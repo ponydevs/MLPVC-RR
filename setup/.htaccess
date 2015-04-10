@@ -1,0 +1,12 @@
+RewriteEngine On
+RewriteBase /
+
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule (.*) - [L]
+
+RewriteRule ^([\w\.\-]{3,}|-?\d+)(?:/((?:[[\w\.\-]]+|-?\d+)(?:/(?:[[\w\-]]+|-?\d+))?))?/?$ /do.php?do=$1&data=$2 [NC]
+RewriteRule ^img/grid-([wg]|(?:[A-Fa-f0-9]{3}|[A-Fa-f0-9]{6}))(?:-(0?\.[1-9]))?\.svg$ /img/grid.php?c=$1&o=$2
+
+ErrorDocument 404 /404
+ErrorDocument 403 /404

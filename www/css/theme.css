@@ -1,0 +1,368 @@
+@import url(http://fonts.googleapis.com/css?family=Arimo:400,700,400italic);
+@font-face {
+	font-family: "Celestia";
+	src: local('Celestia Redux Alternate'), local('Celestia Medium Redux'), url('../font/Celestia Medium Redux.ttf') format('truetype');
+}
+/* Mobile-only Styles */
+@media all and (max-width: 650px){
+	header, footer {
+		text-align: center;
+	}
+	main {
+		height: auto;
+		position: relative;
+	}
+	footer {
+		position: relative;
+	}
+}
+/* Desktop-only Styles */
+@media all and (min-width: 650px){
+	header {
+		z-index: 2;
+	}
+	#topbar {
+		padding: 5px 0;
+		height: 80px;
+		text-align: center;
+		background: #fff;
+	}
+	#topbar .left {
+		display: inline-block;
+		border-radius: 6px;
+	}
+	nav {
+		height: 25px;
+	}
+	main {
+		position: absolute;
+		height: calc(100% - 90px - 35px - 38px);
+		top: 125px;
+		left: 0;
+	}
+	footer {
+		position: absolute;
+		bottom: 0;
+		left: 0;
+	}
+}
+
+:focus { outline: 0 }
+time[datetime][title] { cursor: help }
+
+/* Page layout */
+body, html {
+	margin: 0;
+	padding: 0;
+	width: 100%;
+	height: 100%;
+	font-family: 'Arimo', sans-serif;
+}
+/* Page layout - Header */
+header {
+	position: relative;
+	z-index: 2;
+}
+#topbar {
+	position: relative;
+	z-index: 2;
+	width: 100%;
+	box-shadow: 0 0 12px rgba(0,0,0,.6);
+
+	font-size: 0;
+
+	font-family: "Celestia", sans-serif;
+
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	user-select: none;
+	cursor: default;
+}
+
+#topbar:after {
+	content: "";
+	position: absolute;
+	top: 0;
+	left: 0;
+	z-index: -1;
+	width: 100%;
+	height: 100%;
+	/*noinspection CssUnknownTarget*/
+	background-image: url('../img/grid-g.svg');
+	background-size: 16px;
+}
+#topbar .left {
+	position: relative;
+	z-index: 1;
+	height: 100%;
+	padding: 10px;
+	box-sizing: border-box;
+	overflow: hidden;
+}
+#topbar .left:after {
+	content: "";
+	position: absolute;
+	top: 0;
+	left: 0;
+	z-index: -1;
+	width: 100%;
+	height: 100%;
+	background-color: #1E3DB3;
+	/*noinspection CssUnknownTarget*/
+	background-image: url('../img/grid-w-.3.svg'), url('../img/grid-w-.7.svg');
+	background-size: 16px, 4px;
+}
+#topbar .left h1 {
+	margin: 0 0 10px;
+	line-height: 30px;
+	font-size: 30px;
+	text-shadow:
+		0 0 0.133em #fff,
+		0 0 0.133em #fff,
+		0 0 0.133em #fff,
+		0 0 0.133em #fff,
+		0 0 0.133em #fff,
+		0 0 0.133em #fff,
+		0 0 0.133em #fff,
+		0 0 0.133em #fff,
+		0 0 0.133em #fff,
+		0 0 0.133em #fff,
+		0 0 0.133em #fff,
+		0 0 0.133em #fff,
+		0 0 0.133em #fff;
+	color: #000;
+}
+#topbar .left p {
+	margin: 0;
+	line-height: 20px;
+	font-size: 16px;
+	color: #fff;
+}
+#topbar .left p a {
+	color: inherit;
+	cursor: pointer;
+}
+/* Page layout - Header - Navigation */
+nav {
+	position: relative;
+	z-index: 1;
+	line-height: 0;
+	font-size: 0;
+	padding: 5px;
+	background: rgba(0,0,0,.6);
+	box-shadow: 0 0 12px rgba(0,0,0,.6);
+}
+nav a {
+	display: inline-block;
+	height: 1em;
+	line-height: 1em;
+	font-size: 18px;
+	padding: .2em;
+	color: #fff;
+	text-decoration: none;
+
+	border-radius: 3px;
+
+	transition: background-color .2s linear;
+}
+nav a:not(:last-child){
+	margin-right: 6px;
+}
+nav a.active {
+	transition: none;
+	background-color: rgba(255,255,255,.4);
+	cursor: default;
+}
+nav a:hover, nav a:focus, nav a.active {
+	background-color: rgba(255,255,255,.2);
+}
+
+/* Page layout - Content & sidebar */
+main {
+	z-index: 1;
+	width: 100%;
+	padding: 10px !important;
+	box-sizing: border-box;
+	line-height: 1.2em;
+	overflow: auto;
+
+	/*noinspection CssUnknownTarget*/
+	background-image: url('../img/grid-1E3DB3-.1.svg'), url('../img/grid-1E3DB3-.5.svg');
+	background-size: 16px, 4px;
+}
+main .content, main .sidebar > section {
+	border-radius: 5px;
+	border: 1px solid rgba(170,170,170,.8);
+	background-color: rgba(255,255,255,.6);
+	padding: 10px;
+	color: #000;
+}
+main .content {
+}
+main .sidebar {
+	padding: 0 0 0 10px !important;
+}
+main .sidebar > section {
+	text-align: center;
+}
+main .sidebar > section > h2 {
+	font-size: 24px;
+	margin: 0 0 15px;
+	font-family: "Celestia", sans-serif;
+	font-weight: normal;
+}
+main .sidebar > section p {
+	margin: 0;
+}
+main .sidebar > .welcome em {
+	opacity: 0;
+	margin: 10px 0;
+	display: block;
+	height: 1.2em;
+}
+main .sidebar > .welcome em:before { content: '“' }
+main .sidebar > .welcome em:after  { content: '”' }
+main .sidebar > .welcome em small {
+	font-size: .75em;
+}
+main .sidebar .usercard {
+	font-size: 0;
+	border: 2px solid;
+	color: #999;
+	background-color: #eee;
+	border-radius: 4px;
+	padding: 5px;
+	display: inline-block;
+	margin: 5px 0;
+}
+main .sidebar .usercard > * {
+	display: block;
+}
+main .sidebar .usercard img {
+	width: 50px;
+	margin: 0 auto 5px;
+	border-radius: 100%;
+	border: 1px solid;
+	box-shadow: 0 0 5px;
+}
+main .sidebar .usercard .un {
+	font-size: 22px;
+}
+main .sidebar .usercard .role {
+	font-size: 16px;
+}
+
+/* Page layout - Footer */
+footer {
+	display: block;
+	z-index: 2;
+	width: 100%;
+	padding: 10px;
+	box-sizing: border-box;
+	background: rgba(0,0,0,.6);
+	box-shadow: 0 0 12px rgba(0,0,0,.6);
+
+	height: 38px;
+
+	color: #fff;
+}
+footer > p {
+	margin: 0;
+	height: 18px;
+	line-height: 18px;
+	font-style: normal;
+}
+footer > p a {
+	color: inherit;
+}
+
+
+/* Notices */
+.notice {
+	display: block;
+	margin: 0;
+	border: 1px solid;
+	border-radius: 5px;
+	color: #fff;
+	background-color: #000;
+	padding: 7.5px;
+	font-size: 16px;
+}
+.notice:not(:last-child) {
+	margin-bottom: 10px;
+}
+.notice.info {
+	color: #05d;
+	background-color: #def;
+}
+.notice.success {
+	color: #090;
+	background-color: #dfd;
+}
+.notice.fail {
+	color: #d00;
+	background-color: #fdd;
+}
+.notice.warn {
+	color: #d50;
+	background-color: #fed;
+}
+.notice > p { margin: 0 }
+.notice > p:not(:last-child) {
+	margin-bottom: 5px;
+}
+
+/* buttons */
+button, .btn {
+	display: inline-block;
+	margin: 5px;
+	border: 0;
+	border-radius: 3px;
+	color: #fff;
+	background-color: #777;
+	padding: 4px 7px;
+	font-size: 16px;
+	text-decoration: none;
+
+	opacity: .8;
+	cursor: pointer;
+
+	transform-origin: 50% 100%;
+	transition: transform .1s linear, opacity .2s linear;
+}
+button:hover, .btn:hover,
+button:focus, .btn:focus {
+	opacity: 1;
+}
+button:active, .btn:active {
+	transform: scale(.96);
+}
+button.blue, .btn.blue,
+.notice.info button,
+.notice.info .btn {
+	color: #ddf;
+	background-color: #05d;
+}
+button.green, .btn.green,
+.notice.success button,
+.notice.success .btn {
+	color: #dfd;
+	background-color: #090;
+}
+button.red, .btn.red,
+.notice.fail button,
+.notice.fail .btn {
+	color: #fdd;
+	background-color: #d00;
+}
+button.orange, .btn.orange,
+.notice.warn button,
+.notice.warn .btn {
+	color: #fed;
+	background-color: #d50;
+}
+
+/* Alignment */
+.align-center { text-align: center }
+.align-left   { text-align: left   }
+.align-right  { text-align: right  }
