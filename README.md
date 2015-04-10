@@ -14,7 +14,7 @@ In order to get the site up and running locally you'll need to set up a few thin
 	- `DA_CLIENT`: deviantArt application's `client_id`
 	- `DA_SECRET`: deviantArt application's `client_secret`
 4. Configure your server
-    1. If you're using NGINX, you can see a sample configuration in `setup/nginx.conf` edit this file as described below, move it to `/etc/nginx/sites-available` (you should rename it, but you don't have to) and create a symlink in `/etc/nginx/sites-enabled` to enable the configuration. *Don't forget to run `service nginx restart`*
+    1. If you're using NGINX, you can see a sample configuration in `setup/nginx.conf`. Edit this file as described below, move it to `/etc/nginx/sites-available` (you should rename it, but you don't have to) and create a symlink in `/etc/nginx/sites-enabled` to enable the configuration. *Don't forget to run `service nginx restart`*
         - Change `server_name` to your domain or use `localhost`
         - Set the `root` to the `www` directory of this repository on your machine
         - Optionally, change the `listen` port if needed
