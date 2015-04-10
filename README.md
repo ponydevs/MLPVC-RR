@@ -2,7 +2,7 @@ An automated system for handling requests & reservations, made for MLP-VectorClu
 
 ## Local setup
 
-In ordeer to get the site up and running locally you'll need to have a few things set up. Here's a setp-by step guide on how to get everything working on your local machine:
+In order to get the site up and running locally you'll need to set up a few things in advance. Here's a step-by step guide on getting everything to work on your local machine:
 
 1. Clone the repository
 2. Import `setup/database.sql` to a new, empty database of your choice
@@ -14,12 +14,12 @@ In ordeer to get the site up and running locally you'll need to have a few thing
 	- `DA_CLIENT`: deviantArt application's `client_id`
 	- `DA_SECRET`: deviantArt application's `client_secret`
 4. Configure your server
-    1. If you use NGINX, you can see a sample configuration in `setup/nginx.conf` edit this file as described below, move it to `/etc/nginx/sites-available` (renaming is optional, but suggested) and create a symlink in `/etc/nginx/sites-enabled` to enable the configuration. *Don't forget to run `service nginx restart`*
+    1. If you're using NGINX, you can see a sample configuration in `setup/nginx.conf` edit this file as described below, move it to `/etc/nginx/sites-available` (you should rename it, but you don't have to) and create a symlink in `/etc/nginx/sites-enabled` to enable the configuration. *Don't forget to run `service nginx restart`*
         - Change `server_name` to your domain or use `localhost`
-        - Set the `root` to the `www` directory of this repository
+        - Set the `root` to the `www` directory of this repository on your machine
         - Optionally, change the `listen` port if needed
         - Finally, in the last location block, make sure that the `php5-fpm` configuration matches your server setup, if not you'll have to edit that as well.
-    2. If you use Apache, then you'll have to use the file located at `setup/.htaccess`, which only contains the `mod_rewrite` directives neccessary for the site to function. Any other configuration options should be changed through the Apache main configuration file(s).
-5. Type your domain (or `localhost`) into the address bar and the home page should appear
+    2. If you're using Apache, then you'll have to use the file located at `setup/.htaccess`, which only contains the `mod_rewrite` directives neccessary for the site to function. Any other configuration options should be changed through the Apache main configuration file(s).
+5. Type your domain (or `localhost`) into the address bar of your favourite browser and the home page should appear
 
-The only parts of the server config that are crucial and must be kept intact are the rewrites which allows for readable & pretty URLs without the `.php` extension.
+The only parts of the server config that are crucial and must be kept intact are the rewrites which make readable & pretty URLs without the `.php` extension possible.
