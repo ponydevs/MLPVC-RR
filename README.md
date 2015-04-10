@@ -2,7 +2,7 @@ An automated system for handling requests & reservations, made for MLP-VectorClu
 
 ## Local setup
 
-In order to get the site up and running locally you'll need to set up a few things in advance. Here's a step-by step guide on getting everything to work on your local machine:
+In order to get the site up and running locally you'll need to set up a few things in advance. Here's a step-by-step guide on getting everything to work on your local machine:
 
 1. Clone the repository
 2. Import `setup/database.sql` to a new, empty database of your choice
