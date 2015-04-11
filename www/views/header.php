@@ -16,18 +16,16 @@
 
 	<header>
 		<div id="topbar">
-			<div class="left">
-				<h1>MLP Vector Club Requests & Reservations</h1>
-				<p>An automated system for handling requests & reservations, made for <a href="http://mlp-vectorclub.deviantart.com/">MLP-VectorClub</a></p>
-			</div>
+			<h1>MLP<span class=short>-</span><span class=long> </span>V<span class=long>ector </span>C<span class=long>lub</span> Requests & Reservations</h1>
 		</div>
 		<nav>
 			<a href="<?=djpth()?>">Home</a>
 			<a href="<?=djpth('about')?>">About</a>
+			<a href="http://mlp-vectorclub.deviantart.com/" class="club-link">MLP-VectorClub</a>
 		</nav>
 	</header>
 
-	<main class="grid-100 grid-parent">
-	<div class="notice warn align-center">
-		<p><strong>Important!</strong> This project has not yet been approved as official. Until that happens, this website is not maintained by nor affiliated with MLP-VectorClub.</p>
-	</div>
+	<main class="clearfix">
+		<div class="notice warn align-center">
+			<p><strong>Important!</strong> This project has not yet been approved as official. Until that happens, this website is not maintained by nor affiliated with MLP-VectorClub.</p>
+		</div>

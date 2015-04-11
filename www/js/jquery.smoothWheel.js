@@ -4,26 +4,46 @@
 	        return c * ((t = t / d - 1) * t * t * t * t + 1) + b;
 	    }
 	});
-	
-	var wheel = false,
-		$main = $('main'),
-		main = $main.get(0),
-		$w = $(window),
-	    scrollTop = main.scrollTop;
+	var $w = $(window),
+		$header = $('header');
 
-	$main.on('DOMMouseScroll mousewheel', function(e, delta) {
-		e.preventDefault();
-	    delta = delta || -e.originalEvent.detail / 3 || e.originalEvent.wheelDelta / 120;
-	    wheel = true;
+	function fixedHeader(newScrollTop){
+		if (newScrollTop > 10)
+			$header.addClass('fixed');
+		else
+			$header.removeClass('fixed');
+	}
 
-		var origScrollTop = main.scrollTop;
-		scrollTop = Math.min(main.scrollHeight-$main.outerHeight(), Math.max(0, parseInt(scrollTop - delta * 30)));
-		var scrollTopDiff = Math.abs(origScrollTop - scrollTop);
+	function smoothWheel(){
+		var wheel = false,
+			$el = $(this),
+			el = $el.get(0),
+		    scrollTop = el.scrollTop;
 
-	    $main.stop().animate({
-	        scrollTop: scrollTop + 'px'
-	    }, 2000 * (scrollTopDiff < 90 ? scrollTopDiff/90 : 1), 'easeOutQuint', function() {
-	        wheel = false;
-	    });
-	});
+		$el.on('DOMMouseScroll mousewheel', function(e, delta) {
+			console.log('step 1');
+			if (e.ctrlKey === true || typeof window.matchMedia !== 'undefined' && window.matchMedia("(max-width: 650px)").matches)
+				return true;
+			else if ($w.width() < 650) return true;
+			if ($el.hasClass('no-distractions') || $el.hasClass('locked')) return true;
+			e.preventDefault();
+
+		    delta = delta || -e.originalEvent.detail / 3 || e.originalEvent.wheelDelta / 120;
+		    delta *= 40;
+		    wheel = true;
+
+			scrollTop = Math.min(el.scrollHeight-$el.outerHeight(), Math.max(0, parseInt(scrollTop - delta)));
+
+		    $el.stop().animate({
+		        scrollTop: scrollTop + 'px'
+		    }, 1000, 'easeOutQuint', function() {
+		        wheel = false;
+		    });
+
+		    fixedHeader(scrollTop);
+		});
+		fixedHeader(scrollTop);
+	};
+
+	smoothWheel.call(document.body);
 })(jQuery);

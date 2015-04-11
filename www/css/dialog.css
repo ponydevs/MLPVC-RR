@@ -19,6 +19,7 @@
 	box-shadow: 0 0 20px rgba(0,0,0,.5);
 	max-width: 75%;
 	overflow: hidden;
+	border-radius: 5px;
 }
 #dialogHeader {
 	font-weight: 200;
@@ -37,7 +38,7 @@
 	top: 5px;
 }
 #dialogContent {
-	padding: 20px;
+	padding: 15px 10px;
 	border-left: 1px solid rgba(0, 0, 0, 0.2);
 	border-right: 1px solid rgba(0, 0, 0, 0.2);
 	font-size: 11pt;
@@ -70,6 +71,8 @@
 	border-left: 1px solid rgba(0, 0, 0, 0.2);
 	border-right: 1px solid rgba(0, 0, 0, 0.2);
 	border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+	border-bottom-left-radius: 5.5px;
+	border-bottom-right-radius: 5.5px;
 }
 #dialogButtons button,
 #dialogButtons input {

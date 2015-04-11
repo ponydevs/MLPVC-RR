@@ -1,3 +1,51 @@
+/* Mobile-only Styles */
+@media all and (max-width: 650px){
+	.content > section ul {
+		margin: 15px 0 20px 0;
+
+		text-align: center;
+	}
+	.content > section ul li .fluidbox-wrap,
+	.content > section ul li > a .deviation {
+		display: block;
+		margin: 0 auto 10px;
+	}
+	.content > section ul li .fluidbox-wrap * {
+		display: inline-block;
+	}
+	.content > section ul li .screencap,
+	.content > section ul li .deviation {
+		max-width: 100%;
+		max-height: 175px;
+	}
+
+	section .avatar {
+		display: none;
+	}
+}
+/* Desktop-only Styles */
+@media all and (min-width: 650px){
+	header, footer {
+		transition: opacity .5s, height 0s;
+		transition-delay: 0s, .5s;
+	}
+	body.no-distractions header,
+	body.no-distractions footer {
+		opacity: 0;
+		height: 0;
+		pointer-events: none;
+	}
+
+	.content > section ul {
+		margin: 15px 0 20px 30px;
+	}
+	.content > section ul li .screencap,
+	.content > section ul li .deviation {
+		max-width: 100px;
+		margin-right: 10px;
+	}
+}
+
 .content > h1 {
 	font-size: 2em;
 	text-align: center;
@@ -57,6 +105,30 @@
 	border-width: 30px 0 0 30px;
 	border-color: transparent transparent transparent #ccc;
 }
+.content > section ul {
+	padding: 0;
+	list-style: none;
+}
 .content > section ul:empty:before {
 	content: "None yet.";
+}
+.content > section ul li {
+	padding: 7px;
+	color: #434343;
+	background-color: #c8c8c8;
+}
+.content > section ul li:not(:last-child) {
+	margin-bottom: 10px;
+}
+
+#requests > .unfinished > .group > h3 {
+	margin: 5px 0 10px 5px;
+	font-size: 1.2em;
+}
+
+.fluidbox-wrap {
+	display: inline-block;
+}
+.fluidbox-overlay {
+	background: linear-gradient(to bottom, rgba(0,0,0,.9) 0%, rgba(0,0,0,.8) 0%) !important;
 }

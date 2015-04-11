@@ -10,6 +10,7 @@
 </div>
 <?php } ?>
 <div class="content grid-70">
+<?php if(!empty($CurrentEpisode)){ ?>
 	<h1><?=format_episode_title($CurrentEpisode)?></h1>
 	<p>Vector Requests & Reservations</p>
 	<div class="notice info">
@@ -26,6 +27,11 @@
 			<li>Please remember that you have to be a member of the group in order to make a reservation. The idea is to add the finished vector to the gallery, so it has to meet all of our quality requirements.</li>
 		</ol>
 	</div>
+
+	<div class="notice info">
+		<p>Below is some placeholder data added directly through the database, the interface for adding the entries below has yet to be made.</p>
+	</div>
+
 	<section id="reservations">
 		<div class="unfinished">
 			<h2>List of Reservations</h2>
@@ -40,35 +46,18 @@
 			?></ul>
 		</div>
 	</section>
-	<section id="requests">
-		<div class="unfinished">
-			<h2>List of Requests</h2>
-			<div class="group">
-				<h3>Characters:</h3>
-				<ul><?php
+<?php   requests_render($Requests);
+	} else { ?>
+	<h1>No episode found</h1>
+	<p>There are no episodes stored in the database</p>
 
-				?></ul>
-			</div>
-			<div class="group">
-				<h3>Objects:</h3>
-				<ul><?php
-
-				?></ul>
-			</div>
-			<div class="group">
-				<h3>Backgrounds:</h3>
-				<ul><?php
-
-				?></ul>
-			</div>
-		</div>
-		<div class="finished">
-			<h2>Finished Requests</h2>
-			<ul><?php
-
-			?></ul>
-		</div>
-	</section>
+<?php   if ($signedIn && !rankCompare($currentUser['role'],'inspector')){ ?>
+	<div class="notice info">
+		<p>To make the site functional, first, you'll need to add an episode to the database which will then be displayed here.</p>
+		<p>There's no visual interface yet, so you're on your own for now, sorry :\</p>
+	</div>
+<?php   }
+	} ?>
 </div>
 <div class="sidebar grid-30">
 <?php include "views/sidebar.php"; ?>

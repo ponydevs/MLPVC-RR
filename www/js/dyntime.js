@@ -70,7 +70,6 @@
 
 			function getFullDate(fulldate){
 				return fulldate.replace(/\{\{([a-z]{1,2})}}/g,function(_,k){
-					console.log(k,date[k]);
 					return date[k];
 				});
 			}

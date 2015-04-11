@@ -15,7 +15,8 @@
 	$IndexSettings = array(
 		'title' => 'Home',
 		'view' => 'index',
-		'css' => 'index',
+		'css' => array('index','jquery.fluidbox'),
+		'js' => array('jquery.fluidbox.min','index'),
 	);
 
 	if (isset($do)){
@@ -70,8 +71,7 @@
 					"SELECT *
 					FROM requests
 					WHERE season = ? &&  episode = ?
-					ORDER BY finished",array($CurrentEpisode['season'], $CurrentEpisode['episode']));
-
+					ORDER BY finished, posted",array($CurrentEpisode['season'], $CurrentEpisode['episode']));
 
 				loadPage($IndexSettings);
 			break;

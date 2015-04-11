@@ -8,9 +8,26 @@ $(function(){
 		"You're sooo cute!",
 		"Hey there!",
 		"Buy some apples?",
-		"Hold onto your hats!",
+		"Hold onto yer hats!",
 		"Together, we're friends.",
-		"Partly cloudy with a chance of frog."
+		"Partly cloudy with a chance of frog.",
+		"It was under E!",
+		"R.I.P. Twilight's Library 2010-2014",
+		"Make a wish!",
+		"A mark of one's destiny singled out alone, fulfilled.",
+		"We must work so very hard, it's just so much to do!",
+		"Let the rainbow remind you, that together we'll always shine.",
+		"Eeyup",
+		"<small>*squee*</small>",
+		"Gorgeous!",
+		"Alright, sugarcube.",
+		"But ah want it naaow!",
+		"Rocks.",
+		"<strong>The</strong> one and only.",
+		"I got so many chores to do it's not fun being me",
+		"I'm in love with weather patterns, but the others have concerns",
+		"woof woof",
+		"I'd like to be a tree"
 	], $quote = $('main .sidebar > .welcome em');
 	function getQuote(){
 		$quote.fadeTo(500,0,function(){

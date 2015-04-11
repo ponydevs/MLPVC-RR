@@ -125,6 +125,7 @@
 	define('EIGHTY_YEARS',2524556160);
 	define('THREE_YEARS',94608000);
 	define('THIRTY_DAYS',2592000);
+	define('ONE_HOUR',3600);
 
 	// Random Array Element \\
 	function array_random($array, $num = 1){ return $array[array_rand($array, $num)]; }
@@ -240,7 +241,7 @@
 			die(statusCodeHeader(401));
 	}
 
-	// oAuth Responses \\
+	// oAuth Error Response Messages \\
 	$OAUTH_RESPONSE = array(
 		'invalid_request' => 'The authorization recest was not properly formatted.',
 		'unsupported_response_type' => 'The authorization server does not support obtaining an authorization code using this method.',
@@ -250,6 +251,7 @@
 		'temporarily_unavailable' => "There's an issue on deviantArt's end. Try again later.",
 	);
 
+	// Redirection URI shortcut \\
 	function oauth_redirect_uri($state = true){
 		global $do, $data;
 		if ($do === 'index' && empty($data)) $returnURL = RELPATH;
@@ -257,6 +259,7 @@
 		return '&redirect_uri='.urlencode(ABSPATH."da-auth").($state?'&state='.urlencode($returnURL):'');
 	}
 
+	// Make authenticated requests \\
 	function da_request($url, $postdata = null, $token = null){
 		global $signedIn, $currentUser;
 
@@ -285,6 +288,13 @@
         return json_decode($response, true);
 	}
 
+	// Database rawquery get single result
+	function rawquery_get_single_result($query){
+		if (empty($query[0])) return null;
+		else return $query[0];
+	}
+
+	// Request / Refresh Access Token \\
 	function da_get_token($code, $type = null){
 		global $Database;
 
@@ -321,30 +331,141 @@
 		Cookie::set('access_token',$data['access_token'],THREE_YEARS);
 	}
 
-	// Compare Ranks \\
-	if (isset($Database)){
-		$_RoleData = $Database->orderBy('value','ASC')->get('roles');
-		$POSSIBLE_ROLES_ASSOC = array();
-		$POSSIBLE_ROLES = array();
-		foreach ($_RoleData as $r){
-			$POSSIBLE_ROLES_ASSOC[$r['name']] = $r['label'];
-			$POSSIBLE_ROLES[] = $r['name'];
+	// dA oEmbed API Caller \\
+	function da_oembed($ID, $type = null){
+		if (empty($type) || !in_array($type,array('fav.me','sta.sh'))) $type = 'fav.me';
+
+		return file_get_contents('http://backend.deviantart.com/oembed?url='.urlencode("http://$type/$ID"));
+	}
+
+	// Deviation info cacher \\
+	function da_cache_deviation($ID){
+		global $Database;
+
+		$Deviation = $Database->where('id',$ID)->getOne('deviation_cache');
+		if (empty($Deviation) || (!empty($Deviation['updated_on']) && strtotime($Deviation['updated_on'])+ONE_HOUR < time())){
+			$data = da_oembed($ID);
+
+			if (empty($data)) return null;
+			$json = json_decode($data, true);
+
+			$Deviation = array(
+				'title' => $json['title'],
+				'preview' => $json['thumbnail_url'],
+			);
+
+			if (!empty($Deviation)){
+				$Deviation['id'] = $ID;
+				$Database->insert('deviation_cache', $Deviation);
+			}
+			else $Database->where('id',$Deviation['id'])->update('deviation_cache', $Deviation);
 		}
 
-		function rankCompare($left,$right,$canEqual = false){
-			global $POSSIBLE_ROLES;
-			if ($canEqual)
-				return array_search($left,$POSSIBLE_ROLES) <= array_search($right,$POSSIBLE_ROLES);
-			else
-				return array_search($left,$POSSIBLE_ROLES) < array_search($right,$POSSIBLE_ROLES);
-		}
-		unset($_RoleData);
+		return $Deviation;
 	}
+
+	// Compare Ranks \\
+	$_RoleData = $Database->orderBy('value','ASC')->get('roles');
+	$POSSIBLE_ROLES_ASSOC = array();
+	$POSSIBLE_ROLES = array();
+	foreach ($_RoleData as $r){
+		$POSSIBLE_ROLES_ASSOC[$r['name']] = $r['label'];
+		$POSSIBLE_ROLES[] = $r['name'];
+	}
+	function rankCompare($left,$right,$canEqual = false){
+		global $POSSIBLE_ROLES;
+		if ($canEqual)
+			return array_search($left,$POSSIBLE_ROLES) <= array_search($right,$POSSIBLE_ROLES);
+		else
+			return array_search($left,$POSSIBLE_ROLES) < array_search($right,$POSSIBLE_ROLES);
+	}
+	unset($_RoleData);
 
 	// Format Episode Title \\
 	function format_episode_title($Ep){
 		$EpNumber = intval($Ep['episode']);
 		if ($EpNumber <= 2) $Ep['episode'] = '0102';
 		else if ($EpNumber >= 25) $Ep['episode'] = '2526';
+		else $Ep['episode'] = pad($Ep['episode']);
+		$Ep['season'] = pad($Ep['season']);
 		return "S{$Ep['season']}E{$Ep['episode']}: {$Ep['title']}";
+	}
+
+	// User Information Retriever \\
+	define('GETUSER_BASIC', true);
+	function getUser($value, $coloumn = 'id', $basic = false){
+		global $Database;
+
+		if ($basic !== false) return $Database->where($coloumn, $value)->getOne('users','id, username, avatar_url');
+		else return rawquery_get_single_result($Database->rawQuery(
+			"SELECT
+				users.*,
+				roles.label as rolelabel
+			FROM users
+			LEFT JOIN roles ON roles.name = users.role
+			WHERE `$coloumn` = ?",array($value)));
+	}
+
+	// Render Requests HTML \\
+	$REQUEST_TYPES = array(
+		'chr' => 'Charcaters',
+		'obj' => 'Objects',
+		'bg' => 'Backgrounds',
+	);
+	function requests_render($Requests){
+		global $REQUEST_TYPES;
+
+		$Arranged = array();
+		if (empty($Requests) || !is_array($Requests))
+			return $Arranged;
+
+		$Arranged['unfinished'] = array();
+		$Arranged['unfinished']['bg'] =
+		$Arranged['unfinished']['obj'] =
+		$Arranged['unfinished']['chr'] =
+		$Arranged['finished'] = '';
+
+		foreach ($Requests as $R){
+
+			$finished = !!$R['finished'] && !empty($R['deviation_id']);
+			$BaseString = "<a href='{$R['image_url']}'><img src='{$R['image_url']}' class=screencap></a><span>{$R['label']}</span>";
+
+			$RqHTML = '<li>';
+			if (!empty($R['reserved_by'])){
+				$R['reserver'] = getUser($R['reserved_by'],'id',GETUSER_BASIC);
+				$R['reserver']['avatar_html'] = "<img src='{$R['reserver']['avatar_url']}' class=avatar>";
+				$BySTR = " by {$R['reserver']['avatar_html']}{$R['reserver']['username']}";
+				if (!$finished) $RqHTML .= "$BaseString <strong>reserved$BySTR</strong>";
+				else {
+					$D = da_cache_deviation($R['deviation_id']);
+					$D['title'] = preg_replace("/'/",'&apos;',$D['title']);
+					$RqHTML .= "<a href='http://fav.me/{$D['id']}'><img src='{$D['preview']}' alt='{$D['title']}' class=deviation></a>$BySTR";
+				}
+			}
+			else $RqHTML .= $BaseString;
+			$RqHTML .= '</li>';
+
+			if ($finished)
+				$Arranged['finished'] .= $RqHTML;
+			else {
+				$Arranged['unfinished'][$R['type']] .= $RqHTML;
+			}
+		}
+
+		$Groups = '';
+		foreach ($Arranged['unfinished'] as $g => $c)
+			$Groups .= "<div class=group><h3>{$REQUEST_TYPES[$g]}:</h3><ul>{$c}</ul></div>";
+
+		echo <<<HTML
+	<section id="requests">
+		<div class="unfinished">
+			<h2>List of Requests</h2>
+			$Groups
+		</div>
+		<div class="finished">
+			<h2>Finished Requests</h2>
+			<ul>{$Arranged['finished']}</ul>
+		</div>
+	</section>
+HTML;
 	}

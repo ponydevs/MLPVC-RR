@@ -6,21 +6,30 @@ SET time_zone = "+00:00";
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
 /*!40101 SET NAMES utf8 */;
 
-CREATE TABLE IF NOT EXISTS `episodes` (
-  `season` tinyint(2) unsigned zerofill NOT NULL,
-  `episode` tinyint(2) unsigned zerofill NOT NULL,
+CREATE TABLE IF NOT EXISTS `deviation_cache` (
+  `id` varchar(7) NOT NULL,
   `title` tinytext NOT NULL,
-  `posted` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+  `preview` tinytext NOT NULL,
+  `updated_on` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS `episodes` (
+  `season` tinyint(2) unsigned NOT NULL,
+  `episode` tinyint(2) unsigned NOT NULL,
+  `title` tinytext NOT NULL,
+  `posted` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `posted_by` varchar(36) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `requests` (
   `id` int(11) NOT NULL,
   `type` enum('chr','bg','obj') NOT NULL DEFAULT 'chr',
   `finished` tinyint(1) NOT NULL DEFAULT '0',
-  `season` tinyint(2) unsigned zerofill NOT NULL,
-  `episode` tinyint(2) unsigned zerofill NOT NULL,
+  `season` tinyint(2) unsigned NOT NULL,
+  `episode` tinyint(2) unsigned NOT NULL,
   `image_url` tinytext NOT NULL,
   `label` tinytext NOT NULL,
+  `posted` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `reserved_by` varchar(36) DEFAULT NULL,
   `deviation_id` varchar(7) DEFAULT NULL
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
@@ -51,8 +60,11 @@ CREATE TABLE IF NOT EXISTS `users` (
   `signup_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+ALTER TABLE `deviation_cache`
+  ADD PRIMARY KEY (`id`);
+
 ALTER TABLE `episodes`
-  ADD PRIMARY KEY (`season`,`episode`);
+  ADD PRIMARY KEY (`season`,`episode`), ADD KEY `posted_by` (`posted_by`);
 
 ALTER TABLE `requests`
   ADD PRIMARY KEY (`id`), ADD KEY `season` (`season`,`episode`), ADD KEY `reserved_by` (`reserved_by`);
@@ -67,9 +79,12 @@ ALTER TABLE `users`
 ALTER TABLE `requests`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=4;
 
+ALTER TABLE `episodes`
+ADD CONSTRAINT `episodes_ibfk_1` FOREIGN KEY (`posted_by`) REFERENCES `users` (`id`);
+
 ALTER TABLE `requests`
-ADD CONSTRAINT `requests_ibfk_1` FOREIGN KEY (`season`, `episode`) REFERENCES `episodes` (`season`, `episode`),
-ADD CONSTRAINT `requests_ibfk_2` FOREIGN KEY (`reserved_by`) REFERENCES `users` (`id`);
+ADD CONSTRAINT `requests_ibfk_3` FOREIGN KEY (`season`, `episode`) REFERENCES `episodes` (`season`, `episode`) ON DELETE CASCADE ON UPDATE NO ACTION,
+ADD CONSTRAINT `requests_ibfk_2` FOREIGN KEY (`reserved_by`) REFERENCES `users` (`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 ALTER TABLE `users`
 ADD CONSTRAINT `users_ibfk_1` FOREIGN KEY (`role`) REFERENCES `roles` (`name`) ON DELETE NO ACTION ON UPDATE NO ACTION;

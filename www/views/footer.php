@@ -25,7 +25,7 @@ $(function(){
 	var $nav = $('header nav');
 	if ($nav.length > 0){
 		var wlpn = window.location.pathname,
-			$a = $nav.children('a').filter(function(){ return this.pathname === wlpn });
+			$a = $nav.children('a').filter(function(){ return this.host === window.location.host && this.pathname === wlpn });
 		if ($a.length > 0)
 			$a.addClass('active').removeAttr('href').on('mousedown dragstart click',function(e){e.preventDefault()});
 	}
