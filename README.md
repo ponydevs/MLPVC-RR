@@ -6,7 +6,7 @@ In order to get the site up and running locally you'll need to set up a few thin
 
 1. Clone the repository
 2. Import `setup/database.sql` to a new, empty database of your choice
-3. Copy `setup/conf.php` to `www/conf.php` and fill in the details<br>(you can get a deviantArt API key for yourself [here](http://www.deviantart.com/developers/register))
+3. Copy `setup/conf.php` to `www/conf.php` and fill in the details<br>(you can get the deviantArt client keys for yourself [here](http://www.deviantart.com/developers/register))
 	- `DB_HOST`: Database host (most likely `localhost`)
 	- `DB_NAME`: Name of the database you imported the SQL file into in the previous step
 	- `DB_USER`: Database user that has access to said database
