@@ -23,7 +23,6 @@
 	}
 	#topbar {
 		padding: 5px 0;
-		height: 80px;
 		text-align: center;
 		background: #fff;
 	}
@@ -36,14 +35,30 @@
 	}
 	main {
 		position: absolute;
-		height: calc(100% - 90px - 35px - 38px);
-		top: 125px;
 		left: 0;
 	}
 	footer {
 		position: absolute;
 		bottom: 0;
 		left: 0;
+	}
+}
+@media all and (max-height: 800px) and (min-width: 650px) {
+	#topbar { height: 50px }
+	header .left h1 { line-height: .75em; margin: 0 }
+	header .left p { display: none }
+	main {
+		height: calc(100% - 60px - 35px - 38px);
+		top: 95px;
+	}
+}
+@media all and (min-height: 800px) and (min-width: 650px) {
+	#topbar { height: 80px }
+	header .left h1 { line-height: 1em;	margin: 0 0 10px }
+	header .left p { display: block }
+	main {
+		height: calc(100% - 90px - 35px - 38px);
+		top: 125px;
 	}
 }
 
@@ -113,8 +128,6 @@ header {
 	background-size: 16px, 4px;
 }
 #topbar .left h1 {
-	margin: 0 0 10px;
-	line-height: 30px;
 	font-size: 30px;
 	text-shadow:
 		0 0 0.133em #fff,
@@ -183,8 +196,10 @@ main {
 	width: 100%;
 	padding: 10px !important;
 	box-sizing: border-box;
-	line-height: 1.2em;
 	overflow: auto;
+
+	scroll-behavior: smooth;
+	transition: padding-top .5s ease-out;
 
 	/*noinspection CssUnknownTarget*/
 	background-image: url('../img/grid-1E3DB3-.1.svg'), url('../img/grid-1E3DB3-.5.svg');
@@ -229,9 +244,9 @@ main .sidebar .usercard {
 	font-size: 0;
 	border: 2px solid;
 	color: #999;
-	background-color: #eee;
+	background-color: #efefef;
 	border-radius: 4px;
-	padding: 5px;
+	padding: 10px;
 	display: inline-block;
 	margin: 5px 0;
 }
@@ -240,6 +255,7 @@ main .sidebar .usercard > * {
 }
 main .sidebar .usercard img {
 	width: 50px;
+	height: 50px;
 	margin: 0 auto 5px;
 	border-radius: 100%;
 	border: 1px solid;
@@ -281,8 +297,8 @@ footer > p a {
 .notice {
 	display: block;
 	margin: 0;
-	border: 1px solid;
-	border-radius: 5px;
+	border: 2px solid;
+	border-radius: 7px;
 	color: #fff;
 	background-color: #000;
 	padding: 7.5px;
@@ -306,6 +322,18 @@ footer > p a {
 .notice.warn {
 	color: #d50;
 	background-color: #fed;
+}
+.notice.caution {
+	color: #b80;
+	background-color: #ffd;
+}
+.notice > label:first-child {
+	display: block;
+	font-size: 1.4em;
+	padding-bottom: 5px;
+	margin-bottom: 10px;
+	font-weight: bold;
+	border-bottom: 2px solid;
 }
 .notice > p { margin: 0 }
 .notice > p:not(:last-child) {
@@ -360,6 +388,12 @@ button.orange, .btn.orange,
 .notice.warn .btn {
 	color: #fed;
 	background-color: #d50;
+}
+button.yellow, .btn.yellow,
+.notice.caution button,
+.notice.caution .btn {
+	color: #ffd;
+	background-color: #b80;
 }
 
 /* Alignment */

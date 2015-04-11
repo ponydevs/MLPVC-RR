@@ -10,7 +10,65 @@
 </div>
 <?php } ?>
 <div class="content grid-70">
-	<p>Please keep in mind that this is not a finished product, bugs may occur, things may break, and the design is still not complete, but it'll all be better, I promise!</p>
+	<h1><?=format_episode_title($CurrentEpisode)?></h1>
+	<p>Vector Requests & Reservations</p>
+	<div class="notice info">
+		<label>What Vector Reservations Are</label>
+		<p>People usually get excited whenever a new episode comes out, and start making vectors of any pose/object/etc. that they found hilarious/interesting enough. It often results in various people unnecessarily doing the very same thing. Vector Reservations can help organize our efforts by listing who's working on what and to reduce the number of duplicates.</p>
+	</div>
+	<div class="notice caution rules">
+		<label>Rules</label>
+		<ol>
+			<li>You MUST have an image to make a reservation! For the best quality, get your references from the episode in 1080p.</li>
+			<li>Making a reservation does NOT forbid other people from working on a pose anyway. It is only information that you are working on it, so other people can coordinate to avoid doing the same thing twice.</li>
+			<li>There are no time limits, but remember that the longer you wait, the greater the chance that someone might take your pose anyway. It's generally advised to finish your reservations before a new episode comes out.</li>
+			<li>The are no limits on the number of reservations you can make, but you need to remember about your own limits and what rule #3 says. It's generally advised not to take more than 3 reservations at a time.</li>
+			<li>Please remember that you have to be a member of the group in order to make a reservation. The idea is to add the finished vector to the gallery, so it has to meet all of our quality requirements.</li>
+		</ol>
+	</div>
+	<section id="reservations">
+		<div class="unfinished">
+			<h2>List of Reservations</h2>
+			<ul><?php
+
+			?></ul>
+		</div>
+		<div class="finished">
+			<h2>Finished Reservations</h2>
+			<ul><?php
+
+			?></ul>
+		</div>
+	</section>
+	<section id="requests">
+		<div class="unfinished">
+			<h2>List of Requests</h2>
+			<div class="group">
+				<h3>Characters:</h3>
+				<ul><?php
+
+				?></ul>
+			</div>
+			<div class="group">
+				<h3>Objects:</h3>
+				<ul><?php
+
+				?></ul>
+			</div>
+			<div class="group">
+				<h3>Backgrounds:</h3>
+				<ul><?php
+
+				?></ul>
+			</div>
+		</div>
+		<div class="finished">
+			<h2>Finished Requests</h2>
+			<ul><?php
+
+			?></ul>
+		</div>
+	</section>
 </div>
 <div class="sidebar grid-30">
 <?php include "views/sidebar.php"; ?>

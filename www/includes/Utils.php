@@ -57,7 +57,7 @@
 			$customCSS = array_merge($customCSS, $DEFAULT_CSS);
 
 		# JavaScript
-		$DEFAULT_JS = array('dyntime','dialog');
+		$DEFAULT_JS = array('dyntime','dialog','jquery.smoothWheel');
 		$customJS = array();
 		// Add logged_in.js for logged in users
 		global $signedIn;
@@ -339,4 +339,12 @@
 				return array_search($left,$POSSIBLE_ROLES) < array_search($right,$POSSIBLE_ROLES);
 		}
 		unset($_RoleData);
+	}
+
+	// Format Episode Title \\
+	function format_episode_title($Ep){
+		$EpNumber = intval($Ep['episode']);
+		if ($EpNumber <= 2) $Ep['episode'] = '0102';
+		else if ($EpNumber >= 25) $Ep['episode'] = '2526';
+		return "S{$Ep['season']}E{$Ep['episode']}: {$Ep['title']}";
 	}

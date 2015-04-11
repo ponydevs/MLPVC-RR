@@ -1,0 +1,62 @@
+.content > h1 {
+	font-size: 2em;
+	text-align: center;
+	margin: 0 0 5px;
+}
+.content > h1 + p {
+	font-size: 1.6em;
+	text-align: center;
+	margin: 0 0 10px;
+	font-style: italic;
+}
+.content > .rules {
+	counter-reset: counter;
+}
+.content > .rules > ol {
+	padding: 0 10px;
+	margin: 0;
+	list-style:none
+}
+.content > .rules > ol > li {
+	position: relative;
+	padding-left: 20px;
+}
+.content > .rules > ol > li:not(:last-child) {
+	margin-bottom: 5px;
+}
+.content > .rules > ol > li:before {
+	position: absolute;
+	left: 0;
+	text-align: right;
+	content: counter(counter) ") ";
+	counter-increment: counter;
+}
+.content > section {
+	margin: 10px 0 0;
+}
+.content > section h2 {
+	font-size: 1.3em;
+	margin: 0 0 10px;
+	position:relative;
+	left:-10px;
+	background-color: #ccc;
+	display: inline-block;
+	padding: 3px 7px 3px 25px;
+	font-weight: normal;
+	box-sizing: border-box;
+	height: 30px;
+}
+.content > section h2:after {
+	content:"";
+	position: absolute;
+	top: 0;
+	right: -30px;
+	width: 0;
+	height: 0;
+	border-style: solid;
+	border-width: 30px 0 0 30px;
+	border-color: transparent transparent transparent #ccc;
+}
+.content > section ul:empty:before {
+	content: "None yet.";
+}

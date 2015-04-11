@@ -7,6 +7,33 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8 */;
 
 
+CREATE TABLE IF NOT EXISTS `episodes` (
+  `season` tinyint(2) unsigned zerofill NOT NULL,
+  `episode` tinyint(2) unsigned zerofill NOT NULL,
+  `title` tinytext NOT NULL,
+  `posted` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+INSERT INTO `episodes` (`season`, `episode`, `title`, `posted`) VALUES
+(05, 01, 'The Cutie Map', '2015-04-10 22:00:00');
+
+CREATE TABLE IF NOT EXISTS `requests` (
+  `id` int(11) NOT NULL,
+  `type` enum('chr','bg','obj') NOT NULL DEFAULT 'chr',
+  `finished` tinyint(1) NOT NULL DEFAULT '0',
+  `season` tinyint(2) unsigned zerofill NOT NULL,
+  `episode` tinyint(2) unsigned zerofill NOT NULL,
+  `image_url` tinytext NOT NULL,
+  `label` tinytext NOT NULL,
+  `reserved_by` varchar(36) DEFAULT NULL,
+  `deviation_id` varchar(7) DEFAULT NULL
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+
+INSERT INTO `requests` (`id`, `type`, `finished`, `season`, `episode`, `image_url`, `label`, `reserved_by`, `deviation_id`) VALUES
+(1, 'chr', 0, 05, 01, 'http://placehold.it/192x108', 'This pony', NULL, NULL),
+(2, 'chr', 0, 05, 01, 'http://placehold.it/192x108', 'Another pony', '46947AE2-62AE-28D1-2E49-6DAEE2048F59', NULL),
+(3, 'chr', 1, 05, 01, 'http://orig04.deviantart.net/27d5/f/2015/098/c/8/the_cutie_map__part_2__snapshot_20_12_by_djdavid98-d8ox1rd.png', 'Night Glider only', '46947AE2-62AE-28D1-2E49-6DAEE2048F59', 'd8p25ri');
+
 CREATE TABLE IF NOT EXISTS `roles` (
   `value` tinyint(3) unsigned NOT NULL,
   `name` varchar(10) NOT NULL,
@@ -29,8 +56,15 @@ CREATE TABLE IF NOT EXISTS `users` (
   `avatar_url` tinytext NOT NULL,
   `access_token` tinytext NOT NULL,
   `refresh_token` tinytext NOT NULL,
-  `token_expires` timestamp NULL DEFAULT NULL
+  `token_expires` timestamp NULL DEFAULT NULL,
+  `signup_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+ALTER TABLE `episodes`
+  ADD PRIMARY KEY (`season`,`episode`);
+
+ALTER TABLE `requests`
+  ADD PRIMARY KEY (`id`), ADD KEY `season` (`season`,`episode`), ADD KEY `reserved_by` (`reserved_by`);
 
 ALTER TABLE `roles`
   ADD PRIMARY KEY (`value`), ADD KEY `name` (`name`);
@@ -38,6 +72,13 @@ ALTER TABLE `roles`
 ALTER TABLE `users`
   ADD PRIMARY KEY (`id`), ADD KEY `role` (`role`);
 
+
+ALTER TABLE `requests`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=4;
+
+ALTER TABLE `requests`
+ADD CONSTRAINT `requests_ibfk_1` FOREIGN KEY (`season`, `episode`) REFERENCES `episodes` (`season`, `episode`),
+ADD CONSTRAINT `requests_ibfk_2` FOREIGN KEY (`reserved_by`) REFERENCES `users` (`id`);
 
 ALTER TABLE `users`
 ADD CONSTRAINT `users_ibfk_1` FOREIGN KEY (`role`) REFERENCES `roles` (`name`) ON DELETE NO ACTION ON UPDATE NO ACTION;

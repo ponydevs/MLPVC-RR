@@ -10,7 +10,14 @@
 	if (isset($_POST['data'])) $data = $_POST['data'];
 	else if (!isset($_POST['data']) && isset($_GET['data'])) $data = $_GET['data'];
 	else $data = '';
-	
+
+	// Stored here for quick reference
+	$IndexSettings = array(
+		'title' => 'Home',
+		'view' => 'index',
+		'css' => 'index',
+	);
+
 	if (isset($do)){
 		switch ($do){
 			case "signout":
@@ -35,11 +42,7 @@
 				if (empty($_GET['code']) || (empty($_GET['state']) || ($_GET['state'] !== '/' && !preg_match(REWRITE_REGEX,$_GET['state']))))
 					$_GET['error'] = 'unauthorized_client';
 				if (isset($_GET['error']))
-					loadPage(array(
-						'title' => 'Home',
-						'view' => 'index',
-						'css' => 'index',
-					));
+					loadPage($IndexSettings);
 
 				da_get_token($_GET['code']);
 
@@ -47,20 +50,30 @@
 			break;
 
 			// PAGES
-			// PAGES
-			// PAGES
-			// PAGES
 			case "index":
 				if ($_SERVER['REQUEST_URI'] === '/index'){
 					statusCodeHeader(301);
 					redirect('/',false);
 				}
 
-				loadPage(array(
-					'title' => 'Home',
-					'view' => 'index',
-					//'css' => 'index',
-				));
+				$CurrentEpisode = $Database->rawQuery(
+					"SELECT *
+					FROM episodes e
+					ORDER BY e.posted
+					LIMIT 1");
+				if (empty($CurrentEpisode)) unset($CurrentEpisode);
+				else $CurrentEpisode = $CurrentEpisode[0];
+
+				//$Reservations
+
+				$Requests = $Database->rawQuery(
+					"SELECT *
+					FROM requests
+					WHERE season = ? &&  episode = ?
+					ORDER BY finished",array($CurrentEpisode['season'], $CurrentEpisode['episode']));
+
+
+				loadPage($IndexSettings);
 			break;
 			case "about":
 				loadPage(array(
