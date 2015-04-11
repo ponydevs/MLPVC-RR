@@ -6,16 +6,12 @@ SET time_zone = "+00:00";
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
 /*!40101 SET NAMES utf8 */;
 
-
 CREATE TABLE IF NOT EXISTS `episodes` (
   `season` tinyint(2) unsigned zerofill NOT NULL,
   `episode` tinyint(2) unsigned zerofill NOT NULL,
   `title` tinytext NOT NULL,
   `posted` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-INSERT INTO `episodes` (`season`, `episode`, `title`, `posted`) VALUES
-(05, 01, 'The Cutie Map', '2015-04-10 22:00:00');
 
 CREATE TABLE IF NOT EXISTS `requests` (
   `id` int(11) NOT NULL,
@@ -28,11 +24,6 @@ CREATE TABLE IF NOT EXISTS `requests` (
   `reserved_by` varchar(36) DEFAULT NULL,
   `deviation_id` varchar(7) DEFAULT NULL
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
-
-INSERT INTO `requests` (`id`, `type`, `finished`, `season`, `episode`, `image_url`, `label`, `reserved_by`, `deviation_id`) VALUES
-(1, 'chr', 0, 05, 01, 'http://placehold.it/192x108', 'This pony', NULL, NULL),
-(2, 'chr', 0, 05, 01, 'http://placehold.it/192x108', 'Another pony', '46947AE2-62AE-28D1-2E49-6DAEE2048F59', NULL),
-(3, 'chr', 1, 05, 01, 'http://orig04.deviantart.net/27d5/f/2015/098/c/8/the_cutie_map__part_2__snapshot_20_12_by_djdavid98-d8ox1rd.png', 'Night Glider only', '46947AE2-62AE-28D1-2E49-6DAEE2048F59', 'd8p25ri');
 
 CREATE TABLE IF NOT EXISTS `roles` (
   `value` tinyint(3) unsigned NOT NULL,
