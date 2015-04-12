@@ -1,11 +1,6 @@
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
 
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
-/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8 */;
-
 CREATE TABLE IF NOT EXISTS `deviation_cache` (
   `id` varchar(7) NOT NULL,
   `title` tinytext NOT NULL,
@@ -20,6 +15,14 @@ CREATE TABLE IF NOT EXISTS `episodes` (
   `posted` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `posted_by` varchar(36) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS `permissions` (
+  `action` varchar(30) NOT NULL,
+  `minrole` varchar(10) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+INSERT INTO `permissions` (`action`, `minrole`) VALUES
+('episodes.manage', 'inspector');
 
 CREATE TABLE IF NOT EXISTS `requests` (
   `id` int(11) NOT NULL,
@@ -66,6 +69,9 @@ ALTER TABLE `deviation_cache`
 ALTER TABLE `episodes`
   ADD PRIMARY KEY (`season`,`episode`), ADD KEY `posted_by` (`posted_by`);
 
+ALTER TABLE `permissions`
+  ADD PRIMARY KEY (`action`), ADD KEY `minrole` (`minrole`);
+
 ALTER TABLE `requests`
   ADD PRIMARY KEY (`id`), ADD KEY `season` (`season`,`episode`), ADD KEY `reserved_by` (`reserved_by`);
 
@@ -75,12 +81,14 @@ ALTER TABLE `roles`
 ALTER TABLE `users`
   ADD PRIMARY KEY (`id`), ADD KEY `role` (`role`);
 
-
 ALTER TABLE `requests`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=4;
 
 ALTER TABLE `episodes`
 ADD CONSTRAINT `episodes_ibfk_1` FOREIGN KEY (`posted_by`) REFERENCES `users` (`id`);
+
+ALTER TABLE `permissions`
+ADD CONSTRAINT `permissions_ibfk_1` FOREIGN KEY (`minrole`) REFERENCES `roles` (`name`);
 
 ALTER TABLE `requests`
 ADD CONSTRAINT `requests_ibfk_3` FOREIGN KEY (`season`, `episode`) REFERENCES `episodes` (`season`, `episode`) ON DELETE CASCADE ON UPDATE NO ACTION,
@@ -88,7 +96,3 @@ ADD CONSTRAINT `requests_ibfk_2` FOREIGN KEY (`reserved_by`) REFERENCES `users` 
 
 ALTER TABLE `users`
 ADD CONSTRAINT `users_ibfk_1` FOREIGN KEY (`role`) REFERENCES `roles` (`name`) ON DELETE NO ACTION ON UPDATE NO ACTION;
-
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

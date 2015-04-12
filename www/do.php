@@ -75,10 +75,15 @@
 
 				loadPage($IndexSettings);
 			break;
+			case "episodes":
+				loadPage(array(
+					'title' => 'Episodes',
+					'do-css',
+				));
+			break;
 			case "about":
 				loadPage(array(
 					'title' => 'Home',
-					'view' => 'about',
 				));
 			break;
 

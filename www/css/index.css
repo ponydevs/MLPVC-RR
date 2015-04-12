@@ -1,20 +1,20 @@
 /* Mobile-only Styles */
 @media all and (max-width: 650px){
-	.content > section ul {
+	main > section ul {
 		margin: 15px 0 20px 0;
 
 		text-align: center;
 	}
-	.content > section ul li .fluidbox-wrap,
-	.content > section ul li > a .deviation {
+	main > section ul li .fluidbox-wrap,
+	main > section ul li > a .deviation {
 		display: block;
 		margin: 0 auto 10px;
 	}
-	.content > section ul li .fluidbox-wrap * {
+	main > section ul li .fluidbox-wrap * {
 		display: inline-block;
 	}
-	.content > section ul li .screencap,
-	.content > section ul li .deviation {
+	main > section ul li .screencap,
+	main > section ul li .deviation {
 		max-width: 100%;
 		max-height: 175px;
 	}
@@ -36,53 +36,53 @@
 		pointer-events: none;
 	}
 
-	.content > section ul {
+	main > section ul {
 		margin: 15px 0 20px 30px;
 	}
-	.content > section ul li .screencap,
-	.content > section ul li .deviation {
+	main > section ul li .screencap,
+	main > section ul li .deviation {
 		max-width: 100px;
 		margin-right: 10px;
 	}
 }
 
-.content > h1 {
+main > h1 {
 	font-size: 2em;
 	text-align: center;
 	margin: 0 0 5px;
 }
-.content > h1 + p {
+main > h1 + p {
 	font-size: 1.6em;
 	text-align: center;
 	margin: 0 0 10px;
 	font-style: italic;
 }
-.content > .rules {
+main > .rules {
 	counter-reset: counter;
 }
-.content > .rules > ol {
+main > .rules > ol {
 	padding: 0 10px;
 	margin: 0;
 	list-style:none
 }
-.content > .rules > ol > li {
+main > .rules > ol > li {
 	position: relative;
 	padding-left: 20px;
 }
-.content > .rules > ol > li:not(:last-child) {
+main > .rules > ol > li:not(:last-child) {
 	margin-bottom: 5px;
 }
-.content > .rules > ol > li:before {
+main > .rules > ol > li:before {
 	position: absolute;
 	left: 0;
 	text-align: right;
 	content: counter(counter) ") ";
 	counter-increment: counter;
 }
-.content > section {
+main > section {
 	margin: 10px 0 0;
 }
-.content > section h2 {
+main > section h2 {
 	font-size: 1.3em;
 	margin: 0 0 10px;
 	position:relative;
@@ -94,7 +94,7 @@
 	box-sizing: border-box;
 	height: 30px;
 }
-.content > section h2:after {
+main > section h2:after {
 	content:"";
 	position: absolute;
 	top: 0;
@@ -105,19 +105,19 @@
 	border-width: 30px 0 0 30px;
 	border-color: transparent transparent transparent #ccc;
 }
-.content > section ul {
+main > section ul {
 	padding: 0;
 	list-style: none;
 }
-.content > section ul:empty:before {
+main > section ul:empty:before {
 	content: "None yet.";
 }
-.content > section ul li {
+main > section ul li {
 	padding: 7px;
 	color: #434343;
 	background-color: #c8c8c8;
 }
-.content > section ul li:not(:last-child) {
+main > section ul li:not(:last-child) {
 	margin-bottom: 10px;
 }
 

@@ -21,7 +21,6 @@
 		    scrollTop = el.scrollTop;
 
 		$el.on('DOMMouseScroll mousewheel', function(e, delta) {
-			console.log('step 1');
 			if (e.ctrlKey === true || typeof window.matchMedia !== 'undefined' && window.matchMedia("(max-width: 650px)").matches)
 				return true;
 			else if ($w.width() < 650) return true;

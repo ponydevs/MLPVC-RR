@@ -1,46 +1,59 @@
 $(function(){
 	var $w = $(window),
-		quotes = [
-		"We're so pleased to have you here!",
-		"Thanks for stopping by!",
-		"<small>you rock! woo hoo!</small>",
-		"<small>yay</small>",
-		"You're sooo cute!",
-		"Hey there!",
-		"Buy some apples?",
-		"Hold onto yer hats!",
-		"Together, we're friends.",
-		"Partly cloudy with a chance of frog.",
-		"It was under E!",
-		"R.I.P. Twilight's Library 2010-2014",
-		"Make a wish!",
-		"A mark of one's destiny singled out alone, fulfilled.",
-		"We must work so very hard, it's just so much to do!",
-		"Let the rainbow remind you, that together we'll always shine.",
-		"Eeyup",
-		"<small>*squee*</small>",
-		"Gorgeous!",
-		"Alright, sugarcube.",
-		"But ah want it naaow!",
-		"Rocks.",
-		"<strong>The</strong> one and only.",
-		"I got so many chores to do it's not fun being me",
-		"I'm in love with weather patterns, but the others have concerns",
-		"woof woof",
-		"I'd like to be a tree"
-	], $quote = $('main .sidebar > .welcome em');
+		quotes = {
+			Applejack: "Alright, sugarcube.",
+			Fluttershy: [
+				"<small>you rock! woo hoo!</small>",
+				"<small>yay</small>",
+				"<small>*squee*</small>",
+				"You're sooo cute!",
+				"I'd like to be a tree,"
+			],
+			PinkiePie: [
+				"It was under E!",
+				"Make a wish!",
+			],
+			RainbowDash: "<strong>The</strong> one and only.",
+			Rarity: "Gorgeous!",
+			TwilightSparkle: [
+				"Together, we're friends.",
+				"A mark of one's destiny singled out alone, fulfilled.",
+			],
+			StarlightGlimmer: "We're so pleased to have you here!",
+			Applebloom: [
+				"Buy some apples?",
+				"But ah want it naaow!",
+			],
+			BigMacintosh: "Eeyup",
+			WinterWrapUp: "We must work so very hard, it's just so much to do!",
+			MaudPie: "Rocks.",
+			ScrewLoose: "woof woof",
+		}, $quote = $('aside > .welcome > blockquote');
+	function unCamelCase(str){
+		return str.charAt(0)+str.substring(1).replace(/([A-Z])/g,' $1');
+	}
+	function random(arr){
+		return arr[Math.floor(Math.random()*arr.length)]
+	}
 	function getQuote(){
 		$quote.fadeTo(500,0,function(){
-			var qs = quotes.slice(),
-				current = $quote.data('index');
-			if (typeof current !== 'undefined') qs.splice(current,1);
-			current = parseInt(Math.random()*qs.length);
-			$quote.data('index', current);
-			$quote.html(qs[current]).fadeTo(500,1);
+			var qs = $.extend(true,{},quotes),
+				pony = $quote.data('pony');
+			if (typeof pony !== 'undefined') delete qs[pony];
+			var qskeys = Object.keys(qs);
+			pony = random(qskeys);
+			var ponyQuotes = qs[pony];
+			$quote.data('index', pony).attr('data-cite', unCamelCase(pony));
+			$quote.html(typeof ponyQuotes === 'string' ? ponyQuotes : random(ponyQuotes)).fadeTo(500,1);
 		});
 	}
-	setInterval(getQuote,11000);
 	getQuote();
+	var quoteInterval;
+	$('aside').on('mouseenter',function(){
+		clearInterval(quoteInterval);
+	}).on('mouseleave',function(){
+		quoteInterval = setInterval(getQuote,11000);
+	}).trigger('mouseleave');
 
 	$('#signout').on('click',function(){
 		var title = 'Sign out';

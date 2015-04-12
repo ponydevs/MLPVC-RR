@@ -1,7 +1,17 @@
 <?php
 
-	# AJAX reply function (for JavaScript)
-	function respond($m = 'You need to be signed in to use that.', $s = 0, $x = array()){
+	/**
+	 * Sends replies to AJAX requests in a universal form
+	 * $s respresents the request status, a truthy value
+	 *  means the request was successful, a falsey value
+	 *  means the request failed
+	 * $x can be used to attach additional data to the response
+	 *
+	 * @param string $m
+	 * @param bool|int $s
+	 * @param array $x
+	 */
+	function respond($m = 'You need to be signed in to use that.', $s = false, $x = array()){
 		header('Content-Type: application/json');
 		die(json_encode(array_merge(array(
 			"message" => $m,
@@ -10,7 +20,7 @@
 	}
 
 	# Logging (TODO)
-	function naplo($type,$data = null){
+	function LogAction($type,$data = null){
 		global $Database, $signedIn;
 		$central = array('ip' => $_SERVER['REMOTE_ADDR']);
 
@@ -41,16 +51,8 @@
 		if (isset($settings['title']))
 			$title = $settings['title'];
 
-		// Page heading
-		if (isset($settings['heading']))
-			$heading = $settings['heading'];
-
-		// Alternate favicon
-		if (isset($settings['favicon']))
-			$faviconpath = $settings['favicon'];
-
 		# CSS
-		$DEFAULT_CSS = array('grid','theme','forms','dialog','colors');
+		$DEFAULT_CSS = array('theme','forms','dialog','colors');
 		$customCSS = array();
 		// Only add defaults when needed
 		if (array_search('no-default-css',$settings) === false)
@@ -74,14 +76,16 @@
 		if (isset($settings['status-code']))
 			statusCodeHeader($settings['status-code']);
 
-		# Putting it together
-		/* Together, we'll always shine! */
-		$view = $settings['view'];
-		$viewPath = "views/{$view}.php";
-		// Import global variables
+		# Import global variables
 		foreach ($GLOBALS as $nev => $ertek)
 			if (!isset($$nev))
 				$$nev = $ertek;
+
+		# Putting it together
+		/* Together, we'll always shine! */
+		if (empty($settings['view'])) $view = $do;
+		else $view = $settings['view'];
+		$viewPath = "views/{$view}.php";
 
 		header('Content-Type: text/html; charset=utf-8;');
 
@@ -107,6 +111,14 @@
 			if (!is_array($$type))
 				$customType[] = $$type;
 			else $customType = array_merge($customType, $$type);
+			if (array_search("do-$type",$settings) !== false){
+				global $do;
+				$customType[] = $do;
+			}
+		}
+		else if (array_search("do-$type",$settings) !== false){
+			global $do;
+			$customType[] = $do;
 		}
 	}
 
@@ -148,6 +160,17 @@
 	}
 
 	// Number padder \\
+	/**
+	 * Pad a number using $padchar from either side
+	 *  to create an $l character long string
+	 * If $leftSide is false, padding is done from the right
+	 *
+	 * @param string|int $str
+	 * @param int $l
+	 * @param string $padchar
+	 * @param bool $leftSide
+	 * @return string
+	 */
 	function pad($str,$l = 2,$padchar = '0', $leftSide = true){
 		if (!is_string($str)) $str = strval($str);
 		if (strlen($str) < $l){
@@ -259,7 +282,14 @@
 		return '&redirect_uri='.urlencode(ABSPATH."da-auth").($state?'&state='.urlencode($returnURL):'');
 	}
 
-	// Make authenticated requests \\
+	/**
+	 * Makes authenticated requests to the deviantArt API
+	 *
+	 * @param string $url
+	 * @param null|array $postdata
+	 * @param null|string $token
+	 * @return array
+	 */
 	function da_request($url, $postdata = null, $token = null){
 		global $signedIn, $currentUser;
 
@@ -288,13 +318,27 @@
         return json_decode($response, true);
 	}
 
-	// Database rawquery get single result
+	/**
+	 * Returns the first element of an array of arrays
+	 *  returned by the MySqlidb::query method
+	 *  as received through $query
+	 * Returns null if the query contains no results
+	 *
+	 * @param null|array $query
+	 * @return null|array
+	 */
 	function rawquery_get_single_result($query){
 		if (empty($query[0])) return null;
 		else return $query[0];
 	}
 
-	// Request / Refresh Access Token \\
+	/**
+	 * Requests or refreshes an Access Token
+	 * $type defaults to 'authorization_code'
+	 *
+	 * @param string $code
+	 * @param null|string $type
+	 */
 	function da_get_token($code, $type = null){
 		global $Database;
 
@@ -325,20 +369,33 @@
 		);
 
 		if (empty($Database->where('id',$userdata['userid'])->get('users')))
-			$Database->insert('users', array_merge($data, array('id' => $userdata['userid'])));
+			$Database->insert('users', array_merge($data, array('id' => strtolower(['userid']))));
 		else $Database->where('id',$userdata['userid'])->update('users', $data);
 
 		Cookie::set('access_token',$data['access_token'],THREE_YEARS);
 	}
 
-	// dA oEmbed API Caller \\
+	/**
+	 * Makes a call to the dA oEmbed API to get public info about an artwork
+	 * $type defaults to 'fav.me'
+	 *
+	 * @param string $ID
+	 * @param null|string $type
+	 * @return string
+	 */
 	function da_oembed($ID, $type = null){
 		if (empty($type) || !in_array($type,array('fav.me','sta.sh'))) $type = 'fav.me';
 
 		return file_get_contents('http://backend.deviantart.com/oembed?url='.urlencode("http://$type/$ID"));
 	}
 
-	// Deviation info cacher \\
+	/**
+	 * Caches information about a deviation in the 'deviation_cache' table
+	 * Returns null on failure
+	 *
+	 * @param string $ID
+	 * @return array|null
+	 */
 	function da_cache_deviation($ID){
 		global $Database;
 
@@ -364,24 +421,55 @@
 		return $Deviation;
 	}
 
-	// Compare Ranks \\
-	$_RoleData = $Database->orderBy('value','ASC')->get('roles');
-	$POSSIBLE_ROLES_ASSOC = array();
-	$POSSIBLE_ROLES = array();
-	foreach ($_RoleData as $r){
-		$POSSIBLE_ROLES_ASSOC[$r['name']] = $r['label'];
-		$POSSIBLE_ROLES[] = $r['name'];
-	}
-	function rankCompare($left,$right,$canEqual = false){
-		global $POSSIBLE_ROLES;
-		if ($canEqual)
-			return array_search($left,$POSSIBLE_ROLES) <= array_search($right,$POSSIBLE_ROLES);
-		else
-			return array_search($left,$POSSIBLE_ROLES) < array_search($right,$POSSIBLE_ROLES);
-	}
-	unset($_RoleData);
+	// Check Permissions \\
+	# Temporary function to only fetch role data from DB once, and only when needed
+	$PERM = function($perm, $reload = true){
+		# Make global variables for $PERM
+		global $Database, $ROLES, $ROLES_ASSOC, $PERMISSIONS, $PERM, $PERM_RELOAD;
 
-	// Format Episode Title \\
+		# Get Roles from DB
+		$ROLES_ASSOC = array();
+		$ROLES = array();
+		foreach ($Database->orderBy('value','ASC')->get('roles') as $r){
+			$ROLES_ASSOC[$r['name']] = $r['label'];
+			$ROLES[] = $r['name'];
+		}
+
+		# Get Permissions from DB
+		$PERMISSIONS = array();
+		foreach ($Database->get('permissions') as $p)
+			$PERMISSIONS[$p['action']] = $p['minrole'];
+
+		$PERM_RELOAD = $PERM;
+		$PERM = function($perm, $reload = false){
+			if ($reload){
+				global $PERM_RELOAD;
+				$PERM_RELOAD($perm, $reload);
+			}
+			global $signedIn, $currentUser, $ROLES, $PERMISSIONS;
+
+			if (!$signedIn) return false;
+
+			if (!empty($PERMISSIONS[$perm])) $targetRole = $PERMISSIONS[$perm];
+			else if (in_array($perm,$ROLES)) $targetRole = $perm;
+			else return false;
+
+			return array_search($currentUser['role'],$ROLES) >= array_search($targetRole,$ROLES);
+		};
+		return $PERM($perm);
+	};
+	function PERM($perm){
+		global $PERM;
+		return $PERM($perm);
+	}
+
+	/**
+	 * Turns an 'episode' database row into a readable title
+	 * The episode numbers 1-2 & 25-26 will be represented with both numbers
+	 *
+	 * @param array $Ep
+	 * @return string
+	 */
 	function format_episode_title($Ep){
 		$EpNumber = intval($Ep['episode']);
 		if ($EpNumber <= 2) $Ep['episode'] = '0102';
@@ -391,7 +479,21 @@
 		return "S{$Ep['season']}E{$Ep['episode']}: {$Ep['title']}";
 	}
 
-	// User Information Retriever \\
+	/**
+	 * User Information Retriever
+	 * --------------------------
+	 * Gets a single row from the 'users' database
+	 *  where $coloumn is equal to $value
+	 * Returns null if user is not found
+	 *
+	 * If $basic is set to false, then role
+	 *  information will also be fetched
+	 *
+	 * @param string $value
+	 * @param string $coloumn
+	 * @param bool $basic
+	 * @return array|null
+	 */
 	define('GETUSER_BASIC', true);
 	function getUser($value, $coloumn = 'id', $basic = false){
 		global $Database;
@@ -416,45 +518,47 @@
 		global $REQUEST_TYPES;
 
 		$Arranged = array();
-		if (empty($Requests) || !is_array($Requests))
-			return $Arranged;
+		if (!empty($Requests) && is_array($Requests)){
+			$Arranged['unfinished'] = array();
+			$Arranged['unfinished']['bg'] =
+			$Arranged['unfinished']['obj'] =
+			$Arranged['unfinished']['chr'] =
+			$Arranged['finished'] = '';
 
-		$Arranged['unfinished'] = array();
-		$Arranged['unfinished']['bg'] =
-		$Arranged['unfinished']['obj'] =
-		$Arranged['unfinished']['chr'] =
-		$Arranged['finished'] = '';
+			foreach ($Requests as $R){
+				$finished = !!$R['finished'] && !empty($R['deviation_id']);
+				$BaseString = "<a href='{$R['image_url']}'><img src='{$R['image_url']}' class=screencap></a><span>{$R['label']}</span>";
 
-		foreach ($Requests as $R){
+				$RqHTML = '<li>';
+				if (!empty($R['reserved_by'])){
+					$R['reserver'] = getUser($R['reserved_by'],'id',GETUSER_BASIC);
+					$R['reserver']['avatar_html'] = "<img src='{$R['reserver']['avatar_url']}' class=avatar>";
+					$BySTR = " by {$R['reserver']['avatar_html']}{$R['reserver']['username']}";
+					if (!$finished) $RqHTML .= "$BaseString <strong>reserved$BySTR</strong>";
+					else {
+						$D = da_cache_deviation($R['deviation_id']);
+						$D['title'] = preg_replace("/'/",'&apos;',$D['title']);
+						$RqHTML .= "<a href='http://fav.me/{$D['id']}'><img src='{$D['preview']}' alt='{$D['title']}' class=deviation></a>$BySTR";
+					}
+				}
+				else $RqHTML .= $BaseString;
+				$RqHTML .= '</li>';
 
-			$finished = !!$R['finished'] && !empty($R['deviation_id']);
-			$BaseString = "<a href='{$R['image_url']}'><img src='{$R['image_url']}' class=screencap></a><span>{$R['label']}</span>";
-
-			$RqHTML = '<li>';
-			if (!empty($R['reserved_by'])){
-				$R['reserver'] = getUser($R['reserved_by'],'id',GETUSER_BASIC);
-				$R['reserver']['avatar_html'] = "<img src='{$R['reserver']['avatar_url']}' class=avatar>";
-				$BySTR = " by {$R['reserver']['avatar_html']}{$R['reserver']['username']}";
-				if (!$finished) $RqHTML .= "$BaseString <strong>reserved$BySTR</strong>";
+				if ($finished)
+					$Arranged['finished'] .= $RqHTML;
 				else {
-					$D = da_cache_deviation($R['deviation_id']);
-					$D['title'] = preg_replace("/'/",'&apos;',$D['title']);
-					$RqHTML .= "<a href='http://fav.me/{$D['id']}'><img src='{$D['preview']}' alt='{$D['title']}' class=deviation></a>$BySTR";
+					$Arranged['unfinished'][$R['type']] .= $RqHTML;
 				}
 			}
-			else $RqHTML .= $BaseString;
-			$RqHTML .= '</li>';
 
-			if ($finished)
-				$Arranged['finished'] .= $RqHTML;
-			else {
-				$Arranged['unfinished'][$R['type']] .= $RqHTML;
-			}
+			$Groups = '';
+			foreach ($Arranged['unfinished'] as $g => $c)
+				$Groups .= "<div class=group><h3>{$REQUEST_TYPES[$g]}:</h3><ul>{$c}</ul></div>";
 		}
-
-		$Groups = '';
-		foreach ($Arranged['unfinished'] as $g => $c)
-			$Groups .= "<div class=group><h3>{$REQUEST_TYPES[$g]}:</h3><ul>{$c}</ul></div>";
+		else {
+			$Groups = '<ul></ul>';
+			$Arranged['finished'] = '';
+		}
 
 		echo <<<HTML
 	<section id="requests">
@@ -468,4 +572,41 @@
 		</div>
 	</section>
 HTML;
+	}
+
+	/**
+	 * Renders a sidebar link <li> item
+	 *
+	 * Accepts:
+	 *   1) An URL, text and an optional title for the link
+	 *   2) An array of arrays. The arrays should contain
+	 *      / the elements of harmony. ...ahem, I mean... /
+	 *      the elements:
+	 *        0: url
+	 *        1: text
+	 *        2: title
+	 *
+	 * @param mixed $url
+	 * @param string $text
+	 * @param string $title
+	 */
+	function sidebar_link_render($url, $text = '', $title = null){
+		$render = function($u, $tx, $tt){
+			if (!preg_match('~^https?://~',$u)) $u = djpth($u);
+			$tt = str_replace("'",'&apos;',$tt);
+			echo "<li><a href='$u' title='$tt'>$tx</a></li>";
+		};
+		if (is_array($url) && empty($text) && empty($title))
+			foreach ($url as $l) $render($l[0], $l[1], isset($l[2])?$l[2]:null);
+		else $render($url, $text, $title);
+	}
+
+	function sidebar_links_render(){
+		echo '<ul class="links">';
+		// Member only links
+		if (PERM('member'))
+			sidebar_link_render(array(
+				array(EP_DL_SITE,'Episode downloads','Download iTunes RAW 1080p episodes for best screencaps')
+			));
+		echo '</ul>';
 	}

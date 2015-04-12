@@ -13,18 +13,18 @@
 		text-align: center;
 		position: initial;
 	}
-	main {
+	#main {
 		height: auto;
 		position: relative;
 		padding: 10px;
 	}
 
-	.content, .sidebar {
+	main, aside {
 		float: none !important;
 		width: 100% !important;
 	}
-	.content { margin-bottom: 10px }
-	.sidebar { padding: 0 !important }
+	main { margin-bottom: 10px }
+	aside { padding: 0 !important }
 
 	.notice > label:first-child { text-align: center; font-size: 1.2em }
 }
@@ -63,12 +63,12 @@
 	nav {
 		height: 25px;
 	}
-	main {
+	#main {
 		position: relative;
 		z-index: 1;
-		padding: 105px 8px 48px 8px;
+		padding: 110px 8px 53px 8px;
 	}
-	.sidebar {
+	aside {
 		padding: 0 0 0 10px !important;
 	}
 	footer {
@@ -76,11 +76,38 @@
 		height: 38px;
 	}
 
+	/* Element alignment */
+	main, aside {
+		float: left;
+		box-sizing: border-box;
+	}
+	main { width: 70% }
+	aside { width: 30% }
+
 	.notice > label:first-child { font-size: 1.4em }
 }
 
+/* Global Stuff */
 :focus { outline: 0 }
 time[datetime][title] { cursor: help }
+small { font-size: .75em }
+[disabled], .disabled {
+	cursor: not-allowed !important;
+	opacity: .5 !important;
+	pointer-events: none;
+}
+.clearfix:before,
+.clearfix:after {
+	content: ".";
+	display: block;
+	overflow: hidden;
+	visibility: hidden;
+	font-size: 0;
+	line-height: 0;
+	width: 0;
+	height: 0;
+}
+.clearfix:after { clear: both }
 
 /* Page layout */
 body, html {
@@ -92,7 +119,9 @@ body, html {
 }
 body {
 	/*noinspection CssUnknownTarget*/
-	background-image: url('../img/grid-1E3DB3-.1.svg'), url('../img/grid-1E3DB3-.5.svg');
+	background-image:
+		url('../img/grid-1E3DB3-.1.svg'),
+		url('../img/grid-1E3DB3-.5.svg');
 	background-size: 16px, 4px;
 }
 /* Page layout - Header */
@@ -133,6 +162,7 @@ header {
 	padding: 10px;
 	overflow: hidden;
 }
+/*noinspection CssOptimizeSimilarProperties*/
 #topbar h1:after {
 	content: "";
 	position: absolute;
@@ -199,48 +229,51 @@ nav a:hover, nav a:focus, nav a.active {
 }
 
 /* Page layout - Content & sidebar */
-main {
+#main {
 	z-index: 1;
 	width: 100%;
 	box-sizing: border-box;
 
 	background: transparent;
 }
-main.locked {
+#main.locked {
 	overflow: visible;
 }
-main .content, main .sidebar > section {
+main, aside > section {
 	border-radius: 5px;
 	border: 1px solid rgba(170,170,170,.8);
 	background-color: rgba(255,255,255,.6);
 	padding: 10px;
 	color: #000;
 }
-main .content {
+main {
 }
-main .sidebar > section {
+aside > section {
 	text-align: center;
 }
-main .sidebar > section > h2 {
+aside > section > h2 {
 	font-size: 24px;
 	margin: 0 0 15px;
 	font-family: "Celestia", sans-serif;
 	font-weight: normal;
 }
-main .sidebar > section p {
+aside > section p {
 	margin: 0;
 }
-main .sidebar > .welcome em {
-	opacity: 0;
-	margin: 10px 0;
+aside > .welcome blockquote {
 	display: block;
+	margin: 10px 0;
+	opacity: 0;
+	font-style: italic;
+	line-height: 1.2em;
 }
-main .sidebar > .welcome em:before { content: '“' }
-main .sidebar > .welcome em:after  { content: '”' }
-main .sidebar > .welcome em small {
-	font-size: .75em;
+aside > .welcome blockquote:before { content: '“' }
+aside > .welcome blockquote:after  { content: '”' }
+aside > .welcome blockquote[data-cite]:after {
+	content: '”\0A—' attr(data-cite);
+	white-space: pre-wrap;
 }
-main .sidebar .usercard {
+aside .usercard {
 	font-size: 0;
 	border: 2px solid;
 	color: #777;
@@ -250,20 +283,62 @@ main .sidebar .usercard {
 	display: inline-block;
 	margin: 5px 0;
 }
-main .sidebar .usercard > * {
+aside .usercard > * {
 	display: block;
 }
-main .sidebar .usercard img {
+aside .usercard img {
 	margin: 0 auto 5px;
 	border-radius: 100%;
 	border: 1px solid;
 	box-shadow: 0 0 5px;
 }
-main .sidebar .usercard .un {
+aside .usercard .un {
 	font-size: 22px;
 }
-main .sidebar .usercard .role {
+aside .usercard .role {
 	font-size: 16px;
+}
+aside > .welcome .links:empty {
+	display: none;
+}
+aside > .welcome .links {
+	list-style: none;
+	border-radius: 5px;
+	color: #777;
+	background-color: #efefef;
+	border: 1px solid;
+	margin: 0 0 10px;
+	padding: 5px;
+}
+aside > .welcome .links:before {
+	content: "Useful links";
+	display: block;
+	border-bottom: 1px solid;
+	font-size: 1.2em;
+	margin-bottom: 5px;
+	text-align: left;
+	font-weight: bold;
+}
+aside > .welcome .links li {
+	display: inline-block;
+	white-space: normal;
+}
+aside > .welcome .links li:not(:last-child):after {
+	content: "-";
+	display: inline-block;
+	padding: 0px 3px;
+}
+aside > .welcome .links li a {
+	text-decoration:none;
+	color: inherit;
+	border-bottom: 1px solid transparent;
+	transition: border-bottom-color .2s linear;
+}
+aside > .welcome .links li.active a {
+	border-bottom-color: rgba(255,255,255,.5);
+}
+aside > .welcome .links li:not(.active) a:hover:not(:active) {
+	border-bottom-color: initial;
 }
 
 /* Page layout - Footer */

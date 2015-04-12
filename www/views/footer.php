@@ -1,5 +1,5 @@
 
-	</main>
+	</div>
 
 	<footer>
 		<p><strong>MLPVC-RR v0.1</strong> is open source. You can <a href="<?=GITHUB_URL?>">view it on GitHub</a> or <a href="<?=GITHUB_URL?>/issues">report an issue</a> with the site.</p>

@@ -1,0 +1,11 @@
+main > h1 {
+	font-size: 2em;
+	text-align: center;
+	margin: 0 0 5px;
+}
+main > h1 + p {
+	font-size: 1.6em;
+	text-align: center;
+	margin: 0 0 10px;
+	font-style: italic;
+}

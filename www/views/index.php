@@ -9,7 +9,7 @@
 <?php   } ?>
 </div>
 <?php } ?>
-<div class="content grid-70">
+<main>
 <?php if(!empty($CurrentEpisode)){ ?>
 	<h1><?=format_episode_title($CurrentEpisode)?></h1>
 	<p>Vector Requests & Reservations</p>
@@ -48,17 +48,17 @@
 	</section>
 <?php   requests_render($Requests);
 	} else { ?>
-	<h1>No episode found</h1>
-	<p>There are no episodes stored in the database</p>
+	<h1>There's nothing here yet...</h1>
+	<p>...but there will be!</p>
 
-<?php   if ($signedIn && !rankCompare($currentUser['role'],'inspector')){ ?>
+<?php   if (PERM('episodes.manage')){ ?>
 	<div class="notice info">
-		<p>To make the site functional, first, you'll need to add an episode to the database which will then be displayed here.</p>
+		<p>To make the site functional, you'll need to add an episode to the database first, which will then be displayed here.</p>
 		<p>There's no visual interface yet, so you're on your own for now, sorry :\</p>
 	</div>
 <?php   }
 	} ?>
-</div>
-<div class="sidebar grid-30">
+</main>
+<aside class="sidebar grid-30">
 <?php include "views/sidebar.php"; ?>
-</div>
+</aside>
