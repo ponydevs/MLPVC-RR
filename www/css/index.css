@@ -1,26 +1,34 @@
 /* Mobile-only Styles */
 @media all and (max-width: 650px){
-	main > section ul {
+	#content > section ul {
 		margin: 15px 0 20px 0;
 
 		text-align: center;
 	}
-	main > section ul li .fluidbox-wrap,
-	main > section ul li > a .deviation {
+	#content > section ul li .fluidbox-wrap,
+	#content > section ul li > a .deviation {
 		display: block;
 		margin: 0 auto 10px;
 	}
-	main > section ul li .fluidbox-wrap * {
+	#content > section ul li .fluidbox-wrap * {
 		display: inline-block;
 	}
-	main > section ul li .screencap,
-	main > section ul li .deviation {
+	#content > section ul li .screencap,
+	#content > section ul li .deviation {
 		max-width: 100%;
 		max-height: 175px;
 	}
 
-	section .avatar {
+	#content > section .avatar {
 		display: none;
+	}
+	#content > section h2 {
+		text-align: center;
+		border-radius: 3px;
+	}
+	#content > section h2 > button {
+		display: block;
+		margin: 5px auto 3px;
 	}
 }
 /* Desktop-only Styles */
@@ -35,89 +43,96 @@
 		height: 0;
 		pointer-events: none;
 	}
-
-	main > section ul {
+	
+	#content > section ul {
 		margin: 15px 0 20px 30px;
 	}
-	main > section ul li .screencap,
-	main > section ul li .deviation {
+	#content > section ul li .screencap,
+	#content > section ul li .deviation {
 		max-width: 100px;
 		margin-right: 10px;
 	}
+	#content > section h2 {
+		display: inline-block;
+		height: 30px;
+		position:relative;
+		left:-10px;
+	}
+	#content > section h2:after {
+		content:"";
+		position: absolute;
+		top: 0;
+		right: -30px;
+		width: 0;
+		height: 0;
+		border-style: solid;
+		border-width: 30px 0 0 30px;
+		border-color: transparent transparent transparent #ccc;
+	}
+	#content > section h2 button {
+		margin: 0 0 0 10px;
+		padding: 3px;
+		vertical-align: bottom;
+	}
 }
 
-main > h1 {
+#content > h1 {
 	font-size: 2em;
 	text-align: center;
 	margin: 0 0 5px;
 }
-main > h1 + p {
+#content > h1 + p {
 	font-size: 1.6em;
 	text-align: center;
 	margin: 0 0 10px;
 	font-style: italic;
 }
-main > .rules {
+#content > .rules {
 	counter-reset: counter;
 }
-main > .rules > ol {
+#content > .rules > ol {
 	padding: 0 10px;
 	margin: 0;
 	list-style:none
 }
-main > .rules > ol > li {
+#content > .rules > ol > li {
 	position: relative;
 	padding-left: 20px;
 }
-main > .rules > ol > li:not(:last-child) {
+#content > .rules > ol > li:not(:last-child) {
 	margin-bottom: 5px;
 }
-main > .rules > ol > li:before {
+#content > .rules > ol > li:before {
 	position: absolute;
 	left: 0;
 	text-align: right;
 	content: counter(counter) ") ";
 	counter-increment: counter;
 }
-main > section {
+#content > section {
 	margin: 10px 0 0;
 }
-main > section h2 {
+#content > section h2 {
 	font-size: 1.3em;
 	margin: 0 0 10px;
-	position:relative;
-	left:-10px;
 	background-color: #ccc;
-	display: inline-block;
 	padding: 3px 7px 3px 25px;
 	font-weight: normal;
 	box-sizing: border-box;
-	height: 30px;
 }
-main > section h2:after {
-	content:"";
-	position: absolute;
-	top: 0;
-	right: -30px;
-	width: 0;
-	height: 0;
-	border-style: solid;
-	border-width: 30px 0 0 30px;
-	border-color: transparent transparent transparent #ccc;
-}
-main > section ul {
+#content > section ul {
 	padding: 0;
 	list-style: none;
 }
-main > section ul:empty:before {
+#content > section ul:empty:before {
 	content: "None yet.";
 }
-main > section ul li {
+#content > section ul li {
 	padding: 7px;
 	color: #434343;
 	background-color: #c8c8c8;
 }
-main > section ul li:not(:last-child) {
+#content > section ul li:not(:last-child) {
 	margin-bottom: 10px;
 }
 

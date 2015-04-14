@@ -84,6 +84,7 @@
 			case "about":
 				loadPage(array(
 					'title' => 'Home',
+					'do-css',
 				));
 			break;
 

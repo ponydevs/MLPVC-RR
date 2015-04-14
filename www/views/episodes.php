@@ -1,4 +1,4 @@
-<main>
+<div id=content>
 <?php if(!empty($Episodes)){ ?>
 <?php } else { ?>
 	<div class="notice fail">
@@ -14,7 +14,7 @@
 	</div>
 <?php   }
 	} ?>
-</main>
-<aside class="sidebar grid-30">
+</div>
+<div id=sidebar>
 <?php include "views/sidebar.php"; ?>
-</aside>
+</div>

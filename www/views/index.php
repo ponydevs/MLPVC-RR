@@ -9,7 +9,7 @@
 <?php   } ?>
 </div>
 <?php } ?>
-<main>
+<div id=content>
 <?php if(!empty($CurrentEpisode)){ ?>
 	<h1><?=format_episode_title($CurrentEpisode)?></h1>
 	<p>Vector Requests & Reservations</p>
@@ -58,7 +58,7 @@
 	</div>
 <?php   }
 	} ?>
-</main>
-<aside class="sidebar grid-30">
+</div>
+<div id=sidebar>
 <?php include "views/sidebar.php"; ?>
-</aside>
+</div>

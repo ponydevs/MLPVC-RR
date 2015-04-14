@@ -1,0 +1,14 @@
+#content > section:not(:last-child){
+	margin-bottom: 10px;
+}
+#content > section > h2 {
+	font-size: 1.5em;
+	text-align: left;
+}
+#content > section > h2,
+#content > section > div > * {
+	margin: 0 0 5px;
+}
+#content > section > div > *:last-child {
+	margin-bottom: 0;
+}

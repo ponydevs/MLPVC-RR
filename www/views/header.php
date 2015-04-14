@@ -16,10 +16,10 @@
 
 	<header>
 		<div id="topbar">
-			<h1>MLP<span class=short>-VC</span><span class=long> Vector Club</span> Requests & Reservations</h1>
+			<h1><a href="<?=djpth()?>">MLP<span class=short>-VC</span><span class=long> Vector Club</span> Requests & Reservations</a></h1>
 		</div>
 		<nav>
-			<a href="<?=djpth()?>">Home</a>
+			<a href="<?=djpth()?>" class=home><span>Home</span></a>
 			<a href="<?=djpth('episodes')?>">Episodes</a>
 			<a href="<?=djpth('about')?>">About</a>
 			<a href="http://mlp-vectorclub.deviantart.com/">MLP-VectorClub</a>

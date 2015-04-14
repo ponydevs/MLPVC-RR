@@ -59,7 +59,7 @@
 			$customCSS = array_merge($customCSS, $DEFAULT_CSS);
 
 		# JavaScript
-		$DEFAULT_JS = array('dyntime','dialog','jquery.smoothWheel');
+		$DEFAULT_JS = array('dyntime','dialog','quotes','jquery.smoothWheel');
 		$customJS = array();
 		// Add logged_in.js for logged in users
 		global $signedIn;
@@ -559,11 +559,13 @@
 			$Groups = '<ul></ul>';
 			$Arranged['finished'] = '';
 		}
-
+		
+		$makeRq = PERM('user') ? '<button id=request-btn>Make a request</button>' : '';
+		
 		echo <<<HTML
 	<section id="requests">
 		<div class="unfinished">
-			<h2>List of Requests</h2>
+			<h2>List of Requests$makeRq</h2>
 			$Groups
 		</div>
 		<div class="finished">
@@ -609,4 +611,35 @@ HTML;
 				array(EP_DL_SITE,'Episode downloads','Download iTunes RAW 1080p episodes for best screencaps')
 			));
 		echo '</ul>';
+	}
+	
+	/**
+	 * Renders the user card in the sidebar
+	 */
+	define('GUEST_AVATAR',djpth('img>favicon.png'));
+	function usercard_render(){
+		global $signedIn, $currentUser;
+		if ($signedIn){
+			$avatar = $currentUser['avatar_url'];
+			$username = $currentUser['username'];
+			$rolelabel = $currentUser['rolelabel'];
+		}
+		else {
+			$avatar = GUEST_AVATAR;
+			$username = 'Curious Pony';
+			$rolelabel = 'Guest';
+		}
+		
+		$groupInitials = preg_replace('/[^A-Z]/','',$rolelabel);
+		
+		echo <<<HTML
+		<div class="usercard">
+			<div class="avatar-wrap">
+				<img src="$avatar" class=avatar>
+				<span class=badge>$groupInitials</span>
+			</div>
+			<span class="un">$username</span>
+			<span class="role">$rolelabel</span>
+		</div>
+HTML;
 	}

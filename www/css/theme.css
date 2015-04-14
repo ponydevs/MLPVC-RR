@@ -1,6 +1,7 @@
 @import url(http://fonts.googleapis.com/css?family=Arimo:400,700,400italic);
 @font-face {
 	font-family: "Celestia";
+	src: url('../font/Celestia Medium Redux.ttf');
 	src: local('Celestia Redux Alternate'), local('Celestia Medium Redux'), url('../font/Celestia Medium Redux.ttf') format('truetype');
 }
 /* Mobile-only Styles */
@@ -16,15 +17,25 @@
 	#main {
 		height: auto;
 		position: relative;
-		padding: 10px;
+		padding: 10px 5px;
+		display:flex;
+		flex-flow: column;
 	}
 
-	main, aside {
+	#content, #sidebar {
 		float: none !important;
 		width: 100% !important;
 	}
-	main { margin-bottom: 10px }
-	aside { padding: 0 !important }
+	#content {
+		margin-bottom: 10px;
+		order: 2;
+	}
+	
+	#sidebar > .welcome .usercard {
+		display: block;
+		order: 1;
+	}
+	#sidebar > .quote { display: none }
 
 	.notice > label:first-child { text-align: center; font-size: 1.2em }
 }
@@ -33,7 +44,6 @@
 	body { overflow: auto }
 
 	header, footer {
-		position: fixed;
 		z-index: 2;
 		left: 0;
 	}
@@ -47,8 +57,37 @@
 
 		transition: height .7s cubic-bezier(0.23, 1, 0.32, 1);
 	}
-	header.fixed #topbar {
-		height: 0;
+	header.fixed nav {
+		position: fixed;
+		top: 0;
+		left: 0;
+		z-index: 2;
+	}
+	header.fixed nav a.home > span {
+		display: none;
+		padding: 0;
+	}
+	header.fixed nav a.home {
+		background-color: #1E3DB3;
+		/*noinspection CssUnknownTarget*/
+		background-image: url('../img/grid-w-.2.svg'), url('../img/grid-w-.7.svg');
+		background-size: 16px, 4px;
+	}
+	header.fixed nav a.home:before {
+		color: #000;
+		text-shadow:
+			0 0 0.133em #fff,
+			0 0 0.133em #fff,
+			0 0 0.133em #fff,
+			0 0 0.133em #fff,
+			0 0 0.133em #fff,
+			0 0 0.133em #fff;
+		content: "MLP-VC R&R";
+		font-weight: bold;
+		display: inline-block;
+	}
+	header.fixed {
+		padding-bottom: 35px;
 	}
 	#topbar h1 {
 		display: inline-block;
@@ -61,28 +100,38 @@
 	#topbar h1 > .long { display: inline }
 	#topbar h1 > .short { display: none }
 	nav {
-		height: 25px;
+		height: 35px;
+		width: 100%;
+		box-sizing: border-box;
 	}
+	
 	#main {
 		position: relative;
 		z-index: 1;
-		padding: 110px 8px 53px 8px;
+		padding: 8px 8px 46px 8px;
 	}
-	aside {
+	#sidebar {
 		padding: 0 0 0 10px !important;
 	}
+	#sidebar .usercard {
+		display: inline-block;
+	}
 	footer {
+		position: fixed;
 		bottom: 0;
 		height: 38px;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
 	}
 
 	/* Element alignment */
-	main, aside {
+	#content, #sidebar {
 		float: left;
 		box-sizing: border-box;
 	}
-	main { width: 70% }
-	aside { width: 30% }
+	#content { width: 70% }
+	#sidebar { width: 30% }
 
 	.notice > label:first-child { font-size: 1.4em }
 }
@@ -110,11 +159,8 @@ small { font-size: .75em }
 .clearfix:after { clear: both }
 
 /* Page layout */
-body, html {
+body {
 	margin: 0;
-	padding: 0;
-	width: 100%;
-	height: 100%;
 	font-family: 'Arimo', sans-serif;
 }
 body {
@@ -138,8 +184,6 @@ header {
 
 	font-family: "Celestia", sans-serif;
 
-	-webkit-user-select: none;
-	-moz-user-select: none;
 	user-select: none;
 	cursor: default;
 }
@@ -193,6 +237,10 @@ header {
 		0 0 0.133em #fff;
 	color: #000;
 }
+#topbar h1 a {
+	text-decoration: none;
+	color: inherit;
+}
 /* Page layout - Header - Navigation */
 nav {
 	position: relative;
@@ -200,6 +248,7 @@ nav {
 	line-height: 0;
 	font-size: 0;
 	padding: 5px;
+	padding-bottom: 0;
 	background: rgba(0,0,0,.6);
 	box-shadow: 0 0 12px rgba(0,0,0,.6);
 }
@@ -211,13 +260,14 @@ nav a {
 	padding: .2em;
 	color: #fff;
 	text-decoration: none;
+	margin-bottom: 5px;
 
 	border-radius: 3px;
 
 	transition: background-color .2s linear;
 }
 nav a:not(:last-child){
-	margin-right: 6px;
+	margin-right: 5px;
 }
 nav a.active {
 	transition: none;
@@ -239,69 +289,102 @@ nav a:hover, nav a:focus, nav a.active {
 #main.locked {
 	overflow: visible;
 }
-main, aside > section {
+#content, #sidebar > section {
 	border-radius: 5px;
 	border: 1px solid rgba(170,170,170,.8);
 	background-color: rgba(255,255,255,.6);
 	padding: 10px;
 	color: #000;
 }
-main {
+#content, #sidebar {
+	box-sizing: border-box;
 }
-aside > section {
+#sidebar > section {
 	text-align: center;
 }
-aside > section > h2 {
+#sidebar > section:not(:last-child){
+	margin-bottom: 10px;
+}
+#sidebar > section > h2 {
 	font-size: 24px;
 	margin: 0 0 15px;
 	font-family: "Celestia", sans-serif;
 	font-weight: normal;
 }
-aside > section p {
+#sidebar > section p {
 	margin: 0;
 }
-aside > .welcome blockquote {
+#sidebar #quote {
 	display: block;
-	margin: 10px 0;
+	margin: 0;
 	opacity: 0;
 	font-style: italic;
 	line-height: 1.2em;
 }
-aside > .welcome blockquote:before { content: '“' }
-aside > .welcome blockquote:after  { content: '”' }
-aside > .welcome blockquote[data-cite]:after {
+#sidebar #quote:before { content: '“' }
+#sidebar #quote:after  { content: '”' }
+#sidebar #quote[data-cite]:after {
 	content: '”\0A—' attr(data-cite);
 	white-space: pre-wrap;
 }
-aside .usercard {
+#sidebar .usercard {
 	font-size: 0;
 	border: 2px solid;
 	color: #777;
 	background-color: #efefef;
 	border-radius: 4px;
-	padding: 10px;
-	display: inline-block;
+	padding: 3px;
 	margin: 5px 0;
 }
-aside .usercard > * {
+#sidebar .usercard > * {
 	display: block;
 }
-aside .usercard img {
-	margin: 0 auto 5px;
+#sidebar .usercard .avatar-wrap {
+	position: relative;
+	margin: 3px auto 5px;
 	border-radius: 100%;
 	border: 1px solid;
 	box-shadow: 0 0 5px;
+	width: 50px;
+	height: 50px;
+	background-color: inherit;
+	cursor: default;
+	user-select: none;
 }
-aside .usercard .un {
+#sidebar .usercard .avatar-wrap .avatar {
+	border-radius: 100%;
+}
+#sidebar .usercard .avatar-wrap .badge {
+	position: absolute;
+	right: 0;
+	bottom: 0;
+	display: block;
+	background-color: inherit;
+	padding: 1px 2px;
+	border-radius: 2px;
+	line-height: 1em;
+	font-size: 12px;
+	border: 1px solid;
+	height: 1em;
+	text-transform: uppercase;
+	font-weight: bold;
+	pointer-events: none;
+	box-shadow: inherit;
+}
+#sidebar .usercard .un {
 	font-size: 22px;
+	letter-spacing: 1px;
 }
-aside .usercard .role {
+#sidebar .usercard .role {
 	font-size: 16px;
 }
-aside > .welcome .links:empty {
+#sidebar > .welcome > button {
+	margin-top: 0;
+}
+#sidebar > .welcome .links:empty {
 	display: none;
 }
-aside > .welcome .links {
+#sidebar > .welcome .links {
 	list-style: none;
 	border-radius: 5px;
 	color: #777;
@@ -310,7 +393,7 @@ aside > .welcome .links {
 	margin: 0 0 10px;
 	padding: 5px;
 }
-aside > .welcome .links:before {
+#sidebar > .welcome .links:before {
 	content: "Useful links";
 	display: block;
 	border-bottom: 1px solid;
@@ -319,25 +402,25 @@ aside > .welcome .links:before {
 	text-align: left;
 	font-weight: bold;
 }
-aside > .welcome .links li {
+#sidebar > .welcome .links li {
 	display: inline-block;
 	white-space: normal;
 }
-aside > .welcome .links li:not(:last-child):after {
+#sidebar > .welcome .links li:not(:last-child):after {
 	content: "-";
 	display: inline-block;
-	padding: 0px 3px;
+	padding: 0 3px;
 }
-aside > .welcome .links li a {
+#sidebar > .welcome .links li a {
 	text-decoration:none;
 	color: inherit;
 	border-bottom: 1px solid transparent;
 	transition: border-bottom-color .2s linear;
 }
-aside > .welcome .links li.active a {
+#sidebar > .welcome .links li.active a {
 	border-bottom-color: rgba(255,255,255,.5);
 }
-aside > .welcome .links li:not(.active) a:hover:not(:active) {
+#sidebar > .welcome .links li:not(.active) a:hover:not(:active) {
 	border-bottom-color: initial;
 }
 
@@ -347,18 +430,14 @@ footer {
 	z-index: 2;
 	width: 100%;
 	padding: 10px;
+	line-height: 18px;
 	box-sizing: border-box;
 	background: rgba(0,0,0,.6);
 	box-shadow: 0 0 12px rgba(0,0,0,.6);
 
 	color: #fff;
 }
-footer > p {
-	margin: 0;
-	line-height: 18px;
-	font-style: normal;
-}
-footer > p a {
+footer > a {
 	color: inherit;
 }
 
@@ -425,7 +504,8 @@ button, .btn {
 	padding: 4px 7px;
 	font-size: 16px;
 	text-decoration: none;
-
+	user-select: none;
+	
 	opacity: .8;
 	cursor: pointer;
 

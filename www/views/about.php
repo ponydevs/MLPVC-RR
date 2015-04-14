@@ -1,4 +1,4 @@
-<div class="content grid-70">
+<div id=content>
 	<section>
 		<h2>What's this site?</h2>
 		<div>
@@ -19,6 +19,6 @@
 		</div>
 	</section>
 </div>
-<div class="sidebar grid-30">
+<div id=sidebar>
 <?php include "views/sidebar.php"; ?>
 </div>
