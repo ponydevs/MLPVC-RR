@@ -386,7 +386,7 @@
 	function da_oembed($ID, $type = null){
 		if (empty($type) || !in_array($type,array('fav.me','sta.sh'))) $type = 'fav.me';
 
-		return file_get_contents('http://backend.deviantart.com/oembed?url='.urlencode("http://$type/$ID"));
+		return array_merge(json_decode(file_get_contents('http://backend.deviantart.com/oembed?url='.urlencode("http://$type/$ID")), true),array('_provider' => $type));
 	}
 
 	/**
@@ -394,21 +394,26 @@
 	 * Returns null on failure
 	 *
 	 * @param string $ID
+	 * @param null|string $type
 	 * @return array|null
 	 */
-	function da_cache_deviation($ID){
-		global $Database;
+	$PROVIDER_FULLSIZE_KEY = array(
+		'sta.sh' => 'url',
+		'fav.me' => 'fullsize_url',
+	);
+	function da_cache_deviation($ID, $type = null){
+		global $Database, $PROVIDER_FULLSIZE_KEY;
 
 		$Deviation = $Database->where('id',$ID)->getOne('deviation_cache');
 		if (empty($Deviation) || (!empty($Deviation['updated_on']) && strtotime($Deviation['updated_on'])+ONE_HOUR < time())){
-			$data = da_oembed($ID);
-
-			if (empty($data)) return null;
-			$json = json_decode($data, true);
+			$json = da_oembed($ID, $type);
+			if (empty($json)) return null;
 
 			$Deviation = array(
 				'title' => $json['title'],
 				'preview' => $json['thumbnail_url'],
+				'fullsize' => $json[$PROVIDER_FULLSIZE_KEY[$json['_provider']]],
+				'provider' => $json['_provider'],
 			);
 
 			if (!empty($Deviation)){
@@ -495,7 +500,7 @@
 	 * @return array|null
 	 */
 	define('GETUSER_BASIC', true);
-	function getUser($value, $coloumn = 'id', $basic = false){
+	function get_user($value, $coloumn = 'id', $basic = false){
 		global $Database;
 
 		if ($basic !== false) return $Database->where($coloumn, $value)->getOne('users','id, username, avatar_url');
@@ -506,6 +511,96 @@
 			FROM users
 			LEFT JOIN roles ON roles.name = users.role
 			WHERE `$coloumn` = ?",array($value)));
+	}
+
+
+	// Get Request / Reservation Submission Form HTML \\
+	function post_form_html($type){
+		$Type = strtoupper($type[0]).substr($type,1);
+		$HTML = <<<HTML
+		<form class="hidden post-form" data-type="$type">
+			<h2>Make a $type</h2>
+			<div>
+				<label>
+					<span>Image URL</span>
+					<input type="text" name="image_url" pattern="^.{2,255}$" required>
+					<button class="check-img red">Check image</button>
+				</label>
+				<div class="hidden img-preview">
+					<div class="notice fail">Please click the <strong>Check image</strong> button after providing an URL to get a preview & verify if the link is correct.</div>
+				</div>
+				<label>
+					<span>$Type label</span>
+					<input type="text" name="label" pattern="^.{2,255}$" required>
+				</label>
+HTML;
+			if ($type === 'request')
+				$HTML .= <<<HTML
+				<label>
+					<span>$Type type</span>
+					<select name="type" required>
+						<option value=chr>Character</option>
+						<option value=bg>Background</option>
+						<option value=obj>Object</option>
+					</select>
+				</label>
+HTML;
+			$HTML .= <<<HTML
+			</div>
+			<button class=green>Submit $type</button> <button type="reset">Cancel</button>
+		</form>
+HTML;
+			return $HTML;
+	}
+
+	// Render Reservation HTML\\
+	function reservations_render($Reservations){
+		$Arranged = array();
+		$Arranged['unfinished'] =
+		$Arranged['finished'] = '';
+		if (!empty($Reservations) && is_array($Reservations)){
+
+			foreach ($Reservations as $R){
+				$finished = !!$R['finished'] && !empty($R['deviation_id']);
+				$BaseString = "<a href='{$R['fullsize']}'><img src='{$R['preview']}' class=screencap></a><span>{$R['label']}</span>";
+
+				$ResHTML = '<li>';
+				if (!empty($R['reserved_by'])){
+					$R['reserver'] = get_user($R['reserved_by'],'id',GETUSER_BASIC);
+					$R['reserver']['avatar_html'] = "<img src='{$R['reserver']['avatar_url']}' class=avatar>";
+					$BySTR = " by {$R['reserver']['avatar_html']}{$R['reserver']['username']}";
+					if (!$finished) $ResHTML .= "$BaseString <strong>reserved$BySTR</strong>";
+					else {
+						$D = da_cache_deviation($R['deviation_id']);
+						$D['title'] = preg_replace("/'/",'&apos;',$D['title']);
+						$ResHTML .= "<a href='http://fav.me/{$D['id']}'><img src='{$D['preview']}' alt='{$D['title']}' class=deviation></a>$BySTR";
+					}
+				}
+				else $ResHTML .= $BaseString;
+				$ResHTML .= '</li>';
+
+				$Arranged[(!$finished?'un':'').'finished'] .= $ResHTML;
+			}
+		}
+
+		if (PERM('reservations.create')){
+			$makeRes = '<button id="reservation-btn">Make a reservation</button>';
+			$resForm = post_form_html('reservation');
+		}
+		else $resForm = $makeRes = '';
+
+		echo <<<HTML
+	<section id="reservations">
+		<div class="unfinished">
+			<h2>List of Reservations$makeRes</h2>
+			<ul>{$Arranged['unfinished']}</ul>
+		</div>
+		<div class="finished">
+			<h2>Finished Reservations</h2>
+			<ul>{$Arranged['finished']}</ul>
+		</div>$resForm
+	</section>
+HTML;
 	}
 
 	// Render Requests HTML \\
@@ -527,11 +622,11 @@
 
 			foreach ($Requests as $R){
 				$finished = !!$R['finished'] && !empty($R['deviation_id']);
-				$BaseString = "<a href='{$R['image_url']}'><img src='{$R['image_url']}' class=screencap></a><span>{$R['label']}</span>";
+				$BaseString = "<a href='{$R['fullsize']}'><img src='{$R['preview']}' class=screencap></a><span>{$R['label']}</span>";
 
 				$RqHTML = '<li>';
 				if (!empty($R['reserved_by'])){
-					$R['reserver'] = getUser($R['reserved_by'],'id',GETUSER_BASIC);
+					$R['reserver'] = get_user($R['reserved_by'],'id',GETUSER_BASIC);
 					$R['reserver']['avatar_html'] = "<img src='{$R['reserver']['avatar_url']}' class=avatar>";
 					$BySTR = " by {$R['reserver']['avatar_html']}{$R['reserver']['username']}";
 					if (!$finished) $RqHTML .= "$BaseString <strong>reserved$BySTR</strong>";
@@ -559,8 +654,12 @@
 			$Groups = '<ul></ul>';
 			$Arranged['finished'] = '';
 		}
-		
-		$makeRq = PERM('user') ? '<button id=request-btn>Make a request</button>' : '';
+
+		if (PERM('user')){
+			$makeRq = '<button id="request-btn">Make a request</button>';
+			$reqForm = post_form_html('request');
+		}
+		else $reqForm = $makeRes = '';
 		
 		echo <<<HTML
 	<section id="requests">
@@ -571,7 +670,7 @@
 		<div class="finished">
 			<h2>Finished Requests</h2>
 			<ul>{$Arranged['finished']}</ul>
-		</div>
+		</div>$reqForm
 	</section>
 HTML;
 	}
@@ -613,9 +712,7 @@ HTML;
 		echo '</ul>';
 	}
 	
-	/**
-	 * Renders the user card in the sidebar
-	 */
+	// Renders the user card in the sidebar \\
 	define('GUEST_AVATAR',djpth('img>favicon.png'));
 	function usercard_render(){
 		global $signedIn, $currentUser;

@@ -1,9 +1,9 @@
-input[type]:not([type=radio],[type=checkbox],[type=button])
+input[type]:not([type=radio]):not([type=checkbox]):not([type=button]),
 select,
 textarea {
-	border: 1px solid #313131;
-	background-color: #0f0f0f;
-	color: #efefef;
+	border: 1px solid;
+	background-color: #efefef;
+	color: #313131;
 	padding: 4px;
 	outline: 0;
 	min-height: 18px;
@@ -12,23 +12,17 @@ textarea {
 	font-size: 14px;
 	transition: border-color .2s linear;
 }
-#dialogContent input[type]:not([type=radio],[type=checkbox],[type=button])
+#dialogContent input[type]:not([type=radio],[type=checkbox],[type=button]),
 #dialogContent select,
 #dialogContent textarea {
 	color: #313131;
 	border: 1px solid #CECECE;
 	background-color: #EFEFEF;
 }
-input[type]:not([type=radio],[type=checkbox],[type=button])[disabled],
-select[disabled],
-textarea[disabled] {
-	position: relative;
-	background-color: #151515;
-}
 input[type]:not([type=radio],[type=checkbox],[type=button]):focus,
 select:focus,
 textarea:focus {
-	border-color: #F6921D;
+	border-color: #07f;
 }
 input[type]:not([type=radio],[type=checkbox],[type=button])[required]:not(:focus):valid:hover,
 textarea[required]:not(:focus):valid:hover,
@@ -55,24 +49,24 @@ textarea[pattern]:not(:focus):invalid:hover {
 #dialogContent textarea[required]:not(:focus):invalid,
 #dialogContent input[type]:not([type=radio],[type=checkbox],[type=button]):not(:focus):invalid,
 #dialogContent textarea[pattern]:not(:focus):invalid {
-	border-color: #CE0000;
+	border-color: #a00;
 	color: #700;
 }
 input[type]:not([type=radio],[type=checkbox],[type=button])[required]:focus:invalid,
 textarea[required]:focus:invalid,
 input[type]:not([type=radio],[type=checkbox],[type=button])[pattern]:focus:invalid,
 textarea[pattern]:focus:invalid {
-	border-color: #f00;
+	border-color: #d00;
 	color: #a00;
 }
 input[type]:not([type=radio],[type=checkbox],[type=button])[required]:focus:valid,
 input[type]:not([type=radio],[type=checkbox],[type=button])[pattern]:focus:valid {
-	border-color: #0f0;
+	border-color: #0d0;
 	color: #0a0;
 }
 form:hover textarea[required]:focus:valid,
 form:hover textarea[pattern]:focus:valid {
-	border-color: #0f0;
+	border-color: #0d0;
 }
 select {
 	padding-right: 5px;

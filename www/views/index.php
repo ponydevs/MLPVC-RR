@@ -23,30 +23,15 @@
 			<li>You MUST have an image to make a reservation! For the best quality, get your references from the episode in 1080p.</li>
 			<li>Making a reservation does NOT forbid other people from working on a pose anyway. It is only information that you are working on it, so other people can coordinate to avoid doing the same thing twice.</li>
 			<li>There are no time limits, but remember that the longer you wait, the greater the chance that someone might take your pose anyway. It's generally advised to finish your reservations before a new episode comes out.</li>
-			<li>The are no limits on the number of reservations you can make, but you need to remember about your own limits and what rule #3 says. It's generally advised not to take more than 3 reservations at a time.</li>
-			<li>Please remember that you have to be a member of the group in order to make a reservation. The idea is to add the finished vector to the gallery, so it has to meet all of our quality requirements.</li>
+			<li>The are no limits on the number of reservations you can make, but you need to keep your own limits and what rule #3 says in mind. It's generally advised not to take more than 3 reservations at a time.</li>
+			<li>Please remember that <strong>you have to be a member of the group in order to make a reservation</strong>. The idea is to add the finished vector to the gallery, so it has to meet all of our quality requirements.</li>
 		</ol>
 	</div>
 
-	<div class="notice info">
-		<p>Below is some placeholder data added directly through the database, the interface for adding the entries below has yet to be made.</p>
-	</div>
-
-	<section id="reservations">
-		<div class="unfinished">
-			<h2>List of Reservations</h2>
-			<ul><?php
-
-			?></ul>
-		</div>
-		<div class="finished">
-			<h2>Finished Reservations</h2>
-			<ul><?php
-
-			?></ul>
-		</div>
-	</section>
-<?php   requests_render($Requests);
+<?php   reservations_render($Reservations);
+		requests_render($Requests); ?>
+<script>var SEASON = <?=$CurrentEpisode['season']?>, EPISODE = <?=$CurrentEpisode['episode']?>;</script>
+<?php
 	} else { ?>
 	<h1>There's nothing here yet...</h1>
 	<p>...but there will be!</p>

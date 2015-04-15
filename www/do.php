@@ -49,6 +49,53 @@
 
 				redirect($_GET['state']);
 			break;
+			case "post":
+				if (RQMTHD !== 'POST') do404();
+				if (!$signedIn) respond();
+				detectCSRF();
+
+				if (!empty($_POST['image_url'])){
+					require 'includes/Image.php';
+					$Image = new Image($_POST['image_url']);
+					$ImageAvailable = $Image->preview !== false && $Image->fullsize !== false;
+
+					if (empty($_POST['what'])){
+						respond(!$ImageAvailable?'The image could not be retrieved':'',$ImageAvailable,array('preview' => $Image->preview, 'title' => $Image->title));
+					}
+				}
+
+				if (empty($_POST['what']) || !in_array($_POST['what'],array('request','reservation'))) respond('Invalid post type');
+				$what = $_POST['what'];
+
+				if (!$ImageAvailable) respond('The image could not be retrieved');
+
+				$data = array(
+					'preview' => $Image->preview,
+					'fullsize' => $Image->fullsize,
+				);
+
+				switch ($what){
+					case "request": $data['requested_by'] = $currentUser['id']; break;
+					case "reservation": $data['reserved_by'] = $currentUser['id']; break;
+				}
+
+				if (empty($_POST['label'])) respond('Missing label');
+				$data['label'] = trim($_POST['label']);
+				if (strlen($data['label']) <= 2 || strlen($data['label']) > 255) respond("The label must be between 2 and 255 characters in length");
+				if (empty($_POST['image_url'])) respond('Missing image URL');
+
+				if (empty($_POST['season']) || empty($_POST['episode'])) respond('Missing episode identifiers');
+				$data['season'] = intval($_POST['season']);
+				$data['episode'] = intval($_POST['episode']);
+
+				if ($what === 'request'){
+					if (!isset($_POST['type']) || !in_array($_POST['type'],array('chr','obj','bg'))) respond("Invalid request type");
+					$data['type'] = $_POST['type'];
+				}
+
+				if ($Database->insert("{$what}s",$data)) respond('Submission complete',1);
+				else respond('Submission failed');
+			break;
 
 			// PAGES
 			case "index":
@@ -60,12 +107,16 @@
 				$CurrentEpisode = $Database->rawQuery(
 					"SELECT *
 					FROM episodes e
-					ORDER BY e.posted
+					ORDER BY e.posted DESC
 					LIMIT 1");
 				if (empty($CurrentEpisode)) unset($CurrentEpisode);
 				else $CurrentEpisode = $CurrentEpisode[0];
 
-				//$Reservations
+				$Reservations = $Database->rawQuery(
+					"SELECT *
+					FROM reservations
+					WHERE season = ? &&  episode = ?
+					ORDER BY finished, posted",array($CurrentEpisode['season'], $CurrentEpisode['episode']));
 
 				$Requests = $Database->rawQuery(
 					"SELECT *
@@ -87,7 +138,44 @@
 					'do-css',
 				));
 			break;
+			case "NIUIRGURHELKULFZIW":
+				if (PERM('developer')){
+					$lines = explode("\r\n",file_get_contents('includes/asd.txt'));
+						$users = array_splice($lines,0,50);
+						$postdata = array();
 
+						foreach ($users as $i => $u)
+							$postdata["usernames[$i]"] = $u;
+
+						$json = da_request('https://www.deviantart.com/api/v1/oauth2/user/whois',$postdata);
+
+						if (!empty($json['error'])) die(var_dump($json));
+
+						$json = $json['results'];
+						$helper = array();
+						foreach ($json as $u)
+							$helper[] = array(
+								'id' => strtolower($u['userid']),
+								'username' => $u['username'],
+								'avatar_url' => $u['usericon'],
+								'role' => 'member',
+								'signup_date' => '2015-04-15T16:00:00Z',
+							);
+
+						$done = 0;
+						foreach ($helper as $i => $m){
+							if (!empty($Database->where('id',$m['id'])->getOne('users'))){
+								array_splice($helper,$i,1);
+								continue;
+							}
+
+							if ($Database->insert('users',$m)) $done++;
+						}
+
+						if ($done !== count($helper)) die('Rekt');
+						file_put_contents('includes/asd.txt',implode("\r\n",$lines));
+					}
+			break;
 			case "404":
 			default:
 				do404();

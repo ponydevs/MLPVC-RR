@@ -9,7 +9,7 @@
 	$signedIn = false;
 	if (Cookie::exists('access_token')){
 		$authKey = Cookie::get('access_token');
-		$currentUser = getUser($authKey,'access_token');
+		$currentUser = get_user($authKey,'access_token');
 
 		if (!empty($currentUser)){
 			if (strtotime($currentUser['token_expires']) < time()){

@@ -61,7 +61,6 @@
 		position: fixed;
 		top: 0;
 		left: 0;
-		z-index: 2;
 	}
 	header.fixed nav a.home > span {
 		display: none;
@@ -97,9 +96,11 @@
 		line-height: 35px;
 		height: 35px;
 	}
-	#topbar h1 > .long { display: inline }
-	#topbar h1 > .short { display: none }
+	#topbar h1 .long { display: inline }
+	#topbar h1 .short { display: none }
 	nav {
+		position: relative;
+		z-index: 2;
 		height: 35px;
 		width: 100%;
 		box-sizing: border-box;
@@ -137,6 +138,7 @@
 }
 
 /* Global Stuff */
+.hidden { display: none }
 :focus { outline: 0 }
 time[datetime][title] { cursor: help }
 small { font-size: .75em }
@@ -243,12 +245,9 @@ header {
 }
 /* Page layout - Header - Navigation */
 nav {
-	position: relative;
-	z-index: 1;
 	line-height: 0;
 	font-size: 0;
-	padding: 5px;
-	padding-bottom: 0;
+	padding: 5px 5px 0 5px;
 	background: rgba(0,0,0,.6);
 	box-shadow: 0 0 12px rgba(0,0,0,.6);
 }

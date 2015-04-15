@@ -33,14 +33,13 @@
 }
 /* Desktop-only Styles */
 @media all and (min-width: 650px){
-	header, footer {
-		transition: opacity .5s, height 0s;
-		transition-delay: 0s, .5s;
+	body.no-distractions {
+		overflow: hidden;
+		padding-right: 18px;
 	}
 	body.no-distractions header,
 	body.no-distractions footer {
 		opacity: 0;
-		height: 0;
 		pointer-events: none;
 	}
 	
@@ -135,10 +134,32 @@
 #content > section ul li:not(:last-child) {
 	margin-bottom: 10px;
 }
-
+#content .post-form > div > * {
+	display: block;
+	margin-bottom: 10px;
+}
+#content .post-form label > span {
+	margin-bottom: 5px;
+}
+#content .post-form label > span,
+#requests > .unfinished > .group > h3 {
+	display: block;
+	font-size: 1.2em;
+}
+#content .post-form label > input {
+	width: 100%;
+	max-width: 300px;
+}
+#content .post-form label > button,
+#content .post-form .img-preview > .notice {
+	margin: 0;
+}
+#content .post-form .img-preview > img {
+	width: 100%;
+	max-width: 300px;
+}
 #requests > .unfinished > .group > h3 {
 	margin: 5px 0 10px 5px;
-	font-size: 1.2em;
 }
 
 .fluidbox-wrap {

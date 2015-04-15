@@ -8,7 +8,7 @@
 		$doc = $(document),
 		$header = $('header'),
 		$topbar = $('#topbar'),
-		tbh = $topbar.outerHeight()
+		tbh = $topbar.outerHeight(),
 		$el = void 0;
 
 	function fixedHeader(newScrollTop){
@@ -54,10 +54,7 @@
 				step: function() {
 					fixedHeader(el.scrollTop);
 				},
-				complete: function() {
-					wheel = false;
-				}
-				
+				complete: function() { wheel = false }
 			});
 		});
 		$doc.on('scroll',function(){
@@ -72,7 +69,7 @@
 			$el = void 0;
 		};
 		fixedHeader(scrollTop);
-	};
+	}
 
 	smoothWheel.call(document.body);
 })(jQuery);
