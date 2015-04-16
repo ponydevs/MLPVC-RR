@@ -138,44 +138,6 @@
 					'do-css',
 				));
 			break;
-			case "NIUIRGURHELKULFZIW":
-				if (PERM('developer')){
-					$lines = explode("\r\n",file_get_contents('includes/asd.txt'));
-						$users = array_splice($lines,0,50);
-						$postdata = array();
-
-						foreach ($users as $i => $u)
-							$postdata["usernames[$i]"] = $u;
-
-						$json = da_request('https://www.deviantart.com/api/v1/oauth2/user/whois',$postdata);
-
-						if (!empty($json['error'])) die(var_dump($json));
-
-						$json = $json['results'];
-						$helper = array();
-						foreach ($json as $u)
-							$helper[] = array(
-								'id' => strtolower($u['userid']),
-								'username' => $u['username'],
-								'avatar_url' => $u['usericon'],
-								'role' => 'member',
-								'signup_date' => '2015-04-15T16:00:00Z',
-							);
-
-						$done = 0;
-						foreach ($helper as $i => $m){
-							if (!empty($Database->where('id',$m['id'])->getOne('users'))){
-								array_splice($helper,$i,1);
-								continue;
-							}
-
-							if ($Database->insert('users',$m)) $done++;
-						}
-
-						if ($done !== count($helper)) die('Rekt');
-						file_put_contents('includes/asd.txt',implode("\r\n",$lines));
-					}
-			break;
 			case "404":
 			default:
 				do404();
