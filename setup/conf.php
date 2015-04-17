@@ -15,3 +15,6 @@
 
 	// Google Analytics Tracking Code \\
 	define('GA_TRACKING_CODE','');
+
+	// Get latest commit version from Git \\
+	define('LATEST_COMMIT',shell_exec("git rev-parse --short HEAD"));

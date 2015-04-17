@@ -1,7 +1,7 @@
 
 	</div>
 
-	<footer><strong>MLPVC-RR v0.1</strong> is open source. You can <a href="<?=GITHUB_URL?>">view it on GitHub</a> or <a href="<?=GITHUB_URL?>/issues">report an issue</a> with the site.</footer>
+	<footer><strong>MLPVC-RR v0.<?=LATEST_COMMIT?></strong> is open source. You can <a href="<?=GITHUB_URL?>">view it on GitHub</a> or <a href="<?=GITHUB_URL?>/issues">report an issue</a> with the site.</footer>
 
 <?php 	if (isset($customJS)) foreach ($customJS as $js){ ?>
 <script src="<?=djpth('js>'.(!preg_match('/\.js\.php$/',strtok($js,'?')) ? "$js.js" : $js))?>"></script>
