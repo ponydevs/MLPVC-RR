@@ -65,11 +65,17 @@
 		display: none;
 		padding: 0;
 	}
+
+	/*noinspection CssOptimizeSimilarProperties*/
 	header.fixed nav a.home {
+		font-family: "Celestia", sans-serif;
 		background-color: #1E3DB3;
 		/*noinspection CssUnknownTarget*/
 		background-image: url('../img/grid-w-.2.svg'), url('../img/grid-w-.7.svg');
 		background-size: 16px, 4px;
+		font-size: 18px;
+		line-height: .8em;
+		padding-right: .4em;
 	}
 	header.fixed nav a.home:before {
 		color: #000;
@@ -158,6 +164,10 @@ small { font-size: .75em }
 	height: 0;
 }
 .clearfix:after { clear: both }
+strong.typcn:before, span.typcn:before, em.typcn:before ,
+button:before, .btn:before {
+	margin-right: 0.3125em;
+}
 
 /* Page layout */
 body {
@@ -245,8 +255,8 @@ nav {
 	line-height: 0;
 	font-size: 0;
 	padding: 5px 5px 0 5px;
-	background: rgba(0,0,0,.6);
-	box-shadow: 0 0 12px rgba(0,0,0,.6);
+	background: rgba(0,0,0,.75);
+	box-shadow: 0 0 12px rgba(0,0,0,.75);
 }
 nav a {
 	display: inline-block;
@@ -428,8 +438,8 @@ footer {
 	padding: 10px;
 	line-height: 18px;
 	box-sizing: border-box;
-	background: rgba(0,0,0,.6);
-	box-shadow: 0 0 12px rgba(0,0,0,.6);
+	background: rgba(0,0,0,.75);
+	box-shadow: 0 0 12px rgba(0,0,0,.75);
 
 	color: #fff;
 }

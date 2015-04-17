@@ -27,6 +27,8 @@
 }
 #episodes tbody td {
 	padding: 5px;
+
+	color: rgba(0,0,0,.7);
 }
 
 #episodes tbody .season,
@@ -45,4 +47,21 @@
 
 #episodes tbody .title {
 	padding: 5px 10px;
+}
+
+#episodes tbody .title a {
+	display: inline-block;
+	padding: 2px;
+	color: inherit;
+	text-decoration: none;
+	border-bottom: 1px solid;
+	line-height: 1em;
+
+	transition: background-color .2s, border-bottom-color .2s;
+}
+
+#episodes tbody .title a:hover {
+	background-color: rgba(10,10,10,.15);
+	border-bottom-color: transparent;
+	border-radius: 3px;
 }

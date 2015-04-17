@@ -1,4 +1,7 @@
 <div id=content>
+	<img src="<?=djpth('img>logo.png')?>">
+	<h1>MLP Vector Club Requests & Reservations</h1>
+	<p>An automated system for handling requests & reservations, made for MLP-VectorClub</p>
 	<section>
 		<h2>What's this site?</h2>
 		<div>
@@ -13,9 +16,12 @@
 		</div>
 	</section>
 	<section>
-		<h2>Heh, I'm pretty sure the group won't care about your "great" idea...</h2>
+		<h2>Roll the credits, please!</h2>
 		<div>
-			<p>You're probably right, but I'm not only doing this to help the group. In the process of getting this site to where it's currently at, I've learned how to use deviantArt's API, a challange of which I've always thought that it was too much for me to handle, yet I managed to do it anyway. The creation of this site serves as a great way for me to explore the undiscovered areas in the field of Web Devlopment.</p>
+			<p><strong>Coding, design, hosting:</strong> <a href="http://djdavid98.eu/">DJDavid98</a></p>
+			<p><strong>Used libraries &amp; icons include:</strong> <a href="http://jquery.com/">jQuery</a>, <a href="https://github.com/joshcam/PHP-MySQLi-Database-Class">MysqliDb</a>, <a href="http://www.typicons.com/">Typicons</a></p>
+			<p><strong>Header font:</strong> <a href="http://www.mattyhex.net/CMR/">Celestia Medium Redux</a></p>
+			<p><strong>Application logo</strong> based on the MLP-VectorClub logo and <a href="http://djdavid98.deviantart.com/art/Rainbow-Dash-standing-S03E07-468486614">Rainbow Dash standing (S03E07)</a> by <a href="http://djdavid98.deviantart.com/">DJDavid98</a></p>
 		</div>
 	</section>
 </div>

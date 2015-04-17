@@ -52,7 +52,7 @@
 			$title = $settings['title'];
 
 		# CSS
-		$DEFAULT_CSS = array('theme','forms','dialog','colors');
+		$DEFAULT_CSS = array('theme','forms','dialog','colors','typicons.min');
 		$customCSS = array();
 		// Only add defaults when needed
 		if (array_search('no-default-css',$settings) === false)
@@ -670,7 +670,7 @@ HTML;
 			$makeRq = '<button id="request-btn">Make a request</button>';
 			$reqForm = post_form_html('request');
 		}
-		else $reqForm = $makeRes = '';
+		else $reqForm = $makeRq = '';
 		
 		echo <<<HTML
 	<section id="requests">

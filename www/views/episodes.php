@@ -3,15 +3,15 @@
 		if (PERM('episodes.manage')) { ?>
 	<h1>Previous episodes</h1>
 	<div class="align-center">
-		<p><a data-href="<?= djpth('episodes>add') ?>" class="btn disabled">Add an episode</a></p>
+		<a data-href="<?= djpth('episodes>add') ?>" class="btn disabled typcn typcn-plus">Add an episode</a>
 	</div>
 <?php   } ?>
 	<table id=episodes>
 		<thead>
 			<tr>
-				<th class="left top">Season</th>
-				<th class="top right">Episode</th>
-				<th class="top right">Title</th>
+				<th>Season</th>
+				<th>Episode</th>
+				<th>Title</th>
 			</tr>
 		</thead>
 		<tbody><?php

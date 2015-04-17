@@ -1,3 +1,20 @@
+#content > img {
+	width: 100%;
+	max-width: 200px;
+	margin: 0 auto 10px;
+	display: block;
+}
+#content > h1 {
+	font-size: 2em;
+	text-align: center;
+	margin: 0 0 5px;
+}
+#content > h1 + p {
+	font-size: 1.4em;
+	text-align: center;
+	margin: 0 0 20px;
+	font-style: italic;
+}
 #content > section:not(:last-child){
 	margin-bottom: 10px;
 }
