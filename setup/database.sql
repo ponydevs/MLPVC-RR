@@ -30,7 +30,6 @@ INSERT INTO `permissions` (`action`, `minrole`) VALUES
 CREATE TABLE IF NOT EXISTS `requests` (
   `id` int(11) NOT NULL,
   `type` set('chr','bg','obj') NOT NULL DEFAULT 'chr',
-  `finished` tinyint(1) NOT NULL DEFAULT '0',
   `season` tinyint(2) unsigned NOT NULL,
   `episode` tinyint(2) unsigned NOT NULL,
   `preview` tinytext NOT NULL,
@@ -40,11 +39,10 @@ CREATE TABLE IF NOT EXISTS `requests` (
   `posted` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `reserved_by` varchar(36) DEFAULT NULL,
   `deviation_id` varchar(7) DEFAULT NULL
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `reservations` (
   `id` int(11) NOT NULL,
-  `finished` tinyint(1) NOT NULL DEFAULT '0',
   `season` tinyint(2) unsigned NOT NULL,
   `episode` tinyint(2) unsigned NOT NULL,
   `preview` tinytext NOT NULL,
@@ -53,7 +51,7 @@ CREATE TABLE IF NOT EXISTS `reservations` (
   `posted` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `reserved_by` varchar(36) DEFAULT NULL,
   `deviation_id` varchar(7) DEFAULT NULL
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `roles` (
   `value` tinyint(3) unsigned NOT NULL,
@@ -103,9 +101,9 @@ ALTER TABLE `users`
   ADD PRIMARY KEY (`id`), ADD KEY `role` (`role`);
 
 ALTER TABLE `requests`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=1;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `reservations`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=1;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 ALTER TABLE `episodes`
 ADD CONSTRAINT `episodes_ibfk_1` FOREIGN KEY (`posted_by`) REFERENCES `users` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE;
@@ -114,9 +112,9 @@ ALTER TABLE `permissions`
 ADD CONSTRAINT `permissions_ibfk_1` FOREIGN KEY (`minrole`) REFERENCES `roles` (`name`);
 
 ALTER TABLE `requests`
-ADD CONSTRAINT `requests_ibfk_4` FOREIGN KEY (`requested_by`) REFERENCES `users` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE,
 ADD CONSTRAINT `requests_ibfk_2` FOREIGN KEY (`reserved_by`) REFERENCES `users` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
-ADD CONSTRAINT `requests_ibfk_3` FOREIGN KEY (`season`, `episode`) REFERENCES `episodes` (`season`, `episode`) ON DELETE CASCADE ON UPDATE CASCADE;
+ADD CONSTRAINT `requests_ibfk_3` FOREIGN KEY (`season`, `episode`) REFERENCES `episodes` (`season`, `episode`) ON DELETE CASCADE ON UPDATE CASCADE,
+ADD CONSTRAINT `requests_ibfk_4` FOREIGN KEY (`requested_by`) REFERENCES `users` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE;
 
 ALTER TABLE `reservations`
 ADD CONSTRAINT `reservations_ibfk_1` FOREIGN KEY (`season`, `episode`) REFERENCES `episodes` (`season`, `episode`) ON DELETE CASCADE ON UPDATE CASCADE;

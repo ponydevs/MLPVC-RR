@@ -6,8 +6,10 @@
 
 <?=sidebar_links_render()?>
 
-	<button id="signout">Sign out</button>
-	<button id="unlink" class="red">Unlink Account</button>
+	<div class=buttons>
+		<button id="signout">Sign out</button>
+		<button id="unlink" class="red">Unlink Account</button>
+	</div>
 <?php } else { ?>
 	<p>You're browsing the site as</p>
 <?=usercard_render()?>

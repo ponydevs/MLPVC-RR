@@ -16,12 +16,16 @@ In order to get the site up and running locally you'll need to set up a few thin
 	- `EP_DL_SITE`: Absolute URL of the website where episode downloads can be found<br>(not going to make that one public for obvious reasons)
 	- `GA_TRACKING_CODE`: Google Analytics tracking code
 4. Configure your server
-    1. If you're using NGINX, you can see a sample configuration in `setup/nginx.conf`. Edit this file as described below, move it to `/etc/nginx/sites-available` (you should rename it, but you don't have to) and create a symlink in `/etc/nginx/sites-enabled` to enable the configuration. *Don't forget to run `service nginx restart`*
+    1. If you're using NGINX, you can see a sample configuration in `setup/nginx.conf`. Modify this file as described below, move it to `/etc/nginx/sites-available` (you should rename it, but you don't have to) and create a symlink in `/etc/nginx/sites-enabled` to enable the configuration.
         - Change `server_name` to your domain or use `localhost`
         - Set the `root` to the `www` directory of this repository on your machine
-        - Optionally, change the `listen` port if needed
-        - Finally, in the last location block, make sure that the `php5-fpm` configuration matches your server setup, if not you'll have to edit that as well.
-    2. If you're using Apache, then you'll have to use the file located at `setup/.htaccess`, which only contains the `mod_rewrite` directives neccessary for the site to function. Any other configuration options should be changed through the Apache main configuration file(s).
+        - In the last location block, make sure that the `php5-fpm` configuration matches your server setup, if not you'll have to edit that as well.
+        - `service nginx restart`
+    2. If you're using Apache (on Windows), then check `setup/apache.conf`. Modify the settings as decribed below, then copy the edited configuration to the end of `<apache folder>/conf/extra/httpd-vhosts.conf` (or to wherever you want, this just seems to be a good place for storing the virtual host).
+        - Change `ServerName` to your domain or use `localhost`
+        - Set the `DocumentRoot` and the first `Directory` block's path to the `www` directory of this repository on your machine
+        - You'll also need to get the Certificate Authority bundle file (`ca-bundle.crt`) from [this](https://github.com/bagder/ca-bundle/) repository, place it somewhere in your system, and note it's file path. Then, in `php.ini`, set `curl.cainfo` to the absolute file path of said bundle file.
+        - Restart Apache
 5. Type your domain (or `localhost`) into the address bar of your favourite browser and the home page should appear
 
 The only parts of the server config that are crucial and must be kept intact are the rewrites which make readable & pretty URLs without the `.php` extension possible.

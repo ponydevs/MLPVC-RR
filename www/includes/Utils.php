@@ -294,10 +294,8 @@
 		global $signedIn, $currentUser;
 
 		if (empty($token)){
-			if (!$signedIn){
-				$err = 'Trying to make a request without signing in';
-				die(trigger_error($err));
-			}
+			if (!$signedIn) die(trigger_error('Trying to make a request without signing in'));
+
 			$token = $currentUser['access_token'];
 		}
 
@@ -369,7 +367,7 @@
 		);
 
 		if (empty($Database->where('id',$userdata['userid'])->get('users')))
-			$Database->insert('users', array_merge($data, array('id' => strtolower(['userid']))));
+			$Database->insert('users', array_merge($data, array('id' => strtolower($userdata['userid']))));
 		else $Database->where('id',$userdata['userid'])->update('users', $data);
 
 		Cookie::set('access_token',$data['access_token'],THREE_YEARS);
@@ -726,14 +724,17 @@ HTML;
 			$username = 'Curious Pony';
 			$rolelabel = 'Guest';
 		}
-		
-		$groupInitials = preg_replace('/[^A-Z]/','',$rolelabel);
+
+		if (PERM('member')){
+			$groupInitials = preg_replace('/[^A-Z]/','',$rolelabel);
+			$badge = "<span class=badge>$groupInitials</span>";
+		}
+		else $badge = '';
 		
 		echo <<<HTML
 		<div class="usercard">
 			<div class="avatar-wrap">
-				<img src="$avatar" class=avatar>
-				<span class=badge>$groupInitials</span>
+				<img src="$avatar" class=avatar>$badge
 			</div>
 			<span class="un">$username</span>
 			<span class="role">$rolelabel</span>

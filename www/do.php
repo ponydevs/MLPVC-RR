@@ -104,25 +104,29 @@
 					redirect('/',false);
 				}
 
-				$CurrentEpisode = $Database->rawQuery(
+				$CurrentEpisode = rawquery_get_single_result($Database->rawQuery(
 					"SELECT *
 					FROM episodes e
 					ORDER BY e.posted DESC
-					LIMIT 1");
+					LIMIT 1"));
 				if (empty($CurrentEpisode)) unset($CurrentEpisode);
-				else $CurrentEpisode = $CurrentEpisode[0];
+				else {
+					$Reservations = $Database->rawQuery(
+						"SELECT
+							*,
+							IF(!ISNULL(r.deviation_id), 1, 0) as finished
+						FROM reservations r
+						WHERE season = ? &&  episode = ?
+						ORDER BY finished, posted",array($CurrentEpisode['season'], $CurrentEpisode['episode']));
 
-				$Reservations = $Database->rawQuery(
-					"SELECT *
-					FROM reservations
-					WHERE season = ? &&  episode = ?
-					ORDER BY finished, posted",array($CurrentEpisode['season'], $CurrentEpisode['episode']));
-
-				$Requests = $Database->rawQuery(
-					"SELECT *
-					FROM requests
-					WHERE season = ? &&  episode = ?
-					ORDER BY finished, posted",array($CurrentEpisode['season'], $CurrentEpisode['episode']));
+					$Requests = $Database->rawQuery(
+						"SELECT
+							*,
+							IF(!ISNULL(r.deviation_id), 1, 0) as finished
+						FROM requests r
+						WHERE season = ? &&  episode = ?
+						ORDER BY finished, posted",array($CurrentEpisode['season'], $CurrentEpisode['episode']));
+				}
 
 				loadPage($IndexSettings);
 			break;
