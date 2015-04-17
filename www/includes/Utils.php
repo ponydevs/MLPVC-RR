@@ -473,8 +473,21 @@
 	 * @param array $Ep
 	 * @return string
 	 */
-	function format_episode_title($Ep){
+	define('AS_ARRAY',true);
+	function format_episode_title($Ep, $returnArray = false){
 		$EpNumber = intval($Ep['episode']);
+
+		if ($returnArray === AS_ARRAY) {
+			if ($EpNumber <= 2) $Ep['episode'] = '1-2';
+			else if ($EpNumber >= 25) $Ep['episode'] = '25-26';
+			return array(
+				'id' => "S{$Ep['season']}E{$Ep['episode']}",
+				'season' => $Ep['season'],
+				'episode' => $Ep['episode'],
+				'title' => $Ep['title'],
+			);
+		}
+
 		if ($EpNumber <= 2) $Ep['episode'] = '0102';
 		else if ($EpNumber >= 25) $Ep['episode'] = '2526';
 		else $Ep['episode'] = pad($Ep['episode']);

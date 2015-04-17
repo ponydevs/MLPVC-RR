@@ -104,11 +104,7 @@
 					redirect('/',false);
 				}
 
-				$CurrentEpisode = rawquery_get_single_result($Database->rawQuery(
-					"SELECT *
-					FROM episodes e
-					ORDER BY e.posted DESC
-					LIMIT 1"));
+				$CurrentEpisode = $Database->orderBy('season')->orderBy('episode')->getOne('episodes');
 				if (empty($CurrentEpisode)) unset($CurrentEpisode);
 				else {
 					$Reservations = $Database->rawQuery(
@@ -131,6 +127,7 @@
 				loadPage($IndexSettings);
 			break;
 			case "episodes":
+				$Episodes = $Database->orderBy('season')->orderBy('episode')->get('episodes');
 				loadPage(array(
 					'title' => 'Episodes',
 					'do-css',
