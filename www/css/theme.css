@@ -164,8 +164,8 @@ small { font-size: .75em }
 	height: 0;
 }
 .clearfix:after { clear: both }
-strong.typcn:before, span.typcn:before, em.typcn:before ,
-button:before, .btn:before {
+strong.typcn:before, span.typcn:not(:empty):before, em.typcn:before ,
+button:not(:empty):before, .btn:not(:empty):before {
 	margin-right: 0.3125em;
 }
 
@@ -185,9 +185,8 @@ header {
 }
 #topbar {
 	position: relative;
-	z-index: 2;
+	z-index: 3;
 	width: 100%;
-	box-shadow: 0 0 12px rgba(0,0,0,.6);
 
 	font-size: 0;
 
@@ -494,7 +493,7 @@ img.avatar {
 	font-weight: bold;
 	border-bottom: 2px solid;
 }
-.notice > p { margin: 0 }
+.notice > p { margin: 0 !important }
 .notice > p:not(:last-child) {
 	margin-bottom: 5px;
 }
@@ -517,6 +516,12 @@ button, .btn {
 
 	transform-origin: 50% 100%;
 	transition: transform .1s linear, opacity .2s linear;
+}
+button:empty, .btn:empty {
+	font-size: .8em;
+	padding: 2px;
+	width: 1.5em;
+	margin:0;
 }
 button:hover, .btn:hover,
 button:focus, .btn:focus {

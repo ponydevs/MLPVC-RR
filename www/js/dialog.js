@@ -105,7 +105,8 @@
 			if (typeof type !== 'string' || typeof globalparams[type] === 'undefined') throw new TypeError('Invalid dialog type: '+typeof type);
 			
 			function setFocus(){
-				if ($(':focus').length > 0) window._focusedElement = $(':focus').last();
+				var $focus = $(':focus');
+				if ($focus.length > 0) window._focusedElement = $focus.last();
 				else window._focusedElement = undefined;
 				var $inputs = $('#dialogContent').find('input,select,textarea').filter(':visible'),
 					$actions = $('#dialogButtons').children();
@@ -114,39 +115,60 @@
 			}
 			
 			function run(norender){
-				if (norender !== true){
-					$dialogOverlay = $makeDiv();
-					$dialogContent = $makeDiv();
-					$dialogHeader = $makeDiv();
-					$dialogBox = $makeDiv();
-					$dialogButtons = $makeDiv();
-					
-					$dialogOverlay.attr('id','dialogOverlay');
-					$dialogHeader.attr('id','dialogHeader').text(params.title||defaultTitles[type]);
-					$dialogContent.attr('id','dialogContent').addClass('input-control');
-					var $contentAdd = $makeDiv().html(params.content);
-					if (typeof xtraCSS[type] === 'object') $contentAdd.css(xtraCSS[type]);
-					$dialogContent.append($contentAdd);
-					$dialogBox.attr({
-						'id':'dialogBox',
-						'class':'metrouicss',
-					}).append($dialogHeader).append($dialogContent);
-					if (params.buttons) $dialogButtons = $makeDiv().attr({
-						'id':'dialogButtons',
-						'class':'metrouicss',
-					}).insertAfter($dialogContent);
-					$dialogOverlay.appendTo(document.body).css('opacity', .5).show();
-					$dialogBox.appendTo($dialogOverlay).css('opacity', 0).css({
-						top: $w.height()/3,
-						left: ($w.width() - $dialogBox.outerWidth()) / 2,
-					});
+				var $contentAdd = $makeDiv();
+				if (norender === true){
+					$dialogOverlay = $('#dialogOverlay');
+					$dialogBox = $('#dialogBox');
+					$dialogHeader = $('#dialogHeader');
+					$dialogContent = $('#dialogContent');
+					$dialogButtons = $('#dialogButtons');
+					if (typeof params.title === 'string')
+						$dialogHeader.text(params.title);
+					$dialogContent.find('input, select, textarea').attr('disabled',true);
+					if (typeof xtraCSS[type] === 'object')
+						$contentAdd.css(xtraCSS[type]);
+					$dialogContent.append($contentAdd.html(params.content));
+					if (params.buttons && $dialogButtons.length === 0)
+						$dialogButtons = $makeDiv().attr('id','dialogButtons').insertAfter($dialogContent);
+					else if (!params.buttons && $dialogButtons.length !== 0)
+						$dialogButtons.remove();
+					else $dialogButtons.empty();
 
+					$dialogBox.stop();
 					setTimeout(function(){
 						$dialogBox.css({
 							left: ($w.width() - $dialogBox.outerWidth()) / 2,
-							top: $w.height()/2 - $dialogBox.outerHeight(),
-						}).animate({
 							top: ($w.height() - $dialogBox.outerHeight()) / 2,
+							opacity: 1,
+						});
+					},10);
+				}
+				else {
+					$dialogOverlay = $makeDiv().attr('id','dialogOverlay');
+					$dialogHeader = $makeDiv().attr('id','dialogHeader').text(params.title||defaultTitles[type]);
+					$dialogContent = $makeDiv().attr('id','dialogContent');
+					$dialogBox = $makeDiv().attr('id','dialogBox');
+
+					$contentAdd.html(params.content);
+					if (typeof xtraCSS[type] === 'object') $contentAdd.css(xtraCSS[type]);
+					$dialogContent.append($contentAdd);
+
+					$dialogBox.append($dialogHeader).append($dialogContent);
+					if (params.buttons)
+						$dialogButtons = $makeDiv().attr('id','dialogButtons').insertAfter($dialogContent);
+					$dialogOverlay.appendTo(document.body).css('opacity', .5).show();
+
+					$dialogBox.css('opacity', 0).appendTo($dialogOverlay);
+
+					var whdBoH = $w.height() - $dialogBox.outerHeight();
+
+					setTimeout(function(){
+						if ($dialogBox.is(':animated')) return;
+						$dialogBox.css({
+							top: whdBoH / 3,
+							left: whdBoH / 2,
+						}).animate({
+							top: whdBoH / 2,
 							opacity: 1,
 						}, 350, setFocus);
 						$dialogOverlay.fadeTo(350, 1);
@@ -154,29 +176,6 @@
 
 					var hOf = $html.css('overflow');
 					$html.attr('data-overflow',hOf).css('overflow','hidden');
-				}
-				else {
-					$dialogOverlay = $('#dialogOverlay');
-					$dialogBox = $('#dialogBox');
-					$dialogHeader = $('#dialogHeader');
-					$dialogContent = $('#dialogContent');
-					$dialogButtons = $('#dialogButtons');
-					$dialogHeader.text(params.title);
-					$dialogContent.find('input, select, textarea').attr('disabled',true);
-					var $contentAdd = $makeDiv();
-					if (typeof xtraCSS[type] === 'object') $contentAdd.css(xtraCSS[type]);
-					$dialogContent.append($contentAdd.html(params.content));
-					if (params.buttons && $dialogButtons.length === 0) $dialogButtons = $makeDiv().attr({
-						id:'dialogButtons',
-						'class':'metrouicss',
-					}).insertAfter($dialogContent);
-					else if (!params.buttons && $dialogButtons.length !== 0) $dialogButtons.remove();
-					else $dialogButtons.empty();
-
-					$dialogBox.css({
-						left: ($w.width() - $dialogBox.outerWidth()) / 2,
-						top: ($w.height() - $dialogBox.outerHeight()) / 2,
-					});
 				}
 				
 				$dialogHeader.attr('class','bg-color-' + params.color);
@@ -187,11 +186,12 @@
 					else $button.attr('type','button');
 					$button.attr('class','fg-color-white bg-color-' + params.color);
 					if (obj.form){
-						$form = $('#'+obj.form);
+						var $form = $('#'+obj.form);
 						if ($form.length == 1){
 							$button.click(function(){
 								$form.trigger('submit');
 							});
+							$form.prepend($(document.createElement('input')).attr('type','submit').hide());
 						}
 					}
 					$button.val(name).on('keydown', function (e) {
@@ -245,8 +245,7 @@
 							e.preventDefault();
 							e.stopPropagation();
 							
-							var z_idx = $dialogBox.css('z-index'),
-								drg_h = $dialogBox.outerHeight(),
+							var drg_h = $dialogBox.outerHeight(),
 								drg_w = $dialogBox.outerWidth(),
 								pos_y = $dialogBox.offset().top + drg_h - e.pageY,
 								pos_x = $dialogBox.offset().left + drg_w - e.pageX;
@@ -281,14 +280,10 @@
 				if (typeof callback === 'function') callback();
 			}
 			
-			if (typeof buttons == "function" && typeof params == "undefined" && typeof callback == 'undefined'){
+			if (typeof buttons == "function" && typeof params == "undefined" && typeof callback == 'undefined')
 				callback = buttons;
-				delete buttons;
-			}
-			else if (typeof buttons == "object" && typeof params == "function" && typeof callback == 'undefined'){
+			else if (typeof buttons == "object" && typeof params == "function" && typeof callback == 'undefined')
 				callback = params;
-				delete params;
-			}
 			if (typeof params == "undefined") params = {};
 			
 			if (typeof title === 'undefined') title = defaultTitles[type];
@@ -310,16 +305,16 @@
 		close: function (callback) {
 			if (typeof $.Dialog.open === "undefined") return (typeof callback == 'function' ? callback() : false);
 
-			$('#dialogOverlay').fadeOut(300, function(){
+			$dialogOverlay.fadeOut(350, function(){
 				$.Dialog.open = void(0);
 				$(this).remove();
 				if (window._focusedElement instanceof jQuery) window._focusedElement.focus();
 				if (typeof callback == 'function') callback();
 			});
-			$('#dialogBox').animate({
-				top: ($w.height()/2)*1.5 - $dialogBox.outerHeight(),
+			$dialogBox.animate({
+				top: ($w.height() - $dialogBox.outerHeight()) / 3 * 2,
 				opacity: 0,
-			}, 290);
+			}, 350);
 			var hOf = $html.attr('data-overflow');
 			if (typeof hOf !== 'undefined'){
 				$html.css('overflow',hOf);

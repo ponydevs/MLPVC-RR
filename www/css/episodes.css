@@ -30,12 +30,10 @@
 
 	color: rgba(0,0,0,.7);
 }
-
 #episodes tbody .season,
 #episodes tbody .episode {
 	text-align: center;
 }
-
 #episodes tbody .episode {
 	padding-right: 0;
 }
@@ -44,11 +42,10 @@
 	padding-right: 10px;
 	display: block;
 }
-
 #episodes tbody .title {
 	padding: 5px 10px;
 }
-
+#episodes tbody .title > span.typcn-eye { cursor: help }
 #episodes tbody .title a {
 	display: inline-block;
 	padding: 2px;
@@ -59,9 +56,12 @@
 
 	transition: background-color .2s, border-bottom-color .2s;
 }
-
 #episodes tbody .title a:hover {
 	background-color: rgba(10,10,10,.15);
 	border-bottom-color: transparent;
 	border-radius: 3px;
+}
+
+#episodes tbody .title .admincontrols {
+	margin-left: 5px;
 }

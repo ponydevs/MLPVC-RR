@@ -45,6 +45,15 @@
 	line-height: 14pt;
 	font-weight: 400;
 }
+#dialogContent form > label > input[type]:not([type=radio]):not([type=checkbox]):not([type=button]) {
+	width: 100%;
+	box-sizing: border-box;
+}
+#dialogContent .notice {
+	padding: 4px 7.5px;
+	font-size: .9em;
+	border-width: 1px;
+}
 #dialogContent > div:not(:last-child){
 	border-bottom: 1px solid;
 	padding-bottom: 5px;

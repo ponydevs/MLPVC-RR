@@ -127,12 +127,25 @@
 	content: "None yet.";
 }
 #content > section ul li {
-	padding: 7px;
+	padding: 5px;
 	color: #434343;
 	background-color: #c8c8c8;
+	font-size: 12px;
+	font-family: 'Verdana', sans-serif;
+}
+#content > section ul li > * {
+	display: inline-block;
+	vertical-align: bottom;
+}
+#content > section ul li > .fluidbox {
+	font-size: 0;
+	white-space: nowrap;
 }
 #content > section ul li:not(:last-child) {
 	margin-bottom: 10px;
+}
+#content > section ul li .label:not(:empty):after {
+	content: " -";
 }
 #content .post-form > div > * {
 	display: block;
@@ -160,6 +173,15 @@
 }
 #requests > .unfinished > .group > h3 {
 	margin: 5px 0 10px 5px;
+}
+
+#content .da-userlink {
+	font-weight: bold;
+	color: #337287;
+	text-decoration: none !important;
+}
+#content .da-userlink:hover {
+  color: #1059d2;
 }
 
 .fluidbox-wrap {

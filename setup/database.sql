@@ -13,6 +13,7 @@ CREATE TABLE IF NOT EXISTS `deviation_cache` (
 CREATE TABLE IF NOT EXISTS `episodes` (
   `season` tinyint(2) unsigned NOT NULL,
   `episode` tinyint(2) unsigned NOT NULL,
+  `twoparter` tinyint(1) NOT NULL DEFAULT '0',
   `title` tinytext NOT NULL,
   `posted` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `posted_by` varchar(36) NOT NULL

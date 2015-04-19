@@ -51,8 +51,13 @@
 			break;
 			case "post":
 				if (RQMTHD !== 'POST') do404();
-				if (!$signedIn) respond();
+				if (!PERM('user')) respond();
 				detectCSRF();
+
+				if (empty($_POST['what']) || !in_array($_POST['what'],array('request','reservation'))) respond('Invalid post type');
+				$what = $_POST['what'];
+				if ($what === 'reservation' && !PERM('reservations.create'))
+					respond();
 
 				if (!empty($_POST['image_url'])){
 					require 'includes/Image.php';
@@ -64,36 +69,36 @@
 					}
 				}
 
-				if (empty($_POST['what']) || !in_array($_POST['what'],array('request','reservation'))) respond('Invalid post type');
-				$what = $_POST['what'];
-
 				if (!$ImageAvailable) respond('The image could not be retrieved');
 
-				$data = array(
+				$insert = array(
 					'preview' => $Image->preview,
 					'fullsize' => $Image->fullsize,
 				);
 
 				switch ($what){
-					case "request": $data['requested_by'] = $currentUser['id']; break;
-					case "reservation": $data['reserved_by'] = $currentUser['id']; break;
+					case "request": $insert['requested_by'] = $currentUser['id']; break;
+					case "reservation": $insert['reserved_by'] = $currentUser['id']; break;
 				}
 
-				if (empty($_POST['label'])) respond('Missing label');
-				$data['label'] = trim($_POST['label']);
-				if (strlen($data['label']) <= 2 || strlen($data['label']) > 255) respond("The label must be between 2 and 255 characters in length");
-				if (empty($_POST['image_url'])) respond('Missing image URL');
+				if ($what === 'request' && empty($_POST['label']))
+					respond('Missing label');
+				if ($what === 'reservation' && !empty($_POST['label'])){
+					$insert['label'] = trim($_POST['label']);
+					if (strlen($insert['label']) <= 2 || strlen($insert['label']) > 255) respond("The label must be between 2 and 255 characters in length");
+					if (empty($_POST['image_url'])) respond('Missing image URL');
+				}
 
 				if (empty($_POST['season']) || empty($_POST['episode'])) respond('Missing episode identifiers');
-				$data['season'] = intval($_POST['season']);
-				$data['episode'] = intval($_POST['episode']);
+				$insert['season'] = intval($_POST['season']);
+				$insert['episode'] = intval($_POST['episode']);
 
 				if ($what === 'request'){
 					if (!isset($_POST['type']) || !in_array($_POST['type'],array('chr','obj','bg'))) respond("Invalid request type");
-					$data['type'] = $_POST['type'];
+					$insert['type'] = $_POST['type'];
 				}
 
-				if ($Database->insert("{$what}s",$data)) respond('Submission complete',1);
+				if ($Database->insert("{$what}s",$insert)) respond('Submission complete',1);
 				else respond('Submission failed');
 			break;
 
@@ -106,32 +111,103 @@
 
 				$CurrentEpisode = $Database->orderBy('season')->orderBy('episode')->getOne('episodes');
 				if (empty($CurrentEpisode)) unset($CurrentEpisode);
-				else {
-					$Reservations = $Database->rawQuery(
-						"SELECT
-							*,
-							IF(!ISNULL(r.deviation_id), 1, 0) as finished
-						FROM reservations r
-						WHERE season = ? &&  episode = ?
-						ORDER BY finished, posted",array($CurrentEpisode['season'], $CurrentEpisode['episode']));
-
-					$Requests = $Database->rawQuery(
-						"SELECT
-							*,
-							IF(!ISNULL(r.deviation_id), 1, 0) as finished
-						FROM requests r
-						WHERE season = ? &&  episode = ?
-						ORDER BY finished, posted",array($CurrentEpisode['season'], $CurrentEpisode['episode']));
-				}
+				else list($Requests, $Reservations) = get_posts($CurrentEpisode['season'], $CurrentEpisode['episode']);
 
 				loadPage($IndexSettings);
 			break;
+			case "episode":
+				# TODO Locking posts
+				if (RQMTHD === 'POST'){
+					if (!PERM('episodes.manage')) respond();
+					detectCSRF();
+
+					if (empty($data)) do404();
+
+					$EpData = episode_id_parse($data);
+					if (!empty($EpData)){
+						$Ep = get_real_episode($EpData['season'],$EpData['episode'],'season, episode, twoparter, title');
+						respond('',1,array(
+							'ep' => $Ep,
+							'epid' => format_episode_title($Ep, AS_ARRAY, 'id'),
+						));
+					}
+					unset($EpData);
+
+					$_match = array();
+					if (preg_match('/^delete\/'.EPISODE_ID_PATTERN.'$/',$data,$_match)){
+						list($season,$episode) = array_map('intval',array_splice($_match,1,2));
+
+						$Episode = get_real_episode($season,$episode);
+						if (empty($Episode))
+							respond("There's no episode with this season & episode number");
+
+						if (!$Database->where('season',$Episode['season'])->where('episode',$Episode['episode'])->delete('episodes')) respond(ERR_DB_FAIL);
+						respond('Episode deleted successfuly',1,array('tbody' => get_eptable_tbody()));
+					}
+					else {
+						$editing = preg_match('/^edit\/'.EPISODE_ID_PATTERN.'$/',$data,$_match);
+						if ($editing){
+							list($season,$episode) = array_map('intval',array_splice($_match,1,2));
+							$insert = array();
+						}
+						else if ($data === 'add') $insert = array(
+							'posted' => date('c'),
+							'posted_by' => $currentUser['id'],
+						);
+						else statusCodeHeader(404, AND_DIE);
+
+						if (!isset($_POST['season']) || !is_numeric($_POST['season']) )
+							respond('Season number is missing or invalid');
+						$insert['season'] = intval($_POST['season']);
+						if ($insert['season'] < 1 || $insert['season'] > 8) respond('Season number must be beetween 1 and 8');
+
+						if (!isset($_POST['episode']) || !is_numeric($_POST['episode']))
+							respond('Episode number is missing or invalid');
+						$insert['episode'] = intval($_POST['episode']);
+						if ($insert['episode'] < 1 || $insert['episode'] > 26) respond('Season number must be beetween 1 and 26');
+
+						if ($editing){
+							$Current = get_real_episode($season,$episode);
+							if (empty($Current)) respond("This episode doesn't exist");
+						}
+						$Target = get_real_episode($insert['season'],$insert['episode']);
+						if (!empty($Target) && (!$editing || ($editing && ($Target['season'] !== $Current['season'] || $Target['episode'] !== $Current['episode']))))
+							respond("There's already an episode with the same season & episode number");
+
+						if (isset($_POST['twoparter']))
+							$insert['twoparter'] = 1;
+
+						if (empty($_POST['title']))
+							respond('Episode title is missing or invalid');
+						$insert['title'] = $_POST['title'];
+
+						if ($editing){
+							if (!$Database->where('season',$season)->where('episode',$episode)->update('episodes', $insert))
+								respond('No changes were made', 1);
+						}
+						else if (!$Database->insert('episodes', $insert))
+							respond(ERR_DB_FAIL);
+						respond('Episode saved successfuly',1,array('tbody' => get_eptable_tbody()));
+					}
+				}
+
+				$EpData = episode_id_parse($data);
+				if (empty($EpData)) redirect('/episodes');
+				$CurrentEpisode = get_real_episode($EpData['season'],$EpData['episode'],'season, episode, twoparter, title');
+				if (empty($CurrentEpisode)) redirect('/episodes');
+
+				list($Requests, $Reservations) = get_posts($CurrentEpisode['season'], $CurrentEpisode['episode']);
+
+				loadPage(array_merge($IndexSettings,array('title',format_episode_title($CurrentEpisode))));
+			break;
 			case "episodes":
-				$Episodes = $Database->orderBy('season')->orderBy('episode')->get('episodes');
-				loadPage(array(
+				$Episodes = get_episodes();
+				$settings = array(
 					'title' => 'Episodes',
 					'do-css',
-				));
+				);
+				if (PERM('episodes.manage')) $settings['js'] = 'episodes-manage';
+				loadPage($settings);
 			break;
 			case "about":
 				loadPage(array(

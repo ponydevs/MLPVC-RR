@@ -12,55 +12,55 @@ textarea {
 	font-size: 14px;
 	transition: border-color .2s linear;
 }
-#dialogContent input[type]:not([type=radio],[type=checkbox],[type=button]),
+#dialogContent input[type]:not([type=radio]):not([type=checkbox]):not([type=button]),
 #dialogContent select,
 #dialogContent textarea {
 	color: #313131;
 	border: 1px solid #CECECE;
 	background-color: #EFEFEF;
 }
-input[type]:not([type=radio],[type=checkbox],[type=button]):focus,
+input[type]:not([type=radio]):not([type=checkbox]):not([type=button]):focus,
 select:focus,
 textarea:focus {
 	border-color: #07f;
 }
-input[type]:not([type=radio],[type=checkbox],[type=button])[required]:not(:focus):valid:hover,
+input[type]:not([type=radio]):not([type=checkbox]):not([type=button])[required]:not(:focus):valid:hover,
 textarea[required]:not(:focus):valid:hover,
-input[type]:not([type=radio],[type=checkbox],[type=button])[pattern]:not(:focus):valid:hover,
+input[type]:not([type=radio]):not([type=checkbox]):not([type=button])[pattern]:not(:focus):valid:hover,
 textarea[pattern]:not(:focus):valid:hover {
 	border-color: #0a0;
 	color: #0d0;
 }
-#dialogContent input[type]:not([type=radio],[type=checkbox],[type=button])[required]:not(:focus):valid,
+#dialogContent input[type]:not([type=radio]):not([type=checkbox]):not([type=button])[required]:not(:focus):valid,
 #dialogContent textarea[required]:not(:focus):valid,
-#dialogContent input[type]:not([type=radio],[type=checkbox],[type=button])[pattern]:not(:focus):valid,
+#dialogContent input[type]:not([type=radio]):not([type=checkbox]):not([type=button])[pattern]:not(:focus):valid,
 #dialogContent textarea[pattern]:not(:focus):valid {
 	border-color: #00CE00;
 	color: #070;
 }
-input[type]:not([type=radio],[type=checkbox],[type=button])[required]:not(:focus):invalid:hover,
+input[type]:not([type=radio]):not([type=checkbox]):not([type=button])[required]:not(:focus):invalid:hover,
 textarea[required]:not(:focus):invalid:hover,
-input[type]:not([type=radio],[type=checkbox],[type=button])[pattern]:not(:focus):invalid:hover,
+input[type]:not([type=radio]):not([type=checkbox]):not([type=button])[pattern]:not(:focus):invalid:hover,
 textarea[pattern]:not(:focus):invalid:hover {
 	border-color: #a00;
 	color: #d00;
 }
-#dialogContent input[type]:not([type=radio],[type=checkbox],[type=button])[required]:not(:focus):invalid,
+#dialogContent input[type]:not([type=radio]):not([type=checkbox]):not([type=button])[required]:not(:focus):invalid,
 #dialogContent textarea[required]:not(:focus):invalid,
-#dialogContent input[type]:not([type=radio],[type=checkbox],[type=button]):not(:focus):invalid,
+#dialogContent input[type]:not([type=radio]):not([type=checkbox]):not([type=button]):not(:focus):invalid,
 #dialogContent textarea[pattern]:not(:focus):invalid {
 	border-color: #a00;
 	color: #700;
 }
-input[type]:not([type=radio],[type=checkbox],[type=button])[required]:focus:invalid,
+input[type]:not([type=radio]):not([type=checkbox]):not([type=button])[required]:focus:invalid,
 textarea[required]:focus:invalid,
-input[type]:not([type=radio],[type=checkbox],[type=button])[pattern]:focus:invalid,
+input[type]:not([type=radio]):not([type=checkbox]):not([type=button])[pattern]:focus:invalid,
 textarea[pattern]:focus:invalid {
 	border-color: #d00;
 	color: #a00;
 }
-input[type]:not([type=radio],[type=checkbox],[type=button])[required]:focus:valid,
-input[type]:not([type=radio],[type=checkbox],[type=button])[pattern]:focus:valid {
+input[type]:not([type=radio]):not([type=checkbox]):not([type=button])[required]:focus:valid,
+input[type]:not([type=radio]):not([type=checkbox]):not([type=button])[pattern]:focus:valid {
 	border-color: #0d0;
 	color: #0a0;
 }

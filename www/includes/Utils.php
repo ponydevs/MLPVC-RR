@@ -11,7 +11,8 @@
 	 * @param bool|int $s
 	 * @param array $x
 	 */
-	function respond($m = 'You need to be signed in to use that.', $s = false, $x = array()){
+	define('ERR_DB_FAIL','There was an error while saving to the database');
+	function respond($m = 'Insufficent permissions.', $s = false, $x = array()){
 		header('Content-Type: application/json');
 		die(json_encode(array_merge(array(
 			"message" => $m,
@@ -213,13 +214,16 @@
 		504 => 'Gateway Time-out',
 		505 => 'HTTP Version not supported',
 	);
-	function statusCodeHeader($code){
+	define('AND_DIE', true);
+	function statusCodeHeader($code, $die = false){
 		global $HTTP_STATUS_CODES;
 
 		if (!isset($HTTP_STATUS_CODES[$code]))
 			trigger_error('Érvénytelen státuszkód: '.$code,E_USER_ERROR);
 		else
 			header($_SERVER['SERVER_PROTOCOL'].' '.$code.' '.$HTTP_STATUS_CODES[$code]);
+
+		if ($die === AND_DIE) die();
 	}
 
 	// DJDavid98(TM) Path Notation Resolver \\
@@ -474,25 +478,53 @@
 	 * @return string
 	 */
 	define('AS_ARRAY',true);
-	function format_episode_title($Ep, $returnArray = false){
+	function format_episode_title($Ep, $returnArray = false, $arrayKey = null){
 		$EpNumber = intval($Ep['episode']);
 
 		if ($returnArray === AS_ARRAY) {
-			if ($EpNumber <= 2) $Ep['episode'] = '1-2';
-			else if ($EpNumber >= 25) $Ep['episode'] = '25-26';
-			return array(
+			if ($Ep['twoparter'])
+				$Ep['episode'] = $EpNumber.'-'.($EpNumber+1);
+			else $Ep['episode'] = strval($Ep['episode']);
+			$arr = array(
 				'id' => "S{$Ep['season']}E{$Ep['episode']}",
 				'season' => $Ep['season'],
 				'episode' => $Ep['episode'],
 				'title' => $Ep['title'],
 			);
+
+			if (!empty($arrayKey))
+				return isset($arr[$arrayKey]) ? $arr[$arrayKey] : null;
+			else return $arr;
 		}
 
-		if ($EpNumber <= 2) $Ep['episode'] = '0102';
-		else if ($EpNumber >= 25) $Ep['episode'] = '2526';
+		if ($Ep['twoparter'])
+			$Ep['episode'] = pad($EpNumber).pad($EpNumber+1);
 		else $Ep['episode'] = pad($Ep['episode']);
 		$Ep['season'] = pad($Ep['season']);
-		return "S{$Ep['season']}E{$Ep['episode']}: {$Ep['title']}";
+		return "S{$Ep['season']} E{$Ep['episode']}: {$Ep['title']}";
+	}
+
+	/**
+	 * Extracts the season and episode from the episode id
+	 * Examples:
+	 *   "S1E1" => {season:1,episode:1}
+	 *   "S01E01" => {season:1,episode:1}
+	 *   "S1E1-2" => {season:1,episode:1,twoparter:true}
+	 *   "S01E01-02" => {season:1,episode:1,twoparter:true}
+	 *
+	 * @param string $id
+	 * @return null|array
+	 */
+	define('EPISODE_ID_PATTERN','S(\d{1,2})E(\d{1,2})(-\d{1,2})?');
+	function episode_id_parse($id){
+		$match = array();
+		if (preg_match('/^'.EPISODE_ID_PATTERN.'/', $id, $match))
+			return array(
+				'season' => intval($match[1]),
+				'episode' => intval($match[2]),
+				'twoparter' => !empty($match[3]),
+			);
+		else return null;
 	}
 
 	/**
@@ -524,9 +556,25 @@
 			WHERE `$coloumn` = ?",array($value)));
 	}
 
+	/**
+	 * deviantArt profile link generator
+	 *
+	 * @param array
+	 * @return string
+	 */
+	define('TEXT_ONLY', false);
+	function da_link($User, $avatar = true){
+		if (!is_array($User)) trigger_error('$User is not an array');
+
+		$Username = $User['username'];
+		$username = strtolower($Username);
+		$avatar = $avatar ? "<img src='{$User['avatar_url']}' class=avatar> " : '';
+
+		return "<a href='http://$username.deviantart.com/' class=da-userlink>$avatar<span class=name>$Username</span></a>";
+	}
 
 	// Get Request / Reservation Submission Form HTML \\
-	function post_form_html($type){
+	function get_post_form($type){
 		$Type = strtoupper($type[0]).substr($type,1);
 		$HTML = <<<HTML
 		<form class="hidden post-form" data-type="$type">
@@ -540,13 +588,13 @@
 				<div class="hidden img-preview">
 					<div class="notice fail">Please click the <strong>Check image</strong> button after providing an URL to get a preview & verify if the link is correct.</div>
 				</div>
+HTML;
+			if ($type === 'request')
+				$HTML .= <<<HTML
 				<label>
 					<span>$Type label</span>
 					<input type="text" name="label" pattern="^.{2,255}$" required>
 				</label>
-HTML;
-			if ($type === 'request')
-				$HTML .= <<<HTML
 				<label>
 					<span>$Type type</span>
 					<select name="type" required>
@@ -556,6 +604,15 @@ HTML;
 					</select>
 				</label>
 HTML;
+			else {
+				$HTML .= <<<HTML
+				<label>
+					<span>$Type label (optional)</span>
+					<input type="text" name="label" pattern="^.{2,255}$">
+				</label>
+HTML;
+
+			}
 			$HTML .= <<<HTML
 			</div>
 			<button class=green>Submit $type</button> <button type="reset">Cancel</button>
@@ -573,14 +630,13 @@ HTML;
 
 			foreach ($Reservations as $R){
 				$finished = !!$R['finished'] && !empty($R['deviation_id']);
-				$BaseString = "<a href='{$R['fullsize']}'><img src='{$R['preview']}' class=screencap></a><span>{$R['label']}</span>";
+				$BaseString = "<a href='{$R['fullsize']}'><img src='{$R['preview']}' class=screencap></a><span class=label>{$R['label']}</span> ";
 
 				$ResHTML = '<li>';
 				if (!empty($R['reserved_by'])){
 					$R['reserver'] = get_user($R['reserved_by'],'id',GETUSER_BASIC);
-					$R['reserver']['avatar_html'] = "<img src='{$R['reserver']['avatar_url']}' class=avatar>";
-					$BySTR = " by {$R['reserver']['avatar_html']}{$R['reserver']['username']}";
-					if (!$finished) $ResHTML .= "$BaseString <strong>reserved$BySTR</strong>";
+					$BySTR = ' by '.da_link($R['reserver']);
+					if (!$finished) $ResHTML .= "$BaseString$BySTR";
 					else {
 						$D = da_cache_deviation($R['deviation_id']);
 						$D['title'] = preg_replace("/'/",'&apos;',$D['title']);
@@ -596,7 +652,7 @@ HTML;
 
 		if (PERM('reservations.create')){
 			$makeRes = '<button id="reservation-btn">Make a reservation</button>';
-			$resForm = post_form_html('reservation');
+			$resForm = get_post_form('reservation');
 		}
 		else $resForm = $makeRes = '';
 
@@ -633,14 +689,13 @@ HTML;
 
 			foreach ($Requests as $R){
 				$finished = !!$R['finished'] && !empty($R['deviation_id']);
-				$BaseString = "<a href='{$R['fullsize']}'><img src='{$R['preview']}' class=screencap></a><span>{$R['label']}</span>";
+				$BaseString = "<a href='{$R['fullsize']}'><img src='{$R['preview']}' class=screencap></a><span class=label>{$R['label']}</span>";
 
 				$RqHTML = '<li>';
 				if (!empty($R['reserved_by'])){
 					$R['reserver'] = get_user($R['reserved_by'],'id',GETUSER_BASIC);
-					$R['reserver']['avatar_html'] = "<img src='{$R['reserver']['avatar_url']}' class=avatar>";
-					$BySTR = " by {$R['reserver']['avatar_html']}{$R['reserver']['username']}";
-					if (!$finished) $RqHTML .= "$BaseString <strong>reserved$BySTR</strong>";
+					$BySTR = ' by '.da_link($R['reserver']);
+					if (!$finished) $RqHTML .= "$BaseString taken$BySTR";
 					else {
 						$D = da_cache_deviation($R['deviation_id']);
 						$D['title'] = preg_replace("/'/",'&apos;',$D['title']);
@@ -668,7 +723,7 @@ HTML;
 
 		if (PERM('user')){
 			$makeRq = '<button id="request-btn">Make a request</button>';
-			$reqForm = post_form_html('request');
+			$reqForm = get_post_form('request');
 		}
 		else $reqForm = $makeRq = '';
 		
@@ -684,6 +739,34 @@ HTML;
 		</div>$reqForm
 	</section>
 HTML;
+	}
+
+	/**
+	 * Retrieves requests & reservations for the episode specified
+	 *
+	 * @param int $season
+	 * @param int $episode
+	 * @return array
+	 */
+	function get_posts($season, $episode){
+		global $Database;
+
+		return array(
+			$Database->rawQuery(
+				"SELECT
+					*,
+					IF(!ISNULL(r.deviation_id), 1, 0) as finished
+				FROM requests r
+				WHERE season = ? &&  episode = ?
+				ORDER BY finished, posted",array($season, $episode)),
+			$Database->rawQuery(
+				"SELECT
+					*,
+					IF(!ISNULL(r.deviation_id), 1, 0) as finished
+				FROM reservations r
+				WHERE season = ? &&  episode = ?
+				ORDER BY finished, posted",array($season, $episode))
+		);
 	}
 
 	/**
@@ -753,4 +836,70 @@ HTML;
 			<span class="role">$rolelabel</span>
 		</div>
 HTML;
+	}
+
+	/**
+	 * Returns all episodes from the database, properly sorted
+	 *
+	 * @return array
+	 */
+	function get_episodes(){
+		global $Database;
+
+		return $Database->orderBy('season')->orderBy('episode')->get('episodes');
+	}
+
+	/**
+	 * Get the <tbody> contents for the episode list table
+	 *
+	 * @param array|null $Episode
+	 * @return string
+	 */
+	function get_eptable_tbody($Episode = null){
+		if (!isset($Episodes)) $Episodes = get_episodes();
+		$Body = '';
+		$PathStart = djpth("episode>");
+		foreach ($Episodes as $i => $ep) {
+			$Title = format_episode_title($ep, AS_ARRAY);
+			$href = $PathStart.$Title['id'];
+			if (PERM('episodes.manage')) $adminControls = <<<HTML
+<span class=admincontrols>
+	<button class="edit-episode typcn typcn-spanner blue" title="Edit episode"></button>
+	<button class="delete-episode typcn typcn-times red" title="Delete episode"></button>
+</span>
+HTML;
+			else $adminControls = '';
+
+			$star = $i === 0 ? '<span class="typcn typcn-eye" title="Curently visible on the homepage"></span> ' : '';
+
+			$Body .= <<<HTML
+		<tr data-epid="{$Title['id']}">
+			<td class=season>{$Title['season']}</td>
+			<td class=episode><span>{$Title['episode']}</span></td>
+			<td class=title>$star<a href="$href">{$Title['title']}</a>$adminControls</td>
+		</tr>
+HTML;
+		}
+		return $Body;
+	}
+
+	/**
+	 * If an episode is a two-parter's second part, then returns the first part
+	 * Otherwise returns the episode itself
+	 *
+	 * @param int $episode
+	 * @param int $season
+	 * @param null|string $cols
+	 *
+	 * @return array|null
+	 */
+	function get_real_episode($season, $episode, $cols = null){
+		global $Database;
+
+		$Ep1 = $Database->where('season',$season)->where('episode',$episode)->getOne('episodes', $cols);
+		if (empty($Ep1)){
+			$Part1 = $Database->where('season',$season)->where('episode',$episode-1)->getOne('episodes', $cols);
+			return !empty($Part1) && isset($Part1['twoparter']) && !!$Part1['twoparter'] ? $Part1 : null;
+		}
+		else return $Ep1;
 	}
