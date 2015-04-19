@@ -279,7 +279,7 @@ nav a.active {
 	background-color: rgba(255,255,255,.4);
 	cursor: default;
 }
-nav a:hover, nav a:focus, nav a.active {
+nav a:hover, nav a.active {
 	background-color: rgba(255,255,255,.2);
 }
 

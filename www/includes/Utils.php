@@ -857,6 +857,9 @@ HTML;
 	 */
 	function get_eptable_tbody($Episode = null){
 		if (!isset($Episodes)) $Episodes = get_episodes();
+
+		if (empty($Episodes)) return "<tr class='empty align-center'><td colspan=3><em>There are no episodes to display</em></td></tr>";
+
 		$Body = '';
 		$PathStart = djpth("episode>");
 		foreach ($Episodes as $i => $ep) {

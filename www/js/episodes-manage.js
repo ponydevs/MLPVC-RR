@@ -1,14 +1,15 @@
-$(function(){ var undefined = void 0;
+$(function(){
 	var formContents =
 			'<label><input type="number" min=1 max=8 name=season placeholder=Season required></label>\
 			<label><input type="number" min=1 max=26 name=episode placeholder=Episode required></label>\
+			<label><input type="text" maxlength=255 name=title placeholder=Title required></label>\
 			<label>\
 				<input type="checkbox" name=twoparter> Two-parter\
 			</label>\
 			<div class="notice info align-center">\
 				<p>If <strong>Two-parter</strong> is checked, only specify<br>the episode number of the first part</p>\
-			</div>\
-			<label><input type="text" maxlength=255 name=title placeholder=Title required></label>';
+			</div>',
+		$content = $('#content');
 
 
 	var $eptable = $('#episodes'),
@@ -41,6 +42,8 @@ $(function(){ var undefined = void 0;
 
 						if (data.status){
 							$eptableBody.html(data.tbody);
+							$content.find('.eps-0').hide();
+							$content.find('.eps-gt-0').show();
 							Bind();
 							$.Dialog.close();
 						}
@@ -64,7 +67,7 @@ $(function(){ var undefined = void 0;
 			var $this = $(this),
 				epid = $this.closest('tr').data('epid'),
 				title = 'Editing '+epid;
-			
+
 			$.ajax({
 				method: "POST",
 				url: "/episode/"+epid,
@@ -128,6 +131,8 @@ $(function(){ var undefined = void 0;
 			$.Dialog.confirm(title,'<p>This will remove <strong>ALL</strong> requests & reservations associated with the episode, too.</p><p>Are you sure you want to delete it?</p>',function(sure){
 				if (!sure) return;
 
+				$.Dialog.wait(title);
+
 				$.ajax({
 					method: "POST",
 					url: '/episode/delete/'+epid,
@@ -136,6 +141,10 @@ $(function(){ var undefined = void 0;
 
 						if (data.status){
 							$eptableBody.html(data.tbody);
+							if ($eptableBody.children('.empty').length){
+								$content.find('.eps-0').show();
+								$content.find('.eps-gt-0').hide();
+							}
 							Bind();
 							$.Dialog.close();
 						}
