@@ -16,5 +16,6 @@
 	// Google Analytics Tracking Code \\
 	define('GA_TRACKING_CODE','');
 
-	// Get latest commit version from Git \\
-	define('LATEST_COMMIT',shell_exec("git rev-parse --short HEAD"));
+	// Get latest commit version & time from Git \\
+	define('LATEST_COMMIT_ID',shell_exec("git rev-parse --short HEAD"));
+	define('LATEST_COMMIT_TIME',date('c',strtotime(shell_exec("git log -1 --date=short --pretty=format:%ci"))));
