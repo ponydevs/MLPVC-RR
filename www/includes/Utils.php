@@ -470,6 +470,9 @@
 		return $PERM($perm);
 	}
 
+	// Episode title matching pattern \\
+	define('EP_TITLE_REGEX', '/^[A-Za-z \'\-!\d,&]{5,35}$/');
+
 	/**
 	 * Turns an 'episode' database row into a readable title
 	 * The episode numbers 1-2 & 25-26 will be represented with both numbers

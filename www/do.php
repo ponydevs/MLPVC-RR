@@ -159,12 +159,12 @@
 						if (!isset($_POST['season']) || !is_numeric($_POST['season']) )
 							respond('Season number is missing or invalid');
 						$insert['season'] = intval($_POST['season']);
-						if ($insert['season'] < 1 || $insert['season'] > 8) respond('Season number must be beetween 1 and 8');
+						if ($insert['season'] < 1 || $insert['season'] > 8) respond('Season number must be between 1 and 8');
 
 						if (!isset($_POST['episode']) || !is_numeric($_POST['episode']))
 							respond('Episode number is missing or invalid');
 						$insert['episode'] = intval($_POST['episode']);
-						if ($insert['episode'] < 1 || $insert['episode'] > 26) respond('Season number must be beetween 1 and 26');
+						if ($insert['episode'] < 1 || $insert['episode'] > 26) respond('Season number must be between 1 and 26');
 
 						if ($editing){
 							$Current = get_real_episode($season,$episode);
@@ -180,6 +180,10 @@
 						if (empty($_POST['title']))
 							respond('Episode title is missing or invalid');
 						$insert['title'] = $_POST['title'];
+						if (strlen($insert['title']) < 5 || strlen($insert['title']) > 35)
+							respond('Episode title must be between 5 and 35 characters');
+						if (!preg_match(EP_TITLE_REGEX, $insert['title']))
+							respond('Episode title contains invalid charcaters');
 
 						if ($editing){
 							if (!$Database->where('season',$season)->where('episode',$episode)->update('episodes', $insert))

@@ -1,8 +1,13 @@
 $(function(){
-	var formContents =
-			'<label><input type="number" min=1 max=8 name=season placeholder=Season required></label>\
-			<label><input type="number" min=1 max=26 name=episode placeholder=Episode required></label>\
-			<label><input type="text" maxlength=255 name=title placeholder=Title required></label>\
+	var EP_TITLE_REGEX = window.EP_TITLE_REGEX,
+		EP_TITLE_HTML_REGEX = EP_TITLE_REGEX.toString().split('/')[1],
+		formContents =
+			'<label><input type="number" min=1 max=8 name=season placeholder="Season #" required></label>\
+			<label><input type="number" min=1 max=26 name=episode placeholder="Episode #" required></label>\
+			<label><input type="text" maxlength=255 name=title placeholder=Title pattern="'+EP_TITLE_HTML_REGEX+'" autocomplete=off required></label>\
+			<div class="notice info align-center">\
+				<p><strong>Title</strong> must be between 5 and 35 characters.<br>Letters, numbers, and these characters, are allowed:<br>-, apostrophe, !, &, comma.</p>\
+			</div>\
 			<label>\
 				<input type="checkbox" name=twoparter> Two-parter\
 			</label>\
@@ -10,7 +15,6 @@ $(function(){
 				<p>If <strong>Two-parter</strong> is checked, only specify<br>the episode number of the first part</p>\
 			</div>',
 		$content = $('#content');
-
 
 	var $eptable = $('#episodes'),
 		$eptableBody = $eptable.children('tbody'),

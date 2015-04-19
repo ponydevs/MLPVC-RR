@@ -5,6 +5,7 @@
 	<div class="align-center">
 		<button id="add-episode" class="typcn typcn-plus">Add an episode</button>
 	</div>
+	<script>var EP_TITLE_REGEX = <?=EP_TITLE_REGEX?>;</script>
 <?php   }
 		if (!empty($Episodes) || (empty($Episodes) && PERM('episodes.manage'))){ ?>
 	<table id=episodes>
