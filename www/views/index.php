@@ -39,7 +39,7 @@
 <?php   if (PERM('episodes.manage')){ ?>
 	<div class="notice info">
 		<label>No episodes found</label>
-		<p>To make the site functional, you must add an episode to the database first. Head on over to the <a href=="<?=djpth('episodes')?>">Episodes</a> page and add one now!</p>
+		<p>To make the site functional, you must add an episode to the database first. Head on over to the <a href="<?=djpth('episodes')?>">Episodes</a> page and add one now!</p>
 	</div>
 <?php   }
 	} ?>
