@@ -1,5 +1,5 @@
 <div id=content>
-	<h1><span class=eps-gt-0 style="display: <?=!empty($Episodes)?'block':'none'?>">Episode list</span><span class=eps-0 style="display: <?=empty($Episodes)?'block':'none'?>">No episodes found</span></h1>
+	<h1 data-none="No episodes found" data-list="Episode list"><?=empty($Episodes)?'No episodes found':'Episode list'?></h1>
 	<p class=eps-0 style="display: <?=empty($Episodes)?'block':'none'?>">There are no episodes stored in the database</p>
 <?php   if (PERM('episodes.manage')) { ?>
 	<div class="align-center">

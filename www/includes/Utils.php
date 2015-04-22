@@ -14,6 +14,10 @@
 	define('ERR_DB_FAIL','There was an error while saving to the database');
 	function respond($m = 'Insufficent permissions.', $s = false, $x = array()){
 		header('Content-Type: application/json');
+		if (is_array($m) && $s === false && empty($x)){
+			$m['status'] = true;
+			die(json_encode($m));
+		}
 		die(json_encode(array_merge(array(
 			"message" => $m,
 			"status" => $s,
@@ -475,7 +479,6 @@
 
 	/**
 	 * Turns an 'episode' database row into a readable title
-	 * The episode numbers 1-2 & 25-26 will be represented with both numbers
 	 *
 	 * @param array $Ep
 	 * @return string
@@ -487,7 +490,6 @@
 		if ($returnArray === AS_ARRAY) {
 			if ($Ep['twoparter'])
 				$Ep['episode'] = $EpNumber.'-'.($EpNumber+1);
-			else $Ep['episode'] = strval($Ep['episode']);
 			$arr = array(
 				'id' => "S{$Ep['season']}E{$Ep['episode']}",
 				'season' => $Ep['season'],

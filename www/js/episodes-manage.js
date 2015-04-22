@@ -14,7 +14,8 @@ $(function(){
 			<div class="notice info align-center">\
 				<p>If <strong>Two-parter</strong> is checked, only specify<br>the episode number of the first part</p>\
 			</div>',
-		$content = $('#content');
+		$content = $('#content'),
+		$pageTitle = $content.children('h1');
 
 	var $eptable = $('#episodes'),
 		$eptableBody = $eptable.children('tbody'),
@@ -46,8 +47,7 @@ $(function(){
 
 						if (data.status){
 							$eptableBody.html(data.tbody);
-							$content.find('.eps-0').hide();
-							$content.find('.eps-gt-0').show();
+							$pageTitle.html($pageTitle.data('list')).next().hide();
 							Bind();
 							$.Dialog.close();
 						}
@@ -145,10 +145,8 @@ $(function(){
 
 						if (data.status){
 							$eptableBody.html(data.tbody);
-							if ($eptableBody.children('.empty').length){
-								$content.find('.eps-0').show();
-								$content.find('.eps-gt-0').hide();
-							}
+							if ($eptableBody.children('.empty').length)
+								$pageTitle.html($pageTitle.data('none')).next().show();
 							Bind();
 							$.Dialog.close();
 						}

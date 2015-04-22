@@ -189,7 +189,7 @@
 						var $form = $('#'+obj.form);
 						if ($form.length == 1){
 							$button.click(function(){
-								$form.trigger('submit');
+								$form.find('input[type=submit]').trigger('click');
 							});
 							$form.prepend($(document.createElement('input')).attr('type','submit').hide());
 						}

@@ -126,7 +126,7 @@
 					$EpData = episode_id_parse($data);
 					if (!empty($EpData)){
 						$Ep = get_real_episode($EpData['season'],$EpData['episode'],'season, episode, twoparter, title');
-						respond('',1,array(
+						respond(array(
 							'ep' => $Ep,
 							'epid' => format_episode_title($Ep, AS_ARRAY, 'id'),
 						));
