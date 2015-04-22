@@ -10,7 +10,7 @@ textarea {
 	position: relative;
 	line-height: 16px;
 	font-size: 14px;
-	transition: border-color .2s linear;
+	transition: color .2s, border-color .2s;
 }
 #dialogContent input[type]:not([type=radio]):not([type=checkbox]):not([type=button]),
 #dialogContent select,

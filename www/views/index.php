@@ -18,7 +18,7 @@
 		<p>People usually get excited whenever a new episode comes out, and start making vectors of any pose/object/etc. that they found hilarious/interesting enough. It often results in various people unnecessarily doing the very same thing. Vector Reservations can help organize our efforts by listing who's working on what and to reduce the number of duplicates.</p>
 	</div>
 	<div class="notice caution rules">
-		<label>Rules</label>
+		<label>Reservation Rules</label>
 		<ol>
 			<li>You MUST have an image to make a reservation! For the best quality, get your references from the episode in 1080p.</li>
 			<li>Making a reservation does NOT forbid other people from working on a pose anyway. It is only information that you are working on it, so other people can coordinate to avoid doing the same thing twice.</li>
@@ -28,9 +28,9 @@
 		</ol>
 	</div>
 
-<?php   reservations_render($Reservations);
-		requests_render($Requests); ?>
-<script>var SEASON = <?=$CurrentEpisode['season']?>, EPISODE = <?=$CurrentEpisode['episode']?>;</script>
+<?php   echo reservations_render($Reservations);
+		echo requests_render($Requests); ?>
+	<script>var SEASON = <?=$CurrentEpisode['season']?>, EPISODE = <?=$CurrentEpisode['episode']?>;</script>
 <?php
 	} else { ?>
 	<h1>There's nothing here yet...</h1>

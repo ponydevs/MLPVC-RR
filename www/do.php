@@ -54,10 +54,12 @@
 				if (!PERM('user')) respond();
 				detectCSRF();
 
-				if (empty($_POST['what']) || !in_array($_POST['what'],array('request','reservation'))) respond('Invalid post type');
-				$what = $_POST['what'];
-				if ($what === 'reservation' && !PERM('reservations.create'))
-					respond();
+				if (!empty($_POST['what'])){
+					if(!in_array($_POST['what'],array('request','reservation'))) respond('Invalid post type');
+					$what = $_POST['what'];
+					if ($what === 'reservation' && !PERM('reservations.create'))
+						respond();
+				}
 
 				if (!empty($_POST['image_url'])){
 					require 'includes/Image.php';
@@ -65,9 +67,11 @@
 					$ImageAvailable = $Image->preview !== false && $Image->fullsize !== false;
 
 					if (empty($_POST['what'])){
-						respond(!$ImageAvailable?'The image could not be retrieved':'',$ImageAvailable,array('preview' => $Image->preview, 'title' => $Image->title));
+						if (!$ImageAvailable) respond('The image could not be retrieved');
+						respond(array('preview' => $Image->preview, 'title' => $Image->title));
 					}
 				}
+				else if (empty($_POST['what'])) respond('Invalid request');
 
 				if (!$ImageAvailable) respond('The image could not be retrieved');
 
@@ -81,13 +85,14 @@
 					case "reservation": $insert['reserved_by'] = $currentUser['id']; break;
 				}
 
-				if ($what === 'request' && empty($_POST['label']))
+				if ($what !== 'reservation' && empty($_POST['label']))
 					respond('Missing label');
-				if ($what === 'reservation' && !empty($_POST['label'])){
+				if (!empty($_POST['label'])){
 					$insert['label'] = trim($_POST['label']);
 					if (strlen($insert['label']) <= 2 || strlen($insert['label']) > 255) respond("The label must be between 2 and 255 characters in length");
-					if (empty($_POST['image_url'])) respond('Missing image URL');
 				}
+
+				if (empty($_POST['image_url'])) respond('Missing image URL');
 
 				if (empty($_POST['season']) || empty($_POST['episode'])) respond('Missing episode identifiers');
 				$insert['season'] = intval($_POST['season']);
@@ -100,6 +105,34 @@
 
 				if ($Database->insert("{$what}s",$insert)) respond('Submission complete',1);
 				else respond('Submission failed');
+			break;
+			case "reserving":
+				if (RQMTHD !== 'POST') do404();
+				$match = array();
+				if (empty($data) || !preg_match('/^(requests?|reservations?)\/(\d+)$/',$data,$match)) respond('Invalid request');
+				if (!PERM('reservations.create')) respond();
+				$cancelling = isset($_REQUEST['cancel']);
+				$type = rtrim($match[1],'s');
+
+				$ID = intval($match[2]);
+				$Thing = $Database->where('id', $ID)->getOne("{$type}s");
+				if (empty($Thing)) respond("There's no request with that ID");
+
+				$reservedBy = null;
+				if (!empty($Thing['reserved_by'])){
+					if ($Thing['reserved_by'] === $currentUser['id'] && !$cancelling) respond("You already reserved this $type");
+					if ($Thing['reserved_by'] !== $currentUser['id']) respond("This $type has already been reserved by somepony else");
+				}
+				else if (!$cancelling) $reservedBy = $currentUser['id'];
+
+				if (!$Database->where('id', $Thing['id'])->update("{$type}s",array('reserved_by' => $reservedBy)))
+					respond('Nothing has been changed');
+
+				if ($type === 'request')
+					respond(array('btnhtml' => get_reserver_button(!$cancelling)));
+				else if ($type === 'reservation' && $cancelling)
+					respond(array('remove' => true));
+				else respond('Invalid request');
 			break;
 
 			// PAGES

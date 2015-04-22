@@ -41,7 +41,7 @@
 			e.stopPropagation();
 
 		    delta = delta || -e.originalEvent.detail / 3 || e.originalEvent.wheelDelta / 120;
-		    delta *= 40;
+		    delta *= 60;
 		    wheel = true;
 
 			scrollTop = Math.min(el.scrollHeight-$w.height(), Math.max(0, parseInt(scrollTop - delta)));

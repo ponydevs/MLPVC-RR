@@ -159,7 +159,7 @@
 	}
 
 	// Redirection \\
-	function redirect($url, $die = true){
+	function redirect($url = '/', $die = true){
 		header("Location: $url");
 		if ($die) die();
 	}
@@ -578,10 +578,62 @@
 		return "<a href='http://$username.deviantart.com/' class=da-userlink>$avatar<span class=name>$Username</span></a>";
 	}
 
+	// Reserved by section creator \\
+	function get_reserver_button($By = null, $finished = false){
+		global $signedIn, $currentUser;
+
+		if ($By === false) return "<button class=reserve-request>Reserve</button>";
+		if (empty($By) || $By === true){
+			if (!$signedIn) trigger_error('Trying to get reserver button while not signed in');
+			$By = $currentUser;
+		}
+		$dAlink = da_link($By);
+
+		$HTML =  "<div class=reserver>$dAlink</div>";
+		if (!$finished && $signedIn && $By['id'] === $currentUser['id']){
+			$HTML .= <<<HTML
+
+<div class=reserver-actions>
+<button class="typcn typcn-times red">Cancel</button>
+<button class="typcn typcn-tick green" disabled>I'm done</button>
+</div>
+HTML;
+
+		}
+
+		return $HTML;
+	}
+
+	// List ltem generator function for request & reservation renderers \\
+	function get_r_li($R, $isRequest = false){
+		$finished = !!$R['finished'];
+		$thing = $isRequest ? 'request' : 'reservation';
+		$HTML = "<li id=$thing-{$R['id']}>";
+		$Image = "<div class='image screencap'><a href='{$R['fullsize']}'><img src='{$R['preview']}'></a></div><span class=label>{$R['label']}</span>";
+
+		if (empty($R['reserved_by'])){
+			$HTML .= $Image;
+			if ($isRequest)
+				$HTML .= get_reserver_button(false);
+		}
+		else {
+			$R['reserver'] = get_user($R['reserved_by'],'id',GETUSER_BASIC);
+			if ($finished){
+				$D = da_cache_deviation($R['deviation_id']);
+				$D['title'] = preg_replace("/'/",'&apos;',$D['title']);
+				$Image = "<div class='image deviation'><a href='http://fav.me/{$D['id']}'><img src='{$D['preview']}' alt='{$D['title']}'></a></div>";
+			}
+			$HTML .= $Image.get_reserver_button($R['reserver'], $finished);
+		}
+
+		return "$HTML</li>";
+	}
+
 	// Get Request / Reservation Submission Form HTML \\
 	function get_post_form($type){
 		$Type = strtoupper($type[0]).substr($type,1);
 		$HTML = <<<HTML
+
 		<form class="hidden post-form" data-type="$type">
 			<h2>Make a $type</h2>
 			<div>
@@ -593,6 +645,7 @@
 				<div class="hidden img-preview">
 					<div class="notice fail">Please click the <strong>Check image</strong> button after providing an URL to get a preview & verify if the link is correct.</div>
 				</div>
+
 HTML;
 			if ($type === 'request')
 				$HTML .= <<<HTML
@@ -608,6 +661,7 @@ HTML;
 						<option value=obj>Object</option>
 					</select>
 				</label>
+
 HTML;
 			else {
 				$HTML .= <<<HTML
@@ -615,6 +669,7 @@ HTML;
 					<span>$Type label (optional)</span>
 					<input type="text" name="label" pattern="^.{2,255}$">
 				</label>
+
 HTML;
 
 			}
@@ -633,26 +688,8 @@ HTML;
 		$Arranged['finished'] = '';
 		if (!empty($Reservations) && is_array($Reservations)){
 
-			foreach ($Reservations as $R){
-				$finished = !!$R['finished'] && !empty($R['deviation_id']);
-				$BaseString = "<a href='{$R['fullsize']}'><img src='{$R['preview']}' class=screencap></a><span class=label>{$R['label']}</span> ";
-
-				$ResHTML = '<li>';
-				if (!empty($R['reserved_by'])){
-					$R['reserver'] = get_user($R['reserved_by'],'id',GETUSER_BASIC);
-					$BySTR = ' by '.da_link($R['reserver']);
-					if (!$finished) $ResHTML .= "$BaseString$BySTR";
-					else {
-						$D = da_cache_deviation($R['deviation_id']);
-						$D['title'] = preg_replace("/'/",'&apos;',$D['title']);
-						$ResHTML .= "<a href='http://fav.me/{$D['id']}'><img src='{$D['preview']}' alt='{$D['title']}' class=deviation></a>$BySTR";
-					}
-				}
-				else $ResHTML .= $BaseString;
-				$ResHTML .= '</li>';
-
-				$Arranged[(!$finished?'un':'').'finished'] .= $ResHTML;
-			}
+			foreach ($Reservations as $R)
+				$Arranged[(!$R['finished']?'un':'').'finished'] .= get_r_li($R);
 		}
 
 		if (PERM('reservations.create')){
@@ -672,12 +709,13 @@ HTML;
 			<ul>{$Arranged['finished']}</ul>
 		</div>$resForm
 	</section>
+
 HTML;
 	}
 
 	// Render Requests HTML \\
 	$REQUEST_TYPES = array(
-		'chr' => 'Charcaters',
+		'chr' => 'Characters',
 		'obj' => 'Objects',
 		'bg' => 'Backgrounds',
 	);
@@ -693,28 +731,11 @@ HTML;
 			$Arranged['finished'] = '';
 
 			foreach ($Requests as $R){
-				$finished = !!$R['finished'] && !empty($R['deviation_id']);
-				$BaseString = "<a href='{$R['fullsize']}'><img src='{$R['preview']}' class=screencap></a><span class=label>{$R['label']}</span>";
+				$HTML = get_r_li($R,true);
 
-				$RqHTML = '<li>';
-				if (!empty($R['reserved_by'])){
-					$R['reserver'] = get_user($R['reserved_by'],'id',GETUSER_BASIC);
-					$BySTR = ' by '.da_link($R['reserver']);
-					if (!$finished) $RqHTML .= "$BaseString taken$BySTR";
-					else {
-						$D = da_cache_deviation($R['deviation_id']);
-						$D['title'] = preg_replace("/'/",'&apos;',$D['title']);
-						$RqHTML .= "<a href='http://fav.me/{$D['id']}'><img src='{$D['preview']}' alt='{$D['title']}' class=deviation></a>$BySTR";
-					}
-				}
-				else $RqHTML .= $BaseString;
-				$RqHTML .= '</li>';
-
-				if ($finished)
-					$Arranged['finished'] .= $RqHTML;
-				else {
-					$Arranged['unfinished'][$R['type']] .= $RqHTML;
-				}
+				if ($R['finished'])
+					$Arranged['finished'] .= $HTML;
+				else $Arranged['unfinished'][$R['type']] .= $HTML;
 			}
 
 			$Groups = '';
@@ -743,6 +764,7 @@ HTML;
 			<ul>{$Arranged['finished']}</ul>
 		</div>$reqForm
 	</section>
+
 HTML;
 	}
 
@@ -756,21 +778,16 @@ HTML;
 	function get_posts($season, $episode){
 		global $Database;
 
+		$Query =
+			'SELECT *,
+				IF(!ISNULL(r.deviation_id) && !ISNULL(r.reserved_by), 1, 0) as finished
+			FROM `coloumn` r
+			WHERE season = ? && episode = ?
+			ORDER BY finished, posted';
+
 		return array(
-			$Database->rawQuery(
-				"SELECT
-					*,
-					IF(!ISNULL(r.deviation_id), 1, 0) as finished
-				FROM requests r
-				WHERE season = ? &&  episode = ?
-				ORDER BY finished, posted",array($season, $episode)),
-			$Database->rawQuery(
-				"SELECT
-					*,
-					IF(!ISNULL(r.deviation_id), 1, 0) as finished
-				FROM reservations r
-				WHERE season = ? &&  episode = ?
-				ORDER BY finished, posted",array($season, $episode))
+			$Database->rawQuery(str_ireplace('coloumn','requests',$Query),array($season, $episode)),
+			$Database->rawQuery(str_ireplace('coloumn','reservations',$Query),array($season, $episode))
 		);
 	}
 

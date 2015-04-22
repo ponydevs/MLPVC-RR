@@ -3,7 +3,7 @@ $(function(){
 		$navbar = $('header nav'),
 		SEASON = window.SEASON,
 		EPISODE = window.EPISODE;
-	$('section .unfinished .screencap').parent()
+	$('section .unfinished .screencap > a')
 		.fluidbox()
 		.on('openstart',function(){
 		    $body.addClass('no-distractions');
@@ -11,6 +11,72 @@ $(function(){
 		.on('closestart', function() {
 		    $body.removeClass('no-distractions');
 		});
+
+	$('#requests').find('li[id]').each(function(){
+		var $li = $(this),
+			id = parseInt($li.attr('id').replace(/\D/g,'')),
+			type = '';
+	});
+	$('#requests, #reservations').find('li[id]').each(function(){
+		var $li = $(this),
+			id = parseInt($li.attr('id').replace(/\D/g,'')),
+			type = $li.closest('section[id]').attr('id');
+
+		Bind($li, id, type);
+	});
+	function Bind($li, id, type){
+		$li.find('button.reserve-request').off('click').on('click',function(){
+			var $this = $(this),
+				title = 'Reserving request';
+
+			$.Dialog.wait(title,'Sending reservation to the server');
+
+			$.ajax({
+				method: "POST",
+				url: "/reserving/request/"+id,
+				success: function(data){
+					if (typeof data !== 'object') return console.log(data) && $w.trigger('ajaxerror');
+
+					if (data.status){
+						$.Dialog.close();
+						$(data.btnhtml).insertAfter($this);
+						Bind($li, id, type);
+						$this.remove();
+					}
+					else $.Dialog.fail(title,data.message);
+				}
+			})
+		});
+		$li.find('.reserver-actions .typcn-times').off('click').on('click',function(){
+			var $this = $(this),
+				title = 'Cancel reservation';
+
+			$.Dialog.confirm(title,'Are you sure you want to cancel this reservation?',function(sure){
+				if (!sure) return;
+
+				$.Dialog.wait(title,'Cancelling reservation');
+
+				$.ajax({
+					method: "POST",
+					url: '/reserving/'+type+'/'+id+'?cancel',
+					success: function(data){
+						if (typeof data !== 'object') return console.log(data) && $w.trigger('ajaxerror');
+
+						if (data.status){
+							$.Dialog.close();
+							if (data.remove === true) return $this.closest('li').remove();
+							$(data.btnhtml).insertBefore($this.parent().prev());
+							$this.parent().prev().remove();
+							$this.parent().remove();
+
+							Bind($li, id, type);
+						}
+						else $.Dialog.fail(title,data.message);
+					}
+				})
+			});
+		});
+	}
 
 	$('.post-form').each(function(){
 		var $form = $(this),
@@ -53,12 +119,15 @@ $(function(){
 					if (typeof data !== 'object') return console.log(data) && $w.trigger('ajaxerror');
 
 					if (data.status){
-						$notice.hide();
-						$previewIMG.attr('src',data.preview).show();
+						$previewIMG.attr('src',data.preview).show().on('load',function(){
+							$notice.hide();
 
-						$formImgInput.data('prev-url', url);
+							$formImgInput.data('prev-url', url);
 
-						if (!$formTitleInput.val().trim() && !!data.title) $formTitleInput.val(data.title);
+							if (!!data.title && !$formTitleInput.val().trim()) $formTitleInput.val(data.title);
+						}).on('error',function(){
+							$.Dialog.fail("Can't load image","There was an error while attempting to load the image.<br>Make sure the URL is correct and try again!");
+						});
 					}
 					else {
 						$formImgCheck.attr('disabled', false);
@@ -99,6 +168,7 @@ $(function(){
 			$notice.html(noticeHTML).show();
 			$previewIMG.hide();
 		    $formImgInput.removeData('prev-url');
+		    $(this).hide();
 		});
 	});
 });

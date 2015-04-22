@@ -3,7 +3,7 @@ SET time_zone = "+00:00";
 
 CREATE TABLE IF NOT EXISTS `deviation_cache` (
   `provider` set('fav.me','sta.sh') NOT NULL DEFAULT 'fav.me',
-  `id` varchar(7) NOT NULL,
+  `id` varchar(255) NOT NULL,
   `title` tinytext NOT NULL,
   `preview` tinytext NOT NULL,
   `fullsize` tinytext NOT NULL,

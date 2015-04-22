@@ -12,7 +12,7 @@
 		private $providerRegexes = array(
 			'~^https?://(?:[A-Za-z\-\d]+\.)deviantart.com/art/[A-Za-z\-\d]+-(\d+)~' => 'dA',
 			'~^http://fav.me/(d[a-z\d]{6,})~' => 'fav.me',
-			'~^http://sta.sh/([a-z\d]{12,})~' => 'sta.sh'
+			'~^http://sta.sh/([a-z\d]{10,})~' => 'sta.sh'
 		);
 		private function get_provider(){
 			foreach ($this->providerRegexes as $rx => $name){
@@ -20,9 +20,10 @@
 				if (preg_match($rx, $this->url, $match)){
 					$this->provider = $name;
 					$this->get_direct_url($match[1]);
-					break;
+					return;
 				}
 			}
+			trigger_error('No provider found for "'.$this->url.'"');
 		}
 		private function get_direct_url($id){
 			if ($this->provider === 'dA'){

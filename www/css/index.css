@@ -13,11 +13,6 @@
 	#content > section ul li .fluidbox-wrap * {
 		display: inline-block;
 	}
-	#content > section ul li .screencap,
-	#content > section ul li .deviation {
-		max-width: 100%;
-		max-height: 175px;
-	}
 
 	#content > section .avatar {
 		display: none;
@@ -46,10 +41,9 @@
 	#content > section ul {
 		margin: 15px 0 20px 30px;
 	}
-	#content > section ul li .screencap,
-	#content > section ul li .deviation {
+	#content > section ul li .screencap img,
+	#content > section ul li .deviation img {
 		max-width: 100px;
-		margin-right: 10px;
 	}
 	#content > section h2 {
 		display: inline-block;
@@ -122,30 +116,118 @@
 #content > section ul {
 	padding: 0;
 	list-style: none;
+    display: flex;
+    flex-flow: row wrap;
+	justify-content:space-between;
 }
 #content > section ul:empty:before {
 	content: "None yet.";
 }
 #content > section ul li {
-	padding: 5px;
+	padding: 10px;
 	color: #434343;
-	background-color: #c8c8c8;
+	background-color: rgba(0,0,0,.05);
+	border: 1px solid rgba(0,0,0,.2);
+	box-shadow: 0 0 2px rgba(0,0,0,.2);
 	font-size: 12px;
 	font-family: 'Verdana', sans-serif;
+    flex: initial;
+    text-align: center;
+
+    transition: background-color .3s, border-color .3s, box-shadow .3s;
+}
+#content > section ul li:hover {
+	background-color: rgba(0,0,0,.1);
+	border: 1px solid rgba(0,0,0,.3);
+	box-shadow: 0 0 7px rgba(0,0,0,.3);
 }
 #content > section ul li > * {
-	display: inline-block;
+	display: block;
 	vertical-align: bottom;
 }
-#content > section ul li > .fluidbox {
+#content > section ul li > .image > a {
 	font-size: 0;
 	white-space: nowrap;
-}
-#content > section ul li:not(:last-child) {
 	margin-bottom: 10px;
+	color: inherit;
+	display: inline-block;
 }
-#content > section ul li .label:not(:empty):after {
-	content: " -";
+#content > section ul li > .image.screencap > a {
+	border: 1px solid;
+	box-shadow: 0 0 2px;
+}
+#content > section ul li > .image > .fluidbox {
+	cursor: zoom-in !important;
+}
+#content > section ul li > .image .fluidbox-opened .fluidbox-wrap {
+	cursor: zoom-out !important;
+}
+#content > section ul li > .label {
+	font-size: 1.2em;
+	font-style: italic;
+}
+#content > section ul li > .label:before,
+#content > section ul li > .label:after {
+	content: '"';
+}
+#content > section ul li > .reserver,
+#content > section ul li > .reserve-request {
+	color: #666;
+	background: #efefef linear-gradient(to bottom, #d2dfc5 0%, #bdd1b4 100%);
+	border: 1px solid #93a98f;
+	border-radius: 5px;
+	height: 40px;
+}
+#content > section ul li > .reserve-request {
+	font-size: 16px;
+	line-height: 40px;
+	height: 40px;
+	margin: 5px auto 0;
+	opacity: 1 !important;
+	padding: 0 5px;
+}
+#content > section ul li > .reserver {
+	margin-top: 5px;
+	overflow: hidden;
+	font-size: 0;
+	position: relative;
+	text-align: left;
+}
+#content > section .unfinished ul li > .reserver:before {
+	content: "Reserved by:";
+	position: absolute;
+	left: 45px;
+	font-size: 10px;
+	font-style: italic;
+	display: block;
+	height: 10px;
+}
+#content > section ul li > .reserver .da-userlink > * {
+	margin-right: 5px;
+}
+#content > section ul li > .reserver .avatar {
+	height: 40px;
+	width: 40px;
+}
+#content > section ul li > .reserver .name {
+	display: inline-block;
+	font-size: 16px;
+	vertical-align: bottom;
+}
+#content > section .unfinished ul li > .reserver .name {
+	line-height: 30px;
+	height: 30px;
+}
+#content > section .finished ul li > .reserver .name {
+	line-height: 40px;
+	height: 40px;
+}
+#content > section .finished ul li .deviation img {
+	background: url('data:image/svg+xml;utf-8,<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 16 16" enable-background="new 0 0 16 16" xml:space="preserve"><rect fill="#FFFFFF" width="16" height="16"/><rect fill="#EFEFEF" width="8" height="8"/><rect fill="#EFEFEF" width="8" height="8" x="8" y="8"/></svg>') repeat;
+	background-size: 12px;
+	border: 2px solid #93a98f;
+	box-shadow: 0 0 5px #93a98f;
+	padding: 5px;
 }
 #content .post-form > div > * {
 	display: block;
@@ -179,6 +261,7 @@
 	font-weight: bold;
 	color: #337287;
 	text-decoration: none !important;
+	transition: color .2s linear;
 }
 #content .da-userlink:hover {
   color: #1059d2;
