@@ -40,17 +40,10 @@
 
 			$Arranged[$u['role']][] = $u;
 		}
-		foreach ($Arranged as $group)
-			usort($group,function($a, $b){
-				global $ROLES;
-
-				$aIndex = array_search($a, $ROLES);
-				$bIndex = array_search($b, $ROLES);
-
-				return $aIndex < $bIndex ? 1 : ($aIndex > $bIndex ? -1 : 0);
-			});
-
-		foreach ($Arranged as $role => $users){
+		global $ROLES;
+		foreach (array_reverse($ROLES) as $r){
+			if (empty($Arranged[$r])) continue;
+			$users = $Arranged[$r];
 			$s = count($users) !== 1 ? 's' : '';
 			$usersStr = array();
 			foreach ($users as $u)
@@ -59,7 +52,7 @@
 			global $ROLES_ASSOC;
 			echo <<<HTML
 
-				<p><strong>{$ROLES_ASSOC[$role]}$s:</strong> $usersStr</p>
+				<p><strong>{$ROLES_ASSOC[$r]}$s:</strong> $usersStr</p>
 HTML;
 		} ?>
 		</div>
