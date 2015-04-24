@@ -44,7 +44,8 @@
 		foreach (array_reverse($ROLES) as $r){
 			if (empty($Arranged[$r])) continue;
 			$users = $Arranged[$r];
-			$s = count($users) !== 1 ? 's' : '';
+			$userCount = count($users);
+			$s = $userCount !== 1 ? 's' : '';
 			$usersStr = array();
 			foreach ($users as $u)
 				$usersStr[] = da_link($u, TEXT_ONLY);
@@ -52,7 +53,7 @@
 			global $ROLES_ASSOC;
 			echo <<<HTML
 
-				<p><strong>{$ROLES_ASSOC[$r]}$s:</strong> $usersStr</p>
+				<p><strong>$userCount {$ROLES_ASSOC[$r]}$s:</strong> $usersStr</p>
 HTML;
 		} ?>
 		</div>
