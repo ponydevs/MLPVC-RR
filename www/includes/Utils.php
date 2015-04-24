@@ -453,6 +453,7 @@
 
 		$PERM_RELOAD = $PERM;
 		$PERM = function($perm, $reload = false){
+			if (!is_string($perm)) return false;
 			if ($reload){
 				global $PERM_RELOAD;
 				$PERM_RELOAD($perm, $reload);

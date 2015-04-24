@@ -201,6 +201,14 @@
 	font-style: italic;
 	display: block;
 	height: 10px;
+  z-index: 1;
+}
+#content > section ul li > .reserver .da-userlink {
+  display: block;
+  height: 100%;
+  width: 100%;
+  position: relative;
+  z-index: 2;
 }
 #content > section ul li > .reserver .da-userlink > * {
 	margin-right: 5px;
@@ -255,16 +263,6 @@
 }
 #requests > .unfinished > .group > h3 {
 	margin: 5px 0 10px 5px;
-}
-
-#content .da-userlink {
-	font-weight: bold;
-	color: #337287;
-	text-decoration: none !important;
-	transition: color .2s linear;
-}
-#content .da-userlink:hover {
-  color: #1059d2;
 }
 
 .fluidbox-wrap {

@@ -4,7 +4,7 @@ $(function(){
 		SEASON = window.SEASON,
 		EPISODE = window.EPISODE;
 	$('section .unfinished .screencap > a')
-		.fluidbox()
+		.fluidbox({ immediateOpen: true })
 		.on('openstart',function(){
 		    $body.addClass('no-distractions');
 		})

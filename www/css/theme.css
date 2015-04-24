@@ -301,6 +301,15 @@ nav a:hover, nav a.active {
 	padding: 10px;
 	color: #000;
 }
+#content a {
+	font-weight: bold;
+	color: #337287;
+	text-decoration: none !important;
+	transition: color .2s linear;
+}
+#content a:hover {
+  color: #1059d2;
+}
 #content, #sidebar {
 	box-sizing: border-box;
 }
