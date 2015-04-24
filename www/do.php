@@ -247,8 +247,7 @@
 				loadPage($settings);
 			break;
 			case "about":
-				$Dev = $Database->where('role','developer')->getOne('users');
-				$DevLink = da_link($Dev, TEXT_ONLY);
+				$DevLink = '<a href="http://djdavid98.eu">DJDavid98</a>';
 				loadPage(array(
 					'title' => 'Home',
 					'do-css',
