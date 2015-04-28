@@ -1,14 +1,14 @@
 (function ($, undefined) {
-	function paramMake(c,d,o,cb){return{color:c,draggable:typeof d==="undefined"?false:d,overlay: typeof o==="undefined"?true:o,closeButton:typeof cb==="undefined"?false:cb}};
+	function paramMake(c,d,o,cb){return{color:c,draggable:typeof d==="undefined"?false:d,overlay: typeof o==="undefined"?true:o,closeButton:typeof cb==="undefined"?false:cb}}
 	function $makeDiv(){ return $(document.createElement('div')) }
 	var $html = $('html'),
 		globalparams = {
-			fail: paramMake('lightRed'),
-			success: paramMake('darkGreen'),
-			wait: paramMake('lightBlue'),
-			request: paramMake('lightOrange',true),
-			confirm: paramMake('darkOrange'),
-			info: paramMake('darkBlue')
+			fail: paramMake('red'),
+			success: paramMake('green'),
+			wait: paramMake('blue'),
+			request: paramMake('yellow',true),
+			confirm: paramMake('orange'),
+			info: paramMake('darkblue')
 		},
 		defaultTitles = {
 			fail: 'Error',
@@ -178,13 +178,13 @@
 					$html.attr('data-overflow',hOf).css('overflow','hidden');
 				}
 				
-				$dialogHeader.attr('class','bg-color-' + params.color);
+				$dialogHeader.attr('class',params.color+'-bg');
 				
 				if (params.buttons) $.each(params.buttons, function (name, obj) {
 					var $button = $(document.createElement('input'));
 					if (obj.submit) $button.attr('type','submit');
 					else $button.attr('type','button');
-					$button.attr('class','fg-color-white bg-color-' + params.color);
+					$button.attr('class',params.color+'-bg');
 					if (obj.form){
 						var $form = $('#'+obj.form);
 						if ($form.length == 1){
@@ -240,38 +240,35 @@
 				},100);
 				
 				if (params.draggable){
-					$dialogHeader.css('cursor', 'move').on({
-						mousedown: function (e) {
-							e.preventDefault();
-							e.stopPropagation();
-							
-							var drg_h = $dialogBox.outerHeight(),
-								drg_w = $dialogBox.outerWidth(),
-								pos_y = $dialogBox.offset().top + drg_h - e.pageY,
-								pos_x = $dialogBox.offset().left + drg_w - e.pageX;
+					$dialogHeader.css('cursor', 'move').on('mousedown',function (e) {
+						e.preventDefault();
+						e.stopPropagation();
 
-							$dialogOverlay.on("mousemove", function (e) {
-								var t = (e.pageY > 0) ? (e.pageY + pos_y - drg_h) : (0);
-								var l = (e.pageX > 0) ? (e.pageX + pos_x - drg_w) : (0);
+						var drg_h = $dialogBox.outerHeight(),
+							drg_w = $dialogBox.outerWidth(),
+							pos_y = $dialogBox.offset().top + drg_h - e.pageY,
+							pos_x = $dialogBox.offset().left + drg_w - e.pageX;
 
-								if (t >= 0 && t <= window.innerHeight + e.pageY) {
-									$dialogBox.offset({
-										top: t
-									});
-								}
-								if (l >= 0 && l <= window.innerWidth + e.pageY) {
-									$dialogBox.offset({
-										left: l
-									});
-								}
-							});
-						},
-						click: function(e){
-							e.preventDefault();
-							e.stopPropagation();
-							
-							$dialogOverlay.off("mousemove");
-						}
+						$dialogOverlay.on("mousemove", function (e) {
+							var t = (e.pageY > 0) ? (e.pageY + pos_y - drg_h) : (0);
+							var l = (e.pageX > 0) ? (e.pageX + pos_x - drg_w) : (0);
+
+							if (t >= 0 && t <= window.innerHeight + e.pageY) {
+								$dialogBox.offset({
+									top: t
+								});
+							}
+							if (l >= 0 && l <= window.innerWidth + e.pageY) {
+								$dialogBox.offset({
+									left: l
+								});
+							}
+						});
+					}).on('click', function(e){
+						e.preventDefault();
+						e.stopPropagation();
+
+						$dialogOverlay.off("mousemove");
 					});
 				}
 
@@ -334,12 +331,12 @@
 	$(document.body).on('keydown',function(e){
 		if (e.keyCode === 9 && typeof $.Dialog.open !== 'undefined'){
 			var $this = $(e.target),
-				$inputs = $('#dialogContent :input'),
+				$inputs = $('#dialogContent').find(':input'),
 				idx = $this.index('#dialogContent :input');
 
 			if (e.shiftKey && idx === 0){
 				e.preventDefault();
-				$('#dialogButtons :last').focus();
+				$('#dialogButtons').find(':last').focus();
 			}
 			else if ($inputs.filter(':focus').length !== 1){
 				e.preventDefault();

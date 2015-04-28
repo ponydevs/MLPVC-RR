@@ -57,7 +57,7 @@
 			$title = $settings['title'];
 
 		# CSS
-		$DEFAULT_CSS = array('theme','forms','dialog','colors','typicons.min');
+		$DEFAULT_CSS = array('theme','typicons.min');
 		$customCSS = array();
 		// Only add defaults when needed
 		if (array_search('no-default-css',$settings) === false)
@@ -124,6 +124,20 @@
 		else if (array_search("do-$type",$settings) !== false){
 			global $do;
 			$customType[] = $do;
+		}
+
+		$pathStart = APPATH."$type/";
+		if ($type === 'css') foreach ($customType as $i => $item){
+			if (!file_exists("$pathStart$item.$type")){
+				if(file_exists("$pathStart$item.min.$type"))
+					$customType[$i] .= '.min';
+				else array_splice($customType,$i,1);
+			}
+		}
+		else if ($type === 'js') foreach ($customType as $i => $item){
+			if (strpos($item,'.min') !== false) continue;
+			if (file_exists("$pathStart$item.min.$type"))
+				$customType[$i] .= '.min';
 		}
 	}
 
