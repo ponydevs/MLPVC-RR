@@ -26,7 +26,7 @@
 		<div>
 			<p>Your wish is my command.</p>
 			<p><strong>Coding, design, hosting:</strong> <?=$DevLink?></p>
-			<p><strong>Used libraries &amp; icons include:</strong> <a href="http://jquery.com/">jQuery</a>, <a href="https://github.com/joshcam/PHP-MySQLi-Database-Class">MysqliDb</a>, <a href="http://www.typicons.com/">Typicons</a></p>
+			<p><strong>Used libraries &amp; icons include:</strong> <a href="http://jquery.com/">jQuery</a>, <a href="https://github.com/joshcam/PHP-MySQLi-Database-Class">MysqliDb</a>, <a href="http://www.typicons.com/">Typicons</a>, <a href="https://www.npmjs.com/package/uglify-js">Uglify-js</a>, <a href="http://sass-lang.com/">SASS</a></p>
 			<p><strong>Header font:</strong> <a href="http://www.mattyhex.net/CMR/">Celestia Medium Redux</a></p>
 			<p><strong>Application logo</strong> based on the MLP-VectorClub logo and <a href="http://djdavid98.deviantart.com/art/Rainbow-Dash-standing-S03E07-468486614">Rainbow Dash standing (S03E07)</a> by <a href="http://djdavid98.deviantart.com/">DJDavid98</a></p>
 		</div>
