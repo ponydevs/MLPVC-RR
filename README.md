@@ -1,4 +1,7 @@
-An automated system for handling requests & reservations, made for MLP-VectorClub by [DJDavid98](http://djdavid98.eu)
+<center>![](https://raw.githubusercontent.com/DJDavid98/MLPVC-RR/master/www/img/logo.png)
+
+# MLP-VectorClub Requests & Reservations
+An automated system for handling requests & reservations, made for MLP-VectorClub by [DJDavid98](http://djdavid98.eu)</center>
 
 ## Local setup
 
