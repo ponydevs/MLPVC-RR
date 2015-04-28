@@ -2,7 +2,7 @@ An automated system for handling requests & reservations, made for MLP-VectorClu
 
 ## Local setup
 
-You can find a step-by-step guide which tells you how to set up your machine to be able to properly run & edit the site's code locally, should you need it.
+Below, you can find a step-by-step guide, which tells you how to set up your machine to be able to properly run & edit the site's code locally.
 
 1. Clone the repository<br>Recommended (free) tool: [Atlassian SourceTree](http://www.sourcetreeapp.com/)
 2. Import `setup/database.sql` to a new, empty database of your choice
