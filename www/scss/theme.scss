@@ -1,7 +1,8 @@
 @import url(http://fonts.googleapis.com/css?family=Arimo:400,700,400italic);
-@import "_vars.scss";
-@import "_theme_dialog.scss";
-@import "_theme_forms.scss";
+@import "vars";
+@import "theme_dialog";
+@import "theme_forms";
+@import "../css/typicons.min.css";
 @font-face {
 	font-family: "Celestia";
 	src: url('../font/Celestia Medium Redux.ttf');
@@ -468,7 +469,7 @@ footer {
 	padding: 10px;
 	line-height: 18px;
 
-	@include navfoot();
+	@include navfoot;
 
 	a { color: inherit }
 }

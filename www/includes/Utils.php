@@ -57,7 +57,7 @@
 			$title = $settings['title'];
 
 		# CSS
-		$DEFAULT_CSS = array('theme','typicons.min');
+		$DEFAULT_CSS = array('theme');
 		$customCSS = array();
 		// Only add defaults when needed
 		if (array_search('no-default-css',$settings) === false)
