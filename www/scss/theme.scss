@@ -244,9 +244,23 @@ header {
 				text-decoration: none;
 				color: inherit;
 			}
+			/*noinspection CssOptimizeSimilarProperties*/
+			&:after {
+				content: "";
+				position: absolute;
+				top: 0;
+				left: 0;
+				z-index: -1;
+				width: 100%;
+				height: 100%;
+				background-color: $HeaderBlue;
+				/*noinspection CssUnknownTarget*/
+				background-image: url('../img/grid-w-.2.svg'), url('../img/grid-w-.7.svg');
+				background-size: 16px, 4px;
+			}
 		}
-		/*noinspection CssOptimizeSimilarProperties*/
-		h1:after {
+
+		&:after {
 			content: "";
 			position: absolute;
 			top: 0;
@@ -254,23 +268,10 @@ header {
 			z-index: -1;
 			width: 100%;
 			height: 100%;
-			background-color: $HeaderBlue;
 			/*noinspection CssUnknownTarget*/
-			background-image: url('../img/grid-w-.2.svg'), url('../img/grid-w-.7.svg');
-			background-size: 16px, 4px;
+			background-image: url('../img/grid-g.svg');
+			background-size: 16px;
 		}
-	}
-	#topbar:after {
-		content: "";
-		position: absolute;
-		top: 0;
-		left: 0;
-		z-index: -1;
-		width: 100%;
-		height: 100%;
-		/*noinspection CssUnknownTarget*/
-		background-image: url('../img/grid-g.svg');
-		background-size: 16px;
 	}
 	/* Page layout - Header - Navigation */
 	nav {
@@ -289,21 +290,16 @@ header {
 			color: #fff;
 			text-decoration: none;
 			margin-bottom: 5px;
-
 			border-radius: 3px;
-
 			transition: background-color .2s linear;
-		}
-		a:not(:last-child){
-			margin-right: 5px;
-		}
-		a:hover {
-			background-color: rgba(255,255,255,.2);
-		}
-		a.active {
-			transition: none;
-			background-color: rgba(255,255,255,.35);
-			cursor: default;
+
+			&:not(:last-child){ margin-right: 5px }
+			&:hover { background-color: rgba(255,255,255,.2) }
+			&.active {
+				transition: none;
+				background-color: rgba(255,255,255,.35);
+				cursor: default;
+			}
 		}
 	}
 }
@@ -313,16 +309,16 @@ header {
 	z-index: 1;
 	width: 100%;
 	box-sizing: border-box;
-
 	background: transparent;
-}
-#main.locked {
-	overflow: visible;
+
+	@extend .clearfix;
+
+	&.locked { overflow: visible }
 }
 #content, #sidebar > section {
 	border-radius: 5px;
-	border: 1px solid rgba(170,170,170,.8);
-	background-color: rgba(255,255,255,.6);
+	border: 1px solid $ContentOutline;
+	background-color: $ContentBG;
 	padding: 10px;
 	color: #000;
 }
@@ -350,9 +346,7 @@ header {
 		p {
 			margin: 0;
 		}
-	}
-	> section:not(:last-child){
-		margin-bottom: 10px;
+		&:not(:last-child){ margin-bottom: 10px }
 	}
 	#quote {
 		display: block;
@@ -360,12 +354,13 @@ header {
 		opacity: 0;
 		font-style: italic;
 		line-height: 1.2em;
-	}
-	#quote:before { content: '\201C' }
-	#quote:after  { content: '\201D' }
-	#quote[data-cite]:after {
-		content: '\201D\0A\2014' attr(data-cite);
-		white-space: pre-wrap;
+
+		&:before { content: '\201C' }
+		&:after  { content: '\201D' }
+		&[data-cite]:after {
+			content: '\201D\0A\2014' attr(data-cite);
+			white-space: pre-wrap;
+		}
 	}
 	.usercard {
 		font-size: 0;
@@ -437,27 +432,30 @@ header {
 					border-bottom: 1px solid transparent;
 					transition: border-bottom-color .2s linear;
 				}
+
+				&:not(:last-child):after {
+					content: "-";
+					display: inline-block;
+					padding: 0 3px;
+				}
+				&:not(.active) a:hover:not(:active) {
+					border-bottom-color: initial;
+				}
+				&.active a {
+					border-bottom-color: rgba(255,255,255,.5);
+				}
 			}
-			li:not(:last-child):after {
-				content: "-";
-				display: inline-block;
-				padding: 0 3px;
+			&:before {
+				content: "Useful links";
+				display: block;
+				border-bottom: 1px solid;
+				font-size: 1.2em;
+				margin-bottom: 5px;
+				text-align: left;
+				font-weight: bold;
 			}
-			li:not(.active) a:hover:not(:active) {
-				border-bottom-color: initial;
-			}
-			li.active a { border-bottom-color: rgba(255,255,255,.5) }
+			&:empty { display: none }
 		}
-		.links:before {
-			content: "Useful links";
-			display: block;
-			border-bottom: 1px solid;
-			font-size: 1.2em;
-			margin-bottom: 5px;
-			text-align: left;
-			font-weight: bold;
-		}
-		.links:empty { display: none }
 	}
 }
 

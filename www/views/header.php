@@ -26,7 +26,7 @@
 		</nav>
 	</header>
 
-	<div id=main class="clearfix">
+	<div id=main>
 		<div class="notice warn align-center">
 			<p><strong class="typcn typcn-warning">Important!</strong> This project has not yet been approved as official. Until that happens, this website is not maintained by nor affiliated with MLP-VectorClub.</p>
 		</div>
