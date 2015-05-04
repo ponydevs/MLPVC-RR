@@ -27,6 +27,15 @@ $(function(){
 		if ($a.length > 0)
 			$a.addClass('active').removeAttr('href').on('mousedown dragstart click',function(e){e.preventDefault()});
 	}
+
+	var $w = $(window),
+		$header = $('header'),
+		tbh = $('#topbar').outerHeight();
+	$w.on('scroll',function(){
+		if (document.body.scrollTop > tbh)
+			$header.addClass('fixed');
+		else $header.removeClass('fixed');
+	});
 });
 </script>
 </body>

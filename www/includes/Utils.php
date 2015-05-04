@@ -64,7 +64,7 @@
 			$customCSS = array_merge($customCSS, $DEFAULT_CSS);
 
 		# JavaScript
-		$DEFAULT_JS = array('dyntime','dialog','quotes','jquery.smoothWheel');
+		$DEFAULT_JS = array('dyntime','dialog','quotes');
 		$customJS = array();
 		// Add logged_in.js for logged in users
 		global $signedIn;

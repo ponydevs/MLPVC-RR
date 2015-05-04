@@ -9,7 +9,7 @@
 	src: local('Celestia Redux Alternate'), local('Celestia Medium Redux'), url('../font/Celestia Medium Redux.ttf') format('truetype');
 }
 
-/* Mixins */
+// Mixins
 @mixin navfoot {
 	box-sizing: border-box;
 	background: $NavFootBG;
@@ -17,7 +17,7 @@
 	color: #fff;
 }
 
-/* Mobile-only Styles */
+// Mobile-only Styles
 @media all and (max-width: 650px){
 	body { overflow: initial }
 	#topbar h1 {
@@ -57,7 +57,7 @@
 
 	.notice > label:first-child { text-align: center; font-size: 1.2em }
 }
-/* Desktop-only Styles */
+// Desktop-only Styles
 @media all and (min-width: 650px){
 	body { overflow: auto }
 
@@ -74,11 +74,11 @@
 			top: 0;
 			left: 0;
 
-			/*noinspection CssOptimizeSimilarProperties*/
+			//noinspection CssOptimizeSimilarProperties
 			a.home {
 				font-family: "Celestia", sans-serif;
 				background-color: $HeaderBlue;
-				/*noinspection CssUnknownTarget*/
+				//noinspection CssUnknownTarget
 				background-image: url('../img/grid-w-.2.svg'), url('../img/grid-w-.7.svg');
 				background-size: 16px, 4px;
 				font-size: 18px;
@@ -154,7 +154,7 @@
 		text-overflow: ellipsis;
 	}
 
-	/* Element alignment */
+	// Element alignment
 	#content, #sidebar {
 		float: left;
 		box-sizing: border-box;
@@ -165,7 +165,7 @@
 	.notice > label:first-child { font-size: 1.4em }
 }
 
-/* Global Stuff */
+// Global Stuff
 .hidden { display: none }
 :focus { outline: 0 }
 time[datetime][title] { cursor: help }
@@ -196,17 +196,17 @@ img.avatar {
 	height: 50px;
 }
 
-/* Page layout */
+// Page layout
 body {
 	margin: 0;
 	font-family: 'Arimo', sans-serif;
-	/*noinspection CssUnknownTarget*/
+	//noinspection CssUnknownTarget
 	background-image:
 		url('../img/grid-1E3DB3-.1.svg'),
 		url('../img/grid-1E3DB3-.5.svg');
 	background-size: 16px, 4px;
 }
-/* Page layout - Header */
+// Page layout - Header
 header {
 	width: 100%;
 
@@ -244,7 +244,7 @@ header {
 				text-decoration: none;
 				color: inherit;
 			}
-			/*noinspection CssOptimizeSimilarProperties*/
+			// noinspection CssOptimizeSimilarProperties
 			&:after {
 				content: "";
 				position: absolute;
@@ -254,7 +254,7 @@ header {
 				width: 100%;
 				height: 100%;
 				background-color: $HeaderBlue;
-				/*noinspection CssUnknownTarget*/
+				// noinspection CssUnknownTarget
 				background-image: url('../img/grid-w-.2.svg'), url('../img/grid-w-.7.svg');
 				background-size: 16px, 4px;
 			}
@@ -268,12 +268,12 @@ header {
 			z-index: -1;
 			width: 100%;
 			height: 100%;
-			/*noinspection CssUnknownTarget*/
+			//noinspection CssUnknownTarget
 			background-image: url('../img/grid-g.svg');
 			background-size: 16px;
 		}
 	}
-	/* Page layout - Header - Navigation */
+	// Page layout - Header - Navigation
 	nav {
 		line-height: 0;
 		font-size: 0;
@@ -304,7 +304,7 @@ header {
 	}
 }
 
-/* Page layout - Content & sidebar */
+// Page layout - Content & sidebar
 #main {
 	z-index: 1;
 	width: 100%;
@@ -459,7 +459,7 @@ header {
 	}
 }
 
-/* Page layout - Footer */
+// Page layout - Footer
 footer {
 	display: block;
 	z-index: 2;
@@ -472,7 +472,7 @@ footer {
 	a { color: inherit }
 }
 
-/* Notices */
+// Notices
 .notice {
 	display: block;
 	margin: 0;
@@ -546,7 +546,7 @@ footer {
 	}
 }
 
-/* buttons */
+// Buttons
 button, .btn {
 	display: inline-block;
 	margin: 5px;
@@ -595,7 +595,7 @@ button, .btn {
 	&:active { transform: scale(.96) }
 }
 
-/* Alignment */
+// Alignment
 .align-center { text-align: center }
 .align-left   { text-align: left   }
 .align-right  { text-align: right  }
