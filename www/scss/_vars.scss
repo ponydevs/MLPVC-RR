@@ -6,13 +6,13 @@ $ContentBG: rgba(255,255,255,.6);
 
 /* Links */
 $Link: #337287;
-$LinkHover: #47A5C4;
+$LinkHover: desaturate(lighten($Link, 13), 7);
 
 /* Notices & buttons */
 $NBlue: #07f;
 $NBlueBG: #def;
 $NDarkBlue: #03d;
-$NDarkBlueBG: #def;
+$NDarkBlueBG: #ddf;
 $NGreen: #090;
 $NGreenBG: #dfd;
 $NRed: #d00;

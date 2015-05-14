@@ -7,20 +7,22 @@
 	define('CSRF_TOKEN',Cookie::get('CSRF_TOKEN'));
 
 	$signedIn = false;
-	if (Cookie::exists('access_token')){
-		$authKey = Cookie::get('access_token');
-		$currentUser = get_user($authKey,'access_token');
+	if (Cookie::exists('access')){
+		$authKey = Cookie::get('access');
+		$currentUser = get_user($authKey,'access');
 
-		if (!empty($currentUser)){
-			if (strtotime($currentUser['token_expires']) < time()){
-				da_get_token($currentUser['refresh_token'],'refresh_token');
+		if (!empty($currentUser['Session'])){
+			if (strtotime($currentUser['Session']['expires']) < time()){
+				da_get_token($currentUser['Session']['refresh'],'refresh_token');
 			}
+
 			$signedIn = true;
+			$Database->where('user', $currentUser['id'])->update('sessions', array('lastvisit' => gmdate('c')));
 
 			define('DEBUG', $currentUser['role'] === 'developer');
 		}
 		else {
-			Cookie::delete('access_token');
+			Cookie::delete('access');
 			unset($currentUser);
 		}
 	}

@@ -159,12 +159,7 @@
 	define('ONE_HOUR',3600);
 
 	// Random Array Element \\
-	function array_random($array, $num = 1){ return $array[array_rand($array, $num)]; }
-
-	// Time validator \\
-	function is_time_string($date){
-		return strtotime($date) != false;
-	}
+	function array_random($array){ return $array[array_rand($array, 1)]; }
 
 	// Color padder \\
 	function clrpad($c){
@@ -178,8 +173,9 @@
 		if ($die) die();
 	}
 
-	// Number padder \\
 	/**
+	 * Number padder
+	 * -------------
 	 * Pad a number using $padchar from either side
 	 *  to create an $l character long string
 	 * If $leftSide is false, padding is done from the right
@@ -380,19 +376,52 @@
 
 		$userdata = da_request('https://www.deviantart.com/api/v1/oauth2/user/whoami', null, $json['access_token']);
 
-		$data = array(
+		$UserID = strtolower($userdata['userid']);
+		$UserData = array(
 			'username' => $userdata['username'],
 			'avatar_url' => $userdata['usericon'],
-			'access_token' => $json['access_token'],
-			'refresh_token' => $json['refresh_token'],
-			'token_expires' => date('c',time()+intval($json['expires_in']))
+		);
+		$AuthData = array(
+			'access' => $json['access_token'],
+			'refresh' => $json['refresh_token'],
+			'expires' => date('c',time()+intval($json['expires_in']))
 		);
 
-		if (empty($Database->where('id',$userdata['userid'])->get('users')))
-			$Database->insert('users', array_merge($data, array('id' => strtolower($userdata['userid']))));
-		else $Database->where('id',$userdata['userid'])->update('users', $data);
+		add_browser($AuthData);
 
-		Cookie::set('access_token',$data['access_token'],THREE_YEARS);
+		if (empty($Database->where('id',$userdata['userid'])->get('users')))
+			$Database->insert('users', array_merge($UserData, array('id' => $UserID)));
+		else $Database->where('id',$userdata['userid'])->update('users', $UserData);
+
+		if ($type === 'refresh_token') $Database->where('refresh', $code)->update('sessions',$AuthData);
+		else $Database->insert('sessions', array_merge($AuthData, array('user' => $UserID)));
+
+		Cookie::set('access',$AuthData['access'],THREE_YEARS);
+	}
+
+	/**
+	 * Adds browser info to $Authdata
+	 */
+	function browser(){
+		require_once "includes/Browser.php";
+		$browser = new Browser();
+		$Return = array();
+		$name = $browser->getBrowser();
+		if ($name !== Browser::BROWSER_UNKNOWN){
+			$Return['browser_name'] = $name;
+
+			$ver = $browser->getVersion();
+			if ($ver !== Browser::VERSION_UNKNOWN)
+				$Return['browser_ver'] = $ver;
+		}
+		return $Return;
+	}
+	function add_browser(&$AuthData){
+		$browser = browser();
+		if (!empty($browser))
+			foreach (array_keys($browser) as $v)
+				if (isset($browser[$v]))
+					$AuthData[$v] = $browser[$v];
 	}
 
 	/**
@@ -563,17 +592,31 @@
 	 * @return array|null
 	 */
 	define('GETUSER_BASIC', true);
-	function get_user($value, $coloumn = 'id', $basic = false){
+	function get_user($value, $coloumn = true){
 		global $Database;
 
-		if ($basic !== false) return $Database->where($coloumn, $value)->getOne('users','id, username, avatar_url');
-		else return rawquery_get_single_result($Database->rawQuery(
+		if ($coloumn === true) return $Database->where($coloumn, $value)->getOne('users','id, username, avatar_url');
+
+		$User = array();
+		if ($coloumn === "access"){
+			$Auth = $Database->where('access', $value)->getOne('sessions');
+
+			if (empty($Auth)) return null;
+			$coloumn = 'id';
+			$value = $Auth['user'];
+		}
+
+		$User = rawquery_get_single_result($Database->rawQuery(
 			"SELECT
 				users.*,
 				roles.label as rolelabel
 			FROM users
 			LEFT JOIN roles ON roles.name = users.role
 			WHERE `$coloumn` = ?",array($value)));
+
+		if (isset($Auth)) $User['Session'] = $Auth;
+
+		return $User;
 	}
 
 	/**
@@ -632,7 +675,7 @@ HTML;
 				$HTML .= get_reserver_button(false);
 		}
 		else {
-			$R['reserver'] = get_user($R['reserved_by'],'id',GETUSER_BASIC);
+			$R['reserver'] = get_user($R['reserved_by']);
 			if ($finished){
 				$D = da_cache_deviation($R['deviation_id']);
 				$D['title'] = preg_replace("/'/",'&apos;',$D['title']);

@@ -25,16 +25,20 @@
 				if (!$signedIn) die(header('Location: /'));
 				detectCSRF();
 
-				if (isset($_REQUEST['unlink']))
+				if (isset($_REQUEST['unlink'])){
 					da_request('https://www.deviantart.com/oauth2/revoke',array('token' => $currentUser['access_token']));
+					$col = 'user';
+					$val = $currentUser['id'];
+				}
+				else {
+					$col = 'id';
+					$val = $currentUser['Session']['id'];
+				}
 
-				if (!$Database->where('id',$currentUser['id'])->update('users', array(
-					'access_token' => '',
-					'refresh_token' => '',
-					'token_expires' => NULL,
-				))) respond('Could not remove information from database');
+				if (!$Database->where($col,$val)->delete('sessions'))
+					respond('Could not remove information from database');
 
-				Cookie::delete('access_token');
+				Cookie::delete('access');
 				respond((isset($_REQUEST['unlink'])?'Your account has been unlinked from our site':'You have been signed out successfully').'. Goodbye!',1);
 			break;
 			case "da-auth":

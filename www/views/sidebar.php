@@ -15,7 +15,7 @@
 <?=usercard_render()?>
 		<div class="notice info">
 			<p>Please sign in with your deviantArt account to gain access to the site's features.</p>
-			<a class="btn typcn typcn-link" href="https://www.deviantart.com/oauth2/authorize?response_type=code&scope=user&client_id=<?=DA_CLIENT.oauth_redirect_uri()?>">Sign In with deviantArt</a>
+			<a class="btn typcn typcn-link" href="https://www.deviantart.com/oauth2/authorize?response_type=code&scope=user+browse&client_id=<?=DA_CLIENT.oauth_redirect_uri()?>">Sign In with deviantArt</a>
 		</div>
 <?php } ?>
 	</section>

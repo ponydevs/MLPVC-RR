@@ -69,53 +69,80 @@ INSERT INTO `roles` (`value`, `name`, `label`) VALUES
 (5, 'founder', 'Group Founder'),
 (255, 'developer', 'Site Developer');
 
+CREATE TABLE IF NOT EXISTS `sessions` (
+  `id` bigint(20) unsigned NOT NULL,
+  `user` varchar(36) NOT NULL,
+  `browser_name` tinytext,
+  `browser_ver` tinytext,
+  `access` varchar(50) NOT NULL,
+  `refresh` varchar(40) NOT NULL,
+  `expires` timestamp NULL DEFAULT NULL,
+  `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `lastvisit` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+
 CREATE TABLE IF NOT EXISTS `users` (
   `id` varchar(36) NOT NULL,
   `username` tinytext NOT NULL,
   `role` varchar(10) NOT NULL DEFAULT 'user',
-  `avatar_url` tinytext NOT NULL,
-  `access_token` tinytext NOT NULL,
-  `refresh_token` tinytext NOT NULL,
-  `token_expires` timestamp NULL DEFAULT NULL,
-  `signup_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+  `avatar_url` tinytext NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 ALTER TABLE `deviation_cache`
   ADD PRIMARY KEY (`id`);
 
 ALTER TABLE `episodes`
-  ADD PRIMARY KEY (`season`,`episode`), ADD KEY `posted_by` (`posted_by`);
+  ADD PRIMARY KEY (`season`,`episode`),
+  ADD KEY `posted_by` (`posted_by`);
 
 ALTER TABLE `permissions`
-  ADD PRIMARY KEY (`action`), ADD KEY `minrole` (`minrole`);
+  ADD PRIMARY KEY (`action`),
+  ADD KEY `minrole` (`minrole`);
 
 ALTER TABLE `requests`
-  ADD PRIMARY KEY (`id`), ADD KEY `season` (`season`,`episode`), ADD KEY `reserved_by` (`reserved_by`), ADD KEY `requested_by` (`requested_by`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `season` (`season`,`episode`),
+  ADD KEY `reserved_by` (`reserved_by`),
+  ADD KEY `requested_by` (`requested_by`);
 
 ALTER TABLE `reservations`
-  ADD PRIMARY KEY (`id`), ADD KEY `season` (`season`), ADD KEY `episode` (`episode`), ADD KEY `reservations_ibfk_1` (`season`,`episode`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `season` (`season`),
+  ADD KEY `episode` (`episode`),
+  ADD KEY `reservations_ibfk_1` (`season`,`episode`);
 
 ALTER TABLE `roles`
-  ADD PRIMARY KEY (`value`), ADD KEY `name` (`name`);
+  ADD PRIMARY KEY (`value`),
+  ADD KEY `name` (`name`);
+
+ALTER TABLE `sessions`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `user` (`user`);
 
 ALTER TABLE `users`
-  ADD PRIMARY KEY (`id`), ADD KEY `role` (`role`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `role` (`role`);
 
 ALTER TABLE `requests`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `reservations`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+ALTER TABLE `sessions`
+  MODIFY `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=2;
 
 ALTER TABLE `episodes`
-ADD CONSTRAINT `episodes_ibfk_1` FOREIGN KEY (`posted_by`) REFERENCES `users` (`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+  ADD CONSTRAINT `episodes_ibfk_1` FOREIGN KEY (`posted_by`) REFERENCES `users` (`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 ALTER TABLE `permissions`
-ADD CONSTRAINT `permissions_ibfk_1` FOREIGN KEY (`minrole`) REFERENCES `roles` (`name`);
+  ADD CONSTRAINT `permissions_ibfk_1` FOREIGN KEY (`minrole`) REFERENCES `roles` (`name`);
 
 ALTER TABLE `requests`
-ADD CONSTRAINT `requests_ibfk_2` FOREIGN KEY (`reserved_by`) REFERENCES `users` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
-ADD CONSTRAINT `requests_ibfk_3` FOREIGN KEY (`season`, `episode`) REFERENCES `episodes` (`season`, `episode`) ON DELETE CASCADE ON UPDATE CASCADE,
-ADD CONSTRAINT `requests_ibfk_4` FOREIGN KEY (`requested_by`) REFERENCES `users` (`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+  ADD CONSTRAINT `requests_ibfk_2` FOREIGN KEY (`reserved_by`) REFERENCES `users` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
+  ADD CONSTRAINT `requests_ibfk_3` FOREIGN KEY (`season`, `episode`) REFERENCES `episodes` (`season`, `episode`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `requests_ibfk_4` FOREIGN KEY (`requested_by`) REFERENCES `users` (`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 ALTER TABLE `reservations`
-ADD CONSTRAINT `reservations_ibfk_1` FOREIGN KEY (`season`, `episode`) REFERENCES `episodes` (`season`, `episode`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `reservations_ibfk_1` FOREIGN KEY (`season`, `episode`) REFERENCES `episodes` (`season`, `episode`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+ALTER TABLE `sessions`
+  ADD CONSTRAINT `sessions_ibfk_1` FOREIGN KEY (`user`) REFERENCES `users` (`id`);
