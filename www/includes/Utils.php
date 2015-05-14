@@ -240,41 +240,6 @@
 		if ($die === AND_DIE) die();
 	}
 
-	// DJDavid98(TM) Path Notation Resolver \\
-	function djpth($path = null,$relative = false){
-		if (empty($path) || !is_string($path)) return RELPATH;
-		// Parse "current directory" mark
-		$path = preg_replace('/\\|/','./',$path);
-		// Avoid changing relative path to absolute
-		$path = preg_replace('/^</','../',$path);
-		// Replace other occurences of the "up" mark
-		$path = preg_replace('/</','/../',$path);
-		// Add basic dividers
-		$path = preg_replace('/>/','/',$path);
-		// Replace double slashes not at the beginning of the string
-		$_begins_with_dblslash = strpos($path,'//') === 0;
-		if ($_begins_with_dblslash) $path = substr($path,2);
-		while (strpos($path,'\/\/') !== false) $path = preg_replace('/\/\//','/',$path);
-		if ($_begins_with_dblslash) $path = '//'.$path;
-		// Resolve path
-		$resolved_path = explode('/',(!$relative?RELPATH:'').$path);
-		$removed = 0;
-		foreach ($resolved_path as $index => $part){
-			if ($part == '..'){
-				array_splice($resolved_path,$index-1,2);
-				$removed++;
-			}
-			else if (($question_mark = strpos($part,'?')) !== 0){
-				if ($question_mark !== false){
-					$resolved_path[$index-($removed*2)] = preg_replace('/\+/','%20',urlencode(substr($part,0,$question_mark))).substring($part,$question_mark);
-				}
-				else $resolved_path[$index-($removed*2)] = preg_replace('/\+/','%20',urlencode($part));
-			}
-		}
-		$path = implode('/',$resolved_path);
-		return $path;
-	}
-
 	// CSRF Check \\
 	function detectCSRF($CSRF = null){
 		if (!isset($CSRF)) global $CSRF;
@@ -867,7 +832,6 @@ HTML;
 	 */
 	function sidebar_link_render($url, $text = '', $title = null){
 		$render = function($u, $tx, $tt){
-			if (!preg_match('~^https?://~',$u)) $u = djpth($u);
 			$tt = str_replace("'",'&apos;',$tt);
 			echo "<li><a href='$u' title='$tt'>$tx</a></li>";
 		};
@@ -887,7 +851,7 @@ HTML;
 	}
 	
 	// Renders the user card in the sidebar \\
-	define('GUEST_AVATAR',djpth('img>favicon.png'));
+	define('GUEST_AVATAR','/img/favicon.png');
 	function usercard_render(){
 		global $signedIn, $currentUser;
 		if ($signedIn){
@@ -941,7 +905,7 @@ HTML;
 		if (empty($Episodes)) return "<tr class='empty align-center'><td colspan=3><em>There are no episodes to display</em></td></tr>";
 
 		$Body = '';
-		$PathStart = djpth("episode>");
+		$PathStart = '/episode/';
 		foreach ($Episodes as $i => $ep) {
 			$Title = format_episode_title($ep, AS_ARRAY);
 			$href = $PathStart.$Title['id'];

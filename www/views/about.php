@@ -1,5 +1,5 @@
 <div id=content>
-	<img src="<?=djpth('img>logo.png')?>" alt="MLP Vector Club Requests & Reservations Logo">
+	<img src="/img/logo.png" alt="MLP Vector Club Requests & Reservations Logo">
 	<h1>MLP Vector Club Requests & Reservations</h1>
 	<p>An automated system for handling requests & reservations, made for MLP-VectorClub</p>
 	<section>
