@@ -1,17 +1,12 @@
 	<section class=<?=$signedIn?'welcome':'login'?>>
 		<h2>Welcome!</h2>
-<?php if ($signedIn){ ?>
-		<p>Signed in as</p>
-<?=usercard_render()?>
-
-		<?=sidebar_links_render()?>
-
+<?php if ($signedIn){
+	usercard_render();
+	sidebar_links_render(); ?>
 		<div class=buttons>
 			<button id="signout" class="typcn typcn-arrow-back">Sign out</button>
-			<button id="unlink" class="red typcn typcn-times">Unlink Account</button>
 		</div>
 <?php } else { ?>
-		<p>You're browsing the site as</p>
 <?=usercard_render()?>
 		<div class="notice info">
 			<p>Please sign in with your deviantArt account to gain access to the site's features.</p>

@@ -56,6 +56,10 @@
 		if (isset($settings['title']))
 			$title = $settings['title'];
 
+		// SE crawlign disable
+		if (in_array('no-robots',$settings))
+			$norobots = true;
+
 		# CSS
 		$DEFAULT_CSS = array('theme');
 		$customCSS = array();
@@ -168,9 +172,10 @@
 	}
 
 	// Redirection \\
+	define('STAY_ALIVE', false);
 	function redirect($url = '/', $die = true){
 		header("Location: $url");
-		if ($die) die();
+		if ($die !== STAY_ALIVE) die();
 	}
 
 	/**
@@ -279,7 +284,7 @@
 		if (empty($token)){
 			if (!$signedIn) die(trigger_error('Trying to make a request without signing in'));
 
-			$token = $currentUser['access_token'];
+			$token = $currentUser['Session']['access'];
 		}
 
 		$r = curl_init($url);
@@ -343,7 +348,7 @@
 
 		$UserID = strtolower($userdata['userid']);
 		$UserData = array(
-			'username' => $userdata['username'],
+			'name' => $userdata['username'],
 			'avatar_url' => $userdata['usericon'],
 		);
 		$AuthData = array(
@@ -440,47 +445,32 @@
 		return $Deviation;
 	}
 
-	// Check Permissions \\
-	# Temporary function to only fetch role data from DB once, and only when needed
-	$PERM = function($perm, $reload = true){
-		# Make global variables for $PERM
-		global $Database, $ROLES, $ROLES_ASSOC, $PERMISSIONS, $PERM, $PERM_RELOAD;
+	# Get Roles from DB
+	$ROLES_ASSOC = array();
+	$ROLES = array();
+	foreach ($Database->orderBy('value','ASC')->get('roles') as $r){
+		$ROLES_ASSOC[$r['name']] = $r['label'];
+		$ROLES[] = $r['name'];
+	}
 
-		# Get Roles from DB
-		$ROLES_ASSOC = array();
-		$ROLES = array();
-		foreach ($Database->orderBy('value','ASC')->get('roles') as $r){
-			$ROLES_ASSOC[$r['name']] = $r['label'];
-			$ROLES[] = $r['name'];
-		}
+	# Get Permissions from DB
+	$PERMISSIONS = array();
+	foreach ($Database->get('permissions') as $p)
+		$PERMISSIONS[$p['action']] = $p['minrole'];
 
-		# Get Permissions from DB
-		$PERMISSIONS = array();
-		foreach ($Database->get('permissions') as $p)
-			$PERMISSIONS[$p['action']] = $p['minrole'];
-
-		$PERM_RELOAD = $PERM;
-		$PERM = function($perm, $reload = false){
-			if (!is_string($perm)) return false;
-			if ($reload){
-				global $PERM_RELOAD;
-				$PERM_RELOAD($perm, $reload);
-			}
-			global $signedIn, $currentUser, $ROLES, $PERMISSIONS;
-
-			if (!$signedIn) return false;
-
-			if (!empty($PERMISSIONS[$perm])) $targetRole = $PERMISSIONS[$perm];
-			else if (in_array($perm,$ROLES)) $targetRole = $perm;
-			else return false;
-
-			return array_search($currentUser['role'],$ROLES) >= array_search($targetRole,$ROLES);
-		};
-		return $PERM($perm);
-	};
 	function PERM($perm){
-		global $PERM;
-		return $PERM($perm);
+		if (!is_string($perm)) return false;
+
+		global $signedIn;
+		if (!$signedIn) return false;
+
+		global $currentUser, $ROLES, $PERMISSIONS;
+
+		if (in_array($perm,$ROLES)) $targetRole = $perm;
+		else if (!empty($PERMISSIONS[$perm])) $targetRole = $PERMISSIONS[$perm];
+		else return false;
+
+		return array_search($currentUser['role'],$ROLES) >= array_search($targetRole,$ROLES);
 	}
 
 	// Episode title matching pattern \\
@@ -556,6 +546,7 @@
 	 * @param bool $basic
 	 * @return array|null
 	 */
+	define('USERNAME_PATTERN', '([A-Za-z\-\d]{1,20})');
 	define('GETUSER_BASIC', true);
 	function get_user($value, $coloumn = true){
 		global $Database;
@@ -577,7 +568,7 @@
 				roles.label as rolelabel
 			FROM users
 			LEFT JOIN roles ON roles.name = users.role
-			WHERE `$coloumn` = ?",array($value)));
+			WHERE users.`$coloumn` = ?",array($value)));
 
 		if (isset($Auth)) $User['Session'] = $Auth;
 
@@ -594,7 +585,7 @@
 	function da_link($User, $avatar = true){
 		if (!is_array($User)) trigger_error('$User is not an array');
 
-		$Username = $User['username'];
+		$Username = $User['name'];
 		$username = strtolower($Username);
 		$avatar = $avatar ? "<img src='{$User['avatar_url']}' class=avatar> " : '';
 
@@ -856,30 +847,40 @@ HTML;
 		global $signedIn, $currentUser;
 		if ($signedIn){
 			$avatar = $currentUser['avatar_url'];
-			$username = $currentUser['username'];
+			$un = $currentUser['name'];
+			$username = "<a href='/u/$un'>$un</a>";
 			$rolelabel = $currentUser['rolelabel'];
+			$Avatar = get_avatar_wrap($currentUser);
 		}
 		else {
 			$avatar = GUEST_AVATAR;
 			$username = 'Curious Pony';
 			$rolelabel = 'Guest';
+			$Avatar = get_avatar_wrap(array(
+				'avatar_url' => $avatar,
+				'name' => $username,
+				'rolelabel' => $rolelabel,
+				'guest' => true,
+			));
 		}
 
-		if (PERM('member')){
-			$groupInitials = preg_replace('/[^A-Z]/','',$rolelabel);
-			$badge = "<span class=badge>$groupInitials</span>";
-		}
-		else $badge = '';
-		
 		echo <<<HTML
-		<div class="usercard">
-			<div class="avatar-wrap">
-				<img src="$avatar" class=avatar>$badge
-			</div>
+		<div class=usercard>
+			$Avatar
 			<span class="un">$username</span>
 			<span class="role">$rolelabel</span>
 		</div>
 HTML;
+	}
+
+	// Renders avatar wrapper for a specific user \\
+	function get_avatar_wrap($User){
+		if (empty($User['guest'])){
+			$groupInitials = preg_replace('/[^A-Z]/','',$User['rolelabel']);
+			$badge = "<span class=badge>$groupInitials</span>";
+		}
+		else $badge = '';
+		return "<div class=avatar-wrap><img src='{$User['avatar_url']}' class=avatar>$badge</div>";
 	}
 
 	/**
@@ -950,3 +951,14 @@ HTML;
 		}
 		else return $Ep1;
 	}
+
+	/**
+	 * Adds 's/S' to the end of a word
+	 *
+	 * @param string $w
+	 *
+	 * @return string
+	 */
+	 function s($w){
+	    return "$w'".(substr($w, -1) !== 's'?'s':'');
+	 }

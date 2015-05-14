@@ -5,17 +5,9 @@
 		margin: 0 auto 10px;
 		display: block;
 	}
-	> h1 {
-		font-size: 2em;
-		text-align: center;
-		margin: 0 0 5px;
-
-		+ p {
+	> h1 + p {
 			font-size: 1.4em;
-			text-align: center;
 			margin: 0 0 20px;
-			font-style: italic;
-		}
 	}
 	> section {
 		> h2 {

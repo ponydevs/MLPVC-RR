@@ -4,6 +4,9 @@
 	<title><?=isset($title)?$title.' - ':''?>Vector Club Requests & Reservations</title>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, maximum-scale=1, user-scalable=no">
+<?php if (isset($norobots)){ ?>
+	<meta name="robots" content="noindex, nofollow">
+<?php } ?>
 	<link rel="shortcut icon" href="/favicon.ico">
 <?php if (isset($customCSS)) foreach ($customCSS as $css){ ?>
 	<link rel="stylesheet" href="/css/<?=$css?>.css">
@@ -22,6 +25,9 @@
 		<nav>
 			<a href="/" class=home><span>Home</span></a>
 			<a href="/episodes">Episodes</a>
+<?php if ($signedIn){ ?>
+			<a href="/u/<?=$currentUser['name']?>">Account</a>
+<?php } ?>
 			<a href="/about">About</a>
 			<a href="http://mlp-vectorclub.deviantart.com/">MLP-VectorClub</a>
 		</nav>

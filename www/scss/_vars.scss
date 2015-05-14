@@ -21,3 +21,13 @@ $NOrange: #d50;
 $NOrangeBG: #fed;
 $NYellow: #b80;
 $NYellowBG: #ffd;
+
+$NoFontChange: true;
+@mixin link($color:$Link, $hover:$LinkHover){
+	color: $color;
+	text-decoration: none !important;
+	transition: color .2s linear;
+		font-weight: bold;
+
+	&:hover { color: $hover }
+}

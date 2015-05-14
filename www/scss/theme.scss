@@ -326,26 +326,82 @@ header {
 	box-sizing: border-box;
 }
 #content {
-	a {
-		font-weight: bold;
-		color: $Link;
-		text-decoration: none !important;
-		transition: color .2s linear;
+	> h1 {
+		font-size: 2em;
+		text-align: center;
+		margin: 0 0 5px;
+
+		+ p {
+			font-size: 1.6em;
+			text-align: center;
+			margin: 0 0 10px;
+			font-style: italic;
+		}
 	}
-	a:hover { color: $LinkHover }
+	a { @include link }
 }
 #sidebar {
 	> section {
 		text-align: center;
 		h2 {
 			font-size: 24px;
-			margin: 0 0 15px;
+			margin: 0 0 5px;
 			font-family: "Celestia", sans-serif;
 			font-weight: normal;
 		}
 		p {
 			margin: 0;
 		}
+
+		&.welcome {
+			.buttons > * {
+				margin: 0;
+			}
+			.links {
+				list-style: none;
+				border-radius: 5px;
+				color: #777;
+				background-color: #efefef;
+				border: 1px solid;
+				margin: 0 0 5px;
+				padding: 5px;
+
+				li {
+					display: inline-block;
+					white-space: normal;
+
+					a {
+						text-decoration:none;
+						color: inherit;
+						border-bottom: 1px solid transparent;
+						transition: border-bottom-color .2s linear;
+					}
+
+					&:not(:last-child):after {
+						content: "-";
+						display: inline-block;
+						padding: 0 3px;
+					}
+					&:not(.active) a:hover:not(:active) {
+						border-bottom-color: initial;
+					}
+					&.active a {
+						border-bottom-color: rgba(255,255,255,.5);
+					}
+				}
+				&:before {
+					content: "Useful links";
+					display: block;
+					border-bottom: 1px solid;
+					font-size: 1.2em;
+					margin-bottom: 5px;
+					text-align: left;
+					font-weight: bold;
+				}
+				&:empty { display: none }
+			}
+		}
+
 		&:not(:last-child){ margin-bottom: 10px }
 	}
 	#quote {
@@ -369,93 +425,52 @@ header {
 		background-color: #efefef;
 		border-radius: 4px;
 		padding: 3px;
-		margin: 5px 0;
+		margin: 0 0 5px;
 
-		* { display: block }
 		.avatar-wrap {
-			position: relative;
 			margin: 3px auto 5px;
-			border-radius: 100%;
-			border: 1px solid;
 			box-shadow: 0 0 5px;
-			width: 50px;
-			height: 50px;
-			background-color: inherit;
-			cursor: default;
-			user-select: none;
-
-			.avatar { border-radius: 100%	}
-			.badge {
-				position: absolute;
-				right: 0;
-				bottom: 0;
-				display: block;
-				background-color: inherit;
-				padding: 1px 2px;
-				border-radius: 2px;
-				line-height: 1em;
-				font-size: 12px;
-				border: 1px solid;
-				height: 1em;
-				text-transform: uppercase;
-				font-weight: bold;
-				pointer-events: none;
-				box-shadow: inherit;
-			}
+			border: 1px solid;
 		}
+		* { display: block }
 		.un {
 			font-size: 22px;
 			letter-spacing: 1px;
+
+			a { @include link }
 		}
 		.role { font-size: 16px	}
 	}
-	> .welcome {
-		.buttons button {
-			margin-top: 0;
-		}
-		.links {
-			list-style: none;
-			border-radius: 5px;
-			color: #777;
-			background-color: #efefef;
-			border: 1px solid;
-			margin: 0 0 10px;
-			padding: 5px;
+}
+.avatar-wrap {
+	position: relative;
+	border-radius: 100%;
+	border: 2px solid;
+	margin: 0 auto 5px;
+	width: 50px;
+	height: 50px;
+	cursor: default;
+	user-select: none;
+	color: #777;
+	background-color: #efefef;
 
-			li {
-				display: inline-block;
-				white-space: normal;
-
-				a {
-					text-decoration:none;
-					color: inherit;
-					border-bottom: 1px solid transparent;
-					transition: border-bottom-color .2s linear;
-				}
-
-				&:not(:last-child):after {
-					content: "-";
-					display: inline-block;
-					padding: 0 3px;
-				}
-				&:not(.active) a:hover:not(:active) {
-					border-bottom-color: initial;
-				}
-				&.active a {
-					border-bottom-color: rgba(255,255,255,.5);
-				}
-			}
-			&:before {
-				content: "Useful links";
-				display: block;
-				border-bottom: 1px solid;
-				font-size: 1.2em;
-				margin-bottom: 5px;
-				text-align: left;
-				font-weight: bold;
-			}
-			&:empty { display: none }
-		}
+	.avatar { border-radius: 100%	}
+	.badge {
+		position: absolute;
+		right: 0;
+		bottom: 0;
+		display: block;
+		background-color: inherit;
+		padding: 1px 2px;
+		border-radius: 2px;
+		line-height: 1em;
+		font-size: 12px;
+		border: 1px solid;
+		height: 1em;
+		text-transform: uppercase;
+		font-weight: bold;
+		pointer-events: none;
+		box-shadow: inherit;
 	}
 }
 
@@ -568,6 +583,10 @@ button, .btn {
 	&.blue {
 		color: $NBlueBG;
 		background-color: $NBlue;
+	}
+	&.darkblue {
+		color: $NDarkBlueBG;
+		background-color: $NDarkBlue;
 	}
 	&.green {
 		color: $NGreenBG;

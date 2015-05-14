@@ -1,14 +1,14 @@
 $(function(){
-	$('#signout').on('click',function(){
-		var title = 'Sign out';
-		$.Dialog.confirm(title,'Are you sure you want to sign out?',function(sure){
+	$('#unlink').on('click',function(){
+		var title = 'Unlink account & sign out';
+		$.Dialog.confirm(title,'Are you sure you want to unlink your account?',function(sure){
 			if (!sure) return;
 
-			$.Dialog.wait(title,'Signing out');
+			$.Dialog.wait(title,'Removing account link');
 
 			$.ajax({
 				method: "POST",
-				url: '/signout',
+				url: '/signout?unlink',
 				success: function(data){
 					if (typeof data !== 'object') return console.log(data) && $w.trigger('ajaxerror');
 

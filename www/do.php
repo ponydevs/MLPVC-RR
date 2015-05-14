@@ -22,11 +22,11 @@
 	if (isset($do)){
 		switch ($do){
 			case "signout":
-				if (!$signedIn) die(header('Location: /'));
+				if (!$signedIn) redirect('Location: /');
 				detectCSRF();
 
 				if (isset($_REQUEST['unlink'])){
-					da_request('https://www.deviantart.com/oauth2/revoke',array('token' => $currentUser['access_token']));
+					da_request('https://www.deviantart.com/oauth2/revoke',array('token' => $currentUser['Session']['access']));
 					$col = 'user';
 					$val = $currentUser['id'];
 				}
@@ -256,6 +256,76 @@
 					'title' => 'Home',
 					'do-css',
 				));
+			break;
+			case "u":
+				$do = 'user';
+			case "user":
+				$_match = array();
+
+				if (RQMTHD === 'POST'){
+					if (!PERM('manager')) respond();
+					detectCSRF();
+
+					if (empty($data)) do404();
+
+					if (preg_match('/^newgroup\/'.USERNAME_PATTERN.'$/',$data,$_match)){
+						$un = $_match[1];
+
+						$targetUser = get_user($un, 'name');
+						if (empty($targetUser)) respond('User not found');
+
+						if (!PERM('manager')) respond("You cannot modify this user's group");
+						if ($targetUser['id'] === $currentUser['id']) respond("You cannot modify your own group");
+						if (!PERM($targetUser['role']))
+							respond('You can only modify the group of users who have the same or a lower-level rank than you');
+
+						if (!isset($_POST['newrole'])) respond('The new group is not specified');
+						$newgroup = trim($_POST['newrole']);
+						if (!in_array($newgroup,$ROLES)) respond('The specified group does not exist');
+						if ($targetUser['role'] === $newgroup) respond('This user is already in the specified group');
+
+						if (!$Database->where('id', $targetUser['id'])->update('users',array('role' => $newgroup)))
+							respond('Could not save to the database');
+						respond('Group changed successfully',1,array('ng' => $newgroup));
+					}
+					else statusCodeHeader(404, AND_DIE);
+				}
+
+				if (empty($data)){
+					if ($signedIn) $un = $currentUser['name'];
+					else $MSG = 'Sign in to view your profile';
+				}
+				else if (preg_match('/^'.USERNAME_PATTERN.'$/', $data, $_match))
+					$un = $_match[1];
+
+				if (!isset($un))
+					$MSG = 'Invalid username';
+				else $User = get_user($un, 'name');
+
+				if (empty($User)){
+					if (!isset($MSG))
+						$MSG = 'User not found';
+					$canEdit = $sameUser = false;
+				}
+				else {
+					$sameUser = $signedIn && $User['id'] === $currentUser['id'];
+					$canEdit = PERM('manager') && !$sameUser && PERM($User['role']);
+					$pagePath = "/u/{$User['name']}";
+					if ($_SERVER['REQUEST_URI'] !== $pagePath)
+						redirect($pagePath, STAY_ALIVE);
+				}
+				if ($canEdit)
+					$UsableRoles = $Database->where("value <= (SELECT value FROM roles WHERE name = '{$currentUser['role']}')")->get('roles',null,'name, label');
+
+				if (isset($MSG)) statusCodeHeader(404);
+
+				$settings = array(
+					'title' => !isset($MSG) ? ($sameUser?'Your':s($User['name'])).' account' : 'Account',
+					'no-robots',
+					'js' => array('user'),
+				);
+				if ($canEdit) $settings['js'][] = 'user-manage';
+				loadPage($settings);
 			break;
 			case "404":
 			default:

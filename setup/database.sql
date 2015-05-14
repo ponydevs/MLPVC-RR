@@ -83,7 +83,7 @@ CREATE TABLE IF NOT EXISTS `sessions` (
 
 CREATE TABLE IF NOT EXISTS `users` (
   `id` varchar(36) NOT NULL,
-  `username` tinytext NOT NULL,
+  `name` tinytext NOT NULL,
   `role` varchar(10) NOT NULL DEFAULT 'user',
   `avatar_url` tinytext NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

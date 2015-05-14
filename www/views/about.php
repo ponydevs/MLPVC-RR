@@ -40,7 +40,6 @@
 		<div>
 			<p>Here's a grouped list of all the people who've been added to the site's database so far.</p>
 <?php
-		PERM(false);
 		$Arranged = array();
 		foreach ($Users as $u){
 			if (!isset($Arranged[$u['role']])) $Arranged[$u['role']] = array();
