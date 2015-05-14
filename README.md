@@ -1,7 +1,7 @@
 <p align="center"><img src="https://raw.githubusercontent.com/DJDavid98/MLPVC-RR/master/www/img/logo.png" alt=""></p>
 
 <h1 align="center">MLP-VectorClub Requests & Reservations</h1>
-<p align="center">An automated system for handling requests & reservations, made for MLP-VectorClub by <a href="http://djdavid98.eu">DJDavid98</a></p>
+<p align="center">An automated system for handling requests & reservations, made for <a href="http://mlp-vectorclub.deviantart.com/">MLP-VectorClub</a> by <a href="http://djdavid98.eu">DJDavid98</a></p>
 
 ## Local setup
 
