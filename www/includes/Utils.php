@@ -50,6 +50,70 @@
 		$Database->insert("log_central",$central);
 	}
 
+	/**
+	 * Converts $timestamp to an "X somthing ago" format
+	 * Always uses the greatest unit available
+	 */
+	$TIME_DATA = array(
+		'year' => 31557600,
+	    'month' => 2592000,
+	    'day' => 86400,
+	    'hour' => 3600,
+	    'minute' => 60,
+	    'second' => 1,
+	);
+	function time_ago($timestamp){
+		global $TIME_DATA;
+
+	    $delta = time() - $timestamp;
+
+	    foreach ($TIME_DATA as $n => $v){
+	        if ($delta >= $v){
+	            $left = floor($delta / $v);
+	            $delta -= ($left * $v);
+	            $str = "{$left} ".($left!=1?"{$n}s":$n);
+	            break;
+	        }
+	    }
+
+	    return isset($str) ? "$str ago" : 'just now';
+	}
+
+	/**
+	 * Create an ISO timestamp from the input string
+	 *
+	 * @param int $time
+	 * @param string $format
+	 *
+	 * @return string
+	 */
+	define('FORMAT_READABLE',true);
+	define('FORMAT_FULL','gS M Y, h:i:s a T');
+	function format_timestamp($time, $format = 'c'){
+		if ($format === FORMAT_READABLE)
+			$ts = time_ago($time);
+		else $ts = gmdate($format,$time);
+		return $ts;
+	}
+
+	/**
+	 * Create <time datetime></time> tag
+	 *
+	 * @param string|int $timestamp
+	 *
+	 * @return string
+	 */
+	function timetag($timestamp){
+		if (is_string($timestamp))
+			$timestamp = strtotime($timestamp);
+		if ($timestamp === false) return null;
+
+		$datetime = format_timestamp($timestamp);
+		$full = format_timestamp($timestamp,FORMAT_FULL);
+		$text = format_timestamp($timestamp,FORMAT_READABLE);
+		return "<time datetime='$datetime' title='$full'>$text</time>";
+	}
+
 	// Page loading fornction
 	function loadPage($settings){
 		// Page <title>
@@ -468,7 +532,7 @@
 
 		if (in_array($perm,$ROLES)) $targetRole = $perm;
 		else if (!empty($PERMISSIONS[$perm])) $targetRole = $PERMISSIONS[$perm];
-		else return false;
+		else trigger_error('Invalid permission '.$perm);
 
 		return array_search($currentUser['role'],$ROLES) >= array_search($targetRole,$ROLES);
 	}
@@ -581,15 +645,18 @@
 	 * @param array
 	 * @return string
 	 */
-	define('TEXT_ONLY', false);
-	function da_link($User, $avatar = true){
+	define('TEXT_ONLY', 1);
+	define('LINK_ONLY', 2);
+	function da_link($User, $format = 0){
 		if (!is_array($User)) trigger_error('$User is not an array');
 
 		$Username = $User['name'];
 		$username = strtolower($Username);
-		$avatar = $avatar ? "<img src='{$User['avatar_url']}' class=avatar> " : '';
+		$avatar = $format == 0 ? "<img src='{$User['avatar_url']}' class=avatar> " : '';
+		$link = "http://$username.deviantart.com/";
 
-		return "<a href='http://$username.deviantart.com/' class=da-userlink>$avatar<span class=name>$Username</span></a>";
+		if ($format === LINK_ONLY) return $link;
+		return "<a href='$link' class=da-userlink>$avatar<span class=name>$Username</span></a>";
 	}
 
 	// Reserved by section creator \\
@@ -961,4 +1028,24 @@ HTML;
 	 */
 	 function s($w){
 	    return "$w'".(substr($w, -1) !== 's'?'s':'');
+	 }
+
+	/**
+	 * Parse session array for user page
+	 */
+	define('CURRENT',true);
+	function render_session_li($Session, $current = false){
+		$browserClass = preg_replace('/[^a-z]/','',strtolower($Session['browser_name']));
+		$browserTitle = "{$Session['browser_name']} {$Session['browser_ver']}".($current?' (current)':'');
+		$firstuse = timetag($Session['created']);
+		$lastuse = timetag($Session['lastvisit']);
+		// TBI // $remover = $current ? '' : ' <button class="typcn typcn-arrow-forward remove red" title="Sign out from this session"></button>';
+		$remover = '';
+		echo <<<HTML
+<li class="browser-$browserClass">
+	<span class=browser>$browserTitle$remover</span>
+	<span class=created>Created: $firstuse</span>
+	<span class=used>Last used: $lastuse</span>
+</li>
+HTML;
 	 }

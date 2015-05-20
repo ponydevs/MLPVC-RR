@@ -17,7 +17,8 @@
 			}
 
 			$signedIn = true;
-			$Database->where('user', $currentUser['id'])->update('sessions', array('lastvisit' => gmdate('c')));
+			if ($Database->where('id', $currentUser['Session']['id'])->update('sessions', array('lastvisit' => date('c'))))
+				$currentUser['Session']['lastvisit'] = date('c');
 
 			define('DEBUG', $currentUser['role'] === 'developer');
 		}

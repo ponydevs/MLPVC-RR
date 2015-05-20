@@ -1,7 +1,7 @@
 
 	</div>
 
-	<footer><strong>MLPVC-RR v0.<?=LATEST_COMMIT_ID?></strong> (last updated <time datetime="<?=LATEST_COMMIT_TIME?>"></time>) | <a href="<?=GITHUB_URL?>">View on GitHub</a> | <a href="<?=GITHUB_URL?>/issues">Issue tracker</a></footer>
+	<footer><strong>MLPVC-RR v0.<?=LATEST_COMMIT_ID?></strong> (last updated <?=timetag(LATEST_COMMIT_TIME)?>) | <a href="<?=GITHUB_URL?>">View on GitHub</a> | <a href="<?=GITHUB_URL?>/issues">Issue tracker</a></footer>
 
 <?php 	if (isset($customJS)) foreach ($customJS as $js){ ?>
 <script src="/js/<?=$js?>.js"></script>
@@ -32,7 +32,7 @@ $(function(){
 		$header = $('header'),
 		tbh = $('#topbar').outerHeight();
 	$w.on('scroll',function(){
-		if (document.body.scrollTop > tbh)
+		if ($w.scrollTop() > tbh)
 			$header.addClass('fixed');
 		else $header.removeClass('fixed');
 	});

@@ -28,11 +28,12 @@
 			<p><strong>Coding, design, hosting:</strong> <?=$DevLink?></p>
 			<p><strong>Used libraries &amp; icons include:</strong> <a href="http://jquery.com/">jQuery</a>, <a href="https://github.com/joshcam/PHP-MySQLi-Database-Class">MysqliDb</a>, <a href="http://www.typicons.com/">Typicons</a>, <a href="https://www.npmjs.com/package/uglify-js">Uglify-js</a>, <a href="http://sass-lang.com/">SASS</a></p>
 			<p><strong>Header font:</strong> <a href="http://www.mattyhex.net/CMR/">Celestia Medium Redux</a></p>
+			<p><strong>deviantArt logo</strong> <em>(used on profile pages)</em> &copy; <a href="http://www.mattyhex.net/CMR/">DeviantArt</a></p>
 			<p><strong>Application logo</strong> based on the MLP-VectorClub logo and <a href="http://djdavid98.deviantart.com/art/Rainbow-Dash-standing-S03E07-468486614">Rainbow Dash standing (S03E07)</a> by <a href="http://djdavid98.deviantart.com/">DJDavid98</a></p>
 		</div>
 	</section>
 <?php
-	$Users = $Database->rawQuery('SELECT * FROM users WHERE role != \'developer\' ORDER BY username');
+	$Users = $Database->rawQuery('SELECT * FROM users WHERE role != \'developer\' ORDER BY name');
 	if (!empty($Users)){
 ?>
 	<section>
@@ -51,15 +52,15 @@
 			if (empty($Arranged[$r])) continue;
 			$users = $Arranged[$r];
 			$userCount = count($users);
-			$s = $userCount !== 1 ? 's' : '';
+			$group = $ROLES_ASSOC[$r].($userCount !== 1 ? 's' : '');
 			$usersStr = array();
 			foreach ($users as $u)
 				$usersStr[] = da_link($u, TEXT_ONLY);
 			$usersStr = implode(', ', $usersStr);
 			global $ROLES_ASSOC;
 			echo <<<HTML
+			<p><strong>$userCount $group:</strong> $usersStr</p>
 
-				<p><strong>$userCount {$ROLES_ASSOC[$r]}$s:</strong> $usersStr</p>
 HTML;
 		} ?>
 		</div>

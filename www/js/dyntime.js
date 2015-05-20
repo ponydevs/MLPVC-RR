@@ -1,5 +1,5 @@
 ﻿(function($){
-	var startval = window.DT_START || 'right now';
+	var startval = window.DT_START || 'just now';
 	var timePad = function(i){if(!isNaN(i)){i=parseInt(i);if (i<10&&i>=0)i='0'+i;else if(i<0)i='-0'+Math.abs(i);else i=i.toString()}return i};
 	var months = [ undefined,
 		"Januaray",

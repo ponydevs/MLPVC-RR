@@ -293,13 +293,14 @@
 
 				if (empty($data)){
 					if ($signedIn) $un = $currentUser['name'];
-					else $MSG = 'Sign in to view your profile';
+					else $MSG = 'Sign in to view your settings';
 				}
 				else if (preg_match('/^'.USERNAME_PATTERN.'$/', $data, $_match))
 					$un = $_match[1];
 
-				if (!isset($un))
-					$MSG = 'Invalid username';
+				if (!isset($un)){
+					if (!isset($MSG)) $MSG = 'Invalid username';
+				}
 				else $User = get_user($un, 'name');
 
 				if (empty($User)){
@@ -318,10 +319,18 @@
 					$UsableRoles = $Database->where("value <= (SELECT value FROM roles WHERE name = '{$currentUser['role']}')")->get('roles',null,'name, label');
 
 				if (isset($MSG)) statusCodeHeader(404);
+				else {
+					if ($sameUser){
+						$CurrentSession = $currentUser['Session'];
+						$Database->where('id != ?',array($CurrentSession['id']));
+					}
+					$Sessions = $Database->where('user',$User['id'])->orderBy('lastvisit','DESC')->get('sessions',null,'created,lastvisit,browser_name,browser_ver');
+				}
 
 				$settings = array(
 					'title' => !isset($MSG) ? ($sameUser?'Your':s($User['name'])).' account' : 'Account',
 					'no-robots',
+					'do-css',
 					'js' => array('user'),
 				);
 				if ($canEdit) $settings['js'][] = 'user-manage';

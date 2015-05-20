@@ -1,0 +1,71 @@
+@import "vars";
+
+#content {
+	h1 .da {
+		display: inline;
+		$dalogo: #05cc47;
+		$logowidth: 100px;
+		$logoheight: 167px;
+
+		svg {
+			height: .75em;
+			width: .6em;
+		}
+		path {
+			fill: darken($dalogo ,10);
+			transition: fill .2s linear;
+		}
+		&:hover path { fill: $dalogo }
+	}
+	.settings {
+		text-align: center;
+		border-top: 1px solid $ContentOutline;
+
+		&:empty { display: none }
+		&:not(:empty):before {
+			content: "Settings";
+			margin: 5px 0;
+			font-size: 1.6em;
+			font-weight: bold;
+			display: block;
+		}
+
+		> section {
+			&:not(:last-child) {
+				margin-bottom: 15px;
+			}
+
+			> label {
+				font-size: 1.2em;
+				text-decoration: underline;
+			}
+		}
+		.sessions {
+			.session-list {
+				list-style: none;
+				padding: 0;
+				margin: 10px 0 0;
+				display: flex;
+				flex-flow: row wrap;
+				justify-content:center;
+
+				li {
+					display: inline-block;
+					padding: 5px;
+					border-radius: 5px;
+					background: #ccc;
+					margin: 0 5px 5px 0;
+					flex: 0 0 auto;
+
+					span { display: block }
+					.browser {
+						font-weight: bold;
+
+						> button { vertical-align: bottom }
+						~ * { font-size: .7em }
+					}
+				}
+			}
+		}
+	}
+}
