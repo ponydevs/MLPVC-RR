@@ -76,7 +76,12 @@
 	        }
 	    }
 
-	    return isset($str) ? "$str ago" : 'just now';
+		if (!isset($str)) return 'just now';
+
+		if ($str == '1 day') $str = 'yesterday';
+		else $str .= ' ago';
+
+	    return $str;
 	}
 
 	/**
