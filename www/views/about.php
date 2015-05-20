@@ -55,7 +55,7 @@
 			$group = $ROLES_ASSOC[$r].($userCount !== 1 ? 's' : '');
 			$usersStr = array();
 			foreach ($users as $u)
-				$usersStr[] = da_link($u, TEXT_ONLY);
+				$usersStr[] = "<a href='/u/{$u['name']}'>{$u['name']}</a>";
 			$usersStr = implode(', ', $usersStr);
 			global $ROLES_ASSOC;
 			echo <<<HTML
