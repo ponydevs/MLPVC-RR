@@ -4,15 +4,13 @@
 	h1 .da {
 		display: inline;
 		$dalogo: #05cc47;
-		$logowidth: 100px;
-		$logoheight: 167px;
 
 		svg {
 			height: .75em;
 			width: .6em;
 		}
 		path {
-			fill: darken($dalogo ,10);
+			fill: darken($dalogo, 10);
 			transition: fill .2s linear;
 		}
 		&:hover path { fill: $dalogo }
@@ -38,6 +36,15 @@
 			> label {
 				font-size: 1.2em;
 				text-decoration: underline;
+				margin-bottom: 10px;
+				display: block;
+			}
+			p {
+				margin: 0;
+
+				&:not(:last-child) {
+					margin-bottom: 5px;
+				}
 			}
 		}
 		.sessions {

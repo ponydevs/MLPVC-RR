@@ -1044,11 +1044,11 @@ HTML;
 		$browserTitle = "{$Session['browser_name']} {$Session['browser_ver']}".($current?' (current)':'');
 		$firstuse = timetag($Session['created']);
 		$lastuse = timetag($Session['lastvisit']);
-		// TBI // $remover = $current ? '' : ' <button class="typcn typcn-arrow-forward remove red" title="Sign out from this session"></button>';
-		$remover = '';
+		$signoutText = 'Sign out' . (!$current ? ' from this session' : '');
+		$remover = "<button class='typcn typcn-arrow-back remove orange' title='$signoutText' data-sid={$Session['id']}></button>";
 		echo <<<HTML
 <li class="browser-$browserClass">
-	<span class=browser>$browserTitle$remover</span>
+	<span class=browser>$remover $browserTitle</span>
 	<span class=created>Created: $firstuse</span>
 	<span class=used>Last used: $lastuse</span>
 </li>

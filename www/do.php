@@ -22,11 +22,13 @@
 	if (isset($do)){
 		switch ($do){
 			case "signout":
-				if (!$signedIn) redirect('Location: /');
+				if (!$signedIn) respond('Already signed out',1);
 				detectCSRF();
 
-				if (isset($_REQUEST['unlink'])){
+				if (isset($_REQUEST['unlink']))
 					da_request('https://www.deviantart.com/oauth2/revoke',array('token' => $currentUser['Session']['access']));
+
+				if (isset($_REQUEST['unlink']) || isset($_REQUEST['everywhere'])){
 					$col = 'user';
 					$val = $currentUser['id'];
 				}
@@ -288,6 +290,19 @@
 							respond('Could not save to the database');
 						respond('Group changed successfully',1,array('ng' => $newgroup));
 					}
+					else if (preg_match('/^sessiondel\/(\d+)$/',$data,$_match)){
+						if (!$signedIn) respond();
+						detectCSRF();
+
+						$Session = $Database->where('id', $_match[1])->getOne('sessions');
+						if (empty($Session)) respond('This session does not exist');
+						if ($Session['user'] !== $currentUser['id'] && !PERM('manager'))
+							respond('You are not allowed to delete this session');
+
+						if (!$Database->where('id', $Session['id'])->delete('sessions'))
+							respond('Session could not be deleted');
+						respond('Session successfully removed',1);
+					}
 					else statusCodeHeader(404, AND_DIE);
 				}
 
@@ -324,7 +339,7 @@
 						$CurrentSession = $currentUser['Session'];
 						$Database->where('id != ?',array($CurrentSession['id']));
 					}
-					$Sessions = $Database->where('user',$User['id'])->orderBy('lastvisit','DESC')->get('sessions',null,'created,lastvisit,browser_name,browser_ver');
+					$Sessions = $Database->where('user',$User['id'])->orderBy('lastvisit','DESC')->get('sessions',null,'id,created,lastvisit,browser_name,browser_ver');
 				}
 
 				$settings = array(
