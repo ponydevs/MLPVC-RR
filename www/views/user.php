@@ -23,7 +23,7 @@
 					foreach ($Sessions as $s) render_session_li($s);
 				}
 			?></ul>
-			<p><button class="typcn typcn-arrow-back red" id=signout-everywhere>Sign out everywhere</button></p>
+			<p><button class="typcn typcn-arrow-back yellow" id=signout-everywhere>Sign out everywhere</button></p>
 <?php       } else { ?>
 			<p><?=$sameUser?"You are":'This user is'?>n't logged in anywhere.</p>
 <?php       } ?>
