@@ -25,6 +25,7 @@ CREATE TABLE IF NOT EXISTS `permissions` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 INSERT INTO `permissions` (`action`, `minrole`) VALUES
+('users.listall', 'developer'),
 ('episodes.manage', 'inspector'),
 ('reservations.create', 'member');
 
@@ -63,7 +64,7 @@ CREATE TABLE IF NOT EXISTS `roles` (
 INSERT INTO `roles` (`value`, `name`, `label`) VALUES
 (0, 'ban', 'Banned User'),
 (1, 'user', 'deviantArt User'),
-(2, 'member', 'Group Member'),
+(2, 'member', 'Club Member'),
 (3, 'inspector', 'Vector Inspector'),
 (4, 'manager', 'Group Manager'),
 (5, 'founder', 'Group Founder'),

@@ -288,7 +288,7 @@
 
 						if (!$Database->where('id', $targetUser['id'])->update('users',array('role' => $newgroup)))
 							respond('Could not save to the database');
-						respond('Group changed successfully',1,array('ng' => $newgroup));
+						respond('Group changed successfully',1,array('ng' => $newgroup, 'badge' => label_to_initials($ROLES_ASSOC[$newgroup])));
 					}
 					else if (preg_match('/^sessiondel\/(\d+)$/',$data,$_match)){
 						if (!$signedIn) respond();

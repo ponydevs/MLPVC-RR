@@ -342,12 +342,12 @@
 	/**
 	 * Makes authenticated requests to the deviantArt API
 	 *
-	 * @param string $url
+	 * @param string $endpoint
 	 * @param null|array $postdata
 	 * @param null|string $token
 	 * @return array
 	 */
-	function da_request($url, $postdata = null, $token = null){
+	function da_request($endpoint, $postdata = null, $token = null){
 		global $signedIn, $currentUser;
 
 		if (empty($token)){
@@ -356,7 +356,7 @@
 			$token = $currentUser['Session']['access'];
 		}
 
-		$r = curl_init($url);
+		$r = curl_init(preg_match('~^https?://~', $endpoint) ? $endpoint : "https://www.deviantart.com/api/v1/oauth2/$endpoint");
 		curl_setopt($r, CURLOPT_RETURNTRANSFER, 1);
 		curl_setopt($r, CURLOPT_HTTPHEADER, array("Authorization: Bearer $token"));
 
@@ -413,7 +413,7 @@
 		$json = json_decode($json, true);
 		if (empty($json['status'])) redirect("/da-auth?error={$json['error']}&error_description={$json['error_description']}");
 
-		$userdata = da_request('https://www.deviantart.com/api/v1/oauth2/user/whoami', null, $json['access_token']);
+		$userdata = da_request('user/whoami', null, $json['access_token']);
 
 		$UserID = strtolower($userdata['userid']);
 		$UserData = array(
@@ -601,6 +601,40 @@
 	}
 
 	/**
+	 * User Information Fetching
+	 * -------------------------
+	 * Fetch user info from dA upon request to nonexistant user
+	 *
+	 * @param string $username
+	 * @return array|null
+	 */
+	define('USERNAME_PATTERN', '([A-Za-z\-\d]{1,20})');
+	function fetch_user($username){
+		global $Database;
+
+		if (!preg_match('/^'.USERNAME_PATTERN.'$/', $username))
+			return null;
+
+		$userdata = da_request('user/whois', array('usernames[0]' => $username));
+
+		if (empty($userdata['results'][0]))
+			return null;
+
+		$userdata = $userdata['results'][0];
+
+		$insert = array(
+			'id' => $userdata['userid'],
+			'name' => $userdata['username'],
+			'avatar_url' => $userdata['usericon'],
+		);
+
+		if (!$Database->insert('users',$insert))
+			return null;
+
+		return get_user($insert['name'], 'name');
+	}
+
+	/**
 	 * User Information Retriever
 	 * --------------------------
 	 * Gets a single row from the 'users' database
@@ -612,15 +646,10 @@
 	 *
 	 * @param string $value
 	 * @param string $coloumn
-	 * @param bool $basic
 	 * @return array|null
 	 */
-	define('USERNAME_PATTERN', '([A-Za-z\-\d]{1,20})');
-	define('GETUSER_BASIC', true);
-	function get_user($value, $coloumn = true){
+	function get_user($value, $coloumn = 'id'){
 		global $Database;
-
-		if ($coloumn === true) return $Database->where($coloumn, $value)->getOne('users','id, username, avatar_url');
 
 		$User = array();
 		if ($coloumn === "access"){
@@ -639,7 +668,10 @@
 			LEFT JOIN roles ON roles.name = users.role
 			WHERE users.`$coloumn` = ?",array($value)));
 
-		if (isset($Auth)) $User['Session'] = $Auth;
+		if (empty($User) && $coloumn === 'name')
+			$User = fetch_user($value);
+
+		if (!empty($User) && isset($Auth)) $User['Session'] = $Auth;
 
 		return $User;
 	}
@@ -903,6 +935,7 @@ HTML;
 		else $render($url, $text, $title);
 	}
 
+	// Renders the entire sidebar "Useful links" section \\
 	function sidebar_links_render(){
 		echo '<ul class="links">';
 		// Member only links
@@ -913,7 +946,7 @@ HTML;
 		echo '</ul>';
 	}
 	
-	// Renders the user card in the sidebar \\
+	// Renders the user card \\
 	define('GUEST_AVATAR','/img/favicon.png');
 	function usercard_render(){
 		global $signedIn, $currentUser;
@@ -945,13 +978,24 @@ HTML;
 HTML;
 	}
 
+	/**
+	 * Converts role label to badge initials
+	 * -------------------------------------
+	 * Related: http://stackoverflow.com/a/30740511/1344955
+	 *
+	 * @param string $label
+	 *
+	 * @return string
+	 */
+	function label_to_initials($label){
+		return preg_replace('/(?:^|\s)([A-Z])|./','$1',$label);
+	}
+
 	// Renders avatar wrapper for a specific user \\
 	function get_avatar_wrap($User){
-		if (empty($User['guest'])){
-			$groupInitials = preg_replace('/[^A-Z]/','',$User['rolelabel']);
-			$badge = "<span class=badge>$groupInitials</span>";
-		}
-		else $badge = '';
+		$badge = '';
+		if (empty($User['guest']))
+			$badge = "<span class=badge>".label_to_initials($User['rolelabel'])."</span>";
 		return "<div class=avatar-wrap><img src='{$User['avatar_url']}' class=avatar>$badge</div>";
 	}
 
@@ -970,6 +1014,7 @@ HTML;
 	 * Get the <tbody> contents for the episode list table
 	 *
 	 * @param array|null $Episode
+	 *
 	 * @return string
 	 */
 	function get_eptable_tbody($Episode = null){

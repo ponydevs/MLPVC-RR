@@ -33,39 +33,41 @@
 		</div>
 	</section>
 <?php
-	$Users = $Database->rawQuery('SELECT * FROM users WHERE role != \'developer\' ORDER BY name');
-	if (!empty($Users)){
+	if (PERM('users.listall')){
+		$Users = $Database->orderBy('name')->get('users');
+		if (!empty($Users)){
 ?>
 	<section>
 		<h2>Linked users</h2>
 		<div>
 			<p>Here's a grouped list of all the people who've been added to the site's database so far.</p>
 <?php
-		$Arranged = array();
-		foreach ($Users as $u){
-			if (!isset($Arranged[$u['role']])) $Arranged[$u['role']] = array();
+			$Arranged = array();
+			foreach ($Users as $u){
+				if (!isset($Arranged[$u['role']])) $Arranged[$u['role']] = array();
 
-			$Arranged[$u['role']][] = $u;
-		}
-		global $ROLES;
-		foreach (array_reverse($ROLES) as $r){
-			if (empty($Arranged[$r])) continue;
-			$users = $Arranged[$r];
-			$userCount = count($users);
-			$group = $ROLES_ASSOC[$r].($userCount !== 1 ? 's' : '');
-			$usersStr = array();
-			foreach ($users as $u)
-				$usersStr[] = "<a href='/u/{$u['name']}'>{$u['name']}</a>";
-			$usersStr = implode(', ', $usersStr);
-			global $ROLES_ASSOC;
-			echo <<<HTML
+				$Arranged[$u['role']][] = $u;
+			}
+			global $ROLES;
+			foreach (array_reverse($ROLES) as $r){
+				if (empty($Arranged[$r])) continue;
+				$users = $Arranged[$r];
+				$userCount = count($users);
+				$group = $ROLES_ASSOC[$r].($userCount !== 1 ? 's' : '');
+				$usersStr = array();
+				foreach ($users as $u)
+					$usersStr[] = "<a href='/u/{$u['name']}'>{$u['name']}</a>";
+				$usersStr = implode(', ', $usersStr);
+				global $ROLES_ASSOC;
+				echo <<<HTML
 			<p><strong>$userCount $group:</strong> $usersStr</p>
 
 HTML;
-		} ?>
+			} ?>
 		</div>
 	</section>
-<?php } ?>
+<?php   }
+	} ?>
 </div>
 <div id=sidebar>
 <?php include "views/sidebar.php"; ?>
