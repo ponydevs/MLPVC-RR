@@ -909,40 +909,25 @@ HTML;
 		);
 	}
 
-	/**
-	 * Renders a sidebar link <li> item
-	 *
-	 * Accepts:
-	 *   1) An URL, text and an optional title for the link
-	 *   2) An array of arrays. The arrays should contain
-	 *      / the elements of harmony. ...ahem, I mean... /
-	 *      the elements:
-	 *        0: url
-	 *        1: text
-	 *        2: title
-	 *
-	 * @param mixed $url
-	 * @param string $text
-	 * @param string $title
-	 */
-	function sidebar_link_render($url, $text = '', $title = null){
-		$render = function($u, $tx, $tt){
-			$tt = str_replace("'",'&apos;',$tt);
-			echo "<li><a href='$u' title='$tt'>$tx</a></li>";
-		};
-		if (is_array($url) && empty($text) && empty($title))
-			foreach ($url as $l) $render($l[0], $l[1], isset($l[2])?$l[2]:null);
-		else $render($url, $text, $title);
-	}
-
 	// Renders the entire sidebar "Useful links" section \\
 	function sidebar_links_render(){
+		global $Database, $signedIn, $currentUser;
+		$Links = $Database->rawQuery("SELECT ul.* FROM usefullinks ul LEFT JOIN roles r ON ul.minrole = r.name WHERE r.value <= ".
+			($signedIn
+				?"(SELECT value FROM roles WHERE name = '{$currentUser['role']}')"
+				:1
+			)
+		);
+
 		echo '<ul class="links">';
-		// Member only links
-		if (PERM('member'))
-			sidebar_link_render(array(
-				array(EP_DL_SITE,'Episode downloads','Download iTunes RAW 1080p episodes for best screencaps')
-			));
+		foreach ($Links as $l){
+			if (!empty($l['title'])){
+				$title = str_replace("'",'&apos;',$l['title']);
+				$title = "title='$title'";
+			}
+			else $title = '';
+			echo "<li><a href='{$l['url']}'$title>{$l['label']}</a></li>";
+		}
 		echo '</ul>';
 	}
 	

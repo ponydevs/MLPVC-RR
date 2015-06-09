@@ -82,6 +82,14 @@ CREATE TABLE IF NOT EXISTS `sessions` (
   `lastvisit` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+CREATE TABLE IF NOT EXISTS `usefullinks` (
+  `id` int(11) NOT NULL,
+  `url` tinytext NOT NULL,
+  `label` varchar(40) NOT NULL,
+  `title` tinytext NOT NULL,
+  `minrole` varchar(10) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 CREATE TABLE IF NOT EXISTS `users` (
   `id` varchar(36) NOT NULL,
   `name` tinytext NOT NULL,
@@ -121,6 +129,10 @@ ALTER TABLE `sessions`
   ADD PRIMARY KEY (`id`),
   ADD KEY `user` (`user`);
 
+ALTER TABLE `usefullinks`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `minrole` (`minrole`);
+
 ALTER TABLE `users`
   ADD PRIMARY KEY (`id`),
   ADD KEY `role` (`role`);
@@ -131,6 +143,8 @@ ALTER TABLE `reservations`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `sessions`
   MODIFY `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT;
+ALTER TABLE `usefullinks`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 ALTER TABLE `episodes`
   ADD CONSTRAINT `episodes_ibfk_1` FOREIGN KEY (`posted_by`) REFERENCES `users` (`id`) ON DELETE SET NULL ON UPDATE CASCADE;
@@ -148,3 +162,6 @@ ALTER TABLE `reservations`
 
 ALTER TABLE `sessions`
   ADD CONSTRAINT `sessions_ibfk_1` FOREIGN KEY (`user`) REFERENCES `users` (`id`);
+
+ALTER TABLE `usefullinks`
+  ADD CONSTRAINT `usefullinks_ibfk_1` FOREIGN KEY (`minrole`) REFERENCES `roles` (`name`);

@@ -16,7 +16,6 @@ Below, you can find a step-by-step guide, which tells you how to set up your mac
 	- `DB_PASS`: Password for the user
 	- `DA_CLIENT`: deviantArt application's `client_id`
 	- `DA_SECRET`: deviantArt application's `client_secret`
-	- `EP_DL_SITE`: Absolute URL of the website where episode downloads can be found<br>(not going to make *that* one public, for obvious reasons)
 	- `GA_TRACKING_CODE`: Google Analytics tracking code
 4. Configure your server
     1. If you're using NGINX, you can see a sample configuration in `setup/nginx.conf`. Modify this file as described below, move it to `/etc/nginx/sites-available` (you should rename it, but you don't have to) and create a symlink in `/etc/nginx/sites-enabled` to enable the configuration.
