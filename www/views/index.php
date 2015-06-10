@@ -1,11 +1,8 @@
-<?php
-	if ($do === 'da-auth' && isset($_GET['error'])){
-		$err = $_GET['error'];
-?>
+<?php if ($do === 'da-auth' && isset($err)){ ?>
 <div class="notice fail align-center">
 	<p>There was a(n) <strong><?=$err?></strong> error while trying to authenticate with deviantArt<?=isset($OAUTH_RESPONSE[$err])?"; {$OAUTH_RESPONSE[$err]}":'.'?></p>
-<?php   if (!empty($_GET['error_description'])){ ?>
-	<p>Additional details: <?=$_GET['error_description']?></p>
+<?php   if (!empty($errdesc)){ ?>
+	<p>Additional details: <?=$errdesc?></p>
 <?php   } ?>
 </div>
 <?php } ?>

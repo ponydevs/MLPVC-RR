@@ -11,7 +11,8 @@
 	<p><?php
 		echo "<span>{$User['rolelabel']}</span>";
 		if ($canEdit){
-			?> <button id="change-role" class="blue typcn typcn-spanner" title="Change user's group"></button><?php
+			$BanLabel = $User['role']==='ban'?'Unban':'Ban';
+			?> <button id="change-role" class="blue typcn typcn-spanner" title="Change user's group"></button> <button id="ban-toggle" class="orange typcn typcn-cancel <?=strtolower($BanLabel)?>" title="<?="$BanLabel user"?>" disabled></button><?php
 		}
 	?></p>
 	<div class="settings"><?php

@@ -46,10 +46,14 @@
 			case "da-auth":
 				if ($signedIn) header('Location: /');
 
-				if (empty($_GET['code']) || (empty($_GET['state']) || ($_GET['state'] !== '/' && !preg_match(REWRITE_REGEX,$_GET['state']))))
+				if (!isset($_GET['error']) && (empty($_GET['code']) || (empty($_GET['state']) || ($_GET['state'] !== '/' && !preg_match(REWRITE_REGEX,$_GET['state'])))))
 					$_GET['error'] = 'unauthorized_client';
-				if (isset($_GET['error']))
+				if (isset($_GET['error'])){
+					$err = $_GET['error'];
+					if (isset($_GET['error_description']))
+						$errdesc = $_GET['error_description'];
 					loadPage($IndexSettings);
+				}
 
 				da_get_token($_GET['code']);
 
@@ -351,7 +355,7 @@
 						redirect($pagePath, STAY_ALIVE);
 				}
 				if ($canEdit)
-					$UsableRoles = $Database->where("value <= (SELECT value FROM roles WHERE name = '{$currentUser['role']}')")->get('roles',null,'name, label');
+					$UsableRoles = $Database->where("value <= (SELECT value FROM roles WHERE name = '{$currentUser['role']}')")->where('value > 0')->get('roles',null,'name, label');
 
 				if (isset($MSG)) statusCodeHeader(404);
 				else {

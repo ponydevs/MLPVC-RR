@@ -11,18 +11,20 @@
 		$authKey = Cookie::get('access');
 		$currentUser = get_user($authKey,'access');
 
-		if (!empty($currentUser['Session'])){
-			if (strtotime($currentUser['Session']['expires']) < time()){
-				da_get_token($currentUser['Session']['refresh'],'refresh_token');
+		if (!empty($currentUser)){
+			if ($currentUser['role'] !== 'ban'){
+				if (strtotime($currentUser['Session']['expires']) < time())
+					da_get_token($currentUser['Session']['refresh'],'refresh_token');
+
+				$signedIn = true;
+				$lastVisitTS = date('c');
+				if ($Database->where('id', $currentUser['Session']['id'])->update('sessions', array('lastvisit' => $lastVisitTS)))
+					$currentUser['Session']['lastvisit'] = $lastVisitTS;
 			}
-
-			$signedIn = true;
-			if ($Database->where('id', $currentUser['Session']['id'])->update('sessions', array('lastvisit' => date('c'))))
-				$currentUser['Session']['lastvisit'] = date('c');
-
-			define('DEBUG', $currentUser['role'] === 'developer');
+			else $Database->where('id', $currentUser['id'])->delete('sessions');
 		}
-		else {
+
+		if (!$signedIn){
 			Cookie::delete('access');
 			unset($currentUser);
 		}

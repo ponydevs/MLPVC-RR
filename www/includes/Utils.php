@@ -326,6 +326,7 @@
 		'invalid_scope' => 'The requested scope is invalid, unknown, or malformed.',
 		'server_error' => "There's an issue on deviantArt's end. Try again later.",
 		'temporarily_unavailable' => "There's an issue on deviantArt's end. Try again later.",
+		'user_banned' => 'You were banned on our website by a staff member',
 	);
 
 	// Redirection URI shortcut \\
@@ -412,6 +413,9 @@
 
 		$userdata = da_request('user/whoami', null, $json['access_token']);
 
+		$User = $Database->where('id',$userdata['userid'])->getOne('users');
+		if ($User['role'] === 'ban') redirect("/da-auth?error=user_banned");
+
 		$UserID = strtolower($userdata['userid']);
 		$UserData = array(
 			'name' => $userdata['username'],
@@ -424,8 +428,7 @@
 		);
 
 		add_browser($AuthData);
-
-		if (empty($Database->where('id',$userdata['userid'])->getOne('users','COUNT(*) as rows')['rows'])){
+		if (empty($User)){
 			$MoreInfo = array('id' => $UserID, 'role' => 'user');
 			$makeDev = !$Database->has('users');
 			if ($makeDev)
@@ -434,7 +437,7 @@
 			$Database->insert('users', $Insert);
 			if ($makeDev) update_role($Insert, 'developer');
 		}
-		else $Database->where('id',$userdata['userid'])->update('users', $UserData);
+		else $Database->where('id',$UserID)->update('users', $UserData);
 
 		if ($type === 'refresh_token') $Database->where('refresh', $code)->update('sessions',$AuthData);
 		else $Database->insert('sessions', array_merge($AuthData, array('user' => $UserID)));
