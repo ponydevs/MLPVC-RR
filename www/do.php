@@ -181,6 +181,13 @@
 							respond("There's no episode with this season & episode number");
 
 						if (!$Database->where('season',$Episode['season'])->where('episode',$Episode['episode'])->delete('episodes')) respond(ERR_DB_FAIL);
+						LogAction('episodes',array(
+							'action' => 'delete',
+							'season' => $EpData['season'],
+							'episode' => $EpData['episode'],
+							'twoparter' => $EpData['twoparter'],
+							'title' => $EpData['title'],
+						));
 						respond('Episode deleted successfuly',1,array('tbody' => get_eptable_tbody()));
 					}
 					else {
@@ -230,6 +237,13 @@
 						}
 						else if (!$Database->insert('episodes', $insert))
 							respond(ERR_DB_FAIL);
+						LogAction('episodes',array(
+							'action' => $editing ? 'modify' : 'create',
+							'season' => $insert['season'],
+							'episode' => $insert['episode'],
+							'twoparter' => isset($insert['twoparter']) ? $insert['twoparter'] : 0,
+							'title' => $insert['title'],
+						));
 						respond('Episode saved successfuly',1,array('tbody' => get_eptable_tbody()));
 					}
 				}
@@ -286,8 +300,8 @@
 						if (!in_array($newgroup,$ROLES)) respond('The specified group does not exist');
 						if ($targetUser['role'] === $newgroup) respond('This user is already in the specified group');
 
-						if (!$Database->where('id', $targetUser['id'])->update('users',array('role' => $newgroup)))
-							respond('Could not save to the database');
+						update_role($targetUser,$newgroup);
+
 						respond('Group changed successfully',1,array('ng' => $newgroup, 'badge' => label_to_initials($ROLES_ASSOC[$newgroup])));
 					}
 					else if (preg_match('/^sessiondel\/(\d+)$/',$data,$_match)){
@@ -319,8 +333,14 @@
 				else $User = get_user($un, 'name');
 
 				if (empty($User)){
-					if (!isset($MSG))
-						$MSG = 'User not found';
+					if (!isset($MSG)){
+						$MSG = 'Local user not found';
+						if (!$signedIn){
+							$exists = 'exsists on deviantArt';
+							if (isset($un)) $exists = "<a href='http://$un.deviantart.com/'>$exists</a>";
+							$SubMSG = "If this user $exists, sign in to import their details.";
+						}
+					}
 					$canEdit = $sameUser = false;
 				}
 				else {

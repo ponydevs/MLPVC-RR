@@ -9,7 +9,7 @@
  * @author    Alexander V. Butenko <a.butenka@gmail.com>
  * @copyright Copyright (c) 2010
  * @license   http://opensource.org/licenses/gpl-3.0.html GNU Public License
- * @version   2.0
+ * @version   2.1
  **/
 class MysqliDb
 {
@@ -264,7 +264,7 @@ class MysqliDb
     /**
      *
      * @param string $query   Contains a user-provided select query.
-     * @param int    $numRows The number of rows total to return.
+     * @param integer|array $numRows Array to define SQL limit in format Array ($count, $offset)
      *
      * @return array Contains the returned rows from the query.
      */
@@ -321,7 +321,8 @@ class MysqliDb
      * A convenient SELECT * function.
      *
      * @param string  $tableName The name of the database table to work with.
-     * @param integer $numRows   The number of rows total to return.
+     * @param integer|array $numRows Array to define SQL limit in format Array ($count, $offset)
+     *                               or only $count
      *
      * @return array Contains the returned rows from the select query.
      */
@@ -453,7 +454,8 @@ class MysqliDb
      * Delete query. Call the "where" method first.
      *
      * @param string  $tableName The name of the database table to work with.
-     * @param integer $numRows   The number of rows to delete.
+     * @param integer|array $numRows Array to define SQL limit in format Array ($count, $offset)
+     *                               or only $count
      *
      * @return boolean Indicates success. 0 or 1.
      */
@@ -482,12 +484,16 @@ class MysqliDb
      *
      * @return MysqliDb
      */
-    public function where($whereProp, $whereValue = null, $operator = null)
+    public function where($whereProp, $whereValue = 'DBNULL', $operator = '=', $cond = 'AND')
     {
-        if ($operator)
-            $whereValue = Array ($operator => $whereValue);
-
-        $this->_where[] = Array ("AND", $whereValue, $whereProp);
+        // forkaround for an old operation api
+        if (is_array ($whereValue) && ($key = key ($whereValue)) != "0") {
+            $operator = $key;
+            $whereValue = $whereValue[$key];
+        }
+        if (count ($this->_where) == 0)
+            $cond = '';
+        $this->_where[] = Array ($cond, $whereProp, $operator, $whereValue);
         return $this;
     }
 
@@ -501,13 +507,9 @@ class MysqliDb
      *
      * @return MysqliDb
      */
-    public function orWhere($whereProp, $whereValue = null, $operator = null)
+    public function orWhere($whereProp, $whereValue = 'DBNULL', $operator = '=')
     {
-        if ($operator)
-            $whereValue = Array ($operator => $whereValue);
-
-        $this->_where[] = Array ("OR", $whereValue, $whereProp);
-        return $this;
+        return $this->where ($whereProp, $whereValue, $operator, 'OR');
     }
     /**
      * This method allows you to concatenate joins for the final SQL statement.
@@ -694,7 +696,8 @@ class MysqliDb
      * any passed update data, and the desired rows.
      * It then builds the SQL query.
      *
-     * @param int   $numRows   The number of rows total to return.
+     * @param integer|array $numRows Array to define SQL limit in format Array ($count, $offset)
+     *                               or only $count
      * @param array $tableData Should contain an array of data for updating the database.
      *
      * @return mysqli_stmt Returns the $stmt object.
@@ -867,33 +870,17 @@ class MysqliDb
         if (empty ($this->_where))
             return;
 
-        //Prepair the where portion of the query
+        //Prepare the where portion of the query
         $this->_query .= ' WHERE';
 
-        // Remove first AND/OR concatenator
-        $this->_where[0][0] = '';
         foreach ($this->_where as $cond) {
-            list ($concat, $wValue, $wKey) = $cond;
+            list ($concat, $varName, $operator, $val) = $cond;
+            $this->_query .= " " . $concat ." " . $varName;
 
-            $this->_query .= " " . $concat ." " . $wKey;
-
-            // Empty value (raw where condition in wKey)
-            if ($wValue === null)
-                continue;
-
-            // Simple = comparison
-            if (!is_array ($wValue))
-                $wValue = Array ('=' => $wValue);
-
-            $key = key ($wValue);
-            $val = $wValue[$key];
-            switch (strtolower ($key)) {
-                case '0':
-                    $this->_bindParams ($wValue);
-                    break;
+            switch (strtolower ($operator)) {
                 case 'not in':
                 case 'in':
-                    $comparison = ' ' . $key . ' (';
+                    $comparison = ' ' . $operator. ' (';
                     if (is_object ($val)) {
                         $comparison .= $this->_buildPair ("", $val);
                     } else {
@@ -906,15 +893,20 @@ class MysqliDb
                     break;
                 case 'not between':
                 case 'between':
-                    $this->_query .= " $key ? AND ? ";
+                    $this->_query .= " $operator ? AND ? ";
                     $this->_bindParams ($val);
                     break;
                 case 'not exists':
                 case 'exists':
-                    $this->_query.= $key . $this->_buildPair ("", $val);
+                    $this->_query.= $operator . $this->_buildPair ("", $val);
                     break;
                 default:
-                    $this->_query .= $this->_buildPair ($key, $val);
+                    if (is_array ($val))
+                        $this->_bindParams ($val);
+                    else if ($val === null)
+                        $this->_query .= $operator . " NULL";
+                    else if ($val != 'DBNULL')
+                        $this->_query .= $this->_buildPair ($operator, $val);
             }
         }
     }
@@ -937,7 +929,6 @@ class MysqliDb
     /**
      * Abstraction method that will build the LIMIT part of the WHERE statement
      *
-     * @param int   $numRows   The number of rows total to return.
      */
     protected function _buildOrderBy () {
         if (empty ($this->_orderBy))
@@ -957,7 +948,8 @@ class MysqliDb
     /**
      * Abstraction method that will build the LIMIT part of the WHERE statement
      *
-     * @param int   $numRows   The number of rows total to return.
+     * @param integer|array $numRows Array to define SQL limit in format Array ($count, $offset)
+     *                               or only $count
      */
     protected function _buildLimit ($numRows) {
         if (!isset ($numRows))

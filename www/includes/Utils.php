@@ -24,9 +24,9 @@
 		),$x)));
 	}
 
-	# Logging (TODO)
+	# Logging
 	function LogAction($type,$data = null){
-		global $Database, $signedIn;
+		global $Database, $signedIn, $currentUser;
 		$central = array('ip' => $_SERVER['REMOTE_ADDR']);
 
 		if (isset($data)){
@@ -34,20 +34,17 @@
 				if (is_bool($v))
 					$data[$k] = $v ? 1 : 0;
 
-			$refid = $Database->insert("log_$type",$data,true);
+			$refid = $Database->insert("log__$type",$data);
 		}
 
 		$central['reftype'] = $type;
-		if (isset($refid) && $refid > 0){
+		if (!empty($refid))
 			$central['refid'] = $refid;
-		}
-		else if (!isset($data)){
-			$central['refid'] = 0;
-		}
-		else return false;
+		else if (!empty($data)) return false;
+
 		if ($signedIn)
-			$central['initiator'] = $GLOBALS['currentUser']['id'];
-		$Database->insert("log_central",$central);
+			$central['initiator'] = $currentUser['id'];
+		return !!$Database->insert("log",$central);
 	}
 
 	/**
@@ -81,7 +78,7 @@
 		if ($str == '1 day') $str = 'yesterday';
 		else $str .= ' ago';
 
-	    return $str;
+	    return $str.' (<abbr title="GMT'.date('P').'">'.date('T').'</abbr>)';
 	}
 
 	/**
@@ -351,7 +348,7 @@
 		global $signedIn, $currentUser;
 
 		if (empty($token)){
-			if (!$signedIn) die(trigger_error('Trying to make a request without signing in'));
+			if (!$signedIn) return null;
 
 			$token = $currentUser['Session']['access'];
 		}
@@ -428,8 +425,15 @@
 
 		add_browser($AuthData);
 
-		if (empty($Database->where('id',$userdata['userid'])->get('users')))
-			$Database->insert('users', array_merge($UserData, array('id' => $UserID)));
+		if (empty($Database->where('id',$userdata['userid'])->getOne('users','COUNT(*) as rows')['rows'])){
+			$MoreInfo = array('id' => $UserID, 'role' => 'user');
+			$makeDev = !$Database->has('users');
+			if ($makeDev)
+				$MoreInfo['id'] = strtoupper($MoreInfo['id']);
+			$Insert = array_merge($UserData, $MoreInfo);
+			$Database->insert('users', $Insert);
+			if ($makeDev) update_role($Insert, 'developer');
+		}
 		else $Database->where('id',$userdata['userid'])->update('users', $UserData);
 
 		if ($type === 'refresh_token') $Database->where('refresh', $code)->update('sessions',$AuthData);
@@ -543,7 +547,7 @@
 	}
 
 	// Episode title matching pattern \\
-	define('EP_TITLE_REGEX', '/^[A-Za-z \'\-!\d,&]{5,35}$/');
+	define('EP_TITLE_REGEX', '/^[A-Za-z \'\-!\d,&:]{5,35}$/');
 
 	/**
 	 * Turns an 'episode' database row into a readable title
@@ -623,7 +627,7 @@
 		$userdata = $userdata['results'][0];
 
 		$insert = array(
-			'id' => $userdata['userid'],
+			'id' => strtolower($userdata['userid']),
 			'name' => $userdata['username'],
 			'avatar_url' => $userdata['usericon'],
 		);
@@ -674,6 +678,20 @@
 		if (!empty($User) && isset($Auth)) $User['Session'] = $Auth;
 
 		return $User;
+	}
+
+	// Update user's role
+	function update_role($targetUser, $newgroup){
+		global $Database;
+		$response = $Database->where('id', $targetUser['id'])->update('users',array('role' => $newgroup));
+
+		if ($response) LogAction('rolechange',array(
+			'target' => $targetUser['id'],
+			'oldrole' => $targetUser['role'],
+			'newrole' => $newgroup
+		));
+
+		return $response;
 	}
 
 	/**
@@ -926,7 +944,7 @@ HTML;
 				$title = "title='$title'";
 			}
 			else $title = '';
-			echo "<li><a href='{$l['url']}'$title>{$l['label']}</a></li>";
+			echo "<li><a href='{$l['url']}' $title>{$l['label']}</a></li>";
 		}
 		echo '</ul>';
 	}

@@ -19,6 +19,31 @@ CREATE TABLE IF NOT EXISTS `episodes` (
   `posted_by` varchar(36) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+CREATE TABLE IF NOT EXISTS `log` (
+  `entryid` int(11) NOT NULL,
+  `initiator` varchar(36) DEFAULT NULL,
+  `reftype` tinytext NOT NULL,
+  `refid` int(11) DEFAULT NULL,
+  `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `ip` tinytext
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS `log__episodes` (
+  `entryid` int(11) NOT NULL,
+  `action` set('create','delete','modify') NOT NULL,
+  `season` tinyint(2) unsigned NOT NULL,
+  `episode` tinyint(2) unsigned NOT NULL,
+  `twoparter` tinyint(1) NOT NULL,
+  `title` tinytext NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS `log__rolechange` (
+  `entryid` int(11) NOT NULL,
+  `target` varchar(36) NOT NULL,
+  `oldrole` varchar(10) NOT NULL,
+  `newrole` varchar(10) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 CREATE TABLE IF NOT EXISTS `permissions` (
   `action` varchar(30) NOT NULL,
   `minrole` varchar(10) NOT NULL
@@ -105,6 +130,19 @@ ALTER TABLE `episodes`
   ADD PRIMARY KEY (`season`,`episode`),
   ADD KEY `posted_by` (`posted_by`);
 
+ALTER TABLE `log`
+  ADD PRIMARY KEY (`entryid`),
+  ADD KEY `initiator` (`initiator`);
+
+ALTER TABLE `log__episodes`
+  ADD PRIMARY KEY (`entryid`);
+
+ALTER TABLE `log__rolechange`
+  ADD PRIMARY KEY (`entryid`),
+  ADD KEY `prevrole` (`oldrole`),
+  ADD KEY `newrole` (`newrole`),
+  ADD KEY `target` (`target`);
+
 ALTER TABLE `permissions`
   ADD PRIMARY KEY (`action`),
   ADD KEY `minrole` (`minrole`);
@@ -137,6 +175,12 @@ ALTER TABLE `users`
   ADD PRIMARY KEY (`id`),
   ADD KEY `role` (`role`);
 
+ALTER TABLE `log`
+  MODIFY `entryid` int(11) NOT NULL AUTO_INCREMENT;
+ALTER TABLE `log__episodes`
+  MODIFY `entryid` int(11) NOT NULL AUTO_INCREMENT;
+ALTER TABLE `log__rolechange`
+  MODIFY `entryid` int(11) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `requests`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `reservations`
@@ -148,6 +192,13 @@ ALTER TABLE `usefullinks`
 
 ALTER TABLE `episodes`
   ADD CONSTRAINT `episodes_ibfk_1` FOREIGN KEY (`posted_by`) REFERENCES `users` (`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+
+ALTER TABLE `log`
+  ADD CONSTRAINT `log_ibfk_1` FOREIGN KEY (`initiator`) REFERENCES `users` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE;
+
+ALTER TABLE `log__rolechange`
+  ADD CONSTRAINT `log__rolechange_ibfk_1` FOREIGN KEY (`oldrole`) REFERENCES `roles` (`name`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `log__rolechange_ibfk_2` FOREIGN KEY (`newrole`) REFERENCES `roles` (`name`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 ALTER TABLE `permissions`
   ADD CONSTRAINT `permissions_ibfk_1` FOREIGN KEY (`minrole`) REFERENCES `roles` (`name`);
@@ -161,7 +212,10 @@ ALTER TABLE `reservations`
   ADD CONSTRAINT `reservations_ibfk_1` FOREIGN KEY (`season`, `episode`) REFERENCES `episodes` (`season`, `episode`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 ALTER TABLE `sessions`
-  ADD CONSTRAINT `sessions_ibfk_1` FOREIGN KEY (`user`) REFERENCES `users` (`id`);
+  ADD CONSTRAINT `sessions_ibfk_1` FOREIGN KEY (`user`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 ALTER TABLE `usefullinks`
   ADD CONSTRAINT `usefullinks_ibfk_1` FOREIGN KEY (`minrole`) REFERENCES `roles` (`name`);
+
+ALTER TABLE `users`
+  ADD CONSTRAINT `users_ibfk_1` FOREIGN KEY (`role`) REFERENCES `roles` (`name`);
