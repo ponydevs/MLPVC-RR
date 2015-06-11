@@ -487,6 +487,14 @@ footer {
 	a { color: inherit }
 }
 
+// Colors
+.color-blue { color: $NBlue }
+.color-darkblue { color: $NDarkBlue }
+.color-green { color: $NGreen }
+.color-red { color: $NRed }
+.color-orange { color: $NOrange }
+.color-yellow { color: $NYellow }
+
 // Notices
 .notice {
 	display: block;

@@ -25,6 +25,12 @@
 	}
 
 	# Logging
+	$LOG_DESCRIPTION = array(
+		'episodes' => 'Episode management',
+		'episode_modify' => 'Episode modified',
+		'rolechange' => 'User group change',
+		'userfetch' => 'Fetch user details',
+	);
 	function LogAction($type,$data = null){
 		global $Database, $signedIn, $currentUser;
 		$central = array('ip' => $_SERVER['REMOTE_ADDR']);
@@ -45,6 +51,95 @@
 		if ($signedIn)
 			$central['initiator'] = $currentUser['id'];
 		return !!$Database->insert("log",$central);
+	}
+
+	# Format log details
+	function format_log_details($logtype, $data){
+		global $Database, $ROLES_ASSOC;
+		$details = array();
+
+		switch ($logtype){
+			case "rolechange":
+				$target =  $Database->where('id',$data['target'])->getOne('users');
+
+				$details = array(
+					array('Target user',"<a href='/u/{$target['name']}'>{$target['name']}</a>"),
+					array('Old group',$ROLES_ASSOC[$data['oldrole']]),
+					array('New group',$ROLES_ASSOC[$data['newrole']])
+				);
+			break;
+			case "episodes":
+				$actions = array('add' => 'create', 'del' => 'delete');
+				$details[] = array('Action', $actions[$data['action']]);
+				$details[] = array('Name', format_episode_title($data));
+			break;
+			case "episode_modify":
+				$details[] = array('Target episode', $data['target']);
+
+				$newOld = array();
+				unset($data['entryid'], $data['target']);
+				foreach ($data as $k => $v){
+					if (is_null($v)) continue;
+
+					$thing = substr($k, 3);
+					$type = substr($k, 0, 3);
+					if (!isset($newOld[$thing]))
+						$newOld[$thing] = array();
+					$newOld[$thing][$type] = $thing === 'twoparter' ? !!$v : $v;
+				}
+
+				foreach ($newOld as $thing => $ver){
+					$details[] = array("Old $thing",$ver['old']);
+					$details[] = array("New $thing",$ver['new']);
+				}
+			break;
+			case "userfetch":
+				$user =  $Database->where('id',$data['userid'])->getOne('users');
+				$details[] = array('User', "<a href='/u/{$user['name']}'>{$user['name']}</a>");
+			break;
+			default:
+				$details[] = array('Could not process details','No data processor defined for this entry type');
+			break;
+		}
+
+		return array('details' => $details);
+	}
+
+	# Render log page <tbody> content
+	function log_tbody_render($LogItems){
+		global $Database, $LOG_DESCRIPTION;
+
+		if (count($LogItems) > 0) foreach ($LogItems as $item){
+			if (in_array($item['ip'],array('::1','127.0.0.1'))) $ip = "localhost";
+			else $ip = $item['ip'];
+
+			if ($item['ip'] === $_SERVER['REMOTE_ADDR']) $ip .= ' <span class="self">(from your IP)</span>';
+
+			$inituser = 'Web server';
+			if ($item['initiator'] > 0){
+				$inituser = $Database->where('id',$item['initiator'])->getOne('users');
+				if (empty($inituser))
+					$inituser = 'Deleted user';
+				else $inituser = "<a href='/u/{$inituser['name']}'>{$inituser['name']}</a>";
+			}
+
+			$event = isset($LOG_DESCRIPTION[$item['reftype']]) ? $LOG_DESCRIPTION[$item['reftype']] : $item['reftype'];
+			if ($item['reftype'] !== 'logclear')
+				$event = '<span class="expand-section typcn typcn-plus">'.$event.'</span>';
+			$ts = timetag($item['timestamp']);
+			$HTML = <<<HTML
+
+		<tr>
+			<td class=entryid>{$item['entryid']}</td>
+			<td class=timestamp>$ts<br><span class="dynt-el"></span></td>
+			<td class=ip>{$inituser}<br>{$ip}</td>
+			<td class=reftype>{$event}</td>
+		</tr>
+HTML;
+
+			echo $HTML;
+		}
+		else echo "<tr><td colspan=4>There are no log items</td></tr>";
 	}
 
 	/**
@@ -637,6 +732,8 @@
 
 		if (!$Database->insert('users',$insert))
 			return null;
+
+		LogAction('userfetch',array('userid' => $insert['id']));
 
 		return get_user($insert['name'], 'name');
 	}

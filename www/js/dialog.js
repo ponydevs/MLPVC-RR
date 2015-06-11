@@ -326,7 +326,7 @@
 			$dialogBox.css("left", ($w.width() - $dialogBox.outerWidth()) / 2);
 		}
 	}).on('ajaxerror',function(){
-		$.Dialog.fail(false,'A kérés küldése közben hiba történt. További információt a fejlesztői konzolban találsz.');
+		$.Dialog.fail(false,'There was an error while processing your request. You may find additional details in the browser\'s console.');
 	});
 	$(document.body).on('keydown',function(e){
 		if (e.keyCode === 9 && typeof $.Dialog.open !== 'undefined'){

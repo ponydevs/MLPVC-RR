@@ -81,7 +81,7 @@ $(function(){
 					if (data.status){
 						var $editepWithData = $editep.clone();
 
-						$editepWithData.find('input[name=twoparter]').prop('checked',data.ep.twoparter === true);
+						$editepWithData.find('input[name=twoparter]').prop('checked',!!data.ep.twoparter);
 						delete data.ep.twoparter;
 
 						var epid = data.epid;

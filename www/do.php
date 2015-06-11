@@ -186,11 +186,11 @@
 
 						if (!$Database->where('season',$Episode['season'])->where('episode',$Episode['episode'])->delete('episodes')) respond(ERR_DB_FAIL);
 						LogAction('episodes',array(
-							'action' => 'delete',
-							'season' => $EpData['season'],
-							'episode' => $EpData['episode'],
-							'twoparter' => $EpData['twoparter'],
-							'title' => $EpData['title'],
+							'action' => 'del',
+							'season' => $Episode['season'],
+							'episode' => $Episode['episode'],
+							'twoparter' => $Episode['twoparter'],
+							'title' => $Episode['title'],
 						));
 						respond('Episode deleted successfuly',1,array('tbody' => get_eptable_tbody()));
 					}
@@ -224,8 +224,7 @@
 						if (!empty($Target) && (!$editing || ($editing && ($Target['season'] !== $Current['season'] || $Target['episode'] !== $Current['episode']))))
 							respond("There's already an episode with the same season & episode number");
 
-						if (isset($_POST['twoparter']))
-							$insert['twoparter'] = 1;
+						$insert['twoparter'] = isset($_POST['twoparter']) ? 1 : 0;
 
 						if (empty($_POST['title']))
 							respond('Episode title is missing or invalid');
@@ -241,8 +240,21 @@
 						}
 						else if (!$Database->insert('episodes', $insert))
 							respond(ERR_DB_FAIL);
-						LogAction('episodes',array(
-							'action' => $editing ? 'modify' : 'create',
+
+						if ($editing){
+							$logentry = array('target' => format_episode_title($Current,AS_ARRAY,'id'));
+							$changes = 0;
+							foreach (array('season', 'episode', 'twoparter', 'title') as $k){
+								if (isset($insert[$k]) && $insert[$k] !== $Current[$k]){
+									$logentry["old$k"] = $Current[$k];
+									$logentry["new$k"] = $insert[$k];
+									$changes++;
+								}
+							}
+							if ($changes > 0) LogAction('episode_modify',$logentry);
+						}
+						else LogAction('episodes',array(
+							'action' => 'add',
 							'season' => $insert['season'],
 							'episode' => $insert['episode'],
 							'twoparter' => isset($insert['twoparter']) ? $insert['twoparter'] : 0,
@@ -277,6 +289,56 @@
 					'do-css',
 				));
 			break;
+			case "logs":
+				if (RQMTHD === "POST"){
+					if (!PERM('logs.view')) respond();
+					$_match = array();
+					if (isset($_POST['page']) && is_numeric($_POST['page']))
+						$Page = intval($_POST['page']);
+					else if (preg_match('/^details\/(\d+)/', $data, $_match)){
+						$EntryID = intval($_match[1]);
+
+						$MainEntry = $Database->where('entryid', $EntryID)->getOne('log');
+						if (empty($MainEntry)) respond('Log entry does not exist');
+						if (empty($MainEntry['refid'])) respond('There are no details to show');
+
+						$Details = $Database->where('entryid', $MainEntry['refid'])->getOne("log__{$MainEntry['reftype']}");
+						if (empty($Details)) respond('Failed to retrieve details');
+
+						respond(format_log_details($MainEntry['reftype'],$Details));
+					}
+				}
+				else {
+					if (!PERM('logs.view')) $MSG = "You do not have permission to view the log entries";
+					else if (is_numeric($data))
+						$Page = intval($data);
+				}
+
+				if (empty($MSG)){
+					if (empty($Page) || $Page < 1)
+						$Page = 1;
+
+					$ItemsPerPage = 10;
+					$EntryCount = $Database->getOne('log', 'COUNT(*) as rows')['rows'];
+					$MaxPages = ceil($EntryCount/$ItemsPerPage);
+
+					if ($Page > $MaxPages)
+						$Page = $MaxPages;
+
+					$path = "/logs/$Page";
+					if (strtok($_SERVER['REQUEST_URI'],'?') !== $path)
+						redirect($path, STAY_ALIVE);
+
+					$LogItems = $Database->orderBy('timestamp')->get('log',array($ItemsPerPage*($Page-1), $ItemsPerPage));
+				}
+				else statusCodeHeader(403);
+
+				loadPage(array(
+					'title' => (empty($MSG) ? "Page $Page - ":'').'Logs',
+					'do-css',
+					'do-js',
+				));
+			break;
 			case "u":
 				$do = 'user';
 			case "user":
@@ -301,7 +363,7 @@
 
 						if (!isset($_POST['newrole'])) respond('The new group is not specified');
 						$newgroup = trim($_POST['newrole']);
-						if (!in_array($newgroup,$ROLES)) respond('The specified group does not exist');
+						if (!in_array($newgroup,$ROLES) ||$newgroup === 'ban') respond('The specified group does not exist');
 						if ($targetUser['role'] === $newgroup) respond('This user is already in the specified group');
 
 						update_role($targetUser,$newgroup);

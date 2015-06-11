@@ -40,7 +40,6 @@
 	<section>
 		<h2>Linked users</h2>
 		<div>
-			<p>Here's a grouped list of all the people who've been added to the site's database so far.</p>
 <?php
 			$Arranged = array();
 			foreach ($Users as $u){

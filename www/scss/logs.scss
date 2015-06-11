@@ -1,0 +1,109 @@
+@media all and (max-width: 650px) {
+	.expand-section {
+		display: block;
+		width: calc(100% - 10px);
+	}
+	.expandable-section {
+		border-top-right-radius: 0 !important;
+	}
+	#logs tr td.timestamp .dynt-el {
+		text-decoration: underline;
+		color: #059;
+		cursor: pointer;
+	}
+	#logs tr td.timestamp .dynt-el:after,
+	#logs tr td.timestamp .dynt-el:before {
+		content: "" !important;
+	}
+	#logs tr td.timestamp time {
+		display: none;
+	}
+}
+@media all and (min-width: 500px) {
+	#dialogContent .modal-ip {
+		display: none;
+	}
+}
+@media all and (max-width: 500px) {
+	#logs tr td.ip {
+		display: none;
+	}
+}
+#logs {
+	width: 100%;
+
+	tr td {
+		&.entryid {
+			width: 5%;
+			text-align: center;
+		}
+		&.timestamp {
+			width: 35%;
+
+			.dynt-el {
+				font-style: italic;
+				font-size: .8em;
+			}
+		}
+		&.ip {
+			width: 20%;
+
+			.self { font-size: .8em }
+		}
+		&.reftype {
+			width: 40%;
+			padding: 12px;
+		}
+	}
+	tbody .entryid {
+		font-size: 1.6em;
+	}
+}
+.expand-section {
+	display: inline-block;
+	background-color: rgba(0,0,0,.15);
+	border-radius: 5px;
+	padding: 3px 5px;
+	cursor: pointer;
+
+	transition-property: background-color, border-radius;
+	transition-duration: .5s;
+
+	&:before {
+		font-size: 1.2em;
+	}
+	&.expanded {
+		border-bottom-left-radius: 0;
+		border-bottom-right-radius: 0;
+
+		background-color: rgba(0,0,0,.075);
+	}
+}
+.expandable-section {
+	padding: 10px;
+	background-color: rgba(0,0,0,.075);
+	border-radius: 0 8px 8px 8px;
+
+	p {
+		margin: 0;
+
+		i { font-size: .8em }
+	}
+}
+ul.pagination {
+	display: block;
+	padding: 0;
+	margin: 5px 0;
+	list-style: none;
+	text-align: center;
+
+	&:before { content: "Pages: " }
+
+	li {
+		display: inline;
+
+		&:not(:last-child):after {
+			content: ', ';
+		}
+	}
+}

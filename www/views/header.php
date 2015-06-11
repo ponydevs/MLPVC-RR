@@ -27,6 +27,9 @@
 			<a href="/episodes">Episodes</a>
 <?php if ($signedIn){ ?>
 			<a href="/u/<?=$currentUser['name']?>">Account</a>
+<?php   if (PERM('logs.view')){ ?>
+			<a href="<?=$do === 'logs' ? $_SERVER['REQUEST_URI'] : '/logs'?>">Logs</a>
+<?php   } ?>
 <?php } ?>
 			<a href="/about">About</a>
 			<a href="http://mlp-vectorclub.deviantart.com/">MLP-VectorClub</a>

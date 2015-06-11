@@ -30,11 +30,24 @@ CREATE TABLE IF NOT EXISTS `log` (
 
 CREATE TABLE IF NOT EXISTS `log__episodes` (
   `entryid` int(11) NOT NULL,
-  `action` set('create','delete','modify') NOT NULL,
+  `action` set('add','del') NOT NULL,
   `season` tinyint(2) unsigned NOT NULL,
   `episode` tinyint(2) unsigned NOT NULL,
   `twoparter` tinyint(1) NOT NULL,
   `title` tinytext NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS `log__episode_modify` (
+  `entryid` int(11) NOT NULL,
+  `target` tinytext NOT NULL,
+  `oldseason` tinyint(2) unsigned DEFAULT NULL,
+  `newseason` tinyint(2) unsigned DEFAULT NULL,
+  `oldepisode` tinyint(2) DEFAULT NULL,
+  `newepisode` tinyint(2) unsigned DEFAULT NULL,
+  `oldtwoparter` tinyint(1) DEFAULT NULL,
+  `newtwoparter` tinyint(1) DEFAULT NULL,
+  `oldtitle` tinytext,
+  `newtitle` tinytext
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `log__rolechange` (
@@ -42,6 +55,11 @@ CREATE TABLE IF NOT EXISTS `log__rolechange` (
   `target` varchar(36) NOT NULL,
   `oldrole` varchar(10) NOT NULL,
   `newrole` varchar(10) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS `log__userfetch` (
+  `entryid` int(11) NOT NULL,
+  `userid` varchar(36) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `permissions` (
@@ -52,6 +70,7 @@ CREATE TABLE IF NOT EXISTS `permissions` (
 INSERT INTO `permissions` (`action`, `minrole`) VALUES
 ('users.listall', 'developer'),
 ('episodes.manage', 'inspector'),
+('logs.view', 'manager'),
 ('reservations.create', 'member');
 
 CREATE TABLE IF NOT EXISTS `requests` (
@@ -137,11 +156,17 @@ ALTER TABLE `log`
 ALTER TABLE `log__episodes`
   ADD PRIMARY KEY (`entryid`);
 
+ALTER TABLE `log__episode_modify`
+  ADD PRIMARY KEY (`entryid`);
+
 ALTER TABLE `log__rolechange`
   ADD PRIMARY KEY (`entryid`),
   ADD KEY `prevrole` (`oldrole`),
   ADD KEY `newrole` (`newrole`),
   ADD KEY `target` (`target`);
+
+ALTER TABLE `log__userfetch`
+  ADD PRIMARY KEY (`entryid`);
 
 ALTER TABLE `permissions`
   ADD PRIMARY KEY (`action`),
@@ -179,7 +204,11 @@ ALTER TABLE `log`
   MODIFY `entryid` int(11) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `log__episodes`
   MODIFY `entryid` int(11) NOT NULL AUTO_INCREMENT;
+ALTER TABLE `log__episode_modify`
+  MODIFY `entryid` int(11) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `log__rolechange`
+  MODIFY `entryid` int(11) NOT NULL AUTO_INCREMENT;
+ALTER TABLE `log__userfetch`
   MODIFY `entryid` int(11) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `requests`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
