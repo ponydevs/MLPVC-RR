@@ -2,8 +2,9 @@
 	<h1>Global logs</h1>
 <?php if (!empty($MSG)){ ?>
 	<p><?=$MSG?></p>
-<?php } else {
-		$Pagination = array();
+<?php } else { ?>
+	<p>Displaying <?=$ItemsPerPage?> items/page</p>
+<?php	$Pagination = array();
 		for ($i = 1; $i <= $MaxPages; $i++){
 			$li = $i;
 			if ($li !== $Page)
