@@ -121,7 +121,10 @@
 
 				if ($item['ip'] === $_SERVER['REMOTE_ADDR']) $ip .= ' <span class="self">(from your IP)</span>';
 			}
-			else $ip = 'Web server';
+			else {
+				$inituser = null;
+				$ip = 'Web server';
+			}
 
 			$event = isset($LOG_DESCRIPTION[$item['reftype']]) ? $LOG_DESCRIPTION[$item['reftype']] : $item['reftype'];
 			if ($item['reftype'] !== 'logclear')
