@@ -110,30 +110,33 @@
 		global $Database, $LOG_DESCRIPTION;
 
 		if (count($LogItems) > 0) foreach ($LogItems as $item){
-			if (in_array($item['ip'],array('::1','127.0.0.1'))) $ip = "localhost";
-			else $ip = $item['ip'];
-
-			if ($item['ip'] === $_SERVER['REMOTE_ADDR']) $ip .= ' <span class="self">(from your IP)</span>';
-
-			$inituser = 'Web server';
-			if ($item['initiator'] > 0){
+			if (!empty($item['initiator'])){
 				$inituser = $Database->where('id',$item['initiator'])->getOne('users');
 				if (empty($inituser))
 					$inituser = 'Deleted user';
 				else $inituser = "<a href='/u/{$inituser['name']}'>{$inituser['name']}</a>";
+
+				if (in_array($item['ip'],array('::1','127.0.0.1'))) $ip = "localhost";
+				else $ip = $item['ip'];
+
+				if ($item['ip'] === $_SERVER['REMOTE_ADDR']) $ip .= ' <span class="self">(from your IP)</span>';
 			}
+			else $ip = 'Web server';
 
 			$event = isset($LOG_DESCRIPTION[$item['reftype']]) ? $LOG_DESCRIPTION[$item['reftype']] : $item['reftype'];
 			if ($item['reftype'] !== 'logclear')
 				$event = '<span class="expand-section typcn typcn-plus">'.$event.'</span>';
 			$ts = timetag($item['timestamp']);
+
+			if (!empty($inituser)) $ip = "$inituser<br>$ip";
+
 			$HTML = <<<HTML
 
 		<tr>
 			<td class=entryid>{$item['entryid']}</td>
 			<td class=timestamp>$ts<br><span class="dynt-el"></span></td>
-			<td class=ip>{$inituser}<br>{$ip}</td>
-			<td class=reftype>{$event}</td>
+			<td class=ip>$ip</td>
+			<td class=reftype>$event</td>
 		</tr>
 HTML;
 
