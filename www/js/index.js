@@ -1,5 +1,6 @@
 $(function(){
-	var $body = $(document.body),
+	var $w = $(window),
+		$body = $(document.body),
 		$navbar = $('header nav'),
 		SEASON = window.SEASON,
 		EPISODE = window.EPISODE;
@@ -12,18 +13,16 @@ $(function(){
 		    $body.removeClass('no-distractions');
 		});
 
-	$('#requests').find('li[id]').each(function(){
-		var $li = $(this),
-			id = parseInt($li.attr('id').replace(/\D/g,'')),
-			type = '';
-	});
-	$('#requests, #reservations').find('li[id]').each(function(){
-		var $li = $(this),
-			id = parseInt($li.attr('id').replace(/\D/g,'')),
-			type = $li.closest('section[id]').attr('id');
+	$.fn.rebindHandlers = function(){
+		$(this).find('li[id]').each(function(){
+			var $li = $(this),
+				id = parseInt($li.attr('id').replace(/\D/g,'')),
+				type = $li.closest('section[id]').attr('id');
 
-		Bind($li, id, type);
-	});
+			Bind($li, id, type);
+		});
+	};
+	$('#requests, #reservations').rebindHandlers();
 	function Bind($li, id, type){
 		$li.find('button.reserve-request').off('click').on('click',function(){
 			var $this = $(this),
@@ -79,96 +78,116 @@ $(function(){
 	}
 
 	$('.post-form').each(function(){
-		var $form = $(this),
-			$formImgCheck = $form.find('.check-img'),
-			$formImgPreview = $form.find('.img-preview'),
-			$formImgInput = $form.find('[name=image_url]'),
-			$formTitleInput = $form.find('[name=label]'),
-			$notice = $formImgPreview.children('.notice'),
-			noticeHTML = $notice.html(),
-			$previewIMG = $formImgPreview.children('img'),
-			type = $form.data('type'), Type = type.charAt(0).toUpperCase()+type.substring(1);
-		if ($previewIMG.length === 0) $previewIMG = $(new Image()).appendTo($formImgPreview);
-		$('#'+type+'-btn').on('click',function(){
-			if (!$form.is(':visible')){
-				$form.show();
-				$formImgInput.focus();
-				$body.animate({scrollTop: $form.offset().top + $navbar.outerHeight() }, 1000, 'easeOutQuint');
+		(function($form){
+			var $formImgCheck = $form.find('.check-img'),
+				$formImgPreview = $form.find('.img-preview'),
+				$formImgInput = $form.find('[name=image_url]'),
+				$formTitleInput = $form.find('[name=label]'),
+				$notice = $formImgPreview.children('.notice'),
+				noticeHTML = $notice.html(),
+				$previewIMG = $formImgPreview.children('img'),
+				type = $form.data('type'), Type = type.charAt(0).toUpperCase()+type.substring(1);
+
+			if ($previewIMG.length === 0) $previewIMG = $(new Image()).appendTo($formImgPreview);
+			$('#'+type+'-btn').on('click',function(){
+				if (!$form.is(':visible')){
+					$form.show();
+					$formImgInput.focus();
+					$body.animate({scrollTop: $form.offset().top - $navbar.outerHeight() - 10 }, 500);
+				}
+			});
+			$formImgInput.on('keyup change paste',imgCheckDisabler);
+			function imgCheckDisabler(disable){
+				var prevurl = $formImgInput.data('prev-url'),
+					samevalue = typeof prevurl === 'string' && prevurl.trim() === $formImgInput.val().trim();
+				$formImgCheck.attr('disabled',disable === true || samevalue);
+				if (disable === true || samevalue) $formImgCheck.attr('title', 'You need to change the URL before chacking again.');
+				else $formImgCheck.removeAttr('title');
 			}
-		});
-		$formImgInput.on('keyup change paste',imgCheckDisabler);
-		function imgCheckDisabler(disable){
-			var prevurl = $formImgInput.data('prev-url'),
-				samevalue = typeof prevurl === 'string' && prevurl === $formImgInput.val().trim();
-			$formImgCheck.attr('disabled',disable === true || samevalue);
-			if (disable === true || samevalue) $formImgCheck.attr('title', 'You need to change the URL before chacking again.');
-			else $formImgCheck.removeAttr('title');
-		}
-		$formImgCheck.on('click',function(e){
-			e.preventDefault();
+			$formImgCheck.on('click',function(e){
+				e.preventDefault();
 
-			$formImgCheck.removeClass('red');
-			imgCheckDisabler(true);
-			var url = $formImgInput.val();
+				$formImgCheck.removeClass('red');
+				imgCheckDisabler(true);
+				var url = $formImgInput.val();
 
-			$.ajax({
-				method:'POST',
-				url:'/post',
-				data: { image_url: url },
-				success: function(data){
+				$.ajax({
+					method:'POST',
+					url:'/post',
+					data: { image_url: url },
+					success: function(data){
+						if (typeof data !== 'object') return console.log(data) && $w.trigger('ajaxerror');
+
+						if (data.status){
+							$previewIMG.attr('src',data.preview).show().on('load',function(){
+								$notice.hide();
+
+								$formImgInput.data('prev-url', url);
+
+								if (!!data.title && !$formTitleInput.val().trim()) $formTitleInput.val(data.title);
+							}).on('error',function(){
+								$.Dialog.fail("Can't load image","There was an error while attempting to load the image.<br>Make sure the URL is correct and try again!");
+							});
+						}
+						else {
+							$notice.html(data.message).show();
+							$previewIMG.hide();
+						}
+					}
+				})
+			});
+			var CHECK_BTN = '<strong class="typcn typcn-arrow-repeat">Check image</strong>';
+			$form.on('submit',function(e, screwchanges){
+				e.preventDefault();
+
+				if (!screwchanges && $formImgInput.data('prev-url') !== $formImgInput.val())
+					return $.Dialog.confirm(
+						'You modified the image URL without clicking the '+CHECK_BTN+' button.<br>Do you want to continue with the last checked URL?',
+						function(sure){
+							if (!sure) return;
+
+							$form.trigger('submit',[true]);
+						}
+					);
+
+				if (typeof $formImgInput.data('prev-url') === 'undefined')
+					return $.Dialog.fail(Type, 'Please click the '+CHECK_BTN+' button before submitting your '+type+'!');
+
+				$.Dialog.wait(Type,'Submitting '+type);
+
+				var tempdata = $form.serializeArray(), data = {what: type, episode: EPISODE, season: SEASON};
+				tempdata['image_url'] = $formImgInput.data('prev-url');
+				$.each(tempdata,function(i,el){
+					data[el.name] = el.value;
+				});
+
+				$.post('/post',data,function(data){
 					if (typeof data !== 'object') return console.log(data) && $w.trigger('ajaxerror');
 
 					if (data.status){
-						$previewIMG.attr('src',data.preview).show().on('load',function(){
-							$notice.hide();
+						$.Dialog.wait(Type, 'Updating list');
+						$.post('/episode/'+type+'s/S'+SEASON+'E'+EPISODE,{},function(data){
+							if (typeof data !== 'object') return console.log(data) && $w.trigger('ajaxerror');
 
-							$formImgInput.data('prev-url', url);
+							if (data.status){
+								var $render = $(data.render);
+								console.log($render);
 
-							if (!!data.title && !$formTitleInput.val().trim()) $formTitleInput.val(data.title);
-						}).on('error',function(){
-							$.Dialog.fail("Can't load image","There was an error while attempting to load the image.<br>Make sure the URL is correct and try again!");
+								$('#'+type+'s').html($render.filter('section').html()).rebindHandlers();
+								$.Dialog.close();
+							}
+							else window.location.reload();
 						});
 					}
-					else {
-						$formImgCheck.attr('disabled', false);
-						$notice.html(data.message).show();
-						$previewIMG.hide();
-					}
-				}
-			})
-		});
-		$form.on('submit',function(e){
-			e.preventDefault();
-
-			$.Dialog.wait(Type,'Submitting '+type);
-
-			var tempdata = $form.serializeArray(), data = {what: type, episode: EPISODE, season: SEASON};
-			$.each(tempdata,function(i,el){
-				data[el.name] = el.value;
-			});
-
-			$.ajax({
-				method: 'POST',
-				url: '/post',
-				data: data,
-				success: function(data){
-					if (typeof data !== 'object') return console.log(data) && $w.trigger('ajaxerror');
-
-					if (data.status){
-						$.Dialog.success(Type, data.message);
-						setTimeout(function(){
-							window.location.reload();
-						},1000);
-					}
 					else $.Dialog.fail(Type, data.message);
-				}
-			})
-		}).on('reset',function(){
-			$formImgCheck.attr('disabled', false).addClass('red');
-			$notice.html(noticeHTML).show();
-			$previewIMG.hide();
-		    $formImgInput.removeData('prev-url');
-		    $(this).hide();
-		});
+				})
+			}).on('reset',function(){
+				$formImgCheck.attr('disabled', false).addClass('red');
+				$notice.html(noticeHTML).show();
+				$previewIMG.hide();
+			    $formImgInput.removeData('prev-url');
+			    $(this).hide();
+			});
+		})($(this));
 	});
 });

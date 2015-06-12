@@ -119,23 +119,32 @@
 			list-style: none;
 	    display: flex;
 	    flex-flow: row wrap;
-			justify-content:space-between;
+			justify-content: flex-start;
 
 			li {
 				padding: 10px;
+				margin: 5px;
 				color: #434343;
 				background-color: rgba(0,0,0,.05);
 				border: 1px solid rgba(0,0,0,.2);
 				box-shadow: 0 0 2px rgba(0,0,0,.2);
 				font-size: 12px;
 				font-family: 'Verdana', sans-serif;
-				flex: initial;
+				flex: 1 0 auto;
 				text-align: center;
 				transition: background-color .3s, border-color .3s, box-shadow .3s;
+
+				&:hover {
+					background-color: rgba(0,0,0,.1);
+					border: 1px solid rgba(0,0,0,.3);
+					box-shadow: 0 0 7px rgba(0,0,0,.3);
+				}
 
 				* {
 					display: block;
 					vertical-align: bottom;
+					margin-left: auto;
+					margin-right: auto;
 				}
 				> .image {
 					&.screencap > a {
@@ -179,6 +188,7 @@
 					padding: 0 5px;
 				}
 				.reserver {
+				  display: inline-block;
 					margin-top: 5px;
 					overflow: hidden;
 					font-size: 0;
@@ -186,30 +196,34 @@
 					text-align: left;
 
 					.da-userlink {
-					  display: block;
 					  height: 100%;
-					  width: 100%;
 					  position: relative;
 					  z-index: 2;
 
 					  > * {
 							margin-right: 5px;
 						}
-					}
-					.avatar {
-						height: 40px;
-						width: 40px;
-					}
-					.name {
-						display: inline-block;
-						font-size: 16px;
-						vertical-align: bottom;
+						.avatar {
+							height: 40px;
+							width: 40px;
+							display: inline-block;
+						}
+						.name {
+							display: inline-block;
+							font-size: 16px;
+							vertical-align: bottom;
+						}
 					}
 				}
-				&:hover {
-					background-color: rgba(0,0,0,.1);
-					border: 1px solid rgba(0,0,0,.3);
-					box-shadow: 0 0 7px rgba(0,0,0,.3);
+				.reserver-actions {
+					white-space: nowrap;
+					button {
+						display: inline-block;
+
+						&:not(:last-child){
+							margin-right: 0;
+						}
+					}
 				}
 			}
 			&:empty:before { content: "None yet." }

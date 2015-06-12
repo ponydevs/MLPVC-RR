@@ -14,6 +14,7 @@
 		<label>What Vector Reservations Are</label>
 		<p>People usually get excited whenever a new episode comes out, and start making vectors of any pose/object/etc. that they found hilarious/interesting enough. It often results in various people unnecessarily doing the very same thing. Vector Reservations can help organize our efforts by listing who's working on what and to reduce the number of duplicates.</p>
 	</div>
+<?php   if (PERM('reservations.create')){ ?>
 	<div class="notice caution rules">
 		<label>Reservation Rules</label>
 		<ol>
@@ -25,7 +26,8 @@
 		</ol>
 	</div>
 
-<?php   echo reservations_render($Reservations);
+<?php   }
+		echo reservations_render($Reservations);
 		echo requests_render($Requests); ?>
 	<script>var SEASON = <?=$CurrentEpisode['season']?>, EPISODE = <?=$CurrentEpisode['episode']?>;</script>
 <?php

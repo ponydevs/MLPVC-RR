@@ -803,41 +803,60 @@ HTML;
 	/**
 	 * deviantArt profile link generator
 	 *
-	 * @param array
+	 * @param array $User
+	 * @param int $format
+	 *
 	 * @return string
 	 */
+	define('FULL', 0);
 	define('TEXT_ONLY', 1);
 	define('LINK_ONLY', 2);
-	function da_link($User, $format = 0){
+	function da_link($User, $format = FULL){
 		if (!is_array($User)) trigger_error('$User is not an array');
 
 		$Username = $User['name'];
 		$username = strtolower($Username);
-		$avatar = $format == 0 ? "<img src='{$User['avatar_url']}' class=avatar> " : '';
+		$avatar = $format == FULL ? "<img src='{$User['avatar_url']}' class=avatar> " : '';
 		$link = "http://$username.deviantart.com/";
 
 		if ($format === LINK_ONLY) return $link;
 		return "<a href='$link' class=da-userlink>$avatar<span class=name>$Username</span></a>";
 	}
 
+	/**
+	 * Local profile link generator
+	 *
+	 * @param array $User
+	 * @param int $format
+	 *
+	 * @return string
+	 */
+	function profile_link($User, $format = TEXT_ONLY){
+		$Username = $User['name'];
+
+		$avatar = $format == FULL ? "<img src='{$User['avatar_url']}' class=avatar> " : '';
+
+		return "<a href='/u/$Username' class=da-userlink>$avatar<span class=name>$Username</span></a>";
+	}
+
 	// Reserved by section creator \\
 	function get_reserver_button($By = null, $finished = false){
 		global $signedIn, $currentUser;
 
-		if ($By === false) return "<button class=reserve-request>Reserve</button>";
+		if ($By === false) return "<button class='reserve-request typcn typcn-user-add'>Reserve</button>";
 		if (empty($By) || $By === true){
 			if (!$signedIn) trigger_error('Trying to get reserver button while not signed in');
 			$By = $currentUser;
 		}
-		$dAlink = da_link($By);
+		$dAlink = profile_link($By, FULL);
 
 		$HTML =  "<div class=reserver>$dAlink</div>";
 		if (!$finished && $signedIn && $By['id'] === $currentUser['id']){
 			$HTML .= <<<HTML
 
 <div class=reserver-actions>
-<button class="typcn typcn-times red">Cancel</button>
-<button class="typcn typcn-tick green" disabled>I'm done</button>
+<button class="typcn typcn-user-remove red">Cancel</button>
+<button class="typcn typcn-attachment green" disabled>I'm done</button>
 </div>
 HTML;
 
@@ -851,6 +870,7 @@ HTML;
 		$finished = !!$R['finished'];
 		$thing = $isRequest ? 'request' : 'reservation';
 		$HTML = "<li id=$thing-{$R['id']}>";
+		$R['label'] = htmlspecialchars($R['label']);
 		$Image = "<div class='image screencap'><a href='{$R['fullsize']}'><img src='{$R['preview']}'></a></div><span class=label>{$R['label']}</span>";
 
 		if (empty($R['reserved_by'])){
@@ -882,10 +902,10 @@ HTML;
 				<label>
 					<span>Image URL</span>
 					<input type="text" name="image_url" pattern="^.{2,255}$" required>
-					<button class="check-img red">Check image</button>
+					<button class="check-img red typcn typcn-arrow-repeat">Check image</button>
 				</label>
-				<div class="hidden img-preview">
-					<div class="notice fail">Please click the <strong>Check image</strong> button after providing an URL to get a preview & verify if the link is correct.</div>
+				<div class="img-preview">
+					<div class="notice fail">Please click the <strong>Check image</strong> button after providing an URL to get a preview & verify if the link is correct.<br>Supported providers: deviantArt, Sta.sh, Imgur</div>
 				</div>
 
 HTML;
@@ -940,7 +960,7 @@ HTML;
 		}
 		else $resForm = $makeRes = '';
 
-		echo <<<HTML
+		return <<<HTML
 	<section id="reservations">
 		<div class="unfinished">
 			<h2>List of Reservations$makeRes</h2>
@@ -995,7 +1015,7 @@ HTML;
 		}
 		else $reqForm = $makeRq = '';
 		
-		echo <<<HTML
+		return <<<HTML
 	<section id="requests">
 		<div class="unfinished">
 			<h2>List of Requests$makeRq</h2>
@@ -1017,7 +1037,9 @@ HTML;
 	 * @param int $episode
 	 * @return array
 	 */
-	function get_posts($season, $episode){
+	define('ONLY_REQUESTS', 1);
+	define('ONLY_RESERVATIONS', 2);
+	function get_posts($season, $episode, $only = false){
 		global $Database;
 
 		$Query =
@@ -1027,10 +1049,12 @@ HTML;
 			WHERE season = ? && episode = ?
 			ORDER BY finished, posted';
 
-		return array(
-			$Database->rawQuery(str_ireplace('coloumn','requests',$Query),array($season, $episode)),
-			$Database->rawQuery(str_ireplace('coloumn','reservations',$Query),array($season, $episode))
-		);
+		$return = array();
+		if ($only !== ONLY_RESERVATIONS) $return[] = $Database->rawQuery(str_ireplace('coloumn','requests',$Query),array($season, $episode));
+		if ($only !== ONLY_REQUESTS) $return[] = $Database->rawQuery(str_ireplace('coloumn','reservations',$Query),array($season, $episode));
+
+		if (!$only) return $return;
+		else return $return[0];
 	}
 
 	// Renders the entire sidebar "Useful links" section \\

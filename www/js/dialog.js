@@ -39,7 +39,7 @@
 		open: undefined,
 		fail: function(title,content,callback){
 			$.Dialog.display('fail',title,content,{
-				'Bezárás': {
+				'Close': {
 					'action': function(){
 						$.Dialog.close();
 					}
@@ -48,7 +48,7 @@
 		},
 		success: function(title,content,closeBtn,callback){
 			$.Dialog.display('success',title,content,(closeBtn === true ? {
-				'Bezárás': {
+				'Close': {
 					'action': function(){
 						$.Dialog.close();
 					}

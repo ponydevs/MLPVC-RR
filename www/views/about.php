@@ -55,7 +55,7 @@
 				$group = $ROLES_ASSOC[$r].($userCount !== 1 ? 's' : '');
 				$usersStr = array();
 				foreach ($users as $u)
-					$usersStr[] = "<a href='/u/{$u['name']}'>{$u['name']}</a>";
+					$usersStr[] = profile_link($u);
 				$usersStr = implode(', ', $usersStr);
 				global $ROLES_ASSOC;
 				echo <<<HTML

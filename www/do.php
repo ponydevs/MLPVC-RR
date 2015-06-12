@@ -73,15 +73,20 @@
 
 				if (!empty($_POST['image_url'])){
 					require 'includes/Image.php';
-					$Image = new Image($_POST['image_url']);
+					try {
+						$Image = new Image($_POST['image_url']);
+					}
+					catch (Exception $e){ respond($e->getMessage()); }
 					$ImageAvailable = $Image->preview !== false && $Image->fullsize !== false;
 
-					if (empty($_POST['what'])){
+					if (empty($what)){
 						if (!$ImageAvailable) respond('The image could not be retrieved');
 						respond(array('preview' => $Image->preview, 'title' => $Image->title));
 					}
+					else if ($Database->where('preview', $Image->preview)->has("{$what}s"))
+						respond('This exact image has already been requested');
 				}
-				else if (empty($_POST['what'])) respond('Invalid request');
+				else if (empty($what)) respond("Please provide an image URL ");
 
 				if (!$ImageAvailable) respond('The image could not be retrieved');
 
@@ -101,8 +106,6 @@
 					$insert['label'] = trim($_POST['label']);
 					if (strlen($insert['label']) <= 2 || strlen($insert['label']) > 255) respond("The label must be between 2 and 255 characters in length");
 				}
-
-				if (empty($_POST['image_url'])) respond('Missing image URL');
 
 				if (empty($_POST['season']) || empty($_POST['episode'])) respond('Missing episode identifiers');
 				$insert['season'] = intval($_POST['season']);
@@ -161,7 +164,6 @@
 			case "episode":
 				# TODO Locking posts
 				if (RQMTHD === 'POST'){
-					if (!PERM('episodes.manage')) respond();
 					detectCSRF();
 
 					if (empty($data)) do404();
@@ -178,6 +180,7 @@
 
 					$_match = array();
 					if (preg_match('/^delete\/'.EPISODE_ID_PATTERN.'$/',$data,$_match)){
+						if (!PERM('episodes.manage')) respond();
 						list($season,$episode) = array_map('intval',array_splice($_match,1,2));
 
 						$Episode = get_real_episode($season,$episode);
@@ -194,7 +197,19 @@
 						));
 						respond('Episode deleted successfuly',1,array('tbody' => get_eptable_tbody()));
 					}
+					else if (preg_match('/^((?:request|reservation)s)\/'.EPISODE_ID_PATTERN.'$/', $data, $_match)){
+						list($season,$episode) = array_map('intval',array_splice($_match,2,2));
+
+						$Episode = get_real_episode($season,$episode);
+						if (empty($Episode))
+							respond("There's no episode with this season & episode number");
+						$only = $_match[1] === 'requests' ? ONLY_REQUESTS : ONLY_RESERVATIONS;
+						respond(array(
+							'render' => call_user_func("{$_match[1]}_render",get_posts($season, $episode, $only)),
+						));
+					}
 					else {
+						if (!PERM('episodes.manage')) respond();
 						$editing = preg_match('/^edit\/'.EPISODE_ID_PATTERN.'$/',$data,$_match);
 						if ($editing){
 							list($season,$episode) = array_map('intval',array_splice($_match,1,2));
