@@ -843,7 +843,7 @@ HTML;
 	function get_reserver_button($By = null, $finished = false){
 		global $signedIn, $currentUser;
 
-		if ($By === false) return "<button class='reserve-request typcn typcn-user-add'>Reserve</button>";
+		if ($By === false) return PERM('reservations.create') ? "<button class='reserve-request typcn typcn-user-add'>Reserve</button>" : '';
 		if (empty($By) || $By === true){
 			if (!$signedIn) trigger_error('Trying to get reserver button while not signed in');
 			$By = $currentUser;
