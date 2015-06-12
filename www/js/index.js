@@ -14,13 +14,15 @@ $(function(){
 		});
 
 	$.fn.rebindHandlers = function(){
-		$(this).find('li[id]').each(function(){
+		var $this = $(this);
+		$this.find('li[id]').each(function(){
 			var $li = $(this),
 				id = parseInt($li.attr('id').replace(/\D/g,'')),
 				type = $li.closest('section[id]').attr('id');
 
 			Bind($li, id, type);
 		});
+		return $this;
 	};
 	$('#requests, #reservations').rebindHandlers();
 	function Bind($li, id, type){
@@ -78,7 +80,7 @@ $(function(){
 	}
 
 	$('.post-form').each(function(){
-		(function($form){
+		(function formBind($form){
 			var $formImgCheck = $form.find('.check-img'),
 				$formImgPreview = $form.find('.img-preview'),
 				$formImgInput = $form.find('[name=image_url]'),
@@ -173,7 +175,7 @@ $(function(){
 								var $render = $(data.render);
 								console.log($render);
 
-								$('#'+type+'s').html($render.filter('section').html()).rebindHandlers();
+								formBind($('#'+type+'s').html($render.filter('section').html()).rebindHandlers().find('.post-form'));
 								$.Dialog.close();
 							}
 							else window.location.reload();
