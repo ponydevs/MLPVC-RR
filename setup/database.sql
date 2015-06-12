@@ -182,7 +182,8 @@ ALTER TABLE `reservations`
   ADD PRIMARY KEY (`id`),
   ADD KEY `season` (`season`),
   ADD KEY `episode` (`episode`),
-  ADD KEY `reservations_ibfk_1` (`season`,`episode`);
+  ADD KEY `reservations_ibfk_1` (`season`,`episode`),
+  ADD KEY `reserved_by` (`reserved_by`);
 
 ALTER TABLE `roles`
   ADD PRIMARY KEY (`value`),
@@ -238,7 +239,8 @@ ALTER TABLE `requests`
   ADD CONSTRAINT `requests_ibfk_4` FOREIGN KEY (`requested_by`) REFERENCES `users` (`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 ALTER TABLE `reservations`
-  ADD CONSTRAINT `reservations_ibfk_1` FOREIGN KEY (`season`, `episode`) REFERENCES `episodes` (`season`, `episode`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `reservations_ibfk_1` FOREIGN KEY (`season`, `episode`) REFERENCES `episodes` (`season`, `episode`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `reservations_ibfk_2` FOREIGN KEY (`reserved_by`) REFERENCES `users` (`id`);
 
 ALTER TABLE `sessions`
   ADD CONSTRAINT `sessions_ibfk_1` FOREIGN KEY (`user`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
