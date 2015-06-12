@@ -855,7 +855,7 @@ HTML;
 			$HTML .= <<<HTML
 
 <div class=reserver-actions>
-<button class="typcn typcn-user-remove red">Cancel</button>
+<button class="typcn typcn-user-delete red">Cancel</button>
 <button class="typcn typcn-attachment green" disabled>I'm done</button>
 </div>
 HTML;
