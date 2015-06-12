@@ -48,7 +48,7 @@ $(function(){
 				}
 			})
 		});
-		$li.find('.reserver-actions .typcn-times').off('click').on('click',function(){
+		$li.find('.reserver-actions').children('.cancel').off('click').on('click',function(){
 			var $this = $(this),
 				title = 'Cancel reservation';
 
