@@ -160,19 +160,16 @@
 
 					$dialogBox.css('opacity', 0).appendTo($dialogOverlay);
 
-					var whdBoH = $w.height() - $dialogBox.outerHeight();
+					var whdBoH = $w.height() - $dialogBox.outerHeight(),
+						wwdBoW = $w.width() - $dialogBox.outerWidth();
 
-					setTimeout(function(){
-						if ($dialogBox.is(':animated')) return;
-						$dialogBox.css({
-							top: whdBoH / 3,
-							left: whdBoH / 2,
-						}).animate({
-							top: whdBoH / 2,
-							opacity: 1,
-						}, 350, setFocus);
-						$dialogOverlay.fadeTo(350, 1);
-					}, 100);
+					$dialogBox.css({
+						top: whdBoH / 2,
+						left: wwdBoW / 2,
+						opacity: 1,
+					});
+					setFocus();
+					$dialogOverlay.fadeTo(350, 1);
 
 					var hOf = $html.css('overflow');
 					$html.attr('data-overflow',hOf).css('overflow','hidden');
@@ -232,12 +229,10 @@
 					$dialogButtons.append($button);
 				});
 
-				setTimeout(function(){
-					$dialogBox.css({
-						top: ($w.height() - $dialogBox.outerHeight()) / 2,
-						left: ($w.width() - $dialogBox.outerWidth()) / 2,
-					});
-				},100);
+				$dialogBox.css({
+					top: ($w.height() - $dialogBox.outerHeight()) / 2,
+					left: ($w.width() - $dialogBox.outerWidth()) / 2,
+				});
 				
 				if (params.draggable){
 					$dialogHeader.css('cursor', 'move').on('mousedown',function (e) {
@@ -308,10 +303,6 @@
 				if (window._focusedElement instanceof jQuery) window._focusedElement.focus();
 				if (typeof callback == 'function') callback();
 			});
-			$dialogBox.animate({
-				top: ($w.height() - $dialogBox.outerHeight()) / 3 * 2,
-				opacity: 0,
-			}, 350);
 			var hOf = $html.attr('data-overflow');
 			if (typeof hOf !== 'undefined'){
 				$html.css('overflow',hOf);
