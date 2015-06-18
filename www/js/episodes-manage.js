@@ -8,9 +8,7 @@ $(function(){
 			<div class="notice info align-center">\
 				<p><strong>Title</strong> must be between 5 and 35 characters.<br>Letters, numbers, and these characters, are allowed:<br>-, apostrophe, !, &, comma.</p>\
 			</div>\
-			<label>\
-				<input type="checkbox" name=twoparter> Two-parter\
-			</label>\
+			<label><input type="checkbox" name=twoparter> Two-parter</label>\
 			<div class="notice info align-center">\
 				<p>If <strong>Two-parter</strong> is checked, only specify<br>the episode number of the first part</p>\
 			</div>',
@@ -20,8 +18,7 @@ $(function(){
 	var $eptable = $('#episodes'),
 		$eptableBody = $eptable.children('tbody'),
 		$addep = $(document.createElement('form')).attr('id','addep').html(formContents),
-		$editep = $(document.createElement('form'))
-			.attr('id','editep').html(formContents);
+		$editep = $(document.createElement('form')).attr('id','editep').html(formContents);
 
 	$('#add-episode').on('click',function(e){
 		e.preventDefault();

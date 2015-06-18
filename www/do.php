@@ -64,8 +64,10 @@
 				if (!PERM('user')) respond();
 				detectCSRF();
 
+				$POST_TYPES = array('request','reservation');
+
 				if (!empty($_POST['what'])){
-					if(!in_array($_POST['what'],array('request','reservation'))) respond('Invalid post type');
+					if(!in_array($_POST['what'],$POST_TYPES)) respond('Invalid post type');
 					$what = $_POST['what'];
 					if ($what === 'reservation' && !PERM('reservations.create'))
 						respond();
@@ -77,18 +79,15 @@
 						$Image = new Image($_POST['image_url']);
 					}
 					catch (Exception $e){ respond($e->getMessage()); }
-					$ImageAvailable = $Image->preview !== false && $Image->fullsize !== false;
 
-					if (empty($what)){
-						if (!$ImageAvailable) respond('The image could not be retrieved');
-						respond(array('preview' => $Image->preview, 'title' => $Image->title));
+					foreach ($POST_TYPES as $what){
+						if ($Database->where('preview', $Image->preview)->has("{$what}s"))
+							respond('This exact image has already been '.rtrim(substr($what,0,7),'a').'ed');
 					}
-					else if ($Database->where('preview', $Image->preview)->has("{$what}s"))
-						respond('This exact image has already been requested');
+
+					if (empty($what)) respond(array('preview' => $Image->preview, 'title' => $Image->title));
 				}
 				else if (empty($what)) respond("Please provide an image URL ");
-
-				if (!$ImageAvailable) respond('The image could not be retrieved');
 
 				$insert = array(
 					'preview' => $Image->preview,
@@ -124,26 +123,77 @@
 				$match = array();
 				if (empty($data) || !preg_match('/^(requests?|reservations?)\/(\d+)$/',$data,$match)) respond('Invalid request');
 				if (!PERM('reservations.create')) respond();
-				$cancelling = isset($_REQUEST['cancel']);
+
+				$noaction = !($canceling = $finishing = $unfinishing = false);
+				foreach (array('cancel','finish','unfinish') as $k){
+					if (isset($_REQUEST[$k])){
+						$var = "{$k}ing";
+						$$var = true;
+						$noaction = false;
+						break;
+					}
+				}
 				$type = rtrim($match[1],'s');
+
+				$POST_TYPES = array('request','reservation');
 
 				$ID = intval($match[2]);
 				$Thing = $Database->where('id', $ID)->getOne("{$type}s");
-				if (empty($Thing)) respond("There's no request with that ID");
+				if (empty($Thing)) respond("There's no {$type} with that ID");
 
-				$reservedBy = null;
+				$update = array('reserved_by' => null);
 				if (!empty($Thing['reserved_by'])){
-					if ($Thing['reserved_by'] === $currentUser['id'] && !$cancelling) respond("You already reserved this $type");
-					if ($Thing['reserved_by'] !== $currentUser['id']) respond("This $type has already been reserved by somepony else");
-				}
-				else if (!$cancelling) $reservedBy = $currentUser['id'];
+					$usersMatch = $Thing['reserved_by'] === $currentUser['id'];
+					if ($noaction){
+						if ($usersMatch)
+							respond("You already reserved this $type");
+						else respond("This $type has already been reserved by somepony else");
+					}
+					if ($unfinishing){
+						if (!PERM('inspector')) respond();
 
-				if (!$Database->where('id', $Thing['id'])->update("{$type}s",array('reserved_by' => $reservedBy)))
+						$update = array('deviation_id' => null);
+						if (!isset($_REQUEST['unbind']))
+							unset($update['reserved_by']);
+						else if ($type === 'reservation'){
+							if (!$Database->where('id', $Thing['id'])->delete('reservations'))
+								respond(ERR_DB_FAIL);
+							respond('Reservation deleted', 1);
+						}
+					}
+					else if ($finishing){
+						if (!$usersMatch && !PERM('inspector'))
+							respond();
+						if (!isset($_POST['deviation']))
+							respond('Please specify a deviation URL');
+						$deviation = $_POST['deviation'];
+						try {
+							require 'includes/Image.php';
+							$Image = new Image($deviation);
+
+							if ($Image->provider !== 'fav.me')
+								respond('The finished vector must be uploaded to deviantArt, '.$Image->provider.' links are not allowed');
+
+							foreach ($POST_TYPES as $what){
+								if ($Database->where('deviation_id', $Image->id)->has("{$what}s"))
+									respond("This exact deviation has already been marked as the finished version of a different $what");
+							}
+
+							$update = array('deviation_id' => $Image->id);
+						}
+						catch (Exception $e){ respond($e->getMessage()); }
+					}
+				}
+				else if ($finishing) respond("This $type has not yet been reserved");
+				else if (!$canceling) $update['reservedBy'] = $currentUser['id'];
+
+				if (!$Database->where('id', $Thing['id'])->update("{$type}s",$update))
 					respond('Nothing has been changed');
 
+				if ($finishing || $unfinishing) respond(array());
 				if ($type === 'request')
-					respond(array('btnhtml' => get_reserver_button(!$cancelling)));
-				else if ($type === 'reservation' && $cancelling)
+					respond(array('btnhtml' => get_reserver_button(!$canceling)));
+				else if ($type === 'reservation' && $canceling)
 					respond(array('remove' => true));
 				else respond('Invalid request');
 			break;
@@ -286,7 +336,7 @@
 
 				list($Requests, $Reservations) = get_posts($CurrentEpisode['season'], $CurrentEpisode['episode']);
 
-				loadPage(array_merge($IndexSettings,array('title',format_episode_title($CurrentEpisode))));
+				loadPage(array_merge($IndexSettings,array('title' => format_episode_title($CurrentEpisode))));
 			break;
 			case "episodes":
 				$Episodes = get_episodes();
@@ -299,8 +349,9 @@
 			break;
 			case "about":
 				$DevLink = '<a href="http://djdavid98.eu">DJDavid98</a>';
+
 				loadPage(array(
-					'title' => 'Home',
+					'title' => 'About',
 					'do-css',
 				));
 			break;

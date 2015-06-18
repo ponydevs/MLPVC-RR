@@ -14,7 +14,7 @@
 	define('ERR_DB_FAIL','There was an error while saving to the database');
 	function respond($m = 'Insufficent permissions.', $s = false, $x = array()){
 		header('Content-Type: application/json');
-		if (is_array($m) && $s === false && empty($x)){
+		if (is_array($m) && $s == false && empty($x)){
 			$m['status'] = true;
 			die(json_encode($m));
 		}
@@ -217,7 +217,7 @@ HTML;
 		return "<time datetime='$datetime' title='$full'>$text</time>";
 	}
 
-	// Page loading fornction
+	// Page loading function
 	function loadPage($settings){
 		// Page <title>
 		if (isset($settings['title']))
@@ -582,7 +582,12 @@ HTML;
 	function da_oembed($ID, $type = null){
 		if (empty($type) || !in_array($type,array('fav.me','sta.sh'))) $type = 'fav.me';
 
-		return array_merge(json_decode(file_get_contents('http://backend.deviantart.com/oembed?url='.urlencode("http://$type/$ID")), true),array('_provider' => $type));
+		$data = @file_get_contents('http://backend.deviantart.com/oembed?url='.urlencode("http://$type/$ID"));
+
+		if (empty($data))
+			throw new Exception('Image not found. Please make sure that the URL is correct.');
+
+		return array_merge(json_decode($data, true),array('_provider' => $type));
 	}
 
 	/**
@@ -851,15 +856,22 @@ HTML;
 		$dAlink = profile_link($By, FULL);
 
 		$HTML =  "<div class=reserver>$dAlink</div>";
-		if (!$finished && $signedIn && $By['id'] === $currentUser['id']){
-			$HTML .= <<<HTML
+		$sameUser = $signedIn && $By['id'] === $currentUser['id'];
 
-<div class=reserver-actions>
-	<button class="typcn typcn-user-delete red cancel">Cancel</button>
-	<button class="typcn typcn-attachment green" disabled>I'm done</button>
-</div>
-HTML;
+		$Buttons = array();
+		if (!$finished && ($sameUser || PERM('inspector'))){
+			$Buttons[] = array('user-delete red cancel', 'Cancel');
+			$Buttons[] = array('attachment green finish', ($sameUser ? "I'm" : 'Mark as').' finished');
+		}
+		if ($finished && PERM('inspector')){
+			$Buttons[] = array('user-delete orange unfinish','Un-finish');
+		}
 
+		if (!empty($Buttons)){
+			$HTML .= '<div class=reserver-actions>';
+			foreach ($Buttons as $b)
+				$HTML .= "<button class='typcn typcn-{$b[0]}'>{$b[1]}</button> ";
+			$HTML .= '</div>';
 		}
 
 		return $HTML;

@@ -95,7 +95,7 @@ CREATE TABLE IF NOT EXISTS `reservations` (
   `fullsize` tinytext NOT NULL,
   `label` tinytext NOT NULL,
   `posted` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `reserved_by` varchar(36) DEFAULT NULL,
+  `reserved_by` varchar(36) NOT NULL,
   `deviation_id` varchar(7) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

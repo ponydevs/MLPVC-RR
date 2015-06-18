@@ -1,28 +1,35 @@
 <?php
 
 	class Image {
-		public $preview, $fullsize, $title = '';
-		private $url, $provider;
+		public $preview, $fullsize, $title = '', $provider, $id;
+		private $url;
 		public function __construct($url){
 			$this->url = trim($url);
 			$this->preview = $this->fullsize = false;
 
-			$this->get_provider();
+			$provider = $this->get_provider($this->url);
+			$this->provider = $provider['name'];
+			$this->get_direct_url($provider['itemid']);
 		}
-		private $providerRegexes = array(
-			'~^(?:https?://)?(?:[A-Za-z\-\d]+\.)?deviantart\.com/art/(?:[A-Za-z\-\d]+-)?(\d+)~' => 'dA',
-			'~^(?:http://)?fav\.me/(d[a-z\d]{6,})~' => 'fav.me',
-			'~^(?:http://)?sta\.sh/([a-z\d]{10,})~' => 'sta.sh',
-			'~^(?:http://)?(?:i\.)?imgur\.com/([A-Za-z\d]{1,7})~' => 'imgur',
+		private static $providerRegexes = array(
+			'(?:[A-Za-z\-\d]+\.)?deviantart\.com/art/(?:[A-Za-z\-\d]+-)?(\d+)' => 'dA',
+			'fav\.me/(d[a-z\d]{6,})' => 'fav.me',
+			'sta\.sh/([a-z\d]{10,})' => 'sta.sh',
+			'(?:i\.)?imgur\.com/([A-Za-z\d]{1,7})' => 'imgur',
 		);
-		private function get_provider(){
-			foreach ($this->providerRegexes as $rx => $name){
-				$match = array();
-				if (preg_match($rx, $this->url, $match)){
-					$this->provider = $name;
-					$this->get_direct_url($match[1]);
-					return;
-				}
+		private static function test_provider($url, $pattern, $name){
+			$match = array();
+			if (preg_match("~^(?:https?://(?:www\.)?)?$pattern~", $url, $match))
+				return array(
+					'name' => $name,
+					'itemid' => $match[1]
+				);
+			return false;
+		}
+		public static function get_provider($url){
+			foreach (self::$providerRegexes as $pattern => $name){
+				$test = self::test_provider($url, $pattern, $name);
+				if ($test !== false) return $test;
 			}
 			throw new Exception('Unsupported provider. Try uploading your image to <a href=http://sta.sh target=_blank>sta.sh</a>');
 		}
@@ -46,6 +53,10 @@
 					$this->fullsize = $CachedDeviation['fullsize'];
 					$this->title = $CachedDeviation['title'];
 				break;
+				default:
+					throw new Exception('The image could not be retrieved');
 			}
+
+			$this->id = $id;
 		}
 	}
