@@ -64,8 +64,6 @@
 				if (!PERM('user')) respond();
 				detectCSRF();
 
-				$POST_TYPES = array('request','reservation');
-
 				if (!empty($_POST['what'])){
 					if(!in_array($_POST['what'],$POST_TYPES)) respond('Invalid post type');
 					$what = $_POST['what'];
@@ -121,11 +119,11 @@
 			case "reserving":
 				if (RQMTHD !== 'POST') do404();
 				$match = array();
-				if (empty($data) || !preg_match('/^(requests?|reservations?)\/(\d+)$/',$data,$match)) respond('Invalid request');
+				if (empty($data) || !preg_match('/^(requests?|reservations?)(?:\/(\d+))?$/',$data,$match)) respond('Invalid request #1');
 				if (!PERM('reservations.create')) respond();
 
-				$noaction = !($canceling = $finishing = $unfinishing = false);
-				foreach (array('cancel','finish','unfinish') as $k){
+				$noaction = !($canceling = $finishing = $unfinishing = $adding = false);
+				foreach (array('cancel','finish','unfinish','add') as $k){
 					if (isset($_REQUEST[$k])){
 						$var = "{$k}ing";
 						$$var = true;
@@ -135,66 +133,71 @@
 				}
 				$type = rtrim($match[1],'s');
 
-				$POST_TYPES = array('request','reservation');
+				if (!$adding){
+					if (!isset($match[2]))
+						 respond('Invalid request #2');
+					$ID = intval($match[2]);
+					$Thing = $Database->where('id', $ID)->getOne("{$type}s");
+					if (empty($Thing)) respond("There's no {$type} with that ID");
 
-				$ID = intval($match[2]);
-				$Thing = $Database->where('id', $ID)->getOne("{$type}s");
-				if (empty($Thing)) respond("There's no {$type} with that ID");
-
-				$update = array('reserved_by' => null);
-				if (!empty($Thing['reserved_by'])){
-					$usersMatch = $Thing['reserved_by'] === $currentUser['id'];
-					if ($noaction){
-						if ($usersMatch)
-							respond("You already reserved this $type");
-						else respond("This $type has already been reserved by somepony else");
-					}
-					if ($unfinishing){
-						if (!PERM('inspector')) respond();
-
-						$update = array('deviation_id' => null);
-						if (!isset($_REQUEST['unbind']))
-							unset($update['reserved_by']);
-						else if ($type === 'reservation'){
-							if (!$Database->where('id', $Thing['id'])->delete('reservations'))
-								respond(ERR_DB_FAIL);
-							respond('Reservation deleted', 1);
+					$update = array('reserved_by' => null);
+					if (!empty($Thing['reserved_by'])){
+						$usersMatch = $Thing['reserved_by'] === $currentUser['id'];
+						if ($noaction){
+							if ($usersMatch)
+								respond("You already reserved this $type");
+							else respond("This $type has already been reserved by somepony else");
 						}
-					}
-					else if ($finishing){
-						if (!$usersMatch && !PERM('inspector'))
-							respond();
-						if (!isset($_POST['deviation']))
-							respond('Please specify a deviation URL');
-						$deviation = $_POST['deviation'];
-						try {
-							require 'includes/Image.php';
-							$Image = new Image($deviation);
+						if ($unfinishing){
+							if (!PERM('inspector')) respond();
 
-							if ($Image->provider !== 'fav.me')
-								respond('The finished vector must be uploaded to deviantArt, '.$Image->provider.' links are not allowed');
-
-							foreach ($POST_TYPES as $what){
-								if ($Database->where('deviation_id', $Image->id)->has("{$what}s"))
-									respond("This exact deviation has already been marked as the finished version of a different $what");
+							if (!isset($_REQUEST['unbind'])){
+								if ($type === 'reservation' && empty($Thing['preview']))
+									respond('This reservation was added directly and cannot be marked un-finished.<br>To remove it, check the unbind from user checkbox.');
+								unset($update['reserved_by']);
 							}
-
-							$update = array('deviation_id' => $Image->id);
+							if ($type === 'reservation'){
+								if (!$Database->where('id', $Thing['id'])->delete('reservations'))
+									respond(ERR_DB_FAIL);
+								respond('Reservation deleted', 1);
+							}
+							$update = array('deviation_id' => null);
 						}
-						catch (Exception $e){ respond($e->getMessage()); }
+						else if ($finishing){
+							if (!$usersMatch && !PERM('inspector'))
+								respond();
+							$update = check_request_finish_image();
+						}
 					}
+					else if ($finishing) respond("This $type has not yet been reserved");
+					else if (!$canceling) $update['reservedBy'] = $currentUser['id'];
+
+					if (!$Database->where('id', $Thing['id'])->update("{$type}s",$update))
+						respond('Nothing has been changed');
+
+					if ($finishing || $unfinishing) respond(array());
+					if ($type === 'request')
+						respond(array('btnhtml' => get_reserver_button(!$canceling)));
+					else if ($type === 'reservation' && $canceling)
+						respond(array('remove' => true));
+					else respond('Invalid request');
 				}
-				else if ($finishing) respond("This $type has not yet been reserved");
-				else if (!$canceling) $update['reservedBy'] = $currentUser['id'];
+				else if ($type === 'reservation'){
+					$insert = check_request_finish_image();
+					$insert['reserved_by'] = $currentUser['id'];
+					$epdata = episode_id_parse($_GET['add']);
+					if (empty($epdata))
+						respond('Invalid episode');
+					$epdata = get_real_episode($epdata['season'], $epdata['episode']);
+					if (empty($epdata))
+						respond('The specified episode does not exist');
+					$insert['season'] = $epdata['season'];
+					$insert['episode'] = $epdata['episode'];
 
-				if (!$Database->where('id', $Thing['id'])->update("{$type}s",$update))
-					respond('Nothing has been changed');
-
-				if ($finishing || $unfinishing) respond(array());
-				if ($type === 'request')
-					respond(array('btnhtml' => get_reserver_button(!$canceling)));
-				else if ($type === 'reservation' && $canceling)
-					respond(array('remove' => true));
+					if (!$Database->insert('reservations', $insert))
+						respond(ERR_DB_FAIL);
+					respond('Reservation added',1);
+				}
 				else respond('Invalid request');
 			break;
 

@@ -84,7 +84,12 @@ $(function(){
 				$form.on('submit',function(e){
 					e.preventDefault();
 
-					var deviation = $form.find('[name=deviation]').val();
+					var deviation = $form.find('[name=deviation]').val(),
+						handleError = function(e){
+							$ErrorNotice.html(e.message).parent().show();
+							$w.trigger('resize');
+							$form.find('input').attr('disabled', false);
+						};
 
 					try {
 						if (typeof deviation !== 'string' || deviation.length === 0)
@@ -97,31 +102,37 @@ $(function(){
 								$.Dialog.success(title,'The '+type+' is now marked as finished');
 								updateSection(type, SEASON, EPISODE);
 							}
-							else throw new Error(data.message);
+							else handleError(data);
 						});
 					}
-					catch(e){
-						$ErrorNotice.text(e.message).parent().show();
-						$form.find('input').attr('disabled', false);
-					}
+					catch(e){ handleError(e) }
 				});
 			})
 		});
 		$actions.filter('.unfinish').off('click').on('click',function(){
-			var title = 'Un-finish reservation',
+			var $unfinishBtn = $(this),
+				deleteOnly = $unfinishBtn.hasClass('delete-only'),
+				title = (deleteOnly?'Delete':'Un-finish')+' reservation',
 				Type = type.charAt(0).toUpperCase()+type.substring(1);
 
-			$.Dialog.request(title,'<form id="unbind-check"><div class="notice info">By removing the finished flag, the deviation will be moved back<br>to the "List of '+Type+'" section</div><p>Are you sure you want to mark this reservation as unfinished?</p><hr><label><input type="checkbox" name="unbind"> Unbind reservation from user</label></form>','unbind-check','Un-finish',function(){
+			$.Dialog.request(title,'<form id="unbind-check"><p>Are you sure you want to '+(deleteOnly?'delete this reservation':'mark this reservation as unfinished')+'?</p><hr><label><input type="checkbox" name="unbind"> Unbind reservation from user</label></form>','unbind-check','Un-finish',function(){
 				var $form = $('#unbind-check'),
 					$unbind = $form.find('[name=unbind]');
+
+				if (!deleteOnly)
+					$form.prepend('<div class="notice info">By removing the "finished" flag, the deviation will be moved back<br>to the "List of '+Type+'" section</div>');
+
 				if (type === 'reservations'){
-					$form.append('<div class="notice warn">Because this is a reservation, unbinding it from the user will <strong>delete</strong> it permanently.</div>');
 					$unbind.on('click',function(){
 						$('#dialogButtons').children().first().val(this.checked ? 'Delete' : 'Un-finish')
 					});
+					if (deleteOnly)
+						$unbind.trigger('click').off('click').on('click keydown touchstart', function(){return false}).css('pointer-events','none').parent().hide();
+					$form.append('<div class="notice warn">Because this '+(!deleteOnly?'is a reservation, unbinding<br>it from the user will <strong>delete</strong> it permanently.':'reservation was added directly,<br>it cannot be marked un-finished, only deleted.')+'</div>');
 				}
 				else
 					$form.append('<div class="notice info">If this is checked, any user will be able to reserve this request again afterwards.<br>If left unchecked, only the current reserver <em>(and Vector Inspectors)</em><br>will be able to mark it as finished until the reservation is cancelled.</div>');
+				$w.trigger('resize');
 				$form.on('submit',function(e){
 					e.preventDefault();
 
@@ -133,7 +144,7 @@ $(function(){
 						if (typeof data !== 'object') return console.log(data) && $w.trigger('ajaxerror');
 
 						if (data.status){
-							$.Dialog.success(typeof data.message !== 'undefined' ? data.message : '"finished" flag removed successfully');
+							$.Dialog.success(title, typeof data.message !== 'undefined' ? data.message : '"finished" flag removed successfully');
 							updateSection(type, SEASON, EPISODE);
 						}
 						else $.Dialog.fail(title,data.message);
@@ -161,6 +172,40 @@ $(function(){
 				$formImgInput.focus();
 				$body.animate({scrollTop: $form.offset().top - $navbar.outerHeight() - 10 }, 500);
 			}
+		});
+		if (type === 'reservation') $('#add-reservation-btn').on('click',function(){
+			var title = 'Add a reservation';
+			$.Dialog.request(title,'<form id="add-reservation"><div class="notice fail"><label>Error</label><p></p></div><div class="notice info">This feature should only be used when the vector was made before the episode was displayed here,<br>and all you want to do is link your already-made vector under the newly posted episode.</div><div class="notice warn">If you already posted the reservation, use the <strong class="typcn typcn-attachment">I\'m done</strong> button to mark it as finished instead of adding it here.</div><input type="text" name="deviation" placeholder="Deviation URL"></form>','add-reservation','Finish',function(){
+				var $form = $('#add-reservation'),
+					$ErrorNotice = $form.find('.notice p');
+				$ErrorNotice.parent().hide();
+				$form.on('submit',function ReservationAddSubmit(e){
+					e.preventDefault();
+
+					var deviation = $form.find('[name=deviation]').val(),
+						handleError = function(e){
+							$ErrorNotice.html(e.message).parent().show();
+							$w.trigger('resize');
+							$form.find('input').attr('disabled', false);
+						};
+
+					try {
+						if (typeof deviation !== 'string' || deviation.length === 0)
+							throw new Error('Please enter a deviation URL');
+
+						$.post('/reserving/reservation?add=S'+SEASON+'E'+EPISODE,{deviation:deviation},function(data){
+							if (typeof data !== 'object') return console.log(data) && $w.trigger('ajaxerror');
+
+							if (data.status){
+								$.Dialog.success(title,data.message);
+								updateSection(type, SEASON, EPISODE);
+							}
+							else  handleError(data);
+						});
+					}
+					catch(e){ handleError(e) }
+				});
+			})
 		});
 		$formImgInput.on('keyup change paste',imgCheckDisabler);
 		function imgCheckDisabler(disable){

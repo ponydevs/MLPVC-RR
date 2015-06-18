@@ -845,7 +845,7 @@ HTML;
 	}
 
 	// Reserved by section creator \\
-	function get_reserver_button($By = null, $finished = false){
+	function get_reserver_button($By = null, $R = false){
 		global $signedIn, $currentUser;
 
 		if ($By === false) return PERM('reservations.create') ? "<button class='reserve-request typcn typcn-user-add'>Reserve</button>" : '';
@@ -858,13 +858,14 @@ HTML;
 		$HTML =  "<div class=reserver>$dAlink</div>";
 		$sameUser = $signedIn && $By['id'] === $currentUser['id'];
 
+		$finished = !!$R['finished'];
 		$Buttons = array();
 		if (!$finished && ($sameUser || PERM('inspector'))){
 			$Buttons[] = array('user-delete red cancel', 'Cancel');
 			$Buttons[] = array('attachment green finish', ($sameUser ? "I'm" : 'Mark as').' finished');
 		}
 		if ($finished && PERM('inspector')){
-			$Buttons[] = array('user-delete orange unfinish','Un-finish');
+			$Buttons[] = array((empty($R['preview'])?'trash delete-only red':'media-eject orange').' unfinish',empty($R['preview'])?'Delete':'Un-finish');
 		}
 
 		if (!empty($Buttons)){
@@ -897,7 +898,7 @@ HTML;
 				$D['title'] = preg_replace("/'/",'&apos;',$D['title']);
 				$Image = "<div class='image deviation'><a href='http://fav.me/{$D['id']}'><img src='{$D['preview']}' alt='{$D['title']}'></a></div>";
 			}
-			$HTML .= $Image.get_reserver_button($R['reserver'], $finished);
+			$HTML .= $Image.get_reserver_button($R['reserver'], $R);
 		}
 
 		return "$HTML</li>";
@@ -969,8 +970,9 @@ HTML;
 		if (PERM('reservations.create')){
 			$makeRes = '<button id="reservation-btn">Make a reservation</button>';
 			$resForm = get_post_form('reservation');
+			$addRes = '<button id="add-reservation-btn">Add reservation</button>';
 		}
-		else $resForm = $makeRes = '';
+		else $resForm = $makeRes = $addRes = '';
 
 		return <<<HTML
 	<section id="reservations">
@@ -979,7 +981,7 @@ HTML;
 			<ul>{$Arranged['unfinished']}</ul>
 		</div>
 		<div class="finished">
-			<h2>Finished Reservations</h2>
+			<h2>Finished Reservations$addRes</h2>
 			<ul>{$Arranged['finished']}</ul>
 		</div>$resForm
 	</section>
@@ -1243,4 +1245,28 @@ HTML;
 	<span class=used>Last used: $lastuse</span>
 </li>
 HTML;
+	 }
+
+	 // Checks the image which allows a request to be finished
+	 $POST_TYPES = array('request','reservation');
+	 function check_request_finish_image(){
+	    global $POST_TYPES, $Database;
+		if (!isset($_POST['deviation']))
+			respond('Please specify a deviation URL');
+		$deviation = $_POST['deviation'];
+		try {
+			require 'includes/Image.php';
+			$Image = new Image($deviation);
+
+			if ($Image->provider !== 'fav.me')
+				respond('The finished vector must be uploaded to deviantArt, '.$Image->provider.' links are not allowed');
+
+			foreach ($POST_TYPES as $what){
+				if ($Database->where('deviation_id', $Image->id)->has("{$what}s"))
+					respond("This exact deviation has already been marked as the finished version of a different $what");
+			}
+
+			return array('deviation_id' => $Image->id);
+		}
+		catch (Exception $e){ respond($e->getMessage()); }
 	 }
