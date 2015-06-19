@@ -925,7 +925,7 @@ HTML;
 			if ($type === 'request')
 				$HTML .= <<<HTML
 				<label>
-					<span>$Tyoe description (3-255 chars)</span>
+					<span>$Type description (3-255 chars)</span>
 					<input type="text" name="label" pattern="^.{3,255}$" maxlength=255 required>
 				</label>
 				<label>

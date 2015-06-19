@@ -96,7 +96,7 @@
 				$epdata = get_real_episode(intval($_POST['season']), intval($_POST['episode']));
 				if (empty($epdata)) respond('This episode does not exist');
 				$insert['season'] = $epdata['season'];
-				$insert['episode'] = $epdata['apisode'];
+				$insert['episode'] = $epdata['episode'];
 
 				if ($what === 'reservation'){
 					$reservations = rawquery_get_single_result($Database->rawQuery(
@@ -127,7 +127,7 @@
 				}
 
 				if ($Database->insert("{$what}s",$insert)) respond('Submission complete',1);
-				else respond('Submission failed');
+				else respond(ERR_DB_FAIL);
 			break;
 			case "reserving":
 				if (RQMTHD !== 'POST') do404();
