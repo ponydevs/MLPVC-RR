@@ -111,7 +111,6 @@ INSERT INTO `roles` (`value`, `name`, `label`) VALUES
 (2, 'member', 'Club Member'),
 (3, 'inspector', 'Vector Inspector'),
 (4, 'manager', 'Group Manager'),
-(5, 'founder', 'Group Founder'),
 (255, 'developer', 'Site Developer');
 
 CREATE TABLE IF NOT EXISTS `sessions` (

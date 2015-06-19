@@ -253,6 +253,7 @@ $(function(){
 
 			if (!screwchanges && $formImgInput.data('prev-url') !== $formImgInput.val())
 				return $.Dialog.confirm(
+					title,
 					'You modified the image URL without clicking the '+CHECK_BTN+' button.<br>Do you want to continue with the last checked URL?',
 					function(sure){
 						if (!sure) return;
