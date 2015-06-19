@@ -151,7 +151,7 @@
 						if ($canceling)
 							$unfinishing = true;
 						if ($unfinishing){
-							if (($canceling && !$usersMatch) || !PERM('inspector')) respond();
+							if (($canceling && !$usersMatch) && !PERM('inspector')) respond();
 
 							if (!$canceling && !isset($_REQUEST['unbind'])){
 								if ($type === 'reservation' && empty($Thing['preview']))
