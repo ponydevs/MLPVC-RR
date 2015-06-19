@@ -598,10 +598,6 @@ HTML;
 	 * @param null|string $type
 	 * @return array|null
 	 */
-	$PROVIDER_FULLSIZE_KEY = array(
-		'sta.sh' => 'url',
-		'fav.me' => 'fullsize_url',
-	);
 	function da_cache_deviation($ID, $type = null){
 		global $Database, $PROVIDER_FULLSIZE_KEY;
 
@@ -613,7 +609,7 @@ HTML;
 			$insert = array(
 				'title' => $json['title'],
 				'preview' => $json['thumbnail_url'],
-				'fullsize' => $json[$PROVIDER_FULLSIZE_KEY[$json['_provider']]],
+				'fullsize' => $json['url'],
 				'provider' => $json['_provider'],
 			);
 

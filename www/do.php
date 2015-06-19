@@ -135,7 +135,8 @@
 				if (empty($data) || !preg_match('/^(requests?|reservations?)(?:\/(\d+))?$/',$data,$match)) respond('Invalid request #1');
 				if (!PERM('reservations.create')) respond();
 
-				$noaction = !($canceling = $finishing = $unfinishing = $adding = false);
+				$noaction = true;
+				$canceling = $finishing = $unfinishing = $adding = false;
 				foreach (array('cancel','finish','unfinish','add') as $k){
 					if (isset($_REQUEST[$k])){
 						$var = "{$k}ing";
@@ -188,8 +189,8 @@
 					}
 					else if ($finishing) respond("This $type has not yet been reserved");
 					else if (!$canceling) $update['reserved_by'] = $currentUser['id'];
-
-					if (!$canceling && !$Database->where('id', $Thing['id'])->update("{$type}s",$update))
+					
+					if ((!$canceling || $type !== 'reservation') && !$Database->where('id', $Thing['id'])->update("{$type}s",$update))
 						respond('Nothing has been changed');
 
 					if (!$canceling && ($finishing || $unfinishing)) respond(array());
