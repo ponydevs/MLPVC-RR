@@ -925,8 +925,8 @@ HTML;
 			if ($type === 'request')
 				$HTML .= <<<HTML
 				<label>
-					<span>$Type label</span>
-					<input type="text" name="label" pattern="^.{2,255}$" required>
+					<span>$Tyoe description (3-255 chars)</span>
+					<input type="text" name="label" pattern="^.{3,255}$" maxlength=255 required>
 				</label>
 				<label>
 					<span>$Type type</span>
@@ -941,8 +941,8 @@ HTML;
 			else {
 				$HTML .= <<<HTML
 				<label>
-					<span>$Type label (optional)</span>
-					<input type="text" name="label" pattern="^.{2,255}$">
+					<span>$Type description (optional, 3-255 chars)</span>
+					<input type="text" name="label" pattern="^.{3,255}$" maxlength=255>
 				</label>
 
 HTML;

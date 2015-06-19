@@ -117,7 +117,8 @@
 					respond('Missing label');
 				if (!empty($_POST['label'])){
 					$insert['label'] = trim($_POST['label']);
-					if (strlen($insert['label']) <= 2 || strlen($insert['label']) > 255) respond("The label must be between 2 and 255 characters in length");
+					$labellen = strlen($insert['label']);
+					if ($labellen < 3 || $labellen > 255) respond("The label must be between 3 and 255 characters in length");
 				}
 
 				if ($what === 'request'){
