@@ -135,10 +135,10 @@
 
 				if (!$adding){
 					if (!isset($match[2]))
-						 respond('Invalid request #2');
+						 respond("Missing $type ID");
 					$ID = intval($match[2]);
 					$Thing = $Database->where('id', $ID)->getOne("{$type}s");
-					if (empty($Thing)) respond("There's no {$type} with that ID");
+					if (empty($Thing)) respond("There's no $type with that ID");
 
 					$update = array('reserved_by' => null);
 					if (!empty($Thing['reserved_by'])){
@@ -148,10 +148,12 @@
 								respond("You already reserved this $type");
 							else respond("This $type has already been reserved by somepony else");
 						}
+						if ($canceling)
+							$unfinishing = true;
 						if ($unfinishing){
-							if (!PERM('inspector')) respond();
+							if (($canceling && !$usersMatch) || !PERM('inspector')) respond();
 
-							if (!isset($_REQUEST['unbind'])){
+							if (!$canceling && !isset($_REQUEST['unbind'])){
 								if ($type === 'reservation' && empty($Thing['preview']))
 									respond('This reservation was added directly and cannot be marked un-finished.<br>To remove it, check the unbind from user checkbox.');
 								unset($update['reserved_by']);
@@ -159,9 +161,11 @@
 							if ($type === 'reservation'){
 								if (!$Database->where('id', $Thing['id'])->delete('reservations'))
 									respond(ERR_DB_FAIL);
-								respond('Reservation deleted', 1);
+
+								if (!$canceling)
+									respond('Reservation deleted', 1);
 							}
-							$update = array('deviation_id' => null);
+							if (!$canceling) $update = array('deviation_id' => null);
 						}
 						else if ($finishing){
 							if (!$usersMatch && !PERM('inspector'))
@@ -172,10 +176,10 @@
 					else if ($finishing) respond("This $type has not yet been reserved");
 					else if (!$canceling) $update['reservedBy'] = $currentUser['id'];
 
-					if (!$Database->where('id', $Thing['id'])->update("{$type}s",$update))
+					if (!$canceling && !$Database->where('id', $Thing['id'])->update("{$type}s",$update))
 						respond('Nothing has been changed');
 
-					if ($finishing || $unfinishing) respond(array());
+					if (!$canceling && ($finishing || $unfinishing)) respond(array());
 					if ($type === 'request')
 						respond(array('btnhtml' => get_reserver_button(!$canceling)));
 					else if ($type === 'reservation' && $canceling)
