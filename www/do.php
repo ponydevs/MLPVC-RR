@@ -439,7 +439,7 @@
 				$_match = array();
 
 				if (RQMTHD === 'POST'){
-					if (!PERM('manager')) respond();
+					if (!PERM('inspector')) respond();
 					detectCSRF();
 
 					if (empty($data)) do404();
@@ -450,7 +450,6 @@
 						$targetUser = get_user($un, 'name');
 						if (empty($targetUser)) respond('User not found');
 
-						if (!PERM('manager')) respond("You cannot modify this user's group");
 						if ($targetUser['id'] === $currentUser['id']) respond("You cannot modify your own group");
 						if (!PERM($targetUser['role']))
 							respond('You can only modify the group of users who have the same or a lower-level rank than you');
@@ -470,7 +469,7 @@
 
 						$Session = $Database->where('id', $_match[1])->getOne('sessions');
 						if (empty($Session)) respond('This session does not exist');
-						if ($Session['user'] !== $currentUser['id'] && !PERM('manager'))
+						if ($Session['user'] !== $currentUser['id'] && !PERM('inspector'))
 							respond('You are not allowed to delete this session');
 
 						if (!$Database->where('id', $Session['id'])->delete('sessions'))
@@ -505,7 +504,7 @@
 				}
 				else {
 					$sameUser = $signedIn && $User['id'] === $currentUser['id'];
-					$canEdit = PERM('manager') && !$sameUser && PERM($User['role']);
+					$canEdit = !$sameUser && PERM('inspector') && PERM($User['role']);
 					$pagePath = "/u/{$User['name']}";
 					if ($_SERVER['REQUEST_URI'] !== $pagePath)
 						redirect($pagePath, STAY_ALIVE);
