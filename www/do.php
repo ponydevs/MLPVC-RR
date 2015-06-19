@@ -92,6 +92,22 @@
 					'fullsize' => $Image->fullsize,
 				);
 
+				if (empty($_POST['season']) || empty($_POST['episode'])) respond('Missing episode identifiers');
+				$epdata = get_real_episode(intval($_POST['season']), intval($_POST['episode']));
+				if (empty($epdata)) respond('This episode does not exist');
+				$insert['season'] = $epdata['season'];
+				$insert['episode'] = $epdata['apisode'];
+
+				if ($what === 'reservation'){
+					$reservations = rawquery_get_single_result($Database->rawQuery(
+						"SELECT COUNT(*) as count FROM reservations WHERE reserved_by = ? && season = ? && episode = ? && deviation_id IS NULL",
+						array($currentUser['id'], $insert['season'], $insert['episode'])
+					));
+
+					if (isset($reservations['count']) && $reservations['count'] >= 4)
+						respond("You've already reserved 4 images, please finish them before making another reservation.");
+				}
+
 				switch ($what){
 					case "request": $insert['requested_by'] = $currentUser['id']; break;
 					case "reservation": $insert['reserved_by'] = $currentUser['id']; break;
@@ -103,10 +119,6 @@
 					$insert['label'] = trim($_POST['label']);
 					if (strlen($insert['label']) <= 2 || strlen($insert['label']) > 255) respond("The label must be between 2 and 255 characters in length");
 				}
-
-				if (empty($_POST['season']) || empty($_POST['episode'])) respond('Missing episode identifiers');
-				$insert['season'] = intval($_POST['season']);
-				$insert['episode'] = intval($_POST['episode']);
 
 				if ($what === 'request'){
 					if (!isset($_POST['type']) || !in_array($_POST['type'],array('chr','obj','bg'))) respond("Invalid request type");
@@ -174,7 +186,7 @@
 						}
 					}
 					else if ($finishing) respond("This $type has not yet been reserved");
-					else if (!$canceling) $update['reservedBy'] = $currentUser['id'];
+					else if (!$canceling) $update['reserved_by'] = $currentUser['id'];
 
 					if (!$canceling && !$Database->where('id', $Thing['id'])->update("{$type}s",$update))
 						respond('Nothing has been changed');
