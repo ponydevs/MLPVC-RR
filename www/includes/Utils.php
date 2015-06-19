@@ -610,7 +610,7 @@ HTML;
 			$json = da_oembed($ID, $type);
 			if (empty($json)) return null;
 
-			$Deviation = array(
+			$insert = array(
 				'title' => $json['title'],
 				'preview' => $json['thumbnail_url'],
 				'fullsize' => $json[$PROVIDER_FULLSIZE_KEY[$json['_provider']]],
@@ -618,10 +618,12 @@ HTML;
 			);
 
 			if (!empty($Deviation)){
-				$Deviation['id'] = $ID;
-				$Database->insert('deviation_cache', $Deviation);
+				$insert['id'] = $ID;
+				$Database->insert('deviation_cache', $insert);
 			}
-			else $Database->where('id',$Deviation['id'])->update('deviation_cache', $Deviation);
+			else $Database->where('id',$Deviation['id'])->update('deviation_cache', $insert);
+
+			$Deviation = $insert;
 		}
 
 		return $Deviation;
