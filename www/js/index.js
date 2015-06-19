@@ -32,21 +32,34 @@ $(function(){
 
 			$.Dialog.wait(title,'Sending reservation to the server');
 
-			$.ajax({
-				method: "POST",
-				url: "/reserving/request/"+id,
-				success: function(data){
+			$.post("/reserving/request/"+id,{},function(data){
+				if (typeof data !== 'object') return console.log(data) && $w.trigger('ajaxerror');
+
+				if (data.status){
+					$.Dialog.close();
+					$(data.btnhtml).insertAfter($this);
+					Bind($li, id, type);
+					$this.remove();
+				}
+				else $.Dialog.fail(title,data.message);
+			});
+		}).next('button.delete').on('click',function(){
+			var $this = $(this),
+				title = 'Deleteing request';
+
+			$.Dialog.confirm(title, 'You are about to permanently delete this request.<br>Are you sure about this?', function(sure){
+				if (!sure) return;
+
+				$.post('/reserving/request/'+id+'?delete',{},function(data){
 					if (typeof data !== 'object') return console.log(data) && $w.trigger('ajaxerror');
 
 					if (data.status){
 						$.Dialog.close();
-						$(data.btnhtml).insertAfter($this);
-						Bind($li, id, type);
-						$this.remove();
+						$this.closest('li').remove();
 					}
 					else $.Dialog.fail(title,data.message);
-				}
-			})
+				})
+			});
 		});
 		var $actions = $li.find('.reserver-actions').children();
 		$actions.filter('.cancel').off('click').on('click',function(){

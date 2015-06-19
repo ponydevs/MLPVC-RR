@@ -136,8 +136,8 @@
 				if (!PERM('reservations.create')) respond();
 
 				$noaction = true;
-				$canceling = $finishing = $unfinishing = $adding = false;
-				foreach (array('cancel','finish','unfinish','add') as $k){
+				$canceling = $finishing = $unfinishing = $adding = $deleteing = false;
+				foreach (array('cancel','finish','unfinish','add','delete') as $k){
 					if (isset($_REQUEST[$k])){
 						$var = "{$k}ing";
 						$$var = true;
@@ -172,7 +172,8 @@
 									respond('This reservation was added directly and cannot be marked un-finished.<br>To remove it, check the unbind from user checkbox.');
 								unset($update['reserved_by']);
 							}
-							if ($type === 'reservation'){
+
+							if (($canceling || isset($_REQUEST['unbind'])) && $type === 'reservation'){
 								if (!$Database->where('id', $Thing['id'])->delete('reservations'))
 									respond(ERR_DB_FAIL);
 
@@ -186,6 +187,12 @@
 								respond();
 							$update = check_request_finish_image();
 						}
+					}
+					else if ($type === 'request' && $deleteing){
+						if (!$Database->where('id', $Thing['id'])->delete('requests'))
+							respond(ERR_DB_FAIL);
+
+						respond(array());
 					}
 					else if ($finishing) respond("This $type has not yet been reserved");
 					else if (!$canceling) $update['reserved_by'] = $currentUser['id'];

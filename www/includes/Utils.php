@@ -613,11 +613,14 @@ HTML;
 				'provider' => $json['_provider'],
 			);
 
-			if (!empty($Deviation)){
+			if (empty($Deviation)){
 				$insert['id'] = $ID;
 				$Database->insert('deviation_cache', $insert);
 			}
-			else $Database->where('id',$Deviation['id'])->update('deviation_cache', $insert);
+			else {
+				$Database->where('id',$Deviation['id'])->update('deviation_cache', $insert);
+				$insert['id'] = $ID;
+			}
 
 			$Deviation = $insert;
 		}
@@ -888,6 +891,8 @@ HTML;
 			$HTML .= $Image;
 			if ($isRequest)
 				$HTML .= get_reserver_button(false);
+			if ($isRequest)
+				$HTML .= "<button class='typcn typcn-trash red delete'>Delete</button>";
 		}
 		else {
 			$R['reserver'] = get_user($R['reserved_by']);
