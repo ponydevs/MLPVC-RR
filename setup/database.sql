@@ -70,7 +70,7 @@ CREATE TABLE IF NOT EXISTS `permissions` (
 INSERT INTO `permissions` (`action`, `minrole`) VALUES
 ('users.listall', 'developer'),
 ('episodes.manage', 'inspector'),
-('logs.view', 'manager'),
+('logs.view', 'inspector'),
 ('reservations.create', 'member');
 
 CREATE TABLE IF NOT EXISTS `requests` (
