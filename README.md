@@ -19,10 +19,10 @@ In the past, the management of comments under journals was done manually. Becaus
  - [Pirill-Poveniy](http://pirill-poveniy.deviantart.com/)
  - [thediscorded](http://thediscorded.deviantart.com/)
  - [masemj](http://masemj.deviantart.com/)
- - [Ambassad0r](http://ambassad0r.deviantart.com/) *idea*
+ - [Ambassad0r](http://ambassad0r.deviantart.com/) *(idea)*
  
 **Extrenal link icon** (licensed GPL) taken from [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Icon_External_Link.svg)<br>
-<span size=small>Coding and design by <a href="http://djdavid98.eu/">DJDavid98</a></span>
+<p size=small>Coding and design by <a href="http://djdavid98.eu/">DJDavid98</a></p>
 
 ## Local setup
 
