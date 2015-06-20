@@ -22,7 +22,7 @@ In the past, the management of comments under journals was done manually. Becaus
  - [Ambassad0r](http://ambassad0r.deviantart.com/) *(idea)*
  
 **Extrenal link icon** (licensed GPL) taken from [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Icon_External_Link.svg)<br>
-<p size=small>Coding and design by <a href="http://djdavid98.eu/">DJDavid98</a></p>
+Coding and design by [DJDavid98](http://djdavid98.eu/)
 
 ## Local setup
 
