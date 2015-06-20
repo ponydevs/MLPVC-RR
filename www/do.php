@@ -208,6 +208,7 @@
 					else respond('Invalid request');
 				}
 				else if ($type === 'reservation'){
+					if (!PERM('inspector')) respond();
 					$insert = check_request_finish_image();
 					$insert['reserved_by'] = $currentUser['id'];
 					$epdata = episode_id_parse($_GET['add']);

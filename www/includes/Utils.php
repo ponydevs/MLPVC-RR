@@ -973,9 +973,10 @@ HTML;
 		if (PERM('reservations.create')){
 			$makeRes = '<button id="reservation-btn">Make a reservation</button>';
 			$resForm = get_post_form('reservation');
-			$addRes = '<button id="add-reservation-btn">Add reservation</button>';
+
 		}
-		else $resForm = $makeRes = $addRes = '';
+		else $resForm = $makeRes = '';
+		$addRes = PERM('inspector') ? '<button id="add-reservation-btn" class="typcn typcn-plus blue">Add a reservation</button>' :'';
 
 		return <<<HTML
 	<section id="reservations">
