@@ -300,6 +300,15 @@ header {
 				background-color: rgba(255,255,255,.35);
 				cursor: default;
 			}
+			&[href^=http]:after {
+				content: "";
+				width: 12px;
+				height: 12px;
+				background-image: url(../img/extlink.svg);
+				background-size: 12px;
+				display: inline-block;
+				margin-left: 2px;
+			}
 		}
 	}
 }

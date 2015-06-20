@@ -5,14 +5,8 @@
 	<section>
 		<h2>What's this site?</h2>
 		<div>
-			<p>This website is (would be) a new, automatic way to process and store the requests & reservations users want to make. It's that simple.</p>
-		</div>
-	</section>
-	<section>
-		<h2>Okay, but... what's the point?</h2>
-		<div>
-			<p>The management of comments under journals is currently done manually. Because of this, there has to be a person who checks those comments, evaluates them, then updates the journal accordingly. This takes time, usually, a long time. The group's staff consists of busy people, and we can't expect them to consantly monitor new incoming comments. But!</p>
-			<p>Through this website, new entries could be submitted and added to a list, just like the journals, automatically, without having to have someone doing this monotonous task.</p>
+			<p>This website is a new, automatic way to process and store the requests & reservations users want to make. It's that simple.</p>
+			<p>In the past, the management of comments under journals was done manually. Because of this, there had to be a person who checks those comments, evaluates them, then updates the journal accordingly. This took time, sometimes, longer time than it should have taken. The group's staff consists of busy people, and we can't expect them to consantly monitor new incoming comments. But, with the help of this website, new entries can be submitted and added to a list, just like the journals, automatically, without having to have someone do this monotonous task.</p>
 		</div>
 	</section>
 	<section>
@@ -30,6 +24,7 @@
 			<p><strong>Header font:</strong> <a href="http://www.mattyhex.net/CMR/">Celestia Medium Redux</a></p>
 			<p><strong>deviantArt logo</strong> <em>(used on profile pages)</em> &copy; <a href="http://www.mattyhex.net/CMR/">DeviantArt</a></p>
 			<p><strong>Application logo</strong> based on the MLP-VectorClub logo and <a href="http://djdavid98.deviantart.com/art/Rainbow-Dash-standing-S03E07-468486614">Rainbow Dash standing (S03E07)</a> by <a href="http://djdavid98.deviantart.com/">DJDavid98</a></p>
+			<p><strong>Extrenal link icon</strong> (licensed GPL) taken from <a href="https://commons.wikimedia.org/wiki/File:Icon_External_Link.svg">Wikimedia Commons</a></p>
 		</div>
 	</section>
 <?php
