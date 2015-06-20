@@ -23,7 +23,14 @@
 			<p><strong>Used libraries &amp; icons include:</strong> <a href="http://jquery.com/">jQuery</a>, <a href="https://github.com/joshcam/PHP-MySQLi-Database-Class">MysqliDb</a>, <a href="http://www.typicons.com/">Typicons</a>, <a href="https://www.npmjs.com/package/uglify-js">Uglify-js</a>, <a href="http://sass-lang.com/">SASS</a></p>
 			<p><strong>Header font:</strong> <a href="http://www.mattyhex.net/CMR/">Celestia Medium Redux</a></p>
 			<p><strong>deviantArt logo</strong> <em>(used on profile pages)</em> &copy; <a href="http://www.mattyhex.net/CMR/">DeviantArt</a></p>
-			<p><strong>Application logo</strong> based on the MLP-VectorClub logo and <a href="http://djdavid98.deviantart.com/art/Rainbow-Dash-standing-S03E07-468486614">Rainbow Dash standing (S03E07)</a> by <a href="http://djdavid98.deviantart.com/">DJDavid98</a></p>
+			<p>
+				<strong>Application logo</strong> based on <a href="http://pirill-poveniy.deviantart.com/art/Collab-Christmas-Vector-of-the-MLP-VC-Mascot-503196118">Christmas Vector of the MLP-VC Mascot</a> by the following artists:
+				<ul>
+					<li><a href="http://pirill-poveniy.deviantart.com/">Pirill-Poveniy</a></li>
+					<li><a href="http://thediscorded.deviantart.com/">thediscorded</a></li>
+					<li><a href="http://masemj.deviantart.com/">masemj</a></li>
+					<li><a href="http://ambassad0r.deviantart.com/">Ambassad0r</a> <em>(idea)</em></li>
+				</ul>
 			<p><strong>Extrenal link icon</strong> (licensed GPL) taken from <a href="https://commons.wikimedia.org/wiki/File:Icon_External_Link.svg">Wikimedia Commons</a></p>
 		</div>
 	</section>
