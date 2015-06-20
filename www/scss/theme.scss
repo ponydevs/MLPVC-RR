@@ -378,9 +378,8 @@ header {
 					}
 
 					&:not(:last-child):after {
-						content: "-";
+						content: ", ";
 						display: inline-block;
-						padding: 0 3px;
 					}
 					&:not(.active) a:hover:not(:active) {
 						border-bottom-color: initial;

@@ -1078,23 +1078,22 @@ HTML;
 	// Renders the entire sidebar "Useful links" section \\
 	function sidebar_links_render(){
 		global $Database, $signedIn, $currentUser;
-		$Links = $Database->rawQuery("SELECT ul.* FROM usefullinks ul LEFT JOIN roles r ON ul.minrole = r.name WHERE r.value <= ".
-			($signedIn
-				?"(SELECT value FROM roles WHERE name = '{$currentUser['role']}')"
-				:1
-			)
-		);
+		if (!PERM('user')) return;
+		$Links = $Database->get('usefullinks');
 
-		echo '<ul class="links">';
+		$Render = array();
 		foreach ($Links as $l){
+			if (!PERM($l['minrole'])) continue;
+
 			if (!empty($l['title'])){
 				$title = str_replace("'",'&apos;',$l['title']);
 				$title = "title='$title'";
 			}
 			else $title = '';
-			echo "<li><a href='{$l['url']}' $title>{$l['label']}</a></li>";
+			$Render[] =  "<li><a href='{$l['url']}' $title>{$l['label']}</a></li>";
 		}
-		echo '</ul>';
+		if (!empty($Render))
+			echo '<ul class="links">'.implode('',$Render).'</ul>';
 	}
 	
 	// Renders the user card \\
