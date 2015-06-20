@@ -1,11 +1,11 @@
 <div id=content>
-	<img src="/img/logo.png" alt="MLP Vector Club Requests & Reservations Logo">
-	<h1>MLP Vector Club Requests & Reservations</h1>
-	<p>An automated system for handling requests & reservations, made for <a href="http://mlp-vectorclub.deviantart.com/">MLP-VectorClub</a></p>
+	<img src="/img/logo.png" alt="MLP Vector Club Requests &amp; Reservations Logo">
+	<h1>MLP Vector Club Requests &amp; Reservations</h1>
+	<p>An automated system for handling requests &amp; reservations, made for <a href="http://mlp-vectorclub.deviantart.com/">MLP-VectorClub</a></p>
 	<section>
 		<h2>What's this site?</h2>
 		<div>
-			<p>This website is a new, automatic way to process and store the requests & reservations users want to make. It's that simple.</p>
+			<p>This website is a new, automatic way to process and store the requests &amp; reservations users want to make. It's that simple.</p>
 			<p>In the past, the management of comments under journals was done manually. Because of this, there had to be a person who checks those comments, evaluates them, then updates the journal accordingly. This took time, sometimes, longer time than it should have taken. The group's staff consists of busy people, and we can't expect them to consantly monitor new incoming comments. But, with the help of this website, new entries can be submitted and added to a list, just like the journals, automatically, without having to have someone do this monotonous task.</p>
 		</div>
 	</section>
@@ -20,7 +20,7 @@
 		<div>
 			<p><strong>Used libraries &amp; icons include:</strong> <a href="http://jquery.com/">jQuery</a>, <a href="https://github.com/joshcam/PHP-MySQLi-Database-Class">MysqliDb</a>, <a href="http://www.typicons.com/">Typicons</a>, <a href="https://www.npmjs.com/package/uglify-js">Uglify-js</a>, <a href="http://sass-lang.com/">SASS</a></p>
 			<p><strong>Header font:</strong> <a href="http://www.mattyhex.net/CMR/">Celestia Medium Redux</a></p>
-			<p><strong>deviantArt logo</strong> <em>(used on profile pages)</em> &copy; <a href="http://www.deviantart.com/">DeviantArt</a></p>
+			<p><strong>deviantArt logo</strong> <em>(used on profile pages)</em> &amp;copy; <a href="http://www.deviantart.com/">DeviantArt</a></p>
 			<p>
 				<strong>Application logo</strong> based on <a href="http://pirill-poveniy.deviantart.com/art/Collab-Christmas-Vector-of-the-MLP-VC-Mascot-503196118">Christmas Vector of the MLP-VC Mascot</a> by the following artists:
 				<ul>
