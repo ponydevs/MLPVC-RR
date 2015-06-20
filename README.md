@@ -13,7 +13,7 @@ In the past, the management of comments under journals was done manually. Becaus
 
 **Used libraries & icons include:** [jQuery](http://jquery.com/), [MysqliDb](https://github.com/joshcam/PHP-MySQLi-Database-Class), [Typicons](http://www.typicons.com/), [Uglify-js](https://www.npmjs.com/package/uglify-js), [SASS](http://sass-lang.com/)<br>
 **Header font:** [Celestia Medium Redux](http://www.mattyhex.net/CMR/)<br>
-**deviantArt logo** *(used on profile pages)* &copy; [DeviantArt](http://www.deviantart.com/)</p>
+**deviantArt logo** *(used on profile pages)* &copy; [DeviantArt](http://www.deviantart.com/)<br>
 **Application logo** based on [Christmas Vector of the MLP-VC Mascot](http://pirill-poveniy.deviantart.com/art/Collab-Christmas-Vector-of-the-MLP-VC-Mascot-503196118) by the following artists:
 
  - [Pirill-Poveniy](http://pirill-poveniy.deviantart.com/)
