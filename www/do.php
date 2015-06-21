@@ -453,7 +453,9 @@
 
 						if ($targetUser['id'] === $currentUser['id']) respond("You cannot modify your own group");
 						if (!PERM($targetUser['role']))
-							respond('You can only modify the group of users who have the same or a lower-level rank than you');
+							respond('You can only modify the group of users who are in the same or a lower-level group than you');
+						if ($targetUser['role'] === 'ban')
+							respond('This user is banished, and must be un-banished before changing their group.');
 
 						if (!isset($_POST['newrole'])) respond('The new group is not specified');
 						$newgroup = trim($_POST['newrole']);
@@ -505,13 +507,16 @@
 						if ($rlen < 5 || $rlen > 255)
 							respond('Reason length must be between 5 and 255 characters');
 
-						$Database->where('id', $targetUser['id'])->update('users', array('role' => $action == 'banish' ? 'ban' : 'user'));
+						$changes = array('role' => $action == 'banish' ? 'ban' : 'user');
+						$Database->where('id', $targetUser['id'])->update('users', $changes);
 						LogAction($action,array(
 							'target' => $targetUser['id'],
 							'reason' => $reason
 						));
-						if ($action == 'banish') respond(array());
-						else respond("We welcome {$targetUser['name']} back with open hooves!", 1);
+						$changes['role'] = $ROLES_ASSOC[$changes['role']];
+						$changes['badge'] = label_to_initials($changes['role']);
+						if ($action == 'banish') respond($changes);
+						else respond("We welcome {$targetUser['name']} back with open hooves!", 1, $changes);
 					}
 					else statusCodeHeader(404, AND_DIE);
 				}

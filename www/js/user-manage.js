@@ -10,13 +10,14 @@ $(function(){
 		currRole = $currRole.children('span').text(),
 		$RoleForm = $(document.createElement('form')).attr('id','rolemod').html('<select name=newrole required><optgroup label="Possible roles"></optgroup></select>'),
 		$OptGrp = $RoleForm.find('optgroup'),
-		$banToggle = $('#ban-toggle');
+		$banToggle = $('#ban-toggle'),
+		$changeRole = $('#change-role');
 
 	$.each(ROLES,function(name,label){
 		$OptGrp.append('<option value='+name+'>'+label+'</option>');
 	});
 
-	$('#change-role').on('click',function(){
+	$changeRole.on('click',function(){
 		var title = "Change group";
 		$.Dialog.request(title,$RoleForm.clone(),'rolemod','Change',function(){
 			$('#rolemod').on('submit',function(e){
@@ -37,7 +38,7 @@ $(function(){
 						$roleBadge.text(data.badge);
 						$.Dialog.close();
 
-						$banToggle[data.canbebanned ? 'show' : 'hide']();
+						$banToggle[(data.canbebanned ? 'remove' : 'add')+'Class']('hidden');
 					}
 					else $.Dialog.fail(title,data.message);
 				});
@@ -83,7 +84,11 @@ $(function(){
 							if (action === 'banish') $.Dialog.info(title, '<p>What had to be done, has been done.</p><img src="/img/ban-after.png">');
 							else $.Dialog.success(title, data.message, true);
 
+							$currRole.children('span').text(currRole = data.role);
+							$roleBadge.text(data.badge);
+
 							$banToggle.toggleClass('un-banish banish typcn-world typcn-weather-night');
+							$changeRole.toggleClass('hidden');
 						}
 						else $.Dialog.fail(title,data.message);
 					});

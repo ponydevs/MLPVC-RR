@@ -11,7 +11,7 @@
 	<p><?php
 		echo "<span>{$User['rolelabel']}</span>";
 		if ($canEdit){
-			echo ' <button id="change-role" class="blue typcn typcn-spanner" title="Change '.s($User['name']).' group"></button>';
+			echo ' <button id="change-role" class="blue typcn typcn-spanner'.($User['role']==='ban'?' hidden':'').'" title="Change '.s($User['name']).' group"></button>';
 			$BanLabel = ($User['role']==='ban'?'Un-ban':'Ban').'ish';
 			$Icon = $User['role']==='ban'?'world':'weather-night';
 			if (PERM('inspector', $User['role']))

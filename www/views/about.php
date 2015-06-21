@@ -54,7 +54,7 @@
 				if (empty($Arranged[$r])) continue;
 				$users = $Arranged[$r];
 				$userCount = count($users);
-				$group = $ROLES_ASSOC[$r].($userCount !== 1 ? 's' : '');
+				$group = $ROLES_ASSOC[$r].($userCount !== 1 ? 's' : '').' ['.label_to_initials($ROLES_ASSOC[$r]).']';
 				$usersStr = array();
 				foreach ($users as $u)
 					$usersStr[] = profile_link($u);
