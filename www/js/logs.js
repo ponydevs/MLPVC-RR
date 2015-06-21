@@ -6,10 +6,10 @@ $(function(){
 			var $this = $(this),
 				title = 'Log entry details';
 
-			if ($this.hasClass('expanded')) $this.removeClass('expanded').next().stop().slideUp();
+			if ($this.hasClass('typcn-minus')) $this.toggleClass('typcn-minus typcn-plus').next().stop().slideUp();
 			else {
 				if ($this.next().length === 1)
-					$this.addClass('expanded').next().stop().slideDown();
+					$this.toggleClass('typcn-minus typcn-plus').next().stop().slideDown();
 				else {
 					var EntryID = parseInt($row.children().first().text());
 					$.ajax({
@@ -30,7 +30,7 @@ $(function(){
 								});
 
 								$dataDiv.insertAfter($this).slideDown();
-								$this.addClass('expanded');
+								$this.toggleClass('typcn-minus typcn-plus');
 							}
 							else $.Dialog.fail(title,data.message);
 						}
@@ -61,30 +61,5 @@ $(function(){
 				</span>'
 			);
 		}
-	});
-
-	$('#clearlogs').on('click',function(){
-		var title = this.value;
-		$.Dialog.confirm(title, 'A teljes rendszernapló végleges kürítésére készül, innen nincs visszaút.<br>Biztos, hogy ezt szeretné tenni?',function(sure){
-			if (!sure) return;
-
-			$.Dialog.wait('A rendszernapló ürítése folyamatban van');
-
-			$.ajax({
-				method: "POST",
-				url: '/napló/ürít',
-				success: function(data){
-					if (typeof data === 'string') return console.log(data) === $(window).trigger('ajaxerror');
-
-					if (data.status){
-						$.Dialog.success(title,data.message);
-						setTimeout(function(){
-							window.location.reload();
-						},1500);
-					}
-					else $.Dialog.fail(title,data.message);
-				}
-			});
-		});
 	});
 });
