@@ -4,12 +4,13 @@ $(function(){
 		$content = $('#content'),
 		ROLES = window.ROLES,
 		$name = $content.children('h1'),
-		name = $name.text(),
+		name = $name.text().trim(),
 		$roleBadge = $content.find('.avatar-wrap').children('.badge'),
 		$currRole = $name.next(),
 		currRole = $currRole.children('span').text(),
 		$RoleForm = $(document.createElement('form')).attr('id','rolemod').html('<select name=newrole required><optgroup label="Possible roles"></optgroup></select>'),
-		$OptGrp = $RoleForm.find('optgroup');
+		$OptGrp = $RoleForm.find('optgroup'),
+		$banToggle = $('#ban-toggle');
 
 	$.each(ROLES,function(name,label){
 		$OptGrp.append('<option value='+name+'>'+label+'</option>');
@@ -28,22 +29,66 @@ $(function(){
 
 				$.Dialog.wait(title,'Moving user to the new group');
 
-				$.ajax({
-					method: "POST",
-					url: "/u/newgroup/"+name,
-					data: data,
-					success: function(data){
-						if (typeof data !== 'object') return console.log(data) && $w.trigger('ajaxerror');
+				$.post("newgroup/"+name, data, function(data){
+					if (typeof data !== 'object') return console.log(data) && $w.trigger('ajaxerror');
 
-						if (data.status){
-							$currRole.children('span').text(currRole = ROLES[data.ng]);
-							$roleBadge.text(data.badge);
-							$.Dialog.close();
-						}
-						else $.Dialog.fail(title,data.message);
+					if (data.status){
+						$currRole.children('span').text(currRole = ROLES[data.ng]);
+						$roleBadge.text(data.badge);
+						$.Dialog.close();
+
+						$banToggle[data.canbebanned ? 'show' : 'hide']();
 					}
+					else $.Dialog.fail(title,data.message);
 				});
 			}).find('optgroup').children().filter(function(){ return $(this).text() === currRole }).attr('selected', true);
 		});
+	});
+	$banToggle.on('click',function(){
+		var Action = ($banToggle.hasClass('un-banish') ? 'Un-ban' : 'Ban')+'ish',
+			action = Action.toLowerCase(),
+			title = Action+'ning '+name+(action == 'banish' ? ' to the moon':'');
+		$.Dialog.request(
+			title,
+			(
+				Action === 'Banish'
+				? '<p>'+Action+'ing '+name+' will immediately sign them out<br>of every session and won\'t allow them to log in again.<br>Please, only do this if it\'s absolutely necessary.</p>'
+				: '<p>'+Action+'ing '+name+' will allow them to sign in to the site again.</p>'
+			) +
+			'<form id='+action+'-form>' +
+			'   <p>Please provide a reason (5-255 chars.) for the '+action.replace(/ish$/,'')+' which will be<br>added to the log entry and appear in the user\'s ban history.</p>' +
+			'   <input type="text" name="reason" placeholder="Enter a reason" required pattern="^.{5,255}$">' +
+			'</form>'+
+			(Action === 'Banish' ? '<img src="/img/ban-before.png" alt="Sad twilight" height=200>':''),
+			action+'-form',
+			Action,
+			function(){
+				var $form = $('#'+action+'-form'),
+					$input = $form.find('input');
+				$input.val(Action+'ing because ');
+				$form.on('submit',function(e){
+					e.preventDefault();
+
+					var tempdata = $(this).serializeArray(), data = {};
+					$.each(tempdata,function(i,el){
+						data[el.name] = el.value;
+					});
+
+					$.Dialog.wait(title, 'Gathering the Elements of Harmony');
+
+					$.post(action+'/'+name, data, function(data){
+						if (typeof data !== 'object') return console.log(data) && $w.trigger('ajaxerror');
+
+						if (data.status){
+							if (action === 'banish') $.Dialog.info(title, '<p>What had to be done, has been done.</p><img src="/img/ban-after.png">');
+							else $.Dialog.success(title, data.message, true);
+
+							$banToggle.toggleClass('un-banish banish typcn-world typcn-weather-night');
+						}
+						else $.Dialog.fail(title,data.message);
+					});
+				});
+			}
+		);
 	});
 });

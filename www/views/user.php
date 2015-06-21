@@ -11,14 +11,18 @@
 	<p><?php
 		echo "<span>{$User['rolelabel']}</span>";
 		if ($canEdit){
-			$BanLabel = $User['role']==='ban'?'Unban':'Ban';
-			?> <button id="change-role" class="blue typcn typcn-spanner" title="Change user's group"></button> <button id="ban-toggle" class="orange typcn typcn-cancel <?=strtolower($BanLabel)?>" title="<?="$BanLabel user"?>" disabled></button><?php
+			echo ' <button id="change-role" class="blue typcn typcn-spanner" title="Change '.s($User['name']).' group"></button>';
+			$BanLabel = ($User['role']==='ban'?'Un-ban':'Ban').'ish';
+			$Icon = $User['role']==='ban'?'world':'weather-night';
+			if (PERM('inspector', $User['role']))
+				$Icon .= ' hidden';
+			echo ' <button id="ban-toggle" class="darkblue typcn typcn-'.$Icon.' '.strtolower($BanLabel).'" title="'."$BanLabel user".'"></button>';
 		}
 	?></p>
 	<div class="settings"><?php
 		if ($sameUser || PERM('manager')){ ?>
 		<section class="sessions">
-			<label><!--Manage s-->Sessions</label>
+			<label>Sessions</label>
 <?php       if (isset($CurrentSession) || !empty($Sessions)){ ?>
 			<p>Below is a list of all the browsers where <?=$sameUser?"you've":'this user has'?> logged in from.</p>
 			<ul class="session-list"><?php

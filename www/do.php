@@ -457,12 +457,16 @@
 
 						if (!isset($_POST['newrole'])) respond('The new group is not specified');
 						$newgroup = trim($_POST['newrole']);
-						if (!in_array($newgroup,$ROLES) ||$newgroup === 'ban') respond('The specified group does not exist');
+						if (!in_array($newgroup,$ROLES) || $newgroup === 'ban') respond('The specified group does not exist');
 						if ($targetUser['role'] === $newgroup) respond('This user is already in the specified group');
 
 						update_role($targetUser,$newgroup);
 
-						respond('Group changed successfully',1,array('ng' => $newgroup, 'badge' => label_to_initials($ROLES_ASSOC[$newgroup])));
+						respond('Group changed successfully',1,array(
+							'ng' => $newgroup,
+							'badge' => label_to_initials($ROLES_ASSOC[$newgroup]),
+							'canbebanned' => !PERM('inspector', $newgroup)
+						));
 					}
 					else if (preg_match('/^sessiondel\/(\d+)$/',$data,$_match)){
 						if (!$signedIn) respond();
@@ -476,6 +480,38 @@
 						if (!$Database->where('id', $Session['id'])->delete('sessions'))
 							respond('Session could not be deleted');
 						respond('Session successfully removed',1);
+					}
+					else if (preg_match('/^(un-)?banish\/'.USERNAME_PATTERN.'$/', $data, $_match)){
+						if (!$signedIn) respond();
+						detectCSRF();
+
+						$Action = (empty($_match[1]) ? 'Ban' : 'Un-ban').'ish';
+						$action = strtolower($Action);
+						$un = $_match[2];
+
+						$targetUser = get_user($un, 'name');
+						if (empty($targetUser)) respond('User not found');
+
+						if ($targetUser['id'] === $currentUser['id']) respond("You cannot $action yourself");
+						if (PERM('inspector', $targetUser['role']))
+							respond("You cannot $action people within the inspector or any higher group");
+						if ($action == 'banish' && $targetUser['role'] === 'ban' || $action == 'un-banish' && $targetUser['role'] !== 'ban')
+							respond("This user has already been {$action}ed");
+
+						if (empty($_POST['reason']))
+							respond('Please specify a reason');
+						$reason = trim($_POST['reason']);
+						$rlen = strlen($reason);
+						if ($rlen < 5 || $rlen > 255)
+							respond('Reason length must be between 5 and 255 characters');
+
+						$Database->where('id', $targetUser['id'])->update('users', array('role' => $action == 'banish' ? 'ban' : 'user'));
+						LogAction($action,array(
+							'target' => $targetUser['id'],
+							'reason' => $reason
+						));
+						if ($action == 'banish') respond(array());
+						else respond("We welcome {$targetUser['name']} back with open hooves!", 1);
 					}
 					else statusCodeHeader(404, AND_DIE);
 				}

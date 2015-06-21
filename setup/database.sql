@@ -28,6 +28,12 @@ CREATE TABLE IF NOT EXISTS `log` (
   `ip` tinytext
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+CREATE TABLE IF NOT EXISTS `log__banish` (
+  `entryid` int(11) NOT NULL,
+  `target` varchar(36) NOT NULL,
+  `reason` tinytext NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 CREATE TABLE IF NOT EXISTS `log__episodes` (
   `entryid` int(11) NOT NULL,
   `action` set('add','del') NOT NULL,
@@ -55,6 +61,12 @@ CREATE TABLE IF NOT EXISTS `log__rolechange` (
   `target` varchar(36) NOT NULL,
   `oldrole` varchar(10) NOT NULL,
   `newrole` varchar(10) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS `log__un-banish` (
+  `entryid` int(11) NOT NULL,
+  `target` varchar(36) NOT NULL,
+  `reason` tinytext NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `log__userfetch` (
@@ -141,6 +153,7 @@ CREATE TABLE IF NOT EXISTS `users` (
   `signup_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+
 ALTER TABLE `deviation_cache`
   ADD PRIMARY KEY (`id`);
 
@@ -152,6 +165,10 @@ ALTER TABLE `log`
   ADD PRIMARY KEY (`entryid`),
   ADD KEY `initiator` (`initiator`);
 
+ALTER TABLE `log__banish`
+  ADD PRIMARY KEY (`entryid`),
+  ADD KEY `target` (`target`);
+
 ALTER TABLE `log__episodes`
   ADD PRIMARY KEY (`entryid`);
 
@@ -162,6 +179,10 @@ ALTER TABLE `log__rolechange`
   ADD PRIMARY KEY (`entryid`),
   ADD KEY `prevrole` (`oldrole`),
   ADD KEY `newrole` (`newrole`),
+  ADD KEY `target` (`target`);
+
+ALTER TABLE `log__un-banish`
+  ADD PRIMARY KEY (`entryid`),
   ADD KEY `target` (`target`);
 
 ALTER TABLE `log__userfetch`
@@ -200,13 +221,18 @@ ALTER TABLE `users`
   ADD PRIMARY KEY (`id`),
   ADD KEY `role` (`role`);
 
+
 ALTER TABLE `log`
+  MODIFY `entryid` int(11) NOT NULL AUTO_INCREMENT;
+ALTER TABLE `log__banish`
   MODIFY `entryid` int(11) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `log__episodes`
   MODIFY `entryid` int(11) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `log__episode_modify`
   MODIFY `entryid` int(11) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `log__rolechange`
+  MODIFY `entryid` int(11) NOT NULL AUTO_INCREMENT;
+ALTER TABLE `log__un-banish`
   MODIFY `entryid` int(11) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `log__userfetch`
   MODIFY `entryid` int(11) NOT NULL AUTO_INCREMENT;
@@ -225,9 +251,15 @@ ALTER TABLE `episodes`
 ALTER TABLE `log`
   ADD CONSTRAINT `log_ibfk_1` FOREIGN KEY (`initiator`) REFERENCES `users` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE;
 
+ALTER TABLE `log__banish`
+  ADD CONSTRAINT `log__banish_ibfk_1` FOREIGN KEY (`target`) REFERENCES `users` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE;
+
 ALTER TABLE `log__rolechange`
   ADD CONSTRAINT `log__rolechange_ibfk_1` FOREIGN KEY (`oldrole`) REFERENCES `roles` (`name`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `log__rolechange_ibfk_2` FOREIGN KEY (`newrole`) REFERENCES `roles` (`name`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+ALTER TABLE `log__un-banish`
+  ADD CONSTRAINT `log__un-banish_ibfk_1` FOREIGN KEY (`target`) REFERENCES `users` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE;
 
 ALTER TABLE `permissions`
   ADD CONSTRAINT `permissions_ibfk_1` FOREIGN KEY (`minrole`) REFERENCES `roles` (`name`);

@@ -30,6 +30,8 @@
 		'episode_modify' => 'Episode modified',
 		'rolechange' => 'User group change',
 		'userfetch' => 'Fetch user details',
+		'banish' => 'User banished',
+		'un-banish' => 'User un-banished',
 	);
 	function LogAction($type,$data = null){
 		global $Database, $signedIn, $currentUser;
@@ -40,7 +42,7 @@
 				if (is_bool($v))
 					$data[$k] = $v ? 1 : 0;
 
-			$refid = $Database->insert("log__$type",$data);
+			$refid = $Database->insert("`log__$type`",$data);
 		}
 
 		$central['reftype'] = $type;
@@ -95,7 +97,13 @@
 			break;
 			case "userfetch":
 				$user =  $Database->where('id',$data['userid'])->getOne('users');
-				$details[] = array('User', "<a href='/u/{$user['name']}'>{$user['name']}</a>");
+				$details[] = array('User', profile_link($user));
+			break;
+			case "banish":
+			case "un-banish":
+				$user =  $Database->where('id',$data['target'])->getOne('users');
+				$details[] = array('User', profile_link($user));
+				$details[] = array('Reason', htmlspecialchars($data['reason']));
 			break;
 			default:
 				$details[] = array('Could not process details','No data processor defined for this entry type');
@@ -641,19 +649,23 @@ HTML;
 	foreach ($Database->get('permissions') as $p)
 		$PERMISSIONS[$p['action']] = $p['minrole'];
 
-	function PERM($perm){
+	function PERM($perm, $compareAgainst = null){
 		if (!is_string($perm)) return false;
 
-		global $signedIn;
-		if (!$signedIn) return false;
+		if (empty($compareAgainst)){
+			global $signedIn, $currentUser;
+			if (!$signedIn) return false;
+			$checkRole = $currentUser['role'];
+		}
+		else $checkRole = $compareAgainst;
 
-		global $currentUser, $ROLES, $PERMISSIONS;
+		global $ROLES, $PERMISSIONS;
 
 		if (in_array($perm,$ROLES)) $targetRole = $perm;
 		else if (!empty($PERMISSIONS[$perm])) $targetRole = $PERMISSIONS[$perm];
 		else trigger_error('Invalid permission '.$perm);
 
-		return array_search($currentUser['role'],$ROLES) >= array_search($targetRole,$ROLES);
+		return array_search($checkRole,$ROLES) >= array_search($targetRole,$ROLES);
 	}
 
 	// Episode title matching pattern \\

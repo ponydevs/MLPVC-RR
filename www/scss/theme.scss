@@ -295,7 +295,7 @@ header {
 
 			&:not(:last-child){ margin-right: 5px }
 			&:hover { background-color: rgba(255,255,255,.2) }
-			&.active {
+			&:focus, &:active, &.active {
 				transition: none;
 				background-color: rgba(255,255,255,.35);
 				cursor: default;

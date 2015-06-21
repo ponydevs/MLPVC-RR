@@ -76,3 +76,18 @@
 		}
 	}
 }
+
+#dialogContent > div {
+	&:last-child > img {
+		display: block;
+		height: 200px;
+		margin: 10px auto 0;
+
+		@media all and (max-width: 650px), all and (max-height: 620px) {
+			display: none;
+		}
+	}
+	&:not(:last-child) > img {
+		display: none;
+	}
+}

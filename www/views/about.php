@@ -20,15 +20,16 @@
 		<div>
 			<p><strong>Used libraries &amp; icons include:</strong> <a href="http://jquery.com/">jQuery</a>, <a href="https://github.com/joshcam/PHP-MySQLi-Database-Class">MysqliDb</a>, <a href="http://www.typicons.com/">Typicons</a>, <a href="https://www.npmjs.com/package/uglify-js">Uglify-js</a>, <a href="http://sass-lang.com/">SASS</a></p>
 			<p><strong>Header font:</strong> <a href="http://www.mattyhex.net/CMR/">Celestia Medium Redux</a></p>
-			<p><strong>deviantArt logo</strong> <em>(used on profile pages)</em> &amp;copy; <a href="http://www.deviantart.com/">DeviantArt</a></p>
-			<p>
-				<strong>Application logo</strong> based on <a href="http://pirill-poveniy.deviantart.com/art/Collab-Christmas-Vector-of-the-MLP-VC-Mascot-503196118">Christmas Vector of the MLP-VC Mascot</a> by the following artists:
-				<ul>
-					<li><a href="http://pirill-poveniy.deviantart.com/">Pirill-Poveniy</a></li>
-					<li><a href="http://thediscorded.deviantart.com/">thediscorded</a></li>
-					<li><a href="http://masemj.deviantart.com/">masemj</a></li>
-					<li><a href="http://ambassad0r.deviantart.com/">Ambassad0r</a> <em>(idea)</em></li>
-				</ul>
+			<p><strong>deviantArt logo</strong> <em>(used on profile pages)</em> &copy; <a href="http://www.deviantart.com/">DeviantArt</a></p>
+			<p><strong>Application logo</strong> based on <a href="http://pirill-poveniy.deviantart.com/art/Collab-Christmas-Vector-of-the-MLP-VC-Mascot-503196118">Christmas Vector of the MLP-VC Mascot</a> by the following artists:</p>
+			<ul>
+				<li><a href="http://pirill-poveniy.deviantart.com/">Pirill-Poveniy</a></li>
+				<li><a href="http://thediscorded.deviantart.com/">thediscorded</a></li>
+				<li><a href="http://masemj.deviantart.com/">masemj</a></li>
+				<li><a href="http://ambassad0r.deviantart.com/">Ambassad0r</a> <em>(idea)</em></li>
+			</ul>
+			<p><strong>Pre-ban dialog illustration (<a href="/img/ban-before.png">direct link</a>):</strong> <a href="http://synthrid.deviantart.com/art/Twilight-What-Have-I-Done-355177596">Twilight - What Have I Done?</a> by <a href="http://synthrid.deviantart.com/">Synthrid</a> <em>(edited with daylight colors)</em></p>
+			<p><strong>Post-ban dialog illustration (<a href="/img/ban-after.png">direct link</a>):</strong> <a href="http://sairoch.deviantart.com/art/Sad-Twilight-Sparkle-354710611">Sad Twilight Sparkle</a> by <a href="http://sairoch.deviantart.com/">Sairoch</a> <em>(<a href="http://sta.sh/0mddtxyru0w">shading-free version</a> used)</em></p>
 			<p><strong>Extrenal link icon</strong> (licensed GPL) taken from <a href="https://commons.wikimedia.org/wiki/File:Icon_External_Link.svg">Wikimedia Commons</a></p>
 			<p><small>Coding, design and hosting by <?=$DevLink?></small></p>
 		</div>

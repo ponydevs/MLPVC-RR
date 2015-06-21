@@ -20,14 +20,6 @@ ga('send', 'pageview');
 
 <?php } ?>
 $(function(){
-	var $nav = $('header nav, #topbar h1, #sidebar .links li');
-	if ($nav.length > 0){
-		var wlpn = window.location.pathname,
-			$a = $nav.children('a').filter(function(){ return this.host === window.location.host && this.pathname === wlpn });
-		if ($a.length > 0)
-			$a.addClass('active').removeAttr('href').on('mousedown dragstart click',function(e){e.preventDefault()});
-	}
-
 	var $w = $(window),
 		$header = $('header'),
 		tbh = $('#topbar').outerHeight();

@@ -22,18 +22,32 @@
 		<div id="topbar">
 			<h1><a href="/">MLP<span class=short>-VC</span><span class=long> Vector Club</span> Requests & Reservations</a></h1>
 		</div>
-		<nav>
-			<a href="/" class=home><span>Home</span></a>
-			<a href="/episodes">Episodes</a>
-<?php if ($signedIn){ ?>
-			<a href="/u/<?=$currentUser['name']?>">Account</a>
-<?php   if (PERM('logs.view')){ ?>
-			<a href="<?=$do === 'logs' ? $_SERVER['REQUEST_URI'] : '/logs'?>">Logs</a>
-<?php   } ?>
-<?php } ?>
-			<a href="/about">About</a>
-			<a href="http://mlp-vectorclub.deviantart.com/">MLP-VectorClub</a>
-		</nav>
+		<nav><?php
+	$HeaderItems = array(
+		array('/','<span>Home</span>','home'),
+		array('/episodes','Episodes'),
+	);
+	if ($signedIn){
+		$HeaderItems[] = array("/u/{$currentUser['name']}",'Account');
+		if (PERM('logs.view'))
+			$HeaderItems[] = array($do == 'logs' ? $_SERVER['REQUEST_URI'] : '/logs', 'Logs');
+	}
+	$HeaderItems[] = array('/about', 'About');
+	$currentSet = false;
+	foreach ($HeaderItems as $item){
+		list($path, $label) = $item;
+		$current = !$currentSet && !!preg_match("~^$path($|/)~", $_SERVER['REQUEST_URI']);
+		if ($current)
+			$currentSet = true;
+		$class = trim((!empty($item[2]) ? $item[2] : '').($current ? ' active' : ''));
+		if (!empty($class))
+			$class = " class='$class'";
+
+		$href = $current ? '' : " href='$path'";
+
+		echo "<a$href$class>$label</a>";
+	}
+	echo '<a href="http://mlp-vectorclub.deviantart.com/">MLP-VectorClub</a>'; ?></nav>
 	</header>
 
 	<div id=main>
