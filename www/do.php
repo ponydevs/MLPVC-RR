@@ -397,7 +397,7 @@
 						if (empty($MainEntry)) respond('Log entry does not exist');
 						if (empty($MainEntry['refid'])) respond('There are no details to show');
 
-						$Details = $Database->where('entryid', $MainEntry['refid'])->getOne("log__{$MainEntry['reftype']}");
+						$Details = $Database->where('entryid', $MainEntry['refid'])->getOne("`log__{$MainEntry['reftype']}`");
 						if (empty($Details)) respond('Failed to retrieve details');
 
 						respond(format_log_details($MainEntry['reftype'],$Details));
