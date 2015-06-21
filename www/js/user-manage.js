@@ -48,7 +48,7 @@ $(function(){
 	$banToggle.on('click',function(){
 		var Action = ($banToggle.hasClass('un-banish') ? 'Un-ban' : 'Ban')+'ish',
 			action = Action.toLowerCase(),
-			title = Action+'ning '+name+(action == 'banish' ? ' to the moon':'');
+			title = Action+'ing '+name+(action == 'banish' ? ' to the moon':'');
 		$.Dialog.request(
 			title,
 			(
