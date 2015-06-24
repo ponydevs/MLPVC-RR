@@ -129,15 +129,13 @@
 	nav {
 		position: relative;
 		z-index: 2;
-		height: 35px;
 		width: 100%;
-		box-sizing: border-box;
 	}
 	
 	#main {
 		position: relative;
 		z-index: 1;
-		padding: 8px 8px 46px 8px;
+		padding: 8px 8px 48px 8px;
 	}
 	#sidebar {
 		padding: 0 0 0 10px !important;
@@ -273,11 +271,12 @@ header {
 			background-size: 16px;
 		}
 	}
+
 	// Page layout - Header - Navigation
 	nav {
 		line-height: 0;
 		font-size: 0;
-		padding: 5px 5px 0 5px;
+		padding: 5px;
 
 		@include navfoot();
 
@@ -289,29 +288,37 @@ header {
 
 			li {
 				display: inline-block;
-				height: 1em;
-				line-height: 1em;
 				font-size: 18px;
-				padding: .2em;
 				color: #fff;
-				margin-bottom: 5px;
-				border-radius: 3px;
-				transition: background-color .2s linear;
+				line-height: 1em;
 
 				&:not(:last-child){ margin-right: 5px }
-				&:hover { background-color: rgba(255,255,255,.2) }
-				&:focus, &:active, &.active {
-					transition: none;
-					background-color: rgba(255,255,255,.35);
-					cursor: default;
-				}
-				&.active a:not(:link):not(:first-child) {
-					text-decoration: underline;
+				&.active {
+					background-color: rgba(255,255,255,.3);
+
+					a:not(:link) {
+						background-color: rgba(255,255,255,.2);
+						transition: none;
+						cursor: default;
+
+						&:not(:first-child) {
+							margin-left: 2px;
+						}
+					}
 				}
 
 				a {
-					color:inherit;
+					display: inline-block;
+					color: inherit;
 					text-decoration: none;
+					padding: .1em .2em;
+					height: 1.1em;
+					line-height: 1.1em;
+					border-radius: 3px;
+					transition: background-color .2s linear;
+
+					&:hover { background-color: rgba(255,255,255,.2) }
+					&:focus, &:active {	background-color: rgba(255,255,255,.5) }
 
 					&[href^=http]:after {
 						content: "";
