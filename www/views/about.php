@@ -36,7 +36,7 @@
 	</section>
 <?php
 	if (PERM('users.listall')){
-		$Users = $Database->orderBy('name')->get('users');
+		$Users = $Database->orderBy('name','asc')->get('users');
 		if (!empty($Users)){
 ?>
 	<section>
