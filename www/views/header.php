@@ -9,7 +9,7 @@
 <?php } ?>
 	<link rel="shortcut icon" href="/favicon.ico">
 <?php if (isset($customCSS)) foreach ($customCSS as $css){ ?>
-	<link rel="stylesheet" href="/css/<?=$css?>.css">
+	<link rel="stylesheet" href="/css/<?=$css?>.css?<?=LATEST_COMMIT_ID?>">
 <?php } ?>
 	<script src="/js/prefixfree.min.js" id="prefixfree"></script>
 	<script src="//code.jquery.com/jquery-1.11.2.min.js"></script>

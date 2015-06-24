@@ -14,7 +14,7 @@
 	define('GA_TRACKING_CODE','');
 
 	// Get latest commit version & time from Git \\
-	define('LATEST_COMMIT_ID',shell_exec("git rev-parse --short=4 HEAD"));
+	define('LATEST_COMMIT_ID',rtrim(shell_exec("git rev-parse --short=4 HEAD")));
 	define('LATEST_COMMIT_TIME',date('c',strtotime(shell_exec("git log -1 --date=short --pretty=format:%ci"))));
 
 	// Use For Window, without shell_exec and/or git \\
