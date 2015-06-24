@@ -983,7 +983,7 @@ HTML;
 		}
 
 		if (PERM('reservations.create')){
-			$makeRes = '<button id="reservation-btn">Make a reservation</button>';
+			$makeRes = '<button id="reservation-btn" class=green>Make a reservation</button>';
 			$resForm = get_post_form('reservation');
 
 		}
@@ -1040,7 +1040,7 @@ HTML;
 		}
 
 		if (PERM('user')){
-			$makeRq = '<button id="request-btn">Make a request</button>';
+			$makeRq = '<button id="request-btn" class=green>Make a request</button>';
 			$reqForm = get_post_form('request');
 		}
 		else $reqForm = $makeRq = '';
