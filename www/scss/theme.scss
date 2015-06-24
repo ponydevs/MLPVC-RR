@@ -281,33 +281,48 @@ header {
 
 		@include navfoot();
 
-		a {
-			display: inline-block;
-			height: 1em;
-			line-height: 1em;
-			font-size: 18px;
-			padding: .2em;
-			color: #fff;
-			text-decoration: none;
-			margin-bottom: 5px;
-			border-radius: 3px;
-			transition: background-color .2s linear;
+		ul {
+			list-style: none;
+			padding: 0;
+			margin: 0;
+			display: block;
 
-			&:not(:last-child){ margin-right: 5px }
-			&:hover { background-color: rgba(255,255,255,.2) }
-			&:focus, &:active, &.active {
-				transition: none;
-				background-color: rgba(255,255,255,.35);
-				cursor: default;
-			}
-			&[href^=http]:after {
-				content: "";
-				width: 12px;
-				height: 12px;
-				background-image: url(../img/extlink.svg);
-				background-size: 12px;
+			li {
 				display: inline-block;
-				margin-left: 2px;
+				height: 1em;
+				line-height: 1em;
+				font-size: 18px;
+				padding: .2em;
+				color: #fff;
+				margin-bottom: 5px;
+				border-radius: 3px;
+				transition: background-color .2s linear;
+
+				&:not(:last-child){ margin-right: 5px }
+				&:hover { background-color: rgba(255,255,255,.2) }
+				&:focus, &:active, &.active {
+					transition: none;
+					background-color: rgba(255,255,255,.35);
+					cursor: default;
+				}
+				&.active a:not(:link):not(:first-child) {
+					text-decoration: underline;
+				}
+
+				a {
+					color:inherit;
+					text-decoration: none;
+
+					&[href^=http]:after {
+						content: "";
+						width: 12px;
+						height: 12px;
+						background-image: url(../img/extlink.svg);
+						background-size: 12px;
+						display: inline-block;
+						margin-left: 2px;
+					}
+				}
 			}
 		}
 	}

@@ -19,6 +19,39 @@
 			echo ' <button id="ban-toggle" class="darkblue typcn typcn-'.$Icon.' '.strtolower($BanLabel).'" title="'."$BanLabel user".'"></button>';
 		}
 	?></p>
+	<div class="details">
+		<section class="bans">
+			<label>Banishment history</label>
+			<ul><?php
+		$Banishes = $Database
+			->where('target', $User['id'])
+			->join('log l',"l.reftype = 'banish' && l.refid = b.entryid")
+			->orderBy('l.timestamp')
+			->get('log__banish b',null,"b.reason, l.initiator, l.timestamp, 'Banish' as Action");
+		if (!empty($Banishes)){
+			$Unbanishes = $Database
+				->where('target', $User['id'])
+				->join('log l',"l.reftype = 'un-banish' && l.refid = b.entryid")
+				->get('`log__un-banish` b',null,"b.reason, l.initiator, l.timestamp, 'Un-banish' as Action");
+			if (!empty($Unbanishes)){
+				$Banishes = array_merge($Banishes,$Unbanishes);
+				usort($Banishes, function($a, $b){
+					$a = strtotime($a['timestamp']);
+					$b = strtotime($b['timestamp']);
+					return $a > $b ? -1 : ($a < $b ? 1 : 0);
+				});
+				unset($Unbanishes);
+			}
+
+			foreach ($Banishes as $b){
+				$initiator = get_user($b['initiator']);
+				$b['reason'] = htmlspecialchars($b['reason']);
+				echo "<li class=".strtolower($b['Action'])."><blockquote>{$b['reason']}</blockquote> - ".profile_link($initiator).' '.timetag($b['timestamp'])."</li>";
+			}
+		}
+			?></ul>
+		</section>
+	</div>
 	<div class="settings"><?php
 		if ($sameUser || PERM('manager')){ ?>
 		<section class="sessions">

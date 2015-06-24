@@ -22,32 +22,36 @@
 		<div id="topbar">
 			<h1><a <?=$do==='index'?'class=active':'href=/'?>>MLP<span class=short>-VC</span><span class=long> Vector Club</span> Requests & Reservations</a></h1>
 		</div>
-		<nav><?php
+		<nav><ul><?php
 	$HeaderItems = array(
 		array('/','<span>Home</span>','home'),
-		array('/episodes','Episodes'),
+		'eps' => array('/episodes','Episodes'),
 	);
-	if ($signedIn){
-		$HeaderItems[] = array("/u/{$currentUser['name']}",'Account');
-		if (PERM('logs.view'))
-			$HeaderItems[] = array($do == 'logs' ? $_SERVER['REQUEST_URI'] : '/logs', 'Logs');
+	if ($do === 'episode' && !empty($EpData))
+		$HeaderItems['eps']['subitem'] = array($_SERVER['REQUEST_URI'], $title);
+	if ($signedIn)
+		$HeaderItems['u'] = array("/u/{$currentUser['name']}",'Account');
+	if ($do === 'user' && !$sameUser)
+		$HeaderItems[] = array($_SERVER['REQUEST_URI'], $title);
+	if (PERM('logs.view')){
+		$HeaderItems['logs'] = array('/logs', 'Logs');
+		if ($do === 'logs')
+			$HeaderItems['logs']['subitem'] = array($_SERVER['REQUEST_URI'], "Page $Page");
 	}
 	$HeaderItems[] = array('/about', 'About');
+
 	$currentSet = false;
 	foreach ($HeaderItems as $item){
-		list($path, $label) = $item;
-		$current = !$currentSet && !!preg_match("~^$path($|/)~", $_SERVER['REQUEST_URI']);
-		if ($current)
-			$currentSet = true;
-		$class = trim((!empty($item[2]) ? $item[2] : '').($current ? ' active' : ''));
-		if (!empty($class))
-			$class = " class='$class'";
-
-		$href = $current ? '' : " href='$path'";
-
-		echo "<a$href$class>$label</a>";
+		$sublink = '';
+		if (isset($item['subitem'])){
+			list($class, $sublink) = get_header_link($item['subitem']);
+			$sublink = " &rsaquo; $sublink";
+			$link = get_header_link($item, HTML_ONLY);
+		}
+		else list($class, $link) = get_header_link($item);
+		echo "<li$class>$link$sublink</li>";
 	}
-	echo '<a href="http://mlp-vectorclub.deviantart.com/">MLP-VectorClub</a>'; ?></nav>
+	echo '<li><a href="http://mlp-vectorclub.deviantart.com/">MLP-VectorClub</a></li>'; ?></ul></nav>
 	</header>
 
 	<div id=main>

@@ -1260,12 +1260,12 @@ HTML;
 	<span class=used>Last used: $lastuse</span>
 </li>
 HTML;
-	 }
+	}
 
-	 // Checks the image which allows a request to be finished
-	 $POST_TYPES = array('request','reservation');
-	 function check_request_finish_image(){
-	    global $POST_TYPES, $Database;
+	// Checks the image which allows a request to be finished
+	$POST_TYPES = array('request','reservation');
+	function check_request_finish_image(){
+		global $POST_TYPES, $Database;
 		if (!isset($_POST['deviation']))
 			respond('Please specify a deviation URL');
 		$deviation = $_POST['deviation'];
@@ -1284,4 +1284,24 @@ HTML;
 			return array('deviation_id' => $Image->id);
 		}
 		catch (Exception $e){ respond($e->getMessage()); }
-	 }
+	}
+
+	// Header link HTML generator
+	define('HTML_ONLY', true);
+	function get_header_link($item, $htmlOnly = false){
+		global $currentSet;
+
+		list($path, $label) = $item;
+		$current = (!$currentSet || $htmlOnly === HTML_ONLY) && !!preg_match("~^$path($|/)~", $_SERVER['REQUEST_URI']);
+		if ($current)
+			$currentSet = true;
+		$class = trim((!empty($item[2]) ? $item[2] : '').($current ? ' active' : ''));
+		if (!empty($class))
+			$class = " class='$class'";
+
+		$href = $current && $htmlOnly !== HTML_ONLY ? '' : " href='$path'";
+		$html = "<a$href>$label</a>";
+
+		if ($htmlOnly === HTML_ONLY) return $html;
+		return array($class, $html);
+	}

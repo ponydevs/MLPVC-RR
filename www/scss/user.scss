@@ -15,9 +15,56 @@
 		}
 		&:hover path { fill: $dalogo }
 	}
+	section {
+		&:not(:last-child) { margin-bottom: 15px }
+
+		> label {
+			font-size: 1.2em;
+			text-decoration: underline;
+			margin-bottom: 10px;
+			display: block;
+		}
+		p {
+			margin: 0;
+
+			&:not(:last-child) {
+				margin-bottom: 5px;
+			}
+		}
+	}
+	.details {
+		> section { margin-bottom: 15px }
+		.bans ul {
+			margin: 0;
+			padding: 0;
+			list-style: none;
+
+			&:empty:before {
+				content: "This user has no banishments on record";
+				font-style: italic;
+			}
+
+			li {
+				display: block;
+				blockquote {
+					margin: 0;
+					padding: 3px;
+					display: inline-block;
+				}
+				&.banish blockquote {
+					color: $NRed;
+					background-color: $NRedBG;
+				}
+				&.un-banish blockquote {
+					color: $NGreen;
+					background-color: $NGreenBG;
+				}
+			}
+		}
+	}
 	.settings {
-		text-align: center;
 		border-top: 1px solid $ContentOutline;
+		text-align: center;
 
 		&:empty { display: none }
 		&:not(:empty):before {
@@ -26,26 +73,6 @@
 			font-size: 1.6em;
 			font-weight: bold;
 			display: block;
-		}
-
-		> section {
-			&:not(:last-child) {
-				margin-bottom: 15px;
-			}
-
-			> label {
-				font-size: 1.2em;
-				text-decoration: underline;
-				margin-bottom: 10px;
-				display: block;
-			}
-			p {
-				margin: 0;
-
-				&:not(:last-child) {
-					margin-bottom: 5px;
-				}
-			}
 		}
 		.sessions {
 			.session-list {

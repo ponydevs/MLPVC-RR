@@ -564,7 +564,7 @@
 				}
 
 				$settings = array(
-					'title' => !isset($MSG) ? ($sameUser?'Your':s($User['name'])).' account' : 'Account',
+					'title' => !isset($MSG) ? ($sameUser?'Your':s($User['name'])).' '.($sameUser || $canEdit?'account':'profile') : 'Account',
 					'no-robots',
 					'do-css',
 					'js' => array('user'),
