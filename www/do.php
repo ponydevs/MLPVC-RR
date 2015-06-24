@@ -105,7 +105,7 @@
 					));
 
 					if (isset($reservations['count']) && $reservations['count'] >= 4)
-						respond("You've already reserved 4 images, please finish them before making another reservation.");
+						respond("You've already reserved 4 images, please finish at least<br>one of them before making another reservation.");
 				}
 
 				switch ($what){
