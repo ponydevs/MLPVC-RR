@@ -295,6 +295,7 @@ header {
 				&:not(:last-child){ margin-right: 5px }
 				&.active {
 					background-color: rgba(255,255,255,.3);
+					border-radius: 3px;
 
 					a:not(:link) {
 						background-color: rgba(255,255,255,.2);
