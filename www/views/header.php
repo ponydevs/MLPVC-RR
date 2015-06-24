@@ -20,7 +20,7 @@
 
 	<header>
 		<div id="topbar">
-			<h1><a href="/">MLP<span class=short>-VC</span><span class=long> Vector Club</span> Requests & Reservations</a></h1>
+			<h1><a <?=$do==='index'?'class=active':'href=/'?>>MLP<span class=short>-VC</span><span class=long> Vector Club</span> Requests & Reservations</a></h1>
 		</div>
 		<nav><?php
 	$HeaderItems = array(
