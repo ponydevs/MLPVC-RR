@@ -27,7 +27,7 @@
 		array('/','<span>Home</span>','home'),
 		'eps' => array('/episodes','Episodes'),
 	);
-	if ($do === 'episode' && !empty($EpData))
+	if ($do === 'episode' && !empty($CurrentEpisode))
 		$HeaderItems['eps']['subitem'] = array($_SERVER['REQUEST_URI'], $title);
 	if ($signedIn)
 		$HeaderItems['u'] = array("/u/{$currentUser['name']}",'Account');

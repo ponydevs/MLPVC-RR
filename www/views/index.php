@@ -42,5 +42,13 @@
 	} ?>
 </div>
 <div id=sidebar>
-<?php include "views/sidebar.php"; ?>
+<?php
+	if (!empty($CurrentEpisode)){ ?>
+	<section id=voting>
+		<h2>Episode voting</h2>
+		<?=get_episode_voting($CurrentEpisode)?>
+	</section>
+<?php
+	}
+	include "views/sidebar.php"; ?>
 </div>

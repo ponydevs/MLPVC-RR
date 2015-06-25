@@ -19,6 +19,13 @@ CREATE TABLE IF NOT EXISTS `episodes` (
   `posted_by` varchar(36) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+CREATE TABLE IF NOT EXISTS `episode_voting` (
+  `season` tinyint(2) unsigned NOT NULL,
+  `episode` tinyint(2) unsigned NOT NULL,
+  `user` varchar(36) NOT NULL,
+  `vote` tinyint(1) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 CREATE TABLE IF NOT EXISTS `log` (
   `entryid` int(11) NOT NULL,
   `initiator` varchar(36) DEFAULT NULL,
@@ -161,6 +168,10 @@ ALTER TABLE `episodes`
   ADD PRIMARY KEY (`season`,`episode`),
   ADD KEY `posted_by` (`posted_by`);
 
+ALTER TABLE `episode_voting`
+  ADD PRIMARY KEY (`season`,`episode`,`user`) USING BTREE,
+  ADD KEY `user` (`user`);
+
 ALTER TABLE `log`
   ADD PRIMARY KEY (`entryid`),
   ADD KEY `initiator` (`initiator`);
@@ -247,6 +258,10 @@ ALTER TABLE `usefullinks`
 
 ALTER TABLE `episodes`
   ADD CONSTRAINT `episodes_ibfk_1` FOREIGN KEY (`posted_by`) REFERENCES `users` (`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+
+ALTER TABLE `episode_voting`
+  ADD CONSTRAINT `episode_voting_ibfk_1` FOREIGN KEY (`season`, `episode`) REFERENCES `episodes` (`season`, `episode`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `episode_voting_ibfk_2` FOREIGN KEY (`user`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 ALTER TABLE `log`
   ADD CONSTRAINT `log_ibfk_1` FOREIGN KEY (`initiator`) REFERENCES `users` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE;

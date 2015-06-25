@@ -287,6 +287,29 @@
 							'render' => call_user_func("{$_match[1]}_render",get_posts($season, $episode, $only)),
 						));
 					}
+					else if (preg_match('/^vote\/'.EPISODE_ID_PATTERN.'$/', $data, $_match)){
+						if (!PERM('user')) respond();
+						list($season,$episode) = array_map('intval',array_splice($_match,1,2));
+
+						$Episode = get_real_episode($season,$episode);
+						if (empty($Episode))
+							respond("There's no episode with this season & episode number");
+
+						$UserVote = get_episode_user_vote($Episode);
+						if (!empty($UserVote))
+							respond('You already voted for this episode');
+
+						if (empty($_POST['vote']) || !is_numeric($_POST['vote']))
+							respond('Vote value missing from request');
+
+						if (!$Database->insert('episode_voting',array(
+							'season' => $season,
+							'episode' => $episode,
+							'user' => $currentUser['id'],
+							'vote' => intval($_POST['vote']) > 0 ? 1 : -1
+						))) respond(ERR_DB_FAIL);
+						respond(array('newhtml' => get_episode_voting($Episode)));
+					}
 					else {
 						if (!PERM('episodes.manage')) respond();
 						$editing = preg_match('/^edit\/'.EPISODE_ID_PATTERN.'$/',$data,$_match);

@@ -13,6 +13,32 @@ $(function(){
 		    $body.removeClass('no-distractions');
 		});
 
+	$('#voting').find('button').on('click',function(e){
+		e.preventDefault();
+		var $this = $(this),
+			$both = $this.siblings('button').addBack(),
+			value = $this.hasClass('green') ? 1 : -1,
+			epid = 'S'+SEASON+'E'+EPISODE,
+			title = (value > 0?'Up':'Down')+'voting '+epid;
+
+		$both.attr('disabled', true);
+
+		$.post('/episode/vote/'+epid,{vote:value},function(data){
+			if (typeof data !== 'object') return console.log(data) && $w.trigger('ajaxerror');
+
+			if (data.status){
+				$.Dialog.close();
+				var $section = $this.closest('section');
+				$section.children('h2').nextAll().remove();
+				$section.append(data.newhtml);
+			}
+			else {
+				$.Dialog.fail(title,data.message);
+				$both.attr('disabled', false);
+			}
+		})
+	});
+
 	$.fn.rebindHandlers = function(){
 		var $this = $(this);
 		$this.find('li[id]').each(function(){

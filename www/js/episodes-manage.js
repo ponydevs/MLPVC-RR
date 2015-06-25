@@ -129,7 +129,7 @@ $(function(){
 				epid = $this.closest('tr').data('epid'),
 				title = 'Deleting '+epid;
 
-			$.Dialog.confirm(title,'<p>This will remove <strong>ALL</strong> requests & reservations associated with the episode, too.</p><p>Are you sure you want to delete it?</p>',function(sure){
+			$.Dialog.confirm(title,'<p>This will remove <strong>ALL</strong><ul><li>requests</li><li>reservations</li><li>and votes</li></ul>associated with the episode, too.</p><p>Are you sure you want to delete it?</p>',function(sure){
 				if (!sure) return;
 
 				$.Dialog.wait(title);

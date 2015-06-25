@@ -18,6 +18,10 @@
 			$m['status'] = true;
 			die(json_encode($m));
 		}
+		if ($m === ERR_DB_FAIL){
+			global $Database;
+			$m .= ": ".$Database->getLastError();
+		}
 		die(json_encode(array_merge(array(
 			"message" => $m,
 			"status" => $s,
@@ -1304,4 +1308,78 @@ HTML;
 
 		if ($htmlOnly === HTML_ONLY) return $html;
 		return array($class, $html);
+	}
+
+	/**
+	 * Get user's vote for an episode
+	 *
+	 * Accepts a single array containing values
+	 *  for the keys 'season' and 'episode'
+	 * Return's the user's vote entry from the DB
+	 *
+	 * @param array $Ep
+	 * @return array
+	 */
+	function get_episode_user_vote($Ep){
+		global $Database, $signedIn, $currentUser;
+		if (!$signedIn) return null;
+		return $Database
+			->where('season', $Ep['season'])
+			->where('episode', $Ep['episode'])
+			->where('user', $currentUser['id'])
+			->getOne('episode_voting');
+	}
+
+	// Render episode voting HTML
+	function get_episode_voting($Episode){
+		global $Database, $signedIn;
+		$HTML = '';
+
+		$_bind = array($Episode['season'], $Episode['episode']);
+		$_query = function($col,$as,$val = null){
+			return "SELECT CAST(IFNULL($col,0) AS UNSIGNED INTEGER) as $as FROM episode_voting WHERE ".(isset($val)?"vote = $val && ":'')."season = ? && episode = ?";
+		};
+		$VoteTally = rawquery_get_single_result($Database->rawQuery($_query('COUNT(*)','total'), $_bind));
+		$VoteTally = array_merge(
+			$VoteTally,
+			rawquery_get_single_result($Database->rawQuery($_query('SUM(vote)','up',1), $_bind)),
+			rawquery_get_single_result($Database->rawQuery($_query('ABS(SUM(vote))','down',-1), $_bind))
+		);
+
+		$HTML .= "<p>";
+		if ($VoteTally['total'] > 0){
+			$UpsDowns = $VoteTally['up'] > $VoteTally['down'] ? 'up' : 'down';
+			if ($VoteTally['up'] === $VoteTally['total'] || $VoteTally['down'] === $VoteTally['total'])
+				$Start = "Everypony who voted";
+			else $Start = "{$VoteTally[$UpsDowns]} out of {$VoteTally['total']} ponies";
+			$HTML .= "$Start ".($UpsDowns === 'down'?'dis':'')."liked this episode";
+			if (PERM('user')) $UserVote = get_episode_user_vote($Episode);
+			if (empty($UserVote)) $HTML .= ".";
+			else $HTML .= ", ".(($UserVote['vote'] > 0 && $UpsDowns === 'up' || $UserVote['vote'] < 0 && $UpsDowns === 'down') ? 'and so did you' : 'but you didn\'t').".";
+		}
+		else $HTML .= 'Nopony voted yet.';
+		$HTML .= "</p>";
+
+		if ($VoteTally['total'] > 0){
+			$fills = array();
+
+			$upPerc = call_user_func($UpsDowns === 'up' ? 'ceil' : 'floor', ($VoteTally['up']/$VoteTally['total'])*10000)/100;
+			if ($upPerc > 0)
+				$fills[] = "<div class=up style=width:$upPerc% data-width=$upPerc></div>";
+
+			$downPerc = call_user_func($UpsDowns === 'down' ? 'ceil' : 'floor', ($VoteTally['down']/$VoteTally['total'])*10000)/100;
+			if ($downPerc > 0)
+				array_splice($fills, $UpsDowns === 'up' ? 1 : 0, 0,array("<div class=down style=width:$downPerc% data-width=$downPerc></div>"));
+
+			if (!empty($fills))
+				$HTML .= "<div class=bar>".implode('',$fills)."</div>";
+		}
+		if (empty($UserVote)){
+			$HTML .= "<br><p>What did <em>you</em> think about the episode?</p>";
+			if ($signedIn)
+				$HTML .= '<button class="typcn typcn-thumbs-up green">I liked it</button> <button class="typcn typcn-thumbs-down red">I disliked it</button>';
+			else $HTML .= "<p><em>Sign in below to cast your vote!</em></p>";
+		}
+
+		return $HTML;
 	}
