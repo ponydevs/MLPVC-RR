@@ -443,6 +443,7 @@ header {
 		font-style: italic;
 		line-height: 1.2em;
 
+		&:empty { display: none }
 		&:before { content: '\201C' }
 		&:after  { content: '\201D' }
 		&[data-cite]:after {

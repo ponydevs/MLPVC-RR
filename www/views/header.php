@@ -33,6 +33,8 @@
 		$HeaderItems['u'] = array("/u/{$currentUser['name']}",'Account');
 	if ($do === 'user' && !$sameUser)
 		$HeaderItems[] = array($_SERVER['REQUEST_URI'], $title);
+	if (PERM('inspector'))
+		$HeaderItems[] = array('/config','Site configuration');
 	if (PERM('logs.view')){
 		$HeaderItems['logs'] = array('/logs', 'Logs');
 		if ($do === 'logs')

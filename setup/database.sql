@@ -92,6 +92,64 @@ INSERT INTO `permissions` (`action`, `minrole`) VALUES
 ('logs.view', 'inspector'),
 ('reservations.create', 'member');
 
+CREATE TABLE IF NOT EXISTS `quotes` (
+  `id` int(11) NOT NULL,
+  `pony` int(11) NOT NULL,
+  `text` tinytext NOT NULL
+) ENGINE=InnoDB AUTO_INCREMENT=30 DEFAULT CHARSET=utf8;
+
+INSERT INTO `quotes` (`id`, `pony`, `text`) VALUES
+(1, 1, 'Alright, sugarcube.'),
+(2, 1, 'A good night''s sleep cures just about everythin''!'),
+(3, 2, '<small>you rock! woo hoo!</small>'),
+(4, 2, '<small>yay</small>'),
+(5, 2, '<small>*squee*</small>'),
+(6, 2, 'You''re sooo cute!'),
+(7, 2, '<small>I''d like to be a tree</small>'),
+(8, 2, '<strong>Your face!</strong>'),
+(9, 3, 'It was under E!'),
+(10, 3, 'Make a wish!'),
+(11, 3, '<em>Forever!</em>'),
+(12, 3, 'She''s not a tree, Dashie!'),
+(13, 4, '<strong>The</strong> one and only.'),
+(14, 5, 'Gorgeous!'),
+(15, 6, 'Together, we''re friends.'),
+(16, 6, 'A mark of one''s destiny singled out alone, fulfilled.'),
+(17, 6, 'You know she''s not a tree, right?'),
+(18, 6, 'Huh?! I''m pancake! I mean, awake...'),
+(19, 7, 'We''re so pleased to have you here!'),
+(20, 8, 'Buy some apples?'),
+(21, 8, 'But ah want it naaow!'),
+(22, 9, 'Eeyup'),
+(23, 10, 'We must work so very hard, it''s just so much to do!'),
+(24, 11, 'Rocks.'),
+(25, 12, 'woof woof'),
+(26, 13, 'I don''t get it'),
+(27, 13, 'But it looks <strong>sooo</strong> kewl!'),
+(28, 14, 'It seems we have some NEIGH-sayers in the audience.'),
+(29, 14, 'The Great and Powerful Trixie doesn''t trust wheels.');
+
+CREATE TABLE IF NOT EXISTS `quotes__ponies` (
+  `id` int(11) NOT NULL,
+  `name` tinytext NOT NULL
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8;
+
+INSERT INTO `quotes__ponies` (`id`, `name`) VALUES
+(1, 'Applejack'),
+(2, 'Fluttershy'),
+(3, 'Pinkie Pie'),
+(4, 'Rainbow Dash'),
+(5, 'Rarity'),
+(6, 'Twilight Sparkle'),
+(7, 'Starlight Glimmer'),
+(8, 'Applebloom'),
+(9, 'Big Macintosh'),
+(10, 'Winter Wrap Up'),
+(11, 'Maud Pie'),
+(12, 'Screw Loose'),
+(13, 'Button Mash'),
+(14, 'The Great and Powerful Trixie');
+
 CREATE TABLE IF NOT EXISTS `requests` (
   `id` int(11) NOT NULL,
   `type` set('chr','bg','obj') NOT NULL DEFAULT 'chr',
@@ -203,6 +261,12 @@ ALTER TABLE `permissions`
   ADD PRIMARY KEY (`action`),
   ADD KEY `minrole` (`minrole`);
 
+ALTER TABLE `quotes`
+  ADD PRIMARY KEY (`id`), ADD KEY `pony` (`pony`);
+
+ALTER TABLE `quotes__ponies`
+  ADD PRIMARY KEY (`id`);
+
 ALTER TABLE `requests`
   ADD PRIMARY KEY (`id`),
   ADD KEY `season` (`season`,`episode`),
@@ -247,6 +311,10 @@ ALTER TABLE `log__un-banish`
   MODIFY `entryid` int(11) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `log__userfetch`
   MODIFY `entryid` int(11) NOT NULL AUTO_INCREMENT;
+ALTER TABLE `quotes`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=30;
+ALTER TABLE `quotes__ponies`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=15;
 ALTER TABLE `requests`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `reservations`
@@ -278,6 +346,9 @@ ALTER TABLE `log__un-banish`
 
 ALTER TABLE `permissions`
   ADD CONSTRAINT `permissions_ibfk_1` FOREIGN KEY (`minrole`) REFERENCES `roles` (`name`);
+
+ALTER TABLE `quotes`
+ADD CONSTRAINT `quotes_ibfk_1` FOREIGN KEY (`pony`) REFERENCES `quotes__ponies` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 ALTER TABLE `requests`
   ADD CONSTRAINT `requests_ibfk_2` FOREIGN KEY (`reserved_by`) REFERENCES `users` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
