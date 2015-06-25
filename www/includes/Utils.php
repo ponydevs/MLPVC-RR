@@ -1350,7 +1350,7 @@ HTML;
 		if ($VoteTally['total'] > 0){
 			$UpsDowns = $VoteTally['up'] > $VoteTally['down'] ? 'up' : 'down';
 			if ($VoteTally['up'] === $VoteTally['total'] || $VoteTally['down'] === $VoteTally['total'])
-				$Start = "Everypony who voted";
+				$Start = $VoteTally['total']." ".($VoteTally['total'] !== 1 ? 'ponies' : 'pony');
 			else $Start = "{$VoteTally[$UpsDowns]} out of {$VoteTally['total']} ponies";
 			$HTML .= "$Start ".($UpsDowns === 'down'?'dis':'')."liked this episode";
 			if (PERM('user')) $UserVote = get_episode_user_vote($Episode);
