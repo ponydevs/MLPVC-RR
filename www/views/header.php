@@ -55,3 +55,6 @@
 	</header>
 
 	<div id=main>
+		<div class="notice warn align-center">
+			<p><span class="typcn typcn-warning"></span> The site is currently in the testing phase, <strong>ALL</strong> actions will be reset when we actually start using the site.</p>
+		</div>
