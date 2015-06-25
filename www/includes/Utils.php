@@ -1355,7 +1355,7 @@ HTML;
 			$HTML .= "$Start ".($UpsDowns === 'down'?'dis':'')."liked this episode";
 			if (PERM('user')) $UserVote = get_episode_user_vote($Episode);
 			if (empty($UserVote)) $HTML .= ".";
-			else $HTML .= ", ".(($UserVote['vote'] > 0 && $UpsDowns === 'up' || $UserVote['vote'] < 0 && $UpsDowns === 'down') ? 'and so did you' : 'but you didn\'t').".";
+			else $HTML .= ", ".(($UserVote['vote'] > 0 && $UpsDowns === 'up' || $UserVote['vote'] < 0 && $UpsDowns === 'down') ? 'including you' : 'but you didn\'t').".";
 		}
 		else $HTML .= 'Nopony voted yet.';
 		$HTML .= "</p>";
