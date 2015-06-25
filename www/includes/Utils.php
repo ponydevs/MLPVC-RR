@@ -903,11 +903,14 @@ HTML;
 		$R['label'] = htmlspecialchars($R['label']);
 		$Image = "<div class='image screencap'><a href='{$R['fullsize']}'><img src='{$R['preview']}'></a></div><span class=label>{$R['label']}</span>";
 
+		if ($isRequest && PERM('inspector'))
+			$Image .= "<em>Requested by ".profile_link(get_user($R['requested_by']))."</em>";
+
 		if (empty($R['reserved_by'])){
 			$HTML .= $Image;
 			if ($isRequest)
 				$HTML .= get_reserver_button(false);
-			if ($isRequest)
+			if ($isRequest && PERM('reservations.create'))
 				$HTML .= "<button class='typcn typcn-trash red delete'>Delete</button>";
 		}
 		else {
