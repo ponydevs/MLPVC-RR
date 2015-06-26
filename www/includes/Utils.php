@@ -176,6 +176,8 @@ HTML;
 		global $TIME_DATA;
 
 	    $delta = time() - $timestamp;
+	    $past = $delta > 0;
+	    if (!$past) $delta *= -1;
 
 	    foreach ($TIME_DATA as $n => $v){
 	        if ($delta >= $v){
@@ -188,10 +190,8 @@ HTML;
 
 		if (!isset($str)) return 'just now';
 
-		if ($str == '1 day') $str = 'yesterday';
-		else $str .= ' ago';
-
-	    return $str;
+		if ($str == '1 day') return $past ? 'yesterday' : 'tomorrow';
+		else return $past ? "$str ago" : "in $str";
 	}
 
 	/**
@@ -1185,14 +1185,19 @@ HTML;
 	 * Returns all episodes from the database, properly sorted
 	 *
 	 * @param int $count
-	 * @param string $cols
 	 *
 	 * @return array
 	 */
-	function get_episodes($count = null, $cols = '*, IF(DATE_ADD(DATE(airs), INTERVAL -24 HOUR) < NOW(),1,0) as displayed, IF(IF(twoparter = 0, DATE_ADD(DATE(airs), INTERVAL 30 MINUTE), DATE_ADD(DATE(airs), INTERVAL 60 MINUTE)) < NOW(),1,0) as aired'){
+	function get_episodes($count = null){
 		global $Database;
 
-		return $Database->orderBy('season')->orderBy('episode')->get('episodes',$count,$cols);
+		$eps = $Database->orderBy('season')->orderBy('episode')->get('episodes',$count);
+		foreach ($eps as $i => $ep){
+			$airtime = strtotime($ep['airs']);
+			$eps[$i]['displayed'] = strtotime('-24 hours', $airtime) < time();
+			$eps[$i]['aired'] = strtotime('+'.(!$ep['twoparter']?30:60).' minutes', $airtime) < time();
+		}
+		return $eps;
 	}
 	/**
 	 * Returns the last episode aired from the db
@@ -1372,7 +1377,7 @@ HTML;
 
 	// Render episode voting HTML
 	function get_episode_voting($Episode){
-		if (!$Episode['aired']) return "<p>Voting will start after the episode had aired.</p>";
+		if (!$Episode['aired']) return "<p>Voting will start ".timetag($Episode['willair']).", after the episode had aired.</p>";
 		global $Database, $signedIn;
 		$HTML = '';
 

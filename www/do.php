@@ -241,7 +241,6 @@
 				loadPage($IndexSettings);
 			break;
 			case "episode":
-				# TODO Locking posts
 				if (RQMTHD === 'POST'){
 					detectCSRF();
 
@@ -292,12 +291,15 @@
 						));
 					}
 					else if (preg_match('/^vote\/'.EPISODE_ID_PATTERN.'$/', $data, $_match)){
-						if (!PERM('user')) respond();
 						list($season,$episode) = array_map('intval',array_splice($_match,1,2));
 
 						$Episode = get_real_episode($season,$episode);
 						if (empty($Episode))
 							respond("There's no episode with this season & episode number");
+
+						if (isset($_REQUEST['html']))
+							respond(array('html' => get_episode_voting($Episode)));
+						if (!PERM('user')) respond();
 
 						$UserVote = get_episode_user_vote($Episode);
 						if (!empty($UserVote))

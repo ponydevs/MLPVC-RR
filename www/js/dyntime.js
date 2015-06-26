@@ -74,10 +74,16 @@
 				});
 			}
 			
-			var now = new Date();
-			var timestr = createTimeStr(timeDifference(now,timestamp));
-			
-			var $elapsedHolder = $this.parent().children('.dynt-el');
+			var diff = timeDifference(new Date,timestamp),
+				timestr = createTimeStr(diff),
+				$elapsedHolder = $this.parent().children('.dynt-el'),
+				updateHandler = $this.data('dyntime-beforeupdate');
+
+			if (typeof updateHandler === 'function'){
+				var result = updateHandler(diff);
+				if (result === false) return;
+			}
+
 			if ($elapsedHolder.length > 0){
 				$this.html(getFullDate(date['order'+(
 					typeof $this.data('noweekday') !== 'undefined'
@@ -93,11 +99,11 @@
 		});
 	};
 	function timeDifference(n,e) {
-		var d = {
-			time: n.getTime() - e.getTime()
-		};
-		
-		if (d.time < 0) d.time = 0;
+		var substract = n.getTime() - e.getTime(),
+			d = {
+				past: substract > 0,
+				time: Math.abs(substract)
+			};
 		
 		d.day = Math.floor(d.time/1000/60/60/24);
 		d.time -= d.day*1000*60*60*24;
@@ -137,10 +143,10 @@
 				returnStr = timeparts(el,obj[el]);
 				break;
 			}
-		
+
 		if (returnStr.length === 0) return startval;
-		else if (returnStr === '1 day') return 'yesterday';
-		else return returnStr+' ago';
+		if (returnStr === '1 day') return obj.past ? 'yesterday' : 'tomorrow';
+		else return obj.past ? returnStr+' ago' : 'in '+returnStr;
 	}
 	update();
 	window.updateTimesF = function(){

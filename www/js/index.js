@@ -13,7 +13,9 @@ $(function(){
 		    $body.removeClass('no-distractions');
 		});
 
-	$('#voting').find('button').on('click',function(e){
+	var $voting = $('#voting'),
+		$voteButton = $voting.find('button');
+	$voting.on('click','button',function(e){
 		e.preventDefault();
 		var $this = $(this),
 			$both = $this.siblings('button').addBack(),
@@ -37,6 +39,28 @@ $(function(){
 				$both.attr('disabled', false);
 			}
 		})
+	});
+
+	if (!$voteButton.length)
+		$voting.append('<p>When the countdown is over, the like/dislike buttons will appear automatically.</p>');
+
+	$voting.find('time').data('dyntime-beforeupdate',function(diff){
+		if (diff.past !== true) return;
+
+		if (!$voteButton.length){
+			$.post('/episode/vote/S'+SEASON+'E'+EPISODE+'?html',{},function(data){
+				if (typeof data !== 'object') return console.log(data) && $w.trigger('ajaxerror');
+
+				if (data.status){
+					$voting.children('h2').nextAll().remove();
+					$voting.append(data.html);
+
+				}
+				else $.Dialog.fail('Display voting buttons',data.message);
+			});
+			$(this).removeData('dyntime-beforeupdate');
+			return false;
+		}
 	});
 
 	$.fn.rebindHandlers = function(){
