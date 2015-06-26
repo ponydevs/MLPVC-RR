@@ -953,7 +953,7 @@ HTML;
 					<button class="check-img red typcn typcn-arrow-repeat">Check image</button>
 				</label>
 				<div class="img-preview">
-					<div class="notice fail">Please click the <strong>Check image</strong> button after providing an URL to get a preview & verify if the link is correct.<br>Supported providers: deviantArt, Sta.sh, Imgur</div>
+					<div class="notice fail">Please click the <strong>Check image</strong> button after providing an URL to get a preview & verify if the link is correct.<br>Supported providers: deviantArt, Sta.sh, Imgur, Derpibooru</div>
 				</div>
 
 HTML;
