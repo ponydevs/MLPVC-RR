@@ -405,8 +405,9 @@
 				$settings = array(
 					'title' => 'Episodes',
 					'do-css',
+					'js' => array('episodes'),
 				);
-				if (PERM('episodes.manage')) $settings['js'] = 'episodes-manage';
+				if (PERM('episodes.manage')) $settings['js'][] = 'episodes-manage';
 				loadPage($settings);
 			break;
 			case "about":

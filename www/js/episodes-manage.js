@@ -112,11 +112,7 @@ $(function(){
 			if ($eptableBody.children('.empty').length)
 				$pageTitle.html($pageTitle.data('none')).next().show();
 			else $pageTitle.html($pageTitle.data('list')).next().hide();
-		}
-		if (typeof tbody === 'string' || this.init === true){
-			$eptableBody.children().children(':last-child').children('time.nodt').each(function(){
-				this.innerHTML = new Date($(this).attr('datetime')).toLocaleString();
-			});
+			$eptableBody.trigger('updatetimes');
 		}
 		$eptable.find('tr[data-epid]').each(function(){
 			var $this = $(this),
