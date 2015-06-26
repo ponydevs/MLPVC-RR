@@ -129,7 +129,7 @@ CREATE TABLE IF NOT EXISTS `roles` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 INSERT INTO `roles` (`value`, `name`, `label`) VALUES
-(0, 'ban', 'Banned User'),
+(0, 'ban', 'Banished User'),
 (1, 'user', 'deviantArt User'),
 (2, 'member', 'Club Member'),
 (3, 'inspector', 'Vector Inspector'),
