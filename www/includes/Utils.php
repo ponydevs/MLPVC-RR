@@ -206,9 +206,9 @@ HTML;
 	define('FORMAT_FULL','jS M Y, g:i:s a T');
 	function format_timestamp($time, $format = 'c'){
 		if ($format === FORMAT_READABLE)
-			$ts = time_ago($time);
+			$ts = time_ago($time).($format !== 'c' ? ' ('.date('T').')' : '');
 		else $ts = gmdate($format,$time);
-		return $ts.($format !== 'c' ? ' ('.date('T').')' : '');
+		return $ts;
 	}
 
 	/**
