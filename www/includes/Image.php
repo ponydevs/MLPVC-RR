@@ -16,6 +16,7 @@
 			'fav\.me/(d[a-z\d]{6,})' => 'fav.me',
 			'sta\.sh/([a-z\d]{10,})' => 'sta.sh',
 			'(?:i\.)?imgur\.com/([A-Za-z\d]{1,7})' => 'imgur',
+			'derpiboo(?:\.ru|ru\.org)/(\d+)' => 'derpibooru'
 		);
 		private static function test_provider($url, $pattern, $name){
 			$match = array();
@@ -38,6 +39,19 @@
 				case 'imgur':
 					$this->fullsize = "http://i.imgur.com/$id.png";
 					$this->preview = "http://i.imgur.com/{$id}m.png";
+				break;
+				case 'derpibooru':
+					$Data = file_get_contents("http://derpibooru.org/$id.json");
+
+					if (empty($Data))
+						throw new Exception('The requested image could not be found on Derpibooru');
+					$Data = json_decode($Data, true);
+
+					if (!$Data['is_rendered'])
+						throw new Exception('The image was found but it hasn\'t been rendered yet. Please wait for it to render and try again shortly.');
+
+					$this->fullsize = $Data['representations']['full'];
+					$this->preview = $Data['representations']['small'];
 				break;
 				case 'dA':
 				case 'fav.me':
