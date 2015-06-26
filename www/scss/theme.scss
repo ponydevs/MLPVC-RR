@@ -255,6 +255,23 @@ header {
 				background-image: url('../img/grid-w-.2.svg'), url('../img/grid-w-.7.svg');
 				background-size: 16px, 4px;
 			}
+			&.pride:after {
+				$PrideRed: desaturate(#E60303, 20);
+				$PrideOrange: desaturate(#FF8E00, 20);
+				$PrideYellow: desaturate(#FFEF00, 20);
+				$PrideGreen: desaturate(#008226, 20);
+				$PrideBlue: desaturate(#004DFF, 20);
+				$PridePurple: desaturate(#760789, 20);
+				background-image: linear-gradient(to bottom,
+					$PrideRed 0%, $PrideRed 16.666%,
+					$PrideOrange 16.666%, $PrideOrange 33.336%,
+					$PrideYellow 33.336%, $PrideYellow 50%,
+					$PrideGreen 50%, $PrideGreen 66.667%,
+					$PrideBlue 66.667%, $PrideBlue 83.334%,
+					$PridePurple 83.334%, $PridePurple 100%
+				);
+				background-size: initial;
+			}
 		}
 
 		&:after {
