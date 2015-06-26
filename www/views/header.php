@@ -55,3 +55,6 @@
 	</header>
 
 	<div id=main>
+		<div class="notice info align-center">
+			<p><span class="typcn typcn-info"></span> The site is currently in the testing phase. Some things may break, and if that happens, please let us know.</p>
+		</div>
