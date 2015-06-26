@@ -20,7 +20,7 @@
 
 	<header>
 		<div id="topbar">
-			<h1<?=date('Y-m-d') === '2015-06-27' ? ' class=pride title="Today, gay marriage was legalized in the USA"':''?>><a <?=$do==='index'?'class=active':'href=/'?>>MLP<span class=short>-VC</span><span class=long> Vector Club</span> Requests & Reservations</a></h1>
+			<h1<?=date('Y-m-d') === '2015-06-27' ? ' class=pride title="Today, same-sex marriage was legalized in the USA"':''?>><a <?=$do==='index'?'class=active':'href=/'?>>MLP<span class=short>-VC</span><span class=long> Vector Club</span> Requests & Reservations</a></h1>
 		</div>
 		<nav><ul><?php
 	$HeaderItems = array(
