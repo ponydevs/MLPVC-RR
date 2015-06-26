@@ -27,7 +27,7 @@ $NoFontChange: true;
 	color: $color;
 	text-decoration: none !important;
 	transition: color .2s linear;
-	font-weight: bold;
+		font-weight: bold;
 
 	&:hover { color: $hover }
 }

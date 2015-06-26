@@ -226,37 +226,6 @@
 				}
 				else respond('Invalid request');
 			break;
-			case "quotes":
-				if (RQMTHD !== 'POST') do404();
-
-				$_match = array();
-				/**
-				 * This section reads the values from the database
-				 *  and rearranges it for JS to use
-				 */
-				if ($data = 'json'){
-					$Return = array();
-					if (isset($_REQUEST['editor'])){
-						if (!PERM('inspector')) respond();
-
-						respond(array(
-							'quotes' => $Database->get('quotes'),
-							'quotes__ponies' => $Database->get('quotes__ponies'),
-						));
-					}
-					else $Quote = $Database->rawQuery('SELECT p.name as pony, q.text FROM quotes q LEFT JOIN quotes__ponies p ON q.pony = p.id');
-
-					foreach ($Quote as $q){
-						if (!isset($Return[$q['pony']]))
-							$Return[$q['pony']] = array();
-
-						$Return[$q['pony']][] = $q['text'];
-					}
-
-					respond(array('quotes' => $Return));
-				}
-				else do404();
-			break;
 
 			// PAGES
 			case "index":
@@ -625,13 +594,6 @@
 				);
 				if ($canEdit) $settings['js'][] = 'user-manage';
 				loadPage($settings);
-			break;
-			case "config":
-				if (!PERM('inspector')) do404();
-				loadPage(array(
-					'title' => 'Site configuration',
-					'do-js', 'do-css'
-				));
 			break;
 			case "404":
 			default:
