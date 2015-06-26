@@ -1184,7 +1184,6 @@ HTML;
 	/**
 	 * Returns all episodes from the database, properly sorted
 	 *
-	 * @param string $where
 	 * @param int $count
 	 * @param string $cols
 	 *
