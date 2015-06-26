@@ -299,7 +299,11 @@
 
 						if (isset($_REQUEST['html']))
 							respond(array('html' => get_episode_voting($Episode)));
+
 						if (!PERM('user')) respond();
+
+						if (!$Episode['aired'])
+							respond('You cannot vote on this episode until after it had aired.');
 
 						$UserVote = get_episode_user_vote($Episode);
 						if (!empty($UserVote))
