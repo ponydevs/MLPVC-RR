@@ -16,7 +16,8 @@ CREATE TABLE IF NOT EXISTS `episodes` (
   `twoparter` tinyint(1) NOT NULL DEFAULT '0',
   `title` tinytext NOT NULL,
   `posted` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `posted_by` varchar(36) DEFAULT NULL
+  `posted_by` varchar(36) DEFAULT NULL,
+  `airs` timestamp DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `episode_voting` (
@@ -47,7 +48,8 @@ CREATE TABLE IF NOT EXISTS `log__episodes` (
   `season` tinyint(2) unsigned NOT NULL,
   `episode` tinyint(2) unsigned NOT NULL,
   `twoparter` tinyint(1) NOT NULL,
-  `title` tinytext NOT NULL
+  `title` tinytext NOT NULL,
+  `airs` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `log__episode_modify` (
@@ -55,12 +57,14 @@ CREATE TABLE IF NOT EXISTS `log__episode_modify` (
   `target` tinytext NOT NULL,
   `oldseason` tinyint(2) unsigned DEFAULT NULL,
   `newseason` tinyint(2) unsigned DEFAULT NULL,
-  `oldepisode` tinyint(2) DEFAULT NULL,
+  `oldepisode` tinyint(2) unsigned DEFAULT NULL,
   `newepisode` tinyint(2) unsigned DEFAULT NULL,
   `oldtwoparter` tinyint(1) DEFAULT NULL,
   `newtwoparter` tinyint(1) DEFAULT NULL,
   `oldtitle` tinytext,
-  `newtitle` tinytext
+  `newtitle` tinytext,
+  `oldairs` timestamp NULL DEFAULT NULL,
+  `newairs` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `log__rolechange` (

@@ -234,7 +234,7 @@
 					redirect('/',false);
 				}
 
-				$CurrentEpisode = $Database->orderBy('season')->orderBy('episode')->getOne('episodes');
+				$CurrentEpisode = get_latest_episode();
 				if (empty($CurrentEpisode)) unset($CurrentEpisode);
 				else list($Requests, $Reservations) = get_posts($CurrentEpisode['season'], $CurrentEpisode['episode']);
 
@@ -249,7 +249,11 @@
 
 					$EpData = episode_id_parse($data);
 					if (!empty($EpData)){
-						$Ep = get_real_episode($EpData['season'],$EpData['episode'],'season, episode, twoparter, title');
+						$Ep = get_real_episode($EpData['season'],$EpData['episode'],'season, episode, twoparter, title, airs');
+						$airs =  strtotime($Ep['airs']);
+						unset($Ep['airs']);
+						$Ep['airdate'] = gmdate('Y-m-d', $airs);
+						$Ep['airtime'] = gmdate('H:i', $airs);
 						respond(array(
 							'ep' => $Ep,
 							'epid' => format_episode_title($Ep, AS_ARRAY, 'id'),
@@ -351,6 +355,12 @@
 						if (!preg_match(EP_TITLE_REGEX, $insert['title']))
 							respond('Episode title contains invalid charcaters');
 
+						if (empty($_POST['airs']))
+						repond('No air date &time specified');
+						$airs = strtotime($_POST['airs']);
+						if (empty($airs)) respond('Invalid air time');
+						$insert['airs'] = date('c',strtotime('this minute', $airs));
+
 						if ($editing){
 							if (!$Database->where('season',$season)->where('episode',$episode)->update('episodes', $insert))
 								respond('No changes were made', 1);
@@ -361,7 +371,7 @@
 						if ($editing){
 							$logentry = array('target' => format_episode_title($Current,AS_ARRAY,'id'));
 							$changes = 0;
-							foreach (array('season', 'episode', 'twoparter', 'title') as $k){
+							foreach (array('season', 'episode', 'twoparter', 'title', 'airs') as $k){
 								if (isset($insert[$k]) && $insert[$k] !== $Current[$k]){
 									$logentry["old$k"] = $Current[$k];
 									$logentry["new$k"] = $insert[$k];

@@ -191,7 +191,7 @@ HTML;
 		if ($str == '1 day') $str = 'yesterday';
 		else $str .= ' ago';
 
-	    return $str.' (<abbr title="GMT'.date('P').'">'.date('T').'</abbr>)';
+	    return $str;
 	}
 
 	/**
@@ -208,17 +208,19 @@ HTML;
 		if ($format === FORMAT_READABLE)
 			$ts = time_ago($time);
 		else $ts = gmdate($format,$time);
-		return $ts;
+		return $ts.($format !== 'c' ? ' ('.date('T').')' : '');
 	}
 
 	/**
 	 * Create <time datetime></time> tag
 	 *
 	 * @param string|int $timestamp
-	 *
+	 * @param bool $extended
 	 * @return string
 	 */
-	function timetag($timestamp){
+	define('EXTENDED', true);
+	define('NO_DYNTIME', false);
+	function timetag($timestamp, $extended = false, $allowDyntime = true){
 		if (is_string($timestamp))
 			$timestamp = strtotime($timestamp);
 		if ($timestamp === false) return null;
@@ -226,7 +228,18 @@ HTML;
 		$datetime = format_timestamp($timestamp);
 		$full = format_timestamp($timestamp,FORMAT_FULL);
 		$text = format_timestamp($timestamp,FORMAT_READABLE);
-		return "<time datetime='$datetime' title='$full'>$text</time>";
+
+		if ($allowDyntime === NO_DYNTIME)
+			$datetime .= "' class='nodt";
+
+		return
+			!$extended
+			? "<time datetime='$datetime' title='$full'>$text</time>"
+			:"<time datetime='$datetime'>$full</time>".(
+				$allowDyntime !== NO_DYNTIME
+				?"(<span class=dynt-el>$full</span>)"
+				:''
+			);
 	}
 
 	// Page loading function
@@ -1171,47 +1184,69 @@ HTML;
 	/**
 	 * Returns all episodes from the database, properly sorted
 	 *
+	 * @param string $where
+	 * @param int $count
+	 * @param string $cols
+	 *
 	 * @return array
 	 */
-	function get_episodes(){
+	function get_episodes($count = null, $cols = '*, IF(DATE_ADD(DATE(airs), INTERVAL -24 HOUR) < NOW(),1,0) as displayed, IF(IF(twoparter = 0, DATE_ADD(DATE(airs), INTERVAL 30 MINUTE), DATE_ADD(DATE(airs), INTERVAL 60 MINUTE)) < NOW(),1,0) as aired'){
 		global $Database;
 
-		return $Database->orderBy('season')->orderBy('episode')->get('episodes');
+		return $Database->orderBy('season')->orderBy('episode')->get('episodes',$count,$cols);
+	}
+	/**
+	 * Returns the last episode aired from the db
+	 *
+	 * @return array
+	 */
+	function get_latest_episode(){
+		return rawquery_get_single_result(get_episodes(1));
 	}
 
 	/**
 	 * Get the <tbody> contents for the episode list table
 	 *
-	 * @param array|null $Episode
+	 * @param array|null $Episodes
 	 *
 	 * @return string
 	 */
-	function get_eptable_tbody($Episode = null){
+	define('NOW', time());
+	function get_eptable_tbody($Episodes = null){
 		if (!isset($Episodes)) $Episodes = get_episodes();
 
 		if (empty($Episodes)) return "<tr class='empty align-center'><td colspan=3><em>There are no episodes to display</em></td></tr>";
 
 		$Body = '';
 		$PathStart = '/episode/';
+		$displayed = false;
 		foreach ($Episodes as $i => $ep) {
 			$Title = format_episode_title($ep, AS_ARRAY);
 			$href = $PathStart.$Title['id'];
+			$adminControls = '';
 			if (PERM('episodes.manage')) $adminControls = <<<HTML
 <span class=admincontrols>
 	<button class="edit-episode typcn typcn-spanner blue" title="Edit episode"></button>
 	<button class="delete-episode typcn typcn-times red" title="Delete episode"></button>
 </span>
 HTML;
-			else $adminControls = '';
 
-			$star = $i === 0 ? '<span class="typcn typcn-eye" title="Curently visible on the homepage"></span> ' : '';
+			$star = '';
+			if (!$displayed && $ep['displayed']){
+				$displayed = true;
+				$star = '<span class="typcn typcn-eye" title="Curently visible on the homepage"></span> ';
+			}
+			$star .= '<span class="typcn typcn-media-play'.(!$ep['aired']?'-outline':'').'" title="Episode had'.($ep['aired']?' aired, voting enabled':'n\'t aired yet, voting disabled').'"></span> ';
+
+			$airs = timetag($ep['airs'], EXTENDED, NO_DYNTIME);
 
 			$Body .= <<<HTML
 		<tr data-epid="{$Title['id']}">
-			<td class=season>{$Title['season']}</td>
-			<td class=episode><span>{$Title['episode']}</span></td>
+			<td class=season rowspan=2>{$Title['season']}</td>
+			<td class=episode rowspan=2><span>{$Title['episode']}</span></td>
 			<td class=title>$star<a href="$href">{$Title['title']}</a>$adminControls</td>
 		</tr>
+		<tr><td class=airs>$airs</td></tr>
 HTML;
 		}
 		return $Body;
@@ -1229,6 +1264,9 @@ HTML;
 	 */
 	function get_real_episode($season, $episode, $cols = null){
 		global $Database;
+
+		if (empty($cols)) $cols = '*';
+		$cols .= ', IF(DATE(airs) < NOW(),1,0) as aired';
 
 		$Ep1 = $Database->where('season',$season)->where('episode',$episode)->getOne('episodes', $cols);
 		if (empty($Ep1)){
@@ -1335,6 +1373,7 @@ HTML;
 
 	// Render episode voting HTML
 	function get_episode_voting($Episode){
+		if (!$Episode['aired']) return "<p>Voting will start after the episode had aired.</p>";
 		global $Database, $signedIn;
 		$HTML = '';
 

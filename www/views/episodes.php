@@ -11,9 +11,9 @@
 	<table id=episodes>
 		<thead>
 			<tr>
-				<th>Season</th>
-				<th>Episode</th>
-				<th>Title</th>
+				<th>S<span class=mobile-hide>eason</span></th>
+				<th>E<span class=mobile-hide>pisode</span></th>
+				<th>Title & Air Date</th>
 			</tr>
 		</thead>
 		<tbody><?=get_eptable_tbody($Episodes)?></tbody>
