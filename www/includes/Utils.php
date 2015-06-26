@@ -1182,6 +1182,20 @@ HTML;
 	}
 
 	/**
+	 * Adds airing-.related information to an episodes table row
+	 *
+	 * @param array $Episode
+	 *
+	 * @return array
+	 */
+	function add_episode_airing_data($Episode){
+		$airtime = strtotime($Episode['airs']);
+		$Episode['displayed'] = strtotime('-24 hours', $airtime) < time();
+		$Episode['aired'] = strtotime('+'.(!$Episode['twoparter']?30:60).' minutes', $airtime) < time();
+		return $Episode;
+	}
+
+	/**
 	 * Returns all episodes from the database, properly sorted
 	 *
 	 * @param int $count
@@ -1192,13 +1206,11 @@ HTML;
 		global $Database;
 
 		$eps = $Database->orderBy('season')->orderBy('episode')->get('episodes',$count);
-		foreach ($eps as $i => $ep){
-			$airtime = strtotime($ep['airs']);
-			$eps[$i]['displayed'] = strtotime('-24 hours', $airtime) < time();
-			$eps[$i]['aired'] = strtotime('+'.(!$ep['twoparter']?30:60).' minutes', $airtime) < time();
-		}
+		foreach ($eps as $i => $ep)
+			$eps[$i] = add_episode_airing_data($ep);
 		return $eps;
 	}
+
 	/**
 	 * Returns the last episode aired from the db
 	 *
@@ -1262,22 +1274,18 @@ HTML;
 	 *
 	 * @param int $episode
 	 * @param int $season
-	 * @param null|string $cols
 	 *
 	 * @return array|null
 	 */
-	function get_real_episode($season, $episode, $cols = null){
+	function get_real_episode($season, $episode){
 		global $Database;
 
-		if (empty($cols)) $cols = '*';
-		$cols .= ', IF(DATE(airs) < NOW(),1,0) as aired';
-
-		$Ep1 = $Database->where('season',$season)->where('episode',$episode)->getOne('episodes', $cols);
+		$Ep1 = $Database->where('season',$season)->where('episode',$episode)->getOne('episodes');
 		if (empty($Ep1)){
-			$Part1 = $Database->where('season',$season)->where('episode',$episode-1)->getOne('episodes', $cols);
+			$Part1 = $Database->where('season',$season)->where('episode',$episode-1)->getOne('episodes');
 			return !empty($Part1) && isset($Part1['twoparter']) && !!$Part1['twoparter'] ? $Part1 : null;
 		}
-		else return $Ep1;
+		else return add_episode_airing_data($Ep1);
 	}
 
 	/**

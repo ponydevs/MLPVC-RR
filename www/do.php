@@ -395,7 +395,7 @@
 
 				$EpData = episode_id_parse($data);
 				if (empty($EpData)) redirect('/episodes');
-				$CurrentEpisode = get_real_episode($EpData['season'],$EpData['episode'],'season, episode, twoparter, title');
+				$CurrentEpisode = get_real_episode($EpData['season'],$EpData['episode']);
 				if (empty($CurrentEpisode)) redirect('/episodes');
 
 				list($Requests, $Reservations) = get_posts($CurrentEpisode['season'], $CurrentEpisode['episode']);
