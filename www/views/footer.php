@@ -27,7 +27,7 @@ $(function(){
 		if ($w.scrollTop() > tbh)
 			$header.addClass('fixed');
 		else $header.removeClass('fixed');
-	});
+	}).triggerHandler('scroll');
 });
 </script>
 </body>

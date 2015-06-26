@@ -75,10 +75,9 @@
 			left: 0;
 
 			//noinspection CssOptimizeSimilarProperties
-			a.home {
+			li.home a {
 				font-family: "Celestia", sans-serif;
-				background-color: $HeaderBlue;
-				//noinspection CssUnknownTarget
+				background-color: $HeaderBlue !important;
 				background-image: url('../img/grid-w-.2.svg'), url('../img/grid-w-.7.svg');
 				background-size: 16px, 4px;
 				font-size: 18px;
