@@ -140,6 +140,8 @@
 
 		for (var arr = ['year','month','week','day','hour','minute','second'], l  = arr.length, i = 0, el; i<l; i++)
 			if (obj[el = arr[i]] > 0){
+				if (!obj.past && el !== 'second')
+					obj[el]++;
 				returnStr = timeparts(el,obj[el]);
 				break;
 			}

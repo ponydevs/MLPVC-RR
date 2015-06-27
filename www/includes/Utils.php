@@ -183,6 +183,8 @@ HTML;
 	        if ($delta >= $v){
 	            $left = floor($delta / $v);
 	            $delta -= ($left * $v);
+	            if (!$past && $n !== 'second')
+	                $left++;
 	            $str = "{$left} ".($left!=1?"{$n}s":$n);
 	            break;
 	        }
