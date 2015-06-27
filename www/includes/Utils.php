@@ -917,7 +917,7 @@ HTML;
 		$Image = "<div class='image screencap'><a href='{$R['fullsize']}'><img src='{$R['preview']}'></a></div><span class=label>{$R['label']}</span>";
 
 		if ($isRequest && PERM('inspector'))
-			$Image .= "<em>Requested by ".profile_link(get_user($R['requested_by']))."</em>";
+			$Image .= "<em>Added by ".profile_link(get_user($R['requested_by'])).' '.timetag($R['posted'])."</em>";
 
 		if (empty($R['reserved_by'])){
 			$HTML .= $Image;
@@ -1385,7 +1385,8 @@ HTML;
 
 	// Render episode voting HTML
 	function get_episode_voting($Episode){
-		if (!$Episode['aired']) return "<p>Voting will start ".timetag($Episode['willair']).", after the episode had aired.</p>";
+		if (!$Episode['aired'])
+			return "<p>Voting will start ".timetag($Episode['willair']).", after the episode had aired.</p><p>When the countdown is over, the like/dislike buttons will appear automatically.</p>";
 		global $Database, $signedIn;
 		$HTML = '';
 

@@ -41,9 +41,6 @@ $(function(){
 		})
 	});
 
-	if (!$voteButton.length && $voting.hasClass('canvote'))
-		$voting.append('<p>When the countdown is over, the like/dislike buttons will appear automatically.</p>');
-
 	$voting.find('time').data('dyntime-beforeupdate',function(diff){
 		if (diff.past !== true) return;
 
