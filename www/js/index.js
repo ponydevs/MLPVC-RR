@@ -4,14 +4,6 @@ $(function(){
 		$navbar = $('header nav'),
 		SEASON = window.SEASON,
 		EPISODE = window.EPISODE;
-	$('section .unfinished .screencap > a')
-		.fluidbox({ immediateOpen: true })
-		.on('openstart',function(){
-		    $body.addClass('no-distractions');
-		})
-		.on('closestart', function() {
-		    $body.removeClass('no-distractions');
-		});
 
 	var $voting = $('#voting'),
 		$voteButton = $voting.find('button');
@@ -66,6 +58,15 @@ $(function(){
 			var $li = $(this),
 				id = parseInt($li.attr('id').replace(/\D/g,'')),
 				type = $li.closest('section[id]').attr('id');
+				
+			$('section .unfinished .screencap > a')
+				.fluidbox({ immediateOpen: true })
+				.on('openstart',function(){
+				    $body.addClass('no-distractions');
+				})
+				.on('closestart', function() {
+				    $body.removeClass('no-distractions');
+				});
 
 			Bind($li, id, type);
 		});
