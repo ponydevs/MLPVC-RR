@@ -78,6 +78,7 @@
 				$actions = array('add' => 'create', 'del' => 'delete');
 				$details[] = array('Action', $actions[$data['action']]);
 				$details[] = array('Name', format_episode_title($data));
+				$details[] = array('Airs', timetag($data['airs'], EXTENDED, NO_DYNTIME));
 			break;
 			case "episode_modify":
 				$details[] = array('Target episode', $data['target']);
@@ -92,6 +93,11 @@
 					if (!isset($newOld[$thing]))
 						$newOld[$thing] = array();
 					$newOld[$thing][$type] = $thing === 'twoparter' ? !!$v : $v;
+				}
+
+				if (!empty($newOld['airs'])){
+					$newOld['airs']['old'] =  timetag($newOld['airs']['old'], EXTENDED, NO_DYNTIME);
+					$newOld['airs']['new'] =  timetag($newOld['airs']['new'], EXTENDED, NO_DYNTIME);
 				}
 
 				foreach ($newOld as $thing => $ver){
