@@ -200,7 +200,16 @@
 					if ((!$canceling || $type !== 'reservation') && !$Database->where('id', $Thing['id'])->update("{$type}s",$update))
 						respond('Nothing has been changed');
 
-					if (!$canceling && ($finishing || $unfinishing)) respond(array());
+					if (!$canceling && ($finishing || $unfinishing)){
+						$out = array();
+						if ($finishing && $type === 'request'){
+							$u = get_user($Thing['requested_by'],'id','name');
+							if (!empty($u) && $Thing['requested_by'] !== $currentUser['id'])
+								$out['message'] = "<p class=align-center>You may want to mention <strong>{$u['name']}</strong> in the deviation description<br>".
+									"to let them know that their request has been fulfilled.</p>";
+						}
+						respond($out);
+					}
 					if ($type === 'request')
 						respond(array('btnhtml' => get_reserver_button(!$canceling)));
 					else if ($type === 'reservation' && $canceling)

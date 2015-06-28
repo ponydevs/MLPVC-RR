@@ -169,10 +169,10 @@ $(function(){
 						$.post('/reserving/'+type+'/'+id+'?finish',{deviation:deviation},function(data){
 							if (typeof data !== 'object') return console.log(data) && $w.trigger('ajaxerror');
 
-							if (data.status){
-								$.Dialog.success(title,'The '+type+' is now marked as finished');
-								updateSection(type, SEASON, EPISODE);
-							}
+							if (data.status) updateSection.call({callback:function(){
+								if (typeof data.message === 'string')
+									$.Dialog.success(title,data.message,true);
+							}}, type, SEASON, EPISODE);
 							else handleError(data);
 						});
 					}
@@ -377,7 +377,7 @@ $(function(){
 		});
 	}
 	function updateSection(type, SEASON, EPISODE){
-		var Type = type.charAt(0).toUpperCase()+type.substring(1);
+		var Type = type.charAt(0).toUpperCase()+type.substring(1), dis = this;
 		$.Dialog.wait(Type, 'Updating list');
 		$.post('/episode/'+type.replace(/([^s])$/,'$1s')+'/S'+SEASON+'E'+EPISODE,{},function(data){
 			if (typeof data !== 'object') return console.log(data) && $w.trigger('ajaxerror');
@@ -386,7 +386,10 @@ $(function(){
 				var $render = $(data.render);
 
 				formBind.call($('#'+type.replace(/([^s])$/,'$1s')).html($render.filter('section').html()).rebindHandlers().find('.post-form').data('type',type));
-				$.Dialog.close();
+				window.updateTimesF();
+				console.log(dis);
+				if (typeof dis === 'object' && typeof dis.callback == 'function') dis.callback();
+				else $.Dialog.close();
 			}
 			else window.location.reload();
 		});
