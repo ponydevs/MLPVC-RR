@@ -1508,6 +1508,7 @@ HTML;
 			$Export .= "<br><br><br><h2>{$REQUEST_TYPES[$g]}:</h2><br>";
 			if (empty($reqs)) $Export .= $nada;
 			else foreach ($reqs as $r){
+				$username = false;
 				if (!empty($r['reserved_by'])){
 					if (empty($nameCache[$r['reserved_by']])){
 						$u = get_user($r['reserved_by'],'id','name');
@@ -1516,7 +1517,7 @@ HTML;
 					$username = $nameCache[$r['reserved_by']];
 				}
 				$Export .= "<div class=\"res-box\"> <a href=\"{$r['fullsize']}\"><img src=\"{$r['fullsize']}\"></a> - {$r['label']}".
-					(!empty($username)?" <b>reserved by by :icon$username: :dev$username:</b>":'')."</div><br>";
+					(!empty($username)?" <b>reserved by by :icon$username: :dev$username:</b>":'').'</div><br>';
 			}
 		}
 		$Export .= "<br><br><h1>Finished Requests</h1><br><br>";
@@ -1532,5 +1533,5 @@ HTML;
 
 			$Export .= "<div class=\"res-box\"> :thumb$thumbID: by :icon$username: :dev$username:</div><br>";
 		}
-		return $Export;
+		return preg_replace('/(<br>)+$/','',$Export);
 	}
