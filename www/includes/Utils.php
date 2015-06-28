@@ -1516,7 +1516,7 @@ HTML;
 					$username = $nameCache[$r['reserved_by']];
 				}
 				$Export .= "<div class=\"res-box\"> <a href=\"{$r['fullsize']}\"><img src=\"{$r['fullsize']}\"></a> - {$r['label']}".
-					(!empty($username)?' <b>reserved by by :icon$username: :dev$username:</b>':'')."</div><br>";
+					(!empty($username)?" <b>reserved by by :icon$username: :dev$username:</b>":'')."</div><br>";
 			}
 		}
 		$Export .= "<br><br><h1>Finished Requests</h1><br><br>";
