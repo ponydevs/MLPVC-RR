@@ -320,6 +320,17 @@
 						))) respond(ERR_DB_FAIL);
 						respond(array('newhtml' => get_episode_voting($Episode)));
 					}
+					else if (preg_match('/^export\/'.EPISODE_ID_PATTERN.'$/', $data, $_match)){
+						if (!PERM('episodes.manage')) respond();
+						list($season,$episode) = array_map('intval',array_splice($_match,1,2));
+
+						$Episode = get_real_episode($season,$episode);
+						if (empty($Episode))
+							respond("There's no episode with this season & episode number");
+
+						list($req, $res) = get_posts($Episode['season'], $Episode['episode']);
+						respond(array('export' => export_posts($req, $res)));
+					}
 					else {
 						if (!PERM('episodes.manage')) respond();
 						$editing = preg_match('/^edit\/'.EPISODE_ID_PATTERN.'$/',$data,$_match);

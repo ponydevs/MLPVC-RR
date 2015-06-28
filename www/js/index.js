@@ -5,6 +5,17 @@ $(function(){
 		SEASON = window.SEASON,
 		EPISODE = window.EPISODE;
 
+	$('#export').on('click',function(){
+		$.post('/episode/export/S'+SEASON+'E'+EPISODE,{},function(data){
+			if (typeof data !== 'object') return console.log(data) && $w.trigger('ajaxerror');
+
+			if (data.status) $.Dialog.info('Exporting posts','<p>Here\'s the code you need to paste into the journal while in<br><em>HTML editing mode</em>, replacing what was there previously.</p><textarea style="display:block;margin:0 auto;resize:none"></textarea>',function(){
+				$('#dialogContent').find('textarea').val(data.export);
+			});
+			else $.Dialog.fail('Display voting buttons',data.message);
+		});
+	});
+
 	var $voting = $('#voting'),
 		$voteButton = $voting.find('button');
 	$voting.on('click','button',function(e){
@@ -43,7 +54,6 @@ $(function(){
 				if (data.status){
 					$voting.children('h2').nextAll().remove();
 					$voting.append(data.html);
-
 				}
 				else $.Dialog.fail('Display voting buttons',data.message);
 			});

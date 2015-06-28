@@ -794,17 +794,18 @@ HTML;
 	 *  where $coloumn is equal to $value
 	 * Returns null if user is not found
 	 *
-	 * If $basic is set to false, then role
-	 *  information will also be fetched
+	 * If $cols is set, only specified coloumns
+	 *  will be fetched
 	 *
 	 * @param string $value
 	 * @param string $coloumn
+	 * @param string $dbcols
+	 *
 	 * @return array|null
 	 */
-	function get_user($value, $coloumn = 'id'){
+	function get_user($value, $coloumn = 'id', $dbcols = null){
 		global $Database;
 
-		$User = array();
 		if ($coloumn === "access"){
 			$Auth = $Database->where('access', $value)->getOne('sessions');
 
@@ -813,18 +814,21 @@ HTML;
 			$value = $Auth['user'];
 		}
 
-		$User = rawquery_get_single_result($Database->rawQuery(
-			"SELECT
-				users.*,
-				roles.label as rolelabel
-			FROM users
-			LEFT JOIN roles ON roles.name = users.role
-			WHERE users.`$coloumn` = ?",array($value)));
+		if (empty($dbcols)){
+			$User = rawquery_get_single_result($Database->rawQuery(
+				"SELECT
+					users.*,
+					roles.label as rolelabel
+				FROM users
+				LEFT JOIN roles ON roles.name = users.role
+				WHERE users.`$coloumn` = ?",array($value)));
 
-		if (empty($User) && $coloumn === 'name')
-			$User = fetch_user($value);
+			if (empty($User) && $coloumn === 'name')
+				$User = fetch_user($value);
 
-		if (!empty($User) && isset($Auth)) $User['Session'] = $Auth;
+			if (!empty($User) && isset($Auth)) $User['Session'] = $Auth;
+		}
+		else $User = $Database->where($coloumn, $value)->getOne('users',$dbcols);
 
 		return $User;
 	}
@@ -1001,15 +1005,22 @@ HTML;
 	}
 
 	// Render Reservation HTML\\
-	function reservations_render($Reservations){
+	define('RETURN_ARRANGED', true);
+	function reservations_render($Reservations, $returnArranged = false){
 		$Arranged = array();
 		$Arranged['unfinished'] =
-		$Arranged['finished'] = '';
-		if (!empty($Reservations) && is_array($Reservations)){
+		$Arranged['finished'] = !$returnArranged ? '' : array();
 
-			foreach ($Reservations as $R)
-				$Arranged[(!$R['finished']?'un':'').'finished'] .= get_r_li($R);
+		if (!empty($Reservations) && is_array($Reservations)){
+			foreach ($Reservations as $R){
+				$k = (!$R['finished']?'un':'').'finished';
+				if (!$returnArranged)
+					$Arranged[$k] .= get_r_li($R);
+				else $Arranged[$k][] = $R;
+			}
 		}
+
+		if ($returnArranged) return $Arranged;
 
 		if (PERM('reservations.create')){
 			$makeRes = '<button id="reservation-btn" class=green>Make a reservation</button>';
@@ -1040,33 +1051,39 @@ HTML;
 		'obj' => 'Objects',
 		'bg' => 'Backgrounds',
 	);
-	function requests_render($Requests){
+	function requests_render($Requests, $returnArranged = false){
 		global $REQUEST_TYPES;
 
-		$Arranged = array();
+		$Arranged = array(
+			'finished' => !$returnArranged ? '' : array(),
+			'unfinished' => array(),
+		);
+		$Arranged['unfinished']['bg'] =
+		$Arranged['unfinished']['obj'] =
+		$Arranged['unfinished']['chr'] = $Arranged['finished'];
 		if (!empty($Requests) && is_array($Requests)){
-			$Arranged['unfinished'] = array();
-			$Arranged['unfinished']['bg'] =
-			$Arranged['unfinished']['obj'] =
-			$Arranged['unfinished']['chr'] =
-			$Arranged['finished'] = '';
-
 			foreach ($Requests as $R){
-				$HTML = get_r_li($R,true);
+				$HTML = $returnArranged ? get_r_li($R,true) : $R;
 
-				if ($R['finished'])
-					$Arranged['finished'] .= $HTML;
-				else $Arranged['unfinished'][$R['type']] .= $HTML;
+				if (!$returnArranged){
+					if ($R['finished'])
+						$Arranged['finished'] .= $HTML;
+					else $Arranged['unfinished'][$R['type']] .= $HTML;
+				}
+				else {
+					if ($R['finished'])
+						$Arranged['finished'][] = $HTML;
+					else $Arranged['unfinished'][$R['type']][] = $HTML;
+				}
 			}
-
+		}
+		if (!$returnArranged){
 			$Groups = '';
 			foreach ($Arranged['unfinished'] as $g => $c)
 				$Groups .= "<div class=group><h3>{$REQUEST_TYPES[$g]}:</h3><ul>{$c}</ul></div>";
 		}
-		else {
-			$Groups = '<ul></ul>';
-			$Arranged['finished'] = '';
-		}
+
+		if ($returnArranged) return $Arranged;
 
 		if (PERM('user')){
 			$makeRq = '<button id="request-btn" class=green>Make a request</button>';
@@ -1446,4 +1463,67 @@ HTML;
 		}
 
 		return $HTML;
+	}
+
+	/*
+	 * Exporting all posts
+	 * ---------------
+	 * Format:
+#########################
+<h2>Characters:</h2><br><div class="res-box"> <a href="{link}"><img src="{link}"></a> - {label}</div><br><div class="res-box"> <a href="{link}"><img src="{link}"></a> - {label}</div><br><br><br><h2>Backgrounds:</h2><br><div class="res-box"> <a href="{link}"><img src="{link}"></a> - {label}</div><br><br><h2>Objects:</h2><br>None Yet<br><br><br><h1>Finished Requests</h1><br><br><br>None Yet
+#########################
+	 */
+	function export_posts($req, $res){
+		global $REQUEST_TYPES;
+
+		$res = reservations_render($res, RETURN_ARRANGED);
+		$req = requests_render($req, RETURN_ARRANGED);
+		$nada = 'None yet';
+
+		$nameCache = array();
+
+		$Export = '<h1>List of Reservations</h1><br><br>';
+		if (empty($res['unfinished'])) $Export .= "<br>$nada";
+		else foreach ($res['unfinished'] as $r){
+			if (empty($nameCache[$r['reserved_by']])){
+				$u = get_user($r['reserved_by'],null,'username');
+				$nameCache[$r['reserved_by']] = $u['username'];
+			}
+			$username = $nameCache[$r['reserved_by']];
+			$Export .= "<div class=\"res-box\"> <a href=\"{$r['fullsize']}\"><img src=\"{$r['fullsize']}\"></a> by :icon$username: :dev$username:";
+			if (!empty($r['label'])) $Export .= " - {$r['label']}";
+			$Export .= "</div><br>";
+		}
+		$Export .= '<br><br><h1>Finished Reservations</h1><br><br>';
+		if (empty($res['finished'])) $Export .= "<br>$nada";
+		else foreach ($res['finished'] as $r){
+			if (empty($nameCache[$r['reserved_by']])){
+				$u = get_user($r['reserved_by'],null,'username');
+				$nameCache[$r['reserved_by']] = $u['username'];
+			}
+			$username = $nameCache[$r['reserved_by']];
+
+			$thumbID = parseInt(substr($r['deviation_id'],1), 36);
+
+			$Export .= "<div class=\"res-box\"> :thumb$thumbID: by :icon$username: :dev$username:</div><br>";
+		}
+		$Export .= "<br><br><h1>List of Requests</h1><br><br>";
+		foreach ($req['unfinished'] as $g => $reqs){
+			$Export .= "<br><br><br><h2>{$REQUEST_TYPES[$g]}:</h2><br>";
+			if (empty($reqs)) $Export .= $nada;
+		}
+		$Export .= "<br><br><h1>Finished Requests</h1><br><br>";
+		if (empty($req['finished'])) $Export .= "<br>$nada";
+		else foreach ($req['finished'] as $r){
+			if (empty($nameCache[$r['reserved_by']])){
+				$u = get_user($r['reserved_by'],null,'username');
+				$nameCache[$r['reserved_by']] = $u['username'];
+			}
+			$username = $nameCache[$r['reserved_by']];
+
+			$thumbID = parseInt(substr($r['deviation_id'],1), 36);
+
+			$Export .= "<div class=\"res-box\"> :thumb$thumbID: by :icon$username: :dev$username:</div><br>";
+		}
+		return $Export;
 	}

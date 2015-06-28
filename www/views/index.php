@@ -23,12 +23,16 @@
 			<li>You MUST have an image to make a reservation! For the best quality, get your references from the episode in 1080p.</li>
 			<li>Making a reservation does NOT forbid other people from working on a pose anyway. It is only information that you are working on it, so other people can coordinate to avoid doing the same thing twice.</li>
 			<li>There are no time limits, but remember that the longer you wait, the greater the chance that someone might take your pose anyway. It's generally advised to finish your reservations before a new episode comes out.</li>
-			<li>The are no limits on the number of reservations you can make, but you need to keep your own limits and what rule #3 says in mind. The current limit for reservations are 4 at a time. You can reserve more once you've completed the previous reservation(s).</li>
-			<li>Please remember that <strong>you have to be a member of the group in order to make a reservation</strong>. The idea is to add the finished vector to the gallery, so it has to meet all of our quality requirements.</li>
+			<li>The current limit for reservations are 4 at a time. You can reserve more once you've completed the previous reservation(s).</li>
+			<li>Please remember that <strong>you have to be a member of the group in order to make a reservation</strong>. The idea is to add the finished vector to our gallery, so it has to meet all of our quality requirements.</li>
 		</ol>
 	</div>
-
-<?php   echo reservations_render($Reservations);
+<?php   if (PERM('episodes.manage')){ ?>
+	<p class=align-center>
+		<button id=export class="typcn typcn-export large blue">Export posts in journal format</button>
+	</p>
+<?php   }
+		echo reservations_render($Reservations);
 		echo requests_render($Requests); ?>
 	<script>var SEASON = <?=$CurrentEpisode['season']?>, EPISODE = <?=$CurrentEpisode['episode']?>;</script>
 <?php
