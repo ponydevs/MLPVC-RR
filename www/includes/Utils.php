@@ -1496,7 +1496,7 @@ HTML;
 			}
 			$username = $nameCache[$r['reserved_by']];
 
-			$thumbID = parseInt(substr($r['deviation_id'],1), 36);
+			$thumbID = intval(substr($r['deviation_id'],1), 36);
 
 			$Export .= "<div class=\"res-box\"> :thumb$thumbID: by :icon$username: :dev$username:</div><br>";
 		}
@@ -1516,7 +1516,7 @@ HTML;
 			}
 			$username = $nameCache[$r['reserved_by']];
 
-			$thumbID = parseInt(substr($r['deviation_id'],1), 36);
+			$thumbID = intval(substr($r['deviation_id'],1), 36);
 
 			$Export .= "<div class=\"res-box\"> :thumb$thumbID: by :icon$username: :dev$username:</div><br>";
 		}
