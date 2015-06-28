@@ -9,7 +9,7 @@ $(function(){
 		$.post('/episode/export/S'+SEASON+'E'+EPISODE,{},function(data){
 			if (typeof data !== 'object') return console.log(data) && $w.trigger('ajaxerror');
 
-			if (data.status) $.Dialog.info('Exporting posts','<p>Here\'s the code you need to paste into the journal while in<br><em>HTML editing mode</em>, replacing what was there previously.</p><textarea style="display:block;margin:0 auto;resize:none"></textarea>',function(){
+			if (data.status) $.Dialog.info('Exporting posts','<p>Here\'s the code you need to paste into the journal while in<br><em>HTML editing mode</em>, replacing what was there previously.</p><textarea style="display:block;margin:0 auto;resize:none;width:90%"></textarea>',function(){
 				$('#dialogContent').find('textarea').val(data.export);
 			});
 			else $.Dialog.fail('Display voting buttons',data.message);

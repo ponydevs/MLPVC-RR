@@ -1478,8 +1478,8 @@ HTML;
 
 		$nameCache = array();
 
-		$Export = '<h1>List of Reservations</h1><br><br>';
-		if (empty($res['unfinished'])) $Export .= "<br>$nada";
+		$Export = "<h1>List of Reservations</h1>\n\n";
+		if (empty($res['unfinished'])) $Export .= "\n$nada";
 		else foreach ($res['unfinished'] as $r){
 			if (empty($nameCache[$r['reserved_by']])){
 				$u = get_user($r['reserved_by'],'id','name');
@@ -1488,10 +1488,10 @@ HTML;
 			$username = $nameCache[$r['reserved_by']];
 			$Export .= "<div class=\"res-box\"> <a href=\"{$r['fullsize']}\"><img src=\"{$r['fullsize']}\"></a> by :icon$username: :dev$username:";
 			if (!empty($r['label'])) $Export .= " - {$r['label']}";
-			$Export .= "</div><br>";
+			$Export .= "</div>\n";
 		}
-		$Export .= '<br><br><h1>Finished Reservations</h1><br><br>';
-		if (empty($res['finished'])) $Export .= "<br>$nada";
+		$Export .= "\n\n<h1>Finished Reservations</h1>\n\n";
+		if (empty($res['finished'])) $Export .= "\n$nada";
 		else foreach ($res['finished'] as $r){
 			if (empty($nameCache[$r['reserved_by']])){
 				$u = get_user($r['reserved_by'],'id','name');
@@ -1501,11 +1501,11 @@ HTML;
 
 			$thumbID = intval(substr($r['deviation_id'],1), 36);
 
-			$Export .= "<div class=\"res-box\"> :thumb$thumbID: by :icon$username: :dev$username:</div><br>";
+			$Export .= "<div class=\"res-box\"> :thumb$thumbID: by :icon$username: :dev$username:</div>\n";
 		}
-		$Export .= "<br><br><h1>List of Requests</h1>";
+		$Export .= "\n\n<h1>List of Requests</h1>";
 		foreach ($req['unfinished'] as $g => $reqs){
-			$Export .= "<br><br><br><h2>{$REQUEST_TYPES[$g]}:</h2><br>";
+			$Export .= "\n\n\n<h2>{$REQUEST_TYPES[$g]}:</h2>\n";
 			if (empty($reqs)) $Export .= $nada;
 			else foreach ($reqs as $r){
 				$username = false;
@@ -1517,11 +1517,11 @@ HTML;
 					$username = $nameCache[$r['reserved_by']];
 				}
 				$Export .= "<div class=\"res-box\"> <a href=\"{$r['fullsize']}\"><img src=\"{$r['fullsize']}\"></a> - {$r['label']}".
-					(!empty($username)?" <b>reserved by by :icon$username: :dev$username:</b>":'').'</div><br>';
+					(!empty($username)?" <b>reserved by by :icon$username: :dev$username:</b>":'')."</div>\n";
 			}
 		}
-		$Export .= "<br><br><h1>Finished Requests</h1><br><br>";
-		if (empty($req['finished'])) $Export .= "<br>$nada";
+		$Export .= "\n\n<h1>Finished Requests</h1>\n\n";
+		if (empty($req['finished'])) $Export .= "\n$nada";
 		else foreach ($req['finished'] as $r){
 			if (empty($nameCache[$r['reserved_by']])){
 				$u = get_user($r['reserved_by'],'id','name');
@@ -1531,7 +1531,7 @@ HTML;
 
 			$thumbID = intval(substr($r['deviation_id'],1), 36);
 
-			$Export .= "<div class=\"res-box\"> :thumb$thumbID: by :icon$username: :dev$username:</div><br>";
+			$Export .= "<div class=\"res-box\"> :thumb$thumbID: by :icon$username: :dev$username:</div>\n";
 		}
-		return preg_replace('/(<br>)+$/','',$Export);
+		return rtrim($Export);
 	}
