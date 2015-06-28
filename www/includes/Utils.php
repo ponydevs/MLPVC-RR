@@ -1479,8 +1479,8 @@ HTML;
 		if (empty($res['unfinished'])) $Export .= "<br>$nada";
 		else foreach ($res['unfinished'] as $r){
 			if (empty($nameCache[$r['reserved_by']])){
-				$u = get_user($r['reserved_by'],'id','username');
-				$nameCache[$r['reserved_by']] = $u['username'];
+				$u = get_user($r['reserved_by'],'id','name');
+				$nameCache[$r['reserved_by']] = $u['name'];
 			}
 			$username = $nameCache[$r['reserved_by']];
 			$Export .= "<div class=\"res-box\"> <a href=\"{$r['fullsize']}\"><img src=\"{$r['fullsize']}\"></a> by :icon$username: :dev$username:";
@@ -1491,8 +1491,8 @@ HTML;
 		if (empty($res['finished'])) $Export .= "<br>$nada";
 		else foreach ($res['finished'] as $r){
 			if (empty($nameCache[$r['reserved_by']])){
-				$u = get_user($r['reserved_by'],'id','username');
-				$nameCache[$r['reserved_by']] = $u['username'];
+				$u = get_user($r['reserved_by'],'id','name');
+				$nameCache[$r['reserved_by']] = $u['name'];
 			}
 			$username = $nameCache[$r['reserved_by']];
 
@@ -1511,8 +1511,8 @@ HTML;
 		if (empty($req['finished'])) $Export .= "<br>$nada";
 		else foreach ($req['finished'] as $r){
 			if (empty($nameCache[$r['reserved_by']])){
-				$u = get_user($r['reserved_by'],'id','username');
-				$nameCache[$r['reserved_by']] = $u['username'];
+				$u = get_user($r['reserved_by'],'id','name');
+				$nameCache[$r['reserved_by']] = $u['name'];
 			}
 			$username = $nameCache[$r['reserved_by']];
 
