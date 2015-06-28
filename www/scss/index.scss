@@ -314,13 +314,14 @@
 		display: inline-block;
 		background-image: linear-gradient(to bottom, rgba(255,255,255,.2) 0%, rgba(255,255,255,0) 100%);
 		text-align: center;
+		font-size: 14px;
+		line-height: 20px;
 
+		&:before { content: " " }
 		&[data-width]:before {
 			content: attr(data-width) "%";
 			color: #fff;
 			text-shadow: 0 0 4px rgba(0,0,0,.4);
-			font-size: 14px;
-			line-height: 20px;
 		}
 	}
 	.up { background-color: darken($NGreenBG, 60) }
