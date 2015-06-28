@@ -315,7 +315,7 @@
 		background-image: linear-gradient(to bottom, rgba(255,255,255,.2) 0%, rgba(255,255,255,0) 100%);
 		text-align: center;
 
-		&:before {
+		&[data-width]:before {
 			content: attr(data-width) "%";
 			color: #fff;
 			text-shadow: 0 0 4px rgba(0,0,0,.4);

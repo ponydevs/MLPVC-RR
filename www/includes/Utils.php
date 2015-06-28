@@ -1448,12 +1448,12 @@ HTML;
 			$fills = array();
 
 			$upPerc = call_user_func($UpsDowns === 'up' ? 'ceil' : 'floor', ($VoteTally['up']/$VoteTally['total'])*10000)/100;
-			if ($upPerc > 0)
-				$fills[] = "<div class=up style=width:$upPerc% data-width=$upPerc></div>";
-
 			$downPerc = call_user_func($UpsDowns === 'down' ? 'ceil' : 'floor', ($VoteTally['down']/$VoteTally['total'])*10000)/100;
+
+			if ($upPerc > 0)
+				$fills[] = "<div class=up style=width:$upPerc% ".($upPerc > 10 ? "data-width=$upPerc":'')."></div>";
 			if ($downPerc > 0)
-				array_splice($fills, $UpsDowns === 'up' ? 1 : 0, 0,array("<div class=down style=width:$downPerc% data-width=$downPerc></div>"));
+				array_splice($fills, $UpsDowns === 'up' ? 1 : 0, 0,array("<div class=down style=width:$downPerc% ".($downPerc > 10 ? "data-width=$downPerc":'')."></div>"));
 
 			if (!empty($fills))
 				$HTML .= "<div class=bar>".implode('',$fills)."</div>";
