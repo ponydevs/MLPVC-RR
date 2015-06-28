@@ -278,6 +278,7 @@ $(function(){
 			})
 		});
 		$formImgInput.on('keyup change paste',imgCheckDisabler);
+		var outgoing =  /^https?:\/\/www\.deviantart\.com\/users\/outgoing\?/;
 		function imgCheckDisabler(disable){
 			var prevurl = $formImgInput.data('prev-url'),
 				samevalue = typeof prevurl === 'string' && prevurl.trim() === $formImgInput.val().trim();
@@ -285,8 +286,11 @@ $(function(){
 			if (disable === true || samevalue) $formImgCheck.attr('title', 'You need to change the URL before chacking again.');
 			else $formImgCheck.removeAttr('title');
 
-			if (disable.type === 'keyup')
-				$formImgInput.val($formImgInput.val().replace('http://www.deviantart.com/users/outgoing?',''));
+			if (disable.type === 'keyup'){
+				var val = $formImgInput.val();
+				if (val.test(outgoing))
+					$formImgInput.val($formImgInput.val().replace(outgoing,''));
+			}
 		}
 		$formImgCheck.on('click',function(e){
 			e.preventDefault();

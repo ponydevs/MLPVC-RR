@@ -1063,7 +1063,7 @@ HTML;
 		$Arranged['unfinished']['chr'] = $Arranged['finished'];
 		if (!empty($Requests) && is_array($Requests)){
 			foreach ($Requests as $R){
-				$HTML = $returnArranged ? get_r_li($R,true) : $R;
+				$HTML = !$returnArranged ? get_r_li($R,true) : $R;
 
 				if (!$returnArranged){
 					if ($R['finished'])
