@@ -1465,14 +1465,7 @@ HTML;
 		return $HTML;
 	}
 
-	/*
-	 * Exporting all posts
-	 * ---------------
-	 * Format:
-#########################
-<h2>Characters:</h2><br><div class="res-box"> <a href="{link}"><img src="{link}"></a> - {label}</div><br><div class="res-box"> <a href="{link}"><img src="{link}"></a> - {label}</div><br><br><br><h2>Backgrounds:</h2><br><div class="res-box"> <a href="{link}"><img src="{link}"></a> - {label}</div><br><br><h2>Objects:</h2><br>None Yet<br><br><br><h1>Finished Requests</h1><br><br><br>None Yet
-#########################
-	 */
+	// Exporting all posts \\
 	function export_posts($req, $res){
 		global $REQUEST_TYPES;
 
@@ -1486,7 +1479,7 @@ HTML;
 		if (empty($res['unfinished'])) $Export .= "<br>$nada";
 		else foreach ($res['unfinished'] as $r){
 			if (empty($nameCache[$r['reserved_by']])){
-				$u = get_user($r['reserved_by'],null,'username');
+				$u = get_user($r['reserved_by'],'id','username');
 				$nameCache[$r['reserved_by']] = $u['username'];
 			}
 			$username = $nameCache[$r['reserved_by']];
@@ -1498,7 +1491,7 @@ HTML;
 		if (empty($res['finished'])) $Export .= "<br>$nada";
 		else foreach ($res['finished'] as $r){
 			if (empty($nameCache[$r['reserved_by']])){
-				$u = get_user($r['reserved_by'],null,'username');
+				$u = get_user($r['reserved_by'],'id','username');
 				$nameCache[$r['reserved_by']] = $u['username'];
 			}
 			$username = $nameCache[$r['reserved_by']];
@@ -1507,16 +1500,18 @@ HTML;
 
 			$Export .= "<div class=\"res-box\"> :thumb$thumbID: by :icon$username: :dev$username:</div><br>";
 		}
-		$Export .= "<br><br><h1>List of Requests</h1><br><br>";
+		$Export .= "<br><br><h1>List of Requests</h1>";
 		foreach ($req['unfinished'] as $g => $reqs){
 			$Export .= "<br><br><br><h2>{$REQUEST_TYPES[$g]}:</h2><br>";
 			if (empty($reqs)) $Export .= $nada;
+			else foreach ($reqs as $r)
+				$Export .= "<div class=\"res-box\"> <a href=\"{$r['fullsize']}\"><img src=\"{$r['fullsize']}\"></a> - {$r['label']}</div><br>";
 		}
 		$Export .= "<br><br><h1>Finished Requests</h1><br><br>";
 		if (empty($req['finished'])) $Export .= "<br>$nada";
 		else foreach ($req['finished'] as $r){
 			if (empty($nameCache[$r['reserved_by']])){
-				$u = get_user($r['reserved_by'],null,'username');
+				$u = get_user($r['reserved_by'],'id','username');
 				$nameCache[$r['reserved_by']] = $u['username'];
 			}
 			$username = $nameCache[$r['reserved_by']];
