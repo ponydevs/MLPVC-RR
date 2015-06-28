@@ -288,10 +288,11 @@ $(function(){
 
 			if (disable.type === 'keyup'){
 				var val = $formImgInput.val();
-				if (val.test(outgoing))
+				if (outgoing.test(val))
 					$formImgInput.val($formImgInput.val().replace(outgoing,''));
 			}
 		}
+		var CHECK_BTN = '<strong class="typcn typcn-arrow-repeat">Check image</strong>';
 		$formImgCheck.on('click',function(e){
 			e.preventDefault();
 
@@ -312,7 +313,19 @@ $(function(){
 
 							$formImgInput.data('prev-url', url);
 
-							if (!!data.title && !$formTitleInput.val().trim()) $formTitleInput.val(data.title);
+							if (!!data.title && !$formTitleInput.val().trim())
+								$.Dialog.confirm(
+									'Confirm '+type+' title',
+									'The image you just checked had the following title:<br><br><p class=align-center><strong>'+data.title+'</strong></p>'
+									 +'<br>Would you like to use this as the '+type+'\'s description?<br>Keep in mind that it should describe the thing(s) '
+									 +(type==='request'?'being requested':'you plan to vector')+'.<br>'
+									 +'This dialog will not appear if you give your '+type+'<br>a description before clicking the '+CHECK_BTN+' button.',
+									function(sure){
+										if (!sure) return $form.find('input[name=label]').focus();
+										$formTitleInput.val(data.title);
+										$.Dialog.close();
+									}
+								);
 						}).on('error',function(){
 							$.Dialog.fail("Can't load image","There was an error while attempting to load the image.<br>Make sure the URL is correct and try again!");
 						});
@@ -324,7 +337,6 @@ $(function(){
 				}
 			})
 		});
-		var CHECK_BTN = '<strong class="typcn typcn-arrow-repeat">Check image</strong>';
 		$form.on('submit',function(e, screwchanges){
 			e.preventDefault();
 

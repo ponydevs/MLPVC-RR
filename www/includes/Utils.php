@@ -979,9 +979,12 @@ HTML;
 				<label>
 					<span>$Type type</span>
 					<select name="type" required>
-						<option value=chr>Character</option>
-						<option value=bg>Background</option>
-						<option value=obj>Object</option>
+						<option value="" style=display:none selected>Choose one</option>
+						<optgroup label="$Type types">
+							<option value=chr>Character</option>
+							<option value=bg>Background</option>
+							<option value=obj>Object</option>
+						</optgroup>
 					</select>
 				</label>
 
