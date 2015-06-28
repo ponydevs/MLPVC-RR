@@ -316,8 +316,8 @@
 		text-align: center;
 		font-size: 14px;
 		line-height: 20px;
+		vertical-align: middle;
 
-		&:before { content: " " }
 		&[data-width]:before {
 			content: attr(data-width) "%";
 			color: #fff;
