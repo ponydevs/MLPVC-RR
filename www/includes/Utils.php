@@ -922,7 +922,8 @@ HTML;
 		$thing = $isRequest ? 'request' : 'reservation';
 		$HTML = "<li id=$thing-{$R['id']}>";
 		$R['label'] = htmlspecialchars($R['label']);
-		$Image = "<div class='image screencap'><a href='{$R['fullsize']}'><img src='{$R['preview']}'></a></div><span class=label>{$R['label']}</span>";
+		$Image = "<div class='image screencap'><a href='{$R['fullsize']}'><img src='{$R['preview']}'></a></div>";
+		if (!empty($R['label'])) $Image .= "<span class=label>{$R['label']}</span>";
 
 		if ($isRequest && PERM('inspector'))
 			$Image .= "<em>Added by ".profile_link(get_user($R['requested_by'])).' '.timetag($R['posted'])."</em>";

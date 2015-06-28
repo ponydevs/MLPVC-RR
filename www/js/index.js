@@ -238,9 +238,8 @@ $(function(){
 			var title = 'Add a reservation';
 			$.Dialog.request(title,'<form id="add-reservation"><div class="notice fail"><label>Error</label><p></p></div><div class="notice info">This feature should only be used when the vector was made before the episode was displayed here,<br>and all you want to do is link your already-made vector under the newly posted episode.</div><div class="notice warn">If you already posted the reservation, use the <strong class="typcn typcn-attachment">I\'m done</strong> button to mark it as finished instead of adding it here.</div><input type="text" name="deviation" placeholder="Deviation URL"></form>','add-reservation','Finish',function(){
 				var $form = $('#add-reservation'),
-					$ErrorNotice = $form.find('.notice p');
-				$ErrorNotice.parent().hide();
-				$form.on('submit',function ReservationAddSubmit(e){
+					$ErrorNotice = $form.find('.notice').hide().children('p');
+				$form.on('submit',function(e){
 					e.preventDefault();
 
 					var deviation = $form.find('[name=deviation]').val(),
@@ -275,6 +274,9 @@ $(function(){
 			$formImgCheck.attr('disabled',disable === true || samevalue);
 			if (disable === true || samevalue) $formImgCheck.attr('title', 'You need to change the URL before chacking again.');
 			else $formImgCheck.removeAttr('title');
+
+			if (disable.type === 'keyup')
+				$formImgInput.val($formImgInput.val().replace('http://www.deviantart.com/users/outgoing?',''));
 		}
 		$formImgCheck.on('click',function(e){
 			e.preventDefault();
@@ -319,7 +321,7 @@ $(function(){
 					function(sure){
 						if (!sure) return;
 
-						$form.trigger('submit',[true]);
+						$form.triggerHandler('submit',[true]);
 					}
 				);
 
