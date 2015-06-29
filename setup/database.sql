@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS `episodes` (
   `title` tinytext NOT NULL,
   `posted` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `posted_by` varchar(36) DEFAULT NULL,
-  `airs` timestamp DEFAULT NULL
+  `airs` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `episode_voting` (
