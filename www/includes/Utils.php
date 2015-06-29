@@ -1522,7 +1522,7 @@ HTML;
 			$day = date('j', $airtime);
 			if ($i === 0){
 				$diff = timeDifference(time(), $airtime);
-				$time = '';
+				$time = 'in ';
 				if (!empty($diff['day']))
 					$time .=  "{$diff['day']} day".($diff['day']!==1?'s':'').' & ';
 				foreach (array('minute','second') as $k)

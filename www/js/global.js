@@ -37,7 +37,7 @@ $(function(){
 			$nextime.remove();
 			return window.setCD();
 		}
-		var text = '';
+		var text = 'in ';
 		if (diff.day > 0)
 			text += diff.day+' day'+(diff.day!==1?'s':'')+' & ';
 		$cd.text(text+diff.hour+':'+pad(diff.minute)+':'+pad(diff.second));
