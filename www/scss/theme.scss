@@ -461,6 +461,7 @@ header {
 
 			li {
 				display: block;
+				white-space: nowrap;
 
 				&:not(:last-child) {
 					margin-bottom: 5px;
@@ -503,10 +504,12 @@ header {
 				.meta {
 					display: inline-block;
 					margin-left: 5px;
-
+					max-width: calc(100% - 45px);
 				}
 				.title, time, .countdown {
 					display: block;
+					overflow: hidden;
+					text-overflow: ellipsis;
 				}
 				.title {
 					font-size: 18px;
