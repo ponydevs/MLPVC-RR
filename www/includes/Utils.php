@@ -1525,9 +1525,11 @@ HTML;
 				$time = 'in ';
 				if (!empty($diff['day']))
 					$time .=  "{$diff['day']} day".($diff['day']!==1?'s':'').' & ';
+				if (!empty($diff['hour']))
+					$time .= "{$diff['hour']}:";
 				foreach (array('minute','second') as $k)
 					$diff[$k] = pad($diff[$k]);
-				$time = "<span class=countdown data-airs=\"$airs\">$time{$diff['hour']}:{$diff['minute']}:{$diff['second']} (".date('T', $airtime).")</span>";
+				$time = "<span class=countdown data-airs=\"$airs\">$time{$diff['minute']}:{$diff['second']} (".date('T', $airtime).")</span>";
 			}
 			else $time = timetag($ep['airs']);
 			$HTML .= "<li><div class=calendar><span class=top>$month</span><span class=bottom>$day</span></div>".
