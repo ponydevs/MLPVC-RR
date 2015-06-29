@@ -1268,8 +1268,11 @@ HTML;
 	 *
 	 * @return array
 	 */
-	function get_episodes($count = null){
+	function get_episodes($count = null, $where = null){
 		global $Database;
+
+		if (!empty($where))
+			$Database->where($where);
 
 		$eps = $Database->orderBy('season')->orderBy('episode')->get('episodes',$count);
 		foreach ($eps as $i => $ep)
@@ -1283,7 +1286,7 @@ HTML;
 	 * @return array
 	 */
 	function get_latest_episode(){
-		return rawquery_get_single_result(get_episodes(1));
+		return rawquery_get_single_result(get_episodes(1,'airs < NOW()'));
 	}
 
 	/**
