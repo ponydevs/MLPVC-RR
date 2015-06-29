@@ -152,8 +152,8 @@
 			if (!empty($inituser)) $ip = "$inituser<br>$ip";
 
 			$HTML = <<<HTML
-
 		<tr>
+
 			<td class=entryid>{$item['entryid']}</td>
 			<td class=timestamp>$ts<br><span class="dynt-el"></span></td>
 			<td class=ip>$ip</td>
@@ -165,7 +165,44 @@ HTML;
 		}
 		else echo "<tr><td colspan=4>There are no log items</td></tr>";
 	}
-
+	
+	// Gets the difference between 2 timestamps \\
+	function timeDifference($n,$e) {
+		$substract = $n - $e;
+		$d = array(
+			'past' => $substract > 0,
+			'time' => abs($substract),
+			'target' => $e
+		);
+		$time = $d['time'];
+		
+		$d['day'] = floor($time/60/60/24);
+		$time -= $d['day']*60*60*24;
+		
+		$d['hour'] = floor($time/60/60);
+		$time -= $d['hour']*60*60;
+		
+		$d['minute'] = floor($time/60);
+		$time -= $d['minute']*60;
+		
+		$d['second'] = floor($time);
+		
+		if (!empty($d['day']) && $d['day'] >= 7){
+			$d['week'] = floor($d['day']/7);
+			$d['day'] -= $d['week']*7;
+		}
+		if (!empty($d['week']) && $d['week'] >= 4){
+			$d['month'] = floor($d['week']/4);
+			$d['week'] -= $d['month']*4;
+		}
+		if (!empty($d['month']) && $d['month'] >= 12){
+			$d['year'] = floor($d['month']/12);
+			$d['month'] -= $d['year']*12;
+		}
+		
+		return $d;
+	}
+	
 	/**
 	 * Converts $timestamp to an "X somthing ago" format
 	 * Always uses the greatest unit available
@@ -268,7 +305,7 @@ HTML;
 			$customCSS = array_merge($customCSS, $DEFAULT_CSS);
 
 		# JavaScript
-		$DEFAULT_JS = array('dyntime','dialog','quotes');
+		$DEFAULT_JS = array('dyntime','dialog','global');
 		$customJS = array();
 		// Add logged_in.js for logged in users
 		global $signedIn;
@@ -694,7 +731,7 @@ HTML;
 	}
 
 	// Episode title matching pattern \\
-	define('EP_TITLE_REGEX', '/^[A-Za-z \'\-!\d,&:]{5,35}$/');
+	define('EP_TITLE_REGEX', '/^[A-Za-z \'\-!\d,&:?]{5,35}$/');
 
 	/**
 	 * Turns an 'episode' database row into a readable title
@@ -1465,6 +1502,34 @@ HTML;
 			else $HTML .= "<p><em>Sign in below to cast your vote!</em></p>";
 		}
 
+		return $HTML;
+	}
+
+	// Render upcoming episode HTML \\
+	function get_upcoming_eps($Upcoming = null){
+		if (empty($Upcoming)){
+			global $Database;
+			$Upcoming = $Database->where('airs > NOW()')->get('episodes');
+		}
+		$HTML = '';
+		foreach ($Upcoming as $i => $ep){
+			$airtime = strtotime($ep['airs']);
+			$airs = date('c', $airtime);
+			$month = date('M', $airtime);
+			$day = date('j', $airtime);
+			if ($i === 0){
+				$diff = timeDifference(time(), $airtime);
+				$time = '';
+				if (!empty($diff['day']))
+					$time .=  "{$diff['day']} day".($diff['day']!==1?'s':'').' & ';
+				foreach (array('minute','second') as $k)
+					$diff[$k] = pad($diff[$k]);
+				$time = "<span class=countdown data-airs=\"$airs\">$time{$diff['hour']}:{$diff['minute']}:{$diff['second']} (".date('T', $airtime).")</span>";
+			}
+			else $time = timetag($ep['airs']);
+			$HTML .= "<li><div class=calendar><span class=top>$month</span><span class=bottom>$day</span></div>".
+				"<div class=meta><span class=title>{$ep['title']}</span>$time</div></li>";
+		}
 		return $HTML;
 	}
 

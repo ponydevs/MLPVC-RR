@@ -1,3 +1,11 @@
+<?php
+	$Upcoming = $Database->where('airs > NOW()')->get('episodes');
+	if (!empty($Upcoming)){ ?>
+	<section id=upcoming>
+		<h2>Upcoming episodes</h2>
+		<ul><?=get_upcoming_eps($Upcoming)?></ul>
+	</section>
+<?  } ?>
 	<section class=<?=$signedIn?'welcome':'login'?>>
 		<h2>Welcome!</h2>
 <?php if ($signedIn){

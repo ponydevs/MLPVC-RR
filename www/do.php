@@ -286,7 +286,10 @@
 							'twoparter' => $Episode['twoparter'],
 							'title' => $Episode['title'],
 						));
-						respond('Episode deleted successfuly',1,array('tbody' => get_eptable_tbody()));
+						respond('Episode deleted successfuly',1,array(
+							'tbody' => get_eptable_tbody(),
+							'upcoming' => get_upcoming_eps(),
+						));
 					}
 					else if (preg_match('/^((?:request|reservation)s)\/'.EPISODE_ID_PATTERN.'$/', $data, $_match)){
 						list($season,$episode) = array_map('intval',array_splice($_match,2,2));
@@ -413,7 +416,10 @@
 							'twoparter' => isset($insert['twoparter']) ? $insert['twoparter'] : 0,
 							'title' => $insert['title'],
 						));
-						respond('Episode saved successfuly',1,array('tbody' => get_eptable_tbody()));
+						respond('Episode saved successfuly',1,array(
+							'tbody' => get_eptable_tbody(),
+							'upcoming' => get_upcoming_eps(),
+						));
 					}
 				}
 

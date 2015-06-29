@@ -33,6 +33,20 @@ $(function(){
 	Date.prototype.toAirTime = function(){ return pad(this.getHours())+':'+pad(this.getMinutes()) };
 	var date = saturday.toAirDate(), time = saturday.toAirTime();
 
+	function UpcomingUpdate(ulContent){
+		var $uc = $('#upcoming');
+		if ($uc.length === 0 && !!ulContent){
+			$uc = $(document.createElement('section')).attr('id', 'upcoming').insertBefore($('#sidebar').children('.welcome, .login'));
+			$uc.append($(document.createElement('h2')).text('Upcoming episodes'),document.createElement('ul'));
+		}
+
+		if (ulContent)
+			$uc.children('ul').html(ulContent);
+		else $uc.remove();
+
+		window.setCD();
+		window.updateTimesF();
+	}
 
 	var EP_TITLE_REGEX = window.EP_TITLE_REGEX,
 		EP_TITLE_HTML_REGEX = EP_TITLE_REGEX.toString().split('/')[1],
@@ -76,9 +90,12 @@ $(function(){
 		var title = 'Add Episode';
 
 		$.Dialog.request(title,$addep.clone(true, true),'addep','Add',function(){
-			$('#addep').on('submit',function(e){
+			var $form = $('#addep');
+			$form.on('submit',function(e){
 				e.preventDefault();
-				var data = {};
+				var data = {},
+					$airdate = $form.find('input[name=airdate]'),
+					$airtime = $form.find('input[name=airtime]');
 
 				data.airs = mkDate($airdate.attr('disabled',true).val(), $airtime.attr('disabled',true).val()).toISOString();
 				var tempdata = $(this).serializeArray();
@@ -97,6 +114,7 @@ $(function(){
 
 						if (data.status){
 							Bind(data.tbody);
+							UpcomingUpdate(data.upcoming);
 							$.Dialog.close();
 						}
 						else $.Dialog.fail(title,data.message);
@@ -177,6 +195,7 @@ $(function(){
 
 										if (data.status){
 											Bind(data.tbody);
+											UpcomingUpdate(data.upcoming);
 											$.Dialog.close();
 										}
 										else $.Dialog.fail(title,data.message);
@@ -210,6 +229,7 @@ $(function(){
 
 						if (data.status){
 							Bind(data.tbody);
+							UpcomingUpdate(data.upcoming);
 							$.Dialog.close();
 						}
 						else $.Dialog.fail(title,data.message);

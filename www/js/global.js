@@ -1,4 +1,49 @@
 $(function(){
+	// Countdown
+	var $cd, cdtimer,
+		months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+	window.setCD = function(){
+		var $uc = $('#upcoming');
+		$cd = $uc.find('li').first().find('.countdown');
+		cdtimer = setInterval(function(){
+			cdupdate($cd);
+		}, 1000);
+		cdupdate($cd);
+
+		$uc.find('li').each(function(){
+			var $this = $(this),
+				$calendar = $this.children('.calendar'),
+				d = new Date($this.find('.countdown').data('airs') || $this.find('time').attr('datetime'));
+			$calendar.children('.top').text(months[d.getMonth()]);
+			$calendar.children('.bottom').text(d.getDate());
+		});
+		window.updateTimesF();
+	};
+	window.setCD();
+
+	function pad(n){return n<10?'0'+n:n}
+	function cdupdate($cd){
+		var airs = new Date($cd.data('airs')),
+			diff = window.getTimeDiff(new Date, airs);
+		if (diff.past === true || $cd.length === 0){
+			if ($cd.length > 0){
+				var $oldcd = $cd,
+					$nextime = $oldcd.parents('li').next().find('time');
+				$oldcd.parents('li').remove();
+			}
+			clearInterval(cdtimer);
+			if ($cd.length === 0 || $nextime.length === 0) return $('#upcoming').remove();
+			$(document.createElement('span')).addClass('countdown').data('airs', $nextime.attr('datetime')).insertAfter($nextime);
+			$nextime.remove();
+			return window.setCD();
+		}
+		var text = '';
+		if (diff.day > 0)
+			text += diff.day+' day'+(diff.day!==1?'s':'')+' & ';
+		$cd.text(text+diff.hour+':'+pad(diff.minute)+':'+pad(diff.second));
+	}
+
+	// Quotes
 	var quotes = {
 			Applejack: [
 				"Alright, sugarcube.",

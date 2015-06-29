@@ -100,21 +100,19 @@
 	};
 	function timeDifference(n,e) {
 		var substract = n.getTime() - e.getTime(),
-			d = {
-				past: substract > 0,
-				time: Math.abs(substract)
-			};
+			d = { past: substract > 0, time: Math.abs(substract), target: e }
+			time = d.time;
+
+		d.day = Math.floor(time/1000/60/60/24);
+		time -= d.day*1000*60*60*24;
 		
-		d.day = Math.floor(d.time/1000/60/60/24);
-		d.time -= d.day*1000*60*60*24;
+		d.hour = Math.floor(time/1000/60/60);
+		time -= d.hour*1000*60*60;
 		
-		d.hour = Math.floor(d.time/1000/60/60);
-		d.time -= d.hour*1000*60*60;
+		d.minute = Math.floor(time/1000/60);
+		time -= d.minute*1000*60;
 		
-		d.minute = Math.floor(d.time/1000/60);
-		d.time -= d.minute*1000*60;
-		
-		d.second = Math.floor(d.time/1000);
+		d.second = Math.floor(time/1000);
 		
 		if (d.day >= 7){
 			d.week = Math.floor(d.day/7);
@@ -131,6 +129,9 @@
 		
 		return d;
 	}
+	window.getTimeDiff = function(){
+		return timeDifference.apply(this, arguments);
+	};
 	function createTimeStr(obj){
 		if (typeof obj !== 'object' || $.isArray(obj)) return false;
 		if (obj.time > 0) delete obj.time;
