@@ -503,7 +503,7 @@ header {
 				}
 				.meta {
 					display: inline-block;
-					margin-left: 5px;
+					margin: 2.5px 0 2.5px 5px;
 					max-width: calc(100% - 45px);
 				}
 				.title, time, .countdown {
@@ -513,9 +513,11 @@ header {
 				}
 				.title {
 					font-size: 18px;
+					height: 21px;
 				}
 				time, .countdown {
 					font-size: 12px;
+					height: 14px;
 
 					&:before { content: "Airs " }
 				}
