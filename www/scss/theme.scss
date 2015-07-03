@@ -427,7 +427,8 @@ header {
 					}
 
 					&:not(:last-child):after {
-						content: ", ";
+						content: ",";
+						margin-right: .3em;
 						display: inline-block;
 					}
 					&:not(.active) a:hover:not(:active) {
