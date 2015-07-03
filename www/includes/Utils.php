@@ -1265,6 +1265,7 @@ HTML;
 	 * Returns all episodes from the database, properly sorted
 	 *
 	 * @param int $count
+	 * @param string|null $where
 	 *
 	 * @return array
 	 */
@@ -1286,7 +1287,7 @@ HTML;
 	 * @return array
 	 */
 	function get_latest_episode(){
-		return rawquery_get_single_result(get_episodes(1,'airs < NOW()'));
+		return rawquery_get_single_result(get_episodes(1,'DATE_ADD(TIME(airs), INTERVAL -24 HOUR) < NOW()'));
 	}
 
 	/**
