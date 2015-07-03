@@ -1287,7 +1287,7 @@ HTML;
 	 * @return array
 	 */
 	function get_latest_episode(){
-		return rawquery_get_single_result(get_episodes(1,'DATE_ADD(TIME(airs), INTERVAL -24 HOUR) < NOW()'));
+		return rawquery_get_single_result(get_episodes(1,'airs < NOW() - INTERVAL -24 HOUR'));
 	}
 
 	/**
