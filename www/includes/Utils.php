@@ -673,8 +673,14 @@ HTML;
 
 		$Deviation = $Database->where('id',$ID)->getOne('deviation_cache');
 		if (empty($Deviation) || (!empty($Deviation['updated_on']) && strtotime($Deviation['updated_on'])+ONE_HOUR < time())){
-			$json = da_oembed($ID, $type);
-			if (empty($json)) return null;
+			try {
+				$json = da_oembed($ID, $type);
+			}
+			catch (Exception $e){
+				if (!empty($Deviation))
+					$Database->where('id',$Deviation['id'])->update('deviation_cache', array('updated_on' => date('c',strtotime('+1 minute'))));
+				die("Saving local data for $ID of type $type failed, please try again in a minute.");
+			}
 
 			$insert = array(
 				'title' => $json['title'],
