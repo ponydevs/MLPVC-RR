@@ -78,7 +78,8 @@
 				$actions = array('add' => 'create', 'del' => 'delete');
 				$details[] = array('Action', $actions[$data['action']]);
 				$details[] = array('Name', format_episode_title($data));
-				$details[] = array('Airs', timetag($data['airs'], EXTENDED, NO_DYNTIME));
+				if (!empty($data['airs']))
+					$details[] = array('Airs', timetag($data['airs'], EXTENDED, NO_DYNTIME));
 			break;
 			case "episode_modify":
 				$details[] = array('Target episode', $data['target']);

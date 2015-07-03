@@ -285,6 +285,7 @@
 							'episode' => $Episode['episode'],
 							'twoparter' => $Episode['twoparter'],
 							'title' => $Episode['title'],
+							'airs' => $Episode['airs'],
 						));
 						respond('Episode deleted successfuly',1,array(
 							'tbody' => get_eptable_tbody(),
@@ -415,6 +416,7 @@
 							'episode' => $insert['episode'],
 							'twoparter' => isset($insert['twoparter']) ? $insert['twoparter'] : 0,
 							'title' => $insert['title'],
+							'airs' => $insert['airs'],
 						));
 						respond('Episode saved successfuly',1,array(
 							'tbody' => get_eptable_tbody(),
