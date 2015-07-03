@@ -175,6 +175,7 @@ $(function(){
 							if (data.status) updateSection.call({callback:function(){
 								if (typeof data.message === 'string')
 									$.Dialog.success(title,data.message,true);
+								else $.Dialog.close();
 							}}, type, SEASON, EPISODE);
 							else handleError(data);
 						});
