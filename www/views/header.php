@@ -6,7 +6,7 @@
 	<meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, maximum-scale=1, user-scalable=no">
 	<meta property="og:type" content="website" />
 	<meta property="og:image" content="<?=ABSPATH?>img/logo.png">
-	<meta property="og:title" content="MLP Vector Club Requests & Reservations">
+	<meta property="og:title" content="MLP Vector Club Requests &amp; Reservations">
 	<meta property="og:url" content="<?=ABSPATH?>">
 	<meta property="og:description" content="An automated system for handling requests &amp; reservations, made for MLP-VectorClub">
 <?php if (isset($norobots)){ ?>
