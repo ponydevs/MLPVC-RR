@@ -233,6 +233,7 @@ $(function(){
 		var $form = this instanceof jQuery ? this : $(this),
 			$formImgCheck = $form.find('.check-img'),
 			$formImgPreview = $form.find('.img-preview'),
+			$formDescInput = $form.find('[name=label]'),
 			$formImgInput = $form.find('[name=image_url]'),
 			$formTitleInput = $form.find('[name=label]'),
 			$notice = $formImgPreview.children('.notice'),
@@ -244,7 +245,7 @@ $(function(){
 		$('#'+type+'-btn').on('click',function(){
 			if (!$form.is(':visible')){
 				$form.show();
-				$formImgInput.focus();
+				$formDescInput.focus();
 				$body.animate({scrollTop: $form.offset().top - $navbar.outerHeight() - 10 }, 500);
 			}
 		});
@@ -359,15 +360,16 @@ $(function(){
 				return $.Dialog.fail(Type, 'Please click the '+CHECK_BTN+' button before submitting your '+type+'!');
 
 			if (!sanityCheck && type === 'request'){
-				var label = $form.find('input[name=label]').val(),
+				var label = $formDescInput.val(),
 					$type = $form.find('select');
 
 				if (label.indexOf('character') > -1 && $type.val() !== 'chr')
-					return $.Dialog.confirm(Type, 'Your request label contains the word "character", but the request type isn\'t set to Characters.<br>Are you sure you\'re not requesting one (or more) character(s)?',['Let me change the type', 'Carray on'],function(sure){
+					return $.Dialog.confirm(Type, 'Your request label contains the word "character", but the request type isn\'t set to Character.<br>Are you sure you\'re not requesting one (or more) character(s)?',['Let me change the type', 'Carray on'],function(sure){
 						if (!sure) return $form.triggerHandler('submit',[screwchanges, true]);
 
-						$.Dialog.close();
-						$type.focus();
+						$.Dialog.close(function(){
+							$type.focus();
+						});
 					});
 			}
 

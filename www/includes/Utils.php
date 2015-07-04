@@ -999,11 +999,16 @@ HTML;
 	// Get Request / Reservation Submission Form HTML \\
 	function get_post_form($type){
 		$Type = strtoupper($type[0]).substr($type,1);
+		$optional = $type === 'reservation' ? 'optional, ' : '';
 		$HTML = <<<HTML
 
 		<form class="hidden post-form" data-type="$type">
 			<h2>Make a $type</h2>
 			<div>
+				<label>
+					<span>$Type description ({$optional}3-255 chars)</span>
+					<input type="text" name="label" pattern="^.{3,255}$" maxlength=255 required>
+				</label>
 				<label>
 					<span>Image URL</span>
 					<input type="text" name="image_url" pattern="^.{2,255}$" required>
@@ -1017,10 +1022,6 @@ HTML;
 			if ($type === 'request')
 				$HTML .= <<<HTML
 				<label>
-					<span>$Type description (3-255 chars)</span>
-					<input type="text" name="label" pattern="^.{3,255}$" maxlength=255 required>
-				</label>
-				<label>
 					<span>$Type type</span>
 					<select name="type" required>
 						<option value="" style=display:none selected>Choose one</option>
@@ -1033,16 +1034,6 @@ HTML;
 				</label>
 
 HTML;
-			else {
-				$HTML .= <<<HTML
-				<label>
-					<span>$Type description (optional, 3-255 chars)</span>
-					<input type="text" name="label" pattern="^.{3,255}$" maxlength=255>
-				</label>
-
-HTML;
-
-			}
 			$HTML .= <<<HTML
 			</div>
 			<button class=green>Submit $type</button> <button type="reset">Cancel</button>
