@@ -44,7 +44,7 @@ CREATE TABLE IF NOT EXISTS `log__banish` (
 
 CREATE TABLE IF NOT EXISTS `log__episodes` (
   `entryid` int(11) NOT NULL,
-  `action` set('add','del') NOT NULL,
+  `action` enum('add','del') NOT NULL,
   `season` tinyint(2) unsigned NOT NULL,
   `episode` tinyint(2) unsigned NOT NULL,
   `twoparter` tinyint(1) NOT NULL,
@@ -98,7 +98,7 @@ INSERT INTO `permissions` (`action`, `minrole`) VALUES
 
 CREATE TABLE IF NOT EXISTS `requests` (
   `id` int(11) NOT NULL,
-  `type` set('chr','bg','obj') NOT NULL DEFAULT 'chr',
+  `type` enum('chr','bg','obj') NOT NULL DEFAULT 'chr',
   `season` tinyint(2) unsigned NOT NULL,
   `episode` tinyint(2) unsigned NOT NULL,
   `preview` tinytext NOT NULL,
