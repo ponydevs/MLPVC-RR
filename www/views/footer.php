@@ -4,7 +4,7 @@
 	<footer><strong>MLPVC-RR v1.0 build <?=LATEST_COMMIT_ID?></strong> (last updated <?=timetag(LATEST_COMMIT_TIME)?>) | <a href="<?=GITHUB_URL?>">View on GitHub</a> | <a href="<?=GITHUB_URL?>/issues">Issue tracker</a></footer>
 
 <?php 	if (isset($customJS)) foreach ($customJS as $js){ ?>
-<script src="/js/<?=$js?>.js?<?=LATEST_COMMIT_ID?>"></script>
+<script src="/js/<?=$js?>.js?<?=filemtime(APPATH."/js/$js.js")?>"></script>
 <?php 	} ?>
 <script>
 <?php if (!isset($_SERVER['HTTP_DNT'])){ ?>
