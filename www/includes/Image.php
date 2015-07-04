@@ -16,7 +16,8 @@
 			'fav\.me/(d[a-z\d]{6,})' => 'fav.me',
 			'sta\.sh/([a-z\d]{10,})' => 'sta.sh',
 			'(?:i\.)?imgur\.com/([A-Za-z\d]{1,7})' => 'imgur',
-			'derpiboo(?:\.ru|ru\.org)/(\d+)' => 'derpibooru'
+			'derpiboo(?:\.ru|ru\.org)/(\d+)' => 'derpibooru',
+			'derpicdn\.net/img/(?:view|download)/\d{4}/\d{1,2}/\d{1,2}/(\d+)' => 'derpibooru',
 		);
 		private static function test_provider($url, $pattern, $name){
 			$match = array();
