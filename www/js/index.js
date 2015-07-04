@@ -341,7 +341,7 @@ $(function(){
 				}
 			})
 		});
-		$form.on('submit',function(e, screwchanges){
+		$form.on('submit',function(e, screwchanges, sanityCheck){
 			e.preventDefault();
 
 			if (!screwchanges && $formImgInput.data('prev-url') !== $formImgInput.val())
@@ -357,6 +357,19 @@ $(function(){
 
 			if (typeof $formImgInput.data('prev-url') === 'undefined')
 				return $.Dialog.fail(Type, 'Please click the '+CHECK_BTN+' button before submitting your '+type+'!');
+
+			if (!sanityCheck && type === 'request'){
+				var label = $form.find('input[name=label]').val(),
+					$type = $form.find('select');
+
+				if (label.indexOf('character') > -1 && $type.val() !== 'chr')
+					return $.Dialog.confirm(Type, 'Your request label contains the word "character", but the request type isn\'t set to Characters.<br>Are you sure you\'re not requesting one (or more) character(s)?',['Let me change the type', 'Carray on'],function(sure){
+						if (!sure) return $form.triggerHandler('submit',[screwchanges, true]);
+
+						$.Dialog.close();
+						$type.focus();
+					});
+			}
 
 			$.Dialog.wait(Type,'Submitting '+type);
 
