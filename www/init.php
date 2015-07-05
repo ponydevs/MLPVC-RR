@@ -8,7 +8,7 @@
 	define('APPATH',dirname(__FILE__).DIRECTORY_SEPARATOR);
 	define('RQMTHD',$_SERVER['REQUEST_METHOD']);
 	define('REWRITE_REGEX','~/([\w\.\-]{3,}|-?\d+)(?:/((?:[[\w\.\-]]+|-?\d+)(?:/(?:[[\w\-]]+|-?\d+))?))?/?$~');
-	define('GITHUB_URL','https://github.com/DJDavid98/MLPVC-RR');
+	define('GITHUB_URL','https://github.com/ponydevs/MLPVC-RR');
 
 	// Imports \\
 	require 'includes/MysqliDb.php';
