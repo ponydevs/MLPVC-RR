@@ -5,14 +5,14 @@ $(function(){
 
 		var title = 'Sign out session',
 			$btn = $(this),
-			$li = $btn.closest('li');
+			$li = $btn.closest('li'),
+			browser = $btn.parent().text().trim();
 
-		// First item is always the current session, trigger logout buttons
-		if ($li.index() === 0)
+		// First item is sometimes the current session, trigger logout button instead
+		if ($li.index() === 0 && /\(current\)$/.test(browser))
 			return $signoutBtn.trigger('click');
 
-		var browser = $btn.parent().text().trim(),
-			sid = parseInt($btn.attr('data-sid'));
+		var sid = parseInt($btn.attr('data-sid'));
 
 		if (typeof sid === 'undefined' || isNaN(sid))
 			return $.Dialog.fail(title,'Could not locate Session ID, please reload the page and try again.');
