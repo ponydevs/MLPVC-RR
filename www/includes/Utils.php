@@ -1052,7 +1052,7 @@ HTML;
 
 		}
 		else $resForm = $makeRes = '';
-		$addRes = PERM('inspector') ? '<button id="add-reservation-btn" class=blue>Add a reservation</button>' :'';
+		$addRes = PERM('inspector') ? '<button id="add-reservation-btn" class=darkblue>Add a reservation</button>' :'';
 
 		return <<<HTML
 	<section id="reservations">

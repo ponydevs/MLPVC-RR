@@ -25,21 +25,23 @@
 	if (!empty($Videos)){
 		require_once "includes/Video.php";
 		$FirstVid = $Videos[0];
-		$embed = Video::get_embed($FirstVid['id'], $FirstVid['provider']);
-
-		if (!empty($Videos[1])){
+		$embed = Video::get_embed($FirstVid['id'], $FirstVid['provider']); ?>
+	<section>
+		<h2>Watch the Episode</h2>
+<?php	if (!empty($Videos[1])){
 			$SecondVid = $Videos[1];
 			$url = Video::get_embed($SecondVid['id'], $SecondVid['provider'], Video::URL_ONLY);
-			echo "<p class=align-center style=margin-bottom:5px>Watch the episode below or on <a href='$url' target=_blank>{$_VIDEO_PROVIDER_NAMES[$SecondVid['provider']]}</a></em></p>";
+			echo "<p class=align-center style=margin-bottom:5px>If the video below goes down, click here to watch it on <a href='$url' target=_blank>{$_VIDEO_PROVIDER_NAMES[$SecondVid['provider']]}</a> instead.</p>";
 		}
-		echo "<div class=responsive-embed>$embed</div>";
-	} ?>
-	<div class="notice info">
-		<label>What Vector Reservations Are</label>
+		echo "<div class=responsive-embed>$embed</div>"; ?>
+	</section>
+<?  } ?>
+	<section class=about-res>
+		<h2>What Vector Reservations Are</h2>
 		<p>People usually get excited whenever a new episode comes out, and start making vectors of any pose/object/etc. that they found hilarious/interesting enough. It often results in various people unnecessarily doing the very same thing. Vector Reservations can help organize our efforts by listing who's working on what and to reduce the number of duplicates.</p>
-	</div>
-	<div class="notice caution rules">
-		<label>Reservation Rules</label>
+	</section>
+	<section class=rules>
+		<h2>Reservation Rules</h2>
 		<ol>
 			<li>You MUST have an image to make a reservation! For the best quality, get your references from the episode in 1080p.</li>
 			<li>Making a reservation does NOT forbid other people from working on a pose anyway. It is only information that you are working on it, so other people can coordinate to avoid doing the same thing twice.</li>
@@ -47,11 +49,15 @@
 			<li>The current limit for reservations are 4 at a time. You can reserve more once you've completed the previous reservation(s).</li>
 			<li>Please remember that <strong>you have to be a member of the group in order to make a reservation</strong>. The idea is to add the finished vector to our gallery, so it has to meet all of our quality requirements.</li>
 		</ol>
-	</div>
+	</section>
 <?php   if (PERM('episodes.manage')){ ?>
-	<p class=align-center>
-		<button id=export class="typcn typcn-export large blue">Export posts in journal format</button>
-	</p>
+	<section class=admin>
+		<h2>Administration area</h2>
+		<p class=align-center>
+			<button id=export class="typcn typcn-export large darkblue">Export posts in journal format</button>
+			<button id=video class="typcn typcn-video large darkblue" disabled>Set video links</button>
+		</p>
+	</section>
 <?php   }
 		echo reservations_render($Reservations);
 		echo requests_render($Requests); ?>
