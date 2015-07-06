@@ -13,6 +13,27 @@
 <?php if (PERM('episodes.manage')){ ?>
 	<p class=align-center><em>Episode added by <?=profile_link(get_user($CurrentEpisode['posted_by'])).' '.timetag($CurrentEpisode['posted'])?></em></p>
 <?php } ?>
+<?php
+	$_VIDEO_PROVIDER_NAMES = array(
+		'yt' => 'YouTube',
+		'dm' => 'Dailymotion',
+	);
+	$Videos = $Database
+		->orderBy('provider', 'ASC')
+		->whereEp($CurrentEpisode['season'],$CurrentEpisode['episode'])
+		->get('episodes__videos');
+	if (!empty($Videos)){
+		require_once "includes/Video.php";
+		$FirstVid = $Videos[0];
+		$embed = Video::get_embed($FirstVid['id'], $FirstVid['provider']);
+
+		if (!empty($Videos[1])){
+			$SecondVid = $Videos[1];
+			$url = Video::get_embed($SecondVid['id'], $SecondVid['provider'], Video::URL_ONLY);
+			echo "<p class=align-center style=margin-bottom:5px>Watch the episode below or on <a href='$url' target=_blank>{$_VIDEO_PROVIDER_NAMES[$SecondVid['provider']]}</a></em></p>";
+		}
+		echo "<div class=responsive-embed>$embed</div>";
+	} ?>
 	<div class="notice info">
 		<label>What Vector Reservations Are</label>
 		<p>People usually get excited whenever a new episode comes out, and start making vectors of any pose/object/etc. that they found hilarious/interesting enough. It often results in various people unnecessarily doing the very same thing. Vector Reservations can help organize our efforts by listing who's working on what and to reduce the number of duplicates.</p>

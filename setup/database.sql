@@ -20,7 +20,14 @@ CREATE TABLE IF NOT EXISTS `episodes` (
   `airs` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE IF NOT EXISTS `episode_voting` (
+CREATE TABLE IF NOT EXISTS `episodes__videos` (
+  `season` tinyint(2) unsigned NOT NULL,
+  `episode` tinyint(2) unsigned NOT NULL,
+  `provider` enum('yt','dm') NOT NULL,
+  `id` varchar(15) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS `episodes__votes` (
   `season` tinyint(2) unsigned NOT NULL,
   `episode` tinyint(2) unsigned NOT NULL,
   `user` varchar(36) NOT NULL,
@@ -172,7 +179,10 @@ ALTER TABLE `episodes`
   ADD PRIMARY KEY (`season`,`episode`),
   ADD KEY `posted_by` (`posted_by`);
 
-ALTER TABLE `episode_voting`
+ALTER TABLE `episodes__videos`
+  ADD PRIMARY KEY (`season`,`episode`,`provider`) USING BTREE;
+
+ALTER TABLE `episodes__votes`
   ADD PRIMARY KEY (`season`,`episode`,`user`) USING BTREE,
   ADD KEY `user` (`user`);
 
@@ -263,9 +273,12 @@ ALTER TABLE `usefullinks`
 ALTER TABLE `episodes`
   ADD CONSTRAINT `episodes_ibfk_1` FOREIGN KEY (`posted_by`) REFERENCES `users` (`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
-ALTER TABLE `episode_voting`
-  ADD CONSTRAINT `episode_voting_ibfk_1` FOREIGN KEY (`season`, `episode`) REFERENCES `episodes` (`season`, `episode`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `episode_voting_ibfk_2` FOREIGN KEY (`user`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `episodes__videos`
+  ADD CONSTRAINT `episodes__videos_ibfk_1` FOREIGN KEY (`season`, `episode`) REFERENCES `episodes` (`season`, `episode`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+ALTER TABLE `episodes__votes`
+  ADD CONSTRAINT `episodes__votes_ibfk_1` FOREIGN KEY (`season`, `episode`) REFERENCES `episodes` (`season`, `episode`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `episodes__votes_ibfk_2` FOREIGN KEY (`user`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 ALTER TABLE `log`
   ADD CONSTRAINT `log_ibfk_1` FOREIGN KEY (`initiator`) REFERENCES `users` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE;

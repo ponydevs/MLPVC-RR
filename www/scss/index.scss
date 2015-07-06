@@ -95,6 +95,55 @@
 }
 
 #content {
+	> .responsive-embed {
+		position: relative;
+		padding-bottom: 56.25%;
+		height: 0;
+		overflow: hidden;
+		max-width: 100%;
+		margin-bottom: 10px;
+		color: rgba(255,0,0,.3);
+		box-sizing: border-box;
+
+
+		&:before, &:after, iframe, object, embed {
+			position: absolute;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			display: block;
+			text-align:center;
+		}
+
+		&:before {
+			content:'\e131';
+			//noinspection CssNoGenericFontName
+			font-family: 'Typicons';
+			z-index: 1;
+			padding: calc(((50% + 32px + 14px)/2) - 75px) 0 calc(((50% + 32px + 14px)/2) + 75px);
+			font-size: 64px;
+			line-height: 64px;
+			height:64px;
+			border: 5px dashed;
+			box-sizing: border-box;
+		}
+		&:after {
+			content: 'Loading video';
+			z-index: 1;
+			top: 50%;
+			height: 25px;
+			font-size: 25px;
+			line-height: 25px;
+		}
+
+		iframe, object, embed {
+			z-index: 2;
+			top: 0;
+			border: 0;
+			margin: 0;
+			padding: 0;
+		}
+	}
 	> .rules {
 		counter-reset: counter;
 

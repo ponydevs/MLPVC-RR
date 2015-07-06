@@ -99,10 +99,10 @@
 				$insert['episode'] = $epdata['episode'];
 
 				if ($what === 'reservation'){
-					$reservations = rawquery_get_single_result($Database->rawQuery(
+					$reservations = $Database->rawQuerySingle(
 						"SELECT COUNT(*) as count FROM reservations WHERE reserved_by = ? && season = ? && episode = ? && deviation_id IS NULL",
 						array($currentUser['id'], $insert['season'], $insert['episode'])
-					));
+					);
 
 					if (isset($reservations['count']) && $reservations['count'] >= 4)
 						respond("You've already reserved 4 images, please finish at least<br>one of them before making another reservation.");
@@ -278,7 +278,7 @@
 						if (empty($Episode))
 							respond("There's no episode with this season & episode number");
 
-						if (!$Database->where('season',$Episode['season'])->where('episode',$Episode['episode'])->delete('episodes')) respond(ERR_DB_FAIL);
+						if (!$Database->whereEp($Episode['season'],$Episode['episode'])->delete('episodes')) respond(ERR_DB_FAIL);
 						LogAction('episodes',array(
 							'action' => 'del',
 							'season' => $Episode['season'],
@@ -325,7 +325,7 @@
 						if (empty($_POST['vote']) || !is_numeric($_POST['vote']))
 							respond('Vote value missing from request');
 
-						if (!$Database->insert('episode_voting',array(
+						if (!$Database->insert('episodes__votes',array(
 							'season' => $season,
 							'episode' => $episode,
 							'user' => $currentUser['id'],
@@ -392,7 +392,7 @@
 						$insert['airs'] = date('c',strtotime('this minute', $airs));
 
 						if ($editing){
-							if (!$Database->where('season',$season)->where('episode',$episode)->update('episodes', $insert))
+							if (!$Database->whereEp($season,$episode)->update('episodes', $insert))
 								respond('No changes were made', 1);
 						}
 						else if (!$Database->insert('episodes', $insert))

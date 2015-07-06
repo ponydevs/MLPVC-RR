@@ -11,8 +11,8 @@
 	define('GITHUB_URL','https://github.com/ponydevs/MLPVC-RR');
 
 	// Imports \\
-	require 'includes/MysqliDb.php';
-	$Database = new MysqliDb(DB_HOST,DB_USER,DB_PASS,DB_NAME);
+	require 'includes/MysqliDbWrapper.php';
+	$Database = new MysqliDbWrapper(DB_HOST,DB_USER,DB_PASS,DB_NAME);
 	require 'includes/Cookie.php';
 	require 'includes/Utils.php';
-	if (!isset($skipAuth) || $skipAuth !== true) require 'includes/AuthCheck.php';
+	require 'includes/AuthCheck.php';

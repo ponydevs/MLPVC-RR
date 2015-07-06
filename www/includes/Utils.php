@@ -544,20 +544,6 @@ HTML;
 	}
 
 	/**
-	 * Returns the first element of an array of arrays
-	 *  returned by the MySqlidb::query method
-	 *  as received through $query
-	 * Returns null if the query contains no results
-	 *
-	 * @param null|array $query
-	 * @return null|array
-	 */
-	function rawquery_get_single_result($query){
-		if (empty($query[0])) return null;
-		else return $query[0];
-	}
-
-	/**
 	 * Requests or refreshes an Access Token
 	 * $type defaults to 'authorization_code'
 	 *
@@ -859,13 +845,13 @@ HTML;
 		}
 
 		if (empty($dbcols)){
-			$User = rawquery_get_single_result($Database->rawQuery(
+			$User = $Database->rawQuerySingle(
 				"SELECT
 					users.*,
 					roles.label as rolelabel
 				FROM users
 				LEFT JOIN roles ON roles.name = users.role
-				WHERE users.`$coloumn` = ?",array($value)));
+				WHERE users.`$coloumn` = ?",array($value));
 
 			if (empty($User) && $coloumn === 'name')
 				$User = fetch_user($value);
@@ -1285,7 +1271,8 @@ HTML;
 	 * @return array
 	 */
 	function get_latest_episode(){
-		return rawquery_get_single_result(get_episodes(1,'airs < NOW() - INTERVAL -24 HOUR'));
+		global $Database;
+		return $Database->singleRow(get_episodes(1,'airs < NOW() - INTERVAL -24 HOUR'));
 	}
 
 	/**
@@ -1348,9 +1335,9 @@ HTML;
 	function get_real_episode($season, $episode){
 		global $Database;
 
-		$Ep1 = $Database->where('season',$season)->where('episode',$episode)->getOne('episodes');
+		$Ep1 = $Database->whereEp($season,$episode)->getOne('episodes');
 		if (empty($Ep1)){
-			$Part1 = $Database->where('season',$season)->where('episode',$episode-1)->getOne('episodes');
+			$Part1 = $Database->whereEp($season,$episode-1)->getOne('episodes');
 			return !empty($Part1) && isset($Part1['twoparter']) && !!$Part1['twoparter'] ? $Part1 : null;
 		}
 		else return add_episode_airing_data($Ep1);
@@ -1445,10 +1432,9 @@ HTML;
 		global $Database, $signedIn, $currentUser;
 		if (!$signedIn) return null;
 		return $Database
-			->where('season', $Ep['season'])
-			->where('episode', $Ep['episode'])
+			->whereEp($Ep['season'], $Ep['episode'])
 			->where('user', $currentUser['id'])
-			->getOne('episode_voting');
+			->getOne('episodes__votes');
 	}
 
 	// Render episode voting HTML
@@ -1460,13 +1446,13 @@ HTML;
 
 		$_bind = array($Episode['season'], $Episode['episode']);
 		$_query = function($col,$as,$val = null){
-			return "SELECT CAST(IFNULL($col,0) AS UNSIGNED INTEGER) as $as FROM episode_voting WHERE ".(isset($val)?"vote = $val && ":'')."season = ? && episode = ?";
+			return "SELECT CAST(IFNULL($col,0) AS UNSIGNED INTEGER) as $as FROM episodes__votes WHERE ".(isset($val)?"vote = $val && ":'')."season = ? && episode = ?";
 		};
-		$VoteTally = rawquery_get_single_result($Database->rawQuery($_query('COUNT(*)','total'), $_bind));
+		$VoteTally = $Database->rawQuerySingle($_query('COUNT(*)','total'), $_bind);
 		$VoteTally = array_merge(
 			$VoteTally,
-			rawquery_get_single_result($Database->rawQuery($_query('SUM(vote)','up',1), $_bind)),
-			rawquery_get_single_result($Database->rawQuery($_query('ABS(SUM(vote))','down',-1), $_bind))
+			$Database->rawQuerySingle($_query('SUM(vote)','up',1), $_bind),
+			$Database->rawQuerySingle($_query('ABS(SUM(vote))','down',-1), $_bind)
 		);
 
 		$HTML .= "<p>";
