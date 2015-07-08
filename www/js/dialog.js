@@ -178,17 +178,16 @@
 				$dialogHeader.attr('class',params.color+'-bg');
 				
 				if (params.buttons) $.each(params.buttons, function (name, obj) {
-					var $button = $(document.createElement('input'));
-					if (obj.submit) $button.attr('type','submit');
-					else $button.attr('type','button');
-					$button.attr('class',params.color+'-bg');
+					var $button = $(document.createElement('input'))
+							.attr('type','button')
+							.addClass(params.color+'-bg');
 					if (obj.form){
 						var $form = $('#'+obj.form);
 						if ($form.length == 1){
+							var $submitHelper = $(document.createElement('button')).hide().appendTo($form);
 							$button.click(function(){
-								$form.find('input[type=submit]').trigger('click');
+								$submitHelper.trigger('click');
 							});
-							$form.prepend($(document.createElement('input')).attr('type','submit').hide());
 						}
 					}
 					$button.val(name).on('keydown', function (e) {
