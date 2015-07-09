@@ -422,3 +422,13 @@
 	.up { background-color: darken($NGreenBG, 60) }
 	.down { background-color: darken($NRedBG, 60) }
 }
+
+#vidlinks input {
+	width: 350px !important;
+	padding-left: #{4px + 16px + 4px};
+	background-size: 16px;
+	background: no-repeat 4px 50%;
+
+	&[name=yt] { background-image: url(../img/yt.png) }
+	&[name=dm] { background-image: url(../img/dm.png) }
+}

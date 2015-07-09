@@ -9,9 +9,15 @@
 		public function singleRow($query){
 			return empty($query[0]) ? null : $query[0];
 		}
-		public function whereEp($s, $e){
-			parent::where('season', $s);
-			parent::where('episode',$e);
+		public function whereEp($s, $e = null){
+			if (!isset($e)){
+				parent::where('season', intval($s['season']));
+				parent::where('episode',intval($s['episode']));
+			}
+			else {
+				parent::where('season', $s);
+				parent::where('episode',$e);
+			}
 			return $this;
 		}
 	}

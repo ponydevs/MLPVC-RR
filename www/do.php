@@ -272,7 +272,7 @@
 						if (empty($Episode))
 							respond("There's no episode with this season & episode number");
 
-						if (!$Database->whereEp($Episode['season'],$Episode['episode'])->delete('episodes')) respond(ERR_DB_FAIL);
+						if (!$Database->whereEp($Episode)->delete('episodes')) respond(ERR_DB_FAIL);
 						LogAction('episodes',array(
 							'action' => 'del',
 							'season' => $Episode['season'],
@@ -287,20 +287,16 @@
 						));
 					}
 					else if (preg_match('/^((?:request|reservation)s)\/'.EPISODE_ID_PATTERN.'$/', $data, $_match)){
-						list($season,$episode) = array_map('intval',array_splice($_match,2,2));
-
-						$Episode = get_real_episode($season,$episode);
+						$Episode = get_real_episode($_match[2],$_match[3]);
 						if (empty($Episode))
 							respond("There's no episode with this season & episode number");
 						$only = $_match[1] === 'requests' ? ONLY_REQUESTS : ONLY_RESERVATIONS;
 						respond(array(
-							'render' => call_user_func("{$_match[1]}_render",get_posts($season, $episode, $only)),
+							'render' => call_user_func("{$_match[1]}_render",get_posts($Episode['season'], $Episode['episode'], $only)),
 						));
 					}
 					else if (preg_match('/^vote\/'.EPISODE_ID_PATTERN.'$/', $data, $_match)){
-						list($season,$episode) = array_map('intval',array_splice($_match,1,2));
-
-						$Episode = get_real_episode($season,$episode);
+						$Episode = get_real_episode($_match[1],$_match[2]);
 						if (empty($Episode))
 							respond("There's no episode with this season & episode number");
 
@@ -320,8 +316,8 @@
 							respond('Vote value missing from request');
 
 						if (!$Database->insert('episodes__votes',array(
-							'season' => $season,
-							'episode' => $episode,
+							'season' => $Episode['season'],
+							'episode' => $$Episode['episode'],
 							'user' => $currentUser['id'],
 							'vote' => intval($_POST['vote']) > 0 ? 1 : -1
 						))) respond(ERR_DB_FAIL);
@@ -329,19 +325,69 @@
 					}
 					else if (preg_match('/^export\/'.EPISODE_ID_PATTERN.'$/', $data, $_match)){
 						if (!PERM('episodes.manage')) respond();
-						list($season,$episode) = array_map('intval',array_splice($_match,1,2));
-
-						$Episode = get_real_episode($season,$episode);
+						$Episode = get_real_episode($_match[1],$_match[2]);
 						if (empty($Episode))
 							respond("There's no episode with this season & episode number");
 
 						list($req, $res) = get_posts($Episode['season'], $Episode['episode']);
 						respond(array('export' => export_posts($req, $res)));
 					}
+					else if (preg_match('/^([sg])etvideos\/'.EPISODE_ID_PATTERN.'$/', $data, $_match)){
+						$Episode = get_real_episode($_match[2],$_match[3]);
+						if (empty($Episode))
+							respond("There's no episode with this season & episode number");
+
+						$set = $_match[1] === 's';
+						require_once "includes/Video.php";
+
+						if (!$set){
+							$return = array();
+							$Vids = $Database->whereEp($Episode)->get('episodes__videos',null,'provider as name, id');
+							foreach ($Vids as $i => $prov){
+								if (!empty($prov['id'])) $return[$prov['name']] = Video::get_embed($prov['id'], $prov['name'], Video::URL_ONLY);
+							}
+							respond($return);
+						}
+
+						foreach (array('yt','dm') as $k){
+							$set = null;
+							if (!empty($_POST[$k])){
+								try {
+									$vid = new Video($_POST[$k]);
+								} catch(Exception $e){};
+								if (!isset($vid->provider) || $vid->provider['name'] !== $k)
+									respond("Incorrect {$VIDEO_PROVIDER_NAMES[$k]} URL specified");
+								$set = $vid->id;
+							}
+
+							$video = $Database->whereEp($Episode)->where('provider', $k)->getOne('episodes__videos','COUNT(*) as count');
+							if ($video['count'] === 0){
+								if (!empty($set)) $Database->insert('episodes__videos',array(
+									'season' => $Episode['season'],
+									'episode' => $Episode['episode'],
+									'provider' => $k,
+									'id' => $set,
+								));
+							}
+							else {
+								$Database->whereEp($Episode)->where('provider', $k);
+								if (empty($set))
+									$Database->delete('episodes__videos');
+								else $Database->update('episodes__videos', array('id' => $set));
+							}
+						}
+
+						respond('Links updated',1,array(
+							'epsection' => render_ep_video($Episode)
+						));
+					}
 					else {
 						if (!PERM('episodes.manage')) respond();
 						$editing = preg_match('/^edit\/'.EPISODE_ID_PATTERN.'$/',$data,$_match);
-						if ($editing) $insert = array();
+						if ($editing){
+							list($season, $episode) = array_map('intval', array_splice($_match, 1, 2));
+							$insert = array();
+						}
 						else if ($data === 'add') $insert = array(
 							'posted' => date('c'),
 							'posted_by' => $currentUser['id'],
@@ -383,7 +429,7 @@
 						$insert['airs'] = date('c',strtotime('this minute', $airs));
 
 						if ($editing){
-							if (!$Database->whereEp($insert['season'],$insert['episode'])->update('episodes', $insert))
+							if (!$Database->whereEp($season,$episode)->update('episodes', $insert))
 								respond('No changes were made', 1);
 						}
 						else if (!$Database->insert('episodes', $insert))

@@ -210,29 +210,29 @@ HTML;
 	 */
 	$TIME_DATA = array(
 		'year' => 31557600,
-	    'month' => 2592000,
-	    'day' => 86400,
-	    'hour' => 3600,
-	    'minute' => 60,
-	    'second' => 1,
+		'month' => 2592000,
+		'day' => 86400,
+		'hour' => 3600,
+		'minute' => 60,
+		'second' => 1,
 	);
 	function time_ago($timestamp){
 		global $TIME_DATA;
 
-	    $delta = time() - $timestamp;
-	    $past = $delta > 0;
-	    if (!$past) $delta *= -1;
+		$delta = time() - $timestamp;
+		$past = $delta > 0;
+		if (!$past) $delta *= -1;
 
-	    foreach ($TIME_DATA as $n => $v){
-	        if ($delta >= $v){
-	            $left = floor($delta / $v);
-	            $delta -= ($left * $v);
-	            if (!$past && $n !== 'second')
-	                $left++;
-	            $str = "{$left} ".($left!=1?"{$n}s":$n);
-	            break;
-	        }
-	    }
+		foreach ($TIME_DATA as $n => $v){
+			if ($delta >= $v){
+				$left = floor($delta / $v);
+				$delta -= ($left * $v);
+				if (!$past && $n !== 'second')
+					$left++;
+				$str = "{$left} ".($left!=1?"{$n}s":$n);
+				break;
+			}
+		}
 
 		if (!isset($str)) return 'just now';
 
@@ -540,7 +540,7 @@ HTML;
 		$response = curl_exec($r);
 		curl_close($r);
 
-        return json_decode($response, true);
+		return json_decode($response, true);
 	}
 
 	/**
@@ -769,7 +769,7 @@ HTML;
 	 * @param string $id
 	 * @return null|array
 	 */
-	define('EPISODE_ID_PATTERN','S(\d{1,2})E(\d{1,2})(-\d{1,2})?');
+	define('EPISODE_ID_PATTERN','S0?([1-8])E(0?[1-9]|1\d|2[0-6])(-(?:0[1-9]|1\d|2[0-6]))?(?:\D|$)');
 	function episode_id_parse($id){
 		$match = array();
 		if (preg_match('/^'.EPISODE_ID_PATTERN.'/', $id, $match))
@@ -1351,7 +1351,7 @@ HTML;
 	 * @return string
 	 */
 	 function s($w){
-	    return "$w'".(substr($w, -1) !== 's'?'s':'');
+		return "$w'".(substr($w, -1) !== 's'?'s':'');
 	 }
 
 	/**
@@ -1600,4 +1600,34 @@ HTML;
 
 		if (isset($reservations['count']) && $reservations['count'] >= 4)
 			respond("You've already reserved {$reservations['count']} images in total, please finish or cancel some of them before making another reservation.<br>You may not have more than 4 unfinished reservations at a time.");
+	}
+
+	// Render episode video player \\
+	$VIDEO_PROVIDER_NAMES = array(
+		'yt' => 'YouTube',
+		'dm' => 'Dailymotion',
+	);
+	function render_ep_video($CurrentEpisode){
+		global $VIDEO_PROVIDER_NAMES, $Database;
+
+		$HTML = '';
+
+		$Videos = $Database
+			->orderBy('provider', 'ASC')
+			->whereEp($CurrentEpisode['season'],$CurrentEpisode['episode'])
+			->get('episodes__videos');
+		if (!empty($Videos)){
+			require_once "includes/Video.php";
+			$FirstVid = $Videos[0];
+			$embed = Video::get_embed($FirstVid['id'], $FirstVid['provider']);
+			$HTML .= "<section class=episode><h2>Watch the Episode</h2>";
+			if (!empty($Videos[1])){
+				$SecondVid = $Videos[1];
+				$url = Video::get_embed($SecondVid['id'], $SecondVid['provider'], Video::URL_ONLY);
+				$HTML .= "<p class=align-center style=margin-bottom:5px>If the video below goes down, <a href='$url' target=_blank>click here to watch it on {$VIDEO_PROVIDER_NAMES[$SecondVid['provider']]} instead</a>.</p>";
+			}
+			$HTML .= "<div class=responsive-embed>$embed</div></section>";
+		}
+
+		return $HTML;
 	}

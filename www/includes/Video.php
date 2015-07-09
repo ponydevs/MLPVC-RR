@@ -6,8 +6,8 @@
 		public function __construct($url){
 			$this->url = trim($url);
 			$this->provider = $this->get_provider($this->url);
-			$this->$id = $provider['itemid'];
-			$this->get_embed($provider['itemid']);
+			$this->id = $this->provider['itemid'];
+			$this->get_embed($this->provider['itemid'], $this->provider['name']);
 		}
 		private static $providerRegexes = array(
 			'youtu(?:\.be/|be.com/watch.*[&?]v=)([^&?=]+)(?:&|$)' => 'yt',
@@ -33,7 +33,8 @@
 		public static function get_embed($id, $prov = null, $urlOnly = false){
 			$urlOnly = $urlOnly === self::URL_ONLY;
 			if (!isset($prov))
-				$prov = self::$provider;
+				$prov = self::$provider['name'];
+
 			switch ($prov){
 				case 'yt':
 					$path = $urlOnly ? 'watch?v=' : 'embed/';

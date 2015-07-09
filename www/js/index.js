@@ -3,19 +3,54 @@ $(function(){
 		$body = $(document.body),
 		$navbar = $('header nav'),
 		SEASON = window.SEASON,
-		EPISODE = window.EPISODE;
+		EPISODE = window.EPISODE,
+		idstr = 'S'+SEASON+'E'+EPISODE;
 
 	$('#export').on('click',function(){
-		$.post('/episode/export/S'+SEASON+'E'+EPISODE,{},function(data){
+		var title = 'Exporting posts';
+
+		$.post('/episode/export/'+idstr,{},function(data){
 			if (typeof data !== 'object') return console.log(data) && $w.trigger('ajaxerror');
 
-			if (data.status) $.Dialog.info('Exporting posts','<p>Here\'s the code you need to paste into the journal while in<br><em>HTML editing mode</em>, replacing what was there previously.</p><textarea style="display:block;margin:0 auto;resize:none;width:90%"></textarea>',function(){
+			if (data.status) $.Dialog.info(title,'<p>Here\'s the code you need to paste into the journal while in<br><em>HTML editing mode</em>, replacing what was there previously.</p><textarea style="display:block;margin:0 auto;resize:none;width:90%"></textarea>',function(){
 				$('#dialogContent').find('textarea')
 					.val(data.export)
 					.focus(function(){ $(this).select() }).focus()
 					.mouseup(function(){ return false });
 			});
-			else $.Dialog.fail('Display voting buttons',data.message);
+			else $.Dialog.fail(title,data.message);
+		});
+	});
+
+	$('#video').on('click',function(){
+		$.post('/episode/getvideos/'+idstr,{},function(data){
+			if (typeof data !== 'object') return console.log(data) && $w.trigger('ajaxerror');
+
+			var title = 'Video links';
+			$.Dialog.request(title,'<form id=vidlinks><input type="text" name="yt" placeholder="YouTube"><input type="text" name="dm" placeholder="Dialymotion"></form>','vidlinks','Save',function(){
+				var $form = $('#vidlinks'),
+					$yt = $form.find('[name=yt]'),
+					$dm = $form.find('[name=dm]');
+				if (data.yt) $yt.val(data.yt);
+				if (data.dm) $dm.val(data.dm);
+				$form.on('submit',function(e){
+					e.preventDefault();
+
+					$.Dialog.wait(title, 'Saving links');
+					
+					$.post('/episode/setvideos/'+idstr,{yt: $yt.val(), dm: $dm.val()},function(data){
+						if (typeof data !== 'object') return console.log(data) && $w.trigger('ajaxerror');
+
+						if (data.status){
+							var $epSection = $('#content').children('section.episode');
+							if (data.epsection)
+								$epSection.html($(data.epsection).filter('section').html());
+							$.Dialog.close();
+						}
+						else $.Dialog.fail(title, data.message);
+					})
+				});
+			});
 		});
 	});
 
@@ -26,7 +61,7 @@ $(function(){
 		var $this = $(this),
 			$both = $this.siblings('button').addBack(),
 			value = $this.hasClass('green') ? 1 : -1,
-			epid = 'S'+SEASON+'E'+EPISODE,
+			epid = ''+idstr,
 			title = (value > 0?'Up':'Down')+'voting '+epid;
 
 		$both.attr('disabled', true);
@@ -51,7 +86,7 @@ $(function(){
 		if (diff.past !== true) return;
 
 		if (!$voteButton.length){
-			$.post('/episode/vote/S'+SEASON+'E'+EPISODE+'?html',{},function(data){
+			$.post('/episode/vote/'+idstr+'?html',{},function(data){
 				if (typeof data !== 'object') return console.log(data) && $w.trigger('ajaxerror');
 
 				if (data.status){
@@ -75,10 +110,10 @@ $(function(){
 			$('section .unfinished .screencap > a')
 				.fluidbox({ immediateOpen: true })
 				.on('openstart',function(){
-				    $body.addClass('no-distractions');
+					$body.addClass('no-distractions');
 				})
 				.on('closestart', function() {
-				    $body.removeClass('no-distractions');
+					$body.removeClass('no-distractions');
 				});
 
 			Bind($li, id, type);
@@ -268,7 +303,7 @@ $(function(){
 						if (typeof deviation !== 'string' || deviation.length === 0)
 							throw new Error('Please enter a deviation URL');
 
-						$.post('/reserving/reservation?add=S'+SEASON+'E'+EPISODE,{deviation:deviation},function(data){
+						$.post('/reserving/reservation?add='+idstr,{deviation:deviation},function(data){
 							if (typeof data !== 'object') return console.log(data) && $w.trigger('ajaxerror');
 
 							if (data.status){
@@ -391,8 +426,8 @@ $(function(){
 			$formImgCheck.attr('disabled', false).addClass('red');
 			$notice.html(noticeHTML).show();
 			$previewIMG.hide();
-		    $formImgInput.removeData('prev-url');
-		    $(this).hide();
+			$formImgInput.removeData('prev-url');
+			$(this).hide();
 		});
 	}
 	function updateSection(type, SEASON, EPISODE){

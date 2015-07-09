@@ -13,29 +13,7 @@
 <?php if (PERM('episodes.manage')){ ?>
 	<p class=align-center><em>Episode added by <?=profile_link(get_user($CurrentEpisode['posted_by'])).' '.timetag($CurrentEpisode['posted'])?></em></p>
 <?php } ?>
-<?php
-	$_VIDEO_PROVIDER_NAMES = array(
-		'yt' => 'YouTube',
-		'dm' => 'Dailymotion',
-	);
-	$Videos = $Database
-		->orderBy('provider', 'ASC')
-		->whereEp($CurrentEpisode['season'],$CurrentEpisode['episode'])
-		->get('episodes__videos');
-	if (!empty($Videos)){
-		require_once "includes/Video.php";
-		$FirstVid = $Videos[0];
-		$embed = Video::get_embed($FirstVid['id'], $FirstVid['provider']); ?>
-	<section>
-		<h2>Watch the Episode</h2>
-<?php	if (!empty($Videos[1])){
-			$SecondVid = $Videos[1];
-			$url = Video::get_embed($SecondVid['id'], $SecondVid['provider'], Video::URL_ONLY);
-			echo "<p class=align-center style=margin-bottom:5px>If the video below goes down, <a href='$url' target=_blank>click here to watch it on {$_VIDEO_PROVIDER_NAMES[$SecondVid['provider']]} instead</a>.</p>";
-		}
-		echo "<div class=responsive-embed>$embed</div>"; ?>
-	</section>
-<?  } ?>
+<?php echo render_ep_video($CurrentEpisode); ?>
 	<section class=about-res>
 		<h2>What Vector Reservations Are</h2>
 		<p>People usually get excited whenever a new episode comes out, and start making vectors of any pose/object/etc. that they found hilarious/interesting enough. It often results in various people unnecessarily doing the very same thing. Vector Reservations can help organize our efforts by listing who's working on what and to reduce the number of duplicates.</p>
@@ -55,7 +33,7 @@
 		<h2>Administration area</h2>
 		<p class=align-center>
 			<button id=export class="typcn typcn-export large darkblue">Export posts in journal format</button>
-			<button id=video class="typcn typcn-video large darkblue" disabled>Set video links</button>
+			<button id=video class="typcn typcn-video large darkblue">Set video links</button>
 		</p>
 	</section>
 <?php   }
