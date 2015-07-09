@@ -31,7 +31,7 @@
 <?php	if (!empty($Videos[1])){
 			$SecondVid = $Videos[1];
 			$url = Video::get_embed($SecondVid['id'], $SecondVid['provider'], Video::URL_ONLY);
-			echo "<p class=align-center style=margin-bottom:5px>If the video below goes down, click here to watch it on <a href='$url' target=_blank>{$_VIDEO_PROVIDER_NAMES[$SecondVid['provider']]}</a> instead.</p>";
+			echo "<p class=align-center style=margin-bottom:5px>If the video below goes down, <a href='$url' target=_blank>click here to watch it on {$_VIDEO_PROVIDER_NAMES[$SecondVid['provider']]} instead</a>.</p>";
 		}
 		echo "<div class=responsive-embed>$embed</div>"; ?>
 	</section>
