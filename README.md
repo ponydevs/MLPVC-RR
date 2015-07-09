@@ -52,7 +52,9 @@ Below, you can find a step-by-step guide, which tells you how to set up your mac
         - You'll also need to get the Certificate Authority bundle file (`ca-bundle.crt`) from [this](https://github.com/bagder/ca-bundle/) repository, place it somewhere in your system, and note it's file path. Then, in `php.ini`, set `curl.cainfo` to the absolute file path of said bundle file.
         - Restart Apache
 5. Type your domain (or `localhost`) into the address bar of your favourite browser and the home page should appear
-6. You'll also need to set up a JavaScript minifier & CSS preprocessing. The way you decide to do this is entirely up to you, but I'll provide the settings for my setup in the next section
+6. You'll also need to set up a JavaScript minifier & CSS preprocessing. The way you decide to do this is entirely up to you, but I'll provide the settings for my setup in the next section.
+ - Setting this up is optional, since I'll re-minfy contributed source code myself, if there will be any. This is mostly needed so that you can test locally.
+ - If you do not wish to set this up, just delete any minified code and the unminified version will load automatically for both CSS and JS. Just make sure that you do not commit the deletion of minified files with your pull request.
 
 ### An example CSS preprocessing & JS minification setup 
 
