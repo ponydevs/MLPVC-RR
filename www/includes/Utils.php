@@ -1590,3 +1590,14 @@ HTML;
 		}
 		return rtrim($Export);
 	}
+
+	// Rate limit check for reservations \\
+	function res_limit_check(){
+		$reservations = $Database->rawQuerySingle(
+			"SELECT COUNT(*) as count FROM reservations res LEFT JOIN requests req ON req.reserved_by = res.reserved_by WHERE (res.reserved_by = ? && res.deviation_id IS NULL) || (req.reserved_by = ? && req.deviation_id IS NULL)",
+			array($currentUser['id'])
+		);
+
+		if (isset($reservations['count']) && $reservations['count'] >= 4)
+			respond("You've already reserved {$reservations['count']} images in total, please finish or cancel some of them before making another reservation.<br>You may not have more than 4 unfinished reservations at a time.");
+	}

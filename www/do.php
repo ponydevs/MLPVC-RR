@@ -67,8 +67,11 @@
 				if (!empty($_POST['what'])){
 					if(!in_array($_POST['what'],$POST_TYPES)) respond('Invalid post type');
 					$what = $_POST['what'];
-					if ($what === 'reservation' && !PERM('reservations.create'))
-						respond();
+					if ($what === 'reservation'){
+						if (!PERM('reservations.create'))
+							respond();
+						res_limit_check();
+					}
 				}
 
 				if (!empty($_POST['image_url'])){
@@ -97,16 +100,6 @@
 				if (empty($epdata)) respond('This episode does not exist');
 				$insert['season'] = $epdata['season'];
 				$insert['episode'] = $epdata['episode'];
-
-				if ($what === 'reservation'){
-					$reservations = $Database->rawQuerySingle(
-						"SELECT COUNT(*) as count FROM reservations WHERE reserved_by = ? && season = ? && episode = ? && deviation_id IS NULL",
-						array($currentUser['id'], $insert['season'], $insert['episode'])
-					);
-
-					if (isset($reservations['count']) && $reservations['count'] >= 4)
-						respond("You've already reserved 4 images, please finish at least<br>one of them before making another reservation.");
-				}
 
 				switch ($what){
 					case "request": $insert['requested_by'] = $currentUser['id']; break;
@@ -161,6 +154,7 @@
 							if ($usersMatch)
 								respond("You already reserved this $type");
 							else respond("This $type has already been reserved by somepony else");
+							res_limit_check();
 						}
 						if ($canceling)
 							$unfinishing = true;
@@ -257,7 +251,7 @@
 
 					$EpData = episode_id_parse($data);
 					if (!empty($EpData)){
-						$Ep = get_real_episode($EpData['season'],$EpData['episode'],'season, episode, twoparter, title, airs');
+						$Ep = get_real_episode($EpData['season'],$EpData['episode']);
 						$airs =  strtotime($Ep['airs']);
 						unset($Ep['airs']);
 						$Ep['airdate'] = gmdate('Y-m-d', $airs);
