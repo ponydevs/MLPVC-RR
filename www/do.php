@@ -341,17 +341,14 @@
 					else {
 						if (!PERM('episodes.manage')) respond();
 						$editing = preg_match('/^edit\/'.EPISODE_ID_PATTERN.'$/',$data,$_match);
-						if ($editing){
-							list($season,$episode) = array_map('intval',array_splice($_match,1,2));
-							$insert = array();
-						}
+						if ($editing) $insert = array();
 						else if ($data === 'add') $insert = array(
 							'posted' => date('c'),
 							'posted_by' => $currentUser['id'],
 						);
 						else statusCodeHeader(404, AND_DIE);
 
-						if (!isset($_POST['season']) || !is_numeric($_POST['season']) )
+						if (!isset($_POST['season']) || !is_numeric($_POST['season']))
 							respond('Season number is missing or invalid');
 						$insert['season'] = intval($_POST['season']);
 						if ($insert['season'] < 1 || $insert['season'] > 8) respond('Season number must be between 1 and 8');
@@ -362,7 +359,7 @@
 						if ($insert['episode'] < 1 || $insert['episode'] > 26) respond('Season number must be between 1 and 26');
 
 						if ($editing){
-							$Current = get_real_episode($season,$episode);
+							$Current = get_real_episode($insert['season'],$insert['episode']);
 							if (empty($Current)) respond("This episode doesn't exist");
 						}
 						$Target = get_real_episode($insert['season'],$insert['episode']);
@@ -386,7 +383,7 @@
 						$insert['airs'] = date('c',strtotime('this minute', $airs));
 
 						if ($editing){
-							if (!$Database->whereEp($season,$episode)->update('episodes', $insert))
+							if (!$Database->whereEp($insert['season'],$insert['episode'])->update('episodes', $insert))
 								respond('No changes were made', 1);
 						}
 						else if (!$Database->insert('episodes', $insert))
