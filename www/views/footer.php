@@ -1,7 +1,7 @@
 
 	</div>
 
-	<footer><strong>MLPVC-RR v1.0 build <?=LATEST_COMMIT_ID?></strong> (last updated <?=timetag(LATEST_COMMIT_TIME)?>) | <a href="<?=GITHUB_URL?>">View on GitHub</a> | <a href="<?=GITHUB_URL?>/issues">Issue tracker</a></footer>
+	<footer><strong>MLPVC-RR build <a href="<?=GITHUB_URL?>"><?=LATEST_COMMIT_ID?></a></strong> (last updated <?=timetag(LATEST_COMMIT_TIME)?>) | <a href="<?=GITHUB_URL?>/issues">Report an issue</a></footer>
 
 <?php 	if (isset($customJS)) foreach ($customJS as $js){ ?>
 <script src="/js/<?=$js?>.js?<?=filemtime(APPATH."/js/$js.js")?>"></script>
