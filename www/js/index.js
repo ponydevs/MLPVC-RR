@@ -27,7 +27,7 @@ $(function(){
 			if (typeof data !== 'object') return console.log(data) && $w.trigger('ajaxerror');
 
 			var title = 'Video links';
-			$.Dialog.request(title,'<form id=vidlinks><input type="text" name="yt" placeholder="YouTube"><input type="text" name="dm" placeholder="Dialymotion"></form>','vidlinks','Save',function(){
+			$.Dialog.request(title,'<form id=vidlinks><input type="text" name="yt" placeholder="YouTube"><input type="text" name="dm" placeholder="Dailymotion"></form>','vidlinks','Save',function(){
 				var $form = $('#vidlinks'),
 					$yt = $form.find('[name=yt]'),
 					$dm = $form.find('[name=dm]');
