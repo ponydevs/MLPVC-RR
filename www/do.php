@@ -317,7 +317,7 @@
 
 						if (!$Database->insert('episodes__votes',array(
 							'season' => $Episode['season'],
-							'episode' => $$Episode['episode'],
+							'episode' => $Episode['episode'],
 							'user' => $currentUser['id'],
 							'vote' => intval($_POST['vote']) > 0 ? 1 : -1
 						))) respond(ERR_DB_FAIL);
