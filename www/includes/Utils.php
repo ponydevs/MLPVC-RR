@@ -1593,6 +1593,8 @@ HTML;
 
 	// Rate limit check for reservations \\
 	function res_limit_check(){
+		global $Database;
+
 		$reservations = $Database->rawQuerySingle(
 			"SELECT COUNT(*) as count FROM reservations res LEFT JOIN requests req ON req.reserved_by = res.reserved_by WHERE (res.reserved_by = ? && res.deviation_id IS NULL) || (req.reserved_by = ? && req.deviation_id IS NULL)",
 			array($currentUser['id'])
