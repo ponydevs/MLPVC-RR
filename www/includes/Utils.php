@@ -1591,7 +1591,26 @@ HTML;
 		return rtrim($Export);
 	}
 
-	// Rate limit check for reservations \\
+	/**
+	 * Rate limit check for reservations
+	 * ---------------------------------
+	 * SQL Query to check status of every user (for debugging)
+SELECT
+@id := u.id,
+u.name,
+(
+    (SELECT
+     COUNT(*) as `count`
+     FROM reservations res
+     WHERE res.reserved_by = @id && res.deviation_id IS NULL)
+    +(SELECT
+      COUNT(*) as `count`
+      FROM requests req
+      WHERE req.reserved_by = @id && req.deviation_id IS NULL)
+) as `count`
+FROM `users` u
+ORDER BY `count` DESC
+	 */
 	function res_limit_check(){
 		global $Database, $currentUser;
 
