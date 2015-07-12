@@ -1,6 +1,35 @@
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
 
+CREATE TABLE IF NOT EXISTS `colorguides__colorgroups` (
+  `groupid` int(11) NOT NULL,
+  `ponyid` int(11) NOT NULL,
+  `label` tinytext NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS `colorguides__colors` (
+  `colorid` int(11) NOT NULL,
+  `groupid` int(11) NOT NULL,
+  `label` tinytext NOT NULL,
+  `hex` varchar(7) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS `colorguides__groups` (
+  `ggid` int(11) NOT NULL,
+  `label` tinytext NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS `colorguides__group_pony_binds` (
+  `ggid` int(11) NOT NULL,
+  `ponyid` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS `colorguides__ponies` (
+  `id` int(11) NOT NULL,
+  `label` tinytext NOT NULL,
+  `deviation` varchar(20) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 CREATE TABLE IF NOT EXISTS `deviation_cache` (
   `provider` set('fav.me','sta.sh') NOT NULL DEFAULT 'fav.me',
   `id` varchar(255) NOT NULL,
@@ -172,6 +201,24 @@ CREATE TABLE IF NOT EXISTS `users` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
+ALTER TABLE `colorguides__colorgroups`
+  ADD PRIMARY KEY (`groupid`),
+  ADD KEY `ponyid` (`ponyid`);
+
+ALTER TABLE `colorguides__colors`
+  ADD PRIMARY KEY (`colorid`),
+  ADD KEY `groupid` (`groupid`);
+
+ALTER TABLE `colorguides__groups`
+  ADD PRIMARY KEY (`ggid`);
+
+ALTER TABLE `colorguides__group_pony_binds`
+  ADD PRIMARY KEY (`ggid`,`ponyid`),
+  ADD KEY `ponyid` (`ponyid`);
+
+ALTER TABLE `colorguides__ponies`
+  ADD PRIMARY KEY (`id`);
+
 ALTER TABLE `deviation_cache`
   ADD PRIMARY KEY (`id`);
 
@@ -247,6 +294,14 @@ ALTER TABLE `users`
   ADD KEY `role` (`role`);
 
 
+ALTER TABLE `colorguides__colorgroups`
+  MODIFY `groupid` int(11) NOT NULL AUTO_INCREMENT;
+ALTER TABLE `colorguides__colors`
+  MODIFY `colorid` int(11) NOT NULL AUTO_INCREMENT;
+ALTER TABLE `colorguides__groups`
+  MODIFY `ggid` int(11) NOT NULL AUTO_INCREMENT;
+ALTER TABLE `colorguides__ponies`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `log`
   MODIFY `entryid` int(11) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `log__banish`
@@ -269,6 +324,16 @@ ALTER TABLE `sessions`
   MODIFY `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT;
 ALTER TABLE `usefullinks`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `colorguides__colorgroups`
+  ADD CONSTRAINT `colorguides__colorgroups_ibfk_1` FOREIGN KEY (`ponyid`) REFERENCES `colorguides__ponies` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+ALTER TABLE `colorguides__colors`
+  ADD CONSTRAINT `colorguides__colors_ibfk_1` FOREIGN KEY (`groupid`) REFERENCES `colorguides__colorgroups` (`groupid`);
+
+ALTER TABLE `colorguides__group_pony_binds`
+  ADD CONSTRAINT `colorguides__group_pony_binds_ibfk_1` FOREIGN KEY (`ggid`) REFERENCES `colorguides__groups` (`ggid`),
+  ADD CONSTRAINT `colorguides__group_pony_binds_ibfk_2` FOREIGN KEY (`ponyid`) REFERENCES `colorguides__ponies` (`id`);
 
 ALTER TABLE `episodes`
   ADD CONSTRAINT `episodes_ibfk_1` FOREIGN KEY (`posted_by`) REFERENCES `users` (`id`) ON DELETE SET NULL ON UPDATE CASCADE;

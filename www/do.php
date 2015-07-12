@@ -677,6 +677,24 @@
 				if ($canEdit) $settings['js'][] = 'user-manage';
 				loadPage($settings);
 			break;
+			case "colorguides":
+				// SQL Query to get everything in one request
+				$SQL =
+					"SELECT
+						cgp.label as Pony,
+						cgcg.label as `Group`,
+						cgc.label as Color,
+						cgc.hex as HEX
+					FROM `colorguides__ponies` cgp
+					LEFT JOIN colorguides__colorgroups cgcg ON cgcg.ponyid = cgp.id
+					LEFT JOIN colorguides__colors cgc ON cgc.groupid = cgcg.groupid
+					ORDER BY cgp.label ASC";
+				$ColorGuides =
+				loadPage(array(
+					'title' => 'Color Guides',
+					'do-css',
+				));
+			break;
 			case "404":
 			default:
 				do404();
