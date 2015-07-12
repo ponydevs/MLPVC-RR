@@ -83,7 +83,7 @@
 
 					foreach ($POST_TYPES as $type){
 						if ($Database->where('preview', $Image->preview)->has("{$type}s"))
-							respond('This exact image has already been '.rtrim(substr($type,0,7),'a').'ed');
+							respond("This exact image has already been used for a $type");
 					}
 
 					if (empty($what)) respond(array('preview' => $Image->preview, 'title' => $Image->title));
