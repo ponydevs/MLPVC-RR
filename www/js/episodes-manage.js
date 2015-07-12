@@ -75,7 +75,7 @@ $(function(){
 				<p>If this is checked, only specify<br>the episode number of the first part</p>\
 			</div>');
 
-			$(document.createElement('button')).text('Set time to '+time+' this Sunday').addClass('setsunday').on('click',function(e){
+			$(document.createElement('button')).text('Set time to '+time+' this Saturday').on('click',function(e){
 				e.preventDefault();
 				$(this).parent().prev().children().first().val(date).next().val(time);
 			}).appendTo($form.children('.button-here'));

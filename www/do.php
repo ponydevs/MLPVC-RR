@@ -154,7 +154,6 @@
 							if ($usersMatch)
 								respond("You already reserved this $type");
 							else respond("This $type has already been reserved by somepony else");
-							res_limit_check();
 						}
 						if ($canceling)
 							$unfinishing = true;
@@ -189,7 +188,10 @@
 						respond(array());
 					}
 					else if ($finishing) respond("This $type has not yet been reserved");
-					else if (!$canceling) $update['reserved_by'] = $currentUser['id'];
+					else if (!$canceling){
+						res_limit_check();
+						$update['reserved_by'] = $currentUser['id'];
+					}
 					
 					if ((!$canceling || $type !== 'reservation') && !$Database->where('id', $Thing['id'])->update("{$type}s",$update))
 						respond('Nothing has been changed');
