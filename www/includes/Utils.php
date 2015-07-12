@@ -1596,8 +1596,19 @@ HTML;
 		global $Database, $currentUser;
 
 		$reservations = $Database->rawQuerySingle(
-			"SELECT COUNT(*) as count FROM reservations res LEFT JOIN requests req ON req.reserved_by = res.reserved_by WHERE (res.reserved_by = ? && res.deviation_id IS NULL) || (req.reserved_by = ? && req.deviation_id IS NULL)",
-			array($currentUser['id'], $currentUser['id'])
+			"SELECT
+			(
+			    (SELECT
+			     COUNT(*) as `count`
+			     FROM reservations res
+			     WHERE res.reserved_by = u.id && res.deviation_id IS NULL)
+			    +(SELECT
+			      COUNT(*) as `count`
+			      FROM requests req
+			      WHERE req.reserved_by = u.id && req.deviation_id IS NULL)
+			) as `count`
+			FROM `users` u WHERE u.id = ?",
+			array($currentUser['id'])
 		);
 
 		if (isset($reservations['count']) && $reservations['count'] >= 4)
