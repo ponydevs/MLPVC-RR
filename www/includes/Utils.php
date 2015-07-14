@@ -932,7 +932,7 @@ HTML;
 
 		$finished = !!$R['finished'];
 		$Buttons = array();
-		if (!$finished && ($sameUser || PERM('inspector'))){
+		if (!$finished && (($sameUser && PERM('reservations.create')) || PERM('inspector'))){
 			$Buttons[] = array('user-delete red cancel', 'Cancel');
 			$Buttons[] = array('attachment green finish', ($sameUser ? "I'm" : 'Mark as').' finished');
 		}
@@ -952,22 +952,26 @@ HTML;
 
 	// List ltem generator function for request & reservation renderers \\
 	function get_r_li($R, $isRequest = false){
+		global $signedIn, $currentUser;
+
 		$finished = !!$R['finished'];
 		$thing = $isRequest ? 'request' : 'reservation';
 		$HTML = "<li id=$thing-{$R['id']}>";
 		$R['label'] = htmlspecialchars($R['label']);
 		$Image = "<div class='image screencap'><a href='{$R['fullsize']}'><img src='{$R['preview']}'></a></div>";
 		if (!empty($R['label'])) $Image .= "<span class=label>{$R['label']}</span>";
+		$sameUser = $signedIn && $R['requested_by'] === $currentUser['id'];
 
-		if ($isRequest && PERM('inspector'))
-			$Image .= "<em>Added by ".profile_link(get_user($R['requested_by'])).' '.timetag($R['posted'])."</em>";
+		if ($isRequest && (PERM('inspector') || $sameUser))
+			$Image .= '<em>'.($sameUser?'You':profile_link(get_user($R['requested_by']))).' requested this '.timetag($R['posted'])."</em>";
 
 		if (empty($R['reserved_by'])){
 			$HTML .= $Image;
-			if ($isRequest)
+			if ($isRequest){
 				$HTML .= get_reserver_button(false);
-			if ($isRequest && PERM('reservations.create'))
-				$HTML .= "<button class='typcn typcn-trash red delete'>Delete</button>";
+				if (PERM('inspector') || $sameUser)
+					$HTML .= "<button class='typcn typcn-trash red delete'>Delete</button>";
+			}
 		}
 		else {
 			$R['reserver'] = get_user($R['reserved_by']);
@@ -1591,10 +1595,42 @@ HTML;
 		return rtrim($Export);
 	}
 
-	// Rate limit check for reservations \\
+	/**
+	 * Rate limit check for reservations
+	 * ---------------------------------
+	 * SQL Query to check status of every user (for debugging)
+SELECT
+@id := u.id,
+u.name,
+(
+    (SELECT
+     COUNT(*) as `count`
+     FROM reservations res
+     WHERE res.reserved_by = @id && res.deviation_id IS NULL)
+    +(SELECT
+      COUNT(*) as `count`
+      FROM requests req
+      WHERE req.reserved_by = @id && req.deviation_id IS NULL)
+) as `count`
+FROM `users` u
+ORDER BY `count` DESC
+	 */
 	function res_limit_check(){
+		global $Database, $currentUser;
+
 		$reservations = $Database->rawQuerySingle(
-			"SELECT COUNT(*) as count FROM reservations res LEFT JOIN requests req ON req.reserved_by = res.reserved_by WHERE (res.reserved_by = ? && res.deviation_id IS NULL) || (req.reserved_by = ? && req.deviation_id IS NULL)",
+			"SELECT
+			(
+			    (SELECT
+			     COUNT(*) as `count`
+			     FROM reservations res
+			     WHERE res.reserved_by = u.id && res.deviation_id IS NULL)
+			    +(SELECT
+			      COUNT(*) as `count`
+			      FROM requests req
+			      WHERE req.reserved_by = u.id && req.deviation_id IS NULL)
+			) as `count`
+			FROM `users` u WHERE u.id = ?",
 			array($currentUser['id'])
 		);
 

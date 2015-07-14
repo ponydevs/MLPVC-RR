@@ -48,10 +48,12 @@
 				unset($Unbanishes);
 			}
 
+			$displayInitiator = PERM('inspector');
+
 			foreach ($Banishes as $b){
-				$initiator = get_user($b['initiator']);
+				$initiator = $displayInitiator ? get_user($b['initiator']) : null;
 				$b['reason'] = htmlspecialchars($b['reason']);
-				echo "<li class=".strtolower($b['Action'])."><blockquote>{$b['reason']}</blockquote> - ".profile_link($initiator).' '.timetag($b['timestamp'])."</li>";
+				echo "<li class=".strtolower($b['Action'])."><blockquote>{$b['reason']}</blockquote> - ".(isset($initiator)?profile_link($initiator).' ':'').timetag($b['timestamp'])."</li>";
 			}
 		}
 			?></ul>

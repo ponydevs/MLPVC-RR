@@ -83,7 +83,7 @@
 
 					foreach ($POST_TYPES as $type){
 						if ($Database->where('preview', $Image->preview)->has("{$type}s"))
-							respond('This exact image has already been '.rtrim(substr($type,0,7),'a').'ed');
+							respond("This exact image has already been used for a $type");
 					}
 
 					if (empty($what)) respond(array('preview' => $Image->preview, 'title' => $Image->title));
@@ -126,7 +126,6 @@
 				if (RQMTHD !== 'POST') do404();
 				$match = array();
 				if (empty($data) || !preg_match('/^(requests?|reservations?)(?:\/(\d+))?$/',$data,$match)) respond('Invalid request #1');
-				if (!PERM('reservations.create')) respond();
 
 				$noaction = true;
 				$canceling = $finishing = $unfinishing = $adding = $deleteing = false;
@@ -148,13 +147,27 @@
 					if (empty($Thing)) respond("There's no $type with that ID");
 
 					$update = array('reserved_by' => null);
-					if (!empty($Thing['reserved_by'])){
+					if (!PERM('reservations.create')){
+						if ($type === 'request' && $deleteing){
+							if (!PERM('inspector') && !$signedIn && $Thing['requested_by'] !== $currentUser['id'])
+								respond();
+
+							if (!PERM('inspector') && !empty($Thing['reserved_by']))
+								respond('You cannot delete a request that has been reserved');
+
+							if (!$Database->where('id', $Thing['id'])->delete('requests'))
+								respond(ERR_DB_FAIL);
+
+							respond(array());
+						}
+						else respond();
+					}
+					else if (!empty($Thing['reserved_by'])){
 						$usersMatch = $Thing['reserved_by'] === $currentUser['id'];
 						if ($noaction){
 							if ($usersMatch)
 								respond("You already reserved this $type");
 							else respond("This $type has already been reserved by somepony else");
-							res_limit_check();
 						}
 						if ($canceling)
 							$unfinishing = true;
@@ -182,14 +195,11 @@
 							$update = check_request_finish_image();
 						}
 					}
-					else if ($type === 'request' && $deleteing){
-						if (!$Database->where('id', $Thing['id'])->delete('requests'))
-							respond(ERR_DB_FAIL);
-
-						respond(array());
-					}
 					else if ($finishing) respond("This $type has not yet been reserved");
-					else if (!$canceling) $update['reserved_by'] = $currentUser['id'];
+					else if (!$canceling){
+						res_limit_check();
+						$update['reserved_by'] = $currentUser['id'];
+					}
 					
 					if ((!$canceling || $type !== 'reservation') && !$Database->where('id', $Thing['id'])->update("{$type}s",$update))
 						respond('Nothing has been changed');
@@ -317,7 +327,7 @@
 
 						if (!$Database->insert('episodes__votes',array(
 							'season' => $Episode['season'],
-							'episode' => $$Episode['episode'],
+							'episode' => $Episode['episode'],
 							'user' => $currentUser['id'],
 							'vote' => intval($_POST['vote']) > 0 ? 1 : -1
 						))) respond(ERR_DB_FAIL);

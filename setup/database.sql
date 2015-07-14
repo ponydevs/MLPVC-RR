@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS `colorguides__ponies` (
 
 CREATE TABLE IF NOT EXISTS `deviation_cache` (
   `provider` set('fav.me','sta.sh') NOT NULL DEFAULT 'fav.me',
-  `id` varchar(255) NOT NULL,
+  `id` varchar(20) NOT NULL,
   `title` tinytext NOT NULL,
   `preview` tinytext NOT NULL,
   `fullsize` tinytext NOT NULL,
