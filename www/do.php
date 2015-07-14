@@ -176,7 +176,7 @@
 
 							if (!$canceling && !isset($_REQUEST['unbind'])){
 								if ($type === 'reservation' && empty($Thing['preview']))
-									respond('This reservation was added directly and cannot be marked un-finished.<br>To remove it, check the unbind from user checkbox.');
+									respond('This reservation was added directly and cannot be marked un-finished. To remove it, check the unbind from user checkbox.');
 								unset($update['reserved_by']);
 							}
 
@@ -204,18 +204,20 @@
 					if ((!$canceling || $type !== 'reservation') && !$Database->where('id', $Thing['id'])->update("{$type}s",$update))
 						respond('Nothing has been changed');
 
+					foreach ($update as $k => $v)
+						$Thing[$k] = $v;
+
 					if (!$canceling && ($finishing || $unfinishing)){
 						$out = array();
 						if ($finishing && $type === 'request'){
 							$u = get_user($Thing['requested_by'],'id','name');
 							if (!empty($u) && $Thing['requested_by'] !== $currentUser['id'])
-								$out['message'] = "<p class=align-center>You may want to mention <strong>{$u['name']}</strong> in the deviation description<br>".
-									"to let them know that their request has been fulfilled.</p>";
+								$out['message'] = "<p class=align-center>You may want to mention <strong>{$u['name']}</strong> in the deviation description to let them know that their request has been fulfilled.</p>";
 						}
 						respond($out);
 					}
 					if ($type === 'request')
-						respond(array('btnhtml' => get_reserver_button(!$canceling)));
+						respond(array('btnhtml' => get_reserver_button(get_user($Thing['reserved_by']), $Thing, true)));
 					else if ($type === 'reservation' && $canceling)
 						respond(array('remove' => true));
 					else respond('Invalid request');

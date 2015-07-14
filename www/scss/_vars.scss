@@ -1,14 +1,14 @@
-/* Page colors */
+// Page colors
 $HeaderBlue: #1E3DB3;
 $NavFootBG: rgba(0,0,0,.75);
 $ContentOutline: rgba(170,170,170,.8);
 $ContentBG: rgba(255,255,255,.6);
 
-/* Links */
+// Links
 $Link: #337287;
 $LinkHover: desaturate(lighten($Link, 13), 7);
 
-/* Notices & buttons */
+// Notices & buttons
 $NBlue: #07f;
 $NBlueBG: #def;
 $NDarkBlue: #03d;
@@ -31,3 +31,6 @@ $NoFontChange: true;
 
 	&:hover { color: $hover }
 }
+
+// Mobile-to-Desktop breakpoint pixel value
+$Breakpoint: 650px;

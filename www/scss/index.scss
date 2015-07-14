@@ -1,7 +1,7 @@
 @import "vars";
 
 /* Mobile-only Styles */
-@media all and (max-width: 650px){
+@media all and (max-width: $Breakpoint){
 	#content > section {
 		h2 {
 			text-align: center;
@@ -45,7 +45,7 @@
 	}
 }
 /* Desktop-only Styles */
-@media all and (min-width: 650px){
+@media all and (min-width: $Breakpoint){
 	body.no-distractions {
 		overflow: hidden;
 		padding-right: 18px;

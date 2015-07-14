@@ -54,10 +54,10 @@ $(function(){
 			$ip = $ip.html().split('<br>');
 
 			$.Dialog.info($tr.children('.entryid').text()+'. bejegyzés rejtett adatai','\
-				<b>Időpont:</b> '+$td.children('time').html().trim().replace(/<br>/,' ')+'\
+				<b>Timestamp:</b> '+$td.children('time').html().trim().replace(/<br>/,' ')+'\
 				<span class="modal-ip"><br>\
-					<b>Kezdeményező:</b> '+$ip[0]+'<br>\
-					<b>IP Cím:</b> '+$(document.createElement('div')).html($ip[1]).text()+'\
+					<b>Initiator:</b> '+$ip[0]+'<br>\
+					<b>IP Address:</b> '+$(document.createElement('div')).html($ip[1]).text()+'\
 				</span>'
 			);
 		}

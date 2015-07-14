@@ -18,7 +18,7 @@
 }
 
 // Mobile-only Styles
-@media all and (max-width: 650px){
+@media all and (max-width: $Breakpoint){
 	body { overflow: initial }
 	#topbar h1 {
 		margin: 0;
@@ -58,7 +58,7 @@
 	.notice > label:first-child { text-align: center; font-size: 1.2em }
 }
 // Desktop-only Styles
-@media all and (min-width: 650px){
+@media all and (min-width: $Breakpoint){
 	body { overflow: auto }
 
 	header, footer {

@@ -53,11 +53,11 @@ $(function(){
 			title,
 			(
 				Action === 'Banish'
-				? '<p>'+Action+'ing '+name+' will immediately sign them out<br>of every session and won\'t allow them to log in again.<br>Please, only do this if it\'s absolutely necessary.</p>'
+				? '<p>'+Action+'ing '+name+' will immediately sign them out of every session and won\'t allow them to log in again. Please, only do this if it\'s absolutely necessary.</p>'
 				: '<p>'+Action+'ing '+name+' will allow them to sign in to the site again.</p>'
 			) +
 			'<form id='+action+'-form>' +
-			'   <p>Please provide a reason (5-255 chars.) for the '+action.replace(/ish$/,'')+' which will be<br>added to the log entry and appear in the user\'s ban history.</p>' +
+			'   <p>Please provide a reason (5-255 chars.) for the '+action.replace(/ish$/,'')+' which will be added to the log entry and appear in the user\'s ban history.</p>' +
 			'   <input type="text" name="reason" placeholder="Enter a reason" required pattern="^.{5,255}$">' +
 			'</form>'+
 			(Action === 'Banish' ? '<img src="/img/ban-before.png" alt="Sad twilight" height=200>':''),
