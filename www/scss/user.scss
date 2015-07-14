@@ -110,7 +110,7 @@
 		height: 200px;
 		margin: 10px auto 0;
 
-		@media all and (max-width: 650px), all and (max-height: 620px) {
+		@media all and (max-width: $Breakpoint), all and (max-height: 620px) {
 			display: none;
 		}
 	}

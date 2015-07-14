@@ -1,7 +1,7 @@
 @import url('http://fonts.googleapis.com/css?family=Open+Sans:400italic,700italic,400,700&subset=latin,latin-ext');
 
 // Mobile-only Styles
-@media all and (max-width: 650px){
+@media all and (max-width: $Breakpoint){
 	#dialogOverlay {
 		background-color: white;
 	}
@@ -13,7 +13,7 @@
 	}
 }
 // Desktop-only Styles
-@media all and (min-width: 650px){
+@media all and (min-width: $Breakpoint){
 	#dialogOverlay {
 		background-color: rgba(white, .8);
 	}

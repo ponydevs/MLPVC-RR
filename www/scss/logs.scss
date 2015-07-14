@@ -1,4 +1,6 @@
-@media all and (max-width: 650px) {
+@import "vars";
+
+@media all and (max-width: $Breakpoint) {
 	.expand-section {
 		display: block;
 		width: calc(100% - 10px);
