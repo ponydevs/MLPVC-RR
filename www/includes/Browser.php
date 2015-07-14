@@ -578,24 +578,16 @@ class Browser {
 	 */
 	protected function checkBrowserInternetExplorer(){
 		// Test for IE11
-		if (stripos($this->_agent, 'Trident/7.0; rv:11.0') !== false){
-			$this->setBrowser(self::BROWSER_IE);
-			$this->setVersion('11.0');
-
-			return true;
-		} // Test for IE Mobile
-		else if (strpos('IEMobile', $this->_agent) !== false){
-			$match = array();
-			preg_match('~IEMobile/([^\s;]+)~', $this->_agent, $match);
-			if (!empty($match)){
-				$version = $match[1];
+		if (stripos($this->_agent, 'Trident/7.0;') !== false && stripos($this->_agent, 'rv:11.0;')){
+			if (stripos($this->_agent, 'IEMobile') !== false){
 				$this->setPlatform(self::PLATFORM_WINPHONE);
 				$this->setBrowser(self::BROWSER_IEMOBILE);
 				$this->setMobile(true);
-				$this->setVersion($match[1]);
-
-				return true;
 			}
+			else $this->setBrowser(self::BROWSER_IE);
+			$this->setVersion('11.0');
+
+			return true;
 		} // Test for v1 - v1.5 IE
 		else if (stripos($this->_agent, 'microsoft internet explorer') !== false){
 			$this->setBrowser(self::BROWSER_IE);
