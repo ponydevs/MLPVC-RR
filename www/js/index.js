@@ -122,7 +122,7 @@ $(function(){
 	};
 	$('#requests, #reservations').rebindHandlers();
 	function Bind($li, id, type){
-		$li.find('button.reserve-request').off('click').on('click',function(){
+		$li.children('button.reserve-request').off('click').on('click',function(){
 			var $this = $(this),
 				title = 'Reserving request';
 
@@ -139,7 +139,8 @@ $(function(){
 				}
 				else $.Dialog.fail(title,data.message);
 			});
-		}).next('button.delete').on('click',function(){
+		});
+		$li.children('button.delete').on('click',function(){
 			var $this = $(this),
 				title = 'Deleteing request';
 

@@ -126,7 +126,6 @@
 				if (RQMTHD !== 'POST') do404();
 				$match = array();
 				if (empty($data) || !preg_match('/^(requests?|reservations?)(?:\/(\d+))?$/',$data,$match)) respond('Invalid request #1');
-				if (!PERM('reservations.create')) respond();
 
 				$noaction = true;
 				$canceling = $finishing = $unfinishing = $adding = $deleteing = false;
@@ -148,7 +147,22 @@
 					if (empty($Thing)) respond("There's no $type with that ID");
 
 					$update = array('reserved_by' => null);
-					if (!empty($Thing['reserved_by'])){
+					if (!PERM('reservations.create')){
+						if ($type === 'request' && $deleteing){
+							if (!PERM('inspector') && !$signedIn && $Thing['requested_by'] !== $currentUser['id'])
+								respond();
+
+							if (!PERM('inspector') && !empty($Thing['reserved_by']))
+								respond('You cannot delete a request that has been reserved');
+
+							if (!$Database->where('id', $Thing['id'])->delete('requests'))
+								respond(ERR_DB_FAIL);
+
+							respond(array());
+						}
+						else respond();
+					}
+					else if (!empty($Thing['reserved_by'])){
 						$usersMatch = $Thing['reserved_by'] === $currentUser['id'];
 						if ($noaction){
 							if ($usersMatch)
@@ -180,12 +194,6 @@
 								respond();
 							$update = check_request_finish_image();
 						}
-					}
-					else if ($type === 'request' && $deleteing){
-						if (!$Database->where('id', $Thing['id'])->delete('requests'))
-							respond(ERR_DB_FAIL);
-
-						respond(array());
 					}
 					else if ($finishing) respond("This $type has not yet been reserved");
 					else if (!$canceling){
