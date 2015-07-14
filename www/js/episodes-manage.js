@@ -68,11 +68,11 @@ $(function(){
 				'<input type="time" name=airtime placeholder="HH:MM" required>'+
 			'</div>\
 			<div class="notice info align-center button-here">\
-				<p>Specify when the episode will air,<br>in <strong>your computer\'s timezone</strong>.</p>\
+				<p>Specify when the episode will air, in <strong>your computer\'s timezone</strong>.</p>\
 			</div>\
 			<label><input type="checkbox" name=twoparter> Has two parts</label>\
 			<div class="notice info align-center">\
-				<p>If this is checked, only specify<br>the episode number of the first part</p>\
+				<p>If this is checked, only specify the episode number of the first part</p>\
 			</div>');
 
 			$(document.createElement('button')).text('Set time to '+time+' this Saturday').on('click',function(e){

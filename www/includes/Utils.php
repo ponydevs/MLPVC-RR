@@ -917,27 +917,30 @@ HTML;
 	}
 
 	// Reserved by section creator \\
-	function get_reserver_button($By = null, $R = false){
+	function get_reserver_button($By = null, $R = false, $isRequest = false){
 		global $signedIn, $currentUser;
 
-		if ($By === false) return PERM('reservations.create') ? "<button class='reserve-request typcn typcn-user-add'>Reserve</button>" : '';
-		if (empty($By) || $By === true){
-			if (!$signedIn) trigger_error('Trying to get reserver button while not signed in');
-			$By = $currentUser;
-		}
-		$dAlink = profile_link($By, FULL);
-
-		$HTML =  "<div class=reserver>$dAlink</div>";
 		$sameUser = $signedIn && $By['id'] === $currentUser['id'];
 
-		$finished = !!$R['finished'];
-		$Buttons = array();
-		if (!$finished && (($sameUser && PERM('reservations.create')) || PERM('inspector'))){
-			$Buttons[] = array('user-delete red cancel', 'Cancel');
-			$Buttons[] = array('attachment green finish', ($sameUser ? "I'm" : 'Mark as').' finished');
-		}
-		if ($finished && PERM('inspector')){
-			$Buttons[] = array((empty($R['preview'])?'trash delete-only red':'media-eject orange').' unfinish',empty($R['preview'])?'Delete':'Un-finish');
+		if (is_array($R) && empty($R['reserved_by'])) $HTML = PERM('reservations.create') ? "<button class='reserve-request typcn typcn-user-add'>Reserve</button>" : '';
+		else {
+			if (empty($By) || $By === true){
+				if (!$signedIn) trigger_error('Trying to get reserver button while not signed in');
+				$By = $currentUser;
+			}
+			$dAlink = profile_link($By, FULL);
+
+			$HTML =  "<div class=reserver>$dAlink</div>";
+
+			$finished = !empty($R['deviation_id']);
+			$Buttons = array();
+			if (!$finished && (($sameUser && PERM('reservations.create')) || PERM('inspector'))){
+				$Buttons[] = array('user-delete red cancel', 'Cancel');
+				$Buttons[] = array('attachment green finish', ($sameUser ? "I'm" : 'Mark as').' finished');
+			}
+			if ($finished && PERM('inspector')){
+				$Buttons[] = array((empty($R['preview'])?'trash delete-only red':'media-eject orange').' unfinish',empty($R['preview'])?'Delete':'Un-finish');
+			}
 		}
 
 		if (!empty($Buttons)){
@@ -945,6 +948,10 @@ HTML;
 			foreach ($Buttons as $b)
 				$HTML .= "<button class='typcn typcn-{$b[0]}'>{$b[1]}</button> ";
 			$HTML .= '</div>';
+		}
+		else if ($isRequest){
+			if (PERM('inspector') || $sameUser)
+				$HTML .= "<button class='typcn typcn-trash red delete'>Delete</button>";
 		}
 
 		return $HTML;
@@ -965,23 +972,17 @@ HTML;
 		if ($isRequest && (PERM('inspector') || $sameUser))
 			$Image .= '<em>'.($sameUser?'You':profile_link(get_user($R['requested_by']))).' requested this '.timetag($R['posted'])."</em>";
 
-		if (empty($R['reserved_by'])){
-			$HTML .= $Image;
-			if ($isRequest){
-				$HTML .= get_reserver_button(false);
-				if (PERM('inspector') || $sameUser)
-					$HTML .= "<button class='typcn typcn-trash red delete'>Delete</button>";
-			}
-		}
-		else {
+		$R['reserver'] = false;
+		if (!empty($R['reserved_by'])){
 			$R['reserver'] = get_user($R['reserved_by']);
 			if ($finished){
 				$D = da_cache_deviation($R['deviation_id']);
 				$D['title'] = preg_replace("/'/",'&apos;',$D['title']);
 				$Image = "<div class='image deviation'><a href='http://fav.me/{$D['id']}'><img src='{$D['preview']}' alt='{$D['title']}'></a></div>";
 			}
-			$HTML .= $Image.get_reserver_button($R['reserver'], $R);
 		}
+
+		$HTML .= $Image.get_reserver_button($R['reserver'], $R, $isRequest);
 
 		return "$HTML</li>";
 	}

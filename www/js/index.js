@@ -133,6 +133,7 @@ $(function(){
 
 				if (data.status){
 					$.Dialog.close();
+					$this.nextAll().remove();
 					$(data.btnhtml).insertAfter($this);
 					Bind($li, id, type);
 					$this.remove();
@@ -173,10 +174,9 @@ $(function(){
 
 					if (data.status){
 						$.Dialog.close();
-						if (data.remove === true) return $this.closest('li').remove();
-						$(data.btnhtml).insertBefore($this.parent().prev());
-						$this.parent().prev().remove();
-						$this.parent().remove();
+						if (data.remove === true) return $li.remove();
+						$this.parent().prev().nextAll().addBack().remove();
+						$(data.btnhtml).appendTo($li);
 
 						Bind($li, id, type);
 					}
@@ -231,7 +231,7 @@ $(function(){
 					$unbind = $form.find('[name=unbind]');
 
 				if (!deleteOnly)
-					$form.prepend('<div class="notice info">By removing the "finished" flag, the deviation will be moved back<br>to the "List of '+Type+'" section</div>');
+					$form.prepend('<div class="notice info">By removing the "finished" flag, the deviation will be moved back to the "List of '+Type+'" section</div>');
 
 				if (type === 'reservations'){
 					$unbind.on('click',function(){
@@ -239,10 +239,10 @@ $(function(){
 					});
 					if (deleteOnly)
 						$unbind.trigger('click').off('click').on('click keydown touchstart', function(){return false}).css('pointer-events','none').parent().hide();
-					$form.append('<div class="notice warn">Because this '+(!deleteOnly?'is a reservation, unbinding<br>it from the user will <strong>delete</strong> it permanently.':'reservation was added directly,<br>it cannot be marked un-finished, only deleted.')+'</div>');
+					$form.append('<div class="notice warn">Because this '+(!deleteOnly?'is a reservation, unbinding it from the user will <strong>delete</strong> it permanently.':'reservation was added directly, it cannot be marked un-finished, only deleted.')+'</div>');
 				}
 				else
-					$form.append('<div class="notice info">If this is checked, any user will be able to reserve this request again afterwards.<br>If left unchecked, only the current reserver <em>(and Vector Inspectors)</em><br>will be able to mark it as finished until the reservation is cancelled.</div>');
+					$form.append('<div class="notice info">If this is checked, any user will be able to reserve this request again afterwards. If left unchecked, only the current reserver <em>(and Vector Inspectors)</em> will be able to mark it as finished until the reservation is cancelled.</div>');
 				$w.trigger('resize');
 				$form.on('submit',function(e){
 					e.preventDefault();
@@ -287,9 +287,9 @@ $(function(){
 		});
 		if (type === 'reservation') $('#add-reservation-btn').on('click',function(){
 			var title = 'Add a reservation';
-			$.Dialog.request(title,'<form id="add-reservation"><div class="notice fail"><label>Error</label><p></p></div><div class="notice info">This feature should only be used when the vector was made before the episode was displayed here,<br>and all you want to do is link your already-made vector under the newly posted episode.</div><div class="notice warn">If you already posted the reservation, use the <strong class="typcn typcn-attachment">I\'m done</strong> button to mark it as finished instead of adding it here.</div><input type="text" name="deviation" placeholder="Deviation URL"></form>','add-reservation','Finish',function(){
+			$.Dialog.request(title,'<form id="add-reservation"><div class="notice fail"><label>Error</label><p></p></div><div class="notice info">This feature should only be used when the vector was made before the episode was displayed here, and all you want to do is link your already-made vector under the newly posted episode.</div><div class="notice warn">If you already posted the reservation, use the <strong class="typcn typcn-attachment">I\'m done</strong> button to mark it as finished instead of adding it here.</div><input type="text" name="deviation" placeholder="Deviation URL"></form>','add-reservation','Finish',function(){
 				var $form = $('#add-reservation'),
-					$ErrorNotice = $form.find('.notice').hide().children('p');
+					$ErrorNotice = $form.find('.notice.fail').hide().children('p');
 				$form.on('submit',function(e){
 					e.preventDefault();
 
@@ -360,7 +360,7 @@ $(function(){
 									'The image you just checked had the following title:<br><br><p class=align-center><strong>'+data.title+'</strong></p>'
 									 +'<br>Would you like to use this as the '+type+'\'s description?<br>Keep in mind that it should describe the thing(s) '
 									 +(type==='request'?'being requested':'you plan to vector')+'.<br>'
-									 +'This dialog will not appear if you give your '+type+'<br>a description before clicking the '+CHECK_BTN+' button.',
+									 +'This dialog will not appear if you give your '+type+' a description before clicking the '+CHECK_BTN+' button.',
 									function(sure){
 										if (!sure) return $form.find('input[name=label]').focus();
 										$formTitleInput.val(data.title);
@@ -368,7 +368,7 @@ $(function(){
 									}
 								);
 						}).on('error',function(){
-							$.Dialog.fail("Can't load image","There was an error while attempting to load the image.<br>Make sure the URL is correct and try again!");
+							$.Dialog.fail("Can't load image","There was an error while attempting to load the image. Make sure the URL is correct and try again!");
 						});
 					}
 					else {

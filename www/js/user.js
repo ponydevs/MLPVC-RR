@@ -40,7 +40,7 @@ $(function(){
 	$('#signout-everywhere').on('click',function(){
 		var title = 'Sign out from ALL sessions';
 
-		$.Dialog.confirm(title,"This will invalidate ALL sessions.<br>Continue?",function(sure){
+		$.Dialog.confirm(title,"This will invalidate ALL sessions. Continue?",function(sure){
 			if (!sure) return;
 
 			$.Dialog.wait(title,'Signing out');
