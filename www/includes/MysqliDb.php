@@ -24,7 +24,7 @@ class MysqliDb
      * 
      * @var string
      */
-    protected static $_prefix;
+    public static $prefix;
     /**
      * MySQLi instance
      *
@@ -112,6 +112,20 @@ class MysqliDb
      */
     protected $isSubQuery = false;
 
+    /**
+     * Return type: 'Array' to return results as array, 'Object' as object
+     * 'Json' as json string
+     *
+     * @var string
+     */
+    public $returnType = 'Array';
+
+    /**
+     * Should join() results be nested by table
+     * @var boolean
+     */
+    protected $_nestJoin = false;
+    private $_tableName = '';
     /**
      * Variables for query execution tracing
      *
@@ -211,6 +225,40 @@ class MysqliDb
         $this->_bindParams = array(''); // Create the empty 0 index
         $this->_query = null;
         $this->_queryOptions = array();
+        $this->returnType = 'Array';
+        $this->_nestJoin = false;
+        $this->_tableName = '';
+    }
+
+    /**
+     * Helper function to create dbObject with Json return type
+     *
+     * @return dbObject
+     */
+    public function JsonBuilder () {
+        $this->returnType = 'Json';
+        return $this;
+    }
+
+    /**
+     * Helper function to create dbObject with Array return type
+     * Added for consistency as thats default output type
+     *
+     * @return dbObject
+     */
+    public function ArrayBuilder () {
+        $this->returnType = 'Array';
+        return $this;
+    }
+
+    /**
+     * Helper function to create dbObject with Object return type.
+     *
+     * @return dbObject
+     */
+    public function ObjectBuilder () {
+        $this->returnType = 'Object';
+        return $this;
     }
     
     /**
@@ -220,7 +268,7 @@ class MysqliDb
      */
     public function setPrefix($prefix = '')
     {
-        self::$_prefix = $prefix;
+        self::$prefix = $prefix;
         return $this;
     }
 
@@ -292,7 +340,7 @@ class MysqliDb
     public function setQueryOption ($options) {
         $allowedOptions = Array ('ALL','DISTINCT','DISTINCTROW','HIGH_PRIORITY','STRAIGHT_JOIN','SQL_SMALL_RESULT',
                           'SQL_BIG_RESULT','SQL_BUFFER_RESULT','SQL_CACHE','SQL_NO_CACHE', 'SQL_CALC_FOUND_ROWS',
-                          'LOW_PRIORITY','IGNORE','QUICK');
+                          'LOW_PRIORITY','IGNORE','QUICK', 'MYSQLI_NESTJOIN');
         if (!is_array ($options))
             $options = Array ($options);
 
@@ -301,7 +349,10 @@ class MysqliDb
             if (!in_array ($option, $allowedOptions))
                 die ('Wrong query option: '.$option);
 
-            $this->_queryOptions[] = $option;
+            if ($option == 'MYSQLI_NESTJOIN')
+                $this->_nestJoin = true;
+            else
+                $this->_queryOptions[] = $option;
         }
 
         return $this;
@@ -332,8 +383,9 @@ class MysqliDb
             $columns = '*';
 
         $column = is_array($columns) ? implode(', ', $columns) : $columns; 
+        $this->_tableName = self::$prefix . $tableName;
         $this->_query = 'SELECT ' . implode(' ', $this->_queryOptions) . ' ' .
-                        $column . " FROM " .self::$_prefix . $tableName;
+                        $column . " FROM " . $this->_tableName;
         $stmt = $this->_buildQuery($numRows);
 
         if ($this->isSubQuery)
@@ -358,25 +410,26 @@ class MysqliDb
     {
         $res = $this->get ($tableName, 1, $columns);
 
-        if (is_object($res))
+        if ($res instanceof MysqliDb)
             return $res;
-
-        if (isset($res[0]))
+        else if (is_array ($res) && isset ($res[0]))
             return $res[0];
+        else if ($res)
+            return $res;
 
         return null;
     }
 
     /**
-     * A convenient SELECT * function to get one value.
+     * A convenient SELECT COLUMN function to get a single column value from one row
      *
      * @param string  $tableName The name of the database table to work with.
      *
-     * @return array Contains the returned column from the select query.
+     * @return string Contains the value of a returned column.
      */
     public function getValue($tableName, $column) 
     {
-        $res = $this->get ($tableName, 1, "{$column} as retval");
+        $res = $this->ArrayBuilder()->get ($tableName, 1, "{$column} as retval");
 
         if (isset($res[0]["retval"]))
             return $res[0]["retval"];
@@ -385,31 +438,27 @@ class MysqliDb
     }
 
     /**
+     * Insert method to add new row
      *
      * @param <string $tableName The name of the table.
      * @param array $insertData Data containing information for inserting into the DB.
      *
      * @return boolean Boolean indicating whether the insert query was completed succesfully.
      */
-    public function insert($tableName, $insertData)
-    {
-        if ($this->isSubQuery)
-            return;
+    public function insert ($tableName, $insertData) {
+        return $this->_buildInsert ($tableName, $insertData, 'INSERT');
+    }
 
-        $this->_query = "INSERT INTO " .self::$_prefix . $tableName;
-        $stmt = $this->_buildQuery(null, $insertData);
-        $stmt->execute();
-        $this->_stmtError = $stmt->error;
-        $this->reset();
-        $this->count = $stmt->affected_rows;
-
-        if ($stmt->affected_rows < 1)
-            return false;
-
-        if ($stmt->insert_id > 0)
-            return $stmt->insert_id;
-
-        return true;
+    /**
+     * Replace method to add new row
+     *
+     * @param <string $tableName The name of the table.
+     * @param array $insertData Data containing information for inserting into the DB.
+     *
+     * @return boolean Boolean indicating whether the insert query was completed succesfully.
+     */
+    public function replace ($tableName, $insertData) {
+        return $this->_buildInsert ($tableName, $insertData, 'REPLACE');
     }
 
     /**
@@ -439,7 +488,7 @@ class MysqliDb
         if ($this->isSubQuery)
             return;
 
-        $this->_query = "UPDATE " . self::$_prefix . $tableName;
+        $this->_query = "UPDATE " . self::$prefix . $tableName;
 
         $stmt = $this->_buildQuery (null, $tableData);
         $status = $stmt->execute();
@@ -464,7 +513,7 @@ class MysqliDb
         if ($this->isSubQuery)
             return;
 
-        $this->_query = "DELETE FROM " . self::$_prefix . $tableName;
+        $this->_query = "DELETE FROM " . self::$prefix . $tableName;
 
         $stmt = $this->_buildQuery($numRows);
         $stmt->execute();
@@ -531,7 +580,7 @@ class MysqliDb
             die ('Wrong JOIN type: '.$joinType);
 
         if (!is_object ($joinTable))
-            $joinTable = self::$_prefix . filter_var($joinTable, FILTER_SANITIZE_STRING);
+            $joinTable = self::$prefix . filter_var($joinTable, FILTER_SANITIZE_STRING);
 
         $this->_join[] = Array ($joinType,  $joinTable, $joinCondition);
 
@@ -552,6 +601,12 @@ class MysqliDb
         $allowedDirection = Array ("ASC", "DESC");
         $orderbyDirection = strtoupper (trim ($orderbyDirection));
         $orderByField = preg_replace ("/[^-a-z0-9\.\(\),_`]+/i",'', $orderByField);
+
+        // Add table prefix to orderByField if needed. 
+        //FIXME: We are adding prefix only if table is enclosed into `` to distinguish aliases
+        // from table names
+        $orderByField = preg_replace('/(\`)([`a-zA-Z0-9_]*\.)/', '\1' . self::$prefix.  '\2', $orderByField);
+
 
         if (empty($orderbyDirection) || !in_array ($orderbyDirection, $allowedDirection))
             die ('Wrong order direction: '.$orderbyDirection);
@@ -692,6 +747,35 @@ class MysqliDb
     }
 
     /**
+     * Internal function to build and execute INSERT/REPLACE calls
+     *
+     * @param <string $tableName The name of the table.
+     * @param array $insertData Data containing information for inserting into the DB.
+     *
+     * @return boolean Boolean indicating whether the insert query was completed succesfully.
+     */
+    private function _buildInsert ($tableName, $insertData, $operation)
+    {
+        if ($this->isSubQuery)
+            return;
+
+        $this->_query = $operation . " " . implode (' ', $this->_queryOptions) ." INTO " .self::$prefix . $tableName;
+        $stmt = $this->_buildQuery (null, $insertData);
+        $stmt->execute();
+        $this->_stmtError = $stmt->error;
+        $this->reset();
+        $this->count = $stmt->affected_rows;
+
+        if ($stmt->affected_rows < 1)
+            return false;
+
+        if ($stmt->insert_id > 0)
+            return $stmt->insert_id;
+
+        return true;
+    }
+
+    /**
      * Abstraction method that will compile the WHERE statement,
      * any passed update data, and the desired rows.
      * It then builds the SQL query.
@@ -738,6 +822,9 @@ class MysqliDb
     {
         $parameters = array();
         $results = array();
+        // See http://php.net/manual/en/mysqli-result.fetch-fields.php
+        $mysqlLongType = 252;
+        $shouldStoreResult = false;
 
         $meta = $stmt->result_metadata();
 
@@ -749,13 +836,23 @@ class MysqliDb
 
         $row = array();
         while ($field = $meta->fetch_field()) {
-            $row[$field->name] = null;
-            $parameters[] = & $row[$field->name];
+            if ($field->type == $mysqlLongType)
+                $shouldStoreResult = true;
+
+            if ($this->_nestJoin && $field->table != $this->_tableName) {
+                $field->table = substr ($field->table, strlen (self::$prefix));
+                $row[$field->table][$field->name] = null;
+                $parameters[] = & $row[$field->table][$field->name];
+            } else {
+                $row[$field->name] = null;
+                $parameters[] = & $row[$field->name];
+            }
         }
 
-        // avoid out of memory bug in php 5.2 and 5.3
+        // avoid out of memory bug in php 5.2 and 5.3. Mysqli allocates lot of memory for long*
+        // and blob* types. So to avoid out of memory issues store_result is used
         // https://github.com/joshcam/PHP-MySQLi-Database-Class/pull/119
-        if (version_compare (phpversion(), '5.4', '<'))
+        if ($shouldStoreResult)
              $stmt->store_result();
 
         call_user_func_array(array($stmt, 'bind_result'), $parameters);
@@ -763,9 +860,20 @@ class MysqliDb
         $this->totalCount = 0;
         $this->count = 0;
         while ($stmt->fetch()) {
-            $x = array();
-            foreach ($row as $key => $val) {
-                $x[$key] = $val;
+            if ($this->returnType == 'Object') {
+                $x = new stdClass ();
+                foreach ($row as $key => $val) {
+                    if (is_array ($val)) {
+                        $x->$key = new stdClass ();
+                        foreach ($val as $k => $v)
+                            $x->$key->$k = $v;
+                    } else
+                        $x->$key = $val;
+                }
+            } else {
+                $x = array();
+                foreach ($row as $key => $val)
+                    $x[$key] = $val;
             }
             $this->count++;
             array_push($results, $x);
@@ -778,6 +886,9 @@ class MysqliDb
             $stmt = $this->_mysqli->query ('SELECT FOUND_ROWS()');
             $totalCount = $stmt->fetch_row();
             $this->totalCount = $totalCount[0];
+        }
+        if ($this->returnType == 'Json') {
+            return json_encode ($results);
         }
 
         return $results;
@@ -905,7 +1016,7 @@ class MysqliDb
                         $this->_bindParams ($val);
                     else if ($val === null)
                         $this->_query .= $operator . " NULL";
-                    else if ($val != 'DBNULL')
+                    else if ($val != 'DBNULL' || $val == '0')
                         $this->_query .= $this->_buildPair ($operator, $val);
             }
         }
@@ -1022,7 +1133,7 @@ class MysqliDb
             $val = $vals[$i++];
             if (is_object ($val))
                 $val = '[object]';
-            if ($val == NULL)
+            if ($val === NULL)
                 $val = 'NULL';
             $newStr .= substr ($str, 0, $pos) . "'". $val . "'";
             $str = substr ($str, $pos + 1);
