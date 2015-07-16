@@ -59,7 +59,10 @@
 }
 // Desktop-only Styles
 @media all and (min-width: $Breakpoint){
-	body { overflow: auto }
+	body {
+		overflow-x: auto;
+		overflow-y: scroll;
+	}
 
 	header, footer {
 		z-index: 2;
