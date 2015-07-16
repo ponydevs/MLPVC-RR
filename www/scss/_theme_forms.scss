@@ -94,39 +94,41 @@ input[type=checkbox] {
 		&:focus { border-color: #888 }
 		&:before { color: #000 }
 	}
-	> div > form[id] {
-		> * {
-			display: block;
-			margin: 0 auto 10px;
-			font-family: inherit;
-			width: 100%;
-			box-sizing: border-box;
+	> div:not(#dialogButtons) {
+		> form[id] {
+			> * {
+				display: block;
+				margin: 0 auto 10px;
+				font-family: inherit;
+				width: 100%;
+				box-sizing: border-box;
 
-			&:last-child { margin-bottom: 0 }
+				&:last-child { margin-bottom: 0 }
+			}
+			label {
+				text-align: center;
+				cursor: pointer;
+				> * { vertical-align: text-bottom }
+			}
 		}
-		label {
-			text-align: center;
-			cursor: pointer;
-			> * { vertical-align: text-bottom }
-		}
-	}
-	input[type]:not([type=radio]):not([type=checkbox]):not([type=button]),
-	select,
-	textarea {
-		color: #313131;
-		border: 1px solid #CECECE;
-		background-color: #EFEFEF;
+		input[type]:not([type=radio]):not([type=checkbox]):not([type=button]),
+		select,
+		textarea {
+			color: #313131;
+			border: 1px solid #CECECE;
+			background-color: #EFEFEF;
 
-		&:not(select) {
-			&[required], &[pattern] {
-				&:not(:focus){
-					&:valid {
-						border-color: #00CE00;
-						color: #070;
-					}
-					&:invalid {
-						border-color: #a00;
-						color: #700;
+			&:not(select) {
+				&[required], &[pattern] {
+					&:not(:focus){
+						&:valid {
+							border-color: #00CE00;
+							color: #070;
+						}
+						&:invalid {
+							border-color: #a00;
+							color: #700;
+						}
 					}
 				}
 			}

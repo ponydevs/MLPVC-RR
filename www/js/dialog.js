@@ -145,9 +145,7 @@
 				$dialogHeader.attr('class',params.color+'-bg');
 				
 				if (params.buttons) $.each(params.buttons, function (name, obj) {
-					var $button = $(document.createElement('input'));
-					if (obj.submit) $button.attr('type','submit');
-					else $button.attr('type','button');
+					var $button = $(document.createElement('input')).attr('type','button');
 					$button.attr('class',params.color+'-bg');
 					if (obj.form){
 						var $form = $('#'+obj.form);
