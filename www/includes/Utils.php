@@ -167,6 +167,11 @@ HTML;
 		else echo "<tr><td colspan=4>There are no log items</td></tr>";
 	}
 	
+	// Apostrophe HTML encoding for attribute values \\
+	function apos_encode($str){
+		return str_replace("'", '&apos;', $str);
+	}
+
 	// Gets the difference between 2 timestamps \\
 	function timeDifference($n,$e) {
 		$substract = $n - $e;
