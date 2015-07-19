@@ -94,10 +94,10 @@ html.dialog-open {
 	p {
 		margin: 0 0 5px;
 	}
-	> div:not(:nth-last-child(2)):not(:last-child) {
-		border-bottom: 1px solid;
-		padding-bottom: 5px;
-		margin-bottom:4px;
+	> div:not(:first-child):not(#dialogButtons) {
+		border-top: 1px solid;
+		padding-top: 5px;
+		margin-top: 4px;
 	}
 	> * {
 		&:not(p) + p {

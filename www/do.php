@@ -556,6 +556,9 @@
 			case "user":
 				$_match = array();
 
+				if (strtolower($data) === 'immortalsexgod')
+					$data = 'DJDavid98';
+
 				if (RQMTHD === 'POST'){
 					if (!PERM('inspector')) respond();
 					detectCSRF();
