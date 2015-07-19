@@ -94,6 +94,13 @@ div.tags {
 
 			&:before { content: "\e07e" }
 		}
+		&.ep {
+			$TEpisode: adjust_hue($_TBase, 90);
+			color: $TEpisode;
+			background-color: lighten($TEpisode, $_TLightenAmt);
+
+			&:before { content: "\e131" }
+		}
 		&:not(:last-child) { margin-right: 5px }
 	}
 }

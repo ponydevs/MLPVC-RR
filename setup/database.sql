@@ -117,7 +117,7 @@ CREATE TABLE IF NOT EXISTS `cg__tags` (
   `tid` int(11) NOT NULL,
   `name` varchar(25) NOT NULL,
   `title` tinytext NOT NULL,
-  `type` enum('spec','gen','cat','app') DEFAULT NULL
+  `type` enum('spec','gen','cat','app','ep') DEFAULT NULL
 ) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8;
 
 INSERT INTO `cg__tags` (`tid`, `name`, `title`, `type`) VALUES
