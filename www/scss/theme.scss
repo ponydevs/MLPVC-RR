@@ -350,7 +350,7 @@ header {
 	box-sizing: border-box;
 	background: transparent;
 
-	@include clearfix;
+	@extend %clearfix;
 
 	&.locked { overflow: visible }
 }

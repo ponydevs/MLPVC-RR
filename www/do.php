@@ -695,6 +695,8 @@
 			case "colorguides":
 				if (!PERM('inspector')) do404();
 
+				$CGDb = new MysqliDbWrapper(DB_HOST,DB_USER,DB_PASS,'mlpvc-colorguide');
+
 				loadPage(array(
 					'title' => 'Color Guide',
 					'do-css', 'do-js',

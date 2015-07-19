@@ -32,7 +32,7 @@ $NoFontChange: true;
 	&:hover { color: $hover }
 }
 
-@mixin clearfix {
+%clearfix {
 	&:before,
 	&:after {
 		content: ".";

@@ -31,15 +31,14 @@ Coding and design by [DJDavid98](http://djdavid98.eu/)
 Below, you can find a step-by-step guide, which tells you how to set up your machine to be able to properly run & edit the site's code locally.
 
 1. Clone the repository<br>Recommended (free) tool: [Atlassian SourceTree](http://www.sourcetreeapp.com/)
-2. Import `setup/database.sql` to a new, empty database of your choice
+2. Import the files `setup/mlpvc-rr.sql` and `setup/mlpvc-colorguide.sql` to your MySQL server<br><em>Protip: It's good practice to create a separate user that only has access to those databases instead of just using the `root` account everywhere</em> 
 3. Copy `setup/conf.php` to `www/conf.php` and fill in the details<br>(you can get the deviantArt client keys for yourself [here](http://www.deviantart.com/developers/register))
-	- `DB_HOST`: Database host (most likely `localhost`)
-	- `DB_NAME`: Name of the database you imported the SQL file into in the previous step
-	- `DB_USER`: Database user that has access to said database
-	- `DB_PASS`: Password for the user
+	- `DB_HOST`: The IP address or domain of the MySQL server (most likely `localhost`)
+	- `DB_USER`: Name of the database user that has access to the 2 databases
+	- `DB_PASS`: Password for said user
 	- `DA_CLIENT`: deviantArt application's `client_id`
 	- `DA_SECRET`: deviantArt application's `client_secret`
-	- `GA_TRACKING_CODE`: Google Analytics tracking code
+	- `GA_TRACKING_CODE`: Google Analytics tracking code (if left blank, disables tracking code)
 4. Configure your server
     1. If you're using NGINX, you can see a sample configuration in `setup/nginx.conf`. Modify this file as described below, move it to `/etc/nginx/sites-available` (you should rename it, but you don't have to) and create a symlink in `/etc/nginx/sites-enabled` to enable the configuration.
         - Change `server_name` to your domain or use `localhost`
@@ -51,7 +50,7 @@ Below, you can find a step-by-step guide, which tells you how to set up your mac
         - Set the `DocumentRoot` and the first `Directory` block's path to the `www` directory of this repository on your machine
         - You'll also need to get the Certificate Authority bundle file (`ca-bundle.crt`) from [this](https://github.com/bagder/ca-bundle/) repository, place it somewhere in your system, and note it's file path. Then, in `php.ini`, set `curl.cainfo` to the absolute file path of said bundle file.
         - Restart Apache
-5. Type your domain (or `localhost`) into the address bar of your favourite browser and the home page should appear
+5. Type your domain (or `localhost`) into the address bar of your favourite browser and the home page should appear<br>In order to set up the site permissions and roles, sign in with your deviantArt account, and you'll automatically be granted the developer role in the process.<br><em>Fun fact: Only the developer's user ID is capitalized, making it easy to distinguish from regular users' IDs.</em>
 6. You'll also need to set up a JavaScript minifier & CSS preprocessing. The way you decide to do this is entirely up to you, but I'll provide the settings for my setup in the next section.
  - Setting this up is optional, since I'll re-minfy contributed source code myself, if there will be any. This is mostly needed so that you can test locally.
  - If you do not wish to set this up, just delete any minified code and the unminified version will load automatically for both CSS and JS. Just make sure that you do not commit the deletion of minified files with your pull request.

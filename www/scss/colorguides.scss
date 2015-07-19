@@ -5,8 +5,6 @@
 	margin: 0;
 
 	> li {
-		@include clearfix;
-
 		padding: 10px;
 		color: #434343;
 		background-color: rgba(black,.05);
@@ -42,6 +40,23 @@
 		}
 	}
 }
+
+$_TBase: #0c70b1;
+$TDefault: gray;
+$TCategory: $_TBase;
+$TSpecies: adjust_hue($_TBase, -70);
+$TGender: adjust_hue($_TBase, 60);
+$TAppearance: adjust_hue($_TBase, 120);
+$TEpisode: adjust_hue($_TBase, 90);
+
+@mixin tag-style($color:$TDefault, $icon:false){
+	color: $color;
+	background-color: lighten($color, 50);
+	@if ($icon != false){
+			&:before { content: $icon }
+	}
+}
+
 div.tags {
 	user-select: none;
 	margin-top: 5px;
@@ -53,12 +68,7 @@ div.tags {
 		border: 1px solid;
 		cursor: default;
 
-		$_TBase: #0c70b1;
-		$_TLightenAmt: 50;
-
-		$TDefault: gray;
-		color: $TDefault;
-		background-color: lighten($TDefault, $_TLightenAmt);
+		@include tag-style($TDefault);
 
 		&[title] { cursor: help }
 		&:before {
@@ -66,41 +76,11 @@ div.tags {
 			font-family: 'Typicons';
 			margin-right: 5px;
 		}
-		&.cat {
-			$TCategory: $_TBase;
-			color: $TCategory;
-			background-color: lighten($TCategory, $_TLightenAmt);
-
-			&:before { content: "\e083" }
-		}
-		&.spec {
-			$TSpecies: adjust_hue($_TBase, -70);
-			color: $TSpecies;
-			background-color: lighten($TSpecies, $_TLightenAmt);
-
-			&:before { content: "\e148" }
-		}
-		&.gen {
-			$TGender: adjust_hue($_TBase, 60);
-			color: $TGender;
-			background-color: lighten($TGender, $_TLightenAmt);
-
-			&:before { content: "\e12c" }
-		}
-		&.app {
-			$TAppearance: adjust_hue($_TBase, 120);
-			color: $TAppearance;
-			background-color: lighten($TAppearance, $_TLightenAmt);
-
-			&:before { content: "\e07e" }
-		}
-		&.ep {
-			$TEpisode: adjust_hue($_TBase, 90);
-			color: $TEpisode;
-			background-color: lighten($TEpisode, $_TLightenAmt);
-
-			&:before { content: "\e131" }
-		}
+		&.cat { @include tag-style($TCategory, '\e083')	}
+		&.spec { @include tag-style($TSpecies, '\e148') }
+		&.gen { @include tag-style($TGender, '\e12c') }
+		&.app { @include tag-style($TAppearance, '\e07e') }
+		&.ep { @include tag-style($TEpisode, '\e131') }
 		&:not(:last-child) { margin-right: 5px }
 	}
 }
@@ -125,12 +105,35 @@ ul.colors {
 	}
 }
 
+%qtip-custom {
+	font-size: 16px;
+	line-height: initial !important;
+	min-width: initial !important;
+
+	.qtip-content {
+		padding: 5px;
+		text-align: center;
+	}
+}
+
 .qtip-see-thru {
 	background-color: rgba(white,.9);
 	border: 1px solid rgba(black,.7);
 	box-shadow: 0 0 2px rgba(black,.7);
-	font-size: 18px;
-	min-width: initial !important;
 
-	.qtip-content { padding: 5px }
+	@extend %qtip-custom;
 }
+
+.qtip-tag {
+	@include tag-style($TDefault);
+
+	border-color: initial !important;
+
+	@extend %qtip-custom;
+}
+
+.qtip-tag-cat { @include tag-style($TCategory) }
+.qtip-tag-spec { @include tag-style($TSpecies) }
+.qtip-tag-gen { @include tag-style($TGender) }
+.qtip-tag-app { @include tag-style($TAppearance) }
+.qtip-tag-ep { @include tag-style($TEpisode) }

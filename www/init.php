@@ -12,7 +12,7 @@
 
 	// Imports \\
 	require 'includes/MysqliDbWrapper.php';
-	$Database = new MysqliDbWrapper(DB_HOST,DB_USER,DB_PASS,DB_NAME);
+	$Database = new MysqliDbWrapper(DB_HOST,DB_USER,DB_PASS,'mlpvc-rr');
 	require 'includes/Cookie.php';
 	require 'includes/Utils.php';
 	require 'includes/AuthCheck.php';

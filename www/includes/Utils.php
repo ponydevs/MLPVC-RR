@@ -594,8 +594,37 @@ HTML;
 		if (empty($User)){
 			$MoreInfo = array('id' => $UserID, 'role' => 'user');
 			$makeDev = !$Database->has('users');
-			if ($makeDev)
+			if ($makeDev){
 				$MoreInfo['id'] = strtoupper($MoreInfo['id']);
+
+				$STATIC_ROLES = array(
+					array(0,'ban','Banished User'),
+					array(1,'user','deviantArt User'),
+					array(2,'member','Club Member'),
+					array(3,'inspector','Vector Inspector'),
+					array(4,'manager','Group Manager'),
+					array(255,'developer','Site Developer'),
+				);
+				foreach ($STATIC_ROLES as $role)
+					$Database->insert('roles',array(
+						'value' => $role[0],
+						'name' => $role[1],
+						'label' => $role[2],
+					));
+
+				$INITIAL_PERMISSIONS = array(
+					array('users.listall','inspector'),
+					array('episodes.manage','inspector'),
+					array('logs.view','inspector'),
+					array('reservations.create','member'),
+				);
+				foreach ($INITIAL_PERMISSIONS as $perm){
+					if (!$Database->insert('permissions',array(
+						'action' => $perm[0],
+						'minrole' => $perm[1],
+					))) die("Can' set permission {$perm[0]}: ".$Database->getLastError());
+				}
+			}
 			$Insert = array_merge($UserData, $MoreInfo);
 			$Database->insert('users', $Insert);
 			if ($makeDev) update_role($Insert, 'developer');
