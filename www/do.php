@@ -369,7 +369,7 @@
 								} catch(Exception $e){};
 								if (!isset($vid->provider) || $vid->provider['name'] !== $k)
 									respond("Incorrect {$VIDEO_PROVIDER_NAMES[$k]} URL specified");
-								$set = $vid->id;
+								$set = $vid::$id;
 							}
 
 							$video = $Database->whereEp($Episode)->where('provider', $k)->getOne('episodes__videos','COUNT(*) as count');
