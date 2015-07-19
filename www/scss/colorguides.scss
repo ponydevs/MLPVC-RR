@@ -130,7 +130,7 @@ ul.colors {
 	border: 1px solid rgba(black,.7);
 	box-shadow: 0 0 2px rgba(black,.7);
 	font-size: 18px;
-}
-.qtip-content {
-	padding: 5px;
+	min-width: initial !important;
+
+	.qtip-content { padding: 5px }
 }
