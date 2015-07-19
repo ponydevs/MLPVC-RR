@@ -175,18 +175,6 @@ small { font-size: .75em }
 	opacity: .5 !important;
 	pointer-events: none;
 }
-.clearfix:before,
-.clearfix:after {
-	content: ".";
-	display: block;
-	overflow: hidden;
-	visibility: hidden;
-	font-size: 0;
-	line-height: 0;
-	width: 0;
-	height: 0;
-}
-.clearfix:after { clear: both }
 strong.typcn:before, span.typcn:not(:empty):before, em.typcn:before ,
 button:not(:empty):before, .btn:not(:empty):before {
 	margin-right: 0.3125em;
@@ -362,7 +350,7 @@ header {
 	box-sizing: border-box;
 	background: transparent;
 
-	@extend .clearfix;
+	@include clearfix;
 
 	&.locked { overflow: visible }
 }
@@ -390,7 +378,7 @@ header {
 			font-style: italic;
 		}
 	}
-	a { @include link }
+	a:not(.btn) { @include link }
 }
 #sidebar {
 	> section {

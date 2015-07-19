@@ -34,7 +34,8 @@
 	);
 	if ($do === 'episode' && !empty($CurrentEpisode))
 		$HeaderItems['eps']['subitem'] = array($_SERVER['REQUEST_URI'], $title);
-	$HeaderItems[] = array('/colorguides', 'Color Guides');
+	if (PERM('inspector'))
+		$HeaderItems[] = array('/colorguides', 'Color Guide');
 	if ($signedIn)
 		$HeaderItems['u'] = array("/u/{$currentUser['name']}",'Account');
 	if ($do === 'user' && !$sameUser)

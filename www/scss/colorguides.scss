@@ -1,8 +1,129 @@
-li.colors > span {
-	display: inline-block;
-	$size: 16px;
-	width: $size;
-	height: $size;
-	vertical-align: middle;
-	cursor: help
+@import "vars";
+
+#list {
+	padding: 0;
+	margin: 0;
+
+	> li {
+		@include clearfix;
+
+		padding: 10px;
+		color: #434343;
+		background-color: rgba(black,.05);
+		border: 1px solid rgba(black,.2);
+		box-shadow: 0 0 2px rgba(black,.2);
+		transition: background-color .3s, border-color .3s, box-shadow .3s;
+    display: flex;
+    flex-flow: row nowrap;
+
+		&:hover {
+			background-color: rgba(black,.1);
+			border: 1px solid rgba(black,.3);
+			box-shadow: 0 0 7px rgba(black,.3);
+		}
+		&:not(:last-child) { margin-bottom: 10px }
+
+		> * {
+			flex: 0 0 auto;
+		}
+		> div {
+			> img {
+				margin-right: 10px;
+				width: 150px;
+			}
+			> strong {
+				font-size: 1.5em;
+			}
+			> ul {
+				display: block;
+				padding: 0;
+				margin: 5px 0;
+			}
+		}
+	}
+}
+div.tags {
+	user-select: none;
+	margin-top: 5px;
+
+	> span {
+		display: inline-block;
+		font-weight: bold;
+		padding: 3px 5px;
+		border: 1px solid;
+		cursor: default;
+
+		$_TBase: #0c70b1;
+		$_TLightenAmt: 50;
+
+		$TDefault: gray;
+		color: $TDefault;
+		background-color: lighten($TDefault, $_TLightenAmt);
+
+		&[title] { cursor: help }
+		&:before {
+			//noinspection CssNoGenericFontName
+			font-family: 'Typicons';
+			margin-right: 5px;
+		}
+		&.cat {
+			$TCategory: $_TBase;
+			color: $TCategory;
+			background-color: lighten($TCategory, $_TLightenAmt);
+
+			&:before { content: "\e083" }
+		}
+		&.spec {
+			$TSpecies: adjust_hue($_TBase, -70);
+			color: $TSpecies;
+			background-color: lighten($TSpecies, $_TLightenAmt);
+
+			&:before { content: "\e148" }
+		}
+		&.gen {
+			$TGender: adjust_hue($_TBase, 60);
+			color: $TGender;
+			background-color: lighten($TGender, $_TLightenAmt);
+
+			&:before { content: "\e12c" }
+		}
+		&.app {
+			$TAppearance: adjust_hue($_TBase, 120);
+			color: $TAppearance;
+			background-color: lighten($TAppearance, $_TLightenAmt);
+
+			&:before { content: "\e07e" }
+		}
+		&:not(:last-child) { margin-right: 5px }
+	}
+}
+
+ul.colors {
+	list-style-position: inside;
+
+	> li {
+		&:not(:last-child) { margin-bottom: 5px }
+
+		> span {
+			display: inline-block;
+			$size: 16px;
+			$border: 1px;
+			border: $border solid #000;
+			width: #{$size - $border*2};
+			height: #{$size - $border*2};
+			vertical-align: middle;
+			cursor: help;
+			font-size: 0;
+		}
+	}
+}
+
+.qtip-see-thru {
+	background-color: rgba(white,.9);
+	border: 1px solid rgba(black,.7);
+	box-shadow: 0 0 2px rgba(black,.7);
+	font-size: 18px;
+}
+.qtip-content {
+	padding: 5px;
 }

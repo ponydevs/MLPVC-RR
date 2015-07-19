@@ -693,21 +693,13 @@
 				loadPage($settings);
 			break;
 			case "colorguides":
-				// SQL Query to get everything in one request
-				$SQL =
-					"SELECT
-						cgp.label as Pony,
-						cgcg.label as `Group`,
-						cgc.label as Color,
-						cgc.hex as HEX
-					FROM `colorguides__ponies` cgp
-					LEFT JOIN colorguides__colorgroups cgcg ON cgcg.ponyid = cgp.id
-					LEFT JOIN colorguides__colors cgc ON cgc.groupid = cgcg.groupid
-					ORDER BY cgp.label ASC";
-				$ColorGuides =
+				if (!PERM('inspector')) do404();
+
 				loadPage(array(
-					'title' => 'Color Guides',
-					'do-css',
+					'title' => 'Color Guide',
+					'do-css', 'do-js',
+					'css' => 'jquery.qtip',
+					'js' => 'jquery.qtip',
 				));
 			break;
 			case "404":
