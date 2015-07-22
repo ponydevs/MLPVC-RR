@@ -18,9 +18,8 @@ $(function(){
 			$this.on('click',function(e){
 				e.preventDefault();
 				if (!document.queryCommandSupported('copy')){
-					$this.qtip('option', 'content.title', false);
-					$this.qtip('option', 'content.text', $this.attr('oldtitle'));
-					return $this.off('click') || true;
+					prompt('Copy with Ctrl+C, close with Enter');
+					return true;
 				}
 
 				var $helper = $(document.createElement('textarea')),
