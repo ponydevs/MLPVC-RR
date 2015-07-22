@@ -366,10 +366,13 @@
 							if (!empty($_POST[$k])){
 								try {
 									$vid = new Video($_POST[$k]);
-								} catch(Exception $e){};
+								}
+								catch (Exception $e){
+									respond("{$VIDEO_PROVIDER_NAMES[$k]} link issue: ".$e->getMessage());
+								};
 								if (!isset($vid->provider) || $vid->provider['name'] !== $k)
 									respond("Incorrect {$VIDEO_PROVIDER_NAMES[$k]} URL specified");
-								$set = $vid::$id;
+								$set = $vid->id;
 							}
 
 							$video = $Database->whereEp($Episode)->where('provider', $k)->getOne('episodes__videos','COUNT(*) as count');
