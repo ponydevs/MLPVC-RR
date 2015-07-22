@@ -6,10 +6,10 @@ SET time_zone = "+00:00";
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
 /*!40101 SET NAMES utf8 */;
 
-CREATE DATABASE IF NOT EXISTS `mlpvc-colorguide` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
+DROP DATABASE IF EXISTS `mlpvc-colorguide`;
+CREATE DATABASE `mlpvc-colorguide` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 USE `mlpvc-colorguide`;
 
-DROP TABLE IF EXISTS `colorgroups`;
 CREATE TABLE IF NOT EXISTS `colorgroups` (
   `groupid` int(11) NOT NULL,
   `ponyid` int(11) NOT NULL,
@@ -31,7 +31,6 @@ INSERT INTO `colorgroups` (`groupid`, `ponyid`, `label`, `order`) VALUES
 (11, 3, 'Eyes', 0),
 (12, 3, 'Cutie Mark', 0);
 
-DROP TABLE IF EXISTS `colors`;
 CREATE TABLE IF NOT EXISTS `colors` (
   `colorid` int(11) NOT NULL,
   `groupid` int(11) NOT NULL,
@@ -92,7 +91,6 @@ INSERT INTO `colors` (`colorid`, `groupid`, `label`, `hex`, `order`) VALUES
 (49, 12, 'Sand', '#DFD47B', 0),
 (50, 12, 'Glass Shine', '#FFFFFF', 0);
 
-DROP TABLE IF EXISTS `ponies`;
 CREATE TABLE IF NOT EXISTS `ponies` (
   `id` int(11) NOT NULL,
   `label` tinytext NOT NULL,
@@ -104,7 +102,6 @@ INSERT INTO `ponies` (`id`, `label`, `notes`) VALUES
 (2, 'Twilight Sparkle''s gala dress', ''),
 (3, 'Colgate Minuette', '');
 
-DROP TABLE IF EXISTS `tagged`;
 CREATE TABLE IF NOT EXISTS `tagged` (
   `tid` int(11) NOT NULL,
   `ponyid` int(11) NOT NULL
@@ -124,7 +121,6 @@ INSERT INTO `tagged` (`tid`, `ponyid`) VALUES
 (7, 3),
 (12, 3);
 
-DROP TABLE IF EXISTS `tags`;
 CREATE TABLE IF NOT EXISTS `tags` (
   `tid` int(11) NOT NULL,
   `name` varchar(25) NOT NULL,
