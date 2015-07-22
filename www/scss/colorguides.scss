@@ -1,5 +1,50 @@
+@import "../css/jquery.qtip.min.css";
 @import "vars";
+@import "_theme_ctxmenu";
+// Mobile-only
+@media all and (max-width: 650px){
+	#list > li > div {
+		&:last-child { max-width: 100% }
+		> img {
+			display: none;
+		}
+	}
+	div.tags {
+		white-space: initial !important;
+		border-style: solid;
+		border-width: 1px 0;
+		width: 100%;
+		padding: 3px 0;
 
+		&:before {
+			content: "Tags: ";
+			font-weight: bold;
+		}
+
+		> span:not(.unreadable) {
+			background-color: transparent !important;
+
+			&:not(:last-child):after {
+				content: ",";
+				font-weight: normal;
+				color: #434343;
+			}
+		}
+	}
+}
+// Desktop-only
+@media all and (min-width: 650px){
+	div.tags > span:not(.unreadable) {
+		padding: 3px 5px;
+		border: 1px solid;
+		cursor: default;
+
+		&:not(:last-child) { margin-right: 5px }
+	}
+	#list > li > div:last-child { max-width: calc(100% - 160px) }
+
+	.notice.tagediting { display: none }
+}
 #list {
 	padding: 0;
 	margin: 0;
@@ -10,19 +55,14 @@
 		background-color: rgba(black,.05);
 		border: 1px solid rgba(black,.2);
 		box-shadow: 0 0 2px rgba(black,.2);
-		transition: background-color .3s, border-color .3s, box-shadow .3s;
     display: flex;
     flex-flow: row nowrap;
 
-		&:hover {
-			background-color: rgba(black,.1);
-			border: 1px solid rgba(black,.3);
-			box-shadow: 0 0 7px rgba(black,.3);
-		}
 		&:not(:last-child) { margin-bottom: 10px }
 
 		> * {
 			flex: 0 0 auto;
+			max-width: 100%;
 		}
 		> div {
 			> img {
@@ -31,11 +71,8 @@
 			}
 			> strong {
 				font-size: 1.5em;
-			}
-			> ul {
-				display: block;
-				padding: 0;
-				margin: 5px 0;
+
+				button { margin-left: 8px }
 			}
 		}
 	}
@@ -59,14 +96,11 @@ $TEpisode: adjust_hue($_TBase, 90);
 
 div.tags {
 	user-select: none;
-	margin-top: 5px;
+	margin-top: 6px;
 
-	> span {
+	> span:not(.unreadable) {
 		display: inline-block;
 		font-weight: bold;
-		padding: 3px 5px;
-		border: 1px solid;
-		cursor: default;
 
 		@include tag-style($TDefault);
 
@@ -81,17 +115,24 @@ div.tags {
 		&.gen { @include tag-style($TGender, '\e12c') }
 		&.app { @include tag-style($TAppearance, '\e07e') }
 		&.ep { @include tag-style($TEpisode, '\e131') }
-		&:not(:last-child) { margin-right: 5px }
 	}
 }
 
 ul.colors {
-	list-style-position: inside;
+	display: block;
+	padding: 0;
+	margin: 10px 0 0;
+	list-style: none;
+	white-space: initial !important;
 
 	> li {
-		&:not(:last-child) { margin-bottom: 5px }
+		display: inline-block;
+		border: 1px solid rgba(black, .2);
+		background-color: rgba(black, .05);
+		padding: 4px;
+		margin: 0 5px 5px 0;
 
-		> span {
+		> span:not(.cat) {
 			display: inline-block;
 			$size: 16px;
 			$border: 1px;
@@ -99,17 +140,34 @@ ul.colors {
 			width: #{$size - $border*2};
 			height: #{$size - $border*2};
 			vertical-align: middle;
-			cursor: help;
+			cursor: pointer;
 			font-size: 0;
+			transform: scale(1);
+
+			&.zeroclipboard-is-active { transform: scale(.8) }
 		}
 	}
 }
+
+.global-zeroclipboard-container { cursor: pointer }
 
 %qtip-custom {
 	font-size: 16px;
 	line-height: initial !important;
 	min-width: initial !important;
 
+	.qtip-titlebar {
+		padding: 5px;
+		text-align: center;
+		border-bottom: 1px solid;
+		background: inherit;
+
+
+		+ .qtip-content {
+			font-size: .75em;
+			textalign: left !important;
+		}
+	}
 	.qtip-content {
 		padding: 5px;
 		text-align: center;
@@ -117,7 +175,7 @@ ul.colors {
 }
 
 .qtip-see-thru {
-	background-color: rgba(white,.9);
+	background-color: rgba(white,.8);
 	border: 1px solid rgba(black,.7);
 	box-shadow: 0 0 2px rgba(black,.7);
 

@@ -167,6 +167,7 @@
 
 // Global Stuff
 .hidden { display: none }
+.unreadable { font-size: 0 }
 :focus { outline: 0 }
 time[datetime][title] { cursor: help }
 small { font-size: .75em }

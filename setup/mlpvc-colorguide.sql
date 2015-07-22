@@ -96,14 +96,13 @@ DROP TABLE IF EXISTS `ponies`;
 CREATE TABLE IF NOT EXISTS `ponies` (
   `id` int(11) NOT NULL,
   `label` tinytext NOT NULL,
-  `notes` tinytext NOT NULL,
-  `sprite` varchar(10) NOT NULL
+  `notes` tinytext NOT NULL
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 
-INSERT INTO `ponies` (`id`, `label`, `notes`, `sprite`) VALUES
-(1, 'Twilight Sparkle', 'Far legs use a darker stroke color', 'tsp'),
-(2, 'Twilight Sparkle''s gala dress', '', 'tsg'),
-(3, 'Colgate Minuette', '', 'cgm');
+INSERT INTO `ponies` (`id`, `label`, `notes`) VALUES
+(1, 'Twilight Sparkle', 'Far legs use a darker stroke color'),
+(2, 'Twilight Sparkle''s gala dress', ''),
+(3, 'Colgate Minuette', '');
 
 DROP TABLE IF EXISTS `tagged`;
 CREATE TABLE IF NOT EXISTS `tagged` (

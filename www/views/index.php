@@ -10,7 +10,7 @@
 <?php if(!empty($CurrentEpisode)){ ?>
 	<h1><?=format_episode_title($CurrentEpisode)?></h1>
 	<p>Vector Requests & Reservations</p>
-<?php if (PERM('episodes.manage')){ ?>
+<?php if (PERM('inspector')){ ?>
 	<p class=align-center><em>Episode added by <?=profile_link(get_user($CurrentEpisode['posted_by'])).' '.timetag($CurrentEpisode['posted'])?></em></p>
 <?php } ?>
 <?php echo render_ep_video($CurrentEpisode); ?>
@@ -28,7 +28,7 @@
 			<li>Please remember that <strong>you have to be a member of the group in order to make a reservation</strong>. The idea is to add the finished vector to our gallery, so it has to meet all of our quality requirements.</li>
 		</ol>
 	</section>
-<?php   if (PERM('episodes.manage')){ ?>
+<?php   if (PERM('inspector')){ ?>
 	<section class=admin>
 		<h2>Administration area</h2>
 		<p class=align-center>
@@ -45,7 +45,7 @@
 	<h1>There's nothing here yet...</h1>
 	<p>...but there will be!</p>
 
-<?php   if (PERM('episodes.manage')){ ?>
+<?php   if (PERM('inspector')){ ?>
 	<div class="notice info">
 		<label>No episodes found</label>
 		<p>To make the site functional, you must add an episode to the database first. Head on over to the <a href="/episodes">Episodes</a> page and add one now!</p>

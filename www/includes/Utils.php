@@ -611,19 +611,6 @@ HTML;
 						'name' => $role[1],
 						'label' => $role[2],
 					));
-
-				$INITIAL_PERMISSIONS = array(
-					array('users.listall','inspector'),
-					array('episodes.manage','inspector'),
-					array('logs.view','inspector'),
-					array('reservations.create','member'),
-				);
-				foreach ($INITIAL_PERMISSIONS as $perm){
-					if (!$Database->insert('permissions',array(
-						'action' => $perm[0],
-						'minrole' => $perm[1],
-					))) die("Can' set permission {$perm[0]}: ".$Database->getLastError());
-				}
 			}
 			$Insert = array_merge($UserData, $MoreInfo);
 			$Database->insert('users', $Insert);
@@ -733,13 +720,21 @@ HTML;
 		$ROLES[] = $r['name'];
 	}
 
-	# Get Permissions from DB
-	$PERMISSIONS = array();
-	foreach ($Database->get('permissions') as $p)
-		$PERMISSIONS[$p['action']] = $p['minrole'];
-
-	function PERM($perm, $compareAgainst = null){
-		if (!is_string($perm)) return false;
+	/**
+	 * Permission checking function
+	 * ----------------------------
+	 * Compares the currenlty logged in user's role to the one specified
+	 * A "true" retun value means that the user meets the required role or surpasses it.
+	 * If user isn't logged in, and $compareAgainst is missing, returns false
+	 * If $compareAgainst isn't missing, compare it to $role
+	 *
+	 * @param string $role
+	 * @param string|null $compareAgainst
+	 *
+	 * @return bool
+	 */
+	function PERM($role, $compareAgainst = null){
+		if (!is_string($role)) return false;
 
 		if (empty($compareAgainst)){
 			global $signedIn, $currentUser;
@@ -748,11 +743,10 @@ HTML;
 		}
 		else $checkRole = $compareAgainst;
 
-		global $ROLES, $PERMISSIONS;
+		global $ROLES;
 
-		if (in_array($perm,$ROLES)) $targetRole = $perm;
-		else if (!empty($PERMISSIONS[$perm])) $targetRole = $PERMISSIONS[$perm];
-		else trigger_error('Invalid permission '.$perm);
+		if (in_array($role,$ROLES)) $targetRole = $role;
+		else trigger_error('Invalid role: '.$role);
 
 		return array_search($checkRole,$ROLES) >= array_search($targetRole,$ROLES);
 	}
@@ -956,7 +950,7 @@ HTML;
 
 		$sameUser = $signedIn && $By['id'] === $currentUser['id'];
 
-		if (is_array($R) && empty($R['reserved_by'])) $HTML = PERM('reservations.create') ? "<button class='reserve-request typcn typcn-user-add'>Reserve</button>" : '';
+		if (is_array($R) && empty($R['reserved_by'])) $HTML = PERM('member') ? "<button class='reserve-request typcn typcn-user-add'>Reserve</button>" : '';
 		else {
 			if (empty($By) || $By === true){
 				if (!$signedIn) trigger_error('Trying to get reserver button while not signed in');
@@ -968,7 +962,7 @@ HTML;
 
 			$finished = !empty($R['deviation_id']);
 			$Buttons = array();
-			if (!$finished && (($sameUser && PERM('reservations.create')) || PERM('inspector'))){
+			if (!$finished && (($sameUser && PERM('member')) || PERM('inspector'))){
 				$Buttons[] = array('user-delete red cancel', 'Cancel');
 				$Buttons[] = array('attachment green finish', ($sameUser ? "I'm" : 'Mark as').' finished');
 			}
@@ -1085,7 +1079,7 @@ HTML;
 
 		if ($returnArranged) return $Arranged;
 
-		if (PERM('reservations.create')){
+		if (PERM('member')){
 			$makeRes = '<button id="reservation-btn" class=green>Make a reservation</button>';
 			$resForm = get_post_form('reservation');
 
@@ -1334,7 +1328,7 @@ HTML;
 			$Title = format_episode_title($ep, AS_ARRAY);
 			$href = $PathStart.$Title['id'];
 			$adminControls = '';
-			if (PERM('episodes.manage')) $adminControls = <<<HTML
+			if (PERM('inspector')) $adminControls = <<<HTML
 <span class=admincontrols>
 	<button class="edit-episode typcn typcn-spanner blue" title="Edit episode"></button>
 	<button class="delete-episode typcn typcn-times red" title="Delete episode"></button>

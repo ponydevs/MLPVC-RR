@@ -68,7 +68,7 @@
 					if(!in_array($_POST['what'],$POST_TYPES)) respond('Invalid post type');
 					$what = $_POST['what'];
 					if ($what === 'reservation'){
-						if (!PERM('reservations.create'))
+						if (!PERM('member'))
 							respond();
 						res_limit_check();
 					}
@@ -147,7 +147,7 @@
 					if (empty($Thing)) respond("There's no $type with that ID");
 
 					$update = array('reserved_by' => null);
-					if (!PERM('reservations.create')){
+					if (!PERM('member')){
 						if ($type === 'request' && $deleteing){
 							if (!PERM('inspector') && !$signedIn && $Thing['requested_by'] !== $currentUser['id'])
 								respond();
@@ -277,7 +277,7 @@
 
 					$_match = array();
 					if (preg_match('/^delete\/'.EPISODE_ID_PATTERN.'$/',$data,$_match)){
-						if (!PERM('episodes.manage')) respond();
+						if (!PERM('inspector')) respond();
 						list($season,$episode) = array_map('intval',array_splice($_match,1,2));
 
 						$Episode = get_real_episode($season,$episode);
@@ -336,7 +336,7 @@
 						respond(array('newhtml' => get_episode_voting($Episode)));
 					}
 					else if (preg_match('/^export\/'.EPISODE_ID_PATTERN.'$/', $data, $_match)){
-						if (!PERM('episodes.manage')) respond();
+						if (!PERM('inspector')) respond();
 						$Episode = get_real_episode($_match[1],$_match[2]);
 						if (empty($Episode))
 							respond("There's no episode with this season & episode number");
@@ -394,7 +394,7 @@
 						));
 					}
 					else {
-						if (!PERM('episodes.manage')) respond();
+						if (!PERM('inspector')) respond();
 						$editing = preg_match('/^edit\/'.EPISODE_ID_PATTERN.'$/',$data,$_match);
 						if ($editing){
 							list($season, $episode) = array_map('intval', array_splice($_match, 1, 2));
@@ -490,7 +490,7 @@
 					'do-css',
 					'js' => array('episodes'),
 				);
-				if (PERM('episodes.manage')) $settings['js'][] = 'episodes-manage';
+				if (PERM('inspector')) $settings['js'][] = 'episodes-manage';
 				loadPage($settings);
 			break;
 			case "about":
@@ -503,7 +503,7 @@
 			break;
 			case "logs":
 				if (RQMTHD === "POST"){
-					if (!PERM('logs.view')) respond();
+					if (!PERM('inspector')) respond();
 					$_match = array();
 					if (isset($_POST['page']) && is_numeric($_POST['page']))
 						$Page = intval($_POST['page']);
@@ -521,7 +521,7 @@
 					}
 				}
 				else {
-					if (!PERM('logs.view')) $MSG = "You do not have permission to view the log entries";
+					if (!PERM('inspector')) $MSG = "You do not have permission to view the log entries";
 					else if (is_numeric($data))
 						$Page = intval($data);
 				}
@@ -696,13 +696,17 @@
 				if (!PERM('inspector')) do404();
 
 				$CGDb = new MysqliDbWrapper(DB_HOST,DB_USER,DB_PASS,'mlpvc-colorguide');
+				include "includes/CGUtils.php";
 
-				loadPage(array(
+				$Ponies = $CGDb->orderBy('label', 'ASC')->get('ponies');
+
+				$settings = array(
 					'title' => 'Color Guide',
-					'do-css', 'do-js',
-					'css' => 'jquery.qtip',
-					'js' => 'jquery.qtip',
-				));
+					'do-css',
+					'js' => array('jquery.qtip', 'jquery.ctxmenu', 'ZeroClipboard', $do),
+				);
+				if (PERM('inspector')) $settings['js'][] = 'colorguides-manage';
+				loadPage($settings);
 			break;
 			case "404":
 			default:

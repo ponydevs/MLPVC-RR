@@ -11,7 +11,7 @@ In the past, the management of comments under journals was done manually. Becaus
 
 ## Attributions
 
-**Used libraries & icons include:** [jQuery](http://jquery.com/), [qTip2](http://qtip2.com/), [MysqliDb](https://github.com/joshcam/PHP-MySQLi-Database-Class), [Typicons](http://www.typicons.com/), [Uglify-js](https://www.npmjs.com/package/uglify-js), [SASS](http://sass-lang.com/)<br>
+**Used libraries & icons include:** [jQuery](http://jquery.com/), [qTip2](http://qtip2.com/), [ZeroClipboard v2](http://zeroclipboard.org/), [MysqliDb](https://github.com/joshcam/PHP-MySQLi-Database-Class), [Typicons](http://www.typicons.com/), [Uglify-js](https://www.npmjs.com/package/uglify-js), [SASS](http://sass-lang.com/)<br>
 **Header font:** [Celestia Medium Redux](http://www.mattyhex.net/CMR/)<br>
 **deviantArt logo** *(used on profile pages)* &copy; [DeviantArt](http://www.deviantart.com/)<br>
 **Application logo** based on [Christmas Vector of the MLP-VC Mascot](http://pirill-poveniy.deviantart.com/art/Collab-Christmas-Vector-of-the-MLP-VC-Mascot-503196118) by the following artists:

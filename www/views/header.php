@@ -40,7 +40,7 @@
 		$HeaderItems['u'] = array("/u/{$currentUser['name']}",'Account');
 	if ($do === 'user' && !$sameUser)
 		$HeaderItems[] = array($_SERVER['REQUEST_URI'], $title);
-	if (PERM('logs.view')){
+	if (PERM('inspector')){
 		$HeaderItems['logs'] = array('/logs', 'Logs');
 		if ($do === 'logs')
 			$HeaderItems['logs']['subitem'] = array($_SERVER['REQUEST_URI'], "Page $Page");

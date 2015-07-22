@@ -159,13 +159,11 @@
 					$button.val(name).on('keydown', function (e) {
 						if ([13, 32].indexOf(e.keyCode) !== -1){
 							e.preventDefault();
-							e.stopPropagation();
 							
 							$button.trigger('click');
 						}
 						else if (e.keyCode === 9){
 							e.preventDefault();
-							e.stopPropagation();
 							
 							var $dBc = $dialogButtons.children(),
 								$focused = $dBc.filter(':focus'),
@@ -185,7 +183,6 @@
 						}
 					}).on('click', function (e) {
 						e.preventDefault();
-						e.stopPropagation();
 						
 						if (typeof obj.action === 'function') obj.action(e);
 
