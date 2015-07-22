@@ -706,7 +706,7 @@
 				$settings = array(
 					'title' => 'Color Guide',
 					'do-css',
-					'js' => array('jquery.qtip', 'jquery.ctxmenu', 'ZeroClipboard', $do),
+					'js' => array('jquery.qtip', 'jquery.ctxmenu', $do),
 				);
 				if (PERM('inspector')) $settings['js'][] = 'colorguides-manage';
 				loadPage($settings);

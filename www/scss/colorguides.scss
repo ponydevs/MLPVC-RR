@@ -144,12 +144,10 @@ ul.colors {
 			font-size: 0;
 			transform: scale(1);
 
-			&.zeroclipboard-is-active { transform: scale(.8) }
+			&:active { transform: scale(.8) }
 		}
 	}
 }
-
-.global-zeroclipboard-container { cursor: pointer }
 
 %qtip-custom {
 	font-size: 16px;
