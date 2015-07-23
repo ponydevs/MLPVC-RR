@@ -59,12 +59,13 @@
 		$HTML = '';
 		if (!empty($Ponies)) foreach ($Ponies as $p){
 			$imgPth = "img/cg/{$p['id']}.png";
+			if (!file_Exists(APPATH.$imgPth)) $imgPth = "img/blank-pixel.png";
 			$img = '';
-			if (file_Exists(APPATH.$imgPth)) $img .= "<div><img src='/$imgPth' alt='".apos_encode($p['label'])."'></div>";
+			$img .= "<div><img src='/$imgPth' alt='".apos_encode($p['label'])."'></div>";
 
 			$tags = get_tags_html($p['id']);
 			$colors = get_colors_html($p['id']);
-			$editBtn = PERM('inspector') ? '<button class="rename typcn typcn-pencil blue" title="Rename" disabled></button><button class="delete typcn typcn-trash red" title="Delete" disabled></button>' : '';
+			$editBtn = PERM('inspector') ? '<button class="edit typcn typcn-spanner blue" title="Change name/tags" disabled></button><button class="delete typcn typcn-trash red" title="Delete" disabled></button>' : '';
 
 			$HTML .= "<li>$img<div><strong>{$p['label']}$editBtn</strong>$tags$colors</div></li>";
 		}

@@ -27,11 +27,13 @@
 		else {
 			var $action = $(document.createElement('a'));
 			if (item.text) $action.text(item.text);
+			if (item.icon) $action.addClass('typcn typcn-'+item.icon);
+			if (item.default === true) $action.css('font-weight', 'bold');
 			if (typeof item.click === 'function')
 				$action.on('click',function(e){
 					e.stopPropagation();
 					e.preventDefault();
-					item.click.call($el, e);
+					item.click.call($el.get(0), e);
 					$ctxmenu.hide();
 				});
 			$action.appendTo($item);
@@ -71,6 +73,11 @@
 		$.each(items,function(_, item){
 			addToItems(item, $el)
 		});
+	};
+	$.ctxmenu.triggerItem = function($el, nth){
+		var $ch = $el.data('ctxmenu-items');
+		if (nth < 1 || $ch.length-1 < nth) throw new Error('There\'s no such menu option: '+nth);
+		$ch.eq(nth).children('a').triggerHandler('click');
 	};
 
 	$(document.body).on('click contextmenu',function(){ $ctxmenu.hide() });

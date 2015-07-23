@@ -372,6 +372,7 @@
 								};
 								if (!isset($vid->provider) || $vid->provider['name'] !== $k)
 									respond("Incorrect {$VIDEO_PROVIDER_NAMES[$k]} URL specified");
+								/** @noinspection PhpUndefinedFieldInspection */
 								$set = $vid->id;
 							}
 
@@ -491,9 +492,9 @@
 				$settings = array(
 					'title' => 'Episodes',
 					'do-css',
-					'js' => array('episodes'),
+					'js' => array($do),
 				);
-				if (PERM('inspector')) $settings['js'][] = 'episodes-manage';
+				if (PERM('inspector')) $settings['js'][] = "$do-manage";
 				loadPage($settings);
 			break;
 			case "about":
@@ -695,20 +696,36 @@
 				if ($canEdit) $settings['js'][] = 'user-manage';
 				loadPage($settings);
 			break;
+			case "colourguides":
+			case "colourguide":
 			case "colorguides":
+				$do = 'colorguide';
+			case "colorguide":
 				if (!PERM('inspector')) do404();
 
 				$CGDb = new MysqliDbWrapper(DB_HOST,DB_USER,DB_PASS,'mlpvc-colorguide');
 				include "includes/CGUtils.php";
 
+				$query = !empty($_SERVER['QUERY_STRING']) ? $_SERVER['QUERY_STRING'] : '';
+				if (strtok($_SERVER['REQUEST_URI'], '?') !== "/{$color}guide")
+					redirect("/{$color}guide", STAY_ALIVE);
+
+				if (RQMTHD === 'POST'){
+					if (!PERM('inspector')) respond();
+					$_match = array();
+					if (preg_macth('~rename~', $data, $_match)){
+
+					}
+				}
+
 				$Ponies = $CGDb->orderBy('label', 'ASC')->get('ponies');
 
 				$settings = array(
-					'title' => 'Color Guide',
+					'title' => "$Color Guide",
 					'do-css',
 					'js' => array('jquery.qtip', 'jquery.ctxmenu', $do),
 				);
-				if (PERM('inspector')) $settings['js'][] = 'colorguides-manage';
+				if (PERM('inspector')) $settings['js'][] = "$do-manage";
 				loadPage($settings);
 			break;
 			case "404":

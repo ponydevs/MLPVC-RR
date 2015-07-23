@@ -7,6 +7,9 @@
 	define('CSRF_TOKEN',Cookie::get('CSRF_TOKEN'));
 
 	$signedIn = false;
+
+	$Color = 'Color';
+	$color = 'color';
 	if (Cookie::exists('access')){
 		$authKey = Cookie::get('access');
 		$currentUser = get_user($authKey,'access');
@@ -20,6 +23,11 @@
 				$lastVisitTS = date('c');
 				if ($Database->where('id', $currentUser['Session']['id'])->update('sessions', array('lastvisit' => $lastVisitTS)))
 					$currentUser['Session']['lastvisit'] = $lastVisitTS;
+
+				if ($currentUser['name'] === 'Pirill-Poveniy'){
+					$Color = 'Colour';
+					$color = 'colour';
+				}
 			}
 			else $Database->where('id', $currentUser['id'])->delete('sessions');
 		}

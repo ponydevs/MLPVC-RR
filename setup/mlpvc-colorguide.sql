@@ -6,8 +6,6 @@ SET time_zone = "+00:00";
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
 /*!40101 SET NAMES utf8 */;
 
-DROP DATABASE IF EXISTS `mlpvc-colorguide`;
-CREATE DATABASE `mlpvc-colorguide` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 USE `mlpvc-colorguide`;
 
 CREATE TABLE IF NOT EXISTS `colorgroups` (
@@ -126,7 +124,7 @@ CREATE TABLE IF NOT EXISTS `tags` (
   `name` varchar(25) NOT NULL,
   `title` tinytext NOT NULL,
   `type` enum('spec','gen','cat','app','ep') DEFAULT NULL
-) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8;
 
 INSERT INTO `tags` (`tid`, `name`, `title`, `type`) VALUES
 (1, 'unicorn', '', 'spec'),
@@ -143,7 +141,9 @@ INSERT INTO `tags` (`tid`, `name`, `title`, `type`) VALUES
 (12, 'female', '', 'gen'),
 (13, 'ambiguous', '', 'gen'),
 (14, 'twilight sparkle', 'All appearances related to Twilight Sparkle', NULL),
-(15, 'gala dresses', 'All gala dress colors', 'app');
+(15, 'gala dresses', 'All gala dress colors', 'app'),
+(16, 'human', 'Refers to Equestria Girls characters', 'spec'),
+(17, 'pets', '', 'cat');
 
 
 ALTER TABLE `colorgroups`
@@ -172,7 +172,7 @@ ALTER TABLE `colors`
 ALTER TABLE `ponies`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=4;
 ALTER TABLE `tags`
-  MODIFY `tid` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=16;
+  MODIFY `tid` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=18;
 
 ALTER TABLE `colorgroups`
   ADD CONSTRAINT `colorgroups_ibfk_1` FOREIGN KEY (`ponyid`) REFERENCES `ponies` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
