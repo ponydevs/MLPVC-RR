@@ -7,7 +7,7 @@
 <script src="/js/<?=$js?>.js?<?=filemtime(APPATH."/js/$js.js")?>"></script>
 <?php 	} ?>
 <script>
-<?php if (!isset($_SERVER['HTTP_DNT']) && !empty(GA_TRACKING_CODE)){ ?>
+<?php if (!isset($_SERVER['HTTP_DNT']) && !empty(GA_TRACKING_CODE) && !PERM('inspector')){ ?>
 /* We respect your privacy. Enable "Do Not Track" in your browser, and this tracking code will disappear. */
 (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
 (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
