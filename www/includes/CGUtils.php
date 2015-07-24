@@ -19,7 +19,7 @@
 				if (!empty($Colors))
 					foreach ($Colors as $i => $c){
 						$title = apos_encode($c['label']);
-						$HTML .= "<span style=background-color:{$c['hex']} title='$title'>{$c['hex']}</span> ";
+						$HTML .= "<span id='{$c['colorid']}-{$cg['groupid']}' style=background-color:{$c['hex']} title='$title'>{$c['hex']}</span> ";
 					};
 
 				$HTML .= "</li>";

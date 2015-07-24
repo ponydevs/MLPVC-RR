@@ -25,5 +25,5 @@ $(function(){
 		});
 	}
 	tooltips();
-	(window[' '] = {}).tooltips = function(){tooltips()};
+	window.tooltips = function(){tooltips()};
 });

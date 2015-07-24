@@ -1,9 +1,10 @@
-/* Context menu plugin | by @DJDavid98 | for gh:ponydevs/MLPVC-RR */
+/* Context menu plugin | by @DJDavid98 | for gh:ponydevs/MLPVC-RR | utilizes: http://stackoverflow.com/a/30255040/1344955 */
 (function($){
 	var $ctxmenu = $(document.createElement('div')).attr('id', 'ctxmenu');
 	$ctxmenu
 		.appendTo(document.body)
-		.on('click',function(e){ e.stopPropagation() });
+		.on('click',function(e){ e.stopPropagation() })
+		.on('contextmenu', function(e){ $ctxmenu.hide(); return false });
 	$.ctxmenu = {};
 
 	function setTitle($el, title){
@@ -28,7 +29,7 @@
 			var $action = $(document.createElement('a'));
 			if (item.text) $action.text(item.text);
 			if (item.icon) $action.addClass('typcn typcn-'+item.icon);
-			if (item.default === true) $action.css('font-weight', 'bold');
+			if (item.default === true) $action.addClass('default');
 			if (typeof item.click === 'function')
 				$action.on('click',function(e){
 					e.stopPropagation();
@@ -55,9 +56,21 @@
 				e.stopPropagation();
 
 				$ctxmenu
-					.css({ top: e.clientY, left: e.clientX })
 					.html($el.data('ctxmenu-items').clone(true, true))
+					.css({ top: e.pageY, left: e.pageX, opacity: 0 })
 					.show();
+
+				var w = Math.max(document.documentElement.clientWidth, window.innerWidth || 0),
+					h = Math.max(document.documentElement.clientHeight, window.innerHeight || 0),
+					d = $(document).scrollTop(),
+					p = $ctxmenu.position(),
+					top = (p.top > h + d || p.top > h - d) ? e.pageY-$ctxmenu.outerHeight() : false,
+					left = (p.left < 0 - $ctxmenu.width() || p.left > w) ? e.pageX-$ctxmenu.outerWidth() : false;
+
+				if (top !== false) $ctxmenu.css('top', top);
+				if (left !== false) $ctxmenu.css('left', left);
+
+				$ctxmenu.css('opacity', 1);
 			});
 		});
 	};
@@ -81,5 +94,5 @@
 	};
 
 	$(document.body).on('click contextmenu',function(){ $ctxmenu.hide() });
-	$(window).on('blur',function(){ $ctxmenu.hide() });
+	$(window).on('blur resize',function(){ $ctxmenu.hide() });
 })(jQuery);
