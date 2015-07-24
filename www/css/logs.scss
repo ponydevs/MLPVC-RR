@@ -1,6 +1,6 @@
 @import "vars";
 
-@media all and (max-width: $Breakpoint) {
+@media all and (max-width: $Breakpoint){
 	.expand-section {
 		display: block;
 		width: calc(100% - 10px);
@@ -21,7 +21,7 @@
 		display: none;
 	}
 }
-@media all and (min-width: 500px) {
+@media all and (min-width: 500px){
 	#dialogContent .modal-ip {
 		display: none;
 	}
