@@ -114,7 +114,5 @@
 			display: none;
 		}
 	}
-	&:not(:last-child) > img {
-		display: none;
-	}
+	&:not(:last-child) > img { display: none }
 }

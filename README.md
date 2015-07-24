@@ -64,29 +64,46 @@ This is just the way I have my personal development environment set up locally, 
 - Ruby > SASS gem
 - Node.js > npm Uglify-js package
 
+#### Install necessary tools
+
+1. Install [SASS](http://sass-lang.com/install) (includes install of Ruby)
+2. Install [Node.js](https://nodejs.org/download/)<br>If the `PATH` environment variable is not properly updated after install, do the following:
+	1. Press `Windows+R`, then type `cmd` and press `Enter`
+	2. If you installed to a drive other than `C:`, type `<drive letter>:` to switch to that drive
+	3. Type `cd <node install directory>` *(e.g. `cd C:\Program Files\nodejs`)* and press `Enter`
+	4. Now you can run the command below
+3. Install [autoprefixer](https://www.npmjs.com/package/autoprefixer#cli), [cssnano](https://www.npmjs.com/package/cssnano) and [uglify-js](https://www.npmjs.com/package/uglify-js) using `npm`<br>Run the command: `npm install postcss-cli autoprefixer cssnano uglify-js --global`<br>(You can paste into the comand window by right clikcing and selecting `Paste`)
+
 #### Set up CSS preprocessing
 
-1. [Install SASS](http://sass-lang.com/install)
-2. Open PHPStorm settings
-3. In the sidebar, select `Tools > File Watchers`
-4. Press `Alt+Insert`
-5. Select `SCSS`
+1. Open PHPStorm settings
+2. In the sidebar, select `Tools > File Watchers`
+3. Press `Alt+Insert`
+4. Select `SCSS`
 	- Under `Options`, uncheck `Immediate file sychronization`
 	- Set `Program` to the path of the SASS gem's `scss.bat` file<br>(e.g. `C:\Ruby22\bin\scss.bat`)
-	- Set `Arguments` to `--sourcemap=none --style compressed --no-cache --update $FileName$:../css/$FileNameWithoutExtension$.min.css`
-	- Set `Output paths to refresh` to `../css/$FileNameWithoutExtension$.min.css`
+	- Set `Arguments` to `--sourcemap=auto --no-cache --update $FileName$:../css/$FileNameWithoutExtension$.min.css`
+	- Set `Output paths to refresh` to `../css/$FileNameWithoutExtension$.min.css:../css/$FileNameWithoutExtension$.min.css.map`
+	- Click OK
+5. Press `Alt+Insert`
+6. Select `<custom>`
+	- Name it `Autoprefix & minify CSS` or similar
+	- Under `Options`, uncheck `Immediate file sychronization`
+	- Set `File type` dropdown to `Cascading Style Sheet`
+	- Set `Program` to the path of the `postcss.cmd` file<br>(e.g. `C:\Users\<username>\AppData\Roaming\npm\postcss.cmd`)
+	- Set `Arguments` to `-u cssnano --no-autoprefix --no-comments -u autoprefixer $FileName$ -o $FileName$`
+	- Set `Working directory` to `$FileDir$`
+	- Set `Output paths to refresh` to `$FileName$:$FileName$.map`
 	- Click OK
 	
 #### Set up JS minification
 
-1. Install [Node.js](https://nodejs.org/download/)
-2. Install [uglify-js](https://www.npmjs.com/package/uglify-js) using npm
-2. Open PHPStorm settings
-3. In the sidebar, select `Tools > File Watchers`
-4. Press `Alt+Insert`
-5. Select `UglifyJS`
+1. Open PHPStorm settings
+2. In the sidebar, select `Tools > File Watchers`
+3. Press `Alt+Insert`
+4. Select `UglifyJS`
 	- Under `Options`, uncheck `Immediate file sychronization`
 	- Set `Program` to the path of the `uglifyjs.cmd` file<br>(e.g. `C:\Users\<username>\AppData\Roaming\npm\uglifyjs.cmd`)
-	- Set `Arguments` to `$FileName$ -o $FileNameWithoutExtension$.min.js --screw-ie8 -c -m`
-	- Set `Output paths to refresh` to `$FileNameWithoutExtension$.min.js`
+	- Set `Arguments` to `$FileName$ -o $FileNameWithoutExtension$.min.js --screw-ie8 -c -m --source-map $FileNameWithoutExtension$.min.map`
+	- Set `Output paths to refresh` to `$FileNameWithoutExtension$.min.js:$FileNameWithoutExtension$.min.js.map`
 	- Click OK

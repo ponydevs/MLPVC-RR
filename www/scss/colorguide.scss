@@ -161,10 +161,7 @@ ul.colors {
 		background: inherit;
 
 
-		+ .qtip-content {
-			font-size: .75em;
-			textalign: left !important;
-		}
+		+ .qtip-content { font-size: .75em }
 	}
 	.qtip-content {
 		padding: 5px;
