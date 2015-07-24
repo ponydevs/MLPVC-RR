@@ -28,4 +28,4 @@ Coding and design by [DJDavid98](http://djdavid98.eu/)
 
 ## Contributing
 
-This project is maintained by me, and me alone, and as suack, I do not expect code contributions. Due to the complex CSS & JS minification setup required to edit the site's client-side code locally, it's hard for anyone other than me to make changes to it. If you have an idea that you'd like to share, [open an issue](https://github.com/ponydevs/MLPVC-RR/issues/new) instead.
+This project is maintained by me, and me alone, and as such, I do not expect code contributions. Due to the complex CSS & JS minification setup required to edit the site's client-side code locally, it's hard for anyone other than me to make changes to it. If you have an idea that you'd like to share, [open an issue](https://github.com/ponydevs/MLPVC-RR/issues/new) instead.
