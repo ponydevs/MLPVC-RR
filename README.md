@@ -82,8 +82,8 @@ This is just the way I have my personal development environment set up locally, 
 4. Select `SCSS`
 	- Under `Options`, uncheck `Immediate file sychronization`
 	- Set `Program` to the path of the SASS gem's `scss.bat` file<br>(e.g. `C:\Ruby22\bin\scss.bat`)
-	- Set `Arguments` to `--sourcemap=auto --no-cache --update $FileName$:../css/$FileNameWithoutExtension$.min.css`
-	- Set `Output paths to refresh` to `../css/$FileNameWithoutExtension$.min.css:../css/$FileNameWithoutExtension$.min.css.map`
+	- Set `Arguments` to `--sourcemap=auto --no-cache --update $FileName$:$FileNameWithoutExtension$.min.css`
+	- Set `Output paths to refresh` to `$FileNameWithoutExtension$.min.css:$FileNameWithoutExtension$.min.css.map`
 	- Click OK
 5. Press `Alt+Insert`
 6. Select `<custom>`
@@ -91,7 +91,7 @@ This is just the way I have my personal development environment set up locally, 
 	- Under `Options`, uncheck `Immediate file sychronization`
 	- Set `File type` dropdown to `Cascading Style Sheet`
 	- Set `Program` to the path of the `postcss.cmd` file<br>(e.g. `C:\Users\<username>\AppData\Roaming\npm\postcss.cmd`)
-	- Set `Arguments` to `-u cssnano --no-autoprefix --no-comments -u autoprefixer $FileName$ -o $FileName$`
+	- Set `Arguments` to `-u autoprefixer -u cssnano --no-autoprefix --no-comments $FileName$ -o $FileName$`
 	- Set `Working directory` to `$FileDir$`
 	- Set `Output paths to refresh` to `$FileName$:$FileName$.map`
 	- Click OK

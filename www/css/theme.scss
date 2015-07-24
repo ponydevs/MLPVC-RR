@@ -327,9 +327,10 @@ header {
 					transition: background-color .2s linear;
 
 					&:hover { background-color: rgba(255,255,255,.2) }
-					&:focus, &:active {	background-color: rgba(255,255,255,.5) }
+					&:focus, &:active { background-color: rgba(255,255,255,.5) }
 
 					&[href^=http]:after {
+						font-style: italic;
 						content: "";
 						width: 12px;
 						height: 12px;
