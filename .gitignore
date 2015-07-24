@@ -2,3 +2,4 @@
 www/conf.php
 mlpvc-rr-error.log
 *.opdownload
+node_modules

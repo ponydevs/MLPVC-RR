@@ -11,7 +11,7 @@ In the past, the management of comments under journals was done manually. Becaus
 
 ## Attributions
 
-**Used libraries & icons include:** [jQuery](http://jquery.com/), [qTip2](http://qtip2.com/), [MysqliDb](https://github.com/joshcam/PHP-MySQLi-Database-Class), [Typicons](http://www.typicons.com/), [Uglify-js](https://www.npmjs.com/package/uglify-js), [node-sass](https://www.npmjs.com/package/node-sass), [Autoprefixer](https://www.npmjs.com/package/autoprefixer#cli)<br>
+**Used libraries & icons include:** [jQuery](http://jquery.com/), [qTip2](http://qtip2.com/), [MysqliDb](https://github.com/joshcam/PHP-MySQLi-Database-Class), [Typicons](http://www.typicons.com/), and various npm packages<br>
 **Header font:** [Celestia Medium Redux](http://www.mattyhex.net/CMR/)<br>
 **deviantArt logo** *(used on profile pages)* &copy; [DeviantArt](http://www.deviantart.com/)<br>
 **Application logo** based on [Christmas Vector of the MLP-VC Mascot](http://pirill-poveniy.deviantart.com/art/Collab-Christmas-Vector-of-the-MLP-VC-Mascot-503196118) by the following artists:
@@ -28,4 +28,4 @@ Coding and design by [DJDavid98](http://djdavid98.eu/)
 
 ## Contributing
 
-This project is maintained by me, and me alone, and as such, I do not expect code contributions. Due to the complex CSS & JS minification setup required to edit the site's client-side code locally, it's hard for anyone other than me to make changes to it. If you have an idea that you'd like to share, [open an issue](https://github.com/ponydevs/MLPVC-RR/issues/new) instead.
+This project is maintained by me, and me alone, and as such, I do not expect code contributions. If you have an idea that you'd like to share, [open an issue](https://github.com/ponydevs/MLPVC-RR/issues/new) instead.

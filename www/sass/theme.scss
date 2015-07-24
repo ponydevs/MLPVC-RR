@@ -1,7 +1,7 @@
 @import url(http://fonts.googleapis.com/css?family=Arimo:400,700,400italic);
-@import "vars";
-@import "theme_dialog";
-@import "theme_forms";
+@import "_vars.scss";
+@import "_theme_dialog.scss";
+@import "_theme_forms.scss";
 @import "../css/typicons.min.css";
 @font-face {
 	font-family: "Celestia";
