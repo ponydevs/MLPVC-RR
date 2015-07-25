@@ -1,4 +1,4 @@
-@import "_vars.scss";
+@import "vars";
 
 /* Mobile-only Styles */
 @media all and (max-width: $Breakpoint){
@@ -136,36 +136,47 @@
 
 			&:before, &:after, iframe, object, embed {
 				position: absolute;
-				left: 0;
+				content: '';
 				width: 100%;
 				height: 100%;
+				left: 0;
+				top: 0;
 				display: block;
-				text-align:center;
+				box-sizing: border-box;
 			}
 
 			&:before {
-				content:'\e131';
-				//noinspection CssNoGenericFontName
-				font-family: 'Typicons';
 				z-index: 1;
-				padding: calc(((50% + 32px + 14px)/2) - 75px) 0 calc(((50% + 32px + 14px)/2) + 75px);
-				font-size: 64px;
-				line-height: 64px;
-				height:64px;
 				border: 5px dashed;
-				box-sizing: border-box;
 			}
+
 			&:after {
-				content: 'Loading video';
-				z-index: 1;
+				z-index: 2;
+
+				left: 50%;
 				top: 50%;
-				height: 25px;
-				font-size: 25px;
-				line-height: 25px;
+
+				overflow: hidden;
+
+				$frameWidth: 64px;
+				$frames: 8;
+				$imageWidth: $frames * $frameWidth;
+				$height: 49px;
+				width: $frameWidth;
+				height: $height;
+				transform: translate(-50%, -50%);
+				background-size: $imageWidth $height;
+				background: url('../img/preloader.png') no-repeat 0 0;
+
+				animation: load .6s steps($frames) infinite;
+				@keyframes load {
+					0% { background-position: 0 0 }
+					100% {background-position: 0 -$imageWidth }
+				}
 			}
 
 			iframe, object, embed {
-				z-index: 2;
+				z-index: 3;
 				top: 0;
 				border: 0;
 				margin: 0;
