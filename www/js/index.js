@@ -43,8 +43,14 @@ $(function(){
 
 						if (data.status){
 							var $epSection = $('#content').children('section.episode');
-							if (data.epsection)
+							if (data.epsection){
+								if (!$epSection.length)
+									$epSection = $(document.createElement('section'))
+										.addClass('episode')
+										.insertBefore($('#content').children('section').first());
 								$epSection.html($(data.epsection).filter('section').html());
+							}
+							else if ($epSection.length) $epSection.remove();
 							$.Dialog.close();
 						}
 						else $.Dialog.fail(title, data.message);
