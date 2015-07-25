@@ -71,7 +71,7 @@
 				if (left !== false) $ctxmenu.css('left', left);
 
 				$ctxmenu.css('opacity', 1);
-			});
+			}).addClass('ctxmenu-bound');
 		});
 	};
 	$.ctxmenu.addItem =

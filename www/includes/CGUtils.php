@@ -3,14 +3,17 @@
 	## Utility functions related to the color guide feature ##
 	##########################################################
 
+	// Constant to disable returning of wrapper element with markup generators
+	define('NOWRAP', false);
+
 	// Returns the markup of the color list for a specific pony \\
-	function get_colors_html($PonyID){
+	function get_colors_html($PonyID, $wrap = true){
 		global $CGDb;
 
 		$ColorGroups = $CGDb->where('ponyid', $PonyID)->get('colorgroups');
 		$HTML = '';
 		if (!empty($ColorGroups)){
-			$HTML = "<ul class=colors>";
+			$HTML = $wrap ? "<ul class=colors>" : '';
 			foreach ($ColorGroups as $cg){
 				$cg['label'] = apos_encode($cg['label']);
 				$HTML .= "<li><span class=cat>{$cg['label']}: </span>";
@@ -24,13 +27,13 @@
 
 				$HTML .= "</li>";
 			}
-			$HTML .= "</ul>";
+			if ($wrap) $HTML .= "</ul>";
 		}
 		return $HTML;
 	}
 
 	// Return the markup of a set of tags belonging to a specific pony \\
-	function get_tags_html($PonyID){
+	function get_tags_html($PonyID, $wrap = true){
 		global $CGDb;
 
 		$Tags = $CGDb->rawQuery(
@@ -41,13 +44,13 @@
 			ORDER BY cgt.type DESC, cgt.name',array($PonyID));
 		$HTML = '';
 		if (!empty($Tags)){
-			$HTML = "<div class=tags>";
+			$HTML = $wrap ? "<div class=tags>" : '';
 			foreach ($Tags as $i => $t){
 				$class = " class='tag-{$t['tid']}".(!empty($t['type'])?' typ-'.$t['type']:'')."'";
 				$title = !empty($t['title']) ? " title='".apos_encode($t['title'])."'" : '';
 				$HTML .= "<span$class$title>{$t['name']}</span> ";
 			}
-			$HTML .= "</div>";
+			if ($wrap) $HTML .= "</div>";
 		}
 		return $HTML;
 	}
@@ -71,10 +74,10 @@
 	}
 
 	// Returns the markup for an array of pony datase rows \\
-	function get_ponies_html($Ponies){
+	function get_ponies_html($Ponies, $wrap = true){
 		global $CGDb;
 
-		$HTML = '';
+		$HTML = $wrap ? '<ul id=list>' : '';
 		if (!empty($Ponies)) foreach ($Ponies as $p){
 			$p['label'] = htmlspecialchars($p['label']);
 			$imgPth = "img/cg/{$p['id']}.png";
@@ -89,5 +92,6 @@
 
 			$HTML .= "<li id=p{$p['id']}>$img<div><strong>{$p['label']}$editBtn</strong>$notes$tags$colors</div></li>";
 		}
-		return $HTML;
+
+		return $HTML.($wrap?'</ul>':'');
 	}

@@ -1,5 +1,5 @@
 $(function(){
-	var Color = window.Color, color = window.color, TAG_TYPES_ASSOC = window.TAG_TYPES_ASSOC;
+	var Color = window.Color, color = window.color, TAG_TYPES_ASSOC = window.TAG_TYPES_ASSOC, $colorGroups;
 
 	function copyToClipboard(text){
 		if (!document.queryCommandSupported('copy')){
@@ -53,139 +53,159 @@ $(function(){
 	$tagEditForm.append($(document.createElement('label')).append('<span>Tag type</span><br>',$_typeSelect));
 	$tagEditForm.append($(document.createElement('label')).append('<span>Tag description (max 255 chars., optional)</span><br><textarea name=title maxlength=255></textarea>'));
 
-	$('.tags').children().each(function(){
-		$.ctxmenu.addItem($(this), {text: 'Edit tag', icon: 'pencil', click: function(){
-			var $tag = $(this),
-				tagName = $tag.text().trim(),
-				tagID = $tag.attr('class').match(/tag\-(\d+)(?:\s|$)/)[1],
-				title = 'Editing tag: '+tagName;
+	function ctxmenus(){
+		$('.tags').children(':not(.ctxmenu-bound)').ctxmenu([
+			{text: 'Edit tag', icon: 'pencil', click: function(){
+				var $tag = $(this),
+					tagName = $tag.text().trim(),
+					tagID = $tag.attr('class').match(/tag\-(\d+)(?:\s|$)/)[1],
+					title = 'Editing tag: '+tagName;
 
-			$.Dialog.wait(title, 'Retrieveing tag details from server');
+				$.Dialog.wait(title, 'Retrieveing tag details from server');
 
-			$.post('/colorguide/gettag/'+tagID,{},function(data){
-				if (typeof data !== 'object') return console.log(data) && $w.trigger('ajaxerror');
+				$.post('/colorguide/gettag/'+tagID,{},function(data){
+					if (typeof data !== 'object') return console.log(data) && $w.trigger('ajaxerror');
 
-				if (data.status){
-					$.Dialog.request(title,$tagEditForm.clone(),'edit-tag','Save',function(){
-						var $form = $('#edit-tag');
-						$form.find('input[name], select[name], textarea[name]').each(function(){
-							var $this = $(this);
-							$this.val(data[$this.attr('name')]);
-						});
-						$form.on('submit', function(e){
-							e.preventDefault();
-
-							var tempdata = $(this).serializeArray(), data = {};
-							$.each(tempdata,function(i,el){
-								data[el.name] = el.value;
+					if (data.status){
+						$.Dialog.request(title,$tagEditForm.clone(),'edit-tag','Save',function(){
+							var $form = $('#edit-tag');
+							$form.find('input[name], select[name], textarea[name]').each(function(){
+								var $this = $(this);
+								$this.val(data[$this.attr('name')]);
 							});
+							$form.on('submit', function(e){
+								e.preventDefault();
 
-							$.Dialog.wait(title, 'Saving changes');
+								var tempdata = $(this).serializeArray(), data = {};
+								$.each(tempdata,function(i,el){
+									data[el.name] = el.value;
+								});
 
-							$.post('/colorguide/settag/'+tagID,data,function(data){
-								if (typeof data !== 'object') return console.log(data) && $w.trigger('ajaxerror');
+								$.Dialog.wait(title, 'Saving changes');
 
-								if (data.status){
-									var $affected = $('.tag-'+data.tid);
-									console.log($affected);
-									$affected.qtip('destroy', true);
-									if (data.title) $affected.attr('title', data.title);
-									else $affected.removeAttr('title');
-									$affected
-										.attr('class', 'tag-'+data.tid+' typ-'+data.type)
-										.text(data.name);
-									window.tooltips();
-									$.Dialog.close();
-								}
-								else $.Dialog.fail(title, data.message);
+								$.post('/colorguide/settag/'+tagID,data,function(data){
+									if (typeof data !== 'object') return console.log(data) && $w.trigger('ajaxerror');
+
+									if (data.status){
+										var $affected = $('.tag-'+data.tid);
+										console.log($affected);
+										$affected.qtip('destroy', true);
+										if (data.title) $affected.attr('title', data.title);
+										else $affected.removeAttr('title');
+										$affected
+											.attr('class', 'tag-'+data.tid+(data.type?' typ-'+data.type:''))
+											.text(data.name);
+										window.tooltips();
+										$.Dialog.close();
+									}
+									else $.Dialog.fail(title, data.message);
+								});
 							});
 						});
-					});
-				}
-				else $.Dialog.fail(title, data.message);
-			})
-		}},{text: 'Delete tag (TBI)', icon: 'trash', click: function(){
-			$.Dialog.info('Delete tag triggred', 'yay');
-		}}, true, {text: 'Create new tag', icon: 'plus', click: function(){
-			var title = 'Create new tag',
-				$tag = $(this),
-				$li = $tag.closest('li'),
-				ponyID = $li.attr('id').replace(/\D/g, ''),
-				ponyName = $tag.closest('div:not([class])').children('strong').text().trim();
-
-			$.Dialog.request(title,$tagEditForm.clone(),'edit-tag','Create',function(){
-				var $form = $('#edit-tag');
-				$form.append(
-					$(document.createElement('label'))
-						.append('<input type=checkbox name=addto value='+ponyID+'> Add this tag to the appearance "'+ponyName+'" after creation')
-				);
-				$.Dialog.center();
-				$form.on('submit', function(e){
-					e.preventDefault();
-
-					var tempdata = $form.serializeArray(), data = {};
-					$.each(tempdata,function(i,el){
-						data[el.name] = el.value;
-					});
-
-					$.Dialog.wait(title, 'Adding tag');
-
-					$.post('/colorguide/maketag',data,function(data){
-						if (typeof data !== 'object') return console.log(data) && $w.trigger('ajaxerror');
-
-						if (data.status) $.Dialog.success(title, data.message, true);
-						else $.Dialog.fail(title, data.message);
-					});
-				});
-			})
-		}}, {text: 'Enable edit mode (TBI)', icon: 'edit', click: function(){
-			$(this).parent().prevAll('strong').children('button.edit').triggerHandler('click');
-		}});
-	});
-
-	$('ul.colors').children('li').ctxmenu(
-		[
-			{text: "Edit "+color+" group (TBI)", icon: 'pencil', click: function(){
-				$.Dialog.info('Edit '+color+' group triggered', 'yay');
+					}
+					else $.Dialog.fail(title, data.message);
+				})
 			}},
-			{text: "Delete "+color+" group (TBI)", icon: 'trash', click: function(){
-				// TODO Confirmation
-				$.Dialog.info('Delete '+color+' group triggered', 'yay');
-			}},
-			{text: "Add new group (TBI)", icon: 'folder-add', click: function(){
-				$.Dialog.info('Add new group triggered', 'yay');
-			}},
-			{text: "Add new "+color+' (TBI)', icon: 'plus', click: function(){
-				$.Dialog.info('Add new color triggered', 'yay');
-			}}
-		],
-		function($el){ return Color+' group: '+$el.children().first().text().trim().replace(':','') }
-	).children('span:not(:first-child)').off('click').on('click',function(e){
-		e.preventDefault();
-
-		copyToClipboard(this.innerHTML.trim());
-	}).ctxmenu(
-		[
-			{text: "Copy "+color, icon: 'clipboard', 'default': true, click: function(){
-				copyToClipboard(this.innerHTML.trim());
-			}},
-			{text: "Edit "+color+' (TBI)', icon: 'pencil (TBI)', click: function(){
-				$.Dialog.info('Edit '+color+' triggered', 'yay');
+			{text: 'Delete tag (TBI)', icon: 'trash', click: function(){
+				$.Dialog.info('Delete tag triggred', 'yay');
 			}},
 			true,
-			{text: "Edit "+color+" group (TBI)", icon: 'pencil', click: function(){
-				$.ctxmenu.triggerItem($(this).parent(), 1);
+			{text: 'Create new tag', icon: 'plus', click: function(){
+				var title = 'Create new tag',
+					$tag = $(this),
+					$li = $tag.closest('li'),
+					$div = $tag.closest('div:not([class])'),
+					$tagsDiv = $div.children('.tags'),
+					ponyID = $li.attr('id').replace(/\D/g, ''),
+					ponyName = $div.children('strong').text().trim();
+
+				$.Dialog.request(title,$tagEditForm.clone(),'edit-tag','Create',function(){
+					var $form = $('#edit-tag');
+					$form.append(
+						$(document.createElement('label'))
+							.append('<input type=checkbox name=addto value='+ponyID+'> Add this tag to the appearance "'+ponyName+'" after creation')
+					);
+					$.Dialog.center();
+					$form.on('submit', function(e){
+						e.preventDefault();
+
+						var tempdata = $form.serializeArray(), data = {};
+						$.each(tempdata,function(i,el){
+							data[el.name] = el.value;
+						});
+
+						$.Dialog.wait(title, 'Creating tag');
+
+						$.post('/colorguide/maketag',data,function(data){
+							if (typeof data !== 'object') return console.log(data) && $w.trigger('ajaxerror');
+
+							if (data.status){
+								if (data.tags){
+									$tagsDiv.children('[data-hasqtip]').qtip('destroy', true);
+									$tagsDiv.html(data.tags);
+									window.tooltips();
+									ctxmenus();
+								}
+								$.Dialog.success(title, data.message, true);
+							}
+							else $.Dialog.fail(title, data.message);
+						});
+					});
+				})
 			}},
-			{text: "Delete "+color+" group (TBI)", icon: 'trash', click: function(){
-				$.ctxmenu.triggerItem($(this).parent(), 2);
-			}},
-			{text: "Add new group (TBI)", icon: 'folder-add', click: function(){
-				$.ctxmenu.triggerItem($(this).parent(), 3);
-			}},
-			{text: "Add new "+color+' (TBI)', icon: 'plus', click: function(){
-				$.ctxmenu.triggerItem($(this).parent(), 4);
+			{text: 'Enable edit mode (TBI)', icon: 'edit', click: function(){
+				$(this).parent().prevAll('strong').children('button.edit').triggerHandler('click');
 			}}
-		],
-		function($el){ return 'Color: '+$el.attr('oldtitle') }
-	);
+		]);
+
+		$colorGroups = $('ul.colors').children('li');
+		$colorGroups.filter(':not(.ctxmenu-bound)').ctxmenu(
+			[
+				{text: "Edit "+color+" group (TBI)", icon: 'pencil', click: function(){
+					$.Dialog.info('Edit '+color+' group triggered', 'yay');
+				}},
+				{text: "Delete "+color+" group (TBI)", icon: 'trash', click: function(){
+					// TODO Confirmation
+					$.Dialog.info('Delete '+color+' group triggered', 'yay');
+				}},
+				{text: "Add new group (TBI)", icon: 'folder-add', click: function(){
+					$.Dialog.info('Add new group triggered', 'yay');
+				}},
+				{text: "Add new "+color+' (TBI)', icon: 'plus', click: function(){
+					$.Dialog.info('Add new color triggered', 'yay');
+				}}
+			],
+			function($el){ return Color+' group: '+$el.children().first().text().trim().replace(':','') }
+		);
+		$colorGroups.children('span:not(:first-child)').off('click').on('click',function(e){
+			e.preventDefault();
+
+			copyToClipboard(this.innerHTML.trim());
+		}).filter(':not(.ctxmenu-bound)').ctxmenu(
+			[
+				{text: "Copy "+color, icon: 'clipboard', 'default': true, click: function(){
+					copyToClipboard(this.innerHTML.trim());
+				}},
+				{text: "Edit "+color+' (TBI)', icon: 'pencil (TBI)', click: function(){
+					$.Dialog.info('Edit '+color+' triggered', 'yay');
+				}},
+				true,
+				{text: "Edit "+color+" group (TBI)", icon: 'pencil', click: function(){
+					$.ctxmenu.triggerItem($(this).parent(), 1);
+				}},
+				{text: "Delete "+color+" group (TBI)", icon: 'trash', click: function(){
+					$.ctxmenu.triggerItem($(this).parent(), 2);
+				}},
+				{text: "Add new group (TBI)", icon: 'folder-add', click: function(){
+					$.ctxmenu.triggerItem($(this).parent(), 3);
+				}},
+				{text: "Add new "+color+' (TBI)', icon: 'plus', click: function(){
+					$.ctxmenu.triggerItem($(this).parent(), 4);
+				}}
+			],
+			function($el){ return 'Color: '+$el.attr('oldtitle') }
+		);
+	}
+	ctxmenus();
+	window.ctxmenus = function(){ctxmenus()};
 });

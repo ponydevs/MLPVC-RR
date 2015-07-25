@@ -792,10 +792,30 @@
 							$data['title'] = $title;
 						}
 
-						if ($new) $CGDb->insert('tags', $data);
-						else if ($setting) $CGDb->where('tid', $Tag['tid'])->update('tags', $data);
+						if ($new){
+							$TagID = $CGDb->insert('tags', $data);
+							if (!$TagID) respond(ERR_DB_FAIL);
+							$data['tid'] = $TagID;
 
-						if (!$new) $data = array_merge($Tag, $data);
+							if (!empty($_POST['addto']) && is_numeric($_POST['addto'])){
+								$PonyID = intval($_POST['addto'], 10);
+								$Pony = $CGDb->where('id', $PonyID)->getOne('ponies');
+								if (empty($Pony))
+									respond("Tag created, but target appearance (#$PonyID) does not exist. Please try adding the tag manually.");
+
+								if (!$CGDb->insert('tagged',array(
+									'tid' => $data['tid'],
+									'ponyid' => $Pony['id']
+								))) respond(ERR_DB_FAIL);
+								respond("The tag was successfully created, and has been added to the appearance",1,array(
+									'tags' => get_tags_html($Pony['id'], NOWRAP)
+								));
+							}
+						}
+						else {
+							$CGDb->where('tid', $Tag['tid'])->update('tags', $data);
+							$data = array_merge($Tag, $data);
+						}
 
 						respond('Tag '.($new?'added':'updated').' successfully', 1, $data);
 					}

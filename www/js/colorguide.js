@@ -3,14 +3,7 @@ $(function(){
 	var Color = window.Color, color = window.color;
 
 	function tooltips(){
-		$('.tags').children('span[title][title!=""]').ctxmenu(
-			[
-				{text: "Add to search (TBI)", icon: 'zoom', click: function(){
-					$.Dialog.info('Add tag to search triggered', 'yay');
-				}}
-			],
-			function($el){ return 'Tag: '+$el.text().trim() }
-		).each(function(){
+		$('.tags').children().filter('[title][title!=""]').each(function(){
 			var $this = $(this),
 				tagstyle = $this.attr('class').match(/typ\-([a-z]+)(?:\s|$)/);
 
@@ -21,7 +14,7 @@ $(function(){
 				style: { classes: 'qtip-tag'+tagstyle }
 			});
 		});
-		$('ul.colors').children('li').children('span[title][title!=""]').qtip({
+		$('ul.colors').children('li').children('[title][title!=""]').qtip({
 			content: {
 				text: 'Click to copy HEX '+color+' code to clipboard',
 				title: function(){ return $(this).attr('title') }

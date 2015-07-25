@@ -5,7 +5,7 @@
 		<label>Some features are unavailable</label>
 		<p>Because you seem to be using a mobile device, editing tags & colors may not work, as it requires you to right-click. If you want to do either of these, please do so from a computer.</p>
 	</div>
-	<ul id=list><?=get_ponies_html($Ponies)?></ul>
+	<?=get_ponies_html($Ponies)?>
 </div>
 <div id=sidebar>
 <?php include "views/sidebar.php"; ?>

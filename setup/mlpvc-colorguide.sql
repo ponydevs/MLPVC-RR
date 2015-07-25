@@ -6,6 +6,8 @@ SET time_zone = "+00:00";
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
 /*!40101 SET NAMES utf8 */;
 
+DROP DATABASE `mlpvc-colorguide`;
+CREATE DATABASE `mlpvc-colorguide` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 USE `mlpvc-colorguide`;
 
 CREATE TABLE IF NOT EXISTS `colorgroups` (
