@@ -82,9 +82,21 @@ html.dialog-open {
 	font-size: 16px;
 	font-weight: normal;
 
-	form > label > input[type]:not([type=radio]):not([type=checkbox]):not([type=button]) {
-		width: 100%;
-		box-sizing: border-box;
+	form > label {
+		> span {
+			~ select,
+			~ textarea,
+			~ input[type]:not([type=radio]):not([type=checkbox]):not([type=button]) {
+				margin-top: 5px !important;
+				display: block;
+			}
+		}
+		> select,
+		> textarea,
+		> input[type]:not([type=radio]):not([type=checkbox]):not([type=button]) {
+			width: 100%;
+			box-sizing: border-box;
+		}
 	}
 	.notice {
 		padding: 4px 7.5px;

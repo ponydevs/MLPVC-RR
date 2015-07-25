@@ -96,7 +96,7 @@
 				);
 
 				if (empty($_POST['season']) || empty($_POST['episode'])) respond('Missing episode identifiers');
-				$epdata = get_real_episode(intval($_POST['season']), intval($_POST['episode']));
+				$epdata = get_real_episode(intval($_POST['season'], 10), intval($_POST['episode'], 10));
 				if (empty($epdata)) respond('This episode does not exist');
 				$insert['season'] = $epdata['season'];
 				$insert['episode'] = $epdata['episode'];
@@ -142,7 +142,7 @@
 				if (!$adding){
 					if (!isset($match[2]))
 						 respond("Missing $type ID");
-					$ID = intval($match[2]);
+					$ID = intval($match[2], 10);
 					$Thing = $Database->where('id', $ID)->getOne("{$type}s");
 					if (empty($Thing)) respond("There's no $type with that ID");
 
@@ -278,9 +278,9 @@
 					$_match = array();
 					if (preg_match('/^delete\/'.EPISODE_ID_PATTERN.'$/',$data,$_match)){
 						if (!PERM('inspector')) respond();
-						list($season,$episode) = array_map('intval',array_splice($_match,1,2));
+						list($season,$episode) = array_splice($_match,1,2);
 
-						$Episode = get_real_episode($season,$episode);
+						$Episode = get_real_episode(intval($season, 10),intval($episode, 10));
 						if (empty($Episode))
 							respond("There's no episode with this season & episode number");
 
@@ -331,7 +331,7 @@
 							'season' => $Episode['season'],
 							'episode' => $Episode['episode'],
 							'user' => $currentUser['id'],
-							'vote' => intval($_POST['vote']) > 0 ? 1 : -1
+							'vote' => intval($_POST['vote'], 10) > 0 ? 1 : -1
 						))) respond(ERR_DB_FAIL);
 						respond(array('newhtml' => get_episode_voting($Episode)));
 					}
@@ -412,12 +412,12 @@
 
 						if (!isset($_POST['season']) || !is_numeric($_POST['season']))
 							respond('Season number is missing or invalid');
-						$insert['season'] = intval($_POST['season']);
+						$insert['season'] = intval($_POST['season'], 10);
 						if ($insert['season'] < 1 || $insert['season'] > 8) respond('Season number must be between 1 and 8');
 
 						if (!isset($_POST['episode']) || !is_numeric($_POST['episode']))
 							respond('Episode number is missing or invalid');
-						$insert['episode'] = intval($_POST['episode']);
+						$insert['episode'] = intval($_POST['episode'], 10);
 						if ($insert['episode'] < 1 || $insert['episode'] > 26) respond('Season number must be between 1 and 26');
 
 						if ($editing){
@@ -510,9 +510,9 @@
 					if (!PERM('inspector')) respond();
 					$_match = array();
 					if (isset($_POST['page']) && is_numeric($_POST['page']))
-						$Page = intval($_POST['page']);
+						$Page = intval($_POST['page'], 10);
 					else if (preg_match('/^details\/(\d+)/', $data, $_match)){
-						$EntryID = intval($_match[1]);
+						$EntryID = intval($_match[1], 10);
 
 						$MainEntry = $Database->where('entryid', $EntryID)->getOne('log');
 						if (empty($MainEntry)) respond('Log entry does not exist');
@@ -527,7 +527,7 @@
 				else {
 					if (!PERM('inspector')) $MSG = "You do not have permission to view the log entries";
 					else if (is_numeric($data))
-						$Page = intval($data);
+						$Page = intval($data, 10);
 				}
 
 				if (empty($MSG)){
@@ -706,17 +706,105 @@
 				$CGDb = new MysqliDbWrapper(DB_HOST,DB_USER,DB_PASS,'mlpvc-colorguide');
 				include "includes/CGUtils.php";
 
-				$query = !empty($_SERVER['QUERY_STRING']) ? $_SERVER['QUERY_STRING'] : '';
-				if (strtok($_SERVER['REQUEST_URI'], '?') !== "/{$color}guide")
-					redirect("/{$color}guide", STAY_ALIVE);
-
 				if (RQMTHD === 'POST'){
 					if (!PERM('inspector')) respond();
 					$_match = array();
-					if (preg_macth('~rename~', $data, $_match)){
+					if (preg_match('~^(rename|delete)/(\d+)$~', $data, $_match)){
+						$PonyID = intval($_match[2], 10);
 
+						$Pony = $CGDb->where('id', $PonyID)->getOne('ponies');
+						if (empty($Pony))
+							respond("There's no pony with the ID of $PonyID");
+
+						$update = array();
+						switch ($_match[1]) {
+							case "rename":
+								$newname = isset($_POST['newname']) ? trim($_POST['newname']) : null;
+								$nnl = !empty($newname) ? strlen($newname) : null;
+								if (empty($newname) || $nnl < 4)
+									respond("The new name cannot be shorter than 4 characters");
+								if ($nnl > 255)
+									respond("The new name cannot be longer than 255 characters");
+
+								$update['label'] = $newname;
+							break;
+							case "delete":
+								if ($CGDb->where('id', $Pony['id'])->delete('ponies'))
+									respond(ERR_DB_FAIL);
+								respond('Appearance deleted successfuly');
+							break;
+							default: respond('Bad request');
+						}
+
+						$CGDb->where('id', $Pony['id'])->update('ponies', $update);
 					}
+					else if (preg_match('~^([gs]et|make)tag(?:/(\d+))?$~', $data, $_match)){
+						$setting = $_match[1] === 'set';
+						$getting = $_match[1] === 'get';
+						$new = $_match[1] === 'make';
+
+						if (!$new){
+							if (empty($_match[2]))
+								respond('Missing tag ID');
+							$TagID = intval($_match[2], 10);
+							$Tag = $CGDb->where('tid', $TagID)->getOne('tags');
+							if (empty($Tag))
+								respond("There's no tag with the ID of $TagID");
+
+							if ($getting) respond($Tag);
+						}
+						$data = array();
+
+						$name = isset($_POST['name']) ? strtolower(trim($_POST['name'])) : null;
+						$nl = !empty($name) ? strlen($name) : null;
+						if (empty($name) || $nl < 4)
+							respond("Tag name cannot be shorter than 4 characters");
+						if ($nl > 30)
+							respond("Tag name cannot be longer than 30 characters");
+						$fails = array();
+						if (preg_match('/'.INVERSE_TAG_NAME_PATTERN.'/', $name, $fails)){
+							$invalid = array();
+							foreach ($fails as $f)
+								if (!in_array($f, $invalid))
+									$invalid[] = $f;
+							respond('Tag name contains the following invalid character'.(count($invalid)!==1?'s':'').': "'.implode('", "', $invalid).'".');
+						}
+						$data['name'] = $name;
+
+						if (empty($_POST['type'])) $data['type'] = null;
+						else {
+							$type = trim($_POST['type']);
+							if (!in_array($type, $TAG_TYPES))
+								respond("Invalid tag type: $type");
+							$data['type'] = $type;
+						}
+
+						if (!$new) $CGDb->where('tid',$Tag['tid'],'!=');
+						if ($CGDb->where('name', $data['name'])->has('tags'))
+							respond("There's already a tag with the same name");
+
+						if (empty($_POST['title'])) $data['title'] = '';
+						else {
+							$title = trim($_POST['title']);
+							$tl = strlen($title);
+							if ($tl > 255)
+								respond("Your title exceeds the 255 character limit by ".($tl-255)." characters. Please keep it short, or if more space is necessary, ask the developer to increase the limit.");
+							$data['title'] = $title;
+						}
+
+						if ($new) $CGDb->insert('tags', $data);
+						else if ($setting) $CGDb->where('tid', $Tag['tid'])->update('tags', $data);
+
+						if (!$new) $data = array_merge($Tag, $data);
+
+						respond('Tag '.($new?'added':'updated').' successfully', 1, $data);
+					}
+					else do404();
 				}
+
+				$query = !empty($_SERVER['QUERY_STRING']) ? '?'.$_SERVER['QUERY_STRING'] : '';
+				if (strtok($_SERVER['REQUEST_URI'], '?') !== "/{$color}guide")
+					redirect("/{$color}guide$query", STAY_ALIVE);
 
 				$Ponies = $CGDb->orderBy('label', 'ASC')->get('ponies');
 

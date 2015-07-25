@@ -41,9 +41,9 @@
 			ORDER BY cgt.type DESC, cgt.name',array($PonyID));
 		$HTML = '';
 		if (!empty($Tags)){
-			$HTML = "<div class=tags><span class=unreadable>Tagged: </span>";
+			$HTML = "<div class=tags>";
 			foreach ($Tags as $i => $t){
-				$class = !empty($t['type']) ? " class='{$t['type']}'" : '';
+				$class = " class='tag-{$t['tid']}".(!empty($t['type'])?' typ-'.$t['type']:'')."'";
 				$title = !empty($t['title']) ? " title='".apos_encode($t['title'])."'" : '';
 				$HTML .= "<span$class$title>{$t['name']}</span> ";
 			}
@@ -52,22 +52,42 @@
 		return $HTML;
 	}
 
+	// List of usable tag types
+	$TAG_TYPES_ASSOC = array(
+		'app' => 'Appearance',
+		'cat' => 'Category',
+		'ep' => 'Episode',
+		'gen' => 'Gender',
+		'spec' => 'Species',
+	);
+	$TAG_TYPES = array_keys($TAG_TYPES_ASSOC);
+	define('TAG_NAME_PATTERN', '[a-z\d ().-]');
+	define('INVERSE_TAG_NAME_PATTERN', implode('^',explode('[', TAG_NAME_PATTERN)));
+
+	// Returns the markup for the notes displayed under an appaerance
+	function get_notes_html($p){
+		$p['notes'] = !empty($p['notes']) ? nl2br(htmlspecialchars($p['notes'])) : '';
+		return "<div class='notes'>{$p['notes']}</div>";
+	}
+
 	// Returns the markup for an array of pony datase rows \\
 	function get_ponies_html($Ponies){
 		global $CGDb;
 
 		$HTML = '';
 		if (!empty($Ponies)) foreach ($Ponies as $p){
+			$p['label'] = htmlspecialchars($p['label']);
 			$imgPth = "img/cg/{$p['id']}.png";
 			if (!file_Exists(APPATH.$imgPth)) $imgPth = "img/blank-pixel.png";
 			$img = '';
 			$img .= "<div><img src='/$imgPth' alt='".apos_encode($p['label'])."'></div>";
 
+			$notes = get_notes_html($p);
 			$tags = get_tags_html($p['id']);
 			$colors = get_colors_html($p['id']);
-			$editBtn = PERM('inspector') ? '<button class="edit typcn typcn-spanner blue" title="Change name/tags" disabled></button><button class="delete typcn typcn-trash red" title="Delete" disabled></button>' : '';
+			$editBtn = PERM('inspector') ? '<button class="edit typcn typcn-edit blue" title="Enable edit mode" disabled></button><button class="delete typcn typcn-trash red" title="Delete" disabled></button>' : '';
 
-			$HTML .= "<li>$img<div><strong>{$p['label']}$editBtn</strong>$tags$colors</div></li>";
+			$HTML .= "<li id=p{$p['id']}>$img<div><strong>{$p['label']}$editBtn</strong>$notes$tags$colors</div></li>";
 		}
 		return $HTML;
 	}

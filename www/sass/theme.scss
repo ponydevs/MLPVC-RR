@@ -713,9 +713,12 @@ button, .btn {
 	}
 	&:empty {
 		font-size: .8em;
-		padding: 2px;
-		width: 1.5em;
-		margin:0;
+		line-height: 1em;
+		width: 1em;
+		height: 1em;
+		box-sizing: initial;
+		padding: 4px;
+		margin: 0;
 	}
 	&:hover, &:focus { opacity: 1 }
 	&:active { transform: scale(.96) }

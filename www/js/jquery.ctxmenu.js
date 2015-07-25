@@ -79,10 +79,12 @@
 		var argl = arguments.length;
 		if (argl < 2) throw new Error('Invalud number of arguments ('+argl+') for $.ctxmenu.addItems');
 
-		setTitle($el);
-
 		var items = [].slice.apply(arguments);
 		items.splice(0,1);
+
+		if (typeof $el.data('ctxmenu-items') === 'undefined') return $el.ctxmenu(items);
+		setTitle($el);
+
 		$.each(items,function(_, item){
 			addToItems(item, $el)
 		});

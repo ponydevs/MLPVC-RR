@@ -21,7 +21,7 @@
 			font-weight: bold;
 		}
 
-		> span:not(.unreadable) {
+		> span {
 			background-color: transparent !important;
 
 			&:not(:last-child):after {
@@ -34,7 +34,7 @@
 }
 // Desktop-only
 @media all and (min-width: 650px){
-	div.tags > span:not(.unreadable) {
+	div.tags > span {
 		padding: 3px 5px;
 		border: 1px solid;
 		cursor: default;
@@ -69,11 +69,14 @@
 				margin-right: 10px;
 				width: 150px;
 			}
+			> :not(img):not(:last-child) { margin-bottom: 6px }
 			> strong {
+				display: block;
 				font-size: 1.5em;
 
 				button { margin-left: 8px }
 			}
+			.notes:empty { display: none }
 		}
 	}
 }
@@ -84,10 +87,10 @@ $TCategory: $_TBase;
 $TSpecies: adjust_hue($_TBase, -70);
 $TGender: adjust_hue($_TBase, 60);
 $TAppearance: adjust_hue($_TBase, 120);
-$TEpisode: adjust_hue($_TBase, 90);
+$TEpisode: adjust_hue($_TBase, 200);
 
 @mixin tag-style($color:$TDefault, $icon:false){
-	color: $color;
+	color: darken($color, 5);
 	background-color: lighten($color, 50);
 	@if ($icon != false){
 			&:before { content: $icon }
@@ -96,13 +99,9 @@ $TEpisode: adjust_hue($_TBase, 90);
 
 div.tags {
 	user-select: none;
-	margin-top: 6px;
-
-	> span:not(.unreadable) {
+	> span {
 		display: inline-block;
 		font-weight: bold;
-
-		@include tag-style($TDefault);
 
 		&[title] { cursor: help }
 		&:before {
@@ -110,18 +109,19 @@ div.tags {
 			font-family: 'Typicons';
 			margin-right: 5px;
 		}
-		&.cat { @include tag-style($TCategory, '\e083')	}
-		&.spec { @include tag-style($TSpecies, '\e148') }
-		&.gen { @include tag-style($TGender, '\e12c') }
-		&.app { @include tag-style($TAppearance, '\e07e') }
-		&.ep { @include tag-style($TEpisode, '\e131') }
+
+		&:not([class*=typ-]) { @include tag-style($TDefault) }
+		&.typ-cat { @include tag-style($TCategory, '\e083')	}
+		&.typ-spec { @include tag-style($TSpecies, '\e148') }
+		&.typ-gen { @include tag-style($TGender, '\e12c') }
+		&.typ-app { @include tag-style($TAppearance, '\e07e') }
+		&.typ-ep { @include tag-style($TEpisode, '\e131') }
 	}
 }
 
 ul.colors {
 	display: block;
 	padding: 0;
-	margin: 10px 0 0;
 	list-style: none;
 	white-space: initial !important;
 
@@ -189,3 +189,12 @@ ul.colors {
 .qtip-tag-gen { @include tag-style($TGender) }
 .qtip-tag-app { @include tag-style($TAppearance) }
 .qtip-tag-ep { @include tag-style($TEpisode) }
+
+#edit-tag select[name=type] option {
+	&[value=""]{ @include tag-style($TDefault) }
+	&[value=cat] { @extend .qtip-tag-cat }
+	&[value=spec] { @extend .qtip-tag-spec }
+	&[value=gen] { @extend .qtip-tag-gen }
+	&[value=app] { @extend .qtip-tag-app }
+	&[value=ep] { @extend .qtip-tag-ep }
+}

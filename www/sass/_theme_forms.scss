@@ -55,8 +55,8 @@ textarea {
 input[type=checkbox] {
 	-webkit-appearance: none;
 	display: inline-block;
-	border: 1px solid #313131;
-	background-color: #0f0f0f;
+	border: 1px solid #888;
+	background-color: #EFEFEF;
 	width: 16px;
 	height: 16px;
 	border-radius: 3px;
@@ -64,15 +64,8 @@ input[type=checkbox] {
 	margin: 0 3px 0 0;
 	vertical-align: bottom;
 	top: -2px;
-	transition: border-color .2s, background-color .2s;
 
-	&:hover {
-		background-color: #222;
-
-		&:before { opacity: .3 }
-	}
 	&:checked:before { opacity: 1 }
-	&:focus { border-color: #555 }
 	&:before {
 		position: absolute;
 		top: 2px;
@@ -81,19 +74,10 @@ input[type=checkbox] {
 		font-size: 14px;
 		line-height: 10px;
 		opacity: 0;
-		color: #efefef;
-		transition: opacity .3s linear;
+		color: #000;
 	}
 }
 #dialogContent {
-	input[type=checkbox] {
-		border: 1px solid #CECECE;
-		background-color: #EFEFEF;
-
-		&:hover { background-color: #ddd }
-		&:focus { border-color: #888 }
-		&:before { color: #000 }
-	}
 	> div:not(#dialogButtons) {
 		> form[id] {
 			> * {

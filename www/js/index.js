@@ -2,6 +2,7 @@ $(function(){
 	var $w = $(window),
 		$body = $(document.body),
 		$navbar = $('header nav'),
+		$content = $('#content'),
 		SEASON = window.SEASON,
 		EPISODE = window.EPISODE,
 		idstr = 'S'+SEASON+'E'+EPISODE;
@@ -42,12 +43,12 @@ $(function(){
 						if (typeof data !== 'object') return console.log(data) && $w.trigger('ajaxerror');
 
 						if (data.status){
-							var $epSection = $('#content').children('section.episode');
+							var $epSection = $content.children('section.episode');
 							if (data.epsection){
 								if (!$epSection.length)
 									$epSection = $(document.createElement('section'))
 										.addClass('episode')
-										.insertBefore($('#content').children('section').first());
+										.insertBefore($content.children('section').first());
 								$epSection.html($(data.epsection).filter('section').html());
 							}
 							else if ($epSection.length) $epSection.remove();

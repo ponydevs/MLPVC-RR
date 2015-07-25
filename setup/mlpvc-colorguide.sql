@@ -61,8 +61,6 @@ INSERT INTO `colors` (`colorid`, `groupid`, `label`, `hex`, `order`) VALUES
 (21, 6, 'Grayish Outline', '#C8DBB3', 0),
 (22, 6, 'Fill', '#AFD7E9', 0),
 (23, 6, 'Deep Blue Star', '#4365B7', 0),
-(24, 3, 'Pupil', '#000000', 0),
-(25, 3, 'Shines', '#FFFFFF', 0),
 (26, 7, 'Turquoise Outline', '#6D8EB2', 0),
 (27, 7, 'Fill', '#99A4C4', 0),
 (28, 7, 'Deep Blue Star', '#5861A3', 0),
@@ -81,8 +79,6 @@ INSERT INTO `colors` (`colorid`, `groupid`, `label`, `hex`, `order`) VALUES
 (41, 11, 'Gradient Bottom', '#516CD2', 0),
 (42, 11, 'Dark Highlight', '#ABB0FF', 0),
 (43, 11, 'Light Highlight', '#D8E1FF', 0),
-(44, 11, 'Pupil', '#000000', 0),
-(45, 11, 'Shines', '#FFFFFF', 0),
 (46, 12, 'Base Fill', '#FFCE00', 0),
 (47, 12, 'Base Shine', '#F4EF9C', 0),
 (48, 12, 'Glass', '#BDE7F4', 0),
@@ -92,13 +88,14 @@ INSERT INTO `colors` (`colorid`, `groupid`, `label`, `hex`, `order`) VALUES
 CREATE TABLE IF NOT EXISTS `ponies` (
   `id` int(11) NOT NULL,
   `label` tinytext NOT NULL,
-  `notes` tinytext NOT NULL
+  `notes` tinytext NOT NULL,
+  `added` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 
-INSERT INTO `ponies` (`id`, `label`, `notes`) VALUES
-(1, 'Twilight Sparkle', 'Far legs use a darker stroke color'),
-(2, 'Twilight Sparkle''s gala dress', ''),
-(3, 'Colgate Minuette', '');
+INSERT INTO `ponies` (`id`, `label`, `notes`, `added`) VALUES
+(1, 'Twilight Sparkle', 'Far legs use a darker stroke color', '2015-07-25 14:49:44'),
+(2, 'Twilight Sparkle''s gala dress', '', '2015-07-25 14:49:44'),
+(3, 'Colgate Minuette', '', '2015-07-25 14:49:44');
 
 CREATE TABLE IF NOT EXISTS `tagged` (
   `tid` int(11) NOT NULL,
@@ -124,7 +121,7 @@ CREATE TABLE IF NOT EXISTS `tags` (
   `name` varchar(25) NOT NULL,
   `title` tinytext NOT NULL,
   `type` enum('spec','gen','cat','app','ep') DEFAULT NULL
-) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8;
 
 INSERT INTO `tags` (`tid`, `name`, `title`, `type`) VALUES
 (1, 'unicorn', '', 'spec'),
@@ -143,7 +140,8 @@ INSERT INTO `tags` (`tid`, `name`, `title`, `type`) VALUES
 (14, 'twilight sparkle', 'All appearances related to Twilight Sparkle', NULL),
 (15, 'gala dresses', 'All gala dress colors', 'app'),
 (16, 'human', 'Refers to Equestria Girls characters', 'spec'),
-(17, 'pets', '', 'cat');
+(17, 'pets', '', 'cat'),
+(18, 'amending fences', '', 'ep');
 
 
 ALTER TABLE `colorgroups`
@@ -172,7 +170,7 @@ ALTER TABLE `colors`
 ALTER TABLE `ponies`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=4;
 ALTER TABLE `tags`
-  MODIFY `tid` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=18;
+  MODIFY `tid` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=19;
 
 ALTER TABLE `colorgroups`
   ADD CONSTRAINT `colorgroups_ibfk_1` FOREIGN KEY (`ponyid`) REFERENCES `ponies` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
