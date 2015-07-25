@@ -541,9 +541,7 @@
 					if ($Page > $MaxPages)
 						$Page = $MaxPages;
 
-					$path = "/logs/$Page";
-					if (strtok($_SERVER['REQUEST_URI'],'?') !== $path)
-						redirect($path, STAY_ALIVE);
+					fix_path("/logs/$Page");
 
 					$LogItems = $Database->orderBy('timestamp')->get('log',array($ItemsPerPage*($Page-1), $ItemsPerPage));
 				}
@@ -822,9 +820,7 @@
 					else do404();
 				}
 
-				$query = !empty($_SERVER['QUERY_STRING']) ? '?'.$_SERVER['QUERY_STRING'] : '';
-				if (strtok($_SERVER['REQUEST_URI'], '?') !== "/{$color}guide")
-					redirect("/{$color}guide$query", STAY_ALIVE);
+				fix_path("/{$color}guide");
 
 				$Ponies = $CGDb->orderBy('label', 'ASC')->get('ponies');
 

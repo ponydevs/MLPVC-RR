@@ -421,6 +421,14 @@ HTML;
 		if ($die !== STAY_ALIVE) die();
 	}
 
+	// Redirect to fix path \\
+	function fix_path($path){
+		$query = !empty($_SERVER['QUERY_STRING']) ? preg_replace('~do=[^&]*&data=[^&]*(&|$)~','',$_SERVER['QUERY_STRING']) : '';
+		if (!empty($query)) $query = "?$query";
+		if ($_SERVER['REQUEST_URI'] !== "$path$query")
+			redirect("$path$query", STAY_ALIVE);
+	}
+
 	/**
 	 * Number padder
 	 * -------------
