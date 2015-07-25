@@ -156,7 +156,7 @@ $(function(){
 			{text: 'Enable edit mode (TBI)', icon: 'edit', click: function(){
 				$(this).parent().prevAll('strong').children('button.edit').triggerHandler('click');
 			}}
-		]);
+		], function($el){ return 'Tag: '+$el.text().trim() });
 
 		$colorGroups = $('ul.colors').children('li');
 		$colorGroups.filter(':not(.ctxmenu-bound)').ctxmenu(
