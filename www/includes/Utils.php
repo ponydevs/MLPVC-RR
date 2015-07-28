@@ -673,8 +673,13 @@ HTML;
 
 		$data = @file_get_contents('http://backend.deviantart.com/oembed?url='.urlencode("http://$type/$ID"));
 
-		if (empty($data))
-			throw new Exception('Image not found. Please make sure that the URL is correct.');
+		if (empty($data)){
+			$statusCode = intval(preg_replace('~^HTTP/\S+\s(\d{3}).*~','$1',$http_response_header[0]), 10);
+
+			if ($statusCode == 404)
+				throw new Exception('Image not found. Please make sure that the URL is correct.');
+			else throw new Exception("Image could not be retrieved (HTTP $statusCode)");
+		}
 
 		return array_merge(json_decode($data, true),array('_provider' => $type));
 	}
@@ -703,7 +708,7 @@ HTML;
 					$Database->where('id',$Deviation['id'])->update('deviation_cache', array('updated_on' => date('c',strtotime('+1 minute'))));
 
 				if (empty($type)) $type = 'fav.me';
-				$ErrorMSG = "Saving local data for $type/$ID failed, please try again in a minute.<br>Details: ".$e->getMessage();
+				$ErrorMSG = "Saving local data for $type/$ID failed, please try again in a minute; ".$e->getMessage();
 				if (!PERM('developer')) trigger_error($ErrorMSG);
 				else echo "<div class='notice fail'><label>da_cache_deviation($ID, $type)</label><p>$ErrorMSG</p></div>";
 
@@ -1030,7 +1035,7 @@ HTML;
 					$D['title'] = preg_replace("/'/",'&apos;',$D['title']);
 					$Image = "<div class='image deviation'><a href='http://fav.me/{$D['id']}'><img src='{$D['preview']}' alt='{$D['title']}'></a></div>";
 				}
-				else $Image = "<div class='image deviation'><a href='http://fav.me/{$D['id']}'>Image Could not be displayed</a></div>";
+				else $Image = "<div class='image deviation error'><a href='http://fav.me/{$R['deviation_id']}'>Preview unavailable<br><small>Click to view</small></a></div>";
 			}
 		}
 
