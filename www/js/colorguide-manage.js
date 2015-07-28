@@ -59,7 +59,7 @@ $(function(){
 				});
 		$lbl.append($chx, $(document.createElement('span')).addClass('tag typ-'+type).text(label)).appendTo($_typeSelect);
 	});
-	$tagEditForm.append($(document.createElement('div')).addClass('align-center').append('<span>Tag type</span><br>',$_typeSelect));
+	$tagEditForm.append($(document.createElement('div')).addClass('align-center').append('<span>Tag type (optional)</span><br>',$_typeSelect));
 	$tagEditForm.append($(document.createElement('label')).append('<span>Tag description (max 255 chars., optional)</span><br><textarea name=title maxlength=255></textarea>'));
 
 	var $tags = $('.tags');
