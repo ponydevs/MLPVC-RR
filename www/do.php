@@ -494,8 +494,6 @@
 				loadPage($settings);
 			break;
 			case "about":
-				$DevLink = '<a href="http://djdavid98.eu">DJDavid98</a>';
-
 				loadPage(array(
 					'title' => 'About',
 					'do-css',

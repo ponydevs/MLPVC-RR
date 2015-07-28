@@ -31,7 +31,7 @@
 			<p><strong>Pre-ban dialog illustration (<a href="/img/ban-before.png">direct link</a>):</strong> <a href="http://synthrid.deviantart.com/art/Twilight-What-Have-I-Done-355177596">Twilight - What Have I Done?</a> by <a href="http://synthrid.deviantart.com/">Synthrid</a> <em>(edited with daylight colors)</em></p>
 			<p><strong>Post-ban dialog illustration (<a href="/img/ban-after.png">direct link</a>):</strong> <a href="http://sairoch.deviantart.com/art/Sad-Twilight-Sparkle-354710611">Sad Twilight Sparkle</a> by <a href="http://sairoch.deviantart.com/">Sairoch</a> <em>(<a href="http://sta.sh/0mddtxyru0w">shading-free version</a> used)</em></p>
 			<p><strong>Extrenal link icon</strong> (licensed GPL) taken from <a href="https://commons.wikimedia.org/wiki/File:Icon_External_Link.svg">Wikimedia Commons</a></p>
-			<p><small>Coding, design and hosting by <?=$DevLink?></small></p>
+			<p><small>Coding, design and hosting by <a href="http://djdavid98.eu">DJDavid98</a></small></p>
 		</div>
 	</section>
 <?php
