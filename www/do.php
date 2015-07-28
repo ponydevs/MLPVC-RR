@@ -26,22 +26,23 @@
 
 				if (!empty($_SERVER['HTTP_USER_AGENT']) && strpos($_SERVER['HTTP_USER_AGENT'], 'GitHub-Hookshot/') === 0){
 					if (empty($_SERVER['HTTP_X_GITHUB_EVENT']) || empty($_SERVER['HTTP_X_HUB_SIGNATURE']))
-						do404('event-fail');
+						do404();
 
-					list($algo, $hash) = explode('=', $_SERVER['HTTP_X_HUB_SIGNATURE'], 2) + array('', '');
-					if (!in_array($algo, hash_algos(), TRUE))
-						do404('hash-algo-fail');
-					$rawPost = file_get_contents('php://input');
-					if ($hash !== hash_hmac($algo, $rawPost, GH_WEBHOOK_SECRET))
-						do404('hash-fail');
+					$hash = $_SERVER['HTTP_X_HUB_SIGNATURE'];
+					$payload = file_get_contents('php://input');
+					$payloadHash = hash_hmac('sha1', $payload, GH_WEBHOOK_SECRET);
+					if ($hash !== "sha1=$payloadHash"){
+						statusCodeHeader(404);
+						do404("hash-fail ($hash !== sha1=$payloadHash");
+					}
 
 					switch (strtolower($_SERVER['HTTP_X_GITHUB_EVENT'])) {
 						case 'push': shell_exec("$git pull") && exit;
 						case 'ping': die("pong");
-						default: do404('unhanded-fail');
+						default: do404();
 					}
 				}
-				do404('ua-fail');
+				do404();
 			break;
 			case "signout":
 				if (!$signedIn) respond('Already signed out',1);
