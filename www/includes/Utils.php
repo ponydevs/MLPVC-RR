@@ -12,7 +12,7 @@
 	 * @param array $x
 	 */
 	define('ERR_DB_FAIL','There was an error while saving to the database');
-	function respond($m = 'Insufficent permissions.', $s = false, $x = array()){
+	function respond($m = 'Insufficent permissions.', $s = false, $x = null){
 		header('Content-Type: application/json');
 		if (is_array($m) && $s == false && empty($x)){
 			$m['status'] = true;
@@ -22,10 +22,12 @@
 			global $Database;
 			$m .= ": ".$Database->getLastError();
 		}
-		die(json_encode(array_merge(array(
+		$r = array(
 			"message" => $m,
 			"status" => $s,
-		),$x)));
+		);
+		if (!empty($x)) $r = array_merge($r, $x);
+		die(json_encode($r));
 	}
 
 	# Logging
@@ -389,13 +391,14 @@ HTML;
 	}
 
 	// Display a 404 page
-	function do404(){
-		if (RQMTHD == 'POST') respond("I don't know how to do: {$GLOBALS['do']}");
+	function do404($debug = null){
+		statusCodeHeader(404);
+		if (RQMTHD == 'POST')
+			respond("Endpoint {$GLOBALS['do']} does not exist",0, is_string($debug) ? array('debug' => $debug) : null);
 		loadPage(array(
 			'title' => '404',
 			'view' => '404',
 			'css' => '404',
-			'status-code' => 404,
 		));
 	}
 

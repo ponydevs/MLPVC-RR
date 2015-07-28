@@ -836,28 +836,26 @@
 			case "404": do404();
 			default:
 				if (!empty($_SERVER['HTTP_USER_AGENT']) && strpos($_SERVER['HTTP_USER_AGENT'], 'GitHub-Hookshot/') === 0){
-					function fail(){ statusCodeHeader(404,AND_DIE); }
-
 					if (!empty(GH_WEBHOOK_DO) && $do === GH_WEBHOOK_DO){
 						if (empty($_SERVER['HTTP_X_GITHUB_EVENT']) || empty($_SERVER['HTTP_X_HUB_SIGNATURE']))
-							fail();
+							do404();
 
 						list($algo, $hash) = explode('=', $_SERVER['HTTP_X_HUB_SIGNATURE'], 2) + array('', '');
 						if (!in_array($algo, hash_algos(), TRUE))
-							fail();
+							do404();
 						$rawPost = file_get_contents('php://input');
 						if ($hash !== hash_hmac($algo, $rawPost, GH_WEBHOOK_SECRET))
-							fail();
+							do404();
 
 						switch (strtolower($_SERVER['HTTP_X_GITHUB_EVENT'])) {
 							case 'post': shell_exec("$git pull") && exit;
 							case 'ping': die("pong");
-							default: fail();
+							default: do404();
 						}
 					}
-					else fail();
+					else do404();
 				}
-				do404();
+				do404('default-fallthru');
 			break;
 		}
 	}
