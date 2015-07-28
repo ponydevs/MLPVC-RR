@@ -531,28 +531,46 @@ HTML;
 	 * @return array
 	 */
 	function da_request($endpoint, $postdata = null, $token = null){
-		global $signedIn, $currentUser;
+		global $signedIn, $currentUser, $http_response_header;
 
-		if (empty($token)){
-			if (!$signedIn) return null;
-
+		$requestHeaders = array("Accept-Encoding: gzip");
+		if (!isset($token) && $signedIn)
 			$token = $currentUser['Session']['access'];
-		}
+		if (!empty($token)) $requestHeaders[] = "Authorization: Bearer $token";
+		else if ($token !== false) return null;
 
-		$r = curl_init(preg_match('~^https?://~', $endpoint) ? $endpoint : "https://www.deviantart.com/api/v1/oauth2/$endpoint");
-		curl_setopt($r, CURLOPT_RETURNTRANSFER, 1);
-		curl_setopt($r, CURLOPT_HTTPHEADER, array("Authorization: Bearer $token"));
+		$requestURI  = preg_match('~^https?://~', $endpoint) ? $endpoint : "https://www.deviantart.com/api/v1/oauth2/$endpoint";
 
+		$r = curl_init($requestURI);
+		$curl_opt = array(
+			CURLOPT_RETURNTRANSFER => 1,
+			CURLOPT_HTTPHEADER => $requestHeaders,
+			CURLOPT_HEADER => 1,
+			CURLOPT_BINARYTRANSFER => 1,
+		);
 		if (!empty($postdata)){
-			$query = '';
-			foreach($postdata as $k => $v) $query .= "$k=$v&";
-			rtrim($query, '&');
-			curl_setopt($r,CURLOPT_POST, count($postdata));
-			curl_setopt($r,CURLOPT_POSTFIELDS, $query);
+			$query = array();
+			foreach($postdata as $k => $v) $query[] = urlencode($k).'='.urlencode($v);
+			$curl_opt[CURLOPT_POST] = count($postdata);
+			$curl_opt[CURLOPT_POSTFIELDS] = implode('&', $query);
 		}
+		curl_setopt_array($r, $curl_opt);
+
 		$response = curl_exec($r);
+		$responseCode = curl_getinfo($r, CURLINFO_HTTP_CODE);
+		$headerSize = curl_getinfo($r, CURLINFO_HEADER_SIZE);
+
+		$responseHeaders = rtrim(substr($response, 0, $headerSize));
+		$response = substr($response, $headerSize);
+		$http_response_header = array_map("rtrim",explode("\n",$responseHeaders));
+
+		if ($responseCode < 200 || $responseCode >= 400){
+			trigger_error(rtrim("cURL fail for URL \"$requestURI\" (HTTP $responseCode); ".curl_error($r),' '));
+			return null;
+		}
 		curl_close($r);
 
+		if (preg_match('/Content-Encoding:\s?gzip/',$responseHeaders)) $response = gzdecode($response);
 		return json_decode($response, true);
 	}
 
@@ -564,17 +582,17 @@ HTML;
 	 * @param null|string $type
 	 */
 	function da_get_token($code, $type = null){
-		global $Database;
+		global $Database, $http_response_header;
 
 		if (empty($type) || !in_array($type,array('authorization_code','refresh_token'))) $type = 'authorization_code';
 		$URL_Start = 'https://www.deviantart.com/oauth2/token?client_id='.DA_CLIENT.'&client_secret='.DA_SECRET."&grant_type=$type";
 
 		switch ($type){
 			case "authorization_code":
-				$json = file_get_contents("$URL_Start&code=$code".oauth_redirect_uri(false));
+				$json = da_request("$URL_Start&code=$code".oauth_redirect_uri(false),null,false);
 			break;
 			case "refresh_token":
-				$json = file_get_contents("$URL_Start&refresh_token=$code");
+				$json = da_request("$URL_Start&refresh_token=$code",null,false);
 			break;
 		}
 
@@ -668,10 +686,10 @@ HTML;
 	 * @param null|string $type
 	 * @return string
 	 */
-	function da_oembed($ID, $type = null){
+	function da_oembed($ID, $type){
 		if (empty($type) || !in_array($type,array('fav.me','sta.sh'))) $type = 'fav.me';
 
-		$data = @file_get_contents('http://backend.deviantart.com/oembed?url='.urlencode("http://$type/$ID"));
+		$data = da_request('http://backend.deviantart.com/oembed?url='.urlencode("http://$type/$ID"),null,false);
 
 		if (empty($data)){
 			$statusCode = intval(preg_replace('~^HTTP/\S+\s(\d{3}).*~','$1',$http_response_header[0]), 10);
@@ -681,7 +699,7 @@ HTML;
 			else throw new Exception("Image could not be retrieved (HTTP $statusCode)");
 		}
 
-		return array_merge(json_decode($data, true),array('_provider' => $type));
+		return $data;
 	}
 
 	// Prevents running any more caching requests when set to true
@@ -695,7 +713,7 @@ HTML;
 	 * @param null|string $type
 	 * @return array|null
 	 */
-	function da_cache_deviation($ID, $type = null){
+	function da_cache_deviation($ID, $type = 'fav.me'){
 		global $Database, $PROVIDER_FULLSIZE_KEY, $CACHE_BAILOUT;
 
 		$Deviation = $Database->where('id',$ID)->getOne('deviation_cache');
@@ -707,7 +725,6 @@ HTML;
 				if (!empty($Deviation))
 					$Database->where('id',$Deviation['id'])->update('deviation_cache', array('updated_on' => date('c',strtotime('+1 minute'))));
 
-				if (empty($type)) $type = 'fav.me';
 				$ErrorMSG = "Saving local data for $type/$ID failed, please try again in a minute; ".$e->getMessage();
 				if (!PERM('developer')) trigger_error($ErrorMSG);
 				else echo "<div class='notice fail'><label>da_cache_deviation($ID, $type)</label><p>$ErrorMSG</p></div>";
@@ -720,7 +737,7 @@ HTML;
 				'title' => $json['title'],
 				'preview' => $json['thumbnail_url'],
 				'fullsize' => $json['url'],
-				'provider' => $json['_provider'],
+				'provider' => $type,
 			);
 
 			if (empty($Deviation)){

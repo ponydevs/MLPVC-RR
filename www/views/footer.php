@@ -3,6 +3,9 @@
 
 	<footer><strong>MLPVC-RR build <a href="<?=GITHUB_URL?>"><?=LATEST_COMMIT_ID?></a></strong> (last updated <?=timetag(LATEST_COMMIT_TIME)?>) | <a href="<?=GITHUB_URL?>/issues">Report an issue</a></footer>
 
+<script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
+<script>window.jQuery||document.write('\x3Cscript src="/js/jquery-2.1.4.min.js">\x3C/script>')</script>
+<script>(function(w,d,u){w.RELPATH='<?=RELPATH?>';$.ajaxPrefilter(function(e){var t,n=d.cookie.split("; ");$.each(n,function(e,n){n=n.split("=");if(n[0]==="CSRF_TOKEN"){t=n[1];return false}});if(typeof t!=="undefined"){if(typeof e.data==="undefined")e.data="";if(typeof e.data==="string"){var r=e.data.length>0?e.data.split("&"):[];r.push("CSRF_TOKEN="+t);e.data=r.join("&")}else e.data.CSRF_TOKEN=t}});$.ajaxSetup({statusCode:{401:function(){$.Dialog.fail(u,"Cross-site Request Forgery attack detected. Please notify the site administartors.")},500:function(){$.Dialog.fail(false,'The request failed due to an internal server error.<br>If this persists, please <a href="<?=GITHUB_URL?>/issues" target="_blank">open an issue on GitHub</a>!')}}})})(window,document);</script>
 <?php 	if (isset($customJS)) foreach ($customJS as $js){ ?>
 <script src="/js/<?=$js?>.js?<?=filemtime(APPATH."/js/$js.js")?>"></script>
 <?php 	} ?>
