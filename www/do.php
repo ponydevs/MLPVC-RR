@@ -28,16 +28,12 @@
 					if (empty($_SERVER['HTTP_X_GITHUB_EVENT']) || empty($_SERVER['HTTP_X_HUB_SIGNATURE']))
 						do404();
 
-					$hash = $_SERVER['HTTP_X_HUB_SIGNATURE'];
-					$payload = file_get_contents('php://input');
-					$payloadHash = hash_hmac('sha1', $payload, GH_WEBHOOK_SECRET);
-					if ($hash !== "sha1=$payloadHash"){
-						statusCodeHeader(404);
-						do404("hash-fail ($hash !== sha1=$payloadHash");
-					}
+					$payloadHash = hash_hmac('sha1', file_get_contents('php://input'), GH_WEBHOOK_SECRET);
+					if ($_SERVER['HTTP_X_HUB_SIGNATURE'] !== "sha1=$payloadHash")
+						do404();
 
 					switch (strtolower($_SERVER['HTTP_X_GITHUB_EVENT'])) {
-						case 'push': shell_exec("$git pull") && exit;
+						case 'push': shell_exec("$git pull") && exit ("OK");
 						case 'ping': die("pong");
 						default: do404();
 					}
