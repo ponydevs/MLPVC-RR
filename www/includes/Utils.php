@@ -708,6 +708,7 @@ HTML;
 				else echo "<div class='notice fail'><label>da_cache_deviation($ID, $type)</label><p>$ErrorMSG</p></div>";
 
 				$CACHE_BAILOUT = true;
+				return $Deviation;
 			}
 
 			$insert = array(
