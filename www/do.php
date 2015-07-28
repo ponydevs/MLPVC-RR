@@ -33,10 +33,17 @@
 						do404();
 
 					switch (strtolower($_SERVER['HTTP_X_GITHUB_EVENT'])) {
-						case 'push': shell_exec("$git pull") && exit ("OK");
-						case 'ping': die("pong");
+						case 'push':
+							shell_exec("$git pull");
+							echo "OK";
+						break;
+						case 'ping':
+							echo "pong";
+						break;
 						default: do404();
 					}
+
+					exit;
 				}
 				do404();
 			break;
