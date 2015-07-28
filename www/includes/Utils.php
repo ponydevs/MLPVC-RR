@@ -578,7 +578,10 @@ HTML;
 			break;
 		}
 
-		if (empty($json)) die("Ow");
+		if (empty($json)){
+			Cookie::delete('access');
+			redirect("/da-auth?error=server_error&error_description={$http_response_header[0]}");
+		}
 		$json = json_decode($json, true);
 		if (empty($json['status'])) redirect("/da-auth?error={$json['error']}&error_description={$json['error_description']}");
 
@@ -1003,7 +1006,7 @@ HTML;
 		$R['label'] = htmlspecialchars($R['label']);
 		$Image = "<div class='image screencap'><a href='{$R['fullsize']}'><img src='{$R['preview']}'></a></div>";
 		if (!empty($R['label'])) $Image .= "<span class=label>{$R['label']}</span>";
-		$sameUser = $signedIn && $R['requested_by'] === $currentUser['id'];
+		$sameUser = $isRequest && $signedIn && $R['requested_by'] === $currentUser['id'];
 
 		if ($isRequest && (PERM('inspector') || $sameUser))
 			$Image .= '<em>'.($sameUser?'You':profile_link(get_user($R['requested_by']))).' requested this '.timetag($R['posted'])."</em>";
