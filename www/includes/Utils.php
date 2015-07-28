@@ -679,6 +679,9 @@ HTML;
 		return array_merge(json_decode($data, true),array('_provider' => $type));
 	}
 
+	// Prevents running any more caching requests when set to true
+	$CACHE_BAILOUT = false;
+
 	/**
 	 * Caches information about a deviation in the 'deviation_cache' table
 	 * Returns null on failure
@@ -688,17 +691,23 @@ HTML;
 	 * @return array|null
 	 */
 	function da_cache_deviation($ID, $type = null){
-		global $Database, $PROVIDER_FULLSIZE_KEY;
+		global $Database, $PROVIDER_FULLSIZE_KEY, $CACHE_BAILOUT;
 
 		$Deviation = $Database->where('id',$ID)->getOne('deviation_cache');
-		if (empty($Deviation) || (!empty($Deviation['updated_on']) && strtotime($Deviation['updated_on'])+ONE_HOUR < time())){
+		if (!$CACHE_BAILOUT && empty($Deviation) || (!empty($Deviation['updated_on']) && strtotime($Deviation['updated_on'])+ONE_HOUR < time())){
 			try {
 				$json = da_oembed($ID, $type);
 			}
 			catch (Exception $e){
 				if (!empty($Deviation))
 					$Database->where('id',$Deviation['id'])->update('deviation_cache', array('updated_on' => date('c',strtotime('+1 minute'))));
-				die("Saving local data for $ID of type $type failed, please try again in a minute.");
+
+				if (empty($type)) $type = 'fav.me';
+				$ErrorMSG = "Saving local data for $type/$ID failed, please try again in a minute.<br>Details: ".$e->getMessage();
+				if (!PERM('developer')) trigger_error($ErrorMSG);
+				else echo "<div class='notice fail'><label>da_cache_deviation($ID, $type)</label><p>$ErrorMSG</p></div>";
+
+				$CACHE_BAILOUT = true;
 			}
 
 			$insert = array(
@@ -1016,8 +1025,11 @@ HTML;
 			$R['reserver'] = get_user($R['reserved_by']);
 			if ($finished){
 				$D = da_cache_deviation($R['deviation_id']);
-				$D['title'] = preg_replace("/'/",'&apos;',$D['title']);
-				$Image = "<div class='image deviation'><a href='http://fav.me/{$D['id']}'><img src='{$D['preview']}' alt='{$D['title']}'></a></div>";
+				if (!empty($D)){
+					$D['title'] = preg_replace("/'/",'&apos;',$D['title']);
+					$Image = "<div class='image deviation'><a href='http://fav.me/{$D['id']}'><img src='{$D['preview']}' alt='{$D['title']}'></a></div>";
+				}
+				else $Image = "<div class='image deviation'><a href='http://fav.me/{$D['id']}'>Image Could not be displayed</a></div>";
 			}
 		}
 
