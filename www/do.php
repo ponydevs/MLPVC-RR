@@ -835,22 +835,27 @@
 			break;
 			case "404": do404();
 			default:
-				if (!empty(GH_WEBHOOK_DO) && $do === GH_WEBHOOK_DO){
-					if (
-						empty($_SERVER['HTTP_USER_AGENT']) || strpos($_SERVER['HTTP_USER_AGENT'], 'GitHub-Hookshot/') !== 0 ||
-						empty($_SERVER['HTTP_X_GITHUB_EVENT']) || empty($_SERVER['HTTP_X_HUB_SIGNATURE'])
-					) do404();
+				if (!empty($_SERVER['HTTP_USER_AGENT']) && strpos($_SERVER['HTTP_USER_AGENT'], 'GitHub-Hookshot/') === 0){
+					function fail(){ statusCodeHeader(404,AND_DIE); }
 
-					list($algo, $hash) = explode('=', $_SERVER['HTTP_X_HUB_SIGNATURE'], 2) + array('', '');
-					if (!in_array($algo, hash_algos(), TRUE)) do404();
-					$rawPost = file_get_contents('php://input');
-					if ($hash !== hash_hmac($algo, $rawPost, GH_WEBHOOK_SECRET)) do404();
+					if (!empty(GH_WEBHOOK_DO) && $do === GH_WEBHOOK_DO){
+						if (empty($_SERVER['HTTP_X_GITHUB_EVENT']) || empty($_SERVER['HTTP_X_HUB_SIGNATURE']))
+							fail();
 
-					switch (strtolower($_SERVER['HTTP_X_GITHUB_EVENT'])) {
-						case 'post': shell_exec("$git pull") && exit;
-						case 'ping': die('pong');
-						default: do404();
+						list($algo, $hash) = explode('=', $_SERVER['HTTP_X_HUB_SIGNATURE'], 2) + array('', '');
+						if (!in_array($algo, hash_algos(), TRUE))
+							fail();
+						$rawPost = file_get_contents('php://input');
+						if ($hash !== hash_hmac($algo, $rawPost, GH_WEBHOOK_SECRET))
+							fail();
+
+						switch (strtolower($_SERVER['HTTP_X_GITHUB_EVENT'])) {
+							case 'post': shell_exec("$git pull") && exit;
+							case 'ping': die("pong");
+							default: fail();
+						}
 					}
+					else fail();
 				}
 				do404();
 			break;
