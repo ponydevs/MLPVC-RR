@@ -597,7 +597,10 @@ HTML;
 		}
 
 		if (empty($json)){
-			Cookie::delete('access');
+			if (Cookie::exists('access')){
+				$Database->where('access', Cookie::get('access'))->delete('sessions');
+				Cookie::delete('access');
+			}
 			redirect("/da-auth?error=server_error&error_description={$http_response_header[0]}");
 		}
 		$json = json_decode($json, true);

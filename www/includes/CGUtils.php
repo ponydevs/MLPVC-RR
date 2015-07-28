@@ -46,7 +46,7 @@
 		if (!empty($Tags)){
 			$HTML = $wrap ? "<div class=tags>" : '';
 			foreach ($Tags as $i => $t){
-				$class = " class='tag-{$t['tid']}".(!empty($t['type'])?' typ-'.$t['type']:'')."'";
+				$class = " class='tag id-{$t['tid']}".(!empty($t['type'])?' typ-'.$t['type']:'')."'";
 				$title = !empty($t['title']) ? " title='".apos_encode($t['title'])."'" : '';
 				$HTML .= "<span$class$title>{$t['name']}</span> ";
 			}

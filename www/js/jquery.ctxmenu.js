@@ -55,6 +55,8 @@
 				e.preventDefault();
 				e.stopPropagation();
 
+				$el.trigger('mouseleave');
+
 				$ctxmenu
 					.html($el.data('ctxmenu-items').clone(true, true))
 					.css({ top: e.pageY, left: e.pageX, opacity: 0 })

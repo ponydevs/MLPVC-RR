@@ -45,20 +45,42 @@ $(function(){
 	var $tagEditForm = $(document.createElement('form')).attr('id', 'edit-tag');
 	$tagEditForm
 		.append('<label><span>Tag name (4-30 chars.)</span><input type=text name=name required pattern=^.{4,30}$ maxlength=30></label>');
-	var $_typeSelect = $(document.createElement('select')).attr('name', 'type');
-	$_typeSelect.append('<option value="" selected>No special type</option>');
+	var $_typeSelect = $(document.createElement('div')).addClass('type-selector');
 	$.each(TAG_TYPES_ASSOC,function(type, label){
-		$_typeSelect.append('<option value='+type+'>'+label+'</option>');
+		var $lbl = $(document.createElement('label')),
+			$chx = $(document.createElement('input'))
+				.attr({
+					type: 'checkbox',
+					name: 'type',
+					value: type
+				}).on('click',function(){
+					if (this.checked)
+						$(this).parent().siblings().find('input').prop('checked', false);
+				});
+		$lbl.append($chx, $(document.createElement('span')).addClass('tag typ-'+type).text(label)).appendTo($_typeSelect);
 	});
-	$tagEditForm.append($(document.createElement('label')).append('<span>Tag type</span><br>',$_typeSelect));
+	$tagEditForm.append($(document.createElement('div')).addClass('align-center').append('<span>Tag type</span><br>',$_typeSelect));
 	$tagEditForm.append($(document.createElement('label')).append('<span>Tag description (max 255 chars., optional)</span><br><textarea name=title maxlength=255></textarea>'));
 
+	var $tags = $('.tags');
+	function reorder($this){
+		$this.children().sort(function(a, b){
+			var regex = /^.*typ-([a-z]+).*$/;
+			a = [a.className.replace(regex,'$1'), a.innerHTML.trim()],
+			b = [b.className.replace(regex,'$1'), b.innerHTML.trim()];
+
+			if (a[0] === b[0])
+				return a[1].localeCompare(b[1]);
+			return a[0].localeCompare(b[0]);
+		}).appendTo($this);
+	};
+
 	function ctxmenus(){
-		$('.tags').children(':not(.ctxmenu-bound)').ctxmenu([
+		$tags.children(':not(.ctxmenu-bound)').ctxmenu([
 			{text: 'Edit tag', icon: 'pencil', click: function(){
 				var $tag = $(this),
 					tagName = $tag.text().trim(),
-					tagID = $tag.attr('class').match(/tag\-(\d+)(?:\s|$)/)[1],
+					tagID = $tag.attr('class').match(/id-(\d+)(?:\s|$)/)[1],
 					title = 'Editing tag: '+tagName;
 
 				$.Dialog.wait(title, 'Retrieveing tag details from server');
@@ -67,9 +89,10 @@ $(function(){
 					if (typeof data !== 'object') return console.log(data) && $w.trigger('ajaxerror');
 
 					if (data.status){
-						$.Dialog.request(title,$tagEditForm.clone(),'edit-tag','Save',function(){
+						$.Dialog.request(title,$tagEditForm.clone(true, true),'edit-tag','Save',function(){
 							var $form = $('#edit-tag');
-							$form.find('input[name], select[name], textarea[name]').each(function(){
+							$form.find('input[name=type][value='+data.type+']').prop('checked', true);
+							$form.find('input[type=text][name], textarea[name]').each(function(){
 								var $this = $(this);
 								$this.val(data[$this.attr('name')]);
 							});
@@ -87,14 +110,16 @@ $(function(){
 									if (typeof data !== 'object') return console.log(data) && $w.trigger('ajaxerror');
 
 									if (data.status){
-										var $affected = $('.tag-'+data.tid);
-										console.log($affected);
+										var $affected = $('.id-'+data.tid);
 										$affected.qtip('destroy', true);
 										if (data.title) $affected.attr('title', data.title);
 										else $affected.removeAttr('title');
 										$affected
-											.attr('class', 'tag-'+data.tid+(data.type?' typ-'+data.type:''))
+											.attr('class', 'tag id-'+data.tid+(data.type?' typ-'+data.type:''))
 											.text(data.name);
+										$affected.parent().each(function(){
+											reorder($(this));
+										});
 										window.tooltips();
 										$.Dialog.close();
 									}
@@ -106,8 +131,29 @@ $(function(){
 					else $.Dialog.fail(title, data.message);
 				})
 			}},
-			{text: 'Delete tag (TBI)', icon: 'trash', click: function(){
-				$.Dialog.info('Delete tag triggred', 'yay');
+			{text: 'Delete tag', icon: 'trash', click: function(){
+				var $tag = $(this),
+					tagName = $tag.text().trim(),
+					tagID = $tag.attr('class').match(/id-(\d+)(?:\s|$)/)[1],
+					title = 'Detele tag: '+tagName;
+
+				$.Dialog.confirm(title,"By deleting this tag, it'll be removed from every appearance where it's been used.<br>Are you sure?",['Delete it','Nope'],function(sure){
+					if (!sure) return;
+
+					$.Dialog.wait(title,'Sending removal request');
+
+					$.post('/colorguide/deltag/'+tagID,{},function(data){
+						if (typeof data !== 'object') return console.log(data) && $w.trigger('ajaxerror');
+
+						if (data.status){
+							var $affected = $('.id-'+tagID);
+							$affected.qtip('destroy', true);
+							$affected.remove();
+							$.Dialog.close();
+						}
+						else $.Dialog.fail(title,data.message);
+					});
+				});
 			}},
 			true,
 			{text: 'Create new tag', icon: 'plus', click: function(){
@@ -119,7 +165,7 @@ $(function(){
 					ponyID = $li.attr('id').replace(/\D/g, ''),
 					ponyName = $div.children('strong').text().trim();
 
-				$.Dialog.request(title,$tagEditForm.clone(),'edit-tag','Create',function(){
+				$.Dialog.request(title,$tagEditForm.clone(true, true),'edit-tag','Create',function(){
 					var $form = $('#edit-tag');
 					$form.append(
 						$(document.createElement('label'))
@@ -146,7 +192,7 @@ $(function(){
 									window.tooltips();
 									ctxmenus();
 								}
-								$.Dialog.success(title, data.message, true);
+								$.Dialog.close();
 							}
 							else $.Dialog.fail(title, data.message);
 						});

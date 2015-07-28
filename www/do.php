@@ -700,6 +700,8 @@
 
 				if (RQMTHD === 'POST'){
 					if (!PERM('inspector')) respond();
+					detectCSRF();
+
 					$_match = array();
 					if (preg_match('~^(rename|delete)/(\d+)$~', $data, $_match)){
 						$PonyID = intval($_match[2], 10);
@@ -730,9 +732,10 @@
 
 						$CGDb->where('id', $Pony['id'])->update('ponies', $update);
 					}
-					else if (preg_match('~^([gs]et|make)tag(?:/(\d+))?$~', $data, $_match)){
+					else if (preg_match('~^([gs]et|make|del)tag(?:/(\d+))?$~', $data, $_match)){
 						$setting = $_match[1] === 'set';
 						$getting = $_match[1] === 'get';
+						$deleting = $_match[1] === 'del';
 						$new = $_match[1] === 'make';
 
 						if (!$new){
@@ -744,6 +747,12 @@
 								respond("There's no tag with the ID of $TagID");
 
 							if ($getting) respond($Tag);
+
+							if ($deleting){
+								if (!$CGDb->where('tid', $Tag['tid'])->delete('tags'))
+									respond(ERR_DB_FAIL);
+								respond('Tag deleted successfully', 1);
+							}
 						}
 						$data = array();
 
@@ -799,9 +808,7 @@
 									'tid' => $data['tid'],
 									'ponyid' => $Pony['id']
 								))) respond(ERR_DB_FAIL);
-								respond("The tag was successfully created, and has been added to the appearance",1,array(
-									'tags' => get_tags_html($Pony['id'], NOWRAP)
-								));
+								respond(array('tags' => get_tags_html($Pony['id'], NOWRAP)));
 							}
 						}
 						else {
@@ -809,7 +816,7 @@
 							$data = array_merge($Tag, $data);
 						}
 
-						respond('Tag '.($new?'added':'updated').' successfully', 1, $data);
+						respond($data);
 					}
 					else do404();
 				}

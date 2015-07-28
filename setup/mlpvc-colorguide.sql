@@ -178,11 +178,11 @@ ALTER TABLE `colorgroups`
   ADD CONSTRAINT `colorgroups_ibfk_1` FOREIGN KEY (`ponyid`) REFERENCES `ponies` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 ALTER TABLE `colors`
-  ADD CONSTRAINT `colors_ibfk_1` FOREIGN KEY (`groupid`) REFERENCES `colorgroups` (`groupid`);
+  ADD CONSTRAINT `colors_ibfk_1` FOREIGN KEY (`groupid`) REFERENCES `colorgroups` (`groupid`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 ALTER TABLE `tagged`
-  ADD CONSTRAINT `tagged_ibfk_1` FOREIGN KEY (`tid`) REFERENCES `tags` (`tid`),
-  ADD CONSTRAINT `tagged_ibfk_2` FOREIGN KEY (`ponyid`) REFERENCES `ponies` (`id`);
+  ADD CONSTRAINT `tagged_ibfk_1` FOREIGN KEY (`tid`) REFERENCES `tags` (`tid`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `tagged_ibfk_2` FOREIGN KEY (`ponyid`) REFERENCES `ponies` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;

@@ -20,21 +20,20 @@
 			content: "Tags: ";
 			font-weight: bold;
 		}
+	}
+	.tag {
+		background-color: transparent !important;
 
-		> span {
-			background-color: transparent !important;
-
-			&:not(:last-child):after {
-				content: ",";
-				font-weight: normal;
-				color: #434343;
-			}
+		&:not(:last-child):after {
+			content: ",";
+			font-weight: normal;
+			color: #434343;
 		}
 	}
 }
 // Desktop-only
 @media all and (min-width: 650px){
-	div.tags > span {
+	.tag {
 		padding: 3px 5px;
 		border: 1px solid;
 		cursor: default;
@@ -97,26 +96,24 @@ $TEpisode: adjust_hue($_TBase, 200);
 	}
 }
 
-div.tags {
-	user-select: none;
-	> span {
-		display: inline-block;
-		font-weight: bold;
+div.tags { user-select: none }
+.tag {
+	display: inline-block;
+	font-weight: bold;
 
-		&[title] { cursor: help }
-		&:before {
-			//noinspection CssNoGenericFontName
-			font-family: 'Typicons';
-			margin-right: 5px;
-		}
-
-		&:not([class*=typ-]) { @include tag-style($TDefault) }
-		&.typ-cat { @include tag-style($TCategory, '\e083')	}
-		&.typ-spec { @include tag-style($TSpecies, '\e148') }
-		&.typ-gen { @include tag-style($TGender, '\e12c') }
-		&.typ-app { @include tag-style($TAppearance, '\e07e') }
-		&.typ-ep { @include tag-style($TEpisode, '\e131') }
+	&[title] { cursor: help }
+	&:before {
+		//noinspection CssNoGenericFontName
+		font-family: 'Typicons';
+		margin-right: 5px;
 	}
+
+	&:not([class*=typ-]) { @include tag-style($TDefault) }
+	&.typ-cat { @include tag-style($TCategory, '\e083')	}
+	&.typ-spec { @include tag-style($TSpecies, '\e148') }
+	&.typ-gen { @include tag-style($TGender, '\e12c') }
+	&.typ-app { @include tag-style($TAppearance, '\e07e') }
+	&.typ-ep { @include tag-style($TEpisode, '\e131') }
 }
 
 ul.colors {
@@ -190,11 +187,24 @@ ul.colors {
 .qtip-tag-app { @include tag-style($TAppearance) }
 .qtip-tag-ep { @include tag-style($TEpisode) }
 
-#edit-tag select[name=type] option {
-	&[value=""]{ @include tag-style($TDefault) }
-	&[value=cat] { @extend .qtip-tag-cat }
-	&[value=spec] { @extend .qtip-tag-spec }
-	&[value=gen] { @extend .qtip-tag-gen }
-	&[value=app] { @extend .qtip-tag-app }
-	&[value=ep] { @extend .qtip-tag-ep }
+#edit-tag .type-selector {
+	display: flex;
+	flex-flow: row wrap;
+	align-content: center;
+	user-select: none;
+
+	> span { margin-bottom: 5px }
+
+	label {
+		flex: 1 1 auto;
+		margin: 2px;
+
+		* { cursor: pointer }
+	}
+	input {
+		display: none;
+
+		~ span { display: block }
+		&:not(:checked) ~ span { opacity: .5 }
+	}
 }
