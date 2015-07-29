@@ -536,7 +536,7 @@ HTML;
 	function da_request($endpoint, $postdata = null, $token = null){
 		global $signedIn, $currentUser, $http_response_header;
 
-		$requestHeaders = array("Accept-Encoding: gzip");
+		$requestHeaders = array("Accept-Encoding: gzip","User-Agent: MLPVC-RR @ ".GITHUB_URL);
 		if (!isset($token) && $signedIn)
 			$token = $currentUser['Session']['access'];
 		if (!empty($token)) $requestHeaders[] = "Authorization: Bearer $token";
@@ -606,7 +606,6 @@ HTML;
 			}
 			redirect("/da-auth?error=server_error&error_description={$http_response_header[0]}");
 		}
-		$json = json_decode($json, true);
 		if (empty($json['status'])) redirect("/da-auth?error={$json['error']}&error_description={$json['error_description']}");
 
 		$userdata = da_request('user/whoami', null, $json['access_token']);
