@@ -232,6 +232,8 @@
 			$html.removeClass('dialog-open');
 		},
 		center: function(){
+			if (typeof $.Dialog.open === 'undefined') return;
+
 			var overlay = {w: $dialogOverlay.width(), h: $dialogOverlay.height()},
 				dialog = {w: $dialogBox.outerWidth(), h: $dialogBox.outerHeight()};
 			$dialogBox.css("top", Math.max((overlay.h - dialog.h) / 2, 0));
@@ -239,12 +241,7 @@
 		}
 	};
 
-	$w.on('resize',function(){
-		if (typeof $.Dialog.open !== 'undefined') {
-		}
-	}).on('ajaxerror',function(){
-		$.Dialog.fail(false,'There was an error while processing your request. You may find additional details in the browser\'s console.');
-	});
+	$w.on('resize', $.Dialog.center);
 	$(document.body).on('keydown',function(e){
 		if (e.keyCode === 9 && typeof $.Dialog.open !== 'undefined'){
 			var $this = $(e.target),

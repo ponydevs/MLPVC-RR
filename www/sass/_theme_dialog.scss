@@ -1,4 +1,5 @@
 @import url('http://fonts.googleapis.com/css?family=Open+Sans:400italic,700italic,400,700&subset=latin,latin-ext');
+$ZIndexBase: 21000;
 
 // Mobile-only Styles
 @media all and (max-width: $Breakpoint){
@@ -47,7 +48,7 @@ html.dialog-open {
 	position: fixed;
 	top: 0;
 	left: 0;
-	z-index: 1002;
+	z-index: $ZIndexBase;
 	overflow: auto;
 }
 #dialogBox {
@@ -56,7 +57,7 @@ html.dialog-open {
 	top: 40%;
 	left: 40%;
 	min-width: 150px;
-	z-index: 1002;
+	z-index: $ZIndexBase+1px;
 
 	/* Colors */
 	.blue-bg     { background-color: $NBlue }
@@ -68,14 +69,11 @@ html.dialog-open {
 }
 #dialogHeader {
 	font-weight: 200;
-	line-height: 26pt;
 	width: auto;
-	padding: 0 5px;
+	padding: 5px 8px;
 	font-size: 18px;
-	white-space: nowrap;
-	overflow: hidden;
 	color: #fff;
-	background: #2D89EF linear-gradient(to bottom, rgba(black, 0) 0%, rgba(black, .4) 100%);
+	background: #ededed linear-gradient(to bottom, rgba(black, 0) 0%, rgba(black, .4) 100%);
 }
 #dialogContent {
 	padding: 15px 10px;

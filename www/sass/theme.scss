@@ -93,13 +93,7 @@
 				}
 				&:before {
 					color: #000;
-					text-shadow:
-						0 0 0.133em #fff,
-						0 0 0.133em #fff,
-						0 0 0.133em #fff,
-						0 0 0.133em #fff,
-						0 0 0.133em #fff,
-						0 0 0.133em #fff;
+					@include outline(2);
 					content: "MLP-VC R&R";
 					font-weight: bold;
 					display: inline-block;
@@ -213,20 +207,7 @@ header {
 			z-index: 1;
 			padding: 10px;
 			overflow: hidden;
-			text-shadow:
-				0 0 0.133em #fff,
-				0 0 0.133em #fff,
-				0 0 0.133em #fff,
-				0 0 0.133em #fff,
-				0 0 0.133em #fff,
-				0 0 0.133em #fff,
-				0 0 0.133em #fff,
-				0 0 0.133em #fff,
-				0 0 0.133em #fff,
-				0 0 0.133em #fff,
-				0 0 0.133em #fff,
-				0 0 0.133em #fff,
-				0 0 0.133em #fff;
+			@include outline;
 			color: #000;
 
 			a {

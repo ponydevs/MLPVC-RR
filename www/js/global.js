@@ -1,4 +1,92 @@
 $(function(){
+	// Convert relative URL to absolute
+	$.urlToAbsolute = function(url){
+		var a = document.createElement('a');
+		a.href = url;
+		return a.href;
+	};
+
+	// Create AJAX response handling function
+	$(window).on('ajaxerror',function(){
+		$.Dialog.fail(false,'There was an error while processing your request. You may find additional details in the browser\'s console.');
+	});
+	$.mkAjaxHandler = function(f){
+		return function(data){
+			if (typeof data !== 'object'){
+				console.log(data);
+				$(window).trigger('ajaxerror');
+				return;
+			}
+
+			if (typeof f === 'function') f.call(data);
+		};
+	};
+
+	// Get CSRF token from cookies
+	$.getCSRFToken = function(){
+		var n = document.cookie.match(/CSRF_TOKEN=([a-z\d]+)/i);
+		if (n && n.length)
+			return n[1];
+		else throw new Error('Missing CSRF_TOKEN');
+	};
+	$.ajaxPrefilter(function(e){
+		var t = $.getCSRFToken();
+		if (typeof e.data === "undefined")
+			e.data = "";
+		if (typeof e.data === "string"){
+			var r = e.data.length > 0 ? e.data.split("&") : [];
+			r.push("CSRF_TOKEN=" + t);
+			e.data = r.join("&");
+		}
+		else e.data.CSRF_TOKEN = t;
+	});
+	$.ajaxSetup({
+		statusCode: {
+			401: function(){
+				$.Dialog.fail(undefined, "Cross-site Request Forgery attack detected. Please notify the site administartors.")
+			},
+			500: function(){
+				$.Dialog.fail(false, 'The request failed due to an internal server error. If this persists, please open an issue on GitHub using the link in the footer!')
+			}
+		}
+	});
+
+	// Copy any text to clipboard
+	// Must be called from within an event handler
+	$.copy = function(text){
+		if (!document.queryCommandSupported('copy')){
+			prompt('Copy with Ctrl+C, close with Enter', text);
+			return true;
+		}
+
+		var $helper = $(document.createElement('textarea')),
+			success = false;
+		$helper
+			.css({
+				opacity: 0,
+				width: 0,
+				height: 0,
+				position: 'fixed',
+				left: '-10px',
+				top: '50%',
+				display: 'block',
+			})
+			.text(text)
+			.appendTo('body')
+			.focus();
+		$helper.get(0).select();
+
+		try {
+			success = document.execCommand('copy');
+		} catch(e){}
+
+		if (!success)
+			$.Dialog.fail('Copy to clipboard', 'Copying text to clipboard failed!');
+		setTimeout(function(){
+			$helper.remove();
+		}, 1);
+	};
+
 	// Countdown
 	var $cd, cdtimer,
 		months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -20,7 +108,6 @@ $(function(){
 		window.updateTimesF();
 	};
 	window.setCD();
-
 	function pad(n){return n<10?'0'+n:n}
 	function cdupdate($cd){
 		var airs = new Date($cd.data('airs')),

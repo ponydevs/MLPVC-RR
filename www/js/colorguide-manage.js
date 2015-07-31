@@ -1,45 +1,52 @@
 $(function(){
 	var Color = window.Color, color = window.color, TAG_TYPES_ASSOC = window.TAG_TYPES_ASSOC, $colorGroups;
+	$('.upload-wrap').each(function(){
+		var $this = $(this),
+			ponyID = $this.closest('li').attr('id').substring(1);
 
-	function copyToClipboard(text){
-		if (!document.queryCommandSupported('copy')){
-			prompt('Copy with Ctrl+C, close with Enter', text);
-			return true;
-		}
-
-		var $helper = $(document.createElement('textarea')),
-			success = false;
-		$helper
-			.css({
-				opacity: 0,
-				width: 0,
-				height: 0,
-				position: 'absolute',
-				left: '-10px',
-				top: '-10px',
-				display: 'block',
-			})
-			.text(text)
-			.appendTo('body')
-			.focus();
-		$helper.get(0).select();
-
-		try {
-			success = document.execCommand('copy');
-		} catch(e){}
-
-		if (!success)
-			$.Dialog.fail('Copy to clipboard', 'Copying text to clipboard failed!');
-		setTimeout(function(){
-			$helper.remove();
-		}, 1);
-	}
+		$this.uploadZone({
+			requestKey: 'sprite',
+			title: 'Upload sprite',
+			accept: 'image/png',
+			target: '/colorguide/setsprite/'+ponyID,
+		}).ctxmenu([
+			{text: 'Upload new sprite', icon: 'upload', 'default': true, click: function(){
+				$this.find('input[type="file"]').trigger('click');
+			}},
+			{text: 'Copy image URL', icon: 'clipboard', click: function(){
+				$.copy($.urlToAbsolute($this.find('img').attr('src')));
+			}},
+			{text: 'Open image in new tab', icon: 'arrow-forward', attr: {
+				href: $this.find('img').attr('src'),
+				target: '_blank',
+			}},
+		], 'Sprite image');
+	});
 
 	$('#list').find('button.edit').on('click',function(){
 		$.Dialog.info('Edit mode triggered', 'yay');
 	}).next().on('click',function(){
-		// TODO Confirmation
-		$.Dialog.info('Delete pony triggered', 'yay');
+		var $this = $(this),
+			$li = $this.closest('li'),
+			ponyID = $li.attr('id').substring(1),
+			ponyName = $this.parent().text().trim(),
+			title = 'Deleting appearance: '+ponyName;
+
+		$.Dialog.confirm(title,'Deleting this appearance will remove <strong>ALL</strong> of its color groups, the colors within them, and the sprite file, if any.<br>Delete anyway?',function(sure){
+			if (!sure) return;
+
+			$.Dialog.wait(title, 'Sending removal request');
+
+			$.post('/colorguide/delete/'+ponyID,function(data){
+				if (typeof data !== 'object') return console.log(data) && $w.trigger('ajaxerror');
+
+				if (data.status){
+					$li.remove();
+					$.Dialog.close();
+				}
+				else $.Dialog.fail(title, data.message);
+			});
+		})
 	});
 
 	var $tagEditForm = $(document.createElement('form')).attr('id', 'edit-tag');
@@ -66,14 +73,14 @@ $(function(){
 	function reorder($this){
 		$this.children().sort(function(a, b){
 			var regex = /^.*typ-([a-z]+).*$/;
-			a = [a.className.replace(regex,'$1'), a.innerHTML.trim()],
+			a = [a.className.replace(regex,'$1'), a.innerHTML.trim()];
 			b = [b.className.replace(regex,'$1'), b.innerHTML.trim()];
 
 			if (a[0] === b[0])
 				return a[1].localeCompare(b[1]);
 			return a[0].localeCompare(b[0]);
 		}).appendTo($this);
-	};
+	}
 
 	function ctxmenus(){
 		$tags.children(':not(.ctxmenu-bound)').ctxmenu([
@@ -85,10 +92,8 @@ $(function(){
 
 				$.Dialog.wait(title, 'Retrieveing tag details from server');
 
-				$.post('/colorguide/gettag/'+tagID,{},function(data){
-					if (typeof data !== 'object') return console.log(data) && $w.trigger('ajaxerror');
-
-					if (data.status){
+				$.post('/colorguide/gettag/'+tagID,$.mkAjaxHandler(function(){
+					if (this.status){
 						$.Dialog.request(title,$tagEditForm.clone(true, true),'edit-tag','Save',function(){
 							var $form = $('#edit-tag');
 							$form.find('input[name=type][value='+data.type+']').prop('checked', true);
@@ -128,8 +133,8 @@ $(function(){
 							});
 						});
 					}
-					else $.Dialog.fail(title, data.message);
-				})
+					else $.Dialog.fail(title, this.message);
+				}));
 			}},
 			{text: 'Delete tag', icon: 'trash', click: function(){
 				var $tag = $(this),
@@ -142,17 +147,15 @@ $(function(){
 
 					$.Dialog.wait(title,'Sending removal request');
 
-					$.post('/colorguide/deltag/'+tagID,{},function(data){
-						if (typeof data !== 'object') return console.log(data) && $w.trigger('ajaxerror');
-
-						if (data.status){
+					$.post('/colorguide/deltag/'+tagID,$.mkAjaxHandler(function(){
+						if (this.status){
 							var $affected = $('.id-'+tagID);
 							$affected.qtip('destroy', true);
 							$affected.remove();
 							$.Dialog.close();
 						}
-						else $.Dialog.fail(title,data.message);
-					});
+						else $.Dialog.fail(title, this.message);
+					}));
 				});
 			}},
 			true,
@@ -182,20 +185,18 @@ $(function(){
 
 						$.Dialog.wait(title, 'Creating tag');
 
-						$.post('/colorguide/maketag',data,function(data){
-							if (typeof data !== 'object') return console.log(data) && $w.trigger('ajaxerror');
-
-							if (data.status){
-								if (data.tags){
+						$.post('/colorguide/maketag',data,$.mkAjaxHandler(function(){
+							if (this.status){
+								if (this.tags){
 									$tagsDiv.children('[data-hasqtip]').qtip('destroy', true);
-									$tagsDiv.html(data.tags);
+									$tagsDiv.html(this.tags);
 									window.tooltips();
 									ctxmenus();
 								}
 								$.Dialog.close();
 							}
-							else $.Dialog.fail(title, data.message);
-						});
+							else $.Dialog.fail(title, this.message);
+						}));
 					});
 				})
 			}},
@@ -226,11 +227,11 @@ $(function(){
 		$colorGroups.children('span:not(:first-child)').off('click').on('click',function(e){
 			e.preventDefault();
 
-			copyToClipboard(this.innerHTML.trim());
+			$.copy(this.innerHTML.trim());
 		}).filter(':not(.ctxmenu-bound)').ctxmenu(
 			[
 				{text: "Copy "+color, icon: 'clipboard', 'default': true, click: function(){
-					copyToClipboard(this.innerHTML.trim());
+					$.copy(this.innerHTML.trim());
 				}},
 				{text: "Edit "+color+' (TBI)', icon: 'pencil (TBI)', click: function(){
 					$.Dialog.info('Edit '+color+' triggered', 'yay');

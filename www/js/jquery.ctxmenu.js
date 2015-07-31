@@ -30,6 +30,11 @@
 			if (item.text) $action.text(item.text);
 			if (item.icon) $action.addClass('typcn typcn-'+item.icon);
 			if (item.default === true) $action.addClass('default');
+			if (typeof item.attr !== 'undefined'){
+				if (typeof item.attr === 'string')
+					$action.attr(item.attr, true);
+				else $action.attr(item.attr);
+			}
 			if (typeof item.click === 'function')
 				$action.on('click',function(e){
 					e.stopPropagation();

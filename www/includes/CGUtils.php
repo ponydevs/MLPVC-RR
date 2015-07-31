@@ -82,16 +82,67 @@
 			$p['label'] = htmlspecialchars($p['label']);
 			$imgPth = "img/cg/{$p['id']}.png";
 			if (!file_Exists(APPATH.$imgPth)) $imgPth = "img/blank-pixel.png";
-			$img = '';
-			$img .= "<div><img src='/$imgPth' alt='".apos_encode($p['label'])."'></div>";
+			$img = "<img src='/$imgPth' alt='".apos_encode($p['label'])."'>";
+			if (PERM('inspector')) $img = "<div class='upload-wrap'>$img</div>";
+			$img = "<div>$img</div>";
 
 			$notes = get_notes_html($p);
 			$tags = get_tags_html($p['id']);
 			$colors = get_colors_html($p['id']);
-			$editBtn = PERM('inspector') ? '<button class="edit typcn typcn-edit blue" title="Enable edit mode" disabled></button><button class="delete typcn typcn-trash red" title="Delete" disabled></button>' : '';
+			$editBtn = PERM('inspector') ? '<button class="edit typcn typcn-edit blue" title="Enable edit mode" disabled></button><button class="delete typcn typcn-trash red" title="Delete"></button>' : '';
 
 			$HTML .= "<li id=p{$p['id']}>$img<div><strong>{$p['label']}$editBtn</strong>$notes$tags$colors</div></li>";
 		}
 
 		return $HTML.($wrap?'</ul>':'');
+	}
+
+	/**
+	 * Function to process uploaded images
+	 *
+	 * Checks the $_FILES array for an item named $key,
+	 * checks if file is an image, and it's mime type
+	 * can be found in $allowedMimeTypes, and finally
+	 * checks if the size is at least $minwidth by $minheight,
+	 * then moves it to the requested $path.
+	 *
+	 * @param string $key
+	 * @param array|null $allowedMimeTypes
+	 * @param string $path
+	 * @param int $minwidth
+	 * @param int|null $minheight
+	 */
+	function process_uploaded_image($key,$allowedMimeTypes,$path,$minwidth,$minheight = null){
+		if (!isset($minheight)) $minheight = $minwidth;
+		if (!isset($_FILES[$key])) respond('No files were attached to the request');
+
+		$file = $_FILES[$key];
+		$tmp = $file['tmp_name'];
+		if (strlen($tmp) < 1) respond('File upload failed; Reason unknown');
+
+		$imageSize = getimagesize($tmp);
+		if (is_array($allowedMimeTypes) && !in_array($imageSize['mime'], $allowedMimeTypes))
+			respond("This type of image is now allowed: ".$imageSize['mime']);
+		list($width,$height) = $imageSize;
+
+		if ($width + $height === 0) respond('The uploaded file is not an image');
+
+		if (!move_uploaded_file($tmp, $path)) respond('File upload failed; Writing image file was unsuccessful');
+
+		if ($width < $minwidth || $height < $minheight){
+			unlink($path);
+			respond('The image is too small in '.(
+				$width < $minwidth
+				?(
+					$height < $minheight
+					?'width and height'
+					:'width'
+				)
+				:(
+					$height < $minheight
+					?'height'
+					:''
+				)
+			).', please uploadd a bigger image.<br>The minimum size is '.$minwidth.'px by '.$minheight.'px.</p>');
+		}
 	}

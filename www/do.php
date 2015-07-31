@@ -723,12 +723,15 @@
 				$CGDb = new MysqliDbWrapper(DB_HOST,DB_USER,DB_PASS,'mlpvc-colorguide');
 				include "includes/CGUtils.php";
 
+				$SpriteRelPath = '/img/cg/';
+				$SpritePath = APPATH.substr($SpriteRelPath,1);
+
 				if (RQMTHD === 'POST'){
 					if (!PERM('inspector')) respond();
 					detectCSRF();
 
 					$_match = array();
-					if (preg_match('~^(rename|delete)/(\d+)$~', $data, $_match)){
+					if (preg_match('~^(rename|delete|setsprite)/(\d+)$~', $data, $_match)){
 						$PonyID = intval($_match[2], 10);
 
 						$Pony = $CGDb->where('id', $PonyID)->getOne('ponies');
@@ -748,9 +751,20 @@
 								$update['label'] = $newname;
 							break;
 							case "delete":
-								if ($CGDb->where('id', $Pony['id'])->delete('ponies'))
+								if (!$CGDb->where('id', $Pony['id'])->delete('ponies'))
 									respond(ERR_DB_FAIL);
-								respond('Appearance deleted successfuly');
+
+								$fpath = APPATH."img/cg/{$Pony['id']}.png";
+								if (file_exists($fpath))
+									unlink($fpath);
+
+								respond(array());
+							break;
+							case "setsprite":
+								$fname = $Pony['id'].'.png';
+								$finalpath = $SpritePath.$fname;
+								process_uploaded_image('sprite',array('image/png'),$finalpath,100);
+								respond(array("path" => "$SpriteRelPath$fname?".time()));
 							break;
 							default: respond('Bad request');
 						}
@@ -855,7 +869,8 @@
 					'do-css',
 					'js' => array('jquery.qtip', 'jquery.ctxmenu', $do),
 				);
-				if (PERM('inspector')) $settings['js'][] = "$do-manage";
+				if (PERM('inspector'))
+					$settings['js'] = array_merge($settings['js'],array('jquery.uploadzone', "$do-manage"));
 				loadPage($settings);
 			break;
 			case "404":

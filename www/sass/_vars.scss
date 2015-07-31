@@ -49,3 +49,52 @@ $NoFontChange: true;
 
 // Mobile-to-Desktop breakpoint pixel value
 $Breakpoint: 650px;
+
+$LightOutline: 0;
+$NormalOutline: 1;
+$MediumOutline: 2;
+$StrongOutline: 3;
+@mixin outline($strength:3, $color:#fff){
+	$size: 0.133em;
+	@if ($strength <= $LightOutline){
+		text-shadow:
+			0 0 $size $color,
+			0 0 $size $color;
+	}
+	@if ($strength == $NormalOutline){
+		text-shadow:
+			0 0 $size $color,
+			0 0 $size $color,
+			0 0 $size $color,
+			0 0 $size $color;
+	}
+	@else if ($strength == $MediumOutline){
+		text-shadow:
+			0 0 $size $color,
+			0 0 $size $color,
+			0 0 $size $color,
+			0 0 $size $color,
+
+			0 0 $size $color,
+			0 0 $size $color,
+			0 0 $size $color,
+			0 0 $size $color;
+	}
+	@else if ($strength >= $StrongOutline){
+		text-shadow:
+			0 0 $size $color,
+			0 0 $size $color,
+			0 0 $size $color,
+			0 0 $size $color,
+
+			0 0 $size $color,
+			0 0 $size $color,
+			0 0 $size $color,
+			0 0 $size $color,
+
+			0 0 $size $color,
+			0 0 $size $color,
+			0 0 $size $color,
+			0 0 $size $color;
+	}
+}

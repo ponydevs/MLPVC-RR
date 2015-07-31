@@ -105,21 +105,14 @@ $(function(){
 
 				$.Dialog.wait(title,'Adding episode to database');
 
-				$.ajax({
-					method: "POST",
-					url: "/episode/add",
-					data: data,
-					success: function(data){
-						if (typeof data !== 'object') return console.log(data) && $w.trigger('ajaxerror');
-
-						if (data.status){
-							Bind(data.tbody);
-							UpcomingUpdate(data.upcoming);
-							$.Dialog.close();
-						}
-						else $.Dialog.fail(title,data.message);
+				$.post('/episode/add', data, $.mkAjaxHandler(function(){
+					if (this.status){
+						Bind(this.tbody);
+						UpcomingUpdate(this.upcoming);
+						$.Dialog.close();
 					}
-				});
+					else $.Dialog.fail(title,this.message);
+				}));
 			})
 		});
 	});
@@ -147,66 +140,53 @@ $(function(){
 
 			$.Dialog.wait(title, 'Getting episode details from server');
 
-			$.ajax({
-				method: "POST",
-				url: "/episode/"+epid,
-				success: function(data){
-					if (typeof data !== 'object') return console.log(data) && $w.trigger('ajaxerror');
+			$.post("/episode/"+epid, $.mkAjaxHandler(function(){
+				if (this.status){
+					var $editepWithData = $editep.clone(true, true);
 
-					if (data.status){
-						var $editepWithData = $editep.clone(true, true);
+					$editepWithData.find('input[name=twoparter]').prop('checked',!!this.ep.twoparter);
+					delete this.ep.twoparter;
 
-						$editepWithData.find('input[name=twoparter]').prop('checked',!!data.ep.twoparter);
-						delete data.ep.twoparter;
+					var d = mkDate(this.ep.airdate, this.ep.airtime, true);
+					this.ep.airdate = d.toAirDate();
+					this.ep.airtime = d.toAirTime();
 
-						var d = mkDate(data.ep.airdate, data.ep.airtime, true);
-						data.ep.airdate = d.toAirDate();
-						data.ep.airtime = d.toAirTime();
+					var epid = this.epid;
+					delete this.epid;
 
-						var epid = data.epid;
-						delete data.epid;
+					$.each(this.ep,function(k,v){
+						$editepWithData.find('input[name='+k+']').val(v);
+					});
 
-						$.each(data.ep,function(k,v){
-							$editepWithData.find('input[name='+k+']').val(v);
-						});
+					$.Dialog.request('Editing',$editepWithData,'editep','Save',function(){
+						$('#editep').on('submit',function(e){
+							e.preventDefault();
 
-						$.Dialog.request('Editing',$editepWithData,'editep','Save',function(){
-							$('#editep').on('submit',function(e){
-								e.preventDefault();
+							var tempdata = $(this).serializeArray(), data = {};
+							$.each(tempdata,function(i,el){
+								this[el.name] = el.value;
+							});
 
-								var tempdata = $(this).serializeArray(), data = {};
-								$.each(tempdata,function(i,el){
-									data[el.name] = el.value;
-								});
+							var d = mkDate(this.airdate, this.airtime);
+							delete this.airdate;
+							delete this.airtime;
+							this.airs = d.toISOString();
 
-								var d = mkDate(data.airdate, data.airtime);
-								delete data.airdate;
-								delete data.airtime;
-								data.airs = d.toISOString();
+							$.Dialog.wait(title,'Saving edits');
 
-								$.Dialog.wait(title,'Saving edits');
-
-								$.ajax({
-									method: "POST",
-									url: '/episode/edit/'+epid,
-									data: data,
-									success: function(data){
-										if (typeof data !== 'object') return console.log(data) && $w.trigger('ajaxerror');
-
-										if (data.status){
-											Bind(data.tbody);
-											UpcomingUpdate(data.upcoming);
-											$.Dialog.close();
-										}
-										else $.Dialog.fail(title,data.message);
-									}
-								})
-							})
-						});
-					}
-					else $.Dialog.fail(title,data.message);
+							$.post('/episode/edit/'+epid, data, $.mkAjaxHandler(function(){
+								if (this.status){
+									Bind(this.tbody);
+									UpcomingUpdate(this.upcoming);
+									$.Dialog.close();
+								}
+								else $.Dialog.fail(title,this.message);
+							}));
+						})
+					});
 				}
-			});
+				else $.Dialog.fail(title,this.message);
+			}));
 		});
 
 		$eptable.find('.delete-episode').off('click').on('click',function(e){
@@ -221,20 +201,14 @@ $(function(){
 
 				$.Dialog.wait(title);
 
-				$.ajax({
-					method: "POST",
-					url: '/episode/delete/'+epid,
-					success: function(data){
-						if (typeof data !== 'object') return console.log(data) && $w.trigger('ajaxerror');
-
-						if (data.status){
-							Bind(data.tbody);
-							UpcomingUpdate(data.upcoming);
+				$.post('/episode/delete/'+epid, $.mkAjaxHandler(function(){
+						if (this.status){
+							Bind(this.tbody);
+							UpcomingUpdate(this.upcoming);
 							$.Dialog.close();
 						}
-						else $.Dialog.fail(title,data.message);
-					}
-				});
+						else $.Dialog.fail(title,this.message);
+				}));
 			});
 		});
 	}

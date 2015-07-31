@@ -10,7 +10,7 @@ $(function(){
 	$('#export').on('click',function(){
 		var title = 'Exporting posts';
 
-		$.post('/episode/export/'+idstr,{},function(data){
+		$.post('/episode/export/'+idstr,function(data){
 			if (typeof data !== 'object') return console.log(data) && $w.trigger('ajaxerror');
 
 			if (data.status) $.Dialog.info(title,'<p>Here\'s the code you need to paste into the journal while in<br><em>HTML editing mode</em>, replacing what was there previously.</p><textarea style="display:block;margin:0 auto;resize:none;width:90%"></textarea>',function(){
@@ -24,7 +24,7 @@ $(function(){
 	});
 
 	$('#video').on('click',function(){
-		$.post('/episode/getvideos/'+idstr,{},function(data){
+		$.post('/episode/getvideos/'+idstr,function(data){
 			if (typeof data !== 'object') return console.log(data) && $w.trigger('ajaxerror');
 
 			var title = 'Video links';
@@ -93,7 +93,7 @@ $(function(){
 		if (diff.past !== true) return;
 
 		if (!$voteButton.length){
-			$.post('/episode/vote/'+idstr+'?html',{},function(data){
+			$.post('/episode/vote/'+idstr+'?html',function(data){
 				if (typeof data !== 'object') return console.log(data) && $w.trigger('ajaxerror');
 
 				if (data.status){
@@ -135,7 +135,7 @@ $(function(){
 
 			$.Dialog.wait(title,'Sending reservation to the server');
 
-			$.post("/reserving/request/"+id,{},function(data){
+			$.post("/reserving/request/"+id,function(data){
 				if (typeof data !== 'object') return console.log(data) && $w.trigger('ajaxerror');
 
 				if (data.status){
@@ -155,7 +155,7 @@ $(function(){
 			$.Dialog.confirm(title, 'You are about to permanently delete this request.<br>Are you sure about this?', function(sure){
 				if (!sure) return;
 
-				$.post('/reserving/request/'+id+'?delete',{},function(data){
+				$.post('/reserving/request/'+id+'?delete',function(data){
 					if (typeof data !== 'object') return console.log(data) && $w.trigger('ajaxerror');
 
 					if (data.status){
@@ -176,7 +176,7 @@ $(function(){
 
 				$.Dialog.wait(title,'Cancelling reservation');
 
-				$.post('/reserving/'+type+'/'+id+'?cancel',{},function(data){
+				$.post('/reserving/'+type+'/'+id+'?cancel',function(data){
 					if (typeof data !== 'object') return console.log(data) && $w.trigger('ajaxerror');
 
 					if (data.status){
@@ -258,7 +258,7 @@ $(function(){
 
 					$.Dialog.wait(title,'Removing "finished" flag'+(unbind?' & unbinding from user':''));
 
-					$.post('/reserving/'+type+'/'+id+'?unfinish'+(unbind?'&unbind':''),{},function(data){
+					$.post('/reserving/'+type+'/'+id+'?unfinish'+(unbind?'&unbind':''),function(data){
 						if (typeof data !== 'object') return console.log(data) && $w.trigger('ajaxerror');
 
 						if (data.status){
@@ -441,7 +441,7 @@ $(function(){
 	function updateSection(type, SEASON, EPISODE){
 		var Type = type.charAt(0).toUpperCase()+type.substring(1), dis = this;
 		$.Dialog.wait(Type, 'Updating list');
-		$.post('/episode/'+type.replace(/([^s])$/,'$1s')+'/S'+SEASON+'E'+EPISODE,{},function(data){
+		$.post('/episode/'+type.replace(/([^s])$/,'$1s')+'/S'+SEASON+'E'+EPISODE,function(data){
 			if (typeof data !== 'object') return console.log(data) && $w.trigger('ajaxerror');
 
 			if (data.status){
