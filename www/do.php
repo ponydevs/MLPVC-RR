@@ -34,7 +34,9 @@
 
 					switch (strtolower($_SERVER['HTTP_X_GITHUB_EVENT'])) {
 						case 'push':
-							echo shell_exec("$git pull");
+							$output = array();
+							exec("$git pull",$output);
+							echo implode("\n", $output);
 						break;
 						case 'ping':
 							echo "pong";

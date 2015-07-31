@@ -49,23 +49,29 @@
 				success: function (data) {
 					if (typeof data === 'string') return console.log(data) === $(window).trigger('ajaxerror');
 
-					if (data.status) $.Dialog.close(function(){
-						$this.children('img').fadeTo(200,0,function(){
-							var $this = $(this);
-							$this.attr('src',data.path).on('load',function(){
-								$this.fadeTo(200,1);
+					if (data.status){
+						$this.removeClass('uploading');
+						$helper.removeAttr('data-progress');
+						$input.val('');
+						$.Dialog.close(function(){
+							$this.children('img').fadeTo(200,0,function(){
+								var $this = $(this);
+								$this.attr('src',data.path).on('load',function(){
+									$this.fadeTo(200,1);
+								});
 							});
 						});
-					});
-					else $.Dialog.fail(title,data.message);
+					}
+					else {
+						$this.removeClass('uploading');
+						$helper.removeAttr('data-progress');
+						$input.val('');
+						$.Dialog.fail(title,data.message);
+					}
 				},
 				error: function(xhr){
 					if (xhr.status === 500 || xhr.status === 401) return;
 					$.Dialog.fail(title,'Upload failed (HTTP '+xhr.status+')');
-				},
-				complete: function(){
-					$this.removeClass('uploading');
-					$helper.removeAttr('data-progress');
 				}
 			};
 			if (opt.helper) ajaxOpts['xhr'] = function () {
