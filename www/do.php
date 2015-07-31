@@ -35,6 +35,7 @@
 					switch (strtolower($_SERVER['HTTP_X_GITHUB_EVENT'])) {
 						case 'push':
 							$output = array();
+							exec("$git reset HEAD --hard",$output);
 							exec("$git pull",$output);
 							echo implode("\n", $output);
 						break;
