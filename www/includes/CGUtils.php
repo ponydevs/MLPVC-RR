@@ -127,6 +127,8 @@
 
 		if ($width + $height === 0) respond('The uploaded file is not an image');
 
+		$folder = preg_replace('~^(.*\\'.DIRECTORY_SEPARATOR.')[^'.DIRECTORY_SEPARATOR.']+$~','$1',$path);
+		if (!is_dir($folder)) mkdir($folder,0777,true);
 		if (!move_uploaded_file($tmp, $path)) respond('File upload failed; Writing image file was unsuccessful');
 
 		if ($width < $minwidth || $height < $minheight){
