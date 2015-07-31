@@ -3,3 +3,4 @@ www/conf.php
 mlpvc-rr-error.log
 *.opdownload
 node_modules
+www/img/cg/
