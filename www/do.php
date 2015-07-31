@@ -766,7 +766,7 @@
 								$fname = $Pony['id'].'.png';
 								$finalpath = $SpritePath.$fname;
 								process_uploaded_image('sprite',array('image/png'),$finalpath,100);
-								respond(array("path" => "$SpriteRelPath$fname?".time()));
+								respond(array("path" => "$SpriteRelPath$fname?".filemtime($finalpath)));
 							break;
 							default: respond('Bad request');
 						}

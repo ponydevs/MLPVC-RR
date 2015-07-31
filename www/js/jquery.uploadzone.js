@@ -28,7 +28,6 @@
 			$this[e.type === 'dragenter' ? 'addClass' : 'removeClass']('drop');
 		});
 		$input.on('change drop',function(e){
-			console.log(e);
 			var files = e.target.files || e.originalEvent.dataTransfer.files;
 
 			if (typeof files[0] === 'undefined' || !(files[0] instanceof File))
@@ -38,7 +37,7 @@
 			fd.append('sprite', files[0]);
 			fd.append('CSRF_TOKEN', $.getCSRFToken());
 
-			$this.addClass('uploading');
+			$this.removeClass('drop').addClass('uploading');
 			var ajaxOpts = {
 				url: opt.target,
 				type: "POST",
