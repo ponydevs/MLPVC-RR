@@ -1,5 +1,6 @@
 $(function(){
-	var Color = window.Color, color = window.color, TAG_TYPES_ASSOC = window.TAG_TYPES_ASSOC, $colorGroups;
+	var Color = window.Color, color = window.color, TAG_TYPES_ASSOC = window.TAG_TYPES_ASSOC, $colorGroups,
+		isWebkit = 'WebkitAppearance' in document.documentElement.style;
 	$('.upload-wrap').each(function(){
 		var $this = $(this),
 			ponyID = $this.closest('li').attr('id').substring(1);
@@ -10,17 +11,22 @@ $(function(){
 			accept: 'image/png',
 			target: '/colorguide/setsprite/'+ponyID,
 		}).ctxmenu([
-			{text: 'Upload new sprite', icon: 'upload', 'default': true, click: function(){
-				$this.find('input[type="file"]').trigger('click');
+			{text: 'Open image in new tab', icon: 'arrow-forward', 'default': true, attr: {
+				href: $this.find('img').attr('src'),
+				target: '_blank',
 			}},
 			{text: 'Copy image URL', icon: 'clipboard', click: function(){
 				$.copy($.urlToAbsolute($this.find('img').attr('src')));
 			}},
-			{text: 'Open image in new tab', icon: 'arrow-forward', attr: {
-				href: $this.find('img').attr('src'),
-				target: '_blank',
+			{text: 'Upload new sprite', icon: 'upload', click: function(){
+				$this.find('input[type="file"]').trigger('click', [true]);
 			}},
-		], 'Sprite image');
+		], 'Sprite image').attr('title', isWebkit ? ' ' : '').on('click',function(e, forced){
+			if (forced === true) return true;
+
+			e.preventDefault();
+			$this.data('ctxmenu-items').eq(1).children().get(0).click();
+		});
 	});
 
 	$('#list').find('button.edit').on('click',function(){

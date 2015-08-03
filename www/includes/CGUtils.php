@@ -82,7 +82,7 @@
 			$p['label'] = htmlspecialchars($p['label']);
 			$imgPth = "img/cg/{$p['id']}.png";
 			if (!file_Exists(APPATH.$imgPth)) $imgPth = "img/blank-pixel.png";
-			$img = "<img src='/$imgPth' alt='".apos_encode($p['label'])."'>";
+			$img = "<a href='/$imgPth' target=_blank title='Open image in new tab'><img src='/$imgPth' alt='".apos_encode($p['label'])."'></a>";
 			if (PERM('inspector')) $img = "<div class='upload-wrap'>$img</div>";
 			$img = "<div>$img</div>";
 
@@ -127,7 +127,8 @@
 
 		if ($width + $height === 0) respond('The uploaded file is not an image');
 
-		$folder = preg_replace('~^(.*\\'.DIRECTORY_SEPARATOR.')[^'.DIRECTORY_SEPARATOR.']+$~','$1',$path);
+		$DS = preg_quote(DIRECTORY_SEPARATOR);
+		$folder = preg_replace("~^(.*$DS)[^$DS]+$~",'$1',$path);
 		if (!is_dir($folder)) mkdir($folder,0777,true);
 		if (!move_uploaded_file($tmp, $path)) respond('File upload failed; Writing image file was unsuccessful');
 

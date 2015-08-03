@@ -66,6 +66,11 @@
 		> div {
 			&:not(:last-child) { margin-right: 10px }
 
+			@mixin activate {
+						background-color: rgba(white, .7);
+						&:before, &:after { opacity: 1 }
+			}
+
 			> .upload-wrap {
 				position: relative;
 				overflow: hidden;
@@ -82,16 +87,10 @@
 					z-index: 3;
 					cursor: pointer;
 
-					&:hover + .helper {
-						background-color: rgba(white, .7);
-						&:before { opacity: 1 }
-					}
+					&:hover + .helper { @include activate }
 				}
 				&.drop, &.uploading {
-					> .helper {
-						background-color: rgba(white, .7);
-						&:before { opacity: 1 }
-					}
+					> .helper { @include activate }
 				}
 				&.drop > .helper:before { content: '\e060' }
 				&.uploading > .helper {
@@ -110,13 +109,7 @@
 					}
 					&[data-progress]:after {
 						content: "Uploading...\0A"attr(data-progress) "%";
-						font-weight: bold;
-						white-space: pre-wrap;
-						display: block;
-						text-align: center;
 						font-size: 18px;
-						margin-top: 5px;
-						@include outline($MediumOutline, #000);
 					}
 				}
 				> .helper {
@@ -134,14 +127,28 @@
 					flex-flow: column wrap;
 					transition: background-color .2s;
 
+					&:before, &:after {
+						position: relative;
+						z-index: 3;
+						opacity: 0;
+						transition: opacity .2s;
+						color: #fff;
+					}
 					&:before {
 						//noinspection CssNoGenericFontName
 						font-family: 'Typicons';
-						content: '\e126';
-						opacity: 0;
-						transition: opacity .2s;
-
+						content: '\e00b';
 						@include outline($LightOutline, #000);
+					}
+					&:after {
+						content: "Open in new tab";
+						font-weight: bold;
+						white-space: pre-wrap;
+						display: block;
+						text-align: center;
+						font-size: 16px;
+						margin-top: 5px;
+						@include outline($MediumOutline, #000);
 					}
 				}
 			}
