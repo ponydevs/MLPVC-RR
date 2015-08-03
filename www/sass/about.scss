@@ -24,6 +24,12 @@
 			}
 		}
 
+		.ramnode img {
+			border-radius: 7px;
+			max-height: 45px;
+			max-width: 100%;
+		}
+
 		&:not(:last-child){
 			margin-bottom: 10px;
 		}
