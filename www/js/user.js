@@ -22,19 +22,13 @@ $(function(){
 
 			$.Dialog.wait(title,'Signing out from '+browser);
 
-			$.ajax({
-				method: "POST",
-				url: '/user/sessiondel/'+sid,
-				success: function(data){
-					if (typeof data !== 'object') return console.log(data) && $w.trigger('ajaxerror');
-
-					if (data.status){
-						$li.remove();
-						$.Dialog.close();
-					}
-					else $.Dialog.fail(title,data.message);
+			$.post('/user/sessiondel/'+sid, $.mkAjaxHandler(function(){
+				if (this.status){
+					$li.remove();
+					$.Dialog.close();
 				}
-			});
+				else $.Dialog.fail(title,this.message);
+			}));
 		});
 	});
 	$('#signout-everywhere').on('click',function(){
@@ -45,21 +39,15 @@ $(function(){
 
 			$.Dialog.wait(title,'Signing out');
 
-			$.ajax({
-				method: "POST",
-				url: '/signout?everywhere',
-				success: function(data){
-					if (typeof data !== 'object') return console.log(data) && $w.trigger('ajaxerror');
-
-					if (data.status){
-						$.Dialog.success(title,data.message);
-						setTimeout(function(){
-							window.location.reload();
-						},1000);
-					}
-					else $.Dialog.fail(title,data.message);
+			$.post('/signout?everywhere',$.mkAjaxHandler(function(){
+				if (this.status){
+					$.Dialog.success(title,this.message);
+					setTimeout(function(){
+						window.location.reload();
+					},1000);
 				}
-			});
+				else $.Dialog.fail(title,this.message);
+			}));
 		});
 	});
 	$('#unlink').on('click',function(){
@@ -69,21 +57,15 @@ $(function(){
 
 			$.Dialog.wait(title,'Removing account link');
 
-			$.ajax({
-				method: "POST",
-				url: '/signout?unlink',
-				success: function(data){
-					if (typeof data !== 'object') return console.log(data) && $w.trigger('ajaxerror');
-
-					if (data.status){
-						$.Dialog.success(title,data.message);
-						setTimeout(function(){
-							window.location.reload();
-						},1000);
-					}
-					else $.Dialog.fail(title,data.message);
+			$.post('/signout?unlink', $.mkAjaxHandler(function(){
+				if (this.status){
+					$.Dialog.success(title,this.message);
+					setTimeout(function(){
+						window.location.reload();
+					},1000);
 				}
-			});
+				else $.Dialog.fail(title,this.message);
+			}));
 		});
 	});
 });

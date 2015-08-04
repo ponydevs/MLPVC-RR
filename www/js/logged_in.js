@@ -6,21 +6,15 @@ $(function(){
 
 			$.Dialog.wait(title,'Signing out');
 
-			$.ajax({
-				method: "POST",
-				url: '/signout',
-				success: function(data){
-					if (typeof data !== 'object') return console.log(data) && $w.trigger('ajaxerror');
-
-					if (data.status){
-						$.Dialog.success(title,data.message);
-						setTimeout(function(){
-							window.location.reload();
-						},1000);
-					}
-					else $.Dialog.fail(title,data.message);
+			$.post('/signout',$.mkAjaxHandler(function(){
+				if (this.status){
+					$.Dialog.success(title,this.message);
+					setTimeout(function(){
+						window.location.reload();
+					},1000);
 				}
-			});
+				else $.Dialog.fail(title,this.message);
+			}));
 		});
 	});
 });

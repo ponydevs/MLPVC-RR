@@ -1,5 +1,9 @@
 <?php
 
+	// Constants
+	define('PRINTABLE_ASCII_REGEX','^[ -~]+$');
+	define('INVERSE_PRINTABLE_ASCII_REGEX','[^ -~]');
+
 	/**
 	 * Sends replies to AJAX requests in a universal form
 	 * $s respresents the request status, a truthy value
@@ -512,8 +516,8 @@ HTML;
 		'unsupported_response_type' => 'The authorization server does not support obtaining an authorization code using this method.',
 		'unauthorized_client' => 'The authorization process did not complete. Please try again.',
 		'invalid_scope' => 'The requested scope is invalid, unknown, or malformed.',
-		'server_error' => "There's an issue on deviantArt's end. Try again later.",
-		'temporarily_unavailable' => "There's an issue on deviantArt's end. Try again later.",
+		'server_error' => "There's an issue on DeviantArt's end. Try again later.",
+		'temporarily_unavailable' => "There's an issue on DeviantArt's end. Try again later.",
 		'user_banned' => 'You were banned on our website by a staff member',
 	);
 
@@ -526,7 +530,7 @@ HTML;
 	}
 
 	/**
-	 * Makes authenticated requests to the deviantArt API
+	 * Makes authenticated requests to the DeviantArt API
 	 *
 	 * @param string $endpoint
 	 * @param null|array $postdata
@@ -633,7 +637,7 @@ HTML;
 
 				$STATIC_ROLES = array(
 					array(0,'ban','Banished User'),
-					array(1,'user','deviantArt User'),
+					array(1,'user','DeviantArt User'),
 					array(2,'member','Club Member'),
 					array(3,'inspector','Vector Inspector'),
 					array(4,'manager','Group Manager'),
@@ -954,7 +958,7 @@ HTML;
 	}
 
 	/**
-	 * deviantArt profile link generator
+	 * DeviantArt profile link generator
 	 *
 	 * @param array $User
 	 * @param int $format
@@ -1085,7 +1089,7 @@ HTML;
 					<button class="check-img red typcn typcn-arrow-repeat">Check image</button>
 				</label>
 				<div class="img-preview">
-					<div class="notice fail">Please click the <strong>Check image</strong> button after providing an URL to get a preview & verify if the link is correct.<br>Supported providers: deviantArt, Sta.sh, Imgur, Derpibooru</div>
+					<div class="notice fail">Please click the <strong>Check image</strong> button after providing an URL to get a preview & verify if the link is correct.<br>Supported providers: DeviantArt, Sta.sh, Imgur, Derpibooru, Puush</div>
 				</div>
 
 HTML;
@@ -1467,10 +1471,7 @@ HTML;
 		$deviation = $_POST['deviation'];
 		try {
 			require 'includes/Image.php';
-			$Image = new Image($deviation);
-
-			if ($Image->provider !== 'fav.me')
-				respond('The finished vector must be uploaded to deviantArt, '.$Image->provider.' links are not allowed');
+			$Image = new Image($deviation, 'fav.me');
 
 			foreach ($POST_TYPES as $what){
 				if ($Database->where('deviation_id', $Image->id)->has("{$what}s"))
@@ -1478,6 +1479,9 @@ HTML;
 			}
 
 			return array('deviation_id' => $Image->id);
+		}
+		catch (MismatchedProviderException $e){
+			respond('The finished vector must be uploaded to DeviantArt, '.$e->getActualProvider().' links are not allowed');
 		}
 		catch (Exception $e){ respond($e->getMessage()); }
 	}

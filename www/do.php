@@ -681,7 +681,7 @@
 					if (!isset($MSG)){
 						$MSG = 'Local user not found';
 						if (!$signedIn){
-							$exists = 'exsists on deviantArt';
+							$exists = 'exsists on DeviantArt';
 							if (isset($un)) $exists = "<a href='http://$un.deviantart.com/'>$exists</a>";
 							$SubMSG = "If this user $exists, sign in to import their details.";
 						}
@@ -766,7 +766,7 @@
 							case "setsprite":
 								$fname = $Pony['id'].'.png';
 								$finalpath = $SpritePath.$fname;
-								process_uploaded_image('sprite',array('image/png'),$finalpath,100);
+								process_uploaded_image('sprite',$finalpath,array('image/png'),100);
 								respond(array("path" => "$SpriteRelPath$fname?".filemtime($finalpath)));
 							break;
 							default: respond('Bad request');
@@ -804,14 +804,7 @@
 							respond("Tag name cannot be shorter than 4 characters");
 						if ($nl > 30)
 							respond("Tag name cannot be longer than 30 characters");
-						$fails = array();
-						if (preg_match('/'.INVERSE_TAG_NAME_PATTERN.'/', $name, $fails)){
-							$invalid = array();
-							foreach ($fails as $f)
-								if (!in_array($f, $invalid))
-									$invalid[] = $f;
-							respond('Tag name contains the following invalid character'.(count($invalid)!==1?'s':'').': "'.implode('", "', $invalid).'".');
-						}
+						check_string_valid($name,'Tag name',INVERSE_TAG_NAME_PATTERN);
 						$data['name'] = $name;
 
 						if (empty($_POST['type'])) $data['type'] = null;
@@ -859,6 +852,48 @@
 						}
 
 						respond($data);
+					}
+					// TODO
+					else if (false && preg_match('~^([gs]et|make|del)cg(?:/(\d+))?$~', $data, $_match)){
+						$setting = $_match[1] === 'set';
+						$getting = $_match[1] === 'get';
+						$deleting = $_match[1] === 'del';
+						$new = $_match[1] === 'make';
+
+						if (!$new){
+							if (empty($_match[2]))
+								respond('Missing color group ID');
+							$GroupID = intval($_match[2], 10);
+							$Group = $CGDb->where('groupid', $GroupID)->getOne('colorgroups');
+							if (empty($GroupID))
+								respond("There's no $color group with the ID of $GroupID");
+
+							if ($getting){
+								$Group['Colors'] = get_colors($Group['groupid']);
+								respond($Group);
+							}
+
+							if ($deleting){
+								if (!$CGDb->where('groupid', $Group['groupid'])->delete('colorgroups'))
+									respond(ERR_DB_FAIL);
+								respond("$Color group deleted successfully", 1);
+							}
+						}
+						$data = array();
+
+						if (!empty($_POST['name'])){
+							$name = $_POST['name'];
+							$nl = strlen($name);
+							if ($nl < 2 || $nl > 255)
+								respond('The group name must be between 2 and 255 characters in length');
+								check_string_valid($name, 'Color group name', INVERSE_PRINTABLE_ASCII_REGEX);
+							$data['name'] = $name;
+						}
+
+						if (!empty($_POST['colors'])){
+							$colors = array();
+							$recvColors = jcon_decode($_POST['colors'], true);
+						}
 					}
 					else do404();
 				}

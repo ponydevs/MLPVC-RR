@@ -344,6 +344,8 @@ header {
 			font-style: italic;
 		}
 	}
+}
+#content, #dialogContent {
 	a:not(.btn) { @include link }
 }
 #sidebar {

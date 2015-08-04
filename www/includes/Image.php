@@ -1,13 +1,23 @@
 <?php
 
+	class MismatchedProviderException extends Exception {
+		private $actualProvider;
+		function __construct($actualProvider){
+			$this->actualProvider = $actualProvider;
+		}
+		function getActualProvider(){ return $this->actualProvider; }
+	}
+
 	class Image {
 		public $preview, $fullsize, $title = '', $provider, $id;
 		private $url;
-		public function __construct($url){
+		public function __construct($url, $requestedProvider = null){
 			$this->url = trim($url);
 			$this->preview = $this->fullsize = false;
 
 			$provider = $this->get_provider($this->url);
+			if (isset($requestedProvider) && $provider['name'] !== $requestedProvider)
+				throw new MismatchedProviderException($provider['name']);
 			$this->provider = $provider['name'];
 			$this->get_direct_url($provider['itemid']);
 		}
@@ -18,6 +28,7 @@
 			'(?:i\.)?imgur\.com/([A-Za-z\d]{1,7})' => 'imgur',
 			'derpiboo(?:\.ru|ru\.org)/(\d+)' => 'derpibooru',
 			'derpicdn\.net/img/(?:view|download)/\d{4}/\d{1,2}/\d{1,2}/(\d+)' => 'derpibooru',
+			'puu\.sh/([A-Za-z\d]+(?:/[A-Fa-f\d]+)?)' => 'puush',
 		);
 		private static function test_provider($url, $pattern, $name){
 			$match = array();
@@ -58,6 +69,17 @@
 
 					$this->fullsize = $this->addProtcol($Data['representations']['full']);
 					$this->preview = $this->addProtcol($Data['representations']['small']);
+				break;
+				case 'puush':
+					$path = "http://puu.sh/{$id}";
+					$image = @file_get_contents($path);
+
+					if (empty($image) || $image === 'That puush could not be found.')
+						throw new Exception('The requested image could not be found on Puu.sh');
+					if ($image === 'You do not have access to view that puush.')
+						throw new Exception('The requested image is a private Puu.sh and the token is missing from the URL');
+
+					$this->fullsize = $this->preview = $path;
 				break;
 				case 'dA':
 				case 'fav.me':

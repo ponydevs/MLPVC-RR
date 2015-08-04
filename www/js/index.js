@@ -10,55 +10,49 @@ $(function(){
 	$('#export').on('click',function(){
 		var title = 'Exporting posts';
 
-		$.post('/episode/export/'+idstr,function(data){
-			if (typeof data !== 'object') return console.log(data) && $w.trigger('ajaxerror');
-
-			if (data.status) $.Dialog.info(title,'<p>Here\'s the code you need to paste into the journal while in<br><em>HTML editing mode</em>, replacing what was there previously.</p><textarea style="display:block;margin:0 auto;resize:none;width:90%"></textarea>',function(){
+		$.post('/episode/export/'+idstr,$.mkAjaxHandler(function(){
+			if (this.status) $.Dialog.info(title,'<p>Here\'s the code you need to paste into the journal while in<br><em>HTML editing mode</em>, replacing what was there previously.</p><textarea style="display:block;margin:0 auto;resize:none;width:90%"></textarea>',function(){
 				$('#dialogContent').find('textarea')
-					.val(data.export)
+					.val(this.export)
 					.focus(function(){ $(this).select() }).focus()
 					.mouseup(function(){ return false });
 			});
-			else $.Dialog.fail(title,data.message);
-		});
+			else $.Dialog.fail(title,this.message);
+		}));
 	});
 
 	$('#video').on('click',function(){
-		$.post('/episode/getvideos/'+idstr,function(data){
-			if (typeof data !== 'object') return console.log(data) && $w.trigger('ajaxerror');
-
+		$.post('/episode/getvideos/'+idstr,$.mkAjaxHandler(function(){
 			var title = 'Video links';
 			$.Dialog.request(title,'<form id=vidlinks><input type="text" name="yt" placeholder="YouTube"><input type="text" name="dm" placeholder="Dailymotion"></form>','vidlinks','Save',function(){
 				var $form = $('#vidlinks'),
 					$yt = $form.find('[name=yt]'),
 					$dm = $form.find('[name=dm]');
-				if (data.yt) $yt.val(data.yt);
-				if (data.dm) $dm.val(data.dm);
+				if (this.yt) $yt.val(this.yt);
+				if (this.dm) $dm.val(this.dm);
 				$form.on('submit',function(e){
 					e.preventDefault();
 
 					$.Dialog.wait(title, 'Saving links');
 					
-					$.post('/episode/setvideos/'+idstr,{yt: $yt.val(), dm: $dm.val()},function(data){
-						if (typeof data !== 'object') return console.log(data) && $w.trigger('ajaxerror');
-
-						if (data.status){
+					$.post('/episode/setvideos/'+idstr,{yt: $yt.val(), dm: $dm.val()},$.mkAjaxHandler(function(){
+						if (this.status){
 							var $epSection = $content.children('section.episode');
-							if (data.epsection){
+							if (this.epsection){
 								if (!$epSection.length)
 									$epSection = $(document.createElement('section'))
 										.addClass('episode')
 										.insertBefore($content.children('section').first());
-								$epSection.html($(data.epsection).filter('section').html());
+								$epSection.html($(this.epsection).filter('section').html());
 							}
 							else if ($epSection.length) $epSection.remove();
 							$.Dialog.close();
 						}
-						else $.Dialog.fail(title, data.message);
-					})
+						else $.Dialog.fail(title, this.message);
+					}));
 				});
 			});
-		});
+		}));
 	});
 
 	var $voting = $('#voting'),
@@ -73,35 +67,31 @@ $(function(){
 
 		$both.attr('disabled', true);
 
-		$.post('/episode/vote/'+epid,{vote:value},function(data){
-			if (typeof data !== 'object') return console.log(data) && $w.trigger('ajaxerror');
-
-			if (data.status){
+		$.post('/episode/vote/'+epid,{vote:value},$.mkAjaxHandler(function(){
+			if (this.status){
 				$.Dialog.close();
 				var $section = $this.closest('section');
 				$section.children('h2').nextAll().remove();
-				$section.append(data.newhtml);
+				$section.append(this.newhtml);
 			}
 			else {
-				$.Dialog.fail(title,data.message);
+				$.Dialog.fail(title,this.message);
 				$both.attr('disabled', false);
 			}
-		})
+		}));
 	});
 
 	$voting.find('time').data('dyntime-beforeupdate',function(diff){
 		if (diff.past !== true) return;
 
 		if (!$voteButton.length){
-			$.post('/episode/vote/'+idstr+'?html',function(data){
-				if (typeof data !== 'object') return console.log(data) && $w.trigger('ajaxerror');
-
-				if (data.status){
+			$.post('/episode/vote/'+idstr+'?html',$.mkAjaxHandler(function(){
+				if (this.status){
 					$voting.children('h2').nextAll().remove();
-					$voting.append(data.html);
+					$voting.append(this.html);
 				}
-				else $.Dialog.fail('Display voting buttons',data.message);
-			});
+				else $.Dialog.fail('Display voting buttons',this.message);
+			}));
 			$(this).removeData('dyntime-beforeupdate');
 			return false;
 		}
@@ -135,18 +125,16 @@ $(function(){
 
 			$.Dialog.wait(title,'Sending reservation to the server');
 
-			$.post("/reserving/request/"+id,function(data){
-				if (typeof data !== 'object') return console.log(data) && $w.trigger('ajaxerror');
-
-				if (data.status){
+			$.post("/reserving/request/"+id,$.mkAjaxHandler(function(){
+				if (this.status){
 					$.Dialog.close();
 					$this.nextAll().remove();
-					$(data.btnhtml).insertAfter($this);
+					$(this.btnhtml).insertAfter($this);
 					Bind($li, id, type);
 					$this.remove();
 				}
-				else $.Dialog.fail(title,data.message);
-			});
+				else $.Dialog.fail(title,this.message);
+			}));
 		});
 		$li.children('button.delete').on('click',function(){
 			var $this = $(this),
@@ -155,15 +143,13 @@ $(function(){
 			$.Dialog.confirm(title, 'You are about to permanently delete this request.<br>Are you sure about this?', function(sure){
 				if (!sure) return;
 
-				$.post('/reserving/request/'+id+'?delete',function(data){
-					if (typeof data !== 'object') return console.log(data) && $w.trigger('ajaxerror');
-
-					if (data.status){
+				$.post('/reserving/request/'+id+'?delete',$.mkAjaxHandler(function(){
+					if (this.status){
 						$.Dialog.close();
 						$this.closest('li').remove();
 					}
-					else $.Dialog.fail(title,data.message);
-				})
+					else $.Dialog.fail(title,this.message);
+				}));
 			});
 		});
 		var $actions = $li.find('.reserver-actions').children();
@@ -176,19 +162,17 @@ $(function(){
 
 				$.Dialog.wait(title,'Cancelling reservation');
 
-				$.post('/reserving/'+type+'/'+id+'?cancel',function(data){
-					if (typeof data !== 'object') return console.log(data) && $w.trigger('ajaxerror');
-
-					if (data.status){
+				$.post('/reserving/'+type+'/'+id+'?cancel',$.mkAjaxHandler(function(){
+					if (this.status){
 						$.Dialog.close();
-						if (data.remove === true) return $li.remove();
+						if (this.remove === true) return $li.remove();
 						$this.parent().prev().nextAll().addBack().remove();
-						$(data.btnhtml).appendTo($li);
+						$(this.btnhtml).appendTo($li);
 
 						Bind($li, id, type);
 					}
-					else $.Dialog.fail(title,data.message);
-				});
+					else $.Dialog.fail(title,this.message);
+				}));
 			});
 		});
 		$actions.filter('.finish').off('click').on('click',function(){
@@ -212,16 +196,15 @@ $(function(){
 						if (typeof deviation !== 'string' || deviation.length === 0)
 							throw new Error('Please enter a deviation URL');
 
-						$.post('/reserving/'+type+'/'+id+'?finish',{deviation:deviation},function(data){
-							if (typeof data !== 'object') return console.log(data) && $w.trigger('ajaxerror');
-
+						$.post('/reserving/'+type+'/'+id+'?finish',{deviation:deviation},$.mkAjaxHandler(function(){
+							var data = this;
 							if (data.status) updateSection.call({callback:function(){
 								if (typeof data.message === 'string')
 									$.Dialog.success(title,data.message,true);
 								else $.Dialog.close();
 							}}, type, SEASON, EPISODE);
 							else handleError(data);
-						});
+						}));
 					}
 					catch(e){ handleError(e) }
 				});
@@ -258,15 +241,13 @@ $(function(){
 
 					$.Dialog.wait(title,'Removing "finished" flag'+(unbind?' & unbinding from user':''));
 
-					$.post('/reserving/'+type+'/'+id+'?unfinish'+(unbind?'&unbind':''),function(data){
-						if (typeof data !== 'object') return console.log(data) && $w.trigger('ajaxerror');
-
-						if (data.status){
-							$.Dialog.success(title, typeof data.message !== 'undefined' ? data.message : '"finished" flag removed successfully');
+					$.post('/reserving/'+type+'/'+id+'?unfinish'+(unbind?'&unbind':''),$.mkAjaxHandler(function(){
+						if (this.status){
+							$.Dialog.success(title, typeof this.message !== 'undefined' ? this.message : '"finished" flag removed successfully');
 							updateSection(type, SEASON, EPISODE);
 						}
-						else $.Dialog.fail(title,data.message);
-					});
+						else $.Dialog.fail(title,this.message);
+					}));
 				});
 			});
 		});
@@ -311,15 +292,13 @@ $(function(){
 						if (typeof deviation !== 'string' || deviation.length === 0)
 							throw new Error('Please enter a deviation URL');
 
-						$.post('/reserving/reservation?add='+idstr,{deviation:deviation},function(data){
-							if (typeof data !== 'object') return console.log(data) && $w.trigger('ajaxerror');
-
-							if (data.status){
-								$.Dialog.success(title,data.message);
+						$.post('/reserving/reservation?add='+idstr,{deviation:deviation},$.mkAjaxHandler(function(){
+							if (this.status){
+								$.Dialog.success(title,this.message);
 								updateSection(type, SEASON, EPISODE);
 							}
-							else  handleError(data);
-						});
+							else  handleError(this);
+						}));
 					}
 					catch(e){ handleError(e) }
 				});
@@ -340,7 +319,7 @@ $(function(){
 					$formImgInput.val($formImgInput.val().replace(outgoing,''));
 			}
 		}
-		var CHECK_BTN = '<strong class="typcn typcn-arrow-repeat">Check image</strong>';
+		var CHECK_BTN = '<strong class="typcn typcn-arrow-repeat" style=display:inline-block>Check image</strong>';
 		$formImgCheck.on('click',function(e){
 			e.preventDefault();
 
@@ -348,42 +327,37 @@ $(function(){
 			imgCheckDisabler(true);
 			var url = $formImgInput.val();
 
-			$.ajax({
-				method:'POST',
-				url:'/post',
-				data: { image_url: url },
-				success: function(data){
-					if (typeof data !== 'object') return console.log(data) && $w.trigger('ajaxerror');
+			$.Dialog.wait(Type+' process','Checking image');
 
-					if (data.status){
-						$previewIMG.attr('src',data.preview).show().on('load',function(){
-							$notice.hide();
+			$.post('/post', { image_url: url }, $.mkAjaxHandler(function(){
+				if (this.status){
+					$previewIMG.attr('src',this.preview).show().on('load',function(){
+						$notice.hide();
 
-							$formImgInput.data('prev-url', url);
+						$formImgInput.data('prev-url', url);
 
-							if (!!data.title && !$formTitleInput.val().trim())
-								$.Dialog.confirm(
-									'Confirm '+type+' title',
-									'The image you just checked had the following title:<br><br><p class=align-center><strong>'+data.title+'</strong></p>'
-									 +'<br>Would you like to use this as the '+type+'\'s description?<br>Keep in mind that it should describe the thing(s) '
-									 +(type==='request'?'being requested':'you plan to vector')+'.<br>'
-									 +'This dialog will not appear if you give your '+type+' a description before clicking the '+CHECK_BTN+' button.',
-									function(sure){
-										if (!sure) return $form.find('input[name=label]').focus();
-										$formTitleInput.val(data.title);
-										$.Dialog.close();
-									}
-								);
-						}).on('error',function(){
-							$.Dialog.fail("Can't load image","There was an error while attempting to load the image. Make sure the URL is correct and try again!");
-						});
-					}
-					else {
-						$notice.html(data.message).show();
-						$previewIMG.hide();
-					}
+						if (!!this.title && !$formTitleInput.val().trim())
+							$.Dialog.confirm(
+								'Confirm '+type+' title',
+								'The image you just checked had the following title:<br><br><p class=align-center><strong>'+this.title+'</strong></p>'
+								 +'<br>Would you like to use this as the '+type+'\'s description?<br>Keep in mind that it should describe the thing(s) '
+								 +(type==='request'?'being requested':'you plan to vector')+'.'
+								 +'<p>This dialog will not appear if you give your '+type+' a description before clicking the '+CHECK_BTN+' button.</p>',
+								function(sure){
+									if (!sure) return $form.find('input[name=label]').focus();
+									$formTitleInput.val(this.title);
+									$.Dialog.close();
+								}
+							);
+					}).on('error',function(){
+						$.Dialog.fail("Can't load image","There was an error while attempting to load the image. Make sure the URL is correct and try again!");
+					});
 				}
-			})
+				else {
+					$notice.html(this.message).show();
+					$previewIMG.hide();
+				}
+			}));
 		});
 		$form.on('submit',function(e, screwchanges, sanityCheck){
 			e.preventDefault();
@@ -424,12 +398,13 @@ $(function(){
 				data[el.name] = el.value;
 			});
 
-			$.post('/post',data,function(data){
-				if (typeof data !== 'object') return console.log(data) && $w.trigger('ajaxerror');
-
-				if (data.status) updateSection(type, SEASON, EPISODE);
-				else $.Dialog.fail(Type, data.message);
-			})
+			$.post('/post',data,$.mkAjaxHandler(function(){
+				if (this.status){
+					$.Dialog.success(Type+' posted successfully');
+					updateSection(type, SEASON, EPISODE);
+				}
+				else $.Dialog.fail(Type, this.message);
+			}));
 		}).on('reset',function(){
 			$formImgCheck.attr('disabled', false).addClass('red');
 			$notice.html(noticeHTML).show();
@@ -441,11 +416,9 @@ $(function(){
 	function updateSection(type, SEASON, EPISODE){
 		var Type = type.charAt(0).toUpperCase()+type.substring(1), dis = this;
 		$.Dialog.wait(Type, 'Updating list');
-		$.post('/episode/'+type.replace(/([^s])$/,'$1s')+'/S'+SEASON+'E'+EPISODE,function(data){
-			if (typeof data !== 'object') return console.log(data) && $w.trigger('ajaxerror');
-
-			if (data.status){
-				var $render = $(data.render);
+		$.post('/episode/'+type.replace(/([^s])$/,'$1s')+'/S'+SEASON+'E'+EPISODE,$.mkAjaxHandler(function(){
+			if (this.status){
+				var $render = $(this.render);
 
 				formBind.call($('#'+type.replace(/([^s])$/,'$1s')).html($render.filter('section').html()).rebindHandlers().find('.post-form').data('type',type));
 				window.updateTimesF();
@@ -454,7 +427,7 @@ $(function(){
 				else $.Dialog.close();
 			}
 			else window.location.reload();
-		});
+		}));
 	}
 	$('.post-form').each(function(){
 		formBind.call(this);

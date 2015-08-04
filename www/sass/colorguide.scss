@@ -94,7 +94,7 @@
 				}
 				&.drop > .helper:before { content: '\e060' }
 				&.uploading > .helper {
-					:before {
+					&:before {
 						content: '\e020';
 						animation: spin infinite 1s linear;
 

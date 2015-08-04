@@ -91,10 +91,8 @@ var Dashie = new Personality(
 gulp.task('js', function(){
     gulp.src(['www/js/*.js', '!www/js/*.min.js'])
 		.pipe(plumber(function(err){
-			var err =
-				err.fileName
-				? err.fileName.replace(workingDir,'')+'\n  line '+err.lineNumber+': '+err.message.replace(/^[\/\\]/,'').replace(err.fileName+': ','')
-				: err;
+			if (err.fileName)
+				err = err.fileName.replace(workingDir,'')+'\n  line '+err.lineNumber+': '+err.message.replace(/^[\/\\]/,'').replace(err.fileName+': ','');
 			Dashie.error(err);
 			this.emit('end');
 		}))

@@ -1,6 +1,12 @@
 $(function(){
 	var Color = window.Color, color = window.color, TAG_TYPES_ASSOC = window.TAG_TYPES_ASSOC, $colorGroups,
 		isWebkit = 'WebkitAppearance' in document.documentElement.style;
+
+	var $spriteUploadForm = $(document.createElement('form')).attr('id', 'sprite-img').html(
+		'<p class=align-center><a href=#upload>Click here to upload a file</a> or enter a URL below.</p>' +
+		'<label><input type=text name=image_url placeholder="External image URL" required></label>'
+	);
+
 	$('.upload-wrap').each(function(){
 		var $this = $(this),
 			ponyID = $this.closest('li').attr('id').substring(1);
@@ -10,6 +16,8 @@ $(function(){
 			title: 'Upload sprite',
 			accept: 'image/png',
 			target: '/colorguide/setsprite/'+ponyID,
+		}).on('uz-uploadstart',function(){
+			$.Dialog.close();
 		}).ctxmenu([
 			{text: 'Open image in new tab', icon: 'arrow-forward', 'default': true, attr: {
 				href: $this.find('img').attr('src'),
@@ -19,7 +27,31 @@ $(function(){
 				$.copy($.urlToAbsolute($this.find('img').attr('src')));
 			}},
 			{text: 'Upload new sprite', icon: 'upload', click: function(){
-				$this.find('input[type="file"]').trigger('click', [true]);
+				var title = 'Upload sprite image',
+					ponyID = $this.closest('li').attr('id').substring(1),
+					$uploadInput = $this.find('input[type="file"]');
+				$.Dialog.request(title,$spriteUploadForm.clone(),'sprite-img','Download image',function(){
+					var $form = $('#sprite-img'),
+						$image_url = $form.find('input[name=image_url]');
+					$form.find('a').on('click',function(e){
+						e.preventDefault();
+						e.stopPropagation();
+
+						$uploadInput.trigger('click', [true]);
+					});
+					$form.on('submit',function(e){
+						e.preventDefault();
+
+						var image_url = $image_url.val();
+
+						$.Dialog.wait(title, 'Downloading external image to the server');
+
+						$.post('/colorguide/setsprite/'+ponyID,{image_url: image_url}, $.mkAjaxHandler(function(){
+							if (this.status) $uploadInput.trigger('set-image', [this.path]);
+							else $.Dialog.fail(title,this.message);
+						}));
+					});
+				});
 			}},
 		], 'Sprite image').attr('title', isWebkit ? ' ' : '').on('click',function(e, forced){
 			if (forced === true) return true;
@@ -29,7 +61,8 @@ $(function(){
 		});
 	});
 
-	$('#list').find('button.edit').on('click',function(){
+	var $list = $('#list');
+	$list.find('button.edit').on('click',function(){
 		$.Dialog.info('Edit mode triggered', 'yay');
 	}).next().on('click',function(){
 		var $this = $(this),
@@ -43,15 +76,13 @@ $(function(){
 
 			$.Dialog.wait(title, 'Sending removal request');
 
-			$.post('/colorguide/delete/'+ponyID,function(data){
-				if (typeof data !== 'object') return console.log(data) && $w.trigger('ajaxerror');
-
-				if (data.status){
+			$.post('/colorguide/delete/'+ponyID,$.mkAjaxHandler(function(){
+				if (this.status){
 					$li.remove();
 					$.Dialog.close();
 				}
-				else $.Dialog.fail(title, data.message);
-			});
+				else $.Dialog.fail(title, this.message);
+			}));
 		})
 	});
 
@@ -99,46 +130,43 @@ $(function(){
 				$.Dialog.wait(title, 'Retrieveing tag details from server');
 
 				$.post('/colorguide/gettag/'+tagID,$.mkAjaxHandler(function(){
-					if (this.status){
-						$.Dialog.request(title,$tagEditForm.clone(true, true),'edit-tag','Save',function(){
-							var $form = $('#edit-tag');
-							$form.find('input[name=type][value='+data.type+']').prop('checked', true);
-							$form.find('input[type=text][name], textarea[name]').each(function(){
-								var $this = $(this);
-								$this.val(data[$this.attr('name')]);
-							});
-							$form.on('submit', function(e){
-								e.preventDefault();
-
-								var tempdata = $(this).serializeArray(), data = {};
-								$.each(tempdata,function(i,el){
-									data[el.name] = el.value;
-								});
-
-								$.Dialog.wait(title, 'Saving changes');
-
-								$.post('/colorguide/settag/'+tagID,data,function(data){
-									if (typeof data !== 'object') return console.log(data) && $w.trigger('ajaxerror');
-
-									if (data.status){
-										var $affected = $('.id-'+data.tid);
-										$affected.qtip('destroy', true);
-										if (data.title) $affected.attr('title', data.title);
-										else $affected.removeAttr('title');
-										$affected
-											.attr('class', 'tag id-'+data.tid+(data.type?' typ-'+data.type:''))
-											.text(data.name);
-										$affected.parent().each(function(){
-											reorder($(this));
-										});
-										window.tooltips();
-										$.Dialog.close();
-									}
-									else $.Dialog.fail(title, data.message);
-								});
-							});
+					var tag = this;
+					if (this.status) $.Dialog.request(title,$tagEditForm.clone(true, true),'edit-tag','Save',function(){
+						var $form = $('#edit-tag');
+						$form.find('input[name=type][value='+tag.type+']').prop('checked', true);
+						$form.find('input[type=text][name], textarea[name]').each(function(){
+							var $this = $(this);
+							$this.val(tag[$this.attr('name')]);
 						});
-					}
+						$form.on('submit', function(e){
+							e.preventDefault();
+
+							var tempdata = $(this).serializeArray(), data = {};
+							$.each(tempdata,function(i,el){
+								data[el.name] = el.value;
+							});
+
+							$.Dialog.wait(title, 'Saving changes');
+
+							$.post('/colorguide/settag/'+tagID,data,$.mkAjaxHandler(function(){
+								if (this.status){
+									var $affected = $('.id-'+this.tid);
+									$affected.qtip('destroy', true);
+									if (this.title) $affected.attr('title', this.title);
+									else $affected.removeAttr('title');
+									$affected
+										.attr('class', 'tag id-'+this.tid+(this.type?' typ-'+this.type:''))
+										.text(this.name);
+									$affected.parent().each(function(){
+										reorder($(this));
+									});
+									window.tooltips();
+									$.Dialog.close();
+								}
+								else $.Dialog.fail(title, this.message);
+							}));
+						});
+					});
 					else $.Dialog.fail(title, this.message);
 				}));
 			}},
@@ -216,6 +244,10 @@ $(function(){
 			[
 				{text: "Edit "+color+" group (TBI)", icon: 'pencil', click: function(){
 					$.Dialog.info('Edit '+color+' group triggered', 'yay');
+					return;
+					// TODO
+					var title = 'Editing color group: '+$(this).children().first().text().replace(/:\s?$/,'');
+					$.Dialog.wait(title, 'Retrieving '+color+' group details from server');
 				}},
 				{text: "Delete "+color+" group (TBI)", icon: 'trash', click: function(){
 					// TODO Confirmation

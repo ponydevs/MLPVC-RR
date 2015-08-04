@@ -21,6 +21,16 @@
 
 		if (opt.helper) var $helper = $(document.createElement('div')).addClass('helper');
 
+		$input.on('set-image',function(_, path){
+			$.Dialog.close(function(){
+				$(this).siblings('img').fadeTo(200,0,function(){
+					var $this = $(this);
+					$this.attr('src',path).on('load',function(){
+						$this.fadeTo(200,1);
+					});
+				});
+			});
+		});
 		$input.on('dragenter dragleave',function(e){
 			e.stopPropagation();
 			e.preventDefault();
@@ -33,11 +43,12 @@
 			if (typeof files[0] === 'undefined' || !(files[0] instanceof File))
 				return true;
 
+			$this.trigger('uz-uploadstart').removeClass('drop').addClass('uploading');
+
 			var fd = new FormData();
 			fd.append('sprite', files[0]);
 			fd.append('CSRF_TOKEN', $.getCSRFToken());
 
-			$this.removeClass('drop').addClass('uploading');
 			var ajaxOpts = {
 				url: opt.target,
 				type: "POST",
@@ -45,29 +56,14 @@
 				processData: false,
 				cache: false,
 				data: fd,
-				success: function (data) {
-					if (typeof data === 'string') return console.log(data) === $(window).trigger('ajaxerror');
-
-					if (data.status){
-						$this.removeClass('uploading');
-						$helper.removeAttr('data-progress');
-						$input.val('');
-						$.Dialog.close(function(){
-							$this.children('img').fadeTo(200,0,function(){
-								var $this = $(this);
-								$this.attr('src',data.path).on('load',function(){
-									$this.fadeTo(200,1);
-								});
-							});
-						});
-					}
-					else {
-						$this.removeClass('uploading');
-						$helper.removeAttr('data-progress');
-						$input.val('');
-						$.Dialog.fail(title,data.message);
-					}
-				},
+				success: $.mkAjaxHandler(function(){
+					$this.removeClass('uploading');
+					$helper.removeAttr('data-progress');
+					$input.val('');
+					if (this.status)
+						$input.trigger('set-image', [this.path]);
+					else $.Dialog.fail(title,this.message);
+				}),
 				error: function(xhr){
 					if (xhr.status === 500 || xhr.status === 401) return;
 					$.Dialog.fail(title,'Upload failed (HTTP '+xhr.status+')');
