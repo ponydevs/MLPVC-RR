@@ -9,7 +9,7 @@
  * @author    Alexander V. Butenko <a.butenka@gmail.com>
  * @copyright Copyright (c) 2010
  * @license   http://opensource.org/licenses/gpl-3.0.html GNU Public License
- * @version   2.1
+ * @version   2.2
  **/
 class MysqliDb
 {
@@ -21,10 +21,10 @@ class MysqliDb
     protected static $_instance;
     /**
      * Table prefix
-     * 
+     *
      * @var string
      */
-    public static $prefix;
+    public static $prefix = '';
     /**
      * MySQLi instance
      *
@@ -54,7 +54,7 @@ class MysqliDb
      *
      * @var array
      */
-    protected $_join = array(); 
+    protected $_join = array();
     /**
      * An array that holds where conditions 'fieldname' => 'value'
      *
@@ -64,11 +64,11 @@ class MysqliDb
     /**
      * Dynamic type list for order by condition value
      */
-    protected $_orderBy = array(); 
+    protected $_orderBy = array();
     /**
      * Dynamic type list for group by condition value
      */
-    protected $_groupBy = array(); 
+    protected $_groupBy = array();
     /**
      * Dynamic array that holds a combination of where condition/table data value types and parameter references
      *
@@ -79,13 +79,13 @@ class MysqliDb
      * Variable which holds an amount of returned rows during get/getOne/select queries
      *
      * @var string
-     */ 
+     */
     public $count = 0;
     /**
      * Variable which holds an amount of returned rows during get/getOne/select queries with withTotalCount()
      *
      * @var string
-     */ 
+     */
     public $totalCount = 0;
     /**
      * Variable which holds last statement error
@@ -111,6 +111,18 @@ class MysqliDb
      *
      */
     protected $isSubQuery = false;
+
+    /**
+     * Name of the auto increment column
+     *
+     */
+    protected $_lastInsertId = null;
+
+    /**
+     * Column names for update when using onDuplicate method
+     *
+     */
+    protected $_updateColumns = null;
 
     /**
      * Return type: 'Array' to return results as array, 'Object' as object
@@ -167,12 +179,8 @@ class MysqliDb
             $this->isSubQuery = true;
             return;
         }
-
-        // for subqueries we do not need database connection and redefine root instance
-        if (!is_object ($host))
-            $this->connect();
-
-        $this->setPrefix();
+        if (isset ($prefix))
+            $this->setPrefix ($prefix);
         self::$_instance = $this;
     }
 
@@ -194,6 +202,17 @@ class MysqliDb
         if ($this->charset)
             $this->_mysqli->set_charset ($this->charset);
     }
+
+    /**
+     * A method to get mysqli object or create it in case needed
+     */
+    public function mysqli ()
+    {
+        if (!$this->_mysqli)
+            $this->connect();
+        return $this->_mysqli;
+    }
+
     /**
      * A method of returning the static instance to allow access to the
      * instantiated object from within another class.
@@ -221,13 +240,15 @@ class MysqliDb
         $this->_where = array();
         $this->_join = array();
         $this->_orderBy = array();
-        $this->_groupBy = array(); 
+        $this->_groupBy = array();
         $this->_bindParams = array(''); // Create the empty 0 index
         $this->_query = null;
         $this->_queryOptions = array();
         $this->returnType = 'Array';
         $this->_nestJoin = false;
         $this->_tableName = '';
+        $this->_lastInsertId = null;
+        $this->_updateColumns = null;
     }
 
     /**
@@ -260,10 +281,10 @@ class MysqliDb
         $this->returnType = 'Object';
         return $this;
     }
-    
+
     /**
      * Method to set a prefix
-     * 
+     *
      * @param string $prefix     Contains a tableprefix
      */
     public function setPrefix($prefix = '')
@@ -273,21 +294,17 @@ class MysqliDb
     }
 
     /**
-     * Pass in a raw query and an array containing the parameters to bind to the prepaird statement.
+     * Execute raw SQL query.
      *
-     * @param string $query      Contains a user-provided query.
-     * @param array  $bindParams All variables to bind to the SQL statment.
-     * @param bool   $sanitize   If query should be filtered before execution
+     * @param string $query      User-provided query to execute.
+     * @param array  $bindParams Variables array to bind to the SQL statement.
      *
      * @return array Contains the returned rows from the query.
      */
-    public function rawQuery ($query, $bindParams = null, $sanitize = true)
+    public function rawQuery ($query, $bindParams = null)
     {
         $params = array(''); // Create the empty 0 index
         $this->_query = $query;
-        if ($sanitize)
-            $this->_query = filter_var ($query, FILTER_SANITIZE_STRING,
-                                    FILTER_FLAG_NO_ENCODE_QUOTES);
         $stmt = $this->_prepareQuery();
 
         if (is_array($bindParams) === true) {
@@ -382,7 +399,7 @@ class MysqliDb
         if (empty ($columns))
             $columns = '*';
 
-        $column = is_array($columns) ? implode(', ', $columns) : $columns; 
+        $column = is_array($columns) ? implode(', ', $columns) : $columns;
         $this->_tableName = self::$prefix . $tableName;
         $this->_query = 'SELECT ' . implode(' ', $this->_queryOptions) . ' ' .
                         $column . " FROM " . $this->_tableName;
@@ -406,7 +423,7 @@ class MysqliDb
      *
      * @return array Contains the returned rows from the select query.
      */
-    public function getOne($tableName, $columns = '*') 
+    public function getOne($tableName, $columns = '*')
     {
         $res = $this->get ($tableName, 1, $columns);
 
@@ -427,7 +444,7 @@ class MysqliDb
      *
      * @return string Contains the value of a returned column.
      */
-    public function getValue($tableName, $column) 
+    public function getValue($tableName, $column)
     {
         $res = $this->ArrayBuilder()->get ($tableName, 1, "{$column} as retval");
 
@@ -547,6 +564,19 @@ class MysqliDb
     }
 
     /**
+     * This function store update column's name and column name of the
+     * autoincrement column
+     *
+     * @param Array Variable with values
+     * @param String Variable value
+     */
+    public function onDuplicate($_updateColumns, $_lastInsertId = null)
+    {
+        $this->_lastInsertId = $_lastInsertId;
+        $this->_updateColumns = $_updateColumns;
+    }
+
+    /**
      * This method allows you to specify multiple (method chaining optional) OR WHERE statements for SQL queries.
      *
      * @uses $MySqliDb->orWhere('id', 7)->orWhere('title', 'MyTitle');
@@ -602,7 +632,7 @@ class MysqliDb
         $orderbyDirection = strtoupper (trim ($orderbyDirection));
         $orderByField = preg_replace ("/[^-a-z0-9\.\(\),_`]+/i",'', $orderByField);
 
-        // Add table prefix to orderByField if needed. 
+        // Add table prefix to orderByField if needed.
         //FIXME: We are adding prefix only if table is enclosed into `` to distinguish aliases
         // from table names
         $orderByField = preg_replace('/(\`)([`a-zA-Z0-9_]*\.)/', '\1' . self::$prefix.  '\2', $orderByField);
@@ -620,7 +650,7 @@ class MysqliDb
 
         $this->_orderBy[$orderByField] = $orderbyDirection;
         return $this;
-    } 
+    }
 
     /**
      * This method allows you to specify multiple (method chaining optional) GROUP BY statements for SQL queries.
@@ -637,7 +667,7 @@ class MysqliDb
 
         $this->_groupBy[] = $groupByField;
         return $this;
-    } 
+    }
 
     /**
      * This methods returns the ID of the last inserted item
@@ -646,7 +676,7 @@ class MysqliDb
      */
     public function getInsertId()
     {
-        return $this->_mysqli->insert_id;
+        return $this->mysqli()->insert_id;
     }
 
     /**
@@ -658,7 +688,7 @@ class MysqliDb
      */
     public function escape($str)
     {
-        return $this->_mysqli->real_escape_string($str);
+        return $this->mysqli()->real_escape_string($str);
     }
 
     /**
@@ -670,7 +700,7 @@ class MysqliDb
      * @return bool True if connection is up
      */
     public function ping() {
-        return $this->_mysqli->ping();
+        return $this->mysqli()->ping();
     }
 
     /**
@@ -789,11 +819,12 @@ class MysqliDb
     protected function _buildQuery($numRows = null, $tableData = null)
     {
         $this->_buildJoin();
-        $this->_buildTableData ($tableData);
+        $this->_buildInsertQuery ($tableData);
         $this->_buildWhere();
         $this->_buildGroupBy();
         $this->_buildOrderBy();
         $this->_buildLimit ($numRows);
+        $this->_buildOnDuplicate($tableData);
 
         $this->_lastQuery = $this->replacePlaceHolders ($this->_query, $this->_bindParams);
 
@@ -830,7 +861,7 @@ class MysqliDb
 
         // if $meta is false yet sqlstate is true, there's no sql error but the query is
         // most likely an update/insert/delete which doesn't produce any results
-        if(!$meta && $stmt->sqlstate) { 
+        if(!$meta && $stmt->sqlstate) {
             return array();
         }
 
@@ -879,11 +910,11 @@ class MysqliDb
             array_push($results, $x);
         }
         // stored procedures sometimes can return more then 1 resultset
-        if ($this->_mysqli->more_results())
-            $this->_mysqli->next_result();
+        if ($this->mysqli()->more_results())
+            $this->mysqli()->next_result();
 
         if (in_array ('SQL_CALC_FOUND_ROWS', $this->_queryOptions)) {
-            $stmt = $this->_mysqli->query ('SELECT FOUND_ROWS()');
+            $stmt = $this->mysqli()->query ('SELECT FOUND_ROWS()');
             $totalCount = $stmt->fetch_row();
             $this->totalCount = $totalCount[0];
         }
@@ -914,35 +945,21 @@ class MysqliDb
         }
     }
 
-    /**
-     * Abstraction method that will build an INSERT or UPDATE part of the query
-     */
-    protected function _buildTableData ($tableData) {
-        if (!is_array ($tableData))
-            return;
-
-        $isInsert = strpos ($this->_query, 'INSERT');
-        $isUpdate = strpos ($this->_query, 'UPDATE');
-
-        if ($isInsert !== false) {
-            $this->_query .= ' (`' . implode(array_keys($tableData), '`, `') . '`)';
-            $this->_query .= ' VALUES (';
-        } else
-            $this->_query .= " SET ";
-
-        foreach ($tableData as $column => $value) {
-            if ($isUpdate !== false)
+    public function _buildDataPairs ($tableData, $tableColumns, $isInsert) {
+        foreach ($tableColumns as $column) {
+            $value = $tableData[$column];
+            if (!$isInsert)
                 $this->_query .= "`" . $column . "` = ";
 
             // Subquery value
-            if (is_object ($value)) {
+            if ($value instanceof MysqliDb) {
                 $this->_query .= $this->_buildPair ("", $value) . ", ";
                 continue;
             }
 
             // Simple value
             if (!is_array ($value)) {
-                $this->_bindParam ($value);
+                $this->_bindParam($value);
                 $this->_query .= '?, ';
                 continue;
             }
@@ -951,26 +968,60 @@ class MysqliDb
             $key = key ($value);
             $val = $value[$key];
             switch ($key) {
-                case '[I]':
-                    $this->_query .= $column . $val . ", ";
-                    break;
-                case '[F]':
-                    $this->_query .= $val[0] . ", ";
-                    if (!empty ($val[1]))
-                        $this->_bindParams ($val[1]);
-                    break;
-                case '[N]':
-                    if ($val == null)
-                        $this->_query .= "!" . $column . ", ";
-                    else
-                        $this->_query .= "!" . $val . ", ";
-                    break;
-                default:
-                    die ("Wrong operation");
+            case '[I]':
+                $this->_query .= $column . $val . ", ";
+                break;
+            case '[F]':
+                $this->_query .= $val[0] . ", ";
+                if (!empty ($val[1]))
+                    $this->_bindParams ($val[1]);
+                break;
+            case '[N]':
+                if ($val == null)
+                    $this->_query .= "!" . $column . ", ";
+                else
+                    $this->_query .= "!" . $val . ", ";
+                break;
+            default:
+                die ("Wrong operation");
             }
         }
         $this->_query = rtrim($this->_query, ', ');
-        if ($isInsert !== false)
+    }
+
+    /**
+     * Helper function to add variables into the query statement
+     *
+     * @param Array Variable with values
+     */
+    protected function _buildOnDuplicate($tableData)
+    {
+        if (is_array($this->_updateColumns) && !empty($this->_updateColumns)) {
+            $this->_query .= " on duplicate key update ";
+            if ($this->_lastInsertId)
+                $this->_query .= $this->_lastInsertId . "=LAST_INSERT_ID (".$this->_lastInsertId."), ";
+
+            $this->_buildDataPairs ($tableData, $this->_updateColumns, false);
+        }
+    }
+
+    /**
+     * Abstraction method that will build an INSERT or UPDATE part of the query
+     */
+    protected function _buildInsertQuery ($tableData) {
+        if (!is_array ($tableData))
+            return;
+
+        $isInsert = preg_match ('/^[INSERT|REPLACE]/', $this->_query);
+        $dataColumns = array_keys ($tableData);
+        if ($isInsert)
+            $this->_query .= ' (`' . implode ($dataColumns, '`, `') . '`)  VALUES (';
+        else
+            $this->_query .= " SET ";
+
+        $this->_buildDataPairs ($tableData, $dataColumns, $isInsert);
+
+        if ($isInsert)
             $this->_query .= ')';
     }
 
@@ -1080,8 +1131,8 @@ class MysqliDb
      */
     protected function _prepareQuery()
     {
-        if (!$stmt = $this->_mysqli->prepare($this->_query)) {
-            trigger_error("Problem preparing query ($this->_query) " . $this->_mysqli->error, E_USER_ERROR);
+        if (!$stmt = $this->mysqli()->prepare($this->_query)) {
+            trigger_error("Problem preparing query ($this->_query) " . $this->mysqli()->error, E_USER_ERROR);
         }
         if ($this->traceEnabled)
             $this->traceStartQ = microtime (true);
@@ -1105,9 +1156,11 @@ class MysqliDb
      *
      * @return array
      */
-    protected function refValues($arr)
+    protected function refValues(Array &$arr)
     {
-        //Reference is required for PHP 5.3+
+        //Reference in the function arguments are required for HHVM to work
+        //https://github.com/facebook/hhvm/issues/5155
+        //Referenced data array is required by mysqli since PHP 5.3+
         if (strnatcmp(phpversion(), '5.3') >= 0) {
             $refs = array();
             foreach ($arr as $key => $value) {
@@ -1153,17 +1206,19 @@ class MysqliDb
 
     /**
      * Method returns mysql error
-     * 
+     *
      * @return string
      */
     public function getLastError () {
-        return trim ($this->_stmtError . " " . $this->_mysqli->error);
+        if (!$this->_mysqli)
+            return "mysqli is null";
+        return trim ($this->_stmtError . " " . $this->mysqli()->error);
     }
 
     /**
      * Mostly internal method to get query and its params out of subquery object
      * after get() and getAll()
-     * 
+     *
      * @return array
      */
     public function getSubQuery () {
@@ -1238,7 +1293,7 @@ class MysqliDb
     public function dec ($num = 1) {
         return Array ("[I]" => "-" . (int)$num);
     }
-    
+
     /**
      * Method generates change boolean function call
      * @param string column name. null by default
@@ -1282,7 +1337,7 @@ class MysqliDb
      * @uses register_shutdown_function(array($this, "_transaction_shutdown_check"))
      */
     public function startTransaction () {
-        $this->_mysqli->autocommit (false);
+        $this->mysqli()->autocommit (false);
         $this->_transaction_in_progress = true;
         register_shutdown_function (array ($this, "_transaction_status_check"));
     }
@@ -1294,9 +1349,9 @@ class MysqliDb
      * @uses mysqli->autocommit(true);
      */
     public function commit () {
-        $this->_mysqli->commit ();
+        $this->mysqli()->commit ();
         $this->_transaction_in_progress = false;
-        $this->_mysqli->autocommit (true);
+        $this->mysqli()->autocommit (true);
     }
 
     /**
@@ -1306,9 +1361,9 @@ class MysqliDb
      * @uses mysqli->autocommit(true);
      */
     public function rollback () {
-      $this->_mysqli->rollback ();
+      $this->mysqli()->rollback ();
       $this->_transaction_in_progress = false;
-      $this->_mysqli->autocommit (true);
+      $this->mysqli()->autocommit (true);
     }
 
     /**
