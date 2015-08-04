@@ -103,8 +103,10 @@ $(function(){
 				});
 		$lbl.append($chx, $(document.createElement('span')).addClass('tag typ-'+type).text(label)).appendTo($_typeSelect);
 	});
-	$tagEditForm.append($(document.createElement('div')).addClass('align-center').append('<span>Tag type (optional)</span><br>',$_typeSelect));
-	$tagEditForm.append($(document.createElement('label')).append('<span>Tag description (max 255 chars., optional)</span><br><textarea name=title maxlength=255></textarea>'));
+	$tagEditForm
+		.append($(document.createElement('div')).addClass('align-center').append('<span>Tag type (optional)</span><br>',$_typeSelect))
+		.append($(document.createElement('label')).append('<span>Tag description (max 255 chars., optional)</span><br><textarea name=title maxlength=255></textarea>'))
+		.append($(document.createElement('div')).attr('class','notice').hide().html('<p></p>'));
 
 	var $tags = $('.tags');
 	function reorder($this){
@@ -132,7 +134,13 @@ $(function(){
 				$.post('/colorguide/gettag/'+tagID,$.mkAjaxHandler(function(){
 					var tag = this;
 					if (this.status) $.Dialog.request(title,$tagEditForm.clone(true, true),'edit-tag','Save',function(){
-						var $form = $('#edit-tag');
+						var $form = $('#edit-tag'),
+							$ErrorNotice = $form.children('.notice').children('p'),
+							handleError = function(){
+								$ErrorNotice.html(this.message).parent().removeClass('info').addClass('fail').show();
+								$form.find('input, texarea').attr('disabled', false);
+								$.Dialog.center();
+							};
 						$form.find('input[name=type][value='+tag.type+']').prop('checked', true);
 						$form.find('input[type=text][name], textarea[name]').each(function(){
 							var $this = $(this);
@@ -146,7 +154,8 @@ $(function(){
 								data[el.name] = el.value;
 							});
 
-							$.Dialog.wait(title, 'Saving changes');
+							$ErrorNotice.text('Saving changes...').parent().removeClass('fail').addClass('info').show();
+							$.Dialog.center();
 
 							$.post('/colorguide/settag/'+tagID,data,$.mkAjaxHandler(function(){
 								if (this.status){
@@ -163,7 +172,7 @@ $(function(){
 									window.tooltips();
 									$.Dialog.close();
 								}
-								else $.Dialog.fail(title, this.message);
+								else handleError.call(this);
 							}));
 						});
 					});
@@ -203,7 +212,13 @@ $(function(){
 					ponyName = $div.children('strong').text().trim();
 
 				$.Dialog.request(title,$tagEditForm.clone(true, true),'edit-tag','Create',function(){
-					var $form = $('#edit-tag');
+					var $form = $('#edit-tag'),
+						$ErrorNotice = $form.children('.notice').children('p'),
+						handleError = function(){
+							$ErrorNotice.html(this.message).parent().removeClass('info').addClass('fail').show();
+							$form.find('input, texarea').attr('disabled', false);
+							$.Dialog.center();
+						};
 					$form.append(
 						$(document.createElement('label'))
 							.append('<input type=checkbox name=addto value='+ponyID+'> Add this tag to the appearance "'+ponyName+'" after creation')
@@ -217,7 +232,8 @@ $(function(){
 							data[el.name] = el.value;
 						});
 
-						$.Dialog.wait(title, 'Creating tag');
+						$ErrorNotice.text('Creating tag...').parent().removeClass('fail').addClass('info').show();
+						$.Dialog.center();
 
 						$.post('/colorguide/maketag',data,$.mkAjaxHandler(function(){
 							if (this.status){
@@ -229,7 +245,7 @@ $(function(){
 								}
 								$.Dialog.close();
 							}
-							else $.Dialog.fail(title, this.message);
+							else handleError.call(this);
 						}));
 					});
 				})
@@ -246,6 +262,7 @@ $(function(){
 					$.Dialog.info('Edit '+color+' group triggered', 'yay');
 					return;
 					// TODO
+					//noinspection UnreachableCodeJS
 					var title = 'Editing color group: '+$(this).children().first().text().replace(/:\s?$/,'');
 					$.Dialog.wait(title, 'Retrieving '+color+' group details from server');
 				}},

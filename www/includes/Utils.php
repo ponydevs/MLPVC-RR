@@ -31,7 +31,8 @@
 			"status" => $s,
 		);
 		if (!empty($x)) $r = array_merge($r, $x);
-		die(json_encode($r));
+		echo json_encode($r);
+		exit;
 	}
 
 	# Logging
@@ -171,6 +172,35 @@ HTML;
 			echo $HTML;
 		}
 		else echo "<tr><td colspan=4>There are no log items</td></tr>";
+	}
+
+	/**
+	 * Formats a 1-dimensional array of stings and integers
+	 *  to be human-readable
+	 *
+	 * @param array $list
+	 * @param string $append
+	 * @param string $separator
+	 *
+	 * @return string
+	 */
+	function array_readable($list, $append = 'and', $separator = ','){
+		if (is_string($list)) $list = explode($separator, $list);
+
+		if (count($list) > 1){
+			$list_str = $list;
+			array_splice($list_str,count($list_str)-1,0,$append);
+			$i = 0;
+			$maxDest = count($list_str)-3;
+			while ($i < $maxDest){
+				if ($i == count($list_str)-1) continue;
+				$list_str[$i] = $list_str[$i].',';
+				$i++;
+			}
+			$list_str = implode(' ',$list_str);
+		}
+		else $list_str = $list[0];
+		return $list_str;
 	}
 	
 	// Apostrophe HTML encoding for attribute values \\

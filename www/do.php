@@ -799,11 +799,9 @@
 						$data = array();
 
 						$name = isset($_POST['name']) ? strtolower(trim($_POST['name'])) : null;
-						$nl = !empty($name) ? strlen($name) : null;
-						if (empty($name) || $nl < 4)
-							respond("Tag name cannot be shorter than 4 characters");
-						if ($nl > 30)
-							respond("Tag name cannot be longer than 30 characters");
+						$nl = !empty($name) ? strlen($name) : 0;
+						if ($nl < 4 || $nl > 30)
+							respond("Tag name must be between 4 and 30 characters");
 						check_string_valid($name,'Tag name',INVERSE_TAG_NAME_PATTERN);
 						$data['name'] = $name;
 

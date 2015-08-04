@@ -224,7 +224,7 @@
 	 */
 	function check_string_valid($string, $Thing, $pattern){
 		$fails = array();
-		if (preg_match("~$pattern~", $string, $fails)){
+		if (preg_match("~$pattern~u", $string, $fails)){
 			$invalid = array();
 			foreach ($fails as $f)
 				if (!in_array($f, $invalid))
@@ -232,6 +232,6 @@
 
 			$s = count($invalid)!==1?'s':'';
 			$the_following = count($invalid)!==1?' the following':'an';
-			respond("$Thing contains $the_following invalid character$s: \"".implode('", "', $invalid).'".');
+			respond("$Thing contains $the_following invalid character$s: ".array_readable($invalid));
 		}
 	}
