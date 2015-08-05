@@ -3,8 +3,19 @@
 	## Utility functions related to the color guide feature ##
 	##########################################################
 
+	// Response creator for typeahead.js
+	function typeahead_results($str){
+		header('Content-Type: application/json');
+		if (is_array($str)) $str = json_encode($str);
+		die($str);
+	}
+
 	// Constant to disable returning of wrapper element with markup generators
 	define('NOWRAP', false);
+
+	// Tag constants
+	define('TAG_NAME_PATTERN', '^[a-z\d ().-]{4,30}$');
+	define('INVERSE_TAG_NAME_PATTERN', '[^a-z\d ().-]');
 
 	// Get the colors in a given color groups
 	function get_colors($GroupID){
@@ -52,10 +63,12 @@
 		$HTML = '';
 		if (!empty($Tags)){
 			$HTML = $wrap ? "<div class=tags>" : '';
+			if (PERM('inspector'))
+				$HTML .= "<input type=text class='addtag tag' placeholder='Enter tag' pattern='".TAG_NAME_PATTERN."' maxlength=30 required>";
 			foreach ($Tags as $i => $t){
 				$class = " class='tag id-{$t['tid']}".(!empty($t['type'])?' typ-'.$t['type']:'')."'";
 				$title = !empty($t['title']) ? " title='".apos_encode($t['title'])."'" : '';
-				$HTML .= "<span$class$title>{$t['name']}</span> ";
+				$HTML .= "<span$class$title>{$t['name']}</span>";
 			}
 			if ($wrap) $HTML .= "</div>";
 		}
@@ -71,8 +84,6 @@
 		'spec' => 'Species',
 	);
 	$TAG_TYPES = array_keys($TAG_TYPES_ASSOC);
-	define('TAG_NAME_PATTERN', '^[a-z\d ().-]{4,30}$');
-	define('INVERSE_TAG_NAME_PATTERN', '[^a-z\d ().-]');
 
 	// Returns the markup for the notes displayed under an appaerance
 	function get_notes_html($p, $wrap = true){

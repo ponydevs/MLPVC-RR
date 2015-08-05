@@ -123,7 +123,7 @@ $(function(){
 	}
 
 	function ctxmenus(){
-		$tags.children(':not(.ctxmenu-bound)').ctxmenu([
+		$tags.children('span:not(.ctxmenu-bound)').ctxmenu([
 			{text: 'Edit tag', icon: 'pencil', click: function(){
 				var $tag = $(this),
 					tagName = $tag.text().trim(),
@@ -179,6 +179,28 @@ $(function(){
 					});
 					else $.Dialog.fail(title, this.message);
 				}));
+			}},
+			{text: 'Remove tag', icon: 'minus', click: function(){
+				var $tag = $(this),
+					ponyID = $tag.closest('li').attr('id').replace(/\D/g, ''),
+					tagName = $tag.text().trim(),
+					tagID = $tag.attr('class').match(/id-(\d+)(?:\s|$)/)[1],
+					title = 'Remove tag: '+tagName;
+
+				$.Dialog.confirm(title,"The tag "+tagName+" will be removed from this appearance.<br>Are you sure?",['Remove it','Nope'],function(sure){
+					if (!sure) return;
+
+					$.Dialog.wait(title,'Removing tag');
+
+					$.post('/colorguide/untag/'+ponyID,{ tag: tagID },$.mkAjaxHandler(function(){
+						if (this.status){
+							$tag.qtip('destroy', true);
+							$tag.remove();
+							$.Dialog.close();
+						}
+						else $.Dialog.fail(title, this.message);
+					}));
+				});
 			}},
 			{text: 'Delete tag', icon: 'trash', click: function(){
 				var $tag = $(this),
@@ -251,10 +273,60 @@ $(function(){
 					});
 				})
 			}},
-			{text: 'Enable edit mode (TBI)', icon: 'edit', click: function(){
-				$(this).parent().prevAll('strong').children('button.edit').triggerHandler('click');
-			}}
 		], function($el){ return 'Tag: '+$el.text().trim() });
+
+		var taglist = new Bloodhound({
+			datumTokenizer: Bloodhound.tokenizers.obj.whitespace('value'),
+			queryTokenizer: Bloodhound.tokenizers.whitespace,
+			remote: {
+				url: '/colorguide/gettags?s=%QUERY',
+				wildcard: '%QUERY'
+			}
+		}), insertKeys = [13, 188];
+		$tags.children('.addtag').each(function(){
+			var $input = $(this),
+				ponyID = $input.parents('li').attr('id').substring(1);
+			$input.typeahead(null, {
+				name: 'tags',
+				display: 'name',
+				source: taglist,
+				templates: {
+					suggestion: Handlebars.compile('<span class="tag id-{{tid}} typ-{{type}}">{{name}}</span>')
+				}
+			});
+			$input.on('keydown',function(e){
+				if (insertKeys.indexOf(e.keyCode) !== -1){
+					e.preventDefault();
+					var tag_name = $input.val().trim(),
+						$tagsDiv = $input.parents('.tags'),
+						$ponyTags = $tagsDiv.children('.tag'),
+						title = 'Adding tag: '+tag_name;
+
+					if ($ponyTags.filter(function(){ return this.innerHTML.trim() === tag_name }).length > 0)
+						return $.Dialog.fail(title, 'This appearance already has this tag');
+
+					$input.attr('disabled', true);
+
+					$.post('/colorguide/tag/'+ponyID,{ tag_name: $input.val() }, $.mkAjaxHandler(function(){
+						if (this.status){
+							$tagsDiv.children('[data-hasqtip]').qtip('destroy', true);
+							$tagsDiv.html(this.tags);
+							window.tooltips();
+							ctxmenus();
+							$('#p'+ponyID).find('.addtag').focus();
+						}
+						else $.Dialog.fail(title, this.message);
+						$input.removeAttribute('disabled').focus();
+					}));
+				}
+			});
+			$input.nextAll('.tt-menu').on('click', '.tag', function(){
+				$input.trigger({
+					type: 'keydown',
+					keyCode: 13,
+				});
+			});
+		});
 
 		$colorGroups = $('ul.colors').children('li');
 		$colorGroups.filter(':not(.ctxmenu-bound)').ctxmenu(

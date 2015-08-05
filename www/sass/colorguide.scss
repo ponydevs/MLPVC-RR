@@ -153,14 +153,18 @@
 				}
 			}
 			&:first-child img { width: 150px }
-			> :not(img):not(:last-child) { margin-bottom: 6px }
+			> .colors { margin-bottom: 6px }
 			> strong {
 				display: block;
 				font-size: 1.5em;
 
 				button { margin-left: 8px }
 			}
-			.notes:empty { display: none }
+			.notes {
+				margin-top: 6px;
+				
+				:empty { display: none }
+			}
 		}
 	}
 }
@@ -181,10 +185,20 @@ $TEpisode: adjust_hue($_TBase, 200);
 	}
 }
 
-div.tags { user-select: none }
+div.tags {
+	user-select: none;
+	margin-top: 6px;
+}
+.tag:not(.addtag), div.tags .twitter-typeahead {
+	margin: 0 6px 6px 0;
+	vertical-align: top;
+}
+.twitter-typeahead .addtag { margin-right: 0 }
 .tag {
 	display: inline-block;
 	font-weight: bold;
+	height: 26px;
+	box-sizing: border-box;
 
 	&[title] { cursor: help }
 	&:before {
@@ -206,6 +220,7 @@ ul.colors {
 	padding: 0;
 	list-style: none;
 	white-space: initial !important;
+	margin-top: 6px;
 
 	> li {
 		display: inline-block;

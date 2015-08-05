@@ -1,7 +1,8 @@
 <?php
 
 	// Anti-CSRF
-	$CSRF = RQMTHD !== 'POST' || !isset($_POST['CSRF_TOKEN']) || !Cookie::exists('CSRF_TOKEN') || $_POST['CSRF_TOKEN'] !== Cookie::get('CSRF_TOKEN');
+	$_RQMTHD = RQMTHD === 'POST' ? $_POST : $_GET;
+	$CSRF = !isset($_RQMTHD['CSRF_TOKEN']) || !Cookie::exists('CSRF_TOKEN') || $_RQMTHD['CSRF_TOKEN'] !== Cookie::get('CSRF_TOKEN');
 	if (RQMTHD !== 'POST' && $CSRF)
 		Cookie::set('CSRF_TOKEN',md5(time()+rand()),COOKIE_SESSION);
 	define('CSRF_TOKEN',Cookie::get('CSRF_TOKEN'));
@@ -37,5 +38,3 @@
 			unset($currentUser);
 		}
 	}
-
-	if (!defined('DEBUG')) define('DEBUG',false);

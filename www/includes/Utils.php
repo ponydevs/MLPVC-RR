@@ -18,6 +18,7 @@
 	define('ERR_DB_FAIL','There was an error while saving to the database');
 	function respond($m = 'Insufficent permissions.', $s = false, $x = null){
 		header('Content-Type: application/json');
+		if ($m === true) $m = array();
 		if (is_array($m) && $s == false && empty($x)){
 			$m['status'] = true;
 			die(json_encode($m));
@@ -410,17 +411,16 @@ HTML;
 		}
 
 		$pathStart = APPATH."$type/";
-		if ($type === 'css') foreach ($customType as $i => $item){
-			if (!file_exists("$pathStart$item.$type")){
-				if(file_exists("$pathStart$item.min.$type"))
+		foreach ($customType as $i => $item){
+			$fname = "$item.$type";
+			if (!file_exists($pathStart.$fname)){
+				if (file_exists("$pathStart$item.min.$type"))
 					$customType[$i] .= '.min';
-				else array_splice($customType,$i,1);
+				else {
+					array_splice($customType,$i,1);
+					trigger_error("File /$type/$fname does not exist");
+				}
 			}
-		}
-		else if ($type === 'js') foreach ($customType as $i => $item){
-			if (strpos($item,'.min') !== false) continue;
-			if (file_exists("$pathStart$item.min.$type"))
-				$customType[$i] .= '.min';
 		}
 	}
 

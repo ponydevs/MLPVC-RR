@@ -186,7 +186,7 @@
 							if (!$Database->where('id', $Thing['id'])->delete('requests'))
 								respond(ERR_DB_FAIL);
 
-							respond(array());
+							respond(true);
 						}
 						else respond();
 					}
@@ -729,12 +729,24 @@
 				$SpriteRelPath = '/img/cg/';
 				$SpritePath = APPATH.substr($SpriteRelPath,1);
 
-				if (RQMTHD === 'POST'){
+				if (RQMTHD === 'POST' || (isset($_GET['s']) && $data === "gettags")){
 					if (!PERM('inspector')) respond();
 					detectCSRF();
 
 					$_match = array();
-					if (preg_match('~^(rename|delete|setsprite)/(\d+)$~', $data, $_match)){
+					if ($data === 'gettags'){
+						if (!preg_match('~'.TAG_NAME_PATTERN.'~u', $_GET['s']))
+							typeahead_results('[]');
+
+						$query = $_GET['s'];
+						$Tags = $CGDb
+							->where('name',"%$query%",'LIKE')
+							->orderBy('name')
+							->get('tags',5,'tid, name, type');
+
+						typeahead_results(empty($Tags) ? '[]' : $Tags);
+					}
+					else if (preg_match('~^(rename|delete|setsprite|tag|untag)/(\d+)$~', $data, $_match)){
 						$PonyID = intval($_match[2], 10);
 
 						$Pony = $CGDb->where('id', $PonyID)->getOne('ponies');
@@ -761,13 +773,48 @@
 								if (file_exists($fpath))
 									unlink($fpath);
 
-								respond(array());
+								respond(true);
 							break;
 							case "setsprite":
 								$fname = $Pony['id'].'.png';
 								$finalpath = $SpritePath.$fname;
 								process_uploaded_image('sprite',$finalpath,array('image/png'),100);
 								respond(array("path" => "$SpriteRelPath$fname?".filemtime($finalpath)));
+							break;
+							case "tag":
+								if (empty($_POST['tag_name']))
+									respond('Tag name is not specified');
+								$tag_name = trim($_POST['tag_name']);
+								if (!preg_match('~'.TAG_NAME_PATTERN.'~u',$tag_name))
+									respond('Invalid tag name');
+
+								$Tag = $CGDb->where('name', $tag_name)->getOne('tags');
+								if (empty($Tag))
+									respond('Tag does not exist');
+
+								if ($CGDb->where('ponyid', $Pony['id'])->where('tid', $Tag['tid'])->has('tagged'))
+									respond('This appearance already has this tag');
+
+								if (!$CGDb->insert('tagged',array(
+									'ponyid' => $Pony['id'],
+									'tid' => $Tag['tid'],
+								))) respond(ERR_DB_FAIL);
+								respond(array('tags' => get_tags_html($Pony['id'], NOWRAP)));
+							break;
+							case "untag":
+								if (empty($_POST['tag']))
+									respond('Tag ID is not specified');
+								$TagID = intval($_POST['tag'], 10);
+								$Tag = $CGDb->where('tid', $TagID)->getOne('tags');
+								if (empty($Tag))
+									respond('Tag does not exist');
+
+								if (!$CGDb->where('ponyid', $Pony['id'])->where('tid', $Tag['tid'])->has('tagged'))
+									respond('This appearance does not have this tag');
+
+								if (!$CGDb->where('ponyid', $Pony['id'])->where('tid', $Tag['tid'])->delete('tagged'))
+									respond(ERR_DB_FAIL);
+								respond(array('tags' => get_tags_html($Pony['id'], NOWRAP)));
 							break;
 							default: respond('Bad request');
 						}
@@ -784,7 +831,7 @@
 							if (empty($_match[2]))
 								respond('Missing tag ID');
 							$TagID = intval($_match[2], 10);
-							$Tag = $CGDb->where('tid', $TagID)->getOne('tags');
+							$Tag = $CGDb->where('tid', $TagID)->getOne('tags',isset($query) ? 'tid, name, type':'*');
 							if (empty($Tag))
 								respond("There's no tag with the ID of $TagID");
 
@@ -912,7 +959,12 @@
 					'js' => array('jquery.qtip', 'jquery.ctxmenu', $do),
 				);
 				if (PERM('inspector'))
-					$settings['js'] = array_merge($settings['js'],array('jquery.uploadzone', "$do-manage"));
+					$settings['js'] = array_merge($settings['js'],array(
+						'jquery.uploadzone',
+						'twitter-typeahead',
+						'handlebars-v3.0.3',
+						"$do-manage"
+					));
 				loadPage($settings);
 			break;
 			case "404":
