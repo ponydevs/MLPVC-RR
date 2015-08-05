@@ -48,7 +48,7 @@
 			FROM tagged cgtg
 			LEFT JOIN tags cgt ON cgtg.tid = cgt.tid
 			WHERE cgtg.ponyid = ?
-			ORDER BY cgt.type DESC, cgt.name',array($PonyID));
+			ORDER BY (CASE WHEN cgt.type IS NULL then 1 ELSE 0 END), CONCAT(cgt.type), cgt.name',array($PonyID));
 		$HTML = '';
 		if (!empty($Tags)){
 			$HTML = $wrap ? "<div class=tags>" : '';
