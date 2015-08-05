@@ -123,7 +123,7 @@ $(function(){
 	}
 
 	function ctxmenus(){
-		$tags.children('span:not(.ctxmenu-bound)').ctxmenu([
+		$tags.children(':not(.ctxmenu-bound)').ctxmenu([
 			{text: 'Edit tag', icon: 'pencil', click: function(){
 				var $tag = $(this),
 					tagName = $tag.text().trim(),

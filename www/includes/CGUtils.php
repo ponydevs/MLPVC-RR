@@ -60,18 +60,17 @@
 			LEFT JOIN tags cgt ON cgtg.tid = cgt.tid
 			WHERE cgtg.ponyid = ?
 			ORDER BY (CASE WHEN cgt.type IS NULL then 1 ELSE 0 END), CONCAT(cgt.type), cgt.name',array($PonyID));
-		$HTML = '';
-		if (!empty($Tags)){
-			$HTML = $wrap ? "<div class=tags>" : '';
-			if (PERM('inspector'))
-				$HTML .= "<input type=text class='addtag tag' placeholder='Enter tag' pattern='".TAG_NAME_PATTERN."' maxlength=30 required>";
-			foreach ($Tags as $i => $t){
-				$class = " class='tag id-{$t['tid']}".(!empty($t['type'])?' typ-'.$t['type']:'')."'";
-				$title = !empty($t['title']) ? " title='".apos_encode($t['title'])."'" : '';
-				$HTML .= "<span$class$title>{$t['name']}</span>";
-			}
-			if ($wrap) $HTML .= "</div>";
+
+		$HTML = $wrap ? "<div class=tags>" : '';
+		if (PERM('inspector'))
+			$HTML .= "<input type=text class='addtag tag' placeholder='Enter tag' pattern='".TAG_NAME_PATTERN."' maxlength=30 required>";
+		if (!empty($Tags)) foreach ($Tags as $i => $t){
+			$class = " class='tag id-{$t['tid']}".(!empty($t['type'])?' typ-'.$t['type']:'')."'";
+			$title = !empty($t['title']) ? " title='".apos_encode($t['title'])."'" : '';
+			$HTML .= "<span$class$title>{$t['name']}</span>";
 		}
+		if ($wrap) $HTML .= "</div>";
+
 		return $HTML;
 	}
 
