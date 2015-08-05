@@ -23,7 +23,7 @@
 
 		$input.on('set-image',function(_, path){
 			$.Dialog.close(function(){
-				$(this).siblings('img').fadeTo(200,0,function(){
+				$input.prev().attr('href', path).children('img').fadeTo(200,0,function(){
 					var $this = $(this);
 					$this.attr('src',path).on('load',function(){
 						$this.fadeTo(200,1);

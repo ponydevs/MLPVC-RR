@@ -264,8 +264,41 @@ $(function(){
 					return;
 					// TODO
 					//noinspection UnreachableCodeJS
-					var title = 'Editing color group: '+$(this).children().first().text().replace(/:\s?$/,'');
+					var $this = $(this),
+						groupID = $this.closest('li').attr('id').substring(2),
+						groupName = $this.children().first().text().replace(/:\s?$/,''),
+						title = 'Editing color group: '+groupName;
+
 					$.Dialog.wait(title, 'Retrieving '+color+' group details from server');
+
+					$.post('/colorguide/getcg/'+groupID,$.mkAjaxHandler(function(){
+						if (this.status) $.Dialog.request(title,$cgEditor.clone(true, true),'cg-editor','Save',function(){
+							var $form = $('#cg-editor'),
+							$ErrorNotice = $form.children('.notice').children('p'),
+							handleError = function(){
+								$ErrorNotice.html(this.message).parent().removeClass('info').addClass('fail').show();
+								$form.find('input, texarea').attr('disabled', false);
+								$.Dialog.center();
+							};
+							$form.on('submit',function(e){
+								e.preventDefault();
+
+								var tempdata = $form.serializeArray(), data = {};
+								$.each(tempdata,function(i,el){
+									data[el.name] = el.value;
+								});
+
+								$ErrorNotice.text('Saving changes...').parent().removeClass('fail').addClass('info').show();
+								$.Dialog.center();
+
+								$.post('/colorguide/setcg/'+groupID, data, $.mkAjaxHandler(function(){
+									if (this.status);
+									else handleError.call(this);
+								}));
+							});
+						});
+						else handleError.call(this);
+					}));
 				}},
 				{text: "Delete "+color+" group (TBI)", icon: 'trash', click: function(){
 					// TODO Confirmation
