@@ -4,7 +4,8 @@ $(function(){
 
 	var $spriteUploadForm = $(document.createElement('form')).attr('id', 'sprite-img').html(
 		'<p class=align-center><a href=#upload>Click here to upload a file</a> or enter a URL below.</p>' +
-		'<label><input type=text name=image_url placeholder="External image URL" required></label>'
+		'<label><input type=text name=image_url placeholder="External image URL" required></label>' +
+		'<p class=align-center>The URL will be checked against the supported provider list, and if an image is found, it\'ll be downloaded to the server and set as this appearance\'s sprite image.</p>'
 	);
 
 	$('.upload-wrap').each(function(){
