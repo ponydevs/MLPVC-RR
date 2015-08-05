@@ -166,7 +166,7 @@ $(function(){
 									else $affected.removeAttr('title');
 									$affected
 										.attr('class', 'tag id-'+this.tid+(this.type?' typ-'+this.type:''))
-										.text(this.name);
+										.text(this.name).data('ctxmenu-ipems').eq(0).text('Tag: '+this.name);
 									$affected.parent().each(function(){
 										reorder($(this));
 									});

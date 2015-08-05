@@ -814,7 +814,7 @@
 							if ($type == 'ep'){
 								if (!preg_match('/^'.EPISODE_ID_PATTERN.'$/i', $data['name'], $epdata))
 									respond('Episode tags must be in the format of <strong>s##e##[-##]</strong> where # represents a number<br>Allowed seasons: 1-8, episodes: 1-26');
-								$data['name'] = 's'.intval($epdata[1], 10).'e'.intval($epdata[2], 10).(!empty($epdata[3])?'-'.intval($epdata[3], 10) : '');
+								$data['name'] = 's'.intval($epdata[1], 10).'e'.intval($epdata[2], 10).(!empty($epdata[3])?intval($epdata[3], 10) : '');
 							}
 							$data['type'] = $type;
 						}
