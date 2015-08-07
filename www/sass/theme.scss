@@ -711,3 +711,21 @@ button, .btn {
 .align-center { text-align: center }
 .align-left   { text-align: left   }
 .align-right  { text-align: right  }
+
+// Pagination
+ul.pagination {
+	display: block;
+	padding: 0;
+	margin: 10px 0;
+	list-style: none;
+	text-align: center;
+
+	&:last-child { margin-bottom: 0 }
+	&:before { content: "Pages: " }
+
+	li {
+		display: inline;
+
+		&:not(:last-child):after { content: ', ' }
+	}
+}

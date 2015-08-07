@@ -1811,3 +1811,16 @@ ORDER BY `count` DESC
 
 		return preg_replace('/^(\d+)([GMk])$/', '$1 $2B', $workWith);
 	}
+
+	// Pagination creator
+	function get_pagination_html($basePath, $currentPage = 1, $maxPages = 1){
+		$Pagination = '';
+		for ($i = 1; $i <= $maxPages; $i++){
+			$li = $i;
+			if ($li !== $currentPage)
+				$li = "<a href='/$basepath/$li'>$li</a>";
+			else $li = "<strong>$li</strong>";
+			$Pagination .= "<li>$li</li>";
+		}
+		return "<ul class=pagination>$Pagination</ul>";
+	}

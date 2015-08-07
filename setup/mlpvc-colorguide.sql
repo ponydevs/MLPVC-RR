@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS `colorgroups` (
   `ponyid` int(11) NOT NULL,
   `label` varchar(255) NOT NULL,
   `order` tinyint(4) NOT NULL DEFAULT '0'
-) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8;
 
 INSERT INTO `colorgroups` (`groupid`, `ponyid`, `label`, `order`) VALUES
 (1, 1, 'Mane', 0),
@@ -29,10 +29,7 @@ INSERT INTO `colorgroups` (`groupid`, `ponyid`, `label`, `order`) VALUES
 (9, 3, 'Mane', 0),
 (10, 3, 'Coat', 0),
 (11, 3, 'Eyes', 0),
-(12, 3, 'Cutie Mark', 0),
-(13, 4, 'Normal', 0),
-(14, 4, 'Discorded (Partial)', 0),
-(15, 4, 'Discorded (Total)', 0);
+(12, 3, 'Cutie Mark', 0);
 
 CREATE TABLE IF NOT EXISTS `colors` (
   `colorid` int(11) NOT NULL,
@@ -40,7 +37,7 @@ CREATE TABLE IF NOT EXISTS `colors` (
   `label` tinytext NOT NULL,
   `hex` varchar(7) NOT NULL,
   `order` tinyint(4) NOT NULL DEFAULT '0'
-) ENGINE=InnoDB AUTO_INCREMENT=68 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=51 DEFAULT CHARSET=utf8;
 
 INSERT INTO `colors` (`colorid`, `groupid`, `label`, `hex`, `order`) VALUES
 (1, 1, 'Outline', '#132042', 0),
@@ -88,37 +85,19 @@ INSERT INTO `colors` (`colorid`, `groupid`, `label`, `hex`, `order`) VALUES
 (47, 12, 'Base Shine', '#F4EF9C', 0),
 (48, 12, 'Glass', '#BDE7F4', 0),
 (49, 12, 'Sand', '#DFD47B', 0),
-(50, 12, 'Glass Shine', '#FFFFFF', 0),
-(51, 13, 'Teeth Fill', '#FFFFFF', 0),
-(52, 13, 'Teeth Outline', '#B0D8E7', 0),
-(53, 13, 'Mouth Fill', '#AD047A', 0),
-(54, 13, 'Mouth Dark Fill', '#860059', 0),
-(55, 13, 'Tongue', '#FF6600', 0),
-(56, 13, 'Tongue Dark', '#CB4607', 0),
-(57, 13, 'Emotional Turmoil (up to 15% opacity)', '#000000', 0),
-(58, 14, 'Teeth Outline', '#CECECE', 0),
-(59, 14, 'Mouth Fill', '#92376D', 0),
-(60, 14, 'Mouth Dark Fill', '#702050', 0),
-(61, 14, 'Tongue', '#BEA1BB', 0),
-(62, 14, 'Tongue Dark', '#966D92', 0),
-(63, 15, 'Teeth Outline', '#CCCDD3', 0),
-(64, 15, 'Mouth Fill', '#6D6765', 0),
-(65, 15, 'Mouth Dark Fill', '#444140', 0),
-(66, 15, 'Tongue', '#ABAAA8', 0),
-(67, 15, 'Tongue Dark', '#828180', 0);
+(50, 12, 'Glass Shine', '#FFFFFF', 0);
 
 CREATE TABLE IF NOT EXISTS `ponies` (
   `id` int(11) NOT NULL,
   `label` tinytext NOT NULL,
   `notes` tinytext NOT NULL,
   `added` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 
 INSERT INTO `ponies` (`id`, `label`, `notes`, `added`) VALUES
 (1, 'Twilight Sparkle', 'Far legs use a darker stroke color', '2015-07-25 14:49:44'),
 (2, 'Twilight Sparkle''s gala dress', '', '2015-07-25 14:49:44'),
-(3, 'Colgate Minuette', '', '2015-07-25 14:49:44'),
-(4, 'Universal', 'These colors apply to most characters in the show. Unless a different color is specified, use these.', '2015-08-05 17:36:57');
+(3, 'Colgate Minuette', '', '2015-07-25 14:49:44');
 
 CREATE TABLE IF NOT EXISTS `tagged` (
   `tid` int(11) NOT NULL,
@@ -139,15 +118,14 @@ INSERT INTO `tagged` (`tid`, `ponyid`) VALUES
 (1, 3),
 (7, 3),
 (12, 3),
-(19, 3),
-(21, 3);
+(19, 3);
 
 CREATE TABLE IF NOT EXISTS `tags` (
   `tid` int(11) NOT NULL,
   `name` varchar(25) NOT NULL,
   `title` tinytext NOT NULL,
   `type` enum('spec','gen','cat','app','ep') DEFAULT NULL
-) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8;
 
 INSERT INTO `tags` (`tid`, `name`, `title`, `type`) VALUES
 (1, 'unicorn', '', 'spec'),
@@ -169,8 +147,7 @@ INSERT INTO `tags` (`tid`, `name`, `title`, `type`) VALUES
 (17, 'pets', '', 'cat'),
 (18, 'amending fences', '', 'ep'),
 (19, 's1e1', '', 'ep'),
-(20, 's1e26', '', 'ep'),
-(21, 's5e12', '', 'ep');
+(20, 's1e26', '', 'ep');
 
 
 ALTER TABLE `colorgroups`
@@ -194,13 +171,13 @@ ALTER TABLE `tags`
 
 
 ALTER TABLE `colorgroups`
-  MODIFY `groupid` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=16;
+  MODIFY `groupid` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=13;
 ALTER TABLE `colors`
-  MODIFY `colorid` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=68;
+  MODIFY `colorid` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=51;
 ALTER TABLE `ponies`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=4;
 ALTER TABLE `tags`
-  MODIFY `tid` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=22;
+  MODIFY `tid` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=21;
 
 ALTER TABLE `colorgroups`
   ADD CONSTRAINT `colorgroups_ibfk_1` FOREIGN KEY (`ponyid`) REFERENCES `ponies` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;

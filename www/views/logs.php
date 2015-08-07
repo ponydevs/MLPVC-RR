@@ -4,16 +4,7 @@
 	<p><?=$MSG?></p>
 <?php } else { ?>
 	<p>Displaying <?=$ItemsPerPage?> items/page</p>
-<?php	$Pagination = array();
-		for ($i = 1; $i <= $MaxPages; $i++){
-			$li = $i;
-			if ($li !== $Page)
-				$li = "<a href='/logs/$li'>$li</a>";
-			else $li = "<strong>$li</strong>";
-			$Pagination[] = "<li>$li</li>";
-		}
-		$Pagination = '<ul class=pagination>'.implode('',$Pagination).'</ul>';
-		echo $Pagination; ?>
+	<?=$Pagination = get_pagination_html('logs', $Page, $MaxPages)?>
 	<table id="logs">
 		<thead>
 			<tr>

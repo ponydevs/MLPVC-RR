@@ -182,9 +182,13 @@ $(function(){
 			}},
 			{text: 'Remove tag', icon: 'minus', click: function(){
 				var $tag = $(this),
-					ponyID = $tag.closest('li').attr('id').replace(/\D/g, ''),
+					tagID = $tag.attr('class').match(/id-(\d+)(?:\s|$)/);
+
+				if (!tagID) return false;
+				tagID = tagID[1];
+
+				var ponyID = $tag.closest('li').attr('id').replace(/\D/g, ''),
 					tagName = $tag.text().trim(),
-					tagID = $tag.attr('class').match(/id-(\d+)(?:\s|$)/)[1],
 					title = 'Remove tag: '+tagName;
 
 				$.Dialog.confirm(title,"The tag "+tagName+" will be removed from this appearance.<br>Are you sure?",['Remove it','Nope'],function(sure){
@@ -328,7 +332,7 @@ $(function(){
 			});
 		});
 
-		$colorGroups = $('ul.colors').children('li');
+		$colorGroups = $('ul.colors:not(.static)').children('li');
 		$colorGroups.filter(':not(.ctxmenu-bound)').ctxmenu(
 			[
 				{text: "Edit "+color+" group (TBI)", icon: 'pencil', click: function(){
@@ -385,33 +389,36 @@ $(function(){
 			],
 			function($el){ return Color+' group: '+$el.children().first().text().trim().replace(':','') }
 		);
-		$colorGroups.children('span:not(:first-child)').off('click').on('click',function(e){
-			e.preventDefault();
+		$.ctxmenu.addItems(
+			$('ul.colors').children('li').children('span:not(:first-child)').off('click').on('click',function(e){
+				e.preventDefault();
 
-			$.copy(this.innerHTML.trim());
-		}).filter(':not(.ctxmenu-bound)').ctxmenu(
-			[
-				{text: "Copy "+color, icon: 'clipboard', 'default': true, click: function(){
-					$.copy(this.innerHTML.trim());
-				}},
-				{text: "Edit "+color+' (TBI)', icon: 'pencil (TBI)', click: function(){
-					$.Dialog.info('Edit '+color+' triggered', 'yay');
-				}},
-				true,
-				{text: "Edit "+color+" group (TBI)", icon: 'pencil', click: function(){
-					$.ctxmenu.triggerItem($(this).parent(), 1);
-				}},
-				{text: "Delete "+color+" group (TBI)", icon: 'trash', click: function(){
-					$.ctxmenu.triggerItem($(this).parent(), 2);
-				}},
-				{text: "Add new group (TBI)", icon: 'folder-add', click: function(){
-					$.ctxmenu.triggerItem($(this).parent(), 3);
-				}},
-				{text: "Add new "+color+' (TBI)', icon: 'plus', click: function(){
-					$.ctxmenu.triggerItem($(this).parent(), 4);
-				}}
-			],
-			function($el){ return 'Color: '+$el.attr('oldtitle') }
+				$.copy(this.innerHTML.trim());
+			}).filter(':not(.ctxmenu-bound)').ctxmenu(
+				[
+					{text: "Copy HEX "+color+" code", icon: 'clipboard', 'default': true, click: function(){
+						$.copy(this.innerHTML.trim());
+					}},
+				],
+				function($el){ return 'Color: '+$el.attr('oldtitle') }
+			).filter(function(){ return this.parentNode.parentNode.className.indexOf('static') === -1 }),
+
+			{text: "Edit "+color+' (TBI)', icon: 'pencil (TBI)', click: function(){
+				$.Dialog.info('Edit '+color+' triggered', 'yay');
+			}},
+			true,
+			{text: "Edit "+color+" group (TBI)", icon: 'pencil', click: function(){
+				$.ctxmenu.triggerItem($(this).parent(), 1);
+			}},
+			{text: "Delete "+color+" group (TBI)", icon: 'trash', click: function(){
+				$.ctxmenu.triggerItem($(this).parent(), 2);
+			}},
+			{text: "Add new group (TBI)", icon: 'folder-add', click: function(){
+				$.ctxmenu.triggerItem($(this).parent(), 3);
+			}},
+			{text: "Add new "+color+' (TBI)', icon: 'plus', click: function(){
+				$.ctxmenu.triggerItem($(this).parent(), 4);
+			}}
 		);
 	}
 	ctxmenus();

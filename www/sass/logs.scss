@@ -92,20 +92,3 @@
 		i { font-size: .8em }
 	}
 }
-ul.pagination {
-	display: block;
-	padding: 0;
-	margin: 5px 0;
-	list-style: none;
-	text-align: center;
-
-	&:before { content: "Pages: " }
-
-	li {
-		display: inline;
-
-		&:not(:last-child):after {
-			content: ', ';
-		}
-	}
-}
