@@ -1717,14 +1717,14 @@ SELECT
 @id := u.id,
 u.name,
 (
-    (SELECT
-     COUNT(*) as `count`
-     FROM reservations res
-     WHERE res.reserved_by = @id && res.deviation_id IS NULL)
-    +(SELECT
-      COUNT(*) as `count`
-      FROM requests req
-      WHERE req.reserved_by = @id && req.deviation_id IS NULL)
+	(SELECT
+	 COUNT(*) as `count`
+	 FROM reservations res
+	 WHERE res.reserved_by = @id && res.deviation_id IS NULL)
+	+(SELECT
+	  COUNT(*) as `count`
+	  FROM requests req
+	  WHERE req.reserved_by = @id && req.deviation_id IS NULL)
 ) as `count`
 FROM `users` u
 ORDER BY `count` DESC
@@ -1735,14 +1735,14 @@ ORDER BY `count` DESC
 		$reservations = $Database->rawQuerySingle(
 			"SELECT
 			(
-			    (SELECT
-			     COUNT(*) as `count`
-			     FROM reservations res
-			     WHERE res.reserved_by = u.id && res.deviation_id IS NULL)
-			    +(SELECT
-			      COUNT(*) as `count`
-			      FROM requests req
-			      WHERE req.reserved_by = u.id && req.deviation_id IS NULL)
+				(SELECT
+				 COUNT(*) as `count`
+				 FROM reservations res
+				 WHERE res.reserved_by = u.id && res.deviation_id IS NULL)
+				+(SELECT
+				  COUNT(*) as `count`
+				  FROM requests req
+				  WHERE req.reserved_by = u.id && req.deviation_id IS NULL)
 			) as `count`
 			FROM `users` u WHERE u.id = ?",
 			array($currentUser['id'])
@@ -1780,4 +1780,34 @@ ORDER BY `count` DESC
 		}
 
 		return $HTML;
+	}
+
+	// Turns an ini setting into bytes
+	function size_in_bytes($size){
+		$unit = substr($size, -1);
+		$value = intval(substr($size, 0, -1), 10);
+		switch(strtoupper($unit)){
+			case 'G':
+				$value *= 1024;
+			case 'M':
+				$value *= 1024;
+			case 'K':
+				$value *= 1024;
+			break;
+		}
+		return $value;
+	}
+
+	// Returns the maximum uploadable file size in a readable format
+	function get_max_upload_size(){
+		$sizes = array(ini_get('post_max_size'), ini_get('upload_max_filesize'));
+
+		$workWith = $sizes[0];
+		if ($sizes[1] !== $sizes[0]){
+			$sizesBytes = array_map('size_in_bytes', $sizes);
+			if ($sizesBytes[1] > $sizesBytes[0])
+				$workWith = $sizes[1];
+		}
+
+		return preg_replace('/^(\d+)([GMk])$/', '$1 $2B', $workWith);
 	}

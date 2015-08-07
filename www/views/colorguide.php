@@ -13,5 +13,5 @@
 
 <script>var Color = '<?=$Color?>', color = '<?=$color?>';</script>
 <?php if (PERM('inspector')){ ?>
-<script>var TAG_TYPES_ASSOC = <?=json_encode($TAG_TYPES_ASSOC)?>;</script>
+<script>var TAG_TYPES_ASSOC = <?=json_encode($TAG_TYPES_ASSOC)?>, MAX_SIZE = '<?=get_max_upload_size()?>';</script>
 <?php } ?>

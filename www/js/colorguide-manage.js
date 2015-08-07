@@ -1,9 +1,9 @@
 $(function(){
 	var Color = window.Color, color = window.color, TAG_TYPES_ASSOC = window.TAG_TYPES_ASSOC, $colorGroups,
-		isWebkit = 'WebkitAppearance' in document.documentElement.style;
+		MAX_SIZE = window.MAX_SIZE, isWebkit = 'WebkitAppearance' in document.documentElement.style;
 
 	var $spriteUploadForm = $(document.createElement('form')).attr('id', 'sprite-img').html(
-		'<p class=align-center><a href=#upload>Click here to upload a file</a> or enter a URL below.</p>' +
+		'<p class=align-center><a href=#upload>Click here to upload a file</a> (max. '+MAX_SIZE+') or enter a URL below.</p>' +
 		'<label><input type=text name=image_url placeholder="External image URL" required></label>' +
 		'<p class=align-center>The URL will be checked against the supported provider list, and if an image is found, it\'ll be downloaded to the server and set as this appearance\'s sprite image.</p>'
 	);
