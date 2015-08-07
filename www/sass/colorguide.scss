@@ -207,6 +207,11 @@ div.tags {
 		margin-right: 5px;
 	}
 
+	.tt-dataset & {
+		display: block;
+		margin: 0;
+	}
+
 	&:not([class*=typ-]) { @include tag-style($TDefault) }
 	&.typ-cat { @include tag-style($TCategory, '\e083')	}
 	&.typ-spec { @include tag-style($TSpecies, '\e148') }
