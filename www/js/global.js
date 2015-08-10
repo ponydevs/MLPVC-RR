@@ -1,7 +1,10 @@
-$(function(){
+(function($){
+	// document.createElement shortcut
+	$.mk = function(){ return $(document.createElement.apply(document,arguments)) };
+
 	// Convert relative URL to absolute
 	$.urlToAbsolute = function(url){
-		var a = document.createElement('a');
+		var a = $.mk('a');
 		a.href = url;
 		return a.href;
 	};
@@ -59,7 +62,7 @@ $(function(){
 			return true;
 		}
 
-		var $helper = $(document.createElement('textarea')),
+		var $helper = $.mk('textarea'),
 			success = false;
 		$helper
 			.css({
@@ -86,12 +89,15 @@ $(function(){
 			$helper.remove();
 		}, 1);
 	};
+})(jQuery);
 
+$(function(){
 	// Countdown
 	var $cd, cdtimer,
 		months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 	window.setCD = function(){
 		var $uc = $('#upcoming');
+		if ($uc.length === 0) return;
 		$cd = $uc.find('li').first().find('.countdown');
 		cdtimer = setInterval(function(){
 			cdupdate($cd);
@@ -120,7 +126,7 @@ $(function(){
 			}
 			clearInterval(cdtimer);
 			if ($cd.length === 0 || $nextime.length === 0) return $('#upcoming').remove();
-			$(document.createElement('span')).addClass('countdown').data('airs', $nextime.attr('datetime')).insertAfter($nextime);
+			$.mk('span').addClass('countdown').data('airs', $nextime.attr('datetime')).insertAfter($nextime);
 			$nextime.remove();
 			return window.setCD();
 		}

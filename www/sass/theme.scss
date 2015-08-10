@@ -671,27 +671,27 @@ button, .btn {
 
 	&.large { font-size: 22px }
 	&.blue {
-		color: $NBlueBG;
+		color: $NBlueBG !important;
 		background-color: $NBlue;
 	}
 	&.darkblue {
-		color: $NDarkBlueBG;
+		color: $NDarkBlueBG !important;
 		background-color: $NDarkBlue;
 	}
 	&.green {
-		color: $NGreenBG;
+		color: $NGreenBG !important;
 		background-color: $NGreen;
 	}
 	&.red {
-		color: $NRedBG;
+		color: $NRedBG !important;
 		background-color: $NRed;
 	}
 	&.orange {
-		color: $NOrangeBG;
+		color: $NOrangeBG !important;
 		background-color: $NOrange;
 	}
 	&.yellow {
-		color: $NYellowBG;
+		color: $NYellowBG !important;
 		background-color: $NYellow;
 	}
 	&:empty {

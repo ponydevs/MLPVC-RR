@@ -1,8 +1,9 @@
 $(function(){
 	var Color = window.Color, color = window.color, TAG_TYPES_ASSOC = window.TAG_TYPES_ASSOC, $colorGroups,
-		MAX_SIZE = window.MAX_SIZE, isWebkit = 'WebkitAppearance' in document.documentElement.style;
+		MAX_SIZE = window.MAX_SIZE, PRINTABLE_ASCII_REGEX = window.PRINTABLE_ASCII_REGEX,
+		HEX_COLOR_PATTERN = window.HEX_COLOR_PATTERN, isWebkit = 'WebkitAppearance' in document.documentElement.style;
 
-	var $spriteUploadForm = $(document.createElement('form')).attr('id', 'sprite-img').html(
+	var $spriteUploadForm = $.mk('form').attr('id', 'sprite-img').html(
 		'<p class=align-center><a href=#upload>Click here to upload a file</a> (max. '+MAX_SIZE+') or enter a URL below.</p>' +
 		'<label><input type=text name=image_url placeholder="External image URL" required></label>' +
 		'<p class=align-center>The URL will be checked against the supported provider list, and if an image is found, it\'ll be downloaded to the server and set as this appearance\'s sprite image.</p>'
@@ -31,9 +32,8 @@ $(function(){
 				var title = 'Upload sprite image',
 					ponyID = $this.closest('li').attr('id').substring(1),
 					$uploadInput = $this.find('input[type="file"]');
-				$.Dialog.request(title,$spriteUploadForm.clone(),'sprite-img','Download image',function(){
-					var $form = $('#sprite-img'),
-						$image_url = $form.find('input[name=image_url]');
+				$.Dialog.request(title,$spriteUploadForm.clone(),'sprite-img','Download image',function($form){
+					var $image_url = $form.find('input[name=image_url]');
 					$form.find('a').on('click',function(e){
 						e.preventDefault();
 						e.stopPropagation();
@@ -87,27 +87,27 @@ $(function(){
 		})
 	});
 
-	var $tagEditForm = $(document.createElement('form')).attr('id', 'edit-tag');
+	var $tagEditForm = $.mk('form').attr('id', 'edit-tag');
 	$tagEditForm
 		.append('<label><span>Tag name (4-30 chars.)</span><input type=text name=name required pattern=^.{4,30}$ maxlength=30></label>');
-	var $_typeSelect = $(document.createElement('div')).addClass('type-selector');
+	var $_typeSelect = $.mk('div').addClass('type-selector');
 	$.each(TAG_TYPES_ASSOC,function(type, label){
-		var $lbl = $(document.createElement('label')),
-			$chx = $(document.createElement('input'))
+		var $lbl = $.mk('label'),
+			$chx = $.mk('input')
 				.attr({
 					type: 'checkbox',
 					name: 'type',
 					value: type
-				}).on('click',function(){
+				}).on('click keyup',function(){
 					if (this.checked)
 						$(this).parent().siblings().find('input').prop('checked', false);
 				});
-		$lbl.append($chx, $(document.createElement('span')).addClass('tag typ-'+type).text(label)).appendTo($_typeSelect);
+		$lbl.append($chx, $.mk('span').addClass('tag typ-'+type).text(label)).appendTo($_typeSelect);
 	});
 	$tagEditForm
-		.append($(document.createElement('div')).addClass('align-center').append('<span>Tag type (optional)</span><br>',$_typeSelect))
-		.append($(document.createElement('label')).append('<span>Tag description (max 255 chars., optional)</span><br><textarea name=title maxlength=255></textarea>'))
-		.append($(document.createElement('div')).attr('class','notice').hide().html('<p></p>'));
+		.append($.mk('div').addClass('align-center').append('<span>Tag type (optional)</span><br>',$_typeSelect))
+		.append($.mk('label').append('<span>Tag description (max 255 chars., optional)</span><br><textarea name=title maxlength=255></textarea>'))
+		.append($.mk('div').attr('class','notice').hide().html('<p></p>'));
 
 	var $tags = $('.tags');
 	function reorder($this){
@@ -122,6 +122,243 @@ $(function(){
 		}).appendTo($this);
 	}
 
+	function createNewTag($tag, name){
+		var title = 'Create new tag',
+			$li = $tag.closest('li'),
+			$div = $tag.closest('div:not([class])'),
+			$tagsDiv = $div.children('.tags'),
+			ponyID = $li.attr('id').replace(/\D/g, ''),
+			ponyName = $div.children('strong').text().trim();
+
+		$.Dialog.request(title,$tagEditForm.clone(true, true),'edit-tag','Create',function($form){
+			var $ErrorNotice = $form.children('.notice').children('p'),
+				handleError = function(){
+					$ErrorNotice.html(this.message).parent().removeClass('info').addClass('fail').show();
+					$form.find('input, texarea').attr('disabled', false);
+					$.Dialog.center();
+				};
+			$form.append(
+				$.mk('label').append(
+					$.mk('input').attr({type:'checkbox',name:'addto'}).val(ponyID).prop('checked', typeof name === 'string'),
+					document.createTextNode(' Add this tag to the appearance "'+ponyName+'" after creation')
+				)
+			);
+			if (typeof name === 'string') $form.find('input[name=name]').val(name);
+			$.Dialog.center();
+			$form.on('submit', function(e){
+				e.preventDefault();
+
+				var tempdata = $form.serializeArray(), data = {};
+				$.each(tempdata,function(i,el){
+					data[el.name] = el.value;
+				});
+
+				$ErrorNotice.text('Creating tag...').parent().removeClass('fail').addClass('info').show();
+				$.Dialog.center();
+
+				$.post('/colorguide/maketag',data,$.mkAjaxHandler(function(){
+					if (this.status){
+						if (this.tags){
+							$tagsDiv.children('[data-hasqtip]').qtip('destroy', true);
+							$tagsDiv.html(this.tags);
+							window.tooltips();
+							ctxmenus();
+						}
+						$.Dialog.close();
+					}
+					else handleError.call(this);
+				}));
+			});
+		});
+	}
+
+	var $cgEditor = $.mk('form').attr('id','cg-editor'),
+		$colorPreview = $.mk('span').attr('class','clrp'),
+		$colorInput =
+			$.mk('input').attr({
+				'class': 'clri',
+				pattern: HEX_COLOR_PATTERN.toString().replace(/\//g,''),
+				autocomplete: 'off',
+				spellcheck: 'false',
+			}).on('keyup change input',function(){
+				var $this = $(this),
+					$cp = $this.prev(),
+					valid = HEX_COLOR_PATTERN.test(this.value);
+				if (valid)
+					$cp.removeClass('invalid').css('background-color', this.value.replace(HEX_COLOR_PATTERN, '#$1'));
+				else $cp.addClass('invalid');
+
+				$this.next().attr('required', valid);
+			}).on('paste blur',function(e){
+				var input = this,
+					$input = $(input),
+					shortHex = /^#?([A-Fa-f0-9]{3})$/,
+					f = function(){
+						var val = input.value;
+						if (shortHex.test(val)){
+							var match = val.match(shortHex)[1];
+							val = '#'+match[0]+match[0]+match[1]+match[1]+match[2]+match[2];
+						}
+						if (HEX_COLOR_PATTERN.test(val)){
+							$input.val(val.replace(HEX_COLOR_PATTERN, '#$1').toUpperCase()).trigger('change');
+							if (e.type !== 'blur')
+								$input.next().focus();
+						}
+					};
+				if (e.type === 'paste') setTimeout(f, 10);
+				else f();
+			}),
+		$colorLabel = $.mk('input').attr({ 'class': 'clrl', pattern: PRINTABLE_ASCII_REGEX.replace('+', '{3,30}') }),
+		$colorActions = $.mk('div').attr('class','clra')
+			.append($.mk('span').attr('class','typcn typcn-minus remove red').on('click',function(){
+				$(this).closest('.clr').remove();
+				$.Dialog.center();
+			}))
+			.append($.mk('span').attr('class','typcn typcn-arrow-move move blue')),
+		mkClrDiv = function(color){
+			var $cp = $colorPreview.clone(),
+				$ci = $colorInput.clone(true, true),
+				$cl = $colorLabel.clone(),
+				$ca = $colorActions.clone(true, true),
+				$el = $.mk('div').attr('class','clr');
+
+			if (typeof color === 'object'){
+				if (color.colorid) $el.data('id', color.colorid);
+				if (color.hex) $ci.val(color.hex);
+				if (color.label) $cl.val(color.label);
+			}
+
+			$el.append($cp,$ci,$cl,$ca);
+			$ci.trigger('change');
+			$el.draggabilly({
+				axis: 'y',
+				containment: true,
+				handle: '.move',
+			});
+			$el.on('dragStart dragMove dragEnd',function(e){
+				var $colorRow = $(this),
+					$container = $colorRow.parent(),
+					$childs = $container.children(),
+					draggie = $(this).data('draggabilly'),
+					pos;
+
+				switch (e.type){
+					case "dragStart":
+						$colorRow.addClass('moving');
+					break;
+					case "dragMove":
+						var ix = $colorRow.index(),
+							deltaY = draggie.position.y,
+							direction = deltaY > 0,
+							distY = Math.abs(deltaY);
+
+						pos = Math.round((distY < 14 ? 0 : distY-14)/28);
+						pos = ix+(pos*(direction ? 1 : -1));
+
+						$colorRow.data('moveto', [pos, direction]);
+					break;
+					case "dragEnd":
+						$colorRow.removeClass('moving');
+						$childs.removeAttr('style');
+
+						var data = $colorRow.data('moveto');
+						$colorRow[data[1] ? 'insertAfter' : 'insertBefore']($childs.eq(data[0]));
+					break;
+				}
+			});
+			return $el;
+		},
+		$addBtn = $.mk('button').attr('class','typcn typcn-plus green').text('Add new color').on('click',function(e){
+			e.preventDefault();
+
+			var $form = $(this).parents('#cg-editor'),
+				$colors = $form.children('.clrs');
+			if (!$colors.length)
+				$form.append($colors = $.mk('div').attr('class', 'clrs'));
+			var $div = mkClrDiv();
+			$colors.append($div);
+			$div.find('.clri').focus();
+			$.Dialog.center();
+		});
+	$cgEditor
+		.append('<label><span>Group name (2-30 chars.)</span><br><input name=label pattern="'+PRINTABLE_ASCII_REGEX.replace('+','{2,30}')+'" required></label>')
+		.append('<p class=align-center>The # symbol is optional, rows with invalid '+color+'s will be ignored. Each color must have a short (3-30 chars.) description of its intended use.</p>',$addBtn)
+		.append($.mk('div').attr('class', 'clrs'))
+		.append($.mk('div').attr('class','notice').hide().html('<p></p>'));
+	$cgEditor.on('render-color-inputs',function(_, data){
+		var $form = $(this),
+			$colors = $form.children('.clrs').empty();
+
+		$.each(data, function(_, color){
+			$colors.append(mkClrDiv(color));
+		});
+
+		$.Dialog.center();
+	});
+
+	function CGEditorMaker(title, $group){
+		var dis = this,
+			groupID = $group.attr('id').substring(2);
+		$.Dialog.request(title,$cgEditor.clone(true, true),'cg-editor','Save',function($form){
+			var $ErrorNotice = $form.children('.notice').children('p'),
+				handleError = function(){
+					$ErrorNotice.html(this.message).parent().removeClass('info').addClass('fail').show();
+					$form.find('input, texarea').attr('disabled', false);
+					$.Dialog.center();
+				},
+				$label = $form.find('input[name=label]'),
+				editing = typeof dis === 'object' && dis.label && dis.Colors;
+			if (editing){
+				$label.val(dis.label);
+				$form.trigger('render-color-inputs',[dis.Colors]);
+			}
+			$form.on('submit',function(e){
+				e.preventDefault();
+
+				var data = { label: $label.val(), Colors: [] };
+				if (!editing) data.ponyid = dis.ponyid;
+				$form.find('.clr').each(function(){
+					var $row = $(this),
+						$ci = $row.children('.clri');
+
+					if (!HEX_COLOR_PATTERN.test($ci.val()))
+						return;
+
+					var colorid = $row.data('id'),
+						append = { hex: $ci.val().replace(HEX_COLOR_PATTERN,'#$1').toUpperCase() };
+					if (typeof colorid !== 'undefined') append.colorid = parseInt(colorid, 10);
+
+					append.label = $row.children('.clrl').val();
+
+					data.Colors.push(append);
+				});
+				if (data.Colors.length === 0)
+					throw new Error('You need to add at least 1 color');
+				data.Colors = JSON.stringify(data.Colors);
+
+				$ErrorNotice.text('Saving changes...').parent().removeClass('fail').addClass('info').show();
+				$.Dialog.center();
+
+				$.post('/colorguide/'+(editing?'set':'make')+'cg/'+groupID, data, $.mkAjaxHandler(function(){
+					if (this.status){
+						if (this.cg || this.cgs){
+							if (this.cg){
+								$group.children('[data-hasqtip]').qtip('destroy', true);
+								$group.html(this.cg);
+							}
+							else if (this.cgs)
+								$group.parent().html(this.cgs);
+							window.tooltips();
+							ctxmenus();
+						}
+						$.Dialog.close();
+					}
+					else handleError.call(this);
+				}));
+			});
+		});
+	}
+
 	function ctxmenus(){
 		$tags.children(':not(.ctxmenu-bound)').ctxmenu([
 			{text: 'Edit tag', icon: 'pencil', click: function(){
@@ -134,9 +371,8 @@ $(function(){
 
 				$.post('/colorguide/gettag/'+tagID,$.mkAjaxHandler(function(){
 					var tag = this;
-					if (this.status) $.Dialog.request(title,$tagEditForm.clone(true, true),'edit-tag','Save',function(){
-						var $form = $('#edit-tag'),
-							$ErrorNotice = $form.children('.notice').children('p'),
+					if (this.status) $.Dialog.request(title,$tagEditForm.clone(true, true),'edit-tag','Save',function($form){
+						var $ErrorNotice = $form.children('.notice').children('p'),
 							handleError = function(){
 								$ErrorNotice.html(this.message).parent().removeClass('info').addClass('fail').show();
 								$form.find('input, texarea').attr('disabled', false);
@@ -212,7 +448,7 @@ $(function(){
 					tagID = $tag.attr('class').match(/id-(\d+)(?:\s|$)/)[1],
 					title = 'Detele tag: '+tagName;
 
-				$.Dialog.confirm(title,"By deleting this tag, it'll be removed from every appearance where it's been used.<br>Are you sure?",['Delete it','Nope'],function(sure){
+				$.Dialog.confirm(title,"Deleting this tag will also remove it from every appearance where it's been used.<br>Are you sure?",['Delete it','Nope'],function(sure){
 					if (!sure) return;
 
 					$.Dialog.wait(title,'Sending removal request');
@@ -230,52 +466,7 @@ $(function(){
 			}},
 			true,
 			{text: 'Create new tag', icon: 'plus', click: function(){
-				var title = 'Create new tag',
-					$tag = $(this),
-					$li = $tag.closest('li'),
-					$div = $tag.closest('div:not([class])'),
-					$tagsDiv = $div.children('.tags'),
-					ponyID = $li.attr('id').replace(/\D/g, ''),
-					ponyName = $div.children('strong').text().trim();
-
-				$.Dialog.request(title,$tagEditForm.clone(true, true),'edit-tag','Create',function(){
-					var $form = $('#edit-tag'),
-						$ErrorNotice = $form.children('.notice').children('p'),
-						handleError = function(){
-							$ErrorNotice.html(this.message).parent().removeClass('info').addClass('fail').show();
-							$form.find('input, texarea').attr('disabled', false);
-							$.Dialog.center();
-						};
-					$form.append(
-						$(document.createElement('label'))
-							.append('<input type=checkbox name=addto value='+ponyID+'> Add this tag to the appearance "'+ponyName+'" after creation')
-					);
-					$.Dialog.center();
-					$form.on('submit', function(e){
-						e.preventDefault();
-
-						var tempdata = $form.serializeArray(), data = {};
-						$.each(tempdata,function(i,el){
-							data[el.name] = el.value;
-						});
-
-						$ErrorNotice.text('Creating tag...').parent().removeClass('fail').addClass('info').show();
-						$.Dialog.center();
-
-						$.post('/colorguide/maketag',data,$.mkAjaxHandler(function(){
-							if (this.status){
-								if (this.tags){
-									$tagsDiv.children('[data-hasqtip]').qtip('destroy', true);
-									$tagsDiv.html(this.tags);
-									window.tooltips();
-									ctxmenus();
-								}
-								$.Dialog.close();
-							}
-							else handleError.call(this);
-						}));
-					});
-				})
+				createNewTag($(this));
 			}},
 		], function($el){ return 'Tag: '+$el.text().trim() });
 
@@ -290,6 +481,8 @@ $(function(){
 		$tags.children('.addtag').each(function(){
 			var $input = $(this),
 				ponyID = $input.parents('li').attr('id').substring(1);
+			$input.data('ctxmenu-items', $input.data('ctxmenu-items').filter(':first, :last'));
+			$input.data('ctxmenu-items').first().text('Tags');
 			$input.typeahead(null, {
 				name: 'tags',
 				display: 'name',
@@ -309,9 +502,10 @@ $(function(){
 					if ($ponyTags.filter(function(){ return this.innerHTML.trim() === tag_name }).length > 0)
 						return $.Dialog.fail(title, 'This appearance already has this tag');
 
-					$input.attr('disabled', true);
+					$.Dialog._focusedElement = $input.attr('disabled', true);
+					$input.parent().addClass('loading');
 
-					$.post('/colorguide/tag/'+ponyID,{ tag_name: $input.val() }, $.mkAjaxHandler(function(){
+					$.post('/colorguide/tag/'+ponyID,{ tag_name: tag_name }, $.mkAjaxHandler(function(){
 						if (this.status){
 							$tagsDiv.children('[data-hasqtip]').qtip('destroy', true);
 							$tagsDiv.html(this.tags);
@@ -319,8 +513,15 @@ $(function(){
 							ctxmenus();
 							$('#p'+ponyID).find('.addtag').focus();
 						}
+						else if (typeof this.cancreate === 'string'){
+							title = title.replace(tag_name, this.cancreate);
+							$.Dialog.confirm(title, this.message, function(sure){
+								if (!sure) return;
+								createNewTag($input, this.cancreate);
+							});
+						}
 						else $.Dialog.fail(title, this.message);
-						$input.removeAttribute('disabled').focus();
+						$input.removeAttr('disabled').parent().removeClass('loading');
 					}));
 				}
 			});
@@ -335,57 +536,48 @@ $(function(){
 		$colorGroups = $('ul.colors:not(.static)').children('li');
 		$colorGroups.filter(':not(.ctxmenu-bound)').ctxmenu(
 			[
-				{text: "Edit "+color+" group (TBI)", icon: 'pencil', click: function(){
-					$.Dialog.info('Edit '+color+' group triggered', 'yay');
-					return;
-					// TODO
-					//noinspection UnreachableCodeJS
+				{text: "Edit "+color+" group", icon: 'pencil', click: function(){
 					var $this = $(this),
-						groupID = $this.closest('li').attr('id').substring(2),
+						$group = $this.closest('li'),
+						groupID = $group.attr('id').substring(2),
 						groupName = $this.children().first().text().replace(/:\s?$/,''),
-						title = 'Editing color group: '+groupName;
+						title = 'Editing '+color+' group: '+groupName;
 
 					$.Dialog.wait(title, 'Retrieving '+color+' group details from server');
 
 					$.post('/colorguide/getcg/'+groupID,$.mkAjaxHandler(function(){
-						if (this.status) $.Dialog.request(title,$cgEditor.clone(true, true),'cg-editor','Save',function(){
-							var $form = $('#cg-editor'),
-							$ErrorNotice = $form.children('.notice').children('p'),
-							handleError = function(){
-								$ErrorNotice.html(this.message).parent().removeClass('info').addClass('fail').show();
-								$form.find('input, texarea').attr('disabled', false);
-								$.Dialog.center();
-							};
-							$form.on('submit',function(e){
-								e.preventDefault();
-
-								var tempdata = $form.serializeArray(), data = {};
-								$.each(tempdata,function(i,el){
-									data[el.name] = el.value;
-								});
-
-								$ErrorNotice.text('Saving changes...').parent().removeClass('fail').addClass('info').show();
-								$.Dialog.center();
-
-								$.post('/colorguide/setcg/'+groupID, data, $.mkAjaxHandler(function(){
-									if (this.status);
-									else handleError.call(this);
-								}));
-							});
-						});
-						else handleError.call(this);
+						try {
+							if (this.status) CGEditorMaker.call(this, title, $group);
+							else throw new Error(this.message);
+						}
+						catch(e){ handleError.call(e.message) }
 					}));
 				}},
-				{text: "Delete "+color+" group (TBI)", icon: 'trash', click: function(){
-					// TODO Confirmation
-					$.Dialog.info('Delete '+color+' group triggered', 'yay');
+				{text: "Delete "+color+" group", icon: 'trash', click: function(){
+					var $group = $(this).closest('li'),
+						groupID = $group.attr('id').substring(2),
+						groupName = $group.children().first().text().replace(/:\s?$/,''),
+						title = 'Delete '+color+' group: '+groupName;
+					$.Dialog.confirm(title, 'By deleting this '+color+' group, all '+color+'s within will be removed too.<br>Are you sure?',function(sure){
+						if (!sure) return;
+
+						$.Dialog.wait(title, 'Sending removal request');
+
+						$.post('/colorguide/delcg/'+groupID,$.mkAjaxHandler(function(){
+							if (this.status){
+								$group.children('[data-hasqtip]').qtip('destroy', true);
+								$group.remove();
+								$.Dialog.close();
+							}
+							else $.Dialog.fail(title, this.message);
+						}));
+					});
 				}},
-				{text: "Add new group (TBI)", icon: 'folder-add', click: function(){
-					$.Dialog.info('Add new group triggered', 'yay');
+				{text: "Create new group", icon: 'folder-add', click: function(){
+					var $group = $(this).closest('li'),
+						ponyID = $group.parents('li').attr('id').substring(1);
+					CGEditorMaker.call({ponyid:ponyID},'Create color group', $group);
 				}},
-				{text: "Add new "+color+' (TBI)', icon: 'plus', click: function(){
-					$.Dialog.info('Add new color triggered', 'yay');
-				}}
 			],
 			function($el){ return Color+' group: '+$el.children().first().text().trim().replace(':','') }
 		);
@@ -403,21 +595,15 @@ $(function(){
 				function($el){ return 'Color: '+$el.attr('oldtitle') }
 			).filter(function(){ return this.parentNode.parentNode.className.indexOf('static') === -1 }),
 
-			{text: "Edit "+color+' (TBI)', icon: 'pencil (TBI)', click: function(){
-				$.Dialog.info('Edit '+color+' triggered', 'yay');
-			}},
 			true,
-			{text: "Edit "+color+" group (TBI)", icon: 'pencil', click: function(){
+			{text: "Edit "+color+" group", icon: 'pencil', click: function(){
 				$.ctxmenu.triggerItem($(this).parent(), 1);
 			}},
-			{text: "Delete "+color+" group (TBI)", icon: 'trash', click: function(){
+			{text: "Delete "+color+" group", icon: 'trash', click: function(){
 				$.ctxmenu.triggerItem($(this).parent(), 2);
 			}},
-			{text: "Add new group (TBI)", icon: 'folder-add', click: function(){
+			{text: "Add new group", icon: 'folder-add', click: function(){
 				$.ctxmenu.triggerItem($(this).parent(), 3);
-			}},
-			{text: "Add new "+color+' (TBI)', icon: 'plus', click: function(){
-				$.ctxmenu.triggerItem($(this).parent(), 4);
 			}}
 		);
 	}

@@ -13,40 +13,52 @@
 	// Constant to disable returning of wrapper element with markup generators
 	define('NOWRAP', false);
 
-	// Tag constants
+	// Some patterns for validation
 	define('TAG_NAME_PATTERN', '^[a-z\d ().-]{4,30}$');
 	define('INVERSE_TAG_NAME_PATTERN', '[^a-z\d ().-]');
+	define('HEX_COLOR_PATTERN','/^#?([A-Fa-f0-9]{6})$/u');
 
 	// Get the colors in a given color groups
 	function get_colors($GroupID){
 		global $CGDb;
 
-		return $CGDb->where('groupid', $GroupID)->get('colors');
+		return $CGDb->rawQuery('SELECT * FROM colors WHERE groupid = ? ORDER BY `order`, colorid', array($GroupID));
+	}
+
+	// Return the markup for the specified color group
+	function get_cg_html($GroupID, $wrap = true){
+		global $CGDb;
+
+		if (is_array($GroupID)) $Group = $GroupID;
+		else $Group = $CGDb->where('groupid',$GroupID)->getOne('colorgroups');
+
+		$label = htmlspecialchars($Group['label']);
+		$HTML = $wrap ? "<li id=cg{$Group['groupid']}>" : '';
+		$HTML .= "<span class=cat>$label: </span>";
+		$Colors = get_colors($Group['groupid']);
+		if (!empty($Colors))
+			foreach ($Colors as $i => $c){
+				$title = apos_encode($c['label']);
+				$HTML .= "<span id=c{$c['colorid']} style=background-color:{$c['hex']} title='$title'>{$c['hex']}</span> ";
+			};
+
+		if ($wrap) $HTML .= "</li>";
+
+		return $HTML;
 	}
 
 	// Returns the markup of the color list for a specific pony \\
 	function get_colors_html($PonyID, $wrap = true){
 		global $CGDb;
 
-		$ColorGroups = $CGDb->where('ponyid', $PonyID)->get('colorgroups');
-		$HTML = '';
+		$ColorGroups = $CGDb->rawQuery('SELECT * FROM colorgroups WHERE ponyid = ? ORDER BY `order`, groupid', array($PonyID));
+
+		$HTML = $wrap ? "<ul class=colors>" : '';
 		if (!empty($ColorGroups)){
-			$HTML = $wrap ? "<ul class=colors>" : '';
-			foreach ($ColorGroups as $cg){
-				$label = htmlspecialchars($cg['label']);
-				$HTML .= "<li id=cg{$cg['groupid']}><span class=cat>$label: </span>";
-
-				$Colors = get_colors($cg['groupid']);
-				if (!empty($Colors))
-					foreach ($Colors as $i => $c){
-						$title = apos_encode($c['label']);
-						$HTML .= "<span id=c{$c['colorid']} style=background-color:{$c['hex']} title='$title'>{$c['hex']}</span> ";
-					};
-
-				$HTML .= "</li>";
-			}
-			if ($wrap) $HTML .= "</ul>";
+			foreach ($ColorGroups as $cg)
+				$HTML .= get_cg_html($cg);
 		}
+		if ($wrap) $HTML .= "</ul>";
 		return $HTML;
 	}
 
@@ -235,7 +247,7 @@
 	 */
 	function check_string_valid($string, $Thing, $pattern){
 		$fails = array();
-		if (preg_match("~$pattern~u", $string, $fails)){
+		if (preg_match("@$pattern@u", $string, $fails)){
 			$invalid = array();
 			foreach ($fails as $f)
 				if (!in_array($f, $invalid))
@@ -245,4 +257,11 @@
 			$the_following = count($invalid)!==1?' the following':'an';
 			respond("$Thing contains $the_following invalid character$s: ".array_readable($invalid));
 		}
+	}
+
+	// Checks and shortens episode tags
+	function ep_tag_name_check(&$tag){
+		if (preg_match('/^'.EPISODE_ID_PATTERN.'/i',$tag,$_match))
+			$tag = 's'.intval($_match[1], 10).'e'.intval($_match[2], 10).(!empty($_match[3]) ? intval($_match[3], 10) : '');
+		else return false;
 	}

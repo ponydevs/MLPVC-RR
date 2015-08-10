@@ -5,7 +5,7 @@
 	<div class="align-center">
 		<button id="add-episode" class="typcn typcn-plus">Add an episode</button>
 	</div>
-	<script>var EP_TITLE_REGEX = <?=EP_TITLE_REGEX?>;</script>
+	<script>var EP_TITLE_REGEX = <?=rtrim(EP_TITLE_REGEX,'u')?>;</script>
 <?php   }
 		if (!empty($Episodes) || (empty($Episodes) && PERM('inspector'))){ ?>
 	<table id=episodes>

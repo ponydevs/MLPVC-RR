@@ -152,27 +152,12 @@
 
 			&:after {
 				z-index: 2;
-
 				left: 50%;
 				top: 50%;
-
+				transform: translate(-50%, -50%);
 				overflow: hidden;
 
-				$frameWidth: 64px;
-				$frames: 8;
-				$imageWidth: $frames * $frameWidth;
-				$height: 49px;
-				width: $frameWidth;
-				height: $height;
-				transform: translate(-50%, -50%);
-				background-size: $imageWidth $height;
-				background: url('../img/preloader.png') no-repeat 0 0;
-
-				animation: load .6s steps($frames) infinite;
-				@keyframes load {
-					0% { background-position: 0 0 }
-					100% {background-position: 0 -$imageWidth }
-				}
+				@include sprite-animation(64px, 49px, 8, 'preloader');
 			}
 
 			iframe, object, embed {
@@ -359,8 +344,7 @@
 		}
 		.finished ul li {
 			.deviation img {
-				background: url('data:image/svg+xml;utf-8,<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 16 16" enable-background="new 0 0 16 16" xml:space="preserve"><rect fill="#FFFFFF" width="16" height="16"/><rect fill="#EFEFEF" width="8" height="8"/><rect fill="#EFEFEF" width="8" height="8" x="8" y="8"/></svg>') repeat;
-				background-size: 12px;
+				background: url(../img/transparency.svg) repeat;
 				border: 2px solid #93a98f;
 				box-shadow: 0 0 5px #93a98f;
 			}

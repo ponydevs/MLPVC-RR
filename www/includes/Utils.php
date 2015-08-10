@@ -348,7 +348,7 @@ HTML;
 			$customCSS = array_merge($customCSS, $DEFAULT_CSS);
 
 		# JavaScript
-		$DEFAULT_JS = array('dyntime','dialog','global');
+		$DEFAULT_JS = array('global','dyntime','dialog');
 		$customJS = array();
 		// Add logged_in.js for logged in users
 		global $signedIn;
@@ -412,14 +412,14 @@ HTML;
 
 		$pathStart = APPATH."$type/";
 		foreach ($customType as $i => $item){
+			if (file_exists("$pathStart$item.min.$type")){
+				$customType[$i] .= '.min';
+				continue;
+			}
 			$fname = "$item.$type";
 			if (!file_exists($pathStart.$fname)){
-				if (file_exists("$pathStart$item.min.$type"))
-					$customType[$i] .= '.min';
-				else {
-					array_splice($customType,$i,1);
-					trigger_error("File /$type/$fname does not exist");
-				}
+				array_splice($customType,$i,1);
+				trigger_error("File /$type/$fname does not exist");
 			}
 		}
 	}
@@ -834,7 +834,7 @@ HTML;
 	}
 
 	// Episode title matching pattern \\
-	define('EP_TITLE_REGEX', '/^[A-Za-z \'\-!\d,&:?]{5,35}$/');
+	define('EP_TITLE_REGEX', '/^[A-Za-z \'\-!\d,&:?]{5,35}$/u');
 
 	/**
 	 * Turns an 'episode' database row into a readable title
@@ -879,7 +879,7 @@ HTML;
 	 * @param string $id
 	 * @return null|array
 	 */
-	define('EPISODE_ID_PATTERN','S0?([1-8])E(0?[1-9]|1\d|2[0-6])(-(?:0[1-9]|1\d|2[0-6]))?(?:\D|$)');
+	define('EPISODE_ID_PATTERN','S0*([1-8])E0*([1-9]|1\d|2[0-6])(?:-0*([1-9]|1\d|2[0-6]))?(?:\D|$)');
 	function episode_id_parse($id){
 		$match = array();
 		if (preg_match('/^'.EPISODE_ID_PATTERN.'/', $id, $match))

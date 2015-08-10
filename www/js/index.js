@@ -40,7 +40,7 @@ $(function(){
 							var $epSection = $content.children('section.episode');
 							if (this.epsection){
 								if (!$epSection.length)
-									$epSection = $(document.createElement('section'))
+									$epSection = $.mk('section')
 										.addClass('episode')
 										.insertBefore($content.children('section').first());
 								$epSection.html($(this.epsection).filter('section').html());

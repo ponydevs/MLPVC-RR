@@ -36,56 +36,56 @@ CREATE TABLE IF NOT EXISTS `colors` (
   `groupid` int(11) NOT NULL,
   `label` tinytext NOT NULL,
   `hex` varchar(7) NOT NULL,
-  `order` tinyint(4) NOT NULL DEFAULT '0'
+  `order` tinyint(4) DEFAULT NULL
 ) ENGINE=InnoDB AUTO_INCREMENT=51 DEFAULT CHARSET=utf8;
 
 INSERT INTO `colors` (`colorid`, `groupid`, `label`, `hex`, `order`) VALUES
-(1, 1, 'Outline', '#132042', 0),
-(2, 1, 'Fill', '#273771', 0),
-(3, 1, 'Purple Streak', '#622E86', 0),
-(4, 1, 'Pink Streak', '#E6458B', 0),
-(5, 2, 'Outline', '#A66EBE', 0),
-(6, 2, 'Fill', '#D4A4E8', 0),
-(7, 2, 'Shadow Outline', '#9964AC', 0),
-(8, 2, 'Shadow Fill', '#AE80C4', 0),
-(9, 3, 'Gradient Top', '#210045', 0),
-(10, 3, 'Gradient Bottom', '#64128D', 0),
-(11, 3, 'Dark Highlight', '#8C4FAB', 0),
-(12, 3, 'Light Highlight', '#CCAED7', 0),
-(13, 4, 'Pink Star/Magic Glow', '#E6458B', 0),
-(14, 4, 'White Stars', '#FFFFFF', 0),
-(15, 5, 'Outline', '#2A3E6F', 0),
-(16, 5, 'Fill', '#4365B7', 0),
-(17, 5, 'Darkest Stars & Bottom', '#7591CD', 0),
-(18, 5, 'Blue Stars', '#AFD7E9', 0),
-(19, 5, 'White Stars', '#FFFFFF', 0),
-(20, 6, 'Turquoise Outline', '#64B0CA', 0),
-(21, 6, 'Grayish Outline', '#C8DBB3', 0),
-(22, 6, 'Fill', '#AFD7E9', 0),
-(23, 6, 'Deep Blue Star', '#4365B7', 0),
-(26, 7, 'Turquoise Outline', '#6D8EB2', 0),
-(27, 7, 'Fill', '#99A4C4', 0),
-(28, 7, 'Deep Blue Star', '#5861A3', 0),
-(29, 8, 'Outline', '#64B0CA', 0),
-(30, 8, 'Fill', '#AFD7E9', 0),
-(31, 8, 'Blue Stars', '#7591CD', 0),
-(32, 8, 'White Stars', '#FFFFFF', 0),
+(1, 1, 'Outline', '#132042', NULL),
+(2, 1, 'Fill', '#273771', NULL),
+(3, 1, 'Purple Streak', '#622E86', NULL),
+(4, 1, 'Pink Streak', '#E6458B', NULL),
+(5, 2, 'Outline', '#A66EBE', NULL),
+(6, 2, 'Fill', '#D4A4E8', NULL),
+(7, 2, 'Shadow Outline', '#9964AC', NULL),
+(8, 2, 'Shadow Fill', '#AE80C4', NULL),
+(9, 3, 'Gradient Top', '#210045', NULL),
+(10, 3, 'Gradient Bottom', '#64128D', NULL),
+(11, 3, 'Dark Highlight', '#8C4FAB', NULL),
+(12, 3, 'Light Highlight', '#CCAED7', NULL),
+(13, 4, 'Pink Star/Magic Glow', '#E6458B', NULL),
+(14, 4, 'White Stars', '#FFFFFF', NULL),
+(15, 5, 'Outline', '#2A3E6F', NULL),
+(16, 5, 'Fill', '#4365B7', NULL),
+(17, 5, 'Darkest Stars & Bottom', '#7591CD', NULL),
+(18, 5, 'Blue Stars', '#AFD7E9', NULL),
+(19, 5, 'White Stars', '#FFFFFF', NULL),
+(20, 6, 'Turquoise Outline', '#64B0CA', NULL),
+(21, 6, 'Grayish Outline', '#C8DBB3', NULL),
+(22, 6, 'Fill', '#AFD7E9', NULL),
+(23, 6, 'Deep Blue Star', '#4365B7', NULL),
+(26, 7, 'Turquoise Outline', '#6D8EB2', NULL),
+(27, 7, 'Fill', '#99A4C4', NULL),
+(28, 7, 'Deep Blue Star', '#5861A3', NULL),
+(29, 8, 'Outline', '#64B0CA', NULL),
+(30, 8, 'Fill', '#AFD7E9', NULL),
+(31, 8, 'Blue Stars', '#7591CD', NULL),
+(32, 8, 'White Stars', '#FFFFFF', NULL),
 (33, 9, 'Light Outline', '#A1A4D7', 0),
-(34, 9, 'Light Fill', '#D2D5F1', 0),
-(35, 9, 'Dark Outline', '#30309A', 0),
-(36, 9, 'Dark Fill', '#3A39B3', 0),
-(37, 10, 'Outline', '#447DC0', 0),
-(38, 10, 'Fill', '#84C8F3', 0),
-(39, 10, 'Shadow Fill', '#7BBEEA', 0),
-(40, 11, 'Gradient Top', '#1E1C61', 0),
-(41, 11, 'Gradient Bottom', '#516CD2', 0),
-(42, 11, 'Dark Highlight', '#ABB0FF', 0),
-(43, 11, 'Light Highlight', '#D8E1FF', 0),
-(46, 12, 'Base Fill', '#FFCE00', 0),
-(47, 12, 'Base Shine', '#F4EF9C', 0),
-(48, 12, 'Glass', '#BDE7F4', 0),
-(49, 12, 'Sand', '#DFD47B', 0),
-(50, 12, 'Glass Shine', '#FFFFFF', 0);
+(34, 9, 'Light Fill', '#D2D5F1', 1),
+(35, 9, 'Dark Outline', '#30309A', 2),
+(36, 9, 'Dark Fill', '#3A39B3', 3),
+(37, 10, 'Outline', '#447DC0', NULL),
+(38, 10, 'Fill', '#84C8F3', NULL),
+(39, 10, 'Shadow Fill', '#7BBEEA', NULL),
+(40, 11, 'Gradient Top', '#1E1C61', NULL),
+(41, 11, 'Gradient Bottom', '#516CD2', NULL),
+(42, 11, 'Dark Highlight', '#ABB0FF', NULL),
+(43, 11, 'Light Highlight', '#D8E1FF', NULL),
+(46, 12, 'Base Fill', '#FFCE00', NULL),
+(47, 12, 'Base Shine', '#F4EF9C', NULL),
+(48, 12, 'Glass', '#BDE7F4', NULL),
+(49, 12, 'Sand', '#DFD47B', NULL),
+(50, 12, 'Glass Shine', '#FFFFFF', NULL);
 
 CREATE TABLE IF NOT EXISTS `ponies` (
   `id` int(11) NOT NULL,
@@ -118,14 +118,15 @@ INSERT INTO `tagged` (`tid`, `ponyid`) VALUES
 (1, 3),
 (7, 3),
 (12, 3),
-(19, 3);
+(19, 3),
+(21, 3);
 
 CREATE TABLE IF NOT EXISTS `tags` (
   `tid` int(11) NOT NULL,
   `name` varchar(25) NOT NULL,
   `title` tinytext NOT NULL,
   `type` enum('spec','gen','cat','app','ep') DEFAULT NULL
-) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8;
 
 INSERT INTO `tags` (`tid`, `name`, `title`, `type`) VALUES
 (1, 'unicorn', '', 'spec'),
@@ -147,7 +148,8 @@ INSERT INTO `tags` (`tid`, `name`, `title`, `type`) VALUES
 (17, 'pets', '', 'cat'),
 (18, 'amending fences', '', 'ep'),
 (19, 's1e1', '', 'ep'),
-(20, 's1e26', '', 'ep');
+(20, 's1e26', '', 'ep'),
+(21, 's5e12', '', 'ep');
 
 
 ALTER TABLE `colorgroups`
@@ -177,7 +179,7 @@ ALTER TABLE `colors`
 ALTER TABLE `ponies`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=4;
 ALTER TABLE `tags`
-  MODIFY `tid` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=21;
+  MODIFY `tid` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=22;
 
 ALTER TABLE `colorgroups`
   ADD CONSTRAINT `colorgroups_ibfk_1` FOREIGN KEY (`ponyid`) REFERENCES `ponies` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;

@@ -13,13 +13,13 @@
 
 		var title = opt.title,
 			$this = $(this).first(),
-			$input = $(document.createElement('input')).attr({
+			$input = $.mk('input').attr({
 				'type': 'file',
 				'name': opt.requestKey,
 				'accept': opt.accept,
 			});
 
-		if (opt.helper) var $helper = $(document.createElement('div')).addClass('helper');
+		if (opt.helper) var $helper = $.mk('div').addClass('helper');
 
 		$input.on('set-image',function(_, path){
 			$.Dialog.close(function(){

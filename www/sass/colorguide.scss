@@ -196,7 +196,22 @@ div.tags {
 	margin: 0 6px 6px 0;
 	vertical-align: top;
 }
-.twitter-typeahead .addtag { margin-right: 0 }
+.twitter-typeahead {
+	&.loading{
+		position:relative;
+
+		&:after {
+			content: "";
+			display: block;
+			position: absolute;
+			top: 5px;
+			right: 5px;
+
+			@include sprite-animation(16px, 16px, 12, 'indicator');
+		}
+	}
+	.addtag { margin-right: 0 }
+}
 .tag {
 	display: inline-block;
 	font-weight: bold;
@@ -310,13 +325,89 @@ ul.colors {
 	label {
 		flex: 1 1 auto;
 		margin: 2px;
+		position: relative;
+		overflow: hidden;
 
 		* { cursor: pointer }
 	}
 	input {
-		display: none;
+		position: absolute;
+		top: -20px;
+		left: -20px;
+		width: 0;
+		height: 0;
 
 		~ span { display: block }
 		&:not(:checked) ~ span { opacity: .5 }
+		&:focus ~ span { border-style: dashed }
+		&:not(:checked):focus ~ span { opacity: .75 }
+	}
+}
+
+#cg-editor {
+	overflow: hidden;
+
+	.clr {
+		display: flex;
+		flex-direction: row;
+		justify-content: flex-start;
+		z-index: 1;
+		position: relative;
+
+		&.moving {
+			z-index: 2;
+			box-shadow: 0 0 10px #000;
+			background: #fff;
+		}
+
+		.clrp {
+			flex: 0 0 auto;
+			display: block;
+			border: 1px solid #000;
+			height: 28px;
+			width: 28px;
+			box-sizing: border-box;
+			transition: background-color .2s linear, border .2s linear;
+
+			&.invalid {
+				background-color: transparent !important;
+				background: url(../img/transparency.svg) repeat;
+				background-size: 6px;
+				color:red;
+				border: 2px solid;
+				position: relative;
+
+				&:before {
+					content: "?";
+					position: absolute;
+					top: 0;
+					left: 0;
+					padding: 2px;
+					line-height: 20px;
+					font-size: 20px;
+					height: 20px;
+					width: 20px;
+					text-align: center;
+					font-weight: bold;
+				}
+			}
+		}
+		.clri, .clrl {
+			flex: 0 1 auto;
+			width: 100%;
+			background-image: none !important;
+		}
+		.clri {
+			max-width: 65px;
+			font-family: 'Source Code Pro Semibold', 'Consolas', monospace;
+		}
+		.clra {
+			margin-left: 3px;
+			flex: 1 0 auto;
+
+			> *, > *:before { line-height: 28px }
+			.remove { cursor: pointer }
+			.move { cursor: ns-resize }
+		}
 	}
 }

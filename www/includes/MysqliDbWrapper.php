@@ -3,6 +3,10 @@
 	require_once "MysqliDb.php";
 
 	class MysqliDbWrapper extends MysqliDb {
+		public function __construct($db, $host = DB_HOST, $user = DB_USER, $pass = DB_PASS){
+			parent::__construct($host,$user,$pass,$db);
+			return $this;
+		}
 		public function rawQuerySingle(...$args){
 			return $this->singleRow(parent::rawQuery(...$args));
 		}

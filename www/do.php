@@ -723,7 +723,7 @@
 			case "colorguide":
 				if (!PERM('inspector')) do404();
 
-				$CGDb = new MysqliDbWrapper(DB_HOST,DB_USER,DB_PASS,'mlpvc-colorguide');
+				$CGDb = new MysqliDbWrapper('mlpvc-colorguide');
 				include "includes/CGUtils.php";
 
 				$SpriteRelPath = '/img/cg/';
@@ -738,7 +738,8 @@
 						if (!preg_match('~'.TAG_NAME_PATTERN.'~u', $_GET['s']))
 							typeahead_results('[]');
 
-						$query = $_GET['s'];
+						$query = trim(strtolower($_GET['s']));
+						ep_tag_name_check($query);
 						$Tags = $CGDb
 							->where('name',"%$query%",'LIKE')
 							->orderBy('name')
@@ -788,9 +789,11 @@
 								if (!preg_match('~'.TAG_NAME_PATTERN.'~u',$tag_name))
 									respond('Invalid tag name');
 
+								ep_tag_name_check($tag_name);
+
 								$Tag = $CGDb->where('name', $tag_name)->getOne('tags');
 								if (empty($Tag))
-									respond('Tag does not exist');
+									respond("The tag $tag_name does not exist.<br>Would you like to create it?",0,array('cancreate' => $tag_name));
 
 								if ($CGDb->where('ponyid', $Pony['id'])->where('tid', $Tag['tid'])->has('tagged'))
 									respond('This appearance already has this tag');
@@ -858,11 +861,8 @@
 							if (!in_array($type, $TAG_TYPES))
 								respond("Invalid tag type: $type");
 							$epdata = array();
-							if ($type == 'ep'){
-								if (!preg_match('/^'.EPISODE_ID_PATTERN.'$/i', $data['name'], $epdata))
-									respond('Episode tags must be in the format of <strong>s##e##[-##]</strong> where # represents a number<br>Allowed seasons: 1-8, episodes: 1-26');
-								$data['name'] = 's'.intval($epdata[1], 10).'e'.intval($epdata[2], 10).(!empty($epdata[3])?intval($epdata[3], 10) : '');
-							}
+							if ($type == 'ep' && !ep_tag_name_check($data['name']))
+								respond('Episode tags must be in the format of <strong>s##e##[-##]</strong> where # represents a number<br>Allowed seasons: 1-8, episodes: 1-26');
 							$data['type'] = $type;
 						}
 
@@ -904,8 +904,7 @@
 
 						respond($data);
 					}
-					// TODO
-					else if (false && preg_match('~^([gs]et|make|del)cg(?:/(\d+))?$~', $data, $_match)){
+					else if (preg_match('~^([gs]et|make|del)cg(?:/(\d+))?$~', $data, $_match)){
 						$setting = $_match[1] === 'set';
 						$getting = $_match[1] === 'get';
 						$deleting = $_match[1] === 'del';
@@ -932,19 +931,85 @@
 						}
 						$data = array();
 
-						if (!empty($_POST['name'])){
-							$name = $_POST['name'];
-							$nl = strlen($name);
-							if ($nl < 2 || $nl > 255)
-								respond('The group name must be between 2 and 255 characters in length');
-								check_string_valid($name, 'Color group name', INVERSE_PRINTABLE_ASCII_REGEX);
-							$data['name'] = $name;
+						if (empty($_POST['label']))
+							respond('Please specify a group name');
+						$name = $_POST['label'];
+						$nl = strlen($name);
+						if ($nl < 2 || $nl > 30)
+							respond('The group name must be between 2 and 30 characters in length');
+						check_string_valid($name, "$Color group name", INVERSE_PRINTABLE_ASCII_REGEX);
+						$data['label'] = $name;
+
+						if ($new){
+							if (empty($_POST['ponyid']))
+								respond('Missing appearance ID');
+							$PonyID = intval($_POST['ponyid'], 10);
+							$Pony = $CGDb->where('id', $PonyID)->getOne('ponies');
+							if (empty($Pony))
+								respond('There\'s no appearance with the specified ID');
+							$data['ponyid'] = $PonyID;
 						}
 
-						if (!empty($_POST['colors'])){
-							$colors = array();
-							$recvColors = jcon_decode($_POST['colors'], true);
+						if (!$new) $CGDb->where('groupid', $Group['groupid'])->update('colorgroups', $data);
+						else {
+							$GroupID = $CGDb->insert('colorgroups', $data);
+							if (!$GroupID)
+								respond(ERR_DB_FAIL);
+							$Group = array('groupid' => $GroupID);
 						}
+
+						if (empty($_POST['Colors']))
+							respond("Missing list of {$color}s");
+						$recvColors = json_decode($_POST['Colors'], true);
+						if (empty($recvColors))
+							respond("Missing list of {$color}s");
+						$colorIDs = array();
+						$colors = array();
+						foreach ($recvColors as $i => $c){
+							$append = array('order' => $i);
+							$index = "(index: $i)";
+
+							if (!empty($c['colorid']) && is_numeric($c['colorid'])){
+								$append['colorid'] = intval($c['colorid'], 10);
+								$colorIDs[] = $append['colorid'];
+							}
+
+							if (empty($c['label']))
+								respond("You must specify a $color name $index");
+							$label = trim($c['label']);
+							$ll = strlen($label);
+							if ($ll < 3 || $ll > 30)
+								respond("The $color name must be between 3 and 30 characters in length $index");
+							check_string_valid($label, "$Color $index name", INVERSE_PRINTABLE_ASCII_REGEX);
+							$append['label'] = $label;
+
+							if (empty($c['hex']))
+								respond("You must specify a $color code $index");
+							$hex = trim($c['hex']);
+							if (!preg_match(HEX_COLOR_PATTERN, $hex, $_match))
+								respond("HEX $color is in an invalid format $index");
+							$append['hex'] = '#'.strtoupper($_match[1]);
+
+							$colors[] = $append;
+						}
+						if (!$new && !empty($colorIDs))
+							$CGDb->where('groupid', $Group['groupid'])->where('colorid NOT IN ('.implode(',', $colorIDs).')')->delete('colors');
+						$colorErrors = array();
+						foreach ($colors as $c){
+							if (isset($c['colorid']))
+								$CGDb->where('groupid', $Group['groupid'])->where('colorid', $c['colorid'])->update('colors',$c);
+							else {
+								$c['groupid'] = $Group['groupid'];
+								if (!$CGDb->insert('colors', $c))
+									$colorErrors[] = ERR_DB_FAIL;
+							}
+						}
+						if (!empty($colorErrors))
+							respond("There were some issues while saving your changes. Details:\n".implode("\n",$colorErrors));
+
+						if ($new) $response = array('cgs' => get_colors_html($Pony['id'], NOWRAP));
+						else $response = array('cg' => get_cg_html($Group['groupid'], NOWRAP));
+						respond($response);
 					}
 					else do404();
 				}
@@ -963,6 +1028,7 @@
 						'jquery.uploadzone',
 						'twitter-typeahead',
 						'handlebars-v3.0.3',
+						'draggabilly.pkgd',
 						"$do-manage"
 					));
 				loadPage($settings);

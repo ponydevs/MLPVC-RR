@@ -8,7 +8,7 @@ $(function(){
 		$roleBadge = $content.find('.avatar-wrap').children('.badge'),
 		$currRole = $name.next(),
 		currRole = $currRole.children('span').text(),
-		$RoleForm = $(document.createElement('form')).attr('id','rolemod').html('<select name=newrole required><optgroup label="Possible roles"></optgroup></select>'),
+		$RoleForm = $.mk('form').attr('id','rolemod').html('<select name=newrole required><optgroup label="Possible roles"></optgroup></select>'),
 		$OptGrp = $RoleForm.find('optgroup'),
 		$banToggle = $('#ban-toggle'),
 		$changeRole = $('#change-role');

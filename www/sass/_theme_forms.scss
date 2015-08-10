@@ -1,4 +1,4 @@
-input[type]:not([type=radio]):not([type=checkbox]):not([type=button]),
+input:not([type=radio]):not([type=checkbox]):not([type=button]),
 select,
 textarea {
 	border: 1px solid;
@@ -95,7 +95,7 @@ input[type=checkbox] {
 				> * { vertical-align: text-bottom }
 			}
 		}
-		input[type]:not([type=radio]):not([type=checkbox]):not([type=button]),
+		input:not([type=radio]):not([type=checkbox]):not([type=button]),
 		select,
 		textarea {
 			color: #313131;

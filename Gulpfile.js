@@ -63,7 +63,7 @@ gulp.task('sass', function() {
 	if (ready2go) Flutters.log(true);
 	gulp.src('www/sass/*.scss')
 		.pipe(plumber(function(err){
-			Flutters.error(err.messageFormatted);
+			Flutters.error(err.messageFormatted || err);
 			this.emit('end');
 		}))
 		.pipe(sourcemaps.init())
@@ -91,8 +91,10 @@ var Dashie = new Personality(
 gulp.task('js', function(){
     gulp.src(['www/js/*.js', '!www/js/*.min.js'])
 		.pipe(plumber(function(err){
-			if (err.fileName)
-				err = err.fileName.replace(workingDir,'')+'\n  line '+err.lineNumber+': '+err.message.replace(/^[\/\\]/,'').replace(err.fileName+': ','');
+			err =
+				err.fileName
+				? err.fileName.replace(workingDir,'')+'\n  line '+err.lineNumber+': '+err.message.replace(/^[\/\\]/,'').replace(err.fileName+': ','')
+				: err;
 			Dashie.error(err);
 			this.emit('end');
 		}))

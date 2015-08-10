@@ -14,7 +14,7 @@ $(function(){
 					var EntryID = parseInt($row.children().first().text());
 					$.post('/logs/details/'+EntryID, $.mkAjaxHandler(function(){
 						if (this.status){
-							var $dataDiv = $(document.createElement('div')).attr('class','expandable-section').css('display','none');
+							var $dataDiv = $.mk('div').attr('class','expandable-section').css('display','none');
 							$.each(this.details,function(i,el){
 								if (typeof el[1] === 'boolean')
 									el[1] = '<span class="color-'+(el[1]?'green':'red')+'">'+(el[1]?'yes':'no')+'</span>';
@@ -51,7 +51,7 @@ $(function(){
 				<b>Timestamp:</b> '+$td.children('time').html().trim().replace(/<br>/,' ')+'\
 				<span class="modal-ip"><br>\
 					<b>Initiator:</b> '+$ip[0]+'<br>\
-					<b>IP Address:</b> '+$(document.createElement('div')).html($ip[1]).text()+'\
+					<b>IP Address:</b> '+$.mk('div').html($ip[1]).text()+'\
 				</span>'
 			);
 		}

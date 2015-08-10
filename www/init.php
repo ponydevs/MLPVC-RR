@@ -2,7 +2,6 @@
 
 	include "conf.php";
 	// Global constants \\
-	define('RELPATH','/');
 	define('ABSPATH','http://'.$_SERVER['SERVER_NAME'].'/');
 	define('DROOT',$_SERVER['DOCUMENT_ROOT'].(preg_match('/\/$/',$_SERVER['DOCUMENT_ROOT'])?'':'/'));
 	define('APPATH',dirname(__FILE__).DIRECTORY_SEPARATOR);
@@ -12,7 +11,7 @@
 
 	// Imports \\
 	require 'includes/MysqliDbWrapper.php';
-	$Database = new MysqliDbWrapper(DB_HOST,DB_USER,DB_PASS,'mlpvc-rr');
+	$Database = new MysqliDbWrapper('mlpvc-rr');
 	require 'includes/Cookie.php';
 	require 'includes/Utils.php';
 	require 'includes/AuthCheck.php';

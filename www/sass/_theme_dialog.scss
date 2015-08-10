@@ -24,7 +24,7 @@ $ZIndexBase: 21000;
 		width: auto;
 		overflow: hidden;
 		border-radius: 5px;
-		background-color: rgba(white, .9);
+		background-color: white;
 		box-shadow: 0 0 20px rgba(black, .5);
 	}
 	#dialogContent {
@@ -57,7 +57,7 @@ html.dialog-open {
 	top: 40%;
 	left: 40%;
 	min-width: 150px;
-	z-index: $ZIndexBase+1px;
+	z-index: $ZIndexBase+1;
 
 	/* Colors */
 	.blue-bg     { background-color: $NBlue }
@@ -84,14 +84,14 @@ html.dialog-open {
 		> span {
 			~ select,
 			~ textarea,
-			~ input[type]:not([type=radio]):not([type=checkbox]):not([type=button]) {
+			~ input:not([type=radio]):not([type=checkbox]):not([type=button]) {
 				margin-top: 5px !important;
 				display: block;
 			}
 		}
 		> select,
 		> textarea,
-		> input[type]:not([type=radio]):not([type=checkbox]):not([type=button]) {
+		> input:not([type=radio]):not([type=checkbox]):not([type=button]) {
 			width: 100%;
 			box-sizing: border-box;
 		}
@@ -155,7 +155,6 @@ html.dialog-open {
 		opacity: .85;
 		border: 3px solid transparent;
 		box-sizing: border-box;
-		transition: border-color .2s ease-out, opacity .2s ease-out;
 
 		&[disabled] { cursor: not-allowed }
 		&:last-child { margin-right: 0 !important }

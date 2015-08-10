@@ -36,8 +36,8 @@ $(function(){
 	function UpcomingUpdate(ulContent){
 		var $uc = $('#upcoming');
 		if ($uc.length === 0 && !!ulContent){
-			$uc = $(document.createElement('section')).attr('id', 'upcoming').insertBefore($('#sidebar').children('.welcome, .login'));
-			$uc.append($(document.createElement('h2')).text('Upcoming episodes'),document.createElement('ul'));
+			$uc = $.mk('section').attr('id', 'upcoming').insertBefore($('#sidebar').children('.welcome, .login'));
+			$uc.append($.mk('h2').text('Upcoming episodes'),$.mk('ul'));
 		}
 
 		if (ulContent)
@@ -54,7 +54,7 @@ $(function(){
 		$pageTitle = $content.children('h1');
 
 	function EpisodeForm(id){
-		var $form = $(document.createElement('form')).attr('id', id).html(
+		var $form = $.mk('form').attr('id', id).html(
 			'<div class=input-group>'+
 				'<input type="number" min=1 max=8 name=season placeholder="Season #" required>'+
 				'<input type="number" min=1 max=26 name=episode placeholder="Episode #" required>'+
@@ -75,7 +75,7 @@ $(function(){
 				<p>If this is checked, only specify the episode number of the first part</p>\
 			</div>');
 
-			$(document.createElement('button')).text('Set time to '+time+' this Saturday').on('click',function(e){
+			$.mk('button').text('Set time to '+time+' this Saturday').on('click',function(e){
 				e.preventDefault();
 				$(this).parent().prev().children().first().val(date).next().val(time);
 			}).appendTo($form.children('.button-here'));

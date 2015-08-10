@@ -1,5 +1,5 @@
 (function ($, undefined) {
-	function $makeDiv(id){ return $(document.createElement('div')).attr('id', id) }
+	function $makeDiv(id){ return $.mk('div').attr('id', id) }
 	var $html = $('html'),
 		colors = {
 			fail: 'red',
@@ -92,19 +92,26 @@
 				}
 			},callback);
 		},
+		_storeFocus: function(){
+			if (typeof $.Dialog._focusedElement !== 'undefined' && $.Dialog._focusedElement instanceof jQuery)
+				return;
+			var $focus = $(':focus');
+			if ($focus.length > 0) $.Dialog._focusedElement = $focus.last();
+			else $.Dialog._focusedElement = undefined;
+		},
+		_restoreFocus: function(){
+			if (typeof $.Dialog._focusedElement !== 'undefined' && $.Dialog._focusedElement instanceof jQuery)
+				$.Dialog._focusedElement.focus();
+		},
+		_setFocus: function(){
+			var $inputs = $('#dialogContent').find('input,select,textarea').filter(':visible'),
+				$actions = $('#dialogButtons').children();
+			if ($inputs.length > 0) $inputs.first().focus();
+			else if ($actions.length > 0) $actions.first().focus();
+		},
 		display: function (type,title,content,buttons,params,callback) {
 			if (typeof type !== 'string' || typeof colors[type] === 'undefined') throw new TypeError('Invalid dialog type: '+typeof type);
-			
-			function setFocus(){
-				var $focus = $(':focus');
-				if ($focus.length > 0) window._focusedElement = $focus.last();
-				else window._focusedElement = undefined;
-				var $inputs = $('#dialogContent').find('input,select,textarea').filter(':visible'),
-					$actions = $('#dialogButtons').children();
-				if ($inputs.length > 0) $inputs.first().focus();
-				else if ($actions.length > 0) $actions.first().focus();
-			}
-			
+
 			function run(append){
 				var $contentAdd = $makeDiv().addClass(params.color);
 				if (append){
@@ -126,34 +133,34 @@
 					$dialogButtons.empty();
 				}
 				else {
+					$.Dialog._storeFocus();
+
 					$dialogOverlay = $makeDiv('dialogOverlay');
 					$dialogHeader = $makeDiv('dialogHeader').text(params.title||defaultTitles[type]);
 					$dialogContent = $makeDiv('dialogContent');
 					$dialogBox = $makeDiv('dialogBox');
 
 					$dialogContent.append($contentAdd.html(params.content));
-					$dialogBox.append($dialogHeader).append($dialogContent);
 					$dialogButtons = $makeDiv('dialogButtons').appendTo($dialogContent);
-					$dialogOverlay.css('opacity',0).appendTo(document.body);
-					$dialogBox.appendTo($dialogOverlay);
-					$dialogOverlay.css('opacity',1);
+					$dialogBox.append($dialogHeader).append($dialogContent);
+					$dialogOverlay.append($dialogBox).appendTo(document.body);
 
-					setFocus();
 					$html.addClass('dialog-open');
 				}
 				
 				$dialogHeader.attr('class',params.color+'-bg');
-				
+
+				var $form = false;
 				if (params.buttons) $.each(params.buttons, function (name, obj) {
-					var $button = $(document.createElement('input')).attr('type','button');
+					var $button = $.mk('input').attr('type','button');
 					$button.attr('class',params.color+'-bg');
 					if (obj.form){
-						var $form = $('#'+obj.form);
+						$form = $('#'+obj.form);
 						if ($form.length == 1){
-							$button.click(function(){
+							$button.on('click', function(){
 								$form.find('input[type=submit]').trigger('click');
 							});
-							$form.prepend($(document.createElement('input')).attr('type','submit').hide());
+							$form.prepend($.mk('input').attr('type','submit').hide());
 						}
 					}
 					$button.val(name).on('keydown', function (e) {
@@ -162,21 +169,23 @@
 							
 							$button.trigger('click');
 						}
-						else if (e.keyCode === 9){
+						else if ([9, 37, 39].indexOf(e.keyCode) !== -1){
 							e.preventDefault();
 							
 							var $dBc = $dialogButtons.children(),
 								$focused = $dBc.filter(':focus'),
 								$inputs = $dialogContent.find(':input');
+
+							if (e.keyCode === 37) e.shiftKey = true;
 								
 							if ($focused.length){
 								if (!e.shiftKey){
 									if ($focused.next().length) $focused.next().focus();
-									else $inputs.add($dBc).first().focus();
+									else if (e.keyCode === 9) $inputs.add($dBc).filter(':visible').first().focus();
 								}
 								else {
 									if ($focused.prev().length) $focused.prev().focus();
-									else ($inputs.length > 0 ? $inputs : $dBc).last().focus();
+									else if (e.keyCode === 9) ($inputs.length > 0 ? $inputs : $dBc).filter(':visible').last().focus();
 								}
 							}
 							else $inputs.add($dBc)[!e.shiftKey ? 'first' : 'last']().focus();
@@ -192,10 +201,9 @@
 				});
 
 				$.Dialog.center();
+				$.Dialog._setFocus();
 
-				setFocus();
-
-				if (typeof callback === 'function') callback();
+				if (typeof callback === 'function') callback($form);
 			}
 			
 			if (typeof buttons == "function" && typeof params == "undefined" && typeof callback == 'undefined')
@@ -226,7 +234,7 @@
 
 			$dialogOverlay.remove();
 			$.Dialog.open = void(0);
-			if (window._focusedElement instanceof jQuery) window._focusedElement.focus();
+			$.Dialog._restoreFocus();
 			if (typeof callback == 'function') callback();
 
 			$html.removeClass('dialog-open');
@@ -235,7 +243,7 @@
 			if (typeof $.Dialog.open === 'undefined') return;
 
 			var overlay = {w: $dialogOverlay.width(), h: $dialogOverlay.height()},
-				dialog = {w: $dialogBox.outerWidth(), h: $dialogBox.outerHeight()};
+				dialog = {w: $dialogBox.outerWidth(true), h: $dialogBox.outerHeight(true)};
 			$dialogBox.css("top", Math.max((overlay.h - dialog.h) / 2, 0));
 			$dialogBox.css("left", Math.max((overlay.w - dialog.w) / 2, 0));
 		}

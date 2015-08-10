@@ -1,17 +1,17 @@
 /* Context menu plugin | by @DJDavid98 | for gh:ponydevs/MLPVC-RR | utilizes: http://stackoverflow.com/a/30255040/1344955 */
 (function($){
-	var $ctxmenu = $(document.createElement('div')).attr('id', 'ctxmenu');
+	var $ctxmenu = $.mk('div').attr('id', 'ctxmenu');
 	$ctxmenu
 		.appendTo(document.body)
 		.on('click',function(e){ e.stopPropagation() })
-		.on('contextmenu', function(e){ $ctxmenu.hide(); return false });
+		.on('contextmenu', function(){ $ctxmenu.hide(); return false });
 	$.ctxmenu = {};
 
 	function setTitle($el, title){
 		if (typeof title === 'function')
 			title = title($el);
 		if (!($el.data('ctxmenu-items') instanceof jQuery))
-			$el.data('ctxmenu-items', (new jQuery()).add($(document.createElement('li')).text(title || 'Context menu')));
+			$el.data('ctxmenu-items', (new jQuery()).add($.mk('li').text(title || 'Context menu')));
 		else if (title) $el.data('ctxmenu-items').children().first().text(title);
 
 		return $el;
@@ -23,10 +23,10 @@
 	function addToItems(item, $el){
 		if (!item) return;
 
-		var $item = $(document.createElement('li'));
+		var $item = $.mk('li');
 		if (item === true) $item.addClass('sep');
 		else {
-			var $action = $(document.createElement('a'));
+			var $action = $.mk('a');
 			if (item.text) $action.text(item.text);
 			if (item.icon) $action.addClass('typcn typcn-'+item.icon);
 			if (item.default === true) $action.addClass('default');
