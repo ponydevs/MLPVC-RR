@@ -345,7 +345,7 @@ header {
 		}
 	}
 }
-#content, #dialogContent {
+#content, #dialogContent, .notice {
 	a:not(.btn) { @include link }
 }
 #sidebar {
@@ -587,10 +587,8 @@ footer {
 
 	&:not(:last-child) { margin-bottom: 10px }
 	&.info {
-		&, a {
-			color: $NBlue;
-			background-color: $NBlueBG;
-		}
+		color: $NBlue;
+		background-color: $NBlueBG;
 
 		button, .btn {
 			color: $NBlueBG;
@@ -598,10 +596,8 @@ footer {
 		}
 	}
 	&.success {
-		&, a {
-			color: $NGreen;
-			background-color: $NGreenBG;
-		}
+		color: $NGreen;
+		background-color: $NGreenBG;
 
 		button, .btn {
 			color: $NGreenBG;
@@ -609,10 +605,8 @@ footer {
 		}
 	}
 	&.fail {
-		&, a {
-			color: $NRed;
-			background-color: $NRedBG;
-		}
+		color: $NRed;
+		background-color: $NRedBG;
 
 		button, .btn {
 			color: $NRedBG;
@@ -620,10 +614,8 @@ footer {
 		}
 	}
 	&.warn {
-		&, a {
-			color: $NOrange;
-			background-color: $NOrangeBG;
-		}
+		color: $NOrange;
+		background-color: $NOrangeBG;
 
 		button, .btn {
 			color: $NOrangeBG;
@@ -631,10 +623,8 @@ footer {
 		}
 	}
 	&.caution {
-		&, a {
-			color: $NYellow;
-			background-color: $NYellowBG;
-		}
+		color: $NYellow;
+		background-color: $NYellowBG;
 
 		button, .btn {
 			color: $NYellowBG;
@@ -655,8 +645,6 @@ footer {
 		&:not(:last-child) {
 			margin-bottom: 5px;
 		}
-
-		a { font-weight: bold }
 	}
 }
 
