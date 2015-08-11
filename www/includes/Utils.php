@@ -438,7 +438,7 @@ HTML;
 
 	// Time Constants \\
 	define('EIGHTY_YEARS',2524556160);
-	define('THREE_YEARS',94608000);
+	define('ONE_YEAR',31536000);
 	define('THIRTY_DAYS',2592000);
 	define('ONE_HOUR',3600);
 
@@ -554,7 +554,7 @@ HTML;
 	// Redirection URI shortcut \\
 	function oauth_redirect_uri($state = true){
 		global $do, $data;
-		if ($do === 'index' && empty($data)) $returnURL = RELPATH;
+		if ($do === 'index' && empty($data)) $returnURL = '/';
 		else $returnURL = rtrim("/$do/$data",'/');
 		return '&redirect_uri='.urlencode(ABSPATH."da-auth").($state?'&state='.urlencode($returnURL):'');
 	}
@@ -689,7 +689,7 @@ HTML;
 		if ($type === 'refresh_token') $Database->where('refresh', $code)->update('sessions',$AuthData);
 		else $Database->insert('sessions', array_merge($AuthData, array('user' => $UserID)));
 
-		Cookie::set('access',$AuthData['access'],THREE_YEARS);
+		Cookie::set('access',$AuthData['access'],ONE_YEAR);
 	}
 
 	/**

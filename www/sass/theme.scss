@@ -361,10 +361,8 @@ header {
 			margin: 0;
 		}
 
+		.buttons > * { margin: 0 }
 		&.welcome {
-			.buttons > * {
-				margin: 0;
-			}
 			.links {
 				list-style: none;
 				border-radius: 5px;
@@ -589,8 +587,10 @@ footer {
 
 	&:not(:last-child) { margin-bottom: 10px }
 	&.info {
-		color: $NBlue;
-		background-color: $NBlueBG;
+		&, a {
+			color: $NBlue;
+			background-color: $NBlueBG;
+		}
 
 		button, .btn {
 			color: $NBlueBG;
@@ -598,8 +598,10 @@ footer {
 		}
 	}
 	&.success {
-		color: $NGreen;
-		background-color: $NGreenBG;
+		&, a {
+			color: $NGreen;
+			background-color: $NGreenBG;
+		}
 
 		button, .btn {
 			color: $NGreenBG;
@@ -607,8 +609,10 @@ footer {
 		}
 	}
 	&.fail {
-		color: $NRed;
-		background-color: $NRedBG;
+		&, a {
+			color: $NRed;
+			background-color: $NRedBG;
+		}
 
 		button, .btn {
 			color: $NRedBG;
@@ -616,8 +620,10 @@ footer {
 		}
 	}
 	&.warn {
-		color: $NOrange;
-		background-color: $NOrangeBG;
+		&, a {
+			color: $NOrange;
+			background-color: $NOrangeBG;
+		}
 
 		button, .btn {
 			color: $NOrangeBG;
@@ -625,8 +631,10 @@ footer {
 		}
 	}
 	&.caution {
-		color: $NYellow;
-		background-color: $NYellowBG;
+		&, a {
+			color: $NYellow;
+			background-color: $NYellowBG;
+		}
 
 		button, .btn {
 			color: $NYellowBG;
@@ -647,6 +655,8 @@ footer {
 		&:not(:last-child) {
 			margin-bottom: 5px;
 		}
+
+		a { font-weight: bold }
 	}
 }
 
