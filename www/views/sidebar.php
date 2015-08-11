@@ -18,8 +18,9 @@
 <?  } else { ?>
 		<div class="notice info">
 			<p>Please sign in with your DeviantArt account to gain access to the site's features.</p>
-			<a class="btn typcn typcn-link" rel=nofollow href="https://www.deviantart.com/oauth2/authorize?response_type=code&scope=user+browse&client_id=<?=DA_CLIENT.oauth_redirect_uri()?>">Sign In with DeviantArt</a>
+			<button class="typcn typcn-link" id="signin">Sign In with DeviantArt</button>
 		</div>
+		<script>var OAUTH_URL = "https://www.deviantart.com/oauth2/authorize?response_type=code&scope=user+browse&client_id=<?=DA_CLIENT.oauth_redirect_uri()?>";</script>
 <?php } ?>
 	</section>
 	<section class=quote>
