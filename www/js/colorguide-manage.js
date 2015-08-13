@@ -514,10 +514,11 @@ $(function(){
 							$('#p'+ponyID).find('.addtag').focus();
 						}
 						else if (typeof this.cancreate === 'string'){
-							title = title.replace(tag_name, this.cancreate);
+							var new_name = this.cancreate;
+							title = title.replace(tag_name, new_name);
 							$.Dialog.confirm(title, this.message, function(sure){
 								if (!sure) return;
-								createNewTag($input, this.cancreate);
+								createNewTag($input, new_name);
 							});
 						}
 						else $.Dialog.fail(title, this.message);

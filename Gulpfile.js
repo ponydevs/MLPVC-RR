@@ -46,7 +46,8 @@ function Personality(prompt, onerror){
 		return onerror[Math.floor(Math.random()*onerror.length)];
 	};
 	this.error = function(message){
-		console.error((onerror?$p+getErrorMessage()+'\n':'')+$p+(message.trim()));
+		if (typeof message === 'string') message = message.trim();
+		console.error((onerror?$p+getErrorMessage()+'\n':'')+$p+message);
 	};
 	return this;
 }
@@ -63,6 +64,7 @@ gulp.task('sass', function() {
 	if (ready2go) Flutters.log(true);
 	gulp.src('www/sass/*.scss')
 		.pipe(plumber(function(err){
+			console.log(err);
 			Flutters.error(err.messageFormatted || err);
 			this.emit('end');
 		}))
