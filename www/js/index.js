@@ -239,8 +239,8 @@ $(function(){
 		});
 	}
 
-	function formBind(){
-		var $form = this instanceof jQuery ? this : $(this),
+	$.fn.formBind = function (){
+		var $form = $(this),
 			$formImgCheck = $form.find('.check-img'),
 			$formImgPreview = $form.find('.img-preview'),
 			$formDescInput = $form.find('[name=label]'),
@@ -398,24 +398,22 @@ $(function(){
 			$formImgInput.removeData('prev-url');
 			$(this).hide();
 		});
-	}
+	};
 	function updateSection(type, SEASON, EPISODE){
 		var Type = type.charAt(0).toUpperCase()+type.substring(1), dis = this;
 		$.Dialog.wait(Type, 'Updating list');
 		$.post('/episode/'+type.replace(/([^s])$/,'$1s')+'/S'+SEASON+'E'+EPISODE,$.mkAjaxHandler(function(){
 			if (this.status){
-				var $render = $(this.render);
-
-				formBind.call($('#'+type.replace(/([^s])$/,'$1s')).html($render.filter('section').html()).rebindHandlers().find('.post-form').data('type',type));
+				var $section = $('#'+type.replace(/([^s])$/,'$1s')),
+					$newChilds = $(this.render).filter('section').children();
+				$section.empty().append($newChilds).rebindHandlers();
+				$section.find('.post-form').data('type',type).formBind();
 				window.updateTimesF();
-				console.log(dis);
 				if (typeof dis === 'object' && typeof dis.callback == 'function') dis.callback();
 				else $.Dialog.close();
 			}
 			else window.location.reload();
 		}));
 	}
-	$('.post-form').each(function(){
-		formBind.call(this);
-	});
+	$('.post-form').each($.fn.formBind);
 });

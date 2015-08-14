@@ -10,7 +10,7 @@ CREATE DATABASE IF NOT EXISTS `mlpvc-rr` DEFAULT CHARACTER SET utf8 COLLATE utf8
 USE `mlpvc-rr`;
 
 CREATE TABLE IF NOT EXISTS `deviation_cache` (
-  `provider` set('fav.me','sta.sh') NOT NULL DEFAULT 'fav.me',
+  `provider` enum('fav.me','sta.sh') NOT NULL DEFAULT 'fav.me',
   `id` varchar(20) NOT NULL,
   `title` tinytext NOT NULL,
   `preview` tinytext NOT NULL,
