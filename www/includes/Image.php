@@ -46,11 +46,6 @@
 			}
 			throw new Exception('Unsupported provider. Try uploading your image to <a href=http://sta.sh target=_blank>sta.sh</a>');
 		}
-		private function addProtcol($url){
-			if (!preg_match('/^https?:/', $url))
-				$url = "http:$url";
-			return $url;
-		}
 		private function get_direct_url($id){
 			switch ($this->provider){
 				case 'imgur':
@@ -67,8 +62,8 @@
 					if (!$Data['is_rendered'])
 						throw new Exception('The image was found but it hasn\'t been rendered yet. Please wait for it to render and try again shortly.');
 
-					$this->fullsize = $this->addProtcol($Data['representations']['full']);
-					$this->preview = $this->addProtcol($Data['representations']['small']);
+					$this->fullsize = $Data['representations']['full'];
+					$this->preview = $Data['representations']['small'];
 				break;
 				case 'puush':
 					$path = "http://puu.sh/{$id}";

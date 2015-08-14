@@ -249,6 +249,10 @@ ul.colors {
 	white-space: initial !important;
 	margin: 0;
 
+	&:empty:before {
+		content: "There are no " attr(data-color) " groups for this appearance, add one by right-clicking here";
+	}
+
 	> li {
 		display: inline-block;
 		border: 1px solid rgba(black, .2);
@@ -372,7 +376,7 @@ ul.colors {
 			&.invalid {
 				background-color: transparent !important;
 				background: url(../img/transparency.svg) repeat;
-				background-size: 6px;
+				background-size: 12px;
 				color:red;
 				border: 2px solid;
 				position: relative;

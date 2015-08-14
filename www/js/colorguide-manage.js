@@ -62,9 +62,30 @@ $(function(){
 		});
 	});
 
-	var $list = $('#list');
+	var $list = $('#list'),
+		ENABLE = true,
+		DISABLE = false;
+	$list.children().on('edit-mode',function(e, action){
+		var $li = $(this),
+			ponyID = $li.attr('id').substring(1);
+
+		if (action === DISABLE){
+
+		}
+		else if (action === ENABLE){
+			var title = 'Editing appearance #'+ponyID;
+
+			$.post('/get/'+ponyID,$.mkAjaxHandler(function(){
+				if (this.status){
+
+				}
+				else $.Dialog.fail(title, this.message);
+			}));
+		}
+		else console.warn('Invalid edit-mode action', action);
+	});
 	$list.find('button.edit').on('click',function(){
-		$.Dialog.info('Edit mode triggered', 'yay');
+		$this.parents('li').trigger('edit-mode', [ENABLE]);
 	}).next().on('click',function(){
 		var $this = $(this),
 			$li = $this.closest('li'),
@@ -109,7 +130,14 @@ $(function(){
 		.append($.mk('label').append('<span>Tag description (max 255 chars., optional)</span><br><textarea name=title maxlength=255></textarea>'))
 		.append($.mk('div').attr('class','notice').hide().html('<p></p>'));
 
-	var $tags = $('.tags');
+	var $tags = $('.tags').ctxmenu(
+		[
+			{text: 'Create new tag', icon: 'plus', click: function(){
+				createNewTag($(this));
+			}},
+		],
+		'Tags'
+	);
 	function reorder($this){
 		$this.children().sort(function(a, b){
 			var regex = /^.*typ-([a-z]+).*$/;
@@ -297,8 +325,13 @@ $(function(){
 	});
 
 	function CGEditorMaker(title, $group){
-		var dis = this,
-			groupID = $group.attr('id').substring(2);
+		var dis = this;
+		if (typeof $group !== 'undefined'){
+			console.log($group);
+			var groupID = $group.attr('id').substring(2),
+				ponyID = $group.parents('li').attr('id').substring(1);
+			console.log(groupID, ponyID);
+		}
 		$.Dialog.request(title,$cgEditor.clone(true, true),'cg-editor','Save',function($form){
 			var $ErrorNotice = $form.children('.notice').children('p'),
 				handleError = function(){
@@ -308,6 +341,7 @@ $(function(){
 				},
 				$label = $form.find('input[name=label]'),
 				editing = typeof dis === 'object' && dis.label && dis.Colors;
+
 			if (editing){
 				$label.val(dis.label);
 				$form.trigger('render-color-inputs',[dis.Colors]);
@@ -316,7 +350,7 @@ $(function(){
 				e.preventDefault();
 
 				var data = { label: $label.val(), Colors: [] };
-				if (!editing) data.ponyid = dis.ponyid;
+				if (!editing) data.ponyid = ponyID;
 				$form.find('.clr').each(function(){
 					var $row = $(this),
 						$ci = $row.children('.clri');
@@ -360,7 +394,7 @@ $(function(){
 	}
 
 	function ctxmenus(){
-		$tags.children(':not(.ctxmenu-bound)').ctxmenu([
+		$tags.children('span:not(.ctxmenu-bound)').ctxmenu([
 			{text: 'Edit tag', icon: 'pencil', click: function(){
 				var $tag = $(this),
 					tagName = $tag.text().trim(),
@@ -466,7 +500,7 @@ $(function(){
 			}},
 			true,
 			{text: 'Create new tag', icon: 'plus', click: function(){
-				createNewTag($(this));
+				$.ctxmenu.triggerItem($(this).parent(), 1);
 			}},
 		], function($el){ return 'Tag: '+$el.text().trim() });
 
@@ -481,8 +515,6 @@ $(function(){
 		$tags.children('.addtag').each(function(){
 			var $input = $(this),
 				ponyID = $input.parents('li').attr('id').substring(1);
-			$input.data('ctxmenu-items', $input.data('ctxmenu-items').filter(':first, :last'));
-			$input.data('ctxmenu-items').first().text('Tags');
 			$input.typeahead(null, {
 				name: 'tags',
 				display: 'name',
@@ -534,8 +566,15 @@ $(function(){
 			});
 		});
 
-		$colorGroups = $('ul.colors:not(.static)').children('li');
-		$colorGroups.filter(':not(.ctxmenu-bound)').ctxmenu(
+		$colorGroups = $('ul.colors:not(.static)');
+		$colorGroups.attr('data-color', color).ctxmenu(
+			[
+				{text: "Create new group", icon: 'folder-add', click: function(){
+					CGEditorMaker('Create color group');
+				}},
+			],
+			Color+' groups'
+		).children('li').filter(':not(.ctxmenu-bound)').ctxmenu(
 			[
 				{text: "Edit "+color+" group", icon: 'pencil', click: function(){
 					var $this = $(this),
@@ -548,7 +587,7 @@ $(function(){
 
 					$.post('/colorguide/getcg/'+groupID,$.mkAjaxHandler(function(){
 						try {
-							if (this.status) CGEditorMaker.call(this, title, $group);
+							if (this.status) CGEditorMaker.call(this, title, $group.attr('id', 'cg'+groupID));
 							else throw new Error(this.message);
 						}
 						catch(e){ handleError.call(e.message) }
@@ -574,10 +613,9 @@ $(function(){
 						}));
 					});
 				}},
+				true,
 				{text: "Create new group", icon: 'folder-add', click: function(){
-					var $group = $(this).closest('li'),
-						ponyID = $group.parents('li').attr('id').substring(1);
-					CGEditorMaker.call({ponyid:ponyID},'Create color group', $group);
+					$.ctxmenu.triggerItem($(this).parent(), 1);
 				}},
 			],
 			function($el){ return Color+' group: '+$el.children().first().text().trim().replace(':','') }
@@ -603,7 +641,8 @@ $(function(){
 			{text: "Delete "+color+" group", icon: 'trash', click: function(){
 				$.ctxmenu.triggerItem($(this).parent(), 2);
 			}},
-			{text: "Add new group", icon: 'folder-add', click: function(){
+			true,
+			{text: "Create new group", icon: 'folder-add', click: function(){
 				$.ctxmenu.triggerItem($(this).parent(), 3);
 			}}
 		);

@@ -747,7 +747,7 @@
 
 						typeahead_results(empty($Tags) ? '[]' : $Tags);
 					}
-					else if (preg_match('~^(rename|delete|setsprite|tag|untag)/(\d+)$~', $data, $_match)){
+					else if (preg_match('~^(rename|delete|[gs]et(?:sprite)?|tag|untag)/(\d+)$~', $data, $_match)){
 						$PonyID = intval($_match[2], 10);
 
 						$Pony = $CGDb->where('id', $PonyID)->getOne('ponies');
@@ -756,6 +756,12 @@
 
 						$update = array();
 						switch ($_match[1]) {
+							case "get":
+								respond(array(
+									'label' => $Pony['label'],
+									'notes' => $Pony['notes'],
+								));
+							break;
 							case "rename":
 								$newname = isset($_POST['newname']) ? trim($_POST['newname']) : null;
 								$nnl = !empty($newname) ? strlen($newname) : null;
@@ -776,10 +782,12 @@
 
 								respond(true);
 							break;
+							case "getsprite":
 							case "setsprite":
 								$fname = $Pony['id'].'.png';
 								$finalpath = $SpritePath.$fname;
-								process_uploaded_image('sprite',$finalpath,array('image/png'),100);
+								if ($_match[1] === 'setsprite')
+									process_uploaded_image('sprite',$finalpath,array('image/png'),100);
 								respond(array("path" => "$SpriteRelPath$fname?".filemtime($finalpath)));
 							break;
 							case "tag":

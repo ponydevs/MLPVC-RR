@@ -39,7 +39,6 @@
 	<section class=admin>
 		<h2>Administration area</h2>
 		<p class=align-center>
-			<button id=export class="typcn typcn-export large darkblue">Export posts in journal format</button>
 			<button id=video class="typcn typcn-video large darkblue">Set video links</button>
 		</p>
 	</section>

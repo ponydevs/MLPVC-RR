@@ -7,20 +7,6 @@ $(function(){
 		EPISODE = window.EPISODE,
 		idstr = 'S'+SEASON+'E'+EPISODE;
 
-	$('#export').on('click',function(){
-		var title = 'Exporting posts';
-
-		$.post('/episode/export/'+idstr,$.mkAjaxHandler(function(){
-			if (this.status) $.Dialog.info(title,'<p>Here\'s the code you need to paste into the journal while in<br><em>HTML editing mode</em>, replacing what was there previously.</p><textarea style="display:block;margin:0 auto;resize:none;width:90%"></textarea>',function(){
-				$('#dialogContent').find('textarea')
-					.val(this.export)
-					.focus(function(){ $(this).select() }).focus()
-					.mouseup(function(){ return false });
-			});
-			else $.Dialog.fail(title,this.message);
-		}));
-	});
-
 	$('#video').on('click',function(){
 		$.post('/episode/getvideos/'+idstr,$.mkAjaxHandler(function(){
 			var title = 'Video links';

@@ -650,7 +650,7 @@ HTML;
 		$UserID = strtolower($userdata['userid']);
 		$UserData = array(
 			'name' => $userdata['username'],
-			'avatar_url' => $userdata['usericon'],
+			'avatar_url' => preg_replace('/^https?:/','',$userdata['usericon']),
 		);
 		$AuthData = array(
 			'access' => $json['access_token'],
@@ -1639,74 +1639,6 @@ HTML;
 				"<div class=meta><span class=title>{$ep['title']}</span>$time</div></li>";
 		}
 		return $HTML;
-	}
-
-	// Exporting all posts \\
-	function export_posts($req, $res){
-		global $REQUEST_TYPES;
-
-		$res = reservations_render($res, RETURN_ARRANGED);
-		$req = requests_render($req, RETURN_ARRANGED);
-		$nada = 'None yet';
-
-		$nameCache = array();
-
-		$Export = "<h1>List of Reservations</h1>\n\n";
-		if (empty($res['unfinished'])) $Export .= "\n$nada";
-		else foreach ($res['unfinished'] as $r){
-			if (empty($nameCache[$r['reserved_by']])){
-				$u = get_user($r['reserved_by'],'id','name');
-				$nameCache[$r['reserved_by']] = $u['name'];
-			}
-			$username = $nameCache[$r['reserved_by']];
-			$Export .= "<div class=\"res-box\"> <a href=\"{$r['fullsize']}\"><img src=\"{$r['fullsize']}\"></a> by :icon$username: :dev$username:";
-			if (!empty($r['label'])) $Export .= " - {$r['label']}";
-			$Export .= "</div>\n";
-		}
-		$Export .= "\n\n<h1>Finished Reservations</h1>\n\n";
-		if (empty($res['finished'])) $Export .= "\n$nada";
-		else foreach ($res['finished'] as $r){
-			if (empty($nameCache[$r['reserved_by']])){
-				$u = get_user($r['reserved_by'],'id','name');
-				$nameCache[$r['reserved_by']] = $u['name'];
-			}
-			$username = $nameCache[$r['reserved_by']];
-
-			$thumbID = intval(substr($r['deviation_id'],1), 36);
-
-			$Export .= "<div class=\"res-box\"> :thumb$thumbID: by :icon$username: :dev$username:</div>\n";
-		}
-		$Export .= "\n\n<h1>List of Requests</h1>";
-		foreach ($req['unfinished'] as $g => $reqs){
-			$Export .= "\n\n\n<h2>{$REQUEST_TYPES[$g]}:</h2>\n";
-			if (empty($reqs)) $Export .= $nada;
-			else foreach ($reqs as $r){
-				$username = false;
-				if (!empty($r['reserved_by'])){
-					if (empty($nameCache[$r['reserved_by']])){
-						$u = get_user($r['reserved_by'],'id','name');
-						$nameCache[$r['reserved_by']] = $u['name'];
-					}
-					$username = $nameCache[$r['reserved_by']];
-				}
-				$Export .= "<div class=\"res-box\"> <a href=\"{$r['fullsize']}\"><img src=\"{$r['fullsize']}\"></a> - {$r['label']}".
-					(!empty($username)?" <b>reserved by :icon$username: :dev$username:</b>":'')."</div>\n";
-			}
-		}
-		$Export .= "\n\n<h1>Finished Requests</h1>\n\n";
-		if (empty($req['finished'])) $Export .= "\n$nada";
-		else foreach ($req['finished'] as $r){
-			if (empty($nameCache[$r['reserved_by']])){
-				$u = get_user($r['reserved_by'],'id','name');
-				$nameCache[$r['reserved_by']] = $u['name'];
-			}
-			$username = $nameCache[$r['reserved_by']];
-
-			$thumbID = intval(substr($r['deviation_id'],1), 36);
-
-			$Export .= "<div class=\"res-box\"> :thumb$thumbID: by :icon$username: :dev$username:</div>\n";
-		}
-		return rtrim($Export);
 	}
 
 	/**
