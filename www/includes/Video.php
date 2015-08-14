@@ -47,6 +47,6 @@
 				break;
 			}
 
-			return $urlOnly ? $url : "<iframe async defer allowfullscreen src='$url' class='typcn typcn-video'></iframe>";
+			return $urlOnly ? $url : "<iframe async defer allowfullscreen src='$url'></iframe>";
 		}
 	}

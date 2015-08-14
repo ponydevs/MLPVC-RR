@@ -93,15 +93,10 @@ $(function(){
 			var $form = $('#addep');
 			$form.on('submit',function(e){
 				e.preventDefault();
-				var data = {},
-					$airdate = $form.find('input[name=airdate]'),
-					$airtime = $form.find('input[name=airtime]');
-
-				data.airs = mkDate($airdate.attr('disabled',true).val(), $airtime.attr('disabled',true).val()).toISOString();
-				var tempdata = $(this).serializeArray();
-				$.each(tempdata,function(i,el){
-					data[el.name] = el.value;
-				});
+				var airdate = $form.find('input[name=airdate]').attr('disabled',true).val(),
+					airtime = $form.find('input[name=airtime]').attr('disabled',true).val(),
+					airs = mkDate(airdate, airtime).toISOString(),
+					data = $(this).mkData({airs:airs});
 
 				$.Dialog.wait(title,'Adding episode to database');
 
@@ -162,15 +157,11 @@ $(function(){
 						$('#editep').on('submit',function(e){
 							e.preventDefault();
 
-							var tempdata = $(this).serializeArray(), data = {};
-							$.each(tempdata,function(i,el){
-								this[el.name] = el.value;
-							});
-
-							var d = mkDate(this.airdate, this.airtime);
-							delete this.airdate;
-							delete this.airtime;
-							this.airs = d.toISOString();
+							var data = $(this).mkData(),
+								d = mkDate(data.airdate, data.airtime);
+							delete data.airdate;
+							delete data.airtime;
+							data.airs = d.toISOString();
 
 							$.Dialog.wait(title,'Saving edits');
 

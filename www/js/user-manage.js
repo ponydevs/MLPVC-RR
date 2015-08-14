@@ -23,14 +23,9 @@ $(function(){
 			$('#rolemod').on('submit',function(e){
 				e.preventDefault();
 
-				var tempdata = $(this).serializeArray(), data = {};
-				$.each(tempdata,function(i,el){
-					data[el.name] = el.value;
-				});
-
 				$.Dialog.wait(title,'Moving user to the new group');
 
-				$.post("newgroup/"+name, data, function(data){
+				$.post("newgroup/"+name, $(this).mkData(), function(data){
 					if (typeof data !== 'object') return console.log(data) && $w.trigger('ajaxerror');
 
 					if (data.status){
@@ -70,14 +65,9 @@ $(function(){
 				$form.on('submit',function(e){
 					e.preventDefault();
 
-					var tempdata = $(this).serializeArray(), data = {};
-					$.each(tempdata,function(i,el){
-						data[el.name] = el.value;
-					});
-
 					$.Dialog.wait(title, 'Gathering the Elements of Harmony');
 
-					$.post(action+'/'+name, data, function(data){
+					$.post(action+'/'+name, $(this).mkData(), function(data){
 						if (typeof data !== 'object') return console.log(data) && $w.trigger('ajaxerror');
 
 						if (data.status){

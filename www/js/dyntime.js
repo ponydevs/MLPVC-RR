@@ -100,7 +100,7 @@
 	};
 	function timeDifference(n,e) {
 		var substract = n.getTime() - e.getTime(),
-			d = { past: substract > 0, time: Math.abs(substract), target: e }
+			d = { past: substract > 0, time: Math.abs(substract), target: e},
 			time = d.time;
 
 		d.day = Math.floor(time/1000/60/60/24);
@@ -136,10 +136,11 @@
 		if (typeof obj !== 'object' || $.isArray(obj)) return false;
 		if (obj.time > 0) delete obj.time;
 		
-		var keys = Object.keys(obj), returnStr = '';
-		for (var i=0,l=keys.length; i<l; i++) if (keys[i] !== 'second' && obj[keys[i]] < 1) delete obj[keys[i]];
+		var keys = Object.keys(obj), returnStr = '', i;
+		for (i = 0, l = keys.length; i < l; i++) if (keys[i] !== 'second' && obj[keys[i]] < 1) delete obj[keys[i]];
 
-		for (var arr = ['year','month','week','day','hour','minute','second'], l  = arr.length, i = 0, el; i<l; i++)
+		var arr = ['year','month','week','day','hour','minute','second'], l  = arr.length, el;
+		for (i = 0; i < l; i++)
 			if (obj[el = arr[i]] > 0){
 				if (!obj.past && el !== 'second')
 					obj[el]++;

@@ -39,8 +39,8 @@
 			</ul>
 		</div>
 	</div>
-	<p class=align-center><button class='green typcn typcn-plus' disabled>Add new appearance</button></p>
-	<?=$Pagination = get_pagination_html($color.'guide')?>
+	<p class=align-center><button class='green typcn typcn-plus' id="new-appearance-btn">Add new appearance</button></p>
+	<?=$Pagination = get_pagination_html($color.'guide',$Page,$MaxPages)?>
 	<?=get_ponies_html($Ponies)?>
 	<?=$Pagination?>
 </div>

@@ -63,29 +63,88 @@ $(function(){
 	});
 
 	var $list = $('#list'),
-		ENABLE = true,
-		DISABLE = false;
-	$list.children().on('edit-mode',function(e, action){
-		var $li = $(this),
-			ponyID = $li.attr('id').substring(1);
+		$ponyEditor = $.mk('form').attr('id','pony-editor')
+			.append(
+				$.mk('label').append(
+					$.mk('span').text('Name (4-70 chars.)'),
+					$.mk('input').attr({
+						name: 'label',
+						placeholder: 'Enter a name',
+						pattern: PRINTABLE_ASCII_REGEX.replace('+', '{4,70}'),
+						required: true,
+						maxlength: 70
+					})
+				),
+				$.mk('label').append(
+					$.mk('span').text('Additional notes (255 chars. max, optional)'),
+					$.mk('textarea').attr({
+						name: 'notes',
+						maxlength: 255
+					})
+				),
+				$.mk('div').attr('class','notice').hide().html('<p></p>')
+			),
+		mkPonyEditor = function($this, title, data){
+			var $ponyLabel = $this.parent(),
+				$ponyNotes = $ponyLabel.next();
 
-		if (action === DISABLE){
-
-		}
-		else if (action === ENABLE){
-			var title = 'Editing appearance #'+ponyID;
-
-			$.post('/get/'+ponyID,$.mkAjaxHandler(function(){
-				if (this.status){
-
+			$.Dialog.request(title,$ponyEditor.clone(),'pony-editor','Save',function($form){
+				var $ErrorNotice = $form.children('.notice').children('p'),
+					handleError = function(){
+						$ErrorNotice.html(this.message).parent().removeClass('info').addClass('fail').show();
+						$form.find('input, texarea').attr('disabled', false);
+						$.Dialog.center();
+					},
+					editing = !!data;
+				if (editing){
+					$form.find('input').val(data.label);
+					$form.find('textarea').val(data.notes);
 				}
-				else $.Dialog.fail(title, this.message);
-			}));
-		}
-		else console.warn('Invalid edit-mode action', action);
+				$form.on('submit',function(e){
+					e.preventDefault();
+
+					$ErrorNotice.text('Saving changes...').parent().removeClass('fail').addClass('info').show();
+					$.Dialog.center();
+
+					$.post('/colorguide/'+(editing?'set/'+data.ponyID:'make'),$form.mkData(),$.mkAjaxHandler(function(){
+						if (this.status){
+							if (editing){
+								$ponyLabel.contents().first().replaceWith(this.label);
+								$ponyNotes.html(this.notes);
+								$.Dialog.close();
+							}
+							else {
+								$.Dialog.success(title, this.message);
+								setTimeout(function(){
+									window.location.reload();
+								},1000);
+							}
+						}
+						else handleError.call(this);
+					}));
+				})
+			});
+		};
+
+	$('#new-appearance-btn').on('click',function(){
+		mkPonyEditor($(this),'Add new appearance');
 	});
+
 	$list.find('button.edit').on('click',function(){
-		$this.parents('li').trigger('edit-mode', [ENABLE]);
+		var $this = $(this),
+			ponyID = $this.parents('li').attr('id').substring(1),
+			title = 'Editing appearance #'+ponyID;
+
+		$.Dialog.wait(title, 'Retrieving appearance details from server');
+
+		$.post('/colorguide/get/'+ponyID,$.mkAjaxHandler(function(){
+			var data = this;
+			if (data.status){
+				data.ponyID = ponyID;
+				mkPonyEditor($this, title, data);
+			}
+			else $.Dialog.fail(title, this.message);
+		}));
 	}).next().on('click',function(){
 		var $this = $(this),
 			$li = $this.closest('li'),
@@ -139,7 +198,7 @@ $(function(){
 		'Tags'
 	);
 	function reorder($this){
-		$this.children().sort(function(a, b){
+		$this.children('.tag').sort(function(a, b){
 			var regex = /^.*typ-([a-z]+).*$/;
 			a = [a.className.replace(regex,'$1'), a.innerHTML.trim()];
 			b = [b.className.replace(regex,'$1'), b.innerHTML.trim()];
@@ -176,15 +235,10 @@ $(function(){
 			$form.on('submit', function(e){
 				e.preventDefault();
 
-				var tempdata = $form.serializeArray(), data = {};
-				$.each(tempdata,function(i,el){
-					data[el.name] = el.value;
-				});
-
 				$ErrorNotice.text('Creating tag...').parent().removeClass('fail').addClass('info').show();
 				$.Dialog.center();
 
-				$.post('/colorguide/maketag',data,$.mkAjaxHandler(function(){
+				$.post('/colorguide/maketag',$form.mkData(),$.mkAjaxHandler(function(){
 					if (this.status){
 						if (this.tags){
 							$tagsDiv.children('[data-hasqtip]').qtip('destroy', true);
@@ -420,15 +474,10 @@ $(function(){
 						$form.on('submit', function(e){
 							e.preventDefault();
 
-							var tempdata = $(this).serializeArray(), data = {};
-							$.each(tempdata,function(i,el){
-								data[el.name] = el.value;
-							});
-
 							$ErrorNotice.text('Saving changes...').parent().removeClass('fail').addClass('info').show();
 							$.Dialog.center();
 
-							$.post('/colorguide/settag/'+tagID,data,$.mkAjaxHandler(function(){
+							$.post('/colorguide/settag/'+tagID, $(this).mkData(),$.mkAjaxHandler(function(){
 								if (this.status){
 									var $affected = $('.id-'+this.tid);
 									$affected.qtip('destroy', true);
@@ -538,23 +587,25 @@ $(function(){
 					$input.parent().addClass('loading');
 
 					$.post('/colorguide/tag/'+ponyID,{ tag_name: tag_name }, $.mkAjaxHandler(function(){
+						$input.removeAttr('disabled');
 						if (this.status){
 							$tagsDiv.children('[data-hasqtip]').qtip('destroy', true);
-							$tagsDiv.html(this.tags);
+							$tagsDiv.children('.tag').remove();
+							$tagsDiv.append($(this.tags).filter('span'));
 							window.tooltips();
 							ctxmenus();
-							$('#p'+ponyID).find('.addtag').focus();
+							$input.typeahead('val', '');
 						}
 						else if (typeof this.cancreate === 'string'){
 							var new_name = this.cancreate;
 							title = title.replace(tag_name, new_name);
-							$.Dialog.confirm(title, this.message, function(sure){
+							return $.Dialog.confirm(title, this.message, function(sure){
 								if (!sure) return;
 								createNewTag($input, new_name);
 							});
 						}
 						else $.Dialog.fail(title, this.message);
-						$input.removeAttr('disabled').parent().removeClass('loading');
+						$input.focus().parent().removeClass('loading');
 					}));
 				}
 			});

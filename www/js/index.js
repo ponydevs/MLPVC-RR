@@ -378,10 +378,11 @@ $(function(){
 
 			$.Dialog.wait(Type,'Submitting '+type);
 
-			var tempdata = $form.serializeArray(), data = {what: type, episode: EPISODE, season: SEASON};
-			tempdata['image_url'] = $formImgInput.data('prev-url');
-			$.each(tempdata,function(i,el){
-				data[el.name] = el.value;
+			var data = $form.mkData({
+				what: type,
+				episode: EPISODE,
+				season: SEASON,
+				image_url: $formImgInput.data('prev-url'),
 			});
 
 			$.post('/post',data,$.mkAjaxHandler(function(){

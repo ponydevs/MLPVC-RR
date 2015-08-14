@@ -15,7 +15,7 @@
 	$IndexSettings = array(
 		'title' => 'Home',
 		'view' => 'index',
-		'do-css',
+		'css' => 'index',
 		'js' => array('jquery.fluidbox.min','index'),
 	);
 
@@ -747,20 +747,57 @@
 
 						typeahead_results(empty($Tags) ? '[]' : $Tags);
 					}
-					else if (preg_match('~^(rename|delete|[gs]et(?:sprite)?|tag|untag)/(\d+)$~', $data, $_match)){
-						$PonyID = intval($_match[2], 10);
+					else if (preg_match('~^(rename|delete|make|[gs]et(?:sprite)?|tag|untag)(?:/(\d+))?$~', $data, $_match)){
+						$action = $_match[1];
 
-						$Pony = $CGDb->where('id', $PonyID)->getOne('ponies');
-						if (empty($Pony))
-							respond("There's no pony with the ID of $PonyID");
+						if ($action !== 'make'){
+							if (empty($_match[2]))
+								respond('Missing pony ID');
+							$PonyID = intval($_match[2], 10);
+							$Pony = $CGDb->where('id', $PonyID)->getOne('ponies');
+							if (empty($Pony))
+								respond("There's no pony with the ID of $PonyID");
+						}
 
 						$update = array();
-						switch ($_match[1]) {
+						switch ($action) {
+							case "set":
+							case "make":
 							case "get":
-								respond(array(
+								if ($action === 'get') respond(array(
 									'label' => $Pony['label'],
 									'notes' => $Pony['notes'],
 								));
+
+								$data = array('notes' => '');
+
+								if (empty($_POST['label']))
+									respond('Label is missing');
+								$label = trim($_POST['label']);
+								$ll = strlen($label);
+								check_string_valid($label, "Appearance name", INVERSE_PRINTABLE_ASCII_REGEX);
+								if ($ll < 4 || $ll > 70)
+									respond('Appearance name must be beetween 4 and 70 characters long');
+								$data['label'] = $label;
+
+								if (!empty($_POST['notes'])){
+									$notes = trim($_POST['notes']);
+									check_string_valid($label, "Appearance notes", INVERSE_PRINTABLE_ASCII_REGEX);
+									if (strlen($notes) > 255)
+										respond('Appearance notes cannot be longer than 255 characters');
+									$data['notes'] = $notes;
+								}
+
+								$query = $action === 'set'
+									? $CGDb->where('id', $Pony['id'])->update('ponies', $data)
+									: $CGDb->insert('ponies', $data);
+								if (!$query)
+									respond(ERR_DB_FAIL);
+
+								if ($action === 'make') $data['message'] = 'Appearance added successfully';
+								if (!empty($data['notes']))
+									$data['notes'] = get_notes_html($data, NOWRAP);
+								respond($data);
 							break;
 							case "rename":
 								$newname = isset($_POST['newname']) ? trim($_POST['newname']) : null;
@@ -786,7 +823,7 @@
 							case "setsprite":
 								$fname = $Pony['id'].'.png';
 								$finalpath = $SpritePath.$fname;
-								if ($_match[1] === 'setsprite')
+								if ($action === 'setsprite')
 									process_uploaded_image('sprite',$finalpath,array('image/png'),100);
 								respond(array("path" => "$SpriteRelPath$fname?".filemtime($finalpath)));
 							break;
@@ -942,10 +979,10 @@
 						if (empty($_POST['label']))
 							respond('Please specify a group name');
 						$name = $_POST['label'];
+						check_string_valid($name, "$Color group name", INVERSE_PRINTABLE_ASCII_REGEX);
 						$nl = strlen($name);
 						if ($nl < 2 || $nl > 30)
 							respond('The group name must be between 2 and 30 characters in length');
-						check_string_valid($name, "$Color group name", INVERSE_PRINTABLE_ASCII_REGEX);
 						$data['label'] = $name;
 
 						if ($new){
@@ -985,10 +1022,10 @@
 							if (empty($c['label']))
 								respond("You must specify a $color name $index");
 							$label = trim($c['label']);
+							check_string_valid($label, "$Color $index name", INVERSE_PRINTABLE_ASCII_REGEX);
 							$ll = strlen($label);
 							if ($ll < 3 || $ll > 30)
 								respond("The $color name must be between 3 and 30 characters in length $index");
-							check_string_valid($label, "$Color $index name", INVERSE_PRINTABLE_ASCII_REGEX);
 							$append['label'] = $label;
 
 							if (empty($c['hex']))
@@ -1022,9 +1059,21 @@
 					else do404();
 				}
 
-				fix_path("/{$color}guide");
+				if (is_numeric($data))
+					$Page = intval($data, 10);
+				if (empty($Page) || $Page < 1)
+					$Page = 1;
 
-				$Ponies = $CGDb->orderBy('label', 'ASC')->get('ponies');
+				$ItemsPerPage = 5;
+				$EntryCount = $CGDb->getOne('ponies', 'COUNT(*) as rows')['rows'];
+				$MaxPages = ceil($EntryCount/$ItemsPerPage);
+
+				if ($Page > $MaxPages)
+					$Page = $MaxPages;
+
+				fix_path("/{$color}guide/$Page");
+
+				$Ponies = $CGDb->orderBy('label', 'ASC')->get('ponies',array($ItemsPerPage*($Page-1), $ItemsPerPage));
 
 				$settings = array(
 					'title' => "$Color Guide",

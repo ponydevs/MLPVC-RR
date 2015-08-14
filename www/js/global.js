@@ -25,6 +25,17 @@
 		};
 	};
 
+	// Convert .serializeArray() result to object
+	$.fn.mkData = function(obj){
+		var tempdata = $(this).serializeArray(), data = {};
+		$.each(tempdata,function(i,el){
+			data[el.name] = el.value;
+		});
+		if (typeof obj === 'object')
+			$.extend(data, obj);
+		return data;
+	};
+
 	// Get CSRF token from cookies
 	$.getCSRFToken = function(){
 		var n = document.cookie.match(/CSRF_TOKEN=([a-z\d]+)/i);

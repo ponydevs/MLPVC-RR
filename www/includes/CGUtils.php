@@ -98,7 +98,7 @@
 
 	// Returns the markup for the notes displayed under an appaerance
 	function get_notes_html($p, $wrap = true){
-		$notes = !empty($p['notes']) ? nl2br(htmlspecialchars($p['notes'])) : '';
+		$notes = !empty($p['notes']) ? htmlspecialchars($p['notes']) : '';
 		return $wrap ? "<div class='notes'>$notes</div>" : $notes;
 	}
 
@@ -119,7 +119,7 @@
 			$notes = get_notes_html($p);
 			$tags = get_tags_html($p['id']);
 			$colors = get_colors_html($p['id']);
-			$editBtn = PERM('inspector') ? '<button class="edit typcn typcn-edit blue" title="Enable edit mode" disabled></button><button class="delete typcn typcn-trash red" title="Delete"></button>' : '';
+			$editBtn = PERM('inspector') ? '<button class="edit typcn typcn-pencil blue" title="Edit"></button><button class="delete typcn typcn-trash red" title="Delete"></button>' : '';
 
 			$HTML .= "<li id=p{$p['id']}>$img<div><strong>{$p['label']}$editBtn</strong>$notes$tags$colors</div></li>";
 		}

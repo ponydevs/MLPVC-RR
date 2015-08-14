@@ -164,6 +164,7 @@
 		}
 		.notes {
 			margin-top: 6px;
+			white-space: pre-wrap;
 
 			:empty { display: none }
 		}
@@ -210,7 +211,10 @@ div.tags {
 			@include sprite-animation(16px, 16px, 12, 'indicator');
 		}
 	}
-	.addtag { margin-right: 0 }
+	.addtag {
+		margin-right: 0;
+		cursor: text;
+	}
 }
 .tag {
 	display: inline-block;

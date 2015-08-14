@@ -432,7 +432,6 @@ HTML;
 		loadPage(array(
 			'title' => '404',
 			'view' => '404',
-			'css' => '404',
 		));
 	}
 
@@ -1752,7 +1751,7 @@ ORDER BY `count` DESC
 		for ($i = 1; $i <= $maxPages; $i++){
 			$li = $i;
 			if ($li !== $currentPage)
-				$li = "<a href='/$basepath/$li'>$li</a>";
+				$li = "<a href='/$basePath/$li'>$li</a>";
 			else $li = "<strong>$li</strong>";
 			$Pagination .= "<li>$li</li>";
 		}
