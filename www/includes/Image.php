@@ -98,7 +98,7 @@
 					throw new Exception('The image could not be retrieved');
 			}
 
-			if (in_array($this->provider,$stripProtocol)){
+			if (in_array($this->provider,self::$stripProtocol)){
 				self::removeProtocol($this->preview);
 				self::removeProtocol($this->fullsize);
 			}
