@@ -31,7 +31,7 @@
 			'puu\.sh/([A-Za-z\d]+(?:/[A-Fa-f\d]+)?)' => 'puush',
 		);
 		private static $stripProtocol = array('fav.me','sta.sh');
-		private static function removeProtocol(&$url){
+		public static function removeProtocol(&$url){
 			$url = preg_replace('/^https?:/','',$url);
 		}
 		private static function test_provider($url, $pattern, $name){

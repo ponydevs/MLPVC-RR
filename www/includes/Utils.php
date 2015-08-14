@@ -772,10 +772,12 @@ HTML;
 				return $Deviation;
 			}
 
+			require 'Image.php';
+
 			$insert = array(
 				'title' => $json['title'],
-				'preview' => $json['thumbnail_url'],
-				'fullsize' => $json['url'],
+				'preview' => Image::removeProtocol($json['thumbnail_url']),
+				'fullsize' => Image::removeProtocol($json['url']),
 				'provider' => $type,
 			);
 
