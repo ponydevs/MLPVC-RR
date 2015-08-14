@@ -30,6 +30,10 @@
 			'derpicdn\.net/img/(?:view|download)/\d{4}/\d{1,2}/\d{1,2}/(\d+)' => 'derpibooru',
 			'puu\.sh/([A-Za-z\d]+(?:/[A-Fa-f\d]+)?)' => 'puush',
 		);
+		private static $stripProtocol = array('fav.me','sta.sh');
+		private static function removeProtocol(&$url){
+			$url = preg_replace('/^https?:/','',$url);
+		}
 		private static function test_provider($url, $pattern, $name){
 			$match = array();
 			if (preg_match("~^(?:https?://(?:www\.)?)?$pattern~", $url, $match))
@@ -49,8 +53,8 @@
 		private function get_direct_url($id){
 			switch ($this->provider){
 				case 'imgur':
-					$this->fullsize = "http://i.imgur.com/$id.png";
-					$this->preview = "http://i.imgur.com/{$id}m.png";
+					$this->fullsize = "//i.imgur.com/$id.png";
+					$this->preview = "//i.imgur.com/{$id}m.png";
 				break;
 				case 'derpibooru':
 					$Data = file_get_contents("http://derpibooru.org/$id.json");
@@ -92,6 +96,11 @@
 				break;
 				default:
 					throw new Exception('The image could not be retrieved');
+			}
+
+			if (in_array($this->provider,$stripProtocol)){
+				self::removeProtocol($this->preview);
+				self::removeProtocol($this->fullsize);
 			}
 
 			$this->id = $id;
