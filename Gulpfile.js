@@ -75,7 +75,7 @@ gulp.task('sass', function() {
 			}))
 			.pipe(autoprefixer('last 2 version'))
 			.pipe(rename({suffix: '.min' }))
-			.pipe(minify())
+			.pipe(minify({processImport: false}))
 		.pipe(sourcemaps.write('.'))
 		.pipe(gulp.dest('www/css'));
 });
@@ -108,10 +108,6 @@ gulp.task('js', function(){
 });
 
 gulp.task('default', ['sass', 'js'], function(){
-	console.writeLine('> Compile SASS ..check!');
-	console.writeLine('> Minify JS ..check!');
-	console.writeLine(_sep);
-
 	gulp.watch(['www/js/*.js', '!www/js/*.min.js'], {debounceDelay: 2000}, ['js']);
 	Dashie.log("I got my eyes on you, JavaScript files!");
 	gulp.watch('www/sass/*.scss', {debounceDelay: 2000}, ['sass']);

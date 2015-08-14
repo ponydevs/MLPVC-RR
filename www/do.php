@@ -15,7 +15,7 @@
 	$IndexSettings = array(
 		'title' => 'Home',
 		'view' => 'index',
-		'css' => array('index','jquery.fluidbox'),
+		'do-css',
 		'js' => array('jquery.fluidbox.min','index'),
 	);
 
