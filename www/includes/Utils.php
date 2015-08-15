@@ -136,6 +136,7 @@
 	function log_tbody_render($LogItems){
 		global $Database, $LOG_DESCRIPTION;
 
+		$HTML = '';
 		if (count($LogItems) > 0) foreach ($LogItems as $item){
 			if (!empty($item['initiator'])){
 				$inituser = $Database->where('id',$item['initiator'])->getOne('users');
@@ -160,7 +161,7 @@
 
 			if (!empty($inituser)) $ip = "$inituser<br>$ip";
 
-			$HTML = <<<HTML
+			$HTML .= <<<HTML
 		<tr>
 
 			<td class=entryid>{$item['entryid']}</td>
@@ -169,10 +170,10 @@
 			<td class=reftype>$event</td>
 		</tr>
 HTML;
-
-			echo $HTML;
 		}
-		else echo "<tr><td colspan=4>There are no log items</td></tr>";
+		else $HTML = "<tr><td colspan=4>There are no log items</td></tr>";
+
+		return $HTML;
 	}
 
 	/**

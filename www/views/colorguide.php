@@ -1,5 +1,5 @@
 <div id=content>
-	<h1><?=$title?></h1>
+	<h1><?=$heading?></h1>
 	<p>A searchable<sup title="To Be Implemented">TBI</sup> list of <del style=opacity:.3;color:red>every</del> <ins style=color:green>some</ins> characters <?=$color?> keyed so far</p>
 	<div class="notice warn tagediting">
 		<label>Some features are unavailable</label>

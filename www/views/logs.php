@@ -14,7 +14,7 @@
 				<td class="reftype">Event</td>
 			</tr>
 		</thead>
-		<tbody><?php log_tbody_render($LogItems); ?></tbody>
+		<tbody><?=log_tbody_render($LogItems)?></tbody>
 	</table>
 <?php
 		echo $Pagination;

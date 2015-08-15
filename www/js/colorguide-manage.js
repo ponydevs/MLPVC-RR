@@ -114,10 +114,13 @@ $(function(){
 								$.Dialog.close();
 							}
 							else {
-								$.Dialog.success(title, this.message);
-								setTimeout(function(){
-									window.location.reload();
-								},1000);
+								$.Dialog.success(title, this.message, true);
+								$.toPage(window.location.pathname.replace(/(\d+)?$/,this.page),true,true);
+								var id = this.id;
+								$list.one('page-switch',function(){
+									var $pony = $('#p'+id);
+									$(document.body).scrollTop($pony.offset().top - ($pony.outerHeight()/2));
+								});
 							}
 						}
 						else handleError.call(this);
@@ -128,43 +131,6 @@ $(function(){
 
 	$('#new-appearance-btn').on('click',function(){
 		mkPonyEditor($(this),'Add new appearance');
-	});
-
-	$list.find('button.edit').on('click',function(){
-		var $this = $(this),
-			ponyID = $this.parents('li').attr('id').substring(1),
-			title = 'Editing appearance #'+ponyID;
-
-		$.Dialog.wait(title, 'Retrieving appearance details from server');
-
-		$.post('/colorguide/get/'+ponyID,$.mkAjaxHandler(function(){
-			var data = this;
-			if (data.status){
-				data.ponyID = ponyID;
-				mkPonyEditor($this, title, data);
-			}
-			else $.Dialog.fail(title, this.message);
-		}));
-	}).next().on('click',function(){
-		var $this = $(this),
-			$li = $this.closest('li'),
-			ponyID = $li.attr('id').substring(1),
-			ponyName = $this.parent().text().trim(),
-			title = 'Deleting appearance: '+ponyName;
-
-		$.Dialog.confirm(title,'Deleting this appearance will remove <strong>ALL</strong> of its color groups, the colors within them, and the sprite file, if any.<br>Delete anyway?',function(sure){
-			if (!sure) return;
-
-			$.Dialog.wait(title, 'Sending removal request');
-
-			$.post('/colorguide/delete/'+ponyID,$.mkAjaxHandler(function(){
-				if (this.status){
-					$li.remove();
-					$.Dialog.close();
-				}
-				else $.Dialog.fail(title, this.message);
-			}));
-		})
 	});
 
 	var $tagEditForm = $.mk('form').attr('id', 'edit-tag');
@@ -188,15 +154,6 @@ $(function(){
 		.append($.mk('div').addClass('align-center').append('<span>Tag type (optional)</span><br>',$_typeSelect))
 		.append($.mk('label').append('<span>Tag description (max 255 chars., optional)</span><br><textarea name=title maxlength=255></textarea>'))
 		.append($.mk('div').attr('class','notice').hide().html('<p></p>'));
-
-	var $tags = $('.tags').ctxmenu(
-		[
-			{text: 'Create new tag', icon: 'plus', click: function(){
-				createNewTag($(this));
-			}},
-		],
-		'Tags'
-	);
 	function reorder($this){
 		$this.children('.tag').sort(function(a, b){
 			var regex = /^.*typ-([a-z]+).*$/;
@@ -446,6 +403,63 @@ $(function(){
 			});
 		});
 	}
+
+	var $tags;
+	$list.on('page-switch',function(){
+		$list.find('button.edit').on('click',function(){
+			var $this = $(this),
+				ponyID = $this.parents('li').attr('id').substring(1),
+				title = 'Editing appearance #'+ponyID;
+
+			$.Dialog.wait(title, 'Retrieving appearance details from server');
+
+			$.post('/colorguide/get/'+ponyID,$.mkAjaxHandler(function(){
+				var data = this;
+				if (data.status){
+					data.ponyID = ponyID;
+					mkPonyEditor($this, title, data);
+				}
+				else $.Dialog.fail(title, this.message);
+			}));
+		}).next().on('click',function(){
+			var $this = $(this),
+				$li = $this.closest('li'),
+				ponyID = $li.attr('id').substring(1),
+				ponyName = $this.parent().text().trim(),
+				title = 'Deleting appearance: '+ponyName;
+
+			$.Dialog.confirm(title,'Deleting this appearance will remove <strong>ALL</strong> of its color groups, the colors within them, and the sprite file, if any.<br>Delete anyway?',function(sure){
+				if (!sure) return;
+
+				$.Dialog.wait(title, 'Sending removal request');
+
+				$.post('/colorguide/delete/'+ponyID,$.mkAjaxHandler(function(){
+					if (this.status){
+						$li.remove();
+						$.Dialog.success(title, this.message);
+
+						var path = window.location.pathname;
+						if ($list.children().length === 0)
+							path = path.replace(/(\d+)$/,function(n){ return n > 1 ? n-1 : n });
+						$.toPage(path,true,true);
+					}
+					else $.Dialog.fail(title, this.message);
+				}));
+			})
+		});
+
+		$tags = $('.tags').ctxmenu(
+			[
+				{text: 'Create new tag', icon: 'plus', click: function(){
+					createNewTag($(this));
+				}},
+			],
+			'Tags'
+		);
+
+		ctxmenus();
+		window.tooltips();
+	}).trigger('page-switch');
 
 	function ctxmenus(){
 		$tags.children('span:not(.ctxmenu-bound)').ctxmenu([
@@ -698,6 +712,5 @@ $(function(){
 			}}
 		);
 	}
-	ctxmenus();
 	window.ctxmenus = function(){ctxmenus()};
 });

@@ -48,6 +48,13 @@
 #list {
 	padding: 0;
 	margin: 0;
+
+	&:empty:before {
+		font-size: 1.4em;
+		font-style: italic;
+		content: "There are no appearances on this page";
+		display: block;
+	}
 }
 #list > li, #universal {
 	padding: 10px;

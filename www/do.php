@@ -552,6 +552,8 @@
 						$Page = intval($data, 10);
 				}
 
+				$title = 'Logs';
+
 				if (empty($MSG)){
 					if (empty($Page) || $Page < 1)
 						$Page = 1;
@@ -564,15 +566,26 @@
 						$Page = $MaxPages;
 
 					fix_path("/logs/$Page");
+					$title = "Page $Page - $title";
 
 					$LogItems = $Database->orderBy('timestamp')->get('log',array($ItemsPerPage*($Page-1), $ItemsPerPage));
+
+					if (isset($_GET['js'])){
+						respond(array(
+							'output' => log_tbody_render($LogItems),
+							'update' => '#logs tbody',
+							'page' => $Page,
+							'maxpage' => $MaxPages,
+							'title' => $title,
+						));
+					}
 				}
 				else statusCodeHeader(403);
 
 				loadPage(array(
-					'title' => (empty($MSG) ? "Page $Page - ":'').'Logs',
+					'title' => $title,
 					'do-css',
-					'do-js',
+					'js' => array($do, 'paginate'),
 				));
 			break;
 			case "u":
@@ -728,6 +741,7 @@
 
 				$SpriteRelPath = '/img/cg/';
 				$SpritePath = APPATH.substr($SpriteRelPath,1);
+				$ItemsPerPage = 5;
 
 				if (RQMTHD === 'POST' || (isset($_GET['s']) && $data === "gettags")){
 					if (!PERM('inspector')) respond();
@@ -794,7 +808,23 @@
 								if (!$query)
 									respond(ERR_DB_FAIL);
 
-								if ($action === 'make') $data['message'] = 'Appearance added successfully';
+								if ($action === 'make'){
+									$data['message'] = 'Appearance added successfully';
+									$Query = $CGDb->rawQuerySingle(
+										"SELECT x.position
+										FROM (
+											SELECT
+												p.id,
+												p.label,
+												@rownum := @rownum + 1 AS position
+											FROM ponies p
+											JOIN (SELECT @rownum := 0) r ORDER BY p.label
+										) x
+										WHERE x.id = ?", array($query));
+
+									$data['id'] = $query;
+									$data['page'] = ceil($Query['position'] / $ItemsPerPage);
+								}
 								if (!empty($data['notes']))
 									$data['notes'] = get_notes_html($data, NOWRAP);
 								respond($data);
@@ -817,7 +847,7 @@
 								if (file_exists($fpath))
 									unlink($fpath);
 
-								respond(true);
+								respond('Appearance removed', 1);
 							break;
 							case "getsprite":
 							case "setsprite":
@@ -1064,7 +1094,6 @@
 				if (empty($Page) || $Page < 1)
 					$Page = 1;
 
-				$ItemsPerPage = 5;
 				$EntryCount = $CGDb->getOne('ponies', 'COUNT(*) as rows')['rows'];
 				$MaxPages = ceil($EntryCount/$ItemsPerPage);
 
@@ -1072,13 +1101,26 @@
 					$Page = $MaxPages;
 
 				fix_path("/{$color}guide/$Page");
+				$heading = "$Color Guide";
+				$title = "Page $Page - $heading";
 
 				$Ponies = $CGDb->orderBy('label', 'ASC')->get('ponies',array($ItemsPerPage*($Page-1), $ItemsPerPage));
 
+				if (isset($_GET['js'])){
+					respond(array(
+						'output' => get_ponies_html($Ponies, NOWRAP),
+						'update' => '#list',
+						'page' => $Page,
+						'maxpage' => $MaxPages,
+						'title' => $title,
+					));
+				}
+
 				$settings = array(
-					'title' => "$Color Guide",
+					'title' => $title,
+					'heading' => $heading,
 					'do-css',
-					'js' => array('jquery.qtip', 'jquery.ctxmenu', $do),
+					'js' => array('jquery.qtip', 'jquery.ctxmenu', $do, 'paginate'),
 				);
 				if (PERM('inspector'))
 					$settings['js'] = array_merge($settings['js'],array(
