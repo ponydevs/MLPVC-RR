@@ -125,31 +125,29 @@ CREATE TABLE IF NOT EXISTS `tags` (
   `tid` int(11) NOT NULL,
   `name` varchar(25) NOT NULL,
   `title` tinytext NOT NULL,
-  `type` enum('spec','gen','cat','app','ep') DEFAULT NULL
+  `type` enum('spec','gen','cat','app','ep') DEFAULT NULL,
+  `uses` int(11) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8;
 
-INSERT INTO `tags` (`tid`, `name`, `title`, `type`) VALUES
-(1, 'unicorn', '', 'spec'),
-(2, 'earth pony', '', 'spec'),
-(3, 'pegasus', '', 'spec'),
-(4, 'alicorn', '', 'spec'),
-(5, 'bat pony', '', 'spec'),
-(6, 'mane six', 'Ponies who are one of the show''s six main characters', 'cat'),
-(7, 'minor character', 'Ponies who had a speaking role and/or interacted with the mane six', 'cat'),
-(8, 'background character', 'Ponies whose only purpose is filling crowds, with no to minimal speaking roles', 'cat'),
-(9, 'antagonist', '', 'cat'),
-(10, 'pet', '', 'cat'),
-(11, 'male', '', 'gen'),
-(12, 'female', '', 'gen'),
-(13, 'ambiguous', '', 'gen'),
-(14, 'twilight sparkle', 'All appearances related to Twilight Sparkle', NULL),
-(15, 'gala dresses', 'All gala dress colors', 'app'),
-(16, 'human', 'Refers to Equestria Girls characters', 'spec'),
-(17, 'pets', '', 'cat'),
-(18, 'amending fences', '', 'ep'),
-(19, 's1e1', '', 'ep'),
-(20, 's1e26', '', 'ep'),
-(21, 's5e12', '', 'ep');
+INSERT INTO `tags` (`tid`, `name`, `title`, `type`, `uses`) VALUES
+(1, 'unicorn', '', 'spec', 3),
+(2, 'earth pony', '', 'spec', 0),
+(3, 'pegasus', '', 'spec', 0),
+(4, 'alicorn', '', 'spec', 0),
+(5, 'bat pony', '', 'spec', 0),
+(6, 'mane six', 'Ponies who are one of the show''s six main characters', 'cat', 2),
+(7, 'minor character', 'Ponies who had a speaking role and/or interacted with the mane six', 'cat', 1),
+(8, 'background character', 'Ponies whose only purpose is filling crowds, with no to minimal speaking roles', 'cat', 0),
+(9, 'antagonist', '', 'cat', 0),
+(10, 'pet', '', 'cat', 0),
+(11, 'male', '', 'gen', 0),
+(12, 'female', '', 'gen', 3),
+(14, 'twilight sparkle', 'All appearances related to Twilight Sparkle', NULL, 2),
+(15, 'gala dresses', 'All gala dress colors', 'app', 0),
+(16, 'human', 'Refers to Equestria Girls characters', 'spec', 0),
+(19, 's1e1', '', 'ep', 1),
+(20, 's1e26', '', 'ep', 1),
+(21, 's5e12', '', 'ep', 1);
 
 
 ALTER TABLE `colorgroups`

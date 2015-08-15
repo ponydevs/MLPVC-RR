@@ -24,4 +24,11 @@
 			}
 			return $this;
 		}
+		public function count($table){
+			return parent::getOne($table, 'COUNT(*) as c')['c'];
+		}
+		public function orderByLiteral($orderstr, $direction = 'ASC'){
+            $this->_orderBy[$orderstr] = $direction;
+            return $this;
+		}
 	}

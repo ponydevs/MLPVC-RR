@@ -39,7 +39,10 @@
 			</ul>
 		</div>
 	</div>
-	<p class=align-center><button class='green typcn typcn-plus' id="new-appearance-btn">Add new appearance</button></p>
+	<p class=align-center>
+		<button class='green typcn typcn-plus' id="new-appearance-btn">Add new appearance</button>
+		<a class='btn darkblue typcn typcn-tags' href="/colorguide/tags">View list of tags</a>
+	</p>
 	<?=$Pagination = get_pagination_html($color.'guide',$Page,$MaxPages)?>
 	<?=get_ponies_html($Ponies)?>
 	<?=$Pagination?>

@@ -33,7 +33,7 @@
 	if (PERM('inspector')){
 		$HeaderItems['colorguide'] = array("/{$color}guide", "$Color Guide");
 		if ($do === 'colorguide')
-			$HeaderItems['colorguide']['subitem'] = array($_SERVER['REQUEST_URI'], "Page $Page");
+			$HeaderItems['colorguide']['subitem'] = array($_SERVER['REQUEST_URI'], (isset($Tags) ? 'Tags - ':'')."Page $Page");
 	}
 	if ($signedIn)
 		$HeaderItems['u'] = array("/u/{$currentUser['name']}",'Account');

@@ -1,0 +1,84 @@
+@import "tags";
+#tags {
+	width: 100%;
+	border-collapse: collapse;
+	font-size: 17px;
+
+	tr {
+		th {
+			background: #fff;
+			border: 1px solid;
+		}
+		td {
+			padding: 5px;
+			border: 1px solid;
+
+			&.tid {
+				width: 7.5%;
+				text-align: center;
+			}
+			&.name { font-weight: bold }
+			&.utils { white-space: nowrap }
+			&.type {
+				text-align: center;
+				&:empty:before {
+					content: "none";
+					font-size: .8em;
+					font-style: italic;
+					display: block;
+					opacity: .7;
+				}
+			}
+			&.uses {
+				width: 7.5%;
+				text-align: center;
+			}
+		}
+	}
+	tbody {
+		&:empty:before {
+			content: "No tags to display";
+			font-size: 1.4em;
+			font-style: italic;
+			display: block;
+			text-align: center;
+		}
+
+		.tid { font-size: 1.3em }
+
+		tr {
+			button {
+				margin: 0;
+				padding: 3px;
+			}
+			&:not([class]) {
+				@include tag-style($TDefault);
+				@include tag-button-style($TDefault);
+			}
+			&.typ-cat {
+				@include tag-style($TCategory);
+				@include tag-button-style($TCategory);
+			}
+			&.typ-spec {
+				@include tag-style($TSpecies);
+				@include tag-button-style($TSpecies);
+			}
+			&.typ-gen {
+				@include tag-style($TGender);
+				@include tag-button-style($TGender);
+			}
+			&.typ-app {
+				@include tag-style($TAppearance);
+				@include tag-button-style($TAppearance);
+			}
+			&.typ-ep {
+				@include tag-style($TEpisode);
+				@include tag-button-style($TEpisode);
+			}
+
+			&:last-child td { border-bottom: 0 }
+		}
+
+		.entryid { font-size: 1.6em }
+	}
+}

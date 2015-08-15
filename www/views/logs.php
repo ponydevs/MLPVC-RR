@@ -8,10 +8,10 @@
 	<table id="logs">
 		<thead>
 			<tr>
-				<td class="entryid">#</td>
-				<td class="timestamp">Timestamp</td>
-				<td class="ip">Initiator</td>
-				<td class="reftype">Event</td>
+				<th class="entryid">#</th>
+				<th class="timestamp">Timestamp</th>
+				<th class="ip">Initiator</th>
+				<th class="reftype">Event</th>
 			</tr>
 		</thead>
 		<tbody><?=log_tbody_render($LogItems)?></tbody>

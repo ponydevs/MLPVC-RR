@@ -62,16 +62,26 @@
 		return $HTML;
 	}
 
+	function get_tags($PonyID = null, $limit = null){
+		global $CGDb;
+
+		$CGDb
+			->orderByLiteral('CASE WHEN tags.type IS NULL THEN 1 ELSE 0 END')
+			->orderBy('CONCAT(tags.type)')
+			->orderBy('tags.name');
+		return !empty($PonyID)
+			? $CGDb
+				->join('tags','tagged.tid = tags.tid','LEFT')
+				->where('tagged.ponyid',$PonyID)
+				->get('tagged',$limit,'tags.*')
+			: $CGDb->get('tags',$limit);
+	}
+
 	// Return the markup of a set of tags belonging to a specific pony \\
 	function get_tags_html($PonyID, $wrap = true){
 		global $CGDb;
 
-		$Tags = $CGDb->rawQuery(
-			'SELECT cgt.*
-			FROM tagged cgtg
-			LEFT JOIN tags cgt ON cgtg.tid = cgt.tid
-			WHERE cgtg.ponyid = ?
-			ORDER BY (CASE WHEN cgt.type IS NULL then 1 ELSE 0 END), CONCAT(cgt.type), cgt.name',array($PonyID));
+		$Tags = get_tags($PonyID);
 
 		$HTML = $wrap ? "<div class=tags>" : '';
 		if (PERM('inspector'))
@@ -264,4 +274,29 @@
 		if (preg_match('/^'.EPISODE_ID_PATTERN.'/i',$tag,$_match))
 			$tag = 's'.intval($_match[1], 10).'e'.intval($_match[2], 10).(!empty($_match[3]) ? intval($_match[3], 10) : '');
 		else return false;
+	}
+
+	// Generates the markup for the tags sub-page
+	function get_taglist_html($Tags, $wrap = true){
+		global $TAG_TYPES_ASSOC;
+		$HTML = $wrap ? '<tbody>' : '';
+
+		if (!empty($Tags)) foreach ($Tags as $t){
+			$trClass = $t['type'] ? ' class=typ-'.$t['type'] : '';
+			$type = $t['type'] ? $TAG_TYPES_ASSOC[$t['type']] : '';
+			$utils = "<button class='typcn typcn-minus delete' title=Delete></button> <button class='typcn typcn-flow-merge merge' title=Merge></button>";
+			$HTML .= <<<HTML
+			<tr$trClass>
+				<td class="tid">{$t['tid']}</td>
+				<td class="name">{$t['name']}</td>
+				<td class="utils">$utils</td>
+				<td class="title">{$t['title']}</td>
+				<td class="type">$type</td>
+				<td class="uses">{$t['uses']}</td>
+			</tr>
+HTML;
+		}
+
+		if ($wrap) $HTML .= '</tbody>';
+		return $HTML;
 	}

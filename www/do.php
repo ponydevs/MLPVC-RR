@@ -554,15 +554,9 @@
 				$title = 'Logs';
 
 				if (empty($MSG)){
-					if (empty($Page) || $Page < 1)
-						$Page = 1;
-
 					$ItemsPerPage = 10;
-					$EntryCount = $Database->getOne('log', 'COUNT(*) as rows')['rows'];
-					$MaxPages = ceil($EntryCount/$ItemsPerPage);
-
-					if ($Page > $MaxPages)
-						$Page = $MaxPages;
+					$EntryCount = $Database->count('log');
+					list($Page,$MaxPages) = calc_page($EntryCount);
 
 					fix_path("/logs/$Page");
 					$title = "Page $Page - $title";
@@ -748,15 +742,25 @@
 
 					$_match = array();
 					if ($data === 'gettags'){
-						if (!preg_match('~'.TAG_NAME_PATTERN.'~u', $_GET['s']))
-							typeahead_results('[]');
+						$viaTypeahead = !empty($_GET['s']);
+						$limit = null;
+						$cols = "tid, name, type";
+						if ($viaTypeahead){
+							if (!preg_match('~'.TAG_NAME_PATTERN.'~u', $_GET['s']))
+								typeahead_results('[]');
 
-						$query = trim(strtolower($_GET['s']));
-						ep_tag_name_check($query);
-						$Tags = $CGDb
-							->where('name',"%$query%",'LIKE')
-							->orderBy('name')
-							->get('tags',5,'tid, name, type');
+							$query = trim(strtolower($_GET['s']));
+							ep_tag_name_check($query);
+							$CGDb->where('name',"%$query%",'LIKE');
+							$limit = 5;
+							$cols = "tid, name, CONCAT('typ-', type) as type";
+						}
+						else $CGDb->orderBy('type','ASC');
+
+						if (isset($_POST['not']) && is_numeric($_POST['not']))
+							$CGDb->where('tid',intval($_POST['not'], 10),'!=');
+
+						$Tags = $CGDb->orderBy('name','ASC')->get('tags',$limit,$cols);
 
 						typeahead_results(empty($Tags) ? '[]' : $Tags);
 					}
@@ -876,6 +880,7 @@
 									'ponyid' => $Pony['id'],
 									'tid' => $Tag['tid'],
 								))) respond(ERR_DB_FAIL);
+								update_tag_count($Tag['tid']);
 								respond(array('tags' => get_tags_html($Pony['id'], NOWRAP)));
 							break;
 							case "untag":
@@ -891,6 +896,7 @@
 
 								if (!$CGDb->where('ponyid', $Pony['id'])->where('tid', $Tag['tid'])->delete('tagged'))
 									respond(ERR_DB_FAIL);
+								update_tag_count($Tag['tid']);
 								respond(array('tags' => get_tags_html($Pony['id'], NOWRAP)));
 							break;
 							default: respond('Bad request');
@@ -898,11 +904,13 @@
 
 						$CGDb->where('id', $Pony['id'])->update('ponies', $update);
 					}
-					else if (preg_match('~^([gs]et|make|del)tag(?:/(\d+))?$~', $data, $_match)){
-						$setting = $_match[1] === 'set';
-						$getting = $_match[1] === 'get';
-						$deleting = $_match[1] === 'del';
-						$new = $_match[1] === 'make';
+					else if (preg_match('~^([gs]et|make|del|merge)tag(?:/(\d+))?$~', $data, $_match)){
+						$action = $_match[1];
+						$setting = $action === 'set';
+						$getting = $action === 'get';
+						$deleting = $action === 'del';
+						$new = $action === 'make';
+						$merging = $action === 'merge';
 
 						if (!$new){
 							if (empty($_match[2]))
@@ -921,6 +929,34 @@
 							}
 						}
 						$data = array();
+
+						if ($merging){
+							if (empty($_POST['targetid']))
+								respond('Missing target tag ID');
+							$TargetID = intval($_POST['targetid'], 10);
+							$Target = $CGDb->where('tid', $TargetID)->getOne('tags','tid');
+							if (empty($Target))
+								respond('Target tag does not exist');
+
+							$_TargetTagged = $CGDb->where('tid', $Target['tid'])->get('tagged','ponyid');
+							$TargetTagged = array();
+							foreach ($_TargetTagged as $tg)
+								$TargetTagged[] = $tg['ponyid'];
+
+							$Tagged = $CGDb->where('tid', $Tag['tid'])->get('tagged','ponyid');
+							foreach ($Tagged as $tg){
+								if (in_array($ponyid, $TargetTagged)) continue;
+
+								if (!$CGDb->insert('tagged',array(
+									'tid' => $Target['tid'],
+									'ponyid' => $tg['ponyid']
+								))) respond("Tag merge process failed, please re-try.<br>Technical details: ponyid={$tg['ponyid']} tid={$Target['tid']}");
+							}
+							$CGDb->where('tid', $Tag['tid'])->delete('tags');
+
+							update_tag_count($Target['tid']);
+							respond('Tags successfully merged', 1);
+						}
 
 						$name = isset($_POST['name']) ? strtolower(trim($_POST['name'])) : null;
 						$nl = !empty($name) ? strlen($name) : 0;
@@ -1088,16 +1124,39 @@
 					else do404();
 				}
 
-				if (is_numeric($data))
-					$Page = intval($data, 10);
-				if (empty($Page) || $Page < 1)
-					$Page = 1;
+				if (preg_match('~^tags~',$data) && PERM('inspector')){
+					$ItemsPerPage = 20;
+					$EntryCount = $CGDb->count('tags');
+					list($Page,$MaxPages) = calc_page($EntryCount);
 
-				$EntryCount = $CGDb->getOne('ponies', 'COUNT(*) as rows')['rows'];
-				$MaxPages = ceil($EntryCount/$ItemsPerPage);
+					fix_path("/{$color}guide/tags/$Page");
+					$heading = "Tags";
+					$title = "Page $Page - $heading - $Color Guide";
 
-				if ($Page > $MaxPages)
-					$Page = $MaxPages;
+					$Tags = get_tags(null,array($ItemsPerPage*($Page-1), $ItemsPerPage));
+
+					if (isset($_GET['js'])){
+						respond(array(
+							'output' => get_taglist_html($Tags, NOWRAP),
+							'update' => '#tags tbody',
+							'page' => $Page,
+							'maxpage' => $MaxPages,
+							'title' => $title,
+						));
+					}
+
+
+					loadPage(array(
+						'title' => $title,
+						'heading' => $heading,
+						'view' => "$do-tags",
+						'css' => "$do-tags",
+						'js' => array("$do-tags",'paginate'),
+					));
+				}
+
+				$EntryCount = $CGDb->count('ponies');
+				list($Page,$MaxPages) = calc_page($EntryCount);
 
 				fix_path("/{$color}guide/$Page");
 				$heading = "$Color Guide";

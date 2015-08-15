@@ -150,10 +150,11 @@ $(function(){
 				});
 		$lbl.append($chx, $.mk('span').addClass('tag typ-'+type).text(label)).appendTo($_typeSelect);
 	});
-	$tagEditForm
-		.append($.mk('div').addClass('align-center').append('<span>Tag type (optional)</span><br>',$_typeSelect))
-		.append($.mk('label').append('<span>Tag description (max 255 chars., optional)</span><br><textarea name=title maxlength=255></textarea>'))
-		.append($.mk('div').attr('class','notice').hide().html('<p></p>'));
+	$tagEditForm.append(
+		$.mk('div').addClass('align-center').append('<span>Tag type (optional)</span><br>',$_typeSelect),
+		$.mk('label').append('<span>Tag description (max 255 chars., optional)</span><br><textarea name=title maxlength=255></textarea>'),
+		$.mk('div').attr('class','notice').hide().html('<p></p>')
+	);
 	function reorder($this){
 		$this.children('.tag').sort(function(a, b){
 			var regex = /^.*typ-([a-z]+).*$/;
@@ -583,7 +584,7 @@ $(function(){
 				display: 'name',
 				source: taglist,
 				templates: {
-					suggestion: Handlebars.compile('<span class="tag id-{{tid}} typ-{{type}}">{{name}}</span>')
+					suggestion: Handlebars.compile('<span class="tag id-{{tid}} {{type}}">{{name}}</span>')
 				}
 			});
 			$input.on('keydown',function(e){
@@ -601,14 +602,14 @@ $(function(){
 					$input.parent().addClass('loading');
 
 					$.post('/colorguide/tag/'+ponyID,{ tag_name: tag_name }, $.mkAjaxHandler(function(){
-						$input.removeAttr('disabled');
+						$input.removeAttr('disabled').parent().removeClass('loading');
 						if (this.status){
 							$tagsDiv.children('[data-hasqtip]').qtip('destroy', true);
 							$tagsDiv.children('.tag').remove();
 							$tagsDiv.append($(this.tags).filter('span'));
 							window.tooltips();
 							ctxmenus();
-							$input.typeahead('val', '');
+							$input.typeahead('val', '').focus();
 						}
 						else if (typeof this.cancreate === 'string'){
 							var new_name = this.cancreate;
@@ -619,7 +620,6 @@ $(function(){
 							});
 						}
 						else $.Dialog.fail(title, this.message);
-						$input.focus().parent().removeClass('loading');
 					}));
 				}
 			});

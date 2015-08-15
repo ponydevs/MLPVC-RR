@@ -1,0 +1,21 @@
+$_TBase: #0c70b1;
+$TDefault: gray;
+$TCategory: $_TBase;
+$TSpecies: adjust_hue($_TBase, -70);
+$TGender: adjust_hue($_TBase, 60);
+$TAppearance: adjust_hue($_TBase, 120);
+$TEpisode: adjust_hue($_TBase, 200);
+
+@mixin tag-style($color:$TDefault, $icon:false){
+	color: darken($color, 5);
+	background-color: lighten($color, 50);
+	@if ($icon != false){
+			&:before { content: $icon }
+	}
+}
+@mixin tag-button-style($color:$TDefault){
+	button {
+		background-color: darken($color, 5);
+		color: lighten($color, 50);
+	}
+}

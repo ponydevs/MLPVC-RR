@@ -27,9 +27,11 @@ $(function(){
 			newPageNumber = parseInt(this.page, 10);
 
 			window.updateTimesF();
-			$('nav').find('li.active').children().last().text('Page '+newPageNumber);
+			$('nav').find('li.active').children().last().html(function(){
+				return this.innerHTML.replace(/Page \d+/,'Page '+newPageNumber);
+			});
 			$title.text(this.title);
-			history.pushState({},'',target);
+			history.pushState({},'',basePath+newPageNumber);
 
 			var max = this.maxpage;
 			$pagination.each(function(){

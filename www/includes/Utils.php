@@ -1382,10 +1382,14 @@ HTML;
 		if (!empty($where))
 			$Database->where($where);
 
-		$eps = $Database->orderBy('season')->orderBy('episode')->get('episodes',$count);
-		foreach ($eps as $i => $ep)
-			$eps[$i] = add_episode_airing_data($ep);
-		return $eps;
+		$Database->orderBy('season')->orderBy('episode');
+		if ($count !== 1){
+			$eps =  $Database->get('episodes',$count);
+			foreach ($eps as $i => $ep)
+				$eps[$i] = add_episode_airing_data($ep);
+			return $eps;
+		}
+		else return add_episode_airing_data($Database->getOne('episodes'));
 	}
 
 	/**
@@ -1394,8 +1398,7 @@ HTML;
 	 * @return array
 	 */
 	function get_latest_episode(){
-		global $Database;
-		return $Database->singleRow(get_episodes(1,'airs < NOW() - INTERVAL -24 HOUR'));
+		return get_episodes(1,'airs < NOW() - INTERVAL -24 HOUR');
 	}
 
 	/**
@@ -1760,4 +1763,30 @@ ORDER BY `count` DESC
 			$Pagination .= "<li>$li</li>";
 		}
 		return "<ul class=pagination>$Pagination</ul>";
+	}
+
+	// Pagiation calculate page
+	function calc_page($EntryCount){
+		global $data, $ItemsPerPage;
+		$Page = preg_replace('~^.*(\d+)$~','$1',$data);
+		if (is_numeric($Page))
+			$Page = intval($Page, 10);
+
+		if (empty($Page) || $Page < 1)
+			$Page = 1;
+
+		$MaxPages = ceil($EntryCount/$ItemsPerPage);
+
+		if ($Page > $MaxPages)
+			$Page = $MaxPages;
+
+		return array($Page, $MaxPages);
+	}
+
+	// Update use count on a tag
+	function update_tag_count($TagID){
+		global $CGDb;
+
+		$Tagged = $CGDb->where('tid', $TagID)->count('tagged');
+		$CGDb->where('tid', $TagID)->update('tags',array('uses' => $Tagged));
 	}
