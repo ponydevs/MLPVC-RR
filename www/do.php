@@ -3,13 +3,12 @@
 	require "init.php";
 
 	# Chck activity
-	if (isset($_POST['do'])) $do = $_POST['do'];
-	else if (!isset($_POST['do']) && isset($_GET['do'])) $do = $_GET['do'];
+	if (isset($_GET['do'])) $do = $_GET['do'];
+	if (empty($do)) $do = 'index';
 	
 	# Get additional details
-	if (isset($_POST['data'])) $data = $_POST['data'];
-	else if (!isset($_POST['data']) && isset($_GET['data'])) $data = $_GET['data'];
-	else $data = '';
+	if (isset($_GET['data'])) $data = $_GET['data'];
+	if (empty($data)) $data = '';
 
 	// Stored here for quick reference
 	$IndexSettings = array(
