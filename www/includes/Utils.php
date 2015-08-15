@@ -771,14 +771,17 @@ HTML;
 				return $Deviation;
 			}
 
-			require 'Image.php';
+			require_once 'Image.php';
 
 			$insert = array(
 				'title' => $json['title'],
-				'preview' => Image::removeProtocol($json['thumbnail_url']),
-				'fullsize' => Image::removeProtocol($json['url']),
+				'preview' => $json['thumbnail_url'],
+				'fullsize' => $json['url'],
 				'provider' => $type,
 			);
+
+			Image::removeProtocol($insert['preview']);
+			Image::removeProtocol($insert['fullsize']);
 
 			if (empty($Deviation)){
 				$insert['id'] = $ID;
@@ -1501,7 +1504,7 @@ HTML;
 			respond('Please specify a deviation URL');
 		$deviation = $_POST['deviation'];
 		try {
-			require 'includes/Image.php';
+			require_once 'includes/Image.php';
 			$Image = new Image($deviation, 'fav.me');
 
 			foreach ($POST_TYPES as $what){

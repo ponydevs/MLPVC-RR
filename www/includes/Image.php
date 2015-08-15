@@ -33,6 +33,7 @@
 		private static $stripProtocol = array('fav.me','sta.sh');
 		public static function removeProtocol(&$url){
 			$url = preg_replace('/^https?:/','',$url);
+			return 'NOPE';
 		}
 		private static function test_provider($url, $pattern, $name){
 			$match = array();

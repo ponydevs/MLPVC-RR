@@ -103,7 +103,7 @@
 				}
 
 				if (!empty($_POST['image_url'])){
-					require 'includes/Image.php';
+					require_once 'includes/Image.php';
 					try {
 						$Image = new Image($_POST['image_url']);
 					}
