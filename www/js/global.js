@@ -129,7 +129,7 @@ $(function(){
 	window.setCD = function(){
 		var $uc = $('#upcoming');
 		if ($uc.length === 0) return;
-		$cd = $uc.find('li').first().find('.countdown');
+		$cd = $uc.find('li').first().find('time').addClass('nodt');
 		cdtimer = setInterval(function(){
 			cdupdate($cd);
 		}, 1000);
@@ -147,8 +147,9 @@ $(function(){
 	window.setCD();
 	function pad(n){return n<10?'0'+n:n}
 	function cdupdate($cd){
-		var airs = new Date($cd.data('airs')),
-			diff = window.getTimeDiff(new Date, airs);
+		var now = new Date(),
+			airs = new Date($cd.attr('datetime')),
+			diff = getTimeDiff(now, airs);
 		if (diff.past === true || $cd.length === 0){
 			if ($cd.length > 0){
 				var $oldcd = $cd,
@@ -157,16 +158,20 @@ $(function(){
 			}
 			clearInterval(cdtimer);
 			if ($cd.length === 0 || $nextime.length === 0) return $('#upcoming').remove();
-			$.mk('span').addClass('countdown').data('airs', $nextime.attr('datetime')).insertAfter($nextime);
-			$nextime.remove();
 			return window.setCD();
 		}
 		var text = 'in ';
-		if (diff.day > 0)
-			text += diff.day+' day'+(diff.day!==1?'s':'')+' & ';
-		if (diff.hour > 0)
-			text += diff.hour+':';
-		$cd.text(text+pad(diff.minute)+':'+pad(diff.second));
+		if (diff.time < one.month){
+			if (diff.week > 0)
+				diff.day += diff.week * 7;
+			if (diff.day > 0)
+				text += diff.day+' day'+(diff.day!==1?'s':'')+' & ';
+			if (diff.hour > 0)
+				text += diff.hour+':';
+			text += +pad(diff.minute)+':'+pad(diff.second);
+		}
+		else text = createTimeStr(now, airs);
+		$cd.text(text);
 	}
 
 	// Quotes

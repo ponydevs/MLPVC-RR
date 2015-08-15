@@ -74,8 +74,7 @@
 				});
 			}
 			
-			var diff = timeDifference(new Date,timestamp),
-				timestr = createTimeStr(diff),
+			var timestr = createTimeStr(new Date,timestamp),
 				$elapsedHolder = $this.parent().children('.dynt-el'),
 				updateHandler = $this.data('dyntime-beforeupdate');
 
@@ -98,21 +97,26 @@
 			}
 		});
 	};
-	function timeDifference(n,e) {
-		var substract = n.getTime() - e.getTime(),
-			d = { past: substract > 0, time: Math.abs(substract), target: e},
+	window.getTimeDiff = function(){ return timeDifference.apply(this, arguments) };
+	function timeDifference(now, timestamp) {
+		var substract = (now.getTime() - timestamp.getTime())/1000,
+			d = {
+				past: substract > 0,
+				time: Math.abs(substract),
+				target: timestamp
+			},
 			time = d.time;
 
-		d.day = Math.floor(time/1000/60/60/24);
-		time -= d.day*1000*60*60*24;
+		d.day = Math.floor(time/one.day);
+		time -= d.day * one.day;
 		
-		d.hour = Math.floor(time/1000/60/60);
-		time -= d.hour*1000*60*60;
+		d.hour = Math.floor(time/one.hour);
+		time -= d.hour * one.hour;
 		
-		d.minute = Math.floor(time/1000/60);
-		time -= d.minute*1000*60;
+		d.minute = Math.floor(time/one.minute);
+		time -= d.minute * one.minute;
 		
-		d.second = Math.floor(time/1000);
+		d.second = Math.floor(time);
 		
 		if (d.day >= 7){
 			d.week = Math.floor(d.day/7);
@@ -129,28 +133,45 @@
 		
 		return d;
 	}
-	window.getTimeDiff = function(){
-		return timeDifference.apply(this, arguments);
-	};
-	function createTimeStr(obj){
-		if (typeof obj !== 'object' || $.isArray(obj)) return false;
-		if (obj.time > 0) delete obj.time;
-		
-		var keys = Object.keys(obj), returnStr = '', i;
-		for (i = 0, l = keys.length; i < l; i++) if (keys[i] !== 'second' && obj[keys[i]] < 1) delete obj[keys[i]];
+	var one = {
+		'year':   31557600,
+		'month':  2592000,
+		'week':   604800,
+		'day':    86400,
+		'hour':   3600,
+		'minute': 60,
+		'second': 1,
+	}, order = ['year', 'month', 'week', 'day', 'hour', 'minute', 'second'], i = 0;
+	window.one = (function(one){return one})(one);
 
-		var arr = ['year','month','week','day','hour','minute','second'], l  = arr.length, el;
-		for (i = 0; i < l; i++)
-			if (obj[el = arr[i]] > 0){
-				if (!obj.past && el !== 'second')
-					obj[el]++;
-				returnStr = timeparts(el,obj[el]);
-				break;
+	window.createTimeStr = function(){ return createTimeStr.apply(this, arguments) };
+	function createTimeStr(now, timestamp){
+		var delta = (now.getTime() - timestamp.getTime())/1000,
+			past = delta > 0,
+			str = false;
+		if (!past) delta *= -1;
+
+		console.groupCollapsed('#'+(i++)+' '+timestamp.toISOString());
+		console.log('delta: '+delta);
+
+		$.each(order, function(_, unit){
+			var value = one[unit];
+			console.log(delta/value, delta >= value, unit);
+			if (delta >= value){
+				var left = Math.floor(delta / value);
+				delta -= (left * value);
+				if (!past && unit === 'minute')
+					left++;
+				str = left!=1?left+' '+unit+'s':(unit=='hour'?'an':'a')+' '+unit;
+				console.groupEnd();
+				return false;
 			}
+		});
 
-		if (returnStr.length === 0) return startval;
-		if (returnStr === '1 day') return obj.past ? 'yesterday' : 'tomorrow';
-		else return obj.past ? returnStr+' ago' : 'in '+returnStr;
+		if (str === false) return startval;
+
+		if (str === '1 day') return past ? 'yesterday' : 'tomorrow';
+		else return past ? str+' ago' : 'in '+str;
 	}
 	update();
 	window.updateTimesF = function(){

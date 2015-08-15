@@ -210,8 +210,20 @@ HTML;
 		return str_replace("'", '&apos;', $str);
 	}
 
+	// Data for the time functions below
+	$TIME_DATA = array(
+		'year' =>   31557600,
+		'month' =>  2592000,
+		'week' =>   604800,
+		'day' =>    86400,
+		'hour' =>   3600,
+		'minute' => 60,
+		'second' => 1,
+	);
+
 	// Gets the difference between 2 timestamps \\
-	function timeDifference($n,$e) {
+	function timeDifference($n,$e){
+		global $TIME_DATA;
 		$substract = $n - $e;
 		$d = array(
 			'past' => $substract > 0,
@@ -220,14 +232,14 @@ HTML;
 		);
 		$time = $d['time'];
 		
-		$d['day'] = floor($time/60/60/24);
-		$time -= $d['day']*60*60*24;
+		$d['day'] = floor($time/$TIME_DATA['day']);
+		$time -= $d['day'] * $TIME_DATA['day'];
 		
-		$d['hour'] = floor($time/60/60);
-		$time -= $d['hour']*60*60;
+		$d['hour'] = floor($time/$TIME_DATA['hour']);
+		$time -= $d['hour'] * $TIME_DATA['hour'];
 		
-		$d['minute'] = floor($time/60);
-		$time -= $d['minute']*60;
+		$d['minute'] = floor($time/$TIME_DATA['minute']);
+		$time -= $d['minute'] * $TIME_DATA['minute'];
 		
 		$d['second'] = floor($time);
 		
@@ -250,15 +262,11 @@ HTML;
 	/**
 	 * Converts $timestamp to an "X somthing ago" format
 	 * Always uses the greatest unit available
+	 *
+	 * @param int $timestamp
+	 *
+	 * @return string
 	 */
-	$TIME_DATA = array(
-		'year' => 31557600,
-		'month' => 2592000,
-		'day' => 86400,
-		'hour' => 3600,
-		'minute' => 60,
-		'second' => 1,
-	);
 	function time_ago($timestamp){
 		global $TIME_DATA;
 
@@ -266,13 +274,13 @@ HTML;
 		$past = $delta > 0;
 		if (!$past) $delta *= -1;
 
-		foreach ($TIME_DATA as $n => $v){
-			if ($delta >= $v){
-				$left = floor($delta / $v);
-				$delta -= ($left * $v);
-				if (!$past && $n !== 'second')
+		foreach ($TIME_DATA as $unit => $value){
+			if ($delta >= $value){
+				$left = floor($delta / $value);
+				$delta -= ($left * $value);
+				if (!$past && $unit === 'minute')
 					$left++;
-				$str = "{$left} ".($left!=1?"{$n}s":$n);
+				$str = $left!=1?"$left {$unit}s":($unit=='hour'?'an':'a')." $unit";
 				break;
 			}
 		}
@@ -1621,6 +1629,7 @@ HTML;
 
 	// Render upcoming episode HTML \\
 	function get_upcoming_eps($Upcoming = null){
+		global $TIME_DATA;
 		if (empty($Upcoming)){
 			global $Database;
 			$Upcoming = $Database->where('airs > NOW()')->get('episodes');
@@ -1631,16 +1640,20 @@ HTML;
 			$airs = date('c', $airtime);
 			$month = date('M', $airtime);
 			$day = date('j', $airtime);
-			if ($i === 0){
-				$diff = timeDifference(time(), $airtime);
-				$time = 'in ';
+			$diff = timeDifference(time(), $airtime);
+
+			$time = 'in ';
+			if ($diff['time'] < $TIME_DATA['month']){
+				$tz = "(".date('T', $airtime).")";
+				if ($diff['week'] > 0)
+					$diff['day'] += $diff['week'] * 7;
 				if (!empty($diff['day']))
 					$time .=  "{$diff['day']} day".($diff['day']!==1?'s':'').' & ';
 				if (!empty($diff['hour']))
 					$time .= "{$diff['hour']}:";
 				foreach (array('minute','second') as $k)
 					$diff[$k] = pad($diff[$k]);
-				$time = "<span class=countdown data-airs=\"$airs\">$time{$diff['minute']}:{$diff['second']} (".date('T', $airtime).")</span>";
+				$time = "<time datetime='$airs'>$time{$diff['minute']}:{$diff['second']} $tz</time>";
 			}
 			else $time = timetag($ep['airs']);
 			$HTML .= "<li><div class=calendar><span class=top>$month</span><span class=bottom>$day</span></div>".
