@@ -477,7 +477,7 @@ $(function(){
 							$ErrorNotice.text('Saving changes...').parent().removeClass('fail').addClass('info').show();
 							$.Dialog.center();
 
-							$.post('/colorguide/settag/'+tagID, $(this).mkData(),$.mkAjaxHandler(function(){
+							$.post('/colorguide/settag/'+tagID, $form.mkData(), $.mkAjaxHandler(function(){
 								if (this.status){
 									var $affected = $('.id-'+this.tid);
 									$affected.qtip('destroy', true);

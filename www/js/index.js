@@ -376,14 +376,14 @@ $(function(){
 					});
 			}
 
-			$.Dialog.wait(Type,'Submitting '+type);
-
 			var data = $form.mkData({
 				what: type,
 				episode: EPISODE,
 				season: SEASON,
 				image_url: $formImgInput.data('prev-url'),
 			});
+
+			$.Dialog.wait(Type,'Submitting '+type);
 
 			$.post('/post',data,$.mkAjaxHandler(function(){
 				if (this.status){

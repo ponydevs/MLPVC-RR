@@ -19,24 +19,23 @@ $(function(){
 
 	$changeRole.on('click',function(){
 		var title = "Change group";
-		$.Dialog.request(title,$RoleForm.clone(),'rolemod','Change',function(){
-			$('#rolemod').on('submit',function(e){
+		$.Dialog.request(title,$RoleForm.clone(),'rolemod','Change',function($form){
+			$form.on('submit',function(e){
 				e.preventDefault();
 
+				var data = $form.mkData();
 				$.Dialog.wait(title,'Moving user to the new group');
 
-				$.post("newgroup/"+name, $(this).mkData(), function(data){
-					if (typeof data !== 'object') return console.log(data) && $w.trigger('ajaxerror');
-
-					if (data.status){
-						$currRole.children('span').text(currRole = ROLES[data.ng]);
-						$roleBadge.text(data.badge);
+				$.post("newgroup/"+name, data, $.mkAjaxHandler(function(){
+					if (this.status){
+						$currRole.children('span').text(currRole = ROLES[this.ng]);
+						$roleBadge.text(this.badge);
 						$.Dialog.close();
 
-						$banToggle[(data.canbebanned ? 'remove' : 'add')+'Class']('hidden');
+						$banToggle[(this.canbebanned ? 'remove' : 'add')+'Class']('hidden');
 					}
-					else $.Dialog.fail(title,data.message);
-				});
+					else $.Dialog.fail(title,this.message);
+				}));
 			}).find('optgroup').children().filter(function(){ return $(this).text() === currRole }).attr('selected', true);
 		});
 	});
@@ -65,9 +64,10 @@ $(function(){
 				$form.on('submit',function(e){
 					e.preventDefault();
 
+					var data = $(this).mkData();
 					$.Dialog.wait(title, 'Gathering the Elements of Harmony');
 
-					$.post(action+'/'+name, $(this).mkData(), function(data){
+					$.post(action+'/'+name, data, function(data){
 						if (typeof data !== 'object') return console.log(data) && $w.trigger('ajaxerror');
 
 						if (data.status){
