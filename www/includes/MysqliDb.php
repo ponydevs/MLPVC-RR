@@ -327,6 +327,49 @@ class MysqliDb
     }
 
     /**
+     * Helper function to execute raw SQL query and return only 1 row of results.
+     * Note that function do not add 'limit 1' to the query by itself
+     * Same idea as getOne()
+     *
+     * @param string $query      User-provided query to execute.
+     * @param array  $bindParams Variables array to bind to the SQL statement.
+     *
+     * @return array Contains the returned row from the query.
+     */
+    public function rawQueryOne ($query, $bindParams = null) {
+        $res = $this->rawQuery ($query, $bindParams);
+        if (is_array ($res) && isset ($res[0]))
+            return $res[0];
+
+        return null;
+    }
+
+    /**
+     * Helper function to execute raw SQL query and return only 1 column of results.
+     * If 'limit 1' will be found, then string will be returned instead of array
+     * Same idea as getValue()
+     *
+     * @param string $query      User-provided query to execute.
+     * @param array  $bindParams Variables array to bind to the SQL statement.
+     *
+     * @return mixed Contains the returned rows from the query.
+     */
+    public function rawQueryValue ($query, $bindParams = null) {
+        $res = $this->rawQuery ($query, $bindParams);
+        if (!$res)
+            return null;
+
+        $limit = preg_match ('/limit\s+1;?$/i', $query);
+        $key = key ($res[0]);
+        if (isset($res[0][$key]) && $limit == true)
+            return $res[0][$key];
+
+        $newRes = Array ();
+        for ($i = 0; $i < $this->count; $i++)
+            $newRes[] = $res[$i][$key];
+        return $newRes;
+    }
+    /**
      *
      * @param string $query   Contains a user-provided select query.
      * @param integer|array $numRows Array to define SQL limit in format Array ($count, $offset)
@@ -400,7 +443,11 @@ class MysqliDb
             $columns = '*';
 
         $column = is_array($columns) ? implode(', ', $columns) : $columns;
-        $this->_tableName = self::$prefix . $tableName;
+        if (strpos ($tableName, '.') === false)
+            $this->_tableName = self::$prefix . $tableName;
+        else
+            $this->_tableName = $tableName;
+
         $this->_query = 'SELECT ' . implode(' ', $this->_queryOptions) . ' ' .
                         $column . " FROM " . $this->_tableName;
         $stmt = $this->_buildQuery($numRows);
@@ -441,17 +488,24 @@ class MysqliDb
      * A convenient SELECT COLUMN function to get a single column value from one row
      *
      * @param string  $tableName The name of the database table to work with.
+     * @param int     $limit     Limit of rows to select. Use null for unlimited..1 by default
      *
-     * @return string Contains the value of a returned column.
+     * @return mixed Contains the value of a returned column / array of values
      */
-    public function getValue($tableName, $column)
+    public function getValue ($tableName, $column, $limit = 1)
     {
-        $res = $this->ArrayBuilder()->get ($tableName, 1, "{$column} as retval");
+        $res = $this->ArrayBuilder()->get ($tableName, $limit, "{$column} AS retval");
 
-        if (isset($res[0]["retval"]))
+        if (!$res)
+            return null;
+
+        if (isset($res[0]["retval"]) && $limit == 1)
             return $res[0]["retval"];
 
-        return null;
+        $newRes = Array ();
+        for ($i = 0; $i < $this->count; $i++)
+            $newRes[] = $res[$i]['retval'];
+        return $newRes;
     }
 
     /**
@@ -907,8 +961,11 @@ class MysqliDb
                     $x[$key] = $val;
             }
             $this->count++;
-            array_push($results, $x);
+            array_push ($results, $x);
         }
+        if ($shouldStoreResult)
+            $stmt->free_result();
+        $stmt->close();
         // stored procedures sometimes can return more then 1 resultset
         if ($this->mysqli()->more_results())
             $this->mysqli()->next_result();
@@ -1280,18 +1337,24 @@ class MysqliDb
 
     /**
      * Method generates incremental function call
-     * @param int increment amount. 1 by default
+     * @param int increment by int or float. 1 by default
      */
     public function inc($num = 1) {
-        return Array ("[I]" => "+" . (int)$num);
+        if(!is_numeric($num)){
+            trigger_error('Argument supplied to inc must be a number', E_USER_ERROR);
+        }
+        return Array ("[I]" => "+" . $num);
     }
 
     /**
      * Method generates decrimental function call
-     * @param int increment amount. 1 by default
+     * @param int increment by int or float. 1 by default
      */
     public function dec ($num = 1) {
-        return Array ("[I]" => "-" . (int)$num);
+        if(!is_numeric($num)){
+            trigger_error('Argument supplied to dec must be a number', E_USER_ERROR);
+        }
+        return Array ("[I]" => "-" . $num);
     }
 
     /**
@@ -1402,6 +1465,26 @@ class MysqliDb
 
         return __CLASS__ . "->" . $caller["function"] . "() >>  file \"" .
                 str_replace ($this->traceStripPrefix, '', $caller["file"] ) . "\" line #" . $caller["line"] . " " ;
+    }
+
+    /**
+     * Method to check if needed table is created
+     *
+     * @param array $tables Table name or an Array of table names to check
+     *
+     * @returns boolean True if table exists
+     */
+    public function tableExists ($tables) {
+        $tables = !is_array ($tables) ? Array ($tables) : $tables;
+        $count = count ($tables);
+        if ($count == 0)
+            return false;
+
+        array_walk ($tables, function (&$value, $key) { $value = self::$prefix . $value; });
+        $this->where ('table_schema', $this->db);
+        $this->where ('table_name', $tables, 'IN');
+        $this->get ('information_schema.tables', $count);
+        return $this->count == $count;
     }
 } // END class
 ?>
