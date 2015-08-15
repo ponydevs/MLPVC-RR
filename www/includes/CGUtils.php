@@ -67,8 +67,8 @@
 
 		$CGDb
 			->orderByLiteral('CASE WHEN tags.type IS NULL THEN 1 ELSE 0 END')
-			->orderBy('CONCAT(tags.type)')
-			->orderBy('tags.name');
+			->orderBy('CONCAT(tags.type)', 'ASC')
+			->orderBy('tags.name', 'ASC');
 		return !empty($PonyID)
 			? $CGDb
 				->join('tags','tagged.tid = tags.tid','LEFT')
