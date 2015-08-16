@@ -19,7 +19,7 @@
 			if (!empty($reqProv)){
 				if (!is_array($reqProv))
 					$reqProv = array($reqProv);
-				if ($provider['name'] !== $reqProv)
+				if (!in_array($provider['name'], $reqProv))
 					throw new MismatchedProviderException($provider['name']);
 			}
 			$this->provider = $provider['name'];
