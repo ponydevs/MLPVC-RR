@@ -325,39 +325,53 @@ $(function(){
 
 			$formImgCheck.removeClass('red');
 			imgCheckDisabler(true);
-			var url = $formImgInput.val();
+			var url = $formImgInput.val(),
+				title = Type+' process';
 
 			$.Dialog.wait(Type+' process','Checking image');
 
 			$.post('/post', { image_url: url }, $.mkAjaxHandler(function(){
-				if (this.status){
-					$previewIMG.attr('src',this.preview).show().on('load',function(){
+				var data = this;
+				if (!data.status){
+					$notice.html(data.message).show();
+					$previewIMG.hide();
+					return $.Dialog.close();
+				}
+
+				function load(data, attempts){
+					$.Dialog.wait(title,'Checking image availability');
+
+					$previewIMG.attr('src',data.preview).show().off('load error').on('load',function(){
 						$notice.hide();
 
 						$formImgInput.data('prev-url', url);
 
-						if (!!this.title && !$formTitleInput.val().trim())
+						if (!!data.title && !$formTitleInput.val().trim())
 							$.Dialog.confirm(
 								'Confirm '+type+' title',
-								'The image you just checked had the following title:<br><br><p class=align-center><strong>'+this.title+'</strong></p>'
+								'The image you just checked had the following title:<br><br><p class=align-center><strong>'+data.title+'</strong></p>'
 								 +'<br>Would you like to use this as the '+type+'\'s description?<br>Keep in mind that it should describe the thing(s) '
 								 +(type==='request'?'being requested':'you plan to vector')+'.'
 								 +'<p>This dialog will not appear if you give your '+type+' a description before clicking the '+CHECK_BTN+' button.</p>',
 								function(sure){
 									if (!sure) return $form.find('input[name=label]').focus();
-									$formTitleInput.val(this.title);
+									$formTitleInput.val(data.title);
 									$.Dialog.close();
 								}
 							);
 					}).on('error',function(){
-						$.Dialog.fail("Can't load image","There was an error while attempting to load the image. Make sure the URL is correct and try again!");
+						var title = "Can't load image";
+						if (attempts < 1){
+							$.Dialog.wait(title,'Image could not be loaded, retrying in 2 seconds...');
+							setTimeout(function(){
+								load(data, attempts+1);
+							}, 2000);
+							return;
+						}
+						$.Dialog.fail(title,"There was an error while attempting to load the image. Make sure the URL is correct and try again!");
 					});
 				}
-				else {
-					$notice.html(this.message).show();
-					$previewIMG.hide();
-				}
-				$.Dialog.close();
+				load(data, 0);
 			}));
 		});
 		$form.on('submit',function(e, screwchanges, sanityCheck){

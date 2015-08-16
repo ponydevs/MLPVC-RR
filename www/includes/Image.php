@@ -93,7 +93,14 @@
 						$this->provider = 'fav.me';
 					}
 
-					$CachedDeviation = da_cache_deviation($id,$this->provider);
+					try {
+						$CachedDeviation = da_cache_deviation($id,$this->provider);
+					}
+					catch(DARequestException $e){
+						if ($e->getCode() === 404)
+							respond('The requested image could not be found');
+						respond($e->getMessage());
+					}
 
 					$this->preview = $CachedDeviation['preview'];
 					$this->fullsize = $CachedDeviation['fullsize'];

@@ -567,6 +567,13 @@ HTML;
 		return '&redirect_uri='.urlencode(ABSPATH."da-auth").($state?'&state='.urlencode($returnURL):'');
 	}
 
+	class DARequestException extends Exception {
+		public function __construct($errMsg, $errCode){
+			$this->message = $errMsg;
+			$this->code = $errCode;
+		}
+	}
+
 	/**
 	 * Makes authenticated requests to the DeviantArt API
 	 *
@@ -608,12 +615,11 @@ HTML;
 		$responseHeaders = rtrim(substr($response, 0, $headerSize));
 		$response = substr($response, $headerSize);
 		$http_response_header = array_map("rtrim",explode("\n",$responseHeaders));
-
-		if ($responseCode < 200 || $responseCode >= 400){
-			trigger_error(rtrim("cURL fail for URL \"$requestURI\" (HTTP $responseCode); ".curl_error($r),' '));
-			return null;
-		}
+		$curlError = curl_error($r);
 		curl_close($r);
+
+		if ($responseCode < 200 || $responseCode >= 300)
+			throw new DARequestException(rtrim("cURL fail for URL \"$requestURI\" (HTTP $responseCode); $curlError",' ;'), $responseCode);
 
 		if (preg_match('/Content-Encoding:\s?gzip/',$responseHeaders)) $response = gzdecode($response);
 		return json_decode($response, true);
@@ -736,13 +742,12 @@ HTML;
 	function da_oembed($ID, $type){
 		if (empty($type) || !in_array($type,array('fav.me','sta.sh'))) $type = 'fav.me';
 
-		$data = da_request('http://backend.deviantart.com/oembed?url='.urlencode("http://$type/$ID"),null,false);
-
-		if (empty($data)){
-			$statusCode = intval(preg_replace('~^HTTP/\S+\s(\d{3}).*~','$1',$http_response_header[0]), 10);
-
-			if ($statusCode == 404)
-				throw new Exception('Image not found. Please make sure that the URL is correct.');
+		try {
+			$data = da_request('http://backend.deviantart.com/oembed?url='.urlencode("http://$type/$ID"),null,false);
+		}
+		catch (DARequestException $e){
+			if ($e->getCode() == 404)
+				throw new Exception("Image not found. The URL may be incorrect or the image has been deleted.");
 			else throw new Exception("Image could not be retrieved (HTTP $statusCode)");
 		}
 
@@ -772,8 +777,11 @@ HTML;
 				if (!empty($Deviation))
 					$Database->where('id',$Deviation['id'])->update('deviation_cache', array('updated_on' => date('c',strtotime('+1 minute'))));
 
-				$ErrorMSG = "Saving local data for $type/$ID failed, please try again in a minute; ".$e->getMessage();
+				$ErrorMSG = "Saving local data for $ID@$type failed: ".$e->getMessage();
 				if (!PERM('developer')) trigger_error($ErrorMSG);
+
+				if (RQMTHD === 'POST')
+					respond($ErrorMSG);
 				else echo "<div class='notice fail'><label>da_cache_deviation($ID, $type)</label><p>$ErrorMSG</p></div>";
 
 				$CACHE_BAILOUT = true;
