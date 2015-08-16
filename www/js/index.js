@@ -359,6 +359,7 @@ $(function(){
 									$.Dialog.close();
 								}
 							);
+						else $.Dialog.close();
 					}).on('error',function(){
 						var title = "Can't load image";
 						if (attempts < 1){
