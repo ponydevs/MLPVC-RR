@@ -974,9 +974,14 @@
 							$type = trim($_POST['type']);
 							if (!in_array($type, $TAG_TYPES))
 								respond("Invalid tag type: $type");
-							$epdata = array();
-							if ($type == 'ep' && !ep_tag_name_check($data['name']))
-								respond('Episode tags must be in the format of <strong>s##e##[-##]</strong> where # represents a number<br>Allowed seasons: 1-8, episodes: 1-26');
+
+							$tagName = ep_tag_name_check($data['name']);
+
+							if ($type == 'ep'){
+								if ($tagName === false)
+									respond('Episode tags must be in the format of <strong>s##e##[-##]</strong> where # represents a number<br>Allowed seasons: 1-8, episodes: 1-26');
+								$data['name'] = $tagName;
+							}
 							$data['type'] = $type;
 						}
 

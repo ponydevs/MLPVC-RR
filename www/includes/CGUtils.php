@@ -270,9 +270,10 @@
 	}
 
 	// Checks and shortens episode tags
-	function ep_tag_name_check(&$tag){
+	function ep_tag_name_check($tag){
+		$_match = array();
 		if (preg_match('/^'.EPISODE_ID_PATTERN.'/i',$tag,$_match))
-			$tag = 's'.intval($_match[1], 10).'e'.intval($_match[2], 10).(!empty($_match[3]) ? intval($_match[3], 10) : '');
+			return 's'.intval($_match[1], 10).'e'.intval($_match[2], 10).(!empty($_match[3]) ? intval($_match[3], 10) : '');
 		else return false;
 	}
 
