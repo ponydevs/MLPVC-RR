@@ -357,6 +357,7 @@ $(function(){
 					$notice.html(this.message).show();
 					$previewIMG.hide();
 				}
+				$.Dialog.close();
 			}));
 		});
 		$form.on('submit',function(e, screwchanges, sanityCheck){
