@@ -9,11 +9,6 @@
 <?php } ?>
 <div id=content>
 <?php
-
-	$CurrentEpisode = get_latest_episode();
-	if (empty($CurrentEpisode)) unset($CurrentEpisode);
-	else list($Requests, $Reservations) = get_posts($CurrentEpisode['season'], $CurrentEpisode['episode']);
-
 	if(!empty($CurrentEpisode)){ ?>
 	<h1><?=format_episode_title($CurrentEpisode)?></h1>
 	<p>Vector Requests & Reservations</p>

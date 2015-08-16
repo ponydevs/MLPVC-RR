@@ -1472,7 +1472,7 @@ HTML;
 		$Ep1 = $Database->whereEp($season,$episode)->getOne('episodes');
 		if (empty($Ep1)){
 			$Part1 = $Database->whereEp($season,$episode-1)->getOne('episodes');
-			return !empty($Part1) && isset($Part1['twoparter']) && !!$Part1['twoparter'] ? $Part1 : null;
+			return !empty($Part1) && !empty($Part1['twoparter']) ? add_episode_airing_data($Part1) : null;
 		}
 		else return add_episode_airing_data($Ep1);
 	}

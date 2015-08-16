@@ -275,6 +275,10 @@
 					statusCodeHeader(301);
 					redirect('/',false);
 				}
+				
+				$CurrentEpisode = get_latest_episode();
+				if (empty($CurrentEpisode)) unset($CurrentEpisode);
+				else list($Requests, $Reservations) = get_posts($CurrentEpisode['season'], $CurrentEpisode['episode']);
 
 				loadPage($IndexSettings);
 			break;
