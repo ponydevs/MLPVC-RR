@@ -1286,7 +1286,7 @@ HTML;
 				IF(!ISNULL(r.deviation_id) && !ISNULL(r.reserved_by), 1, 0) as finished
 			FROM `coloumn` r
 			WHERE season = ? && episode = ?
-			ORDER BY finished, id, posted';
+			ORDER BY finished, posted';
 
 		$return = array();
 		if ($only !== ONLY_RESERVATIONS) $return[] = $Database->rawQuery(str_ireplace('coloumn','requests',$Query),array($season, $episode));
