@@ -11,13 +11,17 @@
 	class Image {
 		public $preview, $fullsize, $title = '', $provider, $id;
 		private $url;
-		public function __construct($url, $requestedProvider = null){
+		public function __construct($url, $reqProv = null){
 			$this->url = trim($url);
 			$this->preview = $this->fullsize = false;
 
 			$provider = $this->get_provider($this->url);
-			if (isset($requestedProvider) && $provider['name'] !== $requestedProvider)
-				throw new MismatchedProviderException($provider['name']);
+			if (!empty($reqProv)){
+				if (!is_array($reqProv))
+					$reqProv = array($reqProv);
+				if ($provider['name'] !== $reqProv)
+					throw new MismatchedProviderException($provider['name']);
+			}
 			$this->provider = $provider['name'];
 			$this->get_direct_url($provider['itemid']);
 		}

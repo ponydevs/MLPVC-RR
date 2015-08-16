@@ -1517,7 +1517,7 @@ HTML;
 		$deviation = $_POST['deviation'];
 		try {
 			require_once 'includes/Image.php';
-			$Image = new Image($deviation, 'fav.me');
+			$Image = new Image($deviation, array('fav.me','dA'));
 
 			foreach ($POST_TYPES as $what){
 				if ($Database->where('deviation_id', $Image->id)->has("{$what}s"))
