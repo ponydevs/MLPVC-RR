@@ -1,7 +1,8 @@
 <?php
 
 	class Video {
-		public static $provider, $id, $embed;
+		public static $id, $embed;
+		public $provider;
 		private $url;
 		public function __construct($url){
 			$this->url = trim($url);
@@ -11,7 +12,7 @@
 		}
 		private static $providerRegexes = array(
 			'youtu(?:\.be/|be.com/watch.*[&?]v=)([^&?=]+)(?:&|$)' => 'yt',
-			'dai(?:\.li/|lymotion.com/video/)([^&?=]+)(?:&|$)' => 'dm'
+			'dai(?:\.ly/|lymotion.com/video/(?:embed/))([^&?=]+)(?:&|$)' => 'dm'
 		);
 		private static function test_provider($url, $pattern, $name){
 			$match = array();
@@ -30,10 +31,8 @@
 			throw new Exception('Unsupported provider');
 		}
 		const URL_ONLY = true;
-		public static function get_embed($id, $prov = null, $urlOnly = false){
+		public static function get_embed($id, $prov, $urlOnly = false){
 			$urlOnly = $urlOnly === self::URL_ONLY;
-			if (!isset($prov))
-				$prov = self::$provider['name'];
 
 			switch ($prov){
 				case 'yt':

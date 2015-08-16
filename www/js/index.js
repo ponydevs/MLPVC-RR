@@ -8,14 +8,28 @@ $(function(){
 		idstr = 'S'+SEASON+'E'+EPISODE;
 
 	$('#video').on('click',function(){
+		var title = 'Video links';
+		$.Dialog.wait(title, 'Requesting links from the server');
+
 		$.post('/episode/getvideos/'+idstr,$.mkAjaxHandler(function(){
-			var title = 'Video links';
-			$.Dialog.request(title,'<form id=vidlinks><input type="text" name="yt" placeholder="YouTube"><input type="text" name="dm" placeholder="Dailymotion"></form>','vidlinks','Save',function(){
-				var $form = $('#vidlinks'),
-					$yt = $form.find('[name=yt]'),
+			var data = this;
+
+			if (!data.status) $.Dialog.fail(title, data.message);
+
+			var $form = $.mk('form').attr('id','vidlinks').append(
+				$.mk('p').html("Don't worry, the links start with <code>//</code> instead of the usual <code>https://</code> intentionally.").hide(),
+				$.mk('input').attr({name:'yt',placeholder:'YouTube'}),
+				$.mk('input').attr({name:'dm',placeholder:'Dailymotion'})
+			);
+			$.Dialog.request(title, $form,'vidlinks','Save',function($form){
+				var $yt = $form.find('[name=yt]'),
 					$dm = $form.find('[name=dm]');
-				if (this.yt) $yt.val(this.yt);
-				if (this.dm) $dm.val(this.dm);
+				if (data.yt) $yt.val(data.yt);
+				if (data.dm) $dm.val(data.dm);
+				if (data.yt || data.dm){
+					$form.find('p').show();
+					$.Dialog.center();
+				}
 				$form.on('submit',function(e){
 					e.preventDefault();
 
