@@ -151,19 +151,14 @@
 			str = false;
 		if (!past) delta *= -1;
 
-		console.groupCollapsed('#'+(i++)+' '+timestamp.toISOString());
-		console.log('delta: '+delta);
-
 		$.each(order, function(_, unit){
 			var value = one[unit];
-			console.log(delta/value, delta >= value, unit);
 			if (delta >= value){
 				var left = Math.floor(delta / value);
 				delta -= (left * value);
 				if (!past && unit === 'minute')
 					left++;
 				str = left!=1?left+' '+unit+'s':(unit=='hour'?'an':'a')+' '+unit;
-				console.groupEnd();
 				return false;
 			}
 		});
