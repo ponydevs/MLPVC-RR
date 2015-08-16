@@ -376,6 +376,7 @@ $(function(){
 		});
 		$form.on('submit',function(e, screwchanges, sanityCheck){
 			e.preventDefault();
+			var title = Type+' process';
 
 			if (!screwchanges && $formImgInput.data('prev-url') !== $formImgInput.val())
 				return $.Dialog.confirm(
@@ -389,14 +390,14 @@ $(function(){
 				);
 
 			if (typeof $formImgInput.data('prev-url') === 'undefined')
-				return $.Dialog.fail(Type, 'Please click the '+CHECK_BTN+' button before submitting your '+type+'!');
+				return $.Dialog.fail(title, 'Please click the '+CHECK_BTN+' button before submitting your '+type+'!');
 
 			if (!sanityCheck && type === 'request'){
 				var label = $formDescInput.val(),
 					$type = $form.find('select');
 
 				if (label.indexOf('character') > -1 && $type.val() !== 'chr')
-					return $.Dialog.confirm(Type, 'Your request label contains the word "character", but the request type isn\'t set to Character.<br>Are you sure you\'re not requesting one (or more) character(s)?',['Let me change the type', 'Carray on'],function(sure){
+					return $.Dialog.confirm(title, 'Your request label contains the word "character", but the request type isn\'t set to Character.<br>Are you sure you\'re not requesting one (or more) character(s)?',['Let me change the type', 'Carray on'],function(sure){
 						if (!sure) return $form.triggerHandler('submit',[screwchanges, true]);
 
 						$.Dialog.close(function(){
@@ -412,14 +413,14 @@ $(function(){
 				image_url: $formImgInput.data('prev-url'),
 			});
 
-			$.Dialog.wait(Type,'Submitting '+type);
+			$.Dialog.wait(title,'Submitting '+type);
 
 			$.post('/post',data,$.mkAjaxHandler(function(){
 				if (this.status){
-					$.Dialog.success(Type+' posted successfully');
+					$.Dialog.success(title, Type+' posted successfully');
 					updateSection(type, SEASON, EPISODE);
 				}
-				else $.Dialog.fail(Type, this.message);
+				else $.Dialog.fail(title, this.message);
 			}));
 		}).on('reset',function(){
 			$formImgCheck.attr('disabled', false).addClass('red');
