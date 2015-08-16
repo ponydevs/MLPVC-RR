@@ -359,7 +359,9 @@ $(function(){
 									$.Dialog.close();
 								}
 							);
-						else $.Dialog.close();
+						else $.Dialog.close(function(){
+							$form.find('input[name=label]').focus();
+						});
 					}).on('error',function(){
 						var title = "Can't load image";
 						if (attempts < 1){
