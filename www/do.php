@@ -1166,6 +1166,7 @@
 					));
 				}
 
+				$title = '';
 				if (empty($_GET['q'])){
 					$EntryCount = $CGDb->count('ponies');
 					list($Page,$MaxPages) = calc_page($EntryCount);
@@ -1213,6 +1214,7 @@
 						$EntryCount = $CGDb->rawQuerySingle(implode("COUNT(*) as count",$query))['count'];
 						list($Page,$MaxPages) = calc_page($EntryCount);
 						$Ponies = $CGDb->rawQuery(implode("p.*",$query)." LIMIT ".($ItemsPerPage*($Page-1)).",$ItemsPerPage");
+						$title .= "{$_GET['q']} - ";
 					}
 					else {
 						$Page = $MaxPages = 1;
@@ -1222,7 +1224,7 @@
 
 				fix_path("/{$color}guide/$Page");
 				$heading = "$Color Guide";
-				$title = "Page $Page - $heading";
+				$title .= "Page $Page - $heading";
 
 				if (isset($_GET['js'])){
 					respond(array(

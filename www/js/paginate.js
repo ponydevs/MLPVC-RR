@@ -33,7 +33,9 @@ $(function(){
 			$('nav').find('li.active').children().last().html(function(){
 				return this.innerHTML.replace(/Page \d+/,'Page '+newPageNumber);
 			});
-			$title.text(this.title);
+
+			// Preserve static page title component at the end
+			$title.text($title.text().replace(/^.*( - [^-]+)$/,this.title+'$1'));
 
 			history.pushState({},'',basePath+newPageNumber+(window.location.search.length > 1 ? location.search : ''));
 
