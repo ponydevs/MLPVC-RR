@@ -1796,7 +1796,7 @@ ORDER BY `count` DESC
 		if (empty($Page) || $Page < 1)
 			$Page = 1;
 
-		$MaxPages = ceil($EntryCount/$ItemsPerPage);
+		$MaxPages = max(1, ceil($EntryCount/$ItemsPerPage));
 
 		if ($Page > $MaxPages)
 			$Page = $MaxPages;

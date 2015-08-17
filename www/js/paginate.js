@@ -19,6 +19,9 @@ $(function(){
 		if (!bypass && pageNumber === newPageNumber)
 			return silentfail ? false : $.Dialog.info(title, 'You are already on page '+pageNumber);
 
+		if (location.search.length > 1)
+			target += location.search;
+
 		$.Dialog.wait(title, 'Loading page '+newPageNumber);
 
 		$.get(target, {js: true}, $.mkAjaxHandler(function(){
@@ -31,7 +34,8 @@ $(function(){
 				return this.innerHTML.replace(/Page \d+/,'Page '+newPageNumber);
 			});
 			$title.text(this.title);
-			history.pushState({},'',basePath+newPageNumber);
+
+			history.pushState({},'',basePath+newPageNumber+(window.location.search.length > 1 ? location.search : ''));
 
 			var max = this.maxpage;
 			$pagination.each(function(){

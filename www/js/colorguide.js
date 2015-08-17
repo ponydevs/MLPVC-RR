@@ -25,4 +25,11 @@ $(function(){
 	}
 	tooltips();
 	window.tooltips = function(){tooltips()};
+
+	$('#search-form').on('submit',function(e){
+		e.preventDefault();
+
+		history.pushState({},'',window.location.pathname.replace(/\d+$/,'1')+'?'+$(this).serialize());
+		$.toPage(false, true, true);
+	});
 });

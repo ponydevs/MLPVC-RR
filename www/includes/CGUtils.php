@@ -114,7 +114,7 @@
 
 	// Returns the markup for an array of pony datase rows \\
 	function get_ponies_html($Ponies, $wrap = true){
-		global $CGDb;
+		global $CGDb, $_MSG;
 
 		$HTML = $wrap ? '<ul id=list>' : '';
 		if (!empty($Ponies)) foreach ($Ponies as $p){
@@ -132,6 +132,11 @@
 			$editBtn = PERM('inspector') ? '<button class="edit typcn typcn-pencil blue" title="Edit"></button><button class="delete typcn typcn-trash red" title="Delete"></button>' : '';
 
 			$HTML .= "<li id=p{$p['id']}>$img<div><strong>{$p['label']}$editBtn</strong>$notes$tags$colors</div></li>";
+		}
+		else {
+			if (empty($_MSG))
+				$_MSG = "No appearances to show";
+			$HTML .= "<div class='notice fail'><label>Search error</label><p>$_MSG</p></div>";
 		}
 
 		return $HTML.($wrap?'</ul>':'');
@@ -255,7 +260,7 @@
 	 *
 	 * @return null
 	 */
-	function check_string_valid($string, $Thing, $pattern){
+	function check_string_valid($string, $Thing, $pattern, $returnError = false){
 		$fails = array();
 		if (preg_match("@$pattern@u", $string, $fails)){
 			$invalid = array();
@@ -265,7 +270,9 @@
 
 			$s = count($invalid)!==1?'s':'';
 			$the_following = count($invalid)!==1?' the following':'an';
-			respond("$Thing contains $the_following invalid character$s: ".array_readable($invalid));
+			$Error = "$Thing ($string) contains $the_following invalid character$s: ".array_readable($invalid);
+			if (!$returnError) respond($Error);
+			return $Error;
 		}
 	}
 

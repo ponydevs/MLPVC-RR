@@ -46,6 +46,10 @@
 	.notice.tagediting { display: none }
 }
 
+#content > p.admin {
+	margin: 0 0 5px;
+}
+
 #list {
 	padding: 0;
 	margin: 0;
@@ -411,4 +415,10 @@ ul.colors {
 			.move { cursor: ns-resize }
 		}
 	}
+}
+
+#search-form {
+	text-align: center;
+	margin: 0 auto 10px;
+	display: block;
 }

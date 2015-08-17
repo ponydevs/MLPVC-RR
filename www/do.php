@@ -966,6 +966,8 @@
 						$nl = !empty($name) ? strlen($name) : 0;
 						if ($nl < 4 || $nl > 30)
 							respond("Tag name must be between 4 and 30 characters");
+						if ($name[0] === '-')
+							respond('Tag name cannot start with a dash');
 						check_string_valid($name,'Tag name',INVERSE_TAG_NAME_PATTERN);
 						$data['name'] = $name;
 
@@ -1164,14 +1166,63 @@
 					));
 				}
 
-				$EntryCount = $CGDb->count('ponies');
-				list($Page,$MaxPages) = calc_page($EntryCount);
+				if (empty($_GET['q'])){
+					$EntryCount = $CGDb->count('ponies');
+					list($Page,$MaxPages) = calc_page($EntryCount);
+					$Ponies = $CGDb->orderBy('label', 'ASC')->get('ponies',array($ItemsPerPage*($Page-1), $ItemsPerPage));
+				}
+				else {
+					$tags = array_map('trim',explode(',',$_GET['q']));
+					$Tags = array();
+					foreach ($tags as $i => $tag){
+						$num = $i+1;
+						$_MSG = check_string_valid($tag,"Tag #$num's name",INVERSE_TAG_NAME_PATTERN, !isset($_GET['js']));
+						if (is_string($_MSG)) break;
+
+						$Tag = $CGDb->where('name', $tag)->getOne('tags', 'tid');
+						if (empty($Tag)){
+							$_MSG = "The tag $tag does not exist";
+							if (isset($_GET['js']))
+								respond($_MSG);
+						}
+						if (!in_array($Tag['tid'], $Tags))
+							$Tags[] = $Tag['tid'];
+					}
+					if (empty($_MSG)){
+						if (empty($Tags)){
+							$_MSG = 'Your search matched no tags';
+							if (isset($_GET['js']))
+								respond($_MSG);
+						}
+						$tc = count($Tags);
+						if ($tc > 6){
+							$_MSG = 'You cannot search for more than 6 tags';
+							if (isset($_GET['js']))
+								respond($_MSG);
+						}
+					}
+
+					if (empty($_MSG)){
+						$query = array(
+							'SELECT ',
+							', COUNT(t.tid) as cnt FROM tagged t
+							LEFT JOIN ponies p ON t.ponyid = p.id
+							WHERE t.tid IN ('.implode(',', $Tags).")
+							GROUP BY p.label
+							HAVING cnt = $tc");
+						$EntryCount = $CGDb->rawQuerySingle(implode("COUNT(*) as count",$query))['count'];
+						list($Page,$MaxPages) = calc_page($EntryCount);
+						$Ponies = $CGDb->rawQuery(implode("p.*",$query)." LIMIT ".($ItemsPerPage*($Page-1)).",$ItemsPerPage");
+					}
+					else {
+						$Page = $MaxPages = 1;
+						$Ponies = false;
+					}
+				}
 
 				fix_path("/{$color}guide/$Page");
 				$heading = "$Color Guide";
 				$title = "Page $Page - $heading";
-
-				$Ponies = $CGDb->orderBy('label', 'ASC')->get('ponies',array($ItemsPerPage*($Page-1), $ItemsPerPage));
 
 				if (isset($_GET['js'])){
 					respond(array(
