@@ -29,7 +29,11 @@ $(function(){
 	$('#search-form').on('submit',function(e){
 		e.preventDefault();
 
-		history.pushState({},'',window.location.pathname.replace(/\d+$/,'1')+'?'+$(this).serialize());
+		var query = $(this).serialize();
+		if (query === 'q=') query = '';
+		else query = '?'+query;
+
+		history.pushState({},'',window.location.pathname.replace(/\d+$/,'1')+query);
 		$.toPage(false, true, true);
 	});
 });
