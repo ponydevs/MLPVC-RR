@@ -1100,8 +1100,19 @@ HTML;
 		if (!empty($R['label'])) $Image .= "<span class=label>{$R['label']}</span>";
 		$sameUser = $isRequest && $signedIn && $R['requested_by'] === $currentUser['id'];
 
-		if ($isRequest && (PERM('inspector') || $sameUser))
-			$Image .= '<em>'.($sameUser?'You':profile_link(get_user($R['requested_by']))).' requested this '.timetag($R['posted'])."</em>";
+		$Image .= '<em>'.(
+			$isRequest
+			? (
+				(PERM('inspector') || $sameUser)
+				? (
+					$sameUser
+					? 'You'
+					: profile_link(get_user($R['requested_by']))
+				).' requested this '
+				: 'Requested '
+			)
+			: 'Reserved '
+		).timetag($R['posted'])."</em>";
 
 		$R['reserver'] = false;
 		if (!empty($R['reserved_by'])){
