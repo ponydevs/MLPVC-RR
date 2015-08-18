@@ -19,17 +19,17 @@ CREATE TABLE IF NOT EXISTS `colorgroups` (
 
 INSERT INTO `colorgroups` (`groupid`, `ponyid`, `label`, `order`) VALUES
 (1, 1, 'Mane', 0),
-(2, 1, 'Coat', 0),
-(3, 1, 'Eyes', 0),
-(4, 1, 'Cutie Mark/Magic', 0),
+(2, 1, 'Coat', 1),
+(3, 1, 'Eyes', 2),
+(4, 1, 'Cutie Mark/Magic', 3),
 (5, 2, 'Base', 0),
-(6, 2, 'Shoes (Foreground)', 0),
-(7, 2, 'Shoes (Background)', 0),
-(8, 2, 'Saddle', 0),
+(6, 2, 'Shoes (Foreground)', 1),
+(7, 2, 'Shoes (Background)', 2),
+(8, 2, 'Saddle', 3),
 (9, 3, 'Mane', 0),
-(10, 3, 'Coat', 0),
-(11, 3, 'Eyes', 0),
-(12, 3, 'Cutie Mark', 0);
+(10, 3, 'Coat', 1),
+(11, 3, 'Eyes', 2),
+(12, 3, 'Cutie Mark', 3);
 
 CREATE TABLE IF NOT EXISTS `colors` (
   `colorid` int(11) NOT NULL,

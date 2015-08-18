@@ -47,11 +47,22 @@
 		return $HTML;
 	}
 
+	// Get color groups
+	function get_cgs($PonyID, $cols = '*'){
+		global $CGDb;
+
+		return $CGDb
+			->where('ponyid',$PonyID)
+			->orderBy('`order`','ASC')
+			->orderBy('groupid','ASC')
+			->get('colorgroups',null,$cols);
+	}
+
 	// Returns the markup of the color list for a specific pony \\
 	function get_colors_html($PonyID, $wrap = true){
 		global $CGDb;
 
-		$ColorGroups = $CGDb->rawQuery('SELECT * FROM colorgroups WHERE ponyid = ? ORDER BY `order`, groupid', array($PonyID));
+		$ColorGroups = get_cgs($PonyID);
 
 		$HTML = $wrap ? "<ul class=colors>" : '';
 		if (!empty($ColorGroups)){

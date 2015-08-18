@@ -785,7 +785,7 @@
 
 						typeahead_results(empty($Tags) ? '[]' : $Tags);
 					}
-					else if (preg_match('~^(rename|delete|make|[gs]et(?:sprite)?|tag|untag)(?:/(\d+))?$~', $data, $_match)){
+					else if (preg_match('~^(rename|delete|make|[gs]et(?:sprite|cgs)?|tag|untag)(?:/(\d+))?$~', $data, $_match)){
 						$action = $_match[1];
 
 						if ($action !== 'make'){
@@ -872,6 +872,28 @@
 									unlink($fpath);
 
 								respond('Appearance removed', 1);
+							break;
+							case "getcgs":
+							case "setcgs":
+								if ($action === 'getcgs'){
+									$cgs = get_cgs($Pony['id'],'groupid, label');
+									if (empty($cgs))
+										respond('This appearance does not have any color groups');
+									respond(array('cgs' => $cgs));
+								}
+
+								if (empty($_POST['cgs']))
+									respond("$Color group order data missing");
+
+								$groups = array_unique(array_map('intval',explode(',',$_POST['cgs'])));
+								foreach ($groups as $i => $GroupID){
+									if (!$CGDb->where('groupid', $GroupID)->has('colorgroups'))
+										respond("There's no group with the ID of  $GroupID");
+
+									$CGDb->where('groupid', $GroupID)->update('colorgroups',array('order' => $i));
+								}
+
+								respond(array('cgs' => get_colors_html($Pony['id'], NOWRAP)));
 							break;
 							case "getsprite":
 							case "setsprite":
@@ -1256,17 +1278,19 @@
 				$settings = array(
 					'title' => $title,
 					'heading' => $heading,
-					'do-css',
+					'css' => array($do),
 					'js' => array('jquery.qtip', 'jquery.ctxmenu', $do, 'paginate'),
 				);
-				if (PERM('inspector'))
+				if (PERM('inspector')){
+					$settings['css'][] = "$do-manage";
 					$settings['js'] = array_merge($settings['js'],array(
 						'jquery.uploadzone',
 						'twitter-typeahead',
 						'handlebars-v3.0.3',
-						'draggabilly.pkgd',
+						'Sortable',
 						"$do-manage"
 					));
+				}
 				loadPage($settings);
 			break;
 			case "404":

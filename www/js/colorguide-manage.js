@@ -127,7 +127,8 @@ $(function(){
 					}));
 				})
 			});
-		};
+		},
+		$cgReordering = $.mk('form').attr('id','cg-reorder').append($.mk('div').attr('class','notice').hide().html('<p></p>'));
 
 	$('#new-appearance-btn').on('click',function(){
 		mkPonyEditor($(this),'Add new appearance');
@@ -270,42 +271,6 @@ $(function(){
 
 			$el.append($cp,$ci,$cl,$ca);
 			$ci.trigger('change');
-			$el.draggabilly({
-				axis: 'y',
-				containment: true,
-				handle: '.move',
-			});
-			$el.on('dragStart dragMove dragEnd',function(e){
-				var $colorRow = $(this),
-					$container = $colorRow.parent(),
-					$childs = $container.children(),
-					draggie = $(this).data('draggabilly'),
-					pos;
-
-				switch (e.type){
-					case "dragStart":
-						$colorRow.addClass('moving');
-					break;
-					case "dragMove":
-						var ix = $colorRow.index(),
-							deltaY = draggie.position.y,
-							direction = deltaY > 0,
-							distY = Math.abs(deltaY);
-
-						pos = Math.round((distY < 14 ? 0 : distY-14)/28);
-						pos = ix+(pos*(direction ? 1 : -1));
-
-						$colorRow.data('moveto', [pos, direction]);
-					break;
-					case "dragEnd":
-						$colorRow.removeClass('moving');
-						$childs.removeAttr('style');
-
-						var data = $colorRow.data('moveto');
-						$colorRow[data[1] ? 'insertAfter' : 'insertBefore']($childs.eq(data[0]));
-					break;
-				}
-			});
 			return $el;
 		},
 		$addBtn = $.mk('button').attr('class','typcn typcn-plus green').text('Add new color').on('click',function(e){
@@ -333,16 +298,21 @@ $(function(){
 			$colors.append(mkClrDiv(color));
 		});
 
+		new Sortable($colors.get(0), {
+		    handle: ".move",
+		    ghostClass: "moving",
+		    scroll: false,
+		    animation: 150,
+		});
+
 		$.Dialog.center();
 	});
 
 	function CGEditorMaker(title, $group){
 		var dis = this;
 		if (typeof $group !== 'undefined'){
-			console.log($group);
 			var groupID = $group.attr('id').substring(2),
 				ponyID = $group.parents('li').attr('id').substring(1);
-			console.log(groupID, ponyID);
 		}
 		$.Dialog.request(title,$cgEditor.clone(true, true),'cg-editor','Save',function($form){
 			var $ErrorNotice = $form.children('.notice').children('p'),
@@ -410,7 +380,8 @@ $(function(){
 		$list.find('button.edit').on('click',function(){
 			var $this = $(this),
 				ponyID = $this.parents('li').attr('id').substring(1),
-				title = 'Editing appearance #'+ponyID;
+				ponyName = $this.parent().text().trim(),
+				title = 'Editing appearance: '+ponyName;
 
 			$.Dialog.wait(title, 'Retrieving appearance details from server');
 
@@ -634,6 +605,69 @@ $(function(){
 		$colorGroups = $('ul.colors:not(.static)');
 		$colorGroups.attr('data-color', color).ctxmenu(
 			[
+				{text: "Re-order "+color+" groups", icon: 'arrow-unsorted', click: function(){
+					var $colors = $(this),
+						$li = $colors.parents('li'),
+						ponyID = $li.attr('id').substring(1),
+						ponyName = $li.children().last().children('strong').text().trim(),
+						title = 'Re-order '+color+' groups on appearance: '+ponyName;
+
+					$.Dialog.wait(title, 'Retrieving color group list from server');
+
+					$.post('/colorguide/getcgs/'+ponyID, $.mkAjaxHandler(function(){
+						if (!this.status) $.Dialog.fail(this.message);
+
+						var $form = $cgReordering.clone(),
+							$cgs = $.mk('ol');
+
+						$.each(this.cgs,function(_, cg){
+							$cgs.append($.mk('li').attr('data-id', cg.groupid).text(cg.label));
+						});
+
+						$.mk('div').attr('class','cgs').append('<p class=align-center>Drag to re-arrange</p>',$cgs).prependTo($form);
+						$.Dialog.center();
+
+						new Sortable($cgs.get(0), {
+						    ghostClass: "moving",
+						    scroll: false,
+						    animation: 150,
+						});
+
+						$.Dialog.request(title, $form, 'cg-reorder', 'Save', function($form){
+							var $ErrorNotice = $form.children('.notice').children('p'),
+								handleError = function(){
+									$ErrorNotice.html(this.message).parent().removeClass('info').addClass('fail').show();
+									$.Dialog.center();
+								};
+
+							$form.on('submit', function(e){
+								e.preventDefault();
+								var data = {cgs:[]},
+									$cgs = $form.children('.cgs');
+
+								if (!$cgs.length)
+									return handleError.call({message:'There are no color groups to re-order'});
+								$cgs.find('ol').children().each(function(){
+									data.cgs.push($(this).attr('data-id'));
+								});
+								data.cgs = data.cgs.join(',');
+
+								$ErrorNotice.text('Saving changes...').parent().removeClass('fail').addClass('info').show();
+								$.Dialog.center();
+
+								$.post('/colorguide/setcgs/'+ponyID,data,$.mkAjaxHandler(function(){
+									if (this.status){
+										$colors.html(this.cgs);
+										window.tooltips();
+										ctxmenus();
+										$.Dialog.close();
+									}
+									else handleError.call(this);
+								}));
+							});
+						});
+					}));
+				}},
 				{text: "Create new group", icon: 'folder-add', click: function(){
 					CGEditorMaker('Create color group');
 				}},
@@ -651,11 +685,8 @@ $(function(){
 					$.Dialog.wait(title, 'Retrieving '+color+' group details from server');
 
 					$.post('/colorguide/getcg/'+groupID,$.mkAjaxHandler(function(){
-						try {
-							if (this.status) CGEditorMaker.call(this, title, $group.attr('id', 'cg'+groupID));
-							else throw new Error(this.message);
-						}
-						catch(e){ handleError.call(e.message) }
+						if (this.status) CGEditorMaker.call(this, title, $group.attr('id', 'cg'+groupID));
+						else $.Dialog.fail(title, data.message);
 					}));
 				}},
 				{text: "Delete "+color+" group", icon: 'trash', click: function(){
@@ -679,8 +710,11 @@ $(function(){
 					});
 				}},
 				true,
-				{text: "Create new group", icon: 'folder-add', click: function(){
+				{text: "Re-order "+color+" groups", icon: 'arrow-unsorted', click: function(){
 					$.ctxmenu.triggerItem($(this).parent(), 1);
+				}},
+				{text: "Create new group", icon: 'folder-add', click: function(){
+					$.ctxmenu.triggerItem($(this).parent(), 2);
 				}},
 			],
 			function($el){ return Color+' group: '+$el.children().first().text().trim().replace(':','') }
@@ -707,8 +741,11 @@ $(function(){
 				$.ctxmenu.triggerItem($(this).parent(), 2);
 			}},
 			true,
-			{text: "Create new group", icon: 'folder-add', click: function(){
+			{text: "Re-order "+color+" groups", icon: 'arrow-unsorted', click: function(){
 				$.ctxmenu.triggerItem($(this).parent(), 3);
+			}},
+			{text: "Create new group", icon: 'folder-add', click: function(){
+				$.ctxmenu.triggerItem($(this).parent(), 4);
 			}}
 		);
 	}

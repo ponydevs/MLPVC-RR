@@ -1,0 +1,122 @@
+@import "vars";
+
+#edit-tag .type-selector {
+	display: flex;
+	flex-flow: row wrap;
+	align-content: center;
+	user-select: none;
+
+	> span { margin-bottom: 5px }
+
+	label {
+		flex: 1 1 auto;
+		margin: 2px;
+		position: relative;
+		overflow: hidden;
+
+		* { cursor: pointer }
+	}
+	input {
+		position: absolute;
+		top: -20px;
+		left: -20px;
+		width: 0;
+		height: 0;
+
+		~ span { display: block }
+		&:not(:checked) ~ span { opacity: .5 }
+		&:focus ~ span { border-style: dashed }
+		&:not(:checked):focus ~ span { opacity: .75 }
+	}
+}
+
+#cg-editor {
+	overflow: hidden;
+
+	.clr {
+		display: flex;
+		flex-direction: row;
+		justify-content: flex-start;
+
+		&.moving {
+			box-shadow: 0 0 10px #000;
+			background: #fff;
+		}
+
+		.clrp {
+			flex: 0 0 auto;
+			display: block;
+			border: 1px solid #000;
+			height: 28px;
+			width: 28px;
+			box-sizing: border-box;
+			transition: background-color .2s linear, border .2s linear;
+
+			&.invalid {
+				background-color: transparent !important;
+				background: url(../img/transparency.svg) repeat;
+				background-size: 12px;
+				color:red;
+				border: 2px solid;
+				position: relative;
+
+				&:before {
+					content: "?";
+					position: absolute;
+					top: 0;
+					left: 0;
+					padding: 2px;
+					line-height: 20px;
+					font-size: 20px;
+					height: 20px;
+					width: 20px;
+					text-align: center;
+					font-weight: bold;
+				}
+			}
+		}
+		.clri, .clrl {
+			flex: 0 1 auto;
+			width: 100%;
+			background-image: none !important;
+		}
+		.clri {
+			max-width: 65px;
+			font-family: 'Source Code Pro Semibold', 'Consolas', monospace;
+		}
+		.clra {
+			margin-left: 3px;
+			flex: 1 0 auto;
+
+			> *, > *:before { line-height: 28px }
+			.remove { cursor: pointer }
+			.move { cursor: ns-resize }
+		}
+	}
+}
+
+#cg-reorder .cgs ol {
+	list-style-position: inside;
+	margin: 0;
+	padding: 0;
+	counter-reset: list;
+
+	li {
+		display: inline-block;
+		margin: 2px;
+		padding: 2px;
+		font-size: 14px;
+		color: $NBlue;
+		border: 1px solid;
+		border-radius: 5px;
+		background: $NBlueBG;
+		cursor: move;
+
+		&.moving { box-shadow: 0 0 10px rgba(0,0,0,.5) }
+
+		&:before {
+      content: counter(list) ". ";
+      counter-increment: list;
+		}
+	}
+}
