@@ -1708,7 +1708,7 @@ ORDER BY `count` DESC
 		);
 
 		if (isset($reservations['count']) && $reservations['count'] >= 4)
-			respond("You've already reserved {$reservations['count']} images in total, please finish or cancel some of them before making another reservation.<br>You may not have more than 4 unfinished reservations at a time.");
+			respond("You've already reserved {$reservations['count']} images, but you may not have more than 4 pending reservations at a time. You can review them on your <a href=/u/>profile page</a>.");
 	}
 
 	// Render episode video player \\
