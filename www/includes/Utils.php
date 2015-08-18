@@ -1134,7 +1134,9 @@ HTML;
 				$D = da_cache_deviation($R['deviation_id']);
 				if (!empty($D)){
 					$D['title'] = preg_replace("/'/",'&apos;',$D['title']);
-					$Image = "<div class='image deviation'><a href='http://fav.me/{$D['id']}'><img src='{$D['preview']}' alt='{$D['title']}'></a></div>";
+					$Image = "<div class='image deviation'><a href='http://fav.me/{$D['id']}'><img src='{$D['preview']}' alt='{$D['title']}'>";
+					if (!empty($R['lock'])) $Image .= "<span class='typcn typcn-tick' title='This submission has been accepted into the group gallery'></span>";
+					$Image .= "</a></div>";
 				}
 				else $Image = "<div class='image deviation error'><a href='http://fav.me/{$R['deviation_id']}'>Preview unavailable<br><small>Click to view</small></a></div>";
 			}
