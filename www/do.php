@@ -1190,7 +1190,7 @@
 					$Ponies = $CGDb->orderBy('label', 'ASC')->get('ponies',array($ItemsPerPage*($Page-1), $ItemsPerPage));
 				}
 				else {
-					$tags = array_map('trim',explode(',',strtolower($_GET['q']));
+					$tags = array_map('trim',explode(',',strtolower($_GET['q'])));
 					$Tags = array();
 					foreach ($tags as $i => $tag){
 						$num = $i+1;
