@@ -251,6 +251,25 @@ $(function(){
 				});
 			});
 		});
+		$actions.filter('.lock').off('click').on('click',function(){
+			var title = 'Locking post',
+				$btn = $(this);
+
+			$.Dialog.confirm(title, "By locking this post, you can prevent any additional modifications, such as un-finishing. This flag is <strong>permanent</strong>, and can only be removed by the developer. Ideally, this feature should be used when the image has been added to the group gallery.<br><br>After locking the post, it'll count towards the user's badges/achievements/points/whatever (once implemented). <strong>This action will be logged.</strong><br><br>Are you <em>absolutely</em> sure you want to lock this post, and prevent futher actions?",['Lock it','Nevermind'],function(sure){
+				if (!sure) return;
+
+				$.Dialog.wait(title, 'Locking post');
+
+				$.post('/reserving/'+type+'/'+id+'?lock', $.mkAjaxHandler(function(){
+					if (!this.status) return $.Dialog.fail(title, data.message);
+
+					$btn.parent().remove();
+
+					if (this.message) $.Dialog.success(title, data.message, true);
+					else $.Dialog.close();
+				}));
+			});
+		});
 	}
 
 	$.fn.formBind = function (){

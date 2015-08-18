@@ -155,8 +155,8 @@
 				if (empty($data) || !preg_match('/^(requests?|reservations?)(?:\/(\d+))?$/',$data,$match)) respond('Invalid request #1');
 
 				$noaction = true;
-				$canceling = $finishing = $unfinishing = $adding = $deleteing = false;
-				foreach (array('cancel','finish','unfinish','add','delete') as $k){
+				$canceling = $finishing = $unfinishing = $adding = $deleteing = $locking = false;
+				foreach (array('cancel','finish','unfinish','add','delete','lock') as $k){
 					if (isset($_REQUEST[$k])){
 						$var = "{$k}ing";
 						$$var = true;
@@ -173,10 +173,13 @@
 					$Thing = $Database->where('id', $ID)->getOne("{$type}s");
 					if (empty($Thing)) respond("There's no $type with that ID");
 
+					if (!empty($Thing['lock']))
+						respond('This post has been locked and cannot be edited or removed.'.(PERM('inspector') && !PERM('developer')?' If a change is necessary please ask the developer to do it for you.':''));
+
 					$update = array('reserved_by' => null);
 					if (!PERM('member')){
 						if ($type === 'request' && $deleteing){
-							if (!PERM('inspector') && !$signedIn && $Thing['requested_by'] !== $currentUser['id'])
+							if (!PERM('inspector') && (!$signedIn || $Thing['requested_by'] !== $currentUser['id']))
 								respond();
 
 							if (!PERM('inspector') && !empty($Thing['reserved_by']))
@@ -195,6 +198,20 @@
 							if ($usersMatch)
 								respond("You already reserved this $type");
 							else respond("This $type has already been reserved by somepony else");
+						}
+						if ($locking){
+							if (!PERM('inspector'))
+								respond();
+
+							if (!$Database->where('id', $Thing['id'])->update("{$type}s", array('lock' => 1)))
+								respond("This $type is already locked", 1);
+
+							LogAction('post_lock',array(
+								'type' => $type,
+								'id' => $Thing['id']
+							));
+
+							respond(true);
 						}
 						if ($canceling)
 							$unfinishing = true;

@@ -44,6 +44,7 @@
 		'userfetch' => 'Fetch user details',
 		'banish' => 'User banished',
 		'un-banish' => 'User un-banished',
+		'post_lock' => 'Post locked'
 	);
 	function LogAction($type,$data = null){
 		global $Database, $signedIn, $currentUser;
@@ -123,6 +124,17 @@
 				$user =  $Database->where('id',$data['target'])->getOne('users');
 				$details[] = array('User', profile_link($user));
 				$details[] = array('Reason', htmlspecialchars($data['reason']));
+			break;
+			case "post_lock":
+				$Post = $Database->where('id', $data['id'])->getOne("{$data['type']}s");
+				if (empty($Post))
+					$details[] = array('Error', 'The post in question has been deleted');
+				$details[] = array('ID',$data['id']);
+				$details[] = array('Type',$data['type']);
+				if (!empty($Post)){
+					$IDstr = "S{$Post['season']}E{$Post['episode']}#{$data['type']}-{$data['id']}";
+					$details[] = array('Link',"<a href=/episode/$IDstr>$IDstr</a>");
+				}
 			break;
 			default:
 				$details[] = array('Could not process details','No data processor defined for this entry type');
@@ -1069,8 +1081,9 @@ HTML;
 				$Buttons[] = array('user-delete red cancel', 'Cancel');
 				$Buttons[] = array('attachment green finish', ($sameUser ? "I'm" : 'Mark as').' finished');
 			}
-			if ($finished && PERM('inspector')){
+			if ($finished && PERM('inspector') && empty($R['lock'])){
 				$Buttons[] = array((empty($R['preview'])?'trash delete-only red':'media-eject orange').' unfinish',empty($R['preview'])?'Delete':'Un-finish');
+				$Buttons[] = array('lock-closed delete-only orange lock','Lock');
 			}
 		}
 
@@ -1080,7 +1093,7 @@ HTML;
 				$HTML .= "<button class='typcn typcn-{$b[0]}'>{$b[1]}</button> ";
 			$HTML .= '</div>';
 		}
-		else if ($isRequest){
+		else if (empty($R['lock']) && $isRequest){
 			if (PERM('inspector') || $sameUser)
 				$HTML .= "<button class='typcn typcn-trash red delete'>Delete</button>";
 		}

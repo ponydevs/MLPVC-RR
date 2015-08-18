@@ -82,6 +82,12 @@ CREATE TABLE IF NOT EXISTS `log__episode_modify` (
   `newairs` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+CREATE TABLE IF NOT EXISTS `log__post_lock` (
+  `entryid` int(11) NOT NULL,
+  `type` enum('request','reservation') NOT NULL,
+  `id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 CREATE TABLE IF NOT EXISTS `log__rolechange` (
   `entryid` int(11) NOT NULL,
   `target` varchar(36) NOT NULL,
@@ -116,7 +122,8 @@ CREATE TABLE IF NOT EXISTS `requests` (
   `requested_by` varchar(36) DEFAULT NULL,
   `posted` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `reserved_by` varchar(36) DEFAULT NULL,
-  `deviation_id` varchar(7) DEFAULT NULL
+  `deviation_id` varchar(7) DEFAULT NULL,
+  `lock` tinyint(1) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `reservations` (
@@ -128,7 +135,8 @@ CREATE TABLE IF NOT EXISTS `reservations` (
   `label` tinytext NOT NULL,
   `posted` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `reserved_by` varchar(36) NOT NULL,
-  `deviation_id` varchar(7) DEFAULT NULL
+  `deviation_id` varchar(7) DEFAULT NULL,
+  `lock` tinyint(1) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `roles` (
@@ -194,6 +202,9 @@ ALTER TABLE `log__episodes`
 ALTER TABLE `log__episode_modify`
   ADD PRIMARY KEY (`entryid`);
 
+ALTER TABLE `log__post_lock`
+  ADD PRIMARY KEY (`entryid`);
+
 ALTER TABLE `log__rolechange`
   ADD PRIMARY KEY (`entryid`),
   ADD KEY `prevrole` (`oldrole`),
@@ -248,6 +259,8 @@ ALTER TABLE `log__banish`
 ALTER TABLE `log__episodes`
   MODIFY `entryid` int(11) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `log__episode_modify`
+  MODIFY `entryid` int(11) NOT NULL AUTO_INCREMENT;
+ALTER TABLE `log__post_lock`
   MODIFY `entryid` int(11) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `log__rolechange`
   MODIFY `entryid` int(11) NOT NULL AUTO_INCREMENT;
