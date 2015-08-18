@@ -575,7 +575,7 @@
 				$title = 'Logs';
 
 				if (empty($MSG)){
-					$ItemsPerPage = 10;
+					$ItemsPerPage = 20;
 					$EntryCount = $Database->count('log');
 					list($Page,$MaxPages) = calc_page($EntryCount);
 
