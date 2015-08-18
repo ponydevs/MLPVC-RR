@@ -1,5 +1,7 @@
 @import "vars";
 
+#content > p.admin { margin: 0 0 5px }
+
 #edit-tag .type-selector {
 	display: flex;
 	flex-flow: row wrap;

@@ -2,6 +2,21 @@ $(function(){
 	//noinspection JSUnusedLocalSymbols
 	var Color = window.Color, color = window.color;
 
+	var copyHash = !localStorage.getItem('leavehash'), $toggler = $('#toggle-copy-hash');
+	$toggler.on('display-update',function(){
+		copyHash = !localStorage.getItem('leavehash');
+		$toggler
+			.attr('class','typcn typcn-'+(copyHash ? 'tick' : 'times'))
+			.text('Copy # with color codes: '+(copyHash ? 'En':'Dis')+'abled');
+	}).trigger('display-update').on('click',function(e){
+		e.preventDefault();
+
+		if (copyHash) localStorage.setItem('leavehash', 1);
+		else localStorage.removeItem('leavehash');
+
+		$toggler.trigger('display-update');
+	});
+
 	function tooltips(){
 		$('.tags').children().filter('[title][title!=""]').each(function(){
 			var $this = $(this),
@@ -14,7 +29,8 @@ $(function(){
 				style: { classes: 'qtip-tag'+tagstyle }
 			});
 		});
-		$('ul.colors').children('li').children('[title][title!=""]').qtip({
+		var $ch = $('ul.colors').children('li').children();
+		$ch.filter(':not([data-hasqtip])').qtip({
 			content: {
 				text: 'Click to copy HEX '+color+' code to clipboard',
 				title: function(){ return $(this).attr('title') }
@@ -22,6 +38,19 @@ $(function(){
 			position: { my: 'bottom center', at: 'top center', viewport: true },
 			style: { classes: 'qtip-see-thru' }
 		});
+		$ch.filter('span:not(:first-child)').off('click').on('click',function(e){
+			e.preventDefault();
+			var copy = this.innerHTML.trim();
+			if (!copyHash) copy = copy.replace('#','');
+			$.copy(copy);
+		}).filter(':not(.ctxmenu-bound)').ctxmenu(
+			[
+				{text: "Copy HEX "+color+" code", icon: 'clipboard', 'default': true, click: function(){
+					$.copy(this.innerHTML.trim());
+				}},
+			],
+			function($el){ return 'Color: '+$el.attr('oldtitle') }
+		)
 	}
 	tooltips();
 	window.tooltips = function(){tooltips()};

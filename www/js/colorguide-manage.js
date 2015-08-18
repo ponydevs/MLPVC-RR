@@ -720,19 +720,7 @@ $(function(){
 			function($el){ return Color+' group: '+$el.children().first().text().trim().replace(':','') }
 		);
 		$.ctxmenu.addItems(
-			$('ul.colors').children('li').children('span:not(:first-child)').off('click').on('click',function(e){
-				e.preventDefault();
-
-				$.copy(this.innerHTML.trim());
-			}).filter(':not(.ctxmenu-bound)').ctxmenu(
-				[
-					{text: "Copy HEX "+color+" code", icon: 'clipboard', 'default': true, click: function(){
-						$.copy(this.innerHTML.trim());
-					}},
-				],
-				function($el){ return 'Color: '+$el.attr('oldtitle') }
-			).filter(function(){ return this.parentNode.parentNode.className.indexOf('static') === -1 }),
-
+			$colorGroups.children('li').children('span:not(:first-child)'),
 			true,
 			{text: "Edit "+color+" group", icon: 'pencil', click: function(){
 				$.ctxmenu.triggerItem($(this).parent(), 1);
