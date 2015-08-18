@@ -13,33 +13,6 @@
 				margin: 5px auto 3px;
 			}
 		}
-		ul {
-			margin: 15px 0 20px 0;
-			text-align: center;
-
-			li {
-				box-sizing: border-box;
-				width: 100%;
-
-				&:not(:last-child){
-					margin-bottom: 10px;
-				}
-
-				.screencap img, .deviation img {
-					max-height: 150px;
-					max-width: 100%;
-				}
-				.fluidbox-wrap {
-					display: block;
-				}
-				.fluidbox-wrap * {
-					display: inline-block;
-				}
-				> a .deviation {
-					margin: 0 auto 10px;
-				}
-			}
-		}
 		.avatar {
 			display: none;
 		}
@@ -57,17 +30,6 @@
 		}
 	}
 	#content > section {
-		ul {
-			margin: 15px 0 20px 30px;
-
-			li {
-				margin: 5px;
-
-				.screencap img, .deviation img {
-					height: 150px;
-				}
-			}
-		}
 		h2 {
 			display: inline-block;
 			height: 30px;
@@ -210,123 +172,7 @@
 				&:after { border-left-color: $NDarkBlue }
 			}
 		}
-		ul {
-			padding: 0;
-			list-style: none;
-			display: flex;
-			flex-flow: row wrap;
-			justify-content: flex-start;
-
-			li {
-				padding: 10px;
-				color: #434343;
-				background-color: rgba(0,0,0,.05);
-				border: 1px solid rgba(0,0,0,.2);
-				box-shadow: 0 0 2px rgba(0,0,0,.2);
-				font-size: 12px;
-				font-family: 'Verdana', sans-serif;
-				flex: 1 0 auto;
-				text-align: center;
-				transition: background-color .3s, border-color .3s, box-shadow .3s;
-
-				&:hover {
-					background-color: rgba(0,0,0,.1);
-					border: 1px solid rgba(0,0,0,.3);
-					box-shadow: 0 0 7px rgba(0,0,0,.3);
-				}
-
-				> * {
-					display: block;
-					vertical-align: bottom;
-					margin-left: auto;
-					margin-right: auto;
-				}
-				> .image {
-					&.screencap > a {
-						border: 1px solid;
-						box-shadow: 0 0 2px;
-					}
-
-					&:not(.error) > a {
-						font-size: 0;
-						white-space: nowrap;
-						margin-bottom: 10px;
-						color: inherit;
-						display: inline-block;
-					}
-					&.error > a {
-						font-size: 16px;
-						display: block;
-						margin-bottom: 5px;
-					}
-					> .fluidbox {
-						cursor: zoom-in !important;
-					}
-					.fluidbox-opened .fluidbox-wrap {
-						cursor: zoom-out !important;
-					}
-				}
-				> .label {
-					font-size: 1.2em;
-					font-style: italic;
-
-					&:before, &:after { content: '"' }
-				}
-				.reserver, .reserve-request {
-					color: #666;
-					background: #efefef linear-gradient(to bottom, #d2dfc5 0%, #bdd1b4 100%);
-					border: 1px solid #93a98f;
-					border-radius: 5px;
-					height: 40px;
-				}
-				> .reserve-request {
-					font-size: 16px;
-					line-height: 40px;
-					height: 40px;
-					margin: 5px auto 0;
-					opacity: 1 !important;
-					padding: 0 5px;
-				}
-				.reserver {
-					display: inline-block;
-					margin-top: 5px;
-					overflow: hidden;
-					font-size: 0;
-					position: relative;
-					text-align: left;
-					min-width: 115px;
-
-					.da-userlink {
-						height: 100%;
-						position: relative;
-						z-index: 2;
-
-						> * { margin-right: 5px }
-						.avatar {
-							height: 40px;
-							width: 40px;
-							display: inline-block;
-						}
-						.name {
-							display: inline-block;
-							font-size: 16px;
-							vertical-align: bottom;
-						}
-					}
-				}
-				.reserver-actions {
-					white-space: nowrap;
-					button {
-						display: inline-block;
-
-						&:not(:last-child){
-							margin-right: 0;
-						}
-					}
-				}
-			}
-			&:empty:before { content: "None yet." }
-		}
+		ul { @extend %post-ul }
 		.unfinished ul li {
 			> .reserver .name {
 				line-height: 30px;
@@ -345,8 +191,6 @@
 		}
 		.finished ul li {
 			.deviation img {
-				background: url(../img/transparency.svg) repeat;
-				background-size: 12px;
 				border: 2px solid #93a98f;
 				box-shadow: 0 0 5px #93a98f;
 			}

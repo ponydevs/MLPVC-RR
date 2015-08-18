@@ -18,14 +18,67 @@
 			echo ' <button id="ban-toggle" class="darkblue typcn typcn-'.$Icon.' '.strtolower($BanLabel).'" title="'."$BanLabel user".'"></button>';
 		}
 	?></p>
-	<div class="details">
-<?php if (PERM('developer')){ ?>
+	<div class=details>
+<?  if (PERM('developer')){ ?>
 		<section>
 			<label>User ID:</label>
 			<span><?=$User['id']?></span>
 		</section>
-<?php } ?>
-		<section class="bans">
+<?  }
+	$cols = 'id, CONCAT("S", season, "E", episode) as page, preview, label, posted';
+	$PendingReservations = $Database->where('reserved_by', $User['id'])->where('deviation_id IS NULL')->get('reservations',null,$cols);
+	$PendingRequestReservations = $Database->where('reserved_by', $User['id'])->where('deviation_id IS NULL')->get('requests',null,$cols);
+	$TotalPending = count($PendingReservations)+count($PendingRequestReservations);
+	$hasPending = $TotalPending > 0;
+	if ($TotalPending > 0 || PERM('inspector')){
+		if ($hasPending) $customJS[] = 'index'; ?>
+		<section class=pending-reservations>
+			<label>Pending Reservations</label>
+			<span><?=($sameUser?'You have':'This user has')." <strong>$TotalPending</strong>"?> pending reservation<?php
+		echo $TotalPending!==1?'s':'';
+		if ($hasPending)
+			echo " which ha".($TotalPending!==1?'ve':'s')."n't been marked as finished yet";
+		echo ".";
+		if ($sameUser)
+			echo " Please keep in mind that the global limit is 4 at any given time. If you reach the limit, you can't reserve any more images until you finish or cancel some of your current reservations.";
+			?></span>
+<?php
+		if ($hasPending){
+			$Posts = array_merge(
+				reservations_render($PendingReservations, RETURN_ARRANGED)['unfinished'],
+				array_filter(array_values(requests_render($PendingRequestReservations, RETURN_ARRANGED)['unfinished']))
+			);
+			usort($Posts, function($a, $b){
+				$a = strtotime($a['posted']);
+				$b = strtotime($b['posted']);
+
+				return -($a < $b ? -1 : ($a === $b ? 0 : 1));
+			});
+			foreach ($Posts as $i => $p){
+				$thing = isset($p['rq']) ? 'request' : 'reservation';
+				$id = "$thing-{$p['id']}";
+				$link = "/episode/{$p['page']}#$id";
+				$posted = date('c',strtotime($p['posted']));
+				$Posts[$i] = <<<HTML
+<li id=$id>
+	<div class='image screencap'>
+		<a href='$link'><img src='{$p['preview']}'></a>
+	</div>
+	<span class=label>{$p['label']}</span>
+	<em>Posted under <a href='$link'>{$p['page']}</a> <time datetime="$posted"></em>
+	<div>
+		<a href='$link' class='btn blue typcn typcn-arrow-forward'>View</a>
+	</div>
+</li>
+
+HTML;
+			}
+			echo "<ul>".implode('',$Posts)."</ul>";
+		}
+?>
+		</section>
+<?  } ?>
+		<section class=bans>
 			<label>Banishment history</label>
 			<ul><?php
 		$Banishes = $Database

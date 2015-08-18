@@ -793,7 +793,7 @@ HTML;
 			$insert = array(
 				'title' => $json['title'],
 				'preview' => $json['thumbnail_url'],
-				'fullsize' => $json['url'],
+				'fullsize' => isset($json['fullsize_url']) ? $json['fullsize_url'] : $json['url'],
 				'provider' => $type,
 			);
 
@@ -1176,7 +1176,7 @@ HTML;
 
 		if (!empty($Reservations) && is_array($Reservations)){
 			foreach ($Reservations as $R){
-				$k = (!$R['finished']?'un':'').'finished';
+				$k = (empty($R['finished'])?'un':'').'finished';
 				if (!$returnArranged)
 					$Arranged[$k] .= get_r_li($R);
 				else $Arranged[$k][] = $R;
@@ -1217,36 +1217,34 @@ HTML;
 	function requests_render($Requests, $returnArranged = false){
 		global $REQUEST_TYPES;
 
-		$Arranged = array(
-			'finished' => !$returnArranged ? '' : array(),
-			'unfinished' => array(),
-		);
-		$Arranged['unfinished']['bg'] =
-		$Arranged['unfinished']['obj'] =
-		$Arranged['unfinished']['chr'] = $Arranged['finished'];
+		$Arranged = array('finished' => !$returnArranged ? '' : array());
+		if (!$returnArranged){
+			$Arranged['unfinished'] = array();
+			$Arranged['unfinished']['bg'] =
+			$Arranged['unfinished']['obj'] =
+			$Arranged['unfinished']['chr'] = $Arranged['finished'];
+		}
+		else $Arranged['unfinished'] = $Arranged['finished'];
 		if (!empty($Requests) && is_array($Requests)){
 			foreach ($Requests as $R){
 				$HTML = !$returnArranged ? get_r_li($R,true) : $R;
 
 				if (!$returnArranged){
-					if ($R['finished'])
+					if (!empty($R['finished']))
 						$Arranged['finished'] .= $HTML;
 					else $Arranged['unfinished'][$R['type']] .= $HTML;
 				}
 				else {
-					if ($R['finished'])
-						$Arranged['finished'][] = $HTML;
-					else $Arranged['unfinished'][$R['type']][] = $HTML;
+					$k = (empty($R['finished'])?'un':'').'finished';
+					$Arranged[$k][] = $HTML;
 				}
 			}
 		}
-		if (!$returnArranged){
-			$Groups = '';
-			foreach ($Arranged['unfinished'] as $g => $c)
-				$Groups .= "<div class=group><h3>{$REQUEST_TYPES[$g]}:</h3><ul>{$c}</ul></div>";
-		}
-
 		if ($returnArranged) return $Arranged;
+
+		$Groups = '';
+		foreach ($Arranged['unfinished'] as $g => $c)
+			$Groups .= "<div class=group><h3>{$REQUEST_TYPES[$g]}:</h3><ul>{$c}</ul></div>";
 
 		if (PERM('user')){
 			$makeRq = '<button id="request-btn" class=green>Make a request</button>';

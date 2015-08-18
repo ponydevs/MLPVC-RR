@@ -61,6 +61,7 @@
 				}
 			}
 		}
+		.pending-reservations ul { @extend %post-ul }
 	}
 	.settings {
 		border-top: 1px solid $ContentOutline;
