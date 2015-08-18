@@ -29,7 +29,6 @@ $(function(){
 
 			newPageNumber = parseInt(this.page, 10);
 
-			window.updateTimesF();
 			$('nav').find('li.active').children().last().html(function(){
 				return this.innerHTML.replace(/Page \d+/,'Page '+newPageNumber);
 			});
@@ -55,6 +54,7 @@ $(function(){
 			});
 
 			$(this.update).html(this.output).trigger('page-switch');
+			window.updateTimesF();
 
 			pageNumber = newPageNumber;
 			$.Dialog.close();
