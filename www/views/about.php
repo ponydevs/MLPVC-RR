@@ -32,7 +32,7 @@
 			<p><strong>Post-ban dialog illustration (<a href="/img/ban-after.png">direct link</a>):</strong> <a href="http://sairoch.deviantart.com/art/Sad-Twilight-Sparkle-354710611">Sad Twilight Sparkle</a> by <a href="http://sairoch.deviantart.com/">Sairoch</a> <em>(<a href="http://sta.sh/0mddtxyru0w">shading-free version</a> used)</em></p>
 			<p><strong>Extrenal link icon</strong> (licensed GPL) taken from <a href="https://commons.wikimedia.org/wiki/File:Icon_External_Link.svg">Wikimedia Commons</a></p>
 			<p><strong>Coding and design</strong> by <a href="http://djdavid98.eu">DJDavid98</a></p>
-			<p class=ramnode><a href="https://clientarea.ramnode.com/aff.php?aff=2648"><img src="http://www.ramnode.com/images/banners/affbannerlightnewlogoblack.png" alt="high performance ssd vps""></a></p>
+			<p class=ramnode><a href="https://clientarea.ramnode.com/aff.php?aff=2648"><img src="https://www.ramnode.com/images/banners/affbannerlightnewlogoblack.png" alt="high performance ssd vps""></a></p>
 		</div>
 	</section>
 <?php
