@@ -37,11 +37,11 @@
 			switch ($prov){
 				case 'yt':
 					$path = $urlOnly ? 'watch?v=' : 'embed/';
-					$url = "//www.youtube.com/$path$id";
+					$url = "https://www.youtube.com/$path$id";
 				break;
 				case 'dm':
 					$path = !$urlOnly ? 'embed/' : '';
-					$url = "//www.dailymotion.com/{$path}video/$id";
+					$url = "https://www.dailymotion.com/{$path}video/$id";
 					if (!$urlOnly) $url .= '?hideInfos=1&related=0&quality=1080&autoplay=0';
 				break;
 			}

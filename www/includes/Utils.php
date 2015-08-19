@@ -68,6 +68,11 @@
 		return !!$Database->insert("log",$central);
 	}
 
+	# Make any absolute URL HTTPS
+	function makeHttps($url){
+		return preg_replace('~^(https?:)?//~','https://',$url);
+	}
+
 	# Format log details
 	function format_log_details($logtype, $data){
 		global $Database, $ROLES_ASSOC;
@@ -399,18 +404,10 @@ HTML;
 
 		header('Content-Type: text/html; charset=utf-8;');
 
-		// Kell-e fejrész?
-		if (array_search('no-header',$settings) === false){
-			$pageHeader = array_search('no-page-header',$settings) === false;
-			require 'views/header.php';
-		}
-		// Megjelenésfájl betöltése
+		$pageHeader = array_search('no-page-header',$settings) === false;
+		require 'views/header.php';
 		require $viewPath;
-		// Kell-e lábrész?
-		if (array_search('no-footer',$settings) === false){
-			//$customCSS[] = 'footer';
-			require 'views/footer.php';
-		}
+		require 'views/footer.php';
 
 		die();
 	}
@@ -676,7 +673,7 @@ HTML;
 		$UserID = strtolower($userdata['userid']);
 		$UserData = array(
 			'name' => $userdata['username'],
-			'avatar_url' => preg_replace('/^https?:/','',$userdata['usericon']),
+			'avatar_url' => makeHttps($userdata['usericon']),
 		);
 		$AuthData = array(
 			'access' => $json['access_token'],
@@ -804,13 +801,10 @@ HTML;
 
 			$insert = array(
 				'title' => $json['title'],
-				'preview' => $json['thumbnail_url'],
-				'fullsize' => isset($json['fullsize_url']) ? $json['fullsize_url'] : $json['url'],
+				'preview' => makeHttps($json['thumbnail_url']),
+				'fullsize' => makeHttps(isset($json['fullsize_url']) ? $json['fullsize_url'] : $json['url']),
 				'provider' => $type,
 			);
-
-			Image::removeProtocol($insert['preview']);
-			Image::removeProtocol($insert['fullsize']);
 
 			if (empty($Deviation)){
 				$insert['id'] = $ID;

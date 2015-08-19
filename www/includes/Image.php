@@ -34,11 +34,6 @@
 			'derpicdn\.net/img/(?:view|download)/\d{4}/\d{1,2}/\d{1,2}/(\d+)' => 'derpibooru',
 			'puu\.sh/([A-Za-z\d]+(?:/[A-Fa-f\d]+)?)' => 'puush',
 		);
-		private static $stripProtocol = array('fav.me','sta.sh');
-		public static function removeProtocol(&$url){
-			$url = preg_replace('/^https?:/','',$url);
-			return 'NOPE';
-		}
 		private static function test_provider($url, $pattern, $name){
 			$match = array();
 			if (preg_match("~^(?:https?://(?:www\.)?)?$pattern~", $url, $match))
@@ -110,10 +105,8 @@
 					throw new Exception('The image could not be retrieved');
 			}
 
-			if (in_array($this->provider,self::$stripProtocol)){
-				self::removeProtocol($this->preview);
-				self::removeProtocol($this->fullsize);
-			}
+			$this->preview = makeHttps($this->preview);
+			$this->fullsize = makeHttps($this->fullsize);
 
 			$this->id = $id;
 		}
