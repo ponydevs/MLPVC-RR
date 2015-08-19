@@ -1234,7 +1234,7 @@
 				}
 
 				$title = '';
-				if (empty($_GET['q'])){
+				if (empty($_GET['q']) || !PERM('user')){
 					$EntryCount = $CGDb->count('ponies');
 					list($Page,$MaxPages) = calc_page($EntryCount);
 					$Ponies = $CGDb->orderBy('label', 'ASC')->get('ponies',array($ItemsPerPage*($Page-1), $ItemsPerPage));
