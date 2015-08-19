@@ -1829,9 +1829,11 @@ ORDER BY `count` DESC
 	}
 
 	// Update use count on a tag
-	function update_tag_count($TagID){
+	function update_tag_count($TagID, $returnCount = false){
 		global $CGDb;
 
 		$Tagged = $CGDb->where('tid', $TagID)->count('tagged');
-		$CGDb->where('tid', $TagID)->update('tags',array('uses' => $Tagged));
+		$return = array('status' => $CGDb->where('tid', $TagID)->update('tags',array('uses' => $Tagged)));
+		if ($returnCount) $return['count'] = $Tagged;
+		return $return;
 	}

@@ -8,6 +8,7 @@
 		th {
 			background: #fff;
 			border: 1px solid;
+			padding: 3px 0;
 		}
 		td {
 			padding: 5px;
@@ -30,8 +31,13 @@
 				}
 			}
 			&.uses {
-				width: 7.5%;
+				width: 12%;
 				text-align: center;
+
+				> span {
+					font-size: 1.2em;
+					vertical-align: middle;
+				}
 			}
 		}
 	}

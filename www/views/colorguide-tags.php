@@ -12,7 +12,7 @@
 				<th class="name" colspan=2>Name</th>
 				<th class="title">Description</th>
 				<th class="type">Type</th>
-				<th class="uses">Uses</th>
+				<th class="uses">Uses <button class='typcn typcn-arrow-sync refresh-all' title='Refresh usage data on this page'></button></th>
 			</tr>
 HTML;
 ?></thead>

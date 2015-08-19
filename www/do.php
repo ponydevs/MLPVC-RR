@@ -947,8 +947,36 @@
 
 						$CGDb->where('id', $Pony['id'])->update('ponies', $update);
 					}
-					else if (preg_match('~^([gs]et|make|del|merge)tag(?:/(\d+))?$~', $data, $_match)){
+					else if (preg_match('~^([gs]et|make|del|merge|recount)tag(?:/(\d+))?$~', $data, $_match)){
 						$action = $_match[1];
+
+						if ($action === 'recount'){
+							if (empty($_POST['tagids']))
+								respond('Missing list of tags to update');
+
+							$tagIDs = array_map('intval', explode(',',trim($_POST['tagids'])));
+							$counts = array();
+							$updates = 0;
+							foreach ($tagIDs as $tid){
+								if ($CGDb->where('tid', $tid)->has('tags')){
+									$result = update_tag_count($tid, true);
+									if ($result['status'])
+										$updates++;
+									$counts[$tid] = $result['count'];
+								}
+							}
+
+							respond(
+								(
+									!$updates
+									? 'There was no change in the tag useage counts'
+									: "$updates tag".($updates!==1?"s'":"'s").' use count'.($updates!==1?'s were':' was').' updated'
+								),
+								1,
+								array('counts' => $counts)
+							);
+						}
+
 						$setting = $action === 'set';
 						$getting = $action === 'get';
 						$deleting = $action === 'del';

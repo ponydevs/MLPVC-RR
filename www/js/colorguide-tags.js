@@ -15,7 +15,7 @@ $(function(){
 
 		var $btn = $(this),
 			$tr = $btn.parents('tr'),
-			tagName = $btn.parent().prev().text(),
+			tagName = $tr.children().eq(1).text().trim(),
 			tagID = parseInt($tr.children().first().text().trim(), 10),
 			title;
 		switch (this.className.split(' ').pop()){
@@ -90,6 +90,44 @@ $(function(){
 					});
 				}));
 			break;
+			case "refresh":
+				title = 'Refresh use count of '+tagName;
+
+				$.Dialog.wait(title, 'Updating use count');
+
+				$.post('/colorguide/recounttag',{tagids:tagID}, TagUseUpdateHandler(title));
+			break;
 		}
 	});
+
+	var TagUseUpdateHandler = function(title, successDialog){
+			return $.mkAjaxHandler(function(){
+				if (!this.status) $.Dialog.fail(title, this.message);
+
+				if (this.counts){
+					var counts = this.counts;
+					$tbody.children().each(function(){
+						var $ch = $(this).children(),
+							tid = parseInt($ch.first().text().trim(), 10);
+
+						if (typeof counts[tid] !== 'undefined')
+							$ch.last().children('span').text(counts[tid]);
+					});
+				}
+
+				if (successDialog) $.Dialog.success(title, this.message, true);
+				else $.Dialog.close();
+			})
+		},
+		$refresher = $('.refresh-all').on('click',function(){
+			var tagIDs = [],
+				title = 'Recalculate tag usage data';
+			$tbody.children().each(function(){
+				tagIDs.push($(this).children().first().text().trim())
+			});
+
+			$.Dialog.wait(title, 'Updating use count'+(tagIDs.length!==1?'s':''));
+
+			$.post('/colorguide/recounttag',{tagids:tagIDs.join(',')}, TagUseUpdateHandler(title, true));
+		});
 });
