@@ -75,15 +75,16 @@ HTML;
 			<tbody><?php
 			$Data = $Database->rawQuery(
 				"SELECT
-					@b := CONCAT(browser_name,' ',browser_ver) as browser,
+					@name := browser_name as name,
+					@ver := browser_ver as ver,
 					(
 						SELECT COUNT(*)
 						FROM sessions
-						WHERE CONCAT(browser_name,' ',browser_ver) = @b
+						WHERE browser_name = @name && browser_ver = @ver
 					) as users
 				FROM `sessions`
 				GROUP BY browser
-				ORDER BY users DESC");
+				ORDER BY users DESC, browser_name, browser_ver");
 			$i = 0;
 			$last = 0;
 			foreach ($Data as $r){
@@ -94,7 +95,7 @@ HTML;
 					$i++;
 					$ordering = $i;
 				}
-				echo "<tr><td><strong>$ordering</strong></td><td>{$r['browser']}</td><td>{$r['users']}</td></tr>";
+				echo "<tr><td><strong>$ordering</strong></td><td>{$r['name']} {$r['ver']}</td><td class=align-center>{$r['users']}</td></tr>";
 			} ?></tbody>
 		</table>
 	</section>
