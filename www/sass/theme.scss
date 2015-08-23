@@ -81,8 +81,7 @@
 			li.home a {
 				font-family: "Celestia", sans-serif;
 				background-color: $HeaderBlue !important;
-				background-image: url('../img/grid-w-.2.svg'), url('../img/grid-w-.7.svg');
-				background-size: 16px, 4px;
+				background-image: url('../img/grid-w-.3.svg'), url('../img/grid-w-.1.svg');
 				font-size: 18px;
 				line-height: .8em;
 				padding-right: .4em;
@@ -185,9 +184,8 @@ body {
 	font-family: 'Arimo', sans-serif;
 	//noinspection CssUnknownTarget
 	background-image:
-		url('../img/grid-1E3DB3-.1.svg'),
-		url('../img/grid-1E3DB3-.5.svg');
-	background-size: 16px, 4px;
+		url('../img/grid-1E3DB3-.2.svg'),
+		url('../img/grid-1E3DB3-.1.svg');
 }
 // Page layout - Header
 header {
@@ -225,8 +223,7 @@ header {
 				height: 100%;
 				background-color: $HeaderBlue;
 				// noinspection CssUnknownTarget
-				background-image: url('../img/grid-w-.2.svg'), url('../img/grid-w-.7.svg');
-				background-size: 16px, 4px;
+				background-image: url('../img/grid-w-.3.svg'), url('../img/grid-w-.1.svg');
 			}
 		}
 
@@ -240,7 +237,6 @@ header {
 			height: 100%;
 			//noinspection CssUnknownTarget
 			background-image: url('../img/grid-g.svg');
-			background-size: 16px;
 		}
 	}
 
