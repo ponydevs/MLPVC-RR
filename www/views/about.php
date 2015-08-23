@@ -85,7 +85,7 @@ HTML;
 					) as users
 				FROM `sessions`
 				GROUP BY browser
-				ORDER BY users DESC, browser_name, browser_ver");
+				ORDER BY users DESC, browser_name, browser_ver DESC");
 			$i = 0;
 			$last = 0;
 			foreach ($Data as $r){
