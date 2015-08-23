@@ -33,5 +33,15 @@
 		&:not(:last-child){
 			margin-bottom: 10px;
 		}
+
+		&.browsers table {
+			border-collapse: collapse;
+			background: #fff;
+
+			td, th {
+				border: 1px solid;
+				padding: 5px;
+			}
+		}
 	}
 }

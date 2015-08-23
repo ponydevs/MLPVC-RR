@@ -68,6 +68,36 @@ HTML;
 			} ?>
 		</div>
 	</section>
+	<section class=browsers>
+		<h2>Most popular browsers</h2>
+		<table>
+			<thead><th>#</th><th>Name & Version</th><th>Sessions</th></thead>
+			<tbody><?php
+			$Data = $Database->rawQuery(
+				"SELECT
+					@b := CONCAT(browser_name,' ',browser_ver) as browser,
+					(
+						SELECT COUNT(*)
+						FROM sessions
+						WHERE CONCAT(browser_name,' ',browser_ver) = @b
+					) as users
+				FROM `sessions`
+				GROUP BY browser
+				ORDER BY users DESC");
+			$i = 0;
+			$last = 0;
+			foreach ($Data as $r){
+				$s = $r['users'] !== 1 ? 's' : '';
+				$ordering = '~';
+				if ($last !== $r['users']){
+					$last = $r['users'];
+					$i++;
+					$ordering = $i;
+				}
+				echo "<tr><td><strong>$ordering</strong></td><td>{$r['browser']}</td><td>{$r['users']}</td></tr>";
+			} ?></tbody>
+		</table>
+	</section>
 <?php   }
 	} ?>
 </div>
