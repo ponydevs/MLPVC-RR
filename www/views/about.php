@@ -75,8 +75,9 @@ HTML;
 			<tbody><?php
 			$Data = $Database->rawQuery(
 				"SELECT
-					@name := browser_name as name,
-					@ver := browser_ver as ver,
+					@name := browser_name as `name`,
+					@ver := browser_ver as `ver`,
+					CONCAT(browser_name, ' ', browser_ver) as browser,
 					(
 						SELECT COUNT(*)
 						FROM sessions
@@ -95,7 +96,7 @@ HTML;
 					$i++;
 					$ordering = $i;
 				}
-				echo "<tr><td><strong>$ordering</strong></td><td>{$r['name']} {$r['ver']}</td><td class=align-center>{$r['users']}</td></tr>";
+				echo "<tr><td><strong>$ordering</strong></td><td>{$r['browser']}</td><td class=align-center>{$r['users']}</td></tr>";
 			} ?></tbody>
 		</table>
 	</section>
