@@ -311,8 +311,11 @@ $(function(){
 	function CGEditorMaker(title, $group){
 		var dis = this;
 		if (typeof $group !== 'undefined'){
-			var groupID = $group.attr('id').substring(2),
-				ponyID = $group.parents('li').attr('id').substring(1);
+			if ($group instanceof jQuery){
+				var groupID = $group.attr('id').substring(2),
+					ponyID = $group.parents('li').attr('id').substring(1);
+			}
+			else ponyID = $group;
 		}
 		$.Dialog.request(title,$cgEditor.clone(true, true),'cg-editor','Save',function($form){
 			var $ErrorNotice = $form.children('.notice').children('p'),
@@ -602,8 +605,8 @@ $(function(){
 			});
 		});
 
-		$colorGroups = $('ul.colors:not(.static)');
-		$colorGroups.attr('data-color', color).ctxmenu(
+		$colorGroups = $('ul.colors:not(.static)').attr('data-color', color);
+		$colorGroups.filter(':not(.ctxmenu-bound)').ctxmenu(
 			[
 				{text: "Re-order "+color+" groups", icon: 'arrow-unsorted', click: function(){
 					var $colors = $(this),
@@ -669,11 +672,12 @@ $(function(){
 					}));
 				}},
 				{text: "Create new group", icon: 'folder-add', click: function(){
-					CGEditorMaker('Create color group');
+					CGEditorMaker('Create color group', $(this).parents('li').attr('id').substring(1));
 				}},
 			],
 			Color+' groups'
-		).children('li').filter(':not(.ctxmenu-bound)').ctxmenu(
+		);
+		$colorGroups.children('li').filter(':not(.ctxmenu-bound)').ctxmenu(
 			[
 				{text: "Edit "+color+" group", icon: 'pencil', click: function(){
 					var $this = $(this),
@@ -685,7 +689,7 @@ $(function(){
 					$.Dialog.wait(title, 'Retrieving '+color+' group details from server');
 
 					$.post('/colorguide/getcg/'+groupID,$.mkAjaxHandler(function(){
-						if (this.status) CGEditorMaker.call(this, title, $group.attr('id', 'cg'+groupID));
+						if (this.status) CGEditorMaker.call(this, title, $group);
 						else $.Dialog.fail(title, data.message);
 					}));
 				}},
