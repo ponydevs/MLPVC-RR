@@ -366,7 +366,7 @@ $(function(){
 								$group.html(this.cg);
 							}
 							else if (this.cgs)
-								$group.parent().html(this.cgs);
+								$('#p'+ponyID).find('ul.colors').html(this.cgs);
 							window.tooltips();
 							ctxmenus();
 						}
