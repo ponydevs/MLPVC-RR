@@ -4,3 +4,4 @@ mlpvc-rr-error.log
 *.opdownload
 node_modules
 www/img/cg/
+*.crdownload

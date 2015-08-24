@@ -125,7 +125,7 @@ CREATE TABLE IF NOT EXISTS `tags` (
   `tid` int(11) NOT NULL,
   `name` varchar(25) NOT NULL,
   `title` tinytext NOT NULL,
-  `type` enum('spec','gen','cat','app','ep') DEFAULT NULL,
+  `type` enum('spec','gen','cat','app','ep','char') DEFAULT NULL,
   `uses` int(11) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8;
 
@@ -142,8 +142,8 @@ INSERT INTO `tags` (`tid`, `name`, `title`, `type`, `uses`) VALUES
 (10, 'pet', '', 'cat', 0),
 (11, 'male', '', 'gen', 0),
 (12, 'female', '', 'gen', 3),
-(14, 'twilight sparkle', 'All appearances related to Twilight Sparkle', NULL, 2),
-(15, 'gala dresses', 'All gala dress colors', 'app', 0),
+(14, 'twilight sparkle', 'All appearances related to Twilight Sparkle', 'char', 2),
+(15, 'gala dresses', 'All gala dress colors', 'app', 1),
 (16, 'human', 'Refers to Equestria Girls characters', 'spec', 0),
 (19, 's1e1', '', 'ep', 1),
 (20, 's1e26', '', 'ep', 1),

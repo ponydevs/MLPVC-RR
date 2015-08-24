@@ -114,6 +114,7 @@
 		'ep' => 'Episode',
 		'gen' => 'Gender',
 		'spec' => 'Species',
+		'char' => 'Character',
 	);
 	$TAG_TYPES = array_keys($TAG_TYPES_ASSOC);
 

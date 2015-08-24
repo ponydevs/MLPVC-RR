@@ -229,9 +229,10 @@ div.tags {
 	&:not([class*=typ-]) { @include tag-style($TDefault) }
 	&.typ-cat { @include tag-style($TCategory, '\e083')	}
 	&.typ-spec { @include tag-style($TSpecies, '\e148') }
-	&.typ-gen { @include tag-style($TGender, '\e12c') }
+	&.typ-gen { @include tag-style($TGender, '\e10f') }
 	&.typ-app { @include tag-style($TAppearance, '\e07e') }
 	&.typ-ep { @include tag-style($TEpisode, '\e131') }
+	&.typ-char { @include tag-style($TCharacter, '\e12c') }
 }
 
 #universal ul.colors {
@@ -314,6 +315,7 @@ ul.colors {
 .qtip-tag-gen { @include tag-style($TGender) }
 .qtip-tag-app { @include tag-style($TAppearance) }
 .qtip-tag-ep { @include tag-style($TEpisode) }
+.qtip-tag-char { @include tag-style($TCharacter) }
 
 #search-form {
 	text-align: center;

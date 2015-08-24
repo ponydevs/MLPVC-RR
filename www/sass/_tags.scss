@@ -4,7 +4,8 @@ $TCategory: $_TBase;
 $TSpecies: adjust_hue($_TBase, -70);
 $TGender: adjust_hue($_TBase, 60);
 $TAppearance: adjust_hue($_TBase, 120);
-$TEpisode: adjust_hue($_TBase, 200);
+$TEpisode: adjust_hue($_TBase, 190);
+$TCharacter: adjust_hue($_TBase, 240);
 
 @mixin tag-style($color:$TDefault, $icon:false){
 	color: darken($color, 5);
