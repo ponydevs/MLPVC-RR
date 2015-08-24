@@ -30,7 +30,7 @@ $(function(){
 			});
 		});
 		var $ch = $('ul.colors').children('li').children();
-		$ch.filter(':not([data-hasqtip])').qtip({
+		$ch.filter(':not(:first-child):not([data-hasqtip])').qtip({
 			content: {
 				text: 'Click to copy HEX '+color+' code to clipboard',
 				title: function(){ return $(this).attr('title') }
