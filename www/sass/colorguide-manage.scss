@@ -94,6 +94,10 @@
 			.remove { cursor: pointer }
 			.move { cursor: ns-resize }
 		}
+
+		&:first-child:last-child .clra .move {
+			display: none;
+		}
 	}
 }
 

@@ -57,10 +57,13 @@
 	$.ajaxSetup({
 		statusCode: {
 			401: function(){
-				$.Dialog.fail(undefined, "Cross-site Request Forgery attack detected. Please notify the site administartors.")
+				$.Dialog.fail(undefined, "Cross-site Request Forgery attack detected. Please notify the site administartors.");
+			},
+			404: function(){
+				$.Dialog.fail(undefined, "Error 404: The requested endpoint could not be found");
 			},
 			500: function(){
-				$.Dialog.fail(false, 'The request failed due to an internal server error. If this persists, please open an issue on GitHub using the link in the footer!')
+				$.Dialog.fail(false, 'The request failed due to an internal server error. If this persists, please open an issue on GitHub using the link in the footer!');
 			}
 		}
 	});

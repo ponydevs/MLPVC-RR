@@ -355,7 +355,7 @@ $(function(){
 				$ErrorNotice.text('Saving changes...').parent().removeClass('fail').addClass('info').show();
 				$.Dialog.center();
 
-				$.post('/colorguide/'+(editing?'set':'make')+'cg/'+groupID, data, $.mkAjaxHandler(function(){
+				$.post('/colorguide/'+(editing?'set':'make')+'cg'+(editing?'/'+groupID:''), data, $.mkAjaxHandler(function(){
 					if (this.status){
 						if (this.cg || this.cgs){
 							if (this.cg){
