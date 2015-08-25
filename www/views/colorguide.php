@@ -6,7 +6,7 @@
 		<label>Some features are unavailable</label>
 		<p>Because you seem to be using a mobile device, editing tags & colors may not work, as it requires you to right-click. If you want to do either of these, please do so from a computer.</p>
 	</div>
-<? } ?>
+<? } /* ?>
 	<div id=universal>
 		<div>
 			<strong>Universal colors</strong>
@@ -41,7 +41,7 @@
 			</ul>
 		</div>
 	</div>
-<? if (PERM('inspector')){ ?>
+<? */ if (PERM('inspector')){ ?>
 	<p class='align-center admin'>
 		<button class='green typcn typcn-plus' id="new-appearance-btn">Add new appearance</button>
 		<a class='btn darkblue typcn typcn-tags' href="/colorguide/tags">View list of tags</a>
