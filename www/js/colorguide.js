@@ -30,15 +30,24 @@ $(function(){
 			});
 		});
 		var $ch = $('ul.colors').children('li').children();
-		$ch.filter(':not(:first-child):not([data-hasqtip])').qtip({
-			content: {
-				text: 'Click to copy HEX '+color+' code to clipboard',
-				title: function(){ return $(this).attr('title') }
-			},
-			position: { my: 'bottom center', at: 'top center', viewport: true },
-			style: { classes: 'qtip-see-thru' }
+		$ch.filter(':not(:first-child):not([data-hasqtip])').each(function(){
+			var $this = $(this),
+				text = 'Click to copy HEX '+color+' code to clipboard',
+				title = $this.attr('title');
+
+			if ($this.is(':empty'))
+				text = 'No color to copy';
+
+			$this.qtip({
+				content: {
+					text: text,
+					title: title
+				},
+				position: { my: 'bottom center', at: 'top center', viewport: true },
+				style: { classes: 'qtip-see-thru' }
+			});
 		});
-		$ch.filter('span:not(:first-child)').off('click').on('click',function(e){
+		$ch.filter('span:not(:first-child):not(:empty)').off('click').on('click',function(e){
 			e.preventDefault();
 			var copy = this.innerHTML.trim();
 			if (!copyHash) copy = copy.replace('#','');

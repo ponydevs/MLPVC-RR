@@ -174,7 +174,7 @@
 					if (empty($Thing)) respond("There's no $type with that ID");
 
 					if (!empty($Thing['lock']))
-						respond('This post has been locked and cannot be edited or removed.'.(PERM('inspector') && !PERM('developer')?' If a change is necessary please ask the developer to do it for you.':''));
+						respond('This post has been approved and cannot be edited or removed.'.(PERM('inspector') && !PERM('developer')?' If a change is necessary please ask the developer to do it for you.':''));
 
 					$update = array('reserved_by' => null);
 					if (!PERM('member')){
@@ -204,7 +204,7 @@
 								respond();
 
 							if (!$Database->where('id', $Thing['id'])->update("{$type}s", array('lock' => 1)))
-								respond("This $type is already locked", 1);
+								respond("This $type is already approved", 1);
 
 							LogAction('post_lock',array(
 								'type' => $type,
@@ -848,6 +848,17 @@
 
 									$data['id'] = $query;
 									$data['page'] = ceil($Query['position'] / $ItemsPerPage);
+
+									if (isset($_POST['template'])){
+										try {
+											apply_template($query);
+										}
+										catch (Exception $e){
+											$data['message'] .= ", but applying the template failed";
+											$data['info'] = "The common color groups could not be added.<br>Reason: ".$e->getMessage();
+											respond($data);
+										}
+									}
 								}
 								if (!empty($data['notes']))
 									$data['notes'] = get_notes_html($data, NOWRAP);

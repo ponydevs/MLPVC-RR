@@ -39,7 +39,12 @@
 		if (!empty($Colors))
 			foreach ($Colors as $i => $c){
 				$title = apos_encode($c['label']);
-				$HTML .= "<span id=c{$c['colorid']} style=background-color:{$c['hex']} title='$title'>{$c['hex']}</span> ";
+				$styleTag = $color = '';
+				if (!empty($c['hex'])){
+					$color = $c['hex'];
+					$styleTag = " style=background-color:$color";
+				}
+				$HTML .= "<span id=c{$c['colorid']}$styleTag title='$title'>$color</span> ";
 			};
 
 		if ($wrap) $HTML .= "</li>";
@@ -269,6 +274,7 @@
 	 * @param string $string
 	 * @param string $Thing
 	 * @param string $pattern
+	 * @param bool $returnError
 	 *
 	 * @return null
 	 */
@@ -320,4 +326,60 @@ HTML;
 
 		if ($wrap) $HTML .= '</tbody>';
 		return $HTML;
+	}
+
+	/**
+	 * Apply pre/defined template to an appearance
+	 *
+	 * @param int $PonyID
+	 *
+	 * @return null
+	 */
+	function apply_template($PonyID){
+		global $CGDb, $Color;
+
+		if ($CGDb->where('ponyid', $PonyID)->has('colorgroups'))
+			throw new Exception('Template can only be applied to empty appearances');
+
+		$Scheme = array(
+			'Coat' => array(
+				'Outline',
+				'Fill',
+				'Dark Outline',
+				'Dark Fill',
+			),
+			'Mane & Tail' => array(
+				'Outline',
+				'Fill',
+			),
+			'Iris' => array(
+				'Gradient Top',
+				'Gradient Middle',
+				'Gradient Bottom',
+				'Highlight Top',
+				'Highlight Bottom',
+			),
+			'Cutie Mark' => array(
+				"$Color 1",
+				"$Color 2",
+			),
+		);
+
+		$cgi = $ci = 0;
+		foreach ($Scheme as $GroupName => $ColorNames){
+			$GroupID = $CGDb->insert('colorgroups',array(
+				'ponyid' => $PonyID,
+				'label' => $GroupName,
+				'order' => $cgi++,
+			));
+			if (!$GroupID)
+				throw new Exception(rtrim("Color group \"$GroupName\" could not be created: ".$CGDb->getLastError()), ': ');
+
+			foreach ($ColorNames as $label){
+				if (!$CGDb->insert('colors',array(
+					'groupid' => $GroupID,
+					'label' => $label,
+				))) throw new Exception(rtrim("Color \"$label\" could not be added: ".$CGDb->getLastError()), ': ');
+			}
+		}
 	}

@@ -100,6 +100,16 @@ $(function(){
 					$form.find('input').val(data.label);
 					$form.find('textarea').val(data.notes);
 				}
+				else {
+					$.mk('label').append(
+						$.mk('input').attr({
+							type: 'checkbox',
+							name: 'template'
+						}),
+						" Pre-fill with common color groups"
+					).insertBefore($ErrorNotice.parent());
+					$.Dialog.center();
+				}
 				$form.on('submit',function(e){
 					e.preventDefault();
 
@@ -115,12 +125,16 @@ $(function(){
 							}
 							else {
 								$.Dialog.success(title, this.message, true);
-								$.toPage(window.location.pathname.replace(/(\d+)?$/,this.page),true,true);
-								var id = this.id;
-								$list.one('page-switch',function(){
+								var id = this.id, info = this.info;
+								$list.one('page-switch',function(e){
 									var $pony = $('#p'+id);
 									$(document.body).scrollTop($pony.offset().top - ($pony.outerHeight()/2));
+									if (info){
+										e.preventDefault();
+										$.Dialog.info(title, info);
+									}
 								});
+								$.toPage(window.location.pathname.replace(/(\d+)?$/,this.page),true,true);
 							}
 						}
 						else handleError.call(this);
@@ -352,7 +366,7 @@ $(function(){
 					data.Colors.push(append);
 				});
 				if (data.Colors.length === 0)
-					throw new Error('You need to add at least 1 color');
+					return handleError.call({message:'You need to have at least 1 valid color'});
 				data.Colors = JSON.stringify(data.Colors);
 
 				$ErrorNotice.text('Saving changes...').parent().removeClass('fail').addClass('info').show();

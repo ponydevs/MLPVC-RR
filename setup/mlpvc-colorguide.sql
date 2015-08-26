@@ -35,7 +35,7 @@ CREATE TABLE IF NOT EXISTS `colors` (
   `colorid` int(11) NOT NULL,
   `groupid` int(11) NOT NULL,
   `label` tinytext NOT NULL,
-  `hex` varchar(7) NOT NULL,
+  `hex` varchar(7) DEFAULT NULL,
   `order` tinyint(4) DEFAULT NULL
 ) ENGINE=InnoDB AUTO_INCREMENT=51 DEFAULT CHARSET=utf8;
 

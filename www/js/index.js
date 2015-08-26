@@ -252,20 +252,28 @@ $(function(){
 			});
 		});
 		$actions.filter('.lock').off('click').on('click',function(){
-			var title = 'Locking post',
+			var title = 'Approve post',
 				$btn = $(this);
 
-			$.Dialog.confirm(title, "By locking this post, you can prevent any additional modifications, such as un-finishing. This flag is <strong>permanent</strong>, and can only be removed by the developer. Ideally, this feature should be used when the image has been added to the group gallery.<br><br>After locking the post, it'll count towards the user's badges/achievements/points/whatever (once implemented). <strong>This action will be logged.</strong><br><br>Are you <em>absolutely</em> sure you want to lock this post, and prevent futher actions?",['Lock it','Nevermind'],function(sure){
+			$.Dialog.confirm(title, "By approving this post, you can prevent any additional modifications, such as un-finishing. This mark is <strong>permanent</strong>, and can only be removed by the developer. <strong>This should be used when the image has been added to the group gallery.</strong><br><br>After approving the post, it'll count towards the user's badges/achievements/points/whatever (once implemented) and the image will receive a small green checkmark on the site. <strong>This action will be logged.</strong><br><br>Are you <em>absolutely</em> sure you want to approve this post, and with that, prevent futher actions?",['Approve it','Nevermind'],function(sure){
 				if (!sure) return;
 
-				$.Dialog.wait(title, 'Locking post');
+				$.Dialog.wait(title, 'Approving post');
 
 				$.post('/reserving/'+type+'/'+id+'?lock', $.mkAjaxHandler(function(){
 					if (!this.status) return $.Dialog.fail(title, data.message);
 
+					$btn.closest('li').children('.image').children('a').append(
+						$.mk('span').attr({
+							'class': 'typcn typcn-tick',
+							title: "This submission has been accepted into the group gallery"
+						})
+					);
 					$btn.parent().remove();
 
-					if (this.message) $.Dialog.success(title, data.message, true);
+					if (this.message){
+						$.Dialog.success(title, data.message, true);
+					}
 					else $.Dialog.close();
 				}));
 			});

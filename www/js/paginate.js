@@ -53,11 +53,12 @@ $(function(){
 				$childs.eq(newPageNumber-1).html('<strong>'+newPageNumber+'</strong>');
 			});
 
-			$(this.update).html(this.output).trigger('page-switch');
+			var event = jQuery.Event('page-switch');
+			$(this.update).html(this.output).trigger(event);
 			window.updateTimesF();
-
 			pageNumber = newPageNumber;
-			$.Dialog.close();
+
+			if (!event.isDefaultPrevented()) $.Dialog.close();
 		}));
 	};
 });

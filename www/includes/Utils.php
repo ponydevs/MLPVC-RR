@@ -44,7 +44,7 @@
 		'userfetch' => 'Fetch user details',
 		'banish' => 'User banished',
 		'un-banish' => 'User un-banished',
-		'post_lock' => 'Post locked'
+		'post_lock' => 'Post approved'
 	);
 	function LogAction($type,$data = null){
 		global $Database, $signedIn, $currentUser;
@@ -1077,7 +1077,7 @@ HTML;
 			}
 			if ($finished && PERM('inspector') && empty($R['lock'])){
 				$Buttons[] = array((empty($R['preview'])?'trash delete-only red':'media-eject orange').' unfinish',empty($R['preview'])?'Delete':'Un-finish');
-				$Buttons[] = array('lock-closed delete-only orange lock','Lock');
+				$Buttons[] = array('tick delete-only green lock','Approve');
 			}
 		}
 
