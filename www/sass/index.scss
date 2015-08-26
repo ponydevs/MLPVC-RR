@@ -173,7 +173,7 @@
 			}
 		}
 		ul { @extend %post-ul }
-		&:last-child ul { margin-bottom: 0 }
+		&:last-of-type > div:last-of-type > ul { margin-bottom: 0 }
 		.unfinished ul li {
 			> .reserver .name {
 				line-height: 30px;

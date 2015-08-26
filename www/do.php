@@ -288,14 +288,9 @@
 
 			// PAGES
 			case "index":
-				if ($_SERVER['REQUEST_URI'] === '/index'){
-					statusCodeHeader(301);
-					redirect('/',false);
-				}
-				
 				$CurrentEpisode = get_latest_episode();
 				if (empty($CurrentEpisode)) unset($CurrentEpisode);
-				else list($Requests, $Reservations) = get_posts($CurrentEpisode['season'], $CurrentEpisode['episode']);
+				else redirect("/episode/S{$CurrentEpisode['season']}E{$CurrentEpisode['episode']}", true, 302);
 
 				loadPage($IndexSettings);
 			break;
@@ -526,6 +521,9 @@
 				if (empty($EpData)) redirect('/episodes');
 				$CurrentEpisode = get_real_episode($EpData['season'],$EpData['episode']);
 				if (empty($CurrentEpisode)) redirect('/episodes');
+
+				$Latest = is_episode_latest($CurrentEpisode);
+
 
 				list($Requests, $Reservations) = get_posts($CurrentEpisode['season'], $CurrentEpisode['episode']);
 

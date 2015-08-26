@@ -470,8 +470,8 @@ HTML;
 
 	// Redirection \\
 	define('STAY_ALIVE', false);
-	function redirect($url = '/', $die = true){
-		header("Location: $url");
+	function redirect($url = '/', $die = true, $http = 301){
+		header("Location: $url",$die,$http);
 		if ($die !== STAY_ALIVE) die();
 	}
 
@@ -1434,6 +1434,19 @@ HTML;
 	 */
 	function get_latest_episode(){
 		return get_episodes(1,'airs < NOW() - INTERVAL -24 HOUR');
+	}
+
+	/**
+	 * Checks if provided episode is the latest episode
+	 *
+	 * @param array $Ep
+	 *
+	 * @return bool
+	 */
+	function is_episode_latest($Ep){
+		$latest = get_latest_episode();
+		return $Ep['season'] === $latest['season']
+			&& $Ep['episode'] === $latest['episode'];
 	}
 
 	/**

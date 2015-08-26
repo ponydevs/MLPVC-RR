@@ -25,11 +25,13 @@
 		</div>
 		<nav><ul><?php
 	$HeaderItems = array(
-		array('/','<span>Home</span>','home'),
+		'latest' => array('/','<span>Latest episode</span>','home'),
 		'eps' => array('/episodes','Episodes'),
 	);
-	if ($do === 'episode' && !empty($CurrentEpisode))
-		$HeaderItems['eps']['subitem'] = array($_SERVER['REQUEST_URI'], $title);
+	if ($do === 'episode' && !empty($CurrentEpisode)){
+		if (!empty($Latest)) $HeaderItems['latest'][0] = $_SERVER['REQUEST_URI'];
+		else $HeaderItems['eps']['subitem'] = array($_SERVER['REQUEST_URI'], $title);
+	}
 	if (PERM('inspector')){
 		$HeaderItems['colorguide'] = array("/{$color}guide", "$Color Guide");
 		if ($do === 'colorguide')
