@@ -1101,7 +1101,8 @@ HTML;
 
 		$finished = !!$R['finished'];
 		$thing = $isRequest ? 'request' : 'reservation';
-		$HTML = "<li id=$thing-{$R['id']}>";
+		$ID = "$thing-{$R['id']}";
+		$HTML = "<li id=$ID>";
 		$R['label'] = htmlspecialchars($R['label']);
 		$Image = "<div class='image screencap'><a href='{$R['fullsize']}'><img src='{$R['preview']}'></a></div>";
 		if (!empty($R['label'])) $Image .= "<span class=label>{$R['label']}</span>";
@@ -1119,7 +1120,7 @@ HTML;
 				: 'Requested '
 			)
 			: 'Reserved '
-		).timetag($R['posted'])."</em>";
+		)."<a href=#$ID>".timetag($R['posted'])."</a></em>";
 
 		$R['reserver'] = false;
 		if (!empty($R['reserved_by'])){

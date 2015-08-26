@@ -177,6 +177,12 @@ $StrongOutline: 3;
 			box-shadow: 0 0 7px rgba(0,0,0,.3);
 		}
 
+		&.highlight {
+			background-color: rgba($HeaderBlue,.2) !important;
+			border: 1px solid rgba($HeaderBlue,.4) !important;
+			box-shadow: 0 0 2px rgba($HeaderBlue,.4) !important;
+		}
+
 		> * {
 			display: block;
 			vertical-align: bottom;
