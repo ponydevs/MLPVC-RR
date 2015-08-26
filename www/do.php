@@ -631,11 +631,11 @@
 						if (!isset($_POST['newrole'])) respond('The new group is not specified');
 						$newgroup = trim($_POST['newrole']);
 						if (!in_array($newgroup,$ROLES) || $newgroup === 'ban') respond('The specified group does not exist');
-						if ($targetUser['role'] === $newgroup) respond('This user is already in the specified group');
+						if ($targetUser['role'] === $newgroup) respond(array('already_in' => true));
 
 						update_role($targetUser,$newgroup);
 
-						respond('Group changed successfully',1,array(
+						respond(array(
 							'ng' => $newgroup,
 							'badge' => label_to_initials($ROLES_ASSOC[$newgroup]),
 							'canbebanned' => !PERM('inspector', $newgroup)

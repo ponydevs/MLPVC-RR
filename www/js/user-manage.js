@@ -20,13 +20,19 @@ $(function(){
 	$changeRole.on('click',function(){
 		var title = "Change group";
 		$.Dialog.request(title,$RoleForm.clone(),'rolemod','Change',function($form){
+			var $currRoleOpt = $form.find('option').filter(function(){ return this.innerHTML === currRole }).attr('selected', true);
 			$form.on('submit',function(e){
 				e.preventDefault();
+
+				if ($form.children('select').val() === $currRoleOpt.attr('value'))
+					return $.Dialog.close();
 
 				var data = $form.mkData();
 				$.Dialog.wait(title,'Moving user to the new group');
 
 				$.post("newgroup/"+name, data, $.mkAjaxHandler(function(){
+					if (this.already_in === true)
+						return $.Dialog.close();
 					if (this.status){
 						$currRole.children('span').text(currRole = ROLES[this.ng]);
 						$roleBadge.text(this.badge);
@@ -36,7 +42,7 @@ $(function(){
 					}
 					else $.Dialog.fail(title,this.message);
 				}));
-			}).find('optgroup').children().filter(function(){ return $(this).text() === currRole }).attr('selected', true);
+			});
 		});
 	});
 	$banToggle.on('click',function(){
