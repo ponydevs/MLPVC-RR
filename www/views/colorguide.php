@@ -41,12 +41,13 @@
 			</ul>
 		</div>
 	</div>
-<? */ if (PERM('inspector')){ ?>
-	<p class='align-center admin'>
+*/ ?>
+	<p class='align-center links'>
+<? if (PERM('inspector')){ ?>
 		<button class='green typcn typcn-plus' id="new-appearance-btn">Add new appearance</button>
+<? } ?>
 		<a class='btn darkblue typcn typcn-tags' href="/colorguide/tags">View list of tags</a>
 	</p>
-<? } ?>
 	<div class='notice info'>
 		<p>You can click any colored square on this page to copy its HEX color code to your clipboard. To toggle whether the # symbol will be copied, use the button below. Your choice will be remembered on this browser.</p>
 		<button class='typcn typcn-refresh' id="toggle-copy-hash">Checking...</button>

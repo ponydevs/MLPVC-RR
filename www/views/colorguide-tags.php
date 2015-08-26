@@ -1,18 +1,21 @@
 <div id=content>
 	<h1><?=$heading?></h1>
 	<p>Displaying <?=$ItemsPerPage?> items/page</p>
-	<p class=align-center>
+	<p class='align-center links'>
 		<a class='btn darkblue typcn typcn-arrow-back' href="/colorguide">Back to Color Guide</a>
 	</p>
 	<?=$Pagination = get_pagination_html('colorguide/tags', $Page, $MaxPages)?>
 	<table id="tags">
-		<thead><?=$thead = <<<HTML
+		<thead><?php
+	$cspan = PERM('inspector') ? ' colspan=2' : '';
+	$refresher = PERM('inspector') ? " <button class='typcn typcn-arrow-sync refresh-all' title='Refresh usage data on this page'></button>" : '';
+	echo $thead = <<<HTML
 			<tr>
-				<th class="tid">ID</th>
-				<th class="name" colspan=2>Name</th>
-				<th class="title">Description</th>
-				<th class="type">Type</th>
-				<th class="uses">Uses <button class='typcn typcn-arrow-sync refresh-all' title='Refresh usage data on this page'></button></th>
+				<th class=tid>ID</th>
+				<th class=name$cspan>Name</th>
+				<th class=title>Description</th>
+				<th class=type>Type</th>
+				<th class=uses>Uses$refresher</th>
 			</tr>
 HTML;
 ?></thead>

@@ -307,19 +307,19 @@
 		global $TAG_TYPES_ASSOC;
 		$HTML = $wrap ? '<tbody>' : '';
 
+		$utils = PERM('inspector') ? "<td class=utils><button class='typcn typcn-minus delete' title=Delete></button> <button class='typcn typcn-flow-merge merge' title=Merge></button></td>" : '';
+		$refresh = PERM('inspector') ? " <button class='typcn typcn-arrow-sync refresh' title='Refresh use count'></button>" : '';
+
 		if (!empty($Tags)) foreach ($Tags as $t){
 			$trClass = $t['type'] ? ' class=typ-'.$t['type'] : '';
 			$type = $t['type'] ? $TAG_TYPES_ASSOC[$t['type']] : '';
-			$utils = "<button class='typcn typcn-minus delete' title=Delete></button> <button class='typcn typcn-flow-merge merge' title=Merge></button>";
-			$refresh = "<button class='typcn typcn-arrow-sync refresh' title='Refresh use count'></button>";
 			$HTML .= <<<HTML
 			<tr$trClass>
 				<td class="tid">{$t['tid']}</td>
-				<td class="name">{$t['name']}</td>
-				<td class="utils">$utils</td>
+				<td class="name">{$t['name']}</td>$utils
 				<td class="title">{$t['title']}</td>
 				<td class="type">$type</td>
-				<td class="uses"><span>{$t['uses']}</span> $refresh</td>
+				<td class="uses"><span>{$t['uses']}</span>$refresh</td>
 			</tr>
 HTML;
 		}

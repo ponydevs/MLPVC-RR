@@ -1213,7 +1213,7 @@
 					else do404();
 				}
 
-				if (preg_match('~^tags~',$data) && PERM('inspector')){
+				if (preg_match('~^tags~',$data)){
 					$ItemsPerPage = 20;
 					$EntryCount = $CGDb->count('tags');
 					list($Page,$MaxPages) = calc_page($EntryCount);
@@ -1234,13 +1234,16 @@
 						));
 					}
 
+					$js = array('paginate');
+					if (PERM('inspector'))
+						$js[] = "$do-tags";
 
 					loadPage(array(
 						'title' => $title,
 						'heading' => $heading,
 						'view' => "$do-tags",
 						'css' => "$do-tags",
-						'js' => array("$do-tags",'paginate'),
+						'js' => $js,
 					));
 				}
 

@@ -1,4 +1,7 @@
 @import "tags";
+
+#content > p.links { margin: 0 0 5px }
+
 #tags {
 	width: 100%;
 	border-collapse: collapse;
@@ -80,6 +83,10 @@
 			&.typ-ep {
 				@include tag-style($TEpisode);
 				@include tag-button-style($TEpisode);
+			}
+			&.typ-char {
+				@include tag-style($TCharacter);
+				@include tag-button-style($TCharacter);
 			}
 
 			&:last-child td { border-bottom: 0 }
