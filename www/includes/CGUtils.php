@@ -345,8 +345,8 @@ HTML;
 			'Coat' => array(
 				'Outline',
 				'Fill',
-				'Dark Outline',
-				'Dark Fill',
+				'Shadow Outline',
+				'Shadow Fill',
 			),
 			'Mane & Tail' => array(
 				'Outline',
