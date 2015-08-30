@@ -9,7 +9,7 @@ $ContentBG: rgba(255,255,255,.6);
 	color: #fff;
   box-sizing: border-box;
 }
-$SidebarWidth: 350px;
+$SidebarWidth: 310px;
 
 //noinspection CssOptimizeSimilarProperties
 @mixin white-grid {
@@ -64,6 +64,7 @@ $NoFontChange: true;
 
 // Mobile-to-Desktop breakpoint pixel value
 $Breakpoint: 650px;
+$SidebarBreakpoint: 1200px;
 
 $LightOutline: 0;
 $NormalOutline: 1;
