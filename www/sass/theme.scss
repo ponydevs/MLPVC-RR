@@ -259,7 +259,7 @@ header {
 	}
 }
 // External link icon
-header, #sidebar {
+header, #sidebar .mobile-nav {
 	a[href^=http]:after {
 		font-style: italic;
 		content: "";
