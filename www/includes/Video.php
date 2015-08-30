@@ -12,7 +12,7 @@
 		}
 		private static $providerRegexes = array(
 			'youtu(?:\.be/|be.com/watch.*[&?]v=)([^&?=]+)(?:&|$)' => 'yt',
-			'dai(?:\.ly/|lymotion.com/video/(?:embed/))([^&?=]+)(?:&|$)' => 'dm'
+			'dai(?:\.ly/|lymotion.com/video/(?:embed/)?)([^&?=]+)(?:&|$)' => 'dm'
 		);
 		private static function test_provider($url, $pattern, $name){
 			$match = array();
