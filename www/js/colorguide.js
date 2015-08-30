@@ -1,4 +1,4 @@
-$(function(){
+DocReady.push(function Colorguide(){
 	//noinspection JSUnusedLocalSymbols
 	var Color = window.Color, color = window.color;
 

@@ -1,4 +1,4 @@
-$(function(){
+DocReady.push(function Index(){
 	var $w = $(window),
 		$body = $(document.body),
 		$navbar = $('header nav'),
@@ -17,7 +17,6 @@ $(function(){
 			if (!data.status) $.Dialog.fail(title, data.message);
 
 			var $form = $.mk('form').attr('id','vidlinks').append(
-				$.mk('p').html("Don't worry, the links start with <code>//</code> instead of the usual <code>https://</code> intentionally.").hide(),
 				$.mk('input').attr({name:'yt',placeholder:'YouTube'}),
 				$.mk('input').attr({name:'dm',placeholder:'Dailymotion'})
 			);

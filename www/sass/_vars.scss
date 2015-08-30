@@ -1,8 +1,23 @@
 // Page colors
 $HeaderBlue: #1E3DB3;
-$NavFootBG: rgba(0,0,0,.75);
+$HeaderHeight: 50px;
+$HeaderFooterBG: desaturate($HeaderBlue, 25);
+$StyledBackground: $HeaderFooterBG url('../img/grid-w-.1.svg');
 $ContentOutline: rgba(170,170,170,.8);
 $ContentBG: rgba(255,255,255,.6);
+@mixin navfoot {
+	color: #fff;
+  box-sizing: border-box;
+}
+$SidebarWidth: 350px;
+
+//noinspection CssOptimizeSimilarProperties
+@mixin white-grid {
+	background-color: #fff;
+	background-image:
+		url('../img/grid-1E3DB3-.2.svg'),
+		url('../img/grid-1E3DB3-.1.svg');
+}
 
 // Links
 $Link: #337287;

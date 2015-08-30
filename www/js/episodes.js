@@ -1,4 +1,4 @@
-$(function(){
+DocReady.push(function Episodes(){
 	function pad(n){return n<10?'0'+n:n}
 	var $eptableBody = $('#episodes').children('tbody'),
 		monthNames = 'January|February|March|April|May|June|July|August|September|October|November|December'.split('|');

@@ -10,7 +10,7 @@
 	if (isset($_GET['data'])) $data = $_GET['data'];
 	if (empty($data)) $data = '';
 
-	// Stored here for quick reference
+	// Storing settings of homepage for easier use
 	$IndexSettings = array(
 		'title' => 'Home',
 		'view' => 'index',
@@ -73,7 +73,7 @@
 			case "da-auth":
 				if ($signedIn) header('Location: /');
 
-				if (!isset($_GET['error']) && (empty($_GET['code']) || (empty($_GET['state']) || ($_GET['state'] !== '/' && !preg_match(REWRITE_REGEX,$_GET['state'])))))
+				if (!isset($_GET['error']) && (empty($_GET['code']) || (empty($_GET['state']) || !preg_match(REWRITE_REGEX,$_GET['state']))))
 					$_GET['error'] = 'unauthorized_client';
 				if (isset($_GET['error'])){
 					$err = $_GET['error'];
@@ -290,7 +290,7 @@
 			case "index":
 				$CurrentEpisode = get_latest_episode();
 				if (empty($CurrentEpisode)) unset($CurrentEpisode);
-				else redirect("/episode/S{$CurrentEpisode['season']}E{$CurrentEpisode['episode']}", true, 302);
+				else fix_path("/episode/S{$CurrentEpisode['season']}E{$CurrentEpisode['episode']}", 302);
 
 				loadPage($IndexSettings);
 			break;
@@ -717,8 +717,7 @@
 					$sameUser = $signedIn && $User['id'] === $currentUser['id'];
 					$canEdit = !$sameUser && PERM('inspector') && PERM($User['role']);
 					$pagePath = "/u/{$User['name']}";
-					if ($_SERVER['REQUEST_URI'] !== $pagePath)
-						redirect($pagePath, STAY_ALIVE);
+					fix_path($pagePath);
 				}
 				if ($canEdit)
 					$UsableRoles = $Database->where("value <= (SELECT value FROM roles WHERE name = '{$currentUser['role']}')")->where('value > 0')->get('roles',null,'name, label');

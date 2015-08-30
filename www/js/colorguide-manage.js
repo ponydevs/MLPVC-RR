@@ -1,4 +1,4 @@
-$(function(){
+DocReady.push(function ColorguideManage(){
 	var Color = window.Color, color = window.color, TAG_TYPES_ASSOC = window.TAG_TYPES_ASSOC, $colorGroups,
 		MAX_SIZE = window.MAX_SIZE, PRINTABLE_ASCII_REGEX = window.PRINTABLE_ASCII_REGEX,
 		HEX_COLOR_PATTERN = window.HEX_COLOR_PATTERN, isWebkit = 'WebkitAppearance' in document.documentElement.style;

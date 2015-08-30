@@ -1,4 +1,4 @@
-$(function(){
+DocReady.push(function ColorguideTags(){
 	var TAG_TYPES_ASSOC = window.TAG_TYPES_ASSOC,
 		$tbody = $('#tags').children('tbody'),
 		updateList = function($tr, title){

@@ -360,7 +360,7 @@ HTML;
 	function loadPage($settings){
 		// Page <title>
 		if (isset($settings['title']))
-			$title = $settings['title'];
+			$GLOBALS['title'] = $settings['title'];
 
 		// SE crawlign disable
 		if (in_array('no-robots',$settings))
@@ -376,9 +376,6 @@ HTML;
 		# JavaScript
 		$DEFAULT_JS = array('global','dyntime','dialog');
 		$customJS = array();
-		// Add logged_in.js for logged in users
-		global $signedIn;
-		if (isset($signedIn) && $signedIn === true) $DEFAULT_JS[] = 'logged_in';
 		// Only add defaults when needed
 		if (array_search('no-default-js',$settings) === false)
 			$customJS = array_merge($customJS, $DEFAULT_JS);
@@ -405,11 +402,30 @@ HTML;
 		header('Content-Type: text/html; charset=utf-8;');
 
 		$pageHeader = array_search('no-page-header',$settings) === false;
-		require 'views/header.php';
-		require $viewPath;
-		require 'views/footer.php';
 
-		die();
+		if (empty($_GET['via-js'])){
+			require 'views/header.php';
+			require $viewPath;
+			require 'views/footer.php';
+			die();
+		}
+		else {
+			$_SERVER['REQUEST_URI'] = rtrim(preg_replace('/\?(via-js=true&)?CSRF_TOKEN=[^&]+(&|$)/','?',$_SERVER['REQUEST_URI']),'?');
+			ob_start();
+			require 'views/sidebar.php';
+			$sidebar = ob_get_clean();
+			ob_start();
+			require $viewPath;
+			$content = ob_get_clean();
+			respond(array(
+				'css' => $customCSS,
+				'js' => $customJS,
+				'title' => $title,
+				'content' => $content,
+				'sidebar' => $sidebar,
+				'responseURL' => $_SERVER['REQUEST_URI'],
+			));
+		}
 	}
 	function assetCheck($settings, &$customType, $type){
 		// Any more files?
@@ -431,15 +447,21 @@ HTML;
 		$pathStart = APPATH."$type/";
 		foreach ($customType as $i => $item){
 			if (file_exists("$pathStart$item.min.$type")){
-				$customType[$i] .= '.min';
+				$customType[$i] = format_filepath("$item.min.$type");
 				continue;
 			}
-			$fname = "$item.$type";
-			if (!file_exists($pathStart.$fname)){
+			$item .= ".$type";
+			if (!file_exists($pathStart.$item)){
 				array_splice($customType,$i,1);
-				trigger_error("File /$type/$fname does not exist");
+				trigger_error("File /$type/$item does not exist");
 			}
+			else $customType[$i] = format_filepath($item);
 		}
+	}
+	function format_filepath($item){
+		$type = preg_replace('/^.*\.(\w+)$/','$1', $item);
+		$pathStart = APPATH."$type/";
+		return "/$type/$item?".filemtime($pathStart.$item);
 	}
 
 	// Display a 404 page
@@ -476,11 +498,11 @@ HTML;
 	}
 
 	// Redirect to fix path \\
-	function fix_path($path){
+	function fix_path($path, $http = 301){
 		$query = !empty($_SERVER['QUERY_STRING']) ? preg_replace('~do=[^&]*&data=[^&]*(&|$)~','',$_SERVER['QUERY_STRING']) : '';
 		if (!empty($query)) $query = "?$query";
 		if ($_SERVER['REQUEST_URI'] !== "$path$query")
-			redirect("$path$query", STAY_ALIVE);
+			redirect("$path$query", STAY_ALIVE, $http);
 	}
 
 	/**
@@ -1338,20 +1360,20 @@ HTML;
 	
 	// Renders the user card \\
 	define('GUEST_AVATAR','/img/guest.png');
-	function usercard_render(){
+	function usercard_render($sidebar = false){
 		global $signedIn, $currentUser;
 		if ($signedIn){
 			$avatar = $currentUser['avatar_url'];
 			$un = $currentUser['name'];
 			$username = "<a href='/u/$un'>$un</a>";
 			$rolelabel = $currentUser['rolelabel'];
-			$Avatar = get_avatar_wrap($currentUser);
+			$Avatar = $sidebar ? '' : get_avatar_wrap($currentUser);
 		}
 		else {
 			$avatar = GUEST_AVATAR;
 			$username = 'Curious Pony';
 			$rolelabel = 'Guest';
-			$Avatar = get_avatar_wrap(array(
+			$Avatar = $sidebar ? '' : get_avatar_wrap(array(
 				'avatar_url' => $avatar,
 				'name' => $username,
 				'rolelabel' => $rolelabel,
@@ -1844,4 +1866,58 @@ ORDER BY `count` DESC
 		$return = array('status' => $CGDb->where('tid', $TagID)->update('tags',array('uses' => $Tagged)));
 		if ($returnCount) $return['count'] = $Tagged;
 		return $return;
+	}
+
+	// Gets navigation HTML
+	function get_nav_html(){
+		if (!empty($GLOBALS['NavHTML']))
+			return $GLOBALS['NavHTML'];
+
+		global $do;
+
+		// Navigation items
+		$NavItems = array(
+			'latest' => array('/','Latest episode'),
+			'eps' => array('/episodes','Episodes'),
+		);
+		if ($do === 'episode' && !empty($GLOBALS['CurrentEpisode'])){
+			if (!empty($GLOBALS['Latest']))
+				$NavItems['latest'][0] = $_SERVER['REQUEST_URI'];
+			else $NavItems['eps']['subitem'] = array($_SERVER['REQUEST_URI'], $GLOBALS['title']);
+		}
+		if (PERM('inspector')){
+			global $color, $Color;
+			$NavItems['colorguide'] = array("/{$color}guide", "$Color Guide");
+			if ($do === 'colorguide'){
+				global $Tags, $Page;
+				$NavItems['colorguide']['subitem'] = array($_SERVER['REQUEST_URI'], (isset($Tags) ? 'Tags - ':'')."Page $Page");
+			}
+		}
+		if ($GLOBALS['signedIn'])
+			$NavItems['u'] = array("/u/{$GLOBALS['currentUser']['name']}",'Account');
+		if ($do === 'user' && !$GLOBALS['sameUser'])
+			$NavItems[] = array($_SERVER['REQUEST_URI'], $title);
+		if (PERM('inspector')){
+			$NavItems['logs'] = array('/logs', 'Logs');
+			if ($do === 'logs'){
+				global $Page;
+				$NavItems['logs']['subitem'] = array($_SERVER['REQUEST_URI'], "Page $Page");
+			}
+		}
+		$NavItems[] = array('/about', 'About');
+
+		$GLOBALS['NavHTML'] = '';
+		$currentSet = false;
+		foreach ($NavItems as $item){
+			$sublink = '';
+			if (isset($item['subitem'])){
+				list($class, $sublink) = get_header_link($item['subitem']);
+				$sublink = " &rsaquo; $sublink";
+				$link = get_header_link($item, HTML_ONLY);
+			}
+			else list($class, $link) = get_header_link($item);
+			$GLOBALS['NavHTML'] .= "<li$class>$link$sublink</li>";
+		}
+		$GLOBALS['NavHTML'] .= '<li><a href="http://mlp-vectorclub.deviantart.com/" target="_blank">MLP-VectorClub</a></li>';
+		return $GLOBALS['NavHTML'];
 	}

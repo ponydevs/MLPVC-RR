@@ -1,4 +1,4 @@
-$(function(){
+DocReady.push(function EpisodeManage(){
 	var $eptable = $('#episodes'),
 		$eptableBody = $eptable.children('tbody');
 	Bind.call({init:true});

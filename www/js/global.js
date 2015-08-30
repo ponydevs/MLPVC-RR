@@ -9,15 +9,26 @@
 		return a.href;
 	};
 
+	// Globalie zcoomon elements
+	$.extend(window, {
+		$w: $(window),
+		$document: $(document),
+		$body: $(document.body),
+		$head: $(document.head),
+		$header: $('header'),
+		$main: $('#main'),
+		$sidebar: $('#sidebar'),
+	});
+
 	// Create AJAX response handling function
-	$(window).on('ajaxerror',function(){
+	$w.on('ajaxerror',function(){
 		$.Dialog.fail(false,'There was an error while processing your request. You may find additional details in the browser\'s console.');
 	});
 	$.mkAjaxHandler = function(f){
 		return function(data){
 			if (typeof data !== 'object'){
 				console.log(data);
-				$(window).trigger('ajaxerror');
+				$w.trigger('ajaxerror');
 				return;
 			}
 
@@ -105,7 +116,7 @@
 	};
 })(jQuery);
 
-$(function(){
+DocReady.push(function Global(){
 	// Sign in button handler
 	var OAUTH_URL = window.OAUTH_URL,
 		consent = localStorage.getItem('cookie_consent');
@@ -176,77 +187,159 @@ $(function(){
 		else text = createTimeStr(now, airs);
 		$cd.text(text);
 	}
+	$w.on('unload',function(){ clearInterval(cdtimer) });
 
-	// Quotes
-	var quotes = {
-			Applejack: [
-				"Alright, sugarcube.",
-				"A good night's sleep cures just about everythin'!",
-			],
-			Fluttershy: [
-				"<small>you rock! woo hoo!</small>",
-				"<small>yay</small>",
-				"<small>*squee*</small>",
-				"You're sooo cute!",
-				"<small>I'd like to be a tree</small>",
-				"<strong>Your face!</strong>",
-			],
-			PinkiePie: [
-				"It was under E!",
-				"Make a wish!",
-				"<em>Forever!</em>",
-				"She's not a tree, Dashie!",
-			],
-			RainbowDash: "<strong>The</strong> one and only.",
-			Rarity: "Gorgeous!",
-			TwilightSparkle: [
-				"Together, we're friends.",
-				"A mark of one's destiny singled out alone, fulfilled.",
-				"You know she's not a tree, right?",
-				"Huh?! I'm pancake! I mean, awake...",
-			],
-			StarlightGlimmer: "We're so pleased to have you here!",
-			Applebloom: [
-				"Buy some apples?",
-				"But ah want it naaow!",
-			],
-			BigMacintosh: "Eeyup",
-			WinterWrapUp: "We must work so very hard, it's just so much to do!",
-			MaudPie: "Rocks.",
-			ScrewLoose: "woof woof",
-			ButtonMash: [
-				"I don't get it",
-				"But it looks <strong>sooo</strong> kewl!"
-			],
-			TheGreatandPowerfulTrixie: [
-				"It seems we have some NEIGH-sayers in the audience.",
-				"The Great and Powerful Trixie doesn't trust wheels.",
-			]
-		}, $quote = $('#quote');
-	function unCamelCase(str){
-		str = str.replace(/(\w)and/g, '$1 and');
-		return str.charAt(0)+str.substring(1).replace(/([A-Z])/g,' $1');
-	}
-	function random(arr){
-		return arr[Math.floor(Math.random()*arr.length)]
-	}
-	function getQuote(){
-		$quote.fadeTo(500,0,function(){
-			var qs = $.extend(true,{},quotes),
-				pony = $quote.data('pony');
-			if (typeof pony !== 'undefined') delete qs[pony];
-			var qskeys = Object.keys(qs);
-			pony = random(qskeys);
-			var ponyQuotes = qs[pony];
-			$quote.data('index', pony).attr('data-cite', unCamelCase(pony));
-			$quote.html(typeof ponyQuotes === 'string' ? ponyQuotes : random(ponyQuotes)).fadeTo(500,1);
+	// Sign out button handler
+	$('#signout').on('click',function(){
+		var title = 'Sign out';
+		$.Dialog.confirm(title,'Are you sure you want to sign out?',function(sure){
+			if (!sure) return;
+
+			$.Dialog.wait(title,'Signing out');
+
+			$.post('/signout',$.mkAjaxHandler(function(){
+				if (this.status){
+					$.Dialog.success(title,this.message);
+					setTimeout(function(){
+						window.location.reload();
+					},1000);
+				}
+				else $.Dialog.fail(title,this.message);
+			}));
+		});
+	});
+});
+
+function DocumentIsReady(){
+	$document.triggerHandler('paginate-refresh');
+	if (window.DocReady.length < 1) return;
+	for (var i = 0, l = window.DocReady.length; i<l; i++)
+		window.DocReady[i].call(window);
+}
+$(function(){
+	// Sidebar toggle handler
+	var $body = $(document.body);
+	$('.sidebar-toggle').on('click',function(e){
+		e.preventDefault();
+		$body.toggleClass('sidebar-open');
+	});
+
+	// AJAX page loader
+	var xhr = false,
+		REWRITE_REGEX = window.REWRITE_REGEX;
+	$document.on('click','a[href]',function(e){
+		if (e.which > 2) return true;
+
+		var link = this;
+		if (link.hostname !== location.hostname || !REWRITE_REGEX.test(link.pathname))
+			return true;
+
+		e.preventDefault();
+
+		HandleNav(this.href);
+	});
+
+	$w.on('popstate',function(e){
+		var state = e.originalEvent.state;
+
+		if (!state['via-js'])
+			return $w.trigger('nav-popstate', [state]);
+		HandleNav(location.pathname, state);
+	});
+
+	function HandleNav(url){
+		if (xhr !== false)
+			xhr.abort();
+
+		var title = 'Navigation';
+		$body.addClass('loading');
+		xhr = $.ajax({
+			url: url,
+			data: {'via-js': true},
+			success: $.mkAjaxHandler(function(){
+				if (!this.status) $.Dialog.fail(title, this.message);
+
+				url = this.responseURL;
+				$w.triggerHandler('unload');
+				$body.removeClass('sidebar-open');
+
+				var css = this.css,
+					js = this.js,
+					content = this.content,
+					sidebar = this.sidebar;
+
+				$main.empty();
+				$head.children('link[href], style[href]').each(function(){
+					var $this = $(this),
+						href = $this.attr('href'),
+						pos = css.indexOf(href);
+
+					if (pos !== -1)
+						css.splice(pos, 1);
+					else $this.remove();
+				});
+
+				(function LoadCSS(item){
+					if (item >= css.length){
+						$main.addClass('pls-wait').html(content);
+						$sidebar.html(sidebar);
+						window.updateTimesF();
+						var $headerNav = $header.find('nav').children();
+						$headerNav.children(':not(:first-child)').remove();
+						$headerNav.append($sidebar.find('nav').children().children().clone());
+
+						history[location.pathname === url?'replaceState':'pushState']({'via-js':true},'',url);
+
+						$body.children('script[src], script[data-src]').each(function(){
+							var $this = $(this),
+								src = $this.attr('src') || $this.attr('data-src'),
+								pos = js.indexOf(src);
+
+							if (pos !== -1)
+								js.splice(pos, 1);
+							else $this.remove();
+						});
+
+						window.DocReady = [];
+
+						return (function LoadJS(item){
+							if (item >= js.length){
+								DocumentIsReady();
+								$body.removeClass('loading');
+								$main.removeClass('pls-wait');
+								xhr = false;
+								return;
+							}
+
+							var requrl = js[item];
+							$.ajax({
+								url: requrl,
+								dataType: 'text',
+								success:function(data){
+									$body.append($.mk('script').attr('data-src', requrl).text(data));
+									LoadJS(item+1);
+								}
+							});
+						})(0);
+					}
+
+					var requrl = css[item];
+					$.ajax({
+						url: requrl,
+						success: function(data){
+							$head.append($.mk('style').attr('href',requrl).text(data));
+							LoadCSS(item+1);
+						}
+					});
+				})(0);
+			})
 		});
 	}
-	getQuote();
-	var quoteInterval;
-	$('#sidebar').on('mouseenter',function(){
-		clearInterval(quoteInterval);
-	}).on('mouseleave',function(){
-		quoteInterval = setInterval(getQuote,11000);
-	}).trigger('mouseleave');
+
+	DocumentIsReady();
+});
+
+// Remove loading animation from header on load
+$w.on('load',function(){
+	$body.removeClass('loading');
 });

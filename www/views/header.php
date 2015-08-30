@@ -14,52 +14,21 @@
 <?php } ?>
 	<link rel="shortcut icon" href="/favicon.ico">
 <?php if (isset($customCSS)) foreach ($customCSS as $css){ ?>
-	<link rel="stylesheet" href="/css/<?=$css?>.css?<?=filemtime(APPATH."/css/$css.css")?>">
+	<link rel="stylesheet" href="<?=$css?>">
 <?php } ?>
 </head>
-<body>
+<body class=loading>
 
 	<header>
-		<div id="topbar">
-			<h1<?=date('Y-m-d') === '2015-06-27' ? ' class=pride title="Today, same-sex marriage was legalized in the USA"':''?>><a <?=$do==='index'?'class=active':'href=/'?>>MLP<span class=short>-VC</span><span class=long> Vector Club</span> Requests & Reservations</a></h1>
-		</div>
-		<nav><ul><?php
-	$HeaderItems = array(
-		'latest' => array('/','<span>Latest episode</span>','home'),
-		'eps' => array('/episodes','Episodes'),
-	);
-	if ($do === 'episode' && !empty($CurrentEpisode)){
-		if (!empty($Latest)) $HeaderItems['latest'][0] = $_SERVER['REQUEST_URI'];
-		else $HeaderItems['eps']['subitem'] = array($_SERVER['REQUEST_URI'], $title);
-	}
-	if (PERM('inspector')){
-		$HeaderItems['colorguide'] = array("/{$color}guide", "$Color Guide");
-		if ($do === 'colorguide')
-			$HeaderItems['colorguide']['subitem'] = array($_SERVER['REQUEST_URI'], (isset($Tags) ? 'Tags - ':'')."Page $Page");
-	}
-	if ($signedIn)
-		$HeaderItems['u'] = array("/u/{$currentUser['name']}",'Account');
-	if ($do === 'user' && !$sameUser)
-		$HeaderItems[] = array($_SERVER['REQUEST_URI'], $title);
-	if (PERM('inspector')){
-		$HeaderItems['logs'] = array('/logs', 'Logs');
-		if ($do === 'logs')
-			$HeaderItems['logs']['subitem'] = array($_SERVER['REQUEST_URI'], "Page $Page");
-	}
-	$HeaderItems[] = array('/about', 'About');
-
-	$currentSet = false;
-	foreach ($HeaderItems as $item){
-		$sublink = '';
-		if (isset($item['subitem'])){
-			list($class, $sublink) = get_header_link($item['subitem']);
-			$sublink = " &rsaquo; $sublink";
-			$link = get_header_link($item, HTML_ONLY);
-		}
-		else list($class, $link) = get_header_link($item);
-		echo "<li$class>$link$sublink</li>";
-	}
-	echo '<li><a href="http://mlp-vectorclub.deviantart.com/">MLP-VectorClub</a></li>'; ?></ul></nav>
+		<nav><ul>
+			<li class=sidebar-toggle>
+				<?php require APPATH."img/loader.svg"; ?>
+	            <img class=avatar src="<?=$signedIn?$currentUser['avatar_url']:GUEST_AVATAR?>">
+			</li><?=get_nav_html()?></ul></nav>
 	</header>
+
+	<div id=sidebar>
+<?php include "views/sidebar.php"; ?>
+	</div>
 
 	<div id=main>

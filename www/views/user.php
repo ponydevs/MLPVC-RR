@@ -138,9 +138,6 @@ HTML;
 <?php   } ?></div>
 <?php } ?>
 </div>
-<div id=sidebar>
-<?php include "views/sidebar.php"; ?>
-</div>
 
 <?php if ($canEdit){ ?>
 <script>var ROLES = <?php

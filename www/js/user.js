@@ -1,4 +1,4 @@
-$(function(){
+DocReady.push(function User(){
 	var $signoutBtn = $('#signout');
 	$('.session-list').find('button.remove').on('click',function(e){
 		e.preventDefault();

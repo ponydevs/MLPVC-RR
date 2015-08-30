@@ -1,4 +1,4 @@
-$(function(){
+DocReady.push(function UserManage(){
 	if (typeof window.ROLES == null) return;
 	var $w = $(window),
 		$content = $('#content'),
@@ -73,21 +73,18 @@ $(function(){
 					var data = $(this).mkData();
 					$.Dialog.wait(title, 'Gathering the Elements of Harmony');
 
-					$.post(action+'/'+name, data, function(data){
-						if (typeof data !== 'object') return console.log(data) && $w.trigger('ajaxerror');
+					$.post(action+'/'+name, data, $.mkAjaxHandler(function(){
+						if (!this.status) return $.Dialog.fail(title,this.message);
 
-						if (data.status){
-							if (action === 'banish') $.Dialog.info(title, '<p>What had to be done, has been done.</p><img src="/img/ban-after.png">');
-							else $.Dialog.success(title, data.message, true);
+						if (action === 'banish') $.Dialog.info(title, '<p>What had to be done, has been done.</p><img src="/img/ban-after.png">');
+						else $.Dialog.success(title, this.message, true);
 
-							$currRole.children('span').text(currRole = data.role);
-							$roleBadge.text(data.badge);
+						$currRole.children('span').text(currRole = this.role);
+						$roleBadge.text(this.badge);
 
-							$banToggle.toggleClass('un-banish banish typcn-world typcn-weather-night');
-							$changeRole.toggleClass('hidden');
-						}
-						else $.Dialog.fail(title,data.message);
-					});
+						$banToggle.toggleClass('un-banish banish typcn-world typcn-weather-night');
+						$changeRole.toggleClass('hidden');
+					}));
 				});
 			}
 		);

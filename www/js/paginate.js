@@ -1,22 +1,26 @@
-$(function(){
-	var $title = $(document.head).children('title'),
+$document.off('paginate-refresh').on('paginate-refresh',function(){
+	var $title = $head.children('title'),
 		basePath = location.pathname.replace(/(\d+)$/,''),
 		$pagination = $('.pagination'),
 		pageNumber = parseInt($pagination.first().children('li').children('strong').text(), 10),
 		title = 'Navigation';
 	$pagination.on('click','a',function(e){
 		e.preventDefault();
+		e.stopPropagation();
+
+		$('#ctxmenu').hide();
 
 		$.toPage(this.pathname);
 	});
-	$(window).on('popstate',function(){
-		$.toPage(location.pathname, true);
+	$w.on('nav-popstate',function(e, state){
+		$.toPage.call({state:state},location.pathname, true);
 	});
 	$.toPage = function(target, silentfail, bypass){
 		if (!target) target = window.location.pathname;
-		var newPageNumber = parseInt(target.substring(basePath.length), 10);
+		var newPageNumber = parseInt(target.substring(basePath.length), 10),
+			state = this.state || {};
 
-		if (!bypass && pageNumber === newPageNumber)
+		if (!bypass && (pageNumber === newPageNumber || pageNumber === state.page))
 			return silentfail ? false : $.Dialog.info(title, 'You are already on page '+pageNumber);
 
 		if (location.search.length > 1)
@@ -36,7 +40,8 @@ $(function(){
 			// Preserve static page title component at the end
 			$title.text($title.text().replace(/^.*( - [^-]+)$/,this.title+'$1'));
 
-			history.pushState({},'',basePath+newPageNumber+(window.location.search.length > 1 ? location.search : ''));
+			if (state.page !== newPageNumber && !isNaN(newPageNumber))
+				history.pushState({paginate:true, page:newPageNumber},'',basePath+newPageNumber+(window.location.search.length > 1 ? location.search : ''));
 
 			var max = this.maxpage;
 			$pagination.each(function(){

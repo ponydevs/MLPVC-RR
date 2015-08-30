@@ -54,15 +54,3 @@
 <?php   }
 	} ?>
 </div>
-<div id=sidebar>
-<?php
-	if (!empty($CurrentEpisode)){
-		$CurrentEpisode['willair'] = gmdate('c', strtotime('+'.(!$CurrentEpisode['twoparter'] ? '30' : '60').' minutes',strtotime($CurrentEpisode['airs']))); ?>
-	<section id=voting>
-		<h2>Episode voting</h2>
-		<?=get_episode_voting($CurrentEpisode)?>
-	</section>
-<?php
-	}
-	include "views/sidebar.php"; ?>
-</div>

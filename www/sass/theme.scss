@@ -8,136 +8,97 @@
 	src: url('../font/Celestia Medium Redux.ttf');
 	src: local('Celestia Redux Alternate'), local('Celestia Medium Redux'), url('../font/Celestia Medium Redux.ttf') format('truetype');
 }
-
-// Mixins
-@mixin navfoot {
-	box-sizing: border-box;
-	background: $NavFootBG;
-	box-shadow: 0 0 12px $NavFootBG;
-	color: #fff;
-}
-
 // Mobile-only Styles
-@media all and (max-width: $Breakpoint){
-	body { overflow: initial }
-	#topbar h1 {
-		margin: 0;
-		font-size: 23px;
+@media all and (max-width: $Breakpoint) {
+	body {
+		overflow: initial;
 
-		.long { display: none }
-		.short { display: inline }
+		&.sidebar-open { overflow: hidden }
 	}
 	header, footer {
-		text-align: center;
 		position: initial;
 	}
-	#main {
+	header nav {
 		position: relative;
-		padding: 10px 5px;
-		display:flex;
-		flex-flow: column;
-	}
+		box-shadow: 0 0 5px $HeaderFooterBG;
 
-	#content, #sidebar {
-		float: none !important;
-		width: 100% !important;
-	}
-	#content {
-		margin-bottom: 10px;
-		order: 2;
-	}
-	
-	#sidebar {
-		> .welcome .usercard {
-			display: block;
-			order: 1;
-		}
-		> .quote { display: none }
-	}
-
-	.notice > label:first-child { text-align: center; font-size: 1.2em }
-}
-// Desktop-only Styles
-@media all and (min-width: $Breakpoint){
-	body {
-		overflow-x: auto;
-		overflow-y: scroll;
-	}
-
-	header, footer {
-		z-index: 2;
-		left: 0;
-	}
-	header { top: 0 }
-	header.fixed {
-		padding-bottom: 32px;
-
-		nav {
-			position: fixed;
+		&:after {
+			content: "MLPVC-RR";
+			position: absolute;
 			top: 0;
-			left: 0;
+			lefT: 0;
+			z-index: 1;
+			width: 100%;
+			height: 100%;
+			display: block;
+			text-align: center;
+			font-size: 28px;
+			line-height: 50px;
+			color: #000;
+			@include outline(2);
+			font-family: 'Celestia', sans-serif;
+		}
+		ul {
+			position: relative;
+			z-index: 2;
 
-			//noinspection CssOptimizeSimilarProperties
-			li.home a {
-				font-family: "Celestia", sans-serif;
-				background-color: $HeaderBlue !important;
-				background-image: url('../img/grid-w-.3.svg'), url('../img/grid-w-.1.svg');
-				font-size: 18px;
-				line-height: .8em;
-				padding-right: .4em;
+			li:not(:first-child) { display: none }
+		}
+	}
+	#sidebar {
+		overflow: auto;
 
-				> span {
-					display: none;
-					padding: 0;
+		> .mobile-nav ul {
+			list-style: none;
+			padding: 0;
+			margin: 5px 0 0;
+
+			li {
+				display: inline-block;
+
+				&.active a {
+					background-color: rgba(white, .5);
 				}
-				&:before {
-					color: #000;
-					@include outline(2);
-					content: "MLP-VC R&R";
-					font-weight: bold;
+
+				a {
 					display: inline-block;
+					padding: 2px;
+					margin: 2px;
+					color: #fff;
+					border-radius: 5px;
 				}
 			}
 		}
 	}
-
-	#topbar {
-		height: 65px;
-		text-align: center;
-		background: #fff;
-		overflow: hidden;
-		box-sizing: border-box;
-		transition: height .7s cubic-bezier(0.23, 1, 0.32, 1);
-
-		h1 {
-			display: inline-block;
-			border-radius: 6px;
-			margin: 5px 0;
-			font-size: 30px;
-			line-height: 35px;
-			height: 35px;
-
-			.long { display: inline }
-			.short { display: none }
-		}
+	#main {
+		position: initial;
+		padding: 10px 5px;
+		@include white-grid;
 	}
-	nav {
-		position: relative;
-		z-index: 2;
-		width: 100%;
+
+	footer { text-align: center }
+
+	.notice > label:first-child { text-align: center; font-size: 1.2em }
+}
+// Desktop-only Styles
+@media all and (min-width: $Breakpoint) {
+	body {
+		overflow-x: auto;
+		overflow-y: scroll;
+		@include white-grid;
 	}
-	
+
+	header, footer {
+		z-index: 3;
+		left: 0;
+	}
+
 	#main {
 		position: relative;
 		z-index: 1;
 		padding: 8px 8px 48px 8px;
 	}
-	#sidebar {
-		padding: 0 0 0 10px !important;
-		.usercard {
-			display: inline-block;
-		}
-	}
+	#sidebar .mobile-nav { display: none }
 	footer {
 		position: fixed;
 		bottom: 0;
@@ -145,19 +106,11 @@
 		white-space: nowrap;
 		overflow: hidden;
 		text-overflow: ellipsis;
+		background: $StyledBackground;
 	}
-
-	// Element alignment
-	#content, #sidebar {
-		float: left;
-		box-sizing: border-box;
-	}
-	#content { width: 70% }
-	#sidebar { width: 30% }
 
 	.notice > label:first-child { font-size: 1.4em }
 }
-
 // Global Stuff
 .hidden { display: none }
 .unreadable { font-size: 0 }
@@ -169,7 +122,7 @@ small { font-size: .75em }
 	opacity: .5 !important;
 	pointer-events: none;
 }
-strong.typcn:before, span.typcn:not(:empty):before, em.typcn:before ,
+strong.typcn:before, span.typcn:not(:empty):before, em.typcn:before,
 button:not(:empty):before, .btn:not(:empty):before {
 	margin-right: 0.3125em;
 }
@@ -177,76 +130,31 @@ img.avatar {
 	width: 50px;
 	height: 50px;
 }
-
 // Page layout
 body {
 	margin: 0;
+	padding-top: $HeaderHeight;
 	font-family: 'Arimo', sans-serif;
-	//noinspection CssUnknownTarget
-	background-image:
-		url('../img/grid-1E3DB3-.2.svg'),
-		url('../img/grid-1E3DB3-.1.svg');
+	background: $StyledBackground;
 }
 // Page layout - Header
 header {
+	position: fixed;
+	z-index: 4;
+	top: 0;
+	left: 0;
 	width: 100%;
-
-	#topbar {
-		position: relative;
-		z-index: 3;
-		width: 100%;
-		font-size: 0;
-		font-family: "Celestia", sans-serif;
-		user-select: none;
-		cursor: default;
-
-		h1 {
-			position: relative;
-			z-index: 1;
-			padding: 10px;
-			overflow: hidden;
-			@include outline;
-			color: #000;
-
-			a {
-				text-decoration: none;
-				color: inherit;
-			}
-			// noinspection CssOptimizeSimilarProperties
-			&:after {
-				content: "";
-				position: absolute;
-				top: 0;
-				left: 0;
-				z-index: -1;
-				width: 100%;
-				height: 100%;
-				background-color: $HeaderBlue;
-				// noinspection CssUnknownTarget
-				background-image: url('../img/grid-w-.3.svg'), url('../img/grid-w-.1.svg');
-			}
-		}
-
-		&:after {
-			content: "";
-			position: absolute;
-			top: 0;
-			left: 0;
-			z-index: -1;
-			width: 100%;
-			height: 100%;
-			//noinspection CssUnknownTarget
-			background-image: url('../img/grid-g.svg');
-		}
-	}
+	height: $HeaderHeight;
+	@include navfoot;
+	background: $StyledBackground;
 
 	// Page layout - Header - Navigation
 	nav {
+		display: block;
+		height: 100%;
 		line-height: 0;
 		font-size: 0;
-		padding: 5px;
-
-		@include navfoot();
+		white-space: nowrap;
 
 		ul {
 			list-style: none;
@@ -256,23 +164,62 @@ header {
 
 			li {
 				display: inline-block;
-				font-size: 18px;
 				color: #fff;
-				line-height: 1em;
+				height: 22px;
+				line-height: 22px;
+				font-size: 18px;
+				box-sizing: border-box;
+				margin: 5px 0;
+				vertical-align: middle;
 
-				&:not(:last-child){ margin-right: 5px }
+				&:not(:first-child) { margin-left: 7px }
 				&.active {
-					background-color: rgba(255,255,255,.3);
+					background-color: rgba(255, 255, 255, .3);
 					border-radius: 3px;
 
 					a:not(:link) {
-						background-color: rgba(255,255,255,.2);
+						background-color: rgba(255, 255, 255, .2);
 						transition: none;
 						cursor: default;
 
 						&:not(:first-child) {
 							margin-left: 2px;
 						}
+					}
+				}
+
+				&.sidebar-toggle {
+					position: relative;
+					margin: 2.5px;
+					width: 45px;
+					height: 45px;
+					cursor: pointer;
+					border: 2px solid white;
+					border-radius: 100%;
+					overflow: hidden;
+
+					> .loader {
+						position: relative;
+						z-index: 2;
+						display: none;
+						width: 45px;
+						height: 45px;
+						top: -2px;
+						left: -2px;
+
+						body.loading & { display: block }
+
+						path { fill: #fff }
+					}
+					> .avatar {
+						width: 100%;
+						height: 100%;
+						position: absolute;
+						z-index: 1;
+						top: 0;
+						left: 0;
+
+						body.loading & { opacity: .5 }
 					}
 				}
 
@@ -284,49 +231,53 @@ header {
 					height: 20px;
 					line-height: 20px;
 					border-radius: 3px;
+					box-sizing: border-box;
 					transition: background-color .2s linear;
 
-					&:hover { background-color: rgba(255,255,255,.2) }
-					&:focus, &:active { background-color: rgba(255,255,255,.5) }
-
-					&[href^=http]:after {
-						font-style: italic;
-						content: "";
-						width: 12px;
-						height: 12px;
-						background-image: url(../img/extlink.svg);
-						background-size: 12px;
-						display: inline-block;
-						margin-left: 2px;
-					}
+					&:hover { background-color: rgba(white, .2) }
+					&:active { background-color: rgba(white, .5) }
 				}
 			}
 		}
 	}
 }
-
-// Page layout - Content & sidebar
+// External link icon
+header, #sidebar {
+	a[href^=http]:after {
+		font-style: italic;
+		content: "";
+		width: 12px;
+		height: 12px;
+		background-image: url(../img/extlink.svg);
+		background-size: 12px;
+		display: inline-block;
+		margin-left: 2px;
+	}
+}
+// Page layout - Content
 #main {
+	position: relative;
 	z-index: 1;
 	width: 100%;
 	box-sizing: border-box;
-	background: transparent;
-
-	@extend %clearfix;
+	transition: opacity .5s;
 
 	&.locked { overflow: visible }
+	&.pls-wait {
+		opacity: .5;
+		pointer-events: none;
+		transition: none;
+	}
 }
-#content, #sidebar > section {
+#content {
 	border-radius: 5px;
 	border: 1px solid $ContentOutline;
 	background-color: $ContentBG;
 	padding: 10px;
 	color: #000;
-}
-#content, #sidebar {
 	box-sizing: border-box;
-}
-#content {
+	width: 100%;
+
 	> h1 {
 		font-size: 2em;
 		text-align: center;
@@ -344,67 +295,85 @@ header {
 #content, #dialogContent, .notice {
 	a:not(.btn) { @include link }
 }
+// Page layout - Sidebar
 #sidebar {
+	position: fixed;
+	z-index: 2;
+	top: 50px;
+	left: -$SidebarWidth;
+	width: $SidebarWidth;
+	max-width: 100%;
+	box-sizing: border-box;
+	height: calc(100% - 50px);
+	color: #fff;
+	$Background: rgba(black, .9);
+	background: $Background;
+	padding: 10px;
+	text-align: center;
+	transition: left .5s ease-in-out, box-shadow .5s ease-in-out;
+
+	body.sidebar-open & {
+		left: 0;
+		box-shadow: 0 0 10px #{$Background};
+	}
+
 	> section {
 		text-align: center;
+
+		&:not(:last-child) { margin-bottom: 15px }
+
 		h2 {
 			font-size: 24px;
 			margin: 0 0 5px;
 			font-family: "Celestia", sans-serif;
 			font-weight: normal;
 		}
-		p {
-			margin: 0;
-		}
+		p { margin: 0 }
 
 		.buttons > * { margin: 0 }
-		&.welcome {
-			.links {
-				list-style: none;
-				border-radius: 5px;
-				color: #777;
-				background-color: #efefef;
-				border: 1px solid;
-				margin: 0 0 5px;
-				padding: 5px;
+		&.welcome .links {
+			list-style: none;
+			border-radius: 5px;
+			color: #777;
+			background-color: #efefef;
+			border: 1px solid;
+			margin: 0 0 5px;
+			padding: 5px;
 
-				li {
+			li {
+				display: inline-block;
+				white-space: normal;
+
+				a {
+					text-decoration: none;
+					color: inherit;
+					border-bottom: 1px solid transparent;
+					transition: border-bottom-color .2s linear;
+				}
+
+				&:not(:last-child):after {
+					content: ",";
+					margin-right: .3em;
 					display: inline-block;
-					white-space: normal;
-
-					a {
-						text-decoration:none;
-						color: inherit;
-						border-bottom: 1px solid transparent;
-						transition: border-bottom-color .2s linear;
-					}
-
-					&:not(:last-child):after {
-						content: ",";
-						margin-right: .3em;
-						display: inline-block;
-					}
-					&:not(.active) a:hover:not(:active) {
-						border-bottom-color: initial;
-					}
-					&.active a {
-						border-bottom-color: rgba(255,255,255,.5);
-					}
 				}
-				&:before {
-					content: "Useful links";
-					display: block;
-					border-bottom: 1px solid;
-					font-size: 1.2em;
-					margin-bottom: 5px;
-					text-align: left;
-					font-weight: bold;
+				&:not(.active) a:hover:not(:active) {
+					border-bottom-color: initial;
 				}
-				&:empty { display: none }
+				&.active a {
+					border-bottom-color: rgba(255, 255, 255, .5);
+				}
 			}
+			&:before {
+				content: "Useful links";
+				display: block;
+				border-bottom: 1px solid;
+				font-size: 1.2em;
+				margin-bottom: 5px;
+				text-align: left;
+				font-weight: bold;
+			}
+			&:empty { display: none }
 		}
-
-		&:not(:last-child){ margin-bottom: 10px }
 	}
 	#upcoming {
 		ul {
@@ -425,22 +394,22 @@ header {
 				.calendar {
 					width: 40px;
 					height: 40px;
-					display:inline-block;
-					position:relative;
-					box-shadow: inset 0 0 5px rgba(0,0,0,.3);
+					display: inline-block;
+					position: relative;
+					box-shadow: inset 0 0 5px rgba(0, 0, 0, .3);
 					background: #fafafa;
 					text-align: center;
 
 					> * {
 						width: 100%;
 						display: block;
-						box-sizing:border-box;
+						box-sizing: border-box;
 					}
 					.top {
 						top: 0;
 						height: 15px;
 						line-height: 15px;
-						background: #f00 linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,.1) 100%);
+						background: #f00 linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, .1) 100%);
 						color: #fff;
 						text-transform: uppercase;
 						font-weight: bold;
@@ -451,6 +420,7 @@ header {
 						height: 25px;
 						line-height: 25px;
 						font-size: 1.5em;
+						color: #000;
 						border: 1px solid #777;
 						border-top: 0;
 					}
@@ -487,7 +457,7 @@ header {
 
 		&:empty { display: none }
 		&:before { content: '\201C' }
-		&:after  { content: '\201D' }
+		&:after { content: '\201D' }
 		&[data-cite]:after {
 			content: '\201D\0A\2014' attr(data-cite);
 			white-space: pre-wrap;
@@ -495,12 +465,12 @@ header {
 	}
 	.usercard {
 		font-size: 0;
-		border: 2px solid;
 		color: #777;
 		background-color: #efefef;
 		border-radius: 4px;
 		padding: 3px;
 		margin: 0 0 5px;
+		display: inline-block;
 
 		.avatar-wrap {
 			margin: 3px auto 5px;
@@ -514,7 +484,7 @@ header {
 
 			a { @include link }
 		}
-		.role { font-size: 16px	}
+		.role { font-size: 16px }
 	}
 }
 .avatar-wrap {
@@ -529,7 +499,7 @@ header {
 	color: #777;
 	background-color: #efefef;
 
-	.avatar { border-radius: 100%	}
+	.avatar { border-radius: 100% }
 	.badge {
 		position: absolute;
 		right: 0;
@@ -548,20 +518,16 @@ header {
 		box-shadow: inherit;
 	}
 }
-
 // Page layout - Footer
 footer {
 	display: block;
-	z-index: 2;
 	width: 100%;
 	padding: 10px;
 	line-height: 18px;
-
 	@include navfoot;
 
 	a { color: inherit }
 }
-
 // Colors
 .color-blue { color: $NBlue }
 .color-darkblue { color: $NDarkBlue }
@@ -569,7 +535,6 @@ footer {
 .color-red { color: $NRed }
 .color-orange { color: $NOrange }
 .color-yellow { color: $NYellow }
-
 // Notices
 .notice {
 	display: block;
@@ -643,7 +608,6 @@ footer {
 		}
 	}
 }
-
 // Buttons
 button, .btn {
 	display: inline-block;
@@ -656,10 +620,8 @@ button, .btn {
 	font-size: 16px;
 	text-decoration: none;
 	user-select: none;
-	
 	opacity: .8;
 	cursor: pointer;
-
 	transform-origin: 50% 100%;
 	transition: transform .1s linear, opacity .2s linear;
 
@@ -700,12 +662,10 @@ button, .btn {
 	&:hover, &:focus { opacity: 1 }
 	&:active { transform: scale(.96) }
 }
-
 // Alignment
 .align-center { text-align: center }
-.align-left   { text-align: left   }
-.align-right  { text-align: right  }
-
+.align-left { text-align: left }
+.align-right { text-align: right }
 // Pagination
 ul.pagination {
 	display: block;

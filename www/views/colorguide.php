@@ -62,9 +62,6 @@
 	<?=get_ponies_html($Ponies)?>
 	<?=$Pagination?>
 </div>
-<div id=sidebar>
-<?php include "views/sidebar.php"; ?>
-</div>
 
 <script>var Color = '<?=$Color?>', color = '<?=$color?>';</script>
 <?php if (PERM('inspector')){ ?>

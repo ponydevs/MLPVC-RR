@@ -1,4 +1,4 @@
-$(function(){
+DocReady.push(function Logs(){
 	$('#logs').find('tbody').on('page-switch',function(){
 		$(this).children().each(function(){
 			var $row = $(this);
@@ -47,7 +47,7 @@ $(function(){
 			});
 			$ip = $ip.html().split('<br>');
 
-			$.Dialog.info($tr.children('.entryid').text()+'. bejegyzés rejtett adatai','\
+			$.Dialog.info('Hidden details of entry #'+$tr.children('.entryid').text(),'\
 				<b>Timestamp:</b> '+$td.children('time').html().trim().replace(/<br>/,' ')+'\
 				<span class="modal-ip"><br>\
 					<b>Initiator:</b> '+$ip[0]+'<br>\
