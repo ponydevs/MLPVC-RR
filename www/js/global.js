@@ -18,6 +18,7 @@
 		$header: $('header'),
 		$main: $('#main'),
 		$sidebar: $('#sidebar'),
+		$footer: $('footer'),
 	});
 
 	// Create AJAX response handling function
@@ -266,7 +267,8 @@ $(function(){
 				var css = this.css,
 					js = this.js,
 					content = this.content,
-					sidebar = this.sidebar;
+					sidebar = this.sidebar,
+					footer = this.footer;
 
 				$main.empty();
 				$head.children('link[href], style[href]').each(function(){
@@ -283,6 +285,7 @@ $(function(){
 					if (item >= css.length){
 						$main.addClass('pls-wait').html(content);
 						$sidebar.html(sidebar);
+						$footer.html(footer);
 						window.updateTimesF();
 						var $headerNav = $header.find('nav').children();
 						$headerNav.children(':not(:first-child)').remove();
