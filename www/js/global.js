@@ -20,6 +20,7 @@
 		$sidebar: $('#sidebar'),
 		$footer: $('footer'),
 	});
+	window.$title = $head.children('title');
 
 	// Create AJAX response handling function
 	$w.on('ajaxerror',function(){
@@ -55,16 +56,19 @@
 			return n[1];
 		else throw new Error('Missing CSRF_TOKEN');
 	};
-	$.ajaxPrefilter(function(e){
+	$.ajaxPrefilter(function(event, origEvent){
+		if (origEvent.type !== 'POST' || event.type !== 'POST')
+			return;
+
 		var t = $.getCSRFToken();
-		if (typeof e.data === "undefined")
-			e.data = "";
-		if (typeof e.data === "string"){
-			var r = e.data.length > 0 ? e.data.split("&") : [];
+		if (typeof event.data === "undefined")
+			event.data = "";
+		if (typeof event.data === "string"){
+			var r = event.data.length > 0 ? event.data.split("&") : [];
 			r.push("CSRF_TOKEN=" + t);
-			e.data = r.join("&");
+			event.data = r.join("&");
 		}
-		else e.data.CSRF_TOKEN = t;
+		else event.data.CSRF_TOKEN = t;
 	});
 	$.ajaxSetup({
 		statusCode: {
@@ -224,7 +228,7 @@ $(function(){
 
 	// Sidebar toggle handler
 	var $body = $(document.body);
-	$('.sidebar-toggle').on('click',function(e){
+	$('.sidebar-toggle').off('click').on('click',function(e){
 		e.preventDefault();
 		$body.toggleClass('sidebar-open');
 	});
@@ -232,7 +236,8 @@ $(function(){
 	// AJAX page loader
 	var xhr = false,
 		REWRITE_REGEX = window.REWRITE_REGEX;
-	$document.on('click','a[href]',function(e){
+
+	function LinkClick(e){
 		if (e.which > 2) return true;
 
 		var link = this;
@@ -242,9 +247,10 @@ $(function(){
 		e.preventDefault();
 
 		HandleNav(this.href);
-	});
+	}
+	$document.off('click','a[href]',LinkClick).on('click','a[href]',LinkClick);
 
-	$w.on('popstate',function(e){
+	$w.off('popstate').on('popstate',function(e){
 		var state = e.originalEvent.state;
 
 		if (!state['via-js'])
@@ -274,9 +280,27 @@ $(function(){
 					js = this.js,
 					content = this.content,
 					sidebar = this.sidebar,
-					footer = this.footer;
+					footer = this.footer,
+					pagetitle = this.title;
 
 				$main.empty();
+				var doreload = false;
+				$body.children('script[src], script[data-src]').each(function(){
+					var $this = $(this),
+						src = $this.attr('src') || $this.attr('data-src'),
+						pos = js.indexOf(src);
+
+					if (pos !== -1)
+						js.splice(pos, 1);
+					else {
+						if (src.indexOf('global') !== -1){
+							doreload = true;
+							return false;
+						}
+						else $this.remove();
+					}
+				});
+				if (doreload) return window.location.pathname = url;
 				$head.children('link[href], style[href]').each(function(){
 					var $this = $(this),
 						href = $this.attr('href'),
@@ -296,18 +320,9 @@ $(function(){
 						var $headerNav = $header.find('nav').children();
 						$headerNav.children(':not(:first-child)').remove();
 						$headerNav.append($sidebar.find('nav').children().children().clone());
+						$title.text(pagetitle);
 
 						history[location.pathname === url?'replaceState':'pushState']({'via-js':true},'',url);
-
-						$body.children('script[src], script[data-src]').each(function(){
-							var $this = $(this),
-								src = $this.attr('src') || $this.attr('data-src'),
-								pos = js.indexOf(src);
-
-							if (pos !== -1)
-								js.splice(pos, 1);
-							else $this.remove();
-						});
 
 						window.DocReady = [];
 
@@ -321,7 +336,7 @@ $(function(){
 							}
 
 							var requrl = js[item];
-							$.ajax({
+							xhr = $.ajax({
 								url: requrl,
 								dataType: 'text',
 								success:function(data){
@@ -333,8 +348,9 @@ $(function(){
 					}
 
 					var requrl = css[item];
-					$.ajax({
+					xhr = $.ajax({
 						url: requrl,
+						dataType: 'text',
 						success: function(data){
 							$head.append($.mk('style').attr('href',requrl).text(data));
 							LoadCSS(item+1);

@@ -1,13 +1,12 @@
 <?php
 
 	// Anti-CSRF
-	$_RQMTHD = RQMTHD === 'POST' ? $_POST : $_GET;
-	$CSRF = !isset($_RQMTHD['CSRF_TOKEN']) || !Cookie::exists('CSRF_TOKEN') || $_RQMTHD['CSRF_TOKEN'] !== Cookie::get('CSRF_TOKEN');
+	$CSRF = !isset($_POST['CSRF_TOKEN']) || !Cookie::exists('CSRF_TOKEN') || $_POST['CSRF_TOKEN'] !== Cookie::get('CSRF_TOKEN');
 	if (RQMTHD !== 'POST' && $CSRF)
 		Cookie::set('CSRF_TOKEN',md5(time()+rand()),COOKIE_SESSION);
 	define('CSRF_TOKEN',Cookie::get('CSRF_TOKEN'));
 
-	if (RQMTHD === 'GET' && isset($_RQMTHD['CSRF_TOKEN']))
+	if (RQMTHD === 'GET' && isset($_GET['CSRF_TOKEN']))
 		die(header('Location: '.remove_csrf_query_parameter($_SERVER['REQUEST_URI'])));
 
 	$signedIn = false;
