@@ -74,4 +74,10 @@ DocReady.push(function Colorguide(){
 		history.pushState({},'',window.location.pathname.replace(/\d+$/,'1')+query);
 		$.toPage(false, true, true);
 	});
+
+	$w.on('unload',function(){
+		$('.qtip').each(function(){
+		  $(this).data('qtip').destroy();
+		});
+	});
 });

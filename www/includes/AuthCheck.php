@@ -7,6 +7,9 @@
 		Cookie::set('CSRF_TOKEN',md5(time()+rand()),COOKIE_SESSION);
 	define('CSRF_TOKEN',Cookie::get('CSRF_TOKEN'));
 
+	if (RQMTHD === 'GET' && isset($_RQMTHD['CSRF_TOKEN']))
+		die(header('Location: '.remove_csrf_query_parameter($_SERVER['REQUEST_URI'])));
+
 	$signedIn = false;
 
 	$Color = 'Color';

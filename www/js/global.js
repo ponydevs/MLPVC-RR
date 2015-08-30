@@ -217,7 +217,11 @@ function DocumentIsReady(){
 	for (var i = 0, l = window.DocReady.length; i<l; i++)
 		window.DocReady[i].call(window);
 }
+var DocReadyOnce = false;
 $(function(){
+	if (DocReadyOnce) return;
+	DocReadyOnce = true;
+
 	// Sidebar toggle handler
 	var $body = $(document.body);
 	$('.sidebar-toggle').on('click',function(e){
@@ -249,8 +253,10 @@ $(function(){
 	});
 
 	function HandleNav(url){
-		if (xhr !== false)
+		if (xhr !== false){
 			xhr.abort();
+			xhr = false;
+		}
 
 		var title = 'Navigation';
 		$body.addClass('loading');

@@ -410,7 +410,7 @@ HTML;
 			die();
 		}
 		else {
-			$_SERVER['REQUEST_URI'] = rtrim(preg_replace('/\?(via-js=true&)?CSRF_TOKEN=[^&]+(&|$)/','?',$_SERVER['REQUEST_URI']),'?');
+			$_SERVER['REQUEST_URI'] = rtrim(preg_replace('/via-js=true/','',remove_csrf_query_parameter($_SERVER['REQUEST_URI'])), '?&');
 			ob_start();
 			require 'views/sidebar.php';
 			$sidebar = ob_get_clean();
@@ -463,6 +463,11 @@ HTML;
 		$type = preg_replace('/^.*\.(\w+)$/','$1', $item);
 		$pathStart = APPATH."$type/";
 		return "/$type/$item?".filemtime($pathStart.$item);
+	}
+
+	// Remove CSRF query parameter from request URL
+	function remove_csrf_query_parameter($url, $viajsToo = false){
+		return rtrim(preg_replace('/CSRF_TOKEN=[^&]+(&|$)/','',$url),'?&');
 	}
 
 	// Display a 404 page
