@@ -60,6 +60,7 @@ class Browser {
 	const BROWSER_IE = 'Internet Explorer'; // http://www.microsoft.com/ie/
 	const BROWSER_MSEDGE = 'Microsoft Edge'; // https://www.microsoft.com/en-us/windows/microsoft-edge
 	const BROWSER_IEMOBILE = 'IE Mobile'; // http://en.wikipedia.org/wiki/Internet_Explorer_Mobile
+	const BROWSER_VIVALDI = 'Vivaldi'; // http://vivaldi.com/
 	const BROWSER_KONQUEROR = 'Konqueror'; // http://www.konqueror.org/
 	const BROWSER_ICAB = 'iCab'; // http://www.icab.de/
 	const BROWSER_OMNIWEB = 'OmniWeb'; // http://www.omnigroup.com/applications/omniweb/
@@ -373,6 +374,7 @@ class Browser {
 			$this->checkBrowserWebTv() ||
 			$this->checkBrowserMSEdge() ||
 			$this->checkBrowserInternetExplorer() ||
+			$this->checkBrowserVivaldi() ||
 			$this->checkBrowserOpera() ||
 			$this->checkBrowserGaleon() ||
 			$this->checkBrowserNetscapeNavigator9Plus() ||
@@ -1257,6 +1259,24 @@ class Browser {
 			else $this->setVersion(self::VERSION_UNKNOWN);
 			$this->setBrowser(self::BROWSER_MSEDGE);
 			$this->_platform = self::PLATFORM_WINDOWS;
+
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Determine if the browser is Vivaldi or not
+	 * @return boolean True if the browser is Vivaldi otherwise false
+	 */
+	protected function checkBrowserVivaldi(){
+		if (stripos($this->_agent, 'Vivaldi') !== false){
+			$_match = array();
+			if (preg_match('/Vivaldi\/([\d.]+)/',$this->_agent, $_match))
+				$this->setVersion($_match[1]);
+			else $this->setVersion(self::VERSION_UNKNOWN);
+			$this->setBrowser(self::BROWSER_VIVALDI);
 
 			return true;
 		}

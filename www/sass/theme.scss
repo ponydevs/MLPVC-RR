@@ -94,6 +94,8 @@
 		left: 0;
 	}
 
+	header { background: $HeaderFooterBG }
+
 	#main {
 		position: relative;
 		z-index: 1;
@@ -169,7 +171,6 @@ header {
 	width: 100%;
 	height: $HeaderHeight;
 	@include navfoot;
-	background: $StyledBackground;
 
 	// Page layout - Header - Navigation
 	nav {
