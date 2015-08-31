@@ -633,11 +633,7 @@
 
 						update_role($targetUser,$newgroup);
 
-						respond(array(
-							'ng' => $newgroup,
-							'badge' => label_to_initials($ROLES_ASSOC[$newgroup]),
-							'canbebanned' => !PERM('inspector', $newgroup)
-						));
+						respond('Group changed successfully', 1);
 					}
 					else if (preg_match('/^sessiondel\/(\d+)$/',$data,$_match)){
 						if (!$signedIn) respond();

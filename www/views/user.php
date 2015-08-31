@@ -30,7 +30,7 @@
 	$PendingRequestReservations = $Database->where('reserved_by', $User['id'])->where('deviation_id IS NULL')->get('requests',null,$cols.', 1 as rq');
 	$TotalPending = count($PendingReservations)+count($PendingRequestReservations);
 	$hasPending = $TotalPending > 0;
-	if ($TotalPending > 0 || PERM('inspector')){ ?>
+	if ($TotalPending > 0 || (PERM('inspector') && PERM('member', $User['role']))){ ?>
 		<section class=pending-reservations>
 			<label>Pending Reservations</label>
 			<span><?=($sameUser?'You have':'This user has')." <strong>$TotalPending</strong>"?> pending reservation<?php

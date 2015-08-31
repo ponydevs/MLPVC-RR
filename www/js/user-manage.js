@@ -33,14 +33,13 @@ DocReady.push(function UserManage(){
 				$.post("newgroup/"+name, data, $.mkAjaxHandler(function(){
 					if (this.already_in === true)
 						return $.Dialog.close();
-					if (this.status){
-						$currRole.children('span').text(currRole = ROLES[this.ng]);
-						$roleBadge.text(this.badge);
-						$.Dialog.close();
 
-						$banToggle[(this.canbebanned ? 'remove' : 'add')+'Class']('hidden');
-					}
-					else $.Dialog.fail(title,this.message);
+					if (!this.status) return $.Dialog.fail(title,this.message);
+					$.Dialog.success(title, this.message);
+
+					HandleNav(location.pathname, function(){
+						$.Dialog.close();
+					});
 				}));
 			});
 		});

@@ -287,13 +287,14 @@ $(function(){
 					avatar = this.avatar;
 
 				$main.empty();
-				var doreload = false;
+				var doreload = false,
+					reload = location.pathname === url;
 				$body.children('script[src], script[data-src]').each(function(){
 					var $this = $(this),
 						src = $this.attr('src') || $this.attr('data-src'),
 						pos = js.indexOf(src);
 
-					if (pos !== -1)
+					if (!reload && pos !== -1)
 						js.splice(pos, 1);
 					else {
 						if (src.indexOf('global') !== -1){
