@@ -22,7 +22,7 @@
 	<header>
 		<nav><ul>
 			<li class=sidebar-toggle>
-				<?php require APPATH."img/loader.svg"; ?>
+				<div class="loader"></div>
 	            <img class=avatar src="<?=$signedIn?$currentUser['avatar_url']:GUEST_AVATAR?>">
 			</li><?=get_nav_html()?></ul></nav>
 	</header>

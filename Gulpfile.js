@@ -75,7 +75,10 @@ gulp.task('sass', function() {
 			}))
 			.pipe(autoprefixer('last 2 version'))
 			.pipe(rename({suffix: '.min' }))
-			.pipe(minify({processImport: false}))
+			.pipe(minify({
+				processImport: false,
+				compatibility: '-units.pc,-units.pt'
+			}))
 		.pipe(sourcemaps.write('.'))
 		.pipe(gulp.dest('www/css'));
 });

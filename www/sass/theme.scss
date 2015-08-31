@@ -136,7 +136,6 @@
 		}
 	}
 	body.loading {
-		nav .sidebar-toggle { cursor: wait !important }
 		#sidebar { transition: none !important }
 		#main { transition: opacity .5s !important }
 	}
@@ -226,18 +225,25 @@ header {
 					border-radius: 100%;
 					overflow: hidden;
 
+					body.loading & {
+						cursor: wait;
+						pointer-events: none;
+
+						> .loader { display: block }
+						> .avatar { opacity: .5 }
+					}
+
 					> .loader {
-						position: relative;
+						position: absolute;
+						top: 0;
+						left: 0;
 						z-index: 2;
 						display: none;
-						width: 45px;
-						height: 45px;
-						top: -2px;
-						left: -2px;
+						width: 27px;
+						height: 27px;
+						margin: 7px;
 
-						body.loading & { display: block }
-
-						path { fill: #fff }
+						@include sprite-animation(27px, 27px, 12, 'loading-indicator');
 					}
 					> .avatar {
 						width: 100%;
@@ -246,8 +252,6 @@ header {
 						z-index: 1;
 						top: 0;
 						left: 0;
-
-						body.loading & { opacity: .5 }
 					}
 				}
 
