@@ -724,7 +724,10 @@
 						$CurrentSession = $currentUser['Session'];
 						$Database->where('id != ?',array($CurrentSession['id']));
 					}
-					$Sessions = $Database->where('user',$User['id'])->orderBy('lastvisit','DESC')->get('sessions',null,'id,created,lastvisit,browser_name,browser_ver');
+					$Sessions = $Database
+						->where('user',$User['id'])
+						->orderBy('lastvisit','DESC')
+						->get('sessions',null,'id,created,lastvisit,platform,browser_name,browser_ver');
 				}
 
 				$settings = array(
