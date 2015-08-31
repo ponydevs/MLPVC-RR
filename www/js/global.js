@@ -16,6 +16,7 @@
 		$body: $(document.body),
 		$head: $(document.head),
 		$header: $('header'),
+		$sbToggle: $('.sidebar-toggle'),
 		$main: $('#main'),
 		$sidebar: $('#sidebar'),
 		$footer: $('footer'),
@@ -223,21 +224,34 @@ function DocumentIsReady(){
 	for (var i = 0, l = window.DocReady.length; i<l; i++)
 		window.DocReady[i].call(window);
 }
+function OpenSidebarByDefault(){
+	return window.matchMedia('all and (min-width: 1200px)').matches;
+}
 var DocReadyOnce = false;
 $(function(){
 	if (DocReadyOnce) return;
 	DocReadyOnce = true;
 
 	// Sidebar toggle handler
-	var $body = $(document.body);
-	$('.sidebar-toggle').off('click').on('click',function(e){
+	var $body = $(document.body),
+		xhr = false;
+	$sbToggle.off('click').on('click',function(e){
 		e.preventDefault();
-		$body.toggleClass('sidebar-open');
+
+		if (xhr !== false) return;
+		$sbToggle.trigger('sb-'+($body.hasClass('sidebar-open')?'close':'open'));
+	}).on('sb-open sb-close',function(e){
+		var close = e.type.substring(3) === 'close';
+		$body[close ? 'removeClass' : 'addClass']('sidebar-open');
+		localStorage[close ? 'setItem' : 'removeItem']('sidebar-closed', 'true');
 	});
+	var openSidebar = localStorage.getItem('sidebar-closed') !== 'true';
+	if (!OpenSidebarByDefault()) openSidebar = !openSidebar;
+	if (openSidebar)
+		$body.addClass('sidebar-open');
 
 	// AJAX page loader
-	var xhr = false,
-		REWRITE_REGEX = window.REWRITE_REGEX;
+	var REWRITE_REGEX = window.REWRITE_REGEX;
 
 	function LinkClick(e){
 		if (e.which > 2) return true;
@@ -276,7 +290,8 @@ $(function(){
 
 				url = this.responseURL;
 				$w.triggerHandler('unload');
-				$body.removeClass('sidebar-open');
+				if (!OpenSidebarByDefault())
+					$sbToggle.trigger('sb-close');
 
 				var css = this.css,
 					js = this.js,

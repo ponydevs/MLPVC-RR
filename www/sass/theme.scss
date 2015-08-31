@@ -12,6 +12,7 @@
 @media all and (max-width: $Breakpoint) {
 	body {
 		overflow: initial;
+		background: $StyledBackground;
 
 		&.sidebar-open { overflow: hidden }
 	}
@@ -117,15 +118,21 @@
 }
 // Sidebar always visible
 @media all and (min-width: $SidebarBreakpoint){
-	nav .sidebar-toggle {
-		cursor: default !important;
-	}
 	#sidebar {
-		left: 0 !important;
-		background: rgba(black, .8) !important;
+			background: rgba(black, .8) !important;
 	}
-	#main {
-		padding-left: calc(#{$SidebarWidth} + 8px);
+	body.sidebar-open {
+		#sidebar {
+			left: 0 !important;
+		}
+		#main {
+			padding-left: calc(#{$SidebarWidth} + 8px);
+		}
+	}
+	body.loading {
+		nav .sidebar-toggle { cursor: wait !important }
+		#sidebar { transition: none !important }
+		#main { transition: opacity .5s !important }
 	}
 }
 // Global Stuff
@@ -152,7 +159,6 @@ body {
 	margin: 0;
 	padding-top: $HeaderHeight;
 	font-family: 'Arimo', sans-serif;
-	background: $StyledBackground;
 }
 // Page layout - Header
 header {
@@ -277,7 +283,7 @@ header, #sidebar .mobile-nav {
 	z-index: 1;
 	width: 100%;
 	box-sizing: border-box;
-	transition: opacity .5s;
+	transition: opacity .5s, padding-left .5s ease-in-out;
 
 	&.locked { overflow: visible }
 	&.pls-wait {
