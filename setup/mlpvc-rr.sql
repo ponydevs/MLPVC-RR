@@ -148,6 +148,7 @@ CREATE TABLE IF NOT EXISTS `roles` (
 CREATE TABLE IF NOT EXISTS `sessions` (
   `id` bigint(20) unsigned NOT NULL,
   `user` varchar(36) NOT NULL,
+  `platform` tinytext NOT NULL,
   `browser_name` tinytext,
   `browser_ver` tinytext,
   `access` varchar(50) NOT NULL,

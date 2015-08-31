@@ -759,6 +759,9 @@ HTML;
 			if ($ver !== Browser::VERSION_UNKNOWN)
 				$Return['browser_ver'] = $ver;
 		}
+		$platform = $browser->getPlatform();
+		if ($platform !== Browser::PLATFORM_UNKNOWN)
+			$Return['platform'] = $platform;
 		return $Return;
 	}
 	function add_browser(&$AuthData){
@@ -1564,6 +1567,7 @@ HTML;
 	function render_session_li($Session, $current = false){
 		$browserClass = preg_replace('/[^a-z]/','',strtolower($Session['browser_name']));
 		$browserTitle = "{$Session['browser_name']} {$Session['browser_ver']}".($current?' (current)':'');
+		$platform = !empty($Session['platform']) ? "<span class=platform>on <strong>{$Session['platform']}</strong></span>" : '';
 		$firstuse = timetag($Session['created']);
 		$lastuse = timetag($Session['lastvisit']);
 		$signoutText = 'Sign out' . (!$current ? ' from this session' : '');
@@ -1571,6 +1575,7 @@ HTML;
 		echo <<<HTML
 <li class="browser-$browserClass">
 	<span class=browser>$remover $browserTitle</span>
+	$platform
 	<span class=created>Created: $firstuse</span>
 	<span class=used>Last used: $lastuse</span>
 </li>
