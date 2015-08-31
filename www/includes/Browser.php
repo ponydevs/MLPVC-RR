@@ -58,8 +58,8 @@ class Browser {
 	const BROWSER_OPERA_MINI = 'Opera Mini'; // http://www.opera.com/mini/
 	const BROWSER_WEBTV = 'WebTV'; // http://www.webtv.net/pc/
 	const BROWSER_IE = 'Internet Explorer'; // http://www.microsoft.com/ie/
-	const BROWSER_IEMOBILE = 'IE Mobile';
-	const BROWSER_POCKET_IE = 'Pocket Internet Explorer'; // http://en.wikipedia.org/wiki/Internet_Explorer_Mobile
+	const BROWSER_MSEDGE = 'Microsoft Edge'; // https://www.microsoft.com/en-us/windows/microsoft-edge
+	const BROWSER_IEMOBILE = 'IE Mobile'; // http://en.wikipedia.org/wiki/Internet_Explorer_Mobile
 	const BROWSER_KONQUEROR = 'Konqueror'; // http://www.konqueror.org/
 	const BROWSER_ICAB = 'iCab'; // http://www.icab.de/
 	const BROWSER_OMNIWEB = 'OmniWeb'; // http://www.omnigroup.com/applications/omniweb/
@@ -371,6 +371,7 @@ class Browser {
 			// (5) Netscape 9+ is based on Firefox so Netscape checks
 			//     before FireFox are necessary
 			$this->checkBrowserWebTv() ||
+			$this->checkBrowserMSEdge() ||
 			$this->checkBrowserInternetExplorer() ||
 			$this->checkBrowserOpera() ||
 			$this->checkBrowserGaleon() ||
@@ -615,7 +616,7 @@ class Browser {
 				$this->setBrowser(self::BROWSER_IE);
 				$this->setVersion(str_replace(array('(', ')', ';'), '', $aresult[1]));
 				if (stripos($this->_agent, 'IEMobile') !== false){
-					$this->setBrowser(self::BROWSER_POCKET_IE);
+					$this->setBrowser(self::BROWSER_IEMOBILE);
 					$this->setMobile(true);
 				}
 
@@ -634,7 +635,7 @@ class Browser {
 			$aresult = explode(' ', stristr($this->_agent, 'mspie'));
 			if (isset($aresult[1])){
 				$this->setPlatform(self::PLATFORM_WINDOWS_CE);
-				$this->setBrowser(self::BROWSER_POCKET_IE);
+				$this->setBrowser(self::BROWSER_IEMOBILE);
 				$this->setMobile(true);
 
 				if (stripos($this->_agent, 'mspie') !== false){
@@ -1237,6 +1238,25 @@ class Browser {
 				$this->setTablet(true);
 			}
 			$this->setBrowser(self::BROWSER_ANDROID);
+
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Determine if the browser is Microsoft Edge or not
+	 * @return boolean True if the browser is Microsoft Edge otherwise false
+	 */
+	protected function checkBrowserMSEdge(){
+		if (stripos($this->_agent, 'Edge') !== false){
+			$_match = array();
+			if (preg_match('/Edge\/([\d.]+)/',$this->_agent, $_match))
+				$this->setVersion($_match[1]);
+			else $this->setVersion(self::VERSION_UNKNOWN);
+			$this->setBrowser(self::BROWSER_MSEDGE);
+			$this->_platform = self::PLATFORM_WINDOWS;
 
 			return true;
 		}

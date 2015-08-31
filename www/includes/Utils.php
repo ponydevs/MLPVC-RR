@@ -424,6 +424,7 @@ HTML;
 				'content' => $content,
 				'sidebar' => $sidebar,
 				'footer' => get_footer(),
+				'avatar' => $signedIn ? $currentUser['avatar_url'] : GUEST_AVATAR,
 				'responseURL' => $_SERVER['REQUEST_URI'],
 			));
 		}
@@ -1902,7 +1903,7 @@ ORDER BY `count` DESC
 		if ($GLOBALS['signedIn'])
 			$NavItems['u'] = array("/u/{$GLOBALS['currentUser']['name']}",'Account');
 		if ($do === 'user' && !$GLOBALS['sameUser'])
-			$NavItems[] = array($_SERVER['REQUEST_URI'], $title);
+			$NavItems[] = array($_SERVER['REQUEST_URI'], $GLOBALS['title']);
 		if (PERM('inspector')){
 			$NavItems['logs'] = array('/logs', 'Logs');
 			if ($do === 'logs'){

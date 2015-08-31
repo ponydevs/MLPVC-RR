@@ -57,7 +57,7 @@
 		else throw new Error('Missing CSRF_TOKEN');
 	};
 	$.ajaxPrefilter(function(event, origEvent){
-		if (origEvent.type !== 'POST' || event.type !== 'POST')
+		if ((origEvent.type||event.type).toUpperCase() !== 'POST')
 			return;
 
 		var t = $.getCSRFToken();
@@ -142,6 +142,28 @@ DocReady.push(function Global(){
 		else opener(true);
 	});
 
+	// Sign out button handler
+	$('#signout').on('click',function(){
+		var title = 'Sign out';
+		$.Dialog.confirm(title,'Are you sure you want to sign out?',function(sure){
+			if (!sure) return;
+
+			$.Dialog.wait(title,'Signing out');
+
+			$.post('/signout',$.mkAjaxHandler(function(){
+				if (this.status){
+					$.Dialog.success(title,this.message);
+					setTimeout(function(){
+						HandleNav(location.href, function(){
+							$.Dialog.close();
+						});
+					},1000);
+				}
+				else $.Dialog.fail(title,this.message);
+			}));
+		});
+	});
+
 	// Countdown
 	var $cd, cdtimer,
 		months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -193,26 +215,6 @@ DocReady.push(function Global(){
 		$cd.text(text);
 	}
 	$w.on('unload',function(){ clearInterval(cdtimer) });
-
-	// Sign out button handler
-	$('#signout').on('click',function(){
-		var title = 'Sign out';
-		$.Dialog.confirm(title,'Are you sure you want to sign out?',function(sure){
-			if (!sure) return;
-
-			$.Dialog.wait(title,'Signing out');
-
-			$.post('/signout',$.mkAjaxHandler(function(){
-				if (this.status){
-					$.Dialog.success(title,this.message);
-					setTimeout(function(){
-						window.location.reload();
-					},1000);
-				}
-				else $.Dialog.fail(title,this.message);
-			}));
-		});
-	});
 });
 
 function DocumentIsReady(){
@@ -258,7 +260,7 @@ $(function(){
 		HandleNav(location.pathname, state);
 	});
 
-	function HandleNav(url){
+	function HandleNav(url, callback){
 		if (xhr !== false){
 			xhr.abort();
 			xhr = false;
@@ -281,7 +283,8 @@ $(function(){
 					content = this.content,
 					sidebar = this.sidebar,
 					footer = this.footer,
-					pagetitle = this.title;
+					pagetitle = this.title,
+					avatar = this.avatar;
 
 				$main.empty();
 				var doreload = false;
@@ -318,6 +321,7 @@ $(function(){
 						$footer.html(footer);
 						window.updateTimesF();
 						var $headerNav = $header.find('nav').children();
+						$headerNav.children().first().children('img').attr('src', avatar);
 						$headerNav.children(':not(:first-child)').remove();
 						$headerNav.append($sidebar.find('nav').children().children().clone());
 						$title.text(pagetitle);
@@ -331,6 +335,9 @@ $(function(){
 								DocumentIsReady();
 								$body.removeClass('loading');
 								$main.removeClass('pls-wait');
+								if (typeof callback === 'function')
+									callback();
+								//noinspection JSUnusedAssignment
 								xhr = false;
 								return;
 							}
@@ -360,6 +367,7 @@ $(function(){
 			})
 		});
 	}
+	window.HandleNav = function(){ HandleNav.apply(window, arguments) };
 
 	DocumentIsReady();
 });
