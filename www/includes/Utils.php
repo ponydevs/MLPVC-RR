@@ -1566,18 +1566,18 @@ HTML;
 	define('CURRENT',true);
 	function render_session_li($Session, $current = false){
 		$browserClass = preg_replace('/[^a-z]/','',strtolower($Session['browser_name']));
-		$browserTitle = "{$Session['browser_name']} {$Session['browser_ver']}".($current?' (current)':'');
+		$browserTitle = "{$Session['browser_name']} {$Session['browser_ver']}";
 		$platform = !empty($Session['platform']) ? "<span class=platform>on <strong>{$Session['platform']}</strong></span>" : '';
 		$firstuse = timetag($Session['created']);
-		$lastuse = timetag($Session['lastvisit']);
+		$lastuse = !$current ? 'Last used: '.timetag($Session['lastvisit']) : '<em>Current session</em>';
 		$signoutText = 'Sign out' . (!$current ? ' from this session' : '');
-		$remover = "<button class='typcn typcn-arrow-back remove orange' title='$signoutText' data-sid={$Session['id']}></button>";
+		$remover = "<button class='typcn typcn-arrow-back remove".(!$current?' orange':'')."' title='$signoutText' data-sid={$Session['id']}></button>";
 		echo <<<HTML
 <li class="browser-$browserClass">
 	<span class=browser>$remover $browserTitle</span>
 	$platform
 	<span class=created>Created: $firstuse</span>
-	<span class=used>Last used: $lastuse</span>
+	<span class=used>$lastuse</span>
 </li>
 HTML;
 	}
