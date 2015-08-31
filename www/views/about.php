@@ -31,6 +31,16 @@
 			<p><strong>Pre-ban dialog illustration (<a href="/img/ban-before.png">direct link</a>):</strong> <a href="http://synthrid.deviantart.com/art/Twilight-What-Have-I-Done-355177596">Twilight - What Have I Done?</a> by <a href="http://synthrid.deviantart.com/">Synthrid</a> <em>(edited with daylight colors)</em></p>
 			<p><strong>Post-ban dialog illustration (<a href="/img/ban-after.png">direct link</a>):</strong> <a href="http://sairoch.deviantart.com/art/Sad-Twilight-Sparkle-354710611">Sad Twilight Sparkle</a> by <a href="http://sairoch.deviantart.com/">Sairoch</a> <em>(<a href="http://sta.sh/0mddtxyru0w">shading-free version</a> used)</em></p>
 			<p><strong>Extrenal link icon</strong> (licensed GPL) taken from <a href="https://commons.wikimedia.org/wiki/File:Icon_External_Link.svg">Wikimedia Commons</a></p>
+			<p><strong>Browser logos</strong> (used on user pages):</p>
+			<ul>
+				<li><a href="http://fav.me/d8uhefy">Edge</a> by <a href="https://furrgroup.deviantart.com/">furrgroup</a></li>
+				<li><a href="http://fav.me/d4b6f4v">Firefox</a> by <a href="https://noreasontohope.deviantart.com/">NoReasonToHope</a></li>
+				<li><a href="http://fav.me/d523s3y">Google Chrome</a> by <a href="https://he4rtofcourage.deviantart.com/">he4rtofcourage</a></li>
+				<li><a href="http://fav.me/d5ktmlx">Internet Explorer</a> by <a href="https://mcsadat.deviantart.com/">McSadat</a></li>
+				<li><a href="http://fav.me/d52qnaw">Opera</a> by <a href="https://parallaxmlp.deviantart.com/">ParallaxMLP</a></li>
+				<li><a href="http://fav.me/d530knp">Safari</a> by <a href="https://parallaxmlp.deviantart.com/">ParallaxMLP</a></li>
+				<li><a href="https://github.com/alrra/browser-logos/blob/1ec2af8325ffb8b3f2c2834da84870341a376efd/vivaldi/vivaldi_128x128.png">Vivaldi</a> from <a href="https://github.com/alrra/browser-logos">alrra/browser-logos</a></li>
+			</ul>
 			<p><strong>Coding and design</strong> by <a href="http://djdavid98.eu">DJDavid98</a></p>
 			<p class=ramnode><a href="https://clientarea.ramnode.com/aff.php?aff=2648"><img src="https://www.ramnode.com/images/banners/affbannerlightnewlogoblack.png" alt="high performance ssd vps""></a></p>
 		</div>
