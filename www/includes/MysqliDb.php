@@ -9,7 +9,8 @@
  * @author    Alexander V. Butenko <a.butenka@gmail.com>
  * @copyright Copyright (c) 2010
  * @license   http://opensource.org/licenses/gpl-3.0.html GNU Public License
- * @version   2.2
+ * @link      http://github.com/joshcam/PHP-MySQLi-Database-Class 
+ * @version   2.4
  **/
 class MysqliDb
 {
@@ -138,6 +139,19 @@ class MysqliDb
      */
     protected $_nestJoin = false;
     private $_tableName = '';
+
+    /**
+     * FOR UPDATE flag
+     * @var boolean
+     */
+    protected $_forUpdate = false;
+
+    /**
+     * LOCK IN SHARE MODE flag
+     * @var boolean
+     */
+    protected $_lockInShareMode = false;
+
     /**
      * Variables for query execution tracing
      *
@@ -196,8 +210,9 @@ class MysqliDb
         if (empty ($this->host))
             die ('Mysql host is not set');
 
-        $this->_mysqli = new mysqli ($this->host, $this->username, $this->password, $this->db, $this->port)
-            or die('There was a problem connecting to the database');
+        $this->_mysqli = new mysqli ($this->host, $this->username, $this->password, $this->db, $this->port);
+        if ($this->_mysqli->connect_error)
+            throw new Exception ('Connect Error ' . $this->_mysqli->connect_errno . ': ' . $this->_mysqli->connect_error);
 
         if ($this->charset)
             $this->_mysqli->set_charset ($this->charset);
@@ -246,6 +261,8 @@ class MysqliDb
         $this->_queryOptions = array();
         $this->returnType = 'Array';
         $this->_nestJoin = false;
+        $this->_forUpdate = false;
+        $this->_lockInShareMode = false;
         $this->_tableName = '';
         $this->_lastInsertId = null;
         $this->_updateColumns = null;
@@ -307,7 +324,7 @@ class MysqliDb
         $this->_query = $query;
         $stmt = $this->_prepareQuery();
 
-        if (is_array($bindParams) === true) {
+        if (is_array ($bindParams) === true) {
             foreach ($bindParams as $prop => $val) {
                 $params[0] .= $this->_determineType($val);
                 array_push($params, $bindParams[$prop]);
@@ -400,7 +417,7 @@ class MysqliDb
     public function setQueryOption ($options) {
         $allowedOptions = Array ('ALL','DISTINCT','DISTINCTROW','HIGH_PRIORITY','STRAIGHT_JOIN','SQL_SMALL_RESULT',
                           'SQL_BIG_RESULT','SQL_BUFFER_RESULT','SQL_CACHE','SQL_NO_CACHE', 'SQL_CALC_FOUND_ROWS',
-                          'LOW_PRIORITY','IGNORE','QUICK', 'MYSQLI_NESTJOIN');
+                          'LOW_PRIORITY','IGNORE','QUICK', 'MYSQLI_NESTJOIN', 'FOR UPDATE', 'LOCK IN SHARE MODE');
         if (!is_array ($options))
             $options = Array ($options);
 
@@ -411,6 +428,10 @@ class MysqliDb
 
             if ($option == 'MYSQLI_NESTJOIN')
                 $this->_nestJoin = true;
+            else if ($option == 'FOR UPDATE')
+                $this->_forUpdate = true;
+            else if ($option == 'LOCK IN SHARE MODE')
+                $this->_lockInShareMode = true;
             else
                 $this->_queryOptions[] = $option;
         }
@@ -499,8 +520,11 @@ class MysqliDb
         if (!$res)
             return null;
 
-        if (isset($res[0]["retval"]) && $limit == 1)
-            return $res[0]["retval"];
+        if ($limit == 1) {
+            if (isset ($res[0]["retval"]))
+                return $res[0]["retval"];
+            return null;
+        }
 
         $newRes = Array ();
         for ($i = 0; $i < $this->count; $i++)
@@ -584,7 +608,11 @@ class MysqliDb
         if ($this->isSubQuery)
             return;
 
-        $this->_query = "DELETE FROM " . self::$prefix . $tableName;
+        $table = self::$prefix . $tableName;
+        if (count ($this->_join))
+            $this->_query = "DELETE " . preg_replace ('/.* (.*)/', '$1', $table) . " FROM " . $table;
+        else
+            $this->_query = "DELETE FROM " . $table;
 
         $stmt = $this->_buildQuery($numRows);
         $stmt->execute();
@@ -628,6 +656,7 @@ class MysqliDb
     {
         $this->_lastInsertId = $_lastInsertId;
         $this->_updateColumns = $_updateColumns;
+        return $this;
     }
 
     /**
@@ -879,6 +908,10 @@ class MysqliDb
         $this->_buildOrderBy();
         $this->_buildLimit ($numRows);
         $this->_buildOnDuplicate($tableData);
+        if ($this->_forUpdate)
+            $this->_query .= ' FOR UPDATE';
+        if ($this->_lockInShareMode)
+            $this->_query .= ' LOCK IN SHARE MODE';
 
         $this->_lastQuery = $this->replacePlaceHolders ($this->_query, $this->_bindParams);
 
@@ -915,9 +948,8 @@ class MysqliDb
 
         // if $meta is false yet sqlstate is true, there's no sql error but the query is
         // most likely an update/insert/delete which doesn't produce any results
-        if(!$meta && $stmt->sqlstate) {
+        if(!$meta && $stmt->sqlstate)
             return array();
-        }
 
         $row = array();
         while ($field = $meta->fetch_field()) {
@@ -957,8 +989,13 @@ class MysqliDb
                 }
             } else {
                 $x = array();
-                foreach ($row as $key => $val)
-                    $x[$key] = $val;
+                foreach ($row as $key => $val) {
+                    if (is_array($val)) {
+                        foreach ($val as $k => $v)
+                            $x[$key][$k] = $v;
+                    } else
+                        $x[$key] = $val;
+                }
             }
             $this->count++;
             array_push ($results, $x);
@@ -975,9 +1012,8 @@ class MysqliDb
             $totalCount = $stmt->fetch_row();
             $this->totalCount = $totalCount[0];
         }
-        if ($this->returnType == 'Json') {
+        if ($this->returnType == 'Json')
             return json_encode ($results);
-        }
 
         return $results;
     }
@@ -1188,9 +1224,8 @@ class MysqliDb
      */
     protected function _prepareQuery()
     {
-        if (!$stmt = $this->mysqli()->prepare($this->_query)) {
-            trigger_error("Problem preparing query ($this->_query) " . $this->mysqli()->error, E_USER_ERROR);
-        }
+        if (!$stmt = $this->mysqli()->prepare($this->_query))
+            throw new Exception ("Problem preparing query ($this->_query) " . $this->mysqli()->error);
         if ($this->traceEnabled)
             $this->traceStartQ = microtime (true);
 
@@ -1218,11 +1253,10 @@ class MysqliDb
         //Reference in the function arguments are required for HHVM to work
         //https://github.com/facebook/hhvm/issues/5155
         //Referenced data array is required by mysqli since PHP 5.3+
-        if (strnatcmp(phpversion(), '5.3') >= 0) {
+        if (strnatcmp (phpversion(), '5.3') >= 0) {
             $refs = array();
-            foreach ($arr as $key => $value) {
+            foreach ($arr as $key => $value)
                 $refs[$key] = & $arr[$key];
-            }
             return $refs;
         }
         return $arr;
@@ -1314,7 +1348,7 @@ class MysqliDb
             if (!empty ($matches[2])) $items = $matches[2];
             if (!empty ($matches[3])) $type = $matches[3];
             if (!in_array($type, array_keys($types)))
-                trigger_error ("invalid interval type in '{$diff}'");
+                throw new Exception("invalid interval type in '{$diff}'");
             $func .= " ".$incr ." interval ". $items ." ".$types[$type] . " ";
         }
         return $func;
@@ -1340,9 +1374,8 @@ class MysqliDb
      * @param int increment by int or float. 1 by default
      */
     public function inc($num = 1) {
-        if(!is_numeric($num)){
-            trigger_error('Argument supplied to inc must be a number', E_USER_ERROR);
-        }
+        if(!is_numeric($num))
+            throw new Exception ('Argument supplied to inc must be a number');
         return Array ("[I]" => "+" . $num);
     }
 
@@ -1351,9 +1384,8 @@ class MysqliDb
      * @param int increment by int or float. 1 by default
      */
     public function dec ($num = 1) {
-        if(!is_numeric($num)){
-            trigger_error('Argument supplied to dec must be a number', E_USER_ERROR);
-        }
+        if(!is_numeric($num))
+            throw new Exception ('Argument supplied to dec must be a number');
         return Array ("[I]" => "-" . $num);
     }
 
@@ -1487,4 +1519,3 @@ class MysqliDb
         return $this->count == $count;
     }
 } // END class
-?>
