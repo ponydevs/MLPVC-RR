@@ -1729,7 +1729,7 @@ HTML;
 			$time = 'in ';
 			if ($diff['time'] < $TIME_DATA['month']){
 				$tz = "(".date('T', $airtime).")";
-				if ($diff['week'] > 0)
+				if (!empty($diff['week']))
 					$diff['day'] += $diff['week'] * 7;
 				if (!empty($diff['day']))
 					$time .=  "{$diff['day']} day".($diff['day']!==1?'s':'').' & ';
