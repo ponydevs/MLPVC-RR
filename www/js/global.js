@@ -181,12 +181,16 @@ DocReady.push(function Global(){
 		months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 	window.setCD = function(){
 		var $uc = $('#upcoming');
-		if ($uc.length === 0) return;
-		$cd = $uc.find('li').first().find('time').addClass('nodt');
-		cdtimer = setInterval(function(){
-			cdupdate($cd);
-		}, 1000);
-		cdupdate($cd);
+		if (!$uc.length)
+			return;
+
+		var $lis = $uc.children('ul').children();
+		if (!$lis.length)
+			return $uc.remove();
+
+		$cd = $lis.first().find('time').addClass('nodt');
+		cdtimer = setInterval(cdupdate, 1000);
+		cdupdate();
 
 		$uc.find('li').each(function(){
 			var $this = $(this),
@@ -199,18 +203,16 @@ DocReady.push(function Global(){
 	};
 	window.setCD();
 	function pad(n){return n<10?'0'+n:n}
-	function cdupdate($cd){
-		var now = new Date(),
-			airs = new Date($cd.attr('datetime')),
-			diff = getTimeDiff(now, airs);
-		if (diff.past === true || $cd.length === 0){
-			if ($cd.length > 0){
-				var $oldcd = $cd,
-					$nextime = $oldcd.parents('li').next().find('time');
-				$oldcd.parents('li').remove();
-			}
+	function cdupdate(){
+		if ($cd.length > 0){
+			var now = new Date(),
+				airs = new Date($cd.attr('datetime')),
+				diff = getTimeDiff(now, airs);
+		}
+		if (!$cd.length || diff.past){
+			if ($cd.length)
+				$cd.parents('li').remove();
 			clearInterval(cdtimer);
-			if ($cd.length === 0 || $nextime.length === 0) return $('#upcoming').remove();
 			return window.setCD();
 		}
 		var text = 'in ';
@@ -226,7 +228,6 @@ DocReady.push(function Global(){
 		else text = createTimeStr(now, airs);
 		$cd.text(text);
 	}
-	$w.on('unload',function(){ clearInterval(cdtimer) });
 });
 
 function DocumentIsReady(){
