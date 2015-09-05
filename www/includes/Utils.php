@@ -1374,7 +1374,7 @@ HTML;
 	}
 	
 	// Renders the user card \\
-	define('GUEST_AVATAR','/img/guest.png');
+	define('GUEST_AVATAR','/img/guest.svg');
 	function usercard_render($sidebar = false){
 		global $signedIn, $currentUser;
 		if ($signedIn){

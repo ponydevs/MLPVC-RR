@@ -1,11 +1,9 @@
 DocReady.push(function UserManage(){
 	if (typeof window.ROLES == null) return;
-	var $w = $(window),
-		$content = $('#content'),
+	var $content = $('#content'),
 		ROLES = window.ROLES,
 		$name = $content.children('h1'),
 		name = $name.text().trim(),
-		$roleBadge = $content.find('.avatar-wrap').children('.badge'),
 		$currRole = $name.next(),
 		currRole = $currRole.children('span').text(),
 		$RoleForm = $.mk('form').attr('id','rolemod').html('<select name=newrole required><optgroup label="Possible roles"></optgroup></select>'),
@@ -56,7 +54,7 @@ DocReady.push(function UserManage(){
 				: '<p>'+Action+'ing '+name+' will allow them to sign in to the site again.</p>'
 			) +
 			'<form id='+action+'-form>' +
-			'   <p>You must provide a reason (5-255 chars.) for the '+action.replace(/ish$/,'')+' which will be added to the log entry and appear in the user\'s ban history.</p>' +
+			'   <p>You must provide a reason (5-255 chars.) for the '+action.replace(/ish$/,'')+' which will be added to the log entry and appear in the user\'s banishment history.</p>' +
 			'   <input type="text" name="reason" placeholder="Enter a reason" required pattern="^.{5,255}$">' +
 			'</form>'+
 			(Action === 'Banish' ? '<img src="/img/pre-ban.svg" alt="Sad twilight" height=200>':''),

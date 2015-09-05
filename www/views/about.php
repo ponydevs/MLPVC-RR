@@ -1,5 +1,5 @@
 <div id=content>
-	<img src="/img/logo.png" alt="MLP Vector Club Requests &amp; Reservations Logo">
+	<img src="/img/logo.svg" alt="MLP Vector Club Requests &amp; Reservations Logo">
 	<h1>MLP Vector Club Requests &amp; Reservations</h1>
 	<p>An automated system for handling requests &amp; reservations, made for <a href="http://mlp-vectorclub.deviantart.com/">MLP-VectorClub</a></p>
 	<section>
