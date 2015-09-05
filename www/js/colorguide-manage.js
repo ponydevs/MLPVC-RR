@@ -4,9 +4,9 @@ DocReady.push(function ColorguideManage(){
 		HEX_COLOR_PATTERN = window.HEX_COLOR_PATTERN, isWebkit = 'WebkitAppearance' in document.documentElement.style;
 
 	var $spriteUploadForm = $.mk('form').attr('id', 'sprite-img').html(
-		'<p class=align-center><a href=#upload>Click here to upload a file</a> (max. '+MAX_SIZE+') or enter a URL below.</p>' +
-		'<label><input type=text name=image_url placeholder="External image URL" required></label>' +
-		'<p class=align-center>The URL will be checked against the supported provider list, and if an image is found, it\'ll be downloaded to the server and set as this appearance\'s sprite image.</p>'
+		'<p class="align-center"><a href="#upload">Click here to upload a file</a> (max. '+MAX_SIZE+') or enter a URL below.</p>' +
+		'<label><input type="text" name="image_url" placeholder="External image URL" required></label>' +
+		'<p class="align-center">The URL will be checked against the supported provider list, and if an image is found, it\'ll be downloaded to the server and set as this appearance\'s sprite image.</p>'
 	);
 
 	$('.upload-wrap').each(function(){
@@ -150,7 +150,7 @@ DocReady.push(function ColorguideManage(){
 
 	var $tagEditForm = $.mk('form').attr('id', 'edit-tag');
 	$tagEditForm
-		.append('<label><span>Tag name (4-30 chars.)</span><input type=text name=name required pattern=^.{4,30}$ maxlength=30></label>');
+		.append('<label><span>Tag name (4-30 chars.)</span><input type="text" name="name" required pattern="^.{4,30}$" maxlength="30"></label>');
 	var $_typeSelect = $.mk('div').addClass('type-selector');
 	$.each(TAG_TYPES_ASSOC,function(type, label){
 		var $lbl = $.mk('label'),
@@ -167,7 +167,7 @@ DocReady.push(function ColorguideManage(){
 	});
 	$tagEditForm.append(
 		$.mk('div').addClass('align-center').append('<span>Tag type (optional)</span><br>',$_typeSelect),
-		$.mk('label').append('<span>Tag description (max 255 chars., optional)</span><br><textarea name=title maxlength=255></textarea>'),
+		$.mk('label').append('<span>Tag description (max 255 chars., optional)</span><br><textarea name="title" maxlength="255"></textarea>'),
 		$.mk('div').attr('class','notice').hide().html('<p></p>')
 	);
 	function reorder($this){
@@ -300,8 +300,8 @@ DocReady.push(function ColorguideManage(){
 			$.Dialog.center();
 		});
 	$cgEditor
-		.append('<label><span>Group name (2-30 chars.)</span><br><input name=label pattern="'+PRINTABLE_ASCII_REGEX.replace('+','{2,30}')+'" required></label>')
-		.append('<p class=align-center>The # symbol is optional, rows with invalid '+color+'s will be ignored. Each color must have a short (3-30 chars.) description of its intended use.</p>',$addBtn)
+		.append('<label><span>Group name (2-30 chars.)</span><br><input name="label" pattern="'+PRINTABLE_ASCII_REGEX.replace('+','{2,30}')+'" required></label>')
+		.append('<p class="align-center">The # symbol is optional, rows with invalid '+color+'s will be ignored. Each color must have a short (3-30 chars.) description of its intended use.</p>',$addBtn)
 		.append($.mk('div').attr('class', 'clrs'))
 		.append($.mk('div').attr('class','notice').hide().html('<p></p>'));
 	$cgEditor.on('render-color-inputs',function(_, data){
@@ -641,7 +641,7 @@ DocReady.push(function ColorguideManage(){
 							$cgs.append($.mk('li').attr('data-id', cg.groupid).text(cg.label));
 						});
 
-						$.mk('div').attr('class','cgs').append('<p class=align-center>Drag to re-arrange</p>',$cgs).prependTo($form);
+						$.mk('div').attr('class','cgs').append('<p class="align-center">Drag to re-arrange</p>',$cgs).prependTo($form);
 						$.Dialog.center();
 
 						new Sortable($cgs.get(0), {

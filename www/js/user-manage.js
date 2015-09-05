@@ -6,7 +6,7 @@ DocReady.push(function UserManage(){
 		name = $name.text().trim(),
 		$currRole = $name.next(),
 		currRole = $currRole.children('span').text(),
-		$RoleForm = $.mk('form').attr('id','rolemod').html('<select name=newrole required><optgroup label="Possible roles"></optgroup></select>'),
+		$RoleForm = $.mk('form').attr('id','rolemod').html('<select name="newrole" required><optgroup label="Possible roles"></optgroup></select>'),
 		$OptGrp = $RoleForm.find('optgroup'),
 		$banToggle = $('#ban-toggle'),
 		$changeRole = $('#change-role');
@@ -57,7 +57,7 @@ DocReady.push(function UserManage(){
 			'   <p>You must provide a reason (5-255 chars.) for the '+action.replace(/ish$/,'')+' which will be added to the log entry and appear in the user\'s banishment history.</p>' +
 			'   <input type="text" name="reason" placeholder="Enter a reason" required pattern="^.{5,255}$">' +
 			'</form>'+
-			(Action === 'Banish' ? '<img src="/img/pre-ban.svg" alt="Sad twilight" height=200>':''),
+			(Action === 'Banish' ? '<img src="/img/pre-ban.svg" alt="Sad twilight">':''),
 			action+'-form',
 			Action,
 			function(){

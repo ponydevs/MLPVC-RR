@@ -56,21 +56,21 @@ DocReady.push(function EpisodeManage(){
 	function EpisodeForm(id){
 		var $form = $.mk('form').attr('id', id).html(
 			'<div class=input-group>'+
-				'<input type="number" min=1 max=8 name=season placeholder="Season #" required>'+
-				'<input type="number" min=1 max=26 name=episode placeholder="Episode #" required>'+
+				'<input type="number" min="1 max="8" name="season" placeholder="Season #" required>'+
+				'<input type="number" min="1 max="26" name="episode" placeholder="Episode #" required>'+
 			'</div>\
-			<label><input type="text" maxlength=255 name=title placeholder=Title pattern="'+EP_TITLE_HTML_REGEX+'" autocomplete=off required></label>\
+			<label><input type="text" maxlength="255" name="title" placeholder="Title" pattern="'+EP_TITLE_HTML_REGEX+'" autocomplete="off" required></label>\
 			<div class="notice info align-center">\
 				<p><strong>Title</strong> must be between 5 and 35 characters.<br>Letters, numbers, and these characters, are allowed:<br>-, apostrophe, !, &, comma.</p>\
 			</div>\
-			<div class=input-group>'+
-				'<input type="date" name=airdate placeholder="YYYY-MM-DD" required>'+
-				'<input type="time" name=airtime placeholder="HH:MM" required>'+
+			<div class="input-group">'+
+				'<input type="date" name="airdate" placeholder="YYYY-MM-DD" required>'+
+				'<input type="time" name="airtime" placeholder="HH:MM" required>'+
 			'</div>\
 			<div class="notice info align-center button-here">\
 				<p>Specify when the episode will air, in <strong>your computer\'s timezone</strong>.</p>\
 			</div>\
-			<label><input type="checkbox" name=twoparter> Has two parts</label>\
+			<label><input type="checkbox" name="twoparter"> Has two parts</label>\
 			<div class="notice info align-center">\
 				<p>If this is checked, only specify the episode number of the first part</p>\
 			</div>');

@@ -247,7 +247,7 @@
 					if ($finishing && $type === 'request'){
 						$u = get_user($Thing['requested_by'],'id','name');
 						if (!empty($u) && $Thing['requested_by'] !== $currentUser['id'])
-							$out['message'] = "<p class=align-center>You may want to mention <strong>{$u['name']}</strong> in the deviation description to let them know that their request has been fulfilled.</p>";
+							$out['message'] = "<p class='align-center'>You may want to mention <strong>{$u['name']}</strong> in the deviation description to let them know that their request has been fulfilled.</p>";
 					}
 					respond($out);
 				}

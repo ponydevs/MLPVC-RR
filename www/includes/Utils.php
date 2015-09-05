@@ -138,7 +138,7 @@
 				$details[] = array('Type',$data['type']);
 				if (!empty($Post)){
 					$IDstr = "S{$Post['season']}E{$Post['episode']}#{$data['type']}-{$data['id']}";
-					$details[] = array('Link',"<a href=/episode/$IDstr>$IDstr</a>");
+					$details[] = array('Link',"<a href='/episode/$IDstr'>$IDstr</a>");
 				}
 			break;
 			default:
@@ -181,14 +181,14 @@
 			$HTML .= <<<HTML
 		<tr>
 
-			<td class=entryid>{$item['entryid']}</td>
-			<td class=timestamp>$ts<br><span class="dynt-el"></span></td>
-			<td class=ip>$ip</td>
-			<td class=reftype>$event</td>
+			<td class='entryid'>{$item['entryid']}</td>
+			<td class='timestamp'>$ts<br><span class="dynt-el"></span></td>
+			<td class='ip'>$ip</td>
+			<td class='reftype'>$event</td>
 		</tr>
 HTML;
 		}
-		else $HTML = "<tr><td colspan=4>There are no log items</td></tr>";
+		else $HTML = "<tr><td colspan='4'>There are no log items</td></tr>";
 
 		return $HTML;
 	}
@@ -351,7 +351,7 @@ HTML;
 			? "<time datetime='$datetime' title='$full'>$text</time>"
 			:"<time datetime='$datetime'>$full</time>".(
 				$allowDyntime !== NO_DYNTIME
-				?"(<span class=dynt-el>$full</span>)"
+				?"(<span class='dynt-el'>$full</span>)"
 				:''
 			);
 	}
@@ -1067,11 +1067,11 @@ HTML;
 
 		$Username = $User['name'];
 		$username = strtolower($Username);
-		$avatar = $format == FULL ? "<img src='{$User['avatar_url']}' class=avatar> " : '';
+		$avatar = $format == FULL ? "<img src='{$User['avatar_url']}' class='avatar'> " : '';
 		$link = "http://$username.deviantart.com/";
 
 		if ($format === LINK_ONLY) return $link;
-		return "<a href='$link' class=da-userlink>$avatar<span class=name>$Username</span></a>";
+		return "<a href='$link' class='da-userlink'>$avatar<span class='name'>$Username</span></a>";
 	}
 
 	/**
@@ -1085,9 +1085,9 @@ HTML;
 	function profile_link($User, $format = TEXT_ONLY){
 		$Username = $User['name'];
 
-		$avatar = $format == FULL ? "<img src='{$User['avatar_url']}' class=avatar> " : '';
+		$avatar = $format == FULL ? "<img src='{$User['avatar_url']}' class='avatar'> " : '';
 
-		return "<a href='/u/$Username' class=da-userlink>$avatar<span class=name>$Username</span></a>";
+		return "<a href='/u/$Username' class='da-userlink'>$avatar<span class='name'>$Username</span></a>";
 	}
 
 	// Reserved by section creator \\
@@ -1104,7 +1104,7 @@ HTML;
 			}
 			$dAlink = profile_link($By, FULL);
 
-			$HTML =  "<div class=reserver>$dAlink</div>";
+			$HTML =  "<div class='reserver'>$dAlink</div>";
 
 			$finished = !empty($R['deviation_id']);
 			$Buttons = array();
@@ -1119,7 +1119,7 @@ HTML;
 		}
 
 		if (!empty($Buttons)){
-			$HTML .= '<div class=reserver-actions>';
+			$HTML .= "<div class='reserver-actions'>";
 			foreach ($Buttons as $b)
 				$HTML .= "<button class='typcn typcn-{$b[0]}'>{$b[1]}</button> ";
 			$HTML .= '</div>';
@@ -1139,10 +1139,10 @@ HTML;
 		$finished = !!$R['finished'];
 		$thing = $isRequest ? 'request' : 'reservation';
 		$ID = "$thing-{$R['id']}";
-		$HTML = "<li id=$ID>";
+		$HTML = "<li id='$ID'>";
 		$R['label'] = htmlspecialchars($R['label']);
 		$Image = "<div class='image screencap'><a href='{$R['fullsize']}'><img src='{$R['preview']}'></a></div>";
-		if (!empty($R['label'])) $Image .= "<span class=label>{$R['label']}</span>";
+		if (!empty($R['label'])) $Image .= "<span class='label'>{$R['label']}</span>";
 		$sameUser = $isRequest && $signedIn && $R['requested_by'] === $currentUser['id'];
 
 		$Image .= '<em>'.(
@@ -1157,7 +1157,7 @@ HTML;
 				: 'Requested '
 			)
 			: 'Reserved '
-		)."<a href=#$ID>".timetag($R['posted'])."</a></em>";
+		)."<a href='#$ID'>".timetag($R['posted'])."</a></em>";
 
 		$R['reserver'] = false;
 		if (!empty($R['reserved_by'])){
@@ -1190,7 +1190,7 @@ HTML;
 			<div>
 				<label>
 					<span>$Type description ({$optional}3-255 chars)</span>
-					<input type="text" name="label" pattern="^.{3,255}$" maxlength=255 required>
+					<input type="text" name="label" pattern="^.{3,255}$" maxlength="255" required>
 				</label>
 				<label>
 					<span>Image URL</span>
@@ -1207,11 +1207,11 @@ HTML;
 				<label>
 					<span>$Type type</span>
 					<select name="type" required>
-						<option value="" style=display:none selected>Choose one</option>
+						<option value="" style="display:none" selected>Choose one</option>
 						<optgroup label="$Type types">
-							<option value=chr>Character</option>
-							<option value=bg>Background</option>
-							<option value=obj>Object</option>
+							<option value="chr">Character</option>
+							<option value="bg">Background</option>
+							<option value="obj">Object</option>
 						</optgroup>
 					</select>
 				</label>
@@ -1219,7 +1219,7 @@ HTML;
 HTML;
 			$HTML .= <<<HTML
 			</div>
-			<button class=green>Submit $type</button> <button type="reset">Cancel</button>
+			<button class="green">Submit $type</button> <button type="reset">Cancel</button>
 		</form>
 HTML;
 			return $HTML;
@@ -1244,12 +1244,12 @@ HTML;
 		if ($returnArranged) return $Arranged;
 
 		if (PERM('member')){
-			$makeRes = '<button id="reservation-btn" class=green>Make a reservation</button>';
+			$makeRes = '<button id="reservation-btn" class="green">Make a reservation</button>';
 			$resForm = get_post_form('reservation');
 
 		}
 		else $resForm = $makeRes = '';
-		$addRes = PERM('inspector') ? '<button id="add-reservation-btn" class=darkblue>Add a reservation</button>' :'';
+		$addRes = PERM('inspector') ? '<button id="add-reservation-btn" class="darkblue">Add a reservation</button>' :'';
 
 		return <<<HTML
 	<section id="reservations">
@@ -1302,10 +1302,10 @@ HTML;
 
 		$Groups = '';
 		foreach ($Arranged['unfinished'] as $g => $c)
-			$Groups .= "<div class=group><h3>{$REQUEST_TYPES[$g]}:</h3><ul>{$c}</ul></div>";
+			$Groups .= "<div class='group'><h3>{$REQUEST_TYPES[$g]}:</h3><ul>{$c}</ul></div>";
 
 		if (PERM('user')){
-			$makeRq = '<button id="request-btn" class=green>Make a request</button>';
+			$makeRq = '<button id="request-btn" class="green">Make a request</button>';
 			$reqForm = get_post_form('request');
 		}
 		else $reqForm = $makeRq = '';
@@ -1397,7 +1397,7 @@ HTML;
 		}
 
 		echo <<<HTML
-		<div class=usercard>
+		<div class='usercard'>
 			$Avatar
 			<span class="un">$username</span>
 			<span class="role">$rolelabel</span>
@@ -1422,8 +1422,8 @@ HTML;
 	function get_avatar_wrap($User){
 		$badge = '';
 		if (empty($User['guest']))
-			$badge = "<span class=badge>".label_to_initials($User['rolelabel'])."</span>";
-		return "<div class=avatar-wrap><img src='{$User['avatar_url']}' class=avatar>$badge</div>";
+			$badge = "<span class='badge'>".label_to_initials($User['rolelabel'])."</span>";
+		return "<div class='avatar-wrap'><img src='{$User['avatar_url']}' class='avatar'>$badge</div>";
 	}
 
 	/**
@@ -1497,7 +1497,7 @@ HTML;
 	function get_eptable_tbody($Episodes = null){
 		if (!isset($Episodes)) $Episodes = get_episodes();
 
-		if (empty($Episodes)) return "<tr class='empty align-center'><td colspan=3><em>There are no episodes to display</em></td></tr>";
+		if (empty($Episodes)) return "<tr class='empty align-center'><td colspan='3'><em>There are no episodes to display</em></td></tr>";
 
 		$Body = '';
 		$PathStart = '/episode/';
@@ -1507,7 +1507,7 @@ HTML;
 			$href = $PathStart.$Title['id'];
 			$adminControls = '';
 			if (PERM('inspector')) $adminControls = <<<HTML
-<span class=admincontrols>
+<span class='admincontrols'>
 	<button class="edit-episode typcn typcn-spanner blue" title="Edit episode"></button>
 	<button class="delete-episode typcn typcn-times red" title="Delete episode"></button>
 </span>
@@ -1524,11 +1524,11 @@ HTML;
 
 			$Body .= <<<HTML
 		<tr data-epid="{$Title['id']}">
-			<td class=season rowspan=2>{$Title['season']}</td>
-			<td class=episode rowspan=2><span>{$Title['episode']}</span></td>
-			<td class=title>$star<a href="$href">{$Title['title']}</a>$adminControls</td>
+			<td class='season' rowspan='2'>{$Title['season']}</td>
+			<td class='episode' rowspan='2'><span>{$Title['episode']}</span></td>
+			<td class='title'>$star<a href="$href">{$Title['title']}</a>$adminControls</td>
 		</tr>
-		<tr><td class=airs>$airs</td></tr>
+		<tr><td class='airs'>$airs</td></tr>
 HTML;
 		}
 		return $Body;
@@ -1572,17 +1572,17 @@ HTML;
 	function render_session_li($Session, $current = false){
 		$browserClass = browser_name_to_class_name($Session['browser_name']);
 		$browserTitle = "{$Session['browser_name']} {$Session['browser_ver']}";
-		$platform = !empty($Session['platform']) ? "<span class=platform>on <strong>{$Session['platform']}</strong></span>" : '';
+		$platform = !empty($Session['platform']) ? "<span class='platform'>on <strong>{$Session['platform']}</strong></span>" : '';
 		$firstuse = timetag($Session['created']);
 		$lastuse = !$current ? 'Last used: '.timetag($Session['lastvisit']) : '<em>Current session</em>';
 		$signoutText = 'Sign out' . (!$current ? ' from this session' : '');
-		$remover = "<button class='typcn typcn-arrow-back remove".(!$current?' orange':'')."' title='$signoutText' data-sid={$Session['id']}></button>";
+		$remover = "<button class='typcn typcn-arrow-back remove".(!$current?' orange':'')."' title='$signoutText' data-sid='{$Session['id']}'></button>";
 		echo <<<HTML
 <li class="browser-$browserClass">
-	<span class=browser>$remover $browserTitle</span>
+	<span class="browser">$remover $browserTitle</span>
 	$platform
-	<span class=created>Created: $firstuse</span>
-	<span class=used>$lastuse</span>
+	<span class="created">Created: $firstuse</span>
+	<span class="used">$lastuse</span>
 </li>
 HTML;
 	}
@@ -1694,12 +1694,12 @@ HTML;
 			$downPerc = call_user_func($UpsDowns === 'down' ? 'ceil' : 'floor', ($VoteTally['down']/$VoteTally['total'])*1000)/10;
 
 			if ($upPerc > 0)
-				$fills[] = "<div class=up style=width:$upPerc% ".($upPerc > 10 ? "data-width=$upPerc":'')."></div>";
+				$fills[] = "<div class='up' style='width:$upPerc%'".($upPerc > 10 ? " data-width='$upPerc'":'')."></div>";
 			if ($downPerc > 0)
-				array_splice($fills, $UpsDowns === 'up' ? 1 : 0, 0, array("<div class=down style=width:$downPerc%".($downPerc > 15 ? " data-width=$downPerc":'')."></div>"));
+				array_splice($fills, $UpsDowns === 'up' ? 1 : 0, 0, array("<div class='down' style='width:$downPerc%'".($downPerc > 15 ? " data-width='$downPerc'":'')."></div>"));
 
 			if (!empty($fills))
-				$HTML .= "<div class=bar>".implode('',$fills)."</div>";
+				$HTML .= "<div class='bar'>".implode('',$fills)."</div>";
 		}
 		if (empty($UserVote)){
 			$HTML .= "<br><p>What did <em>you</em> think about the episode?</p>";
@@ -1740,8 +1740,8 @@ HTML;
 				$time = "<time datetime='$airs'>$time{$diff['minute']}:{$diff['second']} $tz</time>";
 			}
 			else $time = timetag($ep['airs']);
-			$HTML .= "<li><div class=calendar><span class=top>$month</span><span class=bottom>$day</span></div>".
-				"<div class=meta><span class=title>{$ep['title']}</span>$time</div></li>";
+			$HTML .= "<li><div class='calendar'><span class='top'>$month</span><span class='bottom'>$day</span></div>".
+				"<div class='meta'><span class='title'>{$ep['title']}</span>$time</div></li>";
 		}
 		return $HTML;
 	}
@@ -1786,7 +1786,7 @@ ORDER BY `count` DESC
 		);
 
 		if (isset($reservations['count']) && $reservations['count'] >= 4)
-			respond("You've already reserved {$reservations['count']} images, but you may not have more than 4 pending reservations at a time. You can review them on your <a href=/u/>profile page</a>.");
+			respond("You've already reserved {$reservations['count']} images, but you may not have more than 4 pending reservations at a time. You can review them on your <a href='/u/'>profile page</a>.");
 	}
 
 	// Render episode video player \\
@@ -1807,13 +1807,13 @@ ORDER BY `count` DESC
 			require_once "includes/Video.php";
 			$FirstVid = $Videos[0];
 			$embed = Video::get_embed($FirstVid['id'], $FirstVid['provider']);
-			$HTML .= "<section class=episode><h2>Watch the Episode</h2>";
+			$HTML .= "<section class='episode'><h2>Watch the Episode</h2>";
 			if (!empty($Videos[1])){
 				$SecondVid = $Videos[1];
 				$url = Video::get_embed($SecondVid['id'], $SecondVid['provider'], Video::URL_ONLY);
-				$HTML .= "<p class=align-center style=margin-bottom:5px>If the video below goes down, <a href='$url' target=_blank>click here to watch it on {$VIDEO_PROVIDER_NAMES[$SecondVid['provider']]} instead</a>.</p>";
+				$HTML .= "<p class='align-center' style='margin-bottom:5px'>If the video below goes down, <a href='$url' target='_blank'>click here to watch it on {$VIDEO_PROVIDER_NAMES[$SecondVid['provider']]} instead</a>.</p>";
 			}
-			$HTML .= "<div class=resp-embed-wrap><div class=responsive-embed>$embed</div></div></section>";
+			$HTML .= "<div class='resp-embed-wrap'><div class='responsive-embed'>$embed</div></div></section>";
 		}
 
 		return $HTML;
@@ -1859,7 +1859,7 @@ ORDER BY `count` DESC
 			else $li = "<strong>$li</strong>";
 			$Pagination .= "<li>$li</li>";
 		}
-		return "<ul class=pagination>$Pagination</ul>";
+		return "<ul class='pagination'>$Pagination</ul>";
 	}
 
 	// Pagiation calculate page

@@ -1,4 +1,4 @@
-<div id=content>
+<div id="content">
 	<h1>Global logs</h1>
 <?php if (!empty($MSG)){ ?>
 	<p><?=$MSG?></p>

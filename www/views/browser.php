@@ -1,4 +1,4 @@
-<div id=content>
+<div id="content">
     <div class="browser-<?=browser_name_to_class_name($browser['browser_name'])?>"></div>
     <h1><?=$browser['browser_name'].' '.$browser['browser_ver']?></h1>
     <p>on <?=$browser['platform']?></p>

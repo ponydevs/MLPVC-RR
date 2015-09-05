@@ -48,7 +48,7 @@
 				$test = self::test_provider($url, $pattern, $name);
 				if ($test !== false) return $test;
 			}
-			throw new Exception('Unsupported provider. Try uploading your image to <a href=http://sta.sh target=_blank>sta.sh</a>');
+			throw new Exception("Unsupported provider. Try uploading your image to <a href='http://sta.sh' target='_blank'>sta.sh</a>");
 		}
 		private function get_direct_url($id){
 			switch ($this->provider){

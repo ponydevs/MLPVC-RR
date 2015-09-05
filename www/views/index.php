@@ -7,20 +7,20 @@
 </div>
 <script>try{history.replaceState('',{},'/')}catch(e){}</script>
 <?php } ?>
-<div id=content>
+<div id="content">
 <?php
 	if(!empty($CurrentEpisode)){ ?>
 	<h1><?=format_episode_title($CurrentEpisode)?></h1>
 	<p>Vector Requests & Reservations</p>
 <?php if (PERM('inspector')){ ?>
-	<p class=align-center><em>Episode added by <?=profile_link(get_user($CurrentEpisode['posted_by'])).' '.timetag($CurrentEpisode['posted'])?></em></p>
+	<p class="align-center"><em>Episode added by <?=profile_link(get_user($CurrentEpisode['posted_by'])).' '.timetag($CurrentEpisode['posted'])?></em></p>
 <?php } ?>
 <?php echo render_ep_video($CurrentEpisode); ?>
-	<section class=about-res>
+	<section class="about-res">
 		<h2>What Vector Reservations Are</h2>
 		<p>People usually get excited whenever a new episode comes out, and start making vectors of any pose/object/etc. that they found hilarious/interesting enough. It often results in various people unnecessarily doing the very same thing. Vector Reservations can help organize our efforts by listing who's working on what and to reduce the number of duplicates.</p>
 	</section>
-	<section class=rules>
+	<section class="rules">
 		<h2>Reservation Rules</h2>
 		<ol>
 			<li>You MUST have an image to make a reservation! For the best quality, get your references from the episode in 1080p.</li>
@@ -31,10 +31,10 @@
 		</ol>
 	</section>
 <?php   if (PERM('inspector')){ ?>
-	<section class=admin>
+	<section class="admin">
 		<h2>Administration area</h2>
-		<p class=align-center>
-			<button id=video class="typcn typcn-video large darkblue">Set video links</button>
+		<p class="align-center">
+			<button id="video" class="typcn typcn-video large darkblue">Set video links</button>
 		</p>
 	</section>
 <?php   }

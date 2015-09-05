@@ -33,8 +33,8 @@
 		else $Group = $CGDb->where('groupid',$GroupID)->getOne('colorgroups');
 
 		$label = htmlspecialchars($Group['label']);
-		$HTML = $wrap ? "<li id=cg{$Group['groupid']}>" : '';
-		$HTML .= "<span class=cat>$label: </span>";
+		$HTML = $wrap ? "<li id='cg{$Group['groupid']}'>" : '';
+		$HTML .= "<span class='cat'>$label: </span>";
 		$Colors = get_colors($Group['groupid']);
 		if (!empty($Colors))
 			foreach ($Colors as $i => $c){
@@ -42,9 +42,10 @@
 				$styleTag = $color = '';
 				if (!empty($c['hex'])){
 					$color = $c['hex'];
-					$styleTag = " style=background-color:$color";
+					$styleTag = " style='background-color:$color'";
 				}
-				$HTML .= "<span id=c{$c['colorid']}$styleTag title='$title'>$color</span> ";
+				//noinspection ALL
+				$HTML .= "<span id='c{$c['colorid']}'$styleTag title='$title'>$color</span> ";
 			};
 
 		if ($wrap) $HTML .= "</li>";
@@ -69,7 +70,7 @@
 
 		$ColorGroups = get_cgs($PonyID);
 
-		$HTML = $wrap ? "<ul class=colors>" : '';
+		$HTML = $wrap ? "<ul class='colors'>" : '';
 		if (!empty($ColorGroups)){
 			foreach ($ColorGroups as $cg)
 				$HTML .= get_cg_html($cg);
@@ -99,9 +100,9 @@
 
 		$Tags = get_tags($PonyID);
 
-		$HTML = $wrap ? "<div class=tags>" : '';
+		$HTML = $wrap ? "<div class='tags'>" : '';
 		if (PERM('inspector'))
-			$HTML .= "<input type=text class='addtag tag' placeholder='Enter tag' pattern='".TAG_NAME_PATTERN."' maxlength=30 required>";
+			$HTML .= "<input type='text' class='addtag tag' placeholder='Enter tag' pattern='".TAG_NAME_PATTERN."' maxlength='30' required>";
 		if (!empty($Tags)) foreach ($Tags as $i => $t){
 			$class = " class='tag id-{$t['tid']}".(!empty($t['type'])?' typ-'.$t['type']:'')."'";
 			$title = !empty($t['title']) ? " title='".apos_encode($t['title'])."'" : '';
@@ -133,13 +134,13 @@
 	function get_ponies_html($Ponies, $wrap = true){
 		global $CGDb, $_MSG;
 
-		$HTML = $wrap ? '<ul id=list>' : '';
+		$HTML = $wrap ? '<ul id="list">' : '';
 		if (!empty($Ponies)) foreach ($Ponies as $p){
 			$p['label'] = htmlspecialchars($p['label']);
 			$imgPth = "img/cg/{$p['id']}.png";
 			if (!file_Exists(APPATH.$imgPth)) $imgPth = "img/blank-pixel.png";
 			else $imgPth = $imgPth.'?'.filemtime(APPATH.$imgPth);
-			$img = "<a href='/$imgPth' target=_blank title='Open image in new tab'><img src='/$imgPth' alt='".apos_encode($p['label'])."'></a>";
+			$img = "<a href='/$imgPth' target='_blank' title='Open image in new tab'><img src='/$imgPth' alt='".apos_encode($p['label'])."'></a>";
 			if (PERM('inspector')) $img = "<div class='upload-wrap'>$img</div>";
 			$img = "<div>$img</div>";
 
@@ -148,7 +149,7 @@
 			$colors = get_colors_html($p['id']);
 			$editBtn = PERM('inspector') ? '<button class="edit typcn typcn-pencil blue" title="Edit"></button><button class="delete typcn typcn-trash red" title="Delete"></button>' : '';
 
-			$HTML .= "<li id=p{$p['id']}>$img<div><strong>{$p['label']}$editBtn</strong>$notes$tags$colors</div></li>";
+			$HTML .= "<li id='p{$p['id']}'>$img<div><strong>{$p['label']}$editBtn</strong>$notes$tags$colors</div></li>";
 		}
 		else {
 			if (empty($_MSG))
@@ -307,11 +308,11 @@
 		global $TAG_TYPES_ASSOC;
 		$HTML = $wrap ? '<tbody>' : '';
 
-		$utils = PERM('inspector') ? "<td class=utils><button class='typcn typcn-minus delete' title=Delete></button> <button class='typcn typcn-flow-merge merge' title=Merge></button></td>" : '';
+		$utils = PERM('inspector') ? "<td class='utils'><button class='typcn typcn-minus delete' title='Delete'></button> <button class='typcn typcn-flow-merge merge' title='Merge'></button></td>" : '';
 		$refresh = PERM('inspector') ? " <button class='typcn typcn-arrow-sync refresh' title='Refresh use count'></button>" : '';
 
 		if (!empty($Tags)) foreach ($Tags as $t){
-			$trClass = $t['type'] ? ' class=typ-'.$t['type'] : '';
+			$trClass = $t['type'] ? " class='typ-{$t['type']}'" : '';
 			$type = $t['type'] ? $TAG_TYPES_ASSOC[$t['type']] : '';
 			$HTML .= <<<HTML
 			<tr$trClass>

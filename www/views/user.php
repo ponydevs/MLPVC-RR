@@ -1,4 +1,4 @@
-<div id=content>
+<div id="content">
 <?php
 	if (isset($MSG)){
 		echo "<h1>$MSG</h1>";
@@ -18,7 +18,7 @@
 			echo ' <button id="ban-toggle" class="darkblue typcn typcn-'.$Icon.' '.strtolower($BanLabel).'" title="'."$BanLabel user".'"></button>';
 		}
 	?></p>
-	<div class=details>
+	<div class="details">
 <?  if (PERM('developer')){ ?>
 		<section>
 			<label>User ID:</label>
@@ -31,7 +31,7 @@
 	$TotalPending = count($PendingReservations)+count($PendingRequestReservations);
 	$hasPending = $TotalPending > 0;
 	if ($TotalPending > 0 || (PERM('inspector') && PERM('member', $User['role']))){ ?>
-		<section class=pending-reservations>
+		<section class="pending-reservations">
 			<label>Pending Reservations</label>
 			<span><?=($sameUser?'You have':'This user has')." <strong>$TotalPending</strong>"?> pending reservation<?php
 		echo $TotalPending!==1?'s':'';
@@ -59,11 +59,11 @@
 				$link = "/episode/{$p['page']}#$id";
 				$posted = date('c',strtotime($p['posted']));
 				$Posts[$i] = <<<HTML
-<li id=$id>
+<li id='$id'>
 	<div class='image screencap'>
 		<a href='$link'><img src='{$p['preview']}'></a>
 	</div>
-	<span class=label>{$p['label']}</span>
+	<span class='label'>{$p['label']}</span>
 	<em>Posted under <a href='$link'>{$p['page']}</a> <time datetime="$posted"></em>
 	<div>
 		<a href='$link' class='btn blue typcn typcn-arrow-forward'>View</a>
@@ -77,7 +77,7 @@ HTML;
 ?>
 		</section>
 <?  } ?>
-		<section class=bans>
+		<section class="bans">
 			<label>Banishment history</label>
 			<ul><?php
 		$Banishes = $Database
@@ -123,7 +123,7 @@ HTML;
 					foreach ($Sessions as $s) render_session_li($s);
 				}
 			?></ul>
-			<p><button class="typcn typcn-arrow-back yellow" id=signout-everywhere>Sign out everywhere</button></p>
+			<p><button class="typcn typcn-arrow-back yellow" id="signout-everywhere">Sign out everywhere</button></p>
 <?php       } else { ?>
 			<p><?=$sameUser?"You are":'This user is'?>n't logged in anywhere.</p>
 <?php       } ?>

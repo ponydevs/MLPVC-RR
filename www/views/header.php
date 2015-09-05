@@ -17,18 +17,18 @@
 	<link rel="stylesheet" href="<?=$css?>">
 <?php } ?>
 </head>
-<body class=loading>
+<body class="loading">
 
 	<header>
 		<nav><ul>
-			<li class=sidebar-toggle>
+			<li class="sidebar-toggle">
 				<div class="loader"></div>
-	            <img class=avatar src="<?=$signedIn?$currentUser['avatar_url']:GUEST_AVATAR?>">
+	            <img class="avatar" src="<?=$signedIn?$currentUser['avatar_url']:GUEST_AVATAR?>">
 			</li><?=get_nav_html()?></ul></nav>
 	</header>
 
-	<div id=sidebar>
+	<div id="sidebar">
 <?php include "views/sidebar.php"; ?>
 	</div>
 
-	<div id=main>
+	<div id="main">

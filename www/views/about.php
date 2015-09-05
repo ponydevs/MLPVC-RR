@@ -1,4 +1,4 @@
-<div id=content>
+<div id="content">
 	<img src="/img/logo.svg" alt="MLP Vector Club Requests &amp; Reservations Logo">
 	<h1>MLP Vector Club Requests &amp; Reservations</h1>
 	<p>An automated system for handling requests &amp; reservations, made for <a href="http://mlp-vectorclub.deviantart.com/">MLP-VectorClub</a></p>
@@ -42,7 +42,7 @@
 				<li><a href="https://github.com/alrra/browser-logos/blob/1ec2af8325ffb8b3f2c2834da84870341a376efd/vivaldi/vivaldi_128x128.png">Vivaldi</a> from <a href="https://github.com/alrra/browser-logos">alrra/browser-logos</a></li>
 			</ul>
 			<p><strong>Coding and design</strong> by <a href="http://djdavid98.eu">DJDavid98</a></p>
-			<p class=ramnode><a href="https://clientarea.ramnode.com/aff.php?aff=2648"><img src="https://www.ramnode.com/images/banners/affbannerlightnewlogoblack.png" alt="high performance ssd vps""></a></p>
+			<p class="ramnode"><a href="https://clientarea.ramnode.com/aff.php?aff=2648"><img src="https://www.ramnode.com/images/banners/affbannerlightnewlogoblack.png" alt="high performance ssd vps""></a></p>
 		</div>
 	</section>
 <?php
@@ -78,7 +78,7 @@ HTML;
 			} ?>
 		</div>
 	</section>
-	<section class=browsers>
+	<section class="browsers">
 		<h2>Most popular browsers</h2>
 		<table>
 			<thead><th>#</th><th>Name & Version</th><th>Sessions</th></thead>
@@ -106,7 +106,7 @@ HTML;
 					$i++;
 					$ordering = $i;
 				}
-				echo "<tr><td><strong>$ordering</strong></td><td>{$r['browser']}</td><td class=align-center>{$r['users']}</td></tr>";
+				echo "<tr><td><strong>$ordering</strong></td><td>{$r['browser']}</td><td class='align-center'>{$r['users']}</td></tr>";
 			} ?></tbody>
 		</table>
 	</section>

@@ -351,7 +351,7 @@ DocReady.push(function Index(){
 					$formImgInput.val($formImgInput.val().replace(outgoing,''));
 			}
 		}
-		var CHECK_BTN = '<strong class="typcn typcn-arrow-repeat" style=display:inline-block>Check image</strong>';
+		var CHECK_BTN = '<strong class="typcn typcn-arrow-repeat" style="display:inline-block">Check image</strong>';
 		$formImgCheck.on('click',function(e){
 			e.preventDefault();
 
@@ -381,7 +381,7 @@ DocReady.push(function Index(){
 						if (!!data.title && !$formTitleInput.val().trim())
 							$.Dialog.confirm(
 								'Confirm '+type+' title',
-								'The image you just checked had the following title:<br><br><p class=align-center><strong>'+data.title+'</strong></p>'
+								'The image you just checked had the following title:<br><br><p class="align-center"><strong>'+data.title+'</strong></p>'
 								 +'<br>Would you like to use this as the '+type+'\'s description?<br>Keep in mind that it should describe the thing(s) '
 								 +(type==='request'?'being requested':'you plan to vector')+'.'
 								 +'<p>This dialog will not appear if you give your '+type+' a description before clicking the '+CHECK_BTN+' button.</p>',
