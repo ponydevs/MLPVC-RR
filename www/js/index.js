@@ -522,7 +522,6 @@ DocReady.push(function Index(){
 						total--;
 						$progress.attr('max', total);
 					}
-					console.log(loaded, total, loaded/total*100);
 				})
 				.always(function(){
 					setTimeout(function(){
