@@ -21,8 +21,8 @@ In the past, the management of comments under journals was done manually. Becaus
  - [masemj](http://masemj.deviantart.com/)
  - [Ambassad0r](http://ambassad0r.deviantart.com/) *(idea)*
  
-**Pre-ban dialog illustration ([direct link](https://raw.githubusercontent.com/ponydevs/MLPVC-RR/master/www/img/ban-before.png)):** [Twilight - What Have I Done?](http://synthrid.deviantart.com/art/Twilight-What-Have-I-Done-355177596) by [Synthrid](http://synthrid.deviantart.com/) *(edited with daylight colors)*<br>
-**Post-ban dialog illustration ([direct link](https://raw.githubusercontent.com/ponydevs/MLPVC-RR/master/www/img/ban-after.png)):** [Sad Twilight Sparkle](http://sairoch.deviantart.com/art/Sad-Twilight-Sparkle-354710611) by [Sairoch](http://sairoch.deviantart.com/) *([shading-free version](http://sta.sh/0mddtxyru0w) used)*<br>
+**Pre-ban dialog illustration ([direct link](https://raw.githubusercontent.com/ponydevs/MLPVC-RR/master/www/img/pre-ban.svg)):** [Twilight - What Have I Done?](http://synthrid.deviantart.com/art/Twilight-What-Have-I-Done-355177596) by [Synthrid](http://synthrid.deviantart.com/) *(edited with daylight colors)*<br>
+**Post-ban dialog illustration ([direct link](https://raw.githubusercontent.com/ponydevs/MLPVC-RR/master/www/img/post-ban.svg)):** [Sad Twilight Sparkle](http://sairoch.deviantart.com/art/Sad-Twilight-Sparkle-354710611) by [Sairoch](http://sairoch.deviantart.com/) *([shading-free version](http://sta.sh/0mddtxyru0w) used)*<br>
 **Extrenal link icon** (licensed GPL) taken from [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Icon_External_Link.svg)<br>
 **Browser logos** (used on user pages):
 
