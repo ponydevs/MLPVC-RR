@@ -39,3 +39,7 @@ Coding and design by [DJDavid98](http://djdavid98.eu/)
 ## Contributing
 
 This project is maintained by me, and me alone, and as such, I do not expect code contributions. If you have an idea that you'd like to share, [open an issue](https://github.com/ponydevs/MLPVC-RR/issues/new) instead.
+
+###To ponydevs organization members
+
+While you may be able to commit directly into the repository I'd like to ask that you do not. If you want to make a contribution make sure to discuss it in an issue before committing anything here.
