@@ -321,7 +321,7 @@ $(function(){
 
 				$body.children('script[src], script[data-src]').each(function(i,el){
 					var $this = $(this);
-					if (!reload){
+					if (reload){
 						$this.remove();
 						return true;
 					}
@@ -331,8 +331,11 @@ $(function(){
 
 					if (pos !== -1)
 						js.splice(pos, 1);
-					else if (src.indexOf('global') !== -1)
-						return !(doreload = true);
+					else {
+						if (src.indexOf('global') !== -1)
+							return !(doreload = true);
+						$this.remove();
+					}
 				});
 				if (doreload !== false)
 					return location.href = url;

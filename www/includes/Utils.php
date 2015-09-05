@@ -421,8 +421,8 @@ HTML;
 				'css' => $customCSS,
 				'js' => $customJS,
 				'title' => $title,
-				'content' => $content,
-				'sidebar' => $sidebar,
+				'content' => remove_indentation($content),
+				'sidebar' => remove_indentation($sidebar),
 				'footer' => get_footer(),
 				'avatar' => $signedIn ? $currentUser['avatar_url'] : GUEST_AVATAR,
 				'responseURL' => $_SERVER['REQUEST_URI'],
@@ -469,6 +469,11 @@ HTML;
 	// Remove CSRF query parameter from request URL
 	function remove_csrf_query_parameter($url, $viajsToo = false){
 		return rtrim(preg_replace('/CSRF_TOKEN=[^&]+(&|$)/','',$url),'?&');
+	}
+
+	// Removes excess tabs from HTML
+	function remove_indentation($HTML){
+		return preg_replace('/(\n|\r|\r\n)\t+/', '', $HTML);
 	}
 
 	// Display a 404 page
