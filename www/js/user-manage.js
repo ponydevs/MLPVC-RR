@@ -75,7 +75,7 @@ DocReady.push(function UserManage(){
 					$.post(action+'/'+name, data, $.mkAjaxHandler(function(){
 						if (!this.status) return $.Dialog.fail(title,this.message);
 
-						if (action === 'banish') $.Dialog.info(title, '<p>What had to be done, has been done.</p><img src="/img/post-ban.png">');
+						if (action === 'banish') $.Dialog.info(title, '<p>What had to be done, has been done.</p><img src="/img/post-ban.svg">');
 						else $.Dialog.success(title, this.message, true);
 
 						$currRole.children('span').text(currRole = this.role);

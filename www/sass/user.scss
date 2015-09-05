@@ -125,7 +125,7 @@
 }
 
 #dialogContent > div {
-	&:last-child > img {
+	&:nth-last-child(2) > img {
 		display: block;
 		height: 200px;
 		margin: 10px auto 0;
@@ -134,5 +134,5 @@
 			display: none;
 		}
 	}
-	&:not(:last-child) > img { display: none }
+	&:not(:nth-last-child(2)) > img { display: none }
 }
