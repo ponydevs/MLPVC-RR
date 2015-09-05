@@ -488,12 +488,12 @@ DocReady.push(function Index(){
 
 		$.Dialog.close();
 
-		$('.highlight').removeClass('highlight');
-		if (location.hash.length <= 1) return;
 		handlehash(location.hash, e);
 	}
 	function handlehash(hash, e){
 		var $anchor = $(hash);
+
+		$('.highlight').removeClass('highlight');
 		if (!$anchor.length) return;
 
 		$anchor.addClass('highlight');
