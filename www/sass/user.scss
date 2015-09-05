@@ -125,14 +125,16 @@
 }
 
 #dialogContent > div {
-	&:nth-last-child(2) > img {
-		display: block;
-		height: 200px;
-		margin: 10px auto 0;
+	> img { display: none }
+	&:nth-last-child(2), &:last-child {
+		> img {
+			display: block;
+			height: 200px;
+			margin: 10px auto 0;
 
-		@media all and (max-width: $Breakpoint), all and (max-height: 620px) {
-			display: none;
+			@media all and (max-width: $Breakpoint), all and (max-height: 620px) {
+				display: none;
+			}
 		}
 	}
-	&:not(:nth-last-child(2)) > img { display: none }
 }

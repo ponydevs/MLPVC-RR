@@ -1,7 +1,6 @@
 (function ($, undefined) {
 	function $makeDiv(id){ return $.mk('div').attr('id', id) }
-	var $html = $('html'),
-		colors = {
+	var colors = {
 			fail: 'red',
 			success: 'green',
 			wait: 'blue',
@@ -24,10 +23,14 @@
 			confirm: 'Are you sure?',
 			info: 'No message provided.',
 		},
-		$w = $(window), $dialogOverlay, $dialogContent, $dialogHeader, $dialogBox, $dialogButtons;
+		$dialogOverlay = $('#dialogOverlay'),
+		$dialogContent = $('#dialogContent'),
+		$dialogHeader = $('#dialogHeader'),
+		$dialogBox = $('#dialogBox'),
+		$dialogButtons = $('#dialogButtons');
 	
 	$.Dialog = {
-		open: undefined,
+		open: $dialogContent.length,
 		fail: function(title,content,callback){
 			$.Dialog.display('fail',title,content,{
 				'Close': {
@@ -145,7 +148,7 @@
 					$dialogBox.append($dialogHeader).append($dialogContent);
 					$dialogOverlay.append($dialogBox).appendTo(document.body);
 
-					$html.addClass('dialog-open');
+					$body.addClass('dialog-open');
 				}
 				
 				$dialogHeader.attr('class',params.color+'-bg');
@@ -223,21 +226,22 @@
 				color: colors[type]
 			};
 
-			if (typeof $.Dialog.open == "undefined"){
+			if ($.Dialog.open)
+				run(true);
+			else {
 				$.Dialog.open = params;
 				run();
 			}
-			else run(!!$.Dialog.open);
 		},
 		close: function (callback) {
 			if (typeof $.Dialog.open === "undefined") return typeof callback == 'function' ? callback() : false;
 
-			$dialogOverlay.remove();
+			$('#dialogOverlay').remove();
 			$.Dialog.open = void(0);
 			$.Dialog._restoreFocus();
 			if (typeof callback == 'function') callback();
 
-			$html.removeClass('dialog-open');
+			$body.removeClass('dialog-open');
 		},
 		center: function(){
 			if (typeof $.Dialog.open === 'undefined') return;
