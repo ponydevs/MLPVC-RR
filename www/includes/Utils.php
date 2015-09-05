@@ -1570,7 +1570,7 @@ HTML;
 	 */
 	define('CURRENT',true);
 	function render_session_li($Session, $current = false){
-		$browserClass = preg_replace('/[^a-z]/','',strtolower($Session['browser_name']));
+		$browserClass = browser_name_to_class_name($Session['browser_name']);
 		$browserTitle = "{$Session['browser_name']} {$Session['browser_ver']}";
 		$platform = !empty($Session['platform']) ? "<span class=platform>on <strong>{$Session['platform']}</strong></span>" : '';
 		$firstuse = timetag($Session['created']);
@@ -1585,6 +1585,11 @@ HTML;
 	<span class=used>$lastuse</span>
 </li>
 HTML;
+	}
+
+	// Converts a browser name to it's equivalent class name
+	function browser_name_to_class_name($BrowserName){
+		return preg_replace('/[^a-z]/','',strtolower($BrowserName));
 	}
 
 	// Checks the image which allows a request to be finished

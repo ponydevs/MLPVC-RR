@@ -1318,6 +1318,14 @@
 				}
 				loadPage($settings);
 			break;
+			case "browser":
+				$browser = browser();
+
+				loadPage(array(
+					'title' => 'Your browser',
+					'do-css'
+				));
+			break;
 			case "404":
 			default:
 				do404();

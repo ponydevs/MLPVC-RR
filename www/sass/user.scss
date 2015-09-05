@@ -1,4 +1,5 @@
 @import "vars";
+@import "browser_icons";
 
 #content {
 	h1 .da {
@@ -92,13 +93,7 @@
 					margin: 0 5px 5px 0;
 					flex: 0 0 auto;
 
-					&.browser-chrome,
-					&.browser-microsoftedge,
-					&.browser-firefox,
-					&.browser-internetexplorer, &.browser-iemobile,
-					&.browser-opera, &.browser-operamini,
-					&.browser-safari,
-					&.browser-vivaldi {
+					@include if-browser-has-icon {
 						//noinspection CssOptimizeSimilarProperties
 						&:before {
 							content: "";
@@ -112,27 +107,8 @@
 							background-position: center;
 						}
 					}
-					&.browser-chrome:before {
-						background-image: url(../img/browser/chrome.png);
-					}
-					&.browser-microsoftedge:before {
-						background-image: url(../img/browser/edge.png);
-					}
-					&.browser-firefox:before {
-						background-image: url(../img/browser/firefox.png);
-					}
-					&.browser-internetexplorer:before, &.browser-iemobile:before {
-						background-image: url(../img/browser/ie.png);
-					}
-					&.browser-opera:before, &.browser-operamini:before {
-						background-image: url(../img/browser/opera.png);
-					}
-					&.browser-safari:before {
-						background-image: url(../img/browser/firefox.png);
-					}
-					&.browser-vivaldi:before {
-						background-image: url(../img/browser/vivaldi.png);
-					}
+
+					@include browser-backgrounds(true);
 
 					span { display: block }
 					.browser {

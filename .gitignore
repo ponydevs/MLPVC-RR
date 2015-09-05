@@ -5,3 +5,4 @@ mlpvc-rr-error.log
 node_modules
 www/img/cg/
 *.crdownload
+www/css/*.scss*

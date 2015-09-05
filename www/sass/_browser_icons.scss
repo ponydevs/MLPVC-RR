@@ -1,0 +1,40 @@
+
+
+@mixin browser-backgrounds($pseudo:false){
+	$before: '';
+	@if ($pseudo){
+		$before: ':before';
+	}
+	&.browser-chrome#{$before} {
+		background-image: url(../img/browser/chrome.png);
+	}
+	&.browser-microsoftedge#{$before} {
+		background-image: url(../img/browser/edge.png);
+	}
+	&.browser-firefox#{$before} {
+		background-image: url(../img/browser/firefox.png);
+	}
+	&.browser-internetexplorer#{$before}, &.browser-iemobile#{$before} {
+		background-image: url(../img/browser/ie.png);
+	}
+	&.browser-opera#{$before}, &.browser-operamini#{$before} {
+		background-image: url(../img/browser/opera.png);
+	}
+	&.browser-safari#{$before} {
+		background-image: url(../img/browser/firefox.png);
+	}
+	&.browser-vivaldi#{$before} {
+		background-image: url(../img/browser/vivaldi.png);
+	}
+}
+@mixin if-browser-has-icon {
+	&.browser-chrome,
+	&.browser-microsoftedge,
+	&.browser-firefox,
+	&.browser-internetexplorer, &.browser-iemobile,
+	&.browser-opera, &.browser-operamini,
+	&.browser-safari,
+	&.browser-vivaldi {
+		@content;
+	}
+}
