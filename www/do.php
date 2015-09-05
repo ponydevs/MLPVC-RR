@@ -15,7 +15,7 @@
 		'title' => 'Home',
 		'view' => 'index',
 		'css' => 'index',
-		'js' => array('jquery.fluidbox.min','index'),
+		'js' => array('imagesloaded.pkgd','jquery.fluidbox.min','index'),
 	);
 
 	if (isset($do)){

@@ -18,6 +18,7 @@
 		$header: $('header'),
 		$sbToggle: $('.sidebar-toggle'),
 		$main: $('#main'),
+		$content: $('#content'),
 		$sidebar: $('#sidebar'),
 		$footer: $('footer'),
 	});
@@ -129,7 +130,7 @@
 			me[el] = a[el];
 		});
 		me.pathString = me.pathname+me.search+me.hash;
-	}
+	};
 })(jQuery);
 
 DocReady.push(function Global(){
@@ -340,6 +341,8 @@ $(function(){
 						css.splice(pos, 1);
 					else $this.remove();
 				});
+
+				console.clear();
 
 				(function LoadCSS(item){
 					if (item >= css.length){

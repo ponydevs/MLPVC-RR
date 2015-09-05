@@ -505,26 +505,31 @@ DocReady.push(function Index(){
 	}
 	$w.on('hashchange', hlhash);
 	if (location.hash.length){
-		var $imgs = $('#content').find('img'),
-			total = $imgs.count, loaded = 0;
-		var $progress = $.mk('progress').attr('max', total);
-		$('#DialogContent').children('div:not([id])').last().append($progress);
+		var $imgs = $content.find('img'),
+			total = $imgs.length, loaded = 0;
+
 		if (total > 0){
 			$.Dialog.wait('Scroll post into view','Waiting for page to load');
-			$imgs.on('load error',function(){
-				switch(e.type){
-					case "load":
+			var $progress = $.mk('progress').attr({max:total,value:0}).css({display:'block',width:'100%',marginTop:'5px'});
+			$('#dialogContent').children('div:not([id])').last().addClass('align-center').append($progress);
+			$content.imagesLoaded()
+				.progress(function(_, img){
+					if (img.isLoaded){
 						loaded++;
 						$progress.attr('value', loaded);
-					break;
-					case "error":
+					}
+					else {
 						total--;
 						$progress.attr('max', total);
-					break;
-				}
-				if (total === loaded)
-					hlhash({type:'load'});
-			});
+					}
+					console.log(loaded, total, loaded/total*100);
+				})
+				.always(function(){
+					setTimeout(function(){
+						$.Dialog.close();
+						hlhash({type:'load'});
+					},1);
+				});
 		}
 		else hlhash();
 	}
