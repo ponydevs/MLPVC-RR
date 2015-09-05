@@ -59,7 +59,7 @@ DocReady.push(function UserManage(){
 			'   <p>Please provide a reason (5-255 chars.) for the '+action.replace(/ish$/,'')+' which will be added to the log entry and appear in the user\'s ban history.</p>' +
 			'   <input type="text" name="reason" placeholder="Enter a reason" required pattern="^.{5,255}$">' +
 			'</form>'+
-			(Action === 'Banish' ? '<img src="/img/ban-before.png" alt="Sad twilight" height=200>':''),
+			(Action === 'Banish' ? '<img src="/img/pre-ban.svg" alt="Sad twilight" height=200>':''),
 			action+'-form',
 			Action,
 			function(){
@@ -75,7 +75,7 @@ DocReady.push(function UserManage(){
 					$.post(action+'/'+name, data, $.mkAjaxHandler(function(){
 						if (!this.status) return $.Dialog.fail(title,this.message);
 
-						if (action === 'banish') $.Dialog.info(title, '<p>What had to be done, has been done.</p><img src="/img/ban-after.png">');
+						if (action === 'banish') $.Dialog.info(title, '<p>What had to be done, has been done.</p><img src="/img/post-ban.png">');
 						else $.Dialog.success(title, this.message, true);
 
 						$currRole.children('span').text(currRole = this.role);
