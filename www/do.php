@@ -10,14 +10,6 @@
 	if (isset($_GET['data'])) $data = $_GET['data'];
 	if (empty($data)) $data = '';
 
-	// Storing settings of homepage for easier use
-	$IndexSettings = array(
-		'title' => 'Home',
-		'view' => 'index',
-		'css' => 'index',
-		'js' => array('imagesloaded.pkgd','jquery.fluidbox.min','index'),
-	);
-
 	if (isset($do)){
 		switch ($do){
 			case GH_WEBHOOK_DO:
@@ -79,7 +71,7 @@
 					$err = $_GET['error'];
 					if (isset($_GET['error_description']))
 						$errdesc = $_GET['error_description'];
-					loadPage($IndexSettings);
+					loadHomePage();
 				}
 
 				da_get_token($_GET['code']);
@@ -289,10 +281,15 @@
 			// PAGES
 			case "index":
 				$CurrentEpisode = get_latest_episode();
-				if (empty($CurrentEpisode)) unset($CurrentEpisode);
-				else fix_path("/episode/S{$CurrentEpisode['season']}E{$CurrentEpisode['episode']}", 302);
-
-				loadPage($IndexSettings);
+				if (empty($CurrentEpisode)){
+					unset($CurrentEpisode);
+					loadPage(array('title' => 'Home'));
+				}
+				else {
+					$data = "S{$CurrentEpisode['season']}E{$CurrentEpisode['episode']}";
+					fix_path("/episode/$data", 302);
+					loadHomePage();
+				}
 			break;
 			case "episode":
 				if (RQMTHD === 'POST'){
@@ -517,17 +514,7 @@
 					}
 				}
 
-				$EpData = episode_id_parse($data);
-				if (empty($EpData)) redirect('/episodes');
-				$CurrentEpisode = get_real_episode($EpData['season'],$EpData['episode']);
-				if (empty($CurrentEpisode)) redirect('/episodes');
-
-				$Latest = is_episode_latest($CurrentEpisode);
-
-
-				list($Requests, $Reservations) = get_posts($CurrentEpisode['season'], $CurrentEpisode['episode']);
-
-				loadPage(array_merge($IndexSettings,array('title' => format_episode_title($CurrentEpisode))));
+				loadHomePage();
 			break;
 			case "episodes":
 				$Episodes = get_episodes();

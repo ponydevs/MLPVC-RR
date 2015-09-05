@@ -1943,3 +1943,24 @@ ORDER BY `count` DESC
 	function get_footer(){
 		return "Running <strong><a href='".GITHUB_URL."' title='Visit the GitHub repository'>MLPVC-RR</a>@<a href='".GITHUB_URL."/commit/".LATEST_COMMIT_ID."' title='See exactly what was changed and why'>".LATEST_COMMIT_ID."</a></strong> created ".timetag(LATEST_COMMIT_TIME)." | <a href='".GITHUB_URL."/issues'>Report an issue</a>";
 	}
+
+	// Loads the home page
+	function loadHomePage(){
+		global $data, $CurrentEpisode, $Requests, $Reservations, $Latest;
+
+		$EpData = episode_id_parse($data);
+		if (empty($EpData))
+			$CurrentEpisode = get_latest_episode();
+		else $CurrentEpisode = get_real_episode($EpData['season'],$EpData['episode']);
+		if (!empty($CurrentEpisode)){
+			$Latest = empty($EpData) ? true : is_episode_latest($CurrentEpisode);
+			list($Requests, $Reservations) = get_posts($CurrentEpisode['season'], $CurrentEpisode['episode']);
+		}
+
+		loadPage(array(
+			'title' => format_episode_title($CurrentEpisode),
+			'view' => 'index',
+			'css' => 'index',
+			'js' => array('imagesloaded.pkgd','jquery.fluidbox.min','index'),
+		));
+	}
