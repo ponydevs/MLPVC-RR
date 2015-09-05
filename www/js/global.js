@@ -133,12 +133,14 @@
 	};
 })(jQuery);
 
-DocReady.push(function Global(){
+function DocumentIsReady(){
+	$document.triggerHandler('paginate-refresh');
+
 	// Sign in button handler
 	var OAUTH_URL = window.OAUTH_URL,
 		consent = localStorage.getItem('cookie_consent');
 
-	$('#signin').on('click',function(){
+	$('#signin').off('click').on('click',function(){
 		var $this = $(this),
 			opener = function(sure){
 				if (!sure) return;
@@ -155,7 +157,7 @@ DocReady.push(function Global(){
 	});
 
 	// Sign out button handler
-	$('#signout').on('click',function(){
+	$('#signout').off('click').on('click',function(){
 		var title = 'Sign out';
 		$.Dialog.confirm(title,'Are you sure you want to sign out?',function(sure){
 			if (!sure) return;
@@ -176,7 +178,37 @@ DocReady.push(function Global(){
 		});
 	});
 
-	// Countdown
+	var l = window.DocReady.length;
+	if (l) for (var i = 0; i<l; i++)
+		window.DocReady[i].call(window);
+}
+function OpenSidebarByDefault(){
+	return window.matchMedia('all and (min-width: 1200px)').matches;
+}
+var DocReadyOnce = false;
+$(function(){
+	if (DocReadyOnce) return;
+	DocReadyOnce = true;
+
+	// Sidebar toggle handler
+	var $body = $(document.body),
+		xhr = false;
+	$sbToggle.off('click').on('click',function(e){
+		e.preventDefault();
+
+		if (xhr !== false) return;
+		$sbToggle.trigger('sb-'+($body.hasClass('sidebar-open')?'close':'open'));
+	}).on('sb-open sb-close',function(e){
+		var close = e.type.substring(3) === 'close';
+		$body[close ? 'removeClass' : 'addClass']('sidebar-open');
+		localStorage[close ? 'setItem' : 'removeItem']('sidebar-closed', 'true');
+	});
+	var openSidebar = localStorage.getItem('sidebar-closed') !== 'true';
+	if (!OpenSidebarByDefault()) openSidebar = !openSidebar;
+	if (openSidebar)
+		$body.addClass('sidebar-open');
+
+	// Upcoming Episode Countdown
 	var $cd, cdtimer,
 		months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 	window.setCD = function(){
@@ -228,39 +260,6 @@ DocReady.push(function Global(){
 		else text = createTimeStr(now, airs);
 		$cd.text(text);
 	}
-});
-
-function DocumentIsReady(){
-	$document.triggerHandler('paginate-refresh');
-	if (window.DocReady.length < 1) return;
-	for (var i = 0, l = window.DocReady.length; i<l; i++)
-		window.DocReady[i].call(window);
-}
-function OpenSidebarByDefault(){
-	return window.matchMedia('all and (min-width: 1200px)').matches;
-}
-var DocReadyOnce = false;
-$(function(){
-	if (DocReadyOnce) return;
-	DocReadyOnce = true;
-
-	// Sidebar toggle handler
-	var $body = $(document.body),
-		xhr = false;
-	$sbToggle.off('click').on('click',function(e){
-		e.preventDefault();
-
-		if (xhr !== false) return;
-		$sbToggle.trigger('sb-'+($body.hasClass('sidebar-open')?'close':'open'));
-	}).on('sb-open sb-close',function(e){
-		var close = e.type.substring(3) === 'close';
-		$body[close ? 'removeClass' : 'addClass']('sidebar-open');
-		localStorage[close ? 'setItem' : 'removeItem']('sidebar-closed', 'true');
-	});
-	var openSidebar = localStorage.getItem('sidebar-closed') !== 'true';
-	if (!OpenSidebarByDefault()) openSidebar = !openSidebar;
-	if (openSidebar)
-		$body.addClass('sidebar-open');
 
 	// AJAX page loader
 	var REWRITE_REGEX = window.REWRITE_REGEX;
