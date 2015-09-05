@@ -1936,5 +1936,5 @@ ORDER BY `count` DESC
 
 	// Returns text of website footer
 	function get_footer(){
-		return "Running <strong><a href='".GITHUB_URL."' title='Visit the GitHub repository'>MLPVC-RR</a>@<a href='".GITHUB_URL."/commit/".LATEST_COMMIT_ID."' title='See exactly what was changed and why'>".LATEST_COMMIT_ID."</a></strong> <em>(".(IS_LATEST_COMMIT?'latest':'outdated').")</em> created ".timetag(LATEST_COMMIT_TIME)." | <a href='".GITHUB_URL."/issues'>Report an issue</a>";
+		return "Running <strong><a href='".GITHUB_URL."' title='Visit the GitHub repository'>MLPVC-RR</a>@<a href='".GITHUB_URL."/commit/".LATEST_COMMIT_ID."' title='See exactly what was changed and why'>".LATEST_COMMIT_ID."</a></strong> created ".timetag(LATEST_COMMIT_TIME)." | <a href='".GITHUB_URL."/issues'>Report an issue</a>";
 	}

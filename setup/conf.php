@@ -23,9 +23,8 @@
 	 */
 	$git = 'git';
 	define('LATEST_COMMIT_ID',rtrim(shell_exec("$git rev-parse --short=4 HEAD")));
-	define('IS_LATEST_COMMIT',strpos(shell_exec("$git log -1 --oneline"), LATEST_COMMIT_ID) === 0);
 	define('LATEST_COMMIT_TIME',date('c',strtotime(shell_exec("$git log -1 --date=short --pretty=format:%ci"))));
 
 	// GitHub webhooks-related \\
 	define('GH_WEBHOOK_DO', '');
-	define('GH_WEBHOOK_Secret', '');
+	define('GH_WEBHOOK_SECRET', '');
