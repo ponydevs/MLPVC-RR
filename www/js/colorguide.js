@@ -77,7 +77,9 @@ DocReady.push(function Colorguide(){
 
 	$w.on('unload',function(){
 		$('.qtip').each(function(){
-		  $(this).data('qtip').destroy();
+			var $this = $(this);
+			$this.data('qtip').destroy();
+			$this.remove();
 		});
 	});
 });
