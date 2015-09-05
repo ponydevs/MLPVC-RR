@@ -271,8 +271,10 @@ $(function(){
 		if (link.hostname !== location.hostname || !REWRITE_REGEX.test(link.pathname))
 			return true;
 
-		e.preventDefault();
+		if (link.pathname === location.pathname && link.search === location.search)
+			return true;
 
+		e.preventDefault();
 		HandleNav(this.href);
 	}
 	$document.off('click','a[href]',LinkClick).on('click','a[href]',LinkClick);
@@ -280,9 +282,9 @@ $(function(){
 	$w.off('popstate').on('popstate',function(e){
 		var state = e.originalEvent.state;
 
-		if (!state['via-js'])
+		if (state !== null && !state['via-js'])
 			return $w.trigger('nav-popstate', [state]);
-		HandleNav(location.href, state);
+		HandleNav(location.href);
 	});
 
 	function HandleNav(url, callback){
@@ -316,22 +318,25 @@ $(function(){
 				var doreload = false,
 					ParsedLocation = new URL(location.href),
 					reload = ParsedLocation.pathString === url;
-				$body.children('script[src], script[data-src]').each(function(){
-					var $this = $(this),
-						src = $this.attr('src') || $this.attr('data-src'),
+
+				$body.children('script[src], script[data-src]').each(function(i,el){
+					var $this = $(this);
+					if (!reload){
+						$this.remove();
+						return true;
+					}
+
+					var src = $this.attr('src') || $this.attr('data-src'),
 						pos = js.indexOf(src);
 
-					if (!reload && pos !== -1)
+					if (pos !== -1)
 						js.splice(pos, 1);
-					else {
-						if (src.indexOf('global') !== -1){
-							doreload = true;
-							return false;
-						}
-						else $this.remove();
-					}
+					else if (src.indexOf('global') !== -1)
+						return !(doreload = true);
 				});
-				if (doreload) return location.href = url;
+				if (doreload !== false)
+					return location.href = url;
+
 				$head.children('link[href], style[href]').each(function(){
 					var $this = $(this),
 						href = $this.attr('href'),
