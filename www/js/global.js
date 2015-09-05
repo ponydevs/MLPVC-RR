@@ -120,6 +120,16 @@
 			$helper.remove();
 		}, 1);
 	};
+
+	window.URL = function(url){
+		var a = document.createElement('a'),
+			me = this;
+		a.href = url;
+		$.each(['hash','host','hostname','href','origin','pathname','port','protocol','search'],function(_,el){
+			me[el] = a[el];
+		});
+		me.pathString = me.pathname+me.search+me.hash;
+	}
 })(jQuery);
 
 DocReady.push(function Global(){
@@ -271,7 +281,7 @@ $(function(){
 
 		if (!state['via-js'])
 			return $w.trigger('nav-popstate', [state]);
-		HandleNav(location.pathname, state);
+		HandleNav(location.href, state);
 	});
 
 	function HandleNav(url, callback){
@@ -288,7 +298,7 @@ $(function(){
 			success: $.mkAjaxHandler(function(){
 				if (!this.status) $.Dialog.fail(title, this.message);
 
-				url = this.responseURL;
+				url = new URL(this.responseURL+(new URL(url).hash)).pathString;
 				$w.triggerHandler('unload');
 				if (!OpenSidebarByDefault())
 					$sbToggle.trigger('sb-close');
@@ -303,7 +313,8 @@ $(function(){
 
 				$main.empty();
 				var doreload = false,
-					reload = location.pathname === url;
+					ParsedLocation = new URL(location.href),
+					reload = ParsedLocation.pathString === url;
 				$body.children('script[src], script[data-src]').each(function(){
 					var $this = $(this),
 						src = $this.attr('src') || $this.attr('data-src'),
@@ -319,7 +330,7 @@ $(function(){
 						else $this.remove();
 					}
 				});
-				if (doreload) return window.location.pathname = url;
+				if (doreload) return location.href = url;
 				$head.children('link[href], style[href]').each(function(){
 					var $this = $(this),
 						href = $this.attr('href'),
@@ -342,7 +353,7 @@ $(function(){
 						$headerNav.append($sidebar.find('nav').children().children().clone());
 						$title.text(pagetitle);
 
-						history[location.pathname === url?'replaceState':'pushState']({'via-js':true},'',url);
+						history[ParsedLocation.pathString === url?'replaceState':'pushState']({'via-js':true},'',url);
 
 						window.DocReady = [];
 

@@ -483,7 +483,10 @@ DocReady.push(function Index(){
 	$('.post-form').each($.fn.formBind);
 
 	function hlhash(e){
-		e.preventDefault();
+		if (typeof e === 'object' && typeof e.preventDefault === 'function')
+			e.preventDefault();
+
+		$.Dialog.close();
 
 		$('.highlight').removeClass('highlight');
 		if (location.hash.length <= 1) return;
@@ -502,7 +505,27 @@ DocReady.push(function Index(){
 	}
 	$w.on('hashchange', hlhash);
 	if (location.hash.length){
-		$.Dialog.wait('Scroll post into view','Waiting for page to load');
-		$w.on('load', hlhash);
+		var $imgs = $('#content').find('img'),
+			total = $imgs.count, loaded = 0;
+		var $progress = $.mk('progress').attr('max', total);
+		$('#DialogContent').children('div:not([id])').last().append($progress);
+		if (total > 0){
+			$.Dialog.wait('Scroll post into view','Waiting for page to load');
+			$imgs.on('load error',function(){
+				switch(e.type){
+					case "load":
+						loaded++;
+						$progress.attr('value', loaded);
+					break;
+					case "error":
+						total--;
+						$progress.attr('max', total);
+					break;
+				}
+				if (total === loaded)
+					hlhash({type:'load'});
+			});
+		}
+		else hlhash();
 	}
 });
