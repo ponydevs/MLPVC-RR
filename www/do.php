@@ -13,7 +13,7 @@
 	if (isset($do)){
 		switch ($do){
 			case GH_WEBHOOK_DO:
-				if (empty(GH_WEBHOOK_DO)) do404();
+				if (empty(GH_WEBHOOK_DO)) redirect('/', AND_DIE);
 
 				if (!empty($_SERVER['HTTP_USER_AGENT']) && strpos($_SERVER['HTTP_USER_AGENT'], 'GitHub-Hookshot/') === 0){
 					if (empty($_SERVER['HTTP_X_GITHUB_EVENT']) || empty($_SERVER['HTTP_X_HUB_SIGNATURE']))
@@ -536,9 +536,7 @@
 				if (RQMTHD === "POST"){
 					if (!PERM('inspector')) respond();
 					$_match = array();
-					if (isset($_POST['page']) && is_numeric($_POST['page']))
-						$Page = intval($_POST['page'], 10);
-					else if (preg_match('/^details\/(\d+)/', $data, $_match)){
+					if (preg_match('/^details\/(\d+)/', $data, $_match)){
 						$EntryID = intval($_match[1], 10);
 
 						$MainEntry = $Database->where('entryid', $EntryID)->getOne('log');
@@ -551,35 +549,30 @@
 						respond(format_log_details($MainEntry['reftype'],$Details));
 					}
 				}
-				else {
-					if (!PERM('inspector')) $MSG = "You do not have permission to view the log entries";
-					else if (is_numeric($data))
-						$Page = intval($data, 10);
-				}
+
+				if (!PERM('inspector')) do404();
+				if (is_numeric($data))
+					$Page = intval($data, 10);
 
 				$title = 'Logs';
 
-				if (empty($MSG)){
-					$ItemsPerPage = 20;
-					$EntryCount = $Database->count('log');
-					list($Page,$MaxPages) = calc_page($EntryCount);
+				$ItemsPerPage = 20;
+				$EntryCount = $Database->count('log');
+				list($Page,$MaxPages) = calc_page($EntryCount);
 
-					fix_path("/logs/$Page");
-					$title = "Page $Page - $title";
+				fix_path("/logs/$Page");
+				$title = "Page $Page - $title";
 
-					$LogItems = $Database->orderBy('timestamp')->get('log',array($ItemsPerPage*($Page-1), $ItemsPerPage));
+				$LogItems = $Database->orderBy('timestamp')->get('log',array($ItemsPerPage*($Page-1), $ItemsPerPage));
 
-					if (isset($_GET['js'])){
-						respond(array(
-							'output' => log_tbody_render($LogItems),
-							'update' => '#logs tbody',
-							'page' => $Page,
-							'maxpage' => $MaxPages,
-							'title' => $title,
-						));
-					}
-				}
-				else statusCodeHeader(403);
+				if (isset($_GET['js']))
+					respond(array(
+						'output' => log_tbody_render($LogItems),
+						'update' => '#logs tbody',
+						'page' => $Page,
+						'maxpage' => $MaxPages,
+						'title' => $title,
+					));
 
 				loadPage(array(
 					'title' => $title,
