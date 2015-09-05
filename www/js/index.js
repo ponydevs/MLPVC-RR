@@ -17,6 +17,7 @@ DocReady.push(function Index(){
 			if (!data.status) $.Dialog.fail(title, data.message);
 
 			var $form = $.mk('form').attr('id','vidlinks').append(
+				$.mk('p').addClass('align-center').text('Enter vido links below, leave any input blank to remove that video from the episode page.'),
 				$.mk('input').attr({name:'yt',placeholder:'YouTube'}),
 				$.mk('input').attr({name:'dm',placeholder:'Dailymotion'})
 			);

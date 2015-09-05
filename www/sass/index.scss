@@ -1,4 +1,5 @@
 @import "vars";
+//noinspection CssUnknownTarget
 @import "../css/jquery.fluidbox";
 
 /* Mobile-only Styles */
@@ -307,10 +308,11 @@
 
 #vidlinks input {
 	width: 350px !important;
-	padding-left: #{4px + 16px + 4px};
-	background-size: 16px;
-	background: no-repeat 4px 50%;
+	$height: 4px + 16px + 4px;
+	height: $height + 2px; // + border
+	padding-left: $height;
+	background: url(../img/video_providers.svg) no-repeat;
 
-	&[name=yt] { background-image: url(../img/yt.png) }
-	&[name=dm] { background-image: url(../img/dm.png) }
+	&[name=dm] { background-position: 4px 4px }
+	&[name=yt] { background-position: 4px -20px }
 }
