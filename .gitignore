@@ -6,3 +6,5 @@ node_modules
 www/img/cg/
 *.crdownload
 www/css/*.scss*
+www/google*.html
+www/mywot*.html
