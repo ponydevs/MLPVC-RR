@@ -1658,7 +1658,7 @@ HTML;
 	// Render episode voting HTML
 	function get_episode_voting($Episode){
 		if (!$Episode['aired'])
-			return "<p>Voting will start ".timetag($Episode['willair']).", after the episode had aired.</p><p>When the countdown is over, the like/dislike buttons will appear automatically.</p>";
+			return "<p>Voting will start ".timetag($Episode['willair']).", after the episode had aired.</p>";
 		global $Database, $signedIn;
 		$HTML = '';
 
