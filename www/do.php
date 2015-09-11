@@ -27,8 +27,6 @@
 						$output = array();
 						exec("$git reset HEAD --hard",$output);
 						exec("$git pull",$output);
-						$output[] = "~~~~ Re-compiling SASS & minifying JS ~~~~~";
-						exec("gulp compile",$output);
 						echo implode("\n", $output);
 					break;
 					case 'ping':

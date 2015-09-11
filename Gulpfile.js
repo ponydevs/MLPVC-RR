@@ -110,11 +110,7 @@ gulp.task('js', function(){
 	    .pipe(gulp.dest('www/js'));
 });
 
-gulp.task('compile', ['sass', 'js'], function(){
-
-});
-
-gulp.task('default', ['compile'], function(){
+gulp.task('default', ['sass', 'js'], function(){
 	gulp.watch(['www/js/*.js', '!www/js/*.min.js'], {debounceDelay: 2000}, ['js']);
 	Dashie.log("I got my eyes on you, JavaScript files!");
 	gulp.watch('www/sass/*.scss', {debounceDelay: 2000}, ['sass']);

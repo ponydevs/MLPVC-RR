@@ -8,20 +8,3 @@ www/img/cg/
 www/css/*.scss*
 www/google*.html
 www/mywot*.html
-
-# Don't push compiled assets
-www/css/*.map
-www/css/*.min.css
-www/js/*.map
-www/js/*.min.js
-
-# Exclude pre-minified JS
-!www/js/jquery-2.1.4.min.js
-!www/js/Sortable.min.js
-!www/js/imagesloaded.pkgd.min.js
-!www/js/jquery.fluidbox.min.js
-!www/js/jquery.qtip.min.js
-
-# Exclude pre-minified CSS
-!www/css/typicons.min.css
-!www/css/jquery.qtip.min.css
