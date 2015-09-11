@@ -360,7 +360,7 @@ HTML;
 	function loadPage($settings){
 		// Page <title>
 		if (isset($settings['title']))
-			$GLOBALS['title'] = (isset($settings['title'])?$settings['title'].' - ':'').SITE_TITLE;
+			$GLOBALS['title'] = $settings['title'];
 
 		// SE crawlign disable
 		if (in_array('no-robots',$settings))
