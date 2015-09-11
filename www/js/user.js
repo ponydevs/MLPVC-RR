@@ -32,11 +32,18 @@ DocReady.push(function User(){
 			$.Dialog.wait(title,'Signing out from '+browser);
 
 			$.post('/user/sessiondel/'+SessionID, $.mkAjaxHandler(function(){
-				if (this.status){
+				if (!this.status) return $.Dialog.fail(title,this.message);
+
+				if ($li.siblings().length !== 0){
 					$li.remove();
 					$.Dialog.close();
 				}
-				else $.Dialog.fail(title,this.message);
+				else {
+					$.Dialog.success(title, 'Session removed successfully');
+					HandleNav.reload(function(){
+						$.Dialog.close();
+					},2000);
+				}
 			}));
 		});
 	});
@@ -51,8 +58,8 @@ DocReady.push(function User(){
 			$.post('/signout?everywhere',$.mkAjaxHandler(function(){
 				if (this.status){
 					$.Dialog.success(title,this.message);
-					setTimeout(function(){
-						window.location.reload();
+					HandleNav.reload(function(){
+						$.Dialog.close();
 					},1000);
 				}
 				else $.Dialog.fail(title,this.message);
@@ -69,8 +76,8 @@ DocReady.push(function User(){
 			$.post('/signout?unlink', $.mkAjaxHandler(function(){
 				if (this.status){
 					$.Dialog.success(title,this.message);
-					setTimeout(function(){
-						window.location.reload();
+					HandleNav.reload(function(){
+						$.Dialog.close();
 					},1000);
 				}
 				else $.Dialog.fail(title,this.message);

@@ -416,6 +416,13 @@ $(function(){
 		});
 	}
 	window.HandleNav = function(){ HandleNav.apply(window, arguments) };
+	HandleNav.reload = function(callback, delay){
+		var f = (typeof delay === 'number' && delay > 0)
+				? function(){ setTimeout(callback, delay) }
+				: callback;
+		HandleNav(location.pathname, f);
+	};
+	window.HandleNav.reload = function(){ HandleNav.reload.apply(window, arguments) };
 
 	DocumentIsReady();
 });
