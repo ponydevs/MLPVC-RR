@@ -1525,7 +1525,7 @@ HTML;
 			$Body .= <<<HTML
 		<tr data-epid="{$Title['id']}">
 			<td class='season' rowspan='2'>{$Title['season']}</td>
-			<td class='episode' rowspan='2'><span>{$Title['episode']}</span></td>
+			<td class='episode' rowspan='2'>{$Title['episode']}</td>
 			<td class='title'>$star<a href="$href">{$Title['title']}</a>$adminControls</td>
 		</tr>
 		<tr><td class='airs'>$airs</td></tr>

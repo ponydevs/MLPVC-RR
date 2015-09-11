@@ -19,6 +19,9 @@
 			border: 2px solid;
 			padding: 3px;
 			margin-bottom: 10px;
+
+			&:nth-child(odd) { border-bottom: 0 }
+			&:nth-child(even) { border-top: 0 }
 		}
 		td {
 			padding: 5px;
@@ -27,15 +30,7 @@
 		.season, .episode {
 			text-align: center;
 			font-size: 1.7em;
-		}
-		.episode {
-			padding-right: 0;
-
-			> span {
-				border-right: 2px solid;
-				padding-right: 10px;
-				display: block;
-			}
+			border-bottom: 2px solid;
 		}
 		.title, .airs { text-align: center }
 		.title {
