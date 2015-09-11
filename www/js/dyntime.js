@@ -74,12 +74,13 @@
 				});
 			}
 			
-			var timestr = createTimeStr(new Date,timestamp),
+			var Now = new Date(),
+				timestr = createTimeStr(Now,timestamp),
 				$elapsedHolder = $this.parent().children('.dynt-el'),
 				updateHandler = $this.data('dyntime-beforeupdate');
 
 			if (typeof updateHandler === 'function'){
-				var result = updateHandler(diff);
+				var result = updateHandler(timeDifference(Now,timestamp));
 				if (result === false) return;
 			}
 
