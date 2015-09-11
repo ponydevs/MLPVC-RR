@@ -236,13 +236,14 @@ $(function(){
 	window.setCD();
 	function pad(n){return n<10?'0'+n:n}
 	function cdupdate(){
-		if ($cd.length > 0){
+		var cdExists = $cd.parent().length > 0;
+		if (cdExists){
 			var now = new Date(),
 				airs = new Date($cd.attr('datetime')),
 				diff = getTimeDiff(now, airs);
 		}
-		if (!$cd.length || diff.past){
-			if ($cd.length)
+		if (!cdExists || diff.past){
+			if (cdExists)
 				$cd.parents('li').remove();
 			clearInterval(cdtimer);
 			return window.setCD();
@@ -260,6 +261,9 @@ $(function(){
 		else text = createTimeStr(now, airs);
 		$cd.text(text);
 	}
+	$w.on('unload',function(){
+		$cd = {length:0};
+	});
 
 	// AJAX page loader
 	var REWRITE_REGEX = window.REWRITE_REGEX;
@@ -319,7 +323,7 @@ $(function(){
 					ParsedLocation = new URL(location.href),
 					reload = ParsedLocation.pathString === url;
 
-				$body.children('script[src], script[data-src]').each(function(i,el){
+				$body.children('script[src], script[data-src]').each(function(){
 					var $this = $(this);
 					if (reload){
 						$this.remove();
@@ -354,10 +358,11 @@ $(function(){
 
 				(function LoadCSS(item){
 					if (item >= css.length){
-						$main.addClass('pls-wait').html(content);
-						$sidebar.html(sidebar);
-						$footer.html(footer);
+						$main.addClass('pls-wait').empty().append(content);
+						$sidebar.empty().append(sidebar);
+						$footer.empty().append(footer);
 						window.updateTimesF();
+						window.setCD();
 						var $headerNav = $header.find('nav').children();
 						$headerNav.children().first().children('img').attr('src', avatar);
 						$headerNav.children(':not(:first-child)').remove();
