@@ -206,9 +206,7 @@ $(function(){
 		$body[close ? 'removeClass' : 'addClass']('sidebar-open');
 		localStorage[close ? 'setItem' : 'removeItem']('sidebar-closed', 'true');
 	});
-	var openSidebar = localStorage.getItem('sidebar-closed') !== 'true';
-	if (!OpenSidebarByDefault()) openSidebar = !openSidebar;
-	if (openSidebar)
+	if (localStorage.getItem('sidebar-closed') !== 'true' && OpenSidebarByDefault())
 		$body.addClass('sidebar-open');
 
 	// Upcoming Episode Countdown
