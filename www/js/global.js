@@ -9,20 +9,23 @@
 		return a.href;
 	};
 
-	// Globalie zcoomon elements
-	$.extend(window, {
-		$w: $(window),
-		$document: $(document),
-		$body: $(document.body),
-		$head: $(document.head),
-		$header: $('header'),
-		$sbToggle: $('.sidebar-toggle'),
-		$main: $('#main'),
-		$content: $('#content'),
-		$sidebar: $('#sidebar'),
-		$footer: $('footer'),
-	});
-	window.$title = $head.children('title');
+	// Globalize common elements
+	window.CommonElements = function(){
+		$.extend(window, {
+			$w: $(window),
+			$document: $(document),
+			$body: $(document.body),
+			$head: $(document.head),
+			$header: $('header'),
+			$sbToggle: $('.sidebar-toggle'),
+			$main: $('#main'),
+			$content: $('#content'),
+			$sidebar: $('#sidebar'),
+			$footer: $('footer'),
+		});
+		window.$title = $head.children('title');
+	};
+	window.CommonElements();
 
 	// Create AJAX response handling function
 	$w.on('ajaxerror',function(){
@@ -358,9 +361,9 @@ $(function(){
 
 				(function LoadCSS(item){
 					if (item >= css.length){
-						$main.addClass('pls-wait').empty().append(content);
-						$sidebar.empty().append(sidebar);
-						$footer.empty().append(footer);
+						$main.addClass('pls-wait').html(content);
+						$sidebar.html(sidebar);
+						$footer.html(footer);
 						window.updateTimesF();
 						window.setCD();
 						var $headerNav = $header.find('nav').children();
@@ -369,6 +372,7 @@ $(function(){
 						$headerNav.append($sidebar.find('nav').children().children().clone());
 						$title.text(pagetitle);
 
+						window.CommonElements();
 						history[ParsedLocation.pathString === url?'replaceState':'pushState']({'via-js':true},'',url);
 
 						window.DocReady = [];

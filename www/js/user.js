@@ -1,5 +1,8 @@
 DocReady.push(function User(){
-	var $signoutBtn = $('#signout');
+	var $signoutBtn = $('#signout'),
+		$name = $content.children('h1'),
+		name = $name.text().trim(),
+		sameUser = name === $sidebar.children('.welcome').find('.un').text().trim();
 	$('.session-list').find('button.remove').on('click',function(e){
 		e.preventDefault();
 
@@ -23,7 +26,7 @@ DocReady.push(function User(){
 		if (typeof SessionID === 'undefined' || isNaN(SessionID) || !isFinite(SessionID))
 			return $.Dialog.fail(title,'Could not locate Session ID, please reload the page and try again.');
 
-		$.Dialog.confirm(title,'You\'ll be logged out form <em>'+browser+'</em>'+platform+'.<br>Continue?',function(sure){
+		$.Dialog.confirm(title,(sameUser?'You':name)+' will be logged out form <em>'+browser+'</em>'+platform+'.<br>Continue?',function(sure){
 			if (!sure) return;
 
 			$.Dialog.wait(title,'Signing out from '+browser);
