@@ -259,7 +259,7 @@ $(function(){
 				text += diff.day+' day'+(diff.day!==1?'s':'')+' & ';
 			if (diff.hour > 0)
 				text += diff.hour+':';
-			text += +pad(diff.minute)+':'+pad(diff.second);
+			text += pad(diff.minute)+':'+pad(diff.second);
 		}
 		else text = createTimeStr(now, airs);
 		$cd.text(text);
