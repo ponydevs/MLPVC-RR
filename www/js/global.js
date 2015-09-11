@@ -236,7 +236,7 @@ $(function(){
 	window.setCD();
 	function pad(n){return n<10?'0'+n:n}
 	function cdupdate(){
-		var cdExists = $cd.parent().length > 0;
+		var cdExists = typeof $cd.parent === "function" && $cd.parent().length > 0;
 		if (cdExists){
 			var now = new Date(),
 				airs = new Date($cd.attr('datetime')),
