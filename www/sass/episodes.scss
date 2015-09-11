@@ -16,7 +16,7 @@
 	}
 	tbody {
 		tr {
-			border: 2px solid;
+			border: 2px solid black;
 			padding: 3px;
 			margin-bottom: 10px;
 
@@ -30,7 +30,7 @@
 		.season, .episode {
 			text-align: center;
 			font-size: 1.7em;
-			border-bottom: 2px solid;
+			border-bottom: 2px solid black;
 		}
 		.title, .airs { text-align: center }
 		.title {
