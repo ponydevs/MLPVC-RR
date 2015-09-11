@@ -269,7 +269,8 @@ $(function(){
 	});
 
 	// AJAX page loader
-	var REWRITE_REGEX = window.REWRITE_REGEX;
+	var REWRITE_REGEX = window.REWRITE_REGEX,
+		SITE_TITLE = window.SITE_TITLE;
 
 	function LinkClick(e){
 		if (e.which > 2) return true;
@@ -370,7 +371,7 @@ $(function(){
 						$headerNav.children().first().children('img').attr('src', avatar);
 						$headerNav.children(':not(:first-child)').remove();
 						$headerNav.append($sidebar.find('nav').children().children().clone());
-						$title.text(pagetitle);
+						$title.text((pagetitle?pagetitle+' - ':'')+SITE_TITLE);
 
 						window.CommonElements();
 						history[ParsedLocation.pathString === url?'replaceState':'pushState']({'via-js':true},'',url);

@@ -8,6 +8,7 @@
 	define('RQMTHD',$_SERVER['REQUEST_METHOD']);
 	define('REWRITE_REGEX','~^/(?:([\w\.\-]+|-?\d+)(?:/((?:[\w\-]+|-?\d+)(?:/(?:[\w\-]+|-?\d+))?))?/?)?$~');
 	define('GITHUB_URL','https://github.com/ponydevs/MLPVC-RR');
+	define('SITE_TITLE', 'Vector Club Requests & Reservations');
 
 	// Imports \\
 	require 'includes/MysqliDbWrapper.php';
