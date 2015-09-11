@@ -12,7 +12,7 @@ process.stdout.write = console.write = function(str){
 	stdoutw.call(process.stdout, out);
 };
 
-var _sep = '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~';
+var _sep = '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~';
 console.writeLine('Gulp process awoken. It still appears to be tired.');
 var stuff = [
 	'gulp',
