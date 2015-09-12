@@ -167,23 +167,25 @@
 				if (!empty($Thing['lock']))
 					respond('This post has been approved and cannot be edited or removed.'.(PERM('inspector') && !PERM('developer')?' If a change is necessary please ask the developer to do it for you.':''));
 
-				$update = array('reserved_by' => null);
-				if (!PERM('member')){
-					if ($type === 'request' && $deleteing){
-						if (!PERM('inspector') && (!$signedIn || $Thing['requested_by'] !== $currentUser['id']))
+				if ($deleteing && $type === 'request'){
+					if (!PERM('inspector')){
+						if (!$signedIn || $Thing['requested_by'] !== $currentUser['id'])
 							respond();
 
-						if (!PERM('inspector') && !empty($Thing['reserved_by']))
+						if (!empty($Thing['reserved_by']))
 							respond('You cannot delete a request that has been reserved');
-
-						if (!$Database->where('id', $Thing['id'])->delete('requests'))
-							respond(ERR_DB_FAIL);
-
-						respond(true);
 					}
-					else respond();
+
+					if (!$Database->where('id', $Thing['id'])->delete('requests'))
+						respond(ERR_DB_FAIL);
+
+					respond(true);
 				}
-				else if (!empty($Thing['reserved_by'])){
+				else if (!PERM('member')) respond();
+
+				$update = array('reserved_by' => null);
+
+				if (!empty($Thing['reserved_by'])){
 					$usersMatch = $Thing['reserved_by'] === $currentUser['id'];
 					if ($noaction){
 						if ($usersMatch)
