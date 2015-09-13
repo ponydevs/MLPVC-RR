@@ -1506,12 +1506,11 @@ HTML;
 			$Title = format_episode_title($ep, AS_ARRAY);
 			$href = $PathStart.$Title['id'];
 			$adminControls = '';
-			if (PERM('inspector')) $adminControls = <<<HTML
-<span class='admincontrols'>
-	<button class="edit-episode typcn typcn-spanner blue" title="Edit episode"></button>
-	<button class="delete-episode typcn typcn-times red" title="Delete episode"></button>
-</span>
-HTML;
+			if (PERM('inspector'))
+				$adminControls = "<span class='admincontrols'>" .
+					"<button class='edit-episode typcn typcn-spanner blue' title='Edit episode'></button> " .
+					"<button class='delete-episode typcn typcn-times red' title='Delete episode'></button>" .
+				"</span>";
 
 			$star = '';
 			if (!$displayed && $ep['displayed']){
