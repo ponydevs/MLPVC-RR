@@ -1,6 +1,5 @@
 $document.off('paginate-refresh').on('paginate-refresh',function(){
-	var $title = $head.children('title'),
-		basePath = location.pathname.replace(/(\d+)$/,''),
+	var basePath = location.pathname.replace(/(\d+)$/,''),
 		$pagination = $('.pagination'),
 		pageNumber = parseInt($pagination.first().children('li').children('strong').text(), 10),
 		title = 'Navigation';
@@ -38,7 +37,7 @@ $document.off('paginate-refresh').on('paginate-refresh',function(){
 			});
 
 			// Preserve static page title component at the end
-			$title.text($title.text().replace(/^.*( - [^-]+)$/,this.title+'$1'));
+			document.title = document.title.replace(/^.*( - [^-]+)$/,this.title+'$1');
 
 			if (state.page !== newPageNumber && !isNaN(newPageNumber))
 				history.pushState({paginate:true, page:newPageNumber},'',basePath+newPageNumber+(window.location.search.length > 1 ? location.search : ''));

@@ -23,7 +23,6 @@
 			$sidebar: $('#sidebar'),
 			$footer: $('footer'),
 		});
-		window.$title = $head.children('title');
 	};
 	window.CommonElements();
 
@@ -369,7 +368,7 @@ $(function(){
 						$headerNav.children().first().children('img').attr('src', avatar);
 						$headerNav.children(':not(:first-child)').remove();
 						$headerNav.append($sidebar.find('nav').children().children().clone());
-						$title.text((pagetitle?pagetitle+' - ':'')+SITE_TITLE);
+						document.title = (pagetitle?pagetitle+' - ':'')+SITE_TITLE;
 
 						window.CommonElements();
 						history[ParsedLocation.pathString === url?'replaceState':'pushState']({'via-js':true},'',url);
