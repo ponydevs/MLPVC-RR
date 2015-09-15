@@ -1198,7 +1198,7 @@ HTML;
 					<button class="check-img red typcn typcn-arrow-repeat">Check image</button>
 				</label>
 				<div class="img-preview">
-					<div class="notice fail">Please click the <strong>Check image</strong> button after providing an URL to get a preview & verify if the link is correct.<br>Supported providers: DeviantArt, Sta.sh, Imgur, Derpibooru, Puush</div>
+					<div class="notice fail">Please click the <strong>Check image</strong> button after providing an URL to get a preview & verify if the link is correct.<br>You can use a link from any of the following providers: <a href="http://deviantart.com/" target="_blank">DeviantArt</a>, <a href="http://sta.sh/" target="_blank">Sta.sh</a>, <a href="http://imgur.com/" target="_blank">Imgur</a>, <a href="http://derpibooru.org/" target="_blank">Derpibooru</a>, <a href="http://puush.me/" target="_blank">Puush</a></div>
 				</div>
 
 HTML;
