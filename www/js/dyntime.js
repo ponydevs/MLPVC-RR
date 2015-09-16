@@ -30,7 +30,7 @@
 		day: function(date){
 			var lastDigit = date % 10,
 				postfix;
-			if (lastDigit == 0 || lastDigit > 3 || date == 11 || date == 12) postfix = 'th';
+			if (lastDigit == 0 || lastDigit > 3 || (date >= 11 && date <= 13)) postfix = 'th';
 			else if (lastDigit == 1) postfix = 'st';
 			else if (lastDigit == 2) postfix = 'nd';
 			else if (lastDigit == 3) postfix = 'rd';
