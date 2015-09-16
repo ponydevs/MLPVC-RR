@@ -40,9 +40,6 @@
 		month: function(m){ return months[parseInt(m)] },
 		year: function(y){ return y },
 	};
-	var timeparts = function(unit, num){
-		return num+' '+unit+(num>1?'s':'');
-	};
 	var update = function(){
 		$('time').filter(':not(.nodt)').each(function(){
 			var $this = $(this),
@@ -142,7 +139,7 @@
 		'hour':   3600,
 		'minute': 60,
 		'second': 1,
-	}, order = ['year', 'month', 'week', 'day', 'hour', 'minute', 'second'], i = 0;
+	}, order = ['year', 'month', 'week', 'day', 'hour', 'minute', 'second'];
 	window.one = (function(one){return one})(one);
 
 	window.createTimeStr = function(){ return createTimeStr.apply(this, arguments) };
