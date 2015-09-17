@@ -231,7 +231,7 @@ $(function(){
 			$calendar.children('.top').text(months[d.getMonth()]);
 			$calendar.children('.bottom').text(d.getDate());
 		});
-		window.updateTimesF();
+		window.updateTimes();
 	};
 	window.setCD();
 	function pad(n){return n<10?'0'+n:n}
@@ -362,7 +362,7 @@ $(function(){
 						$main.addClass('pls-wait').html(content);
 						$sidebar.html(sidebar);
 						$footer.html(footer);
-						window.updateTimesF();
+						window.updateTimes();
 						window.setCD();
 						var $headerNav = $header.find('nav').children();
 						$headerNav.children().first().children('img').attr('src', avatar);

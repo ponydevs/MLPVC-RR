@@ -174,7 +174,7 @@
 			$event = isset($LOG_DESCRIPTION[$item['reftype']]) ? $LOG_DESCRIPTION[$item['reftype']] : $item['reftype'];
 			if ($item['reftype'] !== 'logclear')
 				$event = '<span class="expand-section typcn typcn-plus">'.$event.'</span>';
-			$ts = timetag($item['timestamp']);
+			$ts = timetag($item['timestamp'], EXTENDED);
 
 			if (!empty($inituser)) $ip = "$inituser<br>$ip";
 
@@ -182,7 +182,7 @@
 		<tr>
 
 			<td class='entryid'>{$item['entryid']}</td>
-			<td class='timestamp'>$ts<br><span class="dynt-el"></span></td>
+			<td class='timestamp'>$ts</td>
 			<td class='ip'>$ip</td>
 			<td class='reftype'>$event</td>
 		</tr>
@@ -351,7 +351,7 @@ HTML;
 			? "<time datetime='$datetime' title='$full'>$text</time>"
 			:"<time datetime='$datetime'>$full</time>".(
 				$allowDyntime !== NO_DYNTIME
-				?"(<span class='dynt-el'>$full</span>)"
+				?"<span class='dynt-el'>$text</span>"
 				:''
 			);
 	}
@@ -374,7 +374,7 @@ HTML;
 			$customCSS = array_merge($customCSS, $DEFAULT_CSS);
 
 		# JavaScript
-		$DEFAULT_JS = array('global','dyntime','dialog');
+		$DEFAULT_JS = array('global','moment','dyntime','dialog');
 		$customJS = array();
 		// Only add defaults when needed
 		if (array_search('no-default-js',$settings) === false)

@@ -474,7 +474,7 @@ DocReady.push(function Index(){
 					$newChilds = $(this.render).filter('section').children();
 				$section.empty().append($newChilds).rebindHandlers();
 				$section.find('.post-form').data('type',type).formBind();
-				window.updateTimesF();
+				window.updateTimes();
 				if (typeof dis === 'object' && typeof dis.callback == 'function') dis.callback();
 				else $.Dialog.close();
 			}

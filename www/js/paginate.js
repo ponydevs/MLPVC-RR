@@ -59,7 +59,7 @@ $document.off('paginate-refresh').on('paginate-refresh',function(){
 
 			var event = jQuery.Event('page-switch');
 			$(this.update).html(this.output).trigger(event);
-			window.updateTimesF();
+			window.updateTimes();
 			pageNumber = newPageNumber;
 
 			if (!event.isDefaultPrevented()) $.Dialog.close();

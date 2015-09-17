@@ -50,7 +50,7 @@ DocReady.push(function Logs(){
 				$ip = $tr.children('.ip').clone();
 
 			$ip.children('.self').html(function(){
-				return ' ('+$(this).text()+')';
+				return $(this).text();
 			});
 			$ip = $ip.html().split('<br>');
 

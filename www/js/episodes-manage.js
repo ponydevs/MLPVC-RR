@@ -45,7 +45,7 @@ DocReady.push(function EpisodeManage(){
 		else $uc.remove();
 
 		window.setCD();
-		window.updateTimesF();
+		window.updateTimes();
 	}
 
 	var EP_TITLE_REGEX = window.EP_TITLE_REGEX,

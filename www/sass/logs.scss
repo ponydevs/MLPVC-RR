@@ -12,13 +12,11 @@
 		text-align: center;
 		vertical-align: middle;
 
-		time, time + br { display: none }
+		time { display: none !important }
 		.dynt-el {
 			text-decoration: underline;
 			color: #059;
 			cursor: pointer;
-
-			&:before, &:after { content: "" !important }
 		}
 	}
 }
@@ -43,6 +41,7 @@
 		&.timestamp {
 			width: 35%;
 
+			time, .dynt-el { display: block }
 			.dynt-el {
 				font-style: italic;
 				font-size: .8em;
