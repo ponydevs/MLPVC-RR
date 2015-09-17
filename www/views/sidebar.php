@@ -27,10 +27,4 @@
 	</section>
 <?php
 	}
-	$Upcoming = $Database->where('airs > NOW()')->get('episodes');
-	if (!empty($Upcoming)){ ?>
-	<section id="upcoming">
-		<h2>Upcoming episodes</h2>
-		<ul><?=get_upcoming_eps($Upcoming)?></ul>
-	</section>
-<?  } ?>
+	echo get_upcoming_eps();

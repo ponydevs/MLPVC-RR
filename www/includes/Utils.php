@@ -4,6 +4,9 @@
 	define('PRINTABLE_ASCII_REGEX','^[ -~]+$');
 	define('INVERSE_PRINTABLE_ASCII_REGEX','[^ -~]');
 
+	// Constant to disable returning of wrapper element with markup generators
+	define('NOWRAP', false);
+
 	/**
 	 * Sends replies to AJAX requests in a universal form
 	 * $s respresents the request status, a truthy value
@@ -1711,13 +1714,15 @@ HTML;
 	}
 
 	// Render upcoming episode HTML \\
-	function get_upcoming_eps($Upcoming = null){
+	function get_upcoming_eps($Upcoming = null, $wrap = true){
 		global $TIME_DATA;
 		if (empty($Upcoming)){
 			global $Database;
 			$Upcoming = $Database->where('airs > NOW()')->orderBy('airs', 'ASC')->get('episodes');
 		}
-		$HTML = '';
+		if (empty($Upcoming)) return;
+		
+		$HTML = $wrap ? '<section id="upcoming"><h2>Upcoming episodes</h2><ul>' : '';
 		foreach ($Upcoming as $i => $ep){
 			$airtime = strtotime($ep['airs']);
 			$airs = date('c', $airtime);
@@ -1742,7 +1747,7 @@ HTML;
 			$HTML .= "<li><div class='calendar'><span class='top'>$month</span><span class='bottom'>$day</span></div>".
 				"<div class='meta'><span class='title'>{$ep['title']}</span>$time</div></li>";
 		}
-		return $HTML;
+		return $HTML.($wrap?'</ul></section>':'');
 	}
 
 	/**

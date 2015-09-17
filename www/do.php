@@ -332,7 +332,7 @@
 					));
 					respond('Episode deleted successfuly',1,array(
 						'tbody' => get_eptable_tbody(),
-						'upcoming' => get_upcoming_eps(),
+						'upcoming' => get_upcoming_eps(null, NOWRAP),
 					));
 				}
 				else if (preg_match('/^((?:request|reservation)s)\/'.EPISODE_ID_PATTERN.'$/', $data, $_match)){
@@ -510,7 +510,7 @@
 					));
 					respond('Episode saved successfuly',1,array(
 						'tbody' => get_eptable_tbody(),
-						'upcoming' => get_upcoming_eps(),
+						'upcoming' => get_upcoming_eps(null, NOWRAP),
 					));
 				}
 			}
