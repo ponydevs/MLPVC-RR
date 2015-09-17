@@ -736,7 +736,7 @@
 
 			if (RQMTHD === 'POST' || (isset($_GET['s']) && $data === "gettags")){
 				if (!PERM('inspector')) respond();
-				detectCSRF();
+				IF (RQMTHD === "POST") detectCSRF();
 
 				$_match = array();
 				if ($data === 'gettags'){
