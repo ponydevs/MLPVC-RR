@@ -41,7 +41,7 @@
 				<li><a href="http://fav.me/d530knp">Safari</a> by <a href="https://parallaxmlp.deviantart.com/">ParallaxMLP</a></li>
 				<li><a href="https://github.com/alrra/browser-logos/blob/1ec2af8325ffb8b3f2c2834da84870341a376efd/vivaldi/vivaldi_128x128.png">Vivaldi</a> from <a href="https://github.com/alrra/browser-logos">alrra/browser-logos</a></li>
 			</ul>
-			<p><strong>Coding and design</strong> by <a href="http://djdavid98.tk">DJDavid98</a></p>
+			<p><strong>Coding and design</strong> by <a href="http://djdavid98.hu">DJDavid98</a></p>
 			<p class="ramnode"><a href="https://clientarea.ramnode.com/aff.php?aff=2648"><img src="https://www.ramnode.com/images/banners/affbannerlightnewlogoblack.png" alt="high performance ssd vps""></a></p>
 		</div>
 	</section>
