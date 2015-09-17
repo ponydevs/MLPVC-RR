@@ -1715,7 +1715,7 @@ HTML;
 		global $TIME_DATA;
 		if (empty($Upcoming)){
 			global $Database;
-			$Upcoming = $Database->where('airs > NOW()')->get('episodes');
+			$Upcoming = $Database->where('airs > NOW()')->orderBy('airs', 'ASC')->get('episodes');
 		}
 		$HTML = '';
 		foreach ($Upcoming as $i => $ep){
