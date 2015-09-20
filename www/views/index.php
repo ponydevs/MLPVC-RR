@@ -1,21 +1,16 @@
-<?php if ($do === 'da-auth' && isset($err)){ ?>
-<div class="notice fail align-center">
-	<p>There was a(n) <strong><?=$err?></strong> error while trying to authenticate with DeviantArt<?=isset($OAUTH_RESPONSE[$err])?"; {$OAUTH_RESPONSE[$err]}":'.'?></p>
-<?php   if (!empty($errdesc)){ ?>
-	<p>Additional details: <?=$errdesc?></p>
-<?php   } ?>
-</div>
-<script>try{history.replaceState('',{},'/')}catch(e){}</script>
-<?php } ?>
-<div id="content">
 <?php
-	if(!empty($CurrentEpisode)){ ?>
+	if ($do === 'da-auth' && isset($err)){
+		echo Notice('fail',"There was a(n) <strong>$err</strong> error while trying to authenticate with DeviantArt".(isset($OAUTH_RESPONSE[$err])?"; {$OAUTH_RESPONSE[$err]}":'.').(!empty($errdesc)?"Additional details: $errdesc":''),true) ?>
+<script>try{history.replaceState('',{},'/')}catch(e){}</script>
+<?  } ?>
+<div id="content">
+<?  if(!empty($CurrentEpisode)){ ?>
 	<h1><?=format_episode_title($CurrentEpisode)?></h1>
 	<p>Vector Requests & Reservations</p>
-<?php if (PERM('inspector')){ ?>
+<?  if (PERM('inspector')){ ?>
 	<p class="align-center"><em>Episode added by <?=profile_link(get_user($CurrentEpisode['posted_by'])).' '.timetag($CurrentEpisode['posted'])?></em></p>
-<?php } ?>
-<?php echo render_ep_video($CurrentEpisode); ?>
+<?  }
+	echo render_ep_video($CurrentEpisode); ?>
 	<section class="about-res">
 		<h2>What Vector Reservations Are</h2>
 		<p>People usually get excited whenever a new episode comes out, and start making vectors of any pose/object/etc. that they found hilarious/interesting enough. It often results in various people unnecessarily doing the very same thing. Vector Reservations can help organize our efforts by listing who's working on what and to reduce the number of duplicates.</p>
@@ -46,11 +41,7 @@
 	<h1>There's nothing here yet...</h1>
 	<p>...but there will be!</p>
 
-<?php   if (PERM('inspector')){ ?>
-	<div class="notice info">
-		<label>No episodes found</label>
-		<p>To make the site functional, you must add an episode to the database first. Head on over to the <a href="/episodes">Episodes</a> page and add one now!</p>
-	</div>
-<?php   }
+<?php   if (PERM('inspector'))
+			echo Notice('info','No episodes found',"To make the site functional, you must add an episode to the database first. Head on over to the <a href='/episodes'>Episodes</a> page and add one now!");
 	} ?>
 </div>
