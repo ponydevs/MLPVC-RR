@@ -151,6 +151,7 @@ CREATE TABLE IF NOT EXISTS `sessions` (
   `platform` tinytext NOT NULL,
   `browser_name` tinytext,
   `browser_ver` tinytext,
+  `token` varchar(40) NOT NULL,
   `access` varchar(50) NOT NULL,
   `refresh` varchar(40) NOT NULL,
   `expires` timestamp NULL DEFAULT NULL,

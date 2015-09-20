@@ -15,7 +15,9 @@
 	$color = 'color';
 	if (Cookie::exists('access')){
 		$authKey = Cookie::get('access');
-		$currentUser = get_user($authKey,'access');
+
+		if (!empty($authKey))
+			$currentUser = get_user(sha1($authKey),'token');
 
 		if (!empty($currentUser)){
 			if ($currentUser['role'] !== 'ban'){

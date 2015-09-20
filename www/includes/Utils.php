@@ -718,6 +718,9 @@ HTML;
 			'expires' => date('c',time()+intval($json['expires_in']))
 		);
 
+		$cookie = openssl_random_pseudo_bytes(64);
+		$AuthData['token'] = sha1($cookie);
+
 		add_browser($AuthData);
 		if (empty($User)){
 			$MoreInfo = array('id' => $UserID, 'role' => 'user');
@@ -749,7 +752,7 @@ HTML;
 		if ($type === 'refresh_token') $Database->where('refresh', $code)->update('sessions',$AuthData);
 		else $Database->insert('sessions', array_merge($AuthData, array('user' => $UserID)));
 
-		Cookie::set('access',$AuthData['access'],ONE_YEAR);
+		Cookie::set('access', $cookie, ONE_YEAR);
 	}
 
 	/**
@@ -1013,8 +1016,8 @@ HTML;
 	function get_user($value, $coloumn = 'id', $dbcols = null){
 		global $Database;
 
-		if ($coloumn === "access"){
-			$Auth = $Database->where('access', $value)->getOne('sessions');
+		if ($coloumn === "token"){
+			$Auth = $Database->where('token', $value)->getOne('sessions');
 
 			if (empty($Auth)) return null;
 			$coloumn = 'id';
@@ -1972,4 +1975,31 @@ ORDER BY `count` DESC
 			'css' => 'index',
 			'js' => array('imagesloaded.pkgd','jquery.fluidbox.min','index'),
 		));
+	}
+
+	// Creates the markup for an HTML notice
+	$NOTICE_TYPES = array('info','success','fail','warn','caution');
+	function Notice($type, $title, $text = null, $center = false){
+		global $NOTICE_TYPES;
+		if (!in_array($type, $NOTICE_TYPES))
+			throw new Exception("Invalid notice type $type");
+
+		if (!is_string($text)){
+			if (is_bool($text))
+				$center = $text;
+			$text = $title;
+			unset($title);
+		}
+
+		$HTML = '';
+		if (!empty($title))
+			$HTML .= '<label>'.htmlspecialchars($title).'</label>';
+
+		$textRows = preg_split("/(\r\n|\n|\r){2}/", $text);
+		foreach ($textRows as $row)
+			$HTML .= '<p>'.trim($row).'</p>';
+
+		if ($center)
+			$type .= ' align-center';
+		return "<div class='notice $type'>$HTML</div>";
 	}
