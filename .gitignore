@@ -8,5 +8,3 @@ www/img/cg/
 www/css/*.scss*
 www/google*.html
 www/mywot*.html
-www/includes/MysqliDb/*
-!www/includes/MysqliDb/MysqliDb.php

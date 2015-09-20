@@ -1,6 +1,6 @@
 <?php
 
-	require_once "MysqliDb/MysqliDb.php";
+	require_once "MysqliDb.php";
 
 	class MysqliDbWrapper extends MysqliDb {
 		public function __construct($db, $host = DB_HOST, $user = DB_USER, $pass = DB_PASS){
