@@ -224,6 +224,7 @@ header {
 					border: 2px solid white;
 					border-radius: 100%;
 					overflow: hidden;
+					background-color: rgba(white, .6);
 
 					body.loading & {
 						cursor: wait;
@@ -341,13 +342,10 @@ header, #sidebar .mobile-nav {
 	background: $Background;
 	padding: 10px;
 	text-align: center;
-	transition: left .5s ease-in-out, box-shadow .5s ease-in-out;
+	transition: left .5s ease-in-out;
 	overflow: auto;
 
-	body.sidebar-open & {
-		left: 0;
-		box-shadow: 0 0 10px #{$Background};
-	}
+	body.sidebar-open & { left: 0 }
 
 	> section {
 		text-align: center;
