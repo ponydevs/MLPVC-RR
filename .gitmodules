@@ -1,0 +1,3 @@
+[submodule "www/includes/MysqliDb"]
+	path = www/includes/MysqliDb
+	url = https://github.com/joshcam/PHP-MySQLi-Database-Class
