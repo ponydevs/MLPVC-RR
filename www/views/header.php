@@ -32,4 +32,4 @@
 	</div>
 
 	<div id="main">
-<?=Notice('info', "<span class='typcn typcn-info-large'></span> Due to a security update ".timetag(strtotime(LATEST_COMMIT_TIME))." everyone has been logged out. No, this was <strong>not</strong> done because of an attack, just a general update to make using the website more secure. All you need to do is to log back in again and keep using the site as usual.", true)?>
+<?=Notice('info', "<span class='typcn typcn-info-large'></span> Due to a security update ".timetag(strtotime('2015-09-20T10:50:48+00:00'))." everyone has been logged out. No, this was <strong>not</strong> done because of an attack, just a general update to make using the website more secure. All you need to do is to log back in again and keep using the site as usual.", true)?>

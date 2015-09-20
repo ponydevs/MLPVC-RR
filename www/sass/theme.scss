@@ -635,9 +635,9 @@ footer {
 	> p {
 		margin: 0 !important;
 
-		&:not(:last-child) {
-			margin-bottom: 5px;
-		}
+		&:not(:last-child) { margin-bottom: 5px }
+
+		time { border-bottom: 1px dashed }
 	}
 }
 // Buttons
