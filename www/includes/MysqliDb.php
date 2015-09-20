@@ -335,6 +335,7 @@ class MysqliDb
         }
 
         $stmt->execute();
+        $this->count = $stmt->affected_rows;
         $this->_stmtError = $stmt->error;
         $this->_lastQuery = $this->replacePlaceHolders ($this->_query, $params);
         $res = $this->_dynamicBindResults($stmt);
@@ -713,7 +714,7 @@ class MysqliDb
     {
         $allowedDirection = Array ("ASC", "DESC");
         $orderbyDirection = strtoupper (trim ($orderbyDirection));
-        $orderByField = preg_replace ("/[^-a-z0-9\.\(\),_`]+/i",'', $orderByField);
+        $orderByField = preg_replace ("/[^-a-z0-9\.\(\),_`\*]+/i",'', $orderByField);
 
         // Add table prefix to orderByField if needed.
         //FIXME: We are adding prefix only if table is enclosed into `` to distinguish aliases
@@ -746,7 +747,7 @@ class MysqliDb
      */
     public function groupBy($groupByField)
     {
-        $groupByField = preg_replace ("/[^-a-z0-9\.\(\),_]+/i",'', $groupByField);
+        $groupByField = preg_replace ("/[^-a-z0-9\.\(\),_\*]+/i",'', $groupByField);
 
         $this->_groupBy[] = $groupByField;
         return $this;
@@ -1237,7 +1238,7 @@ class MysqliDb
      */
     public function __destruct()
     {
-        if (!$this->isSubQuery)
+        if ($this->isSubQuery)
             return;
         if ($this->_mysqli)
             $this->_mysqli->close();
