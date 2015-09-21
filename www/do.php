@@ -721,7 +721,7 @@
 
 			$SpriteRelPath = '/img/cg/';
 			$SpritePath = APPATH.substr($SpriteRelPath,1);
-			$ItemsPerPage = 5;
+			$ItemsPerPage = 6;
 
 			if (RQMTHD === 'POST' || (isset($_GET['s']) && $data === "gettags")){
 				if (!PERM('inspector')) respond();
