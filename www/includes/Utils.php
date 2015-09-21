@@ -602,7 +602,7 @@ HTML;
 		'invalid_scope' => 'The requested scope is invalid, unknown, or malformed.',
 		'server_error' => "There's an issue on DeviantArt's end. Try again later.",
 		'temporarily_unavailable' => "There's an issue on DeviantArt's end. Try again later.",
-		'user_banned' => 'You were banned on our website by a staff member',
+		'user_banned' => 'You were banned on our website by a staff member.',
 	);
 
 	// Redirection URI shortcut \\
@@ -705,7 +705,17 @@ HTML;
 		$userdata = da_request('user/whoami', null, $json['access_token']);
 
 		$User = $Database->where('id',$userdata['userid'])->getOne('users');
-		if ($User['role'] === 'ban') redirect("/da-auth?error=user_banned");
+		if ($User['role'] === 'ban'){
+			$_GET['error'] = 'user_banned';
+			$BanReason = $Database
+				->where('target', $User['id'])
+				->orderBy('entryid', 'ASC')
+				->getOne('log__banish');
+			if (!empty($BanReason))
+				$_GET['error_description'] = $BanReason['reason'];
+
+			return;
+		}
 
 		$UserID = strtolower($userdata['userid']);
 		$UserData = array(
@@ -753,6 +763,33 @@ HTML;
 		else $Database->insert('sessions', array_merge($AuthData, array('user' => $UserID)));
 
 		Cookie::set('access', $cookie, ONE_YEAR);
+	}
+
+	function da_handle_auth(){
+		global $err, $errdesc;
+
+		if (!isset($_GET['error']) && (empty($_GET['code']) || (empty($_GET['state']) || !preg_match(REWRITE_REGEX,$_GET['state']))))
+			$_GET['error'] = 'unauthorized_client';
+		if (isset($_GET['error'])){
+			$err = $_GET['error'];
+			if (isset($_GET['error_description']))
+				$errdesc = $_GET['error_description'];
+			loadHomePage();
+		}
+
+		da_get_token($_GET['code']);
+
+		if (isset($_GET['error'])){
+			$err = $_GET['error'];
+			if (isset($_GET['error_description']))
+				$errdesc = $_GET['error_description'];
+
+			if ($err === 'user_banned')
+				$errdesc .= "\n\nIf you'd like to appeal your ban, please <a href='http://mlp-vectorclub.deviantart.com/notes/'>send the group a note</a>.";
+			loadHomePage();
+		}
+
+		redirect($_GET['state']);
 	}
 
 	/**
@@ -1627,7 +1664,7 @@ HTML;
 		global $currentSet;
 
 		list($path, $label) = $item;
-		$current = (!$currentSet || $htmlOnly === HTML_ONLY) && !!preg_match("~^$path($|/)~", $_SERVER['REQUEST_URI']);
+		$current = (!$currentSet || $htmlOnly === HTML_ONLY) && preg_match("~^$path($|/)~", $_SERVER['REQUEST_URI']);
 		if ($current)
 			$currentSet = true;
 		$class = trim((!empty($item[2]) ? $item[2] : '').($current ? ' active' : ''));

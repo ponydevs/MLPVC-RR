@@ -64,18 +64,7 @@
 		case "da-auth":
 			if ($signedIn) header('Location: /');
 
-			if (!isset($_GET['error']) && (empty($_GET['code']) || (empty($_GET['state']) || !preg_match(REWRITE_REGEX,$_GET['state']))))
-				$_GET['error'] = 'unauthorized_client';
-			if (isset($_GET['error'])){
-				$err = $_GET['error'];
-				if (isset($_GET['error_description']))
-					$errdesc = $_GET['error_description'];
-				loadHomePage();
-			}
-
-			da_get_token($_GET['code']);
-
-			redirect($_GET['state']);
+			da_handle_auth();
 		break;
 		case "post":
 			if (RQMTHD !== 'POST') do404();
@@ -1228,7 +1217,7 @@
 			if (empty($_GET['q']) || !PERM('user')){
 				$EntryCount = $CGDb->count('ponies');
 				list($Page,$MaxPages) = calc_page($EntryCount);
-				$Ponies = $CGDb->orderBy('label', 'ASC')->get('ponies',array($ItemsPerPage*($Page-1), $ItemsPerPage));
+				$Ponies = $CGDb->orderBy('id', 'ASC')->get('ponies',array($ItemsPerPage*($Page-1), $ItemsPerPage));
 			}
 			else {
 				$tags = array_map('trim',explode(',',strtolower($_GET['q'])));

@@ -1,6 +1,6 @@
 <?php
 	if ($do === 'da-auth' && isset($err)){
-		echo Notice('fail',"There was a(n) <strong>$err</strong> error while trying to authenticate with DeviantArt".(isset($OAUTH_RESPONSE[$err])?"; {$OAUTH_RESPONSE[$err]}":'.').(!empty($errdesc)?"Additional details: $errdesc":''),true) ?>
+		echo Notice('fail',"There was a(n) <strong>$err</strong> error while trying to authenticate with DeviantArt".(isset($OAUTH_RESPONSE[$err])?"; {$OAUTH_RESPONSE[$err]}":'.').(!empty($errdesc)?"\n\nAdditional details: $errdesc":''),true) ?>
 <script>try{history.replaceState('',{},'/')}catch(e){}</script>
 <?  } ?>
 <div id="content">
