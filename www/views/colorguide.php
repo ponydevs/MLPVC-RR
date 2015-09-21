@@ -6,7 +6,7 @@
 		<label>Some features are unavailable</label>
 		<p>Because you seem to be using a mobile device, editing tags & colors may not work, as it requires you to right-click. If you want to do either of these, please do so from a computer.</p>
 	</div>
-<? } /* ?>
+<? } ?>
 	<div id='universal'>
 		<div>
 			<strong>Universal colors</strong>
@@ -16,12 +16,14 @@
 					<span class='cat'>Normal:</span>
 					<span style='background-color:#FFFFFF' title='Teeth Fill'>#FFFFFF</span>
 					<span style='background-color:#B0D8E7' title='Teeth Outline'>#B0D8E7</span>
-					<span style='background-color:#AD047A' title='Mouth Fill'>#AD047A</span>
-					<span style='background-color:#860059' title='Mouth Dark Fill'>#860059</span>
-					<span style='background-color:#FF6600' title='Tongue'>#FF6600</span>
-					<span style='background-color:#CB4607' title='Tongue Dark'>#CB4607</span>
+					<span style='background-color:#BD1C77' title='Mouth Fill'>#BD1C77</span>
+					<span style='background-color:#A41967' title='Darker Mouth Fill'>#A41967</span>
+					<span style='background-color:#841555' title='Darkest Mouth Fill'>#841555</span>
+					<span style='background-color:#F17031' title='Tongue'>#F17031</span>
+					<span style='background-color:#BE4406' title='Tongue Dark'>#BE4406</span>
 					<span style='background-color:#000000' title='Emotional Turmoil (up to 15% opacity)'>#000000</span>
 				</li>
+<? /*
 				<li>
 					<span class='cat'>Discorded (Partial):</span>
 					<span style='background-color:#CECECE' title='Teeth Outline'>#CECECE</span>
@@ -38,10 +40,10 @@
 					<span style='background-color:#ABAAA8' title='Tongue'>#ABAAA8</span>
 					<span style='background-color:#828180' title='Tongue Dark'>#828180</span>
 				</li>
+ */ ?>
 			</ul>
 		</div>
 	</div>
-*/ ?>
 	<p class='align-center links'>
 <? if (PERM('inspector')){ ?>
 		<button class='green typcn typcn-plus' id="new-appearance-btn">Add new appearance</button>
