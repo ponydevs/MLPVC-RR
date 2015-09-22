@@ -3,9 +3,7 @@ DocReady.push(function EpisodeManage(){
 		$eptableBody = $eptable.children('tbody');
 	Bind.call({init:true});
 
-	var today = new Date(),
-		saturday = new Date(today.getTime());
-	saturday.setDate(saturday.getDate() + 6 - saturday.getDay());
+	var saturday = moment().day("Saturday").toDate();
 	saturday.setUTCHours(15);
 	saturday.setUTCMinutes(30);
 	function pad(n){return n<10?'0'+n:n}
@@ -29,7 +27,7 @@ DocReady.push(function EpisodeManage(){
 		d['set'+(utc?'UTC':'')+'Minutes'](timeArr[1]);
 		return d;
 	}
-	Date.prototype.toAirDate = function(){ return pad(this.getFullYear())+'-'+pad(this.getMonth()+1)+'-'+pad(this.getDate()) };
+	Date.prototype.toAirDate = function(){ return this.getFullYear()+'-'+pad(this.getMonth()+1)+'-'+pad(this.getDate()) };
 	Date.prototype.toAirTime = function(){ return pad(this.getHours())+':'+pad(this.getMinutes()) };
 	var date = saturday.toAirDate(), time = saturday.toAirTime();
 
@@ -56,8 +54,8 @@ DocReady.push(function EpisodeManage(){
 	function EpisodeForm(id){
 		var $form = $.mk('form').attr('id', id).html(
 			'<div class=input-group>'+
-				'<input type="number" min="1 max="8" name="season" placeholder="Season #" required>'+
-				'<input type="number" min="1 max="26" name="episode" placeholder="Episode #" required>'+
+				'<input type="number" min="1" max="8" name="season" placeholder="Season #" required>'+
+				'<input type="number" min="1" max="26" name="episode" placeholder="Episode #" required>'+
 			'</div>\
 			<label><input type="text" maxlength="255" name="title" placeholder="Title" pattern="'+EP_TITLE_HTML_REGEX+'" autocomplete="off" required></label>\
 			<div class="notice info align-center">\
