@@ -4,7 +4,7 @@ SET time_zone = "+00:00";
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8mb4 */;
+/*!40101 SET NAMES utf8 */;
 
 DROP DATABASE `mlpvc-colorguide`;
 CREATE DATABASE `mlpvc-colorguide` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
@@ -71,11 +71,11 @@ INSERT INTO `colorgroups` (`groupid`, `ponyid`, `label`, `order`) VALUES
 (72, 5, 'Mane & Tail', 1),
 (73, 5, 'Iris', 2),
 (74, 5, 'Cutie Mark', 3),
-(75, 112, 'Body', 0),
-(76, 112, 'Spikes', 1),
-(77, 112, 'Iris', 3),
-(78, 112, 'Ears', 2),
-(79, 112, 'Mouth', 0),
+(75, 7, 'Body', 0),
+(76, 7, 'Spikes', 1),
+(77, 7, 'Iris', 3),
+(78, 7, 'Ears', 2),
+(79, 7, 'Mouth', 0),
 (80, 5, 'Magic', 0),
 (81, 100, 'Coat', 0),
 (82, 100, 'Mane & Tail', 0),
@@ -421,13 +421,13 @@ INSERT INTO `ponies` (`id`, `label`, `notes`, `added`) VALUES
 (4, 'Rainbow Dash', '', '2015-09-21 19:01:33'),
 (5, 'Rarity', '', '2015-09-21 19:18:24'),
 (6, 'Twilight Sparkle', 'Far legs use darker colors', '2015-08-24 19:04:32'),
+(7, 'Spike', '', '2015-09-21 19:43:59'),
 (100, 'Minuette', '', '2015-07-25 14:49:44'),
 (102, 'Derpy / Muffins', 'From S509 - Slice of Life', '2015-08-26 03:53:49'),
 (103, 'Lyra Heartstrings', 'From S5E09 - Slice of Life', '2015-08-26 04:08:33'),
 (104, 'Whoa Nelly', 'From S5E14 "Canterlot Boutique"', '2015-09-17 03:43:22'),
 (105, 'Fashion Plate', 'From S5E14 Canterlot Boutique', '2015-09-17 04:02:26'),
 (106, 'Sassy Saddles', 'From S5E14 Canterlot Boutique', '2015-09-17 04:22:20'),
-(112, 'Spike', '', '2015-09-21 19:43:59'),
 (113, 'Twinkleshine', '', '2015-09-21 20:25:31'),
 (114, 'Lemon Hearts', '', '2015-09-21 20:30:06'),
 (115, 'Granny Smith', '', '2015-09-21 20:37:57'),
