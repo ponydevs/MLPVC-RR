@@ -136,28 +136,12 @@ DocReady.push(function Index(){
 				else $.Dialog.fail(title,this.message);
 			}));
 		});
-		$li.children('button.delete').on('click',function(){
-			var $this = $(this),
-				title = 'Deleteing request';
-
-			$.Dialog.confirm(title, 'You are about to permanently delete this request.<br>Are you sure about this?', function(sure){
-				if (!sure) return;
-
-				$.post('/reserving/request/'+id+'?delete',$.mkAjaxHandler(function(){
-					if (this.status){
-						$.Dialog.close();
-						$this.closest('li').remove();
-					}
-					else $.Dialog.fail(title,this.message);
-				}));
-			});
-		});
 		$li.children('em').children('a').on('click',function(e){
 			e.preventDefault();
 			handlehash(this.hash);
 			history.replaceState({},'',this.href);
 		});
-		var $actions = $li.find('.reserver-actions').children();
+		var $actions = $li.find('.actions').children();
 		$actions.filter('.cancel').off('click').on('click',function(){
 			var $this = $(this),
 				title = 'Cancel reservation';
@@ -282,6 +266,28 @@ DocReady.push(function Index(){
 					else $.Dialog.close();
 				}));
 			});
+		});
+		$actions.filter('.delete').on('click',function(){
+			var $this = $(this),
+				title = 'Deleteing request';
+
+			$.Dialog.confirm(title, 'You are about to permanently delete this request.<br>Are you sure about this?', function(sure){
+				if (!sure) return;
+
+				$.post('/reserving/request/'+id+'?delete',$.mkAjaxHandler(function(){
+					if (this.status){
+						$.Dialog.close();
+						$this.closest('li').remove();
+					}
+					else $.Dialog.fail(title,this.message);
+				}));
+			});
+		});
+		$actions.filter('.edit').on('click',function(){
+			var $this = $(this),
+				title = 'Editing request';
+
+			$.Dialog.info(title, 'This feature is under construction');
 		});
 	}
 

@@ -13,15 +13,7 @@
 			<div class="notes">These colors apply to most characters in the show. Unless a different color is specified, use these.</div>
 			<ul class="colors static">
 				<li>
-					<span class='cat'>Normal:</span>
-					<span style='background-color:#FFFFFF' title='Teeth Fill'>#FFFFFF</span>
-					<span style='background-color:#B0D8E7' title='Teeth Outline'>#B0D8E7</span>
-					<span style='background-color:#BD1C77' title='Mouth Fill'>#BD1C77</span>
-					<span style='background-color:#A41967' title='Darker Mouth Fill'>#A41967</span>
-					<span style='background-color:#841555' title='Darkest Mouth Fill'>#841555</span>
-					<span style='background-color:#F17031' title='Tongue'>#F17031</span>
-					<span style='background-color:#BE4406' title='Tongue Dark'>#BE4406</span>
-					<span style='background-color:#000000' title='Emotional Turmoil (up to 15% opacity)'>#000000</span>
+					<span class='cat'>Normal: </span><span style='background-color:#FFFFFF' title='Teeth Fill'>#FFFFFF</span><span style='background-color:#B0D8E7' title='Teeth Outline'>#B0D8E7</span><span style='background-color:#BD1C77' title='Mouth Fill'>#BD1C77</span><span style='background-color:#A41967' title='Darker Mouth Fill'>#A41967</span><span style='background-color:#841555' title='Darkest Mouth Fill'>#841555</span><span style='background-color:#F17031' title='Tongue'>#F17031</span><span style='background-color:#BE4406' title='Tongue Dark'>#BE4406</span><span style='background-color:#000000' title='Emotional Turmoil (up to 15% opacity)'>#000000</span>
 				</li>
 <? /*
 				<li>

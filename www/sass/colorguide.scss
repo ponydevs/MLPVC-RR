@@ -260,6 +260,7 @@ ul.colors {
 		padding: 4px;
 		margin: 0 5px 5px 0;
 
+		> * { vertical-align: middle }
 		> span:not(.cat) {
 			display: inline-block;
 			$size: 16px;
@@ -267,7 +268,6 @@ ul.colors {
 			border: $border solid #000;
 			width: #{$size - $border*2};
 			height: #{$size - $border*2};
-			vertical-align: middle;
 			font-size: 0;
 			transform: scale(1);
 
@@ -280,6 +280,7 @@ ul.colors {
 				background: url(../img/transparency.svg);
 				background-size: 8px;
 			}
+			&:not(:last-child){ margin-right: 4px }
 		}
 	}
 }

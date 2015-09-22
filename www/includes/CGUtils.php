@@ -36,13 +36,13 @@
 		if (!empty($Colors))
 			foreach ($Colors as $i => $c){
 				$title = apos_encode($c['label']);
-				$styleTag = $color = '';
+				$color = '';
 				if (!empty($c['hex'])){
 					$color = $c['hex'];
-					$styleTag = " style='background-color:$color'";
+					$title .= "' style='background-color:$color";
 				}
-				//noinspection ALL
-				$HTML .= "<span id='c{$c['colorid']}'$styleTag title='$title'>$color</span> ";
+
+				$HTML .= "<span id='c{$c['colorid']}' title='$title'>$color</span>";
 			};
 
 		if ($wrap) $HTML .= "</li>";

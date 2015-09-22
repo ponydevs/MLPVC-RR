@@ -285,10 +285,13 @@ $StrongOutline: 3;
 				}
 			}
 		}
-		.reserver-actions {
+		.actions {
 			white-space: nowrap;
+			margin-top: 5px;
+
 			button {
 				display: inline-block;
+				font-size: 1.2em;
 
 				&:not(:last-child){
 					margin-right: 0;

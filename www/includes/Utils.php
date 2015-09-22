@@ -1138,6 +1138,8 @@ HTML;
 		global $signedIn, $currentUser;
 
 		$sameUser = $signedIn && $By['id'] === $currentUser['id'];
+		$CanEdit = empty($R['lock']) && PERM('inspector');
+		$Buttons = array();
 
 		if (is_array($R) && empty($R['reserved_by'])) $HTML = PERM('member') ? "<button class='reserve-request typcn typcn-user-add'>Reserve</button>" : '';
 		else {
@@ -1150,9 +1152,9 @@ HTML;
 			$HTML =  "<div class='reserver'>$dAlink</div>";
 
 			$finished = !empty($R['deviation_id']);
-			$Buttons = array();
+
 			if (!$finished && (($sameUser && PERM('member')) || PERM('inspector'))){
-				$Buttons[] = array('user-delete red cancel', 'Cancel');
+				$Buttons[] = array('user-delete red cancel', 'Cancel Reservation');
 				$Buttons[] = array('attachment green finish', ($sameUser ? "I'm" : 'Mark as').' finished');
 			}
 			if ($finished && PERM('inspector') && empty($R['lock'])){
@@ -1161,21 +1163,21 @@ HTML;
 			}
 		}
 
-		if (!empty($Buttons)){
-			$HTML .= "<div class='reserver-actions'>";
-			foreach ($Buttons as $b)
-				$HTML .= "<button class='typcn typcn-{$b[0]}'>{$b[1]}</button> ";
-			$HTML .= '</div>';
-		}
-		else if (empty($R['lock']) && $isRequest){
-			if (PERM('inspector') || $sameUser)
-				$HTML .= "<button class='typcn typcn-trash red delete'>Delete</button>";
-		}
+		if ($CanEdit)
+			array_splice($Buttons,0,0,array(array('pencil darkblue edit','Edit')));
+		if (empty($R['lock']) && empty($Buttons) && (PERM('inspector') || ($sameUser && empty($R['reserved_by']))))
+			$Buttons[] = array('trash red delete','Delete');
+
+		$HTML .= "<div class='actions'>";
+		foreach ($Buttons as $b)
+			$HTML .= "<button class='typcn typcn-{$b[0]}' title='{$b[1]}'></button> ";
+		$HTML .= '</div>';
 
 		return $HTML;
 	}
 
 	// List ltem generator function for request & reservation renderers \\
+	define('IS_REQUEST', true);
 	function get_r_li($R, $isRequest = false){
 		global $signedIn, $currentUser;
 
@@ -1328,7 +1330,7 @@ HTML;
 		else $Arranged['unfinished'] = $Arranged['finished'];
 		if (!empty($Requests) && is_array($Requests)){
 			foreach ($Requests as $R){
-				$HTML = !$returnArranged ? get_r_li($R,true) : $R;
+				$HTML = !$returnArranged ? get_r_li($R, IS_REQUEST) : $R;
 
 				if (!$returnArranged){
 					if (!empty($R['finished']))
