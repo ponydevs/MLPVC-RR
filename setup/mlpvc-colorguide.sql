@@ -4,7 +4,7 @@ SET time_zone = "+00:00";
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8 */;
+/*!40101 SET NAMES utf8mb4 */;
 
 DROP DATABASE `mlpvc-colorguide`;
 CREATE DATABASE `mlpvc-colorguide` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS `colorgroups` (
   `ponyid` int(11) NOT NULL,
   `label` varchar(255) NOT NULL,
   `order` tinyint(4) NOT NULL DEFAULT '0'
-) ENGINE=InnoDB AUTO_INCREMENT=97 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=108 DEFAULT CHARSET=utf8;
 
 INSERT INTO `colorgroups` (`groupid`, `ponyid`, `label`, `order`) VALUES
 (17, 6, 'Coat', 0),
@@ -54,7 +54,7 @@ INSERT INTO `colorgroups` (`groupid`, `ponyid`, `label`, `order`) VALUES
 (55, 1, 'Mane & Tail', 1),
 (56, 1, 'Iris', 2),
 (57, 1, 'Cutie Mark', 3),
-(58, 1, 'Hat', 0),
+(58, 1, 'Hat & Hairband', 0),
 (59, 3, 'Coat', 0),
 (60, 3, 'Mane & Tail', 1),
 (61, 3, 'Iris', 2),
@@ -92,7 +92,18 @@ INSERT INTO `colorgroups` (`groupid`, `ponyid`, `label`, `order`) VALUES
 (93, 115, 'Coat', 0),
 (94, 115, 'Mane & Tail', 1),
 (95, 115, 'Iris', 2),
-(96, 115, 'Cutie Mark', 3);
+(96, 115, 'Cutie Mark', 3),
+(97, 115, 'Wrap', 0),
+(98, 116, 'Coat', 0),
+(99, 116, 'Mane & Tail', 1),
+(100, 116, 'Iris', 2),
+(101, 116, 'Cutie Mark', 3),
+(102, 117, 'Coat', 0),
+(103, 117, 'Mane & Tail', 1),
+(104, 117, 'Iris (One highlight)', 2),
+(105, 117, 'Cutie Mark', 3),
+(106, 117, 'Earrings/Necklace', 5),
+(107, 117, 'Sweater', 4);
 
 CREATE TABLE IF NOT EXISTS `colors` (
   `colorid` int(11) NOT NULL,
@@ -100,7 +111,7 @@ CREATE TABLE IF NOT EXISTS `colors` (
   `label` tinytext NOT NULL,
   `hex` varchar(7) DEFAULT NULL,
   `order` tinyint(4) DEFAULT NULL
-) ENGINE=InnoDB AUTO_INCREMENT=345 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=394 DEFAULT CHARSET=utf8;
 
 INSERT INTO `colors` (`colorid`, `groupid`, `label`, `hex`, `order`) VALUES
 (55, 17, 'Outline', '#A46BBD', 0),
@@ -251,19 +262,19 @@ INSERT INTO `colors` (`colorid`, `groupid`, `label`, `hex`, `order`) VALUES
 (230, 67, 'Outline', '#6BABDA', 0),
 (231, 67, 'Fill', '#9BDBF5', 1),
 (233, 67, 'Shadow Fill', '#88C4E9', 2),
-(234, 68, 'Outline/Blue Fill', '#1B98D1', 0),
+(234, 68, 'Outline', '#1B98D1', 0),
 (235, 68, 'Red Fill', '#EC4141', 1),
 (236, 69, 'Gradient Top', '#580D36', 0),
 (238, 69, 'Gradient Bottom', '#BC1D75', 1),
 (239, 69, 'Highlight Top', '#D9539D', 2),
 (240, 69, 'Highlight Bottom', '#FCB6DF', 3),
-(241, 70, 'Cloud Outline/Blue Streak', '#1B98D1', 0),
-(242, 70, 'Red Streak', '#EC4141', 1),
+(241, 70, 'Cloud Outline', '#1B98D1', 0),
+(242, 70, 'Red Streak', '#EC4141', 2),
 (243, 68, 'Orange Fill', '#EF7135', 2),
 (244, 68, 'Yellow Fill', '#FAF5AB', 3),
 (245, 68, 'Green Fill', '#5FBB4E', 4),
-(246, 68, 'Purple Fill', '#632E86', 5),
-(247, 70, 'Yellow Streak', '#FDE85F', 2),
+(246, 68, 'Purple Fill', '#632E86', 6),
+(247, 70, 'Yellow Streak', '#FDE85F', 3),
 (248, 71, 'Outline', '#BDC1C2', 0),
 (249, 71, 'Fill', '#EAEEF0', 1),
 (251, 71, 'Shadow Fill', '#DFE4E3', 2),
@@ -281,16 +292,16 @@ INSERT INTO `colors` (`colorid`, `groupid`, `label`, `hex`, `order`) VALUES
 (264, 73, 'Eyeshadow', '#B8E1F0', 4),
 (265, 75, 'Purple Outline', '#985E9F', 0),
 (266, 75, 'Purple Fill', '#C290C6', 1),
-(267, 75, 'Green Outline', '#DCF188', 2),
-(268, 75, 'Green Fill', '#AFD95E', 3),
+(267, 75, 'Green Outline', '#96CE7D', 2),
+(268, 75, 'Green Fill', '#D5EBAD', 3),
 (269, 76, 'Outline', '#2E992E', 0),
 (270, 76, 'Fill', '#50C356', 1),
 (271, 77, 'Gradient Top', '#277915', 0),
 (273, 77, 'Gradient Bottom', '#5EBA4A', 1),
 (274, 77, 'Highlight Top', '#77D963', 2),
 (275, 77, 'Highlight Bottom', '#CAECC3', 3),
-(276, 78, 'Outline', '#D5EBAD', 0),
-(277, 78, 'Fill', '#96CE7D', 1),
+(276, 78, 'Outline', '#DCF188', 0),
+(277, 78, 'Fill', '#AFD95E', 1),
 (278, 75, 'Soles', '#AF72B6', 4),
 (279, 79, 'Teeth', '#94B5B3', 0),
 (280, 79, 'Tongue', '#F997C8', 1),
@@ -350,14 +361,58 @@ INSERT INTO `colors` (`colorid`, `groupid`, `label`, `hex`, `order`) VALUES
 (341, 96, 'Pie FIll 1', '#B68145', 3),
 (342, 96, 'Pie FIll 2', '#D29752', 4),
 (343, 96, 'Pie FIll 3', '#E4A95A', 5),
-(344, 96, 'Pie FIll 4', '#FBB963', 6);
+(344, 96, 'Pie FIll 4', '#FBB963', 6),
+(345, 97, 'Outline', '#F58950', 0),
+(346, 97, 'Fill', '#FABA63', 1),
+(347, 97, 'Apples', '#EB575A', 2),
+(348, 97, 'Stems', '#7CA42A', 3),
+(349, 97, 'Frill Outline', '#ADD9D5', 4),
+(350, 97, 'Frill Fill', '#FFFFFF', 5),
+(351, 98, 'Outline', '#3DBAC9', 0),
+(352, 98, 'Fill', '#8BD8DF', 1),
+(354, 98, 'Shadow Fill', '#6ECAD5', 2),
+(355, 99, 'Outline', '#A6E9F9', 0),
+(356, 99, 'Fill', '#FFFFFF', 1),
+(357, 100, 'Gradient Top', '#320141', 0),
+(359, 100, 'Gradient Bottom', '#F990D1', 1),
+(360, 100, 'Highlight Top', '#D53AB6', 2),
+(361, 100, 'Highlight Bottom', '#FDCAE9', 3),
+(362, 101, 'Air Wave', '#FCFF98', 0),
+(363, 101, 'Horseshoe', '#3797C7', 1),
+(364, 99, 'Blue Fill', '#D4F3FC', 2),
+(365, 101, 'Horseshoe Dots', '#FFFFFF', 2),
+(366, 102, 'Outline', '#D8971C', 0),
+(367, 102, 'Fill', '#F3E365', 1),
+(368, 102, 'Shadow Outline', '#C18719', 2),
+(369, 102, 'Shadow Fill', '#DACB5A', 3),
+(370, 103, 'Outline', '#AC240B', 0),
+(371, 103, 'Fill 1', '#FA8A24', 1),
+(372, 104, 'Gradient Top', '#B74729', 0),
+(374, 104, 'Gradient Bottom', '#F48F66', 1),
+(377, 105, 'Outline', '#AA4300', 0),
+(378, 105, 'Fill 1', '#E37B00', 1),
+(379, 103, 'Fill 2', '#DF5C0A', 2),
+(380, 105, 'Fill 2', '#FDBF36', 2),
+(381, 104, 'Eyeshadow', '#7FA2C3', 2),
+(382, 106, 'Outline', '#75C0C8', 0),
+(383, 106, 'Fill', '#DEF2F0', 1),
+(384, 107, 'Outline', '#552E66', 0),
+(385, 107, 'Fill 1', '#743E8A', 1),
+(386, 107, 'Fill 2', '#A775BE', 2),
+(387, 107, 'Shadow Outline', '#4A295A', 3),
+(388, 107, 'Shadow Fill 1', '#69377D', 4),
+(389, 107, 'Shadow Fill 2', '#9568AA', 5),
+(390, 58, 'Hairband', '#EC3F41', 2),
+(391, 68, 'Blue Fill', '#1B98D1', 5),
+(392, 70, 'Cloud Fill', '#FFFFFF', 1),
+(393, 70, 'Blue Streak', '#1B98D1', 4);
 
 CREATE TABLE IF NOT EXISTS `ponies` (
   `id` int(11) NOT NULL,
   `label` tinytext NOT NULL,
   `notes` tinytext NOT NULL,
   `added` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB AUTO_INCREMENT=116 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=118 DEFAULT CHARSET=utf8;
 
 INSERT INTO `ponies` (`id`, `label`, `notes`, `added`) VALUES
 (1, 'Applejack', '', '2015-09-21 18:46:54'),
@@ -375,7 +430,9 @@ INSERT INTO `ponies` (`id`, `label`, `notes`, `added`) VALUES
 (112, 'Spike', '', '2015-09-21 19:43:59'),
 (113, 'Twinkleshine', '', '2015-09-21 20:25:31'),
 (114, 'Lemon Hearts', '', '2015-09-21 20:30:06'),
-(115, 'Granny Smith', '', '2015-09-21 20:37:57');
+(115, 'Granny Smith', '', '2015-09-21 20:37:57'),
+(116, 'Fleetfoot', '', '2015-09-21 20:58:56'),
+(117, 'Stormy Flare', 'From S5E15', '2015-09-22 05:20:14');
 
 CREATE TABLE IF NOT EXISTS `tagged` (
   `tid` int(11) NOT NULL,
@@ -433,7 +490,13 @@ INSERT INTO `tagged` (`tid`, `ponyid`) VALUES
 (12, 114),
 (2, 115),
 (7, 115),
-(12, 115);
+(12, 115),
+(3, 116),
+(7, 116),
+(12, 116),
+(3, 117),
+(7, 117),
+(12, 117);
 
 CREATE TABLE IF NOT EXISTS `tags` (
   `tid` int(11) NOT NULL,
@@ -446,17 +509,17 @@ CREATE TABLE IF NOT EXISTS `tags` (
 INSERT INTO `tags` (`tid`, `name`, `title`, `type`, `uses`) VALUES
 (1, 'unicorn', '', 'spec', 8),
 (2, 'earth pony', '', 'spec', 3),
-(3, 'pegasus', '', 'spec', 3),
+(3, 'pegasus', '', 'spec', 5),
 (4, 'alicorn', '', 'spec', 2),
 (5, 'bat pony', '', 'spec', 0),
 (6, 'mane six', 'Ponies who are one of the show''s six main characters', 'cat', 6),
-(7, 'minor character', 'Ponies who had a speaking role and/or interacted with the mane six', 'cat', 8),
+(7, 'minor character', 'Ponies who had a speaking role and/or interacted with the mane six', 'cat', 10),
 (8, 'background character', 'Ponies whose only purpose is filling crowds, with no to minimal speaking roles', 'cat', 1),
 (9, 'antagonist', '', 'cat', 0),
 (10, 'pet', '', 'cat', 0),
 (11, 'male', '', 'gen', 1),
-(12, 'female', '', 'gen', 14),
-(14, 'twilight sparkle', 'All appearances related to Twilight Sparkle', 'char', 2),
+(12, 'female', '', 'gen', 16),
+(14, 'twilight sparkle', '', 'char', 2),
 (15, 'gala dress', 'All gala dress colors', 'app', 1),
 (16, 'human', 'Refers to Equestria Girls characters', 'spec', 0),
 (19, 's1e1', '', 'ep', 0),
@@ -490,11 +553,11 @@ ALTER TABLE `tags`
 
 
 ALTER TABLE `colorgroups`
-  MODIFY `groupid` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=97;
+  MODIFY `groupid` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=108;
 ALTER TABLE `colors`
-  MODIFY `colorid` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=345;
+  MODIFY `colorid` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=394;
 ALTER TABLE `ponies`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=116;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=118;
 ALTER TABLE `tags`
   MODIFY `tid` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=27;
 
