@@ -1187,7 +1187,11 @@ HTML;
 		$HTML = "<li id='$ID'>";
 		$R['label'] = htmlspecialchars($R['label']);
 		$Image = "<div class='image screencap'><a href='{$R['fullsize']}'><img src='{$R['preview']}'></a></div>";
-		if (!empty($R['label'])) $Image .= "<span class='label'>{$R['label']}</span>";
+		$label = '';
+		if (!empty($R['label'])){
+			$label = "<span class='label'>{$R['label']}</span>";
+			$Image .= $label;
+		}
 		$sameUser = $isRequest && $signedIn && $R['requested_by'] === $currentUser['id'];
 
 		$Image .= '<em>'.(
@@ -1216,6 +1220,7 @@ HTML;
 					$Image .= "</a></div>";
 				}
 				else $Image = "<div class='image deviation error'><a href='http://fav.me/{$R['deviation_id']}'>Preview unavailable<br><small>Click to view</small></a></div>";
+				if (PERM('inspector')) $Image .= $label;
 			}
 		}
 
@@ -1347,7 +1352,7 @@ HTML;
 
 		$Groups = '';
 		foreach ($Arranged['unfinished'] as $g => $c)
-			$Groups .= "<div class='group'><h3>{$REQUEST_TYPES[$g]}:</h3><ul>{$c}</ul></div>";
+			$Groups .= "<div class='group' id='group-$g'><h3>{$REQUEST_TYPES[$g]}:</h3><ul>{$c}</ul></div>";
 
 		if (PERM('user')){
 			$makeRq = '<button id="request-btn" class="green">Make a request</button>';
@@ -1810,6 +1815,7 @@ u.name,
 	  WHERE req.reserved_by = @id && req.deviation_id IS NULL)
 ) as `count`
 FROM `users` u
+HAVING `count` > 0
 ORDER BY `count` DESC
 	 */
 	function res_limit_check(){
@@ -1832,7 +1838,7 @@ ORDER BY `count` DESC
 		);
 
 		if (isset($reservations['count']) && $reservations['count'] >= 4)
-			respond("You've already reserved {$reservations['count']} images, but you may not have more than 4 pending reservations at a time. You can review them on your <a href='/u/'>profile page</a>.");
+			respond("You've already reserved {$reservations['count']} images, and you can't have more than 4 pending reservations at a time. You can review your reservations on your <a href='/u/'>profile page</a>, finish at least one of them before trying to reserve another image.");
 	}
 
 	// Render episode video player \\
@@ -2041,4 +2047,68 @@ ORDER BY `count` DESC
 		if ($center)
 			$type .= ' align-center';
 		return "<div class='notice $type'>$HTML</div>";
+	}
+
+	/**
+	 * Checks validity of a string based on regex
+	 *  and responds if invalid chars are found
+	 *
+	 * @param string $string
+	 * @param string $Thing
+	 * @param string $pattern
+	 * @param bool $returnError
+	 *
+	 * @return null
+	 */
+	function check_string_valid($string, $Thing, $pattern, $returnError = false){
+		$fails = array();
+		if (preg_match("@$pattern@u", $string, $fails)){
+			$invalid = array();
+			foreach ($fails as $f)
+				if (!in_array($f, $invalid))
+					$invalid[] = $f;
+
+			$s = count($invalid)!==1?'s':'';
+			$the_following = count($invalid)!==1?' the following':'an';
+			$Error = "$Thing ($string) contains $the_following invalid character$s: ".array_readable($invalid);
+			if (!$returnError) respond($Error);
+			return $Error;
+		}
+	}
+
+	/**
+	 * POST data validator function used when creating/editing posts
+	 *
+	 * @param string $thing "request"/"reservation"
+	 * @param array $array Array to output the checked data into
+	 * @param array|null $Post Optional, exsting post to compare new data against
+	 */
+	function check_post_post($thing, &$array, $Post = null){
+		$editing = !empty($Post);
+
+		if (!empty($_POST['label'])){
+			$label = trim($_POST['label']);
+
+			if (!$editing || $label !== $Post['label']){
+				$labellen = strlen($label);
+				if ($labellen < 3 || $labellen > 255)
+					respond("The description must be between 3 and 255 characters in length");
+				check_string_valid($label,'The description',INVERSE_PRINTABLE_ASCII_REGEX);
+				$array['label'] = $label;
+			}
+		}
+		else if (!$editing && $thing !== 'reservation')
+			respond('Description cannot be empty');
+
+		if ($thing === 'request'){
+			if (!empty($_POST['type'])){
+				if (!in_array($_POST['type'],array('chr','obj','bg')))
+					respond("Invalid request type");
+			}
+			else if (!$editing)
+				respnd("Missing request type");
+
+			if (!$editing || (!empty($_POST['type']) &&  $_POST['type'] !== $Post['type']))
+				$array['type'] = $_POST['type'];
+		}
 	}

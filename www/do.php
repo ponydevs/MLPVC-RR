@@ -71,8 +71,39 @@
 			if (!PERM('user')) respond();
 			detectCSRF();
 
+			$_match = array();
+			if (preg_match('~^(get|edit)-(request|reservation)/(\d+)$~ ', $data, $_match)){
+				if (!PERM('inspector'))
+					respond();
+
+				$thing = $_match[2];
+				$Post = $Database->where('id', $_match[3])->getOne("{$thing}s");
+				if (empty($Post))
+					respond("The specified $thing does not exist");
+
+				if ($_match[1] === 'get'){
+					$response = array(
+						'label' => $Post['label'],
+					);
+					if ($thing === 'request')
+						$response['type'] = $Post['type'];
+					respond($response);
+				}
+
+				$update = array();
+				check_post_post($thing, $update, $Post);
+
+				if (empty($update))
+					respond('Nothing was changed', 1);
+
+				if (!$Database->where('id', $Post['id'])->update("{$thing}s", $update))
+					respond(ERR_DB_FAIL);
+				respond($update);
+			}
+
 			if (!empty($_POST['what'])){
-				if(!in_array($_POST['what'],$POST_TYPES)) respond('Invalid post type');
+				if (!in_array($_POST['what'],$POST_TYPES))
+					respond('Invalid post type');
 				$what = $_POST['what'];
 				if ($what === 'reservation'){
 					if (!PERM('member'))
@@ -102,9 +133,11 @@
 				'fullsize' => $Image->fullsize,
 			);
 
-			if (empty($_POST['season']) || empty($_POST['episode'])) respond('Missing episode identifiers');
+			if (empty($_POST['season']) || empty($_POST['episode']))
+				respond('Missing episode identifiers');
 			$epdata = get_real_episode(intval($_POST['season'], 10), intval($_POST['episode'], 10));
-			if (empty($epdata)) respond('This episode does not exist');
+			if (empty($epdata))
+				respond('This episode does not exist');
 			$insert['season'] = $epdata['season'];
 			$insert['episode'] = $epdata['episode'];
 
@@ -113,21 +146,11 @@
 				case "reservation": $insert['reserved_by'] = $currentUser['id']; break;
 			}
 
-			if ($what !== 'reservation' && empty($_POST['label']))
-				respond('Missing label');
-			if (!empty($_POST['label'])){
-				$insert['label'] = trim($_POST['label']);
-				$labellen = strlen($insert['label']);
-				if ($labellen < 3 || $labellen > 255) respond("The label must be between 3 and 255 characters in length");
-			}
+			check_post_post($what, $insert);
 
-			if ($what === 'request'){
-				if (!isset($_POST['type']) || !in_array($_POST['type'],array('chr','obj','bg'))) respond("Invalid request type");
-				$insert['type'] = $_POST['type'];
-			}
-
-			if ($Database->insert("{$what}s",$insert)) respond('Submission complete',1);
-			else respond(ERR_DB_FAIL);
+			if (!$Database->insert("{$what}s",$insert))
+				respond(ERR_DB_FAIL);
+			respond('Submission complete',1);
 		break;
 		case "reserving":
 			if (RQMTHD !== 'POST') do404();

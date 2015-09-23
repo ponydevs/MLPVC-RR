@@ -280,10 +280,84 @@ DocReady.push(function Episode(){
 			});
 		});
 		$actions.filter('.edit').on('click',function(){
-			var $this = $(this),
-				title = 'Editing request';
+			var $button = $(this),
+				$li = $button.parents('li'),
+				_split = $li.attr('id').split('-'),
+				id = _split[1],
+				type = _split[0],
+				title = 'Editing '+type+' #'+id;
 
-			$.Dialog.info(title, 'This feature is under construction');
+			$.Dialog.wait(title, 'Retrieving '+type+' details');
+
+			$.post('/post/get-'+type+'/'+id,$.mkAjaxHandler(function(){
+				if (!this.status) return $.Dialog.fail(title, this.message);
+
+				var postdata = this,
+					$Form = $.mk('form').attr('id', 'post-edit-form').append(
+						$.mk('label').append(
+							$.mk('span').text('Description (3-255 chars.'+(type==='reservation'?', optional':'')+')'),
+							$.mk('input').attr({
+								type: 'text',
+								maxlength: 255,
+								pattern: "^.{3,255}$",
+								name: 'label',
+								required: type !== 'reservation',
+							})
+						)
+					);
+
+				if (type === 'request')
+					$Form.append(
+						$.mk('label').append(
+							$.mk('span').text('Request type'),
+							$.mk('select').attr({
+								name: 'type',
+								required: true,
+							}).append(
+								$.mk('option').attr('value','chr').text('Character'),
+								$.mk('option').attr('value','obj').text('Object'),
+								$.mk('option').attr('value','bg').text('Backgound')
+							)
+						)
+					);
+
+				$.Dialog.request(title, $Form, 'post-edit-form', 'Save', function($form){
+					var $label = $form.find('[name=label]'),
+						$type = $form.find('[name=type]');
+					if (postdata.label)
+						$label.val(postdata.label);
+					if (postdata.type)
+						$type.children('option').filter(function(){
+							return this.value === postdata.type;
+						}).attr('selected', true);
+					$form.on('submit',function(e){
+						e.preventDefault();
+
+						$.Dialog.wait('Saving changes');
+						var data = { label: $label.val() };
+						if (type === 'request')
+							data.type = $type.val();
+						$.post('/post/edit-'+type+'/'+id,data, $.mkAjaxHandler(function(){
+							if (!this.status) return $.Dialog.fail(title, this.message);
+
+							if (this.label)
+								$li.children('.label').text(this.label);
+							if (this.type && !$li.parent().parent().hasClass('finished')){
+								var $group = $('#group-'+this.type).children('ul'),
+									getTimeValue = function(el){
+										return new Date($(el).children('em').find('time').attr('datetime')).getTime();
+									};
+								$group.append($li);
+								$group.children().sort(function(a,b){
+									return getTimeValue(a) - getTimeValue(b);
+								}).appendTo($group);
+							}
+
+							$.Dialog.close();
+						}));
+					});
+				});
+			}));
 		});
 	}
 

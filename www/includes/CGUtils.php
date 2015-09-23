@@ -265,33 +265,6 @@
 		check_image_size($path, $width, $height, $minwidth, $minheight);
 	}
 
-	/**
-	 * Checks validity of a string based on regex
-	 *  and responds if invalid chars are found
-	 *
-	 * @param string $string
-	 * @param string $Thing
-	 * @param string $pattern
-	 * @param bool $returnError
-	 *
-	 * @return null
-	 */
-	function check_string_valid($string, $Thing, $pattern, $returnError = false){
-		$fails = array();
-		if (preg_match("@$pattern@u", $string, $fails)){
-			$invalid = array();
-			foreach ($fails as $f)
-				if (!in_array($f, $invalid))
-					$invalid[] = $f;
-
-			$s = count($invalid)!==1?'s':'';
-			$the_following = count($invalid)!==1?' the following':'an';
-			$Error = "$Thing ($string) contains $the_following invalid character$s: ".array_readable($invalid);
-			if (!$returnError) respond($Error);
-			return $Error;
-		}
-	}
-
 	// Checks and shortens episode tags
 	function ep_tag_name_check($tag){
 		$_match = array();
