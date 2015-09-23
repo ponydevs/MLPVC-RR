@@ -278,7 +278,7 @@
 			else {
 				$data = "S{$CurrentEpisode['season']}E{$CurrentEpisode['episode']}";
 				fix_path("/episode/$data", 302);
-				loadHomePage();
+				loadLatestEpisodePage();
 			}
 		break;
 		case "episode":
@@ -504,7 +504,7 @@
 				}
 			}
 
-			loadHomePage();
+			loadLatestEpisodePage();
 		break;
 		case "episodes":
 			$Episodes = get_episodes();

@@ -774,7 +774,7 @@ HTML;
 			$err = $_GET['error'];
 			if (isset($_GET['error_description']))
 				$errdesc = $_GET['error_description'];
-			loadHomePage();
+			loadLatestEpisodePage();
 		}
 
 		da_get_token($_GET['code']);
@@ -786,7 +786,7 @@ HTML;
 
 			if ($err === 'user_banned')
 				$errdesc .= "\n\nIf you'd like to appeal your ban, please <a href='http://mlp-vectorclub.deviantart.com/notes/'>send the group a note</a>.";
-			loadHomePage();
+			loadLatestEpisodePage();
 		}
 
 		redirect($_GET['state']);
@@ -1996,7 +1996,7 @@ ORDER BY `count` DESC
 	}
 
 	// Loads the home page
-	function loadHomePage(){
+	function loadLatestEpisodePage(){
 		global $data, $CurrentEpisode, $Requests, $Reservations, $Latest;
 
 		$EpData = episode_id_parse($data);
@@ -2010,9 +2010,9 @@ ORDER BY `count` DESC
 
 		loadPage(array(
 			'title' => format_episode_title($CurrentEpisode),
-			'view' => 'index',
-			'css' => 'index',
-			'js' => array('imagesloaded.pkgd','jquery.fluidbox.min','index'),
+			'view' => 'episode',
+			'css' => 'episode',
+			'js' => array('imagesloaded.pkgd','jquery.fluidbox.min','episode'),
 		));
 	}
 

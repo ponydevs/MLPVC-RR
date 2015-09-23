@@ -23,6 +23,7 @@
 			$sidebar: $('#sidebar'),
 			$footer: $('footer'),
 		});
+		window.$navbar = $header.find('nav');
 	};
 	window.CommonElements();
 

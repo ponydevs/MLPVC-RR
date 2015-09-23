@@ -1,9 +1,5 @@
-DocReady.push(function Index(){
-	var $w = $(window),
-		$body = $(document.body),
-		$navbar = $('header nav'),
-		$content = $('#content'),
-		SEASON = window.SEASON,
+DocReady.push(function Episode(){
+	var SEASON = window.SEASON,
 		EPISODE = window.EPISODE,
 		idstr = 'S'+SEASON+'E'+EPISODE;
 
