@@ -1671,7 +1671,7 @@ HTML;
 		global $currentSet;
 
 		list($path, $label) = $item;
-		$current = (!$currentSet || $htmlOnly === HTML_ONLY) && preg_match("~^$path($|/)~", $_SERVER['REQUEST_URI']);
+		$current = (!$currentSet || $htmlOnly === HTML_ONLY) && preg_match("~^$path($|/)~", strtok($_SERVER['REQUEST_URI'], '?'));
 		if ($current)
 			$currentSet = true;
 		$class = trim((!empty($item[2]) ? $item[2] : '').($current ? ' active' : ''));
