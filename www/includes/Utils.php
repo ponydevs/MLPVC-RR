@@ -1225,7 +1225,7 @@ HTML;
 				else $Image = "<div class='image deviation error'><a href='http://fav.me/{$R['deviation_id']}'>Preview unavailable<br><small>Click to view</small></a></div>";
 				if (PERM('inspector')){
 					$Image .= $label;
-					if (isset($R['fullsize']))
+					if (!empty($R['fullsize']))
 						$Image .= "<a href='{$R['fullsize']}' class='original' target='_blank'>Direct link to original image</a>";
 				}
 			}
