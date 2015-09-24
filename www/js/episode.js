@@ -585,7 +585,7 @@ DocReady.push(function Episode(){
 		var $imgs = $content.find('img'),
 			total = $imgs.length, loaded = 0;
 
-		if (total > 0){
+		if (total > 0 && $(location.hash).length > 0){
 			$.Dialog.wait('Scroll post into view','Waiting for page to load');
 			var $progress = $.mk('progress').attr({max:total,value:0}).css({display:'block',width:'100%',marginTop:'5px'});
 			$('#dialogContent').children('div:not([id])').last().addClass('align-center').append($progress);
