@@ -97,7 +97,7 @@ HTML;
 		<section class="awaiting-approval">
 			<label><?=$PrivateSection?>Vectors pending approval</label>
 			<p>After you finish an image and submit it to the group gallery, an inspector will check your vector and may ask you to fix some issues on your image, if any. When an image is accepted to the gallery, it will be marked as "approved" on this site, which gives it a green check mark, indicating that it's most likely free of any errors.</p>
-			<p>You currently have <?=empty($AwaitingApproval)?'no':'<strong>'.count($AwaitingApproval).'</strong>'?> images waiting for approval by our group<?=empty($AwaitingApproval)?'.':", listed below. We suggest that you submit these images to the group gallery at your earliest convenience to have them spot-checked for any issues and to have them added to the gallery to make it easier to find for others."?></p>
+			<p>You currently have <?=empty($AwaitingApproval)?'no':'<strong>'.count($AwaitingApproval).'</strong>'?> images waiting for approval by our group<?=empty($AwaitingApproval)?'.':", listed below. We suggest that you submit these images to the group gallery at your earliest convenience to have them both spot-checked for any issues and added to the gallery to make it easier to find for others."?></p>
 <?php   if (!empty($AwaitingApproval)){ ?>
 			<ul><?
 			foreach ($AwaitingApproval as $row){
