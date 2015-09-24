@@ -110,7 +110,7 @@ HTML;
 			<img src="{$deviation['preview']}" alt="{$deviation['title']}">
 		</a>
 	</div>
-	<span class="label"><a href="$url" target="_blank">{$deviation['title']}</span>
+	<span class="label"><a href="$url" target="_blank">{$deviation['title']}</a></span>
 </li>
 HTML;
 
