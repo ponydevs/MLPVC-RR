@@ -1716,8 +1716,9 @@ HTML;
 
 	// Render episode voting HTML
 	function get_episode_voting($Episode){
+		$thing = $Episode['season'] == 0 ? 'movie' : 'episode';
 		if (!$Episode['aired'])
-			return "<p>Voting will start ".timetag($Episode['willair']).", after the episode had aired.</p>";
+			return "<p>Voting will start ".timetag($Episode['willair']).", after the $thing had aired.</p>";
 		global $Database, $signedIn;
 		$HTML = '';
 
@@ -1738,7 +1739,7 @@ HTML;
 			if ($VoteTally['up'] === $VoteTally['total'] || $VoteTally['down'] === $VoteTally['total'])
 				$Start = $VoteTally['total']." ".($VoteTally['total'] !== 1 ? 'ponies' : 'pony');
 			else $Start = "{$VoteTally[$UpsDowns]} out of {$VoteTally['total']} ponies";
-			$HTML .= "$Start ".($UpsDowns === 'down'?'dis':'')."liked this episode";
+			$HTML .= "$Start ".($UpsDowns === 'down'?'dis':'')."liked this $thing";
 			if (PERM('user')) $UserVote = get_episode_user_vote($Episode);
 			if (empty($UserVote)) $HTML .= ".";
 			else $HTML .= ", ".(($UserVote['vote'] > 0 && $UpsDowns === 'up' || $UserVote['vote'] < 0 && $UpsDowns === 'down') ? 'including you' : 'but you didn\'t').".";
@@ -1761,7 +1762,7 @@ HTML;
 				$HTML .= "<div class='bar'>".implode('',$fills)."</div>";
 		}
 		if (empty($UserVote)){
-			$HTML .= "<br><p>What did <em>you</em> think about the episode?</p>";
+			$HTML .= "<br><p>What did <em>you</em> think about the $thing?</p>";
 			if ($signedIn)
 				$HTML .= '<button class="typcn typcn-thumbs-up green">I liked it</button> <button class="typcn typcn-thumbs-down red">I disliked it</button>';
 			else $HTML .= "<p><em>Sign in below to cast your vote!</em></p>";
