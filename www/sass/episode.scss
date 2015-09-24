@@ -236,11 +236,13 @@
 				line-height: 40px;
 				height: 40px;
 			}
-			> .label {
+			> .label, > .original {
 				opacity: .6;
 				transition: opacity .3s;
 			}
-			&:hover > .label { opacity: 1 }
+			&:hover {
+				> .label, > .original { opacity: 1 }
+			}
 		}
 	}
 	.post-form {
