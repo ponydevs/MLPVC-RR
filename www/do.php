@@ -133,9 +133,9 @@
 				'fullsize' => $Image->fullsize,
 			);
 
-			if (empty($_POST['season']) || empty($_POST['episode']))
+			if (($_POST['season'] != '0' && empty($_POST['season'])) || empty($_POST['episode']))
 				respond('Missing episode identifiers');
-			$epdata = get_real_episode(intval($_POST['season'], 10), intval($_POST['episode'], 10));
+			$epdata = get_real_episode(intval($_POST['season'], 10), intval($_POST['episode'], 10), ALLOW_SEASON_ZERO);
 			if (empty($epdata))
 				respond('This episode does not exist');
 			$insert['season'] = $epdata['season'];
@@ -301,7 +301,7 @@
 			else {
 				$data = "S{$CurrentEpisode['season']}E{$CurrentEpisode['episode']}";
 				fix_path("/episode/$data", 302);
-				loadLatestEpisodePage();
+				loadEpisodePage();
 			}
 		break;
 		case "episode":
@@ -348,7 +348,7 @@
 					));
 				}
 				else if (preg_match('/^((?:request|reservation)s)\/'.EPISODE_ID_PATTERN.'$/', $data, $_match)){
-					$Episode = get_real_episode($_match[2],$_match[3]);
+					$Episode = get_real_episode($_match[2],$_match[3],ALLOW_SEASON_ZERO);
 					if (empty($Episode))
 						respond("There's no episode with this season & episode number");
 					$only = $_match[1] === 'requests' ? ONLY_REQUESTS : ONLY_RESERVATIONS;
@@ -357,7 +357,7 @@
 					));
 				}
 				else if (preg_match('/^vote\/'.EPISODE_ID_PATTERN.'$/', $data, $_match)){
-					$Episode = get_real_episode($_match[1],$_match[2]);
+					$Episode = get_real_episode($_match[1],$_match[2],ALLOW_SEASON_ZERO);
 					if (empty($Episode))
 						respond("There's no episode with this season & episode number");
 
@@ -384,17 +384,8 @@
 					))) respond(ERR_DB_FAIL);
 					respond(array('newhtml' => get_episode_voting($Episode)));
 				}
-				else if (preg_match('/^export\/'.EPISODE_ID_PATTERN.'$/', $data, $_match)){
-					if (!PERM('inspector')) respond();
-					$Episode = get_real_episode($_match[1],$_match[2]);
-					if (empty($Episode))
-						respond("There's no episode with this season & episode number");
-
-					list($req, $res) = get_posts($Episode['season'], $Episode['episode']);
-					respond(array('export' => export_posts($req, $res)));
-				}
 				else if (preg_match('/^([sg])etvideos\/'.EPISODE_ID_PATTERN.'$/', $data, $_match)){
-					$Episode = get_real_episode($_match[2],$_match[3]);
+					$Episode = get_real_episode($_match[2],$_match[3],ALLOW_SEASON_ZERO);
 					if (empty($Episode))
 						respond("There's no episode with this season & episode number");
 
@@ -527,7 +518,7 @@
 				}
 			}
 
-			loadLatestEpisodePage();
+			loadEpisodePage();
 		break;
 		case "episodes":
 			$Episodes = get_episodes();
@@ -538,6 +529,16 @@
 			);
 			if (PERM('inspector')) $settings['js'][] = "$do-manage";
 			loadPage($settings);
+		break;
+		case "eqg":
+			if (!preg_match('/^[a-z\-]+$/',$data))
+				do404();
+
+			$assoc = array('friendship-games' => 3);
+			if (empty($assoc[$data]))
+				do404();
+
+			loadEpisodePage($assoc[$data]);
 		break;
 		case "about":
 			loadPage(array(

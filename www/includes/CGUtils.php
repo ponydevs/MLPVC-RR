@@ -268,8 +268,12 @@
 	// Checks and shortens episode tags
 	function ep_tag_name_check($tag){
 		$_match = array();
-		if (preg_match('/^'.EPISODE_ID_PATTERN.'/i',$tag,$_match))
+		if (preg_match('/^'.EPISODE_ID_PATTERN.'/i',$tag,$_match)){
+			$season = intval($_match[1], 10);
+			if ($season == 0)
+				return false;
 			return 's'.intval($_match[1], 10).'e'.intval($_match[2], 10).(!empty($_match[3]) ? intval($_match[3], 10) : '');
+		}
 		else return false;
 	}
 

@@ -774,7 +774,7 @@ HTML;
 			$err = $_GET['error'];
 			if (isset($_GET['error_description']))
 				$errdesc = $_GET['error_description'];
-			loadLatestEpisodePage();
+			loadEpisodePage();
 		}
 
 		da_get_token($_GET['code']);
@@ -786,7 +786,7 @@ HTML;
 
 			if ($err === 'user_banned')
 				$errdesc .= "\n\nIf you'd like to appeal your ban, please <a href='http://mlp-vectorclub.deviantart.com/notes/'>send the group a note</a>.";
-			loadLatestEpisodePage();
+			loadEpisodePage();
 		}
 
 		redirect($_GET['state']);
@@ -968,6 +968,9 @@ HTML;
 			else return $arr;
 		}
 
+		if ($Ep['season'] == 0)
+			return "Equestria Girls: {$Ep['title']}";
+
 		if ($Ep['twoparter'])
 			$Ep['episode'] = pad($EpNumber).pad($EpNumber+1);
 		else $Ep['episode'] = pad($Ep['episode']);
@@ -986,7 +989,7 @@ HTML;
 	 * @param string $id
 	 * @return null|array
 	 */
-	define('EPISODE_ID_PATTERN','S0*([1-8])E0*([1-9]|1\d|2[0-6])(?:-0*([1-9]|1\d|2[0-6]))?(?:\D|$)');
+	define('EPISODE_ID_PATTERN','S0*([0-8])E0*([1-9]|1\d|2[0-6])(?:-0*([1-9]|1\d|2[0-6]))?(?:\D|$)');
 	function episode_id_parse($id){
 		$match = array();
 		if (preg_match('/^'.EPISODE_ID_PATTERN.'/', $id, $match))
@@ -1504,7 +1507,7 @@ HTML;
 		if (!empty($where))
 			$Database->where($where);
 
-		$Database->orderBy('season')->orderBy('episode');
+		$Database->orderBy('season')->orderBy('episode')->where('season != 0');
 		if ($count !== 1){
 			$eps =  $Database->get('episodes',$count);
 			foreach ($eps as $i => $ep)
@@ -1589,11 +1592,17 @@ HTML;
 	 *
 	 * @param int $episode
 	 * @param int $season
+	 * @param bool $dontIgnoreSeason0 If set to true, season 0 is valid
 	 *
 	 * @return array|null
 	 */
-	function get_real_episode($season, $episode){
+	function get_real_episode($season, $episode, $dontIgnoreSeason0 = false){
 		global $Database;
+
+		if (!$dontIgnoreSeason0 && $season == 0){
+			trigger_error('Season 0 ignored', E_USER_ERROR);
+			return null;
+		}
 
 		$Ep1 = $Database->whereEp($season,$episode)->getOne('episodes');
 		if (empty($Ep1)){
@@ -1602,6 +1611,7 @@ HTML;
 		}
 		else return add_episode_airing_data($Ep1);
 	}
+	define('ALLOW_SEASON_ZERO', true);
 
 	/**
 	 * Adds 's/S' to the end of a word
@@ -1791,8 +1801,11 @@ HTML;
 				$time = "<time datetime='$airs'>$time{$diff['minute']}:{$diff['second']} $tz</time>";
 			}
 			else $time = timetag($ep['airs']);
+
+			$title = ($ep['season'] === 0 ? 'EQG: ' : '').$ep['title'];
+
 			$HTML .= "<li><div class='calendar'><span class='top'>$month</span><span class='bottom'>$day</span></div>".
-				"<div class='meta'><span class='title'>{$ep['title']}</span>$time</div></li>";
+				"<div class='meta'><span class='title'>$title</span>$time</div></li>";
 		}
 		return $HTML.($wrap?'</ul></section>':'');
 	}
@@ -2002,13 +2015,16 @@ ORDER BY `count` DESC
 	}
 
 	// Loads the home page
-	function loadLatestEpisodePage(){
-		global $data, $CurrentEpisode, $Requests, $Reservations, $Latest;
+	function loadEpisodePage($force = null){
+		global $data, $CurrentEpisode, $Requests, $Reservations, $Latest, $Database;
 
-		$EpData = episode_id_parse($data);
-		if (empty($EpData))
-			$CurrentEpisode = get_latest_episode();
-		else $CurrentEpisode = get_real_episode($EpData['season'],$EpData['episode']);
+		if (empty($force)){
+			$EpData = episode_id_parse($data);
+			if (empty($EpData))
+				$CurrentEpisode = get_latest_episode();
+			else $CurrentEpisode = get_real_episode($EpData['season'],$EpData['episode']);
+		}
+		else $CurrentEpisode = get_real_episode(0, $force, ALLOW_SEASON_ZERO);
 		if (!empty($CurrentEpisode)){
 			$Latest = empty($EpData) ? true : is_episode_latest($CurrentEpisode);
 			list($Requests, $Reservations) = get_posts($CurrentEpisode['season'], $CurrentEpisode['episode']);
