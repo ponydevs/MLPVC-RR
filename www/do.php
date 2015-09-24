@@ -531,14 +531,28 @@
 			loadPage($settings);
 		break;
 		case "eqg":
-			if (!preg_match('/^[a-z\-]+$/',$data))
+			if (!preg_match('/^([a-z\-]+|\d+)$/',$data))
 				do404();
 
 			$assoc = array('friendship-games' => 3);
-			if (empty($assoc[$data]))
-				do404();
+			$flip_assoc = array_flip($assoc);
 
-			loadEpisodePage($assoc[$data]);
+			if (!is_numeric($data)){
+				if (empty($assoc[$data]))
+					do404();
+				$url = $data;
+				$data = $assoc[$data];
+			}
+			else {
+				$data = intval($data, 10);
+				if (empty($flip_assoc[$data]))
+					do404();
+				$url = $flip_assoc[$data];
+			}
+
+			fix_path("/eqg/$url");
+
+			loadEpisodePage($data);
 		break;
 		case "about":
 			loadPage(array(

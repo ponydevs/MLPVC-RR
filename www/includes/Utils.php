@@ -1862,6 +1862,7 @@ ORDER BY `count` DESC
 	function render_ep_video($CurrentEpisode){
 		global $VIDEO_PROVIDER_NAMES, $Database;
 
+		$isMovie = $CurrentEpisode['season'] === 0;
 		$HTML = '';
 
 		$Videos = $Database
@@ -1872,7 +1873,7 @@ ORDER BY `count` DESC
 			require_once "includes/Video.php";
 			$FirstVid = $Videos[0];
 			$embed = Video::get_embed($FirstVid['id'], $FirstVid['provider']);
-			$HTML .= "<section class='episode'><h2>Watch the Episode</h2>";
+			$HTML .= "<section class='episode'><h2>Watch the ".($isMovie?'Movie':'Episode')."</h2>";
 			if (!empty($Videos[1])){
 				$SecondVid = $Videos[1];
 				$url = Video::get_embed($SecondVid['id'], $SecondVid['provider'], Video::URL_ONLY);

@@ -25,7 +25,7 @@
 			<span><?=$User['id']?></span>
 		</section>
 <?  }
-	$cols = 'id, CONCAT("S", season, "E", episode) as page, preview, label, posted';
+	$cols = 'id, CONCAT("S", season, "E", episode) as page, season, preview, label, posted';
 	$PendingReservations = $Database->where('reserved_by', $User['id'])->where('deviation_id IS NULL')->get('reservations',null,$cols);
 	$PendingRequestReservations = $Database->where('reserved_by', $User['id'])->where('deviation_id IS NULL')->get('requests',null,$cols.', 1 as rq');
 	$TotalPending = count($PendingReservations)+count($PendingRequestReservations);
@@ -56,7 +56,15 @@
 			foreach ($Posts as $i => $p){
 				$thing = isset($p['rq']) ? 'request' : 'reservation';
 				$id = "$thing-{$p['id']}";
-				$link = "/episode/{$p['page']}#$id";
+				if ($p['season'] !== 0){
+					$link = "/episode/{$p['page']}#$id";
+					$page = $p['page'];
+				}
+				else {
+					$movieNumber = preg_replace('/^.*E(\d+)$/','$1',$p['page']);
+					$link = "/eqg/$movieNumber";
+					$page = "EQG #$movieNumber";
+				}
 				$posted = date('c',strtotime($p['posted']));
 				$Posts[$i] = <<<HTML
 <li id='$id'>
@@ -64,7 +72,7 @@
 		<a href='$link'><img src='{$p['preview']}'></a>
 	</div>
 	<span class='label'>{$p['label']}</span>
-	<em>Posted under <a href='$link'>{$p['page']}</a> <time datetime="$posted"></em>
+	<em>Posted under <a href='$link'>$page</a> <time datetime="$posted"></em>
 	<div>
 		<a href='$link' class='btn blue typcn typcn-arrow-forward'>View</a>
 	</div>
