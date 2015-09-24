@@ -1166,10 +1166,10 @@ HTML;
 			}
 		}
 
-		if ($CanEdit)
-			array_splice($Buttons,0,0,array(array('pencil darkblue edit','Edit')));
 		if (empty($R['lock']) && empty($Buttons) && (PERM('inspector') || ($sameUser && empty($R['reserved_by']))))
 			$Buttons[] = array('trash red delete','Delete');
+		if ($CanEdit)
+			array_splice($Buttons,0,0,array(array('pencil darkblue edit','Edit')));
 
 		$HTML .= "<div class='actions'>";
 		foreach ($Buttons as $b)
