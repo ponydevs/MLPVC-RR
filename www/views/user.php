@@ -25,15 +25,18 @@
 			<span><?=$User['id']?></span>
 		</section>
 <?  }
+
+	$PrivateSection = "<span class='typcn typcn-lock-closed' title='Only visible to you and group administrators'></span>";
+
 	$cols = 'id, CONCAT("S", season, "E", episode) as page, season, preview, label, posted';
 	$PendingReservations = $Database->where('reserved_by', $User['id'])->where('deviation_id IS NULL')->get('reservations',null,$cols);
 	$PendingRequestReservations = $Database->where('reserved_by', $User['id'])->where('deviation_id IS NULL')->get('requests',null,$cols.', 1 as rq');
 	$TotalPending = count($PendingReservations)+count($PendingRequestReservations);
 	$hasPending = $TotalPending > 0;
-	if ($TotalPending > 0 || (PERM('inspector') && PERM('member', $User['role']))){ ?>
+	if ((PERM('inspector') || $sameUser) && PERM('member', $User['role'])){ ?>
 		<section class="pending-reservations">
-			<label>Pending Reservations</label>
-			<span><?=($sameUser?'You have':'This user has')." <strong>$TotalPending</strong>"?> pending reservation<?php
+			<label><?=$PrivateSection?>Pending Reservations</label>
+			<span><?=($sameUser?'You have':'This user has').' '.($hasPending>0?"<strong>$TotalPending</strong>":'no')?> pending reservation<?php
 		echo $TotalPending!==1?'s':'';
 		if ($hasPending)
 			echo " which ha".($TotalPending!==1?'ve':'s')."n't been marked as finished yet";
@@ -83,6 +86,36 @@ HTML;
 			echo "<ul>".implode('',$Posts)."</ul>";
 		}
 ?>
+		</section>
+<?      $AwaitingApproval = $Database->rawQuery(
+			"SELECT IFNULL(req.deviation_id,res.deviation_id) as deviation
+			FROM requests req
+			LEFT JOIN reservations res ON req.reserved_by = res.reserved_by
+			WHERE
+				(req.reserved_by = ? && req.deviation_id IS NOT NULL && req.`lock` = 0)
+				|| (res.reserved_by = ? && res.deviation_id IS NOT NULL && res.`lock` = 0)",array($User['id'],$User['id'])); ?>
+		<section class="awaiting-approval">
+			<label><?=$PrivateSection?>Vectors pending approval</label>
+			<p>After you finish an image and submit it to the group gallery, an inspector will check your vector and may ask you to fix some issues on your image, if any. When an image is accepted to the gallery, it will be marked as "approved" on this site, which gives it a green check mark, indicating that it's most likely free of any errors.</p>
+			<p>You currently have <?=empty($AwaitingApproval)?'no':'<strong>'.count($AwaitingApproval).'</strong>'?> images waiting for approval by our group<?=empty($AwaitingApproval)?'.':", listed below. We suggest that you submit these images to the group gallery at your earliest convenience to have them spot-checked for any issues and to have them added to the gallery to make it easier to find for others."?></p>
+<?php   if (!empty($AwaitingApproval)){ ?>
+			<ul><?
+			foreach ($AwaitingApproval as $row){
+				$deviation = da_cache_deviation($row['deviation']);
+				$url = "http://{$deviation['provider']}/{$deviation['id']}";
+				echo <<<HTML
+<li>
+	<div class="image deviation">
+		<a href="$url" target="_blank">
+			<img src="{$deviation['preview']}" alt="{$deviation['title']}">
+		</a>
+	</div>
+	<span class="label"><a href="$url" target="_blank">{$deviation['title']}</span>
+</li>
+HTML;
+
+			} ?></ul>
+<?php   } ?>
 		</section>
 <?  } ?>
 		<section class="bans">

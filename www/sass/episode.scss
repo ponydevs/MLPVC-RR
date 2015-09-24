@@ -207,7 +207,6 @@
 			}
 		}
 		.finished ul li {
-			$DeviationBorder: #71a972;
 			.image > a {
 				position: relative;
 
@@ -227,10 +226,6 @@
 			    padding: 2px 3px;
 			    cursor: help;
 				}
-			}
-			.deviation img {
-				border: 2px solid $DeviationBorder;
-				box-shadow: 0 0 5px $DeviationBorder;
 			}
 			> .reserver .name {
 				line-height: 40px;

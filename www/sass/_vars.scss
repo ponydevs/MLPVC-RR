@@ -12,6 +12,7 @@ $ContentBG: rgba(255,255,255,.6);
   box-sizing: border-box;
 }
 $SidebarWidth: 330px;
+$DeviationBorder: #71a972;
 
 //noinspection CssOptimizeSimilarProperties
 @mixin white-grid {
@@ -209,6 +210,10 @@ $StrongOutline: 3;
 			margin-right: auto;
 		}
 		> .image {
+			&.deviation img {
+				border: 2px solid $DeviationBorder;
+				box-shadow: 0 0 5px $DeviationBorder;
+			}
 			&.screencap > a {
 				border: 1px solid;
 				box-shadow: 0 0 2px;

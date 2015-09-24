@@ -24,6 +24,10 @@
 			text-decoration: underline;
 			margin-bottom: 10px;
 			display: block;
+
+			> .typcn {
+				margin-right: 7px;
+			}
 		}
 		p {
 			margin: 0;
@@ -62,7 +66,9 @@
 				}
 			}
 		}
-		.pending-reservations ul { @extend %post-ul }
+		.pending-reservations, .awaiting-approval {
+			ul { @extend %post-ul }
+		}
 	}
 	.settings {
 		border-top: 1px solid $ContentOutline;
