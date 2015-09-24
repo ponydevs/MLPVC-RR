@@ -15,12 +15,12 @@
 	echo render_ep_video($CurrentEpisode); ?>
 	<section class="about-res">
 		<h2>What Vector Reservations Are</h2>
-		<p>People usually get excited whenever a new episode comes out, and start making vectors of any pose/object/etc. that they found hilarious/interesting enough. It often results in various people unnecessarily doing the very same thing. Vector Reservations can help organize our efforts by listing who's working on what and to reduce the number of duplicates.</p>
+		<p>People usually get excited whenever a new <?=$isMovie?'movie':'episode'?> comes out, and start making vectors of any pose/object/etc. that they found hilarious/interesting enough. It often results in various people unnecessarily doing the very same thing. Vector Reservations can help organize our efforts by listing who's working on what and to reduce the number of duplicates.</p>
 	</section>
 	<section class="rules">
 		<h2>Reservation Rules</h2>
 		<ol>
-			<li>You MUST have an image to make a reservation! For the best quality, get your references from the episode in 1080p.</li>
+			<li>You MUST have an image to make a reservation! For the best quality, get your references from the <?=$isMovie?'movie':'episode'?> in 1080p.</li>
 			<li>Making a reservation does NOT forbid other people from working on a pose anyway. It is only information that you are working on it, so other people can coordinate to avoid doing the same thing twice.</li>
 			<li>There are no time limits, but remember that the longer you wait, the greater the chance that someone might take your pose anyway. It's generally advised to finish your reservations before a new episode comes out.</li>
 			<li>The current limit for reservations are 4 at a time. You can reserve more once you've completed the previous reservation(s).</li>
