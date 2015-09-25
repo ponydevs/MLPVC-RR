@@ -87,13 +87,11 @@ HTML;
 		}
 ?>
 		</section>
-<?      $AwaitingApproval = $Database->rawQuery(
-			"SELECT IFNULL(req.deviation_id,res.deviation_id) as deviation
-			FROM requests req
-			LEFT JOIN reservations res ON req.reserved_by = res.reserved_by
-			WHERE
-				(req.reserved_by = ? && req.deviation_id IS NOT NULL && req.`lock` = 0)
-				|| (res.reserved_by = ? && res.deviation_id IS NOT NULL && res.`lock` = 0)",array($User['id'],$User['id'])); ?>
+<?php   $AwaitingSQL = "SELECT r.deviation_id as deviation FROM coloumn r WHERE r.reserved_by = ? && r.deviation_id IS NOT NULL && r.`lock` = 0";
+		$AwaitingApproval = array_merge(
+			$Database->rawQuery(preg_replace('/coloumn/','requests',$AwaitingSQL),array($User['id'])),
+			$Database->rawQuery(preg_replace('/coloumn/','reservations',$AwaitingSQL),array($User['id']))
+		); ?>
 		<section class="awaiting-approval">
 			<label><?=$PrivateSection?>Vectors pending approval</label>
 			<p>After you finish an image and submit it to the group gallery, an inspector will check your vector and may ask you to fix some issues on your image, if any. When an image is accepted to the gallery, it will be marked as "approved" on this site, which gives it a green check mark, indicating that it's most likely free of any errors.</p>
