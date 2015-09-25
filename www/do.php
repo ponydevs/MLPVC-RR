@@ -1097,6 +1097,7 @@
 								'tid' => $data['tid'],
 								'ponyid' => $Pony['id']
 							))) respond(ERR_DB_FAIL);
+							update_tag_count($data['tid']);
 							respond(array('tags' => get_tags_html($Pony['id'], NOWRAP)));
 						}
 					}
