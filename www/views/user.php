@@ -33,10 +33,11 @@
 	$PendingRequestReservations = $Database->where('reserved_by', $User['id'])->where('deviation_id IS NULL')->get('requests',null,$cols.', 1 as rq');
 	$TotalPending = count($PendingReservations)+count($PendingRequestReservations);
 	$hasPending = $TotalPending > 0;
-	if ((PERM('inspector') || $sameUser) && PERM('member', $User['role'])){ ?>
+	if ((PERM('inspector') || $sameUser) && PERM('member', $User['role'])){
+		$YouHave = ($sameUser?'You have':'This user has'); ?>
 		<section class="pending-reservations">
 			<label><?=$PrivateSection?>Pending Reservations</label>
-			<span><?=($sameUser?'You have':'This user has').' '.($hasPending>0?"<strong>$TotalPending</strong>":'no')?> pending reservation<?php
+			<span><?="$YouHave ".($hasPending>0?"<strong>$TotalPending</strong>":'no')?> pending reservation<?php
 		echo $TotalPending!==1?'s':'';
 		if ($hasPending)
 			echo " which ha".($TotalPending!==1?'ve':'s')."n't been marked as finished yet";
@@ -91,11 +92,15 @@ HTML;
 		$AwaitingApproval = array_merge(
 			$Database->rawQuery(preg_replace('/coloumn/','requests',$AwaitingSQL),array($User['id'])),
 			$Database->rawQuery(preg_replace('/coloumn/','reservations',$AwaitingSQL),array($User['id']))
-		); ?>
+		);
+		$AwaitCount = count($AwaitingApproval);
+		$them = $AwaitCount!==1?'them':'it'; ?>
 		<section class="awaiting-approval">
 			<label><?=$PrivateSection?>Vectors pending approval</label>
+<?php   if ($sameUser){ ?>
 			<p>After you finish an image and submit it to the group gallery, an inspector will check your vector and may ask you to fix some issues on your image, if any. When an image is accepted to the gallery, it will be marked as "approved" on this site, which gives it a green check mark, indicating that it's most likely free of any errors.</p>
-			<p>You currently have <?=empty($AwaitingApproval)?'no':'<strong>'.count($AwaitingApproval).'</strong>'?> images waiting for approval by our group<?=empty($AwaitingApproval)?'.':", listed below. We suggest that you submit these images to the group gallery at your earliest convenience to have them both spot-checked for any issues and added to the gallery to make it easier to find for others."?></p>
+<?php   } ?>
+			<p><?="$YouHave ".(empty($AwaitingApproval)?'no':"<strong>$AwaitCount</strong>")?> image<?=$AwaitCount!==1?'s':''?> waiting for approval by the group<?=empty($AwaitingApproval)?'.':(", listed below.".($sameUser?"We suggest that you submit $them to the group gallery at your earliest convenience to have $them spot-checked for any issues and added to the gallery, making $them easier for others to find.":''))?></p>
 <?php   if (!empty($AwaitingApproval)){ ?>
 			<ul><?
 			foreach ($AwaitingApproval as $row){
