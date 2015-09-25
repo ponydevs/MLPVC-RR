@@ -1493,7 +1493,7 @@ HTML;
 	function add_episode_airing_data($Episode){
 		$airtime = strtotime($Episode['airs']);
 		$Episode['displayed'] = strtotime('-24 hours', $airtime) < time();
-		$Episode['aired'] = strtotime('+'.(!$Episode['twoparter']?30:60).' minutes', $airtime) < time();
+		$Episode['aired'] = strtotime('+'.($Episode['season']===0?'2 hours':((!$Episode['twoparter']?30:60).' minutes')), $airtime) < time();
 		return $Episode;
 	}
 
