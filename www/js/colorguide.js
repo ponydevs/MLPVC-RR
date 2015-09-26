@@ -1,22 +1,4 @@
-$document.off('paginate-refresh').on('paginate-refresh',function Colorguide(){
-	//noinspection JSUnusedLocalSymbols
-	var Color = window.Color, color = window.color;
-
-	var copyHash = !localStorage.getItem('leavehash'), $toggler = $('#toggle-copy-hash');
-	$toggler.on('display-update',function(){
-		copyHash = !localStorage.getItem('leavehash');
-		$toggler
-			.attr('class','typcn typcn-'+(copyHash ? 'tick' : 'times'))
-			.text('Copy # with color codes: '+(copyHash ? 'En':'Dis')+'abled');
-	}).trigger('display-update').on('click',function(e){
-		e.preventDefault();
-
-		if (copyHash) localStorage.setItem('leavehash', 1);
-		else localStorage.removeItem('leavehash');
-
-		$toggler.trigger('display-update');
-	});
-
+DocReady.push(function Colorguide(){
 	function tooltips(){
 		$('.tags').children().filter('[title][title!=""]').each(function(){
 			var $this = $(this),
@@ -61,25 +43,47 @@ $document.off('paginate-refresh').on('paginate-refresh',function Colorguide(){
 			function($el){ return 'Color: '+$el.attr('oldtitle') }
 		)
 	}
-	tooltips();
 	window.tooltips = function(){tooltips()};
 
-	$('#search-form').on('submit',function(e){
-		e.preventDefault();
+	function Init(){
+		//noinspection JSUnusedLocalSymbols
+		var Color = window.Color, color = window.color;
 
-		var query = $(this).serialize();
-		if (query === 'q=') query = '';
-		else query = '?'+query;
+		var copyHash = !localStorage.getItem('leavehash'), $toggler = $('#toggle-copy-hash');
+		$toggler.on('display-update',function(){
+			copyHash = !localStorage.getItem('leavehash');
+			$toggler
+				.attr('class','typcn typcn-'+(copyHash ? 'tick' : 'times'))
+				.text('Copy # with color codes: '+(copyHash ? 'En':'Dis')+'abled');
+		}).trigger('display-update').on('click',function(e){
+			e.preventDefault();
 
-		history.pushState({},'',window.location.pathname.replace(/\d+$/,'1')+query);
-		$.toPage(false, true, true);
-	});
+			if (copyHash) localStorage.setItem('leavehash', 1);
+			else localStorage.removeItem('leavehash');
 
-	$w.on('unload',function(){
-		$('.qtip').each(function(){
-			var $this = $(this);
-			$this.data('qtip').destroy();
-			$this.remove();
+			$toggler.trigger('display-update');
 		});
-	});
+		window.tooltips();
+
+		$('#search-form').on('submit',function(e){
+			e.preventDefault();
+
+			var query = $(this).serialize();
+			if (query === 'q=') query = '';
+			else query = '?'+query;
+
+			history.pushState({},'',window.location.pathname.replace(/\d+$/,'1')+query);
+			$.toPage(false, true, true);
+		});
+
+		$w.on('unload',function(){
+			$('.qtip').each(function(){
+				var $this = $(this);
+				$this.data('qtip').destroy();
+				$this.remove();
+			});
+		});
+	}
+	$document.off('paginate-refresh').on('paginate-refresh',Init);
+	Init();
 });
