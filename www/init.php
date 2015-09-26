@@ -16,3 +16,9 @@
 	require 'includes/Cookie.php';
 	require 'includes/Utils.php';
 	require 'includes/AuthCheck.php';
+
+	if (isset($_SERVER['HTTP_CF_CONNECTING_IP'])){
+		require 'includes/CloudFlare.php';
+		if (CloudFlare::CheckUserIP())
+			$_SERVER['REMOTE_ADDR'] = $_SERVER['HTTP_CF_CONNECTING_IP'];
+	}
