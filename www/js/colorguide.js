@@ -1,4 +1,4 @@
-DocReady.push(function Colorguide(){
+$document.off('paginate-refresh').on('paginate-refresh',function Colorguide(){
 	//noinspection JSUnusedLocalSymbols
 	var Color = window.Color, color = window.color;
 
