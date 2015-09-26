@@ -4,9 +4,20 @@
 		/**
 		 * Checks if user's IP address is a genuine CloudFlare server IP
 		 *
-		 * @return bool
+		 * @return bool True if IP is genuine
 		 */
 		static function CheckUserIP(){
+			return self::CheckIP($_SERVER['REMOTE_ADDR']);
+		}
+
+		/**
+		 * Checks if user's IP address is a genuine CloudFlare server IP
+		 *
+		 * @param string $ip Address to check
+		 *
+		 * @return bool True if IP is genuine
+		 */
+		static function CheckIP($ip){
 			foreach (self::_getCFIpRanges() as $range){
 				if (self::_cidr_match($_SERVER['REMOTE_ADDR'], $range))
 					return true;
@@ -26,7 +37,7 @@
 				file_put_contents($cachefile, $data);
 			}
 			else $data = file_get_contents($cachefile);
-			return explode('\n', $data);
+			return explode("\n", $data);
 		}
 
 		/**
