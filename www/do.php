@@ -836,20 +836,10 @@
 
 							if ($action === 'make'){
 								$data['message'] = 'Appearance added successfully';
-								$Query = $CGDb->rawQuerySingle(
-									"SELECT x.position
-									FROM (
-										SELECT
-											p.id,
-											p.label,
-											@rownum := @rownum + 1 AS position
-										FROM ponies p
-										JOIN (SELECT @rownum := 0) r ORDER BY p.label
-									) x
-									WHERE x.id = ?", array($query));
+								$Query = $CGDb->getOne('ponies p','COUNT(*) as count');
 
 								$data['id'] = $query;
-								$data['page'] = ceil($Query['position'] / $ItemsPerPage);
+								$data['page'] = ceil($Query['count'] / $ItemsPerPage);
 
 								if (isset($_POST['template'])){
 									try {

@@ -128,7 +128,8 @@ DocReady.push(function ColorguideManage(){
 								var id = this.id, info = this.info;
 								$list.one('page-switch',function(e){
 									var $pony = $('#p'+id);
-									$(document.body).scrollTop($pony.offset().top - ($pony.outerHeight()/2));
+									if ($pony)
+										$(document.body).scrollTop($pony.offset().top - ($pony.outerHeight()/2));
 									if (info){
 										e.preventDefault();
 										$.Dialog.info(title, info);
