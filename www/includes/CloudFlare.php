@@ -31,16 +31,16 @@
 
 		/**
 		 * Match an IP against a range in CIDR notation
-		 *  from http://stackoverflow.com/a/594134/1344955
+		 *  from http://stackoverflow.com/a/14841828/1344955
+		 *
+		 * @param $ip IP address
+		 * @param $range IP range to match $ip against
 		 *
 		 * @return bool True if IP is part of the network
 		 */
 		private function _cidr_match($ip, $range){
-			list ($subnet, $bits) = explode('/', $range);
-			$ip = ip2long($ip);
-			$subnet = ip2long($subnet);
-			$mask = -1 << (32 - $bits);
-			$subnet &= $mask;
-			return ($ip & $mask) == $subnet;
+		    list($subnet, $mask) = explode('/', $range);
+
+			return (ip2long($ip) & ~((1 << (32 - $mask)) - 1)) == ip2long($subnet) ? true : false;
 		}
 	}
