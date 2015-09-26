@@ -29,7 +29,7 @@ DocReady.push(function Colorguide(){
 				style: { classes: 'qtip-tag'+tagstyle }
 			});
 		});
-		var $ch = $('ul.colors').children('li').children();
+		var $ch = $('ul.colors, #colors').children('li').children();
 		$ch.filter(':not(:first-child):not([data-hasqtip])').each(function(){
 			var $this = $(this),
 				text = 'Click to copy HEX '+color+' code to clipboard',

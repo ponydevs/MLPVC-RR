@@ -23,7 +23,8 @@
 	}
 
 	// Return the markup for the specified color group
-	function get_cg_html($GroupID, $wrap = true){
+	define('NO_COLON', false);
+	function get_cg_html($GroupID, $wrap = true, $colon = true){
 		global $CGDb;
 
 		if (is_array($GroupID)) $Group = $GroupID;
@@ -31,7 +32,7 @@
 
 		$label = htmlspecialchars($Group['label']);
 		$HTML = $wrap ? "<li id='cg{$Group['groupid']}'>" : '';
-		$HTML .= "<span class='cat'>$label: </span>";
+		$HTML .= "<span class='cat'>$label".($colon?':':'')." </span>";
 		$Colors = get_colors($Group['groupid']);
 		if (!empty($Colors))
 			foreach ($Colors as $i => $c){
@@ -146,7 +147,7 @@
 			$colors = get_colors_html($p['id']);
 			$editBtn = PERM('inspector') ? '<button class="edit typcn typcn-pencil blue" title="Edit"></button><button class="delete typcn typcn-trash red" title="Delete"></button>' : '';
 
-			$HTML .= "<li id='p{$p['id']}'>$img<div><strong>{$p['label']}$editBtn</strong>$notes$tags$colors</div></li>";
+			$HTML .= "<li id='p{$p['id']}'>$img<div><strong><a href='/colorguide/appearance/{$p['id']}'>{$p['label']}</a>$editBtn</strong>$notes$tags$colors</div></li>";
 		}
 		else {
 			if (empty($_MSG))

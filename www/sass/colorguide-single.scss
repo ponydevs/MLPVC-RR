@@ -1,0 +1,56 @@
+@import "colorguide_vars";
+
+#content {
+	> h1 {
+		font-size: 2.2em;
+		line-height: 1.2em;
+		margin-bottom: 10px;
+	}
+	> img {
+		margin: 0 auto;
+		display: block;
+		width: 100%;
+		max-width: 300px;
+	}
+
+	#colors {
+		margin: 10px 0;
+		padding: 0;
+		list-style: none;
+		display: flex;
+		flex-flow: row wrap;
+		justify-content: flex-start;
+
+		li {
+			margin: 5px;
+			padding: 10px;
+			color: #434343;
+			background-color: rgba(0,0,0,.05);
+			border: 1px solid rgba(0,0,0,.2);
+			box-shadow: 0 0 2px rgba(0,0,0,.2);
+			font-size: 12px;
+			font-family: 'Verdana', sans-serif;
+			flex: 1 0 auto;
+			text-align: center;
+			transition: background-color .3s, border-color .3s, box-shadow .3s;
+
+			&:hover {
+				background-color: rgba(0,0,0,.1);
+				border: 1px solid rgba(0,0,0,.3);
+				box-shadow: 0 0 7px rgba(0,0,0,.3);
+			}
+
+			> .cat {
+				font-size: 2em;
+				font-weight: bold;
+				display: block;
+				margin: 0 0 5px;
+				font-family: 'Celestia', sans-serif;
+
+				~ span {
+					@include colored-square(35px);
+				}
+			}
+		}
+	}
+}

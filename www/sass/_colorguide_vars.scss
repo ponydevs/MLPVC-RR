@@ -20,3 +20,23 @@ $TCharacter: adjust_hue($_TBase, 240);
 		color: lighten($color, 50);
 	}
 }
+
+@mixin colored-square($size:16px, $border:1px){
+			display: inline-block;
+			border: $border solid #000;
+			width: #{$size - $border*2};
+			height: #{$size - $border*2};
+			font-size: 0;
+			transform: scale(1);
+
+			&:not(:empty) {
+				cursor: pointer;
+
+				&:active { transform: scale(.8) }
+			}
+			&:empty {
+				background: url(../img/transparency.svg);
+				background-size: 8px;
+			}
+			&:not(:last-child){ margin-right: 4px }
+}

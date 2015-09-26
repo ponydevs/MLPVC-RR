@@ -4,8 +4,9 @@
 	define('PRINTABLE_ASCII_REGEX','^[ -~]+$');
 	define('INVERSE_PRINTABLE_ASCII_REGEX','[^ -~]');
 
-	// Constant to disable returning of wrapper element with markup generators
+	// Constants to enable/disable returning of wrapper element with markup generators
 	define('NOWRAP', false);
+	define('WRAP', !NOWRAP);
 
 	/**
 	 * Sends replies to AJAX requests in a universal form
@@ -1982,8 +1983,11 @@ ORDER BY `count` DESC
 			global $color, $Color;
 			$NavItems['colorguide'] = array("/{$color}guide", "$Color Guide");
 			if ($do === 'colorguide'){
-				global $Tags, $Page;
-				$NavItems['colorguide']['subitem'] = array($_SERVER['REQUEST_URI'], (isset($Tags) ? 'Tags - ':'')."Page $Page");
+				global $Tags, $Page, $Appearance;
+				if (!empty($Appearance))
+					$NavItems['colorguide']['subitem'] = array($_SERVER['REQUEST_URI'], $Appearance['label']);
+				else $NavItems['colorguide']['subitem'] = array($_SERVER['REQUEST_URI'], (isset($Tags) ? 'Tags - ':'')."Page $Page");
+
 			}
 		}
 		if ($GLOBALS['signedIn'])

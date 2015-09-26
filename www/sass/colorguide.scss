@@ -1,7 +1,8 @@
+//noinspection CssUnknownTarget
 @import "../css/jquery.qtip.min";
 @import "vars";
+@import "colorguide_vars";
 @import "_theme_ctxmenu";
-@import "tags";
 // Mobile-only
 @media all and (max-width: 650px){
 	#list > li > div {
@@ -261,27 +262,7 @@ ul.colors {
 		margin: 0 5px 5px 0;
 
 		> * { vertical-align: middle }
-		> span:not(.cat) {
-			display: inline-block;
-			$size: 16px;
-			$border: 1px;
-			border: $border solid #000;
-			width: #{$size - $border*2};
-			height: #{$size - $border*2};
-			font-size: 0;
-			transform: scale(1);
-
-			&:not(:empty) {
-				cursor: pointer;
-
-				&:active { transform: scale(.8) }
-			}
-			&:empty {
-				background: url(../img/transparency.svg);
-				background-size: 8px;
-			}
-			&:not(:last-child){ margin-right: 4px }
-		}
+		> span:not(.cat) { @include colored-square(16px, 1px) }
 	}
 }
 

@@ -1250,6 +1250,24 @@
 				));
 			}
 
+			$_match = array();
+			if (preg_match('~^appearance/(\d+)~',$data,$_match)){
+				$Appearance = $CGDb->where('id', intval($_match[1]))->getOne('ponies');
+				if (empty($Appearance))
+					do404();
+
+				$heading = $Appearance['label'];
+				$title = "{$Color}s for $heading";
+
+				loadPage(array(
+					'title' => $title,
+					'heading' => $heading,
+					'view' => "$do-single",
+					'css' => array($do, "$do-single"),
+					'js' => array('jquery.qtip', 'jquery.ctxmenu', $do),
+				));
+			}
+
 			$title = '';
 			if (empty($_GET['q']) || !PERM('user')){
 				$EntryCount = $CGDb->count('ponies');
