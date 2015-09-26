@@ -45,45 +45,41 @@ DocReady.push(function Colorguide(){
 	}
 	window.tooltips = function(){tooltips()};
 
-	function Init(){
-		//noinspection JSUnusedLocalSymbols
-		var Color = window.Color, color = window.color;
+	//noinspection JSUnusedLocalSymbols
+	var Color = window.Color, color = window.color;
 
-		var copyHash = !localStorage.getItem('leavehash'), $toggler = $('#toggle-copy-hash');
-		$toggler.on('display-update',function(){
-			copyHash = !localStorage.getItem('leavehash');
-			$toggler
-				.attr('class','typcn typcn-'+(copyHash ? 'tick' : 'times'))
-				.text('Copy # with color codes: '+(copyHash ? 'En':'Dis')+'abled');
-		}).trigger('display-update').on('click',function(e){
-			e.preventDefault();
+	var copyHash = !localStorage.getItem('leavehash'), $toggler = $('#toggle-copy-hash');
+	$toggler.on('display-update',function(){
+		copyHash = !localStorage.getItem('leavehash');
+		$toggler
+			.attr('class','typcn typcn-'+(copyHash ? 'tick' : 'times'))
+			.text('Copy # with color codes: '+(copyHash ? 'En':'Dis')+'abled');
+	}).trigger('display-update').on('click',function(e){
+		e.preventDefault();
 
-			if (copyHash) localStorage.setItem('leavehash', 1);
-			else localStorage.removeItem('leavehash');
+		if (copyHash) localStorage.setItem('leavehash', 1);
+		else localStorage.removeItem('leavehash');
 
-			$toggler.trigger('display-update');
+		$toggler.trigger('display-update');
+	});
+	window.tooltips();
+
+	$('#search-form').on('submit',function(e){
+		e.preventDefault();
+
+		var query = $(this).serialize();
+		if (query === 'q=') query = '';
+		else query = '?'+query;
+
+		history.pushState({},'',window.location.pathname.replace(/\d+$/,'1')+query);
+		$.toPage(false, true, true);
+	});
+
+	$w.on('unload',function(){
+		$('.qtip').each(function(){
+			var $this = $(this);
+			$this.data('qtip').destroy();
+			$this.remove();
 		});
-		window.tooltips();
-
-		$('#search-form').on('submit',function(e){
-			e.preventDefault();
-
-			var query = $(this).serialize();
-			if (query === 'q=') query = '';
-			else query = '?'+query;
-
-			history.pushState({},'',window.location.pathname.replace(/\d+$/,'1')+query);
-			$.toPage(false, true, true);
-		});
-
-		$w.on('unload',function(){
-			$('.qtip').each(function(){
-				var $this = $(this);
-				$this.data('qtip').destroy();
-				$this.remove();
-			});
-		});
-	}
-	$document.off('paginate-refresh').on('paginate-refresh',Init);
-	Init();
+	});
 });
