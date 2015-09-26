@@ -752,8 +752,6 @@
 		case "colorguides":
 			$do = 'colorguide';
 		case "colorguide":
-			if (!PERM('inspector')) do404();
-
 			$CGDb = new MysqliDbWrapper('mlpvc-colorguide');
 			include "includes/CGUtils.php";
 
