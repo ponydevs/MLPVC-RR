@@ -49,7 +49,7 @@
 <?  if (PERM('user')){ ?>
 	<form id=search-form><input name=q<?=!empty($_GET['q'])?" value='".apos_encode($_GET['q'])."'":''?>> <button>Search</button><br>Enter tags separated by commas. You can search for up to 6 tags at a time.</form>
 <?  }
-	else echo Notice('info',"<span class='typcn typcn-info-large'></span> Please sign in with the button on the right to use the search feature.</p>",true); ?>
+	else echo Notice('info',"<span class='typcn typcn-info-large'></span> Please sign in with the button in the sidebar to use the search feature.</p>",true); ?>
 	<?=$Pagination = get_pagination_html($color.'guide',$Page,$MaxPages)?>
 	<?=get_ponies_html($Ponies)?>
 	<?=$Pagination?>
