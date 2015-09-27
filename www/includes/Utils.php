@@ -1561,28 +1561,42 @@ HTML;
 		$PathStart = '/episode/';
 		$displayed = false;
 		foreach ($Episodes as $i => $ep) {
-			$Title = format_episode_title($ep, AS_ARRAY);
-			$href = $PathStart.$Title['id'];
-			$adminControls = '';
-			if (PERM('inspector'))
-				$adminControls = "<span class='admincontrols'>" .
-					"<button class='edit-episode typcn typcn-spanner blue' title='Edit episode'></button> " .
-					"<button class='delete-episode typcn typcn-times red' title='Delete episode'></button>" .
-				"</span>";
+			$adminControls = $SeasonEpisode = $DataID = '';
+			$isMovie = $ep['season'] === 0;
+			if (!$isMovie){
+				$Title = format_episode_title($ep, AS_ARRAY);
+				$href = $PathStart.$Title['id'];
+				if (PERM('inspector'))
+					$adminControls = "<span class='admincontrols'>" .
+						"<button class='edit-episode typcn typcn-spanner blue' title='Edit episode'></button> " .
+						"<button class='delete-episode typcn typcn-times red' title='Delete episode'></button>" .
+					"</span>";
+
+				$SeasonEpisode = <<<HTML
+			<td class='season' rowspan='2'>{$Title['season']}</td>
+			<td class='episode' rowspan='2'>{$Title['episode']}</td>
+HTML;
+
+				$DataID = "data-epid='{$Title['id']}'";
+			}
+			else {
+				$Title = array('title' => "Equestria Girls: {$ep['title']}");
+				$href = "/eqg/{$ep['episode']}";
+				$ep = add_episode_airing_data($ep);
+			}
 
 			$star = '';
-			if (!$displayed && $ep['displayed']){
+			if (!$displayed && !$isMovie && $ep['displayed']){
 				$displayed = true;
 				$star = '<span class="typcn typcn-eye" title="Curently visible on the homepage"></span> ';
 			}
-			$star .= '<span class="typcn typcn-media-play'.(!$ep['aired']?'-outline':'').'" title="Episode had'.($ep['aired']?' aired, voting enabled':'n\'t aired yet, voting disabled').'"></span> ';
+			$star .= '<span class="typcn typcn-media-play'.(!$ep['aired']?'-outline':'').'" title="'.($isMovie?'Movie':'Episode').' had'.($ep['aired']?' aired, voting enabled':'n\'t aired yet, voting disabled').'"></span> ';
 
 			$airs = timetag($ep['airs'], EXTENDED, NO_DYNTIME);
 
 			$Body .= <<<HTML
-		<tr data-epid="{$Title['id']}">
-			<td class='season' rowspan='2'>{$Title['season']}</td>
-			<td class='episode' rowspan='2'>{$Title['episode']}</td>
+		<tr$DataID>
+			$SeasonEpisode
 			<td class='title'>$star<a href="$href">{$Title['title']}</a>$adminControls</td>
 		</tr>
 		<tr><td class='airs'>$airs</td></tr>

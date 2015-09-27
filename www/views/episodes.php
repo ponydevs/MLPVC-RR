@@ -19,4 +19,13 @@
 		<tbody><?=get_eptable_tbody($Episodes)?></tbody>
 	</table>
 <?php   } ?>
+	<h1>Movies</h1>
+	<table id="movies">
+		<thead>
+			<tr>
+				<th>Title &amp; Air Date</th>
+			</tr>
+		</thead>
+		<tbody><?=get_eptable_tbody($Database->where('season', 0)->get('episodes'))?></tbody>
+	</table>
 </div>
