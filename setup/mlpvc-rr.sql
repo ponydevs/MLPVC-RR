@@ -4,12 +4,12 @@ SET time_zone = "+00:00";
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8 */;
+/*!40101 SET NAMES utf8mb4 */;
 
 CREATE DATABASE IF NOT EXISTS `mlpvc-rr` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 USE `mlpvc-rr`;
 
-CREATE TABLE IF NOT EXISTS `deviation_cache` (
+CREATE TABLE `deviation_cache` (
   `provider` enum('fav.me','sta.sh') NOT NULL DEFAULT 'fav.me',
   `id` varchar(20) NOT NULL,
   `title` tinytext NOT NULL,
@@ -18,9 +18,9 @@ CREATE TABLE IF NOT EXISTS `deviation_cache` (
   `updated_on` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE IF NOT EXISTS `episodes` (
-  `season` tinyint(2) unsigned NOT NULL,
-  `episode` tinyint(2) unsigned NOT NULL,
+CREATE TABLE `episodes` (
+  `season` tinyint(2) UNSIGNED NOT NULL,
+  `episode` tinyint(2) UNSIGNED NOT NULL,
   `twoparter` tinyint(1) NOT NULL DEFAULT '0',
   `title` tinytext NOT NULL,
   `posted` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -28,21 +28,21 @@ CREATE TABLE IF NOT EXISTS `episodes` (
   `airs` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE IF NOT EXISTS `episodes__videos` (
-  `season` tinyint(2) unsigned NOT NULL,
-  `episode` tinyint(2) unsigned NOT NULL,
+CREATE TABLE `episodes__videos` (
+  `season` tinyint(2) UNSIGNED NOT NULL,
+  `episode` tinyint(2) UNSIGNED NOT NULL,
   `provider` enum('yt','dm') NOT NULL,
   `id` varchar(15) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE IF NOT EXISTS `episodes__votes` (
-  `season` tinyint(2) unsigned NOT NULL,
-  `episode` tinyint(2) unsigned NOT NULL,
+CREATE TABLE `episodes__votes` (
+  `season` tinyint(2) UNSIGNED NOT NULL,
+  `episode` tinyint(2) UNSIGNED NOT NULL,
   `user` varchar(36) NOT NULL,
   `vote` tinyint(1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE IF NOT EXISTS `log` (
+CREATE TABLE `log` (
   `entryid` int(11) NOT NULL,
   `initiator` varchar(36) DEFAULT NULL,
   `reftype` tinytext NOT NULL,
@@ -51,29 +51,29 @@ CREATE TABLE IF NOT EXISTS `log` (
   `ip` tinytext
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE IF NOT EXISTS `log__banish` (
+CREATE TABLE `log__banish` (
   `entryid` int(11) NOT NULL,
   `target` varchar(36) NOT NULL,
   `reason` tinytext NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE IF NOT EXISTS `log__episodes` (
+CREATE TABLE `log__episodes` (
   `entryid` int(11) NOT NULL,
   `action` enum('add','del') NOT NULL,
-  `season` tinyint(2) unsigned NOT NULL,
-  `episode` tinyint(2) unsigned NOT NULL,
+  `season` tinyint(2) UNSIGNED NOT NULL,
+  `episode` tinyint(2) UNSIGNED NOT NULL,
   `twoparter` tinyint(1) NOT NULL,
   `title` tinytext NOT NULL,
-  `airs` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  `airs` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE IF NOT EXISTS `log__episode_modify` (
+CREATE TABLE `log__episode_modify` (
   `entryid` int(11) NOT NULL,
   `target` tinytext NOT NULL,
-  `oldseason` tinyint(2) unsigned DEFAULT NULL,
-  `newseason` tinyint(2) unsigned DEFAULT NULL,
-  `oldepisode` tinyint(2) unsigned DEFAULT NULL,
-  `newepisode` tinyint(2) unsigned DEFAULT NULL,
+  `oldseason` tinyint(2) UNSIGNED DEFAULT NULL,
+  `newseason` tinyint(2) UNSIGNED DEFAULT NULL,
+  `oldepisode` tinyint(2) UNSIGNED DEFAULT NULL,
+  `newepisode` tinyint(2) UNSIGNED DEFAULT NULL,
   `oldtwoparter` tinyint(1) DEFAULT NULL,
   `newtwoparter` tinyint(1) DEFAULT NULL,
   `oldtitle` tinytext,
@@ -82,40 +82,40 @@ CREATE TABLE IF NOT EXISTS `log__episode_modify` (
   `newairs` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE IF NOT EXISTS `log__post_lock` (
+CREATE TABLE `log__post_lock` (
   `entryid` int(11) NOT NULL,
   `type` enum('request','reservation') NOT NULL,
   `id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE IF NOT EXISTS `log__rolechange` (
+CREATE TABLE `log__rolechange` (
   `entryid` int(11) NOT NULL,
   `target` varchar(36) NOT NULL,
   `oldrole` varchar(10) NOT NULL,
   `newrole` varchar(10) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE IF NOT EXISTS `log__un-banish` (
+CREATE TABLE `log__un-banish` (
   `entryid` int(11) NOT NULL,
   `target` varchar(36) NOT NULL,
   `reason` tinytext NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE IF NOT EXISTS `log__userfetch` (
+CREATE TABLE `log__userfetch` (
   `entryid` int(11) NOT NULL,
   `userid` varchar(36) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE IF NOT EXISTS `permissions` (
+CREATE TABLE `permissions` (
   `action` varchar(30) NOT NULL,
   `minrole` varchar(10) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE IF NOT EXISTS `requests` (
+CREATE TABLE `requests` (
   `id` int(11) NOT NULL,
   `type` enum('chr','bg','obj') NOT NULL DEFAULT 'chr',
-  `season` tinyint(2) unsigned NOT NULL,
-  `episode` tinyint(2) unsigned NOT NULL,
+  `season` tinyint(2) UNSIGNED NOT NULL,
+  `episode` tinyint(2) UNSIGNED NOT NULL,
   `preview` tinytext NOT NULL,
   `fullsize` tinytext NOT NULL,
   `label` tinytext NOT NULL,
@@ -126,10 +126,10 @@ CREATE TABLE IF NOT EXISTS `requests` (
   `lock` tinyint(1) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE IF NOT EXISTS `reservations` (
+CREATE TABLE `reservations` (
   `id` int(11) NOT NULL,
-  `season` tinyint(2) unsigned NOT NULL,
-  `episode` tinyint(2) unsigned NOT NULL,
+  `season` tinyint(2) UNSIGNED NOT NULL,
+  `episode` tinyint(2) UNSIGNED NOT NULL,
   `preview` tinytext NOT NULL,
   `fullsize` tinytext NOT NULL,
   `label` tinytext NOT NULL,
@@ -139,14 +139,14 @@ CREATE TABLE IF NOT EXISTS `reservations` (
   `lock` tinyint(1) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE IF NOT EXISTS `roles` (
-  `value` tinyint(3) unsigned NOT NULL,
+CREATE TABLE `roles` (
+  `value` tinyint(3) UNSIGNED NOT NULL,
   `name` varchar(10) NOT NULL,
   `label` tinytext NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE IF NOT EXISTS `sessions` (
-  `id` bigint(20) unsigned NOT NULL,
+CREATE TABLE `sessions` (
+  `id` bigint(20) UNSIGNED NOT NULL,
   `user` varchar(36) NOT NULL,
   `platform` tinytext NOT NULL,
   `browser_name` tinytext,
@@ -159,7 +159,7 @@ CREATE TABLE IF NOT EXISTS `sessions` (
   `lastvisit` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE IF NOT EXISTS `usefullinks` (
+CREATE TABLE `usefullinks` (
   `id` int(11) NOT NULL,
   `url` tinytext NOT NULL,
   `label` varchar(40) NOT NULL,
@@ -167,7 +167,7 @@ CREATE TABLE IF NOT EXISTS `usefullinks` (
   `minrole` varchar(10) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE IF NOT EXISTS `users` (
+CREATE TABLE `users` (
   `id` varchar(36) NOT NULL,
   `name` tinytext NOT NULL,
   `role` varchar(10) NOT NULL DEFAULT 'user',
@@ -255,38 +255,38 @@ ALTER TABLE `users`
 
 
 ALTER TABLE `log`
-  MODIFY `entryid` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `entryid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=82;
 ALTER TABLE `log__banish`
-  MODIFY `entryid` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `entryid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 ALTER TABLE `log__episodes`
-  MODIFY `entryid` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `entryid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 ALTER TABLE `log__episode_modify`
-  MODIFY `entryid` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `entryid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 ALTER TABLE `log__post_lock`
-  MODIFY `entryid` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `entryid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=47;
 ALTER TABLE `log__rolechange`
-  MODIFY `entryid` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `entryid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 ALTER TABLE `log__un-banish`
   MODIFY `entryid` int(11) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `log__userfetch`
-  MODIFY `entryid` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `entryid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 ALTER TABLE `requests`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=151;
 ALTER TABLE `reservations`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=42;
 ALTER TABLE `sessions`
-  MODIFY `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=110;
 ALTER TABLE `usefullinks`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 ALTER TABLE `episodes`
   ADD CONSTRAINT `episodes_ibfk_1` FOREIGN KEY (`posted_by`) REFERENCES `users` (`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 ALTER TABLE `episodes__videos`
-  ADD CONSTRAINT `episodes__videos_ibfk_1` FOREIGN KEY (`season`, `episode`) REFERENCES `episodes` (`season`, `episode`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `episodes__videos_ibfk_1` FOREIGN KEY (`season`,`episode`) REFERENCES `episodes` (`season`, `episode`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 ALTER TABLE `episodes__votes`
-  ADD CONSTRAINT `episodes__votes_ibfk_1` FOREIGN KEY (`season`, `episode`) REFERENCES `episodes` (`season`, `episode`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `episodes__votes_ibfk_1` FOREIGN KEY (`season`,`episode`) REFERENCES `episodes` (`season`, `episode`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `episodes__votes_ibfk_2` FOREIGN KEY (`user`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 ALTER TABLE `log`
@@ -307,12 +307,12 @@ ALTER TABLE `permissions`
 
 ALTER TABLE `requests`
   ADD CONSTRAINT `requests_ibfk_2` FOREIGN KEY (`reserved_by`) REFERENCES `users` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
-  ADD CONSTRAINT `requests_ibfk_3` FOREIGN KEY (`season`, `episode`) REFERENCES `episodes` (`season`, `episode`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `requests_ibfk_3` FOREIGN KEY (`season`,`episode`) REFERENCES `episodes` (`season`, `episode`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `requests_ibfk_4` FOREIGN KEY (`requested_by`) REFERENCES `users` (`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 ALTER TABLE `reservations`
-  ADD CONSTRAINT `reservations_ibfk_1` FOREIGN KEY (`season`, `episode`) REFERENCES `episodes` (`season`, `episode`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `reservations_ibfk_2` FOREIGN KEY (`reserved_by`) REFERENCES `users` (`id`);
+  ADD CONSTRAINT `reservations_ibfk_1` FOREIGN KEY (`season`,`episode`) REFERENCES `episodes` (`season`, `episode`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `reservations_ibfk_2` FOREIGN KEY (`reserved_by`) REFERENCES `users` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE;
 
 ALTER TABLE `sessions`
   ADD CONSTRAINT `sessions_ibfk_1` FOREIGN KEY (`user`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
