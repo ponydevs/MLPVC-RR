@@ -178,7 +178,13 @@
 			margin-top: 6px;
 			white-space: pre-wrap;
 
-			:empty { display: none }
+			&:empty { display: none }
+
+			> span + a {
+				margin-left: 5px;
+				border-left: 1px solid #000;
+				padding-left: 5px;
+			}
 		}
 	}
 }

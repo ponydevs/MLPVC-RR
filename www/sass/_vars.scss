@@ -306,3 +306,25 @@ $StrongOutline: 3;
 	}
 	&:empty:before { content: "None yet." }
 }
+
+%section {
+	&:not(:last-child) { margin-bottom: 15px }
+
+	> label {
+		font-size: 1.2em;
+		text-decoration: underline;
+		margin-bottom: 10px;
+		display: block;
+
+		> .typcn {
+			margin-right: 7px;
+		}
+	}
+	p {
+		margin: 0;
+
+		&:not(:last-child) {
+			margin-bottom: 5px;
+		}
+	}
+}

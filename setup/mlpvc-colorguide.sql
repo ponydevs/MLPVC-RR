@@ -647,6 +647,7 @@ CREATE TABLE `ponies` (
   `id` int(11) NOT NULL,
   `label` tinytext NOT NULL,
   `notes` tinytext NOT NULL,
+  `cm_favme` varchar(20) DEFAULT NULL,
   `added` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

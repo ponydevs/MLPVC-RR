@@ -811,6 +811,7 @@
 							if ($action === 'get') respond(array(
 								'label' => $Pony['label'],
 								'notes' => $Pony['notes'],
+								'cm_favme' => !empty($Pony['cm_favme']) ? "http://fav.me/{$Pony['cm_favme']}" : null,
 							));
 
 							$data = array('notes' => '');
@@ -831,6 +832,21 @@
 									respond('Appearance notes cannot be longer than 255 characters');
 								$data['notes'] = $notes;
 							}
+							else $data['notes'] = '';
+
+							if (!empty($_POST['cm_favme'])){
+								$cm_favme = trim($_POST['cm_favme']);
+								try {
+									require_once 'includes/Image.php';
+									$Image = new Image($cm_favme, array('fav.me','dA'));
+									$data['cm_favme'] = $Image->id;
+								}
+								catch (MismatchedProviderException $e){
+									respond('The vector must be on DeviantArt, '.$e->getActualProvider().' links are not allowed');
+								}
+								catch (Exception $e){ respond($e->getMessage()); }
+							}
+							else $data['cm_favme'] = null;
 
 							$query = $action === 'set'
 								? $CGDb->where('id', $Pony['id'])->update('ponies', $data)
@@ -856,8 +872,7 @@
 									}
 								}
 							}
-							if (!empty($data['notes']))
-								$data['notes'] = get_notes_html($data, NOWRAP);
+							$data['notes'] = get_notes_html($data, NOWRAP);
 							respond($data);
 						break;
 						case "rename":

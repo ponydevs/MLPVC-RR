@@ -82,6 +82,13 @@ DocReady.push(function ColorguideManage(){
 						maxlength: 255
 					})
 				),
+				$.mk('label').append(
+					$.mk('span').text('Link to cutie mark (optional)'),
+					$.mk('input').attr({
+						name: 'cm_favme',
+						placeholder: 'DeviantArt submission URL',
+					})
+				),
 				$.mk('div').attr('class','notice').hide().html('<p></p>')
 			),
 		mkPonyEditor = function($this, title, data){
@@ -97,8 +104,9 @@ DocReady.push(function ColorguideManage(){
 					},
 					editing = !!data;
 				if (editing){
-					$form.find('input').val(data.label);
+					$form.find('input[name=label]').val(data.label);
 					$form.find('textarea').val(data.notes);
+					$form.find('input[name=cm_favme]').val(data.cm_favme);
 				}
 				else {
 					$.mk('label').append(
@@ -119,7 +127,7 @@ DocReady.push(function ColorguideManage(){
 					$.post('/colorguide/'+(editing?'set/'+data.ponyID:'make'),$form.mkData(),$.mkAjaxHandler(function(){
 						if (this.status){
 							if (editing){
-								$ponyLabel.contents().first().replaceWith(this.label);
+								$ponyLabel.children().first().text(this.label);
 								$ponyNotes.html(this.notes);
 								$.Dialog.close();
 							}

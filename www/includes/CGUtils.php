@@ -124,7 +124,9 @@
 
 	// Returns the markup for the notes displayed under an appaerance
 	function get_notes_html($p, $wrap = true){
-		$notes = !empty($p['notes']) ? htmlspecialchars($p['notes']) : '';
+		$notes = !empty($p['notes']) ? '<span>'.htmlspecialchars($p['notes']).'</span>' : '';
+		if (!empty($p['cm_favme']))
+			$notes .= "<a href='http://fav.me/{$p['cm_favme']}'>Cutie mark vector</a>";
 		return $wrap ? "<div class='notes'>$notes</div>" : $notes;
 	}
 
