@@ -16,17 +16,13 @@
 
 	section { @extend %section }
 
-	#pony-cm {
-		display: block;
-
-		img {
-			width: 100%;
-			max-width: 175px;
-			border: 2px solid $DeviationBorder;
-			box-shadow: 0 0 5px $DeviationBorder;
-			background: url(../img/transparency.svg) repeat;
-			background-size: 12px;
-		}
+	#pony-cm img {
+		width: 100%;
+		max-width: 175px;
+		border: 2px solid $DeviationBorder;
+		box-shadow: 0 0 5px $DeviationBorder;
+		background: url(../img/transparency.svg) repeat;
+		background-size: 12px;
 	}
 
 	#colors {
