@@ -19,11 +19,19 @@
 <?php } ?>
 	</section>
 <?php
-	if (!empty($CurrentEpisode)){
+	if ($view === 'episode' && !empty($CurrentEpisode)){
 		$CurrentEpisode['willair'] = gmdate('c', strtotime('+'.(!$CurrentEpisode['twoparter'] ? '30' : '60').' minutes',strtotime($CurrentEpisode['airs']))); ?>
 	<section id="voting">
 		<h2><?=$CurrentEpisode['season']==0?'Movie':'Episode'?> voting</h2>
 		<?=get_episode_voting($CurrentEpisode)?>
+	</section>
+<?php
+	}
+	if ($do === 'colorguide' && (!empty($Appearance) || !empty($Ponies))){ ?>
+	<section id="hash-copy">
+		<h2>Color Guide</h2>
+		<p>You can click any <?=$color?>ed square on this page to copy its HEX <?=$color?> code to your clipboard.</p>
+		<button class='blue typcn typcn-refresh' id='toggle-copy-hash'>Checking...</button>
 	</section>
 <?php
 	}

@@ -399,8 +399,7 @@ HTML;
 
 		# Putting it together
 		/* Together, we'll always shine! */
-		if (empty($settings['view'])) $view = $do;
-		else $view = $settings['view'];
+		$view = empty($settings['view']) ? $do : $settings['view'];
 		$viewPath = "views/{$view}.php";
 
 		header('Content-Type: text/html; charset=utf-8;');

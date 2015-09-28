@@ -42,9 +42,6 @@
 <? } ?>
 		<a class='btn darkblue typcn typcn-tags' href="/colorguide/tags">View list of tags</a>
 	</p>
-	<?=Notice('info',"You can click any colored square on this page to copy its HEX color code to your clipboard. To toggle whether the # symbol will be copied, use the button below. Your choice will be remembered on this browser.
-
-	<button class='typcn typcn-refresh' id='toggle-copy-hash'>Checking...</button>")?>
 
 <?  if (PERM('user')){ ?>
 	<form id=search-form><input name=q<?=!empty($_GET['q'])?" value='".apos_encode($_GET['q'])."'":''?>> <button>Search</button><br>Enter tags separated by commas. You can search for up to 6 tags at a time.</form>

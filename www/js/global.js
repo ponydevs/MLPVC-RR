@@ -10,12 +10,13 @@
 	};
 
 	// Globalize common elements
+
+	window.$w = $(window);
+	window.$document = $(document);
+	window.$body = $(document.body);
+	window.$head = $(document.head);
 	window.CommonElements = function(){
 		$.extend(window, {
-			$w: $(window),
-			$document: $(document),
-			$body: $(document.body),
-			$head: $(document.head),
 			$header: $('header'),
 			$sbToggle: $('.sidebar-toggle'),
 			$main: $('#main'),
