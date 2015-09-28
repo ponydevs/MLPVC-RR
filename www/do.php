@@ -707,8 +707,12 @@
 			else $User = get_user($un, 'name');
 
 			if (empty($User)){
+				if ($User === false){
+					$MSG = "User does not exist";
+					$SubMSG = "Check the name for typos and try again";
+				}
 				if (!isset($MSG)){
-					$MSG = 'Local user not found';
+					$MSG = 'Local user data missing';
 					if (!$signedIn){
 						$exists = 'exsists on DeviantArt';
 						if (isset($un)) $exists = "<a href='http://$un.deviantart.com/'>$exists</a>";

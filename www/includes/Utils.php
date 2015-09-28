@@ -1017,7 +1017,12 @@ HTML;
 		if (!preg_match('/^'.USERNAME_PATTERN.'$/', $username))
 			return null;
 
-		$userdata = da_request('user/whois', array('usernames[0]' => $username));
+		try {
+			$userdata = da_request('user/whois', array('usernames[0]' => $username));
+		}
+		catch (DARequestException $e){
+			return false;
+		}
 
 		if (empty($userdata['results'][0]))
 			return null;
