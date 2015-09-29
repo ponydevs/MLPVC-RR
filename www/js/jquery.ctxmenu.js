@@ -89,11 +89,16 @@
 		var items = [].slice.apply(arguments);
 		items.splice(0,1);
 
-		if (typeof $el.data('ctxmenu-items') === 'undefined') return $el.ctxmenu(items);
-		setTitle($el);
+		$el.each(function(){
+			var $el = $(this);
 
-		$.each(items,function(_, item){
-			addToItems(item, $el)
+			if (typeof $el.data('ctxmenu-items') === 'undefined') return $el.ctxmenu(items);
+
+			setTitle($el);
+
+			$.each(items,function(_, item){
+				addToItems(item, $el)
+			});
 		});
 	};
 	$.ctxmenu.triggerItem = function($el, nth){
