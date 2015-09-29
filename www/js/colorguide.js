@@ -60,7 +60,7 @@ DocReady.push(function Colorguide(){
 		}).filter(':not(.ctxmenu-bound)').ctxmenu(
 			[
 				{text: "Copy HEX "+color+" code", icon: 'clipboard', 'default': true, click: function(){
-					$.copy(this.innerHTML.trim());
+					$(this).triggerHandler('click');
 				}},
 			],
 			function($el){ return 'Color: '+$el.attr('oldtitle') }
