@@ -1,4 +1,27 @@
 DocReady.push(function Colorguide(){
+	//noinspection JSUnusedLocalSymbols
+	var Color = window.Color, color = window.color;
+
+	var copyHash = !localStorage.getItem('leavehash'), $toggler;
+	function copyHashToggler(){
+		$toggler = $('#toggle-copy-hash');
+		$toggler.off('display-update').on('display-update',function(){
+			copyHash = !localStorage.getItem('leavehash');
+			$toggler
+				.attr('class','blue typcn typcn-'+(copyHash ? 'tick' : 'times'))
+				.text('Copy # with color codes: '+(copyHash ? 'En':'Dis')+'abled');
+		}).trigger('display-update').on('click',function(e){
+			e.preventDefault();
+
+			if (copyHash) localStorage.setItem('leavehash', 1);
+			else localStorage.removeItem('leavehash');
+
+			$toggler.triggerHandler('display-update');
+		});
+	}
+	window.copyHashToggler = function(){copyHashToggler()};
+	copyHashToggler();
+
 	function tooltips(){
 		$('.tags').children().filter('[title][title!=""]').each(function(){
 			var $this = $(this),
@@ -45,29 +68,6 @@ DocReady.push(function Colorguide(){
 	}
 	window.tooltips = function(){tooltips()};
 	tooltips();
-
-	//noinspection JSUnusedLocalSymbols
-	var Color = window.Color, color = window.color;
-
-	var copyHash = !localStorage.getItem('leavehash'), $toggler;
-	function copyHashToggler(){
-		$toggler = $('#toggle-copy-hash');
-		$toggler.off('display-update').on('display-update',function(){
-			copyHash = !localStorage.getItem('leavehash');
-			$toggler
-				.attr('class','blue typcn typcn-'+(copyHash ? 'tick' : 'times'))
-				.text('Copy # with color codes: '+(copyHash ? 'En':'Dis')+'abled');
-		}).trigger('display-update').on('click',function(e){
-			e.preventDefault();
-
-			if (copyHash) localStorage.setItem('leavehash', 1);
-			else localStorage.removeItem('leavehash');
-
-			$toggler.triggerHandler('display-update');
-		});
-	}
-	window.copyHashToggler = function(){copyHashToggler()};
-	copyHashToggler();
 
 	$document.on('paginate-refresh',function(){
 		tooltips();
