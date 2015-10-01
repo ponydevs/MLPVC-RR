@@ -1,6 +1,6 @@
 DocReady.push(function Colorguide(){
 	//noinspection JSUnusedLocalSymbols
-	var Color = window.Color, color = window.color;
+	var Color = window.Color, color = window.color, $list = $('#list');
 
 	var copyHash = !localStorage.getItem('leavehash'), $toggler;
 	function copyHashToggler(){
@@ -69,7 +69,8 @@ DocReady.push(function Colorguide(){
 	window.tooltips = function(){tooltips()};
 	tooltips();
 
-	$document.on('paginate-refresh',function(){
+	$list.on('page-switch',function(){
+		$list = $('#list');
 		tooltips();
 		copyHashToggler();
 	});

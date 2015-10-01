@@ -9,59 +9,6 @@ DocReady.push(function ColorguideManage(){
 		'<p class="align-center">The URL will be checked against the supported provider list, and if an image is found, it\'ll be downloaded to the server and set as this appearance\'s sprite image.</p>'
 	);
 
-	$('.upload-wrap').each(function(){
-		var $this = $(this),
-			ponyID = $this.closest('li').attr('id').substring(1);
-
-		$this.uploadZone({
-			requestKey: 'sprite',
-			title: 'Upload sprite',
-			accept: 'image/png',
-			target: '/colorguide/setsprite/'+ponyID,
-		}).on('uz-uploadstart',function(){
-			$.Dialog.close();
-		}).ctxmenu([
-			{text: 'Open image in new tab', icon: 'arrow-forward', 'default': true, attr: {
-				href: $this.find('img').attr('src'),
-				target: '_blank',
-			}},
-			{text: 'Copy image URL', icon: 'clipboard', click: function(){
-				$.copy($.urlToAbsolute($this.find('img').attr('src')));
-			}},
-			{text: 'Upload new sprite', icon: 'upload', click: function(){
-				var title = 'Upload sprite image',
-					ponyID = $this.closest('li').attr('id').substring(1),
-					$uploadInput = $this.find('input[type="file"]');
-				$.Dialog.request(title,$spriteUploadForm.clone(),'sprite-img','Download image',function($form){
-					var $image_url = $form.find('input[name=image_url]');
-					$form.find('a').on('click',function(e){
-						e.preventDefault();
-						e.stopPropagation();
-
-						$uploadInput.trigger('click', [true]);
-					});
-					$form.on('submit',function(e){
-						e.preventDefault();
-
-						var image_url = $image_url.val();
-
-						$.Dialog.wait(title, 'Downloading external image to the server');
-
-						$.post('/colorguide/setsprite/'+ponyID,{image_url: image_url}, $.mkAjaxHandler(function(){
-							if (this.status) $uploadInput.trigger('set-image', [this.path]);
-							else $.Dialog.fail(title,this.message);
-						}));
-					});
-				});
-			}},
-		], 'Sprite image').attr('title', isWebkit ? ' ' : '').on('click',function(e, forced){
-			if (forced === true) return true;
-
-			e.preventDefault();
-			$this.data('ctxmenu-items').eq(1).children().get(0).click();
-		});
-	});
-
 	var $list = $('#list'),
 		$ponyEditor = $.mk('form').attr('id','pony-editor')
 			.append(
@@ -401,64 +348,6 @@ DocReady.push(function ColorguideManage(){
 		});
 	}
 
-	var $tags;
-	$list.on('page-switch',function(){
-		$list.find('button.edit').on('click',function(){
-			var $this = $(this),
-				ponyID = $this.parents('li').attr('id').substring(1),
-				ponyName = $this.parent().text().trim(),
-				title = 'Editing appearance: '+ponyName;
-
-			$.Dialog.wait(title, 'Retrieving appearance details from server');
-
-			$.post('/colorguide/get/'+ponyID,$.mkAjaxHandler(function(){
-				var data = this;
-				if (data.status){
-					data.ponyID = ponyID;
-					mkPonyEditor($this, title, data);
-				}
-				else $.Dialog.fail(title, this.message);
-			}));
-		}).next().on('click',function(){
-			var $this = $(this),
-				$li = $this.closest('li'),
-				ponyID = $li.attr('id').substring(1),
-				ponyName = $this.parent().text().trim(),
-				title = 'Deleting appearance: '+ponyName;
-
-			$.Dialog.confirm(title,'Deleting this appearance will remove <strong>ALL</strong> of its color groups, the colors within them, and the sprite file, if any.<br>Delete anyway?',function(sure){
-				if (!sure) return;
-
-				$.Dialog.wait(title, 'Sending removal request');
-
-				$.post('/colorguide/delete/'+ponyID,$.mkAjaxHandler(function(){
-					if (this.status){
-						$li.remove();
-						$.Dialog.success(title, this.message);
-
-						var path = window.location.pathname;
-						if ($list.children().length === 0)
-							path = path.replace(/(\d+)$/,function(n){ return n > 1 ? n-1 : n });
-						$.toPage(path,true,true);
-					}
-					else $.Dialog.fail(title, this.message);
-				}));
-			})
-		});
-
-		$tags = $('.tags').ctxmenu(
-			[
-				{text: 'Create new tag', icon: 'plus', click: function(){
-					createNewTag($(this));
-				}},
-			],
-			'Tags'
-		);
-
-		ctxmenus();
-		window.tooltips();
-	}).trigger('page-switch');
-
 	function ctxmenus(){
 		$tags.children('span:not(.ctxmenu-bound)').ctxmenu([
 			{text: 'Edit tag', icon: 'pencil', click: function(){
@@ -763,6 +652,116 @@ DocReady.push(function ColorguideManage(){
 				$.ctxmenu.triggerItem($(this).parent(), 4);
 			}}
 		);
+
+		$('.upload-wrap').each(function(){
+			var $this = $(this),
+				ponyID = $this.closest('li').attr('id').substring(1);
+
+			$this.uploadZone({
+				requestKey: 'sprite',
+				title: 'Upload sprite',
+				accept: 'image/png',
+				target: '/colorguide/setsprite/'+ponyID,
+			}).on('uz-uploadstart',function(){
+				$.Dialog.close();
+			}).ctxmenu([
+				{text: 'Open image in new tab', icon: 'arrow-forward', 'default': true, attr: {
+					href: $this.find('img').attr('src'),
+					target: '_blank',
+				}},
+				{text: 'Copy image URL', icon: 'clipboard', click: function(){
+					$.copy($.urlToAbsolute($this.find('img').attr('src')));
+				}},
+				{text: 'Upload new sprite', icon: 'upload', click: function(){
+					var title = 'Upload sprite image',
+						ponyID = $this.closest('li').attr('id').substring(1),
+						$uploadInput = $this.find('input[type="file"]');
+					$.Dialog.request(title,$spriteUploadForm.clone(),'sprite-img','Download image',function($form){
+						var $image_url = $form.find('input[name=image_url]');
+						$form.find('a').on('click',function(e){
+							e.preventDefault();
+							e.stopPropagation();
+
+							$uploadInput.trigger('click', [true]);
+						});
+						$form.on('submit',function(e){
+							e.preventDefault();
+
+							var image_url = $image_url.val();
+
+							$.Dialog.wait(title, 'Downloading external image to the server');
+
+							$.post('/colorguide/setsprite/'+ponyID,{image_url: image_url}, $.mkAjaxHandler(function(){
+								if (this.status) $uploadInput.trigger('set-image', [this.path]);
+								else $.Dialog.fail(title,this.message);
+							}));
+						});
+					});
+				}},
+			], 'Sprite image').attr('title', isWebkit ? ' ' : '').on('click',function(e, forced){
+				if (forced === true) return true;
+
+				e.preventDefault();
+				$this.data('ctxmenu-items').eq(1).children().get(0).click();
+			});
+		});
 	}
 	window.ctxmenus = function(){ctxmenus()};
+
+	var $tags;
+	$list.on('page-switch',function(){
+		$list.find('button.edit').on('click',function(){
+			var $this = $(this),
+				ponyID = $this.parents('li').attr('id').substring(1),
+				ponyName = $this.parent().text().trim(),
+				title = 'Editing appearance: '+ponyName;
+
+			$.Dialog.wait(title, 'Retrieving appearance details from server');
+
+			$.post('/colorguide/get/'+ponyID,$.mkAjaxHandler(function(){
+				var data = this;
+				if (data.status){
+					data.ponyID = ponyID;
+					mkPonyEditor($this, title, data);
+				}
+				else $.Dialog.fail(title, this.message);
+			}));
+		}).next().on('click',function(){
+			var $this = $(this),
+				$li = $this.closest('li'),
+				ponyID = $li.attr('id').substring(1),
+				ponyName = $this.parent().text().trim(),
+				title = 'Deleting appearance: '+ponyName;
+
+			$.Dialog.confirm(title,'Deleting this appearance will remove <strong>ALL</strong> of its color groups, the colors within them, and the sprite file, if any.<br>Delete anyway?',function(sure){
+				if (!sure) return;
+
+				$.Dialog.wait(title, 'Sending removal request');
+
+				$.post('/colorguide/delete/'+ponyID,$.mkAjaxHandler(function(){
+					if (this.status){
+						$li.remove();
+						$.Dialog.success(title, this.message);
+
+						var path = window.location.pathname;
+						if ($list.children().length === 0)
+							path = path.replace(/(\d+)$/,function(n){ return n > 1 ? n-1 : n });
+						$.toPage(path,true,true);
+					}
+					else $.Dialog.fail(title, this.message);
+				}));
+			})
+		});
+
+		$tags = $('.tags').ctxmenu(
+			[
+				{text: 'Create new tag', icon: 'plus', click: function(){
+					createNewTag($(this));
+				}},
+			],
+			'Tags'
+		);
+
+		ctxmenus();
+	}).trigger('page-switch');
 });

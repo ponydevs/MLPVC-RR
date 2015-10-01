@@ -1,4 +1,4 @@
-$document.off('paginate-refresh').on('paginate-refresh',function(){
+$d.off('paginate-refresh').on('paginate-refresh',function(){
 	var basePath = location.pathname.replace(/(\d+)$/,''),
 		$pagination = $('.pagination'),
 		pageNumber = parseInt($pagination.first().children('li').children('strong').text(), 10),

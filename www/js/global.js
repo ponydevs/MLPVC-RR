@@ -1,10 +1,14 @@
 (function($){
 	// document.createElement shortcut
+	var mk = function(){ return document.createElement.apply(document,arguments) };
+	window.mk = function(){return mk.apply(window,arguments)};
+
+	// $(document.createElement) shortcut
 	$.mk = function(){ return $(document.createElement.apply(document,arguments)) };
 
 	// Convert relative URL to absolute
 	$.urlToAbsolute = function(url){
-		var a = $.mk('a');
+		var a = mk('a');
 		a.href = url;
 		return a.href;
 	};
@@ -12,9 +16,7 @@
 	// Globalize common elements
 
 	window.$w = $(window);
-	window.$document = $(document);
-	window.$body = $(document.body);
-	window.$head = $(document.head);
+	window.$d = $(document);
 	window.CommonElements = function(){
 		$.extend(window, {
 			$header: $('header'),
@@ -23,6 +25,8 @@
 			$content: $('#content'),
 			$sidebar: $('#sidebar'),
 			$footer: $('footer'),
+			$body: $('body'),
+			$head: $('head'),
 		});
 		window.$navbar = $header.find('nav');
 	};
@@ -138,7 +142,7 @@
 })(jQuery);
 
 function DocumentIsReady(){
-	$document.triggerHandler('paginate-refresh');
+	$d.triggerHandler('paginate-refresh');
 
 	// Sign in button handler
 	var OAUTH_URL = window.OAUTH_URL,
@@ -284,7 +288,7 @@ $(function(){
 		e.preventDefault();
 		HandleNav(this.href);
 	}
-	$document.off('click','a[href]',LinkClick).on('click','a[href]',LinkClick);
+	$d.off('click','a[href]',LinkClick).on('click','a[href]',LinkClick);
 
 	$w.off('popstate').on('popstate',function(e){
 		var state = e.originalEvent.state;
