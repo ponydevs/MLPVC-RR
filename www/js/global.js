@@ -199,8 +199,7 @@ $(function(){
 	DocReadyOnce = true;
 
 	// Sidebar toggle handler
-	var $body = $(document.body),
-		xhr = false;
+	var xhr = false;
 	$sbToggle.off('click').on('click',function(e){
 		e.preventDefault();
 
@@ -310,6 +309,7 @@ $(function(){
 			url: url,
 			data: {'via-js': true},
 			success: $.mkAjaxHandler(function(){
+				if (xhr == false) return;
 				if (!this.status) $.Dialog.fail(title, this.message);
 
 				url = new URL(this.responseURL+(new URL(url).hash)).pathString;

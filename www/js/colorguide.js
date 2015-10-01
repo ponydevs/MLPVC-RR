@@ -5,7 +5,7 @@ DocReady.push(function Colorguide(){
 	var copyHash = !localStorage.getItem('leavehash'), $toggler;
 	function copyHashToggler(){
 		$toggler = $('#toggle-copy-hash');
-		$toggler.off('display-update').on('display-update',function(){
+		if ($toggler.length) $toggler.off('display-update').on('display-update',function(){
 			copyHash = !localStorage.getItem('leavehash');
 			$toggler
 				.attr('class','blue typcn typcn-'+(copyHash ? 'tick' : 'times'))
@@ -20,7 +20,6 @@ DocReady.push(function Colorguide(){
 		});
 	}
 	window.copyHashToggler = function(){copyHashToggler()};
-	copyHashToggler();
 
 	function tooltips(){
 		$('.tags').children().filter('[title][title!=""]').each(function(){
@@ -67,13 +66,14 @@ DocReady.push(function Colorguide(){
 		)
 	}
 	window.tooltips = function(){tooltips()};
-	tooltips();
 
-	$list.on('page-switch',function(){
+	function Navigation(){
 		$list = $('#list');
 		tooltips();
 		copyHashToggler();
-	});
+	}
+	$list.on('page-switch', Navigation);
+	$d.on('paginate-refresh', Navigation);
 
 	$('#search-form').on('submit',function(e){
 		e.preventDefault();
