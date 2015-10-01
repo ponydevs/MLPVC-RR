@@ -255,12 +255,43 @@ DocReady.push(function ColorguideManage(){
 			$div.find('.clri').focus();
 			$.Dialog.center();
 		});
-	$cgEditor
-		.append('<label><span>Group name (2-30 chars.)</span><br><input name="label" pattern="'+PRINTABLE_ASCII_REGEX.replace('+','{2,30}')+'" required></label>')
-		.append('<p class="align-center">The # symbol is optional, rows with invalid '+color+'s will be ignored. Each color must have a short (3-30 chars.) description of its intended use.</p>',$addBtn)
-		.append($.mk('div').attr('class', 'clrs'))
-		.append($.mk('div').attr('class','notice').hide().html('<p></p>'));
-	$cgEditor.on('render-color-inputs',function(_, data){
+	$cgEditor.append(
+		$.mk('label').append(
+			$.mk('span').text('Group name (2-30 chars.)'),
+			mk('br'),
+			$.mk('input').attr({
+				type: 'text',
+				name: 'label',
+				pattern: PRINTABLE_ASCII_REGEX.replace('+','{2,30}'),
+				required: true,
+			})
+		),
+		$.mk('label').append(
+			$.mk('input').attr({
+				type: 'checkbox',
+				name: 'major',
+			}).on('click',function(){
+				$(this).parent().next()[this.checked?'show':'hide']().children('input').attr('disabled', !this.checked);
+				$.Dialog.center();
+			}),
+			$.mk('span').text('This is a major change')
+		),
+		$.mk('label').append(
+			$.mk('span').text('Change reason (1-255 chars.)'),
+			mk('br'),
+			$.mk('input').attr({
+				type: 'text',
+				name: 'reason',
+				pattern: PRINTABLE_ASCII_REGEX.replace('+','{1,255}'),
+				required: true,
+				disabled: true,
+			})
+		).hide(),
+		$.mk('p').attr('class', 'align-center').text('The # symbol is optional, rows with invalid '+color+'s will be ignored. Each color must have a short (3-30 chars.) description of its intended use.'),
+		$addBtn,
+		$.mk('div').attr('class', 'clrs'),
+		$.mk('div').attr('class','notice').hide().html('<p></p>')
+	).on('render-color-inputs',function(_, data){
 		var $form = $(this),
 			$colors = $form.children('.clrs').empty();
 
@@ -295,6 +326,8 @@ DocReady.push(function ColorguideManage(){
 					$.Dialog.center();
 				},
 				$label = $form.find('input[name=label]'),
+				$major = $form.find('input[name=major]'),
+				$reason = $form.find('input[name=reason]'),
 				editing = typeof dis === 'object' && dis.label && dis.Colors;
 
 			if (editing){
@@ -325,6 +358,11 @@ DocReady.push(function ColorguideManage(){
 					return handleError.call({message:'You need to have at least 1 valid color'});
 				data.Colors = JSON.stringify(data.Colors);
 
+				if ($major.is(':checked')){
+					data.major = true;
+					data.reason = $reason.val();
+				}
+
 				$ErrorNotice.text('Saving changes...').parent().removeClass('fail').addClass('info').show();
 				$.Dialog.center();
 
@@ -334,11 +372,20 @@ DocReady.push(function ColorguideManage(){
 							if (this.cg){
 								$group.children('[data-hasqtip]').qtip('destroy', true);
 								$group.html(this.cg);
+
+								if (this.update)
+									$group.parents('li').find('.update').html(this.update);
 							}
-							else if (this.cgs)
-								$('#p'+ponyID).find('ul.colors').html(this.cgs);
+							else if (this.cgs){
+								var $pony = $('#p'+ponyID);
+								if (this.update)
+									$pony.find('.update').html(this.update);
+								$pony.find('ul.colors').html(this.cgs);
+							}
 							window.tooltips();
 							ctxmenus();
+							if (this.update)
+								window.updateTimes();
 						}
 						$.Dialog.close();
 					}

@@ -33,6 +33,14 @@
 #cg-editor {
 	overflow: hidden;
 
+	label.major {
+		> input[type="checkbox"]:not(:checked) {
+			+ br, + input[type="text"] {
+				display: none;
+			}
+		}
+	}
+
 	.clr {
 		display: flex;
 		flex-direction: row;

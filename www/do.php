@@ -1151,6 +1151,18 @@
 						respond('The group name must be between 2 and 30 characters in length');
 					$data['label'] = $name;
 
+					if (!empty($_POST['major'])){
+						$major = true;
+
+						if (empty($_POST['reason']))
+							respond('Please specify a reason');
+						$reason = $_POST['reason'];
+						check_string_valid($reason, "Change reason", INVERSE_PRINTABLE_ASCII_REGEX);
+						$rl = strlen($reason);
+						if ($rl < 1 || $rl > 255)
+							respond('The reason must be between 1 and 255 characters in length');
+					}
+
 					if ($new){
 						if (empty($_POST['ponyid']))
 							respond('Missing appearance ID');
@@ -1159,15 +1171,14 @@
 						if (empty($Pony))
 							respond('There\'s no appearance with the specified ID');
 						$data['ponyid'] = $PonyID;
-					}
 
-					if (!$new) $CGDb->where('groupid', $Group['groupid'])->update('colorgroups', $data);
-					else {
 						$GroupID = $CGDb->insert('colorgroups', $data);
 						if (!$GroupID)
 							respond(ERR_DB_FAIL);
 						$Group = array('groupid' => $GroupID);
 					}
+					else $CGDb->where('groupid', $Group['groupid'])->update('colorgroups', $data);
+
 
 					if (empty($_POST['Colors']))
 						respond("Missing list of {$color}s");
@@ -1220,6 +1231,16 @@
 
 					if ($new) $response = array('cgs' => get_colors_html($Pony['id'], NOWRAP));
 					else $response = array('cg' => get_cg_html($Group['groupid'], NOWRAP));
+
+					if (isset($major)){
+						$PonyID = $new ? $Pony['id'] : $Group['ponyid'];
+						LogAction('color_modify',array(
+							'ponyid' => $PonyID,
+							'reason' => $reason,
+						));
+						$response['update'] = get_update_html($PonyID);
+					}
+
 					respond($response);
 				}
 				else do404();
@@ -1267,6 +1288,8 @@
 
 				$heading = $Appearance['label'];
 				$title = "{$Color}s for $heading";
+
+				$Changes = get_updates($Appearance['id']);
 
 				loadPage(array(
 					'title' => $title,

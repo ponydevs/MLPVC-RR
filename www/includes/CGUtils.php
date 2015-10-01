@@ -124,10 +124,31 @@
 
 	// Returns the markup for the notes displayed under an appaerance
 	function get_notes_html($p, $wrap = true){
-		$notes = !empty($p['notes']) ? '<span>'.htmlspecialchars($p['notes']).'</span>' : '';
-		if (!empty($p['cm_favme']))
-			$notes .= "<a href='http://fav.me/{$p['cm_favme']}'>Cutie mark vector</a>";
+		if (!empty($p['notes'])){
+			$notes = '<span>'.htmlspecialchars($p['notes']).'</span>';
+			if (!empty($p['cm_favme']))
+				$notes .= "<a href='http://fav.me/{$p['cm_favme']}'>Cutie mark vector</a>";
+		}
+		else {
+			if (!PERM('inspector')) return '';
+			$notes = '';
+		}
 		return $wrap ? "<div class='notes'>$notes</div>" : $notes;
+	}
+
+	// Returns the markup for the time of last update displayed under an appaerance
+	function get_update_html($PonyID, $wrap = true){
+		global $Database;
+
+		$update = get_updates($PonyID, MOST_RECENT);
+		if (!empty($update)){
+			$update = "Last updated ".timetag($update['timestamp']);
+		}
+		else {
+			if (!PERM('inspector')) return '';
+			$update = '';
+		}
+		return $wrap ? "<div class='update'>$update</div>" : $update;
 	}
 
 	// Returns the markup for an array of pony datase rows \\
@@ -144,12 +165,13 @@
 			if (PERM('inspector')) $img = "<div class='upload-wrap'>$img</div>";
 			$img = "<div>$img</div>";
 
+			$updates = get_update_html($p['id']);
 			$notes = get_notes_html($p);
 			$tags = get_tags_html($p['id']);
 			$colors = get_colors_html($p['id']);
 			$editBtn = PERM('inspector') ? '<button class="edit typcn typcn-pencil blue" title="Edit"></button><button class="delete typcn typcn-trash red" title="Delete"></button>' : '';
 
-			$HTML .= "<li id='p{$p['id']}'>$img<div><strong><a href='/colorguide/appearance/{$p['id']}'>{$p['label']}</a>$editBtn</strong>$notes$tags$colors</div></li>";
+			$HTML .= "<li id='p{$p['id']}'>$img<div><strong><a href='/colorguide/appearance/{$p['id']}'>{$p['label']}</a>$editBtn</strong>$updates$notes$tags$colors</div></li>";
 		}
 		else {
 			if (empty($_MSG))
@@ -360,4 +382,21 @@ HTML;
 				))) throw new Exception(rtrim("Color \"$label\" could not be added: ".$CGDb->getLastError()), ': ');
 			}
 		}
+	}
+
+	// Gets the list of updates for an appearance
+	define('MOST_RECENT', 1);
+	function get_updates($PonyID, $count = null){
+		global $Database;
+
+		$LIMIT  = isset($count) ? "LIMIT $count":'';
+		$query = $Database->rawQuery(
+			"SELECT cm.*, l.initiator, l.timestamp
+			FROM log__color_modify cm
+			LEFT JOIN log l ON cm.entryid = l.refid && l.reftype = 'color_modify'
+			WHERE cm.ponyid = ?
+			ORDER BY l.timestamp DESC
+			{$LIMIT}", array($PonyID));
+
+		return ($count === MOST_RECENT && isset($query[0])) ? $query[0] : $query;
 	}

@@ -17,10 +17,31 @@
 		</a>
 	</section>
 <?  } ?>
-	<ul id="colors">
-<?  foreach (get_cgs($Appearance['id']) as $cg)
-		echo get_cg_html($cg, WRAP, NO_COLON); ?>
-	</ul>
+	<ul id="colors"><?
+	foreach (get_cgs($Appearance['id']) as $cg)
+		echo get_cg_html($cg, WRAP, NO_COLON); ?></ul>
+<?  if (!empty($Changes)){ ?>
+	<section>
+		<label><span class='typcn typcn-warning'></span>List of major changes</label>
+		<ul id="changes">
+<?php   $seeInitiator = PERM('inspector');
+		$UserCache = array();
+		foreach ($Changes as $c){
+			$initiator = '';
+			if ($seeInitiator){
+				$UserID = $c['initiator'];
+				if (empty($UserCache[$UserID])){
+					$UserCache[$UserID] = get_user($UserID);
+				}
+				$User = $UserCache[$UserID];
+				$initiator = " by <a href='/u/{$User['name']}'>{$User['name']}</a>";
+			}
+			echo "<li>{$c['reason']} - ".timetag($c['timestamp'])."$initiator</li>";
+		}?>
+		</ul>
+	</section>
+<?  } ?>
+	<ul id
 </div>
 
 <script>var Color = '<?=$Color?>', color = '<?=$color?>';</script>

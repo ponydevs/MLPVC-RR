@@ -48,7 +48,8 @@
 		'userfetch' => 'Fetch user details',
 		'banish' => 'User banished',
 		'un-banish' => 'User un-banished',
-		'post_lock' => 'Post approved'
+		'post_lock' => 'Post approved',
+		'color_modify' => 'Major appearance update',
 	);
 	function LogAction($type,$data = null){
 		global $Database, $signedIn, $currentUser;
@@ -60,6 +61,10 @@
 					$data[$k] = $v ? 1 : 0;
 
 			$refid = $Database->insert("`log__$type`",$data);
+			if (!$refid){
+				trigger_error('Logging failed: '.$Database->getLastError());
+				return;
+			}
 		}
 
 		$central['reftype'] = $type;
@@ -144,6 +149,10 @@
 					$IDstr = "S{$Post['season']}E{$Post['episode']}#{$data['type']}-{$data['id']}";
 					$details[] = array('Link',"<a href='/episode/$IDstr'>$IDstr</a>");
 				}
+			break;
+			case "color_modify":
+				$details[] = array('Appearance',"<a href='/colorguide/appearance/{$data['ponyid']}'>#{$data['ponyid']}</a>");
+				$details[] = array('Reason',htmlspecialchars($data['reason']));
 			break;
 			default:
 				$details[] = array('Could not process details','No data processor defined for this entry type');

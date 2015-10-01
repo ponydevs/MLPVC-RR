@@ -174,7 +174,14 @@
 
 			button { margin-left: 8px }
 		}
-		.notes {
+		> .update {
+			font-size: .8em;
+
+			&:empty { display: none }
+
+			time { border-bottom: 1px dashed }
+		}
+		> .notes {
 			margin-top: 6px;
 			white-space: pre-wrap;
 
