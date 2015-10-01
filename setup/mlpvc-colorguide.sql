@@ -736,12 +736,12 @@ INSERT INTO `ponies` (`id`, `label`, `notes`, `cm_favme`, `added`) VALUES
 (117, 'Stormy Flare', 'Only has one eye shine.', NULL, '2015-09-22 05:20:14'),
 (118, 'Wind Rider', 'Teeth use a different color than normal.', NULL, '2015-09-24 04:35:32'),
 (119, 'Sugar Belle', '', NULL, '2015-09-24 10:44:18'),
-(120, 'Apple Bloom', '', NULL, '2015-09-24 12:01:03'),
+(120, 'Apple Bloom', 'Far legs use darker colors.', NULL, '2015-09-24 12:01:03'),
 (121, 'Scootaloo', 'Far legs use darker colors.', NULL, '2015-09-24 12:06:23'),
 (122, 'Sweetie Belle', '', NULL, '2015-09-24 12:09:41'),
 (123, 'Night Glider', 'From S5e02', NULL, '2015-09-26 15:03:43'),
 (124, 'Double Diamond', '', NULL, '2015-09-26 17:22:19'),
-(125, 'Party Favor', 'Magic aura color is unknown', NULL, '2015-09-26 17:34:42'),
+(125, 'Party Favor', 'Magic aura color is unknown.', NULL, '2015-09-26 17:34:42'),
 (138, 'Starlight Glimmer', '', NULL, '2015-09-26 18:01:51'),
 (139, 'Coco Pommel', 'From S4E08', NULL, '2015-09-26 21:18:32'),
 (141, 'Suri Polomare', 'From S4E08', NULL, '2015-09-30 05:35:59');
@@ -781,8 +781,10 @@ INSERT INTO `tagged` (`tid`, `ponyid`) VALUES
 (29, 7),
 (30, 7),
 (4, 9),
+(7, 9),
 (12, 9),
 (57, 9),
+(59, 9),
 (1, 100),
 (7, 100),
 (12, 100),
@@ -902,7 +904,7 @@ INSERT INTO `tags` (`tid`, `name`, `title`, `type`, `uses`) VALUES
 (4, 'alicorn', '', 'spec', 2),
 (5, 'bat pony', '', 'spec', 0),
 (6, 'mane six', 'Ponies who are one of the show''s six main characters', 'cat', 7),
-(7, 'minor character', 'Ponies who had a speaking role and/or interacted with the mane six', 'cat', 19),
+(7, 'minor character', 'Ponies who had a speaking role and/or interacted with the mane six', 'cat', 20),
 (8, 'background character', 'Ponies whose only purpose is filling crowds, with no to minimal speaking roles', 'cat', 1),
 (9, 'antagonist', '', 'cat', 2),
 (10, 'pet', '', 'cat', 0),
@@ -950,7 +952,8 @@ INSERT INTO `tags` (`tid`, `name`, `title`, `type`, `uses`) VALUES
 (55, 'coco pommel', '', 'char', 1),
 (56, 'manehatten', '', 'cat', 1),
 (57, 'princess luna', '', 'char', 1),
-(58, 'suri polomare', '', 'char', 1);
+(58, 'suri polomare', '', 'char', 1),
+(59, 'royalty', '', 'cat', 1);
 
 
 ALTER TABLE `colorgroups`
@@ -980,7 +983,7 @@ ALTER TABLE `colors`
 ALTER TABLE `ponies`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=142;
 ALTER TABLE `tags`
-  MODIFY `tid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=59;
+  MODIFY `tid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=60;
 
 ALTER TABLE `colorgroups`
   ADD CONSTRAINT `colorgroups_ibfk_1` FOREIGN KEY (`ponyid`) REFERENCES `ponies` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
