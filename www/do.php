@@ -764,9 +764,6 @@
 			$ItemsPerPage = 7;
 
 			if (RQMTHD === 'POST' || (isset($_GET['s']) && $data === "gettags")){
-				/// TEMPORARY LOCK ///
-				if (!PERM('developer')) respond("Modifications to the $color guide are currently disabled, please wait until the database changes have been made!");
-				/// TEMPORARY LOCK ///
 				if (!PERM('inspector')) respond();
 				IF (RQMTHD === "POST") detectCSRF();
 
@@ -859,6 +856,7 @@
 
 							if ($action === 'make'){
 								$data['message'] = 'Appearance added successfully';
+								// TODO Properly calculate which page added appearance ends up on
 								$Query = $CGDb->getOne('ponies p','COUNT(*) as count');
 
 								$data['id'] = $query;
@@ -1307,7 +1305,7 @@
 			if (empty($_GET['q']) || !PERM('user')){
 				$EntryCount = $CGDb->count('ponies');
 				list($Page,$MaxPages) = calc_page($EntryCount);
-				$Ponies = $CGDb->orderBy('id', 'ASC')->get('ponies',array($ItemsPerPage*($Page-1), $ItemsPerPage));
+				$Ponies = get_ponies(array($ItemsPerPage*($Page-1), $ItemsPerPage));
 			}
 			else {
 				$tags = array_map('trim',explode(',',strtolower($_GET['q'])));
@@ -1365,7 +1363,7 @@
 
 			if (isset($_GET['js'])){
 				respond(array(
-					'output' => get_ponies_html($Ponies, NOWRAP),
+					'output' => render_ponies_html($Ponies, NOWRAP),
 					'update' => '#list',
 					'page' => $Page,
 					'maxpage' => $MaxPages,

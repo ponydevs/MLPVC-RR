@@ -48,7 +48,7 @@
 <?  }
 	else echo Notice('info',"<span class='typcn typcn-info-large'></span> Please sign in with the button in the sidebar to use the search feature.</p>",true); ?>
 	<?=$Pagination = get_pagination_html($color.'guide',$Page,$MaxPages)?>
-	<?=get_ponies_html($Ponies)?>
+	<?=render_ponies_html($Ponies)?>
 	<?=$Pagination?>
 </div>
 

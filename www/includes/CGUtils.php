@@ -151,8 +151,25 @@
 		return $wrap ? "<div class='update'>$update</div>" : $update;
 	}
 
+	function order_ponies(){
+		global $CGDb;
+
+		$CGDb
+			->orderByLiteral('CASE WHEN `order` IS NULL THEN 1 ELSE 0 END')
+			->orderBy('`order`', 'ASC')
+			->orderBy('id', 'ASC');
+	}
+
+	// Get list of ponies
+	function get_ponies($limit = null){
+		global $CGDb;
+
+		order_ponies();
+		return $CGDb->get('ponies',$limit);
+	}
+
 	// Returns the markup for an array of pony datase rows \\
-	function get_ponies_html($Ponies, $wrap = true){
+	function render_ponies_html($Ponies, $wrap = true){
 		global $CGDb, $_MSG;
 
 		$HTML = $wrap ? '<ul id="list">' : '';
