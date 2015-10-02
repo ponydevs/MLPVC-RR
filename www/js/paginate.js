@@ -1,6 +1,7 @@
 (function Paginate(){
 	if (window[" paginationHandlerBound"] === true) return;
 	window[" paginationHandlerBound"] = true;
+	var pageRegex = /Page \d+$/;
 
 	$d.on('paginate-refresh',function(){
 		var basePath = location.pathname.replace(/(\d+)$/,''),
@@ -36,9 +37,11 @@
 
 				newPageNumber = parseInt(this.page, 10);
 
-				$('nav').find('li.active').children().last().html(function(){
-					return this.innerHTML.replace(/Page \d+/,'Page '+newPageNumber);
-				});
+				var $active = $navbar.find('li.active').children().last();
+				if (pageRegex.test($active.text()))
+					$active.html(function(){
+						return this.innerHTML.replace(pageRegex,'Page '+newPageNumber);
+					});
 
 				// Preserve static page title component at the end
 				document.title = document.title.replace(/^.*( - [^-]+)$/,this.title+'$1');
