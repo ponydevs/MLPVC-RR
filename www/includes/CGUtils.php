@@ -400,3 +400,23 @@ HTML;
 
 		return ($count === MOST_RECENT && isset($query[0])) ? $query[0] : $query;
 	}
+
+	// Renders HTML of the list of changes
+	function render_changes_html($Changes, $wrap = true){
+		$seeInitiator = PERM('inspector');
+		$UserCache = array();
+		$HTML = $wrap ? '<ul id="changes">' : '';
+		foreach ($Changes as $c){
+			$initiator = '';
+			if ($seeInitiator){
+				$UserID = $c['initiator'];
+				if (empty($UserCache[$UserID])){
+					$UserCache[$UserID] = get_user($UserID);
+				}
+				$User = $UserCache[$UserID];
+				$initiator = " by <a href='/u/{$User['name']}'>{$User['name']}</a>";
+			}
+			$HTML .= "<li>{$c['reason']} - ".timetag($c['timestamp'])."$initiator</li>";
+		}
+		return $HTML . ($wrap ? '</ul>' : '');
+	}

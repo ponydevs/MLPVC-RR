@@ -2,7 +2,7 @@
 	<h1><?=$heading?></h1>
 	<p>Displaying <?=$ItemsPerPage?> items/page</p>
 	<p class='align-center links'>
-		<a class='btn darkblue typcn typcn-arrow-back' href="/colorguide">Back to Color Guide</a>
+		<a class='btn darkblue typcn typcn-arrow-back' href="/<?=$color?>guide">Back to <?=$Color?> Guide</a>
 	</p>
 	<?=$Pagination = get_pagination_html('colorguide/tags', $Page, $MaxPages)?>
 	<table id="tags">

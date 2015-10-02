@@ -764,6 +764,9 @@
 			$ItemsPerPage = 7;
 
 			if (RQMTHD === 'POST' || (isset($_GET['s']) && $data === "gettags")){
+				/// TEMPORARY LOCK ///
+				if (!PERM('developer')) respond("Modifications to the $color guide are currently disabled, please wait until the database changes have been made!");
+				/// TEMPORARY LOCK ///
 				if (!PERM('inspector')) respond();
 				IF (RQMTHD === "POST") detectCSRF();
 

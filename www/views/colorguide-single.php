@@ -23,22 +23,7 @@
 <?  if (!empty($Changes)){ ?>
 	<section>
 		<label><span class='typcn typcn-warning'></span>List of major changes</label>
-		<ul id="changes">
-<?php   $seeInitiator = PERM('inspector');
-		$UserCache = array();
-		foreach ($Changes as $c){
-			$initiator = '';
-			if ($seeInitiator){
-				$UserID = $c['initiator'];
-				if (empty($UserCache[$UserID])){
-					$UserCache[$UserID] = get_user($UserID);
-				}
-				$User = $UserCache[$UserID];
-				$initiator = " by <a href='/u/{$User['name']}'>{$User['name']}</a>";
-			}
-			echo "<li>{$c['reason']} - ".timetag($c['timestamp'])."$initiator</li>";
-		}?>
-		</ul>
+		<?=render_changes_html($Changes)?>
 	</section>
 <?  } ?>
 	<ul id
