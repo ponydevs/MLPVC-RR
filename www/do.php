@@ -856,7 +856,7 @@
 
 							if ($action === 'make'){
 								$data['message'] = 'Appearance added successfully';
-								// TODO Properly calculate which page added appearance ends up on
+								order_ponies();
 								$Query = $CGDb->getOne('ponies p','COUNT(*) as count');
 
 								$data['id'] = $query;
