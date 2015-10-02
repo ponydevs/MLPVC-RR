@@ -58,7 +58,7 @@ class Browser {
 	const BROWSER_OPERA_MINI = 'Opera Mini'; // http://www.opera.com/mini/
 	const BROWSER_WEBTV = 'WebTV'; // http://www.webtv.net/pc/
 	const BROWSER_IE = 'Internet Explorer'; // http://www.microsoft.com/ie/
-	const BROWSER_MSEDGE = 'Microsoft Edge'; // https://www.microsoft.com/en-us/windows/microsoft-edge
+	const BROWSER_EDGE = 'Edge'; // https://www.microsoft.com/en-us/windows/microsoft-edge
 	const BROWSER_IEMOBILE = 'IE Mobile'; // http://en.wikipedia.org/wiki/Internet_Explorer_Mobile
 	const BROWSER_VIVALDI = 'Vivaldi'; // http://vivaldi.com/
 	const BROWSER_KONQUEROR = 'Konqueror'; // http://www.konqueror.org/
@@ -371,8 +371,10 @@ class Browser {
 			//     before Safari
 			// (5) Netscape 9+ is based on Firefox so Netscape checks
 			//     before FireFox are necessary
+			// (6) Edge must be checkd before Chrome due of usage of
+			//     same Chrome user agent
 			$this->checkBrowserWebTv() ||
-			$this->checkBrowserMSEdge() ||
+			$this->checkBrowserEdge() ||
 			$this->checkBrowserInternetExplorer() ||
 			$this->checkBrowserVivaldi() ||
 			$this->checkBrowserOpera() ||
@@ -1246,21 +1248,29 @@ class Browser {
 
 		return false;
 	}
-
+	
 	/**
-	 * Determine if the browser is Microsoft Edge or not
-	 * @return boolean True if the browser is Microsoft Edge otherwise false
+	 * Determine if the browser is Edge or not (last updated 1.7)
+	 * https://github.com/cbschuld/Browser.php/pull/43
+	 *
+	 * @return boolean True if the browser is Edge otherwise false
 	 */
-	protected function checkBrowserMSEdge(){
-		if (stripos($this->_agent, 'Edge') !== false){
-			$_match = array();
-			if (preg_match('/Edge\/([\d.]+)/',$this->_agent, $_match))
-				$this->setVersion($_match[1]);
-			else $this->setVersion(self::VERSION_UNKNOWN);
-			$this->setBrowser(self::BROWSER_MSEDGE);
-			$this->_platform = self::PLATFORM_WINDOWS;
-
-			return true;
+	protected function checkBrowserEdge(){
+		 if (stripos($this->_agent, 'Edge') !== false) {
+			$aresult = explode('/', stristr($this->_agent, 'Edge'));
+			if (isset($aresult[1])) {
+				$aversion = explode(' ', $aresult[1]);
+				$this->setVersion($aversion[0]);
+				$this->setBrowser(self::BROWSER_EDGE);
+				if (stripos($this->_agent, 'Android') !== false) {
+					if (stripos($this->_agent, 'Mobile') !== false) {
+						$this->setMobile(true);
+					} else {
+						$this->setTablet(true);
+					}
+				}
+				return true;
+			}
 		}
 
 		return false;
