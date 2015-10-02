@@ -2010,10 +2010,18 @@ ORDER BY `count` DESC
 			global $color, $Color;
 			$NavItems['colorguide'] = array("/{$color}guide", "$Color Guide");
 			if ($do === 'colorguide'){
-				global $Tags, $Page, $Appearance;
+				global $Tags, $Changes, $Page, $Appearance;
 				if (!empty($Appearance))
 					$NavItems['colorguide']['subitem'] = array($_SERVER['REQUEST_URI'], $Appearance['label']);
-				else $NavItems['colorguide']['subitem'] = array($_SERVER['REQUEST_URI'], (isset($Tags) ? 'Tags - ':'')."Page $Page");
+				else {
+					if (isset($Tags)) $pagePrefix = 'Tags';
+					else if (isset($Changes)) $pagePrefix = 'Color Changes';
+
+					$NavItems['colorguide']['subitem'] = array(
+						$_SERVER['REQUEST_URI'],
+						(isset($pagePrefix) ? "$pagePrefix - ":'')."Page $Page"
+					);
+				}
 
 			}
 		}

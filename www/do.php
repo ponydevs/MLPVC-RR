@@ -1281,6 +1281,35 @@
 				));
 			}
 
+			if (preg_match('~^changes~',$data)){
+				$ItemsPerPage = 50;
+				$EntryCount = $Database->count('log__color_modify');
+				list($Page,$MaxPages) = calc_page($EntryCount);
+
+				fix_path("/{$color}guide/changes/$Page");
+				$heading = "$Color Changes";
+				$title = "Page $Page - $heading - $Color Guide";
+
+				$Changes = get_updates(null, ($ItemsPerPage*($Page-1)).", $ItemsPerPage");
+
+				if (isset($_GET['js'])){
+					respond(array(
+						'output' => render_changes_html($Changes, NOWRAP, SHOW_APPEARANCE_NAMES),
+						'update' => '#changes',
+						'page' => $Page,
+						'maxpage' => $MaxPages,
+						'title' => $title,
+					));
+				}
+
+				loadPage(array(
+					'title' => $title,
+					'heading' => $heading,
+					'view' => "$do-changes",
+					'js' => array('paginate'),
+				));
+			}
+
 			$_match = array();
 			if (preg_match('~^appearance/(\d+)~',$data,$_match)){
 				$Appearance = $CGDb->where('id', intval($_match[1]))->getOne('ponies');

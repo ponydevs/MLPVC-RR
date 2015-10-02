@@ -406,25 +406,28 @@ HTML;
 	function get_updates($PonyID, $count = null){
 		global $Database;
 
-		$LIMIT  = isset($count) ? "LIMIT $count":'';
+		$LIMIT = isset($count) ? "LIMIT $count":'';
+		$WHERE = isset($PonyID) ? "WHERE cm.ponyid = $PonyID" :'';
 		$query = $Database->rawQuery(
 			"SELECT cm.*, l.initiator, l.timestamp
 			FROM log__color_modify cm
 			LEFT JOIN log l ON cm.entryid = l.refid && l.reftype = 'color_modify'
-			WHERE cm.ponyid = ?
+			{$WHERE}
 			ORDER BY l.timestamp DESC
-			{$LIMIT}", array($PonyID));
+			{$LIMIT}");
 
 		return ($count === MOST_RECENT && isset($query[0])) ? $query[0] : $query;
 	}
 
 	// Renders HTML of the list of changes
-	function render_changes_html($Changes, $wrap = true){
+	define('SHOW_APPEARANCE_NAMES', true);
+	function render_changes_html($Changes, $wrap = true, $showAppearance = false){
 		$seeInitiator = PERM('inspector');
 		$UserCache = array();
+		$PonyCache = array();
 		$HTML = $wrap ? '<ul id="changes">' : '';
 		foreach ($Changes as $c){
-			$initiator = '';
+			$initiator = $appearance = '';
 			if ($seeInitiator){
 				$UserID = $c['initiator'];
 				if (empty($UserCache[$UserID])){
@@ -433,7 +436,17 @@ HTML;
 				$User = $UserCache[$UserID];
 				$initiator = " by <a href='/u/{$User['name']}'>{$User['name']}</a>";
 			}
-			$HTML .= "<li>{$c['reason']} - ".timetag($c['timestamp'])."$initiator</li>";
+			if ($showAppearance){
+				global $CGDb, $color;
+
+				$PonyID = $c['ponyid'];
+				if (empty($PonyCache[$PonyID])){
+					$PonyCache[$PonyID] = $CGDb->where('id', $PonyID)->getOne('ponies');
+				}
+				$Pony = $PonyCache[$PonyID];
+				$appearance = "<a href='/{$color}guide/appearance/{$Pony['id']}'>{$Pony['label']}</a>: ";
+			}
+			$HTML .= "<li>$appearance{$c['reason']} - ".timetag($c['timestamp'])."$initiator</li>";
 		}
 		return $HTML . ($wrap ? '</ul>' : '');
 	}

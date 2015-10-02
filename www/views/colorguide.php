@@ -40,7 +40,8 @@
 <? if (PERM('inspector')){ ?>
 		<button class='green typcn typcn-plus' id="new-appearance-btn">Add new appearance</button>
 <? } ?>
-		<a class='btn darkblue typcn typcn-tags' href="/colorguide/tags">View list of tags</a>
+		<a class='btn darkblue typcn typcn-tags' href="/<?=$color?>guide/tags">List of tags</a>
+		<a class='btn darkblue typcn typcn-warning' href="/<?=$color?>guide/changes">List of major changes</a>
 	</p>
 
 <?  if (PERM('user')){ ?>
