@@ -1306,7 +1306,8 @@
 					'title' => $title,
 					'heading' => $heading,
 					'view' => "$do-changes",
-					'js' => array('paginate'),
+					'css' => "$do-changes",
+					'js' => 'paginate',
 				));
 			}
 

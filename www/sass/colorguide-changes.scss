@@ -1,0 +1,10 @@
+#changes:empty{
+	padding :0;
+
+	&:before {
+		content: "The are no changes to display";
+		font-size: 1.2em;
+		text-align: center;
+		display: block;
+	}
+}
