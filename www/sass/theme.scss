@@ -707,6 +707,7 @@ ul.pagination {
 	cursor: default;
 
 	&:last-child { margin-bottom: 0 }
+	&:empty { display: none }
 
 	li {
 		display: inline-block;
