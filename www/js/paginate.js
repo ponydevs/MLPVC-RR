@@ -47,7 +47,7 @@
 				document.title = document.title.replace(pageRegex, 'Page '+newPageNumber);
 
 				if (state.page !== newPageNumber && !isNaN(newPageNumber))
-					history.pushState({paginate:true, page:newPageNumber},'',basePath+'/'+newPageNumber+(window.location.search.length > 1 ? location.search : ''));
+					history.pushState({paginate:true, page:newPageNumber},'',basePath+newPageNumber+(window.location.search.length > 1 ? location.search : ''));
 
 				$pagination.html(this.pagination);
 
