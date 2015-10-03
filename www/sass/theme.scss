@@ -703,6 +703,8 @@ ul.pagination {
 	margin: 10px 0;
 	list-style: none;
 	text-align: center;
+	user-select: none;
+	cursor: default;
 
 	&:last-child { margin-bottom: 0 }
 
@@ -731,11 +733,14 @@ ul.pagination {
 		}
 		strong {
 			background-color: rgba(0,0,0,.2);
-			color: #555;
+			box-shadow: inset 0 2px 5px rgba(0,0,0,.5);
+			color: #444;
+			cursor: default;
 		}
 		a {
 			color: #000 !important;
 			transition: none !important;
+			cursor: pointer;
 		}
 	}
 }
