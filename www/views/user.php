@@ -30,7 +30,7 @@
 
 	$cols = 'id, CONCAT("S", season, "E", episode) as page, season, preview, label, posted';
 	$PendingReservations = $Database->where('reserved_by', $User['id'])->where('deviation_id IS NULL')->get('reservations',null,$cols);
-	$PendingRequestReservations = $Database->where('reserved_by', $User['id'])->where('deviation_id IS NULL')->get('requests',null,$cols.', 1 as rq');
+	$PendingRequestReservations = $Database->where('reserved_by', $User['id'])->where('deviation_id IS NULL')->get('requests',null,"$cols, 1 as rq");
 	$TotalPending = count($PendingReservations)+count($PendingRequestReservations);
 	$hasPending = $TotalPending > 0;
 	if ((PERM('inspector') || $sameUser) && PERM('member', $User['role'])){
@@ -58,17 +58,7 @@
 				return -($a < $b ? -1 : ($a === $b ? 0 : 1));
 			});
 			foreach ($Posts as $i => $p){
-				$thing = isset($p['rq']) ? 'request' : 'reservation';
-				$id = "$thing-{$p['id']}";
-				if ($p['season'] !== 0){
-					$link = "/episode/{$p['page']}#$id";
-					$page = $p['page'];
-				}
-				else {
-					$movieNumber = preg_replace('/^.*E(\d+)$/','$1',$p['page']);
-					$link = "/eqg/$movieNumber";
-					$page = "EQG #$movieNumber";
-				}
+				list($link,$page) = post_link_html($p);
 				$posted = date('c',strtotime($p['posted']));
 				$Posts[$i] = <<<HTML
 <li id='$id'>
@@ -88,10 +78,18 @@ HTML;
 		}
 ?>
 		</section>
-<?php   $AwaitingSQL = "SELECT r.deviation_id as deviation FROM coloumn r WHERE r.reserved_by = ? && r.deviation_id IS NOT NULL && r.`lock` = 0";
+<?php   $cols = "id, season, deviation_id as deviation, CONCAT('S', season, 'E', episode) as page";
 		$AwaitingApproval = array_merge(
-			$Database->rawQuery(preg_replace('/coloumn/','requests',$AwaitingSQL),array($User['id'])),
-			$Database->rawQuery(preg_replace('/coloumn/','reservations',$AwaitingSQL),array($User['id']))
+			$Database
+				->where('reserved_by', $User['id'])
+				->where('deviation_id IS NOT NULL')
+				->where('`lock` != 1')
+				->get('reservations',null,$cols),
+			$Database
+				->where('reserved_by', $User['id'])
+				->where('deviation_id IS NOT NULL')
+				->where('`lock` != 1')
+				->get('requests',null,"$cols, 1 as rq")
 		);
 		$AwaitCount = count($AwaitingApproval);
 		$them = $AwaitCount!==1?'them':'it'; ?>
@@ -100,12 +98,13 @@ HTML;
 <?php   if ($sameUser){ ?>
 			<p>After you finish an image and submit it to the group gallery, an inspector will check your vector and may ask you to fix some issues on your image, if any. When an image is accepted to the gallery, it will be marked as "approved" on this site, which gives it a green check mark, indicating that it's most likely free of any errors.</p>
 <?php   } ?>
-			<p><?="$YouHave ".(empty($AwaitingApproval)?'no':"<strong>$AwaitCount</strong>")?> image<?=$AwaitCount!==1?'s':''?> waiting for approval by the group<?=empty($AwaitingApproval)?'.':(", listed below.".($sameUser?"We suggest that you submit $them to the group gallery at your earliest convenience to have $them spot-checked for any issues and added to the gallery, making $them easier for others to find.":''))?></p>
-<?php   if (!empty($AwaitingApproval)){ ?>
+			<p><?="$YouHave ".(!$AwaitCount?'no':"<strong>$AwaitCount</strong>")?> image<?=$AwaitCount!==1?'s':''?> waiting for approval by the group<?=!$AwaitCount?'.':(", listed below.".($sameUser?"We suggest that you submit $them to the group gallery at your earliest convenience to have $them spot-checked for any issues and added to the gallery, making $them easier for others to find.":''))?></p>
+<?php   if ($AwaitCount){ ?>
 			<ul><?
 			foreach ($AwaitingApproval as $row){
 				$deviation = da_cache_deviation($row['deviation']);
 				$url = "http://{$deviation['provider']}/{$deviation['id']}";
+				list($link,$page) = post_link_html($row);
 				echo <<<HTML
 <li>
 	<div class="image deviation">
@@ -114,6 +113,10 @@ HTML;
 		</a>
 	</div>
 	<span class="label"><a href="$url" target="_blank">{$deviation['title']}</a></span>
+	<em>Posted under <a href='$link'>$page</a></em>
+	<div>
+		<a href='$link' class='btn blue typcn typcn-arrow-forward'>View</a>
+	</div>
 </li>
 HTML;
 

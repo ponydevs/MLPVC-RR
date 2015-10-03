@@ -2175,3 +2175,19 @@ ORDER BY `count` DESC
 				$array['type'] = $_POST['type'];
 		}
 	}
+
+	// Get link to specific posts
+	function post_link_html($Post){
+		$thing = isset($Post['rq']) ? 'request' : 'reservation';
+		$id = "$thing-{$Post['id']}";
+		if ($Post['season'] !== 0){
+			$link = "/episode/{$Post['page']}#$id";
+			$page = $Post['page'];
+		}
+		else {
+			$movieNumber = preg_replace('/^.*E(\d+)$/','$1',$Post['page']);
+			$link = "/eqg/$movieNumber";
+			$page = "EQG #$movieNumber";
+		}
+		return array($link,$page);
+	}
