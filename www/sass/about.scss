@@ -1,3 +1,5 @@
+@import "vars";
+
 #content {
 	> img {
 		width: 100%;
@@ -10,19 +12,7 @@
 			margin: 0 0 20px;
 	}
 	> section {
-		> h2 {
-			font-size: 1.5em;
-			text-align: left;
-			margin: 0 0 5px;
-			font-family: "Celestia", sans-serif;
-		}
-		> div > * {
-			margin: 0 0 5px;
-
-			&:last-child {
-				margin-bottom: 0;
-			}
-		}
+		@extend %section;
 
 		.ramnode img {
 			border-radius: 7px;

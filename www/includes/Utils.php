@@ -490,9 +490,11 @@ HTML;
 
 	// Display a 404 page
 	function do404($debug = null){
+		if (RQMTHD == 'POST' || isset($_GET['via-js'])){
+			$RQURI = rtrim(preg_replace('/via\-js=true/','',$_SERVER['REQUEST_URI']),'?&');
+			respond("HTTP 404: ".(RQMTHD=='POST'?'Endpoint':'Page')." ($RQURI) does not exist",0, is_string($debug) ? array('debug' => $debug) : null);
+		}
 		statusCodeHeader(404);
-		if (RQMTHD == 'POST')
-			respond("Endpoint ({$_SERVER['REQUEST_URI']}) does not exist",0, is_string($debug) ? array('debug' => $debug) : null);
 		loadPage(array(
 			'title' => '404',
 			'view' => '404',
@@ -1714,13 +1716,13 @@ HTML;
 
 		list($path, $label) = $item;
 		$current = (!$currentSet || $htmlOnly === HTML_ONLY) && preg_match("~^$path($|/)~", strtok($_SERVER['REQUEST_URI'], '?'));
-		if ($current)
+		$class = '';
+		if ($current){
 			$currentSet = true;
-		$class = trim((!empty($item[2]) ? $item[2] : '').($current ? ' active' : ''));
-		if (!empty($class))
-			$class = " class='$class'";
+			$class = " class='active'";
+		}
 
-		$href = $current && $htmlOnly !== HTML_ONLY ? '' : " href='$path'";
+		$href = $current && $htmlOnly !== HTML_ONLY && (empty($item[2]) || $item[2] !== 'false') ? '' : " href='$path'";
 		$html = "<a$href>$label</a>";
 
 		if ($htmlOnly === HTML_ONLY) return $html;
@@ -2029,8 +2031,15 @@ ORDER BY `count` DESC
 		}
 		if ($GLOBALS['signedIn'])
 			$NavItems['u'] = array("/u/{$GLOBALS['currentUser']['name']}",'Account');
-		if ($do === 'user' && !$GLOBALS['sameUser'])
-			$NavItems[] = array($_SERVER['REQUEST_URI'], $GLOBALS['title']);
+		if (PERM('inspector') || $do === 'user'){
+			$NavItems['users'] = array('/users', 'Users', PERM('inspector'));
+
+			if ($do === 'user' && !$GLOBALS['sameUser']){
+				global $User;
+
+				$NavItems['users']['subitem'] = array($_SERVER['REQUEST_URI'], $User['name']);
+			}
+		}
 		if (PERM('inspector')){
 			$NavItems['logs'] = array('/logs', 'Logs');
 			if ($do === 'logs'){

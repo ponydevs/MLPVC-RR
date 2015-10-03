@@ -310,7 +310,11 @@ $(function(){
 			data: {'via-js': true},
 			success: $.mkAjaxHandler(function(){
 				if (xhr == false) return;
-				if (!this.status) $.Dialog.fail(title, this.message);
+				if (!this.status){
+					$body.removeClass('loading');
+					xhr = false;
+					return $.Dialog.fail(title+' error', this.message);
+				}
 
 				url = new URL(this.responseURL+(new URL(url).hash)).pathString;
 				$w.triggerHandler('unload');

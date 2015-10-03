@@ -45,38 +45,10 @@
 			<p class="ramnode"><a href="https://clientarea.ramnode.com/aff.php?aff=2648"><img src="https://www.ramnode.com/images/banners/affbannerlightnewlogoblack.png" alt="high performance ssd vps""></a></p>
 		</div>
 	</section>
-<?php
-	if (PERM('inspector')){
-		$Users = $Database->orderBy('name','asc')->get('users');
-		if (!empty($Users)){
-?>
+<? if (PERM('inspector')){ ?>
 	<section>
-		<h2>Linked users</h2>
-		<div>
-<?php
-			$Arranged = array();
-			foreach ($Users as $u){
-				if (!isset($Arranged[$u['role']])) $Arranged[$u['role']] = array();
-
-				$Arranged[$u['role']][] = $u;
-			}
-			global $ROLES;
-			foreach (array_reverse($ROLES) as $r){
-				if (empty($Arranged[$r])) continue;
-				$users = $Arranged[$r];
-				$userCount = count($users);
-				$group = $ROLES_ASSOC[$r].($userCount !== 1 ? 's' : '').' ['.label_to_initials($ROLES_ASSOC[$r]).']';
-				$usersStr = array();
-				foreach ($users as $u)
-					$usersStr[] = profile_link($u);
-				$usersStr = implode(', ', $usersStr);
-				global $ROLES_ASSOC;
-				echo <<<HTML
-			<p><strong>$userCount $group:</strong> $usersStr</p>
-
-HTML;
-			} ?>
-		</div>
+		<h2><a href="/users"><span class="typcn typcn-arrow-back"></span>Linked users</a></h2>
+		<p><em>This section has been moved to its own page.</em></p>
 	</section>
 	<section class="browsers">
 		<h2>Most popular browsers</h2>
@@ -110,6 +82,5 @@ HTML;
 			} ?></tbody>
 		</table>
 	</section>
-<?php   }
-	} ?>
+<?  } ?>
 </div>

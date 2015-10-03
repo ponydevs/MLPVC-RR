@@ -1428,6 +1428,15 @@
 				'do-css'
 			));
 		break;
+		case "users":
+			if (!PERM('inspector'))
+				do404();
+
+			loadPage(array(
+				'title' => 'Users',
+				'do-css'
+			));
+		break;
 		case "404":
 		default:
 			do404();
