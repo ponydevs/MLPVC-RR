@@ -479,10 +479,11 @@
 						respond('Episode title contains invalid charcaters');
 
 					if (empty($_POST['airs']))
-					repond('No air date &time specified');
+						repond('No air date &time specified');
 					$airs = strtotime($_POST['airs']);
-					if (empty($airs)) respond('Invalid air time');
-					$insert['airs'] = date('c',strtotime('this minute', $airs));
+					if (empty($airs))
+						respond('Invalid air time');
+					$insert['airs'] = date('Y-m-d H:i:s',strtotime('this minute', $airs));
 
 					if ($editing){
 						if (!$Database->whereEp($season,$episode)->update('episodes', $insert))
