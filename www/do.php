@@ -522,11 +522,23 @@
 			loadEpisodePage();
 		break;
 		case "episodes":
-			$Episodes = get_episodes();
+			$ItemsPerPage = 10;
+			$EntryCount = $Database->where('season != 0')->count('episodes');
+			list($Page,$MaxPages) = calc_page($EntryCount);
+			$Pagination = get_pagination_html('episodes');
+
+			fix_path("/episodes/$Page");
+			$heading = "Episodes";
+			$title = "Page $Page - $heading";
+			$Episodes = get_episodes(array($ItemsPerPage*($Page-1), $ItemsPerPage));
+
+			if (isset($_GET['js']))
+				pagination_response(get_eptable_tbody($Episodes), '#episodes tbody');
+
 			$settings = array(
-				'title' => 'Episodes',
+				'title' => $title,
 				'do-css',
-				'js' => array($do),
+				'js' => array('paginate',$do),
 			);
 			if (PERM('inspector')) $settings['js'][] = "$do-manage";
 			loadPage($settings);
