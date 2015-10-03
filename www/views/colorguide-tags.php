@@ -4,7 +4,7 @@
 	<p class='align-center links'>
 		<a class='btn darkblue typcn typcn-arrow-back' href="/<?=$color?>guide">Back to <?=$Color?> Guide</a>
 	</p>
-	<?=$Pagination = get_pagination_html('colorguide/tags', $Page, $MaxPages)?>
+	<?=$Pagination?>
 	<table id="tags">
 		<thead><?php
 	$cspan = PERM('inspector') ? ' colspan="2"' : '';

@@ -1951,14 +1951,32 @@ ORDER BY `count` DESC
 	}
 
 	// Pagination creator
-	function get_pagination_html($basePath, $currentPage = 1, $maxPages = 1){
+	function get_pagination_html($basePath, $currentPage = null, $maxPages = null){
+		if (!isset($currentPage)){
+			global $Page;
+			$currentPage = isset($Page) ? $Page : 1;
+		}
+		if (!isset($maxPages)){
+			global $MaxPages;
+			$maxPages = isset($MaxPages) ? $MaxPages : 1;
+		}
 		$Pagination = '';
+		if ($currentPage > 1){
+			$Pagination .= "<li><a href='/$basePath/1'>&laquo;</a></li>";
+			$prev = $currentPage-1;
+			$Pagination .= "<li><a href='/$basePath/$prev'>&lsaquo;</a></li>";
+		}
 		for ($i = 1; $i <= $maxPages; $i++){
 			$li = $i;
 			if ($li !== $currentPage)
 				$li = "<a href='/$basePath/$li'>$li</a>";
 			else $li = "<strong>$li</strong>";
 			$Pagination .= "<li>$li</li>";
+		}
+		if ($currentPage < $maxPages){
+			$next = $currentPage+1;
+			$Pagination .= "<li><a href='/$basePath/$next'>&rsaquo;</a></li>";
+			$Pagination .= "<li><a href='/$basePath/$maxPages'>&raquo;</a></li>";
 		}
 		return "<ul class='pagination'>$Pagination</ul>";
 	}
@@ -2199,4 +2217,15 @@ ORDER BY `count` DESC
 			$page = "EQG #$movieNumber";
 		}
 		return array($link,$page);
+	}
+
+	// Respond to paginated result requests
+	function pagination_response($output, $update){
+		global $Pagination, $Page;
+		respond(array(
+			'output' => $output,
+			'update' => $update,
+			'pagination' => $Pagination,
+			'page' => $Page,
+		));
 	}

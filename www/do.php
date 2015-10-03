@@ -591,17 +591,12 @@
 
 			fix_path("/logs/$Page");
 			$title = "Page $Page - $title";
+			$Pagination = get_pagination_html('logs');
 
 			$LogItems = $Database->orderBy('timestamp')->get('log',array($ItemsPerPage*($Page-1), $ItemsPerPage));
 
 			if (isset($_GET['js']))
-				respond(array(
-					'output' => log_tbody_render($LogItems),
-					'update' => '#logs tbody',
-					'page' => $Page,
-					'maxpage' => $MaxPages,
-					'title' => $title,
-				));
+				pagination_response(log_tbody_render($LogItems), '#logs tbody');
 
 			loadPage(array(
 				'title' => $title,
@@ -1256,18 +1251,12 @@
 				fix_path("/{$color}guide/tags/$Page");
 				$heading = "Tags";
 				$title = "Page $Page - $heading - $Color Guide";
+				$Pagination = get_pagination_html("{$color}guide/tags");
 
 				$Tags = get_tags(null,array($ItemsPerPage*($Page-1), $ItemsPerPage));
 
-				if (isset($_GET['js'])){
-					respond(array(
-						'output' => get_taglist_html($Tags, NOWRAP),
-						'update' => '#tags tbody',
-						'page' => $Page,
-						'maxpage' => $MaxPages,
-						'title' => $title,
-					));
-				}
+				if (isset($_GET['js']))
+					pagination_response(get_taglist_html($Tags, NOWRAP), '#tags tbody');
 
 				$js = array('paginate');
 				if (PERM('inspector'))
@@ -1290,18 +1279,12 @@
 				fix_path("/{$color}guide/changes/$Page");
 				$heading = "$Color Changes";
 				$title = "Page $Page - $heading - $Color Guide";
+				$Pagination = get_pagination_html("{$color}guide/changes");
 
 				$Changes = get_updates(null, ($ItemsPerPage*($Page-1)).", $ItemsPerPage");
 
-				if (isset($_GET['js'])){
-					respond(array(
-						'output' => render_changes_html($Changes, NOWRAP, SHOW_APPEARANCE_NAMES),
-						'update' => '#changes',
-						'page' => $Page,
-						'maxpage' => $MaxPages,
-						'title' => $title,
-					));
-				}
+				if (isset($_GET['js']))
+					pagination_response(render_changes_html($Changes, NOWRAP, SHOW_APPEARANCE_NAMES), '#changes');
 
 				loadPage(array(
 					'title' => $title,
@@ -1391,16 +1374,10 @@
 			fix_path("/{$color}guide/$Page");
 			$heading = "$Color Guide";
 			$title .= "Page $Page - $heading";
+			$Pagination = get_pagination_html("{$color}guide");
 
-			if (isset($_GET['js'])){
-				respond(array(
-					'output' => render_ponies_html($Ponies, NOWRAP),
-					'update' => '#list',
-					'page' => $Page,
-					'maxpage' => $MaxPages,
-					'title' => $title,
-				));
-			}
+			if (isset($_GET['js']))
+				pagination_response(render_ponies_html($Ponies, NOWRAP), '#list');
 
 			$settings = array(
 				'title' => $title,

@@ -1,7 +1,7 @@
 (function Paginate(){
 	if (window[" paginationHandlerBound"] === true) return;
 	window[" paginationHandlerBound"] = true;
-	var pageRegex = /Page \d+$/;
+	var pageRegex = /Page \d+/g;
 
 	$d.on('paginate-refresh',function(){
 		var basePath = location.pathname.replace(/(\d+)$/,''),
@@ -44,25 +44,12 @@
 					});
 
 				// Preserve static page title component at the end
-				document.title = document.title.replace(/^.*( - [^-]+)$/,this.title+'$1');
+				document.title = document.title.replace(pageRegex, 'Page '+newPageNumber);
 
 				if (state.page !== newPageNumber && !isNaN(newPageNumber))
 					history.pushState({paginate:true, page:newPageNumber},'',basePath+newPageNumber+(window.location.search.length > 1 ? location.search : ''));
 
-				var max = this.maxpage;
-				$pagination.each(function(){
-					var $ul = $(this),
-						$childs = $ul.children();
-
-					if ($childs.length !== max){
-						$ul.empty();
-						for (var i = 1; i <= max; i++)
-							$ul.append('<li><a href="'+basePath+i+'">'+i+'</a></li>');
-						$childs = $ul.children();
-					}
-					else $childs.eq(pageNumber-1).html('<a href="'+basePath+pageNumber+'">'+pageNumber+'</a>');
-					$childs.eq(newPageNumber-1).html('<strong>'+newPageNumber+'</strong>');
-				});
+				$pagination.html(this.pagination);
 
 				var event = jQuery.Event('page-switch');
 				$(this.update).html(this.output).trigger(event);

@@ -705,11 +705,37 @@ ul.pagination {
 	text-align: center;
 
 	&:last-child { margin-bottom: 0 }
-	&:before { content: "Pages: " }
 
 	li {
-		display: inline;
+		display: inline-block;
+		border: 1px solid #aaa;
+		background: linear-gradient(to bottom, #fff 0%, #dedede 100%);
+		overflow: hidden;
 
-		&:not(:last-child):after { content: ', ' }
+		&:not(:last-child) { border-right: 0 }
+		&:first-child {
+			border-top-left-radius: 5px;
+			border-bottom-left-radius: 5px;
+		}
+		&:last-child  {
+			border-top-right-radius: 5px;
+			border-bottom-right-radius: 5px;
+		}
+
+		* {
+			display: inline-block;
+			padding: 5px;
+			min-width: 1em;
+			line-height: 1em;
+			height: 1em;
+		}
+		strong {
+			background-color: rgba(0,0,0,.2);
+			color: #555;
+		}
+		a {
+			color: #000 !important;
+			transition: none !important;
+		}
 	}
 }

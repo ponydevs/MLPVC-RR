@@ -4,7 +4,7 @@
 	<p><?=$MSG?></p>
 <?php } else { ?>
 	<p>Displaying <?=$ItemsPerPage?> items/page</p>
-	<?=$Pagination = get_pagination_html('logs', $Page, $MaxPages)?>
+	<?=$Pagination?>
 	<table id="logs">
 		<thead>
 			<tr>
