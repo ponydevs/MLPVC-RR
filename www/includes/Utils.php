@@ -1957,19 +1957,14 @@ ORDER BY `count` DESC
 		$maxPages = isset($MaxPages) ? $MaxPages : 1;
 
 		$Pagination = $wrap ? "<ul class='pagination'>" : '';
-		if ($currentPage !== 1 && $maxPages !== 1){
+		if (!($currentPage === 1 && $maxPages === 1)){
 			if ($currentPage > 1){
 				$Pagination .= "<li><a href='/$basePath/1'>&laquo;</a></li>";
 				$prev = $currentPage-1;
 				$Pagination .= "<li><a href='/$basePath/$prev'>&lsaquo;</a></li>";
 			}
-			for ($i = 1; $i <= $maxPages; $i++){
-				$li = $i;
-				if ($li !== $currentPage)
-					$li = "<a href='/$basePath/$li'>$li</a>";
-				else $li = "<strong>$li</strong>";
-				$Pagination .= "<li>$li</li>";
-			}
+			for ($i = 1; $i <= $maxPages; $i++)
+				$Pagination .= '<li>'.($i !== $currentPage ? "<a href='/$basePath/$i'>$i</a>" : "<strong>$i</strong>").'</li>';
 			if ($currentPage < $maxPages){
 				$next = $currentPage+1;
 				$Pagination .= "<li><a href='/$basePath/$next'>&rsaquo;</a></li>";
