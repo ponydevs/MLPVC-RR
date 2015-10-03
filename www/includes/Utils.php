@@ -492,7 +492,7 @@ HTML;
 	function do404($debug = null){
 		statusCodeHeader(404);
 		if (RQMTHD == 'POST')
-			respond("Endpoint {$GLOBALS['do']} does not exist",0, is_string($debug) ? array('debug' => $debug) : null);
+			respond("Endpoint ({$_SERVER['REQUEST_URI']}) does not exist",0, is_string($debug) ? array('debug' => $debug) : null);
 		loadPage(array(
 			'title' => '404',
 			'view' => '404',
@@ -1590,7 +1590,7 @@ HTML;
 			<td class='episode' rowspan='2'>{$Title['episode']}</td>
 HTML;
 
-				$DataID = "data-epid='{$Title['id']}'";
+				$DataID = " data-epid='{$Title['id']}'";
 			}
 			else {
 				$Title = array('title' => "Equestria Girls: {$ep['title']}");

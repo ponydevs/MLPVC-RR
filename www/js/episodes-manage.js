@@ -49,7 +49,7 @@ DocReady.push(function EpisodeManage(){
 	var EP_TITLE_REGEX = window.EP_TITLE_REGEX,
 		EP_TITLE_HTML_REGEX = EP_TITLE_REGEX.toString().split('/')[1],
 		$content = $('#content'),
-		$pageTitle = $content.children('h1');
+		$pageTitle = $content.children('h1').first();
 
 	function EpisodeForm(id){
 		var $form = $.mk('form').attr('id', id).html(
