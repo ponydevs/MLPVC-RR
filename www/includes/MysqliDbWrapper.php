@@ -19,7 +19,7 @@
 		 *
 		 * @param array $args Arguments to be forwarded to rawQuery
 		 *
-		 * @return dbObject
+		 * @return array
 		 */
 		public function rawQuerySingle(...$args){
 			return $this->_singleRow(parent::rawQuery(...$args));
