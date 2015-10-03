@@ -323,7 +323,7 @@ DocReady.push(function ColorguideManage(){
 			var $ErrorNotice = $form.children('.notice').children('p'),
 				handleError = function(){
 					$ErrorNotice.html(this.message).parent().removeClass('info').addClass('fail').show();
-					$form.find('input, texarea').attr('disabled', false);
+					$form.find('input:not([name=reason]), texarea').attr('disabled', false);
 					$.Dialog.center();
 				},
 				$label = $form.find('input[name=label]'),

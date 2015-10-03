@@ -51,15 +51,23 @@
 		return $HTML;
 	}
 
-	// Get color groups
-	function get_cgs($PonyID, $cols = '*'){
+	// Order color groups
+	function order_cgs($dir = 'ASC'){
 		global $CGDb;
 
 		return $CGDb
-			->where('ponyid',$PonyID)
-			->orderBy('`order`','ASC')
-			->orderBy('groupid','ASC')
-			->get('colorgroups',null,$cols);
+			->orderByLiteral('CASE WHEN `order` IS NULL THEN 1 ELSE 0 END', $dir)
+			->orderBy('`order`', $dir)
+			->orderBy('groupid', $dir);
+	}
+
+	// Get color groups
+	function get_cgs($PonyID, $cols = '*', $sort_dir = 'ASC', $cnt = null){
+		global $CGDb;
+
+		order_cgs($sort_dir);
+		$CGDb->where('ponyid',$PonyID);
+		return $cnt === 1 ? $CGDb->getOne('colorgroups',$cols) : $CGDb->get('colorgroups',$cnt,$cols);
 	}
 
 	// Returns the markup of the color list for a specific pony \\
@@ -151,13 +159,13 @@
 		return $wrap ? "<div class='update'>$update</div>" : $update;
 	}
 
-	function order_ponies(){
+	function order_ponies($dir = 'ASC'){
 		global $CGDb;
 
 		$CGDb
-			->orderByLiteral('CASE WHEN `order` IS NULL THEN 1 ELSE 0 END')
-			->orderBy('`order`', 'ASC')
-			->orderBy('id', 'ASC');
+			->orderByLiteral('CASE WHEN `order` IS NULL THEN 1 ELSE 0 END', $dir)
+			->orderBy('`order`', $dir)
+			->orderBy('id', $dir);
 	}
 
 	// Get list of ponies
@@ -382,7 +390,7 @@ HTML;
 			),
 		);
 
-		$cgi = $ci = 0;
+		$cgi = 0;
 		foreach ($Scheme as $GroupName => $ColorNames){
 			$GroupID = $CGDb->insert('colorgroups',array(
 				'ponyid' => $PonyID,

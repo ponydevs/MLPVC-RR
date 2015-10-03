@@ -1180,6 +1180,11 @@
 							respond('There\'s no appearance with the specified ID');
 						$data['ponyid'] = $PonyID;
 
+						// Attempt to get order number of last color group for the appearance
+						order_cgs();
+						$LastGroup = get_cgs($PonyID, '`order`', 'DESC', 1);
+						$data['order'] =  !empty($LastGroup['order']) ? $LastGroup['order']+1 : 1;
+
 						$GroupID = $CGDb->insert('colorgroups', $data);
 						if (!$GroupID)
 							respond(ERR_DB_FAIL);
