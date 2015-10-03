@@ -43,6 +43,14 @@
 			);
 		}
 
+		private function _toLink($i){
+			return '<li>'.(
+				$i != $this->_page
+				? "<a href='/{$this->_basePath}/$i'>$i</a>"
+				: "<strong>$i</strong>"
+			).'</li>';
+		}
+
 		/**
 		 * Write the pagination links
 		 *
@@ -50,7 +58,6 @@
 		 */
 		public function __toString(){
 			$Pagination = $this->_wrap ? "<ul class='pagination'>" : '';
-			$links = $this->_getLinks();
 			$previousPage = 0;
 
 			if ($this->_page > 1){
@@ -58,16 +65,15 @@
 				$prev = $this->_page-1;
 				$Pagination .= "<li class='spec'><a href='/{$this->_basePath}/$prev'>&lsaquo;</a></li>";
 			}
-			foreach ($links as $i) {
+			if ($this->_maxPages < 7)
+				for ($i = 1; $i <= $this->_maxPages; $i++)
+					$Pagination .= $this->_toLink($i);
+			else foreach ($this->_getLinks() as $i) {
 				if ($i != min($previousPage + 1, $this->_maxPages))
 					$Pagination .= "<li class='spec'><a>&hellip;</a></li>";
 				$previousPage = $i;
 
-				$Pagination .= '<li>'.(
-					$i != $this->_page
-					? "<a href='/{$this->_basePath}/$i'>$i</a>"
-					: "<strong>$i</strong>"
-				).'</li>';
+				$Pagination .= $this->_toLink($i);
 			}
 			if ($this->_page < $this->_maxPages){
 				$next = $this->_page+1;
