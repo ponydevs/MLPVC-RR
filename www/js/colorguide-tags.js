@@ -79,7 +79,7 @@ DocReady.push(function ColorguideTags(){
 						$form.on('submit',function(e){
 							e.preventDefault();
 
-							$ErrorNotice.text('Merging tags...').parent().removeClass('fail').addClass('info').show();
+							$ErrorNotice.text('Merging tags&hellip;').parent().removeClass('fail').addClass('info').show();
 							$.Dialog.center();
 
 							$.post('/colorguide/mergetag/'+tagID,$form.mkData(),function(){

@@ -592,20 +592,20 @@
 			}
 
 			if (!PERM('inspector')) do404();
-			if (is_numeric($data))
-				$Page = intval($data, 10);
-
-			$title = 'Logs';
 
 			$ItemsPerPage = 20;
 			$EntryCount = $Database->count('log');
 			list($Page,$MaxPages) = calc_page($EntryCount);
 
 			fix_path("/logs/$Page");
-			$title = "Page $Page - $title";
+			$heading = 'Logs';
+			$title = "Page $Page - $heading";
 			$Pagination = get_pagination_html('logs');
 
-			$LogItems = $Database->orderBy('timestamp')->get('log',array($ItemsPerPage*($Page-1), $ItemsPerPage));
+			$LogItems = $Database
+				->orderBy('timestamp')
+				->orderBy('entryid')
+				->get('log',array($ItemsPerPage*($Page-1), $ItemsPerPage));
 
 			if (isset($_GET['js']))
 				pagination_response(log_tbody_render($LogItems), '#logs tbody');

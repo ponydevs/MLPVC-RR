@@ -743,5 +743,16 @@ ul.pagination {
 			transition: none !important;
 			cursor: pointer;
 		}
+		&.spec a {
+			color: $Link !important;
+			background-color: rgba($Link, .15);
+		}
 	}
+}
+#goto-page input {
+	font-size: 28px;
+	max-width: 70px;
+	text-align: center;
+	margin-left: auto;
+	margin-right: auto;
 }

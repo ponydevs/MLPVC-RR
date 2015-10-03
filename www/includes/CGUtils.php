@@ -458,3 +458,13 @@ HTML;
 		}
 		return $HTML . ($wrap ? '</ul>' : '');
 	}
+
+	// Update use count on a tag
+	function update_tag_count($TagID, $returnCount = false){
+		global $CGDb;
+
+		$Tagged = $CGDb->where('tid', $TagID)->count('tagged');
+		$return = array('status' => $CGDb->where('tid', $TagID)->update('tags',array('uses' => $Tagged)));
+		if ($returnCount) $return['count'] = $Tagged;
+		return $return;
+	}

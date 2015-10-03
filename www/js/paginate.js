@@ -1,18 +1,47 @@
 (function Paginate(){
 	if (window[" paginationHandlerBound"] === true) return;
 	window[" paginationHandlerBound"] = true;
-	var pageRegex = /Page \d+/g;
+
+	var pageRegex = /Page \d+/g,
+		basePath = location.pathname.replace(/\/\d+$/,'')+'/',
+		$pagination = $('.pagination'),
+		pageNumber = parseInt($pagination.first().children('li').children('strong').text(), 10),
+		title = 'Navigation',
+		$PaginationForm = $.mk('form').attr('id','goto-page').on('submit',function(e){
+			e.preventDefault();
+
+			var page = parseInt($(this).find('input:visible').val(), 10);
+			if (isNaN(page))
+				page = 1;
+
+			$.toPage(basePath+Math.max(1, page));
+		}).append(
+			$.mk('label').append(
+				$.mk('span').text('Enter page number'),
+				$.mk('input').attr({
+					type: 'number',
+					min: 1,
+					step: 1,
+				})
+			)
+		);
 
 	$d.on('paginate-refresh',function(){
-		var basePath = location.pathname.replace(/\/\d+$/,'')+'/',
-			$pagination = $('.pagination'),
-			pageNumber = parseInt($pagination.first().children('li').children('strong').text(), 10),
-			title = 'Navigation';
+		basePath = location.pathname.replace(/\/\d+$/,'')+'/';
+		$pagination = $('.pagination');
+		pageNumber = parseInt($pagination.first().children('li').children('strong').text(), 10);
+		title = 'Navigation';
+
 		$pagination.on('click','a',function(e){
 			e.preventDefault();
 			e.stopPropagation();
 
 			$('#ctxmenu').hide();
+
+			if (typeof $(this).attr('href') === 'undefined')
+				return $.Dialog.request('Navigation',$PaginationForm.clone(true,true),'goto-page','Go to page',function($form){
+					$form.find('input:visible').val(pageNumber).get(0).select()
+				});
 
 			$.toPage(this.pathname);
 		});
@@ -21,7 +50,7 @@
 		});
 		$.toPage = function(target, silentfail, bypass){
 			if (!target) target = window.location.pathname;
-			var newPageNumber = parseInt(target.substring(basePath.length), 10),
+			var newPageNumber = parseInt(target.replace(/^.*\/(\d+)$/,'$1'), 10),
 				state = this.state || {};
 
 			if (!bypass && (pageNumber === newPageNumber || pageNumber === state.page))

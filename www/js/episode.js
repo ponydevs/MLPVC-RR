@@ -475,7 +475,7 @@ DocReady.push(function Episode(){
 					}).on('error',function(){
 						var title = "Can't load image";
 						if (attempts < 1){
-							$.Dialog.wait(title,'Image could not be loaded, retrying in 2 seconds...');
+							$.Dialog.wait(title,'Image could not be loaded, retrying in 2 seconds&hellip;');
 							setTimeout(function(){
 								load(data, attempts+1);
 							}, 2000);

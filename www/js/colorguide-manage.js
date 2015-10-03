@@ -69,7 +69,7 @@ DocReady.push(function ColorguideManage(){
 				$form.on('submit',function(e){
 					e.preventDefault();
 
-					$ErrorNotice.text('Saving changes...').parent().removeClass('fail').addClass('info').show();
+					$ErrorNotice.text('Saving changes&hellip;').parent().removeClass('fail').addClass('info').show();
 					$.Dialog.center();
 
 					$.post('/colorguide/'+(editing?'set/'+data.ponyID:'make'),$form.mkData(),$.mkAjaxHandler(function(){
@@ -165,7 +165,7 @@ DocReady.push(function ColorguideManage(){
 			$form.on('submit', function(e){
 				e.preventDefault();
 
-				$ErrorNotice.text('Creating tag...').parent().removeClass('fail').addClass('info').show();
+				$ErrorNotice.text('Creating tag&hellip;').parent().removeClass('fail').addClass('info').show();
 				$.Dialog.center();
 
 				$.post('/colorguide/maketag',$form.mkData(),$.mkAjaxHandler(function(){
@@ -364,7 +364,7 @@ DocReady.push(function ColorguideManage(){
 					data.reason = $reason.val();
 				}
 
-				$ErrorNotice.text('Saving changes...').parent().removeClass('fail').addClass('info').show();
+				$ErrorNotice.text('Saving changes&hellip;').parent().removeClass('fail').addClass('info').show();
 				$.Dialog.center();
 
 				$.post('/colorguide/'+(editing?'set':'make')+'cg'+(editing?'/'+groupID:''), data, $.mkAjaxHandler(function(){
@@ -423,7 +423,7 @@ DocReady.push(function ColorguideManage(){
 						$form.on('submit', function(e){
 							e.preventDefault();
 
-							$ErrorNotice.text('Saving changes...').parent().removeClass('fail').addClass('info').show();
+							$ErrorNotice.text('Saving changes&hellip;').parent().removeClass('fail').addClass('info').show();
 							$.Dialog.center();
 
 							$.post('/colorguide/settag/'+tagID, $form.mkData(), $.mkAjaxHandler(function(){
@@ -615,7 +615,7 @@ DocReady.push(function ColorguideManage(){
 								});
 								data.cgs = data.cgs.join(',');
 
-								$ErrorNotice.text('Saving changes...').parent().removeClass('fail').addClass('info').show();
+								$ErrorNotice.text('Saving changes&hellip;').parent().removeClass('fail').addClass('info').show();
 								$.Dialog.center();
 
 								$.post('/colorguide/setcgs/'+ponyID,data,$.mkAjaxHandler(function(){

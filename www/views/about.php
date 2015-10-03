@@ -10,7 +10,7 @@
 		</div>
 	</section>
 	<section>
-		<h2>Why does the version number look so... <em>random</em>?</h2>
+		<h2>Why does the version number look so&hellip; <em>random</em>?</h2>
 		<div>
 			<p>This website's complete codebase is <a href="<?=GITHUB_URL?>">available for anyone to see on GitHub</a>. The version number is the first few characters of the latest commit's ID. In this case, a commit is basically an update to the site. Whenever a new update is applied, the version number changes automatically.</p>
 		</div>

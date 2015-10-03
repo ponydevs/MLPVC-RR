@@ -42,6 +42,7 @@
 
 	# Logging
 	$LOG_DESCRIPTION = array(
+		'junk' => 'Junk entry',
 		'episodes' => 'Episode management',
 		'episode_modify' => 'Episode modified',
 		'rolechange' => 'User group change',
@@ -174,10 +175,10 @@
 					$inituser = 'Deleted user';
 				else $inituser = "<a href='/u/{$inituser['name']}'>{$inituser['name']}</a>";
 
-				if (in_array($item['ip'],array('::1','127.0.0.1'))) $ip = "localhost";
-				else $ip = $item['ip'];
+				$ip = in_array($item['ip'], array('::1', '127.0.0.1')) ? "localhost" : $item['ip'];
 
-				if ($item['ip'] === $_SERVER['REMOTE_ADDR']) $ip .= ' <span class="self">(from your IP)</span>';
+				if ($item['ip'] === $_SERVER['REMOTE_ADDR'])
+					$ip .= ' <span class="self">(from your IP)</span>';
 			}
 			else {
 				$inituser = null;
@@ -185,7 +186,7 @@
 			}
 
 			$event = isset($LOG_DESCRIPTION[$item['reftype']]) ? $LOG_DESCRIPTION[$item['reftype']] : $item['reftype'];
-			if ($item['reftype'] !== 'logclear')
+			if (isset($item['refid']))
 				$event = '<span class="expand-section typcn typcn-plus">'.$event.'</span>';
 			$ts = timetag($item['timestamp'], EXTENDED);
 
@@ -1953,53 +1954,19 @@ ORDER BY `count` DESC
 	// Pagination creator
 	function get_pagination_html($basePath, $wrap = true){
 		global $Page, $MaxPages;
-		$currentPage = isset($Page) ? $Page : 1;
-		$maxPages = isset($MaxPages) ? $MaxPages : 1;
 
-		$Pagination = $wrap ? "<ul class='pagination'>" : '';
-		if (!($currentPage === 1 && $maxPages === 1)){
-			if ($currentPage > 1){
-				$Pagination .= "<li><a href='/$basePath/1'>&laquo;</a></li>";
-				$prev = $currentPage-1;
-				$Pagination .= "<li><a href='/$basePath/$prev'>&lsaquo;</a></li>";
-			}
-			for ($i = 1; $i <= $maxPages; $i++)
-				$Pagination .= '<li>'.($i !== $currentPage ? "<a href='/$basePath/$i'>$i</a>" : "<strong>$i</strong>").'</li>';
-			if ($currentPage < $maxPages){
-				$next = $currentPage+1;
-				$Pagination .= "<li><a href='/$basePath/$next'>&rsaquo;</a></li>";
-				$Pagination .= "<li><a href='/$basePath/$maxPages'>&raquo;</a></li>";
-			}
-		}
-		return $Pagination.($wrap ? '</ul>' : '');
+		require_once APPATH."includes/Pagination.php";
+		return (string) new Pagination($Page, $MaxPages, $basePath, $wrap);
 	}
 
 	// Pagiation calculate page
 	function calc_page($EntryCount){
 		global $data, $ItemsPerPage;
-		$Page = preg_replace('~^.*(\d+)$~','$1',$data);
-		if (is_numeric($Page))
-			$Page = intval($Page, 10);
-
-		if (empty($Page) || $Page < 1)
-			$Page = 1;
 
 		$MaxPages = max(1, ceil($EntryCount/$ItemsPerPage));
-
-		if ($Page > $MaxPages)
-			$Page = $MaxPages;
+		$Page = min(max(intval(preg_replace('~^.*\/(\d+)$~','$1',$data), 10), 1), $MaxPages);
 
 		return array($Page, $MaxPages);
-	}
-
-	// Update use count on a tag
-	function update_tag_count($TagID, $returnCount = false){
-		global $CGDb;
-
-		$Tagged = $CGDb->where('tid', $TagID)->count('tagged');
-		$return = array('status' => $CGDb->where('tid', $TagID)->update('tags',array('uses' => $Tagged)));
-		if ($returnCount) $return['count'] = $Tagged;
-		return $return;
 	}
 
 	// Gets navigation HTML

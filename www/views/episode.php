@@ -40,8 +40,8 @@
 	<script>var SEASON = <?=$CurrentEpisode['season']?>, EPISODE = <?=$CurrentEpisode['episode']?>;</script>
 <?php
 	} else { ?>
-	<h1>There's nothing here yet...</h1>
-	<p>...but there will be!</p>
+	<h1>There's nothing here yet&hellip;</h1>
+	<p>&hellip;but there will be!</p>
 
 <?php   if (PERM('inspector'))
 			echo Notice('info','No episodes found',"To make the site functional, you must add an episode to the database first. Head on over to the <a href='/episodes'>Episodes</a> page and add one now!");
