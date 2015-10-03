@@ -151,7 +151,7 @@ DocReady.push(function EpisodeManage(){
 						$editepWithData.find('input[name='+k+']').val(v);
 					});
 
-					$.Dialog.request('Editing',$editepWithData,'editep','Save',function(){
+					$.Dialog.request('Editing '+epid,$editepWithData,'editep','Save',function(){
 						$('#editep').on('submit',function(e){
 							e.preventDefault();
 
