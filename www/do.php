@@ -852,8 +852,7 @@
 
 							if ($action === 'make'){
 								$data['message'] = 'Appearance added successfully';
-								order_ponies();
-								$Query = $CGDb->getOne('ponies p','COUNT(*) as count');
+								$Query = $CGDb->count('ponies');
 
 								$data['id'] = $query;
 								$data['page'] = ceil($Query['count'] / $ItemsPerPage);
