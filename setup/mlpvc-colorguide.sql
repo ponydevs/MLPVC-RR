@@ -716,12 +716,12 @@ CREATE TABLE `ponies` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 INSERT INTO `ponies` (`id`, `order`, `label`, `notes`, `cm_favme`, `added`) VALUES
-(1, 1, 'Twilight Sparkle', 'Far legs use darker colors.', NULL, '2015-08-24 19:04:32'),
-(2, 2, 'Applejack', '', NULL, '2015-09-21 18:46:54'),
-(3, 3, 'Fluttershy', '', NULL, '2015-09-21 18:54:47'),
-(4, 4, 'Pinkie Pie', 'Far legs use darker colors.', NULL, '2015-09-21 18:52:26'),
-(5, 5, 'Rainbow Dash', '', NULL, '2015-09-21 19:01:33'),
-(6, 6, 'Rarity', '', NULL, '2015-09-21 19:18:24'),
+(1, 1, 'Twilight Sparkle', 'Far legs use darker colors.', 'd64bqyo', '2015-08-24 19:04:32'),
+(2, 2, 'Applejack', '', 'd64bqyo', '2015-09-21 18:46:54'),
+(3, 3, 'Fluttershy', '', 'd64bqyo', '2015-09-21 18:54:47'),
+(4, 4, 'Pinkie Pie', 'Far legs use darker colors.', 'd64bqyo', '2015-09-21 18:52:26'),
+(5, 5, 'Rainbow Dash', '', 'd64bqyo', '2015-09-21 19:01:33'),
+(6, 6, 'Rarity', '', 'd64bqyo', '2015-09-21 19:18:24'),
 (7, 7, 'Spike', '', NULL, '2015-09-21 19:43:59'),
 (9, 13, 'Princess Luna', '', NULL, '2015-09-29 18:55:38'),
 (10, NULL, 'Minuette', 'For convenience, the color of the glass on her cutie mark is solid rather than transparent, thus the sand should be above.', NULL, '2015-07-25 14:49:44'),
