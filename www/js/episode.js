@@ -400,6 +400,8 @@ DocReady.push(function Episode(){
 						if (typeof deviation !== 'string' || deviation.length === 0)
 							throw new Error('Please enter a deviation URL');
 
+						$.Dialog.wait('Adding reservation');
+
 						$.post('/reserving/reservation?add='+idstr,{deviation:deviation},$.mkAjaxHandler(function(){
 							if (this.status){
 								$.Dialog.success(title,this.message);
