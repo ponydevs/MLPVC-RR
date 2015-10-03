@@ -57,3 +57,4 @@
 <?php if (PERM('inspector')){ ?>
 <script>var TAG_TYPES_ASSOC = <?=json_encode($TAG_TYPES_ASSOC)?>, MAX_SIZE = '<?=get_max_upload_size()?>', PRINTABLE_ASCII_REGEX = '<?=PRINTABLE_ASCII_REGEX?>', HEX_COLOR_PATTERN = <?=rtrim(HEX_COLOR_PATTERN,'u')?>;</script>
 <?php } ?>
+</div>
