@@ -26,7 +26,6 @@
 		<?=render_changes_html($Changes)?>
 	</section>
 <?  } ?>
-	<ul id
 </div>
 
 <script>var Color = '<?=$Color?>', color = '<?=$color?>';</script>
