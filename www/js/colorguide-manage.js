@@ -40,7 +40,8 @@ DocReady.push(function ColorguideManage(){
 			),
 		mkPonyEditor = function($this, title, data){
 			var $ponyLabel = $this.parent(),
-				$ponyNotes = $ponyLabel.next();
+				$div = $ponyLabel.parent(),
+				$ponyNotes = $div.children('.notes');
 
 			$.Dialog.request(title,$ponyEditor.clone(),'pony-editor','Save',function($form){
 				var $ErrorNotice = $form.children('.notice').children('p'),
