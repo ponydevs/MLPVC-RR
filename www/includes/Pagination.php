@@ -6,7 +6,7 @@
 	 */
 	class Pagination {
 		var $_page, $_maxPages, $_wrap,
-			$_basePath, $_context = 1;
+			$_basePath, $_context = 2;
 
 		/**
 		 * Constructor for setting initial values & outputting result
