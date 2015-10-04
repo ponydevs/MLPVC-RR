@@ -1,7 +1,6 @@
 DocReady.push(function UserManage(){
-	if (typeof window.ROLES == null) return;
+	if (typeof window.ROLES === 'undefined') return;
 	var $content = $('#content'),
-		ROLES = window.ROLES,
 		$name = $content.children('h1'),
 		name = $name.text().trim(),
 		$currRole = $name.next(),
@@ -11,7 +10,7 @@ DocReady.push(function UserManage(){
 		$banToggle = $('#ban-toggle'),
 		$changeRole = $('#change-role');
 
-	$.each(ROLES,function(name,label){
+	$.each(window.ROLES,function(name,label){
 		$OptGrp.append('<option value='+name+'>'+label+'</option>');
 	});
 

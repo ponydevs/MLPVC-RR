@@ -118,16 +118,16 @@ DocReady.push(function ColorguideTags(){
 				if (successDialog) $.Dialog.success(title, this.message, true);
 				else $.Dialog.close();
 			})
-		},
-		$refresher = $('.refresh-all').on('click',function(){
-			var tagIDs = [],
-				title = 'Recalculate tag usage data';
-			$tbody.children().each(function(){
-				tagIDs.push($(this).children().first().text().trim())
-			});
-
-			$.Dialog.wait(title, 'Updating use count'+(tagIDs.length!==1?'s':''));
-
-			$.post('/colorguide/recounttag',{tagids:tagIDs.join(',')}, TagUseUpdateHandler(title, true));
+		};
+	$('.refresh-all').on('click',function(){
+		var tagIDs = [],
+			title = 'Recalculate tag usage data';
+		$tbody.children().each(function(){
+			tagIDs.push($(this).children().first().text().trim())
 		});
+
+		$.Dialog.wait(title, 'Updating use count'+(tagIDs.length!==1?'s':''));
+
+		$.post('/colorguide/recounttag',{tagids:tagIDs.join(',')}, TagUseUpdateHandler(title, true));
+	});
 });

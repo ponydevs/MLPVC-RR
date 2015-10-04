@@ -7,12 +7,12 @@
 	<?=$Pagination?>
 	<table id="tags">
 		<thead><?php
-	$cspan = PERM('inspector') ? ' colspan="2"' : '';
+	$cspan = PERM('inspector') ? '" colspan="2' : '';
 	$refresher = PERM('inspector') ? " <button class='typcn typcn-arrow-sync refresh-all' title='Refresh usage data on this page'></button>" : '';
 	echo $thead = <<<HTML
 			<tr>
 				<th class="tid">ID</th>
-				<th class="name"$cspan>Name</th>
+				<th class="name{$cspan}">Name</th>
 				<th class="title">Description</th>
 				<th class="type">Type</th>
 				<th class="uses">Uses$refresher</th>

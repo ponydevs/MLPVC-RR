@@ -2,7 +2,7 @@
 (function($){
 	var $ctxmenu = $.mk('div').attr('id', 'ctxmenu');
 	$ctxmenu
-		.appendTo(document.body)
+		.appendTo($body)
 		.on('click',function(e){ e.stopPropagation() })
 		.on('contextmenu', function(){ $ctxmenu.hide(); return false });
 	$.ctxmenu = {};
@@ -107,6 +107,6 @@
 		$ch.eq(nth).children('a').triggerHandler('click');
 	};
 
-	$(document.body).on('click contextmenu',function(){ $ctxmenu.hide() });
-	$(window).on('blur resize',function(){ $ctxmenu.hide() });
+	$body.on('click contextmenu',function(){ $ctxmenu.hide() });
+	$w.on('blur resize',function(){ $ctxmenu.hide() });
 })(jQuery);

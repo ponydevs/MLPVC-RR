@@ -194,7 +194,6 @@
 
 			$HTML .= <<<HTML
 		<tr>
-
 			<td class='entryid'>{$item['entryid']}</td>
 			<td class='timestamp'>$ts</td>
 			<td class='ip'>$ip</td>

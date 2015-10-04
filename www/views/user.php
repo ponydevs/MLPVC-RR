@@ -61,7 +61,7 @@
 				list($link,$page) = post_link_html($p);
 				$posted = date('c',strtotime($p['posted']));
 				$Posts[$i] = <<<HTML
-<li id='$id'>
+<li>
 	<div class='image screencap'>
 		<a href='$link'><img src='{$p['preview']}'></a>
 	</div>

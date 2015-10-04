@@ -1,10 +1,10 @@
 DocReady.push(function ColorguideManage(){
 	var Color = window.Color, color = window.color, TAG_TYPES_ASSOC = window.TAG_TYPES_ASSOC, $colorGroups,
-		MAX_SIZE = window.MAX_SIZE, PRINTABLE_ASCII_REGEX = window.PRINTABLE_ASCII_REGEX,
+		PRINTABLE_ASCII_REGEX = window.PRINTABLE_ASCII_REGEX,
 		HEX_COLOR_PATTERN = window.HEX_COLOR_PATTERN, isWebkit = 'WebkitAppearance' in document.documentElement.style;
 
 	var $spriteUploadForm = $.mk('form').attr('id', 'sprite-img').html(
-		'<p class="align-center"><a href="#upload">Click here to upload a file</a> (max. '+MAX_SIZE+') or enter a URL below.</p>' +
+		'<p class="align-center"><a href="#upload">Click here to upload a file</a> (max. '+window.MAX_SIZE+') or enter a URL below.</p>' +
 		'<label><input type="text" name="image_url" placeholder="External image URL" required></label>' +
 		'<p class="align-center">The URL will be checked against the supported provider list, and if an image is found, it\'ll be downloaded to the server and set as this appearance\'s sprite image.</p>'
 	);

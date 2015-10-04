@@ -146,7 +146,7 @@
 					$dialogContent.append($contentAdd.html(params.content));
 					$dialogButtons = $makeDiv('dialogButtons').appendTo($dialogContent);
 					$dialogBox.append($dialogHeader).append($dialogContent);
-					$dialogOverlay.append($dialogBox).appendTo(document.body);
+					$dialogOverlay.append($dialogBox).appendTo($body);
 
 					$body.addClass('dialog-open');
 				}
@@ -254,7 +254,7 @@
 	};
 
 	$w.on('resize', $.Dialog.center);
-	$(document.body).on('keydown',function(e){
+	$body.on('keydown',function(e){
 		if (e.keyCode === 9 && typeof $.Dialog.open !== 'undefined'){
 			var $this = $(e.target),
 				$inputs = $('#dialogContent').find(':input'),

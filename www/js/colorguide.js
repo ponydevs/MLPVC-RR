@@ -26,7 +26,7 @@ DocReady.push(function Colorguide(){
 			var $this = $(this),
 				tagstyle = $this.attr('class').match(/typ\-([a-z]+)(?:\s|$)/);
 
-			tagstyle = tagstyle == null ? '' : ' qtip-tag-'+tagstyle[1];
+			tagstyle = !tagstyle ? '' : ' qtip-tag-'+tagstyle[1];
 
 			$this.qtip({
 				position: { my: 'bottom center', at: 'top center', viewport: true },

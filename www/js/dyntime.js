@@ -2,6 +2,18 @@
 	var dateformat = { order: 'Do MMMM YYYY, H:mm:ss' };
 	dateformat.orderwd = 'dddd, '+dateformat.order;
 
+	// http://stackoverflow.com/q/783818/1344955#comment44922952_17891099
+	function DateFormatError(message, element){
+		var error = Error.call(this, message);
+
+        this.name = 'DateFormatError';
+		this.message = error.message;
+        this.stack = error.stack;
+		this.element = element;
+	}
+	DateFormatError.prototype = Object.create(Error.prototype);
+	DateFormatError.prototype.constructor = DateFormatError;
+
 	function TimeUpdate(){
 		$('time[datetime]:not(.nodt)').addClass('dynt').each(function(){
 			var $this = $(this),
@@ -9,10 +21,8 @@
 			if (typeof date !== 'string') throw new TypeError('Invalid date data type: "'+(typeof date)+'"');
 
 			var Timestamp = moment(date);
-			if (!Timestamp.isValid()){
-				console.log(this);
-				throw new Error('Invalid date format: "'+date+'"');
-			}
+			if (!Timestamp.isValid())
+				throw new DateFormatError('Invalid date format: "'+date+'"', this);
 
 			var Now = moment(),
 				showDayOfWeek = !$this.attr('data-noweekday'),
