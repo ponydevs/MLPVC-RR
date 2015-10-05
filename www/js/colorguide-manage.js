@@ -321,14 +321,15 @@ DocReady.push(function ColorguideManage(){
 		}
 		$.Dialog.request(title,$cgEditor.clone(true, true),'cg-editor','Save',function($form){
 			var $ErrorNotice = $form.children('.notice').children('p'),
-				handleError = function(){
-					$ErrorNotice.html(this.message).parent().removeClass('info').addClass('fail').show();
-					$form.find('input:not([name=reason]), texarea').attr('disabled', false);
-					$.Dialog.center();
-				},
 				$label = $form.find('input[name=label]'),
 				$major = $form.find('input[name=major]'),
 				$reason = $form.find('input[name=reason]'),
+				handleError = function(){
+					$ErrorNotice.html(this.message).parent().removeClass('info').addClass('fail').show();
+					$form.find('input, texarea').attr('disabled', false);
+					$reason.attr('disabled', !$major.is(':checked'));
+					$.Dialog.center();
+				},
 				editing = typeof dis === 'object' && dis.label && dis.Colors;
 
 			if (editing){
