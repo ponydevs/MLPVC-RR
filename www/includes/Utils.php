@@ -2181,10 +2181,12 @@ ORDER BY `count` DESC
 	// Respond to paginated result requests
 	function pagination_response($output, $update){
 		global $Pagination, $Page;
+		$RQURI = rtrim(preg_replace('/js=true(?:&|$)/','',$_SERVER['REQUEST_URI']),'?');
 		respond(array(
 			'output' => $output,
 			'update' => $update,
 			'pagination' => $Pagination,
 			'page' => $Page,
+			'request_uri' => $RQURI,
 		));
 	}
