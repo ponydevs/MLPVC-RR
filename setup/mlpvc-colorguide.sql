@@ -192,7 +192,15 @@ INSERT INTO `colorgroups` (`groupid`, `ponyid`, `label`, `order`) VALUES
 (213, 35, 'Iris', 3),
 (214, 35, 'Freckles', 4),
 (215, 35, 'Yoke', 5),
-(216, 35, 'Cutie mark', 6);
+(216, 35, 'Cutie mark', 6),
+(217, 36, 'Coat', 0),
+(218, 36, 'Mane & Tail', 1),
+(219, 36, 'Iris', 2),
+(220, 36, 'Cutie Mark', 3),
+(221, 36, 'Sweater', 4),
+(222, 36, 'Sweater Buttons / Hair Beads', 5),
+(223, 36, 'Glasses', 6),
+(224, 36, 'Magic', 7);
 
 CREATE TABLE `colors` (
   `colorid` int(11) NOT NULL,
@@ -820,33 +828,63 @@ INSERT INTO `colors` (`colorid`, `groupid`, `label`, `hex`, `order`) VALUES
 (804, 210, 'Outline', '#EECFE1', 0),
 (805, 210, 'Fill', '#FFEFBC', 1),
 (806, 210, 'Shadow Fill', '#F5E1C7', 2),
-(807, 211, 'Coat Outline', '#BA3455', 0),
-(808, 211, 'Coat Fill', '#FC5D6D', 1),
-(809, 211, 'Hooves Outline', '#A62F4F', 2),
-(810, 211, 'Hooves Fill', '#E55665', 3),
-(811, 211, 'Shadow Coat Outline', '#F1D284', 4),
-(812, 211, 'Shadow Coat Fill', '#FFFAAE', 5),
-(813, 211, 'Shadow Hooves Outline', '#E09A85', 6),
-(814, 211, 'Shadow Hooves Fill', '#EAB8A1', 7),
-(815, 212, 'Outline', '#FF9B54', 0),
-(816, 212, 'Fill', '#FFC36B', 1),
-(817, 213, 'Gradient top', '#3B8C28', 0),
-(818, 213, 'Gradient bottom', '#6ECA5A', 1),
-(819, 214, 'Freckles', '#FFF8B0', 0),
-(820, 215, 'Yoke outline', '#9C7549', 0),
-(821, 215, 'Yoke fill 1', '#C19254', 1),
-(822, 215, 'Post fill 1', '#B0BBAC', 3),
-(823, 215, 'Post fill 2', '#A2AC9E', 4),
-(824, 215, 'Post fill 3', '#CBDFCD', 5),
-(825, 215, 'Yoke fill 2', '#D8A45E', 2),
-(826, 216, 'Apple fill 1', '#94DF60', 0),
-(827, 216, 'Apple fill 2', '#BBFB7C', 1),
-(828, 216, 'Apple fill 3', '#6DC759', 2),
-(829, 216, 'Seeds', '#C39155', 3),
-(830, 216, 'Apple stem 1', '#E0FF8A', 4),
-(831, 216, 'Apple stem 2 (=Apple fill 1)', '#94DF60', 5),
-(832, 216, 'Apple leaf 1 (=Apple fill 3)', '#6DC759', 6),
-(833, 216, 'Apple leaf 2', '#3FA24B', 7);
+(807, 211, 'Coat Outline', '#A32141', 0),
+(808, 211, 'Coat Fill', '#E64A57', 1),
+(809, 211, 'Hooves Outline', '#9E164C', 2),
+(810, 211, 'Hooves Fill', '#D0335C', 3),
+(811, 211, 'Shadow Coat Outline', '#EACA79', 4),
+(812, 211, 'Shadow Coat Fill', '#FCF8AC', 5),
+(813, 211, 'Shadow Hooves Outline', '#CF8D74', 6),
+(814, 211, 'Shadow Hooves Fill', '#DFAD96', 7),
+(815, 212, 'Outline', '#F08E43', 0),
+(816, 212, 'Fill', '#FBBA62', 1),
+(817, 213, 'Gradient top', '#267A14', 0),
+(818, 213, 'Gradient bottom', '#5FBB4B', 1),
+(819, 214, 'Freckles', '#FCF6AD', 0),
+(820, 215, 'Yoke outline', '#876235', 0),
+(821, 215, 'Yoke fill 1', '#C8954D', 1),
+(822, 215, 'Post fill 1', '#A2AF9D', 3),
+(823, 215, 'Post fill 2', '#919E8D', 4),
+(824, 215, 'Post fill 3', '#C2D9C4', 5),
+(825, 215, 'Yoke fill 2', '#AE8241', 2),
+(826, 216, 'Apple fill 1', '#87D557', 0),
+(827, 216, 'Apple fill 2', '#B6F677', 1),
+(828, 216, 'Apple fill 3', '#5EBA4A', 2),
+(829, 216, 'Seeds', '#AD8341', 3),
+(830, 216, 'Apple stem 1', '#DAFC87', 4),
+(831, 216, 'Apple stem 2 (=Apple fill 1)', '#87D557', 5),
+(832, 216, 'Apple leaf 1 (=Apple fill 3)', '#5EBA4A', 6),
+(833, 216, 'Apple leaf 2', '#309438', 7),
+(834, 217, 'Outline', '#DBBD5D', 0),
+(835, 217, 'Fill', '#F9F8D3', 1),
+(836, 217, 'Shadow Outline', '#C4A953', 2),
+(837, 217, 'Shadow Fill', '#E0DEBE', 3),
+(838, 218, 'Outline', '#9D2544', 0),
+(839, 218, 'Fill', '#E0535D', 1),
+(840, 219, 'Gradient Top', '#200B3E', 0),
+(842, 219, 'Gradient Bottom', '#622E87', 1),
+(843, 219, 'Highlight Top', '#8B5DA4', 2),
+(844, 219, 'Highlight Bottom', '#CBB2D3', 3),
+(845, 220, 'Color 1', '#663E64', 0),
+(846, 220, 'Color 2', '#C670B7', 1),
+(847, 218, 'Stripe 1', '#78549A', 2),
+(848, 218, 'Stripe 2', '#AD90D0', 3),
+(849, 221, 'Outline', '#1D1C2B', 0),
+(850, 221, 'Fill 1', '#454163', 1),
+(851, 221, 'Fill 2', '#34324C', 2),
+(852, 221, 'Shadow Fill 1', '#3D3B56', 3),
+(853, 221, 'Shadow Fill 2', '#2F2D44', 4),
+(854, 222, 'Outline', '#CF6995', 0),
+(855, 222, 'Fill', '#FCA1CB', 1),
+(856, 223, 'Frame', '#181723', 0),
+(857, 223, 'Frame Highlight', '#565175', 1),
+(858, 223, 'Pin Outline', '#B5B2D1', 2),
+(859, 223, 'Pin Fill', '#F0F2F8', 3),
+(860, 223, 'Tape Outline', '#87BACB', 4),
+(861, 223, 'Tape Fill', '#F8F9F1', 5),
+(862, 223, 'Lens ( 80% to 25% Opacity)', '#BEDAF4', 6),
+(863, 224, 'Aura color', '#E3BFD0', 0),
+(864, 215, 'Post fill 4 (screwtop on back)', '#6E7969', 6);
 
 CREATE TABLE `ponies` (
   `id` int(11) NOT NULL,
@@ -891,7 +929,8 @@ INSERT INTO `ponies` (`id`, `order`, `label`, `notes`, `cm_favme`, `added`) VALU
 (32, NULL, 'Trixie Lulamoon', '', 'd9bxest', '2015-10-03 15:35:08'),
 (33, NULL, 'Alicorn Amulet', '', NULL, '2015-10-03 16:22:13'),
 (34, 12, 'Princess Celestia', 'Make sure to use appropriate references when picking gradient angles and stops. They''ll differ based on the hair shape and angle.', NULL, '2015-10-03 19:26:50'),
-(35, NULL, 'Big Macintosh', '', NULL, '2015-10-04 19:11:42');
+(35, NULL, 'Big Macintosh', '', NULL, '2015-10-04 19:11:42'),
+(36, NULL, 'Moondancer', '', NULL, '2015-10-05 05:17:36');
 
 CREATE TABLE `tagged` (
   `tid` int(11) NOT NULL,
@@ -1058,7 +1097,11 @@ INSERT INTO `tagged` (`tid`, `ponyid`) VALUES
 (7, 35),
 (11, 35),
 (66, 35),
-(67, 35);
+(67, 35),
+(1, 36),
+(7, 36),
+(12, 36),
+(68, 36);
 
 CREATE TABLE `tags` (
   `tid` int(11) NOT NULL,
@@ -1069,18 +1112,18 @@ CREATE TABLE `tags` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 INSERT INTO `tags` (`tid`, `name`, `title`, `type`, `uses`) VALUES
-(1, 'unicorn', '', 'spec', 13),
+(1, 'unicorn', '', 'spec', 14),
 (2, 'earth pony', '', 'spec', 8),
 (3, 'pegasus', '', 'spec', 8),
 (4, 'alicorn', '', 'spec', 3),
 (5, 'bat pony', '', 'spec', 0),
 (6, 'mane six', 'Ponies who are one of the show''s six main characters', 'cat', 7),
-(7, 'minor character', 'Ponies who had a speaking role and/or interacted with the mane six', 'cat', 22),
+(7, 'minor character', 'Ponies who had a speaking role and/or interacted with the mane six', 'cat', 23),
 (8, 'background character', 'Ponies whose only purpose is filling crowds, with no to minimal speaking roles', 'cat', 1),
 (9, 'antagonist', '', 'cat', 3),
 (10, 'pet', '', 'cat', 0),
 (11, 'male', '', 'gen', 6),
-(12, 'female', '', 'gen', 27),
+(12, 'female', '', 'gen', 28),
 (14, 'twilight sparkle', '', 'char', 1),
 (15, 'gala dress', 'All gala dress colors', 'app', 0),
 (16, 'human', 'Refers to Equestria Girls characters', 'spec', 0),
@@ -1132,7 +1175,8 @@ INSERT INTO `tags` (`tid`, `name`, `title`, `type`, `uses`) VALUES
 (64, 'object', '', 'cat', 1),
 (65, 's5e2', '', 'ep', 4),
 (66, 'big macintosh', '', 'char', 1),
-(67, 'sibling', '', 'cat', 3);
+(67, 'sibling', '', 'cat', 3),
+(68, 'moondancer', '', 'char', 1);
 
 
 ALTER TABLE `colorgroups`
@@ -1156,13 +1200,13 @@ ALTER TABLE `tags`
 
 
 ALTER TABLE `colorgroups`
-  MODIFY `groupid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=217;
+  MODIFY `groupid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=225;
 ALTER TABLE `colors`
-  MODIFY `colorid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=834;
+  MODIFY `colorid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=865;
 ALTER TABLE `ponies`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=36;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=37;
 ALTER TABLE `tags`
-  MODIFY `tid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=68;
+  MODIFY `tid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=69;
 
 ALTER TABLE `colorgroups`
   ADD CONSTRAINT `colorgroups_ibfk_1` FOREIGN KEY (`ponyid`) REFERENCES `ponies` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
