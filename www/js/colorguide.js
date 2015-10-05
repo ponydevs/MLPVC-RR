@@ -79,11 +79,9 @@ DocReady.push(function Colorguide(){
 		e.preventDefault();
 
 		var query = $(this).serialize();
-		if (query === 'q=') query = '';
-		else query = '?'+query;
+		if (query === 'q=') query = false;
 
-		history.pushState({},'',window.location.pathname.replace(/\d+$/,'1')+query);
-		$.toPage(false, true, true);
+		$.toPage.call({query:query}, window.location.pathname.replace(/\d+$/,'1'), true, true);
 	});
 
 	$w.on('unload',function(){

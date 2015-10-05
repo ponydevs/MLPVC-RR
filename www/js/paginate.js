@@ -50,18 +50,29 @@
 		});
 		$.toPage = function(target, silentfail, bypass){
 			if (!target) target = window.location.pathname;
-			var newPageNumber = parseInt(target.replace(/^.*\/(\d+)$/,'$1'), 10),
+			var newPageNumber = parseInt(target.replace(/^.*\/(\d+)(?:$|\?)/,'$1'), 10),
 				state = this.state || {};
 
 			if (!bypass && (pageNumber === newPageNumber || pageNumber === state.page))
 				return silentfail ? false : $.Dialog.info(title, 'You are already on page '+pageNumber);
 
+			var data = { js: true},
+				params = [],
+				extraQuery = this.query;
 			if (location.search.length > 1)
-				target += location.search;
+				params = params.concat(location.search.substring(1).split('&'));
+			if (typeof extraQuery === 'string')
+				params = params.concat(extraQuery.split('&'));
+			else extraQuery = false;
+
+			if (params.length) $.each(params,function(_,el){
+				el = el.split('=');
+				data[el[0]] = el[1];
+			});
 
 			$.Dialog.wait(title, 'Loading page '+newPageNumber);
 
-			$.get(target, {js: true}, $.mkAjaxHandler(function(){
+			$.get(target, data, $.mkAjaxHandler(function(){
 				if (!this.status) return $.Dialog.fail(title, this.message);
 
 				newPageNumber = parseInt(this.page, 10);
@@ -75,8 +86,10 @@
 				// Preserve static page title component at the end
 				document.title = document.title.replace(pageRegex, 'Page '+newPageNumber);
 
-				if (state.page !== newPageNumber && !isNaN(newPageNumber))
-					history.pushState({paginate:true, page:newPageNumber},'',basePath+newPageNumber+(window.location.search.length > 1 ? location.search : ''));
+				var newURI = this.request_uri || (basePath+newPageNumber+(window.location.search.length > 1 ? location.search : ''));
+
+				if ((state.page !== newPageNumber && !isNaN(newPageNumber)) || extraQuery)
+					history.pushState({paginate:true, page:newPageNumber},'',newURI);
 
 				$pagination.html(this.pagination);
 
