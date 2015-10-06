@@ -200,7 +200,13 @@ INSERT INTO `colorgroups` (`groupid`, `ponyid`, `label`, `order`) VALUES
 (221, 36, 'Sweater', 4),
 (222, 36, 'Sweater Buttons / Hair Beads', 5),
 (223, 36, 'Glasses', 6),
-(224, 36, 'Magic', 7);
+(224, 36, 'Magic', 7),
+(225, 37, 'Coat', 0),
+(226, 37, 'Mane & Tail', 1),
+(227, 37, 'Iris', 2),
+(229, 38, 'Coat', 0),
+(230, 38, 'Mane & Tail', 1),
+(231, 38, 'Iris', 2);
 
 CREATE TABLE `colors` (
   `colorid` int(11) NOT NULL,
@@ -884,7 +890,27 @@ INSERT INTO `colors` (`colorid`, `groupid`, `label`, `hex`, `order`) VALUES
 (861, 223, 'Tape Fill', '#F8F9F1', 5),
 (862, 223, 'Lens ( 80% to 25% Opacity)', '#BEDAF4', 6),
 (863, 224, 'Aura color', '#E3BFD0', 0),
-(864, 215, 'Post fill 4 (screwtop on back)', '#6E7969', 6);
+(864, 215, 'Post fill 4 (screwtop on back)', '#6E7969', 6),
+(865, 225, 'Outline', '#A985D3', 0),
+(866, 225, 'Fill', '#CDB8E6', 1),
+(868, 225, 'Shadow Fill', '#BFA3DF', 2),
+(869, 226, 'Outline', '#D3B76A', 0),
+(870, 226, 'Fill 1', '#F7F0A6', 1),
+(871, 227, 'Gradient Top', '#C79835', 0),
+(873, 227, 'Gradient Bottom', '#FCF89A', 1),
+(878, 226, 'Fill 2', '#F8F8D5', 2),
+(879, 229, 'Outline', '#D76CA0', 0),
+(880, 229, 'Fill', '#E8A3C5', 1),
+(882, 229, 'Shadow Fill', '#E48CB7', 2),
+(883, 230, 'Outline', '#A3376E', 0),
+(884, 230, 'Fill 1', '#C24D87', 1),
+(885, 231, 'Gradient Top', '#78952C', 0),
+(887, 231, 'Gradient Bottom', '#D3EAAB', 1),
+(888, 231, 'Highlight Top', '#C6F2A6', 2),
+(889, 231, 'Highlight Bottom', '#EFFBD5', 3),
+(892, 230, 'Fill 2', '#CF78A4', 2),
+(893, 227, 'Highlight Top', '#FAFAB4', 2),
+(894, 227, 'Highlight Bottom', '#FDFDDB', 3);
 
 CREATE TABLE `ponies` (
   `id` int(11) NOT NULL,
@@ -930,7 +956,9 @@ INSERT INTO `ponies` (`id`, `order`, `label`, `notes`, `cm_favme`, `added`) VALU
 (33, NULL, 'Alicorn Amulet', '', NULL, '2015-10-03 16:22:13'),
 (34, 12, 'Princess Celestia', 'Make sure to use appropriate references when picking gradient angles and stops. They''ll differ based on the hair shape and angle.', NULL, '2015-10-03 19:26:50'),
 (35, NULL, 'Big Macintosh', '', NULL, '2015-10-04 19:11:42'),
-(36, NULL, 'Moondancer', '', NULL, '2015-10-05 05:17:36');
+(36, NULL, 'Moondancer', '', NULL, '2015-10-05 05:17:36'),
+(37, NULL, 'Dinky Doo', 'From E5E17', NULL, '2015-10-06 03:39:35'),
+(38, NULL, 'Berry Pinch', 'From S5E17', NULL, '2015-10-06 03:48:24');
 
 CREATE TABLE `tagged` (
   `tid` int(11) NOT NULL,
@@ -1101,7 +1129,17 @@ INSERT INTO `tagged` (`tid`, `ponyid`) VALUES
 (1, 36),
 (7, 36),
 (12, 36),
-(68, 36);
+(68, 36),
+(1, 37),
+(8, 37),
+(12, 37),
+(70, 37),
+(72, 37),
+(1, 38),
+(8, 38),
+(12, 38),
+(70, 38),
+(73, 38);
 
 CREATE TABLE `tags` (
   `tid` int(11) NOT NULL,
@@ -1112,18 +1150,18 @@ CREATE TABLE `tags` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 INSERT INTO `tags` (`tid`, `name`, `title`, `type`, `uses`) VALUES
-(1, 'unicorn', '', 'spec', 14),
+(1, 'unicorn', '', 'spec', 16),
 (2, 'earth pony', '', 'spec', 8),
 (3, 'pegasus', '', 'spec', 8),
 (4, 'alicorn', '', 'spec', 3),
 (5, 'bat pony', '', 'spec', 0),
 (6, 'mane six', 'Ponies who are one of the show''s six main characters', 'cat', 7),
 (7, 'minor character', 'Ponies who had a speaking role and/or interacted with the mane six', 'cat', 23),
-(8, 'background character', 'Ponies whose only purpose is filling crowds, with no to minimal speaking roles', 'cat', 1),
+(8, 'background character', 'Ponies whose only purpose is filling crowds, with no to minimal speaking roles', 'cat', 3),
 (9, 'antagonist', '', 'cat', 3),
 (10, 'pet', '', 'cat', 0),
 (11, 'male', '', 'gen', 6),
-(12, 'female', '', 'gen', 28),
+(12, 'female', '', 'gen', 30),
 (14, 'twilight sparkle', '', 'char', 1),
 (15, 'gala dress', 'All gala dress colors', 'app', 0),
 (16, 'human', 'Refers to Equestria Girls characters', 'spec', 0),
@@ -1176,7 +1214,10 @@ INSERT INTO `tags` (`tid`, `name`, `title`, `type`, `uses`) VALUES
 (65, 's5e2', '', 'ep', 4),
 (66, 'big macintosh', '', 'char', 1),
 (67, 'sibling', '', 'cat', 3),
-(68, 'moondancer', '', 'char', 1);
+(68, 'moondancer', '', 'char', 1),
+(70, 'filly', '', 'cat', 2),
+(72, 'dinky doo', '', 'char', 1),
+(73, 'berry pinch', '', 'char', 1);
 
 
 ALTER TABLE `colorgroups`
@@ -1200,13 +1241,13 @@ ALTER TABLE `tags`
 
 
 ALTER TABLE `colorgroups`
-  MODIFY `groupid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=225;
+  MODIFY `groupid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=233;
 ALTER TABLE `colors`
-  MODIFY `colorid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=865;
+  MODIFY `colorid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=895;
 ALTER TABLE `ponies`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=37;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=39;
 ALTER TABLE `tags`
-  MODIFY `tid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=69;
+  MODIFY `tid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=74;
 
 ALTER TABLE `colorgroups`
   ADD CONSTRAINT `colorgroups_ibfk_1` FOREIGN KEY (`ponyid`) REFERENCES `ponies` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
