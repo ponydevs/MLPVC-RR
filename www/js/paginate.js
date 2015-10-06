@@ -66,8 +66,8 @@
 			else extraQuery = false;
 
 			if (params.length) $.each(params,function(_,el){
-				el = el.split('=');
-				data[el[0]] = el[1];
+				el = el.replace(/\+/g,' ').split('=');
+				data[decodeURIComponent(el[0])] = decodeURIComponent(el[1]);
 			});
 
 			$.Dialog.wait(title, 'Loading page '+newPageNumber);
