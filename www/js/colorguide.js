@@ -74,6 +74,7 @@ DocReady.push(function Colorguide(){
 	}
 	$list.on('page-switch', Navigation);
 	$d.on('paginate-refresh', Navigation);
+	Navigation();
 
 	$('#search-form').on('submit',function(e){
 		e.preventDefault();
