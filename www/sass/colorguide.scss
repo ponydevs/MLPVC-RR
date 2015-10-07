@@ -325,4 +325,11 @@ ul.colors {
 	text-align: center;
 	margin: 0 auto 10px;
 	display: block;
+
+	button {
+		font-size: 1em;
+
+		&:not(:last-child) { margin-right: 5px }
+	}
+	p { margin: 5px 0 0 }
 }

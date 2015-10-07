@@ -78,10 +78,18 @@ DocReady.push(function Colorguide(){
 	$('#search-form').on('submit',function(e){
 		e.preventDefault();
 
-		var query = $(this).serialize();
+		var $this = $(this),
+			query = $this.serialize();
 		if (query === 'q=') query = false;
+		$this.find('button[type=reset]').attr('disabled', query === false);
 
 		$.toPage.call({query:query}, window.location.pathname.replace(/\d+$/,'1'), true, true);
+	}).on('reset',function(e){
+		e.preventDefault();
+
+		var $this = $(this);
+		$this.find('input[name=q]').val('');
+		$this.triggerHandler('submit');
 	});
 
 	$w.on('unload',function(){

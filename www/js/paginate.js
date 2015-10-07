@@ -59,11 +59,16 @@
 			var data = { js: true},
 				params = [],
 				extraQuery = this.query;
-			if (location.search.length > 1)
-				params = params.concat(location.search.substring(1).split('&'));
-			if (typeof extraQuery === 'string')
-				params = params.concat(extraQuery.split('&'));
-			else extraQuery = false;
+			if (typeof extraQuery !== 'undefined'){
+				if (typeof extraQuery === 'string')
+					params = params.concat(extraQuery.split('&'));
+				extraQuery = true;
+			}
+			else {
+				extraQuery = false;
+				if (location.search.length > 1)
+					params = params.concat(location.search.substring(1).split('&'));
+			}
 
 			if (params.length) $.each(params,function(_,el){
 				el = el.replace(/\+/g,' ').split('=');
