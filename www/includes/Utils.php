@@ -1182,14 +1182,18 @@ HTML;
 			}
 		}
 
-		if (empty($R['lock']) && empty($Buttons) && (PERM('inspector') || ($sameUser && empty($R['reserved_by']))))
-			$Buttons[] = array('trash red delete','Delete');
+		if (empty($R['lock']) && empty($Buttons) && (PERM('inspector') || (empty($R['reserved_by'] && $isRequest && $signedIn && $R['requested_by'] === $currentUser['id']))))
+			$Buttons[] = array('trash red delete','Delete', !$CanEdit);
 		if ($CanEdit)
 			array_splice($Buttons,0,0,array(array('pencil darkblue edit','Edit')));
 
 		$HTML .= "<div class='actions'>";
-		foreach ($Buttons as $b)
-			$HTML .= "<button class='typcn typcn-{$b[0]}' title='{$b[1]}'></button> ";
+		if (!empty($Buttons)){
+			foreach ($Buttons as $b){
+				$WriteOut = "'".(!empty($b[2]) ? ">{$b[1]}" : " title='{$b[1]}'>");
+				$HTML .= "<button class='typcn typcn-{$b[0]}$WriteOut</button> ";
+			}
+		}
 		$HTML .= '</div>';
 
 		return $HTML;
