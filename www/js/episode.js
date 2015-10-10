@@ -270,7 +270,7 @@ DocReady.push(function Episode(){
 			$.Dialog.confirm(title, 'You are about to permanently delete this request.<br>Are you sure about this?', function(sure){
 				if (!sure) return;
 
-				$.Dialog.wait(title, 'Deleting request');
+				$.Dialog.wait(title, 'Sending deletion request');
 
 				$.post('/reserving/request/'+id+'?delete',$.mkAjaxHandler(function(){
 					if (!this.status) return $.Dialog.fail(title,this.message);
