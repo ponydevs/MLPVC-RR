@@ -1012,7 +1012,7 @@ INSERT INTO `tagged` (`tid`, `ponyid`) VALUES
 (12, 12),
 (32, 12),
 (1, 13),
-(8, 13),
+(7, 13),
 (12, 13),
 (43, 13),
 (51, 13),
@@ -1132,12 +1132,12 @@ INSERT INTO `tagged` (`tid`, `ponyid`) VALUES
 (1, 37),
 (8, 37),
 (12, 37),
-(70, 37),
+(44, 37),
 (72, 37),
 (1, 38),
 (8, 38),
 (12, 38),
-(70, 38),
+(44, 38),
 (73, 38);
 
 CREATE TABLE `tags` (
@@ -1155,8 +1155,8 @@ INSERT INTO `tags` (`tid`, `name`, `title`, `type`, `uses`) VALUES
 (4, 'alicorn', '', 'spec', 3),
 (5, 'bat pony', '', 'spec', 0),
 (6, 'mane six', 'Ponies who are one of the show''s six main characters', 'cat', 7),
-(7, 'minor character', 'Ponies who had a speaking role and/or interacted with the mane six', 'cat', 23),
-(8, 'background character', 'Ponies whose only purpose is filling crowds, with no to minimal speaking roles', 'cat', 3),
+(7, 'minor character', 'Ponies who had a speaking role and/or interacted with the mane six', 'cat', 24),
+(8, 'background character', 'Ponies whose only purpose is filling crowds, with no to minimal speaking roles', 'cat', 2),
 (9, 'antagonist', '', 'cat', 3),
 (10, 'pet', '', 'cat', 0),
 (11, 'male', '', 'gen', 6),
@@ -1189,7 +1189,7 @@ INSERT INTO `tags` (`tid`, `name`, `title`, `type`, `uses`) VALUES
 (41, 'sugar belle', '', 'char', 1),
 (42, 's5e15', '', 'ep', 2),
 (43, 's5e14', '', 'ep', 2),
-(44, 'foal', '', 'cat', 3),
+(44, 'foal', '', 'cat', 5),
 (45, 'cutie mark crusader', '', 'cat', 3),
 (46, 'apple bloom', '', 'char', 1),
 (47, 'scootaloo', '', 'char', 1),
@@ -1214,7 +1214,6 @@ INSERT INTO `tags` (`tid`, `name`, `title`, `type`, `uses`) VALUES
 (66, 'big macintosh', '', 'char', 1),
 (67, 'sibling', '', 'cat', 3),
 (68, 'moondancer', '', 'char', 1),
-(70, 'filly', '', 'cat', 2),
 (72, 'dinky doo', '', 'char', 1),
 (73, 'berry pinch', '', 'char', 1);
 
