@@ -11,7 +11,7 @@ In the past, the management of comments under journals was done manually. Becaus
 
 ## Attributions
 
-**Used libraries & icons include:** [jQuery](http://jquery.com/), [qTip2](http://qtip2.com/), [typeahead.js](https://twitter.github.io/typeahead.js/), [Sortable](https://github.com/RubaXa/Sortable), [MysqliDb](https://github.com/joshcam/PHP-MySQLi-Database-Class), [Browser.php](https://github.com/cbschuld/Browser.php), [Typicons](http://www.typicons.com/), and various npm packages<br>
+**Used libraries & icons include:** [jQuery](http://jquery.com/), [qTip2](http://qtip2.com/), [typeahead.js](https://twitter.github.io/typeahead.js/), [Sortable](https://github.com/RubaXa/Sortable), [MysqliDb](https://github.com/joshcam/PHP-MySQLi-Database-Class), [Browser.php](https://github.com/cbschuld/Browser.php), [Typicons](http://www.typicons.com/), [Uglify-js](https://www.npmjs.com/package/uglify-js), [SASS](http://sass-lang.com/), [Gulp](http://gulpjs.com/)<br>
 **Header font:** [Celestia Medium Redux](http://www.mattyhex.net/CMR/)<br>
 **DeviantArt logo** *(used on profile pages)* &copy; [DeviantArt](http://www.deviantart.com/)<br>
 **Application logo** based on [Christmas Vector of the MLP-VC Mascot](http://pirill-poveniy.deviantart.com/art/Collab-Christmas-Vector-of-the-MLP-VC-Mascot-503196118) by the following artists:
@@ -21,8 +21,8 @@ In the past, the management of comments under journals was done manually. Becaus
  - [masemj](http://masemj.deviantart.com/)
  - [Ambassad0r](http://ambassad0r.deviantart.com/) *(idea)*
  
-**Pre-ban dialog illustration ([direct link](https://github.com/ponydevs/MLPVC-RR/blob/master/www/img/pre-ban.svg)):** [Twilight - What Have I Done?](http://synthrid.deviantart.com/art/Twilight-What-Have-I-Done-355177596) by [Synthrid](http://synthrid.deviantart.com/) *(edited with daylight colors)*<br>
-**Post-ban dialog illustration ([direct link](https://github.com/ponydevs/MLPVC-RR/blob/master/www/img/post-ban.svg)):** [Sad Twilight Sparkle](http://sairoch.deviantart.com/art/Sad-Twilight-Sparkle-354710611) by [Sairoch](http://sairoch.deviantart.com/) *([shading-free version](http://sta.sh/0mddtxyru0w) used)*<br>
+**Pre-ban dialog illustration ([direct link](https://github.com/ponydevs/MLPVC-RR/blob/master/www/img/pre-ban.svg)):** [Twilight - What Have I Done?](http://synthrid.deviantart.com/art/Twilight-What-Have-I-Done-355177596) by [Synthrid](http://synthrid.deviantart.com/) *(edited to use daylight colors)*<br>
+**Post-ban dialog illustration ([direct link](https://github.com/ponydevs/MLPVC-RR/blob/master/www/img/post-ban.svg)):** [Sad Twilight Sparkle](http://sairoch.deviantart.com/art/Sad-Twilight-Sparkle-354710611) by [Sairoch](http://sairoch.deviantart.com/) *(edited to use daylight colors)*<br>
 **Extrenal link icon** (licensed GPL) taken from [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Icon_External_Link.svg)<br>
 **Browser logos** (used on user pages):
 
@@ -34,7 +34,7 @@ In the past, the management of comments under journals was done manually. Becaus
  - [Safari](http://fav.me/d530knp) by [ParallaxMLP](ParallaxMLP)
  - [Vivaldi](https://github.com/alrra/browser-logos/blob/1ec2af8325ffb8b3f2c2834da84870341a376efd/vivaldi/vivaldi_128x128.png) from [alrra/browser-logos](https://github.com/alrra/browser-logos)
  
-Coding and design by [DJDavid98](http://djdavid98.tk/)
+**Coding and design** by [DJDavid98](http://djdavid98.hu/)
 
 ## Contributing
 

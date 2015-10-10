@@ -17,31 +17,8 @@
 	</section>
 	<section>
 		<h2>Attributions</h2>
-		<div>
-			<p><strong>Used libraries &amp; icons include:</strong> <a href="http://jquery.com/">jQuery</a>, <a href="http://qtip2.com/">qTip<sup>2</sup></a>, <a href="https://twitter.github.io/typeahead.js/">typeahead.js</a>, <a href="https://github.com/RubaXa/Sortable">Sortable</a>, <a href="https://github.com/joshcam/PHP-MySQLi-Database-Class">MysqliDb</a>, <a href="https://github.com/cbschuld/Browser.php">Browser.php</a>, <a href="http://www.typicons.com/">Typicons</a>, <a href="https://www.npmjs.com/package/uglify-js">Uglify-js</a>, <a href="http://sass-lang.com/">SASS</a></p>
-			<p><strong>Header font:</strong> <a href="http://www.mattyhex.net/CMR/">Celestia Medium Redux</a></p>
-			<p><strong>DeviantArt logo</strong> <em>(used on profile pages)</em> &copy; <a href="http://www.deviantart.com/">DeviantArt</a></p>
-			<p><strong>Application logo</strong> based on <a href="http://pirill-poveniy.deviantart.com/art/Collab-Christmas-Vector-of-the-MLP-VC-Mascot-503196118">Christmas Vector of the MLP-VC Mascot</a> by the following artists:</p>
-			<ul>
-				<li><a href="http://pirill-poveniy.deviantart.com/">Pirill-Poveniy</a></li>
-				<li><a href="http://thediscorded.deviantart.com/">thediscorded</a></li>
-				<li><a href="http://masemj.deviantart.com/">masemj</a></li>
-				<li><a href="http://ambassad0r.deviantart.com/">Ambassad0r</a> <em>(idea)</em></li>
-			</ul>
-			<p><strong>Pre-ban dialog illustration (<a href="/img/pre-ban.svg">direct link</a>):</strong> <a href="http://synthrid.deviantart.com/art/Twilight-What-Have-I-Done-355177596">Twilight - What Have I Done?</a> by <a href="http://synthrid.deviantart.com/">Synthrid</a> <em>(edited to use daylight colors)</em></p>
-			<p><strong>Post-ban dialog illustration (<a href="/img/post-ban.svg">direct link</a>):</strong> <a href="http://sairoch.deviantart.com/art/Sad-Twilight-Sparkle-354710611">Sad Twilight Sparkle</a> by <a href="http://sairoch.deviantart.com/">Sairoch</a> <em>(edited to use daylight colors)</em></p>
-			<p><strong>Extrenal link icon</strong> (licensed GPL) taken from <a href="https://commons.wikimedia.org/wiki/File:Icon_External_Link.svg">Wikimedia Commons</a></p>
-			<p><strong>Browser logos</strong> (used on user pages):</p>
-			<ul>
-				<li><a href="http://fav.me/d8uhefy">Edge</a> by <a href="https://furrgroup.deviantart.com/">furrgroup</a></li>
-				<li><a href="http://fav.me/d4b6f4v">Firefox</a> by <a href="https://noreasontohope.deviantart.com/">NoReasonToHope</a></li>
-				<li><a href="http://fav.me/d523s3y">Google Chrome</a> by <a href="https://he4rtofcourage.deviantart.com/">he4rtofcourage</a></li>
-				<li><a href="http://fav.me/d5ktmlx">Internet Explorer</a> by <a href="https://mcsadat.deviantart.com/">McSadat</a></li>
-				<li><a href="http://fav.me/d52qnaw">Opera</a> by <a href="https://parallaxmlp.deviantart.com/">ParallaxMLP</a></li>
-				<li><a href="http://fav.me/d530knp">Safari</a> by <a href="https://parallaxmlp.deviantart.com/">ParallaxMLP</a></li>
-				<li><a href="https://github.com/alrra/browser-logos/blob/1ec2af8325ffb8b3f2c2834da84870341a376efd/vivaldi/vivaldi_128x128.png">Vivaldi</a> from <a href="https://github.com/alrra/browser-logos">alrra/browser-logos</a></li>
-			</ul>
-			<p><strong>Coding and design</strong> by <a href="http://djdavid98.hu">DJDavid98</a></p>
+		<div class="attributions">
+			<?=file_get_contents(APPATH.'views/about.html')?>
 			<p class="ramnode"><a href="https://clientarea.ramnode.com/aff.php?aff=2648"><img src="https://www.ramnode.com/images/banners/affbannerlightnewlogoblack.png" alt="high performance ssd vps""></a></p>
 		</div>
 	</section>

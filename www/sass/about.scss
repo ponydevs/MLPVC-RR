@@ -14,10 +14,14 @@
 	> section {
 		@extend %section;
 
-		.ramnode img {
-			border-radius: 7px;
-			max-height: 45px;
-			max-width: 100%;
+		.attributions {
+			p { line-height: 1.4 }
+
+			.ramnode img {
+				border-radius: 7px;
+				max-height: 45px;
+				max-width: 100%;
+			}
 		}
 
 		&:not(:last-child){
