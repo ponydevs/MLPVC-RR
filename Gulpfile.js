@@ -81,7 +81,10 @@ gulp.task('sass', function() {
 				processImport: false,
 				compatibility: '-units.pc,-units.pt'
 			}))
-		.pipe(sourcemaps.write('.'))
+		.pipe(sourcemaps.write('.', {
+			includeContent: false,
+			sourceRoot: '/sass',
+		}))
 		.pipe(gulp.dest('www/css'));
 });
 
@@ -108,7 +111,10 @@ gulp.task('js', function(){
 		.pipe(sourcemaps.init())
 			.pipe(uglify())
 			.pipe(rename({suffix: '.min' }))
-		.pipe(sourcemaps.write('.'))
+		.pipe(sourcemaps.write('.', {
+			includeContent: false,
+			sourceRoot: '/js',
+		}))
 		.pipe(gulp.dest('www/js'));
 });
 
