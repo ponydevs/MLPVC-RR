@@ -1190,7 +1190,7 @@ HTML;
 		$HTML .= "<div class='actions'>";
 		if (!empty($Buttons)){
 			foreach ($Buttons as $b){
-				$WriteOut = "'".(!empty($b[2]) ? ">{$b[1]}" : " title='{$b[1]}'>");
+				$WriteOut = "'".(!empty($b[2]) ? ">{$b[1]}" : " title='".apos_encode($b[1])."'>");
 				$HTML .= "<button class='typcn typcn-{$b[0]}$WriteOut</button> ";
 			}
 		}
