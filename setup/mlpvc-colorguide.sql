@@ -206,7 +206,12 @@ INSERT INTO `colorgroups` (`groupid`, `ponyid`, `label`, `order`) VALUES
 (227, 37, 'Iris', 2),
 (229, 38, 'Coat', 0),
 (230, 38, 'Mane & Tail', 1),
-(231, 38, 'Iris', 2);
+(231, 38, 'Iris', 2),
+(233, 23, 'Cutie Mark', 4),
+(234, 39, 'Coat', 0),
+(235, 39, 'Mane & Tail', 1),
+(236, 39, 'Iris', 2),
+(238, 39, 'Beanie', 3);
 
 CREATE TABLE `colors` (
   `colorid` int(11) NOT NULL,
@@ -909,7 +914,33 @@ INSERT INTO `colors` (`colorid`, `groupid`, `label`, `hex`, `order`) VALUES
 (889, 231, 'Highlight Bottom', '#EFFBD5', 3),
 (892, 230, 'Fill 2', '#CF78A4', 2),
 (893, 227, 'Highlight Top', '#FAFAB4', 2),
-(894, 227, 'Highlight Bottom', '#FDFDDB', 3);
+(894, 227, 'Highlight Bottom', '#FDFDDB', 3),
+(895, 233, 'Shield Outline', '#AB3266', 0),
+(896, 233, 'Shield Fill 1: AB mane fill', '#F5415F', 1),
+(897, 233, 'Shield Fill 2: SB lt mane fill', '#F6B8D2', 2),
+(898, 233, 'Shield Fill 3: Sc mane fill', '#BF5D93', 3),
+(899, 233, 'Inner Fill 1', '#A02699', 4),
+(900, 233, 'Inner Fill 2', '#FD41F8', 5),
+(901, 234, 'Outline', '#845223', 0),
+(902, 234, 'Fill', '#C58E4F', 1),
+(903, 234, 'Shadow Outline', '#855C37', 2),
+(904, 234, 'Shadow Fill', '#BE9061', 3),
+(905, 235, 'Outline', '#613213', 0),
+(906, 235, 'Fill 1', '#C44933', 1),
+(907, 236, 'Gradient Top', '#B34236', 0),
+(909, 236, 'Gradient Bottom', '#FF814D', 1),
+(910, 236, 'Highlight Top', '#FE9863', 2),
+(911, 236, 'Highlight Bottom', '#FFEAD1', 3),
+(914, 235, 'Fill 2', '#E47743', 2),
+(915, 238, 'Hat outline', '#7A3F3F', 0),
+(916, 238, 'Hat fill 1', '#FAC443', 1),
+(917, 238, 'Hat fill 2', '#FBFBB4', 2),
+(918, 238, 'Hat fill 3', '#F35356', 3),
+(919, 238, 'Hat fill 4', '#FFFFFF', 4),
+(920, 238, 'Propeller Outline', '#63A214', 5),
+(921, 238, 'Propeller Fill', '#A3E34C', 6),
+(922, 238, 'Rotor Outline', '#746DC3', 7),
+(923, 238, 'Rotor Fill', '#BEBDF7', 8);
 
 CREATE TABLE `ponies` (
   `id` int(11) NOT NULL,
@@ -942,7 +973,7 @@ INSERT INTO `ponies` (`id`, `order`, `label`, `notes`, `cm_favme`, `added`) VALU
 (20, NULL, 'Stormy Flare', 'Only has one eye shine.', NULL, '2015-09-22 05:20:14'),
 (21, NULL, 'Wind Rider', 'Teeth use a different color than normal.', NULL, '2015-09-24 04:35:32'),
 (22, NULL, 'Sugar Belle', '', NULL, '2015-09-24 10:44:18'),
-(23, 9, 'Apple Bloom', 'Far legs use darker colors.', NULL, '2015-09-24 12:01:03'),
+(23, 9, 'Apple Bloom', 'Far legs use darker colors. Cutie mark colors subject to change on further episodes', NULL, '2015-09-24 12:01:03'),
 (24, 10, 'Scootaloo', 'Far legs use darker colors.', NULL, '2015-09-24 12:06:23'),
 (25, 11, 'Sweetie Belle', '', NULL, '2015-09-24 12:09:41'),
 (26, NULL, 'Night Glider', '', NULL, '2015-09-26 15:03:43'),
@@ -957,7 +988,8 @@ INSERT INTO `ponies` (`id`, `order`, `label`, `notes`, `cm_favme`, `added`) VALU
 (35, NULL, 'Big Macintosh', '', NULL, '2015-10-04 19:11:42'),
 (36, NULL, 'Moondancer', '', NULL, '2015-10-05 05:17:36'),
 (37, NULL, 'Dinky Doo', 'From E5E17', NULL, '2015-10-06 03:39:35'),
-(38, NULL, 'Berry Pinch', 'From S5E17', NULL, '2015-10-06 03:48:24');
+(38, NULL, 'Berry Pinch', 'From S5E17', NULL, '2015-10-06 03:48:24'),
+(39, NULL, 'Button Mash', 'Based on S5E18', NULL, '2015-10-15 03:32:38');
 
 CREATE TABLE `tagged` (
   `tid` int(11) NOT NULL,
@@ -1135,7 +1167,12 @@ INSERT INTO `tagged` (`tid`, `ponyid`) VALUES
 (8, 38),
 (12, 38),
 (44, 38),
-(73, 38);
+(73, 38),
+(2, 39),
+(8, 39),
+(11, 39),
+(44, 39),
+(74, 39);
 
 CREATE TABLE `tags` (
   `tid` int(11) NOT NULL,
@@ -1147,16 +1184,16 @@ CREATE TABLE `tags` (
 
 INSERT INTO `tags` (`tid`, `name`, `title`, `type`, `uses`) VALUES
 (1, 'unicorn', '', 'spec', 16),
-(2, 'earth pony', '', 'spec', 8),
+(2, 'earth pony', '', 'spec', 9),
 (3, 'pegasus', '', 'spec', 8),
 (4, 'alicorn', '', 'spec', 3),
 (5, 'bat pony', '', 'spec', 0),
 (6, 'mane six', 'Ponies who are one of the show''s six main characters', 'cat', 7),
 (7, 'minor character', 'Ponies who had a speaking role and/or interacted with the mane six', 'cat', 24),
-(8, 'background character', 'Ponies whose only purpose is filling crowds, with no to minimal speaking roles', 'cat', 2),
+(8, 'background character', 'Ponies whose only purpose is filling crowds, with no to minimal speaking roles', 'cat', 3),
 (9, 'antagonist', '', 'cat', 3),
 (10, 'pet', '', 'cat', 0),
-(11, 'male', '', 'gen', 6),
+(11, 'male', '', 'gen', 7),
 (12, 'female', '', 'gen', 30),
 (14, 'twilight sparkle', '', 'char', 1),
 (15, 'gala dress', 'All gala dress colors', 'app', 0),
@@ -1186,7 +1223,7 @@ INSERT INTO `tags` (`tid`, `name`, `title`, `type`, `uses`) VALUES
 (41, 'sugar belle', '', 'char', 1),
 (42, 's5e15', '', 'ep', 2),
 (43, 's5e14', '', 'ep', 2),
-(44, 'foal', '', 'cat', 5),
+(44, 'foal', '', 'cat', 6),
 (45, 'cutie mark crusader', '', 'cat', 3),
 (46, 'apple bloom', '', 'char', 1),
 (47, 'scootaloo', '', 'char', 1),
@@ -1211,7 +1248,8 @@ INSERT INTO `tags` (`tid`, `name`, `title`, `type`, `uses`) VALUES
 (66, 'big macintosh', '', 'char', 1),
 (68, 'moondancer', '', 'char', 1),
 (72, 'dinky doo', '', 'char', 1),
-(73, 'berry pinch', '', 'char', 1);
+(73, 'berry pinch', '', 'char', 1),
+(74, 'button mash', '', 'char', 1);
 
 
 ALTER TABLE `colorgroups`
@@ -1235,13 +1273,13 @@ ALTER TABLE `tags`
 
 
 ALTER TABLE `colorgroups`
-  MODIFY `groupid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=233;
+  MODIFY `groupid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=239;
 ALTER TABLE `colors`
-  MODIFY `colorid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=895;
+  MODIFY `colorid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=924;
 ALTER TABLE `ponies`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=39;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=40;
 ALTER TABLE `tags`
-  MODIFY `tid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=74;
+  MODIFY `tid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=75;
 
 ALTER TABLE `colorgroups`
   ADD CONSTRAINT `colorgroups_ibfk_1` FOREIGN KEY (`ponyid`) REFERENCES `ponies` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
