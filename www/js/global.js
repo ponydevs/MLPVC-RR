@@ -344,7 +344,7 @@ $(function(){
 					var src = $this.attr('src') || $this.attr('data-src'),
 						pos = js.indexOf(src);
 
-					if (pos !== -1)
+					if (pos !== -1 && !/js\/colorguide[\.\-]/.test(src))
 						js.splice(pos, 1);
 					else {
 						if (src.indexOf('global') !== -1)
