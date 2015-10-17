@@ -120,7 +120,7 @@ DocReady.push(function Episode(){
 				$this.remove();
 			}));
 		});
-		$li.children('em').children('a').on('click',function(e){
+		$li.children('em').children('a').last().on('click',function(e){
 			e.preventDefault();
 			handlehash(this.hash);
 			history.replaceState({},'',this.href);
