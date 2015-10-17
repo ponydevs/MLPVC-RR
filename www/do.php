@@ -72,7 +72,7 @@
 			detectCSRF();
 
 			$_match = array();
-			if (preg_match('~^(get|edit)-(request|reservation)/(\d+)$~ ', $data, $_match)){
+			if (preg_match('~^([gs]et)-(request|reservation)/(\d+)$~ ', $data, $_match)){
 				if (!PERM('inspector'))
 					respond();
 
@@ -100,6 +100,31 @@
 					respond(ERR_DB_FAIL);
 				respond($update);
 			}
+			else if (preg_match('~^set-(request|reservation)-image/(\d+)$~ ', $data, $_match)){
+				if (!PERM('inspector'))
+					respond();
+
+				$thing = $_match[1];
+				$Post = $Database->where('id', $_match[2])->getOne("{$thing}s");
+				if (empty($Post))
+					respond("The specified $thing does not exist");
+
+				$Image = check_post_image();
+
+				// Check image availability
+				if (!@getimagesize($Image->preview)){
+					sleep(1);
+					if (!@getimagesize($Image->preview))
+						respond("The specified file does not appear to exist. Please verify that you can reach the following URL: <a href='{$Image->preview}'>{$Image->preview}</a>");
+				}
+
+				if (!$Database->where('id', $Post['id'])->update("{$thing}s",array(
+					'preview' => $Image->preview,
+					'fullsize' => $Image->fullsize,
+				))) respond(ERR_DB_FAIL);
+
+				respond(array('preview' => $Image->preview));
+			}
 
 			if (!empty($_POST['what'])){
 				if (!in_array($_POST['what'],$POST_TYPES))
@@ -112,20 +137,8 @@
 				}
 			}
 
-			if (!empty($_POST['image_url'])){
-				require_once 'includes/Image.php';
-				try {
-					$Image = new Image($_POST['image_url']);
-				}
-				catch (Exception $e){ respond($e->getMessage()); }
-
-				foreach ($POST_TYPES as $type){
-					if ($Database->where('preview', $Image->preview)->has("{$type}s"))
-						respond("This exact image has already been used for a $type");
-				}
-
-				if (empty($what)) respond(array('preview' => $Image->preview, 'title' => $Image->title));
-			}
+			if (!empty($_POST['image_url']))
+				$Image = check_post_image(empty($what));
 			else if (empty($what)) respond("Please provide an image URL ");
 
 			$insert = array(

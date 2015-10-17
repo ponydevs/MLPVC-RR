@@ -57,7 +57,7 @@
 					$this->preview = "//i.imgur.com/{$id}m.png";
 				break;
 				case 'derpibooru':
-					$Data = file_get_contents("http://derpibooru.org/$id.json");
+					$Data = @file_get_contents("http://derpibooru.org/$id.json");
 
 					if (empty($Data))
 						throw new Exception('The requested image could not be found on Derpibooru');

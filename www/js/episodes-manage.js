@@ -1,4 +1,4 @@
-DocReady.push(function EpisodeManage(){
+DocReady.push(function EpisodesManage(){
 	var $eptable = $('#episodes'),
 		$eptableBody = $eptable.children('tbody');
 	Bind.call({init:true});
@@ -6,7 +6,6 @@ DocReady.push(function EpisodeManage(){
 	var saturday = moment().day("Saturday").toDate();
 	saturday.setUTCHours(15);
 	saturday.setUTCMinutes(30);
-	function pad(n){return n<10?'0'+n:n}
 	function parseIntArray(arr){
 		$.each(arr,function(i,el){
 			arr[i] = parseInt(el, 10);
@@ -27,8 +26,8 @@ DocReady.push(function EpisodeManage(){
 		d['set'+(utc?'UTC':'')+'Minutes'](timeArr[1]);
 		return d;
 	}
-	Date.prototype.toAirDate = function(){ return this.getFullYear()+'-'+pad(this.getMonth()+1)+'-'+pad(this.getDate()) };
-	Date.prototype.toAirTime = function(){ return pad(this.getHours())+':'+pad(this.getMinutes()) };
+	Date.prototype.toAirDate = function(){ return this.getFullYear()+'-'+$.pad(this.getMonth()+1)+'-'+$.pad(this.getDate()) };
+	Date.prototype.toAirTime = function(){ return $.pad(this.getHours())+':'+$.pad(this.getMinutes()) };
 	var date = saturday.toAirDate(), time = saturday.toAirTime();
 
 	function UpcomingUpdate(ulContent){
@@ -85,9 +84,8 @@ DocReady.push(function EpisodeManage(){
 
 	$('#add-episode').on('click',function(e){
 		e.preventDefault();
-		var title = 'Add Episode';
 
-		$.Dialog.request(title,$addep.clone(true, true),'addep','Add',function(){
+		$.Dialog.request('Add Episode',$addep.clone(true, true),'addep','Add',function(){
 			var $form = $('#addep');
 			$form.on('submit',function(e){
 				e.preventDefault();

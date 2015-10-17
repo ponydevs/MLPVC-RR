@@ -1,0 +1,72 @@
+.notice {
+	display: block;
+	margin: 0;
+	border: 2px solid;
+	border-radius: 7px;
+	color: #fff;
+	background-color: #000;
+	padding: 7.5px;
+	font-size: 16px;
+
+	&:not(:last-child) { margin-bottom: 10px }
+	&.info {
+		color: $NBlue;
+		background-color: $NBlueBG;
+
+		button, .btn {
+			color: $NBlueBG;
+			background-color: $NBlue;
+		}
+	}
+	&.success {
+		color: $NGreen;
+		background-color: $NGreenBG;
+
+		button, .btn {
+			color: $NGreenBG;
+			background-color: $NGreen;
+		}
+	}
+	&.fail {
+		color: $NRed;
+		background-color: $NRedBG;
+
+		button, .btn {
+			color: $NRedBG;
+			background-color: $NRed;
+		}
+	}
+	&.warn {
+		color: $NOrange;
+		background-color: $NOrangeBG;
+
+		button, .btn {
+			color: $NOrangeBG;
+			background-color: $NOrange;
+		}
+	}
+	&.caution {
+		color: $NYellow;
+		background-color: $NYellowBG;
+
+		button, .btn {
+			color: $NYellowBG;
+			background-color: $NYellow;
+		}
+	}
+
+	> label:first-child {
+		display: block;
+		padding-bottom: 5px;
+		margin-bottom: 10px;
+		font-weight: bold;
+		border-bottom: 2px solid;
+	}
+	> p {
+		margin: 0 !important;
+
+		&:not(:last-child) { margin-bottom: 5px }
+
+		time { border-bottom: 1px dashed }
+	}
+}

@@ -44,57 +44,51 @@ DocReady.push(function ColorguideManage(){
 				$ponyNotes = $div.children('.notes');
 
 			$.Dialog.request(title,$ponyEditor.clone(),'pony-editor','Save',function($form){
-				var $ErrorNotice = $form.children('.notice').children('p'),
-					handleError = function(){
-						$ErrorNotice.html(this.message).parent().removeClass('info').addClass('fail').show();
-						$form.find('input, texarea').attr('disabled', false);
-						$.Dialog.center();
-					},
-					editing = !!data;
+				var editing = !!data;
 				if (editing){
 					$form.find('input[name=label]').val(data.label);
 					$form.find('textarea').val(data.notes);
 					$form.find('input[name=cm_favme]').val(data.cm_favme);
 				}
 				else {
-					$.mk('label').append(
-						$.mk('input').attr({
-							type: 'checkbox',
-							name: 'template'
-						}),
-						" Pre-fill with common color groups"
-					).insertBefore($ErrorNotice.parent());
+					$form.append(
+						$.mk('label').append(
+							$.mk('input').attr({
+								type: 'checkbox',
+								name: 'template'
+							}),
+							" Pre-fill with common color groups"
+						)
+					);
 					$.Dialog.center();
 				}
 				$form.on('submit',function(e){
 					e.preventDefault();
 
-					$ErrorNotice.text('Saving changes&hellip;').parent().removeClass('fail').addClass('info').show();
-					$.Dialog.center();
+					$.Dialog.wait(false, 'Saving changes');
 
 					$.post('/colorguide/'+(editing?'set/'+data.ponyID:'make'),$form.mkData(),$.mkAjaxHandler(function(){
-						if (this.status){
-							if (editing){
-								$ponyLabel.children().first().text(this.label);
-								$ponyNotes.html(this.notes);
-								$.Dialog.close();
-							}
-							else {
-								$.Dialog.success(title, this.message, true);
-								var id = this.id, info = this.info;
-								$list.one('page-switch',function(e){
-									var $pony = $('#p'+id);
-									if ($pony.length)
-										$body.scrollTop($pony.offset().top - ($pony.outerHeight()/2));
-									if (info){
-										e.preventDefault();
-										$.Dialog.info(title, info);
-									}
-								});
-								$.toPage(window.location.pathname.replace(/(\d+)?$/,this.page),true,true);
-							}
+						if (!this.status) return $.Dialog.fail(false, this.message);
+
+						if (editing){
+							$ponyLabel.children().first().text(this.label);
+							$ponyNotes.html(this.notes);
+							$.Dialog.close();
 						}
-						else handleError.call(this);
+						else {
+							$.Dialog.success(title, this.message, true);
+							var id = this.id, info = this.info;
+							$list.one('page-switch',function(e){
+								var $pony = $('#p'+id);
+								if ($pony.length)
+									$body.scrollTop($pony.offset().top - ($pony.outerHeight()/2));
+								if (info){
+									e.preventDefault();
+									$.Dialog.info(title, info);
+								}
+							});
+							$.toPage(window.location.pathname.replace(/(\d+)?$/,this.page),true,true);
+						}
 					}));
 				})
 			});
@@ -148,37 +142,31 @@ DocReady.push(function ColorguideManage(){
 			ponyName = $div.children('strong').text().trim();
 
 		$.Dialog.request(title,$tagEditForm.clone(true, true),'edit-tag','Create',function($form){
-			var $ErrorNotice = $form.children('.notice').children('p'),
-				handleError = function(){
-					$ErrorNotice.html(this.message).parent().removeClass('info').addClass('fail').show();
-					$form.find('input, texarea').attr('disabled', false);
-					$.Dialog.center();
-				};
 			$form.append(
 				$.mk('label').append(
 					$.mk('input').attr({type:'checkbox',name:'addto'}).val(ponyID).prop('checked', typeof name === 'string'),
 					document.createTextNode(' Add this tag to the appearance "'+ponyName+'" after creation')
 				)
 			);
-			if (typeof name === 'string') $form.find('input[name=name]').val(name);
 			$.Dialog.center();
+
+			if (typeof name === 'string') $form.find('input[name=name]').val(name);
+
 			$form.on('submit', function(e){
 				e.preventDefault();
 
-				$ErrorNotice.text('Creating tag&hellip;').parent().removeClass('fail').addClass('info').show();
-				$.Dialog.center();
+				$.Dialog.wait(false, 'Creating tag');
 
 				$.post('/colorguide/maketag',$form.mkData(),$.mkAjaxHandler(function(){
-					if (this.status){
-						if (this.tags){
-							$tagsDiv.children('[data-hasqtip]').qtip('destroy', true);
-							$tagsDiv.html(this.tags);
-							window.tooltips();
-							ctxmenus();
-						}
-						$.Dialog.close();
+					if (!this.status) return $.Dialog.fail(false, this.message);
+
+					if (this.tags){
+						$tagsDiv.children('[data-hasqtip]').qtip('destroy', true);
+						$tagsDiv.html(this.tags);
+						window.tooltips();
+						ctxmenus();
 					}
-					else handleError.call(this);
+					$.Dialog.close();
 				}));
 			});
 		});
@@ -320,16 +308,9 @@ DocReady.push(function ColorguideManage(){
 			else ponyID = $group;
 		}
 		$.Dialog.request(title,$cgEditor.clone(true, true),'cg-editor','Save',function($form){
-			var $ErrorNotice = $form.children('.notice').children('p'),
-				$label = $form.find('input[name=label]'),
+			var $label = $form.find('input[name=label]'),
 				$major = $form.find('input[name=major]'),
 				$reason = $form.find('input[name=reason]'),
-				handleError = function(){
-					$ErrorNotice.html(this.message).parent().removeClass('info').addClass('fail').show();
-					$form.find('input, texarea').attr('disabled', false);
-					$reason.attr('disabled', !$major.is(':checked'));
-					$.Dialog.center();
-				},
 				editing = typeof dis === 'object' && dis.label && dis.Colors;
 
 			if (editing){
@@ -350,7 +331,8 @@ DocReady.push(function ColorguideManage(){
 
 					var colorid = $row.data('id'),
 						append = { hex: $ci.val().replace(HEX_COLOR_PATTERN,'#$1').toUpperCase() };
-					if (typeof colorid !== 'undefined') append.colorid = parseInt(colorid, 10);
+					if (typeof colorid !== 'undefined')
+						append.colorid = parseInt(colorid, 10);
 
 					append.label = $row.children('.clrl').val();
 
@@ -365,33 +347,31 @@ DocReady.push(function ColorguideManage(){
 					data.reason = $reason.val();
 				}
 
-				$ErrorNotice.text('Saving changes&hellip;').parent().removeClass('fail').addClass('info').show();
-				$.Dialog.center();
+				$.Dialog.wait(false, 'Saving changes');
 
 				$.post('/colorguide/'+(editing?'set':'make')+'cg'+(editing?'/'+groupID:''), data, $.mkAjaxHandler(function(){
-					if (this.status){
-						if (this.cg || this.cgs){
-							if (this.cg){
-								$group.children('[data-hasqtip]').qtip('destroy', true);
-								$group.html(this.cg);
+					if (!this.status) return $.Dialog.fail(false, this.message);
 
-								if (this.update)
-									$group.parents('li').find('.update').html(this.update);
-							}
-							else if (this.cgs){
-								var $pony = $('#p'+ponyID);
-								if (this.update)
-									$pony.find('.update').html(this.update);
-								$pony.find('ul.colors').html(this.cgs);
-							}
-							window.tooltips();
-							ctxmenus();
+					if (this.cg || this.cgs){
+						if (this.cg){
+							$group.children('[data-hasqtip]').qtip('destroy', true);
+							$group.html(this.cg);
+
 							if (this.update)
-								window.updateTimes();
+								$group.parents('li').find('.update').html(this.update);
 						}
-						$.Dialog.close();
+						else if (this.cgs){
+							var $pony = $('#p'+ponyID);
+							if (this.update)
+								$pony.find('.update').html(this.update);
+							$pony.find('ul.colors').html(this.cgs);
+						}
+						window.tooltips();
+						ctxmenus();
+						if (this.update)
+							window.updateTimes();
 					}
-					else handleError.call(this);
+					$.Dialog.close();
 				}));
 			});
 		});
@@ -410,12 +390,6 @@ DocReady.push(function ColorguideManage(){
 				$.post('/colorguide/gettag/'+tagID,$.mkAjaxHandler(function(){
 					var tag = this;
 					if (this.status) $.Dialog.request(title,$tagEditForm.clone(true, true),'edit-tag','Save',function($form){
-						var $ErrorNotice = $form.children('.notice').children('p'),
-							handleError = function(){
-								$ErrorNotice.html(this.message).parent().removeClass('info').addClass('fail').show();
-								$form.find('input, texarea').attr('disabled', false);
-								$.Dialog.center();
-							};
 						$form.find('input[name=type][value='+tag.type+']').prop('checked', true);
 						$form.find('input[type=text][name], textarea[name]').each(function(){
 							var $this = $(this);
@@ -424,25 +398,21 @@ DocReady.push(function ColorguideManage(){
 						$form.on('submit', function(e){
 							e.preventDefault();
 
-							$ErrorNotice.text('Saving changes&hellip;').parent().removeClass('fail').addClass('info').show();
-							$.Dialog.center();
+							$.Dialog.wait(false, 'Saving changes');
 
 							$.post('/colorguide/settag/'+tagID, $form.mkData(), $.mkAjaxHandler(function(){
-								if (this.status){
-									var $affected = $('.id-'+this.tid);
-									$affected.qtip('destroy', true);
-									if (this.title) $affected.attr('title', this.title);
-									else $affected.removeAttr('title');
-									$affected
-										.attr('class', 'tag id-'+this.tid+(this.type?' typ-'+this.type:''))
-										.text(this.name).data('ctxmenu-items').eq(0).text('Tag: '+this.name);
-									$affected.parent().each(function(){
-										reorder($(this));
-									});
-									window.tooltips();
-									$.Dialog.close();
-								}
-								else handleError.call(this);
+								if (!this.status) return $.Dialog.fail(false, this.message);
+
+								var $affected = $('.id-'+this.tid);
+								$affected.qtip('destroy', true);
+								if (this.title) $affected.attr('title', this.title);
+								else $affected.removeAttr('title');
+								$affected
+									.attr('class', 'tag id-'+this.tid+(this.type?' typ-'+this.type:''))
+									.text(this.name).data('ctxmenu-items').eq(0).text('Tag: '+this.name);
+								$affected.parent().each(function(){ reorder($(this)) });
+								window.tooltips();
+								$.Dialog.close();
 							}));
 						});
 					});
@@ -533,7 +503,7 @@ DocReady.push(function ColorguideManage(){
 					if ($ponyTags.filter(function(){ return this.innerHTML.trim() === tag_name }).length > 0)
 						return $.Dialog.fail(title, 'This appearance already has this tag');
 
-					$.Dialog._focusedElement = $input.attr('disabled', true);
+					$.Dialog.setFocusedElement($input.attr('disabled', true));
 					$input.parent().addClass('loading');
 
 					$.post('/colorguide/tag/'+ponyID,{ tag_name: tag_name }, $.mkAjaxHandler(function(){
@@ -579,7 +549,7 @@ DocReady.push(function ColorguideManage(){
 					$.Dialog.wait(title, 'Retrieving color group list from server');
 
 					$.post('/colorguide/getcgs/'+ponyID, $.mkAjaxHandler(function(){
-						if (!this.status) $.Dialog.fail(this.message);
+						if (!this.status) return $.Dialog.fail(this.message);
 
 						var $form = $cgReordering.clone(),
 							$cgs = $.mk('ol');
@@ -598,12 +568,6 @@ DocReady.push(function ColorguideManage(){
 						});
 
 						$.Dialog.request(title, $form, 'cg-reorder', 'Save', function($form){
-							var $ErrorNotice = $form.children('.notice').children('p'),
-								handleError = function(){
-									$ErrorNotice.html(this.message).parent().removeClass('info').addClass('fail').show();
-									$.Dialog.center();
-								};
-
 							$form.on('submit', function(e){
 								e.preventDefault();
 								var data = {cgs:[]},
@@ -616,17 +580,15 @@ DocReady.push(function ColorguideManage(){
 								});
 								data.cgs = data.cgs.join(',');
 
-								$ErrorNotice.text('Saving changes&hellip;').parent().removeClass('fail').addClass('info').show();
-								$.Dialog.center();
+								$.Dialog.wait(false, 'Saving changes');
 
 								$.post('/colorguide/setcgs/'+ponyID,data,$.mkAjaxHandler(function(){
-									if (this.status){
-										$colors.html(this.cgs);
-										window.tooltips();
-										ctxmenus();
-										$.Dialog.close();
-									}
-									else handleError.call(this);
+									if (!this.status) return $.Dialog.fail(null, this.message);
+
+									$colors.html(this.cgs);
+									window.tooltips();
+									ctxmenus();
+									$.Dialog.close();
 								}));
 							});
 						});

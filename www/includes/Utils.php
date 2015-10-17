@@ -2166,6 +2166,34 @@ ORDER BY `count` DESC
 		}
 	}
 
+	// Check image URL in POST request
+	function check_post_image($respond = false){
+		if (empty($_POST['image_url']))
+			respond('Please enter an image URL');
+
+		require_once 'includes/Image.php';
+		try {
+			$Image = new Image($_POST['image_url']);
+		}
+		catch (Exception $e){ respond($e->getMessage()); }
+
+		global $POST_TYPES, $Database;
+		foreach ($POST_TYPES as $type){
+			$Used = $Database->where('preview', $Image->preview)->getOne("{$type}s");
+			if (!empty($Used)){
+				$EpID = "S{$Used['season']}E{$Used['episode']}";
+				respond("This exact image has already been used for a $type under <a href='/episode/$EpID#$type-{$Used['id']}'>");
+			}
+		}
+
+		if (!$respond)
+			return $Image;
+		respond(array(
+			'preview' => $Image->preview,
+			'title' => $Image->title
+		));
+	}
+
 	// Get link to specific posts
 	function post_link_html($Post){
 		$thing = isset($Post['rq']) ? 'request' : 'reservation';

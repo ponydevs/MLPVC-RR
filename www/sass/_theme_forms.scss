@@ -65,6 +65,7 @@ input[type=checkbox] {
 	vertical-align: bottom;
 	top: -2px;
 
+	&:disabled { cursor: default }
 	&:checked:before { opacity: 1 }
 	&:before {
 		position: absolute;

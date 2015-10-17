@@ -112,10 +112,19 @@ html.dialog-open {
 			border-radius: 3px;
 		}
 	}
-	> div:not(:first-child):not(#dialogButtons) {
-		border-top: 1px solid;
-		padding-top: 5px;
-		margin-top: 4px;
+	> div {
+		&:not(:first-child):not(#dialogButtons) {
+			border-top: 1px solid;
+			padding-top: 5px;
+			margin-top: 4px;
+		}
+
+		> .notice {
+			margin-top: 10px;
+			border-width: 2px;
+			font-size: 1em;
+			font-weight: bold;
+		}
 	}
 	> * {
 		&:not(p) + p {

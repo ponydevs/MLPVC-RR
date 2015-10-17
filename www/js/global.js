@@ -14,7 +14,6 @@
 	};
 
 	// Globalize common elements
-
 	window.$w = $(window);
 	window.$d = $(document);
 	window.CommonElements = function(){
@@ -32,6 +31,46 @@
 	};
 	window.CommonElements();
 
+	// Common key codes for easy reference
+	window.Key = {
+		Enter: 13,
+		Space: 32,
+		LeftArrow: 37,
+		RightArrow: 39,
+		Tab: 9,
+	};
+	$.isKey = function(Key, e){
+		return e.keyCode == Key;
+	};
+
+	// Make first character in string uppercase
+	$.capitalize = function(str){
+		if (str.length === 1)
+			return str.toUpperCase();
+		return str[0].toUpperCase()+str.substring(1)
+	};
+
+	// Array.includes (ES7) polyfill
+	if (typeof Array.prototype.includes !== 'function')
+		Array.prototype.includes = function(elem){ return this.indexOf(elem) !== -1 };
+
+	$.pad = function(str, char, len, dir){
+		if (typeof str !== 'str')
+			str = ''+str;
+
+		if (typeof char !== 'string')
+			char = '0';
+		if (typeof len !== 'number' || !isFinite(len) || isNaN(len))
+			len = 2;
+		if (typeof dir !== 'boolean')
+			dir = true;
+
+		while (str.length < len)
+			str = dir ? char+str : str+char;
+
+		return str;
+	};
+
 	// Create AJAX response handling function
 	$w.on('ajaxerror',function(){
 		$.Dialog.fail(false,'There was an error while processing your request. You may find additional details in the browser\'s console.');
@@ -46,6 +85,19 @@
 
 			if (typeof f === 'function') f.call(data);
 		};
+	};
+
+	// Checks if a variable is a function and if yes, runs it
+	// If no, returns default value (undefined or value of def)
+	$.callCallback = function(func, params, def){
+		if (typeof params !== 'object' || !$.isArray(params)){
+			def = params;
+			params = [];
+		}
+		if (typeof func !== 'function')
+			return def;
+
+		return func.apply(window, params);
 	};
 
 	// Convert .serializeArray() result to object
@@ -309,7 +361,7 @@ $(function(){
 			url: url,
 			data: {'via-js': true},
 			success: $.mkAjaxHandler(function(){
-				if (xhr == false) return;
+				if (!xhr) return;
 				if (!this.status){
 					$body.removeClass('loading');
 					xhr = false;

@@ -70,20 +70,13 @@ DocReady.push(function ColorguideTags(){
 					);
 
 					$.Dialog.request(title, $form, 'tag-merge', 'Merge', function($form){
-						var $ErrorNotice = $form.children('.notice').children('p'),
-							handleError = function(){
-								$ErrorNotice.html(this.message).parent().removeClass('info').addClass('fail').show();
-								$form.find('select').attr('disabled', false);
-								$.Dialog.center();
-							};
 						$form.on('submit',function(e){
 							e.preventDefault();
 
-							$ErrorNotice.text('Merging tags&hellip;').parent().removeClass('fail').addClass('info').show();
-							$.Dialog.center();
+							$.Dialog.wait(false, 'Merging tags');
 
 							$.post('/colorguide/mergetag/'+tagID,$form.mkData(),function(){
-								if (!this.status) handleError.call(this);
+								if (!this.status) return $.Dialog.fail(false, this.message);
 								updateList.call(this, $tr, title);
 							});
 						});

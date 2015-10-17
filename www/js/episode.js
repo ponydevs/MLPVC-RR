@@ -1,23 +1,22 @@
 DocReady.push(function Episode(){
 	var SEASON = window.SEASON,
 		EPISODE = window.EPISODE,
-		idstr = 'S'+SEASON+'E'+EPISODE;
+		EpID = 'S'+SEASON+'E'+EPISODE;
 
 	$('#video').on('click',function(){
-		var title = 'Video links';
-		$.Dialog.wait(title, 'Requesting links from the server');
+		$.Dialog.wait('Video links', 'Requesting links from the server');
 
-		$.post('/episode/getvideos/'+idstr,$.mkAjaxHandler(function(){
+		$.post('/episode/getvideos/'+EpID,$.mkAjaxHandler(function(){
 			var data = this;
 
-			if (!data.status) $.Dialog.fail(title, data.message);
+			if (!data.status) $.Dialog.fail(false, data.message);
 
 			var $form = $.mk('form').attr('id','vidlinks').append(
 				$.mk('p').addClass('align-center').text('Enter vido links below, leave any input blank to remove that video from the episode page.'),
 				$.mk('input').attr({name:'yt',placeholder:'YouTube'}),
 				$.mk('input').attr({name:'dm',placeholder:'Dailymotion'})
 			);
-			$.Dialog.request(title, $form,'vidlinks','Save',function($form){
+			$.Dialog.request(false, $form,'vidlinks','Save',function($form){
 				var $yt = $form.find('[name=yt]'),
 					$dm = $form.find('[name=dm]');
 				if (data.yt) $yt.val(data.yt);
@@ -31,7 +30,7 @@ DocReady.push(function Episode(){
 
 					$.Dialog.wait(title, 'Saving links');
 					
-					$.post('/episode/setvideos/'+idstr,{yt: $yt.val(), dm: $dm.val()},$.mkAjaxHandler(function(){
+					$.post('/episode/setvideos/'+EpID,{yt: $yt.val(), dm: $dm.val()},$.mkAjaxHandler(function(){
 						if (this.status){
 							var $epSection = $content.children('section.episode');
 							if (this.epsection){
@@ -56,24 +55,17 @@ DocReady.push(function Episode(){
 	$voting.on('click','button',function(e){
 		e.preventDefault();
 		var $this = $(this),
-			$both = $this.siblings('button').addBack(),
-			value = $this.hasClass('green') ? 1 : -1,
-			epid = ''+idstr,
-			title = (value > 0?'Up':'Down')+'voting '+epid;
+			value = $this.hasClass('green') ? 1 : -1;
 
-		$both.attr('disabled', true);
+		$.Dialog.wait('Casting vote');
 
-		$.post('/episode/vote/'+epid,{vote:value},$.mkAjaxHandler(function(){
-			if (this.status){
-				$.Dialog.close();
-				var $section = $this.closest('section');
-				$section.children('h2').nextAll().remove();
-				$section.append(this.newhtml);
-			}
-			else {
-				$.Dialog.fail(title,this.message);
-				$both.attr('disabled', false);
-			}
+		$.post('/episode/vote/'+EpID,{vote:value},$.mkAjaxHandler(function(){
+			if (!this.status) return $.Dialog.fail((value > 0?'Up':'Down')+'voting '+EpID,this.message);
+
+			var $section = $this.closest('section');
+			$section.children('h2').nextAll().remove();
+			$section.append(this.newhtml);
+			$.Dialog.close();
 		}));
 	});
 
@@ -81,12 +73,11 @@ DocReady.push(function Episode(){
 		if (diff.past !== true) return;
 
 		if (!$voteButton.length){
-			$.post('/episode/vote/'+idstr+'?html',$.mkAjaxHandler(function(){
-				if (this.status){
-					$voting.children('h2').nextAll().remove();
-					$voting.append(this.html);
-				}
-				else $.Dialog.fail('Display voting buttons',this.message);
+			$.post('/episode/vote/'+EpID+'?html',$.mkAjaxHandler(function(){
+				if (!this.status) $.Dialog.fail('Display voting buttons',this.message);
+
+				$voting.children('h2').nextAll().remove();
+				$voting.append(this.html);
 			}));
 			$(this).removeData('dyntime-beforeupdate');
 			return false;
@@ -139,59 +130,47 @@ DocReady.push(function Episode(){
 		});
 		var $actions = $li.find('.actions').children();
 		$actions.filter('.cancel').off('click').on('click',function(){
-			var $this = $(this),
-				title = 'Cancel reservation';
+			var $this = $(this);
 
-			$.Dialog.confirm(title,'Are you sure you want to cancel this reservation?',function(sure){
+			$.Dialog.confirm('Cancel reservation','Are you sure you want to cancel this reservation?',function(sure){
 				if (!sure) return;
 
-				$.Dialog.wait(title,'Cancelling reservation');
+				$.Dialog.wait(false, 'Cancelling reservation');
 
 				$.post('/reserving/'+type+'/'+id+'?cancel',$.mkAjaxHandler(function(){
-					if (this.status){
-						$.Dialog.close();
-						if (this.remove === true) return $li.remove();
-						$this.parent().prev().nextAll().addBack().remove();
-						$(this.btnhtml).appendTo($li);
+					if (!this.status) return $.Dialog.fail(false, this.message);
 
-						Bind($li, id, type);
-					}
-					else $.Dialog.fail(title,this.message);
+					$.Dialog.close();
+					if (this.remove === true) return $li.remove();
+					$this.parent().prev().nextAll().addBack().remove();
+					$(this.btnhtml).appendTo($li);
+
+					Bind($li, id, type);
 				}));
 			});
 		});
 		$actions.filter('.finish').off('click').on('click',function(){
-			var title = 'Finish reservation';
-
-			$.Dialog.request(title,'<form id="finish-res"><div class="notice fail"><label>Error</label><p></p></div><input type="text" name="deviation" placeholder="Deviation URL"></form>','finish-res','Finish',function(){
-				var $form = $('#finish-res'),
-					$ErrorNotice = $form.find('.notice p');
-				$ErrorNotice.parent().hide();
+			$.Dialog.request('Finish reservation','<form id="finish-res"><div class="notice fail"><label>Error</label><p></p></div><input type="text" name="deviation" placeholder="Deviation URL"></form>','finish-res','Finish',function($form){
 				$form.on('submit',function(e){
 					e.preventDefault();
 
-					var deviation = $form.find('[name=deviation]').val(),
-						handleError = function(e){
-							$ErrorNotice.html(e.message).parent().show();
-							$w.trigger('resize');
-							$form.find('input').attr('disabled', false);
-						};
+					var deviation = $form.find('[name=deviation]').val();
 
-					try {
-						if (typeof deviation !== 'string' || deviation.length === 0)
-							throw new Error('Please enter a deviation URL');
+					if (typeof deviation !== 'string' || deviation.length === 0)
+						return $.Dialog.fail(false, 'Please enter a deviation URL');
 
-						$.post('/reserving/'+type+'/'+id+'?finish',{deviation:deviation},$.mkAjaxHandler(function(){
-							var data = this;
-							if (data.status) updateSection.call({callback:function(){
-								if (typeof data.message === 'string')
-									$.Dialog.success(title,data.message,true);
-								else $.Dialog.close();
-							}}, type, SEASON, EPISODE);
-							else handleError(data);
-						}));
-					}
-					catch(e){ handleError(e) }
+					$.Dialog.wait(false, 'Marking reservation as finished');
+
+					$.post('/reserving/'+type+'/'+id+'?finish',{deviation:deviation},$.mkAjaxHandler(function(){
+						var data = this;
+						if (!data.status) return $.Dialog.fail(false, data.message);
+
+						updateSection.call({callback:function(){
+							if (typeof data.message === 'string')
+								$.Dialog.success(title,data.message,true);
+							else $.Dialog.close();
+						}}, type, SEASON, EPISODE);
+					}));
 				});
 			})
 		});
@@ -237,16 +216,15 @@ DocReady.push(function Episode(){
 			});
 		});
 		$actions.filter('.lock').off('click').on('click',function(){
-			var title = 'Approve post',
-				$btn = $(this);
+			var $btn = $(this);
 
-			$.Dialog.confirm(title, "By approving this post, you can prevent any additional modifications, such as un-finishing. This mark is <strong>permanent</strong>, and can only be removed by the developer. <strong>This should be used when the image has been added to the group gallery.</strong><br><br>After approving the post, it'll count towards the user's badges/achievements/points/whatever (once implemented) and the image will receive a small green checkmark on the site. <strong>This action will be logged.</strong><br><br>Are you <em>absolutely</em> sure you want to approve this post, and with that, prevent futher actions?",['Approve it','Nevermind'],function(sure){
+			$.Dialog.confirm('Approve post', "By approving this post, you can prevent any additional modifications, such as un-finishing. This mark is <strong>permanent</strong>, and can only be removed by the developer. <strong>This should be used when the image has been added to the group gallery.</strong><br><br>After approving the post, it'll count towards the user's badges/achievements/points/whatever (once implemented) and the image will receive a small green checkmark on the site. <strong>This action will be logged.</strong><br><br>Are you <em>absolutely</em> sure you want to approve this post, and with that, prevent futher actions?",['Approve it','Nevermind'],function(sure){
 				if (!sure) return;
 
-				$.Dialog.wait(title, 'Approving post');
+				$.Dialog.wait(false, 'Approving post');
 
 				$.post('/reserving/'+type+'/'+id+'?lock', $.mkAjaxHandler(function(){
-					if (!this.status) return $.Dialog.fail(title, data.message);
+					if (!this.status) return $.Dialog.fail(false, data.message);
 
 					$btn.closest('li').children('.image').children('a').append(
 						$.mk('span').attr({
@@ -257,26 +235,25 @@ DocReady.push(function Episode(){
 					$btn.parent().remove();
 
 					if (this.message){
-						$.Dialog.success(title, data.message, true);
+						$.Dialog.success(false, data.message, true);
 					}
 					else $.Dialog.close();
 				}));
 			});
 		});
 		$actions.filter('.delete').on('click',function(){
-			var $this = $(this),
-				title = 'Deleteing request';
+			var $this = $(this);
 
-			$.Dialog.confirm(title, 'You are about to permanently delete this request.<br>Are you sure about this?', function(sure){
+			$.Dialog.confirm('Deleteing request', 'You are about to permanently delete this request.<br>Are you sure about this?', function(sure){
 				if (!sure) return;
 
-				$.Dialog.wait(title, 'Sending deletion request');
+				$.Dialog.wait(false, 'Sending deletion request');
 
 				$.post('/reserving/request/'+id+'?delete',$.mkAjaxHandler(function(){
-					if (!this.status) return $.Dialog.fail(title,this.message);
+					if (!this.status) return $.Dialog.fail(false, this.message);
 
-					$.Dialog.close();
 					$this.closest('li').remove();
+					$.Dialog.close();
 				}));
 			});
 		});
@@ -291,7 +268,7 @@ DocReady.push(function Episode(){
 			$.Dialog.wait(title, 'Retrieving '+type+' details');
 
 			$.post('/post/get-'+type+'/'+id,$.mkAjaxHandler(function(){
-				if (!this.status) return $.Dialog.fail(title, this.message);
+				if (!this.status) return $.Dialog.fail(false, this.message);
 
 				var postdata = this,
 					$Form = $.mk('form').attr('id', 'post-edit-form').append(
@@ -322,7 +299,53 @@ DocReady.push(function Episode(){
 						)
 					);
 
-				$.Dialog.request(title, $Form, 'post-edit-form', 'Save', function($form){
+				$Form.append(
+					$.mk('label').append(
+						$.mk('a').text('Update Image').attr({
+							'href':'#update',
+							'class':'btn darkblue typcn typcn-pencil',
+						}).on('click',function(e){
+							e.preventDefault();
+
+							$.Dialog.close();
+							var $img = $li.children('.image').find('img'),
+								$ImgUpdateForm = $.mk('form').attr('id', 'img-update-form').append(
+								$.mk('div').attr('class','align-center').append(
+									$.mk('span').text('Current image'),
+									$img.clone().one('load',function(){ $.Dialog.center() })
+								),
+								$.mk('label').append(
+									$.mk('span').text('New image URL'),
+									$.mk('input').attr({
+										type: 'text',
+										maxlength: 255,
+										pattern: "^.{2,255}$",
+										name: 'image_url',
+										required: true,
+									})
+								)
+							);
+							$.Dialog.request('Update image',$ImgUpdateForm, 'img-update-form','Update image',function($form){
+								$form.on('submit', function(e){
+									e.preventDefault();
+
+									var data = $form.mkData();
+									$.Dialog.wait(false, 'Replacing image');
+
+									$.post('/post/set-'+type+'-image/'+id,data,$.mkAjaxHandler(function(){
+										if (!this.status) return $.Dialog.fail(false, this.message);
+
+										$.Dialog.success(false, 'Image replaced successfully');
+
+										updateSection(type, SEASON, EPISODE);
+									}))
+								})
+							});
+						})
+					)
+				);
+
+				$.Dialog.request(false, $Form, 'post-edit-form', 'Save', function($form){
 					var $label = $form.find('[name=label]'),
 						$type = $form.find('[name=type]');
 					if (postdata.label)
@@ -338,8 +361,8 @@ DocReady.push(function Episode(){
 						var data = { label: $label.val() };
 						if (type === 'request')
 							data.type = $type.val();
-						$.post('/post/edit-'+type+'/'+id,data, $.mkAjaxHandler(function(){
-							if (!this.status) return $.Dialog.fail(title, this.message);
+						$.post('/post/set-'+type+'/'+id,data, $.mkAjaxHandler(function(){
+							if (!this.status) return $.Dialog.fail(false, this.message);
 
 							if (this.label)
 								$li.children('.label').text(this.label);
@@ -383,35 +406,23 @@ DocReady.push(function Episode(){
 			}
 		});
 		if (type === 'reservation') $('#add-reservation-btn').on('click',function(){
-			var title = 'Add a reservation';
-			$.Dialog.request(title,'<form id="add-reservation"><div class="notice fail"><label>Error</label><p></p></div><div class="notice info">This feature should only be used when the vector was made before the episode was displayed here, and all you want to do is link your already-made vector under the newly posted episode.</div><div class="notice warn">If you already posted the reservation, use the <strong class="typcn typcn-attachment">I\'m done</strong> button to mark it as finished instead of adding it here.</div><input type="text" name="deviation" placeholder="Deviation URL"></form>','add-reservation','Finish',function(){
-				var $form = $('#add-reservation'),
-					$ErrorNotice = $form.find('.notice.fail').hide().children('p');
+			$.Dialog.request('Add a reservation','<form id="add-reservation"><div class="notice fail"><label>Error</label><p></p></div><div class="notice info">This feature should only be used when the vector was made before the episode was displayed here, and all you want to do is link your already-made vector under the newly posted episode.</div><div class="notice warn">If you already posted the reservation, use the <strong class="typcn typcn-attachment">I\'m done</strong> button to mark it as finished instead of adding it here.</div><input type="text" name="deviation" placeholder="Deviation URL"></form>','add-reservation','Finish',function($form){
 				$form.on('submit',function(e){
 					e.preventDefault();
 
-					var deviation = $form.find('[name=deviation]').val(),
-						handleError = function(e){
-							$ErrorNotice.html(e.message).parent().show();
-							$w.trigger('resize');
-							$form.find('input').attr('disabled', false);
-						};
+					var deviation = $form.find('[name=deviation]').val();
 
-					try {
-						if (typeof deviation !== 'string' || deviation.length === 0)
-							throw new Error('Please enter a deviation URL');
+					if (typeof deviation !== 'string' || deviation.length === 0)
+						return $.Dialog.fail(false, 'Please enter a deviation URL');
 
-						$.Dialog.wait('Adding reservation');
+					$.Dialog.wait(false, 'Adding reservation');
 
-						$.post('/reserving/reservation?add='+idstr,{deviation:deviation},$.mkAjaxHandler(function(){
-							if (this.status){
-								$.Dialog.success(title,this.message);
-								updateSection(type, SEASON, EPISODE);
-							}
-							else  handleError(this);
-						}));
-					}
-					catch(e){ handleError(e) }
+					$.post('/reserving/reservation?add='+EpID,{deviation:deviation},$.mkAjaxHandler(function(){
+						if (!this.status) return $.Dialog.fail(false, this.message);
+
+						$.Dialog.success(false, this.message);
+						updateSection(type, SEASON, EPISODE);
+					}));
 				});
 			})
 		});
@@ -474,9 +485,8 @@ DocReady.push(function Episode(){
 							$form.find('input[name=label]').focus();
 						});
 					}).on('error',function(){
-						var title = "Can't load image";
 						if (attempts < 1){
-							$.Dialog.wait(title,'Image could not be loaded, retrying in 2 seconds&hellip;');
+							$.Dialog.wait("Can't load image",'Image could not be loaded, retrying in 2 seconds');
 							setTimeout(function(){
 								load(data, attempts+1);
 							}, 2000);
@@ -530,11 +540,10 @@ DocReady.push(function Episode(){
 			$.Dialog.wait(title,'Submitting '+type);
 
 			$.post('/post',data,$.mkAjaxHandler(function(){
-				if (this.status){
-					$.Dialog.success(title, Type+' posted successfully');
-					updateSection(type, SEASON, EPISODE);
-				}
-				else $.Dialog.fail(title, this.message);
+				if (!this.status) return $.Dialog.fail(false, this.message);
+
+				$.Dialog.success(false, Type+' posted successfully');
+				updateSection(type, SEASON, EPISODE);
 			}));
 		}).on('reset',function(){
 			$formImgCheck.attr('disabled', false).addClass('red');
@@ -548,16 +557,16 @@ DocReady.push(function Episode(){
 		var Type = type.charAt(0).toUpperCase()+type.substring(1), dis = this;
 		$.Dialog.wait(Type, 'Updating list');
 		$.post('/episode/'+type.replace(/([^s])$/,'$1s')+'/S'+SEASON+'E'+EPISODE,$.mkAjaxHandler(function(){
-			if (this.status){
-				var $section = $('#'+type.replace(/([^s])$/,'$1s')),
-					$newChilds = $(this.render).filter('section').children();
-				$section.empty().append($newChilds).rebindHandlers();
-				$section.find('.post-form').data('type',type).formBind();
-				window.updateTimes();
-				if (typeof dis === 'object' && typeof dis.callback == 'function') dis.callback();
-				else $.Dialog.close();
-			}
-			else window.location.reload();
+			if (!this.status) return window.location.reload();
+
+			var $section = $('#'+type.replace(/([^s])$/,'$1s')),
+				$newChilds = $(this.render).filter('section').children();
+			$section
+				.empty().append($newChilds).rebindHandlers()
+				.find('.post-form').data('type',type).formBind();
+			window.updateTimes();
+			if (typeof dis === 'object' && typeof dis.callback == 'function') dis.callback();
+			else $.Dialog.close();
 		}));
 	}
 	$('.post-form').each($.fn.formBind);
