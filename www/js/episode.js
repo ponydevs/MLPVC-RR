@@ -28,22 +28,21 @@ DocReady.push(function Episode(){
 				$form.on('submit',function(e){
 					e.preventDefault();
 
-					$.Dialog.wait(title, 'Saving links');
+					$.Dialog.wait(false, 'Saving links');
 					
 					$.post('/episode/setvideos/'+EpID,{yt: $yt.val(), dm: $dm.val()},$.mkAjaxHandler(function(){
-						if (this.status){
-							var $epSection = $content.children('section.episode');
-							if (this.epsection){
-								if (!$epSection.length)
-									$epSection = $.mk('section')
-										.addClass('episode')
-										.insertBefore($content.children('section').first());
-								$epSection.html($(this.epsection).filter('section').html());
-							}
-							else if ($epSection.length) $epSection.remove();
-							$.Dialog.close();
+						if (!this.status) return $.Dialog.fail(false, this.message);
+
+						var $epSection = $content.children('section.episode');
+						if (this.epsection){
+							if (!$epSection.length)
+								$epSection = $.mk('section')
+									.addClass('episode')
+									.insertBefore($content.children('section').first());
+							$epSection.html($(this.epsection).filter('section').html());
 						}
-						else $.Dialog.fail(title, this.message);
+						else if ($epSection.length) $epSection.remove();
+						$.Dialog.close();
 					}));
 				});
 			});
@@ -107,20 +106,18 @@ DocReady.push(function Episode(){
 	$('#requests, #reservations').rebindHandlers();
 	function Bind($li, id, type){
 		$li.children('button.reserve-request').off('click').on('click',function(){
-			var $this = $(this),
-				title = 'Reserving request';
+			var $this = $(this);
 
-			$.Dialog.wait(title,'Sending reservation to the server');
+			$.Dialog.wait('Reserving request','Sending reservation to the server');
 
 			$.post("/reserving/request/"+id,$.mkAjaxHandler(function(){
-				if (this.status){
-					$.Dialog.close();
-					$this.nextAll().remove();
-					$(this.btnhtml).insertAfter($this);
-					Bind($li, id, type);
-					$this.remove();
-				}
-				else $.Dialog.fail(title,this.message);
+				if (!this.status) return $.Dialog.fail(false, this.message);
+
+				$.Dialog.close();
+				$this.nextAll().remove();
+				$(this.btnhtml).insertAfter($this);
+				Bind($li, id, type);
+				$this.remove();
 			}));
 		});
 		$li.children('em').children('a').on('click',function(e){
@@ -167,7 +164,7 @@ DocReady.push(function Episode(){
 
 						updateSection.call({callback:function(){
 							if (typeof data.message === 'string')
-								$.Dialog.success(title,data.message,true);
+								$.Dialog.success(false,data.message,true);
 							else $.Dialog.close();
 						}}, type, SEASON, EPISODE);
 					}));
@@ -177,10 +174,9 @@ DocReady.push(function Episode(){
 		$actions.filter('.unfinish').off('click').on('click',function(){
 			var $unfinishBtn = $(this),
 				deleteOnly = $unfinishBtn.hasClass('delete-only'),
-				title = (deleteOnly?'Delete':'Un-finish')+' reservation',
 				Type = type.charAt(0).toUpperCase()+type.substring(1);
 
-			$.Dialog.request(title,'<form id="unbind-check"><p>Are you sure you want to '+(deleteOnly?'delete this reservation':'mark this reservation as unfinished')+'?</p><hr><label><input type="checkbox" name="unbind"> Unbind reservation from user</label></form>','unbind-check','Un-finish',function(){
+			$.Dialog.request((deleteOnly?'Delete':'Un-finish')+' reservation','<form id="unbind-check"><p>Are you sure you want to '+(deleteOnly?'delete this reservation':'mark this reservation as unfinished')+'?</p><hr><label><input type="checkbox" name="unbind"> Unbind reservation from user</label></form>','unbind-check','Un-finish',function(){
 				var $form = $('#unbind-check'),
 					$unbind = $form.find('[name=unbind]');
 
@@ -203,14 +199,13 @@ DocReady.push(function Episode(){
 
 					var unbind = $unbind.prop('checked');
 
-					$.Dialog.wait(title,'Removing "finished" flag'+(unbind?' & unbinding from user':''));
+					$.Dialog.wait(false, 'Removing "finished" flag'+(unbind?' & unbinding from user':''));
 
 					$.post('/reserving/'+type+'/'+id+'?unfinish'+(unbind?'&unbind':''),$.mkAjaxHandler(function(){
-						if (this.status){
-							$.Dialog.success(title, typeof this.message !== 'undefined' ? this.message : '"finished" flag removed successfully');
-							updateSection(type, SEASON, EPISODE);
-						}
-						else $.Dialog.fail(title,this.message);
+						if (!this.status) return $.Dialog.fail(false, this.message);
+
+						$.Dialog.success(false, typeof this.message !== 'undefined' ? this.message : '"finished" flag removed successfully');
+						updateSection(type, SEASON, EPISODE);
 					}));
 				});
 			});
@@ -234,9 +229,8 @@ DocReady.push(function Episode(){
 					);
 					$btn.parent().remove();
 
-					if (this.message){
+					if (this.message)
 						$.Dialog.success(false, data.message, true);
-					}
 					else $.Dialog.close();
 				}));
 			});
@@ -262,10 +256,9 @@ DocReady.push(function Episode(){
 				$li = $button.parents('li'),
 				_split = $li.attr('id').split('-'),
 				id = _split[1],
-				type = _split[0],
-				title = 'Editing '+type+' #'+id;
+				type = _split[0];
 
-			$.Dialog.wait(title, 'Retrieving '+type+' details');
+			$.Dialog.wait('Editing '+type+' #'+id, 'Retrieving '+type+' details');
 
 			$.post('/post/get-'+type+'/'+id,$.mkAjaxHandler(function(){
 				if (!this.status) return $.Dialog.fail(false, this.message);
