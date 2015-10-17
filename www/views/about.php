@@ -44,6 +44,7 @@
 					) as users
 				FROM `sessions`
 				GROUP BY browser
+				HAVING users > 1
 				ORDER BY users DESC, browser_name, browser_ver DESC");
 			$i = 0;
 			$last = 0;
