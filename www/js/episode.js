@@ -325,7 +325,7 @@ DocReady.push(function Episode(){
 									})
 								)
 							);
-							$.Dialog.request('Update image',$ImgUpdateForm, 'img-update-form','Update image',function($form){
+							$.Dialog.request('Update image of '+type+' #'+id,$ImgUpdateForm, 'img-update-form','Update',function($form){
 								$form.on('submit', function(e){
 									e.preventDefault();
 
@@ -335,7 +335,7 @@ DocReady.push(function Episode(){
 									$.post('/post/set-'+type+'-image/'+id,data,$.mkAjaxHandler(function(){
 										if (!this.status) return $.Dialog.fail(false, this.message);
 
-										$.Dialog.success(false, 'Image replaced successfully');
+										$.Dialog.success(false, 'Image has been updated');
 
 										updateSection(type, SEASON, EPISODE);
 									}))
