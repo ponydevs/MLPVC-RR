@@ -51,6 +51,7 @@
 		'un-banish' => 'User un-banished',
 		'post_lock' => 'Post approved',
 		'color_modify' => 'Major appearance update',
+		'req_delete' => 'Request deleted',
 	);
 	function LogAction($type,$data = null){
 		global $Database, $signedIn, $currentUser;
@@ -131,19 +132,17 @@
 				}
 			break;
 			case "userfetch":
-				$user =  $Database->where('id',$data['userid'])->getOne('users');
-				$details[] = array('User', profile_link($user));
+				$details[] = array('User', profile_link(get_user($data['target'])));
 			break;
 			case "banish":
 			case "un-banish":
-				$user =  $Database->where('id',$data['target'])->getOne('users');
-				$details[] = array('User', profile_link($user));
+				$details[] = array('User', profile_link(get_user($data['target'])));
 				$details[] = array('Reason', htmlspecialchars($data['reason']));
 			break;
 			case "post_lock":
 				$Post = $Database->where('id', $data['id'])->getOne("{$data['type']}s");
 				if (empty($Post))
-					$details[] = array('Error', 'The post in question has been deleted');
+					$details[] = array('Notice', 'The post has been deleted, some details are unavailable');
 				$details[] = array('ID',$data['id']);
 				$details[] = array('Type',$data['type']);
 				if (!empty($Post)){
@@ -155,8 +154,33 @@
 				$details[] = array('Appearance',"<a href='/colorguide/appearance/{$data['ponyid']}'>#{$data['ponyid']}</a>");
 				$details[] = array('Reason',htmlspecialchars($data['reason']));
 			break;
+			case "req_delete":
+				$details[] = array('Request ID', $data['id']);
+				$typeNames = array(
+					'chr' => 'Character',
+					'obj' => 'Object',
+					'bg' => 'Background',
+				);
+				$details[] = array('Description',$data['label']);
+				$details[] = array('Type',$typeNames[$data['type']]);
+				$IDstr = "S{$data['season']}E{$data['episode']}";
+				$details[] = array('Episode', "<a href='/episode/$IDstr'>$IDstr</a>");
+				$details[] = array('Posted', timetag($data['posted'], EXTENDED, NO_DYNTIME));
+				if (!empty($data['requested_by']))
+					$details[] = array('Requested by', profile_link(get_user($data['requested_by'])));
+				if (!empty($data['reserved_by']))
+					$details[] = array('Reserved by', profile_link(get_user($data['reserved_by'])));
+				$details[] = array('Finished', !empty($data['deviation_id']));
+				if (!empty($data['deviation_id'])){
+					$DeviationURL = "http://fav.me/{$data['deviation_id']}";
+					$details[] = array('Deviation', "<a href='$DeviationURL'>$DeviationURL</a>");
+
+					$details[] = array('Approved', $data['lock']);
+				}
+			break;
 			default:
 				$details[] = array('Could not process details','No data processor defined for this entry type');
+				$details[] = array('Raw details', '<pre>'.var_export($data, true).'</pre>');
 			break;
 		}
 

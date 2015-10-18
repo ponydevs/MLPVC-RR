@@ -94,6 +94,20 @@ CREATE TABLE `log__post_lock` (
   `id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+CREATE TABLE `log__req_delete` (
+  `entryid` int(11) NOT NULL,
+  `id` int(11) DEFAULT NULL,
+  `season` tinyint(3) UNSIGNED DEFAULT NULL,
+  `episode` tinyint(3) UNSIGNED DEFAULT NULL,
+  `label` varchar(255) DEFAULT NULL,
+  `type` char(4) DEFAULT NULL,
+  `requested_by` varchar(36) DEFAULT NULL,
+  `posted` timestamp NULL DEFAULT NULL,
+  `reserved_by` varchar(36) DEFAULT NULL,
+  `deviation_id` varchar(7) DEFAULT NULL,
+  `lock` tinyint(1) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 CREATE TABLE `log__rolechange` (
   `entryid` int(11) NOT NULL,
   `target` varchar(36) NOT NULL,
@@ -217,6 +231,9 @@ ALTER TABLE `log__episode_modify`
 ALTER TABLE `log__post_lock`
   ADD PRIMARY KEY (`entryid`);
 
+ALTER TABLE `log__req_delete`
+  ADD PRIMARY KEY (`entryid`);
+
 ALTER TABLE `log__rolechange`
   ADD PRIMARY KEY (`entryid`),
   ADD KEY `prevrole` (`oldrole`),
@@ -275,6 +292,8 @@ ALTER TABLE `log__episodes`
 ALTER TABLE `log__episode_modify`
   MODIFY `entryid` int(11) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `log__post_lock`
+  MODIFY `entryid` int(11) NOT NULL AUTO_INCREMENT;
+ALTER TABLE `log__req_delete`
   MODIFY `entryid` int(11) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `log__rolechange`
   MODIFY `entryid` int(11) NOT NULL AUTO_INCREMENT;

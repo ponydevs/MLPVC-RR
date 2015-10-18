@@ -204,6 +204,19 @@
 					if (!$Database->where('id', $Thing['id'])->delete('requests'))
 						respond(ERR_DB_FAIL);
 
+					LogAction('req_delete',array(
+						'season' => $Thing['season'],
+						'episode' => $Thing['episode'],
+						'id' => $Thing['id'],
+						'label' => $Thing['label'],
+						'type' => $Thing['type'],
+						'requested_by' => $Thing['requested_by'],
+						'posted' => $Thing['posted'],
+						'reserved_by' => $Thing['reserved_by'],
+						'deviation_id' => $Thing['deviation_id'],
+						'lock' => $Thing['lock'],
+					));
+
 					respond(true);
 				}
 				else if (!PERM('member')) respond();
