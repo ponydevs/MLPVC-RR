@@ -147,7 +147,7 @@ DocReady.push(function Episode(){
 			});
 		});
 		$actions.filter('.finish').off('click').on('click',function(){
-			$.Dialog.request('Finish reservation','<form id="finish-res"><div class="notice fail"><label>Error</label><p></p></div><input type="text" name="deviation" placeholder="Deviation URL"></form>','finish-res','Finish',function($form){
+			$.Dialog.request('Finish reservation','<form id="finish-res"><input type="text" name="deviation" placeholder="Deviation URL"></form>','finish-res','Finish',function($form){
 				$form.on('submit',function(e){
 					e.preventDefault();
 
@@ -174,14 +174,15 @@ DocReady.push(function Episode(){
 		$actions.filter('.unfinish').off('click').on('click',function(){
 			var $unfinishBtn = $(this),
 				deleteOnly = $unfinishBtn.hasClass('delete-only'),
-				Type = type.charAt(0).toUpperCase()+type.substring(1);
+				Type = type.charAt(0).toUpperCase()+type.substring(1),
+				what = type.replace(/s$/,'');
 
-			$.Dialog.request((deleteOnly?'Delete':'Un-finish')+' reservation','<form id="unbind-check"><p>Are you sure you want to '+(deleteOnly?'delete this reservation':'mark this reservation as unfinished')+'?</p><hr><label><input type="checkbox" name="unbind"> Unbind reservation from user</label></form>','unbind-check','Un-finish',function(){
+			$.Dialog.request((deleteOnly?'Delete':'Un-finish')+' '+what,'<form id="unbind-check"><p>Are you sure you want to '+(deleteOnly?'delete this reservation':'mark this '+what+' as unfinished')+'?</p><hr><label><input type="checkbox" name="unbind"> Unbind '+what+' from user</label></form>','unbind-check','Un-finish',function(){
 				var $form = $('#unbind-check'),
 					$unbind = $form.find('[name=unbind]');
 
 				if (!deleteOnly)
-					$form.prepend('<div class="notice info">By removing the "finished" flag, the deviation will be moved back to the "List of '+Type+'" section</div>');
+					$form.prepend('<div class="notice info">By removing the "finished" flag, the post will be moved back to the "List of '+Type+'" section</div>');
 
 				if (type === 'reservations'){
 					$unbind.on('click',function(){
