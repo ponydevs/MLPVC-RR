@@ -1278,7 +1278,7 @@ class Browser {
 	 * Determine the user's platform (last updated 1.7)
 	 */
 	protected function checkPlatform(){
-		if (strpos('Windows Phone', $this->_agent)){
+		if (preg_match('/Windows Phone/', $this->_agent)){
 			$this->_platform = self::PLATFORM_WINPHONE;
 		}
 		else if (stripos($this->_agent, 'windows') !== false){
