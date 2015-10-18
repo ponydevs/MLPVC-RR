@@ -431,19 +431,12 @@ HTML;
 	define('SHOW_APPEARANCE_NAMES', true);
 	function render_changes_html($Changes, $wrap = true, $showAppearance = false){
 		$seeInitiator = PERM('inspector');
-		$UserCache = array();
 		$PonyCache = array();
 		$HTML = $wrap ? '<ul id="changes">' : '';
 		foreach ($Changes as $c){
 			$initiator = $appearance = '';
-			if ($seeInitiator){
-				$UserID = $c['initiator'];
-				if (empty($UserCache[$UserID])){
-					$UserCache[$UserID] = get_user($UserID);
-				}
-				$User = $UserCache[$UserID];
-				$initiator = " by ".profile_link($User);
-			}
+			if ($seeInitiator)
+				$initiator = " by ".profile_link(get_user($c['initiator']));
 			if ($showAppearance){
 				global $CGDb, $color;
 

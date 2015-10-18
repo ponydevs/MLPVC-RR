@@ -504,7 +504,8 @@
 
 					if ($editing){
 						$Current = get_real_episode($insert['season'],$insert['episode']);
-						if (empty($Current)) respond("This episode doesn't exist");
+						if (empty($Current))
+							respond("This episode doesn't exist");
 					}
 					$Target = get_real_episode($insert['season'],$insert['episode']);
 					if (!empty($Target) && (!$editing || ($editing && ($Target['season'] !== $Current['season'] || $Target['episode'] !== $Current['episode']))))
@@ -673,32 +674,33 @@
 				if (empty($data)) do404();
 
 				if (preg_match('/^newgroup\/'.USERNAME_PATTERN.'$/',$data,$_match)){
-					$un = $_match[1];
+					$targetUser = get_user($_match[1], 'name');
+					if (empty($targetUser))
+						respond('User not found');
 
-					$targetUser = get_user($un, 'name');
-					if (empty($targetUser)) respond('User not found');
-
-					if ($targetUser['id'] === $currentUser['id']) respond("You cannot modify your own group");
+					if ($targetUser['id'] === $currentUser['id'])
+						respond("You cannot modify your own group");
 					if (!PERM($targetUser['role']))
 						respond('You can only modify the group of users who are in the same or a lower-level group than you');
 					if ($targetUser['role'] === 'ban')
 						respond('This user is banished, and must be un-banished before changing their group.');
 
-					if (!isset($_POST['newrole'])) respond('The new group is not specified');
+					if (!isset($_POST['newrole']))
+						respond('The new group is not specified');
 					$newgroup = trim($_POST['newrole']);
-					if (!in_array($newgroup,$ROLES) || $newgroup === 'ban') respond('The specified group does not exist');
-					if ($targetUser['role'] === $newgroup) respond(array('already_in' => true));
+					if (!in_array($newgroup,$ROLES) || $newgroup === 'ban')
+						respond('The specified group does not exist');
+					if ($targetUser['role'] === $newgroup)
+						respond(array('already_in' => true));
 
 					update_role($targetUser,$newgroup);
 
 					respond('Group changed successfully', 1);
 				}
 				else if (preg_match('/^sessiondel\/(\d+)$/',$data,$_match)){
-					if (!$signedIn) respond();
-					detectCSRF();
-
 					$Session = $Database->where('id', $_match[1])->getOne('sessions');
-					if (empty($Session)) respond('This session does not exist');
+					if (empty($Session))
+						respond('This session does not exist');
 					if ($Session['user'] !== $currentUser['id'] && !PERM('inspector'))
 						respond('You are not allowed to delete this session');
 
@@ -707,9 +709,6 @@
 					respond('Session successfully removed',1);
 				}
 				else if (preg_match('/^(un-)?banish\/'.USERNAME_PATTERN.'$/', $data, $_match)){
-					if (!$signedIn) respond();
-					detectCSRF();
-
 					$Action = (empty($_match[1]) ? 'Ban' : 'Un-ban').'ish';
 					$action = strtolower($Action);
 					$un = $_match[2];

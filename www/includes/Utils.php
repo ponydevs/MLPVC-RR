@@ -976,13 +976,13 @@ HTML;
 
 		if (empty($compareAgainst)){
 			global $signedIn, $currentUser;
-			if (!$signedIn) return false;
+			if (!$signedIn)
+				return false;
 			$checkRole = $currentUser['role'];
 		}
 		else $checkRole = $compareAgainst;
 
 		global $ROLES;
-
 		if (!in_array($role,$ROLES))
 			trigger_error('Invalid role: '.$role, E_USER_ERROR);
 		$targetRole = $role;
@@ -1092,6 +1092,9 @@ HTML;
 		return get_user($insert['name'], 'name');
 	}
 
+	// Global cache for storing user details
+	$_USER_CACHE = array();
+
 	/**
 	 * User Information Retriever
 	 * --------------------------
@@ -1109,7 +1112,7 @@ HTML;
 	 * @return array|null
 	 */
 	function get_user($value, $coloumn = 'id', $dbcols = null){
-		global $Database;
+		global $Database, $_USER_CACHE;
 
 		if ($coloumn === "token"){
 			$Auth = $Database->where('token', $value)->getOne('sessions');
@@ -1118,6 +1121,9 @@ HTML;
 			$coloumn = 'id';
 			$value = $Auth['user'];
 		}
+
+		if ($coloumn === 'id' && isset($_USER_CACHE[$value]))
+			return $_USER_CACHE[$value];
 
 		if (empty($dbcols)){
 			$User = $Database->rawQuerySingle(
@@ -1134,6 +1140,8 @@ HTML;
 			if (!empty($User) && isset($Auth)) $User['Session'] = $Auth;
 		}
 		else $User = $Database->where($coloumn, $value)->getOne('users',$dbcols);
+
+		$_USER_CACHE[$User['id']] = $User;
 
 		return $User;
 	}
