@@ -88,6 +88,16 @@ CREATE TABLE `log__episode_modify` (
   `newairs` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+CREATE TABLE `log__img_update` (
+  `entryid` int(11) NOT NULL,
+  `id` int(11) DEFAULT NULL,
+  `thing` char(11) DEFAULT NULL,
+  `oldpreview` tinytext,
+  `oldfullsize` tinytext,
+  `newpreview` tinytext,
+  `newfullsize` tinytext
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 CREATE TABLE `log__post_lock` (
   `entryid` int(11) NOT NULL,
   `type` enum('request','reservation') NOT NULL,
@@ -228,6 +238,9 @@ ALTER TABLE `log__episodes`
 ALTER TABLE `log__episode_modify`
   ADD PRIMARY KEY (`entryid`);
 
+ALTER TABLE `log__img_update`
+  ADD PRIMARY KEY (`entryid`);
+
 ALTER TABLE `log__post_lock`
   ADD PRIMARY KEY (`entryid`);
 
@@ -290,6 +303,8 @@ ALTER TABLE `log__color_modify`
 ALTER TABLE `log__episodes`
   MODIFY `entryid` int(11) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `log__episode_modify`
+  MODIFY `entryid` int(11) NOT NULL AUTO_INCREMENT;
+ALTER TABLE `log__img_update`
   MODIFY `entryid` int(11) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `log__post_lock`
   MODIFY `entryid` int(11) NOT NULL AUTO_INCREMENT;

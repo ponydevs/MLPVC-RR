@@ -123,6 +123,15 @@
 					'fullsize' => $Image->fullsize,
 				))) respond(ERR_DB_FAIL);
 
+				LogAction('img_update',array(
+					'id' => $Post['id'],
+					'thing' => $thing,
+					'oldpreview' => $Post['preview'],
+					'oldfullsize' => $Post['fullsize'],
+					'newpreview' => $Image->preview,
+					'newfullsize' => $Image->fullsize,
+				));
+
 				respond(array('preview' => $Image->preview));
 			}
 

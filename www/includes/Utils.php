@@ -52,6 +52,7 @@
 		'post_lock' => 'Post approved',
 		'color_modify' => 'Major appearance update',
 		'req_delete' => 'Request deleted',
+		'img_update' => 'Post image updated',
 	);
 	function LogAction($type,$data = null){
 		global $Database, $signedIn, $currentUser;
@@ -177,6 +178,19 @@
 
 					$details[] = array('Approved', $data['lock']);
 				}
+			break;
+			case "img_update":
+				$Post = $Database->where('id', $data['id'])->getOne("{$data['thing']}s");
+				if (empty($Post))
+					$details[] = array('Notice', 'The post has been deleted, some details are unavailable');
+				$details[] = array('Post ID',$data['id']);
+				$details[] = array('Type',$data['thing']);
+				if (!empty($Post)){
+					$IDstr = "S{$Post['season']}E{$Post['episode']}#{$data['thing']}-{$data['id']}";
+					$details[] = array('Link',"<a href='/episode/$IDstr'>$IDstr</a>");
+				}
+				$details[] = array('Old',"<a href='{$data['oldfullsize']}' target='_blank'>Full size</a><div><img src='{$data['oldpreview']}'></div>");
+				$details[] = array('New',"<a href='{$data['newfullsize']}' target='_blank'>Full size</a><div><img src='{$data['newpreview']}'></div>");
 			break;
 			default:
 				$details[] = array('Could not process details','No data processor defined for this entry type');

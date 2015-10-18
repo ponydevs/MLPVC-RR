@@ -92,5 +92,13 @@
 		i { font-size: .8em }
 	}
 
-	pre { margin: 0 }
+	pre {
+		margin: 0;
+		max-width: 400px;
+		overflow: auto;
+	}
+
+	img {
+		max-width: 200px;
+	}
 }
