@@ -1,16 +1,20 @@
 @import "browser_icons";
+@import "vars";
 
-#content > div:first-child {
-	display: none;
+#content {
+	> div:first-child {
+		display: none;
 
-	//noinspection CssOptimizeSimilarProperties
-	@include if-browser-has-icon {
-		display: block;
-		width: 128px;
-		height: 128px;
-		background-repeat: no-repeat;
-		background-position: center;
-		margin: 0 auto;
+		//noinspection CssOptimizeSimilarProperties
+		@include if-browser-has-icon {
+			display: block;
+			width: 128px;
+			height: 128px;
+			background-repeat: no-repeat;
+			background-position: center;
+			margin: 0 auto;
+		}
+		@include browser-backgrounds();
 	}
-	@include browser-backgrounds();
+	> section { @extend %section }
 }

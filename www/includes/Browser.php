@@ -72,9 +72,6 @@ class Browser {
 	const BROWSER_AMAYA = 'Amaya'; // http://www.w3.org/Amaya/
 	const BROWSER_LYNX = 'Lynx'; // http://en.wikipedia.org/wiki/Lynx
 	const BROWSER_SAFARI = 'Safari'; // http://apple.com
-	const BROWSER_IPHONE = 'iPhone'; // http://apple.com
-	const BROWSER_IPOD = 'iPod'; // http://apple.com
-	const BROWSER_IPAD = 'iPad'; // http://apple.com
 	const BROWSER_CHROME = 'Chrome'; // http://www.google.com/chrome
 	const BROWSER_ANDROID = 'Android'; // http://www.android.com/
 	const BROWSER_GOOGLEBOT = 'GoogleBot'; // http://en.wikipedia.org/wiki/Googlebot
@@ -101,9 +98,7 @@ class Browser {
 	const PLATFORM_LINUX = 'Linux';
 	const PLATFORM_OS2 = 'OS/2';
 	const PLATFORM_BEOS = 'BeOS';
-	const PLATFORM_IPHONE = 'iPhone';
-	const PLATFORM_IPOD = 'iPod';
-	const PLATFORM_IPAD = 'iPad';
+	const PLATFORM_IOS = 'iOS';
 	const PLATFORM_BLACKBERRY = 'BlackBerry';
 	const PLATFORM_NOKIA = 'Nokia';
 	const PLATFORM_FREEBSD = 'FreeBSD';
@@ -119,7 +114,8 @@ class Browser {
 		$this->reset();
 		if ($userAgent != ""){
 			$this->setUserAgent($userAgent);
-		} else {
+		}
+		else {
 			$this->determine();
 		}
 	}
@@ -386,9 +382,7 @@ class Browser {
 
 			// common mobile
 			$this->checkBrowserAndroid() ||
-			$this->checkBrowseriPad() ||
-			$this->checkBrowseriPod() ||
-			$this->checkBrowseriPhone() ||
+			$this->checkBrowserAppleMobile() ||
 			$this->checkBrowserBlackBerry() ||
 			$this->checkBrowserNokia() ||
 
@@ -535,7 +529,8 @@ class Browser {
 
 				return true;
 			}
-		} else if (stripos($this->_agent, 'W3C_Validator') !== false){
+		}
+		else if (stripos($this->_agent, 'W3C_Validator') !== false){
 			// Some of the Validator versions do not delineate w/ a slash - add it back in
 			$ua = str_replace("W3C_Validator ", "W3C_Validator/", $this->_agent);
 			$aresult = explode('/', stristr($ua, 'W3C_Validator'));
@@ -546,7 +541,8 @@ class Browser {
 
 				return true;
 			}
-		} else if (stripos($this->_agent, 'W3C-mobileOK') !== false){
+		}
+		else if (stripos($this->_agent, 'W3C-mobileOK') !== false){
 			$this->_browser_name = self::BROWSER_W3CVALIDATOR;
 			$this->setMobile(true);
 
@@ -644,7 +640,8 @@ class Browser {
 
 				if (stripos($this->_agent, 'mspie') !== false){
 					$this->setVersion($aresult[1]);
-				} else {
+				}
+				else {
 					$aversion = explode('/', $this->_agent);
 					if (isset($aversion[1])){
 						$this->setVersion($aversion[1]);
@@ -671,7 +668,8 @@ class Browser {
 					$aversion = explode(' ', $aresult[1]);
 					$this->setVersion($aversion[0]);
 				}
-			} else {
+			}
+			else {
 				$aversion = explode(' ', stristr($resultant, 'opera mini'));
 				if (isset($aversion[1])){
 					$this->setVersion($aversion[1]);
@@ -681,17 +679,20 @@ class Browser {
 			$this->setMobile(true);
 
 			return true;
-		} else if (stripos($this->_agent, 'opera') !== false){
+		}
+		else if (stripos($this->_agent, 'opera') !== false){
 			$resultant = stristr($this->_agent, 'opera');
 			if (preg_match('/Version\/(1*.*)$/', $resultant, $matches)){
 				$this->setVersion($matches[1]);
-			} else if (preg_match('/\//', $resultant)){
+			}
+			else if (preg_match('/\//', $resultant)){
 				$aresult = explode('/', str_replace("(", " ", $resultant));
 				if (isset($aresult[1])){
 					$aversion = explode(' ', $aresult[1]);
 					$this->setVersion($aversion[0]);
 				}
-			} else {
+			}
+			else {
 				$aversion = explode(' ', stristr($resultant, 'opera'));
 				$this->setVersion(isset($aversion[1]) ? $aversion[1] : "");
 			}
@@ -701,7 +702,8 @@ class Browser {
 			$this->_browser_name = self::BROWSER_OPERA;
 
 			return true;
-		} else if (stripos($this->_agent, 'OPR') !== false){
+		}
+		else if (stripos($this->_agent, 'OPR') !== false){
 			$resultant = stristr($this->_agent, 'OPR');
 			if (preg_match('/\//', $resultant)){
 				$aresult = explode('/', str_replace("(", " ", $resultant));
@@ -736,7 +738,8 @@ class Browser {
 				if (stripos($this->_agent, 'Android') !== false){
 					if (stripos($this->_agent, 'Mobile') !== false){
 						$this->setMobile(true);
-					} else {
+					}
+					else {
 						$this->setTablet(true);
 					}
 				}
@@ -906,7 +909,8 @@ class Browser {
 			$this->setBrowser(self::BROWSER_NETSCAPE_NAVIGATOR);
 
 			return true;
-		} else if (stripos($this->_agent, 'Firefox') === false && preg_match('/Netscape6?\/([^ ]*)/i', $this->_agent, $matches)){
+		}
+		else if (stripos($this->_agent, 'Firefox') === false && preg_match('/Netscape6?\/([^ ]*)/i', $this->_agent, $matches)){
 			$this->setVersion($matches[1]);
 			$this->setBrowser(self::BROWSER_NETSCAPE_NAVIGATOR);
 
@@ -955,7 +959,8 @@ class Browser {
 			$this->setVersion($matches[2]);
 			if (stripos($this->_agent, 'Series60') !== false || strpos($this->_agent, 'S60') !== false){
 				$this->setBrowser(self::BROWSER_NOKIA_S60);
-			} else {
+			}
+			else {
 				$this->setBrowser(self::BROWSER_NOKIA);
 			}
 			$this->setMobile(true);
@@ -979,13 +984,15 @@ class Browser {
 				if (stripos($this->_agent, 'Android') !== false){
 					if (stripos($this->_agent, 'Mobile') !== false){
 						$this->setMobile(true);
-					} else {
+					}
+					else {
 						$this->setTablet(true);
 					}
 				}
 
 				return true;
-			} else if (preg_match("/Firefox$/i", $this->_agent, $matches)){
+			}
+			else if (preg_match("/Firefox$/i", $this->_agent, $matches)){
 				$this->setVersion("");
 				$this->setBrowser(self::BROWSER_FIREFOX);
 
@@ -1027,13 +1034,15 @@ class Browser {
 			$this->setBrowser(self::BROWSER_MOZILLA);
 
 			return true;
-		} else if (stripos($this->_agent, 'mozilla') !== false && preg_match('/rv:[0-9]\.[0-9]/i', $this->_agent) && stripos($this->_agent, 'netscape') === false){
+		}
+		else if (stripos($this->_agent, 'mozilla') !== false && preg_match('/rv:[0-9]\.[0-9]/i', $this->_agent) && stripos($this->_agent, 'netscape') === false){
 			$aversion = explode('', stristr($this->_agent, 'rv:'));
 			$this->setVersion(str_replace('rv:', '', $aversion[0]));
 			$this->setBrowser(self::BROWSER_MOZILLA);
 
 			return true;
-		} else if (stripos($this->_agent, 'mozilla') !== false && preg_match('/mozilla\/([^ ]*)/i', $this->_agent, $matches) && stripos($this->_agent, 'netscape') === false){
+		}
+		else if (stripos($this->_agent, 'mozilla') !== false && preg_match('/mozilla\/([^ ]*)/i', $this->_agent, $matches) && stripos($this->_agent, 'netscape') === false){
 			$this->setVersion($matches[1]);
 			$this->setBrowser(self::BROWSER_MOZILLA);
 
@@ -1093,7 +1102,8 @@ class Browser {
 			if (isset($aresult[1])){
 				$aversion = explode(' ', $aresult[1]);
 				$this->setVersion($aversion[0]);
-			} else {
+			}
+			else {
 				$this->setVersion(self::VERSION_UNKNOWN);
 			}
 			$this->setBrowser(self::BROWSER_SAFARI);
@@ -1170,52 +1180,17 @@ class Browser {
 	 * Determine if the browser is iPhone or not (last updated 1.7)
 	 * @return boolean True if the browser is iPhone otherwise false
 	 */
-	protected function checkBrowseriPhone(){
-		if (stripos($this->_agent, 'iPhone') !== false){
-			$this->setVersion(self::VERSION_UNKNOWN);
-			$this->setBrowser(self::BROWSER_IPHONE);
-			$this->getSafariVersionOnIos();
-			$this->getChromeVersionOnIos();
-			$this->checkForFacebookIos();
-			$this->setMobile(true);
+	protected function checkBrowserAppleMobile(){
+		$version = array();
+		if (preg_match('~CriOS/([\d\.]+)~', $this->_agent, $version)){
+			$this->setVersion($version[1]);
+			$this->setBrowser(self::BROWSER_CHROME);
 
 			return true;
 		}
-
-		return false;
-	}
-
-	/**
-	 * Determine if the browser is iPad or not (last updated 1.7)
-	 * @return boolean True if the browser is iPad otherwise false
-	 */
-	protected function checkBrowseriPad(){
-		if (stripos($this->_agent, 'iPad') !== false){
-			$this->setVersion(self::VERSION_UNKNOWN);
-			$this->setBrowser(self::BROWSER_IPAD);
-			$this->getSafariVersionOnIos();
-			$this->getChromeVersionOnIos();
-			$this->checkForFacebookIos();
-			$this->setTablet(true);
-
-			return true;
-		}
-
-		return false;
-	}
-
-	/**
-	 * Determine if the browser is iPod or not (last updated 1.7)
-	 * @return boolean True if the browser is iPod otherwise false
-	 */
-	protected function checkBrowseriPod(){
-		if (stripos($this->_agent, 'iPod') !== false){
-			$this->setVersion(self::VERSION_UNKNOWN);
-			$this->setBrowser(self::BROWSER_IPOD);
-			$this->getSafariVersionOnIos();
-			$this->getChromeVersionOnIos();
-			$this->checkForFacebookIos();
-			$this->setMobile(true);
+		else if (preg_match('~Safari/([\d\.]+)~', $this->_agent, $version)){
+			$this->setVersion($version[1]);
+			$this->setBrowser(self::BROWSER_SAFARI);
 
 			return true;
 		}
@@ -1233,12 +1208,14 @@ class Browser {
 			if (isset($aresult[1])){
 				$aversion = explode(' ', $aresult[1]);
 				$this->setVersion($aversion[0]);
-			} else {
+			}
+			else {
 				$this->setVersion(self::VERSION_UNKNOWN);
 			}
 			if (stripos($this->_agent, 'Mobile') !== false){
 				$this->setMobile(true);
-			} else {
+			}
+			else {
 				$this->setTablet(true);
 			}
 			$this->setBrowser(self::BROWSER_ANDROID);
@@ -1256,19 +1233,21 @@ class Browser {
 	 * @return boolean True if the browser is Edge otherwise false
 	 */
 	protected function checkBrowserEdge(){
-		 if (stripos($this->_agent, 'Edge') !== false) {
+		if (stripos($this->_agent, 'Edge') !== false){
 			$aresult = explode('/', stristr($this->_agent, 'Edge'));
-			if (isset($aresult[1])) {
+			if (isset($aresult[1])){
 				$aversion = explode(' ', $aresult[1]);
 				$this->setVersion($aversion[0]);
 				$this->setBrowser(self::BROWSER_EDGE);
-				if (stripos($this->_agent, 'Android') !== false) {
-					if (stripos($this->_agent, 'Mobile') !== false) {
+				if (stripos($this->_agent, 'Android') !== false){
+					if (stripos($this->_agent, 'Mobile') !== false){
 						$this->setMobile(true);
-					} else {
+					}
+					else {
 						$this->setTablet(true);
 					}
 				}
+
 				return true;
 			}
 		}
@@ -1283,8 +1262,9 @@ class Browser {
 	protected function checkBrowserVivaldi(){
 		if (stripos($this->_agent, 'Vivaldi') !== false){
 			$_match = array();
-			if (preg_match('/Vivaldi\/([\d.]+)/',$this->_agent, $_match))
+			if (preg_match('/Vivaldi\/([\d.]+)/', $this->_agent, $_match)){
 				$this->setVersion($_match[1]);
+			}
 			else $this->setVersion(self::VERSION_UNKNOWN);
 			$this->setBrowser(self::BROWSER_VIVALDI);
 
@@ -1298,41 +1278,52 @@ class Browser {
 	 * Determine the user's platform (last updated 1.7)
 	 */
 	protected function checkPlatform(){
-		if (stripos($this->_agent, 'windows') !== false){
-			$this->_platform = self::PLATFORM_WINDOWS;
-		} else if (strpos('Windows Phone', $this->_agent)){
+		if (strpos('Windows Phone', $this->_agent)){
 			$this->_platform = self::PLATFORM_WINPHONE;
-		} else if (stripos($this->_agent, 'iPad') !== false){
-			$this->_platform = self::PLATFORM_IPAD;
-		} else if (stripos($this->_agent, 'iPod') !== false){
-			$this->_platform = self::PLATFORM_IPOD;
-		} else if (stripos($this->_agent, 'iPhone') !== false){
-			$this->_platform = self::PLATFORM_IPHONE;
-		} elseif (stripos($this->_agent, 'mac') !== false) {
+		}
+		else if (stripos($this->_agent, 'windows') !== false){
+			$this->_platform = self::PLATFORM_WINDOWS;
+		}
+		else if (preg_match('/(iPod|iPad|iPhone)/', $this->_agent)){
+			$this->_platform = self::PLATFORM_IOS;
+		}
+		else if (stripos($this->_agent, 'mac') !== false){
 			$this->_platform = self::PLATFORM_APPLE;
-		} elseif (stripos($this->_agent, 'android') !== false) {
+		}
+		else if (stripos($this->_agent, 'android') !== false){
 			$this->_platform = self::PLATFORM_ANDROID;
-		} elseif (stripos($this->_agent, 'linux') !== false) {
+		}
+		else if (stripos($this->_agent, 'linux') !== false){
 			$this->_platform = self::PLATFORM_LINUX;
-		} else if (stripos($this->_agent, 'Nokia') !== false){
+		}
+		else if (stripos($this->_agent, 'Nokia') !== false){
 			$this->_platform = self::PLATFORM_NOKIA;
-		} else if (stripos($this->_agent, 'BlackBerry') !== false){
+		}
+		else if (stripos($this->_agent, 'BlackBerry') !== false){
 			$this->_platform = self::PLATFORM_BLACKBERRY;
-		} elseif (stripos($this->_agent, 'FreeBSD') !== false) {
+		}
+		else if (stripos($this->_agent, 'FreeBSD') !== false){
 			$this->_platform = self::PLATFORM_FREEBSD;
-		} elseif (stripos($this->_agent, 'OpenBSD') !== false) {
+		}
+		else if (stripos($this->_agent, 'OpenBSD') !== false){
 			$this->_platform = self::PLATFORM_OPENBSD;
-		} elseif (stripos($this->_agent, 'NetBSD') !== false) {
+		}
+		else if (stripos($this->_agent, 'NetBSD') !== false){
 			$this->_platform = self::PLATFORM_NETBSD;
-		} elseif (stripos($this->_agent, 'OpenSolaris') !== false) {
+		}
+		else if (stripos($this->_agent, 'OpenSolaris') !== false){
 			$this->_platform = self::PLATFORM_OPENSOLARIS;
-		} elseif (stripos($this->_agent, 'SunOS') !== false) {
+		}
+		else if (stripos($this->_agent, 'SunOS') !== false){
 			$this->_platform = self::PLATFORM_SUNOS;
-		} elseif (stripos($this->_agent, 'OS\/2') !== false) {
+		}
+		else if (stripos($this->_agent, 'OS\/2') !== false){
 			$this->_platform = self::PLATFORM_OS2;
-		} elseif (stripos($this->_agent, 'BeOS') !== false) {
+		}
+		else if (stripos($this->_agent, 'BeOS') !== false){
 			$this->_platform = self::PLATFORM_BEOS;
-		} elseif (stripos($this->_agent, 'win') !== false) {
+		}
+		else if (stripos($this->_agent, 'win') !== false){
 			$this->_platform = self::PLATFORM_WINDOWS;
 		}
 	}
