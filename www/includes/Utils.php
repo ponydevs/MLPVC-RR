@@ -1182,7 +1182,7 @@ HTML;
 			}
 		}
 
-		if (empty($R['lock']) && empty($Buttons) && (PERM('inspector') || (empty($R['reserved_by'] && $isRequest && $signedIn && $R['requested_by'] === $currentUser['id']))))
+		if (empty($R['lock']) && empty($Buttons) && (PERM('inspector') || (empty($R['reserved_by']) && $isRequest && $signedIn && $R['requested_by'] === $currentUser['id'])))
 			$Buttons[] = array('trash red delete','Delete', !$CanEdit);
 		if ($CanEdit)
 			array_splice($Buttons,0,0,array(array('pencil darkblue edit','Edit')));
@@ -1579,6 +1579,7 @@ HTML;
 		$Body = '';
 		$PathStart = '/episode/';
 		$displayed = false;
+		$LatestEp = get_latest_episode();
 		foreach ($Episodes as $i => $ep) {
 			$adminControls = $SeasonEpisode = $DataID = '';
 			$isMovie = $ep['season'] === 0;
@@ -1605,7 +1606,7 @@ HTML;
 			}
 
 			$star = '';
-			if (!$displayed && !$isMovie && $ep['displayed']){
+			if ($ep['season'] === $LatestEp['season'] && $ep['episode'] === $LatestEp['episode']){
 				$displayed = true;
 				$star = '<span class="typcn typcn-eye" title="Curently visible on the homepage"></span> ';
 			}
