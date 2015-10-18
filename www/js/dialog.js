@@ -202,8 +202,10 @@
 				$dialogHeader.attr('class',params.color+'-bg');
 
 			if (!appendingToRequest && params.buttons) $.each(params.buttons, function (name, obj) {
-				var $button = $.mk('input').attr('type','button');
-				$button.attr('class',params.color+'-bg');
+				var $button = $.mk('input').attr({
+					'type': 'button',
+					'class': params.color+'-bg'
+				});
 				if (typeof obj === 'function')
 					obj = {action: obj};
 				else if (obj.form){

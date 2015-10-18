@@ -271,7 +271,14 @@
 							if (!$canceling)
 								respond('Reservation deleted', 1);
 						}
-						if (!$canceling) $update = array('deviation_id' => null);
+						if (!$canceling){
+							if (isset($_REQUEST['unbind']) && $type === 'request'){
+								if (!PERM('inspector') && !$usersMatch)
+									respond('You cannot remove the reservation from this post');
+							}
+							else $update = array();
+							$update['deviation_id'] = null;
+						}
 					}
 					else if ($finishing){
 						if (!$usersMatch && !PERM('inspector'))

@@ -162,6 +162,8 @@ DocReady.push(function Episode(){
 						var data = this;
 						if (!data.status) return $.Dialog.fail(false, data.message);
 
+						$.Dialog.success(false, 'Reservation has been marked as finished');
+
 						updateSection.call({callback:function(){
 							if (typeof data.message === 'string')
 								$.Dialog.success(false,data.message,true);

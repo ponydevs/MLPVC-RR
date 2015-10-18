@@ -983,8 +983,9 @@ HTML;
 
 		global $ROLES;
 
-		if (in_array($role,$ROLES)) $targetRole = $role;
-		else trigger_error('Invalid role: '.$role);
+		if (!in_array($role,$ROLES))
+			trigger_error('Invalid role: '.$role, E_USER_ERROR);
+		$targetRole = $role;
 
 		return array_search($checkRole,$ROLES) >= array_search($targetRole,$ROLES);
 	}
