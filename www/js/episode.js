@@ -246,8 +246,10 @@ DocReady.push(function Episode(){
 				$.post('/reserving/request/'+id+'?delete',$.mkAjaxHandler(function(){
 					if (!this.status) return $.Dialog.fail(false, this.message);
 
-					$this.closest('li').remove();
 					$.Dialog.close();
+					$this.closest('li').fadeOut(1000,function(){
+						$(this).remove();
+					});
 				}));
 			});
 		});
