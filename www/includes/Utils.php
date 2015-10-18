@@ -1196,7 +1196,7 @@ HTML;
 
 		$avatar = $format == FULL ? "<img src='{$User['avatar_url']}' class='avatar'> " : '';
 
-		return "<a href='/u/$Username' class='da-userlink'>$avatar<span class='name'>$Username</span></a>";
+		return "<a href='/@$Username' class='da-userlink'>$avatar<span class='name'>$Username</span></a>";
 	}
 
 	// Reserved by section creator \\
@@ -1937,7 +1937,7 @@ ORDER BY `count` DESC
 		);
 
 		if (isset($reservations['count']) && $reservations['count'] >= 4)
-			respond("You've already reserved {$reservations['count']} images, and you can't have more than 4 pending reservations at a time. You can review your reservations on your <a href='/u/'>profile page</a>, finish at least one of them before trying to reserve another image.");
+			respond("You've already reserved {$reservations['count']} images, and you can't have more than 4 pending reservations at a time. You can review your reservations on your <a href='/user'>profile page</a>, finish at least one of them before trying to reserve another image.");
 	}
 
 	// Render episode video player \\
@@ -2061,7 +2061,7 @@ ORDER BY `count` DESC
 
 		}
 		if ($GLOBALS['signedIn'])
-			$NavItems['u'] = array("/u/{$GLOBALS['currentUser']['name']}",'Account');
+			$NavItems['u'] = array("/@{$GLOBALS['currentUser']['name']}",'Account');
 		if (PERM('inspector') || $do === 'user'){
 			$NavItems['users'] = array('/users', 'Users', PERM('inspector'));
 

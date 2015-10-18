@@ -773,7 +773,7 @@
 			else {
 				$sameUser = $signedIn && $User['id'] === $currentUser['id'];
 				$canEdit = !$sameUser && PERM('inspector') && PERM($User['role']);
-				$pagePath = "/u/{$User['name']}";
+				$pagePath = "/@{$User['name']}";
 				fix_path($pagePath);
 			}
 			if ($canEdit)
