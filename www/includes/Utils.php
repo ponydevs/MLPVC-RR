@@ -2023,31 +2023,34 @@ ORDER BY `count` DESC
 			'latest' => array('/','Latest episode'),
 			'eps' => array('/episodes','Episodes'),
 		);
+		if ($do === 'episodes'){
+			global $Episodes, $Page;
+			if (isset($Episodes))
+				$NavItems['eps'][1] .= " - Page $Page";
+		}
 		if ($do === 'episode' && !empty($GLOBALS['CurrentEpisode'])){
 			if (!empty($GLOBALS['Latest']))
 				$NavItems['latest'][0] = $_SERVER['REQUEST_URI'];
 			else $NavItems['eps']['subitem'] = array($_SERVER['REQUEST_URI'], $GLOBALS['title']);
 		}
-		if (PERM('inspector')){
-			global $color, $Color;
-			$NavItems['colorguide'] = array("/{$color}guide", "$Color Guide");
-			if ($do === 'colorguide'){
-				global $Tags, $Changes, $Ponies, $Page, $Appearance;
-				if (!empty($Appearance))
-					$NavItems['colorguide']['subitem'] = array($_SERVER['REQUEST_URI'], $Appearance['label']);
-				else if (isset($Ponies))
-					$NavItems['colorguide'][1] .= " - Page $Page";
-				else {
-					if (isset($Tags)) $pagePrefix = 'Tags';
-					else if (isset($Changes)) $pagePrefix = 'Color Changes';
+		global $color, $Color;
+		$NavItems['colorguide'] = array("/{$color}guide", "$Color Guide");
+		if ($do === 'colorguide'){
+			global $Tags, $Changes, $Ponies, $Page, $Appearance;
+			if (!empty($Appearance))
+				$NavItems['colorguide']['subitem'] = array($_SERVER['REQUEST_URI'], $Appearance['label']);
+			else if (isset($Ponies))
+				$NavItems['colorguide'][1] .= " - Page $Page";
+			else {
+				if (isset($Tags)) $pagePrefix = 'Tags';
+				else if (isset($Changes)) $pagePrefix = 'Color Changes';
 
-					$NavItems['colorguide']['subitem'] = array(
-						$_SERVER['REQUEST_URI'],
-						(isset($pagePrefix) ? "$pagePrefix - ":'')."Page $Page"
-					);
-				}
-
+				$NavItems['colorguide']['subitem'] = array(
+					$_SERVER['REQUEST_URI'],
+					(isset($pagePrefix) ? "$pagePrefix - ":'')."Page $Page"
+				);
 			}
+
 		}
 		if ($GLOBALS['signedIn'])
 			$NavItems['u'] = array("/u/{$GLOBALS['currentUser']['name']}",'Account');
