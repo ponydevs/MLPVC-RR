@@ -95,7 +95,7 @@
 				$target =  $Database->where('id',$data['target'])->getOne('users');
 
 				$details = array(
-					array('Target user',"<a href='/u/{$target['name']}'>{$target['name']}</a>"),
+					array('Target user', profile_link($target)),
 					array('Old group',$ROLES_ASSOC[$data['oldrole']]),
 					array('New group',$ROLES_ASSOC[$data['newrole']])
 				);
@@ -211,7 +211,7 @@
 				$inituser = $Database->where('id',$item['initiator'])->getOne('users');
 				if (empty($inituser))
 					$inituser = 'Deleted user';
-				else $inituser = "<a href='/u/{$inituser['name']}'>{$inituser['name']}</a>";
+				else $inituser = profile_link($inituser);
 
 				$ip = in_array($item['ip'], array('::1', '127.0.0.1')) ? "localhost" : $item['ip'];
 
@@ -1494,8 +1494,7 @@ HTML;
 		global $signedIn, $currentUser;
 		if ($signedIn){
 			$avatar = $currentUser['avatar_url'];
-			$un = $currentUser['name'];
-			$username = "<a href='/u/$un'>$un</a>";
+			$username = profile_link($currentUser);
 			$rolelabel = $currentUser['rolelabel'];
 			$Avatar = $sidebar ? '' : get_avatar_wrap($currentUser);
 		}

@@ -442,7 +442,7 @@ HTML;
 					$UserCache[$UserID] = get_user($UserID);
 				}
 				$User = $UserCache[$UserID];
-				$initiator = " by <a href='/u/{$User['name']}'>{$User['name']}</a>";
+				$initiator = " by ".profile_link($User);
 			}
 			if ($showAppearance){
 				global $CGDb, $color;
