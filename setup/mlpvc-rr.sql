@@ -181,6 +181,7 @@ CREATE TABLE `sessions` (
   `platform` tinytext NOT NULL,
   `browser_name` tinytext,
   `browser_ver` tinytext,
+  `user_agent` varchar(300) DEFAULT NULL,
   `token` varchar(40) NOT NULL,
   `access` varchar(50) NOT NULL,
   `refresh` varchar(40) NOT NULL,

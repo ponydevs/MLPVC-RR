@@ -7,6 +7,6 @@
 
     <section>
         <label>Your User Agent string</label>
-        <p><code><?=$_SERVER['HTTP_USER_AGENT']?></code></p>
+        <p><code><?=$browser['user_agent']?></code></p>
     </section>
 </div>

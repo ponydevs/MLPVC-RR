@@ -847,7 +847,9 @@ HTML;
 	function browser(){
 		require_once "includes/Browser.php";
 		$browser = new Browser();
-		$Return = array();
+		$Return = array(
+			'user_agent' => $_SERVER['HTTP_USER_AGENT']
+		);
 		$name = $browser->getBrowser();
 		if ($name !== Browser::BROWSER_UNKNOWN){
 			$Return['browser_name'] = $name;
@@ -863,10 +865,9 @@ HTML;
 	}
 	function add_browser(&$AuthData){
 		$browser = browser();
-		if (!empty($browser))
-			foreach (array_keys($browser) as $v)
-				if (isset($browser[$v]))
-					$AuthData[$v] = $browser[$v];
+		foreach (array_keys($browser) as $v)
+			if (isset($browser[$v]))
+				$AuthData[$v] = $browser[$v];
 	}
 
 	/**
