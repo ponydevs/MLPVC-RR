@@ -788,7 +788,7 @@
 				$Sessions = $Database
 					->where('user',$User['id'])
 					->orderBy('lastvisit','DESC')
-					->get('sessions',null,'id,created,lastvisit,platform,browser_name,browser_ver');
+					->get('sessions',null,'id,created,lastvisit,platform,browser_name,browser_ver,user_agent');
 			}
 
 			$settings = array(
