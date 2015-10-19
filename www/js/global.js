@@ -78,6 +78,7 @@
 	$.mkAjaxHandler = function(f){
 		return function(data){
 			if (typeof data !== 'object'){
+				//noinspection SSBasedInspection
 				console.log(data);
 				$w.trigger('ajaxerror');
 				return;
@@ -330,8 +331,13 @@ $(function(){
 		if (e.which > 2) return true;
 
 		var link = this;
-		if (link.hostname !== location.hostname || !REWRITE_REGEX.test(link.pathname))
-			return true;
+		if (
+			link.hostname !== location.hostname
+			|| (
+				!REWRITE_REGEX.test(link.pathname)
+				&& !/^\/@([A-Za-z\-\d]{1,20})$/.test(link.pathname)
+			)
+		) return true;
 
 		if (link.pathname === location.pathname && link.search === location.search)
 			return true;
