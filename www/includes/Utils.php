@@ -133,7 +133,7 @@
 				}
 			break;
 			case "userfetch":
-				$details[] = array('User', profile_link(get_user($data['target'])));
+				$details[] = array('User', profile_link(get_user($data['userid'])));
 			break;
 			case "banish":
 			case "un-banish":
