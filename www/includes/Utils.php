@@ -1717,14 +1717,17 @@ HTML;
 		$browserClass = browser_name_to_class_name($Session['browser_name']);
 		$browserTitle = "{$Session['browser_name']} {$Session['browser_ver']}";
 		$platform = !empty($Session['platform']) ? "<span class='platform'>on <strong>{$Session['platform']}</strong></span>" : '';
+		$userAgent = '';
+		if (PERM('developer') && !empty($Session['user_agent']))
+			$userAgent = "<button class='darkblue typcn typcn-info-large useragent' data-agent='".apos_encode($Session['user_agent'])."'>View User Agent</button>";
 		$firstuse = timetag($Session['created']);
 		$lastuse = !$current ? 'Last used: '.timetag($Session['lastvisit']) : '<em>Current session</em>';
 		$signoutText = 'Sign out' . (!$current ? ' from this session' : '');
 		$remover = "<button class='typcn typcn-arrow-back remove".(!$current?' orange':'')."' title='$signoutText' data-sid='{$Session['id']}'></button>";
 		echo <<<HTML
-<li class="browser-$browserClass">
+<li class="browser-$browserClass" id="session-{$Session['id']}">
 	<span class="browser">$remover $browserTitle</span>
-	$platform
+	$platform$userAgent
 	<span class="created">Created: $firstuse</span>
 	<span class="used">$lastuse</span>
 </li>

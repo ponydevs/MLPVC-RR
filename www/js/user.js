@@ -1,9 +1,10 @@
 DocReady.push(function User(){
 	var $signoutBtn = $('#signout'),
 		$name = $content.children('h1'),
+		$sessionList = $('.session-list'),
 		name = $name.text().trim(),
 		sameUser = name === $sidebar.children('.welcome').find('.un').text().trim();
-	$('.session-list').find('button.remove').off('click').on('click',function(e){
+	$sessionList.find('button.remove').off('click').on('click',function(e){
 		e.preventDefault();
 
 		var title = 'Removing session',
@@ -21,7 +22,7 @@ DocReady.push(function User(){
 				return $signoutBtn.trigger('click');
 		}
 
-		var SessionID = parseInt($btn.attr('data-sid'));
+		var SessionID = $li.attr('id').replace(/\D/g,'');
 
 		if (typeof SessionID === 'undefined' || isNaN(SessionID) || !isFinite(SessionID))
 			return $.Dialog.fail(title,'Could not locate Session ID, please reload the page and try again.');
@@ -46,6 +47,12 @@ DocReady.push(function User(){
 				}
 			}));
 		});
+	});
+	$sessionList.find('button.useragent').on('click',function(e){
+		e.preventDefault();
+
+		var $this = $(this);
+		$.Dialog.info('User Agent string for session #'+$this.parents('li').attr('id').replace(/\D/g,''), '<code>'+$this.data('agent')+'</code>');
 	});
 	$('#signout-everywhere').on('click',function(){
 		var title = 'Sign out from ALL sessions';
