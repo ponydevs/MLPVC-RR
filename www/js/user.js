@@ -3,7 +3,7 @@ DocReady.push(function User(){
 		$name = $content.children('h1'),
 		name = $name.text().trim(),
 		sameUser = name === $sidebar.children('.welcome').find('.un').text().trim();
-	$('.session-list').find('button.remove').on('click',function(e){
+	$('.session-list').find('button.remove').off('click').on('click',function(e){
 		e.preventDefault();
 
 		var title = 'Removing session',
