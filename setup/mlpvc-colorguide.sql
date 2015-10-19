@@ -217,7 +217,8 @@ INSERT INTO `colorgroups` (`groupid`, `ponyid`, `label`, `order`) VALUES
 (242, 40, 'Iris', 2),
 (243, 40, 'Cutie Mark', 3),
 (244, 24, 'Cutie Mark', 3),
-(245, 25, 'Cutie Mark', 3);
+(245, 25, 'Cutie Mark', 3),
+(246, 25, 'Magic', 4);
 
 CREATE TABLE `colors` (
   `colorid` int(11) NOT NULL,
@@ -976,7 +977,8 @@ INSERT INTO `colors` (`colorid`, `groupid`, `label`, `hex`, `order`) VALUES
 (953, 245, 'Shield Fill 2: SB Mane Fill', '#F6B8D2', 2),
 (954, 245, 'Shield Fill 3: Sc Mane Fill', '#BF5D93', 3),
 (955, 245, 'Star Fill', '#A02699', 4),
-(956, 245, 'Eight Note Fill', '#FD41F8', 5);
+(956, 245, 'Eight Note Fill', '#FD41F8', 5),
+(957, 246, 'Aura', '#C4FBB0', 0);
 
 CREATE TABLE `ponies` (
   `id` int(11) NOT NULL,
@@ -1316,9 +1318,9 @@ ALTER TABLE `tags`
 
 
 ALTER TABLE `colorgroups`
-  MODIFY `groupid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=246;
+  MODIFY `groupid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=247;
 ALTER TABLE `colors`
-  MODIFY `colorid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=957;
+  MODIFY `colorid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=958;
 ALTER TABLE `ponies`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=41;
 ALTER TABLE `tags`
