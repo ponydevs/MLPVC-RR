@@ -338,7 +338,7 @@ HTML;
 	function time_ago($timestamp){
 		global $TIME_DATA;
 
-		$delta = time() - $timestamp;
+		$delta = NOW - $timestamp;
 		$past = $delta > 0;
 		if (!$past) $delta *= -1;
 
@@ -371,7 +371,7 @@ HTML;
 	define('FORMAT_FULL','jS M Y, g:i:s a T');
 	function format_timestamp($time, $format = 'c'){
 		if ($format === FORMAT_READABLE)
-			$ts = time_ago($time).($format !== 'c' ? ' ('.date('T').')' : '');
+			$ts = time_ago($time).($format !== 'c' ? ' ('.date('T', NOW).')' : '');
 		else $ts = gmdate($format,$time);
 		return $ts;
 	}
@@ -774,7 +774,7 @@ HTML;
 		$AuthData = array(
 			'access' => $json['access_token'],
 			'refresh' => $json['refresh_token'],
-			'expires' => date('c',time()+intval($json['expires_in']))
+			'expires' => date('c',NOW+intval($json['expires_in']))
 		);
 
 		$cookie = openssl_random_pseudo_bytes(64);
@@ -907,13 +907,13 @@ HTML;
 		global $Database, $PROVIDER_FULLSIZE_KEY, $CACHE_BAILOUT;
 
 		$Deviation = $Database->where('id',$ID)->getOne('deviation_cache');
-		if (!$CACHE_BAILOUT && empty($Deviation) || (!empty($Deviation['updated_on']) && strtotime($Deviation['updated_on'])+ONE_HOUR < time())){
+		if (!$CACHE_BAILOUT && empty($Deviation) || (!empty($Deviation['updated_on']) && strtotime($Deviation['updated_on'])+ONE_HOUR < NOW)){
 			try {
 				$json = da_oembed($ID, $type);
 			}
 			catch (Exception $e){
 				if (!empty($Deviation))
-					$Database->where('id',$Deviation['id'])->update('deviation_cache', array('updated_on' => date('c',strtotime('+1 minute'))));
+					$Database->where('id',$Deviation['id'])->update('deviation_cache', array('updated_on' => date('c',strtotime('+1 minute', NOW))));
 
 				$ErrorMSG = "Saving local data for $ID@$type failed: ".$e->getMessage();
 				if (!PERM('developer')) trigger_error($ErrorMSG);
@@ -1558,8 +1558,8 @@ HTML;
 	 */
 	function add_episode_airing_data($Episode){
 		$airtime = strtotime($Episode['airs']);
-		$Episode['displayed'] = strtotime('-24 hours', $airtime) < time();
-		$Episode['aired'] = strtotime('+'.($Episode['season']===0?'2 hours':((!$Episode['twoparter']?30:60).' minutes')), $airtime) < time();
+		$Episode['displayed'] = strtotime('-24 hours', $airtime) < NOW;
+		$Episode['aired'] = strtotime('+'.($Episode['season']===0?'2 hours':((!$Episode['twoparter']?30:60).' minutes')), $airtime) < NOW;
 		return $Episode;
 	}
 
@@ -1616,7 +1616,6 @@ HTML;
 	 *
 	 * @return string
 	 */
-	define('NOW', time());
 	function get_eptable_tbody($Episodes = null){
 		if (!isset($Episodes)) $Episodes = get_episodes();
 
@@ -1871,7 +1870,7 @@ HTML;
 			$airs = date('c', $airtime);
 			$month = date('M', $airtime);
 			$day = date('j', $airtime);
-			$diff = timeDifference(time(), $airtime);
+			$diff = timeDifference(NOW, $airtime);
 
 			$time = 'in ';
 			if ($diff['time'] < $TIME_DATA['month']){

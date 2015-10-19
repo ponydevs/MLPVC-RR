@@ -3,7 +3,7 @@
 	// Anti-CSRF
 	$CSRF = !isset($_POST['CSRF_TOKEN']) || !Cookie::exists('CSRF_TOKEN') || $_POST['CSRF_TOKEN'] !== Cookie::get('CSRF_TOKEN');
 	if (RQMTHD !== 'POST' && $CSRF)
-		Cookie::set('CSRF_TOKEN',md5(time()+rand()),COOKIE_SESSION);
+		Cookie::set('CSRF_TOKEN',md5(NOW+rand()),COOKIE_SESSION);
 	define('CSRF_TOKEN',Cookie::get('CSRF_TOKEN'));
 
 	if (RQMTHD === 'GET' && isset($_GET['CSRF_TOKEN']))
@@ -21,11 +21,11 @@
 
 		if (!empty($currentUser)){
 			if ($currentUser['role'] !== 'ban'){
-				if (strtotime($currentUser['Session']['expires']) < time())
+				if (strtotime($currentUser['Session']['expires']) < NOW)
 					da_get_token($currentUser['Session']['refresh'],'refresh_token');
 
 				$signedIn = true;
-				$lastVisitTS = date('c');
+				$lastVisitTS = date('c', NOW);
 				if ($Database->where('id', $currentUser['Session']['id'])->update('sessions', array('lastvisit' => $lastVisitTS)))
 					$currentUser['Session']['lastvisit'] = $lastVisitTS;
 

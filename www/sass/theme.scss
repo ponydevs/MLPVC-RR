@@ -128,11 +128,16 @@
 			background: rgba(black, .8) !important;
 	}
 	body.sidebar-open {
-		#sidebar {
-			left: 0 !important;
+		&.april-fools {
+			#main { padding-right: calc(#{$SidebarWidth} + 8px) }
+			#sidebar {
+				left: initial !important;
+				right: 0 !important;
+			}
 		}
-		#main {
-			padding-left: calc(#{$SidebarWidth} + 8px);
+		&:not(.april-fools) {
+			#sidebar { left: 0 !important }
+			#main { padding-left: calc(#{$SidebarWidth} + 8px) }
 		}
 	}
 	body.loading {
@@ -164,6 +169,10 @@ body {
 	margin: 0;
 	padding-top: $HeaderHeight;
 	font-family: 'Arimo', sans-serif;
+
+	&.april-fools {
+		#content, #dialogBox, header, footer, #sidebar { transform: rotateZ(180deg) }
+	}
 }
 // Page layout - Header
 header {
@@ -293,7 +302,7 @@ header, #sidebar .mobile-nav {
 	z-index: 1;
 	width: 100%;
 	box-sizing: border-box;
-	transition: opacity .5s, padding-left .5s ease-in-out;
+	transition: opacity .5s, padding .5s ease-in-out;
 
 	&.locked { overflow: visible }
 	&.pls-wait {
@@ -333,7 +342,6 @@ header, #sidebar .mobile-nav {
 	position: fixed;
 	z-index: 2;
 	top: 50px;
-	left: -$SidebarWidth;
 	width: $SidebarWidth;
 	max-width: 100%;
 	box-sizing: border-box;
@@ -342,10 +350,16 @@ header, #sidebar .mobile-nav {
 	background: $Background;
 	padding: 10px;
 	text-align: center;
-	transition: left .5s ease-in-out;
+	transition: left .5s ease-in-out, right .5s ease-in-out;
 	overflow: auto;
 
 	body.sidebar-open & { left: 0 }
+	body:not(.april-fools) & {
+		left: -$SidebarWidth;
+	}
+	body.april-fools & {
+		right: -$SidebarWidth;
+	}
 
 	> section {
 		text-align: center;

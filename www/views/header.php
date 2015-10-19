@@ -17,7 +17,7 @@
 	<link rel="stylesheet" href="<?=$css?>">
 <?php } ?>
 </head>
-<body class="loading">
+<body class="loading<?=date('Y-m-d', NOW)==='2016-04-01'?' april-fools':''?>">
 
 	<header>
 		<nav><ul>

@@ -10,6 +10,9 @@
 	define('GITHUB_URL','https://github.com/ponydevs/MLPVC-RR');
 	define('SITE_TITLE', 'Vector Club Requests & Reservations');
 
+	// Time control
+	define('NOW', time());
+
 	// Imports \\
 	require 'includes/MysqliDbWrapper.php';
 	$Database = new MysqliDbWrapper('mlpvc-rr');
