@@ -354,7 +354,7 @@ header, #sidebar .mobile-nav {
 	overflow: auto;
 
 	body.sidebar-open & { left: 0 }
-	body:not(.april-fools) & {
+	body:not(.sidebar-open):not(.april-fools) & {
 		left: -$SidebarWidth;
 	}
 	body.april-fools & {
