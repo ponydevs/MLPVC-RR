@@ -216,7 +216,7 @@ DocReady.push(function Episode(){
 		$actions.filter('.check').off('click').on('click',function(e){
 			e.preventDefault();
 
-			$.Dialog.wait('Deviation acceptance status','Checking if deviation has been accepted into the group yet');
+			$.Dialog.wait('Deviation acceptance status','Checking');
 
 			$.post('/reserving/'+type+'/'+id+'?lock', $.mkAjaxHandler(function(){
 				if (!this.status) return $.Dialog.fail(false, this.message);

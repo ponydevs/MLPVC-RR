@@ -99,7 +99,7 @@ DocReady.push(function User(){
 			thing = IDArray[0],
 			id = IDArray[1];
 
-		$.Dialog.wait('Deviation acceptance status','Checking if deviation has been accepted into the group yet');
+		$.Dialog.wait('Deviation acceptance status','Checking');
 
 		$.post('/reserving/'+thing+'s/'+id+'?lock',$.mkAjaxHandler(function(){
 			if (!this.status) return $.Dialog.fail(false, this.message);
