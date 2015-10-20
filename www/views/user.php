@@ -106,6 +106,7 @@ HTML;
 				$url = "http://{$deviation['provider']}/{$deviation['id']}";
 				list($link,$page) = post_link_html($row);
 				$thing = isset($row['rq']) ? 'request' : 'reservation';
+				$checkBtn = PERM('member') ? "\n\t\t<button class='green typcn typcn-tick check'>Check</button>" : '';
 				echo <<<HTML
 <li id="{$thing}-{$row['id']}">
 	<div class="image deviation">
@@ -116,8 +117,7 @@ HTML;
 	<span class="label"><a href="$url" target="_blank">{$deviation['title']}</a></span>
 	<em>Posted under <a href='$link'>$page</a></em>
 	<div>
-		<a href='$link' class='btn blue typcn typcn-arrow-forward'>View</a>
-		<button class='green typcn typcn-tick check'>Check</button>
+		<a href='$link' class='btn blue typcn typcn-arrow-forward'>View</a>$checkBtn
 	</div>
 </li>
 HTML;

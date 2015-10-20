@@ -239,8 +239,7 @@
 						else respond("This $type has already been reserved by somepony else");
 					}
 					if ($locking && !empty($Thing['deviation_id'])){
-						if (!PERM('inspector')){
-							respond();
+						if (!PERM('inspector') || isset($_REQUEST['force-check'])){
 							if (!is_deviation_in_vectorclub($Thing['deviation_id']))
 								respond("It looks like the deviation has not been accepted into the group yet");
 						}

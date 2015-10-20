@@ -91,7 +91,7 @@ DocReady.push(function User(){
 			}));
 		});
 	});
-	$('#awaiting-deviations').children().children().last().children('.check').on('click',function(e){
+	$('#awaiting-deviations').children('li').children(':last-child').children('button.check').on('click',function(e){
 		e.preventDefault();
 
 		var $li = $(this).parents('li'),
@@ -99,9 +99,9 @@ DocReady.push(function User(){
 			thing = IDArray[0],
 			id = IDArray[1];
 
-		$.Dialog.wait('Check deviation acceptance status','Checking if deviation has been accepted into the group yet');
+		$.Dialog.wait('Deviation acceptance status','Checking if deviation has been accepted into the group yet');
 
-		$.post('/reserving/'+thing+'s/'+id+'?lock',$.mkAjaxHandler(function(){
+		$.post('/reserving/'+thing+'s/'+id+'?lock&force-check',$.mkAjaxHandler(function(){
 			if (!this.status) return $.Dialog.fail(false, this.message);
 
 			$.Dialog.success(false, "Sure looks like it.");
