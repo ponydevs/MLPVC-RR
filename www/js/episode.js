@@ -213,38 +213,26 @@ DocReady.push(function Episode(){
 				});
 			});
 		});
-		$actions.filter('.lock').off('click').on('click',function(){
-			var $btn = $(this),
-				sendRequest = function(){
-					$.post('/reserving/'+type+'/'+id+'?lock', $.mkAjaxHandler(function(){
-						if (!this.status) return $.Dialog.fail(false, data.message);
+		$actions.filter('.check').off('click').on('click',function(e){
+			e.preventDefault();
 
-						$btn.closest('li').children('.image').children('a').append(
-							$.mk('span').attr({
-								'class': 'typcn typcn-tick',
-								title: "This submission has been accepted into the group gallery"
-							})
-						);
-						$btn.parent().remove();
+			$.Dialog.wait('Deviation acceptance status','Checking if deviation has been accepted into the group yet');
 
-						if (this.message)
-							$.Dialog.success(false, data.message, true);
-						else $.Dialog.close();
-					}));
-				};
+			$.post('/reserving/'+type+'/'+id+'?lock', $.mkAjaxHandler(function(){
+				if (!this.status) return $.Dialog.fail(false, this.message);
 
-			if ($btn.hasClass('check')){
-				$.Dialog.wait('Deviation acceptance status','Checking if deviation has been accepted into the group yet');
-				return sendRequest();
-			}
+				$btn.closest('li').children('.image').children('a').append(
+					$.mk('span').attr({
+						'class': 'typcn typcn-tick',
+						title: "This submission has been accepted into the group gallery"
+					})
+				);
+				$btn.parent().remove();
 
-			$.Dialog.confirm('Approve post', "By approving this post, you can prevent any additional modifications, such as un-finishing. This mark is <strong>permanent</strong>, and can only be removed by the developer. <strong>This should be used when the image has been added to the group gallery.</strong><br><br>After approving the post, it'll count towards the user's badges/achievements/points/whatever (once implemented) and the image will receive a small green checkmark on the site. <strong>This action will be logged.</strong><br><br>Are you <em>absolutely</em> sure you want to approve this post, and with that, prevent futher actions?",['Approve it','Nevermind'],function(sure){
-				if (!sure) return;
-
-				$.Dialog.wait(false, 'Approving post');
-
-				sendRequest();
-			});
+				if (this.message)
+					$.Dialog.success(false, this.message, true);
+				else $.Dialog.close();
+			}));
 		});
 		$actions.filter('.delete').on('click',function(){
 			var $this = $(this);

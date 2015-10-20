@@ -206,7 +206,7 @@
 							respond();
 
 						if (!empty($Thing['reserved_by']))
-							respond('You cannot delete a request that has been reserved');
+							respond('You cannot delete a request that has already been reserved by a group member');
 					}
 
 					if (!$Database->where('id', $Thing['id'])->delete('requests'))
@@ -227,8 +227,8 @@
 
 					respond(true);
 				}
-				else if (!PERM('member')) respond();
 
+				if (!PERM('member')) respond();
 				$update = array('reserved_by' => null);
 
 				if (!empty($Thing['reserved_by'])){
@@ -239,11 +239,8 @@
 						else respond("This $type has already been reserved by somepony else");
 					}
 					if ($locking && !empty($Thing['deviation_id'])){
-						$forceCheck = isset($_REQUEST['force-check']);
-						if (!PERM('inspector') || $forceCheck){
-							if (!is_deviation_in_vectorclub($Thing['deviation_id']))
-								respond("It looks like the deviation has not been accepted into the group yet");
-						}
+						if (!is_deviation_in_vectorclub($Thing['deviation_id']))
+							respond("It looks like the deviation has not been accepted into the group yet");
 
 						if (!$Database->where('id', $Thing['id'])->update("{$type}s", array('lock' => 1)))
 							respond("This $type is already approved", 1);
@@ -253,9 +250,9 @@
 							'id' => $Thing['id']
 						));
 
-						$response = array();
-						if ((PERM('member') && !PERM('inspector')) || $forceCheck)
-							$response['message'] = "The image appears to be in the group gallery and as such it is now marked as approved.";
+						$message = "The image appears to be in the group gallery and as such it is now marked as approved.";
+						if ($usersMatch)
+							$message .= " Thank you for your contribution!";
 						respond($response);
 					}
 					if ($canceling)

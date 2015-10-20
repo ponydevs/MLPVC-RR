@@ -101,7 +101,7 @@ DocReady.push(function User(){
 
 		$.Dialog.wait('Deviation acceptance status','Checking if deviation has been accepted into the group yet');
 
-		$.post('/reserving/'+thing+'s/'+id+'?lock&force-check',$.mkAjaxHandler(function(){
+		$.post('/reserving/'+thing+'s/'+id+'?lock',$.mkAjaxHandler(function(){
 			if (!this.status) return $.Dialog.fail(false, this.message);
 
 			var message = this.message;
