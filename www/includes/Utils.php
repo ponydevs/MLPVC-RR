@@ -1247,15 +1247,16 @@ HTML;
 			$HTML =  "<div class='reserver'>$dAlink</div>";
 
 			$finished = !empty($R['deviation_id']);
-
-			if (!$finished && (($sameUser && PERM('member')) || PERM('inspector'))){
+			$inspectorOrSameUser = ($sameUser && PERM('member')) || PERM('inspector');
+			if (!$finished && $inspectorOrSameUser){
 				$Buttons[] = array('user-delete red cancel', 'Cancel Reservation');
 				$Buttons[] = array('attachment green finish', ($sameUser ? "I'm" : 'Mark as').' finished');
-				$Buttons[] = array('tick green check','Check');
 			}
-			if ($finished && PERM('inspector') && empty($R['lock'])){
-				$Buttons[] = array((empty($R['preview'])?'trash delete-only red':'media-eject orange').' unfinish',empty($R['preview'])?'Delete':'Un-finish');
-				$Buttons[] = array('tick green check','Check');
+			if ($finished){
+				if (PERM('inspector') && empty($R['lock']))
+					$Buttons[] = array((empty($R['preview'])?'trash delete-only red':'media-eject orange').' unfinish',empty($R['preview'])?'Delete':'Un-finish');
+				if ($inspectorOrSameUser)
+					$Buttons[] = array('tick green check','Check');
 			}
 		}
 
