@@ -3,12 +3,10 @@
 	require "init.php";
 
 	# Chck activity
-	if (isset($_GET['do'])) $do = $_GET['do'];
-	if (empty($do)) $do = 'index';
+	$do = !empty($_GET['do']) ? $_GET['do'] : 'index';
 	
 	# Get additional details
-	if (isset($_GET['data'])) $data = $_GET['data'];
-	if (empty($data)) $data = '';
+	$data = !empty($_GET['data']) ? $_GET['data'] : '';
 
 	switch ($do){
 		case GH_WEBHOOK_DO:

@@ -67,6 +67,7 @@
 	border-radius: 5px;
 	padding: 3px 5px;
 	cursor: pointer;
+	user-select: none;
 
 	transition-property: background-color, border-radius;
 	transition-duration: .5s;
