@@ -240,6 +240,7 @@
 					}
 					if ($locking && !empty($Thing['deviation_id'])){
 						if (!PERM('inspector')){
+							respond();
 							if (!is_deviation_in_vectorclub($Thing['deviation_id']))
 								respond("It looks like the deviation has not been accepted into the group yet");
 						}
