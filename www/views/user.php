@@ -165,7 +165,7 @@ HTML;
 		<section class="sessions">
 			<label>Sessions</label>
 <?php       if (isset($CurrentSession) || !empty($Sessions)){ ?>
-			<p>Below is a list of all the browsers where <?=$sameUser?"you've":'this user has'?> logged in from.</p>
+			<p>Below is a list of all the browsers <?=$sameUser?"you've":'this user has'?> logged in from.</p>
 			<ul class="session-list"><?php
 				if (isset($CurrentSession)) render_session_li($CurrentSession,CURRENT);
 				if (!empty($Sessions)){
