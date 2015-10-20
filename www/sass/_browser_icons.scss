@@ -29,7 +29,7 @@
 }
 @mixin if-browser-has-icon {
 	&.browser-chrome,
-	&.browser-microsoftedge,
+	&.browser-edge,
 	&.browser-firefox,
 	&.browser-internetexplorer, &.browser-iemobile,
 	&.browser-opera, &.browser-operamini,
