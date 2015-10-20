@@ -239,7 +239,8 @@
 						else respond("This $type has already been reserved by somepony else");
 					}
 					if ($locking && !empty($Thing['deviation_id'])){
-						if (!PERM('inspector') || isset($_REQUEST['force-check'])){
+						$forceCheck = isset($_REQUEST['force-check']);
+						if (!PERM('inspector') || $forceCheck){
 							if (!is_deviation_in_vectorclub($Thing['deviation_id']))
 								respond("It looks like the deviation has not been accepted into the group yet");
 						}
@@ -252,7 +253,10 @@
 							'id' => $Thing['id']
 						));
 
-						respond(true);
+						$response = array();
+						if ((PERM('member') && !PERM('inspector')) || $forceCheck)
+							$response['message'] = "The image appears to be in the group gallery and as such it is now marked as approved.";
+						respond($response);
 					}
 					if ($canceling)
 						$unfinishing = true;

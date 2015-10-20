@@ -214,28 +214,36 @@ DocReady.push(function Episode(){
 			});
 		});
 		$actions.filter('.lock').off('click').on('click',function(){
-			var $btn = $(this);
+			var $btn = $(this),
+				sendRequest = function(){
+					$.post('/reserving/'+type+'/'+id+'?lock', $.mkAjaxHandler(function(){
+						if (!this.status) return $.Dialog.fail(false, data.message);
+
+						$btn.closest('li').children('.image').children('a').append(
+							$.mk('span').attr({
+								'class': 'typcn typcn-tick',
+								title: "This submission has been accepted into the group gallery"
+							})
+						);
+						$btn.parent().remove();
+
+						if (this.message)
+							$.Dialog.success(false, data.message, true);
+						else $.Dialog.close();
+					}));
+				};
+
+			if ($btn.hasClass('check')){
+				$.Dialog.wait('Deviation acceptance status','Checking if deviation has been accepted into the group yet');
+				return sendRequest();
+			}
 
 			$.Dialog.confirm('Approve post', "By approving this post, you can prevent any additional modifications, such as un-finishing. This mark is <strong>permanent</strong>, and can only be removed by the developer. <strong>This should be used when the image has been added to the group gallery.</strong><br><br>After approving the post, it'll count towards the user's badges/achievements/points/whatever (once implemented) and the image will receive a small green checkmark on the site. <strong>This action will be logged.</strong><br><br>Are you <em>absolutely</em> sure you want to approve this post, and with that, prevent futher actions?",['Approve it','Nevermind'],function(sure){
 				if (!sure) return;
 
 				$.Dialog.wait(false, 'Approving post');
 
-				$.post('/reserving/'+type+'/'+id+'?lock', $.mkAjaxHandler(function(){
-					if (!this.status) return $.Dialog.fail(false, data.message);
-
-					$btn.closest('li').children('.image').children('a').append(
-						$.mk('span').attr({
-							'class': 'typcn typcn-tick',
-							title: "This submission has been accepted into the group gallery"
-						})
-					);
-					$btn.parent().remove();
-
-					if (this.message)
-						$.Dialog.success(false, data.message, true);
-					else $.Dialog.close();
-				}));
+				sendRequest();
 			});
 		});
 		$actions.filter('.delete').on('click',function(){

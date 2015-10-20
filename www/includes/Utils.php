@@ -1251,10 +1251,11 @@ HTML;
 			if (!$finished && (($sameUser && PERM('member')) || PERM('inspector'))){
 				$Buttons[] = array('user-delete red cancel', 'Cancel Reservation');
 				$Buttons[] = array('attachment green finish', ($sameUser ? "I'm" : 'Mark as').' finished');
+				$Buttons[] = array('tick green lock check','Check');
 			}
 			if ($finished && PERM('inspector') && empty($R['lock'])){
 				$Buttons[] = array((empty($R['preview'])?'trash delete-only red':'media-eject orange').' unfinish',empty($R['preview'])?'Delete':'Un-finish');
-				$Buttons[] = array('tick delete-only green lock','Approve');
+				$Buttons[] = array('tick green lock','Approve');
 			}
 		}
 

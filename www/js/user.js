@@ -104,10 +104,11 @@ DocReady.push(function User(){
 		$.post('/reserving/'+thing+'s/'+id+'?lock&force-check',$.mkAjaxHandler(function(){
 			if (!this.status) return $.Dialog.fail(false, this.message);
 
+			var message = this.message;
 			$.Dialog.success(false, "Sure looks like it.");
 			$.Dialog.wait(false, "Updating page");
 			HandleNav.reload(function(){
-				$.Dialog.success(false, "The image appears to be in the group gallery and as such it is now marked as approved.", true);
+				$.Dialog.success(false, message, true);
 			});
 		}));
 	});
