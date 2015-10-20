@@ -100,13 +100,14 @@ HTML;
 <?php   } ?>
 			<p><?="$YouHave ".(!$AwaitCount?'no':"<strong>$AwaitCount</strong>")?> image<?=$AwaitCount!==1?'s':''?> waiting to be submited to and/or approved by the group<?=!$AwaitCount?'.':(", listed below.".($sameUser?"We suggest that you submit $them to the group gallery at your earliest convenience to have $them spot-checked for any issues and added to the gallery, making $them easier for others to find.":''))?></p>
 <?php   if ($AwaitCount){ ?>
-			<ul><?
+			<ul id="awaiting-deviations"><?
 			foreach ($AwaitingApproval as $row){
 				$deviation = da_cache_deviation($row['deviation']);
 				$url = "http://{$deviation['provider']}/{$deviation['id']}";
 				list($link,$page) = post_link_html($row);
+				$thing = isset($row['rq']) ? 'request' : 'reservation';
 				echo <<<HTML
-<li>
+<li id="{$thing}-{$row['id']}">
 	<div class="image deviation">
 		<a href="$url" target="_blank">
 			<img src="{$deviation['preview']}" alt="{$deviation['title']}">
@@ -116,6 +117,7 @@ HTML;
 	<em>Posted under <a href='$link'>$page</a></em>
 	<div>
 		<a href='$link' class='btn blue typcn typcn-arrow-forward'>View</a>
+		<button class='green typcn typcn-tick check'>Check</button>
 	</div>
 </li>
 HTML;

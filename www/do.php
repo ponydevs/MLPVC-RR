@@ -177,7 +177,8 @@
 		case "reserving":
 			if (RQMTHD !== 'POST') do404();
 			$match = array();
-			if (empty($data) || !preg_match('/^(requests?|reservations?)(?:\/(\d+))?$/',$data,$match)) respond('Invalid request #1');
+			if (empty($data) || !preg_match('/^(requests?|reservations?)(?:\/(\d+))?$/',$data,$match))
+				respond('Invalid request');
 
 			$noaction = true;
 			$canceling = $finishing = $unfinishing = $adding = $deleteing = $locking = false;
@@ -239,9 +240,11 @@
 							respond("You already reserved this $type");
 						else respond("This $type has already been reserved by somepony else");
 					}
-					if ($locking){
-						if (!PERM('inspector'))
-							respond();
+					if ($locking && !empty($Thing['deviation_id'])){
+						if (!PERM('inspector')){
+							if (!is_deviation_in_vectorclub($Thing['deviation_id']))
+								respond("It looks like the deviation has not been accepted into the group yet");
+						}
 
 						if (!$Database->where('id', $Thing['id'])->update("{$type}s", array('lock' => 1)))
 							respond("This $type is already approved", 1);

@@ -842,6 +842,34 @@ HTML;
 	}
 
 	/**
+	 * Checks if a deviation is in the group
+	 *
+	 * @param int|string $DeviationID
+	 *
+	 * @return bool
+	 */
+	function is_deviation_in_vectorclub($DeviationID){
+		if (!is_int($DeviationID))
+			$DeviationID = intval(substr($DeviationID, 1), 36);
+
+		$DiFiRequest = @file_get_contents("http://deviantart.com/global/difi/?c[]=\"DeviationView\",\"getAllGroups\",[\"$DeviationID\"]&t=json");
+		if (empty($DiFiRequest))
+			return false;
+
+		$DiFiRequest = @json_decode($DiFiRequest);
+		if (
+			empty($DiFiRequest->DiFi->status)
+			|| $DiFiRequest->DiFi->status !== 'SUCCESS'
+			|| empty($DiFiRequest->DiFi->response->calls[0]->status)
+			|| $DiFiRequest->DiFi->response->calls[0]->status !== 'SUCCESS'
+			|| empty($DiFiRequest->DiFi->response->calls[0]->response->content->html)
+		) return false;
+
+		$html = $DiFiRequest->DiFi->response->calls[0]->response->content->html;
+		return strpos($html, 'gmi-groupname="MLP-VectorClub">') !== false;
+	}
+
+	/**
 	 * Adds browser info to $Authdata
 	 */
 	function browser(){

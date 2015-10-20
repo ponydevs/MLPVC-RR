@@ -91,4 +91,24 @@ DocReady.push(function User(){
 			}));
 		});
 	});
+	$('#awaiting-deviations').children().children().last().children('.check').on('click',function(e){
+		e.preventDefault();
+
+		var $li = $(this).parents('li'),
+			IDArray = $li.attr('id').split('-'),
+			thing = IDArray[0],
+			id = IDArray[1];
+
+		$.Dialog.wait('Check deviation acceptance status','Checking if deviation has been accepted into the group yet');
+
+		$.post('/reserving/'+thing+'s/'+id+'?lock',$.mkAjaxHandler(function(){
+			if (!this.status) return $.Dialog.fail(false, this.message);
+
+			$.Dialog.success(false, "Sure looks like it.");
+			$.Dialog.wait(false, "Updating page");
+			HandleNav.reload(function(){
+				$.Dialog.success(false, "The image appears to be in the group gallery and as such it is now marked as approved.", true);
+			});
+		}));
+	});
 });
