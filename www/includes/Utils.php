@@ -1261,8 +1261,8 @@ HTML;
 				$Buttons[] = array('user-delete red cancel', 'Cancel Reservation');
 				$Buttons[] = array('attachment green finish', ($sameUser ? "I'm" : 'Mark as').' finished');
 			}
-			if ($finished){
-				if (PERM('inspector') && empty($R['lock']))
+			if ($finished && empty($R['lock'])){
+				if (PERM('inspector'))
 					$Buttons[] = array((empty($R['preview'])?'trash delete-only red':'media-eject orange').' unfinish',empty($R['preview'])?'Delete':'Un-finish');
 				if ($inspectorOrSameUser)
 					$Buttons[] = array('tick green check','Check');
