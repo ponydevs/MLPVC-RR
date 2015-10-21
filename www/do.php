@@ -239,8 +239,13 @@
 						else respond("This $type has already been reserved by somepony else");
 					}
 					if ($locking && !empty($Thing['deviation_id'])){
-						if (!is_deviation_in_vectorclub($Thing['deviation_id']))
-							respond("It looks like the deviation has not been accepted into the group yet");
+						$Status = is_deviation_in_vectorclub($Thing['deviation_id']);
+						if ($Status !== true)
+							respond(
+								$Status === false
+								? "It looks like the deviation has not been accepted into the group yet"
+								: "There was an issue while checking the acceptance status (Error code: $Status)"
+							);
 
 						if (!$Database->where('id', $Thing['id'])->update("{$type}s", array('lock' => 1)))
 							respond("This $type is already approved", 1);
@@ -253,7 +258,7 @@
 						$message = "The image appears to be in the group gallery and as such it is now marked as approved.";
 						if ($usersMatch)
 							$message .= " Thank you for your contribution!";
-						respond($response);
+						respond($message, 1);
 					}
 					if ($canceling)
 						$unfinishing = true;

@@ -854,16 +854,25 @@ HTML;
 
 		$DiFiRequest = @file_get_contents("http://deviantart.com/global/difi/?c[]=\"DeviationView\",\"getAllGroups\",[\"$DeviationID\"]&t=json");
 		if (empty($DiFiRequest))
-			return false;
+			return 1;
 
 		$DiFiRequest = @json_decode($DiFiRequest);
-		if (
-			empty($DiFiRequest->DiFi->status)
-			|| $DiFiRequest->DiFi->status !== 'SUCCESS'
-			|| empty($DiFiRequest->DiFi->response->calls[0]->status)
-			|| $DiFiRequest->DiFi->response->calls[0]->status !== 'SUCCESS'
-			|| empty($DiFiRequest->DiFi->response->calls[0]->response->content->html)
-		) return false;
+		if (empty($DiFiRequest->DiFi->status))
+			return 2;
+		if ($DiFiRequest->DiFi->status !== 'SUCCESS')
+			return 3;
+		if (empty($DiFiRequest->DiFi->response->calls))
+			return 4;
+		if (empty($DiFiRequest->DiFi->response->calls[0]))
+			return 5;
+		if (empty($DiFiRequest->DiFi->response->calls[0]->response))
+			return 6;
+		if (empty($DiFiRequest->DiFi->response->calls[0]->response->status))
+			return 7;
+		if ($DiFiRequest->DiFi->response->calls[0]->response->status !== 'SUCCESS')
+			return 8;
+		if (empty($DiFiRequest->DiFi->response->calls[0]->response->content->html))
+			return 9;
 
 		$html = $DiFiRequest->DiFi->response->calls[0]->response->content->html;
 		return strpos($html, 'gmi-groupname="MLP-VectorClub">') !== false;
