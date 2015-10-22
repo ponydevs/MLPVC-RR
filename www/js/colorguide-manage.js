@@ -65,9 +65,10 @@ DocReady.push(function ColorguideManage(){
 				$form.on('submit',function(e){
 					e.preventDefault();
 
+					var data = $form.mkData();
 					$.Dialog.wait(false, 'Saving changes');
 
-					$.post('/colorguide/'+(editing?'set/'+data.ponyID:'make'),$form.mkData(),$.mkAjaxHandler(function(){
+					$.post('/colorguide/'+(editing?'set/'+data.ponyID:'make'),data,$.mkAjaxHandler(function(){
 						if (!this.status) return $.Dialog.fail(false, this.message);
 
 						if (editing){
@@ -155,9 +156,10 @@ DocReady.push(function ColorguideManage(){
 			$form.on('submit', function(e){
 				e.preventDefault();
 
+				var data = $form.mkData();
 				$.Dialog.wait(false, 'Creating tag');
 
-				$.post('/colorguide/maketag',$form.mkData(),$.mkAjaxHandler(function(){
+				$.post('/colorguide/maketag',data,$.mkAjaxHandler(function(){
 					if (!this.status) return $.Dialog.fail(false, this.message);
 
 					if (this.tags){
@@ -398,9 +400,10 @@ DocReady.push(function ColorguideManage(){
 						$form.on('submit', function(e){
 							e.preventDefault();
 
+							var data = $form.mkData();
 							$.Dialog.wait(false, 'Saving changes');
 
-							$.post('/colorguide/settag/'+tagID, $form.mkData(), $.mkAjaxHandler(function(){
+							$.post('/colorguide/settag/'+tagID, data, $.mkAjaxHandler(function(){
 								if (!this.status) return $.Dialog.fail(false, this.message);
 
 								var $affected = $('.id-'+this.tid);
