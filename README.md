@@ -26,12 +26,12 @@ In the past, the management of comments under journals was done manually. Becaus
 **Extrenal link icon** (licensed GPL) taken from [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Icon_External_Link.svg)<br>
 **Browser logos** (used on user pages):
 
- - [Edge](http://fav.me/d8uhefy) by [furrgroup](furrgroup)
- - [Firefox](http://fav.me/d4b6f4v) by [NoReasonToHope](NoReasonToHope)
- - [Google Chrome](http://fav.me/d523s3y) by [he4rtofcourage](he4rtofcourage)
- - [Internet Explorer](http://fav.me/d5ktmlx) by [McSadat](McSadat)
- - [Opera](http://fav.me/d52qnaw) by [ParallaxMLP](ParallaxMLP)
- - [Safari](http://fav.me/d530knp) by [ParallaxMLP](ParallaxMLP)
+ - [Edge](http://fav.me/d8uhefy) by [furrgroup](http://furrgroup.deviantart.com/)
+ - [Firefox](http://fav.me/d4b6f4v) by [NoReasonToHope](http://noreasontohope.deviantart.com/)
+ - [Google Chrome](http://fav.me/d523s3y) by [he4rtofcourage](http://he4rtofcourage.deviantart.com/)
+ - [Internet Explorer](http://fav.me/d5ktmlx) by [McSadat](http://mcsadat.deviantart.com/)
+ - [Opera](http://fav.me/d52qnaw) by [ParallaxMLP](http://parallaxmlp.deviantart.com/)
+ - [Safari](http://fav.me/d530knp) by [ParallaxMLP](http://parallaxmlp.deviantart.com/)
  - [Vivaldi](https://github.com/alrra/browser-logos/blob/1ec2af8325ffb8b3f2c2834da84870341a376efd/vivaldi/vivaldi_128x128.png) from [alrra/browser-logos](https://github.com/alrra/browser-logos)
  
 **Coding and design** by [DJDavid98](http://djdavid98.hu/)
