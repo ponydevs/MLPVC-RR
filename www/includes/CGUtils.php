@@ -363,35 +363,54 @@ HTML;
 	 *
 	 * @return null
 	 */
-	function apply_template($PonyID){
+	function apply_template($PonyID, $EQG){
 		global $CGDb, $Color;
 
 		if ($CGDb->where('ponyid', $PonyID)->has('colorgroups'))
 			throw new Exception('Template can only be applied to empty appearances');
 
-		$Scheme = array(
-			'Coat' => array(
-				'Outline',
-				'Fill',
-				'Shadow Outline',
-				'Shadow Fill',
-			),
-			'Mane & Tail' => array(
-				'Outline',
-				'Fill',
-			),
-			'Iris' => array(
-				'Gradient Top',
-				'Gradient Middle',
-				'Gradient Bottom',
-				'Highlight Top',
-				'Highlight Bottom',
-			),
-			'Cutie Mark' => array(
-				"$Color 1",
-				"$Color 2",
-			),
-		);
+		$Scheme = $EQG
+			? array(
+				'Skin' => array(
+					'Outline',
+					'Fill',
+				),
+				'Hair' => array(
+					'Outline',
+					'Fill',
+				),
+				'Eyes' => array(
+					'Gradient Top',
+					'Gradient Middle',
+					'Gradient Bottom',
+					'Highlight Top',
+					'Highlight Bottom',
+					'Eyebrows',
+				),
+			)
+			: array(
+				'Coat' => array(
+					'Outline',
+					'Fill',
+					'Shadow Outline',
+					'Shadow Fill',
+				),
+				'Mane & Tail' => array(
+					'Outline',
+					'Fill',
+				),
+				'Iris' => array(
+					'Gradient Top',
+					'Gradient Middle',
+					'Gradient Bottom',
+					'Highlight Top',
+					'Highlight Bottom',
+				),
+				'Cutie Mark' => array(
+					"$Color 1",
+					"$Color 2",
+				),
+			);
 
 		$cgi = 0;
 		foreach ($Scheme as $GroupName => $ColorNames){

@@ -924,7 +924,7 @@
 
 								if (isset($_POST['template'])){
 									try {
-										apply_template($query);
+										apply_template($query, $EQG);
 									}
 									catch (Exception $e){
 										$data['message'] .= ", but applying the template failed";
