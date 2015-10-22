@@ -2083,8 +2083,8 @@ ORDER BY `count` DESC
 				$NavItems['latest'][0] = $_SERVER['REQUEST_URI'];
 			else $NavItems['eps']['subitem'] = array($_SERVER['REQUEST_URI'], $GLOBALS['title']);
 		}
-		global $color, $Color;
-		$NavItems['colorguide'] = array("/{$color}guide", "$Color Guide");
+		global $color, $Color, $EQG;
+		$NavItems['colorguide'] = array("/{$color}guide", (!empty($EQG)?'EQG ':'')."$Color Guide");
 		if ($do === 'colorguide'){
 			global $Tags, $Changes, $Ponies, $Page, $Appearance;
 			if (!empty($Appearance))

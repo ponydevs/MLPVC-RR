@@ -38,8 +38,9 @@
 	</div>
 	<p class='align-center links'>
 <? if (PERM('inspector')){ ?>
-		<button class='green typcn typcn-plus' id="new-appearance-btn">Add new appearance</button>
+		<button class='green typcn typcn-plus' id="new-appearance-btn">Add new <?=$EQG?'Character':'Pony'?></button>
 <? } ?>
+		<a class='btn blue typcn typcn-world' href="/<?=$color?>guide<?=($EQG?'':'/eqg')?>/1"><?=$EQG?'List of Ponies':'List of Equestria Girls'?></a>
 		<a class='btn darkblue typcn typcn-tags' href="/<?=$color?>guide/tags">List of tags</a>
 		<a class='btn darkblue typcn typcn-warning' href="/<?=$color?>guide/changes">List of major changes</a>
 	</p>
@@ -53,7 +54,7 @@
 	<?=$Pagination?>
 </div>
 
-<script>var Color = '<?=$Color?>', color = '<?=$color?>';</script>
+<script>var Color = '<?=$Color?>', color = '<?=$color?>', EQG = <?=$EQG?'true':'false'?>;</script>
 <?php if (PERM('inspector')){ ?>
 <script>var TAG_TYPES_ASSOC = <?=json_encode($TAG_TYPES_ASSOC)?>, MAX_SIZE = '<?=get_max_upload_size()?>', PRINTABLE_ASCII_REGEX = '<?=PRINTABLE_ASCII_REGEX?>', HEX_COLOR_PATTERN = <?=rtrim(HEX_COLOR_PATTERN,'u')?>;</script>
 <?php } ?>

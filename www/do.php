@@ -823,6 +823,8 @@
 				if (!PERM('inspector')) respond();
 				IF (RQMTHD === "POST") detectCSRF();
 
+				$EQG = isset($_REQUEST['eqg']) ? 1 : 0;
+
 				$_match = array();
 				if ($data === 'gettags'){
 					$viaTypeahead = !empty($_GET['s']);
@@ -847,16 +849,17 @@
 
 					typeahead_results(empty($Tags) ? '[]' : $Tags);
 				}
-				else if (preg_match('~^(rename|delete|make|[gs]et(?:sprite|cgs)?|tag|untag)(?:/(\d+))?$~', $data, $_match)){
+
+				if (preg_match('~^(rename|delete|make|[gs]et(?:sprite|cgs)?|tag|untag)(?:/(\d+))?$~', $data, $_match)){
 					$action = $_match[1];
 
 					if ($action !== 'make'){
 						if (empty($_match[2]))
-							respond('Missing pony ID');
-						$PonyID = intval($_match[2], 10);
-						$Pony = $CGDb->where('id', $PonyID)->getOne('appearances');
-						if (empty($Pony))
-							respond("There's no pony with the ID of $PonyID");
+							respond('Missing appearance ID');
+						$AppearanceID = intval($_match[2], 10);
+						$Appearance = $CGDb->where('id', $AppearanceID)->where('ishuman', $EQG)->getOne('appearances');
+						if (empty($Appearance))
+							respond("The specified appearance does not exist");
 					}
 
 					$update = array();
@@ -865,12 +868,16 @@
 						case "make":
 						case "get":
 							if ($action === 'get') respond(array(
-								'label' => $Pony['label'],
-								'notes' => $Pony['notes'],
-								'cm_favme' => !empty($Pony['cm_favme']) ? "http://fav.me/{$Pony['cm_favme']}" : null,
+								'label' => $Appearance['label'],
+								'notes' => $Appearance['notes'],
+								'cm_favme' => !empty($Appearance['cm_favme']) ? "http://fav.me/{$Appearance['cm_favme']}" : null,
 							));
 
-							$data = array('notes' => '');
+							$data = array(
+								'notes' => '',
+								'ishuman' => $EQG,
+							    'cm_favme' => null,
+							);
 
 							if (empty($_POST['label']))
 								respond('Label is missing');
@@ -888,7 +895,6 @@
 									respond('Appearance notes cannot be longer than 255 characters');
 								$data['notes'] = $notes;
 							}
-							else $data['notes'] = '';
 
 							if (!empty($_POST['cm_favme'])){
 								$cm_favme = trim($_POST['cm_favme']);
@@ -902,20 +908,19 @@
 								}
 								catch (Exception $e){ respond($e->getMessage()); }
 							}
-							else $data['cm_favme'] = null;
 
 							$query = $action === 'set'
-								? $CGDb->where('id', $Pony['id'])->update('appearances', $data)
+								? $CGDb->where('id', $Appearance['id'])->update('appearances', $data)
 								: $CGDb->insert('appearances', $data);
 							if (!$query)
 								respond(ERR_DB_FAIL);
 
 							if ($action === 'make'){
 								$data['message'] = 'Appearance added successfully';
-								$Query = $CGDb->count('appearances');
+								$Query = $CGDb->where('ishuman', $EQG)->count('appearances');
 
 								$data['id'] = $query;
-								$data['page'] = ceil($Query['count'] / $ItemsPerPage);
+								$data['page'] = max(ceil($Query['count'] / $ItemsPerPage), 1);
 
 								if (isset($_POST['template'])){
 									try {
@@ -942,10 +947,10 @@
 							$update['label'] = $newname;
 						break;
 						case "delete":
-							if (!$CGDb->where('id', $Pony['id'])->delete('appearances'))
+							if (!$CGDb->where('id', $Appearance['id'])->delete('appearances'))
 								respond(ERR_DB_FAIL);
 
-							$fpath = APPATH."img/cg/{$Pony['id']}.png";
+							$fpath = APPATH."img/cg/{$Appearance['id']}.png";
 							if (file_exists($fpath))
 								unlink($fpath);
 
@@ -954,7 +959,7 @@
 						case "getcgs":
 						case "setcgs":
 							if ($action === 'getcgs'){
-								$cgs = get_cgs($Pony['id'],'groupid, label');
+								$cgs = get_cgs($Appearance['id'],'groupid, label');
 								if (empty($cgs))
 									respond('This appearance does not have any color groups');
 								respond(array('cgs' => $cgs));
@@ -971,11 +976,11 @@
 								$CGDb->where('groupid', $GroupID)->update('colorgroups',array('order' => $i));
 							}
 
-							respond(array('cgs' => get_colors_html($Pony['id'], NOWRAP)));
+							respond(array('cgs' => get_colors_html($Appearance['id'], NOWRAP)));
 						break;
 						case "getsprite":
 						case "setsprite":
-							$fname = $Pony['id'].'.png';
+							$fname = $Appearance['id'].'.png';
 							$finalpath = $SpritePath.$fname;
 							if ($action === 'setsprite')
 								process_uploaded_image('sprite',$finalpath,array('image/png'),100);
@@ -994,15 +999,15 @@
 							if (empty($Tag))
 								respond("The tag $tag_name does not exist.<br>Would you like to create it?",0,array('cancreate' => $tag_name));
 
-							if ($CGDb->where('ponyid', $Pony['id'])->where('tid', $Tag['tid'])->has('tagged'))
+							if ($CGDb->where('ponyid', $Appearance['id'])->where('tid', $Tag['tid'])->has('tagged'))
 								respond('This appearance already has this tag');
 
 							if (!$CGDb->insert('tagged',array(
-								'ponyid' => $Pony['id'],
+								'ponyid' => $Appearance['id'],
 								'tid' => $Tag['tid'],
 							))) respond(ERR_DB_FAIL);
 							update_tag_count($Tag['tid']);
-							respond(array('tags' => get_tags_html($Pony['id'], NOWRAP)));
+							respond(array('tags' => get_tags_html($Appearance['id'], NOWRAP)));
 						break;
 						case "untag":
 							if (empty($_POST['tag']))
@@ -1012,18 +1017,18 @@
 							if (empty($Tag))
 								respond('Tag does not exist');
 
-							if (!$CGDb->where('ponyid', $Pony['id'])->where('tid', $Tag['tid'])->has('tagged'))
+							if (!$CGDb->where('ponyid', $Appearance['id'])->where('tid', $Tag['tid'])->has('tagged'))
 								respond('This appearance does not have this tag');
 
-							if (!$CGDb->where('ponyid', $Pony['id'])->where('tid', $Tag['tid'])->delete('tagged'))
+							if (!$CGDb->where('ponyid', $Appearance['id'])->where('tid', $Tag['tid'])->delete('tagged'))
 								respond(ERR_DB_FAIL);
 							update_tag_count($Tag['tid']);
-							respond(array('tags' => get_tags_html($Pony['id'], NOWRAP)));
+							respond(array('tags' => get_tags_html($Appearance['id'], NOWRAP)));
 						break;
 						default: respond('Bad request');
 					}
 
-					$CGDb->where('id', $Pony['id'])->update('appearances', $update);
+					$CGDb->where('id', $Appearance['id'])->update('appearances', $update);
 				}
 				else if (preg_match('~^([gs]et|make|del|merge|recount)tag(?:/(\d+))?$~', $data, $_match)){
 					$action = $_match[1];
@@ -1151,17 +1156,17 @@
 						$data['tid'] = $TagID;
 
 						if (!empty($_POST['addto']) && is_numeric($_POST['addto'])){
-							$PonyID = intval($_POST['addto'], 10);
-							$Pony = $CGDb->where('id', $PonyID)->getOne('appearances');
-							if (empty($Pony))
-								respond("Tag created, but target appearance (#$PonyID) does not exist. Please try adding the tag manually.");
+							$AppearanceID = intval($_POST['addto'], 10);
+							$Appearance = $CGDb->where('id', $AppearanceID)->getOne('appearances');
+							if (empty($Appearance))
+								respond("Tag created, but target appearance (#$AppearanceID) does not exist. Please try adding the tag manually.");
 
 							if (!$CGDb->insert('tagged',array(
 								'tid' => $data['tid'],
-								'ponyid' => $Pony['id']
+								'ponyid' => $Appearance['id']
 							))) respond(ERR_DB_FAIL);
 							update_tag_count($data['tid']);
-							respond(array('tags' => get_tags_html($Pony['id'], NOWRAP)));
+							respond(array('tags' => get_tags_html($Appearance['id'], NOWRAP)));
 						}
 					}
 					else {
@@ -1222,15 +1227,15 @@
 					if ($new){
 						if (empty($_POST['ponyid']))
 							respond('Missing appearance ID');
-						$PonyID = intval($_POST['ponyid'], 10);
-						$Pony = $CGDb->where('id', $PonyID)->getOne('appearances');
-						if (empty($Pony))
-							respond('There\'s no appearance with the specified ID');
-						$data['ponyid'] = $PonyID;
+						$AppearanceID = intval($_POST['ponyid'], 10);
+						$Appearance = $CGDb->where('id', $AppearanceID)->where('ishuman', $EQG)->getOne('appearances');
+						if (empty($Appearance))
+							respond('The specified appearance odes not exist');
+						$data['ponyid'] = $AppearanceID;
 
 						// Attempt to get order number of last color group for the appearance
 						order_cgs();
-						$LastGroup = get_cgs($PonyID, '`order`', 'DESC', 1);
+						$LastGroup = get_cgs($AppearanceID, '`order`', 'DESC', 1);
 						$data['order'] =  !empty($LastGroup['order']) ? $LastGroup['order']+1 : 1;
 
 						$GroupID = $CGDb->insert('colorgroups', $data);
@@ -1290,16 +1295,16 @@
 					if (!empty($colorErrors))
 						respond("There were some issues while saving your changes. Details:\n".implode("\n",$colorErrors));
 
-					if ($new) $response = array('cgs' => get_colors_html($Pony['id'], NOWRAP));
+					if ($new) $response = array('cgs' => get_colors_html($Appearance['id'], NOWRAP));
 					else $response = array('cg' => get_cg_html($Group['groupid'], NOWRAP));
 
 					if (isset($major)){
-						$PonyID = $new ? $Pony['id'] : $Group['ponyid'];
+						$AppearanceID = $new ? $Appearance['id'] : $Group['ponyid'];
 						LogAction('color_modify',array(
-							'ponyid' => $PonyID,
+							'ponyid' => $AppearanceID,
 							'reason' => $reason,
 						));
-						$response['update'] = get_update_html($PonyID);
+						$response['update'] = get_update_html($AppearanceID);
 					}
 
 					respond($response);
@@ -1359,12 +1364,18 @@
 				));
 			}
 
+			$EQG = preg_match(EQG_URL_PATTERN, $data);
+			if ($EQG)
+				$data = preg_replace(EQG_URL_PATTERN, '', $data);
+			$CGPath = "/{$color}guide".($EQG?'/eqg':'');
+
 			$_match = array();
 			if (preg_match('~^appearance/(\d+)~',$data,$_match)){
-				$Appearance = $CGDb->where('id', intval($_match[1]))->getOne('appearances');
+				$Appearance = $CGDb->where('id', intval($_match[1]))->where('ishuman', $EQG)->getOne('appearances');
 				if (empty($Appearance))
 					do404();
 
+				fix_path("$CGPath/appearance/{$Appearance['id']}");
 				$heading = $Appearance['label'];
 				$title = "{$Color}s for $heading";
 
@@ -1381,9 +1392,9 @@
 
 			$title = '';
 			if (empty($_GET['q']) || !PERM('user')){
-				$EntryCount = $CGDb->count('appearances');
+				$EntryCount = $CGDb->where('ishuman',$EQG)->count('appearances');
 				list($Page,$MaxPages) = calc_page($EntryCount);
-				$Ponies = get_appearances(array($ItemsPerPage*($Page-1), $ItemsPerPage));
+				$Ponies = get_appearances($EQG, array($ItemsPerPage*($Page-1), $ItemsPerPage));
 			}
 			else {
 				$tags = array_map('trim',explode(',',strtolower($_GET['q'])));
@@ -1417,16 +1428,15 @@
 				}
 
 				if (empty($_MSG)){
-					$query = array(
-						'SELECT ',
-						', COUNT(t.tid) as cnt FROM tagged t
+					$query =
+						'SELECT @coloumn, COUNT(t.tid) as cnt FROM tagged t
 						LEFT JOIN ponies p ON t.ponyid = p.id
-						WHERE t.tid IN ('.implode(',', $Tags).")
+						WHERE t.tid IN ('.implode(',', $Tags).") && p.ishuman = $EQG
 						GROUP BY p.label
-						HAVING cnt = $tc");
-					$EntryCount = $CGDb->rawQuerySingle(implode("COUNT(*) as count",$query))['count'];
+						HAVING cnt = $tc";
+					$EntryCount = $CGDb->rawQuerySingle(str_replace('@coloumn','COUNT(*) as count',$query))['count'];
 					list($Page,$MaxPages) = calc_page($EntryCount);
-					$Ponies = $CGDb->rawQuery(implode("p.*",$query)." LIMIT ".($ItemsPerPage*($Page-1)).",$ItemsPerPage");
+					$Ponies = $CGDb->rawQuery(str_replace('@coloumn','p.*',$query)." LIMIT ".($ItemsPerPage*($Page-1)).",$ItemsPerPage");
 					$title .= "{$_GET['q']} - ";
 				}
 				else {
@@ -1435,8 +1445,8 @@
 				}
 			}
 
-			fix_path("/{$color}guide/$Page");
-			$heading = "$Color Guide";
+			fix_path("$CGPath/$Page");
+			$heading = ($EQG?'EQG ':'')."$Color Guide";
 			$title .= "Page $Page - $heading";
 			$Pagination = get_pagination_html("{$color}guide");
 

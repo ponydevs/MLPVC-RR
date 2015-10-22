@@ -57,10 +57,13 @@
 
 	> label:first-child {
 		display: block;
-		padding-bottom: 5px;
-		margin-bottom: 10px;
 		font-weight: bold;
-		border-bottom: 2px solid;
+
+		&:not(:last-child) {
+			padding-bottom: 5px;
+			margin-bottom: 10px;
+			border-bottom: 2px solid;
+		}
 	}
 	> p {
 		margin: 0 !important;

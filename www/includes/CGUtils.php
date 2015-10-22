@@ -15,6 +15,9 @@
 	define('INVERSE_TAG_NAME_PATTERN', '[^a-z\d ().-]');
 	define('HEX_COLOR_PATTERN','/^#?([A-Fa-f0-9]{6})$/u');
 
+	// EQG Color Guide URL pattern
+	define('EQG_URL_PATTERN','~^eqg/~');
+
 	// Get the colors in a given color groups
 	function get_colors($GroupID){
 		global $CGDb;
@@ -169,11 +172,11 @@
 	}
 
 	// Get list of ponies
-	function get_appearances($limit = null){
+	function get_appearances($EQG, $limit = null){
 		global $CGDb;
 
 		order_appearances();
-		return $CGDb->get('appearances',$limit);
+		return $CGDb->where('ishuman', $EQG)->get('appearances',$limit);
 	}
 
 	// Returns the markup for an array of pony datase rows \\
@@ -201,7 +204,7 @@
 		else {
 			if (empty($_MSG))
 				$_MSG = "No appearances to show";
-			$HTML .= "<div class='notice fail'><label>Search error</label><p>$_MSG</p></div>";
+			$HTML .= "<div class='notice info align-center'><label>$_MSG</label></div>";
 		}
 
 		return $HTML.($wrap?'</ul>':'');

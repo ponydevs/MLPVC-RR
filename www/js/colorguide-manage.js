@@ -1,7 +1,8 @@
 DocReady.push(function ColorguideManage(){
 	var Color = window.Color, color = window.color, TAG_TYPES_ASSOC = window.TAG_TYPES_ASSOC, $colorGroups,
 		PRINTABLE_ASCII_REGEX = window.PRINTABLE_ASCII_REGEX,
-		HEX_COLOR_PATTERN = window.HEX_COLOR_PATTERN, isWebkit = 'WebkitAppearance' in document.documentElement.style;
+		HEX_COLOR_PATTERN = window.HEX_COLOR_PATTERN, isWebkit = 'WebkitAppearance' in document.documentElement.style,
+		EQG = window.EQG, EQGRq = EQG?'?eqg':'';
 
 	var $spriteUploadForm = $.mk('form').attr('id', 'sprite-img').html(
 		'<p class="align-center"><a href="#upload">Click here to upload a file</a> (max. '+window.MAX_SIZE+') or enter a URL below.</p>' +
@@ -68,7 +69,7 @@ DocReady.push(function ColorguideManage(){
 					var data = $form.mkData();
 					$.Dialog.wait(false, 'Saving changes');
 
-					$.post('/colorguide/'+(editing?'set/'+data.ponyID:'make'),data,$.mkAjaxHandler(function(){
+					$.post('/colorguide/'+(editing?'set/'+data.ponyID:'make')+EQGRq,data,$.mkAjaxHandler(function(){
 						if (!this.status) return $.Dialog.fail(false, this.message);
 
 						if (editing){
@@ -97,7 +98,7 @@ DocReady.push(function ColorguideManage(){
 		$cgReordering = $.mk('form').attr('id','cg-reorder').append($.mk('div').attr('class','notice').hide().html('<p></p>'));
 
 	$('#new-appearance-btn').on('click',function(){
-		mkPonyEditor($(this),'Add new appearance');
+		mkPonyEditor($(this),'Add new '+(EQG?'Character':'Pony'));
 	});
 
 	var $tagEditForm = $.mk('form').attr('id', 'edit-tag');
@@ -159,7 +160,7 @@ DocReady.push(function ColorguideManage(){
 				var data = $form.mkData();
 				$.Dialog.wait(false, 'Creating tag');
 
-				$.post('/colorguide/maketag',data,$.mkAjaxHandler(function(){
+				$.post('/colorguide/maketag'+EQGRq,data,$.mkAjaxHandler(function(){
 					if (!this.status) return $.Dialog.fail(false, this.message);
 
 					if (this.tags){
@@ -351,7 +352,7 @@ DocReady.push(function ColorguideManage(){
 
 				$.Dialog.wait(false, 'Saving changes');
 
-				$.post('/colorguide/'+(editing?'set':'make')+'cg'+(editing?'/'+groupID:''), data, $.mkAjaxHandler(function(){
+				$.post('/colorguide/'+(editing?'set':'make')+'cg'+(editing?'/'+groupID:'')+EQGRq, data, $.mkAjaxHandler(function(){
 					if (!this.status) return $.Dialog.fail(false, this.message);
 
 					if (this.cg || this.cgs){
@@ -389,7 +390,7 @@ DocReady.push(function ColorguideManage(){
 
 				$.Dialog.wait(title, 'Retrieveing tag details from server');
 
-				$.post('/colorguide/gettag/'+tagID,$.mkAjaxHandler(function(){
+				$.post('/colorguide/gettag/'+tagID+EQGRq,$.mkAjaxHandler(function(){
 					var tag = this;
 					if (this.status) $.Dialog.request(title,$tagEditForm.clone(true, true),'edit-tag','Save',function($form){
 						$form.find('input[name=type][value='+tag.type+']').prop('checked', true);
@@ -403,7 +404,7 @@ DocReady.push(function ColorguideManage(){
 							var data = $form.mkData();
 							$.Dialog.wait(false, 'Saving changes');
 
-							$.post('/colorguide/settag/'+tagID, data, $.mkAjaxHandler(function(){
+							$.post('/colorguide/settag/'+tagID+EQGRq, data, $.mkAjaxHandler(function(){
 								if (!this.status) return $.Dialog.fail(false, this.message);
 
 								var $affected = $('.id-'+this.tid);
@@ -438,7 +439,7 @@ DocReady.push(function ColorguideManage(){
 
 					$.Dialog.wait(title,'Removing tag');
 
-					$.post('/colorguide/untag/'+ponyID,{ tag: tagID },$.mkAjaxHandler(function(){
+					$.post('/colorguide/untag/'+ponyID+EQGRq,{ tag: tagID },$.mkAjaxHandler(function(){
 						if (this.status){
 							$tag.qtip('destroy', true);
 							$tag.remove();
@@ -459,7 +460,7 @@ DocReady.push(function ColorguideManage(){
 
 					$.Dialog.wait(title,'Sending removal request');
 
-					$.post('/colorguide/deltag/'+tagID,$.mkAjaxHandler(function(){
+					$.post('/colorguide/deltag/'+tagID+EQGRq,$.mkAjaxHandler(function(){
 						if (this.status){
 							var $affected = $('.id-'+tagID);
 							$affected.qtip('destroy', true);
@@ -509,7 +510,7 @@ DocReady.push(function ColorguideManage(){
 					$.Dialog.setFocusedElement($input.attr('disabled', true));
 					$input.parent().addClass('loading');
 
-					$.post('/colorguide/tag/'+ponyID,{ tag_name: tag_name }, $.mkAjaxHandler(function(){
+					$.post('/colorguide/tag/'+ponyID+EQGRq,{ tag_name: tag_name }, $.mkAjaxHandler(function(){
 						$input.removeAttr('disabled').parent().removeClass('loading');
 						if (this.status){
 							$tagsDiv.children('[data-hasqtip]').qtip('destroy', true);
@@ -551,7 +552,7 @@ DocReady.push(function ColorguideManage(){
 
 					$.Dialog.wait(title, 'Retrieving color group list from server');
 
-					$.post('/colorguide/getcgs/'+ponyID, $.mkAjaxHandler(function(){
+					$.post('/colorguide/getcgs/'+ponyID+EQGRq, $.mkAjaxHandler(function(){
 						if (!this.status) return $.Dialog.fail(this.message);
 
 						var $form = $cgReordering.clone(),
@@ -585,7 +586,7 @@ DocReady.push(function ColorguideManage(){
 
 								$.Dialog.wait(false, 'Saving changes');
 
-								$.post('/colorguide/setcgs/'+ponyID,data,$.mkAjaxHandler(function(){
+								$.post('/colorguide/setcgs/'+ponyID+EQGRq,data,$.mkAjaxHandler(function(){
 									if (!this.status) return $.Dialog.fail(null, this.message);
 
 									$colors.html(this.cgs);
@@ -614,7 +615,7 @@ DocReady.push(function ColorguideManage(){
 
 					$.Dialog.wait(title, 'Retrieving '+color+' group details from server');
 
-					$.post('/colorguide/getcg/'+groupID,$.mkAjaxHandler(function(){
+					$.post('/colorguide/getcg/'+groupID+EQGRq,$.mkAjaxHandler(function(){
 						if (this.status) CGEditorMaker.call(this, title, $group);
 						else $.Dialog.fail(title, data.message);
 					}));
@@ -629,7 +630,7 @@ DocReady.push(function ColorguideManage(){
 
 						$.Dialog.wait(title, 'Sending removal request');
 
-						$.post('/colorguide/delcg/'+groupID,$.mkAjaxHandler(function(){
+						$.post('/colorguide/delcg/'+groupID+EQGRq,$.mkAjaxHandler(function(){
 							if (this.status){
 								$group.children('[data-hasqtip]').qtip('destroy', true);
 								$group.remove();
@@ -705,7 +706,7 @@ DocReady.push(function ColorguideManage(){
 
 							$.Dialog.wait(title, 'Downloading external image to the server');
 
-							$.post('/colorguide/setsprite/'+ponyID,{image_url: image_url}, $.mkAjaxHandler(function(){
+							$.post('/colorguide/setsprite/'+ponyID+EQGRq,{image_url: image_url}, $.mkAjaxHandler(function(){
 								if (this.status) $uploadInput.trigger('set-image', [this.path]);
 								else $.Dialog.fail(title,this.message);
 							}));
@@ -732,7 +733,7 @@ DocReady.push(function ColorguideManage(){
 
 			$.Dialog.wait(title, 'Retrieving appearance details from server');
 
-			$.post('/colorguide/get/'+ponyID,$.mkAjaxHandler(function(){
+			$.post('/colorguide/get/'+ponyID+EQGRq,$.mkAjaxHandler(function(){
 				var data = this;
 				if (data.status){
 					data.ponyID = ponyID;
@@ -752,7 +753,7 @@ DocReady.push(function ColorguideManage(){
 
 				$.Dialog.wait(title, 'Sending removal request');
 
-				$.post('/colorguide/delete/'+ponyID,$.mkAjaxHandler(function(){
+				$.post('/colorguide/delete/'+ponyID+EQGRq,$.mkAjaxHandler(function(){
 					if (this.status){
 						$li.remove();
 						$.Dialog.success(title, this.message);
