@@ -854,7 +854,7 @@
 						if (empty($_match[2]))
 							respond('Missing pony ID');
 						$PonyID = intval($_match[2], 10);
-						$Pony = $CGDb->where('id', $PonyID)->getOne('ponies');
+						$Pony = $CGDb->where('id', $PonyID)->getOne('appearances');
 						if (empty($Pony))
 							respond("There's no pony with the ID of $PonyID");
 					}
@@ -905,14 +905,14 @@
 							else $data['cm_favme'] = null;
 
 							$query = $action === 'set'
-								? $CGDb->where('id', $Pony['id'])->update('ponies', $data)
-								: $CGDb->insert('ponies', $data);
+								? $CGDb->where('id', $Pony['id'])->update('appearances', $data)
+								: $CGDb->insert('appearances', $data);
 							if (!$query)
 								respond(ERR_DB_FAIL);
 
 							if ($action === 'make'){
 								$data['message'] = 'Appearance added successfully';
-								$Query = $CGDb->count('ponies');
+								$Query = $CGDb->count('appearances');
 
 								$data['id'] = $query;
 								$data['page'] = ceil($Query['count'] / $ItemsPerPage);
@@ -942,7 +942,7 @@
 							$update['label'] = $newname;
 						break;
 						case "delete":
-							if (!$CGDb->where('id', $Pony['id'])->delete('ponies'))
+							if (!$CGDb->where('id', $Pony['id'])->delete('appearances'))
 								respond(ERR_DB_FAIL);
 
 							$fpath = APPATH."img/cg/{$Pony['id']}.png";
@@ -1023,7 +1023,7 @@
 						default: respond('Bad request');
 					}
 
-					$CGDb->where('id', $Pony['id'])->update('ponies', $update);
+					$CGDb->where('id', $Pony['id'])->update('appearances', $update);
 				}
 				else if (preg_match('~^([gs]et|make|del|merge|recount)tag(?:/(\d+))?$~', $data, $_match)){
 					$action = $_match[1];
@@ -1152,7 +1152,7 @@
 
 						if (!empty($_POST['addto']) && is_numeric($_POST['addto'])){
 							$PonyID = intval($_POST['addto'], 10);
-							$Pony = $CGDb->where('id', $PonyID)->getOne('ponies');
+							$Pony = $CGDb->where('id', $PonyID)->getOne('appearances');
 							if (empty($Pony))
 								respond("Tag created, but target appearance (#$PonyID) does not exist. Please try adding the tag manually.");
 
@@ -1223,7 +1223,7 @@
 						if (empty($_POST['ponyid']))
 							respond('Missing appearance ID');
 						$PonyID = intval($_POST['ponyid'], 10);
-						$Pony = $CGDb->where('id', $PonyID)->getOne('ponies');
+						$Pony = $CGDb->where('id', $PonyID)->getOne('appearances');
 						if (empty($Pony))
 							respond('There\'s no appearance with the specified ID');
 						$data['ponyid'] = $PonyID;
@@ -1361,7 +1361,7 @@
 
 			$_match = array();
 			if (preg_match('~^appearance/(\d+)~',$data,$_match)){
-				$Appearance = $CGDb->where('id', intval($_match[1]))->getOne('ponies');
+				$Appearance = $CGDb->where('id', intval($_match[1]))->getOne('appearances');
 				if (empty($Appearance))
 					do404();
 
@@ -1381,9 +1381,9 @@
 
 			$title = '';
 			if (empty($_GET['q']) || !PERM('user')){
-				$EntryCount = $CGDb->count('ponies');
+				$EntryCount = $CGDb->count('appearances');
 				list($Page,$MaxPages) = calc_page($EntryCount);
-				$Ponies = get_ponies(array($ItemsPerPage*($Page-1), $ItemsPerPage));
+				$Ponies = get_appearances(array($ItemsPerPage*($Page-1), $ItemsPerPage));
 			}
 			else {
 				$tags = array_map('trim',explode(',',strtolower($_GET['q'])));

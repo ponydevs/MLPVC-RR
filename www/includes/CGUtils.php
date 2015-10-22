@@ -159,7 +159,7 @@
 		return $wrap ? "<div class='update'>$update</div>" : $update;
 	}
 
-	function order_ponies($dir = 'ASC'){
+	function order_appearances($dir = 'ASC'){
 		global $CGDb;
 
 		$CGDb
@@ -169,11 +169,11 @@
 	}
 
 	// Get list of ponies
-	function get_ponies($limit = null){
+	function get_appearances($limit = null){
 		global $CGDb;
 
-		order_ponies();
-		return $CGDb->get('ponies',$limit);
+		order_appearances();
+		return $CGDb->get('appearances',$limit);
 	}
 
 	// Returns the markup for an array of pony datase rows \\

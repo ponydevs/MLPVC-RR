@@ -10,6 +10,57 @@ DROP DATABASE `mlpvc-colorguide`;
 CREATE DATABASE `mlpvc-colorguide` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 USE `mlpvc-colorguide`;
 
+CREATE TABLE `appearances` (
+  `id` int(11) NOT NULL,
+  `order` int(11) DEFAULT NULL,
+  `label` tinytext NOT NULL,
+  `notes` tinytext NOT NULL,
+  `cm_favme` varchar(20) DEFAULT NULL,
+  `ishuman` tinyint(1) NOT NULL DEFAULT '0',
+  `added` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+INSERT INTO `appearances` (`id`, `order`, `label`, `notes`, `cm_favme`, `ishuman`, `added`) VALUES
+(1, 1, 'Twilight Sparkle', 'Far legs use darker colors.', 'd64bqyo', 0, '2015-08-24 19:04:32'),
+(2, 2, 'Applejack', '', 'd64bqyo', 0, '2015-09-21 18:46:54'),
+(3, 3, 'Fluttershy', '', 'd64bqyo', 0, '2015-09-21 18:54:47'),
+(4, 4, 'Pinkie Pie', 'Far legs use darker colors.', 'd64bqyo', 0, '2015-09-21 18:52:26'),
+(5, 5, 'Rainbow Dash', '', 'd64bqyo', 0, '2015-09-21 19:01:33'),
+(6, 6, 'Rarity', '', 'd64bqyo', 0, '2015-09-21 19:18:24'),
+(7, 7, 'Spike', '', NULL, 0, '2015-09-21 19:43:59'),
+(9, 13, 'Princess Luna', '', NULL, 0, '2015-09-29 18:55:38'),
+(10, NULL, 'Minuette', 'For convenience, the color of the glass on her cutie mark is solid rather than transparent, thus the sand should be above.', NULL, 0, '2015-07-25 14:49:44'),
+(11, NULL, 'Derpy / Muffins', '', NULL, 0, '2015-08-26 03:53:49'),
+(12, NULL, 'Lyra Heartstrings', '', NULL, 0, '2015-08-26 04:08:33'),
+(13, NULL, 'Whoa Nelly', '', NULL, 0, '2015-09-17 03:43:22'),
+(14, NULL, 'Fashion Plate', '', NULL, 0, '2015-09-17 04:02:26'),
+(15, NULL, 'Sassy Saddles', '', NULL, 0, '2015-09-17 04:22:20'),
+(16, NULL, 'Twinkleshine', '', NULL, 0, '2015-09-21 20:25:31'),
+(17, NULL, 'Lemon Hearts', '', NULL, 0, '2015-09-21 20:30:06'),
+(18, NULL, 'Granny Smith', 'Far legs use darker colors.', NULL, 0, '2015-09-21 20:37:57'),
+(19, NULL, 'Fleetfoot', '', 'd97x7vd', 0, '2015-09-21 20:58:56'),
+(20, NULL, 'Stormy Flare', 'Only has one eye shine.', NULL, 0, '2015-09-22 05:20:14'),
+(21, NULL, 'Wind Rider', 'Teeth use a different color than normal.', NULL, 0, '2015-09-24 04:35:32'),
+(22, NULL, 'Sugar Belle', '', NULL, 0, '2015-09-24 10:44:18'),
+(23, 9, 'Apple Bloom', 'Far legs use darker colors. \r\nCutie Mark colors subject to change on further episodes.', NULL, 0, '2015-09-24 12:01:03'),
+(24, 10, 'Scootaloo', 'Far legs use darker colors.\r\nCutie Mark colors subject to change on further episodes.', NULL, 0, '2015-09-24 12:06:23'),
+(25, 11, 'Sweetie Belle', 'Cutie Mark colors subject to change on further episodes.', NULL, 0, '2015-09-24 12:09:41'),
+(26, NULL, 'Night Glider', '', NULL, 0, '2015-09-26 15:03:43'),
+(27, NULL, 'Double Diamond', '', NULL, 0, '2015-09-26 17:22:19'),
+(28, NULL, 'Party Favor', 'Magic aura color is unknown.', NULL, 0, '2015-09-26 17:34:42'),
+(29, NULL, 'Starlight Glimmer', '', NULL, 0, '2015-09-26 18:01:51'),
+(30, NULL, 'Coco Pommel', '', NULL, 0, '2015-09-26 21:18:32'),
+(31, NULL, 'Suri Polomare', 'From S4E08', NULL, 0, '2015-09-30 05:35:59'),
+(32, NULL, 'Trixie Lulamoon', '', 'd9bxest', 0, '2015-10-03 15:35:08'),
+(33, NULL, 'Alicorn Amulet', '', NULL, 0, '2015-10-03 16:22:13'),
+(34, 12, 'Princess Celestia', 'Make sure to use appropriate references when picking gradient angles and stops. They''ll differ based on the hair shape and angle.', NULL, 0, '2015-10-03 19:26:50'),
+(35, NULL, 'Big Macintosh', '', NULL, 0, '2015-10-04 19:11:42'),
+(36, NULL, 'Moondancer', '', NULL, 0, '2015-10-05 05:17:36'),
+(37, NULL, 'Dinky Doo', 'From E5E17', NULL, 0, '2015-10-06 03:39:35'),
+(38, NULL, 'Berry Pinch', 'From S5E17', NULL, 0, '2015-10-06 03:48:24'),
+(39, NULL, 'Button Mash', 'Based on S5E18', NULL, 0, '2015-10-15 03:32:38'),
+(40, NULL, 'Lily Longsocks', 'From S5E18', NULL, 0, '2015-10-16 05:37:56');
+
 CREATE TABLE `colorgroups` (
   `groupid` int(11) NOT NULL,
   `ponyid` int(11) NOT NULL,
@@ -980,56 +1031,6 @@ INSERT INTO `colors` (`colorid`, `groupid`, `label`, `hex`, `order`) VALUES
 (956, 245, 'Eight Note Fill', '#FD41F8', 5),
 (957, 246, 'Aura', '#C4FBB0', 0);
 
-CREATE TABLE `ponies` (
-  `id` int(11) NOT NULL,
-  `order` int(11) DEFAULT NULL,
-  `label` tinytext NOT NULL,
-  `notes` tinytext NOT NULL,
-  `cm_favme` varchar(20) DEFAULT NULL,
-  `added` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-INSERT INTO `ponies` (`id`, `order`, `label`, `notes`, `cm_favme`, `added`) VALUES
-(1, 1, 'Twilight Sparkle', 'Far legs use darker colors.', 'd64bqyo', '2015-08-24 19:04:32'),
-(2, 2, 'Applejack', '', 'd64bqyo', '2015-09-21 18:46:54'),
-(3, 3, 'Fluttershy', '', 'd64bqyo', '2015-09-21 18:54:47'),
-(4, 4, 'Pinkie Pie', 'Far legs use darker colors.', 'd64bqyo', '2015-09-21 18:52:26'),
-(5, 5, 'Rainbow Dash', '', 'd64bqyo', '2015-09-21 19:01:33'),
-(6, 6, 'Rarity', '', 'd64bqyo', '2015-09-21 19:18:24'),
-(7, 7, 'Spike', '', NULL, '2015-09-21 19:43:59'),
-(9, 13, 'Princess Luna', '', NULL, '2015-09-29 18:55:38'),
-(10, NULL, 'Minuette', 'For convenience, the color of the glass on her cutie mark is solid rather than transparent, thus the sand should be above.', NULL, '2015-07-25 14:49:44'),
-(11, NULL, 'Derpy / Muffins', '', NULL, '2015-08-26 03:53:49'),
-(12, NULL, 'Lyra Heartstrings', '', NULL, '2015-08-26 04:08:33'),
-(13, NULL, 'Whoa Nelly', '', NULL, '2015-09-17 03:43:22'),
-(14, NULL, 'Fashion Plate', '', NULL, '2015-09-17 04:02:26'),
-(15, NULL, 'Sassy Saddles', '', NULL, '2015-09-17 04:22:20'),
-(16, NULL, 'Twinkleshine', '', NULL, '2015-09-21 20:25:31'),
-(17, NULL, 'Lemon Hearts', '', NULL, '2015-09-21 20:30:06'),
-(18, NULL, 'Granny Smith', 'Far legs use darker colors.', NULL, '2015-09-21 20:37:57'),
-(19, NULL, 'Fleetfoot', '', 'd97x7vd', '2015-09-21 20:58:56'),
-(20, NULL, 'Stormy Flare', 'Only has one eye shine.', NULL, '2015-09-22 05:20:14'),
-(21, NULL, 'Wind Rider', 'Teeth use a different color than normal.', NULL, '2015-09-24 04:35:32'),
-(22, NULL, 'Sugar Belle', '', NULL, '2015-09-24 10:44:18'),
-(23, 9, 'Apple Bloom', 'Far legs use darker colors. \r\nCutie Mark colors subject to change on further episodes.', NULL, '2015-09-24 12:01:03'),
-(24, 10, 'Scootaloo', 'Far legs use darker colors.\r\nCutie Mark colors subject to change on further episodes.', NULL, '2015-09-24 12:06:23'),
-(25, 11, 'Sweetie Belle', 'Cutie Mark colors subject to change on further episodes.', NULL, '2015-09-24 12:09:41'),
-(26, NULL, 'Night Glider', '', NULL, '2015-09-26 15:03:43'),
-(27, NULL, 'Double Diamond', '', NULL, '2015-09-26 17:22:19'),
-(28, NULL, 'Party Favor', 'Magic aura color is unknown.', NULL, '2015-09-26 17:34:42'),
-(29, NULL, 'Starlight Glimmer', '', NULL, '2015-09-26 18:01:51'),
-(30, NULL, 'Coco Pommel', '', NULL, '2015-09-26 21:18:32'),
-(31, NULL, 'Suri Polomare', 'From S4E08', NULL, '2015-09-30 05:35:59'),
-(32, NULL, 'Trixie Lulamoon', '', 'd9bxest', '2015-10-03 15:35:08'),
-(33, NULL, 'Alicorn Amulet', '', NULL, '2015-10-03 16:22:13'),
-(34, 12, 'Princess Celestia', 'Make sure to use appropriate references when picking gradient angles and stops. They''ll differ based on the hair shape and angle.', NULL, '2015-10-03 19:26:50'),
-(35, NULL, 'Big Macintosh', '', NULL, '2015-10-04 19:11:42'),
-(36, NULL, 'Moondancer', '', NULL, '2015-10-05 05:17:36'),
-(37, NULL, 'Dinky Doo', 'From E5E17', NULL, '2015-10-06 03:39:35'),
-(38, NULL, 'Berry Pinch', 'From S5E17', NULL, '2015-10-06 03:48:24'),
-(39, NULL, 'Button Mash', 'Based on S5E18', NULL, '2015-10-15 03:32:38'),
-(40, NULL, 'Lily Longsocks', 'From S5E18', NULL, '2015-10-16 05:37:56');
-
 CREATE TABLE `tagged` (
   `tid` int(11) NOT NULL,
   `ponyid` int(11) NOT NULL
@@ -1297,6 +1298,9 @@ INSERT INTO `tags` (`tid`, `name`, `title`, `type`, `uses`) VALUES
 (75, 'lily longsocks', '', 'char', 1);
 
 
+ALTER TABLE `appearances`
+  ADD PRIMARY KEY (`id`);
+
 ALTER TABLE `colorgroups`
   ADD PRIMARY KEY (`groupid`),
   ADD UNIQUE KEY `groupid` (`groupid`,`ponyid`,`label`),
@@ -1306,9 +1310,6 @@ ALTER TABLE `colors`
   ADD PRIMARY KEY (`colorid`),
   ADD KEY `groupid` (`groupid`);
 
-ALTER TABLE `ponies`
-  ADD PRIMARY KEY (`id`);
-
 ALTER TABLE `tagged`
   ADD PRIMARY KEY (`tid`,`ponyid`),
   ADD KEY `ponyid` (`ponyid`);
@@ -1317,24 +1318,24 @@ ALTER TABLE `tags`
   ADD PRIMARY KEY (`tid`);
 
 
+ALTER TABLE `appearances`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=41;
 ALTER TABLE `colorgroups`
   MODIFY `groupid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=247;
 ALTER TABLE `colors`
   MODIFY `colorid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=958;
-ALTER TABLE `ponies`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=41;
 ALTER TABLE `tags`
   MODIFY `tid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=76;
 
 ALTER TABLE `colorgroups`
-  ADD CONSTRAINT `colorgroups_ibfk_1` FOREIGN KEY (`ponyid`) REFERENCES `ponies` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `colorgroups_ibfk_1` FOREIGN KEY (`ponyid`) REFERENCES `appearances` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 ALTER TABLE `colors`
   ADD CONSTRAINT `colors_ibfk_1` FOREIGN KEY (`groupid`) REFERENCES `colorgroups` (`groupid`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 ALTER TABLE `tagged`
   ADD CONSTRAINT `tagged_ibfk_1` FOREIGN KEY (`tid`) REFERENCES `tags` (`tid`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `tagged_ibfk_2` FOREIGN KEY (`ponyid`) REFERENCES `ponies` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `tagged_ibfk_2` FOREIGN KEY (`ponyid`) REFERENCES `appearances` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
