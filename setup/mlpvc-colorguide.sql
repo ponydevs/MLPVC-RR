@@ -1242,7 +1242,6 @@ INSERT INTO `tags` (`tid`, `name`, `title`, `type`, `uses`) VALUES
 (12, 'female', '', 'gen', 31),
 (14, 'twilight sparkle', '', 'char', 1),
 (15, 'gala dress', 'All gala dress colors', 'app', 0),
-(16, 'human', 'Refers to Equestria Girls characters', 'spec', 0),
 (19, 's1e1', '', 'ep', 0),
 (20, 's1e26', '', 'ep', 0),
 (21, 's5e12', '', 'ep', 0),
