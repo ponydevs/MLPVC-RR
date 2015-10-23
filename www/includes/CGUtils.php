@@ -357,9 +357,11 @@ HTML;
 	}
 
 	/**
-	 * Apply pre/defined template to an appearance
+	 * Apply pre-defined template to an appearance
+	 * $EQG controls whether to apply EQG or Pony template
 	 *
 	 * @param int $PonyID
+	 * @param bool $EQG
 	 *
 	 * @return null
 	 */
