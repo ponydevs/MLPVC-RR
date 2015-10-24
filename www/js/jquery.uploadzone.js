@@ -1,5 +1,7 @@
 /* Image upload plugin w/ drag'n'drop support | by @DJDavid98 | for gh:ponydevs/MLPVC-RR */
+/* global File */
 (function(){
+	'use strict';
 	var defaults = {
 		requestKey: 'file',
 		title: 'Image upload',
@@ -17,9 +19,11 @@
 				'type': 'file',
 				'name': opt.requestKey,
 				'accept': opt.accept,
-			});
+			}),
+			$helper;
 
-		if (opt.helper) var $helper = $.mk('div').addClass('helper');
+		if (opt.helper)
+			$helper = $.mk('div').addClass('helper');
 
 		$input.on('set-image',function(_, path){
 			$.Dialog.close(function(){
@@ -69,7 +73,7 @@
 					$.Dialog.fail(title,'Upload failed (HTTP '+xhr.status+')');
 				}
 			};
-			if (opt.helper) ajaxOpts['xhr'] = function () {
+			if (opt.helper) ajaxOpts.xhr = function () {
 				var xhrobj = $.ajaxSettings.xhr();
 				if (xhrobj.upload)
 					xhrobj.upload.addEventListener('progress', function (event) {
@@ -86,7 +90,8 @@
 		});
 
 		$this.append($input);
-		if (opt.helper) $this.append($helper);
+		if (opt.helper)
+			$this.append($helper);
 
 		return $this;
 	};

@@ -1,4 +1,6 @@
+/* global $w,$d,$head,$body,$header,$sidebar,$sbToggle,$main,$footer,console,prompt,HandleNav,getTimeDiff,one,createTimeStr */
 (function($){
+	'use strict';
 	// document.createElement shortcut
 	var mk = function(){ return document.createElement.apply(document,arguments) };
 	window.mk = function(){return mk.apply(window,arguments)};
@@ -17,16 +19,14 @@
 	window.$w = $(window);
 	window.$d = $(document);
 	window.CommonElements = function(){
-		$.extend(window, {
-			$header: $('header'),
-			$sbToggle: $('.sidebar-toggle'),
-			$main: $('#main'),
-			$content: $('#content'),
-			$sidebar: $('#sidebar'),
-			$footer: $('footer'),
-			$body: $('body'),
-			$head: $('head'),
-		});
+		window.$header = $('header');
+		window.$sbToggle = $('.sidebar-toggle');
+		window.$main = $('#main');
+		window.$content = $('#content');
+		window.$sidebar = $('#sidebar');
+		window.$footer = $('footer');
+		window.$body = $('body');
+		window.$head = $('head');
 		window.$navbar = $header.find('nav');
 	};
 	window.CommonElements();
@@ -40,14 +40,12 @@
 		Tab: 9,
 	};
 	$.isKey = function(Key, e){
-		return e.keyCode == Key;
+		return e.keyCode === Key;
 	};
 
 	// Make first character in string uppercase
 	$.capitalize = function(str){
-		if (str.length === 1)
-			return str.toUpperCase();
-		return str[0].toUpperCase()+str.substring(1)
+		return str.length === 1 ? str.toUpperCase() : str[0].toUpperCase()+str.substring(1);
 	};
 
 	// Array.includes (ES7) polyfill
@@ -55,7 +53,7 @@
 		Array.prototype.includes = function(elem){ return this.indexOf(elem) !== -1 };
 
 	$.pad = function(str, char, len, dir){
-		if (typeof str !== 'str')
+		if (typeof str !== 'string')
 			str = ''+str;
 
 		if (typeof char !== 'string')
@@ -195,6 +193,7 @@
 })(jQuery);
 
 function DocumentIsReady(){
+	'use strict';
 	$d.triggerHandler('paginate-refresh');
 
 	// Sign in button handler
@@ -244,10 +243,12 @@ function DocumentIsReady(){
 		window.DocReady[i].call(window);
 }
 function OpenSidebarByDefault(){
+	'use strict';
 	return window.matchMedia('all and (min-width: 1200px)').matches;
 }
 var DocReadyOnce = false;
 $(function(){
+	'use strict';
 	if (DocReadyOnce) return;
 	DocReadyOnce = true;
 
@@ -294,11 +295,12 @@ $(function(){
 	window.setCD();
 	function pad(n){return n<10?'0'+n:n}
 	function cdupdate(){
-		var cdExists = typeof $cd.parent === "function" && $cd.parent().length > 0;
+		var cdExists = typeof $cd.parent === "function" && $cd.parent().length > 0,
+			diff = {}, now, airs;
 		if (cdExists){
-			var now = new Date(),
-				airs = new Date($cd.attr('datetime')),
-				diff = getTimeDiff(now, airs);
+			now = new Date();
+			airs = new Date($cd.attr('datetime'));
+			diff = getTimeDiff(now, airs);
 		}
 		if (!cdExists || diff.past){
 			if (cdExists)
@@ -332,10 +334,9 @@ $(function(){
 
 		var link = this;
 		if (
-			link.hostname !== location.hostname
-			|| (
-				!REWRITE_REGEX.test(link.pathname)
-				&& !/^\/@([A-Za-z\-\d]{1,20})$/.test(link.pathname)
+			link.hostname !== location.hostname || (
+				!REWRITE_REGEX.test(link.pathname) &&
+				!/^\/@([A-Za-z\-\d]{1,20})$/.test(link.pathname)
 			)
 		) return true;
 
@@ -410,8 +411,10 @@ $(function(){
 						$this.remove();
 					}
 				});
-				if (doreload !== false)
-					return location.href = url;
+				if (doreload !== false){
+					location.href = url;
+					return location.href;
+				}
 
 				$head.children('link[href], style[href]').each(function(){
 					var $this = $(this),
@@ -494,5 +497,6 @@ $(function(){
 
 // Remove loading animation from header on load
 $w.on('load',function(){
+	'use strict';
 	$body.removeClass('loading');
 });

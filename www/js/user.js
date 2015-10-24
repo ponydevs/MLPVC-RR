@@ -1,4 +1,6 @@
+/* globals DocReady,$sidebar,$content,HandleNav */
 DocReady.push(function User(){
+	'use strict';
 	var $signoutBtn = $('#signout'),
 		$name = $content.children('h1'),
 		$sessionList = $('.session-list'),

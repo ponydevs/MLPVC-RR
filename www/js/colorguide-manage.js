@@ -1,4 +1,6 @@
+/* globals $body,DocReady,mk,Sortable,Bloodhound,Handlebars */
 DocReady.push(function ColorguideManage(){
+	'use strict';
 	var Color = window.Color, color = window.color, TAG_TYPES_ASSOC = window.TAG_TYPES_ASSOC, $colorGroups,
 		PRINTABLE_ASCII_REGEX = window.PRINTABLE_ASCII_REGEX,
 		HEX_COLOR_PATTERN = window.HEX_COLOR_PATTERN, isWebkit = 'WebkitAppearance' in document.documentElement.style,
@@ -92,7 +94,7 @@ DocReady.push(function ColorguideManage(){
 							$.toPage(window.location.pathname.replace(/(\d+)?$/,this.page),true,true);
 						}
 					}));
-				})
+				});
 			});
 		},
 		$cgReordering = $.mk('form').attr('id','cg-reorder').append($.mk('div').attr('class','notice').hide().html('<p></p>'));
@@ -304,9 +306,10 @@ DocReady.push(function ColorguideManage(){
 	function CGEditorMaker(title, $group){
 		var dis = this;
 		if (typeof $group !== 'undefined'){
+			var ponyID;
 			if ($group instanceof jQuery){
-				var groupID = $group.attr('id').substring(2),
-					ponyID = $group.parents('li').attr('id').substring(1);
+				var groupID = $group.attr('id').substring(2);
+				ponyID = $group.parents('li').attr('id').substring(1);
 			}
 			else ponyID = $group;
 		}
@@ -342,7 +345,7 @@ DocReady.push(function ColorguideManage(){
 					data.Colors.push(append);
 				});
 				if (data.Colors.length === 0)
-					return handleError.call({message:'You need to have at least 1 valid color'});
+					return $.Dialog.fail(false, 'You need to have at least 1 valid color');
 				data.Colors = JSON.stringify(data.Colors);
 
 				if ($major.is(':checked')){
@@ -578,7 +581,7 @@ DocReady.push(function ColorguideManage(){
 									$cgs = $form.children('.cgs');
 
 								if (!$cgs.length)
-									return handleError.call({message:'There are no color groups to re-order'});
+									return $.Dialog.fail(false, 'There are no color groups to re-order');
 								$cgs.find('ol').children().each(function(){
 									data.cgs.push($(this).attr('data-id'));
 								});
@@ -616,8 +619,9 @@ DocReady.push(function ColorguideManage(){
 					$.Dialog.wait(title, 'Retrieving '+color+' group details from server');
 
 					$.post('/colorguide/getcg/'+groupID+EQGRq,$.mkAjaxHandler(function(){
-						if (this.status) CGEditorMaker.call(this, title, $group);
-						else $.Dialog.fail(title, data.message);
+						if (!this.status) return $.Dialog.fail(title, this.message);
+
+						CGEditorMaker.call(this, title, $group);
 					}));
 				}},
 				{text: "Delete "+color+" group", icon: 'trash', click: function(){
@@ -765,7 +769,7 @@ DocReady.push(function ColorguideManage(){
 					}
 					else $.Dialog.fail(title, this.message);
 				}));
-			})
+			});
 		});
 
 		$tags = $('.tags').ctxmenu(

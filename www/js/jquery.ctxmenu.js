@@ -1,5 +1,7 @@
 /* Context menu plugin | by @DJDavid98 | for gh:ponydevs/MLPVC-RR | utilizes: http://stackoverflow.com/a/30255040/1344955 */
+/* global $w,$body */
 (function($){
+	'use strict';
 	var $ctxmenu = $.mk('div').attr('id', 'ctxmenu');
 	$ctxmenu
 		.appendTo($body)
@@ -96,9 +98,7 @@
 
 			setTitle($el);
 
-			$.each(items,function(_, item){
-				addToItems(item, $el)
-			});
+			$.each(items,function(_, item){ addToItems(item, $el) });
 		});
 	};
 	$.ctxmenu.triggerItem = function($el, nth){

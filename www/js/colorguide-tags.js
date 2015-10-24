@@ -1,4 +1,6 @@
+/* globals DocReady */
 DocReady.push(function ColorguideTags(){
+	'use strict';
 	var TAG_TYPES_ASSOC = window.TAG_TYPES_ASSOC,
 		$tbody = $('#tags').children('tbody'),
 		updateList = function($tr, title){
@@ -110,13 +112,13 @@ DocReady.push(function ColorguideTags(){
 
 				if (successDialog) $.Dialog.success(title, this.message, true);
 				else $.Dialog.close();
-			})
+			});
 		};
 	$('.refresh-all').on('click',function(){
 		var tagIDs = [],
 			title = 'Recalculate tag usage data';
 		$tbody.children().each(function(){
-			tagIDs.push($(this).children().first().text().trim())
+			tagIDs.push($(this).children().first().text().trim());
 		});
 
 		$.Dialog.wait(title, 'Updating use count'+(tagIDs.length!==1?'s':''));

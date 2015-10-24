@@ -1,4 +1,6 @@
+/* globals $body,Key,$w */
 (function ($, undefined) {
+	'use strict';
 	function $makeDiv(id){ return $.mk('div').attr('id', id) }
 	var colors = {
 			fail: 'red',
@@ -42,7 +44,7 @@
 			Dialog = {
 				isOpen: function(){ return typeof _open !== 'undefined' },
 			},
-			closeTimeout = false;;
+			closeTimeout = false;
 
 		// Pre-defined dialogs
 		Dialog.fail = function(title,content,callback){
@@ -59,7 +61,8 @@
 			if (typeof additional_info === 'function' && callback === 'undefined'){
 				callback = additional_info;
 			}
-			if (typeof additional_info !== 'string' || additional_info.length < 2) additional_info = 'Sending request';
+			if (typeof additional_info !== 'string' || additional_info.length < 2)
+				additional_info = 'Sending request';
 			var content = $.capitalize(additional_info)+'&hellip;';
 			Display('wait',title,content,callback);
 		};
@@ -74,7 +77,7 @@
 					'submit': true,
 					'form': formid,
 				};
-			buttons['Cancel'] = function(){ Close() };
+			buttons.Cancel = function(){ Close() };
 
 			Display('request',title,content,buttons,callback);
 		};
@@ -137,7 +140,7 @@
 			if (typeof type !== 'string' || typeof colors[type] === 'undefined')
 				throw new TypeError('Invalid dialog type: '+typeof type);
 
-			if (typeof buttons == 'function' && typeof callback == 'undefined')
+			if (typeof buttons === 'function' && typeof callback === 'undefined')
 				callback = buttons;
 			
 			if (typeof title === 'undefined') title = defaultTitles[type];
@@ -206,7 +209,7 @@
 				var overlay = {w: $dialogOverlay.width(), h: $dialogOverlay.height()},
 					dialogpos = {w: $dialogBox.outerWidth(true), h: $dialogBox.outerHeight(true)};
 				$dialogBox.css({
-					top: (Math.max((overlay.h - dialogpos.h) / 2)*.5, 0),
+					top: Math.max(Math.max((overlay.h - dialogpos.h) / 2)*0.5, 0),
 					left: Math.max((overlay.w - dialogpos.w) / 2, 0),
 				});
 			}
@@ -223,7 +226,7 @@
 					obj = {action: obj};
 				else if (obj.form){
 					$requestContentDiv = $('#'+obj.form);
-					if ($requestContentDiv.length == 1){
+					if ($requestContentDiv.length === 1){
 						$button.on('click', function(){
 							$requestContentDiv.find('input[type=submit]').trigger('click');
 						});

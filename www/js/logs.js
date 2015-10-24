@@ -1,4 +1,6 @@
+/* global DocReady */
 DocReady.push(function Logs(){
+	'use strict';
 	var requesting = false;
 
 	$('#logs').find('tbody').off('page-switch').on('page-switch',function(){
@@ -54,12 +56,12 @@ DocReady.push(function Logs(){
 			});
 			$ip = $ip.html().split('<br>');
 
-			$.Dialog.info('Hidden details of entry #'+$tr.children('.entryid').text(),'\
-				<b>Timestamp:</b> '+$td.children('time').html().trim().replace(/<br>/,' ')+'\
-				<span class="modal-ip"><br>\
-					<b>Initiator:</b> '+$ip[0]+'<br>\
-					<b>IP Address:</b> '+$.mk('div').html($ip[1]).text()+'\
-				</span>'
+			$.Dialog.info('Hidden details of entry #'+$tr.children('.entryid').text()+
+				'<b>Timestamp:</b> '+$td.children('time').html().trim().replace(/<br>/,' ')+
+				'<span class="modal-ip"><br>'+
+					'<b>Initiator:</b> '+$ip[0]+'<br>'+
+					'<b>IP Address:</b> '+$.mk('div').html($ip[1]).text()+
+				'</span>'
 			);
 		}
 	});

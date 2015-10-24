@@ -1,4 +1,6 @@
+/* global DocReady,$content,$body,$w,$navbar */
 DocReady.push(function Episode(){
+	'use strict';
 	var SEASON = window.SEASON,
 		EPISODE = window.EPISODE,
 		EpID = 'S'+SEASON+'E'+EPISODE;
@@ -164,14 +166,14 @@ DocReady.push(function Episode(){
 
 						$.Dialog.success(false, 'Reservation has been marked as finished');
 
-						updateSection.call({callback:function(){
+						updateSection(type, SEASON, EPISODE, function(){
 							if (typeof data.message === 'string')
 								$.Dialog.success(false,data.message,true);
 							else $.Dialog.close();
-						}}, type, SEASON, EPISODE);
+						});
 					}));
 				});
-			})
+			});
 		});
 		$actions.filter('.unfinish').off('click').on('click',function(){
 			var $unfinishBtn = $(this),
@@ -188,7 +190,7 @@ DocReady.push(function Episode(){
 
 				if (type === 'reservations'){
 					$unbind.on('click',function(){
-						$('#dialogButtons').children().first().val(this.checked ? 'Delete' : 'Un-finish')
+						$('#dialogButtons').children().first().val(this.checked ? 'Delete' : 'Un-finish');
 					});
 					if (deleteOnly)
 						$unbind.trigger('click').off('click').on('click keydown touchstart', function(){return false}).css('pointer-events','none').parent().hide();
@@ -215,6 +217,8 @@ DocReady.push(function Episode(){
 		});
 		$actions.filter('.check').off('click').on('click',function(e){
 			e.preventDefault();
+
+			var $btn = $(this);
 
 			$.Dialog.wait('Deviation acceptance status','Checking');
 
@@ -332,8 +336,8 @@ DocReady.push(function Episode(){
 										$.Dialog.success(false, 'Image has been updated');
 
 										updateSection(type, SEASON, EPISODE);
-									}))
-								})
+									}));
+								});
 							});
 						})
 					)
@@ -418,7 +422,7 @@ DocReady.push(function Episode(){
 						updateSection(type, SEASON, EPISODE);
 					}));
 				});
-			})
+			});
 		});
 		$formImgInput.on('keyup change paste',imgCheckDisabler);
 		var outgoing =  /^https?:\/\/www\.deviantart\.com\/users\/outgoing\?/;
@@ -465,10 +469,10 @@ DocReady.push(function Episode(){
 						if (!!data.title && !$formTitleInput.val().trim())
 							$.Dialog.confirm(
 								'Confirm '+type+' title',
-								'The image you just checked had the following title:<br><br><p class="align-center"><strong>'+data.title+'</strong></p>'
-								 +'<br>Would you like to use this as the '+type+'\'s description?<br>Keep in mind that it should describe the thing(s) '
-								 +(type==='request'?'being requested':'you plan to vector')+'.'
-								 +'<p>This dialog will not appear if you give your '+type+' a description before clicking the '+CHECK_BTN+' button.</p>',
+								'The image you just checked had the following title:<br><br><p class="align-center"><strong>'+data.title+'</strong></p>'+
+								'<br>Would you like to use this as the '+type+'\'s description?<br>Keep in mind that it should describe the thing(s) '+
+								(type==='request'?'being requested':'you plan to vector')+'.'+
+								'<p>This dialog will not appear if you give your '+type+' a description before clicking the '+CHECK_BTN+' button.</p>',
 								function(sure){
 									if (!sure) return $form.find('input[name=label]').focus();
 									$formTitleInput.val(data.title);
@@ -547,8 +551,8 @@ DocReady.push(function Episode(){
 			$(this).hide();
 		});
 	};
-	function updateSection(type, SEASON, EPISODE){
-		var Type = type.charAt(0).toUpperCase()+type.substring(1), dis = this;
+	function updateSection(type, SEASON, EPISODE, callback){
+		var Type = type.charAt(0).toUpperCase()+type.substring(1);
 		$.Dialog.wait(Type, 'Updating list');
 		$.post('/episode/'+type.replace(/([^s])$/,'$1s')+'/S'+SEASON+'E'+EPISODE,$.mkAjaxHandler(function(){
 			if (!this.status) return window.location.reload();
@@ -559,7 +563,7 @@ DocReady.push(function Episode(){
 				.empty().append($newChilds).rebindHandlers()
 				.find('.post-form').data('type',type).formBind();
 			window.updateTimes();
-			if (typeof dis === 'object' && typeof dis.callback == 'function') dis.callback();
+			if (typeof callback === 'function') callback();
 			else $.Dialog.close();
 		}));
 	}

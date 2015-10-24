@@ -1,4 +1,6 @@
+/* globals $w,$d,DocReady */
 DocReady.push(function Colorguide(){
+	'use strict';
 	//noinspection JSUnusedLocalSymbols
 	var Color = window.Color, color = window.color, $list = $('#list');
 
@@ -63,7 +65,7 @@ DocReady.push(function Colorguide(){
 				}},
 			],
 			function($el){ return 'Color: '+$el.attr('oldtitle') }
-		)
+		);
 	}
 	window.tooltips = function(){tooltips()};
 

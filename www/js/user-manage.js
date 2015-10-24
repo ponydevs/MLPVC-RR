@@ -1,4 +1,6 @@
+/* globals DocReady,HandleNav */
 DocReady.push(function UserManage(){
+	'use strict';
 	if (typeof window.ROLES === 'undefined') return;
 	var $content = $('#content'),
 		$name = $content.children('h1'),
@@ -44,7 +46,7 @@ DocReady.push(function UserManage(){
 	$banToggle.on('click',function(){
 		var Action = ($banToggle.hasClass('un-banish') ? 'Un-ban' : 'Ban')+'ish',
 			action = Action.toLowerCase(),
-			title = Action+'ing '+name+(action == 'banish' ? ' to the moon':'');
+			title = Action+'ing '+name+(action === 'banish' ? ' to the moon':'');
 		$.Dialog.request(
 			title,
 			(

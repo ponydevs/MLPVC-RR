@@ -1,4 +1,6 @@
-﻿(function($){
+﻿/* global moment */
+(function($){
+	'use strict';
 	var dateformat = { order: 'Do MMMM YYYY, H:mm:ss' };
 	dateformat.orderwd = 'dddd, '+dateformat.order;
 

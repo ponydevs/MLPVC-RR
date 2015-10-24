@@ -1,4 +1,6 @@
+/* global $d,$w,$navbar */
 (function Paginate(){
+	'use strict';
 	if (window[" paginationHandlerBound"] === true) return;
 	window[" paginationHandlerBound"] = true;
 
@@ -40,7 +42,7 @@
 
 			if (typeof $(this).attr('href') === 'undefined')
 				return $.Dialog.request('Navigation',$PaginationForm.clone(true,true),'goto-page','Go to page',function($form){
-					$form.find('input:visible').val(pageNumber).get(0).select()
+					$form.find('input:visible').val(pageNumber).get(0).select();
 				});
 
 			$.toPage(this.pathname);
