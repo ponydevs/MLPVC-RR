@@ -64,7 +64,6 @@ var Flutters = new Personality(
 	]
 );
 gulp.task('sass', function() {
-	if (ready2go) Flutters.log(true);
 	gulp.src('www/sass/*.scss')
 		.pipe(plumber(function(err){
 			Flutters.error(err.messageFormatted || err);

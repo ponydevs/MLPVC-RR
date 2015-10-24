@@ -41,7 +41,8 @@
 		var _open = $dialogContent.length,
 			Dialog = {
 				isOpen: function(){ return typeof _open !== 'undefined' },
-			};
+			},
+			closeTimeout = false;;
 
 		// Pre-defined dialogs
 		Dialog.fail = function(title,content,callback){
@@ -123,13 +124,19 @@
 		var DISABLE = true,
 			ENABLE = false;
 		function _controlInputs(disable){
-				$dialogContent.children(':not(:last-child)').find('input, select, textarea').attr('disabled',disable);
+			$dialogContent.children(':not(:last-child)').find('input, select, textarea').attr('disabled',disable);
 		}
 
 		// Displaying dialogs
 		function Display(type,title,content,buttons,callback) {
-			if (typeof type !== 'string' || typeof colors[type] === 'undefined') throw new TypeError('Invalid dialog type: '+typeof type);
-			
+			if (closeTimeout !== false) {
+				clearTimeout(closeTimeout);
+				closeTimeout = false;
+			}
+
+			if (typeof type !== 'string' || typeof colors[type] === 'undefined')
+				throw new TypeError('Invalid dialog type: '+typeof type);
+
 			if (typeof buttons == 'function' && typeof callback == 'undefined')
 				callback = buttons;
 			
@@ -196,6 +203,12 @@
 				$dialogOverlay.append($dialogBox).appendTo($body);
 
 				$body.addClass('dialog-open');
+				var overlay = {w: $dialogOverlay.width(), h: $dialogOverlay.height()},
+					dialogpos = {w: $dialogBox.outerWidth(true), h: $dialogBox.outerHeight(true)};
+				$dialogBox.css({
+					top: (Math.max((overlay.h - dialogpos.h) / 2)*.5, 0),
+					left: Math.max((overlay.w - dialogpos.w) / 2, 0),
+				});
 			}
 
 			if (!appendingToRequest)
@@ -264,12 +277,27 @@
 			if (!Dialog.isOpen())
 				return $.callCallback(callback, false);
 
-			$('#dialogOverlay').remove();
-			_open = undefined;
-			_restoreFocus();
-			$.callCallback(callback);
+			if (closeTimeout !== false) {
+				clearTimeout(closeTimeout);
+				closeTimeout = false;
+			}
 
-			$body.removeClass('dialog-open');
+			var overlay = {w: $dialogOverlay.width(), h: $dialogOverlay.height()},
+				dialogpos = {w: $dialogBox.outerWidth(true), h: $dialogBox.outerHeight(true)};
+			$dialogBox.css({
+				top: Math.max(((overlay.h - dialogpos.h) / 2) * 1.2, 0),
+				left: Math.max((overlay.w - dialogpos.w) / 2, 0),
+			});
+			$dialogOverlay.css('opacity', 0);
+			closeTimeout = setTimeout(function(){
+				$dialogOverlay.remove();
+				_open = undefined;
+				_restoreFocus();
+				$.callCallback(callback);
+
+				$body.removeClass('dialog-open');
+				closeTimeout = false;
+			}, 500);
 		}
 		Dialog.close = function(){ Close.apply(Dialog, arguments) };
 		Dialog.center = function(){
@@ -279,8 +307,9 @@
 				dialog = {w: $dialogBox.outerWidth(true), h: $dialogBox.outerHeight(true)};
 			$dialogBox.css({
 				top: Math.max((overlay.h - dialog.h) / 2, 0),
-				left: Math.max((overlay.w - dialog.w) / 2, 0)
+				left: Math.max((overlay.w - dialog.w) / 2, 0),
 			});
+			$dialogOverlay.css('opacity', 1);
 		};
 		return Dialog;
 	})();
