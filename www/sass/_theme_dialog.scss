@@ -35,12 +35,11 @@ $ZIndexBase: 21000;
 
 		overflow: auto;
 	}
+	body.dialog-open #main { padding-right: #{8px + 15px} }
 }
 
-html.dialog-open {
+body.dialog-open {
 	overflow: hidden;
-
-	#main { padding-right: #{8px + 15px} }
 }
 #dialogOverlay {
 	width: 100%;
