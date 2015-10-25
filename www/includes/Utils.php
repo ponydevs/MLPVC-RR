@@ -1816,8 +1816,8 @@ HTML;
 			if (!empty($Deviation['author'])){
 				$Author = get_user($Deviation['author'], 'name');
 
-				if (!empty($Author) && !empty($ReserverID)){
-					if (!isset($_POST['allow_overwrite_reserver']) && $Author['id'] !== $ReserverID){
+				if (!empty($Author)){
+					if (!isset($_POST['allow_overwrite_reserver']) && !empty($ReserverID) && $Author['id'] !== $ReserverID){
 						global $currentUser;
 						$sameUser = $currentUser['id'] === $ReserverID;
 						$person = $sameUser ? 'you' : 'the user who reserved this post';
