@@ -200,4 +200,8 @@ DocReady.push(function EpisodesManage(){
 			});
 		});
 	}
+
+	$eptableBody.on('page-switch',function(){
+		Bind();
+	});
 });
