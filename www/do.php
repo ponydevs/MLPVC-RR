@@ -169,6 +169,9 @@
 				if (empty($PostAs))
 					respond('The user you wanted to post as does not exist');
 
+				if ($what === 'reservation' && !PERM('member', $PostAs['role']))
+					respond('The user you wanted to post as is not a club member');
+
 				$ByID = $PostAs['id'];
 			}
 
