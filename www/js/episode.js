@@ -85,191 +85,6 @@ DocReady.push(function Episode(){
 		}
 	});
 
-
-	$.fn.formBind = function (){
-		var $form = $(this),
-			$formImgCheck = $form.find('.check-img'),
-			$formImgPreview = $form.find('.img-preview'),
-			$formDescInput = $form.find('[name=label]'),
-			$formImgInput = $form.find('[name=image_url]'),
-			$formTitleInput = $form.find('[name=label]'),
-			$notice = $formImgPreview.children('.notice'),
-			noticeHTML = $notice.html(),
-			$previewIMG = $formImgPreview.children('img'),
-			type = $form.data('type'), Type = type.charAt(0).toUpperCase()+type.substring(1);
-
-		if ($previewIMG.length === 0) $previewIMG = $(new Image()).appendTo($formImgPreview);
-		$('#'+type+'-btn').on('click',function(){
-			if (!$form.is(':visible')){
-				$form.show();
-				$formDescInput.focus();
-				$body.animate({scrollTop: $form.offset().top - $navbar.outerHeight() - 10 }, 500);
-			}
-		});
-		if (type === 'reservation') $('#add-reservation-btn').on('click',function(){
-			$.Dialog.request('Add a reservation','<form id="add-reservation"><div class="notice info">This feature should only be used when the vector was made before the episode was displayed here, and all you want to do is link your already-made vector under the newly posted episode.</div><div class="notice warn">If you already posted the reservation, use the <strong class="typcn typcn-attachment">I\'m done</strong> button to mark it as finished instead of adding it here.</div><input type="text" name="deviation" placeholder="Deviation URL"></form>','add-reservation','Finish',function($form){
-				$form.on('submit',function(e){
-					e.preventDefault();
-
-					var deviation = $form.find('[name=deviation]').val();
-
-					if (typeof deviation !== 'string' || deviation.length === 0)
-						return $.Dialog.fail(false, 'Please enter a deviation URL');
-
-					$.Dialog.wait(false, 'Adding reservation');
-
-					$.post('/reserving/reservation?add='+EpID,{deviation:deviation},$.mkAjaxHandler(function(){
-						if (!this.status) return $.Dialog.fail(false, this.message);
-
-						$.Dialog.success(false, this.message);
-						updateSection(type, SEASON, EPISODE);
-					}));
-				});
-			});
-		});
-		$formImgInput.on('keyup change paste',imgCheckDisabler);
-		var outgoing =  /^https?:\/\/www\.deviantart\.com\/users\/outgoing\?/;
-		function imgCheckDisabler(disable){
-			var prevurl = $formImgInput.data('prev-url'),
-				samevalue = typeof prevurl === 'string' && prevurl.trim() === $formImgInput.val().trim();
-			$formImgCheck.attr('disabled',disable === true || samevalue);
-			if (disable === true || samevalue) $formImgCheck.attr('title', 'You need to change the URL before chacking again.');
-			else $formImgCheck.removeAttr('title');
-
-			if (disable.type === 'keyup'){
-				var val = $formImgInput.val();
-				if (outgoing.test(val))
-					$formImgInput.val($formImgInput.val().replace(outgoing,''));
-			}
-		}
-		var CHECK_BTN = '<strong class="typcn typcn-arrow-repeat" style="display:inline-block">Check image</strong>';
-		$formImgCheck.on('click',function(e){
-			e.preventDefault();
-
-			$formImgCheck.removeClass('red');
-			imgCheckDisabler(true);
-			var url = $formImgInput.val(),
-				title = Type+' process';
-
-			$.Dialog.wait(Type+' process','Checking image');
-
-			$.post('/post', { image_url: url }, $.mkAjaxHandler(function(){
-				var data = this;
-				if (!data.status){
-					$notice.html(data.message).show();
-					$previewIMG.hide();
-					return $.Dialog.close();
-				}
-
-				function load(data, attempts){
-					$.Dialog.wait(title,'Checking image availability');
-
-					$previewIMG.attr('src',data.preview).show().off('load error').on('load',function(){
-						$notice.hide();
-
-						$formImgInput.data('prev-url', url);
-
-						if (!!data.title && !$formTitleInput.val().trim())
-							$.Dialog.confirm(
-								'Confirm '+type+' title',
-								'The image you just checked had the following title:<br><br><p class="align-center"><strong>'+data.title+'</strong></p>'+
-								'<br>Would you like to use this as the '+type+'\'s description?<br>Keep in mind that it should describe the thing(s) '+
-								(type==='request'?'being requested':'you plan to vector')+'.'+
-								'<p>This dialog will not appear if you give your '+type+' a description before clicking the '+CHECK_BTN+' button.</p>',
-								function(sure){
-									if (!sure) return $form.find('input[name=label]').focus();
-									$formTitleInput.val(data.title);
-									$.Dialog.close();
-								}
-							);
-						else $.Dialog.close(function(){
-							$form.find('input[name=label]').focus();
-						});
-					}).on('error',function(){
-						if (attempts < 1){
-							$.Dialog.wait("Can't load image",'Image could not be loaded, retrying in 2 seconds');
-							setTimeout(function(){
-								load(data, attempts+1);
-							}, 2000);
-							return;
-						}
-						$.Dialog.fail(title,"There was an error while attempting to load the image. Make sure the URL is correct and try again!");
-					});
-				}
-				load(data, 0);
-			}));
-		});
-		$form.on('submit',function(e, screwchanges, sanityCheck){
-			e.preventDefault();
-			var title = Type+' process';
-
-			if (!screwchanges && $formImgInput.data('prev-url') !== $formImgInput.val())
-				return $.Dialog.confirm(
-					title,
-					'You modified the image URL without clicking the '+CHECK_BTN+' button.<br>Do you want to continue with the last checked URL?',
-					function(sure){
-						if (!sure) return;
-
-						$form.triggerHandler('submit',[true]);
-					}
-				);
-
-			if (typeof $formImgInput.data('prev-url') === 'undefined')
-				return $.Dialog.fail(title, 'Please click the '+CHECK_BTN+' button before submitting your '+type+'!');
-
-			if (!sanityCheck && type === 'request'){
-				var label = $formDescInput.val(),
-					$type = $form.find('select');
-
-				if (label.indexOf('character') > -1 && $type.val() !== 'chr')
-					return $.Dialog.confirm(title, 'Your request label contains the word "character", but the request type isn\'t set to Character.<br>Are you sure you\'re not requesting one (or more) character(s)?',['Let me change the type', 'Carray on'],function(sure){
-						if (!sure) return $form.triggerHandler('submit',[screwchanges, true]);
-
-						$.Dialog.close(function(){
-							$type.focus();
-						});
-					});
-			}
-
-			var data = $form.mkData({
-				what: type,
-				episode: EPISODE,
-				season: SEASON,
-				image_url: $formImgInput.data('prev-url'),
-			});
-
-			$.Dialog.wait(title,'Submitting '+type);
-
-			$.post('/post',data,$.mkAjaxHandler(function(){
-				if (!this.status) return $.Dialog.fail(false, this.message);
-
-				$.Dialog.success(false, Type+' posted successfully');
-				updateSection(type, SEASON, EPISODE);
-			}));
-		}).on('reset',function(){
-			$formImgCheck.attr('disabled', false).addClass('red');
-			$notice.html(noticeHTML).show();
-			$previewIMG.hide();
-			$formImgInput.removeData('prev-url');
-			$(this).hide();
-		});
-	};
-	function updateSection(type, SEASON, EPISODE, callback){
-		var Type = type.charAt(0).toUpperCase()+type.substring(1);
-		$.Dialog.wait(Type, 'Updating list');
-		$.post('/episode/'+type.replace(/([^s])$/,'$1s')+'/S'+SEASON+'E'+EPISODE,$.mkAjaxHandler(function(){
-			if (!this.status) return window.location.reload();
-
-			var $section = $('#'+type.replace(/([^s])$/,'$1s')),
-				$newChilds = $(this.render).filter('section').children();
-			$section
-				.empty().append($newChilds).rebindHandlers()
-				.find('.post-form').data('type',type).formBind();
-			window.updateTimes();
-			if (typeof callback === 'function') callback();
-			else $.Dialog.close();
-		}));
-	}
 	$.fn.rebindHandlers = function(){
 		var $this = $(this);
 		$this.find('li[id]').each(function(){
@@ -288,7 +103,6 @@ DocReady.push(function Episode(){
 
 			Bind($li, id, type);
 		});
-		$this.find('.post-form').formBind();
 		return $this;
 	};
 	$('#requests, #reservations').rebindHandlers();
@@ -583,6 +397,192 @@ DocReady.push(function Episode(){
 			}));
 		});
 	}
+
+	$.fn.formBind = function (){
+		var $form = $(this),
+			$formImgCheck = $form.find('.check-img'),
+			$formImgPreview = $form.find('.img-preview'),
+			$formDescInput = $form.find('[name=label]'),
+			$formImgInput = $form.find('[name=image_url]'),
+			$formTitleInput = $form.find('[name=label]'),
+			$notice = $formImgPreview.children('.notice'),
+			noticeHTML = $notice.html(),
+			$previewIMG = $formImgPreview.children('img'),
+			type = $form.data('type'), Type = type.charAt(0).toUpperCase()+type.substring(1);
+
+		if ($previewIMG.length === 0) $previewIMG = $(new Image()).appendTo($formImgPreview);
+		$('#'+type+'-btn').on('click',function(){
+			if (!$form.is(':visible')){
+				$form.show();
+				$formDescInput.focus();
+				$body.animate({scrollTop: $form.offset().top - $navbar.outerHeight() - 10 }, 500);
+			}
+		});
+		if (type === 'reservation') $('#add-reservation-btn').on('click',function(){
+			$.Dialog.request('Add a reservation','<form id="add-reservation"><div class="notice info">This feature should only be used when the vector was made before the episode was displayed here, and all you want to do is link your already-made vector under the newly posted episode.</div><div class="notice warn">If you already posted the reservation, use the <strong class="typcn typcn-attachment">I\'m done</strong> button to mark it as finished instead of adding it here.</div><input type="text" name="deviation" placeholder="Deviation URL"></form>','add-reservation','Finish',function($form){
+				$form.on('submit',function(e){
+					e.preventDefault();
+
+					var deviation = $form.find('[name=deviation]').val();
+
+					if (typeof deviation !== 'string' || deviation.length === 0)
+						return $.Dialog.fail(false, 'Please enter a deviation URL');
+
+					$.Dialog.wait(false, 'Adding reservation');
+
+					$.post('/reserving/reservation?add='+EpID,{deviation:deviation},$.mkAjaxHandler(function(){
+						if (!this.status) return $.Dialog.fail(false, this.message);
+
+						$.Dialog.success(false, this.message);
+						updateSection(type, SEASON, EPISODE);
+					}));
+				});
+			});
+		});
+		$formImgInput.on('keyup change paste',imgCheckDisabler);
+		var outgoing =  /^https?:\/\/www\.deviantart\.com\/users\/outgoing\?/;
+		function imgCheckDisabler(disable){
+			var prevurl = $formImgInput.data('prev-url'),
+				samevalue = typeof prevurl === 'string' && prevurl.trim() === $formImgInput.val().trim();
+			$formImgCheck.attr('disabled',disable === true || samevalue);
+			if (disable === true || samevalue) $formImgCheck.attr('title', 'You need to change the URL before chacking again.');
+			else $formImgCheck.removeAttr('title');
+
+			if (disable.type === 'keyup'){
+				var val = $formImgInput.val();
+				if (outgoing.test(val))
+					$formImgInput.val($formImgInput.val().replace(outgoing,''));
+			}
+		}
+		var CHECK_BTN = '<strong class="typcn typcn-arrow-repeat" style="display:inline-block">Check image</strong>';
+		$formImgCheck.on('click',function(e){
+			e.preventDefault();
+
+			$formImgCheck.removeClass('red');
+			imgCheckDisabler(true);
+			var url = $formImgInput.val(),
+				title = Type+' process';
+
+			$.Dialog.wait(Type+' process','Checking image');
+
+			$.post('/post', { image_url: url }, $.mkAjaxHandler(function(){
+				var data = this;
+				if (!data.status){
+					$notice.html(data.message).show();
+					$previewIMG.hide();
+					return $.Dialog.close();
+				}
+
+				function load(data, attempts){
+					$.Dialog.wait(title,'Checking image availability');
+
+					$previewIMG.attr('src',data.preview).show().off('load error').on('load',function(){
+						$notice.hide();
+
+						$formImgInput.data('prev-url', url);
+
+						if (!!data.title && !$formTitleInput.val().trim())
+							$.Dialog.confirm(
+								'Confirm '+type+' title',
+								'The image you just checked had the following title:<br><br><p class="align-center"><strong>'+data.title+'</strong></p>'+
+								'<br>Would you like to use this as the '+type+'\'s description?<br>Keep in mind that it should describe the thing(s) '+
+								(type==='request'?'being requested':'you plan to vector')+'.'+
+								'<p>This dialog will not appear if you give your '+type+' a description before clicking the '+CHECK_BTN+' button.</p>',
+								function(sure){
+									if (!sure) return $form.find('input[name=label]').focus();
+									$formTitleInput.val(data.title);
+									$.Dialog.close();
+								}
+							);
+						else $.Dialog.close(function(){
+							$form.find('input[name=label]').focus();
+						});
+					}).on('error',function(){
+						if (attempts < 1){
+							$.Dialog.wait("Can't load image",'Image could not be loaded, retrying in 2 seconds');
+							setTimeout(function(){
+								load(data, attempts+1);
+							}, 2000);
+							return;
+						}
+						$.Dialog.fail(title,"There was an error while attempting to load the image. Make sure the URL is correct and try again!");
+					});
+				}
+				load(data, 0);
+			}));
+		});
+		$form.on('submit',function(e, screwchanges, sanityCheck){
+			e.preventDefault();
+			var title = Type+' process';
+
+			if (!screwchanges && $formImgInput.data('prev-url') !== $formImgInput.val())
+				return $.Dialog.confirm(
+					title,
+					'You modified the image URL without clicking the '+CHECK_BTN+' button.<br>Do you want to continue with the last checked URL?',
+					function(sure){
+						if (!sure) return;
+
+						$form.triggerHandler('submit',[true]);
+					}
+				);
+
+			if (typeof $formImgInput.data('prev-url') === 'undefined')
+				return $.Dialog.fail(title, 'Please click the '+CHECK_BTN+' button before submitting your '+type+'!');
+
+			if (!sanityCheck && type === 'request'){
+				var label = $formDescInput.val(),
+					$type = $form.find('select');
+
+				if (label.indexOf('character') > -1 && $type.val() !== 'chr')
+					return $.Dialog.confirm(title, 'Your request label contains the word "character", but the request type isn\'t set to Character.<br>Are you sure you\'re not requesting one (or more) character(s)?',['Let me change the type', 'Carray on'],function(sure){
+						if (!sure) return $form.triggerHandler('submit',[screwchanges, true]);
+
+						$.Dialog.close(function(){
+							$type.focus();
+						});
+					});
+			}
+
+			var data = $form.mkData({
+				what: type,
+				episode: EPISODE,
+				season: SEASON,
+				image_url: $formImgInput.data('prev-url'),
+			});
+
+			$.Dialog.wait(title,'Submitting '+type);
+
+			$.post('/post',data,$.mkAjaxHandler(function(){
+				if (!this.status) return $.Dialog.fail(false, this.message);
+
+				$.Dialog.success(false, Type+' posted successfully');
+				updateSection(type, SEASON, EPISODE);
+			}));
+		}).on('reset',function(){
+			$formImgCheck.attr('disabled', false).addClass('red');
+			$notice.html(noticeHTML).show();
+			$previewIMG.hide();
+			$formImgInput.removeData('prev-url');
+			$(this).hide();
+		});
+	};
+	function updateSection(type, SEASON, EPISODE, callback){
+		var Type = type.charAt(0).toUpperCase()+type.substring(1);
+		$.Dialog.wait(Type, 'Updating list');
+		$.post('/episode/'+type.replace(/([^s])$/,'$1s')+'/S'+SEASON+'E'+EPISODE,$.mkAjaxHandler(function(){
+			if (!this.status) return window.location.reload();
+
+			var $section = $('#'+type.replace(/([^s])$/,'$1s')),
+				$newChilds = $(this.render).filter('section').children();
+			$section
+				.empty().append($newChilds).rebindHandlers()
+				.find('.post-form').data('type',type).formBind();
+			window.updateTimes();
+			if (typeof callback === 'function') callback();
+			else $.Dialog.close();
+		}));
+	}
+	$('.post-form').each($.fn.formBind);
 
 	function hlhash(e){
 		if (typeof e === 'object' && typeof e.preventDefault === 'function')
