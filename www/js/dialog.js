@@ -42,7 +42,7 @@
 	$.Dialog = (function(){
 		var _open = $dialogContent.length,
 			Dialog = {
-				isOpen: function(){ return typeof _open !== 'undefined' },
+				isOpen: function(){ return Boolean(_open) },
 			},
 			closeTimeout = false;
 
