@@ -1116,15 +1116,19 @@ HTML;
 			return null;
 
 		$userdata = $userdata['results'][0];
+		$ID = strtolower($userdata['userid']);
+
+		$userExists = $Database->where('id', $ID)->has('users');
 
 		$insert = array(
-			'id' => strtolower($userdata['userid']),
 			'name' => $userdata['username'],
 			'avatar_url' => $userdata['usericon'],
 		);
+		if (!$userExists)
+			$insert['id'] = $ID;
 
-		if (!$Database->insert('users',$insert))
-			return null;
+		if (!($userExists ? $Database->where('id', $ID)->update('users', $insert) : $Database->insert('users',$insert)))
+			throw new Exception('Saving user data failed'.(PERM('developer')?': '.$Database->getLastError():''));
 
 		LogAction('userfetch',array('userid' => $insert['id']));
 
