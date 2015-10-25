@@ -290,7 +290,7 @@
 					else if ($finishing){
 						if (!$usersMatch && !PERM('inspector'))
 							respond();
-						$update = check_request_finish_image();
+						$update = check_request_finish_image($Thing['reserved_by']);
 					}
 				}
 				else if ($finishing) respond("This $type has not yet been reserved");

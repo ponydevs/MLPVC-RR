@@ -160,17 +160,32 @@ DocReady.push(function Episode(){
 
 					$.Dialog.wait(false, 'Marking reservation as finished');
 
-					$.post('/reserving/'+type+'/'+id+'?finish',{deviation:deviation},$.mkAjaxHandler(function(){
-						var data = this;
-						if (!data.status) return $.Dialog.fail(false, data.message);
+					var request_url = '/reserving/'+type+'/'+id+'?finish';
+					$.post(request_url,{deviation:deviation},$.mkAjaxHandler(function(){
+						var data = this,
+							success = function(){
+								$.Dialog.success(false, 'Reservation has been marked as finished');
 
-						$.Dialog.success(false, 'Reservation has been marked as finished');
+								updateSection(type, SEASON, EPISODE, function(){
+									if (typeof data.message === 'string')
+										$.Dialog.success(false, data.message, true);
+									else $.Dialog.close();
+								});
+							};
+						if (data.status) success();
+						else if (data.retry){
+							$.Dialog.confirm(false, data.message, ["Continue","Cancel"], function(sure){
+								if (!sure) return;
 
-						updateSection(type, SEASON, EPISODE, function(){
-							if (typeof data.message === 'string')
-								$.Dialog.success(false,data.message,true);
-							else $.Dialog.close();
-						});
+								$.post(request_url,{deviation:deviation,allow_overwrite_reserver:true}, $.mkAjaxHandler(function(){
+									if (!this.status) return $.Dialog.fail(false, this.message);
+
+									data = this;
+									success();
+								}));
+							});
+						}
+						else $.Dialog.fail(false, data.message);
 					}));
 				});
 			});
