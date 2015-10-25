@@ -419,7 +419,7 @@ DocReady.push(function Episode(){
 			}
 		});
 		if (type === 'reservation') $('#add-reservation-btn').on('click',function(){
-			$.Dialog.request('Add a reservation','<form id="add-reservation"><div class="notice fail"><label>Error</label><p></p></div><div class="notice info">This feature should only be used when the vector was made before the episode was displayed here, and all you want to do is link your already-made vector under the newly posted episode.</div><div class="notice warn">If you already posted the reservation, use the <strong class="typcn typcn-attachment">I\'m done</strong> button to mark it as finished instead of adding it here.</div><input type="text" name="deviation" placeholder="Deviation URL"></form>','add-reservation','Finish',function($form){
+			$.Dialog.request('Add a reservation','<form id="add-reservation"><div class="notice info">This feature should only be used when the vector was made before the episode was displayed here, and all you want to do is link your already-made vector under the newly posted episode.</div><div class="notice warn">If you already posted the reservation, use the <strong class="typcn typcn-attachment">I\'m done</strong> button to mark it as finished instead of adding it here.</div><input type="text" name="deviation" placeholder="Deviation URL"></form>','add-reservation','Finish',function($form){
 				$form.on('submit',function(e){
 					e.preventDefault();
 
