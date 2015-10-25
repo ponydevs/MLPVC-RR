@@ -301,7 +301,7 @@
 					else if ($finishing){
 						if (!$usersMatch && !PERM('inspector'))
 							respond();
-						$update = check_request_finish_image();
+						$update = check_request_finish_image($Thing['reserved_by']);
 
 						$Deviation = da_cache_deviation($update['deviation_id']);
 						if (!empty($Deviation['author'])){
