@@ -1276,14 +1276,15 @@ HTML;
 		}
 
 		if (empty($R['lock']) && empty($Buttons) && (PERM('inspector') || (empty($R['reserved_by']) && $isRequest && $signedIn && $R['requested_by'] === $currentUser['id'])))
-			$Buttons[] = array('trash red delete','Delete', !$CanEdit);
+			$Buttons[] = array('trash red delete','Delete');
 		if ($CanEdit)
 			array_splice($Buttons,0,0,array(array('pencil darkblue edit','Edit')));
 
 		$HTML .= "<div class='actions'>";
 		if (!empty($Buttons)){
+			$regularButton = count($Buttons) <3;
 			foreach ($Buttons as $b){
-				$WriteOut = "'".(!empty($b[2]) ? ">{$b[1]}" : " title='".apos_encode($b[1])."'>");
+				$WriteOut = "'".($regularButton ? ">{$b[1]}" : " title='".apos_encode($b[1])."'>");
 				$HTML .= "<button class='typcn typcn-{$b[0]}$WriteOut</button> ";
 			}
 		}
