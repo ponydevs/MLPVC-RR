@@ -85,6 +85,8 @@
 					);
 					if ($thing === 'request')
 						$response['type'] = $Post['type'];
+					if (PERM('developer'))
+						$response['posted'] = date('c', strtotime($Post['posted']));
 					respond($response);
 				}
 

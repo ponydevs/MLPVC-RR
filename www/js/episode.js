@@ -1,4 +1,4 @@
-/* global DocReady,$content,$body,$w,$navbar */
+/* global DocReady,$content,$body,$w,$navbar,moment */
 DocReady.push(function Episode(){
 	'use strict';
 	var SEASON = window.SEASON,
@@ -312,6 +312,19 @@ DocReady.push(function Episode(){
 						)
 					);
 
+				if (typeof postdata.posted === 'string')
+					$Form.append(
+						$.mk('label').append(
+							$.mk('span').text('Post timestamp'),
+							$.mk('input').attr({
+								type: 'datetime',
+								name: 'date',
+								required: true,
+								spellcheck: false,
+							})
+						)
+					);
+
 				$Form.append(
 					$.mk('label').append(
 						$.mk('a').text('Update Image').attr({
@@ -360,20 +373,31 @@ DocReady.push(function Episode(){
 
 				$.Dialog.request(false, $Form, 'post-edit-form', 'Save', function($form){
 					var $label = $form.find('[name=label]'),
-						$type = $form.find('[name=type]');
+						$type = $form.find('[name=type]'),
+						$date;
 					if (postdata.label)
 						$label.val(postdata.label);
 					if (postdata.type)
 						$type.children('option').filter(function(){
 							return this.value === postdata.type;
 						}).attr('selected', true);
+					if (typeof postdata.posted === 'string'){
+						$date = $form.find('[name=date]');
+
+						var posted = moment(postdata.posted);
+						$date.val(posted.format('YYYY-MM-DD\THH:mm:SSZ'));
+					}
 					$form.on('submit',function(e){
 						e.preventDefault();
 
-						$.Dialog.wait('Saving changes');
 						var data = { label: $label.val() };
 						if (type === 'request')
 							data.type = $type.val();
+						if (typeof postdata.posted === 'string')
+							data.posted = new Date($date.val()).toISOString();
+
+						$.Dialog.wait('Saving changes');
+
 						$.post('/post/set-'+type+'/'+id,data, $.mkAjaxHandler(function(){
 							if (!this.status) return $.Dialog.fail(false, this.message);
 
@@ -388,6 +412,10 @@ DocReady.push(function Episode(){
 								$group.children().sort(function(a,b){
 									return getTimeValue(a) - getTimeValue(b);
 								}).appendTo($group);
+							}
+							if (this.posted){
+								$li.children('em').find('time').attr('datetime', this.posted);
+								window.updateTimes();
 							}
 
 							$.Dialog.close();

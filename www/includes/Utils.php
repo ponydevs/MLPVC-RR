@@ -1392,7 +1392,7 @@ HTML;
 				$HTML .= <<<HTML
 				<label>
 					<span>$Type as user</span>
-					<input type="text" name="post_as" pattern="^$UNP$" maxlength="20" placeholder="Username">
+					<input type="text" name="post_as" pattern="^$UNP$" maxlength="20" placeholder="Username" spellcheck="false">
 				</label>
 
 HTML;
@@ -2291,6 +2291,13 @@ ORDER BY `count` DESC
 
 			if (!$editing || (!empty($_POST['type']) &&  $_POST['type'] !== $Post['type']))
 				$array['type'] = $_POST['type'];
+		}
+
+		if (!empty($_POST['posted'])){
+			if (!PERM('developer'))
+				respond();
+
+			$array['posted'] = date('c', strtotime($_POST['posted']));
 		}
 	}
 
