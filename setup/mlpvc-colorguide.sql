@@ -59,7 +59,9 @@ INSERT INTO `appearances` (`id`, `order`, `label`, `notes`, `cm_favme`, `ishuman
 (37, NULL, 'Dinky Doo', 'From E5E17', NULL, 0, '2015-10-06 03:39:35'),
 (38, NULL, 'Berry Pinch', 'From S5E17', NULL, 0, '2015-10-06 03:48:24'),
 (39, NULL, 'Button Mash', 'Based on S5E18', NULL, 0, '2015-10-15 03:32:38'),
-(40, NULL, 'Lily Longsocks', 'From S5E18', NULL, 0, '2015-10-16 05:37:56');
+(40, NULL, 'Lily Longsocks', 'From S5E18', NULL, 0, '2015-10-16 05:37:56'),
+(44, NULL, 'Shining Armor', '', NULL, 0, '2015-10-23 14:27:32'),
+(45, NULL, 'Penny Curve', 'VectorClub Mascot', 'd9e7zgj', 0, '2015-10-25 20:10:21');
 
 CREATE TABLE `colorgroups` (
   `groupid` int(11) NOT NULL,
@@ -269,7 +271,17 @@ INSERT INTO `colorgroups` (`groupid`, `ponyid`, `label`, `order`) VALUES
 (243, 40, 'Cutie Mark', 3),
 (244, 24, 'Cutie Mark', 3),
 (245, 25, 'Cutie Mark', 3),
-(246, 25, 'Magic', 4);
+(246, 25, 'Magic', 4),
+(257, 44, 'Coat', 0),
+(258, 44, 'Mane & Tail', 1),
+(259, 44, 'Iris', 2),
+(260, 44, 'Cutie Mark', 3),
+(261, 44, 'Magic', 4),
+(262, 45, 'Coat', 0),
+(263, 45, 'Mane & Tail', 1),
+(264, 45, 'Iris', 2),
+(265, 45, 'Cutie Mark', 3),
+(266, 45, 'Magic', 4);
 
 CREATE TABLE `colors` (
   `colorid` int(11) NOT NULL,
@@ -1029,7 +1041,44 @@ INSERT INTO `colors` (`colorid`, `groupid`, `label`, `hex`, `order`) VALUES
 (954, 245, 'Shield Fill 3: Sc Mane Fill', '#BF5D93', 3),
 (955, 245, 'Star Fill', '#A02699', 4),
 (956, 245, 'Eight Note Fill', '#FD41F8', 5),
-(957, 246, 'Aura', '#C4FBB0', 0);
+(957, 246, 'Aura', '#C4FBB0', 0),
+(991, 257, 'Outline', '#9C9AAD', 0),
+(992, 257, 'Fill', '#FEFEFE', 1),
+(993, 257, 'Shadow Outline', '#9291A3', 2),
+(994, 257, 'Shadow Fill', '#F1F1F1', 3),
+(995, 258, 'Outline', '#101C2F', 0),
+(996, 258, 'Fill', '#325394', 1),
+(997, 259, 'Gradient Top', '#1A4859', 1),
+(999, 259, 'Gradient Bottom', '#63D1E9', 2),
+(1000, 259, 'Highlight Top', '#3CBDF1', 3),
+(1001, 259, 'Highlight Bottom', '#B1E8F2', 4),
+(1002, 260, 'Stars', '#6698CA', 0),
+(1003, 260, 'Shield Outline', '#111B26', 1),
+(1004, 257, 'Hoof Outline', '#2D3558', 4),
+(1005, 257, 'Hoof Fill', '#43558C', 5),
+(1006, 257, 'Shadow Hoof Outline', '#233250', 6),
+(1007, 257, 'Shadow Hoof Fill', '#3F5085', 7),
+(1008, 258, 'Stripe 1', '#57C4DD', 2),
+(1009, 258, 'Stripe 2', '#243871', 3),
+(1010, 259, 'Eyeball', '#E8F8F9', 0),
+(1011, 260, 'Shield Fill', '#243871', 2),
+(1012, 260, 'Shield Star Pattern', '#ED6C9C', 3),
+(1013, 261, 'Aura (Same as Twilight''s)', '#EA428B', 0),
+(1014, 262, 'Outline', '#9CBDDB', 0),
+(1015, 262, 'Fill', '#E6EFFC', 1),
+(1017, 262, 'Shadow Fill', '#D7E3F4', 2),
+(1018, 263, 'Outline', '#2864BC', 0),
+(1019, 263, 'Fill 1', '#3DA9FF', 1),
+(1020, 264, 'Gradient Top', '#FF8D38', 0),
+(1022, 264, 'Gradient Bottom', '#F6DF58', 1),
+(1023, 264, 'Highlight Top', '#F9E98C', 2),
+(1024, 264, 'Highlight Bottom', '#FCF1BD', 3),
+(1025, 265, 'Pen Nib Outline', '#C4AA1D', 0),
+(1026, 265, 'Pen Nib Fill', '#FCDF58', 1),
+(1027, 263, 'Fill 2', '#94D4FF', 2),
+(1028, 265, 'Node Fill', '#3DA9FF', 2),
+(1029, 265, 'Path Fill', '#000000', 3),
+(1030, 266, 'Aura', '#FCDF58', 0);
 
 CREATE TABLE `tagged` (
   `tid` int(11) NOT NULL,
@@ -1217,7 +1266,15 @@ INSERT INTO `tagged` (`tid`, `ponyid`) VALUES
 (8, 40),
 (12, 40),
 (44, 40),
-(75, 40);
+(75, 40),
+(1, 44),
+(7, 44),
+(11, 44),
+(59, 44),
+(77, 44),
+(1, 45),
+(12, 45),
+(78, 45);
 
 CREATE TABLE `tags` (
   `tid` int(11) NOT NULL,
@@ -1228,18 +1285,18 @@ CREATE TABLE `tags` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 INSERT INTO `tags` (`tid`, `name`, `title`, `type`, `uses`) VALUES
-(1, 'unicorn', '', 'spec', 16),
+(1, 'unicorn', '', 'spec', 18),
 (2, 'earth pony', '', 'spec', 10),
 (3, 'pegasus', '', 'spec', 8),
 (4, 'alicorn', '', 'spec', 3),
 (5, 'bat pony', '', 'spec', 0),
 (6, 'mane six', 'Ponies who are one of the show''s six main characters', 'cat', 7),
-(7, 'minor character', 'Ponies who had a speaking role and/or interacted with the mane six', 'cat', 24),
+(7, 'minor character', 'Ponies who had a speaking role and/or interacted with the mane six', 'cat', 25),
 (8, 'background character', 'Ponies whose only purpose is filling crowds, with no to minimal speaking roles', 'cat', 4),
 (9, 'antagonist', '', 'cat', 3),
 (10, 'pet', '', 'cat', 0),
-(11, 'male', '', 'gen', 7),
-(12, 'female', '', 'gen', 31),
+(11, 'male', '', 'gen', 8),
+(12, 'female', '', 'gen', 32),
 (14, 'twilight sparkle', '', 'char', 1),
 (15, 'gala dress', 'All gala dress colors', 'app', 0),
 (19, 's1e1', '', 'ep', 0),
@@ -1282,7 +1339,7 @@ INSERT INTO `tags` (`tid`, `name`, `title`, `type`, `uses`) VALUES
 (56, 'manehatten', '', 'cat', 1),
 (57, 'princess luna', '', 'char', 1),
 (58, 'suri polomare', '', 'char', 1),
-(59, 'royalty', '', 'cat', 3),
+(59, 'royalty', '', 'cat', 4),
 (60, 'trixie', '', 'char', 1),
 (61, 's3e5', '', 'ep', 1),
 (62, 'alicorn amulet', '', NULL, 1),
@@ -1294,7 +1351,10 @@ INSERT INTO `tags` (`tid`, `name`, `title`, `type`, `uses`) VALUES
 (72, 'dinky doo', '', 'char', 1),
 (73, 'berry pinch', '', 'char', 1),
 (74, 'button mash', '', 'char', 1),
-(75, 'lily longsocks', '', 'char', 1);
+(75, 'lily longsocks', '', 'char', 1),
+(76, 'human', '', 'spec', 1),
+(77, 'shining armor', '', 'char', 1),
+(78, 'original character', 'Characters not canon to the show''s universe', 'cat', 1);
 
 
 ALTER TABLE `appearances`
@@ -1318,13 +1378,13 @@ ALTER TABLE `tags`
 
 
 ALTER TABLE `appearances`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=41;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=46;
 ALTER TABLE `colorgroups`
-  MODIFY `groupid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=247;
+  MODIFY `groupid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=267;
 ALTER TABLE `colors`
-  MODIFY `colorid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=958;
+  MODIFY `colorid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1031;
 ALTER TABLE `tags`
-  MODIFY `tid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=76;
+  MODIFY `tid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=79;
 
 ALTER TABLE `colorgroups`
   ADD CONSTRAINT `colorgroups_ibfk_1` FOREIGN KEY (`ponyid`) REFERENCES `appearances` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
