@@ -156,7 +156,7 @@
 
 			var append = Boolean(_open),
 				$contentAdd = $makeDiv().addClass(params.color).append(params.content),
-				appendingToRequest = append && _open.type === 'request',
+				appendingToRequest = append && _open.type === 'request' && ['fail','wait'].includes(params.type),
 				$requestContentDiv;
 			if (append){
 				$dialogOverlay = $('#dialogOverlay');
@@ -166,7 +166,7 @@
 					$dialogHeader.text(params.title);
 				$dialogContent = $('#dialogContent');
 
-				if (appendingToRequest && ['fail','wait'].includes(params.type)){
+				if (appendingToRequest){
 					$requestContentDiv = $dialogContent.children(':not(#dialogButtons)').last();
 					var $ErrorNotice = $requestContentDiv.children('.notice');
 					if (!$ErrorNotice.length){
