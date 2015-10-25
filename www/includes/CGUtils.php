@@ -466,7 +466,7 @@ HTML;
 
 				$PonyID = $c['ponyid'];
 				if (empty($PonyCache[$PonyID])){
-					$PonyCache[$PonyID] = $CGDb->where('id', $PonyID)->getOne('ponies');
+					$PonyCache[$PonyID] = $CGDb->where('id', $PonyID)->getOne('appearances');
 				}
 				$Pony = $PonyCache[$PonyID];
 				$appearance = "<a href='/{$color}guide/appearance/{$Pony['id']}'>{$Pony['label']}</a>: ";
