@@ -7,4 +7,7 @@ DocReady.push(function Episodes(){
 			this.innerHTML = moment($(this).attr('datetime')).format('D-MMMM-YYYY H:mm:ss').replace(/:00$/, '');
 		});
 	}).trigger('updatetimes');
+	$eptableBody.on('page-switch',function(){
+		$eptableBody.trigger('updatetimes');
+	});
 });
