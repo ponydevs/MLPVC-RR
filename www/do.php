@@ -354,7 +354,8 @@
 					respond();
 				$_POST['allow_overwrite_reserver'] = true;
 				$insert = check_request_finish_image();
-				$insert['reserved_by'] = $currentUser['id'];
+				if (empty($insert['reserved_by']))
+					$insert['reserved_by'] = $currentUser['id'];
 				$epdata = episode_id_parse($_GET['add']);
 				if (empty($epdata))
 					respond('Invalid episode');
