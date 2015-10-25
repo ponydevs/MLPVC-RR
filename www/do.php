@@ -302,24 +302,6 @@
 						if (!$usersMatch && !PERM('inspector'))
 							respond();
 						$update = check_request_finish_image($Thing['reserved_by']);
-
-						$Deviation = da_cache_deviation($update['deviation_id']);
-						if (!empty($Deviation['author'])){
-							$Author = get_user($Deviation['author'], 'name');
-
-							if (!empty($Author)){
-								if (!isset($_POST['allow_overwrite_reserver']) && $Author['id'] !== $ReserverID){
-									global $currentUser;
-									$sameUser = $currentUser['id'] === $ReserverID;
-									$person = $sameUser ? 'you' : 'the user who reserved this post';
-									respond("You've linked to an image which was not submitted by $person. If this was intentional, press Continue to proceed with marking the post finished <b>but</b> note that it will make {$Author['name']} the new reserver.".($sameUser
-											? "<br><br>This means that you'll no longer be able to interact with this post until {$Author['name']} or an administrator cancels the reservation on it."
-											: ''), 0, array('retry' => true));
-								}
-
-								$update['reserved_by'] = $Author['id'];
-							}
-						}
 					}
 				}
 				else if ($finishing) respond("This $type has not yet been reserved");
