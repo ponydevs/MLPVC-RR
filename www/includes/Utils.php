@@ -1122,7 +1122,7 @@ HTML;
 
 		$insert = array(
 			'name' => $userdata['username'],
-			'avatar_url' => $userdata['usericon'],
+			'avatar_url' => makeHttps($userdata['usericon']),
 		);
 		if (!$userExists)
 			$insert['id'] = $ID;
