@@ -33,10 +33,11 @@
 			'derpiboo(?:\.ru|ru\.org)/(\d+)' => 'derpibooru',
 			'derpicdn\.net/img/(?:view|download)/\d{4}/\d{1,2}/\d{1,2}/(\d+)' => 'derpibooru',
 			'puu\.sh/([A-Za-z\d]+(?:/[A-Fa-f\d]+)?)' => 'puush',
+			'prntscr\.com/([\da-z]+)' => 'lightshot',
 		);
 		private static function test_provider($url, $pattern, $name){
 			$match = array();
-			if (preg_match("~^(?:https?://(?:www\.)?)?$pattern~", $url, $match))
+			if (preg_match("~^(?:https?://(?:www\\.)?)?$pattern~", $url, $match))
 				return array(
 					'name' => $name,
 					'itemid' => $match[1]
@@ -53,8 +54,8 @@
 		private function get_direct_url($id){
 			switch ($this->provider){
 				case 'imgur':
-					$this->fullsize = "//i.imgur.com/$id.png";
-					$this->preview = "//i.imgur.com/{$id}m.png";
+					$this->fullsize = "https://i.imgur.com/$id.png";
+					$this->preview = "https://i.imgur.com/{$id}m.png";
 				break;
 				case 'derpibooru':
 					$Data = @file_get_contents("http://derpibooru.org/$id.json");
@@ -101,6 +102,17 @@
 					$this->fullsize = $CachedDeviation['fullsize'];
 					$this->title = $CachedDeviation['title'];
 				break;
+				case 'lightshot':
+					$page = @file_get_contents("http://prntscr.com/$id");
+					$_match = array();
+					if (empty($page))
+						throw new Exception('The requested page could not be found');
+					if (!preg_match('~<img\s+class="image__pic[^"]*"\s+src="http://i\.imgur\.com/([A-Za-z\d]+)\.~', $page, $_match))
+						throw new Exception('The requested image could not be found');
+
+					$this->provider = 'imgur';
+					$this->get_direct_url($_match[1]);
+					break;
 				default:
 					throw new Exception('The image could not be retrieved');
 			}
