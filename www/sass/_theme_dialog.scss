@@ -49,8 +49,6 @@ body.dialog-open {
 	left: 0;
 	z-index: $ZIndexBase;
 	overflow: auto;
-	opacity: 0;
-	transition: opacity .5s;
 }
 #dialogBox {
 	font-family: 'Segoe UI', 'Open Sans', sans-serif;
@@ -59,7 +57,6 @@ body.dialog-open {
 	left: 40%;
 	min-width: 150px;
 	z-index: $ZIndexBase+1;
-	transition: top .5s;
 
 	/* Colors */
 	.blue-bg     { background-color: $NBlue }

@@ -42,9 +42,8 @@
 	$.Dialog = (function(){
 		var _open = $dialogContent.length,
 			Dialog = {
-				isOpen: function(){ return Boolean(_open) },
-			},
-			closeTimeout = false;
+				isOpen: function(){ return typeof _open === 'object' },
+			};
 
 		// Pre-defined dialogs
 		Dialog.fail = function(title,content,callback){
@@ -132,11 +131,6 @@
 
 		// Displaying dialogs
 		function Display(type,title,content,buttons,callback) {
-			if (closeTimeout !== false) {
-				clearTimeout(closeTimeout);
-				closeTimeout = false;
-			}
-
 			if (typeof type !== 'string' || typeof colors[type] === 'undefined')
 				throw new TypeError('Invalid dialog type: '+typeof type);
 
@@ -206,12 +200,6 @@
 				$dialogOverlay.append($dialogBox).appendTo($body);
 
 				$body.addClass('dialog-open');
-				var overlay = {w: $dialogOverlay.width(), h: $dialogOverlay.height()},
-					dialogpos = {w: $dialogBox.outerWidth(true), h: $dialogBox.outerHeight(true)};
-				$dialogBox.css({
-					top: Math.max(Math.max((overlay.h - dialogpos.h) / 2)*0.5, 0),
-					left: Math.max((overlay.w - dialogpos.w) / 2, 0),
-				});
 			}
 
 			if (!appendingToRequest)
@@ -280,27 +268,12 @@
 			if (!Dialog.isOpen())
 				return $.callCallback(callback, false);
 
-			if (closeTimeout !== false) {
-				clearTimeout(closeTimeout);
-				closeTimeout = false;
-			}
+			$dialogOverlay.remove();
+			_open = undefined;
+			_restoreFocus();
+			$.callCallback(callback);
 
-			var overlay = {w: $dialogOverlay.width(), h: $dialogOverlay.height()},
-				dialogpos = {w: $dialogBox.outerWidth(true), h: $dialogBox.outerHeight(true)};
-			$dialogBox.css({
-				top: Math.max(((overlay.h - dialogpos.h) / 2) * 1.2, 0),
-				left: Math.max((overlay.w - dialogpos.w) / 2, 0),
-			});
-			$dialogOverlay.css('opacity', 0);
-			closeTimeout = setTimeout(function(){
-				$dialogOverlay.remove();
-				_open = undefined;
-				_restoreFocus();
-				$.callCallback(callback);
-
-				$body.removeClass('dialog-open');
-				closeTimeout = false;
-			}, 500);
+			$body.removeClass('dialog-open');
 		}
 		Dialog.close = function(){ Close.apply(Dialog, arguments) };
 		Dialog.center = function(){
@@ -312,7 +285,6 @@
 				top: Math.max((overlay.h - dialog.h) / 2, 0),
 				left: Math.max((overlay.w - dialog.w) / 2, 0),
 			});
-			$dialogOverlay.css('opacity', 1);
 		};
 		return Dialog;
 	})();
