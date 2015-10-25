@@ -213,7 +213,7 @@
 				$Thing = $Database->where('id', $ID)->getOne("{$type}s");
 				if (empty($Thing)) respond("There's no $type with that ID");
 
-				if (!empty($Thing['lock']))
+				if (!empty($Thing['lock']) && !PERM('developer'))
 					respond('This post has been approved and cannot be edited or removed.'.(PERM('inspector') && !PERM('developer')?' If a change is necessary please ask the developer to do it for you.':''));
 
 				if ($deleteing && $type === 'request'){

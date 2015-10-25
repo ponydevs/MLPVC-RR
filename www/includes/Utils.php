@@ -1248,7 +1248,7 @@ HTML;
 		global $signedIn, $currentUser;
 
 		$sameUser = $signedIn && $By['id'] === $currentUser['id'];
-		$CanEdit = empty($R['lock']) && PERM('inspector');
+		$CanEdit = (empty($R['lock']) && PERM('inspector')) || PERM('developer');
 		$Buttons = array();
 
 		if (is_array($R) && empty($R['reserved_by'])) $HTML = PERM('member') ? "<button class='reserve-request typcn typcn-user-add'>Reserve</button>" : '';
