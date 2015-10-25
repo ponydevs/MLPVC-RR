@@ -167,7 +167,7 @@
 				$PostAs = get_user($username, 'name', '');
 
 				if (empty($PostAs))
-					respond('The user you wanted to request as does not exist');
+					respond('The user you wanted to post as does not exist');
 
 				$ByID = $PostAs['id'];
 			}
@@ -352,6 +352,7 @@
 			else if ($type === 'reservation'){
 				if (!PERM('inspector'))
 					respond();
+				$_POST['allow_overwrite_reserver'] = true;
 				$insert = check_request_finish_image();
 				$insert['reserved_by'] = $currentUser['id'];
 				$epdata = episode_id_parse($_GET['add']);
