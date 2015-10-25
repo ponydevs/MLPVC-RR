@@ -1383,6 +1383,17 @@ HTML;
 				</label>
 
 HTML;
+			if (PERM('developer')){
+				$UNP = USERNAME_PATTERN;
+				$HTML .= <<<HTML
+				<label>
+					<span>$Type as user</span>
+					<input type="text" name="post_as" pattern="^$UNP$" maxlength="20" placeholder="Username">
+				</label>
+
+HTML;
+			}
+
 			$HTML .= <<<HTML
 			</div>
 			<button class="green">Submit $type</button> <button type="reset">Cancel</button>
@@ -1782,7 +1793,7 @@ HTML;
 
 	// Checks the image which allows a request to be finished
 	$POST_TYPES = array('request','reservation');
-	function check_request_finish_image($ReserverID){
+	function check_request_finish_image(){
 		global $POST_TYPES, $Database;
 		if (!isset($_POST['deviation']))
 			respond('Please specify a deviation URL');
@@ -1796,26 +1807,7 @@ HTML;
 					respond("This exact deviation has already been marked as the finished version of a different $what");
 			}
 
-			$return = array('deviation_id' => $Image->id);
-			$Deviation = da_cache_deviation($Image->id);
-			if (!empty($Deviation['author'])){
-				$Author = get_user($Deviation['author'], 'name');
-
-				if (!empty($Author)){
-					if (!isset($_POST['allow_overwrite_reserver']) && $Author['id'] !== $ReserverID){
-						global $currentUser;
-						$sameUser = $currentUser['id'] === $ReserverID;
-						$person = $sameUser ? 'you' : 'the user who reserved this post';
-						respond("You've linked to an image which was not submitted by $person. If this was intentional, press Continue to proceed with marking the post finished <b>but</b> note that it will make {$Author['name']} the new reserver.".($sameUser
-								? "<br><br>This means that you'll no longer be able to interact with this post until {$Author['name']} or an administrator cancels the reservation on it."
-								: ''), 0, array('retry' => true));
-					}
-
-					$return['reserved_by'] = $Author['id'];
-				}
-			}
-
-			return $return;
+			return array('deviation_id' => $Image->id);
 		}
 		catch (MismatchedProviderException $e){
 			respond('The finished vector must be uploaded to DeviantArt, '.$e->getActualProvider().' links are not allowed');
