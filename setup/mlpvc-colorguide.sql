@@ -61,7 +61,8 @@ INSERT INTO `appearances` (`id`, `order`, `label`, `notes`, `cm_favme`, `ishuman
 (39, NULL, 'Button Mash', 'Based on S5E18', NULL, 0, '2015-10-15 03:32:38'),
 (40, NULL, 'Lily Longsocks', 'From S5E18', NULL, 0, '2015-10-16 05:37:56'),
 (44, NULL, 'Shining Armor', '', NULL, 0, '2015-10-23 14:27:32'),
-(45, NULL, 'Penny Curve', 'VectorClub Mascot', 'd9e7zgj', 0, '2015-10-25 20:10:21');
+(45, NULL, 'Penny Curve', 'VectorClub Mascot', 'd9e7zgj', 0, '2015-10-25 20:10:21'),
+(46, NULL, 'Cheese Sandwich', '', NULL, 0, '2015-10-26 14:27:27');
 
 CREATE TABLE `colorgroups` (
   `groupid` int(11) NOT NULL,
@@ -281,7 +282,13 @@ INSERT INTO `colorgroups` (`groupid`, `ponyid`, `label`, `order`) VALUES
 (263, 45, 'Mane & Tail', 1),
 (264, 45, 'Iris', 2),
 (265, 45, 'Cutie Mark', 3),
-(266, 45, 'Magic', 4);
+(266, 45, 'Magic', 4),
+(267, 46, 'Coat', 0),
+(268, 46, 'Mane & Tail', 1),
+(269, 46, 'Iris', 2),
+(270, 46, 'Cutie Mark', 3),
+(271, 46, 'Shirt', 4),
+(272, 46, 'Glasses', 5);
 
 CREATE TABLE `colors` (
   `colorid` int(11) NOT NULL,
@@ -1078,7 +1085,25 @@ INSERT INTO `colors` (`colorid`, `groupid`, `label`, `hex`, `order`) VALUES
 (1027, 263, 'Fill 2', '#94D4FF', 2),
 (1028, 265, 'Node Fill', '#3DA9FF', 2),
 (1029, 265, 'Path Fill', '#000000', 3),
-(1030, 266, 'Aura', '#FCDF58', 0);
+(1030, 266, 'Aura', '#FCDF58', 0),
+(1031, 267, 'Outline', '#AC6600', 0),
+(1032, 267, 'Fill', '#FFB240', 1),
+(1033, 267, 'Shadow Outline', '#9D5700', 2),
+(1034, 267, 'Shadow Fill', '#F7A731', 3),
+(1035, 268, 'Outline', '#251100', 0),
+(1036, 268, 'Fill', '#683A00', 1),
+(1037, 269, 'Gradient Top', '#275D00', 0),
+(1039, 269, 'Gradient Bottom', '#8CEA4D', 1),
+(1042, 270, 'Crust', '#744126', 0),
+(1043, 270, 'Bread', '#E1D4AC', 1),
+(1044, 271, 'Outline', '#9C8300', 0),
+(1045, 271, 'Fill', '#FFBE39', 1),
+(1046, 272, 'Frame', '#000000', 0),
+(1047, 270, 'Crust spots', '#BE916D', 2),
+(1048, 270, 'Bread spots', '#8E7A50', 3),
+(1049, 270, 'Grill marks', '#25150D', 4),
+(1050, 270, 'Cheese', '#FFFF13', 5),
+(1051, 270, 'Toasting Gradient (0 to 85%)', '#000000', 6);
 
 CREATE TABLE `tagged` (
   `tid` int(11) NOT NULL,
@@ -1274,7 +1299,11 @@ INSERT INTO `tagged` (`tid`, `ponyid`) VALUES
 (77, 44),
 (1, 45),
 (12, 45),
-(78, 45);
+(78, 45),
+(2, 46),
+(7, 46),
+(11, 46),
+(79, 46);
 
 CREATE TABLE `tags` (
   `tid` int(11) NOT NULL,
@@ -1286,16 +1315,16 @@ CREATE TABLE `tags` (
 
 INSERT INTO `tags` (`tid`, `name`, `title`, `type`, `uses`) VALUES
 (1, 'unicorn', '', 'spec', 18),
-(2, 'earth pony', '', 'spec', 10),
+(2, 'earth pony', '', 'spec', 11),
 (3, 'pegasus', '', 'spec', 8),
 (4, 'alicorn', '', 'spec', 3),
 (5, 'bat pony', '', 'spec', 0),
 (6, 'mane six', 'Ponies who are one of the show''s six main characters', 'cat', 7),
-(7, 'minor character', 'Ponies who had a speaking role and/or interacted with the mane six', 'cat', 25),
+(7, 'minor character', 'Ponies who had a speaking role and/or interacted with the mane six', 'cat', 26),
 (8, 'background character', 'Ponies whose only purpose is filling crowds, with no to minimal speaking roles', 'cat', 4),
 (9, 'antagonist', '', 'cat', 3),
 (10, 'pet', '', 'cat', 0),
-(11, 'male', '', 'gen', 8),
+(11, 'male', '', 'gen', 9),
 (12, 'female', '', 'gen', 32),
 (14, 'twilight sparkle', '', 'char', 1),
 (15, 'gala dress', 'All gala dress colors', 'app', 0),
@@ -1354,7 +1383,8 @@ INSERT INTO `tags` (`tid`, `name`, `title`, `type`, `uses`) VALUES
 (75, 'lily longsocks', '', 'char', 1),
 (76, 'human', '', 'spec', 1),
 (77, 'shining armor', '', 'char', 1),
-(78, 'original character', 'Characters not canon to the show''s universe', 'cat', 1);
+(78, 'original character', 'Characters not canon to the show''s universe', 'cat', 1),
+(79, 'cheese sandwich', '', 'char', 1);
 
 
 ALTER TABLE `appearances`
@@ -1378,13 +1408,13 @@ ALTER TABLE `tags`
 
 
 ALTER TABLE `appearances`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=46;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=47;
 ALTER TABLE `colorgroups`
-  MODIFY `groupid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=267;
+  MODIFY `groupid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=273;
 ALTER TABLE `colors`
-  MODIFY `colorid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1031;
+  MODIFY `colorid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1052;
 ALTER TABLE `tags`
-  MODIFY `tid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=79;
+  MODIFY `tid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=80;
 
 ALTER TABLE `colorgroups`
   ADD CONSTRAINT `colorgroups_ibfk_1` FOREIGN KEY (`ponyid`) REFERENCES `appearances` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
