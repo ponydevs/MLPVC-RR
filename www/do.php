@@ -1424,7 +1424,7 @@
 						$Name = $Appearance['label'];
 						$NameVerticalMargin = 5;
 						$NameFontSize = 22;
-						$TextMarginRight = 10;
+						$TextMargin = 10;
 
 						// Detect if sprite exists and adjust image size & define starting positions
 						$SpritePath = APPATH.$SpriteRelPath;
@@ -1442,7 +1442,7 @@
 						}
 						else $SpriteRealWidth = 0;
 						$origin = array(
-							'x' => $SpriteExists ? $SpriteRealWidth : 0,
+							'x' => $SpriteExists ? $SpriteRealWidth : $TextMargin,
 							'y' => 0,
 						);
 
@@ -1461,7 +1461,7 @@
 
 						// Check how long & tall appearance name is, and set image width
 						$NameBox = imagettfsanebbox($NameFontSize, $FontFile, $Name);
-						$OutWidth = $origin['x'] + max($NameBox['width'], $ExportBox['width']) + $TextMarginRight;
+						$OutWidth = $origin['x'] + max($NameBox['width'], $ExportBox['width']) + $TextMargin;
 
 						// Set image height
 						$OutHeight = $origin['y'] + (($NameVerticalMargin*3) + $NameBox['height'] + $ExportBox['height']) + $CGsHeight;
