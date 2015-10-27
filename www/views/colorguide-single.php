@@ -6,7 +6,7 @@
 	if (PERM('inspector')){
 		$RenderPath = APPATH."img/cg_render/{$Appearance['id']}.png";
 		$FileModTime = file_exists($RenderPath) ? '?'.filemtime($RenderPath) : '';
-		echo "<div class='align-center'><a class='darkblue btn typcn typcn-image' title='View as PNG' href='/{$color}guide/appearance/{$Appearance['id']}.png$FileModTime' target='_blank'></a></div>";
+		echo "<div class='align-center'><a class='darkblue btn typcn typcn-image' href='/{$color}guide/appearance/{$Appearance['id']}.png$FileModTime' target='_blank'>View as PNG</a></div>";
 	}
 	if (!empty($Appearance['notes'])){ ?>
 	<section>
