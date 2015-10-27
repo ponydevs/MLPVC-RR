@@ -1405,19 +1405,34 @@
 						'Sprite' => null,
 						'IsEQG' => (bool) $Appearance['ishuman'],
 						'Added' => date('c', strtotime($Appearance['added'])),
+						'Changes' => array(),
 						'ColorGroups' => array(),
 					);
 
 					if (!empty($Appearance['cm_favme'])){
 						$CM = da_cache_deviation($Appearance['cm_favme']);
 						if (!empty($CM))
-							$Data['CutieMark'] = $CM;
+							$Data['CutieMark'] = array(
+								'Title' => $CM['title'],
+								'MadeBy' => $CM['author'],
+								'URL' => "http://{$CM['provider']}/{$CM['id']}",
+								'Preview' => $CM['preview'],
+								'FullSize' => $CM['fullsize'],
+							);
 					}
 
 					$SpriteRelPath = "img/cg/{$Appearance['id']}.png";
 					if (file_exists(APPATH.$SpriteRelPath))
 						$Data['Sprite'] = ABSPATH.$SpriteRelPath;
 
+					$Changes = get_updates($Appearance['id']);
+					if (!empty($Changes))
+						foreach ($Changes as $ch){
+							$Data['Changes'][] = array(
+								'Reason' => $ch['reason'],
+								'On' => date('c', strtotime($ch['timestamp'])),
+							);
+						};
 
 					$ColorGroups = get_cgs($Appearance['id']);
 					if (!empty($ColorGroups))
