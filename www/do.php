@@ -1404,7 +1404,8 @@
 						'CutieMark' => null,
 						'Sprite' => null,
 						'IsEQG' => (bool) $Appearance['ishuman'],
-						'Added' => date('c', strtotime($Appearance['added']))
+						'Added' => date('c', strtotime($Appearance['added'])),
+						'ColorGroups' => array(),
 					);
 
 					if (!empty($Appearance['cm_favme'])){
@@ -1416,6 +1417,30 @@
 					$SpriteRelPath = "img/cg/{$Appearance['id']}.png";
 					if (file_exists(APPATH.$SpriteRelPath))
 						$Data['Sprite'] = ABSPATH.$SpriteRelPath;
+
+
+					$ColorGroups = get_cgs($Appearance['id']);
+					if (!empty($ColorGroups))
+						foreach ($ColorGroups as $cg){
+							$Push = array(
+								'GroupID' => $cg['groupid'],
+								'Label' => $cg['label'],
+								'Colors' => array(),
+							);
+
+							$Colors = get_colors($cg['groupid']);
+							if (!empty($Colors)){
+								foreach ($Colors as $i => $c)
+									$Push['Colors'][] = array(
+										'ColorID' => $c['colorid'],
+										'Label' => $c['label'],
+										'HEX' => $c['hex'],
+										'RGB' => hex2rgb($c['hex']),
+									);
+							}
+
+							$Data['ColorGroups'][] = $Push;
+						};
 
 					header('Content-Type: application/json');
 					die(json_encode($Data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));

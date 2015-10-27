@@ -554,6 +554,12 @@ HTML;
 		return $c;
 	}
 
+	// Convert HEX to RGB
+	function hex2rgb($hex){
+		// http://stackoverflow.com/a/15202130/1344955
+		return sscanf($hex, "#%02x%02x%02x");
+	}
+
 	// Redirection \\
 	define('STAY_ALIVE', false);
 	function redirect($url = '/', $die = true, $http = 301){
