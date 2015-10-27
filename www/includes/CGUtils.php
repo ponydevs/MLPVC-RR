@@ -596,3 +596,7 @@ HTML;
 			return unlink($RenderedPath);
 		else return true;
 	}
+
+	function imageCopyExact($dest, $source, $x, $y, $w, $h){
+		imagecopyresampled($dest, $source, $x, $y, $x, $y, $w, $h, $w, $h);
+	}

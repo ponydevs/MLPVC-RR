@@ -1440,6 +1440,7 @@
 							if ($SpriteHeight > $OutHeight)
 								$OutHeight = $SpriteHeight;
 						}
+						else $SpriteRealWidth = 0;
 						$origin = array(
 							'x' => $SpriteExists ? $SpriteRealWidth : 0,
 							'y' => 0,
@@ -1471,7 +1472,7 @@
 
 						// If sprite exists, output it on base image
 						if ($SpriteExists)
-							imagecopyresampled($BaseImage, $Sprite, 0, 0, 0, 0, $SpriteWidth, $SpriteHeight, $SpriteWidth, $SpriteHeight);
+							imageCopyExact($BaseImage, $Sprite, 0, 0, $SpriteWidth, $SpriteHeight);
 
 						// Output appearance name
 						$origin['y'] += $NameVerticalMargin;
@@ -1489,9 +1490,25 @@
 
 								$Colors = get_colors($cg['groupid']);
 								if (!empty($Colors)){
-									foreach ($Colors as $i => $c){
+									$i = 0;
+									foreach ($Colors as $c){
 										$add = $i === 0 ? 0 : $i*5;
-										imageDrawRectangle($BaseImage, $origin['x']+($i*$ColorSquareSize)+$add, $origin['y'], $ColorSquareSize, $c['hex'], $BLACK);
+										$x = $origin['x']+($i*$ColorSquareSize)+$add;
+										if ($x+$ColorSquareSize > $OutWidth){
+											$i = 0;
+											$SizeIncrease = $ColorSquareSize + $CGVerticalMargin;
+											$origin['y'] += $SizeIncrease;
+											$x = $origin['x'];
+
+											// Create new base image since height will increase, and copy contsnts of old one
+											$NewBaseImage = imageCreateTransparent($OutWidth, $OutHeight + $SizeIncrease);
+											imageCopyExact($NewBaseImage, $BaseImage, 0, 0, $OutWidth, $OutHeight);
+											imagedestroy($BaseImage);
+											$BaseImage = $NewBaseImage;
+										}
+
+										imageDrawRectangle($BaseImage, $x, $origin['y'], $ColorSquareSize, $c['hex'], $BLACK);
+										$i++;
 									}
 
 									$origin['y'] += $ColorSquareSize + $CGVerticalMargin;
