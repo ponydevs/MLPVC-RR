@@ -1390,6 +1390,37 @@
 
 			$_match = array();
 			if (preg_match('~^appearance/(\d+)~',$data,$_match)){
+				if (isset($_REQUEST['json'])){
+					$Appearance = $CGDb->where('id', intval($_match[1]))->getOne('appearances');
+
+					if (empty($Appearance))
+						respond('The reuested appearance does not exist');
+
+					$Data = array(
+						'status' => true,
+						'ID' => $Appearance['id'],
+						'Name' => $Appearance['label'],
+						'Notes' => !empty($Appearance['notes']) ? $Appearance['notes'] : null,
+						'CutieMark' => null,
+						'Sprite' => null,
+						'IsEQG' => (bool) $Appearance['ishuman'],
+						'Added' => date('c', strtotime($Appearance['added']))
+					);
+
+					if (!empty($Appearance['cm_favme'])){
+						$CM = da_cache_deviation($Appearance['cm_favme']);
+						if (!empty($CM))
+							$Data['CutieMark'] = $CM;
+					}
+
+					$SpriteRelPath = "img/cg/{$Appearance['id']}.png";
+					if (file_exists(APPATH.$SpriteRelPath))
+						$Data['Sprite'] = ABSPATH.$SpriteRelPath;
+
+					header('Content-Type: application/json');
+					die(json_encode($Data, JSON_PRETTY_PRINT));
+				}
+
 				$Appearance = $CGDb->where('id', intval($_match[1]))->where('ishuman', $EQG)->getOne('appearances');
 				if (empty($Appearance))
 					do404();

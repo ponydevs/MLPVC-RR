@@ -986,6 +986,10 @@ HTML;
 			$Deviation = $insert;
 		}
 
+		if (!empty($Deviation['updated_on']))
+			$Deviation['updated_on'] = date('c', strtotime($Deviation['updated_on']));
+
+
 		return $Deviation;
 	}
 
