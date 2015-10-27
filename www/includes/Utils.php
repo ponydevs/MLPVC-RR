@@ -978,6 +978,7 @@ HTML;
 				'fullsize' => makeHttps(isset($json['fullsize_url']) ? $json['fullsize_url'] : $json['url']),
 				'provider' => $type,
 				'author' => $json['author_name'],
+				'updated_on' => date('c', time()),
 			);
 
 			if (empty($Deviation)){
@@ -991,10 +992,8 @@ HTML;
 
 			$Deviation = $insert;
 		}
-
-		if (!empty($Deviation['updated_on']))
+		else if (!empty($Deviation['updated_on']))
 			$Deviation['updated_on'] = date('c', strtotime($Deviation['updated_on']));
-
 
 		return $Deviation;
 	}
