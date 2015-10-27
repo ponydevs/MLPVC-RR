@@ -588,3 +588,11 @@ HTML;
 	// Constants for getimagesize() return array keys
 	define('WIDTH', 0);
 	define('HEIGHT', 1);
+
+	function clear_rendered_image($AppearanceID){
+		// Remove rendered sprite image to force its re-generation
+		$RenderedPath = APPATH."img/cg_render/$AppearanceID.png";
+		if (file_exists($RenderedPath))
+			return unlink($RenderedPath);
+		else return true;
+	}

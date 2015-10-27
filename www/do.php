@@ -869,7 +869,7 @@
 					typeahead_results(empty($Tags) ? '[]' : $Tags);
 				}
 
-				if (preg_match('~^(rename|delete|make|[gs]et(?:sprite|cgs)?|tag|untag)(?:/(\d+))?$~', $data, $_match)){
+				if (preg_match('~^(rename|delete|make|[gs]et(?:sprite|cgs)?|tag|untag|clearrendercache)(?:/(\d+))?$~', $data, $_match)){
 					$action = $_match[1];
 
 					if ($action !== 'make'){
@@ -1004,12 +1004,15 @@
 							if ($action === 'setsprite'){
 								process_uploaded_image('sprite', $finalpath, array('image/png'), 100);
 
-								// Remove rendered sprite image to force its re-generation
-								$RenderedGuidePath = APPATH."img/cg_render/$fname";
-								if (file_exists($RenderedGuidePath))
-									unlink($RenderedGuidePath);
+								clear_rendered_image($Appearance['id']);
 							}
 							respond(array("path" => "$SpriteRelPath$fname?".filemtime($finalpath)));
+						break;
+						case "clearrendercache":
+							if (!clear_rendered_image($Appearance['id']))
+								respond('Cache could not be cleared');
+
+							respond('Cached image removed, the image will be re-generated on the next request', 1);
 						break;
 						case "tag":
 							if (empty($_POST['tag_name']))
@@ -1331,10 +1334,7 @@
 						));
 						$response['update'] = get_update_html($AppearanceID);
 
-						// Remove rendered sprite image to force its re-generation
-						$RenderedGuidePath = APPATH."img/cg_render/{$Appearance['id']}.png";
-						if (file_exists($RenderedGuidePath))
-							unlink($RenderedGuidePath);
+						clear_rendered_image($Appearance['id']);
 					}
 
 					respond($response);
@@ -1412,7 +1412,7 @@
 
 					if ($asPNG){
 						$OutputPath = APPATH."img/cg_render/{$Appearance['id']}.png";
-						if (file_exists($OutputPath) && !(PERM('inspector') && isset($_REQUEST['regen'])))
+						if (file_exists($OutputPath))
 							outputpng($OutputPath);
 
 						$OutWidth = 0;

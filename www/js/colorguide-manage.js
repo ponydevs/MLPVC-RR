@@ -38,8 +38,7 @@ DocReady.push(function ColorguideManage(){
 						name: 'cm_favme',
 						placeholder: 'DeviantArt submission URL',
 					})
-				),
-				$.mk('div').attr('class','notice').hide().html('<p></p>')
+				)
 			),
 		mkPonyEditor = function($this, title, data){
 			var $ponyLabel = $this.parent(),
@@ -52,6 +51,25 @@ DocReady.push(function ColorguideManage(){
 					$form.find('input[name=label]').val(data.label);
 					$form.find('textarea').val(data.notes);
 					$form.find('input[name=cm_favme]').val(data.cm_favme);
+					$form.append(
+						$.mk('div').attr('class','align-center').append(
+							$.mk('button')
+								.attr('class', 'blue typcn typcn-image')
+								.text('Update rendered image')
+								.on('click',function(e){
+									e.preventDefault();
+									
+									$.Dialog.close();
+									$.Dialog.wait('Clear appearance image cache','Clearing cache');
+
+									$.post('/colorguide/clearrendercache/'+data.ponyID,$.mkAjaxHandler(function(){
+										if (!this.status) return $.Dialog.fail(false, this.message);
+
+										$.Dialog.success(false, this.message, true);
+									}));
+								})
+						)
+					);
 				}
 				else {
 					$form.append(
@@ -68,10 +86,10 @@ DocReady.push(function ColorguideManage(){
 				$form.on('submit',function(e){
 					e.preventDefault();
 
-					var data = $form.mkData();
+					var newdata = $form.mkData();
 					$.Dialog.wait(false, 'Saving changes');
 
-					$.post('/colorguide/'+(editing?'set/'+data.ponyID:'make')+EQGRq,data,$.mkAjaxHandler(function(){
+					$.post('/colorguide/'+(editing?'set/'+data.ponyID:'make')+EQGRq,newdata,$.mkAjaxHandler(function(){
 						if (!this.status) return $.Dialog.fail(false, this.message);
 
 						if (editing){
