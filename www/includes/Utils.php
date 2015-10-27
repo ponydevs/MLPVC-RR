@@ -2150,14 +2150,12 @@ ORDER BY `count` DESC
 		}
 		if ($GLOBALS['signedIn'])
 			$NavItems['u'] = array("/@{$GLOBALS['currentUser']['name']}",'Account');
-		if (PERM('inspector') || $do === 'user'){
+		if (PERM('inspector'))
 			$NavItems['users'] = array('/users', 'Users', PERM('inspector'));
+		if ($do === 'user' && !$GLOBALS['sameUser']){
+			global $User;
 
-			if ($do === 'user' && !$GLOBALS['sameUser']){
-				global $User;
-
-				$NavItems['users']['subitem'] = array($_SERVER['REQUEST_URI'], $User['name']);
-			}
+			$NavItems['users']['subitem'] = array($_SERVER['REQUEST_URI'], $User['name']);
 		}
 		if (PERM('inspector')){
 			$NavItems['logs'] = array('/logs', 'Logs');
