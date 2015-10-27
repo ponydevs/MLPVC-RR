@@ -1415,8 +1415,8 @@
 						if (file_exists($OutputPath) && !(PERM('inspector') && isset($_REQUEST['regen'])))
 							outputpng($OutputPath);
 
-						$OutWidth = 300;
-						$OutHeight = 400;
+						$OutWidth = 0;
+						$OutHeight = 0;
 						$SpriteWidth = $SpriteHeight = 0;
 						$SpriteRightMargin = 10;
 						$ColorSquareSize = 25;
