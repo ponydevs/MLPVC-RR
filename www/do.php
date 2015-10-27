@@ -1445,12 +1445,6 @@
 							'y' => 0,
 						);
 
-						// Check how long & tall appearance name is, and adjust image size if needed
-						$NameBox = imagettfsanebbox($NameFontSize, $FontFile, $Name);
-						$MinWidth = $origin['x'] + $NameBox['width'] + $TextMarginRight;
-						if ($MinWidth > $OutWidth)
-							$OutWidth = $MinWidth;
-
 						// Get color groups & calculate the space they take up
 						$ColorGroups = get_cgs($Appearance['id']);
 						$CGCount = count($ColorGroups);
@@ -1458,21 +1452,34 @@
 						$CGVerticalMargin = $NameVerticalMargin*1.5;
 						$GroupLabelBox = imagettfsanebbox($CGFontSize, $FontFile, 'AGIJKFagijkf');
 						$CGsHeight = $CGCount*($GroupLabelBox['height'] + ($CGVerticalMargin*2) + $ColorSquareSize);
-						$MinHeight = $origin['y'] + (($NameVerticalMargin*2) + $NameBox['height']) + $CGsHeight;
-						if ($MinHeight > $OutHeight)
-							$OutHeight = $MinHeight;
+
+						// Get export time & size
+						$ExportTS = "Image last updated: ".format_timestamp(time(), FORMAT_FULL);
+						$ExportFontSize = $CGFontSize/1.5;
+						$ExportBox = imagettfsanebbox($ExportFontSize, $FontFile, $ExportTS);
+
+						// Check how long & tall appearance name is, and set image width
+						$NameBox = imagettfsanebbox($NameFontSize, $FontFile, $Name);
+						$OutWidth = $origin['x'] + max($NameBox['width'], $ExportBox['width']) + $TextMarginRight;
+
+						// Set image height
+						$OutHeight = $origin['y'] + (($NameVerticalMargin*3) + $NameBox['height'] + $ExportBox['height']) + $CGsHeight;
 
 						// Create base image
 						$BaseImage = imageCreateTransparent($OutWidth, $OutHeight);
 						$BLACK = imagecolorallocate($BaseImage, 0, 0, 0);
 
-						// If sprite exists, output it on $BaseImage
+						// If sprite exists, output it on base image
 						if ($SpriteExists)
 							imagecopyresampled($BaseImage, $Sprite, 0, 0, 0, 0, $SpriteWidth, $SpriteHeight, $SpriteWidth, $SpriteHeight);
 
 						// Output appearance name
 						$origin['y'] += $NameVerticalMargin;
 						imageWrite($BaseImage, $Name, $origin['x'], $NameFontSize, $BLACK);
+						$origin['y'] += $NameVerticalMargin;
+
+						// Output generation time
+						imageWrite($BaseImage, $ExportTS, $origin['x'], $ExportFontSize, $BLACK);
 						$origin['y'] += $NameVerticalMargin;
 
 						if (!empty($ColorGroups))
