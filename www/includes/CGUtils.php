@@ -201,7 +201,7 @@
 
 			if (PERM('inspector')){
 				$RenderPath = APPATH."img/cg_render/{$p['id']}.png";
-				$FileModTime = file_exists($RenderPath) ? '?'.filemtime($RenderPath) : '';
+				$FileModTime = '?'.(file_exists($RenderPath) ? filemtime($RenderPath) : time());
 				$editBtn = "<a class='darkblue btn typcn typcn-image' title='View as PNG' href='/{$color}guide/appearance/{$p['id']}.png$FileModTime' target='_blank'></a>$editBtn";
 			}
 
