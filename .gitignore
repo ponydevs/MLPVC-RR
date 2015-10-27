@@ -4,6 +4,7 @@ mlpvc-rr-error.log
 *.opdownload
 node_modules
 www/img/cg/
+www/img/cg_render/
 *.crdownload
 www/css/*.scss*
 www/google*.html

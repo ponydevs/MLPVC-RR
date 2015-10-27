@@ -1001,8 +1001,14 @@
 						case "setsprite":
 							$fname = $Appearance['id'].'.png';
 							$finalpath = $SpritePath.$fname;
-							if ($action === 'setsprite')
-								process_uploaded_image('sprite',$finalpath,array('image/png'),100);
+							if ($action === 'setsprite'){
+								process_uploaded_image('sprite', $finalpath, array('image/png'), 100);
+
+								// Remove rendered sprite image to force its re-generation
+								$RenderedGuidePath = APPATH."img/cg_render/$fname";
+								if (file_exists($RenderedGuidePath))
+									unlink($RenderedGuidePath);
+							}
 							respond(array("path" => "$SpriteRelPath$fname?".filemtime($finalpath)));
 						break;
 						case "tag":
@@ -1324,6 +1330,11 @@
 							'reason' => $reason,
 						));
 						$response['update'] = get_update_html($AppearanceID);
+
+						// Remove rendered sprite image to force its re-generation
+						$RenderedGuidePath = APPATH."img/cg_render/{$Appearance['id']}.png";
+						if (file_exists($RenderedGuidePath))
+							unlink($RenderedGuidePath);
 					}
 
 					respond($response);
@@ -1389,12 +1400,101 @@
 			$CGPath = "/{$color}guide".($EQG?'/eqg':'');
 
 			$_match = array();
-			if (preg_match('~^appearance/(\d+)~',$data,$_match)){
-				if (isset($_REQUEST['json'])){
+			if (preg_match('~^appearance/(\d+)(\.png)?~',$data,$_match)){
+				$asJSON = isset($_REQUEST['json']);
+				$asPNG = !empty($_match[2]) && PERM('inspector');
+				if ($asJSON || $asPNG){
 					$Appearance = $CGDb->where('id', intval($_match[1]))->getOne('appearances');
 
 					if (empty($Appearance))
 						respond('The reuested appearance does not exist');
+					$SpriteRelPath = "img/cg/{$Appearance['id']}.png";
+
+					if ($asPNG){
+						$OutputPath = APPATH."img/cg_render/{$Appearance['id']}.png";
+						if (file_exists($OutputPath) && !(PERM('inspector') && isset($_REQUEST['regen'])))
+							outputpng($OutputPath);
+
+						$OutWidth = 300;
+						$OutHeight = 400;
+						$SpriteWidth = $SpriteHeight = 0;
+						$SpriteRightMargin = 10;
+						$ColorSquareSize = 25;
+						$FontFile = APPATH.'font/Celestia Medium Redux.ttf';
+						$Name = $Appearance['label'];
+						$NameVerticalMargin = 5;
+						$NameFontSize = 22;
+						$TextMarginRight = 10;
+
+						// Detect if sprite exists and adjust image size & define starting positions
+						$SpritePath = APPATH.$SpriteRelPath;
+						$SpriteExists = file_exists($SpritePath);
+						if ($SpriteExists){
+							$SpriteSize = getimagesize($SpritePath);
+							$Sprite = imagecreatefrompng($SpritePath);
+							$SpriteHeight = $SpriteSize[HEIGHT];
+							$SpriteWidth = $SpriteSize[WIDTH];
+							$SpriteRealWidth = $SpriteWidth + $SpriteRightMargin;
+
+							$OutWidth += $SpriteRealWidth;
+							if ($SpriteHeight > $OutHeight)
+								$OutHeight = $SpriteHeight;
+						}
+						$origin = array(
+							'x' => $SpriteExists ? $SpriteRealWidth : 0,
+							'y' => 0,
+						);
+
+						// Check how long & tall appearance name is, and adjust image size if needed
+						$NameBox = imagettfsanebbox($NameFontSize, $FontFile, $Name);
+						$MinWidth = $origin['x'] + $NameBox['width'] + $TextMarginRight;
+						if ($MinWidth > $OutWidth)
+							$OutWidth = $MinWidth;
+
+						// Get color groups & calculate the space they take up
+						$ColorGroups = get_cgs($Appearance['id']);
+						$CGCount = count($ColorGroups);
+						$CGFontSize = $NameFontSize/1.5;
+						$CGVerticalMargin = $NameVerticalMargin*1.5;
+						$GroupLabelBox = imagettfsanebbox($CGFontSize, $FontFile, 'AGIJKFagijkf');
+						$CGsHeight = $CGCount*($GroupLabelBox['height'] + ($CGVerticalMargin*2) + $ColorSquareSize);
+						$MinHeight = $origin['y'] + (($NameVerticalMargin*2) + $NameBox['height']) + $CGsHeight;
+						if ($MinHeight > $OutHeight)
+							$OutHeight = $MinHeight;
+
+						// Create base image
+						$BaseImage = imageCreateTransparent($OutWidth, $OutHeight);
+						$BLACK = imagecolorallocate($BaseImage, 0, 0, 0);
+
+						// If sprite exists, output it on $BaseImage
+						if ($SpriteExists)
+							imagecopyresampled($BaseImage, $Sprite, 0, 0, 0, 0, $SpriteWidth, $SpriteHeight, $SpriteWidth, $SpriteHeight);
+
+						// Output appearance name
+						$origin['y'] += $NameVerticalMargin;
+						imageWrite($BaseImage, $Name, $origin['x'], $NameFontSize, $BLACK);
+						$origin['y'] += $NameVerticalMargin;
+
+						if (!empty($ColorGroups))
+							foreach ($ColorGroups as $cg){
+								imageWrite($BaseImage, $cg['label'], $origin['x'], $CGFontSize , $BLACK);
+								$origin['y'] += $CGVerticalMargin;
+
+								$Colors = get_colors($cg['groupid']);
+								if (!empty($Colors)){
+									foreach ($Colors as $i => $c){
+										$add = $i === 0 ? 0 : $i*5;
+										imageDrawRectangle($BaseImage, $origin['x']+($i*$ColorSquareSize)+$add, $origin['y'], $ColorSquareSize, $c['hex'], $BLACK);
+									}
+
+									$origin['y'] += $ColorSquareSize + $CGVerticalMargin;
+								}
+							};
+
+						if (!upload_folder_create($OutputPath))
+							respond('Failed to create render directory');
+						outputpng($BaseImage, $OutputPath);
+					}
 
 					$Data = array(
 						'status' => true,

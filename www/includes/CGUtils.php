@@ -181,7 +181,7 @@
 
 	// Returns the markup for an array of pony datase rows \\
 	function render_ponies_html($Ponies, $wrap = true){
-		global $CGDb, $_MSG;
+		global $CGDb, $_MSG, $color;
 
 		$HTML = $wrap ? '<ul id="list">' : '';
 		if (!empty($Ponies)) foreach ($Ponies as $p){
@@ -197,7 +197,7 @@
 			$notes = get_notes_html($p);
 			$tags = get_tags_html($p['id']);
 			$colors = get_colors_html($p['id']);
-			$editBtn = PERM('inspector') ? '<button class="edit typcn typcn-pencil blue" title="Edit"></button><button class="delete typcn typcn-trash red" title="Delete"></button>' : '';
+			$editBtn = PERM('inspector') ? "<a class='darkblue btn typcn typcn-image' title='View as PNG' href='/{$color}guide/appearance/{$p['id']}.png' target='_blank'></a><button class='edit typcn typcn-pencil blue' title='Edit'></button><button class='delete typcn typcn-trash red' title='Delete'></button>" : '';
 
 			$HTML .= "<li id='p{$p['id']}'>$img<div><strong><a href='/colorguide/appearance/{$p['id']}'>{$p['label']}</a>$editBtn</strong>$updates$notes$tags$colors</div></li>";
 		}
@@ -244,9 +244,9 @@
 
 	// Create upload destination folder
 	function upload_folder_create($path){
-		$DS = preg_quote(DIRECTORY_SEPARATOR);
-		$folder = preg_replace("~^(.*$DS)[^$DS]+$~",'$1',$path);
-		if (!is_dir($folder)) mkdir($folder,0777,true);
+		$DS = preg_quote('/\\');
+		$folder = preg_replace("~^(.*[$DS])[^$DS]+$~",'$1',$path);
+		return !is_dir($folder) ? mkdir($folder,0777,true) : true;
 	}
 
 	/**
@@ -485,3 +485,100 @@ HTML;
 		if ($returnCount) $return['count'] = $Tagged;
 		return $return;
 	}
+
+	// Preseving alpha
+	function preserveAlpha($img) {
+		$background = imagecolorallocate($img, 0, 0, 0);
+		imagecolortransparent($img, $background);
+		imagealphablending($img, false);
+		imagesavealpha($img, true);
+		return $img;
+	}
+
+	// Transparent Image creator
+	function imageCreateTransparent($width, $height = null) {
+		if (!isset($height))
+			$height = $width;
+		$png = preserveAlpha(imagecreatetruecolor($width, $height));
+
+		$transparency = imagecolorallocatealpha($png, 0, 0, 0, 127);
+		imagefill($png, 0, 0, $transparency);
+		return $png;
+	}
+
+	// Draw Rectangle on image
+	function imageDrawRectangle($image, $x, $y, $size, $fill, $outline){
+		$fill = imagecolorallocate($image, ...hex2rgb($fill));
+		if (is_string($outline))
+			$outline = imagecolorallocate($image, ...hex2rgb($outline));
+
+		$x2 = $x+$size-1;
+		$y2 = $y+$size-1;
+
+		imagefilledrectangle($image, $x, $y, $x2, $y2, $fill);
+		imagerectangle($image, $x, $y, $x2, $y2, $outline);
+	}
+
+	// Writes on an image
+	function imageWrite($image, $text, $x, $fontsize, $fontcolor){
+		if (is_string($fontcolor))
+			$fontcolor = imagecolorallocate($image, 0, 0, 0);
+
+		global $origin, $FontFile;
+		$box = imagettfsanebbox($fontsize, $FontFile, $text);
+		$origin['y'] += $box['height'];
+
+		imagettftext($image, $fontsize, 0, $x, $origin['y'], $fontcolor, $FontFile, $text);
+	}
+
+	// imagettfbbox wrapper with sane output
+	function imagettfsanebbox($fontsize, $fontfile, $text){
+		/*
+		    imagettfbbox returns (x,y):
+		    6,7--4,5
+		     |    |
+		     |    |
+		    0,1--2,3
+		*/
+		$box = imagettfbbox($fontsize, 0, $fontfile, $text);
+
+		$return =  array(
+			'bottom left' => array('x' => $box[0], 'y' => $box[1]),
+			'bottom right' => array('x' => $box[2], 'y' => $box[3]),
+			'top right' => array('x' => $box[4], 'y' => $box[5]),
+			'top left' => array('x' => $box[6], 'y' => $box[7]),
+		);
+		$return['width'] = max(
+			$return['top right']['x'] - $return['top left']['x'],
+			$return['bottom right']['x'] - $return['bottom left']['x']
+		);
+		$return['height'] = max(
+			$return['bottom left']['y'] - $return['top left']['y'],
+			$return['bottom right']['y'] - $return['top right']['y']
+		);
+
+		return $return;
+	}
+
+	// Output png file to browser
+	function outputpng($resource, $path = null){
+		header('Content-Type: image/png');
+
+		if (!is_string($resource))
+			imagepng($resource, $path);
+		else {
+			$path = $resource;
+			if (isset($_SERVER['HTTP_IF_MODIFIED_SINCE'])
+				&& strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE']) >= filemtime($path)){
+				header('HTTP/1.0 304 Not Modified');
+				exit;
+			}
+		}
+
+		readfile($path);
+		exit;
+	}
+
+	// Constants for getimagesize() return array keys
+	define('WIDTH', 0);
+	define('HEIGHT', 1);
