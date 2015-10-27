@@ -1418,7 +1418,7 @@
 						$Data['Sprite'] = ABSPATH.$SpriteRelPath;
 
 					header('Content-Type: application/json');
-					die(json_encode($Data, JSON_PRETTY_PRINT));
+					die(json_encode($Data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
 				}
 
 				$Appearance = $CGDb->where('id', intval($_match[1]))->where('ishuman', $EQG)->getOne('appearances');
