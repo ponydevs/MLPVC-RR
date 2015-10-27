@@ -2151,7 +2151,7 @@ ORDER BY `count` DESC
 		if ($GLOBALS['signedIn'])
 			$NavItems['u'] = array("/@{$GLOBALS['currentUser']['name']}",'Account');
 		if (PERM('inspector'))
-			$NavItems['users'] = array('/users', 'Users', PERM('inspector'));
+			$NavItems['users'] = array('/users', 'Users');
 		if ($do === 'user' && !$GLOBALS['sameUser']){
 			global $User;
 
