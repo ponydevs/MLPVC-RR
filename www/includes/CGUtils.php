@@ -581,6 +581,8 @@ HTML;
 			}
 		}
 
+		global $FileRelPath;
+		fix_path("$FileRelPath?t=".filemtime($path));
 		readfile($path);
 		exit;
 	}

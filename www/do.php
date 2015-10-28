@@ -1412,11 +1412,9 @@
 
 					if ($asPNG){
 						$OutputPath = APPATH."img/cg_render/{$Appearance['id']}.png";
-						$FileRelPath = "$CGPath/appearance/{$Appearance['id']}.png?";
-						if (file_exists($OutputPath)){
-							fix_path($FileRelPath.filemtime($OutputPath));
+						$FileRelPath = "$CGPath/appearance/{$Appearance['id']}.png";
+						if (file_exists($OutputPath))
 							outputpng($OutputPath);
-						}
 
 						$OutWidth = 0;
 						$OutHeight = 0;
@@ -1520,7 +1518,6 @@
 
 						if (!upload_folder_create($OutputPath))
 							respond('Failed to create render directory');
-						fix_path($FileRelPath.time());
 						outputpng($BaseImage, $OutputPath);
 					}
 

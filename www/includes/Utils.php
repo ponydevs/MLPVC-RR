@@ -586,7 +586,7 @@ HTML;
 
 			$fix_query_arr = array();
 			foreach ($merged as $key => $item)
-				$fix_query_arr[] = "$key".(!empty($itme)?"=$item":'');
+				$fix_query_arr[] = "$key".(!empty($item)?"=$item":'');
 			$fix_query = implode('&', $fix_query_arr);
 			$fix_query = empty($fix_query) ? '' : "?$fix_query";
 		}
