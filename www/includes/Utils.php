@@ -568,11 +568,44 @@ HTML;
 	}
 
 	// Redirect to fix path \\
-	function fix_path($path, $http = 301){
-		$query = !empty($_SERVER['QUERY_STRING']) ? preg_replace('~do=[^&]*&data=[^&]*(&|$)~','',$_SERVER['QUERY_STRING']) : '';
-		if (!empty($query)) $query = "?$query";
-		if ($_SERVER['REQUEST_URI'] !== "$path$query")
-			redirect("$path$query", STAY_ALIVE, $http);
+	function fix_path($fix_uri, $http = 301){
+		list($path, $query) = explode('?', "{$_SERVER['REQUEST_URI']}?");
+		$query = empty($query) ? '' : "?$query";
+
+		list($fix_path, $fix_query) = explode('?', "$fix_uri?");
+		$fix_query = empty($fix_query) ? '' : "?$fix_query";
+
+		if (empty($fix_query))
+			$fix_query = $query;
+		else {
+			$query_assoc = query_string_assoc($query);
+			$fix_query_assoc = query_string_assoc($fix_query);
+			$merged = $query_assoc;
+			foreach ($fix_query_assoc as $key => $item)
+				$merged[$key] = $item;
+
+			$fix_query_arr = array();
+			foreach ($merged as $key => $item)
+				$fix_query_arr[] = "$key".(!empty($itme)?"=$item":'');
+			$fix_query = implode('&', $fix_query_arr);
+			$fix_query = empty($fix_query) ? '' : "?$fix_query";
+		}
+
+		if ($path !== $fix_path || $query !== $fix_query)
+			redirect("$fix_path$fix_query", STAY_ALIVE, $http);
+	}
+
+	// Turn query string into an associative array
+	function query_string_assoc($query){
+		$assoc = array();
+		if (!empty($query)){
+			$query_arr = explode('&', substr($query, 1));
+			foreach ($query_arr as $el){
+				$el = explode('=', $el);
+				$assoc[$el[0]] = empty($el[1]) ? '' : $el[1];
+			}
+		}
+		return $assoc;
 	}
 
 	/**
