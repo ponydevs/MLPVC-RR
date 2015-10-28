@@ -1648,7 +1648,7 @@
 				if (empty($_MSG)){
 					$query =
 						'SELECT @coloumn, COUNT(t.tid) as cnt FROM tagged t
-						LEFT JOIN ponies p ON t.ponyid = p.id
+						LEFT JOIN appearances p ON t.ponyid = p.id
 						WHERE t.tid IN ('.implode(',', $Tags).") && p.ishuman = $EQG
 						GROUP BY p.label
 						HAVING cnt = $tc";
