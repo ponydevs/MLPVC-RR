@@ -226,12 +226,13 @@ function DocumentIsReady(){
 
 			$.post('/signout',$.mkAjaxHandler(function(){
 				if (this.status){
-					$.Dialog.success(title,this.message);
-					setTimeout(function(){
-						HandleNav(location.href, function(){
+					var msg = this.message;
+					HandleNav(location.href, function(){
+						$.Dialog.success(title, msg);
+						setTimeout(function(){
 							$.Dialog.close();
-						});
-					},1000);
+						}, 1500);
+					});
 				}
 				else $.Dialog.fail(title,this.message);
 			}));
