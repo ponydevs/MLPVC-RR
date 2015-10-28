@@ -1402,7 +1402,7 @@
 			$_match = array();
 			if (preg_match('~^appearance/(\d+)(\.png)?~',$data,$_match)){
 				$asJSON = isset($_REQUEST['json']);
-				$asPNG = !empty($_match[2]) && PERM('inspector');
+				$asPNG = !empty($_match[2]);
 				if ($asJSON || $asPNG){
 					$Appearance = $CGDb->where('id', intval($_match[1]))->getOne('appearances');
 

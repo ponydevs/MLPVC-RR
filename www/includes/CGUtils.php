@@ -197,15 +197,15 @@
 			$notes = get_notes_html($p);
 			$tags = get_tags_html($p['id']);
 			$colors = get_colors_html($p['id']);
-			$editBtn = PERM('inspector') ? "<button class='edit typcn typcn-pencil blue' title='Edit'></button><button class='delete typcn typcn-trash red' title='Delete'></button>" : '';
 
-			if (PERM('inspector')){
-				$RenderPath = APPATH."img/cg_render/{$p['id']}.png";
-				$FileModTime = '?t='.(file_exists($RenderPath) ? filemtime($RenderPath) : time());
-				$editBtn = "<a class='darkblue btn typcn typcn-image' title='View as PNG' href='/{$color}guide/appearance/{$p['id']}.png$FileModTime' target='_blank'></a>$editBtn";
-			}
+			$RenderPath = APPATH."img/cg_render/{$p['id']}.png";
+			$FileModTime = '?t='.(file_exists($RenderPath) ? filemtime($RenderPath) : time());
+			$Actions = "<a class='darkblue btn typcn typcn-image' title='View as PNG' href='/{$color}guide/appearance/{$p['id']}.png$FileModTime' target='_blank'></a>";
+			if (PERM('inspector'))
+				$Actions .= "<button class='edit typcn typcn-pencil blue' title='Edit'></button>".
+				            "<button class='delete typcn typcn-trash red' title='Delete'></button>";
 
-			$HTML .= "<li id='p{$p['id']}'>$img<div><strong><a href='/colorguide/appearance/{$p['id']}'>{$p['label']}</a>$editBtn</strong>$updates$notes$tags$colors</div></li>";
+			$HTML .= "<li id='p{$p['id']}'>$img<div><strong><a href='/colorguide/appearance/{$p['id']}'>{$p['label']}</a>$Actions</strong>$updates$notes$tags$colors</div></li>";
 		}
 		else {
 			if (empty($_MSG))
