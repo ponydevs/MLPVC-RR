@@ -33,19 +33,19 @@
 			<thead><th>#</th><th>Name & Version</th><th>Sessions</th></thead>
 			<tbody><?php
 			$Data = $Database->rawQuery(
-				"SELECT
-					@name := browser_name as `name`,
-					@ver := browser_ver as `ver`,
-					CONCAT(browser_name, ' ', browser_ver) as browser,
+				'SELECT
+					@name := browser_name as "name",
+					@ver := browser_ver as "ver",
+					CONCAT(browser_name, " ", browser_ver) as browser,
 					(
 						SELECT COUNT(*)
 						FROM sessions
 						WHERE browser_name = @name && browser_ver = @ver
 					) as users
-				FROM `sessions`
+				FROM sessions
 				GROUP BY browser
 				HAVING users > 1
-				ORDER BY users DESC, browser_name, browser_ver DESC");
+				ORDER BY users DESC, browser_name, browser_ver DESC');
 			$i = 0;
 			$last = 0;
 			foreach ($Data as $r){

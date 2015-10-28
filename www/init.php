@@ -14,8 +14,8 @@
 	define('NOW', time());
 
 	// Imports \\
-	require 'includes/MysqliDbWrapper.php';
-	$Database = new MysqliDbWrapper('mlpvc-rr');
+	require 'includes/PostgresDbWrapper.php';
+	$Database = new PostgresDbWrapper('mlpvc-rr');
 	require 'includes/Cookie.php';
 	require 'includes/Utils.php';
 	require 'includes/AuthCheck.php';

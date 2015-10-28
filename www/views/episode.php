@@ -1,17 +1,17 @@
 <?php
-	$isMovie = $CurrentEpisode['season'] === 0;
 
 	if ($do === 'da-auth' && isset($err)){
 		echo Notice('fail',"There was a(n) <strong>$err</strong> error while trying to authenticate with DeviantArt".(isset($OAUTH_RESPONSE[$err])?"; {$OAUTH_RESPONSE[$err]}":'.').(!empty($errdesc)?"\n\nAdditional details: $errdesc":''),true) ?>
 <script>try{history.replaceState('',{},'/')}catch(e){}</script>
 <?  } ?>
 <div id="content">
-<?  if(!empty($CurrentEpisode)){ ?>
+<?  if (!empty($CurrentEpisode)){
+		$isMovie = $CurrentEpisode['season'] === 0;?>
 	<h1><?=format_episode_title($CurrentEpisode)?></h1>
 	<p>Vector Requests & Reservations</p>
-<?  if (PERM('inspector')){ ?>
+<?php   if (PERM('inspector')){ ?>
 	<p class="align-center"><em><?=$isMovie?'Movie':'Episode'?> added by <?=profile_link(get_user($CurrentEpisode['posted_by'])).' '.timetag($CurrentEpisode['posted'])?></em></p>
-<?  }
+<?php   }
 	echo render_ep_video($CurrentEpisode); ?>
 	<section class="about-res">
 		<h2>What Vector Reservations Are</h2>

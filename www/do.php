@@ -364,7 +364,10 @@
 			$CurrentEpisode = get_latest_episode();
 			if (empty($CurrentEpisode)){
 				unset($CurrentEpisode);
-				loadPage(array('title' => 'Home'));
+				loadPage(array(
+					'title' => 'Home',
+					'view' => 'episode',
+				));
 			}
 			else {
 				$data = "S{$CurrentEpisode['season']}E{$CurrentEpisode['episode']}";
@@ -558,8 +561,11 @@
 						if (!$Database->whereEp($season,$episode)->update('episodes', $insert))
 							respond('No changes were made', 1);
 					}
-					else if (!$Database->insert('episodes', $insert))
-						respond(ERR_DB_FAIL);
+					else {
+						$insert['posted'] = date('c');
+						if (!$Database->insert('episodes', $insert))
+							respond(ERR_DB_FAIL);
+					}
 
 					if ($editing){
 						$logentry = array('target' => format_episode_title($Current,AS_ARRAY,'id'));
@@ -653,7 +659,7 @@
 					if (empty($MainEntry)) respond('Log entry does not exist');
 					if (empty($MainEntry['refid'])) respond('There are no details to show');
 
-					$Details = $Database->where('entryid', $MainEntry['refid'])->getOne("`log__{$MainEntry['reftype']}`");
+					$Details = $Database->where('entryid', $MainEntry['refid'])->getOne("log__{$MainEntry['reftype']}");
 					if (empty($Details)) respond('Failed to retrieve details');
 
 					respond(format_log_details($MainEntry['reftype'],$Details));
@@ -831,7 +837,7 @@
 		case "colorguides":
 			$do = 'colorguide';
 		case "colorguide":
-			$CGDb = new MysqliDbWrapper('mlpvc-colorguide');
+			$CGDb = new PostgresDbWrapper('mlpvc-colorguide');
 			include "includes/CGUtils.php";
 
 			$SpriteRelPath = '/img/cg/';
@@ -1263,7 +1269,7 @@
 
 						// Attempt to get order number of last color group for the appearance
 						order_cgs();
-						$LastGroup = get_cgs($AppearanceID, '`order`', 'DESC', 1);
+						$LastGroup = get_cgs($AppearanceID, '"order"', 'DESC', 1);
 						$data['order'] =  !empty($LastGroup['order']) ? $LastGroup['order']+1 : 1;
 
 						$GroupID = $CGDb->insert('colorgroups', $data);
@@ -1646,7 +1652,7 @@
 					$query =
 						'SELECT @coloumn, COUNT(t.tid) as cnt FROM tagged t
 						LEFT JOIN appearances p ON t.ponyid = p.id
-						WHERE t.tid IN ('.implode(',', $Tags).") && p.ishuman = $EQG
+						WHERE t.tid IN ('.implode(',', $Tags).") AND p.ishuman = $EQG
 						GROUP BY p.label
 						HAVING cnt = $tc";
 					$EntryCount = $CGDb->rawQuerySingle(str_replace('@coloumn','COUNT(*) as count',$query))['count'];

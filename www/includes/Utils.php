@@ -56,14 +56,17 @@
 	);
 	function LogAction($type,$data = null){
 		global $Database, $signedIn, $currentUser;
-		$central = array('ip' => $_SERVER['REMOTE_ADDR']);
+		$central = array(
+			'ip' => $_SERVER['REMOTE_ADDR'],
+			'timestamp' => date('c'),
+		);
 
 		if (isset($data)){
 			foreach ($data as $k => $v)
 				if (is_bool($v))
 					$data[$k] = $v ? 1 : 0;
 
-			$refid = $Database->insert("`log__$type`",$data);
+			$refid = $Database->insert("log__$type",$data);
 			if (!$refid){
 				trigger_error('Logging failed: '.$Database->getLastError());
 				return;
@@ -813,7 +816,8 @@ HTML;
 		$AuthData = array(
 			'access' => $json['access_token'],
 			'refresh' => $json['refresh_token'],
-			'expires' => date('c',NOW+intval($json['expires_in']))
+			'expires' => date('c',NOW+intval($json['expires_in'])),
+			'created' => date('c'),
 		);
 
 		$cookie = openssl_random_pseudo_bytes(64);
@@ -821,25 +825,31 @@ HTML;
 
 		add_browser($AuthData);
 		if (empty($User)){
-			$MoreInfo = array('id' => $UserID, 'role' => 'user');
+			$MoreInfo = array(
+				'id' => $UserID,
+				'role' => 'user',
+				'signup_date' => date('c'),
+			);
 			$makeDev = !$Database->has('users');
 			if ($makeDev){
 				$MoreInfo['id'] = strtoupper($MoreInfo['id']);
 
-				$STATIC_ROLES = array(
-					array(0,'ban','Banished User'),
-					array(1,'user','DeviantArt User'),
-					array(2,'member','Club Member'),
-					array(3,'inspector','Vector Inspector'),
-					array(4,'manager','Group Manager'),
-					array(255,'developer','Site Developer'),
-				);
-				foreach ($STATIC_ROLES as $role)
-					$Database->insert('roles',array(
-						'value' => $role[0],
-						'name' => $role[1],
-						'label' => $role[2],
-					));
+				if (!$Database->has('roles')){
+					$STATIC_ROLES = array(
+						array(0, 'ban', 'Banished User'),
+						array(1, 'user', 'DeviantArt User'),
+						array(2, 'member', 'Club Member'),
+						array(3, 'inspector', 'Vector Inspector'),
+						array(4, 'manager', 'Group Manager'),
+						array(255, 'developer', 'Site Developer'),
+					);
+					foreach ($STATIC_ROLES as $role)
+						$Database->insert('roles', array(
+							'value' => $role[0],
+							'name' => $role[1],
+							'label' => $role[2],
+						));
+				}
 			}
 			$Insert = array_merge($UserData, $MoreInfo);
 			$Database->insert('users', $Insert);
@@ -847,8 +857,8 @@ HTML;
 		}
 		else $Database->where('id',$UserID)->update('users', $UserData);
 
-		if ($type === 'refresh_token') $Database->where('refresh', $code)->update('sessions',$AuthData);
-		else $Database->insert('sessions', array_merge($AuthData, array('user' => $UserID)));
+		if ($type === 'refresh_token') $res = $Database->where('refresh', $code)->update('sessions',$AuthData);
+		else $res = $Database->insert('sessions', array_merge($AuthData, array('user' => $UserID)));
 
 		Cookie::set('access', $cookie, ONE_YEAR);
 	}
@@ -1217,7 +1227,7 @@ HTML;
 					roles.label as rolelabel
 				FROM users
 				LEFT JOIN roles ON roles.name = users.role
-				WHERE users.`$coloumn` = ?",array($value));
+				WHERE users.$coloumn = ?",array($value));
 
 			if (empty($User) && $coloumn === 'name')
 				$User = fetch_user($value);
@@ -1562,9 +1572,14 @@ HTML;
 		global $Database;
 
 		$Query =
-			'SELECT *,
-				IF(!ISNULL(r.deviation_id) && !ISNULL(r.reserved_by), 1, 0) as finished
-			FROM `coloumn` r
+			'SELECT
+				*,
+				(CASE
+					WHEN (r.deviation_id IS NOT NULL && r.reserved_by IS NOT NULL)
+					THEN 1
+					ELSE 0
+				END) as finished
+			FROM "coloumn" r
 			WHERE season = ? && episode = ?
 			ORDER BY finished, posted';
 
@@ -1657,6 +1672,9 @@ HTML;
 	 * @return array
 	 */
 	function add_episode_airing_data($Episode){
+		if (empty($Episode))
+			return null;
+
 		$airtime = strtotime($Episode['airs']);
 		$Episode['displayed'] = strtotime('-24 hours', $airtime) < NOW;
 		$Episode['aired'] = strtotime('+'.($Episode['season']===0?'2 hours':((!$Episode['twoparter']?30:60).' minutes')), $airtime) < NOW;
@@ -1693,7 +1711,7 @@ HTML;
 	 * @return array
 	 */
 	function get_latest_episode(){
-		return get_episodes(1,'airs < NOW() - INTERVAL -24 HOUR');
+		return get_episodes(1,"airs < NOW() - INTERVAL '24 HOUR'");
 	}
 
 	/**
@@ -1883,7 +1901,7 @@ HTML;
 
 	// Header link HTML generator
 	define('HTML_ONLY', true);
-	function get_header_link($item, $htmlOnly = false){
+	function get_header_link($item, $htmlOnly = false, $perm = true){
 		global $currentSet;
 
 		list($path, $label) = $item;
@@ -1930,7 +1948,7 @@ HTML;
 
 		$_bind = array($Episode['season'], $Episode['episode']);
 		$_query = function($col,$as,$val = null){
-			return "SELECT CAST(IFNULL($col,0) AS UNSIGNED INTEGER) as $as FROM episodes__votes WHERE ".(isset($val)?"vote = $val && ":'')."season = ? && episode = ?";
+			return "SELECT COALESCE($col,0) as $as FROM episodes__votes WHERE ".(isset($val)?"vote = $val && ":'')."season = ? && episode = ?";
 		};
 		$VoteTally = $Database->rawQuerySingle($_query('COUNT(*)','total'), $_bind);
 		$VoteTally = array_merge(
@@ -2026,34 +2044,34 @@ SELECT
 u.name,
 (
 	(SELECT
-	 COUNT(*) as `count`
+	 COUNT(*) as "count"
 	 FROM reservations res
 	 WHERE res.reserved_by = @id && res.deviation_id IS NULL)
 	+(SELECT
-	  COUNT(*) as `count`
+	  COUNT(*) as "count"
 	  FROM requests req
 	  WHERE req.reserved_by = @id && req.deviation_id IS NULL)
-) as `count`
-FROM `users` u
-HAVING `count` > 0
-ORDER BY `count` DESC
+) as "count"
+FROM "users" u
+HAVING "count" > 0
+ORDER BY "count" DESC
 	 */
 	function res_limit_check(){
 		global $Database, $currentUser;
 
 		$reservations = $Database->rawQuerySingle(
-			"SELECT
+			'SELECT
 			(
 				(SELECT
-				 COUNT(*) as `count`
+				 COUNT(*) as "count"
 				 FROM reservations res
 				 WHERE res.reserved_by = u.id && res.deviation_id IS NULL)
 				+(SELECT
-				  COUNT(*) as `count`
+				  COUNT(*) as "count"
 				  FROM requests req
 				  WHERE req.reserved_by = u.id && req.deviation_id IS NULL)
-			) as `count`
-			FROM `users` u WHERE u.id = ?",
+			) as "count"
+			FROM users u WHERE u.id = ?',
 			array($currentUser['id'])
 		);
 
@@ -2183,11 +2201,10 @@ ORDER BY `count` DESC
 		}
 		if ($GLOBALS['signedIn'])
 			$NavItems['u'] = array("/@{$GLOBALS['currentUser']['name']}",'Account');
-		if (PERM('inspector'))
-			$NavItems['users'] = array('/users', 'Users');
 		if ($do === 'user' && !$GLOBALS['sameUser']){
 			global $User;
 
+			$NavItems['users'] = array('/users', 'Users', PERM('inspector'));
 			$NavItems['users']['subitem'] = array($_SERVER['REQUEST_URI'], $User['name']);
 		}
 		if (PERM('inspector')){
@@ -2206,7 +2223,7 @@ ORDER BY `count` DESC
 			if (isset($item['subitem'])){
 				list($class, $sublink) = get_header_link($item['subitem']);
 				$sublink = " &rsaquo; $sublink";
-				$link = get_header_link($item, HTML_ONLY);
+				$link = get_header_link($item, HTML_ONLY, isset($item[2]) ? $item[2] : true);
 			}
 			else list($class, $link) = get_header_link($item);
 			$GLOBALS['NavHTML'] .= "<li$class>$link$sublink</li>";

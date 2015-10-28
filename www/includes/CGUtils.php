@@ -22,7 +22,7 @@
 	function get_colors($GroupID){
 		global $CGDb;
 
-		return $CGDb->rawQuery('SELECT * FROM colors WHERE groupid = ? ORDER BY `order`, colorid', array($GroupID));
+		return $CGDb->rawQuery('SELECT * FROM colors WHERE groupid = ? ORDER BY "order", colorid', array($GroupID));
 	}
 
 	// Return the markup for the specified color group
@@ -59,8 +59,8 @@
 		global $CGDb;
 
 		return $CGDb
-			->orderByLiteral('CASE WHEN `order` IS NULL THEN 1 ELSE 0 END', $dir)
-			->orderBy('`order`', $dir)
+			->orderByLiteral('CASE WHEN "order" IS NULL THEN 1 ELSE 0 END', $dir)
+			->orderBy('"order"', $dir)
 			->orderBy('groupid', $dir);
 	}
 
@@ -93,7 +93,7 @@
 
 		$CGDb
 			->orderByLiteral('CASE WHEN tags.type IS NULL THEN 1 ELSE 0 END')
-			->orderBy('CONCAT(tags.type)', 'ASC')
+			->orderBy('tags.type', 'ASC')
 			->orderBy('tags.name', 'ASC');
 		return !empty($PonyID)
 			? $CGDb
@@ -166,8 +166,8 @@
 		global $CGDb;
 
 		$CGDb
-			->orderByLiteral('CASE WHEN `order` IS NULL THEN 1 ELSE 0 END', $dir)
-			->orderBy('`order`', $dir)
+			->orderByLiteral('CASE WHEN "order" IS NULL THEN 1 ELSE 0 END', $dir)
+			->orderBy('"order"', $dir)
 			->orderBy('id', $dir);
 	}
 

@@ -10,3 +10,9 @@ www/css/*.scss*
 www/google*.html
 www/mywot*.html
 cf-ips.txt
+
+# PostgreSQL switch
+*.bat
+setup/*.sql
+!setup/*.pg.sql
+www/includes/MysqliDb.php

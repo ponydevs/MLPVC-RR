@@ -28,7 +28,7 @@
 
 	$PrivateSection = "<span class='typcn typcn-lock-closed' title='Only visible to you and group administrators'></span>";
 
-	$cols = 'id, CONCAT("S", season, "E", episode) as page, season, preview, label, posted';
+	$cols = "id, ('S'||season||'E'||episode) as page, season, preview, label, posted";
 	$PendingReservations = $Database->where('reserved_by', $User['id'])->where('deviation_id IS NULL')->get('reservations',null,$cols);
 	$PendingRequestReservations = $Database->where('reserved_by', $User['id'])->where('deviation_id IS NULL')->get('requests',null,"$cols, 1 as rq");
 	$TotalPending = count($PendingReservations)+count($PendingRequestReservations);
@@ -78,17 +78,17 @@ HTML;
 		}
 ?>
 		</section>
-<?php   $cols = "id, season, deviation_id as deviation, CONCAT('S', season, 'E', episode) as page";
+<?php   $cols = "id, season, deviation_id as deviation, ('S'||season||'E'||episode) as page";
 		$AwaitingApproval = array_merge(
 			$Database
 				->where('reserved_by', $User['id'])
 				->where('deviation_id IS NOT NULL')
-				->where('`lock` != 1')
+				->where('"lock" IS NOT TRUE')
 				->get('reservations',null,$cols),
 			$Database
 				->where('reserved_by', $User['id'])
 				->where('deviation_id IS NOT NULL')
-				->where('`lock` != 1')
+				->where('"lock" IS NOT TRUE')
 				->get('requests',null,"$cols, 1 as rq")
 		);
 		$AwaitCount = count($AwaitingApproval);
@@ -131,14 +131,14 @@ HTML;
 			<ul><?php
 		$Banishes = $Database
 			->where('target', $User['id'])
-			->join('log l',"l.reftype = 'banish' && l.refid = b.entryid")
+			->join('log l',"l.reftype = 'banish' AND l.refid = b.entryid")
 			->orderBy('l.timestamp')
 			->get('log__banish b',null,"b.reason, l.initiator, l.timestamp, 'Banish' as Action");
 		if (!empty($Banishes)){
 			$Unbanishes = $Database
 				->where('target', $User['id'])
-				->join('log l',"l.reftype = 'un-banish' && l.refid = b.entryid")
-				->get('`log__un-banish` b',null,"b.reason, l.initiator, l.timestamp, 'Un-banish' as Action");
+				->join('log l',"l.reftype = 'un-banish' AND l.refid = b.entryid")
+				->get('log__un-banish b',null,"b.reason, l.initiator, l.timestamp, 'Un-banish' as Action");
 			if (!empty($Unbanishes)){
 				$Banishes = array_merge($Banishes,$Unbanishes);
 				usort($Banishes, function($a, $b){

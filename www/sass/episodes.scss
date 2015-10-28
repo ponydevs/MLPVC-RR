@@ -20,8 +20,10 @@
 			padding: 3px;
 			margin-bottom: 10px;
 
-			&:nth-child(odd) { border-bottom: 0 }
-			&:nth-child(even) { border-top: 0 }
+			&:not(.empty) {
+				&:nth-child(odd) { border-bottom: 0 }
+				&:nth-child(even) { border-top: 0 }
+			}
 		}
 		td {
 			padding: 5px;
