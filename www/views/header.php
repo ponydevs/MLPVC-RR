@@ -32,3 +32,4 @@
 	</div>
 
 	<div id="main">
+		<?=Notice('info','<span class="typcn typcn-info-large"></span> In order to preserve server resources our database was migrated to PostgreSQL. If some of your requests/reservations are no longer visible, please addd them again as they likely got lost in the process. Sorrry for the inconvinience and thank you for your understanding. ~ DJDavid98', true)?>
