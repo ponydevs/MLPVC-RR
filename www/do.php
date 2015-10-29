@@ -183,6 +183,8 @@
 			}
 
 			check_post_post($what, $insert);
+			
+			$insert['posted'] = date('c');
 
 			if (!$Database->insert("{$what}s",$insert))
 				respond(ERR_DB_FAIL);
@@ -351,6 +353,7 @@
 					respond('The specified episode does not exist');
 				$insert['season'] = $epdata['season'];
 				$insert['episode'] = $epdata['episode'];
+				$insert['posted'] = date('c');
 
 				if (!$Database->insert('reservations', $insert))
 					respond(ERR_DB_FAIL);
