@@ -1901,7 +1901,7 @@ HTML;
 
 	// Header link HTML generator
 	define('HTML_ONLY', true);
-	function get_header_link($item, $htmlOnly = false, $perm = true){
+	function get_header_link($item, $htmlOnly = false){
 		global $currentSet;
 
 		list($path, $label) = $item;
@@ -1912,8 +1912,13 @@ HTML;
 			$class = " class='active'";
 		}
 
-		$href = $current && $htmlOnly !== HTML_ONLY && (empty($item[2]) || $item[2] !== 'false') ? '' : " href='$path'";
-		$html = "<a$href>$label</a>";
+		$perm = isset($item[2]) ? $item[2] : true;
+
+		if ($perm){
+			$href = $current && $htmlOnly !== HTML_ONLY ? '' : " href='$path'";
+			$html = "<a$href>$label</a>";
+		}
+		else $html = $label;
 
 		if ($htmlOnly === HTML_ONLY) return $html;
 		return array($class, $html);
@@ -2201,11 +2206,12 @@ ORDER BY "count" DESC
 		}
 		if ($GLOBALS['signedIn'])
 			$NavItems['u'] = array("/@{$GLOBALS['currentUser']['name']}",'Account');
-		if ($do === 'user' && !$GLOBALS['sameUser']){
+		if (($do === 'user' || PERM('inspector')) && empty($GLOBALS['sameUser'])){
 			global $User;
 
 			$NavItems['users'] = array('/users', 'Users', PERM('inspector'));
-			$NavItems['users']['subitem'] = array($_SERVER['REQUEST_URI'], $User['name']);
+			if (!empty($User))
+				$NavItems['users']['subitem'] = array($_SERVER['REQUEST_URI'], $User['name']);
 		}
 		if (PERM('inspector')){
 			$NavItems['logs'] = array('/logs', 'Logs');
@@ -2223,7 +2229,7 @@ ORDER BY "count" DESC
 			if (isset($item['subitem'])){
 				list($class, $sublink) = get_header_link($item['subitem']);
 				$sublink = " &rsaquo; $sublink";
-				$link = get_header_link($item, HTML_ONLY, isset($item[2]) ? $item[2] : true);
+				$link = get_header_link($item, HTML_ONLY);
 			}
 			else list($class, $link) = get_header_link($item);
 			$GLOBALS['NavHTML'] .= "<li$class>$link$sublink</li>";
