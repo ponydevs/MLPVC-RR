@@ -27,38 +27,5 @@
 		<h2><a href="/users"><span class="typcn typcn-arrow-back"></span>Linked users</a></h2>
 		<p><em>This section has been moved to its own page.</em></p>
 	</section>
-	<section class="browsers">
-		<h2>Most popular browsers</h2>
-		<table>
-			<thead><th>#</th><th>Name & Version</th><th>Sessions</th></thead>
-			<tbody><?php
-			$Data = $Database->rawQuery(
-				'SELECT
-					@name := browser_name as "name",
-					@ver := browser_ver as "ver",
-					CONCAT(browser_name, " ", browser_ver) as browser,
-					(
-						SELECT COUNT(*)
-						FROM sessions
-						WHERE browser_name = @name && browser_ver = @ver
-					) as users
-				FROM sessions
-				GROUP BY browser
-				HAVING users > 1
-				ORDER BY users DESC, browser_name, browser_ver DESC');
-			$i = 0;
-			$last = 0;
-			foreach ($Data as $r){
-				$s = $r['users'] !== 1 ? 's' : '';
-				$ordering = '~';
-				if ($last !== $r['users']){
-					$last = $r['users'];
-					$i++;
-					$ordering = $i;
-				}
-				echo "<tr><td><strong>$ordering</strong></td><td>{$r['browser']}</td><td class='align-center'>{$r['users']}</td></tr>";
-			} ?></tbody>
-		</table>
-	</section>
 <?  } ?>
 </div>
