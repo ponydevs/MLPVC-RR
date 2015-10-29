@@ -12,6 +12,7 @@ www/mywot*.html
 cf-ips.txt
 
 # PostgreSQL switch
+*.sh
 *.bat
 setup/*.sql
 !setup/*.pg.sql

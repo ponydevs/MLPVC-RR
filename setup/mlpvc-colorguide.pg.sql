@@ -3,6 +3,7 @@
 --
 
 SET statement_timeout = 0;
+SET lock_timeout = 0;
 SET client_encoding = 'UTF8';
 SET standard_conforming_strings = on;
 SET check_function_bodies = false;
@@ -29,7 +30,7 @@ SET default_tablespace = '';
 SET default_with_oids = false;
 
 --
--- Name: appearances; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: appearances; Type: TABLE; Schema: public; Owner: mlpvc-rr; Tablespace: 
 --
 
 CREATE TABLE appearances (
@@ -46,7 +47,7 @@ CREATE TABLE appearances (
 ALTER TABLE appearances OWNER TO "mlpvc-rr";
 
 --
--- Name: appearances_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: appearances_id_seq; Type: SEQUENCE; Schema: public; Owner: mlpvc-rr
 --
 
 CREATE SEQUENCE appearances_id_seq
@@ -60,14 +61,14 @@ CREATE SEQUENCE appearances_id_seq
 ALTER TABLE appearances_id_seq OWNER TO "mlpvc-rr";
 
 --
--- Name: appearances_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: appearances_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER SEQUENCE appearances_id_seq OWNED BY appearances.id;
 
 
 --
--- Name: colorgroups; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: colorgroups; Type: TABLE; Schema: public; Owner: mlpvc-rr; Tablespace: 
 --
 
 CREATE TABLE colorgroups (
@@ -81,7 +82,7 @@ CREATE TABLE colorgroups (
 ALTER TABLE colorgroups OWNER TO "mlpvc-rr";
 
 --
--- Name: colorgroups_groupid_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: colorgroups_groupid_seq; Type: SEQUENCE; Schema: public; Owner: mlpvc-rr
 --
 
 CREATE SEQUENCE colorgroups_groupid_seq
@@ -95,14 +96,14 @@ CREATE SEQUENCE colorgroups_groupid_seq
 ALTER TABLE colorgroups_groupid_seq OWNER TO "mlpvc-rr";
 
 --
--- Name: colorgroups_groupid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: colorgroups_groupid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER SEQUENCE colorgroups_groupid_seq OWNED BY colorgroups.groupid;
 
 
 --
--- Name: colors; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: colors; Type: TABLE; Schema: public; Owner: mlpvc-rr; Tablespace: 
 --
 
 CREATE TABLE colors (
@@ -117,7 +118,7 @@ CREATE TABLE colors (
 ALTER TABLE colors OWNER TO "mlpvc-rr";
 
 --
--- Name: colors_colorid_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: colors_colorid_seq; Type: SEQUENCE; Schema: public; Owner: mlpvc-rr
 --
 
 CREATE SEQUENCE colors_colorid_seq
@@ -131,14 +132,14 @@ CREATE SEQUENCE colors_colorid_seq
 ALTER TABLE colors_colorid_seq OWNER TO "mlpvc-rr";
 
 --
--- Name: colors_colorid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: colors_colorid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER SEQUENCE colors_colorid_seq OWNED BY colors.colorid;
 
 
 --
--- Name: tagged; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: tagged; Type: TABLE; Schema: public; Owner: mlpvc-rr; Tablespace: 
 --
 
 CREATE TABLE tagged (
@@ -150,7 +151,7 @@ CREATE TABLE tagged (
 ALTER TABLE tagged OWNER TO "mlpvc-rr";
 
 --
--- Name: tags; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: tags; Type: TABLE; Schema: public; Owner: mlpvc-rr; Tablespace: 
 --
 
 CREATE TABLE tags (
@@ -165,7 +166,7 @@ CREATE TABLE tags (
 ALTER TABLE tags OWNER TO "mlpvc-rr";
 
 --
--- Name: tags_tid_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: tags_tid_seq; Type: SEQUENCE; Schema: public; Owner: mlpvc-rr
 --
 
 CREATE SEQUENCE tags_tid_seq
@@ -179,42 +180,42 @@ CREATE SEQUENCE tags_tid_seq
 ALTER TABLE tags_tid_seq OWNER TO "mlpvc-rr";
 
 --
--- Name: tags_tid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: tags_tid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER SEQUENCE tags_tid_seq OWNED BY tags.tid;
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: id; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY appearances ALTER COLUMN id SET DEFAULT nextval('appearances_id_seq'::regclass);
 
 
 --
--- Name: groupid; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: groupid; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY colorgroups ALTER COLUMN groupid SET DEFAULT nextval('colorgroups_groupid_seq'::regclass);
 
 
 --
--- Name: colorid; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: colorid; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY colors ALTER COLUMN colorid SET DEFAULT nextval('colors_colorid_seq'::regclass);
 
 
 --
--- Name: tid; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: tid; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY tags ALTER COLUMN tid SET DEFAULT nextval('tags_tid_seq'::regclass);
 
 
 --
--- Data for Name: appearances; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: appearances; Type: TABLE DATA; Schema: public; Owner: mlpvc-rr
 --
 
 INSERT INTO appearances VALUES (1, 1, 'Twilight Sparkle', 'Far legs use darker colors.', 'd64bqyo', false, '2015-08-24 19:04:32');
@@ -262,14 +263,14 @@ INSERT INTO appearances VALUES (46, NULL, 'Cheese Sandwich', '', NULL, false, '2
 
 
 --
--- Name: appearances_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: appearances_id_seq; Type: SEQUENCE SET; Schema: public; Owner: mlpvc-rr
 --
 
 SELECT pg_catalog.setval('appearances_id_seq', 1, false);
 
 
 --
--- Data for Name: colorgroups; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: colorgroups; Type: TABLE DATA; Schema: public; Owner: mlpvc-rr
 --
 
 INSERT INTO colorgroups VALUES (17, 1, 'Coat', 0);
@@ -492,14 +493,14 @@ INSERT INTO colorgroups VALUES (272, 46, 'Glasses', 5);
 
 
 --
--- Name: colorgroups_groupid_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: colorgroups_groupid_seq; Type: SEQUENCE SET; Schema: public; Owner: mlpvc-rr
 --
 
 SELECT pg_catalog.setval('colorgroups_groupid_seq', 1, false);
 
 
 --
--- Data for Name: colors; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: colors; Type: TABLE DATA; Schema: public; Owner: mlpvc-rr
 --
 
 INSERT INTO colors VALUES (55, 17, 'Outline', '#A46BBD', 0);
@@ -1310,14 +1311,14 @@ INSERT INTO colors VALUES (1051, 270, 'Toasting Gradient (0 to 85%)', '#000000',
 
 
 --
--- Name: colors_colorid_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: colors_colorid_seq; Type: SEQUENCE SET; Schema: public; Owner: mlpvc-rr
 --
 
 SELECT pg_catalog.setval('colors_colorid_seq', 1, false);
 
 
 --
--- Data for Name: tagged; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: tagged; Type: TABLE DATA; Schema: public; Owner: mlpvc-rr
 --
 
 INSERT INTO tagged VALUES (4, 1);
@@ -1516,7 +1517,7 @@ INSERT INTO tagged VALUES (79, 46);
 
 
 --
--- Data for Name: tags; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: tags; Type: TABLE DATA; Schema: public; Owner: mlpvc-rr
 --
 
 INSERT INTO tags VALUES (1, 'unicorn', '', 'spec', 18);
@@ -1593,14 +1594,14 @@ INSERT INTO tags VALUES (79, 'cheese sandwich', '', 'char', 1);
 
 
 --
--- Name: tags_tid_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: tags_tid_seq; Type: SEQUENCE SET; Schema: public; Owner: mlpvc-rr
 --
 
 SELECT pg_catalog.setval('tags_tid_seq', 1, false);
 
 
 --
--- Name: appearances_id; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: appearances_id; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr; Tablespace: 
 --
 
 ALTER TABLE ONLY appearances
@@ -1608,7 +1609,7 @@ ALTER TABLE ONLY appearances
 
 
 --
--- Name: colorgroups_groupid; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: colorgroups_groupid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr; Tablespace: 
 --
 
 ALTER TABLE ONLY colorgroups
@@ -1616,7 +1617,7 @@ ALTER TABLE ONLY colorgroups
 
 
 --
--- Name: colorgroups_groupid_label; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: colorgroups_groupid_label; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr; Tablespace: 
 --
 
 ALTER TABLE ONLY colorgroups
@@ -1624,7 +1625,7 @@ ALTER TABLE ONLY colorgroups
 
 
 --
--- Name: colors_colorid; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: colors_colorid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr; Tablespace: 
 --
 
 ALTER TABLE ONLY colors
@@ -1632,7 +1633,7 @@ ALTER TABLE ONLY colors
 
 
 --
--- Name: tagged_tid_ponyid; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: tagged_tid_ponyid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr; Tablespace: 
 --
 
 ALTER TABLE ONLY tagged
@@ -1640,7 +1641,7 @@ ALTER TABLE ONLY tagged
 
 
 --
--- Name: tags_tid; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: tags_tid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr; Tablespace: 
 --
 
 ALTER TABLE ONLY tags
@@ -1648,21 +1649,21 @@ ALTER TABLE ONLY tags
 
 
 --
--- Name: colorgroups_ponyid; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: colorgroups_ponyid; Type: INDEX; Schema: public; Owner: mlpvc-rr; Tablespace: 
 --
 
 CREATE INDEX colorgroups_ponyid ON colorgroups USING btree (ponyid);
 
 
 --
--- Name: colors_groupid; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: colors_groupid; Type: INDEX; Schema: public; Owner: mlpvc-rr; Tablespace: 
 --
 
 CREATE INDEX colors_groupid ON colors USING btree (groupid);
 
 
 --
--- Name: colorgroups_ponyid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: colorgroups_ponyid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY colorgroups
@@ -1670,7 +1671,7 @@ ALTER TABLE ONLY colorgroups
 
 
 --
--- Name: colors_groupid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: colors_groupid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY colors
@@ -1688,53 +1689,53 @@ GRANT ALL ON SCHEMA public TO PUBLIC;
 
 
 --
--- Name: appearances; Type: ACL; Schema: public; Owner: postgres
+-- Name: appearances; Type: ACL; Schema: public; Owner: mlpvc-rr
 --
 
 REVOKE ALL ON TABLE appearances FROM PUBLIC;
-REVOKE ALL ON TABLE appearances FROM postgres;
+REVOKE ALL ON TABLE appearances FROM "mlpvc-rr";
+GRANT ALL ON TABLE appearances TO "mlpvc-rr";
 GRANT ALL ON TABLE appearances TO postgres;
-GRANT SELECT,INSERT,DELETE,UPDATE ON TABLE appearances TO "mlpvc-rr";
 
 
 --
--- Name: colorgroups; Type: ACL; Schema: public; Owner: postgres
+-- Name: colorgroups; Type: ACL; Schema: public; Owner: mlpvc-rr
 --
 
 REVOKE ALL ON TABLE colorgroups FROM PUBLIC;
-REVOKE ALL ON TABLE colorgroups FROM postgres;
+REVOKE ALL ON TABLE colorgroups FROM "mlpvc-rr";
+GRANT ALL ON TABLE colorgroups TO "mlpvc-rr";
 GRANT ALL ON TABLE colorgroups TO postgres;
-GRANT SELECT,INSERT,DELETE,UPDATE ON TABLE colorgroups TO "mlpvc-rr";
 
 
 --
--- Name: colors; Type: ACL; Schema: public; Owner: postgres
+-- Name: colors; Type: ACL; Schema: public; Owner: mlpvc-rr
 --
 
 REVOKE ALL ON TABLE colors FROM PUBLIC;
-REVOKE ALL ON TABLE colors FROM postgres;
+REVOKE ALL ON TABLE colors FROM "mlpvc-rr";
+GRANT ALL ON TABLE colors TO "mlpvc-rr";
 GRANT ALL ON TABLE colors TO postgres;
-GRANT SELECT,INSERT,DELETE,UPDATE ON TABLE colors TO "mlpvc-rr";
 
 
 --
--- Name: tagged; Type: ACL; Schema: public; Owner: postgres
+-- Name: tagged; Type: ACL; Schema: public; Owner: mlpvc-rr
 --
 
 REVOKE ALL ON TABLE tagged FROM PUBLIC;
-REVOKE ALL ON TABLE tagged FROM postgres;
+REVOKE ALL ON TABLE tagged FROM "mlpvc-rr";
+GRANT ALL ON TABLE tagged TO "mlpvc-rr";
 GRANT ALL ON TABLE tagged TO postgres;
-GRANT SELECT,INSERT,DELETE,UPDATE ON TABLE tagged TO "mlpvc-rr";
 
 
 --
--- Name: tags; Type: ACL; Schema: public; Owner: postgres
+-- Name: tags; Type: ACL; Schema: public; Owner: mlpvc-rr
 --
 
 REVOKE ALL ON TABLE tags FROM PUBLIC;
-REVOKE ALL ON TABLE tags FROM postgres;
+REVOKE ALL ON TABLE tags FROM "mlpvc-rr";
+GRANT ALL ON TABLE tags TO "mlpvc-rr";
 GRANT ALL ON TABLE tags TO postgres;
-GRANT SELECT,INSERT,DELETE,UPDATE ON TABLE tags TO "mlpvc-rr";
 
 
 --
