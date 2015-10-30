@@ -51,7 +51,8 @@
 		}
 	}
 	.settings {
-		border-top: 1px solid $ContentOutline;
+		border-top: 2px dashed $ContentOutline;
+		padding-top: 10px;
 		text-align: center;
 
 		&:empty { display: none }
@@ -104,6 +105,8 @@
 						+ .platform { font-size: .9em !important }
 						~ * { font-size: .7em }
 					}
+
+					button ~ button { margin-top: 0 }
 				}
 			}
 		}

@@ -19,14 +19,26 @@
 		}
 	?></p>
 	<div class="details">
-<?  if (PERM('developer')){ ?>
+<?php
+
+	$DevSection =
+	$PublicSection =
+	$PrivateSection =
+	$VeryPrivateSection = '';
+
+	if ($sameUser || PERM('inspector')){
+		$DevSection = "<span class='typcn typcn-cog color-red' title='Only visible to the developer'></span>";
+		$PublicSection = "<span class='typcn typcn-world color-blue' title='Publicly visible'></span>";
+		$PrivateSection = "<span class='typcn typcn-lock-closed' title='Only visible to you and group administrators'></span>";
+		$VeryPrivateSection = "<span class='typcn typcn-lock-closed color-green' title='Only visible to you'></span>";
+	}
+
+	if (PERM('developer')){ ?>
 		<section>
-			<label>User ID:</label>
+			<label><?=$DevSection?>User ID:</label>
 			<span><?=$User['id']?></span>
 		</section>
 <?  }
-
-	$PrivateSection = "<span class='typcn typcn-lock-closed' title='Only visible to you and group administrators'></span>";
 
 	$cols = "id, ('S'||season||'E'||episode) as page, season, preview, label, posted";
 	$PendingReservations = $Database->where('reserved_by', $User['id'])->where('deviation_id IS NULL')->get('reservations',null,$cols);
@@ -127,7 +139,7 @@ HTML;
 		</section>
 <?  } ?>
 		<section class="bans">
-			<label>Banishment history</label>
+			<label><?=$PublicSection?>Banishment history</label>
 			<ul><?php
 		$Banishes = $Database
 			->where('target', $User['id'])
@@ -163,7 +175,7 @@ HTML;
 	<div class="settings"><?php
 		if ($sameUser || PERM('manager')){ ?>
 		<section class="sessions">
-			<label>Sessions</label>
+			<label><?=$PrivateSection?>Sessions</label>
 <?php       if (isset($CurrentSession) || !empty($Sessions)){ ?>
 			<p>Below is a list of all the browsers <?=$sameUser?"you've":'this user has'?> logged in from.</p>
 			<ul class="session-list"><?php
@@ -180,7 +192,7 @@ HTML;
 <?php   }
 		if ($sameUser){ ?>
 		<section>
-			<label>Unlink account</label>
+			<label><?=$VeryPrivateSection?>Unlink account</label>
 			<p>By unlinking your account you revoke this site's access to your account information. This will also log you out on any device where you're currently logged in. The next time you want to log in, you'll have to link your account again. This will not remove any of your data from our site, all previously collected data is still kept locally.</p>
 	        <button id="unlink" class="orange typcn typcn-times">Unlink Account</button>
 	    </section>
