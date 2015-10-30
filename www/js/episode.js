@@ -135,8 +135,10 @@ DocReady.push(function Episode(){
 				$.post('/reserving/'+type+'/'+id+'?cancel',$.mkAjaxHandler(function(){
 					if (!this.status) return $.Dialog.fail(false, this.message);
 
-					if (this.remove === true)
+					if (this.remove === true){
+						$.Dialog.close();
 						return $li.remove();
+					}
 
 					var $newli = $(this.li);
 					$li.replaceWith($newli);
