@@ -3,7 +3,7 @@
 /**
  * PostgresDb Class
  *
- * Heavily mased on MysqliDB version 2.4 as made by
+ * Heavily ased on MysqliDB version 2.4 as made by
  *   Jeffery Way <jeffrey@jeffrey-way.com>
  *   Josh Campbell <jcampbell@ajillion.com>
  *   Alexander V. Butenko <a.butenka@gmail.com>
@@ -14,7 +14,7 @@
 class PostgresDb {
 	protected
 		/**
-		 * PDO connevtion
+		 * PDO connection
 		 *
 		 * @var PDO
 		 */
@@ -177,8 +177,7 @@ class PostgresDb {
 
 	/**
 	 * Helper function to add variables into bind parameters array and will return
-	 * its SQL part of the query according to operator in ' $operator ?' or
-	 * ' $operator ($subquery) ' formats
+	 * its SQL part of the query according to operator in ' $operator ?'
 	 *
 	 * @param array $operator Variable with values
 	 * @param       $value
@@ -186,16 +185,9 @@ class PostgresDb {
 	 * @return string
 	 */
 	protected function _buildPair($operator, $value){
-		if (!is_object($value)){
-			$this->_bindParam($value);
+		$this->_bindParam($value);
 
-			return ' '.$operator.' ? ';
-		}
-
-		$subQuery = $value->getSubQuery();
-		$this->_bindParams($subQuery['params']);
-
-		return " ".$operator." (".$subQuery['query'].") ".$subQuery['alias'];
+		return ' '.$operator.' ? ';
 	}
 
 	/**
@@ -274,12 +266,6 @@ class PostgresDb {
 			$value = $tableData[$column];
 			if (!$isInsert){
 				$this->_query .= "\"$column\" = ";
-			}
-
-			// Subquery value
-			if ($value instanceof PostgresDb){
-				$this->_query .= $this->_buildPair("", $value).", ";
-				continue;
 			}
 
 			// Simple value
@@ -599,10 +585,7 @@ class PostgresDb {
 	public function getOne($tableName, $columns = '*'){
 		$res = $this->get($tableName, 1, $columns);
 
-		if ($res instanceof PostgresDb){
-			return $res;
-		}
-		else if (is_array($res) && isset ($res[0])){
+		if (is_array($res) && isset ($res[0])){
 			return $res[0];
 		}
 		else if ($res){
@@ -694,7 +677,7 @@ class PostgresDb {
 		$joinType = strtoupper(trim($joinType));
 
 		if ($joinType && !in_array($joinType, $allowedTypes)){
-			die ('Wrong JOIN type: '.$joinType);
+			die("Wrong JOIN type: $joinType");
 		}
 
 		$this->_join[] = array($joinType, $joinTable, $joinCondition);
@@ -707,7 +690,7 @@ class PostgresDb {
 
 		if ($success !== true){
 			$errInfo = $stmt->errorInfo();
-			$this->_stmtError = "PDO Error #".$errInfo[1].": ".$errInfo[2];
+			$this->_stmtError = "PDO Error #{$errInfo[1]}: {$errInfo[2]}";
 			$result = false;
 			$this->count = 0;
 		}
