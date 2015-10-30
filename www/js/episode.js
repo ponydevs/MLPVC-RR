@@ -108,18 +108,16 @@ DocReady.push(function Episode(){
 	$('#requests, #reservations').rebindHandlers();
 	function Bind($li, id, type){
 		$li.children('button.reserve-request').off('click').on('click',function(){
-			var $this = $(this);
-
 			$.Dialog.wait('Reserving request','Sending reservation to the server');
 
 			$.post("/reserving/request/"+id,$.mkAjaxHandler(function(){
 				if (!this.status) return $.Dialog.fail(false, this.message);
 
+				var $newli = $(this.li);
+				$li.replaceWith($newli);
+				window.updateTimes();
+				Bind($newli, id, type);
 				$.Dialog.close();
-				$this.nextAll().remove();
-				$(this.btnhtml).insertAfter($this);
-				Bind($li, id, type);
-				$this.remove();
 			}));
 		});
 		$li.children('em').children('a').last().on('click',function(e){
@@ -129,8 +127,6 @@ DocReady.push(function Episode(){
 		});
 		var $actions = $li.find('.actions').children();
 		$actions.filter('.cancel').off('click').on('click',function(){
-			var $this = $(this);
-
 			$.Dialog.confirm('Cancel reservation','Are you sure you want to cancel this reservation?',function(sure){
 				if (!sure) return;
 
@@ -139,12 +135,14 @@ DocReady.push(function Episode(){
 				$.post('/reserving/'+type+'/'+id+'?cancel',$.mkAjaxHandler(function(){
 					if (!this.status) return $.Dialog.fail(false, this.message);
 
-					$.Dialog.close();
-					if (this.remove === true) return $li.remove();
-					$this.parent().prev().nextAll().addBack().remove();
-					$(this.btnhtml).appendTo($li);
+					if (this.remove === true)
+						return $li.remove();
 
-					Bind($li, id, type);
+					var $newli = $(this.li);
+					$li.replaceWith($newli);
+					window.updateTimes();
+					Bind($newli, id, type);
+					$.Dialog.close();
 				}));
 			});
 		});

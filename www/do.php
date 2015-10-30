@@ -247,7 +247,10 @@
 				}
 
 				if (!PERM('member')) respond();
-				$update = array('reserved_by' => null);
+				$update = array(
+					'reserved_by' => null,
+					'reserved_at' => null
+				);
 
 				if (!empty($Thing['reserved_by'])){
 					$usersMatch = $Thing['reserved_by'] === $currentUser['id'];
@@ -315,6 +318,7 @@
 				else if (!$canceling){
 					res_limit_check();
 					$update['reserved_by'] = $currentUser['id'];
+					$update['reserved_at'] = date('c');
 				}
 
 				if ((!$canceling || $type !== 'reservation') && !$Database->where('id', $Thing['id'])->update("{$type}s",$update))
@@ -332,11 +336,12 @@
 					}
 					respond($out);
 				}
+
 				if ($type === 'request')
-					respond(array('btnhtml' => get_reserver_button(get_user($Thing['reserved_by']), $Thing, true)));
+					respond(array('li' => get_r_li($Thing, true)));
 				else if ($type === 'reservation' && $canceling)
 					respond(array('remove' => true));
-				else respond('Invalid request');
+				else respond(true);
 			}
 			else if ($type === 'reservation'){
 				if (!PERM('inspector'))

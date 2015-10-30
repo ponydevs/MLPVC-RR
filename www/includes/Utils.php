@@ -25,7 +25,7 @@
 		if ($m === true) $m = array();
 		if (is_array($m) && $s == false && empty($x)){
 			$m['status'] = true;
-			die(json_encode($m));
+			die(json_encode($m, JSON_UNESCAPED_SLASHES));
 		}
 		if ($m === ERR_DB_FAIL){
 			global $Database;
@@ -36,7 +36,7 @@
 			"status" => $s,
 		);
 		if (!empty($x)) $r = array_merge($r, $x);
-		echo json_encode($r);
+		echo json_encode($r, JSON_UNESCAPED_SLASHES);
 		exit;
 	}
 
@@ -1350,7 +1350,7 @@ HTML;
 	function get_r_li($R, $isRequest = false){
 		global $signedIn, $currentUser;
 
-		$finished = !!$R['finished'];
+		$finished = !empty($R['deviation_id']);
 		$thing = $isRequest ? 'request' : 'reservation';
 		$ID = "$thing-{$R['id']}";
 		$HTML = "<li id='$ID'>";
@@ -1394,6 +1394,9 @@ HTML;
 					if (!empty($R['fullsize']))
 						$Image .= "<a href='{$R['fullsize']}' class='original' target='_blank'>Direct link to original image</a>";
 				}
+			}
+			else if ($isRequest && !empty($R['reserved_at'])){
+				$Image .= "<em>Reserved <a href='#$ID'>".timetag($R['reserved_at'])."</a></em>";
 			}
 		}
 

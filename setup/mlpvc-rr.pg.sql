@@ -488,7 +488,8 @@ CREATE TABLE requests (
     posted timestamp without time zone NOT NULL,
     reserved_by uuid,
     deviation_id character varying(7),
-    lock boolean DEFAULT false NOT NULL
+    lock boolean DEFAULT false NOT NULL,
+    reserved_at timestamp without time zone
 );
 
 
