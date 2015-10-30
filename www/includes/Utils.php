@@ -1924,7 +1924,7 @@ HTML;
 			$href = $current && $htmlOnly !== HTML_ONLY ? '' : " href='$path'";
 			$html = "<a$href>$label</a>";
 		}
-		else $html = $label;
+		else $html = "<span>$label</span>";
 
 		if ($htmlOnly === HTML_ONLY) return $html;
 		return array($class, $html);
