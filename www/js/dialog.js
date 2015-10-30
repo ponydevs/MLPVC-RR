@@ -113,8 +113,10 @@
 			else _$focusedElement = undefined;
 		}
 		function _restoreFocus(){
-			if (typeof _$focusedElement !== 'undefined' && _$focusedElement instanceof jQuery)
+			if (typeof _$focusedElement !== 'undefined' && _$focusedElement instanceof jQuery){
 				_$focusedElement.focus();
+				_$focusedElement = undefined;
+			}
 		}
 		function _setFocus(){
 			var $inputs = $('#dialogContent').find('input,select,textarea').filter(':visible'),
