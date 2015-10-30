@@ -2381,7 +2381,7 @@ ORDER BY "count" DESC
 			$Used = $Database->where('preview', $Image->preview)->getOne("{$type}s");
 			if (!empty($Used)){
 				$EpID = "S{$Used['season']}E{$Used['episode']}";
-				respond("This exact image has already been used for a $type under <a href='/episode/$EpID#$type-{$Used['id']}'>");
+				respond("This exact image has already been used for a $type under <a href='/episode/$EpID#$type-{$Used['id']}' target='_blank'>$EpID</a>");
 			}
 		}
 
