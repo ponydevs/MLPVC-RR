@@ -88,6 +88,11 @@
 	> section {
 		margin: 10px 0 0;
 
+		&:last-of-type {
+			> div:last-of-type > ul { margin-bottom: 0 !important }
+			> form { margin-top: 20px }
+		}
+
 		> .resp-embed-wrap {
 			width: 100%;
 			margin: 0 auto;
