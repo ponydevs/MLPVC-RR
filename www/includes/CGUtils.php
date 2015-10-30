@@ -444,7 +444,11 @@ HTML;
 	function get_updates($PonyID, $count = null){
 		global $Database;
 
-		$LIMIT = isset($count) ? "LIMIT $count":'';
+		if (isset($count)){
+			$count = explode(',', $count);
+			$LIMIT = "LIMIT {$count[1]} OFFSET {$count[0]}";
+		}
+		else $LIMIT = '';
 		$WHERE = isset($PonyID) ? "WHERE cm.ponyid = $PonyID" :'';
 		$query = $Database->rawQuery(
 			"SELECT cm.*, l.initiator, l.timestamp
