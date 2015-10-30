@@ -17,3 +17,4 @@ cf-ips.txt
 setup/*.sql
 !setup/*.pg.sql
 www/includes/MysqliDb.php
+setup/*_full.pg.sql
