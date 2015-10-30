@@ -1717,7 +1717,7 @@ HTML;
 	 * @return array
 	 */
 	function get_latest_episode(){
-		return get_episodes(1,"airs < NOW() - INTERVAL '24 HOUR'");
+		return get_episodes(1,"airs < NOW() + INTERVAL '24 HOUR'");
 	}
 
 	/**
