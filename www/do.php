@@ -542,7 +542,7 @@
 					if (!empty($Target) && (!$editing || ($editing && ($Target['season'] !== $Current['season'] || $Target['episode'] !== $Current['episode']))))
 						respond("There's already an episode with the same season & episode number");
 
-					$insert['twoparter'] = isset($_POST['twoparter']) ? 1 : 0;
+					$insert['twoparter'] = isset($_POST['twoparter']);
 
 					if (empty($_POST['title']))
 						respond('Episode title is missing or invalid');
