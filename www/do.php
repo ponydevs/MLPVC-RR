@@ -944,7 +944,7 @@
 
 							$query = $action === 'set'
 								? $CGDb->where('id', $Appearance['id'])->update('appearances', $data)
-								: $CGDb->insert('appearances', $data, 'ponyid');
+								: $CGDb->insert('appearances', $data, 'id');
 							if (!$query)
 								respond(ERR_DB_FAIL);
 
