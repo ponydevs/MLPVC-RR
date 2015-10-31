@@ -320,7 +320,7 @@ class PostgresDb {
 	}
 
 	/**
-	 * Abstraction method that will build the LIMIT part of the WHERE statement
+	 * Abstraction method that will build the ORDER BY part of the WHERE statement
 	 *
 	 */
 	protected function _buildOrderBy(){

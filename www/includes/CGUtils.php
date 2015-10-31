@@ -374,6 +374,9 @@ HTML;
 	function apply_template($PonyID, $EQG){
 		global $CGDb, $Color;
 
+		if (empty($PonyID) || !is_numeric($PonyID))
+			throw new Exception('Incorrect value for $PonyID whiel applying template');
+
 		if ($CGDb->where('ponyid', $PonyID)->has('colorgroups'))
 			throw new Exception('Template can only be applied to empty appearances');
 
@@ -445,8 +448,11 @@ HTML;
 		global $Database;
 
 		if (isset($count)){
-			$count = explode(',', $count);
-			$LIMIT = "LIMIT {$count[1]} OFFSET {$count[0]}";
+			if (strpos($count, '') !== false){
+				$count = explode(',', $count);
+				$LIMIT = "LIMIT {$count[1]} OFFSET {$count[0]}";
+			}
+			else $LIMIT = "LIMIT $count";
 		}
 		else $LIMIT = '';
 		$WHERE = isset($PonyID) ? "WHERE cm.ponyid = $PonyID" :'';
