@@ -40,7 +40,7 @@ CREATE TABLE deviation_cache (
     author character varying(20),
     preview character varying(255) NOT NULL,
     fullsize character varying(255) NOT NULL,
-    updated_on timestamp without time zone NOT NULL
+    updated_on timestamp with time zone DEFAULT now() NOT NULL
 );
 
 
@@ -55,9 +55,9 @@ CREATE TABLE episodes (
     episode integer NOT NULL,
     twoparter boolean DEFAULT false NOT NULL,
     title character varying(35) NOT NULL,
-    posted timestamp without time zone NOT NULL,
+    posted timestamp with time zone DEFAULT now() NOT NULL,
     posted_by uuid,
-    airs timestamp without time zone
+    airs timestamp with time zone
 );
 
 
@@ -100,7 +100,7 @@ CREATE TABLE log (
     initiator uuid,
     reftype character varying(20) NOT NULL,
     refid integer,
-    "timestamp" timestamp without time zone NOT NULL,
+    "timestamp" timestamp with time zone DEFAULT now() NOT NULL,
     ip character varying(255)
 );
 
@@ -485,11 +485,11 @@ CREATE TABLE requests (
     fullsize character varying(255) NOT NULL,
     label character varying(255) NOT NULL,
     requested_by uuid,
-    posted timestamp without time zone NOT NULL,
+    posted timestamp with time zone DEFAULT now() NOT NULL,
     reserved_by uuid,
     deviation_id character varying(7),
     lock boolean DEFAULT false NOT NULL,
-    reserved_at timestamp without time zone
+    reserved_at timestamp with time zone
 );
 
 
@@ -527,7 +527,7 @@ CREATE TABLE reservations (
     preview character varying(255),
     fullsize character varying(255),
     label character varying(255),
-    posted timestamp without time zone NOT NULL,
+    posted timestamp with time zone DEFAULT now() NOT NULL,
     reserved_by uuid,
     deviation_id character varying(7),
     lock boolean DEFAULT false NOT NULL
@@ -584,9 +584,9 @@ CREATE TABLE sessions (
     token character varying(40) NOT NULL,
     access character varying(50) NOT NULL,
     refresh character varying(40) NOT NULL,
-    expires timestamp without time zone,
-    created timestamp without time zone NOT NULL,
-    lastvisit timestamp without time zone
+    expires timestamp with time zone,
+    created timestamp with time zone DEFAULT now() NOT NULL,
+    lastvisit timestamp with time zone DEFAULT now() NOT NULL
 );
 
 
@@ -658,7 +658,7 @@ CREATE TABLE users (
     name character varying(20) NOT NULL,
     role character varying(10) DEFAULT 'user'::character varying NOT NULL,
     avatar_url character varying(255) NOT NULL,
-    signup_date timestamp without time zone
+    signup_date timestamp with time zone DEFAULT now() NOT NULL
 );
 
 
