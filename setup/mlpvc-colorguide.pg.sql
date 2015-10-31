@@ -9,49 +9,6 @@ SET standard_conforming_strings = on;
 SET check_function_bodies = false;
 SET client_min_messages = warning;
 
-SET search_path = public, pg_catalog;
-
-ALTER TABLE ONLY public.colors DROP CONSTRAINT colors_groupid_fkey;
-ALTER TABLE ONLY public.colorgroups DROP CONSTRAINT colorgroups_ponyid_fkey;
-DROP INDEX public.colors_groupid;
-DROP INDEX public.colorgroups_ponyid;
-ALTER TABLE ONLY public.tags DROP CONSTRAINT tags_tid;
-ALTER TABLE ONLY public.tagged DROP CONSTRAINT tagged_tid_ponyid;
-ALTER TABLE ONLY public.colors DROP CONSTRAINT colors_colorid;
-ALTER TABLE ONLY public.colorgroups DROP CONSTRAINT colorgroups_groupid_label;
-ALTER TABLE ONLY public.colorgroups DROP CONSTRAINT colorgroups_groupid;
-ALTER TABLE ONLY public.appearances DROP CONSTRAINT appearances_id;
-ALTER TABLE public.tags ALTER COLUMN tid DROP DEFAULT;
-ALTER TABLE public.colors ALTER COLUMN colorid DROP DEFAULT;
-ALTER TABLE public.colorgroups ALTER COLUMN groupid DROP DEFAULT;
-ALTER TABLE public.appearances ALTER COLUMN id DROP DEFAULT;
-DROP SEQUENCE public.tags_tid_seq;
-DROP TABLE public.tags;
-DROP TABLE public.tagged;
-DROP SEQUENCE public.colors_colorid_seq;
-DROP TABLE public.colors;
-DROP SEQUENCE public.colorgroups_groupid_seq;
-DROP TABLE public.colorgroups;
-DROP SEQUENCE public.appearances_id_seq;
-DROP TABLE public.appearances;
-DROP EXTENSION plpgsql;
-DROP SCHEMA public;
---
--- Name: public; Type: SCHEMA; Schema: -; Owner: postgres
---
-
-CREATE SCHEMA public;
-
-
-ALTER SCHEMA public OWNER TO postgres;
-
---
--- Name: SCHEMA public; Type: COMMENT; Schema: -; Owner: postgres
---
-
-COMMENT ON SCHEMA public IS 'standard public schema';
-
-
 --
 -- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: 
 --
@@ -307,13 +264,14 @@ INSERT INTO appearances VALUES (50, NULL, 'Marble Pie', '', NULL, false, '2015-1
 INSERT INTO appearances VALUES (51, NULL, 'Limestone Pie', '', NULL, false, '2015-10-31 22:30:14+00');
 INSERT INTO appearances VALUES (52, NULL, 'Maue Pie', '', NULL, false, '2015-10-31 22:30:14+00');
 INSERT INTO appearances VALUES (53, NULL, 'Igneous Rock', '', NULL, false, '2015-10-31 22:30:14+00');
+INSERT INTO appearances VALUES (54, NULL, 'Cloudy Quartz', '', NULL, false, '2015-10-31 22:43:48.197299+00');
 
 
 --
 -- Name: appearances_id_seq; Type: SEQUENCE SET; Schema: public; Owner: mlpvc-rr
 --
 
-SELECT pg_catalog.setval('appearances_id_seq', 53, true);
+SELECT pg_catalog.setval('appearances_id_seq', 54, true);
 
 
 --
@@ -554,13 +512,17 @@ INSERT INTO colorgroups VALUES (294, 53, 'Mane & Tail', 1);
 INSERT INTO colorgroups VALUES (295, 53, 'Iris', 2);
 INSERT INTO colorgroups VALUES (296, 53, 'Cutie Mark', 3);
 INSERT INTO colorgroups VALUES (297, 53, 'Hat & Tie/Collar', 4);
+INSERT INTO colorgroups VALUES (298, 54, 'Coat', 0);
+INSERT INTO colorgroups VALUES (299, 54, 'Mane & Tail', 1);
+INSERT INTO colorgroups VALUES (301, 54, 'Cutie Mark', 3);
+INSERT INTO colorgroups VALUES (300, 54, 'Iris', 2);
 
 
 --
 -- Name: colorgroups_groupid_seq; Type: SEQUENCE SET; Schema: public; Owner: mlpvc-rr
 --
 
-SELECT pg_catalog.setval('colorgroups_groupid_seq', 297, true);
+SELECT pg_catalog.setval('colorgroups_groupid_seq', 301, true);
 
 
 --
@@ -1432,13 +1394,26 @@ INSERT INTO colors VALUES (1142, 297, 'Hat/Tie Outline', '#232323', 0);
 INSERT INTO colors VALUES (1143, 297, 'Hat/Tie Fill', '#404040', 1);
 INSERT INTO colors VALUES (1144, 297, 'Collar Outline', '#656565', 2);
 INSERT INTO colors VALUES (1145, 297, 'Collar Fill/Hat Fill 2', '#CCCCCC', 3);
+INSERT INTO colors VALUES (1146, 298, 'Outline', '#A9A9A7', 0);
+INSERT INTO colors VALUES (1147, 298, 'Fill', '#D8DDEA', 1);
+INSERT INTO colors VALUES (1149, 298, 'Shadow Fill', '#C1C5C9', 2);
+INSERT INTO colors VALUES (1150, 299, 'Outline', '#223937', 0);
+INSERT INTO colors VALUES (1151, 299, 'Fill', '#508383', 1);
+INSERT INTO colors VALUES (1157, 301, 'Rock Fill 1', '#85B7B9', 0);
+INSERT INTO colors VALUES (1158, 301, 'Rock Fill 2', '#A4D0D4', 1);
+INSERT INTO colors VALUES (1159, 301, 'Rock Fill 3', '#BCE3E1', 2);
+INSERT INTO colors VALUES (1160, 301, 'Cracks', '#1C484C', 3);
+INSERT INTO colors VALUES (1152, 300, 'Gradient Top', '#218691', 0);
+INSERT INTO colors VALUES (1154, 300, 'Gradient Bottom', '#91CFE1', 1);
+INSERT INTO colors VALUES (1155, 300, 'Highlight Top', '#A3EBEB', 2);
+INSERT INTO colors VALUES (1156, 300, 'Highlight Bottom', '#EBFAF8', 3);
 
 
 --
 -- Name: colors_colorid_seq; Type: SEQUENCE SET; Schema: public; Owner: mlpvc-rr
 --
 
-SELECT pg_catalog.setval('colors_colorid_seq', 1145, true);
+SELECT pg_catalog.setval('colors_colorid_seq', 1160, true);
 
 
 --
@@ -1655,6 +1630,10 @@ INSERT INTO tagged VALUES (83, 53);
 INSERT INTO tagged VALUES (11, 53);
 INSERT INTO tagged VALUES (2, 53);
 INSERT INTO tagged VALUES (7, 53);
+INSERT INTO tagged VALUES (84, 54);
+INSERT INTO tagged VALUES (12, 54);
+INSERT INTO tagged VALUES (7, 54);
+INSERT INTO tagged VALUES (2, 54);
 
 
 --
@@ -1731,18 +1710,19 @@ INSERT INTO tags VALUES (79, 'cheese sandwich', '', 'char', 1);
 INSERT INTO tags VALUES (80, 'marble pie', '', 'char', 1);
 INSERT INTO tags VALUES (81, 'limestone pie', '', 'char', 1);
 INSERT INTO tags VALUES (82, 'maud pie', '', 'char', 1);
-INSERT INTO tags VALUES (12, 'female', '', 'gen', 36);
 INSERT INTO tags VALUES (83, 'igenous rock', '', 'char', 1);
 INSERT INTO tags VALUES (11, 'male', '', 'gen', 10);
-INSERT INTO tags VALUES (2, 'earth pony', '', 'spec', 15);
-INSERT INTO tags VALUES (7, 'minor character', 'Ponies who had a speaking role and/or interacted with the mane six', 'cat', 30);
+INSERT INTO tags VALUES (84, 'cloudy quartz', '', 'char', 1);
+INSERT INTO tags VALUES (12, 'female', '', 'gen', 37);
+INSERT INTO tags VALUES (7, 'minor character', 'Ponies who had a speaking role and/or interacted with the mane six', 'cat', 31);
+INSERT INTO tags VALUES (2, 'earth pony', '', 'spec', 16);
 
 
 --
 -- Name: tags_tid_seq; Type: SEQUENCE SET; Schema: public; Owner: mlpvc-rr
 --
 
-SELECT pg_catalog.setval('tags_tid_seq', 83, true);
+SELECT pg_catalog.setval('tags_tid_seq', 84, true);
 
 
 --
