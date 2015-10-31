@@ -71,7 +71,13 @@
 
 	// Create AJAX response handling function
 	$w.on('ajaxerror',function(){
-		$.Dialog.fail(false,'There was an error while processing your request. You may find additional details in the browser\'s console.');
+		var details = '';
+
+		if (arguments.length > 1){
+			var data = [].slice.call(arguments, 1);
+			details = ' Details:<pre><code>' + data.join('\n').replace(/</g,'&lt;') + '</code></pre>';
+		}
+		$.Dialog.fail(false,'There was an error while processing your request.'+details+' You may find additional details in the browser\'s console.');
 	});
 	$.mkAjaxHandler = function(f){
 		return function(data){
@@ -132,6 +138,10 @@
 		else event.data.CSRF_TOKEN = t;
 	});
 	$.ajaxSetup({
+		dataType: "json",
+		error: function(){
+			$w.triggerHandler('ajaxerror',[].slice.call(arguments, 1));
+		},
 		statusCode: {
 			401: function(){
 				$.Dialog.fail(undefined, "Cross-site Request Forgery attack detected. Please notify the site administartors.");
