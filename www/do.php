@@ -542,7 +542,7 @@
 					if (!empty($Target) && (!$editing || ($editing && ($Target['season'] !== $Current['season'] || $Target['episode'] !== $Current['episode']))))
 						respond("There's already an episode with the same season & episode number");
 
-					$insert['twoparter'] = isset($_POST['twoparter']);
+					$insert['twoparter'] = isset($_POST['twoparter']) ? 1 : 0;
 
 					if (empty($_POST['title']))
 						respond('Episode title is missing or invalid');
@@ -561,7 +561,7 @@
 
 					if ($editing){
 						if (!$Database->whereEp($season,$episode)->update('episodes', $insert))
-							respond('No changes were made', 1);
+							respond(ERR_DB_FAIL);
 					}
 					else if (!$Database->insert('episodes', $insert))
 						respond(ERR_DB_FAIL);
@@ -570,7 +570,7 @@
 						$logentry = array('target' => format_episode_title($Current,AS_ARRAY,'id'));
 						$changes = 0;
 						foreach (array('season', 'episode', 'twoparter', 'title', 'airs') as $k){
-							if (isset($insert[$k]) && $insert[$k] !== $Current[$k]){
+							if (isset($insert[$k]) && $insert[$k] != $Current[$k]){
 								$logentry["old$k"] = $Current[$k];
 								$logentry["new$k"] = $insert[$k];
 								$changes++;
