@@ -447,7 +447,7 @@ HTML;
 	function get_updates($PonyID, $count = null){
 		global $Database;
 
-		if (isset($count)){
+		if (!empty($count)){
 			if (strpos($count, '') !== false){
 				$count = explode(',', $count);
 				$LIMIT = "LIMIT {$count[1]} OFFSET {$count[0]}";
