@@ -23,10 +23,13 @@
 		width: 0;
 		height: 0;
 
-		~ span { display: block }
-		&:not(:checked) ~ span { opacity: .5 }
-		&:focus ~ span { border-style: dashed }
-		&:not(:checked):focus ~ span { opacity: .75 }
+		~ .tag {
+			display: block;
+			height: auto;
+		}
+		&:not(:checked) ~ .tag { opacity: .5 }
+		&:focus ~ .tag { border-style: dashed }
+		&:not(:checked):focus ~ .tag { opacity: .75 }
 	}
 }
 
