@@ -14,13 +14,7 @@ In the past, the management of comments under journals was done manually. Becaus
 **Used libraries & icons include:** [jQuery](http://jquery.com/), [qTip2](http://qtip2.com/), [typeahead.js](https://twitter.github.io/typeahead.js/), [Sortable](https://github.com/RubaXa/Sortable), [Browser.php](https://github.com/cbschuld/Browser.php), [Typicons](http://www.typicons.com/), [Uglify-js](https://www.npmjs.com/package/uglify-js), [SASS](http://sass-lang.com/), [Gulp](http://gulpjs.com/)<br>
 **Header font:** [Celestia Medium Redux](http://www.mattyhex.net/CMR/)<br>
 **DeviantArt logo** *(used on profile pages)* &copy; [DeviantArt](http://www.deviantart.com/)<br>
-**Application logo** based on [Christmas Vector of the MLP-VC Mascot](http://pirill-poveniy.deviantart.com/art/Collab-Christmas-Vector-of-the-MLP-VC-Mascot-503196118) by the following artists:
-
- - [Pirill-Poveniy](http://pirill-poveniy.deviantart.com/)
- - [thediscorded](http://thediscorded.deviantart.com/)
- - [masemj](http://masemj.deviantart.com/)
- - [Ambassad0r](http://ambassad0r.deviantart.com/) *(idea)*
- 
+**Application logo** features Penny Curve, the mascot of our group. The image is based on an expression from [Christmas Vector of the MLP-VC Mascot](http://pirill-poveniy.deviantart.com/art/Collab-Christmas-Vector-of-the-MLP-VC-Mascot-503196118) (made by [Pirill-Poveniy](http://pirill-poveniy.deviantart.com/), [thediscorded](http://thediscorded.deviantart.com/), [masemj](http://masemj.deviantart.com/) & [Ambassad0r](http://ambassad0r.deviantart.com/)) with the mane design and eye colours from [Penny Curve (MLP-VectorClub Mascot 2.0)](http://ambassad0r.deviantart.com/art/Penny-Curve-MLP-VectorClub-Mascot-2-0-568079382) (made by [Ambassad0r](http://ambassad0r.deviantart.com/))<br>
 **Pre-ban dialog illustration ([direct link](https://github.com/ponydevs/MLPVC-RR/blob/master/www/img/pre-ban.svg)):** [Twilight - What Have I Done?](http://synthrid.deviantart.com/art/Twilight-What-Have-I-Done-355177596) by [Synthrid](http://synthrid.deviantart.com/) *(edited to use daylight colors)*<br>
 **Post-ban dialog illustration ([direct link](https://github.com/ponydevs/MLPVC-RR/blob/master/www/img/post-ban.svg)):** [Sad Twilight Sparkle](http://sairoch.deviantart.com/art/Sad-Twilight-Sparkle-354710611) by [Sairoch](http://sairoch.deviantart.com/) *(edited to use daylight colors)*<br>
 **Extrenal link icon** (licensed GPL) taken from [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Icon_External_Link.svg)<br>
