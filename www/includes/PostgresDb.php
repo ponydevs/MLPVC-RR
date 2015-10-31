@@ -135,10 +135,9 @@ class PostgresDb {
 	 */
 	protected function _replacePlaceHolders($str, $vals){
 		$i = 0;
-		$newStr = "";
 		$valcount = count($vals);
 
-		while ($pos = strpos($str, "?") && $i < $valcount){
+		while (strpos($str, "?") !== false && $i < $valcount){
 			$val = $vals[$i++];
 			if (is_object($val)){
 				$val = '[object]';
@@ -146,13 +145,14 @@ class PostgresDb {
 			else if ($val === null){
 				$val = 'NULL';
 			}
+			if (is_string($val)){
+				$val = "'$val'";
+			}
 
-			$newStr .= substr($str, 0, $pos)."'".$val."'";
-			$str = substr($str, $pos + 1);
+			$str = preg_replace('/\?/', $val, $str, 1);
 		}
-		$newStr .= $str;
 
-		return $newStr;
+		return $str;
 	}
 
 	/**
@@ -320,7 +320,7 @@ class PostgresDb {
 	}
 
 	/**
-	 * Abstraction method that will build the ORDER BY part of the WHERE statement
+	 * Abstraction method that will build the LIMIT part of the WHERE statement
 	 *
 	 */
 	protected function _buildOrderBy(){
@@ -343,14 +343,18 @@ class PostgresDb {
 	 * Internal function to build and execute INSERT/REPLACE calls
 	 *
 	 * @param <string $tableName The name of the table.
-	 * @param array $insertData Data containing information for inserting into the DB.
-	 * @param       $operation
+	 * @param array       $insertData   Data containing information for inserting into the DB.
+	 * @param             $operation
+	 * @param string|null $returnColumn What column to return after insert
 	 *
 	 * @return boolean Boolean indicating whether the insert query was completed succesfully.
 	 */
-	private function _buildInsert($tableName, $insertData, $operation){
+	private function _buildInsert($tableName, $insertData, $operation, $returnColumn = null){
 		$this->_query = "$operation INTO ".$this->_escapeTableName($tableName);
-		$stmt = $this->_buildQuery(null, $insertData);
+		if (!empty($returnColumn)){
+			$returnColumn = trim($returnColumn);
+		}
+		$stmt = $this->_buildQuery(null, $insertData, $returnColumn);
 
 		$res = $this->_execStatement($stmt);
 
@@ -358,9 +362,8 @@ class PostgresDb {
 			return false;
 		}
 
-		$insertId = $this->_conn->lastInsertId();
-		if ($insertId > 0){
-			return $insertId;
+		if (!empty($res[0][$returnColumn])){
+			return $res[0][$returnColumn];
 		}
 
 		return true;
@@ -392,12 +395,16 @@ class PostgresDb {
 	 * @param integer|array $numRows   Array to define SQL limit in format Array ($count, $offset)
 	 *                                 or only $count
 	 * @param array         $tableData Should contain an array of data for updating the database.
+	 * @param string|null   $returning What column to return after inserting
 	 *
 	 * @return mysqli_stmt Returns the $stmt object.
 	 */
-	protected function _buildQuery($numRows = null, $tableData = null){
+	protected function _buildQuery($numRows = null, $tableData = null, $returning = null){
 		$this->_buildJoin();
 		$this->_buildInsertQuery($tableData);
+		if (!empty($returning)){
+			$this->_query .= " RETURNING \"$returning\"";
+		}
 		$this->_buildWhere();
 		$this->_buildGroupBy();
 		$this->_buildOrderBy();
@@ -628,12 +635,13 @@ class PostgresDb {
 	 * Insert method to add new row
 	 *
 	 * @param <string $tableName The name of the table.
-	 * @param array $insertData Data containing information for inserting into the DB.
+	 * @param array       $insertData   Data containing information for inserting into the DB.
+	 * @param string|null $returnColumn Which column to return
 	 *
 	 * @return boolean Boolean indicating whether the insert query was completed succesfully.
 	 */
-	public function insert($tableName, $insertData){
-		return $this->_buildInsert($tableName, $insertData, 'INSERT');
+	public function insert($tableName, $insertData, $returnColumn = null){
+		return $this->_buildInsert($tableName, $insertData, 'INSERT', $returnColumn);
 	}
 
 	/**
@@ -683,6 +691,19 @@ class PostgresDb {
 		$this->_join[] = array($joinType, $joinTable, $joinCondition);
 
 		return $this;
+	}
+
+	/**
+	 * Method to check if a table exists
+	 *
+	 * @param array $table Table name to check
+	 *
+	 * @returns boolean True if table exists
+	 */
+	public function tableExists($table){
+		$res = $this->rawQuerySingle("SELECT to_regclass('public.$table') IS NOT NULL as exists");
+
+		return $res['exists'];
 	}
 
 	protected function _execStatement($stmt){
