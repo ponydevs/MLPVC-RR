@@ -375,7 +375,7 @@ HTML;
 		global $CGDb, $Color;
 
 		if (empty($PonyID) || !is_numeric($PonyID))
-			throw new Exception('Incorrect value for $PonyID whiel applying template');
+			throw new Exception('Incorrect value for $PonyID while applying template');
 
 		if ($CGDb->where('ponyid', $PonyID)->has('colorgroups'))
 			throw new Exception('Template can only be applied to empty appearances');
@@ -429,7 +429,7 @@ HTML;
 				'ponyid' => $PonyID,
 				'label' => $GroupName,
 				'order' => $cgi++,
-			));
+			), 'groupid');
 			if (!$GroupID)
 				throw new Exception(rtrim("Color group \"$GroupName\" could not be created: ".$CGDb->getLastError()), ': ');
 

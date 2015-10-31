@@ -66,7 +66,7 @@
 				if (is_bool($v))
 					$data[$k] = $v ? 1 : 0;
 
-			$refid = $Database->insert("log__$type",$data);
+			$refid = $Database->insert("log__$type",$data,'entryid');
 			if (!$refid){
 				trigger_error('Logging failed: '.$Database->getLastError());
 				return;
@@ -860,8 +860,8 @@ HTML;
 		}
 		else $Database->where('id',$UserID)->update('users', $UserData);
 
-		if ($type === 'refresh_token') $res = $Database->where('refresh', $code)->update('sessions',$AuthData);
-		else $res = $Database->insert('sessions', array_merge($AuthData, array('user' => $UserID)));
+		if ($type === 'refresh_token') $Database->where('refresh', $code)->update('sessions',$AuthData);
+		else $Database->insert('sessions', array_merge($AuthData, array('user' => $UserID)));
 
 		Cookie::set('access', $cookie, ONE_YEAR);
 	}

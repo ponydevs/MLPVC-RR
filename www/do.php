@@ -944,16 +944,16 @@
 
 							$query = $action === 'set'
 								? $CGDb->where('id', $Appearance['id'])->update('appearances', $data)
-								: $CGDb->insert('appearances', $data);
+								: $CGDb->insert('appearances', $data, 'ponyid');
 							if (!$query)
 								respond(ERR_DB_FAIL);
 
 							if ($action === 'make'){
 								$data['message'] = 'Appearance added successfully';
-								$Query = $CGDb->where('ishuman', $EQG)->count('appearances');
+								$count = $CGDb->where('ishuman', $EQG)->count('appearances');
 
 								$data['id'] = $query;
-								$data['page'] = max(ceil($Query['count'] / $ItemsPerPage), 1);
+								$data['page'] = max(ceil($count / $ItemsPerPage), 1);
 
 								if (isset($_POST['template'])){
 									try {
@@ -1193,7 +1193,7 @@
 					}
 
 					if ($new){
-						$TagID = $CGDb->insert('tags', $data);
+						$TagID = $CGDb->insert('tags', $data, 'tid');
 						if (!$TagID) respond(ERR_DB_FAIL);
 						$data['tid'] = $TagID;
 
@@ -1280,7 +1280,7 @@
 						$LastGroup = get_cgs($AppearanceID, '"order"', 'DESC', 1);
 						$data['order'] =  !empty($LastGroup['order']) ? $LastGroup['order']+1 : 1;
 
-						$GroupID = $CGDb->insert('colorgroups', $data);
+						$GroupID = $CGDb->insert('colorgroups', $data, 'groupid');
 						if (!$GroupID)
 							respond(ERR_DB_FAIL);
 						$Group = array('groupid' => $GroupID);
