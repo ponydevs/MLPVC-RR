@@ -448,7 +448,7 @@ HTML;
 		global $Database;
 
 		if (!empty($count)){
-			if (strpos($count, '') !== false){
+			if (strpos($count, ',') !== false){
 				$count = explode(',', $count);
 				$LIMIT = "LIMIT {$count[1]} OFFSET {$count[0]}";
 			}
