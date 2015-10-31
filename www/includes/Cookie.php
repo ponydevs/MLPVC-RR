@@ -12,7 +12,7 @@
 				$domain = $_SERVER['HTTP_HOST'];
 
 			if (is_numeric($expires))
-				$expires += NOW;
+				$expires += time();
 			else if (is_string($expires)) $expires = strtotime($expires);
 			else $expires = 0;
 
@@ -26,7 +26,7 @@
 			$retval = false;
 			if ($domain === false)
 				$domain = $_SERVER['HTTP_HOST'];
-			$retval = setcookie($name, '', NOW - 3600, $path, $domain);
+			$retval = setcookie($name, '', time() - 3600, $path, $domain);
 
 			unset($_COOKIE[$name]);
 			return $retval;

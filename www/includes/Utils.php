@@ -56,10 +56,7 @@
 	);
 	function LogAction($type,$data = null){
 		global $Database, $signedIn, $currentUser;
-		$central = array(
-			'ip' => $_SERVER['REMOTE_ADDR'],
-			'timestamp' => date('c'),
-		);
+		$central = array('ip' => $_SERVER['REMOTE_ADDR']);
 
 		if (isset($data)){
 			foreach ($data as $k => $v)
@@ -341,7 +338,7 @@ HTML;
 	function time_ago($timestamp){
 		global $TIME_DATA;
 
-		$delta = NOW - $timestamp;
+		$delta = time() - $timestamp;
 		$past = $delta > 0;
 		if (!$past) $delta *= -1;
 
@@ -378,7 +375,7 @@ HTML;
 
 		$ts = gmdate($format, $time);
 		if ($format !== 'c')
-			$ts .= ' ('.date('T', NOW).')';
+			$ts .= ' ('.date('T').')';
 		return $ts;
 	}
 
@@ -819,8 +816,7 @@ HTML;
 		$AuthData = array(
 			'access' => $json['access_token'],
 			'refresh' => $json['refresh_token'],
-			'expires' => date('c',NOW+intval($json['expires_in'])),
-			'created' => date('c'),
+			'expires' => date('c',time()+intval($json['expires_in'])),
 		);
 
 		$cookie = openssl_random_pseudo_bytes(64);
@@ -831,7 +827,6 @@ HTML;
 			$MoreInfo = array(
 				'id' => $UserID,
 				'role' => 'user',
-				'signup_date' => date('c'),
 			);
 			$makeDev = !$Database->has('users');
 			if ($makeDev){
@@ -997,13 +992,13 @@ HTML;
 		global $Database, $PROVIDER_FULLSIZE_KEY, $CACHE_BAILOUT;
 
 		$Deviation = $Database->where('id',$ID)->getOne('deviation_cache');
-		if (!$CACHE_BAILOUT && empty($Deviation) || (!empty($Deviation['updated_on']) && strtotime($Deviation['updated_on'])+ONE_HOUR < NOW)){
+		if (!$CACHE_BAILOUT && empty($Deviation) || (!empty($Deviation['updated_on']) && strtotime($Deviation['updated_on'])+ONE_HOUR < time())){
 			try {
 				$json = da_oembed($ID, $type);
 			}
 			catch (Exception $e){
 				if (!empty($Deviation))
-					$Database->where('id',$Deviation['id'])->update('deviation_cache', array('updated_on' => date('c',strtotime('+1 minute', NOW))));
+					$Database->where('id',$Deviation['id'])->update('deviation_cache', array('updated_on' => date('c',strtotime('+1 minute', time()))));
 
 				$ErrorMSG = "Saving local data for $ID@$type failed: ".$e->getMessage();
 				if (!PERM('developer')) trigger_error($ErrorMSG);
@@ -1024,7 +1019,7 @@ HTML;
 				'fullsize' => makeHttps(isset($json['fullsize_url']) ? $json['fullsize_url'] : $json['url']),
 				'provider' => $type,
 				'author' => $json['author_name'],
-				'updated_on' => date('c', time()),
+				'updated_on' => date('c'),
 			);
 
 			if (empty($Deviation)){
@@ -1682,8 +1677,8 @@ HTML;
 			return null;
 
 		$airtime = strtotime($Episode['airs']);
-		$Episode['displayed'] = strtotime('-24 hours', $airtime) < NOW;
-		$Episode['aired'] = strtotime('+'.($Episode['season']===0?'2 hours':((!$Episode['twoparter']?30:60).' minutes')), $airtime) < NOW;
+		$Episode['displayed'] = strtotime('-24 hours', $airtime) < time();
+		$Episode['aired'] = strtotime('+'.($Episode['season']===0?'2 hours':((!$Episode['twoparter']?30:60).' minutes')), $airtime) < time();
 		return $Episode;
 	}
 
@@ -2022,7 +2017,7 @@ HTML;
 			$airs = date('c', $airtime);
 			$month = date('M', $airtime);
 			$day = date('j', $airtime);
-			$diff = timeDifference(NOW, $airtime);
+			$diff = timeDifference(time(), $airtime);
 
 			$time = 'in ';
 			if ($diff['time'] < $TIME_DATA['month']){

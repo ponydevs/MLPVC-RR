@@ -183,8 +183,6 @@
 			}
 
 			check_post_post($what, $insert);
-			
-			$insert['posted'] = date('c');
 
 			if (!$Database->insert("{$what}s",$insert))
 				respond(ERR_DB_FAIL);
@@ -358,7 +356,6 @@
 					respond('The specified episode does not exist');
 				$insert['season'] = $epdata['season'];
 				$insert['episode'] = $epdata['episode'];
-				$insert['posted'] = date('c');
 
 				if (!$Database->insert('reservations', $insert))
 					respond(ERR_DB_FAIL);
@@ -523,10 +520,7 @@
 						list($season, $episode) = array_map('intval', array_splice($_match, 1, 2));
 						$insert = array();
 					}
-					else if ($data === 'add') $insert = array(
-						'posted' => date('c'),
-						'posted_by' => $currentUser['id'],
-					);
+					else if ($data === 'add') $insert = array('posted_by' => $currentUser['id']);
 					else statusCodeHeader(404, AND_DIE);
 
 					if (!isset($_POST['season']) || !is_numeric($_POST['season']))
@@ -569,11 +563,8 @@
 						if (!$Database->whereEp($season,$episode)->update('episodes', $insert))
 							respond('No changes were made', 1);
 					}
-					else {
-						$insert['posted'] = date('c');
-						if (!$Database->insert('episodes', $insert))
-							respond(ERR_DB_FAIL);
-					}
+					else if (!$Database->insert('episodes', $insert))
+						respond(ERR_DB_FAIL);
 
 					if ($editing){
 						$logentry = array('target' => format_episode_title($Current,AS_ARRAY,'id'));
