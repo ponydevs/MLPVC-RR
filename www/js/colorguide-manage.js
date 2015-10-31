@@ -622,6 +622,25 @@ DocReady.push(function ColorguideManage(){
 				{text: "Create new group", icon: 'folder-add', click: function(){
 					CGEditorMaker('Create color group', $(this).parents('li').attr('id').substring(1));
 				}},
+				{text: "Apply template (if empty)", icon: 'document-add', click: function(){
+					var ponyID = $(this).parents('li').attr('id').substring(1);
+					$.Dialog.confirm('Apply template on appearance','Add common color groups to this appearance?<br>Note: This will only work if there are no color groups currently present.',function(sure){
+						if (!sure) return;
+
+						$.Dialog.wait(false, 'Applying template');
+
+						$.post('/colorguide/applytemplate/'+ponyID+EQGRq,$.mkAjaxHandler(function(){
+							if (!this.status) return $.Dialog.fail(false, this.message);
+
+							var $pony = $('#p'+ponyID);
+							$pony.find('ul.colors').html(this.cgs);
+							window.tooltips();
+							ctxmenus();
+
+							$.Dialog.close();
+						}));
+					});
+				}},
 			],
 			Color+' groups'
 		);

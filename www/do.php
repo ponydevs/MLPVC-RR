@@ -883,7 +883,7 @@
 					typeahead_results(empty($Tags) ? '[]' : $Tags);
 				}
 
-				if (preg_match('~^(rename|delete|make|[gs]et(?:sprite|cgs)?|tag|untag|clearrendercache)(?:/(\d+))?$~', $data, $_match)){
+				if (preg_match('~^(rename|delete|make|[gs]et(?:sprite|cgs)?|tag|untag|clearrendercache|applytemplate)(?:/(\d+))?$~', $data, $_match)){
 					$action = $_match[1];
 
 					if ($action !== 'make'){
@@ -1066,6 +1066,16 @@
 								respond(ERR_DB_FAIL);
 							update_tag_count($Tag['tid']);
 							respond(array('tags' => get_tags_html($Appearance['id'], NOWRAP)));
+						break;
+						case "applytemplate":
+							try {
+								apply_template($Appearance['id'], $EQG);
+							}
+							catch (Exception $e){
+								respond("Applying the template failed. Reason: ".$e->getMessage());
+							}
+
+							respond(array('cgs' => get_colors_html($Appearance['id'], NOWRAP)));
 						break;
 						default: respond('Bad request');
 					}
