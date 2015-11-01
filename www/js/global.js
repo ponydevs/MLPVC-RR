@@ -75,6 +75,8 @@
 
 		if (arguments.length > 1){
 			var data = [].slice.call(arguments, 1);
+			if (data[0] === 'abort')
+				return;
 			details = ' Details:<pre><code>' + data.join('\n').replace(/</g,'&lt;') + '</code></pre>';
 		}
 		$.Dialog.fail(false,'There was an error while processing your request.'+details+' You may find additional details in the browser\'s console.');
