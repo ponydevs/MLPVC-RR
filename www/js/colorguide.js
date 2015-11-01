@@ -55,12 +55,20 @@ DocReady.push(function Colorguide(){
 		});
 		$ch.filter('span:not(:first-child):not(:empty)').off('click').on('click',function(e){
 			e.preventDefault();
-			var copy = this.innerHTML.trim();
+			var $this = $(this),
+				copy = $this.html().trim();
 			if (e.shiftKey){
 				var r = parseInt(copy.substring(1,3), 16),
 					g = parseInt(copy.substring(3,5), 16),
-					b = parseInt(copy.substring(5,7), 16);
-				return $.Dialog.info('RGB values for color ' + copy, '<div class="align-center">rgb(<code class="color-red">'+r+'</code>, <code class="color-green">'+g+'</code>, <code class="color-darkblue">'+b+'</code>)</div>');
+					b = parseInt(copy.substring(5,7), 16),
+					$cg = $this.closest('li'),
+					$appearance = $cg.parents('li'),
+					path = [
+						$appearance.children().last().children('strong').text().trim(),
+						$cg.children().first().text().replace(/:\s+$/,''),
+						$this.attr('oldtitle'),
+					];
+				return $.Dialog.info('RGB values for color ' + copy, '<div class="align-center">'+path.join(' &rsaquo; ')+'<br><span style="font-size:1.2em">rgb(<code class="color-red">'+r+'</code>, <code class="color-green">'+g+'</code>, <code class="color-darkblue">'+b+'</code>)</span></div>');
 			}
 			if (!copyHash) copy = copy.replace('#','');
 			$.copy(copy);
