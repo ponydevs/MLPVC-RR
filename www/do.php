@@ -586,10 +586,7 @@
 						'title' => $insert['title'],
 						'airs' => $insert['airs'],
 					));
-					respond('Episode saved successfuly',1,array(
-						'tbody' => get_eptable_tbody(),
-						'upcoming' => get_upcoming_eps(null, NOWRAP),
-					));
+					respond('Episode saved successfuly', 1);
 				}
 			}
 

@@ -40,7 +40,7 @@
 		$dialogButtons = $('#dialogButtons');
 	
 	$.Dialog = (function(){
-		var _open = $dialogContent.length,
+		var _open = $dialogContent.length ? {} : undefined,
 			Dialog = {
 				isOpen: function(){ return typeof _open === 'object' },
 			};

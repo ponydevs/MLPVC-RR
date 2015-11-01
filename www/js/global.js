@@ -355,7 +355,7 @@ $(function(){
 			return true;
 
 		e.preventDefault();
-		HandleNav(this.href);
+		Navigation(this.href);
 	}
 	$d.off('click','a[href]',LinkClick).on('click','a[href]',LinkClick);
 
@@ -364,10 +364,10 @@ $(function(){
 
 		if (state !== null && !state['via-js'])
 			return $w.trigger('nav-popstate', [state]);
-		HandleNav(location.href);
+		Navigation(location.href);
 	});
 
-	function HandleNav(url, callback){
+	function Navigation(url, callback){
 		if (xhr !== false){
 			xhr.abort();
 			xhr = false;
@@ -405,14 +405,15 @@ $(function(){
 					reload = ParsedLocation.pathString === url;
 
 				$body.children('script[src], script[data-src]').each(function(){
-					var $this = $(this);
+					var $this = $(this),
+						src = $this.attr('src') || $this.attr('data-src');
 					if (reload){
-						$this.remove();
+						if (!/js\/dialog\./.test(src))
+							$this.remove();
 						return true;
 					}
 
-					var src = $this.attr('src') || $this.attr('data-src'),
-						pos = js.indexOf(src);
+					var pos = js.indexOf(src);
 
 					if (pos !== -1 && !/js\/colorguide[\.\-]/.test(src))
 						js.splice(pos, 1);
@@ -462,8 +463,8 @@ $(function(){
 								DocumentIsReady();
 								$body.removeClass('loading');
 								$main.removeClass('pls-wait');
-								if (typeof callback === 'function')
-									callback();
+
+								$.callCallback(callback);
 								//noinspection JSUnusedAssignment
 								xhr = false;
 								return;
@@ -494,14 +495,14 @@ $(function(){
 			})
 		});
 	}
-	window.HandleNav = function(){ HandleNav.apply(window, arguments) };
-	HandleNav.reload = function(callback, delay){
+	window.HandleNav = function(){ Navigation.apply(window, arguments) };
+	var Reload = function(callback, delay){
 		var f = (typeof delay === 'number' && delay > 0)
-				? function(){ setTimeout(callback, delay) }
-				: callback;
-		HandleNav(location.pathname, f);
+			? function(){ setTimeout(callback, delay) }
+			: callback;
+		Navigation(location.pathname, f);
 	};
-	window.HandleNav.reload = function(){ HandleNav.reload.apply(window, arguments) };
+	window.HandleNav.reload = function(){ Reload.apply(window, arguments) };
 
 	DocumentIsReady();
 });

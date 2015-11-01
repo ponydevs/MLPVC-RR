@@ -1,4 +1,4 @@
-/* global DocReady,moment */
+/* global DocReady,moment,HandleNav */
 DocReady.push(function EpisodesManage(){
 	'use strict';
 	var $eptable = $('#episodes'),
@@ -58,10 +58,7 @@ DocReady.push(function EpisodesManage(){
 				'<input type="number" min="1" max="8" name="season" placeholder="Season #" required>'+
 				'<input type="number" min="1" max="26" name="episode" placeholder="Episode #" required>'+
 			'</div>'+
-			'<label><input type="text" maxlength="255" name="title" placeholder="Title" pattern="'+EP_TITLE_HTML_REGEX+'" autocomplete="off" required></label>'+
-			'<div class="notice info align-center">'+
-				'<p><strong>Title</strong> must be between 5 and 35 characters.<br>Letters, numbers, and these characters, are allowed:<br>-, apostrophe, !, &, comma.</p>'+
-			'</div>'+
+			'<label><span>Title (5-35 chars.)</span><input type="text" maxlength="35" name="title" placeholder="Title" pattern="'+EP_TITLE_HTML_REGEX+'" autocomplete="off" required></label>'+
 			'<div class="input-group">'+
 				'<input type="date" name="airdate" placeholder="YYYY-MM-DD" required>'+
 				'<input type="time" name="airtime" placeholder="HH:MM" required>'+
@@ -74,10 +71,10 @@ DocReady.push(function EpisodesManage(){
 				'<p>If this is checked, only specify the episode number of the first part</p>'+
 			'</div>');
 
-			$.mk('button').text('Set time to '+time+' this Saturday').on('click',function(e){
-				e.preventDefault();
-				$(this).parent().prev().children().first().val(date).next().val(time);
-			}).appendTo($form.children('.button-here'));
+		$.mk('button').text('Set time to '+time+' this Saturday').on('click',function(e){
+			e.preventDefault();
+			$(this).parent().prev().children().first().val(date).next().val(time);
+		}).appendTo($form.children('.button-here'));
 
 		return $form;
 	}
@@ -127,53 +124,53 @@ DocReady.push(function EpisodesManage(){
 			e.preventDefault();
 
 			var $this = $(this),
-				epid = $this.closest('tr').data('epid'),
-				title = 'Editing '+epid;
+				epid = $this.closest('tr').data('epid');
 
-			$.Dialog.wait(title, 'Getting episode details from server');
+			$.Dialog.wait('Editing '+epid, 'Getting episode details from server');
 
 			$.post("/episode/"+epid, $.mkAjaxHandler(function(){
-				if (this.status){
-					var $editepWithData = $editep.clone(true, true);
+				if (!this.status) return $.Dialog.fail(false,this.message);
 
-					$editepWithData.find('input[name=twoparter]').prop('checked',!!this.ep.twoparter);
-					delete this.ep.twoparter;
+				var $editepWithData = $editep.clone(true, true);
 
-					var d = mkDate(this.ep.airdate, this.ep.airtime, true);
-					this.ep.airdate = d.toAirDate();
-					this.ep.airtime = d.toAirTime();
+				$editepWithData.find('input[name=twoparter]').prop('checked',!!this.ep.twoparter);
+				delete this.ep.twoparter;
 
-					var epid = this.epid;
-					delete this.epid;
+				var d = mkDate(this.ep.airdate, this.ep.airtime, true);
+				this.ep.airdate = d.toAirDate();
+				this.ep.airtime = d.toAirTime();
 
-					$.each(this.ep,function(k,v){
-						$editepWithData.find('input[name='+k+']').val(v);
+				var epid = this.epid;
+				delete this.epid;
+
+				$.each(this.ep,function(k,v){
+					$editepWithData.find('input[name='+k+']').val(v);
+				});
+
+				$.Dialog.request(false, $editepWithData,'editep','Save',function(){
+					$('#editep').on('submit',function(e){
+						e.preventDefault();
+
+						var data = $(this).mkData(),
+							d = mkDate(data.airdate, data.airtime);
+						delete data.airdate;
+						delete data.airtime;
+						data.airs = d.toISOString();
+
+						$.Dialog.wait(false, 'Saving edits');
+
+						$.post('/episode/edit/'+epid, data, $.mkAjaxHandler(function(){
+							if (!this.status) return $.Dialog.fail(false, this.message);
+
+							$.Dialog.success(false, 'Episode edited');
+							$.Dialog.wait(false, 'Updating page');
+
+							HandleNav.reload(function(){
+								$.Dialog.close();
+							});
+						}));
 					});
-
-					$.Dialog.request('Editing '+epid,$editepWithData,'editep','Save',function(){
-						$('#editep').on('submit',function(e){
-							e.preventDefault();
-
-							var data = $(this).mkData(),
-								d = mkDate(data.airdate, data.airtime);
-							delete data.airdate;
-							delete data.airtime;
-							data.airs = d.toISOString();
-
-							$.Dialog.wait(title,'Saving edits');
-
-							$.post('/episode/edit/'+epid, data, $.mkAjaxHandler(function(){
-								if (this.status){
-									Bind(this.tbody);
-									UpcomingUpdate(this.upcoming);
-									$.Dialog.close();
-								}
-								else $.Dialog.fail(title,this.message);
-							}));
-						});
-					});
-				}
-				else $.Dialog.fail(title,this.message);
+				});
 			}));
 		});
 
