@@ -32,7 +32,7 @@ $TCharacter: adjust_hue($_TBase, 240);
 			&:not(:empty) {
 				cursor: pointer;
 
-				&:active { transform: scale(.8) }
+				&:active { transform: scale(.9) }
 			}
 			&:empty {
 				background: url(../img/transparency.svg);

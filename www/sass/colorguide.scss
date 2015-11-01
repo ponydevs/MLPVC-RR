@@ -272,6 +272,7 @@ ul.colors {
 	list-style: none;
 	white-space: initial !important;
 	margin: 0;
+	user-select: none;
 
 	&:empty:before {
 		content: "There are no " attr(data-color) " groups for this appearance, add one by right-clicking here";
@@ -283,9 +284,10 @@ ul.colors {
 		background-color: rgba(black, .05);
 		padding: 4px;
 		margin: 0 5px 5px 0;
+		font-size: 18px;
 
 		> * { vertical-align: middle }
-		> span:not(.cat) { @include colored-square(16px, 1px) }
+		> span:not(.cat) { @include colored-square(18px, 1px) }
 	}
 }
 
