@@ -492,8 +492,8 @@
 							$set = $vid->id;
 						}
 
-						$video = $Database->whereEp($Episode)->where('provider', $k)->getOne('episodes__videos','COUNT(*) as count');
-						if ($video['count'] === 0){
+						$videocount = $Database->whereEp($Episode)->where('provider', $k)->count('episodes__videos');
+						if ($videocount === 0){
 							if (!empty($set)) $Database->insert('episodes__videos',array(
 								'season' => $Episode['season'],
 								'episode' => $Episode['episode'],

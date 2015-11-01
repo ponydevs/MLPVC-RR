@@ -29,7 +29,7 @@
 		}
 		if ($m === ERR_DB_FAIL){
 			global $Database;
-			$m .= ": ".$Database->getLastError();
+			$m = rtrim("$m: ".$Database->getLastError(),': ');
 		}
 		$r = array(
 			"message" => $m,
@@ -2109,7 +2109,7 @@ ORDER BY "count" DESC
 			if (!empty($Videos[1])){
 				$SecondVid = $Videos[1];
 				$url = Video::get_embed($SecondVid['id'], $SecondVid['provider'], Video::URL_ONLY);
-				$HTML .= "<p class='align-center' style='margin-bottom:5px'>If the video below goes down, <a href='$url' target='_blank'>click here to watch it on {$VIDEO_PROVIDER_NAMES[$SecondVid['provider']]} instead</a>.</p>";
+				$HTML .= "<p class='align-center' style='margin-bottom:5px'>Also available on: <a href='$url' target='_blank'>{$VIDEO_PROVIDER_NAMES[$SecondVid['provider']]}</a></p>";
 			}
 			$HTML .= "<div class='resp-embed-wrap'><div class='responsive-embed'>$embed</div></div></section>";
 		}

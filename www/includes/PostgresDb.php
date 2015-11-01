@@ -475,7 +475,7 @@ class PostgresDb {
 	 * @return int
 	 */
 	public function count($table){
-		return $this->getOne($table, 'COUNT(*) as c')['c'];
+		return $this->getOne($table, 'COUNT(*)::int as c')['c'];
 	}
 
 	/**
