@@ -30,7 +30,7 @@
 	if ($do === 'colorguide' && (!empty($Appearance) || !empty($Ponies))){ ?>
 	<section id="hash-copy">
 		<h2>Color Guide</h2>
-		<p>You can click any <?=$color?>ed square on this page to copy its HEX <?=$color?> code to your clipboard.</p>
+		<p>You can click any <?=$color?>ed square on this page to copy its HEX <?=$color?> code to your clipboard. Holding Shift while clicking will display a dialog with the RGB <?=$color?> values instead.</p>
 		<button class='blue typcn typcn-refresh' id='toggle-copy-hash'>Checking&hellip;</button>
 	</section>
 <?php
