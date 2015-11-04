@@ -2208,9 +2208,9 @@ ORDER BY "count" DESC
 		}
 		if ($GLOBALS['signedIn'])
 			$NavItems['u'] = array("/@{$GLOBALS['currentUser']['name']}",'Account');
-		if (($do === 'user' || PERM('inspector')) && empty($GLOBALS['sameUser'])){
+		if ($do === 'user' || PERM('inspector')){
 			global $User;
-
+			
 			$NavItems['users'] = array('/users', 'Users', PERM('inspector'));
 			if (!empty($User))
 				$NavItems['users']['subitem'] = array($_SERVER['REQUEST_URI'], $User['name']);
