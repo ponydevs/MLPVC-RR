@@ -2209,10 +2209,10 @@ ORDER BY "count" DESC
 		if ($GLOBALS['signedIn'])
 			$NavItems['u'] = array("/@{$GLOBALS['currentUser']['name']}",'Account');
 		if ($do === 'user' || PERM('inspector')){
-			global $User;
+			global $User, $sameUser;
 			
 			$NavItems['users'] = array('/users', 'Users', PERM('inspector'));
-			if (!empty($User))
+			if (!empty($User) && empty($sameUser))
 				$NavItems['users']['subitem'] = array($_SERVER['REQUEST_URI'], $User['name']);
 		}
 		if (PERM('inspector')){
