@@ -229,28 +229,20 @@ INSERT INTO appearances VALUES (9, 13, 'Princess Luna', '', NULL, false, '2015-0
 INSERT INTO appearances VALUES (10, NULL, 'Minuette', 'For convenience, the color offalsethe glass on her cutie mark is solid rather than transparent, thus the sand should be above.', NULL, false, '2015-07-25 14:49:44+00');
 INSERT INTO appearances VALUES (11, NULL, 'Derpy / Muffins', '', NULL, false, '2015-08-26 03:53:49+00');
 INSERT INTO appearances VALUES (12, NULL, 'Lyra Heartstrings', '', NULL, false, '2015-08-26 04:08:33+00');
-INSERT INTO appearances VALUES (13, NULL, 'Whoa Nelly', '', NULL, false, '2015-09-17 03:43:22+00');
-INSERT INTO appearances VALUES (14, NULL, 'Fashion Plate', '', NULL, false, '2015-09-17 04:02:26+00');
 INSERT INTO appearances VALUES (15, NULL, 'Sassy Saddles', '', NULL, false, '2015-09-17 04:22:20+00');
 INSERT INTO appearances VALUES (16, NULL, 'Twinkleshine', '', NULL, false, '2015-09-21 20:25:31+00');
 INSERT INTO appearances VALUES (17, NULL, 'Lemon Hearts', '', NULL, false, '2015-09-21 20:30:06+00');
 INSERT INTO appearances VALUES (18, NULL, 'Granny Smith', 'Far legs use darker colors.', NULL, false, '2015-09-21 20:37:57+00');
 INSERT INTO appearances VALUES (19, NULL, 'Fleetfoot', '', 'd97x7vd', false, '2015-09-21 20:58:56+00');
-INSERT INTO appearances VALUES (20, NULL, 'Stormy Flare', 'Only has one eye shine.', NULL, false, '2015-09-22 05:20:14+00');
 INSERT INTO appearances VALUES (21, NULL, 'Wind Rider', 'Teeth use a different color than normal.', NULL, false, '2015-09-24 04:35:32+00');
-INSERT INTO appearances VALUES (22, NULL, 'Sugar Belle', '', NULL, false, '2015-09-24 10:44:18+00');
 INSERT INTO appearances VALUES (25, 11, 'Sweetie Belle', 'Cutie Mark colors subject to change on further episodes.', NULL, false, '2015-09-24 12:09:41+00');
 INSERT INTO appearances VALUES (26, NULL, 'Night Glider', '', NULL, false, '2015-09-26 15:03:43+00');
 INSERT INTO appearances VALUES (27, NULL, 'Double Diamond', '', NULL, false, '2015-09-26 17:22:19+00');
 INSERT INTO appearances VALUES (28, NULL, 'Party Favor', 'Magic aura color is unknown.', NULL, false, '2015-09-26 17:34:42+00');
 INSERT INTO appearances VALUES (29, NULL, 'Starlight Glimmer', '', NULL, false, '2015-09-26 18:01:51+00');
-INSERT INTO appearances VALUES (30, NULL, 'Coco Pommel', '', NULL, false, '2015-09-26 21:18:32+00');
-INSERT INTO appearances VALUES (31, NULL, 'Suri Polomare', 'From S4E08', NULL, false, '2015-09-30 05:35:59+00');
 INSERT INTO appearances VALUES (32, NULL, 'Trixie Lulamoon', '', 'd9bxest', false, '2015-10-03 15:35:08+00');
 INSERT INTO appearances VALUES (33, NULL, 'Alicorn Amulet', '', NULL, false, '2015-10-03 16:22:13+00');
 INSERT INTO appearances VALUES (34, 12, 'Princess Celestia', 'Make sure to usefalseappropriate references when picking gradient angles and stops. They''ll differ based on the hair shape and angle.', NULL, false, '2015-10-03 19:26:50+00');
-INSERT INTO appearances VALUES (35, NULL, 'Big Macintosh', '', NULL, false, '2015-10-04 19:11:42+00');
-INSERT INTO appearances VALUES (36, NULL, 'Moondancer', '', NULL, false, '2015-10-05 05:17:36+00');
 INSERT INTO appearances VALUES (37, NULL, 'Dinky Doo', 'From E5E17', NULL, false, '2015-10-06 03:39:35+00');
 INSERT INTO appearances VALUES (38, NULL, 'Berry Pinch', 'From S5E17', NULL, false, '2015-10-06 03:48:24+00');
 INSERT INTO appearances VALUES (39, NULL, 'Button Mash', 'Based on S5E18', NULL, false, '2015-10-15 03:32:38+00');
@@ -258,7 +250,6 @@ INSERT INTO appearances VALUES (40, NULL, 'Lily Longsocks', 'From S5E18', NULL, 
 INSERT INTO appearances VALUES (44, NULL, 'Shining Armor', '', NULL, false, '2015-10-23 14:27:32+00');
 INSERT INTO appearances VALUES (45, NULL, 'Penny Curve', 'VectorClub Mascot', 'd9e7zgj', false, '2015-10-25 20:10:21+00');
 INSERT INTO appearances VALUES (46, NULL, 'Cheese Sandwich', '', NULL, false, '2015-10-26 14:27:27+00');
-INSERT INTO appearances VALUES (53, NULL, 'Igneous Rock', '', NULL, false, '2015-10-31 22:30:14+00');
 INSERT INTO appearances VALUES (54, NULL, 'Cloudy Quartz', '', NULL, false, '2015-10-31 22:43:48.197299+00');
 INSERT INTO appearances VALUES (50, NULL, 'Marble Pie', 'Two different hair outline colors.', 'd9eeci7', false, '2015-10-31 22:30:14+00');
 INSERT INTO appearances VALUES (52, NULL, 'Maud Pie', 'Far legs use darker colors.', 'd7apvq4', false, '2015-10-31 22:30:14+00');
@@ -267,13 +258,26 @@ INSERT INTO appearances VALUES (23, 9, 'Apple Bloom', 'Far legs use darker color
 Cutie Mark colors subject to change on further episodes.', NULL, false, '2015-09-24 12:01:03+00');
 INSERT INTO appearances VALUES (24, 10, 'Scootaloo', 'Far legs use darker colors.
 Cutie Mark colors subject to change on further episodes.', NULL, false, '2015-09-24 12:06:23+00');
+INSERT INTO appearances VALUES (13, NULL, 'Whoa Nelly', 'Special eyeball color.', NULL, false, '2015-09-17 03:43:22+00');
+INSERT INTO appearances VALUES (14, NULL, 'Fashion Plate', 'Far legs use darker colors.', NULL, false, '2015-09-17 04:02:26+00');
+INSERT INTO appearances VALUES (22, NULL, 'Sugar Belle', 'Far legs use darker colors.', NULL, false, '2015-09-24 10:44:18+00');
+INSERT INTO appearances VALUES (20, NULL, 'Stormy Flare', 'Only has one eye shine.
+Far legs use darker colors.', NULL, false, '2015-09-22 05:20:14+00');
+INSERT INTO appearances VALUES (31, NULL, 'Suri Polomare', 'From S4E08
+Far legs use darker colors.', NULL, false, '2015-09-30 05:35:59+00');
+INSERT INTO appearances VALUES (30, NULL, 'Coco Pommel', 'Far legs use darker colors.', NULL, false, '2015-09-26 21:18:32+00');
+INSERT INTO appearances VALUES (35, NULL, 'Big Macintosh', 'Far legs use darker colors.', NULL, false, '2015-10-04 19:11:42+00');
+INSERT INTO appearances VALUES (36, NULL, 'Moondancer', 'Far legs use darker colors.', NULL, false, '2015-10-05 05:17:36+00');
+INSERT INTO appearances VALUES (53, NULL, 'Igneous Rock', 'Far legs use darker colors.', NULL, false, '2015-10-31 22:30:14+00');
+INSERT INTO appearances VALUES (55, NULL, 'Spitfire', 'Far legs use darker colors.', 'd5nzngs', false, '2015-11-04 22:58:36.915265+00');
+INSERT INTO appearances VALUES (56, NULL, 'Lightning Dust', 'Far legs use darker colors.', 'd9fl30m', false, '2015-11-04 23:10:40.321984+00');
 
 
 --
 -- Name: appearances_id_seq; Type: SEQUENCE SET; Schema: public; Owner: mlpvc-rr
 --
 
-SELECT pg_catalog.setval('appearances_id_seq', 54, true);
+SELECT pg_catalog.setval('appearances_id_seq', 56, true);
 
 
 --
@@ -497,12 +501,17 @@ INSERT INTO colorgroups VALUES (270, 46, 'Cutie Mark', 3);
 INSERT INTO colorgroups VALUES (271, 46, 'Shirt', 4);
 INSERT INTO colorgroups VALUES (272, 46, 'Glasses', 5);
 INSERT INTO colorgroups VALUES (281, 50, 'Coat', 0);
+INSERT INTO colorgroups VALUES (310, 56, 'Coat', 0);
 INSERT INTO colorgroups VALUES (283, 50, 'Iris', 2);
 INSERT INTO colorgroups VALUES (284, 50, 'Cutie Mark', 3);
 INSERT INTO colorgroups VALUES (285, 51, 'Coat', 0);
 INSERT INTO colorgroups VALUES (286, 51, 'Mane & Tail', 1);
 INSERT INTO colorgroups VALUES (287, 51, 'Iris', 2);
+INSERT INTO colorgroups VALUES (311, 56, 'Mane & Tail', 1);
 INSERT INTO colorgroups VALUES (288, 51, 'Cutie Mark', 3);
+INSERT INTO colorgroups VALUES (312, 56, 'Iris', 2);
+INSERT INTO colorgroups VALUES (313, 56, 'Cutie Mark', 3);
+INSERT INTO colorgroups VALUES (309, 55, 'Cutie Mark', 3);
 INSERT INTO colorgroups VALUES (293, 53, 'Coat', 0);
 INSERT INTO colorgroups VALUES (294, 53, 'Mane & Tail', 1);
 INSERT INTO colorgroups VALUES (295, 53, 'Iris', 2);
@@ -522,13 +531,16 @@ INSERT INTO colorgroups VALUES (292, 52, 'Dress', 4);
 INSERT INTO colorgroups VALUES (304, 52, 'Boulder', 5);
 INSERT INTO colorgroups VALUES (305, 52, 'Cutie Mark', 3);
 INSERT INTO colorgroups VALUES (289, 52, 'Coat', 0);
+INSERT INTO colorgroups VALUES (306, 55, 'Coat', 0);
+INSERT INTO colorgroups VALUES (307, 55, 'Mane & Tail', 1);
+INSERT INTO colorgroups VALUES (308, 55, 'Iris', 2);
 
 
 --
 -- Name: colorgroups_groupid_seq; Type: SEQUENCE SET; Schema: public; Owner: mlpvc-rr
 --
 
-SELECT pg_catalog.setval('colorgroups_groupid_seq', 305, true);
+SELECT pg_catalog.setval('colorgroups_groupid_seq', 313, true);
 
 
 --
@@ -1364,6 +1376,10 @@ INSERT INTO colors VALUES (1105, 288, 'Lime Fill 2', '#90BA40', 1);
 INSERT INTO colors VALUES (1106, 288, 'Lime Fill 3', '#DDEA79', 2);
 INSERT INTO colors VALUES (1107, 288, 'Stone Fill 1', '#FEFEFE', 3);
 INSERT INTO colors VALUES (1108, 288, 'Stone Fill 2', '#CCCED2', 4);
+INSERT INTO colors VALUES (1186, 306, 'Outline', '#BEB205', 0);
+INSERT INTO colors VALUES (1187, 306, 'Fill', '#F8EA62', 1);
+INSERT INTO colors VALUES (1188, 306, 'Shadow Outline', '#A89E0E', 2);
+INSERT INTO colors VALUES (1189, 306, 'Shadow Fill', '#DDCE52', 3);
 INSERT INTO colors VALUES (1113, 290, 'Outline', '#554373', 0);
 INSERT INTO colors VALUES (1114, 290, 'Fill', '#9885B7', 1);
 INSERT INTO colors VALUES (1115, 291, 'Gradient Top', '#196E5D', 0);
@@ -1435,16 +1451,41 @@ INSERT INTO colors VALUES (1182, 305, 'Light Details', '#7C949A', 7);
 INSERT INTO colors VALUES (1185, 305, 'Very Dark Details', '#192425', 10);
 INSERT INTO colors VALUES (1109, 289, 'Outline', '#8A8995', 0);
 INSERT INTO colors VALUES (1110, 289, 'Fill', '#B8B7BE', 1);
+INSERT INTO colors VALUES (1190, 307, 'Outline', '#AA4401', 0);
+INSERT INTO colors VALUES (1191, 307, 'Fill 1', '#ED7B00', 1);
 INSERT INTO colors VALUES (1175, 305, 'Top Light Fill', '#B6C8CB', 0);
 INSERT INTO colors VALUES (1111, 289, 'Shadow Outline', '#7B7C83', 2);
 INSERT INTO colors VALUES (1112, 289, 'Shadow Fill', '#A4A4A8', 3);
+INSERT INTO colors VALUES (1199, 307, 'Fill 2', '#FBBE33', 2);
+INSERT INTO colors VALUES (1196, 308, 'Highlight Bottom', '#FACC83', 3);
+INSERT INTO colors VALUES (1198, 309, 'Fill 1', '#ED7B00', 1);
+INSERT INTO colors VALUES (1192, 308, 'Gradient Top', '#422302', 0);
+INSERT INTO colors VALUES (1194, 308, 'Gradient Bottom', '#CF6E03', 1);
+INSERT INTO colors VALUES (1195, 308, 'Highlight Top', '#D36E02', 2);
+INSERT INTO colors VALUES (1202, 308, 'Eyelid Highlight', '#FEFEAE', 4);
+INSERT INTO colors VALUES (1203, 309, 'Fill 2', '#FBBE33', 2);
+INSERT INTO colors VALUES (1207, 310, 'Shadow Outline', '#4CBDBE', 2);
+INSERT INTO colors VALUES (1208, 310, 'Shadow Fill', '#79DCD0', 3);
+INSERT INTO colors VALUES (1197, 309, 'Outline', '#AA4401', 0);
+INSERT INTO colors VALUES (1204, 309, 'Fill 3', '#F8EA62', 3);
+INSERT INTO colors VALUES (1205, 310, 'Outline', '#37B5B4', 0);
+INSERT INTO colors VALUES (1206, 310, 'Fill', '#8BEAD5', 1);
+INSERT INTO colors VALUES (1209, 311, 'Outline', '#CF7314', 0);
+INSERT INTO colors VALUES (1210, 311, 'Fill 1', '#F6AC05', 1);
+INSERT INTO colors VALUES (1218, 311, 'Fill 2', '#F5D758', 2);
+INSERT INTO colors VALUES (1211, 312, 'Gradient Top', '#A65A26', 0);
+INSERT INTO colors VALUES (1212, 312, 'Gradient Middle', '#EB8F24', 1);
+INSERT INTO colors VALUES (1213, 312, 'Gradient Bottom', '#FDAD35', 2);
+INSERT INTO colors VALUES (1216, 313, 'Lightning', '#FFFFFF', 0);
+INSERT INTO colors VALUES (1217, 313, 'Side Stars', '#FDE687', 1);
+INSERT INTO colors VALUES (1219, 313, 'Middle Star', '#FAF99D', 2);
 
 
 --
 -- Name: colors_colorid_seq; Type: SEQUENCE SET; Schema: public; Owner: mlpvc-rr
 --
 
-SELECT pg_catalog.setval('colors_colorid_seq', 1185, true);
+SELECT pg_catalog.setval('colors_colorid_seq', 1219, true);
 
 
 --
@@ -1675,6 +1716,15 @@ INSERT INTO tagged VALUES (86, 53);
 INSERT INTO tagged VALUES (86, 54);
 INSERT INTO tagged VALUES (86, 51);
 INSERT INTO tagged VALUES (86, 50);
+INSERT INTO tagged VALUES (87, 55);
+INSERT INTO tagged VALUES (3, 55);
+INSERT INTO tagged VALUES (7, 55);
+INSERT INTO tagged VALUES (12, 55);
+INSERT INTO tagged VALUES (27, 55);
+INSERT INTO tagged VALUES (7, 56);
+INSERT INTO tagged VALUES (88, 56);
+INSERT INTO tagged VALUES (12, 56);
+INSERT INTO tagged VALUES (3, 56);
 
 
 --
@@ -1682,7 +1732,6 @@ INSERT INTO tagged VALUES (86, 50);
 --
 
 INSERT INTO tags VALUES (1, 'unicorn', '', 'spec', 18);
-INSERT INTO tags VALUES (3, 'pegasus', '', 'spec', 8);
 INSERT INTO tags VALUES (4, 'alicorn', '', 'spec', 3);
 INSERT INTO tags VALUES (5, 'bat pony', '', 'spec', 0);
 INSERT INTO tags VALUES (14, 'twilight sparkle', '', 'char', 1);
@@ -1735,7 +1784,6 @@ INSERT INTO tags VALUES (10, 'pet', '', 'cat', 0);
 INSERT INTO tags VALUES (85, 'pie family', '', 'cat', 6);
 INSERT INTO tags VALUES (59, 'royalty', '', 'cat', 4);
 INSERT INTO tags VALUES (81, 'limestone pie', '', 'char', 1);
-INSERT INTO tags VALUES (27, 'wonderbolt', 'Wonderbolt characters', 'cat', 2);
 INSERT INTO tags VALUES (46, 'apple bloom', '', 'char', 1);
 INSERT INTO tags VALUES (22, 'applejack', '', 'char', 1);
 INSERT INTO tags VALUES (82, 'maud pie', '', 'char', 1);
@@ -1746,8 +1794,12 @@ INSERT INTO tags VALUES (83, 'igenous rock', '', 'char', 1);
 INSERT INTO tags VALUES (11, 'male', '', 'gen', 10);
 INSERT INTO tags VALUES (79, 'cheese sandwich', '', 'char', 1);
 INSERT INTO tags VALUES (84, 'cloudy quartz', '', 'char', 1);
-INSERT INTO tags VALUES (12, 'female', '', 'gen', 37);
+INSERT INTO tags VALUES (87, 'spitfire', '', 'char', 1);
 INSERT INTO tags VALUES (2, 'earth pony', '', 'spec', 16);
+INSERT INTO tags VALUES (27, 'wonderbolt', 'Wonderbolt characters', 'cat', 3);
+INSERT INTO tags VALUES (7, 'minor character', 'Ponies who had a speaking role and/or interacted with the mane six', 'cat', 33);
+INSERT INTO tags VALUES (88, 'lightning dust', '', 'char', 1);
+INSERT INTO tags VALUES (12, 'female', '', 'gen', 39);
 INSERT INTO tags VALUES (86, 's5e20', '', 'ep', 4);
 INSERT INTO tags VALUES (9, 'antagonist', '', 'cat', 3);
 INSERT INTO tags VALUES (8, 'background character', 'Ponies whose only purpose is filling crowds, with no to minimal speaking roles', 'cat', 4);
@@ -1755,16 +1807,16 @@ INSERT INTO tags VALUES (45, 'cutie mark crusader', '', 'cat', 3);
 INSERT INTO tags VALUES (44, 'foal', '', 'cat', 7);
 INSERT INTO tags VALUES (56, 'manehatten', '', 'cat', 1);
 INSERT INTO tags VALUES (6, 'mane six', 'Ponies who are one of the show''s six main characters', 'cat', 7);
-INSERT INTO tags VALUES (7, 'minor character', 'Ponies who had a speaking role and/or interacted with the mane six', 'cat', 31);
 INSERT INTO tags VALUES (64, 'object', '', 'cat', 1);
 INSERT INTO tags VALUES (78, 'original character', 'Characters not canon to the show''s universe', 'cat', 1);
+INSERT INTO tags VALUES (3, 'pegasus', '', 'spec', 10);
 
 
 --
 -- Name: tags_tid_seq; Type: SEQUENCE SET; Schema: public; Owner: mlpvc-rr
 --
 
-SELECT pg_catalog.setval('tags_tid_seq', 86, true);
+SELECT pg_catalog.setval('tags_tid_seq', 88, true);
 
 
 --
