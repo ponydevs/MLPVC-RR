@@ -29,7 +29,7 @@ DocReady.push(function UserManage(){
 				var data = $form.mkData();
 				$.Dialog.wait(title,'Moving user to the new group');
 
-				$.post("newgroup/"+name, data, $.mkAjaxHandler(function(){
+				$.post("/user/newgroup/"+name, data, $.mkAjaxHandler(function(){
 					if (this.already_in === true)
 						return $.Dialog.close();
 
@@ -71,7 +71,7 @@ DocReady.push(function UserManage(){
 					var data = $(this).mkData();
 					$.Dialog.wait(title, 'Gathering the Elements of Harmony');
 
-					$.post(action+'/'+name, data, $.mkAjaxHandler(function(){
+					$.post('/user/'+action+'/'+name, data, $.mkAjaxHandler(function(){
 						if (!this.status) return $.Dialog.fail(title,this.message);
 
 						if (action === 'banish') $.Dialog.success(title, '<p>What had to be done, has been done.</p><img src="/img/post-ban.svg">');
