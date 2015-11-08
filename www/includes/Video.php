@@ -12,11 +12,11 @@
 		}
 		private static $providerRegexes = array(
 			'youtu(?:\.be/|be.com/watch.*[&?]v=)([^&?=]+)(?:&|$)' => 'yt',
-			'dai(?:\.ly/|lymotion.com/video/(?:embed/)?)([^&?=]+)(?:&|$)' => 'dm'
+			'dai(?:\.ly/|lymotion.com/video/(?:embed/)?)([a-z\d]+)(?:_|$)' => 'dm'
 		);
 		private static function test_provider($url, $pattern, $name){
 			$match = array();
-			if (preg_match("~^(?:https?://(?:www\.)?)?$pattern~", $url, $match))
+			if (preg_match("~^(?:https?://(?:www\\.)?)?$pattern~", $url, $match))
 				return array(
 					'name' => $name,
 					'itemid' => $match[1]
