@@ -2233,6 +2233,8 @@ ORDER BY "count" DESC
 				$sublink = " &rsaquo; $sublink";
 				$link = get_header_link($item, HTML_ONLY);
 			}
+			else if (isset($item[2]) && !$item[2])
+				continue;
 			else list($class, $link) = get_header_link($item);
 			$GLOBALS['NavHTML'] .= "<li$class>$link$sublink</li>";
 		}
