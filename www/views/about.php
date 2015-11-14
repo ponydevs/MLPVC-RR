@@ -16,6 +16,12 @@
 		</div>
 	</section>
 	<section>
+		<h2>Site usage</h2>
+		<div id="stats">
+			<canvas class="stats-posts"></canvas>
+		</div>
+	</section>
+	<section>
 		<h2>Attributions</h2>
 		<div class="attributions">
 			<?=file_get_contents(APPATH.'views/about.html')?>

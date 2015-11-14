@@ -639,9 +639,49 @@
 			loadEpisodePage($data);
 		break;
 		case "about":
+			if (RQMTHD === 'POST'){
+				detectCSRF();
+
+				if ($data === 'stats-posts'){
+					$Data = array(
+						'labels' => array(),
+						'datasets' => array(),
+					);
+
+					$Query = array("SELECT DATE(posted) as ","_date, COUNT(*) as ","_cnt FROM \"","\" WHERE posted > NOW() - INTERVAL '1 MONTH' GROUP BY DATE(posted) ORDER BY ","_date");
+					$RequestData = $Database->rawQuery(implode('requests', $Query));
+					if (!empty($RequestData)){
+						$Data = array();
+						/*
+SELECT
+  DATE(COALESCE(req.posted,res.posted)) as date,
+  COUNT(*) as cnt,
+  (CASE WHEN tableoid::regclass::text = 'requests' THEN 'requests' ELSE 'reservations' END) as type
+FROM "requests" req
+LEFT JOIN "reservations" res ON true
+WHERE COALESCE(req.posted,res.posted) > NOW() - INTERVAL '1 MONTH'
+GROUP BY date
+ORDER BY date
+						*/
+						//foreach ($Data)
+						$Dataset = array(
+							'label' => 'Requests',
+				            'fillColor' => "rgba(220,220,220,0.2)",
+				            'strokeColor' => "rgba(220,220,220,1)",
+				            'pointColor' => "rgba(220,220,220,1)",
+				            'pointStrokeColor' => "#fff",
+				            'pointHighlightFill' => "#fff",
+				            'pointHighlightStroke' => "rgba(220,220,220,1)",
+						);
+					}
+					$ReservationData = $Database->rawQuery(implode('reservations', $Query));
+				}
+				else do404();
+			}
 			loadPage(array(
 				'title' => 'About',
 				'do-css',
+				'js' => array('Chart', $do),
 			));
 		break;
 		case "logs":
