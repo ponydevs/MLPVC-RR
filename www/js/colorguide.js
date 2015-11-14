@@ -58,9 +58,7 @@ DocReady.push(function Colorguide(){
 			var $this = $(this),
 				copy = $this.html().trim();
 			if (e.shiftKey){
-				var r = parseInt(copy.substring(1,3), 16),
-					g = parseInt(copy.substring(3,5), 16),
-					b = parseInt(copy.substring(5,7), 16),
+				var rgb = $.hex2rgb(copy),
 					$cg = $this.closest('li'),
 					$appearance = $cg.parents('li'),
 					path = [
@@ -68,7 +66,7 @@ DocReady.push(function Colorguide(){
 						$cg.children().first().text().replace(/:\s+$/,''),
 						$this.attr('oldtitle'),
 					];
-				return $.Dialog.info('RGB values for color ' + copy, '<div class="align-center">'+path.join(' &rsaquo; ')+'<br><span style="font-size:1.2em">rgb(<code class="color-red">'+r+'</code>, <code class="color-green">'+g+'</code>, <code class="color-darkblue">'+b+'</code>)</span></div>');
+				return $.Dialog.info('RGB values for color ' + copy, '<div class="align-center">'+path.join(' &rsaquo; ')+'<br><span style="font-size:1.2em">rgb(<code class="color-red">'+rgb.r+'</code>, <code class="color-green">'+rgb.g+'</code>, <code class="color-darkblue">'+rgb.b+'</code>)</span></div>');
 			}
 			if (!copyHash) copy = copy.replace('#','');
 			$.copy(copy);

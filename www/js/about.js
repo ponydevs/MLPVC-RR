@@ -3,13 +3,59 @@ $(function(){
 	'use strict';
 	Chart.defaults.global.responsive = true;
 
-	var $stats = $('#stats'),
-		PostsCTX = $stats.children('.stats-posts').get(0).getContext("2d"),
-		PostsChart;
+	var $stats = $('#stats');
 
+	// Post Stats
+	var $PostStats = $stats.children('.stats-posts'),
+		$PostStatsLegend = $PostStats.children('.legend'),
+		PostsCTX = $PostStats.children('canvas').get(0).getContext("2d"),
+		PostsChart,
+		PostLegendColors = ["#46ACD3","#438CCB"];
 	$.post('/about/stats-posts',$.mkAjaxHandler(function(){
-		if (!this.status) return $stats.closest('section').remove();
+		if (!this.status) return $PostStats.remove();
 
-		PostsChart = new Chart(PostsCTX).Line(this.data);
+		var Data = this.data;
+
+		$.each(Data.datasets,function(i,el){
+			var rgb = $.hex2rgb(PostLegendColors[el.clrkey]),
+				rgbstr = rgb.r+','+rgb.g+','+rgb.b;
+			$.extend(Data.datasets[i], {
+				fillColor: 'rgba('+rgbstr+',0.2)',
+				strokeColor: 'rgb('+rgbstr+')',
+				pointColor: 'rgb('+rgbstr+')',
+				pointStrokeColor: "#fff",
+				pointHighlightFill: "#fff",
+				pointHighlightStroke: 'rgb('+rgbstr+')',
+			});
+			$PostStatsLegend.append("<span><span class='sq' style='background-color:rgb("+rgbstr+")'></span><span>"+el.label+"</span></span>");
+		});
+
+		PostsChart = new Chart(PostsCTX).Line(Data);
 	}));
+
+	// Approval Stats
+/*	var $ApprovalStats = $stats.children('.stats-approvals'),
+		$ApprovalStatsLegend = $PostStats.children('.legend'),
+		ApprovalCTX = $PostStats.children('canvas').get(0).getContext("2d"),
+		ApprovalChart,
+		ApprovalLegendColor = $.hex2rgb("#4DC742");
+	$.post('/about/stats-approvals',$.mkAjaxHandler(function(){
+		if (!this.status) return $ApprovalStats.remove();
+
+		var Data = this.data,
+			el = Data.datasets[0],
+			rgb = ApprovalLegendColor,
+			rgbstr = rgb.r+','+rgb.g+','+rgb.b;
+		$.extend(Data.datasets[i], {
+			fillColor: 'rgba('+rgbstr+',0.2)',
+			strokeColor: 'rgb('+rgbstr+')',
+			pointColor: 'rgb('+rgbstr+')',
+			pointStrokeColor: "#fff",
+			pointHighlightFill: "#fff",
+			pointHighlightStroke: 'rgb('+rgbstr+')',
+		});
+		$ApprovalStatsLegend.append("<span><span class='sq' style='background-color:rgb("+rgbstr+")'></span><span>"+el.label+"</span></span>");
+
+		ApprovalChart = new Chart(ApprovalCTX).Line(Data);
+	}));*/
 });

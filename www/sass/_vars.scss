@@ -339,3 +339,16 @@ $StrongOutline: 3;
 		&:last-child { margin-bottom: 0 }
 	}
 }
+
+// Color palette
+// http://www.colorschemer.com/schemes/viewscheme.php?id=4817
+$ColorPalette:
+	#FFFF54, #C8E64C, #8CD446, #4DC742, #45D2B0,
+	#46ACD3, #438CCB, #4262C7, #5240C3, #8C3FC0,
+	#D145C1, #E64C8D, #FF5454, #FF8054, #FFA054, #FFB554;
+%color-palette {
+	$cpl: length($ColorPalette)-1;
+	@for $i from 0 through $cpl {
+		&:nth-child(#{$cpl}n+#{$i}) { background-color: nth($ColorPalette, $i+1) }
+	}
+}

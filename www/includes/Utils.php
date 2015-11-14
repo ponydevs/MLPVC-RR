@@ -2425,3 +2425,38 @@ ORDER BY "count" DESC
 			'request_uri' => $RQURI,
 		));
 	}
+
+	/**
+	 * Process data for usage stats
+	 *
+	 * @param array $Rows    Database rows obtained with rawQuery
+	 * @param array $Dataset Array to process data into
+	 *
+	 * @return array
+	 */
+	function process_usage_stats($Rows, &$Dataset){
+		$Dataset['labels'] =
+		$Dataset['data'] = array();
+
+		foreach ($Rows as $row){
+			$Dataset['labels'][] = $row['key'];
+			$Dataset['data'][] = $row['cnt'];
+		}
+
+		global $Labels;
+		foreach ($Labels as $ix => $label){
+			if (empty($Dataset['labels'][$ix]) || $Dataset['labels'][$ix] !== $label){
+				array_splice($Dataset['labels'], $ix, 0, array($label));
+				array_splice($Dataset['data'], $ix, 0, array(0));
+			}
+		}
+
+		unset($Dataset['labels']);
+	}
+
+	// Create upload destination folder
+	function upload_folder_create($path){
+		$DS = preg_quote('/\\');
+		$folder = preg_replace("~^(.*[$DS])[^$DS]+$~",'$1',$path);
+		return !is_dir($folder) ? mkdir($folder,0777,true) : true;
+	}

@@ -641,42 +641,78 @@
 		case "about":
 			if (RQMTHD === 'POST'){
 				detectCSRF();
+				$StatCacheDuration = 24*ONE_HOUR;
 
-				if ($data === 'stats-posts'){
-					$Data = array(
-						'labels' => array(),
-						'datasets' => array(),
-					);
-
-					$Query = array("SELECT DATE(posted) as ","_date, COUNT(*) as ","_cnt FROM \"","\" WHERE posted > NOW() - INTERVAL '1 MONTH' GROUP BY DATE(posted) ORDER BY ","_date");
-					$RequestData = $Database->rawQuery(implode('requests', $Query));
-					if (!empty($RequestData)){
-						$Data = array();
-						/*
-SELECT
-  DATE(COALESCE(req.posted,res.posted)) as date,
-  COUNT(*) as cnt,
-  (CASE WHEN tableoid::regclass::text = 'requests' THEN 'requests' ELSE 'reservations' END) as type
-FROM "requests" req
-LEFT JOIN "reservations" res ON true
-WHERE COALESCE(req.posted,res.posted) > NOW() - INTERVAL '1 MONTH'
-GROUP BY date
-ORDER BY date
-						*/
-						//foreach ($Data)
-						$Dataset = array(
-							'label' => 'Requests',
-				            'fillColor' => "rgba(220,220,220,0.2)",
-				            'strokeColor' => "rgba(220,220,220,1)",
-				            'pointColor' => "rgba(220,220,220,1)",
-				            'pointStrokeColor' => "#fff",
-				            'pointHighlightFill' => "#fff",
-				            'pointHighlightStroke' => "rgba(220,220,220,1)",
-						);
+				$_match = array();
+				if (!empty($data) && preg_match('~^stats-(posts|approvals)$~',$data,$_match)){
+					$stat = $_match[1];
+					$CachePath = APPATH."../stats/$stat.json";
+					if (file_exists($CachePath) && filemtime($CachePath) < time() - $StatCacheDuration){
+						respond(json_decode($CachePath, true));
 					}
-					$ReservationData = $Database->rawQuery(implode('reservations', $Query));
+
+					switch ($stat){
+						case 'posts':
+							$Labels = $Database->rawQuery(
+								"SELECT key FROM
+								(
+									SELECT posted, to_char(posted,'FMDDth FMMon') AS key FROM requests
+									WHERE posted > NOW() - INTERVAL '1 MONTH'
+									UNION ALL
+									SELECT posted, to_char(posted,'FMDDth FMMon') AS key FROM reservations
+									WHERE posted > NOW() - INTERVAL '1 MONTH'
+								) t
+								GROUP BY key
+								ORDER BY MIN(t.posted)");
+
+							if (empty($Labels))
+								$Labels = array();
+							else {
+								foreach ($Labels as $k => $v)
+									$Labels[$k] = $v['key'];
+							}
+
+							$Data = array(
+								'labels' => $Labels,
+								'datasets' => array(),
+							);
+
+							$query =
+								"SELECT
+									to_char(MIN(posted),'FMDDth FMMon') AS key,
+									COUNT(*)::INT AS cnt
+								FROM table_name t
+								WHERE posted > NOW() - INTERVAL '1 MONTH'
+								GROUP BY DATE(posted)
+								ORDER BY MIN(posted)";
+							$RequestData = $Database->rawQuery(str_replace('table_name', 'requests', $query));
+							if (!empty($RequestData)){
+								$Dataset = array('label' => 'Requests', 'clrkey' => 0);
+								process_usage_stats($RequestData, $Dataset);
+								$Data['datasets'][] = $Dataset;
+							}
+							$ReservationData = $Database->rawQuery(str_replace('table_name', 'reservations', $query));
+							if (!empty($ReservationData)){
+								$Dataset = array('label' => 'Reservations', 'clrkey' => 1);
+								process_usage_stats($ReservationData, $Dataset);
+								$Data['datasets'][] = $Dataset;
+							}
+
+						break;
+/*						case 'approvals':
+							$Approvals = $Database->rawQuery(
+								""
+							);
+						break;*/
+					}
+
+					upload_folder_create($CachePath);
+					file_put_contents($CachePath, json_encode($Data, JSON_UNESCAPED_SLASHES));
+
+					respond(array('data' => $Data));
 				}
-				else do404();
+
+				do404();
 			}
 			loadPage(array(
 				'title' => 'About',

@@ -193,6 +193,15 @@
 		}, 1);
 	};
 
+	// Convert HEX to RGB
+	$.hex2rgb = function(hexstr){
+		return {
+			r: parseInt(hexstr.substring(1, 3), 16),
+			g: parseInt(hexstr.substring(3, 5), 16),
+			b: parseInt(hexstr.substring(5, 7), 16)
+		};
+	};
+
 	window.URL = function(url){
 		var a = document.createElement('a'),
 			me = this;

@@ -10,6 +10,7 @@ www/css/*.scss*
 www/google*.html
 www/mywot*.html
 cf-ips.txt
+stats/
 
 # PostgreSQL switch
 *.sh

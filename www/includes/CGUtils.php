@@ -248,13 +248,6 @@
 		}
 	}
 
-	// Create upload destination folder
-	function upload_folder_create($path){
-		$DS = preg_quote('/\\');
-		$folder = preg_replace("~^(.*[$DS])[^$DS]+$~",'$1',$path);
-		return !is_dir($folder) ? mkdir($folder,0777,true) : true;
-	}
-
 	/**
 	 * Function to process uploaded images
 	 *

@@ -16,9 +16,19 @@
 		</div>
 	</section>
 	<section>
-		<h2>Site usage</h2>
+		<h2>Statistics</h2>
 		<div id="stats">
-			<canvas class="stats-posts"></canvas>
+			<p>Here you can see various graphs about the site.</p>
+			<div class="stats-posts">
+				<h3>Posts in the last 30 days</h3>
+				<canvas></canvas>
+				<div class="legend"></div>
+			</div>
+<!--			<div class="stats-posts">
+				<h3>Post approvals in the last 30 days</h3>
+				<canvas></canvas>
+				<div class="legend"></div>
+			</div>-->
 		</div>
 	</section>
 	<section>
