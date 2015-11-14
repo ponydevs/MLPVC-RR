@@ -1685,8 +1685,9 @@ ORDER BY date
 						$_MSG = 'Your search matched no tags';
 						if (isset($_GET['js']))
 							respond($_MSG);
+						$tc = 0;
 					}
-					$tc = count($Tags);
+					else $tc = count($Tags);
 					if ($tc > 6){
 						$_MSG = 'You cannot search for more than 6 tags';
 						if (isset($_GET['js']))
@@ -1708,14 +1709,14 @@ ORDER BY date
 								WHERE t.tid IN (".implode(',', $Tags).")
 								GROUP BY t.ponyid
 								HAVING COUNT(t.tid) = $tc
-								-- limit
+								--limit
 							) tg
 						) AND p.ishuman = $IsHuman";
 					$EntryCount = $CGDb->rawQuerySingle(str_replace('@coloumn','COUNT(*) as count',$query))['count'];
 					list($Page,$MaxPages) = calc_page($EntryCount);
 
 					$SearchQuery = str_replace('@coloumn','p.*',$query);
-					$SearchQuery = str_replace('-- limit',"LIMIT $ItemsPerPage OFFSET $Offset",$SearchQuery);
+					$SearchQuery = str_replace('--limit',"LIMIT $ItemsPerPage OFFSET $Offset",$SearchQuery);
 					$Ponies = $CGDb->rawQuery($SearchQuery);
 				}
 				else {
