@@ -1695,16 +1695,28 @@ ORDER BY date
 				}
 
 				if (empty($_MSG)){
+					$title .= "{$_GET['q']} - ";
+					$Offset = $ItemsPerPage*($Page-1);
+					$IsHuman = $EQG ? 'true' : 'false';
+
 					$query =
-						'SELECT @coloumn, COUNT(t.tid) as cnt FROM tagged t
-						LEFT JOIN appearances p ON t.ponyid = p.id
-						WHERE t.tid IN ('.implode(',', $Tags).") AND p.ishuman = $EQG
-						GROUP BY p.label
-						HAVING cnt = $tc";
+						"SELECT @coloumn FROM appearances p
+						WHERE p.id IN (
+							SELECT ponyid FROM (
+								SELECT t.ponyid
+								FROM tagged t
+								WHERE t.tid IN (".implode(',', $Tags).")
+								GROUP BY t.ponyid
+								HAVING COUNT(t.tid) = $tc
+								-- limit
+							) tg
+						) AND p.ishuman = $IsHuman";
 					$EntryCount = $CGDb->rawQuerySingle(str_replace('@coloumn','COUNT(*) as count',$query))['count'];
 					list($Page,$MaxPages) = calc_page($EntryCount);
-					$Ponies = $CGDb->rawQuery(str_replace('@coloumn','p.*',$query)." LIMIT ".($ItemsPerPage*($Page-1)).",$ItemsPerPage");
-					$title .= "{$_GET['q']} - ";
+
+					$SearchQuery = str_replace('@coloumn','p.*',$query);
+					$SearchQuery = str_replace('-- limit',"LIMIT $ItemsPerPage OFFSET $Offset",$SearchQuery);
+					$Ponies = $CGDb->rawQuery($SearchQuery);
 				}
 				else {
 					$Page = $MaxPages = 1;
