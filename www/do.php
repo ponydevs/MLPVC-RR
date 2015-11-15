@@ -1076,6 +1076,8 @@
 								$CGDb->where('groupid', $GroupID)->update('colorgroups',array('order' => $i));
 							}
 
+							clear_rendered_image($Appearance['id']);
+
 							respond(array('cgs' => get_colors_html($Appearance['id'], NOWRAP)));
 						break;
 						case "getsprite":
@@ -1144,7 +1146,7 @@
 
 							respond(array('cgs' => get_colors_html($Appearance['id'], NOWRAP)));
 						break;
-						default: respond('Bad request');
+						default: statusCodeHeader(400, AND_DIE);
 					}
 				}
 				else if (preg_match('~^([gs]et|make|del|merge|recount)tag(?:/(\d+))?$~', $data, $_match)){
