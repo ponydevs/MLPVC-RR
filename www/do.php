@@ -969,8 +969,7 @@
 							respond("The specified appearance does not exist");
 					}
 
-					$update = array();
-					switch ($action) {
+					switch ($action){
 						case "set":
 						case "make":
 						case "get":
@@ -1040,18 +1039,10 @@
 									}
 								}
 							}
+							else clear_rendered_image($Appearance['id']);
+
 							$data['notes'] = get_notes_html($data, NOWRAP);
 							respond($data);
-						break;
-						case "rename":
-							$newname = isset($_POST['newname']) ? trim($_POST['newname']) : null;
-							$nnl = !empty($newname) ? strlen($newname) : null;
-							if (empty($newname) || $nnl < 4)
-								respond("The new name cannot be shorter than 4 characters");
-							if ($nnl > 255)
-								respond("The new name cannot be longer than 255 characters");
-
-							$update['label'] = $newname;
 						break;
 						case "delete":
 							if (!$CGDb->where('id', $Appearance['id'])->delete('appearances'))
@@ -1060,6 +1051,8 @@
 							$fpath = APPATH."img/cg/{$Appearance['id']}.png";
 							if (file_exists($fpath))
 								unlink($fpath);
+
+							clear_rendered_image($Appearance['id']);
 
 							respond('Appearance removed', 1);
 						break;
@@ -1153,8 +1146,6 @@
 						break;
 						default: respond('Bad request');
 					}
-
-					$CGDb->where('id', $Appearance['id'])->update('appearances', $update);
 				}
 				else if (preg_match('~^([gs]et|make|del|merge|recount)tag(?:/(\d+))?$~', $data, $_match)){
 					$action = $_match[1];
@@ -1424,16 +1415,15 @@
 					if ($new) $response = array('cgs' => get_colors_html($Appearance['id'], NOWRAP));
 					else $response = array('cg' => get_cg_html($Group['groupid'], NOWRAP));
 
+					$AppearanceID = $new ? $Appearance['id'] : $Group['ponyid'];
 					if (isset($major)){
-						$AppearanceID = $new ? $Appearance['id'] : $Group['ponyid'];
 						LogAction('color_modify',array(
 							'ponyid' => $AppearanceID,
 							'reason' => $reason,
 						));
 						$response['update'] = get_update_html($AppearanceID);
-
-						clear_rendered_image($Appearance['id']);
 					}
+					clear_rendered_image($AppearanceID);
 
 					respond($response);
 				}
