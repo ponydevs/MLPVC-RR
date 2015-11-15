@@ -1,5 +1,33 @@
 @import "vars";
 
+// Mobile
+@media all and (max-width: $Breakpoint){
+	#stats > div {
+		width: 100%;
+		margin-bottom: 0 !important;
+
+		&:not(:last-child){
+			border-bottom: 0;
+		}
+	}
+}
+// Desktop
+@media all and (min-width: $Breakpoint){
+	#stats {
+		display: flex;
+		$SectionMargin: 10px;
+		> div {
+			display: block;
+			flex: 0 0 calc(50% - #{$SectionMargin/2});
+			margin-bottom: 0 !important;
+
+			&:nth-child(odd) {
+				margin-right: $SectionMargin !important;
+			}
+		}
+	}
+}
+
 #content {
 	> img {
 		width: 100%;
@@ -41,22 +69,13 @@
 }
 
 #stats {
-	display: flex;
-
-	$SectionMargin: 10px;
 	> div {
 		display: block;
-		flex: 0 0 calc(50% - #{$SectionMargin/2});
 		border: 1px solid $ContentOutline;
 		background: #fff;
 		$StatPadding: 7px;
-		padding: $StatPadding;
+		padding: $StatPadding 0;
 		box-sizing: border-box;
-		margin-bottom: 0 !important;
-
-		&:nth-child(odd) {
-			margin-right: $SectionMargin !important;
-		}
 
 		h3 {
 			text-align: center;
@@ -64,8 +83,8 @@
 			font-size: 1.3em;
 		}
 		canvas {
-			width: calc(100% - #{$StatPadding}) !important;
-			height: 200px !important;
+			width: calc(100% - #{$StatPadding});
+			height: 200px;
 		}
 		.legend {
 			text-align: center;
@@ -80,6 +99,8 @@
 				height: 1.2em;
 			}
 			> span {
+				display: inline-block;
+
 				&:not(:last-child) {
 					margin-right: 15px;
 				}

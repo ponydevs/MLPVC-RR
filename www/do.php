@@ -658,10 +658,10 @@
 								"SELECT key FROM
 								(
 									SELECT posted, to_char(posted,'FMDDth FMMon') AS key FROM requests
-									WHERE posted > NOW() - INTERVAL '1 MONTH'
+									WHERE posted > NOW() - INTERVAL '20 DAYS'
 									UNION ALL
 									SELECT posted, to_char(posted,'FMDDth FMMon') AS key FROM reservations
-									WHERE posted > NOW() - INTERVAL '1 MONTH'
+									WHERE posted > NOW() - INTERVAL '20 DAYS'
 								) t
 								GROUP BY key
 								ORDER BY MIN(t.posted)");
@@ -673,7 +673,7 @@
 									to_char(MIN(posted),'FMDDth FMMon') AS key,
 									COUNT(*)::INT AS cnt
 								FROM table_name t
-								WHERE posted > NOW() - INTERVAL '1 MONTH'
+								WHERE posted > NOW() - INTERVAL '20 DAYS'
 								GROUP BY DATE(posted)
 								ORDER BY MIN(posted)";
 							$RequestData = $Database->rawQuery(str_replace('table_name', 'requests', $query));

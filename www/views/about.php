@@ -20,7 +20,7 @@
 		<p>Here you can see various graphs about the site.</p>
 		<div id="stats">
 			<div class="stats-posts">
-				<h3>Posts in the last 30 days</h3>
+				<h3>Posts in the last 20 days</h3>
 				<canvas></canvas>
 				<div class="legend"></div>
 			</div>
