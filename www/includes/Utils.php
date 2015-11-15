@@ -2427,12 +2427,26 @@ ORDER BY "count" DESC
 	}
 
 	/**
+	 * Process label data for stats
+	 */
+	function process_stat_labels(){
+		global $Labels, $Data;
+
+		if (empty($Labels))
+			$Labels = array();
+		else {
+			foreach ($Labels as $k => $v)
+				$Labels[$k] = $v['key'];
+		}
+
+		$Data['labels'] = $Labels;
+	}
+
+	/**
 	 * Process data for usage stats
 	 *
 	 * @param array $Rows    Database rows obtained with rawQuery
 	 * @param array $Dataset Array to process data into
-	 *
-	 * @return array
 	 */
 	function process_usage_stats($Rows, &$Dataset){
 		$Dataset['labels'] =

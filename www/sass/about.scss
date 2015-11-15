@@ -41,19 +41,28 @@
 }
 
 #stats {
-	> div > h3 {
-		text-align: center;
-		margin: 0 0 7px;
-		font-size: 1.3em;
-	}
-	.stats-posts {
-		width: 100%;
+	display: flex;
+
+	$SectionMargin: 10px;
+	> div {
+		display: block;
+		flex: 0 0 calc(50% - #{$SectionMargin/2});
 		border: 1px solid $ContentOutline;
 		background: #fff;
 		$StatPadding: 7px;
 		padding: $StatPadding;
 		box-sizing: border-box;
+		margin-bottom: 0 !important;
 
+		&:nth-child(odd) {
+			margin-right: $SectionMargin !important;
+		}
+
+		h3 {
+			text-align: center;
+			margin: 0 0 7px;
+			font-size: 1.3em;
+		}
 		canvas {
 			width: calc(100% - #{$StatPadding}) !important;
 			height: 200px !important;

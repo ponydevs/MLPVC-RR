@@ -647,9 +647,10 @@
 				if (!empty($data) && preg_match('~^stats-(posts|approvals)$~',$data,$_match)){
 					$stat = $_match[1];
 					$CachePath = APPATH."../stats/$stat.json";
-					if (file_exists($CachePath) && filemtime($CachePath) < time() - $StatCacheDuration){
+					if (file_exists($CachePath) && filemtime($CachePath) < time() - $StatCacheDuration)
 						respond(json_decode($CachePath, true));
-					}
+
+					$Data = array('datasets' => array());
 
 					switch ($stat){
 						case 'posts':
@@ -665,17 +666,7 @@
 								GROUP BY key
 								ORDER BY MIN(t.posted)");
 
-							if (empty($Labels))
-								$Labels = array();
-							else {
-								foreach ($Labels as $k => $v)
-									$Labels[$k] = $v['key'];
-							}
-
-							$Data = array(
-								'labels' => $Labels,
-								'datasets' => array(),
-							);
+							process_stat_labels();
 
 							$query =
 								"SELECT
@@ -697,13 +688,32 @@
 								process_usage_stats($ReservationData, $Dataset);
 								$Data['datasets'][] = $Dataset;
 							}
-
 						break;
-/*						case 'approvals':
+						case 'approvals':
+							$Labels = $Database->rawQuery(
+								"SELECT to_char(timestamp,'FMDDth FMMon') AS key
+								FROM log
+								WHERE timestamp > NOW() - INTERVAL '1 MONTH' AND reftype = 'post_lock'
+								GROUP BY key
+								ORDER BY MIN(timestamp)");
+
+							process_stat_labels();
+
 							$Approvals = $Database->rawQuery(
-								""
+								"SELECT
+									to_char(MIN(timestamp),'FMDDth FMMon') AS key,
+									COUNT(*)::INT AS cnt
+								FROM log
+								WHERE timestamp > NOW() - INTERVAL '1 MONTH' AND reftype = 'post_lock'
+								GROUP BY DATE(timestamp)
+								ORDER BY MIN(timestamp)"
 							);
-						break;*/
+							if (!empty($Approvals)){
+								$Dataset = array('label' => 'Approved posts');
+								process_usage_stats($Approvals, $Dataset);
+								$Data['datasets'][] = $Dataset;
+							}
+						break;
 					}
 
 					upload_folder_create($CachePath);

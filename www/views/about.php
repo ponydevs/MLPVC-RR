@@ -17,18 +17,18 @@
 	</section>
 	<section>
 		<h2>Statistics</h2>
+		<p>Here you can see various graphs about the site.</p>
 		<div id="stats">
-			<p>Here you can see various graphs about the site.</p>
 			<div class="stats-posts">
 				<h3>Posts in the last 30 days</h3>
 				<canvas></canvas>
 				<div class="legend"></div>
 			</div>
-<!--			<div class="stats-posts">
+			<div class="stats-approvals">
 				<h3>Post approvals in the last 30 days</h3>
 				<canvas></canvas>
 				<div class="legend"></div>
-			</div>-->
+			</div>
 		</div>
 	</section>
 	<section>

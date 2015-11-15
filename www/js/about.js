@@ -10,7 +10,7 @@ $(function(){
 		$PostStatsLegend = $PostStats.children('.legend'),
 		PostsCTX = $PostStats.children('canvas').get(0).getContext("2d"),
 		PostsChart,
-		PostLegendColors = ["#46ACD3","#438CCB"];
+		PostLegendColors = ["#46ACD3","#4262C7"];
 	$.post('/about/stats-posts',$.mkAjaxHandler(function(){
 		if (!this.status) return $PostStats.remove();
 
@@ -34,19 +34,18 @@ $(function(){
 	}));
 
 	// Approval Stats
-/*	var $ApprovalStats = $stats.children('.stats-approvals'),
-		$ApprovalStatsLegend = $PostStats.children('.legend'),
-		ApprovalCTX = $PostStats.children('canvas').get(0).getContext("2d"),
+	var $ApprovalStats = $stats.children('.stats-approvals'),
+		$ApprovalStatsLegend = $ApprovalStats.children('.legend'),
+		ApprovalCTX = $ApprovalStats.children('canvas').get(0).getContext("2d"),
 		ApprovalChart,
 		ApprovalLegendColor = $.hex2rgb("#4DC742");
 	$.post('/about/stats-approvals',$.mkAjaxHandler(function(){
 		if (!this.status) return $ApprovalStats.remove();
 
 		var Data = this.data,
-			el = Data.datasets[0],
 			rgb = ApprovalLegendColor,
 			rgbstr = rgb.r+','+rgb.g+','+rgb.b;
-		$.extend(Data.datasets[i], {
+		$.extend(Data.datasets[0], {
 			fillColor: 'rgba('+rgbstr+',0.2)',
 			strokeColor: 'rgb('+rgbstr+')',
 			pointColor: 'rgb('+rgbstr+')',
@@ -54,8 +53,8 @@ $(function(){
 			pointHighlightFill: "#fff",
 			pointHighlightStroke: 'rgb('+rgbstr+')',
 		});
-		$ApprovalStatsLegend.append("<span><span class='sq' style='background-color:rgb("+rgbstr+")'></span><span>"+el.label+"</span></span>");
+		$ApprovalStatsLegend.append("<span><span class='sq' style='background-color:rgb("+rgbstr+")'></span><span>"+Data.datasets[0].label+"</span></span>");
 
 		ApprovalChart = new Chart(ApprovalCTX).Line(Data);
-	}));*/
+	}));
 });
