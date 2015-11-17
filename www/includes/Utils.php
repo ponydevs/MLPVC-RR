@@ -1990,7 +1990,7 @@ HTML;
 			$HTML .= "<br><p>What did <em>you</em> think about the $thing?</p>";
 			if ($signedIn)
 				$HTML .= "<button class='blue rate typcn typcn-star'>Cast your vote</button>";
-			else $HTML .= "<p><em>Sign in below to cast your vote!</em></p>";
+			else $HTML .= "<p><em>Sign in above to cast your vote!</em></p>";
 		}
 		else $HTML .= "<p>Your rating: ".plur('muffin', $UserVote['vote']).'</p>';
 
