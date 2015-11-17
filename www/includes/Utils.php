@@ -147,8 +147,16 @@
 				$details[] = array('ID',$data['id']);
 				$details[] = array('Type',$data['type']);
 				if (!empty($Post)){
-					$IDstr = "S{$Post['season']}E{$Post['episode']}#{$data['type']}-{$data['id']}";
-					$details[] = array('Link',"<a href='/episode/$IDstr'>$IDstr</a>");
+					$Fragment = "#{$data['type']}-{$data['id']}";
+					if ($Post['season'] == 0){
+						$IDstr = "EQG{$Post['episode']}";
+						$Link = "/eqg/{$Post['episode']}";
+					}
+					else{
+						$IDstr = "S{$Post['season']}E{$Post['episode']}";
+						$Link = "/episode/$IDstr";
+					}
+					$details[] = array('Link',"<a href='$Link$Fragment'>$IDstr$Fragment</a>");
 				}
 			break;
 			case "color_modify":
