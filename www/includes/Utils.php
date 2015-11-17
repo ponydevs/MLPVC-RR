@@ -1976,7 +1976,6 @@ HTML;
 			$Score = $Score[0]['score'];
 		else $Score = 0;
 
-		// Temporary
 		$Score = round($Score*10)/10;
 		$ScorePercent = round(($Score/5)*1000)/10;
 
