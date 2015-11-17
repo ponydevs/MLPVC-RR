@@ -12,14 +12,14 @@ DocReady.push(function User(){
 		var title = 'Removing session',
 			$btn = $(this),
 			$li = $btn.closest('li'),
-			$browser = $btn.parent(),
+			$browser = $btn.prev().prev(),
 			browser = $browser.text().trim(),
 			$platform = $browser.next().children('strong'),
 			platform = $platform.length ? ' on <em>'+$platform.text().trim()+'</em>' : '';
 
 		// First item is sometimes the current session, trigger logout button instead
 		if ($li.index() === 0){
-			var current = /current/i.test($browser.parent().children().last().text());
+			var current = /current/i.test($li.children().last().text());
 			if (current)
 				return $signoutBtn.trigger('click');
 		}
