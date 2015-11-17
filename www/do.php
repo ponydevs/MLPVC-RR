@@ -443,7 +443,7 @@
 					if (!PERM('user')) respond();
 
 					if (!$Episode['aired'])
-						respond('You cannot vote on this episode until after it had aired.');
+						respond('You can only vote on this episode after it has aired.');
 
 					$UserVote = get_episode_user_vote($Episode);
 					if (!empty($UserVote))
@@ -452,11 +452,15 @@
 					if (empty($_POST['vote']) || !is_numeric($_POST['vote']))
 						respond('Vote value missing from request');
 
+					$Vote = intval($_POST['vote'], 10);
+					if ($Vote < 1 || $Vote > 5)
+						respond('Vote value must be an integer between 1 and 5 (inclusive)');
+
 					if (!$Database->insert('episodes__votes',array(
 						'season' => $Episode['season'],
 						'episode' => $Episode['episode'],
 						'user' => $currentUser['id'],
-						'vote' => intval($_POST['vote'], 10) > 0 ? 1 : -1
+						'vote' => $Vote,
 					))) respond(ERR_DB_FAIL);
 					respond(array('newhtml' => get_episode_voting($Episode)));
 				}

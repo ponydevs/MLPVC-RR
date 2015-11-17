@@ -1828,6 +1828,18 @@ HTML;
 	 }
 
 	/**
+	 * Appends 's' to the end of string if input is not 1
+	 *
+	 * @param string $w
+	 * @param int $in
+	 *
+	 * @return string
+	 */
+	 function plur($w, $in){
+		return "$in $w".($in!==1?'s':'');
+	 }
+
+	/**
 	 * Parse session array for user page
 	 */
 	define('CURRENT',true);
@@ -1946,58 +1958,41 @@ HTML;
 	}
 
 	// Render episode voting HTML
+	/**
+	 * @param $Episode
+	 *
+	 * @return string
+	 */
 	function get_episode_voting($Episode){
 		$thing = $Episode['season'] == 0 ? 'movie' : 'episode';
 		if (!$Episode['aired'])
 			return "<p>Voting will start ".timetag($Episode['willair']).", after the $thing had aired.</p>";
-		global $Database, $signedIn;
+		global $Database, $signedIn, $currentUser;
 		$HTML = '';
 
-		$_bind = array($Episode['season'], $Episode['episode']);
-		$_query = function($col,$as,$val = null){
-			return "SELECT COALESCE($col,0) as $as FROM episodes__votes WHERE ".(isset($val)?"vote = $val && ":'')."season = ? && episode = ?";
-		};
-		$VoteTally = $Database->rawQuerySingle($_query('COUNT(*)','total'), $_bind);
-		$VoteTally = array_merge(
-			$VoteTally,
-			$Database->rawQuerySingle($_query('SUM(vote)','up',1), $_bind),
-			$Database->rawQuerySingle($_query('ABS(SUM(vote))','down',-1), $_bind)
-		);
+		$Score = $Database->whereEp($Episode)->get('episodes__votes',null,'AVG(vote) as score');
+		if (!empty($Score[0]['score']))
+			$Score = $Score[0]['score'];
+		else $Score = 0;
 
-		$HTML .= "<p>";
-		if ($VoteTally['total'] > 0){
-			$UpsDowns = $VoteTally['up'] > $VoteTally['down'] ? 'up' : 'down';
-			if ($VoteTally['up'] === $VoteTally['total'] || $VoteTally['down'] === $VoteTally['total'])
-				$Start = $VoteTally['total']." ".($VoteTally['total'] !== 1 ? 'ponies' : 'pony');
-			else $Start = "{$VoteTally[$UpsDowns]} out of {$VoteTally['total']} ponies";
-			$HTML .= "$Start ".($UpsDowns === 'down'?'dis':'')."liked this $thing";
-			if (PERM('user')) $UserVote = get_episode_user_vote($Episode);
-			if (empty($UserVote)) $HTML .= ".";
-			else $HTML .= ", ".(($UserVote['vote'] > 0 && $UpsDowns === 'up' || $UserVote['vote'] < 0 && $UpsDowns === 'down') ? 'including you' : 'but you didn\'t').".";
+		// Temporary
+		$Score = round($Score*10)/10;
+		$ScorePercent = round(($Score/5)*1000)/10;
+
+		$HTML .= '<p>'.(!empty($Score) ? "This $thing is rated $Score/5" : 'Nopony voted yet.').'</p>';
+		if ($Score > 0){
+			$RatingFile = file_get_contents(APPATH."img/muffin-rating.svg");
+			$HTML .= str_replace("width='100'", "width='$ScorePercent'", $RatingFile);
 		}
-		else $HTML .= 'Nopony voted yet.';
-		$HTML .= "</p>";
 
-		if ($VoteTally['total'] > 0){
-			$fills = array();
-
-			$upPerc = call_user_func($UpsDowns === 'up' ? 'ceil' : 'floor', ($VoteTally['up']/$VoteTally['total'])*1000)/10;
-			$downPerc = call_user_func($UpsDowns === 'down' ? 'ceil' : 'floor', ($VoteTally['down']/$VoteTally['total'])*1000)/10;
-
-			if ($upPerc > 0)
-				$fills[] = "<div class='up' style='width:$upPerc%'".($upPerc > 10 ? " data-width='$upPerc'":'')."></div>";
-			if ($downPerc > 0)
-				array_splice($fills, $UpsDowns === 'up' ? 1 : 0, 0, array("<div class='down' style='width:$downPerc%'".($downPerc > 15 ? " data-width='$downPerc'":'')."></div>"));
-
-			if (!empty($fills))
-				$HTML .= "<div class='bar'>".implode('',$fills)."</div>";
-		}
+		$UserVote = get_episode_user_vote($Episode);
 		if (empty($UserVote)){
 			$HTML .= "<br><p>What did <em>you</em> think about the $thing?</p>";
 			if ($signedIn)
-				$HTML .= '<button class="typcn typcn-thumbs-up green">I liked it</button> <button class="typcn typcn-thumbs-down red">I disliked it</button>';
+				$HTML .= "<button class='blue rate typcn typcn-star'>Cast your vote</button>";
 			else $HTML .= "<p><em>Sign in below to cast your vote!</em></p>";
 		}
+		else $HTML .= "<p>Your rating: ".plur('muffin', $UserVote['vote']).'</p>';
 
 		return $HTML;
 	}

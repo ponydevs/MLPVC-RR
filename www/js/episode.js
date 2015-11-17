@@ -55,19 +55,71 @@ DocReady.push(function Episode(){
 		$voteButton = $voting.find('button');
 	$voting.on('click','button',function(e){
 		e.preventDefault();
-		var $this = $(this),
-			value = $this.hasClass('green') ? 1 : -1;
 
-		$.Dialog.wait('Casting vote');
+		var $btn = $(this),
+			makeStar = function(v){
+				return $.mk('label').append(
+					$.mk('input').attr({
+						type: 'radio',
+						name: 'vote',
+						value: v,
+					}),
+					$.mk('span')
+				).on('mouseenter mouseleave',function(e){
+					var $this = $(this),
+						$checked = $this.parent().find('input:checked'),
+						$parent = $checked.parent();
 
-		$.post('/episode/vote/'+EpID,{vote:value},$.mkAjaxHandler(function(){
-			if (!this.status) return $.Dialog.fail((value > 0?'Up':'Down')+'voting '+EpID,this.message);
+					switch(e.type){
+						case "mouseleave":
+							if ($parent.length === 0){
+								$this.siblings().addBack().find('.typcn').attr('class', '');
+								break;
+							}
+							$this = $parent;
+						/* falls through */
+						case "mouseenter":
+							$this.prevAll().addBack().children('span').attr('class','active');
+							$this.nextAll().children('span').attr('class','');
+						break;
+					}
 
-			var $section = $this.closest('section');
-			$section.children('h2').nextAll().remove();
-			$section.append(this.newhtml);
-			$.Dialog.close();
-		}));
+					$this.siblings().addBack().removeClass('selected');
+					$parent.addClass('selected');
+				});
+			},
+			$VoteForm = $.mk('form').attr('id','star-rating').append(
+				$.mk('p').text('Rate the episode on a scale of 1 to 5'),
+				$.mk('div').attr('class','rate').append(
+					makeStar(1),
+					makeStar(2),
+					makeStar(3),
+					makeStar(4),
+					makeStar(5)
+				)
+			);
+
+		$.Dialog.request('Rating '+EpID,$VoteForm,'star-rating','Rate',function($form){
+			$form.on('submit',function(e){
+				e.preventDefault();
+
+				var data = $form.mkData();
+
+				if (typeof data.vote === 'undefined')
+					return $.Dialog.fail(false, 'Please choose a rating by clicking on one of the muffins');
+
+				$.Dialog.wait(false, 'Submitting your rating');
+
+				$.post('/episode/vote/'+EpID,data,$.mkAjaxHandler(function(){
+					if (!this.status) return $.Dialog.fail(false, this.message);
+
+					var $section = $btn.closest('section');
+					$section.children('h2').nextAll().remove();
+					$section.append(this.newhtml);
+					$.Dialog.close();
+				}));
+			});
+		});
 	});
 
 	$voting.find('time').data('dyntime-beforeupdate',function(diff){

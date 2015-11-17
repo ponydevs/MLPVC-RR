@@ -22,7 +22,7 @@
 	if ($view === 'episode' && !empty($CurrentEpisode)){
 		$CurrentEpisode['willair'] = gmdate('c', strtotime('+'.(!$CurrentEpisode['twoparter'] ? '30' : '60').' minutes',strtotime($CurrentEpisode['airs']))); ?>
 	<section id="voting">
-		<h2><?=$CurrentEpisode['season']==0?'Movie':'Episode'?> voting</h2>
+		<h2><?=$CurrentEpisode['season']==0?'Movie':'Episode'?> rating</h2>
 		<?=get_episode_voting($CurrentEpisode)?>
 	</section>
 <?php
