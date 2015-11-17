@@ -375,10 +375,10 @@ $(function(){
 
 		if (state !== null && !state['via-js'])
 			return $w.trigger('nav-popstate', [state]);
-		Navigation(location.href);
+		Navigation(location.href, undefined, true);
 	});
 
-	function Navigation(url, callback){
+	function Navigation(url, callback, block_reload){
 		if (xhr !== false){
 			xhr.abort();
 			xhr = false;
@@ -386,11 +386,11 @@ $(function(){
 
 		var title = 'Navigation';
 		$body.addClass('loading');
-		xhr = $.ajax({
+		var ajaxcall = $.ajax({
 			url: url,
 			data: {'via-js': true},
 			success: $.mkAjaxHandler(function(){
-				if (!xhr) return;
+				if (xhr !== ajaxcall) return;
 				if (!this.status){
 					$body.removeClass('loading');
 					xhr = false;
@@ -413,7 +413,7 @@ $(function(){
 				$main.empty();
 				var doreload = false,
 					ParsedLocation = new URL(location.href),
-					reload = ParsedLocation.pathString === url;
+					reload = !block_reload && ParsedLocation.pathString === url;
 
 				$body.children('script[src], script[data-src]').each(function(){
 					var $this = $(this),
@@ -505,6 +505,7 @@ $(function(){
 				})(0);
 			})
 		});
+		xhr = ajaxcall;
 	}
 	window.HandleNav = function(){ Navigation.apply(window, arguments) };
 	var Reload = function(callback, delay){
