@@ -239,8 +239,8 @@ div.tags {
 	display: inline-block;
 	font-weight: bold;
 	box-sizing: border-box;
+	cursor: pointer;
 
-	&[title] { cursor: help }
 	&:before {
 		//noinspection CssNoGenericFontName
 		font-family: 'Typicons';

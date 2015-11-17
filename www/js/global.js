@@ -43,9 +43,12 @@
 		return e.keyCode === Key;
 	};
 
-	// Make first character in string uppercase
-	$.capitalize = function(str){
-		return str.length === 1 ? str.toUpperCase() : str[0].toUpperCase()+str.substring(1);
+	// Make the first letter of the first or all word(s) uppercase
+	$.capitalize = function(str, all){
+		if (all) return str.replace(/((?:^|\s)[a-z])/g, function(match){
+			return match.toUpperCase();
+		});
+		else return str.length === 1 ? str.toUpperCase() : str[0].toUpperCase()+str.substring(1);
 	};
 
 	// Array.includes (ES7) polyfill

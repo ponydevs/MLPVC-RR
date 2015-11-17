@@ -23,14 +23,27 @@ DocReady.push(function Colorguide(){
 	}
 	window.copyHashToggler = function(){copyHashToggler()};
 
+	var $SearchForm = $('#search-form');
+
 	function tooltips(){
-		$('.tags').children().filter('[title][title!=""]').each(function(){
+		$('.tags').children('span').off('click').on('click',function(e){
+			e.preventDefault();
+
+			$SearchForm.find('input[name="q"]').val(this.innerHTML.trim());
+			$SearchForm.triggerHandler('submit');
+		}).each(function(){
 			var $this = $(this),
+				text = 'Click to quick search',
+				title = $this.attr('title') || $.capitalize($this.text().trim(), true),
 				tagstyle = $this.attr('class').match(/typ\-([a-z]+)(?:\s|$)/);
 
 			tagstyle = !tagstyle ? '' : ' qtip-tag-'+tagstyle[1];
 
 			$this.qtip({
+				content: {
+					text: text,
+					title: title
+				},
 				position: { my: 'bottom center', at: 'top center', viewport: true },
 				style: { classes: 'qtip-tag'+tagstyle }
 			});
@@ -96,7 +109,7 @@ DocReady.push(function Colorguide(){
 	$d.on('paginate-refresh', Navigation);
 	Navigation();
 
-	$('#search-form').on('submit',function(e){
+	$SearchForm.on('submit',function(e){
 		e.preventDefault();
 
 		var $this = $(this),

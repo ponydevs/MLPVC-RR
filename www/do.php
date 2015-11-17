@@ -1739,7 +1739,6 @@
 
 				if (empty($_MSG)){
 					$title .= "{$_GET['q']} - ";
-					$Offset = $ItemsPerPage*($Page-1);
 					$IsHuman = $EQG ? 'true' : 'false';
 
 					$query =
@@ -1756,6 +1755,7 @@
 						) AND p.ishuman = $IsHuman";
 					$EntryCount = $CGDb->rawQuerySingle(str_replace('@coloumn','COUNT(*) as count',$query))['count'];
 					list($Page,$MaxPages) = calc_page($EntryCount);
+					$Offset = $ItemsPerPage*($Page-1);
 
 					$SearchQuery = str_replace('@coloumn','p.*',$query);
 					$SearchQuery = str_replace('--limit',"LIMIT $ItemsPerPage OFFSET $Offset",$SearchQuery);
