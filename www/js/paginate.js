@@ -1,8 +1,6 @@
-/* global $d,$w,$navbar */
+/* global $d,$w,$navbar,HandleNav */
 (function Paginate(){
 	'use strict';
-	if (window[" paginationHandlerBound"] === true) return;
-	window[" paginationHandlerBound"] = true;
 
 	var pageRegex = /Page \d+/g,
 		basePath = location.pathname.replace(/\/\d+$/,'')+'/',
@@ -28,13 +26,13 @@
 			)
 		);
 
-	$d.on('paginate-refresh',function(){
+	$d.off('paginate-refresh').on('paginate-refresh',function(){
 		basePath = location.pathname.replace(/\/\d+$/,'')+'/';
 		$pagination = $('.pagination');
 		pageNumber = parseInt($pagination.first().children('li').children('strong').text(), 10);
 		title = 'Navigation';
 
-		$pagination.on('click','a',function(e){
+		$pagination.off('click').on('click','a',function(e){
 			e.preventDefault();
 			e.stopPropagation();
 
@@ -47,10 +45,16 @@
 
 			$.toPage(this.pathname);
 		});
-		$w.on('nav-popstate',function(e, state){
-			$.toPage.call({state:state},location.pathname, true);
+		$w.off('nav-popstate').on('nav-popstate',function(e, state){
+			var obj = {state:state},
+				params = [location.pathname, true, undefined, true];
+			if ($('.pagination').length === 0)
+				HandleNav(params[0],function(){
+					$.toPage.apply(obj, params);
+				}, true);
+			else $.toPage.apply(obj, params);
 		});
-		$.toPage = function(target, silentfail, bypass){
+		$.toPage = function(target, silentfail, bypass, overwriteState){
 			if (!target) target = window.location.pathname;
 			var newPageNumber = parseInt(target.replace(/^.*\/(\d+)(?:$|\?)/,'$1'), 10),
 				state = this.state || {};
@@ -58,7 +62,7 @@
 			if (!bypass && (pageNumber === newPageNumber || pageNumber === state.page))
 				return silentfail ? false : $.Dialog.info(title, 'You are already on page '+pageNumber);
 
-			var data = { js: true},
+			var data = { js: true },
 				params = [],
 				extraQuery = this.query;
 			if (typeof extraQuery !== 'undefined'){
@@ -93,10 +97,19 @@
 				// Preserve static page title component at the end
 				document.title = document.title.replace(pageRegex, 'Page '+newPageNumber);
 
-				var newURI = this.request_uri || (basePath+newPageNumber+(window.location.search.length > 1 ? location.search : ''));
+				var newURI = this.request_uri || (basePath+newPageNumber+
+						(
+							window.location.search.length > 1
+							? location.search
+							: ''
+						)
+					),
+					stateParams = [{paginate:true, page:newPageNumber},'',newURI];
 
-				if ((state.page !== newPageNumber && !isNaN(newPageNumber)) || extraQuery)
-					history.pushState({paginate:true, page:newPageNumber},'',newURI);
+				if (overwriteState === true)
+					history.replaceState(history, stateParams);
+				else if ((state.page !== newPageNumber && !isNaN(newPageNumber)) || extraQuery)
+					history.pushState.apply(history, stateParams);
 
 				$pagination.html(this.pagination);
 
