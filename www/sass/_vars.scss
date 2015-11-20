@@ -145,15 +145,17 @@ $StrongOutline: 3;
 				margin-bottom: 10px;
 			}
 
-			.screencap img, .deviation img {
-				max-height: 150px;
+			.image > a {
 				max-width: 100%;
-			}
-			.fluidbox-wrap {
-				display: block;
-			}
-			.fluidbox-wrap * {
-				display: inline-block;
+				box-sizing: border-box;
+
+				.fluidbox-wrap * { display: inline-block }
+
+				img {
+					display: block;
+					max-height: 150px;
+					max-width: 100%;
+				}
 			}
 			> a .deviation {
 				margin: 0 auto 10px;
@@ -220,10 +222,11 @@ $StrongOutline: 3;
 			}
 			&:not(.error) > a {
 				font-size: 0;
-				white-space: nowrap;
 				margin-bottom: 10px;
 				color: inherit;
 				display: inline-block;
+				background: url('../img/transparency.svg');
+				background-size: 16px;
 			}
 			&.error > a {
 				font-size: 16px;
@@ -231,15 +234,11 @@ $StrongOutline: 3;
 				margin-bottom: 5px;
 			}
 
-			img {
-				background: url(../img/transparency.svg) repeat;
-				background-size: 12px;
-			}
 			> .fluidbox {
-				cursor: zoom-in !important;
+				&, * { cursor: zoom-in !important }
 			}
 			.fluidbox-opened .fluidbox-wrap {
-				cursor: zoom-out !important;
+				&, * { cursor: zoom-out !important }
 			}
 		}
 		> .label {

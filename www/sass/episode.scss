@@ -1,6 +1,12 @@
 @import "vars";
 //noinspection CssUnknownTarget
 @import "../css/jquery.fluidbox";
+.fluidbox {
+	&.fluidbox-loaded, &.fluidbox-closed {
+		.fluidbox-loader { display: none !important }
+	}
+}
+
 
 /* Mobile-only Styles */
 @media all and (max-width: $Breakpoint){
