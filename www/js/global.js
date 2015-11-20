@@ -472,6 +472,8 @@ $(function(){
 						var replace = ParsedLocation.pathString === url;
 						if (!/^http:\/\//.test(url))
 							url = URL(url).href;
+						if (window.DEVELOPER === true)
+							$.Dialog.info('Navigation URL', url);
 						history[replace?'replaceState':'pushState']({'via-js':true},'',url);
 
 						window.DocReady = [];
