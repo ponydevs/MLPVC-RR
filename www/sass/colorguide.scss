@@ -239,7 +239,7 @@ div.tags {
 	display: inline-block;
 	font-weight: bold;
 	box-sizing: border-box;
-	cursor: pointer;
+	cursor: default;
 
 	&:before {
 		//noinspection CssNoGenericFontName

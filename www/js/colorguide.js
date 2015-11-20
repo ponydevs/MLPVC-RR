@@ -26,27 +26,43 @@ DocReady.push(function Colorguide(){
 	var $SearchForm = $('#search-form');
 
 	function tooltips(){
-		$('.tags').children('span').off('click').on('click',function(e){
-			e.preventDefault();
-
-			$SearchForm.find('input[name="q"]').val(this.innerHTML.trim());
-			$SearchForm.triggerHandler('submit');
-		}).each(function(){
+		var isGuest = $('#search-form').length === 0,
+			$tags = $('.tags').children('span');
+		$tags.each(function(){
 			var $this = $(this),
 				text = 'Click to quick search',
-				title = $this.attr('title') || $.capitalize($this.text().trim(), true),
+				title = $this.attr('title'),
 				tagstyle = $this.attr('class').match(/typ\-([a-z]+)(?:\s|$)/);
 
 			tagstyle = !tagstyle ? '' : ' qtip-tag-'+tagstyle[1];
 
-			$this.qtip({
-				content: {
-					text: text,
-					title: title
-				},
-				position: { my: 'bottom center', at: 'top center', viewport: true },
-				style: { classes: 'qtip-tag'+tagstyle }
-			});
+			if (!title && !isGuest)
+				title = $.capitalize($this.text().trim(), true);
+
+			if (title){
+				if (isGuest)
+					$this.css('cursor','help');
+				$this.qtip({
+					content: (
+						isGuest
+							? {
+							text: title,
+						}
+							: {
+							text: text,
+							title: title
+						}
+					),
+					position: {my: 'bottom center', at: 'top center', viewport: true},
+					style: {classes: 'qtip-tag' + tagstyle}
+				});
+			}
+		});
+		if (!isGuest) $tags.css('cursor','pointer').off('click').on('click',function(e){
+			e.preventDefault();
+
+			$SearchForm.find('input[name="q"]').val(this.innerHTML.trim());
+			$SearchForm.triggerHandler('submit');
 		});
 		var $ch = $('ul.colors, #colors').children('li').children();
 		$ch.filter(':not(:first-child):not([data-hasqtip])').each(function(){
@@ -113,9 +129,14 @@ DocReady.push(function Colorguide(){
 		e.preventDefault();
 
 		var $this = $(this),
+			$query = $this.find('input[name=q]'),
 			query = $this.serialize();
 		if (query === 'q=') query = false;
 		$this.find('button[type=reset]').attr('disabled', query === false);
+
+		if (query !== false)
+			$.Dialog.wait('Navigation', 'Seaching for <code>'+$query.val().replace(/</g,'&lt;')+'</code>');
+		else $.Dialog.success('Navigation', 'Search terms cleared');
 
 		$.toPage.call({query:query}, window.location.pathname.replace(/\d+$/,'1'), true, true);
 	}).on('reset',function(e){
