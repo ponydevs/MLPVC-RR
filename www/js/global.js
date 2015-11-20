@@ -207,12 +207,13 @@
 
 	window.URL = function(url){
 		var a = document.createElement('a'),
-			me = this;
+			me = {};
 		a.href = url;
 		$.each(['hash','host','hostname','href','origin','pathname','port','protocol','search'],function(_,el){
 			me[el] = a[el];
 		});
 		me.pathString = me.pathname+me.search+me.hash;
+		return me;
 	};
 })(jQuery);
 
@@ -468,7 +469,10 @@ $(function(){
 						document.title = (pagetitle?pagetitle+' - ':'')+SITE_TITLE;
 
 						window.CommonElements();
-						history[ParsedLocation.pathString === url?'replaceState':'pushState']({'via-js':true},'',url);
+						var replace = ParsedLocation.pathString === url;
+						if (!/^http:\/\//.test(url))
+							url = URL(url).href;
+						history[replace?'replaceState':'pushState']({'via-js':true},'',url);
 
 						window.DocReady = [];
 
