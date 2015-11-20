@@ -14,7 +14,11 @@
 				max-width: 100%;
 				box-sizing: border-box;
 
-				.fluidbox-wrap * { display: inline-block }
+				.fluidbox-wrap {
+					max-width: inherit;
+
+					* { display: inline-block }
+				}
 
 				img {
 					display: block;
