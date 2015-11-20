@@ -469,9 +469,17 @@ $(function(){
 						document.title = (pagetitle?pagetitle+' - ':'')+SITE_TITLE;
 
 						window.CommonElements();
+						if (window.DEVELOPER === true)
+							$.Dialog.info('Navigation URL', url);
 						var replace = ParsedLocation.pathString === url;
-						if (!/^http:\/\//.test(url))
-							url = URL(url).href;
+						if (!/^http:\/\//.test(url)){
+							if (window.DEVELOPER === true)
+								$.Dialog.info('Navigation URL', url);
+							url = URL(url);
+							if (window.DEVELOPER === true)
+								$.Dialog.info('Navigation URL', "<code>"+JSON.stringify(url)+"</code>");
+							url = url.href;
+						}
 						if (window.DEVELOPER === true)
 							$.Dialog.info('Navigation URL', url);
 						history[replace?'replaceState':'pushState']({'via-js':true},'',url);
