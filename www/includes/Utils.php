@@ -382,7 +382,7 @@ HTML;
 			return time_ago($time);
 
 		$ts = gmdate($format, $time);
-		if ($format !== 'c')
+		if ($format !== 'c' && strpos($format, 'T') === false)
 			$ts .= ' ('.date('T').')';
 		return $ts;
 	}
