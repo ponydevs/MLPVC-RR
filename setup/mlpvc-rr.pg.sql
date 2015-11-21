@@ -198,6 +198,27 @@ CREATE TABLE log__episode_modify (
 ALTER TABLE log__episode_modify OWNER TO "mlpvc-rr";
 
 --
+-- Name: log__episode_modify_entryid_seq; Type: SEQUENCE; Schema: public; Owner: mlpvc-rr
+--
+
+CREATE SEQUENCE log__episode_modify_entryid_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE log__episode_modify_entryid_seq OWNER TO "mlpvc-rr";
+
+--
+-- Name: log__episode_modify_entryid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER SEQUENCE log__episode_modify_entryid_seq OWNED BY log__episode_modify.entryid;
+
+
+--
 -- Name: log__episodes; Type: TABLE; Schema: public; Owner: mlpvc-rr; Tablespace: 
 --
 
@@ -683,6 +704,13 @@ ALTER TABLE ONLY log__banish ALTER COLUMN entryid SET DEFAULT nextval('log__bani
 --
 
 ALTER TABLE ONLY log__color_modify ALTER COLUMN entryid SET DEFAULT nextval('log__color_modify_entryid_seq'::regclass);
+
+
+--
+-- Name: entryid; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER TABLE ONLY log__episode_modify ALTER COLUMN entryid SET DEFAULT nextval('log__episode_modify_entryid_seq'::regclass);
 
 
 --

@@ -157,7 +157,7 @@ ALTER TABLE tagged OWNER TO "mlpvc-rr";
 CREATE TABLE tags (
     tid integer NOT NULL,
     name character varying(25) NOT NULL,
-    title character varying(255) NOT NULL,
+    title character varying(255),
     type character varying(4),
     uses integer DEFAULT 0 NOT NULL
 );
@@ -1760,7 +1760,6 @@ INSERT INTO tagged VALUES (2, 46);
 INSERT INTO tagged VALUES (7, 46);
 INSERT INTO tagged VALUES (11, 46);
 INSERT INTO tagged VALUES (79, 46);
-INSERT INTO tagged VALUES (12, 47);
 INSERT INTO tagged VALUES (80, 50);
 INSERT INTO tagged VALUES (12, 50);
 INSERT INTO tagged VALUES (2, 50);
@@ -1807,101 +1806,105 @@ INSERT INTO tagged VALUES (11, 57);
 INSERT INTO tagged VALUES (91, 58);
 INSERT INTO tagged VALUES (12, 58);
 INSERT INTO tagged VALUES (2, 58);
+INSERT INTO tagged VALUES (92, 57);
+INSERT INTO tagged VALUES (28, 53);
+INSERT INTO tagged VALUES (28, 54);
 
 
 --
 -- Data for Name: tags; Type: TABLE DATA; Schema: public; Owner: mlpvc-rr
 --
 
-INSERT INTO tags VALUES (1, 'unicorn', '', 'spec', 18);
-INSERT INTO tags VALUES (4, 'alicorn', '', 'spec', 3);
-INSERT INTO tags VALUES (5, 'bat pony', '', 'spec', 0);
-INSERT INTO tags VALUES (14, 'twilight sparkle', '', 'char', 1);
-INSERT INTO tags VALUES (19, 's1e1', '', 'ep', 0);
-INSERT INTO tags VALUES (20, 's1e26', '', 'ep', 0);
-INSERT INTO tags VALUES (21, 's5e12', '', 'ep', 0);
-INSERT INTO tags VALUES (23, 'pinkie pie', '', 'char', 1);
-INSERT INTO tags VALUES (24, 'fluttershy', '', 'char', 1);
-INSERT INTO tags VALUES (25, 'rainbow dash', '', 'char', 1);
-INSERT INTO tags VALUES (26, 'rarity', '', 'char', 1);
-INSERT INTO tags VALUES (29, 'dragon', '', 'spec', 1);
-INSERT INTO tags VALUES (30, 'spike', '', 'char', 1);
-INSERT INTO tags VALUES (31, 'minuette', '', 'char', 1);
-INSERT INTO tags VALUES (32, 'lyra heartstrings', '', 'char', 1);
-INSERT INTO tags VALUES (33, 'fashion plate', '', 'char', 1);
-INSERT INTO tags VALUES (34, 'sassy saddles', '', 'char', 1);
-INSERT INTO tags VALUES (35, 'twinkleshine', '', 'char', 1);
-INSERT INTO tags VALUES (36, 'lemon hearts', '', 'char', 1);
-INSERT INTO tags VALUES (37, 'granny smith', '', 'char', 1);
-INSERT INTO tags VALUES (38, 'fleetfoot', '', 'char', 1);
-INSERT INTO tags VALUES (39, 'stormy flare', '', 'char', 1);
-INSERT INTO tags VALUES (40, 'wind rider', '', 'char', 1);
-INSERT INTO tags VALUES (41, 'sugar belle', '', 'char', 1);
-INSERT INTO tags VALUES (42, 's5e15', '', 'ep', 2);
-INSERT INTO tags VALUES (43, 's5e14', '', 'ep', 2);
-INSERT INTO tags VALUES (47, 'scootaloo', '', 'char', 1);
-INSERT INTO tags VALUES (48, 'sweetie belle', '', 'char', 1);
-INSERT INTO tags VALUES (49, 'night glider', '', 'char', 1);
 INSERT INTO tags VALUES (50, 'derpy hooves', 'Derpy Hooves or Muffins', 'char', 1);
-INSERT INTO tags VALUES (51, 'whoa nelly', '', 'char', 1);
-INSERT INTO tags VALUES (52, 'double diamond', '', 'char', 1);
-INSERT INTO tags VALUES (53, 'party favor', '', 'char', 1);
-INSERT INTO tags VALUES (54, 'starlight glimmer', '', 'char', 1);
-INSERT INTO tags VALUES (55, 'coco pommel', '', 'char', 1);
-INSERT INTO tags VALUES (57, 'princess luna', '', 'char', 1);
-INSERT INTO tags VALUES (58, 'suri polomare', '', 'char', 1);
-INSERT INTO tags VALUES (60, 'trixie', '', 'char', 1);
-INSERT INTO tags VALUES (61, 's3e5', '', 'ep', 1);
-INSERT INTO tags VALUES (62, 'alicorn amulet', '', NULL, 1);
-INSERT INTO tags VALUES (63, 'princess celestia', '', 'char', 1);
-INSERT INTO tags VALUES (65, 's5e2', '', 'ep', 4);
-INSERT INTO tags VALUES (68, 'moondancer', '', 'char', 1);
-INSERT INTO tags VALUES (72, 'dinky doo', '', 'char', 1);
-INSERT INTO tags VALUES (75, 'lily longsocks', '', 'char', 1);
-INSERT INTO tags VALUES (76, 'human', '', 'spec', 1);
-INSERT INTO tags VALUES (77, 'shining armor', '', 'char', 1);
-INSERT INTO tags VALUES (28, 'parent', 'Parents of other characters', 'cat', 2);
-INSERT INTO tags VALUES (80, 'marble pie', '', 'char', 1);
-INSERT INTO tags VALUES (10, 'pet', '', 'cat', 0);
-INSERT INTO tags VALUES (85, 'pie family', '', 'cat', 6);
-INSERT INTO tags VALUES (59, 'royalty', '', 'cat', 4);
-INSERT INTO tags VALUES (81, 'limestone pie', '', 'char', 1);
-INSERT INTO tags VALUES (46, 'apple bloom', '', 'char', 1);
-INSERT INTO tags VALUES (22, 'applejack', '', 'char', 1);
-INSERT INTO tags VALUES (82, 'maud pie', '', 'char', 1);
-INSERT INTO tags VALUES (73, 'berry pinch', '', 'char', 1);
-INSERT INTO tags VALUES (66, 'big macintosh', '', 'char', 1);
-INSERT INTO tags VALUES (74, 'button mash', '', 'char', 1);
-INSERT INTO tags VALUES (83, 'igenous rock', '', 'char', 1);
-INSERT INTO tags VALUES (79, 'cheese sandwich', '', 'char', 1);
-INSERT INTO tags VALUES (84, 'cloudy quartz', '', 'char', 1);
-INSERT INTO tags VALUES (87, 'spitfire', '', 'char', 1);
 INSERT INTO tags VALUES (27, 'wonderbolt', 'Wonderbolt characters', 'cat', 3);
 INSERT INTO tags VALUES (7, 'minor character', 'Ponies who had a speaking role and/or interacted with the mane six', 'cat', 33);
-INSERT INTO tags VALUES (88, 'lightning dust', '', 'char', 1);
-INSERT INTO tags VALUES (86, 's5e20', '', 'ep', 4);
 INSERT INTO tags VALUES (8, 'background character', 'Ponies whose only purpose is filling crowds, with no to minimal speaking roles', 'cat', 4);
-INSERT INTO tags VALUES (45, 'cutie mark crusader', '', 'cat', 3);
-INSERT INTO tags VALUES (44, 'foal', '', 'cat', 7);
-INSERT INTO tags VALUES (56, 'manehatten', '', 'cat', 1);
 INSERT INTO tags VALUES (6, 'mane six', 'Ponies who are one of the show''s six main characters', 'cat', 7);
-INSERT INTO tags VALUES (64, 'object', '', 'cat', 1);
 INSERT INTO tags VALUES (78, 'original character', 'Characters not canon to the show''s universe', 'cat', 1);
-INSERT INTO tags VALUES (3, 'pegasus', '', 'spec', 10);
-INSERT INTO tags VALUES (89, 'discord', '', 'char', 1);
-INSERT INTO tags VALUES (90, 'draconequus', '', 'spec', 1);
-INSERT INTO tags VALUES (11, 'male', '', 'gen', 11);
-INSERT INTO tags VALUES (91, 'tree hugger', '', 'char', 1);
-INSERT INTO tags VALUES (12, 'female', '', 'gen', 40);
-INSERT INTO tags VALUES (2, 'earth pony', '', 'spec', 17);
-INSERT INTO tags VALUES (9, 'antagonist', '', 'cat', 4);
+INSERT INTO tags VALUES (28, 'parent', 'Parents of other characters', 'cat', 4);
+INSERT INTO tags VALUES (1, 'unicorn', NULL, 'spec', 18);
+INSERT INTO tags VALUES (4, 'alicorn', NULL, 'spec', 3);
+INSERT INTO tags VALUES (5, 'bat pony', NULL, 'spec', 0);
+INSERT INTO tags VALUES (14, 'twilight sparkle', NULL, 'char', 1);
+INSERT INTO tags VALUES (19, 's1e1', NULL, 'ep', 0);
+INSERT INTO tags VALUES (20, 's1e26', NULL, 'ep', 0);
+INSERT INTO tags VALUES (21, 's5e12', NULL, 'ep', 0);
+INSERT INTO tags VALUES (23, 'pinkie pie', NULL, 'char', 1);
+INSERT INTO tags VALUES (24, 'fluttershy', NULL, 'char', 1);
+INSERT INTO tags VALUES (25, 'rainbow dash', NULL, 'char', 1);
+INSERT INTO tags VALUES (26, 'rarity', NULL, 'char', 1);
+INSERT INTO tags VALUES (29, 'dragon', NULL, 'spec', 1);
+INSERT INTO tags VALUES (30, 'spike', NULL, 'char', 1);
+INSERT INTO tags VALUES (31, 'minuette', NULL, 'char', 1);
+INSERT INTO tags VALUES (32, 'lyra heartstrings', NULL, 'char', 1);
+INSERT INTO tags VALUES (33, 'fashion plate', NULL, 'char', 1);
+INSERT INTO tags VALUES (34, 'sassy saddles', NULL, 'char', 1);
+INSERT INTO tags VALUES (35, 'twinkleshine', NULL, 'char', 1);
+INSERT INTO tags VALUES (36, 'lemon hearts', NULL, 'char', 1);
+INSERT INTO tags VALUES (37, 'granny smith', NULL, 'char', 1);
+INSERT INTO tags VALUES (38, 'fleetfoot', NULL, 'char', 1);
+INSERT INTO tags VALUES (39, 'stormy flare', NULL, 'char', 1);
+INSERT INTO tags VALUES (40, 'wind rider', NULL, 'char', 1);
+INSERT INTO tags VALUES (41, 'sugar belle', NULL, 'char', 1);
+INSERT INTO tags VALUES (42, 's5e15', NULL, 'ep', 2);
+INSERT INTO tags VALUES (43, 's5e14', NULL, 'ep', 2);
+INSERT INTO tags VALUES (47, 'scootaloo', NULL, 'char', 1);
+INSERT INTO tags VALUES (48, 'sweetie belle', NULL, 'char', 1);
+INSERT INTO tags VALUES (49, 'night glider', NULL, 'char', 1);
+INSERT INTO tags VALUES (51, 'whoa nelly', NULL, 'char', 1);
+INSERT INTO tags VALUES (52, 'double diamond', NULL, 'char', 1);
+INSERT INTO tags VALUES (53, 'party favor', NULL, 'char', 1);
+INSERT INTO tags VALUES (54, 'starlight glimmer', NULL, 'char', 1);
+INSERT INTO tags VALUES (55, 'coco pommel', NULL, 'char', 1);
+INSERT INTO tags VALUES (57, 'princess luna', NULL, 'char', 1);
+INSERT INTO tags VALUES (58, 'suri polomare', NULL, 'char', 1);
+INSERT INTO tags VALUES (60, 'trixie', NULL, 'char', 1);
+INSERT INTO tags VALUES (61, 's3e5', NULL, 'ep', 1);
+INSERT INTO tags VALUES (62, 'alicorn amulet', NULL, NULL, 1);
+INSERT INTO tags VALUES (63, 'princess celestia', NULL, 'char', 1);
+INSERT INTO tags VALUES (65, 's5e2', NULL, 'ep', 4);
+INSERT INTO tags VALUES (68, 'moondancer', NULL, 'char', 1);
+INSERT INTO tags VALUES (72, 'dinky doo', NULL, 'char', 1);
+INSERT INTO tags VALUES (75, 'lily longsocks', NULL, 'char', 1);
+INSERT INTO tags VALUES (76, 'human', NULL, 'spec', 1);
+INSERT INTO tags VALUES (77, 'shining armor', NULL, 'char', 1);
+INSERT INTO tags VALUES (80, 'marble pie', NULL, 'char', 1);
+INSERT INTO tags VALUES (10, 'pet', NULL, 'cat', 0);
+INSERT INTO tags VALUES (85, 'pie family', NULL, 'cat', 6);
+INSERT INTO tags VALUES (59, 'royalty', NULL, 'cat', 4);
+INSERT INTO tags VALUES (81, 'limestone pie', NULL, 'char', 1);
+INSERT INTO tags VALUES (46, 'apple bloom', NULL, 'char', 1);
+INSERT INTO tags VALUES (22, 'applejack', NULL, 'char', 1);
+INSERT INTO tags VALUES (82, 'maud pie', NULL, 'char', 1);
+INSERT INTO tags VALUES (73, 'berry pinch', NULL, 'char', 1);
+INSERT INTO tags VALUES (66, 'big macintosh', NULL, 'char', 1);
+INSERT INTO tags VALUES (74, 'button mash', NULL, 'char', 1);
+INSERT INTO tags VALUES (83, 'igenous rock', NULL, 'char', 1);
+INSERT INTO tags VALUES (79, 'cheese sandwich', NULL, 'char', 1);
+INSERT INTO tags VALUES (84, 'cloudy quartz', NULL, 'char', 1);
+INSERT INTO tags VALUES (87, 'spitfire', NULL, 'char', 1);
+INSERT INTO tags VALUES (88, 'lightning dust', NULL, 'char', 1);
+INSERT INTO tags VALUES (86, 's5e20', NULL, 'ep', 4);
+INSERT INTO tags VALUES (45, 'cutie mark crusader', NULL, 'cat', 3);
+INSERT INTO tags VALUES (44, 'foal', NULL, 'cat', 7);
+INSERT INTO tags VALUES (56, 'manehatten', NULL, 'cat', 1);
+INSERT INTO tags VALUES (64, 'object', NULL, 'cat', 1);
+INSERT INTO tags VALUES (3, 'pegasus', NULL, 'spec', 10);
+INSERT INTO tags VALUES (89, 'discord', NULL, 'char', 1);
+INSERT INTO tags VALUES (90, 'draconequus', NULL, 'spec', 1);
+INSERT INTO tags VALUES (11, 'male', NULL, 'gen', 11);
+INSERT INTO tags VALUES (91, 'tree hugger', NULL, 'char', 1);
+INSERT INTO tags VALUES (12, 'female', NULL, 'gen', 40);
+INSERT INTO tags VALUES (2, 'earth pony', NULL, 'spec', 17);
+INSERT INTO tags VALUES (9, 'antagonist', NULL, 'cat', 4);
+INSERT INTO tags VALUES (92, 's5e22', NULL, 'ep', 1);
 
 
 --
 -- Name: tags_tid_seq; Type: SEQUENCE SET; Schema: public; Owner: mlpvc-rr
 --
 
-SELECT pg_catalog.setval('tags_tid_seq', 91, true);
+SELECT pg_catalog.setval('tags_tid_seq', 92, true);
 
 
 --
@@ -1980,6 +1983,22 @@ ALTER TABLE ONLY colorgroups
 
 ALTER TABLE ONLY colors
     ADD CONSTRAINT colors_groupid_fkey FOREIGN KEY (groupid) REFERENCES colorgroups(groupid) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: tagged_ponyid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER TABLE ONLY tagged
+    ADD CONSTRAINT tagged_ponyid_fkey FOREIGN KEY (ponyid) REFERENCES appearances(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: tagged_tid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER TABLE ONLY tagged
+    ADD CONSTRAINT tagged_tid_fkey FOREIGN KEY (tid) REFERENCES tags(tid) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --

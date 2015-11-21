@@ -409,7 +409,8 @@
 					if (empty($Episode))
 						respond("There's no episode with this season & episode number");
 
-					if (!$Database->whereEp($Episode)->delete('episodes')) respond(ERR_DB_FAIL);
+					if (!$Database->whereEp($Episode)->delete('episodes'))
+						respond(ERR_DB_FAIL);
 					LogAction('episodes',array(
 						'action' => 'del',
 						'season' => $Episode['season'],
@@ -418,8 +419,8 @@
 						'title' => $Episode['title'],
 						'airs' => $Episode['airs'],
 					));
+					$CGDb->where('name', "s{$Episode['season']}e{$Episode['episode']}")->delete('tags');
 					respond('Episode deleted successfuly',1,array(
-						'tbody' => get_eptable_tbody(),
 						'upcoming' => get_upcoming_eps(null, NOWRAP),
 					));
 				}
@@ -565,10 +566,28 @@
 
 					if ($editing){
 						if (!$Database->whereEp($season,$episode)->update('episodes', $insert))
-							respond(ERR_DB_FAIL);
+							respond('Updating episode failed: '.ERR_DB_FAIL);
 					}
 					else if (!$Database->insert('episodes', $insert))
-						respond(ERR_DB_FAIL);
+						respond('Episode creation failed: '.ERR_DB_FAIL);
+
+					$SeasonChanged = $editing && $season !== $insert['season'];
+					$EpisodeChanged = $editing && $episode !== $insert['episode'];
+					if (!$editing || $SeasonChanged || $EpisodeChanged){
+						$TagName = "s{$insert['season']}e{$insert['episode']}";
+						$EpTag = $CGDb->where('name', $editing ? "s{$season}e{$episode}" : $TagName)->getOne('tags');
+
+						if (empty($EpTag)){
+							if (!$CGDb->insert('tags', array(
+								'name' => $TagName,
+								'type' => 'ep',
+							))) respond('Episode tag creation failed: '.ERR_DB_FAIL);
+						}
+						else if ($SeasonChanged || $EpisodeChanged)
+							$CGDb->where('name',$EpTag['name'])->update('tags', array(
+								'name' => $TagName,
+							));
+					}
 
 					if ($editing){
 						$logentry = array('target' => format_episode_title($Current,AS_ARRAY,'id'));

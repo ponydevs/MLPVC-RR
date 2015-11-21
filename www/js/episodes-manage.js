@@ -98,9 +98,12 @@ DocReady.push(function EpisodesManage(){
 				$.post('/episode/add', data, $.mkAjaxHandler(function(){
 					if (!this.status) return $.Dialog.fail(false, this.message);
 
-					Bind(this.tbody);
-					UpcomingUpdate(this.upcoming);
-					$.Dialog.close();
+					$.Dialog.success(false, this.message);
+					$.Dialog.wait(false, 'Reloading page');
+
+					HandleNav.reload(function(){
+						$.Dialog.close();
+					}, 1000);
 				}));
 			});
 		});
@@ -157,7 +160,7 @@ DocReady.push(function EpisodesManage(){
 						delete data.airtime;
 						data.airs = d.toISOString();
 
-						$.Dialog.wait(false, 'Saving edits');
+						$.Dialog.wait(false, 'Saving changes');
 
 						$.post('/episode/edit/'+epid, data, $.mkAjaxHandler(function(){
 							if (!this.status) return $.Dialog.fail(false, this.message);
@@ -167,7 +170,7 @@ DocReady.push(function EpisodesManage(){
 
 							HandleNav.reload(function(){
 								$.Dialog.close();
-							});
+							}, 1000);
 						}));
 					});
 				});
@@ -178,21 +181,22 @@ DocReady.push(function EpisodesManage(){
 			e.preventDefault();
 
 			var $this = $(this),
-				epid = $this.closest('tr').data('epid'),
-				title = 'Deleting '+epid;
+				epid = $this.closest('tr').data('epid');
 
-			$.Dialog.confirm(title,'<p>This will remove <strong>ALL</strong><ul><li>requests</li><li>reservations</li><li>video links</li><li>and votes</li></ul>associated with the episode, too.</p><p>Are you sure you want to delete it?</p>',function(sure){
+			$.Dialog.confirm('Deleting '+epid,'<p>This will remove <strong>ALL</strong><ul><li>requests</li><li>reservations</li><li>video links</li><li>and votes</li></ul>associated with the episode, too.</p><p>Are you sure you want to delete it?</p>',function(sure){
 				if (!sure) return;
 
-				$.Dialog.wait(title);
+				$.Dialog.wait(false, 'Removing episode');
 
 				$.post('/episode/delete/'+epid, $.mkAjaxHandler(function(){
-						if (this.status){
-							Bind(this.tbody);
-							UpcomingUpdate(this.upcoming);
-							$.Dialog.close();
-						}
-						else $.Dialog.fail(title,this.message);
+					if (!this.status) return $.Dialog.fail(false, this.message);
+
+					$.Dialog.success(false, this.message);
+					$.Dialog.wait(false, 'Reloading page');
+
+					HandleNav.reload(function(){
+						$.Dialog.close();
+					}, 1000);
 				}));
 			});
 		});
