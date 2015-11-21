@@ -27,7 +27,27 @@
 			<li>Please remember that <strong>you have to be a member of the group in order to make a reservation</strong>. The idea is to add the finished vector to our gallery, so it has to meet all of our quality requirements.</li>
 		</ol>
 	</section>
-<?php   if (PERM('inspector')){ ?>
+<?php   $EpTag = $CGDb->where('name',"s{$CurrentEpisode['season']}e{$CurrentEpisode['episode']}")->getOne('tags');
+		if (!empty($EpTag)){
+			$TaggedAppearances = $CGDb->rawQuery(
+				"SELECT p.id, p.label
+				FROM tagged t
+				LEFT JOIN appearances p ON t.ponyid = p.id
+				WHERE t.tid = {$EpTag['tid']}");
+
+			if (!empty($TaggedAppearances)){ ?>
+	<section class="appearances">
+		<h2>Related <a href="/colorguide"><?=$Color?> Guide</a> <?=plur('page', count($TaggedAppearances))?></h2>
+		<p><?php
+				$HTML = '';
+				foreach ($TaggedAppearances as $p)
+					$HTML .= "<a href='/colorguide/appearance/{$p['id']}'>{$p['label']}</a>, ";
+				echo rtrim($HTML,', ');
+		?></p>
+	</section>
+<?php		}
+		}
+		if (PERM('inspector')){ ?>
 	<section class="admin">
 		<h2>Administration area</h2>
 		<p class="align-center">

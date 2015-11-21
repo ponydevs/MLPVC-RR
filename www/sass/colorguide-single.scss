@@ -16,6 +16,10 @@
 
 	section { @extend %section }
 
+	#tags .tag:not(:last-child) {
+		margin-right: 7px;
+	}
+
 	#pony-cm img {
 		width: 100%;
 		max-width: 175px;

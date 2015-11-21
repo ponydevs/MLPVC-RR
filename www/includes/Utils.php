@@ -1838,14 +1838,16 @@ HTML;
 	/**
 	 * Appends 's' to the end of string if input is not 1
 	 *
-	 * @param string $w
-	 * @param int $in
+	 * @param string $w Text to pluralize
+	 * @param int $in Number to base pluralization off of
+	 * @param bool $prep Prepend number to text
 	 *
 	 * @return string
 	 */
-	 function plur($w, $in){
-		return "$in $w".($in!==1?'s':'');
+	 function plur($w, $in, $prep = false){
+		return ($prep?"$in ":'').$w.($in!==1?'s':'');
 	 }
+	 define('PREPEND_NUMBER', true);
 
 	/**
 	 * Parse session array for user page
@@ -2000,7 +2002,7 @@ HTML;
 				$HTML .= "<button class='blue rate typcn typcn-star'>Cast your vote</button>";
 			else $HTML .= "<p><em>Sign in above to cast your vote!</em></p>";
 		}
-		else $HTML .= "<p>Your rating: ".plur('muffin', $UserVote['vote']).'</p>';
+		else $HTML .= "<p>Your rating: ".plur('muffin', $UserVote['vote'], PREPEND_NUMBER).'</p>';
 
 		return $HTML;
 	}

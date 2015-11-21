@@ -167,6 +167,7 @@
 			font-weight: normal;
 			box-sizing: border-box;
 
+			a { color: inherit !important }
 			+ p { margin: 0 }
 		}
 		&.rules {
@@ -188,6 +189,17 @@
 
 				&:after { border-left-color: $NBlue }
 			}
+		}
+		&.appearances {
+			color: $NGreen;
+
+			h2 {
+				color: $NGreenBG;
+				background-color: $NGreen;
+
+				&:after { border-left-color: $NGreen }
+			}
+			p { font-size: 1.2em }
 		}
 		&.admin {
 			color: $NDarkBlue;

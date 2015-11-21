@@ -5,8 +5,41 @@
 <?php
 	$RenderPath = APPATH."img/cg_render/{$Appearance['id']}.png";
 	$FileModTime = '?t='.(file_exists($RenderPath) ? filemtime($RenderPath) : time());
-	echo "<div class='align-center'><a class='darkblue btn typcn typcn-image' href='/{$color}guide/appearance/{$Appearance['id']}.png$FileModTime' target='_blank'>View as PNG</a></div>";
+	echo "<div class='align-center'><a class='darkblue btn typcn typcn-image' href='/{$color}guide/appearance/{$Appearance['id']}.pn g$FileModTime' target='_blank'>View as PNG</a></div>"; ?>
 
+	<section id="tags">
+		<label><span class='typcn typcn-tags'></span>Tags</label>
+		<?=get_tags_html($Appearance['id'],WRAP,NO_INPUT)?>
+	</section>
+<?php
+	$EpTagsOnAppearance = $CGDb->rawQuery(
+		"SELECT t.tid
+		FROM tagged tt
+		LEFT JOIN tags t ON tt.tid = t.tid
+		WHERE tt.ponyid = {$Appearance['id']}");
+	foreach ($EpTagsOnAppearance as $k => $row){
+		$EpTagsOnAppearance[$k] = $row['tid'];
+	}
+	$EpAppearances = $CGDb->rawQuery(
+		"SELECT DISTINCT t.name
+		FROM tagged tt
+		LEFT JOIN tags t ON tt.tid = t.tid
+		WHERE t.type = 'ep' && t.tid IN (".implode(',',$EpTagsOnAppearance).")");
+	if (!empty($EpAppearances)){ ?>
+	<section id="ep-appearances">
+		<label><span class='typcn typcn-video'></span>Appears in <?=plur('episode',count($EpAppearances),PREPEND_NUMBER)?></label>
+		<p><?php
+			$HTML = '';
+			foreach ($EpAppearances as $ep){
+				$Ep = $Database->whereEp(...explode('e',substr($ep['name'],1)))->getOne('episodes');
+				if (empty($Ep)) continue;
+				$HTML .= "<a href='/episode/S{$Ep['season']}E{$Ep['episode']}'>{$Ep['title']}</a>, ";
+			}
+			echo rtrim($HTML, ', ')
+		?></p>
+	</section>
+<?php
+	}
 	if (!empty($Appearance['notes'])){ ?>
 	<section>
 		<label><span class='typcn typcn-info-large'></span>Additional notes</label>

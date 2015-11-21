@@ -923,8 +923,7 @@
 		case "colorguides":
 			$do = 'colorguide';
 		case "colorguide":
-			$CGDb = new PostgresDbWrapper('mlpvc-colorguide');
-			include "includes/CGUtils.php";
+			require_once "includes/CGUtils.php";
 
 			$SpriteRelPath = '/img/cg/';
 			$SpritePath = APPATH.substr($SpriteRelPath,1);

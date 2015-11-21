@@ -88,13 +88,15 @@
 		return $HTML;
 	}
 
-	function get_tags($PonyID = null, $limit = null){
+	function get_tags($PonyID = null, $limit = null, $is_editing = false){
 		global $CGDb;
 
 		$CGDb
 			->orderByLiteral('CASE WHEN tags.type IS NULL THEN 1 ELSE 0 END')
 			->orderBy('tags.type', 'ASC')
 			->orderBy('tags.name', 'ASC');
+		if (!$is_editing)
+			$CGDb->where("tags.type != 'ep'");
 		return !empty($PonyID)
 			? $CGDb
 				->join('tags','tagged.tid = tags.tid','LEFT')
@@ -104,13 +106,15 @@
 	}
 
 	// Return the markup of a set of tags belonging to a specific pony \\
-	function get_tags_html($PonyID, $wrap = true){
+	define('NO_INPUT', true);
+	function get_tags_html($PonyID, $wrap = true, $no_input = false){
 		global $CGDb;
 
-		$Tags = get_tags($PonyID);
+		$Editing = !$no_input && PERM('inspector');
+		$Tags = get_tags($PonyID, null, $Editing);
 
 		$HTML = $wrap ? "<div class='tags'>" : '';
-		if (PERM('inspector'))
+		if ($Editing)
 			$HTML .= "<input type='text' class='addtag tag' placeholder='Enter tag' pattern='".TAG_NAME_PATTERN."' maxlength='30' required>";
 		if (!empty($Tags)) foreach ($Tags as $i => $t){
 			$class = " class='tag id-{$t['tid']}".(!empty($t['type'])?' typ-'.$t['type']:'')."'";

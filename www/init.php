@@ -13,6 +13,7 @@
 	// Imports \\
 	require 'includes/PostgresDbWrapper.php';
 	$Database = new PostgresDbWrapper('mlpvc-rr');
+	$CGDb = new PostgresDbWrapper('mlpvc-colorguide');
 	require 'includes/Cookie.php';
 	require 'includes/Utils.php';
 	require 'includes/AuthCheck.php';
