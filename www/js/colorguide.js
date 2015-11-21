@@ -27,7 +27,7 @@ DocReady.push(function Colorguide(){
 
 	function tooltips(){
 		var isGuest = $('#search-form').length === 0,
-			$tags = $('.tags').children('span');
+			$tags = $('.tags').children('span.tag');
 		$tags.each(function(){
 			var $this = $(this),
 				text = 'Click to quick search',
@@ -135,7 +135,7 @@ DocReady.push(function Colorguide(){
 		$this.find('button[type=reset]').attr('disabled', query === false);
 
 		if (query !== false)
-			$.Dialog.wait('Navigation', 'Seaching for <code>'+$query.val().replace(/</g,'&lt;')+'</code>');
+			$.Dialog.wait('Navigation', 'Searching for <code>'+$query.val().replace(/</g,'&lt;')+'</code>');
 		else $.Dialog.success('Navigation', 'Search terms cleared');
 
 		$.toPage.call({query:query}, window.location.pathname.replace(/\d+$/,'1'), true, true);
