@@ -670,10 +670,10 @@
 				if (!empty($data) && preg_match('~^stats-(posts|approvals)$~',$data,$_match)){
 					$stat = $_match[1];
 					$CachePath = APPATH."../stats/$stat.json";
-					if (file_exists($CachePath) && filemtime($CachePath) < time() - $StatCacheDuration)
-						respond(json_decode($CachePath, true));
+					if (file_exists($CachePath) && filemtime($CachePath) > time() - $StatCacheDuration)
+						respond(array('data' => json_decode(file_get_contents($CachePath), true)));
 
-					$Data = array('datasets' => array());
+					$Data = array('datasets' => array(), 'timestamp' => date('c'));
 
 					switch ($stat){
 						case 'posts':

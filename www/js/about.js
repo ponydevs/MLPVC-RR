@@ -7,6 +7,7 @@ $(function(){
 
 	// Post Stats
 	var $PostStats = $stats.children('.stats-posts'),
+		$PostsTitle = $PostStats.children('h3'),
 		$PostStatsLegend = $PostStats.children('.legend'),
 		PostsCTX = $PostStats.children('canvas').get(0).getContext("2d"),
 		PostsChart,
@@ -15,6 +16,9 @@ $(function(){
 		if (!this.status) return $PostStats.remove();
 
 		var Data = this.data;
+
+		$.mk('p').append('Last updated: ', $.mk('time').attr('datetime', Data.timestamp)).insertAfter($PostsTitle);
+		window.updateTimes();
 
 		$.each(Data.datasets,function(i,el){
 			var rgb = $.hex2rgb(PostLegendColors[el.clrkey]),
@@ -35,6 +39,7 @@ $(function(){
 
 	// Approval Stats
 	var $ApprovalStats = $stats.children('.stats-approvals'),
+		$ApprovalTitle = $ApprovalStats.children('h3'),
 		$ApprovalStatsLegend = $ApprovalStats.children('.legend'),
 		ApprovalCTX = $ApprovalStats.children('canvas').get(0).getContext("2d"),
 		ApprovalChart,
@@ -45,6 +50,10 @@ $(function(){
 		var Data = this.data,
 			rgb = ApprovalLegendColor,
 			rgbstr = rgb.r+','+rgb.g+','+rgb.b;
+
+		$.mk('p').append('Last updated: ', $.mk('time').attr('datetime', Data.timestamp)).insertAfter($ApprovalTitle);
+		window.updateTimes();
+
 		$.extend(Data.datasets[0], {
 			fillColor: 'rgba('+rgbstr+',0.2)',
 			strokeColor: 'rgb('+rgbstr+')',

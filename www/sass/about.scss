@@ -77,10 +77,10 @@
 		padding: $StatPadding 0;
 		box-sizing: border-box;
 
-		h3 {
+		h3 { font-size: 1.3em }
+		h3, p {
 			text-align: center;
 			margin: 0 0 7px;
-			font-size: 1.3em;
 		}
 		canvas {
 			width: calc(100% - #{$StatPadding});
