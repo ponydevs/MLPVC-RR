@@ -42,7 +42,7 @@
 				case 'dm':
 					$path = !$urlOnly ? 'embed/' : '';
 					$url = "https://www.dailymotion.com/{$path}video/$id";
-					if (!$urlOnly) $url .= '?related=0&quality=1080&highlight=2E71B4';
+					if (!$urlOnly) $url .= '?related=0&quality=1080&highlight=2C73B1';
 				break;
 			}
 
