@@ -32,8 +32,9 @@
 			$HTML = '';
 			foreach ($EpAppearances as $ep){
 				$Ep = $Database->whereEp(...explode('e',substr($ep['name'],1)))->getOne('episodes');
-				if (empty($Ep)) continue;
-				$HTML .= "<a href='/episode/S{$Ep['season']}E{$Ep['episode']}'>{$Ep['title']}</a>, ";
+				$HTML .= empty($Ep)
+					? strtoupper($ep['name']).', '
+					: "<a href='/episode/S{$Ep['season']}E{$Ep['episode']}'>{$Ep['title']}</a>, ";
 			}
 			echo rtrim($HTML, ', ')
 		?></p>
