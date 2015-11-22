@@ -295,19 +295,31 @@
 
 	$w.on('resize', $.Dialog.center);
 	$body.on('keydown',function(e){
-		if (e.keyCode === 9 && $.Dialog.isOpen()){
-			var $inputs = $dialogContent.find(':input'),
-				idx = $inputs.index(e.target);
+		if (!$.Dialog.isOpen() || e.keyCode !== Key.Tab)
+			return true;
 
-			if (e.shiftKey && idx === 0){
+		var $inputs = $dialogContent.find(':input'),
+			$focused = $inputs.filter(e.target),
+			idx = $inputs.index($focused);
+
+		if ($focused.length === 0){
+			e.preventDefault();
+			$inputs.first().focus();
+		}
+		else if (e.shiftKey){
+			if (idx === 0){
 				e.preventDefault();
 				$dialogButtons.find(':last').focus();
 			}
-			else if ($inputs.filter(':focus').length !== 1){
-				e.preventDefault();
-				$inputs.first().focus();
+			else {
+				var $parent = $focused.parent();
+				if (!$parent.is($dialogButtons))
+					return true;
+				if ($parent.children().first().is($focused)){
+					e.preventDefault();
+					$inputs.eq($inputs.index($focused)-1).focus();
+				}
 			}
-			return true;
 		}
 	});
 })(jQuery);
