@@ -37,8 +37,9 @@ $NRed: #d00;
 $NRedBG: #fdd;
 $NOrange: #d50;
 $NOrangeBG: #fed;
-$NYellow: #b80;
+$NYellow: #b70;
 $NYellowBG: #ffd;
+$DefaultUIColor: #357;
 
 $NoFontChange: true;
 @mixin link($color:$Link, $hover:$LinkHover){

@@ -16,22 +16,19 @@ $ZIndexBase: 21000;
 // Desktop-only Styles
 @media all and (min-width: $Breakpoint){
 	#dialogOverlay {
-		background-color: rgba(white, .8);
+		background-color: rgba(white, .9);
 	}
 	#dialogBox {
 		margin: 10px;
 		max-width: 400px;
 		width: auto;
 		overflow: hidden;
-		border-radius: 5px;
+		border-radius: 5px 5px 0 0;
 		background-color: white;
-		box-shadow: 0 0 20px rgba(black, .5);
 	}
 	#dialogContent {
-		//noinspection All
-		border: 1px solid rgba(black, .2);
-		//noinspection All
-		border-width: 0 1px 1px;
+		border: 1px solid $DefaultUIColor;
+		border-top-width: 0;
 
 		overflow: auto;
 	}
@@ -64,7 +61,13 @@ body.dialog-open {
 	.green-bg    { background-color: $NGreen }
 	.red-bg      { background-color: $NRed }
 	.orange-bg   { background-color: $NOrange }
-	.yellow-bg   { background-color: $NYellow }
+	//.yellow-bg   { background-color: $NYellow }
+	.blue-border     { border-color: $NBlue }
+	.darkblue-border { border-color: $NDarkBlue }
+	.green-border    { border-color: $NGreen }
+	.red-border      { border-color: $NRed }
+	.orange-border   { border-color: $NOrange }
+	//.yellow-border   { border-color: $NYellow }
 }
 #dialogHeader {
 	font-weight: 200;
@@ -72,12 +75,13 @@ body.dialog-open {
 	padding: 5px 8px;
 	font-size: 18px;
 	color: #fff;
-	background: #ededed linear-gradient(to bottom, rgba(black, 0) 0%, rgba(black, .4) 100%);
+	background-color: $DefaultUIColor;
 }
 #dialogContent {
 	padding: 15px 10px;
 	font-size: 16px;
 	font-weight: normal;
+	color: $DefaultUIColor;
 
 	form > label {
 		> span {
@@ -105,8 +109,8 @@ body.dialog-open {
 
 		pre { margin: 5px 0 }
 		code {
-			background-color: rgba(black, .1);
-			color: #000;
+			background-color: rgba($DefaultUIColor, .1);
+			color: $DefaultUIColor;
 			font-size: .9em;
 			padding: 3px;
 			border-radius: 3px;
@@ -141,7 +145,7 @@ body.dialog-open {
 	.green    { color: $NGreen }
 	.red      { color: $NRed }
 	.orange   { color: $NOrange }
-	.yellow   { color: $NYellow }
+	//.yellow   { color: $NYellow }
 }
 #dialogButtons {
 	width: auto;
@@ -157,8 +161,6 @@ body.dialog-open {
 		font-weight: 400;
 		font-size: 14px;
 		line-height: 20px;
-		min-width: 90px;
-		min-height: 32px;
 		height: 32px;
 		color: #fff;
 		margin: 0 10px 0 0 !important;
@@ -166,19 +168,20 @@ body.dialog-open {
 		text-align: center;
 		vertical-align: middle;
 		cursor: pointer;
-		padding: 4px 10px;
+		padding: 3px 10px;
 		position: relative;
 		outline: none;
 		opacity: .85;
 		border: 3px solid transparent;
+		border-radius: 4px;
 		box-sizing: border-box;
+		background-color: $DefaultUIColor;
+		transition: opacity .1s;
 
 		&[disabled] { cursor: not-allowed }
 		&:last-child { margin-right: 0 !important }
-		&:focus {
-			opacity: 1;
-			border-color: rgba(black, .2);
-		}
+		&:hover, &:focus { opacity: 1 }
+		&:focus { border-color: rgba(black, .2) }
 		&:active {
 			top: 1px;
 			left: 1px;

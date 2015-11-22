@@ -204,8 +204,10 @@
 				$body.addClass('dialog-open');
 			}
 
-			if (!appendingToRequest)
+			if (!appendingToRequest){
 				$dialogHeader.attr('class',params.color+'-bg');
+				$dialogContent.attr('class',params.color+'-border');
+			}
 
 			if (!appendingToRequest && params.buttons) $.each(params.buttons, function (name, obj) {
 				var $button = $.mk('input').attr({
