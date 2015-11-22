@@ -51,7 +51,8 @@ DocReady.push(function Episode(){
 		}));
 	});
 
-	var $voteButton = $('#voting').find('.rate');
+	var $voting = $('#voting'),
+		$voteButton = $voting.find('.rate');
 	$voteButton.on('click',function(e){
 		e.preventDefault();
 
