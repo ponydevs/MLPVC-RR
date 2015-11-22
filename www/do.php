@@ -664,7 +664,7 @@
 		case "about":
 			if (RQMTHD === 'POST'){
 				detectCSRF();
-				$StatCacheDuration = 24*ONE_HOUR;
+				$StatCacheDuration = 5*ONE_HOUR;
 
 				$_match = array();
 				if (!empty($data) && preg_match('~^stats-(posts|approvals)$~',$data,$_match)){

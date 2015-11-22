@@ -17,7 +17,7 @@
 	</section>
 	<section>
 		<h2>Statistics</h2>
-		<p>Here you can see various graphs about the site.</p>
+		<p>Here you can see various graphs about the site. The information below is cached to reduce server load, you can see when each graph was last updated below their title.</p>
 		<div id="stats">
 			<div class="stats-posts">
 				<h3>Posts in the last 20 days</h3>
