@@ -51,9 +51,8 @@ DocReady.push(function Episode(){
 		}));
 	});
 
-	var $voting = $('#voting'),
-		$voteButton = $voting.find('button');
-	$voting.on('click','button',function(e){
+	var $voteButton = $('#voting').find('.rate');
+	$voteButton.on('click',function(e){
 		e.preventDefault();
 
 		var $btn = $(this),
@@ -117,7 +116,7 @@ DocReady.push(function Episode(){
 				$.post('/episode/vote/'+EpID,data,$.mkAjaxHandler(function(){
 					if (!this.status) return $.Dialog.fail(false, this.message);
 
-					var $section = $btn.closest('section');
+					var $section = $voteButton.closest('section');
 					$section.children('h2').nextAll().remove();
 					$section.append(this.newhtml);
 					$.Dialog.close();
