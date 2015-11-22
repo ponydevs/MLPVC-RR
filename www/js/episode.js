@@ -68,12 +68,14 @@ DocReady.push(function Episode(){
 				).on('mouseenter mouseleave',function(e){
 					var $this = $(this),
 						$checked = $this.parent().find('input:checked'),
-						$parent = $checked.parent();
+						$parent = $checked.parent(),
+						$strongRating = $this.closest('div').next().children('strong');
 
-					switch(e.type){
+					switch (e.type){
 						case "mouseleave":
 							if ($parent.length === 0){
 								$this.siblings().addBack().find('.typcn').attr('class', '');
+								$strongRating.text('?');
 								break;
 							}
 							$this = $parent;
@@ -81,6 +83,7 @@ DocReady.push(function Episode(){
 						case "mouseenter":
 							$this.prevAll().addBack().children('span').attr('class','active');
 							$this.nextAll().children('span').attr('class','');
+							$strongRating.text($this.children('input').attr('value'));
 						break;
 					}
 
@@ -89,14 +92,15 @@ DocReady.push(function Episode(){
 				});
 			},
 			$VoteForm = $.mk('form').attr('id','star-rating').append(
-				$.mk('p').text('Rate the episode on a scale of 1 to 5'),
+				$.mk('p').text("Rate the episode on a scale of 1 to 5. This cannot be changed later."),
 				$.mk('div').attr('class','rate').append(
 					makeStar(1),
 					makeStar(2),
 					makeStar(3),
 					makeStar(4),
 					makeStar(5)
-				)
+				),
+				$.mk('p').css('font-size','1.1em').append('Your rating: <strong>?</strong>/5')
 			);
 
 		$.Dialog.request('Rating '+EpID,$VoteForm,'star-rating','Rate',function($form){
