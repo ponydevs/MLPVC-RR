@@ -1,8 +1,7 @@
-/* globals $body,DocReady,mk,Sortable,Bloodhound,Handlebars */
+/* globals $body,DocReady,mk,Sortable,Bloodhound,Handlebars,PRINTABLE_ASCII_REGEX */
 DocReady.push(function ColorguideManage(){
 	'use strict';
 	var Color = window.Color, color = window.color, TAG_TYPES_ASSOC = window.TAG_TYPES_ASSOC, $colorGroups,
-		PRINTABLE_ASCII_REGEX = window.PRINTABLE_ASCII_REGEX,
 		HEX_COLOR_PATTERN = window.HEX_COLOR_PATTERN, isWebkit = 'WebkitAppearance' in document.documentElement.style,
 		EQG = window.EQG, EQGRq = EQG?'?eqg':'';
 

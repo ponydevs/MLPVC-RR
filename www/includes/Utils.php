@@ -3,6 +3,10 @@
 	// Constants
 	define('PRINTABLE_ASCII_REGEX','^[ -~]+$');
 	define('INVERSE_PRINTABLE_ASCII_REGEX','[^ -~]');
+	$hex = '[0-9A-Fa-f]';
+	define('UUIDV4_REGEX',"^$hex{8}-$hex{4}-4$hex{3}-[89AaBb]$hex{3}-$hex{12}$");
+	define('NEWEST_FIRST', 'DESC');
+	define('NEWEST_LAST', 'ASC');
 
 	// Constants to enable/disable returning of wrapper element with markup generators
 	define('NOWRAP', false);
@@ -2249,7 +2253,7 @@ ORDER BY "count" DESC
 
 	// Returns text of website footer
 	function get_footer(){
-		return "Running <strong><a href='".GITHUB_URL."' title='Visit the GitHub repository'>MLPVC-RR</a>@<a href='".GITHUB_URL."/commit/".LATEST_COMMIT_ID."' title='See exactly what was changed and why'>".LATEST_COMMIT_ID."</a></strong> created ".timetag(LATEST_COMMIT_TIME)." | <a href='".GITHUB_URL."/issues' target='_blank'>Report an issue</a>";
+		return "Running <strong><a href='".GITHUB_URL."' title='Visit the GitHub repository'>MLPVC-RR</a>@<a href='".GITHUB_URL."/commit/".LATEST_COMMIT_ID."' title='See exactly what was changed and why'>".LATEST_COMMIT_ID."</a></strong> created ".timetag(LATEST_COMMIT_TIME)." | <a href='".GITHUB_URL."/issues' target='_blank'>Known issues</a>".(PERM('user')?" | <a href='#feedback' class='send-feedback'>Send feedback</a>":'');
 	}
 
 	// Loads the home page
@@ -2478,4 +2482,27 @@ ORDER BY "count" DESC
 		$DS = preg_quote('/\\');
 		$folder = preg_replace("~^(.*[$DS])[^$DS]+$~",'$1',$path);
 		return !is_dir($folder) ? mkdir($folder,0777,true) : true;
+	}
+
+	// Renders HTML of user feedback section
+	function render_feedback_list_html($Feedback, $wrap = true){
+		$HTML = $wrap ? '<ul id="feedback">' : '';
+		foreach ($Feedback as $f){
+			$User = get_user($f['user']);
+			$HTML .= "<li><img src='{$User['avatar_url']}'><a class='subject' href='/feedback/{$f['chain']}'>{$f['subject']}</a></li>";
+		}
+		return $HTML.($wrap?'</ul>':'');
+	}
+
+	// Render HTML for a ringle chain
+	function render_feedback_chain_html($ChainID, $wrap = true){
+		global $Database;
+
+		$HTML = $wrap ? '<ul id="feedback-chain">' : '';
+		$Messages = $Database->where('chain',$ChainID)->orderBy('sent',NEWEST_LAST)->orderBy('mid','ASC')->get('feedback__messages');
+		foreach ($Messages as $m){
+			$User = get_user($m['author']);
+			$HTML .= "<li><img src='{$User['avatar_url']}'><span>".profile_link($User)." (".timetag($m['sent']).")</span><div class='msg'>".htmlspecialchars($m['body'])."</div></li>";
+		}
+		return $HTML.($wrap?'</ul>':'');
 	}

@@ -1828,6 +1828,96 @@
 				'do-css'
 			));
 		break;
+		case "feedback":
+			if (!PERM('user'))
+				do404();
+
+			if (!empty($data) && preg_match('~'.UUIDV4_REGEX.'~', $data)){
+				$ChainID = $data;
+				$Chain = $Database->where('chain',$ChainID)->getOne('feedback');
+				$ChainID = $Chain['chain'];
+				$CantSeeChain = empty($Chain) || (!PERM('developer') && $Chain['user'] !== $currentUser['id']);
+			}
+
+			if (RQMTHD === 'POST'){
+				$insert = array();
+				$creating = empty($ChainID);
+
+				// Create new chain
+				if (empty($ChainID)){
+					if (empty($_POST['subject']))
+						respond('Subject cannot be empty');
+					$subject = $_POST['subject'];
+					$sln = strlen($subject);
+					if ($sln < 5 ||$sln > 120)
+						respond("The subject must be between 5 and 120 characters (you entered $sln).");
+
+					$ChainID = $Database->insert('feedback',array(
+						'user' => $currentUser['id'],
+						'subject' => $subject,
+					),'chain');
+					if (empty($ChainID))
+						respond('Your feedback could not be submitted: '.ERR_DB_FAIL);
+				}
+				else if ($CantSeeChain)
+					respond('The specified chain does not exist, or you\'re not allowed to respond to it');
+
+				// Respond to existing chain
+				if (empty($_POST['message']))
+					respond('Message cannot be empty');
+				$message = $_POST['message'];
+				$mln = strlen($message);
+				if ($mln < 10 ||$mln > 500)
+					respond("The message must be between 10 and 500 characters (you entered $mln).");
+
+				$MessageID = $Database->insert('feedback__messages',array(
+					'chain' => $ChainID,
+					'author' => $currentUser['id'],
+					'body' => $message,
+				), 'mid');
+				if (empty($MessageID))
+					respond('Your message could not be submitted: '.ERR_DB_FAIL);
+				if (!$creating)
+					respond(true);
+
+				$Link = "feedback/$ChainID".(!$creating?"#msg$MessageID":'');
+				respond("Your feedback was submitted successfuly. You can track its status here: <a href='/$Link'>".ABSPATH."$Link</a>", 1);
+			}
+
+			if (!empty($ChainID)){
+				if ($CantSeeChain)
+					do404();
+
+				$Author = get_user($Chain['user']);
+
+				fix_path("/feedback/$ChainID");
+
+				loadPage(array(
+					'title' => "Feedback #$ChainID",
+					'view' => "$do-single",
+				));
+			}
+
+			$ItemsPerPage = 20;
+			if (!PERM('developer'))
+				$Database->where('user', $currentUser['id']);
+			$EntryCount = $Database->count('feedback');
+			list($Page,$MaxPages) = calc_page($EntryCount);
+			fix_path("/feedback/$Page");
+
+			$Pagination = get_pagination_html('feedback');
+
+			if (!PERM('developer'))
+				$Database->where('user', $currentUser['id']);
+			$Feedback = $Database->orderBy('created',NEWEST_FIRST)->get('feedback');
+
+			if (isset($_GET['js']))
+				pagination_response(render_feedback_list_html($Feedback, NOWRAP), '#feedback');
+
+			loadPage(array(
+				'title' => 'Feedback'
+			));
+		break;
 		case "404":
 		default:
 			do404();

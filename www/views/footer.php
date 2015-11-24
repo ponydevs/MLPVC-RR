@@ -7,6 +7,7 @@
 <script>if(!window.jQuery)document.write('\x3Cscript src="/js/jquery-2.1.4.min.js">\x3C/script>');
 var REWRITE_REGEX = <?=str_replace('~','/',str_replace('/','\/',REWRITE_REGEX))?>i,
 	SITE_TITLE = '<?=SITE_TITLE?>',
+	PRINTABLE_ASCII_REGEX = '<?=PRINTABLE_ASCII_REGEX?>',
 	DocReady = [];<?
 	if (!isset($_SERVER['HTTP_DNT']) && !empty(GA_TRACKING_CODE) && !PERM('inspector')){ ?>
 
