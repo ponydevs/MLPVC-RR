@@ -470,6 +470,9 @@
 					if (empty($Episode))
 						respond("There's no episode with this season & episode number");
 
+					if ($Episode['season'] === 5 && $Episode['episode'] === 25 && $Episode['twoparter'] === true)
+						respond("Don't mess with this episode until I can make a proper interface for this");
+
 					$set = $_match[1] === 's';
 					require_once "includes/Video.php";
 

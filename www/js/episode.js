@@ -11,7 +11,7 @@ DocReady.push(function Episode(){
 		$.post('/episode/getvideos/'+EpID,$.mkAjaxHandler(function(){
 			var data = this;
 
-			if (!data.status) $.Dialog.fail(false, data.message);
+			if (!data.status) return $.Dialog.fail(false, data.message);
 
 			var $form = $.mk('form').attr('id','vidlinks').append(
 				$.mk('p').addClass('align-center').text('Enter vido links below, leave any input blank to remove that video from the episode page.'),
