@@ -1880,6 +1880,9 @@
 
 					if ($CantSeeChain)
 						respond('The specified chain does not exist, or you\'re not allowed to respond to it');
+
+					if (!$Chain['open'])
+						respond('This feedback is closed; no responses are allowed.');
 				}
 
 				// Respond to existing chain
