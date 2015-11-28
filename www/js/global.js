@@ -1,4 +1,4 @@
-/* global $w,$d,$head,$body,$header,$sidebar,$sbToggle,$main,$footer,console,prompt,HandleNav,getTimeDiff,one,createTimeStr */
+/* global $w,$d,$head,$body,$header,$sidebar,$sbToggle,$main,$footer,console,prompt,HandleNav,getTimeDiff,one,createTimeStr,PRINTABLE_ASCII_REGEX */
 (function($){
 	'use strict';
 	// document.createElement shortcut
@@ -264,6 +264,59 @@ function DocumentIsReady(){
 		});
 	});
 
+	// Feedback form
+	var $FeedbackForm;
+	$('.send-feedback').off('click').on('click',function(e){
+		e.preventDefault();
+		e.stopPropagation();
+
+		if (typeof $FeedbackForm === 'undefined'){
+			$FeedbackForm = $.mk('form').attr('id','feedback-form').append(
+				$.mk('p').text("Your opinion matters. If you're having an issue with the site, or just want to say how great it is, this is the place to do do."),
+				$.mk('p').html("Your message will be sent directly to the developer, and you'll be able to communicate with him using the <a href='/feedback'>Feedback</a> section of the site."),
+				$.mk('label').append(
+					$.mk('span').text('Subject (5-120 chars.)'),
+					$.mk('input').attr({
+						name: 'subject',
+						maxlength: 120,
+						placeholder: 'Enter subject',
+						pattern: PRINTABLE_ASCII_REGEX.replace('+','{5,120}'),
+						required: true,
+					})
+				),
+				$.mk('label').append(
+					$.mk('span').text('Message (10-500 chars.)'),
+					$.mk('textarea').attr({
+						name: 'message',
+						maxlength: 500,
+						placeholder: 'Enter message',
+						pattern: PRINTABLE_ASCII_REGEX.replace('+','{10,500}'),
+						required: true,
+					})
+				)
+			);
+		}
+
+		$.Dialog.request('Send feedback',$FeedbackForm.clone(true,true),'feedback-form','Send',function($form){
+			$form.on('submit',function(e){
+				e.preventDefault();
+
+				var data = $form.mkData();
+
+				if (data.subject.length < 5 || data.subject.length > 120)
+					return $.Dialog.fail(false, 'The subject must be between 5 and 120 characters (you entered '+data.subject.length+').');
+				if (data.message.length < 10 || data.message.length > 500)
+					return $.Dialog.fail(false, 'Your message must be between 10 and 500 characters (you entered '+data.message.length+').');
+
+				$.post('/feedback',data,$.mkAjaxHandler(function(){
+					if (!this.status) return $.Dialog.fail(false, this.message);
+
+					$.Dialog.success(false, this.message, true);
+				}));
+			});
+		});
+	});
+
 	var l = window.DocReady.length;
 	if (l) for (var i = 0; i<l; i++)
 		window.DocReady[i].call(window);
@@ -368,6 +421,9 @@ $(function(){
 
 		if (link.pathname === location.pathname && link.search === location.search)
 			return true;
+
+		if ($(this).parents('#dialogContent').length !== 0)
+			$.Dialog.close();
 
 		e.preventDefault();
 		Navigation(this.href);

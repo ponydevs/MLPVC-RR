@@ -1,0 +1,65 @@
+@import "vars";
+
+#feedback-chain {
+	display: block;
+	padding: 0;
+	margin: 0;
+
+	li {
+		display: block;
+		color: #434343;
+		background-color: #eee;
+		border: 1px solid #888;
+
+		&:not(:last-child) { margin-bottom: 10px }
+
+		//noinspection CssOptimizeSimilarProperties
+		.meta {
+			display: block;
+			padding: 7px;
+			background: rgba(0,0,0,.1);
+			border-bottom: 1px solid #888;
+			$AvatarSize: 25px;
+			line-height: $AvatarSize;
+
+			> :not(:last-child) {
+				margin-right: 15px;
+			}
+
+			.da-userlink {
+				display: inline-block;
+				height: $AvatarSize;
+				font-size: $AvatarSize*.8;
+
+				.avatar {
+					height: $AvatarSize;
+					width: $AvatarSize;
+				}
+				.name { height: 100% }
+				> * {
+					vertical-align: top;
+					display: inline-block;
+					box-sizing: border-box;
+				}
+			}
+		}
+		.content {
+			margin: 10px;
+		}
+	}
+}
+
+#respond {
+	margin-top: 10px;
+
+	@extend %section;
+
+	textarea {
+		display: block;
+		margin: 10px 0 5px;
+		resize: vertical;
+		box-sizing: border-box;
+		width: 100%;
+		font-family: inherit;
+	}
+}
