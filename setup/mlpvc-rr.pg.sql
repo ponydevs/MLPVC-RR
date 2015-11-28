@@ -85,7 +85,8 @@ CREATE TABLE episodes__videos (
     season integer NOT NULL,
     episode integer NOT NULL,
     provider character(2) NOT NULL,
-    id character varying(15) NOT NULL
+    id character varying(15) NOT NULL,
+    part integer DEFAULT 1 NOT NULL
 );
 
 
@@ -871,11 +872,11 @@ ALTER TABLE ONLY deviation_cache
 
 
 --
--- Name: episodes__videos_season_episode_provider; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr; Tablespace: 
+-- Name: episodes__videos_season_episode_provider_part; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr; Tablespace: 
 --
 
 ALTER TABLE ONLY episodes__videos
-    ADD CONSTRAINT episodes__videos_season_episode_provider PRIMARY KEY (season, episode, provider);
+    ADD CONSTRAINT episodes__videos_season_episode_provider_part PRIMARY KEY (season, episode, provider, part);
 
 
 --
