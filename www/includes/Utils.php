@@ -2526,7 +2526,7 @@ HTML;
 	// Render HTML for a ringle chain
 	define('FEEDBACK_SPECIAL_MESSAGE_REGEX','~^@@([a-z]+)~');
 	$FEEDBACK_SPECIAL_MESSAGES = array(
-		'close' => "I <strong class='color-red'>closed</strong> your feedback, which means no more responses can be posted. If you feel that the issue was not resolved, please <a href='#feedback' class='new-feedback'>submit a new feedback</a>.",
+		'close' => "I <strong class='color-red'>closed</strong> your feedback, which means no more responses can be posted. If you feel that the issue was not resolved, please <a href='#feedback' class='send-feedback'>submit a new feedback</a>.",
 		'open' => "I <strong class='color-green'>re-opened</strong> your feedback.",
 	);
 	function render_feedback_chain_html($ChainID, $Author = null, $wrap = true){
