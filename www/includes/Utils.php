@@ -2100,27 +2100,44 @@ ORDER BY "count" DESC
 		'yt' => 'YouTube',
 		'dm' => 'Dailymotion',
 	);
+	// TODO Make a proper interface for this and clean up code
 	function render_ep_video($CurrentEpisode){
 		global $VIDEO_PROVIDER_NAMES, $Database;
 
 		$isMovie = $CurrentEpisode['season'] === 0;
 		$HTML = '';
 
-		$Videos = $Database
+		$Part1 = $Database
 			->orderBy('provider', 'ASC')
+			->where('part','1')
 			->whereEp($CurrentEpisode['season'],$CurrentEpisode['episode'])
 			->get('episodes__videos');
-		if (!empty($Videos)){
+		if (!empty($Part1)){
 			require_once "includes/Video.php";
-			$FirstVid = $Videos[0];
-			$embed = Video::get_embed($FirstVid['id'], $FirstVid['provider']);
+
+			$twoparter = $CurrentEpisode['twoparter'];
+
+			$FirstVid = $Part1[0];
+			$embed = "<div class='responsive-embed'>".Video::get_embed($FirstVid['id'], $FirstVid['provider'])."</div>";
 			$HTML .= "<section class='episode'><h2>Watch the ".($isMovie?'Movie':'Episode')."</h2>";
-			if (!empty($Videos[1])){
-				$SecondVid = $Videos[1];
+			if ($twoparter){
+				$Part2 = $Database
+					->orderBy('provider', 'ASC')
+					->where('part','2')
+					->whereEp($CurrentEpisode['season'],$CurrentEpisode['episode'])
+					->get('episodes__videos');
+
+				if (!empty($Part2)){
+					$SecondVid = $Part2[0];
+					$embed .= "<div class='responsive-embed'>".Video::get_embed($SecondVid['id'], $SecondVid['provider'])."</div>";
+				}
+			}
+			if (empty($Part2) && !empty($Part1[1])){
+				$SecondVid = $Part1[1];
 				$url = Video::get_embed($SecondVid['id'], $SecondVid['provider'], Video::URL_ONLY);
 				$HTML .= "<p class='align-center' style='margin-bottom:5px'>Also available on: <a href='$url' target='_blank'>{$VIDEO_PROVIDER_NAMES[$SecondVid['provider']]}</a></p>";
 			}
-			$HTML .= "<div class='resp-embed-wrap'><div class='responsive-embed'>$embed</div></div></section>";
+			$HTML .= "<div class='resp-embed-wrap'>$embed</div></section>";
 		}
 
 		return $HTML;
