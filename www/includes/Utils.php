@@ -6,7 +6,7 @@
 	$hex = '[0-9A-Fa-f]';
 	define('UUIDV4_REGEX',"^$hex{8}-$hex{4}-4$hex{3}-[89AaBb]$hex{3}-$hex{12}$");
 	define('NEWEST_FIRST', 'DESC');
-	define('NEWEST_LAST', 'ASC');
+	define('OLDEST_FIRST', 'ASC');
 
 	// Constants to enable/disable returning of wrapper element with markup generators
 	define('NOWRAP', false);
@@ -2224,6 +2224,13 @@ ORDER BY "count" DESC
 			if (!empty($User) && empty($sameUser))
 				$NavItems['users']['subitem'] = array($_SERVER['REQUEST_URI'], $User['name']);
 		}
+		if ($GLOBALS['signedIn']){
+			$NavItems['feedback'] = array('/feedback',PERM('developer') ? 'Feedback' : 'My feedback');
+			global $Chain;
+			if ($do === 'feedback' && !empty($Chain)){
+				$NavItems['feedback']['subitem'] = array($_SERVER['REQUEST_URI'], $Chain['subject']);
+			}
+		}
 		if (PERM('inspector')){
 			$NavItems['logs'] = array('/logs', 'Logs');
 			if ($do === 'logs'){
@@ -2484,25 +2491,74 @@ ORDER BY "count" DESC
 		return !is_dir($folder) ? mkdir($folder,0777,true) : true;
 	}
 
+	// String trimmer for specific widths
+	function str_trim($str, $w, $cutoff = "…"){
+		$l = strlen($str);
+		if ($l <= $w)
+			return $str;
+		$w--;
+		return preg_replace("~^(.{$w}).*$~","$1$cutoff",$str);
+	}
+
 	// Renders HTML of user feedback section
+	define('FEEDBACK_SUBJECT_LENGTH', 20);
 	function render_feedback_list_html($Feedback, $wrap = true){
 		$HTML = $wrap ? '<ul id="feedback">' : '';
 		foreach ($Feedback as $f){
 			$User = get_user($f['user']);
-			$HTML .= "<li><img src='{$User['avatar_url']}'><a class='subject' href='/feedback/{$f['chain']}'>{$f['subject']}</a></li>";
+			$userlink = profile_link($User);
+			$time = timetag($f['created']);
+			$class = $f['open'] ? 'open' : 'closed';
+			$HTML .= <<<HTML
+<li class='$class'>
+	<img src='{$User['avatar_url']}'>
+	<span class='text'>
+		<span class='subject'><a href='/feedback/{$f['chain']}'>{$f['subject']}</a></span>
+		<span class='info'>$userlink | $time</span>
+		<span class='id'>{$f['chain']}</span>
+	</span>
+</li>
+HTML;
 		}
 		return $HTML.($wrap?'</ul>':'');
 	}
 
 	// Render HTML for a ringle chain
-	function render_feedback_chain_html($ChainID, $wrap = true){
-		global $Database;
+	define('FEEDBACK_SPECIAL_MESSAGE_REGEX','~^@@([a-z]+)~');
+	$FEEDBACK_SPECIAL_MESSAGES = array(
+		'close' => "I <strong class='color-red'>closed</strong> your feedback, which means no more responses can be posted. If you feel that the issue was not resolved, please <a href='#feedback' class='new-feedback'>submit a new feedback</a>.",
+		'open' => "I <strong class='color-green'>re-opened</strong> your feedback.",
+	);
+	function render_feedback_chain_html($ChainID, $Author = null, $wrap = true){
+		global $Database, $ROLES_ASSOC, $currentUser, $FEEDBACK_SPECIAL_MESSAGES;
+
+		if (empty($Author))
+			$Author = $Database->rawQuerySingle(
+				"SELECT u.*
+				FROM feedback__messages f
+				LEFT JOIN users u ON f.author = u.id
+				WHERE f.chain = ?",array($ChainID));
 
 		$HTML = $wrap ? '<ul id="feedback-chain">' : '';
-		$Messages = $Database->where('chain',$ChainID)->orderBy('sent',NEWEST_LAST)->orderBy('mid','ASC')->get('feedback__messages');
+		$Messages = $Database->where('chain',$ChainID)->orderBy('sent',OLDEST_FIRST)->orderBy('mid','ASC')->get('feedback__messages');
 		foreach ($Messages as $m){
 			$User = get_user($m['author']);
-			$HTML .= "<li><img src='{$User['avatar_url']}'><span>".profile_link($User)." (".timetag($m['sent']).")</span><div class='msg'>".htmlspecialchars($m['body'])."</div></li>";
+			$sameUser = $currentUser['id'] === $User['id'];
+			$isOP = $Author['id'] === $User['id'];
+
+			$userlink = profile_link($User,FORMAT_FULL);
+			$role = ($sameUser ? 'You' : $ROLES_ASSOC[$User['role']]).($isOP ? ' <sup>OP</sup>':'');
+			$time = timetag($m['sent']);
+			$_match = array();
+			if (preg_match(FEEDBACK_SPECIAL_MESSAGE_REGEX, $m['body'], $_match))
+				$body = $FEEDBACK_SPECIAL_MESSAGES[$_match[1]];
+			else $body = nl2br(htmlspecialchars($m['body']));
+			$HTML .= <<<HTML
+<li>
+	<div class='meta'>$userlink<strong>$role</strong>$time</div>
+	<div class='content'>$body</div>
+</li>
+HTML;
 		}
 		return $HTML.($wrap?'</ul>':'');
 	}

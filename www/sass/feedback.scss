@@ -1,0 +1,58 @@
+@import "vars";
+
+#feedback {
+	padding: 0;
+	margin: 0;
+	display: flex;
+	width: 100%;
+
+	li {
+		flex: 1 1 50%;
+		display: flex;
+		align-items: center;
+		margin: 2px;
+
+		&.open {
+			color: $NGreen;
+			background-color: $NGreenBG;
+			border: 1px solid $NGreen;
+
+			> img { background-color: darken($NGreenBG, 5) }
+		}
+		&.closed {
+			color: #434343;
+			background-color: #eee;
+			border: 1px solid #bbb;
+
+			> img { background-color: #ddd }
+		}
+
+		//noinspection CssOptimizeSimilarProperties
+		> img {
+			flex: 0 0 50px;
+			margin-right: 5px;
+			border-right: 1px solid;
+			border-right-color: inherit;
+		}
+		> .text {
+			flex: 1 1 auto;
+
+			> * {
+				display: block;
+
+				&.subject {
+					font-size: 1.15em;
+					white-space: nowrap;
+					overflow: hidden;
+					text-overflow: ellipsis;
+				}
+				&.info {
+					font-size: .8em;
+				}
+				&.id {
+					font-size: .6em;
+				}
+			}
+		}
+	}
+}

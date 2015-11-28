@@ -422,6 +422,9 @@ $(function(){
 		if (link.pathname === location.pathname && link.search === location.search)
 			return true;
 
+		if ($(this).parents('#dialogContent').length !== 0)
+			$.Dialog.close();
+
 		e.preventDefault();
 		Navigation(this.href);
 	}

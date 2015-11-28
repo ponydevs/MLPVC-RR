@@ -1844,7 +1844,7 @@
 				$creating = empty($ChainID);
 
 				// Create new chain
-				if (empty($ChainID)){
+				if ($creating){
 					if (empty($_POST['subject']))
 						respond('Subject cannot be empty');
 					$subject = $_POST['subject'];
@@ -1859,8 +1859,28 @@
 					if (empty($ChainID))
 						respond('Your feedback could not be submitted: '.ERR_DB_FAIL);
 				}
-				else if ($CantSeeChain)
-					respond('The specified chain does not exist, or you\'re not allowed to respond to it');
+				else {
+					if (isset($_REQUEST['close']) || isset($_REQUEST['reopen'])){
+						if (!PERM('developer'))
+							respond();
+
+						$closed = isset($_REQUEST['close']);
+
+						if (!$Database->where('chain', $ChainID)->update('feedback',array('open' => !$closed ? 'true' : 'false')))
+							respond(ERR_DB_FAIL);
+
+						$Database->insert('feedback__messages',array(
+							'chain' => $ChainID,
+							'author' => $currentUser['id'],
+							'body' => $closed ? "@@close" : "@@open",
+						));
+
+						respond(array('chain' => render_feedback_chain_html($ChainID)));
+					}
+
+					if ($CantSeeChain)
+						respond('The specified chain does not exist, or you\'re not allowed to respond to it');
+				}
 
 				// Respond to existing chain
 				if (empty($_POST['message']))
@@ -1869,6 +1889,8 @@
 				$mln = strlen($message);
 				if ($mln < 10 ||$mln > 500)
 					respond("The message must be between 10 and 500 characters (you entered $mln).");
+				if (preg_match(FEEDBACK_SPECIAL_MESSAGE_REGEX, $message))
+					respond("<p>Your message begins with text that has special meaning for the system. Please remove the <code>@@</code> from the beginning of your message and try again.</p>");
 
 				$MessageID = $Database->insert('feedback__messages',array(
 					'chain' => $ChainID,
@@ -1878,7 +1900,7 @@
 				if (empty($MessageID))
 					respond('Your message could not be submitted: '.ERR_DB_FAIL);
 				if (!$creating)
-					respond(true);
+					respond(array('chain' => render_feedback_chain_html($ChainID)));
 
 				$Link = "feedback/$ChainID".(!$creating?"#msg$MessageID":'');
 				respond("Your feedback was submitted successfuly. You can track its status here: <a href='/$Link'>".ABSPATH."$Link</a>", 1);
@@ -1889,12 +1911,15 @@
 					do404();
 
 				$Author = get_user($Chain['user']);
+				$subject = str_trim($Chain['subject'], FEEDBACK_SUBJECT_LENGTH);
 
 				fix_path("/feedback/$ChainID");
 
 				loadPage(array(
-					'title' => "Feedback #$ChainID",
+					'title' => "$subject - Feedback",
 					'view' => "$do-single",
+				    'css' => "$do-single",
+					'js' => "$do-single",
 				));
 			}
 
@@ -1909,13 +1934,18 @@
 
 			if (!PERM('developer'))
 				$Database->where('user', $currentUser['id']);
-			$Feedback = $Database->orderBy('created',NEWEST_FIRST)->get('feedback');
+			$Feedback = $Database
+				->orderByLiteral('CASE WHEN open = true THEN 1 ELSE 0 END',NEWEST_FIRST)
+				->orderBy('created',NEWEST_FIRST)
+				->get('feedback');
 
 			if (isset($_GET['js']))
 				pagination_response(render_feedback_list_html($Feedback, NOWRAP), '#feedback');
 
 			loadPage(array(
-				'title' => 'Feedback'
+				'title' => 'Feedback',
+				'do-css',
+				'js' => "paginate",
 			));
 		break;
 		case "404":
