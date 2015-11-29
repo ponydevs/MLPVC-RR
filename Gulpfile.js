@@ -1,3 +1,4 @@
+// jshint ignore: start
 var cl = console.log;
 console.log = console.writeLine = function () {
 	var args = [].slice.call(arguments);
