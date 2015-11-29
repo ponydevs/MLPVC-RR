@@ -57,7 +57,7 @@
 <?php   }
 		echo reservations_render($Reservations);
 		echo requests_render($Requests); ?>
-	<script>var SEASON = <?=$CurrentEpisode['season']?>, EPISODE = <?=$CurrentEpisode['episode']?>;</script>
+	<script>var SEASON = <?=$CurrentEpisode['season']?>, EPISODE = <?=$CurrentEpisode['episode']?><?=PERM('developer')?', USERNAME_PATTERN = "^'.USERNAME_PATTERN.'$"':''?>;</script>
 <?php
 	} else { ?>
 	<h1>There's nothing here yet&hellip;</h1>

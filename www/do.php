@@ -315,7 +315,24 @@
 				else if ($finishing) respond("This $type has not yet been reserved");
 				else if (!$canceling){
 					res_limit_check();
-					$update['reserved_by'] = $currentUser['id'];
+
+					if (!empty($_POST['post_as'])){
+						if (!PERM('developer'))
+							respond('Reserving as other users is only allowed to the developer');
+
+						$post_as = trim($_POST['post_as']);
+						if (!preg_match('~^'.USERNAME_PATTERN.'$~', $post_as))
+							respond('Username format is invalid');
+
+						$User = get_user($post_as, 'name');
+						if (empty($User))
+							respond('User does not exist');
+						if (!PERM('member',$User['role']))
+							respond('User does not have permission to reserve posts');
+
+						$update['reserved_by'] = $User['id'];
+					}
+					else $update['reserved_by'] = $currentUser['id'];
 					$update['reserved_at'] = date('c');
 				}
 

@@ -3,6 +3,7 @@ DocReady.push(function Episode(){
 	'use strict';
 	var SEASON = window.SEASON,
 		EPISODE = window.EPISODE,
+		USERNAME_PATTERN = window.USERNAME_PATTERN,
 		EpID = 'S'+SEASON+'E'+EPISODE;
 
 	$('#video').on('click',function(){
@@ -162,18 +163,32 @@ DocReady.push(function Episode(){
 	};
 	$('#requests, #reservations').rebindHandlers();
 	function Bind($li, id, type){
-		$li.children('button.reserve-request').off('click').on('click',function(){
-			$.Dialog.wait('Reserving request','Sending reservation to the server');
+		$li.children('button.reserve-request').off('click').on('click',function(e){
+			e.preventDefault();
 
-			$.post("/reserving/request/"+id,$.mkAjaxHandler(function(){
-				if (!this.status) return $.Dialog.fail(false, this.message);
+			var title = 'Reserving request',
+				send = function(data){
+					$.Dialog.wait(title, 'Sending reservation to the server');
 
-				var $newli = $(this.li);
-				$li.replaceWith($newli);
-				window.updateTimes();
-				Bind($newli, id, type);
-				$.Dialog.close();
-			}));
+					$.post("/reserving/request/" + id, data, $.mkAjaxHandler(function(){
+						if (!this.status) return $.Dialog.fail(false, this.message);
+
+						var $newli = $(this.li);
+						$li.replaceWith($newli);
+						window.updateTimes();
+						Bind($newli, id, type);
+						$.Dialog.close();
+					}));
+				};
+
+			if (typeof USERNAME_PATTERN !== 'string' || !e.shiftKey) send({});
+			else $.Dialog.request(title, '<form id="reserve-as"><label><span>Reserve as</span><input type="text" name="post_as" placeholder="Username" pattern="'+USERNAME_PATTERN+'" required></label></form>','reserve-as','Reserve',function($form){
+				$form.on('submit',function(e){
+					e.preventDefault();
+
+					send($form.mkData());
+				});
+			});
 		});
 		$li.children('em').children('a').last().on('click',function(e){
 			e.preventDefault();
