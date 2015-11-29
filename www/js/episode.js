@@ -451,7 +451,7 @@ DocReady.push(function Episode(){
 						if (typeof postdata.posted === 'string')
 							data.posted = new Date($date.val()).toISOString();
 
-						$.Dialog.wait('Saving changes');
+						$.Dialog.wait(false, 'Saving changes');
 
 						$.post('/post/set-'+type+'/'+id,data, $.mkAjaxHandler(function(){
 							if (!this.status) return $.Dialog.fail(false, this.message);
