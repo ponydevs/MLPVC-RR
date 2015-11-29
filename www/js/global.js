@@ -78,18 +78,19 @@
 
 		if (arguments.length > 1){
 			var data = [].slice.call(arguments, 1);
-			if (data[0] === 'abort')
+			if (data[1] === 'abort')
 				return;
-			details = ' Details:<pre><code>' + data.join('\n').replace(/</g,'&lt;') + '</code></pre>';
+			details = ' Details:<pre><code>' + data.slice(1).join('\n').replace(/</g,'&lt;') + '</code></pre>';
+			details += ' Response body:<pre><code>' + data[0].responseText.replace(/</g,'&lt;') + '</code></pre>';
 		}
-		$.Dialog.fail(false,'There was an error while processing your request.'+details+' You may find additional details in the browser\'s console.');
+		$.Dialog.fail(false,'There was an error while processing your request.'+details);
 	});
 	$.mkAjaxHandler = function(f){
 		return function(data){
 			if (typeof data !== 'object'){
 				//noinspection SSBasedInspection
 				console.log(data);
-				$w.trigger('ajaxerror');
+				$w.triggerHandler('ajaxerror');
 				return;
 			}
 
@@ -145,7 +146,7 @@
 	$.ajaxSetup({
 		dataType: "json",
 		error: function(){
-			$w.triggerHandler('ajaxerror',[].slice.call(arguments, 1));
+			$w.triggerHandler('ajaxerror',[].slice.call(arguments));
 		},
 		statusCode: {
 			401: function(){

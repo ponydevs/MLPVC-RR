@@ -129,6 +129,35 @@ body.dialog-open {
 			font-size: 1em;
 			font-weight: bold;
 		}
+
+		> pre {
+			max-width: 100%;
+			display: block;
+			overflow: auto;
+			background: #000;
+			$Lime: #0c0;
+			color: $Lime;
+			font-size: 12px;
+			padding: 3px;
+			margin: 5px 0 10px;
+			box-sizing: border-box;
+
+			&::-webkit-scrollbar {
+				background-color:transparent;
+				padding:0;
+
+				&:vertical { width: 5px }
+				&:horizontal { height: 5px }
+			}
+			&::-webkit-scrollbar-button { display:none }
+			&::-webkit-scrollbar-thumb {
+				background-color: rgba($Lime, .7);
+				margin: 0 2px;
+
+				&:hover { background-color: rgba($Lime, .8) }
+				&:active { background-color: rgba($Lime, .9) }
+			}
+		}
 	}
 	> * {
 		&:not(p) + p {
