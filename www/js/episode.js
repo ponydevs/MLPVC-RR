@@ -448,8 +448,12 @@ DocReady.push(function Episode(){
 						var data = { label: $label.val() };
 						if (type === 'request')
 							data.type = $type.val();
-						if (typeof postdata.posted === 'string')
-							data.posted = new Date($date.val()).toISOString();
+						if (typeof postdata.posted === 'string'){
+							data.posted = new Date($date.val());
+							if (isNaN(data.posted.getTime()))
+								return $.Dialog.fail(false, 'Post timestamp is invalid');
+							data.posted = data.posted.toISOString();
+						}
 
 						$.Dialog.wait(false, 'Saving changes');
 
