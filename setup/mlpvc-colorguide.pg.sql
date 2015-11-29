@@ -257,7 +257,6 @@ INSERT INTO appearances VALUES (23, 9, 'Apple Bloom', 'Far legs use darker color
 Cutie Mark colors subject to change on further episodes.', NULL, false, '2015-09-24 12:01:03+00');
 INSERT INTO appearances VALUES (24, 10, 'Scootaloo', 'Far legs use darker colors.
 Cutie Mark colors subject to change on further episodes.', NULL, false, '2015-09-24 12:06:23+00');
-INSERT INTO appearances VALUES (13, NULL, 'Whoa Nelly', 'Special eyeball color.', NULL, false, '2015-09-17 03:43:22+00');
 INSERT INTO appearances VALUES (14, NULL, 'Fashion Plate', 'Far legs use darker colors.', NULL, false, '2015-09-17 04:02:26+00');
 INSERT INTO appearances VALUES (22, NULL, 'Sugar Belle', 'Far legs use darker colors.', NULL, false, '2015-09-24 10:44:18+00');
 INSERT INTO appearances VALUES (20, NULL, 'Stormy Flare', 'Only has one eye shine.
@@ -273,9 +272,11 @@ INSERT INTO appearances VALUES (56, NULL, 'Lightning Dust', 'Far legs use darker
 INSERT INTO appearances VALUES (57, NULL, 'Discord', '', NULL, false, '2015-11-14 03:28:38.262247+00');
 INSERT INTO appearances VALUES (58, NULL, 'Tree Hugger', '', NULL, false, '2015-11-14 04:07:04.439467+00');
 INSERT INTO appearances VALUES (29, NULL, 'Starlight Glimmer', '', 'd8old4s', false, '2015-09-26 18:01:51+00');
-INSERT INTO appearances VALUES (59, NULL, 'Rara', '', NULL, false, '2015-11-24 04:28:54.164681+00');
-INSERT INTO appearances VALUES (60, NULL, 'Countess Coloratura', '', NULL, false, '2015-11-24 04:42:00.076945+00');
 INSERT INTO appearances VALUES (61, NULL, 'Svengallop', '', NULL, false, '2015-11-24 06:28:47.770494+00');
+INSERT INTO appearances VALUES (13, NULL, 'Whoa Nelly', 'Special eyeball color.
+Cutie Mark head colors are different from normal ones.', NULL, false, '2015-09-17 03:43:22+00');
+INSERT INTO appearances VALUES (59, NULL, 'Coloratura / Rara', '', NULL, false, '2015-11-24 04:28:54.164681+00');
+INSERT INTO appearances VALUES (60, NULL, 'Rara (Countess Outfit)', '', NULL, false, '2015-11-24 04:42:00.076945+00');
 
 
 --
@@ -1936,6 +1937,7 @@ INSERT INTO tagged VALUES (95, 61);
 INSERT INTO tagged VALUES (11, 61);
 INSERT INTO tagged VALUES (2, 61);
 INSERT INTO tagged VALUES (94, 61);
+INSERT INTO tagged VALUES (96, 60);
 
 
 --
@@ -2028,13 +2030,14 @@ INSERT INTO tags VALUES (12, 'female', NULL, 'gen', 41);
 INSERT INTO tags VALUES (11, 'male', NULL, 'gen', 12);
 INSERT INTO tags VALUES (2, 'earth pony', NULL, 'spec', 20);
 INSERT INTO tags VALUES (94, 's5e24', '', 'ep', 3);
+INSERT INTO tags VALUES (96, 'outfit', 'Alternative character outfits', NULL, 1);
 
 
 --
 -- Name: tags_tid_seq; Type: SEQUENCE SET; Schema: public; Owner: mlpvc-rr
 --
 
-SELECT pg_catalog.setval('tags_tid_seq', 95, true);
+SELECT pg_catalog.setval('tags_tid_seq', 96, true);
 
 
 --
