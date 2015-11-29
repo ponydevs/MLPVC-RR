@@ -52,7 +52,7 @@ DocReady.push(function Episode(){
 	});
 
 	var $voting = $('#voting'),
-		$voteButton = $voting.find('.rate');
+		$voteButton = $voting.children('.rate');
 	$voteButton.on('click',function(e){
 		e.preventDefault();
 
