@@ -1,6 +1,6 @@
 <div id="content">
 	<h1><?=$heading?></h1>
-	<p>A searchable list of character <?=$color?>s from the show</p>
+	<p>A searchable list of character <?=$color?>s from the <?=$EQG?'movies':'show'?></p>
 <? if (PERM('inspector')){ ?>
 	<div class="notice warn tagediting">
 		<label>Some features are unavailable</label>

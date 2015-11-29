@@ -1516,189 +1516,122 @@
 
 			$_match = array();
 			if (preg_match('~^appearance/(\d+)(\.png)?~',$data,$_match)){
-				$asJSON = isset($_REQUEST['json']);
 				$asPNG = !empty($_match[2]);
-				if ($asJSON || $asPNG){
+				if ($asPNG){
 					$Appearance = $CGDb->where('id', intval($_match[1]))->getOne('appearances');
 
 					if (empty($Appearance))
-						respond('The reuested appearance does not exist');
+						do404();
 					$SpriteRelPath = "img/cg/{$Appearance['id']}.png";
 
-					if ($asPNG){
-						$OutputPath = APPATH."img/cg_render/{$Appearance['id']}.png";
-						$FileRelPath = "$CGPath/appearance/{$Appearance['id']}.png";
-						if (file_exists($OutputPath))
-							outputpng($OutputPath);
+					$OutputPath = APPATH."img/cg_render/{$Appearance['id']}.png";
+					$FileRelPath = "$CGPath/appearance/{$Appearance['id']}.png";
+					if (file_exists($OutputPath))
+						outputpng($OutputPath);
 
-						$OutWidth = 0;
-						$OutHeight = 0;
-						$SpriteWidth = $SpriteHeight = 0;
-						$SpriteRightMargin = 10;
-						$ColorSquareSize = 25;
-						$FontFile = APPATH.'font/Celestia Medium Redux.ttf';
-						$Name = $Appearance['label'];
-						$NameVerticalMargin = 5;
-						$NameFontSize = 22;
-						$TextMargin = 10;
+					$OutWidth = 0;
+					$OutHeight = 0;
+					$SpriteWidth = $SpriteHeight = 0;
+					$SpriteRightMargin = 10;
+					$ColorSquareSize = 25;
+					$FontFile = APPATH.'font/Celestia Medium Redux.ttf';
+					$Name = $Appearance['label'];
+					$NameVerticalMargin = 5;
+					$NameFontSize = 22;
+					$TextMargin = 10;
 
-						// Detect if sprite exists and adjust image size & define starting positions
-						$SpritePath = APPATH.$SpriteRelPath;
-						$SpriteExists = file_exists($SpritePath);
-						if ($SpriteExists){
-							$SpriteSize = getimagesize($SpritePath);
-							$Sprite = imagecreatefrompng($SpritePath);
-							$SpriteHeight = $SpriteSize[HEIGHT];
-							$SpriteWidth = $SpriteSize[WIDTH];
-							$SpriteRealWidth = $SpriteWidth + $SpriteRightMargin;
+					// Detect if sprite exists and adjust image size & define starting positions
+					$SpritePath = APPATH.$SpriteRelPath;
+					$SpriteExists = file_exists($SpritePath);
+					if ($SpriteExists){
+						$SpriteSize = getimagesize($SpritePath);
+						$Sprite = imagecreatefrompng($SpritePath);
+						$SpriteHeight = $SpriteSize[HEIGHT];
+						$SpriteWidth = $SpriteSize[WIDTH];
+						$SpriteRealWidth = $SpriteWidth + $SpriteRightMargin;
 
-							$OutWidth += $SpriteRealWidth;
-							if ($SpriteHeight > $OutHeight)
-								$OutHeight = $SpriteHeight;
-						}
-						else $SpriteRealWidth = 0;
-						$origin = array(
-							'x' => $SpriteExists ? $SpriteRealWidth : $TextMargin,
-							'y' => 0,
-						);
-
-						// Get color groups & calculate the space they take up
-						$ColorGroups = get_cgs($Appearance['id']);
-						$CGCount = count($ColorGroups);
-						$CGFontSize = $NameFontSize/1.5;
-						$CGVerticalMargin = $NameVerticalMargin*1.5;
-						$GroupLabelBox = imagettfsanebbox($CGFontSize, $FontFile, 'AGIJKFagijkf');
-						$CGsHeight = $CGCount*($GroupLabelBox['height'] + ($CGVerticalMargin*2) + $ColorSquareSize);
-
-						// Get export time & size
-						$ExportTS = "Image last updated: ".format_timestamp(time(), FORMAT_FULL);
-						$ExportFontSize = $CGFontSize/1.5;
-						$ExportBox = imagettfsanebbox($ExportFontSize, $FontFile, $ExportTS);
-
-						// Check how long & tall appearance name is, and set image width
-						$NameBox = imagettfsanebbox($NameFontSize, $FontFile, $Name);
-						$OutWidth = $origin['x'] + max($NameBox['width'], $ExportBox['width']) + $TextMargin;
-
-						// Set image height
-						$OutHeight = $origin['y'] + (($NameVerticalMargin*3) + $NameBox['height'] + $ExportBox['height']) + $CGsHeight;
-
-						// Create base image
-						$BaseImage = imageCreateTransparent($OutWidth, $OutHeight);
-						$BLACK = imagecolorallocate($BaseImage, 0, 0, 0);
-
-						// If sprite exists, output it on base image
-						if ($SpriteExists)
-							imageCopyExact($BaseImage, $Sprite, 0, 0, $SpriteWidth, $SpriteHeight);
-
-						// Output appearance name
-						$origin['y'] += $NameVerticalMargin;
-						imageWrite($BaseImage, $Name, $origin['x'], $NameFontSize, $BLACK);
-						$origin['y'] += $NameVerticalMargin;
-
-						// Output generation time
-						imageWrite($BaseImage, $ExportTS, $origin['x'], $ExportFontSize, $BLACK);
-						$origin['y'] += $NameVerticalMargin;
-
-						if (!empty($ColorGroups))
-							foreach ($ColorGroups as $cg){
-								imageWrite($BaseImage, $cg['label'], $origin['x'], $CGFontSize , $BLACK);
-								$origin['y'] += $CGVerticalMargin;
-
-								$Colors = get_colors($cg['groupid']);
-								if (!empty($Colors)){
-									$i = 0;
-									foreach ($Colors as $c){
-										$add = $i === 0 ? 0 : $i*5;
-										$x = $origin['x']+($i*$ColorSquareSize)+$add;
-										if ($x+$ColorSquareSize > $OutWidth){
-											$i = 0;
-											$SizeIncrease = $ColorSquareSize + $CGVerticalMargin;
-											$origin['y'] += $SizeIncrease;
-											$x = $origin['x'];
-
-											// Create new base image since height will increase, and copy contsnts of old one
-											$NewBaseImage = imageCreateTransparent($OutWidth, $OutHeight + $SizeIncrease);
-											imageCopyExact($NewBaseImage, $BaseImage, 0, 0, $OutWidth, $OutHeight);
-											imagedestroy($BaseImage);
-											$BaseImage = $NewBaseImage;
-										}
-
-										imageDrawRectangle($BaseImage, $x, $origin['y'], $ColorSquareSize, $c['hex'], $BLACK);
-										$i++;
-									}
-
-									$origin['y'] += $ColorSquareSize + $CGVerticalMargin;
-								}
-							};
-
-						if (!upload_folder_create($OutputPath))
-							respond('Failed to create render directory');
-						outputpng($BaseImage, $OutputPath);
+						$OutWidth += $SpriteRealWidth;
+						if ($SpriteHeight > $OutHeight)
+							$OutHeight = $SpriteHeight;
 					}
-
-					$Data = array(
-						'status' => true,
-						'ID' => $Appearance['id'],
-						'Name' => $Appearance['label'],
-						'Notes' => !empty($Appearance['notes']) ? $Appearance['notes'] : null,
-						'CutieMark' => null,
-						'Sprite' => null,
-						'IsEQG' => (bool) $Appearance['ishuman'],
-						'Added' => date('c', strtotime($Appearance['added'])),
-						'Changes' => array(),
-						'ColorGroups' => array(),
+					else $SpriteRealWidth = 0;
+					$origin = array(
+						'x' => $SpriteExists ? $SpriteRealWidth : $TextMargin,
+						'y' => 0,
 					);
 
-					if (!empty($Appearance['cm_favme'])){
-						$CM = da_cache_deviation($Appearance['cm_favme']);
-						if (!empty($CM))
-							$Data['CutieMark'] = array(
-								'Title' => $CM['title'],
-								'MadeBy' => $CM['author'],
-								'URL' => "http://{$CM['provider']}/{$CM['id']}",
-								'Preview' => $CM['preview'],
-								'FullSize' => $CM['fullsize'],
-							);
-					}
-
-					$SpriteRelPath = "img/cg/{$Appearance['id']}.png";
-					if (file_exists(APPATH.$SpriteRelPath))
-						$Data['Sprite'] = ABSPATH.$SpriteRelPath;
-
-					$Changes = get_updates($Appearance['id']);
-					if (!empty($Changes))
-						foreach ($Changes as $ch){
-							$Data['Changes'][] = array(
-								'Reason' => $ch['reason'],
-								'On' => date('c', strtotime($ch['timestamp'])),
-							);
-						};
-
+					// Get color groups & calculate the space they take up
 					$ColorGroups = get_cgs($Appearance['id']);
+					$CGCount = count($ColorGroups);
+					$CGFontSize = $NameFontSize/1.5;
+					$CGVerticalMargin = $NameVerticalMargin*1.5;
+					$GroupLabelBox = imagettfsanebbox($CGFontSize, $FontFile, 'AGIJKFagijkf');
+					$CGsHeight = $CGCount*($GroupLabelBox['height'] + ($CGVerticalMargin*2) + $ColorSquareSize);
+
+					// Get export time & size
+					$ExportTS = "Image last updated: ".format_timestamp(time(), FORMAT_FULL);
+					$ExportFontSize = $CGFontSize/1.5;
+					$ExportBox = imagettfsanebbox($ExportFontSize, $FontFile, $ExportTS);
+
+					// Check how long & tall appearance name is, and set image width
+					$NameBox = imagettfsanebbox($NameFontSize, $FontFile, $Name);
+					$OutWidth = $origin['x'] + max($NameBox['width'], $ExportBox['width']) + $TextMargin;
+
+					// Set image height
+					$OutHeight = $origin['y'] + (($NameVerticalMargin*3) + $NameBox['height'] + $ExportBox['height']) + $CGsHeight;
+
+					// Create base image
+					$BaseImage = imageCreateTransparent($OutWidth, $OutHeight);
+					$BLACK = imagecolorallocate($BaseImage, 0, 0, 0);
+
+					// If sprite exists, output it on base image
+					if ($SpriteExists)
+						imageCopyExact($BaseImage, $Sprite, 0, 0, $SpriteWidth, $SpriteHeight);
+
+					// Output appearance name
+					$origin['y'] += $NameVerticalMargin;
+					imageWrite($BaseImage, $Name, $origin['x'], $NameFontSize, $BLACK);
+					$origin['y'] += $NameVerticalMargin;
+
+					// Output generation time
+					imageWrite($BaseImage, $ExportTS, $origin['x'], $ExportFontSize, $BLACK);
+					$origin['y'] += $NameVerticalMargin;
+
 					if (!empty($ColorGroups))
 						foreach ($ColorGroups as $cg){
-							$Push = array(
-								'GroupID' => $cg['groupid'],
-								'Label' => $cg['label'],
-								'Colors' => array(),
-							);
+							imageWrite($BaseImage, $cg['label'], $origin['x'], $CGFontSize , $BLACK);
+							$origin['y'] += $CGVerticalMargin;
 
 							$Colors = get_colors($cg['groupid']);
 							if (!empty($Colors)){
-								foreach ($Colors as $i => $c)
-									$Push['Colors'][] = array(
-										'ColorID' => $c['colorid'],
-										'Label' => $c['label'],
-										'HEX' => $c['hex'],
-										'RGB' => hex2rgb($c['hex']),
-									);
-							}
+								$i = 0;
+								foreach ($Colors as $c){
+									$add = $i === 0 ? 0 : $i*5;
+									$x = $origin['x']+($i*$ColorSquareSize)+$add;
+									if ($x+$ColorSquareSize > $OutWidth){
+										$i = 0;
+										$SizeIncrease = $ColorSquareSize + $CGVerticalMargin;
+										$origin['y'] += $SizeIncrease;
+										$x = $origin['x'];
 
-							$Data['ColorGroups'][] = $Push;
+										// Create new base image since height will increase, and copy contents of old one
+										$NewBaseImage = imageCreateTransparent($OutWidth, $OutHeight + $SizeIncrease);
+										imageCopyExact($NewBaseImage, $BaseImage, 0, 0, $OutWidth, $OutHeight);
+										imagedestroy($BaseImage);
+										$BaseImage = $NewBaseImage;
+									}
+
+									imageDrawRectangle($BaseImage, $x, $origin['y'], $ColorSquareSize, $c['hex'], $BLACK);
+									$i++;
+								}
+
+								$origin['y'] += $ColorSquareSize + $CGVerticalMargin;
+							}
 						};
 
-					header('Content-Type: application/json');
-					die(json_encode($Data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+					if (!upload_folder_create($OutputPath))
+						respond('Failed to create render directory');
+					outputpng($BaseImage, $OutputPath);
 				}
 
 				$Appearance = $CGDb->where('id', intval($_match[1]))->where('ishuman', $EQG)->getOne('appearances');
