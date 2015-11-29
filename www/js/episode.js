@@ -56,8 +56,7 @@ DocReady.push(function Episode(){
 	$voteButton.on('click',function(e){
 		e.preventDefault();
 
-		var $btn = $(this),
-			makeStar = function(v){
+		var makeStar = function(v){
 				return $.mk('label').append(
 					$.mk('input').attr({
 						type: 'radio',
@@ -131,7 +130,7 @@ DocReady.push(function Episode(){
 
 		if (!$voteButton.length){
 			$.post('/episode/vote/'+EpID+'?html',$.mkAjaxHandler(function(){
-				if (!this.status) $.Dialog.fail('Display voting buttons',this.message);
+				if (!this.status) return $.Dialog.fail('Display voting buttons',this.message);
 
 				$voting.children('h2').nextAll().remove();
 				$voting.append(this.html);
