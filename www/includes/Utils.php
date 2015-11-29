@@ -868,7 +868,7 @@ HTML;
 		}
 		else $Database->where('id',$UserID)->update('users', $UserData);
 
-		if (!$makeDev && (!empty($User) && !PERM('member', $User['role']) || empty($User)) && is_user_in_vectorclub($UserData['name']))
+		if (empty($makeDev) && (!empty($User) && !PERM('member', $User['role']) || empty($User)) && is_user_in_vectorclub($UserData['name']))
 			update_role(array(
 				'id' => $UserID,
 				'role' => isset($User['role']) ? $User['role'] : 'user',
