@@ -1419,6 +1419,7 @@ HTML;
 	function get_post_form($type){
 		$Type = strtoupper($type[0]).substr($type,1);
 		$optional = $type === 'reservation' ? 'optional, ' : '';
+		$optreq = $type === 'reservation' ? '' : 'required';
 		$HTML = <<<HTML
 
 		<form class="hidden post-form" data-type="$type">
@@ -1426,7 +1427,7 @@ HTML;
 			<div>
 				<label>
 					<span>$Type description ({$optional}3-255 chars)</span>
-					<input type="text" name="label" pattern="^.{3,255}$" maxlength="255" required>
+					<input type="text" name="label" pattern="^.{3,255}$" maxlength="255" $optreq>
 				</label>
 				<label>
 					<span>Image URL</span>
