@@ -863,9 +863,16 @@ HTML;
 			}
 			$Insert = array_merge($UserData, $MoreInfo);
 			$Database->insert('users', $Insert);
-			if ($makeDev) update_role($Insert, 'developer');
+			if ($makeDev)
+				update_role($Insert, 'developer');
 		}
 		else $Database->where('id',$UserID)->update('users', $UserData);
+
+		if (!$makeDev && (!empty($User) && !PERM('member', $User['role']) || empty($User)) && is_user_in_vectorclub($UserData['name']))
+			update_role(array(
+				'id' => $UserID,
+				'role' => isset($User['role']) ? $User['role'] : 'user',
+			), 'member');
 
 		if ($type === 'refresh_token') $Database->where('refresh', $code)->update('sessions',$AuthData);
 		else $Database->insert('sessions', array_merge($AuthData, array('user' => $UserID)));
@@ -935,6 +942,19 @@ HTML;
 
 		$html = $DiFiRequest->DiFi->response->calls[0]->response->content->html;
 		return strpos($html, 'gmi-groupname="MLP-VectorClub">') !== false;
+	}
+
+	/**
+	 * Checks if a user is a club member
+	 *
+	 * @param int|string $Username
+	 *
+	 * @return bool
+	 */
+	function is_user_in_vectorclub($Username){
+		$RecentlyJoined = @file_get_contents('http://mlp-vectorclub.deviantart.com/modals/memberlist/');
+
+		return !empty($RecentlyJoined) && preg_match('~<a class="[a-z ]*username" href="http://'.strtolower($Username).'.deviantart.com/">'.USERNAME_PATTERN.'</a>~', $RecentlyJoined);
 	}
 
 	/**
