@@ -10,7 +10,7 @@ DocReady.push(function FeedbackSingle(){
 	$respond.on('click',function(e){
 		e.preventDefault();
 
-		$.Dialog.wait('Submitting your response');
+		$.Dialog.wait(false, 'Submitting your response');
 
 		$.post('',{message:$response.val()},$.mkAjaxHandler(function(){
 			if (!this.status) return $.Dialog.fail(false, this.message);
