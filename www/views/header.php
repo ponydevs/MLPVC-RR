@@ -1,10 +1,5 @@
 <!DOCTYPE html>
-<html lang="en"<?php
-	if ($signedIn && $currentUser['name']==='Yanoda' && !Cookie::exists('damnit_yan')){
-		Cookie::set('damnit_yan', 1, ONE_YEAR);
-		echo 'class="drop"';
-	}
-?>>
+<html lang="en">
 <head>
 	<title><?=(isset($title)?$title.' - ':'').SITE_TITLE?></title>
 	<meta charset="utf-8">

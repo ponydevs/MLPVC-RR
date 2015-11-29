@@ -93,34 +93,6 @@
 		@include white-grid;
 	}
 
-	html.drop {
-		overflow: hidden !important;
-		height:100%;
-		width:100%;
-		background: #000 url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' version='1.1' height='25px' width='92px'><text x='0' y='14.5' fill='white' font-size='20'>COME ON</text></svg>") no-repeat center;
-		background-size: contain;
-		perspective: 1000px;
-
-		body {
-			overflow: hidden !important;
-			height:100%;
-			width:100%;
-			pointer-events: none;
-			animation: drop 6s;
-			animation-fill-mode: forwards;
-			transform-origin: 50% 100%;
-
-			@keyframes drop {
-				0% { filter: hue-rotate(0deg) }
-				80% { transform: rotateX(0deg) }
-				100% {
-					transform: rotateX(180deg);
-					filter: hue-rotate(1440deg);
-				}
-			}
-		}
-	}
-
 	header, footer {
 		z-index: 3;
 		left: 0;
