@@ -206,8 +206,13 @@
 				&:after { border-left-color: $NDarkBlue }
 			}
 		}
-		ul { @extend %post-ul }
+		ul {
+			li .image > a .fluidbox__wrap { max-width: inherit }
+
+			@extend %post-ul;
+		}
 		.unfinished ul li {
+			.image > a.fluidbox--initialized { cursor: zoom-in }
 			> .reserver .name {
 				line-height: 30px;
 				height: 30px;
