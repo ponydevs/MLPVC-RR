@@ -654,7 +654,11 @@
 				'do-css',
 				'js' => array('paginate',$do),
 			);
-			if (PERM('inspector')) $settings['js'][] = "$do-manage";
+			if (PERM('inspector'))
+				$settings['js'] = array_merge(
+					$settings['js'],
+					array('moment-timezone',"$do-manage")
+				);
 			loadPage($settings);
 		break;
 		case "eqg":
