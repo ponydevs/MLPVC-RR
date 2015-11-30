@@ -1,9 +1,36 @@
 @import "vars";
 
+// Mobile
+@media all and (max-width: $Breakpoint){
+	#feedback {
+		display: block;
+
+		li {
+			display: block;
+
+			&:not(:last-child) {
+				margin-bottom: 5px;
+			}
+		}
+	}
+}
+// Desktop
+@media all and (min-width: $Breakpoint){
+	#feedback {
+		display: flex;
+		flex-flow: row wrap;
+		justify-content: flex-start;
+
+		li {
+			margin: 2px;
+			flex: 1 0 auto;
+		}
+	}
+}
+
 #feedback {
 	padding: 0;
 	margin: 0;
-	display: flex;
 	width: 100%;
 
 	&:empty:before {
@@ -17,10 +44,8 @@
 	}
 
 	li {
-		flex: 1 1 50%;
 		display: flex;
 		align-items: center;
-		margin: 2px;
 
 		&.open {
 			color: $NGreen;
@@ -37,31 +62,31 @@
 			> img { background-color: #ddd }
 		}
 
+		$ImageSize: 50px;
+		$ImageMargin: 5px;
+		$ImageBorder: 1px;
 		//noinspection CssOptimizeSimilarProperties
 		> img {
-			flex: 0 0 50px;
-			margin-right: 5px;
-			border-right: 1px solid;
+			flex: 0 0 $ImageSize;
+			margin-right: $ImageMargin;
+			border-right: $ImageBorder solid;
 			border-right-color: inherit;
 		}
 		> .text {
-			flex: 1 1 auto;
+			max-width: calc(100% - #{$ImageSize+$ImageBorder+($ImageMargin*2)});
 
 			> * {
 				display: block;
+				flex: 1 1 auto;
+				white-space: nowrap;
+				overflow: hidden;
+				text-overflow: ellipsis;
 
 				&.subject {
 					font-size: 1.15em;
-					white-space: nowrap;
-					overflow: hidden;
-					text-overflow: ellipsis;
 				}
-				&.info {
-					font-size: .8em;
-				}
-				&.id {
-					font-size: .6em;
-				}
+				&.info { font-size: .8em }
+				&.id { font-size: .6em }
 			}
 		}
 	}
