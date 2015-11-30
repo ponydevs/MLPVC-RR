@@ -14,11 +14,7 @@
 				max-width: 100%;
 				box-sizing: border-box;
 
-				.fluidbox-wrap {
-					max-width: inherit;
-
-					* { display: inline-block }
-				}
+				.fluidbox__wrap { max-width: inherit }
 
 				img {
 					display: block;
@@ -91,13 +87,6 @@
 				font-size: 16px;
 				display: block;
 				margin-bottom: 5px;
-			}
-
-			> .fluidbox {
-				&, * { cursor: zoom-in !important }
-			}
-			.fluidbox-opened .fluidbox-wrap {
-				&, * { cursor: zoom-out !important }
 			}
 		}
 		> .label {

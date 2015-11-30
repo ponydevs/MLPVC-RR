@@ -1,11 +1,6 @@
 @import "vars";
-//noinspection CssUnknownTarget
-@import "../css/jquery.fluidbox";
-.fluidbox {
-	&.fluidbox-loaded, &.fluidbox-closed {
-		.fluidbox-loader { display: none !important }
-	}
-}
+@import "jquery.fluidbox";
+.fluidbox__overlay { background: rgba(0,0,0,.9) !important }
 
 
 /* Mobile-only Styles */
@@ -287,13 +282,6 @@
 #content .post-form
 #requests > .unfinished > .group > h3 {
 	margin: 5px 0 10px 5px;
-}
-
-.fluidbox-wrap {
-	display: inline-block;
-}
-.fluidbox-overlay {
-	background: linear-gradient(to bottom, rgba(0,0,0,.9) 0%, rgba(0,0,0,.8) 0%) !important;
 }
 
 #voting #muffins {

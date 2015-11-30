@@ -109,7 +109,9 @@ gulp.task('js', function(){
 			this.emit('end');
 		}))
 		.pipe(sourcemaps.init())
-			.pipe(uglify())
+			.pipe(uglify({
+				preserveComments: function(_, comment){ return /^!/m.test(comment.value) },
+			}))
 			.pipe(rename({suffix: '.min' }))
 		.pipe(sourcemaps.write('.', {
 			includeContent: false,

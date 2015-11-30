@@ -2321,7 +2321,7 @@ ORDER BY "count" DESC
 			'title' => format_episode_title($CurrentEpisode),
 			'view' => 'episode',
 			'css' => 'episode',
-			'js' => array('imagesloaded.pkgd','jquery.fluidbox.min','episode'),
+			'js' => array('imagesloaded.pkgd','jquery.ba-throttle-debounce','jquery.fluidbox.min','episode'),
 		));
 	}
 

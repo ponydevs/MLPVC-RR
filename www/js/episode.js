@@ -149,11 +149,14 @@ DocReady.push(function Episode(){
 				type = $li.closest('section[id]').attr('id');
 				
 			$('section .unfinished .screencap > a')
-				.fluidbox({ immediateOpen: true })
-				.on('openstart',function(){
+				.fluidbox({
+					immediateOpen: true,
+					loader: true,
+				})
+				.on('openstart.fluidbox',function(){
 					$body.addClass('no-distractions');
 				})
-				.on('closestart', function() {
+				.on('closestart.fluidbox', function() {
 					$body.removeClass('no-distractions');
 				});
 
