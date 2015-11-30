@@ -1566,7 +1566,7 @@
 					$SpriteExists = file_exists($SpritePath);
 					if ($SpriteExists){
 						$SpriteSize = getimagesize($SpritePath);
-						$Sprite = imagecreatefrompng($SpritePath);
+						$Sprite = preserveAlpha(imagecreatefrompng($SpritePath));
 						$SpriteHeight = $SpriteSize[HEIGHT];
 						$SpriteWidth = $SpriteSize[WIDTH];
 						$SpriteRealWidth = $SpriteWidth + $SpriteRightMargin;
@@ -1640,6 +1640,7 @@
 										imageCopyExact($NewBaseImage, $BaseImage, 0, 0, $OutWidth, $OutHeight);
 										imagedestroy($BaseImage);
 										$BaseImage = $NewBaseImage;
+										$OutHeight += $SizeIncrease;
 									}
 
 									imageDrawRectangle($BaseImage, $x, $origin['y'], $ColorSquareSize, $c['hex'], $BLACK);
@@ -1650,9 +1651,14 @@
 							}
 						};
 
+					$sizeArr = array($OutWidth, $OutHeight);
+					$FinalBase = imageCreateWhiteBG(...$sizeArr);
+					imageDrawRectangle($FinalBase, 0, 0, $sizeArr, null, $BLACK);
+					imageCopyExact($FinalBase, $BaseImage, 0, 0, ...$sizeArr);
+
 					if (!upload_folder_create($OutputPath))
 						respond('Failed to create render directory');
-					outputpng($BaseImage, $OutputPath);
+					outputpng($FinalBase, $OutputPath);
 				}
 
 				$Appearance = $CGDb->where('id', intval($_match[1]))->where('ishuman', $EQG)->getOne('appearances');

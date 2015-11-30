@@ -500,8 +500,8 @@ HTML;
 	}
 
 	// Preseving alpha
-	function preserveAlpha($img) {
-		$background = imagecolorallocate($img, 0, 0, 0);
+	function preserveAlpha($img, &$background = null) {
+		$background = imagecolorallocatealpha($img, 0, 0, 0, 127);
 		imagecolortransparent($img, $background);
 		imagealphablending($img, false);
 		imagesavealpha($img, true);
@@ -512,23 +512,43 @@ HTML;
 	function imageCreateTransparent($width, $height = null) {
 		if (!isset($height))
 			$height = $width;
-		$png = preserveAlpha(imagecreatetruecolor($width, $height));
 
-		$transparency = imagecolorallocatealpha($png, 0, 0, 0, 127);
+		$png = preserveAlpha(imagecreatetruecolor($width, $height), $transparency);
 		imagefill($png, 0, 0, $transparency);
+		return $png;
+	}
+
+	// White Image creator
+	function imageCreateWhiteBG($width, $height = null) {
+		if (!isset($height))
+			$height = $width;
+		$png = imagecreatetruecolor($width, $height);
+
+		$white = imagecolorallocate($png, 255, 255, 255);
+		imagefill($png, 0, 0, $white);
 		return $png;
 	}
 
 	// Draw Rectangle on image
 	function imageDrawRectangle($image, $x, $y, $size, $fill, $outline){
-		$fill = imagecolorallocate($image, ...hex2rgb($fill));
+		if (!empty($fill))
+			$fill = imagecolorallocate($image, ...hex2rgb($fill));
 		if (is_string($outline))
 			$outline = imagecolorallocate($image, ...hex2rgb($outline));
 
-		$x2 = $x+$size-1;
-		$y2 = $y+$size-1;
+		if (is_array($size)){
+			$x2 = $x + $size[0];
+			$y2 = $y + $size[1];
+		}
+		else {
+			$x2 = $x + $size;
+			$y2 = $y + $size;
+		}
 
-		imagefilledrectangle($image, $x, $y, $x2, $y2, $fill);
+		$x2--; $y2--;
+
+		if (!empty($fill))
+			imagefilledrectangle($image, $x, $y, $x2, $y2, $fill);
 		imagerectangle($image, $x, $y, $x2, $y2, $outline);
 	}
 
