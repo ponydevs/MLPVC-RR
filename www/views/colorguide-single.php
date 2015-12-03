@@ -5,7 +5,7 @@
 <?php
 	$RenderPath = APPATH."img/cg_render/{$Appearance['id']}.png";
 	$FileModTime = '?t='.(file_exists($RenderPath) ? filemtime($RenderPath) : time());
-	echo "<div class='align-center'><a class='darkblue btn typcn typcn-image' href='/{$color}guide/appearance/{$Appearance['id']}.pn g$FileModTime' target='_blank'>View as PNG</a></div>"; ?>
+	echo "<div class='align-center'><a class='darkblue btn typcn typcn-image' href='/{$color}guide/appearance/{$Appearance['id']}.png$FileModTime' target='_blank'>View as PNG</a></div>"; ?>
 
 	<section id="tags">
 		<label><span class='typcn typcn-tags'></span>Tags</label>
