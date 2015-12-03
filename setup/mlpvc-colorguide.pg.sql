@@ -277,13 +277,14 @@ INSERT INTO appearances VALUES (13, NULL, 'Whoa Nelly', 'Special eyeball color.
 Cutie Mark head colors are different from normal ones.', NULL, false, '2015-09-17 03:43:22+00');
 INSERT INTO appearances VALUES (59, NULL, 'Coloratura / Rara', '', NULL, false, '2015-11-24 04:28:54.164681+00');
 INSERT INTO appearances VALUES (60, NULL, 'Rara (Countess Outfit)', '', NULL, false, '2015-11-24 04:42:00.076945+00');
+INSERT INTO appearances VALUES (62, NULL, 'Sunburst', '', NULL, false, '2015-12-01 15:18:10.631048+00');
 
 
 --
 -- Name: appearances_id_seq; Type: SEQUENCE SET; Schema: public; Owner: mlpvc-rr
 --
 
-SELECT pg_catalog.setval('appearances_id_seq', 61, true);
+SELECT pg_catalog.setval('appearances_id_seq', 62, true);
 
 
 --
@@ -562,6 +563,8 @@ INSERT INTO colorgroups VALUES (328, 59, 'Coat', 0);
 INSERT INTO colorgroups VALUES (329, 59, 'Mane & Tail', 1);
 INSERT INTO colorgroups VALUES (330, 59, 'Iris', 2);
 INSERT INTO colorgroups VALUES (331, 59, 'Cutie Mark', 3);
+INSERT INTO colorgroups VALUES (352, 62, 'Iris', 2);
+INSERT INTO colorgroups VALUES (353, 62, 'Cutie Mark', 3);
 INSERT INTO colorgroups VALUES (332, 60, 'Coat', 0);
 INSERT INTO colorgroups VALUES (338, 60, 'Collar and Hoof Bands', 6);
 INSERT INTO colorgroups VALUES (334, 60, 'Iris', 2);
@@ -575,13 +578,15 @@ INSERT INTO colorgroups VALUES (346, 61, 'Shirt', 5);
 INSERT INTO colorgroups VALUES (347, 61, 'Tie', 6);
 INSERT INTO colorgroups VALUES (349, 61, 'Tail band', 8);
 INSERT INTO colorgroups VALUES (348, 61, 'Vest', 7);
+INSERT INTO colorgroups VALUES (350, 62, 'Coat', 0);
+INSERT INTO colorgroups VALUES (351, 62, 'Mane & Tail', 1);
 
 
 --
 -- Name: colorgroups_groupid_seq; Type: SEQUENCE SET; Schema: public; Owner: mlpvc-rr
 --
 
-SELECT pg_catalog.setval('colorgroups_groupid_seq', 349, true);
+SELECT pg_catalog.setval('colorgroups_groupid_seq', 353, true);
 
 
 --
@@ -1670,13 +1675,32 @@ INSERT INTO colors VALUES (1384, 38, 'Mane Outline', '#80D940', 5);
 INSERT INTO colors VALUES (1385, 38, 'Mane Fill', '#D6FF58', 6);
 INSERT INTO colors VALUES (1386, 38, 'Eyeball Fill', '#F8FCC6', 7);
 INSERT INTO colors VALUES (1387, 38, 'Iris (no gradient)', '#DF8C37', 8);
+INSERT INTO colors VALUES (1388, 350, 'Outline', '#F99000', 0);
+INSERT INTO colors VALUES (1389, 350, 'Fill', '#FEBC40', 1);
+INSERT INTO colors VALUES (1390, 350, 'Shadow Outline', '#DE8200', 2);
+INSERT INTO colors VALUES (1391, 350, 'Shadow Fill', '#E3A939', 3);
+INSERT INTO colors VALUES (1401, 350, 'Marking Outline', '#BABA94', 4);
+INSERT INTO colors VALUES (1402, 350, 'Marking Fill', '#FBFEDE', 5);
+INSERT INTO colors VALUES (1403, 350, 'Shadow Marking Outline', '#A6A682', 6);
+INSERT INTO colors VALUES (1404, 350, 'Shadow Marking Fill', '#E2E5C6', 7);
+INSERT INTO colors VALUES (1392, 351, 'Outline', '#A63110', 0);
+INSERT INTO colors VALUES (1393, 351, 'Fill', '#EB5926', 1);
+INSERT INTO colors VALUES (1405, 351, 'Stripe 1', '#CE3D12', 2);
+INSERT INTO colors VALUES (1406, 351, 'Stripe 2', '#DA4009', 3);
+INSERT INTO colors VALUES (1394, 352, 'Gradient Top', '#0F4D6E', 0);
+INSERT INTO colors VALUES (1396, 352, 'Gradient Bottom', '#2ECCCF', 1);
+INSERT INTO colors VALUES (1399, 353, 'Sun', '#EE7C04', 0);
+INSERT INTO colors VALUES (1400, 353, 'Ray 1', '#FDE065', 1);
+INSERT INTO colors VALUES (1407, 353, 'Ray 2', '#FBFBDE', 2);
+INSERT INTO colors VALUES (1408, 353, 'Sparkle 1', '#3F9DB0', 3);
+INSERT INTO colors VALUES (1409, 353, 'Sparkle 2', '#A6DCDC', 4);
 
 
 --
 -- Name: colors_colorid_seq; Type: SEQUENCE SET; Schema: public; Owner: mlpvc-rr
 --
 
-SELECT pg_catalog.setval('colors_colorid_seq', 1387, true);
+SELECT pg_catalog.setval('colors_colorid_seq', 1409, true);
 
 
 --
@@ -1938,6 +1962,10 @@ INSERT INTO tagged VALUES (11, 61);
 INSERT INTO tagged VALUES (2, 61);
 INSERT INTO tagged VALUES (94, 61);
 INSERT INTO tagged VALUES (96, 60);
+INSERT INTO tagged VALUES (98, 62);
+INSERT INTO tagged VALUES (11, 62);
+INSERT INTO tagged VALUES (99, 62);
+INSERT INTO tagged VALUES (1, 62);
 
 
 --
@@ -1946,6 +1974,9 @@ INSERT INTO tagged VALUES (96, 60);
 
 INSERT INTO tags VALUES (93, 'rara', '', 'char', 2);
 INSERT INTO tags VALUES (95, 'svengallop', '', 'char', 1);
+INSERT INTO tags VALUES (97, 's5e8', NULL, 'ep', 0);
+INSERT INTO tags VALUES (99, 's5e26', '', 'ep', 1);
+INSERT INTO tags VALUES (1, 'unicorn', NULL, 'spec', 19);
 INSERT INTO tags VALUES (50, 'derpy hooves', 'Derpy Hooves or Muffins', 'char', 1);
 INSERT INTO tags VALUES (27, 'wonderbolt', 'Wonderbolt characters', 'cat', 3);
 INSERT INTO tags VALUES (7, 'minor character', 'Ponies who had a speaking role and/or interacted with the mane six', 'cat', 33);
@@ -1953,7 +1984,6 @@ INSERT INTO tags VALUES (8, 'background character', 'Ponies whose only purpose i
 INSERT INTO tags VALUES (6, 'mane six', 'Ponies who are one of the show''s six main characters', 'cat', 7);
 INSERT INTO tags VALUES (78, 'original character', 'Characters not canon to the show''s universe', 'cat', 1);
 INSERT INTO tags VALUES (28, 'parent', 'Parents of other characters', 'cat', 4);
-INSERT INTO tags VALUES (1, 'unicorn', NULL, 'spec', 18);
 INSERT INTO tags VALUES (4, 'alicorn', NULL, 'spec', 3);
 INSERT INTO tags VALUES (5, 'bat pony', NULL, 'spec', 0);
 INSERT INTO tags VALUES (14, 'twilight sparkle', NULL, 'char', 1);
@@ -2027,17 +2057,18 @@ INSERT INTO tags VALUES (91, 'tree hugger', NULL, 'char', 1);
 INSERT INTO tags VALUES (9, 'antagonist', NULL, 'cat', 4);
 INSERT INTO tags VALUES (92, 's5e22', NULL, 'ep', 1);
 INSERT INTO tags VALUES (12, 'female', NULL, 'gen', 41);
-INSERT INTO tags VALUES (11, 'male', NULL, 'gen', 12);
 INSERT INTO tags VALUES (2, 'earth pony', NULL, 'spec', 20);
 INSERT INTO tags VALUES (94, 's5e24', '', 'ep', 3);
 INSERT INTO tags VALUES (96, 'outfit', 'Alternative character outfits', NULL, 1);
+INSERT INTO tags VALUES (98, 'sunburst', '', 'char', 1);
+INSERT INTO tags VALUES (11, 'male', NULL, 'gen', 13);
 
 
 --
 -- Name: tags_tid_seq; Type: SEQUENCE SET; Schema: public; Owner: mlpvc-rr
 --
 
-SELECT pg_catalog.setval('tags_tid_seq', 96, true);
+SELECT pg_catalog.setval('tags_tid_seq', 99, true);
 
 
 --
