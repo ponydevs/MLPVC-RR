@@ -279,10 +279,8 @@ INSERT INTO appearances VALUES (59, NULL, 'Coloratura / Rara', '', NULL, false, 
 INSERT INTO appearances VALUES (60, NULL, 'Rara (Countess Outfit)', '', NULL, false, '2015-11-24 04:42:00.076945+00');
 INSERT INTO appearances VALUES (62, NULL, 'Sunburst', '', NULL, false, '2015-12-01 15:18:10.631048+00');
 INSERT INTO appearances VALUES (0, 0, 'Universal colors', 'These colors apply to most characters in the show. Use these unless a different color is specified.
-
 <strong>Pure white:</strong> Use for eye reflections, sclera and teeth.
-
-<strong>Pure black:</strong> Use for eye pupil, eyelashes, eye outlines and on eyelids (for emotional turmoil at ~5-15%)', NULL, false, '2015-12-03 16:57:59.671+01');
+<strong>Pure black:</strong> Use for eye pupil, eyelashes, eye outlines and on eyelids (for emotional turmoil at ~5-15%)', NULL, false, '2015-12-03 15:57:59.671+00');
 
 
 --
@@ -572,6 +570,7 @@ INSERT INTO colorgroups VALUES (352, 62, 'Iris', 2);
 INSERT INTO colorgroups VALUES (353, 62, 'Cutie Mark', 3);
 INSERT INTO colorgroups VALUES (332, 60, 'Coat', 0);
 INSERT INTO colorgroups VALUES (338, 60, 'Collar and Hoof Bands', 6);
+INSERT INTO colorgroups VALUES (354, 0, 'Normal', 1);
 INSERT INTO colorgroups VALUES (334, 60, 'Iris', 2);
 INSERT INTO colorgroups VALUES (339, 60, 'Veil', 7);
 INSERT INTO colorgroups VALUES (340, 61, 'Coat', 0);
@@ -585,7 +584,6 @@ INSERT INTO colorgroups VALUES (349, 61, 'Tail band', 8);
 INSERT INTO colorgroups VALUES (348, 61, 'Vest', 7);
 INSERT INTO colorgroups VALUES (350, 62, 'Coat', 0);
 INSERT INTO colorgroups VALUES (351, 62, 'Mane & Tail', 1);
-INSERT INTO colorgroups VALUES (354, 0, 'Normal', 1);
 
 
 --
