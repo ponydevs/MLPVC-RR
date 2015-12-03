@@ -2456,13 +2456,12 @@ ORDER BY "count" DESC
 		$thing = isset($Post['rq']) ? 'request' : 'reservation';
 		$id = "$thing-{$Post['id']}";
 		if ($Post['season'] !== 0){
-			$link = "/episode/{$Post['page']}#$id";
-			$page = $Post['page'];
+			$page = "S{$Post['season']}E{$Post['episode']}";
+			$link = "/episode/$page#$id";
 		}
 		else {
-			$movieNumber = preg_replace('/^.*E(\d+)$/','$1',$Post['page']);
-			$link = "/eqg/$movieNumber";
-			$page = "EQG #$movieNumber";
+			$page = "EQG {$Post['episode']}";
+			$link = "/eqg/{$Post['episode']}";
 		}
 		return array($link,$page);
 	}

@@ -40,9 +40,9 @@
 		</section>
 <?  }
 
-	$cols = "id, ('S'||season||'E'||episode) as page, season, preview, label, posted";
+	$cols = "id, season, episode, preview, label, posted";
 	$PendingReservations = $Database->where('reserved_by', $User['id'])->where('deviation_id IS NULL')->get('reservations',null,$cols);
-	$PendingRequestReservations = $Database->where('reserved_by', $User['id'])->where('deviation_id IS NULL')->get('requests',null,"$cols, 1 as rq");
+	$PendingRequestReservations = $Database->where('reserved_by', $User['id'])->where('deviation_id IS NULL')->get('requests',null,"$cols, true as rq");
 	$TotalPending = count($PendingReservations)+count($PendingRequestReservations);
 	$hasPending = $TotalPending > 0;
 	if ((PERM('inspector') || $sameUser) && PERM('member', $User['role'])){
@@ -71,14 +71,14 @@
 			});
 			foreach ($Posts as $i => $p){
 				list($link,$page) = post_link_html($p);
-				$posted = date('c',strtotime($p['posted']));
+				$posted = timetag($p['posted']);
 				$Posts[$i] = <<<HTML
 <li>
 	<div class='image screencap'>
 		<a href='$link'><img src='{$p['preview']}'></a>
 	</div>
 	<span class='label'>{$p['label']}</span>
-	<em>Posted under <a href='$link'>$page</a> <time datetime="$posted"></em>
+	<em>Posted under <a href='$link'>$page</a> $posted</em>
 	<div>
 		<a href='$link' class='btn blue typcn typcn-arrow-forward'>View</a>
 	</div>
@@ -90,7 +90,7 @@ HTML;
 		}
 ?>
 		</section>
-<?php   $cols = "id, season, deviation_id as deviation, ('S'||season||'E'||episode) as page";
+<?php   $cols = "id, season, episode, deviation_id as deviation";
 		$AwaitingApproval = array_merge(
 			$Database
 				->where('reserved_by', $User['id'])
