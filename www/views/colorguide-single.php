@@ -5,21 +5,24 @@
 <?php
 	$RenderPath = APPATH."img/cg_render/{$Appearance['id']}.png";
 	$FileModTime = '?t='.(file_exists($RenderPath) ? filemtime($RenderPath) : time());
-	echo "<div class='align-center'><a class='darkblue btn typcn typcn-image' href='/{$color}guide/appearance/{$Appearance['id']}.png$FileModTime' target='_blank'>View as PNG</a></div>"; ?>
+	echo "<div class='align-center'><a class='darkblue btn typcn typcn-image' href='/{$color}guide/appearance/{$Appearance['id']}.png$FileModTime' target='_blank'>View as PNG</a></div>";
 
+	if ($CGDb->where('ponyid',$Appearance['id'])->has('tagged')){ ?>
 	<section id="tags">
 		<label><span class='typcn typcn-tags'></span>Tags</label>
 		<?=get_tags_html($Appearance['id'],WRAP,NO_INPUT)?>
 	</section>
 <?php
+	}
 	$EpTagsOnAppearance = $CGDb->rawQuery(
 		"SELECT t.tid
 		FROM tagged tt
 		LEFT JOIN tags t ON tt.tid = t.tid
 		WHERE tt.ponyid = {$Appearance['id']}");
-	foreach ($EpTagsOnAppearance as $k => $row){
-		$EpTagsOnAppearance[$k] = $row['tid'];
-	}
+	if (!empty($EpTagsOnAppearance)){
+		foreach ($EpTagsOnAppearance as $k => $row)
+			$EpTagsOnAppearance[$k] = $row['tid'];
+
 	$EpAppearances = $CGDb->rawQuery(
 		"SELECT DISTINCT t.name
 		FROM tagged tt
@@ -40,11 +43,12 @@
 		?></p>
 	</section>
 <?php
+		}
 	}
 	if (!empty($Appearance['notes'])){ ?>
 	<section>
 		<label><span class='typcn typcn-info-large'></span>Additional notes</label>
-		<p><?=$Appearance['notes']?></p>
+		<p id="notes"><?=$Appearance['notes']?></p>
 	</section>
 <?  }
 	if (!empty($Appearance['cm_favme'])){

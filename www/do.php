@@ -1007,10 +1007,9 @@
 					$action = $_match[1];
 
 					if ($action !== 'make'){
-						if (empty($_match[2]))
+						if (strlen($_match[2]) === 0)
 							respond('Missing appearance ID');
-						$AppearanceID = intval($_match[2], 10);
-						$Appearance = $CGDb->where('id', $AppearanceID)->where('ishuman', $EQG)->getOne('appearances');
+						$Appearance = $CGDb->where('id', intval($_match[2], 10))->where('ishuman', $EQG)->getOne('appearances');
 						if (empty($Appearance))
 							respond("The specified appearance does not exist");
 					}
@@ -1043,9 +1042,10 @@
 							if (!empty($_POST['notes'])){
 								$notes = trim($_POST['notes']);
 								check_string_valid($label, "Appearance notes", INVERSE_PRINTABLE_ASCII_REGEX);
-								if (strlen($notes) > 255)
+								if (strlen($notes) > 255 && $Appearance['id'] !== 0)
 									respond('Appearance notes cannot be longer than 255 characters');
-								$data['notes'] = $notes;
+								if ($action === 'make' || $notes !== $Appearance['notes'])
+									$data['notes'] = $notes;
 							}
 
 							if (!empty($_POST['cm_favme'])){
@@ -1085,12 +1085,18 @@
 									}
 								}
 							}
-							else clear_rendered_image($Appearance['id']);
+							else {
+								clear_rendered_image($Appearance['id']);
+								$data['id'] = $Appearance['id'];
+							}
 
 							$data['notes'] = get_notes_html($data, NOWRAP);
 							respond($data);
 						break;
 						case "delete":
+							if ($Appearance['id'] === 0)
+								respond('This appearance cannot be deleted');
+
 							if (!$CGDb->where('id', $Appearance['id'])->delete('appearances'))
 								respond(ERR_DB_FAIL);
 
@@ -1144,6 +1150,9 @@
 							respond('Cached image removed, the image will be re-generated on the next request', 1);
 						break;
 						case "tag":
+							if ($Appearance['id'] === 0)
+								respond('This appearance cannot be tagged');
+
 							if (empty($_POST['tag_name']))
 								respond('Tag name is not specified');
 							$tag_name = trim($_POST['tag_name']);
@@ -1167,6 +1176,9 @@
 							respond(array('tags' => get_tags_html($Appearance['id'], NOWRAP)));
 						break;
 						case "untag":
+							if ($Appearance['id'] === 0)
+								respond('This appearance cannot be un-tagged');
+
 							if (empty($_POST['tag']))
 								respond('Tag ID is not specified');
 							$TagID = intval($_POST['tag'], 10);
@@ -1390,7 +1402,7 @@
 					}
 
 					if ($new){
-						if (empty($_POST['ponyid']))
+						if (!isset($_POST['ponyid']) || !is_numeric($_POST['ponyid']))
 							respond('Missing appearance ID');
 						$AppearanceID = intval($_POST['ponyid'], 10);
 						$Appearance = $CGDb->where('id', $AppearanceID)->where('ishuman', $EQG)->getOne('appearances');

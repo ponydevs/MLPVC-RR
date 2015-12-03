@@ -2,7 +2,7 @@
 DocReady.push(function Colorguide(){
 	'use strict';
 	//noinspection JSUnusedLocalSymbols
-	var Color = window.Color, color = window.color, $list = $('#list');
+	var Color = window.Color, color = window.color, $list = $('.appearance-list');
 
 	var copyHash = !localStorage.getItem('leavehash'), $toggler;
 	function copyHashToggler(){
@@ -117,11 +117,11 @@ DocReady.push(function Colorguide(){
 	window.tooltips = function(){tooltips()};
 
 	function Navigation(){
-		$list = $('#list');
+		$list = $('.appearance-list');
 		tooltips();
 		copyHashToggler();
 	}
-	$list.on('page-switch', Navigation);
+	$list.filter('#list').on('page-switch', Navigation);
 	$d.on('paginate-refresh', Navigation);
 	Navigation();
 

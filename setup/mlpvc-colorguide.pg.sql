@@ -278,6 +278,11 @@ Cutie Mark head colors are different from normal ones.', NULL, false, '2015-09-1
 INSERT INTO appearances VALUES (59, NULL, 'Coloratura / Rara', '', NULL, false, '2015-11-24 04:28:54.164681+00');
 INSERT INTO appearances VALUES (60, NULL, 'Rara (Countess Outfit)', '', NULL, false, '2015-11-24 04:42:00.076945+00');
 INSERT INTO appearances VALUES (62, NULL, 'Sunburst', '', NULL, false, '2015-12-01 15:18:10.631048+00');
+INSERT INTO appearances VALUES (0, 0, 'Universal colors', 'These colors apply to most characters in the show. Use these unless a different color is specified.
+
+<strong>Pure white:</strong> Use for eye reflections, sclera and teeth.
+
+<strong>Pure black:</strong> Use for eye pupil, eyelashes, eye outlines and on eyelids (for emotional turmoil at ~5-15%)', NULL, false, '2015-12-03 16:57:59.671+01');
 
 
 --
@@ -580,13 +585,14 @@ INSERT INTO colorgroups VALUES (349, 61, 'Tail band', 8);
 INSERT INTO colorgroups VALUES (348, 61, 'Vest', 7);
 INSERT INTO colorgroups VALUES (350, 62, 'Coat', 0);
 INSERT INTO colorgroups VALUES (351, 62, 'Mane & Tail', 1);
+INSERT INTO colorgroups VALUES (354, 0, 'Normal', 1);
 
 
 --
 -- Name: colorgroups_groupid_seq; Type: SEQUENCE SET; Schema: public; Owner: mlpvc-rr
 --
 
-SELECT pg_catalog.setval('colorgroups_groupid_seq', 353, true);
+SELECT pg_catalog.setval('colorgroups_groupid_seq', 354, true);
 
 
 --
@@ -1694,13 +1700,21 @@ INSERT INTO colors VALUES (1400, 353, 'Ray 1', '#FDE065', 1);
 INSERT INTO colors VALUES (1407, 353, 'Ray 2', '#FBFBDE', 2);
 INSERT INTO colors VALUES (1408, 353, 'Sparkle 1', '#3F9DB0', 3);
 INSERT INTO colors VALUES (1409, 353, 'Sparkle 2', '#A6DCDC', 4);
+INSERT INTO colors VALUES (1410, 354, 'Pure white', '#FFFFFF', 0);
+INSERT INTO colors VALUES (1411, 354, 'Pure black', '#000000', 1);
+INSERT INTO colors VALUES (1412, 354, 'Teeth Outline', '#B0D8E7', 2);
+INSERT INTO colors VALUES (1413, 354, 'Mouth Fill', '#BD1C77', 3);
+INSERT INTO colors VALUES (1414, 354, 'Darker Mouth Fill', '#A41967', 4);
+INSERT INTO colors VALUES (1415, 354, 'Darkest Mouth Fill', '#841555', 5);
+INSERT INTO colors VALUES (1416, 354, 'Tongue', '#F17031', 6);
+INSERT INTO colors VALUES (1417, 354, 'Tongue Dark', '#BE4406', 7);
 
 
 --
 -- Name: colors_colorid_seq; Type: SEQUENCE SET; Schema: public; Owner: mlpvc-rr
 --
 
-SELECT pg_catalog.setval('colors_colorid_seq', 1409, true);
+SELECT pg_catalog.setval('colors_colorid_seq', 1417, true);
 
 
 --

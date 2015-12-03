@@ -11,7 +11,7 @@ DocReady.push(function ColorguideManage(){
 		'<p class="align-center">The URL will be checked against the supported provider list, and if an image is found, it\'ll be downloaded to the server and set as this appearance\'s sprite image.</p>'
 	);
 
-	var $list = $('#list'),
+	var $list = $('.appearance-list'),
 		$ponyEditor = $.mk('form').attr('id','pony-editor')
 			.append(
 				$.mk('label').append(
@@ -99,7 +99,7 @@ DocReady.push(function ColorguideManage(){
 						else {
 							$.Dialog.success(title, this.message, true);
 							var id = this.id, info = this.info;
-							$list.one('page-switch',function(e){
+							$list.filter('#list').one('page-switch',function(e){
 								var $pony = $('#p'+id);
 								if ($pony.length)
 									$body.scrollTop($pony.offset().top - ($pony.outerHeight()/2));
@@ -764,7 +764,8 @@ DocReady.push(function ColorguideManage(){
 	window.ctxmenus = function(){ctxmenus()};
 
 	var $tags;
-	$list.on('page-switch',function(){
+	$list.filter('#list').on('page-switch',function(){
+		var $list = $(this);
 		$list.find('button.edit').on('click',function(){
 			var $this = $(this),
 				ponyID = $this.parents('li').attr('id').substring(1),

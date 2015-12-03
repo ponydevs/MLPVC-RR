@@ -97,7 +97,7 @@
 			->orderBy('tags.name', 'ASC');
 		if (!$is_editing)
 			$CGDb->where("tags.type != 'ep'");
-		return !empty($PonyID)
+		return isset($PonyID)
 			? $CGDb
 				->join('tags','tagged.tid = tags.tid','LEFT')
 				->where('tagged.ponyid',$PonyID)
@@ -114,7 +114,7 @@
 		$Tags = get_tags($PonyID, null, $Editing);
 
 		$HTML = $wrap ? "<div class='tags'>" : '';
-		if ($Editing)
+		if ($Editing && $PonyID !== 0)
 			$HTML .= "<input type='text' class='addtag tag' placeholder='Enter tag' pattern='".TAG_NAME_PATTERN."' maxlength='30' required>";
 		if (!empty($Tags)) foreach ($Tags as $i => $t){
 			$class = " class='tag id-{$t['tid']}".(!empty($t['type'])?' typ-'.$t['type']:'')."'";
@@ -140,7 +140,12 @@
 	// Returns the markup for the notes displayed under an appaerance
 	function get_notes_html($p, $wrap = true){
 		if (!empty($p['notes']) || !empty($p['cm_favme'])){
-			$notes = !empty($p['notes']) ? '<span>'.htmlspecialchars($p['notes']).'</span>' : '';
+			$notes = '';
+			if (!empty($p['notes'])){
+				if ($p['id'] !== 0)
+					$p['notes'] = htmlspecialchars($p['notes']);
+				$notes = "<span>{$p['notes']}</span>";
+			}
 			if (!empty($p['cm_favme']))
 				$notes .= "<a href='http://fav.me/{$p['cm_favme']}'>Cutie mark vector</a>";
 		}
@@ -180,22 +185,26 @@
 		global $CGDb;
 
 		order_appearances();
-		return $CGDb->where('ishuman', $EQG)->get('appearances',$limit);
+		return $CGDb->where('ishuman', $EQG)->where('"id" != 0')->get('appearances',$limit);
 	}
 
 	// Returns the markup for an array of pony datase rows \\
 	function render_ponies_html($Ponies, $wrap = true){
 		global $CGDb, $_MSG, $color;
 
-		$HTML = $wrap ? '<ul id="list">' : '';
+		$HTML = $wrap ? '<ul id="list" class="appearance-list">' : '';
 		if (!empty($Ponies)) foreach ($Ponies as $p){
 			$p['label'] = htmlspecialchars($p['label']);
+
+			$img = '';
 			$imgPth = "img/cg/{$p['id']}.png";
-			if (!file_Exists(APPATH.$imgPth)) $imgPth = "img/blank-pixel.png";
-			else $imgPth = $imgPth.'?'.filemtime(APPATH.$imgPth);
-			$img = "<a href='/$imgPth' target='_blank' title='Open image in new tab'><img src='/$imgPth' alt='".apos_encode($p['label'])."'></a>";
-			if (PERM('inspector')) $img = "<div class='upload-wrap'>$img</div>";
-			$img = "<div>$img</div>";
+			$hasSprite = file_Exists(APPATH.$imgPth);
+			if ($hasSprite){
+				$imgPth = $imgPth.'?'.filemtime(APPATH.$imgPth);
+				$img = "<a href='/$imgPth' target='_blank' title='Open image in new tab'><img src='/$imgPth' alt='".apos_encode($p['label'])."'></a>";
+				if (PERM('inspector')) $img = "<div class='upload-wrap'>$img</div>";
+				$img = "<div>$img</div>";
+			}
 
 			$updates = get_update_html($p['id']);
 			$notes = get_notes_html($p);
@@ -207,7 +216,7 @@
 			$Actions = "<a class='darkblue btn typcn typcn-image' title='View as PNG' href='/{$color}guide/appearance/{$p['id']}.png$FileModTime' target='_blank'></a>";
 			if (PERM('inspector'))
 				$Actions .= "<button class='edit typcn typcn-pencil blue' title='Edit'></button>".
-				            "<button class='delete typcn typcn-trash red' title='Delete'></button>";
+				            ($p['id']!==0?"<button class='delete typcn typcn-trash red' title='Delete'></button>":'');
 
 			$HTML .= "<li id='p{$p['id']}'>$img<div><strong><a href='/colorguide/appearance/{$p['id']}'>{$p['label']}</a>$Actions</strong>$updates$notes$tags$colors</div></li>";
 		}

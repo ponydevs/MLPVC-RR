@@ -16,8 +16,17 @@
 
 	section { @extend %section }
 
-	#tags .tag:not(:last-child) {
-		margin-right: 7px;
+	#tags {
+		.tags:empty:before {
+			content: "This appearance has no tags";
+		}
+		.tag:not(:last-child) {
+			margin-right: 7px;
+		}
+	}
+
+	#notes {
+		white-space: pre-wrap;
 	}
 
 	#pony-cm img {
