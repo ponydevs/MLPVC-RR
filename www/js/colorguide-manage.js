@@ -764,8 +764,7 @@ DocReady.push(function ColorguideManage(){
 	window.ctxmenus = function(){ctxmenus()};
 
 	var $tags;
-	$list.filter('#list').on('page-switch',function(){
-		var $list = $(this);
+	$list.on('page-switch',function(){
 		$list.find('button.edit').on('click',function(){
 			var $this = $(this),
 				ponyID = $this.parents('li').attr('id').substring(1),
