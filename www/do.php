@@ -1691,6 +1691,19 @@
 					'js' => array('jquery.qtip', 'jquery.ctxmenu', $do),
 				));
 			}
+			else if ($data === 'full'){
+				$GuideOrder = isset($_REQUEST['guide-order']);
+				if ($GuideOrder)
+					order_appearances();
+				else $CGDb->orderBy('label','ASC');
+				$Appearances = $CGDb->where('ishuman', $EQG)->where('"id" != 0')->get('appearances',null,'id,label');
+
+				loadPage(array(
+					'title' => 'Full list - Color Guide',
+					'view' => "$do-full",
+					'css' => "$do-full",
+				));
+			}
 
 			$title = '';
 			if (empty($_GET['q']) || !PERM('user')){

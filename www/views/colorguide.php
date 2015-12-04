@@ -14,7 +14,8 @@
 <? if (PERM('inspector')){ ?>
 		<button class='green typcn typcn-plus' id="new-appearance-btn">Add new <?=$EQG?'Character':'Pony'?></button>
 <? } ?>
-		<a class='btn blue typcn typcn-world' href="/<?=$color?>guide<?=($EQG?'':'/eqg')?>/1"><?=$EQG?'List of Ponies':'List of Equestria Girls'?></a>
+		<a class='btn blue typcn typcn-world' href="/<?=$color?>guide<?=($EQG?'':'/eqg')?>/1">View <?=$EQG?'Ponies':'Equestria Girls'?></a>
+		<a class='btn darkblue typcn typcn-th-menu' href="/<?=$color?>guide/full">Full list of <?=$EQG?'Equestria Girls':'Ponies'?></a>
 		<a class='btn darkblue typcn typcn-tags' href="/<?=$color?>guide/tags">List of tags</a>
 		<a class='btn darkblue typcn typcn-warning' href="/<?=$color?>guide/changes">List of major changes</a>
 	</p>

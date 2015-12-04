@@ -2243,13 +2243,18 @@ ORDER BY "count" DESC
 			else if (isset($Ponies))
 				$NavItems['colorguide'][1] .= " - Page $Page";
 			else {
-				if (isset($Tags)) $pagePrefix = 'Tags';
-				else if (isset($Changes)) $pagePrefix = 'Color Changes';
+				if ($GLOBALS['data'] === 'full'){
+					$NavItems['colorguide']['subitem'] = array($_SERVER['REQUEST_URI'],'Full list');
+				}
+				else {
+					if (isset($Tags)) $pagePrefix = 'Tags';
+					else if (isset($Changes)) $pagePrefix = 'Color Changes';
 
-				$NavItems['colorguide']['subitem'] = array(
-					$_SERVER['REQUEST_URI'],
-					(isset($pagePrefix) ? "$pagePrefix - ":'')."Page $Page"
-				);
+					$NavItems['colorguide']['subitem'] = array(
+						$_SERVER['REQUEST_URI'],
+						(isset($pagePrefix) ? "$pagePrefix - " : '')."Page $Page"
+					);
+				}
 			}
 
 		}

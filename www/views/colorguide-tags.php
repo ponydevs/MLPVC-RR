@@ -3,6 +3,7 @@
 	<p>Displaying <?=$ItemsPerPage?> items/page</p>
 	<p class='align-center links'>
 		<a class='btn darkblue typcn typcn-arrow-back' href="/<?=$color?>guide">Back to <?=$Color?> Guide</a>
+		<a class='btn darkblue typcn typcn-warning' href="/<?=$color?>guide/changes">List of major changes</a>
 	</p>
 	<?=$Pagination?>
 	<table id="tags">

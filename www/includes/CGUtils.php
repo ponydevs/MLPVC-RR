@@ -229,6 +229,32 @@
 		return $HTML.($wrap?'</ul>':'');
 	}
 
+	// Renders HTML for full guide list
+	function render_full_list_html($Appearances, $GuideOrder, $wrap = WRAP){
+		$elementName = $GuideOrder ? 'ul' : 'div';
+		$HTML = $wrap ? "<$elementName id='full-list'>" : '';
+		if (!empty($Appearances)){
+			global $color;
+			if (!$GuideOrder){
+				$PrevFirstLetter = '';
+				foreach ($Appearances as $p){
+					$FirstLetter = strtoupper($p['label'][0]);
+					if ($FirstLetter !== $PrevFirstLetter){
+						if ($PrevFirstLetter !== ''){
+							$HTML = rtrim($HTML, ', ')."</div></section>";
+						}
+						$PrevFirstLetter = $FirstLetter;
+						$HTML .= "<section><h2>$PrevFirstLetter</h2><div>";
+					}
+					$HTML .= "<a href='/{$color}guide/appearance/{$p['id']}'>{$p['label']}</a>, ";
+				}
+			}
+			else foreach($Appearances as $p)
+				$HTML .= "<li><a href='/{$color}guide/appearance/{$p['id']}'>{$p['label']}</a></li>";
+		}
+		return $HTML.($wrap?"</$elementName>":'');
+	}
+
 	// Check image type
 	function check_image_type($tmp, $allowedMimeTypes){
 		$imageSize = getimagesize($tmp);

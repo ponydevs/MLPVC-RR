@@ -1,0 +1,28 @@
+@import "vars";
+
+#content {
+	#full-list {
+		display: block;
+		list-style: none;
+		padding: 0;
+		margin: 0;
+
+		&:empty:before {
+			font-size: 1.4em;
+			font-style: italic;
+			content: "No appearances to show";
+			display: block;
+			text-align: center;
+		}
+
+/*		> li {
+			display: inline;
+
+			&:not(:last-child):after {
+				content: ", ";
+			}
+		}*/
+		section { @extend %section }
+		a { font-size: 1.2em }
+	}
+}
