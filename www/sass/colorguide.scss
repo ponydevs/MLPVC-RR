@@ -260,10 +260,14 @@ div.tags {
 	&.typ-char { @include tag-style($TCharacter, '\e12c') }
 }
 
-#universal ul.colors {
-	margin-top: 6px;
+#universal {
+	margin-bottom: 10px;
+	
+	ul.colors {
+		margin-top: 6px;
 
-	li { margin-bottom: 0 }
+		li { margin-bottom: 0 }
+	}
 }
 ul.colors {
 	display: block;
