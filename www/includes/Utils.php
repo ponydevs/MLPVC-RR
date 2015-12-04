@@ -2263,7 +2263,7 @@ ORDER BY "count" DESC
 				$NavItems['users']['subitem'] = array($_SERVER['REQUEST_URI'], $User['name']);
 		}
 		if ($GLOBALS['signedIn']){
-			$NavItems['feedback'] = array('/feedback',PERM('developer') ? 'Feedback' : 'My feedback');
+			$NavItems['feedback'] = array('/feedback','Feedback');
 			global $Chain;
 			if ($do === 'feedback' && !empty($Chain)){
 				$NavItems['feedback']['subitem'] = array($_SERVER['REQUEST_URI'], $Chain['subject']);
