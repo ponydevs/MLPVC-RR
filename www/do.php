@@ -1698,6 +1698,9 @@
 				else $CGDb->orderBy('label','ASC');
 				$Appearances = $CGDb->where('ishuman', $EQG)->where('"id" != 0')->get('appearances',null,'id,label');
 
+				if (isset($_REQUEST['ajax']))
+					respond(array('html' => render_full_list_html($Appearances, $GuideOrder, NOWRAP)));
+
 				loadPage(array(
 					'title' => 'Full list - Color Guide',
 					'view' => "$do-full",
