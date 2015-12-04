@@ -1702,6 +1702,7 @@
 					'title' => 'Full list - Color Guide',
 					'view' => "$do-full",
 					'css' => "$do-full",
+					'js' => "$do-full",
 				));
 			}
 

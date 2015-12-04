@@ -1,6 +1,8 @@
 @import "vars";
 
 #content {
+	> h1 + p select { font: inherit }
+
 	#full-list {
 		display: block;
 		list-style: none;
@@ -14,14 +16,7 @@
 			display: block;
 			text-align: center;
 		}
-
-/*		> li {
-			display: inline;
-
-			&:not(:last-child):after {
-				content: ", ";
-			}
-		}*/
+		
 		section { @extend %section }
 		a { font-size: 1.2em }
 	}
