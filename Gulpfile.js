@@ -145,7 +145,7 @@ gulp.task('md', function(){
 				el = el.nextElementSibling;
 			}
 
-			return newElements.replace(/\n/g,'');
+			return newElements.replace(/\n/g,'')+'\n';
 		}))
 		.pipe(rename('about.html'))
 		.pipe(gulp.dest('www/views'));
