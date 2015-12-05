@@ -86,7 +86,8 @@ CREATE TABLE episodes__videos (
     episode integer NOT NULL,
     provider character(2) NOT NULL,
     id character varying(15) NOT NULL,
-    part integer DEFAULT 1 NOT NULL
+    part integer DEFAULT 1 NOT NULL,
+    fullep boolean DEFAULT true NOT NULL
 );
 
 

@@ -535,7 +535,7 @@
 								$set = $vid->id;
 							}
 
-							$fullep = false;
+							$fullep = $Episode['twoparter'] ? false : true;
 							if ($part === 1 && $Episode['twoparter'] && isset($_POST["{$PostKey}_full"])){
 								$NextPart = $provider.'_'.($part+1);
 								$_POST[$NextPart] = null;
