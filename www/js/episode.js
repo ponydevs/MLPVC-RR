@@ -176,7 +176,12 @@ DocReady.push(function Episode(){
 		$.post('/episode/vote/'+EpID+'?detail', $.mkAjaxHandler(function(){
 			if (!this.status) return $.Dialog.fail(false, this.message);
 
-			var $chart = $.mk('canvas'),
+			var $chart = $.mk('canvas').css({
+					width: 200,
+					height: 200,
+					display: 'block',
+					margin: '0 auto',
+				}),
 				ctx = $chart.get(0).getContext("2d"),
 				$tooltip = $.mk('p').attr('class','tooltip').html('&nbsp;');
 			$.Dialog.info(false, [
