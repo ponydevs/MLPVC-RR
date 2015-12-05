@@ -236,7 +236,6 @@ INSERT INTO appearances VALUES (18, NULL, 'Granny Smith', 'Far legs use darker c
 INSERT INTO appearances VALUES (19, NULL, 'Fleetfoot', '', 'd97x7vd', false, '2015-09-21 20:58:56+00');
 INSERT INTO appearances VALUES (21, NULL, 'Wind Rider', 'Teeth use a different color than normal.', NULL, false, '2015-09-24 04:35:32+00');
 INSERT INTO appearances VALUES (25, 11, 'Sweetie Belle', 'Cutie Mark colors subject to change on further episodes.', NULL, false, '2015-09-24 12:09:41+00');
-INSERT INTO appearances VALUES (26, NULL, 'Night Glider', '', NULL, false, '2015-09-26 15:03:43+00');
 INSERT INTO appearances VALUES (27, NULL, 'Double Diamond', '', NULL, false, '2015-09-26 17:22:19+00');
 INSERT INTO appearances VALUES (28, NULL, 'Party Favor', 'Magic aura color is unknown.', NULL, false, '2015-09-26 17:34:42+00');
 INSERT INTO appearances VALUES (32, NULL, 'Trixie Lulamoon', '', 'd9bxest', false, '2015-10-03 15:35:08+00');
@@ -249,6 +248,7 @@ INSERT INTO appearances VALUES (40, NULL, 'Lily Longsocks', 'From S5E18', NULL, 
 INSERT INTO appearances VALUES (44, NULL, 'Shining Armor', '', NULL, false, '2015-10-23 14:27:32+00');
 INSERT INTO appearances VALUES (45, NULL, 'Penny Curve', 'VectorClub Mascot', 'd9e7zgj', false, '2015-10-25 20:10:21+00');
 INSERT INTO appearances VALUES (46, NULL, 'Cheese Sandwich', '', NULL, false, '2015-10-26 14:27:27+00');
+INSERT INTO appearances VALUES (26, NULL, 'Night Glider', '', 'd8oovxh', false, '2015-09-26 15:03:43+00');
 INSERT INTO appearances VALUES (54, NULL, 'Cloudy Quartz', '', NULL, false, '2015-10-31 22:43:48.197299+00');
 INSERT INTO appearances VALUES (50, NULL, 'Marble Pie', 'Two different hair outline colors.', 'd9eeci7', false, '2015-10-31 22:30:14+00');
 INSERT INTO appearances VALUES (52, NULL, 'Maud Pie', 'Far legs use darker colors.', 'd7apvq4', false, '2015-10-31 22:30:14+00');
