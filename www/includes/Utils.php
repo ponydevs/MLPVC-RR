@@ -2143,7 +2143,11 @@ ORDER BY "count" DESC
 				if (!empty($Part[1])){
 					$SecondVid = $Part[1];
 					$url = Video::get_embed($SecondVid['id'], $SecondVid['provider'], Video::URL_ONLY);
-					$alsoAvail[$VIDEO_PROVIDER_NAMES[$SecondVid['provider']].($CurrentEpisode['twoparter']?" (Part $part)":'')]  = $url;
+					$ProviderName = $VIDEO_PROVIDER_NAMES[$SecondVid['provider']];
+					$PartStr = '';
+					if ($CurrentEpisode['twoparter'])
+						$PartStr = ' ('.($SecondVid['fullep'] ? 'Full episode' : "Part $part").')';
+					$alsoAvail[$ProviderName.$PartStr] = $url;
 				}
 			}
 		}

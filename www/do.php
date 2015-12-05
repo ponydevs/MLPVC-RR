@@ -532,6 +532,13 @@
 								$set = $vid->id;
 							}
 
+							$fullep = false;
+							if ($part === 1 && isset($_POST["{$PostKey}_full"])){
+								$NextPart = $provider.'_'.($part+1);
+								$_POST[$NextPart] = null;
+								$fullep = true;
+							}
+
 							$videocount = $Database
 								->whereEp($Episode)
 								->where('provider', $provider)
@@ -545,6 +552,7 @@
 										'provider' => $provider,
 										'part' => $part,
 										'id' => $set,
+										'fullep' => $fullep,
 									));
 							}
 							else {
@@ -554,7 +562,10 @@
 									->where('part', $part);
 								if (empty($set))
 									$Database->delete('episodes__videos');
-								else $Database->update('episodes__videos', array('id' => $set));
+								else $Database->update('episodes__videos', array(
+									'id' => $set,
+									'fullep' => $fullep,
+								));
 							}
 						}
 					}

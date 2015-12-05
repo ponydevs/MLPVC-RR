@@ -14,18 +14,30 @@ DocReady.push(function Episode(){
 
 			if (!data.status) return $.Dialog.fail(false, data.message);
 
-			var $form = $.mk('form').attr('id','vidlinks').append(
-				$.mk('p').addClass('align-center').text('Enter vido links below, leave any input blank to remove that video from the episode page.'),
+			var $form = $.mk('form').attr('id','vidlinks').attr('class','align-center').append(
+				$.mk('p').text('Enter vido links below, leave any input blank to remove that video from the episode page.'),
 				$.mk('input').attr({type:'url','class':'yt',name:'yt_1',placeholder:'YouTube'}),
 				$.mk('input').attr({type:'url','class':'dm',name:'dm_1',placeholder:'Dailymotion'})
 			);
 			if (data.twoparter){
-				$.mk('p').addClass('align-center').html('<strong>~ Part 1 ~</strong>').insertBefore($form.children('input').first());
+				$.mk('p').html('<strong>~ Part 1 ~</strong>').insertBefore($form.children('input').first());
+				var pt2 = {
+					$yt: $.mk('input').attr({type:'url','class':'yt',name:'yt_2',placeholder:'YouTube'}),
+					$dm: $.mk('input').attr({type:'url','class':'dm',name:'dm_2',placeholder:'Dailymotion'})
+				};
 				$form.append(
-					$.mk('p').addClass('align-center').html('<strong>~ Part 2 ~</strong>'),
-					$.mk('input').attr({type:'url','class':'yt',name:'yt_2',placeholder:'YouTube'}),
-					$.mk('input').attr({type:'url','class':'dm',name:'dm_2',placeholder:'Dailymotion'})
+					$.mk('p').text('Check below if either link contains the full episode instead of just one part'),
+					$.mk('div').append(
+						"<label><input type='checkbox' name='yt_1_full'> YouTube</label> &nbsp; "+
+						"<label><input type='checkbox' name='dm_1_full'> Dailymotion</label>"
+					),
+					$.mk('p').html('<strong>~ Part 2 ~</strong>'),
+					pt2.$yt,
+					pt2.$dm
 				);
+				$form.find('input[type="checkbox"]').on('change',function(){
+					pt2['$'+($(this).attr('name').replace(/^([a-z]+)_.*$/,'$1'))].attr('disabled', this.checked);
+				});
 			}
 			if (Object.keys(data.vidlinks).length > 0){
 				var $inputs = $form.children('input').attr('spellcheck','false');
