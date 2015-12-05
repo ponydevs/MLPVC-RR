@@ -34,7 +34,7 @@ $(function(){
 			$PostStatsLegend.append("<span><span class='sq' style='background-color:rgb("+rgbstr+")'></span><span>"+el.label+"</span></span>");
 		});
 
-		PostsChart = new Chart(PostsCTX).Line(Data);
+		PostsChart = new Chart(PostsCTX).Line(Data,{animation: false});
 	}));
 
 	// Approval Stats
@@ -64,6 +64,6 @@ $(function(){
 		});
 		$ApprovalStatsLegend.append("<span><span class='sq' style='background-color:rgb("+rgbstr+")'></span><span>"+Data.datasets[0].label+"</span></span>");
 
-		ApprovalChart = new Chart(ApprovalCTX).Line(Data);
+		ApprovalChart = new Chart(ApprovalCTX).Line(Data,{animation: false});
 	}));
 });
