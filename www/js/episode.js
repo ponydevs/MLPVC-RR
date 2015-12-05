@@ -149,11 +149,12 @@ DocReady.push(function Episode(){
 		$.post('/episode/vote/'+EpID+'?detail', $.mkAjaxHandler(function(){
 			if (!this.status) return $.Dialog.fail(false, this.message);
 
-			var $chart = $.mk('canvas').attr('id','vote-distrib'),
-				ctx = $chart.get(0).getContext("2d");
+			var $chart = $.mk('canvas'),
+				ctx = $chart.get(0).getContext("2d"),
+				$tooltip = $.mk('p').attr('class','tooltip').html('&nbsp;');
 			$.Dialog.info(false, [
 				$.mk('p').text("Here's a chart showing how the votes are distributed."),
-				$chart
+				$.mk('div').attr('id','vote-distrib').append($chart, $tooltip)
 			]);
 			                   //-- 0 ---,--- 1 ---,--- 2 ---,--- 3 ---,--- 4 ---,--- 5 ---
 			var LegendColors = [undefined,"#FF5454","#FFB554","#FFFF54","#8CD446","#4DC742"],
@@ -163,7 +164,21 @@ DocReady.push(function Episode(){
 				$.extend(data[k],{ color: LegendColors[parseInt(v.label, 10)] });
 			});
 
-			new Chart(ctx).Pie(data,{ animationEasing: 'easeInOutExpo' });
+			new Chart(ctx).Pie(data,{
+				animationEasing: 'easeInOutExpo',
+				customTooltips: function(tooltip){
+					if (!tooltip){
+						$tooltip.css('color','').html('&nbsp;');
+						return;
+					}
+
+					var dataArray = tooltip.text.split(': ');
+					$tooltip.css('color',LegendColors[parseInt(dataArray[0], 10)]).empty().append(
+						$.mk('span').text(dataArray[1]+' ×'),
+						$.mk('span').attr('class','muffins cnt-'+dataArray[0])
+					);
+				}
+			});
 		}));
 	});
 

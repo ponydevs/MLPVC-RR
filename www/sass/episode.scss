@@ -341,8 +341,36 @@
 }
 
 #vote-distrib {
-	width: 200px;
-	height: 200px;
-	display: block;
-	margin: 0 auto;
+	canvas {
+		width: 200px;
+		height: 200px;
+		display: block;
+		margin: 0 auto;
+	}
+	.tooltip {
+		display: block;
+		text-align: center;
+		font-size: 17px;
+		font-weight: bold;
+		line-height: 17px;
+		height: 17px;
+		margin: 5px 0 0;
+
+		> span {
+			display: inline-block;
+			height: 17px;
+			vertical-align: bottom;
+			color: #8a6d31;
+		}
+
+		.muffins {
+			margin-left: 5px;
+			background: url('../img/muffin-rating.svg') no-repeat center;
+			background-size: 100px 17px;
+
+			@for $i from 1 through 5 {
+				&.cnt-#{$i} { width: #{$i*20px} }
+			}
+		}
+	}
 }
