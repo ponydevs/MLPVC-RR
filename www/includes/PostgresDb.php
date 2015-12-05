@@ -270,6 +270,8 @@ class PostgresDb {
 
 			// Simple value
 			if (!is_array($value)){
+				if (is_bool($value))
+					$value = $value ? 'true' : 'false';
 				$this->_bindParam($value);
 				$this->_query .= '?, ';
 				continue;
