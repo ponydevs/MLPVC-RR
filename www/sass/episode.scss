@@ -364,8 +364,8 @@
 		}
 
 		.muffins {
-			margin-left: 5px;
-			background: url('../img/muffin-rating.svg') no-repeat center;
+			margin: 0 5px;
+			background: url('../img/muffin-rating.svg') no-repeat 0 50%;
 			background-size: 100px 17px;
 
 			@for $i from 1 through 5 {

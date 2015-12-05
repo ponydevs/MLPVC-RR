@@ -158,11 +158,19 @@ DocReady.push(function Episode(){
 			]);
 			                   //-- 0 ---,--- 1 ---,--- 2 ---,--- 3 ---,--- 4 ---,--- 5 ---
 			var LegendColors = [undefined,"#FF5454","#FFB554","#FFFF54","#8CD446","#4DC742"],
-				data = this.data;
+				data = this.data,
+				totalVotes = 0;
 
 			$.each(data,function(k,v){
 				$.extend(data[k],{ color: LegendColors[parseInt(v.label, 10)] });
+				totalVotes += parseInt(v.value, 10);
 			});
+
+			if (totalVotes === 0){
+				$chart.remove();
+				$tooltip.text('There are no votes for this episode yet');
+				return;
+			}
 
 			new Chart(ctx).Pie(data,{
 				animationEasing: 'easeInOutExpo',
@@ -172,10 +180,12 @@ DocReady.push(function Episode(){
 						return;
 					}
 
-					var dataArray = tooltip.text.split(': ');
+					var dataArray = tooltip.text.split(': '),
+						votePerc = Math.round((parseInt(dataArray[1],10)/totalVotes)*1000)/10;
 					$tooltip.css('color',LegendColors[parseInt(dataArray[0], 10)]).empty().append(
 						$.mk('span').text(dataArray[1]+' ×'),
-						$.mk('span').attr('class','muffins cnt-'+dataArray[0])
+						$.mk('span').attr('class','muffins cnt-'+dataArray[0]),
+						$.mk('span').text('('+votePerc+'%)')
 					);
 				}
 			});
