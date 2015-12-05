@@ -506,11 +506,14 @@
 						$return = array(
 							'twoparter' => $Episode['twoparter'],
 							'vidlinks' => array(),
+							'fullep' => array(),
 						);
-						$Vids = $Database->whereEp($Episode)->get('episodes__videos',null,'provider as name, id, part');
+						$Vids = $Database->whereEp($Episode)->get('episodes__videos',null,'provider as name, *');
 						foreach ($Vids as $part => $prov){
 							if (!empty($prov['id']))
 								$return['vidlinks']["{$prov['name']}_{$prov['part']}"] = Video::get_embed($prov['id'], $prov['name'], Video::URL_ONLY);
+							if ($prov['fullep'])
+								$return['fullep'][] = $prov['name'];
 						}
 						respond($return);
 					}
@@ -533,7 +536,7 @@
 							}
 
 							$fullep = false;
-							if ($part === 1 && isset($_POST["{$PostKey}_full"])){
+							if ($part === 1 && $Episode['twoparter'] && isset($_POST["{$PostKey}_full"])){
 								$NextPart = $provider.'_'.($part+1);
 								$_POST[$NextPart] = null;
 								$fullep = true;

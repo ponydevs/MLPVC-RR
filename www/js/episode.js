@@ -38,6 +38,14 @@ DocReady.push(function Episode(){
 				$form.find('input[type="checkbox"]').on('change',function(){
 					pt2['$'+($(this).attr('name').replace(/^([a-z]+)_.*$/,'$1'))].attr('disabled', this.checked);
 				});
+				if (data.fullep.length > 0)
+					$.each(data.fullep,function(_,prov){
+						$form
+							.find('input[type="checkbox"]')
+							.filter('[name="'+prov+'_1_full"]')
+							.attr('checked', true)
+							.trigger('change');
+					});
 			}
 			if (Object.keys(data.vidlinks).length > 0){
 				var $inputs = $form.children('input').attr('spellcheck','false');
