@@ -2014,7 +2014,7 @@ HTML;
 		$Score = round($Score*10)/10;
 		$ScorePercent = round(($Score/5)*1000)/10;
 
-		$HTML .= '<p>'.(!empty($Score) ? "This $thing is rated $Score/5 ($Votes votes)" : 'Nopony voted yet.').'</p>';
+		$HTML .= '<p>'.(!empty($Score) ? "This $thing is rated $Score/5 (<a class='detail' href='#detail'>$Votes votes</a>)" : 'Nopony voted yet.').'</p>';
 		if ($Score > 0){
 			$RatingFile = file_get_contents(APPATH."img/muffin-rating.svg");
 			$HTML .= str_replace("width='100'", "width='$ScorePercent'", $RatingFile);
@@ -2326,7 +2326,7 @@ ORDER BY "count" DESC
 			'title' => format_episode_title($CurrentEpisode),
 			'view' => 'episode',
 			'css' => 'episode',
-			'js' => array('imagesloaded.pkgd','jquery.ba-throttle-debounce','jquery.fluidbox.min','episode'),
+			'js' => array('imagesloaded.pkgd','jquery.ba-throttle-debounce','jquery.fluidbox.min','Chart','episode'),
 		));
 	}
 

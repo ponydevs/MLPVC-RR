@@ -1,4 +1,4 @@
-/* global DocReady,$content,$body,$w,$navbar,moment */
+/* global DocReady,$content,$body,$w,$navbar,moment,Chart */
 DocReady.push(function Episode(){
 	'use strict';
 	var SEASON = window.SEASON,
@@ -139,6 +139,32 @@ DocReady.push(function Episode(){
 			$(this).removeData('dyntime-beforeupdate');
 			return false;
 		}
+	});
+
+	$voting.find('a.detail').on('click',function(e){
+		e.preventDefault();
+
+		$.Dialog.wait('Voting details','Getting vote distribution information');
+
+		$.post('/episode/vote/'+EpID+'?detail', $.mkAjaxHandler(function(){
+			if (!this.status) return $.Dialog.fail(false, this.message);
+
+			var $chart = $.mk('canvas').attr('id','vote-distrib'),
+				ctx = $chart.get(0).getContext("2d");
+			$.Dialog.info(false, [
+				$.mk('p').text("Here's a chart showing how the votes are distributed."),
+				$chart
+			]);
+			                   //-- 0 ---,--- 1 ---,--- 2 ---,--- 3 ---,--- 4 ---,--- 5 ---
+			var LegendColors = [undefined,"#FF5454","#FFB554","#FFFF54","#8CD446","#4DC742"],
+				data = this.data;
+
+			$.each(data,function(k,v){
+				$.extend(data[k],{ color: LegendColors[parseInt(v.label, 10)] });
+			});
+
+			new Chart(ctx).Pie(data,{ animationEasing: 'easeInOutExpo' });
+		}));
 	});
 
 	$.fn.rebindHandlers = function(){

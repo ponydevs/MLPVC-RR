@@ -455,10 +455,22 @@
 					if (empty($Episode))
 						respond("There's no episode with this season & episode number");
 
+					if (isset($_REQUEST['detail'])){
+						$VoteCounts = $Database->rawQuery(
+							"SELECT count(*) as value, vote as label
+							FROM episodes__votes v
+							WHERE season = ? && episode = ?
+							GROUP BY v.vote
+							ORDER BY v.vote DESC",array($Episode['season'],$Episode['episode']));
+
+						respond(array('data' => $VoteCounts));
+					}
+
 					if (isset($_REQUEST['html']))
 						respond(array('html' => get_episode_voting($Episode)));
 
-					if (!PERM('user')) respond();
+					if (!PERM('user'))
+						respond();
 
 					if (!$Episode['aired'])
 						respond('You can only vote on this episode after it has aired.');
