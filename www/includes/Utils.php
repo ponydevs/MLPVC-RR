@@ -1143,7 +1143,7 @@ HTML;
 			return "Equestria Girls: {$Ep['title']}";
 
 		if ($Ep['twoparter'])
-			$Ep['episode'] = pad($EpNumber).pad($EpNumber+1);
+			$Ep['episode'] = pad($EpNumber).'-'.pad($EpNumber+1);
 		else $Ep['episode'] = pad($Ep['episode']);
 		$Ep['season'] = pad($Ep['season']);
 		return "S{$Ep['season']} E{$Ep['episode']}: {$Ep['title']}";
