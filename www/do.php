@@ -499,56 +499,67 @@
 					if (empty($Episode))
 						respond("There's no episode with this season & episode number");
 
-					if ($Episode['season'] === 5 && $Episode['episode'] === 25 && $Episode['twoparter'] === true)
-						respond("Don't mess with this episode until I can make a proper interface for this");
-
 					$set = $_match[1] === 's';
 					require_once "includes/Video.php";
 
 					if (!$set){
-						$return = array();
-						$Vids = $Database->whereEp($Episode)->get('episodes__videos',null,'provider as name, id');
-						foreach ($Vids as $i => $prov){
-							if (!empty($prov['id'])) $return[$prov['name']] = Video::get_embed($prov['id'], $prov['name'], Video::URL_ONLY);
+						$return = array(
+							'twoparter' => $Episode['twoparter'],
+							'vidlinks' => array(),
+						);
+						$Vids = $Database->whereEp($Episode)->get('episodes__videos',null,'provider as name, id, part');
+						foreach ($Vids as $part => $prov){
+							if (!empty($prov['id']))
+								$return['vidlinks']["{$prov['name']}_{$prov['part']}"] = Video::get_embed($prov['id'], $prov['name'], Video::URL_ONLY);
 						}
 						respond($return);
 					}
 
-					foreach (array('yt','dm') as $k){
-						$set = null;
-						if (!empty($_POST[$k])){
-							try {
-								$vid = new Video($_POST[$k]);
+					foreach (array('yt','dm') as $provider){
+						for ($part = 1; $part <= ($Episode['twoparter']?2:1); $part++){
+							$set = null;
+							$PostKey = "{$provider}_$part";
+							if (!empty($_POST[$PostKey])){
+								try {
+									$vid = new Video($_POST[$PostKey]);
+								}
+								catch (Exception $e){
+									respond("{$VIDEO_PROVIDER_NAMES[$provider]} link issue: ".$e->getMessage());
+								};
+								if (!isset($vid->provider) || $vid->provider['name'] !== $provider)
+									respond("Incorrect {$VIDEO_PROVIDER_NAMES[$provider]} URL specified");
+								/** @noinspection PhpUndefinedFieldInspection */
+								$set = $vid->id;
 							}
-							catch (Exception $e){
-								respond("{$VIDEO_PROVIDER_NAMES[$k]} link issue: ".$e->getMessage());
-							};
-							if (!isset($vid->provider) || $vid->provider['name'] !== $k)
-								respond("Incorrect {$VIDEO_PROVIDER_NAMES[$k]} URL specified");
-							/** @noinspection PhpUndefinedFieldInspection */
-							$set = $vid->id;
-						}
 
-						$videocount = $Database->whereEp($Episode)->where('provider', $k)->count('episodes__videos');
-						if ($videocount === 0){
-							if (!empty($set)) $Database->insert('episodes__videos',array(
-								'season' => $Episode['season'],
-								'episode' => $Episode['episode'],
-								'provider' => $k,
-								'id' => $set,
-							));
-						}
-						else {
-							$Database->whereEp($Episode)->where('provider', $k);
-							if (empty($set))
-								$Database->delete('episodes__videos');
-							else $Database->update('episodes__videos', array('id' => $set));
+							$videocount = $Database
+								->whereEp($Episode)
+								->where('provider', $provider)
+								->where('part', $part)
+								->count('episodes__videos');
+							if ($videocount === 0){
+								if (!empty($set))
+									$Database->insert('episodes__videos', array(
+										'season' => $Episode['season'],
+										'episode' => $Episode['episode'],
+										'provider' => $provider,
+										'part' => $part,
+										'id' => $set,
+									));
+							}
+							else {
+								$Database
+									->whereEp($Episode)
+									->where('provider', $provider)
+									->where('part', $part);
+								if (empty($set))
+									$Database->delete('episodes__videos');
+								else $Database->update('episodes__videos', array('id' => $set));
+							}
 						}
 					}
 
-					respond('Links updated',1,array(
-						'epsection' => render_ep_video($Episode)
-					));
+					respond('Links updated',1,array('epsection' => render_ep_video($Episode)));
 				}
 				else {
 					if (!PERM('inspector')) respond();
@@ -1133,11 +1144,11 @@
 								respond("$Color group order data missing");
 
 							$groups = array_unique(array_map('intval',explode(',',$_POST['cgs'])));
-							foreach ($groups as $i => $GroupID){
+							foreach ($groups as $part => $GroupID){
 								if (!$CGDb->where('groupid', $GroupID)->has('colorgroups'))
 									respond("There's no group with the ID of  $GroupID");
 
-								$CGDb->where('groupid', $GroupID)->update('colorgroups',array('order' => $i));
+								$CGDb->where('groupid', $GroupID)->update('colorgroups',array('order' => $part));
 							}
 
 							clear_rendered_image($Appearance['id']);
@@ -1442,9 +1453,9 @@
 						respond("Missing list of {$color}s");
 					$colorIDs = array();
 					$colors = array();
-					foreach ($recvColors as $i => $c){
-						$append = array('order' => $i);
-						$index = "(index: $i)";
+					foreach ($recvColors as $part => $c){
+						$append = array('order' => $part);
+						$index = "(index: $part)";
 
 						if (!empty($c['colorid']) && is_numeric($c['colorid'])){
 							$append['colorid'] = intval($c['colorid'], 10);
@@ -1649,12 +1660,12 @@
 
 							$Colors = get_colors($cg['groupid']);
 							if (!empty($Colors)){
-								$i = 0;
+								$part = 0;
 								foreach ($Colors as $c){
-									$add = $i === 0 ? 0 : $i*5;
-									$x = $origin['x']+($i*$ColorSquareSize)+$add;
+									$add = $part === 0 ? 0 : $part*5;
+									$x = $origin['x']+($part*$ColorSquareSize)+$add;
 									if ($x+$ColorSquareSize > $OutWidth){
-										$i = 0;
+										$part = 0;
 										$SizeIncrease = $ColorSquareSize + $CGVerticalMargin;
 										$origin['y'] += $SizeIncrease;
 										$x = $origin['x'];
@@ -1668,7 +1679,7 @@
 									}
 
 									imageDrawRectangle($BaseImage, $x, $origin['y'], $ColorSquareSize, $c['hex'], $BLACK);
-									$i++;
+									$part++;
 								}
 
 								$origin['y'] += $ColorSquareSize + $CGVerticalMargin;
@@ -1730,8 +1741,8 @@
 			else {
 				$tags = array_map('trim',explode(',',strtolower($_GET['q'])));
 				$Tags = array();
-				foreach ($tags as $i => $tag){
-					$num = $i+1;
+				foreach ($tags as $part => $tag){
+					$num = $part+1;
 					$_MSG = check_string_valid($tag,"Tag #$num's name",INVERSE_TAG_NAME_PATTERN, !isset($_GET['js']));
 					if (is_string($_MSG)) break;
 

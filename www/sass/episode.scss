@@ -336,8 +336,8 @@
 	padding-left: $height;
 	background: url(../img/video_providers.svg) no-repeat;
 
-	&[name=dm] { background-position: 4px 4px }
-	&[name=yt] { background-position: 4px -20px }
+	&.dm { background-position: 4px 4px }
+	&.yt { background-position: 4px -20px }
 }
 
 #vote-distrib {

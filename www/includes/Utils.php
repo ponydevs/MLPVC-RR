@@ -2127,39 +2127,36 @@ ORDER BY "count" DESC
 
 		$isMovie = $CurrentEpisode['season'] === 0;
 		$HTML = '';
+		$embed = '';
+		$alsoAvail = array();
+		for ($part = 1; $part <= ($CurrentEpisode['twoparter']?2:1); $part++){
+			$Part = $Database
+				->whereEp($CurrentEpisode)
+				->where('part',$part)
+				->orderBy('provider', 'ASC')
+				->get('episodes__videos');
 
-		$Part1 = $Database
-			->orderBy('provider', 'ASC')
-			->where('part','1')
-			->whereEp($CurrentEpisode['season'],$CurrentEpisode['episode'])
-			->get('episodes__videos');
-		if (!empty($Part1)){
-			require_once "includes/Video.php";
-
-			$twoparter = $CurrentEpisode['twoparter'];
-
-			$FirstVid = $Part1[0];
-			$embed = "<div class='responsive-embed'>".Video::get_embed($FirstVid['id'], $FirstVid['provider'])."</div>";
-			$HTML .= "<section class='episode'><h2>Watch the ".($isMovie?'Movie':'Episode')."</h2>";
-			if ($twoparter){
-				$Part2 = $Database
-					->orderBy('provider', 'ASC')
-					->where('part','2')
-					->whereEp($CurrentEpisode['season'],$CurrentEpisode['episode'])
-					->get('episodes__videos');
-
-				if (!empty($Part2)){
-					$SecondVid = $Part2[0];
-					$embed .= "<div class='responsive-embed'>".Video::get_embed($SecondVid['id'], $SecondVid['provider'])."</div>";
+			if (!empty($Part)){
+				require_once "includes/Video.php";
+				$FirstVid = $Part[0];
+				$embed .= "<div class='responsive-embed'>".Video::get_embed($FirstVid['id'], $FirstVid['provider'])."</div>";
+				if (!empty($Part[1])){
+					$SecondVid = $Part[1];
+					$url = Video::get_embed($SecondVid['id'], $SecondVid['provider'], Video::URL_ONLY);
+					$alsoAvail[$VIDEO_PROVIDER_NAMES[$SecondVid['provider']].($CurrentEpisode['twoparter']?" (Part $part)":'')]  = $url;
 				}
 			}
-			if (empty($Part2) && !empty($Part1[1])){
-				$SecondVid = $Part1[1];
-				$url = Video::get_embed($SecondVid['id'], $SecondVid['provider'], Video::URL_ONLY);
-				$HTML .= "<p class='align-center' style='margin-bottom:5px'>Also available on: <a href='$url' target='_blank'>{$VIDEO_PROVIDER_NAMES[$SecondVid['provider']]}</a></p>";
-			}
-			$HTML .= "<div class='resp-embed-wrap'>$embed</div></section>";
 		}
+		if (!empty($alsoAvail)){
+			$links = array();
+			foreach ($alsoAvail as $prov => $link)
+				$links[] = "<a href='$link' target='_blank'>$prov</a>";
+			$HTML .= "<p class='align-center' style='margin-bottom:5px'>Also available on: ".implode(', ',$links)."</p>";
+		}
+		if (!empty($embed))
+			$HTML .= "<div class='resp-embed-wrap'>$embed</div>";
+		if (!empty($HTML))
+			$HTML = "<section class='episode'><h2>Watch the ".($isMovie?'Movie':'Episode')."</h2>$HTML</section>";
 
 		return $HTML;
 	}
@@ -2321,6 +2318,11 @@ ORDER BY "count" DESC
 			$Latest = empty($EpData) ? true : is_episode_latest($CurrentEpisode);
 			list($Requests, $Reservations) = get_posts($CurrentEpisode['season'], $CurrentEpisode['episode']);
 		}
+
+		$EpID = "S{$CurrentEpisode['season']}E{$CurrentEpisode['episode']}";
+		if ($CurrentEpisode['twoparter'])
+			$EpID .= '-'.($CurrentEpisode['episode']+1);
+		fix_path("/episode/$EpID");
 
 		loadPage(array(
 			'title' => format_episode_title($CurrentEpisode),

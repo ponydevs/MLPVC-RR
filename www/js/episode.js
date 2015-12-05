@@ -16,24 +16,31 @@ DocReady.push(function Episode(){
 
 			var $form = $.mk('form').attr('id','vidlinks').append(
 				$.mk('p').addClass('align-center').text('Enter vido links below, leave any input blank to remove that video from the episode page.'),
-				$.mk('input').attr({name:'yt',placeholder:'YouTube'}),
-				$.mk('input').attr({name:'dm',placeholder:'Dailymotion'})
+				$.mk('input').attr({type:'url','class':'yt',name:'yt_1',placeholder:'YouTube'}),
+				$.mk('input').attr({type:'url','class':'dm',name:'dm_1',placeholder:'Dailymotion'})
 			);
-			$.Dialog.request(false, $form,'vidlinks','Save',function($form){
-				var $yt = $form.find('[name=yt]'),
-					$dm = $form.find('[name=dm]');
-				if (data.yt) $yt.val(data.yt);
-				if (data.dm) $dm.val(data.dm);
-				if (data.yt || data.dm){
-					$form.find('p').show();
-					$.Dialog.center();
-				}
+			if (data.twoparter){
+				$.mk('p').addClass('align-center').html('<strong>~ Part 1 ~</strong>').insertBefore($form.children('input').first());
+				$form.append(
+					$.mk('p').addClass('align-center').html('<strong>~ Part 2 ~</strong>'),
+					$.mk('input').attr({type:'url','class':'yt',name:'yt_2',placeholder:'YouTube'}),
+					$.mk('input').attr({type:'url','class':'dm',name:'dm_2',placeholder:'Dailymotion'})
+				);
+			}
+			if (Object.keys(data.vidlinks).length > 0){
+				var $inputs = $form.children('input').attr('spellcheck','false');
+				$.each(data.vidlinks,function(k,v){
+					$inputs.filter('[name='+k+']').val(v);
+				});
+			}
+			$.Dialog.request(false,$form,'vidlinks','Save',function($form){
 				$form.on('submit',function(e){
 					e.preventDefault();
 
+					var data = $form.mkData();
 					$.Dialog.wait(false, 'Saving links');
 					
-					$.post('/episode/setvideos/'+EpID,{yt: $yt.val(), dm: $dm.val()},$.mkAjaxHandler(function(){
+					$.post('/episode/setvideos/'+EpID,data,$.mkAjaxHandler(function(){
 						if (!this.status) return $.Dialog.fail(false, this.message);
 
 						var $epSection = $content.children('section.episode');
