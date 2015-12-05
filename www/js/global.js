@@ -500,20 +500,22 @@ $(function(){
 					return location.href;
 				}
 
-				$head.children('link[href], style[href]').each(function(){
+				var CSSSelector = 'link[href], style[href]';
+				$head.children(CSSSelector).each(function(){
 					var $this = $(this),
 						href = $this.attr('href'),
 						pos = css.indexOf(href);
 
 					if (pos !== -1)
 						css.splice(pos, 1);
-					else $this.remove();
+					else $this.attr('data-remove','true');
 				});
 
 				console.clear();
 
 				(function LoadCSS(item){
 					if (item >= css.length){
+						$head.children(CSSSelector.replace(/href/g,'data-remove=true')).remove();
 						$main.addClass('pls-wait').html(content);
 						$sidebar.html(sidebar);
 						$footer.html(footer);
