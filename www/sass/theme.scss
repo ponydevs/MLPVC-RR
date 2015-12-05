@@ -359,7 +359,23 @@ header, #sidebar .mobile-nav {
 			font-family: "Celestia", sans-serif;
 			font-weight: normal;
 		}
-		p { margin: 0 }
+		p {
+			margin: 0;
+
+			a {
+				display: inline-block;
+				line-height: .9em;
+				color: #fff;
+				text-decoration: none;
+				border-bottom: 1px solid rgba(white, .5);
+				transition: border-bottom-color .1s;
+
+				&:hover, &:focus {
+					border-bottom-color: rgba(white, .7);
+				}
+				&:active { border-bottom-color: white }
+			}
+		}
 
 		.buttons > * { margin: 0 }
 		&.welcome .links {

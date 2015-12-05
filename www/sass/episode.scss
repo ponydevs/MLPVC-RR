@@ -288,28 +288,14 @@
 	margin: 5px 0 10px 5px;
 }
 
-#voting {
-	a {
-		display: inline-block;
-		line-height: .9em;
-		color: #fff;
-		text-decoration: none;
-		border-bottom: 1px solid rgba(white, .5);
-
-		&:hover, &:focus {
-			border-bottom-color: rgba(white, .7);
-		}
-		&:active { border-bottom-color: white }
-	}
-	#muffins {
-		width: 100%;
-		max-width: 250px;
-		margin: 5px 0 0;
-		padding: 2px;
-		background: #111;
-		border: 1px solid #000;
-		border-radius: 5px;
-	}
+#voting #muffins {
+	width: 100%;
+	max-width: 250px;
+	margin: 5px 0 0;
+	padding: 2px;
+	background: #111;
+	border: 1px solid #000;
+	border-radius: 5px;
 }
 
 #star-rating {
