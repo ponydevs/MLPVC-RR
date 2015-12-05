@@ -127,8 +127,15 @@
 
 		var DISABLE = true,
 			ENABLE = false;
-		function _controlInputs(disable){
-			$dialogContent.children(':not(:last-child)').find('input, select, textarea').attr('disabled',disable);
+		function _controlInputs(action){
+			var $inputs = $dialogContent
+				.children(':not(#dialogButtons)')
+				.last()
+				.find('input, select, textarea');
+
+			if (action === DISABLE)
+				$inputs.filter(':not(:disabled)').addClass('temp-disable').attr('disabled',DISABLE);
+			else $inputs.filter('.temp-disable').removeClass('temp-disable').attr('disabled',ENABLE);
 		}
 
 		// Displaying dialogs
