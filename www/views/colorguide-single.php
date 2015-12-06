@@ -44,7 +44,7 @@
 				$Ep = get_real_episode($season, $episode);
 				$HTML .= empty($Ep)
 					? strtoupper($ep['name']).', '
-					: "<a href='/episode/S{$Ep['season']}E{$Ep['episode']}'>{$Ep['title']}</a>, ";
+					: "<a href='/episode/S{$Ep['season']}E{$Ep['episode']}'>".format_episode_title($Ep)."</a>, ";
 			}
 			echo rtrim($HTML, ', ')
 		?></p>
