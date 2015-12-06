@@ -366,7 +366,7 @@
 			$season = intval($_match[1], 10);
 			if ($season == 0)
 				return false;
-			return 's'.intval($_match[1], 10).'e'.intval($_match[2], 10).(!empty($_match[3]) ? intval($_match[3], 10) : '');
+			return 's'.intval($_match[1], 10).'e'.intval($_match[2], 10).(!empty($_match[3]) ? '-'.intval($_match[3], 10) : '');
 		}
 		else return false;
 	}
