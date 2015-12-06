@@ -1,4 +1,4 @@
-/* globals $body,DocReady,mk,Sortable,Bloodhound,Handlebars,PRINTABLE_ASCII_REGEX */
+/* globals $body,DocReady,mk,Sortable,Bloodhound,Handlebars,PRINTABLE_ASCII_REGEX,Key */
 DocReady.push(function ColorguideManage(){
 	'use strict';
 	var Color = window.Color, color = window.color, TAG_TYPES_ASSOC = window.TAG_TYPES_ASSOC, $colorGroups,
@@ -508,7 +508,7 @@ DocReady.push(function ColorguideManage(){
 				url: '/colorguide/gettags?s=%QUERY',
 				wildcard: '%QUERY'
 			}
-		}), insertKeys = [13, 188];
+		}), insertKeys = [Key.Enter, Key.Comma];
 		$tags.children('.addtag').each(function(){
 			var $input = $(this),
 				ponyID = $input.parents('li').attr('id').substring(1);

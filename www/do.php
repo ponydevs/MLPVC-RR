@@ -1194,7 +1194,7 @@
 
 							if (empty($_POST['tag_name']))
 								respond('Tag name is not specified');
-							$tag_name = trim($_POST['tag_name']);
+							$tag_name = strtolower(trim($_POST['tag_name']));
 							if (!preg_match('~'.TAG_NAME_PATTERN.'~u',$tag_name))
 								respond('Invalid tag name');
 

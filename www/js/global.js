@@ -38,6 +38,7 @@
 		LeftArrow: 37,
 		RightArrow: 39,
 		Tab: 9,
+		Comma: 188,
 	};
 	$.isKey = function(Key, e){
 		return e.keyCode === Key;
