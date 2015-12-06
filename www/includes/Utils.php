@@ -2311,13 +2311,16 @@ ORDER BY "count" DESC
 	function loadEpisodePage($force = null){
 		global $data, $CurrentEpisode, $Requests, $Reservations, $Latest, $Database;
 
-		if (empty($force)){
+		if (is_int($force))
+			$CurrentEpisode = get_real_episode(0, $force, ALLOW_SEASON_ZERO);
+		else if (is_array($force))
+			$CurrentEpisode = $force;
+		else {
 			$EpData = episode_id_parse($data);
 			if (empty($EpData))
 				$CurrentEpisode = get_latest_episode();
 			else $CurrentEpisode = get_real_episode($EpData['season'],$EpData['episode']);
 		}
-		else $CurrentEpisode = get_real_episode(0, $force, ALLOW_SEASON_ZERO);
 		if (!empty($CurrentEpisode)){
 			$Latest = empty($EpData) ? true : is_episode_latest($CurrentEpisode);
 			list($Requests, $Reservations) = get_posts($CurrentEpisode['season'], $CurrentEpisode['episode']);

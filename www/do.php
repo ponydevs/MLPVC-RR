@@ -391,11 +391,8 @@
 					'view' => 'episode',
 				));
 			}
-			else {
-				$data = "S{$CurrentEpisode['season']}E{$CurrentEpisode['episode']}";
-				fix_path("/episode/$data", 302);
-				loadEpisodePage();
-			}
+
+			loadEpisodePage($CurrentEpisode);
 		break;
 		case "episode":
 			if (RQMTHD === 'POST'){
