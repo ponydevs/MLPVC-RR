@@ -1589,7 +1589,7 @@
 			$CGPath = "/{$color}guide".($EQG?'/eqg':'');
 
 			$_match = array();
-			if (preg_match('~^appearance/(\d+)(\.png)?~',$data,$_match)){
+			if (preg_match('~^appearance/(?:[A-Za-z\d\-]+-)?(\d+)(\.png)?~',$data,$_match)){
 				$asPNG = !empty($_match[2]);
 				if ($asPNG){
 					$Appearance = $CGDb->where('id', intval($_match[1]))->getOne('appearances');
@@ -1718,7 +1718,8 @@
 				if (empty($Appearance))
 					do404();
 
-				fix_path("$CGPath/appearance/{$Appearance['id']}");
+				$SafeLabel = preg_replace('~[^A-Za-z\d\-]~','',preg_replace('~\s+~','-',$Appearance['label']));
+				fix_path("$CGPath/appearance/$SafeLabel-{$Appearance['id']}");
 				$heading = $Appearance['label'];
 				$title = "{$Color}s for $heading";
 
