@@ -1718,7 +1718,7 @@
 				if (empty($Appearance))
 					do404();
 
-				$SafeLabel = preg_replace('~[^A-Za-z\d\-]~','',preg_replace('~\s+~','-',$Appearance['label']));
+				$SafeLabel = preg_replace('~-+~','-',preg_replace('~[^A-Za-z\d\-]~','-',$Appearance['label']));
 				fix_path("$CGPath/appearance/$SafeLabel-{$Appearance['id']}");
 				$heading = $Appearance['label'];
 				$title = "{$Color}s for $heading";
