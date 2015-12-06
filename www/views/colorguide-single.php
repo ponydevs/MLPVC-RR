@@ -7,6 +7,12 @@
 	$FileModTime = '?t='.(file_exists($RenderPath) ? filemtime($RenderPath) : time());
 	echo "<div class='align-center'><a class='darkblue btn typcn typcn-image' href='/{$color}guide/appearance/{$Appearance['id']}.png$FileModTime' target='_blank'>View as PNG</a></div>";
 
+	if (!empty($Changes)){ ?>
+	<section>
+		<label><span class='typcn typcn-warning'></span>List of major changes</label>
+		<?=render_changes_html($Changes)?>
+	</section>
+<?  }
 	if ($CGDb->where('ponyid',$Appearance['id'])->has('tagged')){ ?>
 	<section id="tags">
 		<label><span class='typcn typcn-tags'></span>Tags</label>
@@ -63,12 +69,6 @@
 	<ul id="colors"><?
 	foreach (get_cgs($Appearance['id']) as $cg)
 		echo get_cg_html($cg, WRAP, NO_COLON); ?></ul>
-<?  if (!empty($Changes)){ ?>
-	<section>
-		<label><span class='typcn typcn-warning'></span>List of major changes</label>
-		<?=render_changes_html($Changes)?>
-	</section>
-<?  } ?>
 </div>
 
 <script>var Color = '<?=$Color?>', color = '<?=$color?>';</script>
