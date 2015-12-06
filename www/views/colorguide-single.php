@@ -39,12 +39,15 @@
 		<label><span class='typcn typcn-video'></span>Appears in <?=plur('episode',count($EpAppearances),PREPEND_NUMBER)?></label>
 		<p><?php
 			$HTML = '';
-			foreach ($EpAppearances as $ep){
-				list($season, $episode) = explode('e',substr($ep['name'],1));
-				$Ep = get_real_episode($season, $episode);
-				$HTML .= empty($Ep)
-					? strtoupper($ep['name']).', '
-					: "<a href='/episode/S{$Ep['season']}E{$Ep['episode']}'>".format_episode_title($Ep)."</a>, ";
+			foreach ($EpAppearances as $tag){
+				$name = strtoupper($tag['name']);
+				$EpData = episode_id_parse($name);
+				$Ep = get_real_episode($EpData['season'], $EpData['episode']);
+				$HTML .= (
+					empty($Ep)
+					? $name
+					: "<a href='/episode/S{$Ep['season']}E{$Ep['episode']}'>".format_episode_title($Ep).'</a>'
+				).', ';
 			}
 			echo rtrim($HTML, ', ')
 		?></p>
