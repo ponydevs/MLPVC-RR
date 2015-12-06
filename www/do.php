@@ -1025,7 +1025,9 @@
 							typeahead_results('[]');
 
 						$query = trim(strtolower($_GET['s']));
-						ep_tag_name_check($query);
+						$TagCheck = ep_tag_name_check($query);
+						if ($TagCheck !== false)
+							$query = $TagCheck;
 						$CGDb->where('name',"%$query%",'LIKE');
 						$limit = 5;
 						$cols = "tid, name, CONCAT('typ-', type) as type";
@@ -1196,11 +1198,16 @@
 							if (!preg_match('~'.TAG_NAME_PATTERN.'~u',$tag_name))
 								respond('Invalid tag name');
 
-							ep_tag_name_check($tag_name);
+							$TagCheck = ep_tag_name_check($tag_name);
+							if ($TagCheck !== false)
+								$tag_name = $TagCheck;
 
 							$Tag = $CGDb->where('name', $tag_name)->getOne('tags');
 							if (empty($Tag))
-								respond("The tag $tag_name does not exist.<br>Would you like to create it?",0,array('cancreate' => $tag_name));
+								respond("The tag $tag_name does not exist.<br>Would you like to create it?",0,array(
+									'cancreate' => $tag_name,
+									'typehint' => $TagCheck !== false ? 'ep' : null,
+								));
 
 							if ($CGDb->where('ponyid', $Appearance['id'])->where('tid', $Tag['tid'])->has('tagged'))
 								respond('This appearance already has this tag');

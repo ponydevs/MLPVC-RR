@@ -131,7 +131,7 @@ DocReady.push(function ColorguideManage(){
 					type: 'checkbox',
 					name: 'type',
 					value: type
-				}).on('click keyup',function(){
+				}).on('change',function(){
 					if (this.checked)
 						$(this).parent().siblings().find('input').prop('checked', false);
 				});
@@ -154,7 +154,7 @@ DocReady.push(function ColorguideManage(){
 		}).appendTo($this);
 	}
 
-	function createNewTag($tag, name){
+	function createNewTag($tag, name, typehint){
 		var title = 'Create new tag',
 			$li = $tag.closest('li'),
 			$div = $tag.closest('div:not([class])'),
@@ -171,7 +171,11 @@ DocReady.push(function ColorguideManage(){
 			);
 			$.Dialog.center();
 
-			if (typeof name === 'string') $form.find('input[name=name]').val(name);
+			if (typeof typehint === 'string' && typeof TAG_TYPES_ASSOC[typehint] !== 'undefined')
+				$form.find('input[name=type][value='+typehint+']').prop('checked', true).trigger('change');
+
+			if (typeof name === 'string')
+				$form.find('input[name=name]').val(name);
 
 			$form.on('submit', function(e){
 				e.preventDefault();
@@ -541,11 +545,12 @@ DocReady.push(function ColorguideManage(){
 							$input.typeahead('val', '').focus();
 						}
 						else if (typeof this.cancreate === 'string'){
-							var new_name = this.cancreate;
+							var new_name = this.cancreate,
+								typehint = this.typehint;
 							title = title.replace(tag_name, new_name);
 							return $.Dialog.confirm(title, this.message, function(sure){
 								if (!sure) return;
-								createNewTag($input, new_name);
+								createNewTag($input, new_name, typehint);
 							});
 						}
 						else $.Dialog.fail(title, this.message);

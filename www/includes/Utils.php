@@ -2323,9 +2323,7 @@ ORDER BY "count" DESC
 			list($Requests, $Reservations) = get_posts($CurrentEpisode['season'], $CurrentEpisode['episode']);
 		}
 
-		$EpID = "S{$CurrentEpisode['season']}E{$CurrentEpisode['episode']}";
-		if ($CurrentEpisode['twoparter'])
-			$EpID .= '-'.($CurrentEpisode['episode']+1);
+		$EpID = format_episode_title($CurrentEpisode,AS_ARRAY,'id');
 		fix_path("/episode/$EpID");
 
 		loadPage(array(
@@ -2609,4 +2607,22 @@ HTML;
 HTML;
 		}
 		return $HTML.($wrap?'</ul>':'');
+	}
+
+	function get_ep_tag_ids($Ep){
+		global $CGDb;
+
+		$EpTagIDs = array();
+		$EpTagPt1 = $CGDb->where('name',"s{$Ep['season']}e{$Ep['episode']}")->getOne('tags','tid');
+		if (!empty($EpTagPt1))
+			$EpTagIDs[] = $EpTagPt1['tid'];
+		if ($Ep['twoparter']){
+			$EpTagPt2 = $CGDb->where('name',"s{$Ep['season']}e".($Ep['episode']+1))->getOne('tags','tid');
+			if (!empty($EpTagPt2))
+				$EpTagIDs[] = $EpTagPt2['tid'];
+			$EpTagBothParts = $CGDb->where('name',"s{$Ep['season']}e{$Ep['episode']}-".($Ep['episode']+1))->getOne('tags','tid');
+			if (!empty($EpTagBothParts))
+				$EpTagIDs[] = $EpTagBothParts['tid'];
+		}
+		return $EpTagIDs;
 	}
