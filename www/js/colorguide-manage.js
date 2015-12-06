@@ -708,7 +708,7 @@ DocReady.push(function ColorguideManage(){
 			}}
 		);
 
-		$('.upload-wrap').each(function(){
+		$('.upload-wrap').filter(':not(.ctxmenu-bound)').each(function(){
 			var $this = $(this),
 				ponyID = $this.closest('li').attr('id').substring(1);
 

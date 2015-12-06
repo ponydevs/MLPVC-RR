@@ -202,9 +202,12 @@
 			if ($hasSprite){
 				$imgPth = $imgPth.'?'.filemtime(APPATH.$imgPth);
 				$img = "<a href='/$imgPth' target='_blank' title='Open image in new tab'><img src='/$imgPth' alt='".apos_encode($p['label'])."'></a>";
-				if (PERM('inspector')) $img = "<div class='upload-wrap'>$img</div>";
+				if (PERM('inspector'))
+					$img = "<div class='upload-wrap'>$img</div>";
 				$img = "<div>$img</div>";
 			}
+			else if (PERM('inspector'))
+				$img = "<div><div class='upload-wrap'><a><img src='/img/blank-pixel.png'></a></div></div>";
 
 			$updates = get_update_html($p['id']);
 			$notes = get_notes_html($p);
