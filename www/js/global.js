@@ -561,6 +561,7 @@ $(function(){
 						url: requrl,
 						dataType: 'text',
 						success: function(data){
+							data = data.replace(/url\((['"])?\.\.\//g,'url($1/');
 							$head.append($.mk('style').attr('href',requrl).text(data));
 							LoadCSS(item+1);
 						}
