@@ -40,7 +40,8 @@
 		<p><?php
 			$HTML = '';
 			foreach ($EpAppearances as $ep){
-				$Ep = $Database->whereEp(...explode('e',substr($ep['name'],1)))->getOne('episodes');
+				list($season, $episode) = explode('e',substr($ep['name'],1));
+				$Ep = get_real_episode($season, $episode);
 				$HTML .= empty($Ep)
 					? strtoupper($ep['name']).', '
 					: "<a href='/episode/S{$Ep['season']}E{$Ep['episode']}'>{$Ep['title']}</a>, ";

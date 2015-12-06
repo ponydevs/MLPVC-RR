@@ -27,13 +27,22 @@
 			<li>Please remember that <strong>you have to be a member of the group in order to make a reservation</strong>. The idea is to add the finished vector to our gallery, so it has to meet all of our quality requirements.</li>
 		</ol>
 	</section>
-<?php   $EpTag = $CGDb->where('name',"s{$CurrentEpisode['season']}e{$CurrentEpisode['episode']}")->getOne('tags');
-		if (!empty($EpTag)){
+<?php   $EpTagIDs = array();
+		$EpTagPt1 = $CGDb->where('name',"s{$CurrentEpisode['season']}e{$CurrentEpisode['episode']}")->getOne('tags','tid');
+		if (!empty($EpTagPt1))
+			$EpTagIDs[] = $EpTagPt1['tid'];
+		if ($CurrentEpisode['twoparter']){
+			$EpTagPt2 = $CGDb->where('name',"s{$CurrentEpisode['season']}e".($CurrentEpisode['episode']+1))->getOne('tags','tid');
+			if (!empty($EpTagPt2))
+				$EpTagIDs[] = $EpTagPt2['tid'];
+		}
+		
+		if (!empty($EpTagIDs)){
 			$TaggedAppearances = $CGDb->rawQuery(
 				"SELECT p.id, p.label
 				FROM tagged t
 				LEFT JOIN appearances p ON t.ponyid = p.id
-				WHERE t.tid = {$EpTag['tid']}");
+				WHERE t.tid IN (".implode(',',$EpTagIDs).")");
 
 			if (!empty($TaggedAppearances)){ ?>
 	<section class="appearances">
