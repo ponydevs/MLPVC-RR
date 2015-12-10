@@ -715,9 +715,7 @@
 				$url = $flip_assoc[$data];
 			}
 
-			fix_path("/eqg/$url");
-
-			loadEpisodePage($data);
+			loadEpisodePage($data, true);
 		break;
 		case "about":
 			if (RQMTHD === 'POST'){

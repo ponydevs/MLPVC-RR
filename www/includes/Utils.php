@@ -2312,7 +2312,7 @@ ORDER BY "count" DESC
 	}
 
 	// Loads the home page
-	function loadEpisodePage($force = null){
+	function loadEpisodePage($force = null, $EQG = false){
 		global $data, $CurrentEpisode, $Requests, $Reservations, $Latest, $Database;
 
 		if (is_int($force))
@@ -2331,7 +2331,9 @@ ORDER BY "count" DESC
 		}
 
 		$EpID = format_episode_title($CurrentEpisode,AS_ARRAY,'id');
-		fix_path("/episode/$EpID");
+		if (!$EQG)
+			fix_path("/episode/$EpID");
+		else fix_path("/eqg/{$GLOBALS['url']}");
 
 		loadPage(array(
 			'title' => format_episode_title($CurrentEpisode),
