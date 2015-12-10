@@ -251,6 +251,7 @@ INSERT INTO appearances VALUES (46, NULL, 'Cheese Sandwich', '', NULL, false, '2
 INSERT INTO appearances VALUES (26, NULL, 'Night Glider', '', 'd8oovxh', false, '2015-09-26 15:03:43+00');
 INSERT INTO appearances VALUES (63, NULL, 'Sunset Shimmer (EQG, RR)', 'Sunset''s colors from Equestria Girls and Rainbow Rocks.', NULL, true, '2015-12-05 18:17:59.882699+00');
 INSERT INTO appearances VALUES (29, NULL, 'Starlight Glimmer', 'Her cutie mark does not use pure white for the star fill.', 'd8old4s', false, '2015-09-26 18:01:51+00');
+INSERT INTO appearances VALUES (62, NULL, 'Sunburst', '', 'd9iyv1r', false, '2015-12-01 15:18:10.631048+00');
 INSERT INTO appearances VALUES (54, NULL, 'Cloudy Quartz', '', NULL, false, '2015-10-31 22:43:48.197299+00');
 INSERT INTO appearances VALUES (50, NULL, 'Marble Pie', 'Two different hair outline colors.', 'd9eeci7', false, '2015-10-31 22:30:14+00');
 INSERT INTO appearances VALUES (52, NULL, 'Maud Pie', 'Far legs use darker colors.', 'd7apvq4', false, '2015-10-31 22:30:14+00');
@@ -278,7 +279,6 @@ INSERT INTO appearances VALUES (13, NULL, 'Whoa Nelly', 'Special eyeball color.
 Cutie Mark head colors are different from normal ones.', NULL, false, '2015-09-17 03:43:22+00');
 INSERT INTO appearances VALUES (59, NULL, 'Coloratura / Rara', '', NULL, false, '2015-11-24 04:28:54.164681+00');
 INSERT INTO appearances VALUES (60, NULL, 'Rara (Countess Outfit)', '', NULL, false, '2015-11-24 04:42:00.076945+00');
-INSERT INTO appearances VALUES (62, NULL, 'Sunburst', '', NULL, false, '2015-12-01 15:18:10.631048+00');
 INSERT INTO appearances VALUES (0, 0, 'Universal colors', 'These colors apply to most characters in the show. Use these unless a different color is specified.
 <strong>Pure white:</strong> Use for eye reflections, sclera and teeth.
 <strong>Pure black:</strong> Use for eye pupil, eyelashes, eye outlines and on eyelids (for emotional turmoil at ~5-15%)', NULL, false, '2015-12-03 15:57:59.671+00');
@@ -2027,6 +2027,21 @@ INSERT INTO tagged VALUES (100, 63);
 INSERT INTO tagged VALUES (12, 63);
 INSERT INTO tagged VALUES (76, 63);
 INSERT INTO tagged VALUES (7, 63);
+INSERT INTO tagged VALUES (101, 46);
+INSERT INTO tagged VALUES (21, 36);
+INSERT INTO tagged VALUES (102, 29);
+INSERT INTO tagged VALUES (103, 29);
+INSERT INTO tagged VALUES (104, 30);
+INSERT INTO tagged VALUES (105, 30);
+INSERT INTO tagged VALUES (106, 30);
+INSERT INTO tagged VALUES (105, 31);
+INSERT INTO tagged VALUES (99, 22);
+INSERT INTO tagged VALUES (99, 26);
+INSERT INTO tagged VALUES (99, 27);
+INSERT INTO tagged VALUES (99, 28);
+INSERT INTO tagged VALUES (21, 16);
+INSERT INTO tagged VALUES (21, 17);
+INSERT INTO tagged VALUES (21, 10);
 
 
 --
@@ -2036,10 +2051,14 @@ INSERT INTO tagged VALUES (7, 63);
 INSERT INTO tags VALUES (93, 'rara', '', 'char', 2);
 INSERT INTO tags VALUES (95, 'svengallop', '', 'char', 1);
 INSERT INTO tags VALUES (97, 's5e8', NULL, 'ep', 0);
-INSERT INTO tags VALUES (99, 's5e26', '', 'ep', 1);
 INSERT INTO tags VALUES (1, 'unicorn', NULL, 'spec', 19);
 INSERT INTO tags VALUES (7, 'minor character', 'Ponies who had a speaking role and/or interacted with the mane six', 'cat', 34);
+INSERT INTO tags VALUES (101, 's4e12', '', 'ep', 1);
 INSERT INTO tags VALUES (50, 'derpy hooves', 'Derpy Hooves or Muffins', 'char', 1);
+INSERT INTO tags VALUES (103, 's5e25-26', '', 'ep', 1);
+INSERT INTO tags VALUES (105, 's4e8', '', 'ep', 2);
+INSERT INTO tags VALUES (99, 's5e26', '', 'ep', 5);
+INSERT INTO tags VALUES (21, 's5e12', NULL, 'ep', 4);
 INSERT INTO tags VALUES (27, 'wonderbolt', 'Wonderbolt characters', 'cat', 3);
 INSERT INTO tags VALUES (8, 'background character', 'Ponies whose only purpose is filling crowds, with no to minimal speaking roles', 'cat', 4);
 INSERT INTO tags VALUES (6, 'mane six', 'Ponies who are one of the show''s six main characters', 'cat', 7);
@@ -2050,7 +2069,6 @@ INSERT INTO tags VALUES (5, 'bat pony', NULL, 'spec', 0);
 INSERT INTO tags VALUES (14, 'twilight sparkle', NULL, 'char', 1);
 INSERT INTO tags VALUES (19, 's1e1', NULL, 'ep', 0);
 INSERT INTO tags VALUES (20, 's1e26', NULL, 'ep', 0);
-INSERT INTO tags VALUES (21, 's5e12', NULL, 'ep', 0);
 INSERT INTO tags VALUES (23, 'pinkie pie', NULL, 'char', 1);
 INSERT INTO tags VALUES (24, 'fluttershy', NULL, 'char', 1);
 INSERT INTO tags VALUES (25, 'rainbow dash', NULL, 'char', 1);
@@ -2084,7 +2102,6 @@ INSERT INTO tags VALUES (60, 'trixie', NULL, 'char', 1);
 INSERT INTO tags VALUES (61, 's3e5', NULL, 'ep', 1);
 INSERT INTO tags VALUES (62, 'alicorn amulet', NULL, NULL, 1);
 INSERT INTO tags VALUES (63, 'princess celestia', NULL, 'char', 1);
-INSERT INTO tags VALUES (65, 's5e2', NULL, 'ep', 4);
 INSERT INTO tags VALUES (68, 'moondancer', NULL, 'char', 1);
 INSERT INTO tags VALUES (72, 'dinky doo', NULL, 'char', 1);
 INSERT INTO tags VALUES (75, 'lily longsocks', NULL, 'char', 1);
@@ -2124,13 +2141,17 @@ INSERT INTO tags VALUES (11, 'male', NULL, 'gen', 13);
 INSERT INTO tags VALUES (100, 'sunset shimmer', '', 'char', 1);
 INSERT INTO tags VALUES (12, 'female', NULL, 'gen', 42);
 INSERT INTO tags VALUES (76, 'human', NULL, 'spec', 1);
+INSERT INTO tags VALUES (102, 's5e1-2', '', 'ep', 1);
+INSERT INTO tags VALUES (104, 's4e24', '', 'ep', 1);
+INSERT INTO tags VALUES (106, 's5e16', '', 'ep', 1);
+INSERT INTO tags VALUES (65, 's5e2', NULL, 'ep', 4);
 
 
 --
 -- Name: tags_tid_seq; Type: SEQUENCE SET; Schema: public; Owner: mlpvc-rr
 --
 
-SELECT pg_catalog.setval('tags_tid_seq', 100, true);
+SELECT pg_catalog.setval('tags_tid_seq', 106, true);
 
 
 --
