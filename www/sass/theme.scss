@@ -598,12 +598,12 @@ footer {
 	a { color: inherit }
 }
 // Colors
-.color-blue { color: $NBlue }
-.color-darkblue { color: $NDarkBlue }
-.color-green { color: $NGreen }
-.color-red { color: $NRed }
-.color-orange { color: $NOrange }
-.color-yellow { color: $NYellow }
+.color-blue { color: $NBlue !important }
+.color-darkblue { color: $NDarkBlue !important }
+.color-green { color: $NGreen !important }
+.color-red { color: $NRed !important }
+.color-orange { color: $NOrange !important }
+.color-yellow { color: $NYellow !important }
 @import "theme_notices";
 @import "theme_buttons";
 // Alignment

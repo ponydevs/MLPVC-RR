@@ -123,3 +123,25 @@
 .delta-warn {
 	margin: 10px 0 0;
 }
+
+#rgbform {
+	.inputs {
+		display: flex !important;
+		width: 100%;
+		align-items: center;
+
+		> * {
+			flex: 1 1 auto;
+		}
+	}
+	.preview {
+		display: block !important;
+		width: 60px !important;
+		height: 60px !important;
+		margin: 10px auto 0 !important;
+		border: 2px solid #000;
+		box-sizing: content-box !important;
+
+		&:not([style]) { @include clrp-invalid(60px) }
+	}
+}

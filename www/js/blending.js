@@ -55,6 +55,39 @@ DocReady.push(function Blender(){
 		else f();
 	}).trigger('change');
 	$form.on('submit',Calculate).triggerHandler('submit');
+	$form.on('click','td',function(e){
+		if (!e.shiftKey)
+			return true;
+		var $hexInput = $(this).find('.clri');
+		if ($hexInput.length === 0)
+			return true;
+		e.preventDefault();
+
+		var hex = $hexInput.val(),
+			$prev = $.mk('div').attr('class','preview').css('background-color', hex),
+			OrigRGB = $.hex2rgb(hex),
+			$inputs = $.mk('div').attr('class','inputs').html(
+				"<input type='number' class='color-red' name='r' min='0' max='255' step='1' value='" + OrigRGB.r + "'>" +
+				"<input type='number' class='color-green' name='g' min='0' max='255' step='1' value='" + OrigRGB.g + "'>" +
+				"<input type='number' class='color-darkblue' name='b' min='0' max='255' step='1' value='" + OrigRGB.b + "'>"
+			);
+
+		$inputs.children().on('keyup change input mouseup',function(){
+			var $form = $(this).closest('form');
+			$form.children('.preview').css('background-color', $.rgb2hex($form.mkData()));
+		});
+		var $rgbform = $.mk('form').attr('id','rgbform').append($inputs,$prev);
+
+		$.Dialog.setFocusedElement($hexInput);
+		$.Dialog.request('Enter RGB values',$rgbform,'rgbform','Set',function($form){
+			$form.on('submit',function(e){
+				e.preventDefault();
+
+				$hexInput.val($.rgb2hex($form.mkData())).trigger('change');
+				$.Dialog.close();
+			});
+		});
+	});
 
 	function Calculate(e){
 		e.stopPropagation();

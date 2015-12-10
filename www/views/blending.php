@@ -1,7 +1,7 @@
 <div id="content">
 	<h1><?=$title?></h1>
 	<p>Originally made by <?=profile_link(get_user('Dasprid','name','name, avatar_url'), FORMAT_FULL)?></p>
-	<?=Notice('info',"<span class='typcn typcn-info-large'></span> This is a tool which helps you to find an original $color, given two different background {$color}s and the resulting blended $color, when the original $color is blended over it.", true)?>
+	<?=Notice('info',"<p><span class='typcn typcn-info-large'></span> This is a tool which helps you to find an original $color, given two different background {$color}s and the resulting blended $color, when the original $color is blended over it.</p><p><strong>Shift+Click</strong> an input to open a dialog where you can enter RGB values</p>", true)?>
 
 	<div id="blend-wrap">
 		<form autocomplete="off">

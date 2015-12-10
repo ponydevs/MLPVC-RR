@@ -210,7 +210,7 @@
 
 	// Convert RGB to HEX
 	$.rgb2hex = function(color){
-		return '#'+(16777216 + (color.r << 16) + (color.g << 8) + color.b).toString(16).toUpperCase().substring(1);
+		return '#'+(16777216 + (parseInt(color.r, 10) << 16) + (parseInt(color.g, 10) << 8) + parseInt(color.b, 10)).toString(16).toUpperCase().substring(1);
 	};
 
 	// :valid pseudo polyfill
