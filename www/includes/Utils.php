@@ -1302,7 +1302,11 @@ HTML;
 	define('TEXT_ONLY', 1);
 	define('LINK_ONLY', 2);
 	function da_link($User, $format = FULL){
-		if (!is_array($User)) trigger_error('$User is not an array');
+		if (!is_array($User)){
+			trigger_error('$User is not an array');
+			if (PERM('developer'))
+				var_dump($User);
+		}
 
 		$Username = $User['name'];
 		$username = strtolower($Username);
@@ -1322,8 +1326,13 @@ HTML;
 	 * @return string
 	 */
 	function profile_link($User, $format = TEXT_ONLY){
-		$Username = $User['name'];
+		if (!is_array($User)){
+			trigger_error('$User is not an array');
+			if (PERM('developer'))
+				var_dump($User);
+		}
 
+		$Username = $User['name'];
 		$avatar = $format == FULL ? "<img src='{$User['avatar_url']}' class='avatar'> " : '';
 
 		return "<a href='/@$Username' class='da-userlink'>$avatar<span class='name'>$Username</span></a>";
