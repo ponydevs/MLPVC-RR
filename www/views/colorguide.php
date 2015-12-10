@@ -16,8 +16,9 @@
 <? } ?>
 		<a class='btn blue typcn typcn-world' href="/<?=$color?>guide<?=$EQG?'':'/eqg'?>/1">View <?=$EQG?'Ponies':'Equestria Girls'?></a>
 		<a class='btn darkblue typcn typcn-th-menu' href="/<?=$color?>guide<?=$EQG?'/eqg':''?>/full">Full list of <?=$EQG?'Equestria Girls':'Ponies'?></a>
-		<a class='btn darkblue typcn typcn-tags' href="/<?=$color?>guide/tags">List of tags</a>
-		<a class='btn darkblue typcn typcn-warning' href="/<?=$color?>guide/changes">List of major changes</a>
+		<a class='btn darkblue typcn typcn-arrow-forward' href="/blending">Blending Calculator</a>
+		<a class='btn darkblue typcn typcn-tags' href="/<?=$color?>guide/tags">Tags</a>
+		<a class='btn darkblue typcn typcn-warning' href="/<?=$color?>guide/changes">Major changes</a>
 	</p>
 
 <?  if (PERM('user')){ ?>
