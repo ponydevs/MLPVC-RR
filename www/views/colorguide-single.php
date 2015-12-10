@@ -24,16 +24,12 @@
 		"SELECT t.tid
 		FROM tagged tt
 		LEFT JOIN tags t ON tt.tid = t.tid
-		WHERE tt.ponyid = {$Appearance['id']}");
+		WHERE tt.ponyid = ? &&  t.type = ?",array($Appearance['id'], 'ep'));
 	if (!empty($EpTagsOnAppearance)){
 		foreach ($EpTagsOnAppearance as $k => $row)
 			$EpTagsOnAppearance[$k] = $row['tid'];
 
-	$EpAppearances = $CGDb->rawQuery(
-		"SELECT DISTINCT t.name
-		FROM tagged tt
-		LEFT JOIN tags t ON tt.tid = t.tid
-		WHERE t.type = 'ep' && t.tid IN (".implode(',',$EpTagsOnAppearance).")");
+	$EpAppearances = $CGDb->rawQuery("SELECT DISTINCT t.name FROM tags t WHERE t.tid IN (".implode(',',$EpTagsOnAppearance).")");
 	if (!empty($EpAppearances)){ ?>
 	<section id="ep-appearances">
 		<label><span class='typcn typcn-video'></span>Appears in <?=plur('episode',count($EpAppearances),PREPEND_NUMBER)?></label>
