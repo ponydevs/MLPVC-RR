@@ -3,7 +3,6 @@
 	<p>Originally made by <?=profile_link(get_user('Dasprid','name','name, avatar_url'), FORMAT_FULL)?></p>
 	<?=Notice('info',"<span class='typcn typcn-info-large'></span> This is a tool which helps you to find an original $color, given two different background {$color}s and the resulting blended $color, when the original $color is blended over it.", true)?>
 
-
 	<div id="blend-wrap">
 		<form autocomplete="off">
 			<table>
@@ -50,6 +49,9 @@
 			<span class="rgba" data-color="<?=$color?>"></span>
 			<span class="opacity" data-color="value"></span>
 		</div>
+	</div>
+	<div class="hidden delta-warn">
+		<?=Notice('warn',"<span class='typcn typcn-warning'></span> The result may not be accurate as the difference between the optimal $color and the closest match is too large", true)?>
 	</div>
 </div>
 <script>var HEX_COLOR_PATTERN = <?=rtrim(HEX_COLOR_PATTERN,'u')?>;</script>

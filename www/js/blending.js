@@ -23,7 +23,8 @@ DocReady.push(function Blender(){
 		$hex = $result.children('.hex'),
 		$hexa = $result.children('.hexa'),
 		$rgba = $result.children('.rgba'),
-		$opacity = $result.children('.opacity');
+		$opacity = $result.children('.opacity'),
+		$deltaWarn = $('.delta-warn');
 
 	$inputs.on('keyup change input',function(){
 		var $this = $(this),
@@ -91,6 +92,7 @@ DocReady.push(function Blender(){
 
 		if (bestMatch === null)
 			return SetPreview(false);
+		$deltaWarn[minDelta > 10?'show':'hide']();
 		SetPreview({
 			r: Math.round(bestMatch.r),
 			g: Math.round(bestMatch.g),
