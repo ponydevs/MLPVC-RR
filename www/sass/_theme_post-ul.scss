@@ -92,10 +92,8 @@
 			&:before, &:after { content: '"' }
 		}
 		.reserver, .reserve-request {
+			@extend %reserve-button;
 			color: #666;
-			background: #efefef linear-gradient(to bottom, #d2dfc5 0%, #bdd1b4 100%);
-			border: 1px solid #93a98f;
-			border-radius: 5px;
 			height: 40px;
 		}
 		> .reserve-request {
@@ -120,14 +118,15 @@
 				position: relative;
 				z-index: 2;
 
-				> * { margin-right: 5px }
+				> * {
+					margin-right: 5px;
+					display: inline-block;
+				}
 				.avatar {
 					height: 40px;
 					width: 40px;
-					display: inline-block;
 				}
 				.name {
-					display: inline-block;
 					font-size: 16px;
 					vertical-align: bottom;
 				}

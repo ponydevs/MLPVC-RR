@@ -7,6 +7,7 @@
 	define('UUIDV4_REGEX',"^$hex{8}-$hex{4}-4$hex{3}-[89AaBb]$hex{3}-$hex{12}$");
 	define('NEWEST_FIRST', 'DESC');
 	define('OLDEST_FIRST', 'ASC');
+	define('HEX_COLOR_PATTERN','/^#?([A-Fa-f0-9]{6})$/u');
 
 	// Constants to enable/disable returning of wrapper element with markup generators
 	define('NOWRAP', false);
@@ -1178,10 +1179,11 @@ HTML;
 	 * Fetch user info from dA upon request to nonexistant user
 	 *
 	 * @param string $username
+	 * @param string $dbcols
 	 * @return array|null
 	 */
 	define('USERNAME_PATTERN', '([A-Za-z\-\d]{1,20})');
-	function fetch_user($username){
+	function fetch_user($username, $dbcols = null){
 		global $Database;
 
 		if (!preg_match('/^'.USERNAME_PATTERN.'$/', $username))
@@ -1212,9 +1214,10 @@ HTML;
 		if (!($userExists ? $Database->where('id', $ID)->update('users', $insert) : $Database->insert('users',$insert)))
 			throw new Exception('Saving user data failed'.(PERM('developer')?': '.$Database->getLastError():''));
 
-		LogAction('userfetch',array('userid' => $insert['id']));
+		if (!$userExists)
+			LogAction('userfetch',array('userid' => $insert['id']));
 
-		return get_user($insert['name'], 'name');
+		return get_user($insert['name'], 'name', $dbcols);
 	}
 
 	// Global cache for storing user details
@@ -1258,13 +1261,14 @@ HTML;
 				FROM users
 				LEFT JOIN roles ON roles.name = users.role
 				WHERE users.$coloumn = ?",array($value));
-
-			if (empty($User) && $coloumn === 'name')
-				$User = fetch_user($value);
-
-			if (!empty($User) && isset($Auth)) $User['Session'] = $Auth;
 		}
 		else $User = $Database->where($coloumn, $value)->getOne('users',$dbcols);
+
+		if (empty($User) && $coloumn === 'name')
+			$User = fetch_user($value, $dbcols);
+
+		if (empty($dbcols) && !empty($User) && isset($Auth))
+			$User['Session'] = $Auth;
 
 		if (isset($User['id']))
 			$_USER_CACHE[$User['id']] = $User;

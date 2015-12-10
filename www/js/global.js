@@ -1,3 +1,4 @@
+/* jshint bitwise: false */
 /* global $w,$d,$head,$body,$header,$sidebar,$sbToggle,$main,$footer,console,prompt,HandleNav,getTimeDiff,one,createTimeStr,PRINTABLE_ASCII_REGEX */
 (function($){
 	'use strict';
@@ -205,6 +206,24 @@
 			g: parseInt(hexstr.substring(3, 5), 16),
 			b: parseInt(hexstr.substring(5, 7), 16)
 		};
+	};
+
+	// Convert RGB to HEX
+	$.rgb2hex = function(color){
+		return '#'+(16777216 + (color.r << 16) + (color.g << 8) + color.b).toString(16).toUpperCase().substring(1);
+	};
+
+	// :valid pseudo polyfill
+	if (typeof $.expr[':'].valid !== 'function')
+		$.extend($.expr[':'], {
+			valid: function(el){
+				return el.validity.valid;
+			}
+		});
+
+	$.roundTo = function(number, precision){
+		var pow = Math.pow(10, precision);
+		return Math.round(number*pow)/pow;
 	};
 
 	window.URL = function(url){

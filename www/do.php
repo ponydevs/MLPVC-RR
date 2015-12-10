@@ -1985,6 +1985,13 @@
 				'js' => "paginate",
 			));
 		break;
+		case "blending":
+			$HexPattern = preg_replace('~^/(.+)/u$~','$1',HEX_COLOR_PATTERN);
+			loadPage(array(
+				'title' => "$Color Blending Calculator",
+				'do-css', 'do-js',
+			));
+		break;
 		case "404":
 		default:
 			do404();

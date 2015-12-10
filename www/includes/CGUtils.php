@@ -13,7 +13,6 @@
 	// Some patterns for validation
 	define('TAG_NAME_PATTERN', '^[a-z\d ().-]{4,30}$');
 	define('INVERSE_TAG_NAME_PATTERN', '[^a-z\d ().-]');
-	define('HEX_COLOR_PATTERN','/^#?([A-Fa-f0-9]{6})$/u');
 
 	// EQG Color Guide URL pattern
 	define('EQG_URL_PATTERN','~^eqg/~');

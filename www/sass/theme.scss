@@ -323,6 +323,28 @@ header, #sidebar .mobile-nav {
 			text-align: center;
 			margin: 0 0 10px;
 			font-style: italic;
+
+			.da-userlink {
+				@extend %reserve-button;
+				display: inline-block;
+				font-style: normal;
+				height: 1.2em;
+				white-space: nowrap;
+
+				> * {
+					display: inline-block;
+					vertical-align: top;
+				}
+				.avatar {
+					height: 1.2em;
+					width: 1.2em;
+				}
+				.name {
+					line-height: 1.6em;
+					font-size: .8em;
+					margin-right: 5px;
+				}
+			}
 		}
 	}
 }
