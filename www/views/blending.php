@@ -1,6 +1,6 @@
 <div id="content">
 	<h1><?=$title?></h1>
-	<p>Originally made by <?=profile_link(get_user('Dasprid','name','name, avatar_url'), FULL)?></p>
+	<p>Originally made by <?=profile_link(get_user('dasprid','name','name, avatar_url'), FULL)?></p>
 	<?=Notice('info',"<p><span class='typcn typcn-info-large'></span> This is a tool which helps you to find an original $color, given two different background {$color}s and the resulting blended $color, when the original $color is blended over it.</p><p><strong>Shift+Click</strong> an input to open a dialog where you can enter RGB values</p><a class='btn typcn typcn-arrow-back' href='/{$color}guide'>Back to $Color Guide</a>", true)?>
 
 	<div id="blend-wrap">

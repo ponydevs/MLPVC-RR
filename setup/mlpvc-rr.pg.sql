@@ -24,6 +24,20 @@ COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
 
 
 --
+-- Name: citext; Type: EXTENSION; Schema: -; Owner: 
+--
+
+CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA public;
+
+
+--
+-- Name: EXTENSION citext; Type: COMMENT; Schema: -; Owner: 
+--
+
+COMMENT ON EXTENSION citext IS 'data type for case-insensitive character strings';
+
+
+--
 -- Name: uuid-ossp; Type: EXTENSION; Schema: -; Owner: 
 --
 
@@ -743,7 +757,7 @@ ALTER SEQUENCE usefullinks_id_seq OWNED BY usefullinks.id;
 
 CREATE TABLE users (
     id uuid NOT NULL,
-    name character varying(20) NOT NULL,
+    name citext NOT NULL,
     role character varying(10) DEFAULT 'user'::character varying NOT NULL,
     avatar_url character varying(255) NOT NULL,
     signup_date timestamp with time zone DEFAULT now() NOT NULL
