@@ -454,7 +454,7 @@ $(function(){
 	$w.off('popstate').on('popstate',function(e){
 		var state = e.originalEvent.state;
 
-		if (state !== null && !state['via-js'])
+		if (state !== null && !state['via-js'] && state.paginate === true)
 			return $w.trigger('nav-popstate', [state]);
 		Navigation(location.href, undefined, true);
 	});
@@ -478,7 +478,7 @@ $(function(){
 					return $.Dialog.fail(title+' error', this.message);
 				}
 
-				url = new URL(this.responseURL+(new URL(url).hash)).pathString;
+				url = new URL(this.responseURL).pathString+(new URL(url).hash);
 				$w.triggerHandler('unload');
 				if (!OpenSidebarByDefault())
 					$sbToggle.trigger('sb-close');

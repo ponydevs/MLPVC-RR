@@ -278,8 +278,8 @@ DocReady.push(function Episode(){
 		});
 		$li.children('em').children('a').last().on('click',function(e){
 			e.preventDefault();
-			handlehash(this.hash);
-			history.replaceState({},'',this.href);
+			history.replaceState(history.state,'',this.href);
+			HighlightHash();
 		});
 		var $actions = $li.find('.actions').children();
 		$actions.filter('.cancel').off('click').on('click',function(){
@@ -772,28 +772,22 @@ DocReady.push(function Episode(){
 	}
 	$('.post-form').each($.fn.formBind);
 
-	function hlhash(e){
-		if (typeof e === 'object' && typeof e.preventDefault === 'function')
-			e.preventDefault();
-
-		$.Dialog.close();
-
-		handlehash(location.hash, e);
-	}
-	function handlehash(hash, e){
-		var $anchor = $(hash);
-
+	function HighlightHash(e){
 		$('.highlight').removeClass('highlight');
-		if (!$anchor.length) return;
 
+		var $anchor = $(location.hash);
+		if (!$anchor.length)
+			return;
 		$anchor.addClass('highlight');
+
 		setTimeout(function(){
 			$body.animate({scrollTop: $anchor.offset().top - $navbar.outerHeight() - 10 }, 500,function(){
-				if (typeof e === 'object' && e.type === 'load') $.Dialog.close();
+				if (typeof e === 'object' && e.type === 'load')
+					$.Dialog.close();
 			});
 		}, 1);
 	}
-	$w.on('hashchange', hlhash);
+	$w.on('hashchange', HighlightHash);
 	if (location.hash.length){
 		var $imgs = $content.find('img'),
 			total = $imgs.length, loaded = 0;
@@ -804,22 +798,13 @@ DocReady.push(function Episode(){
 			$('#dialogContent').children('div:not([id])').last().addClass('align-center').append($progress);
 			$content.imagesLoaded()
 				.progress(function(_, img){
-					if (img.isLoaded){
-						loaded++;
-						$progress.attr('value', loaded);
-					}
-					else {
-						total--;
-						$progress.attr('max', total);
-					}
+					if (img.isLoaded)
+						$progress.attr('value', ++loaded);
+					else $progress.attr('max', --total);
 				})
 				.always(function(){
-					setTimeout(function(){
-						$.Dialog.close();
-						hlhash({type:'load'});
-					},1);
+					HighlightHash({type:'load'});
 				});
 		}
-		else hlhash();
 	}
 });
