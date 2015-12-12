@@ -21,17 +21,28 @@
 
 		if (!empty($currentUser)){
 			if ($currentUser['role'] !== 'ban'){
-				if (strtotime($currentUser['Session']['expires']) < time())
-					da_get_token($currentUser['Session']['refresh'],'refresh_token');
+				if (strtotime($currentUser['Session']['expires']) < time()){
+					try {
+						da_get_token($currentUser['Session']['refresh'], 'refresh_token');
+						$tokenvalid = true;
+					}
+					catch (DARequestException $e){
+						$Database->where('id', $currentUser['Session']['id'])->delete('sessions');
+						trigger_error("Session refresh failed for {$currentUser['name']} ({$currentUser['id']}) | {$e->getMessage()} (HTTP {$e->getCode()})", E_USER_WARNING);
+					}
+				}
+				else $tokenvalid = true;
 
-				$signedIn = true;
-				$lastVisitTS = date('c');
-				if ($Database->where('id', $currentUser['Session']['id'])->update('sessions', array('lastvisit' => $lastVisitTS)))
-					$currentUser['Session']['lastvisit'] = $lastVisitTS;
+				if ($tokenvalid){
+					$signedIn = true;
+					$lastVisitTS = date('c');
+					if ($Database->where('id', $currentUser['Session']['id'])->update('sessions', array('lastvisit' => $lastVisitTS)))
+						$currentUser['Session']['lastvisit'] = $lastVisitTS;
 
-				if ($currentUser['name'] === 'Pirill-Poveniy'){
-					$Color = 'Colour';
-					$color = 'colour';
+					if ($currentUser['name'] === 'Pirill-Poveniy'){
+						$Color = 'Colour';
+						$color = 'colour';
+					}
 				}
 			}
 			else $Database->where('id', $currentUser['id'])->delete('sessions');
