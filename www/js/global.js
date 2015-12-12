@@ -83,7 +83,11 @@
 			if (data[1] === 'abort')
 				return;
 			details = ' Details:<pre><code>' + data.slice(1).join('\n').replace(/</g,'&lt;') + '</code></pre>';
-			details += ' Response body:<pre><code>' + data[0].responseText.replace(/</g,'&lt;') + '</code></pre>';
+			details += ' Response body:';
+			var xdebug = /^(?:<br \/>\n)?(<pre class='xdebug-var-dump')/;
+			if (xdebug.test(data[0].responseText))
+				details += '<div class="reset">'+data[0].responseText.replace(xdebug, '$1')+'</div>';
+			else details += '<pre><code>' + data[0].responseText.replace(/</g,'&lt;') + '</code></pre>';
 		}
 		$.Dialog.fail(false,'There was an error while processing your request.'+details);
 	});

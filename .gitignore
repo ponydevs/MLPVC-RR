@@ -11,6 +11,7 @@ www/google*.html
 www/mywot*.html
 cf-ips.txt
 stats/
+stash-cache/
 
 # PostgreSQL switch
 *.sh

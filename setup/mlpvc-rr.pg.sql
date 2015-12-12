@@ -68,7 +68,7 @@ CREATE TABLE deviation_cache (
     author character varying(20),
     preview character varying(255) NOT NULL,
     fullsize character varying(255) NOT NULL,
-    updated_on timestamp with time zone DEFAULT now() NOT NULL
+    updated_on timestamp with time zone DEFAULT now()
 );
 
 
@@ -688,7 +688,8 @@ CREATE TABLE sessions (
     refresh character varying(40) NOT NULL,
     expires timestamp with time zone,
     created timestamp with time zone DEFAULT now() NOT NULL,
-    lastvisit timestamp with time zone DEFAULT now() NOT NULL
+    lastvisit timestamp with time zone DEFAULT now() NOT NULL,
+    scope character varying(50) DEFAULT 'user browse'::character varying NOT NULL
 );
 
 
@@ -760,7 +761,8 @@ CREATE TABLE users (
     name citext NOT NULL,
     role character varying(10) DEFAULT 'user'::character varying NOT NULL,
     avatar_url character varying(255) NOT NULL,
-    signup_date timestamp with time zone DEFAULT now() NOT NULL
+    signup_date timestamp with time zone DEFAULT now() NOT NULL,
+    stash_allowed boolean DEFAULT false NOT NULL
 );
 
 

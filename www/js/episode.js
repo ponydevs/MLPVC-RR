@@ -589,6 +589,7 @@ DocReady.push(function Episode(){
 	$.fn.formBind = function (){
 		var $form = $(this),
 			$formImgCheck = $form.find('.check-img'),
+			$formImgStash = $form.find('.upload-stash'),
 			$formImgPreview = $form.find('.img-preview'),
 			$formDescInput = $form.find('[name=label]'),
 			$formImgInput = $form.find('[name=image_url]'),
@@ -656,7 +657,8 @@ DocReady.push(function Episode(){
 			$.post('/post', { image_url: url }, $.mkAjaxHandler(function(){
 				var data = this;
 				if (!data.status){
-					$notice.html(data.message).show();
+					$notice.children('p:not(.keep)').remove();
+					$notice.prepend($.mk('p').class('color-red').html(data.message)).show();
 					$previewIMG.hide();
 					return $.Dialog.close();
 				}
@@ -665,7 +667,7 @@ DocReady.push(function Episode(){
 					$.Dialog.wait(title,'Checking image availability');
 
 					$previewIMG.attr('src',data.preview).show().off('load error').on('load',function(){
-						$notice.hide();
+						$notice.children('p:not(.keep)').remove();
 
 						$formImgInput.data('prev-url', url);
 
@@ -698,6 +700,78 @@ DocReady.push(function Episode(){
 				}
 				load(data, 0);
 			}));
+		});
+		$formImgStash.on('click',function(e){
+			e.preventDefault();
+
+			$.Dialog.wait('Link from your Sta.sh', 'Looking for your Sta.sh uploads');
+
+			$.post('/upload-stash/get', $.mkAjaxHandler(function(){
+				if (!this.status) return $.Dialog.fail(false, this.message);
+
+				var $SelectorForm = $.mk('form').attr('id', 'stash-item-select').append(
+						$.mk('p').html('Select an image from the list below then click <strong>Use</strong>. Most recent images are shown first.')
+					),
+					$Selector = $.mk('div').attr('class','selector').appendTo($SelectorForm);
+				$.each(this.items,function(_,item){
+					$Selector.append(
+						$.mk('label').append(
+							$.mk('input').attr({
+								type: 'radio',
+								name: 'itemid',
+								value: item.itemid,
+								required: true,
+							}),
+							$.mk('img').attr({
+								src: item.image,
+								title: item.name,
+							})
+						)
+					);
+				});
+
+				$.Dialog.request(false, $SelectorForm, 'stash-item-select', 'Use', function($form){
+					$form.on('submit',function(e){
+						e.preventDefault();
+
+						var data = $form.mkData();
+						$.Dialog.wait(false, 'Caching image details');
+
+						$.post('/upload-stash/detail/'+data.itemid,$.mkAjaxHandler(function(){
+							if (!this.status) return $.Dialog.fail(false, this.message);
+
+							$formImgInput.val(this.url);
+							$.Dialog.close();
+							$.Dialog.success('Linking from Sta.sh', 'Image cached successfully');
+							$formImgCheck.triggerHandler('click');
+						}));
+					});
+				});
+			}));
+		});
+		$formImgStash.next('a.typcn-lock-open').on('click',function(e){
+			e.preventDefault();
+
+			var $button = $(this),
+				authurl = $(this).attr('data-redirect'),
+				globalFunctionKey = ' authHandle'+authurl.replace(/^.*(\d{5})$/,'$1');
+
+			$.Dialog.confirm('Enable Sta.sh upload',"<p>In order to be able to link files from your Sta.sh, you must allow the site to read your files there. Don't worry, we won't delete or change them in any way.</p><p>This is neccessary because when you just paste the link into the field below, the site does not receive the URL of the full image afterwards, only a version which has its width capped at 1024px. If you use this method, your 1080p screenshots will be available here in full resolution.</p><p>If you don't feel comfortable allowing our site to read your Sta.sh, <strong>you can keep using links</strong>, but be aware that the resolution will be lower than you'd expect!</p><p><strong>If you want to revoke our acesss to your Sta.sh afterwards</strong>, go to your <a href='/u/'>Account</a> page and click the unlink button at the bottom of the page, then log in again.</p>",['Okay',"I'd rather not"],function(sure){
+				if (!sure) return;
+
+				$.Dialog.wait(false, 'Opening authorization request window');
+				window[globalFunctionKey] = function(status){
+					if (!status) return $.Dialog.fail(false, 'Sta.sh linking could not be enabled');
+
+					$button.remove();
+					$formImgStash.removeAttr('disabled').toggleClass('typcn-folder typcn-folder-open');
+					$.Dialog.success(false, 'Authorization complete, you can now link from your Sta.sh', true);
+				};
+				var authWindow = window.open(authurl,'_blank');
+				if (!authWindow || authWindow.closed || typeof authWindow.closed === 'undefined')
+					return $.Dialog.fail(false, "It appears you have a pop-up blocker which didn't allow the authorization dialog to open. Please disable it and try again.");
+				$.Dialog.info(false, 'A new window/tab was opened to ask for your premission to access the files stored in your Sta.sh. Click "Allow" or "Deny", then come back to this page.');
+			});
 		});
 		$form.on('submit',function(e, screwchanges, sanityCheck){
 			e.preventDefault();

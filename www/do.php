@@ -41,8 +41,18 @@
 			if (!$signedIn) respond('Already signed out',1);
 			detectCSRF();
 
-			if (isset($_REQUEST['unlink']))
-				da_request('https://www.deviantart.com/oauth2/revoke',array('token' => $currentUser['Session']['access']));
+			if (isset($_REQUEST['unlink'])){
+				try {
+					da_request('https://www.deviantart.com/oauth2/revoke', array('token' => $currentUser['Session']['access']));
+					$Database->where('id', $currentUser['id'])->update('users',array('stash_allowed' => false));
+					$UserStashCache = APPATH."../stash-cache/{$currentUser['id']}.json";
+					if (file_exists($UserStashCache))
+						unlink($UserStashCache);
+				}
+				catch (DARequestException $e){
+					respond("Coulnd not revoke the site's access: {$e->getMessage()} (HTTP {$e->getCode()})");
+				}
+			}
 
 			if (isset($_REQUEST['unlink']) || isset($_REQUEST['everywhere'])){
 				$col = 'user';
@@ -60,8 +70,6 @@
 			respond((isset($_REQUEST['unlink'])?'Your account has been unlinked from our site':'You have been signed out successfully').'. Goodbye!',1);
 		break;
 		case "da-auth":
-			if ($signedIn) header('Location: /');
-
 			da_handle_auth();
 		break;
 		case "post":
@@ -379,6 +387,86 @@
 				respond('Reservation added',1);
 			}
 			else respond('Invalid request');
+		break;
+		case "upload-stash":
+			if (empty($data))
+				do404();
+			if (RQMTHD !== 'POST'){
+				if (preg_match('~close-dialog/(\d{5})~', $data, $_match)){
+					$Database->where('user',$currentUser['id'])->where('scope', '^.*stash.*$', '!~*')->delete('sessions');
+					echo "<script>var k=' authHandle'+$_match[1];if(typeof window.opener[k]==='function')window.opener[k]({$currentUser['stash_allowed']});window.close()</script>";
+					exit;
+				}
+				do404();
+			}
+
+			if (!PERM('user'))
+				respond();
+			detectCSRF();
+
+			$_match = array();
+			if ($data === 'get'){
+				$StashCache = APPATH.'../stash-cache';
+				$Post = array();
+				$CachedData = array();
+
+				$UserStashCache = "$StashCache/{$currentUser['id']}.json";
+				upload_folder_create($UserStashCache);
+				if (file_exists($UserStashCache)){
+					$CachedData = json_decode(file_get_contents($UserStashCache), true);
+					$Post['cursor'] = $CachedData['cursor'];
+				}
+
+				$Request = stash_get_all_items($Post);
+				if (!empty($CachedData)){
+					if (is_array($Request)){
+						$Data = array_replace_recursive($CachedData, $Request);
+						if ($Request['has_more'])
+							write_stash_cache($UserStashCache, $Data);
+					}
+					else {
+						$Data = $CachedData;
+						trigger_error('Could not fetch Sta.sh folder data, falling back to cache', E_USER_WARNING);
+					}
+				}
+				else {
+					if (!is_array($Request))
+						respond('Error retrieving folders');
+					$Data = $Request;
+					write_stash_cache($UserStashCache, $Data);
+				}
+
+				if (empty($Data['entries']))
+					respond('Your Sta.sh is empty');
+
+				$Items = array();
+				foreach ($Data['entries'] as $entry){
+					$metadata = $entry['metadata'];
+
+					if (!empty($metadata['files'][2]['src']))
+						$image = $metadata['files'][2]['src'];
+					else $image = end($metadata['files'])['src'];
+
+					$Items[] = array(
+						'name' => $metadata['title'],
+						'image' => $image,
+						'itemid' => $entry['itemid'],
+					);
+				}
+
+				respond(array('items' => $Items));
+			}
+			else if (preg_match('~^detail/(\d{12,})$~',$data,$_match)){
+				try {
+					$URLID = da_cache_own_stash_item($_match[1])['id'];
+				}
+				catch (DARequestException $e){
+					respond("Could not get details of item #{$_match[1]} (HTTP {$e->getCode()})");
+				}
+
+				respond(array('url' => "http://sta.sh/$URLID"));
+			}
+			else do404();
 		break;
 
 		// PAGES
@@ -981,7 +1069,7 @@
 				$Sessions = $Database
 					->where('user',$User['id'])
 					->orderBy('lastvisit','DESC')
-					->get('sessions',null,'id,created,lastvisit,platform,browser_name,browser_ver,user_agent');
+					->get('sessions',null,'id,created,lastvisit,platform,browser_name,browser_ver,user_agent,scope');
 			}
 
 			$settings = array(

@@ -272,6 +272,11 @@
 		.img-preview > img {
 			width: 100%;
 			max-width: 300px;
+			max-height: 200px;
+			margin-top: 10px;
+			border: 2px solid #000;
+
+			&:not([src]) { display: none }
 		}
 	}
 }
@@ -364,6 +369,36 @@
 
 		@for $i from 1 through 5 {
 			&.cnt-#{$i} { width: #{$i*20px} }
+		}
+	}
+}
+
+#stash-item-select .selector {
+	display: flex !important;
+	flex-flow: row wrap;
+	justify-content: center;
+	max-height: 350px;
+	overflow: auto;
+
+	label {
+		display: inline-block;
+		flex: 1 1 auto;
+		width: auto !important;
+		padding: 5px;
+		box-sizing: border-box;
+
+		input {
+			display: none;
+
+			~ img {
+				height: 80px;
+				border: 2px solid rgba(black, .4);
+				opacity: .8;
+			}
+			&:checked ~ img {
+				border-color: black;
+				opacity: 1;
+			}
 		}
 	}
 }

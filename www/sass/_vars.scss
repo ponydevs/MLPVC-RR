@@ -192,3 +192,28 @@ $ColorPalette:
 
 	.avatar { border-right: 1px solid $border }
 }
+
+$NoScrollbar: false;
+@mixin l33th4x($scrollbar:true){
+	$Lime: #0c0;
+	background: #000;
+	color: $Lime;
+
+	@if ($scrollbar == true){
+		&::-webkit-scrollbar {
+			background-color: transparent;
+			padding: 0;
+
+			&:vertical { width: 5px }
+			&:horizontal { height: 5px }
+		}
+		&::-webkit-scrollbar-button { display: none }
+		&::-webkit-scrollbar-thumb {
+			background-color: rgba($Lime, .7);
+			margin: 0 2px;
+
+			&:hover { background-color: rgba($Lime, .8) }
+			&:active { background-color: rgba($Lime, .9) }
+		}
+	}
+}
