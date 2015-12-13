@@ -52,6 +52,7 @@
 	}
 	#sidebar {
 		height: calc(100% - 50px);
+		background: rgba(black, .95) !important;
 
 		> .mobile-nav ul {
 			list-style: none;
@@ -226,7 +227,6 @@ header {
 
 					body.loading & {
 						cursor: wait;
-						pointer-events: none;
 
 						> .loader { display: block }
 						> .avatar { opacity: .5 }

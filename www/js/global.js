@@ -357,7 +357,6 @@ $(function(){
 	$sbToggle.off('click').on('click',function(e){
 		e.preventDefault();
 
-		if (xhr !== false) return;
 		$sbToggle.trigger('sb-'+($body.hasClass('sidebar-open')?'close':'open'));
 	}).on('sb-open sb-close',function(e){
 		var close = e.type.substring(3) === 'close';
