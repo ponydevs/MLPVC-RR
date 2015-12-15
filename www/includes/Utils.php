@@ -2230,7 +2230,6 @@ ORDER BY "count" DESC
 		'yt' => 'YouTube',
 		'dm' => 'Dailymotion',
 	);
-	// TODO Make a proper interface for this and clean up code
 	function render_ep_video($CurrentEpisode){
 		global $VIDEO_PROVIDER_NAMES, $Database;
 
