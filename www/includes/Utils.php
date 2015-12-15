@@ -1122,8 +1122,8 @@ HTML;
 		$AlreadyCached = $Database->where('id', $URLID)->where('provider','sta.sh')->getOne('deviation_cache');
 		$update = array(
 			'title' => $ItemInfo['title'],
-			'preview' => $preview,
-			'fullsize' => $fullsize,
+			'preview' => makeHttps($preview),
+			'fullsize' => makeHttps($fullsize),
 		);
 
 		if (!empty($AlreadyCached))
