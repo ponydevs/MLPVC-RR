@@ -648,16 +648,11 @@ DocReady.push(function Episode(){
 					$formImgInput.val($formImgInput.val().replace(outgoing,''));
 			}
 		}
-		var CHECK_BTN = '<strong class="typcn typcn-arrow-repeat" style="display:inline-block">Check image</strong>';
-		$formImgCheck.on('click',function(e){
-			e.preventDefault();
-
-			$formImgCheck.removeClass('red');
-			imgCheckDisabler(true);
+		function checkImage(){
 			var url = $formImgInput.val(),
 				title = Type+' process';
 
-			$.Dialog.wait(Type+' process','Checking image');
+			$.Dialog.wait(title,'Checking image');
 
 			$.post('/post', { image_url: url }, $.mkAjaxHandler(function(){
 				var data = this;
@@ -705,6 +700,14 @@ DocReady.push(function Episode(){
 				}
 				load(data, 0);
 			}));
+		}
+		var CHECK_BTN = '<strong class="typcn typcn-arrow-repeat" style="display:inline-block">Check image</strong>';
+		$formImgCheck.on('click',function(e){
+			e.preventDefault();
+
+			$formImgCheck.removeClass('red');
+			imgCheckDisabler(true);
+			checkImage();
 		});
 		$formImgStash.on('click',function(e){
 			e.preventDefault();
@@ -740,9 +743,10 @@ DocReady.push(function Episode(){
 						e.preventDefault();
 
 						var data = $form.mkData();
-						$formImgInput.val('http://sta.sh/'+(parseInt(data.itemid).toString(36))).triggerHandler('change');
+						$formImgCheck.attr('disabled', false);
+						$formImgInput.val('http://sta.sh/'+(parseInt(data.itemid).toString(36)));
 						$.Dialog.close();
-						$formImgCheck.triggerHandler('click');
+						checkImage();
 					});
 				});
 			}));
