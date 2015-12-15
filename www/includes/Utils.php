@@ -898,8 +898,14 @@ HTML;
 				'role' => isset($User['role']) ? $User['role'] : 'user',
 			), 'member');
 
-		if ($type === 'refresh_token') $Database->where('refresh', $code)->update('sessions',$AuthData);
-		else $Database->insert('sessions', array_merge($AuthData, array('user' => $UserID)));
+		if ($type === 'refresh_token')
+			$Database->where('refresh', $code)->update('sessions',$AuthData);
+		else {
+			$Database->where('user', $User['id'])->where('scope', $AuthData['scope'], '!=')->delete('sessions');
+			$Database->insert('sessions', array_merge($AuthData, array('user' => $UserID)));
+		}
+
+		$Database->where('user',$currentUser['id'])->where('scope', $currentUser['Session']['scope'], '!=')->delete('sessions');
 
 		Cookie::set('access', $cookie, ONE_YEAR);
 	}

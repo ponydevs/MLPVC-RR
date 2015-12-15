@@ -392,11 +392,8 @@
 			if (empty($data))
 				do404();
 			if (RQMTHD !== 'POST'){
-				if (preg_match('~close-dialog/(\d{5})~', $data, $_match)){
-					$Database->where('user',$currentUser['id'])->where('scope', '^.*stash.*$', '!~*')->delete('sessions');
-					echo "<script>var k=' authHandle'+$_match[1];if(typeof window.opener[k]==='function')window.opener[k]({$currentUser['stash_allowed']});window.close()</script>";
-					exit;
-				}
+				if (preg_match('~close-dialog/(\d{5})~', $data, $_match))
+					die("<script>var k=' authHandle'+$_match[1];if(typeof window.opener[k]==='function')window.opener[k]({$currentUser['stash_allowed']});window.close()</script>");
 				do404();
 			}
 
