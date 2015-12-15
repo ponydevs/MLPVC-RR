@@ -715,7 +715,7 @@ DocReady.push(function Episode(){
 				if (!this.status) return $.Dialog.fail(false, this.message);
 
 				var $SelectorForm = $.mk('form').attr('id', 'stash-item-select').append(
-						$.mk('p').html('Select an image from the list below then click <strong>Use</strong>. Most recent images are shown first.')
+						$.mk('p').html("<p>Select an image from the list below then click <strong>Use</strong>. Most recent images are shown first.</p><div class='notice info'>Since you've enabled Sta.sh upload, using a link from <em>your own</em> Sta.sh instead of selecting an image here will have the same effect.</div>")
 					),
 					$Selector = $.mk('div').attr('class','selector').appendTo($SelectorForm);
 				$.each(this.items,function(_,item){
@@ -740,16 +740,9 @@ DocReady.push(function Episode(){
 						e.preventDefault();
 
 						var data = $form.mkData();
-						$.Dialog.wait(false, 'Caching image details');
-
-						$.post('/upload-stash/detail/'+data.itemid,$.mkAjaxHandler(function(){
-							if (!this.status) return $.Dialog.fail(false, this.message);
-
-							$formImgInput.val(this.url);
-							$.Dialog.close();
-							$.Dialog.success('Linking from Sta.sh', 'Image cached successfully');
-							$formImgCheck.triggerHandler('click');
-						}));
+						$formImgInput.val('http://sta.sh/'+(parseInt(data.itemid).toString(36))).triggerHandler('change');
+						$.Dialog.close();
+						$formImgCheck.triggerHandler('click');
 					});
 				});
 			}));

@@ -456,16 +456,6 @@
 
 				respond(array('items' => $Items));
 			}
-			else if (preg_match('~^detail/(\d{12,})$~',$data,$_match)){
-				try {
-					$URLID = da_cache_own_stash_item($_match[1])['id'];
-				}
-				catch (DARequestException $e){
-					respond("Could not get details of item #{$_match[1]} (HTTP {$e->getCode()})");
-				}
-
-				respond(array('url' => "http://sta.sh/$URLID"));
-			}
 			else do404();
 		break;
 
