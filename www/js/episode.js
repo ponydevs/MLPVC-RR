@@ -180,21 +180,21 @@ DocReady.push(function Episode(){
 				if (!this.status) return $.Dialog.fail(false, this.message);
 
 				var $chart = $.mk('canvas').css({
-							width: 200,
-							height: 200,
-							display: 'block',
-							margin: '0 auto',
-						}),
-						ctx = $chart.get(0).getContext("2d"),
-						$tooltip = $.mk('p').attr('class','tooltip').html('&nbsp;');
+						width: 200,
+						height: 200,
+						display: 'block',
+						margin: '0 auto',
+					}),
+					ctx = $chart.get(0).getContext("2d"),
+					$tooltip = $.mk('p').attr('class','tooltip').html('&nbsp;');
 				$.Dialog.info(false, [
 					$.mk('p').text("Here's a chart showing how the votes are distributed."),
 					$.mk('div').attr('id','vote-distrib').append($chart, $tooltip)
 				]);
 				                   //-- 0 ---,--- 1 ---,--- 2 ---,--- 3 ---,--- 4 ---,--- 5 ---
 				var LegendColors = [undefined,"#FF5454","#FFB554","#FFFF54","#8CD446","#4DC742"],
-						data = this.data,
-						totalVotes = 0;
+					data = this.data,
+					totalVotes = 0;
 
 				$.each(data,function(k,v){
 					$.extend(data[k],{ color: LegendColors[parseInt(v.label, 10)] });
@@ -663,7 +663,7 @@ DocReady.push(function Episode(){
 				var data = this;
 				if (!data.status){
 					$notice.children('p:not(.keep)').remove();
-					$notice.prepend($.mk('p').class('color-red').html(data.message)).show();
+					$notice.prepend($.mk('p').attr('class','color-red').html(data.message)).show();
 					$previewIMG.hide();
 					return $.Dialog.close();
 				}

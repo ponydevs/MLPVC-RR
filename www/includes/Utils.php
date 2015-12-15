@@ -1022,6 +1022,8 @@ HTML;
 	function da_oembed($ID, $type){
 		if (empty($type) || !in_array($type,array('fav.me','sta.sh'))) $type = 'fav.me';
 
+		if ($type === 'sta.sh')
+			$ID = str_pad($ID, 11, '0', STR_PAD_LEFT);
 		try {
 			$data = da_request('http://backend.deviantart.com/oembed?url='.urlencode("http://$type/$ID"),null,false);
 		}
@@ -2550,13 +2552,17 @@ ORDER BY "count" DESC
 				'preview' => $Image->preview,
 				'title' => $Image->title
 			);
-			global $currentUser;
-			// If provider is Sta.sh & user has given Sta.sh access
-			if ($currentUser['stash_allowed'] && $Image->provider === 'sta.sh'){
-				try {
-					$Result = da_cache_own_stash_item($Image->id, true);
+			// If provider is Sta.sh & user has given Sta.sh access, re-use Sta.sh upload code
+			if ($Image->provider === 'sta.sh'){
+				$oEmbed = da_oembed($Image->id, 'sta.sh');
+				$Result['author'] = $oEmbed['author_name'];
+				global $currentUser;
+				if ($Result['author'] === $currentUser['name'] && $currentUser['stash_allowed']){
+					try {
+						$Result = da_cache_own_stash_item($Image->id, true);
+					}
+					catch (DARequestException $e){}
 				}
-				catch (DARequestException $e){}
 			}
 		}
 		catch (Exception $e){ respond($e->getMessage()); }

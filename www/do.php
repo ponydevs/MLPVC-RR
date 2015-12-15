@@ -449,7 +449,7 @@
 
 					$Items[] = array(
 						'name' => $metadata['title'],
-						'image' => $image,
+						'image' => makeHttps($image),
 						'itemid' => $entry['itemid'],
 					);
 				}
