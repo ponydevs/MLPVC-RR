@@ -652,6 +652,8 @@ DocReady.push(function Episode(){
 			var url = $formImgInput.val(),
 				title = Type+' process';
 
+			$formImgCheck.removeClass('red');
+			imgCheckDisabler(true);
 			$.Dialog.wait(title,'Checking image');
 
 			$.post('/post', { image_url: url }, $.mkAjaxHandler(function(){
@@ -705,8 +707,6 @@ DocReady.push(function Episode(){
 		$formImgCheck.on('click',function(e){
 			e.preventDefault();
 
-			$formImgCheck.removeClass('red');
-			imgCheckDisabler(true);
 			checkImage();
 		});
 		$formImgStash.on('click',function(e){
