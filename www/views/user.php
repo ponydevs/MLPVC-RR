@@ -205,6 +205,6 @@ HTML;
 	$Echo = array();
 	foreach ($UsableRoles as $r)
 		$Echo[$r['name']] = $r['label'];
-	echo json_encode($Echo);
+	echo JSON::Encode($Echo);
 ?>;</script>
 <?php }?>

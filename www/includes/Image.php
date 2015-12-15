@@ -62,7 +62,7 @@
 
 					if (empty($Data))
 						throw new Exception('The requested image could not be found on Derpibooru');
-					$Data = json_decode($Data, true);
+					$Data = JSON::Decode($Data, true);
 
 					if (!$Data['is_rendered'])
 						throw new Exception('The image was found but it hasn\'t been rendered yet. Please wait for it to render and try again shortly.');

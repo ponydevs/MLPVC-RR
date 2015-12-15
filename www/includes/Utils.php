@@ -32,18 +32,21 @@
 		if ($m === true) $m = array();
 		if (is_array($m) && $s == false && empty($x)){
 			$m['status'] = true;
-			die(json_encode($m, JSON_UNESCAPED_SLASHES));
+			$r = $m;
 		}
-		if ($m === ERR_DB_FAIL){
-			global $Database;
-			$m = rtrim("$m: ".$Database->getLastError(),': ');
+		else {
+			if ($m === ERR_DB_FAIL){
+				global $Database;
+				$m = rtrim("$m: ".$Database->getLastError(), ': ');
+			}
+			$r = array(
+				"message" => $m,
+				"status" => $s,
+			);
 		}
-		$r = array(
-			"message" => $m,
-			"status" => $s,
-		);
-		if (!empty($x)) $r = array_merge($r, $x);
-		echo json_encode($r, JSON_UNESCAPED_SLASHES);
+		if (!empty($x))
+			$r = array_merge($r, $x);
+		echo JSON::Encode($r);
 		exit;
 	}
 
@@ -789,7 +792,7 @@ HTML;
 			throw new DARequestException(rtrim("cURL fail for URL \"$requestURI\" (HTTP $responseCode); $curlError",' ;'), $responseCode);
 
 		if (preg_match('/Content-Encoding:\s?gzip/',$responseHeaders)) $response = gzdecode($response);
-		return json_decode($response, true);
+		return JSON::Decode($response, true);
 	}
 
 	/**
@@ -944,7 +947,7 @@ HTML;
 		if (empty($DiFiRequest))
 			return 1;
 
-		$DiFiRequest = @json_decode($DiFiRequest);
+		$DiFiRequest = @JSON::Decode($DiFiRequest, JSON::$AsObject);
 		if (empty($DiFiRequest->DiFi->status))
 			return 2;
 		if ($DiFiRequest->DiFi->status !== 'SUCCESS')
@@ -2772,5 +2775,5 @@ HTML;
 			return $b < $a ? -1 : ($b === $a ? 0 : 1);
 		});
 
-		file_put_contents($CachePath, json_encode($Data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+		file_put_contents($CachePath, JSON::Encode($Data));
 	}

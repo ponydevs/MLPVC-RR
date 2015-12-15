@@ -413,7 +413,7 @@
 				$UserStashCache = "$StashCache/{$currentUser['id']}.json";
 				upload_folder_create($UserStashCache);
 				if (file_exists($UserStashCache)){
-					$CachedData = json_decode(file_get_contents($UserStashCache), true);
+					$CachedData = JSON::Decode(file_get_contents($UserStashCache));
 					$Post['cursor'] = $CachedData['cursor'];
 				}
 
@@ -815,7 +815,7 @@
 					$stat = $_match[1];
 					$CachePath = APPATH."../stats/$stat.json";
 					if (file_exists($CachePath) && filemtime($CachePath) > time() - $StatCacheDuration)
-						respond(array('data' => json_decode(file_get_contents($CachePath), true)));
+						respond(array('data' => JSON::Decode(file_get_contents($CachePath))));
 
 					$Data = array('datasets' => array(), 'timestamp' => date('c'));
 
@@ -884,7 +884,7 @@
 					}
 
 					upload_folder_create($CachePath);
-					file_put_contents($CachePath, json_encode($Data, JSON_UNESCAPED_SLASHES));
+					file_put_contents($CachePath, JSON::Encode($Data));
 
 					respond(array('data' => $Data));
 				}
@@ -1037,7 +1037,7 @@
 			else $User = get_user($un, 'name');
 
 			if (empty($User)){
-				if ($User === false){
+				if (isset($User) && $User === false){
 					$MSG = "User does not exist";
 					$SubMSG = "Check the name for typos and try again";
 				}
@@ -1552,7 +1552,7 @@
 
 					if (empty($_POST['Colors']))
 						respond("Missing list of {$color}s");
-					$recvColors = json_decode($_POST['Colors'], true);
+					$recvColors = JSON::Decode($_POST['Colors'], true);
 					if (empty($recvColors))
 						respond("Missing list of {$color}s");
 					$colorIDs = array();
