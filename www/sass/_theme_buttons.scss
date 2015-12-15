@@ -17,27 +17,27 @@ button, .btn {
 	&.large { font-size: 22px }
 	&.blue {
 		color: $NBlueBG !important;
-		background-color: $NBlue;
+		background-color: $NBlue !important;
 	}
 	&.darkblue {
 		color: $NDarkBlueBG !important;
-		background-color: $NDarkBlue;
+		background-color: $NDarkBlue !important;
 	}
 	&.green {
 		color: $NGreenBG !important;
-		background-color: $NGreen;
+		background-color: $NGreen !important;
 	}
 	&.red {
 		color: $NRedBG !important;
-		background-color: $NRed;
+		background-color: $NRed !important;
 	}
 	&.orange {
 		color: $NOrangeBG !important;
-		background-color: $NOrange;
+		background-color: $NOrange !important;
 	}
 	&.yellow {
 		color: $NYellowBG !important;
-		background-color: $NYellow;
+		background-color: $NYellow !important;
 	}
 	&:hover, &:focus { opacity: 1 }
 	&:active { transform: scale(.96) }

@@ -15,7 +15,7 @@
 		<div class="buttons">
 			<button class="typcn typcn-link green" id="signin">Sign In with DeviantArt</button>
 		</div>
-		<script>var OAUTH_URL = "https://www.deviantart.com/oauth2/authorize?response_type=code&scope=user+browse&client_id=<?=DA_CLIENT.oauth_redirect_uri()?>";</script>
+		<script>var OAUTH_URL = "<?=oauth_get_authorization_url()?>";</script>
 <?php } ?>
 	</section>
 <?php

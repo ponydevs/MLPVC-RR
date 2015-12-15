@@ -6,7 +6,8 @@
 	// Response creator for typeahead.js
 	function typeahead_results($str){
 		header('Content-Type: application/json');
-		if (is_array($str)) $str = json_encode($str);
+		if (is_array($str))
+			$str = JSON::Encode($str);
 		die($str);
 	}
 

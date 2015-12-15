@@ -3,11 +3,13 @@
 	// Constants
 	define('PRINTABLE_ASCII_REGEX','^[ -~]+$');
 	define('INVERSE_PRINTABLE_ASCII_REGEX','[^ -~]');
-	$hex = '[0-9A-Fa-f]';
-	define('UUIDV4_REGEX',"^$hex{8}-$hex{4}-4$hex{3}-[89AaBb]$hex{3}-$hex{12}$");
+	$_hex = '[0-9A-Fa-f]';
+	define('UUIDV4_REGEX',"^$_hex{8}-$_hex{4}-4$_hex{3}-[89AaBb]$_hex{3}-$_hex{12}$");
 	define('NEWEST_FIRST', 'DESC');
 	define('OLDEST_FIRST', 'ASC');
 	define('HEX_COLOR_PATTERN','/^#?([A-Fa-f0-9]{6})$/u');
+	define('OAUTH_SCOPE_BASIC', 'user browse');
+	define('OAUTH_SCOPE_STASH', OAUTH_SCOPE_BASIC.' stash');
 
 	// Constants to enable/disable returning of wrapper element with markup generators
 	define('NOWRAP', false);
@@ -30,18 +32,21 @@
 		if ($m === true) $m = array();
 		if (is_array($m) && $s == false && empty($x)){
 			$m['status'] = true;
-			die(json_encode($m, JSON_UNESCAPED_SLASHES));
+			$r = $m;
 		}
-		if ($m === ERR_DB_FAIL){
-			global $Database;
-			$m = rtrim("$m: ".$Database->getLastError(),': ');
+		else {
+			if ($m === ERR_DB_FAIL){
+				global $Database;
+				$m = rtrim("$m: ".$Database->getLastError(), ': ');
+			}
+			$r = array(
+				"message" => $m,
+				"status" => $s,
+			);
 		}
-		$r = array(
-			"message" => $m,
-			"status" => $s,
-		);
-		if (!empty($x)) $r = array_merge($r, $x);
-		echo json_encode($r, JSON_UNESCAPED_SLASHES);
+		if (!empty($x))
+			$r = array_merge($r, $x);
+		echo JSON::Encode($r);
 		exit;
 	}
 
@@ -698,6 +703,15 @@ HTML;
 			die(statusCodeHeader(401));
 	}
 
+	// A function to compare a space-separated list of strings
+	function compare_scope($scope1, $scope2){
+		$scope1 = explode(' ',$scope1);
+		$scope2 = explode(' ',$scope2);
+		$diff1 = array_diff($scope1,$scope2);
+		$diff2 = array_diff($scope2,$scope1);
+		return !(count($diff1)+count($diff2));
+	}
+
 	// oAuth Error Response Messages \\
 	$OAUTH_RESPONSE = array(
 		'invalid_request' => 'The authorization recest was not properly formatted.',
@@ -714,7 +728,13 @@ HTML;
 		global $do, $data;
 		if ($do === 'index' && empty($data)) $returnURL = '/';
 		else $returnURL = rtrim("/$do/$data",'/');
-		return '&redirect_uri='.urlencode(ABSPATH."da-auth").($state?'&state='.urlencode($returnURL):'');
+		return '&redirect_uri='.urlencode(ABSPATH."da-auth").($state?'&state='.urlencode($state===true?$returnURL:$state):'');
+	}
+
+	// oAuth Authorization page URL generator
+	function oauth_get_authorization_url($scope = OAUTH_SCOPE_BASIC, $state = true){
+		$scope = str_replace(' ','+',$scope);
+		return "https://www.deviantart.com/oauth2/authorize?response_type=code&scope=$scope&client_id=".DA_CLIENT.oauth_redirect_uri($state);
 	}
 
 	class DARequestException extends Exception {
@@ -772,7 +792,7 @@ HTML;
 			throw new DARequestException(rtrim("cURL fail for URL \"$requestURI\" (HTTP $responseCode); $curlError",' ;'), $responseCode);
 
 		if (preg_match('/Content-Encoding:\s?gzip/',$responseHeaders)) $response = gzdecode($response);
-		return json_decode($response, true);
+		return JSON::Decode($response, true);
 	}
 
 	/**
@@ -830,7 +850,10 @@ HTML;
 			'access' => $json['access_token'],
 			'refresh' => $json['refresh_token'],
 			'expires' => date('c',time()+intval($json['expires_in'])),
+			'scope' => $json['scope'],
 		);
+		if (compare_scope($AuthData['scope'], OAUTH_SCOPE_STASH))
+			$UserData['stash_allowed'] = true;
 
 		$cookie = openssl_random_pseudo_bytes(64);
 		$AuthData['token'] = sha1($cookie);
@@ -882,7 +905,7 @@ HTML;
 	}
 
 	function da_handle_auth(){
-		global $err, $errdesc;
+		global $err, $errdesc, $signedIn;
 
 		if (!isset($_GET['error']) && (empty($_GET['code']) || (empty($_GET['state']) || !preg_match(REWRITE_REGEX,$_GET['state']))))
 			$_GET['error'] = 'unauthorized_client';
@@ -890,9 +913,10 @@ HTML;
 			$err = $_GET['error'];
 			if (isset($_GET['error_description']))
 				$errdesc = $_GET['error_description'];
+			if ($signedIn)
+				redirect($_GET['state']);
 			loadEpisodePage();
 		}
-
 		da_get_token($_GET['code']);
 
 		if (isset($_GET['error'])){
@@ -923,7 +947,7 @@ HTML;
 		if (empty($DiFiRequest))
 			return 1;
 
-		$DiFiRequest = @json_decode($DiFiRequest);
+		$DiFiRequest = @JSON::Decode($DiFiRequest, JSON::$AsObject);
 		if (empty($DiFiRequest->DiFi->status))
 			return 2;
 		if ($DiFiRequest->DiFi->status !== 'SUCCESS')
@@ -1024,6 +1048,9 @@ HTML;
 	function da_cache_deviation($ID, $type = 'fav.me'){
 		global $Database, $PROVIDER_FULLSIZE_KEY, $CACHE_BAILOUT;
 
+		if ($type === 'sta.sh')
+			$ID = ltrim($ID,'0');
+
 		$Deviation = $Database->where('id',$ID)->getOne('deviation_cache');
 		if (!$CACHE_BAILOUT && empty($Deviation) || (!empty($Deviation['updated_on']) && strtotime($Deviation['updated_on'])+ONE_HOUR < time())){
 			try {
@@ -1070,6 +1097,48 @@ HTML;
 			$Deviation['updated_on'] = date('c', strtotime($Deviation['updated_on']));
 
 		return $Deviation;
+	}
+
+	function da_cache_own_stash_item($ItemID, $urlid = false){
+		global $Database;
+
+		if ($urlid){
+			$URLID = $ItemID;
+			$ItemID = base_convert($URLID, 36, 10);
+		}
+		else $URLID = base_convert($ItemID, 10, 36);
+		$ItemInfo = da_request("stash/item/{$ItemID}");
+
+		if (empty($ItemInfo['files']))
+			respond('This submission does not have any files associated with it (e.g. Sta.sh Writer drafts)');
+		if (!preg_match(IMAGE_URL_SUFFIX_REGEX,$ItemInfo['files'][0]['src']))
+			respond('This submission does not appear to be an image');
+
+		$fullsize = end($ItemInfo['files'])['src'];
+		$preview = !empty($ItemInfo['files'][2]['src'])
+			? $ItemInfo['files'][2]['src']
+			: $fullsize;
+
+		$AlreadyCached = $Database->where('id', $URLID)->where('provider','sta.sh')->getOne('deviation_cache');
+		$update = array(
+			'title' => $ItemInfo['title'],
+			'preview' => $preview,
+			'fullsize' => $fullsize,
+		);
+
+		if (!empty($AlreadyCached))
+			$Database->where('id', $AlreadyCached['id'])->where('provider', 'sta.sh')->update('deviation_cache', $update);
+		else $Database->insert('deviation_cache',array_merge(
+			array(
+				'provider' => 'sta.sh',
+				'id' => $URLID,
+				'updated_on' => null,
+			),
+			$update
+		));
+
+		$update['id'] = $URLID;
+		return $update;
 	}
 
 	# Get Roles from DB
@@ -1450,9 +1519,20 @@ HTML;
 
 	// Get Request / Reservation Submission Form HTML \\
 	function get_post_form($type){
+		global $currentUser;
+
 		$Type = strtoupper($type[0]).substr($type,1);
 		$optional = $type === 'reservation' ? 'optional, ' : '';
 		$optreq = $type === 'reservation' ? '' : 'required';
+
+		$StashBtnLabel = 'Link from your Sta.sh';
+		$StashUpload = "<p class='keep'><button class='upload-stash typcn typcn-folder".($currentUser['stash_allowed']?'-open':'')."'";
+		if ($currentUser['stash_allowed'])
+			$StashUpload .= ">$StashBtnLabel</button>";
+		else $StashUpload .= " disabled>$StashBtnLabel</button> <a class='btn green typcn typcn-lock-open' href='#authorize-stash' data-redirect='".oauth_get_authorization_url(OAUTH_SCOPE_STASH,'/upload-stash/close-dialog/'.rand(10000,99999))."'>Enable linking from Sta.sh</a>";
+
+		$StashUpload .= '</p>';
+
 		$HTML = <<<HTML
 
 		<form class="hidden post-form" data-type="$type">
@@ -1464,11 +1544,16 @@ HTML;
 				</label>
 				<label>
 					<span>Image URL</span>
-					<input type="text" name="image_url" pattern="^.{2,255}$" required>
-					<button class="check-img red typcn typcn-arrow-repeat">Check image</button>
+					<input type="text" name="image_url" pattern="^.{2,255}$" required>&nbsp;
+					<button class="check-img red typcn typcn-arrow-repeat">Check image</button><br>
 				</label>
 				<div class="img-preview">
-					<div class="notice fail">Please click the <strong>Check image</strong> button after providing an URL to get a preview & verify if the link is correct.<br>You can use a link from any of the following providers: <a href="http://deviantart.com/" target="_blank">DeviantArt</a>, <a href="http://sta.sh/" target="_blank">Sta.sh</a>, <a href="http://imgur.com/" target="_blank">Imgur</a>, <a href="http://derpibooru.org/" target="_blank">Derpibooru</a>, <a href="http://puush.me/" target="_blank">Puush</a>, <a href="http://app.prntscr.com/" target="_blank">LightShot</a></div>
+					<div class="notice info">
+						<p>Please click the <strong>Check image</strong> button after providing an URL to get a preview & verify if the link is correct.</p>
+						<hr>
+						<p class="keep">You can use a link from any of the following providers: <a href="http://deviantart.com/" target="_blank">DeviantArt</a>, <a href="http://imgur.com/" target="_blank">Imgur</a>, <a href="http://derpibooru.org/" target="_blank">Derpibooru</a>, <a href="http://puush.me/" target="_blank">Puush</a>, <a href="http://app.prntscr.com/" target="_blank">LightShot</a></p>
+						$StashUpload
+					</div>
 				</div>
 
 HTML;
@@ -1898,8 +1983,11 @@ HTML;
 
 		$signoutText = 'Sign out' . (!$current ? ' from this session' : '');
 		$buttons = "<button class='typcn typcn-arrow-back remove".(!$current?' orange':'')."' data-sid='{$Session['id']}'>$signoutText</button>";
-		if (PERM('developer') && !empty($Session['user_agent']))
-			$buttons .= "<br><button class='darkblue typcn typcn-info-large useragent' data-agent='".apos_encode($Session['user_agent'])."'>View User Agent</button>";
+		if (PERM('developer')){
+			$platform .= "<span class='scope'><code>{$Session['scope']}</code></span>";
+			if (!empty($Session['user_agent']))
+				$buttons .= "<br><button class='darkblue typcn typcn-info-large useragent' data-agent='".apos_encode($Session['user_agent'])."'>View User Agent</button>";
+		}
 
 		$firstuse = timetag($Session['created']);
 		$lastuse = !$current ? 'Last used: '.timetag($Session['lastvisit']) : '<em>Current session</em>';
@@ -2458,24 +2546,38 @@ ORDER BY "count" DESC
 		require_once 'includes/Image.php';
 		try {
 			$Image = new Image($_POST['image_url']);
+			$Result = array(
+				'preview' => $Image->preview,
+				'title' => $Image->title
+			);
+			global $currentUser;
+			// If provider is Sta.sh & user has given Sta.sh access
+			if ($currentUser['stash_allowed'] && $Image->provider === 'sta.sh'){
+				try {
+					$Result = da_cache_own_stash_item($Image->id, true);
+				}
+				catch (DARequestException $e){}
+			}
 		}
 		catch (Exception $e){ respond($e->getMessage()); }
 
 		global $POST_TYPES, $Database;
 		foreach ($POST_TYPES as $type){
-			$Used = $Database->where('preview', $Image->preview)->getOne("{$type}s");
+			$Used = $Database->rawQuerySingle(
+				"SELECT ep.*, r.id
+				FROM {$type}s r
+				LEFT JOIN episodes ep ON r.season = ep.season && r.episode = ep.episode
+				WHERE r.preview != '' AND r.preview = ?", array($Image->preview));
 			if (!empty($Used)){
-				$EpID = "S{$Used['season']}E{$Used['episode']}";
+				;
+				$EpID = format_episode_title($Used,AS_ARRAY,'id');
 				respond("This exact image has already been used for a $type under <a href='/episode/$EpID#$type-{$Used['id']}' target='_blank'>$EpID</a>");
 			}
 		}
 
 		if (!$respond)
 			return $Image;
-		respond(array(
-			'preview' => $Image->preview,
-			'title' => $Image->title
-		));
+		respond($Result);
 	}
 
 	// Get link to specific posts
@@ -2643,4 +2745,35 @@ HTML;
 				$EpTagIDs[] = $EpTagBothParts['tid'];
 		}
 		return $EpTagIDs;
+	}
+
+	function stash_get_all_items($Post){
+		$Request = da_request('stash/delta', $Post);
+		if (empty($Request))
+			return null;
+
+		if ($Request['has_more']){
+			$Post['offset'] = $Request['next_offset'];
+			$NextRequest = stash_get_all_items($Post);
+			$Request['entries'] = array_merge($Request['entries'], $NextRequest['entries']);
+		}
+
+		return $Request;
+	}
+
+	// Stash cache writer
+	define('IMAGE_URL_SUFFIX_REGEX','~\.(png|jpe?g|gif|bmp)$~');
+	function write_stash_cache($CachePath, &$Data){
+		foreach ($Data['entries'] as $k => $entry){
+			if (empty($entry['itemid']) || empty($entry['metadata']['files']) || !preg_match(IMAGE_URL_SUFFIX_REGEX,$entry['metadata']['files'][0]['src']))
+				unset($Data['entries'][$k]);
+		}
+
+		usort($Data['entries'],function($a, $b){
+			$a = $a['metadata']['creation_time'];
+			$b = $b['metadata']['creation_time'];
+			return $b < $a ? -1 : ($b === $a ? 0 : 1);
+		});
+
+		file_put_contents($CachePath, JSON::Encode($Data));
 	}

@@ -104,7 +104,7 @@ body.dialog-open {
 		font-size: .9em;
 		border-width: 1px;
 	}
-	p {
+	:not(.notice) > p {
 		margin: 0 0 5px;
 
 		pre { margin: 5px 0 }
@@ -130,32 +130,25 @@ body.dialog-open {
 			font-weight: bold;
 		}
 
-		> pre {
+		pre {
 			max-width: 100%;
 			display: block;
 			overflow: auto;
-			background: #000;
-			$Lime: #0c0;
-			color: $Lime;
 			font-size: 12px;
 			padding: 3px;
 			margin: 5px 0 10px;
 			box-sizing: border-box;
+			@include l33th4x;
+		}
 
-			&::-webkit-scrollbar {
-				background-color:transparent;
-				padding:0;
+		.reset {
+			background-color: #fff;
+			color: #000;
+			margin-top: 5px;
 
-				&:vertical { width: 5px }
-				&:horizontal { height: 5px }
-			}
-			&::-webkit-scrollbar-button { display:none }
-			&::-webkit-scrollbar-thumb {
-				background-color: rgba($Lime, .7);
-				margin: 0 2px;
-
-				&:hover { background-color: rgba($Lime, .8) }
-				&:active { background-color: rgba($Lime, .9) }
+			> font {
+				display: block;
+				width: 100%;
 			}
 		}
 	}

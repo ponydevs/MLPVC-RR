@@ -72,4 +72,12 @@
 
 		time { border-bottom: 1px dashed }
 	}
+	> hr {
+		border-width: 0;
+		border-top-width: inherit;
+		border-style: solid;
+		border-color: initial !important;
+
+		&:first-child { display: none }
+	}
 }

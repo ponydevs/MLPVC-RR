@@ -11,6 +11,7 @@
 	define('SITE_TITLE', 'MLP Vector Club');
 
 	// Imports \\
+	require 'includes/JSON.php';
 	require 'includes/PostgresDbWrapper.php';
 	$Database = new PostgresDbWrapper('mlpvc-rr');
 	$CGDb = new PostgresDbWrapper('mlpvc-colorguide');
