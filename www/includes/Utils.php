@@ -2237,6 +2237,7 @@ ORDER BY "count" DESC
 		$HTML = '';
 		$embed = '';
 		$alsoAvail = array();
+		$Parts = 0;
 		for ($part = 1; $part <= ($CurrentEpisode['twoparter']?2:1); $part++){
 			$Part = $Database
 				->whereEp($CurrentEpisode)
@@ -2245,9 +2246,10 @@ ORDER BY "count" DESC
 				->get('episodes__videos');
 
 			if (!empty($Part)){
+				$Parts++;
 				require_once "includes/Video.php";
 				$FirstVid = $Part[0];
-				$embed .= "<div class='responsive-embed'>".Video::get_embed($FirstVid['id'], $FirstVid['provider'])."</div>";
+				$embed .= "<div class='responsive-embed".($CurrentEpisode['twoparter']&&$part!==1?' hidden':'')."'>".Video::get_embed($FirstVid['id'], $FirstVid['provider'])."</div>";
 				if (!empty($Part[1])){
 					$SecondVid = $Part[1];
 					$url = Video::get_embed($SecondVid['id'], $SecondVid['provider'], Video::URL_ONLY);
@@ -2268,7 +2270,7 @@ ORDER BY "count" DESC
 		if (!empty($embed))
 			$HTML .= "<div class='resp-embed-wrap'>$embed</div>";
 		if (!empty($HTML))
-			$HTML = "<section class='episode'><h2>Watch the ".($isMovie?'Movie':'Episode')."</h2>$HTML</section>";
+			$HTML = "<section class='episode'><h2>Watch the ".($isMovie?'Movie':'Episode').($Parts == 2?"<button class='blue part-switch'>Part 2</button>":'')."</h2>$HTML</section>";
 
 		return $HTML;
 	}

@@ -4,7 +4,8 @@ DocReady.push(function Episode(){
 	var SEASON = window.SEASON,
 		EPISODE = window.EPISODE,
 		USERNAME_PATTERN = window.USERNAME_PATTERN,
-		EpID = 'S'+SEASON+'E'+EPISODE;
+		EpID = 'S'+SEASON+'E'+EPISODE,
+		$epSection = $content.children('section.episode');
 
 	$('#video').on('click',function(){
 		$.Dialog.wait('Video links', 'Requesting links from the server');
@@ -63,13 +64,13 @@ DocReady.push(function Episode(){
 					$.post('/episode/setvideos/'+EpID,data,$.mkAjaxHandler(function(){
 						if (!this.status) return $.Dialog.fail(false, this.message);
 
-						var $epSection = $content.children('section.episode');
 						if (this.epsection){
 							if (!$epSection.length)
 								$epSection = $.mk('section')
 									.addClass('episode')
 									.insertBefore($content.children('section').first());
 							$epSection.html($(this.epsection).filter('section').html());
+							BindPSwitch();
 						}
 						else if ($epSection.length) $epSection.remove();
 						$.Dialog.close();
@@ -78,6 +79,19 @@ DocReady.push(function Episode(){
 			});
 		}));
 	});
+
+	function BindPSwitch(){
+		var $PSwitch = $epSection.children('h2').children('.part-switch'),
+			$Vids;
+		if ($PSwitch.length){
+			$Vids = $epSection.find('.resp-embed-wrap').children();
+			$PSwitch.on('click', function(){
+				$Vids.toggleClass('hidden');
+				$PSwitch.toggleHtml(['Part 2', 'Part 1']);
+			});
+		}
+	}
+	BindPSwitch();
 
 	var $voting = $('#voting'),
 		$voteButton = $voting.children('.rate');

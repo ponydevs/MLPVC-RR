@@ -230,6 +230,33 @@
 		return Math.round(number*pow)/pow;
 	};
 
+	$.rangeLimit = function(input,overflow){
+		var min, max, paramCount = 2;
+		switch (arguments.length-paramCount){
+			case 1:
+				min = 0;
+				max = arguments[paramCount];
+			break;
+			case 2:
+				min = arguments[paramCount];
+				max = arguments[paramCount+1];
+			break;
+			default:
+				throw new Error('Invalid number of parameters for $.rangeLimit');
+		}
+		if (overflow){
+			if (input > max)
+				input = min;
+			else if (input < min)
+				input = max;
+		}
+		return Math.min(max, Math.max(min, input));
+	};
+
+	$.fn.toggleHtml = function(contentArray){
+		this.html(contentArray[$.rangeLimit(contentArray.indexOf(this.html())+1, true, contentArray.length-1)]);
+	};
+
 	window.URL = function(url){
 		var a = document.createElement('a'),
 			me = {};
