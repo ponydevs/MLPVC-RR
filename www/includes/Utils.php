@@ -905,7 +905,7 @@ HTML;
 			$Database->insert('sessions', array_merge($AuthData, array('user' => $UserID)));
 		}
 
-		$Database->where('user',$currentUser['id'])->where('scope', $currentUser['Session']['scope'], '!=')->delete('sessions');
+		$Database->where('user',$UserID)->where('scope', $AuthData['scope'], '!=')->delete('sessions');
 
 		Cookie::set('access', $cookie, ONE_YEAR);
 	}
