@@ -254,11 +254,10 @@ INSERT INTO appearances VALUES (27, NULL, 'Double Diamond', '', NULL, false, '20
 INSERT INTO appearances VALUES (28, NULL, 'Party Favor', 'Magic aura color is unknown.', NULL, false, '2015-09-26 17:34:42+00');
 INSERT INTO appearances VALUES (29, NULL, 'Starlight Glimmer', 'Her cutie mark does not use pure white for the star fill.', 'd8old4s', false, '2015-09-26 18:01:51+00');
 INSERT INTO appearances VALUES (30, NULL, 'Coco Pommel', 'Far legs use darker colors.', NULL, false, '2015-09-26 21:18:32+00');
-INSERT INTO appearances VALUES (31, NULL, 'Suri Polomare', 'From S4E08
-Far legs use darker colors.', NULL, false, '2015-09-30 05:35:59+00');
+INSERT INTO appearances VALUES (31, NULL, 'Suri Polomare', 'Far legs use darker colors.', NULL, false, '2015-09-30 05:35:59+00');
 INSERT INTO appearances VALUES (32, NULL, 'Trixie Lulamoon', '', 'd9bxest', false, '2015-10-03 15:35:08+00');
 INSERT INTO appearances VALUES (33, NULL, 'Alicorn Amulet', '', NULL, false, '2015-10-03 16:22:13+00');
-INSERT INTO appearances VALUES (34, 12, 'Princess Celestia', 'Make sure to usefalseappropriate references when picking gradient angles and stops. They''ll differ based on the hair shape and angle.', NULL, false, '2015-10-03 19:26:50+00');
+INSERT INTO appearances VALUES (34, 12, 'Princess Celestia', 'Make sure to use appropriate references when picking gradient angles and stops. They''ll differ based on the hair shape and angle.', NULL, false, '2015-10-03 19:26:50+00');
 INSERT INTO appearances VALUES (35, NULL, 'Big Macintosh', 'Far legs use darker colors.', NULL, false, '2015-10-04 19:11:42+00');
 INSERT INTO appearances VALUES (36, NULL, 'Moondancer', 'Far legs use darker colors.', NULL, false, '2015-10-05 05:17:36+00');
 INSERT INTO appearances VALUES (37, NULL, 'Dinky Doo', 'From E5E17', NULL, false, '2015-10-06 03:39:35+00');

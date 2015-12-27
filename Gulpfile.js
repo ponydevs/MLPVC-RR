@@ -235,6 +235,6 @@ gulp.task('default', ['js', 'sass', 'md', 'pgsort'], function(){
 	Flutters.log("SCSS files, do you mind if I, um, watch over you for a bit?");
 	gulp.watch('README.md', {debounceDelay: 2000}, ['md']);
 	AJ.log("Readme markdown file is under my radar, sugarcube");
-	gulp.watch(['setup/*.pg.sql', '!setup/*_full.pg.sql'], {debounceDelay: 2000}, ['pgsort']);
-	Rarity.log("PostgreSQL dump sorting is aaiting your orders, darling.");
+	gulp.watch('setup/*.pg.sql', {debounceDelay: 2000}, ['pgsort']);
+	Rarity.log("PostgreSQL dump sorting is awaiting your orders, darling.");
 });
