@@ -159,6 +159,12 @@ var Rarity = new Personality(
 	]
 );
 gulp.task('pgsort', function(){
+	var parseRow = function(r){
+		var match = r.match(/VALUES \((\d+)(?:, (\d+|NULL))?[, )]/);
+		if (!match)
+			return [];
+		return [match[1], match[2]];
+	};
 	try {
 		fs.readdir('./setup', function(err, dir){
 			if (err) throw err;
@@ -179,30 +185,34 @@ gulp.task('pgsort', function(){
 						var test = /INSERT INTO "?([a-z]+)"?\s*VALUES\s*\((\d+),[\s\S]+?;/g;
 						if (!test.test(data))
 							return;
-						var groups = {};
-						data.replace(test,function(row,group,field){
-							if (group !== 'tagged'){
-								if (typeof groups[group] !== 'object')
-									groups[group] = {};
-								groups[group][field] = row;
-							}
+						var Tables = {},
+							TableCounters = {};
+						data.replace(test,function(row,table){
+							if (typeof Tables[table] !== 'object')
+								Tables[table] = [];
+							Tables[table].push(row);
+							TableCounters[table] = 0;
 							return row;
 						});
-						var sortedGroupKeys = {},
-							groupStep = {};
-						for (var j = 0, k = Object.keys(groups), l = k.length; j<l; j++){
-							var group = k[j];
-							sortedGroupKeys[group] = Object.keys(groups[group]).sort(function(a,b){ return parseInt(a, 10) - parseInt(b, 10) });
-							groupStep[group] = 0;
+
+						for (var j = 0, k = Object.keys(Tables), l = k.length; j<l; j++){
+							var table = k[j];
+							Tables[table].sort(function(a,b){
+								a = parseRow(a);
+								b = parseRow(b);
+
+								var ix = 0;
+								if (a[0] === b[0] && !isNaN(a[1]) && !isNaN(b[1]))
+									ix++;
+
+								a[ix] = parseInt(a[ix], 10);
+								b[ix] = parseInt(b[ix], 10);
+
+								return a[ix] > b[ix] ? 1 : (a[ix] < b[ix] ? -1 : 0);
+							})
 						}
-						data = data.replace(test,function(row,group){
-							if (group === 'tagged')
-								return row;
-
-							var nextSortedKeyIndex = groupStep[group]++,
-								nextSortedKey = sortedGroupKeys[group][nextSortedKeyIndex];
-
-							return groups[group][nextSortedKey];
+						data = data.replace(test,function(row,table){
+							return Tables[table][TableCounters[table]++];
 						});
 
 						fs.writeFile(fpath, data, function(err){
