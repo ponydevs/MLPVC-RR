@@ -1028,7 +1028,7 @@ HTML;
 	function da_oembed($ID, $type){
 		if (empty($type) || !in_array($type,array('fav.me','sta.sh'))) $type = 'fav.me';
 
-		if ($type === 'sta.sh')
+		if ($type === 'sta.sh' && strlen($ID) !== 11)
 			$ID = str_pad($ID, 11, '0', STR_PAD_LEFT);
 		try {
 			$data = da_request('http://backend.deviantart.com/oembed?url='.urlencode("http://$type/$ID"),null,false);
@@ -1056,8 +1056,8 @@ HTML;
 	function da_cache_deviation($ID, $type = 'fav.me'){
 		global $Database, $PROVIDER_FULLSIZE_KEY, $CACHE_BAILOUT;
 
-		if ($type === 'sta.sh')
-			$ID = ltrim($ID,'0');
+		if ($type === 'sta.sh' && strlen($ID) !== 11)
+			$ID = str_pad($ID, 11, '0', STR_PAD_LEFT);
 
 		$Deviation = $Database->where('id',$ID)->getOne('deviation_cache');
 		if (!$CACHE_BAILOUT && empty($Deviation) || (!empty($Deviation['updated_on']) && strtotime($Deviation['updated_on'])+ONE_HOUR < time())){
