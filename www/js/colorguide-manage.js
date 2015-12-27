@@ -671,7 +671,7 @@ DocReady.push(function ColorguideManage(){
 					}));
 				}},
 				{text: "Create new group", icon: 'folder-add', click: function(){
-					CGEditorMaker('Create color group', $(this).parents('li').attr('id').substring(1));
+					CGEditorMaker('Create '+color+' group', $(this).closest('[id^=p]').attr('id').substring(1));
 				}},
 				{text: "Apply template (if empty)", icon: 'document-add', click: function(){
 					var ponyID = $(this).parents('li').attr('id').substring(1);
