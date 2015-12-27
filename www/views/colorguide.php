@@ -31,8 +31,16 @@
 	<?=$Pagination?>
 </div>
 
-<script>var Color = '<?=$Color?>', color = '<?=$color?>', EQG = <?=$EQG?'true':'false'?>;</script>
-<?php if (PERM('inspector')){ ?>
-<script>var TAG_TYPES_ASSOC = <?=JSON::Encode($TAG_TYPES_ASSOC)?>, MAX_SIZE = '<?=get_max_upload_size()?>', HEX_COLOR_PATTERN = <?=rtrim(HEX_COLOR_PATTERN,'u')?>;</script>
-<?php } ?>
-</div>
+<?  $export = array(
+		'Color' => $Color,
+		'color' => $color,
+		'EQG' => $EQG,
+		'AppearancePage' => false,
+	);
+	if (PERM('inspector'))
+		$export = array_merge($export, array(
+			'TAG_TYPES_ASSOC' => $TAG_TYPES_ASSOC,
+			'MAX_SIZE' => get_max_upload_size(),
+			'HEX_COLOR_PATTERN' => rtrim(HEX_COLOR_PATTERN,'u'),
+		));
+	ExportVars($export); ?>

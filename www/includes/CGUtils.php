@@ -27,7 +27,8 @@
 
 	// Return the markup for the specified color group
 	define('NO_COLON', false);
-	function get_cg_html($GroupID, $wrap = true, $colon = true){
+	define('OUTPUT_COLOR_NAMES', true);
+	function get_cg_html($GroupID, $wrap = true, $colon = true, $colorNames = false){
 		global $CGDb;
 
 		if (is_array($GroupID)) $Group = $GroupID;
@@ -46,7 +47,10 @@
 					$title .= "' style='background-color:$color";
 				}
 
-				$HTML .= "<span id='c{$c['colorid']}' title='$title'>$color</span>";
+				$append = "<span id='c{$c['colorid']}' title='$title'>$color</span>";
+				if ($colorNames)
+					$append = "<div class='color-line'>$append<span>{$c['label']}</span></div>";
+				$HTML .= $append;
 			};
 
 		if ($wrap) $HTML .= "</li>";
@@ -74,7 +78,7 @@
 	}
 
 	// Returns the markup of the color list for a specific pony \\
-	function get_colors_html($PonyID, $wrap = true){
+	function get_colors_html($PonyID, $wrap = true, $colon = true, $colorNames = false){
 		global $CGDb;
 
 		$ColorGroups = get_cgs($PonyID);
@@ -82,20 +86,20 @@
 		$HTML = $wrap ? "<ul class='colors'>" : '';
 		if (!empty($ColorGroups)){
 			foreach ($ColorGroups as $cg)
-				$HTML .= get_cg_html($cg);
+				$HTML .= get_cg_html($cg, WRAP, $colon, $colorNames);
 		}
 		if ($wrap) $HTML .= "</ul>";
 		return $HTML;
 	}
 
-	function get_tags($PonyID = null, $limit = null, $is_editing = false){
+	function get_tags($PonyID = null, $limit = null, $showEpTags = false){
 		global $CGDb;
 
 		$CGDb
 			->orderByLiteral('CASE WHEN tags.type IS NULL THEN 1 ELSE 0 END')
 			->orderBy('tags.type', 'ASC')
 			->orderBy('tags.name', 'ASC');
-		if (!$is_editing)
+		if (!$showEpTags)
 			$CGDb->where("tags.type != 'ep'");
 		return isset($PonyID)
 			? $CGDb
@@ -106,15 +110,13 @@
 	}
 
 	// Return the markup of a set of tags belonging to a specific pony \\
-	define('NO_INPUT', true);
-	function get_tags_html($PonyID, $wrap = true, $no_input = false){
+	function get_tags_html($PonyID, $wrap = true){
 		global $CGDb;
 
-		$Editing = !$no_input && PERM('inspector');
-		$Tags = get_tags($PonyID, null, $Editing);
+		$Tags = get_tags($PonyID, null, PERM('inspector'));
 
 		$HTML = $wrap ? "<div class='tags'>" : '';
-		if ($Editing && $PonyID !== 0)
+		if (PERM('inspector') && $PonyID !== 0)
 			$HTML .= "<input type='text' class='addtag tag' placeholder='Enter tag' pattern='".TAG_NAME_PATTERN."' maxlength='30' required>";
 		if (!empty($Tags)) foreach ($Tags as $i => $t){
 			$class = " class='tag id-{$t['tid']}".(!empty($t['type'])?' typ-'.$t['type']:'')."'";
@@ -154,6 +156,23 @@
 			$notes = '';
 		}
 		return $wrap ? "<div class='notes'>$notes</div>" : $notes;
+	}
+
+	//
+	function get_sprite_html($p){
+		$imgPth = "img/cg/{$p['id']}.png";
+		$hasSprite = file_Exists(APPATH.$imgPth);
+		if ($hasSprite){
+			$imgPth = $imgPth.'?'.filemtime(APPATH.$imgPth);
+			$img = "<a href='/$imgPth' target='_blank' title='Open image in new tab'><img src='/$imgPth' alt='".apos_encode($p['label'])."'></a>";
+			if (PERM('inspector'))
+				$img = "<div class='upload-wrap'>$img</div>";
+		}
+		else if (PERM('inspector'))
+			$img = "<div class='upload-wrap'><a><img src='/img/blank-pixel.png'></a></div>";
+		else return '';
+
+		return "<div class='sprite'>$img</div>";
 	}
 
 	// Returns the markup for the time of last update displayed under an appaerance
@@ -196,19 +215,7 @@
 		if (!empty($Ponies)) foreach ($Ponies as $p){
 			$p['label'] = htmlspecialchars($p['label']);
 
-			$img = '';
-			$imgPth = "img/cg/{$p['id']}.png";
-			$hasSprite = file_Exists(APPATH.$imgPth);
-			if ($hasSprite){
-				$imgPth = $imgPth.'?'.filemtime(APPATH.$imgPth);
-				$img = "<a href='/$imgPth' target='_blank' title='Open image in new tab'><img src='/$imgPth' alt='".apos_encode($p['label'])."'></a>";
-				if (PERM('inspector'))
-					$img = "<div class='upload-wrap'>$img</div>";
-				$img = "<div>$img</div>";
-			}
-			else if (PERM('inspector'))
-				$img = "<div><div class='upload-wrap'><a><img src='/img/blank-pixel.png'></a></div></div>";
-
+			$img = get_sprite_html($p);
 			$updates = get_update_html($p['id']);
 			$notes = get_notes_html($p);
 			$tags = get_tags_html($p['id']);
@@ -666,4 +673,46 @@ HTML;
 
 	function imageCopyExact($dest, $source, $x, $y, $w, $h){
 		imagecopyresampled($dest, $source, $x, $y, $x, $y, $w, $h, $w, $h);
+	}
+
+	function get_episode_appearances($AppearanceID, $wrap = true){
+		global $CGDb;
+
+		$EpTagsOnAppearance = $CGDb->rawQuery(
+				"SELECT t.tid
+		FROM tagged tt
+		LEFT JOIN tags t ON tt.tid = t.tid
+		WHERE tt.ponyid = ? &&  t.type = ?",array($AppearanceID, 'ep'));
+		if (empty($EpTagsOnAppearance))
+			return '';
+
+		foreach ($EpTagsOnAppearance as $k => $row)
+			$EpTagsOnAppearance[$k] = $row['tid'];
+
+		$EpAppearances = $CGDb->rawQuery("SELECT DISTINCT t.name FROM tags t WHERE t.tid IN (".implode(',',$EpTagsOnAppearance).")");
+		if (empty($EpAppearances))
+			return '';
+
+		$List = '';
+		foreach ($EpAppearances as $tag){
+			$name = strtoupper($tag['name']);
+			$EpData = episode_id_parse($name);
+			$Ep = get_real_episode($EpData['season'], $EpData['episode']);
+			$List .= (
+				empty($Ep)
+				? $name
+				: "<a href='/episode/S{$Ep['season']}E{$Ep['episode']}'>".format_episode_title($Ep).'</a>'
+			).', ';
+		}
+		$List = rtrim($List, ', ');
+		$N_episodes = plur('episode',count($EpAppearances),PREPEND_NUMBER);
+
+		if (!$wrap)
+			return $List;
+		return <<<HTML
+		<section id="ep-appearances">
+			<label><span class='typcn typcn-video'></span>Appears in $N_episodes</label>
+			<p>$List</p>
+		</section>
+HTML;
 	}

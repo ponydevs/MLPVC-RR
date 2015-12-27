@@ -1,8 +1,8 @@
-/* globals $w,$d,DocReady */
+/* globals $w,$d,$content,DocReady,HandleNav */
 DocReady.push(function Colorguide(){
 	'use strict';
 	//noinspection JSUnusedLocalSymbols
-	var Color = window.Color, color = window.color, $list = $('.appearance-list');
+	var Color = window.Color, color = window.color, $list = $('.appearance-list'), EQG = window.EQG, AppearancePage = !!window.AppearancePage;
 
 	var copyHash = !localStorage.getItem('leavehash'), $toggler;
 	function copyHashToggler(){
@@ -26,7 +26,7 @@ DocReady.push(function Colorguide(){
 	var $SearchForm = $('#search-form');
 
 	function tooltips(){
-		var isGuest = $('#search-form').length === 0,
+		var isGuest = $SearchForm.length + $('button.edit').length === 0,
 			$tags = $('.tags').children('span.tag');
 		$tags.each(function(){
 			var $this = $(this),
@@ -45,10 +45,8 @@ DocReady.push(function Colorguide(){
 				$this.qtip({
 					content: (
 						isGuest
-							? {
-							text: title,
-						}
-							: {
+						? { text: title }
+						: {
 							text: text,
 							title: title
 						}
@@ -61,11 +59,14 @@ DocReady.push(function Colorguide(){
 		if (!isGuest) $tags.css('cursor','pointer').off('click').on('click',function(e){
 			e.preventDefault();
 
-			$SearchForm.find('input[name="q"]').val(this.innerHTML.trim());
-			$SearchForm.triggerHandler('submit');
+			var query = this.innerHTML.trim();
+			if ($SearchForm.length){
+				$SearchForm.find('input[name="q"]').val(query);
+				$SearchForm.triggerHandler('submit');
+			}
+			else HandleNav('/colorguide'+(EQG?'/eqg':'')+'/1?q='+query.replace(/ /g,'+'));
 		});
-		var $ch = $('ul.colors, #colors').children('li').children();
-		$ch.filter(':not(:first-child):not([data-hasqtip])').each(function(){
+		$('ul.colors').children('li').find('span[id^=c]:not(:empty)').each(function(){
 			var $this = $(this),
 				text = 'Click to copy HEX '+color+' code to clipboard<br>Shift+Click to view RGB values',
 				title = $this.attr('title');
@@ -81,17 +82,19 @@ DocReady.push(function Colorguide(){
 				position: { my: 'bottom center', at: 'top center', viewport: true },
 				style: { classes: 'qtip-see-thru' }
 			});
-		});
-		$ch.filter('span:not(:first-child):not(:empty)').off('click').on('click',function(e){
+		}).off('click').on('click',function(e){
 			e.preventDefault();
 			var $this = $(this),
 				copy = $this.html().trim();
 			if (e.shiftKey){
 				var rgb = $.hex2rgb(copy),
 					$cg = $this.closest('li'),
-					$appearance = $cg.parents('li'),
 					path = [
-						$appearance.children().last().children('strong').text().trim(),
+						(
+							!AppearancePage
+							? $cg.parents('li').children().last().children('strong').text().trim()
+							: $content.children('h1').text()
+						),
 						$cg.children().first().text().replace(/:\s+$/,''),
 						$this.attr('oldtitle'),
 					];

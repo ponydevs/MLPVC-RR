@@ -2,25 +2,32 @@
 @import "vars";
 
 #content {
+	> .sprite {
+		margin: 0 auto 5px;
+		display: block;
+		width: 100%;
+		max-width: 300px;
+		height: 300px;
+
+		.upload-wrap {
+			border: 1px dashed rgba(black,.5);
+		}
+
+		img {
+			height: 300px;
+		}
+	}
 	> h1 {
 		font-size: 2.2em;
 		line-height: 1.2em;
 		margin-bottom: 10px;
 	}
-	> img {
-		margin: 0 auto;
-		display: block;
-		width: 100%;
-		max-width: 300px;
-	}
 
 	section { @extend %section }
 
-	#tags {
-		.tags:empty:before {
-			content: "This appearance has no tags";
-		}
-		.tag:not(:last-child) {
+	#tags .tags {
+		&:empty:before { content: "This appearance has no tags" }
+		> :not(:last-child) {
 			margin-right: 7px;
 		}
 	}
@@ -39,7 +46,7 @@
 	}
 
 	#colors {
-		margin: 10px 0;
+		margin: 10px 0 0;
 		padding: 0;
 		list-style: none;
 		display: flex;
@@ -50,23 +57,15 @@
 			margin: 5px;
 			padding: 10px;
 			color: #434343;
-			background-color: rgba(0,0,0,.05);
+			background-color: rgba(0,0,0,.07);
 			border: 1px solid rgba(0,0,0,.2);
-			box-shadow: 0 0 2px rgba(0,0,0,.2);
 			font-size: 12px;
 			font-family: 'Verdana', sans-serif;
 			flex: 1 0 auto;
 			text-align: center;
-			transition: background-color .3s, border-color .3s, box-shadow .3s;
-
-			&:hover {
-				background-color: rgba(0,0,0,.1);
-				border: 1px solid rgba(0,0,0,.3);
-				box-shadow: 0 0 7px rgba(0,0,0,.3);
-			}
 
 			> .cat {
-				font-size: 2em;
+				font-size: 2.2em;
 				font-weight: bold;
 				display: block;
 				margin: 0 0 5px;
@@ -74,6 +73,33 @@
 
 				~ span {
 					@include colored-square(35px);
+				}
+				~ .color-line {
+					display: flex;
+
+					&:not(:last-child){
+						margin-bottom: 5px;
+					}
+
+					:first-child {
+						display: block;
+						flex: 0 0 35px;
+
+						@include colored-square(35px);
+					}
+					:last-child {
+						display: block;
+						flex: 1 1 auto;
+						font-size: 20px;
+						line-height: 35px;
+						height: 35px;
+						white-space: nowrap;
+						overflow: hidden;
+						text-overflow: ellipsis;
+						text-align: left;
+						box-sizing: border-box;
+						padding: 0 5px;
+					}
 				}
 			}
 		}

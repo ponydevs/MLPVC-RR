@@ -2790,3 +2790,20 @@ HTML;
 
 		file_put_contents($CachePath, JSON::Encode($Data));
 	}
+
+	// Export PHP variables into JS through a script tag
+	function ExportVars($export){
+		$HTML =  '<script>var ';
+		foreach ($export as $name => $value){
+			if (is_bool($value))
+				$value = $value ? 'true' : 'false';
+			else if (is_array($value))
+				$value = JSON::Encode($value);
+			else if (is_string($value)){
+				if (!preg_match('~^/.*/[img]*$~', $value))
+					$value = JSON::Encode($value);
+			}
+			$HTML .= "$name=$value,";
+		}
+		echo rtrim($HTML,',').'</script>';
+	}

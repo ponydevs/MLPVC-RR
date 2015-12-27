@@ -1134,7 +1134,6 @@
 							));
 
 							$data = array(
-								'notes' => '',
 								'ishuman' => $EQG,
 							    'cm_favme' => null,
 							);
@@ -1156,6 +1155,7 @@
 								if ($action === 'make' || $notes !== $Appearance['notes'])
 									$data['notes'] = $notes;
 							}
+							else $data['notes'] = '';
 
 							if (!empty($_POST['cm_favme'])){
 								$cm_favme = trim($_POST['cm_favme']);
@@ -1199,6 +1199,8 @@
 								$data['id'] = $Appearance['id'];
 							}
 
+							if (isset($_POST['noreturn']))
+								respond(true);
 							$data['notes'] = get_notes_html($data, NOWRAP);
 							respond($data);
 						break;
@@ -1239,7 +1241,7 @@
 
 							clear_rendered_image($Appearance['id']);
 
-							respond(array('cgs' => get_colors_html($Appearance['id'], NOWRAP)));
+							respond(array('cgs' => get_colors_html($Appearance['id'], NOWRAP, !isset($_POST['NO_COLON']), isset($_POST['OUTPUT_COLOR_NAMES']))));
 						break;
 						case "getsprite":
 						case "setsprite":
@@ -1286,8 +1288,14 @@
 								'ponyid' => $Appearance['id'],
 								'tid' => $Tag['tid'],
 							))) respond(ERR_DB_FAIL);
+
 							update_tag_count($Tag['tid']);
-							respond(array('tags' => get_tags_html($Appearance['id'], NOWRAP)));
+							$response = array('tags' => get_tags_html($Appearance['id'], NOWRAP));
+							if (isset($_POST['needupdate']) && $Tag['type'] === 'ep'){
+								$response['needupdate'] = true;
+								$response['eps'] = get_episode_appearances($Appearance['id'], NOWRAP);
+							}
+							respond($response);
 						break;
 						case "untag":
 							if ($Appearance['id'] === 0)
@@ -1305,8 +1313,14 @@
 
 							if (!$CGDb->where('ponyid', $Appearance['id'])->where('tid', $Tag['tid'])->delete('tagged'))
 								respond(ERR_DB_FAIL);
+
 							update_tag_count($Tag['tid']);
-							respond(array('tags' => get_tags_html($Appearance['id'], NOWRAP)));
+							$response = array('tags' => get_tags_html($Appearance['id'], NOWRAP));
+							if (isset($_POST['needupdate']) && $Tag['type'] === 'ep'){
+								$response['needupdate'] = true;
+								$response['eps'] = get_episode_appearances($Appearance['id'], NOWRAP);
+							}
+							respond($response);
 						break;
 						case "applytemplate":
 							try {
@@ -1370,7 +1384,11 @@
 						if ($deleting){
 							if (!$CGDb->where('tid', $Tag['tid'])->delete('tags'))
 								respond(ERR_DB_FAIL);
-							respond('Tag deleted successfully', 1);
+
+							respond('Tag deleted successfully', 1, isset($_POST['needupdate']) && $Tag['type'] === 'ep' ? array(
+								'needupdate' => true,
+								'eps' => get_episode_appearances($Appearance['id'], NOWRAP),
+							) : null);
 						}
 					}
 					$data = array();
@@ -1586,8 +1604,11 @@
 					if (!empty($colorErrors))
 						respond("There were some issues while saving your changes. Details:\n".implode("\n",$colorErrors));
 
-					if ($new) $response = array('cgs' => get_colors_html($Appearance['id'], NOWRAP));
-					else $response = array('cg' => get_cg_html($Group['groupid'], NOWRAP));
+					$colon = !isset($_POST['NO_COLON']);
+					$outputNames = isset($_POST['OUTPUT_COLOR_NAMES']);
+
+					if ($new) $response = array('cgs' => get_colors_html($Appearance['id'], NOWRAP, $colon, $outputNames));
+					else $response = array('cg' => get_cg_html($Group['groupid'], NOWRAP, $colon, $outputNames));
 
 					$AppearanceID = $new ? $Appearance['id'] : $Group['ponyid'];
 					if (isset($major)){
@@ -1660,6 +1681,14 @@
 			if ($EQG)
 				$data = preg_replace(EQG_URL_PATTERN, '', $data);
 			$CGPath = "/{$color}guide".($EQG?'/eqg':'');
+
+			$GUIDE_MANAGE_JS = array(
+				'jquery.uploadzone',
+				'twitter-typeahead',
+				'handlebars-v3.0.3',
+				'Sortable',
+				"$do-manage"
+			);
 
 			$_match = array();
 			if (preg_match('~^appearance/(?:[A-Za-z\d\-]+-)?(\d+)(\.png)?~',$data,$_match)){
@@ -1798,13 +1827,18 @@
 
 				$Changes = get_updates($Appearance['id']);
 
-				loadPage(array(
+				$settings = array(
 					'title' => $title,
 					'heading' => $heading,
 					'view' => "$do-single",
 					'css' => array($do, "$do-single"),
 					'js' => array('jquery.qtip', 'jquery.ctxmenu', $do),
-				));
+				);
+				if (PERM('inspector')){
+					$settings['css'][] = "$do-manage";
+					$settings['js'] = array_merge($settings['js'],$GUIDE_MANAGE_JS);
+				}
+				loadPage($settings);
 			}
 			else if ($data === 'full'){
 				$GuideOrder = isset($_REQUEST['guide-order']);
@@ -1908,13 +1942,7 @@
 			);
 			if (PERM('inspector')){
 				$settings['css'][] = "$do-manage";
-				$settings['js'] = array_merge($settings['js'],array(
-					'jquery.uploadzone',
-					'twitter-typeahead',
-					'handlebars-v3.0.3',
-					'Sortable',
-					"$do-manage"
-				));
+				$settings['js'] = array_merge($settings['js'],$GUIDE_MANAGE_JS);
 			}
 			loadPage($settings);
 		break;

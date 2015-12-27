@@ -1,15 +1,19 @@
-/* globals $body,DocReady,mk,Sortable,Bloodhound,Handlebars,PRINTABLE_ASCII_REGEX,Key */
+/* globals $body,$content,DocReady,HandleNav,mk,Sortable,Bloodhound,Handlebars,PRINTABLE_ASCII_REGEX,Key */
 DocReady.push(function ColorguideManage(){
 	'use strict';
 	var Color = window.Color, color = window.color, TAG_TYPES_ASSOC = window.TAG_TYPES_ASSOC, $colorGroups,
 		HEX_COLOR_PATTERN = window.HEX_COLOR_PATTERN, isWebkit = 'WebkitAppearance' in document.documentElement.style,
-		EQG = window.EQG, EQGRq = EQG?'?eqg':'';
+		EQG = window.EQG, EQGRq = EQG?'?eqg':'', AppearancePage = !!window.AppearancePage;
 
 	var $spriteUploadForm = $.mk('form').attr('id', 'sprite-img').html(
 		'<p class="align-center"><a href="#upload">Click here to upload a file</a> (max. '+window.MAX_SIZE+') or enter a URL below.</p>' +
 		'<label><input type="text" name="image_url" placeholder="External image URL" required></label>' +
 		'<p class="align-center">The URL will be checked against the supported provider list, and if an image is found, it\'ll be downloaded to the server and set as this appearance\'s sprite image.</p>'
 	);
+
+	var $EpAppearances;
+	if (AppearancePage)
+		$EpAppearances = $('#ep-appearances').children('p');
 
 	var $list = $('.appearance-list'),
 		$ponyEditor = $.mk('form').attr('id','pony-editor')
@@ -40,12 +44,18 @@ DocReady.push(function ColorguideManage(){
 				)
 			),
 		mkPonyEditor = function($this, title, data){
-			var $ponyLabel = $this.parent(),
-				$div = $ponyLabel.parent(),
-				$ponyNotes = $div.children('.notes');
+			var editing = !!data,
+				$li = $this.parents('[id^=p]'),
+				$ponyNotes = $li.find('.notes'),
+				$ponyLabel;
+			if (AppearancePage){
+				if (!editing)
+					return;
+				$ponyLabel = $content.children('h1');
+			}
+			else $ponyLabel = $this.parent();
 
 			$.Dialog.request(title,$ponyEditor.clone(),'pony-editor','Save',function($form){
-				var editing = !!data;
 				if (editing){
 					$form.find('input[name=label]').val(data.label);
 					$form.find('textarea').val(data.notes);
@@ -87,14 +97,25 @@ DocReady.push(function ColorguideManage(){
 
 					var newdata = $form.mkData();
 					$.Dialog.wait(false, 'Saving changes');
+					if (AppearancePage)
+						newdata.noreturn = true;
 
 					$.post('/colorguide/'+(editing?'set/'+data.ponyID:'make')+EQGRq,newdata,$.mkAjaxHandler(function(){
 						if (!this.status) return $.Dialog.fail(false, this.message);
 
 						if (editing){
-							$ponyLabel.children().first().text(this.label);
-							$ponyNotes.html(this.notes);
-							$.Dialog.close();
+							if (!AppearancePage){
+								$ponyLabel.children().first().text(this.label);
+								$ponyNotes.html(this.notes);
+								$.Dialog.close();
+							}
+							else {
+								$.Dialog.success(false, 'Metadata updated');
+								$.Dialog.wait(false, 'Reloading page');
+								HandleNav.reload(function(){
+									$.Dialog.close();
+								});
+							}
 						}
 						else {
 							$.Dialog.success(title, this.message, true);
@@ -156,11 +177,12 @@ DocReady.push(function ColorguideManage(){
 
 	function createNewTag($tag, name, typehint){
 		var title = 'Create new tag',
-			$li = $tag.closest('li'),
-			$div = $tag.closest('div:not([class])'),
-			$tagsDiv = $div.children('.tags'),
-			ponyID = $li.attr('id').replace(/\D/g, ''),
-			ponyName = $div.children('strong').text().trim();
+			$tagsDiv = $tag.closest('.tags'),
+			$li = $tagsDiv.closest('[id^=p]'),
+			ponyID = $li.attr('id').substring(1),
+			ponyName = !AppearancePage
+				? $tagsDiv.parent().siblings('strong').text().trim()
+				: $content.children('h1').text();
 
 		$.Dialog.request(title,$tagEditForm.clone(true, true),'edit-tag','Create',function($form){
 			$form.append(
@@ -330,7 +352,7 @@ DocReady.push(function ColorguideManage(){
 			var ponyID;
 			if ($group instanceof jQuery){
 				var groupID = $group.attr('id').substring(2);
-				ponyID = $group.parents('li').attr('id').substring(1);
+				ponyID = $group.parents('[id^=p]').attr('id').substring(1);
 			}
 			else ponyID = $group;
 		}
@@ -372,6 +394,11 @@ DocReady.push(function ColorguideManage(){
 				if ($major.is(':checked')){
 					data.major = true;
 					data.reason = $reason.val();
+				}
+
+				if (AppearancePage){
+					data.OUTPUT_COLOR_NAMES = true;
+					data.NO_COLON = true;
 				}
 
 				$.Dialog.wait(false, 'Saving changes');
@@ -454,22 +481,26 @@ DocReady.push(function ColorguideManage(){
 				if (!tagID) return false;
 				tagID = tagID[1];
 
-				var ponyID = $tag.closest('li').attr('id').replace(/\D/g, ''),
+				var ponyID = $tag.closest('[id^=p]').attr('id').replace(/\D/g, ''),
 					tagName = $tag.text().trim(),
 					title = 'Remove tag: '+tagName;
 
 				$.Dialog.confirm(title,"The tag "+tagName+" will be removed from this appearance.<br>Are you sure?",['Remove it','Nope'],function(sure){
 					if (!sure) return;
 
+					var data = {tag:tagID};
 					$.Dialog.wait(title,'Removing tag');
+					if (AppearancePage)
+						data.needupdate = '?';
 
-					$.post('/colorguide/untag/'+ponyID+EQGRq,{ tag: tagID },$.mkAjaxHandler(function(){
-						if (this.status){
-							$tag.qtip('destroy', true);
-							$tag.remove();
-							$.Dialog.close();
-						}
-						else $.Dialog.fail(title, this.message);
+					$.post('/colorguide/untag/'+ponyID+EQGRq,data,$.mkAjaxHandler(function(){
+						if (!this.status) return $.Dialog.fail(title, this.message);
+
+						if (this.needupdate === true)
+							$EpAppearances.html(this.eps);
+						$tag.qtip('destroy', true);
+						$tag.remove();
+						$.Dialog.close();
 					}));
 				});
 			}},
@@ -482,16 +513,20 @@ DocReady.push(function ColorguideManage(){
 				$.Dialog.confirm(title,"Deleting this tag will also remove it from every appearance where it's been used.<br>Are you sure?",['Delete it','Nope'],function(sure){
 					if (!sure) return;
 
+					var data = {};
 					$.Dialog.wait(title,'Sending removal request');
+					if (AppearancePage)
+						data.needupdate = '?';
 
-					$.post('/colorguide/deltag/'+tagID+EQGRq,$.mkAjaxHandler(function(){
-						if (this.status){
-							var $affected = $('.id-'+tagID);
-							$affected.qtip('destroy', true);
-							$affected.remove();
-							$.Dialog.close();
-						}
-						else $.Dialog.fail(title, this.message);
+					$.post('/colorguide/deltag/'+tagID+EQGRq,data,$.mkAjaxHandler(function(){
+						if (!this.status) return $.Dialog.fail(title, this.message);
+
+						if (this.needupdate === true)
+							$EpAppearances.html(this.eps);
+						var $affected = $('.id-' + tagID);
+						$affected.qtip('destroy', true);
+						$affected.remove();
+						$.Dialog.close();
 					}));
 				});
 			}},
@@ -511,7 +546,7 @@ DocReady.push(function ColorguideManage(){
 		}), insertKeys = [Key.Enter, Key.Comma];
 		$tags.children('.addtag').each(function(){
 			var $input = $(this),
-				ponyID = $input.parents('li').attr('id').substring(1);
+				ponyID = $input.closest('[id^=p]').attr('id').substring(1);
 			$input.typeahead(null, {
 				name: 'tags',
 				display: 'name',
@@ -534,9 +569,15 @@ DocReady.push(function ColorguideManage(){
 					$.Dialog.setFocusedElement($input.attr('disabled', true));
 					$input.parent().addClass('loading');
 
-					$.post('/colorguide/tag/'+ponyID+EQGRq,{ tag_name: tag_name }, $.mkAjaxHandler(function(){
+					var data = {tag_name:tag_name};
+					if (AppearancePage)
+						data.needupdate = '?';
+
+					$.post('/colorguide/tag/'+ponyID+EQGRq, data, $.mkAjaxHandler(function(){
 						$input.removeAttr('disabled').parent().removeClass('loading');
 						if (this.status){
+							if (this.needupdate === true)
+								$EpAppearances.html(this.eps);
 							$tagsDiv.children('[data-hasqtip]').qtip('destroy', true);
 							$tagsDiv.children('.tag').remove();
 							$tagsDiv.append($(this.tags).filter('span'));
@@ -565,14 +606,16 @@ DocReady.push(function ColorguideManage(){
 			});
 		});
 
-		$colorGroups = $('ul.colors:not(.static)').attr('data-color', color);
+		$colorGroups = $('ul.colors').attr('data-color', color);
 		$colorGroups.filter(':not(.ctxmenu-bound)').ctxmenu(
 			[
 				{text: "Re-order "+color+" groups", icon: 'arrow-unsorted', click: function(){
 					var $colors = $(this),
-						$li = $colors.parents('li'),
+						$li = $colors.closest('[id^=p]'),
 						ponyID = $li.attr('id').substring(1),
-						ponyName = $li.children().last().children('strong').text().trim(),
+						ponyName = !AppearancePage
+							? $li.children().last().children('strong').text().trim()
+							: $content.children('h1').text(),
 						title = 'Re-order '+color+' groups on appearance: '+ponyName;
 
 					$.Dialog.wait(title, 'Retrieving color group list from server');
@@ -610,6 +653,10 @@ DocReady.push(function ColorguideManage(){
 								data.cgs = data.cgs.join(',');
 
 								$.Dialog.wait(false, 'Saving changes');
+								if (AppearancePage){
+									data.OUTPUT_COLOR_NAMES = true;
+									data.NO_COLON = true;
+								}
 
 								$.post('/colorguide/setcgs/'+ponyID+EQGRq,data,$.mkAjaxHandler(function(){
 									if (!this.status) return $.Dialog.fail(null, this.message);
@@ -695,85 +742,97 @@ DocReady.push(function ColorguideManage(){
 			],
 			function($el){ return Color+' group: '+$el.children().first().text().trim().replace(':','') }
 		);
+		var $colors = $colorGroups.children('li').children('span[id^=c]:not(:empty)');
+		if (!$colors.length)
+			$colors = $colorGroups.children('li').children('.color-line').children(':first-child');
 		$.ctxmenu.addItems(
-			$colorGroups.children('li').children('span:not(:first-child)'),
+			$colors.filter(':not(.ctxmenu-bound)'),
 			true,
 			{text: "Edit "+color+" group", icon: 'pencil', click: function(){
-				$.ctxmenu.triggerItem($(this).parent(), 1);
+				$.ctxmenu.triggerItem($(this).parents('.ctxmenu-bound'), 1);
 			}},
 			{text: "Delete "+color+" group", icon: 'trash', click: function(){
-				$.ctxmenu.triggerItem($(this).parent(), 2);
+				$.ctxmenu.triggerItem($(this).parents('.ctxmenu-bound'), 2);
 			}},
 			true,
 			{text: "Re-order "+color+" groups", icon: 'arrow-unsorted', click: function(){
-				$.ctxmenu.triggerItem($(this).parent(), 3);
+				$.ctxmenu.triggerItem($(this).parents('.ctxmenu-bound'), 3);
 			}},
 			{text: "Create new group", icon: 'folder-add', click: function(){
-				$.ctxmenu.triggerItem($(this).parent(), 4);
+				$.ctxmenu.triggerItem($(this).parents('.ctxmenu-bound'), 4);
 			}}
 		);
 
 		$('.upload-wrap').filter(':not(.ctxmenu-bound)').each(function(){
 			var $this = $(this),
-				ponyID = $this.closest('li').attr('id').substring(1);
+				$li = $this.closest('li');
+			if (!$li.length)
+				$li = $content.children('[id^=p]');
+			var ponyID = $li.attr('id').substring(1);
+			(function(ponyID){
+				$this.uploadZone({
+					requestKey: 'sprite',
+					title: 'Upload sprite',
+					accept: 'image/png',
+					target: '/colorguide/setsprite/'+ponyID,
+				}).on('uz-uploadstart',function(){
+					$.Dialog.close();
+				}).ctxmenu([
+					{text: 'Open image in new tab', icon: 'arrow-forward', 'default': true, attr: {
+						href: $this.find('img').attr('src'),
+						target: '_blank',
+					}},
+					{text: 'Copy image URL', icon: 'clipboard', click: function(){
+						$.copy($.urlToAbsolute($this.find('img').attr('src')));
+					}},
+					{text: 'Upload new sprite', icon: 'upload', click: function(){
+						var title = 'Upload sprite image',
+							$uploadInput = $this.find('input[type="file"]');
+						$.Dialog.request(title,$spriteUploadForm.clone(),'sprite-img','Download image',function($form){
+							var $image_url = $form.find('input[name=image_url]');
+							$form.find('a').on('click',function(e){
+								e.preventDefault();
+								e.stopPropagation();
 
-			$this.uploadZone({
-				requestKey: 'sprite',
-				title: 'Upload sprite',
-				accept: 'image/png',
-				target: '/colorguide/setsprite/'+ponyID,
-			}).on('uz-uploadstart',function(){
-				$.Dialog.close();
-			}).ctxmenu([
-				{text: 'Open image in new tab', icon: 'arrow-forward', 'default': true, attr: {
-					href: $this.find('img').attr('src'),
-					target: '_blank',
-				}},
-				{text: 'Copy image URL', icon: 'clipboard', click: function(){
-					$.copy($.urlToAbsolute($this.find('img').attr('src')));
-				}},
-				{text: 'Upload new sprite', icon: 'upload', click: function(){
-					var title = 'Upload sprite image',
-						ponyID = $this.closest('li').attr('id').substring(1),
-						$uploadInput = $this.find('input[type="file"]');
-					$.Dialog.request(title,$spriteUploadForm.clone(),'sprite-img','Download image',function($form){
-						var $image_url = $form.find('input[name=image_url]');
-						$form.find('a').on('click',function(e){
-							e.preventDefault();
-							e.stopPropagation();
+								$uploadInput.trigger('click', [true]);
+							});
+							$form.on('submit',function(e){
+								e.preventDefault();
 
-							$uploadInput.trigger('click', [true]);
+								var image_url = $image_url.val();
+
+								$.Dialog.wait(title, 'Downloading external image to the server');
+
+								$.post('/colorguide/setsprite/'+ponyID+EQGRq,{image_url: image_url}, $.mkAjaxHandler(function(){
+									if (this.status) $uploadInput.trigger('set-image', [this.path]);
+									else $.Dialog.fail(title,this.message);
+								}));
+							});
 						});
-						$form.on('submit',function(e){
-							e.preventDefault();
+					}},
+				], 'Sprite image').attr('title', isWebkit ? ' ' : '').on('click',function(e, forced){
+					if (forced === true) return true;
 
-							var image_url = $image_url.val();
-
-							$.Dialog.wait(title, 'Downloading external image to the server');
-
-							$.post('/colorguide/setsprite/'+ponyID+EQGRq,{image_url: image_url}, $.mkAjaxHandler(function(){
-								if (this.status) $uploadInput.trigger('set-image', [this.path]);
-								else $.Dialog.fail(title,this.message);
-							}));
-						});
-					});
-				}},
-			], 'Sprite image').attr('title', isWebkit ? ' ' : '').on('click',function(e, forced){
-				if (forced === true) return true;
-
-				e.preventDefault();
-				$this.data('ctxmenu-items').eq(1).children().get(0).click();
-			});
+					e.preventDefault();
+					$this.data('ctxmenu-items').eq(1).children().get(0).click();
+				});
+			})(ponyID);
 		});
 	}
 	window.ctxmenus = function(){ctxmenus()};
 
 	var $tags;
-	$list.on('page-switch',function(){
-		$(this).find('button.edit').on('click',function(){
+	$list.on('page-switch',BindEditTagsHandlers);
+	BindEditTagsHandlers();
+
+	function BindEditTagsHandlers(){
+		$('button.edit').on('click',function(){
 			var $this = $(this),
-				ponyID = $this.parents('li').attr('id').substring(1),
-				ponyName = $this.parent().text().trim(),
+				$li = $this.closest('[id^=p]'),
+				ponyID = $li.attr('id').substring(1),
+				ponyName = !AppearancePage
+					? $this.parent().text().trim()
+					: $content.children('h1').text(),
 				title = 'Editing appearance: '+ponyName;
 
 			$.Dialog.wait(title, 'Retrieving appearance details from server');
@@ -786,7 +845,7 @@ DocReady.push(function ColorguideManage(){
 				}
 				else $.Dialog.fail(title, this.message);
 			}));
-		}).next().on('click',function(){
+		}).next('.delete').on('click',function(){
 			var $this = $(this),
 				$li = $this.closest('li'),
 				ponyID = $li.attr('id').substring(1),
@@ -823,5 +882,5 @@ DocReady.push(function ColorguideManage(){
 		);
 
 		ctxmenus();
-	}).trigger('page-switch');
+	}
 });
