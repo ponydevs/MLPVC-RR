@@ -27,6 +27,7 @@ var stuff = [
 	'gulp-util',
 	'gulp-markdown',
 	'gulp-dom',
+	'fs',
 ];
 console.write('> *yaaawn*');
 for (var i= 0,l=stuff.length;i<l;i++){
@@ -151,11 +152,79 @@ gulp.task('md', function(){
 		.pipe(gulp.dest('www/views'));
 });
 
-gulp.task('default', ['js', 'sass', 'md'], function(){
+var Rarity = new Personality(
+	'pgsort',
+	[
+		'This is the WORST. POSSIBLE. THING!',
+	]
+);
+gulp.task('pgsort', function(){
+	try {
+		fs.readdir('./setup', function(err, dir){
+			if (err) throw err;
+
+			var i = 0;
+			while (i < dir.length){
+				if (!/\.pg\.sql$/.test(dir[i]) || /_full/.test(dir[i])){
+					dir.splice(i, 1);
+					continue;
+				}
+				i++;
+			}
+
+			for (i = 0; i<dir.length; i++)
+				(function(fpath){
+					fs.readFile(fpath, 'utf8', function(err, data){
+						if (err) throw err;
+						var test = /INSERT INTO "?([a-z]+)"?\s*VALUES\s*\((\d+),[\s\S]+?;/g;
+						if (!test.test(data))
+							return;
+						var groups = {};
+						data.replace(test,function(row,group,field){
+							if (group !== 'tagged'){
+								if (typeof groups[group] !== 'object')
+									groups[group] = {};
+								groups[group][field] = row;
+							}
+							return row;
+						});
+						var sortedGroupKeys = {},
+							groupStep = {};
+						for (var j = 0, k = Object.keys(groups), l = k.length; j<l; j++){
+							var group = k[j];
+							sortedGroupKeys[group] = Object.keys(groups[group]).sort(function(a,b){ return parseInt(a, 10) - parseInt(b, 10) });
+							groupStep[group] = 0;
+						}
+						data = data.replace(test,function(row,group){
+							if (group === 'tagged')
+								return row;
+
+							var nextSortedKeyIndex = groupStep[group]++,
+								nextSortedKey = sortedGroupKeys[group][nextSortedKeyIndex];
+
+							return groups[group][nextSortedKey];
+						});
+
+						fs.writeFile(fpath, data, function(err){
+							if (err) throw err;
+						});
+					});
+				})('./setup/'+dir[i]);
+		});
+	}
+	catch(err){
+		Rarity.error(err);
+		this.emit('end');
+	}
+});
+
+gulp.task('default', ['js', 'sass', 'md', 'pgsort'], function(){
 	gulp.watch(['www/js/*.js', '!www/js/*.min.js'], {debounceDelay: 2000}, ['js']);
 	Dashie.log("I got my eyes on you, JavaScript files!");
 	gulp.watch('www/sass/*.scss', {debounceDelay: 2000}, ['sass']);
 	Flutters.log("SCSS files, do you mind if I, um, watch over you for a bit?");
 	gulp.watch('README.md', {debounceDelay: 2000}, ['md']);
 	AJ.log("Readme markdown file is under my radar, sugarcube");
+	gulp.watch(['setup/*.pg.sql', '!setup/*_full.pg.sql'], {debounceDelay: 2000}, ['pgsort']);
+	Rarity.log("PostgreSQL dump sorting is aaiting your orders, darling.");
 });
