@@ -1108,7 +1108,7 @@ HTML;
 	}
 
 	function da_cache_own_stash_item($ItemID, $urlid = false){
-		global $Database;
+		global $Database, $currentUser;
 
 		if ($urlid){
 			$URLID = $ItemID;
@@ -1142,6 +1142,7 @@ HTML;
 			array(
 				'provider' => 'sta.sh',
 				'id' => $URLID,
+				'author' => $currentUser['name'],
 				'updated_on' => null,
 			),
 			$update
