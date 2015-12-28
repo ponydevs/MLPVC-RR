@@ -1116,6 +1116,8 @@ HTML;
 		}
 		else $URLID = base_convert($ItemID, 10, 36);
 		$ItemInfo = da_request("stash/item/{$ItemID}");
+		if (strlen($URLID) !== 11)
+			$URLID = str_pad($URLID, 11, '0', STR_PAD_LEFT);
 
 		if (empty($ItemInfo['files']))
 			respond('This submission does not have any files associated with it (e.g. Sta.sh Writer drafts)');
