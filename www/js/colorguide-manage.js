@@ -517,17 +517,26 @@ DocReady.push(function ColorguideManage(){
 					$.Dialog.wait(title,'Sending removal request');
 					if (AppearancePage)
 						data.needupdate = '?';
+					(function Send(data){
+						$.post('/colorguide/deltag/'+tagID+EQGRq,data,$.mkAjaxHandler(function(){
+							if (this.status){
+								if (this.needupdate === true)
+									$EpAppearances.html(this.eps);
+								var $affected = $('.id-' + tagID);
+								$affected.qtip('destroy', true);
+								$affected.remove();
+								$.Dialog.close();
+							}
+							else if (this.confirm)
+								$.Dialog.confirm(false, this.message, ['NUKE TAG','Nevermind'], function(sure){
+									if (!sure) return;
 
-					$.post('/colorguide/deltag/'+tagID+EQGRq,data,$.mkAjaxHandler(function(){
-						if (!this.status) return $.Dialog.fail(title, this.message);
-
-						if (this.needupdate === true)
-							$EpAppearances.html(this.eps);
-						var $affected = $('.id-' + tagID);
-						$affected.qtip('destroy', true);
-						$affected.remove();
-						$.Dialog.close();
-					}));
+									data.sanitycheck = true;
+									Send(data);
+								});
+							else $.Dialog.fail(title, this.message);
+						}));
+					})(data);
 				});
 			}},
 			true,

@@ -1382,6 +1382,12 @@
 						if ($getting) respond($Tag);
 
 						if ($deleting){
+							if (!isset($_POST['sanitycheck'])){
+								$Uses = $CGDb->where('tid', $Tag['tid'])->count('tagged');
+								if ($Uses > 0)
+									respond('<p>This tag is currently used on '.plur('appearance',$Uses,PREPEND_NUMBER).'</p><p>Deleting will <strong class="color-red">permanently remove</strong> the tag from those appearances!</p><p>Are you <em class="color-red">REALLY</em> sure about this?</p>',0,array('confirm' => true));
+							}
+
 							if (!$CGDb->where('tid', $Tag['tid'])->delete('tags'))
 								respond(ERR_DB_FAIL);
 
