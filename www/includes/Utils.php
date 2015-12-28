@@ -2548,7 +2548,7 @@ ORDER BY "count" DESC
 	}
 
 	// Check image URL in POST request
-	function check_post_image($respond = false){
+	function check_post_image($respond = false, $Post = null){
 		if (empty($_POST['image_url']))
 			respond('Please enter an image URL');
 
@@ -2576,11 +2576,13 @@ ORDER BY "count" DESC
 
 		global $POST_TYPES, $Database;
 		foreach ($POST_TYPES as $type){
-			$Used = $Database->rawQuerySingle(
-				"SELECT ep.*, r.id
-				FROM {$type}s r
-				LEFT JOIN episodes ep ON r.season = ep.season && r.episode = ep.episode
-				WHERE r.preview != '' AND r.preview = ?", array($Image->preview));
+			if (!empty($Post['id']))
+				$Database->where('r.id',$Post['id'],'!=');
+			$Database
+				->join('episodes ep','r.season = ep.season && r.episode = ep.episode')
+				->where('r.preview','','!=')
+				->where('r.preview',$Image->preview)
+				->getOne("{$type}s r",'ep.*, r.id');
 			if (!empty($Used)){
 				;
 				$EpID = format_episode_title($Used,AS_ARRAY,'id');

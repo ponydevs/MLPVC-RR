@@ -117,7 +117,7 @@
 				if (empty($Post))
 					respond("The specified $thing does not exist");
 
-				$Image = check_post_image();
+				$Image = check_post_image(false, $Post);
 
 				// Check image availability
 				if (!@getimagesize($Image->preview)){
