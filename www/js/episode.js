@@ -523,6 +523,8 @@ DocReady.push(function Episode(){
 										pattern: "^.{2,255}$",
 										name: 'image_url',
 										required: true,
+										autocomplete: 'off',
+										spellcheck: 'false',
 									})
 								)
 							);
