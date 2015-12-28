@@ -152,19 +152,14 @@ gulp.task('md', function(){
 		.pipe(gulp.dest('www/views'));
 });
 
-var Rarity = new Personality(
-	'pgsort',
-	[
-		'This is the WORST. POSSIBLE. THING!',
-	]
-);
-gulp.task('pgsort', function(){
-	var parseRow = function(r){
+var Rarity = new Personality('pgsort', ['This is the WORST. POSSIBLE. THING!']),
+	parseRow = function(r){
 		var match = r.match(/VALUES \((\d+)(?:, (\d+|NULL))?[, )]/);
 		if (!match)
 			return [];
 		return [match[1], match[2]];
 	};
+gulp.task('pgsort', function(){
 	try {
 		fs.readdir('./setup', function(err, dir){
 			if (err) throw err;
