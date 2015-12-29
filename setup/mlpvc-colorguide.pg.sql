@@ -218,71 +218,72 @@ ALTER TABLE ONLY tags ALTER COLUMN tid SET DEFAULT nextval('tags_tid_seq'::regcl
 -- Data for Name: appearances; Type: TABLE DATA; Schema: public; Owner: mlpvc-rr
 --
 
-INSERT INTO appearances VALUES (0, 0, 'Universal colors', 'These colors apply to most characters in the show. Use these unless a different color is specified.
+INSERT INTO appearances VALUES
+(0, 0, 'Universal colors', 'These colors apply to most characters in the show. Use these unless a different color is specified.
 <strong>Pure white:</strong> Use for eye reflections, sclera and teeth.
-<strong>Pure black:</strong> Use for eye pupil, eyelashes, eye outlines and on eyelids (for emotional turmoil at ~5-15%)', NULL, false, '2015-12-03 15:57:59.671+00');
-INSERT INTO appearances VALUES (1, 1, 'Twilight Sparkle', 'Far legs use darker colors.', 'd64bqyo', false, '2015-08-24 19:04:32+00');
-INSERT INTO appearances VALUES (2, 2, 'Applejack', '', 'd64bqyo', false, '2015-09-21 18:46:54+00');
-INSERT INTO appearances VALUES (3, 3, 'Fluttershy', '', 'd64bqyo', false, '2015-09-21 18:54:47+00');
-INSERT INTO appearances VALUES (4, 4, 'Pinkie Pie', 'Far legs use darker colors.', 'd64bqyo', false, '2015-09-21 18:52:26+00');
-INSERT INTO appearances VALUES (5, 5, 'Rainbow Dash', '', 'd64bqyo', false, '2015-09-21 19:01:33+00');
-INSERT INTO appearances VALUES (6, 6, 'Rarity', '', 'd64bqyo', false, '2015-09-21 19:18:24+00');
-INSERT INTO appearances VALUES (7, 7, 'Spike', '', NULL, false, '2015-09-21 19:43:59+00');
-INSERT INTO appearances VALUES (9, 13, 'Princess Luna', '', NULL, false, '2015-09-29 18:55:38+00');
-INSERT INTO appearances VALUES (10, NULL, 'Minuette', 'For convenience, the color offalsethe glass on her cutie mark is solid rather than transparent, thus the sand should be above.', NULL, false, '2015-07-25 14:49:44+00');
-INSERT INTO appearances VALUES (11, NULL, 'Derpy / Muffins', '', NULL, false, '2015-08-26 03:53:49+00');
-INSERT INTO appearances VALUES (12, NULL, 'Lyra Heartstrings', '', NULL, false, '2015-08-26 04:08:33+00');
-INSERT INTO appearances VALUES (13, NULL, 'Whoa Nelly', 'Special eyeball color.
-Cutie Mark head colors are different from normal ones.', NULL, false, '2015-09-17 03:43:22+00');
-INSERT INTO appearances VALUES (14, NULL, 'Fashion Plate', 'Far legs use darker colors.', NULL, false, '2015-09-17 04:02:26+00');
-INSERT INTO appearances VALUES (15, NULL, 'Sassy Saddles', '', NULL, false, '2015-09-17 04:22:20+00');
-INSERT INTO appearances VALUES (16, NULL, 'Twinkleshine', '', NULL, false, '2015-09-21 20:25:31+00');
-INSERT INTO appearances VALUES (17, NULL, 'Lemon Hearts', '', NULL, false, '2015-09-21 20:30:06+00');
-INSERT INTO appearances VALUES (18, NULL, 'Granny Smith', 'Far legs use darker colors.', NULL, false, '2015-09-21 20:37:57+00');
-INSERT INTO appearances VALUES (19, NULL, 'Fleetfoot', '', 'd97x7vd', false, '2015-09-21 20:58:56+00');
-INSERT INTO appearances VALUES (20, NULL, 'Stormy Flare', 'Only has one eye shine.
-Far legs use darker colors.', NULL, false, '2015-09-22 05:20:14+00');
-INSERT INTO appearances VALUES (21, NULL, 'Wind Rider', 'Teeth use a different color than normal.', NULL, false, '2015-09-24 04:35:32+00');
-INSERT INTO appearances VALUES (22, NULL, 'Sugar Belle', 'Far legs use darker colors.', NULL, false, '2015-09-24 10:44:18+00');
-INSERT INTO appearances VALUES (23, 9, 'Apple Bloom', 'Far legs use darker colors.
-Cutie Mark colors subject to change on further episodes.', NULL, false, '2015-09-24 12:01:03+00');
-INSERT INTO appearances VALUES (24, 10, 'Scootaloo', 'Far legs use darker colors.
-Cutie Mark colors subject to change on further episodes.', NULL, false, '2015-09-24 12:06:23+00');
-INSERT INTO appearances VALUES (25, 11, 'Sweetie Belle', 'Cutie Mark colors subject to change on further episodes.', NULL, false, '2015-09-24 12:09:41+00');
-INSERT INTO appearances VALUES (26, NULL, 'Night Glider', '', 'd8oovxh', false, '2015-09-26 15:03:43+00');
-INSERT INTO appearances VALUES (27, NULL, 'Double Diamond', '', NULL, false, '2015-09-26 17:22:19+00');
-INSERT INTO appearances VALUES (28, NULL, 'Party Favor', 'Magic aura color is unknown.', NULL, false, '2015-09-26 17:34:42+00');
-INSERT INTO appearances VALUES (29, NULL, 'Starlight Glimmer', 'Her cutie mark does not use pure white for the star fill.', 'd8old4s', false, '2015-09-26 18:01:51+00');
-INSERT INTO appearances VALUES (30, NULL, 'Coco Pommel', 'Far legs use darker colors.', NULL, false, '2015-09-26 21:18:32+00');
-INSERT INTO appearances VALUES (31, NULL, 'Suri Polomare', 'Far legs use darker colors.', NULL, false, '2015-09-30 05:35:59+00');
-INSERT INTO appearances VALUES (32, NULL, 'Trixie Lulamoon', '', 'd9bxest', false, '2015-10-03 15:35:08+00');
-INSERT INTO appearances VALUES (33, NULL, 'Alicorn Amulet', '', NULL, false, '2015-10-03 16:22:13+00');
-INSERT INTO appearances VALUES (34, 12, 'Princess Celestia', 'Make sure to use appropriate references when picking gradient angles and stops. They''ll differ based on the hair shape and angle.', NULL, false, '2015-10-03 19:26:50+00');
-INSERT INTO appearances VALUES (35, NULL, 'Big Macintosh', 'Far legs use darker colors.', NULL, false, '2015-10-04 19:11:42+00');
-INSERT INTO appearances VALUES (36, NULL, 'Moondancer', 'Far legs use darker colors.', NULL, false, '2015-10-05 05:17:36+00');
-INSERT INTO appearances VALUES (37, NULL, 'Dinky Doo', 'From E5E17', NULL, false, '2015-10-06 03:39:35+00');
-INSERT INTO appearances VALUES (38, NULL, 'Berry Pinch', 'From S5E17', NULL, false, '2015-10-06 03:48:24+00');
-INSERT INTO appearances VALUES (39, NULL, 'Button Mash', 'Based on S5E18', NULL, false, '2015-10-15 03:32:38+00');
-INSERT INTO appearances VALUES (40, NULL, 'Lily Longsocks', 'From S5E18', NULL, false, '2015-10-16 05:37:56+00');
-INSERT INTO appearances VALUES (44, NULL, 'Shining Armor', '', NULL, false, '2015-10-23 14:27:32+00');
-INSERT INTO appearances VALUES (45, NULL, 'Penny Curve', 'VectorClub Mascot', 'd9e7zgj', false, '2015-10-25 20:10:21+00');
-INSERT INTO appearances VALUES (46, NULL, 'Cheese Sandwich', '', NULL, false, '2015-10-26 14:27:27+00');
-INSERT INTO appearances VALUES (50, NULL, 'Marble Pie', 'Two different hair outline colors.', 'd9eeci7', false, '2015-10-31 22:30:14+00');
-INSERT INTO appearances VALUES (51, NULL, 'Limestone Pie', '', 'd9eecqj', false, '2015-10-31 22:30:14+00');
-INSERT INTO appearances VALUES (52, NULL, 'Maud Pie', 'Far legs use darker colors.', 'd7apvq4', false, '2015-10-31 22:30:14+00');
-INSERT INTO appearances VALUES (53, NULL, 'Igneous Rock', 'Far legs use darker colors.', NULL, false, '2015-10-31 22:30:14+00');
-INSERT INTO appearances VALUES (54, NULL, 'Cloudy Quartz', '', NULL, false, '2015-10-31 22:43:48.197299+00');
-INSERT INTO appearances VALUES (55, NULL, 'Spitfire', 'Far legs use darker colors.', 'd5nzngs', false, '2015-11-04 22:58:36.915265+00');
-INSERT INTO appearances VALUES (56, NULL, 'Lightning Dust', 'Far legs use darker colors.', 'd9fl30m', false, '2015-11-04 23:10:40.321984+00');
-INSERT INTO appearances VALUES (57, NULL, 'Discord', '', NULL, false, '2015-11-14 03:28:38.262247+00');
-INSERT INTO appearances VALUES (58, NULL, 'Tree Hugger', '', NULL, false, '2015-11-14 04:07:04.439467+00');
-INSERT INTO appearances VALUES (59, NULL, 'Coloratura / Rara', '', NULL, false, '2015-11-24 04:28:54.164681+00');
-INSERT INTO appearances VALUES (60, NULL, 'Rara (Countess Outfit)', '', NULL, false, '2015-11-24 04:42:00.076945+00');
-INSERT INTO appearances VALUES (61, NULL, 'Svengallop', '', NULL, false, '2015-11-24 06:28:47.770494+00');
-INSERT INTO appearances VALUES (62, NULL, 'Sunburst', '', 'd9iyv1r', false, '2015-12-01 15:18:10.631048+00');
-INSERT INTO appearances VALUES (63, NULL, 'Sunset Shimmer (EQG, RR)', 'Sunset''s colors from Equestria Girls and Rainbow Rocks.', NULL, true, '2015-12-05 18:17:59.882699+00');
-INSERT INTO appearances VALUES (64, NULL, 'Angel Bunny', '', NULL, false, '2015-12-18 06:39:19.313917+00');
-INSERT INTO appearances VALUES (65, NULL, 'Meadow Flower', '', 'd9ko8le', false, '2015-12-19 17:55:09.130305+00');
+<strong>Pure black:</strong> Use for eye pupil, eyelashes, eye outlines and on eyelids (for emotional turmoil at ~5-15%)', NULL, false, '2015-12-03 15:57:59.671+00'),
+(1, 1, 'Twilight Sparkle', 'Far legs use darker colors.', 'd64bqyo', false, '2015-08-24 19:04:32+00'),
+(2, 2, 'Applejack', '', 'd64bqyo', false, '2015-09-21 18:46:54+00'),
+(3, 3, 'Fluttershy', '', 'd64bqyo', false, '2015-09-21 18:54:47+00'),
+(4, 4, 'Pinkie Pie', 'Far legs use darker colors.', 'd64bqyo', false, '2015-09-21 18:52:26+00'),
+(5, 5, 'Rainbow Dash', '', 'd64bqyo', false, '2015-09-21 19:01:33+00'),
+(6, 6, 'Rarity', '', 'd64bqyo', false, '2015-09-21 19:18:24+00'),
+(7, 7, 'Spike', '', NULL, false, '2015-09-21 19:43:59+00'),
+(9, 13, 'Princess Luna', '', NULL, false, '2015-09-29 18:55:38+00'),
+(10, NULL, 'Minuette', 'For convenience, the color offalsethe glass on her cutie mark is solid rather than transparent, thus the sand should be above.', NULL, false, '2015-07-25 14:49:44+00'),
+(11, NULL, 'Derpy / Muffins', '', NULL, false, '2015-08-26 03:53:49+00'),
+(12, NULL, 'Lyra Heartstrings', '', NULL, false, '2015-08-26 04:08:33+00'),
+(13, NULL, 'Whoa Nelly', 'Special eyeball color.
+Cutie Mark head colors are different from normal ones.', NULL, false, '2015-09-17 03:43:22+00'),
+(14, NULL, 'Fashion Plate', 'Far legs use darker colors.', NULL, false, '2015-09-17 04:02:26+00'),
+(15, NULL, 'Sassy Saddles', '', NULL, false, '2015-09-17 04:22:20+00'),
+(16, NULL, 'Twinkleshine', '', NULL, false, '2015-09-21 20:25:31+00'),
+(17, NULL, 'Lemon Hearts', '', NULL, false, '2015-09-21 20:30:06+00'),
+(18, NULL, 'Granny Smith', 'Far legs use darker colors.', NULL, false, '2015-09-21 20:37:57+00'),
+(19, NULL, 'Fleetfoot', '', 'd97x7vd', false, '2015-09-21 20:58:56+00'),
+(20, NULL, 'Stormy Flare', 'Only has one eye shine.
+Far legs use darker colors.', NULL, false, '2015-09-22 05:20:14+00'),
+(21, NULL, 'Wind Rider', 'Teeth use a different color than normal.', NULL, false, '2015-09-24 04:35:32+00'),
+(22, NULL, 'Sugar Belle', 'Far legs use darker colors.', NULL, false, '2015-09-24 10:44:18+00'),
+(23, 9, 'Apple Bloom', 'Far legs use darker colors.
+Cutie Mark colors subject to change on further episodes.', NULL, false, '2015-09-24 12:01:03+00'),
+(24, 10, 'Scootaloo', 'Far legs use darker colors.
+Cutie Mark colors subject to change on further episodes.', NULL, false, '2015-09-24 12:06:23+00'),
+(25, 11, 'Sweetie Belle', 'Cutie Mark colors subject to change on further episodes.', NULL, false, '2015-09-24 12:09:41+00'),
+(26, NULL, 'Night Glider', '', 'd8oovxh', false, '2015-09-26 15:03:43+00'),
+(27, NULL, 'Double Diamond', '', NULL, false, '2015-09-26 17:22:19+00'),
+(28, NULL, 'Party Favor', 'Magic aura color is unknown.', NULL, false, '2015-09-26 17:34:42+00'),
+(29, NULL, 'Starlight Glimmer', 'Her cutie mark does not use pure white for the star fill.', 'd8old4s', false, '2015-09-26 18:01:51+00'),
+(30, NULL, 'Coco Pommel', 'Far legs use darker colors.', NULL, false, '2015-09-26 21:18:32+00'),
+(31, NULL, 'Suri Polomare', 'Far legs use darker colors.', NULL, false, '2015-09-30 05:35:59+00'),
+(32, NULL, 'Trixie Lulamoon', '', 'd9bxest', false, '2015-10-03 15:35:08+00'),
+(33, NULL, 'Alicorn Amulet', '', NULL, false, '2015-10-03 16:22:13+00'),
+(34, 12, 'Princess Celestia', 'Make sure to use appropriate references when picking gradient angles and stops. They''ll differ based on the hair shape and angle.', NULL, false, '2015-10-03 19:26:50+00'),
+(35, NULL, 'Big Macintosh', 'Far legs use darker colors.', NULL, false, '2015-10-04 19:11:42+00'),
+(36, NULL, 'Moondancer', 'Far legs use darker colors.', NULL, false, '2015-10-05 05:17:36+00'),
+(37, NULL, 'Dinky Doo', 'From E5E17', NULL, false, '2015-10-06 03:39:35+00'),
+(38, NULL, 'Berry Pinch', 'From S5E17', NULL, false, '2015-10-06 03:48:24+00'),
+(39, NULL, 'Button Mash', 'Based on S5E18', NULL, false, '2015-10-15 03:32:38+00'),
+(40, NULL, 'Lily Longsocks', 'From S5E18', NULL, false, '2015-10-16 05:37:56+00'),
+(44, NULL, 'Shining Armor', '', NULL, false, '2015-10-23 14:27:32+00'),
+(45, NULL, 'Penny Curve', 'VectorClub Mascot', 'd9e7zgj', false, '2015-10-25 20:10:21+00'),
+(46, NULL, 'Cheese Sandwich', '', NULL, false, '2015-10-26 14:27:27+00'),
+(50, NULL, 'Marble Pie', 'Two different hair outline colors.', 'd9eeci7', false, '2015-10-31 22:30:14+00'),
+(51, NULL, 'Limestone Pie', '', 'd9eecqj', false, '2015-10-31 22:30:14+00'),
+(52, NULL, 'Maud Pie', 'Far legs use darker colors.', 'd7apvq4', false, '2015-10-31 22:30:14+00'),
+(53, NULL, 'Igneous Rock', 'Far legs use darker colors.', NULL, false, '2015-10-31 22:30:14+00'),
+(54, NULL, 'Cloudy Quartz', '', NULL, false, '2015-10-31 22:43:48.197299+00'),
+(55, NULL, 'Spitfire', 'Far legs use darker colors.', 'd5nzngs', false, '2015-11-04 22:58:36.915265+00'),
+(56, NULL, 'Lightning Dust', 'Far legs use darker colors.', 'd9fl30m', false, '2015-11-04 23:10:40.321984+00'),
+(57, NULL, 'Discord', '', NULL, false, '2015-11-14 03:28:38.262247+00'),
+(58, NULL, 'Tree Hugger', '', NULL, false, '2015-11-14 04:07:04.439467+00'),
+(59, NULL, 'Coloratura / Rara', '', NULL, false, '2015-11-24 04:28:54.164681+00'),
+(60, NULL, 'Rara (Countess Outfit)', '', NULL, false, '2015-11-24 04:42:00.076945+00'),
+(61, NULL, 'Svengallop', '', NULL, false, '2015-11-24 06:28:47.770494+00'),
+(62, NULL, 'Sunburst', '', 'd9iyv1r', false, '2015-12-01 15:18:10.631048+00'),
+(63, NULL, 'Sunset Shimmer (EQG, RR)', 'Sunset''s colors from Equestria Girls and Rainbow Rocks.', NULL, true, '2015-12-05 18:17:59.882699+00'),
+(64, NULL, 'Angel Bunny', '', NULL, false, '2015-12-18 06:39:19.313917+00'),
+(65, NULL, 'Meadow Flower', '', 'd9ko8le', false, '2015-12-19 17:55:09.130305+00');
 
 
 --
@@ -296,313 +297,314 @@ SELECT pg_catalog.setval('appearances_id_seq', 65, true);
 -- Data for Name: colorgroups; Type: TABLE DATA; Schema: public; Owner: mlpvc-rr
 --
 
-INSERT INTO colorgroups VALUES (17, 1, 'Coat', 0);
-INSERT INTO colorgroups VALUES (18, 1, 'Mane & Tail', 0);
-INSERT INTO colorgroups VALUES (19, 1, 'Iris', 0);
-INSERT INTO colorgroups VALUES (20, 1, 'Cutie Mark', 0);
-INSERT INTO colorgroups VALUES (21, 1, 'Magic', 0);
-INSERT INTO colorgroups VALUES (22, 11, 'Coat', 0);
-INSERT INTO colorgroups VALUES (23, 11, 'Mane & Tail', 0);
-INSERT INTO colorgroups VALUES (24, 11, 'Iris', 0);
-INSERT INTO colorgroups VALUES (25, 11, 'Cutie Mark', 0);
-INSERT INTO colorgroups VALUES (26, 12, 'Coat', 0);
-INSERT INTO colorgroups VALUES (27, 12, 'Mane & Tail', 1);
-INSERT INTO colorgroups VALUES (28, 12, 'Iris', 2);
-INSERT INTO colorgroups VALUES (29, 12, 'Magic', 4);
-INSERT INTO colorgroups VALUES (30, 12, 'Cutie Mark', 3);
-INSERT INTO colorgroups VALUES (35, 13, 'Coat', 0);
-INSERT INTO colorgroups VALUES (36, 13, 'Mane & Tail', 1);
-INSERT INTO colorgroups VALUES (37, 13, 'Iris ', 2);
-INSERT INTO colorgroups VALUES (38, 13, 'Cutie Mark', 3);
-INSERT INTO colorgroups VALUES (39, 13, 'Magic', 4);
-INSERT INTO colorgroups VALUES (40, 14, 'Coat', 0);
-INSERT INTO colorgroups VALUES (41, 14, 'Mane & Tail', 1);
-INSERT INTO colorgroups VALUES (42, 14, 'Iris', 2);
-INSERT INTO colorgroups VALUES (43, 14, 'Cutie Mark', 3);
-INSERT INTO colorgroups VALUES (44, 14, 'Bandana', 6);
-INSERT INTO colorgroups VALUES (45, 14, 'Magic', 4);
-INSERT INTO colorgroups VALUES (46, 14, 'Glasses', 5);
-INSERT INTO colorgroups VALUES (47, 15, 'Coat', 0);
-INSERT INTO colorgroups VALUES (48, 15, 'Mane & Tail', 1);
-INSERT INTO colorgroups VALUES (49, 15, 'Iris', 2);
-INSERT INTO colorgroups VALUES (51, 15, 'Dress', 4);
-INSERT INTO colorgroups VALUES (52, 15, 'Saddle', 5);
-INSERT INTO colorgroups VALUES (53, 15, 'Magic', 3);
-INSERT INTO colorgroups VALUES (54, 2, 'Coat', 0);
-INSERT INTO colorgroups VALUES (55, 2, 'Mane & Tail', 1);
-INSERT INTO colorgroups VALUES (56, 2, 'Iris', 2);
-INSERT INTO colorgroups VALUES (57, 2, 'Cutie Mark', 3);
-INSERT INTO colorgroups VALUES (58, 2, 'Hat & Hair Tie', 4);
-INSERT INTO colorgroups VALUES (59, 4, 'Coat', 0);
-INSERT INTO colorgroups VALUES (60, 4, 'Mane & Tail', 1);
-INSERT INTO colorgroups VALUES (61, 4, 'Iris', 2);
-INSERT INTO colorgroups VALUES (62, 4, 'Cutie Mark', 3);
-INSERT INTO colorgroups VALUES (63, 3, 'Coat', 0);
-INSERT INTO colorgroups VALUES (64, 3, 'Mane & Tail', 1);
-INSERT INTO colorgroups VALUES (65, 3, 'Iris', 2);
-INSERT INTO colorgroups VALUES (66, 3, 'Cutie Mark', 3);
-INSERT INTO colorgroups VALUES (67, 5, 'Coat', 0);
-INSERT INTO colorgroups VALUES (68, 5, 'Mane & Tail', 1);
-INSERT INTO colorgroups VALUES (69, 5, 'Iris', 2);
-INSERT INTO colorgroups VALUES (70, 5, 'Cutie Mark', 3);
-INSERT INTO colorgroups VALUES (71, 6, 'Coat', 0);
-INSERT INTO colorgroups VALUES (72, 6, 'Mane & Tail', 1);
-INSERT INTO colorgroups VALUES (73, 6, 'Iris', 2);
-INSERT INTO colorgroups VALUES (74, 6, 'Cutie Mark', 3);
-INSERT INTO colorgroups VALUES (75, 7, 'Body', 0);
-INSERT INTO colorgroups VALUES (76, 7, 'Spikes', 1);
-INSERT INTO colorgroups VALUES (77, 7, 'Iris', 3);
-INSERT INTO colorgroups VALUES (78, 7, 'Ears', 2);
-INSERT INTO colorgroups VALUES (79, 7, 'Mouth', 0);
-INSERT INTO colorgroups VALUES (80, 6, 'Magic', 4);
-INSERT INTO colorgroups VALUES (81, 10, 'Coat', 0);
-INSERT INTO colorgroups VALUES (82, 10, 'Mane & Tail', 0);
-INSERT INTO colorgroups VALUES (83, 10, 'Iris', 0);
-INSERT INTO colorgroups VALUES (84, 10, 'Cutie Mark', 0);
-INSERT INTO colorgroups VALUES (85, 16, 'Coat', 0);
-INSERT INTO colorgroups VALUES (86, 16, 'Mane & Tail', 1);
-INSERT INTO colorgroups VALUES (87, 16, 'Iris', 2);
-INSERT INTO colorgroups VALUES (88, 16, 'Cutie Mark', 3);
-INSERT INTO colorgroups VALUES (89, 17, 'Coat', 0);
-INSERT INTO colorgroups VALUES (90, 17, 'Mane & Tail', 1);
-INSERT INTO colorgroups VALUES (91, 17, 'Iris', 2);
-INSERT INTO colorgroups VALUES (92, 17, 'Cutie Mark', 3);
-INSERT INTO colorgroups VALUES (93, 18, 'Coat', 0);
-INSERT INTO colorgroups VALUES (94, 18, 'Mane & Tail', 1);
-INSERT INTO colorgroups VALUES (95, 18, 'Iris', 2);
-INSERT INTO colorgroups VALUES (96, 18, 'Cutie Mark', 3);
-INSERT INTO colorgroups VALUES (97, 18, 'Wrap', 4);
-INSERT INTO colorgroups VALUES (98, 19, 'Coat', 0);
-INSERT INTO colorgroups VALUES (99, 19, 'Mane & Tail', 1);
-INSERT INTO colorgroups VALUES (100, 19, 'Iris', 2);
-INSERT INTO colorgroups VALUES (101, 19, 'Cutie Mark', 3);
-INSERT INTO colorgroups VALUES (102, 20, 'Coat', 0);
-INSERT INTO colorgroups VALUES (103, 20, 'Mane & Tail', 1);
-INSERT INTO colorgroups VALUES (104, 20, 'Iris', 2);
-INSERT INTO colorgroups VALUES (105, 20, 'Cutie Mark', 3);
-INSERT INTO colorgroups VALUES (106, 20, 'Earrings/Necklace', 5);
-INSERT INTO colorgroups VALUES (107, 20, 'Sweater', 4);
-INSERT INTO colorgroups VALUES (108, 21, 'Coat', 0);
-INSERT INTO colorgroups VALUES (109, 21, 'Mane & Tail', 1);
-INSERT INTO colorgroups VALUES (110, 21, 'Iris', 2);
-INSERT INTO colorgroups VALUES (111, 21, 'Cutie Mark', 3);
-INSERT INTO colorgroups VALUES (112, 21, 'Jacket', 5);
-INSERT INTO colorgroups VALUES (113, 21, 'Scarf', 6);
-INSERT INTO colorgroups VALUES (114, 21, 'Badge', 7);
-INSERT INTO colorgroups VALUES (115, 21, 'Teeth', 4);
-INSERT INTO colorgroups VALUES (116, 22, 'Coat', 0);
-INSERT INTO colorgroups VALUES (117, 22, 'Mane & Tail', 1);
-INSERT INTO colorgroups VALUES (118, 22, 'Iris', 2);
-INSERT INTO colorgroups VALUES (119, 22, 'Cutie Mark', 3);
-INSERT INTO colorgroups VALUES (120, 22, 'Magic', 4);
-INSERT INTO colorgroups VALUES (121, 22, 'Hair Tie', 5);
-INSERT INTO colorgroups VALUES (122, 23, 'Coat', 0);
-INSERT INTO colorgroups VALUES (123, 23, 'Mane & Tail', 1);
-INSERT INTO colorgroups VALUES (124, 23, 'Iris', 2);
-INSERT INTO colorgroups VALUES (126, 24, 'Coat', 0);
-INSERT INTO colorgroups VALUES (127, 24, 'Mane & Tail', 1);
-INSERT INTO colorgroups VALUES (128, 24, 'Iris', 2);
-INSERT INTO colorgroups VALUES (130, 23, 'Bow', 4);
-INSERT INTO colorgroups VALUES (131, 25, 'Coat', 0);
-INSERT INTO colorgroups VALUES (132, 25, 'Mane & Tail', 1);
-INSERT INTO colorgroups VALUES (133, 25, 'Iris', 2);
-INSERT INTO colorgroups VALUES (135, 26, 'Coat', 0);
-INSERT INTO colorgroups VALUES (136, 26, 'Mane & Tail', 1);
-INSERT INTO colorgroups VALUES (137, 26, 'Iris', 2);
-INSERT INTO colorgroups VALUES (138, 26, 'Cutie Mark', 3);
-INSERT INTO colorgroups VALUES (139, 27, 'Coat', 0);
-INSERT INTO colorgroups VALUES (140, 27, 'Mane & Tail', 1);
-INSERT INTO colorgroups VALUES (141, 27, 'Iris', 2);
-INSERT INTO colorgroups VALUES (142, 27, 'Cutie Mark', 3);
-INSERT INTO colorgroups VALUES (143, 27, 'Scarf', 4);
-INSERT INTO colorgroups VALUES (144, 28, 'Coat', 0);
-INSERT INTO colorgroups VALUES (145, 28, 'Mane & Tail', 1);
-INSERT INTO colorgroups VALUES (146, 28, 'Iris', 2);
-INSERT INTO colorgroups VALUES (147, 28, 'Cutie Mark', 3);
-INSERT INTO colorgroups VALUES (164, 29, 'Coat', 0);
-INSERT INTO colorgroups VALUES (165, 29, 'Mane & Tail', 1);
-INSERT INTO colorgroups VALUES (166, 29, 'Iris', 2);
-INSERT INTO colorgroups VALUES (167, 29, 'Cutie Mark', 3);
-INSERT INTO colorgroups VALUES (168, 29, 'Magic', 5);
-INSERT INTO colorgroups VALUES (169, 30, 'Coat', 0);
-INSERT INTO colorgroups VALUES (170, 30, 'Mane & Tail', 1);
-INSERT INTO colorgroups VALUES (171, 30, 'Iris', 2);
-INSERT INTO colorgroups VALUES (172, 30, 'Cutie Mark', 3);
-INSERT INTO colorgroups VALUES (173, 30, 'Neckpiece', 4);
-INSERT INTO colorgroups VALUES (174, 30, 'Flower', 5);
-INSERT INTO colorgroups VALUES (175, 9, 'Coat', 0);
-INSERT INTO colorgroups VALUES (176, 9, 'Mane & Tail', 1);
-INSERT INTO colorgroups VALUES (177, 9, 'Shoes', 5);
-INSERT INTO colorgroups VALUES (178, 9, 'Regalia', 4);
-INSERT INTO colorgroups VALUES (179, 9, 'Cutie Mark', 3);
-INSERT INTO colorgroups VALUES (180, 9, 'Iris', 2);
-INSERT INTO colorgroups VALUES (182, 31, 'Coat', 0);
-INSERT INTO colorgroups VALUES (183, 31, 'Mane & Tail', 1);
-INSERT INTO colorgroups VALUES (184, 31, 'Iris', 2);
-INSERT INTO colorgroups VALUES (185, 31, 'Cutie Mark', 3);
-INSERT INTO colorgroups VALUES (186, 31, 'Scarf', 4);
-INSERT INTO colorgroups VALUES (187, 31, 'Headband', 5);
-INSERT INTO colorgroups VALUES (188, 17, 'Magic', 4);
-INSERT INTO colorgroups VALUES (189, 10, 'Magic ', 0);
-INSERT INTO colorgroups VALUES (190, 16, 'Magic', 4);
-INSERT INTO colorgroups VALUES (191, 32, 'Coat', 0);
-INSERT INTO colorgroups VALUES (192, 32, 'Mane & Tail', 1);
-INSERT INTO colorgroups VALUES (193, 32, 'Iris', 2);
-INSERT INTO colorgroups VALUES (194, 32, 'Cutie Mark', 3);
-INSERT INTO colorgroups VALUES (195, 32, 'Hat & Cloak', 4);
-INSERT INTO colorgroups VALUES (196, 32, 'Gem', 5);
-INSERT INTO colorgroups VALUES (197, 32, 'Magic', 6);
-INSERT INTO colorgroups VALUES (198, 33, 'Head', 0);
-INSERT INTO colorgroups VALUES (199, 33, 'Body', 1);
-INSERT INTO colorgroups VALUES (200, 33, 'Wings', 2);
-INSERT INTO colorgroups VALUES (201, 33, 'Gem', 4);
-INSERT INTO colorgroups VALUES (202, 33, 'Wearer Changes', 5);
-INSERT INTO colorgroups VALUES (203, 33, 'Straps', 3);
-INSERT INTO colorgroups VALUES (204, 34, 'Coat', 0);
-INSERT INTO colorgroups VALUES (205, 34, 'Mane & Tail', 1);
-INSERT INTO colorgroups VALUES (206, 34, 'Iris', 2);
-INSERT INTO colorgroups VALUES (207, 34, 'Cutie Mark', 3);
-INSERT INTO colorgroups VALUES (208, 34, 'Magic', 4);
-INSERT INTO colorgroups VALUES (209, 34, 'Regalia', 5);
-INSERT INTO colorgroups VALUES (210, 34, 'Shoes', 6);
-INSERT INTO colorgroups VALUES (211, 35, 'Coat and Hooves', 1);
-INSERT INTO colorgroups VALUES (212, 35, 'Mane and Tail', 2);
-INSERT INTO colorgroups VALUES (213, 35, 'Iris', 3);
-INSERT INTO colorgroups VALUES (214, 35, 'Freckles', 4);
-INSERT INTO colorgroups VALUES (215, 35, 'Yoke', 5);
-INSERT INTO colorgroups VALUES (216, 35, 'Cutie mark', 6);
-INSERT INTO colorgroups VALUES (217, 36, 'Coat', 0);
-INSERT INTO colorgroups VALUES (218, 36, 'Mane & Tail', 1);
-INSERT INTO colorgroups VALUES (219, 36, 'Iris', 2);
-INSERT INTO colorgroups VALUES (220, 36, 'Cutie Mark', 3);
-INSERT INTO colorgroups VALUES (221, 36, 'Sweater', 4);
-INSERT INTO colorgroups VALUES (222, 36, 'Sweater Buttons / Hair Beads', 5);
-INSERT INTO colorgroups VALUES (223, 36, 'Glasses', 6);
-INSERT INTO colorgroups VALUES (224, 36, 'Magic', 7);
-INSERT INTO colorgroups VALUES (225, 37, 'Coat', 0);
-INSERT INTO colorgroups VALUES (226, 37, 'Mane & Tail', 1);
-INSERT INTO colorgroups VALUES (227, 37, 'Iris', 2);
-INSERT INTO colorgroups VALUES (229, 38, 'Coat', 0);
-INSERT INTO colorgroups VALUES (230, 38, 'Mane & Tail', 1);
-INSERT INTO colorgroups VALUES (231, 38, 'Iris', 2);
-INSERT INTO colorgroups VALUES (233, 23, 'Cutie Mark', 3);
-INSERT INTO colorgroups VALUES (234, 39, 'Coat', 0);
-INSERT INTO colorgroups VALUES (235, 39, 'Mane & Tail', 1);
-INSERT INTO colorgroups VALUES (236, 39, 'Iris', 2);
-INSERT INTO colorgroups VALUES (238, 39, 'Beanie', 3);
-INSERT INTO colorgroups VALUES (240, 40, 'Coat', 0);
-INSERT INTO colorgroups VALUES (241, 40, 'Mane & Tail', 1);
-INSERT INTO colorgroups VALUES (242, 40, 'Iris', 2);
-INSERT INTO colorgroups VALUES (243, 40, 'Cutie Mark', 3);
-INSERT INTO colorgroups VALUES (244, 24, 'Cutie Mark', 3);
-INSERT INTO colorgroups VALUES (245, 25, 'Cutie Mark', 3);
-INSERT INTO colorgroups VALUES (246, 25, 'Magic', 4);
-INSERT INTO colorgroups VALUES (257, 44, 'Coat', 0);
-INSERT INTO colorgroups VALUES (258, 44, 'Mane & Tail', 1);
-INSERT INTO colorgroups VALUES (259, 44, 'Iris', 2);
-INSERT INTO colorgroups VALUES (260, 44, 'Cutie Mark', 3);
-INSERT INTO colorgroups VALUES (261, 44, 'Magic', 4);
-INSERT INTO colorgroups VALUES (262, 45, 'Coat', 0);
-INSERT INTO colorgroups VALUES (263, 45, 'Mane & Tail', 1);
-INSERT INTO colorgroups VALUES (264, 45, 'Iris', 2);
-INSERT INTO colorgroups VALUES (265, 45, 'Cutie Mark', 3);
-INSERT INTO colorgroups VALUES (266, 45, 'Magic', 4);
-INSERT INTO colorgroups VALUES (267, 46, 'Coat', 0);
-INSERT INTO colorgroups VALUES (268, 46, 'Mane & Tail', 1);
-INSERT INTO colorgroups VALUES (269, 46, 'Iris', 2);
-INSERT INTO colorgroups VALUES (270, 46, 'Cutie Mark', 3);
-INSERT INTO colorgroups VALUES (271, 46, 'Shirt', 4);
-INSERT INTO colorgroups VALUES (272, 46, 'Glasses', 5);
-INSERT INTO colorgroups VALUES (281, 50, 'Coat', 0);
-INSERT INTO colorgroups VALUES (282, 50, 'Mane & Tail', 1);
-INSERT INTO colorgroups VALUES (283, 50, 'Iris', 2);
-INSERT INTO colorgroups VALUES (284, 50, 'Cutie Mark', 3);
-INSERT INTO colorgroups VALUES (285, 51, 'Coat', 0);
-INSERT INTO colorgroups VALUES (286, 51, 'Mane & Tail', 1);
-INSERT INTO colorgroups VALUES (287, 51, 'Iris', 2);
-INSERT INTO colorgroups VALUES (288, 51, 'Cutie Mark', 3);
-INSERT INTO colorgroups VALUES (289, 52, 'Coat', 0);
-INSERT INTO colorgroups VALUES (290, 52, 'Mane & Tail', 1);
-INSERT INTO colorgroups VALUES (291, 52, 'Iris', 2);
-INSERT INTO colorgroups VALUES (292, 52, 'Dress', 4);
-INSERT INTO colorgroups VALUES (293, 53, 'Coat', 0);
-INSERT INTO colorgroups VALUES (294, 53, 'Mane & Tail', 1);
-INSERT INTO colorgroups VALUES (295, 53, 'Iris', 2);
-INSERT INTO colorgroups VALUES (296, 53, 'Cutie Mark', 3);
-INSERT INTO colorgroups VALUES (297, 53, 'Hat & Tie/Collar', 4);
-INSERT INTO colorgroups VALUES (298, 54, 'Coat', 0);
-INSERT INTO colorgroups VALUES (299, 54, 'Mane & Tail', 1);
-INSERT INTO colorgroups VALUES (300, 54, 'Iris', 2);
-INSERT INTO colorgroups VALUES (301, 54, 'Cutie Mark', 3);
-INSERT INTO colorgroups VALUES (302, 54, 'Glasses', 4);
-INSERT INTO colorgroups VALUES (303, 54, 'Neckpiece', 5);
-INSERT INTO colorgroups VALUES (304, 52, 'Boulder', 5);
-INSERT INTO colorgroups VALUES (305, 52, 'Cutie Mark', 3);
-INSERT INTO colorgroups VALUES (306, 55, 'Coat', 0);
-INSERT INTO colorgroups VALUES (307, 55, 'Mane & Tail', 1);
-INSERT INTO colorgroups VALUES (308, 55, 'Iris', 2);
-INSERT INTO colorgroups VALUES (309, 55, 'Cutie Mark', 3);
-INSERT INTO colorgroups VALUES (310, 56, 'Coat', 0);
-INSERT INTO colorgroups VALUES (311, 56, 'Mane & Tail', 1);
-INSERT INTO colorgroups VALUES (312, 56, 'Iris', 2);
-INSERT INTO colorgroups VALUES (313, 56, 'Cutie Mark', 3);
-INSERT INTO colorgroups VALUES (314, 57, 'Head', 1);
-INSERT INTO colorgroups VALUES (315, 57, 'Fang', 2);
-INSERT INTO colorgroups VALUES (316, 57, 'Eyes', 3);
-INSERT INTO colorgroups VALUES (317, 57, 'Horns', 4);
-INSERT INTO colorgroups VALUES (318, 57, 'Body', 5);
-INSERT INTO colorgroups VALUES (319, 57, 'Arms', 6);
-INSERT INTO colorgroups VALUES (320, 57, 'Wings', 7);
-INSERT INTO colorgroups VALUES (321, 57, 'Tail', 8);
-INSERT INTO colorgroups VALUES (322, 57, 'Legs', 9);
-INSERT INTO colorgroups VALUES (323, 58, 'Coat', 0);
-INSERT INTO colorgroups VALUES (324, 58, 'Mane & Tail', 1);
-INSERT INTO colorgroups VALUES (325, 58, 'Iris', 2);
-INSERT INTO colorgroups VALUES (326, 58, 'Cutie Mark', 3);
-INSERT INTO colorgroups VALUES (327, 58, 'Kerchief', 4);
-INSERT INTO colorgroups VALUES (328, 59, 'Coat', 0);
-INSERT INTO colorgroups VALUES (329, 59, 'Mane & Tail', 1);
-INSERT INTO colorgroups VALUES (330, 59, 'Iris', 2);
-INSERT INTO colorgroups VALUES (331, 59, 'Cutie Mark', 3);
-INSERT INTO colorgroups VALUES (332, 60, 'Coat', 0);
-INSERT INTO colorgroups VALUES (333, 60, 'Mane & Tail', 1);
-INSERT INTO colorgroups VALUES (334, 60, 'Iris', 2);
-INSERT INTO colorgroups VALUES (335, 60, 'Cutie Mark', 3);
-INSERT INTO colorgroups VALUES (336, 60, 'Jacket', 4);
-INSERT INTO colorgroups VALUES (337, 60, 'Shirt', 5);
-INSERT INTO colorgroups VALUES (338, 60, 'Collar and Hoof Bands', 6);
-INSERT INTO colorgroups VALUES (339, 60, 'Veil', 7);
-INSERT INTO colorgroups VALUES (340, 61, 'Coat', 0);
-INSERT INTO colorgroups VALUES (341, 61, 'Mane & Tail', 1);
-INSERT INTO colorgroups VALUES (342, 61, 'Iris', 2);
-INSERT INTO colorgroups VALUES (344, 61, 'Glasses', 3);
-INSERT INTO colorgroups VALUES (345, 61, 'Suit', 4);
-INSERT INTO colorgroups VALUES (346, 61, 'Shirt', 5);
-INSERT INTO colorgroups VALUES (347, 61, 'Tie', 6);
-INSERT INTO colorgroups VALUES (348, 61, 'Vest', 7);
-INSERT INTO colorgroups VALUES (349, 61, 'Tail band', 8);
-INSERT INTO colorgroups VALUES (350, 62, 'Coat', 0);
-INSERT INTO colorgroups VALUES (351, 62, 'Mane & Tail', 1);
-INSERT INTO colorgroups VALUES (352, 62, 'Iris', 2);
-INSERT INTO colorgroups VALUES (353, 62, 'Cutie Mark', 3);
-INSERT INTO colorgroups VALUES (354, 0, 'Normal', 1);
-INSERT INTO colorgroups VALUES (355, 63, 'Skin', 1);
-INSERT INTO colorgroups VALUES (356, 63, 'Hair', 2);
-INSERT INTO colorgroups VALUES (357, 63, 'Shirt', 3);
-INSERT INTO colorgroups VALUES (358, 63, 'Jacket', 4);
-INSERT INTO colorgroups VALUES (359, 63, 'Skirt', 5);
-INSERT INTO colorgroups VALUES (360, 63, 'Boots', 6);
-INSERT INTO colorgroups VALUES (361, 63, 'Eyes', 7);
-INSERT INTO colorgroups VALUES (362, 63, 'Cutie Mark', 8);
-INSERT INTO colorgroups VALUES (363, 29, 'Cutie Mark (Equalized)', 4);
-INSERT INTO colorgroups VALUES (364, 29, 'Hairbands (as filly)', 6);
-INSERT INTO colorgroups VALUES (365, 64, 'Body', 1);
-INSERT INTO colorgroups VALUES (366, 64, 'Eyes', 2);
-INSERT INTO colorgroups VALUES (367, 64, 'Nose and Whiskers', 3);
-INSERT INTO colorgroups VALUES (368, 65, 'Coat', 0);
-INSERT INTO colorgroups VALUES (369, 65, 'Mane & Tail', 1);
-INSERT INTO colorgroups VALUES (370, 65, 'Iris', 2);
-INSERT INTO colorgroups VALUES (371, 65, 'Cutie Mark', 3);
+INSERT INTO colorgroups VALUES
+(17, 1, 'Coat', 0),
+(18, 1, 'Mane & Tail', 0),
+(19, 1, 'Iris', 0),
+(20, 1, 'Cutie Mark', 0),
+(21, 1, 'Magic', 0),
+(22, 11, 'Coat', 0),
+(23, 11, 'Mane & Tail', 0),
+(24, 11, 'Iris', 0),
+(25, 11, 'Cutie Mark', 0),
+(26, 12, 'Coat', 0),
+(27, 12, 'Mane & Tail', 1),
+(28, 12, 'Iris', 2),
+(29, 12, 'Magic', 4),
+(30, 12, 'Cutie Mark', 3),
+(35, 13, 'Coat', 0),
+(36, 13, 'Mane & Tail', 1),
+(37, 13, 'Iris ', 2),
+(38, 13, 'Cutie Mark', 3),
+(39, 13, 'Magic', 4),
+(40, 14, 'Coat', 0),
+(41, 14, 'Mane & Tail', 1),
+(42, 14, 'Iris', 2),
+(43, 14, 'Cutie Mark', 3),
+(44, 14, 'Bandana', 6),
+(45, 14, 'Magic', 4),
+(46, 14, 'Glasses', 5),
+(47, 15, 'Coat', 0),
+(48, 15, 'Mane & Tail', 1),
+(49, 15, 'Iris', 2),
+(51, 15, 'Dress', 4),
+(52, 15, 'Saddle', 5),
+(53, 15, 'Magic', 3),
+(54, 2, 'Coat', 0),
+(55, 2, 'Mane & Tail', 1),
+(56, 2, 'Iris', 2),
+(57, 2, 'Cutie Mark', 3),
+(58, 2, 'Hat & Hair Tie', 4),
+(59, 4, 'Coat', 0),
+(60, 4, 'Mane & Tail', 1),
+(61, 4, 'Iris', 2),
+(62, 4, 'Cutie Mark', 3),
+(63, 3, 'Coat', 0),
+(64, 3, 'Mane & Tail', 1),
+(65, 3, 'Iris', 2),
+(66, 3, 'Cutie Mark', 3),
+(67, 5, 'Coat', 0),
+(68, 5, 'Mane & Tail', 1),
+(69, 5, 'Iris', 2),
+(70, 5, 'Cutie Mark', 3),
+(71, 6, 'Coat', 0),
+(72, 6, 'Mane & Tail', 1),
+(73, 6, 'Iris', 2),
+(74, 6, 'Cutie Mark', 3),
+(75, 7, 'Body', 0),
+(76, 7, 'Spikes', 1),
+(77, 7, 'Iris', 3),
+(78, 7, 'Ears', 2),
+(79, 7, 'Mouth', 0),
+(80, 6, 'Magic', 4),
+(81, 10, 'Coat', 0),
+(82, 10, 'Mane & Tail', 0),
+(83, 10, 'Iris', 0),
+(84, 10, 'Cutie Mark', 0),
+(85, 16, 'Coat', 0),
+(86, 16, 'Mane & Tail', 1),
+(87, 16, 'Iris', 2),
+(88, 16, 'Cutie Mark', 3),
+(89, 17, 'Coat', 0),
+(90, 17, 'Mane & Tail', 1),
+(91, 17, 'Iris', 2),
+(92, 17, 'Cutie Mark', 3),
+(93, 18, 'Coat', 0),
+(94, 18, 'Mane & Tail', 1),
+(95, 18, 'Iris', 2),
+(96, 18, 'Cutie Mark', 3),
+(97, 18, 'Wrap', 4),
+(98, 19, 'Coat', 0),
+(99, 19, 'Mane & Tail', 1),
+(100, 19, 'Iris', 2),
+(101, 19, 'Cutie Mark', 3),
+(102, 20, 'Coat', 0),
+(103, 20, 'Mane & Tail', 1),
+(104, 20, 'Iris', 2),
+(105, 20, 'Cutie Mark', 3),
+(106, 20, 'Earrings/Necklace', 5),
+(107, 20, 'Sweater', 4),
+(108, 21, 'Coat', 0),
+(109, 21, 'Mane & Tail', 1),
+(110, 21, 'Iris', 2),
+(111, 21, 'Cutie Mark', 3),
+(112, 21, 'Jacket', 5),
+(113, 21, 'Scarf', 6),
+(114, 21, 'Badge', 7),
+(115, 21, 'Teeth', 4),
+(116, 22, 'Coat', 0),
+(117, 22, 'Mane & Tail', 1),
+(118, 22, 'Iris', 2),
+(119, 22, 'Cutie Mark', 3),
+(120, 22, 'Magic', 4),
+(121, 22, 'Hair Tie', 5),
+(122, 23, 'Coat', 0),
+(123, 23, 'Mane & Tail', 1),
+(124, 23, 'Iris', 2),
+(126, 24, 'Coat', 0),
+(127, 24, 'Mane & Tail', 1),
+(128, 24, 'Iris', 2),
+(130, 23, 'Bow', 4),
+(131, 25, 'Coat', 0),
+(132, 25, 'Mane & Tail', 1),
+(133, 25, 'Iris', 2),
+(135, 26, 'Coat', 0),
+(136, 26, 'Mane & Tail', 1),
+(137, 26, 'Iris', 2),
+(138, 26, 'Cutie Mark', 3),
+(139, 27, 'Coat', 0),
+(140, 27, 'Mane & Tail', 1),
+(141, 27, 'Iris', 2),
+(142, 27, 'Cutie Mark', 3),
+(143, 27, 'Scarf', 4),
+(144, 28, 'Coat', 0),
+(145, 28, 'Mane & Tail', 1),
+(146, 28, 'Iris', 2),
+(147, 28, 'Cutie Mark', 3),
+(164, 29, 'Coat', 0),
+(165, 29, 'Mane & Tail', 1),
+(166, 29, 'Iris', 2),
+(167, 29, 'Cutie Mark', 3),
+(168, 29, 'Magic', 5),
+(169, 30, 'Coat', 0),
+(170, 30, 'Mane & Tail', 1),
+(171, 30, 'Iris', 2),
+(172, 30, 'Cutie Mark', 3),
+(173, 30, 'Neckpiece', 4),
+(174, 30, 'Flower', 5),
+(175, 9, 'Coat', 0),
+(176, 9, 'Mane & Tail', 1),
+(177, 9, 'Shoes', 5),
+(178, 9, 'Regalia', 4),
+(179, 9, 'Cutie Mark', 3),
+(180, 9, 'Iris', 2),
+(182, 31, 'Coat', 0),
+(183, 31, 'Mane & Tail', 1),
+(184, 31, 'Iris', 2),
+(185, 31, 'Cutie Mark', 3),
+(186, 31, 'Scarf', 4),
+(187, 31, 'Headband', 5),
+(188, 17, 'Magic', 4),
+(189, 10, 'Magic ', 0),
+(190, 16, 'Magic', 4),
+(191, 32, 'Coat', 0),
+(192, 32, 'Mane & Tail', 1),
+(193, 32, 'Iris', 2),
+(194, 32, 'Cutie Mark', 3),
+(195, 32, 'Hat & Cloak', 4),
+(196, 32, 'Gem', 5),
+(197, 32, 'Magic', 6),
+(198, 33, 'Head', 0),
+(199, 33, 'Body', 1),
+(200, 33, 'Wings', 2),
+(201, 33, 'Gem', 4),
+(202, 33, 'Wearer Changes', 5),
+(203, 33, 'Straps', 3),
+(204, 34, 'Coat', 0),
+(205, 34, 'Mane & Tail', 1),
+(206, 34, 'Iris', 2),
+(207, 34, 'Cutie Mark', 3),
+(208, 34, 'Magic', 4),
+(209, 34, 'Regalia', 5),
+(210, 34, 'Shoes', 6),
+(211, 35, 'Coat and Hooves', 1),
+(212, 35, 'Mane and Tail', 2),
+(213, 35, 'Iris', 3),
+(214, 35, 'Freckles', 4),
+(215, 35, 'Yoke', 5),
+(216, 35, 'Cutie mark', 6),
+(217, 36, 'Coat', 0),
+(218, 36, 'Mane & Tail', 1),
+(219, 36, 'Iris', 2),
+(220, 36, 'Cutie Mark', 3),
+(221, 36, 'Sweater', 4),
+(222, 36, 'Sweater Buttons / Hair Beads', 5),
+(223, 36, 'Glasses', 6),
+(224, 36, 'Magic', 7),
+(225, 37, 'Coat', 0),
+(226, 37, 'Mane & Tail', 1),
+(227, 37, 'Iris', 2),
+(229, 38, 'Coat', 0),
+(230, 38, 'Mane & Tail', 1),
+(231, 38, 'Iris', 2),
+(233, 23, 'Cutie Mark', 3),
+(234, 39, 'Coat', 0),
+(235, 39, 'Mane & Tail', 1),
+(236, 39, 'Iris', 2),
+(238, 39, 'Beanie', 3),
+(240, 40, 'Coat', 0),
+(241, 40, 'Mane & Tail', 1),
+(242, 40, 'Iris', 2),
+(243, 40, 'Cutie Mark', 3),
+(244, 24, 'Cutie Mark', 3),
+(245, 25, 'Cutie Mark', 3),
+(246, 25, 'Magic', 4),
+(257, 44, 'Coat', 0),
+(258, 44, 'Mane & Tail', 1),
+(259, 44, 'Iris', 2),
+(260, 44, 'Cutie Mark', 3),
+(261, 44, 'Magic', 4),
+(262, 45, 'Coat', 0),
+(263, 45, 'Mane & Tail', 1),
+(264, 45, 'Iris', 2),
+(265, 45, 'Cutie Mark', 3),
+(266, 45, 'Magic', 4),
+(267, 46, 'Coat', 0),
+(268, 46, 'Mane & Tail', 1),
+(269, 46, 'Iris', 2),
+(270, 46, 'Cutie Mark', 3),
+(271, 46, 'Shirt', 4),
+(272, 46, 'Glasses', 5),
+(281, 50, 'Coat', 0),
+(282, 50, 'Mane & Tail', 1),
+(283, 50, 'Iris', 2),
+(284, 50, 'Cutie Mark', 3),
+(285, 51, 'Coat', 0),
+(286, 51, 'Mane & Tail', 1),
+(287, 51, 'Iris', 2),
+(288, 51, 'Cutie Mark', 3),
+(289, 52, 'Coat', 0),
+(290, 52, 'Mane & Tail', 1),
+(291, 52, 'Iris', 2),
+(292, 52, 'Dress', 4),
+(293, 53, 'Coat', 0),
+(294, 53, 'Mane & Tail', 1),
+(295, 53, 'Iris', 2),
+(296, 53, 'Cutie Mark', 3),
+(297, 53, 'Hat & Tie/Collar', 4),
+(298, 54, 'Coat', 0),
+(299, 54, 'Mane & Tail', 1),
+(300, 54, 'Iris', 2),
+(301, 54, 'Cutie Mark', 3),
+(302, 54, 'Glasses', 4),
+(303, 54, 'Neckpiece', 5),
+(304, 52, 'Boulder', 5),
+(305, 52, 'Cutie Mark', 3),
+(306, 55, 'Coat', 0),
+(307, 55, 'Mane & Tail', 1),
+(308, 55, 'Iris', 2),
+(309, 55, 'Cutie Mark', 3),
+(310, 56, 'Coat', 0),
+(311, 56, 'Mane & Tail', 1),
+(312, 56, 'Iris', 2),
+(313, 56, 'Cutie Mark', 3),
+(314, 57, 'Head', 1),
+(315, 57, 'Fang', 2),
+(316, 57, 'Eyes', 3),
+(317, 57, 'Horns', 4),
+(318, 57, 'Body', 5),
+(319, 57, 'Arms', 6),
+(320, 57, 'Wings', 7),
+(321, 57, 'Tail', 8),
+(322, 57, 'Legs', 9),
+(323, 58, 'Coat', 0),
+(324, 58, 'Mane & Tail', 1),
+(325, 58, 'Iris', 2),
+(326, 58, 'Cutie Mark', 3),
+(327, 58, 'Kerchief', 4),
+(328, 59, 'Coat', 0),
+(329, 59, 'Mane & Tail', 1),
+(330, 59, 'Iris', 2),
+(331, 59, 'Cutie Mark', 3),
+(332, 60, 'Coat', 0),
+(333, 60, 'Mane & Tail', 1),
+(334, 60, 'Iris', 2),
+(335, 60, 'Cutie Mark', 3),
+(336, 60, 'Jacket', 4),
+(337, 60, 'Shirt', 5),
+(338, 60, 'Collar and Hoof Bands', 6),
+(339, 60, 'Veil', 7),
+(340, 61, 'Coat', 0),
+(341, 61, 'Mane & Tail', 1),
+(342, 61, 'Iris', 2),
+(344, 61, 'Glasses', 3),
+(345, 61, 'Suit', 4),
+(346, 61, 'Shirt', 5),
+(347, 61, 'Tie', 6),
+(348, 61, 'Vest', 7),
+(349, 61, 'Tail band', 8),
+(350, 62, 'Coat', 0),
+(351, 62, 'Mane & Tail', 1),
+(352, 62, 'Iris', 2),
+(353, 62, 'Cutie Mark', 3),
+(354, 0, 'Normal', 1),
+(355, 63, 'Skin', 1),
+(356, 63, 'Hair', 2),
+(357, 63, 'Shirt', 3),
+(358, 63, 'Jacket', 4),
+(359, 63, 'Skirt', 5),
+(360, 63, 'Boots', 6),
+(361, 63, 'Eyes', 7),
+(362, 63, 'Cutie Mark', 8),
+(363, 29, 'Cutie Mark (Equalized)', 4),
+(364, 29, 'Hairbands (as filly)', 6),
+(365, 64, 'Body', 1),
+(366, 64, 'Eyes', 2),
+(367, 64, 'Nose and Whiskers', 3),
+(368, 65, 'Coat', 0),
+(369, 65, 'Mane & Tail', 1),
+(370, 65, 'Iris', 2),
+(371, 65, 'Cutie Mark', 3);
 
 
 --
@@ -616,1177 +618,1178 @@ SELECT pg_catalog.setval('colorgroups_groupid_seq', 371, true);
 -- Data for Name: colors; Type: TABLE DATA; Schema: public; Owner: mlpvc-rr
 --
 
-INSERT INTO colors VALUES (55, 17, 'Outline', '#A46BBD', 0);
-INSERT INTO colors VALUES (57, 17, 'Fill', '#CC9CDF', 1);
-INSERT INTO colors VALUES (58, 17, 'Shadow Outline', '#9156A9', 2);
-INSERT INTO colors VALUES (59, 17, 'Shadow Fill', '#BF89D1', 3);
-INSERT INTO colors VALUES (60, 18, 'Outline and Inner Lines', '#132248', 0);
-INSERT INTO colors VALUES (61, 18, 'Fill', '#243870', 1);
-INSERT INTO colors VALUES (62, 18, 'Stripe 1', '#652D87', 2);
-INSERT INTO colors VALUES (63, 18, 'Stripe 2', '#EA428B', 3);
-INSERT INTO colors VALUES (64, 19, 'Gradient Top', '#1E093C', 0);
-INSERT INTO colors VALUES (65, 19, 'Gradient Bottom', '#662F89', 1);
-INSERT INTO colors VALUES (66, 19, 'Highlight Top', '#8D5DA4', 2);
-INSERT INTO colors VALUES (67, 19, 'Highlight Bottom', '#CCB2D3', 3);
-INSERT INTO colors VALUES (68, 20, 'Large Star', '#EA428B', 0);
-INSERT INTO colors VALUES (69, 20, 'Small Stars', '#FFFFFF', 1);
-INSERT INTO colors VALUES (70, 21, 'Aura', '#EA428B', 0);
-INSERT INTO colors VALUES (71, 22, 'Outline', '#7F859F', 0);
-INSERT INTO colors VALUES (72, 22, 'Fill', '#B5BBC7', 1);
-INSERT INTO colors VALUES (73, 22, 'Shadow Fill', '#ADB1BE', 2);
-INSERT INTO colors VALUES (74, 23, 'Outline', '#D6CD6B', 0);
-INSERT INTO colors VALUES (75, 23, 'Fill', '#E7E6A7', 1);
-INSERT INTO colors VALUES (76, 24, 'Gradient Top', '#D1973D', 0);
-INSERT INTO colors VALUES (77, 24, 'Gradient Bottom/Highlight Top', '#D9E985', 1);
-INSERT INTO colors VALUES (79, 24, 'Highlight Bottom', '#E1EBB0', 2);
-INSERT INTO colors VALUES (80, 25, 'Bubble', '#CECEEA', 0);
-INSERT INTO colors VALUES (81, 25, 'Bubble Highlight', '#D5E9F0', 1);
-INSERT INTO colors VALUES (82, 26, 'Outline', '#3EA679', 0);
-INSERT INTO colors VALUES (83, 26, 'Fill', '#8DEBCD', 1);
-INSERT INTO colors VALUES (84, 26, 'Shadow Fill', '#6ACDA9', 2);
-INSERT INTO colors VALUES (85, 27, 'Outline 1', '#7AD9D7', 0);
-INSERT INTO colors VALUES (86, 27, 'Fill 1', '#EBEBEB', 2);
-INSERT INTO colors VALUES (87, 27, 'Outline 2', '#55C1C1', 1);
-INSERT INTO colors VALUES (88, 27, 'Fill 2', '#A5D7D7', 3);
-INSERT INTO colors VALUES (89, 28, 'Gradient Top', '#D56315', 0);
-INSERT INTO colors VALUES (90, 28, 'Gradient Bottom', '#E3C752', 1);
-INSERT INTO colors VALUES (91, 28, 'Highlight Top', '#EAEA6B', 2);
-INSERT INTO colors VALUES (92, 28, 'Highlight Bottom', '#ECECCF', 3);
-INSERT INTO colors VALUES (93, 29, 'Aura', '#C49159', 0);
-INSERT INTO colors VALUES (94, 30, 'Outline', '#AF821A', 0);
-INSERT INTO colors VALUES (95, 30, 'Fill', '#E1B046', 1);
-INSERT INTO colors VALUES (96, 30, 'Highlight', '#F2D297', 2);
-INSERT INTO colors VALUES (97, 30, 'Strings', '#50B18C', 3);
-INSERT INTO colors VALUES (111, 35, 'Outline', '#81CFBD', 0);
-INSERT INTO colors VALUES (112, 35, 'Fill', '#A1FFE9', 1);
-INSERT INTO colors VALUES (114, 35, 'Shadow Fill', '#90E4D0', 2);
-INSERT INTO colors VALUES (115, 36, 'Outline', '#80D940', 0);
-INSERT INTO colors VALUES (116, 36, 'Fill', '#D6FF58', 1);
-INSERT INTO colors VALUES (117, 37, 'Gradient Top', '#A84E0D', 0);
-INSERT INTO colors VALUES (119, 37, 'Gradient Bottom', '#EE8B2D', 1);
-INSERT INTO colors VALUES (120, 37, 'Highlight Top', '#F2AA75', 2);
-INSERT INTO colors VALUES (121, 37, 'Highlight Bottom', '#F5B98D', 3);
-INSERT INTO colors VALUES (122, 38, 'Main Star Fills', '#FFFFFF', 0);
-INSERT INTO colors VALUES (123, 38, 'Small Star Fills', '#D78F4F', 1);
-INSERT INTO colors VALUES (124, 37, 'Sclera', '#F9FFCB', 4);
-INSERT INTO colors VALUES (125, 38, 'Head Outline', '#76C1AD', 2);
-INSERT INTO colors VALUES (126, 38, 'Head Fill', '#BEFFF0', 3);
-INSERT INTO colors VALUES (127, 38, 'Head Shadow', '#92DECF', 4);
-INSERT INTO colors VALUES (128, 39, 'Aura', '#E69A44', 0);
-INSERT INTO colors VALUES (129, 40, 'Outline', '#1D4555', 0);
-INSERT INTO colors VALUES (130, 40, 'Fill', '#2F7A98', 1);
-INSERT INTO colors VALUES (131, 40, 'Shadow Outline', '#203A45', 2);
-INSERT INTO colors VALUES (132, 40, 'Shadow Fill', '#2D5B6C', 3);
-INSERT INTO colors VALUES (133, 41, 'Outline', '#5E5A5A', 0);
-INSERT INTO colors VALUES (134, 41, 'Fill 1', '#B0B0B0', 1);
-INSERT INTO colors VALUES (135, 42, 'Gradient Top', '#2F8CB0', 0);
-INSERT INTO colors VALUES (137, 42, 'Gradient Bottom', '#ADD7E6', 1);
-INSERT INTO colors VALUES (140, 43, 'Stars', '#EED255', 0);
-INSERT INTO colors VALUES (142, 41, 'Fill 2', '#797979', 2);
-INSERT INTO colors VALUES (143, 44, 'Outline', '#9F1D3A', 0);
-INSERT INTO colors VALUES (144, 44, 'Main Fill', '#D44350', 1);
-INSERT INTO colors VALUES (145, 44, 'Thick Stripe', '#B1374F', 2);
-INSERT INTO colors VALUES (146, 44, 'Thin Stripe', '#E49355', 3);
-INSERT INTO colors VALUES (147, 45, 'Aura', '#F7DF53', 0);
-INSERT INTO colors VALUES (148, 46, 'Frame Outline', '#919DA4', 0);
-INSERT INTO colors VALUES (149, 46, 'Frame Fill', '#FFFFFF', 1);
-INSERT INTO colors VALUES (150, 46, 'Lens Top (85% Opacity)', '#260F1C', 2);
-INSERT INTO colors VALUES (151, 46, 'Lens Bottom (85% Opacity)', '#C06588', 3);
-INSERT INTO colors VALUES (152, 47, 'Main Outline', '#4596B0', 0);
-INSERT INTO colors VALUES (153, 47, 'Fill', '#B1EAFD', 2);
-INSERT INTO colors VALUES (156, 48, 'Outline', '#A3413E', 0);
-INSERT INTO colors VALUES (157, 48, 'Main Outer Fill', '#EB7F51', 1);
-INSERT INTO colors VALUES (158, 49, 'Gradient Top', '#F5973C', 0);
-INSERT INTO colors VALUES (160, 49, 'Gradient Bottom', '#F5B27D', 1);
-INSERT INTO colors VALUES (161, 49, 'Highlight Top', '#FADBAB', 2);
-INSERT INTO colors VALUES (162, 49, 'Highlight Bottom', '#FBEDD4', 3);
-INSERT INTO colors VALUES (165, 47, 'Inside Outlines (Ear, horn)', '#57ACD4', 1);
-INSERT INTO colors VALUES (166, 48, 'Outer Fill 1', '#E9D271', 2);
-INSERT INTO colors VALUES (167, 48, 'Outer Fill 2', '#FFAC89', 3);
-INSERT INTO colors VALUES (168, 48, 'Outer Fill 3 (at front)', '#EA5E5E', 4);
-INSERT INTO colors VALUES (169, 48, 'Inside Outline Stroke', '#95346D', 5);
-INSERT INTO colors VALUES (170, 48, 'Inside Fill Gradient Top', '#CE53B9', 6);
-INSERT INTO colors VALUES (171, 48, 'Inside Fill Gradient Bottom', '#88387D', 7);
-INSERT INTO colors VALUES (172, 48, 'Inside Fill Line', '#75326F', 8);
-INSERT INTO colors VALUES (173, 51, 'Outline', '#1E1A24', 0);
-INSERT INTO colors VALUES (174, 51, 'Fill 1', '#5D4D68', 1);
-INSERT INTO colors VALUES (175, 51, 'Fill 2', '#3B2D45', 2);
-INSERT INTO colors VALUES (176, 51, 'Stud Fill 1', '#FFFCCB', 3);
-INSERT INTO colors VALUES (177, 51, 'Stud Fill 2', '#F4D05B', 4);
-INSERT INTO colors VALUES (178, 52, 'Outline', '#E8AD34', 0);
-INSERT INTO colors VALUES (179, 52, 'Fill 1', '#F5CF5D', 1);
-INSERT INTO colors VALUES (180, 52, 'Fill 2', '#F9E457', 2);
-INSERT INTO colors VALUES (181, 52, 'Fill 3', '#FAE356', 3);
-INSERT INTO colors VALUES (182, 52, 'Seat fill', '#FEFBAA', 4);
-INSERT INTO colors VALUES (183, 52, 'Seat Decoration Fill 1', '#8F35B4', 5);
-INSERT INTO colors VALUES (184, 52, 'Seat Decoration Fill 2', '#AC5DCB', 6);
-INSERT INTO colors VALUES (185, 52, 'Stud Fill 1', '#FFFCCB', 7);
-INSERT INTO colors VALUES (186, 52, 'Stud Fill 2', '#F4D05B', 8);
-INSERT INTO colors VALUES (187, 53, 'Aura', '#F6EF95', 0);
-INSERT INTO colors VALUES (188, 49, 'Eyeshadow', '#564C9A', 4);
-INSERT INTO colors VALUES (189, 54, 'Outline', '#EF6F2F', 0);
-INSERT INTO colors VALUES (190, 54, 'Fill', '#FABA62', 1);
-INSERT INTO colors VALUES (192, 54, 'Shadow Fill', '#F0AA52', 2);
-INSERT INTO colors VALUES (193, 55, 'Outline', '#E7D462', 0);
-INSERT INTO colors VALUES (194, 55, 'Fill', '#FAF5AB', 1);
-INSERT INTO colors VALUES (195, 56, 'Gradient Top', '#287916', 0);
-INSERT INTO colors VALUES (197, 56, 'Gradient Bottom', '#61BA4E', 1);
-INSERT INTO colors VALUES (198, 56, 'Highlight Top', '#78D863', 2);
-INSERT INTO colors VALUES (199, 56, 'Highlight Bottom', '#CAECC4', 3);
-INSERT INTO colors VALUES (200, 57, 'Apples', '#EC3F41', 0);
-INSERT INTO colors VALUES (201, 57, 'Leaves', '#6BB944', 1);
-INSERT INTO colors VALUES (202, 58, 'Outline', '#B2884D', 0);
-INSERT INTO colors VALUES (203, 58, 'Fill', '#CA9A56', 1);
-INSERT INTO colors VALUES (204, 59, 'Outline', '#E880B0', 0);
-INSERT INTO colors VALUES (205, 59, 'Fill', '#F5B7D0', 1);
-INSERT INTO colors VALUES (206, 59, 'Shadow Outline', '#DD6FA4', 2);
-INSERT INTO colors VALUES (207, 59, 'Shadow Fill', '#E89CBF', 3);
-INSERT INTO colors VALUES (208, 60, 'Outline', '#BB1C76', 0);
-INSERT INTO colors VALUES (209, 60, 'Fill', '#EB458B', 1);
-INSERT INTO colors VALUES (210, 61, 'Gradient Top', '#196E91', 0);
-INSERT INTO colors VALUES (212, 61, 'Gradient Bottom', '#7DD0F1', 1);
-INSERT INTO colors VALUES (213, 61, 'Highlight Top', '#9CDCF4', 2);
-INSERT INTO colors VALUES (214, 61, 'Highlight Bottom', '#DCF3FD', 3);
-INSERT INTO colors VALUES (215, 62, 'Color 1', '#7ED0F2', 0);
-INSERT INTO colors VALUES (216, 62, 'Color 2', '#FAF5AB', 1);
-INSERT INTO colors VALUES (217, 63, 'Outline', '#E9D461', 0);
-INSERT INTO colors VALUES (218, 63, 'Fill', '#FAF5AB', 1);
-INSERT INTO colors VALUES (220, 63, 'Shadow Fill', '#F3E488', 2);
-INSERT INTO colors VALUES (221, 64, 'Outline', '#E581B1', 0);
-INSERT INTO colors VALUES (222, 64, 'Fill', '#F3B5CF', 1);
-INSERT INTO colors VALUES (223, 65, 'Gradient Top', '#02534D', 0);
-INSERT INTO colors VALUES (225, 65, 'Gradient Bottom', '#02ACA4', 1);
-INSERT INTO colors VALUES (226, 65, 'Highlight Top', '#3CBEB7', 2);
-INSERT INTO colors VALUES (227, 65, 'Highlight Bottom', '#84D2D4', 3);
-INSERT INTO colors VALUES (228, 66, 'Wings', '#F3B5CF', 0);
-INSERT INTO colors VALUES (229, 66, 'Body', '#69C8C3', 1);
-INSERT INTO colors VALUES (230, 67, 'Outline', '#6BABDA', 0);
-INSERT INTO colors VALUES (231, 67, 'Fill', '#9BDBF5', 1);
-INSERT INTO colors VALUES (233, 67, 'Shadow Fill', '#88C4E9', 2);
-INSERT INTO colors VALUES (234, 68, 'Outline/Blue Fill', '#1B98D1', 0);
-INSERT INTO colors VALUES (235, 68, 'Red Fill', '#EC4141', 1);
-INSERT INTO colors VALUES (236, 69, 'Gradient Top', '#580D36', 0);
-INSERT INTO colors VALUES (238, 69, 'Gradient Bottom', '#BC1D75', 1);
-INSERT INTO colors VALUES (239, 69, 'Highlight Top', '#D9539D', 2);
-INSERT INTO colors VALUES (240, 69, 'Highlight Bottom', '#FCB6DF', 3);
-INSERT INTO colors VALUES (241, 70, 'Cloud Outline/Blue Streak', '#1B98D1', 0);
-INSERT INTO colors VALUES (242, 70, 'Red Streak', '#EC4141', 2);
-INSERT INTO colors VALUES (243, 68, 'Orange Fill', '#EF7135', 2);
-INSERT INTO colors VALUES (244, 68, 'Yellow Fill', '#FAF5AB', 3);
-INSERT INTO colors VALUES (245, 68, 'Green Fill', '#5FBB4E', 4);
-INSERT INTO colors VALUES (246, 68, 'Purple Fill', '#632E86', 5);
-INSERT INTO colors VALUES (247, 70, 'Yellow Streak', '#FDE85F', 3);
-INSERT INTO colors VALUES (248, 71, 'Outline', '#BDC1C2', 0);
-INSERT INTO colors VALUES (249, 71, 'Fill', '#EAEEF0', 1);
-INSERT INTO colors VALUES (251, 71, 'Shadow Fill', '#DFE4E3', 2);
-INSERT INTO colors VALUES (252, 72, 'Outline/Gradient Dark Fill', '#4A1767', 0);
-INSERT INTO colors VALUES (253, 72, 'Solid Fill', '#5E50A0', 2);
-INSERT INTO colors VALUES (254, 73, 'Gradient Top', '#20476B', 0);
-INSERT INTO colors VALUES (256, 73, 'Gradient Bottom', '#3977B8', 1);
-INSERT INTO colors VALUES (257, 73, 'Highlight Top', '#5693CF', 2);
-INSERT INTO colors VALUES (258, 73, 'Highlight Bottom', '#76ADE5', 3);
-INSERT INTO colors VALUES (259, 74, 'Strokes', '#2696CB', 0);
-INSERT INTO colors VALUES (260, 74, 'Fill', '#7DD1F5', 1);
-INSERT INTO colors VALUES (263, 72, 'Gradient Light Fill', '#794897', 1);
-INSERT INTO colors VALUES (264, 73, 'Eyeshadow', '#B8E1F0', 4);
-INSERT INTO colors VALUES (265, 75, 'Purple Outline', '#985E9F', 0);
-INSERT INTO colors VALUES (266, 75, 'Purple Fill', '#C290C6', 1);
-INSERT INTO colors VALUES (267, 75, 'Green Outline', '#96CE7D', 2);
-INSERT INTO colors VALUES (268, 75, 'Green Fill', '#D5EBAD', 3);
-INSERT INTO colors VALUES (269, 76, 'Outline', '#2E992E', 0);
-INSERT INTO colors VALUES (270, 76, 'Fill', '#50C356', 1);
-INSERT INTO colors VALUES (271, 77, 'Gradient Top', '#277915', 0);
-INSERT INTO colors VALUES (273, 77, 'Gradient Bottom', '#5EBA4A', 1);
-INSERT INTO colors VALUES (274, 77, 'Highlight Top', '#77D963', 2);
-INSERT INTO colors VALUES (275, 77, 'Highlight Bottom', '#CAECC3', 3);
-INSERT INTO colors VALUES (276, 78, 'Outline', '#DCF188', 0);
-INSERT INTO colors VALUES (277, 78, 'Fill', '#AFD95E', 1);
-INSERT INTO colors VALUES (278, 75, 'Soles', '#AF72B6', 4);
-INSERT INTO colors VALUES (279, 79, 'Teeth', '#94B5B3', 0);
-INSERT INTO colors VALUES (280, 79, 'Tongue', '#F997C8', 1);
-INSERT INTO colors VALUES (281, 79, 'Mouth', '#973365', 2);
-INSERT INTO colors VALUES (282, 80, 'Aura', '#82C1DC', 0);
-INSERT INTO colors VALUES (283, 81, 'Outline', '#457BBB', 0);
-INSERT INTO colors VALUES (284, 81, 'Fill', '#81C3EA', 1);
-INSERT INTO colors VALUES (285, 81, 'Shadow Fill', '#7ABAE5', 2);
-INSERT INTO colors VALUES (286, 82, 'Dark Outline', '#303296', 0);
-INSERT INTO colors VALUES (287, 82, 'Dark Fill', '#393CB0', 1);
-INSERT INTO colors VALUES (288, 82, 'Light Outline', '#9E9FDC', 2);
-INSERT INTO colors VALUES (289, 82, 'Light Fill', '#CED0EC', 3);
-INSERT INTO colors VALUES (290, 83, 'Gradient Top', '#1F205D', 0);
-INSERT INTO colors VALUES (291, 83, 'Gradient Bottom', '#526BCB', 1);
-INSERT INTO colors VALUES (292, 83, 'Highlight Top', '#AAAAF8', 2);
-INSERT INTO colors VALUES (293, 83, 'Highlight Bottom', '#DBDCFC', 3);
-INSERT INTO colors VALUES (294, 84, 'Base', '#DBBF0F', 0);
-INSERT INTO colors VALUES (295, 84, 'Base Highlight', '#FBEB98', 1);
-INSERT INTO colors VALUES (296, 84, 'Glass', '#BFEAF8', 2);
-INSERT INTO colors VALUES (297, 84, 'Sand', '#D4CF97', 3);
-INSERT INTO colors VALUES (298, 85, 'Outline', '#BEB789', 0);
-INSERT INTO colors VALUES (299, 85, 'Fill', '#F9FAED', 1);
-INSERT INTO colors VALUES (301, 85, 'Shadow Fill', '#E0DEC1', 2);
-INSERT INTO colors VALUES (302, 86, 'Outline', '#DE83CD', 0);
-INSERT INTO colors VALUES (303, 86, 'Fill', '#F8AAE5', 1);
-INSERT INTO colors VALUES (304, 87, 'Gradient Top', '#015B56', 0);
-INSERT INTO colors VALUES (306, 87, 'Gradient Bottom', '#6BF0ED', 1);
-INSERT INTO colors VALUES (307, 87, 'Highlight Top', '#B1F0F4', 2);
-INSERT INTO colors VALUES (308, 87, 'Highlight Bottom', '#D5F9FB', 3);
-INSERT INTO colors VALUES (309, 88, 'Stars', '#B6E0F7', 0);
-INSERT INTO colors VALUES (311, 89, 'Outline', '#EFBD3B', 0);
-INSERT INTO colors VALUES (312, 89, 'Fill', '#FBFC63', 1);
-INSERT INTO colors VALUES (314, 89, 'Shadow Fill', '#F7E253', 2);
-INSERT INTO colors VALUES (315, 90, 'Outline', '#3695B5', 0);
-INSERT INTO colors VALUES (316, 90, 'Fill 1', '#68B5CF', 1);
-INSERT INTO colors VALUES (317, 91, 'Gradient Top', '#580D36', 0);
-INSERT INTO colors VALUES (319, 91, 'Gradient Bottom', '#BC1D75', 1);
-INSERT INTO colors VALUES (320, 91, 'Highlight Top', '#D9539D', 2);
-INSERT INTO colors VALUES (321, 91, 'Highlight Bottom', '#FCB6DF', 3);
-INSERT INTO colors VALUES (322, 92, 'Blue Outline', '#63B5CB', 0);
-INSERT INTO colors VALUES (323, 92, 'Blue Fill', '#A2D7E1', 1);
-INSERT INTO colors VALUES (324, 90, 'Fill 2', '#7BCBE1', 2);
-INSERT INTO colors VALUES (325, 92, 'Green Outline', '#96DC51', 2);
-INSERT INTO colors VALUES (326, 92, 'Green Fill', '#BAEF85', 3);
-INSERT INTO colors VALUES (327, 93, 'Outline', '#ACC849', 0);
-INSERT INTO colors VALUES (328, 93, 'Fill', '#D2EA91', 1);
-INSERT INTO colors VALUES (329, 93, 'Shadow Outline', '#A4C040', 2);
-INSERT INTO colors VALUES (330, 93, 'Shadow Fill', '#BDD56C', 3);
-INSERT INTO colors VALUES (331, 94, 'Outline', '#ADD9D5', 0);
-INSERT INTO colors VALUES (332, 94, 'Fill', '#FFFFFF', 1);
-INSERT INTO colors VALUES (333, 95, 'Gradient Top', '#EC565C', 0);
-INSERT INTO colors VALUES (335, 95, 'Gradient Bottom', '#F49A43', 1);
-INSERT INTO colors VALUES (338, 96, 'Plate Fill 1', '#9AA596', 0);
-INSERT INTO colors VALUES (339, 96, 'Plate Fill 2', '#A2AF9D', 1);
-INSERT INTO colors VALUES (340, 96, 'Plate Fill 3', '#B2BEAC', 2);
-INSERT INTO colors VALUES (341, 96, 'Pie FIll 1', '#B68145', 3);
-INSERT INTO colors VALUES (342, 96, 'Pie FIll 2', '#D29752', 4);
-INSERT INTO colors VALUES (343, 96, 'Pie FIll 3', '#E4A95A', 5);
-INSERT INTO colors VALUES (344, 96, 'Pie FIll 4', '#FBB963', 6);
-INSERT INTO colors VALUES (345, 97, 'Outline', '#F58950', 0);
-INSERT INTO colors VALUES (346, 97, 'Fill', '#FABA63', 1);
-INSERT INTO colors VALUES (347, 97, 'Apples', '#EB575A', 2);
-INSERT INTO colors VALUES (348, 97, 'Stems', '#7CA42A', 3);
-INSERT INTO colors VALUES (349, 97, 'Frill Outline', '#ADD9D5', 4);
-INSERT INTO colors VALUES (350, 97, 'Frill Fill', '#FFFFFF', 5);
-INSERT INTO colors VALUES (351, 98, 'Outline', '#3DBAC9', 0);
-INSERT INTO colors VALUES (352, 98, 'Fill', '#8BD8DF', 1);
-INSERT INTO colors VALUES (354, 98, 'Shadow Fill', '#6ECAD5', 2);
-INSERT INTO colors VALUES (355, 99, 'Outline', '#A6E9F9', 0);
-INSERT INTO colors VALUES (356, 99, 'Fill', '#FFFFFF', 1);
-INSERT INTO colors VALUES (357, 100, 'Gradient Top', '#320141', 0);
-INSERT INTO colors VALUES (359, 100, 'Gradient Bottom', '#F990D1', 1);
-INSERT INTO colors VALUES (360, 100, 'Highlight Top', '#D53AB6', 2);
-INSERT INTO colors VALUES (361, 100, 'Highlight Bottom', '#FDCAE9', 3);
-INSERT INTO colors VALUES (362, 101, 'Air Wave', '#FCFF98', 0);
-INSERT INTO colors VALUES (363, 101, 'Horseshoe', '#3797C7', 1);
-INSERT INTO colors VALUES (364, 99, 'Blue Fill', '#D4F3FC', 2);
-INSERT INTO colors VALUES (365, 101, 'Horseshoe Dots', '#FFFFFF', 2);
-INSERT INTO colors VALUES (366, 102, 'Outline', '#D8971C', 0);
-INSERT INTO colors VALUES (367, 102, 'Fill', '#F3E365', 1);
-INSERT INTO colors VALUES (368, 102, 'Shadow Outline', '#C18719', 2);
-INSERT INTO colors VALUES (369, 102, 'Shadow Fill', '#DACB5A', 3);
-INSERT INTO colors VALUES (370, 103, 'Outline', '#AC240B', 0);
-INSERT INTO colors VALUES (371, 103, 'Fill 1', '#FA8A24', 1);
-INSERT INTO colors VALUES (372, 104, 'Gradient Top', '#B74729', 0);
-INSERT INTO colors VALUES (374, 104, 'Gradient Bottom', '#F48F66', 1);
-INSERT INTO colors VALUES (377, 105, 'Outline', '#AA4300', 0);
-INSERT INTO colors VALUES (378, 105, 'Fill 1', '#E37B00', 1);
-INSERT INTO colors VALUES (379, 103, 'Fill 2', '#DF5C0A', 2);
-INSERT INTO colors VALUES (380, 105, 'Fill 2', '#FDBF36', 2);
-INSERT INTO colors VALUES (381, 104, 'Eyeshadow', '#7FA2C3', 2);
-INSERT INTO colors VALUES (382, 106, 'Outline', '#75C0C8', 0);
-INSERT INTO colors VALUES (383, 106, 'Fill', '#DEF2F0', 1);
-INSERT INTO colors VALUES (384, 107, 'Outline', '#552E66', 0);
-INSERT INTO colors VALUES (385, 107, 'Fill 1', '#743E8A', 1);
-INSERT INTO colors VALUES (386, 107, 'Fill 2', '#A775BE', 2);
-INSERT INTO colors VALUES (387, 107, 'Shadow Outline', '#4A295A', 3);
-INSERT INTO colors VALUES (388, 107, 'Shadow Fill 1', '#69377D', 4);
-INSERT INTO colors VALUES (389, 107, 'Shadow Fill 2', '#9568AA', 5);
-INSERT INTO colors VALUES (390, 58, 'Hair Tie', '#EC3F41', 2);
-INSERT INTO colors VALUES (392, 70, 'Cloud Fill', '#FFFFFF', 1);
-INSERT INTO colors VALUES (394, 108, 'Outline', '#6BABDA', 0);
-INSERT INTO colors VALUES (395, 108, 'Fill', '#9CDBF5', 1);
-INSERT INTO colors VALUES (397, 108, 'Shadow Fill', '#89C7EB', 2);
-INSERT INTO colors VALUES (398, 109, 'Outline', '#52574C', 0);
-INSERT INTO colors VALUES (399, 109, 'Fill 1', '#8E9783', 1);
-INSERT INTO colors VALUES (400, 110, 'Gradient Top', '#CB9932', 0);
-INSERT INTO colors VALUES (402, 110, 'Gradient Bottom', '#FCEBA5', 1);
-INSERT INTO colors VALUES (405, 111, 'Helmet Fill 1', '#48412C', 0);
-INSERT INTO colors VALUES (406, 111, 'Helmet Fill 2', '#7C704C', 1);
-INSERT INTO colors VALUES (407, 109, 'Fill 2', '#777B6C', 2);
-INSERT INTO colors VALUES (408, 109, 'Shadow Fill', '#585B52', 3);
-INSERT INTO colors VALUES (409, 110, 'Eyebrows', '#53564D', 2);
-INSERT INTO colors VALUES (410, 112, 'Outline', '#324649', 0);
-INSERT INTO colors VALUES (411, 112, 'Fill 1', '#507276', 1);
-INSERT INTO colors VALUES (412, 112, 'Fill 2', '#A9AE82', 2);
-INSERT INTO colors VALUES (413, 112, 'Sleeve Patch', '#BEC99D', 3);
-INSERT INTO colors VALUES (414, 112, 'Zipper Outline', '#77ACA8', 4);
-INSERT INTO colors VALUES (415, 112, 'Zipper Fill', '#C2DFE3', 5);
-INSERT INTO colors VALUES (416, 112, 'Fur Outline', '#41585B', 6);
-INSERT INTO colors VALUES (417, 112, 'Fur Fill', '#AAAE82', 7);
-INSERT INTO colors VALUES (418, 113, 'Outline', '#D7D78C', 0);
-INSERT INTO colors VALUES (419, 113, 'Fill', '#FAFCEE', 1);
-INSERT INTO colors VALUES (420, 114, 'Outline', '#8E6E21', 0);
-INSERT INTO colors VALUES (421, 114, 'Fill 1', '#E2D23B', 1);
-INSERT INTO colors VALUES (422, 114, 'Fill 2', '#EFE89A', 2);
-INSERT INTO colors VALUES (423, 111, 'Helmet Fill 3', '#C1AE73', 2);
-INSERT INTO colors VALUES (424, 111, 'Helmet Shadow Fill', '#1E1D11', 3);
-INSERT INTO colors VALUES (425, 111, 'Strap Fill', '#629672', 4);
-INSERT INTO colors VALUES (426, 111, 'Strap Holes', '#35462A', 5);
-INSERT INTO colors VALUES (427, 111, 'Wing Outline', '#D3D8A0', 6);
-INSERT INTO colors VALUES (428, 111, 'Wing Fill', '#F7F8DC', 7);
-INSERT INTO colors VALUES (429, 111, 'Goggles Rim', '#313131', 8);
-INSERT INTO colors VALUES (430, 111, 'Goggles Fill 1', '#3AD0F5', 9);
-INSERT INTO colors VALUES (431, 111, 'Goggles Fill 2', '#D7F5FB', 10);
-INSERT INTO colors VALUES (432, 111, 'Goggles Fill 3 (At rim)', '#2BA9C4', 11);
-INSERT INTO colors VALUES (433, 115, 'Outline', '#A3C6BC', 0);
-INSERT INTO colors VALUES (434, 115, 'Fill', '#FFFFFF', 1);
-INSERT INTO colors VALUES (435, 116, 'Outline', '#FD80C6', 0);
-INSERT INTO colors VALUES (436, 116, 'Fill', '#FFC3E5', 1);
-INSERT INTO colors VALUES (437, 116, 'Shadow Outline', '#F673B8', 2);
-INSERT INTO colors VALUES (438, 116, 'Shadow Fill', '#FFB0D8', 3);
-INSERT INTO colors VALUES (439, 117, 'Outline', '#533251', 0);
-INSERT INTO colors VALUES (440, 117, 'Fill', '#955495', 1);
-INSERT INTO colors VALUES (441, 118, 'Gradient Top', '#681D46', 0);
-INSERT INTO colors VALUES (443, 118, 'Gradient Bottom', '#CD2F89', 1);
-INSERT INTO colors VALUES (444, 118, 'Highlight Top', '#EB64B1', 2);
-INSERT INTO colors VALUES (445, 118, 'Highlight Bottom', '#FFBFE7', 3);
-INSERT INTO colors VALUES (446, 119, 'Candy 1', '#FD81BA', 0);
-INSERT INTO colors VALUES (447, 119, 'Candy 2', '#FEAD89', 1);
-INSERT INTO colors VALUES (448, 119, 'Candy 3', '#FFD77C', 2);
-INSERT INTO colors VALUES (449, 119, 'Cup Top', '#7FC9C7', 4);
-INSERT INTO colors VALUES (450, 119, 'Cup Fill 1', '#A2E3BE', 5);
-INSERT INTO colors VALUES (451, 119, 'Cup Fill 2', '#BFF7C6', 6);
-INSERT INTO colors VALUES (452, 119, 'Cupcake Fill 1', '#C477C6', 7);
-INSERT INTO colors VALUES (453, 119, 'Cupcake Fill 2', '#E0A5E0', 8);
-INSERT INTO colors VALUES (454, 119, 'Cherry Fill', '#FD696D', 9);
-INSERT INTO colors VALUES (455, 119, 'Cherry Stroke', '#C8454F', 10);
-INSERT INTO colors VALUES (456, 119, 'Cherry Stem', '#57334E', 11);
-INSERT INTO colors VALUES (457, 119, 'Candy Highlight', '#FFFFFF', 3);
-INSERT INTO colors VALUES (458, 120, 'Magic', '#47C0CC', 0);
-INSERT INTO colors VALUES (459, 121, 'Outline 1', '#13A9A9', 0);
-INSERT INTO colors VALUES (460, 121, 'Fill 1', '#0FDAD9', 1);
-INSERT INTO colors VALUES (461, 121, 'Outline 2', '#89CBC8', 2);
-INSERT INTO colors VALUES (462, 121, 'Fill 2', '#D1FEEC', 3);
-INSERT INTO colors VALUES (463, 122, 'Outline', '#D9C574', 0);
-INSERT INTO colors VALUES (464, 122, 'Fill', '#F3F49B', 1);
-INSERT INTO colors VALUES (465, 122, 'Shadow Outline', '#D5C167', 2);
-INSERT INTO colors VALUES (466, 122, 'Shadow Fill', '#E6DC7F', 3);
-INSERT INTO colors VALUES (467, 123, 'Outline', '#C52452', 0);
-INSERT INTO colors VALUES (468, 123, 'Fill', '#F5415F', 1);
-INSERT INTO colors VALUES (469, 124, 'Gradient Top', '#ED585A', 0);
-INSERT INTO colors VALUES (471, 124, 'Gradient Bottom', '#FBA93F', 1);
-INSERT INTO colors VALUES (472, 124, 'Highlight Top', '#FCC657', 2);
-INSERT INTO colors VALUES (473, 124, 'Highlight Bottom', '#FEE27A', 3);
-INSERT INTO colors VALUES (476, 126, 'Outline', '#F37033', 0);
-INSERT INTO colors VALUES (477, 126, 'Fill', '#F9B764', 1);
-INSERT INTO colors VALUES (478, 126, 'Shadow Outline', '#EA6B2B', 2);
-INSERT INTO colors VALUES (479, 126, 'Shadow Fill', '#F0AA56', 3);
-INSERT INTO colors VALUES (480, 127, 'Outline', '#BD1F77', 0);
-INSERT INTO colors VALUES (481, 127, 'Fill', '#BF5D93', 1);
-INSERT INTO colors VALUES (482, 128, 'Gradient Top', '#482562', 0);
-INSERT INTO colors VALUES (484, 128, 'Gradient Bottom', '#B28EC0', 1);
-INSERT INTO colors VALUES (485, 128, 'Highlight Top', '#C5A6D0', 2);
-INSERT INTO colors VALUES (486, 128, 'Highlight Bottom', '#E7CEE4', 3);
-INSERT INTO colors VALUES (489, 130, 'Outline', '#C72965', 0);
-INSERT INTO colors VALUES (490, 130, 'Fill 1', '#F35F91', 1);
-INSERT INTO colors VALUES (491, 130, 'Fill 2', '#EC438C', 2);
-INSERT INTO colors VALUES (492, 131, 'Outline', '#CEC8D1', 0);
-INSERT INTO colors VALUES (493, 131, 'Fill', '#EFEDED', 1);
-INSERT INTO colors VALUES (495, 131, 'Shadow Fill', '#E0DDE3', 2);
-INSERT INTO colors VALUES (496, 132, 'Outline', '#785B88', 0);
-INSERT INTO colors VALUES (497, 132, 'Fill 1', '#B28DC1', 1);
-INSERT INTO colors VALUES (498, 133, 'Gradient Top', '#629558', 0);
-INSERT INTO colors VALUES (500, 133, 'Gradient Bottom', '#AED79E', 1);
-INSERT INTO colors VALUES (501, 133, 'Highlight Top', '#CBE4BE', 2);
-INSERT INTO colors VALUES (502, 133, 'Highlight Bottom', '#F4F8ED', 3);
-INSERT INTO colors VALUES (505, 132, 'Fill 2', '#F6B8D2', 2);
-INSERT INTO colors VALUES (506, 135, 'Outline', '#2F5173', 0);
-INSERT INTO colors VALUES (507, 135, 'Fill', '#4C7DAF', 1);
-INSERT INTO colors VALUES (509, 135, 'Shadow Fill', '#406C93', 2);
-INSERT INTO colors VALUES (510, 136, 'Outline', '#9BAAE8', 0);
-INSERT INTO colors VALUES (511, 136, 'Fill 1', '#E1E6FA', 1);
-INSERT INTO colors VALUES (512, 137, 'Gradient Top', '#1378AB', 0);
-INSERT INTO colors VALUES (513, 137, 'Gradient Middle', '#47CFFF', 1);
-INSERT INTO colors VALUES (514, 137, 'Gradient Bottom', '#6EDCFF', 2);
-INSERT INTO colors VALUES (515, 137, 'Highlight Top', '#90E2FF', 3);
-INSERT INTO colors VALUES (516, 137, 'Highlight Bottom', '#D5F3FF', 4);
-INSERT INTO colors VALUES (517, 138, 'Moon 1', '#385E83', 0);
-INSERT INTO colors VALUES (518, 138, 'Moon 2', '#FDFDCB', 1);
-INSERT INTO colors VALUES (519, 138, 'Feather Center', '#D6E4FF', 2);
-INSERT INTO colors VALUES (520, 138, 'Feather Fill 1', '#97ABEB', 3);
-INSERT INTO colors VALUES (521, 138, 'Feather Fill 2', '#6A8AD2', 4);
-INSERT INTO colors VALUES (522, 138, 'Feather Fill 3', '#44608D', 5);
-INSERT INTO colors VALUES (523, 136, 'Fill 2', '#C4CFF4', 2);
-INSERT INTO colors VALUES (524, 136, 'Fill 3', '#FFFFFF', 3);
-INSERT INTO colors VALUES (525, 139, 'Outline', '#BFD1E1', 0);
-INSERT INTO colors VALUES (526, 139, 'Fill', '#FFFFFF', 1);
-INSERT INTO colors VALUES (527, 139, 'Shadow Outline', '#B2C7D2', 2);
-INSERT INTO colors VALUES (528, 139, 'Shadow Fill', '#D6E3E5', 3);
-INSERT INTO colors VALUES (529, 140, 'Outline', '#A6BFD8', 0);
-INSERT INTO colors VALUES (530, 140, 'Fill 1', '#F2FBFC', 1);
-INSERT INTO colors VALUES (531, 141, 'Gradient Top', '#2B4E99', 0);
-INSERT INTO colors VALUES (532, 141, 'Gradient Middle', '#6E9FFC', 1);
-INSERT INTO colors VALUES (533, 141, 'Gradient Bottom', '#B0EBFF', 2);
-INSERT INTO colors VALUES (536, 142, 'Fill', '#87B1E6', 0);
-INSERT INTO colors VALUES (537, 142, 'Inner Strokes', '#BEDBFA', 1);
-INSERT INTO colors VALUES (538, 140, 'Fill 2', '#FFFFFF', 2);
-INSERT INTO colors VALUES (539, 143, 'Outline', '#603860', 0);
-INSERT INTO colors VALUES (540, 143, 'Fill', '#9B579B', 1);
-INSERT INTO colors VALUES (541, 144, 'Outline', '#75C3D3', 0);
-INSERT INTO colors VALUES (542, 144, 'Fill', '#C7F0F2', 1);
-INSERT INTO colors VALUES (544, 144, 'Shadow Fill', '#A7DEE6', 2);
-INSERT INTO colors VALUES (545, 145, 'Outline', '#366395', 0);
-INSERT INTO colors VALUES (546, 145, 'Fill 1', '#4886CE', 1);
-INSERT INTO colors VALUES (547, 146, 'Gradient Top', '#2B4E99', 0);
-INSERT INTO colors VALUES (548, 146, 'Gradient Middle', '#6E9FFC', 1);
-INSERT INTO colors VALUES (549, 146, 'Gradient Bottom', '#B0EBFF', 2);
-INSERT INTO colors VALUES (552, 147, 'Balloon Fill 1', '#EB5095', 0);
-INSERT INTO colors VALUES (553, 147, 'Balloon Fill 2', '#F36AAB', 1);
-INSERT INTO colors VALUES (554, 145, 'Fill 2', '#62A8E1', 2);
-INSERT INTO colors VALUES (555, 147, 'Balloon Fill 3', '#F88FC2', 2);
-INSERT INTO colors VALUES (556, 147, 'Balloon Fill 4', '#FED3E9', 3);
-INSERT INTO colors VALUES (557, 147, 'Confetti 1', '#7F6DAF', 4);
-INSERT INTO colors VALUES (558, 147, 'Confetti 2', '#FDAE75', 5);
-INSERT INTO colors VALUES (559, 147, 'Confetti 3', '#FCD269', 6);
-INSERT INTO colors VALUES (560, 147, 'Confetti 4', '#FFFFFF', 7);
-INSERT INTO colors VALUES (613, 164, 'Outline', '#C394D7', 0);
-INSERT INTO colors VALUES (614, 164, 'Fill', '#F2C7F8', 1);
-INSERT INTO colors VALUES (616, 164, 'Shadow Fill', '#DDB1EB', 2);
-INSERT INTO colors VALUES (617, 165, 'Outline', '#562875', 0);
-INSERT INTO colors VALUES (618, 165, 'Fill 1', '#69328F', 1);
-INSERT INTO colors VALUES (619, 166, 'Gradient Top', '#241A7C', 0);
-INSERT INTO colors VALUES (621, 166, 'Gradient Bottom', '#98A2EF', 1);
-INSERT INTO colors VALUES (622, 166, 'Highlight Top', '#8587EC', 2);
-INSERT INTO colors VALUES (623, 166, 'Highlight Bottom', '#B9BAFC', 3);
-INSERT INTO colors VALUES (624, 167, 'Star Fill 1', '#B765B8', 0);
-INSERT INTO colors VALUES (625, 167, 'Star Fill 2', '#FFFFF0', 1);
-INSERT INTO colors VALUES (626, 165, 'Fill 2', '#8640B4', 2);
-INSERT INTO colors VALUES (627, 165, 'Fill 3', '#9BE9D8', 3);
-INSERT INTO colors VALUES (628, 167, 'Trail Fill 1', '#08BAB7', 2);
-INSERT INTO colors VALUES (629, 167, 'Trail Fill 2', '#9BE9D8', 3);
-INSERT INTO colors VALUES (630, 168, 'Aura', '#9BE9D8', 0);
-INSERT INTO colors VALUES (631, 169, 'Outline', '#E9CDA4', 0);
-INSERT INTO colors VALUES (632, 169, 'Fill', '#FBF4DF', 1);
-INSERT INTO colors VALUES (633, 169, 'Shadow Outline', '#DEC098', 2);
-INSERT INTO colors VALUES (634, 169, 'Shadow Fill', '#EFE2CA', 3);
-INSERT INTO colors VALUES (635, 170, 'Outline', '#45C8D5', 0);
-INSERT INTO colors VALUES (636, 170, 'Fill 1', '#96E5EF', 1);
-INSERT INTO colors VALUES (637, 171, 'Gradient Top', '#26A9BF', 0);
-INSERT INTO colors VALUES (639, 171, 'Gradient Bottom', '#D7FFFA', 1);
-INSERT INTO colors VALUES (640, 171, 'Highlight Top', '#C3F4FD', 2);
-INSERT INTO colors VALUES (641, 171, 'Highlight Bottom', '#EFFCFC', 3);
-INSERT INTO colors VALUES (642, 172, 'Hat Fill 1', '#D39CD1', 0);
-INSERT INTO colors VALUES (643, 172, 'Hat Fill 2', '#B674BC', 1);
-INSERT INTO colors VALUES (644, 170, 'Fill 2', '#CCF9F9', 2);
-INSERT INTO colors VALUES (645, 173, 'Collar Outline', '#985C9D', 0);
-INSERT INTO colors VALUES (646, 173, 'Collar Fill 1', '#D39CD1', 1);
-INSERT INTO colors VALUES (647, 173, 'Collar Fill 2', '#FBFBFB', 2);
-INSERT INTO colors VALUES (648, 173, 'Collar Shadow Fill', '#B674BC', 3);
-INSERT INTO colors VALUES (649, 173, 'Tie Outline', '#E64E07', 4);
-INSERT INTO colors VALUES (650, 173, 'Tie Fill', '#FF7D74', 5);
-INSERT INTO colors VALUES (651, 174, 'Main Outline', '#E64E07', 0);
-INSERT INTO colors VALUES (652, 174, 'Main Fill 1', '#FF7D74', 1);
-INSERT INTO colors VALUES (653, 174, 'Main Fill 2', '#FFA085', 2);
-INSERT INTO colors VALUES (654, 174, 'Blossom Outline', '#6C3F6B', 3);
-INSERT INTO colors VALUES (655, 174, 'Blossom Outside Fill', '#985C9D', 4);
-INSERT INTO colors VALUES (656, 174, 'Blossom Inside Fill 1', '#955E9C', 5);
-INSERT INTO colors VALUES (657, 174, 'Blossom Inside Fill 2', '#D39CD1', 6);
-INSERT INTO colors VALUES (658, 172, 'Hat Fill 3', '#FBFBFB', 2);
-INSERT INTO colors VALUES (659, 172, 'Plume Fill', '#FF5555', 3);
-INSERT INTO colors VALUES (660, 172, 'Plume Shadow', '#F24C4C', 4);
-INSERT INTO colors VALUES (661, 175, 'Outline', '#151730', 0);
-INSERT INTO colors VALUES (662, 175, 'Fill', '#38407C', 1);
-INSERT INTO colors VALUES (663, 175, 'Shadow Fill', '#30376C', 2);
-INSERT INTO colors VALUES (664, 176, 'Outline', '#8952E1', 0);
-INSERT INTO colors VALUES (665, 176, 'Edge Fill (50% opacity)', '#473CC7', 1);
-INSERT INTO colors VALUES (666, 176, 'Main Fill', '#1C4FC2', 2);
-INSERT INTO colors VALUES (667, 177, 'Outline', '#9791F1', 0);
-INSERT INTO colors VALUES (668, 177, 'Fill', '#C4BFF9', 1);
-INSERT INTO colors VALUES (669, 177, 'Shadow Outline', '#7E79CB', 2);
-INSERT INTO colors VALUES (670, 177, 'Shadow Fill', '#9F9DCE', 3);
-INSERT INTO colors VALUES (671, 178, 'Outline', '#9F9DCE', 0);
-INSERT INTO colors VALUES (672, 178, 'Fill', '#000000', 1);
-INSERT INTO colors VALUES (673, 178, 'Moon', '#FFFFFF', 2);
-INSERT INTO colors VALUES (674, 179, 'Dark Side of the Moon', '#000000', 0);
-INSERT INTO colors VALUES (675, 179, 'Moon', '#FFFFFF', 1);
-INSERT INTO colors VALUES (676, 176, 'Stars', '#FFFFFF', 3);
-INSERT INTO colors VALUES (677, 180, 'Gradient Top', '#0E6183', 0);
-INSERT INTO colors VALUES (678, 180, 'Gradient Bottom', '#06A79F', 1);
-INSERT INTO colors VALUES (679, 180, 'Highlight Top', '#61E9D1', 2);
-INSERT INTO colors VALUES (680, 180, 'Highlight Bottom', '#9AFCFD', 3);
-INSERT INTO colors VALUES (681, 180, 'Eyeshadow', '#7696ED', 4);
-INSERT INTO colors VALUES (683, 182, 'Outline', '#FA9EDE', 0);
-INSERT INTO colors VALUES (684, 182, 'Fill', '#FFD9FB', 1);
-INSERT INTO colors VALUES (685, 182, 'Shadow Outline', '#F591D7', 2);
-INSERT INTO colors VALUES (686, 182, 'Shadow Fill', '#FDBBEC', 3);
-INSERT INTO colors VALUES (687, 183, 'Outline', '#6B5584', 0);
-INSERT INTO colors VALUES (688, 183, 'Fill', '#9775B8', 1);
-INSERT INTO colors VALUES (689, 184, 'Gradient Top', '#584239', 0);
-INSERT INTO colors VALUES (690, 184, 'Gradient Middle', '#A87A66', 1);
-INSERT INTO colors VALUES (691, 184, 'Gradient Bottom', '#DFB77D', 2);
-INSERT INTO colors VALUES (692, 184, 'Highlight Top', '#CEA06F', 3);
-INSERT INTO colors VALUES (693, 184, 'Highlight Bottom', '#E2C6AB', 4);
-INSERT INTO colors VALUES (694, 185, 'Button 1 main', '#9776B8', 0);
-INSERT INTO colors VALUES (695, 185, 'Button 1 holes', '#43324C', 1);
-INSERT INTO colors VALUES (696, 186, 'Outline', '#5EC3EF', 0);
-INSERT INTO colors VALUES (697, 186, 'Main fill', '#C3F6FF', 1);
-INSERT INTO colors VALUES (698, 186, 'Stripes', '#7CD7F9', 2);
-INSERT INTO colors VALUES (699, 186, 'Dots', '#FBFBFB', 3);
-INSERT INTO colors VALUES (700, 187, 'Outline', '#F6DDA5', 0);
-INSERT INTO colors VALUES (701, 187, 'Fill', '#FFF9D8', 1);
-INSERT INTO colors VALUES (702, 185, 'Button 1 rim', '#72528C', 2);
-INSERT INTO colors VALUES (703, 185, 'Button 2 main', '#FFF8D8', 3);
-INSERT INTO colors VALUES (704, 185, 'Button 2 holes', '#8E734D', 4);
-INSERT INTO colors VALUES (705, 185, 'Button 2 rim', '#EFDEAD', 5);
-INSERT INTO colors VALUES (706, 185, 'Button 3 main', '#C4F5FF', 6);
-INSERT INTO colors VALUES (707, 185, 'Button 3 holes', '#2F6E87', 7);
-INSERT INTO colors VALUES (708, 185, 'Button 3 rim', '#6ABFE3', 8);
-INSERT INTO colors VALUES (709, 188, 'Aura', '#D9539D', 0);
-INSERT INTO colors VALUES (710, 189, 'Aura', '#E8DA9C', 0);
-INSERT INTO colors VALUES (711, 190, 'Aura', '#6BF0ED', 0);
-INSERT INTO colors VALUES (712, 191, 'Outline', '#338FCC', 0);
-INSERT INTO colors VALUES (713, 191, 'Fill', '#6CB2EA', 1);
-INSERT INTO colors VALUES (715, 191, 'Shadow Fill', '#5DAAE3', 2);
-INSERT INTO colors VALUES (716, 192, 'Outline', '#92CDF4', 0);
-INSERT INTO colors VALUES (717, 192, 'Fill 1', '#B8E0F9', 1);
-INSERT INTO colors VALUES (718, 193, 'Gradient Top', '#3A2851', 0);
-INSERT INTO colors VALUES (719, 193, 'Gradient Middle', '#6E4386', 1);
-INSERT INTO colors VALUES (720, 193, 'Gradient Bottom', '#E0A0D3', 2);
-INSERT INTO colors VALUES (723, 194, 'Wand Star Outline', '#B7E0FA', 0);
-INSERT INTO colors VALUES (724, 194, 'Wand Star Fill', '#71A2CD', 1);
-INSERT INTO colors VALUES (725, 192, 'Fill 2', '#D8EEFB', 2);
-INSERT INTO colors VALUES (726, 194, 'Wand Handle Fill 1', '#6EA3D3', 2);
-INSERT INTO colors VALUES (727, 194, 'Wand Handle Fill 2', '#ADCCEA', 3);
-INSERT INTO colors VALUES (728, 194, 'Trail Fill', '#82DEF4', 4);
-INSERT INTO colors VALUES (729, 194, 'Trail Stars', '#FFFFFF', 5);
-INSERT INTO colors VALUES (730, 195, 'Outline', '#7B5ACE', 0);
-INSERT INTO colors VALUES (731, 195, 'Fill', '#9C82DA', 1);
-INSERT INTO colors VALUES (732, 195, 'Stars 1', '#FAF99D', 2);
-INSERT INTO colors VALUES (733, 195, 'Stars 2', '#82DDF4', 3);
-INSERT INTO colors VALUES (734, 195, 'Stars 3', '#B7E0F9', 4);
-INSERT INTO colors VALUES (735, 195, 'Stars 4', '#D7ECFA', 5);
-INSERT INTO colors VALUES (736, 196, 'Outline', '#2C84A0', 0);
-INSERT INTO colors VALUES (737, 196, 'Center Fill', '#BFEFFA', 1);
-INSERT INTO colors VALUES (738, 196, 'Fill 1', '#32A2BA', 2);
-INSERT INTO colors VALUES (739, 196, 'Fill 2', '#3ABDDC', 3);
-INSERT INTO colors VALUES (740, 196, 'Fill 3', '#82DDF4', 4);
-INSERT INTO colors VALUES (741, 196, 'Fill 4', '#A7F8E0', 5);
-INSERT INTO colors VALUES (742, 196, 'Fill 5', '#CDF1FB', 6);
-INSERT INTO colors VALUES (743, 197, 'Aura', '#E3B2DA', 0);
-INSERT INTO colors VALUES (744, 198, 'Outline', '#161515', 0);
-INSERT INTO colors VALUES (745, 198, 'Fill', '#5E5E5E', 1);
-INSERT INTO colors VALUES (746, 198, 'Horn Inner Strokes', '#B7B7B7', 2);
-INSERT INTO colors VALUES (747, 198, 'Eye Stroke', '#6E0303', 3);
-INSERT INTO colors VALUES (748, 198, 'Eye Fill', '#DA0101', 4);
-INSERT INTO colors VALUES (749, 199, 'Outline', '#161515', 0);
-INSERT INTO colors VALUES (750, 199, 'Fill 1', '#434343', 1);
-INSERT INTO colors VALUES (751, 199, 'Fill 2', '#5E5E5E', 2);
-INSERT INTO colors VALUES (752, 199, 'Fill 3', '#8C8C8C', 3);
-INSERT INTO colors VALUES (753, 200, 'Outline', '#161515', 0);
-INSERT INTO colors VALUES (754, 200, 'Fill', '#333333', 1);
-INSERT INTO colors VALUES (755, 200, 'Red Outline', '#6E0303', 2);
-INSERT INTO colors VALUES (756, 200, 'Red Fill 1', '#B10101', 3);
-INSERT INTO colors VALUES (757, 200, 'Red Fill 2', '#DA0101', 4);
-INSERT INTO colors VALUES (758, 200, 'Red Fill 3', '#FD080B', 5);
-INSERT INTO colors VALUES (759, 201, 'Outline', '#6E0303', 0);
-INSERT INTO colors VALUES (760, 201, 'Center Fill', '#FCB3B3', 1);
-INSERT INTO colors VALUES (761, 201, 'Fill 1', '#B10101', 2);
-INSERT INTO colors VALUES (762, 201, 'Fill 2', '#FD080B', 3);
-INSERT INTO colors VALUES (763, 201, 'Fill 3', '#FE9292', 4);
-INSERT INTO colors VALUES (764, 202, 'Magic Aura/Eye Aura', '#FD080B', 0);
-INSERT INTO colors VALUES (765, 202, 'Iris', '#B10101', 1);
-INSERT INTO colors VALUES (767, 203, 'Outline', '#161515', 0);
-INSERT INTO colors VALUES (768, 203, 'Fill 1', '#434343', 1);
-INSERT INTO colors VALUES (769, 203, 'Fill 2', '#333333', 2);
-INSERT INTO colors VALUES (770, 203, 'Highlight', '#B7B7B7', 3);
-INSERT INTO colors VALUES (771, 204, 'Outline', '#EECFE1', 0);
-INSERT INTO colors VALUES (772, 204, 'Fill', '#FEF7FB', 1);
-INSERT INTO colors VALUES (774, 204, 'Shadow Fill', '#F2E6E9', 2);
-INSERT INTO colors VALUES (775, 205, 'Gradient Outline 1', '#3D9DC4', 0);
-INSERT INTO colors VALUES (776, 205, 'Gradient Outline 2', '#48BAA9', 1);
-INSERT INTO colors VALUES (777, 206, 'Gradient Top', '#5F2F7A', 0);
-INSERT INTO colors VALUES (779, 206, 'Gradient Bottom', '#E68CE3', 1);
-INSERT INTO colors VALUES (780, 206, 'Highlight Top', '#CB7DD0', 2);
-INSERT INTO colors VALUES (781, 206, 'Highlight Bottom', '#D8A0D9', 3);
-INSERT INTO colors VALUES (782, 207, 'Sun Center', '#FDF5B7', 0);
-INSERT INTO colors VALUES (783, 207, 'Sun Edge', '#FDD68F', 1);
-INSERT INTO colors VALUES (784, 208, 'Aura', '#FEFD96', 0);
-INSERT INTO colors VALUES (785, 207, 'Sun Rays', '#FAC18A', 2);
-INSERT INTO colors VALUES (786, 205, 'Gradient Outline 3', '#7A9BDE', 2);
-INSERT INTO colors VALUES (787, 205, 'Gradient Outline 4', '#D085D0', 3);
-INSERT INTO colors VALUES (788, 205, 'Gradient Dark Fill 1', '#44B1CE', 4);
-INSERT INTO colors VALUES (789, 205, 'Gradient Light Fill 1', '#8CDEE4', 5);
-INSERT INTO colors VALUES (790, 205, 'Gradient Dark Fill 2', '#50CDA5', 6);
-INSERT INTO colors VALUES (791, 205, 'Gradient Light Fill 2', '#CBF5C0', 7);
-INSERT INTO colors VALUES (792, 205, 'Gradient Dark Fill 3', '#80A4EE', 8);
-INSERT INTO colors VALUES (793, 205, 'Gradient Light Fill 3', '#AEDEFC', 9);
-INSERT INTO colors VALUES (794, 205, 'Gradient Dark Fill 4', '#E599F2', 10);
-INSERT INTO colors VALUES (795, 205, 'Gradient Light Fill 4', '#F2C4FD', 11);
-INSERT INTO colors VALUES (796, 209, 'Outline & Trim', '#E9BF6E', 0);
-INSERT INTO colors VALUES (797, 209, 'Fill', '#FFE398', 1);
-INSERT INTO colors VALUES (798, 209, 'Gem Outline', '#6E3B7F', 2);
-INSERT INTO colors VALUES (799, 209, 'Gem Center Fill', '#C671D0', 3);
-INSERT INTO colors VALUES (800, 209, 'Gem Shine', '#DE9FE2', 4);
-INSERT INTO colors VALUES (801, 209, 'Gem Saturated Fill', '#BE62C8', 5);
-INSERT INTO colors VALUES (802, 209, 'Gem Main Fill', '#9E5DB5', 6);
-INSERT INTO colors VALUES (803, 209, 'Gem Dark Fill', '#824997', 7);
-INSERT INTO colors VALUES (804, 210, 'Outline', '#EECFE1', 0);
-INSERT INTO colors VALUES (805, 210, 'Fill', '#FFEFBC', 1);
-INSERT INTO colors VALUES (806, 210, 'Shadow Fill', '#F5E1C7', 2);
-INSERT INTO colors VALUES (807, 211, 'Coat Outline', '#A32141', 0);
-INSERT INTO colors VALUES (808, 211, 'Coat Fill', '#E64A57', 1);
-INSERT INTO colors VALUES (809, 211, 'Shadow Coat Outline', '#9E164C', 2);
-INSERT INTO colors VALUES (810, 211, 'Shadow Coat Fill', '#D0335C', 3);
-INSERT INTO colors VALUES (811, 211, 'Hooves Outline', '#EACA79', 4);
-INSERT INTO colors VALUES (812, 211, 'Hooves Fill', '#FCF8AC', 5);
-INSERT INTO colors VALUES (813, 211, 'Shadow Hooves Outline', '#CF8D74', 6);
-INSERT INTO colors VALUES (814, 211, 'Shadow Hooves Fill', '#DFAD96', 7);
-INSERT INTO colors VALUES (815, 212, 'Outline', '#F08E43', 0);
-INSERT INTO colors VALUES (816, 212, 'Fill', '#FBBA62', 1);
-INSERT INTO colors VALUES (817, 213, 'Gradient top', '#267A14', 0);
-INSERT INTO colors VALUES (818, 213, 'Gradient bottom', '#5FBB4B', 1);
-INSERT INTO colors VALUES (819, 214, 'Freckles', '#FCF6AD', 0);
-INSERT INTO colors VALUES (820, 215, 'Yoke outline', '#876235', 0);
-INSERT INTO colors VALUES (821, 215, 'Yoke fill 1', '#C8954D', 1);
-INSERT INTO colors VALUES (822, 215, 'Post fill 1', '#A2AF9D', 3);
-INSERT INTO colors VALUES (823, 215, 'Post fill 2', '#919E8D', 4);
-INSERT INTO colors VALUES (824, 215, 'Post fill 3', '#C2D9C4', 5);
-INSERT INTO colors VALUES (825, 215, 'Yoke fill 2', '#AE8241', 2);
-INSERT INTO colors VALUES (826, 216, 'Apple fill 1', '#87D557', 0);
-INSERT INTO colors VALUES (827, 216, 'Apple fill 2', '#B6F677', 1);
-INSERT INTO colors VALUES (828, 216, 'Apple fill 3', '#5EBA4A', 2);
-INSERT INTO colors VALUES (829, 216, 'Seeds', '#AD8341', 3);
-INSERT INTO colors VALUES (830, 216, 'Apple stem 1', '#DAFC87', 4);
-INSERT INTO colors VALUES (831, 216, 'Apple stem 2 (=Apple fill 1)', '#87D557', 5);
-INSERT INTO colors VALUES (832, 216, 'Apple leaf 1 (=Apple fill 3)', '#5EBA4A', 6);
-INSERT INTO colors VALUES (833, 216, 'Apple leaf 2', '#309438', 7);
-INSERT INTO colors VALUES (834, 217, 'Outline', '#DBBD5D', 0);
-INSERT INTO colors VALUES (835, 217, 'Fill', '#F9F8D3', 1);
-INSERT INTO colors VALUES (836, 217, 'Shadow Outline', '#C4A953', 2);
-INSERT INTO colors VALUES (837, 217, 'Shadow Fill', '#E0DEBE', 3);
-INSERT INTO colors VALUES (838, 218, 'Outline', '#9D2544', 0);
-INSERT INTO colors VALUES (839, 218, 'Fill', '#E0535D', 1);
-INSERT INTO colors VALUES (840, 219, 'Gradient Top', '#200B3E', 0);
-INSERT INTO colors VALUES (842, 219, 'Gradient Bottom', '#622E87', 1);
-INSERT INTO colors VALUES (843, 219, 'Highlight Top', '#8B5DA4', 2);
-INSERT INTO colors VALUES (844, 219, 'Highlight Bottom', '#CBB2D3', 3);
-INSERT INTO colors VALUES (845, 220, 'Color 1', '#663E64', 0);
-INSERT INTO colors VALUES (846, 220, 'Color 2', '#C670B7', 1);
-INSERT INTO colors VALUES (847, 218, 'Stripe 1', '#78549A', 2);
-INSERT INTO colors VALUES (848, 218, 'Stripe 2', '#AD90D0', 3);
-INSERT INTO colors VALUES (849, 221, 'Outline', '#1D1C2B', 0);
-INSERT INTO colors VALUES (850, 221, 'Fill 1', '#454163', 1);
-INSERT INTO colors VALUES (851, 221, 'Fill 2', '#34324C', 2);
-INSERT INTO colors VALUES (852, 221, 'Shadow Fill 1', '#3D3B56', 3);
-INSERT INTO colors VALUES (853, 221, 'Shadow Fill 2', '#2F2D44', 4);
-INSERT INTO colors VALUES (854, 222, 'Outline', '#CF6995', 0);
-INSERT INTO colors VALUES (855, 222, 'Fill', '#FCA1CB', 1);
-INSERT INTO colors VALUES (856, 223, 'Frame', '#181723', 0);
-INSERT INTO colors VALUES (857, 223, 'Frame Highlight', '#565175', 1);
-INSERT INTO colors VALUES (858, 223, 'Pin Outline', '#B5B2D1', 2);
-INSERT INTO colors VALUES (859, 223, 'Pin Fill', '#F0F2F8', 3);
-INSERT INTO colors VALUES (860, 223, 'Tape Outline', '#87BACB', 4);
-INSERT INTO colors VALUES (861, 223, 'Tape Fill', '#F8F9F1', 5);
-INSERT INTO colors VALUES (862, 223, 'Lens ( 80% to 25% Opacity)', '#BEDAF4', 6);
-INSERT INTO colors VALUES (863, 224, 'Aura', '#E3BFD0', 0);
-INSERT INTO colors VALUES (864, 215, 'Post fill 4 (screwtop on back)', '#6E7969', 6);
-INSERT INTO colors VALUES (865, 225, 'Outline', '#A985D3', 0);
-INSERT INTO colors VALUES (866, 225, 'Fill', '#CDB8E6', 1);
-INSERT INTO colors VALUES (868, 225, 'Shadow Fill', '#BFA3DF', 2);
-INSERT INTO colors VALUES (869, 226, 'Outline', '#D3B76A', 0);
-INSERT INTO colors VALUES (870, 226, 'Fill 1', '#F7F0A6', 1);
-INSERT INTO colors VALUES (871, 227, 'Gradient Top', '#C79835', 0);
-INSERT INTO colors VALUES (873, 227, 'Gradient Bottom', '#FCF89A', 1);
-INSERT INTO colors VALUES (878, 226, 'Fill 2', '#F8F8D5', 2);
-INSERT INTO colors VALUES (879, 229, 'Outline', '#D76CA0', 0);
-INSERT INTO colors VALUES (880, 229, 'Fill', '#E8A3C5', 1);
-INSERT INTO colors VALUES (882, 229, 'Shadow Fill', '#E48CB7', 2);
-INSERT INTO colors VALUES (883, 230, 'Outline', '#A3376E', 0);
-INSERT INTO colors VALUES (884, 230, 'Fill 1', '#C24D87', 1);
-INSERT INTO colors VALUES (885, 231, 'Gradient Top', '#78952C', 0);
-INSERT INTO colors VALUES (887, 231, 'Gradient Bottom', '#D3EAAB', 1);
-INSERT INTO colors VALUES (888, 231, 'Highlight Top', '#C6F2A6', 2);
-INSERT INTO colors VALUES (889, 231, 'Highlight Bottom', '#EFFBD5', 3);
-INSERT INTO colors VALUES (892, 230, 'Fill 2', '#CF78A4', 2);
-INSERT INTO colors VALUES (893, 227, 'Highlight Top', '#FAFAB4', 2);
-INSERT INTO colors VALUES (894, 227, 'Highlight Bottom', '#FDFDDB', 3);
-INSERT INTO colors VALUES (895, 233, 'Shield Outline', '#AB3266', 0);
-INSERT INTO colors VALUES (896, 233, 'Shield Fill 1: AB Mane Fill', '#F5415F', 1);
-INSERT INTO colors VALUES (897, 233, 'Shield Fill 2: SB Mane Fill', '#F6B8D2', 2);
-INSERT INTO colors VALUES (898, 233, 'Shield Fill 3: Sc Mane Fill', '#BF5D93', 3);
-INSERT INTO colors VALUES (899, 233, 'Apple Fill', '#A02699', 4);
-INSERT INTO colors VALUES (900, 233, 'Heart Fill', '#FD41F8', 5);
-INSERT INTO colors VALUES (901, 234, 'Outline', '#845223', 0);
-INSERT INTO colors VALUES (902, 234, 'Fill', '#C58E4F', 1);
-INSERT INTO colors VALUES (903, 234, 'Shadow Outline', '#855C37', 2);
-INSERT INTO colors VALUES (904, 234, 'Shadow Fill', '#BE9061', 3);
-INSERT INTO colors VALUES (905, 235, 'Outline', '#613213', 0);
-INSERT INTO colors VALUES (906, 235, 'Fill 1', '#C44933', 1);
-INSERT INTO colors VALUES (907, 236, 'Gradient Top', '#B34236', 0);
-INSERT INTO colors VALUES (909, 236, 'Gradient Bottom', '#FF814D', 1);
-INSERT INTO colors VALUES (910, 236, 'Highlight Top', '#FE9863', 2);
-INSERT INTO colors VALUES (911, 236, 'Highlight Bottom', '#FFEAD1', 3);
-INSERT INTO colors VALUES (914, 235, 'Fill 2', '#E47743', 2);
-INSERT INTO colors VALUES (915, 238, 'Hat Outline', '#7A3F3F', 0);
-INSERT INTO colors VALUES (916, 238, 'Hat Fill 1', '#FAC443', 1);
-INSERT INTO colors VALUES (917, 238, 'Hat Fill 2', '#FBFBB4', 2);
-INSERT INTO colors VALUES (918, 238, 'Hat Fill 3', '#F35356', 3);
-INSERT INTO colors VALUES (919, 238, 'Hat Fill 4', '#FFFFFF', 4);
-INSERT INTO colors VALUES (920, 238, 'Propeller Outline', '#63A214', 5);
-INSERT INTO colors VALUES (921, 238, 'Propeller Fill', '#A3E34C', 6);
-INSERT INTO colors VALUES (922, 238, 'Rotor Outline', '#746DC3', 7);
-INSERT INTO colors VALUES (923, 238, 'Rotor Fill', '#BEBDF7', 8);
-INSERT INTO colors VALUES (925, 240, 'Outline', '#EF60A1', 0);
-INSERT INTO colors VALUES (926, 240, 'Fill', '#FFB2D3', 1);
-INSERT INTO colors VALUES (928, 240, 'Shadow Fill', '#FA92BE', 2);
-INSERT INTO colors VALUES (929, 241, 'Outline', '#7A2682', 0);
-INSERT INTO colors VALUES (930, 241, 'Fill 1', '#B739A6', 1);
-INSERT INTO colors VALUES (931, 242, 'Gradient Top', '#128B8F', 0);
-INSERT INTO colors VALUES (933, 242, 'Gradient Bottom', '#4AB1C4', 1);
-INSERT INTO colors VALUES (934, 242, 'Highlight Top', '#8EEDF5', 2);
-INSERT INTO colors VALUES (935, 242, 'Highlight Bottom', '#DDEFF5', 3);
-INSERT INTO colors VALUES (936, 243, 'Body Fill', '#FCEECF', 0);
-INSERT INTO colors VALUES (937, 243, 'Body Shadow Fill', '#EBCE96', 1);
-INSERT INTO colors VALUES (938, 241, 'Fill 2', '#A031A8', 2);
-INSERT INTO colors VALUES (939, 241, 'Band', '#51C8B8', 3);
-INSERT INTO colors VALUES (940, 243, 'Eye', '#49341D', 2);
-INSERT INTO colors VALUES (941, 243, 'Nose', '#7A4A52', 3);
-INSERT INTO colors VALUES (942, 243, 'Quills Fill', '#996448', 4);
-INSERT INTO colors VALUES (943, 243, 'Quills Highlight 1', '#F1C2A7', 5);
-INSERT INTO colors VALUES (944, 243, 'Quills Highlight 2', '#7E4B3E', 6);
-INSERT INTO colors VALUES (945, 244, 'Shield Outline', '#AB3266', 0);
-INSERT INTO colors VALUES (946, 244, 'Shield Fill 1: AB Mane Fill', '#F5415F', 1);
-INSERT INTO colors VALUES (947, 244, 'Shield Fill 2: SB Mane Fill', '#F6B8D2', 2);
-INSERT INTO colors VALUES (948, 244, 'Shield Fill 3: Sc Mane Fill', '#BF5D93', 3);
-INSERT INTO colors VALUES (949, 244, 'Wing Fill', '#A02699', 4);
-INSERT INTO colors VALUES (950, 244, 'Lightning Bolt Fill', '#FD41F8', 5);
-INSERT INTO colors VALUES (951, 245, 'Shield Outline', '#AB3266', 0);
-INSERT INTO colors VALUES (952, 245, 'Shield Fill 1: AB Mane Fill', '#F5415F', 1);
-INSERT INTO colors VALUES (953, 245, 'Shield Fill 2: SB Mane Fill', '#F6B8D2', 2);
-INSERT INTO colors VALUES (954, 245, 'Shield Fill 3: Sc Mane Fill', '#BF5D93', 3);
-INSERT INTO colors VALUES (955, 245, 'Star Fill', '#A02699', 4);
-INSERT INTO colors VALUES (956, 245, 'Eight Note Fill', '#FD41F8', 5);
-INSERT INTO colors VALUES (957, 246, 'Aura', '#C4FBB0', 0);
-INSERT INTO colors VALUES (991, 257, 'Outline', '#9C9AAD', 0);
-INSERT INTO colors VALUES (992, 257, 'Fill', '#FEFEFE', 1);
-INSERT INTO colors VALUES (993, 257, 'Shadow Outline', '#9291A3', 2);
-INSERT INTO colors VALUES (994, 257, 'Shadow Fill', '#F1F1F1', 3);
-INSERT INTO colors VALUES (995, 258, 'Outline', '#101C2F', 0);
-INSERT INTO colors VALUES (996, 258, 'Fill', '#325394', 1);
-INSERT INTO colors VALUES (997, 259, 'Gradient Top', '#1A4859', 1);
-INSERT INTO colors VALUES (999, 259, 'Gradient Bottom', '#63D1E9', 2);
-INSERT INTO colors VALUES (1000, 259, 'Highlight Top', '#3CBDF1', 3);
-INSERT INTO colors VALUES (1001, 259, 'Highlight Bottom', '#B1E8F2', 4);
-INSERT INTO colors VALUES (1002, 260, 'Stars', '#6698CA', 0);
-INSERT INTO colors VALUES (1003, 260, 'Shield Outline', '#111B26', 1);
-INSERT INTO colors VALUES (1004, 257, 'Hoof Outline', '#2D3558', 4);
-INSERT INTO colors VALUES (1005, 257, 'Hoof Fill', '#43558C', 5);
-INSERT INTO colors VALUES (1006, 257, 'Shadow Hoof Outline', '#233250', 6);
-INSERT INTO colors VALUES (1007, 257, 'Shadow Hoof Fill', '#3F5085', 7);
-INSERT INTO colors VALUES (1008, 258, 'Stripe 1', '#57C4DD', 2);
-INSERT INTO colors VALUES (1009, 258, 'Stripe 2', '#243871', 3);
-INSERT INTO colors VALUES (1010, 259, 'Eyeball', '#E8F8F9', 0);
-INSERT INTO colors VALUES (1011, 260, 'Shield Fill', '#243871', 2);
-INSERT INTO colors VALUES (1012, 260, 'Shield Star Pattern', '#ED6C9C', 3);
-INSERT INTO colors VALUES (1013, 261, 'Aura (Same as Twilight''s)', '#EA428B', 0);
-INSERT INTO colors VALUES (1014, 262, 'Outline', '#9CBDDB', 0);
-INSERT INTO colors VALUES (1015, 262, 'Fill', '#E6EFFC', 1);
-INSERT INTO colors VALUES (1017, 262, 'Shadow Fill', '#D7E3F4', 2);
-INSERT INTO colors VALUES (1018, 263, 'Outline', '#2864BC', 0);
-INSERT INTO colors VALUES (1019, 263, 'Fill 1', '#3DA9FF', 1);
-INSERT INTO colors VALUES (1020, 264, 'Gradient Top', '#FF8D38', 0);
-INSERT INTO colors VALUES (1022, 264, 'Gradient Bottom', '#F6DF58', 1);
-INSERT INTO colors VALUES (1023, 264, 'Highlight Top', '#F9E98C', 2);
-INSERT INTO colors VALUES (1024, 264, 'Highlight Bottom', '#FCF1BD', 3);
-INSERT INTO colors VALUES (1025, 265, 'Pen Nib Outline', '#C4AA1D', 0);
-INSERT INTO colors VALUES (1026, 265, 'Pen Nib Fill', '#FCDF58', 1);
-INSERT INTO colors VALUES (1027, 263, 'Fill 2', '#94D4FF', 2);
-INSERT INTO colors VALUES (1028, 265, 'Node Fill', '#3DA9FF', 2);
-INSERT INTO colors VALUES (1029, 265, 'Path Fill', '#000000', 3);
-INSERT INTO colors VALUES (1030, 266, 'Aura', '#FCDF58', 0);
-INSERT INTO colors VALUES (1031, 267, 'Outline', '#AC6600', 0);
-INSERT INTO colors VALUES (1032, 267, 'Fill', '#FFB240', 1);
-INSERT INTO colors VALUES (1033, 267, 'Shadow Outline', '#9D5700', 2);
-INSERT INTO colors VALUES (1034, 267, 'Shadow Fill', '#F7A731', 3);
-INSERT INTO colors VALUES (1035, 268, 'Outline', '#251100', 0);
-INSERT INTO colors VALUES (1036, 268, 'Fill', '#683A00', 1);
-INSERT INTO colors VALUES (1037, 269, 'Gradient Top', '#275D00', 0);
-INSERT INTO colors VALUES (1039, 269, 'Gradient Bottom', '#8CEA4D', 1);
-INSERT INTO colors VALUES (1042, 270, 'Crust', '#744126', 0);
-INSERT INTO colors VALUES (1043, 270, 'Bread', '#E1D4AC', 1);
-INSERT INTO colors VALUES (1044, 271, 'Outline', '#9C8300', 0);
-INSERT INTO colors VALUES (1045, 271, 'Fill', '#FFBE39', 1);
-INSERT INTO colors VALUES (1046, 272, 'Frame', '#000000', 0);
-INSERT INTO colors VALUES (1047, 270, 'Crust spots', '#BE916D', 2);
-INSERT INTO colors VALUES (1048, 270, 'Bread spots', '#8E7A50', 3);
-INSERT INTO colors VALUES (1049, 270, 'Grill marks', '#25150D', 4);
-INSERT INTO colors VALUES (1050, 270, 'Cheese', '#FFFF13', 5);
-INSERT INTO colors VALUES (1051, 270, 'Toasting Gradient (0 to 85%)', '#000000', 6);
-INSERT INTO colors VALUES (1078, 281, 'Outline', '#778282', 0);
-INSERT INTO colors VALUES (1079, 281, 'Fill', '#C2CDCD', 1);
-INSERT INTO colors VALUES (1081, 281, 'Shadow Fill', '#A1ADAD', 2);
-INSERT INTO colors VALUES (1082, 282, 'Main Outline', '#2C3838', 0);
-INSERT INTO colors VALUES (1083, 282, 'Inner Outline', '#405252', 1);
-INSERT INTO colors VALUES (1084, 283, 'Gradient Top', '#713A9D', 0);
-INSERT INTO colors VALUES (1086, 283, 'Gradient Bottom', '#B792DD', 1);
-INSERT INTO colors VALUES (1087, 283, 'Highlight Top', '#B795E9', 2);
-INSERT INTO colors VALUES (1088, 283, 'Highlight Bottom', '#EDE6F4', 3);
-INSERT INTO colors VALUES (1089, 284, 'Color 1', '#9D8CB0', 0);
-INSERT INTO colors VALUES (1090, 284, 'Color 2', '#88799C', 1);
-INSERT INTO colors VALUES (1091, 282, 'FIll 1', '#607878', 2);
-INSERT INTO colors VALUES (1092, 282, 'Fill 2', '#819B93', 3);
-INSERT INTO colors VALUES (1093, 285, 'Outline', '#545173', 0);
-INSERT INTO colors VALUES (1094, 285, 'Fill', '#9495B9', 1);
-INSERT INTO colors VALUES (1096, 285, 'Shadow Fill', '#77769B', 2);
-INSERT INTO colors VALUES (1097, 286, 'Outline', '#6B7B7E', 0);
-INSERT INTO colors VALUES (1098, 286, 'Fill', '#C7CECF', 1);
-INSERT INTO colors VALUES (1099, 287, 'Gradient Top', '#9AA41C', 0);
-INSERT INTO colors VALUES (1101, 287, 'Gradient Bottom', '#DDE261', 1);
-INSERT INTO colors VALUES (1102, 287, 'Highlight Top', '#F2EE86', 2);
-INSERT INTO colors VALUES (1103, 287, 'Highlight Bottom', '#FBFADF', 3);
-INSERT INTO colors VALUES (1104, 288, 'Lime Fill 1', '#619623', 0);
-INSERT INTO colors VALUES (1105, 288, 'Lime Fill 2', '#90BA40', 1);
-INSERT INTO colors VALUES (1106, 288, 'Lime Fill 3', '#DDEA79', 2);
-INSERT INTO colors VALUES (1107, 288, 'Stone Fill 1', '#FEFEFE', 3);
-INSERT INTO colors VALUES (1108, 288, 'Stone Fill 2', '#CCCED2', 4);
-INSERT INTO colors VALUES (1109, 289, 'Outline', '#8A8995', 0);
-INSERT INTO colors VALUES (1110, 289, 'Fill', '#B8B7BE', 1);
-INSERT INTO colors VALUES (1111, 289, 'Shadow Outline', '#7B7C83', 2);
-INSERT INTO colors VALUES (1112, 289, 'Shadow Fill', '#A4A4A8', 3);
-INSERT INTO colors VALUES (1113, 290, 'Outline', '#554373', 0);
-INSERT INTO colors VALUES (1114, 290, 'Fill', '#9885B7', 1);
-INSERT INTO colors VALUES (1115, 291, 'Gradient Top', '#196E5D', 0);
-INSERT INTO colors VALUES (1117, 291, 'Gradient Bottom', '#99EAD7', 1);
-INSERT INTO colors VALUES (1118, 291, 'Highlight Top', '#ADDEDF', 2);
-INSERT INTO colors VALUES (1119, 291, 'Highlight Bottom', '#DFF1F2', 3);
-INSERT INTO colors VALUES (1120, 292, 'Outline', '#395B6E', 0);
-INSERT INTO colors VALUES (1121, 292, 'Fill', '#53829F', 1);
-INSERT INTO colors VALUES (1122, 291, 'Eyeshadow (Same as mane fill)', '#9885B7', 4);
-INSERT INTO colors VALUES (1123, 292, 'Shadow Outline', '#355063', 2);
-INSERT INTO colors VALUES (1124, 292, 'Shadow Fill', '#4B748F', 3);
-INSERT INTO colors VALUES (1125, 292, 'Belt', '#3B4144', 4);
-INSERT INTO colors VALUES (1126, 293, 'Outline', '#8A5838', 0);
-INSERT INTO colors VALUES (1127, 293, 'Fill', '#C39D4D', 1);
-INSERT INTO colors VALUES (1128, 293, 'Shadow Outline', '#9E6E41', 2);
-INSERT INTO colors VALUES (1129, 293, 'Shadow Fill', '#C0974D', 3);
-INSERT INTO colors VALUES (1130, 294, 'Outline', '#666666', 0);
-INSERT INTO colors VALUES (1131, 294, 'Fill 1', '#989898', 1);
-INSERT INTO colors VALUES (1132, 295, 'Gradient Top', '#B48A25', 0);
-INSERT INTO colors VALUES (1134, 295, 'Gradient Bottom', '#FAE695', 1);
-INSERT INTO colors VALUES (1137, 296, 'Handle Outline', '#602A1D', 0);
-INSERT INTO colors VALUES (1138, 296, 'Handle Fill', '#924623', 1);
-INSERT INTO colors VALUES (1139, 294, 'Fill 2', '#CCCCCC', 2);
-INSERT INTO colors VALUES (1140, 296, 'Pickaxe Outline', '#646D6D', 2);
-INSERT INTO colors VALUES (1141, 296, 'Pickaxe Fill', '#849492', 3);
-INSERT INTO colors VALUES (1142, 297, 'Hat/Tie Outline', '#232323', 0);
-INSERT INTO colors VALUES (1143, 297, 'Hat/Tie Fill', '#404040', 1);
-INSERT INTO colors VALUES (1144, 297, 'Collar Outline', '#656565', 2);
-INSERT INTO colors VALUES (1145, 297, 'Collar Fill/Hat Fill 2', '#CCCCCC', 3);
-INSERT INTO colors VALUES (1146, 298, 'Outline', '#A9A9A7', 0);
-INSERT INTO colors VALUES (1147, 298, 'Fill', '#D8DDEA', 1);
-INSERT INTO colors VALUES (1149, 298, 'Shadow Fill', '#C1C5C9', 2);
-INSERT INTO colors VALUES (1150, 299, 'Outline', '#223937', 0);
-INSERT INTO colors VALUES (1151, 299, 'Fill', '#508383', 1);
-INSERT INTO colors VALUES (1152, 300, 'Gradient Top', '#218691', 0);
-INSERT INTO colors VALUES (1154, 300, 'Gradient Bottom', '#91CFE1', 1);
-INSERT INTO colors VALUES (1155, 300, 'Highlight Top', '#A3EBEB', 2);
-INSERT INTO colors VALUES (1156, 300, 'Highlight Bottom', '#EBFAF8', 3);
-INSERT INTO colors VALUES (1157, 301, 'Rock Fill 1', '#85B7B9', 0);
-INSERT INTO colors VALUES (1158, 301, 'Rock Fill 2', '#A4D0D4', 1);
-INSERT INTO colors VALUES (1159, 301, 'Rock Fill 3', '#BCE3E1', 2);
-INSERT INTO colors VALUES (1160, 301, 'Cracks', '#1C484C', 3);
-INSERT INTO colors VALUES (1161, 302, 'Frame/Chain Outline', '#D2AB0F', 0);
-INSERT INTO colors VALUES (1162, 302, 'Chain Fill', '#EED33B', 1);
-INSERT INTO colors VALUES (1163, 302, 'Lens Fill 1 (75% Opacity)', '#87D1E7', 2);
-INSERT INTO colors VALUES (1164, 302, 'Lens Fill 2 (75% Opacity)', '#A0DAF0', 3);
-INSERT INTO colors VALUES (1165, 303, 'Collar Outline', '#000000', 0);
-INSERT INTO colors VALUES (1166, 303, 'Collar Fill 1', '#343434', 1);
-INSERT INTO colors VALUES (1167, 303, 'Collar Fill 2', '#FFFFFF', 2);
-INSERT INTO colors VALUES (1168, 303, 'Pendant Outline', '#D2AB0F', 3);
-INSERT INTO colors VALUES (1169, 303, 'Pendant Fill 1', '#EED33B', 4);
-INSERT INTO colors VALUES (1170, 303, 'Pendant Fill 2', '#54BEBA', 5);
-INSERT INTO colors VALUES (1171, 303, 'Collar Shadow Fill 1', '#252525', 6);
-INSERT INTO colors VALUES (1172, 303, 'Collar Shadow Fill 2', '#C0C0C0', 7);
-INSERT INTO colors VALUES (1173, 304, 'Fill 1', '#638081', 0);
-INSERT INTO colors VALUES (1174, 304, 'Fill 2', '#3A4A4D', 1);
-INSERT INTO colors VALUES (1175, 305, 'Top Light Fill', '#B6C8CB', 0);
-INSERT INTO colors VALUES (1176, 305, 'Top Medium Fill', '#9AB0B7', 1);
-INSERT INTO colors VALUES (1177, 305, 'Front Light Fill', '#698D95', 3);
-INSERT INTO colors VALUES (1178, 305, 'Front Medium Fill', '#547176', 4);
-INSERT INTO colors VALUES (1179, 305, 'Front Dark Fill', '#42585E', 5);
-INSERT INTO colors VALUES (1180, 305, 'Medium Details', '#476168', 8);
-INSERT INTO colors VALUES (1181, 305, 'Dark Details', '#26383B', 9);
-INSERT INTO colors VALUES (1182, 305, 'Light Details', '#7C949A', 7);
-INSERT INTO colors VALUES (1183, 305, 'Top Dark Fill', '#85A2A7', 2);
-INSERT INTO colors VALUES (1184, 305, 'Bottom Fill', '#30474B', 6);
-INSERT INTO colors VALUES (1185, 305, 'Very Dark Details', '#192425', 10);
-INSERT INTO colors VALUES (1186, 306, 'Outline', '#BEB205', 0);
-INSERT INTO colors VALUES (1187, 306, 'Fill', '#F8EA62', 1);
-INSERT INTO colors VALUES (1188, 306, 'Shadow Outline', '#A89E0E', 2);
-INSERT INTO colors VALUES (1189, 306, 'Shadow Fill', '#DDCE52', 3);
-INSERT INTO colors VALUES (1190, 307, 'Outline', '#AA4401', 0);
-INSERT INTO colors VALUES (1191, 307, 'Fill 1', '#ED7B00', 1);
-INSERT INTO colors VALUES (1192, 308, 'Gradient Top', '#422302', 0);
-INSERT INTO colors VALUES (1194, 308, 'Gradient Bottom', '#CF6E03', 1);
-INSERT INTO colors VALUES (1195, 308, 'Highlight Top', '#D36E02', 2);
-INSERT INTO colors VALUES (1196, 308, 'Highlight Bottom', '#FACC83', 3);
-INSERT INTO colors VALUES (1197, 309, 'Outline', '#AA4401', 0);
-INSERT INTO colors VALUES (1198, 309, 'Fill 1', '#ED7B00', 1);
-INSERT INTO colors VALUES (1199, 307, 'Fill 2', '#FBBE33', 2);
-INSERT INTO colors VALUES (1202, 308, 'Eyelid Highlight', '#FEFEAE', 4);
-INSERT INTO colors VALUES (1203, 309, 'Fill 2', '#FBBE33', 2);
-INSERT INTO colors VALUES (1204, 309, 'Fill 3', '#F8EA62', 3);
-INSERT INTO colors VALUES (1205, 310, 'Outline', '#37B5B4', 0);
-INSERT INTO colors VALUES (1206, 310, 'Fill', '#8BEAD5', 1);
-INSERT INTO colors VALUES (1207, 310, 'Shadow Outline', '#4CBDBE', 2);
-INSERT INTO colors VALUES (1208, 310, 'Shadow Fill', '#79DCD0', 3);
-INSERT INTO colors VALUES (1209, 311, 'Outline', '#CF7314', 0);
-INSERT INTO colors VALUES (1210, 311, 'Fill 1', '#F6AC05', 1);
-INSERT INTO colors VALUES (1211, 312, 'Gradient Top', '#A65A26', 0);
-INSERT INTO colors VALUES (1212, 312, 'Gradient Middle', '#EB8F24', 1);
-INSERT INTO colors VALUES (1213, 312, 'Gradient Bottom', '#FDAD35', 2);
-INSERT INTO colors VALUES (1216, 313, 'Lightning', '#FFFFFF', 0);
-INSERT INTO colors VALUES (1217, 313, 'Side Stars', '#FDE687', 1);
-INSERT INTO colors VALUES (1218, 311, 'Fill 2', '#F5D758', 2);
-INSERT INTO colors VALUES (1219, 313, 'Middle Star', '#FAF99D', 2);
-INSERT INTO colors VALUES (1220, 314, 'Outline', '#6E6956', 0);
-INSERT INTO colors VALUES (1221, 314, 'Fill', '#ACA793', 1);
-INSERT INTO colors VALUES (1222, 314, 'Beard/Eyebrow Outline', '#E1DACA', 2);
-INSERT INTO colors VALUES (1223, 314, 'Beard/Eyebrow Fill', '#FFFFFF', 3);
-INSERT INTO colors VALUES (1224, 314, 'Ear inside', '#E7B4D5', 4);
-INSERT INTO colors VALUES (1225, 314, 'Mane Outline', '#000000', 5);
-INSERT INTO colors VALUES (1226, 314, 'Mane Fill', '#252525', 6);
-INSERT INTO colors VALUES (1227, 315, 'Outline', '#D4CD9D', 0);
-INSERT INTO colors VALUES (1228, 315, 'Fill', '#F7F4D0', 1);
-INSERT INTO colors VALUES (1229, 316, 'Sclera', '#EAE13D', 0);
-INSERT INTO colors VALUES (1230, 316, 'Iris/Pupil', '#D53338', 1);
-INSERT INTO colors VALUES (1231, 317, 'Antler Fill', '#F7F3D3', 0);
-INSERT INTO colors VALUES (1232, 317, 'Horn Outline', '#7DB6D5', 1);
-INSERT INTO colors VALUES (1233, 317, 'Horn Fill', '#CAF3F2', 2);
-INSERT INTO colors VALUES (1234, 318, 'Stroke', '#321F1A', 0);
-INSERT INTO colors VALUES (1235, 318, 'Fill', '#68413D', 1);
-INSERT INTO colors VALUES (1236, 319, 'Talon Outline', '#BB9415', 0);
-INSERT INTO colors VALUES (1237, 319, 'Talon Fill', '#EAE13D', 1);
-INSERT INTO colors VALUES (1238, 319, 'Paw Outline', '#B99C1A', 2);
-INSERT INTO colors VALUES (1239, 319, 'Paw Fill', '#EBD379', 3);
-INSERT INTO colors VALUES (1240, 319, 'Paw Pad', '#65423B', 4);
-INSERT INTO colors VALUES (1241, 320, 'Feathered Wing Outline', '#1187B2', 0);
-INSERT INTO colors VALUES (1242, 320, 'Feathered Wing Fill', '#16A4D8', 1);
-INSERT INTO colors VALUES (1243, 320, 'Bat Wing Outline', '#3A3752', 2);
-INSERT INTO colors VALUES (1244, 320, 'Bat Wing Fill', '#5F5D87', 3);
-INSERT INTO colors VALUES (1245, 321, 'Outline', '#7A3333', 0);
-INSERT INTO colors VALUES (1246, 321, 'Fill', '#AA4747', 1);
-INSERT INTO colors VALUES (1247, 321, 'Scales Outline', '#925A5A', 2);
-INSERT INTO colors VALUES (1248, 321, 'Scales Fill', '#E8B4D3', 3);
-INSERT INTO colors VALUES (1249, 321, 'Scale Marks', '#FFB8C6', 4);
-INSERT INTO colors VALUES (1250, 321, 'Tail Puff Outline', '#E1DACA', 5);
-INSERT INTO colors VALUES (1251, 321, 'Tail Puff Fill', '#FFFFFF', 6);
-INSERT INTO colors VALUES (1252, 322, 'Hoof Leg Outline', '#88682A', 0);
-INSERT INTO colors VALUES (1253, 322, 'Hoof Leg Fill', '#C0994E', 1);
-INSERT INTO colors VALUES (1254, 322, 'Hoof Outline', '#2E270F', 2);
-INSERT INTO colors VALUES (1255, 322, 'Hoof Fill', '#563F27', 3);
-INSERT INTO colors VALUES (1256, 322, 'Talon Leg Outline', '#439939', 4);
-INSERT INTO colors VALUES (1257, 322, 'Talon Leg Fill', '#75C76C', 5);
-INSERT INTO colors VALUES (1258, 322, 'Talon Outline', '#D6CE9C', 7);
-INSERT INTO colors VALUES (1259, 322, 'Talon Fill', '#F8F2D0', 8);
-INSERT INTO colors VALUES (1260, 322, 'Talon Leg Scale Marks', '#BCED9F', 6);
-INSERT INTO colors VALUES (1261, 323, 'Outline', '#64A152', 0);
-INSERT INTO colors VALUES (1262, 323, 'Fill', '#B9DF80', 1);
-INSERT INTO colors VALUES (1264, 323, 'Shadow Fill', '#95C66D', 2);
-INSERT INTO colors VALUES (1265, 324, 'Outline', '#D74A4F', 0);
-INSERT INTO colors VALUES (1266, 324, 'Fill 1', '#EE7676', 1);
-INSERT INTO colors VALUES (1267, 325, 'Gradient Top', '#5A2878', 0);
-INSERT INTO colors VALUES (1269, 325, 'Gradient Bottom', '#C7A4E0', 1);
-INSERT INTO colors VALUES (1270, 325, 'Highlight Top', '#C9A5E0', 2);
-INSERT INTO colors VALUES (1271, 325, 'Highlight Bottom', '#EFE4F4', 3);
-INSERT INTO colors VALUES (1272, 326, 'Tree fill 1', '#EB4549', 0);
-INSERT INTO colors VALUES (1273, 326, 'Tree fill 2', '#C93538', 1);
-INSERT INTO colors VALUES (1274, 324, 'Fill 2', '#F19C73', 2);
-INSERT INTO colors VALUES (1275, 327, 'Outline', '#F8AA3D', 0);
-INSERT INTO colors VALUES (1276, 327, 'Fill', '#FECC65', 1);
-INSERT INTO colors VALUES (1277, 327, 'Flower pedals', '#FEFEFE', 2);
-INSERT INTO colors VALUES (1278, 327, 'Flower centers', '#FD9932', 3);
-INSERT INTO colors VALUES (1279, 326, 'Trunk', '#664648', 2);
-INSERT INTO colors VALUES (1280, 326, 'Knot', '#422728', 3);
-INSERT INTO colors VALUES (1281, 328, 'Outline', '#91B4B0', 0);
-INSERT INTO colors VALUES (1282, 328, 'Fill', '#DCF3E9', 1);
-INSERT INTO colors VALUES (1284, 328, 'Shadow Fill', '#BCD8D1', 2);
-INSERT INTO colors VALUES (1285, 329, 'Outline', '#211A32', 0);
-INSERT INTO colors VALUES (1286, 329, 'Main Fill 1 + Gradient End 1', '#3E3860', 1);
-INSERT INTO colors VALUES (1287, 330, 'Gradient Top', '#12595D', 0);
-INSERT INTO colors VALUES (1289, 330, 'Gradient Bottom', '#46B6BA', 1);
-INSERT INTO colors VALUES (1290, 330, 'Highlight Top', '#BAF1DB', 2);
-INSERT INTO colors VALUES (1291, 330, 'Highlight Bottom', '#8ADFD0', 3);
-INSERT INTO colors VALUES (1292, 331, 'Star', '#F1D55F', 0);
-INSERT INTO colors VALUES (1293, 331, 'Note 1', '#F69D40', 1);
-INSERT INTO colors VALUES (1294, 329, 'Main Fill 2', '#292447', 2);
-INSERT INTO colors VALUES (1295, 329, 'Gradient End 2 + Stripes', '#339CAB', 3);
-INSERT INTO colors VALUES (1296, 331, 'Note 2', '#43AB8A', 2);
-INSERT INTO colors VALUES (1297, 331, 'Note 3', '#4498B1', 3);
-INSERT INTO colors VALUES (1298, 331, 'Note 4', '#B485C8', 4);
-INSERT INTO colors VALUES (1299, 331, 'Note 5', '#D35E5E', 5);
-INSERT INTO colors VALUES (1300, 332, 'Outline', '#91B4B0', 0);
-INSERT INTO colors VALUES (1304, 333, 'Outline/Stripe', '#DDB5F9', 0);
-INSERT INTO colors VALUES (1305, 333, 'Inside Fill 1', '#EAD0FA', 2);
-INSERT INTO colors VALUES (1306, 334, 'Gradient Top', '#12595D', 0);
-INSERT INTO colors VALUES (1311, 335, 'Star', '#F1D55F', 0);
-INSERT INTO colors VALUES (1313, 332, 'Fill', '#DCF3E9', 1);
-INSERT INTO colors VALUES (1314, 332, 'Shadow Fill', '#BCD8D1', 2);
-INSERT INTO colors VALUES (1315, 334, 'Gradient Bottom', '#46B6BA', 1);
-INSERT INTO colors VALUES (1316, 334, 'Highlight Top', '#BAF1DB', 2);
-INSERT INTO colors VALUES (1317, 334, 'Highlight Bottom', '#8ADFD0', 3);
-INSERT INTO colors VALUES (1318, 335, 'Note 1', '#F69D40', 1);
-INSERT INTO colors VALUES (1319, 335, 'Note 2', '#43AB8A', 2);
-INSERT INTO colors VALUES (1320, 335, 'Note 3', '#4498B1', 3);
-INSERT INTO colors VALUES (1321, 335, 'Note 4', '#B485C8', 4);
-INSERT INTO colors VALUES (1322, 335, 'Note 5', '#D35E5E', 5);
-INSERT INTO colors VALUES (1323, 333, 'Outside Fill', '#F6F0FB', 1);
-INSERT INTO colors VALUES (1324, 333, 'Inside Fill 2', '#775F9E', 3);
-INSERT INTO colors VALUES (1325, 336, 'Outline', '#661568', 0);
-INSERT INTO colors VALUES (1326, 336, 'Main/Inside Fill', '#961F98', 1);
-INSERT INTO colors VALUES (1327, 336, 'Liner Fill', '#871D89', 2);
-INSERT INTO colors VALUES (1328, 336, 'Liner Stroke', '#3C3160', 3);
-INSERT INTO colors VALUES (1329, 336, 'Button Outline', '#AD9DDC', 4);
-INSERT INTO colors VALUES (1330, 336, 'Button Fill 1', '#EBE7F6', 5);
-INSERT INTO colors VALUES (1331, 336, 'Button Fill 2', '#FFFFFF', 6);
-INSERT INTO colors VALUES (1332, 337, 'Outline', '#50288C', 0);
-INSERT INTO colors VALUES (1333, 337, 'Fill', '#7A32D6', 1);
-INSERT INTO colors VALUES (1334, 338, 'Collar/Band Strap', '#302C46', 0);
-INSERT INTO colors VALUES (1335, 338, 'Collar Bead Fill 1', '#41E8D4', 1);
-INSERT INTO colors VALUES (1336, 338, 'Collar Bead Fill 2', '#87F0E5', 2);
-INSERT INTO colors VALUES (1337, 338, 'Hoof Band Stud Outline', '#AD9DDC', 3);
-INSERT INTO colors VALUES (1338, 338, 'Hoof Band Stud Fill 1', '#EBE7F6', 4);
-INSERT INTO colors VALUES (1339, 338, 'Hoof Band Stud Fill 2', '#FFFFFF', 5);
-INSERT INTO colors VALUES (1340, 338, 'Color Band Fill 1', '#7932D6', 6);
-INSERT INTO colors VALUES (1341, 338, 'Color Band Fill 2', '#8B4ADA', 7);
-INSERT INTO colors VALUES (1342, 338, 'Color Band Fill 3', '#9383E2', 8);
-INSERT INTO colors VALUES (1343, 338, 'Color Band Fill 4', '#AD9CDC', 9);
-INSERT INTO colors VALUES (1344, 338, 'Color Band Fill 5', '#E8E6F9', 10);
-INSERT INTO colors VALUES (1345, 338, 'Color Band Fill 6', '#41E8D4', 11);
-INSERT INTO colors VALUES (1346, 339, 'Headband', '#000000', 0);
-INSERT INTO colors VALUES (1347, 339, 'Stroke', '#2C223E', 1);
-INSERT INTO colors VALUES (1348, 339, 'Fill (75% Opacity)', '#2C223E', 2);
-INSERT INTO colors VALUES (1349, 339, 'Headband Stud Outline', '#AD9DDC', 3);
-INSERT INTO colors VALUES (1350, 339, 'Headband Stud Fill 1', '#EBE7F6', 4);
-INSERT INTO colors VALUES (1351, 339, 'Headband Stud Fill 2', '#FFFFFF', 5);
-INSERT INTO colors VALUES (1352, 340, 'Outline', '#BEC8B8', 0);
-INSERT INTO colors VALUES (1353, 340, 'Fill', '#F0F3EE', 1);
-INSERT INTO colors VALUES (1356, 341, 'Outline', '#E57573', 0);
-INSERT INTO colors VALUES (1357, 341, 'Inside Stroke', '#F8E2D8', 1);
-INSERT INTO colors VALUES (1358, 342, 'Gradient Top', '#562B0C', 0);
-INSERT INTO colors VALUES (1359, 342, 'Gradient Middle', '#994C18', 1);
-INSERT INTO colors VALUES (1360, 342, 'Gradient Bottom', '#F0E3AB', 2);
-INSERT INTO colors VALUES (1365, 341, 'Fill 1', '#EFB69C', 2);
-INSERT INTO colors VALUES (1366, 341, 'Fill 2', '#F6D8C8', 3);
-INSERT INTO colors VALUES (1367, 344, 'Frame Outline', '#543520', 0);
-INSERT INTO colors VALUES (1368, 344, 'Frame Fill', '#79554E', 1);
-INSERT INTO colors VALUES (1369, 344, 'Lens Fill 1 (50% Opacity)', '#80ECEC', 2);
-INSERT INTO colors VALUES (1370, 344, 'Lens Fill 2 (50% Opacity)', '#2CB9C6', 3);
-INSERT INTO colors VALUES (1371, 345, 'Outline', '#172E5D', 0);
-INSERT INTO colors VALUES (1372, 345, 'Fill 1', '#23629C', 1);
-INSERT INTO colors VALUES (1373, 345, 'Fill 2', '#1C5183', 2);
-INSERT INTO colors VALUES (1374, 346, 'Outline', '#A8DADA', 0);
-INSERT INTO colors VALUES (1375, 346, 'Fill', '#D1ECED', 1);
-INSERT INTO colors VALUES (1376, 346, 'Pinstripe', '#FFFFFF', 2);
-INSERT INTO colors VALUES (1377, 347, 'Outline', '#581326', 0);
-INSERT INTO colors VALUES (1378, 347, 'Fill 1', '#A12147', 1);
-INSERT INTO colors VALUES (1379, 347, 'Fill 2', '#831E3C', 2);
-INSERT INTO colors VALUES (1380, 348, 'Outline', '#C2921E', 0);
-INSERT INTO colors VALUES (1381, 348, 'Fill', '#E2B443', 1);
-INSERT INTO colors VALUES (1382, 349, 'Outline', '#AC6534', 0);
-INSERT INTO colors VALUES (1383, 349, 'Fill', '#BF7741', 1);
-INSERT INTO colors VALUES (1384, 38, 'Mane Outline', '#80D940', 5);
-INSERT INTO colors VALUES (1385, 38, 'Mane Fill', '#D6FF58', 6);
-INSERT INTO colors VALUES (1386, 38, 'Eyeball Fill', '#F8FCC6', 7);
-INSERT INTO colors VALUES (1387, 38, 'Iris (no gradient)', '#DF8C37', 8);
-INSERT INTO colors VALUES (1388, 350, 'Outline', '#F99000', 0);
-INSERT INTO colors VALUES (1389, 350, 'Fill', '#FEBC40', 1);
-INSERT INTO colors VALUES (1390, 350, 'Shadow Outline', '#DE8200', 2);
-INSERT INTO colors VALUES (1391, 350, 'Shadow Fill', '#E3A939', 3);
-INSERT INTO colors VALUES (1392, 351, 'Outline', '#A63110', 0);
-INSERT INTO colors VALUES (1393, 351, 'Fill', '#EB5926', 1);
-INSERT INTO colors VALUES (1394, 352, 'Gradient Top', '#0F4D6E', 0);
-INSERT INTO colors VALUES (1396, 352, 'Gradient Bottom', '#2ECCCF', 1);
-INSERT INTO colors VALUES (1399, 353, 'Sun', '#EE7C04', 0);
-INSERT INTO colors VALUES (1400, 353, 'Ray 1', '#FDE065', 1);
-INSERT INTO colors VALUES (1401, 350, 'Marking Outline', '#BABA94', 4);
-INSERT INTO colors VALUES (1402, 350, 'Marking Fill', '#FBFEDE', 5);
-INSERT INTO colors VALUES (1403, 350, 'Shadow Marking Outline', '#A6A682', 6);
-INSERT INTO colors VALUES (1404, 350, 'Shadow Marking Fill', '#E2E5C6', 7);
-INSERT INTO colors VALUES (1405, 351, 'Stripe 1', '#CE3D12', 2);
-INSERT INTO colors VALUES (1406, 351, 'Stripe 2', '#DA4009', 3);
-INSERT INTO colors VALUES (1407, 353, 'Ray 2', '#FBFBDE', 2);
-INSERT INTO colors VALUES (1408, 353, 'Sparkle 1', '#3F9DB0', 3);
-INSERT INTO colors VALUES (1409, 353, 'Sparkle 2', '#A6DCDC', 4);
-INSERT INTO colors VALUES (1410, 354, 'Pure white', '#FFFFFF', 0);
-INSERT INTO colors VALUES (1411, 354, 'Pure black', '#000000', 1);
-INSERT INTO colors VALUES (1412, 354, 'Teeth Outline', '#B0D8E7', 2);
-INSERT INTO colors VALUES (1413, 354, 'Mouth Fill', '#BD1C77', 3);
-INSERT INTO colors VALUES (1414, 354, 'Darker Mouth Fill', '#A41967', 4);
-INSERT INTO colors VALUES (1415, 354, 'Darkest Mouth Fill', '#841555', 5);
-INSERT INTO colors VALUES (1416, 354, 'Tongue', '#F17031', 6);
-INSERT INTO colors VALUES (1417, 354, 'Tongue Dark', '#BE4406', 7);
-INSERT INTO colors VALUES (1418, 355, 'Outline', '#DE9E04', 0);
-INSERT INTO colors VALUES (1419, 355, 'Fill', '#FDD678', 1);
-INSERT INTO colors VALUES (1420, 356, 'Outline', '#7C110E', 0);
-INSERT INTO colors VALUES (1421, 356, 'Fill 1', '#EC1B2E', 1);
-INSERT INTO colors VALUES (1422, 356, 'Fill 2', '#E3CA1B', 2);
-INSERT INTO colors VALUES (1423, 357, 'Outline', '#7D1E59', 0);
-INSERT INTO colors VALUES (1424, 357, 'Fill', '#D2469F', 1);
-INSERT INTO colors VALUES (1431, 358, 'Outline', '#1A1A1A', 0);
-INSERT INTO colors VALUES (1432, 358, 'Fill', '#434343', 1);
-INSERT INTO colors VALUES (1433, 358, 'Pocket Line', '#6C6C6C', 2);
-INSERT INTO colors VALUES (1434, 358, 'Stud Outline', '#9FBEDF', 3);
-INSERT INTO colors VALUES (1435, 358, 'Stud Fill', '#FFFFFF', 4);
-INSERT INTO colors VALUES (1436, 359, 'Outline', '#BC5E02', 0);
-INSERT INTO colors VALUES (1437, 359, 'Fill', '#FD8813', 1);
-INSERT INTO colors VALUES (1438, 359, 'Stripe 1', '#FEF58C', 2);
-INSERT INTO colors VALUES (1439, 359, 'Stripe 2', '#D2469F', 3);
-INSERT INTO colors VALUES (1440, 360, 'Outline', '#1A1A1A', 0);
-INSERT INTO colors VALUES (1441, 360, 'Main Fill', '#434343', 1);
-INSERT INTO colors VALUES (1442, 360, 'Color Fill', '#DD308F', 2);
-INSERT INTO colors VALUES (1443, 361, 'Iris Gradient Top', '#128C7E', 0);
-INSERT INTO colors VALUES (1444, 361, 'Iris Gradient Bottom', '#7EF8D0', 1);
-INSERT INTO colors VALUES (1445, 361, 'Highlight Top', '#D8FDF0', 2);
-INSERT INTO colors VALUES (1446, 361, 'Highlight Bottom', '#96FBDB', 3);
-INSERT INTO colors VALUES (1447, 361, 'Eyebrows', '#000000', 4);
-INSERT INTO colors VALUES (1448, 362, 'Sunburst Red (on Book)', '#EC323F', 0);
-INSERT INTO colors VALUES (1449, 362, 'Sunburst Yellow Outline', '#E1CD1D', 2);
-INSERT INTO colors VALUES (1450, 362, 'Sunburst Yellow Fill', '#FEF58C', 3);
-INSERT INTO colors VALUES (1451, 362, 'Center Outline', '#FD8813', 4);
-INSERT INTO colors VALUES (1452, 362, 'Center Fill 1', '#E3CA1B', 5);
-INSERT INTO colors VALUES (1453, 362, 'Center Fill 2', '#EC323F', 6);
-INSERT INTO colors VALUES (1454, 362, 'Sunburst Red (on Shirt)', '#C91326', 1);
-INSERT INTO colors VALUES (1455, 363, 'Cutie Mark', '#696969', 0);
-INSERT INTO colors VALUES (1456, 364, 'Outline', '#036785', 0);
-INSERT INTO colors VALUES (1457, 364, 'Fill', '#08BAB7', 1);
-INSERT INTO colors VALUES (1458, 354, 'Tear Fill (Opacity 45%)', '#AFC2CF', 8);
-INSERT INTO colors VALUES (1459, 354, 'Tear Outline (Opacity 45%)', '#D9ECFB', 9);
-INSERT INTO colors VALUES (1460, 365, 'Outline', '#C2DBDB', 0);
-INSERT INTO colors VALUES (1461, 365, 'Fill', '#FFFFFF', 1);
-INSERT INTO colors VALUES (1462, 365, 'Foot pads', '#DA80BE', 2);
-INSERT INTO colors VALUES (1463, 366, 'Eyebrow', '#9DB5B2', 0);
-INSERT INTO colors VALUES (1464, 366, 'Eye', '#000000', 1);
-INSERT INTO colors VALUES (1465, 366, 'Highlight', '#FFFFFF', 2);
-INSERT INTO colors VALUES (1466, 367, 'Nose', '#DA80BE', 0);
-INSERT INTO colors VALUES (1467, 367, 'Philtrum', '#799A9A', 1);
-INSERT INTO colors VALUES (1468, 367, 'Mouth', '#526D6D', 2);
-INSERT INTO colors VALUES (1469, 367, 'Whiskers', '#CACACA', 3);
-INSERT INTO colors VALUES (1470, 368, 'Outline', '#E880B0', 0);
-INSERT INTO colors VALUES (1471, 368, 'Fill', '#F5B7D0', 1);
-INSERT INTO colors VALUES (1472, 368, 'Shadow Outline', '#DD6FA4', 2);
-INSERT INTO colors VALUES (1473, 368, 'Shadow Fill', '#E89CBF', 3);
-INSERT INTO colors VALUES (1474, 369, 'Outline', '#D69A2A', 0);
-INSERT INTO colors VALUES (1475, 369, 'Fill', '#EFD472', 1);
-INSERT INTO colors VALUES (1476, 370, 'Gradient Top', '#264D72', 0);
-INSERT INTO colors VALUES (1477, 370, 'Gradient Middle', '#3399DA', 1);
-INSERT INTO colors VALUES (1478, 370, 'Gradient Bottom', '#8DF1EF', 2);
-INSERT INTO colors VALUES (1481, 371, 'Stem & Leaf', '#73A71F', 0);
-INSERT INTO colors VALUES (1482, 371, 'Leaf Stroke', '#304127', 1);
-INSERT INTO colors VALUES (1483, 369, 'Fill 2', '#F4F3AA', 2);
-INSERT INTO colors VALUES (1484, 371, 'Center Fill', '#624430', 2);
-INSERT INTO colors VALUES (1485, 371, 'Center Outline', '#E28B34', 3);
-INSERT INTO colors VALUES (1486, 371, 'Petals', '#F2DB73', 4);
-INSERT INTO colors VALUES (1487, 371, 'Rays', '#B67136', 5);
+INSERT INTO colors VALUES
+(55, 17, 'Outline', '#A46BBD', 0),
+(57, 17, 'Fill', '#CC9CDF', 1),
+(58, 17, 'Shadow Outline', '#9156A9', 2),
+(59, 17, 'Shadow Fill', '#BF89D1', 3),
+(60, 18, 'Outline and Inner Lines', '#132248', 0),
+(61, 18, 'Fill', '#243870', 1),
+(62, 18, 'Stripe 1', '#652D87', 2),
+(63, 18, 'Stripe 2', '#EA428B', 3),
+(64, 19, 'Gradient Top', '#1E093C', 0),
+(65, 19, 'Gradient Bottom', '#662F89', 1),
+(66, 19, 'Highlight Top', '#8D5DA4', 2),
+(67, 19, 'Highlight Bottom', '#CCB2D3', 3),
+(68, 20, 'Large Star', '#EA428B', 0),
+(69, 20, 'Small Stars', '#FFFFFF', 1),
+(70, 21, 'Aura', '#EA428B', 0),
+(71, 22, 'Outline', '#7F859F', 0),
+(72, 22, 'Fill', '#B5BBC7', 1),
+(73, 22, 'Shadow Fill', '#ADB1BE', 2),
+(74, 23, 'Outline', '#D6CD6B', 0),
+(75, 23, 'Fill', '#E7E6A7', 1),
+(76, 24, 'Gradient Top', '#D1973D', 0),
+(77, 24, 'Gradient Bottom/Highlight Top', '#D9E985', 1),
+(79, 24, 'Highlight Bottom', '#E1EBB0', 2),
+(80, 25, 'Bubble', '#CECEEA', 0),
+(81, 25, 'Bubble Highlight', '#D5E9F0', 1),
+(82, 26, 'Outline', '#3EA679', 0),
+(83, 26, 'Fill', '#8DEBCD', 1),
+(84, 26, 'Shadow Fill', '#6ACDA9', 2),
+(85, 27, 'Outline 1', '#7AD9D7', 0),
+(86, 27, 'Fill 1', '#EBEBEB', 2),
+(87, 27, 'Outline 2', '#55C1C1', 1),
+(88, 27, 'Fill 2', '#A5D7D7', 3),
+(89, 28, 'Gradient Top', '#D56315', 0),
+(90, 28, 'Gradient Bottom', '#E3C752', 1),
+(91, 28, 'Highlight Top', '#EAEA6B', 2),
+(92, 28, 'Highlight Bottom', '#ECECCF', 3),
+(93, 29, 'Aura', '#C49159', 0),
+(94, 30, 'Outline', '#AF821A', 0),
+(95, 30, 'Fill', '#E1B046', 1),
+(96, 30, 'Highlight', '#F2D297', 2),
+(97, 30, 'Strings', '#50B18C', 3),
+(111, 35, 'Outline', '#81CFBD', 0),
+(112, 35, 'Fill', '#A1FFE9', 1),
+(114, 35, 'Shadow Fill', '#90E4D0', 2),
+(115, 36, 'Outline', '#80D940', 0),
+(116, 36, 'Fill', '#D6FF58', 1),
+(117, 37, 'Gradient Top', '#A84E0D', 0),
+(119, 37, 'Gradient Bottom', '#EE8B2D', 1),
+(120, 37, 'Highlight Top', '#F2AA75', 2),
+(121, 37, 'Highlight Bottom', '#F5B98D', 3),
+(122, 38, 'Main Star Fills', '#FFFFFF', 0),
+(123, 38, 'Small Star Fills', '#D78F4F', 1),
+(124, 37, 'Sclera', '#F9FFCB', 4),
+(125, 38, 'Head Outline', '#76C1AD', 2),
+(126, 38, 'Head Fill', '#BEFFF0', 3),
+(127, 38, 'Head Shadow', '#92DECF', 4),
+(128, 39, 'Aura', '#E69A44', 0),
+(129, 40, 'Outline', '#1D4555', 0),
+(130, 40, 'Fill', '#2F7A98', 1),
+(131, 40, 'Shadow Outline', '#203A45', 2),
+(132, 40, 'Shadow Fill', '#2D5B6C', 3),
+(133, 41, 'Outline', '#5E5A5A', 0),
+(134, 41, 'Fill 1', '#B0B0B0', 1),
+(135, 42, 'Gradient Top', '#2F8CB0', 0),
+(137, 42, 'Gradient Bottom', '#ADD7E6', 1),
+(140, 43, 'Stars', '#EED255', 0),
+(142, 41, 'Fill 2', '#797979', 2),
+(143, 44, 'Outline', '#9F1D3A', 0),
+(144, 44, 'Main Fill', '#D44350', 1),
+(145, 44, 'Thick Stripe', '#B1374F', 2),
+(146, 44, 'Thin Stripe', '#E49355', 3),
+(147, 45, 'Aura', '#F7DF53', 0),
+(148, 46, 'Frame Outline', '#919DA4', 0),
+(149, 46, 'Frame Fill', '#FFFFFF', 1),
+(150, 46, 'Lens Top (85% Opacity)', '#260F1C', 2),
+(151, 46, 'Lens Bottom (85% Opacity)', '#C06588', 3),
+(152, 47, 'Main Outline', '#4596B0', 0),
+(153, 47, 'Fill', '#B1EAFD', 2),
+(156, 48, 'Outline', '#A3413E', 0),
+(157, 48, 'Main Outer Fill', '#EB7F51', 1),
+(158, 49, 'Gradient Top', '#F5973C', 0),
+(160, 49, 'Gradient Bottom', '#F5B27D', 1),
+(161, 49, 'Highlight Top', '#FADBAB', 2),
+(162, 49, 'Highlight Bottom', '#FBEDD4', 3),
+(165, 47, 'Inside Outlines (Ear, horn)', '#57ACD4', 1),
+(166, 48, 'Outer Fill 1', '#E9D271', 2),
+(167, 48, 'Outer Fill 2', '#FFAC89', 3),
+(168, 48, 'Outer Fill 3 (at front)', '#EA5E5E', 4),
+(169, 48, 'Inside Outline Stroke', '#95346D', 5),
+(170, 48, 'Inside Fill Gradient Top', '#CE53B9', 6),
+(171, 48, 'Inside Fill Gradient Bottom', '#88387D', 7),
+(172, 48, 'Inside Fill Line', '#75326F', 8),
+(173, 51, 'Outline', '#1E1A24', 0),
+(174, 51, 'Fill 1', '#5D4D68', 1),
+(175, 51, 'Fill 2', '#3B2D45', 2),
+(176, 51, 'Stud Fill 1', '#FFFCCB', 3),
+(177, 51, 'Stud Fill 2', '#F4D05B', 4),
+(178, 52, 'Outline', '#E8AD34', 0),
+(179, 52, 'Fill 1', '#F5CF5D', 1),
+(180, 52, 'Fill 2', '#F9E457', 2),
+(181, 52, 'Fill 3', '#FAE356', 3),
+(182, 52, 'Seat fill', '#FEFBAA', 4),
+(183, 52, 'Seat Decoration Fill 1', '#8F35B4', 5),
+(184, 52, 'Seat Decoration Fill 2', '#AC5DCB', 6),
+(185, 52, 'Stud Fill 1', '#FFFCCB', 7),
+(186, 52, 'Stud Fill 2', '#F4D05B', 8),
+(187, 53, 'Aura', '#F6EF95', 0),
+(188, 49, 'Eyeshadow', '#564C9A', 4),
+(189, 54, 'Outline', '#EF6F2F', 0),
+(190, 54, 'Fill', '#FABA62', 1),
+(192, 54, 'Shadow Fill', '#F0AA52', 2),
+(193, 55, 'Outline', '#E7D462', 0),
+(194, 55, 'Fill', '#FAF5AB', 1),
+(195, 56, 'Gradient Top', '#287916', 0),
+(197, 56, 'Gradient Bottom', '#61BA4E', 1),
+(198, 56, 'Highlight Top', '#78D863', 2),
+(199, 56, 'Highlight Bottom', '#CAECC4', 3),
+(200, 57, 'Apples', '#EC3F41', 0),
+(201, 57, 'Leaves', '#6BB944', 1),
+(202, 58, 'Outline', '#B2884D', 0),
+(203, 58, 'Fill', '#CA9A56', 1),
+(204, 59, 'Outline', '#E880B0', 0),
+(205, 59, 'Fill', '#F5B7D0', 1),
+(206, 59, 'Shadow Outline', '#DD6FA4', 2),
+(207, 59, 'Shadow Fill', '#E89CBF', 3),
+(208, 60, 'Outline', '#BB1C76', 0),
+(209, 60, 'Fill', '#EB458B', 1),
+(210, 61, 'Gradient Top', '#196E91', 0),
+(212, 61, 'Gradient Bottom', '#7DD0F1', 1),
+(213, 61, 'Highlight Top', '#9CDCF4', 2),
+(214, 61, 'Highlight Bottom', '#DCF3FD', 3),
+(215, 62, 'Color 1', '#7ED0F2', 0),
+(216, 62, 'Color 2', '#FAF5AB', 1),
+(217, 63, 'Outline', '#E9D461', 0),
+(218, 63, 'Fill', '#FAF5AB', 1),
+(220, 63, 'Shadow Fill', '#F3E488', 2),
+(221, 64, 'Outline', '#E581B1', 0),
+(222, 64, 'Fill', '#F3B5CF', 1),
+(223, 65, 'Gradient Top', '#02534D', 0),
+(225, 65, 'Gradient Bottom', '#02ACA4', 1),
+(226, 65, 'Highlight Top', '#3CBEB7', 2),
+(227, 65, 'Highlight Bottom', '#84D2D4', 3),
+(228, 66, 'Wings', '#F3B5CF', 0),
+(229, 66, 'Body', '#69C8C3', 1),
+(230, 67, 'Outline', '#6BABDA', 0),
+(231, 67, 'Fill', '#9BDBF5', 1),
+(233, 67, 'Shadow Fill', '#88C4E9', 2),
+(234, 68, 'Outline/Blue Fill', '#1B98D1', 0),
+(235, 68, 'Red Fill', '#EC4141', 1),
+(236, 69, 'Gradient Top', '#580D36', 0),
+(238, 69, 'Gradient Bottom', '#BC1D75', 1),
+(239, 69, 'Highlight Top', '#D9539D', 2),
+(240, 69, 'Highlight Bottom', '#FCB6DF', 3),
+(241, 70, 'Cloud Outline/Blue Streak', '#1B98D1', 0),
+(242, 70, 'Red Streak', '#EC4141', 2),
+(243, 68, 'Orange Fill', '#EF7135', 2),
+(244, 68, 'Yellow Fill', '#FAF5AB', 3),
+(245, 68, 'Green Fill', '#5FBB4E', 4),
+(246, 68, 'Purple Fill', '#632E86', 5),
+(247, 70, 'Yellow Streak', '#FDE85F', 3),
+(248, 71, 'Outline', '#BDC1C2', 0),
+(249, 71, 'Fill', '#EAEEF0', 1),
+(251, 71, 'Shadow Fill', '#DFE4E3', 2),
+(252, 72, 'Outline/Gradient Dark Fill', '#4A1767', 0),
+(253, 72, 'Solid Fill', '#5E50A0', 2),
+(254, 73, 'Gradient Top', '#20476B', 0),
+(256, 73, 'Gradient Bottom', '#3977B8', 1),
+(257, 73, 'Highlight Top', '#5693CF', 2),
+(258, 73, 'Highlight Bottom', '#76ADE5', 3),
+(259, 74, 'Strokes', '#2696CB', 0),
+(260, 74, 'Fill', '#7DD1F5', 1),
+(263, 72, 'Gradient Light Fill', '#794897', 1),
+(264, 73, 'Eyeshadow', '#B8E1F0', 4),
+(265, 75, 'Purple Outline', '#985E9F', 0),
+(266, 75, 'Purple Fill', '#C290C6', 1),
+(267, 75, 'Green Outline', '#96CE7D', 2),
+(268, 75, 'Green Fill', '#D5EBAD', 3),
+(269, 76, 'Outline', '#2E992E', 0),
+(270, 76, 'Fill', '#50C356', 1),
+(271, 77, 'Gradient Top', '#277915', 0),
+(273, 77, 'Gradient Bottom', '#5EBA4A', 1),
+(274, 77, 'Highlight Top', '#77D963', 2),
+(275, 77, 'Highlight Bottom', '#CAECC3', 3),
+(276, 78, 'Outline', '#DCF188', 0),
+(277, 78, 'Fill', '#AFD95E', 1),
+(278, 75, 'Soles', '#AF72B6', 4),
+(279, 79, 'Teeth', '#94B5B3', 0),
+(280, 79, 'Tongue', '#F997C8', 1),
+(281, 79, 'Mouth', '#973365', 2),
+(282, 80, 'Aura', '#82C1DC', 0),
+(283, 81, 'Outline', '#457BBB', 0),
+(284, 81, 'Fill', '#81C3EA', 1),
+(285, 81, 'Shadow Fill', '#7ABAE5', 2),
+(286, 82, 'Dark Outline', '#303296', 0),
+(287, 82, 'Dark Fill', '#393CB0', 1),
+(288, 82, 'Light Outline', '#9E9FDC', 2),
+(289, 82, 'Light Fill', '#CED0EC', 3),
+(290, 83, 'Gradient Top', '#1F205D', 0),
+(291, 83, 'Gradient Bottom', '#526BCB', 1),
+(292, 83, 'Highlight Top', '#AAAAF8', 2),
+(293, 83, 'Highlight Bottom', '#DBDCFC', 3),
+(294, 84, 'Base', '#DBBF0F', 0),
+(295, 84, 'Base Highlight', '#FBEB98', 1),
+(296, 84, 'Glass', '#BFEAF8', 2),
+(297, 84, 'Sand', '#D4CF97', 3),
+(298, 85, 'Outline', '#BEB789', 0),
+(299, 85, 'Fill', '#F9FAED', 1),
+(301, 85, 'Shadow Fill', '#E0DEC1', 2),
+(302, 86, 'Outline', '#DE83CD', 0),
+(303, 86, 'Fill', '#F8AAE5', 1),
+(304, 87, 'Gradient Top', '#015B56', 0),
+(306, 87, 'Gradient Bottom', '#6BF0ED', 1),
+(307, 87, 'Highlight Top', '#B1F0F4', 2),
+(308, 87, 'Highlight Bottom', '#D5F9FB', 3),
+(309, 88, 'Stars', '#B6E0F7', 0),
+(311, 89, 'Outline', '#EFBD3B', 0),
+(312, 89, 'Fill', '#FBFC63', 1),
+(314, 89, 'Shadow Fill', '#F7E253', 2),
+(315, 90, 'Outline', '#3695B5', 0),
+(316, 90, 'Fill 1', '#68B5CF', 1),
+(317, 91, 'Gradient Top', '#580D36', 0),
+(319, 91, 'Gradient Bottom', '#BC1D75', 1),
+(320, 91, 'Highlight Top', '#D9539D', 2),
+(321, 91, 'Highlight Bottom', '#FCB6DF', 3),
+(322, 92, 'Blue Outline', '#63B5CB', 0),
+(323, 92, 'Blue Fill', '#A2D7E1', 1),
+(324, 90, 'Fill 2', '#7BCBE1', 2),
+(325, 92, 'Green Outline', '#96DC51', 2),
+(326, 92, 'Green Fill', '#BAEF85', 3),
+(327, 93, 'Outline', '#ACC849', 0),
+(328, 93, 'Fill', '#D2EA91', 1),
+(329, 93, 'Shadow Outline', '#A4C040', 2),
+(330, 93, 'Shadow Fill', '#BDD56C', 3),
+(331, 94, 'Outline', '#ADD9D5', 0),
+(332, 94, 'Fill', '#FFFFFF', 1),
+(333, 95, 'Gradient Top', '#EC565C', 0),
+(335, 95, 'Gradient Bottom', '#F49A43', 1),
+(338, 96, 'Plate Fill 1', '#9AA596', 0),
+(339, 96, 'Plate Fill 2', '#A2AF9D', 1),
+(340, 96, 'Plate Fill 3', '#B2BEAC', 2),
+(341, 96, 'Pie FIll 1', '#B68145', 3),
+(342, 96, 'Pie FIll 2', '#D29752', 4),
+(343, 96, 'Pie FIll 3', '#E4A95A', 5),
+(344, 96, 'Pie FIll 4', '#FBB963', 6),
+(345, 97, 'Outline', '#F58950', 0),
+(346, 97, 'Fill', '#FABA63', 1),
+(347, 97, 'Apples', '#EB575A', 2),
+(348, 97, 'Stems', '#7CA42A', 3),
+(349, 97, 'Frill Outline', '#ADD9D5', 4),
+(350, 97, 'Frill Fill', '#FFFFFF', 5),
+(351, 98, 'Outline', '#3DBAC9', 0),
+(352, 98, 'Fill', '#8BD8DF', 1),
+(354, 98, 'Shadow Fill', '#6ECAD5', 2),
+(355, 99, 'Outline', '#A6E9F9', 0),
+(356, 99, 'Fill', '#FFFFFF', 1),
+(357, 100, 'Gradient Top', '#320141', 0),
+(359, 100, 'Gradient Bottom', '#F990D1', 1),
+(360, 100, 'Highlight Top', '#D53AB6', 2),
+(361, 100, 'Highlight Bottom', '#FDCAE9', 3),
+(362, 101, 'Air Wave', '#FCFF98', 0),
+(363, 101, 'Horseshoe', '#3797C7', 1),
+(364, 99, 'Blue Fill', '#D4F3FC', 2),
+(365, 101, 'Horseshoe Dots', '#FFFFFF', 2),
+(366, 102, 'Outline', '#D8971C', 0),
+(367, 102, 'Fill', '#F3E365', 1),
+(368, 102, 'Shadow Outline', '#C18719', 2),
+(369, 102, 'Shadow Fill', '#DACB5A', 3),
+(370, 103, 'Outline', '#AC240B', 0),
+(371, 103, 'Fill 1', '#FA8A24', 1),
+(372, 104, 'Gradient Top', '#B74729', 0),
+(374, 104, 'Gradient Bottom', '#F48F66', 1),
+(377, 105, 'Outline', '#AA4300', 0),
+(378, 105, 'Fill 1', '#E37B00', 1),
+(379, 103, 'Fill 2', '#DF5C0A', 2),
+(380, 105, 'Fill 2', '#FDBF36', 2),
+(381, 104, 'Eyeshadow', '#7FA2C3', 2),
+(382, 106, 'Outline', '#75C0C8', 0),
+(383, 106, 'Fill', '#DEF2F0', 1),
+(384, 107, 'Outline', '#552E66', 0),
+(385, 107, 'Fill 1', '#743E8A', 1),
+(386, 107, 'Fill 2', '#A775BE', 2),
+(387, 107, 'Shadow Outline', '#4A295A', 3),
+(388, 107, 'Shadow Fill 1', '#69377D', 4),
+(389, 107, 'Shadow Fill 2', '#9568AA', 5),
+(390, 58, 'Hair Tie', '#EC3F41', 2),
+(392, 70, 'Cloud Fill', '#FFFFFF', 1),
+(394, 108, 'Outline', '#6BABDA', 0),
+(395, 108, 'Fill', '#9CDBF5', 1),
+(397, 108, 'Shadow Fill', '#89C7EB', 2),
+(398, 109, 'Outline', '#52574C', 0),
+(399, 109, 'Fill 1', '#8E9783', 1),
+(400, 110, 'Gradient Top', '#CB9932', 0),
+(402, 110, 'Gradient Bottom', '#FCEBA5', 1),
+(405, 111, 'Helmet Fill 1', '#48412C', 0),
+(406, 111, 'Helmet Fill 2', '#7C704C', 1),
+(407, 109, 'Fill 2', '#777B6C', 2),
+(408, 109, 'Shadow Fill', '#585B52', 3),
+(409, 110, 'Eyebrows', '#53564D', 2),
+(410, 112, 'Outline', '#324649', 0),
+(411, 112, 'Fill 1', '#507276', 1),
+(412, 112, 'Fill 2', '#A9AE82', 2),
+(413, 112, 'Sleeve Patch', '#BEC99D', 3),
+(414, 112, 'Zipper Outline', '#77ACA8', 4),
+(415, 112, 'Zipper Fill', '#C2DFE3', 5),
+(416, 112, 'Fur Outline', '#41585B', 6),
+(417, 112, 'Fur Fill', '#AAAE82', 7),
+(418, 113, 'Outline', '#D7D78C', 0),
+(419, 113, 'Fill', '#FAFCEE', 1),
+(420, 114, 'Outline', '#8E6E21', 0),
+(421, 114, 'Fill 1', '#E2D23B', 1),
+(422, 114, 'Fill 2', '#EFE89A', 2),
+(423, 111, 'Helmet Fill 3', '#C1AE73', 2),
+(424, 111, 'Helmet Shadow Fill', '#1E1D11', 3),
+(425, 111, 'Strap Fill', '#629672', 4),
+(426, 111, 'Strap Holes', '#35462A', 5),
+(427, 111, 'Wing Outline', '#D3D8A0', 6),
+(428, 111, 'Wing Fill', '#F7F8DC', 7),
+(429, 111, 'Goggles Rim', '#313131', 8),
+(430, 111, 'Goggles Fill 1', '#3AD0F5', 9),
+(431, 111, 'Goggles Fill 2', '#D7F5FB', 10),
+(432, 111, 'Goggles Fill 3 (At rim)', '#2BA9C4', 11),
+(433, 115, 'Outline', '#A3C6BC', 0),
+(434, 115, 'Fill', '#FFFFFF', 1),
+(435, 116, 'Outline', '#FD80C6', 0),
+(436, 116, 'Fill', '#FFC3E5', 1),
+(437, 116, 'Shadow Outline', '#F673B8', 2),
+(438, 116, 'Shadow Fill', '#FFB0D8', 3),
+(439, 117, 'Outline', '#533251', 0),
+(440, 117, 'Fill', '#955495', 1),
+(441, 118, 'Gradient Top', '#681D46', 0),
+(443, 118, 'Gradient Bottom', '#CD2F89', 1),
+(444, 118, 'Highlight Top', '#EB64B1', 2),
+(445, 118, 'Highlight Bottom', '#FFBFE7', 3),
+(446, 119, 'Candy 1', '#FD81BA', 0),
+(447, 119, 'Candy 2', '#FEAD89', 1),
+(448, 119, 'Candy 3', '#FFD77C', 2),
+(449, 119, 'Cup Top', '#7FC9C7', 4),
+(450, 119, 'Cup Fill 1', '#A2E3BE', 5),
+(451, 119, 'Cup Fill 2', '#BFF7C6', 6),
+(452, 119, 'Cupcake Fill 1', '#C477C6', 7),
+(453, 119, 'Cupcake Fill 2', '#E0A5E0', 8),
+(454, 119, 'Cherry Fill', '#FD696D', 9),
+(455, 119, 'Cherry Stroke', '#C8454F', 10),
+(456, 119, 'Cherry Stem', '#57334E', 11),
+(457, 119, 'Candy Highlight', '#FFFFFF', 3),
+(458, 120, 'Magic', '#47C0CC', 0),
+(459, 121, 'Outline 1', '#13A9A9', 0),
+(460, 121, 'Fill 1', '#0FDAD9', 1),
+(461, 121, 'Outline 2', '#89CBC8', 2),
+(462, 121, 'Fill 2', '#D1FEEC', 3),
+(463, 122, 'Outline', '#D9C574', 0),
+(464, 122, 'Fill', '#F3F49B', 1),
+(465, 122, 'Shadow Outline', '#D5C167', 2),
+(466, 122, 'Shadow Fill', '#E6DC7F', 3),
+(467, 123, 'Outline', '#C52452', 0),
+(468, 123, 'Fill', '#F5415F', 1),
+(469, 124, 'Gradient Top', '#ED585A', 0),
+(471, 124, 'Gradient Bottom', '#FBA93F', 1),
+(472, 124, 'Highlight Top', '#FCC657', 2),
+(473, 124, 'Highlight Bottom', '#FEE27A', 3),
+(476, 126, 'Outline', '#F37033', 0),
+(477, 126, 'Fill', '#F9B764', 1),
+(478, 126, 'Shadow Outline', '#EA6B2B', 2),
+(479, 126, 'Shadow Fill', '#F0AA56', 3),
+(480, 127, 'Outline', '#BD1F77', 0),
+(481, 127, 'Fill', '#BF5D93', 1),
+(482, 128, 'Gradient Top', '#482562', 0),
+(484, 128, 'Gradient Bottom', '#B28EC0', 1),
+(485, 128, 'Highlight Top', '#C5A6D0', 2),
+(486, 128, 'Highlight Bottom', '#E7CEE4', 3),
+(489, 130, 'Outline', '#C72965', 0),
+(490, 130, 'Fill 1', '#F35F91', 1),
+(491, 130, 'Fill 2', '#EC438C', 2),
+(492, 131, 'Outline', '#CEC8D1', 0),
+(493, 131, 'Fill', '#EFEDED', 1),
+(495, 131, 'Shadow Fill', '#E0DDE3', 2),
+(496, 132, 'Outline', '#785B88', 0),
+(497, 132, 'Fill 1', '#B28DC1', 1),
+(498, 133, 'Gradient Top', '#629558', 0),
+(500, 133, 'Gradient Bottom', '#AED79E', 1),
+(501, 133, 'Highlight Top', '#CBE4BE', 2),
+(502, 133, 'Highlight Bottom', '#F4F8ED', 3),
+(505, 132, 'Fill 2', '#F6B8D2', 2),
+(506, 135, 'Outline', '#2F5173', 0),
+(507, 135, 'Fill', '#4C7DAF', 1),
+(509, 135, 'Shadow Fill', '#406C93', 2),
+(510, 136, 'Outline', '#9BAAE8', 0),
+(511, 136, 'Fill 1', '#E1E6FA', 1),
+(512, 137, 'Gradient Top', '#1378AB', 0),
+(513, 137, 'Gradient Middle', '#47CFFF', 1),
+(514, 137, 'Gradient Bottom', '#6EDCFF', 2),
+(515, 137, 'Highlight Top', '#90E2FF', 3),
+(516, 137, 'Highlight Bottom', '#D5F3FF', 4),
+(517, 138, 'Moon 1', '#385E83', 0),
+(518, 138, 'Moon 2', '#FDFDCB', 1),
+(519, 138, 'Feather Center', '#D6E4FF', 2),
+(520, 138, 'Feather Fill 1', '#97ABEB', 3),
+(521, 138, 'Feather Fill 2', '#6A8AD2', 4),
+(522, 138, 'Feather Fill 3', '#44608D', 5),
+(523, 136, 'Fill 2', '#C4CFF4', 2),
+(524, 136, 'Fill 3', '#FFFFFF', 3),
+(525, 139, 'Outline', '#BFD1E1', 0),
+(526, 139, 'Fill', '#FFFFFF', 1),
+(527, 139, 'Shadow Outline', '#B2C7D2', 2),
+(528, 139, 'Shadow Fill', '#D6E3E5', 3),
+(529, 140, 'Outline', '#A6BFD8', 0),
+(530, 140, 'Fill 1', '#F2FBFC', 1),
+(531, 141, 'Gradient Top', '#2B4E99', 0),
+(532, 141, 'Gradient Middle', '#6E9FFC', 1),
+(533, 141, 'Gradient Bottom', '#B0EBFF', 2),
+(536, 142, 'Fill', '#87B1E6', 0),
+(537, 142, 'Inner Strokes', '#BEDBFA', 1),
+(538, 140, 'Fill 2', '#FFFFFF', 2),
+(539, 143, 'Outline', '#603860', 0),
+(540, 143, 'Fill', '#9B579B', 1),
+(541, 144, 'Outline', '#75C3D3', 0),
+(542, 144, 'Fill', '#C7F0F2', 1),
+(544, 144, 'Shadow Fill', '#A7DEE6', 2),
+(545, 145, 'Outline', '#366395', 0),
+(546, 145, 'Fill 1', '#4886CE', 1),
+(547, 146, 'Gradient Top', '#2B4E99', 0),
+(548, 146, 'Gradient Middle', '#6E9FFC', 1),
+(549, 146, 'Gradient Bottom', '#B0EBFF', 2),
+(552, 147, 'Balloon Fill 1', '#EB5095', 0),
+(553, 147, 'Balloon Fill 2', '#F36AAB', 1),
+(554, 145, 'Fill 2', '#62A8E1', 2),
+(555, 147, 'Balloon Fill 3', '#F88FC2', 2),
+(556, 147, 'Balloon Fill 4', '#FED3E9', 3),
+(557, 147, 'Confetti 1', '#7F6DAF', 4),
+(558, 147, 'Confetti 2', '#FDAE75', 5),
+(559, 147, 'Confetti 3', '#FCD269', 6),
+(560, 147, 'Confetti 4', '#FFFFFF', 7),
+(613, 164, 'Outline', '#C394D7', 0),
+(614, 164, 'Fill', '#F2C7F8', 1),
+(616, 164, 'Shadow Fill', '#DDB1EB', 2),
+(617, 165, 'Outline', '#562875', 0),
+(618, 165, 'Fill 1', '#69328F', 1),
+(619, 166, 'Gradient Top', '#241A7C', 0),
+(621, 166, 'Gradient Bottom', '#98A2EF', 1),
+(622, 166, 'Highlight Top', '#8587EC', 2),
+(623, 166, 'Highlight Bottom', '#B9BAFC', 3),
+(624, 167, 'Star Fill 1', '#B765B8', 0),
+(625, 167, 'Star Fill 2', '#FFFFF0', 1),
+(626, 165, 'Fill 2', '#8640B4', 2),
+(627, 165, 'Fill 3', '#9BE9D8', 3),
+(628, 167, 'Trail Fill 1', '#08BAB7', 2),
+(629, 167, 'Trail Fill 2', '#9BE9D8', 3),
+(630, 168, 'Aura', '#9BE9D8', 0),
+(631, 169, 'Outline', '#E9CDA4', 0),
+(632, 169, 'Fill', '#FBF4DF', 1),
+(633, 169, 'Shadow Outline', '#DEC098', 2),
+(634, 169, 'Shadow Fill', '#EFE2CA', 3),
+(635, 170, 'Outline', '#45C8D5', 0),
+(636, 170, 'Fill 1', '#96E5EF', 1),
+(637, 171, 'Gradient Top', '#26A9BF', 0),
+(639, 171, 'Gradient Bottom', '#D7FFFA', 1),
+(640, 171, 'Highlight Top', '#C3F4FD', 2),
+(641, 171, 'Highlight Bottom', '#EFFCFC', 3),
+(642, 172, 'Hat Fill 1', '#D39CD1', 0),
+(643, 172, 'Hat Fill 2', '#B674BC', 1),
+(644, 170, 'Fill 2', '#CCF9F9', 2),
+(645, 173, 'Collar Outline', '#985C9D', 0),
+(646, 173, 'Collar Fill 1', '#D39CD1', 1),
+(647, 173, 'Collar Fill 2', '#FBFBFB', 2),
+(648, 173, 'Collar Shadow Fill', '#B674BC', 3),
+(649, 173, 'Tie Outline', '#E64E07', 4),
+(650, 173, 'Tie Fill', '#FF7D74', 5),
+(651, 174, 'Main Outline', '#E64E07', 0),
+(652, 174, 'Main Fill 1', '#FF7D74', 1),
+(653, 174, 'Main Fill 2', '#FFA085', 2),
+(654, 174, 'Blossom Outline', '#6C3F6B', 3),
+(655, 174, 'Blossom Outside Fill', '#985C9D', 4),
+(656, 174, 'Blossom Inside Fill 1', '#955E9C', 5),
+(657, 174, 'Blossom Inside Fill 2', '#D39CD1', 6),
+(658, 172, 'Hat Fill 3', '#FBFBFB', 2),
+(659, 172, 'Plume Fill', '#FF5555', 3),
+(660, 172, 'Plume Shadow', '#F24C4C', 4),
+(661, 175, 'Outline', '#151730', 0),
+(662, 175, 'Fill', '#38407C', 1),
+(663, 175, 'Shadow Fill', '#30376C', 2),
+(664, 176, 'Outline', '#8952E1', 0),
+(665, 176, 'Edge Fill (50% opacity)', '#473CC7', 1),
+(666, 176, 'Main Fill', '#1C4FC2', 2),
+(667, 177, 'Outline', '#9791F1', 0),
+(668, 177, 'Fill', '#C4BFF9', 1),
+(669, 177, 'Shadow Outline', '#7E79CB', 2),
+(670, 177, 'Shadow Fill', '#9F9DCE', 3),
+(671, 178, 'Outline', '#9F9DCE', 0),
+(672, 178, 'Fill', '#000000', 1),
+(673, 178, 'Moon', '#FFFFFF', 2),
+(674, 179, 'Dark Side of the Moon', '#000000', 0),
+(675, 179, 'Moon', '#FFFFFF', 1),
+(676, 176, 'Stars', '#FFFFFF', 3),
+(677, 180, 'Gradient Top', '#0E6183', 0),
+(678, 180, 'Gradient Bottom', '#06A79F', 1),
+(679, 180, 'Highlight Top', '#61E9D1', 2),
+(680, 180, 'Highlight Bottom', '#9AFCFD', 3),
+(681, 180, 'Eyeshadow', '#7696ED', 4),
+(683, 182, 'Outline', '#FA9EDE', 0),
+(684, 182, 'Fill', '#FFD9FB', 1),
+(685, 182, 'Shadow Outline', '#F591D7', 2),
+(686, 182, 'Shadow Fill', '#FDBBEC', 3),
+(687, 183, 'Outline', '#6B5584', 0),
+(688, 183, 'Fill', '#9775B8', 1),
+(689, 184, 'Gradient Top', '#584239', 0),
+(690, 184, 'Gradient Middle', '#A87A66', 1),
+(691, 184, 'Gradient Bottom', '#DFB77D', 2),
+(692, 184, 'Highlight Top', '#CEA06F', 3),
+(693, 184, 'Highlight Bottom', '#E2C6AB', 4),
+(694, 185, 'Button 1 main', '#9776B8', 0),
+(695, 185, 'Button 1 holes', '#43324C', 1),
+(696, 186, 'Outline', '#5EC3EF', 0),
+(697, 186, 'Main fill', '#C3F6FF', 1),
+(698, 186, 'Stripes', '#7CD7F9', 2),
+(699, 186, 'Dots', '#FBFBFB', 3),
+(700, 187, 'Outline', '#F6DDA5', 0),
+(701, 187, 'Fill', '#FFF9D8', 1),
+(702, 185, 'Button 1 rim', '#72528C', 2),
+(703, 185, 'Button 2 main', '#FFF8D8', 3),
+(704, 185, 'Button 2 holes', '#8E734D', 4),
+(705, 185, 'Button 2 rim', '#EFDEAD', 5),
+(706, 185, 'Button 3 main', '#C4F5FF', 6),
+(707, 185, 'Button 3 holes', '#2F6E87', 7),
+(708, 185, 'Button 3 rim', '#6ABFE3', 8),
+(709, 188, 'Aura', '#D9539D', 0),
+(710, 189, 'Aura', '#E8DA9C', 0),
+(711, 190, 'Aura', '#6BF0ED', 0),
+(712, 191, 'Outline', '#338FCC', 0),
+(713, 191, 'Fill', '#6CB2EA', 1),
+(715, 191, 'Shadow Fill', '#5DAAE3', 2),
+(716, 192, 'Outline', '#92CDF4', 0),
+(717, 192, 'Fill 1', '#B8E0F9', 1),
+(718, 193, 'Gradient Top', '#3A2851', 0),
+(719, 193, 'Gradient Middle', '#6E4386', 1),
+(720, 193, 'Gradient Bottom', '#E0A0D3', 2),
+(723, 194, 'Wand Star Outline', '#B7E0FA', 0),
+(724, 194, 'Wand Star Fill', '#71A2CD', 1),
+(725, 192, 'Fill 2', '#D8EEFB', 2),
+(726, 194, 'Wand Handle Fill 1', '#6EA3D3', 2),
+(727, 194, 'Wand Handle Fill 2', '#ADCCEA', 3),
+(728, 194, 'Trail Fill', '#82DEF4', 4),
+(729, 194, 'Trail Stars', '#FFFFFF', 5),
+(730, 195, 'Outline', '#7B5ACE', 0),
+(731, 195, 'Fill', '#9C82DA', 1),
+(732, 195, 'Stars 1', '#FAF99D', 2),
+(733, 195, 'Stars 2', '#82DDF4', 3),
+(734, 195, 'Stars 3', '#B7E0F9', 4),
+(735, 195, 'Stars 4', '#D7ECFA', 5),
+(736, 196, 'Outline', '#2C84A0', 0),
+(737, 196, 'Center Fill', '#BFEFFA', 1),
+(738, 196, 'Fill 1', '#32A2BA', 2),
+(739, 196, 'Fill 2', '#3ABDDC', 3),
+(740, 196, 'Fill 3', '#82DDF4', 4),
+(741, 196, 'Fill 4', '#A7F8E0', 5),
+(742, 196, 'Fill 5', '#CDF1FB', 6),
+(743, 197, 'Aura', '#E3B2DA', 0),
+(744, 198, 'Outline', '#161515', 0),
+(745, 198, 'Fill', '#5E5E5E', 1),
+(746, 198, 'Horn Inner Strokes', '#B7B7B7', 2),
+(747, 198, 'Eye Stroke', '#6E0303', 3),
+(748, 198, 'Eye Fill', '#DA0101', 4),
+(749, 199, 'Outline', '#161515', 0),
+(750, 199, 'Fill 1', '#434343', 1),
+(751, 199, 'Fill 2', '#5E5E5E', 2),
+(752, 199, 'Fill 3', '#8C8C8C', 3),
+(753, 200, 'Outline', '#161515', 0),
+(754, 200, 'Fill', '#333333', 1),
+(755, 200, 'Red Outline', '#6E0303', 2),
+(756, 200, 'Red Fill 1', '#B10101', 3),
+(757, 200, 'Red Fill 2', '#DA0101', 4),
+(758, 200, 'Red Fill 3', '#FD080B', 5),
+(759, 201, 'Outline', '#6E0303', 0),
+(760, 201, 'Center Fill', '#FCB3B3', 1),
+(761, 201, 'Fill 1', '#B10101', 2),
+(762, 201, 'Fill 2', '#FD080B', 3),
+(763, 201, 'Fill 3', '#FE9292', 4),
+(764, 202, 'Magic Aura/Eye Aura', '#FD080B', 0),
+(765, 202, 'Iris', '#B10101', 1),
+(767, 203, 'Outline', '#161515', 0),
+(768, 203, 'Fill 1', '#434343', 1),
+(769, 203, 'Fill 2', '#333333', 2),
+(770, 203, 'Highlight', '#B7B7B7', 3),
+(771, 204, 'Outline', '#EECFE1', 0),
+(772, 204, 'Fill', '#FEF7FB', 1),
+(774, 204, 'Shadow Fill', '#F2E6E9', 2),
+(775, 205, 'Gradient Outline 1', '#3D9DC4', 0),
+(776, 205, 'Gradient Outline 2', '#48BAA9', 1),
+(777, 206, 'Gradient Top', '#5F2F7A', 0),
+(779, 206, 'Gradient Bottom', '#E68CE3', 1),
+(780, 206, 'Highlight Top', '#CB7DD0', 2),
+(781, 206, 'Highlight Bottom', '#D8A0D9', 3),
+(782, 207, 'Sun Center', '#FDF5B7', 0),
+(783, 207, 'Sun Edge', '#FDD68F', 1),
+(784, 208, 'Aura', '#FEFD96', 0),
+(785, 207, 'Sun Rays', '#FAC18A', 2),
+(786, 205, 'Gradient Outline 3', '#7A9BDE', 2),
+(787, 205, 'Gradient Outline 4', '#D085D0', 3),
+(788, 205, 'Gradient Dark Fill 1', '#44B1CE', 4),
+(789, 205, 'Gradient Light Fill 1', '#8CDEE4', 5),
+(790, 205, 'Gradient Dark Fill 2', '#50CDA5', 6),
+(791, 205, 'Gradient Light Fill 2', '#CBF5C0', 7),
+(792, 205, 'Gradient Dark Fill 3', '#80A4EE', 8),
+(793, 205, 'Gradient Light Fill 3', '#AEDEFC', 9),
+(794, 205, 'Gradient Dark Fill 4', '#E599F2', 10),
+(795, 205, 'Gradient Light Fill 4', '#F2C4FD', 11),
+(796, 209, 'Outline & Trim', '#E9BF6E', 0),
+(797, 209, 'Fill', '#FFE398', 1),
+(798, 209, 'Gem Outline', '#6E3B7F', 2),
+(799, 209, 'Gem Center Fill', '#C671D0', 3),
+(800, 209, 'Gem Shine', '#DE9FE2', 4),
+(801, 209, 'Gem Saturated Fill', '#BE62C8', 5),
+(802, 209, 'Gem Main Fill', '#9E5DB5', 6),
+(803, 209, 'Gem Dark Fill', '#824997', 7),
+(804, 210, 'Outline', '#EECFE1', 0),
+(805, 210, 'Fill', '#FFEFBC', 1),
+(806, 210, 'Shadow Fill', '#F5E1C7', 2),
+(807, 211, 'Coat Outline', '#A32141', 0),
+(808, 211, 'Coat Fill', '#E64A57', 1),
+(809, 211, 'Shadow Coat Outline', '#9E164C', 2),
+(810, 211, 'Shadow Coat Fill', '#D0335C', 3),
+(811, 211, 'Hooves Outline', '#EACA79', 4),
+(812, 211, 'Hooves Fill', '#FCF8AC', 5),
+(813, 211, 'Shadow Hooves Outline', '#CF8D74', 6),
+(814, 211, 'Shadow Hooves Fill', '#DFAD96', 7),
+(815, 212, 'Outline', '#F08E43', 0),
+(816, 212, 'Fill', '#FBBA62', 1),
+(817, 213, 'Gradient top', '#267A14', 0),
+(818, 213, 'Gradient bottom', '#5FBB4B', 1),
+(819, 214, 'Freckles', '#FCF6AD', 0),
+(820, 215, 'Yoke outline', '#876235', 0),
+(821, 215, 'Yoke fill 1', '#C8954D', 1),
+(822, 215, 'Post fill 1', '#A2AF9D', 3),
+(823, 215, 'Post fill 2', '#919E8D', 4),
+(824, 215, 'Post fill 3', '#C2D9C4', 5),
+(825, 215, 'Yoke fill 2', '#AE8241', 2),
+(826, 216, 'Apple fill 1', '#87D557', 0),
+(827, 216, 'Apple fill 2', '#B6F677', 1),
+(828, 216, 'Apple fill 3', '#5EBA4A', 2),
+(829, 216, 'Seeds', '#AD8341', 3),
+(830, 216, 'Apple stem 1', '#DAFC87', 4),
+(831, 216, 'Apple stem 2 (=Apple fill 1)', '#87D557', 5),
+(832, 216, 'Apple leaf 1 (=Apple fill 3)', '#5EBA4A', 6),
+(833, 216, 'Apple leaf 2', '#309438', 7),
+(834, 217, 'Outline', '#DBBD5D', 0),
+(835, 217, 'Fill', '#F9F8D3', 1),
+(836, 217, 'Shadow Outline', '#C4A953', 2),
+(837, 217, 'Shadow Fill', '#E0DEBE', 3),
+(838, 218, 'Outline', '#9D2544', 0),
+(839, 218, 'Fill', '#E0535D', 1),
+(840, 219, 'Gradient Top', '#200B3E', 0),
+(842, 219, 'Gradient Bottom', '#622E87', 1),
+(843, 219, 'Highlight Top', '#8B5DA4', 2),
+(844, 219, 'Highlight Bottom', '#CBB2D3', 3),
+(845, 220, 'Color 1', '#663E64', 0),
+(846, 220, 'Color 2', '#C670B7', 1),
+(847, 218, 'Stripe 1', '#78549A', 2),
+(848, 218, 'Stripe 2', '#AD90D0', 3),
+(849, 221, 'Outline', '#1D1C2B', 0),
+(850, 221, 'Fill 1', '#454163', 1),
+(851, 221, 'Fill 2', '#34324C', 2),
+(852, 221, 'Shadow Fill 1', '#3D3B56', 3),
+(853, 221, 'Shadow Fill 2', '#2F2D44', 4),
+(854, 222, 'Outline', '#CF6995', 0),
+(855, 222, 'Fill', '#FCA1CB', 1),
+(856, 223, 'Frame', '#181723', 0),
+(857, 223, 'Frame Highlight', '#565175', 1),
+(858, 223, 'Pin Outline', '#B5B2D1', 2),
+(859, 223, 'Pin Fill', '#F0F2F8', 3),
+(860, 223, 'Tape Outline', '#87BACB', 4),
+(861, 223, 'Tape Fill', '#F8F9F1', 5),
+(862, 223, 'Lens ( 80% to 25% Opacity)', '#BEDAF4', 6),
+(863, 224, 'Aura', '#E3BFD0', 0),
+(864, 215, 'Post fill 4 (screwtop on back)', '#6E7969', 6),
+(865, 225, 'Outline', '#A985D3', 0),
+(866, 225, 'Fill', '#CDB8E6', 1),
+(868, 225, 'Shadow Fill', '#BFA3DF', 2),
+(869, 226, 'Outline', '#D3B76A', 0),
+(870, 226, 'Fill 1', '#F7F0A6', 1),
+(871, 227, 'Gradient Top', '#C79835', 0),
+(873, 227, 'Gradient Bottom', '#FCF89A', 1),
+(878, 226, 'Fill 2', '#F8F8D5', 2),
+(879, 229, 'Outline', '#D76CA0', 0),
+(880, 229, 'Fill', '#E8A3C5', 1),
+(882, 229, 'Shadow Fill', '#E48CB7', 2),
+(883, 230, 'Outline', '#A3376E', 0),
+(884, 230, 'Fill 1', '#C24D87', 1),
+(885, 231, 'Gradient Top', '#78952C', 0),
+(887, 231, 'Gradient Bottom', '#D3EAAB', 1),
+(888, 231, 'Highlight Top', '#C6F2A6', 2),
+(889, 231, 'Highlight Bottom', '#EFFBD5', 3),
+(892, 230, 'Fill 2', '#CF78A4', 2),
+(893, 227, 'Highlight Top', '#FAFAB4', 2),
+(894, 227, 'Highlight Bottom', '#FDFDDB', 3),
+(895, 233, 'Shield Outline', '#AB3266', 0),
+(896, 233, 'Shield Fill 1: AB Mane Fill', '#F5415F', 1),
+(897, 233, 'Shield Fill 2: SB Mane Fill', '#F6B8D2', 2),
+(898, 233, 'Shield Fill 3: Sc Mane Fill', '#BF5D93', 3),
+(899, 233, 'Apple Fill', '#A02699', 4),
+(900, 233, 'Heart Fill', '#FD41F8', 5),
+(901, 234, 'Outline', '#845223', 0),
+(902, 234, 'Fill', '#C58E4F', 1),
+(903, 234, 'Shadow Outline', '#855C37', 2),
+(904, 234, 'Shadow Fill', '#BE9061', 3),
+(905, 235, 'Outline', '#613213', 0),
+(906, 235, 'Fill 1', '#C44933', 1),
+(907, 236, 'Gradient Top', '#B34236', 0),
+(909, 236, 'Gradient Bottom', '#FF814D', 1),
+(910, 236, 'Highlight Top', '#FE9863', 2),
+(911, 236, 'Highlight Bottom', '#FFEAD1', 3),
+(914, 235, 'Fill 2', '#E47743', 2),
+(915, 238, 'Hat Outline', '#7A3F3F', 0),
+(916, 238, 'Hat Fill 1', '#FAC443', 1),
+(917, 238, 'Hat Fill 2', '#FBFBB4', 2),
+(918, 238, 'Hat Fill 3', '#F35356', 3),
+(919, 238, 'Hat Fill 4', '#FFFFFF', 4),
+(920, 238, 'Propeller Outline', '#63A214', 5),
+(921, 238, 'Propeller Fill', '#A3E34C', 6),
+(922, 238, 'Rotor Outline', '#746DC3', 7),
+(923, 238, 'Rotor Fill', '#BEBDF7', 8),
+(925, 240, 'Outline', '#EF60A1', 0),
+(926, 240, 'Fill', '#FFB2D3', 1),
+(928, 240, 'Shadow Fill', '#FA92BE', 2),
+(929, 241, 'Outline', '#7A2682', 0),
+(930, 241, 'Fill 1', '#B739A6', 1),
+(931, 242, 'Gradient Top', '#128B8F', 0),
+(933, 242, 'Gradient Bottom', '#4AB1C4', 1),
+(934, 242, 'Highlight Top', '#8EEDF5', 2),
+(935, 242, 'Highlight Bottom', '#DDEFF5', 3),
+(936, 243, 'Body Fill', '#FCEECF', 0),
+(937, 243, 'Body Shadow Fill', '#EBCE96', 1),
+(938, 241, 'Fill 2', '#A031A8', 2),
+(939, 241, 'Band', '#51C8B8', 3),
+(940, 243, 'Eye', '#49341D', 2),
+(941, 243, 'Nose', '#7A4A52', 3),
+(942, 243, 'Quills Fill', '#996448', 4),
+(943, 243, 'Quills Highlight 1', '#F1C2A7', 5),
+(944, 243, 'Quills Highlight 2', '#7E4B3E', 6),
+(945, 244, 'Shield Outline', '#AB3266', 0),
+(946, 244, 'Shield Fill 1: AB Mane Fill', '#F5415F', 1),
+(947, 244, 'Shield Fill 2: SB Mane Fill', '#F6B8D2', 2),
+(948, 244, 'Shield Fill 3: Sc Mane Fill', '#BF5D93', 3),
+(949, 244, 'Wing Fill', '#A02699', 4),
+(950, 244, 'Lightning Bolt Fill', '#FD41F8', 5),
+(951, 245, 'Shield Outline', '#AB3266', 0),
+(952, 245, 'Shield Fill 1: AB Mane Fill', '#F5415F', 1),
+(953, 245, 'Shield Fill 2: SB Mane Fill', '#F6B8D2', 2),
+(954, 245, 'Shield Fill 3: Sc Mane Fill', '#BF5D93', 3),
+(955, 245, 'Star Fill', '#A02699', 4),
+(956, 245, 'Eight Note Fill', '#FD41F8', 5),
+(957, 246, 'Aura', '#C4FBB0', 0),
+(991, 257, 'Outline', '#9C9AAD', 0),
+(992, 257, 'Fill', '#FEFEFE', 1),
+(993, 257, 'Shadow Outline', '#9291A3', 2),
+(994, 257, 'Shadow Fill', '#F1F1F1', 3),
+(995, 258, 'Outline', '#101C2F', 0),
+(996, 258, 'Fill', '#325394', 1),
+(997, 259, 'Gradient Top', '#1A4859', 1),
+(999, 259, 'Gradient Bottom', '#63D1E9', 2),
+(1000, 259, 'Highlight Top', '#3CBDF1', 3),
+(1001, 259, 'Highlight Bottom', '#B1E8F2', 4),
+(1002, 260, 'Stars', '#6698CA', 0),
+(1003, 260, 'Shield Outline', '#111B26', 1),
+(1004, 257, 'Hoof Outline', '#2D3558', 4),
+(1005, 257, 'Hoof Fill', '#43558C', 5),
+(1006, 257, 'Shadow Hoof Outline', '#233250', 6),
+(1007, 257, 'Shadow Hoof Fill', '#3F5085', 7),
+(1008, 258, 'Stripe 1', '#57C4DD', 2),
+(1009, 258, 'Stripe 2', '#243871', 3),
+(1010, 259, 'Eyeball', '#E8F8F9', 0),
+(1011, 260, 'Shield Fill', '#243871', 2),
+(1012, 260, 'Shield Star Pattern', '#ED6C9C', 3),
+(1013, 261, 'Aura (Same as Twilight''s)', '#EA428B', 0),
+(1014, 262, 'Outline', '#9CBDDB', 0),
+(1015, 262, 'Fill', '#E6EFFC', 1),
+(1017, 262, 'Shadow Fill', '#D7E3F4', 2),
+(1018, 263, 'Outline', '#2864BC', 0),
+(1019, 263, 'Fill 1', '#3DA9FF', 1),
+(1020, 264, 'Gradient Top', '#FF8D38', 0),
+(1022, 264, 'Gradient Bottom', '#F6DF58', 1),
+(1023, 264, 'Highlight Top', '#F9E98C', 2),
+(1024, 264, 'Highlight Bottom', '#FCF1BD', 3),
+(1025, 265, 'Pen Nib Outline', '#C4AA1D', 0),
+(1026, 265, 'Pen Nib Fill', '#FCDF58', 1),
+(1027, 263, 'Fill 2', '#94D4FF', 2),
+(1028, 265, 'Node Fill', '#3DA9FF', 2),
+(1029, 265, 'Path Fill', '#000000', 3),
+(1030, 266, 'Aura', '#FCDF58', 0),
+(1031, 267, 'Outline', '#AC6600', 0),
+(1032, 267, 'Fill', '#FFB240', 1),
+(1033, 267, 'Shadow Outline', '#9D5700', 2),
+(1034, 267, 'Shadow Fill', '#F7A731', 3),
+(1035, 268, 'Outline', '#251100', 0),
+(1036, 268, 'Fill', '#683A00', 1),
+(1037, 269, 'Gradient Top', '#275D00', 0),
+(1039, 269, 'Gradient Bottom', '#8CEA4D', 1),
+(1042, 270, 'Crust', '#744126', 0),
+(1043, 270, 'Bread', '#E1D4AC', 1),
+(1044, 271, 'Outline', '#9C8300', 0),
+(1045, 271, 'Fill', '#FFBE39', 1),
+(1046, 272, 'Frame', '#000000', 0),
+(1047, 270, 'Crust spots', '#BE916D', 2),
+(1048, 270, 'Bread spots', '#8E7A50', 3),
+(1049, 270, 'Grill marks', '#25150D', 4),
+(1050, 270, 'Cheese', '#FFFF13', 5),
+(1051, 270, 'Toasting Gradient (0 to 85%)', '#000000', 6),
+(1078, 281, 'Outline', '#778282', 0),
+(1079, 281, 'Fill', '#C2CDCD', 1),
+(1081, 281, 'Shadow Fill', '#A1ADAD', 2),
+(1082, 282, 'Main Outline', '#2C3838', 0),
+(1083, 282, 'Inner Outline', '#405252', 1),
+(1084, 283, 'Gradient Top', '#713A9D', 0),
+(1086, 283, 'Gradient Bottom', '#B792DD', 1),
+(1087, 283, 'Highlight Top', '#B795E9', 2),
+(1088, 283, 'Highlight Bottom', '#EDE6F4', 3),
+(1089, 284, 'Color 1', '#9D8CB0', 0),
+(1090, 284, 'Color 2', '#88799C', 1),
+(1091, 282, 'FIll 1', '#607878', 2),
+(1092, 282, 'Fill 2', '#819B93', 3),
+(1093, 285, 'Outline', '#545173', 0),
+(1094, 285, 'Fill', '#9495B9', 1),
+(1096, 285, 'Shadow Fill', '#77769B', 2),
+(1097, 286, 'Outline', '#6B7B7E', 0),
+(1098, 286, 'Fill', '#C7CECF', 1),
+(1099, 287, 'Gradient Top', '#9AA41C', 0),
+(1101, 287, 'Gradient Bottom', '#DDE261', 1),
+(1102, 287, 'Highlight Top', '#F2EE86', 2),
+(1103, 287, 'Highlight Bottom', '#FBFADF', 3),
+(1104, 288, 'Lime Fill 1', '#619623', 0),
+(1105, 288, 'Lime Fill 2', '#90BA40', 1),
+(1106, 288, 'Lime Fill 3', '#DDEA79', 2),
+(1107, 288, 'Stone Fill 1', '#FEFEFE', 3),
+(1108, 288, 'Stone Fill 2', '#CCCED2', 4),
+(1109, 289, 'Outline', '#8A8995', 0),
+(1110, 289, 'Fill', '#B8B7BE', 1),
+(1111, 289, 'Shadow Outline', '#7B7C83', 2),
+(1112, 289, 'Shadow Fill', '#A4A4A8', 3),
+(1113, 290, 'Outline', '#554373', 0),
+(1114, 290, 'Fill', '#9885B7', 1),
+(1115, 291, 'Gradient Top', '#196E5D', 0),
+(1117, 291, 'Gradient Bottom', '#99EAD7', 1),
+(1118, 291, 'Highlight Top', '#ADDEDF', 2),
+(1119, 291, 'Highlight Bottom', '#DFF1F2', 3),
+(1120, 292, 'Outline', '#395B6E', 0),
+(1121, 292, 'Fill', '#53829F', 1),
+(1122, 291, 'Eyeshadow (Same as mane fill)', '#9885B7', 4),
+(1123, 292, 'Shadow Outline', '#355063', 2),
+(1124, 292, 'Shadow Fill', '#4B748F', 3),
+(1125, 292, 'Belt', '#3B4144', 4),
+(1126, 293, 'Outline', '#8A5838', 0),
+(1127, 293, 'Fill', '#C39D4D', 1),
+(1128, 293, 'Shadow Outline', '#9E6E41', 2),
+(1129, 293, 'Shadow Fill', '#C0974D', 3),
+(1130, 294, 'Outline', '#666666', 0),
+(1131, 294, 'Fill 1', '#989898', 1),
+(1132, 295, 'Gradient Top', '#B48A25', 0),
+(1134, 295, 'Gradient Bottom', '#FAE695', 1),
+(1137, 296, 'Handle Outline', '#602A1D', 0),
+(1138, 296, 'Handle Fill', '#924623', 1),
+(1139, 294, 'Fill 2', '#CCCCCC', 2),
+(1140, 296, 'Pickaxe Outline', '#646D6D', 2),
+(1141, 296, 'Pickaxe Fill', '#849492', 3),
+(1142, 297, 'Hat/Tie Outline', '#232323', 0),
+(1143, 297, 'Hat/Tie Fill', '#404040', 1),
+(1144, 297, 'Collar Outline', '#656565', 2),
+(1145, 297, 'Collar Fill/Hat Fill 2', '#CCCCCC', 3),
+(1146, 298, 'Outline', '#A9A9A7', 0),
+(1147, 298, 'Fill', '#D8DDEA', 1),
+(1149, 298, 'Shadow Fill', '#C1C5C9', 2),
+(1150, 299, 'Outline', '#223937', 0),
+(1151, 299, 'Fill', '#508383', 1),
+(1152, 300, 'Gradient Top', '#218691', 0),
+(1154, 300, 'Gradient Bottom', '#91CFE1', 1),
+(1155, 300, 'Highlight Top', '#A3EBEB', 2),
+(1156, 300, 'Highlight Bottom', '#EBFAF8', 3),
+(1157, 301, 'Rock Fill 1', '#85B7B9', 0),
+(1158, 301, 'Rock Fill 2', '#A4D0D4', 1),
+(1159, 301, 'Rock Fill 3', '#BCE3E1', 2),
+(1160, 301, 'Cracks', '#1C484C', 3),
+(1161, 302, 'Frame/Chain Outline', '#D2AB0F', 0),
+(1162, 302, 'Chain Fill', '#EED33B', 1),
+(1163, 302, 'Lens Fill 1 (75% Opacity)', '#87D1E7', 2),
+(1164, 302, 'Lens Fill 2 (75% Opacity)', '#A0DAF0', 3),
+(1165, 303, 'Collar Outline', '#000000', 0),
+(1166, 303, 'Collar Fill 1', '#343434', 1),
+(1167, 303, 'Collar Fill 2', '#FFFFFF', 2),
+(1168, 303, 'Pendant Outline', '#D2AB0F', 3),
+(1169, 303, 'Pendant Fill 1', '#EED33B', 4),
+(1170, 303, 'Pendant Fill 2', '#54BEBA', 5),
+(1171, 303, 'Collar Shadow Fill 1', '#252525', 6),
+(1172, 303, 'Collar Shadow Fill 2', '#C0C0C0', 7),
+(1173, 304, 'Fill 1', '#638081', 0),
+(1174, 304, 'Fill 2', '#3A4A4D', 1),
+(1175, 305, 'Top Light Fill', '#B6C8CB', 0),
+(1176, 305, 'Top Medium Fill', '#9AB0B7', 1),
+(1177, 305, 'Front Light Fill', '#698D95', 3),
+(1178, 305, 'Front Medium Fill', '#547176', 4),
+(1179, 305, 'Front Dark Fill', '#42585E', 5),
+(1180, 305, 'Medium Details', '#476168', 8),
+(1181, 305, 'Dark Details', '#26383B', 9),
+(1182, 305, 'Light Details', '#7C949A', 7),
+(1183, 305, 'Top Dark Fill', '#85A2A7', 2),
+(1184, 305, 'Bottom Fill', '#30474B', 6),
+(1185, 305, 'Very Dark Details', '#192425', 10),
+(1186, 306, 'Outline', '#BEB205', 0),
+(1187, 306, 'Fill', '#F8EA62', 1),
+(1188, 306, 'Shadow Outline', '#A89E0E', 2),
+(1189, 306, 'Shadow Fill', '#DDCE52', 3),
+(1190, 307, 'Outline', '#AA4401', 0),
+(1191, 307, 'Fill 1', '#ED7B00', 1),
+(1192, 308, 'Gradient Top', '#422302', 0),
+(1194, 308, 'Gradient Bottom', '#CF6E03', 1),
+(1195, 308, 'Highlight Top', '#D36E02', 2),
+(1196, 308, 'Highlight Bottom', '#FACC83', 3),
+(1197, 309, 'Outline', '#AA4401', 0),
+(1198, 309, 'Fill 1', '#ED7B00', 1),
+(1199, 307, 'Fill 2', '#FBBE33', 2),
+(1202, 308, 'Eyelid Highlight', '#FEFEAE', 4),
+(1203, 309, 'Fill 2', '#FBBE33', 2),
+(1204, 309, 'Fill 3', '#F8EA62', 3),
+(1205, 310, 'Outline', '#37B5B4', 0),
+(1206, 310, 'Fill', '#8BEAD5', 1),
+(1207, 310, 'Shadow Outline', '#4CBDBE', 2),
+(1208, 310, 'Shadow Fill', '#79DCD0', 3),
+(1209, 311, 'Outline', '#CF7314', 0),
+(1210, 311, 'Fill 1', '#F6AC05', 1),
+(1211, 312, 'Gradient Top', '#A65A26', 0),
+(1212, 312, 'Gradient Middle', '#EB8F24', 1),
+(1213, 312, 'Gradient Bottom', '#FDAD35', 2),
+(1216, 313, 'Lightning', '#FFFFFF', 0),
+(1217, 313, 'Side Stars', '#FDE687', 1),
+(1218, 311, 'Fill 2', '#F5D758', 2),
+(1219, 313, 'Middle Star', '#FAF99D', 2),
+(1220, 314, 'Outline', '#6E6956', 0),
+(1221, 314, 'Fill', '#ACA793', 1),
+(1222, 314, 'Beard/Eyebrow Outline', '#E1DACA', 2),
+(1223, 314, 'Beard/Eyebrow Fill', '#FFFFFF', 3),
+(1224, 314, 'Ear inside', '#E7B4D5', 4),
+(1225, 314, 'Mane Outline', '#000000', 5),
+(1226, 314, 'Mane Fill', '#252525', 6),
+(1227, 315, 'Outline', '#D4CD9D', 0),
+(1228, 315, 'Fill', '#F7F4D0', 1),
+(1229, 316, 'Sclera', '#EAE13D', 0),
+(1230, 316, 'Iris/Pupil', '#D53338', 1),
+(1231, 317, 'Antler Fill', '#F7F3D3', 0),
+(1232, 317, 'Horn Outline', '#7DB6D5', 1),
+(1233, 317, 'Horn Fill', '#CAF3F2', 2),
+(1234, 318, 'Stroke', '#321F1A', 0),
+(1235, 318, 'Fill', '#68413D', 1),
+(1236, 319, 'Talon Outline', '#BB9415', 0),
+(1237, 319, 'Talon Fill', '#EAE13D', 1),
+(1238, 319, 'Paw Outline', '#B99C1A', 2),
+(1239, 319, 'Paw Fill', '#EBD379', 3),
+(1240, 319, 'Paw Pad', '#65423B', 4),
+(1241, 320, 'Feathered Wing Outline', '#1187B2', 0),
+(1242, 320, 'Feathered Wing Fill', '#16A4D8', 1),
+(1243, 320, 'Bat Wing Outline', '#3A3752', 2),
+(1244, 320, 'Bat Wing Fill', '#5F5D87', 3),
+(1245, 321, 'Outline', '#7A3333', 0),
+(1246, 321, 'Fill', '#AA4747', 1),
+(1247, 321, 'Scales Outline', '#925A5A', 2),
+(1248, 321, 'Scales Fill', '#E8B4D3', 3),
+(1249, 321, 'Scale Marks', '#FFB8C6', 4),
+(1250, 321, 'Tail Puff Outline', '#E1DACA', 5),
+(1251, 321, 'Tail Puff Fill', '#FFFFFF', 6),
+(1252, 322, 'Hoof Leg Outline', '#88682A', 0),
+(1253, 322, 'Hoof Leg Fill', '#C0994E', 1),
+(1254, 322, 'Hoof Outline', '#2E270F', 2),
+(1255, 322, 'Hoof Fill', '#563F27', 3),
+(1256, 322, 'Talon Leg Outline', '#439939', 4),
+(1257, 322, 'Talon Leg Fill', '#75C76C', 5),
+(1258, 322, 'Talon Outline', '#D6CE9C', 7),
+(1259, 322, 'Talon Fill', '#F8F2D0', 8),
+(1260, 322, 'Talon Leg Scale Marks', '#BCED9F', 6),
+(1261, 323, 'Outline', '#64A152', 0),
+(1262, 323, 'Fill', '#B9DF80', 1),
+(1264, 323, 'Shadow Fill', '#95C66D', 2),
+(1265, 324, 'Outline', '#D74A4F', 0),
+(1266, 324, 'Fill 1', '#EE7676', 1),
+(1267, 325, 'Gradient Top', '#5A2878', 0),
+(1269, 325, 'Gradient Bottom', '#C7A4E0', 1),
+(1270, 325, 'Highlight Top', '#C9A5E0', 2),
+(1271, 325, 'Highlight Bottom', '#EFE4F4', 3),
+(1272, 326, 'Tree fill 1', '#EB4549', 0),
+(1273, 326, 'Tree fill 2', '#C93538', 1),
+(1274, 324, 'Fill 2', '#F19C73', 2),
+(1275, 327, 'Outline', '#F8AA3D', 0),
+(1276, 327, 'Fill', '#FECC65', 1),
+(1277, 327, 'Flower pedals', '#FEFEFE', 2),
+(1278, 327, 'Flower centers', '#FD9932', 3),
+(1279, 326, 'Trunk', '#664648', 2),
+(1280, 326, 'Knot', '#422728', 3),
+(1281, 328, 'Outline', '#91B4B0', 0),
+(1282, 328, 'Fill', '#DCF3E9', 1),
+(1284, 328, 'Shadow Fill', '#BCD8D1', 2),
+(1285, 329, 'Outline', '#211A32', 0),
+(1286, 329, 'Main Fill 1 + Gradient End 1', '#3E3860', 1),
+(1287, 330, 'Gradient Top', '#12595D', 0),
+(1289, 330, 'Gradient Bottom', '#46B6BA', 1),
+(1290, 330, 'Highlight Top', '#BAF1DB', 2),
+(1291, 330, 'Highlight Bottom', '#8ADFD0', 3),
+(1292, 331, 'Star', '#F1D55F', 0),
+(1293, 331, 'Note 1', '#F69D40', 1),
+(1294, 329, 'Main Fill 2', '#292447', 2),
+(1295, 329, 'Gradient End 2 + Stripes', '#339CAB', 3),
+(1296, 331, 'Note 2', '#43AB8A', 2),
+(1297, 331, 'Note 3', '#4498B1', 3),
+(1298, 331, 'Note 4', '#B485C8', 4),
+(1299, 331, 'Note 5', '#D35E5E', 5),
+(1300, 332, 'Outline', '#91B4B0', 0),
+(1304, 333, 'Outline/Stripe', '#DDB5F9', 0),
+(1305, 333, 'Inside Fill 1', '#EAD0FA', 2),
+(1306, 334, 'Gradient Top', '#12595D', 0),
+(1311, 335, 'Star', '#F1D55F', 0),
+(1313, 332, 'Fill', '#DCF3E9', 1),
+(1314, 332, 'Shadow Fill', '#BCD8D1', 2),
+(1315, 334, 'Gradient Bottom', '#46B6BA', 1),
+(1316, 334, 'Highlight Top', '#BAF1DB', 2),
+(1317, 334, 'Highlight Bottom', '#8ADFD0', 3),
+(1318, 335, 'Note 1', '#F69D40', 1),
+(1319, 335, 'Note 2', '#43AB8A', 2),
+(1320, 335, 'Note 3', '#4498B1', 3),
+(1321, 335, 'Note 4', '#B485C8', 4),
+(1322, 335, 'Note 5', '#D35E5E', 5),
+(1323, 333, 'Outside Fill', '#F6F0FB', 1),
+(1324, 333, 'Inside Fill 2', '#775F9E', 3),
+(1325, 336, 'Outline', '#661568', 0),
+(1326, 336, 'Main/Inside Fill', '#961F98', 1),
+(1327, 336, 'Liner Fill', '#871D89', 2),
+(1328, 336, 'Liner Stroke', '#3C3160', 3),
+(1329, 336, 'Button Outline', '#AD9DDC', 4),
+(1330, 336, 'Button Fill 1', '#EBE7F6', 5),
+(1331, 336, 'Button Fill 2', '#FFFFFF', 6),
+(1332, 337, 'Outline', '#50288C', 0),
+(1333, 337, 'Fill', '#7A32D6', 1),
+(1334, 338, 'Collar/Band Strap', '#302C46', 0),
+(1335, 338, 'Collar Bead Fill 1', '#41E8D4', 1),
+(1336, 338, 'Collar Bead Fill 2', '#87F0E5', 2),
+(1337, 338, 'Hoof Band Stud Outline', '#AD9DDC', 3),
+(1338, 338, 'Hoof Band Stud Fill 1', '#EBE7F6', 4),
+(1339, 338, 'Hoof Band Stud Fill 2', '#FFFFFF', 5),
+(1340, 338, 'Color Band Fill 1', '#7932D6', 6),
+(1341, 338, 'Color Band Fill 2', '#8B4ADA', 7),
+(1342, 338, 'Color Band Fill 3', '#9383E2', 8),
+(1343, 338, 'Color Band Fill 4', '#AD9CDC', 9),
+(1344, 338, 'Color Band Fill 5', '#E8E6F9', 10),
+(1345, 338, 'Color Band Fill 6', '#41E8D4', 11),
+(1346, 339, 'Headband', '#000000', 0),
+(1347, 339, 'Stroke', '#2C223E', 1),
+(1348, 339, 'Fill (75% Opacity)', '#2C223E', 2),
+(1349, 339, 'Headband Stud Outline', '#AD9DDC', 3),
+(1350, 339, 'Headband Stud Fill 1', '#EBE7F6', 4),
+(1351, 339, 'Headband Stud Fill 2', '#FFFFFF', 5),
+(1352, 340, 'Outline', '#BEC8B8', 0),
+(1353, 340, 'Fill', '#F0F3EE', 1),
+(1356, 341, 'Outline', '#E57573', 0),
+(1357, 341, 'Inside Stroke', '#F8E2D8', 1),
+(1358, 342, 'Gradient Top', '#562B0C', 0),
+(1359, 342, 'Gradient Middle', '#994C18', 1),
+(1360, 342, 'Gradient Bottom', '#F0E3AB', 2),
+(1365, 341, 'Fill 1', '#EFB69C', 2),
+(1366, 341, 'Fill 2', '#F6D8C8', 3),
+(1367, 344, 'Frame Outline', '#543520', 0),
+(1368, 344, 'Frame Fill', '#79554E', 1),
+(1369, 344, 'Lens Fill 1 (50% Opacity)', '#80ECEC', 2),
+(1370, 344, 'Lens Fill 2 (50% Opacity)', '#2CB9C6', 3),
+(1371, 345, 'Outline', '#172E5D', 0),
+(1372, 345, 'Fill 1', '#23629C', 1),
+(1373, 345, 'Fill 2', '#1C5183', 2),
+(1374, 346, 'Outline', '#A8DADA', 0),
+(1375, 346, 'Fill', '#D1ECED', 1),
+(1376, 346, 'Pinstripe', '#FFFFFF', 2),
+(1377, 347, 'Outline', '#581326', 0),
+(1378, 347, 'Fill 1', '#A12147', 1),
+(1379, 347, 'Fill 2', '#831E3C', 2),
+(1380, 348, 'Outline', '#C2921E', 0),
+(1381, 348, 'Fill', '#E2B443', 1),
+(1382, 349, 'Outline', '#AC6534', 0),
+(1383, 349, 'Fill', '#BF7741', 1),
+(1384, 38, 'Mane Outline', '#80D940', 5),
+(1385, 38, 'Mane Fill', '#D6FF58', 6),
+(1386, 38, 'Eyeball Fill', '#F8FCC6', 7),
+(1387, 38, 'Iris (no gradient)', '#DF8C37', 8),
+(1388, 350, 'Outline', '#F99000', 0),
+(1389, 350, 'Fill', '#FEBC40', 1),
+(1390, 350, 'Shadow Outline', '#DE8200', 2),
+(1391, 350, 'Shadow Fill', '#E3A939', 3),
+(1392, 351, 'Outline', '#A63110', 0),
+(1393, 351, 'Fill', '#EB5926', 1),
+(1394, 352, 'Gradient Top', '#0F4D6E', 0),
+(1396, 352, 'Gradient Bottom', '#2ECCCF', 1),
+(1399, 353, 'Sun', '#EE7C04', 0),
+(1400, 353, 'Ray 1', '#FDE065', 1),
+(1401, 350, 'Marking Outline', '#BABA94', 4),
+(1402, 350, 'Marking Fill', '#FBFEDE', 5),
+(1403, 350, 'Shadow Marking Outline', '#A6A682', 6),
+(1404, 350, 'Shadow Marking Fill', '#E2E5C6', 7),
+(1405, 351, 'Stripe 1', '#CE3D12', 2),
+(1406, 351, 'Stripe 2', '#DA4009', 3),
+(1407, 353, 'Ray 2', '#FBFBDE', 2),
+(1408, 353, 'Sparkle 1', '#3F9DB0', 3),
+(1409, 353, 'Sparkle 2', '#A6DCDC', 4),
+(1410, 354, 'Pure white', '#FFFFFF', 0),
+(1411, 354, 'Pure black', '#000000', 1),
+(1412, 354, 'Teeth Outline', '#B0D8E7', 2),
+(1413, 354, 'Mouth Fill', '#BD1C77', 3),
+(1414, 354, 'Darker Mouth Fill', '#A41967', 4),
+(1415, 354, 'Darkest Mouth Fill', '#841555', 5),
+(1416, 354, 'Tongue', '#F17031', 6),
+(1417, 354, 'Tongue Dark', '#BE4406', 7),
+(1418, 355, 'Outline', '#DE9E04', 0),
+(1419, 355, 'Fill', '#FDD678', 1),
+(1420, 356, 'Outline', '#7C110E', 0),
+(1421, 356, 'Fill 1', '#EC1B2E', 1),
+(1422, 356, 'Fill 2', '#E3CA1B', 2),
+(1423, 357, 'Outline', '#7D1E59', 0),
+(1424, 357, 'Fill', '#D2469F', 1),
+(1431, 358, 'Outline', '#1A1A1A', 0),
+(1432, 358, 'Fill', '#434343', 1),
+(1433, 358, 'Pocket Line', '#6C6C6C', 2),
+(1434, 358, 'Stud Outline', '#9FBEDF', 3),
+(1435, 358, 'Stud Fill', '#FFFFFF', 4),
+(1436, 359, 'Outline', '#BC5E02', 0),
+(1437, 359, 'Fill', '#FD8813', 1),
+(1438, 359, 'Stripe 1', '#FEF58C', 2),
+(1439, 359, 'Stripe 2', '#D2469F', 3),
+(1440, 360, 'Outline', '#1A1A1A', 0),
+(1441, 360, 'Main Fill', '#434343', 1),
+(1442, 360, 'Color Fill', '#DD308F', 2),
+(1443, 361, 'Iris Gradient Top', '#128C7E', 0),
+(1444, 361, 'Iris Gradient Bottom', '#7EF8D0', 1),
+(1445, 361, 'Highlight Top', '#D8FDF0', 2),
+(1446, 361, 'Highlight Bottom', '#96FBDB', 3),
+(1447, 361, 'Eyebrows', '#000000', 4),
+(1448, 362, 'Sunburst Red (on Book)', '#EC323F', 0),
+(1449, 362, 'Sunburst Yellow Outline', '#E1CD1D', 2),
+(1450, 362, 'Sunburst Yellow Fill', '#FEF58C', 3),
+(1451, 362, 'Center Outline', '#FD8813', 4),
+(1452, 362, 'Center Fill 1', '#E3CA1B', 5),
+(1453, 362, 'Center Fill 2', '#EC323F', 6),
+(1454, 362, 'Sunburst Red (on Shirt)', '#C91326', 1),
+(1455, 363, 'Cutie Mark', '#696969', 0),
+(1456, 364, 'Outline', '#036785', 0),
+(1457, 364, 'Fill', '#08BAB7', 1),
+(1458, 354, 'Tear Fill (Opacity 45%)', '#AFC2CF', 8),
+(1459, 354, 'Tear Outline (Opacity 45%)', '#D9ECFB', 9),
+(1460, 365, 'Outline', '#C2DBDB', 0),
+(1461, 365, 'Fill', '#FFFFFF', 1),
+(1462, 365, 'Foot pads', '#DA80BE', 2),
+(1463, 366, 'Eyebrow', '#9DB5B2', 0),
+(1464, 366, 'Eye', '#000000', 1),
+(1465, 366, 'Highlight', '#FFFFFF', 2),
+(1466, 367, 'Nose', '#DA80BE', 0),
+(1467, 367, 'Philtrum', '#799A9A', 1),
+(1468, 367, 'Mouth', '#526D6D', 2),
+(1469, 367, 'Whiskers', '#CACACA', 3),
+(1470, 368, 'Outline', '#E880B0', 0),
+(1471, 368, 'Fill', '#F5B7D0', 1),
+(1472, 368, 'Shadow Outline', '#DD6FA4', 2),
+(1473, 368, 'Shadow Fill', '#E89CBF', 3),
+(1474, 369, 'Outline', '#D69A2A', 0),
+(1475, 369, 'Fill', '#EFD472', 1),
+(1476, 370, 'Gradient Top', '#264D72', 0),
+(1477, 370, 'Gradient Middle', '#3399DA', 1),
+(1478, 370, 'Gradient Bottom', '#8DF1EF', 2),
+(1481, 371, 'Stem & Leaf', '#73A71F', 0),
+(1482, 371, 'Leaf Stroke', '#304127', 1),
+(1483, 369, 'Fill 2', '#F4F3AA', 2),
+(1484, 371, 'Center Fill', '#624430', 2),
+(1485, 371, 'Center Outline', '#E28B34', 3),
+(1486, 371, 'Petals', '#F2DB73', 4),
+(1487, 371, 'Rays', '#B67136', 5);
 
 
 --
@@ -1800,394 +1803,396 @@ SELECT pg_catalog.setval('colors_colorid_seq', 1487, true);
 -- Data for Name: tagged; Type: TABLE DATA; Schema: public; Owner: mlpvc-rr
 --
 
-INSERT INTO tagged VALUES (1, 6);
-INSERT INTO tagged VALUES (1, 10);
-INSERT INTO tagged VALUES (1, 12);
-INSERT INTO tagged VALUES (1, 13);
-INSERT INTO tagged VALUES (1, 14);
-INSERT INTO tagged VALUES (1, 15);
-INSERT INTO tagged VALUES (1, 16);
-INSERT INTO tagged VALUES (1, 17);
-INSERT INTO tagged VALUES (1, 22);
-INSERT INTO tagged VALUES (1, 25);
-INSERT INTO tagged VALUES (1, 28);
-INSERT INTO tagged VALUES (1, 29);
-INSERT INTO tagged VALUES (1, 32);
-INSERT INTO tagged VALUES (1, 36);
-INSERT INTO tagged VALUES (1, 37);
-INSERT INTO tagged VALUES (1, 38);
-INSERT INTO tagged VALUES (1, 44);
-INSERT INTO tagged VALUES (1, 45);
-INSERT INTO tagged VALUES (1, 62);
-INSERT INTO tagged VALUES (2, 2);
-INSERT INTO tagged VALUES (2, 4);
-INSERT INTO tagged VALUES (2, 18);
-INSERT INTO tagged VALUES (2, 23);
-INSERT INTO tagged VALUES (2, 27);
-INSERT INTO tagged VALUES (2, 30);
-INSERT INTO tagged VALUES (2, 31);
-INSERT INTO tagged VALUES (2, 35);
-INSERT INTO tagged VALUES (2, 39);
-INSERT INTO tagged VALUES (2, 40);
-INSERT INTO tagged VALUES (2, 46);
-INSERT INTO tagged VALUES (2, 50);
-INSERT INTO tagged VALUES (2, 51);
-INSERT INTO tagged VALUES (2, 52);
-INSERT INTO tagged VALUES (2, 53);
-INSERT INTO tagged VALUES (2, 54);
-INSERT INTO tagged VALUES (2, 58);
-INSERT INTO tagged VALUES (2, 59);
-INSERT INTO tagged VALUES (2, 60);
-INSERT INTO tagged VALUES (2, 61);
-INSERT INTO tagged VALUES (3, 3);
-INSERT INTO tagged VALUES (3, 5);
-INSERT INTO tagged VALUES (3, 11);
-INSERT INTO tagged VALUES (3, 19);
-INSERT INTO tagged VALUES (3, 20);
-INSERT INTO tagged VALUES (3, 21);
-INSERT INTO tagged VALUES (3, 24);
-INSERT INTO tagged VALUES (3, 26);
-INSERT INTO tagged VALUES (3, 55);
-INSERT INTO tagged VALUES (3, 56);
-INSERT INTO tagged VALUES (3, 65);
-INSERT INTO tagged VALUES (4, 1);
-INSERT INTO tagged VALUES (4, 9);
-INSERT INTO tagged VALUES (4, 34);
-INSERT INTO tagged VALUES (6, 1);
-INSERT INTO tagged VALUES (6, 2);
-INSERT INTO tagged VALUES (6, 3);
-INSERT INTO tagged VALUES (6, 4);
-INSERT INTO tagged VALUES (6, 5);
-INSERT INTO tagged VALUES (6, 6);
-INSERT INTO tagged VALUES (6, 7);
-INSERT INTO tagged VALUES (7, 9);
-INSERT INTO tagged VALUES (7, 10);
-INSERT INTO tagged VALUES (7, 11);
-INSERT INTO tagged VALUES (7, 12);
-INSERT INTO tagged VALUES (7, 13);
-INSERT INTO tagged VALUES (7, 14);
-INSERT INTO tagged VALUES (7, 15);
-INSERT INTO tagged VALUES (7, 16);
-INSERT INTO tagged VALUES (7, 17);
-INSERT INTO tagged VALUES (7, 18);
-INSERT INTO tagged VALUES (7, 19);
-INSERT INTO tagged VALUES (7, 20);
-INSERT INTO tagged VALUES (7, 21);
-INSERT INTO tagged VALUES (7, 22);
-INSERT INTO tagged VALUES (7, 23);
-INSERT INTO tagged VALUES (7, 24);
-INSERT INTO tagged VALUES (7, 25);
-INSERT INTO tagged VALUES (7, 26);
-INSERT INTO tagged VALUES (7, 27);
-INSERT INTO tagged VALUES (7, 28);
-INSERT INTO tagged VALUES (7, 30);
-INSERT INTO tagged VALUES (7, 34);
-INSERT INTO tagged VALUES (7, 35);
-INSERT INTO tagged VALUES (7, 36);
-INSERT INTO tagged VALUES (7, 44);
-INSERT INTO tagged VALUES (7, 46);
-INSERT INTO tagged VALUES (7, 50);
-INSERT INTO tagged VALUES (7, 51);
-INSERT INTO tagged VALUES (7, 52);
-INSERT INTO tagged VALUES (7, 53);
-INSERT INTO tagged VALUES (7, 54);
-INSERT INTO tagged VALUES (7, 55);
-INSERT INTO tagged VALUES (7, 56);
-INSERT INTO tagged VALUES (7, 63);
-INSERT INTO tagged VALUES (7, 65);
-INSERT INTO tagged VALUES (8, 37);
-INSERT INTO tagged VALUES (8, 38);
-INSERT INTO tagged VALUES (8, 39);
-INSERT INTO tagged VALUES (8, 40);
-INSERT INTO tagged VALUES (9, 29);
-INSERT INTO tagged VALUES (9, 31);
-INSERT INTO tagged VALUES (9, 32);
-INSERT INTO tagged VALUES (9, 57);
-INSERT INTO tagged VALUES (11, 7);
-INSERT INTO tagged VALUES (11, 14);
-INSERT INTO tagged VALUES (11, 21);
-INSERT INTO tagged VALUES (11, 27);
-INSERT INTO tagged VALUES (11, 28);
-INSERT INTO tagged VALUES (11, 35);
-INSERT INTO tagged VALUES (11, 39);
-INSERT INTO tagged VALUES (11, 44);
-INSERT INTO tagged VALUES (11, 46);
-INSERT INTO tagged VALUES (11, 53);
-INSERT INTO tagged VALUES (11, 57);
-INSERT INTO tagged VALUES (11, 61);
-INSERT INTO tagged VALUES (11, 62);
-INSERT INTO tagged VALUES (12, 1);
-INSERT INTO tagged VALUES (12, 2);
-INSERT INTO tagged VALUES (12, 3);
-INSERT INTO tagged VALUES (12, 4);
-INSERT INTO tagged VALUES (12, 5);
-INSERT INTO tagged VALUES (12, 6);
-INSERT INTO tagged VALUES (12, 9);
-INSERT INTO tagged VALUES (12, 10);
-INSERT INTO tagged VALUES (12, 11);
-INSERT INTO tagged VALUES (12, 12);
-INSERT INTO tagged VALUES (12, 13);
-INSERT INTO tagged VALUES (12, 15);
-INSERT INTO tagged VALUES (12, 16);
-INSERT INTO tagged VALUES (12, 17);
-INSERT INTO tagged VALUES (12, 18);
-INSERT INTO tagged VALUES (12, 19);
-INSERT INTO tagged VALUES (12, 20);
-INSERT INTO tagged VALUES (12, 22);
-INSERT INTO tagged VALUES (12, 23);
-INSERT INTO tagged VALUES (12, 24);
-INSERT INTO tagged VALUES (12, 25);
-INSERT INTO tagged VALUES (12, 26);
-INSERT INTO tagged VALUES (12, 29);
-INSERT INTO tagged VALUES (12, 30);
-INSERT INTO tagged VALUES (12, 31);
-INSERT INTO tagged VALUES (12, 32);
-INSERT INTO tagged VALUES (12, 34);
-INSERT INTO tagged VALUES (12, 36);
-INSERT INTO tagged VALUES (12, 37);
-INSERT INTO tagged VALUES (12, 38);
-INSERT INTO tagged VALUES (12, 40);
-INSERT INTO tagged VALUES (12, 45);
-INSERT INTO tagged VALUES (12, 50);
-INSERT INTO tagged VALUES (12, 51);
-INSERT INTO tagged VALUES (12, 52);
-INSERT INTO tagged VALUES (12, 54);
-INSERT INTO tagged VALUES (12, 55);
-INSERT INTO tagged VALUES (12, 56);
-INSERT INTO tagged VALUES (12, 58);
-INSERT INTO tagged VALUES (12, 59);
-INSERT INTO tagged VALUES (12, 60);
-INSERT INTO tagged VALUES (12, 63);
-INSERT INTO tagged VALUES (12, 65);
-INSERT INTO tagged VALUES (14, 1);
-INSERT INTO tagged VALUES (21, 10);
-INSERT INTO tagged VALUES (21, 16);
-INSERT INTO tagged VALUES (21, 17);
-INSERT INTO tagged VALUES (21, 36);
-INSERT INTO tagged VALUES (22, 2);
-INSERT INTO tagged VALUES (23, 4);
-INSERT INTO tagged VALUES (24, 3);
-INSERT INTO tagged VALUES (25, 5);
-INSERT INTO tagged VALUES (26, 6);
-INSERT INTO tagged VALUES (27, 19);
-INSERT INTO tagged VALUES (27, 21);
-INSERT INTO tagged VALUES (27, 55);
-INSERT INTO tagged VALUES (28, 18);
-INSERT INTO tagged VALUES (28, 20);
-INSERT INTO tagged VALUES (28, 53);
-INSERT INTO tagged VALUES (28, 54);
-INSERT INTO tagged VALUES (29, 7);
-INSERT INTO tagged VALUES (30, 7);
-INSERT INTO tagged VALUES (31, 10);
-INSERT INTO tagged VALUES (32, 12);
-INSERT INTO tagged VALUES (33, 14);
-INSERT INTO tagged VALUES (34, 15);
-INSERT INTO tagged VALUES (35, 16);
-INSERT INTO tagged VALUES (36, 17);
-INSERT INTO tagged VALUES (37, 18);
-INSERT INTO tagged VALUES (38, 19);
-INSERT INTO tagged VALUES (39, 20);
-INSERT INTO tagged VALUES (40, 21);
-INSERT INTO tagged VALUES (41, 22);
-INSERT INTO tagged VALUES (42, 20);
-INSERT INTO tagged VALUES (42, 21);
-INSERT INTO tagged VALUES (43, 13);
-INSERT INTO tagged VALUES (43, 14);
-INSERT INTO tagged VALUES (44, 23);
-INSERT INTO tagged VALUES (44, 24);
-INSERT INTO tagged VALUES (44, 25);
-INSERT INTO tagged VALUES (44, 37);
-INSERT INTO tagged VALUES (44, 38);
-INSERT INTO tagged VALUES (44, 39);
-INSERT INTO tagged VALUES (44, 40);
-INSERT INTO tagged VALUES (45, 23);
-INSERT INTO tagged VALUES (45, 24);
-INSERT INTO tagged VALUES (45, 25);
-INSERT INTO tagged VALUES (46, 23);
-INSERT INTO tagged VALUES (47, 24);
-INSERT INTO tagged VALUES (48, 25);
-INSERT INTO tagged VALUES (49, 26);
-INSERT INTO tagged VALUES (50, 11);
-INSERT INTO tagged VALUES (51, 13);
-INSERT INTO tagged VALUES (52, 27);
-INSERT INTO tagged VALUES (53, 28);
-INSERT INTO tagged VALUES (54, 29);
-INSERT INTO tagged VALUES (55, 30);
-INSERT INTO tagged VALUES (56, 30);
-INSERT INTO tagged VALUES (57, 9);
-INSERT INTO tagged VALUES (58, 31);
-INSERT INTO tagged VALUES (59, 1);
-INSERT INTO tagged VALUES (59, 9);
-INSERT INTO tagged VALUES (59, 34);
-INSERT INTO tagged VALUES (59, 44);
-INSERT INTO tagged VALUES (60, 32);
-INSERT INTO tagged VALUES (61, 33);
-INSERT INTO tagged VALUES (62, 33);
-INSERT INTO tagged VALUES (63, 34);
-INSERT INTO tagged VALUES (64, 33);
-INSERT INTO tagged VALUES (65, 22);
-INSERT INTO tagged VALUES (65, 26);
-INSERT INTO tagged VALUES (65, 27);
-INSERT INTO tagged VALUES (65, 28);
-INSERT INTO tagged VALUES (66, 35);
-INSERT INTO tagged VALUES (68, 36);
-INSERT INTO tagged VALUES (72, 37);
-INSERT INTO tagged VALUES (73, 38);
-INSERT INTO tagged VALUES (74, 39);
-INSERT INTO tagged VALUES (75, 40);
-INSERT INTO tagged VALUES (76, 63);
-INSERT INTO tagged VALUES (77, 44);
-INSERT INTO tagged VALUES (78, 45);
-INSERT INTO tagged VALUES (79, 46);
-INSERT INTO tagged VALUES (80, 50);
-INSERT INTO tagged VALUES (81, 51);
-INSERT INTO tagged VALUES (82, 52);
-INSERT INTO tagged VALUES (83, 53);
-INSERT INTO tagged VALUES (84, 54);
-INSERT INTO tagged VALUES (85, 4);
-INSERT INTO tagged VALUES (85, 50);
-INSERT INTO tagged VALUES (85, 51);
-INSERT INTO tagged VALUES (85, 52);
-INSERT INTO tagged VALUES (85, 53);
-INSERT INTO tagged VALUES (85, 54);
-INSERT INTO tagged VALUES (86, 50);
-INSERT INTO tagged VALUES (86, 51);
-INSERT INTO tagged VALUES (86, 53);
-INSERT INTO tagged VALUES (86, 54);
-INSERT INTO tagged VALUES (87, 55);
-INSERT INTO tagged VALUES (88, 56);
-INSERT INTO tagged VALUES (89, 57);
-INSERT INTO tagged VALUES (90, 57);
-INSERT INTO tagged VALUES (91, 58);
-INSERT INTO tagged VALUES (92, 57);
-INSERT INTO tagged VALUES (93, 59);
-INSERT INTO tagged VALUES (93, 60);
-INSERT INTO tagged VALUES (94, 59);
-INSERT INTO tagged VALUES (94, 60);
-INSERT INTO tagged VALUES (94, 61);
-INSERT INTO tagged VALUES (95, 61);
-INSERT INTO tagged VALUES (96, 60);
-INSERT INTO tagged VALUES (98, 62);
-INSERT INTO tagged VALUES (99, 22);
-INSERT INTO tagged VALUES (99, 26);
-INSERT INTO tagged VALUES (99, 27);
-INSERT INTO tagged VALUES (99, 28);
-INSERT INTO tagged VALUES (99, 62);
-INSERT INTO tagged VALUES (100, 63);
-INSERT INTO tagged VALUES (101, 46);
-INSERT INTO tagged VALUES (102, 29);
-INSERT INTO tagged VALUES (103, 29);
-INSERT INTO tagged VALUES (104, 30);
-INSERT INTO tagged VALUES (105, 30);
-INSERT INTO tagged VALUES (105, 31);
-INSERT INTO tagged VALUES (106, 30);
-INSERT INTO tagged VALUES (107, 65);
-INSERT INTO tagged VALUES (108, 65);
+INSERT INTO tagged VALUES
+(1, 6),
+(1, 10),
+(1, 12),
+(1, 13),
+(1, 14),
+(1, 15),
+(1, 16),
+(1, 17),
+(1, 22),
+(1, 25),
+(1, 28),
+(1, 29),
+(1, 32),
+(1, 36),
+(1, 37),
+(1, 38),
+(1, 44),
+(1, 45),
+(1, 62),
+(2, 2),
+(2, 4),
+(2, 18),
+(2, 23),
+(2, 27),
+(2, 30),
+(2, 31),
+(2, 35),
+(2, 39),
+(2, 40),
+(2, 46),
+(2, 50),
+(2, 51),
+(2, 52),
+(2, 53),
+(2, 54),
+(2, 58),
+(2, 59),
+(2, 60),
+(2, 61),
+(3, 3),
+(3, 5),
+(3, 11),
+(3, 19),
+(3, 20),
+(3, 21),
+(3, 24),
+(3, 26),
+(3, 55),
+(3, 56),
+(3, 65),
+(4, 1),
+(4, 9),
+(4, 34),
+(6, 1),
+(6, 2),
+(6, 3),
+(6, 4),
+(6, 5),
+(6, 6),
+(6, 7),
+(7, 9),
+(7, 10),
+(7, 11),
+(7, 12),
+(7, 13),
+(7, 14),
+(7, 15),
+(7, 16),
+(7, 17),
+(7, 18),
+(7, 19),
+(7, 20),
+(7, 21),
+(7, 22),
+(7, 23),
+(7, 24),
+(7, 25),
+(7, 26),
+(7, 27),
+(7, 28),
+(7, 30),
+(7, 34),
+(7, 35),
+(7, 36),
+(7, 44),
+(7, 46),
+(7, 50),
+(7, 51),
+(7, 52),
+(7, 53),
+(7, 54),
+(7, 55),
+(7, 56),
+(7, 63),
+(7, 65),
+(8, 37),
+(8, 38),
+(8, 39),
+(8, 40),
+(9, 29),
+(9, 31),
+(9, 32),
+(9, 57),
+(11, 7),
+(11, 14),
+(11, 21),
+(11, 27),
+(11, 28),
+(11, 35),
+(11, 39),
+(11, 44),
+(11, 46),
+(11, 53),
+(11, 57),
+(11, 61),
+(11, 62),
+(12, 1),
+(12, 2),
+(12, 3),
+(12, 4),
+(12, 5),
+(12, 6),
+(12, 9),
+(12, 10),
+(12, 11),
+(12, 12),
+(12, 13),
+(12, 15),
+(12, 16),
+(12, 17),
+(12, 18),
+(12, 19),
+(12, 20),
+(12, 22),
+(12, 23),
+(12, 24),
+(12, 25),
+(12, 26),
+(12, 29),
+(12, 30),
+(12, 31),
+(12, 32),
+(12, 34),
+(12, 36),
+(12, 37),
+(12, 38),
+(12, 40),
+(12, 45),
+(12, 50),
+(12, 51),
+(12, 52),
+(12, 54),
+(12, 55),
+(12, 56),
+(12, 58),
+(12, 59),
+(12, 60),
+(12, 63),
+(12, 65),
+(14, 1),
+(21, 10),
+(21, 16),
+(21, 17),
+(21, 36),
+(22, 2),
+(23, 4),
+(24, 3),
+(25, 5),
+(26, 6),
+(27, 19),
+(27, 21),
+(27, 55),
+(28, 18),
+(28, 20),
+(28, 53),
+(28, 54),
+(29, 7),
+(30, 7),
+(31, 10),
+(32, 12),
+(33, 14),
+(34, 15),
+(35, 16),
+(36, 17),
+(37, 18),
+(38, 19),
+(39, 20),
+(40, 21),
+(41, 22),
+(42, 20),
+(42, 21),
+(43, 13),
+(43, 14),
+(44, 23),
+(44, 24),
+(44, 25),
+(44, 37),
+(44, 38),
+(44, 39),
+(44, 40),
+(45, 23),
+(45, 24),
+(45, 25),
+(46, 23),
+(47, 24),
+(48, 25),
+(49, 26),
+(50, 11),
+(51, 13),
+(52, 27),
+(53, 28),
+(54, 29),
+(55, 30),
+(56, 30),
+(57, 9),
+(58, 31),
+(59, 1),
+(59, 9),
+(59, 34),
+(59, 44),
+(60, 32),
+(61, 33),
+(62, 33),
+(63, 34),
+(64, 33),
+(65, 22),
+(65, 26),
+(65, 27),
+(65, 28),
+(66, 35),
+(68, 36),
+(72, 37),
+(73, 38),
+(74, 39),
+(75, 40),
+(76, 63),
+(77, 44),
+(78, 45),
+(79, 46),
+(80, 50),
+(81, 51),
+(82, 52),
+(83, 53),
+(84, 54),
+(85, 4),
+(85, 50),
+(85, 51),
+(85, 52),
+(85, 53),
+(85, 54),
+(86, 50),
+(86, 51),
+(86, 53),
+(86, 54),
+(87, 55),
+(88, 56),
+(89, 57),
+(90, 57),
+(91, 58),
+(92, 57),
+(93, 59),
+(93, 60),
+(94, 59),
+(94, 60),
+(94, 61),
+(95, 61),
+(96, 60),
+(98, 62),
+(99, 22),
+(99, 26),
+(99, 27),
+(99, 28),
+(99, 62),
+(100, 63),
+(101, 46),
+(102, 29),
+(103, 29),
+(104, 30),
+(105, 30),
+(105, 31),
+(106, 30),
+(107, 65),
+(108, 65);
 
 
 --
 -- Data for Name: tags; Type: TABLE DATA; Schema: public; Owner: mlpvc-rr
 --
 
-INSERT INTO tags VALUES (1, 'unicorn', NULL, 'spec', 19);
-INSERT INTO tags VALUES (2, 'earth pony', NULL, 'spec', 20);
-INSERT INTO tags VALUES (3, 'pegasus', NULL, 'spec', 11);
-INSERT INTO tags VALUES (4, 'alicorn', NULL, 'spec', 3);
-INSERT INTO tags VALUES (5, 'bat pony', NULL, 'spec', 0);
-INSERT INTO tags VALUES (6, 'mane six', 'Ponies who are one of the show''s six main characters', 'cat', 7);
-INSERT INTO tags VALUES (7, 'minor character', 'Ponies who had a speaking role and/or interacted with the mane six', 'cat', 35);
-INSERT INTO tags VALUES (8, 'background character', 'Ponies whose only purpose is filling crowds, with no to minimal speaking roles', 'cat', 4);
-INSERT INTO tags VALUES (9, 'antagonist', NULL, 'cat', 4);
-INSERT INTO tags VALUES (10, 'pet', NULL, 'cat', 0);
-INSERT INTO tags VALUES (11, 'male', NULL, 'gen', 13);
-INSERT INTO tags VALUES (12, 'female', NULL, 'gen', 43);
-INSERT INTO tags VALUES (14, 'twilight sparkle', NULL, 'char', 1);
-INSERT INTO tags VALUES (19, 's1e1', NULL, 'ep', 0);
-INSERT INTO tags VALUES (20, 's1e26', NULL, 'ep', 0);
-INSERT INTO tags VALUES (21, 's5e12', NULL, 'ep', 4);
-INSERT INTO tags VALUES (22, 'applejack', NULL, 'char', 1);
-INSERT INTO tags VALUES (23, 'pinkie pie', NULL, 'char', 1);
-INSERT INTO tags VALUES (24, 'fluttershy', NULL, 'char', 1);
-INSERT INTO tags VALUES (25, 'rainbow dash', NULL, 'char', 1);
-INSERT INTO tags VALUES (26, 'rarity', NULL, 'char', 1);
-INSERT INTO tags VALUES (27, 'wonderbolt', 'Wonderbolt characters', 'cat', 3);
-INSERT INTO tags VALUES (28, 'parent', 'Parents of other characters', 'cat', 4);
-INSERT INTO tags VALUES (29, 'dragon', NULL, 'spec', 1);
-INSERT INTO tags VALUES (30, 'spike', NULL, 'char', 1);
-INSERT INTO tags VALUES (31, 'minuette', NULL, 'char', 1);
-INSERT INTO tags VALUES (32, 'lyra heartstrings', NULL, 'char', 1);
-INSERT INTO tags VALUES (33, 'fashion plate', NULL, 'char', 1);
-INSERT INTO tags VALUES (34, 'sassy saddles', NULL, 'char', 1);
-INSERT INTO tags VALUES (35, 'twinkleshine', NULL, 'char', 1);
-INSERT INTO tags VALUES (36, 'lemon hearts', NULL, 'char', 1);
-INSERT INTO tags VALUES (37, 'granny smith', NULL, 'char', 1);
-INSERT INTO tags VALUES (38, 'fleetfoot', NULL, 'char', 1);
-INSERT INTO tags VALUES (39, 'stormy flare', NULL, 'char', 1);
-INSERT INTO tags VALUES (40, 'wind rider', NULL, 'char', 1);
-INSERT INTO tags VALUES (41, 'sugar belle', NULL, 'char', 1);
-INSERT INTO tags VALUES (42, 's5e15', NULL, 'ep', 2);
-INSERT INTO tags VALUES (43, 's5e14', NULL, 'ep', 2);
-INSERT INTO tags VALUES (44, 'foal', NULL, 'cat', 7);
-INSERT INTO tags VALUES (45, 'cutie mark crusader', NULL, 'cat', 3);
-INSERT INTO tags VALUES (46, 'apple bloom', NULL, 'char', 1);
-INSERT INTO tags VALUES (47, 'scootaloo', NULL, 'char', 1);
-INSERT INTO tags VALUES (48, 'sweetie belle', NULL, 'char', 1);
-INSERT INTO tags VALUES (49, 'night glider', NULL, 'char', 1);
-INSERT INTO tags VALUES (50, 'derpy hooves', 'Derpy Hooves or Muffins', 'char', 1);
-INSERT INTO tags VALUES (51, 'whoa nelly', NULL, 'char', 1);
-INSERT INTO tags VALUES (52, 'double diamond', NULL, 'char', 1);
-INSERT INTO tags VALUES (53, 'party favor', NULL, 'char', 1);
-INSERT INTO tags VALUES (54, 'starlight glimmer', NULL, 'char', 1);
-INSERT INTO tags VALUES (55, 'coco pommel', NULL, 'char', 1);
-INSERT INTO tags VALUES (56, 'manehatten', NULL, 'cat', 1);
-INSERT INTO tags VALUES (57, 'princess luna', NULL, 'char', 1);
-INSERT INTO tags VALUES (58, 'suri polomare', NULL, 'char', 1);
-INSERT INTO tags VALUES (59, 'royalty', NULL, 'cat', 4);
-INSERT INTO tags VALUES (60, 'trixie', NULL, 'char', 1);
-INSERT INTO tags VALUES (61, 's3e5', NULL, 'ep', 1);
-INSERT INTO tags VALUES (62, 'alicorn amulet', NULL, NULL, 1);
-INSERT INTO tags VALUES (63, 'princess celestia', NULL, 'char', 1);
-INSERT INTO tags VALUES (64, 'object', NULL, 'cat', 1);
-INSERT INTO tags VALUES (65, 's5e2', NULL, 'ep', 4);
-INSERT INTO tags VALUES (66, 'big macintosh', NULL, 'char', 1);
-INSERT INTO tags VALUES (68, 'moondancer', NULL, 'char', 1);
-INSERT INTO tags VALUES (72, 'dinky doo', NULL, 'char', 1);
-INSERT INTO tags VALUES (73, 'berry pinch', NULL, 'char', 1);
-INSERT INTO tags VALUES (74, 'button mash', NULL, 'char', 1);
-INSERT INTO tags VALUES (75, 'lily longsocks', NULL, 'char', 1);
-INSERT INTO tags VALUES (76, 'human', NULL, 'spec', 1);
-INSERT INTO tags VALUES (77, 'shining armor', NULL, 'char', 1);
-INSERT INTO tags VALUES (78, 'original character', 'Characters not canon to the show''s universe', 'cat', 1);
-INSERT INTO tags VALUES (79, 'cheese sandwich', NULL, 'char', 1);
-INSERT INTO tags VALUES (80, 'marble pie', NULL, 'char', 1);
-INSERT INTO tags VALUES (81, 'limestone pie', NULL, 'char', 1);
-INSERT INTO tags VALUES (82, 'maud pie', NULL, 'char', 1);
-INSERT INTO tags VALUES (83, 'igenous rock', NULL, 'char', 1);
-INSERT INTO tags VALUES (84, 'cloudy quartz', NULL, 'char', 1);
-INSERT INTO tags VALUES (85, 'pie family', NULL, 'cat', 6);
-INSERT INTO tags VALUES (86, 's5e20', NULL, 'ep', 4);
-INSERT INTO tags VALUES (87, 'spitfire', NULL, 'char', 1);
-INSERT INTO tags VALUES (88, 'lightning dust', NULL, 'char', 1);
-INSERT INTO tags VALUES (89, 'discord', NULL, 'char', 1);
-INSERT INTO tags VALUES (90, 'draconequus', NULL, 'spec', 1);
-INSERT INTO tags VALUES (91, 'tree hugger', NULL, 'char', 1);
-INSERT INTO tags VALUES (92, 's5e22', NULL, 'ep', 1);
-INSERT INTO tags VALUES (93, 'rara', '', 'char', 2);
-INSERT INTO tags VALUES (94, 's5e24', '', 'ep', 3);
-INSERT INTO tags VALUES (95, 'svengallop', '', 'char', 1);
-INSERT INTO tags VALUES (96, 'outfit', 'Alternative character outfits', NULL, 1);
-INSERT INTO tags VALUES (97, 's5e8', NULL, 'ep', 0);
-INSERT INTO tags VALUES (98, 'sunburst', '', 'char', 1);
-INSERT INTO tags VALUES (99, 's5e26', '', 'ep', 5);
-INSERT INTO tags VALUES (100, 'sunset shimmer', '', 'char', 1);
-INSERT INTO tags VALUES (101, 's4e12', '', 'ep', 1);
-INSERT INTO tags VALUES (102, 's5e1-2', '', 'ep', 1);
-INSERT INTO tags VALUES (103, 's5e25-26', '', 'ep', 1);
-INSERT INTO tags VALUES (104, 's4e24', '', 'ep', 1);
-INSERT INTO tags VALUES (105, 's4e8', '', 'ep', 2);
-INSERT INTO tags VALUES (106, 's5e16', '', 'ep', 1);
-INSERT INTO tags VALUES (107, 'meadow flower', '', 'char', 1);
-INSERT INTO tags VALUES (108, 's3e7', '', 'ep', 1);
+INSERT INTO tags VALUES
+(1, 'unicorn', NULL, 'spec', 19),
+(2, 'earth pony', NULL, 'spec', 20),
+(3, 'pegasus', NULL, 'spec', 11),
+(4, 'alicorn', NULL, 'spec', 3),
+(5, 'bat pony', NULL, 'spec', 0),
+(6, 'mane six', 'Ponies who are one of the show''s six main characters', 'cat', 7),
+(7, 'minor character', 'Ponies who had a speaking role and/or interacted with the mane six', 'cat', 35),
+(8, 'background character', 'Ponies whose only purpose is filling crowds, with no to minimal speaking roles', 'cat', 4),
+(9, 'antagonist', NULL, 'cat', 4),
+(10, 'pet', NULL, 'cat', 0),
+(11, 'male', NULL, 'gen', 13),
+(12, 'female', NULL, 'gen', 43),
+(14, 'twilight sparkle', NULL, 'char', 1),
+(19, 's1e1', NULL, 'ep', 0),
+(20, 's1e26', NULL, 'ep', 0),
+(21, 's5e12', NULL, 'ep', 4),
+(22, 'applejack', NULL, 'char', 1),
+(23, 'pinkie pie', NULL, 'char', 1),
+(24, 'fluttershy', NULL, 'char', 1),
+(25, 'rainbow dash', NULL, 'char', 1),
+(26, 'rarity', NULL, 'char', 1),
+(27, 'wonderbolt', 'Wonderbolt characters', 'cat', 3),
+(28, 'parent', 'Parents of other characters', 'cat', 4),
+(29, 'dragon', NULL, 'spec', 1),
+(30, 'spike', NULL, 'char', 1),
+(31, 'minuette', NULL, 'char', 1),
+(32, 'lyra heartstrings', NULL, 'char', 1),
+(33, 'fashion plate', NULL, 'char', 1),
+(34, 'sassy saddles', NULL, 'char', 1),
+(35, 'twinkleshine', NULL, 'char', 1),
+(36, 'lemon hearts', NULL, 'char', 1),
+(37, 'granny smith', NULL, 'char', 1),
+(38, 'fleetfoot', NULL, 'char', 1),
+(39, 'stormy flare', NULL, 'char', 1),
+(40, 'wind rider', NULL, 'char', 1),
+(41, 'sugar belle', NULL, 'char', 1),
+(42, 's5e15', NULL, 'ep', 2),
+(43, 's5e14', NULL, 'ep', 2),
+(44, 'foal', NULL, 'cat', 7),
+(45, 'cutie mark crusader', NULL, 'cat', 3),
+(46, 'apple bloom', NULL, 'char', 1),
+(47, 'scootaloo', NULL, 'char', 1),
+(48, 'sweetie belle', NULL, 'char', 1),
+(49, 'night glider', NULL, 'char', 1),
+(50, 'derpy hooves', 'Derpy Hooves or Muffins', 'char', 1),
+(51, 'whoa nelly', NULL, 'char', 1),
+(52, 'double diamond', NULL, 'char', 1),
+(53, 'party favor', NULL, 'char', 1),
+(54, 'starlight glimmer', NULL, 'char', 1),
+(55, 'coco pommel', NULL, 'char', 1),
+(56, 'manehatten', NULL, 'cat', 1),
+(57, 'princess luna', NULL, 'char', 1),
+(58, 'suri polomare', NULL, 'char', 1),
+(59, 'royalty', NULL, 'cat', 4),
+(60, 'trixie', NULL, 'char', 1),
+(61, 's3e5', NULL, 'ep', 1),
+(62, 'alicorn amulet', NULL, NULL, 1),
+(63, 'princess celestia', NULL, 'char', 1),
+(64, 'object', NULL, 'cat', 1),
+(65, 's5e2', NULL, 'ep', 4),
+(66, 'big macintosh', NULL, 'char', 1),
+(68, 'moondancer', NULL, 'char', 1),
+(72, 'dinky doo', NULL, 'char', 1),
+(73, 'berry pinch', NULL, 'char', 1),
+(74, 'button mash', NULL, 'char', 1),
+(75, 'lily longsocks', NULL, 'char', 1),
+(76, 'human', NULL, 'spec', 1),
+(77, 'shining armor', NULL, 'char', 1),
+(78, 'original character', 'Characters not canon to the show''s universe', 'cat', 1),
+(79, 'cheese sandwich', NULL, 'char', 1),
+(80, 'marble pie', NULL, 'char', 1),
+(81, 'limestone pie', NULL, 'char', 1),
+(82, 'maud pie', NULL, 'char', 1),
+(83, 'igenous rock', NULL, 'char', 1),
+(84, 'cloudy quartz', NULL, 'char', 1),
+(85, 'pie family', NULL, 'cat', 6),
+(86, 's5e20', NULL, 'ep', 4),
+(87, 'spitfire', NULL, 'char', 1),
+(88, 'lightning dust', NULL, 'char', 1),
+(89, 'discord', NULL, 'char', 1),
+(90, 'draconequus', NULL, 'spec', 1),
+(91, 'tree hugger', NULL, 'char', 1),
+(92, 's5e22', NULL, 'ep', 1),
+(93, 'rara', '', 'char', 2),
+(94, 's5e24', '', 'ep', 3),
+(95, 'svengallop', '', 'char', 1),
+(96, 'outfit', 'Alternative character outfits', NULL, 1),
+(97, 's5e8', NULL, 'ep', 0),
+(98, 'sunburst', '', 'char', 1),
+(99, 's5e26', '', 'ep', 5),
+(100, 'sunset shimmer', '', 'char', 1),
+(101, 's4e12', '', 'ep', 1),
+(102, 's5e1-2', '', 'ep', 1),
+(103, 's5e25-26', '', 'ep', 1),
+(104, 's4e24', '', 'ep', 1),
+(105, 's4e8', '', 'ep', 2),
+(106, 's5e16', '', 'ep', 1),
+(107, 'meadow flower', '', 'char', 1),
+(108, 's3e7', '', 'ep', 1);
 
 
 --

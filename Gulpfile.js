@@ -166,7 +166,7 @@ gulp.task('pgsort', function(){
 
 			var i = 0;
 			while (i < dir.length){
-				if (!/\.pg\.sql$/.test(dir[i]) || /_full/.test(dir[i])){
+				if (!/\.pg\.sql$/.test(dir[i])){
 					dir.splice(i, 1);
 					continue;
 				}
@@ -209,6 +209,8 @@ gulp.task('pgsort', function(){
 						data = data.replace(test,function(row,table){
 							return Tables[table][TableCounters[table]++];
 						});
+						data = data.replace(/;(?:\r|\r\n|\n)INSERT INTO "?([a-z]+)"?\s+VALUES\s+/g,',\n');
+						data = data.replace(/((?:\r|\r\n|\n)\s*(?:\r|\r\n|\n)INSERT INTO "?([a-z]+)"?\s*VALUES)\s*\(/g,'$1\n(');
 
 						fs.writeFile(fpath, data, function(err){
 							if (err) throw err;
