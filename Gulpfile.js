@@ -177,7 +177,7 @@ gulp.task('pgsort', function(){
 				(function(fpath){
 					fs.readFile(fpath, 'utf8', function(err, data){
 						if (err) throw err;
-						var test = /INSERT INTO "?([a-z]+)"?\s*VALUES\s*\((\d+),[\s\S]+?;/g;
+						var test = /INSERT INTO "?([a-z_\-]+)"?\s*VALUES\s*\((\d+),[\s\S]+?;\n/g;
 						if (!test.test(data))
 							return;
 						var Tables = {},
@@ -209,8 +209,8 @@ gulp.task('pgsort', function(){
 						data = data.replace(test,function(row,table){
 							return Tables[table][TableCounters[table]++];
 						});
-						data = data.replace(/;(?:\r|\r\n|\n)INSERT INTO "?([a-z]+)"?\s+VALUES\s+/g,',\n');
-						data = data.replace(/((?:\r|\r\n|\n)\s*(?:\r|\r\n|\n)INSERT INTO "?([a-z]+)"?\s*VALUES)\s*\(/g,'$1\n(');
+						data = data.replace(/;(?:\r|\r\n|\n)INSERT INTO "?([a-z_\-]+)"?\s+VALUES\s+/g,',\n');
+						data = data.replace(/((?:\r|\r\n|\n)\s*(?:\r|\r\n|\n)INSERT INTO "?([a-z_\-]+)"?\s*VALUES)\s*\(/g,'$1\n(');
 
 						fs.writeFile(fpath, data, function(err){
 							if (err) throw err;
