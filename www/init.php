@@ -14,6 +14,13 @@
 	require 'includes/JSON.php';
 	require 'includes/PostgresDbWrapper.php';
 	$Database = new PostgresDbWrapper('mlpvc-rr');
+	try {
+		$Database->pdo();
+	}
+	catch (Exception $e){
+		unset($Database);
+		die(require APPATH."views/dberr.php");
+	}
 	$CGDb = new PostgresDbWrapper('mlpvc-colorguide');
 	require 'includes/Cookie.php';
 	require 'includes/Utils.php';

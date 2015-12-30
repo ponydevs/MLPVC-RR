@@ -2,6 +2,8 @@
 		<h2>Pages</h2>
 		<nav><ul><?=get_nav_html()?></ul></nav>
 	</section>
+<?php
+if (!empty($Database)){ ?>
 	<section class="<?=$signedIn?'welcome':'login'?>">
 		<h2><?=$signedIn?'Signed in as':'Welcome!'?></h2>
 <?php
@@ -36,3 +38,10 @@
 <?php
 	}
 	echo get_upcoming_eps();
+} else { ?>
+
+	<section class="login">
+		<h2>Welcome!</h2>
+		<p>We're having some technical difficulties and signing in is not possible at the moment. Please check back later.</p>
+	</section>
+<? } ?>

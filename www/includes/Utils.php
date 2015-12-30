@@ -1153,11 +1153,13 @@ HTML;
 	}
 
 	# Get Roles from DB
-	$ROLES_ASSOC = array();
-	$ROLES = array();
-	foreach ($Database->orderBy('value','ASC')->get('roles') as $r){
-		$ROLES_ASSOC[$r['name']] = $r['label'];
-		$ROLES[] = $r['name'];
+	$ROLES_ASSOC = array('guest' => 0);
+	$ROLES = array('guest');
+	if (!empty($Database)){
+		foreach ($Database->orderBy('value', 'ASC')->get('roles') as $r){
+			$ROLES_ASSOC[$r['name']] = $r['label'];
+			$ROLES[] = $r['name'];
+		}
 	}
 
 	/**
@@ -2417,7 +2419,7 @@ ORDER BY "count" DESC
 
 	// Returns text of website footer
 	function get_footer(){
-		return "Running <strong><a href='".GITHUB_URL."' title='Visit the GitHub repository'>MLPVC-RR</a>@<a href='".GITHUB_URL."/commit/".LATEST_COMMIT_ID."' title='See exactly what was changed and why'>".LATEST_COMMIT_ID."</a></strong> created ".timetag(LATEST_COMMIT_TIME)." | <a href='".GITHUB_URL."/issues' target='_blank'>Known issues</a>".(PERM('user')?" | <a href='#feedback' class='send-feedback'>Send feedback</a>":'');
+		return "Running <strong><a href='".GITHUB_URL."' title='Visit the GitHub repository'>MLPVC-RR</a>@<a href='".GITHUB_URL."/commit/".LATEST_COMMIT_ID."' title='See exactly what was changed and why'>".LATEST_COMMIT_ID."</a></strong> created ".timetag(LATEST_COMMIT_TIME)." | <a href='".GITHUB_URL."/issues' target='_blank'>Known issues</a> | ".(PERM('user')?"<a href='#feedback' class='send-feedback'>Send feedback</a>":"<a href='".GITHUB_URL."/issues/new' target='_blank'>Send feedback</a>");
 	}
 
 	// Loads the home page
