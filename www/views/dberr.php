@@ -3,7 +3,9 @@
 	require "$DIR/../includes/Utils.php";
 	$signedIn = false;
 	$FTS = '?'.time();
-	$customCSS = array("/css/theme.min.css$FTS");
+	$customCSS = array("/css/theme.min.css");
+	foreach ($customCSS as $k => $el)
+		$customCSS[$k] .= '?'.filemtime(APPATH.substr($el,1));
 	$view = 'dberr';
 	require "$DIR/header.php"; ?>
 <div id="content">
@@ -18,5 +20,7 @@
 	echo Notice('fail','<strong>Probable cause / debug information:</strong><pre><code>'.(isset($CODE_ERRORS[$code]) ? $CODE_ERRORS[$code] : $e->getMessage()).'</code></pre>',true)?>
 </div>
 <?php
-	$customJS = array("/js/global.min.js$FTS","/js/moment.min.js$FTS","/js/dyntime.min.js$FTS");
+	$customJS = array("/js/global.min.js","/js/moment.min.js","/js/dyntime.min.js");
+	foreach ($customJS as $k => $el)
+		$customJS[$k] .= '?'.filemtime(APPATH.substr($el,1));
 	require "$DIR/footer.php"; ?>
