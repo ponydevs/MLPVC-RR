@@ -2,7 +2,8 @@
 	$DIR = dirname(__FILE__);
 	require "$DIR/../includes/Utils.php";
 	$signedIn = false;
-	$FTS = '?'.time();
+	statusCodeHeader(503);
+
 	$customCSS = array("/css/theme.min.css");
 	foreach ($customCSS as $k => $el)
 		$customCSS[$k] .= '?'.filemtime(APPATH.substr($el,1));

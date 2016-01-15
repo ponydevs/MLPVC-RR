@@ -152,7 +152,7 @@
 	$.ajaxSetup({
 		dataType: "json",
 		error: function(xhr){
-			if ([404, 500].indexOf(xhr.status) === -1)
+			if ([404, 500, 503].indexOf(xhr.status) === -1)
 				$w.triggerHandler('ajaxerror',[].slice.call(arguments));
 		},
 		statusCode: {
@@ -164,6 +164,9 @@
 			},
 			500: function(){
 				$.Dialog.fail(false, 'The request failed due to an internal server error. If this persists, please <a href="#feedback" class="send-feedback">let us know</a>!');
+			},
+			503: function(){
+				$.Dialog.fail(false, 'The request failed because the server is temporarily unavailable. This whouldn\'t take too long, please try again in a few seconds.<br>If the problem still persist after a few minutes, please contact <a href="http://djdavid98.deviantart.com/">DJDavid98</a>.');
 			}
 		}
 	});
