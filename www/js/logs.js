@@ -37,7 +37,7 @@ DocReady.push(function Logs(){
 							});
 
 							$dataDiv.insertAfter($this).slideDown();
-							$this.addClass('typcn-minus');
+							$this.addClass('typcn-minus color-darkblue');
 						})).always(function(){
 							requesting = false;
 							$this.removeClass('typcn-refresh');
