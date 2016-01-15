@@ -19,6 +19,8 @@ DocReady.push(function Logs(){
 						if (requesting) return false;
 						requesting = true;
 
+						$this.removeClass('typcn-minus typcn-plus').addClass('typcn-refresh');
+
 						var EntryID = parseInt($row.children().first().text());
 
 						$.post('/logs/details/'+EntryID, $.mkAjaxHandler(function(){
@@ -35,9 +37,12 @@ DocReady.push(function Logs(){
 							});
 
 							$dataDiv.insertAfter($this).slideDown();
-							$this.toggleClass('typcn-minus typcn-plus');
+							$this.addClass('typcn-minus');
 						})).always(function(){
 							requesting = false;
+							$this.removeClass('typcn-refresh');
+						}).fail(function(){
+							$this.addClass('typcn-times color-red').css('cursor','not-allowed').off('click');
 						});
 					}
 				}

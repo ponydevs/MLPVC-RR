@@ -151,8 +151,9 @@
 	});
 	$.ajaxSetup({
 		dataType: "json",
-		error: function(){
-			$w.triggerHandler('ajaxerror',[].slice.call(arguments));
+		error: function(xhr){
+			if ([404, 500].indexOf(xhr.status) === -1)
+				$w.triggerHandler('ajaxerror',[].slice.call(arguments));
 		},
 		statusCode: {
 			401: function(){
@@ -162,7 +163,7 @@
 				$.Dialog.fail(undefined, "Error 404: The requested endpoint could not be found");
 			},
 			500: function(){
-				$.Dialog.fail(false, 'The request failed due to an internal server error. If this persists, please open an issue on GitHub using the link in the footer!');
+				$.Dialog.fail(false, 'The request failed due to an internal server error. If this persists, please <a href="#feedback" class="send-feedback">let us know</a>!');
 			}
 		}
 	});
@@ -316,59 +317,6 @@ function DocumentIsReady(){
 		});
 	});
 
-	// Feedback form
-	var $FeedbackForm;
-	$('.send-feedback').off('click').on('click',function(e){
-		e.preventDefault();
-		e.stopPropagation();
-
-		if (typeof $FeedbackForm === 'undefined'){
-			$FeedbackForm = $.mk('form').attr('id','feedback-form').append(
-				$.mk('p').text("Your opinion matters. If you're having an issue with the site, or just want to say how great it is, this is the place to do do."),
-				$.mk('p').html("Your message will be sent directly to the developer, and you'll be able to communicate with him using the <a href='/feedback'>Feedback</a> section of the site."),
-				$.mk('label').append(
-					$.mk('span').text('Subject (5-120 chars.)'),
-					$.mk('input').attr({
-						name: 'subject',
-						maxlength: 120,
-						placeholder: 'Enter subject',
-						pattern: PRINTABLE_ASCII_REGEX.replace('+','{5,120}'),
-						required: true,
-					})
-				),
-				$.mk('label').append(
-					$.mk('span').text('Message (10-500 chars.)'),
-					$.mk('textarea').attr({
-						name: 'message',
-						maxlength: 500,
-						placeholder: 'Enter message',
-						pattern: PRINTABLE_ASCII_REGEX.replace('+','{10,500}'),
-						required: true,
-					})
-				)
-			);
-		}
-
-		$.Dialog.request('Send feedback',$FeedbackForm.clone(true,true),'feedback-form','Send',function($form){
-			$form.on('submit',function(e){
-				e.preventDefault();
-
-				var data = $form.mkData();
-
-				if (data.subject.length < 5 || data.subject.length > 120)
-					return $.Dialog.fail(false, 'The subject must be between 5 and 120 characters (you entered '+data.subject.length+').');
-				if (data.message.length < 10 || data.message.length > 500)
-					return $.Dialog.fail(false, 'Your message must be between 10 and 500 characters (you entered '+data.message.length+').');
-
-				$.post('/feedback',data,$.mkAjaxHandler(function(){
-					if (!this.status) return $.Dialog.fail(false, this.message);
-
-					$.Dialog.success(false, this.message, true);
-				}));
-			});
-		});
-	});
-
 	var l = window.DocReady.length;
 	if (l) for (var i = 0; i<l; i++)
 		window.DocReady[i].call(window);
@@ -453,6 +401,59 @@ $(function(){
 	}
 	$w.on('unload',function(){
 		$cd = {length:0};
+	});
+
+	// Feedback form
+	var $FeedbackForm;
+	$(document).on('click','.send-feedback',function(e){
+		e.preventDefault();
+		e.stopPropagation();
+
+		if (typeof $FeedbackForm === 'undefined'){
+			$FeedbackForm = $.mk('form').attr('id','feedback-form').append(
+				$.mk('p').text("Your opinion matters. If you're having an issue with the site, or just want to say how great it is, this is the place to do do."),
+				$.mk('p').html("Your message will be sent directly to the developer, and you'll be able to communicate with him using the <a href='/feedback'>Feedback</a> section of the site."),
+				$.mk('label').append(
+					$.mk('span').text('Subject (5-120 chars.)'),
+					$.mk('input').attr({
+						name: 'subject',
+						maxlength: 120,
+						placeholder: 'Enter subject',
+						pattern: PRINTABLE_ASCII_REGEX.replace('+','{5,120}'),
+						required: true,
+					})
+				),
+				$.mk('label').append(
+					$.mk('span').text('Message (10-500 chars.)'),
+					$.mk('textarea').attr({
+						name: 'message',
+						maxlength: 500,
+						placeholder: 'Enter message',
+						pattern: PRINTABLE_ASCII_REGEX.replace('+','{10,500}'),
+						required: true,
+					})
+				)
+			);
+		}
+
+		$.Dialog.request('Send feedback',$FeedbackForm.clone(true,true),'feedback-form','Send',function($form){
+			$form.on('submit',function(e){
+				e.preventDefault();
+
+				var data = $form.mkData();
+
+				if (data.subject.length < 5 || data.subject.length > 120)
+					return $.Dialog.fail(false, 'The subject must be between 5 and 120 characters (you entered '+data.subject.length+').');
+				if (data.message.length < 10 || data.message.length > 500)
+					return $.Dialog.fail(false, 'Your message must be between 10 and 500 characters (you entered '+data.message.length+').');
+
+				$.post('/feedback',data,$.mkAjaxHandler(function(){
+					if (!this.status) return $.Dialog.fail(false, this.message);
+
+					$.Dialog.success(false, this.message, true);
+				}));
+			});
+		});
 	});
 
 	// AJAX page loader
