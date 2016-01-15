@@ -9,30 +9,26 @@ DocReady.push(function User(){
 	$sessionList.find('button.remove').off('click').on('click',function(e){
 		e.preventDefault();
 
-		var title = 'Removing session',
+		var title = 'Deleting session',
 			$btn = $(this),
 			$li = $btn.closest('li'),
-			$browser = $btn.prev().prev(),
-			browser = $browser.text().trim(),
-			$platform = $browser.next().children('strong'),
-			platform = $platform.length ? ' on <em>'+$platform.text().trim()+'</em>' : '';
+			browser = $li.children('.browser').text().trim(),
+			$platform = $li.children('.platform'),
+			platform = $platform.length ? ' on <em>'+$platform.children('strong').text().trim()+'</em>' : '';
 
 		// First item is sometimes the current session, trigger logout button instead
-		if ($li.index() === 0){
-			var current = /current/i.test($li.children().last().text());
-			if (current)
-				return $signoutBtn.trigger('click');
-		}
+		if ($li.index() === 0 && /current/i.test($li.children().last().text()))
+			return $signoutBtn.triggerHandler('click');
 
 		var SessionID = $li.attr('id').replace(/\D/g,'');
 
 		if (typeof SessionID === 'undefined' || isNaN(SessionID) || !isFinite(SessionID))
 			return $.Dialog.fail(title,'Could not locate Session ID, please reload the page and try again.');
 
-		$.Dialog.confirm(title,(sameUser?'You':name)+' will be logged out form <em>'+browser+'</em>'+platform+'.<br>Continue?',function(sure){
+		$.Dialog.confirm(title,(sameUser?'You':name)+' will be signed out of <em>'+browser+'</em>'+platform+'.<br>Continue?',function(sure){
 			if (!sure) return;
 
-			$.Dialog.wait(title,'Signing out from '+browser);
+			$.Dialog.wait(title,'Signing out of '+browser);
 
 			$.post('/user/sessiondel/'+SessionID, $.mkAjaxHandler(function(){
 				if (!this.status) return $.Dialog.fail(title,this.message);

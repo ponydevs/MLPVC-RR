@@ -2001,8 +2001,8 @@ HTML;
 		if (PERM('developer')){
 			$platform .= "<span class='scope'><code>{$Session['scope']}</code></span>";
 			if (!empty($Session['user_agent']))
-				$buttons .= "<br><button class='darkblue typcn typcn-info-large useragent' data-agent='".apos_encode($Session['user_agent'])."'>UA</button>".
-					"<a class='btn red typcn typcn-code' href='/browser/{$Session['id']}'>Debug</a>";
+				$buttons .= "<br><button class='darkblue typcn typcn-eye useragent' data-agent='".apos_encode($Session['user_agent'])."'>UA</button>".
+					"<a class='btn red typcn typcn-chevron-right' href='/browser/{$Session['id']}'>Debug</a>";
 		}
 
 		$firstuse = timetag($Session['created']);

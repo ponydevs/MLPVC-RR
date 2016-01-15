@@ -18,7 +18,7 @@
 	}
 	section { @extend %section }
 	.details {
-		> section { margin-bottom: 15px }
+		> section:not(:last-child) { margin-bottom: 15px }
 		.bans ul {
 			margin: 0;
 			padding: 0;
@@ -51,6 +51,7 @@
 		}
 	}
 	.settings {
+		margin-top: 15px;
 		border-top: 2px dashed $ContentOutline;
 		padding-top: 10px;
 		text-align: center;
@@ -86,7 +87,7 @@
 							content: "";
 							display: block;
 							float:left;
-							margin: 0 auto;
+							margin: 0 auto 5px;
 							height: 64px;
 							width: 100%;
 							background-repeat: no-repeat;
@@ -103,7 +104,7 @@
 
 						> button { vertical-align: bottom }
 						+ .platform { font-size: .9em !important }
-						~ * { font-size: .7em }
+						~ * { font-size: .8em }
 					}
 					.scope {
 						margin-top: 5px;
