@@ -141,16 +141,17 @@ HTML;
 		<section class="bans">
 			<label><?=$PublicSection?>Banishment history</label>
 			<ul><?php
+		$Actions = array('Banish','Un-banish');
 		$Banishes = $Database
 			->where('target', $User['id'])
 			->join('log l',"l.reftype = 'banish' AND l.refid = b.entryid")
 			->orderBy('l.timestamp')
-			->get('log__banish b',null,"b.reason, l.initiator, l.timestamp, 'Banish' as Action");
+			->get('log__banish b',null,"b.reason, l.initiator, l.timestamp, 0 as action");
 		if (!empty($Banishes)){
 			$Unbanishes = $Database
 				->where('target', $User['id'])
 				->join('log l',"l.reftype = 'un-banish' AND l.refid = b.entryid")
-				->get('log__un-banish b',null,"b.reason, l.initiator, l.timestamp, 'Un-banish' as Action");
+				->get('log__un-banish b',null,"b.reason, l.initiator, l.timestamp, 1 as action");
 			if (!empty($Unbanishes)){
 				$Banishes = array_merge($Banishes,$Unbanishes);
 				usort($Banishes, function($a, $b){
@@ -166,7 +167,7 @@ HTML;
 			foreach ($Banishes as $b){
 				$initiator = $displayInitiator ? get_user($b['initiator']) : null;
 				$b['reason'] = htmlspecialchars($b['reason']);
-				echo "<li class=".strtolower($b['Action'])."><blockquote>{$b['reason']}</blockquote> - ".(isset($initiator)?profile_link($initiator).' ':'').timetag($b['timestamp'])."</li>";
+				echo "<li class=".strtolower($Actions[$b['action']])."><blockquote>{$b['reason']}</blockquote> - ".(isset($initiator)?profile_link($initiator).' ':'').timetag($b['timestamp'])."</li>";
 			}
 		}
 			?></ul>
