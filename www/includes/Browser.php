@@ -94,7 +94,7 @@ class Browser {
 	const PLATFORM_WINDOWS = 'Windows';
 	const PLATFORM_WINPHONE = 'Windows Phone';
 	const PLATFORM_WINDOWS_CE = 'Windows CE';
-	const PLATFORM_APPLE = 'Apple';
+	const PLATFORM_OSX = 'Mac OSX';
 	const PLATFORM_LINUX = 'Linux';
 	const PLATFORM_OS2 = 'OS/2';
 	const PLATFORM_BEOS = 'BeOS';
@@ -110,14 +110,11 @@ class Browser {
 
 	const OPERATING_SYSTEM_UNKNOWN = 'unknown';
 
-	public function Browser($userAgent = ""){
+	public function Browser($userAgent = null){
 		$this->reset();
-		if ($userAgent != ""){
+		if (!empty($userAgent))
 			$this->setUserAgent($userAgent);
-		}
-		else {
-			$this->determine();
-		}
+		else $this->determine();
 	}
 
 	/**
@@ -1288,7 +1285,7 @@ class Browser {
 			$this->_platform = self::PLATFORM_IOS;
 		}
 		else if (stripos($this->_agent, 'mac') !== false){
-			$this->_platform = self::PLATFORM_APPLE;
+			$this->_platform = self::PLATFORM_OSX;
 		}
 		else if (stripos($this->_agent, 'android') !== false){
 			$this->_platform = self::PLATFORM_ANDROID;

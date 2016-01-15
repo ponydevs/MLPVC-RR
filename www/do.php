@@ -1953,7 +1953,14 @@
 			loadPage($settings);
 		break;
 		case "browser":
-			$browser = browser();
+			$AgentString = null;
+			if (is_numeric($data) && PERM('developer')){
+				$SessionID = intval($data, 10);
+				$Session = $Database->where('id', $SessionID)->getOne('sessions');
+				if (!empty($Session))
+					$AgentString = $Session['user_agent'];
+			}
+			$browser = browser($AgentString);
 
 			loadPage(array(
 				'title' => 'Your browser',

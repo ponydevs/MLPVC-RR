@@ -990,13 +990,15 @@ HTML;
 
 	/**
 	 * Adds browser info to $Authdata
+	 *
+	 * @param string|null $user_agent User-Agent string to check
+	 *
+	 * @return array
 	 */
-	function browser(){
+	function browser($user_agent = null){
 		require_once "includes/Browser.php";
-		$browser = new Browser();
-		$Return = array(
-			'user_agent' => $_SERVER['HTTP_USER_AGENT']
-		);
+		$Return = array('user_agent' => !empty($user_agent) ? $user_agent : $_SERVER['HTTP_USER_AGENT']);
+		$browser = new Browser($Return['user_agent']);
 		$name = $browser->getBrowser();
 		if ($name !== Browser::BROWSER_UNKNOWN){
 			$Return['browser_name'] = $name;
@@ -1999,7 +2001,8 @@ HTML;
 		if (PERM('developer')){
 			$platform .= "<span class='scope'><code>{$Session['scope']}</code></span>";
 			if (!empty($Session['user_agent']))
-				$buttons .= "<br><button class='darkblue typcn typcn-info-large useragent' data-agent='".apos_encode($Session['user_agent'])."'>View User Agent</button>";
+				$buttons .= "<br><button class='darkblue typcn typcn-info-large useragent' data-agent='".apos_encode($Session['user_agent'])."'>UA</button>".
+					"<a class='btn red typcn typcn-code' href='/browser/{$Session['id']}'>Debug</a>";
 		}
 
 		$firstuse = timetag($Session['created']);
