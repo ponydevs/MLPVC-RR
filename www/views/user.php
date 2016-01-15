@@ -27,10 +27,11 @@
 	$VeryPrivateSection = '';
 
 	if ($sameUser || PERM('inspector')){
-		$DevSection = "<span class='typcn typcn-cog color-red' title='Only visible to the developer'></span>";
-		$PublicSection = "<span class='typcn typcn-world color-blue' title='Publicly visible'></span>";
-		$PrivateSection = "<span class='typcn typcn-lock-closed' title='Only visible to you and group administrators'></span>";
-		$VeryPrivateSection = "<span class='typcn typcn-lock-closed color-green' title='Only visible to you'></span>";
+		$you = $sameUser ? 'you' : 'the user';
+		$DevSection = "<span class='typcn typcn-cog color-red' title='Visible to: developer'></span>";
+		$PublicSection = "<span class='typcn typcn-world color-blue' title='Visible to: public'></span>";
+		$PrivateSection = "<span class='typcn typcn-lock-closed' title='Visible to: $you & group administrators'></span>";
+		$VeryPrivateSection = "<span class='typcn typcn-lock-closed color-green' title='Visible to: $you'></span>";
 	}
 
 	if (PERM('developer')){ ?>
