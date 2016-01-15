@@ -20,6 +20,8 @@ $(function(){
 		$.mk('p').append('Last updated: ', $.mk('time').attr('datetime', Data.timestamp)).insertAfter($PostsTitle);
 		window.updateTimes();
 
+		if (Data.datasets.length === 0)
+			return $PostStatsLegend.html('<strong>No data available</strong>');
 		$.each(Data.datasets,function(i,el){
 			var rgb = $.hex2rgb(PostLegendColors[el.clrkey]),
 				rgbstr = rgb.r+','+rgb.g+','+rgb.b;
@@ -54,6 +56,8 @@ $(function(){
 		$.mk('p').append('Last updated: ', $.mk('time').attr('datetime', Data.timestamp)).insertAfter($ApprovalTitle);
 		window.updateTimes();
 
+		if (Data.datasets.length === 0)
+			return $ApprovalStatsLegend.html('<strong>No data available</strong>');
 		$.extend(Data.datasets[0], {
 			fillColor: 'rgba('+rgbstr+',0.2)',
 			strokeColor: 'rgb('+rgbstr+')',
