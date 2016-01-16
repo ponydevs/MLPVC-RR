@@ -73,12 +73,13 @@
 			foreach ($Posts as $i => $p){
 				list($link,$page) = post_link_html($p);
 				$posted = timetag($p['posted']);
+				$label = !empty($p['label']) ? "<span class='label'>{$p['label']}</span>" : '';
 				$Posts[$i] = <<<HTML
 <li>
 	<div class='image screencap'>
 		<a href='$link'><img src='{$p['preview']}'></a>
 	</div>
-	<span class='label'>{$p['label']}</span>
+	$label
 	<em>Posted under <a href='$link'>$page</a> $posted</em>
 	<div>
 		<a href='$link' class='btn blue typcn typcn-arrow-forward'>View</a>
