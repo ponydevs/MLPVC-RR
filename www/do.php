@@ -1962,6 +1962,8 @@
 			}
 			$browser = browser($AgentString);
 
+			fix_path('/browser'.(!empty($Session)?"/{$Session['id']}":''));
+
 			loadPage(array(
 				'title' => 'Your browser',
 				'do-css'
