@@ -547,7 +547,7 @@ HTML;
 
 	// Removes excess tabs from HTML
 	function remove_indentation($HTML){
-		return preg_replace('~>\s*<~','><',preg_replace('/(\n|\r|\r\n)[\t ]*/', '', $HTML));
+		return preg_replace('/(\n|\r|\r\n)[\t ]*/', '', $HTML);
 	}
 
 	// Display a 404 page
