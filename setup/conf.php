@@ -28,3 +28,11 @@
 	// GitHub webhooks-related \\
 	define('GH_WEBHOOK_DO', '');
 	define('GH_WEBHOOK_SECRET', '');
+
+	// E-Mail Provider \\
+	define('MAIL_ENABLED', false);
+	define('MAIL_HOST','');
+	define('MAIL_PORT','');
+	define('MAIL_USER','');
+	define('MAIL_PASS','');
+	define('DEVELOPER_EMAIL','');

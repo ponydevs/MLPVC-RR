@@ -1983,10 +1983,12 @@
 				do404();
 
 			if (!empty($data) && preg_match('~'.UUIDV4_REGEX.'~', $data)){
-				$ChainID = $data;
-				$Chain = $Database->where('chain',$ChainID)->getOne('feedback');
-				$ChainID = $Chain['chain'];
-				$CantSeeChain = empty($Chain) || (!PERM('developer') && $Chain['user'] !== $currentUser['id']);
+				$CantSeeChain = true;
+				$Chain = $Database->where('chain',$data)->getOne('feedback');
+				if (!empty($Chain)){
+					$ChainID = $Chain['chain'];
+					$CantSeeChain = !PERM('developer') && $Chain['user'] !== $currentUser['id'];
+				}
 			}
 
 			if (RQMTHD === 'POST'){
@@ -2002,12 +2004,14 @@
 					if ($sln < 5 ||$sln > 120)
 						respond("The subject must be between 5 and 120 characters (you entered $sln).");
 
-					$ChainID = $Database->insert('feedback',array(
+					$Chain = array(
 						'user' => $currentUser['id'],
 						'subject' => $subject,
-					),'chain');
+					);
+					$ChainID = $Database->insert('feedback',$Chain,'chain');
 					if (empty($ChainID))
 						respond('Your feedback could not be submitted: '.ERR_DB_FAIL);
+					$Chain['chain'] = $ChainID;
 				}
 				else {
 					if (isset($_REQUEST['close']) || isset($_REQUEST['reopen'])){
@@ -2045,18 +2049,25 @@
 				if (preg_match(FEEDBACK_SPECIAL_MESSAGE_REGEX, $message))
 					respond("<p>Your message begins with text that has special meaning for the system. Please remove the <code>@@</code> from the beginning of your message and try again.</p>");
 
-				$MessageID = $Database->insert('feedback__messages',array(
+				$insert = array(
 					'chain' => $ChainID,
 					'author' => $currentUser['id'],
 					'body' => $message,
-				), 'mid');
+				);
+				$MessageID = $Database->insert('feedback__messages', $insert, 'mid');
 				if (empty($MessageID))
 					respond('Your message could not be submitted: '.ERR_DB_FAIL);
+				$insert['mid'] = $MessageID;
+
+				if (MAIL_ENABLED)
+					send_feedback_update($insert, $Chain, $creating);
+
 				if (!$creating)
 					respond(array('chain' => render_feedback_chain_html($ChainID)));
+				else $insert['chain_subject'] = $subject;
 
 				$Link = "feedback/$ChainID".(!$creating?"#msg$MessageID":'');
-				respond("Your feedback was submitted successfuly. You can track its status here: <a href='/$Link'>".ABSPATH."$Link</a>", 1);
+				respond("Your feedback was submitted successfuly. You can view it here: <a href='/$Link'>".ABSPATH."$Link</a>", 1);
 			}
 
 			if (!empty($ChainID)){

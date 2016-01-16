@@ -450,6 +450,8 @@ $(function(){
 				if (data.message.length < 10 || data.message.length > 500)
 					return $.Dialog.fail(false, 'Your message must be between 10 and 500 characters (you entered '+data.message.length+').');
 
+				$.Dialog.wait(false, 'Submitting feedback');
+
 				$.post('/feedback',data,$.mkAjaxHandler(function(){
 					if (!this.status) return $.Dialog.fail(false, this.message);
 
