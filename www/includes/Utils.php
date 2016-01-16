@@ -475,9 +475,12 @@ HTML;
 		$pageHeader = array_search('no-page-header',$settings) === false;
 
 		if (empty($_GET['via-js'])){
+			ob_start();
 			require 'views/header.php';
 			require $viewPath;
 			require 'views/footer.php';
+			$content = ob_get_clean();
+			echo remove_indentation($content);
 			die();
 		}
 		else {
@@ -544,7 +547,7 @@ HTML;
 
 	// Removes excess tabs from HTML
 	function remove_indentation($HTML){
-		return preg_replace('/(\n|\r|\r\n)\t+/', '', $HTML);
+		return preg_replace('~>\s*<~','><',preg_replace('/(\n|\r|\r\n)[\t ]*/', '', $HTML));
 	}
 
 	// Display a 404 page
