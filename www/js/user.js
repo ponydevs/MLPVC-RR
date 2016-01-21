@@ -60,7 +60,7 @@ DocReady.push(function User(){
 
 			$.Dialog.wait(title,'Signing out');
 
-			$.post('/signout?everywhere',$.mkAjaxHandler(function(){
+			$.post('/signout?everywhere',{username:name},$.mkAjaxHandler(function(){
 				if (this.status){
 					$.Dialog.success(title,this.message);
 					HandleNav.reload(function(){

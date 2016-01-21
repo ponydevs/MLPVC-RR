@@ -57,6 +57,18 @@
 			if (isset($_REQUEST['unlink']) || isset($_REQUEST['everywhere'])){
 				$col = 'user';
 				$val = $currentUser['id'];
+				if (!empty($_POST['username'])){
+					if (!PERM('manager') || isset($_REQUEST['unlink']))
+						respond();
+					if (!preg_match(USERNAME_PATTERN, $_POST['username']))
+						respond('Invalid username');
+					$TargetUser = $Database->where('name', $_POST['username'])->getOne('users','id,name');
+					if (empty($TargetUser))
+						respond("Target user doesn't exist");
+					if ($TargetUser['id'] !== $currentUser['id'])
+						$val = $TargetUser['id'];
+					else unset($TargetUser);
+				}
 			}
 			else {
 				$col = 'id';
@@ -66,8 +78,11 @@
 			if (!$Database->where($col,$val)->delete('sessions'))
 				respond('Could not remove information from database');
 
-			Cookie::delete('access');
-			respond((isset($_REQUEST['unlink'])?'Your account has been unlinked from our site':'You have been signed out successfully').'. Goodbye!',1);
+			if (empty($TargetUser)){
+				Cookie::delete('access');
+				respond((isset($_REQUEST['unlink'])?'Your account has been unlinked from our site':'You have been signed out successfully').'. Goodbye!',1);
+			}
+			else respond("All sessions of {$TargetUser['name']} have been removed", 1);
 		break;
 		case "da-auth":
 			da_handle_auth();
