@@ -2309,7 +2309,7 @@ ORDER BY "count" DESC
 		$workWith = $sizes[0];
 		if ($sizes[1] !== $sizes[0]){
 			$sizesBytes = array_map('size_in_bytes', $sizes);
-			if ($sizesBytes[1] > $sizesBytes[0])
+			if ($sizesBytes[1] < $sizesBytes[0])
 				$workWith = $sizes[1];
 		}
 
