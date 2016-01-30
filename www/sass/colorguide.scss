@@ -276,7 +276,8 @@ ul.colors {
 	list-style: none;
 	white-space: initial !important;
 	margin: 0;
-	user-select: none;
+
+	&:not(#colors) { user-select: none }
 
 	&:empty:before {
 		font-size: 1.4em;
