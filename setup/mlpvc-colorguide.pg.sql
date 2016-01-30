@@ -283,14 +283,16 @@ Cutie Mark colors subject to change on further episodes.', NULL, false, '2015-09
 (62, NULL, 'Sunburst', '', 'd9iyv1r', false, '2015-12-01 15:18:10.631048+00'),
 (63, NULL, 'Sunset Shimmer (EQG, RR)', 'Sunset''s colors from Equestria Girls and Rainbow Rocks.', NULL, true, '2015-12-05 18:17:59.882699+00'),
 (64, NULL, 'Angel Bunny', '', NULL, false, '2015-12-18 06:39:19.313917+00'),
-(65, NULL, 'Meadow Flower', '', 'd9ko8le', false, '2015-12-19 17:55:09.130305+00');
+(65, NULL, 'Meadow Flower', '', 'd9ko8le', false, '2015-12-19 17:55:09.130305+00'),
+(66, NULL, 'Pipsqueak', '', NULL, false, '2016-01-25 00:43:42.292322+00'),
+(67, NULL, 'Silver Spoon', '', NULL, false, '2016-01-25 02:40:31.20103+00');
 
 
 --
 -- Name: appearances_id_seq; Type: SEQUENCE SET; Schema: public; Owner: mlpvc-rr
 --
 
-SELECT pg_catalog.setval('appearances_id_seq', 65, true);
+SELECT pg_catalog.setval('appearances_id_seq', 67, true);
 
 
 --
@@ -604,14 +606,22 @@ INSERT INTO colorgroups VALUES
 (368, 65, 'Coat', 0),
 (369, 65, 'Mane & Tail', 1),
 (370, 65, 'Iris', 2),
-(371, 65, 'Cutie Mark', 3);
+(371, 65, 'Cutie Mark', 3),
+(372, 66, 'Coat', 0),
+(373, 66, 'Mane & Tail', 1),
+(374, 66, 'Iris', 2),
+(376, 67, 'Coat', 1),
+(377, 67, 'Mane & Tail', 2),
+(378, 67, 'Iris', 3),
+(379, 67, 'Glasses', 4),
+(380, 67, 'Necklace', 5);
 
 
 --
 -- Name: colorgroups_groupid_seq; Type: SEQUENCE SET; Schema: public; Owner: mlpvc-rr
 --
 
-SELECT pg_catalog.setval('colorgroups_groupid_seq', 371, true);
+SELECT pg_catalog.setval('colorgroups_groupid_seq', 380, true);
 
 
 --
@@ -1789,14 +1799,42 @@ INSERT INTO colors VALUES
 (1484, 371, 'Center Fill', '#624430', 2),
 (1485, 371, 'Center Outline', '#E28B34', 3),
 (1486, 371, 'Petals', '#F2DB73', 4),
-(1487, 371, 'Rays', '#B67136', 5);
+(1487, 371, 'Rays', '#B67136', 5),
+(1488, 372, 'Outline', '#A79B88', 0),
+(1489, 372, 'Fill', '#FFFFFF', 1),
+(1490, 372, 'Spot outline', '#7D6043', 2),
+(1491, 372, 'Spot fill', '#B08C69', 3),
+(1492, 373, 'Outline', '#451D17', 0),
+(1493, 373, 'Fill 1', '#6E4122', 1),
+(1494, 374, 'Iris', '#451D17', 0),
+(1501, 373, 'Fill 2', '#8C522D', 2),
+(1502, 376, 'Outline', '#7B939B', 0),
+(1503, 376, 'Fill', '#ABB8C1', 1),
+(1504, 376, 'Shadow Outline', '#6F8790', 2),
+(1505, 376, 'Shadow Fill', '#99A6B1', 3),
+(1506, 377, 'Outline', '#BACBD7', 0),
+(1507, 377, 'Fill 1', '#D9E4EA', 1),
+(1508, 377, 'Fill 2', '#EBEFF1', 2),
+(1509, 377, 'Braid Band Outline', '#D057B7', 3),
+(1510, 377, 'Braid Band Fill', '#EC76D3', 4),
+(1511, 378, 'Gradient Top', '#53377A', 0),
+(1512, 378, 'Gradient Bottom', '#A684D2', 1),
+(1513, 378, 'Highlight Top', '#AE7DD1', 2),
+(1514, 378, 'Highlight Bottom', '#B29BCF', 3),
+(1515, 379, 'Outline', '#15B0DF', 0),
+(1516, 379, 'Fill', '#BBFFFF', 1),
+(1517, 379, 'Lens Fill 1 (40% opaque)', '#FFFFFF', 2),
+(1518, 379, 'Lens Fill 2 (60% opaque)', '#FFFFFF', 3),
+(1519, 380, 'Outline', '#92D7F2', 0),
+(1520, 380, 'Fill', '#BBFFFF', 1),
+(1521, 380, 'Highlight', '#FBECF4', 2);
 
 
 --
 -- Name: colors_colorid_seq; Type: SEQUENCE SET; Schema: public; Owner: mlpvc-rr
 --
 
-SELECT pg_catalog.setval('colors_colorid_seq', 1487, true);
+SELECT pg_catalog.setval('colors_colorid_seq', 1521, true);
 
 
 --
@@ -1843,6 +1881,8 @@ INSERT INTO tagged VALUES
 (2, 59),
 (2, 60),
 (2, 61),
+(2, 66),
+(2, 67),
 (3, 3),
 (3, 5),
 (3, 11),
@@ -1899,6 +1939,8 @@ INSERT INTO tagged VALUES
 (7, 56),
 (7, 63),
 (7, 65),
+(7, 66),
+(7, 67),
 (8, 37),
 (8, 38),
 (8, 39),
@@ -1920,6 +1962,7 @@ INSERT INTO tagged VALUES
 (11, 57),
 (11, 61),
 (11, 62),
+(11, 66),
 (12, 1),
 (12, 2),
 (12, 3),
@@ -1963,6 +2006,7 @@ INSERT INTO tagged VALUES
 (12, 60),
 (12, 63),
 (12, 65),
+(12, 67),
 (14, 1),
 (21, 10),
 (21, 16),
@@ -2004,6 +2048,8 @@ INSERT INTO tagged VALUES
 (44, 38),
 (44, 39),
 (44, 40),
+(44, 66),
+(44, 67),
 (45, 23),
 (45, 24),
 (45, 25),
@@ -2086,7 +2132,9 @@ INSERT INTO tagged VALUES
 (105, 31),
 (106, 30),
 (107, 65),
-(108, 65);
+(108, 65),
+(110, 66),
+(111, 67);
 
 
 --
@@ -2095,17 +2143,17 @@ INSERT INTO tagged VALUES
 
 INSERT INTO tags VALUES
 (1, 'unicorn', NULL, 'spec', 19),
-(2, 'earth pony', NULL, 'spec', 20),
+(2, 'earth pony', NULL, 'spec', 22),
 (3, 'pegasus', NULL, 'spec', 11),
 (4, 'alicorn', NULL, 'spec', 3),
 (5, 'bat pony', NULL, 'spec', 0),
 (6, 'mane six', 'Ponies who are one of the show''s six main characters', 'cat', 7),
-(7, 'minor character', 'Ponies who had a speaking role and/or interacted with the mane six', 'cat', 35),
+(7, 'minor character', 'Ponies who had a speaking role and/or interacted with the mane six', 'cat', 37),
 (8, 'background character', 'Ponies whose only purpose is filling crowds, with no to minimal speaking roles', 'cat', 4),
 (9, 'antagonist', NULL, 'cat', 4),
 (10, 'pet', NULL, 'cat', 0),
-(11, 'male', NULL, 'gen', 13),
-(12, 'female', NULL, 'gen', 43),
+(11, 'male', NULL, 'gen', 14),
+(12, 'female', NULL, 'gen', 44),
 (14, 'twilight sparkle', NULL, 'char', 1),
 (19, 's1e1', NULL, 'ep', 0),
 (20, 's1e26', NULL, 'ep', 0),
@@ -2132,7 +2180,7 @@ INSERT INTO tags VALUES
 (41, 'sugar belle', NULL, 'char', 1),
 (42, 's5e15', NULL, 'ep', 2),
 (43, 's5e14', NULL, 'ep', 2),
-(44, 'foal', NULL, 'cat', 7),
+(44, 'foal', NULL, 'cat', 9),
 (45, 'cutie mark crusader', NULL, 'cat', 3),
 (46, 'apple bloom', NULL, 'char', 1),
 (47, 'scootaloo', NULL, 'char', 1),
@@ -2192,14 +2240,17 @@ INSERT INTO tags VALUES
 (105, 's4e8', '', 'ep', 2),
 (106, 's5e16', '', 'ep', 1),
 (107, 'meadow flower', '', 'char', 1),
-(108, 's3e7', '', 'ep', 1);
+(108, 's3e7', '', 'ep', 1),
+(109, 's5e7', NULL, 'ep', 0),
+(110, 'pipsqueak', '', 'char', 1),
+(111, 'silver spoon', '', 'char', 1);
 
 
 --
 -- Name: tags_tid_seq; Type: SEQUENCE SET; Schema: public; Owner: mlpvc-rr
 --
 
-SELECT pg_catalog.setval('tags_tid_seq', 108, true);
+SELECT pg_catalog.setval('tags_tid_seq', 111, true);
 
 
 --
