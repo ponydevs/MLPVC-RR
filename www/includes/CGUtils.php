@@ -157,14 +157,22 @@
 		}
 		return $wrap ? "<div class='notes'>$notes</div>" : $notes;
 	}
-
-	//
-	function get_sprite_html($p){
+	// Returns the URL for sprite images
+	function get_sprite_url($p, $fallback = null){
 		$imgPth = "img/cg/{$p['id']}.png";
 		$hasSprite = file_Exists(APPATH.$imgPth);
-		if ($hasSprite){
+		if (file_Exists(APPATH.$imgPth)){
 			$imgPth = $imgPth.'?'.filemtime(APPATH.$imgPth);
-			$img = "<a href='/$imgPth' target='_blank' title='Open image in new tab'><img src='/$imgPth' alt='".apos_encode($p['label'])."'></a>";
+			return "/$imgPth";
+		}
+		return !empty($fallback) ? $fallback : '';
+	}
+
+	// Returns the HTML for sprite images
+	function get_sprite_html($p){
+		$imgPth = get_sprite_url($p);
+		if (!empty($imgPth)){
+			$img = "<a href='$imgPth' target='_blank' title='Open image in new tab'><img src='$imgPth' alt='".apos_encode($p['label'])."'></a>";
 			if (PERM('inspector'))
 				$img = "<div class='upload-wrap'>$img</div>";
 		}
