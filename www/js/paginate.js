@@ -6,6 +6,7 @@
 		basePath = location.pathname.replace(/\/\d+$/,'')+'/',
 		$pagination = $('.pagination'),
 		pageNumber = parseInt($pagination.first().children('li').children('strong').text(), 10),
+		maxPages = parseInt($pagination.first().children(':not(.spec)').last().text(), 10),
 		title = 'Navigation',
 		$PaginationForm = $.mk('form').attr('id','goto-page').on('submit',function(e){
 			e.preventDefault();
@@ -21,6 +22,7 @@
 				$.mk('input').attr({
 					type: 'number',
 					min: 1,
+					max: maxPages,
 					step: 1,
 				})
 			)
@@ -112,6 +114,7 @@
 					history.pushState.apply(history, stateParams);
 
 				$pagination.html(this.pagination);
+				maxPages = parseInt($pagination.first().children(':not(.spec)').last().text(), 10);
 
 				var event = jQuery.Event('page-switch');
 				$(this.update).html(this.output).trigger(event);
