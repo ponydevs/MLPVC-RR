@@ -160,7 +160,6 @@
 	// Returns the URL for sprite images
 	function get_sprite_url($p, $fallback = null){
 		$imgPth = "img/cg/{$p['id']}.png";
-		$hasSprite = file_Exists(APPATH.$imgPth);
 		if (file_Exists(APPATH.$imgPth)){
 			$imgPth = $imgPth.'?'.filemtime(APPATH.$imgPth);
 			return "/$imgPth";
