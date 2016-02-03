@@ -7,12 +7,14 @@ DocReady.push(function Colorguide(){
 	var copyHash = !localStorage.getItem('leavehash'), $toggler;
 	function copyHashToggler(){
 		$toggler = $('#toggle-copy-hash');
-		if ($toggler.length) $toggler.off('display-update').on('display-update',function(){
+		if (!$toggler.length)
+			return;
+		$toggler.off('display-update').on('display-update',function(){
 			copyHash = !localStorage.getItem('leavehash');
 			$toggler
 				.attr('class','blue typcn typcn-'+(copyHash ? 'tick' : 'times'))
 				.text('Copy # with color codes: '+(copyHash ? 'En':'Dis')+'abled');
-		}).trigger('display-update').on('click',function(e){
+		}).trigger('display-update').off('click').on('click',function(e){
 			e.preventDefault();
 
 			if (copyHash) localStorage.setItem('leavehash', 1);
