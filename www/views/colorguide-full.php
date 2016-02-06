@@ -7,7 +7,9 @@
 
 	<p class='align-center links'>
 		<a class='btn darkblue typcn typcn-arrow-back' href="/<?=$color?>guide<?=$EQG?'/eqg':''?>">Back to <?=($EQG?'EQG ':'').$Color?> Guide</a>
+<?php if (PERM('inspector')){ ?>
 		<button class='darkblue typcn typcn-arrow-unsorted' id="guide-reorder"<?=!$GuideOrder?' disabled':''?>>Re-order</button>
+<?php } ?>
 		<a class='btn blue typcn typcn-world' href="/<?=$color?>guide<?=($EQG?'':'/eqg')?>/full<?=$GuideOrder?'?guide-order':''?>">List of <?=$EQG?'Ponies':'Equestria Girls'?></a>
 		<a class='btn darkblue typcn typcn-tags' href="/<?=$color?>guide/tags">Tag list</a>
 		<a class='btn darkblue typcn typcn-warning' href="/<?=$color?>guide/changes">Major changes</a>

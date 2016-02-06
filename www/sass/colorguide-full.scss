@@ -22,6 +22,7 @@
 			> a {
 				color: $HeaderBlue !important;
 				text-decoration: underline !important;
+				font-size: 20px;
 				cursor: move;
 
 				&.moving { text-shadow: 0 0 5px rgba($HeaderBlue,.7), 0 0 10px rgba($HeaderBlue,.5) }
