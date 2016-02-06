@@ -38,8 +38,12 @@ DocReady.push(function Colorguide(){
 
 			tagstyle = !tagstyle ? '' : ' qtip-tag-'+tagstyle[1];
 
-			if (!title && !isGuest)
-				title = $.capitalize($this.text().trim(), true);
+			if (!title && !isGuest){
+				var titletext = $this.text().trim();
+				title = /^s\d+e\d+(-\d+)?$/i.test(titletext)
+					? titletext.toUpperCase()
+					: $.capitalize($this.text().trim(), true);
+			}
 
 			if (title){
 				if (isGuest)
