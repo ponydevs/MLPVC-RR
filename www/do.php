@@ -1151,7 +1151,7 @@
 				}
 
 				$_match = array();
-				if (preg_match('~^(rename|delete|make|[gs]et(?:sprite|cgs)?|tag|untag|clearrendercache|applytemplate)(?:/(\d+))?$~', $data, $_match)){
+				if (preg_match('~^(rename|delete|make|(?:[gs]et|del)(?:sprite|cgs)?|tag|untag|clearrendercache|applytemplate)(?:/(\d+))?$~', $data, $_match)){
 					$action = $_match[1];
 
 					if ($action !== 'make'){
@@ -1284,15 +1284,28 @@
 
 							respond(array('cgs' => get_colors_html($Appearance['id'], NOWRAP, !isset($_POST['NO_COLON']), isset($_POST['OUTPUT_COLOR_NAMES']))));
 						break;
+						case "delsprite":
 						case "getsprite":
 						case "setsprite":
 							$fname = $Appearance['id'].'.png';
 							$finalpath = $SpritePath.$fname;
-							if ($action === 'setsprite'){
-								process_uploaded_image('sprite', $finalpath, array('image/png'), 100);
 
-								clear_rendered_image($Appearance['id']);
+							switch ($action){
+								case "setsprite":
+									process_uploaded_image('sprite', $finalpath, array('image/png'), 100);
+									clear_rendered_image($Appearance['id']);
+								break;
+								case "delsprite":
+									if (!file_exists($finalpath))
+										respond('No sprite file found');
+
+									if (!unlink($finalpath))
+										respond('File could not be deleted');
+
+									respond(array('sprite' => get_sprite_url($Appearance, DEFAULT_SPRITE)));
+								break;
 							}
+
 							respond(array("path" => "$SpriteRelPath$fname?".filemtime($finalpath)));
 						break;
 						case "clearrendercache":

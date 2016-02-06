@@ -782,7 +782,14 @@ DocReady.push(function ColorguideManage(){
 			if (!$li.length)
 				$li = $content.children('[id^=p]');
 			var ponyID = $li.attr('id').substring(1);
-			(function(ponyID){
+			(function($this, ponyID){
+				var imgsrc, hasSprite,
+					updateSprite = function(){
+						imgsrc = $this.find('img').attr('src');
+						hasSprite = imgsrc.indexOf('blank-pixel.png') === -1;
+						$this[hasSprite?'removeClass':'addClass']('nosprite');
+						$.ctxmenu.setDefault($this, hasSprite ? 1 : 3);
+					};
 				$this.uploadZone({
 					requestKey: 'sprite',
 					title: 'Upload sprite',
@@ -790,8 +797,10 @@ DocReady.push(function ColorguideManage(){
 					target: '/colorguide/setsprite/'+ponyID,
 				}).on('uz-uploadstart',function(){
 					$.Dialog.close();
+				}).on('uz-uploadfinish',function(){
+					updateSprite();
 				}).ctxmenu([
-					{text: 'Open image in new tab', icon: 'arrow-forward', 'default': true, attr: {
+					{text: 'Open image in new tab', icon: 'arrow-forward', attr: {
 						href: $this.find('img').attr('src'),
 						target: '_blank',
 					}},
@@ -823,13 +832,29 @@ DocReady.push(function ColorguideManage(){
 							});
 						});
 					}},
+					{text: 'Remove sprite image', icon: 'times', click: function(){
+						$.Dialog.confirm('Remove sprite image','Are you sure you want to <strong>permanently delete</strong> the sprite image from the server?',['Wipe it','Nope'],function(sure){
+							if (!sure) return;
+
+							$.Dialog.wait(false, 'Removing image');
+
+							$.post('/colorguide/delsprite/'+ponyID, $.mkAjaxHandler(function(){
+								if (!this.status) return $.Dialog.fail(false, this.message);
+
+								$this.find('img').attr('src', this.sprite);
+								updateSprite();
+								$.Dialog.close();
+							}));
+						});
+					}}
 				], 'Sprite image').attr('title', isWebkit ? ' ' : '').on('click',function(e, forced){
 					if (forced === true) return true;
 
 					e.preventDefault();
-					$this.data('ctxmenu-items').eq(1).children().get(0).click();
+					$.ctxmenu.runDefault($this);
 				});
-			})(ponyID);
+				updateSprite();
+			})($this, ponyID);
 		});
 	}
 	window.ctxmenus = function(){ctxmenus()};

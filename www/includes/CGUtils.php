@@ -160,6 +160,7 @@
 		return $wrap ? "<div class='notes'>$notes</div>" : $notes;
 	}
 	// Returns the URL for sprite images
+	define('DEFAULT_SPRITE', '/img/blank-pixel.png');
 	function get_sprite_url($p, $fallback = null){
 		$imgPth = "img/cg/{$p['id']}.png";
 		if (file_Exists(APPATH.$imgPth)){

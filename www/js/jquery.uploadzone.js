@@ -27,11 +27,13 @@
 
 		$input.on('set-image',function(_, path){
 			$.Dialog.close(function(){
+				$this.removeClass('uploading');
 				$input.prev().attr('href', path).children('img').fadeTo(200,0,function(){
-					var $this = $(this);
-					$this.attr('src',path).on('load',function(){
-						$this.fadeTo(200,1);
+					var $image = $(this);
+					$image.attr('src',path).on('load',function(){
+						$image.fadeTo(200,1);
 					});
+					$this.trigger('uz-uploadfinish');
 				});
 			});
 		});
@@ -61,12 +63,14 @@
 				cache: false,
 				data: fd,
 				success: $.mkAjaxHandler(function(){
-					$this.removeClass('uploading');
 					$helper.removeAttr('data-progress');
 					$input.val('');
 					if (this.status)
 						$input.trigger('set-image', [this.path]);
-					else $.Dialog.fail(title,this.message);
+					else {
+						$.Dialog.fail(title,this.message);
+						$this.trigger('uz-uploadfinish').removeClass('uploading');
+					}
 				}),
 				error: function(xhr){
 					if (xhr.status === 500 || xhr.status === 401) return;

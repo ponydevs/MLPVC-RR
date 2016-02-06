@@ -123,6 +123,7 @@
 .upload-wrap {
 	position: relative;
 	overflow: hidden;
+	border: 1px dashed rgba(black,.5);
 
 	@mixin activate {
 		background-color: rgba(white, .7);
@@ -166,6 +167,16 @@
 			font-size: 18px;
 		}
 	}
+	&:not(.uploading){
+		&:not(.nosprite) > .helper {
+			&:before { content: '\e00b' }
+			&:after { content: "Open in new tab" }
+		}
+		&.nosprite > .helper {
+			&:before { content: '\e126' }
+			&:after { content: "Click to upload" }
+		}
+	}
 	> .helper {
 		position: absolute;
 		top: 0;
@@ -191,11 +202,9 @@
 		&:before {
 			//noinspection CssNoGenericFontName
 			font-family: 'Typicons';
-			content: '\e00b';
 			@include outline($LightOutline, #000);
 		}
 		&:after {
-			content: "Open in new tab";
 			font-weight: bold;
 			white-space: pre-wrap;
 			display: block;

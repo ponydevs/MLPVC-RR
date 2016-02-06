@@ -106,6 +106,14 @@
 		if (nth < 1 || $ch.length-1 < nth) throw new Error('There\'s no such menu option: '+nth);
 		$ch.eq(nth).children('a').triggerHandler('click');
 	};
+	$.ctxmenu.setDefault = function($el, nth){
+		var $ch = $el.data('ctxmenu-items').filter(':not(.sep)');
+		$ch.find('a').removeClass('default');
+		$ch.eq(nth).children('a').addClass('default');
+	};
+	$.ctxmenu.runDefault = function($el){
+		$el.data('ctxmenu-items').find('a.default').get(0).click();
+	};
 
 	$body.on('click contextmenu',function(){ $ctxmenu.hide() });
 	$w.on('blur resize',function(){ $ctxmenu.hide() });
