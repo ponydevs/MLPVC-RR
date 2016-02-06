@@ -1656,7 +1656,7 @@
 				$title = "Page $Page - $heading - $Color Guide";
 				$Pagination = get_pagination_html("{$color}guide/tags");
 
-				$Tags = get_tags(null,array($ItemsPerPage*($Page-1), $ItemsPerPage));
+				$Tags = get_tags(null,array($ItemsPerPage*($Page-1), $ItemsPerPage), true);
 
 				if (isset($_GET['js']))
 					pagination_response(get_taglist_html($Tags, NOWRAP), '#tags tbody');
