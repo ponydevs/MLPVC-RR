@@ -185,7 +185,7 @@ DocReady.push(function ColorguideManage(){
 			$li = $tagsDiv.closest('[id^=p]'),
 			ponyID = $li.attr('id').substring(1),
 			ponyName = !AppearancePage
-				? $tagsDiv.parent().siblings('strong').text().trim()
+				? $tagsDiv.siblings('strong').text().trim()
 				: $content.children('h1').text();
 
 		$.Dialog.request(title,$tagEditForm.clone(true, true),'edit-tag','Create',function($form){
