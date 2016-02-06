@@ -736,34 +736,39 @@ HTML;
 		FROM tagged tt
 		LEFT JOIN tags t ON tt.tid = t.tid
 		WHERE tt.ponyid = ? &&  t.type = ?",array($AppearanceID, 'ep'));
-		if (empty($EpTagsOnAppearance))
-			return '';
+		if (!empty($EpTagsOnAppearance)){
+			foreach ($EpTagsOnAppearance as $k => $row)
+				$EpTagsOnAppearance[$k] = $row['tid'];
 
-		foreach ($EpTagsOnAppearance as $k => $row)
-			$EpTagsOnAppearance[$k] = $row['tid'];
+			$EpAppearances = $CGDb->rawQuery("SELECT DISTINCT t.name FROM tags t WHERE t.tid IN (".implode(',',$EpTagsOnAppearance).")");
+			if (empty($EpAppearances))
+				return '';
 
-		$EpAppearances = $CGDb->rawQuery("SELECT DISTINCT t.name FROM tags t WHERE t.tid IN (".implode(',',$EpTagsOnAppearance).")");
-		if (empty($EpAppearances))
-			return '';
-
-		$List = '';
-		foreach ($EpAppearances as $tag){
-			$name = strtoupper($tag['name']);
-			$EpData = episode_id_parse($name);
-			$Ep = get_real_episode($EpData['season'], $EpData['episode']);
-			$List .= (
-				empty($Ep)
-				? $name
-				: "<a href='/episode/S{$Ep['season']}E{$Ep['episode']}'>".format_episode_title($Ep).'</a>'
-			).', ';
+			$List = '';
+			foreach ($EpAppearances as $tag){
+				$name = strtoupper($tag['name']);
+				$EpData = episode_id_parse($name);
+				$Ep = get_real_episode($EpData['season'], $EpData['episode']);
+				$List .= (
+					empty($Ep)
+					? $name
+					: "<a href='/episode/S{$Ep['season']}E{$Ep['episode']}'>".format_episode_title($Ep).'</a>'
+				).', ';
+			}
+			$List = rtrim($List, ', ');
+			$N_episodes = plur('episode',count($EpAppearances),PREPEND_NUMBER);
+			$hide = '';
 		}
-		$List = rtrim($List, ', ');
-		$N_episodes = plur('episode',count($EpAppearances),PREPEND_NUMBER);
+		else {
+			$N_episodes = 'no episodes';
+			$List = '';
+			$hide = 'style="display:none"';
+		}
 
 		if (!$wrap)
 			return $List;
 		return <<<HTML
-		<section id="ep-appearances">
+		<section id="ep-appearances" $hide>
 			<label><span class='typcn typcn-video'></span>Appears in $N_episodes</label>
 			<p>$List</p>
 		</section>

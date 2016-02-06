@@ -501,7 +501,7 @@ DocReady.push(function ColorguideManage(){
 						if (!this.status) return $.Dialog.fail(title, this.message);
 
 						if (this.needupdate === true)
-							$EpAppearances.html(this.eps);
+							$EpAppearances.html(this.eps).parent()[this.eps.length?'show':'hide']();
 						$tag.qtip('destroy', true);
 						$tag.remove();
 						$.Dialog.close();
@@ -525,7 +525,7 @@ DocReady.push(function ColorguideManage(){
 						$.post('/colorguide/deltag/'+tagID+EQGRq,data,$.mkAjaxHandler(function(){
 							if (this.status){
 								if (this.needupdate === true)
-									$EpAppearances.html(this.eps);
+									$EpAppearances.html(this.eps).parent()[this.eps.length?'show':'hide']();
 								var $affected = $('.id-' + tagID);
 								$affected.qtip('destroy', true);
 								$affected.remove();
@@ -590,7 +590,7 @@ DocReady.push(function ColorguideManage(){
 						$input.removeAttr('disabled').parent().removeClass('loading');
 						if (this.status){
 							if (this.needupdate === true)
-								$EpAppearances.html(this.eps);
+								$EpAppearances.html(this.eps).parent().show();
 							$tagsDiv.children('[data-hasqtip]').qtip('destroy', true);
 							$tagsDiv.children('.tag').remove();
 							$tagsDiv.append($(this.tags).filter('span'));
