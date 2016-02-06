@@ -1444,8 +1444,8 @@
 
 					$name = isset($_POST['name']) ? strtolower(trim($_POST['name'])) : null;
 					$nl = !empty($name) ? strlen($name) : 0;
-					if ($nl < 4 || $nl > 30)
-						respond("Tag name must be between 4 and 30 characters");
+					if ($nl < 3 || $nl > 30)
+						respond("Tag name must be between 3 and 30 characters");
 					if ($name[0] === '-')
 						respond('Tag name cannot start with a dash');
 					check_string_valid($name,'Tag name',INVERSE_TAG_NAME_PATTERN);
