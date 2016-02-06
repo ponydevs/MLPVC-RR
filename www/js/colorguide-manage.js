@@ -57,8 +57,12 @@ DocReady.push(function ColorguideManage(){
 
 			$.Dialog.request(title,$ponyEditor.clone(),'pony-editor','Save',function($form){
 				if (editing){
+
 					$form.find('input[name=label]').val(data.label);
-					$form.find('textarea').val(data.notes);
+					var $txtarea = $form.find('textarea');
+					$txtarea.val(data.notes);
+					if (parseInt(data.ponyID, 10) === 0)
+						$txtarea.removeAttr('maxlength');
 					$form.find('input[name=cm_favme]').val(data.cm_favme);
 					$form.append(
 						$.mk('div').attr('class','align-center').append(

@@ -1236,6 +1236,8 @@
 							else {
 								clear_rendered_image($Appearance['id']);
 								$data['id'] = $Appearance['id'];
+								if (empty($data['notes']))
+									$data['notes'] = $Appearance['notes'];
 							}
 
 							if (isset($_POST['noreturn']))

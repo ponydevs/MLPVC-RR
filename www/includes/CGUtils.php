@@ -141,14 +141,16 @@
 
 	// Returns the markup for the notes displayed under an appaerance
 	function get_notes_html($p, $wrap = true){
-		if (!empty($p['notes']) || !empty($p['cm_favme'])){
+		$hasNotes = !empty($p['notes']);
+		$hasCM = !empty($p['cm_favme']);
+		if ($hasNotes || $hasCM){
 			$notes = '';
-			if (!empty($p['notes'])){
+			if ($hasNotes){
 				if ($p['id'] !== 0)
 					$p['notes'] = htmlspecialchars($p['notes']);
-				$notes = "<span>{$p['notes']}</span>";
+				$notes = '<span>'.nl2br($p['notes']).'</span>';
 			}
-			if (!empty($p['cm_favme']))
+			if ($hasCM)
 				$notes .= "<a href='http://fav.me/{$p['cm_favme']}'>Cutie mark vector</a>";
 		}
 		else {
