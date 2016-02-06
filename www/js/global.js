@@ -261,6 +261,15 @@
 		this.html(contentArray[$.rangeLimit(contentArray.indexOf(this.html())+1, true, contentArray.length-1)]);
 	};
 
+	$.fn.moveAttr = function(from, to){
+		this.each(function(){
+			var $el = $(this),
+				value = $el.attr(from);
+			if (typeof value !== 'undefined')
+				$el.removeAttr(from).attr(to, value);
+		});
+	};
+
 	window.URL = function(url){
 		var a = document.createElement('a'),
 			me = {};

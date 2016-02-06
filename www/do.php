@@ -1100,33 +1100,57 @@
 
 				$EQG = isset($_REQUEST['eqg']) ? 1 : 0;
 
-				$_match = array();
-				if ($data === 'gettags'){
-					$viaTypeahead = !empty($_GET['s']);
-					$limit = null;
-					$cols = "tid, name, type";
-					if ($viaTypeahead){
-						if (!preg_match('~'.TAG_NAME_PATTERN.'~u', $_GET['s']))
-							typeahead_results('[]');
+				switch ($data){
+					case 'gettags':
+						$viaTypeahead = !empty($_GET['s']);
+						$limit = null;
+						$cols = "tid, name, type";
+						if ($viaTypeahead){
+							if (!preg_match('~'.TAG_NAME_PATTERN.'~u', $_GET['s']))
+								typeahead_results('[]');
 
-						$query = trim(strtolower($_GET['s']));
-						$TagCheck = ep_tag_name_check($query);
-						if ($TagCheck !== false)
-							$query = $TagCheck;
-						$CGDb->where('name',"%$query%",'LIKE');
-						$limit = 5;
-						$cols = "tid, name, CONCAT('typ-', type) as type";
-					}
-					else $CGDb->orderBy('type','ASC');
+							$query = trim(strtolower($_GET['s']));
+							$TagCheck = ep_tag_name_check($query);
+							if ($TagCheck !== false)
+								$query = $TagCheck;
+							$CGDb->where('name',"%$query%",'LIKE');
+							$limit = 5;
+							$cols = "tid, name, CONCAT('typ-', type) as type";
+						}
+						else $CGDb->orderBy('type','ASC');
 
-					if (isset($_POST['not']) && is_numeric($_POST['not']))
-						$CGDb->where('tid',intval($_POST['not'], 10),'!=');
+						if (isset($_POST['not']) && is_numeric($_POST['not']))
+							$CGDb->where('tid',intval($_POST['not'], 10),'!=');
 
-					$Tags = $CGDb->orderBy('name','ASC')->get('tags',$limit,$cols);
+						$Tags = $CGDb->orderBy('name','ASC')->get('tags',$limit,$cols);
 
-					typeahead_results(empty($Tags) ? '[]' : $Tags);
+						typeahead_results(empty($Tags) ? '[]' : $Tags);
+					break;
+					case 'full':
+						if (isset($_REQUEST['reorder'])){
+							if (!PERM('inspector'))
+								respond();
+							if (empty($_POST['list']))
+								respond('The list of IDs is missing');
+
+							$list = trim($_POST['list']);
+							if (!preg_match('~^\d+(?:,\d+)+$~', $list))
+								respond('The list of IDs is not formatted properly');
+
+							$list = explode(',', $list);
+							$order = 1;
+							foreach ($list as $id){
+								if (!$CGDb->where('id', $id)->update('appearances', array('order' => $order++)))
+									respond("Updating appearance #$id failed, process halted");
+							}
+
+							respond(array('html' => render_full_list_html(get_appearances($EQG,null,'id,label'), true, NOWRAP)));
+						}
+						else do404();
+					break;
 				}
 
+				$_match = array();
 				if (preg_match('~^(rename|delete|make|[gs]et(?:sprite|cgs)?|tag|untag|clearrendercache|applytemplate)(?:/(\d+))?$~', $data, $_match)){
 					$action = $_match[1];
 
@@ -1863,10 +1887,10 @@
 			}
 			else if ($data === 'full'){
 				$GuideOrder = isset($_REQUEST['guide-order']);
-				if ($GuideOrder)
-					order_appearances();
-				else $CGDb->orderBy('label','ASC');
-				$Appearances = $CGDb->where('ishuman', $EQG)->where('"id" != 0')->get('appearances',null,'id,label');
+				if (!$GuideOrder)
+					$CGDb->orderBy('label','ASC');
+				$Appearances = get_appearances($EQG,null,'id,label');
+
 
 				if (isset($_REQUEST['ajax']))
 					respond(array('html' => render_full_list_html($Appearances, $GuideOrder, NOWRAP)));
@@ -1875,7 +1899,7 @@
 					'title' => 'Full list - Color Guide',
 					'view' => "$do-full",
 					'css' => "$do-full",
-					'js' => "$do-full",
+					'js' => array('Sortable', "$do-full"),
 				));
 			}
 

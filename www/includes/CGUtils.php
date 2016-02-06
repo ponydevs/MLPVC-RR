@@ -207,11 +207,11 @@
 	}
 
 	// Get list of ponies
-	function get_appearances($EQG, $limit = null){
+	function get_appearances($EQG, $limit = null, $cols = '*'){
 		global $CGDb;
 
 		order_appearances();
-		return $CGDb->where('ishuman', $EQG)->where('"id" != 0')->get('appearances',$limit);
+		return $CGDb->where('ishuman', $EQG)->where('id',0,'!=')->get('appearances', $limit, $cols);
 	}
 
 	// Returns the markup for an array of pony datase rows \\
@@ -265,9 +265,53 @@
 					}
 					$HTML .= "<a href='/{$color}guide/appearance/{$p['id']}'>{$p['label']}</a>, ";
 				}
+				$HTML .= rtrim($HTML, ', ');
 			}
-			else foreach($Appearances as $p)
-				$HTML .= "<li><a href='/{$color}guide/appearance/{$p['id']}'>{$p['label']}</a></li>";
+			else {
+				global $CGDb;
+				$GroupTagIDs_Assoc = array(
+					6  => 'Mane Six & Spike',
+					45 => 'Cutie Mark Crusaders',
+					59 => 'Royalty',
+					9  => 'Antagonists',
+					44 => 'Foals',
+					78 => 'Original Characters',
+					1  => 'Unicorns',
+					3  => 'Pegasi',
+					2  => 'Earth Ponies',
+					10 => 'Pets',
+					// add other tags here
+					64 => 'Objects',
+					-1 => 'Other',
+				);
+				$GroupTagIDs = array_keys($GroupTagIDs_Assoc);
+				$Sorted = array();
+				foreach($Appearances as $p){
+					$Tagged = $CGDb->rawQuery(
+						'SELECT tags.tid
+						FROM tagged
+						LEFT JOIN tags ON tagged.tid = tags.tid && tagged.ponyid = ?
+						WHERE tags.tid IN ('.implode(',',$GroupTagIDs).')', array($p['id']));
+					if (!empty($Tagged)){
+						if (count($Tagged) > 1)
+							usort($Tagged,function($a,$b) use ($GroupTagIDs){
+								return array_search($a['tid'], $GroupTagIDs) - array_search($b['tid'], $GroupTagIDs);
+							});
+						$tid = $Tagged[0]['tid'];
+					}
+					else $tid = -1;
+					$Sorted[$tid][] = $p;
+				}
+				foreach ($GroupTagIDs_Assoc as $Category => $CategoryName){
+					if (empty($Sorted[$Category]))
+						continue;
+
+					$HTML .= "<section><h2>$CategoryName</h2><div>";
+					foreach ($Sorted[$Category] as $p)
+						$HTML .= "<a href='/{$color}guide/appearance/{$p['id']}'>{$p['label']}</a>, ";
+					$HTML = rtrim($HTML, ', ')."</div></section>";
+				}
+			}
 		}
 		return $HTML.($wrap?"</$elementName>":'');
 	}

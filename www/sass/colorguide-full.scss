@@ -1,23 +1,44 @@
 @import "vars";
 
-#content {
-	> h1 + p select { font: inherit }
+#content > h1 + p select { font: inherit }
+#full-list {
+	display: block;
+	list-style: none;
+	padding: 0;
+	margin: 0;
 
-	#full-list {
+	&:empty:before {
+		font-size: 1.4em;
+		font-style: italic;
+		content: "No appearances to show";
 		display: block;
-		list-style: none;
-		padding: 0;
-		margin: 0;
+		text-align: center;
+	}
 
-		&:empty:before {
-			font-size: 1.4em;
-			font-style: italic;
-			content: "No appearances to show";
-			display: block;
-			text-align: center;
+	&.sorting {
+		section > div {
+			font-size: 0;
+
+			> a {
+				color: $HeaderBlue !important;
+				text-decoration: underline !important;
+				cursor: move;
+
+				&.moving { text-shadow: 0 0 5px rgba($HeaderBlue,.7), 0 0 10px rgba($HeaderBlue,.5) }
+				&:not(:last-child) {
+					margin-right: 10px;
+				}
+			}
 		}
-		
-		section { @extend %section }
-		a { font-size: 1.2em }
+	}
+
+	section {
+		@extend %section;
+
+		div {
+			font-size: 20px;
+
+			a { display: inline-block }
+		}
 	}
 }
