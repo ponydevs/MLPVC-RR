@@ -421,7 +421,10 @@ DocReady.push(function Episode(){
 						title: "This submission has been accepted into the group gallery"
 					})
 				);
-				$btn.parent().remove();
+				var $parent = $btn.parent(),
+					$editbtn = $parent.children('.edit').detach();
+				$editbtn.text($editbtn.attr('title')).removeAttr('title');
+				$parent.empty().append($editbtn);
 
 				if (this.message)
 					$.Dialog.success(false, this.message, true);
