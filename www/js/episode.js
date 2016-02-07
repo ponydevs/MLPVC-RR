@@ -96,7 +96,8 @@ DocReady.push(function Episode(){
 	BindPSwitch();
 
 	var $showPlayers = $('.episode').find('.showplayers').on('scroll-video-into-view',function(){
-			$.scrollTo($embedWrap.offset().top - (($w.height() - $embedWrap.height()) / 2), 500);
+			var hh = $header.outerHeight();
+			$.scrollTo($embedWrap.offset().top - (($w.height() - $footer.outerHeight() - hh - $embedWrap.outerHeight()) / 2) - hh, 500);
 		}),
 		$playerActions = $showPlayers.parent(),
 		$embedWrap;
