@@ -503,53 +503,54 @@ DocReady.push(function Episode(){
 						)
 					);
 
-				$Form.append(
-					$.mk('label').append(
-						$.mk('a').text('Update Image').attr({
-							'href':'#update',
-							'class':'btn darkblue typcn typcn-pencil',
-						}).on('click',function(e){
-							e.preventDefault();
+				if ($li.children('.image').find('.typcn-tick').length === 0)
+					$Form.append(
+						$.mk('label').append(
+							$.mk('a').text('Update Image').attr({
+								'href':'#update',
+								'class':'btn darkblue typcn typcn-pencil',
+							}).on('click',function(e){
+								e.preventDefault();
 
-							$.Dialog.close();
-							var $img = $li.children('.image').find('img'),
-								$ImgUpdateForm = $.mk('form').attr('id', 'img-update-form').append(
-								$.mk('div').attr('class','align-center').append(
-									$.mk('span').text('Current image'),
-									$img.clone().one('load',function(){ $.Dialog.center() })
-								),
-								$.mk('label').append(
-									$.mk('span').text('New image URL'),
-									$.mk('input').attr({
-										type: 'text',
-										maxlength: 255,
-										pattern: "^.{2,255}$",
-										name: 'image_url',
-										required: true,
-										autocomplete: 'off',
-										spellcheck: 'false',
-									})
-								)
-							);
-							$.Dialog.request('Update image of '+type+' #'+id,$ImgUpdateForm, 'img-update-form','Update',function($form){
-								$form.on('submit', function(e){
-									e.preventDefault();
+								$.Dialog.close();
+								var $img = $li.children('.image').find('img'),
+									$ImgUpdateForm = $.mk('form').attr('id', 'img-update-form').append(
+									$.mk('div').attr('class','align-center').append(
+										$.mk('span').text('Current image'),
+										$img.clone().one('load',function(){ $.Dialog.center() })
+									),
+									$.mk('label').append(
+										$.mk('span').text('New image URL'),
+										$.mk('input').attr({
+											type: 'text',
+											maxlength: 255,
+											pattern: "^.{2,255}$",
+											name: 'image_url',
+											required: true,
+											autocomplete: 'off',
+											spellcheck: 'false',
+										})
+									)
+								);
+								$.Dialog.request('Update image of '+type+' #'+id,$ImgUpdateForm, 'img-update-form','Update',function($form){
+									$form.on('submit', function(e){
+										e.preventDefault();
 
-									var data = $form.mkData();
-									$.Dialog.wait(false, 'Replacing image');
+										var data = $form.mkData();
+										$.Dialog.wait(false, 'Replacing image');
 
-									$.post('/post/set-'+type+'-image/'+id,data,$.mkAjaxHandler(function(){
-										if (!this.status) return $.Dialog.fail(false, this.message);
+										$.post('/post/set-'+type+'-image/'+id,data,$.mkAjaxHandler(function(){
+											if (!this.status) return $.Dialog.fail(false, this.message);
 
-										$.Dialog.success(false, 'Image has been updated');
+											$.Dialog.success(false, 'Image has been updated');
 
-										updateSection(type, SEASON, EPISODE);
-									}));
+											updateSection(type, SEASON, EPISODE);
+										}));
+									});
 								});
-							});
-						})
-					)
-				);
+							})
+						)
+					);
 
 				$.Dialog.request(false, $Form, 'post-edit-form', 'Save', function($form){
 					var $label = $form.find('[name=label]'),

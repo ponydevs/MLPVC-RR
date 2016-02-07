@@ -131,6 +131,8 @@
 				$Post = $Database->where('id', $_match[2])->getOne("{$thing}s");
 				if (empty($Post))
 					respond("The specified $thing does not exist");
+				if ($Post['lock'])
+					respond('This post is locked, its image cannot be changed.');
 
 				$Image = check_post_image(false, $Post);
 
@@ -138,7 +140,7 @@
 				if (!@getimagesize($Image->preview)){
 					sleep(1);
 					if (!@getimagesize($Image->preview))
-						respond("The specified file does not appear to exist. Please verify that you can reach the following URL: <a href='{$Image->preview}'>{$Image->preview}</a>");
+						respond("<p class='align-center'>The specified file does not appear to exist. Please verify that you can reach the URL below and try again.<br><a href='{$Image->preview}' target='_blank'>{$Image->preview}</a></p>");
 				}
 
 				if (!$Database->where('id', $Post['id'])->update("{$thing}s",array(
