@@ -270,6 +270,8 @@
 		});
 	};
 
+	$.scrollTo = function(pos, speed, callback){ $('html,body').animate({scrollTop:pos},speed,callback) };
+
 	window.URL = function(url){
 		var a = document.createElement('a'),
 			me = {};

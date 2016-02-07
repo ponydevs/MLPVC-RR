@@ -1,4 +1,4 @@
-/* global DocReady,$content,$body,$w,$navbar,moment,Chart */
+/* global DocReady,$content,$body,$w,$footer,$header,$navbar,moment,Chart */
 DocReady.push(function Episode(){
 	'use strict';
 	var SEASON = window.SEASON,
@@ -80,9 +80,11 @@ DocReady.push(function Episode(){
 		}));
 	});
 
+	var $epSectionTitle = $epSection.children('h2'),
+		$PSwitch;
 	function BindPSwitch(){
-		var $PSwitch = $epSection.children('h2').children('.part-switch'),
-			$Vids;
+		var $Vids;
+		$PSwitch = $epSectionTitle.children('.part-switch');
 		if ($PSwitch.length){
 			$Vids = $epSection.find('.resp-embed-wrap').children();
 			$PSwitch.on('click', function(){
@@ -92,6 +94,44 @@ DocReady.push(function Episode(){
 		}
 	}
 	BindPSwitch();
+
+	var $showPlayers = $('.episode').find('.showplayers').on('scroll-video-into-view',function(){
+			$.scrollTo($embedWrap.offset().top - (($w.height() - $embedWrap.height()) / 2), 500);
+		}),
+		$playerActions = $showPlayers.parent(),
+		$embedWrap;
+	if ($showPlayers.length){
+		$showPlayers.on('click',function(e){
+			e.preventDefault();
+
+			if (typeof $embedWrap === 'undefined'){
+				$.Dialog.wait($showPlayers.text());
+
+				$.post('/episode/videos/'+EpID, $.mkAjaxHandler(function(){
+					if (!this.status) return $.Dialog.fail(false, this.message);
+
+					if (this[0] === 2)
+						$epSectionTitle.append('<button class="blue part-switch">Part 2</button>');
+					$embedWrap = $.mk('div').attr('class','resp-embed-wrap').html(this[1]).insertAfter($playerActions);
+					BindPSwitch();
+					$showPlayers
+						.removeClass('typcn-eye green')
+						.addClass('typcn-eye-outline blue')
+						.text('Hide on-site player')
+						.triggerHandler('scroll-video-into-view');
+					$.Dialog.close();
+				}));
+			}
+			else {
+				var show = $showPlayers.hasClass('typcn-eye');
+				$embedWrap.add($PSwitch)[show?'show':'hide']();
+				$showPlayers.toggleClass('typcn-eye typcn-eye-outline').toggleHtml(['Show on-site player','Hide on-site player']);
+
+				if (show)
+					$showPlayers.triggerHandler('scroll-video-into-view');
+			}
+		});
+	}
 
 	var $voting = $('#voting'),
 		$voteButton = $voting.children('.rate');
@@ -629,7 +669,7 @@ DocReady.push(function Episode(){
 			if (!$form.is(':visible')){
 				$form.show();
 				$formDescInput.focus();
-				$body.animate({scrollTop: $form.offset().top - $navbar.outerHeight() - 10 }, 500);
+				$.scrollTo($form.offset().top - $navbar.outerHeight() - 10, 500);
 			}
 		});
 		if (type === 'reservation') $('#add-reservation-btn').on('click',function(){
@@ -877,7 +917,7 @@ DocReady.push(function Episode(){
 		$anchor.addClass('highlight');
 
 		setTimeout(function(){
-			$body.animate({scrollTop: $anchor.offset().top - $navbar.outerHeight() - 10 }, 500,function(){
+			$.scrollTo($anchor.offset().top - $navbar.outerHeight() - 10, 500, function(){
 				if (typeof e === 'object' && e.type === 'load')
 					$.Dialog.close();
 			});

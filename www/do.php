@@ -487,6 +487,8 @@
 			loadEpisodePage($CurrentEpisode);
 		break;
 		case "episode":
+			$_match = array();
+
 			if (RQMTHD === 'POST'){
 				detectCSRF();
 
@@ -506,7 +508,6 @@
 				}
 				unset($EpData);
 
-				$_match = array();
 				if (preg_match('/^delete\/'.EPISODE_ID_PATTERN.'$/',$data,$_match)){
 					if (!PERM('inspector')) respond();
 					list($season,$episode) = array_splice($_match,1,2);
@@ -583,12 +584,15 @@
 					))) respond(ERR_DB_FAIL);
 					respond(array('newhtml' => get_episode_voting($Episode)));
 				}
-				else if (preg_match('/^([sg])etvideos\/'.EPISODE_ID_PATTERN.'$/', $data, $_match)){
-					$Episode = get_real_episode($_match[2],$_match[3],ALLOW_SEASON_ZERO);
+				else if (preg_match('/^(([sg])et)?videos\/'.EPISODE_ID_PATTERN.'$/', $data, $_match)){
+					$Episode = get_real_episode($_match[3],$_match[4],ALLOW_SEASON_ZERO);
 					if (empty($Episode))
 						respond("There's no episode with this season & episode number");
 
-					$set = $_match[1] === 's';
+					if (empty($_match[1]))
+						respond(get_ep_video_embeds($Episode));
+
+					$set = $_match[2] === 's';
 					require_once "includes/Video.php";
 
 					if (!$set){
@@ -757,6 +761,8 @@
 					));
 					respond('Episode saved successfuly', 1);
 				}
+			}
+			else if (preg_match('/^getvideos\/'.EPISODE_ID_PATTERN.'$/',$data,$_match)){
 			}
 
 			loadEpisodePage();

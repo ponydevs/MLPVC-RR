@@ -2241,49 +2241,62 @@ ORDER BY "count" DESC
 		'yt' => 'YouTube',
 		'dm' => 'Dailymotion',
 	);
+	$PROVIDER_BTN_CLASSES = array(
+		'yt' => 'red typcn-social-youtube',
+		'dm' => 'darkblue typcn-video',
+	);
 	function render_ep_video($CurrentEpisode){
-		global $VIDEO_PROVIDER_NAMES, $Database;
+		global $Database, $VIDEO_PROVIDER_NAMES, $PROVIDER_BTN_CLASSES;
 
 		$isMovie = $CurrentEpisode['season'] === 0;
 		$HTML = '';
-		$embed = '';
-		$alsoAvail = array();
-		$Parts = 0;
-		for ($part = 1; $part <= ($CurrentEpisode['twoparter']?2:1); $part++){
-			$Part = $Database
-				->whereEp($CurrentEpisode)
-				->where('part',$part)
-				->orderBy('provider', 'ASC')
-				->get('episodes__videos');
+		$Videos = $Database
+			->whereEp($CurrentEpisode)
+			->orderBy('provider', 'ASC')
+			->orderBy('part', 'ASC')
+			->get('episodes__videos');
 
-			if (!empty($Part)){
-				$Parts++;
-				require_once "includes/Video.php";
-				$FirstVid = $Part[0];
-				$embed .= "<div class='responsive-embed".($CurrentEpisode['twoparter']&&$part!==1?' hidden':'')."'>".Video::get_embed($FirstVid['id'], $FirstVid['provider'])."</div>";
-				if (!empty($Part[1])){
-					$SecondVid = $Part[1];
-					$url = Video::get_embed($SecondVid['id'], $SecondVid['provider'], Video::URL_ONLY);
-					$ProviderName = $VIDEO_PROVIDER_NAMES[$SecondVid['provider']];
-					$PartStr = '';
-					if ($CurrentEpisode['twoparter'])
-						$PartStr = ' ('.($SecondVid['fullep'] ? 'Full episode' : "Part $part").')';
-					$alsoAvail[$ProviderName.$PartStr] = $url;
-				}
+		if (!empty($Videos)){
+			$HTML = "<section class='episode'><h2>Watch the ".($isMovie?'Movie':'Episode')."</h2><p class='align-center actions'>";
+			require_once "includes/Video.php";
+			foreach ($Videos as $v){
+				$url = Video::get_embed($v['id'], $v['provider'], Video::URL_ONLY);
+				$partText = $CurrentEpisode['twoparter'] ? (
+					!$v['fullep']
+					? " (Part {$v['part']})"
+					: " (Full episode)"
+				) : '';
+				$HTML .= "<a class='btn typcn {$PROVIDER_BTN_CLASSES[$v['provider']]}' href='$url' target='_blank'>{$VIDEO_PROVIDER_NAMES[$v['provider']]}$partText</a>";
 			}
+			$HTML .= "<button class='green typcn typcn-eye showplayers'>Show on-site player</button></p></section>";
 		}
-		if (!empty($alsoAvail)){
-			$links = array();
-			foreach ($alsoAvail as $prov => $link)
-				$links[] = "<a href='$link' target='_blank'>$prov</a>";
-			$HTML .= "<p class='align-center' style='margin-bottom:5px'>Also available on: ".implode(', ',$links)."</p>";
-		}
-		if (!empty($embed))
-			$HTML .= "<div class='resp-embed-wrap'>$embed</div>";
-		if (!empty($HTML))
-			$HTML = "<section class='episode'><h2>Watch the ".($isMovie?'Movie':'Episode').($Parts == 2?"<button class='blue part-switch'>Part 2</button>":'')."</h2>$HTML</section>";
 
 		return $HTML;
+	}
+
+	function get_ep_video_embeds($CurrentEpisode){
+		global $Database, $VIDEO_PROVIDER_NAMES;
+
+		$EpVideos = $Database
+			->whereEp($CurrentEpisode)
+			->orderBy('provider', 'ASC')
+			->orderBy('part', 'ASC')
+			->get('episodes__videos');
+		$Parts = 0;
+		$embed = '';
+		if (!empty($EpVideos)){
+			$Videos = array();
+			foreach ($EpVideos as $v)
+				$Videos[$v['provider']][(int)$v['part']] = $v;
+			// YouTube embed preferred
+			$Videos = !empty($Videos['yt']) ? $Videos['yt'] : $Videos['dm'];
+
+			$Parts = count($Videos);
+			require_once "includes/Video.php";
+			foreach ($Videos as $v)
+				$embed .= "<div class='responsive-embed".($CurrentEpisode['twoparter']&&$v['part']!==1?' hidden':'')."'>".Video::get_embed($v['id'], $v['provider'])."</div>";
+		}
+		return array($Parts, $embed);
 	}
 
 	// Turns an ini setting into bytes
