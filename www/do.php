@@ -140,7 +140,7 @@
 				if (!@getimagesize($Image->preview)){
 					sleep(1);
 					if (!@getimagesize($Image->preview))
-						respond("<p class='align-center'>The specified file does not appear to exist. Please verify that you can reach the URL below and try again.<br><a href='{$Image->preview}' target='_blank'>{$Image->preview}</a></p>");
+						respond("<p class='align-center'>The specified image doesn't seem to exist. Please verify that you can reach the URL below and try again.<br><a href='{$Image->preview}' target='_blank'>{$Image->preview}</a></p>");
 				}
 
 				if (!$Database->where('id', $Post['id'])->update("{$thing}s",array(
