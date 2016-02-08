@@ -225,13 +225,12 @@ gulp.task('pgsort', function(){
 	}
 });
 
-gulp.task('default', ['js', 'sass', 'md', 'pgsort'], function(){
+gulp.task('default', ['js', 'sass', 'md'], function(){
 	gulp.watch(['www/js/*.js', '!www/js/*.min.js'], {debounceDelay: 2000}, ['js']);
 	Dashie.log("I got my eyes on you, JavaScript files!");
 	gulp.watch('www/sass/*.scss', {debounceDelay: 2000}, ['sass']);
 	Flutters.log("SCSS files, do you mind if I, um, watch over you for a bit?");
 	gulp.watch('README.md', {debounceDelay: 2000}, ['md']);
 	AJ.log("Readme markdown file is under my radar, sugarcube");
-	gulp.watch('setup/*.pg.sql', {debounceDelay: 2000}, ['pgsort']);
-	Rarity.log("PostgreSQL dump sorting is awaiting your orders, darling.");
+	Rarity.log("PostgreSQL dump sorting should now be run manually!");
 });
