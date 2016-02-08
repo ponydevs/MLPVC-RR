@@ -19,15 +19,15 @@ In the past, the management of comments under journals was done manually. Becaus
 **Pre-ban dialog illustration ([direct link](https://github.com/ponydevs/MLPVC-RR/blob/master/www/img/pre-ban.svg)):** [Twilight - What Have I Done?](http://synthrid.deviantart.com/art/Twilight-What-Have-I-Done-355177596) by [Synthrid](http://synthrid.deviantart.com/) *(edited to use daylight colors)*<br>
 **Post-ban dialog illustration ([direct link](https://github.com/ponydevs/MLPVC-RR/blob/master/www/img/post-ban.svg)):** [Sad Twilight Sparkle](http://sairoch.deviantart.com/art/Sad-Twilight-Sparkle-354710611) by [Sairoch](http://sairoch.deviantart.com/) *(edited to use daylight colors)*<br>
 **Extrenal link icon** (licensed GPL) taken from [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Icon_External_Link.svg)<br>
-**Browser logos** (used on user pages):
+**Browser logos** (used in session list & the [Browser recognition testing page](https://mlpvc-rr.ml/browser)):
 
- - [Edge](http://fav.me/d8uhefy) by [furrgroup](http://furrgroup.deviantart.com/)
+ - [Edge](http://fav.me/d9qzk7x) by [masemj](http://masemj.deviantart.com/) ([pony design](http://fav.me/d8uhefy) by [furrgroup](http://furrgroup.deviantart.com/))
  - [Firefox](http://fav.me/d4b6f4v) by [NoReasonToHope](http://noreasontohope.deviantart.com/)
  - [Google Chrome](http://fav.me/d523s3y) by [he4rtofcourage](http://he4rtofcourage.deviantart.com/)
- - [Internet Explorer](http://fav.me/d5ktmlx) by [McSadat](http://mcsadat.deviantart.com/)
+ - [Internet Explorer](http://fav.me/d52fp08) by [McSadat](http://mcsadat.deviantart.com/)
  - [Opera](http://fav.me/d52qnaw) by [ParallaxMLP](http://parallaxmlp.deviantart.com/)
  - [Safari](http://fav.me/d530knp) by [ParallaxMLP](http://parallaxmlp.deviantart.com/)
- - [Vivaldi](https://github.com/alrra/browser-logos/blob/1ec2af8325ffb8b3f2c2834da84870341a376efd/vivaldi/vivaldi_128x128.png) from [alrra/browser-logos](https://github.com/alrra/browser-logos)
+ - [Vivaldi](https://github.com/alrra/browser-logos/blob/1ec2af8325ffb8b3f2c2834da84870341a376efd/vivaldi/vivaldi_256x256.png) from [alrra/browser-logos](https://github.com/alrra/browser-logos)
  
 **Coding and design** by [DJDavid98](http://djdavid98.hu/)
 

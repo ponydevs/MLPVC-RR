@@ -5,6 +5,12 @@
 	@if ($pseudo){
 		$before: ':before';
 	}
+	//noinspection CssOptimizeSimilarProperties
+	&#{$before} {
+		background-repeat: no-repeat;
+		background-position: center;
+		background-size: contain;
+	}
 	&.browser-chrome#{$before} {
 		background-image: url(../img/browser/chrome.png);
 	}

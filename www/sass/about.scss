@@ -45,6 +45,22 @@
 		.attributions {
 			p { line-height: 1.4 }
 
+			ul {
+				padding: 0;
+				list-style: none;
+				li {
+					&:before {
+						content: "\bb";
+						font-weight: bold;
+						display: inline-block;
+						width: 25px;
+						font-size: 1.1em;
+						text-align: center;
+					}
+					&:not(:last-child) { margin-bottom: 3px }
+				}
+			}
+
 			.ramnode img {
 				border-radius: 7px;
 				max-height: 45px;
@@ -54,16 +70,6 @@
 
 		&:not(:last-child){
 			margin-bottom: 10px;
-		}
-
-		&.browsers table {
-			border-collapse: collapse;
-			background: #fff;
-
-			td, th {
-				border: 1px solid;
-				padding: 5px;
-			}
 		}
 	}
 }
