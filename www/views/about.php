@@ -10,9 +10,10 @@
 		</div>
 	</section>
 	<section>
-		<h2>Why does the version number look so&hellip; <em>random</em>?</h2>
-		<div>
-			<p>This website's complete codebase is <a href="<?=GITHUB_URL?>">available for anyone to see on GitHub</a>. The version number is the first few characters of the latest commit's ID. In this case, a commit is basically an update to the site. Whenever a new update is applied, the version number changes automatically.</p>
+		<h2>Attributions</h2>
+		<div class="attributions">
+			<?php readfile(APPATH.'views/about.html'); ?>
+			<p class="ramnode"><a href="https://clientarea.ramnode.com/aff.php?aff=2648"><img src="https://www.ramnode.com/images/banners/affbannerlightnewlogoblack.png" alt="high performance ssd vps""></a></p>
 		</div>
 	</section>
 	<section>
@@ -32,10 +33,9 @@
 		</div>
 	</section>
 	<section>
-		<h2>Attributions</h2>
-		<div class="attributions">
-			<?=file_get_contents(APPATH.'views/about.html')?>
-			<p class="ramnode"><a href="https://clientarea.ramnode.com/aff.php?aff=2648"><img src="https://www.ramnode.com/images/banners/affbannerlightnewlogoblack.png" alt="high performance ssd vps""></a></p>
+		<h2>Why does the version number look so&hellip; <em>random</em>?</h2>
+		<div>
+			<p>This website's complete codebase is <a href="<?=GITHUB_URL?>">available for anyone to see on GitHub</a>. The version number is the first few characters of the latest commit's ID. In this case, a commit is basically an update to the site. Whenever a new update is applied, the version number changes automatically.</p>
 		</div>
 	</section>
 <? if (PERM('inspector')){ ?>
