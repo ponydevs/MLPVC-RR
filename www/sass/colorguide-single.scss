@@ -9,6 +9,13 @@
 		max-width: 300px;
 		height: 300px;
 
+		> .upload-wrap {
+			a, a > img {
+				display: block;
+			}
+			a > img { margin: 0 auto }
+		}
+
 		img {
 			height: 300px;
 		}
