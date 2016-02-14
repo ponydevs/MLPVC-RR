@@ -14,7 +14,7 @@ var REWRITE_REGEX = <?=str_replace('~','/',str_replace('/','\/',REWRITE_REGEX))?
 <!-- We respect your privacy. Enable "Do Not Track" in your browser, and this tracking code will disappear. -->
 <script async src='https://www.google-analytics.com/analytics.js'></script>
 <script>
-// http://nickcraver.com/blog/2015/03/24/optimization-considerations/
+/* http://nickcraver.com/blog/2015/03/24/optimization-considerations/ */
 var ga=ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
 ga('create','<?=GA_TRACKING_CODE?>','auto');
 ga('require', 'displayfeatures');
