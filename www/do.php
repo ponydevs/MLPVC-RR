@@ -1943,7 +1943,7 @@
 					$Tag = $CGDb->where('name', $tag)->getOne('tags', 'tid');
 					if (empty($Tag)){
 						$_MSG = "The tag $tag does not exist";
-						if (isset($_GET['js']))
+						if (isset($_REQUEST['js']))
 							respond($_MSG);
 					}
 					if (!in_array($Tag['tid'], $Tags))
@@ -1952,7 +1952,7 @@
 				if (empty($_MSG)){
 					if (empty($Tags)){
 						$_MSG = 'Your search matched no tags';
-						if (isset($_GET['js']))
+						if (isset($_REQUEST['js']))
 							respond($_MSG);
 						$tc = 0;
 					}
@@ -1986,7 +1986,7 @@
 
 					$SearchQuery = str_replace('@coloumn','p.*',$query);
 					$SearchQuery = str_replace('--limit',"LIMIT $ItemsPerPage OFFSET $Offset",$SearchQuery);
-					$Ponies = $CGDb->rawQuery($SearchQuery);
+					$Ponies = $CGDb->rawQuery("$SearchQuery ORDER BY p.order ASC");
 				}
 				else {
 					$Page = $MaxPages = 1;
