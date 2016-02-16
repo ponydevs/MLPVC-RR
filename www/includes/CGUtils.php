@@ -249,6 +249,22 @@
 		return $HTML.($wrap?'</ul>':'');
 	}
 
+	$GroupTagIDs_Assoc = array(
+		6  => 'Mane Six & Spike',
+		45 => 'Cutie Mark Crusaders',
+		59 => 'Royalty',
+		9  => 'Antagonists',
+		44 => 'Foals',
+		78 => 'Original Characters',
+		1  => 'Unicorns',
+		3  => 'Pegasi',
+		2  => 'Earth Ponies',
+		10 => 'Pets',
+		// add other tags here
+		64 => 'Objects',
+		-1 => 'Other',
+	);
+
 	// Renders HTML for full guide list
 	function render_full_list_html($Appearances, $GuideOrder, $wrap = WRAP){
 		$elementName = $GuideOrder ? 'ul' : 'div';
@@ -271,40 +287,8 @@
 				$HTML .= rtrim($HTML, ', ');
 			}
 			else {
-				global $CGDb;
-				$GroupTagIDs_Assoc = array(
-					6  => 'Mane Six & Spike',
-					45 => 'Cutie Mark Crusaders',
-					59 => 'Royalty',
-					9  => 'Antagonists',
-					44 => 'Foals',
-					78 => 'Original Characters',
-					1  => 'Unicorns',
-					3  => 'Pegasi',
-					2  => 'Earth Ponies',
-					10 => 'Pets',
-					// add other tags here
-					64 => 'Objects',
-					-1 => 'Other',
-				);
-				$GroupTagIDs = array_keys($GroupTagIDs_Assoc);
-				$Sorted = array();
-				foreach($Appearances as $p){
-					$Tagged = $CGDb->rawQuery(
-						'SELECT tags.tid
-						FROM tagged
-						LEFT JOIN tags ON tagged.tid = tags.tid && tagged.ponyid = ?
-						WHERE tags.tid IN ('.implode(',',$GroupTagIDs).')', array($p['id']));
-					if (!empty($Tagged)){
-						if (count($Tagged) > 1)
-							usort($Tagged,function($a,$b) use ($GroupTagIDs){
-								return array_search($a['tid'], $GroupTagIDs) - array_search($b['tid'], $GroupTagIDs);
-							});
-						$tid = $Tagged[0]['tid'];
-					}
-					else $tid = -1;
-					$Sorted[$tid][] = $p;
-				}
+				global $GroupTagIDs_Assoc;
+				$Sorted = sort_appearances($Appearances);
 				foreach ($GroupTagIDs_Assoc as $Category => $CategoryName){
 					if (empty($Sorted[$Category]))
 						continue;
@@ -317,6 +301,59 @@
 			}
 		}
 		return $HTML.($wrap?"</$elementName>":'');
+	}
+
+	define('SIMPLE_ARRAY', true);
+	function sort_appearances($Appearances, $simpleArray = false){
+		global $CGDb, $GroupTagIDs_Assoc;
+		$GroupTagIDs = array_keys($GroupTagIDs_Assoc);
+		$Sorted = array();
+		foreach($Appearances as $p){
+			$Tagged = $CGDb->rawQuery(
+				'SELECT tags.tid
+				FROM tagged
+				LEFT JOIN tags ON tagged.tid = tags.tid && tagged.ponyid = ?
+				WHERE tags.tid IN ('.implode(',',$GroupTagIDs).')', array($p['id']));
+			if (!empty($Tagged)){
+				if (count($Tagged) > 1)
+					usort($Tagged,function($a,$b) use ($GroupTagIDs){
+						return array_search($a['tid'], $GroupTagIDs) - array_search($b['tid'], $GroupTagIDs);
+					});
+				$tid = $Tagged[0]['tid'];
+			}
+			else $tid = -1;
+			$Sorted[$tid][] = $p;
+		}
+		if ($simpleArray){
+			$idArray = array();
+			foreach ($GroupTagIDs_Assoc as $Category => $CategoryName){
+				if (empty($Sorted[$Category]))
+					continue;
+				foreach ($Sorted[$Category] as $p)
+					$idArray[] = $p['id'];
+			}
+			return $idArray;
+		}
+		else return $Sorted;
+	}
+
+	function reorder_appearances($ids){
+		global $CGDb;
+		if (empty($ids))
+			return false;
+
+		$list = is_string($ids) ? explode(',', $ids) : $ids;
+		$order = 1;
+		foreach ($list as $id){
+			if (!$CGDb->where('id', $id)->update('appearances', array('order' => $order++)))
+				respond("Updating appearance #$id failed, process halted");
+		}
+	}
+
+	function get_sort_reorder_appearances($EQG){
+		if ($EQG)
+			return;
+		reorder_appearances(sort_appearances(get_appearances($EQG,null,'id'), SIMPLE_ARRAY));
 	}
 
 	// Check image type

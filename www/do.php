@@ -1145,12 +1145,7 @@
 							if (!preg_match('~^\d+(?:,\d+)+$~', $list))
 								respond('The list of IDs is not formatted properly');
 
-							$list = explode(',', $list);
-							$order = 1;
-							foreach ($list as $id){
-								if (!$CGDb->where('id', $id)->update('appearances', array('order' => $order++)))
-									respond("Updating appearance #$id failed, process halted");
-							}
+							reorder_appearances($list);
 
 							respond(array('html' => render_full_list_html(get_appearances($EQG,null,'id,label'), true, NOWRAP)));
 						}
@@ -1352,6 +1347,9 @@
 							))) respond(ERR_DB_FAIL);
 
 							update_tag_count($Tag['tid']);
+							if (isset($GroupTagIDs_Assoc[$Tag['tid']]))
+								get_sort_reorder_appearances($EQG);
+
 							$response = array('tags' => get_tags_html($Appearance['id'], NOWRAP));
 							if (isset($_POST['needupdate']) && $Tag['type'] === 'ep'){
 								$response['needupdate'] = true;
@@ -1377,6 +1375,9 @@
 								respond(ERR_DB_FAIL);
 
 							update_tag_count($Tag['tid']);
+							if (isset($GroupTagIDs_Assoc[$Tag['tid']]))
+								get_sort_reorder_appearances($EQG);
+
 							$response = array('tags' => get_tags_html($Appearance['id'], NOWRAP));
 							if (isset($_POST['needupdate']) && $Tag['type'] === 'ep'){
 								$response['needupdate'] = true;
@@ -1452,6 +1453,9 @@
 
 							if (!$CGDb->where('tid', $Tag['tid'])->delete('tags'))
 								respond(ERR_DB_FAIL);
+
+							if (isset($GroupTagIDs_Assoc[$Tag['tid']]))
+								get_sort_reorder_appearances($EQG);
 
 							respond('Tag deleted successfully', 1, isset($_POST['needupdate']) && $Tag['type'] === 'ep' ? array(
 								'needupdate' => true,
