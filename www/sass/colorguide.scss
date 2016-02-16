@@ -292,7 +292,14 @@ ul.colors {
 		font-style: italic;
 		content: "There are no " attr(data-color) " groups for this appearance, add one by right-clicking here";
 		display: block;
+		width: 100%;
 		text-align: center;
+		padding: .2em;
+		box-sizing: border-box;
+		border: 1px dashed rgba(black,.5);
+	}
+	&:not(#colors):empty:before{
+		font-size: 18px;
 	}
 
 	> li {

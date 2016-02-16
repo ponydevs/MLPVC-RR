@@ -1223,7 +1223,6 @@
 								$count = $CGDb->where('ishuman', $EQG)->count('appearances');
 
 								$data['id'] = $query;
-								$data['page'] = max(ceil($count / $ItemsPerPage), 1);
 
 								if (isset($_POST['template'])){
 									try {
