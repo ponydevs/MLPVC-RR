@@ -11,6 +11,7 @@
 			<a class='darkblue btn typcn typcn-image' href='/<?=$color?>guide/appearance/<?="{$Appearance['id']}.png$FileModTime"?>' target='_blank'>View as PNG</a>
 <?  if (PERM('inspector')){ ?>
 			<button class='blue edit typcn typcn-pencil'>Edit metadata</button>
+			<button class='red delete typcn typcn-trash'>Delete apperance</button>
 <?  } ?>
 		</div>
 

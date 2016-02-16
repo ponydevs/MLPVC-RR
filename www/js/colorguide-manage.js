@@ -122,18 +122,14 @@ DocReady.push(function ColorguideManage(){
 							}
 						}
 						else {
-							$.Dialog.success(title, this.message, true);
 							var id = this.id, info = this.info;
-							$list.filter('#list').one('page-switch',function(e){
-								var $pony = $('#p'+id);
-								if ($pony.length)
-									$body.scrollTop($pony.offset().top - ($pony.outerHeight()/2));
-								if (info){
-									e.preventDefault();
+							$.Dialog.success(title, 'Appearance added');
+							$.Dialog.wait(title, 'Loading appearance page');
+							HandleNav('/colorguide/appearance/'+id,function(){
+								if (info)
 									$.Dialog.info(title, info);
-								}
+								else $.Dialog.close();
 							});
-							$.toPage(window.location.pathname.replace(/(\d+)?$/,this.page),true,true);
 						}
 					}));
 				});
@@ -543,7 +539,7 @@ DocReady.push(function ColorguideManage(){
 					})(data);
 				});
 			}},
-			true,
+			$.ctxmenu.separator,
 			{text: 'Create new tag', icon: 'plus', click: function(){
 				$.ctxmenu.triggerItem($(this).parent(), 1);
 			}},
@@ -687,7 +683,7 @@ DocReady.push(function ColorguideManage(){
 					CGEditorMaker('Create '+color+' group', $(this).closest('[id^=p]').attr('id').substring(1));
 				}},
 				{text: "Apply template (if empty)", icon: 'document-add', click: function(){
-					var ponyID = $(this).parents('li').attr('id').substring(1);
+					var ponyID = $(this).closest('[id^=p]').attr('id').substring(1);
 					$.Dialog.confirm('Apply template on appearance','Add common color groups to this appearance?<br>Note: This will only work if there are no color groups currently present.',function(sure){
 						if (!sure) return;
 
@@ -745,7 +741,7 @@ DocReady.push(function ColorguideManage(){
 						}));
 					});
 				}},
-				true,
+				$.ctxmenu.separator,
 				{text: "Re-order "+color+" groups", icon: 'arrow-unsorted', click: function(){
 					$.ctxmenu.triggerItem($(this).parent(), 1);
 				}},
@@ -755,24 +751,22 @@ DocReady.push(function ColorguideManage(){
 			],
 			function($el){ return Color+' group: '+$el.children().first().text().trim().replace(':','') }
 		);
-		var $colors = $colorGroups.children('li').children('span[id^=c]:not(:empty)');
-		if (!$colors.length)
-			$colors = $colorGroups.children('li').children('.color-line').children(':first-child');
+		var $colors = $colorGroups.children('li').find('span[id^=c]:not(:empty)');
 		$.ctxmenu.addItems(
-			$colors.filter(':not(.ctxmenu-bound)'),
-			true,
+			$colors.filter('.ctxmenu-bound'),
+			$.ctxmenu.separator,
 			{text: "Edit "+color+" group", icon: 'pencil', click: function(){
-				$.ctxmenu.triggerItem($(this).parents('.ctxmenu-bound'), 1);
+				$.ctxmenu.triggerItem($(this).parent().closest('.ctxmenu-bound'), 1);
 			}},
 			{text: "Delete "+color+" group", icon: 'trash', click: function(){
-				$.ctxmenu.triggerItem($(this).parents('.ctxmenu-bound'), 2);
+				$.ctxmenu.triggerItem($(this).parent().closest('.ctxmenu-bound'), 2);
 			}},
-			true,
+			$.ctxmenu.separator,
 			{text: "Re-order "+color+" groups", icon: 'arrow-unsorted', click: function(){
-				$.ctxmenu.triggerItem($(this).parents('.ctxmenu-bound'), 3);
+				$.ctxmenu.triggerItem($(this).parent().closest('.ctxmenu-bound'), 3);
 			}},
 			{text: "Create new group", icon: 'folder-add', click: function(){
-				$.ctxmenu.triggerItem($(this).parents('.ctxmenu-bound'), 4);
+				$.ctxmenu.triggerItem($(this).parent().closest('.ctxmenu-bound'), 4);
 			}}
 		);
 
@@ -885,9 +879,11 @@ DocReady.push(function ColorguideManage(){
 			}));
 		}).next('.delete').on('click',function(){
 			var $this = $(this),
-				$li = $this.closest('li'),
+				$li = $this.closest('[id^=p]'),
 				ponyID = $li.attr('id').substring(1),
-				ponyName = $this.parent().text().trim(),
+				ponyName = !AppearancePage
+					? $this.parent().text().trim()
+					: $content.children('h1').text(),
 				title = 'Deleting appearance: '+ponyName;
 
 			$.Dialog.confirm(title,'Deleting this appearance will remove <strong>ALL</strong> of its color groups, the colors within them, and the sprite file, if any.<br>Delete anyway?',function(sure){
@@ -903,7 +899,13 @@ DocReady.push(function ColorguideManage(){
 						var path = window.location.pathname;
 						if ($list.children().length === 0)
 							path = path.replace(/(\d+)$/,function(n){ return n > 1 ? n-1 : n });
-						$.toPage(path,true,true);
+						if (AppearancePage){
+							$.Dialog.wait('Navigation', 'Loading page 1');
+							HandleNav('/colorguide/1',function(){
+								$.Dialog.close();
+							});
+						}
+						else $.toPage(path,true,true);
 					}
 					else $.Dialog.fail(title, this.message);
 				}));

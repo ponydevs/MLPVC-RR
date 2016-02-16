@@ -7,7 +7,7 @@
 		.appendTo($body)
 		.on('click',function(e){ e.stopPropagation() })
 		.on('contextmenu', function(){ $ctxmenu.hide(); return false });
-	$.ctxmenu = {};
+	$.ctxmenu = { separator: true };
 
 	function setTitle($el, title){
 		if (typeof title === 'function')
@@ -26,7 +26,7 @@
 		if (!item) return;
 
 		var $item = $.mk('li');
-		if (item === true) $item.addClass('sep');
+		if (item === $.ctxmenu.separator) $item.addClass('sep');
 		else {
 			var $action = $.mk('a');
 			if (item.text) $action.text(item.text);
