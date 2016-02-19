@@ -2,7 +2,7 @@
 	$Title = (isset($title)?$title.' - ':'').SITE_TITLE;
 
 	$ThumbImage = "/img/logo.png";
-	if ($do === 'colorguide' && !empty($Appearance)){
+	if (isset($do) && $do === 'colorguide' && !empty($Appearance)){
 		$sprite = get_sprite_url($Appearance);
 		if ($sprite)
 			$ThumbImage = $sprite;
