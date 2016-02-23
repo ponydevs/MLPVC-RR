@@ -32,7 +32,7 @@
 	if (!empty($Appearance['notes'])){ ?>
 		<section>
 			<label><span class='typcn typcn-info-large'></span>Additional notes</label>
-			<p id="notes"><?=$Appearance['notes']?></p>
+			<p id="notes"><?=get_notes_html($Appearance, NOWRAP, NOTE_TEXT_ONLY)?></p>
 		</section>
 <?  }
 	if (!empty($Appearance['cm_favme'])){

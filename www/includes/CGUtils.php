@@ -140,9 +140,10 @@
 	$TAG_TYPES = array_keys($TAG_TYPES_ASSOC);
 
 	// Returns the markup for the notes displayed under an appaerance
-	function get_notes_html($p, $wrap = true){
+	define('NOTE_TEXT_ONLY', false);
+	function get_notes_html($p, $wrap = true, $cmLink = true){
 		$hasNotes = !empty($p['notes']);
-		$hasCM = !empty($p['cm_favme']);
+		$hasCM = !empty($p['cm_favme']) && $cmLink !== NOTE_TEXT_ONLY;
 		if ($hasNotes || $hasCM){
 			$notes = '';
 			if ($hasNotes){
