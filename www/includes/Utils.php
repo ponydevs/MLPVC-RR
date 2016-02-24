@@ -858,7 +858,7 @@ HTML;
 		if (compare_scope($AuthData['scope'], OAUTH_SCOPE_STASH))
 			$UserData['stash_allowed'] = true;
 
-		$cookie = openssl_random_pseudo_bytes(64);
+		$cookie = \Sodium\randombytes_buf(64);
 		$AuthData['token'] = sha1($cookie);
 
 		add_browser($AuthData);

@@ -7,7 +7,7 @@
 	define('CSRF_TOKEN',Cookie::get('CSRF_TOKEN'));
 
 	if (RQMTHD === 'GET' && isset($_GET['CSRF_TOKEN']))
-		die(header('Location: '.remove_csrf_query_parameter($_SERVER['REQUEST_URI'])));
+		redirect(remove_csrf_query_parameter($_SERVER['REQUEST_URI']));
 
 	$signedIn = false;
 
