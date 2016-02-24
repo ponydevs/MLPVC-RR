@@ -229,7 +229,7 @@ INSERT INTO appearances VALUES
 (5, 5, 'Rainbow Dash', '', 'd64bqyo', false, '2015-09-21 19:01:33+00'),
 (6, 6, 'Rarity', '', 'd64bqyo', false, '2015-09-21 19:18:24+00'),
 (7, 7, 'Spike', '', NULL, false, '2015-09-21 19:43:59+00'),
-(9, 12, 'Princess Luna', 'Magic Aura currently missing.', NULL, false, '2015-09-29 18:55:38+00'),
+(9, 12, 'Princess Luna', '', NULL, false, '2015-09-29 18:55:38+00'),
 (10, 26, 'Minuette', 'For convenience, the color offalsethe glass on her cutie mark is solid rather than transparent, thus the sand should be above.', NULL, false, '2015-07-25 14:49:44+00'),
 (11, 39, 'Derpy / Muffins', '', NULL, false, '2015-08-26 03:53:49+00'),
 (12, 29, 'Lyra Heartstrings', '', NULL, false, '2015-08-26 04:08:33+00'),
@@ -439,8 +439,8 @@ INSERT INTO colorgroups VALUES
 (174, 30, 'Flower', 5),
 (175, 9, 'Coat', 0),
 (176, 9, 'Mane & Tail', 1),
-(177, 9, 'Shoes', 5),
-(178, 9, 'Regalia', 4),
+(177, 9, 'Shoes', 6),
+(178, 9, 'Regalia', 5),
 (179, 9, 'Cutie Mark', 3),
 (180, 9, 'Iris', 2),
 (182, 31, 'Coat', 0),
@@ -621,14 +621,15 @@ INSERT INTO colorgroups VALUES
 (381, 68, 'Mane', 1),
 (382, 68, 'Coat', 2),
 (383, 68, 'Iris', 3),
-(384, 68, 'Cutie Mark', 4);
+(384, 68, 'Cutie Mark', 4),
+(385, 9, 'Magic', 4);
 
 
 --
 -- Name: colorgroups_groupid_seq; Type: SEQUENCE SET; Schema: public; Owner: mlpvc-rr
 --
 
-SELECT pg_catalog.setval('colorgroups_groupid_seq', 384, true);
+SELECT pg_catalog.setval('colorgroups_groupid_seq', 385, true);
 
 
 --
@@ -1848,14 +1849,16 @@ INSERT INTO colors VALUES
 (1532, 384, 'Pink Flower Fill', '#C62D9B', 1),
 (1533, 384, 'Blue Flower Outline', '#82DECF', 2),
 (1534, 384, 'Blue Flower Fill', '#B1ECEC', 3),
-(1535, 384, 'Flower Middle', '#F1FB9F', 4);
+(1535, 384, 'Flower Middle', '#F1FB9F', 4),
+(1536, 385, 'Aura', '#6196F5', 0),
+(1537, 196, 'Center Highlights', '#D9F9FF', 7);
 
 
 --
 -- Name: colors_colorid_seq; Type: SEQUENCE SET; Schema: public; Owner: mlpvc-rr
 --
 
-SELECT pg_catalog.setval('colors_colorid_seq', 1535, true);
+SELECT pg_catalog.setval('colors_colorid_seq', 1537, true);
 
 
 --
