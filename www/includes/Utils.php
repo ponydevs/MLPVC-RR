@@ -428,6 +428,11 @@ HTML;
 			);
 	}
 
+	// Removes excess tabs from HTML
+	function remove_indentation($HTML){
+		return preg_replace('/(\n|\r|\r\n)[\t ]*/', '$1', $HTML);
+	}
+
 	// Page loading function
 	function loadPage($settings){
 		// Page <title>
@@ -543,11 +548,6 @@ HTML;
 	// Remove CSRF query parameter from request URL
 	function remove_csrf_query_parameter($url, $viajsToo = false){
 		return rtrim(preg_replace('/CSRF_TOKEN=[^&]+(&|$)/','',$url),'?&');
-	}
-
-	// Removes excess tabs from HTML
-	function remove_indentation($HTML){
-		return preg_replace('/(\n|\r|\r\n)[\t ]*/', '', $HTML);
 	}
 
 	// Display a 404 page
