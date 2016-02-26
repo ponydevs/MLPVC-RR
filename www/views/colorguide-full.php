@@ -1,5 +1,5 @@
 <div id="content">
-	<h1>Full <?=$EQG?'character':'pony'?> list</h1>
+	<h1>Full <?=$EQG?'Character':'Pony'?> List</h1>
 	<p>List of appearances sorted <select id="sort-by" data-baseurl="/<?=$color?>guide<?=($EQG?'/eqg':'')?>/full">
 		<option value=''<?=$GuideOrder?'':' selected'?>>alphabetcally</option>
 		<option value='guide-order'<?=$GuideOrder?' selected':''?>>by relevance</option>
