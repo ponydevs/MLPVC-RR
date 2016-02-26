@@ -21,7 +21,7 @@
 			<?=render_changes_html($Changes)?>
 		</section>
 <?  }
-	if ($CGDb->where('ponyid',$Appearance['id'])->has('tagged') || PERM('inspector')){ ?>
+	if ($Appearance['id'] !== 0 && ($CGDb->where('ponyid',$Appearance['id'])->has('tagged') || PERM('inspector'))){ ?>
 		<section id="tags">
 			<label><span class='typcn typcn-tags'></span>Tags</label>
 			<div class='tags'><?=get_tags_html($Appearance['id'],NOWRAP)?></div>

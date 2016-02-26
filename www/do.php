@@ -1896,12 +1896,17 @@
 				$SafeLabel = trim(preg_replace('~-+~','-',preg_replace('~[^A-Za-z\d\-]~','-',$Appearance['label'])),'-');
 				fix_path("$CGPath/appearance/$SafeLabel-{$Appearance['id']}");
 				$heading = $Appearance['label'];
-				$title = "{$Color}s for $heading";
+				if ($Appearance['id'] === 0){
+					$title = $heading;
+					if ($color !== 'color')
+						$title = str_replace('color',$color,$title);
+				}
+				else $title = "{$Color}s for $heading";
 
 				$Changes = get_updates($Appearance['id']);
 
 				$settings = array(
-					'title' => $title,
+					'title' => "$title - $Color Guide",
 					'heading' => $heading,
 					'view' => "$do-single",
 					'css' => array($do, "$do-single"),
@@ -1924,7 +1929,7 @@
 					respond(array('html' => render_full_list_html($Appearances, $GuideOrder, NOWRAP)));
 
 				loadPage(array(
-					'title' => 'Full list - Color Guide',
+					'title' => "Full list - $Color Guide",
 					'view' => "$do-full",
 					'css' => "$do-full",
 					'js' => array('Sortable', "$do-full"),
