@@ -1478,61 +1478,50 @@ HTML;
 	// List ltem generator function for request & reservation renderers \\
 	define('IS_REQUEST', true);
 	function get_r_li($R, $isRequest = false){
-		global $signedIn, $currentUser;
-
 		$finished = !empty($R['deviation_id']);
-		$thing = $isRequest ? 'request' : 'reservation';
-		$ID = "$thing-{$R['id']}";
-		$HTML = "<li id='$ID'>";
-		$R['label'] = htmlspecialchars($R['label']);
+		$ID = ($isRequest ? 'request' : 'reservation').'-'.$R['id'];
 		$Image = "<div class='image screencap'><a href='{$R['fullsize']}'><img src='{$R['preview']}'></a></div>";
-		$label = '';
-		if (!empty($R['label'])){
-			$label = "<span class='label'>{$R['label']}</span>";
-			$Image .= $label;
-		}
-		$sameUser = $isRequest && $signedIn && $R['requested_by'] === $currentUser['id'];
+		$post_label = !empty($R['label']) ? '<span class="label">'.htmlspecialchars($R['label']).'</span>' : '';
+		$permalink = "<a href='#$ID'>".timetag($R['posted']).'</a>';
 
-		$Image .= $PostedBy = '<em>'.(
-			$isRequest
-			? (
-				(PERM('inspector') || $sameUser)
-				? (
-					$sameUser
-					? 'You'
-					: profile_link(get_user($R['requested_by']))
-				).' requested this '
-				: 'Requested '
-			)
-			: 'Reserved '
-		)."<a href='#$ID'>".timetag($R['posted'])."</a></em>";
+		$posted_at = '<em>';
+		if ($isRequest){
+			global $signedIn, $currentUser;
+			$sameUser = $signedIn && $R['requested_by'] === $currentUser['id'];
+
+			$posted_at .= "Requested $permalink";
+			if (PERM('inspector') || $sameUser)
+				$posted_at .= ' by '.($sameUser ? 'You' : profile_link(get_user($R['requested_by'])));
+		}
+		else $posted_at .= "Reserved $permalink";
+		$posted_at .= "</em>";
 
 		$R['reserver'] = false;
 		if (!empty($R['reserved_by'])){
 			$R['reserver'] = get_user($R['reserved_by']);
+			$reserved_at = $isRequest && !empty($R['reserved_at']) ? "<em>Reserved <a href='#$ID'>".timetag($R['reserved_at'])."</a></em>" : '';
 			if ($finished){
-				$D = da_cache_deviation($R['deviation_id']);
-				if (!empty($D)){
-					$D['title'] = preg_replace("/'/",'&apos;',$D['title']);
-					$Image = "<div class='image deviation'><a href='http://fav.me/{$D['id']}'><img src='{$D['preview']}' alt='{$D['title']}'>";
-					if (!empty($R['lock'])) $Image .= "<span class='typcn typcn-tick' title='This submission has been accepted into the group gallery'></span>";
+				$Deviation = da_cache_deviation($R['deviation_id']);
+				if (empty($Deviation))
+					$Image = "<div class='image deviation error'><a href='http://fav.me/{$R['deviation_id']}'>Preview unavailable<br><small>Click to view</small></a></div>";
+				else {
+					$alt = apos_encode($Deviation['title']);
+					$Image = "<div class='image deviation'><a href='http://fav.me/{$Deviation['id']}'><img src='{$Deviation['preview']}' alt='$alt'>";
+					if (!empty($R['lock']))
+						$Image .= "<span class='typcn typcn-tick' title='This submission has been accepted into the group gallery'></span>";
 					$Image .= "</a></div>";
 				}
-				else $Image = "<div class='image deviation error'><a href='http://fav.me/{$R['deviation_id']}'>Preview unavailable<br><small>Click to view</small></a></div>";
 				if (PERM('inspector')){
-					$Image .= $label.$PostedBy;
+					$Image .= $post_label.$posted_at.$reserved_at;
 					if (!empty($R['fullsize']))
 						$Image .= "<a href='{$R['fullsize']}' class='original' target='_blank'>Direct link to original image</a>";
 				}
 			}
-			else if ($isRequest && !empty($R['reserved_at'])){
-				$Image .= "<em>Reserved <a href='#$ID'>".timetag($R['reserved_at'])."</a></em>";
-			}
+			else $Image .= $post_label.$posted_at.$reserved_at;
 		}
+		else $Image .= $post_label.$posted_at;
 
-		$HTML .= $Image.get_reserver_button($R['reserver'], $R, $isRequest);
-
-		return "$HTML</li>";
+		return "<li id='$ID'>".$Image.get_reserver_button($R['reserver'], $R, $isRequest).'</li>';
 	}
 
 	// Get Request / Reservation Submission Form HTML \\
