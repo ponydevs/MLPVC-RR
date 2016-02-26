@@ -279,15 +279,17 @@
 					$usersMatch = $Thing['reserved_by'] === $currentUser['id'];
 					if ($noaction){
 						if ($usersMatch)
-							respond("You already reserved this $type");
+							respond("You've already reserved this $type");
 						else respond("This $type has already been reserved by somepony else");
 					}
-					if ($locking && !empty($Thing['deviation_id'])){
+					if ($locking){
+						if (empty($Thing['deviation_id']))
+							respond('Only finished {$type}s can be locked');
 						$Status = is_deviation_in_vectorclub($Thing['deviation_id']);
 						if ($Status !== true)
 							respond(
 								$Status === false
-								? "It looks like the deviation has not been accepted into the group yet"
+								? "The deviation has not been submitted to/accepted by the group yet"
 								: "There was an issue while checking the acceptance status (Error code: $Status)"
 							);
 
@@ -302,7 +304,7 @@
 						$message = "The image appears to be in the group gallery and as such it is now marked as approved.";
 						if ($usersMatch)
 							$message .= " Thank you for your contribution!";
-						respond($message, 1);
+						respond($message, 1, array('canedit' => PERM('developer')));
 					}
 					if ($canceling)
 						$unfinishing = true;

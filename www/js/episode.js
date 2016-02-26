@@ -451,7 +451,7 @@ DocReady.push(function Episode(){
 
 			var $btn = $(this);
 
-			$.Dialog.wait('Deviation acceptance status','Checking');
+			$.Dialog.wait('Submission approval status','Checking');
 
 			$.post('/reserving/'+type+'/'+id+'?lock', $.mkAjaxHandler(function(){
 				if (!this.status) return $.Dialog.fail(false, this.message);
@@ -462,10 +462,12 @@ DocReady.push(function Episode(){
 						title: "This submission has been accepted into the group gallery"
 					})
 				);
-				var $parent = $btn.parent(),
-					$editbtn = $parent.children('.edit').detach();
-				$editbtn.text($editbtn.attr('title')).removeAttr('title');
-				$parent.empty().append($editbtn);
+				var $editbtn;
+				if (this.canedit){
+					$editbtn = $btn.siblings('.edit').detach();
+					$editbtn.text($editbtn.attr('title')).removeAttr('title');
+				}
+				$btn.parent().html(this.canedit ? $editbtn : '');
 
 				if (this.message)
 					$.Dialog.success(false, this.message, true);
