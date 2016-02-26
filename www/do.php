@@ -1990,16 +1990,16 @@
 								WHERE t.tid IN (".implode(',', $Tags).")
 								GROUP BY t.ponyid
 								HAVING COUNT(t.tid) = $tc
-								--limit
 							) tg
-						) AND p.ishuman = $IsHuman";
+						) AND p.ishuman = $IsHuman
+						--limit";
 					$EntryCount = $CGDb->rawQuerySingle(str_replace('@coloumn','COUNT(*) as count',$query))['count'];
 					list($Page,$MaxPages) = calc_page($EntryCount);
 					$Offset = $ItemsPerPage*($Page-1);
 
 					$SearchQuery = str_replace('@coloumn','p.*',$query);
-					$SearchQuery = str_replace('--limit',"LIMIT $ItemsPerPage OFFSET $Offset",$SearchQuery);
-					$Ponies = $CGDb->rawQuery("$SearchQuery ORDER BY p.order ASC");
+					$SearchQuery = str_replace('--limit',"ORDER BY p.order ASC LIMIT $ItemsPerPage OFFSET $Offset",$SearchQuery);
+					$Ponies = $CGDb->rawQuery($SearchQuery);
 				}
 				else {
 					$Page = $MaxPages = 1;
