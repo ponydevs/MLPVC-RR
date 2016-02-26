@@ -336,8 +336,10 @@ DocReady.push(function Episode(){
 				});
 			});
 		});
-		$li.children('em').children('a').last().on('click',function(e){
+		$li.children('em').children('a:not(.da-userlink)').on('click',function(e){
 			e.preventDefault();
+			e.stopPropagation();
+
 			history.replaceState(history.state,'',this.href);
 			HighlightHash();
 		});
