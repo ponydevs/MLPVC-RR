@@ -2368,7 +2368,7 @@ ORDER BY "count" DESC
 				$NavItems['colorguide'][1] .= " - Page $Page";
 			else {
 				if ($GLOBALS['data'] === 'full'){
-					$NavItems['colorguide']['subitem'] = array('/colorguide/full','Full list');
+					$NavItems['colorguide']['subitem'] = array('/colorguide/full','Full List');
 				}
 				else {
 					if (isset($Tags)) $pagePrefix = 'Tags';

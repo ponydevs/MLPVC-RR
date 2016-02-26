@@ -1932,7 +1932,7 @@
 					respond(array('html' => render_full_list_html($Appearances, $GuideOrder, NOWRAP)));
 
 				loadPage(array(
-					'title' => "Full list - $Color Guide",
+					'title' => "Full List - $Color Guide",
 					'view' => "$do-full",
 					'css' => "$do-full",
 					'js' => array('Sortable', "$do-full"),
