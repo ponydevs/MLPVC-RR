@@ -1735,7 +1735,7 @@
 				list($Page,$MaxPages) = calc_page($EntryCount);
 
 				fix_path("/{$color}guide/changes/$Page");
-				$heading = "$Color Changes";
+				$heading = "Major $Color Changes";
 				$title = "Page $Page - $heading - $Color Guide";
 				$Pagination = get_pagination_html("{$color}guide/changes");
 

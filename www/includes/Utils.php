@@ -2372,7 +2372,7 @@ ORDER BY "count" DESC
 				}
 				else {
 					if (isset($Tags)) $pagePrefix = 'Tags';
-					else if (isset($Changes)) $pagePrefix = 'Color Changes';
+					else if (isset($Changes)) $pagePrefix = "Major $Color Changes";
 
 					$NavItems['colorguide']['subitem'] = array(
 						$_SERVER['REQUEST_URI'],

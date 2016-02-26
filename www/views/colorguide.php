@@ -19,7 +19,7 @@
 		<a class='btn darkblue typcn typcn-th-menu' href="/<?=$color?>guide<?=$EQG?'/eqg':''?>/full">Full List of <?=$EQG?'Equestria Girls':'Ponies'?></a>
 		<a class='btn darkblue typcn typcn-arrow-forward' href="/blending">Blending Calculator</a>
 		<a class='btn darkblue typcn typcn-tags' href="/<?=$color?>guide/tags">Tags</a>
-		<a class='btn darkblue typcn typcn-warning' href="/<?=$color?>guide/changes">Major changes</a>
+		<a class='btn darkblue typcn typcn-warning' href="/<?=$color?>guide/changes">Major Changes</a>
 	</p>
 
 	<form id="search-form"><input name="q" <?=!empty($_GET['q'])?" value='".apos_encode($_GET['q'])."'":''?> title='Search'> <button class='blue typcn typcn-zoom'></button><button type='reset' class='orange typcn typcn-times' title='Clear'<?=empty($_GET['q'])?'disabled':''?>></button><p>Enter tags separated by commas. You can search for up to 6 tags at a time.</p></form>

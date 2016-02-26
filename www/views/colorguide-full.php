@@ -11,8 +11,8 @@
 		<button class='darkblue typcn typcn-arrow-unsorted' id="guide-reorder"<?=!$GuideOrder?' disabled':''?>>Re-order</button>
 <?php } ?>
 		<a class='btn blue typcn typcn-world' href="/<?=$color?>guide<?=($EQG?'':'/eqg')?>/full<?=$GuideOrder?'?guide-order':''?>">List of <?=$EQG?'Ponies':'Equestria Girls'?></a>
-		<a class='btn darkblue typcn typcn-tags' href="/<?=$color?>guide/tags">Tag list</a>
-		<a class='btn darkblue typcn typcn-warning' href="/<?=$color?>guide/changes">Major changes</a>
+		<a class='btn darkblue typcn typcn-tags' href="/<?=$color?>guide/tags">Tags</a>
+		<a class='btn darkblue typcn typcn-warning' href="/<?=$color?>guide/changes">Major Changes</a>
 	</p>
 
 	<?=render_full_list_html($Appearances, $GuideOrder)?>
