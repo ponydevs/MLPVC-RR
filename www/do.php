@@ -1539,9 +1539,12 @@
 
 						if (!empty($_POST['addto']) && is_numeric($_POST['addto'])){
 							$AppearanceID = intval($_POST['addto'], 10);
+							if ($AppearanceID === 0)
+								respond("The tag was created, <strong>but</strong> it could not be added to the appearance because it can't be tagged.", 1);
+
 							$Appearance = $CGDb->where('id', $AppearanceID)->getOne('appearances');
 							if (empty($Appearance))
-								respond("Tag created, but target appearance (#$AppearanceID) does not exist. Please try adding the tag manually.");
+								respond("The tag was created, <strong>but</strong> it could not be added to the appearance (<a href='/{$color}guide/appearance/$AppearanceID'>#$AppearanceID</a>) because it doesn't seem to exist. Please try adding the tag manually.", 1);
 
 							if (!$CGDb->insert('tagged',array(
 								'tid' => $data['tid'],
