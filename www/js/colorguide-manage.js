@@ -19,7 +19,7 @@ DocReady.push(function ColorguideManage(){
 		$ponyEditor = $.mk('form').attr('id','pony-editor')
 			.append(
 				$.mk('label').append(
-					$.mk('span').text('Name (4-70 chars.)'),
+					'<span>Name (4-70 chars.)</span>',
 					$.mk('input').attr({
 						name: 'label',
 						placeholder: 'Enter a name',
@@ -29,19 +29,50 @@ DocReady.push(function ColorguideManage(){
 					})
 				),
 				$.mk('label').append(
-					$.mk('span').text('Additional notes (255 chars. max, optional)'),
+					'<span>Additional notes (255 chars. max, optional)</span>',
 					$.mk('textarea').attr({
 						name: 'notes',
 						maxlength: 255
 					})
 				),
 				$.mk('label').append(
-					$.mk('span').text('Link to cutie mark (optional)'),
+					'<span>Link to cutie mark (optional)</span>',
 					$.mk('input').attr({
 						name: 'cm_favme',
 						placeholder: 'DeviantArt submission URL',
+					}).on('change blur',function(){
+						$(this).parent().next().find('input').attr('required', this.value.trim().length === 0);
 					})
-				)
+				),
+				$.mk('div').attr('class','align-center').append(
+					'<p>Cutie mark orientation</p>',
+					$.mk('div').attr('class','radio-group').append(
+						$.mk('label').append(
+							$.mk('input').attr({
+								type: 'radio',
+								name: 'cm_dir',
+								value: 'ht',
+							}),
+							"<span>Head-Tail</span>"
+						),
+						$.mk('label').append(
+							$.mk('input').attr({
+								type: 'radio',
+								name: 'cm_dir',
+								value: 'th',
+							}),
+							"<span>Tail-Head</span>"
+						)
+					)
+				),
+				$.mk('label').append(
+					"<span>Link to CM preview image (optional)</span>",
+					$.mk('input').attr({
+						name: 'cm_preview',
+						placeholder: 'Separate preview image',
+					})
+				),
+				'<p class="notice info">The preview of the linked CM above will be used if the preview field is left empty.</p>'
 			),
 		mkPonyEditor = function($this, title, data){
 			var editing = !!data,
@@ -55,7 +86,7 @@ DocReady.push(function ColorguideManage(){
 			}
 			else $ponyLabel = $this.parent();
 
-			$.Dialog.request(title,$ponyEditor.clone(),'pony-editor','Save',function($form){
+			$.Dialog.request(title,$ponyEditor.clone(true,true),'pony-editor','Save',function($form){
 				if (editing){
 
 					$form.find('input[name=label]').val(data.label);
@@ -63,7 +94,14 @@ DocReady.push(function ColorguideManage(){
 					$txtarea.val(data.notes);
 					if (parseInt(data.ponyID, 10) === 0)
 						$txtarea.removeAttr('maxlength');
-					$form.find('input[name=cm_favme]').val(data.cm_favme);
+					var $favme = $form.find('input[name=cm_favme]');
+					$favme.triggerHandler('change');
+					if (data.cm_favme)
+						$favme.val(data.cm_favme);
+					if (data.cm_preview)
+						$form.find('input[name=cm_preview]').val(data.cm_preview);
+					if (data.cm_dir)
+						$form.find('input[name=cm_dir][value='+data.cm_dir+']').prop('checked', true);
 					$form.append(
 						$.mk('div').attr('class','align-center').append(
 							$.mk('button')
@@ -399,6 +437,7 @@ DocReady.push(function ColorguideManage(){
 				if (AppearancePage){
 					data.OUTPUT_COLOR_NAMES = true;
 					data.NO_COLON = true;
+					data.RETURN_CM_IMAGE = true;
 				}
 
 				$.Dialog.wait(false, 'Saving changes');
@@ -424,6 +463,8 @@ DocReady.push(function ColorguideManage(){
 						ctxmenus();
 						if (this.update)
 							window.updateTimes();
+						if (this.cm_img)
+							$('#pony-cm').css('background-image', this.cm_img);
 					}
 					$.Dialog.close();
 				}));

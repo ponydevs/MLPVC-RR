@@ -35,12 +35,20 @@
 			<p id="notes"><?=get_notes_html($Appearance, NOWRAP, NOTE_TEXT_ONLY)?></p>
 		</section>
 <?  }
+
 	if (!empty($Appearance['cm_favme'])){
-		$CM = da_cache_deviation($Appearance['cm_favme']); ?>
+		if (!empty($Appearance['cm_preview']))
+			$preview = $Appearance['cm_preview'];
+		else {
+			$CM = da_cache_deviation($Appearance['cm_favme']);
+			$preview = $CM['preview'];
+		} ?>
 		<section>
-			<label>Approved cutie mark vector</label>
-			<a id="pony-cm" href="http://fav.me/<?=$CM['id']?>">
-				<img src="<?=$CM['preview']?>" alt="<?=$CM['title']?>">
+			<label>Recommended cutie mark vector</label>
+			<p>The image below links to the vector, and shows which way the cutie mark should be facing. The body shape used here is the same for every character, and it is <strong>not</strong> tailored to any individual body design.</p>
+<?=PERM('inspector')&&!isset($Appearance['cm_dir'])?Notice('fail','Missing CM orientation, falling back to <strong>Tail-Head</strong>. Please edit the appaearance and provide an orientation!'):''?>
+			<a id="pony-cm" href="http://fav.me/<?=$Appearance['cm_favme']?>" style="background-image:<?=generate_cm_facing_image($Appearance['id'], $Appearance['cm_dir'])?>">
+				<div class="img cm-dir-<?=$Appearance['cm_dir']===CM_DIR_HEAD_TO_TAIL?'ht':'th'?>" style="background-image:url('<?=apos_encode($preview)?>')"></div>
 			</a>
 		</section>
 <?  } ?>

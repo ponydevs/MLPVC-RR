@@ -813,3 +813,43 @@ HTML;
 		</section>
 HTML;
 	}
+
+	// Generate CM preview image
+	define('CM_DIR_TAIL_TO_HEAD', false);
+	define('CM_DIR_HEAD_TO_TAIL', true);
+	function generate_cm_facing_image($AppearanceID, $dir = null){
+		global $CGDb;
+
+		if (empty($dir))
+			$dir = $CGDb->where('id', $AppearanceID)->getOne('appearances','cm_dir')['cm_dir'];
+
+		$DefaultColorMapping = array(
+			'Coat Outline' => '#0D0D0D',
+			'Coat Shadow Outline' => '#000000',
+			'Coat Fill' => '#2B2B2B',
+			'Coat Shadow Fill' => '#171717',
+			'Mane & Tail Outline' => '#333333',
+			'Mane & Tail Fill' => '#5E5E5E',
+		);
+		$Colors = $CGDb->rawQuery(
+			"SELECT cg.label||' '||c.label as label, c.hex
+			FROM colorgroups cg
+			LEFT JOIN colors c on c.groupid = cg.groupid
+			WHERE cg.ponyid = ?", array($AppearanceID));
+
+		$ColorMapping = array();
+		foreach ($Colors as $row){
+			$label = preg_replace('/\s\d+$/','',$row['label']);
+			if (isset($DefaultColorMapping[$label]) && !isset($ColorMapping[$label]))
+				$ColorMapping[$label] = $row['hex'];
+		}
+		if (!isset($ColorMapping['Coat Shadow Outline']) && isset($ColorMapping['Coat Outline']))
+			$ColorMapping['Coat Shadow Outline'] = $ColorMapping['Coat Outline'];
+
+		$img = file_get_contents(APPATH.'img/cm-direction-'.($dir===CM_DIR_HEAD_TO_TAIL?'ht':'th').'.svg');
+		foreach ($DefaultColorMapping as $label => $defhex){
+			if (isset($ColorMapping[$label]))
+				$img = str_replace($defhex, $ColorMapping[$label], $img);
+		}
+		return "url('data:image/svg+xml;base64,".base64_encode($img)."')";
+	}

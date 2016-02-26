@@ -177,7 +177,7 @@ gulp.task('pgsort', function(){
 				(function(fpath){
 					fs.readFile(fpath, 'utf8', function(err, data){
 						if (err) throw err;
-						var test = /INSERT INTO "?([a-z_\-]+)"?\s*VALUES\s*\((\d+),[\s\S]+?;\n/g;
+						var test = /INSERT INTO "?([a-z_\-]+)"?\s*VALUES\s*\((\d+),[\s\S]+?;(?:\r|\r\n|\n)/g;
 						if (!test.test(data))
 							return;
 						var Tables = {},

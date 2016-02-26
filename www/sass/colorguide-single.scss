@@ -35,13 +35,42 @@
 		}
 	}
 
-	#pony-cm img {
-		max-width: 175px;
-		max-height: 175px;
-		border: 2px solid $DeviationBorder;
-		box-shadow: 0 0 5px $DeviationBorder;
-		background: url(../img/transparency.svg) repeat;
-		background-size: 12px;
+	#notes {
+		font-size: 1.1em;
+		background: papayawhip;
+		color: saddlebrown;
+		padding: 10px;
+		border: 1px solid burlywood;
+		display: inline-block;
+	}
+
+	#pony-cm {
+		$SquareSize: 250px;
+
+		display: block;
+		width: $SquareSize;
+		height: $SquareSize;
+		position: relative;
+		font-size: 0;
+
+		//noinspection CssOptimizeSimilarProperties
+		.img {
+			$CMSize: $SquareSize * 0.4857;
+
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: $CMSize;
+			height: $CMSize;
+			margin: ($SquareSize - $CMSize)/2;
+
+			&.cm-dir-th { transform: rotateZ(20deg) }
+			&.cm-dir-ht { transform: rotateZ(-20deg) }
+
+			background-repeat: no-repeat;
+			background-position: center center;
+			background-size: contain;
+		}
 	}
 
 	#colors {

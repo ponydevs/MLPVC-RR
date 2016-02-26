@@ -1175,6 +1175,10 @@
 								'label' => $Appearance['label'],
 								'notes' => $Appearance['notes'],
 								'cm_favme' => !empty($Appearance['cm_favme']) ? "http://fav.me/{$Appearance['cm_favme']}" : null,
+								'cm_preview' => $Appearance['cm_preview'],
+								'cm_dir' => isset($Appearance['cm_dir'])
+									? ($Appearance['cm_dir'] === CM_DIR_HEAD_TO_TAIL ? 'ht' : 'th')
+									: null
 							));
 
 							$data = array(
@@ -1211,7 +1215,29 @@
 								catch (MismatchedProviderException $e){
 									respond('The vector must be on DeviantArt, '.$e->getActualProvider().' links are not allowed');
 								}
-								catch (Exception $e){ respond($e->getMessage()); }
+								catch (Exception $e){ respond("Cutie Mark link issue: ".$e->getMessage()); }
+
+								if (empty($_POST['cm_dir']))
+									respond('Cutie mark orientation must be set if a link is provided');
+								if ($_POST['cm_dir'] !== 'th' && $_POST['cm_dir'] !== 'ht')
+									respond('Invalid cutie mark orientation');
+								$data['cm_dir'] = $_POST['cm_dir'] === 'ht' ? CM_DIR_HEAD_TO_TAIL : CM_DIR_TAIL_TO_HEAD;
+
+								$cm_preview = trim($_POST['cm_preview']);
+								if (empty($cm_preview))
+									$data['cm_preview'] = null;
+								else if ($cm_preview !== $Appearance['cm_preview']){
+									try {
+										require_once 'includes/Image.php';
+										$Image = new Image($cm_preview);
+										$data['cm_preview'] = $Image->preview;
+									}
+									catch (Exception $e){ respond("Cutie Mark preview issue: ".$e->getMessage()); }
+								}
+							}
+							else {
+								$data['cm_dir'] = null;
+								$data['cm_preview'] = null;
 							}
 
 							$query = $action === 'set'
@@ -1687,6 +1713,8 @@
 					else $response = array('cg' => get_cg_html($Group['groupid'], NOWRAP, $colon, $outputNames));
 
 					$AppearanceID = $new ? $Appearance['id'] : $Group['ponyid'];
+					if (isset($_POST['RETURN_CM_IMAGE']))
+						$response['cm_img'] = generate_cm_facing_image($AppearanceID);
 					if (isset($major)){
 						LogAction('color_modify',array(
 							'ponyid' => $AppearanceID,
