@@ -499,11 +499,12 @@ $(function(){
 	$d.off('click','a[href]',LinkClick).on('click','a[href]',LinkClick);
 
 	$w.off('popstate').on('popstate',function(e){
-		var state = e.originalEvent.state;
+		var state = e.originalEvent.state,
+			goto = function(url,callback){ Navigation(url, callback, true) };
 
 		if (state !== null && !state['via-js'] && state.paginate === true)
-			return $w.trigger('nav-popstate', [state]);
-		Navigation(location.href, undefined, true);
+			return $w.trigger('nav-popstate', [state, goto]);
+		goto(location.href);
 	});
 
 	function Navigation(url, callback, block_reload){
@@ -592,10 +593,12 @@ $(function(){
 						$headerNav.children().first().children('img').attr('src', avatar);
 						$headerNav.children(':not(:first-child)').remove();
 						$headerNav.append($sidebar.find('nav').children().children().clone());
-						document.title = (pagetitle?pagetitle+' - ':'')+SITE_TITLE;
 
 						window.CommonElements();
-						history[ParsedLocation.pathString === url?'replaceState':'pushState']({'via-js':true},'',url);
+						if (!block_reload)
+							history[ParsedLocation.pathString === url?'replaceState':'pushState']({'via-js':true},'',url);
+						document.title = (pagetitle?pagetitle+' - ':'')+SITE_TITLE;
+						window.HandleNav.lastLoadedPathname = window.location.pathname;
 
 						window.DocReady = [];
 
@@ -646,6 +649,7 @@ $(function(){
 		Navigation(location.pathname, f);
 	};
 	window.HandleNav.reload = function(){ Reload.apply(window, arguments) };
+	window.HandleNav.lastLoadedPathname = window.location.pathname;
 
 	DocumentIsReady();
 });

@@ -47,19 +47,22 @@
 
 			$.toPage(this.pathname);
 		});
-		$w.off('nav-popstate').on('nav-popstate',function(e, state){
+		$w.off('nav-popstate').on('nav-popstate',function(e, state, goto){
 			var obj = {state:state},
 				params = [location.pathname, true, undefined, true];
-			if ($('.pagination').length === 0)
-				HandleNav(params[0],function(){
+			if (typeof state.baseurl !== 'undefined' && HandleNav.lastLoadedPathname.replace(/\/\d+($|\?)/,'$1') !== state.baseurl)
+				goto(location.pathname,function(){
 					$.toPage.apply(obj, params);
-				}, true);
+				});
 			else $.toPage.apply(obj, params);
 		});
 		$.toPage = function(target, silentfail, bypass, overwriteState){
-			if (!target) target = window.location.pathname;
-			var newPageNumber = parseInt(target.replace(/^.*\/(\d+)(?:$|\?)/,'$1'), 10),
+			if (!target) target = location.pathname;
+			var newPageNumber = parseInt(target.replace(/^.*\/(\d+)(?:\?.*)?$/,'$1'), 10),
 				state = this.state || {};
+
+			if (isNaN(newPageNumber))
+				return $.Dialog.fail(title, 'Could not get page number to go to');
 
 			if (!bypass && (pageNumber === newPageNumber || pageNumber === state.page))
 				return silentfail ? false : $.Dialog.info(title, 'You are already on page '+pageNumber);
@@ -101,17 +104,17 @@
 
 				var newURI = this.request_uri || (basePath+newPageNumber+
 						(
-							window.location.search.length > 1
+							location.search.length > 1
 							? location.search
 							: ''
 						)
 					),
-					stateParams = [{paginate:true, page:newPageNumber},'',newURI];
+					stateParams = [{paginate:true, page:newPageNumber, baseurl: this.request_uri.replace(/\/\d+($|\?)/,'$1') },'',newURI];
 
 				if (overwriteState === true)
 					history.replaceState(history, stateParams);
 				else if ((state.page !== newPageNumber && !isNaN(newPageNumber)) || extraQuery)
-					history.pushState.apply(history, stateParams);
+					history.replaceState.apply(history, stateParams);
 
 				$pagination.html(this.pagination);
 				maxPages = parseInt($pagination.first().children(':not(.spec)').last().text(), 10);
