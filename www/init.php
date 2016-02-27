@@ -26,8 +26,12 @@
 	require 'includes/Utils.php';
 	require 'includes/AuthCheck.php';
 
+	$is_cf = false;
 	if (isset($_SERVER['HTTP_CF_CONNECTING_IP'])){
 		require 'includes/CloudFlare.php';
-		if (CloudFlare::CheckUserIP())
+		if (CloudFlare::CheckUserIP()){
 			$_SERVER['REMOTE_ADDR'] = $_SERVER['HTTP_CF_CONNECTING_IP'];
+			$is_cf = true;
+		}
 	}
+	define('CF_REQUEST', $is_cf);

@@ -10,6 +10,7 @@
 		redirect(remove_csrf_query_parameter($_SERVER['REQUEST_URI']));
 
 	$signedIn = false;
+	$currentUser = null;
 
 	$Color = 'Color';
 	$color = 'color';

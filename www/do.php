@@ -768,8 +768,6 @@
 					respond('Episode saved successfuly', 1);
 				}
 			}
-			else if (preg_match('/^getvideos\/'.EPISODE_ID_PATTERN.'$/',$data,$_match)){
-			}
 
 			loadEpisodePage();
 		break;
@@ -1225,7 +1223,9 @@
 									respond('Cutie mark orientation must be set if a link is provided');
 								if ($_POST['cm_dir'] !== 'th' && $_POST['cm_dir'] !== 'ht')
 									respond('Invalid cutie mark orientation');
-								$data['cm_dir'] = $_POST['cm_dir'] === 'ht' ? CM_DIR_HEAD_TO_TAIL : CM_DIR_TAIL_TO_HEAD;
+								$cm_dir = $_POST['cm_dir'] === 'ht' ? CM_DIR_HEAD_TO_TAIL : CM_DIR_TAIL_TO_HEAD;
+								if ($Appearance['cm_dir'] !== $cm_dir)
+									$data['cm_dir'] = $cm_dir;
 
 								$cm_preview = trim($_POST['cm_preview']);
 								if (empty($cm_preview))
@@ -1511,7 +1511,7 @@
 
 						$Tagged = $CGDb->where('tid', $Tag['tid'])->get('tagged','ponyid');
 						foreach ($Tagged as $tg){
-							if (in_array($ponyid, $TargetTagged)) continue;
+							if (in_array($tg['ponyid'], $TargetTagged)) continue;
 
 							if (!$CGDb->insert('tagged',array(
 								'tid' => $Target['tid'],
@@ -1799,134 +1799,18 @@
 			);
 
 			$_match = array();
-			if (preg_match('~^appearance/(?:[A-Za-z\d\-]+-)?(\d+)(\.png)?~',$data,$_match)){
-				$asPNG = !empty($_match[2]);
-				if ($asPNG){
-					$Appearance = $CGDb->where('id', intval($_match[1]))->getOne('appearances');
-
-					if (empty($Appearance))
-						do404();
-					$SpriteRelPath = "img/cg/{$Appearance['id']}.png";
-
-					$OutputPath = APPATH."img/cg_render/{$Appearance['id']}.png";
-					$FileRelPath = "$CGPath/appearance/{$Appearance['id']}.png";
-					if (file_exists($OutputPath))
-						outputpng($OutputPath);
-
-					$OutWidth = 0;
-					$OutHeight = 0;
-					$SpriteWidth = $SpriteHeight = 0;
-					$SpriteRightMargin = 10;
-					$ColorSquareSize = 25;
-					$FontFile = APPATH.'font/Celestia Medium Redux.ttf';
-					$Name = $Appearance['label'];
-					$NameVerticalMargin = 5;
-					$NameFontSize = 22;
-					$TextMargin = 10;
-
-					// Detect if sprite exists and adjust image size & define starting positions
-					$SpritePath = APPATH.$SpriteRelPath;
-					$SpriteExists = file_exists($SpritePath);
-					if ($SpriteExists){
-						$SpriteSize = getimagesize($SpritePath);
-						$Sprite = preserveAlpha(imagecreatefrompng($SpritePath));
-						$SpriteHeight = $SpriteSize[HEIGHT];
-						$SpriteWidth = $SpriteSize[WIDTH];
-						$SpriteRealWidth = $SpriteWidth + $SpriteRightMargin;
-
-						$OutWidth += $SpriteRealWidth;
-						if ($SpriteHeight > $OutHeight)
-							$OutHeight = $SpriteHeight;
-					}
-					else $SpriteRealWidth = 0;
-					$origin = array(
-						'x' => $SpriteExists ? $SpriteRealWidth : $TextMargin,
-						'y' => 0,
-					);
-
-					// Get color groups & calculate the space they take up
-					$ColorGroups = get_cgs($Appearance['id']);
-					$CGCount = count($ColorGroups);
-					$CGFontSize = $NameFontSize/1.5;
-					$CGVerticalMargin = $NameVerticalMargin*1.5;
-					$GroupLabelBox = imagettfsanebbox($CGFontSize, $FontFile, 'AGIJKFagijkf');
-					$CGsHeight = $CGCount*($GroupLabelBox['height'] + ($CGVerticalMargin*2) + $ColorSquareSize);
-
-					// Get export time & size
-					$ExportTS = "Image last updated: ".format_timestamp(time(), FORMAT_FULL);
-					$ExportFontSize = $CGFontSize/1.5;
-					$ExportBox = imagettfsanebbox($ExportFontSize, $FontFile, $ExportTS);
-
-					// Check how long & tall appearance name is, and set image width
-					$NameBox = imagettfsanebbox($NameFontSize, $FontFile, $Name);
-					$OutWidth = $origin['x'] + max($NameBox['width'], $ExportBox['width']) + $TextMargin;
-
-					// Set image height
-					$OutHeight = $origin['y'] + (($NameVerticalMargin*3) + $NameBox['height'] + $ExportBox['height']) + $CGsHeight;
-
-					// Create base image
-					$BaseImage = imageCreateTransparent($OutWidth, $OutHeight);
-					$BLACK = imagecolorallocate($BaseImage, 0, 0, 0);
-
-					// If sprite exists, output it on base image
-					if ($SpriteExists)
-						imageCopyExact($BaseImage, $Sprite, 0, 0, $SpriteWidth, $SpriteHeight);
-
-					// Output appearance name
-					$origin['y'] += $NameVerticalMargin;
-					imageWrite($BaseImage, $Name, $origin['x'], $NameFontSize, $BLACK);
-					$origin['y'] += $NameVerticalMargin;
-
-					// Output generation time
-					imageWrite($BaseImage, $ExportTS, $origin['x'], $ExportFontSize, $BLACK);
-					$origin['y'] += $NameVerticalMargin;
-
-					if (!empty($ColorGroups))
-						foreach ($ColorGroups as $cg){
-							imageWrite($BaseImage, $cg['label'], $origin['x'], $CGFontSize , $BLACK);
-							$origin['y'] += $CGVerticalMargin;
-
-							$Colors = get_colors($cg['groupid']);
-							if (!empty($Colors)){
-								$part = 0;
-								foreach ($Colors as $c){
-									$add = $part === 0 ? 0 : $part*5;
-									$x = $origin['x']+($part*$ColorSquareSize)+$add;
-									if ($x+$ColorSquareSize > $OutWidth){
-										$part = 0;
-										$SizeIncrease = $ColorSquareSize + $CGVerticalMargin;
-										$origin['y'] += $SizeIncrease;
-										$x = $origin['x'];
-
-										// Create new base image since height will increase, and copy contents of old one
-										$NewBaseImage = imageCreateTransparent($OutWidth, $OutHeight + $SizeIncrease);
-										imageCopyExact($NewBaseImage, $BaseImage, 0, 0, $OutWidth, $OutHeight);
-										imagedestroy($BaseImage);
-										$BaseImage = $NewBaseImage;
-										$OutHeight += $SizeIncrease;
-									}
-
-									imageDrawRectangle($BaseImage, $x, $origin['y'], $ColorSquareSize, $c['hex'], $BLACK);
-									$part++;
-								}
-
-								$origin['y'] += $ColorSquareSize + $CGVerticalMargin;
-							}
-						};
-
-					$sizeArr = array($OutWidth, $OutHeight);
-					$FinalBase = imageCreateWhiteBG(...$sizeArr);
-					imageDrawRectangle($FinalBase, 0, 0, $sizeArr, null, $BLACK);
-					imageCopyExact($FinalBase, $BaseImage, 0, 0, ...$sizeArr);
-
-					if (!upload_folder_create($OutputPath))
-						respond('Failed to create render directory');
-					outputpng($FinalBase, $OutputPath);
-				}
-
-				$Appearance = $CGDb->where('id', intval($_match[1]))->where('ishuman', $EQG)->getOne('appearances');
+			if (preg_match('~^appearance/(?:[A-Za-z\d\-]+-)?(\d+)(?:\.(png|svg))?~',$data,$_match)){
+				$Appearance = $CGDb->where('id', (int)$_match[1])->where('ishuman', $EQG)->getOne('appearances');
 				if (empty($Appearance))
 					do404();
+
+				$asFile = !empty($_match[2]);
+				if ($asFile){
+					switch ($_match[2]){
+						case 'png': render_appearance_png($Appearance);
+						case 'svg': render_cm_direction_svg($Appearance['id'], $Appearance['cm_dir']);
+					}
+				}
 
 				$SafeLabel = trim(preg_replace('~-+~','-',preg_replace('~[^A-Za-z\d\-]~','-',$Appearance['label'])),'-');
 				fix_path("$CGPath/appearance/$SafeLabel-{$Appearance['id']}");

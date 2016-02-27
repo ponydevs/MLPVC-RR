@@ -124,12 +124,19 @@ DocReady.push(function Colorguide(){
 		);
 		$('span.cm-direction').each(function(){
 			var $this = $(this),
-				preload = new Image();
-			preload.src = $this.attr('data-cm-preview');
+				ponyID = $this.closest('li').attr('id').substring(1),
+				base = new Image(),
+				cm = new Image(),
+				base_img = '/colorguide/appearance/'+ponyID+'.png',
+				cm_img = $this.attr('data-cm-preview');
+			setTimeout(function(){
+				base.src = base_img;
+				cm.src = cm_img;
+			}, 1);
 			$this.qtip({
 				content: {
-					text: $.mk('span').attr('class', 'cm-dir-image').css('background-image', $this.attr('data-cm-base')).append(
-						$.mk('div').attr('class', 'img cm-dir-'+$this.attr('data-cm-dir')).css('background-image', "url('"+preload.src+"')")
+					text: $.mk('span').attr('class', 'cm-dir-image').backgroundImageUrl(base_img).append(
+						$.mk('div').attr('class', 'img cm-dir-'+$this.attr('data-cm-dir')).css('background-image', "url('"+cm_img+"')")
 					)
 				},
 				position: { my: 'bottom center', at: 'top center', viewport: true },

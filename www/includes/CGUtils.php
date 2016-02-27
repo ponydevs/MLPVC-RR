@@ -14,6 +14,7 @@
 	// Cutie Mark orientation related constants
 	define('CM_DIR_TAIL_TO_HEAD', false);
 	define('CM_DIR_HEAD_TO_TAIL', true);
+	define('CM_DIR_UNSPECIFIED', '???');
 
 	// Some patterns for validation
 	define('TAG_NAME_PATTERN', '^[a-z\d ().-]{3,30}$');
@@ -159,9 +160,8 @@
 				$dir = '';
 				if (isset($p['cm_dir'])){
 					$head_to_tail = $p['cm_dir'] === CM_DIR_HEAD_TO_TAIL;
-					$CMFacingImage = generate_cm_facing_image($p['id'], $p['cm_dir']);
 					$CMPreviewUrl = get_cm_preview_url($p);
-					$dir = ' <span class="cm-direction" data-cm-base="'.$CMFacingImage.'" data-cm-preview="'.$CMPreviewUrl.'" data-cm-dir="'.($head_to_tail ? 'ht' : 'th').'"><span class="typcn typcn-info-large"></span> '.($head_to_tail ? 'Head-Tail' : 'Tail-Head').' orientation';
+					$dir = ' <span class="cm-direction" data-cm-preview="'.$CMPreviewUrl.'" data-cm-dir="'.($head_to_tail ? 'ht' : 'th').'"><span class="typcn typcn-info-large"></span> '.($head_to_tail ? 'Head-Tail' : 'Tail-Head').' orientation';
 				}
 				$notes .= "<a href='http://fav.me/{$p['cm_favme']}'>Cutie mark vector$dir</a>";
 			}
@@ -702,11 +702,10 @@ HTML;
 	}
 
 	// Writes on an image
-	function imageWrite($image, $text, $x, $fontsize, $fontcolor){
+	function imageWrite($image, $text, $x, $fontsize, $fontcolor, &$origin, $FontFile){
 		if (is_string($fontcolor))
 			$fontcolor = imagecolorallocate($image, 0, 0, 0);
 
-		global $origin, $FontFile;
 		$box = imagettfsanebbox($fontsize, $FontFile, $text);
 		$origin['y'] += $box['height'];
 
@@ -743,22 +742,36 @@ HTML;
 	}
 
 	// Output png file to browser
-	function outputpng($resource, $path = null){
-		header('Content-Type: image/png');
+	function outputpng($resource, $path, $FileRelPath){
+		outputimage($resource, $path, $FileRelPath, function($fp,$fd){ imagepng($fd, $fp); }, 'png');
+	}
 
-		if (!is_string($resource))
-			imagepng($resource, $path);
+	// Output svg file to browser
+	function outputsvg($svgdata, $path, $FileRelPath){
+		outputimage($svgdata, $path, $FileRelPath, function($fp,$fd){ file_put_contents($fp, $fd); }, 'svg+xml');
+	}
+
+	/**
+	 * @param resource|string $data
+	 * @param string $path
+	 * @param string $relpath
+	 * @param callable $write_callback
+	 * @param string $content_type
+	 */
+	function outputimage($data, $path, $relpath, $write_callback, $content_type){
+		if (isset($data))
+			$write_callback($path, $data);
+		$modif_ts = filemtime($path);
+		if (isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) && strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE']) >= $modif_ts)
+			statusCodeHeader(304,AND_DIE);
+
+		if (CF_REQUEST)
+			fix_path("$relpath?t=$modif_ts");
 		else {
-			$path = $resource;
-			if (isset($_SERVER['HTTP_IF_MODIFIED_SINCE'])
-				&& strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE']) >= filemtime($path)){
-				header('HTTP/1.0 304 Not Modified');
-				exit;
-			}
+			header('Last-Modified: '.date('r', $modif_ts));
+			header('Cache-Control: max-age='.ONE_YEAR.',public');
 		}
-
-		global $FileRelPath;
-		fix_path("$FileRelPath?t=".filemtime($path));
+		header("Content-Type: image/$content_type");
 		readfile($path);
 		exit;
 	}
@@ -767,12 +780,12 @@ HTML;
 	define('WIDTH', 0);
 	define('HEIGHT', 1);
 
-	function clear_rendered_image($AppearanceID){
+	define('CM_DIR_ONLY',true);
+	function clear_rendered_image($AppearanceID, $cm_dir_only = false){
 		// Remove rendered sprite image to force its re-generation
-		$RenderedPath = APPATH."img/cg_render/$AppearanceID.png";
-		if (file_exists($RenderedPath))
-			return unlink($RenderedPath);
-		else return true;
+		$RenderedPath = APPATH."img/cg_render/$AppearanceID";
+		return ($cm_dir_only !== CM_DIR_ONLY && file_exists("$RenderedPath.png") ? unlink("$RenderedPath.png") : true)
+		       && (file_exists("$RenderedPath.svg") ? unlink("$RenderedPath.svg") : true);
 	}
 
 	function imageCopyExact($dest, $source, $x, $y, $w, $h){
@@ -827,11 +840,16 @@ HTML;
 	}
 
 	// Generate CM preview image
-	function generate_cm_facing_image($AppearanceID, $dir = null){
-		global $CGDb;
+	function render_cm_direction_svg($AppearanceID, $dir){
+		global $CGDb, $CGPath;
 
-		if (empty($dir))
-			$dir = $CGDb->where('id', $AppearanceID)->getOne('appearances','cm_dir')['cm_dir'];
+		$OutputPath = APPATH."img/cg_render/$AppearanceID.svg";
+		$FileRelPath = "$CGPath/appearance/$AppearanceID.svg";
+		if (file_exists($OutputPath))
+			outputsvg(null,$OutputPath,$FileRelPath);
+
+		if (is_null($dir))
+			statusCodeHeader(404, AND_DIE);
 
 		$DefaultColorMapping = array(
 			'Coat Outline' => '#0D0D0D',
@@ -861,10 +879,11 @@ HTML;
 			if (isset($ColorMapping[$label]))
 				$img = str_replace($defhex, $ColorMapping[$label], $img);
 		}
-		return "url('data:image/svg+xml;base64,".base64_encode($img)."')";
+
+		outputsvg($img,$OutputPath,$FileRelPath);
 	}
 
-	//
+	// Retruns CM preview image link
 	function get_cm_preview_url($Appearance){
 		if (!empty($Appearance['cm_preview']))
 			$preview = $Appearance['cm_preview'];
@@ -873,4 +892,128 @@ HTML;
 			$preview = $CM['preview'];
 		}
 		return $preview;
+	}
+
+	// Render appearance PNG image
+	function render_appearance_png($Appearance){
+		global $CGPath;
+
+		$OutputPath = APPATH."img/cg_render/{$Appearance['id']}.png";
+		$FileRelPath = "$CGPath/appearance/{$Appearance['id']}.png";
+		//if (file_exists($OutputPath))
+		//	outputpng(null,$OutputPath,$FileRelPath);
+
+		$SpriteRelPath = "img/cg/{$Appearance['id']}.png";
+
+		$OutWidth = 0;
+		$OutHeight = 0;
+		$SpriteWidth = $SpriteHeight = 0;
+		$SpriteRightMargin = 10;
+		$ColorSquareSize = 25;
+		$FontFile = APPATH.'font/Celestia Medium Redux.ttf';
+		if (!file_exists($FontFile))
+			trigger_error('Font file missing', E_USER_ERROR);
+		$Name = $Appearance['label'];
+		$NameVerticalMargin = 5;
+		$NameFontSize = 22;
+		$TextMargin = 10;
+
+		// Detect if sprite exists and adjust image size & define starting positions
+		$SpritePath = APPATH.$SpriteRelPath;
+		$SpriteExists = file_exists($SpritePath);
+		if ($SpriteExists){
+			$SpriteSize = getimagesize($SpritePath);
+			$Sprite = preserveAlpha(imagecreatefrompng($SpritePath));
+			$SpriteHeight = $SpriteSize[HEIGHT];
+			$SpriteWidth = $SpriteSize[WIDTH];
+			$SpriteRealWidth = $SpriteWidth + $SpriteRightMargin;
+
+			$OutWidth += $SpriteRealWidth;
+			if ($SpriteHeight > $OutHeight)
+				$OutHeight = $SpriteHeight;
+		}
+		else $SpriteRealWidth = 0;
+		$origin = array(
+			'x' => $SpriteExists ? $SpriteRealWidth : $TextMargin,
+			'y' => 0,
+		);
+
+		// Get color groups & calculate the space they take up
+		$ColorGroups = get_cgs($Appearance['id']);
+		$CGCount = count($ColorGroups);
+		$CGFontSize = $NameFontSize/1.5;
+		$CGVerticalMargin = $NameVerticalMargin*1.5;
+		$GroupLabelBox = imagettfsanebbox($CGFontSize, $FontFile, 'AGIJKFagijkf');
+		$CGsHeight = $CGCount*($GroupLabelBox['height'] + ($CGVerticalMargin*2) + $ColorSquareSize);
+
+		// Get export time & size
+		$ExportTS = "Image last updated: ".format_timestamp(time(), FORMAT_FULL);
+		$ExportFontSize = $CGFontSize/1.5;
+		$ExportBox = imagettfsanebbox($ExportFontSize, $FontFile, $ExportTS);
+
+		// Check how long & tall appearance name is, and set image width
+		$NameBox = imagettfsanebbox($NameFontSize, $FontFile, $Name);
+		$OutWidth = $origin['x'] + max($NameBox['width'], $ExportBox['width']) + $TextMargin;
+
+		// Set image height
+		$OutHeight = $origin['y'] + (($NameVerticalMargin*3) + $NameBox['height'] + $ExportBox['height']) + $CGsHeight;
+
+		// Create base image
+		$BaseImage = imageCreateTransparent($OutWidth, $OutHeight);
+		$BLACK = imagecolorallocate($BaseImage, 0, 0, 0);
+
+		// If sprite exists, output it on base image
+		if ($SpriteExists)
+			imageCopyExact($BaseImage, $Sprite, 0, 0, $SpriteWidth, $SpriteHeight);
+
+		// Output appearance name
+		$origin['y'] += $NameVerticalMargin;
+		imageWrite($BaseImage, $Name, $origin['x'], $NameFontSize, $BLACK, $origin, $FontFile);
+		$origin['y'] += $NameVerticalMargin;
+
+		// Output generation time
+		imageWrite($BaseImage, $ExportTS, $origin['x'], $ExportFontSize, $BLACK, $origin, $FontFile);
+		$origin['y'] += $NameVerticalMargin;
+
+		if (!empty($ColorGroups))
+			foreach ($ColorGroups as $cg){
+				imageWrite($BaseImage, $cg['label'], $origin['x'], $CGFontSize , $BLACK, $origin, $FontFile);
+				$origin['y'] += $CGVerticalMargin;
+
+				$Colors = get_colors($cg['groupid']);
+				if (!empty($Colors)){
+					$part = 0;
+					foreach ($Colors as $c){
+						$add = $part === 0 ? 0 : $part*5;
+						$x = $origin['x']+($part*$ColorSquareSize)+$add;
+						if ($x+$ColorSquareSize > $OutWidth){
+							$part = 0;
+							$SizeIncrease = $ColorSquareSize + $CGVerticalMargin;
+							$origin['y'] += $SizeIncrease;
+							$x = $origin['x'];
+
+							// Create new base image since height will increase, and copy contents of old one
+							$NewBaseImage = imageCreateTransparent($OutWidth, $OutHeight + $SizeIncrease);
+							imageCopyExact($NewBaseImage, $BaseImage, 0, 0, $OutWidth, $OutHeight);
+							imagedestroy($BaseImage);
+							$BaseImage = $NewBaseImage;
+							$OutHeight += $SizeIncrease;
+						}
+
+						imageDrawRectangle($BaseImage, $x, $origin['y'], $ColorSquareSize, $c['hex'], $BLACK);
+						$part++;
+					}
+
+					$origin['y'] += $ColorSquareSize + $CGVerticalMargin;
+				}
+			};
+
+		$sizeArr = array($OutWidth, $OutHeight);
+		$FinalBase = imageCreateWhiteBG(...$sizeArr);
+		imageDrawRectangle($FinalBase, 0, 0, $sizeArr, null, $BLACK);
+		imageCopyExact($FinalBase, $BaseImage, 0, 0, ...$sizeArr);
+
+		if (!upload_folder_create($OutputPath))
+			respond('Failed to create render directory');
+		outputpng($FinalBase, $OutputPath, $FileRelPath);
 	}

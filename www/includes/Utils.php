@@ -692,11 +692,11 @@ HTML;
 		global $HTTP_STATUS_CODES;
 
 		if (!isset($HTTP_STATUS_CODES[$code]))
-			trigger_error('Érvénytelen státuszkód: '.$code,E_USER_ERROR);
-		else
-			header($_SERVER['SERVER_PROTOCOL'].' '.$code.' '.$HTTP_STATUS_CODES[$code]);
+			throw new Exception("Unknown status code: $code");
 
-		if ($die === AND_DIE) die();
+		header("{$_SERVER['SERVER_PROTOCOL']} $code {$HTTP_STATUS_CODES[$code]}");
+		if ($die === AND_DIE)
+			die();
 	}
 
 	// CSRF Check \\

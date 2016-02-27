@@ -42,7 +42,7 @@
 			<label>Recommended cutie mark vector</label>
 			<p>The image below links to the vector, and shows which way the cutie mark should be facing. The body shape used here is the same for every character, and it is <strong>not</strong> tailored to any individual body design.</p>
 <?=PERM('inspector')&&!isset($Appearance['cm_dir'])?Notice('fail','Missing CM orientation, falling back to <strong>Tail-Head</strong>. Please edit the appaearance and provide an orientation!'):''?>
-			<a id="pony-cm" href="http://fav.me/<?=$Appearance['cm_favme']?>" style="background-image:<?=generate_cm_facing_image($Appearance['id'], $Appearance['cm_dir'])?>">
+			<a id="pony-cm" href="http://fav.me/<?=$Appearance['cm_favme']?>" style="background-image:url('/colorguide/appearance/<?=$Appearance['id']?>.svg')">
 				<div class="img cm-dir-<?=$Appearance['cm_dir']===CM_DIR_HEAD_TO_TAIL?'ht':'th'?>" style="background-image:url('<?=apos_encode($preview)?>')"></div>
 			</a>
 		</section>

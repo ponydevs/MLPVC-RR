@@ -259,6 +259,8 @@
 
 	$.fn.toggleHtml = function(contentArray){
 		this.html(contentArray[$.rangeLimit(contentArray.indexOf(this.html())+1, true, contentArray.length-1)]);
+
+		return this;
 	};
 
 	$.fn.moveAttr = function(from, to){
@@ -268,6 +270,14 @@
 			if (typeof value !== 'undefined')
 				$el.removeAttr(from).attr(to, value);
 		});
+
+		return this;
+	};
+
+	$.fn.backgroundImageUrl = function(url){
+		$(this).css('background-image', 'url("'+url.replace(/"/g,'%22')+'")');
+
+		return this;
 	};
 
 	$.scrollTo = function(pos, speed, callback){ $('html,body').animate({scrollTop:pos},speed,callback) };
