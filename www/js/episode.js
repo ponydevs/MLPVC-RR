@@ -70,9 +70,12 @@ DocReady.push(function Episode(){
 									.addClass('episode')
 									.insertBefore($content.children('section').first());
 							$epSection.html($(this.epsection).filter('section').html());
-							BindPSwitch();
+							BindVideoButtons();
 						}
-						else if ($epSection.length) $epSection.remove();
+						else if ($epSection.length){
+							$epSection.remove();
+							$epSection = {length:0};
+						}
 						$.Dialog.close();
 					}));
 				});
@@ -93,46 +96,50 @@ DocReady.push(function Episode(){
 			});
 		}
 	}
-	BindPSwitch();
 
-	var $showPlayers = $('.episode').find('.showplayers').on('scroll-video-into-view',function(){
-			var hh = $header.outerHeight();
-			$.scrollTo($embedWrap.offset().top - (($w.height() - $footer.outerHeight() - hh - $embedWrap.outerHeight()) / 2) - hh, 500);
-		}),
-		$playerActions = $showPlayers.parent(),
-		$embedWrap;
-	if ($showPlayers.length){
-		$showPlayers.on('click',function(e){
-			e.preventDefault();
+	function BindVideoButtons(){
+		var $showPlayers = $('.episode').find('.showplayers').on('scroll-video-into-view',function(){
+				var hh = $header.outerHeight();
+				$.scrollTo($embedWrap.offset().top - (($w.height() - $footer.outerHeight() - hh - $embedWrap.outerHeight()) / 2) - hh, 500);
+			}),
+			$playerActions = $showPlayers.parent(),
+			$embedWrap;
+		if ($showPlayers.length){
+			$showPlayers.on('click',function(e){
+				e.preventDefault();
 
-			if (typeof $embedWrap === 'undefined'){
-				$.Dialog.wait($showPlayers.text());
+				if (typeof $embedWrap === 'undefined'){
+					$.Dialog.wait($showPlayers.text());
 
-				$.post('/episode/videos/'+EpID, $.mkAjaxHandler(function(){
-					if (!this.status) return $.Dialog.fail(false, this.message);
+					$.post('/episode/videos/'+EpID, $.mkAjaxHandler(function(){
+						if (!this.status) return $.Dialog.fail(false, this.message);
 
-					if (this[0] === 2)
-						$epSectionTitle.append('<button class="blue part-switch">Part 2</button>');
-					$embedWrap = $.mk('div').attr('class','resp-embed-wrap').html(this[1]).insertAfter($playerActions);
-					BindPSwitch();
-					$showPlayers
-						.removeClass('typcn-eye green')
-						.addClass('typcn-eye-outline blue')
-						.text('Hide on-site player')
-						.triggerHandler('scroll-video-into-view');
-					$.Dialog.close();
-				}));
-			}
-			else {
-				var show = $showPlayers.hasClass('typcn-eye');
-				$embedWrap.add($PSwitch)[show?'show':'hide']();
-				$showPlayers.toggleClass('typcn-eye typcn-eye-outline').toggleHtml(['Show on-site player','Hide on-site player']);
+						if (this[0] === 2)
+							$epSectionTitle.append('<button class="blue part-switch">Part 2</button>');
+						$embedWrap = $.mk('div').attr('class','resp-embed-wrap').html(this[1]).insertAfter($playerActions);
+						BindPSwitch();
+						$showPlayers
+							.removeClass('typcn-eye green')
+							.addClass('typcn-eye-outline blue')
+							.text('Hide on-site player')
+							.triggerHandler('scroll-video-into-view');
+						$.Dialog.close();
+					}));
+				}
+				else {
+					var show = $showPlayers.hasClass('typcn-eye');
+					$embedWrap.add($PSwitch)[show?'show':'hide']();
+					$showPlayers.toggleClass('typcn-eye typcn-eye-outline').toggleHtml(['Show on-site player','Hide on-site player']);
 
-				if (show)
-					$showPlayers.triggerHandler('scroll-video-into-view');
-			}
-		});
+					if (show)
+						$showPlayers.triggerHandler('scroll-video-into-view');
+				}
+			});
+		}
+
+		BindPSwitch();
 	}
+	BindVideoButtons();
 
 	var $voting = $('#voting'),
 		$voteButton = $voting.children('.rate');
