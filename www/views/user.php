@@ -43,7 +43,7 @@
 
 	$cols = "id, season, episode, preview, label, posted";
 	$PendingReservations = $Database->where('reserved_by', $User['id'])->where('deviation_id IS NULL')->get('reservations',null,$cols);
-	$PendingRequestReservations = $Database->where('reserved_by', $User['id'])->where('deviation_id IS NULL')->get('requests',null,"$cols, true as rq");
+	$PendingRequestReservations = $Database->where('reserved_by', $User['id'])->where('deviation_id IS NULL')->get('requests',null,"$cols, reserved_at, true as rq");
 	$TotalPending = count($PendingReservations)+count($PendingRequestReservations);
 	$hasPending = $TotalPending > 0;
 	if ((PERM('inspector') || $sameUser) && PERM('member', $User['role'])){
@@ -72,15 +72,19 @@
 			});
 			foreach ($Posts as $i => $p){
 				list($link,$page) = post_link_html($p);
-				$posted = timetag($p['posted']);
 				$label = !empty($p['label']) ? "<span class='label'>{$p['label']}</span>" : '';
+				$is_request = isset($p['rq']);
+				$reservation_time_known = !empty($p['reserved_at']);
+				$posted = timetag($is_request && $reservation_time_known ? $p['reserved_at'] : $p['posted']);
+				$PostedAction = $is_request && !$reservation_time_known ? 'Posted' : 'Reserved';
+
 				$Posts[$i] = <<<HTML
 <li>
 	<div class='image screencap'>
 		<a href='$link'><img src='{$p['preview']}'></a>
 	</div>
 	$label
-	<em>Posted under <a href='$link'>$page</a> $posted</em>
+	<em>$PostedAction under <a href='$link'>$page</a> $posted</em>
 	<div>
 		<a href='$link' class='btn blue typcn typcn-arrow-forward'>View</a>
 	</div>
@@ -103,7 +107,7 @@ HTML;
 				->where('reserved_by', $User['id'])
 				->where('deviation_id IS NOT NULL')
 				->where('"lock" IS NOT TRUE')
-				->get('requests',null,"$cols, 1 as rq")
+				->get('requests',null,"$cols, true as rq")
 		);
 		$AwaitCount = count($AwaitingApproval);
 		$them = $AwaitCount!==1?'them':'it'; ?>
@@ -121,6 +125,7 @@ HTML;
 				list($link,$page) = post_link_html($row);
 				$thing = isset($row['rq']) ? 'request' : 'reservation';
 				$checkBtn = PERM('member') ? "\n\t\t<button class='green typcn typcn-tick check'>Check</button>" : '';
+
 				echo <<<HTML
 <li id="{$thing}-{$row['id']}">
 	<div class="image deviation">
