@@ -418,7 +418,7 @@ DocReady.push(function Episode(){
 		$actions.filter('.unfinish').off('click').on('click',function(){
 			var $unfinishBtn = $(this),
 				deleteOnly = $unfinishBtn.hasClass('delete-only'),
-				Type = type.charAt(0).toUpperCase()+type.substring(1),
+				Type = $.capitalize(type),
 				what = type.replace(/s$/,'');
 
 			$.Dialog.request((deleteOnly?'Delete':'Un-finish')+' '+what,'<form id="unbind-check"><p>Are you sure you want to '+(deleteOnly?'delete this reservation':'mark this '+what+' as unfinished')+'?</p><hr><label><input type="checkbox" name="unbind"> Unbind '+what+' from user</label></form>','unbind-check','Un-finish',function(){
@@ -674,7 +674,7 @@ DocReady.push(function Episode(){
 			$notice = $formImgPreview.children('.notice'),
 			noticeHTML = $notice.html(),
 			$previewIMG = $formImgPreview.children('img'),
-			type = $form.data('type'), Type = type.charAt(0).toUpperCase()+type.substring(1);
+			type = $form.attr('data-type'), Type = $.capitalize(type);
 
 		if ($previewIMG.length === 0) $previewIMG = $(new Image()).appendTo($formImgPreview);
 		$('#'+type+'-btn').on('click',function(){
@@ -903,7 +903,7 @@ DocReady.push(function Episode(){
 		});
 	};
 	function updateSection(type, SEASON, EPISODE, callback){
-		var Type = type.charAt(0).toUpperCase()+type.substring(1);
+		var Type = $.capitalize(type);
 		$.Dialog.wait(Type, 'Updating list');
 		$.post('/episode/'+type.replace(/([^s])$/,'$1s')+'/S'+SEASON+'E'+EPISODE,$.mkAjaxHandler(function(){
 			if (!this.status) return window.location.reload();
@@ -912,7 +912,7 @@ DocReady.push(function Episode(){
 				$newChilds = $(this.render).filter('section').children();
 			$section
 				.empty().append($newChilds).rebindHandlers()
-				.find('.post-form').data('type',type).formBind();
+				.find('.post-form').attr('data-type',type).formBind();
 			window.updateTimes();
 			if (typeof callback === 'function') callback();
 			else $.Dialog.close();
