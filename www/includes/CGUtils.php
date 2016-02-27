@@ -11,6 +11,10 @@
 		die($str);
 	}
 
+	// Cutie Mark orientation related constants
+	define('CM_DIR_TAIL_TO_HEAD', false);
+	define('CM_DIR_HEAD_TO_TAIL', true);
+
 	// Some patterns for validation
 	define('TAG_NAME_PATTERN', '^[a-z\d ().-]{3,30}$');
 	define('INVERSE_TAG_NAME_PATTERN', '[^a-z\d ().-]');
@@ -151,8 +155,16 @@
 					$p['notes'] = htmlspecialchars($p['notes']);
 				$notes = '<span>'.nl2br($p['notes']).'</span>';
 			}
-			if ($hasCM)
-				$notes .= "<a href='http://fav.me/{$p['cm_favme']}'>Cutie mark vector</a>";
+			if ($hasCM){
+				$dir = '';
+				if (isset($p['cm_dir'])){
+					$head_to_tail = $p['cm_dir'] === CM_DIR_HEAD_TO_TAIL;
+					$CMFacingImage = generate_cm_facing_image($p['id'], $p['cm_dir']);
+					$CMPreviewUrl = get_cm_preview_url($p);
+					$dir = ' <span class="cm-direction" data-cm-base="'.$CMFacingImage.'" data-cm-preview="'.$CMPreviewUrl.'" data-cm-dir="'.($head_to_tail ? 'ht' : 'th').'"><span class="typcn typcn-info-large"></span> '.($head_to_tail ? 'Head-Tail' : 'Tail-Head').' orientation';
+				}
+				$notes .= "<a href='http://fav.me/{$p['cm_favme']}'>Cutie mark vector$dir</a>";
+			}
 		}
 		else {
 			if (!PERM('inspector')) return '';
@@ -815,8 +827,6 @@ HTML;
 	}
 
 	// Generate CM preview image
-	define('CM_DIR_TAIL_TO_HEAD', false);
-	define('CM_DIR_HEAD_TO_TAIL', true);
 	function generate_cm_facing_image($AppearanceID, $dir = null){
 		global $CGDb;
 
@@ -832,14 +842,14 @@ HTML;
 			'Mane & Tail Fill' => '#5E5E5E',
 		);
 		$Colors = $CGDb->rawQuery(
-			"SELECT cg.label||' '||c.label as label, c.hex
+			"SELECT cg.label as cglabel, c.label as label, c.hex
 			FROM colorgroups cg
 			LEFT JOIN colors c on c.groupid = cg.groupid
 			WHERE cg.ponyid = ?", array($AppearanceID));
 
 		$ColorMapping = array();
 		foreach ($Colors as $row){
-			$label = preg_replace('/\s\d+$/','',$row['label']);
+			$label = $row['cglabel'].' '.preg_replace('~/.*$~','$1', preg_replace('/\s\d+$/','',$row['label']));
 			if (isset($DefaultColorMapping[$label]) && !isset($ColorMapping[$label]))
 				$ColorMapping[$label] = $row['hex'];
 		}
@@ -852,4 +862,15 @@ HTML;
 				$img = str_replace($defhex, $ColorMapping[$label], $img);
 		}
 		return "url('data:image/svg+xml;base64,".base64_encode($img)."')";
+	}
+
+	//
+	function get_cm_preview_url($Appearance){
+		if (!empty($Appearance['cm_preview']))
+			$preview = $Appearance['cm_preview'];
+		else {
+			$CM = da_cache_deviation($Appearance['cm_favme']);
+			$preview = $CM['preview'];
+		}
+		return $preview;
 	}

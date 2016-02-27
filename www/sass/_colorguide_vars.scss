@@ -67,6 +67,33 @@ $TCharacter: adjust_hue($_TBase, 240);
 	}
 }
 
+@mixin pony-cm-image($SquareSize: 250px){
+		display: block;
+		width: $SquareSize;
+		height: $SquareSize;
+		position: relative;
+		font-size: 0;
+
+		//noinspection CssOptimizeSimilarProperties
+		.img {
+			$CMSize: $SquareSize * 0.4857;
+
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: $CMSize;
+			height: $CMSize;
+			margin: ($SquareSize - $CMSize)/2;
+
+			&.cm-dir-th { transform: rotateZ(20deg) }
+			&.cm-dir-ht { transform: rotateZ(-20deg) }
+
+			background-repeat: no-repeat;
+			background-position: center center;
+			background-size: contain;
+		}
+}
+
 %clr {
 	display: flex;
 	flex-direction: row;

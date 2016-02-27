@@ -122,6 +122,20 @@ DocReady.push(function Colorguide(){
 			],
 			function($el){ return 'Color: '+$el.attr('oldtitle') }
 		);
+		$('span.cm-direction').each(function(){
+			var $this = $(this),
+				preload = new Image();
+			preload.src = $this.attr('data-cm-preview');
+			$this.qtip({
+				content: {
+					text: $.mk('span').attr('class', 'cm-dir-image').css('background-image', $this.attr('data-cm-base')).append(
+						$.mk('div').attr('class', 'img cm-dir-'+$this.attr('data-cm-dir')).css('background-image', "url('"+preload.src+"')")
+					)
+				},
+				position: { my: 'bottom center', at: 'top center', viewport: true },
+				style: { classes: 'qtip-link' }
+			});
+		});
 	}
 	window.tooltips = function(){tooltips()};
 

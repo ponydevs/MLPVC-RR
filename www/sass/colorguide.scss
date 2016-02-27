@@ -115,6 +115,12 @@
 					border-left: 1px solid #000;
 					padding-left: 5px;
 				}
+				> a .cm-direction {
+					border: 1px dashed;
+					padding: 2px 2px;
+					border-radius: 4px;
+					background: rgba(white,.5);
+				}
 			}
 		}
 	}
@@ -340,6 +346,20 @@ ul.colors {
 	box-shadow: 0 0 2px rgba(black,.7);
 
 	@extend %qtip-custom;
+}
+.qtip-link {
+	background-color: white;
+	color: $Link;
+	border: 1px solid rgba($Link,.7);
+	box-shadow: 0 0 2px rgba($Link,.7);
+	font-size: 1.1em;
+
+	@extend %qtip-custom;
+
+	.cm-dir-image {
+		@include pony-cm-image(150px);
+		margin: 0 auto;
+	}
 }
 
 .qtip-tag {

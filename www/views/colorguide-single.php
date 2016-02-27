@@ -37,12 +37,7 @@
 <?  }
 
 	if (!empty($Appearance['cm_favme'])){
-		if (!empty($Appearance['cm_preview']))
-			$preview = $Appearance['cm_preview'];
-		else {
-			$CM = da_cache_deviation($Appearance['cm_favme']);
-			$preview = $CM['preview'];
-		} ?>
+		$preview = get_cm_preview_url($Appearance); ?>
 		<section>
 			<label>Recommended cutie mark vector</label>
 			<p>The image below links to the vector, and shows which way the cutie mark should be facing. The body shape used here is the same for every character, and it is <strong>not</strong> tailored to any individual body design.</p>
