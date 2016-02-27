@@ -1533,7 +1533,7 @@ HTML;
 		$optreq = $type === 'reservation' ? '' : 'required';
 
 		$StashBtnLabel = 'Link from your Sta.sh';
-		$StashUpload = "<p class='keep'><button class='upload-stash typcn typcn-folder".($currentUser['stash_allowed']?'-open':'')."'";
+		$StashUpload = "<p class='keep'><button type='button' class='upload-stash typcn typcn-folder".($currentUser['stash_allowed']?'-open':'')."'";
 		if ($currentUser['stash_allowed'])
 			$StashUpload .= ">$StashBtnLabel</button>";
 		else $StashUpload .= " disabled>$StashBtnLabel</button> <a class='btn green typcn typcn-lock-open' href='#authorize-stash' data-redirect='".oauth_get_authorization_url(OAUTH_SCOPE_STASH,'/upload-stash/close-dialog/'.rand(10000,99999))."'>Enable linking from Sta.sh</a>";
@@ -1552,7 +1552,7 @@ HTML;
 				<label>
 					<span>Image URL</span>
 					<input type="text" name="image_url" pattern="^.{2,255}$" required>&nbsp;
-					<button class="check-img red typcn typcn-arrow-repeat">Check image</button><br>
+					<button type="button" class="check-img red typcn typcn-arrow-repeat">Check image</button><br>
 				</label>
 				<div class="img-preview">
 					<div class="notice info">
