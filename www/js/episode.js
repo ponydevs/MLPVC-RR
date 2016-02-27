@@ -562,7 +562,7 @@ DocReady.push(function Episode(){
 									$ImgUpdateForm = $.mk('form').attr('id', 'img-update-form').append(
 									$.mk('div').attr('class','align-center').append(
 										$.mk('span').text('Current image'),
-										$img.clone().one('load',function(){ $.Dialog.center() })
+										$img.clone()
 									),
 									$.mk('label').append(
 										$.mk('span').text('New image URL'),

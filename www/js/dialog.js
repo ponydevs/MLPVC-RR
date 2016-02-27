@@ -267,8 +267,6 @@
 				});
 				$dialogButtons.append($button);
 			});
-
-			Dialog.center();
 			_setFocus();
 
 			$.callCallback(callback, [$requestContentDiv]);
@@ -287,20 +285,9 @@
 			$body.removeClass('dialog-open');
 		}
 		Dialog.close = function(){ Close.apply(Dialog, arguments) };
-		Dialog.center = function(){
-			if (typeof _open === 'undefined') return;
-
-			var overlay = {w: $dialogOverlay.width(), h: $dialogOverlay.height()},
-				dialog = {w: $dialogBox.outerWidth(true), h: $dialogBox.outerHeight(true)};
-			$dialogBox.css({
-				top: Math.max((overlay.h - dialog.h) / 2, 0),
-				left: Math.max((overlay.w - dialog.w) / 2, 0),
-			});
-		};
 		return Dialog;
 	})();
 
-	$w.on('resize', $.Dialog.center);
 	$body.on('keydown',function(e){
 		if (!$.Dialog.isOpen() || e.keyCode !== Key.Tab)
 			return true;

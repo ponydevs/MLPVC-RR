@@ -137,7 +137,6 @@ DocReady.push(function ColorguideManage(){
 							" Pre-fill with common color groups"
 						)
 					);
-					$.Dialog.center();
 				}
 				$form.on('submit',function(e){
 					e.preventDefault();
@@ -234,7 +233,6 @@ DocReady.push(function ColorguideManage(){
 					document.createTextNode(' Add this tag to the appearance "'+ponyName+'" after creation')
 				)
 			);
-			$.Dialog.center();
 
 			if (typeof typehint === 'string' && typeof TAG_TYPES_ASSOC[typehint] !== 'undefined')
 				$form.find('input[name=type][value='+typehint+']').prop('checked', true).trigger('change');
@@ -303,7 +301,6 @@ DocReady.push(function ColorguideManage(){
 		$colorActions = $.mk('div').attr('class','clra')
 			.append($.mk('span').attr('class','typcn typcn-minus remove red').on('click',function(){
 				$(this).closest('.clr').remove();
-				$.Dialog.center();
 			}))
 			.append($.mk('span').attr('class','typcn typcn-arrow-move move blue')),
 		mkClrDiv = function(color){
@@ -333,7 +330,6 @@ DocReady.push(function ColorguideManage(){
 			var $div = mkClrDiv();
 			$colors.append($div);
 			$div.find('.clri').focus();
-			$.Dialog.center();
 		});
 	$cgEditor.append(
 		$.mk('label').append(
@@ -352,7 +348,6 @@ DocReady.push(function ColorguideManage(){
 				name: 'major',
 			}).on('click',function(){
 				$(this).parent().next()[this.checked?'show':'hide']().children('input').attr('disabled', !this.checked);
-				$.Dialog.center();
 			}),
 			$.mk('span').text('This is a major change')
 		),
@@ -385,8 +380,6 @@ DocReady.push(function ColorguideManage(){
 		    scroll: false,
 		    animation: 150,
 		});
-
-		$.Dialog.center();
 	});
 
 	function CGEditorMaker(title, $group){
@@ -686,7 +679,6 @@ DocReady.push(function ColorguideManage(){
 						});
 
 						$.mk('div').attr('class','cgs').append('<p class="align-center">Drag to re-arrange</p>',$cgs).prependTo($form);
-						$.Dialog.center();
 
 						new Sortable($cgs.get(0), {
 						    ghostClass: "moving",
