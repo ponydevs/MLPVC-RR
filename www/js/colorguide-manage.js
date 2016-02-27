@@ -29,10 +29,10 @@ DocReady.push(function ColorguideManage(){
 					})
 				),
 				$.mk('label').append(
-					'<span>Additional notes (255 chars. max, optional)</span>',
+					'<span>Additional notes (1000 chars. max, optional)</span>',
 					$.mk('textarea').attr({
 						name: 'notes',
-						maxlength: 255
+						maxlength: 1000
 					})
 				),
 				$.mk('label').append(

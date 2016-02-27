@@ -1168,10 +1168,8 @@
 					}
 
 					switch ($action){
-						case "set":
-						case "make":
 						case "get":
-							if ($action === 'get') respond(array(
+							respond(array(
 								'label' => $Appearance['label'],
 								'notes' => $Appearance['notes'],
 								'cm_favme' => !empty($Appearance['cm_favme']) ? "http://fav.me/{$Appearance['cm_favme']}" : null,
@@ -1180,7 +1178,9 @@
 									? ($Appearance['cm_dir'] === CM_DIR_HEAD_TO_TAIL ? 'ht' : 'th')
 									: null
 							));
-
+						break;
+						case "set":
+						case "make":
 							$data = array(
 								'ishuman' => $EQG,
 							    'cm_favme' => null,
@@ -1198,8 +1198,8 @@
 							if (!empty($_POST['notes'])){
 								$notes = trim($_POST['notes']);
 								check_string_valid($label, "Appearance notes", INVERSE_PRINTABLE_ASCII_REGEX);
-								if (strlen($notes) > 255 && $Appearance['id'] !== 0)
-									respond('Appearance notes cannot be longer than 255 characters');
+								if (strlen($notes) > 1000 && $Appearance['id'] !== 0)
+									respond('Appearance notes cannot be longer than 1000 characters');
 								if ($action === 'make' || $notes !== $Appearance['notes'])
 									$data['notes'] = $notes;
 							}
