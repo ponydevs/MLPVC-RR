@@ -106,8 +106,12 @@
 					$response = array(
 						'label' => $Post['label'],
 					);
-					if ($thing === 'request')
+					if ($thing === 'request'){
 						$response['type'] = $Post['type'];
+
+						if (PERM('developer') && isset($Post['reserved_at']))
+							$response['reserved_at'] = date('c', strtotime($Post['reserved_at']));
+					}
 					if (PERM('developer'))
 						$response['posted'] = date('c', strtotime($Post['posted']));
 					respond($response);

@@ -1484,7 +1484,7 @@ HTML;
 		$post_label = !empty($R['label']) ? '<span class="label">'.htmlspecialchars($R['label']).'</span>' : '';
 		$permalink = "<a href='#$ID'>".timetag($R['posted']).'</a>';
 
-		$posted_at = '<em>';
+		$posted_at = '<em class="post-date">';
 		if ($isRequest){
 			global $signedIn, $currentUser;
 			$sameUser = $signedIn && $R['requested_by'] === $currentUser['id'];
@@ -1499,7 +1499,7 @@ HTML;
 		$R['reserver'] = false;
 		if (!empty($R['reserved_by'])){
 			$R['reserver'] = get_user($R['reserved_by']);
-			$reserved_at = $isRequest && !empty($R['reserved_at']) ? "<em>Reserved <a href='#$ID'>".timetag($R['reserved_at'])."</a></em>" : '';
+			$reserved_at = $isRequest && !empty($R['reserved_at']) ? "<em class='reserve-date'>Reserved <a href='#$ID'>".timetag($R['reserved_at'])."</a></em>" : '';
 			if ($finished){
 				$Deviation = da_cache_deviation($R['deviation_id']);
 				if (empty($Deviation))
@@ -2548,8 +2548,15 @@ ORDER BY "count" DESC
 			else if (!$editing)
 				respnd("Missing request type");
 
-			if (!$editing || (!empty($_POST['type']) &&  $_POST['type'] !== $Post['type']))
+			if (!$editing || (!empty($_POST['type']) && $_POST['type'] !== $Post['type']))
 				$array['type'] = $_POST['type'];
+
+			if (!empty($_POST['reserved_at'])){
+				if (!PERM('developer'))
+					respond();
+
+				$array['reserved_at'] = date('c', strtotime($_POST['reserved_at']));
+			}
 		}
 
 		if (!empty($_POST['posted'])){

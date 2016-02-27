@@ -554,6 +554,18 @@ DocReady.push(function Episode(){
 							})
 						)
 					);
+				if (typeof postdata.reserved_at === 'string')
+					$Form.append(
+						$.mk('label').append(
+							$.mk('span').text('Reserved at'),
+							$.mk('input').attr({
+								type: 'datetime',
+								name: 'reserved_at',
+								required: true,
+								spellcheck: false,
+							})
+						)
+					);
 
 				if ($li.children('.image').find('.typcn-tick').length === 0)
 					$Form.append(
@@ -607,7 +619,7 @@ DocReady.push(function Episode(){
 				$.Dialog.request(false, $Form, 'post-edit-form', 'Save', function($form){
 					var $label = $form.find('[name=label]'),
 						$type = $form.find('[name=type]'),
-						$date;
+						$date, $reserved_at;
 					if (postdata.label)
 						$label.val(postdata.label);
 					if (postdata.type)
@@ -618,7 +630,13 @@ DocReady.push(function Episode(){
 						$date = $form.find('[name=date]');
 
 						var posted = moment(postdata.posted);
-						$date.val(posted.format('YYYY-MM-DD\THH:mm:SSZ'));
+						$date.val(posted.format('YYYY-MM-DD\THH:mm:ssZ'));
+					}
+					if (typeof postdata.reserved_at === 'string'){
+						$reserved_at = $form.find('[name=reserved_at]');
+
+						var reserved = moment(postdata.reserved_at);
+						$reserved_at.val(reserved.format('YYYY-MM-DD\THH:mm:ssZ'));
 					}
 					$form.on('submit',function(e){
 						e.preventDefault();
@@ -632,14 +650,24 @@ DocReady.push(function Episode(){
 								return $.Dialog.fail(false, 'Post timestamp is invalid');
 							data.posted = data.posted.toISOString();
 						}
+						if (typeof postdata.reserved_at === 'string'){
+							data.reserved_at = new Date($reserved_at.val());
+							if (isNaN(data.reserved_at.getTime()))
+								return $.Dialog.fail(false, 'Reserved at timestamp is invalid');
+							data.reserved_at = data.reserved_at.toISOString();
+						}
 
 						$.Dialog.wait(false, 'Saving changes');
 
 						$.post('/post/set-'+type+'/'+id,data, $.mkAjaxHandler(function(){
 							if (!this.status) return $.Dialog.fail(false, this.message);
 
-							if (this.label)
+							if (this.label){
+								var $label = $li.children('.label');
+								if (!$label.length)
+									$.mk('span').attr('class','lebel').insertAfter($li.children('.image'));
 								$li.children('.label').text(this.label);
+							}
 							if (this.type && !$li.parent().parent().hasClass('finished')){
 								var $group = $('#group-'+this.type).children('ul'),
 									getTimeValue = function(el){
@@ -651,7 +679,11 @@ DocReady.push(function Episode(){
 								}).appendTo($group);
 							}
 							if (this.posted){
-								$li.children('em').find('time').attr('datetime', this.posted);
+								$li.children('.post-date').find('time').attr('datetime', this.posted);
+								window.updateTimes();
+							}
+							if (this.reserved_at){
+								$li.children('.reserve-date').find('time').attr('datetime', this.reserved_at);
 								window.updateTimes();
 							}
 

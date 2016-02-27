@@ -84,23 +84,27 @@ body.dialog-open {
 	font-weight: normal;
 	color: $DefaultUIColor;
 
-	form > label {
-		> span {
-			~ select,
-			~ textarea,
-			~ input:not([type=radio]):not([type=checkbox]):not([type=button]) {
-				margin-top: 5px !important;
-				display: block;
+	form {
+    min-width: 300px;
+
+		> label {
+			> span {
+				~ select,
+				~ textarea,
+				~ input:not([type=radio]):not([type=checkbox]):not([type=button]) {
+					margin-top: 5px !important;
+					display: block;
+				}
 			}
-		}
-		> select,
-		> textarea,
-		> input:not([type=radio]):not([type=checkbox]):not([type=button]) {
-			width: 100%;
-			box-sizing: border-box;
-		}
-		> textarea {
-			resize: vertical;
+			> select,
+			> textarea,
+			> input:not([type=radio]):not([type=checkbox]):not([type=button]) {
+				width: 100%;
+				box-sizing: border-box;
+			}
+			> textarea {
+				resize: vertical;
+			}
 		}
 	}
 	.notice {
