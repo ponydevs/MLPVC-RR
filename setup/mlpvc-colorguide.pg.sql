@@ -654,7 +654,7 @@ INSERT INTO colors VALUES
 (57, 17, 'Fill', '#CC9CDF', 1),
 (58, 17, 'Shadow Outline', '#9156A9', 2),
 (59, 17, 'Shadow Fill', '#BF89D1', 3),
-(60, 18, 'Outline and Inner Lines', '#132248', 0),
+(60, 18, 'Outline', '#132248', 0),
 (61, 18, 'Fill', '#243870', 1),
 (62, 18, 'Stripe 1', '#652D87', 2),
 (63, 18, 'Stripe 2', '#EA428B', 3),
@@ -1865,14 +1865,15 @@ INSERT INTO colors VALUES
 (1543, 388, 'Fill', '#FCF8AC', 1),
 (1544, 388, 'Shadow Outline', '#CF8D74', 2),
 (1545, 388, 'Shadow Fill', '#DFAD96', 3),
-(1546, 72, 'Gradient Dark Fill', '#4A1767', 3);
+(1546, 72, 'Gradient Dark Fill', '#4A1767', 3),
+(1547, 18, 'Inner Lines', '#132248', 4);
 
 
 --
 -- Name: colors_colorid_seq; Type: SEQUENCE SET; Schema: public; Owner: mlpvc-rr
 --
 
-SELECT pg_catalog.setval('colors_colorid_seq', 1546, true);
+SELECT pg_catalog.setval('colors_colorid_seq', 1547, true);
 
 
 --
@@ -2291,14 +2292,16 @@ INSERT INTO tags VALUES
 (109, 's5e7', NULL, 'ep', 1),
 (110, 'pipsqueak', '', 'char', 1),
 (111, 'silver spoon', '', 'char', 1),
-(112, 'blossomforth', '', 'char', 1);
+(112, 'blossomforth', '', 'char', 1),
+(113, 's5e6', NULL, 'ep', 0),
+(114, 's5e5', NULL, 'ep', 0);
 
 
 --
 -- Name: tags_tid_seq; Type: SEQUENCE SET; Schema: public; Owner: mlpvc-rr
 --
 
-SELECT pg_catalog.setval('tags_tid_seq', 113, false);
+SELECT pg_catalog.setval('tags_tid_seq', 114, true);
 
 
 --
