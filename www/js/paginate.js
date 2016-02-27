@@ -37,7 +37,6 @@
 		$pagination.off('click').on('click','a',function(e){
 			e.preventDefault();
 			e.stopPropagation();
-
 			$('#ctxmenu').hide();
 
 			if (typeof $(this).attr('href') === 'undefined')

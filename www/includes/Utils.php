@@ -2391,13 +2391,6 @@ ORDER BY "count" DESC
 			if (!empty($User) && empty($sameUser))
 				$NavItems['users']['subitem'] = array($_SERVER['REQUEST_URI'], $User['name']);
 		}
-		if ($GLOBALS['signedIn']){
-			$NavItems['feedback'] = array('/feedback','Feedback');
-			global $Chain;
-			if ($do === 'feedback' && !empty($Chain)){
-				$NavItems['feedback']['subitem'] = array($_SERVER['REQUEST_URI'], $Chain['subject']);
-			}
-		}
 		if (PERM('inspector')){
 			$NavItems['logs'] = array('/logs', 'Logs');
 			if ($do === 'logs'){
@@ -2427,7 +2420,7 @@ ORDER BY "count" DESC
 
 	// Returns text of website footer
 	function get_footer(){
-		return "Running <strong><a href='".GITHUB_URL."' title='Visit the GitHub repository'>MLPVC-RR</a>@<a href='".GITHUB_URL."/commit/".LATEST_COMMIT_ID."' title='See exactly what was changed and why'>".LATEST_COMMIT_ID."</a></strong> created ".timetag(LATEST_COMMIT_TIME)." | <a href='".GITHUB_URL."/issues' target='_blank'>Known issues</a> | ".(PERM('user')?"<a href='#feedback' class='send-feedback'>Send feedback</a>":"<a href='".GITHUB_URL."/issues/new' target='_blank'>Send feedback</a>");
+		return "Running <strong><a href='".GITHUB_URL."' title='Visit the GitHub repository'>MLPVC-RR</a>@<a href='".GITHUB_URL."/commit/".LATEST_COMMIT_ID."' title='See exactly what was changed and why'>".LATEST_COMMIT_ID."</a></strong> created ".timetag(LATEST_COMMIT_TIME)." | <a class='issues' href='".GITHUB_URL."/issues' target='_blank'>Known issues</a> | ".(PERM('user')?"<a href='#feedback' class='send-feedback'>Send feedback</a>":"<a href='".GITHUB_URL."/issues/new' target='_blank'>Send feedback</a>");
 	}
 
 	// Loads the home page

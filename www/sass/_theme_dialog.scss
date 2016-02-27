@@ -85,7 +85,7 @@ body.dialog-open {
 	color: $DefaultUIColor;
 
 	form {
-    min-width: 300px;
+		min-width: 300px;
 
 		> label {
 			> span {
@@ -131,7 +131,7 @@ body.dialog-open {
 			margin-top: 4px;
 		}
 
-		> .notice {
+		&:not([class]) > .notice {
 			margin-top: 10px;
 			border-width: 2px;
 			font-size: 1em;

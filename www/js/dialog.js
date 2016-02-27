@@ -6,7 +6,7 @@
 			fail: 'red',
 			success: 'green',
 			wait: 'blue',
-			request: 'yellow',
+			request: '',
 			confirm: 'orange',
 			info: 'darkblue'
 		},
@@ -158,9 +158,12 @@
 			};
 
 			var append = Boolean(_open),
-				$contentAdd = $makeDiv().addClass(params.color).append(params.content),
+				$contentAdd = $makeDiv().append(params.content),
 				appendingToRequest = append && _open.type === 'request' && ['fail','wait'].includes(params.type),
 				$requestContentDiv;
+
+			if (params.color.length)
+				$contentAdd.addClass(params.color);
 			if (append){
 				$dialogOverlay = $('#dialogOverlay');
 				$dialogBox = $('#dialogBox');

@@ -122,57 +122,6 @@ CREATE TABLE episodes__votes (
 ALTER TABLE episodes__votes OWNER TO "mlpvc-rr";
 
 --
--- Name: feedback; Type: TABLE; Schema: public; Owner: mlpvc-rr; Tablespace: 
---
-
-CREATE TABLE feedback (
-    chain uuid DEFAULT uuid_generate_v4() NOT NULL,
-    "user" uuid NOT NULL,
-    subject character varying(120) NOT NULL,
-    open boolean DEFAULT true NOT NULL,
-    created timestamp with time zone DEFAULT now() NOT NULL
-);
-
-
-ALTER TABLE feedback OWNER TO "mlpvc-rr";
-
---
--- Name: feedback__messages; Type: TABLE; Schema: public; Owner: mlpvc-rr; Tablespace: 
---
-
-CREATE TABLE feedback__messages (
-    mid integer NOT NULL,
-    chain uuid NOT NULL,
-    author uuid NOT NULL,
-    body character varying(500),
-    sent timestamp with time zone DEFAULT now() NOT NULL
-);
-
-
-ALTER TABLE feedback__messages OWNER TO "mlpvc-rr";
-
---
--- Name: feedback__messages_mid_seq; Type: SEQUENCE; Schema: public; Owner: mlpvc-rr
---
-
-CREATE SEQUENCE feedback__messages_mid_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER TABLE feedback__messages_mid_seq OWNER TO "mlpvc-rr";
-
---
--- Name: feedback__messages_mid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: mlpvc-rr
---
-
-ALTER SEQUENCE feedback__messages_mid_seq OWNED BY feedback__messages.mid;
-
-
---
 -- Name: log; Type: TABLE; Schema: public; Owner: mlpvc-rr; Tablespace: 
 --
 
@@ -769,13 +718,6 @@ CREATE TABLE users (
 ALTER TABLE users OWNER TO "mlpvc-rr";
 
 --
--- Name: mid; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
---
-
-ALTER TABLE ONLY feedback__messages ALTER COLUMN mid SET DEFAULT nextval('feedback__messages_mid_seq'::regclass);
-
-
---
 -- Name: entryid; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
 --
 
@@ -910,22 +852,6 @@ ALTER TABLE ONLY episodes__votes
 
 ALTER TABLE ONLY episodes
     ADD CONSTRAINT episodes_season_episode PRIMARY KEY (season, episode);
-
-
---
--- Name: feedback__messages_mid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr; Tablespace: 
---
-
-ALTER TABLE ONLY feedback__messages
-    ADD CONSTRAINT feedback__messages_mid PRIMARY KEY (mid);
-
-
---
--- Name: feedback_chain; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr; Tablespace: 
---
-
-ALTER TABLE ONLY feedback
-    ADD CONSTRAINT feedback_chain PRIMARY KEY (chain);
 
 
 --
@@ -1087,27 +1013,6 @@ CREATE INDEX episodes_posted_by ON episodes USING btree (posted_by);
 
 
 --
--- Name: feedback__messages_author; Type: INDEX; Schema: public; Owner: mlpvc-rr; Tablespace: 
---
-
-CREATE INDEX feedback__messages_author ON feedback__messages USING btree (author);
-
-
---
--- Name: feedback__messages_chain; Type: INDEX; Schema: public; Owner: mlpvc-rr; Tablespace: 
---
-
-CREATE INDEX feedback__messages_chain ON feedback__messages USING btree (chain);
-
-
---
--- Name: feedback_user; Type: INDEX; Schema: public; Owner: mlpvc-rr; Tablespace: 
---
-
-CREATE INDEX feedback_user ON feedback USING btree ("user");
-
-
---
 -- Name: log__banish_target; Type: INDEX; Schema: public; Owner: mlpvc-rr; Tablespace: 
 --
 
@@ -1234,30 +1139,6 @@ ALTER TABLE ONLY episodes__votes
 
 ALTER TABLE ONLY episodes
     ADD CONSTRAINT episodes_posted_by_fkey FOREIGN KEY (posted_by) REFERENCES users(id) ON UPDATE SET NULL ON DELETE SET NULL;
-
-
---
--- Name: feedback__messages_author_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
---
-
-ALTER TABLE ONLY feedback__messages
-    ADD CONSTRAINT feedback__messages_author_fkey FOREIGN KEY (author) REFERENCES users(id) ON UPDATE CASCADE ON DELETE CASCADE;
-
-
---
--- Name: feedback__messages_chain_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
---
-
-ALTER TABLE ONLY feedback__messages
-    ADD CONSTRAINT feedback__messages_chain_fkey FOREIGN KEY (chain) REFERENCES feedback(chain) ON UPDATE CASCADE ON DELETE CASCADE;
-
-
---
--- Name: feedback_user_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
---
-
-ALTER TABLE ONLY feedback
-    ADD CONSTRAINT feedback_user_fkey FOREIGN KEY ("user") REFERENCES users(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --

@@ -422,54 +422,21 @@ $(function(){
 	$(document).on('click','.send-feedback',function(e){
 		e.preventDefault();
 		e.stopPropagation();
+		$('#ctxmenu').hide();
 
-		if (typeof $FeedbackForm === 'undefined'){
-			$FeedbackForm = $.mk('form').attr('id','feedback-form').append(
-				$.mk('p').text("Your opinion matters. If you're having an issue with the site, or just want to say how great it is, this is the place to do do."),
-				$.mk('p').html("Your message will be sent directly to the developer, and you'll be able to communicate with him using the <a href='/feedback'>Feedback</a> section of the site."),
-				$.mk('label').append(
-					$.mk('span').text('Subject (5-120 chars.)'),
-					$.mk('input').attr({
-						name: 'subject',
-						maxlength: 120,
-						placeholder: 'Enter subject',
-						pattern: PRINTABLE_ASCII_REGEX.replace('+','{5,120}'),
-						required: true,
-					})
-				),
-				$.mk('label').append(
-					$.mk('span').text('Message (10-500 chars.)'),
-					$.mk('textarea').attr({
-						name: 'message',
-						maxlength: 500,
-						placeholder: 'Enter message',
-						pattern: PRINTABLE_ASCII_REGEX.replace('+','{10,500}'),
-						required: true,
-					})
-				)
-			);
-		}
-
-		$.Dialog.request('Send feedback',$FeedbackForm.clone(true,true),'feedback-form','Send',function($form){
-			$form.on('submit',function(e){
-				e.preventDefault();
-
-				var data = $form.mkData();
-
-				if (data.subject.length < 5 || data.subject.length > 120)
-					return $.Dialog.fail(false, 'The subject must be between 5 and 120 characters (you entered '+data.subject.length+').');
-				if (data.message.length < 10 || data.message.length > 500)
-					return $.Dialog.fail(false, 'Your message must be between 10 and 500 characters (you entered '+data.message.length+').');
-
-				$.Dialog.wait(false, 'Submitting feedback');
-
-				$.post('/feedback',data,$.mkAjaxHandler(function(){
-					if (!this.status) return $.Dialog.fail(false, this.message);
-
-					$.Dialog.success(false, this.message, true);
-				}));
-			});
-		});
+		$.Dialog.info('How to send feedback',$.mk('div').append(
+			"<p>If you're having an issue with the site and would like to let the developer know, here's how you can contact him:</p>",
+			$.mk('ul').append(
+				"<li>Send a note to <a href='http://djdavid98.deviantart.com/'>DJDavid98</a> on DeviantArt</li>",
+				"<li>Send an e-mail to <a href='mailto:djdavid98@gmail.com'>djdavid98@gmail.com</a></li>",
+				"<li>Add <a href='skype:guzsik.david?add'>guzsik.david</a> on Skype</li>"
+			),
+			$.mk('p').attr('class','notice info').append(
+				"If you have a GitHub account, please ",
+				$.mk('a').attr('href',$footer.find('a.issues').attr('href')).text('create an issue'),
+				" on the project's GitHub page instead of using the methods above."
+			)
+		).children(),'feedback-form');
 	});
 
 	// AJAX page loader
