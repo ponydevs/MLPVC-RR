@@ -100,9 +100,9 @@ DocReady.push(function ColorguideManage(){
 					if (parseInt(data.ponyID, 10) === 0)
 						$txtarea.removeAttr('maxlength');
 					var $favme = $form.find('input[name=cm_favme]');
-					$favme.triggerHandler('change');
 					if (data.cm_favme)
 						$favme.val(data.cm_favme);
+					$favme.triggerHandler('change');
 					if (data.cm_preview)
 						$form.find('input[name=cm_preview]').val(data.cm_preview);
 					if (data.cm_dir)
