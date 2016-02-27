@@ -6,6 +6,12 @@ $Border: #888;
 $Background: #EFEFEF;
 $BackgroundLight: #F6F6F6;
 
+:disabled, [disabled], .disabled {
+	cursor: not-allowed !important;
+	opacity: .5 !important;
+	pointer-events: none;
+}
+
 input:not([type=radio]):not([type=checkbox]):not([type=button]):not([type=file]),
 select, textarea {
 	border: 1px solid;
@@ -55,7 +61,6 @@ input[type=checkbox] {
 	top: -2px;
 
 	&:focus { background-color: $BackgroundLight }
-	&:disabled { cursor: default }
 	&:checked:before { opacity: 1 }
 	&:before {
 		position: absolute;
@@ -82,7 +87,7 @@ input[type=checkbox] {
 			}
 			label {
 				text-align: center;
-				cursor: pointer;
+
 				> * { vertical-align: text-bottom }
 			}
 
@@ -123,6 +128,7 @@ input[type=checkbox] {
 					&:checked ~ span { background-color: lighten($DefaultUIColor, 60); opacity: 1 }
 					&:focus ~ span { border-style: dashed }
 					&:not(:checked):focus ~ span { opacity: .9 }
+					&:disabled ~ span { cursor: not-allowed }
 				}
 			}
 		}

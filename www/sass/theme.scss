@@ -143,11 +143,6 @@
 :focus { outline: 0 }
 time[datetime][title] { cursor: help }
 small { font-size: .75em }
-[disabled], .disabled {
-	cursor: not-allowed !important;
-	opacity: .5 !important;
-	pointer-events: none;
-}
 strong.typcn:before, span.typcn:not(:empty):before, em.typcn:before,
 button:not(:empty):before, .btn:not(:empty):before {
 	margin-right: 0.3125em;

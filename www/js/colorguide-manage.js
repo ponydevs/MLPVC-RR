@@ -41,7 +41,10 @@ DocReady.push(function ColorguideManage(){
 						name: 'cm_favme',
 						placeholder: 'DeviantArt submission URL',
 					}).on('change blur',function(){
-						$(this).parent().next().find('input').attr('required', this.value.trim().length === 0);
+						var disable = this.value.trim().length === 0,
+							$cm_dir = $(this).parent().next();
+						$cm_dir.find('input').attr('disabled', disable);
+						$cm_dir.next().find('input').attr('disabled', disable);
 					})
 				),
 				$.mk('div').attr('class','align-center').append(
@@ -52,6 +55,7 @@ DocReady.push(function ColorguideManage(){
 								type: 'radio',
 								name: 'cm_dir',
 								value: 'ht',
+								required: true,
 							}),
 							"<span>Head-Tail</span>"
 						),
@@ -60,6 +64,7 @@ DocReady.push(function ColorguideManage(){
 								type: 'radio',
 								name: 'cm_dir',
 								value: 'th',
+								required: true,
 							}),
 							"<span>Tail-Head</span>"
 						)
