@@ -5,8 +5,18 @@
 	var $ctxmenu = $.mk('div').attr('id', 'ctxmenu');
 	$ctxmenu
 		.appendTo($body)
-		.on('click',function(e){ e.stopPropagation() })
-		.on('contextmenu', function(){ $ctxmenu.hide(); return false });
+		.on('click',function(e){
+			e.stopPropagation();
+			$ctxmenu.hide();
+		})
+		.on('contextmenu', function(e){
+			var $target = $(e.target);
+			switch (e.target.nodeName.toLowerCase()){
+				case 'li': $target.children('a').trigger('click'); break;
+				case 'a': $target.trigger('click'); break;
+			}
+			return false;
+		});
 	$.ctxmenu = { separator: true };
 
 	function setTitle($el, title){
@@ -59,6 +69,8 @@
 			});
 
 			$el.on('contextmenu',function(e){
+				if (e.shiftKey)
+					return;
 				e.preventDefault();
 				e.stopPropagation();
 
