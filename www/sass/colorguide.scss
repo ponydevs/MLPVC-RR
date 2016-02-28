@@ -4,7 +4,7 @@
 @import "colorguide_vars";
 @import "_theme_ctxmenu";
 // Mobile-only
-@media all and (max-width: 650px){
+@media all and (max-width: $Breakpoint){
 	.appearance-list > li {
 		display: block !important;
 
@@ -20,40 +20,17 @@
 		}
 	}
 	div.tags {
-		white-space: initial !important;
-		border-top: 1px solid;
 		width: 100%;
-		padding-top: 6px;
 
-		&:before {
-			content: "Tagged: ";
-			font-weight: bold;
-		}
+		&:empty { display: none }
 
 		> .addtag, > .twitter-typeahead {
 			display: none !important;
 		}
 	}
-	.tag {
-		background-color: transparent !important;
-
-		&:not(:last-child):after {
-			content: ",";
-			font-weight: normal;
-			color: #434343;
-		}
-	}
 }
 // Desktop-only
-@media all and (min-width: 650px){
-	.tag {
-		padding: 3px 5px;
-		border: 1px solid;
-		cursor: default;
-		height: 26px;
-
-		&:not(:last-child) { margin-right: 5px }
-	}
+@media all and (min-width: $Breakpoint){
 	.appearance-list > li > div:last-child { max-width: calc(100% - 160px) }
 
 	.notice.tagediting { display: none }
@@ -96,7 +73,12 @@
 				display: block;
 				font-size: 1.5em;
 
-				button, .btn { margin-left: 8px }
+				> * {
+					display: inline-block;
+					vertical-align: middle;
+				}
+
+				button, .btn { margin: 0 0 0 8px }
 			}
 			> .update {
 				font-size: .8em;
@@ -225,6 +207,15 @@
 div.tags {
 	user-select: none;
 	margin-top: 6px;
+
+	.tag {
+		padding: 3px 5px;
+		border: 1px solid;
+		cursor: default;
+		height: 26px;
+
+		&:not(:last-child) { margin-right: 5px }
+	}
 }
 .tag:not(.addtag), div.tags .twitter-typeahead {
 	margin: 0 6px 6px 0;
@@ -277,12 +268,6 @@ div.tags {
 
 #universal {
 	margin-bottom: 10px;
-	
-	ul.colors {
-		margin-top: 6px;
-
-		li { margin-bottom: 0 }
-	}
 }
 ul.colors {
 	display: block;
@@ -313,7 +298,7 @@ ul.colors {
 		border: 1px solid rgba(black, .2);
 		background-color: rgba(black, .05);
 		padding: 4px;
-		margin: 0 5px 5px 0;
+		margin: 5px 5px 0 0;
 		font-size: 18px;
 
 		> * { vertical-align: middle }

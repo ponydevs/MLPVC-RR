@@ -1,6 +1,21 @@
 @import "colorguide_vars";
 @import "vars";
 
+// Mobile-only
+@media all and (max-width: $Breakpoint){
+	#pony-cm {
+		margin-left: auto;
+		margin-right: auto;
+
+
+		@include pony-cm-image(200px);
+	}
+}
+// Desktop-only
+@media all and (min-width: $Breakpoint){
+	#pony-cm { @include pony-cm-image }
+}
+
 #content {
 	> .sprite {
 		margin: 0 auto 5px;
@@ -44,7 +59,7 @@
 		display: inline-block;
 	}
 
-	#pony-cm { @include pony-cm-image }
+	#pony-cm { margin-top: 5px }
 
 	#colors {
 		margin: 10px 0 0;
