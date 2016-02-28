@@ -7,31 +7,102 @@
 @media all and (max-width: $Breakpoint){
 	.appearance-list > li {
 		display: block !important;
+		text-align: center;
 
 		> div {
-			&:first-child {
-				display: none;
+			&.sprite {
+				display: inline-block !important;
+				margin: 0;
 			}
 			&:last-child {
 				max-width: 100% !important;
 				padding: 0 !important;
 				display: block !important;
+				text-align: left;
 			}
-		}
-	}
-	div.tags {
-		width: 100%;
 
-		&:empty { display: none }
+			> strong {
+				text-align: center;
 
-		> .addtag, > .twitter-typeahead {
-			display: none !important;
+				a:first-child {
+					display: block;
+
+					~ * { font-size: .6em }
+				}
+
+				button, .btn {
+					&:nth-child(2) { margin-left: 0 }
+				}
+			}
+
+			div.tags {
+				width: 100%;
+
+				&:empty { display: none }
+
+				> .addtag, > .twitter-typeahead {
+					display: none !important;
+				}
+			}
+
+			div.notes {
+				> span + a {
+					margin-top: 3px;
+				}
+				a {
+					display: block;
+					$LinkHeight: 18px;
+					height: $LinkHeight;
+
+					&:after {
+						content:"";
+						display: inline-block;
+						width: $LinkHeight*.9;
+						height: $LinkHeight*.9;
+						background: url('../img/extlink-link-color.svg') no-repeat center center;
+						background-size: contain;
+					}
+					> span, &:after {
+						vertical-align: middle;
+					}
+					> .cm-direction { display: none }
+				}
+			}
+
+			ul.colors {
+				display: flex;
+				flex-wrap: wrap;
+				width: 100%;
+				border-style: solid;
+				border-color: rgba(0,0,0,.3);
+				border-width: 1px 0 0 1px;
+				margin-top: 5px;
+
+				li {
+					display: block;
+					text-align: center;
+					flex: 1 0 auto;
+					max-width: 100%;
+					box-sizing: border-box;
+					margin: 0;
+					border-width: 0 1px 1px 0;
+				}
+			}
 		}
 	}
 }
 // Desktop-only
 @media all and (min-width: $Breakpoint){
-	.appearance-list > li > div:last-child { max-width: calc(100% - 160px) }
+	.appearance-list > li > div {
+		&:last-child { max-width: calc(100% - 160px) }
+
+		.update time { border-bottom: 1px dashed }
+		div.notes > span + a {
+			margin-left: 5px;
+			border-left: 1px solid #000;
+			padding-left: 5px;
+		}
+	}
 
 	.notice.tagediting { display: none }
 }
@@ -53,9 +124,8 @@
 	> li {
 		padding: 10px;
 		color: #434343;
-		background-color: rgba(black, .05);
-		border: 1px solid rgba(black, .2);
-		box-shadow: 0 0 2px rgba(black, .2);
+		background-color: rgba(0,0,0,.03);
+		border: 1px solid rgba(0,0,0,.3);
 		display: flex;
 		flex-flow: row nowrap;
 
@@ -81,22 +151,16 @@
 				button, .btn { margin: 0 0 0 8px }
 			}
 			> .update {
+				margin-top: 5px;
 				font-size: .8em;
 
 				&:empty { display: none }
-
-				time { border-bottom: 1px dashed }
 			}
 			> .notes {
 				margin-top: 6px;
 
 				&:empty { display: none }
 
-				> span + a {
-					margin-left: 5px;
-					border-left: 1px solid #000;
-					padding-left: 5px;
-				}
 				> a .cm-direction {
 					border: 1px dashed;
 					padding: 2px 2px;
@@ -207,22 +271,13 @@
 div.tags {
 	user-select: none;
 	margin-top: 6px;
-
-	.tag {
-		padding: 3px 5px;
-		border: 1px solid;
-		cursor: default;
-		height: 26px;
-
-		&:not(:last-child) { margin-right: 5px }
-	}
 }
 .tag:not(.addtag), div.tags .twitter-typeahead {
 	margin: 0 6px 6px 0;
 	vertical-align: top;
 }
 .twitter-typeahead {
-	&.loading{
+	&.loading {
 		position:relative;
 
 		&:after {
@@ -244,18 +299,17 @@ div.tags {
 	display: inline-block;
 	font-weight: bold;
 	box-sizing: border-box;
+	padding: 3px 5px;
+	border: 1px solid;
 	cursor: default;
+	height: 26px;
 
 	&:before {
 		//noinspection CssNoGenericFontName
 		font-family: 'Typicons';
 		margin-right: 5px;
 	}
-
-	.tt-dataset & {
-		display: block;
-		margin: 0;
-	}
+	&:not(:last-child) { margin-right: 5px }
 
 	&:not([class*=typ-]) { @include tag-style($TDefault) }
 	&.typ-cat { @include tag-style($TCategory, '\e083')	}
@@ -264,11 +318,17 @@ div.tags {
 	&.typ-app { @include tag-style($TAppearance, '\e07e') }
 	&.typ-ep { @include tag-style($TEpisode, '\e131') }
 	&.typ-char { @include tag-style($TCharacter, '\e12c') }
+
+	.tt-dataset & {
+		display: block;
+		margin: 0;
+	}
 }
 
 #universal {
 	margin-bottom: 10px;
 }
+
 ul.colors {
 	display: block;
 	padding: 0;
@@ -289,7 +349,7 @@ ul.colors {
 		box-sizing: border-box;
 		border: 1px dashed rgba(black,.5);
 	}
-	&:not(#colors):empty:before{
+	&:not(#colors):empty:before {
 		font-size: 18px;
 	}
 
@@ -299,10 +359,10 @@ ul.colors {
 		background-color: rgba(black, .05);
 		padding: 4px;
 		margin: 5px 5px 0 0;
-		font-size: 18px;
+		font-size: 16px;
 
 		> * { vertical-align: middle }
-		> span:not(.cat) { @include colored-square(18px, 1px) }
+		> span:not(.cat) { @include colored-square(16px, 1px) }
 	}
 }
 

@@ -163,7 +163,7 @@
 					$CMPreviewUrl = get_cm_preview_url($p);
 					$dir = ' <span class="cm-direction" data-cm-preview="'.$CMPreviewUrl.'" data-cm-dir="'.($head_to_tail ? 'ht' : 'th').'"><span class="typcn typcn-info-large"></span> '.($head_to_tail ? 'Head-Tail' : 'Tail-Head').' orientation';
 				}
-				$notes .= "<a href='http://fav.me/{$p['cm_favme']}'>Cutie mark vector$dir</a>";
+				$notes .= "<a href='http://fav.me/{$p['cm_favme']}'><span>Cutie Mark</span>$dir</a>";
 			}
 		}
 		else {
