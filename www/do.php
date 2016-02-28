@@ -479,7 +479,7 @@
 			else do404();
 		break;
 		case "ping":
-			if (RQMTHD !== 'POST' || detectCSRF(RETURN_AS_BOOL))
+			if (RQMTHD !== 'POST')
 				do404();
 
 			respond(true);

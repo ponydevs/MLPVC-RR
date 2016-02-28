@@ -343,6 +343,31 @@ function DocumentIsReady(){
 		});
 	});
 
+	// HTTPS button
+	try {
+		if (/^https/.test(location.protocol))
+			throw undefined;
+		var canhttps = sessionStorage.getItem('canhttps');
+		if (canhttps === null || canhttps === 'true'){
+			$.ajax({
+				method: "POST",
+				url: 'https://'+location.host+'/ping',
+				success: $.mkAjaxHandler(function(){
+					if (this.status)
+						$sidebar.append(
+							$.mk('a').attr({
+								'class': 'btn green typcn typcn-lock-closed',
+								href: location.href.replace(/^http:/,'https:')
+							}).text('Switch to HTTPS')
+						);
+					sessionStorage.setItem('canhttps', canhttps = this.status.toString());
+				}),
+				error: function(){ sessionStorage.setItem('canhttps', canhttps = 'false') }
+			});
+		}
+	}
+	catch(e){}
+
 	var l = window.DocReady.length;
 	if (l) for (var i = 0; i<l; i++)
 		window.DocReady[i].call(window);

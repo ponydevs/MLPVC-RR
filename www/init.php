@@ -26,6 +26,8 @@
 	require 'includes/Utils.php';
 	require 'includes/AuthCheck.php';
 
+	header('Access-Control-Allow-Origin: '.(!empty($_SERVER['HTTPS'])?'http':'https').'://'.$_SERVER['SERVER_NAME']);
+
 	$is_cf = false;
 	if (isset($_SERVER['HTTP_CF_CONNECTING_IP'])){
 		require 'includes/CloudFlare.php';
