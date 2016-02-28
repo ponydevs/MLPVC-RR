@@ -127,7 +127,7 @@ DocReady.push(function Colorguide(){
 				ponyID = $this.closest('li').attr('id').substring(1),
 				base = new Image(),
 				cm = new Image(),
-				base_img = '/colorguide/appearance/'+ponyID+'.png',
+				base_img = '/colorguide/appearance/'+ponyID+'.svg',
 				cm_img = $this.attr('data-cm-preview');
 			setTimeout(function(){
 				base.src = base_img;
