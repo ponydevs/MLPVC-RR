@@ -1723,8 +1723,6 @@
 					else $response = array('cg' => get_cg_html($Group['groupid'], NOWRAP, $colon, $outputNames));
 
 					$AppearanceID = $new ? $Appearance['id'] : $Group['ponyid'];
-					if (isset($_POST['RETURN_CM_IMAGE']))
-						$response['cm_img'] = generate_cm_facing_image($AppearanceID);
 					if (isset($major)){
 						LogAction('color_modify',array(
 							'ponyid' => $AppearanceID,
@@ -1733,6 +1731,8 @@
 						$response['update'] = get_update_html($AppearanceID);
 					}
 					clear_rendered_image($AppearanceID);
+					if (isset($_POST['RETURN_CM_IMAGE']))
+						$response['cm_img'] = "/{$color}guide/appearance/$AppearanceID.svg?t=".time();
 
 					respond($response);
 				}

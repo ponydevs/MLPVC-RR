@@ -461,10 +461,19 @@ DocReady.push(function ColorguideManage(){
 						ctxmenus();
 						if (this.update)
 							window.updateTimes();
-						if (this.cm_img)
-							$('#pony-cm').css('background-image', this.cm_img);
+						if (this.cm_img){
+							$.Dialog.success(false, 'Color group updated');
+							$.Dialog.wait(false, 'Updating cutie mark orientation image');
+							var preload = new Image();
+							preload.src = this.cm_img;
+							$(preload).on('load error',function(){
+								$('#pony-cm').backgroundImageUrl(preload.src);
+								$.Dialog.close();
+							});
+						}
+						else $.Dialog.close();
 					}
-					$.Dialog.close();
+					else $.Dialog.close();
 				}));
 			});
 		});
