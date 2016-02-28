@@ -700,9 +700,14 @@ HTML;
 	}
 
 	// CSRF Check \\
-	function detectCSRF($CSRF = null){
-		if (!isset($CSRF)) global $CSRF;
-		if (isset($CSRF) && $CSRF)
+	define('RETURN_AS_BOOL', true);
+	function detectCSRF($return_as_bool = false){
+		global $CSRF;
+		$is_forged = isset($CSRF) && $CSRF;
+
+		if ($return_as_bool === RETURN_AS_BOOL)
+			return $is_forged;
+		else if ($is_forged)
 			die(statusCodeHeader(401));
 	}
 

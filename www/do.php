@@ -478,6 +478,12 @@
 			}
 			else do404();
 		break;
+		case "ping":
+			if (RQMTHD !== 'POST' || detectCSRF(RETURN_AS_BOOL))
+				do404();
+
+			respond(true);
+		break;
 
 		// PAGES
 		case "index":

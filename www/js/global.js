@@ -63,16 +63,18 @@
 
 		if (typeof char !== 'string')
 			char = '0';
-		if (typeof len !== 'number' || !isFinite(len) || isNaN(len))
+		if (typeof len !== 'number' && !isFinite(len) && isNaN(len))
 			len = 2;
+		else len = parseInt(len, 10);
 		if (typeof dir !== 'boolean')
 			dir = true;
 
 		while (str.length < len)
-			str = dir ? char+str : str+char;
+			str = dir === $.pad.left ? char+str : str+char;
 
 		return str;
 	};
+	$.pad.right = !($.pad.left = true);
 
 	// Create AJAX response handling function
 	$w.on('ajaxerror',function(){
@@ -395,7 +397,6 @@ $(function(){
 		window.updateTimes();
 	};
 	window.setCD();
-	function pad(n){return n<10?'0'+n:n}
 	function cdupdate(){
 		var cdExists = typeof $cd.parent === "function" && $cd.parent().length > 0,
 			diff = {}, now, airs;
@@ -418,7 +419,7 @@ $(function(){
 				text += diff.day+' day'+(diff.day!==1?'s':'')+' & ';
 			if (diff.hour > 0)
 				text += diff.hour+':';
-			text += pad(diff.minute)+':'+pad(diff.second);
+			text += $.pad(diff.minute)+':'+$.pad(diff.second);
 		}
 		else text = createTimeStr(now, airs);
 		$cd.text(text);
@@ -428,7 +429,6 @@ $(function(){
 	});
 
 	// Feedback form
-	var $FeedbackForm;
 	$(document).on('click','.send-feedback',function(e){
 		e.preventDefault();
 		e.stopPropagation();
