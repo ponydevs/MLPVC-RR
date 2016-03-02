@@ -23,6 +23,9 @@ DocReady.push(function ColorguideFull(){
 		}));
 	});
 
+	if (typeof window.Sortable !== 'function')
+		return;
+
 	$ReorderBtn.on('click',function(){
 		if (!$ReorderBtn.hasClass('typcn-tick')){
 			$ReorderBtn.removeClass('typcn-arrow-unsorted darkblue').addClass('typcn-tick green').html('Save');

@@ -1844,7 +1844,7 @@
 				loadPage($settings);
 			}
 			else if ($data === 'full'){
-				$GuideOrder = isset($_REQUEST['guide-order']);
+				$GuideOrder = !isset($_REQUEST['alphabetically']) && !$EQG;
 				if (!$GuideOrder)
 					$CGDb->orderBy('label','ASC');
 				$Appearances = get_appearances($EQG,null,'id,label');
@@ -1853,11 +1853,16 @@
 				if (isset($_REQUEST['ajax']))
 					respond(array('html' => render_full_list_html($Appearances, $GuideOrder, NOWRAP)));
 
+				$js = array();
+				if (PERM('inspector'))
+					$js[] = 'Sortable';
+				$js[] = "$do-full";
+
 				loadPage(array(
 					'title' => "Full List - $Color Guide",
 					'view' => "$do-full",
 					'css' => "$do-full",
-					'js' => array('Sortable', "$do-full"),
+					'js' => $js,
 				));
 			}
 

@@ -297,7 +297,7 @@
 					}
 					$HTML .= "<a href='/{$color}guide/appearance/{$p['id']}'>{$p['label']}</a>, ";
 				}
-				$HTML .= rtrim($HTML, ', ');
+				$HTML = rtrim($HTML, ', ');
 			}
 			else {
 				global $GroupTagIDs_Assoc;
