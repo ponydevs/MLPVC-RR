@@ -863,7 +863,8 @@ HTML;
 			"SELECT cg.label as cglabel, c.label as label, c.hex
 			FROM colorgroups cg
 			LEFT JOIN colors c on c.groupid = cg.groupid
-			WHERE cg.ponyid = ?", array($AppearanceID));
+			WHERE cg.ponyid = ?
+			ORDER BY cg.label ASC, c.label ASC", array($AppearanceID));
 
 		$ColorMapping = array();
 		foreach ($Colors as $row){
