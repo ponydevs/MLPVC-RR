@@ -2068,7 +2068,7 @@ HTML;
 		global $currentSet;
 
 		list($path, $label) = $item;
-		$current = (!$currentSet || $htmlOnly === HTML_ONLY) && preg_match("~^$path($|/)~", strtok($_SERVER['REQUEST_URI'], '?'));
+		$current = (!$currentSet || $htmlOnly === HTML_ONLY) && ($path === true || preg_match("~^$path($|/)~", strtok($_SERVER['REQUEST_URI'], '?')));
 		$class = '';
 		if ($current){
 			$currentSet = true;
@@ -2361,28 +2361,25 @@ ORDER BY "count" DESC
 		if ($do === 'episode' && !empty($GLOBALS['CurrentEpisode'])){
 			if (!empty($GLOBALS['Latest']))
 				$NavItems['latest'][0] = $_SERVER['REQUEST_URI'];
-			else $NavItems['eps']['subitem'] = array($_SERVER['REQUEST_URI'], $GLOBALS['title']);
+			else $NavItems['eps']['subitem'] = $GLOBALS['title'];
 		}
 		global $color, $Color, $EQG;
 		$NavItems['colorguide'] = array("/{$color}guide", (!empty($EQG)?'EQG ':'')."$Color Guide");
 		if ($do === 'colorguide'){
 			global $Tags, $Changes, $Ponies, $Page, $Appearance;
 			if (!empty($Appearance))
-				$NavItems['colorguide']['subitem'] = array($_SERVER['REQUEST_URI'], $Appearance['label']);
+				$NavItems['colorguide']['subitem'] = $Appearance['label'];
 			else if (isset($Ponies))
 				$NavItems['colorguide'][1] .= " - Page $Page";
 			else {
 				if ($GLOBALS['data'] === 'full'){
-					$NavItems['colorguide']['subitem'] = array('/colorguide/full','Full List');
+					$NavItems['colorguide']['subitem'] = 'Full List';
 				}
 				else {
 					if (isset($Tags)) $pagePrefix = 'Tags';
 					else if (isset($Changes)) $pagePrefix = "Major $Color Changes";
 
-					$NavItems['colorguide']['subitem'] = array(
-						$_SERVER['REQUEST_URI'],
-						(isset($pagePrefix) ? "$pagePrefix - " : '')."Page $Page"
-					);
+					$NavItems['colorguide']['subitem'] = (isset($pagePrefix) ? "$pagePrefix - " : '')."Page $Page";
 				}
 			}
 
@@ -2394,7 +2391,7 @@ ORDER BY "count" DESC
 			
 			$NavItems['users'] = array('/users', 'Users', PERM('inspector'));
 			if (!empty($User) && empty($sameUser))
-				$NavItems['users']['subitem'] = array($_SERVER['REQUEST_URI'], $User['name']);
+				$NavItems['users']['subitem'] = $User['name'];
 		}
 		if (PERM('inspector')){
 			$NavItems['logs'] = array('/logs', 'Logs');
@@ -2410,7 +2407,7 @@ ORDER BY "count" DESC
 		foreach ($NavItems as $item){
 			$sublink = '';
 			if (isset($item['subitem'])){
-				list($class, $sublink) = get_header_link($item['subitem']);
+				list($class, $sublink) = get_header_link(array(true, $item['subitem']));
 				$sublink = " &rsaquo; $sublink";
 				$link = get_header_link($item, HTML_ONLY);
 			}
