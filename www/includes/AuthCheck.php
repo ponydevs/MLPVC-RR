@@ -9,11 +9,6 @@
 	if (RQMTHD === 'GET' && isset($_GET['CSRF_TOKEN']))
 		redirect(remove_csrf_query_parameter($_SERVER['REQUEST_URI']));
 
-	$signedIn = false;
-	$currentUser = null;
-
-	$Color = 'Color';
-	$color = 'color';
 	if (Cookie::exists('access')){
 		$authKey = Cookie::get('access');
 

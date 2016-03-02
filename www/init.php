@@ -10,6 +10,12 @@
 	define('GITHUB_URL','https://github.com/ponydevs/MLPVC-RR');
 	define('SITE_TITLE', 'MLP Vector Club');
 
+	// Global variables \\
+	$Color = 'Color';
+	$color = 'color';
+	$signedIn = false;
+	$currentUser = null;
+
 	// Imports \\
 	require 'includes/JSON.php';
 	require 'includes/PostgresDbWrapper.php';
