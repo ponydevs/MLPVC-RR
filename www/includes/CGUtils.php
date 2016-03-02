@@ -849,7 +849,7 @@ HTML;
 			outputsvg(null,$OutputPath,$FileRelPath);
 
 		if (is_null($dir))
-			statusCodeHeader(404, AND_DIE);
+			do404();
 
 		$DefaultColorMapping = array(
 			'Coat Outline' => '#0D0D0D',
