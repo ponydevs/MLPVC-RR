@@ -2812,13 +2812,27 @@ HTML;
 	function ExportVars($export){
 		$HTML =  '<script>var ';
 		foreach ($export as $name => $value){
-			if (is_bool($value))
-				$value = $value ? 'true' : 'false';
-			else if (is_array($value))
-				$value = JSON::Encode($value);
-			else if (is_string($value)){
-				if (!preg_match('~^/.*/[img]*$~', $value))
+			$type = gettype($value);
+			switch ($type){
+				case "boolean":
+					$value = $value ? 'true' : 'false';
+				break;
+				case "array":
 					$value = JSON::Encode($value);
+				break;
+				case "string":
+					// regex test
+					if (preg_match('~^/.*/[gumi]*$~', $value))
+						$value = preg_replace('~(/[img]*)u([img]*)$~','$1$2',$value);
+					else $value = JSON::Encode($value);
+				break;
+				case "integer":
+				case "float":
+				case "null":
+					$value = strval($value);
+				break;
+				default:
+					trigger_error("Exporting unsupported variable $name of type $type", E_USER_ERROR);
 			}
 			$HTML .= "$name=$value,";
 		}

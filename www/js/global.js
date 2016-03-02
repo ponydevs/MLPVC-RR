@@ -259,6 +259,16 @@
 		return Math.min(max, Math.max(min, input));
 	};
 
+	var shortHex = /^#?([A-Fa-f0-9]{3})$/;
+	window.SHORT_HEX_COLOR_PATTERN = shortHex;
+	$.hexpand = function(shorthex){
+		var match = shorthex.trim().match(shortHex);
+		if (!match)
+			return shorthex;
+		match = match[1];
+		return '#'+match[0]+match[0]+match[1]+match[1]+match[2]+match[2];
+	};
+
 	$.fn.toggleHtml = function(contentArray){
 		this.html(contentArray[$.rangeLimit(contentArray.indexOf(this.html())+1, true, contentArray.length-1)]);
 
@@ -278,6 +288,12 @@
 
 	$.fn.backgroundImageUrl = function(url){
 		$(this).css('background-image', 'url("'+url.replace(/"/g,'%22')+'")');
+
+		return this;
+	};
+
+	$.fn.patternAttr = function(regex){
+		$(this).attr('pattern', regex.toString().replace(/(^\/|\/[img]*$)/g,''));
 
 		return this;
 	};

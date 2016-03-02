@@ -761,16 +761,8 @@ HTML;
 	function outputimage($data, $path, $relpath, $write_callback, $content_type){
 		if (isset($data))
 			$write_callback($path, $data);
-		$modif_ts = filemtime($path);
-		if (isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) && strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE']) >= $modif_ts)
-			statusCodeHeader(304,AND_DIE);
 
-		if (CF_REQUEST)
-			fix_path("$relpath?t=$modif_ts");
-		else {
-			header('Last-Modified: '.date('r', $modif_ts));
-			header('Cache-Control: max-age='.ONE_YEAR.',public');
-		}
+		fix_path("$relpath?t=".filemtime($path));
 		header("Content-Type: image/$content_type");
 		readfile($path);
 		exit;
@@ -782,10 +774,11 @@ HTML;
 
 	define('CM_DIR_ONLY',true);
 	function clear_rendered_image($AppearanceID, $cm_dir_only = false){
-		// Remove rendered sprite image to force its re-generation
 		$RenderedPath = APPATH."img/cg_render/$AppearanceID";
-		return ($cm_dir_only !== CM_DIR_ONLY && file_exists("$RenderedPath.png") ? unlink("$RenderedPath.png") : true)
-		       && (file_exists("$RenderedPath.svg") ? unlink("$RenderedPath.svg") : true);
+		if ($cm_dir_only !== CM_DIR_ONLY && file_exists("$RenderedPath.png"))
+			unlink("$RenderedPath.png");
+		if (file_exists("$RenderedPath.svg"))
+			unlink("$RenderedPath.svg");
 	}
 
 	function imageCopyExact($dest, $source, $x, $y, $w, $h){
@@ -882,6 +875,13 @@ HTML;
 		}
 
 		outputsvg($img,$OutputPath,$FileRelPath);
+	}
+
+	function get_cm_dir_svg_mod_ts($AppearanceID){
+		$OutputPath = APPATH."img/cg_render/$AppearanceID.svg";
+		if (file_exists($OutputPath))
+			return filemtime($OutputPath);
+		return null;
 	}
 
 	// Retruns CM preview image link

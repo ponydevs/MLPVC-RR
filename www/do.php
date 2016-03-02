@@ -1193,6 +1193,7 @@
 								'ishuman' => $EQG,
 							    'cm_favme' => null,
 							);
+							$AppearancePage = isset($_POST['APPEARANCE_PAGE']);
 
 							if (empty($_POST['label']))
 								respond('Label is missing');
@@ -1256,34 +1257,35 @@
 							if (!$query)
 								respond(ERR_DB_FAIL);
 
+
 							if ($action === 'make'){
-								$data['message'] = 'Appearance added successfully';
-								$count = $CGDb->where('ishuman', $EQG)->count('appearances');
-
-								$data['id'] = $query;
-
+								$response = array(
+									'message' => 'Appearance added successfully',
+									'id' => $query,
+								);
 								if (isset($_POST['template'])){
 									try {
 										apply_template($query, $EQG);
 									}
 									catch (Exception $e){
-										$data['message'] .= ", but applying the template failed";
-										$data['info'] = "The common color groups could not be added.<br>Reason: ".$e->getMessage();
-										respond($data);
+										$response['message'] .= ", but applying the template failed";
+										$response['info'] = "The common color groups could not be added.<br>Reason: ".$e->getMessage();
+										respond($response, 1);
 									}
 								}
+								respond($response, 1);
 							}
 							else {
 								clear_rendered_image($Appearance['id']);
-								$data['id'] = $Appearance['id'];
-								if (empty($data['notes']))
-									$data['notes'] = $Appearance['notes'];
+								if ($AppearancePage)
+									respond(true);
 							}
 
-							if (isset($_POST['noreturn']))
-								respond(true);
-							$data['notes'] = get_notes_html($data, NOWRAP);
-							respond($data);
+							$Appearance = array_merge($Appearance, $data);
+							respond(array(
+								'label' => $data['label'],
+								'notes' => get_notes_html($Appearance, NOWRAP),
+							));
 						break;
 						case "delete":
 							if ($Appearance['id'] === 0)
@@ -1301,14 +1303,12 @@
 							respond('Appearance removed', 1);
 						break;
 						case "getcgs":
+							$cgs = get_cgs($Appearance['id'],'groupid, label');
+							if (empty($cgs))
+								respond('This appearance does not have any color groups');
+							respond(array('cgs' => $cgs));
+						break;
 						case "setcgs":
-							if ($action === 'getcgs'){
-								$cgs = get_cgs($Appearance['id'],'groupid, label');
-								if (empty($cgs))
-									respond('This appearance does not have any color groups');
-								respond(array('cgs' => $cgs));
-							}
-
 							if (empty($_POST['cgs']))
 								respond("$Color group order data missing");
 
@@ -1731,8 +1731,10 @@
 						$response['update'] = get_update_html($AppearanceID);
 					}
 					clear_rendered_image($AppearanceID);
-					if (isset($_POST['RETURN_CM_IMAGE']))
+
+					if (isset($_POST['APPEARANCE_PAGE']))
 						$response['cm_img'] = "/{$color}guide/appearance/$AppearanceID.svg?t=".time();
+					else $response['notes'] = get_notes_html($CGDb->where('id', $AppearanceID)->getOne('appearances'),  NOWRAP);
 
 					respond($response);
 				}
@@ -1816,6 +1818,7 @@
 						case 'png': render_appearance_png($Appearance);
 						case 'svg': render_cm_direction_svg($Appearance['id'], $Appearance['cm_dir']);
 					}
+					# rendering functions internally call die(), so execution stops here #
 				}
 
 				$SafeLabel = trim(preg_replace('~-+~','-',preg_replace('~[^A-Za-z\d\-]~','-',$Appearance['label'])),'-');

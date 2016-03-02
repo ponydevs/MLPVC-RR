@@ -1,4 +1,4 @@
-/* globals $body,$content,DocReady,HandleNav,mk,Sortable,Bloodhound,Handlebars,PRINTABLE_ASCII_REGEX,Key */
+/* globals $body,$content,DocReady,HandleNav,mk,Sortable,Bloodhound,Handlebars,SHORT_HEX_COLOR_PATTERN,PRINTABLE_ASCII_REGEX,Key */
 DocReady.push(function ColorguideManage(){
 	'use strict';
 	var Color = window.Color, color = window.color, TAG_TYPES_ASSOC = window.TAG_TYPES_ASSOC, $colorGroups,
@@ -40,7 +40,7 @@ DocReady.push(function ColorguideManage(){
 					$.mk('input').attr({
 						name: 'cm_favme',
 						placeholder: 'DeviantArt submission URL',
-					}).on('change blur',function(){
+					}).on('change blur paste keyup',function(){
 						var disable = this.value.trim().length === 0,
 							$cm_dir = $(this).parent().next();
 						$cm_dir.find('input').attr('disabled', disable);
@@ -144,7 +144,7 @@ DocReady.push(function ColorguideManage(){
 					var newdata = $form.mkData();
 					$.Dialog.wait(false, 'Saving changes');
 					if (AppearancePage)
-						newdata.noreturn = true;
+						newdata.APPEARANCE_PAGE = true;
 
 					$.post('/colorguide/'+(editing?'set/'+data.ponyID:'make')+EQGRq,newdata,$.mkAjaxHandler(function(){
 						if (!this.status) return $.Dialog.fail(false, this.message);
@@ -153,6 +153,7 @@ DocReady.push(function ColorguideManage(){
 							if (!AppearancePage){
 								$ponyLabel.children().first().text(this.label);
 								$ponyNotes.html(this.notes);
+								window.tooltips();
 								$.Dialog.close();
 							}
 							else {
@@ -263,41 +264,47 @@ DocReady.push(function ColorguideManage(){
 
 	var $cgEditor = $.mk('form').attr('id','cg-editor'),
 		$colorPreview = $.mk('span').attr('class','clrp'),
+		colorLabelPattern = PRINTABLE_ASCII_REGEX.replace('+', '{3,30}'),
 		$colorInput =
 			$.mk('input').attr({
 				'class': 'clri',
-				pattern: HEX_COLOR_PATTERN.toString().replace(/\//g,''),
 				autocomplete: 'off',
 				spellcheck: 'false',
-			}).on('keyup change input',function(){
+			}).patternAttr(HEX_COLOR_PATTERN).on('keyup change input',function(_, override){
 				var $this = $(this),
 					$cp = $this.prev(),
-					valid = HEX_COLOR_PATTERN.test(this.value);
+					color = (typeof override === 'string' ? override : this.value).trim(),
+					valid = HEX_COLOR_PATTERN.test(color);
 				if (valid)
-					$cp.removeClass('invalid').css('background-color', this.value.replace(HEX_COLOR_PATTERN, '#$1'));
+					$cp.removeClass('invalid').css('background-color', color.replace(HEX_COLOR_PATTERN, '#$1'));
 				else $cp.addClass('invalid');
 
 				$this.next().attr('required', valid);
-			}).on('paste blur',function(e){
+			}).on('paste blur keyup',function(e){
 				var input = this,
-					$input = $(input),
-					shortHex = /^#?([A-Fa-f0-9]{3})$/,
 					f = function(){
-						var val = input.value;
-						if (shortHex.test(val)){
-							var match = val.match(shortHex)[1];
-							val = '#'+match[0]+match[0]+match[1]+match[1]+match[2]+match[2];
-						}
+						var val = $.hexpand(input.value);
 						if (HEX_COLOR_PATTERN.test(val)){
-							$input.val(val.replace(HEX_COLOR_PATTERN, '#$1').toUpperCase()).trigger('change');
-							if (e.type !== 'blur')
-								$input.next().focus();
+							val = val.replace(HEX_COLOR_PATTERN, '#$1').toUpperCase();
+							var $input = $(input);
+							switch (e.type){
+								case 'paste':
+									$input.next().focus();
+								/* falls through */
+								case 'blur':
+									$input.val(val);
+							}
+							$input.trigger('change',[val]).patternAttr(
+								SHORT_HEX_COLOR_PATTERN.test(input.value)
+								? SHORT_HEX_COLOR_PATTERN
+								: HEX_COLOR_PATTERN
+							);
 						}
 					};
 				if (e.type === 'paste') setTimeout(f, 10);
 				else f();
 			}),
-		$colorLabel = $.mk('input').attr({ 'class': 'clrl', pattern: PRINTABLE_ASCII_REGEX.replace('+', '{3,30}') }),
+		$colorLabel = $.mk('input').attr({ 'class': 'clrl', pattern: colorLabelPattern }),
 		$colorActions = $.mk('div').attr('class','clra')
 			.append($.mk('span').attr('class','typcn typcn-minus remove red').on('click',function(){
 				$(this).closest('.clr').remove();
@@ -409,13 +416,14 @@ DocReady.push(function ColorguideManage(){
 				if (!editing) data.ponyid = ponyID;
 				$form.find('.clr').each(function(){
 					var $row = $(this),
-						$ci = $row.children('.clri');
+						$ci = $row.children('.clri'),
+						val = $.hexpand($ci.val());
 
-					if (!HEX_COLOR_PATTERN.test($ci.val()))
+					if (!HEX_COLOR_PATTERN.test(val))
 						return;
 
 					var colorid = $row.data('id'),
-						append = { hex: $ci.val().replace(HEX_COLOR_PATTERN,'#$1').toUpperCase() };
+						append = { hex: val.replace(HEX_COLOR_PATTERN,'#$1').toUpperCase() };
 					if (typeof colorid !== 'undefined')
 						append.colorid = parseInt(colorid, 10);
 
@@ -432,11 +440,8 @@ DocReady.push(function ColorguideManage(){
 					data.reason = $reason.val();
 				}
 
-				if (AppearancePage){
-					data.OUTPUT_COLOR_NAMES = true;
-					data.NO_COLON = true;
-					data.RETURN_CM_IMAGE = true;
-				}
+				if (AppearancePage)
+					data.APPEARANCE_PAGE = true;
 
 				$.Dialog.wait(false, 'Saving changes');
 
@@ -444,6 +449,7 @@ DocReady.push(function ColorguideManage(){
 					if (!this.status) return $.Dialog.fail(false, this.message);
 
 					if (this.cg || this.cgs){
+						var $pony = $('#p'+ponyID);
 						if (this.cg){
 							$group.children('[data-hasqtip]').qtip('destroy', true);
 							$group.html(this.cg);
@@ -452,16 +458,23 @@ DocReady.push(function ColorguideManage(){
 								$group.parents('li').find('.update').html(this.update);
 						}
 						else if (this.cgs){
-							var $pony = $('#p'+ponyID);
 							if (this.update)
 								$pony.find('.update').html(this.update);
 							$pony.find('ul.colors').html(this.cgs);
 						}
+						if (!AppearancePage && this.notes){
+							var $notes = $pony.find('.notes');
+							try {
+								$notes.find('.cm-direction').qtip('destroy', true);
+							}catch(e){}
+							$notes.html(this.notes);
+						}
+
 						window.tooltips();
 						ctxmenus();
 						if (this.update)
 							window.updateTimes();
-						if (this.cm_img){
+						if (AppearancePage && this.cm_img){
 							$.Dialog.success(false, 'Color group updated');
 							$.Dialog.wait(false, 'Updating cutie mark orientation image');
 							var preload = new Image();

@@ -26,4 +26,8 @@ HTML;
 	<?=$Pagination?>
 </div>
 
-<script>var Color = '<?=$Color?>', color = '<?=$color?>', TAG_TYPES_ASSOC = <?=JSON::Encode($TAG_TYPES_ASSOC)?>;</script>
+<?  ExportVars(array(
+		'Color' => $Color,
+		'color' => $color,
+		'TAG_TYPES_ASSOC' => $TAG_TYPES_ASSOC,
+	));

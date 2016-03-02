@@ -63,6 +63,6 @@
 		$export = array_merge($export, array(
 			'TAG_TYPES_ASSOC' => $TAG_TYPES_ASSOC,
 			'MAX_SIZE' => get_max_upload_size(),
-			'HEX_COLOR_PATTERN' => rtrim(HEX_COLOR_PATTERN,'u'),
+			'HEX_COLOR_PATTERN' => HEX_COLOR_PATTERN,
 		));
 	ExportVars($export); ?>
