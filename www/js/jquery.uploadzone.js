@@ -1,4 +1,4 @@
-/* Image upload plugin w/ drag'n'drop support | by @DJDavid98 | for gh:ponydevs/MLPVC-RR */
+/* Image upload plugin w/ drag'n'drop support | by @SeinopSys | for gh:ponydevs/MLPVC-RR */
 /* global File */
 (function(){
 	'use strict';

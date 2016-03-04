@@ -168,7 +168,7 @@
 				$.Dialog.fail(false, 'The request failed due to an internal server error. If this persists, please <a href="#feedback" class="send-feedback">let us know</a>!');
 			},
 			503: function(){
-				$.Dialog.fail(false, 'The request failed because the server is temporarily unavailable. This whouldn\'t take too long, please try again in a few seconds.<br>If the problem still persist after a few minutes, please contact <a href="http://djdavid98.deviantart.com/">DJDavid98</a>.');
+				$.Dialog.fail(false, 'The request failed because the server is temporarily unavailable. This whouldn\'t take too long, please try again in a few seconds.<br>If the problem still persist after a few minutes, please let us know by clicking the "Send feedback" link in the footer.');
 			}
 		}
 	});
@@ -479,7 +479,7 @@ $(function(){
 			"<p>If you're having an issue with the site and would like to let the developer know, here's how you can contact him:</p>",
 			$.mk('ul').append(
 				"<li>Send a note to <a href='http://djdavid98.deviantart.com/'>DJDavid98</a> on DeviantArt</li>",
-				"<li>Send an e-mail to <a href='mailto:djdavid98@gmail.com'>djdavid98@gmail.com</a></li>",
+				"<li>Send an e-mail to <a href='mailto:seinopsys@gmail.com'>seinopsys@gmail.com</a></li>",
 				"<li>Add <a href='skype:guzsik.david?add'>guzsik.david</a> on Skype</li>"
 			),
 			$.mk('p').attr('class','notice info').append(

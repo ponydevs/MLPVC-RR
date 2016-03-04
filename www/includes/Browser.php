@@ -35,8 +35,8 @@
  * This implementation is based on the original work from Gary White
  * http://apptools.com/phptools/browser/
  *
- * IE Mobile browser & Windows Phone platform check implemented by DJDavid98
- * http://github.com/DJDavid98
+ * IE Mobile browser & Windows Phone platform check implemented by SeinopSys
+ * http://github.com/SeinopSys
  */
 class Browser {
 	private $_agent = '';

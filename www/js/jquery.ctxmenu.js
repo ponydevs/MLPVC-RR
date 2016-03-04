@@ -1,4 +1,4 @@
-/* Context menu plugin | by @DJDavid98 | for gh:ponydevs/MLPVC-RR | utilizes: http://stackoverflow.com/a/30255040/1344955 */
+/* Context menu plugin | by @SeinopSys | for gh:ponydevs/MLPVC-RR | utilizes: http://stackoverflow.com/a/30255040/1344955 */
 /* global $w,$body */
 (function($){
 	'use strict';
