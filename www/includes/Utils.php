@@ -1171,8 +1171,8 @@ HTML;
 		}
 
 		$STASH_DL_LINK_REGEX = '(https?://sta.sh/download/\d+/[a-z\d_]+-d[a-z\d]{6,}\.(?:png|jpe?g|bmp)\?[^"]+)';
-		$urlmatch = regex_match(new RegExp('~<a\s+class="[^"]*?dev-page-download[^"]*?"\s+href="'.
-			$STASH_DL_LINK_REGEX.'"[^>]+data-gmiclass="DownloadButton"[^>]*>~'), $stashpage, $_match);
+		$urlmatch = regex_match(new RegExp('<a\s+class="[^"]*?dev-page-download[^"]*?"\s+href="'.
+			$STASH_DL_LINK_REGEX.'"[^>]+data-gmiclass="DownloadButton"[^>]*>'), $stashpage, $_match);
 
 		if ($urlmatch){
 			$dlurl = htmlspecialchars_decode($_match[1]);
