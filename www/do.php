@@ -1166,14 +1166,17 @@
 				$_match = array();
 				if (preg_match('~^(rename|delete|make|(?:[gs]et|del)(?:sprite|cgs)?|tag|untag|clearrendercache|applytemplate)(?:/(\d+))?$~', $data, $_match)){
 					$action = $_match[1];
+					$creating = $action === 'make';
+					$AppearanceID = intval($_match[2], 10);
 
-					if ($action !== 'make'){
+					if (!$creating){
 						if (strlen($_match[2]) === 0)
 							respond('Missing appearance ID');
-						$Appearance = $CGDb->where('id', intval($_match[2], 10))->where('ishuman', $EQG)->getOne('appearances');
+						$Appearance = $CGDb->where('id', $AppearanceID)->where('ishuman', $EQG)->getOne('appearances');
 						if (empty($Appearance))
 							respond("The specified appearance does not exist");
 					}
+					else $Appearance = array('id' => $AppearanceID);
 
 					switch ($action){
 						case "get":
@@ -1207,9 +1210,9 @@
 							if (!empty($_POST['notes'])){
 								$notes = trim($_POST['notes']);
 								check_string_valid($label, "Appearance notes", INVERSE_PRINTABLE_ASCII_REGEX);
-								if (strlen($notes) > 1000 && $Appearance['id'] !== 0)
+								if (strlen($notes) > 1000 && ($creating || $Appearance['id'] !== 0))
 									respond('Appearance notes cannot be longer than 1000 characters');
-								if ($action === 'make' || $notes !== $Appearance['notes'])
+								if ($creating || $notes !== $Appearance['notes'])
 									$data['notes'] = $notes;
 							}
 							else $data['notes'] = '';
@@ -1231,13 +1234,13 @@
 								if ($_POST['cm_dir'] !== 'th' && $_POST['cm_dir'] !== 'ht')
 									respond('Invalid cutie mark orientation');
 								$cm_dir = $_POST['cm_dir'] === 'ht' ? CM_DIR_HEAD_TO_TAIL : CM_DIR_TAIL_TO_HEAD;
-								if ($Appearance['cm_dir'] !== $cm_dir)
+								if ($creating || $Appearance['cm_dir'] !== $cm_dir)
 									$data['cm_dir'] = $cm_dir;
 
 								$cm_preview = trim($_POST['cm_preview']);
 								if (empty($cm_preview))
 									$data['cm_preview'] = null;
-								else if ($cm_preview !== $Appearance['cm_preview']){
+								else if ($creating || $cm_preview !== $Appearance['cm_preview']){
 									try {
 										require_once 'includes/Image.php';
 										$Image = new Image($cm_preview);
@@ -1251,14 +1254,13 @@
 								$data['cm_preview'] = null;
 							}
 
-							$query = $action === 'set'
-								? $CGDb->where('id', $Appearance['id'])->update('appearances', $data)
-								: $CGDb->insert('appearances', $data, 'id');
+							$query = $creating
+								? $CGDb->insert('appearances', $data, 'id')
+								: $CGDb->where('id', $Appearance['id'])->update('appearances', $data);
 							if (!$query)
 								respond(ERR_DB_FAIL);
 
-
-							if ($action === 'make'){
+							if ($creating){
 								$response = array(
 									'message' => 'Appearance added successfully',
 									'id' => $query,
