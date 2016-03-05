@@ -54,7 +54,7 @@
 			Display('success',title,content, (closeBtn === true ? CloseButton : undefined), callback);
 		};
 		Dialog.wait = function(title,additional_info,force_new){
-			if (typeof additional_info === 'boolean' && force_new === 'undefined'){
+			if (typeof additional_info === 'boolean' && typeof force_new === 'undefined'){
 				force_new = additional_info;
 				additional_info = undefined;
 			}
@@ -142,13 +142,13 @@
 				buttons = undefined;
 			}
 			var force_new = false;
-			if (typeof buttons === 'boolean' && typeof callback === 'undefined'){
-				force_new = true;
-				buttons = undefined;
-			}
 			if (typeof callback === 'boolean'){
-				force_new = true;
+				force_new = callback;
 				callback = undefined;
+			}
+			else if (typeof buttons === 'boolean' && typeof callback === 'undefined'){
+				force_new = buttons;
+				buttons = undefined;
 			}
 			
 			if (typeof title === 'undefined')
