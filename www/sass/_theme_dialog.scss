@@ -18,11 +18,11 @@ $ZIndexBase: 21000;
 	#dialogOverlay {
 		background-color: rgba(white, .9);
 		display: flex;
-		justify-content: center;
-		align-items: center;
+		padding: 10px;
 	}
 	#dialogBox {
-		margin: 10px;
+		// http://stackoverflow.com/a/33455342/1344955
+		margin: auto;
 		max-width: 400px;
 		width: auto;
 		overflow: hidden;
@@ -50,6 +50,7 @@ body.dialog-open {
 	left: 0;
 	z-index: $ZIndexBase;
 	overflow: auto;
+	box-sizing: border-box;
 }
 #dialogBox {
 	font-family: 'Segoe UI', 'Open Sans', sans-serif;
