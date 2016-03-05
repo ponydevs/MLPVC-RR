@@ -292,11 +292,10 @@ DocReady.push(function Episode(){
 	$voting.bindDetails();
 
 	$.fn.rebindHandlers = function(){
-		var $this = $(this);
-		$this.find('li[id]').each(function(){
+		 $(this).find('li[id]').each(function(){
 			var $li = $(this),
 				id = parseInt($li.attr('id').replace(/\D/g,'')),
-				type = $li.closest('section[id]').attr('id');
+				type = $li.closest('section[id]').attr('id').replace(/s$/,'');
 				
 			$('section .unfinished .screencap > a')
 				.fluidbox({
@@ -312,7 +311,7 @@ DocReady.push(function Episode(){
 
 			Bind($li, id, type);
 		});
-		return $this;
+		return this;
 	};
 	$('#requests, #reservations').rebindHandlers();
 	function Bind($li, id, type){
@@ -374,7 +373,7 @@ DocReady.push(function Episode(){
 			});
 		});
 		$actions.filter('.finish').off('click').on('click',function(){
-			$.Dialog.request('Finish reservation','<form id="finish-res"><input type="text" name="deviation" placeholder="Deviation URL"></form>','finish-res','Finish',function($form){
+			$.Dialog.request('Finish reservation','<form id="finish-res"><input type="text" name="deviation" placeholder="Deviation URL" required></form>','finish-res','Finish',function($form){
 				$form.on('submit',function(e){
 					e.preventDefault();
 
@@ -428,7 +427,7 @@ DocReady.push(function Episode(){
 				if (!deleteOnly)
 					$form.prepend('<div class="notice info">By removing the "finished" flag, the post will be moved back to the "List of '+Type+'" section</div>');
 
-				if (type === 'reservations'){
+				if (type === 'reservation'){
 					$unbind.on('click',function(){
 						$('#dialogButtons').children().first().val(this.checked ? 'Delete' : 'Un-finish');
 					});
@@ -879,16 +878,17 @@ DocReady.push(function Episode(){
 		});
 	};
 	function updateSection(type, SEASON, EPISODE, callback){
-		var Type = $.capitalize(type);
+		var Type = $.capitalize(type),
+			typeWithS = type.replace(/([^s])$/,'$1s');
 		$.Dialog.wait(Type, 'Updating list');
-		$.post('/episode/'+type.replace(/([^s])$/,'$1s')+'/S'+SEASON+'E'+EPISODE,$.mkAjaxHandler(function(){
+		$.post('/episode/'+typeWithS+'/S'+SEASON+'E'+EPISODE,$.mkAjaxHandler(function(){
 			if (!this.status) return window.location.reload();
 
-			var $section = $('#'+type.replace(/([^s])$/,'$1s')),
+			var $section = $('#'+typeWithS),
 				$newChilds = $(this.render).filter('section').children();
-			$section
-				.empty().append($newChilds).rebindHandlers()
-				.find('.post-form').attr('data-type',type).formBind();
+			$section.empty().append($newChilds).rebindHandlers();
+			console.log(type);
+			$section.find('.post-form').attr('data-type',type).formBind();
 			window.updateTimes();
 			if (typeof callback === 'function') callback();
 			else $.Dialog.close();
