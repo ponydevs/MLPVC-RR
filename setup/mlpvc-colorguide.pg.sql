@@ -290,7 +290,9 @@ Eyes don''t have iris highlights.', 'd9fl30m', false, '2015-11-05 00:10:40.32198
 (64, 62, 'Angel Bunny', '', NULL, false, '2015-12-18 07:39:19.313917+01', NULL, NULL),
 (65, 44, 'Meadow Flower', '', 'd9ko8le', false, '2015-12-19 18:55:09.130305+01', NULL, false),
 (66, 19, 'Pipsqueak', '', NULL, false, '2016-01-25 01:43:42.292322+01', NULL, NULL),
-(67, 20, 'Silver Spoon', 'Far legs use darker colors.', NULL, false, '2016-01-25 03:40:31.20103+01', NULL, NULL),
+(67, 20, 'Silver Spoon', 'Far legs use darker colors.
+Necklace highlights are not pure white.
+TODO - wrong lens opacities', NULL, false, '2016-01-25 03:40:31.20103+01', NULL, NULL),
 (68, 43, 'Blossomforth', 'Imported from the old colour guide', 'd8geiw1', false, '2016-02-11 19:02:12.030258+01', NULL, true),
 (69, 30, 'Vinyl Scratch / DJ Pon-3', 'Based on S5E9', 'd58fbhj', false, '2016-02-28 00:56:35.641502+01', NULL, true),
 (70, 64, 'Wonderbolt Uniform', '', NULL, false, '2016-02-29 14:00:08.939447+01', NULL, NULL),
