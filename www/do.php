@@ -1907,8 +1907,9 @@
 			fix_path('/browser'.(!empty($Session)?"/{$Session['id']}":''));
 
 			loadPage(array(
-				'title' => 'Your browser',
-				'do-css'
+				'title' => 'Browser recognition test page',
+				'do-css',
+				'no-robots',
 			));
 		break;
 		case "users":
