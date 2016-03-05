@@ -56,7 +56,7 @@
 				if (!empty($_POST['username'])){
 					if (!PERM('manager') || isset($_REQUEST['unlink']))
 						respond();
-					if (!preg_match(USERNAME_PATTERN, $_POST['username']))
+					if (!$USERNAME_REGEX->match($_POST['username']))
 						respond('Invalid username');
 					$TargetUser = $Database->where('name', $_POST['username'])->getOne('users','id,name');
 					if (empty($TargetUser))
@@ -87,7 +87,7 @@
 			detectCSRF();
 
 			$_match = array();
-			if (preg_match('~^([gs]et)-(request|reservation)/(\d+)$~ ', $data, $_match)){
+			if (regex_match(new RegExp('^([gs]et)-(request|reservation)/(\d+)$'), $data, $_match)){
 				if (!PERM('inspector'))
 					respond();
 
@@ -121,7 +121,7 @@
 					respond(ERR_DB_FAIL);
 				respond($update);
 			}
-			else if (preg_match('~^set-(request|reservation)-image/(\d+)$~ ', $data, $_match)){
+			else if (regex_match(new RegExp('^set-(request|reservation)-image/(\d+)$'), $data, $_match)){
 				if (!PERM('inspector'))
 					respond();
 
@@ -220,7 +220,7 @@
 		case "reserving":
 			if (RQMTHD !== 'POST') do404();
 			$match = array();
-			if (empty($data) || !preg_match('/^(requests?|reservations?)(?:\/(\d+))?$/',$data,$match))
+			if (empty($data) || !regex_match(new RegExp('^(requests?|reservations?)(?:/(\d+))?$'),$data,$match))
 				respond('Invalid request');
 
 			$noaction = true;
@@ -352,7 +352,7 @@
 							respond('Reserving as other users is only allowed to the developer');
 
 						$post_as = trim($_POST['post_as']);
-						if (!preg_match('~^'.USERNAME_PATTERN.'$~', $post_as))
+						if (!$USERNAME_REGEX->match($post_as))
 							respond('Username format is invalid');
 
 						$User = get_user($post_as, 'name');
@@ -453,7 +453,7 @@
 				}
 				unset($EpData);
 
-				if (preg_match('/^delete\/'.EPISODE_ID_PATTERN.'$/',$data,$_match)){
+				if (regex_match(new RegExp('^delete/'.EPISODE_ID_PATTERN.'$'),$data,$_match)){
 					if (!PERM('inspector')) respond();
 					list($season,$episode) = array_splice($_match,1,2);
 
@@ -476,7 +476,7 @@
 						'upcoming' => get_upcoming_eps(null, NOWRAP),
 					));
 				}
-				else if (preg_match('/^((?:request|reservation)s)\/'.EPISODE_ID_PATTERN.'$/', $data, $_match)){
+				else if (regex_match(new RegExp('^((?:request|reservation)s)/'.EPISODE_ID_PATTERN.'$'), $data, $_match)){
 					$Episode = get_real_episode($_match[2],$_match[3],ALLOW_SEASON_ZERO);
 					if (empty($Episode))
 						respond("There's no episode with this season & episode number");
@@ -485,7 +485,7 @@
 						'render' => call_user_func("{$_match[1]}_render",get_posts($Episode['season'], $Episode['episode'], $only)),
 					));
 				}
-				else if (preg_match('/^vote\/'.EPISODE_ID_PATTERN.'$/', $data, $_match)){
+				else if (regex_match(new RegExp('^vote/'.EPISODE_ID_PATTERN.'$'), $data, $_match)){
 					$Episode = get_real_episode($_match[1],$_match[2],ALLOW_SEASON_ZERO);
 					if (empty($Episode))
 						respond("There's no episode with this season & episode number");
@@ -529,7 +529,7 @@
 					))) respond(ERR_DB_FAIL);
 					respond(array('newhtml' => get_episode_voting($Episode)));
 				}
-				else if (preg_match('/^(([sg])et)?videos\/'.EPISODE_ID_PATTERN.'$/', $data, $_match)){
+				else if (regex_match(new RegExp('^(([sg])et)?videos/'.EPISODE_ID_PATTERN.'$'), $data, $_match)){
 					$Episode = get_real_episode($_match[3],$_match[4],ALLOW_SEASON_ZERO);
 					if (empty($Episode))
 						respond("There's no episode with this season & episode number");
@@ -615,7 +615,7 @@
 				}
 				else {
 					if (!PERM('inspector')) respond();
-					$editing = preg_match('/^edit\/'.EPISODE_ID_PATTERN.'$/',$data,$_match);
+					$editing = regex_match(new RegExp('^edit\/'.EPISODE_ID_PATTERN.'$'),$data,$_match);
 					if ($editing){
 						list($season, $episode) = array_map('intval', array_splice($_match, 1, 2));
 						$insert = array();
@@ -649,7 +649,7 @@
 					$insert['title'] = $_POST['title'];
 					if (strlen($insert['title']) < 5 || strlen($insert['title']) > 35)
 						respond('Episode title must be between 5 and 35 characters');
-					if (!preg_match(EP_TITLE_REGEX, $insert['title']))
+					if (!$EP_TITLE_REGEX->match($insert['title']))
 						respond('Episode title contains invalid charcaters');
 
 					if (empty($_POST['airs']))
@@ -737,7 +737,7 @@
 			loadPage($settings);
 		break;
 		case "eqg":
-			if (!preg_match('/^([a-z\-]+|\d+)$/',$data))
+			if (!regex_match(new RegExp('^([a-z\-]+|\d+)$'),$data))
 				do404();
 
 			$assoc = array('friendship-games' => 3);
@@ -764,7 +764,7 @@
 				$StatCacheDuration = 5*ONE_HOUR;
 
 				$_match = array();
-				if (!empty($data) && preg_match('~^stats-(posts|approvals)$~',$data,$_match)){
+				if (!empty($data) && regex_match(new RegExp('^stats-(posts|approvals)$'),$data,$_match)){
 					$stat = $_match[1];
 					$CachePath = APPATH."../stats/$stat.json";
 					if (file_exists($CachePath) && filemtime($CachePath) > time() - $StatCacheDuration)
@@ -854,7 +854,7 @@
 			if (RQMTHD === "POST"){
 				if (!PERM('inspector')) respond();
 				$_match = array();
-				if (preg_match('/^details\/(\d+)/', $data, $_match)){
+				if (regex_match(new RegExp('^details/(\d+)'), $data, $_match)){
 					$EntryID = intval($_match[1], 10);
 
 					$MainEntry = $Database->where('entryid', $EntryID)->getOne('log');
@@ -907,7 +907,7 @@
 
 				if (empty($data)) do404();
 
-				if (preg_match('/^newgroup\/'.USERNAME_PATTERN.'$/',$data,$_match)){
+				if (regex_match(new RegExp('^newgroup/'.USERNAME_PATTERN.'$'),$data,$_match)){
 					$targetUser = get_user($_match[1], 'name');
 					if (empty($targetUser))
 						respond('User not found');
@@ -931,7 +931,7 @@
 
 					respond(true);
 				}
-				else if (preg_match('/^sessiondel\/(\d+)$/',$data,$_match)){
+				else if (regex_match(new RegExp('^sessiondel/(\d+)$'),$data,$_match)){
 					$Session = $Database->where('id', $_match[1])->getOne('sessions');
 					if (empty($Session))
 						respond('This session does not exist');
@@ -942,7 +942,7 @@
 						respond('Session could not be deleted');
 					respond('Session successfully removed',1);
 				}
-				else if (preg_match('/^(un-)?banish\/'.USERNAME_PATTERN.'$/', $data, $_match)){
+				else if (regex_match(new RegExp('^(un-)?banish/'.USERNAME_PATTERN.'$'), $data, $_match)){
 					$Action = (empty($_match[1]) ? 'Ban' : 'Un-ban').'ish';
 					$action = strtolower($Action);
 					$un = $_match[2];
@@ -981,7 +981,7 @@
 				if ($signedIn) $un = $currentUser['name'];
 				else $MSG = 'Sign in to view your settings';
 			}
-			else if (preg_match('/^'.USERNAME_PATTERN.'$/', $data, $_match))
+			else if (regex_match($USERNAME_REGEX, $data, $_match))
 				$un = $_match[1];
 
 			if (!isset($un)){
@@ -1057,7 +1057,7 @@
 						$limit = null;
 						$cols = "tid, name, type";
 						if ($viaTypeahead){
-							if (!preg_match('~'.TAG_NAME_PATTERN.'~u', $_GET['s']))
+							if (!regex_match($TAG_NAME_REGEX, $_GET['s']))
 								typeahead_results('[]');
 
 							$query = trim(strtolower($_GET['s']));
@@ -1085,7 +1085,7 @@
 								respond('The list of IDs is missing');
 
 							$list = trim($_POST['list']);
-							if (!preg_match('~^\d+(?:,\d+)+$~', $list))
+							if (!regex_match(new RegExp('^\d+(?:,\d+)+$'), $list))
 								respond('The list of IDs is not formatted properly');
 
 							reorder_appearances($list);
@@ -1097,7 +1097,7 @@
 				}
 
 				$_match = array();
-				if (preg_match('~^(rename|delete|make|(?:[gs]et|del)(?:sprite|cgs)?|tag|untag|clearrendercache|applytemplate)(?:/(\d+))?$~', $data, $_match)){
+				if (regex_match(new RegExp('~^(rename|delete|make|(?:[gs]et|del)(?:sprite|cgs)?|tag|untag|clearrendercache|applytemplate)(?:/(\d+))?$~'), $data, $_match)){
 					$action = $_match[1];
 					$creating = $action === 'make';
 					$AppearanceID = intval($_match[2], 10);
@@ -1296,7 +1296,7 @@
 							if (empty($_POST['tag_name']))
 								respond('Tag name is not specified');
 							$tag_name = strtolower(trim($_POST['tag_name']));
-							if (!preg_match('~'.TAG_NAME_PATTERN.'~u',$tag_name))
+							if (!regex_match($TAG_NAME_REGEX,$tag_name))
 								respond('Invalid tag name');
 
 							$TagCheck = ep_tag_name_check($tag_name);
@@ -1370,7 +1370,7 @@
 						default: statusCodeHeader(400, AND_DIE);
 					}
 				}
-				else if (preg_match('~^([gs]et|make|del|merge|recount)tag(?:/(\d+))?$~', $data, $_match)){
+				else if (regex_match(new RegExp('^([gs]et|make|del|merge|recount)tag(?:/(\d+))?$'), $data, $_match)){
 					$action = $_match[1];
 
 					if ($action === 'recount'){
@@ -1532,7 +1532,7 @@
 
 					respond($data);
 				}
-				else if (preg_match('~^([gs]et|make|del)cg(?:/(\d+))?$~', $data, $_match)){
+				else if (regex_match(new RegExp('^([gs]et|make|del)cg(?:/(\d+))?$'), $data, $_match)){
 					$setting = $_match[1] === 'set';
 					$getting = $_match[1] === 'get';
 					$deleting = $_match[1] === 'del';
@@ -1630,7 +1630,7 @@
 						if (empty($c['hex']))
 							respond("You must specify a $color code $index");
 						$hex = trim($c['hex']);
-						if (!preg_match(HEX_COLOR_PATTERN, $hex, $_match))
+						if (!$HEX_COLOR_PATTERN->match($hex, $_match))
 							respond("HEX $color is in an invalid format $index");
 						$append['hex'] = '#'.strtoupper($_match[1]);
 
@@ -1676,7 +1676,7 @@
 				else do404();
 			}
 
-			if (preg_match('~^tags~',$data)){
+			if (regex_match(new RegExp('^tags'),$data)){
 				$ItemsPerPage = 20;
 				$EntryCount = $CGDb->count('tags');
 				list($Page,$MaxPages) = calc_page($EntryCount);
@@ -1704,7 +1704,7 @@
 				));
 			}
 
-			if (preg_match('~^changes~',$data)){
+			if (regex_match(new RegExp('^changes'),$data)){
 				$ItemsPerPage = 50;
 				$EntryCount = $Database->count('log__color_modify');
 				list($Page,$MaxPages) = calc_page($EntryCount);
@@ -1728,9 +1728,9 @@
 				));
 			}
 
-			$EQG = preg_match(EQG_URL_PATTERN, $data);
+			$EQG = $EQG_URL_PATTERN->match($data);
 			if ($EQG)
-				$data = preg_replace(EQG_URL_PATTERN, '', $data);
+				$data = $EQG_URL_PATTERN->replace('', $data);
 			$CGPath = "/{$color}guide".($EQG?'/eqg':'');
 
 			$GUIDE_MANAGE_JS = array(
@@ -1742,7 +1742,7 @@
 			);
 
 			$_match = array();
-			if (preg_match('~^appearance/(?:[A-Za-z\d\-]+-)?(\d+)(?:\.(png|svg))?~',$data,$_match)){
+			if (regex_match(new RegExp('^appearance/(?:[A-Za-z\d\-]+-)?(\d+)(?:\.(png|svg))?'),$data,$_match)){
 				$Appearance = $CGDb->where('id', (int)$_match[1])->where('ishuman', $EQG)->getOne('appearances');
 				if (empty($Appearance))
 					do404();
@@ -1756,7 +1756,7 @@
 					# rendering functions internally call die(), so execution stops here #
 				}
 
-				$SafeLabel = trim(preg_replace('~-+~','-',preg_replace('~[^A-Za-z\d\-]~','-',$Appearance['label'])),'-');
+				$SafeLabel = trim(regex_replace(new RegExp('-+'),'-',regex_replace(new RegExp('[^A-Za-z\d\-]'),'-',$Appearance['label'])),'-');
 				fix_path("$CGPath/appearance/$SafeLabel-{$Appearance['id']}");
 				$heading = $Appearance['label'];
 				if ($Appearance['id'] === 0){
@@ -1920,7 +1920,6 @@
 			));
 		break;
 		case "blending":
-			$HexPattern = preg_replace('~^/(.+)/u$~','$1',HEX_COLOR_PATTERN);
 			loadPage(array(
 				'title' => "$Color Blending Calculator",
 				'do-css', 'do-js',

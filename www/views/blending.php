@@ -54,4 +54,4 @@
 		<?=Notice('warn',"<span class='typcn typcn-warning'></span> The result may not be accurate as the difference between the optimal $color and the closest match is too large", true)?>
 	</div>
 </div>
-<?  ExportVars(array('HEX_COLOR_PATTERN' => HEX_COLOR_PATTERN));
+<?  ExportVars(array('HEX_COLOR_PATTERN' => $HEX_COLOR_PATTERN));

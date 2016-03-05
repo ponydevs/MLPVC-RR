@@ -147,6 +147,8 @@ body.dialog-open {
 			margin: 5px 0 10px;
 			box-sizing: border-box;
 			@include l33th4x;
+
+			&:last-child { margin-bottom: 0 }
 		}
 
 		.reset {

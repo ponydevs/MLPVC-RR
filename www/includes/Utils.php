@@ -3,12 +3,9 @@
 	// Constants
 	define('PRINTABLE_ASCII_REGEX','^[ -~]+$');
 	define('INVERSE_PRINTABLE_ASCII_REGEX','[^ -~]');
-	$_hex = '[0-9A-Fa-f]';
-	define('UUIDV4_REGEX',"^$_hex{8}-$_hex{4}-4$_hex{3}-[89AaBb]$_hex{3}-$_hex{12}$");
 	define('NEWEST_FIRST', 'DESC');
 	define('OLDEST_FIRST', 'ASC');
-	define('HEX_COLOR_PATTERN','/^#?([A-Fa-f0-9]{6})$/u');
-	define('OAUTH_SCOPE_BASIC', 'user browse');
+	$HEX_COLOR_PATTERN = new RegExp('^#?([\dA-Fa-f]{6})$','u');
 
 	// Constants to enable/disable returning of wrapper element with markup generators
 	define('NOWRAP', false);
@@ -91,7 +88,7 @@
 
 	# Make any absolute URL HTTPS
 	function makeHttps($url){
-		return preg_replace('~^(https?:)?//~','https://',$url);
+		return regex_replace(new RegExp('^(https?:)?//'),'https://',$url);
 	}
 
 	# Format log details
@@ -429,7 +426,7 @@ HTML;
 
 	// Removes excess tabs from HTML
 	function remove_indentation($HTML){
-		return preg_replace('/(\n|\r|\r\n)[\t ]*/', '$1', $HTML);
+		return regex_replace(new RegExp('(\n|\r|\r\n)[\t ]*'), '$1', $HTML);
 	}
 
 	// Page loading function
@@ -488,7 +485,7 @@ HTML;
 			die();
 		}
 		else {
-			$_SERVER['REQUEST_URI'] = rtrim(preg_replace('/via-js=true/','',remove_csrf_query_parameter($_SERVER['REQUEST_URI'])), '?&');
+			$_SERVER['REQUEST_URI'] = rtrim(str_replace('via-js=true','',remove_csrf_query_parameter($_SERVER['REQUEST_URI'])), '?&');
 			ob_start();
 			require 'views/sidebar.php';
 			$sidebar = ob_get_clean();
@@ -539,20 +536,20 @@ HTML;
 		}
 	}
 	function format_filepath($item){
-		$type = preg_replace('/^.*\.(\w+)$/','$1', $item);
+		$type = regex_replace(new RegExp('^.*\.(\w+)$'),'$1', $item);
 		$pathStart = APPATH."$type/";
 		return "/$type/$item?".filemtime($pathStart.$item);
 	}
 
 	// Remove CSRF query parameter from request URL
 	function remove_csrf_query_parameter($url, $viajsToo = false){
-		return rtrim(preg_replace('/CSRF_TOKEN=[^&]+(&|$)/','',$url),'?&');
+		return rtrim(regex_replace(new RegExp('CSRF_TOKEN=[^&]+(&|$)'),'',$url),'?&');
 	}
 
 	// Display a 404 page
 	function do404($debug = null){
 		if (RQMTHD == 'POST' || isset($_GET['via-js'])){
-			$RQURI = rtrim(preg_replace('/via\-js=true/','',$_SERVER['REQUEST_URI']),'?&');
+			$RQURI = rtrim(str_replace('via-js=true','',$_SERVER['REQUEST_URI']),'?&');
 			respond("HTTP 404: ".(RQMTHD=='POST'?'Endpoint':'Page')." ($RQURI) does not exist",0, is_string($debug) ? array('debug' => $debug) : null);
 		}
 		statusCodeHeader(404);
@@ -767,7 +764,7 @@ HTML;
 		if (!empty($token)) $requestHeaders[] = "Authorization: Bearer $token";
 		else if ($token !== false) return null;
 
-		$requestURI  = preg_match('~^https?://~', $endpoint) ? $endpoint : "https://www.deviantart.com/api/v1/oauth2/$endpoint";
+		$requestURI  = regex_match(new RegExp('^https?://'), $endpoint) ? $endpoint : "https://www.deviantart.com/api/v1/oauth2/$endpoint";
 
 		$r = curl_init($requestURI);
 		$curl_opt = array(
@@ -797,7 +794,8 @@ HTML;
 		if ($responseCode < 200 || $responseCode >= 300)
 			throw new cURLRequestException(rtrim("cURL fail for URL \"$requestURI\" (HTTP $responseCode); $curlError",' ;'), $responseCode);
 
-		if (preg_match('/Content-Encoding:\s?gzip/',$responseHeaders)) $response = gzdecode($response);
+		if (regex_match(new RegExp('Content-Encoding:\s?gzip'), $responseHeaders))
+			$response = gzdecode($response);
 		return JSON::Decode($response, true);
 	}
 
@@ -915,14 +913,15 @@ HTML;
 	}
 
 	function da_handle_auth(){
-		global $err, $errdesc, $signedIn;
+		global $err, $errdesc, $REWRITE_REGEX;
 
-		if (!isset($_GET['error']) && (empty($_GET['code']) || (empty($_GET['state']) || !preg_match(REWRITE_REGEX,$_GET['state']))))
+		if (!isset($_GET['error']) && (empty($_GET['code']) || (empty($_GET['state']) || !regex_match($REWRITE_REGEX, $_GET['state']))))
 			$_GET['error'] = 'unauthorized_client';
 		if (isset($_GET['error'])){
 			$err = $_GET['error'];
 			if (isset($_GET['error_description']))
 				$errdesc = $_GET['error_description'];
+			global $signedIn;
 			if ($signedIn)
 				redirect($_GET['state']);
 			loadEpisodePage();
@@ -990,7 +989,7 @@ HTML;
 	function is_user_in_vectorclub($Username){
 		$RecentlyJoined = @file_get_contents('http://mlp-vectorclub.deviantart.com/modals/memberlist/');
 
-		return !empty($RecentlyJoined) && preg_match('~<a class="[a-z ]*username" href="http://'.strtolower($Username).'.deviantart.com/">'.USERNAME_PATTERN.'</a>~', $RecentlyJoined);
+		return !empty($RecentlyJoined) && regex_match(new RegExp('<a class="[a-z ]*username" href="http://'.strtolower($Username).'.deviantart.com/">'.USERNAME_PATTERN.'</a>'), $RecentlyJoined);
 	}
 
 	function redirects_where($url, $cookies, $referrer){
@@ -1026,8 +1025,7 @@ HTML;
 		if ($responseCode < 200 || $responseCode >= 300)
 			throw new cURLRequestException(rtrim("cURL fail for URL \"$url\" (HTTP $responseCode); $curlError",' ;'), $responseCode);
 
-		$_match = array();
-		return preg_match('/Location:\s+([^\r\n]+)/', $responseHeaders, $_match) ? trim($_match[1]) : null;
+		return regex_match(new RegExp('Location:\s+([^\r\n]+)'), $responseHeaders, $_match) ? trim($_match[1]) : null;
 	}
 
 	/**
@@ -1165,16 +1163,16 @@ HTML;
 
 		$cookies = array();
 		foreach ($http_response_header as $header){
-			if (!preg_match('~^([^:]+): (.*)$~', $header, $parts) || $parts[1] !== 'Set-Cookie')
+			if (!regex_match(new RegExp('^([^:]+): (.*)$'), $header, $parts) || $parts[1] !== 'Set-Cookie')
 				continue;
 
-			preg_match('~\s*([^=]+=[^;]+)(?:;|$)~', $parts[2], $cookie);
+			regex_match(new RegExp('\s*([^=]+=[^;]+)(?:;|$)'), $parts[2], $cookie);
 			$cookies[] = $cookie[1];
 		}
 
-		$_match = array();
 		$STASH_DL_LINK_REGEX = '(https?://sta.sh/download/\d+/[a-z\d_]+-d[a-z\d]{6,}\.(?:png|jpe?g|bmp)\?[^"]+)';
-		$urlmatch = preg_match('~<a\s+class="[^"]*?dev-page-download[^"]*?"\s+href="'.$STASH_DL_LINK_REGEX.'"[^>]+data-gmiclass="DownloadButton"[^>]*>~', $stashpage, $_match);
+		$urlmatch = regex_match(new RegExp('~<a\s+class="[^"]*?dev-page-download[^"]*?"\s+href="'.
+			$STASH_DL_LINK_REGEX.'"[^>]+data-gmiclass="DownloadButton"[^>]*>~'), $stashpage, $_match);
 
 		if ($urlmatch){
 			$dlurl = htmlspecialchars_decode($_match[1]);
@@ -1228,7 +1226,7 @@ HTML;
 	}
 
 	// Episode title matching pattern \\
-	define('EP_TITLE_REGEX', '/^[A-Za-z \'\-!\d,&:?]{5,35}$/u');
+	$EP_TITLE_REGEX = new RegExp('^[A-Za-z \'\-!\d,&:?]{5,35}$','u');
 
 	/**
 	 * Turns an 'episode' database row into a readable title
@@ -1277,9 +1275,10 @@ HTML;
 	 * @return null|array
 	 */
 	define('EPISODE_ID_PATTERN','S0*([0-8])E0*([1-9]|1\d|2[0-6])(?:-0*([1-9]|1\d|2[0-6]))?(?:\D|$)');
+	$EPISODE_ID_REGEX = new RegExp('^'.EPISODE_ID_PATTERN,'i');
 	function episode_id_parse($id){
-		$match = array();
-		if (preg_match('/^'.EPISODE_ID_PATTERN.'/', $id, $match))
+		global $EPISODE_ID_REGEX;
+		if (regex_match($EPISODE_ID_REGEX, $id, $match))
 			return array(
 				'season' => intval($match[1]),
 				'episode' => intval($match[2]),
@@ -1298,10 +1297,11 @@ HTML;
 	 * @return array|null
 	 */
 	define('USERNAME_PATTERN', '([A-Za-z\-\d]{1,20})');
+	$USERNAME_REGEX = new RegExp('^'.USERNAME_PATTERN.'$');
 	function fetch_user($username, $dbcols = null){
-		global $Database;
+		global $Database,$USERNAME_REGEX;
 
-		if (!preg_match('/^'.USERNAME_PATTERN.'$/', $username))
+		if (!$USERNAME_REGEX->match($username))
 			return null;
 
 		try {
@@ -1811,7 +1811,7 @@ HTML;
 	 * @return string
 	 */
 	function label_to_initials($label){
-		return preg_replace('/(?:^|\s)([A-Z])|./','$1',$label);
+		return regex_replace(new RegExp('(?:^|\s)([A-Z])|.'),'$1',$label);
 	}
 
 	// Renders avatar wrapper for a specific user \\
@@ -2028,7 +2028,7 @@ HTML;
 
 	// Converts a browser name to it's equivalent class name
 	function browser_name_to_class_name($BrowserName){
-		return preg_replace('/[^a-z]/','',strtolower($BrowserName));
+		return regex_replace(new RegExp('[^a-z]'),'',strtolower($BrowserName));
 	}
 
 	// Checks the image which allows a request to be finished
@@ -2080,7 +2080,8 @@ HTML;
 		global $currentSet;
 
 		list($path, $label) = $item;
-		$current = (!$currentSet || $htmlOnly === HTML_ONLY) && ($path === true || preg_match("~^$path($|/)~", strtok($_SERVER['REQUEST_URI'], '?')));
+		$RQURI = strtok($_SERVER['REQUEST_URI'], '?');
+		$current = (!$currentSet || $htmlOnly === HTML_ONLY) && ($path === true || regex_match(new RegExp("^$path($|/)"), $RQURI));
 		$class = '';
 		if ($current){
 			$currentSet = true;
@@ -2332,7 +2333,7 @@ ORDER BY "count" DESC
 				$workWith = $sizes[1];
 		}
 
-		return preg_replace('/^(\d+)([GMk])$/', '$1 $2B', $workWith);
+		return regex_replace(new RegExp('^(\d+)([GMk])$'), '$1 $2B', $workWith);
 	}
 
 	// Pagination creator
@@ -2348,7 +2349,7 @@ ORDER BY "count" DESC
 		global $data, $ItemsPerPage;
 
 		$MaxPages = max(1, ceil($EntryCount/$ItemsPerPage));
-		$Page = min(max(intval(preg_replace('~^.*\/(\d+)$~','$1',$data), 10), 1), $MaxPages);
+		$Page = min(max(intval(regex_replace(new RegExp('^.*\/(\d+)$'),'$1',$data), 10), 1), $MaxPages);
 
 		return array($Page, $MaxPages);
 	}
@@ -2508,8 +2509,7 @@ ORDER BY "count" DESC
 	 * @return null
 	 */
 	function check_string_valid($string, $Thing, $pattern, $returnError = false){
-		$fails = array();
-		if (preg_match("@$pattern@u", $string, $fails)){
+		if (regex_match(new RegExp($pattern,'u'), $string, $fails)){
 			$invalid = array();
 			foreach ($fails as $f)
 				if (!in_array($f, $invalid))
@@ -2639,7 +2639,7 @@ ORDER BY "count" DESC
 	// Respond to paginated result requests
 	function pagination_response($output, $update){
 		global $Pagination, $Page;
-		$RQURI = rtrim(preg_replace('/js=true(?:&|$)/','',$_SERVER['REQUEST_URI']),'?');
+		$RQURI = rtrim(regex_replace(new RegExp('js=true(?:&|$)'),'',$_SERVER['REQUEST_URI']),'?');
 		respond(array(
 			'output' => $output,
 			'update' => $update,
@@ -2693,81 +2693,9 @@ ORDER BY "count" DESC
 
 	// Create upload destination folder
 	function upload_folder_create($path){
-		$DS = preg_quote(DIRECTORY_SEPARATOR, '~');
-		$folder = preg_replace("~^(.*[$DS])[^$DS]+$~",'$1',$path);
+		$DS = DIRECTORY_SEPARATOR;
+		$folder = regex_replace(new RegExp("^(.*[$DS])[^$DS]+$"),'$1',$path);
 		return !is_dir($folder) ? mkdir($folder,0777,true) : true;
-	}
-
-	// String trimmer for specific widths
-	function str_trim($str, $w, $cutoff = "…"){
-		$l = strlen($str);
-		if ($l <= $w)
-			return $str;
-		$w--;
-		return preg_replace("~^(.{$w}).*$~","$1$cutoff",$str);
-	}
-
-	// Renders HTML of user feedback section
-	define('FEEDBACK_SUBJECT_LENGTH', 20);
-	function render_feedback_list_html($Feedback, $wrap = true){
-		$HTML = $wrap ? '<ul id="feedback">' : '';
-		foreach ($Feedback as $f){
-			$User = get_user($f['user']);
-			$userlink = profile_link($User);
-			$time = timetag($f['created']);
-			$class = $f['open'] ? 'open' : 'closed';
-			$HTML .= <<<HTML
-<li class='$class'>
-	<img src='{$User['avatar_url']}'>
-	<span class='text'>
-		<span class='subject'><a href='/feedback/{$f['chain']}'>{$f['subject']}</a></span>
-		<span class='info'>$userlink | $time</span>
-		<span class='id'>{$f['chain']}</span>
-	</span>
-</li>
-HTML;
-		}
-		return $HTML.($wrap?'</ul>':'');
-	}
-
-	// Render HTML for a ringle chain
-	define('FEEDBACK_SPECIAL_MESSAGE_REGEX','~^@@([a-z]+)~');
-	$FEEDBACK_SPECIAL_MESSAGES = array(
-		'close' => "I <strong class='color-red'>closed</strong> your feedback, which means no more responses can be posted. If you feel that the issue was not resolved, please <a href='#feedback' class='send-feedback'>submit a new feedback</a>.",
-		'open' => "I <strong class='color-green'>re-opened</strong> your feedback.",
-	);
-	function render_feedback_chain_html($ChainID, $Author = null, $wrap = true){
-		global $Database, $ROLES_ASSOC, $currentUser, $FEEDBACK_SPECIAL_MESSAGES;
-
-		if (empty($Author))
-			$Author = $Database->rawQuerySingle(
-				"SELECT u.*
-				FROM feedback__messages f
-				LEFT JOIN users u ON f.author = u.id
-				WHERE f.chain = ?",array($ChainID));
-
-		$HTML = $wrap ? '<ul id="feedback-chain">' : '';
-		$Messages = $Database->where('chain',$ChainID)->orderBy('sent',OLDEST_FIRST)->orderBy('mid','ASC')->get('feedback__messages');
-		foreach ($Messages as $m){
-			$User = get_user($m['author']);
-			$sameUser = $currentUser['id'] === $User['id'];
-			$isOP = $Author['id'] === $User['id'];
-
-			$userlink = profile_link($User,FORMAT_FULL);
-			$role = ($sameUser ? 'You' : $ROLES_ASSOC[$User['role']]).($isOP ? ' <sup>OP</sup>':'');
-			$time = timetag($m['sent']);
-			$_match = array();
-			if (preg_match(FEEDBACK_SPECIAL_MESSAGE_REGEX, $m['body'], $_match))
-				$body = $FEEDBACK_SPECIAL_MESSAGES[$_match[1]];
-			else $body = nl2br(htmlspecialchars($m['body']));
-			$HTML .= <<<HTML
-<li id="message-{$m['mid']}">
-	<div class='meta'>$userlink<strong>$role</strong>$time</div>
-	<div class='content'>$body</div>
-</li>
-HTML;
-		}
-		return $HTML.($wrap?'</ul>':'');
 	}
 
 	function get_ep_tag_ids($Ep){
@@ -2802,8 +2730,8 @@ HTML;
 				break;
 				case "string":
 					// regex test
-					if (preg_match('~^/.*/[gumi]*$~', $value))
-						$value = preg_replace('~(/[img]*)u([img]*)$~','$1$2',$value);
+					if (regex_match(new RegExp('^/(.*)/([a-z]*)$'), $value, $regex_parts))
+						$value = (new RegExp($regex_parts[1],$regex_parts[2]))->jsExport();
 					else $value = JSON::Encode($value);
 				break;
 				case "integer":
@@ -2812,6 +2740,10 @@ HTML;
 					$value = strval($value);
 				break;
 				default:
+					if ($value instanceof RegExp){
+						$value = $value->jsExport();
+						break;
+					}
 					trigger_error("Exporting unsupported variable $name of type $type", E_USER_ERROR);
 			}
 			$HTML .= "$name=$value,";

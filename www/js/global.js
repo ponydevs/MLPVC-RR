@@ -156,19 +156,24 @@
 		error: function(xhr){
 			if ([404, 500, 503].indexOf(xhr.status) === -1)
 				$w.triggerHandler('ajaxerror',[].slice.call(arguments));
+			$body.removeClass('loading');
 		},
 		statusCode: {
 			401: function(){
 				$.Dialog.fail(undefined, "Cross-site Request Forgery attack detected. Please notify the site administartors.");
+				$body.removeClass('loading');
 			},
 			404: function(){
 				$.Dialog.fail(undefined, "Error 404: The requested endpoint could not be found");
+				$body.removeClass('loading');
 			},
 			500: function(){
 				$.Dialog.fail(false, 'The request failed due to an internal server error. If this persists, please <a href="#feedback" class="send-feedback">let us know</a>!');
+				$body.removeClass('loading');
 			},
 			503: function(){
 				$.Dialog.fail(false, 'The request failed because the server is temporarily unavailable. This whouldn\'t take too long, please try again in a few seconds.<br>If the problem still persist after a few minutes, please let us know by clicking the "Send feedback" link in the footer.');
+				$body.removeClass('loading');
 			}
 		}
 	});
@@ -527,11 +532,12 @@ $(function(){
 
 	function Navigation(url, callback, block_reload){
 		if (xhr !== false){
-			xhr.abort();
+			try {
+				xhr.abort();
+			}catch(e){}
 			xhr = false;
 		}
 
-		var title = 'Navigation';
 		$body.addClass('loading');
 		var ajaxcall = $.ajax({
 			url: url,
@@ -541,7 +547,7 @@ $(function(){
 				if (!this.status){
 					$body.removeClass('loading');
 					xhr = false;
-					return $.Dialog.fail(title+' error', this.message);
+					return $.Dialog.fail('Navigation error', this.message);
 				}
 
 				url = new URL(this.responseURL).pathString+(new URL(url).hash);

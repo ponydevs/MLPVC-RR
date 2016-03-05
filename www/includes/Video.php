@@ -16,7 +16,7 @@
 		);
 		private static function test_provider($url, $pattern, $name){
 			$match = array();
-			if (preg_match("~^(?:https?://(?:www\\.)?)?$pattern~", $url, $match))
+			if (regex_match(new RegExp("^(?:https?://(?:www\\.)?)?$pattern"), $url, $match))
 				return array(
 					'name' => $name,
 					'itemid' => $match[1]

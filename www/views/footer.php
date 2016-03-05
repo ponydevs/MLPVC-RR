@@ -5,7 +5,7 @@
 
 <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
 <script>if(!window.jQuery)document.write('\x3Cscript src="/js/jquery-2.1.4.min.js">\x3C/script>');
-var REWRITE_REGEX = <?=str_replace('~','/',str_replace('/','\/',REWRITE_REGEX))?>i,
+var REWRITE_REGEX = <?=$REWRITE_REGEX->jsExport()?>,
 	SITE_TITLE = '<?=SITE_TITLE?>',
 	PRINTABLE_ASCII_REGEX = '<?=PRINTABLE_ASCII_REGEX?>',
 	DocReady = [];</script><?

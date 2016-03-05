@@ -33,7 +33,7 @@
 		);
 		private static function test_provider($url, $pattern, $name){
 			$match = array();
-			if (preg_match("~^(?:https?://(?:www\\.)?)?$pattern~", $url, $match))
+			if (regex_match(new RegExp("^(?:https?://(?:www\\.)?)?$pattern"), $url, $match))
 				return array(
 					'name' => $name,
 					'itemid' => $match[1]
@@ -104,7 +104,7 @@
 					$_match = array();
 					if (empty($page))
 						throw new Exception('The requested page could not be found');
-					if (!preg_match('~<img\s+class="image__pic[^"]*"\s+src="http://i\.imgur\.com/([A-Za-z\d]+)\.~', $page, $_match))
+					if (!regex_match(new RegExp('<img\s+class="image__pic[^"]*"\s+src="http://i\.imgur\.com/([A-Za-z\d]+)\.'), $page, $_match))
 						throw new Exception('The requested image could not be found');
 
 					$this->provider = 'imgur';

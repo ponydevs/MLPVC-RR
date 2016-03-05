@@ -1,12 +1,14 @@
 <?php
 
 	require 'conf.php';
+	require 'includes/RegExp.php';
 
 	// Global constants \\
 	define('ABSPATH',(!empty($_SERVER['HTTPS'])?'https':'http').'://'.$_SERVER['SERVER_NAME'].'/');
 	define('APPATH',dirname(__FILE__).DIRECTORY_SEPARATOR);
 	define('RQMTHD',$_SERVER['REQUEST_METHOD']);
-	define('REWRITE_REGEX','~^/(?:([\w\.\-]+|-?\d+)(?:/((?:[\w\-]+|-?\d+)(?:/(?:[\w\-]+|-?\d+))?))?/?)?$~');
+	define('REWRITE_REGEX','');
+	$REWRITE_REGEX = new RegExp('^/(?:([\w\.\-]+|-?\d+)(?:/((?:[\w\-]+|-?\d+)(?:/(?:[\w\-]+|-?\d+))?))?/?)?$','i');
 	define('GITHUB_URL','https://github.com/ponydevs/MLPVC-RR');
 	define('SITE_TITLE', 'MLP Vector Club');
 

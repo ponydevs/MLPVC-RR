@@ -204,8 +204,8 @@ $NoScrollbar: false;
 			background-color: transparent;
 			padding: 0;
 
-			&:vertical { width: 5px }
-			&:horizontal { height: 5px }
+			&:vertical { width: 7px }
+			&:horizontal { height: 7px }
 		}
 		&::-webkit-scrollbar-button { display: none }
 		&::-webkit-scrollbar-thumb {

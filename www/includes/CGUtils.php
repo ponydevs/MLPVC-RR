@@ -18,10 +18,12 @@
 
 	// Some patterns for validation
 	define('TAG_NAME_PATTERN', '^[a-z\d ().-]{3,30}$');
+	$TAG_NAME_REGEX = new RegExp(TAG_NAME_REGEX,'u');
 	define('INVERSE_TAG_NAME_PATTERN', '[^a-z\d ().-]');
 
 	// EQG Color Guide URL pattern
-	define('EQG_URL_PATTERN','~^eqg/~');
+	define('EQG_URL_PATTERN','^eqg/');
+	$EQG_URL_PATTERN = new RegExp('^eqg/');
 
 	// Get the colors in a given color groups
 	function get_colors($GroupID){
@@ -472,8 +474,10 @@
 
 	// Checks and shortens episode tags
 	function ep_tag_name_check($tag){
+		global $EPISODE_ID_REGEX;
+
 		$_match = array();
-		if (preg_match('/^'.EPISODE_ID_PATTERN.'/i',$tag,$_match)){
+		if (regex_match($EPISODE_ID_REGEX,$tag,$_match)){
 			$season = intval($_match[1], 10);
 			if ($season == 0)
 				return false;
@@ -861,7 +865,7 @@ HTML;
 
 		$ColorMapping = array();
 		foreach ($Colors as $row){
-			$label = $row['cglabel'].' '.preg_replace('~/.*$~','$1', preg_replace('/\s\d+$/','',$row['label']));
+			$label = $row['cglabel'].' '.regex_replace(new RegExp('(\s\d+)?/.*$'),'', $row['label']);
 			if (isset($DefaultColorMapping[$label]) && !isset($ColorMapping[$label]))
 				$ColorMapping[$label] = $row['hex'];
 		}
