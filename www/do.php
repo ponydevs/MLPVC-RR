@@ -213,9 +213,10 @@
 			$insert[$type === 'reservation' ? 'reserved_by' : 'requested_by'] = $ByID;
 			check_post_post($type, $insert);
 
-			if (!$Database->insert("{$type}s",$insert))
+			$PostID = $Database->insert("{$type}s",$insert,'id');
+			if (!$PostID)
 				respond(ERR_DB_FAIL);
-			respond('Submission complete',1);
+			respond(array('id' => $PostID));
 		break;
 		case "reserving":
 			if (RQMTHD !== 'POST') do404();

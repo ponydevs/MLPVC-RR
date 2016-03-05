@@ -865,8 +865,11 @@ DocReady.push(function Episode(){
 						});
 					}
 
-					$.Dialog.success(false, Type+' posted successfully');
-					updateSection(type, SEASON, EPISODE);
+					var id = this.id;
+					updateSection(type, SEASON, EPISODE, function(){
+						$.Dialog.close();
+						$('#'+type+'-'+id).find('em.post-date').children('a').triggerHandler('click');
+					});
 				}));
 			})();
 		}).on('reset',function(){
@@ -880,14 +883,13 @@ DocReady.push(function Episode(){
 	function updateSection(type, SEASON, EPISODE, callback){
 		var Type = $.capitalize(type),
 			typeWithS = type.replace(/([^s])$/,'$1s');
-		$.Dialog.wait(Type, 'Updating list');
+		$.Dialog.wait(Type, 'Updating list', true);
 		$.post('/episode/'+typeWithS+'/S'+SEASON+'E'+EPISODE,$.mkAjaxHandler(function(){
 			if (!this.status) return window.location.reload();
 
 			var $section = $('#'+typeWithS),
 				$newChilds = $(this.render).filter('section').children();
 			$section.empty().append($newChilds).rebindHandlers();
-			console.log(type);
 			$section.find('.post-form').attr('data-type',type).formBind();
 			window.updateTimes();
 			if (typeof callback === 'function') callback();

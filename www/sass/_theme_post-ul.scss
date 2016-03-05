@@ -54,8 +54,8 @@
 		transition: background-color .3s, border-color .3s;
 
 		&.highlight {
-			background-color: rgba($HeaderBlue,.2) !important;
-			border: 1px solid rgba($HeaderBlue,.4) !important;
+			background-color: rgba($HeaderBlue,.15) !important;
+			border: 1px solid rgba($HeaderBlue,.3) !important;
 		}
 
 		> * {
