@@ -643,7 +643,11 @@ $(function(){
 								url: requrl,
 								dataType: 'text',
 								success:function(data){
-									$body.append($.mk('script').attr('data-src', requrl).text(data));
+									$body.append(
+										$.mk('script')
+											.attr('data-src', requrl)
+											.text(data.replace(/(\/\/#\s*sourceMappingURL=)(.*)/g,'$1/js/$2'))
+									);
 									LoadJS(item+1);
 								}
 							});
