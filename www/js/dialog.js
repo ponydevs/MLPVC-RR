@@ -48,7 +48,7 @@
 
 		// Dialog defintions
 		Dialog.fail = function(title,content,force_new){
-			Display('fail',title,content,CloseButton,Boolean(force_new));
+			Display('fail',title,content,CloseButton,force_new === true);
 		};
 		Dialog.success = function(title,content,closeBtn,callback){
 			Display('success',title,content, (closeBtn === true ? CloseButton : undefined), callback);
@@ -60,7 +60,7 @@
 			}
 			if (typeof additional_info !== 'string')
 				additional_info = 'Sending request';
-			Display('wait',title,$.capitalize(additional_info)+'&hellip;',force_new);
+			Display('wait',title,$.capitalize(additional_info)+'&hellip;',force_new === true);
 		};
 		Dialog.request = function(title,content,formid,confirmBtn,callback){
 			if (typeof confirmBtn === 'function' && typeof callback === 'undefined'){
