@@ -851,14 +851,25 @@ DocReady.push(function Episode(){
 				image_url: $formImgInput.data('prev-url'),
 			});
 
-			$.Dialog.wait(title,'Submitting '+type);
+			(function submit(){
+				$.Dialog.wait(title,'Submitting '+type);
 
-			$.post('/post',data,$.mkAjaxHandler(function(){
-				if (!this.status) return $.Dialog.fail(false, this.message);
+				$.post('/post',data,$.mkAjaxHandler(function(){
+					if (!this.status){
+						if (!this.canforce)
+							return $.Dialog.fail(false, this.message);
+						return $.Dialog.confirm(false, this.message, ['Go ahead','Nevermind'], function(sure){
+							if (!sure) return;
 
-				$.Dialog.success(false, Type+' posted successfully');
-				updateSection(type, SEASON, EPISODE);
-			}));
+							data.allow_nonmember = true;
+							submit();
+						});
+					}
+
+					$.Dialog.success(false, Type+' posted successfully');
+					updateSection(type, SEASON, EPISODE);
+				}));
+			})();
 		}).on('reset',function(){
 			$formImgCheck.attr('disabled', false).addClass('red');
 			$notice.html(noticeHTML).show();

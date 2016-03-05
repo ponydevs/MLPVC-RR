@@ -204,8 +204,8 @@
 				if (empty($PostAs))
 					respond('The user you wanted to post as does not exist');
 
-				if ($type === 'reservation' && !PERM('member', $PostAs['role']))
-					respond('The user you wanted to post as is not a club member');
+				if ($type === 'reservation' && !PERM('member', $PostAs['role']) && !isset($_POST['allow_nonmember']))
+					respond('The user you wanted to post as is not a club member, so you want to post as them anyway?',0,array('canforce' => true));
 
 				$ByID = $PostAs['id'];
 			}
