@@ -2693,8 +2693,8 @@ ORDER BY "count" DESC
 
 	// Create upload destination folder
 	function upload_folder_create($path){
-		$DS = DIRECTORY_SEPARATOR;
-		$folder = regex_replace(new RegExp("^(.*[$DS])[^$DS]+$"),'$1',$path);
+		$DS = preg_replace('~(\\\\)~','$1$1','\/');
+		$folder = regex_replace(new RegExp("^(.*[$DS])[^$DS]+$"),'$1',regex_replace(new RegExp('$DS'),'\\',$path));
 		return !is_dir($folder) ? mkdir($folder,0777,true) : true;
 	}
 

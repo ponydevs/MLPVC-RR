@@ -18,11 +18,10 @@
 
 	// Some patterns for validation
 	define('TAG_NAME_PATTERN', '^[a-z\d ().-]{3,30}$');
-	$TAG_NAME_REGEX = new RegExp(TAG_NAME_REGEX,'u');
+	$TAG_NAME_REGEX = new RegExp(TAG_NAME_PATTERN,'u');
 	define('INVERSE_TAG_NAME_PATTERN', '[^a-z\d ().-]');
 
 	// EQG Color Guide URL pattern
-	define('EQG_URL_PATTERN','^eqg/');
 	$EQG_URL_PATTERN = new RegExp('^eqg/');
 
 	// Get the colors in a given color groups

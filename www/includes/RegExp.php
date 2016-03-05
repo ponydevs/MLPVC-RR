@@ -42,7 +42,7 @@
 		 * @return bool
 		 */
 		public function match($text, &$matches = null){
-			return (bool) preg_match($this->_phpRegex, $text, $matches);
+			return (bool) preg_match($this->__toString(), $text, $matches);
 		}
 
 		/**
@@ -54,7 +54,7 @@
 		 * @return string|array
 		 */
 		public function replace($with, $in, $limit = -1, &$count = null){
-			return preg_replace($this->_phpRegex,$with, $in, $limit = -1, $count = null);
+			return preg_replace($this->__toString(),$with, $in, $limit = -1, $count = null);
 		}
 	}
 

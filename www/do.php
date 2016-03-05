@@ -1728,7 +1728,7 @@
 				));
 			}
 
-			$EQG = $EQG_URL_PATTERN->match($data);
+			$EQG = $EQG_URL_PATTERN->match($data) ? 1 : 0;
 			if ($EQG)
 				$data = $EQG_URL_PATTERN->replace('', $data);
 			$CGPath = "/{$color}guide".($EQG?'/eqg':'');
