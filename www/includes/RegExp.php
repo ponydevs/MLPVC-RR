@@ -26,7 +26,7 @@
 
 		public function jsExport(){
 			if (!isset($this->_jsRegex))
-				$this->_jsRegex = '/'.$this->_escape($this->_pattern,'/').'/'.preg_replace('[^img]','',$this->_modifiers);
+				$this->_jsRegex = '/'.$this->_escape($this->_pattern,'/').'/'.preg_replace('/[^img]/','',$this->_modifiers);
 			return $this->_jsRegex;
 		}
 
