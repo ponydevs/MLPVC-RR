@@ -1,8 +1,7 @@
 /* global DocReady,moment,HandleNav */
 DocReady.push(function EpisodesManage(){
 	'use strict';
-	var $eptable = $('#episodes'),
-		$eptableBody = $eptable.children('tbody');
+	var $eptableBody = $('#episodes').children('tbody');
 	Bind.call({init:true});
 
 	/*!
@@ -40,24 +39,8 @@ DocReady.push(function EpisodesManage(){
 	Date.prototype.toAirTime = function(){ return $.pad(this.getHours())+':'+$.pad(this.getMinutes()) };
 	var date = saturday.toAirDate(), time = saturday.toAirTime();
 
-	function UpcomingUpdate(ulContent){
-		var $uc = $('#upcoming');
-		if ($uc.length === 0 && !!ulContent){
-			$uc = $.mk('section').attr('id', 'upcoming').insertBefore($('#sidebar').children('.welcome, .login'));
-			$uc.append($.mk('h2').text('Upcoming episodes'),$.mk('ul'));
-		}
-
-		if (ulContent)
-			$uc.children('ul').html(ulContent);
-		else $uc.remove();
-
-		window.setCD();
-		window.updateTimes();
-	}
-
 	var EP_TITLE_REGEX = window.EP_TITLE_REGEX,
 		EP_TITLE_HTML_REGEX = EP_TITLE_REGEX.toString().split('/')[1],
-		$content = $('#content'),
 		$pageTitle = $content.children('h1').first();
 
 	function EpisodeForm(id){
@@ -66,7 +49,10 @@ DocReady.push(function EpisodesManage(){
 				'<input type="number" min="1" max="8" name="season" placeholder="Season #" required>'+
 				'<input type="number" min="1" max="26" name="episode" placeholder="Episode #" required>'+
 			'</div>'+
-			'<label><span>Title (5-35 chars.)</span><input type="text" maxlength="35" name="title" placeholder="Title" pattern="'+EP_TITLE_HTML_REGEX+'" autocomplete="off" required></label>'+
+			'<label>'+
+				'<span>Title (5-35 chars.)</span>'+
+				'<input type="text" maxlength="35" name="title" placeholder="Title" pattern="'+EP_TITLE_HTML_REGEX+'" autocomplete="off" required>'+
+			'</label>'+
 			'<div class="input-group">'+
 				'<input type="date" name="airdate" placeholder="YYYY-MM-DD" required>'+
 				'<input type="time" name="airtime" placeholder="HH:MM" required>'+
@@ -92,8 +78,7 @@ DocReady.push(function EpisodesManage(){
 	$('#add-episode').on('click',function(e){
 		e.preventDefault();
 
-		$.Dialog.request('Add Episode',$addep.clone(true, true),'addep','Add',function(){
-			var $form = $('#addep');
+		$.Dialog.request('Add Episode',$addep.clone(true, true),'addep','Add',function($form){
 			$form.on('submit',function(e){
 				e.preventDefault();
 				var airdate = $form.find('input[name=airdate]').attr('disabled',true).val(),
@@ -106,12 +91,11 @@ DocReady.push(function EpisodesManage(){
 				$.post('/episode/add', data, $.mkAjaxHandler(function(){
 					if (!this.status) return $.Dialog.fail(false, this.message);
 
-					$.Dialog.success(false, this.message);
-					$.Dialog.wait(false, 'Reloading page');
+					$.Dialog.wait(false, 'Opening episode page', true);
 
-					HandleNav.reload(function(){
+					HandleNav('/episode/'+this.epid,function(){
 						$.Dialog.close();
-					}, 1000);
+					});
 				}));
 			});
 		});
@@ -125,13 +109,13 @@ DocReady.push(function EpisodesManage(){
 			else $pageTitle.html($pageTitle.data('list')).next().hide();
 			$eptableBody.trigger('updatetimes');
 		}
-		$eptable.find('tr[data-epid]').each(function(){
+		$eptableBody.find('tr[data-epid]').each(function(){
 			var $this = $(this),
 				epid = $this.attr('data-epid');
 
 			$this.removeAttr('data-epid').data('epid', epid);
 		});
-		$eptable.find('.edit-episode').off('click').on('click',function(e){
+		$eptableBody.find('.edit-episode').off('click').on('click',function(e){
 			e.preventDefault();
 
 			var $this = $(this),
@@ -158,8 +142,8 @@ DocReady.push(function EpisodesManage(){
 					$editepWithData.find('input[name='+k+']').val(v);
 				});
 
-				$.Dialog.request(false, $editepWithData,'editep','Save',function(){
-					$('#editep').on('submit',function(e){
+				$.Dialog.request(false, $editepWithData,'editep','Save',function($form){
+					$form.on('submit',function(e){
 						e.preventDefault();
 
 						var data = $(this).mkData(),
@@ -173,19 +157,17 @@ DocReady.push(function EpisodesManage(){
 						$.post('/episode/edit/'+epid, data, $.mkAjaxHandler(function(){
 							if (!this.status) return $.Dialog.fail(false, this.message);
 
-							$.Dialog.success(false, 'Episode edited');
-							$.Dialog.wait(false, 'Updating page');
-
+							$.Dialog.wait(false, 'Updating page', true);
 							HandleNav.reload(function(){
 								$.Dialog.close();
-							}, 1000);
+							});
 						}));
 					});
 				});
 			}));
 		});
 
-		$eptable.find('.delete-episode').off('click').on('click',function(e){
+		$eptableBody.find('.delete-episode').off('click').on('click',function(e){
 			e.preventDefault();
 
 			var $this = $(this),
@@ -199,12 +181,10 @@ DocReady.push(function EpisodesManage(){
 				$.post('/episode/delete/'+epid, $.mkAjaxHandler(function(){
 					if (!this.status) return $.Dialog.fail(false, this.message);
 
-					$.Dialog.success(false, this.message);
-					$.Dialog.wait(false, 'Reloading page');
-
+					$.Dialog.wait(false, 'Reloading page', true);
 					HandleNav.reload(function(){
 						$.Dialog.close();
-					}, 1000);
+					});
 				}));
 			});
 		});

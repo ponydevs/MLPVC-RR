@@ -38,32 +38,29 @@
 		$dialogHeader = $('#dialogHeader'),
 		$dialogBox = $('#dialogBox'),
 		$dialogButtons = $('#dialogButtons');
-	
+
 	$.Dialog = (function(){
 		var _open = $dialogContent.length ? {} : undefined,
 			Dialog = {
 				isOpen: function(){ return typeof _open === 'object' },
-			};
+			},
+			CloseButton = { Close: function(){ Close() } };
 
-		// Pre-defined dialogs
-		Dialog.fail = function(title,content,callback){
-			Display('fail',title,content,{
-				'Close': function(){ Close() }
-			},callback);
+		// Dialog defintions
+		Dialog.fail = function(title,content,force_new){
+			Display('fail',title,content,CloseButton,Boolean(force_new));
 		};
 		Dialog.success = function(title,content,closeBtn,callback){
-			Display('success',title,content,(closeBtn === true ? {
-				'Close': function(){ Close() }
-			} : undefined), callback);
+			Display('success',title,content, (closeBtn === true ? CloseButton : undefined), callback);
 		};
-		Dialog.wait = function(title,additional_info,callback){
-			if (typeof additional_info === 'function' && callback === 'undefined'){
-				callback = additional_info;
+		Dialog.wait = function(title,additional_info,force_new){
+			if (typeof additional_info === 'boolean' && force_new === 'undefined'){
+				force_new = additional_info;
+				additional_info = undefined;
 			}
-			if (typeof additional_info !== 'string' || additional_info.length < 2)
+			if (typeof additional_info !== 'string')
 				additional_info = 'Sending request';
-			var content = $.capitalize(additional_info)+'&hellip;';
-			Display('wait',title,content,callback);
+			Display('wait',title,$.capitalize(additional_info)+'&hellip;',force_new);
 		};
 		Dialog.request = function(title,content,formid,confirmBtn,callback){
 			if (typeof confirmBtn === 'function' && typeof callback === 'undefined'){
@@ -94,9 +91,7 @@
 			Display('confirm',title,content,buttons);
 		};
 		Dialog.info = function(title,content,callback){
-			Display('info',title,content,{
-				'Close': function(){ Close() }
-			},callback);
+			Display('info',title,content,CloseButton,callback);
 		};
 
 		// Storing and restoring focus
@@ -109,8 +104,7 @@
 			if (typeof _$focusedElement !== 'undefined' && _$focusedElement instanceof jQuery)
 				return;
 			var $focus = $(':focus');
-			if ($focus.length > 0) _$focusedElement = $focus.last();
-			else _$focusedElement = undefined;
+			_$focusedElement = $focus.length > 0 ? $focus.last() : undefined;
 		}
 		function _restoreFocus(){
 			if (typeof _$focusedElement !== 'undefined' && _$focusedElement instanceof jQuery){
@@ -143,12 +137,26 @@
 			if (typeof type !== 'string' || typeof colors[type] === 'undefined')
 				throw new TypeError('Invalid dialog type: '+typeof type);
 
-			if (typeof buttons === 'function' && typeof callback === 'undefined')
+			if (typeof buttons === 'function' && typeof callback !== 'function'){
 				callback = buttons;
+				buttons = undefined;
+			}
+			var force_new = false;
+			if (typeof buttons === 'boolean' && typeof callback === 'undefined'){
+				force_new = true;
+				buttons = undefined;
+			}
+			if (typeof callback === 'boolean'){
+				force_new = true;
+				callback = undefined;
+			}
 			
-			if (typeof title === 'undefined') title = defaultTitles[type];
-			else if (title === false) title = undefined;
-			if (typeof content === 'undefined') content = defaultContent[type];
+			if (typeof title === 'undefined')
+				title = defaultTitles[type];
+			else if (title === false)
+				title = undefined;
+			if (typeof content !== 'string' && !(content instanceof jQuery))
+				content = defaultContent[type];
 			var params = {
 				type: type,
 				title: title,
@@ -172,7 +180,7 @@
 					$dialogHeader.text(params.title);
 				$dialogContent = $('#dialogContent');
 
-				if (appendingToRequest){
+				if (appendingToRequest && !force_new){
 					$requestContentDiv = $dialogContent.children(':not(#dialogButtons)').last();
 					var $ErrorNotice = $requestContentDiv.children('.notice');
 					if (!$ErrorNotice.length){

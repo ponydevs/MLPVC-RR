@@ -157,8 +157,7 @@ DocReady.push(function ColorguideManage(){
 								$.Dialog.close();
 							}
 							else {
-								$.Dialog.success(false, 'Metadata updated');
-								$.Dialog.wait(false, 'Reloading page');
+								$.Dialog.wait(false, 'Reloading page', true);
 								HandleNav.reload(function(){
 									$.Dialog.close();
 								});

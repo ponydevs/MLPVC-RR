@@ -17,8 +17,7 @@ DocReady.push(function UserManage(){
 	});
 
 	$changeRole.on('click',function(){
-		var title = "Change group";
-		$.Dialog.request(title,$RoleForm.clone(),'rolemod','Change',function($form){
+		$.Dialog.request('Change group',$RoleForm.clone(),'rolemod','Change',function($form){
 			var $currRoleOpt = $form.find('option').filter(function(){ return this.innerHTML === currRole }).attr('selected', true);
 			$form.on('submit',function(e){
 				e.preventDefault();
@@ -27,15 +26,15 @@ DocReady.push(function UserManage(){
 					return $.Dialog.close();
 
 				var data = $form.mkData();
-				$.Dialog.wait(title,'Moving user to the new group');
+				$.Dialog.wait(false,'Moving user to the new group');
 
 				$.post("/user/newgroup/"+name, data, $.mkAjaxHandler(function(){
 					if (this.already_in === true)
 						return $.Dialog.close();
 
-					if (!this.status) return $.Dialog.fail(title,this.message);
-					$.Dialog.success(title, this.message);
+					if (!this.status) return $.Dialog.fail(false, this.message);
 
+					$.Dialog.info(false, 'Reloading page', true);
 					HandleNav.reload(function(){
 						$.Dialog.close();
 					});
@@ -69,17 +68,17 @@ DocReady.push(function UserManage(){
 					e.preventDefault();
 
 					var data = $(this).mkData();
-					$.Dialog.wait(title, 'Gathering the Elements of Harmony');
+					$.Dialog.wait(false, 'Gathering the Elements of Harmony');
 
 					$.post('/user/'+action+'/'+name, data, $.mkAjaxHandler(function(){
 						if (!this.status) return $.Dialog.fail(title,this.message);
 
-						if (action === 'banish') $.Dialog.success(title, '<p>What had to be done, has been done.</p><img src="/img/post-ban.svg">');
-						else $.Dialog.success(title, this.message);
-
+						var message = this.message;
+						$.Dialog.wait(false, 'Reloading page', true);
 						HandleNav.reload(function(){
-							$.Dialog.close();
-						},2000);
+							if (action === 'banish') $.Dialog.success(title, '<p>What had to be done, has been done.</p><img src="/img/post-ban.svg">');
+							else $.Dialog.success(title, message, true);
+						});
 					}));
 				});
 			}

@@ -34,7 +34,7 @@
 			$r = $m;
 		}
 		else {
-			if ($m === ERR_DB_FAIL){
+			if (strpos($m, ERR_DB_FAIL) !== false){
 				global $Database;
 				$m = rtrim("$m: ".$Database->getLastError(), ': ');
 			}
@@ -1909,7 +1909,7 @@ HTML;
 				$href = $PathStart.$Title['id'];
 				if (PERM('inspector'))
 					$adminControls = "<span class='admincontrols'>" .
-						"<button class='edit-episode typcn typcn-spanner blue' title='Edit episode'></button> " .
+						"<button class='edit-episode typcn typcn-pencil blue' title='Edit episode'></button> " .
 						"<button class='delete-episode typcn typcn-times red' title='Delete episode'></button>" .
 					"</span>";
 
@@ -2007,11 +2007,11 @@ HTML;
 		$browserTitle = "{$Session['browser_name']} {$Session['browser_ver']}";
 		$platform = !empty($Session['platform']) ? "<span class='platform'>on <strong>{$Session['platform']}</strong></span>" : '';
 
-		$signoutText = 'Sign out' . (!$current ? ' from this session' : '');
-		$buttons = "<button class='typcn typcn-arrow-back remove".(!$current?' orange':'')."' data-sid='{$Session['id']}'>$signoutText</button>";
+		$signoutText = !$current ? 'Delete' : 'Sign out';
+		$buttons = "<button class='typcn remove ".(!$current?'typcn-trash red':'typcn-arrow-back')."' data-sid='{$Session['id']}'>$signoutText</button>";
 		if (PERM('developer') && !empty($Session['user_agent'])){
 			$buttons .= "<br><button class='darkblue typcn typcn-eye useragent' data-agent='".apos_encode($Session['user_agent'])."'>UA</button>".
-				"<a class='btn red typcn typcn-chevron-right' href='/browser/{$Session['id']}'>Debug</a>";
+				"<a class='btn orange typcn typcn-chevron-right' href='/browser/{$Session['id']}'>Debug</a>";
 		}
 
 		$firstuse = timetag($Session['created']);

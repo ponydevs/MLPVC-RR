@@ -17,7 +17,7 @@ DocReady.push(function User(){
 			platform = $platform.length ? ' on <em>'+$platform.children('strong').text().trim()+'</em>' : '';
 
 		// First item is sometimes the current session, trigger logout button instead
-		if ($li.index() === 0 && /current/i.test($li.children().last().text()))
+		if ($li.index() === 0 && $li.children().last().text().indexOf('Current') !== -1)
 			return $signoutBtn.triggerHandler('click');
 
 		var SessionID = $li.attr('id').replace(/\D/g,'');
@@ -35,14 +35,13 @@ DocReady.push(function User(){
 
 				if ($li.siblings().length !== 0){
 					$li.remove();
-					$.Dialog.close();
+					return $.Dialog.close();
 				}
-				else {
+
+				$.Dialog.wait(false, 'Reloading page', true);
+				HandleNav.reload(function(){
 					$.Dialog.success(title, 'Session removed successfully');
-					HandleNav.reload(function(){
-						$.Dialog.close();
-					},2000);
-				}
+				});
 			}));
 		});
 	});
@@ -53,21 +52,18 @@ DocReady.push(function User(){
 		$.Dialog.info('User Agent string for session #'+$this.parents('li').attr('id').replace(/\D/g,''), '<code>'+$this.data('agent')+'</code>');
 	});
 	$('#signout-everywhere').on('click',function(){
-		var title = 'Sign out from ALL sessions';
-
-		$.Dialog.confirm(title,"This will invalidate ALL sessions. Continue?",function(sure){
+		$.Dialog.confirm('Sign out from ALL sessions',"This will invalidate ALL sessions. Continue?",function(sure){
 			if (!sure) return;
 
-			$.Dialog.wait(title,'Signing out');
+			$.Dialog.wait(false, 'Signing out');
 
 			$.post('/signout?everywhere',{username:name},$.mkAjaxHandler(function(){
-				if (this.status){
-					$.Dialog.success(title,this.message);
-					HandleNav.reload(function(){
-						$.Dialog.close();
-					},1000);
-				}
-				else $.Dialog.fail(title,this.message);
+				if (!this.status) return $.Dialog.fail(false, this.message);
+
+				$.Dialog.wait(false, 'Reloading page', true);
+				HandleNav.reload(function(){
+					$.Dialog.close();
+				});
 			}));
 		});
 	});
@@ -79,13 +75,12 @@ DocReady.push(function User(){
 			$.Dialog.wait(title,'Removing account link');
 
 			$.post('/signout?unlink', $.mkAjaxHandler(function(){
-				if (this.status){
-					$.Dialog.success(title,this.message);
-					HandleNav.reload(function(){
-						$.Dialog.close();
-					},1000);
-				}
-				else $.Dialog.fail(title,this.message);
+				if (!this.status) return $.Dialog.fail(false, this.message);
+
+				$.Dialog.wait(false, 'Reloading page', true);
+				HandleNav.reload(function(){
+					$.Dialog.close();
+				});
 			}));
 		});
 	});
@@ -103,8 +98,7 @@ DocReady.push(function User(){
 			if (!this.status) return $.Dialog.fail(false, this.message);
 
 			var message = this.message;
-			$.Dialog.success(false, "Sure looks like it.");
-			$.Dialog.wait(false, "Updating page");
+			$.Dialog.wait(false, "Reloading page");
 			HandleNav.reload(function(){
 				$.Dialog.success(false, message, true);
 			});

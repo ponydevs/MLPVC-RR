@@ -74,11 +74,9 @@
 			if (!$Database->where($col,$val)->delete('sessions'))
 				respond('Could not remove information from database');
 
-			if (empty($TargetUser)){
+			if (empty($TargetUser))
 				Cookie::delete('access');
-				respond((isset($_REQUEST['unlink'])?'Your account has been unlinked from our site':'You have been signed out successfully').'. Goodbye!',1);
-			}
-			else respond("All sessions of {$TargetUser['name']} have been removed", 1);
+			respond(true);
 		break;
 		case "da-auth":
 			da_handle_auth();
@@ -706,7 +704,7 @@
 						'title' => $insert['title'],
 						'airs' => $insert['airs'],
 					));
-					respond('Episode saved successfuly', 1);
+					respond($editing ? true : array('epid' => format_episode_title($insert,AS_ARRAY,'id')));
 				}
 			}
 
@@ -931,7 +929,7 @@
 
 					update_role($targetUser,$newgroup);
 
-					respond('Group changed successfully', 1);
+					respond(true);
 				}
 				else if (preg_match('/^sessiondel\/(\d+)$/',$data,$_match)){
 					$Session = $Database->where('id', $_match[1])->getOne('sessions');
