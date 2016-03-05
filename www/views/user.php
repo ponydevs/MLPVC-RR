@@ -56,7 +56,7 @@
 			echo " which ha".($TotalPending!==1?'ve':'s')."n't been marked as finished yet";
 		echo ".";
 		if ($sameUser)
-			echo " Please keep in mind that the global limit is 4 at any given time. If you reach the limit, you can't reserve any more images until you finish or cancel some of your current reservations.";
+			echo " Please keep in mind that the global limit is 4 at any given time. If you reach the limit, you can't reserve any more images until you finish or cancel some of your pending reservations.";
 			?></span>
 <?php
 		if ($hasPending){
