@@ -710,8 +710,7 @@ CREATE TABLE users (
     name citext NOT NULL,
     role character varying(10) DEFAULT 'user'::character varying NOT NULL,
     avatar_url character varying(255) NOT NULL,
-    signup_date timestamp with time zone DEFAULT now() NOT NULL,
-    stash_allowed boolean DEFAULT false NOT NULL
+    signup_date timestamp with time zone DEFAULT now() NOT NULL
 );
 
 

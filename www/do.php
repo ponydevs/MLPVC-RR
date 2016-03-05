@@ -38,18 +38,14 @@
 			do404();
 		break;
 		case "signout":
-			if (!$signedIn) respond('Already signed out',1);
+			if (!$signedIn) respond("You've already signed out",1);
 			detectCSRF();
 
 			if (isset($_REQUEST['unlink'])){
 				try {
-					da_request('https://www.deviantart.com/oauth2/revoke', array('token' => $currentUser['Session']['access']));
-					$Database->where('id', $currentUser['id'])->update('users',array('stash_allowed' => false));
-					$UserStashCache = APPATH."../stash-cache/{$currentUser['id']}.json";
-					if (file_exists($UserStashCache))
-						unlink($UserStashCache);
+					da_request('https://www.deviantart.com/oauth2/revoke', null, array('token' => $currentUser['Session']['access']));
 				}
-				catch (DARequestException $e){
+				catch (cURLRequestException $e){
 					respond("Coulnd not revoke the site's access: {$e->getMessage()} (HTTP {$e->getCode()})");
 				}
 			}
@@ -138,7 +134,7 @@
 				if ($Post['lock'])
 					respond('This post is locked, its image cannot be changed.');
 
-				$Image = check_post_image(false, $Post);
+				$Image = check_post_image($Post);
 
 				// Check image availability
 				if (!@getimagesize($Image->preview)){
@@ -164,20 +160,30 @@
 				respond(array('preview' => $Image->preview));
 			}
 
-			if (!empty($_POST['what'])){
+			$image_check = empty($_POST['what']);
+			if (!$image_check){
 				if (!in_array($_POST['what'],$POST_TYPES))
 					respond('Invalid post type');
-				$what = $_POST['what'];
-				if ($what === 'reservation'){
+
+				$type = $_POST['what'];
+				if ($type === 'reservation'){
 					if (!PERM('member'))
 						respond();
 					res_limit_check();
 				}
 			}
 
-			if (!empty($_POST['image_url']))
-				$Image = check_post_image(empty($what));
-			else if (empty($what)) respond("Please provide an image URL ");
+			if (!empty($_POST['image_url'])){
+				$Image = check_post_image();
+
+				if ($image_check)
+					respond(array(
+						'preview' => $Image->preview,
+						'title' => $Image->title,
+					));
+			}
+			else if ($image_check)
+				respond("Please provide an image URL!");
 
 			$insert = array(
 				'preview' => $Image->preview,
@@ -186,7 +192,7 @@
 
 			if (($_POST['season'] != '0' && empty($_POST['season'])) || empty($_POST['episode']))
 				respond('Missing episode identifiers');
-			$epdata = get_real_episode(intval($_POST['season'], 10), intval($_POST['episode'], 10), ALLOW_SEASON_ZERO);
+			$epdata = get_real_episode((int)$_POST['season'], (int)$_POST['episode'], ALLOW_SEASON_ZERO);
 			if (empty($epdata))
 				respond('This episode does not exist');
 			$insert['season'] = $epdata['season'];
@@ -200,20 +206,16 @@
 				if (empty($PostAs))
 					respond('The user you wanted to post as does not exist');
 
-				if ($what === 'reservation' && !PERM('member', $PostAs['role']))
+				if ($type === 'reservation' && !PERM('member', $PostAs['role']))
 					respond('The user you wanted to post as is not a club member');
 
 				$ByID = $PostAs['id'];
 			}
 
-			switch ($what){
-				case "request": $insert['requested_by'] = $ByID; break;
-				case "reservation": $insert['reserved_by'] = $ByID; break;
-			}
+			$insert[$type === 'reservation' ? 'reserved_by' : 'requested_by'] = $ByID;
+			check_post_post($type, $insert);
 
-			check_post_post($what, $insert);
-
-			if (!$Database->insert("{$what}s",$insert))
+			if (!$Database->insert("{$type}s",$insert))
 				respond(ERR_DB_FAIL);
 			respond('Submission complete',1);
 		break;
@@ -410,73 +412,6 @@
 				respond('Reservation added',1);
 			}
 			else respond('Invalid request');
-		break;
-		case "upload-stash":
-			if (empty($data))
-				do404();
-			if (RQMTHD !== 'POST'){
-				if (preg_match('~close-dialog/(\d{5})~', $data, $_match))
-					die("<script>var k=' authHandle'+$_match[1];if(typeof window.opener[k]==='function')window.opener[k]({$currentUser['stash_allowed']});window.close()</script>");
-				do404();
-			}
-
-			if (!PERM('user'))
-				respond();
-			detectCSRF();
-
-			$_match = array();
-			if ($data === 'get'){
-				$StashCache = APPATH.'../stash-cache';
-				$Post = array();
-				$CachedData = array();
-
-				$UserStashCache = "$StashCache/{$currentUser['id']}.json";
-				upload_folder_create($UserStashCache);
-				if (file_exists($UserStashCache)){
-					$CachedData = JSON::Decode(file_get_contents($UserStashCache));
-					$Post['cursor'] = $CachedData['cursor'];
-				}
-
-				$Request = stash_get_all_items($Post);
-				if (!empty($CachedData)){
-					if (is_array($Request)){
-						$Data = array_replace_recursive($CachedData, $Request);
-						if ($Request['has_more'])
-							write_stash_cache($UserStashCache, $Data);
-					}
-					else {
-						$Data = $CachedData;
-						trigger_error('Could not fetch Sta.sh folder data, falling back to cache', E_USER_WARNING);
-					}
-				}
-				else {
-					if (!is_array($Request))
-						respond('Error retrieving folders');
-					$Data = $Request;
-					write_stash_cache($UserStashCache, $Data);
-				}
-
-				if (empty($Data['entries']))
-					respond('Your Sta.sh is empty');
-
-				$Items = array();
-				foreach ($Data['entries'] as $entry){
-					$metadata = $entry['metadata'];
-
-					if (!empty($metadata['files'][2]['src']))
-						$image = $metadata['files'][2]['src'];
-					else $image = end($metadata['files'])['src'];
-
-					$Items[] = array(
-						'name' => $metadata['title'],
-						'image' => makeHttps($image),
-						'itemid' => $entry['itemid'],
-					);
-				}
-
-				respond(array('items' => $Items));
-			}
-			else do404();
 		break;
 		case "ping":
 			if (RQMTHD !== 'POST')

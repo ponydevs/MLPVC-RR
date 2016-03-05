@@ -9,7 +9,6 @@
 	define('OLDEST_FIRST', 'ASC');
 	define('HEX_COLOR_PATTERN','/^#?([A-Fa-f0-9]{6})$/u');
 	define('OAUTH_SCOPE_BASIC', 'user browse');
-	define('OAUTH_SCOPE_STASH', OAUTH_SCOPE_BASIC.' stash');
 
 	// Constants to enable/disable returning of wrapper element with markup generators
 	define('NOWRAP', false);
@@ -472,7 +471,7 @@ HTML;
 
 		# Putting it together
 		/* Together, we'll always shine! */
-		$view = empty($settings['view']) ? $do : $settings['view'];
+		$view = empty($settings['view']) ? $GLOBALS['do'] : $settings['view'];
 		$viewPath = "views/{$view}.php";
 
 		header('Content-Type: text/html; charset=utf-8;');
@@ -499,11 +498,11 @@ HTML;
 			respond(array(
 				'css' => $customCSS,
 				'js' => $customJS,
-				'title' => $title,
+				'title' => $GLOBALS['title'],
 				'content' => remove_indentation($content),
 				'sidebar' => remove_indentation($sidebar),
 				'footer' => get_footer(),
-				'avatar' => $signedIn ? $currentUser['avatar_url'] : GUEST_AVATAR,
+				'avatar' => $GLOBALS['signedIn'] ? $GLOBALS['currentUser']['avatar_url'] : GUEST_AVATAR,
 				'responseURL' => $_SERVER['REQUEST_URI'],
 			));
 		}
@@ -740,12 +739,11 @@ HTML;
 	}
 
 	// oAuth Authorization page URL generator
-	function oauth_get_authorization_url($scope = OAUTH_SCOPE_BASIC, $state = true){
-		$scope = str_replace(' ','+',$scope);
-		return "https://www.deviantart.com/oauth2/authorize?response_type=code&scope=$scope&client_id=".DA_CLIENT.oauth_redirect_uri($state);
+	function get_oauth_authorization_url(){
+		return "https://www.deviantart.com/oauth2/authorize?response_type=code&scope=user+browse&client_id=".DA_CLIENT.oauth_redirect_uri();
 	}
 
-	class DARequestException extends Exception {
+	class cURLRequestException extends Exception {
 		public function __construct($errMsg, $errCode){
 			$this->message = $errMsg;
 			$this->code = $errCode;
@@ -760,7 +758,7 @@ HTML;
 	 * @param null|string $token
 	 * @return array
 	 */
-	function da_request($endpoint, $postdata = null, $token = null){
+	function da_request($endpoint, $token = null, $postdata = null){
 		global $signedIn, $currentUser, $http_response_header;
 
 		$requestHeaders = array("Accept-Encoding: gzip","User-Agent: MLPVC-RR @ ".GITHUB_URL);
@@ -797,7 +795,7 @@ HTML;
 		curl_close($r);
 
 		if ($responseCode < 200 || $responseCode >= 300)
-			throw new DARequestException(rtrim("cURL fail for URL \"$requestURI\" (HTTP $responseCode); $curlError",' ;'), $responseCode);
+			throw new cURLRequestException(rtrim("cURL fail for URL \"$requestURI\" (HTTP $responseCode); $curlError",' ;'), $responseCode);
 
 		if (preg_match('/Content-Encoding:\s?gzip/',$responseHeaders)) $response = gzdecode($response);
 		return JSON::Decode($response, true);
@@ -818,10 +816,10 @@ HTML;
 
 		switch ($type){
 			case "authorization_code":
-				$json = da_request("$URL_Start&code=$code".oauth_redirect_uri(false),null,false);
+				$json = da_request("$URL_Start&code=$code".oauth_redirect_uri(false),false);
 			break;
 			case "refresh_token":
-				$json = da_request("$URL_Start&refresh_token=$code",null,false);
+				$json = da_request("$URL_Start&refresh_token=$code",false);
 			break;
 		}
 
@@ -834,7 +832,7 @@ HTML;
 		}
 		if (empty($json['status'])) redirect("/da-auth?error={$json['error']}&error_description={$json['error_description']}");
 
-		$userdata = da_request('user/whoami', null, $json['access_token']);
+		$userdata = da_request('user/whoami', $json['access_token']);
 
 		$User = $Database->where('id',$userdata['userid'])->getOne('users');
 		if ($User['role'] === 'ban'){
@@ -860,8 +858,6 @@ HTML;
 			'expires' => date('c',time()+intval($json['expires_in'])),
 			'scope' => $json['scope'],
 		);
-		if (compare_scope($AuthData['scope'], OAUTH_SCOPE_STASH))
-			$UserData['stash_allowed'] = true;
 
 		$cookie = \Sodium\randombytes_buf(64);
 		$AuthData['token'] = sha1($cookie);
@@ -985,6 +981,7 @@ HTML;
 
 	/**
 	 * Checks if a user is a club member
+	 * (currently only works for recently added members, does not deal with old members or admins)
 	 *
 	 * @param int|string $Username
 	 *
@@ -994,6 +991,43 @@ HTML;
 		$RecentlyJoined = @file_get_contents('http://mlp-vectorclub.deviantart.com/modals/memberlist/');
 
 		return !empty($RecentlyJoined) && preg_match('~<a class="[a-z ]*username" href="http://'.strtolower($Username).'.deviantart.com/">'.USERNAME_PATTERN.'</a>~', $RecentlyJoined);
+	}
+
+	function redirects_where($url, $cookies, $referrer){
+		$r = curl_init();
+		$curl_opt = array(
+			CURLOPT_HTTPHEADER => array(
+				"Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+				"Accept-Encoding: gzip, deflate, sdch",
+				"Accept-Language: hu,en-GB;q=0.8,en;q=0.6",
+				"Connection: keep-alive",
+			),
+			CURLOPT_HEADER => true,
+			CURLOPT_URL => $url,
+			CURLOPT_BINARYTRANSFER => true,
+			CURLOPT_FOLLOWLOCATION => true,
+			CURLOPT_RETURNTRANSFER => true,
+			CURLOPT_REFERER => $referrer,
+			CURLOPT_USERAGENT => "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/49.0.2623.75 Safari/537.36",
+			CURLOPT_COOKIE => implode('; ', $cookies),
+
+		);
+		curl_setopt_array($r, $curl_opt);
+
+		$response = curl_exec($r);
+		$responseCode = curl_getinfo($r, CURLINFO_HTTP_CODE);
+		$headerSize = curl_getinfo($r, CURLINFO_HEADER_SIZE);
+
+		$responseHeaders = rtrim(substr($response, 0, $headerSize));
+		$response = substr($response, $headerSize);
+		$curlError = curl_error($r);
+		curl_close($r);
+
+		if ($responseCode < 200 || $responseCode >= 300)
+			throw new cURLRequestException(rtrim("cURL fail for URL \"$url\" (HTTP $responseCode); $curlError",' ;'), $responseCode);
+
+		$_match = array();
+		return preg_match('/Location:\s+([^\r\n]+)/', $responseHeaders, $_match) ? trim($_match[1]) : null;
 	}
 
 	/**
@@ -1041,12 +1075,12 @@ HTML;
 		if ($type === 'sta.sh' && strlen($ID) !== 11)
 			$ID = str_pad($ID, 11, '0', STR_PAD_LEFT);
 		try {
-			$data = da_request('http://backend.deviantart.com/oembed?url='.urlencode("http://$type/$ID"),null,false);
+			$data = da_request('http://backend.deviantart.com/oembed?url='.urlencode("http://$type/$ID"),false);
 		}
-		catch (DARequestException $e){
+		catch (cURLRequestException $e){
 			if ($e->getCode() == 404)
 				throw new Exception("Image not found. The URL may be incorrect or the image has been deleted.");
-			else throw new Exception("Image could not be retrieved (HTTP $statusCode)");
+			else throw new Exception("Image could not be retrieved (HTTP {$e->getCode()})");
 		}
 
 		return $data;
@@ -1064,10 +1098,10 @@ HTML;
 	 * @return array|null
 	 */
 	function da_cache_deviation($ID, $type = 'fav.me'){
-		global $Database, $PROVIDER_FULLSIZE_KEY, $CACHE_BAILOUT;
+		global $Database, $CACHE_BAILOUT;
 
-		if ($type === 'sta.sh' && strlen($ID) !== 11)
-			$ID = str_pad($ID, 11, '0', STR_PAD_LEFT);
+		if ($type === 'sta.sh')
+			$ID = stash_id_normalize($ID);
 
 		$Deviation = $Database->where('id',$ID)->getOne('deviation_cache');
 		if (!$CACHE_BAILOUT && empty($Deviation) || (!empty($Deviation['updated_on']) && strtotime($Deviation['updated_on'])+ONE_HOUR < time())){
@@ -1100,6 +1134,12 @@ HTML;
 				'updated_on' => date('c'),
 			);
 
+			if ($type === 'sta.sh'){
+				$fullsize_attempt = get_fullsize_stash_url($ID);
+				if (!empty($fullsize_attempt))
+					$Result['fullsize'] = $fullsize_attempt;
+			}
+
 			if (empty($Deviation)){
 				$insert['id'] = $ID;
 				$Database->insert('deviation_cache', $insert);
@@ -1117,49 +1157,32 @@ HTML;
 		return $Deviation;
 	}
 
-	function da_cache_own_stash_item($ItemID, $urlid = false){
-		global $Database, $currentUser;
+	function get_fullsize_stash_url($stash_id){
+		$stash_url = "http://sta.sh/$stash_id";
+		$stashpage = @file_get_contents($stash_url);
+		if (empty($stashpage))
+			return null;
 
-		if ($urlid){
-			$URLID = $ItemID;
-			$ItemID = base_convert($URLID, 36, 10);
+		$cookies = array();
+		foreach ($http_response_header as $header){
+			if (!preg_match('~^([^:]+): (.*)$~', $header, $parts) || $parts[1] !== 'Set-Cookie')
+				continue;
+
+			preg_match('~\s*([^=]+=[^;]+)(?:;|$)~', $parts[2], $cookie);
+			$cookies[] = $cookie[1];
 		}
-		else $URLID = base_convert($ItemID, 10, 36);
-		$ItemInfo = da_request("stash/item/{$ItemID}");
-		if (strlen($URLID) !== 11)
-			$URLID = str_pad($URLID, 11, '0', STR_PAD_LEFT);
 
-		if (empty($ItemInfo['files']))
-			respond('This submission does not have any files associated with it (e.g. Sta.sh Writer drafts)');
-		if (!preg_match(IMAGE_URL_SUFFIX_REGEX,$ItemInfo['files'][0]['src']))
-			respond('This submission does not appear to be an image');
+		$_match = array();
+		$STASH_DL_LINK_REGEX = '(https?://sta.sh/download/\d+/[a-z\d_]+-d[a-z\d]{6,}\.(?:png|jpe?g|bmp)\?[^"]+)';
+		$urlmatch = preg_match('~<a\s+class="[^"]*?dev-page-download[^"]*?"\s+href="'.$STASH_DL_LINK_REGEX.'"[^>]+data-gmiclass="DownloadButton"[^>]*>~', $stashpage, $_match);
 
-		$fullsize = end($ItemInfo['files'])['src'];
-		$preview = !empty($ItemInfo['files'][2]['src'])
-			? $ItemInfo['files'][2]['src']
-			: $fullsize;
+		if ($urlmatch){
+			$dlurl = htmlspecialchars_decode($_match[1]);
+			$fullsize_url = redirects_where($dlurl, $cookies, $stash_url);
 
-		$AlreadyCached = $Database->where('id', $URLID)->where('provider','sta.sh')->getOne('deviation_cache');
-		$update = array(
-			'title' => $ItemInfo['title'],
-			'preview' => makeHttps($preview),
-			'fullsize' => makeHttps($fullsize),
-		);
-
-		if (!empty($AlreadyCached))
-			$Database->where('id', $AlreadyCached['id'])->where('provider', 'sta.sh')->update('deviation_cache', $update);
-		else $Database->insert('deviation_cache',array_merge(
-			array(
-				'provider' => 'sta.sh',
-				'id' => $URLID,
-				'author' => $currentUser['name'],
-				'updated_on' => null,
-			),
-			$update
-		));
-
-		$update['id'] = $URLID;
-		return $update;
+			return !empty($fullsize_url) ? makeHttps($fullsize_url) : null;
+		}
+		return null;
 	}
 
 	# Get Roles from DB
@@ -1282,9 +1305,9 @@ HTML;
 			return null;
 
 		try {
-			$userdata = da_request('user/whois', array('usernames[0]' => $username));
+			$userdata = da_request('user/whois', null, array('usernames[0]' => $username));
 		}
-		catch (DARequestException $e){
+		catch (cURLRequestException $e){
 			return false;
 		}
 
@@ -1537,14 +1560,6 @@ HTML;
 		$optional = $type === 'reservation' ? 'optional, ' : '';
 		$optreq = $type === 'reservation' ? '' : 'required';
 
-		$StashBtnLabel = 'Link from your Sta.sh';
-		$StashUpload = "<p class='keep'><button type='button' class='upload-stash typcn typcn-folder".($currentUser['stash_allowed']?'-open':'')."'";
-		if ($currentUser['stash_allowed'])
-			$StashUpload .= ">$StashBtnLabel</button>";
-		else $StashUpload .= " disabled>$StashBtnLabel</button> <a class='btn green typcn typcn-lock-open' href='#authorize-stash' data-redirect='".oauth_get_authorization_url(OAUTH_SCOPE_STASH,'/upload-stash/close-dialog/'.rand(10000,99999))."'>Enable linking from Sta.sh</a>";
-
-		$StashUpload .= '</p>';
-
 		$HTML = <<<HTML
 
 		<form class="hidden post-form" data-type="$type">
@@ -1563,8 +1578,7 @@ HTML;
 					<div class="notice info">
 						<p>Please click the <strong>Check image</strong> button after providing an URL to get a preview & verify if the link is correct.</p>
 						<hr>
-						<p class="keep">You can use a link from any of the following providers: <a href="http://deviantart.com/" target="_blank">DeviantArt</a>, <a href="http://imgur.com/" target="_blank">Imgur</a>, <a href="http://derpibooru.org/" target="_blank">Derpibooru</a>, <a href="http://puush.me/" target="_blank">Puush</a>, <a href="http://app.prntscr.com/" target="_blank">LightShot</a></p>
-						$StashUpload
+						<p class="keep">You can use a link from any of the following providers: <a href="http://sta.sh/" target="_blank">Sta.sh</a>, <a href="http://deviantart.com/" target="_blank">DeviantArt</a>, <a href="http://imgur.com/" target="_blank">Imgur</a>, <a href="http://derpibooru.org/" target="_blank">Derpibooru</a>, <a href="http://puush.me/" target="_blank">Puush</a>, <a href="http://app.prntscr.com/" target="_blank">LightShot</a></p>
 					</div>
 				</div>
 
@@ -1995,11 +2009,9 @@ HTML;
 
 		$signoutText = 'Sign out' . (!$current ? ' from this session' : '');
 		$buttons = "<button class='typcn typcn-arrow-back remove".(!$current?' orange':'')."' data-sid='{$Session['id']}'>$signoutText</button>";
-		if (PERM('developer')){
-			$platform .= "<span class='scope'><code>{$Session['scope']}</code></span>";
-			if (!empty($Session['user_agent']))
-				$buttons .= "<br><button class='darkblue typcn typcn-eye useragent' data-agent='".apos_encode($Session['user_agent'])."'>UA</button>".
-					"<a class='btn red typcn typcn-chevron-right' href='/browser/{$Session['id']}'>Debug</a>";
+		if (PERM('developer') && !empty($Session['user_agent'])){
+			$buttons .= "<br><button class='darkblue typcn typcn-eye useragent' data-agent='".apos_encode($Session['user_agent'])."'>UA</button>".
+				"<a class='btn red typcn typcn-chevron-right' href='/browser/{$Session['id']}'>Debug</a>";
 		}
 
 		$firstuse = timetag($Session['created']);
@@ -2562,30 +2574,20 @@ ORDER BY "count" DESC
 		}
 	}
 
-	// Check image URL in POST request
-	function check_post_image($respond = false, $Post = null){
+	/**
+	 * Check image URL in POST request
+	 *
+	 * @param array|null $Post Existing post for comparison
+	 *
+	 * @return Image
+	 */
+	function check_post_image($Post = null){
 		if (empty($_POST['image_url']))
 			respond('Please enter an image URL');
 
 		require_once 'includes/Image.php';
 		try {
 			$Image = new Image($_POST['image_url']);
-			$Result = array(
-				'preview' => $Image->preview,
-				'title' => $Image->title
-			);
-			// If provider is Sta.sh & user has given Sta.sh access, re-use Sta.sh upload code
-			if ($Image->provider === 'sta.sh'){
-				$oEmbed = da_oembed($Image->id, 'sta.sh');
-				$Result['author'] = $oEmbed['author_name'];
-				global $currentUser;
-				if ($Result['author'] === $currentUser['name'] && $currentUser['stash_allowed']){
-					try {
-						$Result = da_cache_own_stash_item($Image->id, true);
-					}
-					catch (DARequestException $e){}
-				}
-			}
 		}
 		catch (Exception $e){ respond($e->getMessage()); }
 
@@ -2599,15 +2601,24 @@ ORDER BY "count" DESC
 				->where('r.preview',$Image->preview)
 				->getOne("{$type}s r",'ep.*, r.id');
 			if (!empty($Used)){
-				;
 				$EpID = format_episode_title($Used,AS_ARRAY,'id');
 				respond("This exact image has already been used for a $type under <a href='/episode/$EpID#$type-{$Used['id']}' target='_blank'>$EpID</a>");
 			}
 		}
 
-		if (!$respond)
-			return $Image;
-		respond($Result);
+		return $Image;
+	}
+
+	/**
+	 * Normalize a misaligned Stash submission ID
+	 *
+	 * @param string $id Stash submission ID
+	 *
+	 * @return string
+	 */
+	function stash_id_normalize($id){
+		$normalized = ltrim($id,'0');
+		return strlen($normalized) < 12 ? '0'.$normalized : $normalized;
 	}
 
 	// Get link to specific posts
@@ -2682,7 +2693,7 @@ ORDER BY "count" DESC
 
 	// Create upload destination folder
 	function upload_folder_create($path){
-		$DS = preg_quote('/\\');
+		$DS = preg_quote(DIRECTORY_SEPARATOR, '~');
 		$folder = preg_replace("~^(.*[$DS])[^$DS]+$~",'$1',$path);
 		return !is_dir($folder) ? mkdir($folder,0777,true) : true;
 	}
@@ -2775,37 +2786,6 @@ HTML;
 				$EpTagIDs[] = $EpTagBothParts['tid'];
 		}
 		return $EpTagIDs;
-	}
-
-	function stash_get_all_items($Post){
-		$Request = da_request('stash/delta', $Post);
-		if (empty($Request))
-			return null;
-
-		if ($Request['has_more']){
-			$Post['offset'] = $Request['next_offset'];
-			$NextRequest = stash_get_all_items($Post);
-			$Request['entries'] = array_merge($Request['entries'], $NextRequest['entries']);
-		}
-
-		return $Request;
-	}
-
-	// Stash cache writer
-	define('IMAGE_URL_SUFFIX_REGEX','~\.(png|jpe?g|gif|bmp)$~');
-	function write_stash_cache($CachePath, &$Data){
-		foreach ($Data['entries'] as $k => $entry){
-			if (empty($entry['itemid']) || empty($entry['metadata']['files']) || !preg_match(IMAGE_URL_SUFFIX_REGEX,$entry['metadata']['files'][0]['src']))
-				unset($Data['entries'][$k]);
-		}
-
-		usort($Data['entries'],function($a, $b){
-			$a = $a['metadata']['creation_time'];
-			$b = $b['metadata']['creation_time'];
-			return $b < $a ? -1 : ($b === $a ? 0 : 1);
-		});
-
-		file_put_contents($CachePath, JSON::Encode($Data));
 	}
 
 	// Export PHP variables into JS through a script tag

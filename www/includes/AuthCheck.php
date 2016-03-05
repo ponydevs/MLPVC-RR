@@ -9,6 +9,12 @@
 	if (RQMTHD === 'GET' && isset($_GET['CSRF_TOKEN']))
 		redirect(remove_csrf_query_parameter($_SERVER['REQUEST_URI']));
 
+	// Global variables \\
+	$Color = 'Color';
+	$color = 'color';
+	$signedIn = false;
+	$currentUser = null;
+
 	if (Cookie::exists('access')){
 		$authKey = Cookie::get('access');
 
@@ -22,7 +28,7 @@
 						da_get_token($currentUser['Session']['refresh'], 'refresh_token');
 						$tokenvalid = true;
 					}
-					catch (DARequestException $e){
+					catch (cURLRequestException $e){
 						$Database->where('id', $currentUser['Session']['id'])->delete('sessions');
 						trigger_error("Session refresh failed for {$currentUser['name']} ({$currentUser['id']}) | {$e->getMessage()} (HTTP {$e->getCode()})", E_USER_WARNING);
 					}

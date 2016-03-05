@@ -9,13 +9,9 @@
 	}
 
 	class Image {
-		public $preview, $fullsize, $title = '', $provider, $id;
-		private $url;
+		public $preview = false, $fullsize = false, $title = '', $provider, $id, $author = null;
 		public function __construct($url, $reqProv = null){
-			$this->url = trim($url);
-			$this->preview = $this->fullsize = false;
-
-			$provider = $this->get_provider($this->url);
+			$provider = $this->get_provider(trim($url));
 			if (!empty($reqProv)){
 				if (!is_array($reqProv))
 					$reqProv = array($reqProv);
@@ -92,7 +88,7 @@
 					try {
 						$CachedDeviation = da_cache_deviation($id,$this->provider);
 					}
-					catch(DARequestException $e){
+					catch(cURLRequestException $e){
 						if ($e->getCode() === 404)
 							respond('The requested image could not be found');
 						respond($e->getMessage());
@@ -101,6 +97,7 @@
 					$this->preview = $CachedDeviation['preview'];
 					$this->fullsize = $CachedDeviation['fullsize'];
 					$this->title = $CachedDeviation['title'];
+					$this->author = $CachedDeviation['author'];
 				break;
 				case 'lightshot':
 					$page = @file_get_contents("http://prntscr.com/$id");

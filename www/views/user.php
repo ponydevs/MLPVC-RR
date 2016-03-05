@@ -201,7 +201,7 @@ HTML;
 		if ($sameUser){ ?>
 		<section>
 			<label><?=$VeryPrivateSection?>Unlink account</label>
-			<p>By unlinking your account you revoke this site's access to your account information<?=$currentUser['stash_allowed']?', as well as the files stored in your Sta.sh':''?>. This will also log you out on every device where you're currently logged in. The next time you want to log in, you'll have to link your account again. This will not remove any of your <strong>public</strong> data from our site, it's still kept locally.</p>
+			<p>By unlinking your account you revoke this site's access to your account information. This will also log you out on every device where you're currently logged in. The next time you want to log in, you'll have to link your account again. This will not remove any of your <strong>public</strong> data from our site, it's still kept locally.</p>
 	        <button id="unlink" class="orange typcn typcn-times">Unlink Account</button>
 	    </section>
 <?php   } ?></div>

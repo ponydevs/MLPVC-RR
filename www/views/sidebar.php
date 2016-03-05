@@ -17,7 +17,7 @@ if (!empty($Database)){ ?>
 		<div class="buttons">
 			<button class="typcn typcn-link green" id="signin">Sign In with DeviantArt</button>
 		</div>
-		<script>var OAUTH_URL = "<?=oauth_get_authorization_url()?>";</script>
+		<script>var OAUTH_URL = "<?=get_oauth_authorization_url()?>";</script>
 <?php } ?>
 	</section>
 <?php
