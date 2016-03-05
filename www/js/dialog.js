@@ -155,7 +155,7 @@
 				title = defaultTitles[type];
 			else if (title === false)
 				title = undefined;
-			if (typeof content !== 'string' && !(content instanceof jQuery))
+			if (!content)
 				content = defaultContent[type];
 			var params = {
 				type: type,
