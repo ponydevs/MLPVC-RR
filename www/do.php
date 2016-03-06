@@ -1101,16 +1101,16 @@
 				if (regex_match(new RegExp('^(rename|delete|make|(?:[gs]et|del)(?:sprite|cgs)?|tag|untag|clearrendercache|applytemplate)(?:/(\d+))?$'), $data, $_match)){
 					$action = $_match[1];
 					$creating = $action === 'make';
-					$AppearanceID = intval($_match[2], 10);
 
 					if (!$creating){
+						$AppearanceID = intval($_match[2], 10);
 						if (strlen($_match[2]) === 0)
 							respond('Missing appearance ID');
 						$Appearance = $CGDb->where('id', $AppearanceID)->where('ishuman', $EQG)->getOne('appearances');
 						if (empty($Appearance))
 							respond("The specified appearance does not exist");
 					}
-					else $Appearance = array('id' => $AppearanceID);
+					else $Appearance = array('id' => null);
 
 					switch ($action){
 						case "get":
@@ -1139,6 +1139,8 @@
 							check_string_valid($label, "Appearance name", INVERSE_PRINTABLE_ASCII_REGEX);
 							if ($ll < 4 || $ll > 70)
 								respond('Appearance name must be beetween 4 and 70 characters long');
+							if ($CGDb->where('label', $label)->has('appearances'))
+								respond('An appearance already esists with this name');
 							$data['label'] = $label;
 
 							if (!empty($_POST['notes'])){
@@ -1195,6 +1197,7 @@
 								respond(ERR_DB_FAIL);
 
 							if ($creating){
+								$data['id'] = $query;
 								$response = array(
 									'message' => 'Appearance added successfully',
 									'id' => $query,
@@ -1209,7 +1212,7 @@
 										respond($response, 1);
 									}
 								}
-								respond($response, 1);
+								respond($response);
 							}
 							else {
 								clear_rendered_image($Appearance['id']);
@@ -1219,7 +1222,7 @@
 
 							$Appearance = array_merge($Appearance, $data);
 							respond(array(
-								'label' => $data['label'],
+								'label' => $Appearance['label'],
 								'notes' => get_notes_html($Appearance, NOWRAP),
 							));
 						break;
