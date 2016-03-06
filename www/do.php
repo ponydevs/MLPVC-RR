@@ -1098,7 +1098,7 @@
 				}
 
 				$_match = array();
-				if (regex_match(new RegExp('~^(rename|delete|make|(?:[gs]et|del)(?:sprite|cgs)?|tag|untag|clearrendercache|applytemplate)(?:/(\d+))?$~'), $data, $_match)){
+				if (regex_match(new RegExp('^(rename|delete|make|(?:[gs]et|del)(?:sprite|cgs)?|tag|untag|clearrendercache|applytemplate)(?:/(\d+))?$'), $data, $_match)){
 					$action = $_match[1];
 					$creating = $action === 'make';
 					$AppearanceID = intval($_match[2], 10);
