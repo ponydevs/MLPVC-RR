@@ -7,7 +7,7 @@ DocReady.push(function ColorguideManage(){
 		ColorTextParseError = function(line, lineNumber, matches){
 			this.message = 'Parse error on line '+line+' (shown below)'+
 				'<pre style="font-size:16px"><code>'+line.replace(/</g,'&lt;')+'</code></pre>'+
-				(!matches[2] ? 'The color name is missing from this line.' : 'Please check for any errors before continuing.');
+				(matches && !matches[2] ? 'The color name is missing from this line.' : 'Please check for any errors before continuing.');
 			this.lineNumber = lineNumber;
 		};
 
