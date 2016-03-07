@@ -11,7 +11,7 @@ In the past, the management of comments under journals was done manually. Becaus
 
 ## Attributions
 
-**Used libraries & icons include:** [jQuery](http://jquery.com/), [qTip2](http://qtip2.com/), [typeahead.js](https://twitter.github.io/typeahead.js/), [Chart.js](http://www.chartjs.org/), [PostgresDb](https://github.com/SeinopSys/PHP-PostgreSQL-Database-Class), [SwiftMailer](http://swiftmailer.org/), [Sortable](https://github.com/RubaXa/Sortable), [Browser.php](https://github.com/cbschuld/Browser.php), [libsodium](https://github.com/jedisct1/libsodium-php), [Typicons](http://www.typicons.com/), [Uglify-js](https://www.npmjs.com/package/uglify-js), [SASS](http://sass-lang.com/), [Gulp](http://gulpjs.com/)<br>
+**Used libraries & icons include:** [jQuery](http://jquery.com/), [qTip2](http://qtip2.com/), [typeahead.js](https://twitter.github.io/typeahead.js/), [Chart.js](http://www.chartjs.org/), [Sortable](https://github.com/RubaXa/Sortable), [Ace Editor](https://ace.c9.io/), [PostgresDb](https://github.com/SeinopSys/PHP-PostgreSQL-Database-Class), [SwiftMailer](http://swiftmailer.org/), [Browser.php](https://github.com/cbschuld/Browser.php), [libsodium](https://github.com/jedisct1/libsodium-php), [Typicons](http://www.typicons.com/), [Uglify-js](https://www.npmjs.com/package/uglify-js), [SASS](http://sass-lang.com/), [Gulp](http://gulpjs.com/)<br>
 **[Color Belending Calculator](https://mlpvc-rr.ml/blending)** originally made by [DASPRiD](https://github.com/dasprid)<br>
 **Header font:** [Celestia Medium Redux](http://www.mattyhex.net/CMR/)<br>
 **DeviantArt logo** *(used on profile pages)* &copy; [DeviantArt](http://www.deviantart.com/)<br>
