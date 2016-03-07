@@ -5,7 +5,7 @@ DocReady.push(function ColorguideManage(){
 		HEX_COLOR_PATTERN = window.HEX_COLOR_PATTERN, isWebkit = 'WebkitAppearance' in document.documentElement.style,
 		EQG = window.EQG, EQGRq = EQG?'?eqg':'', AppearancePage = !!window.AppearancePage,
 		ColorTextParseError = function(line, lineNumber, matches){
-			this.message = 'Parse error on line '+line+' (shown below)'+
+			this.message = 'Parse error on line '+lineNumber+' (shown below)'+
 				'<pre style="font-size:16px"><code>'+line.replace(/</g,'&lt;')+'</code></pre>'+
 				(matches && !matches[2] ? 'The color name is missing from this line.' : 'Please check for any errors before continuing.');
 			this.lineNumber = lineNumber;
