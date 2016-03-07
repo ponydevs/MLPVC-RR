@@ -131,6 +131,23 @@ input[type=checkbox] {
 					&:disabled ~ span { cursor: not-allowed }
 				}
 			}
+
+			.btn-group {
+				display: flex;
+				width: 100%;
+
+				button, .btn {
+					margin: 0;
+					flex: 1 1 auto;
+
+					&:active {
+						transform: none !important;
+						opacity: .8;
+					}
+					&:first-child { border-radius: 3px 0 0 3px }
+					&:last-child { border-radius: 0 3px 3px 0 }
+				}
+			}
 		}
 		input:not([type=radio]):not([type=checkbox]):not([type=button]):not([type=file]),
 		select,

@@ -28,7 +28,7 @@
 	function get_colors($GroupID){
 		global $CGDb;
 
-		return $CGDb->rawQuery('SELECT * FROM colors WHERE groupid = ? ORDER BY "order", colorid', array($GroupID));
+		return $CGDb->rawQuery('SELECT * FROM colors WHERE groupid = ? ORDER BY groupid, "order"', array($GroupID));
 	}
 
 	// Return the markup for the specified color group
@@ -53,7 +53,7 @@
 					$title .= "' style='background-color:$color";
 				}
 
-				$append = "<span id='c{$c['colorid']}' title='$title'>$color</span>";
+				$append = "<span title='$title'>$color</span>";
 				if ($colorNames)
 					$append = "<div class='color-line'>$append<span>{$c['label']}</span></div>";
 				$HTML .= $append;

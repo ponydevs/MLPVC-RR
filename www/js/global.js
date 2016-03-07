@@ -269,7 +269,7 @@
 	$.hexpand = function(shorthex){
 		var match = shorthex.trim().match(shortHex);
 		if (!match)
-			return shorthex;
+			return shorthex.replace(/^#?/,'#');
 		match = match[1];
 		return '#'+match[0]+match[0]+match[1]+match[1]+match[2]+match[2];
 	};
@@ -292,13 +292,25 @@
 	};
 
 	$.fn.backgroundImageUrl = function(url){
-		$(this).css('background-image', 'url("'+url.replace(/"/g,'%22')+'")');
+		this.css('background-image', 'url("'+url.replace(/"/g,'%22')+'")');
 
 		return this;
 	};
 
 	$.fn.patternAttr = function(regex){
-		$(this).attr('pattern', regex.toString().replace(/(^\/|\/[img]*$)/g,''));
+		this.attr('pattern', regex.toString().replace(/(^\/|\/[img]*$)/g,''));
+
+		return this;
+	};
+
+	$.fn.enable = function(){
+		this.attr('disabled', false);
+
+		return this;
+	};
+
+	$.fn.disable = function(){
+		this.attr('disabled', true);
 
 		return this;
 	};

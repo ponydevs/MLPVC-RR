@@ -46,6 +46,15 @@
 	}
 
 	.clr { @extend %clr }
+	.clrs.ace_editor {
+		height: 180px;
+		border: 1px solid $DefaultUIColor;
+
+		&, * {
+			font-family: 'Source Code Pro', 'Consolas', monospace !important;
+			font-size: 14px !important;
+		}
+	}
 }
 
 #cg-reorder .cgs ol {

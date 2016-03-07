@@ -1051,6 +1051,7 @@
 				IF (RQMTHD === "POST") detectCSRF();
 
 				$EQG = isset($_REQUEST['eqg']) ? 1 : 0;
+				$AppearancePage = isset($_POST['APPEARANCE_PAGE']);
 
 				switch ($data){
 					case 'gettags':
@@ -1130,7 +1131,6 @@
 								'ishuman' => $EQG,
 							    'cm_favme' => null,
 							);
-							$AppearancePage = isset($_POST['APPEARANCE_PAGE']);
 
 							if (empty($_POST['label']))
 								respond('Label is missing');
@@ -1327,7 +1327,7 @@
 								get_sort_reorder_appearances($EQG);
 
 							$response = array('tags' => get_tags_html($Appearance['id'], NOWRAP));
-							if (isset($_POST['needupdate']) && $Tag['type'] === 'ep'){
+							if ($AppearancePage && $Tag['type'] === 'ep'){
 								$response['needupdate'] = true;
 								$response['eps'] = get_episode_appearances($Appearance['id'], NOWRAP);
 							}
@@ -1355,7 +1355,7 @@
 								get_sort_reorder_appearances($EQG);
 
 							$response = array('tags' => get_tags_html($Appearance['id'], NOWRAP));
-							if (isset($_POST['needupdate']) && $Tag['type'] === 'ep'){
+							if ($AppearancePage && $Tag['type'] === 'ep'){
 								$response['needupdate'] = true;
 								$response['eps'] = get_episode_appearances($Appearance['id'], NOWRAP);
 							}
@@ -1433,7 +1433,7 @@
 							if (isset($GroupTagIDs_Assoc[$Tag['tid']]))
 								get_sort_reorder_appearances($EQG);
 
-							respond('Tag deleted successfully', 1, isset($_POST['needupdate']) && $Tag['type'] === 'ep' ? array(
+							respond('Tag deleted successfully', 1, $AppearancePage && $Tag['type'] === 'ep' ? array(
 								'needupdate' => true,
 								'eps' => get_episode_appearances($Appearance['id'], NOWRAP),
 							) : null);
@@ -1611,16 +1611,10 @@
 					$recvColors = JSON::Decode($_POST['Colors'], true);
 					if (empty($recvColors))
 						respond("Missing list of {$color}s");
-					$colorIDs = array();
 					$colors = array();
 					foreach ($recvColors as $part => $c){
 						$append = array('order' => $part);
 						$index = "(index: $part)";
-
-						if (!empty($c['colorid']) && is_numeric($c['colorid'])){
-							$append['colorid'] = intval($c['colorid'], 10);
-							$colorIDs[] = $append['colorid'];
-						}
 
 						if (empty($c['label']))
 							respond("You must specify a $color name $index");
@@ -1640,23 +1634,19 @@
 
 						$colors[] = $append;
 					}
-					if (!$new && !empty($colorIDs))
-						$CGDb->where('groupid', $Group['groupid'])->where('colorid NOT IN ('.implode(',', $colorIDs).')')->delete('colors');
-					$colorErrors = array();
-					foreach ($colors as $c){
-						if (isset($c['colorid']))
-							$CGDb->where('groupid', $Group['groupid'])->where('colorid', $c['colorid'])->update('colors',$c);
-						else {
-							$c['groupid'] = $Group['groupid'];
-							if (!$CGDb->insert('colors', $c))
-								$colorErrors[] = ERR_DB_FAIL;
-						}
+					if (!$new)
+						$CGDb->where('groupid', $Group['groupid'])->delete('colors');
+					$colorError = false;
+					foreach ($colors as $i => $c){
+						$c['groupid'] = $Group['groupid'];
+						if (!$CGDb->insert('colors', $c) && !$colorError)
+							$colorError = true;
 					}
-					if (!empty($colorErrors))
-						respond("There were some issues while saving your changes. Details:\n".implode("\n",$colorErrors));
+					if ($colorError)
+						respond("There were some issues while saving some of the colors. Please let the developer know about this error, so he can look into why this might've happened.");
 
-					$colon = !isset($_POST['NO_COLON']);
-					$outputNames = isset($_POST['OUTPUT_COLOR_NAMES']);
+					$colon = !$AppearancePage;
+					$outputNames = $AppearancePage;
 
 					if ($new) $response = array('cgs' => get_colors_html($Appearance['id'], NOWRAP, $colon, $outputNames));
 					else $response = array('cg' => get_cg_html($Group['groupid'], NOWRAP, $colon, $outputNames));
@@ -1742,7 +1732,14 @@
 				'twitter-typeahead',
 				'handlebars-v3.0.3',
 				'Sortable',
+				'ace',
+				'ace-mode-colorguide',
+				'ace-theme-colorguide',
 				"$do-manage"
+			);
+			$GUIDE_MANAGE_CSS = array(
+				'ace-theme-colorguide',
+				"$do-manage",
 			);
 
 			$_match = array();
@@ -1780,7 +1777,7 @@
 					'js' => array('jquery.qtip', 'jquery.ctxmenu', $do),
 				);
 				if (PERM('inspector')){
-					$settings['css'][] = "$do-manage";
+					$settings['css'] = array_merge($settings['css'], $GUIDE_MANAGE_CSS);
 					$settings['js'] = array_merge($settings['js'],$GUIDE_MANAGE_JS);
 				}
 				loadPage($settings);
@@ -1891,7 +1888,7 @@
 				'js' => array('jquery.qtip', 'jquery.ctxmenu', $do, 'paginate'),
 			);
 			if (PERM('inspector')){
-				$settings['css'][] = "$do-manage";
+				$settings['css'] = array_merge($settings['css'], $GUIDE_MANAGE_CSS);
 				$settings['js'] = array_merge($settings['js'],$GUIDE_MANAGE_JS);
 			}
 			loadPage($settings);

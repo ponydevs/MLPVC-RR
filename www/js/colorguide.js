@@ -24,6 +24,7 @@ DocReady.push(function Colorguide(){
 		});
 	}
 	window.copyHashToggler = function(){copyHashToggler()};
+	window.copyHashEnabled = function(){ return copyHash };
 
 	var $SearchForm = $('#search-form');
 

@@ -1,9 +1,15 @@
-/* globals $body,$content,DocReady,HandleNav,mk,Sortable,Bloodhound,Handlebars,SHORT_HEX_COLOR_PATTERN,PRINTABLE_ASCII_REGEX,Key */
+/* globals $body,$content,DocReady,HandleNav,mk,Sortable,Bloodhound,Handlebars,SHORT_HEX_COLOR_PATTERN,PRINTABLE_ASCII_REGEX,Key,ace */
 DocReady.push(function ColorguideManage(){
 	'use strict';
 	var Color = window.Color, color = window.color, TAG_TYPES_ASSOC = window.TAG_TYPES_ASSOC, $colorGroups,
 		HEX_COLOR_PATTERN = window.HEX_COLOR_PATTERN, isWebkit = 'WebkitAppearance' in document.documentElement.style,
-		EQG = window.EQG, EQGRq = EQG?'?eqg':'', AppearancePage = !!window.AppearancePage;
+		EQG = window.EQG, EQGRq = EQG?'?eqg':'', AppearancePage = !!window.AppearancePage,
+		ColorTextParseError = function(line, lineNumber, matches){
+			this.message = 'Parse error on line '+line+' (shown below)'+
+				'<pre style="font-size:16px"><code>'+line.replace(/</g,'&lt;')+'</code></pre>'+
+				(!matches[2] ? 'The color name is missing from this line.' : 'Please check for any errors before continuing.');
+			this.lineNumber = lineNumber;
+		};
 
 	var $spriteUploadForm = $.mk('form').attr('id', 'sprite-img').html(
 		'<p class="align-center"><a href="#upload">Click here to upload a file</a> (max. '+window.MAX_SIZE+') or enter a URL below.</p>' +
@@ -317,7 +323,6 @@ DocReady.push(function ColorguideManage(){
 				$el = $.mk('div').attr('class','clr');
 
 			if (typeof color === 'object'){
-				if (color.colorid) $el.data('id', color.colorid);
 				if (color.hex) $ci.val(color.hex);
 				if (color.label) $cl.val(color.label);
 			}
@@ -326,16 +331,83 @@ DocReady.push(function ColorguideManage(){
 			$ci.trigger('change');
 			return $el;
 		},
-		$addBtn = $.mk('button').attr('class','typcn typcn-plus green').text('Add new color').on('click',function(e){
+		$addBtn = $.mk('button').attr('class','typcn typcn-plus green add-color').text('Add new color').on('click',function(e){
 			e.preventDefault();
 
 			var $form = $(this).parents('#cg-editor'),
 				$colors = $form.children('.clrs');
 			if (!$colors.length)
 				$form.append($colors = $.mk('div').attr('class', 'clrs'));
-			var $div = mkClrDiv();
-			$colors.append($div);
-			$div.find('.clri').focus();
+
+			if ($colors.hasClass('ace_editor')){
+				var editor = $colors.data('editor');
+				editor.clearSelection();
+				editor.navigateLineEnd();
+				var curpos = editor.getCursorPosition(),
+					trow = curpos.row+1,
+					emptyLine = curpos.column === 0,
+					copyHashEnabled = window.copyHashEnabled();
+
+				if (!emptyLine)
+					trow++;
+
+				editor.insert((!emptyLine?'\n':'')+(copyHashEnabled?'#':'')+'\tColor Name');
+				editor.gotoLine(trow,Number(copyHashEnabled));
+				editor.focus();
+			}
+			else {
+				var $div = mkClrDiv();
+				$colors.append($div);
+				$div.find('.clri').focus();
+			}
+		}),
+		parseColorsText = function(text){
+			var colors = [],
+				lines = text.split('\n');
+
+			for (var lineIndex = 0, lineCount = lines.length; lineIndex < lineCount; lineIndex++){
+				var line = lines[lineIndex];
+
+				// Comment or empty line
+				if (/^(\/\/.*)?$/.test(line))
+					continue;
+
+				var matches = line.trim().match(/^#([a-f\d]{6}|[a-f\d]{3})(?:\s*([a-z\d][ -~]{2,29}))?$/i);
+				// Valid line
+				if (matches && matches[2]){
+					colors.push({ hex: $.hexpand(matches[1]), label: matches[2] });
+					continue;
+				}
+
+				// Invalid line
+				throw new ColorTextParseError(line, lineIndex+1, matches);
+			}
+
+			return colors;
+		},
+		$editorToggle = $.mk('button').attr('class','typcn typcn-document-text darkblue').text('Plain text editor').on('click',function(e){
+			e.preventDefault();
+
+			var $btn = $(this),
+				$form = $btn.parents('#cg-editor');
+
+			$btn.disable();
+			try {
+				$form.trigger('save-color-inputs');
+			}
+			catch (error){
+				if (!(error instanceof ColorTextParseError))
+					throw error;
+				$btn.enable();
+				var editor = $form.find('.clrs').data('editor');
+				editor.gotoLine(error.lineNumber);
+				editor.navigateLineEnd();
+				$.Dialog.fail(false, error.message);
+				editor.focus();
+				return;
+			}
+			$btn.enable().toggleClass('typcn-document-text typcn-pencil').toggleHtml(['Plain text editor','Interactive editor']);
+			$.Dialog.clearNotice(/Parse error on line \d+ \(shown below\)/);
 		});
 	$cgEditor.append(
 		$.mk('label').append(
@@ -369,23 +441,98 @@ DocReady.push(function ColorguideManage(){
 			})
 		).hide(),
 		$.mk('p').attr('class', 'align-center').text('The # symbol is optional, rows with invalid '+color+'s will be ignored. Each color must have a short (3-30 chars.) description of its intended use.'),
-		$addBtn,
-		$.mk('div').attr('class', 'clrs'),
-		$.mk('div').attr('class','notice').hide().html('<p></p>')
-	).on('render-color-inputs',function(_, data){
+		$.mk('div').attr('class', 'btn-group').append(
+			$addBtn, $editorToggle
+		),
+		$.mk('div').attr('class', 'clrs')
+	).on('render-color-inputs',function(){
 		var $form = $(this),
+			data = $form.data('color_values'),
 			$colors = $form.children('.clrs').empty();
 
 		$.each(data, function(_, color){
 			$colors.append(mkClrDiv(color));
 		});
 
-		new Sortable($colors.get(0), {
+		$colors.data('sortable',new Sortable($colors.get(0), {
 		    handle: ".move",
 		    ghostClass: "moving",
 		    scroll: false,
 		    animation: 150,
-		});
+		}));
+	}).on('save-color-inputs',function(_, storeState){
+		var $form = $(this),
+			$colors = $form.children('.clrs'),
+			is_ace = $colors.hasClass('ace_editor'),
+			editor;
+		if (is_ace){
+			// Saving
+			editor =  $colors.data('editor');
+			$form.data('color_values',parseColorsText(editor.getValue()));
+			if (storeState)
+				return;
+
+			// Switching
+			editor.destroy();
+			$colors.empty().removeClass('ace_editor ace-colorguide').removeData('editor').unbind();
+			$form.trigger('render-color-inputs');
+		}
+		else {
+			// Saving
+			var data = [];
+			$form.find('.clr').each(function(){
+				var $row = $(this),
+					$ci = $row.children('.clri'),
+					val = $.hexpand($ci.val());
+
+				if (!HEX_COLOR_PATTERN.test(val))
+					return;
+
+				data.push({
+					hex: val.replace(HEX_COLOR_PATTERN,'#$1').toUpperCase(),
+					label: $row.children('.clrl').val(),
+				});
+			});
+			$form.data('color_values',data);
+			if (storeState)
+				return;
+
+			// Switching
+			var editable_content = [
+				'// Place each color on its own line',
+				'// Format: #012ABC Name of color',
+			];
+			$.each(data, function(_, color){
+				var line = [];
+
+				if (typeof color === 'object'){
+					line.push(color.hex ? color.hex : '#_____');
+					if (color.label)
+						line.push(color.label);
+				}
+
+				editable_content.push(line.join('\t'));
+			});
+
+			// Remove Sortable
+			var sortable_instance = $colors.data('sortable');
+			if (typeof sortable_instance !== 'undefined')
+				sortable_instance.destroy();
+			$colors.unbind().text(editable_content.join('\n')+'\n');
+
+			// Create editor
+			editor = ace.edit($colors[0]);
+			editor.$blockScrolling = Infinity;
+			var session = editor.getSession();
+			editor.setTheme('ace/theme/colorguide');
+			editor.setShowPrintMargin(false);
+			session.setMode("ace/mode/colorguide");
+			session.setTabSize(8);
+			session.setUseSoftTabs(false);
+			editor.navigateFileEnd();
+			editor.focus();
+			$colors.data('editor', editor);
+		}
 	});
 
 	function CGEditorMaker(title, $group){
@@ -406,30 +553,27 @@ DocReady.push(function ColorguideManage(){
 
 			if (editing){
 				$label.val(dis.label);
-				$form.trigger('render-color-inputs',[dis.Colors]);
+				$form.data('color_values', dis.Colors).trigger('render-color-inputs');
 			}
 			$form.on('submit',function(e){
 				e.preventDefault();
 
-				var data = { label: $label.val(), Colors: [] };
+				try {
+					$form.trigger('save-color-inputs', [true]);
+				}
+				catch (error){
+					if (!(error instanceof ColorTextParseError))
+						throw error;
+					var editor = $form.find('.clrs').data('editor');
+					editor.gotoLine(error.lineNumber);
+					editor.navigateLineEnd();
+					$.Dialog.fail(false, error.message);
+					editor.focus();
+					return;
+				}
+
+				var data = { label: $label.val(), Colors: $form.data('color_values') };
 				if (!editing) data.ponyid = ponyID;
-				$form.find('.clr').each(function(){
-					var $row = $(this),
-						$ci = $row.children('.clri'),
-						val = $.hexpand($ci.val());
-
-					if (!HEX_COLOR_PATTERN.test(val))
-						return;
-
-					var colorid = $row.data('id'),
-						append = { hex: val.replace(HEX_COLOR_PATTERN,'#$1').toUpperCase() };
-					if (typeof colorid !== 'undefined')
-						append.colorid = parseInt(colorid, 10);
-
-					append.label = $row.children('.clrl').val();
-
-					data.Colors.push(append);
-				});
 				if (data.Colors.length === 0)
 					return $.Dialog.fail(false, 'You need to have at least 1 valid color');
 				data.Colors = JSON.stringify(data.Colors);
@@ -551,7 +695,7 @@ DocReady.push(function ColorguideManage(){
 					var data = {tag:tagID};
 					$.Dialog.wait(title,'Removing tag');
 					if (AppearancePage)
-						data.needupdate = '?';
+						data.APPEARANCE_PAGE = true;
 
 					$.post('/colorguide/untag/'+ponyID+EQGRq,data,$.mkAjaxHandler(function(){
 						if (!this.status) return $.Dialog.fail(title, this.message);
@@ -576,7 +720,7 @@ DocReady.push(function ColorguideManage(){
 					var data = {};
 					$.Dialog.wait(title,'Sending removal request');
 					if (AppearancePage)
-						data.needupdate = '?';
+						data.APPEARANCE_PAGE = true;
 					(function Send(data){
 						$.post('/colorguide/deltag/'+tagID+EQGRq,data,$.mkAjaxHandler(function(){
 							if (this.status){
@@ -640,7 +784,7 @@ DocReady.push(function ColorguideManage(){
 
 					var data = {tag_name:tag_name};
 					if (AppearancePage)
-						data.needupdate = '?';
+						data.APPEARANCE_PAGE = true;
 
 					$.post('/colorguide/tag/'+ponyID+EQGRq, data, $.mkAjaxHandler(function(){
 						$input.removeAttr('disabled').parent().removeClass('loading');
@@ -721,10 +865,8 @@ DocReady.push(function ColorguideManage(){
 								data.cgs = data.cgs.join(',');
 
 								$.Dialog.wait(false, 'Saving changes');
-								if (AppearancePage){
-									data.OUTPUT_COLOR_NAMES = true;
-									data.NO_COLON = true;
-								}
+								if (AppearancePage)
+									data.APPEARANCE_PAGE = true;
 
 								$.post('/colorguide/setcgs/'+ponyID+EQGRq,data,$.mkAjaxHandler(function(){
 									if (!this.status) return $.Dialog.fail(null, this.message);

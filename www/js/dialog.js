@@ -189,7 +189,7 @@
 					}
 					$ErrorNotice
 						.attr('class','notice '+noticeClasses[params.type])
-						.children('p').html(params.content);
+						.children('p').html(params.content).show();
 					_controlInputs(params.type === 'wait' ? DISABLE : ENABLE);
 				}
 				else {
@@ -296,6 +296,22 @@
 			$body.removeClass('dialog-open');
 		}
 		Dialog.close = function(){ Close.apply(Dialog, arguments) };
+		Dialog.clearNotice = function(regexp){
+			var $notice = $dialogContent.find('.notice');
+			if (!$notice.length)
+				return false;
+
+			if (typeof regexp === 'undefined'){
+				$notice.hide();
+				return true;
+			}
+
+			if (regexp.test($notice.html())){
+				$notice.hide();
+				return true;
+			}
+			return false;
+		};
 		return Dialog;
 	})();
 

@@ -211,6 +211,7 @@ gulp.task('pgsort', function(){
 						});
 						data = data.replace(/;(?:\r|\r\n|\n)INSERT INTO "?([a-z_\-]+)"?\s+VALUES\s+/g,',\n');
 						data = data.replace(/((?:\r|\r\n|\n)\s*(?:\r|\r\n|\n)INSERT INTO "?([a-z_\-]+)"?\s*VALUES)\s*\(/g,'$1\n(');
+						data = data.replace(/\r\n?/g,'\n');
 
 						fs.writeFile(fpath, data, function(err){
 							if (err) throw err;
