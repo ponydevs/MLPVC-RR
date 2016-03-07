@@ -1924,6 +1924,7 @@
 			));
 		break;
 		case "blending":
+			$HexPattern = regex_replace(new RegExp('^/(.*)/.*$'),'$1',$HEX_COLOR_PATTERN->jsExport());
 			loadPage(array(
 				'title' => "$Color Blending Calculator",
 				'do-css', 'do-js',
