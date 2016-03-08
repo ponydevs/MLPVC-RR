@@ -40,9 +40,12 @@
 		if (is_array($GroupID)) $Group = $GroupID;
 		else $Group = $CGDb->where('groupid',$GroupID)->getOne('colorgroups');
 
-		$label = htmlspecialchars($Group['label']);
+		$label = htmlspecialchars($Group['label']).($colon?': ':'');
 		$HTML = $wrap ? "<li id='cg{$Group['groupid']}'>" : '';
-		$HTML .= "<span class='cat'>$label".($colon?':':'')." </span>";
+		$HTML .=
+			"<span class='cat'>$label".
+				($colorNames?'<span class="admin"><button class="blue typcn typcn-pencil edit-cg"></button><button class="red typcn typcn-trash delete-cg"></button></span>':'').
+			"</span>";
 		$Colors = get_colors($Group['groupid']);
 		if (!empty($Colors))
 			foreach ($Colors as $i => $c){

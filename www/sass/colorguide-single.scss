@@ -10,10 +10,28 @@
 
 		@include pony-cm-image(200px);
 	}
+
+	#content .cat {
+		line-height: 1em;
+
+		.admin {
+			margin-top: 5px;
+			display: block;
+			font-size: .9em;
+
+			button {
+				margin: 0;
+
+				&:not(:last-child){ margin-right: 5px }
+			}
+		}
+	}
 }
 // Desktop-only
 @media all and (min-width: $Breakpoint){
 	#pony-cm { @include pony-cm-image }
+
+	#content .admin { display: none }
 }
 
 #content {
@@ -41,7 +59,17 @@
 		margin-bottom: 10px;
 	}
 
-	section { @extend %section }
+	section {
+		@extend %section;
+
+		> .admin button {
+			display: block;
+			margin: 0;
+			width: 100%;
+
+			&:not(:last-child){ margin-bottom: 5px }
+		}
+	}
 
 	#tags .tags {
 		&:empty:before { content: "This appearance has no tags" }
@@ -59,10 +87,15 @@
 		display: inline-block;
 	}
 
-	#pony-cm { margin-top: 5px }
+	.approved-cutie-mark {
+		#pony-cm { margin-bottom: 10px }
+		.aside {
+			font-size: small;
+			margin-bottom: 4px;
+		}
+	}
 
 	#colors {
-		margin: 10px 0 0;
 		padding: 0;
 		list-style: none;
 		display: flex;

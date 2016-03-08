@@ -4,8 +4,8 @@
 	<p class="align-center">If you can't find a character here, check the old gudes: <a href="https://sta.sh/0kic0ngp3fy">Pony</a> / <a href="http://fav.me/d7120l1">EQG</a></p>
 <? if (PERM('inspector')){ ?>
 	<div class="notice warn tagediting">
-		<label>Some features are unavailable</label>
-		<p>Because you seem to be using a mobile device, editing tags & colors may not work, as it requires you to right-click. If you want to do either of these, please do so from a computer.</p>
+		<label>Limited editing</label>
+		<p>Editing tags or colors from the guide page does not work on mobile devices. If you want to edit those, please go the appearance's page.</p>
 	</div>
 <? }
 	$Universal = $CGDb->where('id',0)->getOne('appearances');

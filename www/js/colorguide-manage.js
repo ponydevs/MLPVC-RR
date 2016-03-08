@@ -499,8 +499,8 @@ DocReady.push(function ColorguideManage(){
 
 			// Switching
 			var editable_content = [
-				'// Place each color on its own line',
-				'// Format: #012ABC Name of color',
+				'// One color per line',
+				'// e.g. #012ABC Fill',
 			];
 			$.each(data, function(_, color){
 				var line = [];

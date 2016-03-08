@@ -1774,7 +1774,7 @@
 					'heading' => $heading,
 					'view' => "$do-single",
 					'css' => array($do, "$do-single"),
-					'js' => array('jquery.qtip', 'jquery.ctxmenu', $do),
+					'js' => array('jquery.qtip', 'jquery.ctxmenu', $do, "$do-single"),
 				);
 				if (PERM('inspector')){
 					$settings['css'] = array_merge($settings['css'], $GUIDE_MANAGE_CSS);

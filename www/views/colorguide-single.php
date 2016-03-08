@@ -38,18 +38,30 @@
 
 	if (!empty($Appearance['cm_favme'])){
 		$preview = get_cm_preview_url($Appearance); ?>
-		<section>
+		<section class="approved-cutie-mark">
 			<label>Recommended cutie mark vector</label>
-			<p>The image below links to the vector, and shows which way the cutie mark should be facing. The body shape used here is the same for every character, and it is <strong>not</strong> tailored to any individual body design.</p>
 <?=PERM('inspector')&&!isset($Appearance['cm_dir'])?Notice('fail','Missing CM orientation, falling back to <strong>Tail-Head</strong>. Please edit the appaearance and provide an orientation!'):''?>
 			<a id="pony-cm" href="http://fav.me/<?=$Appearance['cm_favme']?>" style="background-image:url('/colorguide/appearance/<?=$Appearance['id']?>.svg')">
 				<div class="img cm-dir-<?=$Appearance['cm_dir']===CM_DIR_HEAD_TO_TAIL?'ht':'th'?>" style="background-image:url('<?=apos_encode($preview)?>')"></div>
 			</a>
+			<p class="aside">This is only an illustration, the body shape & colors are <strong>not</strong> guaranteed to reflect the actual design.</p>
+			<p>The image above links to the vector made by <?php
+				$Vector = da_cache_deviation($Appearance['cm_favme']);
+				echo profile_link(get_user($Vector['author'],'name','name, avatar_url'), FULL);
+			?> and shows which way the cutie mark should be facing.</p>
 		</section>
 <?  } ?>
-		<ul id="colors" class="colors"><?
-		foreach (get_cgs($Appearance['id']) as $cg)
-			echo get_cg_html($cg, WRAP, NO_COLON, OUTPUT_COLOR_NAMES); ?></ul>
+		<section class="color-list">
+			<label class="admin">Color groups</label>
+			<div class="admin">
+				<button class="darkblue typcn typcn-arrow-unsorted reorder-cgs">Re-order groups</button>
+				<button class="green typcn typcn-plus create-cg">Create group</button>
+			</div>
+			<ul id="colors" class="colors"><?php
+	foreach (get_cgs($Appearance['id']) as $cg)
+		echo get_cg_html($cg, WRAP, NO_COLON, OUTPUT_COLOR_NAMES);
+			?></ul>
+		</section>
 	</div>
 </div>
 

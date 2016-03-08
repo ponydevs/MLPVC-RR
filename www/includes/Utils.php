@@ -1450,7 +1450,7 @@ HTML;
 		$Username = $User['name'];
 		$avatar = $format == FULL ? "<img src='{$User['avatar_url']}' class='avatar'> " : '';
 
-		return "<a href='/@$Username' class='da-userlink'>$avatar<span class='name'>$Username</span></a>";
+		return "<a href='/@$Username' class='da-userlink".($format == FULL ? ' with-avatar':'')."'>$avatar<span class='name'>$Username</span></a>";
 	}
 
 	// Reserved by section creator \\
