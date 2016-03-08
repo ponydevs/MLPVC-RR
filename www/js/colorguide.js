@@ -73,7 +73,7 @@ DocReady.push(function Colorguide(){
 			}
 			else HandleNav('/colorguide'+(EQG?'/eqg':'')+'/1?q='+query.replace(/ /g,'+'));
 		});
-		$('ul.colors').children('li').find('span:not(.cat):not(:empty)').each(function(){
+		$('ul.colors').children('li').find('.valid-color').each(function(){
 			var $this = $(this),
 				text = 'Click to copy HEX '+color+' code to clipboard<br>Shift+Click to view RGB values',
 				title = $this.attr('title');

@@ -952,7 +952,7 @@ DocReady.push(function ColorguideManage(){
 			],
 			function($el){ return Color+' group: '+$el.children().first().text().trim().replace(':','') }
 		);
-		var $colors = $colorGroups.children('li').find('span:not(.cat):not(:empty)');
+		var $colors = $colorGroups.children('li').find('.valid-color');
 		$.ctxmenu.addItems(
 			$colors.filter('.ctxmenu-bound'),
 			$.ctxmenu.separator,
