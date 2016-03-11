@@ -361,16 +361,11 @@ function DocumentIsReady(){
 			$.Dialog.wait(title,'Signing out');
 
 			$.post('/signout',$.mkAjaxHandler(function(){
-				if (this.status){
-					var msg = this.message;
-					HandleNav(location.href, function(){
-						$.Dialog.success(title, msg);
-						setTimeout(function(){
-							$.Dialog.close();
-						}, 1500);
-					});
-				}
-				else $.Dialog.fail(title,this.message);
+				if (!this.status) return $.Dialog.fail(title,this.message);
+
+				HandleNav.reload(function(){
+					$.Dialog.close();
+				});
 			}));
 		});
 	});
