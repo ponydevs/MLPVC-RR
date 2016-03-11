@@ -25,6 +25,8 @@
 							margin: 0;
 							&:not(:last-child) { margin-right: 10px }
 						}
+
+						.typcn-arrow-move { cursor: move !important }
 					}
 				}
 			}
