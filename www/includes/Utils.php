@@ -909,7 +909,7 @@ HTML;
 
 		$Database->rawQuery(
 			"DELETE FROM sessions
-			WHERE \"user\" = ? && (scope != ? || lastvisit <= NOW() - INTERVAL '2 MONTH')", array($UserID,$AuthData['scope']));
+			WHERE \"user\" = ? && (scope != ? OR lastvisit <= NOW() - INTERVAL '2 MONTH')", array($UserID,$AuthData['scope']));
 
 
 		Cookie::set('access', $cookie, ONE_YEAR);
