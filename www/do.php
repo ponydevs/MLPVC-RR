@@ -884,6 +884,23 @@
 
 							respond(format_log_details($MainEntry['reftype'],$Details));
 						}
+						else do404();
+					break;
+					case "usefullinks":
+						if (regex_match(new RegExp('^([gs]et|del)/(\d+)'), $data, $_match)){
+							$Link = $Database->where('id', $_match[2])->getOne('usefullinks');
+							if (empty($Link))
+								respond('The specified link does not exist');
+
+							$action = $_match[1];
+							if ($action === 'del'){
+								if (!$Database->where('id', $Link['id'])->delete('usefullinks'))
+									respond(ERR_DB_FAIL);
+
+								respond(true);
+							}
+						}
+						else do404();
 					break;
 					default:
 						do404();
@@ -917,7 +934,8 @@
 				break;
 				default:
 					loadPage(array(
-						'title' => 'Admin Area'
+						'title' => 'Admin Area',
+						'do-css',
 					));
 			}
 		break;

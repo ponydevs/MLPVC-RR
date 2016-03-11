@@ -2792,3 +2792,28 @@ ORDER BY "count" DESC
 HTML;
 		return send_email($subject, $message);
 	}
+
+	function render_useful_links_list($wrap = true){
+		global $Database, $ROLES_ASSOC;
+
+		$HTML = $wrap ? '<ol>' : '';
+
+		$UsefulLinks = $Database->get('usefullinks');
+		$GrpUsers = $Database->rawQuery('SELECT COUNT(*) as "count", roles.name FROM users LEFT JOIN roles ON roles.name = users.role GROUP BY roles.name');
+		$GrpUserCounts = array();
+		foreach ($GrpUsers as $rel)
+			$GrpUserCounts[$rel['name']] = intval($rel['count'], 10);
+		foreach ($UsefulLinks as $l){
+			$href = apos_encode($l['url']);
+			$title = apos_encode($l['title']);
+			$label = htmlspecialchars_decode($l['label']);
+			$cansee = plur($ROLES_ASSOC[$l['minrole']], $GrpUserCounts[$l['minrole']]);
+			if ($l['minrole'] !== 'developer')
+				$cansee .= ' and above';
+			$HTML .= "<li><div><a href='$href' title='$title'>{$label}</a> (#{$l['id']})</div>".
+			             "<div><span class='typcn typcn-eye'></span> $cansee</div>".
+			             "<div class='buttons'><button class='blue typcn typcn-pencil'>Edit</button><button class='red typcn typcn-trash'>Delete</button></div></li>";
+		}
+
+		return $HTML.($wrap?'</ol>':'');
+	}

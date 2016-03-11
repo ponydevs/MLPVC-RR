@@ -1,0 +1,26 @@
+@import "vars";
+
+#content {
+	> section {
+		@extend %section;
+
+		&.useful-links {
+			ol {
+				font-size: 1.2em;
+
+				li {
+					&:not(:last-child) { margin-bottom: 10px }
+
+					.buttons {
+						margin-top: 5px;
+
+						button {
+							margin: 0;
+							&:not(:last-child) { margin-right: 10px }
+						}
+					}
+				}
+			}
+		}
+	}
+}
