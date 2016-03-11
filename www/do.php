@@ -1166,7 +1166,7 @@
 							check_string_valid($label, "Appearance name", INVERSE_PRINTABLE_ASCII_REGEX);
 							if ($ll < 4 || $ll > 70)
 								respond('Appearance name must be beetween 4 and 70 characters long');
-							if ($CGDb->where('label', $label)->has('appearances'))
+							if ($creating && $CGDb->where('label', $label)->has('appearances'))
 								respond('An appearance already esists with this name');
 							$data['label'] = $label;
 
