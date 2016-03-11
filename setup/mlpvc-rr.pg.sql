@@ -674,7 +674,8 @@ CREATE TABLE usefullinks (
     url character varying(255) NOT NULL,
     label character varying(40) NOT NULL,
     title character varying(255) NOT NULL,
-    minrole character varying(10) DEFAULT 'user'::character varying NOT NULL
+    minrole character varying(10) DEFAULT 'user'::character varying NOT NULL,
+    "order" integer
 );
 
 
