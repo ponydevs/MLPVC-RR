@@ -4,6 +4,9 @@
 	<p><?=$MSG?></p>
 <?php } else { ?>
 	<p>Displaying <?=$ItemsPerPage?> items/page</p>
+	<p class='align-center links'>
+		<a class='btn darkblue typcn typcn-arrow-back' href="/admin">Back to Admin Area</a>
+	</p>
 	<?=$Pagination?>
 	<table id="logs">
 		<thead>

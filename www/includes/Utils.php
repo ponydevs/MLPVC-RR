@@ -2405,10 +2405,11 @@ ORDER BY "count" DESC
 				$NavItems['users']['subitem'] = $User['name'];
 		}
 		if (PERM('inspector')){
-			$NavItems['logs'] = array('/logs', 'Logs');
-			if ($do === 'logs'){
+			$NavItems['admin'] = array('/admin', 'Admin');
+			global $task;
+			if ($task === 'logs'){
 				global $Page;
-				$NavItems['logs'][1] .= " - Page $Page";
+				$NavItems['admin']['subitem'] = "Logs - Page $Page";
 			}
 		}
 		$NavItems[] = array('/about', 'About');

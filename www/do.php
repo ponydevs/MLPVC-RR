@@ -860,47 +860,66 @@
 			));
 		break;
 		case "logs":
+			redirect(rtrim("/admin/logs/$data",'/'), AND_DIE);
+		break;
+		case "admin":
+			if (!PERM('inspector'))
+				do404();
+
+			$task = strtok($data, '/');
+			$data = regex_replace(new RegExp('^[^/]*?(?:/(.*))?$'), '$1', $data);
+
 			if (RQMTHD === "POST"){
-				if (!PERM('inspector')) respond();
-				$_match = array();
-				if (regex_match(new RegExp('^details/(\d+)'), $data, $_match)){
-					$EntryID = intval($_match[1], 10);
+				switch ($task){
+					case "logs":
+						if (regex_match(new RegExp('^details/(\d+)'), $data, $_match)){
+							$EntryID = intval($_match[1], 10);
 
-					$MainEntry = $Database->where('entryid', $EntryID)->getOne('log');
-					if (empty($MainEntry)) respond('Log entry does not exist');
-					if (empty($MainEntry['refid'])) respond('There are no details to show');
+							$MainEntry = $Database->where('entryid', $EntryID)->getOne('log');
+							if (empty($MainEntry)) respond('Log entry does not exist');
+							if (empty($MainEntry['refid'])) respond('There are no details to show');
 
-					$Details = $Database->where('entryid', $MainEntry['refid'])->getOne("log__{$MainEntry['reftype']}");
-					if (empty($Details)) respond('Failed to retrieve details');
+							$Details = $Database->where('entryid', $MainEntry['refid'])->getOne("log__{$MainEntry['reftype']}");
+							if (empty($Details)) respond('Failed to retrieve details');
 
-					respond(format_log_details($MainEntry['reftype'],$Details));
+							respond(format_log_details($MainEntry['reftype'],$Details));
+						}
+					break;
+					default:
+						do404();
 				}
 			}
+			switch ($task){
+				case "logs":
+					$ItemsPerPage = 20;
+					$EntryCount = $Database->count('log');
+					list($Page,$MaxPages) = calc_page($EntryCount);
 
-			if (!PERM('inspector')) do404();
+					fix_path("/admin/logs/$Page");
+					$heading = 'Logs';
+					$title = "Page $Page - $heading";
+					$Pagination = get_pagination_html('admin/logs');
 
-			$ItemsPerPage = 20;
-			$EntryCount = $Database->count('log');
-			list($Page,$MaxPages) = calc_page($EntryCount);
+					$LogItems = $Database
+						->orderBy('timestamp')
+						->orderBy('entryid')
+						->get('log',array($ItemsPerPage*($Page-1), $ItemsPerPage));
 
-			fix_path("/logs/$Page");
-			$heading = 'Logs';
-			$title = "Page $Page - $heading";
-			$Pagination = get_pagination_html('logs');
+					if (isset($_GET['js']))
+						pagination_response(log_tbody_render($LogItems), '#logs tbody');
 
-			$LogItems = $Database
-				->orderBy('timestamp')
-				->orderBy('entryid')
-				->get('log',array($ItemsPerPage*($Page-1), $ItemsPerPage));
-
-			if (isset($_GET['js']))
-				pagination_response(log_tbody_render($LogItems), '#logs tbody');
-
-			loadPage(array(
-				'title' => $title,
-				'do-css',
-				'js' => array($do, 'paginate'),
-			));
+					loadPage(array(
+						'title' => $title,
+						'view' => "$do-logs",
+						'css' => "$do-logs",
+						'js' => array("$do-logs", 'paginate'),
+					));
+				break;
+				default:
+					loadPage(array(
+						'title' => 'Admin Area'
+					));
+			}
 		break;
 		case "u":
 			$do = 'user';
