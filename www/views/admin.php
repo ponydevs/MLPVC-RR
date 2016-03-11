@@ -10,6 +10,11 @@
 		<p><button class="green typcn typcn-plus" id="add-link">Add link</button><button class='darkblue typcn typcn-arrow-unsorted' id="reorder-links">Re-order links</button></p>
 		<div><?=render_useful_links_list()?></div>
 	</section>
+
+	<section class="recent-posts">
+		<h2>Most recent posts</h2>
+		<div><?=render_most_recent_posts()?></div>
+	</section>
 </div>
 
 <?php

@@ -31,5 +31,18 @@
 				}
 			}
 		}
+		&.recent-posts ul {
+			@extend %post-ul;
+
+			&:empty:before {
+				content: "No recent posts to show";
+				font-style: italic;
+			}
+
+			li .reserver .da-userlink .name {
+				font-size: 16px;
+				vertical-align: middle;
+			}
+		}
 	}
 }

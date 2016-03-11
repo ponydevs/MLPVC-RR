@@ -2625,7 +2625,7 @@ ORDER BY "count" DESC
 
 	// Get link to specific posts
 	function post_link_html($Post){
-		$thing = isset($Post['rq']) ? 'request' : 'reservation';
+		$thing = empty($Post['rq']) ? 'reservation' : 'request';
 		$id = "$thing-{$Post['id']}";
 		if ($Post['season'] !== 0){
 			$page = "S{$Post['season']}E{$Post['episode']}";
@@ -2812,4 +2812,61 @@ HTML;
 		}
 
 		return $HTML.($wrap?'</ol>':'');
+	}
+
+	function render_most_recent_posts($wrap = true){
+		global $Database, $ROLES_ASSOC;
+
+		$cols = 'id,season,episode,label,posted,preview,lock,deviation_id,reserved_by';
+		$RecentPosts = $Database->rawQuery(
+			"SELECT * FROM
+			(
+				SELECT $cols, true AS rq, reserved_at FROM requests
+				WHERE posted > NOW() - INTERVAL '20 DAYS'
+				UNION ALL
+				SELECT $cols, false AS rq, null AS reserved_at FROM reservations
+				WHERE posted > NOW() - INTERVAL '20 DAYS'
+			) t
+			ORDER BY posted
+			LIMIT 10");
+
+		$HTML = $wrap ? '<ul>' : '';
+
+		foreach ($RecentPosts as $p){
+			list($link,$page) = post_link_html($p);
+			$label = !empty($p['label']) ? "<span class='label'>{$p['label']}</span>" : '';
+			$is_request = $p['rq'];
+			$reservation_time_known = !empty($p['reserved_at']);
+			$posted = timetag($p['posted']);
+			$what = !empty($p['deviation_id']) ? 'deviation' : 'screencap';
+			$preview = $p['preview'];
+			if (!empty($p['deviation_id'])){
+				$Deviation = da_cache_deviation($p['deviation_id']);
+				$preview = $Deviation['preview'];
+			}
+			$reserver_btn = '';
+			if ($is_request)
+				$reserver_btn .= '<em>Posted by '.profile_link(get_user($p['requested_by'])).'</em>';
+			if (!$is_request || isset($p['reserved_by'])){
+				$user = profile_link(get_user($p['reserved_by']), FULL);
+				$reserver_btn = "<div class='reserver'>$user</div>";
+			}
+
+			$HTML .= <<<HTML
+<li>
+	<div class='image $what'>
+		<a href='$link'><img src='$preview'></a>
+	</div>
+	$label
+	<em>Posted under <a href='$link'>$page</a> $posted</em>
+	$reserver_btn
+	<div>
+		<a href='$link' class='btn blue typcn typcn-arrow-forward'>View</a>
+	</div>
+</li>
+
+HTML;
+		}
+
+		return $HTML.($wrap?'</ul>':'');
 	}
