@@ -1,5 +1,5 @@
 <div id="content">
-	<?=get_sprite_html($Appearance)?>
+	<div class="sprite-wrap"><?=get_sprite_html($Appearance)?></div>
 	<h1><?=$heading?></h1>
 	<p>from the MLP-VectorClub <a href="/<?=$color?>guide"><?=$Color?> Guide</a></p>
 

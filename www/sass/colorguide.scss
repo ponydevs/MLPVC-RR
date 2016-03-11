@@ -175,6 +175,7 @@
 	position: relative;
 	overflow: hidden;
 	border: 1px dashed rgba(black,.5);
+	line-height: initial;
 
 	@mixin activate {
 		background-color: rgba(white, .7);
