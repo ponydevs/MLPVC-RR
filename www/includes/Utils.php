@@ -2851,11 +2851,12 @@ HTML;
 				$user = profile_link(get_user($p['reserved_by']), FULL);
 				$reserver_btn = "<div class='reserver'>$user</div>";
 			}
+			$lock = $p['lock'] ? "<span class='typcn typcn-tick' title='This submission has been accepted into the group gallery'></span>" : '';
 
 			$HTML .= <<<HTML
 <li>
 	<div class='image $what'>
-		<a href='$link'><img src='$preview'></a>
+		<a href='$link'><img src='$preview'></a>$lock
 	</div>
 	$label
 	<em>Posted under <a href='$link'>$page</a> $posted</em>
