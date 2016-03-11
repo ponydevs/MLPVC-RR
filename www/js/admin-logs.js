@@ -23,7 +23,7 @@ DocReady.push(function Logs(){
 
 						var EntryID = parseInt($row.children().first().text());
 
-						$.post('/logs/details/'+EntryID, $.mkAjaxHandler(function(){
+						$.post('/admin/logs/details/'+EntryID, $.mkAjaxHandler(function(){
 							if (!this.status) $.Dialog.fail(title,this.message);
 
 							var $dataDiv = $.mk('div').attr('class','expandable-section').css('display','none');

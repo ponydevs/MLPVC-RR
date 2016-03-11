@@ -151,29 +151,29 @@
 		}
 		else event.data.CSRF_TOKEN = t;
 	});
+	var lasturl;
 	$.ajaxSetup({
 		dataType: "json",
 		error: function(xhr){
-			if ([404, 500, 503].indexOf(xhr.status) === -1)
+			if ([401, 404, 500, 503].indexOf(xhr.status) === -1)
 				$w.triggerHandler('ajaxerror',[].slice.call(arguments));
 			$body.removeClass('loading');
 		},
+	    beforeSend: function(_, settings) {
+	        lasturl = settings.url;
+	    },
 		statusCode: {
 			401: function(){
 				$.Dialog.fail(undefined, "Cross-site Request Forgery attack detected. Please notify the site administartors.");
-				$body.removeClass('loading');
 			},
 			404: function(){
-				$.Dialog.fail(undefined, "Error 404: The requested endpoint could not be found");
-				$body.removeClass('loading');
+				$.Dialog.fail(false, "Error 404: The requested endpoint ("+lasturl.replace(/</g,'&lt;').replace(/\//g,'/<wbr>')+") could not be found");
 			},
 			500: function(){
 				$.Dialog.fail(false, 'The request failed due to an internal server error. If this persists, please <a href="#feedback" class="send-feedback">let us know</a>!');
-				$body.removeClass('loading');
 			},
 			503: function(){
 				$.Dialog.fail(false, 'The request failed because the server is temporarily unavailable. This whouldn\'t take too long, please try again in a few seconds.<br>If the problem still persist after a few minutes, please let us know by clicking the "Send feedback" link in the footer.');
-				$body.removeClass('loading');
 			}
 		}
 	});
