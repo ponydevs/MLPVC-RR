@@ -2142,10 +2142,8 @@ HTML;
 		$ScorePercent = round(($Score/5)*1000)/10;
 
 		$HTML .= '<p>'.(!empty($Score) ? "This $thing is rated $Score/5 (<a class='detail' href='#detail'>$Votes votes</a>)" : 'Nopony voted yet.').'</p>';
-		if ($Score > 0){
-			$RatingFile = file_get_contents(APPATH."img/muffin-rating.svg");
-			$HTML .= str_replace("width='100'", "width='$ScorePercent'", $RatingFile);
-		}
+		if ($Score > 0)
+			$HTML .= "<img src='/muffin-rating?w=$ScorePercent' id='muffins'>";
 
 		$UserVote = get_episode_user_vote($Episode);
 		if (empty($UserVote)){
