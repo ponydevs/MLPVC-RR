@@ -1756,7 +1756,7 @@ HTML;
 	function sidebar_links_render(){
 		global $Database, $signedIn, $currentUser;
 		if (!PERM('user')) return;
-		$Links = $Database->get('usefullinks');
+		$Links = $Database->orderBy('"order"','ASC')->get('usefullinks');
 
 		$Render = array();
 		foreach ($Links as $l){
@@ -1767,7 +1767,7 @@ HTML;
 				$title = "title='$title'";
 			}
 			else $title = '';
-			$Render[] =  "<li><a href='{$l['url']}' $title>{$l['label']}</a></li>";
+			$Render[] =  "<li id='s-ufl-{$l['id']}'><a href='{$l['url']}' $title>{$l['label']}</a></li>";
 		}
 		if (!empty($Render))
 			echo '<ul class="links">'.implode('',$Render).'</ul>';
@@ -2799,20 +2799,16 @@ HTML;
 		$HTML = $wrap ? '<ol>' : '';
 
 		$UsefulLinks = $Database->get('usefullinks');
-		$GrpUsers = $Database->rawQuery('SELECT COUNT(*) as "count", roles.name FROM users LEFT JOIN roles ON roles.name = users.role GROUP BY roles.name');
-		$GrpUserCounts = array();
-		foreach ($GrpUsers as $rel)
-			$GrpUserCounts[$rel['name']] = intval($rel['count'], 10);
 		foreach ($UsefulLinks as $l){
 			$href = apos_encode($l['url']);
 			$title = apos_encode($l['title']);
 			$label = htmlspecialchars_decode($l['label']);
-			$cansee = plur($ROLES_ASSOC[$l['minrole']], $GrpUserCounts[$l['minrole']]);
+			$cansee = $ROLES_ASSOC[$l['minrole']];
 			if ($l['minrole'] !== 'developer')
-				$cansee .= ' and above';
-			$HTML .= "<li><div><a href='$href' title='$title'>{$label}</a> (#{$l['id']})</div>".
+				$cansee .= 's and above';
+			$HTML .= "<li id='ufl-{$l['id']}'><div><a href='$href' title='$title'>{$label}</a></div>".
 			             "<div><span class='typcn typcn-eye'></span> $cansee</div>".
-			             "<div class='buttons'><button class='blue typcn typcn-pencil'>Edit</button><button class='red typcn typcn-trash'>Delete</button></div></li>";
+			             "<div class='buttons'><button class='blue typcn typcn-pencil edit-link'>Edit</button><button class='red typcn typcn-trash delete-link'>Delete</button></div></li>";
 		}
 
 		return $HTML.($wrap?'</ol>':'');

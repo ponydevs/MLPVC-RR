@@ -34,7 +34,7 @@ DocReady.push(function ColorguideFull(){
 				$names.children().moveAttr('href','data-href');
 				new Sortable($names.get(0), {
 				    ghostClass: "moving",
-				    scroll: false,
+				    scroll: true,
 				    animation: 150,
 				});
 			});

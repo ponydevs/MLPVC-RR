@@ -297,8 +297,11 @@
 		return this;
 	};
 
+	$.attributifyRegex = function(regex){
+		return regex.toString().replace(/(^\/|\/[img]*$)/g,'');
+	};
 	$.fn.patternAttr = function(regex){
-		this.attr('pattern', regex.toString().replace(/(^\/|\/[img]*$)/g,''));
+		this.attr('pattern', $.attributifyRegex(regex));
 
 		return this;
 	};
