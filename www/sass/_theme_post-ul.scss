@@ -92,8 +92,6 @@
 			&:before, &:after { content: '"' }
 		}
 		.reserver, .reserve-request {
-			@extend %reserve-button;
-			color: #666;
 			height: 40px;
 		}
 		> .reserve-request {
@@ -103,6 +101,9 @@
 			margin: 5px auto 0;
 			opacity: 1 !important;
 			padding: 0 5px;
+			color: #666;
+
+			@extend %reserve-button;
 		}
 		.reserver {
 			display: inline-block;
@@ -111,12 +112,12 @@
 			font-size: 0;
 			position: relative;
 			text-align: left;
-			min-width: 115px;
 
 			.da-userlink {
 				height: 100%;
 				position: relative;
 				z-index: 2;
+				min-width: 125px;
 
 				> * {
 					margin-right: 5px;
