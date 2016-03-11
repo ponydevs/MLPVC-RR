@@ -781,6 +781,7 @@
 		 */
 		protected function _alterQuery(){
 			$this->_query = preg_replace('~(\s+)&&(\s+)~', '$1AND$2', $this->_query);
+			$this->_query = preg_replace('~(\s+)\|\|(\s+)~', '$1OR$2', $this->_query);
 		}
 
 		/**

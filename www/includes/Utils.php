@@ -907,7 +907,10 @@ HTML;
 			$Database->insert('sessions', array_merge($AuthData, array('user' => $UserID)));
 		}
 
-		$Database->where('user',$UserID)->where('scope', $AuthData['scope'], '!=')->delete('sessions');
+		$Database->rawQuery(
+			"DELETE FROM sessions
+			WHERE \"user\" = ? && (scope != ? || lastvisit <= NOW() - INTERVAL '2 MONTH')", array($UserID,$AuthData['scope']));
+
 
 		Cookie::set('access', $cookie, ONE_YEAR);
 	}
