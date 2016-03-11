@@ -15,29 +15,30 @@
 		background: $StyledBackground;
 
 		&.sidebar-open { overflow: hidden }
+		&:not(.sidebar-open) header nav { box-shadow: 0 0 5px $HeaderFooterBG }
 	}
 	header, footer {
 		position: initial;
 	}
-	header{
-		background: $StyledBackground;
+	header {
+		background: $HeaderFooterBG;
 		
 		nav {
 			position: relative;
-			box-shadow: 0 0 5px $HeaderFooterBG;
+			transition: box-shadow .5s ease-in-out;
 
 			&:after {
 				content: "MLPVC-RR";
 				position: absolute;
 				top: 0;
-				lefT: 0;
+				left: 0;
 				z-index: 1;
 				width: 100%;
 				height: 100%;
 				display: block;
 				text-align: center;
 				font-size: 28px;
-				line-height: 50px;
+				line-height: 45px;
 				color: #000;
 				@include outline(2);
 				font-family: 'Celestia', sans-serif;
@@ -53,25 +54,50 @@
 	#sidebar {
 		height: calc(100% - 50px);
 		background: rgba(black, .95) !important;
+		padding-top: 0 !important;
 
-		> .mobile-nav ul {
-			list-style: none;
-			padding: 0;
-			margin: 5px 0 0;
+		> .mobile-nav {
+			display: block;
+			position: relative;
+			left: -10px;
+			width: calc(100% + 20px);
+			padding: 5px;
+			margin-bottom: 10px !important;
+			background: rgba($HeaderFooterBG,.5) $WhiteGridImage;
+			border-bottom: 2px solid $HeaderFooterBG;
 
-			li {
-				display: inline-block;
+			ul {
+				list-style: none;
+				padding: 0;
+				margin: 0;
+				font-size: 1.1em;
 
-				&.active a {
-					background-color: rgba(white, .5);
-				}
-
-				a {
+				li {
+					border: 2px solid transparent;
 					display: inline-block;
-					padding: 2px;
-					margin: 2px;
-					color: #fff;
-					border-radius: 5px;
+
+					&.active {
+						border-color: initial;
+						border-radius: 5px;
+
+						> * { margin: 0 }
+
+						a {
+							padding: 1px 2px;
+
+							&:not(:link) {
+								background-color: rgba(white, .2);
+								border-radius: 0;
+							}
+						}
+					}
+
+					a {
+						display: inline-block;
+						margin: 1px 2px;
+						color: #fff;
+						border-radius: 5px;
+					}
 				}
 			}
 		}

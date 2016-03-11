@@ -1,5 +1,4 @@
 	<section class='mobile-nav'>
-		<h2>Pages</h2>
 		<nav><ul><?=get_nav_html()?></ul></nav>
 	</section>
 <?php
