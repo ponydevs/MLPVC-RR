@@ -4,4 +4,16 @@
 	<p class='align-center links'>
 		<a class='btn darkblue typcn typcn-document-text' href="/admin/logs">Global Logs</a>
 	</p>
+
+	<section class="useful-links">
+		<h2>Manage useful links</h2>
+		<p><button class="green typcn typcn-plus" id="add-link">Add link</button><button class='darkblue typcn typcn-arrow-unsorted' id="reorder-links">Re-order links</button></p>
+		<div><?=render_useful_links_list()?></div>
+	</section>
 </div>
+
+<?php
+	ExportVars(array(
+		'ROLES_ASSOC' => $ROLES_ASSOC,
+		'PRINTABLE_ASCII_REGEX' => PRINTABLE_ASCII_REGEX
+	));

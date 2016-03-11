@@ -42,6 +42,8 @@ form:hover textarea {
 }
 select {
 	padding-right: 5px;
+
+	option[default] { display: none }
 }
 textarea {
 	padding-right: 5px;

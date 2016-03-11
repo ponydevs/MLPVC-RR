@@ -884,11 +884,123 @@
 
 							respond(format_log_details($MainEntry['reftype'],$Details));
 						}
+						else do404();
+					break;
+					case "usefullinks":
+						if (regex_match(new RegExp('^([gs]et|del|make)(?:/(\d+))?$'), $data, $_match)){
+							$action = $_match[1];
+							$creating = $action === 'make';
+
+							if (!$creating){
+								$Link = $Database->where('id', $_match[2])->getOne('usefullinks');
+								if (empty($Link))
+									respond('The specified link does not exist');
+							}
+
+							switch ($action){
+								case 'get':
+									respond(array(
+										'label' => $Link['label'],
+										'url' => $Link['url'],
+										'title' => $Link['title'],
+										'minrole' => $Link['minrole'],
+									));
+								case 'del':
+									if (!$Database->where('id', $Link['id'])->delete('usefullinks'))
+										respond(ERR_DB_FAIL);
+
+									respond(true);
+								break;
+								case 'make':
+								case 'set':
+									$data = array();
+
+									if (empty($_POST['label']))
+										respond('Link label is missing');
+									$label = trim($_POST['label']);
+									if ($creating || $Link['label'] !== $label){
+										$ll = strlen($label);
+										if ($ll < 3 || $ll > 40)
+											respond('Link label must be between 3 and 40 characters long');
+										check_string_valid($label, 'Link label', INVERSE_PRINTABLE_ASCII_REGEX);
+										$data['label'] = $label;
+									}
+
+									if (empty($_POST['url']))
+										respond('Link URL is missing');
+									$url = trim($_POST['url']);
+									if ($creating || $Link['url'] !== $url){
+										$ul = strlen($url);
+										if ($ul < 10 || $ul > 255)
+											respond('Link URL must be between 10 and 255 characters long');
+										if (!regex_match(new RegExp('^https?:\/\/.+$'), $url))
+											respond('Link URL does not appear to be a valid link');
+										if (stripos($url, ABSPATH) === 0)
+											$url = substr($url, 0, strlen(ABSPATH));
+										$data['url'] = $url;
+									}
+
+									if (!empty($_POST['title'])){
+										$title = trim($_POST['title']);
+										if ($creating || $Link['title'] !== $title){
+											$tl = strlen($title);
+											if ($tl < 3 || $tl > 255)
+												respond('Link title must be between 3 and 255 characters long');
+											check_string_valid($title, 'Link title', INVERSE_PRINTABLE_ASCII_REGEX);
+											$data['title'] = trim($title);
+										}
+									}
+									else $data['title'] = '';
+
+									if (empty($_POST['minrole']))
+										respond('Minimum role is missing');
+									$minrole = trim($_POST['minrole']);
+									if ($creating || $Link['minrole'] !== $minrole){
+										if (!isset($ROLES_ASSOC[$minrole]) || !PERM('user', $minrole))
+											respond('Minumum role is invalid');
+										$data['minrole'] = $minrole;
+									}
+
+									if (empty($data))
+										respond('Nothing was changed');
+									$query = $creating
+										? $Database->insert('usefullinks', $data)
+										: $Database->where('id', $Link['id'])->update('usefullinks', $data);
+									if (!$query)
+										respond(ERR_DB_FAIL);
+
+									respond(true);
+								break;
+								default: do404();
+							}
+						}
+						else if ($data === 'reorder'){
+							if (!isset($_POST['list']))
+								respond('Missing ordering information');
+
+							$list = explode(',',regex_replace(new RegExp('[^\d,]'),'',trim($_POST['list'])));
+							$order = 1;
+							foreach ($list as $id){
+								if (!$Database->where('id', $id)->update('usefullinks', array('order' => $order++)))
+									respond("Updating link #$id failed, process halted");
+							}
+
+							respond(true);
+						}
+						else do404();
 					break;
 					default:
 						do404();
 				}
 			}
+
+			if (empty($task))
+				loadPage(array(
+					'title' => 'Admin Area',
+					'do-css',
+					'js' => array('Sortable',$do),
+				));
+
 			switch ($task){
 				case "logs":
 					$ItemsPerPage = 20;
@@ -916,9 +1028,7 @@
 					));
 				break;
 				default:
-					loadPage(array(
-						'title' => 'Admin Area'
-					));
+					do404();
 			}
 		break;
 		case "u":
