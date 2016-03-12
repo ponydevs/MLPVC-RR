@@ -2856,7 +2856,7 @@ HTML;
 			$HTML .= <<<HTML
 <li>
 	<div class='image $what'>
-		<a href='$link'><img src='$preview'></a>$lock
+		<a href='$link'><img src='$preview'>$lock</a>
 	</div>
 	$label
 	<em>Posted under <a href='$link'>$page</a> $posted</em>

@@ -244,26 +244,6 @@
 			}
 		}
 		.finished ul li {
-			.image > a {
-				position: relative;
-
-				> span.typcn {
-			    position: absolute;
-			    left: 0;
-			    top: calc(100% - 30px);
-			    background: rgba(0,0,0,.7);
-			    color: #5f5;
-			    border: 2px solid $DeviationBorder;
-			    border-top-right-radius: 10px;
-			    height: 22px;
-			    text-transform: uppercase;
-			    max-width: 100%;
-			    font-size: 22px;
-			    line-height: 22px;
-			    padding: 2px 3px;
-			    cursor: help;
-				}
-			}
 			> .reserver .name {
 				line-height: 40px;
 				height: 40px;
