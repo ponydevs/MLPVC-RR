@@ -13,7 +13,7 @@
 		<h2>Attributions</h2>
 		<div class="attributions">
 			<?php readfile(APPATH.'views/about.html'); ?>
-			<p class="ramnode"><a href="https://clientarea.ramnode.com/aff.php?aff=2648"><img src="https://www.ramnode.com/images/banners/affbannerlightnewlogoblack.png" alt="high performance ssd vps""></a></p>
+			<p class="ramnode"><a href="https://clientarea.ramnode.com/aff.php?aff=2648"><img src="https://www.ramnode.com/images/banners/affbannerlightnewlogoblack.png" alt="high performance ssd vps"></a></p>
 		</div>
 	</section>
 	<section>
