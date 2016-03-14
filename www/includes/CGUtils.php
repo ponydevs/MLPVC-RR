@@ -867,7 +867,7 @@ HTML;
 
 		$ColorMapping = array();
 		foreach ($Colors as $row){
-			$label = $row['cglabel'].' '.regex_replace(new RegExp('(\s\d+)?/.*$'),'', $row['label']);
+			$label = $row['cglabel'].' '.regex_replace(new RegExp('(\s\d+)?(/.*)?$'),'', $row['label']);
 			if (isset($DefaultColorMapping[$label]) && !isset($ColorMapping[$label]))
 				$ColorMapping[$label] = $row['hex'];
 		}
@@ -881,13 +881,6 @@ HTML;
 		}
 
 		outputsvg($img,$OutputPath,$FileRelPath);
-	}
-
-	function get_cm_dir_svg_mod_ts($AppearanceID){
-		$OutputPath = APPATH."img/cg_render/$AppearanceID.svg";
-		if (file_exists($OutputPath))
-			return filemtime($OutputPath);
-		return null;
 	}
 
 	// Retruns CM preview image link
