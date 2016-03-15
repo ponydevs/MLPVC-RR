@@ -125,7 +125,8 @@
 			var $inputs = $dialogContent
 				.children(':not(#dialogButtons)')
 				.last()
-				.find('input, select, textarea');
+				.add($dialogButtons)
+				.find('input, button, select, textarea');
 
 			if (action === DISABLE)
 				$inputs.filter(':not(:disabled)').addClass('temp-disable').attr('disabled',DISABLE);
