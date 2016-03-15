@@ -1217,7 +1217,7 @@
 							$limit = 5;
 							$cols = "tid, name, CONCAT('typ-', type) as type";
 						}
-						else $CGDb->orderBy('type','ASC');
+						else $CGDb->orderBy('type','ASC')->where('"synonym_of" IS NULL');
 
 						if (isset($_POST['not']) && is_numeric($_POST['not']))
 							$CGDb->where('tid',$not_tid,'!=');
@@ -1605,6 +1605,8 @@
 						$Target = $CGDb->where('tid', $TargetID)->getOne('tags','tid');
 						if (empty($Target))
 							respond('Target tag does not exist');
+						if (!empty($Target['synonym_of']))
+							respond('Synonym tags cannot be synonymization targets');
 
 						$_TargetTagged = $CGDb->where('tid', $Target['tid'])->get('tagged',null,'ponyid');
 						$TargetTagged = array();
