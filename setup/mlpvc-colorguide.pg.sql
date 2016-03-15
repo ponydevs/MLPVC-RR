@@ -255,7 +255,7 @@ Eye gradient should be adjusted (lower on eye) to make sure top highlight is eas
 Eyes don''t have iris highlights.', 'd9fl30m', false, '2015-11-05 00:10:40.321984+01', NULL, true),
 (57, 16, 'Discord', '', NULL, false, '2015-11-14 04:28:38.262247+01', NULL, NULL),
 (58, 63, 'Tree Hugger', '', 'd8u7pz5', false, '2015-11-14 05:07:04.439467+01', NULL, false),
-(59, 64, 'Coloratura / Rara', '', 'd9hm2yd', false, '2015-11-24 05:28:54.164681+01', NULL, true),
+(59, 64, 'Coloratura', '', 'd9hm2yd', false, '2015-11-24 05:28:54.164681+01', NULL, true),
 (60, 65, 'Rara (Countess Outfit)', '', NULL, false, '2015-11-24 05:42:00.076945+01', NULL, NULL),
 (61, 66, 'Svengallop', '', NULL, false, '2015-11-24 07:28:47.770494+01', NULL, NULL),
 (62, 40, 'Sunburst', '', 'd9iyv1r', false, '2015-12-01 16:18:10.631048+01', NULL, true),
@@ -278,7 +278,7 @@ Forelock has an outline with a unique color.', NULL, false, '2016-03-06 16:21:47
 (77, 28, 'Twist', '', NULL, false, '2016-03-07 03:53:42.051112+01', NULL, NULL),
 (78, 11, 'Babs Seed', '', 'd8rnkgc', false, '2016-03-12 07:47:50.907346+01', NULL, true),
 (79, 68, 'Cheerilee', '', NULL, false, '2016-03-12 08:12:21.28273+01', NULL, NULL),
-(80, 69, 'Doctor Whooves/Time Turner', '', NULL, false, '2016-03-12 16:38:44.973718+01', NULL, NULL),
+(80, 69, 'Dr. Hooves / Time Turner', '', NULL, false, '2016-03-12 16:38:44.973718+01', NULL, NULL),
 (81, 29, 'Featherweight', '', NULL, false, '2016-03-13 15:23:00.43058+01', NULL, NULL);
 
 
@@ -2431,7 +2431,6 @@ INSERT INTO tagged VALUES
 (66, 35),
 (68, 36),
 (72, 37),
-(73, 38),
 (74, 39),
 (75, 40),
 (76, 63),
@@ -2460,8 +2459,6 @@ INSERT INTO tagged VALUES
 (90, 57),
 (91, 58),
 (92, 57),
-(93, 59),
-(93, 60),
 (94, 59),
 (94, 60),
 (94, 61),
@@ -2495,11 +2492,8 @@ INSERT INTO tagged VALUES
 (115, 69),
 (116, 38),
 (117, 11),
-(118, 11),
-(119, 10),
 (120, 12),
 (120, 69),
-(121, 12),
 (122, 72),
 (123, 73),
 (127, 74),
@@ -2513,7 +2507,10 @@ INSERT INTO tagged VALUES
 (134, 80),
 (135, 80),
 (136, 81),
-(137, 9);
+(155, 64),
+(156, 64),
+(158, 59),
+(158, 60);
 
 
 --
@@ -2580,10 +2577,10 @@ INSERT INTO tags VALUES
 (63, 'princess celestia', NULL, 'char', 1, NULL),
 (64, 'object', NULL, 'cat', 1, NULL),
 (65, 's5e2', NULL, 'ep', 4, NULL),
-(66, 'big macintosh', NULL, 'char', 1, NULL),
+(66, 'big mcintosh', '', 'char', 1, NULL),
 (68, 'moondancer', NULL, 'char', 1, NULL),
 (72, 'dinky doo', NULL, 'char', 1, NULL),
-(73, 'berry pinch', NULL, 'char', 1, NULL),
+(73, 'berry pinch', NULL, 'char', 0, 116),
 (74, 'button mash', NULL, 'char', 1, NULL),
 (75, 'lily longsocks', NULL, 'char', 1, NULL),
 (76, 'human', NULL, 'spec', 1, NULL),
@@ -2603,7 +2600,7 @@ INSERT INTO tags VALUES
 (90, 'draconequus', NULL, 'spec', 1, NULL),
 (91, 'tree hugger', NULL, 'char', 1, NULL),
 (92, 's5e22', NULL, 'ep', 1, NULL),
-(93, 'rara', '', 'char', 2, NULL),
+(93, 'rara', '', 'char', 0, 158),
 (94, 's5e24', '', 'ep', 3, NULL),
 (95, 'svengallop', '', 'char', 1, NULL),
 (96, 'outfit', 'Alternative character outfits', NULL, 3, NULL),
@@ -2628,10 +2625,10 @@ INSERT INTO tags VALUES
 (115, 'vinyl scratch', '', 'char', 1, NULL),
 (116, 'ruby pinch', '', 'char', 1, NULL),
 (117, 'muffins', '', 'char', 1, NULL),
-(118, 'derpy', '', 'char', 1, NULL),
-(119, 'colgate', '', 'char', 1, NULL),
+(118, 'derpy', '', 'char', 0, 50),
+(119, 'colgate', '', 'char', 0, 31),
 (120, 's5e9', '', 'ep', 2, NULL),
-(121, 'lyra', '', 'char', 1, NULL),
+(121, 'lyra', '', 'char', 0, 32),
 (122, 'sweet biscuit', '', 'char', 1, NULL),
 (123, 'say cheese', '', 'char', 1, NULL),
 (124, 's6e1', NULL, 'ep', 0, NULL),
@@ -2644,17 +2641,38 @@ INSERT INTO tags VALUES
 (131, 'wonderbolt outfit', '', 'app', 2, NULL),
 (132, 'babs seed', '', 'char', 1, NULL),
 (133, 'cheerilee', '', 'char', 1, NULL),
-(134, 'doctor whooves', '', 'char', 1, NULL),
+(134, 'doctor hooves', '', 'char', 1, NULL),
 (135, 'time turner', '', 'char', 1, NULL),
 (136, 'featherweight', '', 'char', 1, NULL),
-(137, 'luna', 'Allows searching for "luna" alone', 'char', 1, NULL);
+(137, 'luna', '', 'char', 0, 57),
+(138, 'celestia', '', 'char', 0, 63),
+(139, 'cadance', '', 'char', 0, 128),
+(140, 'twilight', '', 'char', 0, 14),
+(141, 'princess twilight', '', 'char', 0, 14),
+(142, 'vinyl', '', 'char', 0, 115),
+(143, 'dj pon-3', '', 'char', 0, 115),
+(144, 'dj p0n-3', '', 'char', 0, 115),
+(145, 'dj pon3', '', 'char', 0, 115),
+(146, 'dj-pon3', '', 'char', 0, 115),
+(147, 'pinkie', '', 'char', 0, 23),
+(148, 'diabetty', '', 'char', 0, 51),
+(149, 'big mac', '', 'char', 0, 66),
+(150, 'big macintosh', '', 'char', 0, 66),
+(151, 'maud', '', 'char', 0, 82),
+(152, 'dr. hooves', '', 'char', 0, 134),
+(153, 'dr hooves', '', 'char', 0, 134),
+(154, 'angel', '', 'char', 0, 155),
+(155, 'angel bunny', '', 'char', 1, NULL),
+(156, 'bunny', '', 'spec', 1, NULL),
+(157, 'doctor whooves', '', 'char', 0, 134),
+(158, 'coloratura', '', 'char', 2, NULL);
 
 
 --
 -- Name: tags_tid_seq; Type: SEQUENCE SET; Schema: public; Owner: mlpvc-rr
 --
 
-SELECT pg_catalog.setval('tags_tid_seq', 137, true);
+SELECT pg_catalog.setval('tags_tid_seq', 158, true);
 
 
 --
