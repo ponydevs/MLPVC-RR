@@ -1497,6 +1497,11 @@
 							$Tag = $CGDb->where('tid',$_POST['tag'])->getOne('tags');
 							if (empty($Tag))
 								respond('Tag does not exist');
+							if (!empty($Tag['synonym_of'])){
+								$Syn = get_tag_synon($Tag,'name');
+								respond('Synonym tags cannot be removed from appearances directly. '.
+								        "If you want to remove this tag you must remove <strong>{$Syn['name']}</strong> or the synonymization.");
+							}
 
 							if ($CGDb->where('ponyid', $Appearance['id'])->where('tid', $Tag['tid'])->has('tagged')){
 								if (!$CGDb->where('ponyid', $Appearance['id'])->where('tid', $Tag['tid'])->delete('tagged'))
@@ -1576,7 +1581,8 @@
 
 						if ($deleting){
 							if (!isset($_POST['sanitycheck'])){
-								$Uses = $CGDb->where('tid', $Tag['tid'])->count('tagged');
+								$tid = !empty($Tag['synonym_of']) ? $Tag['synonym_of'] : $Tag['tid'];
+								$Uses = $CGDb->where('tid',$tid)->count('tagged');
 								if ($Uses > 0)
 									respond('<p>This tag is currently used on '.plur('appearance',$Uses,PREPEND_NUMBER).'</p><p>Deleting will <strong class="color-red">permanently remove</strong> the tag from those appearances!</p><p>Are you <em class="color-red">REALLY</em> sure about this?</p>',0,array('confirm' => true));
 							}
@@ -1601,8 +1607,7 @@
 
 						if (empty($_POST['targetid']))
 							respond('Missing target tag ID');
-						$TargetID = intval($_POST['targetid'], 10);
-						$Target = $CGDb->where('tid', $TargetID)->getOne('tags','tid');
+						$Target = $CGDb->where('tid', intval($_POST['targetid'], 10))->getOne('tags');
 						if (empty($Target))
 							respond('Target tag does not exist');
 						if (!empty($Target['synonym_of']))
@@ -1631,7 +1636,7 @@
 						}
 
 						update_tag_count($Target['tid']);
-						respond('Tags successfully '.($merging?'merged':'synonymized'), 1);
+						respond('Tags successfully '.($merging?'merged':'synonymized'), 1, $synoning ? array('target' => $Target) : null);
 					}
 					else if ($unsynoning){
 						if (empty($Tag['synonym_of']))

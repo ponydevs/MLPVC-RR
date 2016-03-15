@@ -21,6 +21,20 @@ DocReady.push(function ColorguideManage(){
 	if (AppearancePage)
 		$EpAppearances = $('#ep-appearances').children('p');
 
+	$.fn.reorderTags = function(){
+		return this.each(function(){
+			$(this).children('.tag').sort(function(a, b){
+				var regex = /^.*typ-([a-z]+).*$/;
+				a = [a.className.replace(regex,'$1'), a.innerHTML.trim()];
+				b = [b.className.replace(regex,'$1'), b.innerHTML.trim()];
+
+				if (a[0] === b[0])
+					return a[1].localeCompare(b[1]);
+				return a[0].localeCompare(b[0]);
+			}).appendTo(this);
+		});
+	};
+
 	var $list = $('.appearance-list'),
 		$ponyEditor = $.mk('form').attr('id','pony-editor')
 			.append(
@@ -224,37 +238,46 @@ DocReady.push(function ColorguideManage(){
 			$.Dialog.close(function(){
 				window.CGTagEditing(tagName, tagID, action, function(action){
 					var $affected = $('.tag.id-'+tagID);
-					switch (action){
-						case "synon":
-							 $affected.addClass('synonym');
-						break;
-						case "unsynon":
-							if (this.keep_tagged)
-							    $affected.removeClass('synonym');
-						   else $affected.remove();
-						break;
-						case "merge":
-							 $affected.replaceWith($.mk('span').attr({
-							    'class': 'tag id-'+this.tid+(this.type?' typ-'+this.type:'')+(this.synonym_of?' synonym':''),
-							    title: this.title,
-							 }).text(this.name));
-						break;
-					}
+
+					if ($affected.length)
+						switch (action){
+							case "synon":
+								$affected.addClass('synonym');
+								var target = this.target,
+									$ssp =  $affected.eq(0).clone().removeClass('ctxmenu-bound'),
+									$tsp = $makeTagSpan(target);
+
+								var $tagsDivs = $affected.add($('.tag.id-'+target.tid)).closest('.tags');
+								$tagsDivs.filter(function(){
+									return $(this).children('.id-'+tagID).length === 0;
+								}).append($ssp).reorderTags();
+								$tagsDivs.filter(function(){
+									return $(this).children('.id-'+target.tid).length === 0;
+								}).append($tsp).reorderTags();
+								window.tooltips();
+								ctxmenus();
+							break;
+							case "unsynon":
+								if (this.keep_tagged)
+									$affected.removeClass('synonym');
+								else $affected.remove();
+							break;
+							case "merge":
+								$affected.replaceWith($makeTagSpan(this));
+							break;
+						};
+
 					$.Dialog.close();
 				});
 			});
 		})
 	);
-	function reorder($this){
-		$this.children('.tag').sort(function(a, b){
-			var regex = /^.*typ-([a-z]+).*$/;
-			a = [a.className.replace(regex,'$1'), a.innerHTML.trim()];
-			b = [b.className.replace(regex,'$1'), b.innerHTML.trim()];
 
-			if (a[0] === b[0])
-				return a[1].localeCompare(b[1]);
-			return a[0].localeCompare(b[0]);
-		}).appendTo($this);
+	function $makeTagSpan(data){
+		return $.mk('span').attr({
+			'class': 'tag id-'+data.tid+(data.type?' typ-'+data.type:'')+(data.synonym_of?' synonym':''),
+			title: data.title,
+		}).text(data.name);
 	}
 
 	function createNewTag($tag, name, typehint){
@@ -489,10 +512,10 @@ DocReady.push(function ColorguideManage(){
 		});
 
 		$colors.data('sortable',new Sortable($colors.get(0), {
-		    handle: ".move",
-		    ghostClass: "moving",
-		    scroll: false,
-		    animation: 150,
+			handle: ".move",
+			ghostClass: "moving",
+			scroll: false,
+			animation: 150,
 		}));
 	}).on('save-color-inputs',function(_, storeState){
 		var $form = $(this),
@@ -704,7 +727,7 @@ DocReady.push(function ColorguideManage(){
 								$affected.text(data.name).data('ctxmenu-items').eq(0).text('Tag: '+data.name);
 								$affected.each(function(){
 									this.className = this.className.replace(/typ-[a-z]+/, data.type ? 'typ-'+data.type : '');
-									$(this)[data.synonym_of?'addClass':'removeClass']('synonym').parent().each(function(){ reorder($(this)) });
+									$(this)[data.synonym_of?'addClass':'removeClass']('synonym').parent().reorderTags();
 								});
 								window.tooltips();
 								$.Dialog.close();
@@ -725,7 +748,7 @@ DocReady.push(function ColorguideManage(){
 					tagName = $tag.text().trim(),
 					title = 'Remove tag: '+tagName;
 
-				$.Dialog.confirm(title,"The tag "+tagName+" will be removed from this appearance.<br>Are you sure?",['Remove it','Nope'],function(sure){
+				$.Dialog.confirm(title,"The tag <strong>"+tagName+"</strong> will be removed from this appearance.<br>Are you sure?",['Remove it','Nope'],function(sure){
 					if (!sure) return;
 
 					var data = {tag:tagID};
@@ -883,9 +906,9 @@ DocReady.push(function ColorguideManage(){
 						$.mk('div').attr('class','cgs').append('<p class="align-center">Drag to re-arrange</p>',$cgs).prependTo($form);
 
 						new Sortable($cgs.get(0), {
-						    ghostClass: "moving",
-						    scroll: false,
-						    animation: 150,
+							ghostClass: "moving",
+							scroll: false,
+							animation: 150,
 						});
 
 						$.Dialog.request(title, $form, 'cg-reorder', 'Save', function($form){
