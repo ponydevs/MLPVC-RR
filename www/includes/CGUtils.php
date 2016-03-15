@@ -101,8 +101,21 @@
 		return $HTML;
 	}
 
+	/**
+	 * Retrieve set of tags for a given appearance
+	 *
+	 * @param int $PonyID
+	 * @param array|int $limit
+	 * @param bool $showEpTags
+	 *
+	 * @return array|null
+	 */
 	function get_tags($PonyID = null, $limit = null, $showEpTags = false){
 		global $CGDb;
+
+		$showSynonymTags = $showEpTags || PERM('inspector');
+		if (!$showSynonymTags)
+			$CGDb->where('"synonym_of" IS NULL');
 
 		$CGDb
 			->orderByLiteral('CASE WHEN tags.type IS NULL THEN 1 ELSE 0 END')
@@ -112,7 +125,7 @@
 			$CGDb->where("tags.type != 'ep'");
 		return isset($PonyID)
 			? $CGDb
-				->join('tags','tagged.tid = tags.tid','LEFT')
+				->join('tags','tagged.tid = tags.tid'.($showSynonymTags?' OR tagged.tid = tags.synonym_of':''),'LEFT')
 				->where('tagged.ponyid',$PonyID)
 				->get('tagged',$limit,'tags.*')
 			: $CGDb->get('tags',$limit);
@@ -128,7 +141,7 @@
 		if (PERM('inspector') && $PonyID !== 0)
 			$HTML .= "<input type='text' class='addtag tag' placeholder='Enter tag' pattern='".TAG_NAME_PATTERN."' maxlength='30' required>";
 		if (!empty($Tags)) foreach ($Tags as $i => $t){
-			$class = " class='tag id-{$t['tid']}".(!empty($t['type'])?' typ-'.$t['type']:'')."'";
+			$class = " class='tag id-{$t['tid']}".(!empty($t['synonym_of'])?' synonym':'').(!empty($t['type'])?' typ-'.$t['type']:'')."'";
 			$title = !empty($t['title']) ? " title='".apos_encode($t['title'])."'" : '';
 			$HTML .= "<span$class$title>{$t['name']}</span>";
 		}
@@ -490,19 +503,35 @@
 
 	// Generates the markup for the tags sub-page
 	function get_taglist_html($Tags, $wrap = true){
-		global $TAG_TYPES_ASSOC;
+		global $TAG_TYPES_ASSOC, $CGDb;
 		$HTML = $wrap ? '<tbody>' : '';
 
-		$utils = PERM('inspector') ? "<td class='utils'><button class='typcn typcn-minus delete' title='Delete'></button> <button class='typcn typcn-flow-merge merge' title='Merge'></button></td>" : '';
-		$refresh = PERM('inspector') ? " <button class='typcn typcn-arrow-sync refresh' title='Refresh use count'></button>" : '';
+		$canEdit = PERM('inspector');
+
+		$utils =
+		$refresh = '';
+		if ($canEdit){
+			$refresh = " <button class='typcn typcn-arrow-sync refresh' title='Refresh use count'></button>";
+			$utils = "<td class='utils align-center'><button class='typcn typcn-minus delete' title='Delete'></button> ".
+			         "<button class='typcn typcn-flow-merge merge' title='Merge'></button> <button class='typcn typcn-flow-children synon' title='Synonymize'></button></td>";
+		}
+
 
 		if (!empty($Tags)) foreach ($Tags as $t){
 			$trClass = $t['type'] ? " class='typ-{$t['type']}'" : '';
 			$type = $t['type'] ? $TAG_TYPES_ASSOC[$t['type']] : '';
+			$search = apos_encode(str_replace(' ','+',$t['name']));
+			$titleName = apos_encode($t['name']);
+
+			if ($canEdit && !empty($t['synonym_of'])){
+				$Syn = get_tag_synon($t,'name');
+				$t['title'] .= "<br><em>Synonym of <strong>{$Syn['name']}</strong></em>";
+			}
+
 			$HTML .= <<<HTML
 			<tr$trClass>
 				<td class="tid">{$t['tid']}</td>
-				<td class="name">{$t['name']}</td>$utils
+				<td class="name"><a href='/colorguide/?q=$search' title='Search for $titleName'><span class="typcn typcn-zoom"></span>{$t['name']}</a></td>$utils
 				<td class="title">{$t['title']}</td>
 				<td class="type">$type</td>
 				<td class="uses"><span>{$t['uses']}</span>$refresh</td>
@@ -1016,4 +1045,30 @@ HTML;
 		if (!upload_folder_create($OutputPath))
 			respond('Failed to create render directory');
 		outputpng($FinalBase, $OutputPath, $FileRelPath);
+	}
+
+	function get_actual_tag($value, $column = 'tid', $bool = false, $returnCols = null){
+		global $CGDb;
+
+		$arg1 = $bool === RETURN_AS_BOOL
+			? array('tags', 'synonym_of,tid')
+			: array('tags', !empty($returnCols)?"synonym_of,$returnCols":'*');
+
+		$Tag = $CGDb->where($column, $value)->getOne(...$arg1);
+
+		if (!empty($Tag['synonym_of'])){
+			$arg2 = $bool === RETURN_AS_BOOL ? 'tid' : $arg1[1];
+			$Tag = get_tag_synon($Tag, $arg2);
+		}
+
+		return $bool === RETURN_AS_BOOL ? !empty($Tag) : $Tag;
+	}
+
+	function get_tag_synon($Tag, $returnCols = null){
+		global $CGDb;
+
+		if (empty($Tag['synonym_of']))
+			return null;
+
+		return $CGDb->where('tid', $Tag['synonym_of'])->getOne('tags',$returnCols);
 	}

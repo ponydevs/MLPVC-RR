@@ -15,6 +15,8 @@ $ContentBG: rgba(255,255,255,.6);
 $SidebarWidth: 330px;
 $DeviationBorder: #71a972;
 
+$monospace: 'Source Code Pro Semibold', 'Consolas', monospace;
+
 //noinspection CssOptimizeSimilarProperties
 @mixin white-grid {
 	background-color: #fff;

@@ -209,7 +209,41 @@ DocReady.push(function ColorguideManage(){
 	$tagEditForm.append(
 		$.mk('div').addClass('align-center').append('<span>Tag type (optional)</span><br>',$_typeSelect),
 		$.mk('label').append('<span>Tag description (max 255 chars., optional)</span><br><textarea name="title" maxlength="255"></textarea>'),
-		$.mk('div').attr('class','notice').hide().html('<p></p>')
+		$.mk('div').attr('class','align-center edit-only').append(
+			$.mk('button').attr('class','blue typcn typcn-flow-merge merge').html('Merge&hellip;'),
+			$.mk('button').attr('class','blue typcn typcn-flow-children synon').html('Synonymize&hellip;')
+		).on('click','button',function(e){
+			e.preventDefault();
+
+			var $form = $(this).closest('form'),
+				tag = $form.data('tag'),
+				tagName = tag.name,
+				tagID = tag.tid,
+				action = this.className.split(' ').pop();
+
+			$.Dialog.close(function(){
+				window.CGTagEditing(tagName, tagID, action, function(action){
+					var $affected = $('.tag.id-'+tagID);
+					switch (action){
+						case "synon":
+							 $affected.addClass('synonym');
+						break;
+						case "unsynon":
+							if (this.keep_tagged)
+							    $affected.removeClass('synonym');
+						   else $affected.remove();
+						break;
+						case "merge":
+							 $affected.replaceWith($.mk('span').attr({
+							    'class': 'tag id-'+this.tid+(this.type?' typ-'+this.type:'')+(this.synonym_of?' synonym':''),
+							    title: this.title,
+							 }).text(this.name));
+						break;
+					}
+					$.Dialog.close();
+				});
+			});
+		})
 	);
 	function reorder($this){
 		$this.children('.tag').sort(function(a, b){
@@ -233,7 +267,7 @@ DocReady.push(function ColorguideManage(){
 				: $content.children('h1').text();
 
 		$.Dialog.request(title,$tagEditForm.clone(true, true),'edit-tag','Create',function($form){
-			$form.append(
+			$form.children('.edit-only').replaceWith(
 				$.mk('label').append(
 					$.mk('input').attr({type:'checkbox',name:'addto'}).val(ponyID).prop('checked', typeof name === 'string'),
 					document.createTextNode(' Add this tag to the appearance "'+ponyName+'" after creation')
@@ -647,7 +681,7 @@ DocReady.push(function ColorguideManage(){
 
 				$.post('/colorguide/gettag/'+tagID+EQGRq,$.mkAjaxHandler(function(){
 					var tag = this;
-					if (this.status) $.Dialog.request(title,$tagEditForm.clone(true, true),'edit-tag','Save',function($form){
+					if (this.status) $.Dialog.request(title,$tagEditForm.clone(true, true).data('tag', tag),'edit-tag','Save',function($form){
 						$form.find('input[name=type][value='+tag.type+']').prop('checked', true);
 						$form.find('input[type=text][name], textarea[name]').each(function(){
 							var $this = $(this);
@@ -662,14 +696,16 @@ DocReady.push(function ColorguideManage(){
 							$.post('/colorguide/settag/'+tagID+EQGRq, data, $.mkAjaxHandler(function(){
 								if (!this.status) return $.Dialog.fail(false, this.message);
 
-								var $affected = $('.id-'+this.tid);
+								var data = this,
+									$affected = $('.id-'+data.tid);
 								$affected.qtip('destroy', true);
-								if (this.title) $affected.attr('title', this.title);
+								if (data.title) $affected.attr('title', data.title);
 								else $affected.removeAttr('title');
-								$affected
-									.attr('class', 'tag id-'+this.tid+(this.type?' typ-'+this.type:''))
-									.text(this.name).data('ctxmenu-items').eq(0).text('Tag: '+this.name);
-								$affected.parent().each(function(){ reorder($(this)) });
+								$affected.text(data.name).data('ctxmenu-items').eq(0).text('Tag: '+data.name);
+								$affected.each(function(){
+									this.className = this.className.replace(/typ-[a-z]+/, data.type ? 'typ-'+data.type : '');
+									$(this)[data.synonym_of?'addClass':'removeClass']('synonym').parent().each(function(){ reorder($(this)) });
+								});
 								window.tooltips();
 								$.Dialog.close();
 							}));
@@ -765,7 +801,7 @@ DocReady.push(function ColorguideManage(){
 				display: 'name',
 				source: taglist,
 				templates: {
-					suggestion: Handlebars.compile('<span class="tag id-{{tid}} {{type}}">{{name}}</span>')
+					suggestion: Handlebars.compile('<span class="tag id-{{tid}} {{type}} {{#if synonym_of}}synonym{{else}}monospace{{/if}}">{{name}} <span class="uses">{{#if synonym_of}}<span class="typcn typcn-flow-children"></span>{{synonym_target}}{{else}}{{uses}}{{/if}}</span></span>')
 				}
 			});
 			$input.on('keydown',function(e){
@@ -1071,12 +1107,11 @@ DocReady.push(function ColorguideManage(){
 			$.Dialog.wait(title, 'Retrieving appearance details from server');
 
 			$.post('/colorguide/get/'+ponyID+EQGRq,$.mkAjaxHandler(function(){
+				if (!this.status) return $.Dialog.fail(false, this.message);
+
 				var data = this;
-				if (data.status){
-					data.ponyID = ponyID;
-					mkPonyEditor($this, title, data);
-				}
-				else $.Dialog.fail(title, this.message);
+				data.ponyID = ponyID;
+				mkPonyEditor($this, title, data);
 			}));
 		}).next('.delete').on('click',function(){
 			var $this = $(this),

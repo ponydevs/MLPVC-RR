@@ -1,6 +1,25 @@
 @import "vars";
 @import "colorguide_vars";
 
+.tag > .uses {
+	font-weight: normal;
+	font-size: .9em;
+	padding: 1px 2px;
+}
+.tag.monospace > .uses {
+	font-family: $monospace;
+}
+.tag.synonym { opacity: .8 }
+.twitter-typeahead {
+	.tt-dataset { background: #fff }
+	.tag.synonym > .uses {
+
+		.typcn { margin-right: 4px }
+	}
+	input { font-weight: normal !important }
+}
+.tag.addtag.tt-hint { color: rgba(black, .5) !important }
+
 #edit-tag .type-selector {
 	display: flex;
 	flex-flow: row wrap;
@@ -51,7 +70,7 @@
 		border: 1px solid $DefaultUIColor;
 
 		&, * {
-			font-family: 'Source Code Pro', 'Consolas', monospace !important;
+			font-family: $monospace !important;
 			font-size: 14px !important;
 		}
 	}

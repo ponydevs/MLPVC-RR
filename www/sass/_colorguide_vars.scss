@@ -121,7 +121,7 @@ $TCharacter: adjust_hue($_TBase, 240);
 	}
 	.clri {
 		width: 65px;
-		font-family: 'Source Code Pro Semibold', 'Consolas', monospace;
+		font-family: $monospace;
 	}
 	.clra {
 		margin-left: 3px;

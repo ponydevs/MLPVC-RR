@@ -1192,6 +1192,16 @@
 
 				switch ($data){
 					case 'gettags':
+						if (isset($_POST['not']) && is_numeric($_POST['not']))
+							$not_tid = intval($_POST['not'], 10);
+						if (!empty($_POST['action']) && $_POST['action'] === 'synon'){
+							$Tag = $CGDb->where('tid',$not_tid)->where('"synonym_of" IS NOT NULL')->getOne('tags');
+							if (!empty($Tag)){
+								$Syn = get_tag_synon($Tag,'name');
+								respond("This tag is already a synonym of <strong>{$Syn['name']}</strong>.<br>Would you like to remove the synonym?",0,array('undo' => true));
+							}
+						}
+
 						$viaTypeahead = !empty($_GET['s']);
 						$limit = null;
 						$cols = "tid, name, type";
@@ -1210,9 +1220,16 @@
 						else $CGDb->orderBy('type','ASC');
 
 						if (isset($_POST['not']) && is_numeric($_POST['not']))
-							$CGDb->where('tid',intval($_POST['not'], 10),'!=');
-
-						$Tags = $CGDb->orderBy('name','ASC')->get('tags',$limit,$cols);
+							$CGDb->where('tid',$not_tid,'!=');
+						$Tags = $CGDb->orderBy('name','ASC')->get('tags',$limit,"$cols, uses, synonym_of");
+						if ($viaTypeahead)
+							foreach ($Tags as $i => $t){
+								if (empty($t['synonym_of']))
+									continue;
+								$Syn = $CGDb->where('tid', $t['synonym_of'])->getOne('tags','name');
+								if (!empty($Syn))
+									$Tags[$i]['synonym_target'] = $Syn['name'];
+							};
 
 						typeahead_results(empty($Tags) ? '[]' : $Tags);
 					break;
@@ -1430,6 +1447,7 @@
 
 							respond('Cached image removed, the image will be re-generated on the next request', 1);
 						break;
+						// TODO merge with untag
 						case "tag":
 							if ($Appearance['id'] === 0)
 								respond('This appearance cannot be tagged');
@@ -1444,7 +1462,7 @@
 							if ($TagCheck !== false)
 								$tag_name = $TagCheck;
 
-							$Tag = $CGDb->where('name', $tag_name)->getOne('tags');
+							$Tag = $CGDb->where('name',$tag_name)->getOne('tags');
 							if (empty($Tag))
 								respond("The tag $tag_name does not exist.<br>Would you like to create it?",0,array(
 									'cancreate' => $tag_name,
@@ -1476,16 +1494,14 @@
 
 							if (empty($_POST['tag']))
 								respond('Tag ID is not specified');
-							$TagID = intval($_POST['tag'], 10);
-							$Tag = $CGDb->where('tid', $TagID)->getOne('tags');
+							$Tag = $CGDb->where('tid',$_POST['tag'])->getOne('tags');
 							if (empty($Tag))
 								respond('Tag does not exist');
 
-							if (!$CGDb->where('ponyid', $Appearance['id'])->where('tid', $Tag['tid'])->has('tagged'))
-								respond('This appearance does not have this tag');
-
-							if (!$CGDb->where('ponyid', $Appearance['id'])->where('tid', $Tag['tid'])->delete('tagged'))
-								respond(ERR_DB_FAIL);
+							if ($CGDb->where('ponyid', $Appearance['id'])->where('tid', $Tag['tid'])->has('tagged')){
+								if (!$CGDb->where('ponyid', $Appearance['id'])->where('tid', $Tag['tid'])->delete('tagged'))
+									respond(ERR_DB_FAIL);
+							}
 
 							update_tag_count($Tag['tid']);
 							if (isset($GroupTagIDs_Assoc[$Tag['tid']]))
@@ -1511,7 +1527,7 @@
 						default: statusCodeHeader(400, AND_DIE);
 					}
 				}
-				else if (regex_match(new RegExp('^([gs]et|make|del|merge|recount)tag(?:/(\d+))?$'), $data, $_match)){
+				else if (regex_match(new RegExp('^([gs]et|make|del|merge|recount|(?:un)?synon)tag(?:/(\d+))?$'), $data, $_match)){
 					$action = $_match[1];
 
 					if ($action === 'recount'){
@@ -1522,7 +1538,7 @@
 						$counts = array();
 						$updates = 0;
 						foreach ($tagIDs as $tid){
-							if ($CGDb->where('tid', $tid)->has('tags')){
+							if (get_actual_tag($tid,'tid',RETURN_AS_BOOL)){
 								$result = update_tag_count($tid, true);
 								if ($result['status'])
 									$updates++;
@@ -1533,7 +1549,7 @@
 						respond(
 							(
 								!$updates
-								? 'There was no change in the tag useage counts'
+								? 'There was no change in the tag usage counts'
 								: "$updates tag".($updates!==1?"s'":"'s").' use count'.($updates!==1?'s were':' was').' updated'
 							),
 							1,
@@ -1541,11 +1557,12 @@
 						);
 					}
 
-					$setting = $action === 'set';
 					$getting = $action === 'get';
 					$deleting = $action === 'del';
 					$new = $action === 'make';
 					$merging = $action === 'merge';
+					$synoning = $action === 'synon';
+					$unsynoning = $action === 'unsynon';
 
 					if (!$new){
 						if (empty($_match[2]))
@@ -1578,7 +1595,10 @@
 					}
 					$data = array();
 
-					if ($merging){
+					if ($merging || $synoning){
+						if ($synoning && !empty($Tag['synonym_of']))
+							respond('This tag is already synonymized with a different tag');
+
 						if (empty($_POST['targetid']))
 							respond('Missing target tag ID');
 						$TargetID = intval($_POST['targetid'], 10);
@@ -1586,24 +1606,56 @@
 						if (empty($Target))
 							respond('Target tag does not exist');
 
-						$_TargetTagged = $CGDb->where('tid', $Target['tid'])->get('tagged','ponyid');
+						$_TargetTagged = $CGDb->where('tid', $Target['tid'])->get('tagged',null,'ponyid');
 						$TargetTagged = array();
 						foreach ($_TargetTagged as $tg)
 							$TargetTagged[] = $tg['ponyid'];
 
-						$Tagged = $CGDb->where('tid', $Tag['tid'])->get('tagged','ponyid');
+						$Tagged = $CGDb->where('tid', $Tag['tid'])->get('tagged',null,'ponyid');
 						foreach ($Tagged as $tg){
 							if (in_array($tg['ponyid'], $TargetTagged)) continue;
 
 							if (!$CGDb->insert('tagged',array(
 								'tid' => $Target['tid'],
 								'ponyid' => $tg['ponyid']
-							))) respond("Tag merge process failed, please re-try.<br>Technical details: ponyid={$tg['ponyid']} tid={$Target['tid']}");
+							))) respond('Tag '.($merging?'merging':'synonimizing')." failed, please re-try.<br>Technical details: ponyid={$tg['ponyid']} tid={$Target['tid']}");
 						}
-						$CGDb->where('tid', $Tag['tid'])->delete('tags');
+						if ($merging)
+							// No need to delete "tagged" table entries, constraints do it for us
+							$CGDb->where('tid', $Tag['tid'])->delete('tags');
+						else {
+							$CGDb->where('tid', $Tag['tid'])->delete('tagged');
+							$CGDb->where('tid', $Tag['tid'])->update('tags', array('synonym_of' => $Target['tid'], 'uses' => 0));
+						}
 
 						update_tag_count($Target['tid']);
-						respond('Tags successfully merged', 1);
+						respond('Tags successfully '.($merging?'merged':'synonymized'), 1);
+					}
+					else if ($unsynoning){
+						if (empty($Tag['synonym_of']))
+							respond(true);
+
+						$keep_tagged = isset($_POST['keep_tagged']);
+						$uses = 0;
+						if ($keep_tagged){
+							$Target = $CGDb->where('tid', $Tag['synonym_of'])->getOne('tags','tid');
+							if (!empty($Target)){
+								$TargetTagged = $CGDb->where('tid', $Target['tid'])->get('tagged',null,'ponyid');
+								foreach ($TargetTagged as $tg){
+									if (!$CGDb->insert('tagged',array(
+										'tid' => $Tag['tid'],
+										'ponyid' => $tg['ponyid']
+									))) respond("Tag synonym removal process failed, please re-try.<br>Technical details: ponyid={$tg['ponyid']} tid={$Tag['tid']}");
+									$uses++;
+								}
+							}
+							else $keep_tagged = false;
+						}
+
+						if (!$CGDb->where('tid', $Tag['tid'])->update('tags', array('synonym_of' => null, 'uses' => $uses)))
+							respond(ERR_DB_FAIL);
+
+						respond(array('keep_tagged' => $keep_tagged));
 					}
 
 					$name = isset($_POST['name']) ? strtolower(trim($_POST['name'])) : null;
@@ -1872,7 +1924,8 @@
 				'ace',
 				'ace-mode-colorguide',
 				'ace-theme-colorguide',
-				"$do-manage"
+				"$do-tags",
+				"$do-manage",
 			);
 			$GUIDE_MANAGE_CSS = array(
 				'ace-theme-colorguide',
@@ -1956,7 +2009,7 @@
 					$_MSG = check_string_valid($tag,"Tag #$num's name",INVERSE_TAG_NAME_PATTERN, !isset($_GET['js']));
 					if (is_string($_MSG)) break;
 
-					$Tag = $CGDb->where('name', $tag)->getOne('tags', 'tid');
+					$Tag = get_actual_tag($tag, 'name', false, 'tid, name');
 					if (empty($Tag)){
 						$_MSG = "The tag $tag does not exist";
 						if (isset($_REQUEST['js']))

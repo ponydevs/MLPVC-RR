@@ -21,7 +21,16 @@
 				width: 7.5%;
 				text-align: center;
 			}
-			&.name { font-weight: bold }
+			&.name {
+				font-weight: bold;
+
+				a {
+					color: inherit !important;
+					text-decoration: underline !important;
+
+					.typcn { margin-right: 7px }
+				}
+			}
 			&.utils { white-space: nowrap }
 			&.type {
 				text-align: center;

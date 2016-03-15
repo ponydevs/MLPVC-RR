@@ -285,7 +285,8 @@ div.tags {
 			display: block;
 			position: absolute;
 			top: 5px;
-			right: 5px;
+			// padding + border + margin
+			right: 5px + 1px + 5px;
 
 			@include sprite-animation(16px, 16px, 12, 'indicator');
 		}
@@ -322,6 +323,7 @@ div.tags {
 	.tt-dataset & {
 		display: block;
 		margin: 0;
+		white-space: nowrap;
 	}
 }
 
