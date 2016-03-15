@@ -754,10 +754,11 @@ DocReady.push(function ColorguideManage(){
 					if (!sure) return;
 
 					var data = {};
-					$.Dialog.wait(title,'Sending removal request');
 					if (AppearancePage)
 						data.APPEARANCE_PAGE = true;
 					(function Send(data){
+						$.Dialog.wait(title,'Sending removal request');
+
 						$.post('/colorguide/deltag/'+tagID+EQGRq,data,$.mkAjaxHandler(function(){
 							if (this.status){
 								if (this.needupdate === true)

@@ -1667,6 +1667,8 @@
 					if ($name[0] === '-')
 						respond('Tag name cannot start with a dash');
 					check_string_valid($name,'Tag name',INVERSE_TAG_NAME_PATTERN);
+					if (regex_match(new RegExp('^b+[ae3]+[s5]+t+(e+r+|e+s+t+)?[\s\-.()]*p+[o0]+[wh]*n+[ye3]*$'),$name))
+						respond('Highly opinion-based tags are not allowed');
 					$data['name'] = $name;
 
 					if (empty($_POST['type'])) $data['type'] = null;
