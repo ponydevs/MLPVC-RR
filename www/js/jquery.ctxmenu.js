@@ -124,7 +124,17 @@
 		$ch.eq(nth).children('a').addClass('default');
 	};
 	$.ctxmenu.runDefault = function($el){
-		$el.data('ctxmenu-items').find('a.default').get(0).click();
+		var $def = $el.data('ctxmenu-items').find('a.default').clone().css({
+			position: 'absolute',
+			'z-index': -1,
+			top: 0,
+			left: 0,
+			width: 0,
+			height: 0,
+			display: 'block',
+		}).appendTo($body);
+		$def.get(0).click();
+		$def.remove();
 	};
 
 	$body.on('click contextmenu',function(){ $ctxmenu.hide() });

@@ -265,7 +265,7 @@ DocReady.push(function ColorguideManage(){
 							case "merge":
 								$affected.replaceWith($makeTagSpan(this));
 							break;
-						};
+						}
 
 					$.Dialog.close();
 				});
