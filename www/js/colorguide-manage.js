@@ -1055,9 +1055,8 @@ DocReady.push(function ColorguideManage(){
 				}).on('uz-uploadfinish',function(){
 					updateSprite();
 				}).ctxmenu([
-					{text: 'Open image in new tab', icon: 'arrow-forward', attr: {
-						href: $this.find('img').attr('src'),
-						target: '_blank',
+					{text: 'Open image in new tab', icon: 'arrow-forward', click: function(){
+						window.open($this.find('img').attr('src'),'_blank');
 					}},
 					{text: 'Copy image URL', icon: 'clipboard', click: function(){
 						$.copy($.urlToAbsolute($this.find('img').attr('src')));
