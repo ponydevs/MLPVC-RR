@@ -1089,6 +1089,8 @@ HTML;
 
 	// Prevents running any more caching requests when set to true
 	$CACHE_BAILOUT = false;
+	$MASS_CACHE_LIMIT = 5;
+	$MASS_CACHE_USED = 0;
 
 	/**
 	 * Caches information about a deviation in the 'deviation_cache' table
@@ -1096,16 +1098,17 @@ HTML;
 	 *
 	 * @param string $ID
 	 * @param null|string $type
+	 * @param bool $mass
 	 * @return array|null
 	 */
-	function da_cache_deviation($ID, $type = 'fav.me'){
-		global $Database, $CACHE_BAILOUT;
+	function da_cache_deviation($ID, $type = 'fav.me', $mass = false){
+		global $Database, $CACHE_BAILOUT, $MASS_CACHE_USED, $MASS_CACHE_LIMIT;
 
 		if ($type === 'sta.sh')
 			$ID = stash_id_normalize($ID);
 
 		$Deviation = $Database->where('id',$ID)->getOne('deviation_cache');
-		if (!$CACHE_BAILOUT && empty($Deviation) || (!empty($Deviation['updated_on']) && strtotime($Deviation['updated_on'])+ONE_HOUR < time())){
+		if (!$CACHE_BAILOUT && (empty($Deviation) && $MASS_CACHE_USED <= $MASS_CACHE_LIMIT) || (!empty($Deviation['updated_on']) && strtotime($Deviation['updated_on'])+(ONE_HOUR*5) < time())){
 			try {
 				$json = da_oembed($ID, $type);
 			}
@@ -1150,10 +1153,16 @@ HTML;
 				$insert['id'] = $ID;
 			}
 
+			$MASS_CACHE_USED++;
 			$Deviation = $insert;
 		}
-		else if (!empty($Deviation['updated_on']))
+		else if (!empty($Deviation['updated_on'])){
 			$Deviation['updated_on'] = date('c', strtotime($Deviation['updated_on']));
+			if ($CACHE_BAILOUT)
+				$Database->where('id',$Deviation['id'])->update('deviation_cache', array(
+					'updated_on' => $Deviation['updated_on'],
+				));
+		}
 
 		return $Deviation;
 	}
@@ -1532,7 +1541,7 @@ HTML;
 			$R['reserver'] = get_user($R['reserved_by']);
 			$reserved_at = $isRequest && !empty($R['reserved_at']) ? "<em class='reserve-date'>Reserved <a href='#$ID'>".timetag($R['reserved_at'])."</a></em>" : '';
 			if ($finished){
-				$Deviation = da_cache_deviation($R['deviation_id']);
+				$Deviation = da_cache_deviation($R['deviation_id'],'fav.me',true);
 				if (empty($Deviation))
 					$Image = "<div class='image deviation error'><a href='http://fav.me/{$R['deviation_id']}'>Preview unavailable<br><small>Click to view</small></a></div>";
 				else {
