@@ -1,4 +1,4 @@
-<div id="content" class="sections-with-icons">
+<div id="content">
 <?php
 	if (isset($MSG)){
 		echo "<h1>$MSG</h1>";

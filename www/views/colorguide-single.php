@@ -1,4 +1,4 @@
-<div id="content" class="sections-with-icons">
+<div id="content">
 	<div class="sprite-wrap"><?=get_sprite_html($Appearance)?></div>
 	<h1><?=$heading?></h1>
 	<p>from the MLP-VectorClub <a href="/<?=$color?>guide"><?=$Color?> Guide</a></p>

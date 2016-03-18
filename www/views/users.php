@@ -1,4 +1,4 @@
-<div id="content" class="sections-with-icons">
+<div id="content">
 	<h1><?=$title?></h1>
 	<p>List of all users in the database</p>
 
