@@ -1,4 +1,10 @@
 <?php
+
+	// Global variables \\
+	$Color = 'Color';
+	$color = 'color';
+	$signedIn = false;
+	$currentUser = null;
 	
 	require "init.php";
 
