@@ -43,12 +43,18 @@
 			display: inline-block;
 
 			> .upload-wrap {
+				&.nosprite img {
+					width: 300px;
+					height: 300px;
+				}
+
 				a, a > img {
 					display: block;
 				}
 				a > img {
 					margin: 0 auto;
 					max-width: 100%;
+
 				}
 			}
 
