@@ -1437,7 +1437,7 @@ HTML;
 
 		$Username = $User['name'];
 		$username = strtolower($Username);
-		$avatar = $format == FULL ? "<img src='{$User['avatar_url']}' class='avatar'> " : '';
+		$avatar = $format == FULL ? "<img src='{$User['avatar_url']}' class='avatar' alt='avatar'> " : '';
 		$link = "http://$username.deviantart.com/";
 
 		if ($format === LINK_ONLY) return $link;
@@ -1460,7 +1460,7 @@ HTML;
 		}
 
 		$Username = $User['name'];
-		$avatar = $format == FULL ? "<img src='{$User['avatar_url']}' class='avatar'> " : '';
+		$avatar = $format == FULL ? "<img src='{$User['avatar_url']}' class='avatar' alt='avatar'> " : '';
 
 		return "<a href='/@$Username' class='da-userlink".($format == FULL ? ' with-avatar':'')."'>$avatar<span class='name'>$Username</span></a>";
 	}
@@ -1520,7 +1520,8 @@ HTML;
 	function get_r_li($R, $isRequest = false){
 		$finished = !empty($R['deviation_id']);
 		$ID = ($isRequest ? 'request' : 'reservation').'-'.$R['id'];
-		$Image = "<div class='image screencap'><a href='{$R['fullsize']}'><img src='{$R['preview']}'></a></div>";
+		$alt = !empty($R['label']) ? apos_encode($R['label']) : '';
+		$Image = "<div class='image screencap'><a href='{$R['fullsize']}'><img src='{$R['preview']}' alt='$alt'></a></div>";
 		$post_label = !empty($R['label']) ? '<span class="label">'.htmlspecialchars($R['label']).'</span>' : '';
 		$permalink = "<a href='#$ID'>".timetag($R['posted']).'</a>';
 
@@ -1831,7 +1832,7 @@ HTML;
 		$badge = '';
 		if (empty($User['guest']))
 			$badge = "<span class='badge'>".label_to_initials($User['rolelabel'])."</span>";
-		return "<div class='avatar-wrap'><img src='{$User['avatar_url']}' class='avatar'>$badge</div>";
+		return "<div class='avatar-wrap'><img src='{$User['avatar_url']}' class='avatar' alt='avatar'>$badge</div>";
 	}
 
 	/**
@@ -2155,7 +2156,7 @@ HTML;
 
 		$HTML .= '<p>'.(!empty($Score) ? "This $thing is rated $Score/5 (<a class='detail' href='#detail'>$Votes votes</a>)" : 'Nopony voted yet.').'</p>';
 		if ($Score > 0)
-			$HTML .= "<img src='/muffin-rating?w=$ScorePercent' id='muffins'>";
+			$HTML .= "<img src='/muffin-rating?w=$ScorePercent' id='muffins' alt='muffin rating svg'>";
 
 		$UserVote = get_episode_user_vote($Episode);
 		if (empty($UserVote)){
@@ -2848,11 +2849,15 @@ HTML;
 			$reservation_time_known = !empty($p['reserved_at']);
 			$posted = timetag($p['posted']);
 			$what = !empty($p['deviation_id']) ? 'deviation' : 'screencap';
+			$alt = '';
 			$preview = $p['preview'];
 			if (!empty($p['deviation_id'])){
 				$Deviation = da_cache_deviation($p['deviation_id']);
 				$preview = $Deviation['preview'];
+				$alt = $Deviation['title'];
 			}
+			else if (!empty($p['label']))
+				$alt = $p['label'];
 			$reserver_btn = '';
 			if ($is_request)
 				$reserver_btn .= '<em>Posted by '.profile_link(get_user($p['requested_by'])).'</em>';
@@ -2865,7 +2870,7 @@ HTML;
 			$HTML .= <<<HTML
 <li>
 	<div class='image $what'>
-		<a href='$link'><img src='$preview'>$lock</a>
+		<a href='$link'><img src='$preview' alt='preview'>$lock</a>
 	</div>
 	$label
 	<em>Posted under <a href='$link'>$page</a> $posted</em>
