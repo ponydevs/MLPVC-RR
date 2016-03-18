@@ -1,4 +1,4 @@
-<div id="content">
+<div id="content" class="sections-with-icons">
 	<h1><?=$title?></h1>
 	<p>List of all users in the database</p>
 
@@ -25,7 +25,7 @@
 			global $ROLES_ASSOC;
 			echo <<<HTML
 <section>
-	<label><strong>$userCount</strong> $group $groupInitials</label>
+	<h2><strong>$userCount</strong> $group $groupInitials</h2>
 	$usersStr
 </section>
 HTML;

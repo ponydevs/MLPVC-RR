@@ -1,4 +1,4 @@
-<div id="content">
+<div id="content" class="sections-with-icons">
 <?php
 	if (isset($MSG)){
 		echo "<h1>$MSG</h1>";
@@ -36,7 +36,7 @@
 
 	if (PERM('developer')){ ?>
 		<section>
-			<label><?=$DevSection?>User ID:</label>
+			<h2><?=$DevSection?>User ID:</h2>
 			<span><?=$User['id']?></span>
 		</section>
 <?  }
@@ -49,7 +49,7 @@
 	if ((PERM('inspector') || $sameUser) && PERM('member', $User['role'])){
 		$YouHave = ($sameUser?'You have':'This user has'); ?>
 		<section class="pending-reservations">
-			<label><?=$PrivateSection?>Pending reservations</label>
+			<h2><?=$PrivateSection?>Pending reservations</h2>
 			<span><?="$YouHave ".($hasPending>0?"<strong>$TotalPending</strong>":'no')?> pending reservation<?php
 		echo $TotalPending!==1?'s':'';
 		if ($hasPending)
@@ -112,7 +112,7 @@ HTML;
 		$AwaitCount = count($AwaitingApproval);
 		$them = $AwaitCount!==1?'them':'it'; ?>
 		<section class="awaiting-approval">
-			<label><?=$PrivateSection?>Vectors waiting for approval</label>
+			<h2><?=$PrivateSection?>Vectors waiting for approval</h2>
 <?php   if ($sameUser){ ?>
 			<p>After you finish an image and submit it to the group gallery, an inspector will check your vector and may ask you to fix some issues on your image, if any. After an image is accepted to the gallery, it can be marked as "approved", which gives it a green check mark, indicating that it's most likely free of any errors.</p>
 <?php   } ?>
@@ -146,7 +146,7 @@ HTML;
 		</section>
 <?  } ?>
 		<section class="bans">
-			<label><?=$PublicSection?>Banishment history</label>
+			<h2><?=$PublicSection?>Banishment history</h2>
 			<ul><?php
 		$Actions = array('Banish','Un-banish');
 		$Banishes = $Database
@@ -183,7 +183,7 @@ HTML;
 	<div class="settings"><?php
 		if ($sameUser || PERM('manager')){ ?>
 		<section class="sessions">
-			<label><?=$PrivateSection?>Sessions</label>
+			<h2><?=$PrivateSection?>Sessions</h2>
 <?php       if (isset($CurrentSession) || !empty($Sessions)){ ?>
 			<p>Below is a list of all the browsers <?=$sameUser?"you've":'this user has'?> logged in from.</p>
 			<ul class="session-list"><?php
@@ -200,7 +200,7 @@ HTML;
 <?php   }
 		if ($sameUser){ ?>
 		<section>
-			<label><?=$VeryPrivateSection?>Unlink account</label>
+			<h2><?=$VeryPrivateSection?>Unlink account</h2>
 			<p>By unlinking your account you revoke this site's access to your account information. This will also log you out on every device where you're currently logged in. The next time you want to log in, you'll have to link your account again. This will not remove any of your <strong>public</strong> data from our site, it's still kept locally.</p>
 	        <button id="unlink" class="orange typcn typcn-times">Unlink Account</button>
 	    </section>

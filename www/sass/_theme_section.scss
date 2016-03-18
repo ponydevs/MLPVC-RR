@@ -1,0 +1,24 @@
+%section {
+	&:not(:last-child) { margin-bottom: 15px }
+
+	> h2 {
+		font-size: 1.3em;
+		text-align: left;
+		margin: 0 0 8px;
+		font-family: "Celestia", sans-serif;
+
+		.typcn { margin-right: 7px }
+	}
+	p {
+		margin: 0;
+
+		&:not(:last-child) {
+			margin-bottom: 5px;
+		}
+	}
+	> div > * {
+		margin: 0 0 5px;
+
+		&:last-child { margin-bottom: 0 }
+	}
+}
