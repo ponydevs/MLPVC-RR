@@ -74,12 +74,13 @@ DocReady.push(function Admin(){
 					})
 				),
 				$.mk('label').append(
-					"<span>URL (10-255 chars.)</span>",
+					"<span>URL (3-255 chars.)</span>",
 					$.mk('input').attr({
-						type: 'url',
+						type: 'text',
 						name: 'url',
 						maxlength: 255,
 						required: true,
+						pattern: PRINTABLE_ASCII_REGEX.replace('+','{3,255}'),
 					})
 				),
 				$.mk('label').append(

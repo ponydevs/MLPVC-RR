@@ -931,12 +931,14 @@
 									$url = trim($_POST['url']);
 									if ($creating || $Link['url'] !== $url){
 										$ul = strlen($url);
-										if ($ul < 10 || $ul > 255)
-											respond('Link URL must be between 10 and 255 characters long');
-										if (!regex_match(new RegExp('^https?:\/\/.+$'), $url))
-											respond('Link URL does not appear to be a valid link');
 										if (stripos($url, ABSPATH) === 0)
-											$url = substr($url, 0, strlen(ABSPATH));
+											$url = substr($url, strlen(ABSPATH)-1);
+										if (!regex_match($REWRITE_REGEX,$url)){
+											if ($ul < 3 || $ul > 255)
+												respond('Link URL must be between 3 and 255 characters long');
+											if (!regex_match(new RegExp('^https?:\/\/.+$'), $url))
+												respond('Link URL does not appear to be a valid link');
+										}
 										$data['url'] = $url;
 									}
 
