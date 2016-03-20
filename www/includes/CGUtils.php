@@ -863,7 +863,7 @@ HTML;
 			return $List;
 		return <<<HTML
 		<section id="ep-appearances" $hide>
-			<label><span class='typcn typcn-video'></span>Appears in $N_episodes</label>
+			<h2><span class='typcn typcn-video'></span>Appears in $N_episodes</h2>
 			<p>$List</p>
 		</section>
 HTML;
