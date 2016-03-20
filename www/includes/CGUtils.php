@@ -599,12 +599,13 @@ HTML;
 					'Highlight Bottom',
 				),
 				'Cutie Mark' => array(
-					"$Color 1",
-					"$Color 2",
+					"Fill 1",
+					"Fill 2",
 				),
 			);
 
 		$cgi = 0;
+		$ci = 0;
 		foreach ($Scheme as $GroupName => $ColorNames){
 			$GroupID = $CGDb->insert('colorgroups',array(
 				'ponyid' => $PonyID,
@@ -618,6 +619,7 @@ HTML;
 				if (!$CGDb->insert('colors',array(
 					'groupid' => $GroupID,
 					'label' => $label,
+					'order' => $ci++,
 				))) throw new Exception(rtrim("Color \"$label\" could not be added: ".$CGDb->getLastError()), ': ');
 			}
 		}
@@ -861,7 +863,7 @@ HTML;
 			return $List;
 		return <<<HTML
 		<section id="ep-appearances" $hide>
-			<label><span class='typcn typcn-video'></span>Appears in $N_episodes</label>
+			<h2><span class='typcn typcn-video'></span>Appears in $N_episodes</h2>
 			<p>$List</p>
 		</section>
 HTML;
