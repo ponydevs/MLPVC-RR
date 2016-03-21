@@ -28,7 +28,7 @@
 	function get_colors($GroupID){
 		global $CGDb;
 
-		return $CGDb->rawQuery('SELECT * FROM colors WHERE groupid = ? ORDER BY groupid, "order"', array($GroupID));
+		return $CGDb->where('groupid', $GroupID)->orderBy('groupid', 'ASC')->orderBy('"order"', 'ASC')->get('colors');
 	}
 
 	// Return the markup for the specified color group
