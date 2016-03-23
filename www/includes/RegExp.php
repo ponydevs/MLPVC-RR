@@ -36,7 +36,7 @@
 		}
 
 		/**
-		 * @param array $text
+		 * @param array      $text
 		 * @param array|null $matches
 		 *
 		 * @return bool
@@ -56,6 +56,15 @@
 		public function replace($with, $in, $limit = -1, &$count = null){
 			return preg_replace($this->__toString(),$with, $in, $limit = -1, $count = null);
 		}
+
+		/**
+		 * @param string $str
+		 *
+		 * @return string
+		 */
+		public static function escapeBackslashes($str){
+			return preg_replace('~(\\\\)~','$1$1',$str);
+		}
 	}
 
 	/**
@@ -68,20 +77,20 @@
 	 * @return bool
 	 */
 	function regex_match(RegExp $regex, $text, &$matches = null){
-		return (bool) preg_match(strval($regex), $text, $matches);
+		return (bool) $regex->match($text, $matches);
 	}
 
 	/**
 	 * Replace text using a RegExp
 	 *
-	 * @param RegExp     $regex Regular Expression
-		 * @param string $with  Replacement
-		 * @param string $in    String to replace in
-		 * @param int    $limit
-		 * @param int    $count
+	 * @param RegExp $regex Regular Expression
+	 * @param string $with  Replacement
+	 * @param string $in    String to replace in
+	 * @param int    $limit
+	 * @param int    $count
 	 *
 	 * @return string|array
 	 */
 	function regex_replace(RegExp $regex, $with, $in, $limit = -1, &$count = null){
-		return preg_replace(strval($regex), $with, $in, $limit, $count);
+		return $regex->replace($with, $in, $limit, $count);
 	}
