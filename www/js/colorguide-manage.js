@@ -112,17 +112,14 @@ DocReady.push(function ColorguideManage(){
 			else $ponyLabel = $this.parent();
 
 			$.Dialog.request(title,$ponyEditor.clone(true,true),'pony-editor','Save',function($form){
+				var $favme = $form.find('input[name=cm_favme]');
 				if (editing){
-
 					$form.find('input[name=label]').val(data.label);
-					var $txtarea = $form.find('textarea');
-					$txtarea.val(data.notes);
+					var $txtarea = $form.find('textarea').val(data.notes);
 					if (parseInt(data.ponyID, 10) === 0)
 						$txtarea.removeAttr('maxlength');
-					var $favme = $form.find('input[name=cm_favme]');
 					if (data.cm_favme)
 						$favme.val(data.cm_favme);
-					$favme.triggerHandler('change');
 					if (data.cm_preview)
 						$form.find('input[name=cm_preview]').val(data.cm_preview);
 					if (data.cm_dir)
@@ -158,6 +155,8 @@ DocReady.push(function ColorguideManage(){
 						)
 					);
 				}
+				$favme.triggerHandler('change');
+
 				$form.on('submit',function(e){
 					e.preventDefault();
 
