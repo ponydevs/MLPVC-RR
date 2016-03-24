@@ -683,7 +683,7 @@ $(function(){
 		var f = (typeof delay === 'number' && delay > 0)
 			? function(){ setTimeout(callback, delay) }
 			: callback;
-		Navigation(location.pathname, f);
+		Navigation(location.pathname+location.search+location.hash, f);
 	};
 	window.HandleNav.reload = function(){ Reload.apply(window, arguments) };
 	window.HandleNav.lastLoadedPathname = window.location.pathname;
