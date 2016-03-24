@@ -2763,46 +2763,6 @@ ORDER BY "count" DESC
 		echo rtrim($HTML,',').'</script>';
 	}
 
-	// Sends an e-mail using SimpleMail
-	function send_email($subject, $body, $to = DEVELOPER_EMAIL){
-		require_once APPATH.'includes/SwiftMailer/swift_required.php';
-		$transport = Swift_SmtpTransport::newInstance(MAIL_HOST, MAIL_PORT, 'ssl')
-			->setUsername(MAIL_USER)
-			->setPassword(MAIL_PASS)
-			->setSourceIp('0.0.0.0');
-
-		$mailer = Swift_Mailer::newInstance($transport);
-
-		$message = Swift_Message::newInstance($subject)
-			->setTo(array(DEVELOPER_EMAIL))
-			->setFrom(array(MAIL_USER => SITE_TITLE));
-		$message->setBody($body, 'text/html');
-		return $mailer->send($message);
-	}
-
-	// Sends an e-mail to the developer when a feedback is updated
-	function send_feedback_update($Message, $Chain, $isnewfeedback){
-		$tag = $isnewfeedback ? 'New Feedback' : 'Feedback Comment';
-		$subject = "[$tag] {$Chain['subject']}";
-		$timetag = timetag(time(), FORMAT_FULL, NO_DYNTIME);
-		$chain_url = ABSPATH."feedback/{$Chain['chain']}".(!$isnewfeedback?"#message-{$Message['mid']}":'');
-		$view_what = $isnewfeedback ? 'chain' : 'message';
-		$user = profile_link(get_user($Message['author']));
-		$did_what = (
-				$isnewfeedback
-				? 'posted a new'
-				: 'responded to this'
-			).' feedback with the following message:</p><blockquote>'.nl2br(htmlspecialchars($Message['body']).'</blockquote>');
-		$message = <<<HTML
-<html><body>
-<h1>MLPVC-RR - $tag</h1>
-<p>On $timetag $user $did_what
-<p>To view the $view_what, <a href="$chain_url">click here</a>.</p>
-</body></html>
-HTML;
-		return send_email($subject, $message);
-	}
-
 	function render_useful_links_list($wrap = true){
 		global $Database, $ROLES_ASSOC;
 
