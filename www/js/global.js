@@ -378,23 +378,23 @@ function DocumentIsReady(){
 		if (/^https/.test(location.protocol))
 			throw undefined;
 		var canhttps = sessionStorage.getItem('canhttps');
-		if (canhttps === null || canhttps === 'true'){
-			$.ajax({
-				method: "POST",
-				url: 'https://'+location.host+'/ping',
-				success: $.mkAjaxHandler(function(){
-					if (this.status)
-						$sidebar.append(
-							$.mk('a').attr({
-								'class': 'btn green typcn typcn-lock-closed',
-								href: location.href.replace(/^http:/,'https:')
-							}).text('Switch to HTTPS')
-						);
-					sessionStorage.setItem('canhttps', canhttps = this.status.toString());
-				}),
-				error: function(){ sessionStorage.setItem('canhttps', canhttps = 'false') }
-			});
-		}
+		if (canhttps === 'false')
+			throw undefined;
+		$.ajax({
+			method: "POST",
+			url: 'https://'+location.host+'/ping',
+			success: $.mkAjaxHandler(function(){
+				if (this.status)
+					$sidebar.append(
+						$.mk('a').attr({
+							'class': 'btn green typcn typcn-lock-closed',
+							href: location.href.replace(/^http:/,'https:')
+						}).text('Switch to HTTPS')
+					);
+				sessionStorage.setItem('canhttps', canhttps = this.status.toString());
+			}),
+			error: function(){ sessionStorage.setItem('canhttps', canhttps = 'false') }
+		});
 	}
 	catch(e){}
 
@@ -406,15 +406,12 @@ function OpenSidebarByDefault(){
 	'use strict';
 	return window.matchMedia('all and (min-width: 1200px)').matches;
 }
-var DocReadyOnce = false;
 $(function(){
 	'use strict';
-	if (DocReadyOnce) return;
-	DocReadyOnce = true;
 
 	// Sidebar toggle handler
 	var xhr = false;
-	$sbToggle.off('click').on('click',function(e){
+	$sbToggle.off('click sb-open sb-close').on('click',function(e){
 		e.preventDefault();
 
 		$sbToggle.trigger('sb-'+($body.hasClass('sidebar-open')?'close':'open'));
@@ -484,7 +481,7 @@ $(function(){
 	});
 
 	// Feedback form
-	$(document).on('click','.send-feedback',function(e){
+	$(document).off('click','.send-feedback').on('click','.send-feedback',function(e){
 		e.preventDefault();
 		e.stopPropagation();
 		$('#ctxmenu').hide();
@@ -596,10 +593,8 @@ $(function(){
 						$this.remove();
 					}
 				});
-				if (doreload !== false){
-					location.href = url;
-					return location.href;
-				}
+				if (doreload !== false)
+					return (location.href = url);
 
 				var CSSSelector = 'link[href], style[href]';
 				$head.children(CSSSelector).each(function(){
