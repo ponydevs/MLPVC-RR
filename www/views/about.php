@@ -12,8 +12,9 @@
 	<section>
 		<h2>Attributions</h2>
 		<div class="attributions">
+			<?=Notice('warn','This section went missing due to a bug and will be restored within an hour or so, sorry of the inconvenience! Until then the section\'s contents are available at <a href="'.GITHUB_URL.'#attributions">'.GITHUB_URL.'#attributions</a><br>~ '.profile_link(get_user('DJDavid98','name')).' '.timetag('2016-03-24T13:29:00+01+00'))?>
 			<?php readfile(APPATH.'views/about.html'); ?>
-			<p class="ramnode"><a href="https://clientarea.ramnode.com/aff.php?aff=2648"><img src="https://www.ramnode.com/images/banners/affbannerlightnewlogoblack.png" alt="high performance ssd vps"></a></p>
+<!--			<p class="ramnode"><a href="https://clientarea.ramnode.com/aff.php?aff=2648"><img src="https://www.ramnode.com/images/banners/affbannerlightnewlogoblack.png" alt="high performance ssd vps"></a></p>-->
 		</div>
 	</section>
 	<section>
