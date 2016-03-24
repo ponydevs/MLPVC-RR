@@ -49,7 +49,7 @@
 		$w.off('nav-popstate').on('nav-popstate',function(e, state, goto){
 			var obj = {state:state},
 				params = [location.pathname, true, undefined, true];
-			if (typeof state.baseurl !== 'undefined' && HandleNav.lastLoadedPathname.replace(/\/\d+($|\?)/,'$1') !== state.baseurl)
+			if (typeof state.baseurl !== 'undefined' && $.Navigation.lastLoadedPathname.replace(/\/\d+($|\?)/,'$1') !== state.baseurl)
 				goto(location.pathname,function(){
 					$.toPage.apply(obj, params);
 				});

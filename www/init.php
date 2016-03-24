@@ -8,9 +8,7 @@
 	define('APPATH',dirname(__FILE__).DIRECTORY_SEPARATOR);
 	define('RQMTHD',$_SERVER['REQUEST_METHOD']);
 	define('REWRITE_REGEX','');
-	$_RewritePathname = '/(?:([\w\.\-]+|-?\d+)(?:/((?:[\w\-]+|-?\d+)(?:/(?:[\w\-]+|-?\d+))?))?/?)?';
-	$REWRITE_REGEX = new RegExp("^$_RewritePathname$",'i');
-	$REWRITE_QUERY_REGEX = new RegExp("^$_RewritePathname(\\?[^#]+)?$",'i');
+	$REWRITE_REGEX = new RegExp('^/(?:([\w\.\-]+|-?\d+)(?:/((?:[\w\-]+|-?\d+)(?:/(?:[\w\-]+|-?\d+))?))?/?)?$','i');
 	define('GITHUB_URL','https://github.com/ponydevs/MLPVC-RR');
 	define('SITE_TITLE', 'MLP Vector Club');
 

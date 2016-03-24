@@ -5,9 +5,7 @@
 
 <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
 <script>if(!window.jQuery)document.write('\x3Cscript src="/js/jquery-2.1.4.min.js">\x3C/script>');
-var REWRITE_REGEX = <?=$REWRITE_REGEX->jsExport()?>,
-	SITE_TITLE = '<?=SITE_TITLE?>',
-	PRINTABLE_ASCII_REGEX = '<?=PRINTABLE_ASCII_REGEX?>',
+var PRINTABLE_ASCII_REGEX = '<?=PRINTABLE_ASCII_REGEX?>',
 	DocReady = [];</script><?
 	if (!isset($_SERVER['HTTP_DNT']) && !empty(GA_TRACKING_CODE) && !PERM('inspector')){ ?>
 

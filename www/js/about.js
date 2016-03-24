@@ -1,5 +1,5 @@
-/* global Chart */
-$(function(){
+/* global DocReady,Chart */
+DocReady.push(function About(){
 	'use strict';
 	Chart.defaults.global.responsive = true;
 
@@ -70,4 +70,7 @@ $(function(){
 
 		ApprovalChart = new Chart(ApprovalCTX).Line(Data,{animation: false});
 	}));
+},function(){
+	'use strict';
+	delete window.Chart;
 });

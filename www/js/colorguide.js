@@ -71,7 +71,7 @@ DocReady.push(function Colorguide(){
 				$SearchForm.find('input[name="q"]').val(query);
 				$SearchForm.triggerHandler('submit');
 			}
-			else HandleNav('/colorguide'+(EQG?'/eqg':'')+'/1?q='+query.replace(/ /g,'+'));
+			else $.Navigation.visit('/colorguide'+(EQG?'/eqg':'')+'/1?q='+query.replace(/ /g,'+'));
 		});
 		$('ul.colors').children('li').find('.valid-color').each(function(){
 			var $this = $(this),
@@ -177,12 +177,11 @@ DocReady.push(function Colorguide(){
 		$this.find('input[name=q]').val('');
 		$this.triggerHandler('submit');
 	});
-
-	$w.on('unload',function(){
-		$('.qtip').each(function(){
-			var $this = $(this);
-			$this.data('qtip').destroy();
-			$this.remove();
-		});
+}, function(){
+	'use strict';
+	$('.qtip').each(function(){
+		var $this = $(this);
+		$this.data('qtip').destroy();
+		$this.remove();
 	});
 });

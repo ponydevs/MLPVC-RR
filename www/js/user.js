@@ -39,8 +39,8 @@ DocReady.push(function User(){
 				}
 
 				$.Dialog.wait(false, 'Reloading page', true);
-				HandleNav.reload(function(){
-					$.Dialog.success(title, 'Session removed successfully');
+				$.Navigation.reload(function(){
+					$.Dialog.close();
 				});
 			}));
 		});
@@ -61,7 +61,7 @@ DocReady.push(function User(){
 				if (!this.status) return $.Dialog.fail(false, this.message);
 
 				$.Dialog.wait(false, 'Reloading page', true);
-				HandleNav.reload(function(){
+				$.Navigation.reload(function(){
 					$.Dialog.close();
 				});
 			}));
@@ -78,7 +78,7 @@ DocReady.push(function User(){
 				if (!this.status) return $.Dialog.fail(false, this.message);
 
 				$.Dialog.wait(false, 'Reloading page', true);
-				HandleNav.reload(function(){
+				$.Navigation.reload(function(){
 					$.Dialog.close();
 				});
 			}));
@@ -99,7 +99,7 @@ DocReady.push(function User(){
 
 			var message = this.message;
 			$.Dialog.wait(false, "Reloading page");
-			HandleNav.reload(function(){
+			$.Navigation.reload(function(){
 				$.Dialog.success(false, message, true);
 			});
 		}));

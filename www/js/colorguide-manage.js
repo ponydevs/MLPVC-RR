@@ -177,7 +177,7 @@ DocReady.push(function ColorguideManage(){
 							}
 							else {
 								$.Dialog.wait(false, 'Reloading page', true);
-								HandleNav.reload(function(){
+								$.Navigation.reload(function(){
 									$.Dialog.close();
 								});
 							}
@@ -186,7 +186,7 @@ DocReady.push(function ColorguideManage(){
 							var id = this.id, info = this.info;
 							$.Dialog.success(title, 'Appearance added');
 							$.Dialog.wait(title, 'Loading appearance page');
-							HandleNav('/colorguide/appearance/'+id,function(){
+							$.Navigation.visit('/colorguide/appearance/'+id,function(){
 								if (info)
 									$.Dialog.info(title, info);
 								else $.Dialog.close();
@@ -1159,7 +1159,7 @@ DocReady.push(function ColorguideManage(){
 							path = path.replace(/(\d+)$/,function(n){ return n > 1 ? n-1 : n });
 						if (AppearancePage){
 							$.Dialog.wait('Navigation', 'Loading page 1');
-							HandleNav('/colorguide/1',function(){
+							$.Navigation.visit('/colorguide/1',function(){
 								$.Dialog.close();
 							});
 						}

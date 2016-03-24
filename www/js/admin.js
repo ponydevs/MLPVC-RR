@@ -106,7 +106,7 @@ DocReady.push(function Admin(){
 					if (!this.status) return $.Dialog.fail(false, this.message);
 
 					$.Dialog.wait(false, 'Reloading page', true);
-					HandleNav.reload(function(){
+					$.Navigation.reload(function(){
 						$.Dialog.close();
 					});
 				}));
@@ -140,7 +140,7 @@ DocReady.push(function Admin(){
 				if (!this.status) return $.Dialog.fail(false, this.message);
 
 				$.Dialog.wait(false, 'Reloading page', true);
-				HandleNav.reload(function(){
+				$.Navigation.reload(function(){
 					$.Dialog.close();
 				});
 			}));

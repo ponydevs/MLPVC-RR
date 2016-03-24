@@ -495,7 +495,7 @@ HTML;
 			respond(array(
 				'css' => $customCSS,
 				'js' => $customJS,
-				'title' => $GLOBALS['title'],
+				'title' => (isset($GLOBALS['title'])?$GLOBALS['title'].' - ':'').SITE_TITLE,
 				'content' => remove_indentation($content),
 				'sidebar' => remove_indentation($sidebar),
 				'footer' => get_footer(),
@@ -731,13 +731,7 @@ HTML;
 	function oauth_redirect_uri($state = true){
 		global $do, $data;
 		if ($do === 'index' && empty($data)) $returnURL = '/';
-		else {
-			$returnURL = rtrim("/$do/$data",'/').(
-				!empty($_SERVER['QUERY_STRING'])
-				? '?'.rtrim(regex_replace(new RegExp('(?:do|data|via-js)=[^&]+(?:&|$)'),'',$_SERVER['QUERY_STRING']),'&?')
-				: ''
-			);
-		}
+		else $returnURL = $_SERVER['REQUEST_URI'];
 		return '&redirect_uri='.urlencode(ABSPATH."da-auth").($state?'&state='.urlencode($state===true?$returnURL:$state):'');
 	}
 
@@ -922,9 +916,9 @@ HTML;
 	}
 
 	function da_handle_auth(){
-		global $err, $errdesc, $REWRITE_QUERY_REGEX;
+		global $err, $errdesc, $REWRITE_REGEX;
 
-		if (!isset($_GET['error']) && (empty($_GET['code']) || (empty($_GET['state']) || !regex_match($REWRITE_QUERY_REGEX, $_GET['state']))))
+		if (!isset($_GET['error']) && (empty($_GET['code']) || (empty($_GET['state']) || !regex_match($REWRITE_REGEX, strtok($_GET['state'],'?')))))
 			$_GET['error'] = 'unauthorized_client';
 		if (isset($_GET['error'])){
 			$err = $_GET['error'];

@@ -35,7 +35,7 @@ DocReady.push(function UserManage(){
 					if (!this.status) return $.Dialog.fail(false, this.message);
 
 					$.Dialog.info(false, 'Reloading page', true);
-					HandleNav.reload(function(){
+					$.Navigation.reload(function(){
 						$.Dialog.close();
 					});
 				}));
@@ -75,7 +75,7 @@ DocReady.push(function UserManage(){
 
 						var message = this.message;
 						$.Dialog.wait(false, 'Reloading page', true);
-						HandleNav.reload(function(){
+						$.Navigation.reload(function(){
 							if (action === 'banish') $.Dialog.success(title, '<p>What had to be done, has been done.</p><img src="/img/post-ban.svg">');
 							else $.Dialog.success(title, message, true);
 						});

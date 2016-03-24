@@ -93,7 +93,7 @@ DocReady.push(function EpisodesManage(){
 
 					$.Dialog.wait(false, 'Opening episode page', true);
 
-					HandleNav('/episode/'+this.epid,function(){
+					$.Navigation.visit('/episode/'+this.epid,function(){
 						$.Dialog.close();
 					});
 				}));
@@ -158,7 +158,7 @@ DocReady.push(function EpisodesManage(){
 							if (!this.status) return $.Dialog.fail(false, this.message);
 
 							$.Dialog.wait(false, 'Updating page', true);
-							HandleNav.reload(function(){
+							$.Navigation.reload(function(){
 								$.Dialog.close();
 							});
 						}));
@@ -182,7 +182,7 @@ DocReady.push(function EpisodesManage(){
 					if (!this.status) return $.Dialog.fail(false, this.message);
 
 					$.Dialog.wait(false, 'Reloading page', true);
-					HandleNav.reload(function(){
+					$.Navigation.reload(function(){
 						$.Dialog.close();
 					});
 				}));
