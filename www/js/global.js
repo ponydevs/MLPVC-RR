@@ -3,6 +3,9 @@
 (function($){
 	'use strict';
 
+	if (typeof $.Navigation !== 'undefined' && $.Navigation.firstLoadDone === true)
+		return;
+
 	// console placeholder to avoid errors
 	if (typeof window.console.log !== 'function')
 		window.console.log = function(){};
@@ -643,6 +646,8 @@
 		};
 		module.reload = function(){ _reload.apply(module, arguments) };
 
+		module.firstLoadDone = false;
+
 		return module;
 	}).call({});
 })(jQuery);
@@ -650,6 +655,9 @@
 // Runs on first load
 $(function(){
 	'use strict';
+
+	if ($.Navigation.firstLoadDone)
+		return;
 
 	console.log('[HTTP-Nav] > $(document).ready()');
 	console.group('[HTTP-Nav] GET '+window.location.pathname+window.location.search+window.location.hash);
@@ -780,6 +788,7 @@ $(function(){
 	$.Navigation.docReady();
 	console.log('%cDocument ready','color:green');
 	console.groupEnd();
+	$.Navigation.firstLoadDone = true;
 });
 
 // Remove loading animation from header on load
