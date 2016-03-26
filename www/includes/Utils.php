@@ -1117,6 +1117,7 @@ HTML;
 	$CACHE_BAILOUT = false;
 	$MASS_CACHE_LIMIT = 5;
 	$MASS_CACHE_USED = 0;
+	$FULLSIZE_MATCH_REGEX = new RegExp('^https?://orig\d+\.');
 
 	/**
 	 * Caches information about a deviation in the 'deviation_cache' table
@@ -1128,7 +1129,7 @@ HTML;
 	 * @return array|null
 	 */
 	function da_cache_deviation($ID, $type = 'fav.me', $mass = false){
-		global $Database, $CACHE_BAILOUT, $MASS_CACHE_USED, $MASS_CACHE_LIMIT;
+		global $Database, $CACHE_BAILOUT, $MASS_CACHE_USED, $MASS_CACHE_LIMIT, $FULLSIZE_MATCH_REGEX;
 
 		if ($type === 'sta.sh')
 			$ID = stash_id_normalize($ID);
@@ -1164,10 +1165,10 @@ HTML;
 				'updated_on' => date('c'),
 			);
 
-			if ($type === 'sta.sh'){
+			if ($type === 'sta.sh' && !regex_match($FULLSIZE_MATCH_REGEX, $insert['fullsize'])){
 				$fullsize_attempt = get_fullsize_stash_url($ID);
 				if (!empty($fullsize_attempt))
-					$Result['fullsize'] = $fullsize_attempt;
+					$insert['fullsize'] = $fullsize_attempt;
 			}
 
 			if (empty($Deviation)){

@@ -163,6 +163,44 @@
 
 				respond(array('preview' => $Image->preview));
 			}
+			else if (regex_match(new RegExp('^fix-(request|reservation)-stash/(\d+)$'), $data, $_match)){
+				if (!PERM('inspector'))
+					respond();
+
+				$thing = $_match[1];
+				$Post = $Database->where('id', $_match[2])->getOne("{$thing}s");
+				if (empty($Post))
+					respond("The specified $thing does not exist");
+
+				$fullsize = $Post['fullsize'];
+				// Link is already full size, we're done
+				if (regex_match($FULLSIZE_MATCH_REGEX, $fullsize))
+					respond(array('fullsize' => $fullsize));
+
+				// Reverse submission lookup
+				$StashItem = $Database->where('provider', 'sta.sh')->where('fullsize', $fullsize)->getOne('deviation_cache','id');
+				if (empty($StashItem['id']))
+					respond('Stash URL lookup failed');
+
+				try {
+					$fullsize = get_fullsize_stash_url($StashItem['id']);
+				}
+				catch (Exception $e){
+					respond('Error while finding URL: '.$e->getMessage());
+				}
+				// Check image availability
+				if (!@getimagesize($fullsize)){
+					sleep(1);
+					if (!@getimagesize($fullsize))
+						respond("The specified image doesn't seem to exist. Please verify that you can reach the URL below and try again.<br><a href='$fullsize' target='_blank'>$fullsize</a>");
+				}
+
+				if (!$Database->where('id', $Post['id'])->update("{$thing}s",array(
+					'fullsize' => $fullsize,
+				))) respond(ERR_DB_FAIL);
+
+				respond(array('fullsize' => $fullsize));
+			}
 
 			$image_check = empty($_POST['what']);
 			if (!$image_check){

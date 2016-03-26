@@ -581,7 +581,10 @@ DocReady.push(function Episode(){
 						)
 					);
 
-				if ($li.children('.image').find('.typcn-tick').length === 0)
+				if ($li.children('.image').find('.typcn-tick').length === 0){
+					var $fullsize_link = $li.children('.image').children('a'),
+						fullsize_url = $fullsize_link.attr('href');
+					console.log(fullsize_url);
 					$Form.append(
 						$.mk('label').append(
 							$.mk('a').text('Update Image').attr({
@@ -593,23 +596,23 @@ DocReady.push(function Episode(){
 								$.Dialog.close();
 								var $img = $li.children('.image').find('img'),
 									$ImgUpdateForm = $.mk('form').attr('id', 'img-update-form').append(
-									$.mk('div').attr('class','align-center').append(
-										$.mk('span').text('Current image'),
-										$img.clone()
-									),
-									$.mk('label').append(
-										$.mk('span').text('New image URL'),
-										$.mk('input').attr({
-											type: 'text',
-											maxlength: 255,
-											pattern: "^.{2,255}$",
-											name: 'image_url',
-											required: true,
-											autocomplete: 'off',
-											spellcheck: 'false',
-										})
-									)
-								);
+										$.mk('div').attr('class','align-center').append(
+											$.mk('span').text('Current image'),
+											$img.clone()
+										),
+										$.mk('label').append(
+											$.mk('span').text('New image URL'),
+											$.mk('input').attr({
+												type: 'text',
+												maxlength: 255,
+												pattern: "^.{2,255}$",
+												name: 'image_url',
+												required: true,
+												autocomplete: 'off',
+												spellcheck: 'false',
+											})
+										)
+									);
 								$.Dialog.request('Update image of '+type+' #'+id,$ImgUpdateForm, 'img-update-form','Update',function($form){
 									$form.on('submit', function(e){
 										e.preventDefault();
@@ -626,9 +629,29 @@ DocReady.push(function Episode(){
 										}));
 									});
 								});
-							})
+							}),
+							(
+								/^https?:\/\/orig\d+\./.test(fullsize_url) || !/deviantart\.net\//.test(fullsize_url)
+								? undefined
+								: $.mk('a').text('Sta.sh fullsize fix').attr({
+									'href':'#fix-stash-fullsize',
+									'class':'btn orange typcn typcn-spanner',
+								}).on('click',function(e){
+									e.preventDefault();
+									$.Dialog.close();
+									$.Dialog.wait('Fix Sta.sh fullsize URL','Fixing Sta.sh full size image URL');
+
+									$.post('/post/fix-'+type+'-stash/'+id,$.mkAjaxHandler(function(){
+										if (!this.status) return $.Dialog.fail(false, this.message);
+
+										$fullsize_link.attr('href', this.fullsize);
+										$.Dialog.success(false, 'Fix successful', true);
+									}));
+								})
+							)
 						)
 					);
+				}
 
 				$.Dialog.request(false, $Form, 'post-edit-form', 'Save', function($form){
 					var $label = $form.find('[name=label]'),
