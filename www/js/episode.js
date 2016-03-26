@@ -3,7 +3,8 @@ DocReady.push(function Episode(){
 	'use strict';
 	var SEASON = window.SEASON,
 		EPISODE = window.EPISODE,
-		USERNAME_PATTERN = window.USERNAME_PATTERN,
+		USERNAME_REGEX = window.USERNAME_REGEX,
+		FULLSIZE_MATCH_REGEX = window.FULLSIZE_MATCH_REGEX,
 		EpID = 'S'+SEASON+'E'+EPISODE,
 		$epSection = $content.children('section.episode');
 
@@ -348,8 +349,8 @@ DocReady.push(function Episode(){
 					}));
 				};
 
-			if (typeof USERNAME_PATTERN !== 'string' || !e.shiftKey) send({});
-			else $.Dialog.request(title, '<form id="reserve-as"><label><span>Reserve as</span><input type="text" name="post_as" placeholder="Username" pattern="'+USERNAME_PATTERN+'" required></label></form>','reserve-as','Reserve',function($form){
+			if (typeof USERNAME_REGEX !== 'string' || !e.shiftKey) send({});
+			else $.Dialog.request(title, '<form id="reserve-as"><label><span>Reserve as</span><input type="text" name="post_as" placeholder="Username" pattern="'+USERNAME_REGEX+'" required></label></form>','reserve-as','Reserve',function($form){
 				$form.on('submit',function(e){
 					e.preventDefault();
 
@@ -585,7 +586,7 @@ DocReady.push(function Episode(){
 					finished = $li.closest('div').attr('class') === 'finished',
 					$fullsize_link = finished ? $li.children('.original') : $li.children('.image').children('a'),
 					fullsize_url = $fullsize_link.attr('href'),
-					show_stash_fix_btn = !/^https?:\/\/orig\d+\./.test(fullsize_url) && /deviantart\.net\//.test(fullsize_url);
+					show_stash_fix_btn = !FULLSIZE_MATCH_REGEX.test(fullsize_url) && /deviantart\.net\//.test(fullsize_url);
 
 				if (show_img_update_btn || show_stash_fix_btn){
 					$Form.append(

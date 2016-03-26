@@ -183,7 +183,9 @@
 					respond('Stash URL lookup failed');
 
 				try {
-					$fullsize = get_fullsize_stash_url($StashItem['id']);
+					$newfullsize = get_fullsize_stash_url($StashItem['id']);
+					if (empty($newfullsize))
+						throw new Exception('Could not find the URL');
 				}
 				catch (Exception $e){
 					respond('Error while finding URL: '.$e->getMessage());

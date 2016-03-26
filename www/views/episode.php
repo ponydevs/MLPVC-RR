@@ -63,7 +63,9 @@
 			'EPISODE' => $CurrentEpisode['episode'],
 		);
 		if (PERM('developer'))
-			$export['USERNAME_PATTERN'] = '^'.USERNAME_PATTERN.'$';
+			$export['USERNAME_REGEX'] = $USERNAME_REGEX;
+		if (PERM('inspector'))
+			$export['FULLSIZE_MATCH_REGEX'] = $FULLSIZE_MATCH_REGEX;
 		ExportVars($export);
 	} else { ?>
 	<h1>There's nothing here yet&hellip;</h1>

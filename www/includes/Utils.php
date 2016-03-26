@@ -1117,7 +1117,7 @@ HTML;
 	$CACHE_BAILOUT = false;
 	$MASS_CACHE_LIMIT = 5;
 	$MASS_CACHE_USED = 0;
-	$FULLSIZE_MATCH_REGEX = new RegExp('^https?://orig\d+\.');
+	$FULLSIZE_MATCH_REGEX = new RegExp('^https?:\/\/orig\d+\.');
 
 	/**
 	 * Caches information about a deviation in the 'deviation_cache' table
