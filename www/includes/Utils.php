@@ -2278,8 +2278,8 @@ ORDER BY "count" DESC
 			$fullep = $CurrentEpisode['twoparter'] ? 'Full episode' : '';
 			if (count($Videos) === 1 && $Videos[0]['provider'] === 'yt'){
 				$airtime = strtotime($CurrentEpisode['airs']);
-				$added = $Videos[0]['added'];
-				if (!empty($added) && $airtime > strtotime($added)){
+				$modified = $Videos[0]['modified'];
+				if (!empty($modified) && $airtime > strtotime($modified)){
 					$fullep = 'Livestream';
 					$CurrentEpisode = add_episode_airing_data($CurrentEpisode);
 					if ($CurrentEpisode['aired'])

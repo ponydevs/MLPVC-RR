@@ -622,6 +622,7 @@
 								else $Database->update('episodes__videos', array(
 									'id' => $set,
 									'fullep' => $fullep,
+									'modified' => date('c'),
 								));
 							}
 						}
