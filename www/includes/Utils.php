@@ -2791,13 +2791,13 @@ ORDER BY "count" DESC
 		$RecentPosts = $Database->rawQuery(
 			"SELECT * FROM
 			(
-				SELECT $cols, true AS rq, reserved_at FROM requests
+				SELECT $cols, requested_by, true AS rq, reserved_at FROM requests
 				WHERE posted > NOW() - INTERVAL '20 DAYS'
 				UNION ALL
-				SELECT $cols, false AS rq, null AS reserved_at FROM reservations
+				SELECT $cols, null AS requested_by, false AS rq, null AS reserved_at FROM reservations
 				WHERE posted > NOW() - INTERVAL '20 DAYS'
 			) t
-			ORDER BY posted
+			ORDER BY posted DESC
 			LIMIT 10");
 
 		$HTML = $wrap ? '<ul>' : '';
