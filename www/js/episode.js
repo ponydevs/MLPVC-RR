@@ -587,8 +587,6 @@ DocReady.push(function Episode(){
 					fullsize_url = $fullsize_link.attr('href'),
 					show_stash_fix_btn = !/^https?:\/\/orig\d+\./.test(fullsize_url) && /deviantart\.net\//.test(fullsize_url);
 
-				console.log(fullsize_url,show_img_update_btn,show_stash_fix_btn);
-
 				if (show_img_update_btn || show_stash_fix_btn){
 					$Form.append(
 						$.mk('label').append(
