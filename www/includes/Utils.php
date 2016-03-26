@@ -2281,6 +2281,9 @@ ORDER BY "count" DESC
 				$added = $Videos[0]['added'];
 				if (!empty($added) && $airtime > strtotime($added)){
 					$fullep = 'Livestream';
+					$CurrentEpisode = add_episode_airing_data($CurrentEpisode);
+					if ($CurrentEpisode['aired'])
+						$fullep .= ' recording';
 					if (!$CurrentEpisode['twoparter'])
 						$fullep = " ($fullep)";
 				}
