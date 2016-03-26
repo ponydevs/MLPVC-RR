@@ -584,7 +584,6 @@ DocReady.push(function Episode(){
 				if ($li.children('.image').find('.typcn-tick').length === 0){
 					var $fullsize_link = $li.children('.image').children('a'),
 						fullsize_url = $fullsize_link.attr('href');
-					console.log(fullsize_url);
 					$Form.append(
 						$.mk('label').append(
 							$.mk('a').text('Update Image').attr({
