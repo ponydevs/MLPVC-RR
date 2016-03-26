@@ -995,7 +995,7 @@ HTML;
 		return !empty($RecentlyJoined) && regex_match(new RegExp('<a class="[a-z ]*username" href="http://'.strtolower($Username).'.deviantart.com/">'.USERNAME_PATTERN.'</a>'), $RecentlyJoined);
 	}
 
-	function legitimate_lequest($url, $cookies = null, $referrer = null){
+	function legitimate_request($url, $cookies = null, $referrer = null){
 		$r = curl_init();
 		$curl_opt = array(
 			CURLOPT_HTTPHEADER => array(
@@ -1053,7 +1053,7 @@ HTML;
 				$cookies[] = $cookie[1];
 			};
 
-		$request = legitimate_lequest($url, $cookies, $referrer);
+		$request = legitimate_request($url, $cookies, $referrer);
 		return regex_match(new RegExp('Location:\s+([^\r\n]+)'), $request['responseHeaders'], $_match) ? trim($_match[1]) : null;
 	}
 
@@ -1195,21 +1195,23 @@ HTML;
 
 	function get_fullsize_stash_url($stash_id){
 		$stash_url = "http://sta.sh/$stash_id";
-		$stashpage = legitimate_lequest($stash_url,null,null);
+		try {
+			$stashpage = legitimate_request($stash_url,null,null);
+		}
+		catch (Exception $e){ return null; }
 		if (empty($stashpage))
-			return false;
+			return null;
 
 		$STASH_DL_LINK_REGEX = '(https?://sta.sh/download/\d+/[a-z\d_]+-d[a-z\d]{6,}\.(?:png|jpe?g|bmp)\?[^"]+)';
 		$urlmatch = regex_match(new RegExp('<a\s+class="[^"]*?dev-page-download[^"]*?"\s+href="'.
 			$STASH_DL_LINK_REGEX.'"'), $stashpage['response'], $_match);
 
-		if ($urlmatch){
-			$dlurl = htmlspecialchars_decode($_match[1]);
-			$fullsize_url = redirects_where($dlurl, $stash_url);
+		if (!$urlmatch)
+			return null;
 
-			return !empty($fullsize_url) ? makeHttps($fullsize_url) : null;
-		}
-		return null;
+		$fullsize_url = redirects_where(htmlspecialchars_decode($_match[1]), $stash_url);
+
+		return !empty($fullsize_url) ? makeHttps($fullsize_url) : null;
 	}
 
 	# Get Roles from DB
