@@ -454,7 +454,7 @@
 		var _xhr = false,
 			_loadCSS = function _loadCSS(css, callback){
 				if (!css.length)
-					return $.callCallback();
+					return $.callCallback(callback);
 
 				console.group('Loading CSS');
 				(function _recursivelyLoadCSS(item){
