@@ -995,7 +995,7 @@ HTML;
 		return !empty($RecentlyJoined) && regex_match(new RegExp('<a class="[a-z ]*username" href="http://'.strtolower($Username).'.deviantart.com/">'.USERNAME_PATTERN.'</a>'), $RecentlyJoined);
 	}
 
-	function redirects_where($url, $cookies, $referrer){
+	function legitimate_lequest($url, $cookies = null, $referrer = null){
 		$r = curl_init();
 		$curl_opt = array(
 			CURLOPT_HTTPHEADER => array(
@@ -1009,11 +1009,12 @@ HTML;
 			CURLOPT_BINARYTRANSFER => true,
 			CURLOPT_FOLLOWLOCATION => true,
 			CURLOPT_RETURNTRANSFER => true,
-			CURLOPT_REFERER => $referrer,
-			CURLOPT_USERAGENT => "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/49.0.2623.75 Safari/537.36",
-			CURLOPT_COOKIE => implode('; ', $cookies),
-
+			CURLOPT_USERAGENT => "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/49.0.2623.75 Safari/537.36"
 		);
+		if (isset($referrer))
+			$curl_opt[CURLOPT_REFERER] = $referrer;
+		if (is_array($cookies))
+			$curl_opt[CURLOPT_COOKIE] = implode('; ', $cookies);
 		curl_setopt_array($r, $curl_opt);
 
 		$response = curl_exec($r);
@@ -1028,7 +1029,32 @@ HTML;
 		if ($responseCode < 200 || $responseCode >= 300)
 			throw new cURLRequestException(rtrim("cURL fail for URL \"$url\" (HTTP $responseCode); $curlError",' ;'), $responseCode);
 
-		return regex_match(new RegExp('Location:\s+([^\r\n]+)'), $responseHeaders, $_match) ? trim($_match[1]) : null;
+		global $http_response_header;
+		$http_response_header = array_map("rtrim",explode("\n",$responseHeaders));
+
+		if (regex_match(new RegExp('Content-Encoding:\s?gzip'), $responseHeaders))
+			$response = gzdecode($response);
+		return array(
+			'responseHeaders' => $responseHeaders,
+			'response' => $response,
+		);
+	}
+
+	function redirects_where($url, $referrer = null){
+		global $http_response_header;
+
+		$cookies = array();
+		if (!empty($http_response_header))
+			foreach ($http_response_header as $header){
+				if (!regex_match(new RegExp('^([^:]+): (.*)$'), $header, $parts) || $parts[1] !== 'Set-Cookie')
+					continue;
+
+				regex_match(new RegExp('\s*([^=]+=[^;]+)(?:;|$)'), $parts[2], $cookie);
+				$cookies[] = $cookie[1];
+			};
+
+		$request = legitimate_lequest($url, $cookies, $referrer);
+		return regex_match(new RegExp('Location:\s+([^\r\n]+)'), $request['responseHeaders'], $_match) ? trim($_match[1]) : null;
 	}
 
 	/**
@@ -1169,26 +1195,17 @@ HTML;
 
 	function get_fullsize_stash_url($stash_id){
 		$stash_url = "http://sta.sh/$stash_id";
-		$stashpage = @file_get_contents($stash_url);
+		$stashpage = legitimate_lequest($stash_url,null,null);
 		if (empty($stashpage))
-			return null;
-
-		$cookies = array();
-		foreach ($http_response_header as $header){
-			if (!regex_match(new RegExp('^([^:]+): (.*)$'), $header, $parts) || $parts[1] !== 'Set-Cookie')
-				continue;
-
-			regex_match(new RegExp('\s*([^=]+=[^;]+)(?:;|$)'), $parts[2], $cookie);
-			$cookies[] = $cookie[1];
-		}
+			return false;
 
 		$STASH_DL_LINK_REGEX = '(https?://sta.sh/download/\d+/[a-z\d_]+-d[a-z\d]{6,}\.(?:png|jpe?g|bmp)\?[^"]+)';
 		$urlmatch = regex_match(new RegExp('<a\s+class="[^"]*?dev-page-download[^"]*?"\s+href="'.
-			$STASH_DL_LINK_REGEX.'"[^>]+data-gmiclass="DownloadButton"[^>]*>'), $stashpage, $_match);
+			$STASH_DL_LINK_REGEX.'"'), $stashpage['response'], $_match);
 
 		if ($urlmatch){
 			$dlurl = htmlspecialchars_decode($_match[1]);
-			$fullsize_url = redirects_where($dlurl, $cookies, $stash_url);
+			$fullsize_url = redirects_where($dlurl, $stash_url);
 
 			return !empty($fullsize_url) ? makeHttps($fullsize_url) : null;
 		}
