@@ -2275,6 +2275,9 @@ ORDER BY "count" DESC
 			->get('episodes__videos');
 
 		if (!empty($Videos)){
+			$CurrentEpisode = add_episode_airing_data($CurrentEpisode);
+			$fullep = count($Videos) === 1 && !$CurrentEpisode['aired'] ? 'Livestream' : 'Full episode';
+
 			$HTML = "<section class='episode'><h2>Watch the ".($isMovie?'Movie':'Episode')."</h2><p class='align-center actions'>";
 			require_once "includes/Video.php";
 			foreach ($Videos as $v){
@@ -2282,7 +2285,7 @@ ORDER BY "count" DESC
 				$partText = $CurrentEpisode['twoparter'] ? (
 					!$v['fullep']
 					? " (Part {$v['part']})"
-					: " (Full episode)"
+					: " ($fullep)"
 				) : '';
 				$HTML .= "<a class='btn typcn {$PROVIDER_BTN_CLASSES[$v['provider']]}' href='$url' target='_blank'>{$VIDEO_PROVIDER_NAMES[$v['provider']]}$partText</a>";
 			}
