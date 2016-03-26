@@ -1212,7 +1212,16 @@ HTML;
 
 		$fullsize_url = redirects_where(htmlspecialchars_decode($_match[1]), $stash_url);
 
-		return !empty($fullsize_url) ? makeHttps($fullsize_url) : null;
+		if (empty($fullsize_url))
+			return null;
+
+		global $Database;
+		if ($Database->where('id', $stash_id)->where('provider', 'sta.sh')->has('deviation_cache'))
+			$Database->where('id', $stash_id)->where('provider', 'sta.sh')->update('deviation_cache', array(
+				'fullsize' => $fullsize_url
+			));
+
+		return makeHttps($fullsize_url);
 	}
 
 	# Get Roles from DB
