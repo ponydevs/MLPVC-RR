@@ -282,21 +282,22 @@ Forelock has an outline with a unique color.', NULL, false, '2016-03-06 16:21:47
 (78, 11, 'Babs Seed', '', 'd8rnkgc', false, '2016-03-12 07:47:50.907346+01', NULL, true),
 (79, 72, 'Cheerilee', '', NULL, false, '2016-03-12 08:12:21.28273+01', NULL, NULL),
 (80, 73, 'Dr. Hooves / Time Turner', '', NULL, false, '2016-03-12 16:38:44.973718+01', NULL, NULL),
-(81, 33, 'Featherweight', '', NULL, false, '2016-03-13 15:23:00.43058+01', NULL, NULL),
+(81, 33, 'Featherweight', 'Eyes don''t have iris highlights.', NULL, false, '2016-03-13 15:23:00.43058+01', NULL, NULL),
 (82, 21, 'Lord Tirek (First Form)', 'The nose ring uses the accessory highlight color as the fill.', NULL, false, '2016-03-20 12:16:44.670192+01', NULL, NULL),
 (83, 22, 'Lord Tirek (Second Form)', 'The nose ring uses the accessory highlight color as the fill.', NULL, false, '2016-03-20 13:26:53.906391+01', NULL, NULL),
 (84, 23, 'Lord Tirek (Third Form)', 'The nose ring uses the accessory highlight color as the fill.
 The difference between the second and third forms are the body colors.', NULL, false, '2016-03-20 14:35:46.946257+01', NULL, NULL),
 (85, 24, 'Lord Tirek (Fourth Form)', 'The nose ring uses the accessory highlight color as the fill.
 The difference between the third and final forms are the body and shadow colors.', NULL, false, '2016-03-20 15:15:11.582008+01', NULL, NULL),
-(86, 76, 'Scorpan''s Medallion', '', NULL, false, '2016-03-20 16:08:58.951886+01', NULL, NULL);
+(86, 76, 'Scorpan''s Medallion', '', NULL, false, '2016-03-20 16:08:58.951886+01', NULL, NULL),
+(87, NULL, 'Rose', 'WIP', NULL, false, '2016-03-25 23:41:37.557224+01', NULL, NULL);
 
 
 --
 -- Name: appearances_id_seq; Type: SEQUENCE SET; Schema: public; Owner: mlpvc-rr
 --
 
-SELECT pg_catalog.setval('appearances_id_seq', 86, true);
+SELECT pg_catalog.setval('appearances_id_seq', 87, true);
 
 
 --
@@ -709,14 +710,18 @@ INSERT INTO colorgroups VALUES
 (480, 85, 'Hair & Tail', 2),
 (481, 85, 'Equine Body', 1),
 (482, 86, 'Medallion', 1),
-(483, 86, 'Necklace', 2);
+(483, 86, 'Necklace', 2),
+(484, 87, 'Coat', 0),
+(485, 87, 'Mane & Tail', 1),
+(486, 87, 'Iris', 2),
+(487, 87, 'Cutie Mark', 3);
 
 
 --
 -- Name: colorgroups_groupid_seq; Type: SEQUENCE SET; Schema: public; Owner: mlpvc-rr
 --
 
-SELECT pg_catalog.setval('colorgroups_groupid_seq', 483, true);
+SELECT pg_catalog.setval('colorgroups_groupid_seq', 487, true);
 
 
 --
@@ -2170,7 +2175,7 @@ INSERT INTO colors VALUES
 (453, 1, 'Gradient Middle', '#8F6435'),
 (453, 2, 'Gradient Bottom', '#E0C08F'),
 (454, 0, 'Outline', '#B7D9D3'),
-(454, 1, 'Fill', '#FDFDFD'),
+(454, 1, 'Fill', '#FFFFFF'),
 (455, 0, 'Outline', '#2C2F35'),
 (455, 1, 'Fill', '#454C54'),
 (455, 2, 'Abdomen Lines', '#5F666E'),
@@ -2281,7 +2286,26 @@ INSERT INTO colors VALUES
 (482, 5, 'Shadow Fill', '#6D6308'),
 (483, 0, 'Ring Outline', '#8C7E0C'),
 (483, 1, 'Ring Fill', '#D0C423'),
-(483, 2, 'String', '#404040');
+(483, 2, 'String', '#404040'),
+(484, 0, 'Outline', '#CCBC96'),
+(484, 1, 'Fill', '#FFFBD3'),
+(484, 2, 'Shadow Outline', '#B5A887'),
+(484, 3, 'Shadow Fill', '#E1DEBA'),
+(485, 0, 'Outline 1', '#992246'),
+(485, 1, 'Fill 1', '#B82C57'),
+(485, 2, 'Outline 2', '#DB6589'),
+(485, 3, 'Fill 2', '#E2829D'),
+(486, 6, 'Gradient Top', NULL),
+(486, 7, 'Gradient Middle', NULL),
+(486, 8, 'Gradient Bottom', NULL),
+(486, 9, 'Highlight Top', NULL),
+(486, 10, 'Highlight Bottom', NULL),
+(487, 0, 'Rose Outline', '#FFFFFF'),
+(487, 1, 'Rose Fill', '#D13868'),
+(487, 2, 'Rose Shadow Fill', '#FFFFFF'),
+(487, 3, 'Leaf Outline', '#FFFFFF'),
+(487, 4, 'Leaf Fill', '#97CC62'),
+(487, 5, 'Stem', '#4D7325');
 
 
 --
@@ -2501,6 +2525,7 @@ INSERT INTO tagged VALUES
 (12, 77),
 (12, 78),
 (12, 79),
+(12, 87),
 (14, 1),
 (21, 10),
 (21, 16),
@@ -2573,7 +2598,6 @@ INSERT INTO tagged VALUES
 (59, 34),
 (59, 44),
 (59, 75),
-(60, 32),
 (61, 33),
 (62, 33),
 (63, 34),
@@ -2679,7 +2703,9 @@ INSERT INTO tagged VALUES
 (173, 84),
 (173, 85),
 (173, 86),
-(175, 86);
+(175, 86),
+(176, 32),
+(177, 87);
 
 
 --
@@ -2698,7 +2724,7 @@ INSERT INTO tags VALUES
 (9, 'antagonist', NULL, 'cat', 9, NULL),
 (10, 'pet', NULL, 'cat', 1, NULL),
 (11, 'male', NULL, 'gen', 20, NULL),
-(12, 'female', NULL, 'gen', 54, NULL),
+(12, 'female', NULL, 'gen', 55, NULL),
 (14, 'twilight sparkle', NULL, 'char', 1, NULL),
 (19, 's1e1', NULL, 'ep', 0, NULL),
 (20, 's1e26', NULL, 'ep', 0, NULL),
@@ -2740,7 +2766,7 @@ INSERT INTO tags VALUES
 (57, 'princess luna', NULL, 'char', 1, NULL),
 (58, 'suri polomare', NULL, 'char', 1, NULL),
 (59, 'royalty', NULL, 'cat', 5, NULL),
-(60, 'trixie', NULL, 'char', 1, NULL),
+(60, 'trixie', NULL, 'char', 0, 176),
 (61, 's3e5', NULL, 'ep', 1, NULL),
 (62, 'alicorn amulet', NULL, NULL, 1, NULL),
 (63, 'princess celestia', NULL, 'char', 1, NULL),
@@ -2850,14 +2876,17 @@ INSERT INTO tags VALUES
 (172, 'tirek', '', 'char', 0, 171),
 (173, 's4e25-26', '', 'ep', 5, NULL),
 (174, 'amulet', '', NULL, 0, 62),
-(175, 'scorpan''s medallion', '', NULL, 1, NULL);
+(175, 'scorpan''s medallion', '', NULL, 1, NULL),
+(176, 'trixie lulamoon', '', 'char', 1, NULL),
+(177, 'rose', '', 'char', 1, NULL),
+(178, 'roseluck', '', 'char', 0, 177);
 
 
 --
 -- Name: tags_tid_seq; Type: SEQUENCE SET; Schema: public; Owner: mlpvc-rr
 --
 
-SELECT pg_catalog.setval('tags_tid_seq', 175, true);
+SELECT pg_catalog.setval('tags_tid_seq', 178, true);
 
 
 --
