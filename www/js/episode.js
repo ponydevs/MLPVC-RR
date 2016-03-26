@@ -649,7 +649,16 @@ DocReady.push(function Episode(){
 									$.Dialog.wait('Fix Sta.sh fullsize URL','Fixing Sta.sh full size image URL');
 
 									$.post('/post/fix-'+type+'-stash/'+id,$.mkAjaxHandler(function(){
-										if (!this.status) return $.Dialog.fail(false, this.message);
+										if (!this.status){
+											if (this.rmdirect){
+												if (!finished){
+													$li.find('.post-date').children('a').first().triggerHandler('click');
+													return $.Dialog.fail(false, this.message+'<br>The post might be broken because of this, please check it for any issues.');
+												}
+												$li.children('.original').remove();
+											}
+											return $.Dialog.fail(false, this.message);
+										}
 
 										$fullsize_link.attr('href', this.fullsize);
 										$.Dialog.success(false, 'Fix successful', true);

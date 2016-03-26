@@ -189,7 +189,7 @@
 						if ($newfullsize === 404){
 							$Database->where('provider', 'sta.sh')->where('fullsize', $fullsize)->delete('deviation_cache');
 							$Database->where('preview', $StashItem['preview'])->orWhere('fullsize', $StashItem['fullsize'])->delete('requests,reservations');
-							respond('The original image has been deleted from Sta.sh');
+							respond('The original image has been deleted from Sta.sh',0,array('rmdirect' => true));
 						}
 						else throw new Exception("Code $newfullsize; Could not find the URL (original url: $origfullsize)");
 					}
