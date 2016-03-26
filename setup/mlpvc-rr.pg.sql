@@ -2,12 +2,16 @@
 -- PostgreSQL database dump
 --
 
+-- Dumped from database version 9.5.1
+-- Dumped by pg_dump version 9.5.1
+
 SET statement_timeout = 0;
 SET lock_timeout = 0;
 SET client_encoding = 'UTF8';
 SET standard_conforming_strings = on;
 SET check_function_bodies = false;
 SET client_min_messages = warning;
+SET row_security = off;
 
 --
 -- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: 
@@ -58,7 +62,7 @@ SET default_tablespace = '';
 SET default_with_oids = false;
 
 --
--- Name: deviation_cache; Type: TABLE; Schema: public; Owner: mlpvc-rr; Tablespace: 
+-- Name: deviation_cache; Type: TABLE; Schema: public; Owner: mlpvc-rr
 --
 
 CREATE TABLE deviation_cache (
@@ -75,7 +79,7 @@ CREATE TABLE deviation_cache (
 ALTER TABLE deviation_cache OWNER TO "mlpvc-rr";
 
 --
--- Name: episodes; Type: TABLE; Schema: public; Owner: mlpvc-rr; Tablespace: 
+-- Name: episodes; Type: TABLE; Schema: public; Owner: mlpvc-rr
 --
 
 CREATE TABLE episodes (
@@ -92,7 +96,7 @@ CREATE TABLE episodes (
 ALTER TABLE episodes OWNER TO "mlpvc-rr";
 
 --
--- Name: episodes__videos; Type: TABLE; Schema: public; Owner: mlpvc-rr; Tablespace: 
+-- Name: episodes__videos; Type: TABLE; Schema: public; Owner: mlpvc-rr
 --
 
 CREATE TABLE episodes__videos (
@@ -101,14 +105,15 @@ CREATE TABLE episodes__videos (
     provider character(2) NOT NULL,
     id character varying(15) NOT NULL,
     part integer DEFAULT 1 NOT NULL,
-    fullep boolean DEFAULT true NOT NULL
+    fullep boolean DEFAULT true NOT NULL,
+    added timestamp with time zone DEFAULT '2016-03-26 17:55:19.836369+01'::timestamp with time zone
 );
 
 
 ALTER TABLE episodes__videos OWNER TO "mlpvc-rr";
 
 --
--- Name: episodes__votes; Type: TABLE; Schema: public; Owner: mlpvc-rr; Tablespace: 
+-- Name: episodes__votes; Type: TABLE; Schema: public; Owner: mlpvc-rr
 --
 
 CREATE TABLE episodes__votes (
@@ -122,7 +127,7 @@ CREATE TABLE episodes__votes (
 ALTER TABLE episodes__votes OWNER TO "mlpvc-rr";
 
 --
--- Name: log; Type: TABLE; Schema: public; Owner: mlpvc-rr; Tablespace: 
+-- Name: log; Type: TABLE; Schema: public; Owner: mlpvc-rr
 --
 
 CREATE TABLE log (
@@ -138,7 +143,7 @@ CREATE TABLE log (
 ALTER TABLE log OWNER TO "mlpvc-rr";
 
 --
--- Name: log__banish; Type: TABLE; Schema: public; Owner: mlpvc-rr; Tablespace: 
+-- Name: log__banish; Type: TABLE; Schema: public; Owner: mlpvc-rr
 --
 
 CREATE TABLE log__banish (
@@ -172,7 +177,7 @@ ALTER SEQUENCE log__banish_entryid_seq OWNED BY log__banish.entryid;
 
 
 --
--- Name: log__color_modify; Type: TABLE; Schema: public; Owner: mlpvc-rr; Tablespace: 
+-- Name: log__color_modify; Type: TABLE; Schema: public; Owner: mlpvc-rr
 --
 
 CREATE TABLE log__color_modify (
@@ -206,7 +211,7 @@ ALTER SEQUENCE log__color_modify_entryid_seq OWNED BY log__color_modify.entryid;
 
 
 --
--- Name: log__episode_modify; Type: TABLE; Schema: public; Owner: mlpvc-rr; Tablespace: 
+-- Name: log__episode_modify; Type: TABLE; Schema: public; Owner: mlpvc-rr
 --
 
 CREATE TABLE log__episode_modify (
@@ -249,7 +254,7 @@ ALTER SEQUENCE log__episode_modify_entryid_seq OWNED BY log__episode_modify.entr
 
 
 --
--- Name: log__episodes; Type: TABLE; Schema: public; Owner: mlpvc-rr; Tablespace: 
+-- Name: log__episodes; Type: TABLE; Schema: public; Owner: mlpvc-rr
 --
 
 CREATE TABLE log__episodes (
@@ -287,7 +292,7 @@ ALTER SEQUENCE log__episodes_entryid_seq OWNED BY log__episodes.entryid;
 
 
 --
--- Name: log__img_update; Type: TABLE; Schema: public; Owner: mlpvc-rr; Tablespace: 
+-- Name: log__img_update; Type: TABLE; Schema: public; Owner: mlpvc-rr
 --
 
 CREATE TABLE log__img_update (
@@ -325,7 +330,7 @@ ALTER SEQUENCE log__img_update_entryid_seq OWNED BY log__img_update.entryid;
 
 
 --
--- Name: log__post_lock; Type: TABLE; Schema: public; Owner: mlpvc-rr; Tablespace: 
+-- Name: log__post_lock; Type: TABLE; Schema: public; Owner: mlpvc-rr
 --
 
 CREATE TABLE log__post_lock (
@@ -359,7 +364,7 @@ ALTER SEQUENCE log__post_lock_entryid_seq OWNED BY log__post_lock.entryid;
 
 
 --
--- Name: log__req_delete; Type: TABLE; Schema: public; Owner: mlpvc-rr; Tablespace: 
+-- Name: log__req_delete; Type: TABLE; Schema: public; Owner: mlpvc-rr
 --
 
 CREATE TABLE log__req_delete (
@@ -401,7 +406,7 @@ ALTER SEQUENCE log__req_delete_entryid_seq OWNED BY log__req_delete.entryid;
 
 
 --
--- Name: log__rolechange; Type: TABLE; Schema: public; Owner: mlpvc-rr; Tablespace: 
+-- Name: log__rolechange; Type: TABLE; Schema: public; Owner: mlpvc-rr
 --
 
 CREATE TABLE log__rolechange (
@@ -436,7 +441,7 @@ ALTER SEQUENCE log__rolechange_entryid_seq OWNED BY log__rolechange.entryid;
 
 
 --
--- Name: log__un-banish; Type: TABLE; Schema: public; Owner: mlpvc-rr; Tablespace: 
+-- Name: log__un-banish; Type: TABLE; Schema: public; Owner: mlpvc-rr
 --
 
 CREATE TABLE "log__un-banish" (
@@ -470,7 +475,7 @@ ALTER SEQUENCE "log__un-banish_entryid_seq" OWNED BY "log__un-banish".entryid;
 
 
 --
--- Name: log__userfetch; Type: TABLE; Schema: public; Owner: mlpvc-rr; Tablespace: 
+-- Name: log__userfetch; Type: TABLE; Schema: public; Owner: mlpvc-rr
 --
 
 CREATE TABLE log__userfetch (
@@ -524,7 +529,7 @@ ALTER SEQUENCE log_entryid_seq OWNED BY log.entryid;
 
 
 --
--- Name: requests; Type: TABLE; Schema: public; Owner: mlpvc-rr; Tablespace: 
+-- Name: requests; Type: TABLE; Schema: public; Owner: mlpvc-rr
 --
 
 CREATE TABLE requests (
@@ -568,7 +573,7 @@ ALTER SEQUENCE requests_id_seq OWNED BY requests.id;
 
 
 --
--- Name: reservations; Type: TABLE; Schema: public; Owner: mlpvc-rr; Tablespace: 
+-- Name: reservations; Type: TABLE; Schema: public; Owner: mlpvc-rr
 --
 
 CREATE TABLE reservations (
@@ -609,7 +614,7 @@ ALTER SEQUENCE reservations_id_seq OWNED BY reservations.id;
 
 
 --
--- Name: roles; Type: TABLE; Schema: public; Owner: mlpvc-rr; Tablespace: 
+-- Name: roles; Type: TABLE; Schema: public; Owner: mlpvc-rr
 --
 
 CREATE TABLE roles (
@@ -622,7 +627,7 @@ CREATE TABLE roles (
 ALTER TABLE roles OWNER TO "mlpvc-rr";
 
 --
--- Name: sessions; Type: TABLE; Schema: public; Owner: mlpvc-rr; Tablespace: 
+-- Name: sessions; Type: TABLE; Schema: public; Owner: mlpvc-rr
 --
 
 CREATE TABLE sessions (
@@ -666,7 +671,7 @@ ALTER SEQUENCE sessions_id_seq OWNED BY sessions.id;
 
 
 --
--- Name: usefullinks; Type: TABLE; Schema: public; Owner: mlpvc-rr; Tablespace: 
+-- Name: usefullinks; Type: TABLE; Schema: public; Owner: mlpvc-rr
 --
 
 CREATE TABLE usefullinks (
@@ -703,7 +708,7 @@ ALTER SEQUENCE usefullinks_id_seq OWNED BY usefullinks.id;
 
 
 --
--- Name: users; Type: TABLE; Schema: public; Owner: mlpvc-rr; Tablespace: 
+-- Name: users; Type: TABLE; Schema: public; Owner: mlpvc-rr
 --
 
 CREATE TABLE users (
@@ -823,7 +828,7 @@ ALTER TABLE ONLY usefullinks ALTER COLUMN id SET DEFAULT nextval('usefullinks_id
 
 
 --
--- Name: deviation_cache_provider_id; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr; Tablespace: 
+-- Name: deviation_cache_provider_id; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY deviation_cache
@@ -831,7 +836,7 @@ ALTER TABLE ONLY deviation_cache
 
 
 --
--- Name: episodes__videos_season_episode_provider_part; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr; Tablespace: 
+-- Name: episodes__videos_season_episode_provider_part; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY episodes__videos
@@ -839,7 +844,7 @@ ALTER TABLE ONLY episodes__videos
 
 
 --
--- Name: episodes__votes_season_episode_user; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr; Tablespace: 
+-- Name: episodes__votes_season_episode_user; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY episodes__votes
@@ -847,7 +852,7 @@ ALTER TABLE ONLY episodes__votes
 
 
 --
--- Name: episodes_season_episode; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr; Tablespace: 
+-- Name: episodes_season_episode; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY episodes
@@ -855,7 +860,7 @@ ALTER TABLE ONLY episodes
 
 
 --
--- Name: log__banish_entryid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr; Tablespace: 
+-- Name: log__banish_entryid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY log__banish
@@ -863,7 +868,7 @@ ALTER TABLE ONLY log__banish
 
 
 --
--- Name: log__color_modify_entryid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr; Tablespace: 
+-- Name: log__color_modify_entryid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY log__color_modify
@@ -871,7 +876,7 @@ ALTER TABLE ONLY log__color_modify
 
 
 --
--- Name: log__episode_modify_entryid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr; Tablespace: 
+-- Name: log__episode_modify_entryid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY log__episode_modify
@@ -879,7 +884,7 @@ ALTER TABLE ONLY log__episode_modify
 
 
 --
--- Name: log__episodes_entryid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr; Tablespace: 
+-- Name: log__episodes_entryid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY log__episodes
@@ -887,7 +892,7 @@ ALTER TABLE ONLY log__episodes
 
 
 --
--- Name: log__img_update_entryid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr; Tablespace: 
+-- Name: log__img_update_entryid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY log__img_update
@@ -895,7 +900,7 @@ ALTER TABLE ONLY log__img_update
 
 
 --
--- Name: log__post_lock_entryid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr; Tablespace: 
+-- Name: log__post_lock_entryid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY log__post_lock
@@ -903,7 +908,7 @@ ALTER TABLE ONLY log__post_lock
 
 
 --
--- Name: log__req_delete_entryid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr; Tablespace: 
+-- Name: log__req_delete_entryid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY log__req_delete
@@ -911,7 +916,7 @@ ALTER TABLE ONLY log__req_delete
 
 
 --
--- Name: log__rolechange_entryid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr; Tablespace: 
+-- Name: log__rolechange_entryid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY log__rolechange
@@ -919,7 +924,7 @@ ALTER TABLE ONLY log__rolechange
 
 
 --
--- Name: log__un-banish_entryid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr; Tablespace: 
+-- Name: log__un-banish_entryid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY "log__un-banish"
@@ -927,7 +932,7 @@ ALTER TABLE ONLY "log__un-banish"
 
 
 --
--- Name: log__userfetch_entryid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr; Tablespace: 
+-- Name: log__userfetch_entryid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY log__userfetch
@@ -935,7 +940,7 @@ ALTER TABLE ONLY log__userfetch
 
 
 --
--- Name: log_entryid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr; Tablespace: 
+-- Name: log_entryid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY log
@@ -943,7 +948,7 @@ ALTER TABLE ONLY log
 
 
 --
--- Name: requests_id; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr; Tablespace: 
+-- Name: requests_id; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY requests
@@ -951,7 +956,7 @@ ALTER TABLE ONLY requests
 
 
 --
--- Name: reservations_id; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr; Tablespace: 
+-- Name: reservations_id; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY reservations
@@ -959,7 +964,7 @@ ALTER TABLE ONLY reservations
 
 
 --
--- Name: roles_name; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr; Tablespace: 
+-- Name: roles_name; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY roles
@@ -967,7 +972,7 @@ ALTER TABLE ONLY roles
 
 
 --
--- Name: roles_value; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr; Tablespace: 
+-- Name: roles_value; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY roles
@@ -975,7 +980,7 @@ ALTER TABLE ONLY roles
 
 
 --
--- Name: sessions_id; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr; Tablespace: 
+-- Name: sessions_id; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY sessions
@@ -983,7 +988,7 @@ ALTER TABLE ONLY sessions
 
 
 --
--- Name: usefullinks_id; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr; Tablespace: 
+-- Name: usefullinks_id; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY usefullinks
@@ -991,7 +996,7 @@ ALTER TABLE ONLY usefullinks
 
 
 --
--- Name: users_id; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr; Tablespace: 
+-- Name: users_id; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY users
@@ -999,119 +1004,119 @@ ALTER TABLE ONLY users
 
 
 --
--- Name: episodes__votes_user; Type: INDEX; Schema: public; Owner: mlpvc-rr; Tablespace: 
+-- Name: episodes__votes_user; Type: INDEX; Schema: public; Owner: mlpvc-rr
 --
 
 CREATE INDEX episodes__votes_user ON episodes__votes USING btree ("user");
 
 
 --
--- Name: episodes_posted_by; Type: INDEX; Schema: public; Owner: mlpvc-rr; Tablespace: 
+-- Name: episodes_posted_by; Type: INDEX; Schema: public; Owner: mlpvc-rr
 --
 
 CREATE INDEX episodes_posted_by ON episodes USING btree (posted_by);
 
 
 --
--- Name: log__banish_target; Type: INDEX; Schema: public; Owner: mlpvc-rr; Tablespace: 
+-- Name: log__banish_target; Type: INDEX; Schema: public; Owner: mlpvc-rr
 --
 
 CREATE INDEX log__banish_target ON log__banish USING btree (target);
 
 
 --
--- Name: log__rolechange_newrole; Type: INDEX; Schema: public; Owner: mlpvc-rr; Tablespace: 
+-- Name: log__rolechange_newrole; Type: INDEX; Schema: public; Owner: mlpvc-rr
 --
 
 CREATE INDEX log__rolechange_newrole ON log__rolechange USING btree (newrole);
 
 
 --
--- Name: log__rolechange_oldrole; Type: INDEX; Schema: public; Owner: mlpvc-rr; Tablespace: 
+-- Name: log__rolechange_oldrole; Type: INDEX; Schema: public; Owner: mlpvc-rr
 --
 
 CREATE INDEX log__rolechange_oldrole ON log__rolechange USING btree (oldrole);
 
 
 --
--- Name: log__rolechange_target; Type: INDEX; Schema: public; Owner: mlpvc-rr; Tablespace: 
+-- Name: log__rolechange_target; Type: INDEX; Schema: public; Owner: mlpvc-rr
 --
 
 CREATE INDEX log__rolechange_target ON log__rolechange USING btree (target);
 
 
 --
--- Name: log__un-banish_target; Type: INDEX; Schema: public; Owner: mlpvc-rr; Tablespace: 
+-- Name: log__un-banish_target; Type: INDEX; Schema: public; Owner: mlpvc-rr
 --
 
 CREATE INDEX "log__un-banish_target" ON "log__un-banish" USING btree (target);
 
 
 --
--- Name: log__userfetch_userid; Type: INDEX; Schema: public; Owner: mlpvc-rr; Tablespace: 
+-- Name: log__userfetch_userid; Type: INDEX; Schema: public; Owner: mlpvc-rr
 --
 
 CREATE INDEX log__userfetch_userid ON log__userfetch USING btree (userid);
 
 
 --
--- Name: log_initiator; Type: INDEX; Schema: public; Owner: mlpvc-rr; Tablespace: 
+-- Name: log_initiator; Type: INDEX; Schema: public; Owner: mlpvc-rr
 --
 
 CREATE INDEX log_initiator ON log USING btree (initiator);
 
 
 --
--- Name: requests_requested_by; Type: INDEX; Schema: public; Owner: mlpvc-rr; Tablespace: 
+-- Name: requests_requested_by; Type: INDEX; Schema: public; Owner: mlpvc-rr
 --
 
 CREATE INDEX requests_requested_by ON requests USING btree (requested_by);
 
 
 --
--- Name: requests_reserved_by; Type: INDEX; Schema: public; Owner: mlpvc-rr; Tablespace: 
+-- Name: requests_reserved_by; Type: INDEX; Schema: public; Owner: mlpvc-rr
 --
 
 CREATE INDEX requests_reserved_by ON requests USING btree (reserved_by);
 
 
 --
--- Name: requests_season_episode; Type: INDEX; Schema: public; Owner: mlpvc-rr; Tablespace: 
+-- Name: requests_season_episode; Type: INDEX; Schema: public; Owner: mlpvc-rr
 --
 
 CREATE INDEX requests_season_episode ON requests USING btree (season, episode);
 
 
 --
--- Name: reservations_reserved_by; Type: INDEX; Schema: public; Owner: mlpvc-rr; Tablespace: 
+-- Name: reservations_reserved_by; Type: INDEX; Schema: public; Owner: mlpvc-rr
 --
 
 CREATE INDEX reservations_reserved_by ON reservations USING btree (reserved_by);
 
 
 --
--- Name: reservations_season_episode; Type: INDEX; Schema: public; Owner: mlpvc-rr; Tablespace: 
+-- Name: reservations_season_episode; Type: INDEX; Schema: public; Owner: mlpvc-rr
 --
 
 CREATE INDEX reservations_season_episode ON reservations USING btree (season, episode);
 
 
 --
--- Name: sessions_user; Type: INDEX; Schema: public; Owner: mlpvc-rr; Tablespace: 
+-- Name: sessions_user; Type: INDEX; Schema: public; Owner: mlpvc-rr
 --
 
 CREATE INDEX sessions_user ON sessions USING btree ("user");
 
 
 --
--- Name: usefullinks_minrole; Type: INDEX; Schema: public; Owner: mlpvc-rr; Tablespace: 
+-- Name: usefullinks_minrole; Type: INDEX; Schema: public; Owner: mlpvc-rr
 --
 
 CREATE INDEX usefullinks_minrole ON usefullinks USING btree (minrole);
 
 
 --
--- Name: users_role; Type: INDEX; Schema: public; Owner: mlpvc-rr; Tablespace: 
+-- Name: users_role; Type: INDEX; Schema: public; Owner: mlpvc-rr
 --
 
 CREATE INDEX users_role ON users USING btree (role);

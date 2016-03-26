@@ -2275,8 +2275,16 @@ ORDER BY "count" DESC
 			->get('episodes__videos');
 
 		if (!empty($Videos)){
-			$CurrentEpisode = add_episode_airing_data($CurrentEpisode);
-			$fullep = count($Videos) === 1 && !$CurrentEpisode['aired'] ? 'Livestream' : 'Full episode';
+			$fullep = $CurrentEpisode['twoparter'] ? 'Full episode' : '';
+			if (count($Videos) === 1 && $Videos[0]['provider'] === 'yt'){
+				$airtime = strtotime($CurrentEpisode['airs']);
+				$added = $Videos[0]['added'];
+				if (!empty($added) && $airtime > strtotime($added)){
+					$fullep = 'Livestream';
+					if (!$CurrentEpisode['twoparter'])
+						$fullep = " ($fullep)";
+				}
+			}
 
 			$HTML = "<section class='episode'><h2>Watch the ".($isMovie?'Movie':'Episode')."</h2><p class='align-center actions'>";
 			require_once "includes/Video.php";
@@ -2286,7 +2294,7 @@ ORDER BY "count" DESC
 					!$v['fullep']
 					? " (Part {$v['part']})"
 					: " ($fullep)"
-				) : '';
+				) : $fullep;
 				$HTML .= "<a class='btn typcn {$PROVIDER_BTN_CLASSES[$v['provider']]}' href='$url' target='_blank'>{$VIDEO_PROVIDER_NAMES[$v['provider']]}$partText</a>";
 			}
 			$HTML .= "<button class='green typcn typcn-eye showplayers'>Show on-site player</button></p></section>";

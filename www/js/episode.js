@@ -15,16 +15,18 @@ DocReady.push(function Episode(){
 
 			if (!data.status) return $.Dialog.fail(false, data.message);
 
-			var $form = $.mk('form').attr('id','vidlinks').attr('class','align-center').append(
-				$.mk('p').text('Enter vido links below, leave any input blank to remove that video from the episode page.'),
-				$.mk('input').attr({type:'url','class':'yt',name:'yt_1',placeholder:'YouTube'}),
-				$.mk('input').attr({type:'url','class':'dm',name:'dm_1',placeholder:'Dailymotion'})
-			);
+			var $yt_input = $.mk('input').attr({type:'url','class':'yt',name:'yt_1',placeholder:'YouTube',spellcheck:'false'}),
+				$dm_input = $.mk('input').attr({type:'url','class':'dm',name:'dm_1',placeholder:'Dailymotion',spellcheck:'false'}),
+				$form = $.mk('form').attr('id','vidlinks').attr('class','align-center').append(
+					$.mk('p').text('Enter vido links below, leave any input blank to remove that video from the episode page.'),
+					$yt_input.clone(),
+					$dm_input.clone()
+				);
 			if (data.twoparter){
 				$.mk('p').html('<strong>~ Part 1 ~</strong>').insertBefore($form.children('input').first());
 				var pt2 = {
-					$yt: $.mk('input').attr({type:'url','class':'yt',name:'yt_2',placeholder:'YouTube'}),
-					$dm: $.mk('input').attr({type:'url','class':'dm',name:'dm_2',placeholder:'Dailymotion'})
+					$yt: $yt_input.clone().attr('name', 'yt_2'),
+					$dm: $dm_input.clone().attr('name', 'dm_2')
 				};
 				$form.append(
 					$.mk('p').text('Check below if either link contains the full episode instead of just one part'),
@@ -44,17 +46,30 @@ DocReady.push(function Episode(){
 						$form
 							.find('input[type="checkbox"]')
 							.filter('[name="'+prov+'_1_full"]')
-							.attr('checked', true)
+							.prop('checked', true)
 							.trigger('change');
 					});
 			}
 			if (Object.keys(data.vidlinks).length > 0){
-				var $inputs = $form.children('input').attr('spellcheck','false');
+				var $inputs = $form.children('input');
 				$.each(data.vidlinks,function(k,v){
 					$inputs.filter('[name='+k+']').val(v);
 				});
 			}
 			$.Dialog.request(false,$form,'vidlinks','Save',function($form){
+				if (data.airs && new Date(data.airs).getTime() < new Date().getTime()){
+					var $lsnotice = $.mk('div').addClass('notice warn').text('If you add this video now, it will be shown as a livestream link!');
+					$form.append($lsnotice);
+
+					$form.on('change keydown','input',function(){
+						setTimeout(function(){
+							var state = $form.mkData(),
+								shownotice = state.yt_1 && state.yt_1_full && !(state.dm_1 || state.dm_2);
+
+							$lsnotice[shownotice ? 'show' : 'hide']();
+						},1);
+					}).triggerHandler('change');
+				}
 				$form.on('submit',function(e){
 					e.preventDefault();
 

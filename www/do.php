@@ -560,6 +560,7 @@
 							'twoparter' => $Episode['twoparter'],
 							'vidlinks' => array(),
 							'fullep' => array(),
+							'airs' => date('c',strtotime($Episode['airs'])),
 						);
 						$Vids = $Database->whereEp($Episode)->get('episodes__videos',null,'provider as name, *');
 						foreach ($Vids as $part => $prov){
