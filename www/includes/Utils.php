@@ -1167,7 +1167,7 @@ HTML;
 
 			if ($type === 'sta.sh' && !regex_match($FULLSIZE_MATCH_REGEX, $insert['fullsize'])){
 				$fullsize_attempt = get_fullsize_stash_url($ID);
-				if (!empty($fullsize_attempt))
+				if (is_string($fullsize_attempt))
 					$insert['fullsize'] = $fullsize_attempt;
 			}
 
@@ -1199,21 +1199,28 @@ HTML;
 		try {
 			$stashpage = legitimate_request($stash_url,null,null);
 		}
-		catch (Exception $e){ return null; }
+		catch (cURLRequestException $e){
+			if ($e->getCode() === 404)
+				return 404;
+			return 1;
+		}
+		catch (Exception $e){
+			return 2;
+		}
 		if (empty($stashpage))
-			return null;
+			return 3;
 
 		$STASH_DL_LINK_REGEX = '(https?://sta.sh/download/\d+/[a-z\d_]+-d[a-z\d]{6,}\.(?:png|jpe?g|bmp)\?[^"]+)';
 		$urlmatch = regex_match(new RegExp('<a\s+class="[^"]*?dev-page-download[^"]*?"\s+href="'.
 			$STASH_DL_LINK_REGEX.'"'), $stashpage['response'], $_match);
 
 		if (!$urlmatch)
-			return null;
+			return 4;
 
 		$fullsize_url = redirects_where(htmlspecialchars_decode($_match[1]), $stash_url);
 
 		if (empty($fullsize_url))
-			return null;
+			return 5;
 
 		global $Database;
 		if ($Database->where('id', $stash_id)->where('provider', 'sta.sh')->has('deviation_cache'))

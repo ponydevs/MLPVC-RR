@@ -178,14 +178,21 @@
 					respond(array('fullsize' => $fullsize));
 
 				// Reverse submission lookup
-				$StashItem = $Database->where('provider', 'sta.sh')->where('fullsize', $fullsize)->getOne('deviation_cache','id');
+				$StashItem = $Database->where('provider', 'sta.sh')->where('fullsize', $fullsize)->getOne('deviation_cache','id,fullsize,preview');
 				if (empty($StashItem['id']))
 					respond('Stash URL lookup failed');
 
 				try {
+					$origfullsize = $fullsize;
 					$newfullsize = get_fullsize_stash_url($StashItem['id']);
-					if (empty($newfullsize))
-						throw new Exception('Could not find the URL');
+					if (!is_string($newfullsize)){
+						if ($newfullsize === 404){
+							$Database->where('provider', 'sta.sh')->where('fullsize', $fullsize)->delete('deviation_cache');
+							$Database->where('preview', $StashItem['preview'])->orWhere('fullsize', $StashItem['fullsize'])->delete('requests,reservations');
+							respond('The original image has been deleted from Sta.sh');
+						}
+						else throw new Exception("Code $newfullsize; Could not find the URL (original url: $origfullsize)");
+					}
 				}
 				catch (Exception $e){
 					respond('Error while finding URL: '.$e->getMessage());
