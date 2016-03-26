@@ -141,9 +141,8 @@ DocReady.push(function Episode(){
 	}
 	BindVideoButtons();
 
-	var $voting = $('#voting'),
-		$voteButton = $voting.children('.rate');
-	$voteButton.on('click',function(e){
+	var $voting = $('#voting');
+	$voting.on('click','.rate',function(e){
 		e.preventDefault();
 
 		var makeStar = function(v){
@@ -190,7 +189,8 @@ DocReady.push(function Episode(){
 					makeStar(5)
 				),
 				$.mk('p').css('font-size','1.1em').append('Your rating: <strong>?</strong>/5')
-			);
+			),
+			$voteButton = $voting.children('.rate');
 
 		$.Dialog.request('Rating '+EpID,$VoteForm,'star-rating','Rate',function($form){
 			$form.on('submit',function(e){
@@ -219,7 +219,7 @@ DocReady.push(function Episode(){
 	$voting.find('time').data('dyntime-beforeupdate',function(diff){
 		if (diff.past !== true) return;
 
-		if (!$voteButton.length){
+		if (!$voting.children('.rate').length){
 			$.post('/episode/vote/'+EpID+'?html',$.mkAjaxHandler(function(){
 				if (!this.status) return $.Dialog.fail('Display voting buttons',this.message);
 
