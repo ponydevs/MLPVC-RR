@@ -172,26 +172,27 @@
 				if (empty($Post))
 					respond("The specified $thing does not exist");
 
-				$fullsize = $Post['fullsize'];
 				// Link is already full size, we're done
-				if (regex_match($FULLSIZE_MATCH_REGEX, $fullsize))
-					respond(array('fullsize' => $fullsize));
+				if (regex_match($FULLSIZE_MATCH_REGEX, $Post['fullsize']))
+					respond(array('fullsize' => $Post['fullsize']));
 
 				// Reverse submission lookup
-				$StashItem = $Database->where('provider', 'sta.sh')->where('fullsize', $fullsize)->getOne('deviation_cache','id,fullsize,preview');
+				$StashItem = $Database
+					->where('fullsize', $Post['fullsize'])
+					->orWhere('preview', $Post['preview'])
+					->getOne('deviation_cache','id,fullsize,preview');
 				if (empty($StashItem['id']))
 					respond('Stash URL lookup failed');
 
 				try {
-					$origfullsize = $fullsize;
-					$newfullsize = get_fullsize_stash_url($StashItem['id']);
-					if (!is_string($newfullsize)){
-						if ($newfullsize === 404){
-							$Database->where('provider', 'sta.sh')->where('fullsize', $fullsize)->delete('deviation_cache');
+					$fullsize = get_fullsize_stash_url($StashItem['id']);
+					if (!is_string($fullsize)){
+						if ($fullsize === 404){
+							$Database->where('provider', 'sta.sh')->where('id', $StashItem['id'])->delete('deviation_cache');
 							$Database->where('preview', $StashItem['preview'])->orWhere('fullsize', $StashItem['fullsize'])->delete('requests,reservations');
 							respond('The original image has been deleted from Sta.sh',0,array('rmdirect' => true));
 						}
-						else throw new Exception("Code $newfullsize; Could not find the URL (original url: $origfullsize)");
+						else throw new Exception("Code $fullsize; Could not find the URL");
 					}
 				}
 				catch (Exception $e){
