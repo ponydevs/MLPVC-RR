@@ -108,6 +108,8 @@
 		> .label {
 			font-size: 1.2em;
 			font-style: italic;
+			max-width: 266px;
+			margin-bottom: 5px;
 
 			&:before, &:after { content: '"' }
 		}
