@@ -2825,13 +2825,15 @@ ORDER BY "count" DESC
 
 		$UsefulLinks = $Database->get('usefullinks');
 		foreach ($UsefulLinks as $l){
-			$href = apos_encode($l['url']);
+			$href = "href='".apos_encode($l['url'])."'";
+			if ($l['url'][0] === '#')
+				$href .= " class='action--".substr($l['url'],1)."'";
 			$title = apos_encode($l['title']);
 			$label = htmlspecialchars_decode($l['label']);
 			$cansee = $ROLES_ASSOC[$l['minrole']];
 			if ($l['minrole'] !== 'developer')
 				$cansee .= 's and above';
-			$HTML .= "<li id='ufl-{$l['id']}'><div><a href='$href' title='$title'>{$label}</a></div>".
+			$HTML .= "<li id='ufl-{$l['id']}'><div><a $href title='$title'>{$label}</a></div>".
 			             "<div><span class='typcn typcn-eye'></span> $cansee</div>".
 			             "<div class='buttons'><button class='blue typcn typcn-pencil edit-link'>Edit</button><button class='red typcn typcn-trash delete-link'>Delete</button></div></li>";
 		}

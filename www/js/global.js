@@ -758,36 +758,34 @@ $(function(){
 	});
 
 	// Color Average form
-	(function(){
-		$(document).off('click','.action--color-avg').on('click','.action--color-avg',function(e){
-			e.preventDefault();
-			e.stopPropagation();
+	$(document).off('click','.action--color-avg').on('click','.action--color-avg',function(e){
+		e.preventDefault();
+		e.stopPropagation();
 
-			var title = 'Colour Average Calculator',
-				callme = function(){
-					$.Dialog.close();
-					$.Dialog.request(title,window.$ColorAvgForm.clone(true,true),'color-avg-form','Save progress',function($form){
-						$form.triggerHandler('added');
-					});
-				};
-
-			if (typeof window.$ColorAvgForm === 'undefined'){
-				$.Dialog.wait(title,'Loading form, please wait');
-				var scriptUrl = '/js/global-color_avg_form.min.js';
-				$.getScript(scriptUrl,callme).fail(function(){
-					setTimeout(function(){
-						$.Dialog.close(function(){
-							$.Dialog.wait(title, 'Loading script (attempt #2)');
-							$.getScript(scriptUrl.replace(/min\./,''), callme).fail(function(){
-								$.Dialog.fail(title, 'Form could not be loaded');
-							});
-						});
-					},1);
+		var title = 'Colour Average Calculator',
+			callme = function(){
+				$.Dialog.close();
+				$.Dialog.request(title,window.$ColorAvgForm.clone(true,true),'color-avg-form','Save progress',function($form){
+					$form.triggerHandler('added');
 				});
-			}
-			else callme();
-		});
-	})();
+			};
+
+		if (typeof window.$ColorAvgForm === 'undefined'){
+			$.Dialog.wait(title,'Loading form, please wait');
+			var scriptUrl = '/js/global-color_avg_form.min.js';
+			$.getScript(scriptUrl,callme).fail(function(){
+				setTimeout(function(){
+					$.Dialog.close(function(){
+						$.Dialog.wait(title, 'Loading script (attempt #2)');
+						$.getScript(scriptUrl.replace(/min\./,''), callme).fail(function(){
+							$.Dialog.fail(title, 'Form could not be loaded');
+						});
+					});
+				},1);
+			});
+		}
+		else callme();
+	});
 
 	$d.on('click','a[href]',function LinkClick(e){
 		if (e.which > 2) return true;
