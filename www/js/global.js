@@ -766,8 +766,8 @@ $(function(){
 			var title = 'Colour Average Calculator',
 				callme = function(){
 					$.Dialog.close();
-					$.Dialog.request(title,window.$ColorAvgForm,'color-avg-form','Save progress',function($form){
-						$form.triggerHandler('read-colors');
+					$.Dialog.request(title,window.$ColorAvgForm.clone(true,true),'color-avg-form','Save progress',function($form){
+						$form.triggerHandler('added');
 					});
 				};
 
