@@ -35,6 +35,7 @@
 		}
 		&.recent-posts ul {
 			@extend %post-ul;
+			margin-bottom: 0;
 
 			&:empty:before {
 				content: "No recent posts to show";
