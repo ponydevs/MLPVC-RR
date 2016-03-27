@@ -1,7 +1,7 @@
 <div id="content">
 	<h1><?=$heading?></h1>
 	<p>A searchable list of character <?=$color?>s from the <?=$EQG?'movies':'show'?></p>
-	<p class="align-center">If you can't find a character here, check the old gudes: <a href="https://sta.sh/0kic0ngp3fy">Pony</a> / <a href="http://fav.me/d7120l1">EQG</a></p>
+	<p class="align-center">If you can't find a character here, check the old guides: <a href="https://sta.sh/0kic0ngp3fy">Pony</a> / <a href="http://fav.me/d7120l1">EQG</a></p>
 <? if (PERM('inspector')){ ?>
 	<div class="notice warn tagediting">
 		<label>Limited editing</label>
