@@ -350,13 +350,25 @@ DocReady.push(function Episode(){
 				};
 
 			if (typeof USERNAME_REGEX === 'undefined' || !e.shiftKey) send({});
-			else $.Dialog.request(title, '<form id="reserve-as"><label><span>Reserve as</span><input type="text" name="post_as" placeholder="Username" pattern="'+USERNAME_REGEX+'" required></label></form>','reserve-as','Reserve',function($form){
-				$form.on('submit',function(e){
-					e.preventDefault();
+			else {
+				var $ReserveAsForm = $.mk('form').attr('id','reserve-as').append(
+					$.mk('label').append(
+						"<span>Reserve as</span>",
+						$.mk('input').attr({
+							type: 'text',
+							name: 'post_as',
+							placeholder: 'Username',
+						}).patternAttr(USERNAME_REGEX)
+					)
+				);
+				$.Dialog.request(title, $ReserveAsForm,'reserve-as','Reserve',function($form){
+					$form.on('submit',function(e){
+						e.preventDefault();
 
-					send($form.mkData());
+						send($form.mkData());
+					});
 				});
-			});
+			}
 		});
 		$li.children('em').children('a:not(.da-userlink)').on('click',function(e){
 			e.preventDefault();
