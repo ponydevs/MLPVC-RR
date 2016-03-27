@@ -66,17 +66,17 @@ DocReady.push(function Blender(){
 		var hex = $hexInput.val(),
 			$prev = $.mk('div').attr('class','preview').css('background-color', hex),
 			OrigRGB = $.hex2rgb(hex),
-			$inputs = $.mk('div').attr('class','inputs').html(
+			$formInputs = $.mk('div').attr('class','input-group-3').html(
 				"<input type='number' class='color-red' name='r' min='0' max='255' step='1' value='" + OrigRGB.r + "'>" +
 				"<input type='number' class='color-green' name='g' min='0' max='255' step='1' value='" + OrigRGB.g + "'>" +
 				"<input type='number' class='color-darkblue' name='b' min='0' max='255' step='1' value='" + OrigRGB.b + "'>"
 			);
 
-		$inputs.children().on('keyup change input mouseup',function(){
+		$formInputs.children().on('keyup change input mouseup',function(){
 			var $form = $(this).closest('form');
 			$form.children('.preview').css('background-color', $.rgb2hex($form.mkData()));
 		});
-		var $rgbform = $.mk('form').attr('id','rgbform').append($inputs,$prev);
+		var $rgbform = $.mk('form').attr('id','rgbform').append($formInputs,$prev);
 
 		$.Dialog.setFocusedElement($hexInput);
 		$.Dialog.request('Enter RGB values',$rgbform,'rgbform','Set',function($form){

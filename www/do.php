@@ -996,7 +996,7 @@
 										$ul = strlen($url);
 										if (stripos($url, ABSPATH) === 0)
 											$url = substr($url, strlen(ABSPATH)-1);
-										if (!regex_match($REWRITE_REGEX,$url)){
+										if (!regex_match($REWRITE_REGEX,$url) && !regex_match(new RegExp('^#[a-z\-]+$'),$url)){
 											if ($ul < 3 || $ul > 255)
 												respond('Link URL must be between 3 and 255 characters long');
 											if (!regex_match(new RegExp('^https?:\/\/.+$'), $url))

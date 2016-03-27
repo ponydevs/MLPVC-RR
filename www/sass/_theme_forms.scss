@@ -150,6 +150,23 @@ input[type=checkbox] {
 					&:last-child { border-radius: 0 3px 3px 0 }
 				}
 			}
+
+			.input-group-2 > * {
+				display: inline-block;
+				width: 50%;
+				box-sizing:border-box;
+			}
+
+			.input-group-3 {
+				display: flex !important;
+				width: 100%;
+				align-items: center;
+
+				> * {
+					flex: 1 1 auto;
+					width: 30%;
+				}
+			}
 		}
 		input:not([type=radio]):not([type=checkbox]):not([type=button]):not([type=file]),
 		select,

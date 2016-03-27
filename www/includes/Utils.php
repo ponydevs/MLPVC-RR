@@ -1813,7 +1813,12 @@ HTML;
 				$title = "title='$title'";
 			}
 			else $title = '';
-			$Render[] =  "<li id='s-ufl-{$l['id']}'><a href='{$l['url']}' $title>{$l['label']}</a></li>";
+
+			$href = "href='{$l['url']}'";
+			if ($l['url'][0] === '#')
+				$href .= " class='action--".substr($l['url'],1)."'";
+
+			$Render[] =  "<li id='s-ufl-{$l['id']}'><a $href $title>{$l['label']}</a></li>";
 		}
 		if (!empty($Render))
 			echo '<ul class="links">'.implode('',$Render).'</ul>';

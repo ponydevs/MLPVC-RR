@@ -45,7 +45,7 @@ DocReady.push(function EpisodesManage(){
 
 	function EpisodeForm(id){
 		var $form = $.mk('form').attr('id', id).html(
-			'<div class=input-group>'+
+			'<div class=input-group-2>'+
 				'<input type="number" min="1" max="8" name="season" placeholder="Season #" required>'+
 				'<input type="number" min="1" max="26" name="episode" placeholder="Episode #" required>'+
 			'</div>'+
@@ -53,7 +53,7 @@ DocReady.push(function EpisodesManage(){
 				'<span>Title (5-35 chars.)</span>'+
 				'<input type="text" maxlength="35" name="title" placeholder="Title" pattern="'+EP_TITLE_HTML_REGEX+'" autocomplete="off" required>'+
 			'</label>'+
-			'<div class="input-group">'+
+			'<div class="input-group-2">'+
 				'<input type="date" name="airdate" placeholder="YYYY-MM-DD" required>'+
 				'<input type="time" name="airtime" placeholder="HH:MM" required>'+
 			'</div>'+
