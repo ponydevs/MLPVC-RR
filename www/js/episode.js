@@ -349,7 +349,7 @@ DocReady.push(function Episode(){
 					}));
 				};
 
-			if (typeof USERNAME_REGEX !== 'string' || !e.shiftKey) send({});
+			if (typeof USERNAME_REGEX === 'undefined' || !e.shiftKey) send({});
 			else $.Dialog.request(title, '<form id="reserve-as"><label><span>Reserve as</span><input type="text" name="post_as" placeholder="Username" pattern="'+USERNAME_REGEX+'" required></label></form>','reserve-as','Reserve',function($form){
 				$form.on('submit',function(e){
 					e.preventDefault();
