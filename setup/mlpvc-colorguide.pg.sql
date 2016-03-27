@@ -290,7 +290,7 @@ The difference between the second and third forms are the body colors.', NULL, f
 (85, 24, 'Lord Tirek (Fourth Form)', 'The nose ring uses the accessory highlight color as the fill.
 The difference between the third and final forms are the body and shadow colors.', NULL, false, '2016-03-20 15:15:11.582008+01', NULL, NULL),
 (86, 76, 'Scorpan''s Medallion', '', NULL, false, '2016-03-20 16:08:58.951886+01', NULL, NULL),
-(87, NULL, 'Rose', 'WIP', NULL, false, '2016-03-25 23:41:37.557224+01', NULL, NULL);
+(87, NULL, 'Rose', 'Far legs use darker colors.', 'd5it5t6', false, '2016-03-25 23:41:37.557224+01', NULL, false);
 
 
 --
@@ -2295,15 +2295,14 @@ INSERT INTO colors VALUES
 (485, 1, 'Fill 1', '#B82C57'),
 (485, 2, 'Outline 2', '#DB6589'),
 (485, 3, 'Fill 2', '#E2829D'),
-(486, 6, 'Gradient Top', NULL),
-(486, 7, 'Gradient Middle', NULL),
-(486, 8, 'Gradient Bottom', NULL),
-(486, 9, 'Highlight Top', NULL),
-(486, 10, 'Highlight Bottom', NULL),
-(487, 0, 'Rose Outline', '#FFFFFF'),
+(486, 0, 'Gradient Top', '#3C591E'),
+(486, 1, 'Gradient Bottom', '#B8E78C'),
+(486, 2, 'Highlight Top', '#D6ECB1'),
+(486, 3, 'Highlight Bottom', '#FFFFFF'),
+(487, 0, 'Rose Outline', '#9B2246'),
 (487, 1, 'Rose Fill', '#D13868'),
-(487, 2, 'Rose Shadow Fill', '#FFFFFF'),
-(487, 3, 'Leaf Outline', '#FFFFFF'),
+(487, 2, 'Rose Shadow Fill', '#BA2B57'),
+(487, 3, 'Leaf Outline', '#74A639'),
 (487, 4, 'Leaf Fill', '#97CC62'),
 (487, 5, 'Stem', '#4D7325');
 
@@ -2435,6 +2434,7 @@ INSERT INTO tagged VALUES
 (7, 78),
 (7, 79),
 (7, 81),
+(7, 87),
 (8, 37),
 (8, 38),
 (8, 39),
@@ -2705,7 +2705,8 @@ INSERT INTO tagged VALUES
 (173, 86),
 (175, 86),
 (176, 32),
-(177, 87);
+(177, 87),
+(179, 87);
 
 
 --
@@ -2719,7 +2720,7 @@ INSERT INTO tags VALUES
 (4, 'alicorn', NULL, 'spec', 4, NULL),
 (5, 'bat pony', NULL, 'spec', 0, NULL),
 (6, 'mane six', 'Ponies who are one of the show''s six main characters', 'cat', 7, NULL),
-(7, 'minor character', 'Ponies who had a speaking role and/or interacted with the mane six', 'cat', 49, NULL),
+(7, 'minor character', 'Ponies who had a speaking role and/or interacted with the mane six', 'cat', 50, NULL),
 (8, 'background character', 'Ponies whose only purpose is filling crowds, with no to minimal speaking roles', 'cat', 6, NULL),
 (9, 'antagonist', NULL, 'cat', 9, NULL),
 (10, 'pet', NULL, 'cat', 1, NULL),
@@ -2879,14 +2880,20 @@ INSERT INTO tags VALUES
 (175, 'scorpan''s medallion', '', NULL, 1, NULL),
 (176, 'trixie lulamoon', '', 'char', 1, NULL),
 (177, 'rose', '', 'char', 1, NULL),
-(178, 'roseluck', '', 'char', 0, 177);
+(178, 'roseluck', '', 'char', 0, 177),
+(179, 'flower trio', 'Flower-themed trio consisting of Rose, Daisy and Lily Valley.', 'cat', 1, NULL),
+(180, 's6e3', NULL, 'ep', 0, NULL),
+(181, 's6e4', NULL, 'ep', 0, NULL),
+(182, 's6e5', NULL, 'ep', 0, NULL),
+(183, 's6e6', NULL, 'ep', 0, NULL),
+(184, 's5e1', NULL, 'ep', 0, NULL);
 
 
 --
 -- Name: tags_tid_seq; Type: SEQUENCE SET; Schema: public; Owner: mlpvc-rr
 --
 
-SELECT pg_catalog.setval('tags_tid_seq', 178, true);
+SELECT pg_catalog.setval('tags_tid_seq', 184, true);
 
 
 --
