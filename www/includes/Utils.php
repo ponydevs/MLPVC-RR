@@ -2853,7 +2853,7 @@ ORDER BY "count" DESC
 				WHERE posted > NOW() - INTERVAL '20 DAYS'
 			) t
 			ORDER BY posted DESC
-			LIMIT 10");
+			LIMIT 20");
 
 		$HTML = $wrap ? '<ul>' : '';
 
