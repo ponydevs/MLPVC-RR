@@ -2769,14 +2769,14 @@ ORDER BY "count" DESC
 		global $CGDb;
 
 		$EpTagIDs = array();
-		$EpTagPt1 = $CGDb->where('name',"s{$Ep['season']}e{$Ep['episode']}")->getOne('tags','tid');
+		$EpTagPt1 = $CGDb->where('name',"s{$Ep['season']}e{$Ep['episode']}")->where('type','ep')->getOne('tags','tid');
 		if (!empty($EpTagPt1))
 			$EpTagIDs[] = $EpTagPt1['tid'];
 		if ($Ep['twoparter']){
-			$EpTagPt2 = $CGDb->where('name',"s{$Ep['season']}e".($Ep['episode']+1))->getOne('tags','tid');
+			$EpTagPt2 = $CGDb->where('name',"s{$Ep['season']}e".($Ep['episode']+1))->where('type','ep')->getOne('tags','tid');
 			if (!empty($EpTagPt2))
 				$EpTagIDs[] = $EpTagPt2['tid'];
-			$EpTagBothParts = $CGDb->where('name',"s{$Ep['season']}e{$Ep['episode']}-".($Ep['episode']+1))->getOne('tags','tid');
+			$EpTagBothParts = $CGDb->where('name',"s{$Ep['season']}e{$Ep['episode']}-".($Ep['episode']+1))->where('type','ep')->getOne('tags','tid');
 			if (!empty($EpTagBothParts))
 				$EpTagIDs[] = $EpTagBothParts['tid'];
 		}
