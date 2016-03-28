@@ -1742,19 +1742,25 @@
 						respond('Highly opinion-based tags are not allowed');
 					$data['name'] = $name;
 
-					if (empty($_POST['type'])) $data['type'] = null;
+					$epTagName = ep_tag_name_check($data['name']);
+					$surelyAnEpisodeTag = $epTagName !== false;
+					if (empty($_POST['type'])){
+						if ($surelyAnEpisodeTag)
+							$data['name'] = $epTagName;
+						$data['type'] = $epTagName === false ? null : 'ep';
+					}
 					else {
 						$type = trim($_POST['type']);
 						if (!in_array($type, $TAG_TYPES))
 							respond("Invalid tag type: $type");
 
-						$tagName = ep_tag_name_check($data['name']);
-
 						if ($type == 'ep'){
-							if ($tagName === false)
+							if (!$surelyAnEpisodeTag)
 								respond('Episode tags must be in the format of <strong>s##e##[-##]</strong> where # represents a number<br>Allowed seasons: 1-8, episodes: 1-26');
-							$data['name'] = $tagName;
+							$data['name'] = $epTagName;
 						}
+						else if ($surelyAnEpisodeTag)
+							$type = $ep;
 						$data['type'] = $type;
 					}
 
