@@ -525,7 +525,7 @@
 
 			if ($canEdit && !empty($t['synonym_of'])){
 				$Syn = get_tag_synon($t,'name');
-				$t['title'] .= "<br><em>Synonym of <strong>{$Syn['name']}</strong></em>";
+				$t['title'] .= (empty($t['title'])?'':'<br>')."<em>Synonym of <strong>{$Syn['name']}</strong></em>";
 			}
 
 			$HTML .= <<<HTML
