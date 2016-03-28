@@ -53,7 +53,7 @@
 				$color = '';
 				if (!empty($c['hex'])){
 					$color = $c['hex'];
-					$title .= "' style='background-color:$color' class='valid-color'";
+					$title .= "' style='background-color:$color' class='valid-color";
 				}
 
 				$append = "<span title='$title'>$color</span>";

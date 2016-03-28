@@ -65,6 +65,7 @@
 			margin-bottom: 10px !important;
 			background: rgba($HeaderFooterBG,.5) $WhiteGridImage;
 			border-bottom: 2px solid $HeaderFooterBG;
+			box-sizing: border-box;
 
 			ul {
 				list-style: none;
@@ -167,6 +168,7 @@
 .hidden { display: none }
 .unreadable { font-size: 0 }
 :focus { outline: 0 }
+a > img { border: 0 }
 time[datetime][title] { cursor: help }
 small { font-size: .75em }
 strong.typcn:before, span.typcn:not(:empty):before, em.typcn:before,
