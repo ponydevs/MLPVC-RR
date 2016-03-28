@@ -152,7 +152,7 @@
 
 	// List of available tag types
 	$TAG_TYPES_ASSOC = array(
-		'app' => 'Appearance',
+		'app' => 'Clothing',
 		'cat' => 'Category',
 		'ep' => 'Episode',
 		'gen' => 'Gender',
