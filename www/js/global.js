@@ -664,6 +664,11 @@ $(function(){
 
 	// Sidebar toggle handler
 	(function(){
+		var triggerResize = function(){
+			setTimeout(function(){
+				$w.trigger('resize');
+			},510);
+		};
 		$sbToggle.off('click sb-open sb-close').on('click',function(e){
 			e.preventDefault();
 
@@ -672,9 +677,12 @@ $(function(){
 			var close = e.type.substring(3) === 'close';
 			$body[close ? 'removeClass' : 'addClass']('sidebar-open');
 			localStorage[close ? 'setItem' : 'removeItem']('sidebar-closed', 'true');
+			triggerResize();
 		});
-		if (localStorage.getItem('sidebar-closed') !== 'true' && window.OpenSidebarByDefault())
+		if (localStorage.getItem('sidebar-closed') !== 'true' && window.OpenSidebarByDefault()){
 			$body.addClass('sidebar-open');
+			triggerResize();
+		}
 	})();
 
 	// Upcoming Episode Countdown

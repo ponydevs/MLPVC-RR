@@ -1,7 +1,9 @@
-/* global DocReady,Chart */
+/* global DocReady,Chart,$w */
 DocReady.push(function About(){
 	'use strict';
 	Chart.defaults.global.responsive = true;
+	Chart.defaults.global.maintainAspectRatio = false;
+	Chart.defaults.global.animation = false;
 
 	var $stats = $('#stats');
 
@@ -36,7 +38,11 @@ DocReady.push(function About(){
 			$PostStatsLegend.append("<span><span class='sq' style='background-color:rgb("+rgbstr+")'></span><span>"+el.label+"</span></span>");
 		});
 
-		PostsChart = new Chart(PostsCTX).Line(Data,{animation: false});
+		var setChart = function(){ PostsChart = new Chart(PostsCTX).Line(Data) };
+		setChart();
+		// The chart must be re-created on resize because the .resize() method actually breaks it
+		$w.on('resize', setChart);
+		//$w.on('resize', function(){ PostsChart.resize() });
 	}));
 
 	// Approval Stats
@@ -68,7 +74,11 @@ DocReady.push(function About(){
 		});
 		$ApprovalStatsLegend.append("<span><span class='sq' style='background-color:rgb("+rgbstr+")'></span><span>"+Data.datasets[0].label+"</span></span>");
 
-		ApprovalChart = new Chart(ApprovalCTX).Line(Data,{ animation: false, tooltipTemplate: "<%= value %>" });
+		var setChart = function(){ ApprovalChart = new Chart(ApprovalCTX).Line(Data,{ showTooltips: false }) };
+		setChart();
+		// The chart must be re-created on resize because the .resize() method actually breaks it
+		$w.on('resize', setChart);
+		//$w.on('resize', function(){ ApprovalChart.resize() });
 	}));
 },function(){
 	'use strict';

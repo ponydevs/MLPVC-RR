@@ -81,7 +81,7 @@
 		border: 1px solid $ContentOutline;
 		background: #fff;
 		$StatPadding: 7px;
-		padding: $StatPadding 0;
+		padding: $StatPadding;
 		box-sizing: border-box;
 
 		h3 { font-size: 1.3em }
@@ -89,13 +89,9 @@
 			text-align: center;
 			margin: 0 0 7px;
 		}
-		.stats-wrapper {
-			margin: 0 $StatPadding;
-
-			canvas {
-				width: 100%;
-				height: 200px;
-			}
+		.stats-wrapper canvas {
+			width: 100% !important;
+			height: 200px !important;
 		}
 		.legend {
 			text-align: center;
