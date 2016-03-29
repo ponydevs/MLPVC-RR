@@ -13,8 +13,20 @@
 		<h2>Attributions</h2>
 		<div class="attributions">
 <?  $about = file_get_contents(APPATH.'views/about.html');
-	if (!empty($about))
-		echo $about.'<p class="ramnode"><a href="https://clientarea.ramnode.com/aff.php?aff=2648"><img src="https://www.ramnode.com/images/banners/affbannerlightnewlogoblack.png" alt="high performance ssd vps"></a></p>';
+	if (!empty($about)){
+		echo $about;
+
+		$VERSION_REGEX = new RegExp('^.*(\d\.\d(?:\.\d)?)$');
+		$phpver = phpversion();
+		$server = implode(' ',array_slice(preg_split('~[/ ]~',$_SERVER['SERVER_SOFTWARE']),0,2));
+		$pgver = $Database->rawQuerySingle('SHOW server_version')['server_version'];
+		echo <<<HTML
+<p class="ramnode"><a href="https://clientarea.ramnode.com/aff.php?aff=2648"><img src="https://www.ramnode.com/images/banners/affbannerlightnewlogoblack.png" alt="high performance ssd vps"></a></p>
+<p style="font-size:.9em"><strong>VPS:</strong> OpenVZ SSD, 256MB RAM, 25GB storage, 1000GB bandwidth, <span class="typcn typcn-location"></span> Netherlands<br>
+<strong>Server Software:</strong> Debian 7.0 (wheezy) 32-bit, PHP $phpver, $server, PostgreSQL $pgver<br>
+<strong>Fun fact:</strong> The server costs less than $4 per month to run ($8/quarter + VAT).</p>
+HTML;
+	}
 	else echo Notice('warn','This section went missing due to a bug, and will be restored ASAP. Until then the section\'s contents are available at <a href="'.GITHUB_URL.'#attributions">'.GITHUB_URL.'#attributions</a>'); ?>
 		</div>
 	</section>

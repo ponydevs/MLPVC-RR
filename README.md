@@ -29,7 +29,7 @@ In the past, the management of comments under journals was done manually. Becaus
  - [Safari](http://fav.me/d530knp) by [ParallaxMLP](http://parallaxmlp.deviantart.com/)
  - [Vivaldi](https://github.com/alrra/browser-logos/blob/1ec2af8325ffb8b3f2c2834da84870341a376efd/vivaldi/vivaldi_256x256.png) from [alrra/browser-logos](https://github.com/alrra/browser-logos)
  
-**Coding and design** by [SeinopSys](https://github.com/SeinopSys)
+**Coding, design & hosting:** [SeinopSys](https://github.com/SeinopSys)
 
 ## Contributing
 
