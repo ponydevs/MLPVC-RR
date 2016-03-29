@@ -2,12 +2,16 @@
 -- PostgreSQL database dump
 --
 
+-- Dumped from database version 9.5.1
+-- Dumped by pg_dump version 9.5.1
+
 SET statement_timeout = 0;
 SET lock_timeout = 0;
 SET client_encoding = 'UTF8';
 SET standard_conforming_strings = on;
 SET check_function_bodies = false;
 SET client_min_messages = warning;
+SET row_security = off;
 
 --
 -- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: 
@@ -30,7 +34,7 @@ SET default_tablespace = '';
 SET default_with_oids = false;
 
 --
--- Name: appearances; Type: TABLE; Schema: public; Owner: mlpvc-rr; Tablespace: 
+-- Name: appearances; Type: TABLE; Schema: public; Owner: mlpvc-rr
 --
 
 CREATE TABLE appearances (
@@ -70,7 +74,7 @@ ALTER SEQUENCE appearances_id_seq OWNED BY appearances.id;
 
 
 --
--- Name: colorgroups; Type: TABLE; Schema: public; Owner: mlpvc-rr; Tablespace: 
+-- Name: colorgroups; Type: TABLE; Schema: public; Owner: mlpvc-rr
 --
 
 CREATE TABLE colorgroups (
@@ -105,7 +109,7 @@ ALTER SEQUENCE colorgroups_groupid_seq OWNED BY colorgroups.groupid;
 
 
 --
--- Name: colors; Type: TABLE; Schema: public; Owner: mlpvc-rr; Tablespace: 
+-- Name: colors; Type: TABLE; Schema: public; Owner: mlpvc-rr
 --
 
 CREATE TABLE colors (
@@ -119,7 +123,7 @@ CREATE TABLE colors (
 ALTER TABLE colors OWNER TO "mlpvc-rr";
 
 --
--- Name: tagged; Type: TABLE; Schema: public; Owner: mlpvc-rr; Tablespace: 
+-- Name: tagged; Type: TABLE; Schema: public; Owner: mlpvc-rr
 --
 
 CREATE TABLE tagged (
@@ -131,7 +135,7 @@ CREATE TABLE tagged (
 ALTER TABLE tagged OWNER TO "mlpvc-rr";
 
 --
--- Name: tags; Type: TABLE; Schema: public; Owner: mlpvc-rr; Tablespace: 
+-- Name: tags; Type: TABLE; Schema: public; Owner: mlpvc-rr
 --
 
 CREATE TABLE tags (
@@ -2865,8 +2869,7 @@ INSERT INTO tagged VALUES
 (190, 92),
 (191, 92),
 (192, 93),
-(193, 93),
-(197, 75);
+(193, 93);
 
 
 --
@@ -3059,7 +3062,7 @@ INSERT INTO tags VALUES
 (194, 'ziporwhill', '', 'char', 0, 193),
 (195, 'zipporwhil', '', 'char', 0, 193),
 (196, 'shining armour', '', 'char', 0, 77),
-(197, 'princess mi amore cadenza', '', 'char', 1, NULL);
+(197, 'princess mi amore cadenza', '', 'char', 0, 128);
 
 
 --
@@ -3070,7 +3073,7 @@ SELECT pg_catalog.setval('tags_tid_seq', 197, true);
 
 
 --
--- Name: appearances_id; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr; Tablespace: 
+-- Name: appearances_id; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY appearances
@@ -3078,7 +3081,7 @@ ALTER TABLE ONLY appearances
 
 
 --
--- Name: colorgroups_groupid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr; Tablespace: 
+-- Name: colorgroups_groupid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY colorgroups
@@ -3086,7 +3089,7 @@ ALTER TABLE ONLY colorgroups
 
 
 --
--- Name: colorgroups_groupid_label; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr; Tablespace: 
+-- Name: colorgroups_groupid_label; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY colorgroups
@@ -3094,7 +3097,7 @@ ALTER TABLE ONLY colorgroups
 
 
 --
--- Name: tagged_tid_ponyid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr; Tablespace: 
+-- Name: tagged_tid_ponyid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY tagged
@@ -3102,7 +3105,7 @@ ALTER TABLE ONLY tagged
 
 
 --
--- Name: tags_tid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr; Tablespace: 
+-- Name: tags_tid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY tags
@@ -3110,21 +3113,21 @@ ALTER TABLE ONLY tags
 
 
 --
--- Name: colorgroups_ponyid; Type: INDEX; Schema: public; Owner: mlpvc-rr; Tablespace: 
+-- Name: colorgroups_ponyid; Type: INDEX; Schema: public; Owner: mlpvc-rr
 --
 
 CREATE INDEX colorgroups_ponyid ON colorgroups USING btree (ponyid);
 
 
 --
--- Name: colors_groupid; Type: INDEX; Schema: public; Owner: mlpvc-rr; Tablespace: 
+-- Name: colors_groupid; Type: INDEX; Schema: public; Owner: mlpvc-rr
 --
 
 CREATE INDEX colors_groupid ON colors USING btree (groupid);
 
 
 --
--- Name: tags_synonym_of; Type: INDEX; Schema: public; Owner: mlpvc-rr; Tablespace: 
+-- Name: tags_synonym_of; Type: INDEX; Schema: public; Owner: mlpvc-rr
 --
 
 CREATE INDEX tags_synonym_of ON tags USING btree (synonym_of);

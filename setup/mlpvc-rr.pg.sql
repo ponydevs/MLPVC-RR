@@ -106,7 +106,7 @@ CREATE TABLE episodes__videos (
     id character varying(15) NOT NULL,
     part integer DEFAULT 1 NOT NULL,
     fullep boolean DEFAULT true NOT NULL,
-    modified timestamp with time zone DEFAULT '2016-03-26 18:44:15.230066+01'::timestamp with time zone
+    modified timestamp with time zone DEFAULT now()
 );
 
 
