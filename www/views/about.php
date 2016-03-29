@@ -17,7 +17,7 @@
 		echo $about;
 
 		$VERSION_REGEX = new RegExp('^.*(\d\.\d(?:\.\d)?)$');
-		$phpver = phpversion();
+		$phpver = preg_replace('/^(\d+(?:\.\d+)*).*$/','$1',PHP_VERSION);
 		$server = implode(' ',array_slice(preg_split('~[/ ]~',$_SERVER['SERVER_SOFTWARE']),0,2));
 		$pgver = $Database->rawQuerySingle('SHOW server_version')['server_version'];
 		echo <<<HTML
