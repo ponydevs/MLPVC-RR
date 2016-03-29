@@ -843,7 +843,7 @@
 						respond(array('data' => JSON::Decode(file_get_contents($CachePath))));
 
 					$Data = array('datasets' => array(), 'timestamp' => date('c'));
-					$LabelFormat = 'YYYY-MM-DDT00:00:00';
+					$LabelFormat = 'YYYY-MM-DD 00:00:00';
 
 					switch ($stat){
 						case 'posts':
@@ -867,7 +867,7 @@
 									COUNT(*)::INT AS cnt
 								FROM table_name t
 								WHERE posted > NOW() - INTERVAL '20 DAYS'
-								GROUP BY DATE(posted)
+								GROUP BY to_char(posted,'$LabelFormat')
 								ORDER BY MIN(posted)";
 							$RequestData = $Database->rawQuery(str_replace('table_name', 'requests', $query));
 							if (!empty($RequestData)){
@@ -898,7 +898,7 @@
 									COUNT(*)::INT AS cnt
 								FROM log
 								WHERE timestamp > NOW() - INTERVAL '20 DAYS' AND reftype = 'post_lock'
-								GROUP BY DATE(timestamp)
+								GROUP BY to_char(timestamp,'$LabelFormat')
 								ORDER BY MIN(timestamp)"
 							);
 							if (!empty($Approvals)){
