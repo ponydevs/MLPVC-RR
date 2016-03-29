@@ -839,30 +839,31 @@
 				if (!empty($data) && regex_match(new RegExp('^stats-(posts|approvals)$'),$data,$_match)){
 					$stat = $_match[1];
 					$CachePath = APPATH."../stats/$stat.json";
-					if (file_exists($CachePath) && filemtime($CachePath) > time() - $StatCacheDuration)
-						respond(array('data' => JSON::Decode(file_get_contents($CachePath))));
+					/*if (file_exists($CachePath) && filemtime($CachePath) > time() - $StatCacheDuration)
+						respond(array('data' => JSON::Decode(file_get_contents($CachePath))));*/
 
 					$Data = array('datasets' => array(), 'timestamp' => date('c'));
+					$LabelFormat = 'YYYY-MM-DDT00:00:00';
 
 					switch ($stat){
 						case 'posts':
 							$Labels = $Database->rawQuery(
 								"SELECT key FROM
 								(
-									SELECT posted, to_char(posted,'FMDDth FMMon') AS key FROM requests
+									SELECT posted, to_char(posted,'$LabelFormat') AS key FROM requests
 									WHERE posted > NOW() - INTERVAL '20 DAYS'
 									UNION ALL
-									SELECT posted, to_char(posted,'FMDDth FMMon') AS key FROM reservations
+									SELECT posted, to_char(posted,'$LabelFormat') AS key FROM reservations
 									WHERE posted > NOW() - INTERVAL '20 DAYS'
 								) t
 								GROUP BY key
 								ORDER BY MIN(t.posted)");
 
-							process_stat_labels();
+							process_stat_labels($Labels, $Data);
 
 							$query =
 								"SELECT
-									to_char(MIN(posted),'FMDDth FMMon') AS key,
+									to_char(MIN(posted),'$LabelFormat') AS key,
 									COUNT(*)::INT AS cnt
 								FROM table_name t
 								WHERE posted > NOW() - INTERVAL '20 DAYS'
@@ -883,20 +884,20 @@
 						break;
 						case 'approvals':
 							$Labels = $Database->rawQuery(
-								"SELECT to_char(timestamp,'FMDDth FMMon') AS key
+								"SELECT to_char(timestamp,'$LabelFormat') AS key
 								FROM log
-								WHERE timestamp > NOW() - INTERVAL '1 MONTH' AND reftype = 'post_lock'
+								WHERE timestamp > NOW() - INTERVAL '20 DAYS' AND reftype = 'post_lock'
 								GROUP BY key
 								ORDER BY MIN(timestamp)");
 
-							process_stat_labels();
+							process_stat_labels($Labels, $Data);
 
 							$Approvals = $Database->rawQuery(
 								"SELECT
-									to_char(MIN(timestamp),'FMDDth FMMon') AS key,
+									to_char(MIN(timestamp),'$LabelFormat') AS key,
 									COUNT(*)::INT AS cnt
 								FROM log
-								WHERE timestamp > NOW() - INTERVAL '1 MONTH' AND reftype = 'post_lock'
+								WHERE timestamp > NOW() - INTERVAL '20 DAYS' AND reftype = 'post_lock'
 								GROUP BY DATE(timestamp)
 								ORDER BY MIN(timestamp)"
 							);
@@ -907,6 +908,8 @@
 							}
 						break;
 					}
+
+					timed_stat_data_postprocess($Data);
 
 					upload_folder_create($CachePath);
 					file_put_contents($CachePath, JSON::Encode($Data));

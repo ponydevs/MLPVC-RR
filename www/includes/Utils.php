@@ -563,6 +563,7 @@ HTML;
 	define('EIGHTY_YEARS',2524556160);
 	define('ONE_YEAR',31536000);
 	define('THIRTY_DAYS',2592000);
+	define('ONE_DAY',86400);
 	define('ONE_HOUR',3600);
 
 	// Random Array Element \\
@@ -2718,10 +2719,11 @@ ORDER BY "count" DESC
 
 	/**
 	 * Process label data for stats
+	 *
+	 * @param array $Labels Labels to append to data
+	 * @param array $Data   Data array reference
 	 */
-	function process_stat_labels(){
-		global $Labels, $Data;
-
+	function process_stat_labels(&$Labels, &$Data){
 		if (empty($Labels))
 			$Labels = array();
 		else {
@@ -2756,6 +2758,43 @@ ORDER BY "count" DESC
 		}
 
 		unset($Dataset['labels']);
+	}
+
+	// Post-processing time-based statistics data
+	function timed_stat_data_postprocess(&$Data){
+		//var_dump($Data['labels'],$Data['datasets'][0]['data']);
+		foreach ($Data['labels'] as $k => $l)
+			$Data['labels'][$k] = strtotime($l);
+
+		$safety = 0;
+		while (true){
+			if ($safety++ > 20)
+				throw new Exception('Too many loops');
+
+			$continue = false;
+			$labelCount = count($Data['labels']);
+			for ($lix = 1; $lix < $labelCount-1; $lix++){
+				$diff = $Data['labels'][$lix] - $Data['labels'][$lix-1];
+				//var_dump(array(date('Y-m-d', $Data['labels'][$lix-1]),date('Y-m-d', $Data['labels'][$lix]),$diff));
+				if ($diff > ONE_DAY){
+					$continue = true;
+					//var_dump('breaks');
+					break;
+				}
+			}
+			if (!$continue)
+				break;
+
+			array_splice($Data['labels'], $lix, 0, array(strtotime('+1 day', $Data['labels'][$lix-1])));
+			foreach ($Data['datasets'] as $k => $_){
+				array_splice($Data['datasets'][$k]['data'], $lix, 0, array(0));
+				//var_dump(array($lix,$Data['datasets'][$k]['data'],$Data['datasets'][$k]['data'][$lix], $Data['datasets'][$k]['data'][$lix - 1],$Data['datasets'][$k]['data'][$lix + 1]));
+				//die();
+			}
+		}
+
+		foreach ($Data['labels'] as $k => $ts)
+			$Data['labels'][$k] = date('jS M',$ts);
 	}
 
 	// Create upload destination folder

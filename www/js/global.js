@@ -102,7 +102,7 @@
 				return;
 			details = ' Details:<pre><code>' + data.slice(1).join('\n').replace(/</g,'&lt;') + '</code></pre>';
 			details += ' Response body:';
-			var xdebug = /^(?:<br \/>\n)?(<pre class='xdebug-var-dump')/;
+			var xdebug = /^(?:<br \/>\n)?(<pre class='xdebug-var-dump'|<font size='1')/;
 			if (xdebug.test(data[0].responseText))
 				details += '<div class="reset">'+data[0].responseText.replace(xdebug, '$1')+'</div>';
 			else details += '<pre><code>' + data[0].responseText.replace(/</g,'&lt;') + '</code></pre>';

@@ -28,7 +28,7 @@
 				<div class="legend"></div>
 			</div>
 			<div class="stats-approvals">
-				<h3>Post approvals in the last 30 days</h3>
+				<h3>Post approvals in the last 20 days</h3>
 				<canvas></canvas>
 				<div class="legend"></div>
 			</div>

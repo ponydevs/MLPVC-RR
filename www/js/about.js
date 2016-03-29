@@ -68,7 +68,7 @@ DocReady.push(function About(){
 		});
 		$ApprovalStatsLegend.append("<span><span class='sq' style='background-color:rgb("+rgbstr+")'></span><span>"+Data.datasets[0].label+"</span></span>");
 
-		ApprovalChart = new Chart(ApprovalCTX).Line(Data,{animation: false});
+		ApprovalChart = new Chart(ApprovalCTX).Line(Data,{ animation: false, tooltipTemplate: "<%= value %>" });
 	}));
 },function(){
 	'use strict';
