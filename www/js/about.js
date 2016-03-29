@@ -9,7 +9,7 @@ DocReady.push(function About(){
 	var $PostStats = $stats.children('.stats-posts'),
 		$PostsTitle = $PostStats.children('h3'),
 		$PostStatsLegend = $PostStats.children('.legend'),
-		PostsCTX = $PostStats.children('canvas').get(0).getContext("2d"),
+		PostsCTX = $PostStats.find('canvas').get(0).getContext("2d"),
 		PostsChart,
 		PostLegendColors = ["#46ACD3","#4262C7"];
 	$.post('/about/stats-posts',$.mkAjaxHandler(function(){
@@ -43,7 +43,7 @@ DocReady.push(function About(){
 	var $ApprovalStats = $stats.children('.stats-approvals'),
 		$ApprovalTitle = $ApprovalStats.children('h3'),
 		$ApprovalStatsLegend = $ApprovalStats.children('.legend'),
-		ApprovalCTX = $ApprovalStats.children('canvas').get(0).getContext("2d"),
+		ApprovalCTX = $ApprovalStats.find('canvas').get(0).getContext("2d"),
 		ApprovalChart,
 		ApprovalLegendColor = $.hex2rgb("#4DC742");
 	$.post('/about/stats-approvals',$.mkAjaxHandler(function(){

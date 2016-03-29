@@ -839,8 +839,8 @@
 				if (!empty($data) && regex_match(new RegExp('^stats-(posts|approvals)$'),$data,$_match)){
 					$stat = $_match[1];
 					$CachePath = APPATH."../stats/$stat.json";
-					/*if (file_exists($CachePath) && filemtime($CachePath) > time() - $StatCacheDuration)
-						respond(array('data' => JSON::Decode(file_get_contents($CachePath))));*/
+					if (file_exists($CachePath) && filemtime($CachePath) > time() - $StatCacheDuration)
+						respond(array('data' => JSON::Decode(file_get_contents($CachePath))));
 
 					$Data = array('datasets' => array(), 'timestamp' => date('c'));
 					$LabelFormat = 'YYYY-MM-DDT00:00:00';

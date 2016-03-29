@@ -24,12 +24,16 @@
 		<div id="stats">
 			<div class="stats-posts">
 				<h3>Posts in the last 20 days</h3>
-				<canvas></canvas>
+				<div class="stats-wrapper">
+					<canvas></canvas>
+				</div>
 				<div class="legend"></div>
 			</div>
 			<div class="stats-approvals">
 				<h3>Post approvals in the last 20 days</h3>
-				<canvas></canvas>
+				<div class="stats-wrapper">
+					<canvas></canvas>
+				</div>
 				<div class="legend"></div>
 			</div>
 		</div>
