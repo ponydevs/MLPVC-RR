@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<title>Sign-in process</title>
+<head>
+<style>
+@font-face {
+	font-family: Celestia;
+	src: url('../font/Celestia Medium Redux.ttf');
+	src: local("Celestia Redux Alternate"),
+	     local("Celestia Medium Redux"),
+	     url('../font/Celestia Medium Redux.ttf') format("truetype");
+}
+html, body {
+	width: 100%;
+	height: 100%;
+}
+body {
+	margin: 0;
+	display: flex;
+	padding: 10px;
+	box-sizing: border-box;
+	opacity: 0;
+
+	transition: opacity 2s;
+}
+body.fadein {
+	opacity: 1;
+}
+body > span {
+	flex: 0 0 auto;
+	margin: auto;
+	display: block;
+	text-align: center;
+}
+body > span > * {
+	display: block;
+}
+body > span > :first-child {
+	color: transparent;
+	width: 200px;
+	height: 200px;
+	font-size: 200px;
+	line-height: 1em;
+	background: url('../img/login-success.svg') no-repeat center;
+	background-size: contain;
+}
+body > span > :last-child {
+	font-size: 28px;
+	font-family: "Celestia", sans-serif;
+	color: green;
+}
+</style>
+<script>window.opener.$.PopupMoveCenter(window, 400, 400)</script>
+</head>
+<body>
+	<span>
+		<span>&#x2713;</span>
+		<span>Welcome<script>
+			try {
+				if (localStorage.getItem('cookie_consent') == '1')
+					//noinspection DocumentWriteJS
+					document.write(' back')
+			} catch(e){}</script>!</span>
+	</span>
+	
+<script>setTimeout(function(){document.getElementsByTagName('body')[0].className += 'fadein'},1);window.opener[' {{CODE}}']()</script>
+</body>
+</html>

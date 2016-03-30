@@ -14,7 +14,7 @@
 		<div class="attributions">
 <?  $about = file_get_contents(APPATH.'views/about.html');
 	if (!empty($about)){
-		echo $about;
+		echo str_replace(GITHUB_URL.'/blob/master/www','',$about);
 
 		$VERSION_REGEX = new RegExp('^.*(\d\.\d(?:\.\d)?)$');
 		$phpver = preg_replace('/^(\d+(?:\.\d+)*).*$/','$1',PHP_VERSION);

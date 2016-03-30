@@ -350,6 +350,32 @@
 	window.OpenSidebarByDefault = function(){
 		return Math.max(document.documentElement.clientWidth, window.innerWidth || 0) >= 1200;
 	};
+	
+	// http://stackoverflow.com/a/16861050
+	var PopupCalcCenter = function(w, h){
+		var dualScreenLeft = typeof window.screenLeft !== 'undefined' ? window.screenLeft : screen.left,
+			dualScreenTop = typeof window.screenTop !== 'undefined' ? window.screenTop : screen.top,
+			width = window.innerWidth ? window.innerWidth : document.documentElement.clientWidth ? document.documentElement.clientWidth : screen.width,
+			height = window.innerHeight ? window.innerHeight : document.documentElement.clientHeight ? document.documentElement.clientHeight : screen.height,
+			left = ((width / 2) - (w / 2)) + dualScreenLeft,
+			top = ((height / 2) - (h / 2)) + dualScreenTop;
+
+		return {top:top, left:left};
+	};
+	$.PopupOpenCenter = function(url, title, w, h) {
+		var calcpos = PopupCalcCenter(w,h),
+			newWindow = window.open(url,title,'scrollbars=yes,width='+w+',height='+h+',top='+calcpos.top+',left='+calcpos.left);
+
+		if (window.focus)
+			newWindow.focus();
+		
+		return newWindow;
+	};
+	$.PopupMoveCenter = function(popup, w, h){
+		var calcpos = PopupCalcCenter(w,h);
+		popup.resizeTo(w,h);
+		popup.moveTo(calcpos.left,calcpos.top);
+	};
 
 	var DocReadyAlwaysRun = function(){
 		console.log('> DocReadyAlwaysRun()');
@@ -366,8 +392,46 @@
 
 					localStorage.setItem('cookie_consent',1);
 					$this.attr('disabled', true);
-					$.Dialog.wait('Sign-in process', 'Redirecting you to DeviantArt');
-					window.location.href = OAUTH_URL;
+
+					var rndk = (~~(Math.random()*99999999)).toString(36), success = false, closeCheck, popup;
+					window[' '+rndk] = function(){
+						success = true;
+						clearInterval(closeCheck);
+						$.Dialog.wait(false, 'Reloading page');
+						$.Navigation.reload(function(){
+							$.Dialog.close();
+							popup.close();
+						});
+					};
+					try {
+						popup = $.PopupOpenCenter(OAUTH_URL+"&state="+rndk,'login','450','580');
+					}catch(e){}
+					// http://stackoverflow.com/a/25643792
+					var onWindowClosed = function(){
+							if (success)
+								return;
+
+							if (document.cookie.indexOf('auth=') !== -1)
+								return window[' '+rndk];
+
+							$.Dialog.fail(false, 'Popup-based login unsuccessful');
+							$.Dialog.wait(false, 'Redirecting you to DeviantArt');
+							window.location.href = OAUTH_URL+"&state="+encodeURIComponent(window.location.href.replace(window.location.origin,''));
+						};
+					closeCheck = setInterval(function () {
+						try {
+							if (!popup || popup.closed){
+								clearInterval(closeCheck);
+								onWindowClosed();
+							}
+						}catch(e){}
+					}, 500);
+					$w.on('beforeunload', function(){
+						success = true;
+						popup.close();
+					});
+					$.Dialog.wait('Sign-in process', "Opening popup window");
+					$.Dialog.wait(false, "Waiting for you to sign in");
 				};
 
 			if (!consent) $.Dialog.confirm('EU Cookie Policy Notice','In compliance with the <a href="http://ec.europa.eu/ipg/basics/legal/cookies/index_en.htm">EU Cookie Policy</a> we must inform you that our website will store cookies on your device to remember your logged in status between browser sessions.<br><br>If you would like to avoid these completly harmless pieces of information required to use this website, click "Decline" and continue browsing as a guest.<br><br>This warning will not appear again if you accept our use of persistent cookies.',['Accept','Decline'],opener);
@@ -802,6 +866,10 @@ $(function(){
 		if (link.host !== location.host) return true;
 
 		if (link.pathname === location.pathname && link.search === location.search)
+			return true;
+
+		// Check if link seems to has a file extension
+		if (!/^.*\/[^.]*$/.test(link.pathname))
 			return true;
 
 		if ($(this).parents('#dialogContent').length !== 0)

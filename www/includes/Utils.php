@@ -733,7 +733,7 @@ HTML;
 		global $do, $data;
 		if ($do === 'index' && empty($data)) $returnURL = '/';
 		else $returnURL = $_SERVER['REQUEST_URI'];
-		return '&redirect_uri='.urlencode(ABSPATH."da-auth").($state?'&state='.urlencode($state===true?$returnURL:$state):'');
+		return '&redirect_uri='.urlencode(ABSPATH."da-auth");
 	}
 
 	// oAuth Authorization page URL generator
@@ -919,7 +919,7 @@ HTML;
 	function da_handle_auth(){
 		global $err, $errdesc, $REWRITE_REGEX;
 
-		if (!isset($_GET['error']) && (empty($_GET['code']) || (empty($_GET['state']) || !regex_match($REWRITE_REGEX, strtok($_GET['state'],'?')))))
+		if (!isset($_GET['error']) && (empty($_GET['code']) || empty($_GET['state'])))
 			$_GET['error'] = 'unauthorized_client';
 		if (isset($_GET['error'])){
 			$err = $_GET['error'];
@@ -941,8 +941,14 @@ HTML;
 				$errdesc .= "\n\nIf you'd like to appeal your ban, please <a href='http://mlp-vectorclub.deviantart.com/notes/'>send the group a note</a>.";
 			loadEpisodePage();
 		}
+		
+		if (regex_match(new RegExp('^[a-z\d]+$','i'), $_GET['state'], $_match)){
+			die(str_replace('{{CODE}}', $_match[0], file_get_contents('views/loginConfrim.html')));
+		}
+		else if (regex_match($REWRITE_REGEX, $_GET['state']))
+			redirect($_GET['state']);
 
-		redirect($_GET['state']);
+		redirect('/');
 	}
 
 	/**
