@@ -393,6 +393,14 @@
 					localStorage.setItem('cookie_consent',1);
 					$this.attr('disabled', true);
 
+					var redirect = function(){
+						$.Dialog.wait(false, 'Redirecting you to DeviantArt');
+						window.location.href = OAUTH_URL+"&state="+encodeURIComponent(window.location.href.replace(window.location.origin,''));
+					};
+
+					if (navigator.userAgent.indexOf('Trident') !== -1)
+						return redirect();
+
 					var rndk = (~~(Math.random()*99999999)).toString(36), success = false, closeCheck, popup;
 					window[' '+rndk] = function(){
 						success = true;
@@ -415,8 +423,7 @@
 								return window[' '+rndk];
 
 							$.Dialog.fail(false, 'Popup-based login unsuccessful');
-							$.Dialog.wait(false, 'Redirecting you to DeviantArt');
-							window.location.href = OAUTH_URL+"&state="+encodeURIComponent(window.location.href.replace(window.location.origin,''));
+							redirect();
 						};
 					closeCheck = setInterval(function () {
 						try {
