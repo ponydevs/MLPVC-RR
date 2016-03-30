@@ -390,6 +390,7 @@
 				opener = function(sure){
 					if (!sure) return;
 
+					$.Dialog.close();
 					localStorage.setItem('cookie_consent',1);
 					$this.attr('disabled', true);
 
