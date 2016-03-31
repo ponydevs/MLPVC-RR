@@ -743,7 +743,7 @@ body.april1st {
 	}
 
 	.mlg-crosshair {
-		position: absolute;
+		position: fixed;
 		z-index: 1337420;
 		background: url('../img/mlg-crosshair.svg') no-repeat;
 		width: 50px;
