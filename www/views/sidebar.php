@@ -4,7 +4,7 @@
 <?php
 if (!empty($Database)){ ?>
 	<section class="<?=$signedIn?'welcome':'login'?>">
-		<h2><?=$signedIn?'Signed in as':'Welcome!'?></h2>
+		<h2><?=APRIL_1ST ? 'hOI!!' : ($signedIn?'Signed in as':'Welcome!')?></h2>
 <?php
 	usercard_render(true);
 	if ($signedIn){

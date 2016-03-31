@@ -34,7 +34,7 @@
 	<link rel="stylesheet" href="<?=$css?>">
 <?php } ?>
 </head>
-<body class="loading">
+<body class="loading<?=APRIL_1ST?' april1st':''?>">
 
 	<header>
 		<nav><ul>
