@@ -123,12 +123,22 @@
 			->orderBy('tags.name', 'ASC');
 		if (!$showEpTags)
 			$CGDb->where("tags.type != 'ep'");
-		return isset($PonyID)
+		$tags = isset($PonyID)
 			? $CGDb
 				->join('tags','tagged.tid = tags.tid'.($showSynonymTags?' OR tagged.tid = tags.synonym_of':''),'LEFT')
 				->where('tagged.ponyid',$PonyID)
 				->get('tagged',$limit,'tags.*')
 			: $CGDb->get('tags',$limit);
+
+		global $color;
+		if ($color !== 'color' && $PonyID == 52)
+			$tags[] = array(
+				'tid' => 0,
+				'name' => 'wrong cutie mark',
+				'title' => '<img src="http://e.deviantart.net/emoticons/m/meow.gif" alt=":3">',
+				'uses' => 'Infinite',
+			);
+		return $tags;
 	}
 
 	// Return the markup of a set of tags belonging to a specific pony \\

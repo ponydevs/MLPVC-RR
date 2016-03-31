@@ -1560,11 +1560,11 @@
 							if ($Appearance['id'] === 0)
 								respond('This appearance cannot be un-tagged');
 
-							if (empty($_POST['tag']))
+							if (!isset($_POST['tag']) || !is_numeric($_POST['tag']))
 								respond('Tag ID is not specified');
 							$Tag = $CGDb->where('tid',$_POST['tag'])->getOne('tags');
 							if (empty($Tag))
-								respond('Tag does not exist');
+								respond('This tag does not exist');
 							if (!empty($Tag['synonym_of'])){
 								$Syn = get_tag_synon($Tag,'name');
 								respond('Synonym tags cannot be removed from appearances directly. '.
@@ -1638,12 +1638,12 @@
 					$unsynoning = $action === 'unsynon';
 
 					if (!$new){
-						if (empty($_match[2]))
+						if (!isset($_match[2]))
 							respond('Missing tag ID');
 						$TagID = intval($_match[2], 10);
 						$Tag = $CGDb->where('tid', $TagID)->getOne('tags',isset($query) ? 'tid, name, type':'*');
 						if (empty($Tag))
-							respond("There's no tag with the ID of $TagID");
+							respond("This tag does not exist");
 
 						if ($getting) respond($Tag);
 
@@ -1768,8 +1768,8 @@
 					}
 
 					if (!$new) $CGDb->where('tid',$Tag['tid'],'!=');
-					if ($CGDb->where('name', $data['name'])->has('tags'))
-						respond("There's already a tag with the same name");
+					if ($CGDb->where('name', $data['name'])->where('type', $data['type'])->has('tags') || $data['name'] === 'wrong cutie mark')
+						respond("A tag with the same name and type already exists");
 
 					if (empty($_POST['title'])) $data['title'] = '';
 					else {
