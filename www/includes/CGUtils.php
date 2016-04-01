@@ -131,7 +131,7 @@
 			: $CGDb->get('tags',$limit);
 
 		global $color;
-		if ($color !== 'color' && $PonyID == 52)
+		if (APRIL_1ST && $color !== 'color' && $PonyID == 52)
 			$tags[] = array(
 				'tid' => 0,
 				'name' => 'wrong cutie mark',
