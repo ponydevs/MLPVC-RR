@@ -261,11 +261,6 @@ header {
 						> .avatar { opacity: .5 }
 					}
 
-					@keyframes barrel-roll {
-						from { transform: rotateZ(0deg) }
-						to { transform: rotateZ(360deg) }
-					}
-
 					> .loader {
 						position: absolute;
 						top: 0;
@@ -730,16 +725,21 @@ body.april1st {
 		}
 	}
 
-	body:not(.loading).april1st .sidebar-toggle {
+	&:not(.loading) .sidebar-toggle {
 		animation: barrel-roll 300s linear infinite;
 	}
 
-	body.loading.april1st  .sidebar-toggle {
+	&.loading .sidebar-toggle {
 		animation: barrel-roll .6s steps(12) infinite;
 
 		> .loader {
 			animation: none !important;
 		}
+	}
+
+	@keyframes barrel-roll {
+		from { transform: rotateZ(0deg) }
+		to { transform: rotateZ(360deg) }
 	}
 
 	.mlg-crosshair {

@@ -2082,6 +2082,8 @@
 			$title = '';
 			if (empty($_GET['q'])){
 				$EntryCount = $CGDb->where('ishuman',$EQG)->count('appearances');
+				if (!$EQG)
+					$EntryCount--; // "Universal" appearance
 				list($Page,$MaxPages) = calc_page($EntryCount);
 				$Ponies = get_appearances($EQG, array($ItemsPerPage*($Page-1), $ItemsPerPage));
 			}
