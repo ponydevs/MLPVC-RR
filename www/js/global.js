@@ -488,6 +488,48 @@
 			});
 		}
 		catch(e){}
+
+		// Mute button
+		if ($body.hasClass('april1st')){
+			if (typeof $.crosshairSound === 'undefined'){
+				$.crosshairSound = new Audio('/img/mlg-crosshair.mp3');
+				$.crosshairSound.volume = 0.05;
+			}
+			var muted = localStorage.getItem('clickmute') === '1';
+			$d.off('mousedown').on('mousedown', function(e){
+				var width = 50,
+					left = e.clientX - (width/2),
+					top = e.clientY - (width/2);
+				$body.append(
+					$.mk('span').attr('class','mlg-crosshair').css({
+						top: top,
+						left: left,
+					}).each(function(){
+						if (!muted){
+							$.crosshairSound.pause();
+							$.crosshairSound.currentTime = 0;
+							$.crosshairSound.play();
+						}
+						var $this = $(this);
+						setTimeout(function(){ $this.remove() },200);
+					})
+				);
+			});
+			$('#mute-clicks').on('mousedown',function(e, change){
+				e.preventDefault();
+
+				if (change !== false){
+					if (muted)
+						localStorage.removeItem('clickmute');
+					else localStorage.setItem('clickmute', '1');
+					muted = !muted;
+				}
+				$(this)
+					.removeClass('typcn-volume'+(muted?'-mute':''))
+					.addClass('typcn-volume'+(muted?'':'-mute'))
+					.text((muted?'Unm':'M')+'ute click sounds');
+			}).triggerHandler('mousedown',[false]);
+		}
 	};
 
 	$.Navigation = (function(module){
@@ -886,27 +928,6 @@ $(function(){
 		e.preventDefault();
 		$.Navigation.visit(this.href);
 	});
-	if ($body.hasClass('april1st')){
-		var crosshairSound = new Audio('/img/mlg-crosshair.mp3');
-		crosshairSound.volume = 0.05;
-		$d.on('mousedown', function(e){
-			var width = 50,
-				left = e.clientX - (width/2),
-				top = e.clientY - (width/2);
-			$body.append(
-				$.mk('span').attr('class','mlg-crosshair').css({
-					top: top,
-					left: left,
-				}).each(function(){
-					crosshairSound.pause();
-					crosshairSound.currentTime = 0;
-					crosshairSound.play();
-					var $this = $(this);
-					setTimeout(function(){ $this.remove() },200);
-				})
-			);
-		});
-	}
 
 	$w.on('popstate',function(e){
 		var state = e.originalEvent.state,

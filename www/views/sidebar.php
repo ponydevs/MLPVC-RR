@@ -43,4 +43,7 @@ if (!empty($Database)){ ?>
 		<h2>Welcome!</h2>
 		<p>We're having some technical difficulties and signing in is not possible at the moment. Please check back later.</p>
 	</section>
-<? } ?>
+<? }
+   if (APRIL_1ST){ ?>
+	<section><button id="mute-clicks" class="blue typcn typcn-refresh">Checking</section>
+<? }
