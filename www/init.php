@@ -11,7 +11,8 @@
 	$REWRITE_REGEX = new RegExp('^/(?:([\w\.\-]+|-?\d+)(?:/((?:[\w\-]+|-?\d+)(?:/(?:[\w\-]+|-?\d+))?))?/?)?$','i');
 	define('GITHUB_URL','https://github.com/ponydevs/MLPVC-RR');
 	define('SITE_TITLE', 'MLP Vector Club');
-	define('APRIL_1ST', date('Y-m-d') === '2016-04-01');
+	// strtotime('2016-04-02T00:00:00-12:00') === 1459598400
+	define('APRIL_1ST', time() < 1459598400);
 
 	// Imports \\
 	require 'includes/JSON.php';
