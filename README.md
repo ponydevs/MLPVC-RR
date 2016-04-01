@@ -1,13 +1,15 @@
 <p align="center"><img src="https://raw.githubusercontent.com/ponydevs/MLPVC-RR/master/www/img/logo.png" alt=""></p>
 
-<h1 align="center">MLP-VectorClub Requests & Reservations</h1>
-<p align="center"><em>An automated system for handling requests & reservations, made for <a href="http://mlp-vectorclub.deviantart.com/">MLP-VectorClub</a></em></p>
+<h1 align="center"><a href="http://mlp-vectorclub.deviantart.com/">MLP-VectorClub</a> Website</h1>
+<p align="center"><em>Handling requests, reservations & the Color Guide since 2015</em></p>
 
 ## What's this site?
 
-This website is a new, automatic way to process and store the requests & reservations users want to make. It's that simple.
+This website originally started as a new, automatic way to process and store the requests & reservations users want to make. It was born due to the fact that in the past, the handling of comments under journals was done manually. Because of this, there had to be people who checked those comments every once in a while, evaluated them, then updated the journal accordingly. This was a time consuming task, and since the group's staff consists of busy people, and we can't expect them to consantly monitor new incoming comments. The initial goal of this website was to provide an easy-to-use interface where new entries can be submitted and added to a list (just like the journals) automatically, eliminating this monotonous task.
 
-In the past, the management of comments under journals was done manually. Because of this, there had to be a person who checks those comments, evaluates them, then updates the journal accordingly. This took time, sometimes, longer time than it should have taken. The group's staff consists of busy people, and we can't expect them to consantly monitor new incoming comments. But, with the help of this website, new entries can be submitted and added to a list, just like the journals, automatically, without having to have someone do this monotonous task.
+After some time, the idea of moving the old PNG color guide into an easier to use format was brought up and met with positive responses. Since then, the site also houses the vector club's official color guide, with freshly picked colors from recent episodes, and cute little pictures to go with each* character, among other information, such as recommended cutie mark vectors and tag-based search. For easier use in drawing applications individual characters can stil be downloaded as PNG files that contain all colors associated with them.
+
+<sub>* Sprites are made manually by an enthusiastic club admin on his own, and as such it will take some time before all ponies have images, but we'll get there eventually.</sub>
 
 ## Attributions
 

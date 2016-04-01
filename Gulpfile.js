@@ -138,15 +138,18 @@ gulp.task('md', function(){
 		.pipe(markdown())
 		.pipe(dom(function(){
 			var document = this,
-				el = document.getElementById('attributions'),
-				newElements = "";
+				el = document.getElementById('what-s-this-site-'),
+				newElements = '<section class="'+el.id+'">'+el.outerHTML;
 
-			while (el.nextElementSibling !== null && el.nextElementSibling.nodeName.toLowerCase() !== 'h2'){
-				newElements += el.nextElementSibling.outerHTML;
-				el = el.nextElementSibling;
+			while (el.nextElementSibling !== null && el.nextElementSibling.id !== 'contributing'){
+				var next = el.nextElementSibling;
+				if (next.nodeName.toLowerCase() == 'h2')
+					newElements += '</section><section class="'+next.id+'">';
+				newElements += next.outerHTML;
+				el = next;
 			}
 
-			return newElements.replace(/\n/g,'')+'\n';
+			return newElements+'\n';
 		}))
 		.pipe(rename('about.html'))
 		.pipe(gulp.dest('www/views'));

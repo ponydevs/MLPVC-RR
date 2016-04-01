@@ -1,17 +1,7 @@
 <div id="content">
-	<img src="/img/logo.svg" alt="MLP Vector Club Requests &amp; Reservations Logo">
-	<h1>MLP Vector Club Requests &amp; Reservations</h1>
-	<p>An automated system for handling requests &amp; reservations, made for <a href="http://mlp-vectorclub.deviantart.com/">MLP-VectorClub</a></p>
-	<section>
-		<h2>What's this site?</h2>
-		<div>
-			<p>This website is a new, automatic way to process and store the requests &amp; reservations users want to make. It's that simple.</p>
-			<p>In the past, the management of comments under journals was done manually. Because of this, there had to be a person who checks those comments, evaluates them, then updates the journal accordingly. This took time, sometimes, longer time than it should have taken. The group's staff consists of busy people, and we can't expect them to consantly monitor new incoming comments. But, with the help of this website, new entries can be submitted and added to a list, just like the journals, automatically, without having to have someone do this monotonous task.</p>
-		</div>
-	</section>
-	<section>
-		<h2>Attributions</h2>
-		<div class="attributions">
+	<img src="/img/logo.svg" alt="MLP Vector Club Website Logo">
+	<h1><a href="http://mlp-vectorclub.deviantart.com/">MLP-VectorClub</a> Website</h1>
+	<p>Handling requests, reservations & the Color Guide since 2015</p>
 <?  $about = file_get_contents(APPATH.'views/about.html');
 	if (!empty($about)){
 		echo str_replace(GITHUB_URL.'/blob/master/www','',$about);
@@ -25,11 +15,10 @@
 <p style="font-size:.9em"><strong>VPS:</strong> OpenVZ SSD, 256MB RAM, 25GB storage, 1000GB bandwidth, <span class="typcn typcn-location"></span> Netherlands<br>
 <strong>Server Software:</strong> Debian 7.0 (wheezy) 32-bit, PHP $phpver, $server, PostgreSQL $pgver<br>
 <strong>Fun fact:</strong> The server costs less than $4 per month to run ($8/quarter + VAT).</p>
+</section>
 HTML;
 	}
 	else echo Notice('warn','This section went missing due to a bug, and will be restored ASAP. Until then the section\'s contents are available at <a href="'.GITHUB_URL.'#attributions">'.GITHUB_URL.'#attributions</a>'); ?>
-		</div>
-	</section>
 	<section>
 		<h2>Statistics</h2>
 		<p>Here you can see various graphs about the site. The information below is cached to reduce server load, you can see when each graph was last updated below their title.</p>
