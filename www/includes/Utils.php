@@ -447,7 +447,7 @@ HTML;
 			$customCSS = array_merge($customCSS, $DEFAULT_CSS);
 
 		# JavaScript
-		$DEFAULT_JS = array('global','moment','dyntime','dialog');
+		$DEFAULT_JS = array('konami','global','moment','dyntime','dialog');
 		$customJS = array();
 		// Only add defaults when needed
 		if (array_search('no-default-js',$settings) === false)
