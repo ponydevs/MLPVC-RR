@@ -684,71 +684,12 @@ ul.pagination {
 	margin-right: auto;
 }
 
-body.april1st {
-	#sidebar > section {
-		&.welcome, &.login {
-			h2 {
-				position: relative;
-				z-index: 1;
-				margin-right: 20%;
-				font-family: "Determination", "Celestia", sans-serif;
-
-				&:after {
-					content: "";
-					position: absolute;
-					height: 50px;
-					width: 50px;
-					top: 0;
-					left: 66%;
-					background: url('../img/tem.png') no-repeat center;
-					background-size: contain;
-
-					animation: shake .7s steps(2) infinite;
-
-					@keyframes shake {
-						0% {
-							margin-top: -1px;
-						}
-						100% {
-							margin-top: 1px;
-						}
-					}
-				}
-
-				+ .usercard {
-					position: relative;
-					z-index: 2;
-
-					transform: rotateZ(3deg);
-				}
-			}
-		}
-	}
-
-	&:not(.loading) .sidebar-toggle {
-		animation: barrel-roll 300s linear infinite;
-	}
-
-	&.loading .sidebar-toggle {
-		animation: barrel-roll .6s steps(12) infinite;
-
-		> .loader {
-			animation: none !important;
-		}
-	}
-
-	@keyframes barrel-roll {
-		from { transform: rotateZ(0deg) }
-		to { transform: rotateZ(360deg) }
-	}
-
-	.mlg-crosshair {
-		position: fixed;
-		z-index: 1337420;
-		background: url('../img/mlg-crosshair.svg') no-repeat;
-		width: 50px;
-		height: 50px;
-		pointer-events: none;
-		user-select: none;
-	}
+body.mlg-crosshair .mlg-crosshair {
+	position: fixed;
+	z-index: 1337420;
+	background: url('../img/mlg-crosshair.svg') no-repeat;
+	width: 50px;
+	height: 50px;
+	pointer-events: none;
+	user-select: none;
 }

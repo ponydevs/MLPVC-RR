@@ -39,9 +39,6 @@
 						$Color = 'Colour';
 						$color = 'colour';
 					}
-					else if ($currentUser['name'] === 'Yanoda'){
-						define('APRIL_1ST', true);
-					}
 				}
 			}
 			else $Database->where('id', $currentUser['id'])->delete('sessions');
@@ -52,6 +49,3 @@
 			unset($currentUser);
 		}
 	}
-
-	if (!defined('APRIL_1ST'))
-		define('APRIL_1ST', false);

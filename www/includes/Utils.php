@@ -944,8 +944,6 @@ HTML;
 		
 		if (regex_match(new RegExp('^[a-z\d]+$','i'), $_GET['state'], $_match)){
 			$confirm = str_replace('{{CODE}}', $_match[0], file_get_contents('views/loginConfrim.html'));
-			if (APRIL_1ST)
-				$confirm = str_replace('login-success.svg','login-success-m.svg', $confirm);
 			die($confirm);
 		}
 		else if (regex_match($REWRITE_REGEX, $_GET['state']))

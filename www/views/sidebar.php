@@ -4,7 +4,7 @@
 <?php
 if (!empty($Database)){ ?>
 	<section class="<?=$signedIn?'welcome':'login'?>">
-		<h2><?=APRIL_1ST ? 'hOI!!' : ($signedIn?'Signed in as':'Welcome!')?></h2>
+		<h2><?=$signedIn?'Signed in as':'Welcome!'?></h2>
 <?php
 	usercard_render(true);
 	if ($signedIn){
@@ -43,7 +43,4 @@ if (!empty($Database)){ ?>
 		<h2>Welcome!</h2>
 		<p>We're having some technical difficulties and signing in is not possible at the moment. Please check back later.</p>
 	</section>
-<? }
-   if (APRIL_1ST){ ?>
-	<section><button id="mute-clicks" class="blue typcn typcn-refresh">Checking</section>
 <? }

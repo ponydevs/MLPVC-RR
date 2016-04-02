@@ -490,12 +490,11 @@
 		catch(e){}
 
 		// Mute button
-		if ($body.hasClass('april1st')){
+		if ($body.hasClass('mlg-crosshair')){
 			if (typeof $.crosshairSound === 'undefined'){
 				$.crosshairSound = new Audio('/img/mlg-crosshair.mp3');
 				$.crosshairSound.volume = 0.05;
 			}
-			var muted = localStorage.getItem('clickmute') === '1';
 			$d.off('mousedown').on('mousedown', function(e){
 				var width = 50,
 					left = e.clientX - (width/2),
@@ -505,31 +504,16 @@
 						top: top,
 						left: left,
 					}).each(function(){
-						if (!muted){
-							$.crosshairSound.pause();
-							$.crosshairSound.currentTime = 0;
-							$.crosshairSound.play();
-						}
+						$.crosshairSound.pause();
+						$.crosshairSound.currentTime = 0;
+						$.crosshairSound.play();
 						var $this = $(this);
 						setTimeout(function(){ $this.remove() },200);
 					})
 				);
 			});
-			$('#mute-clicks').on('mousedown',function(e, change){
-				e.preventDefault();
-
-				if (change !== false){
-					if (muted)
-						localStorage.removeItem('clickmute');
-					else localStorage.setItem('clickmute', '1');
-					muted = !muted;
-				}
-				$(this)
-					.removeClass('typcn-volume'+(muted?'-mute':''))
-					.addClass('typcn-volume'+(muted?'':'-mute'))
-					.text((muted?'Unm':'M')+'ute click sounds');
-			}).triggerHandler('mousedown',[false]);
 		}
+		localStorage.removeItem('clickmute');
 	};
 
 	$.Navigation = (function(module){
