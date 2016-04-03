@@ -16,8 +16,8 @@ DocReady.push(function Episode(){
 
 			if (!data.status) return $.Dialog.fail(false, data.message);
 
-			var $yt_input = $.mk('input').attr({type:'url','class':'yt',name:'yt_1',placeholder:'YouTube',spellcheck:'false'}),
-				$dm_input = $.mk('input').attr({type:'url','class':'dm',name:'dm_1',placeholder:'Dailymotion',spellcheck:'false'}),
+			var $yt_input = $.mk('input').attr({type:'url','class':'yt',name:'yt_1',placeholder:'YouTube',spellcheck:'false',autocomplete:'off'}),
+				$dm_input = $.mk('input').attr({type:'url','class':'dm',name:'dm_1',placeholder:'Dailymotion',spellcheck:'false',autocomplete:'off'}),
 				$form = $.mk('form').attr('id','vidlinks').attr('class','align-center').append(
 					$.mk('p').text('Enter vido links below, leave any input blank to remove that video from the episode page.'),
 					$yt_input.clone(),
@@ -58,7 +58,7 @@ DocReady.push(function Episode(){
 				});
 			}
 			$.Dialog.request(false,$form,'vidlinks','Save',function($form){
-				if (data.airs && new Date(data.airs).getTime() < new Date().getTime()){
+				if (data.airs && new Date(data.airs).getTime() > new Date().getTime()){
 					var $lsnotice = $.mk('div').addClass('notice warn').text('If you add this video now, it will be shown as a livestream link!');
 					$form.append($lsnotice);
 
