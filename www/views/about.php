@@ -8,7 +8,7 @@
 
 		$osver = PHP_OS === 'WINNT'
 			? str_replace('Caption=','',trim(shell_exec('wmic os get Caption /value')))
-			: regex_replace(new RegExp('Description:\s(\w+).*(\d\.\d(?:\.\d))\s(\(\w+\))'),'$1 $2 $3',shell_exec('lsb_release -da'));
+			: regex_replace(new RegExp('^[\s\S]*Description:\s+(\w+).*(\d+\.\d+(?:\.\d)?)\s+(\(\w+\))[\s\S]*$'),'$1 $2 $3',shell_exec('lsb_release -da'));
 		$phpver = preg_replace('/^(\d+(?:\.\d+)*).*$/','$1',PHP_VERSION);
 		$server = implode(' ',array_slice(preg_split('~[/ ]~',$_SERVER['SERVER_SOFTWARE']),0,2));
 		$pgver = $Database->rawQuerySingle('SHOW server_version')['server_version'];
