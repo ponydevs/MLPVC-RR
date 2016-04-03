@@ -6,14 +6,16 @@
 	if (!empty($about)){
 		echo str_replace(GITHUB_URL.'/blob/master/www','',$about);
 
-		$VERSION_REGEX = new RegExp('^.*(\d\.\d(?:\.\d)?)$');
+		$osver = PHP_OS === 'WINNT'
+			? str_replace('Caption=','',trim(shell_exec('wmic os get Caption /value')))
+			: regex_replace(new RegExp('Description:\s(\w+).*(\d\.\d(?:\.\d))\s(\(\w+\))'),'$1 $2 $3',shell_exec('lsb_release -da'));
 		$phpver = preg_replace('/^(\d+(?:\.\d+)*).*$/','$1',PHP_VERSION);
 		$server = implode(' ',array_slice(preg_split('~[/ ]~',$_SERVER['SERVER_SOFTWARE']),0,2));
 		$pgver = $Database->rawQuerySingle('SHOW server_version')['server_version'];
 		echo <<<HTML
 <p class="ramnode"><a href="https://clientarea.ramnode.com/aff.php?aff=2648"><img src="https://www.ramnode.com/images/banners/affbannerlightnewlogoblack.png" alt="high performance ssd vps"></a></p>
 <p style="font-size:.9em"><strong>VPS:</strong> OpenVZ SSD, 256MB RAM, 25GB storage, 1000GB bandwidth, <span class="typcn typcn-location"></span> Netherlands<br>
-<strong>Server Software:</strong> Debian 7.0 (wheezy) 32-bit, PHP $phpver, $server, PostgreSQL $pgver<br>
+<strong>Server Software:</strong> $osver, PHP $phpver, $server, PostgreSQL $pgver<br>
 <strong>Fun fact:</strong> The server costs less than $4 per month to run ($8/quarter + VAT).</p>
 </section>
 HTML;
