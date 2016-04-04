@@ -24,6 +24,7 @@
 	<meta property="og:description" content="<?=$Description?>">
 	<meta name="description" content="<?=$Description?>">
 	<meta name="format-detection" content="telephone=no">
+	<meta name="theme-color" content="#2C73B1">
 	<link rel="image_src" href="<?=$ThumbImage?>">
 
 <?php if (isset($norobots)){ ?>
