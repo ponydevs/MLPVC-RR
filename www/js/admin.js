@@ -146,4 +146,15 @@ DocReady.push(function Admin(){
 			}));
 		}
 	});
+
+	// Countdown
+	$('.countdown').each(function(){
+		var $this = $(this);
+		$this.countdown(new Date($this.attr('data-time'))).on('update.countdown', function(event) {
+			$(this).html(event.strftime(''
+			+ '<span>%-w</span> week%!w '
+			+ '<span>%-d</span> day%!d<br> '
+			+ '<span>%H:%M:%S</span>'));
+		});
+	});
 });

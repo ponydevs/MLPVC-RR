@@ -6,6 +6,19 @@
 	> section {
 		@extend %section;
 
+		.countdown {
+			text-align: center;
+			font-size: 22px;
+
+			span {
+				font-size: 2em;
+			}
+
+			@media all and (min-width: $Breakpoint){
+				br { display: none }
+			}
+		}
+
 		&.useful-links {
 			ol {
 				margin: 5px 0 0;

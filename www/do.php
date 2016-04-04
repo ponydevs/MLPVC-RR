@@ -1066,7 +1066,7 @@
 				loadPage(array(
 					'title' => 'Admin Area',
 					'do-css',
-					'js' => array('Sortable',$do),
+					'js' => array('Sortable','jquery.countdown',$do),
 				));
 
 			switch ($task){
