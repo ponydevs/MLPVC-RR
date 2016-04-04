@@ -7,15 +7,19 @@
 		@extend %section;
 
 		.countdown {
-			text-align: center;
 			font-size: 22px;
 
 			span {
 				font-size: 2em;
 			}
 
+			// Desktop
 			@media all and (min-width: $Breakpoint){
 				br { display: none }
+			}
+			// Mobile
+			@media all and (max-width: $Breakpoint){
+				text-align: center;
 			}
 		}
 
