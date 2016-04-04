@@ -2948,3 +2948,35 @@ HTML;
 
 		return $HTML.($wrap?'</ul>':'');
 	}
+
+	function sanitize_html($dirty_html, $allowed = null){
+		require_once "includes/HTMLPurifier/HTMLPurifier.standalone.php";
+		$config = HTMLPurifier_Config::createDefault();
+		$allowed = array_merge(array('strong','b','em','i'), $allowed);
+		$config->set('HTML.AllowedElements', $allowed);
+		$purifier = new HTMLPurifier($config);
+		return $purifier->purify($dirty_html);
+	}
+
+	function get_config_var($key){
+		global $Database;
+
+		$q = $Database->where('key', $key)->getOne('global_settings','value');
+		return isset($q['value']) ? $q['value'] : false;
+	}
+
+	function process_config($key){
+		$value = trim($_POST['value']);
+
+		if ($value === '')
+			return null;
+
+		switch ($key){
+			case "reservation_rules":
+			case "about_reservations":
+				$value = sanitize_html($value, $key === 'reservation_rules'? array('li', 'ol') : array('p'));
+			break;
+		}
+
+		return $value;
+	}

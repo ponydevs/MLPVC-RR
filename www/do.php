@@ -479,6 +479,34 @@
 
 			respond(true);
 		break;
+		case "setting":
+			if (!PERM('inspector') || RQMTHD !== 'POST')
+				do404();
+			detectCSRF();
+
+			if (!regex_match(new RegExp('^([gs]et)/([a-z_]+)$'), trim($data), $_match))
+				respond('Setting key invalid');
+
+			$getting = $_match[1] === 'get';
+			$key = $_match[2];
+
+			$currvalue = get_config_var($key);
+			if ($currvalue === false)
+				respond('Setting does not exist');
+			if ($getting)
+				respond(array('value' => $currvalue));
+
+			if (!isset($_POST['value']))
+				respond('Missing setting value');
+
+			$newvalue = process_config($key);
+			if ($newvalue === $currvalue)
+				respond(array('value' => $newvalue));
+			if (!$Database->where('key', $key)->update('global_settings', array('value' => $newvalue)))
+				respond(ERR_DB_FAIL);
+
+			respond(array('value' => $newvalue));
+		break;
 
 		// PAGES
 		case "index":

@@ -99,6 +99,47 @@ DocReady.push(function Episode(){
 		}));
 	});
 
+	$('#edit-about_reservations, #edit-reservation_rules').on('click',function(e){
+		e.preventDefault();
+
+		var $h2 = $(this).parent(),
+			$h2c = $h2.clone(),
+			endpoint = this.id.replace(/^.*-/, '');
+		$h2c.children().remove();
+		var text = $h2c.text().trim();
+
+		$.Dialog.wait('Editing "'+text+'"',"Retrieving setting's value");
+		$.post('/setting/get/'+endpoint,$.mkAjaxHandler(function(){
+			if (!this.status) return $.Dialog.fail(false, this.message);
+
+			var $Form = $.mk('form').attr('id', endpoint+'-editor').append(
+				$.mk('label').append(
+					$.mk('span').text(text),
+					$.mk('textarea').attr({
+						name: 'value',
+					}).val(this.value)
+				)
+			);
+
+			$.Dialog.request(false, $Form, $Form.attr('id'), 'Save', function($form){
+				$form.on('submit', function(e){
+					e.preventDefault();
+
+					var data = $form.mkData();
+					$.Dialog.wait(false, 'Saving');
+
+					$.post('/setting/set/'+endpoint, data, $.mkAjaxHandler(function(){
+						if (!this.status) return $.Dialog.fail(false, this.message);
+
+						$h2.siblings().remove();
+						$h2.parent().append(this.value);
+						$.Dialog.close();
+					}));
+				});
+			});
+		}));
+	});
+
 	var $epSectionTitle = $epSection.children('h2'),
 		$PSwitch;
 	function BindPSwitch(){

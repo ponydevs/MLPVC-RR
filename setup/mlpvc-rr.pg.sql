@@ -127,6 +127,18 @@ CREATE TABLE episodes__votes (
 ALTER TABLE episodes__votes OWNER TO "mlpvc-rr";
 
 --
+-- Name: global_settings; Type: TABLE; Schema: public; Owner: mlpvc-rr
+--
+
+CREATE TABLE global_settings (
+    key character varying(50) NOT NULL,
+    value text
+);
+
+
+ALTER TABLE global_settings OWNER TO "mlpvc-rr";
+
+--
 -- Name: log; Type: TABLE; Schema: public; Owner: mlpvc-rr
 --
 
@@ -860,6 +872,14 @@ ALTER TABLE ONLY episodes
 
 
 --
+-- Name: global_settings_key; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER TABLE ONLY global_settings
+    ADD CONSTRAINT global_settings_key PRIMARY KEY (key);
+
+
+--
 -- Name: log__banish_entryid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
@@ -1315,6 +1335,15 @@ REVOKE ALL ON TABLE episodes__votes FROM PUBLIC;
 REVOKE ALL ON TABLE episodes__votes FROM "mlpvc-rr";
 GRANT ALL ON TABLE episodes__votes TO "mlpvc-rr";
 GRANT ALL ON TABLE episodes__votes TO postgres;
+
+
+--
+-- Name: global_settings; Type: ACL; Schema: public; Owner: mlpvc-rr
+--
+
+REVOKE ALL ON TABLE global_settings FROM PUBLIC;
+REVOKE ALL ON TABLE global_settings FROM "mlpvc-rr";
+GRANT ALL ON TABLE global_settings TO "mlpvc-rr";
 
 
 --
