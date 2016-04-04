@@ -1,5 +1,5 @@
 /* jshint bitwise: false */
-/* global $w,$d,$head,$body,$header,$sidebar,$sbToggle,$main,$footer,console,prompt,HandleNav,getTimeDiff,one,createTimeStr,PRINTABLE_ASCII_REGEX,Konami */
+/* global $w,$d,$head,$body,$header,$sidebar,$sbToggle,$main,$footer,console,prompt,HandleNav,getTimeDiff,one,createTimeStr,PRINTABLE_ASCII_REGEX */
 (function($){
 	'use strict';
 
@@ -886,46 +886,6 @@ $(function(){
 		e.preventDefault();
 		$.Navigation.visit(this.href);
 	});
-
-
-	var crosshairSound,
-		playSound = function(){
-			crosshairSound.pause();
-			crosshairSound.currentTime = 0;
-			crosshairSound.play();
-		},
-		mlgcrosshair = function(){
-			if (typeof crosshairSound === 'undefined'){
-				crosshairSound = new Audio('/img/mlg-crosshair.mp3');
-				crosshairSound.volume = 0.05;
-			}
-			$d.off('mousedown').on('mousedown', function(e){
-				var width = 50,
-					left = e.clientX - (width/2),
-					top = e.clientY - (width/2),
-					$span = $.mk('span').attr('class','mlg-crosshair').css({
-						top: top,
-						left: left,
-					});
-				$body.append($span);
-				playSound();
-				setTimeout(function(){ $span.remove() },200);
-			});
-		};
-	if ($body.hasClass('mlg-crosshair'))
-		mlgcrosshair();
-	else new Konami(function(){
-		$body.addClass('mlg-crosshair');
-		mlgcrosshair();
-		$(crosshairSound).on('canplaythrough',function(e){
-			$(crosshairSound).off(e.type);
-			var ov = crosshairSound.volume;
-			crosshairSound.volume = 1;
-			playSound();
-			crosshairSound.volume = ov;
-		});
-	});
-	localStorage.removeItem('clickmute');
 
 	$w.on('popstate',function(e){
 		var state = e.originalEvent.state,

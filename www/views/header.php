@@ -35,7 +35,7 @@
 	<link rel="stylesheet" href="<?=$css?>">
 <?php } ?>
 </head>
-<body class="loading<?=PERM('developer')?' mlg-crosshair':''?>">
+<body class="loading">
 
 	<header>
 		<nav><ul>

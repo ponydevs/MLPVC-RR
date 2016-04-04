@@ -683,13 +683,3 @@ ul.pagination {
 	margin-left: auto;
 	margin-right: auto;
 }
-
-body.mlg-crosshair .mlg-crosshair {
-	position: fixed;
-	z-index: 1337420;
-	background: url('../img/mlg-crosshair.svg') no-repeat;
-	width: 50px;
-	height: 50px;
-	pointer-events: none;
-	user-select: none;
-}
