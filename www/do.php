@@ -1396,6 +1396,8 @@
 							if (!empty($_POST['notes'])){
 								$notes = trim($_POST['notes']);
 								check_string_valid($label, "Appearance notes", INVERSE_PRINTABLE_ASCII_REGEX);
+								if ($Appearance['id'] === 0)
+									$notes = trim(sanitize_html($notes));
 								if (strlen($notes) > 1000 && ($creating || $Appearance['id'] !== 0))
 									respond('Appearance notes cannot be longer than 1000 characters');
 								if ($creating || $notes !== $Appearance['notes'])

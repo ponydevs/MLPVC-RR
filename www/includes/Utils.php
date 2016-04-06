@@ -2952,8 +2952,10 @@ HTML;
 	function sanitize_html($dirty_html, $allowed = null){
 		require_once "includes/HTMLPurifier/HTMLPurifier.standalone.php";
 		$config = HTMLPurifier_Config::createDefault();
-		$allowed = array_merge(array('strong','b','em','i'), $allowed);
-		$config->set('HTML.AllowedElements', $allowed);
+		$whitelist = array('strong','b','em','i');
+		if (!empty($allowed))
+			$whitelist = array_merge($whitelist, $allowed);
+		$config->set('HTML.AllowedElements', $whitelist);
 		$purifier = new HTMLPurifier($config);
 		return $purifier->purify($dirty_html);
 	}
