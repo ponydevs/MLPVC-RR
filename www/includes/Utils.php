@@ -963,11 +963,11 @@ HTML;
 		if (!is_int($DeviationID))
 			$DeviationID = intval(substr($DeviationID, 1), 36);
 
-		$DiFiRequest = @file_get_contents("http://deviantart.com/global/difi/?c[]=\"DeviationView\",\"getAllGroups\",[\"$DeviationID\"]&t=json");
-		if (empty($DiFiRequest))
+		$DiFiRequest = @legitimate_request("http://deviantart.com/global/difi/?c[]=\"DeviationView\",\"getAllGroups\",[\"$DeviationID\"]&t=json");
+		if (empty($DiFiRequest['response']))
 			return 1;
 
-		$DiFiRequest = @JSON::Decode($DiFiRequest, JSON::$AsObject);
+		$DiFiRequest = @JSON::Decode($DiFiRequest['response'], JSON::$AsObject);
 		if (empty($DiFiRequest->DiFi->status))
 			return 2;
 		if ($DiFiRequest->DiFi->status !== 'SUCCESS')
