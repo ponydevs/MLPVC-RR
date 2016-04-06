@@ -8,12 +8,6 @@
 	src: url('../font/Celestia Medium Redux.ttf');
 	src: local('Celestia Redux Alternate'), local('Celestia Medium Redux'), url('../font/Celestia Medium Redux.ttf') format('truetype');
 }
-// https://www.behance.net/gallery/31268855/Determination-Better-Undertale-Font
-@font-face {
-	font-family: "Determination";
-	src: url('../font/dtm/DTM-Mono.otf');
-	src: url('../font/dtm/DTM-Mono.otf') format('opentype'), url('../font/dtm/DTM-Mono.woff') format('woff');
-}
 // Mobile-only Styles
 @media all and (max-width: $Breakpoint) {
 	body {
