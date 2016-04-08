@@ -1510,14 +1510,14 @@ HTML;
 	}
 
 	// Reserved by section creator \\
-	function get_reserver_button($By = null, $R = false, $isRequest = false){
+	function get_reserver_button($By = null, $R = false, $isRequest = false, $view_only = false){
 		global $signedIn, $currentUser;
 
 		$sameUser = $signedIn && $By['id'] === $currentUser['id'];
 		$CanEdit = (empty($R['lock']) && PERM('inspector')) || PERM('developer');
 		$Buttons = array();
 
-		if (is_array($R) && empty($R['reserved_by'])) $HTML = PERM('member') ? "<button class='reserve-request typcn typcn-user-add'>Reserve</button>" : '';
+		if (is_array($R) && empty($R['reserved_by'])) $HTML = PERM('member') && !$view_only ? "<button class='reserve-request typcn typcn-user-add'>Reserve</button>" : '';
 		else {
 			if (empty($By) || $By === true){
 				if (!$signedIn) trigger_error('Trying to get reserver button while not signed in');
@@ -1548,10 +1548,14 @@ HTML;
 
 		$HTML .= "<div class='actions'>";
 		if (!empty($Buttons)){
-			$regularButton = count($Buttons) <3;
-			foreach ($Buttons as $b){
-				$WriteOut = "'".($regularButton ? ">{$b[1]}" : " title='".apos_encode($b[1])."'>");
-				$HTML .= "<button class='typcn typcn-{$b[0]}$WriteOut</button> ";
+			if ($view_only !== false)
+				$HTML .="<div><a href='$view_only' class='btn blue typcn typcn-arrow-forward'>View</a></div>";
+			else {
+				$regularButton = count($Buttons) <3;
+				foreach ($Buttons as $b){
+					$WriteOut = "'".($regularButton ? ">{$b[1]}" : " title='".apos_encode($b[1])."'>");
+					$HTML .= "<button class='typcn typcn-{$b[0]}$WriteOut</button> ";
+				}
 			}
 		}
 		$HTML .= '</div>';
@@ -1561,11 +1565,13 @@ HTML;
 
 	// List ltem generator function for request & reservation renderers \\
 	define('IS_REQUEST', true);
-	function get_r_li($R, $isRequest = false){
+	function get_r_li($R, $isRequest = false, $view_only = false){
 		$finished = !empty($R['deviation_id']);
 		$ID = ($isRequest ? 'request' : 'reservation').'-'.$R['id'];
 		$alt = !empty($R['label']) ? apos_encode($R['label']) : '';
-		$Image = "<div class='image screencap'><a href='{$R['fullsize']}'><img src='{$R['preview']}' alt='$alt'></a></div>";
+		$postlink = "/episode/S{$R['season']}E{$R['episode']}#$ID";
+		$ImageLink = $view_only ? $postlink : $R['fullsize'];
+		$Image = "<div class='image screencap'><a href='$ImageLink'><img src='{$R['preview']}' alt='$alt'></a></div>";
 		$post_label = !empty($R['label']) ? '<span class="label">'.htmlspecialchars($R['label']).'</span>' : '';
 		$permalink = "<a href='#$ID'>".timetag($R['posted']).'</a>';
 
@@ -1587,11 +1593,14 @@ HTML;
 			$reserved_at = $isRequest && !empty($R['reserved_at']) ? "<em class='reserve-date'>Reserved <a href='#$ID'>".timetag($R['reserved_at'])."</a></em>" : '';
 			if ($finished){
 				$Deviation = da_cache_deviation($R['deviation_id'],'fav.me',true);
-				if (empty($Deviation))
-					$Image = "<div class='image deviation error'><a href='http://fav.me/{$R['deviation_id']}'>Preview unavailable<br><small>Click to view</small></a></div>";
+				if (empty($Deviation)){
+					$ImageLink = $view_only ? $postlink : "http://fav.me/{$R['deviation_id']}";
+					$Image = "<div class='image deviation error'><a href='$ImageLink'>Preview unavailable<br><small>Click to view</small></a></div>";
+				}
 				else {
 					$alt = apos_encode($Deviation['title']);
-					$Image = "<div class='image deviation'><a href='http://fav.me/{$Deviation['id']}'><img src='{$Deviation['preview']}' alt='$alt'>";
+					$ImageLink = $view_only ? $postlink : "http://fav.me/{$Deviation['id']}";
+					$Image = "<div class='image deviation'><a href='$ImageLink'><img src='{$Deviation['preview']}' alt='$alt'>";
 					if (!empty($R['lock']))
 						$Image .= "<span class='typcn typcn-tick' title='This submission has been accepted into the group gallery'></span>";
 					$Image .= "</a></div>";
@@ -1606,7 +1615,7 @@ HTML;
 		}
 		else $Image .= $post_label.$posted_at;
 
-		return "<li id='$ID'>".$Image.get_reserver_button($R['reserver'], $R, $isRequest).'</li>';
+		return "<li id='$ID'>$Image".get_reserver_button($R['reserver'], $R, $isRequest, $view_only ? $postlink : false).'</li>';
 	}
 
 	// Get Request / Reservation Submission Form HTML \\
@@ -2904,48 +2913,8 @@ ORDER BY "count" DESC
 			LIMIT 20");
 
 		$HTML = $wrap ? '<ul>' : '';
-
-		foreach ($RecentPosts as $p){
-			list($link,$page) = post_link_html($p);
-			$label = !empty($p['label']) ? "<span class='label'>{$p['label']}</span>" : '';
-			$is_request = $p['rq'];
-			$reservation_time_known = !empty($p['reserved_at']);
-			$posted = timetag($p['posted']);
-			$what = !empty($p['deviation_id']) ? 'deviation' : 'screencap';
-			$alt = '';
-			$preview = $p['preview'];
-			if (!empty($p['deviation_id'])){
-				$Deviation = da_cache_deviation($p['deviation_id']);
-				$preview = $Deviation['preview'];
-				$alt = $Deviation['title'];
-			}
-			else if (!empty($p['label']))
-				$alt = $p['label'];
-			$reserver_btn = '';
-			if ($is_request)
-				$reserver_btn .= '<em>Posted by '.profile_link(get_user($p['requested_by'])).'</em>';
-			if (!$is_request || isset($p['reserved_by'])){
-				$user = profile_link(get_user($p['reserved_by']), FULL);
-				$reserver_btn = "<div class='reserver'>$user</div>";
-			}
-			$lock = $p['lock'] ? "<span class='typcn typcn-tick' title='This submission has been accepted into the group gallery'></span>" : '';
-
-			$HTML .= <<<HTML
-<li>
-	<div class='image $what'>
-		<a href='$link'><img src='$preview' alt='preview'>$lock</a>
-	</div>
-	$label
-	<em>Posted under <a href='$link'>$page</a> $posted</em>
-	$reserver_btn
-	<div>
-		<a href='$link' class='btn blue typcn typcn-arrow-forward'>View</a>
-	</div>
-</li>
-
-HTML;
-		}
-
+		foreach ($RecentPosts as $p)
+			$HTML .= get_r_li($p, isset($p['requested_by']), true);
 		return $HTML.($wrap?'</ul>':'');
 	}
 
