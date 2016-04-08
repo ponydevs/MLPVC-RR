@@ -70,7 +70,8 @@
 
 				return -($a < $b ? -1 : ($a === $b ? 0 : 1));
 			});
-			foreach ($Posts as $i => $p){
+			$HTML = '';
+			foreach ($Posts as $p){
 				list($link,$page) = post_link_html($p);
 				$label = !empty($p['label']) ? "<span class='label'>{$p['label']}</span>" : '';
 				$is_request = isset($p['rq']);
@@ -78,7 +79,7 @@
 				$posted = timetag($is_request && $reservation_time_known ? $p['reserved_at'] : $p['posted']);
 				$PostedAction = $is_request && !$reservation_time_known ? 'Posted' : 'Reserved';
 
-				$Posts[$i] = <<<HTML
+				$HTML .= <<<HTML
 <li>
 	<div class='image screencap'>
 		<a href='$link'><img src='{$p['preview']}'></a>
@@ -92,7 +93,7 @@
 
 HTML;
 			}
-			echo "<ul>".implode('',$Posts)."</ul>";
+			echo "<ul>$HTML</ul>";
 		}
 ?>
 		</section>
@@ -116,7 +117,7 @@ HTML;
 <?php   if ($sameUser){ ?>
 			<p>After you finish an image and submit it to the group gallery, an inspector will check your vector and may ask you to fix some issues on your image, if any. After an image is accepted to the gallery, it can be marked as "approved", which gives it a green check mark, indicating that it's most likely free of any errors.</p>
 <?php   } ?>
-			<p><?="$YouHave ".(!$AwaitCount?'no':"<strong>$AwaitCount</strong>")?> image<?=$AwaitCount!==1?'s':''?> waiting to be submited to and/or approved by the group<?=!$AwaitCount?'.':(", listed below.".($sameUser?"We suggest that you submit $them to the group gallery at your earliest convenience to have $them spot-checked for any issues and added to the group gallery, making $them easier for others to find.":''))?></p>
+			<p><?="$YouHave ".(!$AwaitCount?'no':"<strong>$AwaitCount</strong>")?> image<?=$AwaitCount!==1?'s':''?> waiting to be submited to and/or approved by the group<?=!$AwaitCount?'.':(", listed below.".($sameUser?" We suggest that you submit $them to the group gallery at your earliest convenience to have $them spot-checked for any issues and added to the group gallery, making $them easier for others to find.":''))?></p>
 <?php   if ($AwaitCount){ ?>
 			<ul id="awaiting-deviations"><?
 			foreach ($AwaitingApproval as $row){
