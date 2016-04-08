@@ -6,8 +6,9 @@
 	</p>
 
 	<section class="the-final-countdown">
-		<h2><span class="typcn typcn-time"></span>It's the final countdown</h2>
-		<div class="countdown" data-time="2016-05-04T16:46:47+02:00"></div>
+<?php $coupts = '2016-05-04T14:46:47Z'; ?>
+		<h2><span class="typcn typcn-time"></span><?=timetag($coupts, EXTENDED, NO_DYNTIME)?></h2>
+		<div class="countdown" data-time="<?=$coupts?>"><span>&hellip;</span> weeks <span>&hellip;</span> days<br> <span>&hellip;</span></div>
 	</section>
 
 	<section class="useful-links">
