@@ -2065,7 +2065,7 @@ HTML;
 	 * @return string
 	 */
 	 function plur($w, $in, $prep = false){
-		return ($prep?"$in ":'').$w.($in!==1?'s':'');
+		return ($prep?"$in ":'').$w.($in!=1?'s':'');
 	 }
 	 define('PREPEND_NUMBER', true);
 
