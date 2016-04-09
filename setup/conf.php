@@ -22,17 +22,7 @@
 	 *   $git = 'git';
 	 */
 	$git = 'git';
-	define('LATEST_COMMIT_ID',rtrim(shell_exec("$git rev-parse --short=4 HEAD")));
-	define('LATEST_COMMIT_TIME',date('c',strtotime(shell_exec("$git log -1 --date=short --pretty=format:%ci"))));
 
 	// GitHub webhooks-related \\
 	define('GH_WEBHOOK_DO', '');
 	define('GH_WEBHOOK_SECRET', '');
-
-	// E-Mail Provider \\
-	define('MAIL_ENABLED', false);
-	define('MAIL_HOST','');
-	define('MAIL_PORT','');
-	define('MAIL_USER','');
-	define('MAIL_PASS','');
-	define('DEVELOPER_EMAIL','');

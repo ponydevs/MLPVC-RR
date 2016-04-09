@@ -11,6 +11,12 @@
 	$REWRITE_REGEX = new RegExp('^/(?:([\w\.\-]+|-?\d+)(?:/((?:[\w\-]+|-?\d+)(?:/(?:[\w\-]+|-?\d+))?))?/?)?$','i');
 	define('GITHUB_URL','https://github.com/ponydevs/MLPVC-RR');
 	define('SITE_TITLE', 'MLP Vector Club');
+	// Set git path in conf.php!
+	if (isset($git)){
+		define('LATEST_COMMIT_ID',rtrim(shell_exec("$git rev-parse --short=4 HEAD")));
+		define('LATEST_COMMIT_TIME',date('c',strtotime(shell_exec("$git log -1 --date=short --pretty=format:%ci"))));
+		unset($git);
+	}
 
 	// Imports \\
 	require 'includes/JSON.php';
