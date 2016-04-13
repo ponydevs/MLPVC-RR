@@ -1514,10 +1514,12 @@ HTML;
 		global $signedIn, $currentUser;
 
 		$sameUser = $signedIn && $By['id'] === $currentUser['id'];
-		$CanEdit = (empty($R['lock']) && PERM('inspector')) || PERM('developer');
+		$requestedByUser = $isRequest && $signedIn && $R['requested_by'] === $currentUser['id'];
+		$isNotReserved = empty($R['reserved_by']);
+		$CanEdit = (empty($R['lock']) && PERM('inspector')) || PERM('developer') || ($requestedByUser && $isNotReserved);
 		$Buttons = array();
 
-		if (is_array($R) && empty($R['reserved_by'])) $HTML = PERM('member') && !$view_only ? "<button class='reserve-request typcn typcn-user-add'>Reserve</button>" : '';
+		if (is_array($R) && $isNotReserved) $HTML = PERM('member') && !$view_only ? "<button class='reserve-request typcn typcn-user-add'>Reserve</button>" : '';
 		else {
 			if (empty($By) || $By === true){
 				if (!$signedIn) trigger_error('Trying to get reserver button while not signed in');
@@ -1541,7 +1543,7 @@ HTML;
 			}
 		}
 
-		if (empty($R['lock']) && empty($Buttons) && (PERM('inspector') || (empty($R['reserved_by']) && $isRequest && $signedIn && $R['requested_by'] === $currentUser['id'])))
+		if (empty($R['lock']) && empty($Buttons) && (PERM('inspector') || ($requestedByUser && $isNotReserved)))
 			$Buttons[] = array('trash red delete','Delete');
 		if ($CanEdit)
 			array_splice($Buttons,0,0,array(array('pencil darkblue edit','Edit')));

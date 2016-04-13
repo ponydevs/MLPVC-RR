@@ -89,18 +89,18 @@
 		break;
 		case "post":
 			if (RQMTHD !== 'POST') do404();
-			if (!PERM('user')) respond();
+			if (!$signedIn) respond();
 			detectCSRF();
 
 			$_match = array();
 			if (regex_match(new RegExp('^([gs]et)-(request|reservation)/(\d+)$'), $data, $_match)){
-				if (!PERM('inspector'))
-					respond();
-
 				$thing = $_match[2];
 				$Post = $Database->where('id', $_match[3])->getOne("{$thing}s");
 				if (empty($Post))
 					respond("The specified $thing does not exist");
+
+				if (!PERM('inspector') || $thing !== 'request' || !($Post['requested_by'] === $currentUser['id'] && empty($Post['reserved_by'])))
+					respond();
 
 				if ($_match[1] === 'get'){
 					$response = array(
@@ -128,8 +128,6 @@
 				respond($update);
 			}
 			else if (regex_match(new RegExp('^set-(request|reservation)-image/(\d+)$'), $data, $_match)){
-				if (!PERM('inspector'))
-					respond();
 
 				$thing = $_match[1];
 				$Post = $Database->where('id', $_match[2])->getOne("{$thing}s");
@@ -137,6 +135,9 @@
 					respond("The specified $thing does not exist");
 				if ($Post['lock'])
 					respond('This post is locked, its image cannot be changed.');
+
+				if (!PERM('inspector') || $thing !== 'request' || !($Post['requested_by'] === $currentUser['id'] && empty($Post['reserved_by'])))
+					respond();
 
 				$Image = check_post_image($Post);
 

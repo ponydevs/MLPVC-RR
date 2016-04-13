@@ -159,6 +159,8 @@
 			white-space: nowrap;
 			margin-top: 5px;
 
+			&:empty { display: none }
+
 			button {
 				display: inline-block;
 				font-size: 1.2em;

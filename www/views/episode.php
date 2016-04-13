@@ -58,7 +58,7 @@
 		);
 		if (PERM('developer'))
 			$export['USERNAME_REGEX'] = $USERNAME_REGEX;
-		if (PERM('inspector'))
+		if ($signedIn)
 			$export['FULLSIZE_MATCH_REGEX'] = $FULLSIZE_MATCH_REGEX;
 		ExportVars($export);
 	} else { ?>
