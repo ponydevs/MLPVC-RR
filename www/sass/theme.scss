@@ -402,6 +402,22 @@ header, #sidebar .mobile-nav {
 
 		.buttons > * { margin: 0 }
 
+		//noinspection CssOptimizeSimilarProperties
+		.da-login:before, .discord-join:before {
+			content: "";
+			background-repeat: no-repeat;
+			background-position: center center;
+			background-size: contain;
+			vertical-align: text-top;
+		}
+		.da-login:before { background-image: url('../img/da-logo.svg') }
+		.discord-join {
+			color: white;
+			background: #7289DA;
+
+			&:before { background-image: url('../img/discord-logo-white.svg') }
+		}
+
 		&.welcome .links {
 			list-style: none;
 			border-radius: 5px;

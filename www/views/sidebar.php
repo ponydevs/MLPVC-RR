@@ -7,17 +7,17 @@ if (!empty($Database)){ ?>
 		<h2><?=$signedIn?'Signed in as':'Welcome!'?></h2>
 <?php
 	usercard_render(true);
-	if ($signedIn){
+	if ($signedIn)
 		sidebar_links_render(); ?>
 		<div class="buttons">
+<?  if ($signedIn){ ?>
 			<button id="signout" class="typcn typcn-arrow-back">Sign out</button>
-		</div>
 <?  } else { ?>
-		<div class="buttons">
-			<button class="typcn typcn-link green" id="signin">Sign In with DeviantArt</button>
+			<button class="typcn green da-login" id="signin">Sign in</button>
+			<script>var OAUTH_URL = "<?=get_oauth_authorization_url()?>";</script>
+<?  } ?>
+			<a class="btn typcn discord-join" href="https://discord.gg/0vv70fepSILbdJOD" target="_blank">Join Discord</a>
 		</div>
-		<script>var OAUTH_URL = "<?=get_oauth_authorization_url()?>";</script>
-<?php } ?>
 	</section>
 <?php
 	if ($view === 'episode' && !empty($CurrentEpisode)){

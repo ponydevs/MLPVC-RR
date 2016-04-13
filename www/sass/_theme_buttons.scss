@@ -8,12 +8,15 @@ button, .btn {
 	padding: 4px 7px;
 	font-family: inherit;
 	font-size: 16px;
+	line-height: 1.2em;
 	text-decoration: none;
 	user-select: none;
 	opacity: .8;
 	cursor: pointer;
+	box-sizing: border-box;
 	transform-origin: 50% 100%;
 	transition: transform .1s linear, opacity .2s linear;
+	-webkit-appearance: none;
 
 	&.large { font-size: 22px }
 	&.blue {
