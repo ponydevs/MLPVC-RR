@@ -858,7 +858,7 @@ HTML;
 			'scope' => $json['scope'],
 		);
 
-		$cookie = \Sodium\randombytes_buf(64);
+		$cookie = openssl_random_pseudo_bytes(64);
 		$AuthData['token'] = sha1($cookie);
 
 		add_browser($AuthData);
