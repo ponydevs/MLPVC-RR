@@ -44,7 +44,7 @@
 		$HTML = $wrap ? "<li id='cg{$Group['groupid']}'>" : '';
 		$HTML .=
 			"<span class='cat'>$label".
-				($colorNames?'<span class="admin"><button class="blue typcn typcn-pencil edit-cg"></button><button class="red typcn typcn-trash delete-cg"></button></span>':'').
+				($colorNames && PERM('inspector')?'<span class="admin"><button class="blue typcn typcn-pencil edit-cg"></button><button class="red typcn typcn-trash delete-cg"></button></span>':'').
 			"</span>";
 		$Colors = get_colors($Group['groupid']);
 		if (!empty($Colors))
