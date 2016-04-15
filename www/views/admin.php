@@ -10,6 +10,22 @@
 		<h2><span class="typcn typcn-time"></span><?=timetag($coupts, EXTENDED, NO_DYNTIME)?></h2>
 		<div class="countdown" data-time="<?=$coupts?>"><span>&hellip;</span> weeks <span>&hellip;</span> days<br> <span>&hellip;</span></div>
 	</section>
+<?php
+	$FavmeIDs = array();
+	foreach ($Database->where('author','Hawk9mm')->get('deviation_cache',null,'id') as $row)
+		$FavmeIDs[] = $row['id'];
+	if (count($FavmeIDs)){
+		$Appearances = $CGDb->rawQuery('SELECT id,label FROM appearances WHERE cm_favme IN (\''.implode('\',\'',$FavmeIDs).'\')');
+		if (count($Appearances)){ ?>
+	<section class="hawk9mm">
+		<h2><span class="typcn typcn-warning"></span>Appearances with Hawk9mm CMs that need replacing</h2>
+		<ul><?php
+		foreach ($Appearances as $p)
+			echo "<li><a href='/colorguide/appearance/{$p['id']}'>".htmlspecialchars($p['label']).'</a></li>';
+		?></ul>
+	</section>
+<?php   }
+	} ?>
 
 	<section class="useful-links">
 		<h2><span class="typcn typcn-link"></span>Manage useful links</h2>
