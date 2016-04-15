@@ -31,7 +31,9 @@
 						$output = array();
 						exec("$git reset HEAD --hard",$output);
 						exec("$git pull",$output);
-						echo implode("\n", $output);
+						$output = implode("\n", $output);
+						if (empty($output))
+							statusCodeHeader(500, AND_DIE);
 					break;
 					case 'ping':
 						echo "pong";
