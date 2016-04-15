@@ -29,11 +29,12 @@
 				switch (strtolower($_SERVER['HTTP_X_GITHUB_EVENT'])) {
 					case 'push':
 						$output = array();
-						exec("$git reset HEAD --hard",$output);
-						exec("$git pull",$output);
+						exec("git reset HEAD --hard",$output);
+						exec("git pull",$output);
 						$output = implode("\n", $output);
 						if (empty($output))
 							statusCodeHeader(500, AND_DIE);
+						echo $output;
 					break;
 					case 'ping':
 						echo "pong";
