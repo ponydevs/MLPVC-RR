@@ -147,6 +147,8 @@
 					vertical-align: middle;
 				}
 
+				a mark { text-decoration: underline }
+
 				button, .btn { margin: 0 0 0 8px }
 			}
 			> .update {
@@ -428,11 +430,24 @@ ul.colors {
 	text-align: center;
 	margin: 0 auto 10px;
 	display: block;
-
+	max-width: 100%;
+	width: 500px;
+	font-size: 1.2em;
 	button {
 		font-size: 1em;
 
 		&:not(:last-child) { margin-right: 5px }
 	}
-	p { margin: 5px 0 0 }
+	input {
+		font-size: 1em;
+		line-height: .9em;
+		height: 1em;
+	}
+	p {
+		font-size: .7em;
+		margin: 5px 0 0;
+		font-style: italic;
+
+		em { text-decoration: underline }
+	}
 }

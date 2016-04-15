@@ -132,7 +132,7 @@
 	}
 
 	// Return the markup of a set of tags belonging to a specific pony \\
-	function get_tags_html($PonyID, $wrap = true){
+	function get_tags_html($PonyID, $wrap = true, $Search = null){
 		global $CGDb;
 
 		$Tags = get_tags($PonyID, null, PERM('inspector'));
@@ -143,6 +143,8 @@
 		if (!empty($Tags)) foreach ($Tags as $i => $t){
 			$class = " class='tag id-{$t['tid']}".(!empty($t['synonym_of'])?' synonym':'').(!empty($t['type'])?' typ-'.$t['type']:'')."'";
 			$title = !empty($t['title']) ? " title='".apos_encode($t['title'])."'" : '';
+			if (!empty($Search['tid_assoc'][$t['tid']]))
+				$t['name'] = "<mark>{$t['name']}</mark>";
 			$HTML .= "<span$class$title>{$t['name']}</span>";
 		}
 		if ($wrap) $HTML .= "</div>";
@@ -249,16 +251,18 @@
 
 	// Returns the markup for an array of pony datase rows \\
 	function render_ponies_html($Ponies, $wrap = true){
-		global $CGDb, $_MSG, $color;
+		global $CGDb, $_MSG, $color, $Search;
 
 		$HTML = $wrap ? '<ul id="list" class="appearance-list">' : '';
 		if (!empty($Ponies)) foreach ($Ponies as $p){
 			$p['label'] = htmlspecialchars($p['label']);
+			if ($p['id'] && !empty($Search['label']))
+				$p['label'] = "<mark>{$p['label']}</mark>";
 
 			$img = get_sprite_html($p);
 			$updates = get_update_html($p['id']);
 			$notes = get_notes_html($p);
-			$tags = get_tags_html($p['id']);
+			$tags = $p['id'] ? get_tags_html($p['id'], true, $Search) : '';
 			$colors = get_colors_html($p['id']);
 
 			$RenderPath = APPATH."img/cg_render/{$p['id']}.png";
@@ -1073,4 +1077,44 @@ HTML;
 			return null;
 
 		return $CGDb->where('tid', $Tag['synonym_of'])->getOne('tags',$returnCols);
+	}
+
+	function process_search_query($q){
+		global $CGDb, $TAG_NAME_REGEX;
+
+		$tokens = array_map('trim',explode(',',strtolower($q)));
+		if (count($tokens) > 6)
+			throw new Exception('You may only search for up to 6 tags/labels');
+		$SearchTagIDs = array();
+		$SearchLabelLIKEs = array();
+
+		foreach ($tokens as $token){
+			// Search for a tag
+			if (regex_match($TAG_NAME_REGEX, $token)){
+				$err = check_string_valid($token, "Tag name", INVERSE_TAG_NAME_PATTERN, true);
+				if (is_string($err))
+					throw new Exception($err);
+				$Tag = get_actual_tag($token, 'name', false, 'tid');
+				if (empty($Tag))
+					throw new Exception('Tag (<code>'.htmlspecialchars($token).'</code>) does not exist');
+
+				$SearchTagIDs[] = $Tag['tid'];
+			}
+			// Search for a lebel
+			else {
+				$err = check_string_valid($token, "Name wildcard", INVERSE_PRINTABLE_ASCII_REGEX, true);
+				if (is_string($err))
+					throw new Exception($err);
+
+				$like = escape_like_string(regex_replace(new RegExp('\*+'),'*',$token));
+				$like = str_replace('*','%',$like);
+				$like = str_replace('?','_',$like);
+				$SearchLabelLIKEs[] = $like;
+			}
+		}
+
+		return array(
+			'tid' => $SearchTagIDs,
+			'label' => $SearchLabelLIKEs,
+		);
 	}

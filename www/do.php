@@ -2111,7 +2111,7 @@
 			}
 
 			$title = '';
-			if (empty($_GET['q'])){
+			if (empty($_GET['q']) || regex_match(new RegExp('^\*+$'),$_GET['q'])){
 				$EntryCount = $CGDb->where('ishuman',$EQG)->count('appearances');
 				if (!$EQG)
 					$EntryCount--; // "Universal" appearance
@@ -2119,64 +2119,57 @@
 				$Ponies = get_appearances($EQG, array($ItemsPerPage*($Page-1), $ItemsPerPage));
 			}
 			else {
-				$tags = array_map('trim',explode(',',strtolower($_GET['q'])));
-				$Tags = array();
-				foreach ($tags as $part => $tag){
-					$num = $part+1;
-					$_MSG = check_string_valid($tag,"Tag #$num's name",INVERSE_TAG_NAME_PATTERN, !isset($_GET['js']));
-					if (is_string($_MSG)) break;
+				$SearchQuery = $_GET['q'];
+				$Page = $MaxPages = 1;
+				$Ponies = false;
 
-					$Tag = get_actual_tag($tag, 'name', false, 'tid, name');
-					if (empty($Tag)){
-						$_MSG = "The tag $tag does not exist";
-						if (isset($_REQUEST['js']))
-							respond($_MSG);
-					}
-					if (!in_array($Tag['tid'], $Tags))
-						$Tags[] = $Tag['tid'];
-				}
-				if (empty($_MSG)){
-					if (empty($Tags)){
-						$_MSG = 'Your search matched no tags';
-						if (isset($_REQUEST['js']))
-							respond($_MSG);
-						$tc = 0;
-					}
-					else $tc = count($Tags);
-					if ($tc > 6){
-						$_MSG = 'You cannot search for more than 6 tags';
-						if (isset($_GET['js']))
-							respond($_MSG);
-					}
-				}
-
-				if (empty($_MSG)){
-					$title .= "{$_GET['q']} - ";
+				try {
+					$Search = process_search_query($SearchQuery);
+					$title .= "$SearchQuery - ";
 					$IsHuman = $EQG ? 'true' : 'false';
 
-					$query =
-						"SELECT @coloumn FROM appearances p
-						WHERE p.id IN (
-							SELECT ponyid FROM (
+					$Restrictions = array();
+					$Params = array();
+					if (!empty($Search['tid'])){
+						$tc = count($Search['tid']);
+						$Restrictions[] = 'p.id IN (
+							--SELECT ponyid FROM (
 								SELECT t.ponyid
 								FROM tagged t
-								WHERE t.tid IN (".implode(',', $Tags).")
+								WHERE t.tid IN ('.implode(',', $Search['tid']).")
 								GROUP BY t.ponyid
 								HAVING COUNT(t.tid) = $tc
-							) tg
-						) AND p.ishuman = $IsHuman
-						--limit";
-					$EntryCount = $CGDb->rawQuerySingle(str_replace('@coloumn','COUNT(*) as count',$query))['count'];
-					list($Page,$MaxPages) = calc_page($EntryCount);
-					$Offset = $ItemsPerPage*($Page-1);
+							--) tg
+						)";
+						$Search['tid_assoc'] = array();
+						foreach ($Search['tid'] as $tid)
+							$Search['tid_assoc'][$tid] = true;
+					}
+					if (!empty($Search['label'])){
+						$collect = array();
+						foreach ($Search['label'] as $l){
+							$collect[] = 'lower(p.label) LIKE ?';
+							$Params[] = $l;
+						}
+						$Restrictions[] = implode(' AND ', $collect);
+					}
 
-					$SearchQuery = str_replace('@coloumn','p.*',$query);
-					$SearchQuery = str_replace('--limit',"ORDER BY p.order ASC LIMIT $ItemsPerPage OFFSET $Offset",$SearchQuery);
-					$Ponies = $CGDb->rawQuery($SearchQuery);
+					if (count($Restrictions)){
+						$Params[] = $EQG;
+						$Query = "SELECT @coloumn FROM appearances p WHERE ".implode(' AND ',$Restrictions)." AND p.ishuman = ? AND p.id != 0";
+						$EntryCount = $CGDb->rawQuerySingle(str_replace('@coloumn','COUNT(*) as count',$Query),$Params)['count'];
+						list($Page,$MaxPages) = calc_page($EntryCount);
+						$Offset = $ItemsPerPage*($Page-1);
+
+						$SearchQuery = str_replace('@coloumn','p.*',$Query);
+						$SearchQuery .= " ORDER BY p.order ASC LIMIT $ItemsPerPage OFFSET $Offset";
+						$Ponies = $CGDb->rawQuery($SearchQuery,$Params);
+					}
 				}
-				else {
-					$Page = $MaxPages = 1;
-					$Ponies = false;
+				catch (Exception $e){
+					$_MSG = $e->getMessage();
+					if (isset($_REQUEST['js']))
+						respond($_MSG);
 				}
 			}
 

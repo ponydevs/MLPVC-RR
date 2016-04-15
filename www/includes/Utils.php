@@ -2603,7 +2603,7 @@ ORDER BY "count" DESC
 
 			$s = count($invalid)!==1?'s':'';
 			$the_following = count($invalid)!==1?' the following':'an';
-			$Error = "$Thing ($string) contains $the_following invalid character$s: ".array_readable($invalid);
+			$Error = "$Thing (".htmlspecialchars($string).") contains $the_following invalid character$s: ".array_readable($invalid);
 			if (!$returnError) respond($Error);
 			return $Error;
 		}
@@ -2952,4 +2952,16 @@ ORDER BY "count" DESC
 		}
 
 		return $value;
+	}
+
+
+	/**
+	 * Escapes valued for use in LIKE checks
+	 *
+	 * @param string $str
+	 *
+	 * @return string
+	 */
+	function escape_like_string($str){
+		return preg_replace('~(^|[^\\\\])([%_\[\]])~','$1\\\\$2', $str);
 	}
