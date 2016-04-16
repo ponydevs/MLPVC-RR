@@ -2099,13 +2099,9 @@
 
 				$SafeLabel = trim(regex_replace(new RegExp('-+'),'-',regex_replace(new RegExp('[^A-Za-z\d\-]'),'-',$Appearance['label'])),'-');
 				fix_path("$CGPath/appearance/$SafeLabel-{$Appearance['id']}");
-				$heading = $Appearance['label'];
-				if ($Appearance['id'] === 0){
-					$title = $heading;
-					if ($color !== 'color')
-						$title = str_replace('color',$color,$title);
-				}
-				else $title = "{$Color}s for $heading";
+				$title = $heading = $Appearance['label'];
+				if ($Appearance['id'] === 0 && $color !== 'color')
+					$title = str_replace('color',$color,$title);
 
 				$Changes = get_updates($Appearance['id']);
 
