@@ -246,7 +246,9 @@
 		global $CGDb;
 
 		order_appearances();
-		return $CGDb->where('ishuman', $EQG)->where('id',0,'!=')->get('appearances', $limit, $cols);
+		if (isset($EQG))
+			$CGDb->where('ishuman', $EQG)->where('id',0,'!=');
+		return $CGDb->get('appearances', $limit, $cols);
 	}
 
 	// Returns the markup for an array of pony datase rows \\

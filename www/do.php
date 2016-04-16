@@ -1350,6 +1350,47 @@
 						}
 						else do404();
 					break;
+					case "export":
+						if (!PERM('inspector'))
+							do404();
+						$JSON = array(
+							'expoted_at' => date('c'),
+							'Appearances' => array(),
+						);
+
+						$Appearances = get_appearances(null);
+						if (!empty($Appearances)) foreach ($Appearances as $p){
+							$AppendAppearance = $p;
+
+							$AppendAppearance['ColorGroups'] = array();
+							$ColorGroups = get_cgs($p['id']);
+							if (!empty($ColorGroups)) foreach ($ColorGroups as $cg){
+								$AppendColorGroup = $cg;
+								unset($AppendColorGroup['ponyid']);
+
+								$AppendColorGroup['Colors'] = array();
+								$Colors = get_colors($cg['groupid']);
+								if (!empty($Colors)) foreach ($Colors as $c){
+									unset($c['groupid']);
+									$AppendColorGroup['Colors'][] = $c;
+								}
+
+								$AppendAppearance['ColorGroups'][$cg['groupid']] = $AppendColorGroup;
+							}
+
+							$JSON['Appearances'][$p['id']] = $AppendAppearance;
+						}
+
+						$data = JSON::Encode($JSON, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
+						$data = preg_replace_callback('/^\s+/m', function($match){
+							return str_pad('',strlen($match[0])/4,"\t", STR_PAD_LEFT);
+						}, $data);
+
+						header('Content-Type: application/octet-stream');
+						header('Content-Transfer-Encoding: Binary');
+						header('Content-disposition: attachment; filename="mlpvc-colorguide.json"');
+						die($data);
+					break;
 				}
 
 				$_match = array();
@@ -1549,65 +1590,55 @@
 
 							respond('Cached image removed, the image will be re-generated on the next request', 1);
 						break;
-						// TODO merge with untag
 						case "tag":
-							if ($Appearance['id'] === 0)
-								respond('This appearance cannot be tagged');
-
-							if (empty($_POST['tag_name']))
-								respond('Tag name is not specified');
-							$tag_name = strtolower(trim($_POST['tag_name']));
-							if (!regex_match($TAG_NAME_REGEX,$tag_name))
-								respond('Invalid tag name');
-
-							$TagCheck = ep_tag_name_check($tag_name);
-							if ($TagCheck !== false)
-								$tag_name = $TagCheck;
-
-							$Tag = $CGDb->where('name',$tag_name)->getOne('tags');
-							if (empty($Tag))
-								respond("The tag $tag_name does not exist.<br>Would you like to create it?",0,array(
-									'cancreate' => $tag_name,
-									'typehint' => $TagCheck !== false ? 'ep' : null,
-								));
-
-							if ($CGDb->where('ponyid', $Appearance['id'])->where('tid', $Tag['tid'])->has('tagged'))
-								respond('This appearance already has this tag');
-
-							if (!$CGDb->insert('tagged',array(
-								'ponyid' => $Appearance['id'],
-								'tid' => $Tag['tid'],
-							))) respond(ERR_DB_FAIL);
-
-							update_tag_count($Tag['tid']);
-							if (isset($GroupTagIDs_Assoc[$Tag['tid']]))
-								get_sort_reorder_appearances($EQG);
-
-							$response = array('tags' => get_tags_html($Appearance['id'], NOWRAP));
-							if ($AppearancePage && $Tag['type'] === 'ep'){
-								$response['needupdate'] = true;
-								$response['eps'] = get_episode_appearances($Appearance['id'], NOWRAP);
-							}
-							respond($response);
-						break;
 						case "untag":
 							if ($Appearance['id'] === 0)
-								respond('This appearance cannot be un-tagged');
+								respond("This appearance cannot be tagged");
 
-							if (!isset($_POST['tag']) || !is_numeric($_POST['tag']))
-								respond('Tag ID is not specified');
-							$Tag = $CGDb->where('tid',$_POST['tag'])->getOne('tags');
-							if (empty($Tag))
-								respond('This tag does not exist');
-							if (!empty($Tag['synonym_of'])){
-								$Syn = get_tag_synon($Tag,'name');
-								respond('Synonym tags cannot be removed from appearances directly. '.
-								        "If you want to remove this tag you must remove <strong>{$Syn['name']}</strong> or the synonymization.");
-							}
+							switch ($action){
+								case "tag":
+									if (empty($_POST['tag_name']))
+										respond('Tag name is not specified');
+									$tag_name = strtolower(trim($_POST['tag_name']));
+									if (!regex_match($TAG_NAME_REGEX,$tag_name))
+										respond('Invalid tag name');
 
-							if ($CGDb->where('ponyid', $Appearance['id'])->where('tid', $Tag['tid'])->has('tagged')){
-								if (!$CGDb->where('ponyid', $Appearance['id'])->where('tid', $Tag['tid'])->delete('tagged'))
-									respond(ERR_DB_FAIL);
+									$TagCheck = ep_tag_name_check($tag_name);
+									if ($TagCheck !== false)
+										$tag_name = $TagCheck;
+
+									$Tag = $CGDb->where('name',$tag_name)->getOne('tags');
+									if (empty($Tag))
+										respond("The tag $tag_name does not exist.<br>Would you like to create it?",0,array(
+											'cancreate' => $tag_name,
+											'typehint' => $TagCheck !== false ? 'ep' : null,
+										));
+
+									if ($CGDb->where('ponyid', $Appearance['id'])->where('tid', $Tag['tid'])->has('tagged'))
+										respond('This appearance already has this tag');
+
+									if (!$CGDb->insert('tagged',array(
+										'ponyid' => $Appearance['id'],
+										'tid' => $Tag['tid'],
+									))) respond(ERR_DB_FAIL);
+								break;
+								case "untag":
+									if (!isset($_POST['tag']) || !is_numeric($_POST['tag']))
+										respond('Tag ID is not specified');
+									$Tag = $CGDb->where('tid',$_POST['tag'])->getOne('tags');
+									if (empty($Tag))
+										respond('This tag does not exist');
+									if (!empty($Tag['synonym_of'])){
+										$Syn = get_tag_synon($Tag,'name');
+										respond('Synonym tags cannot be removed from appearances directly. '.
+										        "If you want to remove this tag you must remove <strong>{$Syn['name']}</strong> or the synonymization.");
+									}
+
+									if ($CGDb->where('ponyid', $Appearance['id'])->where('tid', $Tag['tid'])->has('tagged')){
+										if (!$CGDb->where('ponyid', $Appearance['id'])->where('tid', $Tag['tid'])->delete('tagged'))
+											respond(ERR_DB_FAIL);
+									}
+								break;
 							}
 
 							update_tag_count($Tag['tid']);
