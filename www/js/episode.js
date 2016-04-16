@@ -348,26 +348,28 @@ DocReady.push(function Episode(){
 	};
 	$voting.bindDetails();
 
+	$.fn.rebindFluidbox = function(){
+		$(this).find('.screencap > a')
+			.fluidbox({
+				immediateOpen: true,
+				loader: true,
+			})
+			.on('openstart.fluidbox',function(){
+				$body.addClass('no-distractions');
+			})
+			.on('closestart.fluidbox', function() {
+				$body.removeClass('no-distractions');
+			});
+	};
 	$.fn.rebindHandlers = function(){
-		 $(this).find('li[id]').each(function(){
+		 this.find('li[id]').each(function(){
 			var $li = $(this),
 				id = parseInt($li.attr('id').replace(/\D/g,'')),
 				type = $li.closest('section[id]').attr('id').replace(/s$/,'');
-				
-			$('section .unfinished .screencap > a')
-				.fluidbox({
-					immediateOpen: true,
-					loader: true,
-				})
-				.on('openstart.fluidbox',function(){
-					$body.addClass('no-distractions');
-				})
-				.on('closestart.fluidbox', function() {
-					$body.removeClass('no-distractions');
-				});
 
 			Bind($li, id, type);
 		});
+		this.closest('section').find('.unfinished').rebindFluidbox();
 		return this;
 	};
 	$('#requests, #reservations').rebindHandlers();
@@ -384,6 +386,7 @@ DocReady.push(function Episode(){
 
 						var $newli = $(this.li);
 						$li.replaceWith($newli);
+						$newli.rebindFluidbox();
 						window.updateTimes();
 						Bind($newli, id, type);
 						$.Dialog.close();
@@ -435,6 +438,7 @@ DocReady.push(function Episode(){
 
 					var $newli = $(this.li);
 					$li.replaceWith($newli);
+					$newli.rebindFluidbox();
 					window.updateTimes();
 					Bind($newli, id, type);
 					$.Dialog.close();
