@@ -1181,4 +1181,14 @@ DocReady.push(function ColorguideManage(){
 
 		ctxmenus();
 	}
+
+	$('.cg-export').on('click',function(){
+		$.mk('form').attr({
+			method:'POST',
+			action:'/colorguide/export',
+			target: '_blank',
+		}).html(
+			$.mk('input').attr('name','CSRF_TOKEN').val($.getCSRFToken())
+		).get(0).submit();
+	});
 });

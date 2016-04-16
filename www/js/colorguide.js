@@ -177,16 +177,6 @@ DocReady.push(function Colorguide(){
 		$this.find('input[name=q]').val('');
 		$this.triggerHandler('submit');
 	});
-
-	$('.cg-export').on('click',function(){
-		$.mk('form').attr({
-			method:'POST',
-			action:'/colorguide/export',
-			target: '_blank',
-		}).html(
-			$.mk('input').attr('name','CSRF_TOKEN').val($.getCSRFToken())
-		).get(0).submit();
-	});
 }, function(){
 	'use strict';
 	$('.qtip').each(function(){
