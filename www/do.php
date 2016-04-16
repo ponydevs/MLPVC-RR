@@ -1334,21 +1334,21 @@
 						typeahead_results(empty($Tags) ? '[]' : $Tags);
 					break;
 					case 'full':
-						if (isset($_REQUEST['reorder'])){
-							if (!PERM('inspector'))
-								respond();
-							if (empty($_POST['list']))
-								respond('The list of IDs is missing');
+						if (!isset($_REQUEST['reorder']))
+							do404();
 
-							$list = trim($_POST['list']);
-							if (!regex_match(new RegExp('^\d+(?:,\d+)+$'), $list))
-								respond('The list of IDs is not formatted properly');
+						if (!PERM('inspector'))
+							respond();
+						if (empty($_POST['list']))
+							respond('The list of IDs is missing');
 
-							reorder_appearances($list);
+						$list = trim($_POST['list']);
+						if (!regex_match(new RegExp('^\d+(?:,\d+)+$'), $list))
+							respond('The list of IDs is not formatted properly');
 
-							respond(array('html' => render_full_list_html(get_appearances($EQG,null,'id,label'), true, NOWRAP)));
-						}
-						else do404();
+						reorder_appearances($list);
+
+						respond(array('html' => render_full_list_html(get_appearances($EQG,null,'id,label'), true, NOWRAP)));
 					break;
 					case "export":
 						if (!PERM('inspector'))
