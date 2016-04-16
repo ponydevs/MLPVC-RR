@@ -102,7 +102,7 @@
 				if (empty($Post))
 					respond("The specified $thing does not exist");
 
-				if (!PERM('inspector') || $thing !== 'request' || !($Post['requested_by'] === $currentUser['id'] && empty($Post['reserved_by'])))
+				if (!(PERM('inspector') || ($thing === 'request' && empty($Post['reserved_by']) && $Post['requested_by'] === $currentUser['id'])))
 					respond();
 
 				if ($_match[1] === 'get'){
