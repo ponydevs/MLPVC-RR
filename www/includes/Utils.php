@@ -2002,7 +2002,7 @@ HTML;
 			$star = '';
 			if ($ep['season'] === $LatestEp['season'] && $ep['episode'] === $LatestEp['episode']){
 				$displayed = true;
-				$star = '<span class="typcn typcn-eye" title="Curently visible on the homepage"></span> ';
+				$star = '<span class="typcn typcn-home" title="Curently visible on the homepage"></span> ';
 			}
 			$star .= '<span class="typcn typcn-media-play'.(!$ep['aired']?'-outline':'').'" title="'.($isMovie?'Movie':'Episode').' had'.($ep['aired']?' aired, voting enabled':'n\'t aired yet, voting disabled').'"></span> ';
 
