@@ -88,11 +88,12 @@ body.dialog-open {
 	form {
 		min-width: 350px;
 
-		> label {
+		> label, > .label {
 			> span {
 				~ select,
 				~ textarea,
-				~ input:not([type=radio]):not([type=checkbox]):not([type=button]) {
+				~ input:not([type=radio]):not([type=checkbox]):not([type=button]),
+				~ .input-group-2 {
 					margin-top: 5px !important;
 					display: block;
 				}

@@ -45,17 +45,23 @@ DocReady.push(function EpisodesManage(){
 
 	function EpisodeForm(id){
 		var $form = $.mk('form').attr('id', id).html(
-			'<div class=input-group-2>'+
-				'<input type="number" min="1" max="8" name="season" placeholder="Season #" required>'+
-				'<input type="number" min="1" max="26" name="episode" placeholder="Episode #" required>'+
+			'<div class="label">' +
+				'<span>Season &amp; Episode</span>'+
+				'<div class=input-group-2>'+
+					'<input type="number" min="1" max="8" name="season" placeholder="Season #" required>'+
+					'<input type="number" min="1" max="26" name="episode" placeholder="Episode #" required>'+
+				'</div>'+
 			'</div>'+
 			'<label>'+
 				'<span>Title (5-35 chars.)</span>'+
 				'<input type="text" maxlength="35" name="title" placeholder="Title" pattern="'+EP_TITLE_HTML_REGEX+'" autocomplete="off" required>'+
 			'</label>'+
-			'<div class="input-group-2">'+
-				'<input type="date" name="airdate" placeholder="YYYY-MM-DD" required>'+
-				'<input type="time" name="airtime" placeholder="HH:MM" required>'+
+			'<div class="label">' +
+				'<span>Air Date</span>'+
+				'<div class="input-group-2">'+
+					'<input type="date" name="airdate" placeholder="YYYY-MM-DD" required>'+
+					'<input type="time" name="airtime" placeholder="HH:MM" required>'+
+				'</div>'+
 			'</div>'+
 			'<div class="notice info align-center button-here">'+
 				'<p>Specify when the episode will air, in <strong>your computer\'s timezone</strong>.</p>'+
