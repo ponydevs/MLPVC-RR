@@ -204,7 +204,7 @@ DocReady.push(function ColorguideManage(){
 
 	var $tagEditForm = $.mk('form').attr('id', 'edit-tag');
 	$tagEditForm
-		.append('<label><span>Tag name (4-30 chars.)</span><input type="text" name="name" required pattern="^.{4,30}$" maxlength="30"></label>');
+		.append('<label><span>Tag name (3-30 chars.)</span><input type="text" name="name" required pattern="^.{3,30}$" maxlength="30"></label>');
 	var $_typeSelect = $.mk('div').addClass('type-selector');
 	$.each(TAG_TYPES_ASSOC,function(type, label){
 		var $lbl = $.mk('label'),
