@@ -1354,13 +1354,14 @@
 						if (!PERM('inspector'))
 							do404();
 						$JSON = array(
-							'expoted_at' => date('c'),
 							'Appearances' => array(),
 						);
 
 						$Appearances = get_appearances(null);
 						if (!empty($Appearances)) foreach ($Appearances as $p){
 							$AppendAppearance = $p;
+
+							$AppendAppearance['notes'] = regex_replace(new RegExp('(\r\n|\r|\n)'),"\n",$AppendAppearance['notes']);
 
 							$AppendAppearance['ColorGroups'] = array();
 							$ColorGroups = get_cgs($p['id']);
