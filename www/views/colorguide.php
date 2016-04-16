@@ -1,7 +1,9 @@
 <div id="content">
 	<h1><?=$heading?></h1>
 	<p>A searchable list of character <?=$color?>s from the <?=$EQG?'movies':'show'?></p>
-	<p class="align-center">If you can't find a character here, check the old guides: <a href="https://sta.sh/0kic0ngp3fy">Pony</a> / <a href="http://fav.me/d7120l1">EQG</a></p>
+	<p class="align-center">
+		If you can't find a character here, check the old guides: <a href="https://sta.sh/0kic0ngp3fy">Pony</a> / <a href="http://fav.me/d7120l1">EQG</a><br>
+		Looking for this information in a machine-readable format? <a href="<?=GITHUB_URL?>/blob/master/setup/mlpvc-colorguide.json" target="_blank">JSON</a> / <a href="<?=GITHUB_URL?>/blob/master/setup/mlpvc-colorguide.pg.sql" target="_blank">PgSQL</a></p>
 <? if (PERM('inspector')){ ?>
 	<div class="notice warn tagediting">
 		<label>Limited editing</label>
@@ -20,9 +22,9 @@
 		<a class='btn darkblue typcn typcn-arrow-forward' href="/blending">Blending Calculator</a>
 		<a class='btn darkblue typcn typcn-tags' href="/<?=$color?>guide/tags">Tags</a>
 		<a class='btn darkblue typcn typcn-warning' href="/<?=$color?>guide/changes">Major Changes</a>
-<? if (PERM('inspector')){ ?>
+<?  if (PERM('inspector')){ ?>
 		<button class='darkblue typcn typcn-download cg-export'>Export</button>
-<? } ?>
+<?  } ?>
 	</p>
 
 	<form id="search-form"><input name="q" <?=!empty($_GET['q'])?" value='".apos_encode($_GET['q'])."'":''?> title='Search'> <button class='blue typcn typcn-zoom'></button><button type='reset' class='orange typcn typcn-times' title='Clear'<?=empty($_GET['q'])?'disabled':''?>></button><p>Enter tags/names separated by commas. Force name-based search by using&nbsp;<strong>?</strong>&nbsp;or&nbsp;<strong>*</strong>. You may search using <em>up to 6</em> tokens at a time.</p></form>
