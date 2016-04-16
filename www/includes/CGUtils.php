@@ -256,8 +256,6 @@
 		$HTML = $wrap ? '<ul id="list" class="appearance-list">' : '';
 		if (!empty($Ponies)) foreach ($Ponies as $p){
 			$p['label'] = htmlspecialchars($p['label']);
-			if ($p['id'] && !empty($Search['label']))
-				$p['label'] = "<mark>{$p['label']}</mark>";
 
 			$img = get_sprite_html($p);
 			$updates = get_update_html($p['id']);
