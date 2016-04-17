@@ -1355,7 +1355,13 @@
 							do404();
 						$JSON = array(
 							'Appearances' => array(),
+							'Tags' => array(),
 						);
+
+						$Tags = get_tags(null,null,true);
+						if (!empty($Tags)) foreach ($Tags as $t){
+							$JSON['Tags'][$t['tid']] = $t;
+						}
 
 						$Appearances = get_appearances(null);
 						if (!empty($Appearances)) foreach ($Appearances as $p){
@@ -1378,6 +1384,12 @@
 
 								$AppendAppearance['ColorGroups'][$cg['groupid']] = $AppendColorGroup;
 							}
+
+							$AppendAppearance['TagIDs'] = array();
+							$Tags = get_tags($p['id'],null,true);
+							if (!empty($Tags))
+								foreach ($Tags as $t)
+									$AppendAppearance['TagIDs'][] = $t['tid'];
 
 							$JSON['Appearances'][$p['id']] = $AppendAppearance;
 						}
