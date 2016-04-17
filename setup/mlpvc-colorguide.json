@@ -14789,11 +14789,6 @@
 						},
 						{
 							"order": 2,
-							"label": "Mouth",
-							"hex": "#526D6D"
-						},
-						{
-							"order": 3,
 							"label": "Whiskers",
 							"hex": "#CACACA"
 						}
@@ -14806,19 +14801,30 @@
 					"Colors": [
 						{
 							"order": 0,
-							"label": "Mouth",
-							"hex": "#C13271"
+							"label": "Outline",
+							"hex": "#526D6D"
 						},
 						{
 							"order": 1,
+							"label": "Fill",
+							"hex": "#C13271"
+						},
+						{
+							"order": 2,
 							"label": "Tongue",
 							"hex": "#F9A4E0"
+						},
+						{
+							"order": 3,
+							"label": "Teeth Separator",
+							"hex": "#CDCDCD"
 						}
 					]
 				}
 			},
 			"TagIDs": [
 				10,
+				11,
 				154,
 				155,
 				156
@@ -15081,7 +15087,8 @@
 			"TagIDs": [
 				10,
 				238,
-				239
+				239,
+				243
 			]
 		},
 		"117": {
@@ -15164,7 +15171,10 @@
 				10,
 				240,
 				241,
-				242
+				242,
+				244,
+				245,
+				246
 			]
 		},
 		"33": {
@@ -15948,74 +15958,89 @@
 			"ColorGroups": {
 				"573": {
 					"groupid": 573,
-					"label": "Outfit",
+					"label": "Shirt",
 					"order": 1,
 					"Colors": [
 						{
 							"order": 0,
-							"label": "Shirt Outline",
+							"label": "Outline",
 							"hex": "#176361"
 						},
 						{
 							"order": 1,
-							"label": "Shirt Fill 1/Button Fill",
+							"label": "Fill 1/Button Fill",
 							"hex": "#1998A1"
 						},
 						{
 							"order": 2,
-							"label": "Shirt Fill 2",
+							"label": "Fill 2",
 							"hex": "#FFFFFF"
 						},
 						{
 							"order": 3,
-							"label": "Shirt Shadow Outline",
+							"label": "Shadow Outline",
 							"hex": "#17585C"
 						},
 						{
 							"order": 4,
-							"label": "Shirt Shadow Fill 1",
+							"label": "Shadow Fill 1",
 							"hex": "#1A8A94"
 						},
 						{
 							"order": 5,
-							"label": "Shirt Shadow Fill 2",
+							"label": "Shadow Fill 2",
 							"hex": "#EAEAEA"
-						},
+						}
+					]
+				},
+				"619": {
+					"groupid": 619,
+					"label": "Bowtie",
+					"order": 2,
+					"Colors": [
 						{
-							"order": 6,
-							"label": "Trim Outline",
-							"hex": "#EDC43C"
-						},
-						{
-							"order": 7,
-							"label": "Trim Fill",
-							"hex": "#F6D93D"
-						},
-						{
-							"order": 8,
-							"label": "Trim Shadow Fill",
-							"hex": "#E1C63B"
-						},
-						{
-							"order": 9,
-							"label": "Bowtie Outline",
+							"order": 0,
+							"label": "Outline",
 							"hex": "#398E96"
 						},
 						{
-							"order": 10,
-							"label": "Bowtie Fill 1",
+							"order": 1,
+							"label": "Fill 1",
 							"hex": "#43B6C0"
 						},
 						{
-							"order": 11,
-							"label": "Bowtie Fill 2",
+							"order": 2,
+							"label": "Fill 2",
 							"hex": "#FBECB3"
+						}
+					]
+				},
+				"620": {
+					"groupid": 620,
+					"label": "Trim",
+					"order": 3,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#EDC43C"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#F6D93D"
+						},
+						{
+							"order": 2,
+							"label": "Shadow Fill",
+							"hex": "#E1C63B"
 						}
 					]
 				}
 			},
 			"TagIDs": [
 				96,
+				192,
 				212,
 				213,
 				214
@@ -16198,7 +16223,7 @@
 				"604": {
 					"groupid": 604,
 					"label": "Body",
-					"order": 1,
+					"order": 0,
 					"Colors": [
 						{
 							"order": 0,
@@ -16224,15 +16249,22 @@
 							"order": 4,
 							"label": "Inner Fill",
 							"hex": "#FFC653"
-						},
+						}
+					]
+				},
+				"621": {
+					"groupid": 621,
+					"label": "Leaves",
+					"order": 1,
+					"Colors": [
 						{
-							"order": 5,
-							"label": "Leaf Outline",
+							"order": 0,
+							"label": "Outline",
 							"hex": "#529821"
 						},
 						{
-							"order": 6,
-							"label": "Leaf Fill",
+							"order": 1,
+							"label": "Fill",
 							"hex": "#7FC04B"
 						}
 					]
@@ -16267,7 +16299,9 @@
 			},
 			"TagIDs": [
 				232,
-				233
+				233,
+				247,
+				248
 			]
 		},
 		"63": {
@@ -16587,7 +16621,7 @@
 			"name": "male",
 			"title": null,
 			"type": "gen",
-			"uses": 29,
+			"uses": 30,
 			"synonym_of": null
 		},
 		"12": {
@@ -17947,7 +17981,7 @@
 			"name": "s4e14",
 			"title": null,
 			"type": "ep",
-			"uses": 4,
+			"uses": 5,
 			"synonym_of": null
 		},
 		"193": {
@@ -18341,6 +18375,54 @@
 			"type": "char",
 			"uses": 0,
 			"synonym_of": 241
+		},
+		"243": {
+			"tid": 243,
+			"name": "dog",
+			"title": "",
+			"type": "spec",
+			"uses": 0,
+			"synonym_of": 239
+		},
+		"244": {
+			"tid": 244,
+			"name": "owlicious",
+			"title": "",
+			"type": "char",
+			"uses": 0,
+			"synonym_of": 241
+		},
+		"245": {
+			"tid": 245,
+			"name": "owliscius",
+			"title": "",
+			"type": "char",
+			"uses": 0,
+			"synonym_of": 241
+		},
+		"246": {
+			"tid": 246,
+			"name": "owliscious",
+			"title": "",
+			"type": "char",
+			"uses": 0,
+			"synonym_of": 241
+		},
+		"247": {
+			"tid": 247,
+			"name": "creatures",
+			"title": "",
+			"type": "cat",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"248": {
+			"tid": 248,
+			"name": "frog",
+			"title": "",
+			"type": "spec",
+			"uses": 1,
+			"synonym_of": null
 		}
 	}
 }
