@@ -610,8 +610,11 @@ HTML;
 					'Highlight Bottom',
 				),
 				'Cutie Mark' => array(
-					"Fill 1",
-					"Fill 2",
+					'Fill 1',
+					'Fill 2',
+				),
+				'Magic' => array(
+					'Aura',
 				),
 			);
 
