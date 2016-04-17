@@ -1571,7 +1571,7 @@
 
 							clear_rendered_image($Appearance['id']);
 
-							respond(array('cgs' => get_colors_html($Appearance['id'], NOWRAP, !isset($_POST['NO_COLON']), isset($_POST['OUTPUT_COLOR_NAMES']))));
+							respond(array('cgs' => get_colors_html($Appearance['id'], NOWRAP, !$AppearancePage, $AppearancePage)));
 						break;
 						case "delsprite":
 						case "getsprite":
@@ -1673,7 +1673,7 @@
 								respond("Applying the template failed. Reason: ".$e->getMessage());
 							}
 
-							respond(array('cgs' => get_colors_html($Appearance['id'], NOWRAP)));
+							respond(array('cgs' => get_colors_html($Appearance['id'], NOWRAP, !$AppearancePage, $AppearancePage)));
 						break;
 						default: statusCodeHeader(400, AND_DIE);
 					}
