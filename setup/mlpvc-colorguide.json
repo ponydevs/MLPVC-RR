@@ -14076,12 +14076,12 @@
 					"Colors": [
 						{
 							"order": 0,
-							"label": "Mouth Fill",
+							"label": "Mouth",
 							"hex": "#C13271"
 						},
 						{
 							"order": 1,
-							"label": "Tongue Fill",
+							"label": "Tongue",
 							"hex": "#F9A4E0"
 						}
 					]
@@ -14212,9 +14212,212 @@
 				}
 			}
 		},
+		"116": {
+			"id": 116,
+			"order": 98,
+			"label": "Winona",
+			"notes": "",
+			"cm_favme": null,
+			"ishuman": false,
+			"added": "2016-04-17 00:21:19.215671+02",
+			"cm_preview": null,
+			"cm_dir": null,
+			"ColorGroups": {
+				"613": {
+					"groupid": 613,
+					"label": "Body",
+					"order": 1,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#583A25"
+						},
+						{
+							"order": 1,
+							"label": "Fill 1",
+							"hex": "#9A6642"
+						},
+						{
+							"order": 2,
+							"label": "Fill 2",
+							"hex": "#FFFFFF"
+						},
+						{
+							"order": 3,
+							"label": "Shadow Outline",
+							"hex": "#44261E"
+						},
+						{
+							"order": 4,
+							"label": "Shadow Fill 1",
+							"hex": "#6C472E"
+						},
+						{
+							"order": 5,
+							"label": "Shadow Fill 2",
+							"hex": "#B2B2B2"
+						}
+					]
+				},
+				"614": {
+					"groupid": 614,
+					"label": "Face",
+					"order": 2,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Eye",
+							"hex": "#000000"
+						},
+						{
+							"order": 1,
+							"label": "Highlight",
+							"hex": "#FFFFFF"
+						},
+						{
+							"order": 2,
+							"label": "Nose",
+							"hex": "#744E32"
+						},
+						{
+							"order": 3,
+							"label": "Whiskers",
+							"hex": "#595959"
+						}
+					]
+				},
+				"615": {
+					"groupid": 615,
+					"label": "Mouth",
+					"order": 3,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Teeth",
+							"hex": "#CBCBCB"
+						},
+						{
+							"order": 1,
+							"label": "Mouth",
+							"hex": "#9B0000"
+						},
+						{
+							"order": 2,
+							"label": "Tongue",
+							"hex": "#FF82BA"
+						}
+					]
+				},
+				"616": {
+					"groupid": 616,
+					"label": "Collar",
+					"order": 4,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#941D1D"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#BF2725"
+						},
+						{
+							"order": 2,
+							"label": "Tag Fill",
+							"hex": "#DBC626"
+						},
+						{
+							"order": 3,
+							"label": "Tag Highlight",
+							"hex": "#F1E76B"
+						}
+					]
+				}
+			}
+		},
+		"117": {
+			"id": 117,
+			"order": 99,
+			"label": "Owlowiscious",
+			"notes": "",
+			"cm_favme": null,
+			"ishuman": false,
+			"added": "2016-04-17 01:18:42.416125+02",
+			"cm_preview": null,
+			"cm_dir": null,
+			"ColorGroups": {
+				"617": {
+					"groupid": 617,
+					"label": "Body",
+					"order": 1,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#BEA66E"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#E0D39D"
+						},
+						{
+							"order": 2,
+							"label": "Outline 2",
+							"hex": "#5F533E"
+						},
+						{
+							"order": 3,
+							"label": "Fill 2",
+							"hex": "#91825F"
+						},
+						{
+							"order": 4,
+							"label": "Talon Outline",
+							"hex": "#D97A1C"
+						},
+						{
+							"order": 5,
+							"label": "Talon Fill",
+							"hex": "#FFAB59"
+						}
+					]
+				},
+				"618": {
+					"groupid": 618,
+					"label": "Face",
+					"order": 2,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Eyes",
+							"hex": "#534838"
+						},
+						{
+							"order": 1,
+							"label": "Beak Outline",
+							"hex": "#D97A1C"
+						},
+						{
+							"order": 2,
+							"label": "Beak Fill",
+							"hex": "#FFAB59"
+						},
+						{
+							"order": 3,
+							"label": "Mouth",
+							"hex": "#845245"
+						}
+					]
+				}
+			}
+		},
 		"33": {
 			"id": 33,
-			"order": 98,
+			"order": 100,
 			"label": "Alicorn Amulet",
 			"notes": "",
 			"cm_favme": null,
@@ -14399,7 +14602,7 @@
 		},
 		"86": {
 			"id": 86,
-			"order": 99,
+			"order": 101,
 			"label": "Scorpan's Medallion",
 			"notes": "",
 			"cm_favme": null,
@@ -14471,7 +14674,7 @@
 		},
 		"94": {
 			"id": 94,
-			"order": 100,
+			"order": 102,
 			"label": "Party Cannon",
 			"notes": "",
 			"cm_favme": null,
@@ -14595,7 +14798,7 @@
 		},
 		"115": {
 			"id": 115,
-			"order": 101,
+			"order": 103,
 			"label": "Fake Timberwolf",
 			"notes": "",
 			"cm_favme": null,
@@ -14798,7 +15001,7 @@
 		},
 		"70": {
 			"id": 70,
-			"order": 102,
+			"order": 104,
 			"label": "Wonderbolt Uniform",
 			"notes": "",
 			"cm_favme": null,
@@ -14890,7 +15093,7 @@
 		},
 		"71": {
 			"id": 71,
-			"order": 103,
+			"order": 105,
 			"label": "Wonderbolt Trainee Uniform",
 			"notes": "",
 			"cm_favme": null,
@@ -14952,7 +15155,7 @@
 		},
 		"105": {
 			"id": 105,
-			"order": 104,
+			"order": 106,
 			"label": "Pony Tones Outfit",
 			"notes": "",
 			"cm_favme": null,
@@ -15032,7 +15235,7 @@
 		},
 		"109": {
 			"id": 109,
-			"order": 105,
+			"order": 107,
 			"label": "Zecora",
 			"notes": "Based on S4E14.",
 			"cm_favme": null,
@@ -15188,7 +15391,7 @@
 		},
 		"113": {
 			"id": 113,
-			"order": 106,
+			"order": 108,
 			"label": "Orange Frog",
 			"notes": "",
 			"cm_favme": null,
