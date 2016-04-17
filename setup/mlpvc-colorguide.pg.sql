@@ -3,7 +3,7 @@
 --
 
 -- Dumped from database version 9.5.1
--- Dumped by pg_dump version 9.5.1
+-- Dumped by pg_dump version 9.5.2
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -236,7 +236,7 @@ Her S6 mane style includes an additional shadow fill color', 'd8old4s', false, '
 (30, 79, 'Coco Pommel', 'Far legs use darker colors.', NULL, false, '2015-09-26 23:18:32+02', NULL, NULL),
 (31, 21, 'Suri Polomare', 'Far legs use darker colors.', NULL, false, '2015-09-30 07:35:59+02', NULL, NULL),
 (32, 19, 'Trixie Lulamoon', 'Eyes don''t have iris highlights.', 'd9bxest', false, '2015-10-03 17:35:08+02', NULL, true),
-(33, 100, 'Alicorn Amulet', '', NULL, false, '2015-10-03 18:22:13+02', NULL, NULL),
+(33, 101, 'Alicorn Amulet', '', NULL, false, '2015-10-03 18:22:13+02', NULL, NULL),
 (34, 13, 'Princess Celestia', 'Make sure to use appropriate references when picking gradient angles and stops. They''ll differ based on the hair shape and angle.', NULL, false, '2015-10-03 21:26:50+02', NULL, NULL),
 (35, 72, 'Big McIntosh', 'Far legs use darker colors.', 'd5dwm4b', false, '2015-10-04 21:11:42+02', 'https://t10.deviantart.net/RiwtrISi3FaWzJvJQ0U5C0pFIKE=/fit-in/300x900/filters:no_upscale():origin()/pre06/2ab8/th/pre/i/2016/057/d/d/bigmac_cm_by_yanoda-d9t76qn.png', true),
 (36, 46, 'Moon Dancer', 'Far legs use darker colors.', 'd9vcpeu', false, '2015-10-05 07:17:36+02', NULL, true),
@@ -276,8 +276,8 @@ Glasses don''t seem to have lenses.', 'd9iyv1r', false, '2015-12-01 16:18:10.631
 Necklace highlights are not pure white.', NULL, false, '2016-01-25 03:40:31.20103+01', NULL, NULL),
 (68, 64, 'Blossomforth', 'Imported from the old colour guide', 'd8geiw1', false, '2016-02-11 19:02:12.030258+01', NULL, true),
 (69, 42, 'Vinyl Scratch / DJ Pon-3', 'Based on S5E9.', 'd58fbhj', false, '2016-02-28 00:56:35.641502+01', NULL, true),
-(70, 104, 'Wonderbolt Uniform', '', NULL, false, '2016-02-29 14:00:08.939447+01', NULL, NULL),
-(71, 105, 'Wonderbolt Trainee Uniform', '', NULL, false, '2016-02-29 14:12:07.849625+01', NULL, NULL),
+(70, 105, 'Wonderbolt Uniform', '', NULL, false, '2016-02-29 14:00:08.939447+01', NULL, NULL),
+(71, 106, 'Wonderbolt Trainee Uniform', '', NULL, false, '2016-02-29 14:12:07.849625+01', NULL, NULL),
 (72, 54, 'Sweet Biscuit', '', 'd9tl3qw', false, '2016-03-02 19:41:10.393913+01', NULL, true),
 (73, 55, 'Say Cheese', '', 'd9ts8lk', false, '2016-03-02 19:45:22.316553+01', NULL, true),
 (74, 28, 'Diamond Tiara', '', NULL, false, '2016-03-06 06:03:33.719822+01', NULL, NULL),
@@ -295,7 +295,7 @@ Forelock has an outline with a unique color (Short Forelock Outline).', NULL, fa
 The difference between the second and third forms are the body colors.', NULL, false, '2016-03-20 14:35:46.946257+01', NULL, NULL),
 (85, 25, 'Lord Tirek (4th Form)', 'The nose ring uses the accessory highlight color as the fill.
 The difference between the third and final forms are the body and shadow colors.', NULL, false, '2016-03-20 15:15:11.582008+01', NULL, NULL),
-(86, 101, 'Scorpan''s Medallion', '', NULL, false, '2016-03-20 16:08:58.951886+01', NULL, NULL),
+(86, 102, 'Scorpan''s Medallion', '', NULL, false, '2016-03-20 16:08:58.951886+01', NULL, NULL),
 (87, 43, 'Rose', 'Far legs use darker colors.', 'd5it5t6', false, '2016-03-25 23:41:37.557224+01', NULL, false),
 (88, 17, 'Princess Flurry Heart', '', NULL, false, '2016-03-28 04:08:29.923679+02', NULL, NULL),
 (89, 44, 'Twilight Velvet', '', NULL, false, '2016-03-28 05:04:19.54759+02', NULL, NULL),
@@ -307,7 +307,7 @@ Only has one iris highlight.', NULL, false, '2016-03-28 11:13:12.736184+02', NUL
 Far legs use darker colors. 
 Only has one iris highlight.
 Glasses don''t seem to have lenses.', NULL, false, '2016-03-28 12:19:48.604527+02', NULL, NULL),
-(94, 102, 'Party Cannon', '', NULL, false, '2016-04-04 00:24:37.699874+02', NULL, NULL),
+(94, 103, 'Party Cannon', '', NULL, false, '2016-04-04 00:24:37.699874+02', NULL, NULL),
 (95, 91, 'Street Rat', '', NULL, false, '2016-04-04 00:47:18.446764+02', NULL, NULL),
 (96, 92, 'Copper Top', '', NULL, false, '2016-04-04 01:58:03.047005+02', NULL, NULL),
 (97, 66, 'Bulk Biceps', '', NULL, false, '2016-04-08 05:33:44.359968+02', NULL, NULL),
@@ -321,29 +321,34 @@ On the Cutie Mark, the spotlight''s base is layered on top of the spotlight.', N
 (104, 65, 'Twilight Sky', 'Based on S2E22.
 Far legs use darker colors.
 Does not have iris highlights.', NULL, false, '2016-04-12 12:09:35.98652+02', NULL, NULL),
-(105, 106, 'Pony Tones Outfit', '', NULL, false, '2016-04-12 13:16:04.154183+02', NULL, NULL),
+(105, 107, 'Pony Tones Outfit', '', NULL, false, '2016-04-12 13:16:04.154183+02', NULL, NULL),
 (106, 94, 'Toe Tapper', 'Far legs use darker colors.
 Only has one eye shine and one iris highlight located in the top part of the iris.', NULL, false, '2016-04-14 00:34:43.797733+02', NULL, NULL),
 (107, 95, 'Torch Song', 'Far legs use darker colors.', NULL, false, '2016-04-14 01:19:10.125737+02', NULL, NULL),
 (108, 57, 'Minty Bubblegum', 'Shadow fill is a guess based on Lyra''s colors, as well as bottom eye gradient color.
 Magic aura color is unknown.
 On the Cutie Mark, the gumballs are layered above the glass.', 'd9yydnz', false, '2016-04-14 04:09:51.571119+02', NULL, false),
-(109, 107, 'Zecora', 'Based on S4E14.', NULL, false, '2016-04-14 13:36:00.618867+02', NULL, NULL),
+(109, 108, 'Zecora', 'Based on S4E14.', NULL, false, '2016-04-14 13:36:00.618867+02', NULL, NULL),
 (110, 77, 'Octavia', '', NULL, false, '2016-04-14 23:29:54.839394+02', NULL, NULL),
 (111, 76, 'Sweetie Drops / Bon Bon', '', NULL, false, '2016-04-15 00:28:54.267643+02', NULL, NULL),
 (112, 97, 'Gummy', 'In 3/4 view, the top line on his far eye uses the "Far Eye Top Line" color instead of the normal gradient.', NULL, false, '2016-04-16 01:36:38.459294+02', NULL, NULL),
-(113, 108, 'Orange Frog', '', NULL, false, '2016-04-16 10:47:17.651278+02', NULL, NULL),
+(113, 109, 'Orange Frog', '', NULL, false, '2016-04-16 10:47:17.651278+02', NULL, NULL),
 (114, 12, 'Cutie Mark Crusader Cape', 'Based on S3E4.', NULL, false, '2016-04-16 11:06:58.316031+02', NULL, NULL),
-(115, 103, 'Fake Timberwolf', '', NULL, false, '2016-04-16 12:17:28.841557+02', NULL, NULL),
+(115, 104, 'Fake Timberwolf', '', NULL, false, '2016-04-16 12:17:28.841557+02', NULL, NULL),
 (116, 98, 'Winona', '', NULL, false, '2016-04-17 00:21:19.215671+02', NULL, NULL),
-(117, 99, 'Owlowiscious', '', NULL, false, '2016-04-17 01:18:42.416125+02', NULL, NULL);
+(117, 99, 'Owlowiscious', '', NULL, false, '2016-04-17 01:18:42.416125+02', NULL, NULL),
+(118, 110, 'Princess Ember', 'For bottom stroke on wings, use Outline Bottom Gradient (only apply gradient to wing "spokes").  Diamond-like scale coloring is inconsistent between some shots but there''s up to four different colors in use, darkening near tail.', NULL, false, '2016-04-17 16:11:54.678374+02', NULL, NULL),
+(119, 100, 'Tank', 'Far Legs use darker colors.
+In some scenes, Tank uses an alternate set of colors for the tongue.
+For accurate goggle lenses: Group together the Fill (100% Normal blending) and the Highlights (75% Color Dodge blending) and set the group to 50% opacity.
+For a less accurate version, group together the Fill and the Highlights (both 100% opacity, Normal blending) and set the group to 50% opacity.', NULL, false, '2016-04-17 16:21:24.581344+02', NULL, NULL);
 
 
 --
 -- Name: appearances_id_seq; Type: SEQUENCE SET; Schema: public; Owner: mlpvc-rr
 --
 
-SELECT pg_catalog.setval('appearances_id_seq', 117, true);
+SELECT pg_catalog.setval('appearances_id_seq', 119, true);
 
 
 --
@@ -893,14 +898,25 @@ INSERT INTO colorgroups VALUES
 (618, 117, 'Face', 2),
 (619, 105, 'Bowtie', 2),
 (620, 105, 'Trim', 3),
-(621, 113, 'Leaves', 1);
+(621, 113, 'Leaves', 1),
+(622, 119, 'Body', 1),
+(623, 119, 'Carapace', 2),
+(624, 119, 'Plastron', 3),
+(625, 119, 'Mouth', 4),
+(626, 119, 'Goggles', 5),
+(627, 119, 'Copter', 6),
+(628, 118, 'Body', 1),
+(629, 118, 'Wings', 2),
+(630, 118, 'Spines, Tail and Horns', 3),
+(631, 118, 'Eyes', 4),
+(632, 118, 'Mouth', 5);
 
 
 --
 -- Name: colorgroups_groupid_seq; Type: SEQUENCE SET; Schema: public; Owner: mlpvc-rr
 --
 
-SELECT pg_catalog.setval('colorgroups_groupid_seq', 621, true);
+SELECT pg_catalog.setval('colorgroups_groupid_seq', 632, true);
 
 
 --
@@ -1395,7 +1411,7 @@ INSERT INTO colors VALUES
 (175, 1, 'Fill', '#38407C'),
 (175, 2, 'Shadow Fill', '#30376C'),
 (176, 0, 'Outline', '#8952E1'),
-(176, 1, 'Edge Fill (50% opacity)', '#473CC7'),
+(176, 1, 'Edge Fill (50% Opacity)', '#473CC7'),
 (176, 2, 'Main Fill', '#1C4FC2'),
 (176, 3, 'Stars', '#FFFFFF'),
 (177, 0, 'Outline', '#9791F1'),
@@ -2116,8 +2132,8 @@ INSERT INTO colors VALUES
 (385, 0, 'Aura', '#6196F5'),
 (386, 0, 'Shines', '#FFFFFF'),
 (386, 1, 'Pupil', '#000000'),
-(387, 0, 'Fill (45% opacity)', '#AFC2CF'),
-(387, 1, 'Outline (45% opacity)', '#D9ECFB'),
+(387, 0, 'Fill (45% Opacity)', '#AFC2CF'),
+(387, 1, 'Outline (45% Opacity)', '#D9ECFB'),
 (388, 0, 'Outline', '#EACA79'),
 (388, 1, 'Fill', '#FFF8AC'),
 (388, 2, 'Shadow Outline', '#CF8D74'),
@@ -2275,11 +2291,11 @@ INSERT INTO colors VALUES
 (430, 4, 'Cravet Fill', '#009999'),
 (431, 0, 'Frame Outline', '#C7B420'),
 (431, 1, 'Frame Fill', '#EEE569'),
-(431, 2, 'Lens Fill 1 (67% opacity)', '#AACAD2'),
-(431, 3, 'Lens Fill 2 (67% opacity)', '#C8DFE2'),
-(431, 4, 'Lens Fill 3 (67% opacity)', '#B9D4D7'),
-(431, 5, 'Lens Side Fill 1 (67% opacity)', '#7BADB5'),
-(431, 6, 'Lens Side Fill 2 (67% opacity)', '#84C5DC'),
+(431, 2, 'Lens Fill 1 (67% Opacity)', '#AACAD2'),
+(431, 3, 'Lens Fill 2 (67% Opacity)', '#C8DFE2'),
+(431, 4, 'Lens Fill 3 (67% Opacity)', '#B9D4D7'),
+(431, 5, 'Lens Side Fill 1 (67% Opacity)', '#7BADB5'),
+(431, 6, 'Lens Side Fill 2 (67% Opacity)', '#84C5DC'),
 (432, 0, 'Aura', '#75E8EE'),
 (433, 0, 'Outline', '#CBAF8A'),
 (433, 1, 'Fill', '#FDF2D8'),
@@ -2640,12 +2656,14 @@ INSERT INTO colors VALUES
 (532, 2, 'Fill 2', '#EBC22A'),
 (533, 0, 'Outline', '#3B6B8F'),
 (533, 1, 'Fill', '#5FA2C0'),
-(533, 2, 'Tie Outline', '#202A40'),
-(533, 3, 'Tie Fill', '#2F3D5D'),
-(533, 4, 'Sleeve Outline', '#202A40'),
-(533, 5, 'Sleeve Fill', '#4E6A88'),
-(533, 6, 'Shadow Sleeve Outline', '#1C2339'),
-(533, 7, 'Shadow Sleeve Fill', '#425A70'),
+(533, 2, 'Shadow Outline', '#345A76'),
+(533, 3, 'Shadow Fill', '#5087A3'),
+(533, 4, 'Tie Outline', '#202A40'),
+(533, 5, 'Tie Fill', '#2F3D5D'),
+(533, 6, 'Sleeve Outline', '#202A40'),
+(533, 7, 'Sleeve Fill', '#4E6A88'),
+(533, 8, 'Shadow Sleeve Outline', '#1C2339'),
+(533, 9, 'Shadow Sleeve Fill', '#425A70'),
 (534, 0, 'Outline', '#202A40'),
 (534, 1, 'Fill 1', '#2E3E5E'),
 (534, 2, 'Fill 2', '#4D6A88'),
@@ -2921,7 +2939,7 @@ INSERT INTO colors VALUES
 (602, 3, 'Gum Outline', '#C787C6'),
 (602, 4, 'Gum Fill', '#FFB3FF'),
 (602, 5, 'Mouth Fill', '#990033'),
-(602, 6, 'Darker Mouth Fill', '#4A001D'),
+(602, 6, 'Dark Mouth Fill', '#4A001D'),
 (603, 0, 'Outline', '#526D6D'),
 (603, 1, 'Fill', '#C13271'),
 (603, 2, 'Tongue', '#F9A4E0'),
@@ -3005,7 +3023,76 @@ INSERT INTO colors VALUES
 (620, 1, 'Fill', '#F6D93D'),
 (620, 2, 'Shadow Fill', '#E1C63B'),
 (621, 0, 'Outline', '#529821'),
-(621, 1, 'Fill', '#7FC04B');
+(621, 1, 'Fill', '#7FC04B'),
+(622, 0, 'Eye Fill', '#1B3120'),
+(622, 1, 'Eyebrow', '#000000'),
+(622, 2, 'Outline', '#3E7353'),
+(622, 3, 'Fill', '#63AB80'),
+(622, 4, 'Leg Spots', '#67C294'),
+(622, 5, 'Claw', '#AAF796'),
+(622, 6, 'Shadow Fill', '#579B72'),
+(622, 7, 'Shadow Leg Spots', '#5AAA80'),
+(622, 8, 'Shadow Claw', '#8BCF86'),
+(622, 9, 'Sole', '#4D8E66'),
+(623, 0, 'Outline', '#3E7352'),
+(623, 1, 'Fill', '#529B6F'),
+(623, 2, 'Outer Circles', '#67C294'),
+(623, 3, 'Middle Circles', '#AAF797'),
+(623, 4, 'Inner Circles', '#DCFF93'),
+(623, 5, 'Interior', '#0E1C0F'),
+(623, 6, 'Bridge Outline', '#1C3121'),
+(623, 7, 'Bridge Fill', '#2B4D33'),
+(624, 0, 'Fill', '#AAF798'),
+(624, 1, 'Lines', '#67C193'),
+(624, 2, 'Leg Hole Fill', '#488A62'),
+(625, 0, 'Fill', '#BD1C78'),
+(625, 1, 'Dark Fill', '#4C0B30'),
+(625, 2, 'Tongue', '#F27032'),
+(625, 3, 'Alternate Tongue', '#FF6699'),
+(625, 4, 'Alternate Tongue Stroke', '#FF2E7F'),
+(626, 0, 'Lens Outline', '#856B2C'),
+(626, 1, 'Lens Fill (See Notes)', '#A0CBD6'),
+(626, 2, 'Lens Highlight (See Notes)', '#C8E9E0'),
+(626, 3, 'Front Fill', '#AD8935'),
+(626, 4, 'Side Fill 1', '#59461D'),
+(626, 5, 'Side Fill 2/Strap Fill', '#403313'),
+(627, 0, 'Shell/Propellor Outline', '#85ADC0'),
+(627, 1, 'Shell/Propellor Fill', '#B3D7E5'),
+(627, 2, 'Shell Highlight', '#E5F2F8'),
+(627, 3, 'Rotor', '#1B0D24'),
+(627, 4, 'Belt Outline', '#392914'),
+(627, 5, 'Belt Fill', '#5D4123'),
+(627, 6, 'Belt Buckle Outline', '#67ADCC'),
+(627, 7, 'Belt Buckle Fill', '#B2D7E5'),
+(627, 8, 'Magic Aura', '#FDF696'),
+(628, 0, 'Outline', '#145086'),
+(628, 1, 'Fill', '#4BC9DC'),
+(628, 2, 'Shadow Fill (Legs)', '#3394B7'),
+(628, 3, 'Shadow Fill (Wings)', '#41B0CB'),
+(628, 4, 'Underbelly Outline', '#0FBBC3'),
+(628, 5, 'Underbelly Fill', '#A3FAEC'),
+(628, 6, 'Scales 1 (face, side, leg)', '#249DD6'),
+(628, 7, 'Scales 2 (near-body tail)', '#2191C2'),
+(628, 8, 'Scales 3 (middle of tail)', '#1385C0'),
+(628, 9, 'Scales 4 (far end of tail)', '#116EB6'),
+(629, 0, 'Outline Gradient Top', '#483484'),
+(629, 1, 'Outline Gradient Bottom', '#5F53CC'),
+(629, 2, 'Fill Gradient Top', '#6A53CB'),
+(629, 3, 'Fill Gradient Bottom', '#81ADF7'),
+(630, 0, 'Spines/Tail Outline', '#21315F'),
+(630, 1, 'Spines/Tail Fill', '#30478F'),
+(630, 2, 'Horn Outline', '#C0B5DF'),
+(630, 3, 'Horn Fill', '#F8FAE3'),
+(631, 0, 'Gradient Top', '#DE333D'),
+(631, 1, 'Gradient Bottom', '#F8834F'),
+(631, 2, 'Eyelid', '#1485BD'),
+(631, 3, 'Eyebrow', '#213160'),
+(631, 4, 'Under-eye Scales', '#83F2F8'),
+(632, 0, 'Teeth Outline', '#AFD8CF'),
+(632, 1, 'Teeth Fill', '#FFFFFF'),
+(632, 2, 'Tongue', '#FD8531'),
+(632, 3, 'Cheek', '#A95495'),
+(632, 4, 'Throat', '#592D51');
 
 
 --
@@ -3177,6 +3264,7 @@ INSERT INTO tagged VALUES
 (7, 109),
 (7, 110),
 (7, 111),
+(7, 118),
 (8, 37),
 (8, 38),
 (8, 39),
@@ -3197,6 +3285,7 @@ INSERT INTO tagged VALUES
 (10, 112),
 (10, 116),
 (10, 117),
+(10, 119),
 (11, 7),
 (11, 14),
 (11, 21),
@@ -3227,6 +3316,9 @@ INSERT INTO tagged VALUES
 (11, 102),
 (11, 104),
 (11, 106),
+(11, 112),
+(11, 117),
+(11, 119),
 (12, 1),
 (12, 2),
 (12, 3),
@@ -3293,6 +3385,8 @@ INSERT INTO tagged VALUES
 (12, 109),
 (12, 110),
 (12, 111),
+(12, 116),
+(12, 118),
 (14, 1),
 (21, 10),
 (21, 16),
@@ -3313,6 +3407,7 @@ INSERT INTO tagged VALUES
 (28, 53),
 (28, 54),
 (29, 7),
+(29, 118),
 (30, 7),
 (31, 10),
 (32, 12),
@@ -3491,6 +3586,7 @@ INSERT INTO tagged VALUES
 (181, 99),
 (181, 108),
 (182, 7),
+(182, 118),
 (185, 29),
 (185, 44),
 (185, 62),
@@ -3545,7 +3641,10 @@ INSERT INTO tagged VALUES
 (240, 117),
 (241, 117),
 (247, 113),
-(248, 113);
+(248, 113),
+(249, 118),
+(250, 119),
+(251, 119);
 
 
 --
@@ -3559,12 +3658,12 @@ INSERT INTO tags VALUES
 (4, 'alicorn', NULL, 'spec', 5, NULL),
 (5, 'bat pony', NULL, 'spec', 0, NULL),
 (6, 'mane six', 'Ponies who are one of the show''s six main characters', 'cat', 7, NULL),
-(7, 'minor character', 'Ponies who had a speaking role and/or interacted with the mane six', 'cat', 70, NULL),
+(7, 'minor character', 'Ponies who had a speaking role and/or interacted with the mane six', 'cat', 71, NULL),
 (8, 'background character', 'Ponies whose only purpose is filling crowds, with no to minimal speaking roles', 'cat', 8, NULL),
 (9, 'antagonist', NULL, 'cat', 8, NULL),
-(10, 'pet', NULL, 'cat', 4, NULL),
-(11, 'male', NULL, 'gen', 30, NULL),
-(12, 'female', NULL, 'gen', 66, NULL),
+(10, 'pet', NULL, 'cat', 5, NULL),
+(11, 'male', NULL, 'gen', 33, NULL),
+(12, 'female', NULL, 'gen', 68, NULL),
 (14, 'twilight sparkle', NULL, 'char', 1, NULL),
 (19, 's1e1', NULL, 'ep', 0, NULL),
 (20, 's1e26', NULL, 'ep', 0, NULL),
@@ -3576,7 +3675,7 @@ INSERT INTO tags VALUES
 (26, 'rarity', NULL, 'char', 1, NULL),
 (27, 'wonderbolt', 'Wonderbolt characters', 'cat', 5, NULL),
 (28, 'parent', 'Parents of other characters', 'cat', 4, NULL),
-(29, 'dragon', NULL, 'spec', 1, NULL),
+(29, 'dragon', NULL, 'spec', 2, NULL),
 (30, 'spike', NULL, 'char', 1, NULL),
 (31, 'minuette', NULL, 'char', 1, NULL),
 (32, 'lyra heartstrings', NULL, 'char', 1, NULL),
@@ -3723,7 +3822,7 @@ INSERT INTO tags VALUES
 (179, 'flower trio', 'Flower-themed trio consisting of Rose, Daisy and Lily Valley.', 'cat', 1, NULL),
 (180, 's6e3', NULL, 'ep', 3, NULL),
 (181, 's6e4', NULL, 'ep', 4, NULL),
-(182, 's6e5', NULL, 'ep', 1, NULL),
+(182, 's6e5', NULL, 'ep', 2, NULL),
 (183, 's6e6', NULL, 'ep', 0, NULL),
 (184, 's5e1', NULL, 'ep', 0, NULL),
 (185, 's6e1-2', NULL, 'ep', 5, NULL),
@@ -3788,14 +3887,18 @@ INSERT INTO tags VALUES
 (245, 'owliscius', NULL, 'char', 0, 241),
 (246, 'owliscious', NULL, 'char', 0, 241),
 (247, 'creatures', NULL, 'cat', 1, NULL),
-(248, 'frog', NULL, 'spec', 1, NULL);
+(248, 'frog', NULL, 'spec', 1, NULL),
+(249, 'princess ember', NULL, 'char', 1, NULL),
+(250, 'tank', NULL, 'char', 1, NULL),
+(251, 'tortoise', NULL, 'spec', 1, NULL),
+(252, 'turtle', NULL, 'spec', 0, 251);
 
 
 --
 -- Name: tags_tid_seq; Type: SEQUENCE SET; Schema: public; Owner: mlpvc-rr
 --
 
-SELECT pg_catalog.setval('tags_tid_seq', 248, true);
+SELECT pg_catalog.setval('tags_tid_seq', 252, true);
 
 
 --

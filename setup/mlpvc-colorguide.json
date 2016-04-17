@@ -72,12 +72,12 @@
 					"Colors": [
 						{
 							"order": 0,
-							"label": "Fill (45% opacity)",
+							"label": "Fill (45% Opacity)",
 							"hex": "#AFC2CF"
 						},
 						{
 							"order": 1,
-							"label": "Outline (45% opacity)",
+							"label": "Outline (45% Opacity)",
 							"hex": "#D9ECFB"
 						}
 					]
@@ -1862,7 +1862,7 @@
 						},
 						{
 							"order": 1,
-							"label": "Edge Fill (50% opacity)",
+							"label": "Edge Fill (50% Opacity)",
 							"hex": "#473CC7"
 						},
 						{
@@ -11740,27 +11740,27 @@
 						},
 						{
 							"order": 2,
-							"label": "Lens Fill 1 (67% opacity)",
+							"label": "Lens Fill 1 (67% Opacity)",
 							"hex": "#AACAD2"
 						},
 						{
 							"order": 3,
-							"label": "Lens Fill 2 (67% opacity)",
+							"label": "Lens Fill 2 (67% Opacity)",
 							"hex": "#C8DFE2"
 						},
 						{
 							"order": 4,
-							"label": "Lens Fill 3 (67% opacity)",
+							"label": "Lens Fill 3 (67% Opacity)",
 							"hex": "#B9D4D7"
 						},
 						{
 							"order": 5,
-							"label": "Lens Side Fill 1 (67% opacity)",
+							"label": "Lens Side Fill 1 (67% Opacity)",
 							"hex": "#7BADB5"
 						},
 						{
 							"order": 6,
-							"label": "Lens Side Fill 2 (67% opacity)",
+							"label": "Lens Side Fill 2 (67% Opacity)",
 							"hex": "#84C5DC"
 						}
 					]
@@ -14189,31 +14189,41 @@
 						},
 						{
 							"order": 2,
+							"label": "Shadow Outline",
+							"hex": "#345A76"
+						},
+						{
+							"order": 3,
+							"label": "Shadow Fill",
+							"hex": "#5087A3"
+						},
+						{
+							"order": 4,
 							"label": "Tie Outline",
 							"hex": "#202A40"
 						},
 						{
-							"order": 3,
+							"order": 5,
 							"label": "Tie Fill",
 							"hex": "#2F3D5D"
 						},
 						{
-							"order": 4,
+							"order": 6,
 							"label": "Sleeve Outline",
 							"hex": "#202A40"
 						},
 						{
-							"order": 5,
+							"order": 7,
 							"label": "Sleeve Fill",
 							"hex": "#4E6A88"
 						},
 						{
-							"order": 6,
+							"order": 8,
 							"label": "Shadow Sleeve Outline",
 							"hex": "#1C2339"
 						},
 						{
-							"order": 7,
+							"order": 9,
 							"label": "Shadow Sleeve Fill",
 							"hex": "#425A70"
 						}
@@ -14947,7 +14957,7 @@
 						},
 						{
 							"order": 6,
-							"label": "Darker Mouth Fill",
+							"label": "Dark Mouth Fill",
 							"hex": "#4A001D"
 						}
 					]
@@ -14955,6 +14965,7 @@
 			},
 			"TagIDs": [
 				10,
+				11,
 				230,
 				231
 			]
@@ -15086,6 +15097,7 @@
 			},
 			"TagIDs": [
 				10,
+				12,
 				238,
 				239,
 				243
@@ -15169,6 +15181,7 @@
 			},
 			"TagIDs": [
 				10,
+				11,
 				240,
 				241,
 				242,
@@ -15177,9 +15190,276 @@
 				246
 			]
 		},
+		"119": {
+			"id": 119,
+			"order": 100,
+			"label": "Tank",
+			"notes": "Far Legs use darker colors.\nIn some scenes, Tank uses an alternate set of colors for the tongue.\nFor accurate goggle lenses: Group together the Fill (100% Normal blending) and the Highlights (75% Color Dodge blending) and set the group to 50% opacity.\nFor a less accurate version, group together the Fill and the Highlights (both 100% opacity, Normal blending) and set the group to 50% opacity.",
+			"cm_favme": null,
+			"ishuman": false,
+			"added": "2016-04-17 16:21:24.581344+02",
+			"cm_preview": null,
+			"cm_dir": null,
+			"ColorGroups": {
+				"622": {
+					"groupid": 622,
+					"label": "Body",
+					"order": 1,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Eye Fill",
+							"hex": "#1B3120"
+						},
+						{
+							"order": 1,
+							"label": "Eyebrow",
+							"hex": "#000000"
+						},
+						{
+							"order": 2,
+							"label": "Outline",
+							"hex": "#3E7353"
+						},
+						{
+							"order": 3,
+							"label": "Fill",
+							"hex": "#63AB80"
+						},
+						{
+							"order": 4,
+							"label": "Leg Spots",
+							"hex": "#67C294"
+						},
+						{
+							"order": 5,
+							"label": "Claw",
+							"hex": "#AAF796"
+						},
+						{
+							"order": 6,
+							"label": "Shadow Fill",
+							"hex": "#579B72"
+						},
+						{
+							"order": 7,
+							"label": "Shadow Leg Spots",
+							"hex": "#5AAA80"
+						},
+						{
+							"order": 8,
+							"label": "Shadow Claw",
+							"hex": "#8BCF86"
+						},
+						{
+							"order": 9,
+							"label": "Sole",
+							"hex": "#4D8E66"
+						}
+					]
+				},
+				"623": {
+					"groupid": 623,
+					"label": "Carapace",
+					"order": 2,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#3E7352"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#529B6F"
+						},
+						{
+							"order": 2,
+							"label": "Outer Circles",
+							"hex": "#67C294"
+						},
+						{
+							"order": 3,
+							"label": "Middle Circles",
+							"hex": "#AAF797"
+						},
+						{
+							"order": 4,
+							"label": "Inner Circles",
+							"hex": "#DCFF93"
+						},
+						{
+							"order": 5,
+							"label": "Interior",
+							"hex": "#0E1C0F"
+						},
+						{
+							"order": 6,
+							"label": "Bridge Outline",
+							"hex": "#1C3121"
+						},
+						{
+							"order": 7,
+							"label": "Bridge Fill",
+							"hex": "#2B4D33"
+						}
+					]
+				},
+				"624": {
+					"groupid": 624,
+					"label": "Plastron",
+					"order": 3,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Fill",
+							"hex": "#AAF798"
+						},
+						{
+							"order": 1,
+							"label": "Lines",
+							"hex": "#67C193"
+						},
+						{
+							"order": 2,
+							"label": "Leg Hole Fill",
+							"hex": "#488A62"
+						}
+					]
+				},
+				"625": {
+					"groupid": 625,
+					"label": "Mouth",
+					"order": 4,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Fill",
+							"hex": "#BD1C78"
+						},
+						{
+							"order": 1,
+							"label": "Dark Fill",
+							"hex": "#4C0B30"
+						},
+						{
+							"order": 2,
+							"label": "Tongue",
+							"hex": "#F27032"
+						},
+						{
+							"order": 3,
+							"label": "Alternate Tongue",
+							"hex": "#FF6699"
+						},
+						{
+							"order": 4,
+							"label": "Alternate Tongue Stroke",
+							"hex": "#FF2E7F"
+						}
+					]
+				},
+				"626": {
+					"groupid": 626,
+					"label": "Goggles",
+					"order": 5,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Lens Outline",
+							"hex": "#856B2C"
+						},
+						{
+							"order": 1,
+							"label": "Lens Fill (See Notes)",
+							"hex": "#A0CBD6"
+						},
+						{
+							"order": 2,
+							"label": "Lens Highlight (See Notes)",
+							"hex": "#C8E9E0"
+						},
+						{
+							"order": 3,
+							"label": "Front Fill",
+							"hex": "#AD8935"
+						},
+						{
+							"order": 4,
+							"label": "Side Fill 1",
+							"hex": "#59461D"
+						},
+						{
+							"order": 5,
+							"label": "Side Fill 2/Strap Fill",
+							"hex": "#403313"
+						}
+					]
+				},
+				"627": {
+					"groupid": 627,
+					"label": "Copter",
+					"order": 6,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Shell/Propellor Outline",
+							"hex": "#85ADC0"
+						},
+						{
+							"order": 1,
+							"label": "Shell/Propellor Fill",
+							"hex": "#B3D7E5"
+						},
+						{
+							"order": 2,
+							"label": "Shell Highlight",
+							"hex": "#E5F2F8"
+						},
+						{
+							"order": 3,
+							"label": "Rotor",
+							"hex": "#1B0D24"
+						},
+						{
+							"order": 4,
+							"label": "Belt Outline",
+							"hex": "#392914"
+						},
+						{
+							"order": 5,
+							"label": "Belt Fill",
+							"hex": "#5D4123"
+						},
+						{
+							"order": 6,
+							"label": "Belt Buckle Outline",
+							"hex": "#67ADCC"
+						},
+						{
+							"order": 7,
+							"label": "Belt Buckle Fill",
+							"hex": "#B2D7E5"
+						},
+						{
+							"order": 8,
+							"label": "Magic Aura",
+							"hex": "#FDF696"
+						}
+					]
+				}
+			},
+			"TagIDs": [
+				10,
+				11,
+				250,
+				251,
+				252
+			]
+		},
 		"33": {
 			"id": 33,
-			"order": 100,
+			"order": 101,
 			"label": "Alicorn Amulet",
 			"notes": "",
 			"cm_favme": null,
@@ -15370,7 +15650,7 @@
 		},
 		"86": {
 			"id": 86,
-			"order": 101,
+			"order": 102,
 			"label": "Scorpan's Medallion",
 			"notes": "",
 			"cm_favme": null,
@@ -15447,7 +15727,7 @@
 		},
 		"94": {
 			"id": 94,
-			"order": 102,
+			"order": 103,
 			"label": "Party Cannon",
 			"notes": "",
 			"cm_favme": null,
@@ -15575,7 +15855,7 @@
 		},
 		"115": {
 			"id": 115,
-			"order": 103,
+			"order": 104,
 			"label": "Fake Timberwolf",
 			"notes": "",
 			"cm_favme": null,
@@ -15783,7 +16063,7 @@
 		},
 		"70": {
 			"id": 70,
-			"order": 104,
+			"order": 105,
 			"label": "Wonderbolt Uniform",
 			"notes": "",
 			"cm_favme": null,
@@ -15880,7 +16160,7 @@
 		},
 		"71": {
 			"id": 71,
-			"order": 105,
+			"order": 106,
 			"label": "Wonderbolt Trainee Uniform",
 			"notes": "",
 			"cm_favme": null,
@@ -15947,7 +16227,7 @@
 		},
 		"105": {
 			"id": 105,
-			"order": 106,
+			"order": 107,
 			"label": "Pony Tones Outfit",
 			"notes": "",
 			"cm_favme": null,
@@ -16048,7 +16328,7 @@
 		},
 		"109": {
 			"id": 109,
-			"order": 107,
+			"order": 108,
 			"label": "Zecora",
 			"notes": "Based on S4E14.",
 			"cm_favme": null,
@@ -16211,7 +16491,7 @@
 		},
 		"113": {
 			"id": 113,
-			"order": 108,
+			"order": 109,
 			"label": "Orange Frog",
 			"notes": "",
 			"cm_favme": null,
@@ -16302,6 +16582,201 @@
 				233,
 				247,
 				248
+			]
+		},
+		"118": {
+			"id": 118,
+			"order": 110,
+			"label": "Princess Ember",
+			"notes": "For bottom stroke on wings, use Outline Bottom Gradient (only apply gradient to wing \"spokes\").  Diamond-like scale coloring is inconsistent between some shots but there's up to four different colors in use, darkening near tail.",
+			"cm_favme": null,
+			"ishuman": false,
+			"added": "2016-04-17 16:11:54.678374+02",
+			"cm_preview": null,
+			"cm_dir": null,
+			"ColorGroups": {
+				"628": {
+					"groupid": 628,
+					"label": "Body",
+					"order": 1,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#145086"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#4BC9DC"
+						},
+						{
+							"order": 2,
+							"label": "Shadow Fill (Legs)",
+							"hex": "#3394B7"
+						},
+						{
+							"order": 3,
+							"label": "Shadow Fill (Wings)",
+							"hex": "#41B0CB"
+						},
+						{
+							"order": 4,
+							"label": "Underbelly Outline",
+							"hex": "#0FBBC3"
+						},
+						{
+							"order": 5,
+							"label": "Underbelly Fill",
+							"hex": "#A3FAEC"
+						},
+						{
+							"order": 6,
+							"label": "Scales 1 (face, side, leg)",
+							"hex": "#249DD6"
+						},
+						{
+							"order": 7,
+							"label": "Scales 2 (near-body tail)",
+							"hex": "#2191C2"
+						},
+						{
+							"order": 8,
+							"label": "Scales 3 (middle of tail)",
+							"hex": "#1385C0"
+						},
+						{
+							"order": 9,
+							"label": "Scales 4 (far end of tail)",
+							"hex": "#116EB6"
+						}
+					]
+				},
+				"629": {
+					"groupid": 629,
+					"label": "Wings",
+					"order": 2,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline Gradient Top",
+							"hex": "#483484"
+						},
+						{
+							"order": 1,
+							"label": "Outline Gradient Bottom",
+							"hex": "#5F53CC"
+						},
+						{
+							"order": 2,
+							"label": "Fill Gradient Top",
+							"hex": "#6A53CB"
+						},
+						{
+							"order": 3,
+							"label": "Fill Gradient Bottom",
+							"hex": "#81ADF7"
+						}
+					]
+				},
+				"630": {
+					"groupid": 630,
+					"label": "Spines, Tail and Horns",
+					"order": 3,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Spines/Tail Outline",
+							"hex": "#21315F"
+						},
+						{
+							"order": 1,
+							"label": "Spines/Tail Fill",
+							"hex": "#30478F"
+						},
+						{
+							"order": 2,
+							"label": "Horn Outline",
+							"hex": "#C0B5DF"
+						},
+						{
+							"order": 3,
+							"label": "Horn Fill",
+							"hex": "#F8FAE3"
+						}
+					]
+				},
+				"631": {
+					"groupid": 631,
+					"label": "Eyes",
+					"order": 4,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Gradient Top",
+							"hex": "#DE333D"
+						},
+						{
+							"order": 1,
+							"label": "Gradient Bottom",
+							"hex": "#F8834F"
+						},
+						{
+							"order": 2,
+							"label": "Eyelid",
+							"hex": "#1485BD"
+						},
+						{
+							"order": 3,
+							"label": "Eyebrow",
+							"hex": "#213160"
+						},
+						{
+							"order": 4,
+							"label": "Under-eye Scales",
+							"hex": "#83F2F8"
+						}
+					]
+				},
+				"632": {
+					"groupid": 632,
+					"label": "Mouth",
+					"order": 5,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Teeth Outline",
+							"hex": "#AFD8CF"
+						},
+						{
+							"order": 1,
+							"label": "Teeth Fill",
+							"hex": "#FFFFFF"
+						},
+						{
+							"order": 2,
+							"label": "Tongue",
+							"hex": "#FD8531"
+						},
+						{
+							"order": 3,
+							"label": "Cheek",
+							"hex": "#A95495"
+						},
+						{
+							"order": 4,
+							"label": "Throat",
+							"hex": "#592D51"
+						}
+					]
+				}
+			},
+			"TagIDs": [
+				7,
+				12,
+				29,
+				182,
+				249
 			]
 		},
 		"63": {
@@ -16589,7 +17064,7 @@
 			"name": "minor character",
 			"title": "Ponies who had a speaking role and/or interacted with the mane six",
 			"type": "cat",
-			"uses": 70,
+			"uses": 71,
 			"synonym_of": null
 		},
 		"8": {
@@ -16613,7 +17088,7 @@
 			"name": "pet",
 			"title": null,
 			"type": "cat",
-			"uses": 4,
+			"uses": 5,
 			"synonym_of": null
 		},
 		"11": {
@@ -16621,7 +17096,7 @@
 			"name": "male",
 			"title": null,
 			"type": "gen",
-			"uses": 30,
+			"uses": 33,
 			"synonym_of": null
 		},
 		"12": {
@@ -16629,7 +17104,7 @@
 			"name": "female",
 			"title": null,
 			"type": "gen",
-			"uses": 66,
+			"uses": 68,
 			"synonym_of": null
 		},
 		"14": {
@@ -16725,7 +17200,7 @@
 			"name": "dragon",
 			"title": null,
 			"type": "spec",
-			"uses": 1,
+			"uses": 2,
 			"synonym_of": null
 		},
 		"30": {
@@ -17901,7 +18376,7 @@
 			"name": "s6e5",
 			"title": null,
 			"type": "ep",
-			"uses": 1,
+			"uses": 2,
 			"synonym_of": null
 		},
 		"183": {
@@ -18423,6 +18898,38 @@
 			"type": "spec",
 			"uses": 1,
 			"synonym_of": null
+		},
+		"249": {
+			"tid": 249,
+			"name": "princess ember",
+			"title": null,
+			"type": "char",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"250": {
+			"tid": 250,
+			"name": "tank",
+			"title": null,
+			"type": "char",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"251": {
+			"tid": 251,
+			"name": "tortoise",
+			"title": null,
+			"type": "spec",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"252": {
+			"tid": 252,
+			"name": "turtle",
+			"title": null,
+			"type": "spec",
+			"uses": 0,
+			"synonym_of": 251
 		}
 	}
 }
