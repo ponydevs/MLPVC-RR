@@ -744,7 +744,7 @@ HTML;
 
 		$x2--; $y2--;
 
-		if (!empty($fill))
+		if (isset($fill))
 			imagefilledrectangle($image, $x, $y, $x2, $y2, $fill);
 		imagerectangle($image, $x, $y, $x2, $y2, $outline);
 	}
@@ -942,8 +942,8 @@ HTML;
 
 		$OutputPath = APPATH."img/cg_render/{$Appearance['id']}.png";
 		$FileRelPath = "$CGPath/appearance/{$Appearance['id']}.png";
-		//if (file_exists($OutputPath))
-		//	outputpng(null,$OutputPath,$FileRelPath);
+		if (file_exists($OutputPath))
+			outputpng(null,$OutputPath,$FileRelPath);
 
 		$SpriteRelPath = "img/cg/{$Appearance['id']}.png";
 
