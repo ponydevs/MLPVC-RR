@@ -43,9 +43,12 @@
 			);
 		}
 
-		private function _toLink($i){
+		private function _toLink($i, &$currentIndex = null, $nr = null){
+			$current = $i == $this->_page;
+			if (isset($currentIndex) && $current)
+				$currentIndex = $nr;
 			return '<li>'.(
-				$i != $this->_page
+				!$current
 				? "<a href='/{$this->_basePath}/$i'>$i</a>"
 				: "<strong>$i</strong>"
 			).'</li>';
@@ -57,32 +60,47 @@
 		 * @return string
 		 */
 		public function __toString(){
-			$Pagination = $this->_wrap ? "<ul class='pagination'>" : '';
-			$previousPage = 0;
-
 			if (!($this->_page === 1 && $this->_maxPages === 1)){
-				if ($this->_page > 1){
-					$Pagination .= "<li class='spec'><a href='/{$this->_basePath}/1'>&laquo;</a></li>";
-					$prev = $this->_page-1;
-					$Pagination .= "<li class='spec'><a href='/{$this->_basePath}/$prev'>&lsaquo;</a></li>";
+				$Items = array();
+				$previousPage = 0;
+				$nr = 0;
+				$currentIndex = 0;
+
+				if ($this->_maxPages < 7){
+					for ($i = 1; $i <= $this->_maxPages; $i++){
+						$Items[$nr] = $this->_toLink($i, $currentIndex, $nr++);
+						$nr++;
+					}
 				}
-				if ($this->_maxPages < 7)
-					for ($i = 1; $i <= $this->_maxPages; $i++)
-						$Pagination .= $this->_toLink($i);
 				else foreach ($this->_getLinks() as $i) {
-					if ($i != min($previousPage + 1, $this->_maxPages))
-						$Pagination .= "<li class='spec'><a>&hellip;</a></li>";
+					if ($i != min($previousPage + 1, $this->_maxPages)){
+						$diff = $i - ($previousPage + 1);
+						$Items[$nr++] = $diff > 1 ? "<li class='spec'><a>&hellip;</a></li>" : $this->_toLink($previousPage+1);
+					}
 					$previousPage = $i;
 
-					$Pagination .= $this->_toLink($i);
+					$Items[$nr] = $this->_toLink($i, $currentIndex, $nr);
+					$nr++;
+				}
+
+				if ($this->_page > 1){
+					$prev = $this->_page-1;
+					$Items[$currentIndex-1] = "<li class='spec'><a href='/{$this->_basePath}/$prev'>&lsaquo;</a></li>";
+					if ($this->_page > 2)
+						$Items[0] = "<li class='spec'><a href='/{$this->_basePath}/1'>&laquo;</a></li>";
 				}
 				if ($this->_page < $this->_maxPages){
 					$next = $this->_page+1;
-					$Pagination .= "<li class='spec'><a href='/{$this->_basePath}/$next'>&rsaquo;</a></li>";
-					$Pagination .= "<li class='spec'><a href='/{$this->_basePath}/{$this->_maxPages}'>&raquo;</a></li>";
+					$Items[$currentIndex+1] = "<li class='spec'><a href='/{$this->_basePath}/$next'>&rsaquo;</a></li>";
+					if ($this->_page < $this->_maxPages-1){
+						array_pop($Items);
+						$Items[] = "<li class='spec'><a href='/{$this->_basePath}/{$this->_maxPages}'>&raquo;</a></li>";
+					}
 				}
+				$Items = implode('',$Items);
 			}
+			else $Items = '';
 
-			return $Pagination.($this->_wrap ? '</ul>' : '');
+			return $this->_wrap ? "<ul class='pagination'>$Items</ul>" : $Items;
 		}
 	}
