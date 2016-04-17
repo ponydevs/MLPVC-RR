@@ -1849,12 +1849,12 @@
 					if ($CGDb->where('name', $data['name'])->where('type', $data['type'])->has('tags') || $data['name'] === 'wrong cutie mark')
 						respond("A tag with the same name and type already exists");
 
-					if (empty($_POST['title'])) $data['title'] = '';
+					if (empty($_POST['title'])) $data['title'] = null;
 					else {
 						$title = trim($_POST['title']);
 						$tl = strlen($title);
 						if ($tl > 255)
-							respond("Your title exceeds the 255 character limit by ".($tl-255)." characters. Please keep it short, or if more space is necessary, ask the developer to increase the limit.");
+							respond("Your title exceeds the 255 character limit by ".($tl-255)." characters.");
 						$data['title'] = $title;
 					}
 
