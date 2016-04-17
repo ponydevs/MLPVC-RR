@@ -107,22 +107,29 @@
 	 * @param int $PonyID
 	 * @param array|int $limit
 	 * @param bool $showEpTags
+	 * @param bool $exporting
 	 *
 	 * @return array|null
 	 */
-	function get_tags($PonyID = null, $limit = null, $showEpTags = false){
+	function get_tags($PonyID = null, $limit = null, $showEpTags = false, $exporting = false){
 		global $CGDb;
 
-		$showSynonymTags = $showEpTags || PERM('inspector');
-		if (!$showSynonymTags)
-			$CGDb->where('"synonym_of" IS NULL');
+		if (!$exporting){
+			$showSynonymTags = $showEpTags || PERM('inspector');
+			if (!$showSynonymTags)
+				$CGDb->where('"synonym_of" IS NULL');
 
-		$CGDb
-			->orderByLiteral('CASE WHEN tags.type IS NULL THEN 1 ELSE 0 END')
-			->orderBy('tags.type', 'ASC')
-			->orderBy('tags.name', 'ASC');
-		if (!$showEpTags)
-			$CGDb->where("tags.type != 'ep'");
+			$CGDb
+				->orderByLiteral('CASE WHEN tags.type IS NULL THEN 1 ELSE 0 END')
+				->orderBy('tags.type', 'ASC')
+				->orderBy('tags.name', 'ASC');
+			if (!$showEpTags)
+				$CGDb->where("tags.type != 'ep'");
+		}
+		else {
+			$showSynonymTags = true;
+			$CGDb->orderBy('tags.tid','ASC');
+		}
 		return isset($PonyID)
 			? $CGDb
 				->join('tags','tagged.tid = tags.tid'.($showSynonymTags?' OR tagged.tid = tags.synonym_of':''),'LEFT')

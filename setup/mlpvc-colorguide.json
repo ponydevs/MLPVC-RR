@@ -208,13 +208,13 @@
 				}
 			},
 			"TagIDs": [
+				4,
 				6,
-				59,
-				141,
-				140,
-				14,
 				12,
-				4
+				14,
+				59,
+				140,
+				141
 			]
 		},
 		"2": {
@@ -340,10 +340,10 @@
 				}
 			},
 			"TagIDs": [
+				2,
 				6,
-				22,
 				12,
-				2
+				22
 			]
 		},
 		"3": {
@@ -442,10 +442,10 @@
 				}
 			},
 			"TagIDs": [
+				3,
 				6,
-				24,
 				12,
-				3
+				24
 			]
 		},
 		"4": {
@@ -549,12 +549,12 @@
 				}
 			},
 			"TagIDs": [
+				2,
 				6,
-				85,
-				147,
-				23,
 				12,
-				2
+				23,
+				85,
+				147
 			]
 		},
 		"5": {
@@ -683,10 +683,10 @@
 				}
 			},
 			"TagIDs": [
+				3,
 				6,
-				25,
 				12,
-				3
+				25
 			]
 		},
 		"6": {
@@ -807,10 +807,10 @@
 				}
 			},
 			"TagIDs": [
+				1,
 				6,
-				26,
 				12,
-				1
+				26
 			]
 		},
 		"7": {
@@ -942,10 +942,10 @@
 			},
 			"TagIDs": [
 				6,
-				30,
-				182,
 				11,
-				29
+				29,
+				30,
+				182
 			]
 		},
 		"23": {
@@ -1091,14 +1091,14 @@
 				}
 			},
 			"TagIDs": [
-				45,
-				237,
-				44,
+				2,
 				7,
+				12,
+				44,
+				45,
 				46,
 				160,
-				12,
-				2
+				237
 			]
 		},
 		"24": {
@@ -1222,13 +1222,13 @@
 				}
 			},
 			"TagIDs": [
-				45,
-				237,
-				44,
+				3,
 				7,
-				47,
 				12,
-				3
+				44,
+				45,
+				47,
+				237
 			]
 		},
 		"25": {
@@ -1364,13 +1364,13 @@
 				}
 			},
 			"TagIDs": [
-				45,
-				237,
-				44,
+				1,
 				7,
-				48,
 				12,
-				1
+				44,
+				45,
+				48,
+				237
 			]
 		},
 		"78": {
@@ -1509,14 +1509,14 @@
 				}
 			},
 			"TagIDs": [
-				45,
-				237,
-				44,
+				2,
 				7,
-				159,
-				132,
 				12,
-				2
+				44,
+				45,
+				132,
+				159,
+				237
 			]
 		},
 		"114": {
@@ -1571,10 +1571,10 @@
 				}
 			},
 			"TagIDs": [
-				234,
 				45,
-				237,
-				96
+				96,
+				234,
+				237
 			]
 		},
 		"34": {
@@ -1809,12 +1809,12 @@
 				}
 			},
 			"TagIDs": [
+				4,
 				7,
-				59,
-				138,
-				63,
 				12,
-				4
+				59,
+				63,
+				138
 			]
 		},
 		"9": {
@@ -1989,12 +1989,12 @@
 				}
 			},
 			"TagIDs": [
+				4,
 				7,
-				59,
-				137,
-				57,
 				12,
-				4
+				57,
+				59,
+				137
 			]
 		},
 		"44": {
@@ -2162,13 +2162,13 @@
 				}
 			},
 			"TagIDs": [
+				1,
 				7,
+				11,
 				59,
 				77,
-				196,
 				185,
-				11,
-				1
+				196
 			]
 		},
 		"75": {
@@ -2396,13 +2396,13 @@
 				}
 			},
 			"TagIDs": [
-				59,
-				139,
-				128,
-				197,
-				185,
+				4,
 				12,
-				4
+				59,
+				128,
+				139,
+				185,
+				197
 			]
 		},
 		"88": {
@@ -2521,13 +2521,13 @@
 				}
 			},
 			"TagIDs": [
-				44,
+				4,
 				7,
-				59,
-				186,
-				185,
 				12,
-				4
+				44,
+				59,
+				185,
+				186
 			]
 		},
 		"57": {
@@ -2812,11 +2812,11 @@
 			},
 			"TagIDs": [
 				9,
-				89,
-				92,
-				109,
 				11,
-				90
+				89,
+				90,
+				92,
+				109
 			]
 		},
 		"32": {
@@ -3031,11 +3031,11 @@
 				}
 			},
 			"TagIDs": [
+				1,
 				9,
-				60,
-				176,
 				12,
-				1
+				60,
+				176
 			]
 		},
 		"56": {
@@ -3144,11 +3144,11 @@
 				}
 			},
 			"TagIDs": [
+				3,
 				9,
-				88,
-				108,
 				12,
-				3
+				88,
+				108
 			]
 		},
 		"31": {
@@ -3336,11 +3336,11 @@
 				}
 			},
 			"TagIDs": [
+				2,
 				9,
-				58,
-				105,
 				12,
-				2
+				58,
+				105
 			]
 		},
 		"82": {
@@ -3519,11 +3519,11 @@
 			},
 			"TagIDs": [
 				9,
+				11,
+				170,
 				171,
 				172,
-				173,
-				11,
-				170
+				173
 			]
 		},
 		"83": {
@@ -3705,11 +3705,11 @@
 			},
 			"TagIDs": [
 				9,
+				11,
+				170,
 				171,
 				172,
-				173,
-				11,
-				170
+				173
 			]
 		},
 		"84": {
@@ -3891,11 +3891,11 @@
 			},
 			"TagIDs": [
 				9,
+				11,
+				170,
 				171,
 				172,
-				173,
-				11,
-				170
+				173
 			]
 		},
 		"85": {
@@ -4077,11 +4077,11 @@
 			},
 			"TagIDs": [
 				9,
+				11,
+				170,
 				171,
 				172,
-				173,
-				11,
-				170
+				173
 			]
 		},
 		"77": {
@@ -4217,11 +4217,11 @@
 				}
 			},
 			"TagIDs": [
-				44,
+				2,
 				7,
-				130,
 				12,
-				2
+				44,
+				130
 			]
 		},
 		"67": {
@@ -4399,11 +4399,11 @@
 				}
 			},
 			"TagIDs": [
-				44,
+				2,
 				7,
-				111,
 				12,
-				2
+				44,
+				111
 			]
 		},
 		"74": {
@@ -4524,11 +4524,11 @@
 				}
 			},
 			"TagIDs": [
-				44,
+				2,
 				7,
-				127,
 				12,
-				2
+				44,
+				127
 			]
 		},
 		"66": {
@@ -4605,11 +4605,11 @@
 				}
 			},
 			"TagIDs": [
-				44,
+				2,
 				7,
-				110,
 				11,
-				2
+				44,
+				110
 			]
 		},
 		"39": {
@@ -4753,11 +4753,11 @@
 				}
 			},
 			"TagIDs": [
+				2,
 				8,
-				44,
-				74,
 				11,
-				2
+				44,
+				74
 			]
 		},
 		"81": {
@@ -4856,10 +4856,10 @@
 				}
 			},
 			"TagIDs": [
-				44,
 				7,
-				136,
-				11
+				11,
+				44,
+				136
 			]
 		},
 		"37": {
@@ -4946,11 +4946,11 @@
 				}
 			},
 			"TagIDs": [
+				1,
 				8,
-				44,
-				72,
 				12,
-				1
+				44,
+				72
 			]
 		},
 		"38": {
@@ -5037,12 +5037,12 @@
 				}
 			},
 			"TagIDs": [
+				1,
 				8,
+				12,
 				44,
 				73,
-				116,
-				12,
-				1
+				116
 			]
 		},
 		"40": {
@@ -5176,11 +5176,11 @@
 				}
 			},
 			"TagIDs": [
+				2,
 				8,
-				44,
-				75,
 				12,
-				2
+				44,
+				75
 			]
 		},
 		"93": {
@@ -5308,13 +5308,13 @@
 				}
 			},
 			"TagIDs": [
-				44,
+				3,
 				7,
-				194,
-				195,
-				193,
+				44,
 				192,
-				3
+				193,
+				194,
+				195
 			]
 		},
 		"98": {
@@ -5443,12 +5443,12 @@
 				}
 			},
 			"TagIDs": [
-				44,
+				2,
 				7,
-				203,
-				181,
 				11,
-				2
+				44,
+				181,
+				203
 			]
 		},
 		"45": {
@@ -5574,9 +5574,9 @@
 				}
 			},
 			"TagIDs": [
-				78,
+				1,
 				12,
-				1
+				78
 			]
 		},
 		"10": {
@@ -5707,12 +5707,12 @@
 				}
 			},
 			"TagIDs": [
+				1,
 				7,
-				119,
-				31,
-				21,
 				12,
-				1
+				21,
+				31,
+				119
 			]
 		},
 		"16": {
@@ -5818,11 +5818,11 @@
 				}
 			},
 			"TagIDs": [
+				1,
 				7,
-				35,
-				21,
 				12,
-				1
+				21,
+				35
 			]
 		},
 		"17": {
@@ -5948,11 +5948,11 @@
 				}
 			},
 			"TagIDs": [
+				1,
 				7,
-				36,
-				21,
 				12,
-				1
+				21,
+				36
 			]
 		},
 		"12": {
@@ -6083,12 +6083,12 @@
 				}
 			},
 			"TagIDs": [
+				1,
 				7,
-				121,
+				12,
 				32,
 				120,
-				12,
-				1
+				121
 			]
 		},
 		"69": {
@@ -6303,16 +6303,16 @@
 				}
 			},
 			"TagIDs": [
+				1,
 				7,
-				146,
-				144,
-				143,
-				145,
-				142,
+				12,
 				115,
 				120,
-				12,
-				1
+				142,
+				143,
+				144,
+				145,
+				146
 			]
 		},
 		"87": {
@@ -6446,12 +6446,12 @@
 				}
 			},
 			"TagIDs": [
-				179,
+				1,
 				7,
+				12,
 				177,
 				178,
-				12,
-				1
+				179
 			]
 		},
 		"89": {
@@ -6550,11 +6550,11 @@
 				}
 			},
 			"TagIDs": [
+				1,
 				7,
-				187,
-				188,
 				12,
-				1
+				187,
+				188
 			]
 		},
 		"91": {
@@ -6643,11 +6643,11 @@
 				}
 			},
 			"TagIDs": [
+				1,
 				7,
-				189,
-				188,
 				11,
-				1
+				188,
+				189
 			]
 		},
 		"36": {
@@ -6869,12 +6869,12 @@
 				}
 			},
 			"TagIDs": [
+				1,
 				7,
-				162,
-				68,
-				21,
 				12,
-				1
+				21,
+				68,
+				162
 			]
 		},
 		"29": {
@@ -7039,14 +7039,14 @@
 				}
 			},
 			"TagIDs": [
+				1,
 				7,
-				161,
+				12,
 				54,
 				102,
 				103,
-				185,
-				12,
-				1
+				161,
+				185
 			]
 		},
 		"22": {
@@ -7239,12 +7239,12 @@
 				}
 			},
 			"TagIDs": [
+				1,
 				7,
+				12,
 				41,
 				65,
-				99,
-				12,
-				1
+				99
 			]
 		},
 		"28": {
@@ -7373,13 +7373,13 @@
 				}
 			},
 			"TagIDs": [
+				1,
 				7,
+				11,
 				53,
-				163,
 				65,
 				99,
-				11,
-				1
+				163
 			]
 		},
 		"15": {
@@ -7597,10 +7597,10 @@
 				}
 			},
 			"TagIDs": [
+				1,
 				7,
-				34,
 				12,
-				1
+				34
 			]
 		},
 		"62": {
@@ -7830,12 +7830,12 @@
 				}
 			},
 			"TagIDs": [
+				1,
 				7,
+				11,
 				98,
 				99,
-				185,
-				11,
-				1
+				185
 			]
 		},
 		"14": {
@@ -7995,11 +7995,11 @@
 				}
 			},
 			"TagIDs": [
+				1,
 				7,
-				33,
-				43,
 				11,
-				1
+				33,
+				43
 			]
 		},
 		"13": {
@@ -8150,12 +8150,12 @@
 				}
 			},
 			"TagIDs": [
+				1,
 				7,
-				148,
-				51,
-				43,
 				12,
-				1
+				43,
+				51,
+				148
 			]
 		},
 		"72": {
@@ -8264,11 +8264,11 @@
 				}
 			},
 			"TagIDs": [
+				1,
 				7,
-				122,
-				43,
 				12,
-				1
+				43,
+				122
 			]
 		},
 		"73": {
@@ -8382,11 +8382,11 @@
 				}
 			},
 			"TagIDs": [
+				1,
 				7,
-				123,
-				43,
 				12,
-				1
+				43,
+				123
 			]
 		},
 		"92": {
@@ -8586,11 +8586,11 @@
 				}
 			},
 			"TagIDs": [
+				1,
 				7,
-				190,
-				191,
 				11,
-				1
+				190,
+				191
 			]
 		},
 		"108": {
@@ -8766,11 +8766,11 @@
 				}
 			},
 			"TagIDs": [
+				1,
 				8,
-				220,
-				181,
 				12,
-				1
+				181,
+				220
 			]
 		},
 		"55": {
@@ -8894,11 +8894,11 @@
 				}
 			},
 			"TagIDs": [
+				3,
 				7,
-				27,
-				87,
 				12,
-				3
+				27,
+				87
 			]
 		},
 		"19": {
@@ -9007,11 +9007,11 @@
 				}
 			},
 			"TagIDs": [
+				3,
 				7,
-				27,
-				38,
 				12,
-				3
+				27,
+				38
 			]
 		},
 		"11": {
@@ -9105,14 +9105,14 @@
 				}
 			},
 			"TagIDs": [
+				3,
 				7,
-				118,
-				50,
-				167,
-				164,
-				117,
 				12,
-				3
+				50,
+				117,
+				118,
+				164,
+				167
 			]
 		},
 		"100": {
@@ -9231,10 +9231,10 @@
 				}
 			},
 			"TagIDs": [
+				3,
 				7,
-				205,
 				12,
-				3
+				205
 			]
 		},
 		"103": {
@@ -9360,10 +9360,10 @@
 				}
 			},
 			"TagIDs": [
+				3,
 				7,
-				208,
 				12,
-				3
+				208
 			]
 		},
 		"101": {
@@ -9472,10 +9472,10 @@
 				}
 			},
 			"TagIDs": [
+				3,
 				7,
-				206,
 				11,
-				3
+				206
 			]
 		},
 		"68": {
@@ -9589,10 +9589,10 @@
 				}
 			},
 			"TagIDs": [
+				3,
 				8,
-				112,
 				12,
-				3
+				112
 			]
 		},
 		"104": {
@@ -9681,11 +9681,11 @@
 				}
 			},
 			"TagIDs": [
+				3,
 				8,
-				210,
-				209,
 				11,
-				3
+				209,
+				210
 			]
 		},
 		"97": {
@@ -9858,10 +9858,10 @@
 				}
 			},
 			"TagIDs": [
+				3,
 				7,
-				202,
 				11,
-				3
+				202
 			]
 		},
 		"65": {
@@ -9985,11 +9985,11 @@
 				}
 			},
 			"TagIDs": [
+				3,
 				7,
-				107,
-				108,
 				12,
-				3
+				107,
+				108
 			]
 		},
 		"102": {
@@ -10130,10 +10130,10 @@
 				}
 			},
 			"TagIDs": [
+				3,
 				7,
-				207,
 				11,
-				3
+				207
 			]
 		},
 		"26": {
@@ -10267,12 +10267,12 @@
 				}
 			},
 			"TagIDs": [
+				3,
 				7,
+				12,
 				49,
 				65,
-				99,
-				12,
-				3
+				99
 			]
 		},
 		"20": {
@@ -10435,12 +10435,12 @@
 				}
 			},
 			"TagIDs": [
+				3,
 				7,
+				12,
 				28,
 				39,
-				42,
-				12,
-				3
+				42
 			]
 		},
 		"21": {
@@ -10697,12 +10697,12 @@
 				}
 			},
 			"TagIDs": [
+				3,
 				7,
+				11,
 				27,
 				40,
-				42,
-				11,
-				3
+				42
 			]
 		},
 		"35": {
@@ -10907,12 +10907,12 @@
 				}
 			},
 			"TagIDs": [
+				2,
 				7,
-				149,
-				150,
-				66,
 				11,
-				2
+				66,
+				149,
+				150
 			]
 		},
 		"18": {
@@ -11068,11 +11068,11 @@
 				}
 			},
 			"TagIDs": [
+				2,
 				7,
-				28,
-				37,
 				12,
-				2
+				28,
+				37
 			]
 		},
 		"79": {
@@ -11176,15 +11176,15 @@
 				}
 			},
 			"TagIDs": [
+				2,
 				7,
+				12,
+				133,
+				165,
 				226,
 				227,
-				229,
-				133,
 				228,
-				165,
-				12,
-				2
+				229
 			]
 		},
 		"80": {
@@ -11320,14 +11320,14 @@
 				}
 			},
 			"TagIDs": [
+				2,
 				8,
-				134,
-				157,
-				153,
-				152,
-				135,
 				11,
-				2
+				134,
+				135,
+				152,
+				153,
+				157
 			]
 		},
 		"111": {
@@ -11446,11 +11446,11 @@
 				}
 			},
 			"TagIDs": [
+				2,
 				7,
-				224,
-				225,
 				12,
-				2
+				224,
+				225
 			]
 		},
 		"110": {
@@ -11576,10 +11576,10 @@
 				}
 			},
 			"TagIDs": [
+				2,
 				7,
-				223,
 				12,
-				2
+				223
 			]
 		},
 		"76": {
@@ -11767,10 +11767,10 @@
 				}
 			},
 			"TagIDs": [
+				2,
 				7,
-				129,
 				12,
-				2
+				129
 			]
 		},
 		"30": {
@@ -11973,13 +11973,13 @@
 				}
 			},
 			"TagIDs": [
+				2,
 				7,
+				12,
 				55,
 				104,
 				105,
-				106,
-				12,
-				2
+				106
 			]
 		},
 		"46": {
@@ -12127,11 +12127,11 @@
 				}
 			},
 			"TagIDs": [
+				2,
 				7,
-				79,
-				101,
 				11,
-				2
+				79,
+				101
 			]
 		},
 		"52": {
@@ -12334,15 +12334,15 @@
 				}
 			},
 			"TagIDs": [
+				2,
 				7,
-				85,
-				151,
+				12,
 				82,
+				85,
 				86,
 				109,
-				180,
-				12,
-				2
+				151,
+				180
 			]
 		},
 		"51": {
@@ -12456,12 +12456,12 @@
 				}
 			},
 			"TagIDs": [
+				2,
 				7,
-				85,
-				81,
-				86,
 				12,
-				2
+				81,
+				85,
+				86
 			]
 		},
 		"50": {
@@ -12570,12 +12570,12 @@
 				}
 			},
 			"TagIDs": [
+				2,
 				7,
-				85,
-				80,
-				86,
 				12,
-				2
+				80,
+				85,
+				86
 			]
 		},
 		"53": {
@@ -12711,13 +12711,13 @@
 				}
 			},
 			"TagIDs": [
+				2,
 				7,
-				28,
-				85,
-				83,
-				86,
 				11,
-				2
+				28,
+				83,
+				85,
+				86
 			]
 		},
 		"54": {
@@ -12900,13 +12900,13 @@
 				}
 			},
 			"TagIDs": [
+				2,
 				7,
-				28,
-				85,
-				84,
-				86,
 				12,
-				2
+				28,
+				84,
+				85,
+				86
 			]
 		},
 		"27": {
@@ -13027,12 +13027,12 @@
 				}
 			},
 			"TagIDs": [
+				2,
 				7,
+				11,
 				52,
 				65,
-				99,
-				11,
-				2
+				99
 			]
 		},
 		"58": {
@@ -13173,12 +13173,12 @@
 				}
 			},
 			"TagIDs": [
+				2,
 				7,
+				12,
 				91,
 				109,
-				181,
-				12,
-				2
+				181
 			]
 		},
 		"59": {
@@ -13307,12 +13307,12 @@
 				}
 			},
 			"TagIDs": [
+				2,
 				7,
-				158,
+				12,
 				93,
 				94,
-				12,
-				2
+				158
 			]
 		},
 		"60": {
@@ -13604,13 +13604,13 @@
 				}
 			},
 			"TagIDs": [
+				2,
 				7,
-				158,
+				12,
 				93,
 				94,
-				12,
-				2,
-				96
+				96,
+				158
 			]
 		},
 		"61": {
@@ -13819,10 +13819,10 @@
 				}
 			},
 			"TagIDs": [
-				95,
-				94,
+				2,
 				11,
-				2
+				94,
+				95
 			]
 		},
 		"95": {
@@ -14066,11 +14066,11 @@
 				}
 			},
 			"TagIDs": [
+				2,
 				7,
-				199,
-				180,
 				11,
-				2
+				180,
+				199
 			]
 		},
 		"96": {
@@ -14275,11 +14275,11 @@
 				}
 			},
 			"TagIDs": [
+				2,
 				7,
-				201,
-				180,
 				12,
-				2
+				180,
+				201
 			]
 		},
 		"99": {
@@ -14465,11 +14465,11 @@
 				}
 			},
 			"TagIDs": [
+				2,
 				7,
-				204,
-				181,
 				12,
-				2
+				181,
+				204
 			]
 		},
 		"106": {
@@ -14563,13 +14563,13 @@
 				}
 			},
 			"TagIDs": [
+				2,
 				7,
+				11,
+				192,
 				213,
 				214,
-				219,
-				192,
-				11,
-				2
+				219
 			]
 		},
 		"107": {
@@ -14708,13 +14708,13 @@
 				}
 			},
 			"TagIDs": [
+				2,
 				7,
+				12,
+				192,
 				213,
 				214,
-				218,
-				192,
-				12,
-				2
+				218
 			]
 		},
 		"64": {
@@ -14949,8 +14949,8 @@
 			},
 			"TagIDs": [
 				10,
-				231,
-				230
+				230,
+				231
 			]
 		},
 		"116": {
@@ -15162,9 +15162,9 @@
 			},
 			"TagIDs": [
 				10,
+				240,
 				241,
-				242,
-				240
+				242
 			]
 		},
 		"33": {
@@ -15352,9 +15352,9 @@
 				}
 			},
 			"TagIDs": [
-				64,
 				61,
 				62,
+				64,
 				174
 			]
 		},
@@ -15767,8 +15767,8 @@
 			},
 			"TagIDs": [
 				64,
-				236,
-				235
+				235,
+				236
 			]
 		},
 		"70": {
@@ -15863,9 +15863,9 @@
 				}
 			},
 			"TagIDs": [
-				131,
 				27,
-				96
+				96,
+				131
 			]
 		},
 		"71": {
@@ -15930,9 +15930,9 @@
 				}
 			},
 			"TagIDs": [
-				131,
 				27,
-				96
+				96,
+				131
 			]
 		},
 		"105": {
@@ -16015,10 +16015,10 @@
 				}
 			},
 			"TagIDs": [
+				96,
 				212,
 				213,
-				214,
-				96
+				214
 			]
 		},
 		"109": {
@@ -16178,10 +16178,10 @@
 			},
 			"TagIDs": [
 				7,
-				222,
-				192,
 				12,
-				221
+				192,
+				221,
+				222
 			]
 		},
 		"113": {
@@ -16495,83 +16495,51 @@
 			},
 			"TagIDs": [
 				7,
-				100,
 				12,
-				76
+				76,
+				100
 			]
 		}
 	},
 	"Tags": {
-		"234": {
-			"tid": 234,
-			"name": "cutie mark crusader cape",
+		"1": {
+			"tid": 1,
+			"name": "unicorn",
 			"title": null,
-			"type": "app",
-			"uses": 1,
+			"type": "spec",
+			"uses": 27,
 			"synonym_of": null
 		},
-		"212": {
-			"tid": 212,
-			"name": "pony tones outfit",
+		"2": {
+			"tid": 2,
+			"name": "earth pony",
 			"title": null,
-			"type": "app",
-			"uses": 1,
+			"type": "spec",
+			"uses": 36,
 			"synonym_of": null
 		},
-		"131": {
-			"tid": 131,
-			"name": "wonderbolt outfit",
+		"3": {
+			"tid": 3,
+			"name": "pegasus",
 			"title": null,
-			"type": "app",
-			"uses": 2,
+			"type": "spec",
+			"uses": 19,
 			"synonym_of": null
 		},
-		"9": {
-			"tid": 9,
-			"name": "antagonist",
+		"4": {
+			"tid": 4,
+			"name": "alicorn",
 			"title": null,
-			"type": "cat",
-			"uses": 8,
-			"synonym_of": null
-		},
-		"8": {
-			"tid": 8,
-			"name": "background character",
-			"title": "Ponies whose only purpose is filling crowds, with no to minimal speaking roles",
-			"type": "cat",
-			"uses": 8,
-			"synonym_of": null
-		},
-		"45": {
-			"tid": 45,
-			"name": "cutie mark crusader",
-			"title": null,
-			"type": "cat",
+			"type": "spec",
 			"uses": 5,
 			"synonym_of": null
 		},
-		"237": {
-			"tid": 237,
-			"name": "cutie mark crusaders",
+		"5": {
+			"tid": 5,
+			"name": "bat pony",
 			"title": null,
-			"type": "cat",
+			"type": "spec",
 			"uses": 0,
-			"synonym_of": 45
-		},
-		"179": {
-			"tid": 179,
-			"name": "flower trio",
-			"title": "Flower-themed trio consisting of Rose, Daisy and Lily Valley.",
-			"type": "cat",
-			"uses": 1,
-			"synonym_of": null
-		},
-		"44": {
-			"tid": 44,
-			"name": "foal",
-			"title": null,
-			"type": "cat",
-			"uses": 16,
 			"synonym_of": null
 		},
 		"6": {
@@ -16590,28 +16558,20 @@
 			"uses": 70,
 			"synonym_of": null
 		},
-		"64": {
-			"tid": 64,
-			"name": "object",
+		"8": {
+			"tid": 8,
+			"name": "background character",
+			"title": "Ponies whose only purpose is filling crowds, with no to minimal speaking roles",
+			"type": "cat",
+			"uses": 8,
+			"synonym_of": null
+		},
+		"9": {
+			"tid": 9,
+			"name": "antagonist",
 			"title": null,
 			"type": "cat",
-			"uses": 4,
-			"synonym_of": null
-		},
-		"78": {
-			"tid": 78,
-			"name": "original character",
-			"title": "Characters not canon to the show's universe",
-			"type": "cat",
-			"uses": 1,
-			"synonym_of": null
-		},
-		"28": {
-			"tid": 28,
-			"name": "parent",
-			"title": "Parents of other characters",
-			"type": "cat",
-			"uses": 4,
+			"uses": 8,
 			"synonym_of": null
 		},
 		"10": {
@@ -16622,1193 +16582,25 @@
 			"uses": 4,
 			"synonym_of": null
 		},
-		"85": {
-			"tid": 85,
-			"name": "pie family",
+		"11": {
+			"tid": 11,
+			"name": "male",
 			"title": null,
-			"type": "cat",
-			"uses": 6,
+			"type": "gen",
+			"uses": 29,
 			"synonym_of": null
 		},
-		"213": {
-			"tid": 213,
-			"name": "pony tones",
+		"12": {
+			"tid": 12,
+			"name": "female",
 			"title": null,
-			"type": "cat",
-			"uses": 3,
-			"synonym_of": null
-		},
-		"214": {
-			"tid": 214,
-			"name": "ponytones",
-			"title": null,
-			"type": "cat",
-			"uses": 0,
-			"synonym_of": 213
-		},
-		"59": {
-			"tid": 59,
-			"name": "royalty",
-			"title": null,
-			"type": "cat",
-			"uses": 6,
-			"synonym_of": null
-		},
-		"27": {
-			"tid": 27,
-			"name": "wonderbolt",
-			"title": "Wonderbolt characters",
-			"type": "cat",
-			"uses": 5,
-			"synonym_of": null
-		},
-		"154": {
-			"tid": 154,
-			"name": "angel",
-			"title": null,
-			"type": "char",
-			"uses": 0,
-			"synonym_of": 155
-		},
-		"155": {
-			"tid": 155,
-			"name": "angel bunny",
-			"title": null,
-			"type": "char",
-			"uses": 1,
-			"synonym_of": null
-		},
-		"46": {
-			"tid": 46,
-			"name": "apple bloom",
-			"title": null,
-			"type": "char",
-			"uses": 1,
-			"synonym_of": null
-		},
-		"160": {
-			"tid": 160,
-			"name": "applebloom",
-			"title": null,
-			"type": "char",
-			"uses": 0,
-			"synonym_of": 46
-		},
-		"22": {
-			"tid": 22,
-			"name": "applejack",
-			"title": null,
-			"type": "char",
-			"uses": 1,
-			"synonym_of": null
-		},
-		"159": {
-			"tid": 159,
-			"name": "babs",
-			"title": null,
-			"type": "char",
-			"uses": 0,
-			"synonym_of": 132
-		},
-		"132": {
-			"tid": 132,
-			"name": "babs seed",
-			"title": null,
-			"type": "char",
-			"uses": 1,
-			"synonym_of": null
-		},
-		"73": {
-			"tid": 73,
-			"name": "berry pinch",
-			"title": null,
-			"type": "char",
-			"uses": 0,
-			"synonym_of": 116
-		},
-		"149": {
-			"tid": 149,
-			"name": "big mac",
-			"title": null,
-			"type": "char",
-			"uses": 0,
-			"synonym_of": 66
-		},
-		"150": {
-			"tid": 150,
-			"name": "big macintosh",
-			"title": null,
-			"type": "char",
-			"uses": 0,
-			"synonym_of": 66
-		},
-		"66": {
-			"tid": 66,
-			"name": "big mcintosh",
-			"title": null,
-			"type": "char",
-			"uses": 1,
-			"synonym_of": null
-		},
-		"112": {
-			"tid": 112,
-			"name": "blossomforth",
-			"title": null,
-			"type": "char",
-			"uses": 1,
-			"synonym_of": null
-		},
-		"224": {
-			"tid": 224,
-			"name": "bon bon",
-			"title": null,
-			"type": "char",
-			"uses": 1,
-			"synonym_of": null
-		},
-		"202": {
-			"tid": 202,
-			"name": "bulk biceps",
-			"title": null,
-			"type": "char",
-			"uses": 1,
-			"synonym_of": null
-		},
-		"74": {
-			"tid": 74,
-			"name": "button mash",
-			"title": null,
-			"type": "char",
-			"uses": 1,
-			"synonym_of": null
-		},
-		"139": {
-			"tid": 139,
-			"name": "cadance",
-			"title": null,
-			"type": "char",
-			"uses": 0,
-			"synonym_of": 128
-		},
-		"138": {
-			"tid": 138,
-			"name": "celestia",
-			"title": null,
-			"type": "char",
-			"uses": 0,
-			"synonym_of": 63
-		},
-		"226": {
-			"tid": 226,
-			"name": "cheerelie",
-			"title": null,
-			"type": "char",
-			"uses": 0,
-			"synonym_of": 133
-		},
-		"227": {
-			"tid": 227,
-			"name": "cheereliee",
-			"title": null,
-			"type": "char",
-			"uses": 0,
-			"synonym_of": 133
-		},
-		"229": {
-			"tid": 229,
-			"name": "cheerile",
-			"title": null,
-			"type": "char",
-			"uses": 0,
-			"synonym_of": 133
-		},
-		"133": {
-			"tid": 133,
-			"name": "cheerilee",
-			"title": null,
-			"type": "char",
-			"uses": 1,
-			"synonym_of": null
-		},
-		"79": {
-			"tid": 79,
-			"name": "cheese sandwich",
-			"title": null,
-			"type": "char",
-			"uses": 1,
-			"synonym_of": null
-		},
-		"228": {
-			"tid": 228,
-			"name": "cherelee",
-			"title": null,
-			"type": "char",
-			"uses": 0,
-			"synonym_of": 133
-		},
-		"165": {
-			"tid": 165,
-			"name": "cherilee",
-			"title": null,
-			"type": "char",
-			"uses": 0,
-			"synonym_of": 133
-		},
-		"205": {
-			"tid": 205,
-			"name": "cloudchaser",
-			"title": null,
-			"type": "char",
-			"uses": 1,
-			"synonym_of": null
-		},
-		"84": {
-			"tid": 84,
-			"name": "cloudy quartz",
-			"title": null,
-			"type": "char",
-			"uses": 1,
-			"synonym_of": null
-		},
-		"55": {
-			"tid": 55,
-			"name": "coco pommel",
-			"title": null,
-			"type": "char",
-			"uses": 1,
-			"synonym_of": null
-		},
-		"119": {
-			"tid": 119,
-			"name": "colgate",
-			"title": null,
-			"type": "char",
-			"uses": 0,
-			"synonym_of": 31
-		},
-		"158": {
-			"tid": 158,
-			"name": "coloratura",
-			"title": null,
-			"type": "char",
-			"uses": 2,
-			"synonym_of": null
-		},
-		"201": {
-			"tid": 201,
-			"name": "copper top",
-			"title": null,
-			"type": "char",
-			"uses": 1,
-			"synonym_of": null
-		},
-		"118": {
-			"tid": 118,
-			"name": "derpy",
-			"title": null,
-			"type": "char",
-			"uses": 0,
-			"synonym_of": 50
-		},
-		"50": {
-			"tid": 50,
-			"name": "derpy hooves",
-			"title": null,
-			"type": "char",
-			"uses": 1,
-			"synonym_of": null
-		},
-		"148": {
-			"tid": 148,
-			"name": "diabetty",
-			"title": null,
-			"type": "char",
-			"uses": 0,
-			"synonym_of": 51
-		},
-		"127": {
-			"tid": 127,
-			"name": "diamond tiara",
-			"title": null,
-			"type": "char",
-			"uses": 1,
-			"synonym_of": null
-		},
-		"72": {
-			"tid": 72,
-			"name": "dinky doo",
-			"title": null,
-			"type": "char",
-			"uses": 1,
-			"synonym_of": null
-		},
-		"89": {
-			"tid": 89,
-			"name": "discord",
-			"title": null,
-			"type": "char",
-			"uses": 1,
-			"synonym_of": null
-		},
-		"167": {
-			"tid": 167,
-			"name": "ditzy",
-			"title": null,
-			"type": "char",
-			"uses": 0,
-			"synonym_of": 50
-		},
-		"164": {
-			"tid": 164,
-			"name": "ditzy doo",
-			"title": null,
-			"type": "char",
-			"uses": 0,
-			"synonym_of": 50
-		},
-		"146": {
-			"tid": 146,
-			"name": "dj-pon3",
-			"title": null,
-			"type": "char",
-			"uses": 0,
-			"synonym_of": 115
-		},
-		"144": {
-			"tid": 144,
-			"name": "dj p0n-3",
-			"title": null,
-			"type": "char",
-			"uses": 0,
-			"synonym_of": 115
-		},
-		"143": {
-			"tid": 143,
-			"name": "dj pon-3",
-			"title": null,
-			"type": "char",
-			"uses": 0,
-			"synonym_of": 115
-		},
-		"145": {
-			"tid": 145,
-			"name": "dj pon3",
-			"title": null,
-			"type": "char",
-			"uses": 0,
-			"synonym_of": 115
-		},
-		"134": {
-			"tid": 134,
-			"name": "doctor hooves",
-			"title": null,
-			"type": "char",
-			"uses": 1,
-			"synonym_of": null
-		},
-		"157": {
-			"tid": 157,
-			"name": "doctor whooves",
-			"title": null,
-			"type": "char",
-			"uses": 0,
-			"synonym_of": 134
-		},
-		"52": {
-			"tid": 52,
-			"name": "double diamond",
-			"title": null,
-			"type": "char",
-			"uses": 1,
-			"synonym_of": null
-		},
-		"153": {
-			"tid": 153,
-			"name": "dr hooves",
-			"title": null,
-			"type": "char",
-			"uses": 0,
-			"synonym_of": 134
-		},
-		"152": {
-			"tid": 152,
-			"name": "dr. hooves",
-			"title": null,
-			"type": "char",
-			"uses": 0,
-			"synonym_of": 134
-		},
-		"33": {
-			"tid": 33,
-			"name": "fashion plate",
-			"title": null,
-			"type": "char",
-			"uses": 1,
-			"synonym_of": null
-		},
-		"136": {
-			"tid": 136,
-			"name": "featherweight",
-			"title": null,
-			"type": "char",
-			"uses": 1,
-			"synonym_of": null
-		},
-		"38": {
-			"tid": 38,
-			"name": "fleetfoot",
-			"title": null,
-			"type": "char",
-			"uses": 1,
-			"synonym_of": null
-		},
-		"208": {
-			"tid": 208,
-			"name": "flitter",
-			"title": null,
-			"type": "char",
-			"uses": 1,
-			"synonym_of": null
-		},
-		"24": {
-			"tid": 24,
-			"name": "fluttershy",
-			"title": null,
-			"type": "char",
-			"uses": 1,
-			"synonym_of": null
-		},
-		"37": {
-			"tid": 37,
-			"name": "granny smith",
-			"title": null,
-			"type": "char",
-			"uses": 1,
-			"synonym_of": null
-		},
-		"231": {
-			"tid": 231,
-			"name": "gummy",
-			"title": null,
-			"type": "char",
-			"uses": 1,
-			"synonym_of": null
-		},
-		"204": {
-			"tid": 204,
-			"name": "hoofer steps",
-			"title": null,
-			"type": "char",
-			"uses": 1,
-			"synonym_of": null
-		},
-		"200": {
-			"tid": 200,
-			"name": "hot fuzz",
-			"title": null,
-			"type": "char",
-			"uses": 0,
-			"synonym_of": null
-		},
-		"83": {
-			"tid": 83,
-			"name": "igenous rock",
-			"title": null,
-			"type": "char",
-			"uses": 1,
-			"synonym_of": null
-		},
-		"36": {
-			"tid": 36,
-			"name": "lemon hearts",
-			"title": null,
-			"type": "char",
-			"uses": 1,
-			"synonym_of": null
-		},
-		"88": {
-			"tid": 88,
-			"name": "lightning dust",
-			"title": null,
-			"type": "char",
-			"uses": 1,
-			"synonym_of": null
-		},
-		"75": {
-			"tid": 75,
-			"name": "lily longsocks",
-			"title": null,
-			"type": "char",
-			"uses": 1,
-			"synonym_of": null
-		},
-		"81": {
-			"tid": 81,
-			"name": "limestone pie",
-			"title": null,
-			"type": "char",
-			"uses": 1,
-			"synonym_of": null
-		},
-		"171": {
-			"tid": 171,
-			"name": "lord tirek",
-			"title": null,
-			"type": "char",
-			"uses": 4,
-			"synonym_of": null
-		},
-		"137": {
-			"tid": 137,
-			"name": "luna",
-			"title": null,
-			"type": "char",
-			"uses": 0,
-			"synonym_of": 57
-		},
-		"121": {
-			"tid": 121,
-			"name": "lyra",
-			"title": null,
-			"type": "char",
-			"uses": 0,
-			"synonym_of": 32
-		},
-		"32": {
-			"tid": 32,
-			"name": "lyra heartstrings",
-			"title": null,
-			"type": "char",
-			"uses": 1,
-			"synonym_of": null
-		},
-		"80": {
-			"tid": 80,
-			"name": "marble pie",
-			"title": null,
-			"type": "char",
-			"uses": 1,
-			"synonym_of": null
-		},
-		"151": {
-			"tid": 151,
-			"name": "maud",
-			"title": null,
-			"type": "char",
-			"uses": 0,
-			"synonym_of": 82
-		},
-		"82": {
-			"tid": 82,
-			"name": "maud pie",
-			"title": null,
-			"type": "char",
-			"uses": 1,
-			"synonym_of": null
-		},
-		"129": {
-			"tid": 129,
-			"name": "mayor mare",
-			"title": null,
-			"type": "char",
-			"uses": 1,
-			"synonym_of": null
-		},
-		"107": {
-			"tid": 107,
-			"name": "meadow flower",
-			"title": null,
-			"type": "char",
-			"uses": 1,
-			"synonym_of": null
-		},
-		"220": {
-			"tid": 220,
-			"name": "minty bubblegum",
-			"title": null,
-			"type": "char",
-			"uses": 1,
-			"synonym_of": null
-		},
-		"31": {
-			"tid": 31,
-			"name": "minuette",
-			"title": null,
-			"type": "char",
-			"uses": 1,
-			"synonym_of": null
-		},
-		"162": {
-			"tid": 162,
-			"name": "moon dancer",
-			"title": null,
-			"type": "char",
-			"uses": 1,
-			"synonym_of": null
-		},
-		"68": {
-			"tid": 68,
-			"name": "moondancer",
-			"title": null,
-			"type": "char",
-			"uses": 0,
-			"synonym_of": 162
-		},
-		"117": {
-			"tid": 117,
-			"name": "muffins",
-			"title": null,
-			"type": "char",
-			"uses": 1,
-			"synonym_of": null
-		},
-		"49": {
-			"tid": 49,
-			"name": "night glider",
-			"title": null,
-			"type": "char",
-			"uses": 1,
-			"synonym_of": null
-		},
-		"189": {
-			"tid": 189,
-			"name": "night light",
-			"title": null,
-			"type": "char",
-			"uses": 1,
-			"synonym_of": null
-		},
-		"223": {
-			"tid": 223,
-			"name": "octavia",
-			"title": null,
-			"type": "char",
-			"uses": 1,
-			"synonym_of": null
-		},
-		"232": {
-			"tid": 232,
-			"name": "orange frog",
-			"title": null,
-			"type": "char",
-			"uses": 1,
-			"synonym_of": null
-		},
-		"241": {
-			"tid": 241,
-			"name": "owlowiscious",
-			"title": null,
-			"type": "char",
-			"uses": 1,
-			"synonym_of": null
-		},
-		"242": {
-			"tid": 242,
-			"name": "owloysius",
-			"title": null,
-			"type": "char",
-			"uses": 0,
-			"synonym_of": 241
-		},
-		"53": {
-			"tid": 53,
-			"name": "party favor",
-			"title": null,
-			"type": "char",
-			"uses": 1,
-			"synonym_of": null
-		},
-		"163": {
-			"tid": 163,
-			"name": "party favour",
-			"title": null,
-			"type": "char",
-			"uses": 0,
-			"synonym_of": 53
-		},
-		"147": {
-			"tid": 147,
-			"name": "pinkie",
-			"title": null,
-			"type": "char",
-			"uses": 0,
-			"synonym_of": 23
-		},
-		"23": {
-			"tid": 23,
-			"name": "pinkie pie",
-			"title": null,
-			"type": "char",
-			"uses": 1,
-			"synonym_of": null
-		},
-		"110": {
-			"tid": 110,
-			"name": "pipsqueak",
-			"title": null,
-			"type": "char",
-			"uses": 1,
-			"synonym_of": null
-		},
-		"128": {
-			"tid": 128,
-			"name": "princess cadance",
-			"title": null,
-			"type": "char",
-			"uses": 1,
-			"synonym_of": null
-		},
-		"63": {
-			"tid": 63,
-			"name": "princess celestia",
-			"title": null,
-			"type": "char",
-			"uses": 1,
-			"synonym_of": null
-		},
-		"186": {
-			"tid": 186,
-			"name": "princess flurry heart",
-			"title": null,
-			"type": "char",
-			"uses": 1,
-			"synonym_of": null
-		},
-		"57": {
-			"tid": 57,
-			"name": "princess luna",
-			"title": null,
-			"type": "char",
-			"uses": 1,
-			"synonym_of": null
-		},
-		"197": {
-			"tid": 197,
-			"name": "princess mi amore cadenza",
-			"title": null,
-			"type": "char",
-			"uses": 0,
-			"synonym_of": 128
-		},
-		"141": {
-			"tid": 141,
-			"name": "princess twilight",
-			"title": null,
-			"type": "char",
-			"uses": 0,
-			"synonym_of": 14
-		},
-		"25": {
-			"tid": 25,
-			"name": "rainbow dash",
-			"title": null,
-			"type": "char",
-			"uses": 1,
-			"synonym_of": null
-		},
-		"93": {
-			"tid": 93,
-			"name": "rara",
-			"title": null,
-			"type": "char",
-			"uses": 0,
-			"synonym_of": 158
-		},
-		"26": {
-			"tid": 26,
-			"name": "rarity",
-			"title": null,
-			"type": "char",
-			"uses": 1,
-			"synonym_of": null
-		},
-		"177": {
-			"tid": 177,
-			"name": "rose",
-			"title": null,
-			"type": "char",
-			"uses": 1,
-			"synonym_of": null
-		},
-		"178": {
-			"tid": 178,
-			"name": "roseluck",
-			"title": null,
-			"type": "char",
-			"uses": 0,
-			"synonym_of": 177
-		},
-		"116": {
-			"tid": 116,
-			"name": "ruby pinch",
-			"title": null,
-			"type": "char",
-			"uses": 1,
-			"synonym_of": null
-		},
-		"34": {
-			"tid": 34,
-			"name": "sassy saddles",
-			"title": null,
-			"type": "char",
-			"uses": 1,
-			"synonym_of": null
-		},
-		"123": {
-			"tid": 123,
-			"name": "say cheese",
-			"title": null,
-			"type": "char",
-			"uses": 1,
-			"synonym_of": null
-		},
-		"47": {
-			"tid": 47,
-			"name": "scootaloo",
-			"title": null,
-			"type": "char",
-			"uses": 1,
-			"synonym_of": null
-		},
-		"77": {
-			"tid": 77,
-			"name": "shining armor",
-			"title": null,
-			"type": "char",
-			"uses": 1,
-			"synonym_of": null
-		},
-		"196": {
-			"tid": 196,
-			"name": "shining armour",
-			"title": null,
-			"type": "char",
-			"uses": 0,
-			"synonym_of": 77
-		},
-		"111": {
-			"tid": 111,
-			"name": "silver spoon",
-			"title": null,
-			"type": "char",
-			"uses": 1,
-			"synonym_of": null
-		},
-		"30": {
-			"tid": 30,
-			"name": "spike",
-			"title": null,
-			"type": "char",
-			"uses": 1,
-			"synonym_of": null
-		},
-		"87": {
-			"tid": 87,
-			"name": "spitfire",
-			"title": null,
-			"type": "char",
-			"uses": 1,
-			"synonym_of": null
-		},
-		"161": {
-			"tid": 161,
-			"name": "starlight",
-			"title": null,
-			"type": "char",
-			"uses": 0,
-			"synonym_of": 54
-		},
-		"54": {
-			"tid": 54,
-			"name": "starlight glimmer",
-			"title": null,
-			"type": "char",
-			"uses": 1,
-			"synonym_of": null
-		},
-		"39": {
-			"tid": 39,
-			"name": "stormy flare",
-			"title": null,
-			"type": "char",
-			"uses": 1,
-			"synonym_of": null
-		},
-		"199": {
-			"tid": 199,
-			"name": "street rat",
-			"title": null,
-			"type": "char",
-			"uses": 1,
-			"synonym_of": null
-		},
-		"41": {
-			"tid": 41,
-			"name": "sugar belle",
-			"title": null,
-			"type": "char",
-			"uses": 1,
-			"synonym_of": null
-		},
-		"98": {
-			"tid": 98,
-			"name": "sunburst",
-			"title": null,
-			"type": "char",
-			"uses": 1,
-			"synonym_of": null
-		},
-		"100": {
-			"tid": 100,
-			"name": "sunset shimmer",
-			"title": null,
-			"type": "char",
-			"uses": 1,
-			"synonym_of": null
-		},
-		"58": {
-			"tid": 58,
-			"name": "suri polomare",
-			"title": null,
-			"type": "char",
-			"uses": 1,
-			"synonym_of": null
-		},
-		"95": {
-			"tid": 95,
-			"name": "svengallop",
-			"title": null,
-			"type": "char",
-			"uses": 1,
-			"synonym_of": null
-		},
-		"122": {
-			"tid": 122,
-			"name": "sweet biscuit",
-			"title": null,
-			"type": "char",
-			"uses": 1,
-			"synonym_of": null
-		},
-		"48": {
-			"tid": 48,
-			"name": "sweetie belle",
-			"title": null,
-			"type": "char",
-			"uses": 1,
-			"synonym_of": null
-		},
-		"225": {
-			"tid": 225,
-			"name": "sweetie drops",
-			"title": null,
-			"type": "char",
-			"uses": 1,
-			"synonym_of": null
-		},
-		"203": {
-			"tid": 203,
-			"name": "tender taps",
-			"title": null,
-			"type": "char",
-			"uses": 1,
-			"synonym_of": null
-		},
-		"207": {
-			"tid": 207,
-			"name": "thunderclap",
-			"title": null,
-			"type": "char",
-			"uses": 1,
-			"synonym_of": null
-		},
-		"206": {
-			"tid": 206,
-			"name": "thunderlane",
-			"title": null,
-			"type": "char",
-			"uses": 1,
-			"synonym_of": null
-		},
-		"135": {
-			"tid": 135,
-			"name": "time turner",
-			"title": null,
-			"type": "char",
-			"uses": 1,
-			"synonym_of": null
-		},
-		"172": {
-			"tid": 172,
-			"name": "tirek",
-			"title": null,
-			"type": "char",
-			"uses": 0,
-			"synonym_of": 171
-		},
-		"219": {
-			"tid": 219,
-			"name": "toe tapper",
-			"title": null,
-			"type": "char",
-			"uses": 1,
-			"synonym_of": null
-		},
-		"218": {
-			"tid": 218,
-			"name": "torch song",
-			"title": null,
-			"type": "char",
-			"uses": 1,
-			"synonym_of": null
-		},
-		"91": {
-			"tid": 91,
-			"name": "tree hugger",
-			"title": null,
-			"type": "char",
-			"uses": 1,
-			"synonym_of": null
-		},
-		"190": {
-			"tid": 190,
-			"name": "trenderhoof",
-			"title": null,
-			"type": "char",
-			"uses": 1,
-			"synonym_of": null
-		},
-		"60": {
-			"tid": 60,
-			"name": "trixie",
-			"title": null,
-			"type": "char",
-			"uses": 0,
-			"synonym_of": 176
-		},
-		"176": {
-			"tid": 176,
-			"name": "trixie lulamoon",
-			"title": null,
-			"type": "char",
-			"uses": 1,
-			"synonym_of": null
-		},
-		"140": {
-			"tid": 140,
-			"name": "twilight",
-			"title": null,
-			"type": "char",
-			"uses": 0,
-			"synonym_of": 14
-		},
-		"210": {
-			"tid": 210,
-			"name": "twilight sky",
-			"title": null,
-			"type": "char",
-			"uses": 1,
+			"type": "gen",
+			"uses": 66,
 			"synonym_of": null
 		},
 		"14": {
 			"tid": 14,
 			"name": "twilight sparkle",
-			"title": null,
-			"type": "char",
-			"uses": 1,
-			"synonym_of": null
-		},
-		"187": {
-			"tid": 187,
-			"name": "twilight velvet",
-			"title": null,
-			"type": "char",
-			"uses": 1,
-			"synonym_of": null
-		},
-		"35": {
-			"tid": 35,
-			"name": "twinkleshine",
-			"title": null,
-			"type": "char",
-			"uses": 1,
-			"synonym_of": null
-		},
-		"130": {
-			"tid": 130,
-			"name": "twist",
-			"title": null,
-			"type": "char",
-			"uses": 1,
-			"synonym_of": null
-		},
-		"142": {
-			"tid": 142,
-			"name": "vinyl",
-			"title": null,
-			"type": "char",
-			"uses": 0,
-			"synonym_of": 115
-		},
-		"115": {
-			"tid": 115,
-			"name": "vinyl scratch",
-			"title": null,
-			"type": "char",
-			"uses": 1,
-			"synonym_of": null
-		},
-		"51": {
-			"tid": 51,
-			"name": "whoa nelly",
-			"title": null,
-			"type": "char",
-			"uses": 1,
-			"synonym_of": null
-		},
-		"40": {
-			"tid": 40,
-			"name": "wind rider",
-			"title": null,
-			"type": "char",
-			"uses": 1,
-			"synonym_of": null
-		},
-		"238": {
-			"tid": 238,
-			"name": "winona",
-			"title": null,
-			"type": "char",
-			"uses": 1,
-			"synonym_of": null
-		},
-		"222": {
-			"tid": 222,
-			"name": "zecora",
-			"title": null,
-			"type": "char",
-			"uses": 1,
-			"synonym_of": null
-		},
-		"194": {
-			"tid": 194,
-			"name": "ziporwhill",
-			"title": null,
-			"type": "char",
-			"uses": 0,
-			"synonym_of": 193
-		},
-		"195": {
-			"tid": 195,
-			"name": "zipporwhil",
-			"title": null,
-			"type": "char",
-			"uses": 0,
-			"synonym_of": 193
-		},
-		"193": {
-			"tid": 193,
-			"name": "zipporwhill",
 			"title": null,
 			"type": "char",
 			"uses": 1,
@@ -17830,21 +16622,317 @@
 			"uses": 0,
 			"synonym_of": null
 		},
-		"209": {
-			"tid": 209,
-			"name": "s2e22",
+		"21": {
+			"tid": 21,
+			"name": "s5e12",
 			"title": null,
 			"type": "ep",
+			"uses": 4,
+			"synonym_of": null
+		},
+		"22": {
+			"tid": 22,
+			"name": "applejack",
+			"title": null,
+			"type": "char",
 			"uses": 1,
 			"synonym_of": null
 		},
-		"233": {
-			"tid": 233,
-			"name": "s3e3",
+		"23": {
+			"tid": 23,
+			"name": "pinkie pie",
 			"title": null,
-			"type": "ep",
+			"type": "char",
 			"uses": 1,
 			"synonym_of": null
+		},
+		"24": {
+			"tid": 24,
+			"name": "fluttershy",
+			"title": null,
+			"type": "char",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"25": {
+			"tid": 25,
+			"name": "rainbow dash",
+			"title": null,
+			"type": "char",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"26": {
+			"tid": 26,
+			"name": "rarity",
+			"title": null,
+			"type": "char",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"27": {
+			"tid": 27,
+			"name": "wonderbolt",
+			"title": "Wonderbolt characters",
+			"type": "cat",
+			"uses": 5,
+			"synonym_of": null
+		},
+		"28": {
+			"tid": 28,
+			"name": "parent",
+			"title": "Parents of other characters",
+			"type": "cat",
+			"uses": 4,
+			"synonym_of": null
+		},
+		"29": {
+			"tid": 29,
+			"name": "dragon",
+			"title": null,
+			"type": "spec",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"30": {
+			"tid": 30,
+			"name": "spike",
+			"title": null,
+			"type": "char",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"31": {
+			"tid": 31,
+			"name": "minuette",
+			"title": null,
+			"type": "char",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"32": {
+			"tid": 32,
+			"name": "lyra heartstrings",
+			"title": null,
+			"type": "char",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"33": {
+			"tid": 33,
+			"name": "fashion plate",
+			"title": null,
+			"type": "char",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"34": {
+			"tid": 34,
+			"name": "sassy saddles",
+			"title": null,
+			"type": "char",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"35": {
+			"tid": 35,
+			"name": "twinkleshine",
+			"title": null,
+			"type": "char",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"36": {
+			"tid": 36,
+			"name": "lemon hearts",
+			"title": null,
+			"type": "char",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"37": {
+			"tid": 37,
+			"name": "granny smith",
+			"title": null,
+			"type": "char",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"38": {
+			"tid": 38,
+			"name": "fleetfoot",
+			"title": null,
+			"type": "char",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"39": {
+			"tid": 39,
+			"name": "stormy flare",
+			"title": null,
+			"type": "char",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"40": {
+			"tid": 40,
+			"name": "wind rider",
+			"title": null,
+			"type": "char",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"41": {
+			"tid": 41,
+			"name": "sugar belle",
+			"title": null,
+			"type": "char",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"42": {
+			"tid": 42,
+			"name": "s5e15",
+			"title": null,
+			"type": "ep",
+			"uses": 2,
+			"synonym_of": null
+		},
+		"43": {
+			"tid": 43,
+			"name": "s5e14",
+			"title": null,
+			"type": "ep",
+			"uses": 4,
+			"synonym_of": null
+		},
+		"44": {
+			"tid": 44,
+			"name": "foal",
+			"title": null,
+			"type": "cat",
+			"uses": 16,
+			"synonym_of": null
+		},
+		"45": {
+			"tid": 45,
+			"name": "cutie mark crusader",
+			"title": null,
+			"type": "cat",
+			"uses": 5,
+			"synonym_of": null
+		},
+		"46": {
+			"tid": 46,
+			"name": "apple bloom",
+			"title": null,
+			"type": "char",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"47": {
+			"tid": 47,
+			"name": "scootaloo",
+			"title": null,
+			"type": "char",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"48": {
+			"tid": 48,
+			"name": "sweetie belle",
+			"title": null,
+			"type": "char",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"49": {
+			"tid": 49,
+			"name": "night glider",
+			"title": null,
+			"type": "char",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"50": {
+			"tid": 50,
+			"name": "derpy hooves",
+			"title": null,
+			"type": "char",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"51": {
+			"tid": 51,
+			"name": "whoa nelly",
+			"title": null,
+			"type": "char",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"52": {
+			"tid": 52,
+			"name": "double diamond",
+			"title": null,
+			"type": "char",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"53": {
+			"tid": 53,
+			"name": "party favor",
+			"title": null,
+			"type": "char",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"54": {
+			"tid": 54,
+			"name": "starlight glimmer",
+			"title": null,
+			"type": "char",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"55": {
+			"tid": 55,
+			"name": "coco pommel",
+			"title": null,
+			"type": "char",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"57": {
+			"tid": 57,
+			"name": "princess luna",
+			"title": null,
+			"type": "char",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"58": {
+			"tid": 58,
+			"name": "suri polomare",
+			"title": null,
+			"type": "char",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"59": {
+			"tid": 59,
+			"name": "royalty",
+			"title": null,
+			"type": "cat",
+			"uses": 6,
+			"synonym_of": null
+		},
+		"60": {
+			"tid": 60,
+			"name": "trixie",
+			"title": null,
+			"type": "char",
+			"uses": 0,
+			"synonym_of": 176
 		},
 		"61": {
 			"tid": 61,
@@ -17854,19 +16942,283 @@
 			"uses": 1,
 			"synonym_of": null
 		},
-		"108": {
-			"tid": 108,
-			"name": "s3e7",
+		"62": {
+			"tid": 62,
+			"name": "alicorn amulet",
 			"title": null,
-			"type": "ep",
-			"uses": 2,
+			"type": null,
+			"uses": 1,
 			"synonym_of": null
 		},
-		"236": {
-			"tid": 236,
-			"name": "s3e9",
+		"63": {
+			"tid": 63,
+			"name": "princess celestia",
+			"title": null,
+			"type": "char",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"64": {
+			"tid": 64,
+			"name": "object",
+			"title": null,
+			"type": "cat",
+			"uses": 4,
+			"synonym_of": null
+		},
+		"65": {
+			"tid": 65,
+			"name": "s5e2",
 			"title": null,
 			"type": "ep",
+			"uses": 4,
+			"synonym_of": null
+		},
+		"66": {
+			"tid": 66,
+			"name": "big mcintosh",
+			"title": null,
+			"type": "char",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"68": {
+			"tid": 68,
+			"name": "moondancer",
+			"title": null,
+			"type": "char",
+			"uses": 0,
+			"synonym_of": 162
+		},
+		"72": {
+			"tid": 72,
+			"name": "dinky doo",
+			"title": null,
+			"type": "char",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"73": {
+			"tid": 73,
+			"name": "berry pinch",
+			"title": null,
+			"type": "char",
+			"uses": 0,
+			"synonym_of": 116
+		},
+		"74": {
+			"tid": 74,
+			"name": "button mash",
+			"title": null,
+			"type": "char",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"75": {
+			"tid": 75,
+			"name": "lily longsocks",
+			"title": null,
+			"type": "char",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"76": {
+			"tid": 76,
+			"name": "human",
+			"title": null,
+			"type": "spec",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"77": {
+			"tid": 77,
+			"name": "shining armor",
+			"title": null,
+			"type": "char",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"78": {
+			"tid": 78,
+			"name": "original character",
+			"title": "Characters not canon to the show's universe",
+			"type": "cat",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"79": {
+			"tid": 79,
+			"name": "cheese sandwich",
+			"title": null,
+			"type": "char",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"80": {
+			"tid": 80,
+			"name": "marble pie",
+			"title": null,
+			"type": "char",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"81": {
+			"tid": 81,
+			"name": "limestone pie",
+			"title": null,
+			"type": "char",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"82": {
+			"tid": 82,
+			"name": "maud pie",
+			"title": null,
+			"type": "char",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"83": {
+			"tid": 83,
+			"name": "igenous rock",
+			"title": null,
+			"type": "char",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"84": {
+			"tid": 84,
+			"name": "cloudy quartz",
+			"title": null,
+			"type": "char",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"85": {
+			"tid": 85,
+			"name": "pie family",
+			"title": null,
+			"type": "cat",
+			"uses": 6,
+			"synonym_of": null
+		},
+		"86": {
+			"tid": 86,
+			"name": "s5e20",
+			"title": null,
+			"type": "ep",
+			"uses": 5,
+			"synonym_of": null
+		},
+		"87": {
+			"tid": 87,
+			"name": "spitfire",
+			"title": null,
+			"type": "char",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"88": {
+			"tid": 88,
+			"name": "lightning dust",
+			"title": null,
+			"type": "char",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"89": {
+			"tid": 89,
+			"name": "discord",
+			"title": null,
+			"type": "char",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"90": {
+			"tid": 90,
+			"name": "draconequus",
+			"title": null,
+			"type": "spec",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"91": {
+			"tid": 91,
+			"name": "tree hugger",
+			"title": null,
+			"type": "char",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"92": {
+			"tid": 92,
+			"name": "s5e22",
+			"title": null,
+			"type": "ep",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"93": {
+			"tid": 93,
+			"name": "rara",
+			"title": null,
+			"type": "char",
+			"uses": 0,
+			"synonym_of": 158
+		},
+		"94": {
+			"tid": 94,
+			"name": "s5e24",
+			"title": null,
+			"type": "ep",
+			"uses": 3,
+			"synonym_of": null
+		},
+		"95": {
+			"tid": 95,
+			"name": "svengallop",
+			"title": null,
+			"type": "char",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"96": {
+			"tid": 96,
+			"name": "outfit",
+			"title": "Alternative character outfits",
+			"type": null,
+			"uses": 5,
+			"synonym_of": null
+		},
+		"97": {
+			"tid": 97,
+			"name": "s5e8",
+			"title": null,
+			"type": "ep",
+			"uses": 0,
+			"synonym_of": null
+		},
+		"98": {
+			"tid": 98,
+			"name": "sunburst",
+			"title": null,
+			"type": "char",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"99": {
+			"tid": 99,
+			"name": "s5e26",
+			"title": null,
+			"type": "ep",
+			"uses": 5,
+			"synonym_of": null
+		},
+		"100": {
+			"tid": 100,
+			"name": "sunset shimmer",
+			"title": null,
+			"type": "char",
 			"uses": 1,
 			"synonym_of": null
 		},
@@ -17878,20 +17230,20 @@
 			"uses": 1,
 			"synonym_of": null
 		},
-		"191": {
-			"tid": 191,
-			"name": "s4e13",
+		"102": {
+			"tid": 102,
+			"name": "s5e1-2",
 			"title": null,
 			"type": "ep",
 			"uses": 1,
 			"synonym_of": null
 		},
-		"192": {
-			"tid": 192,
-			"name": "s4e14",
+		"103": {
+			"tid": 103,
+			"name": "s5e25-26",
 			"title": null,
 			"type": "ep",
-			"uses": 4,
+			"uses": 1,
 			"synonym_of": null
 		},
 		"104": {
@@ -17902,73 +17254,9 @@
 			"uses": 1,
 			"synonym_of": null
 		},
-		"168": {
-			"tid": 168,
-			"name": "s4e25",
-			"title": null,
-			"type": "ep",
-			"uses": 0,
-			"synonym_of": null
-		},
-		"173": {
-			"tid": 173,
-			"name": "s4e25-26",
-			"title": null,
-			"type": "ep",
-			"uses": 5,
-			"synonym_of": null
-		},
-		"169": {
-			"tid": 169,
-			"name": "s4e26",
-			"title": null,
-			"type": "ep",
-			"uses": 0,
-			"synonym_of": null
-		},
 		"105": {
 			"tid": 105,
 			"name": "s4e8",
-			"title": null,
-			"type": "ep",
-			"uses": 2,
-			"synonym_of": null
-		},
-		"184": {
-			"tid": 184,
-			"name": "s5e1",
-			"title": null,
-			"type": "ep",
-			"uses": 0,
-			"synonym_of": null
-		},
-		"102": {
-			"tid": 102,
-			"name": "s5e1-2",
-			"title": null,
-			"type": "ep",
-			"uses": 1,
-			"synonym_of": null
-		},
-		"21": {
-			"tid": 21,
-			"name": "s5e12",
-			"title": null,
-			"type": "ep",
-			"uses": 4,
-			"synonym_of": null
-		},
-		"43": {
-			"tid": 43,
-			"name": "s5e14",
-			"title": null,
-			"type": "ep",
-			"uses": 4,
-			"synonym_of": null
-		},
-		"42": {
-			"tid": 42,
-			"name": "s5e15",
 			"title": null,
 			"type": "ep",
 			"uses": 2,
@@ -17982,65 +17270,57 @@
 			"uses": 1,
 			"synonym_of": null
 		},
-		"65": {
-			"tid": 65,
-			"name": "s5e2",
+		"107": {
+			"tid": 107,
+			"name": "meadow flower",
 			"title": null,
-			"type": "ep",
-			"uses": 4,
-			"synonym_of": null
-		},
-		"86": {
-			"tid": 86,
-			"name": "s5e20",
-			"title": null,
-			"type": "ep",
-			"uses": 5,
-			"synonym_of": null
-		},
-		"92": {
-			"tid": 92,
-			"name": "s5e22",
-			"title": null,
-			"type": "ep",
+			"type": "char",
 			"uses": 1,
 			"synonym_of": null
 		},
-		"94": {
-			"tid": 94,
-			"name": "s5e24",
+		"108": {
+			"tid": 108,
+			"name": "s3e7",
+			"title": null,
+			"type": "ep",
+			"uses": 2,
+			"synonym_of": null
+		},
+		"109": {
+			"tid": 109,
+			"name": "s5e7",
 			"title": null,
 			"type": "ep",
 			"uses": 3,
 			"synonym_of": null
 		},
-		"103": {
-			"tid": 103,
-			"name": "s5e25-26",
+		"110": {
+			"tid": 110,
+			"name": "pipsqueak",
 			"title": null,
-			"type": "ep",
+			"type": "char",
 			"uses": 1,
 			"synonym_of": null
 		},
-		"99": {
-			"tid": 99,
-			"name": "s5e26",
+		"111": {
+			"tid": 111,
+			"name": "silver spoon",
 			"title": null,
-			"type": "ep",
-			"uses": 5,
+			"type": "char",
+			"uses": 1,
 			"synonym_of": null
 		},
-		"126": {
-			"tid": 126,
-			"name": "s5e3",
+		"112": {
+			"tid": 112,
+			"name": "blossomforth",
 			"title": null,
-			"type": "ep",
-			"uses": 0,
+			"type": "char",
+			"uses": 1,
 			"synonym_of": null
 		},
-		"125": {
-			"tid": 125,
-			"name": "s5e4",
+		"113": {
+			"tid": 113,
+			"name": "s5e6",
 			"title": null,
 			"type": "ep",
 			"uses": 0,
@@ -18054,29 +17334,45 @@
 			"uses": 0,
 			"synonym_of": null
 		},
-		"113": {
-			"tid": 113,
-			"name": "s5e6",
+		"115": {
+			"tid": 115,
+			"name": "vinyl scratch",
 			"title": null,
-			"type": "ep",
-			"uses": 0,
+			"type": "char",
+			"uses": 1,
 			"synonym_of": null
 		},
-		"109": {
-			"tid": 109,
-			"name": "s5e7",
+		"116": {
+			"tid": 116,
+			"name": "ruby pinch",
 			"title": null,
-			"type": "ep",
-			"uses": 3,
+			"type": "char",
+			"uses": 1,
 			"synonym_of": null
 		},
-		"97": {
-			"tid": 97,
-			"name": "s5e8",
+		"117": {
+			"tid": 117,
+			"name": "muffins",
 			"title": null,
-			"type": "ep",
-			"uses": 0,
+			"type": "char",
+			"uses": 1,
 			"synonym_of": null
+		},
+		"118": {
+			"tid": 118,
+			"name": "derpy",
+			"title": null,
+			"type": "char",
+			"uses": 0,
+			"synonym_of": 50
+		},
+		"119": {
+			"tid": 119,
+			"name": "colgate",
+			"title": null,
+			"type": "char",
+			"uses": 0,
+			"synonym_of": 31
 		},
 		"120": {
 			"tid": 120,
@@ -18084,6 +17380,30 @@
 			"title": null,
 			"type": "ep",
 			"uses": 2,
+			"synonym_of": null
+		},
+		"121": {
+			"tid": 121,
+			"name": "lyra",
+			"title": null,
+			"type": "char",
+			"uses": 0,
+			"synonym_of": 32
+		},
+		"122": {
+			"tid": 122,
+			"name": "sweet biscuit",
+			"title": null,
+			"type": "char",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"123": {
+			"tid": 123,
+			"name": "say cheese",
+			"title": null,
+			"type": "char",
+			"uses": 1,
 			"synonym_of": null
 		},
 		"124": {
@@ -18094,20 +17414,436 @@
 			"uses": 0,
 			"synonym_of": null
 		},
-		"185": {
-			"tid": 185,
-			"name": "s6e1-2",
+		"125": {
+			"tid": 125,
+			"name": "s5e4",
+			"title": null,
+			"type": "ep",
+			"uses": 0,
+			"synonym_of": null
+		},
+		"126": {
+			"tid": 126,
+			"name": "s5e3",
+			"title": null,
+			"type": "ep",
+			"uses": 0,
+			"synonym_of": null
+		},
+		"127": {
+			"tid": 127,
+			"name": "diamond tiara",
+			"title": null,
+			"type": "char",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"128": {
+			"tid": 128,
+			"name": "princess cadance",
+			"title": null,
+			"type": "char",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"129": {
+			"tid": 129,
+			"name": "mayor mare",
+			"title": null,
+			"type": "char",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"130": {
+			"tid": 130,
+			"name": "twist",
+			"title": null,
+			"type": "char",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"131": {
+			"tid": 131,
+			"name": "wonderbolt outfit",
+			"title": null,
+			"type": "app",
+			"uses": 2,
+			"synonym_of": null
+		},
+		"132": {
+			"tid": 132,
+			"name": "babs seed",
+			"title": null,
+			"type": "char",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"133": {
+			"tid": 133,
+			"name": "cheerilee",
+			"title": null,
+			"type": "char",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"134": {
+			"tid": 134,
+			"name": "doctor hooves",
+			"title": null,
+			"type": "char",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"135": {
+			"tid": 135,
+			"name": "time turner",
+			"title": null,
+			"type": "char",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"136": {
+			"tid": 136,
+			"name": "featherweight",
+			"title": null,
+			"type": "char",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"137": {
+			"tid": 137,
+			"name": "luna",
+			"title": null,
+			"type": "char",
+			"uses": 0,
+			"synonym_of": 57
+		},
+		"138": {
+			"tid": 138,
+			"name": "celestia",
+			"title": null,
+			"type": "char",
+			"uses": 0,
+			"synonym_of": 63
+		},
+		"139": {
+			"tid": 139,
+			"name": "cadance",
+			"title": null,
+			"type": "char",
+			"uses": 0,
+			"synonym_of": 128
+		},
+		"140": {
+			"tid": 140,
+			"name": "twilight",
+			"title": null,
+			"type": "char",
+			"uses": 0,
+			"synonym_of": 14
+		},
+		"141": {
+			"tid": 141,
+			"name": "princess twilight",
+			"title": null,
+			"type": "char",
+			"uses": 0,
+			"synonym_of": 14
+		},
+		"142": {
+			"tid": 142,
+			"name": "vinyl",
+			"title": null,
+			"type": "char",
+			"uses": 0,
+			"synonym_of": 115
+		},
+		"143": {
+			"tid": 143,
+			"name": "dj pon-3",
+			"title": null,
+			"type": "char",
+			"uses": 0,
+			"synonym_of": 115
+		},
+		"144": {
+			"tid": 144,
+			"name": "dj p0n-3",
+			"title": null,
+			"type": "char",
+			"uses": 0,
+			"synonym_of": 115
+		},
+		"145": {
+			"tid": 145,
+			"name": "dj pon3",
+			"title": null,
+			"type": "char",
+			"uses": 0,
+			"synonym_of": 115
+		},
+		"146": {
+			"tid": 146,
+			"name": "dj-pon3",
+			"title": null,
+			"type": "char",
+			"uses": 0,
+			"synonym_of": 115
+		},
+		"147": {
+			"tid": 147,
+			"name": "pinkie",
+			"title": null,
+			"type": "char",
+			"uses": 0,
+			"synonym_of": 23
+		},
+		"148": {
+			"tid": 148,
+			"name": "diabetty",
+			"title": null,
+			"type": "char",
+			"uses": 0,
+			"synonym_of": 51
+		},
+		"149": {
+			"tid": 149,
+			"name": "big mac",
+			"title": null,
+			"type": "char",
+			"uses": 0,
+			"synonym_of": 66
+		},
+		"150": {
+			"tid": 150,
+			"name": "big macintosh",
+			"title": null,
+			"type": "char",
+			"uses": 0,
+			"synonym_of": 66
+		},
+		"151": {
+			"tid": 151,
+			"name": "maud",
+			"title": null,
+			"type": "char",
+			"uses": 0,
+			"synonym_of": 82
+		},
+		"152": {
+			"tid": 152,
+			"name": "dr. hooves",
+			"title": null,
+			"type": "char",
+			"uses": 0,
+			"synonym_of": 134
+		},
+		"153": {
+			"tid": 153,
+			"name": "dr hooves",
+			"title": null,
+			"type": "char",
+			"uses": 0,
+			"synonym_of": 134
+		},
+		"154": {
+			"tid": 154,
+			"name": "angel",
+			"title": null,
+			"type": "char",
+			"uses": 0,
+			"synonym_of": 155
+		},
+		"155": {
+			"tid": 155,
+			"name": "angel bunny",
+			"title": null,
+			"type": "char",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"156": {
+			"tid": 156,
+			"name": "bunny",
+			"title": null,
+			"type": "spec",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"157": {
+			"tid": 157,
+			"name": "doctor whooves",
+			"title": null,
+			"type": "char",
+			"uses": 0,
+			"synonym_of": 134
+		},
+		"158": {
+			"tid": 158,
+			"name": "coloratura",
+			"title": null,
+			"type": "char",
+			"uses": 2,
+			"synonym_of": null
+		},
+		"159": {
+			"tid": 159,
+			"name": "babs",
+			"title": null,
+			"type": "char",
+			"uses": 0,
+			"synonym_of": 132
+		},
+		"160": {
+			"tid": 160,
+			"name": "applebloom",
+			"title": null,
+			"type": "char",
+			"uses": 0,
+			"synonym_of": 46
+		},
+		"161": {
+			"tid": 161,
+			"name": "starlight",
+			"title": null,
+			"type": "char",
+			"uses": 0,
+			"synonym_of": 54
+		},
+		"162": {
+			"tid": 162,
+			"name": "moon dancer",
+			"title": null,
+			"type": "char",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"163": {
+			"tid": 163,
+			"name": "party favour",
+			"title": null,
+			"type": "char",
+			"uses": 0,
+			"synonym_of": 53
+		},
+		"164": {
+			"tid": 164,
+			"name": "ditzy doo",
+			"title": null,
+			"type": "char",
+			"uses": 0,
+			"synonym_of": 50
+		},
+		"165": {
+			"tid": 165,
+			"name": "cherilee",
+			"title": null,
+			"type": "char",
+			"uses": 0,
+			"synonym_of": 133
+		},
+		"167": {
+			"tid": 167,
+			"name": "ditzy",
+			"title": null,
+			"type": "char",
+			"uses": 0,
+			"synonym_of": 50
+		},
+		"168": {
+			"tid": 168,
+			"name": "s4e25",
+			"title": null,
+			"type": "ep",
+			"uses": 0,
+			"synonym_of": null
+		},
+		"169": {
+			"tid": 169,
+			"name": "s4e26",
+			"title": null,
+			"type": "ep",
+			"uses": 0,
+			"synonym_of": null
+		},
+		"170": {
+			"tid": 170,
+			"name": "centaur",
+			"title": null,
+			"type": "spec",
+			"uses": 4,
+			"synonym_of": null
+		},
+		"171": {
+			"tid": 171,
+			"name": "lord tirek",
+			"title": null,
+			"type": "char",
+			"uses": 4,
+			"synonym_of": null
+		},
+		"172": {
+			"tid": 172,
+			"name": "tirek",
+			"title": null,
+			"type": "char",
+			"uses": 0,
+			"synonym_of": 171
+		},
+		"173": {
+			"tid": 173,
+			"name": "s4e25-26",
 			"title": null,
 			"type": "ep",
 			"uses": 5,
 			"synonym_of": null
 		},
-		"188": {
-			"tid": 188,
-			"name": "s6e2",
+		"174": {
+			"tid": 174,
+			"name": "amulet",
 			"title": null,
-			"type": "ep",
-			"uses": 2,
+			"type": null,
+			"uses": 0,
+			"synonym_of": 62
+		},
+		"175": {
+			"tid": 175,
+			"name": "scorpan's medallion",
+			"title": null,
+			"type": null,
+			"uses": 1,
+			"synonym_of": null
+		},
+		"176": {
+			"tid": 176,
+			"name": "trixie lulamoon",
+			"title": null,
+			"type": "char",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"177": {
+			"tid": 177,
+			"name": "rose",
+			"title": null,
+			"type": "char",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"178": {
+			"tid": 178,
+			"name": "roseluck",
+			"title": null,
+			"type": "char",
+			"uses": 0,
+			"synonym_of": 177
+		},
+		"179": {
+			"tid": 179,
+			"name": "flower trio",
+			"title": "Flower-themed trio consisting of Rose, Daisy and Lily Valley.",
+			"type": "cat",
+			"uses": 1,
 			"synonym_of": null
 		},
 		"180": {
@@ -18142,6 +17878,246 @@
 			"uses": 0,
 			"synonym_of": null
 		},
+		"184": {
+			"tid": 184,
+			"name": "s5e1",
+			"title": null,
+			"type": "ep",
+			"uses": 0,
+			"synonym_of": null
+		},
+		"185": {
+			"tid": 185,
+			"name": "s6e1-2",
+			"title": null,
+			"type": "ep",
+			"uses": 5,
+			"synonym_of": null
+		},
+		"186": {
+			"tid": 186,
+			"name": "princess flurry heart",
+			"title": null,
+			"type": "char",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"187": {
+			"tid": 187,
+			"name": "twilight velvet",
+			"title": null,
+			"type": "char",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"188": {
+			"tid": 188,
+			"name": "s6e2",
+			"title": null,
+			"type": "ep",
+			"uses": 2,
+			"synonym_of": null
+		},
+		"189": {
+			"tid": 189,
+			"name": "night light",
+			"title": null,
+			"type": "char",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"190": {
+			"tid": 190,
+			"name": "trenderhoof",
+			"title": null,
+			"type": "char",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"191": {
+			"tid": 191,
+			"name": "s4e13",
+			"title": null,
+			"type": "ep",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"192": {
+			"tid": 192,
+			"name": "s4e14",
+			"title": null,
+			"type": "ep",
+			"uses": 4,
+			"synonym_of": null
+		},
+		"193": {
+			"tid": 193,
+			"name": "zipporwhill",
+			"title": null,
+			"type": "char",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"194": {
+			"tid": 194,
+			"name": "ziporwhill",
+			"title": null,
+			"type": "char",
+			"uses": 0,
+			"synonym_of": 193
+		},
+		"195": {
+			"tid": 195,
+			"name": "zipporwhil",
+			"title": null,
+			"type": "char",
+			"uses": 0,
+			"synonym_of": 193
+		},
+		"196": {
+			"tid": 196,
+			"name": "shining armour",
+			"title": null,
+			"type": "char",
+			"uses": 0,
+			"synonym_of": 77
+		},
+		"197": {
+			"tid": 197,
+			"name": "princess mi amore cadenza",
+			"title": null,
+			"type": "char",
+			"uses": 0,
+			"synonym_of": 128
+		},
+		"198": {
+			"tid": 198,
+			"name": "party cannon",
+			"title": null,
+			"type": null,
+			"uses": 1,
+			"synonym_of": null
+		},
+		"199": {
+			"tid": 199,
+			"name": "street rat",
+			"title": null,
+			"type": "char",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"200": {
+			"tid": 200,
+			"name": "hot fuzz",
+			"title": null,
+			"type": "char",
+			"uses": 0,
+			"synonym_of": null
+		},
+		"201": {
+			"tid": 201,
+			"name": "copper top",
+			"title": null,
+			"type": "char",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"202": {
+			"tid": 202,
+			"name": "bulk biceps",
+			"title": null,
+			"type": "char",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"203": {
+			"tid": 203,
+			"name": "tender taps",
+			"title": null,
+			"type": "char",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"204": {
+			"tid": 204,
+			"name": "hoofer steps",
+			"title": null,
+			"type": "char",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"205": {
+			"tid": 205,
+			"name": "cloudchaser",
+			"title": null,
+			"type": "char",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"206": {
+			"tid": 206,
+			"name": "thunderlane",
+			"title": null,
+			"type": "char",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"207": {
+			"tid": 207,
+			"name": "thunderclap",
+			"title": null,
+			"type": "char",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"208": {
+			"tid": 208,
+			"name": "flitter",
+			"title": null,
+			"type": "char",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"209": {
+			"tid": 209,
+			"name": "s2e22",
+			"title": null,
+			"type": "ep",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"210": {
+			"tid": 210,
+			"name": "twilight sky",
+			"title": null,
+			"type": "char",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"212": {
+			"tid": 212,
+			"name": "pony tones outfit",
+			"title": null,
+			"type": "app",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"213": {
+			"tid": 213,
+			"name": "pony tones",
+			"title": null,
+			"type": "cat",
+			"uses": 3,
+			"synonym_of": null
+		},
+		"214": {
+			"tid": 214,
+			"name": "ponytones",
+			"title": null,
+			"type": "cat",
+			"uses": 0,
+			"synonym_of": 213
+		},
 		"215": {
 			"tid": 215,
 			"name": "s6e7",
@@ -18166,29 +18142,101 @@
 			"uses": 0,
 			"synonym_of": null
 		},
-		"12": {
-			"tid": 12,
-			"name": "female",
+		"218": {
+			"tid": 218,
+			"name": "torch song",
 			"title": null,
-			"type": "gen",
-			"uses": 66,
+			"type": "char",
+			"uses": 1,
 			"synonym_of": null
 		},
-		"11": {
-			"tid": 11,
-			"name": "male",
+		"219": {
+			"tid": 219,
+			"name": "toe tapper",
 			"title": null,
-			"type": "gen",
-			"uses": 29,
+			"type": "char",
+			"uses": 1,
 			"synonym_of": null
 		},
-		"4": {
-			"tid": 4,
-			"name": "alicorn",
+		"220": {
+			"tid": 220,
+			"name": "minty bubblegum",
+			"title": null,
+			"type": "char",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"221": {
+			"tid": 221,
+			"name": "zebra",
 			"title": null,
 			"type": "spec",
-			"uses": 5,
+			"uses": 1,
 			"synonym_of": null
+		},
+		"222": {
+			"tid": 222,
+			"name": "zecora",
+			"title": null,
+			"type": "char",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"223": {
+			"tid": 223,
+			"name": "octavia",
+			"title": null,
+			"type": "char",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"224": {
+			"tid": 224,
+			"name": "bon bon",
+			"title": null,
+			"type": "char",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"225": {
+			"tid": 225,
+			"name": "sweetie drops",
+			"title": null,
+			"type": "char",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"226": {
+			"tid": 226,
+			"name": "cheerelie",
+			"title": null,
+			"type": "char",
+			"uses": 0,
+			"synonym_of": 133
+		},
+		"227": {
+			"tid": 227,
+			"name": "cheereliee",
+			"title": null,
+			"type": "char",
+			"uses": 0,
+			"synonym_of": 133
+		},
+		"228": {
+			"tid": 228,
+			"name": "cherelee",
+			"title": null,
+			"type": "char",
+			"uses": 0,
+			"synonym_of": 133
+		},
+		"229": {
+			"tid": 229,
+			"name": "cheerile",
+			"title": null,
+			"type": "char",
+			"uses": 0,
+			"synonym_of": 133
 		},
 		"230": {
 			"tid": 230,
@@ -18198,65 +18246,73 @@
 			"uses": 1,
 			"synonym_of": null
 		},
-		"5": {
-			"tid": 5,
-			"name": "bat pony",
+		"231": {
+			"tid": 231,
+			"name": "gummy",
 			"title": null,
-			"type": "spec",
-			"uses": 0,
+			"type": "char",
+			"uses": 1,
 			"synonym_of": null
 		},
-		"156": {
-			"tid": 156,
-			"name": "bunny",
+		"232": {
+			"tid": 232,
+			"name": "orange frog",
 			"title": null,
-			"type": "spec",
+			"type": "char",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"233": {
+			"tid": 233,
+			"name": "s3e3",
+			"title": null,
+			"type": "ep",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"234": {
+			"tid": 234,
+			"name": "cutie mark crusader cape",
+			"title": null,
+			"type": "app",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"235": {
+			"tid": 235,
+			"name": "fake timberwolf",
+			"title": null,
+			"type": null,
+			"uses": 1,
+			"synonym_of": null
+		},
+		"236": {
+			"tid": 236,
+			"name": "s3e9",
+			"title": null,
+			"type": "ep",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"237": {
+			"tid": 237,
+			"name": "cutie mark crusaders",
+			"title": null,
+			"type": "cat",
+			"uses": 0,
+			"synonym_of": 45
+		},
+		"238": {
+			"tid": 238,
+			"name": "winona",
+			"title": null,
+			"type": "char",
 			"uses": 1,
 			"synonym_of": null
 		},
 		"239": {
 			"tid": 239,
 			"name": "canine",
-			"title": null,
-			"type": "spec",
-			"uses": 1,
-			"synonym_of": null
-		},
-		"170": {
-			"tid": 170,
-			"name": "centaur",
-			"title": null,
-			"type": "spec",
-			"uses": 4,
-			"synonym_of": null
-		},
-		"90": {
-			"tid": 90,
-			"name": "draconequus",
-			"title": null,
-			"type": "spec",
-			"uses": 1,
-			"synonym_of": null
-		},
-		"29": {
-			"tid": 29,
-			"name": "dragon",
-			"title": null,
-			"type": "spec",
-			"uses": 1,
-			"synonym_of": null
-		},
-		"2": {
-			"tid": 2,
-			"name": "earth pony",
-			"title": null,
-			"type": "spec",
-			"uses": 36,
-			"synonym_of": null
-		},
-		"76": {
-			"tid": 76,
-			"name": "human",
 			"title": null,
 			"type": "spec",
 			"uses": 1,
@@ -18270,77 +18326,21 @@
 			"uses": 1,
 			"synonym_of": null
 		},
-		"3": {
-			"tid": 3,
-			"name": "pegasus",
+		"241": {
+			"tid": 241,
+			"name": "owlowiscious",
 			"title": null,
-			"type": "spec",
-			"uses": 19,
-			"synonym_of": null
-		},
-		"1": {
-			"tid": 1,
-			"name": "unicorn",
-			"title": null,
-			"type": "spec",
-			"uses": 27,
-			"synonym_of": null
-		},
-		"221": {
-			"tid": 221,
-			"name": "zebra",
-			"title": null,
-			"type": "spec",
+			"type": "char",
 			"uses": 1,
 			"synonym_of": null
 		},
-		"62": {
-			"tid": 62,
-			"name": "alicorn amulet",
+		"242": {
+			"tid": 242,
+			"name": "owloysius",
 			"title": null,
-			"type": null,
-			"uses": 1,
-			"synonym_of": null
-		},
-		"174": {
-			"tid": 174,
-			"name": "amulet",
-			"title": null,
-			"type": null,
+			"type": "char",
 			"uses": 0,
-			"synonym_of": 62
-		},
-		"235": {
-			"tid": 235,
-			"name": "fake timberwolf",
-			"title": null,
-			"type": null,
-			"uses": 1,
-			"synonym_of": null
-		},
-		"96": {
-			"tid": 96,
-			"name": "outfit",
-			"title": "Alternative character outfits",
-			"type": null,
-			"uses": 5,
-			"synonym_of": null
-		},
-		"198": {
-			"tid": 198,
-			"name": "party cannon",
-			"title": null,
-			"type": null,
-			"uses": 1,
-			"synonym_of": null
-		},
-		"175": {
-			"tid": 175,
-			"name": "scorpan's medallion",
-			"title": null,
-			"type": null,
-			"uses": 1,
-			"synonym_of": null
+			"synonym_of": 241
 		}
 	}
 }

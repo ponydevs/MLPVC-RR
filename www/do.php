@@ -1358,7 +1358,7 @@
 							'Tags' => array(),
 						);
 
-						$Tags = get_tags(null,null,true);
+						$Tags = $CGDb->orderBy('tid','ASC')->get('tags');
 						if (!empty($Tags)) foreach ($Tags as $t){
 							$JSON['Tags'][$t['tid']] = $t;
 						}
@@ -1386,9 +1386,9 @@
 							}
 
 							$AppendAppearance['TagIDs'] = array();
-							$Tags = get_tags($p['id'],null,true);
-							if (!empty($Tags))
-								foreach ($Tags as $t)
+							$TagIDs = get_tags($p['id'],null,null,true);
+							if (!empty($TagIDs))
+								foreach ($TagIDs as $t)
 									$AppendAppearance['TagIDs'][] = $t['tid'];
 
 							$JSON['Appearances'][$p['id']] = $AppendAppearance;
