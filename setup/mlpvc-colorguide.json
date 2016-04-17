@@ -1538,7 +1538,7 @@
 						{
 							"order": 0,
 							"label": "Outline",
-							"hex": "#6B012C"
+							"hex": "#6B002C"
 						},
 						{
 							"order": 1,
@@ -2424,12 +2424,12 @@
 						{
 							"order": 0,
 							"label": "Outline + Wing Gr. Start",
-							"hex": "#FDB8DA"
+							"hex": "#FFB8DA"
 						},
 						{
 							"order": 1,
 							"label": "Fill + Wing Gr. Start",
-							"hex": "#FCF2FB"
+							"hex": "#FFF2FB"
 						},
 						{
 							"order": 2,
@@ -2498,7 +2498,7 @@
 						{
 							"order": 3,
 							"label": "Highlight Bottom",
-							"hex": "#FBFDFE"
+							"hex": "#FBFFFF"
 						}
 					]
 				},
@@ -6532,7 +6532,7 @@
 						{
 							"order": 4,
 							"label": "Highlight Bottom",
-							"hex": "#FBFDFD"
+							"hex": "#FBFFFF"
 						}
 					]
 				},
@@ -6632,7 +6632,7 @@
 						{
 							"order": 0,
 							"label": "Fill 1",
-							"hex": "#FCFFAB"
+							"hex": "#FFFFAB"
 						},
 						{
 							"order": 1,
@@ -7068,7 +7068,7 @@
 						{
 							"order": 0,
 							"label": "Outline",
-							"hex": "#FD80C6"
+							"hex": "#FF80C6"
 						},
 						{
 							"order": 1,
@@ -7139,12 +7139,12 @@
 						{
 							"order": 0,
 							"label": "Candy 1",
-							"hex": "#FD81BA"
+							"hex": "#FF81BA"
 						},
 						{
 							"order": 1,
 							"label": "Candy 2",
-							"hex": "#FEAD89"
+							"hex": "#FFAD89"
 						},
 						{
 							"order": 2,
@@ -7184,7 +7184,7 @@
 						{
 							"order": 9,
 							"label": "Cherry Fill",
-							"hex": "#FD696D"
+							"hex": "#FF696D"
 						},
 						{
 							"order": 10,
@@ -7233,7 +7233,7 @@
 						{
 							"order": 3,
 							"label": "Fill 2",
-							"hex": "#D1FEEC"
+							"hex": "#D1FFEC"
 						}
 					]
 				}
@@ -7315,7 +7315,7 @@
 						{
 							"order": 1,
 							"label": "Gradient Middle",
-							"hex": "#6E9FFC"
+							"hex": "#6E9FFF"
 						},
 						{
 							"order": 2,
@@ -7347,7 +7347,7 @@
 						{
 							"order": 3,
 							"label": "Balloon Fill 4",
-							"hex": "#FED3E9"
+							"hex": "#FFD3E9"
 						},
 						{
 							"order": 4,
@@ -7357,12 +7357,12 @@
 						{
 							"order": 5,
 							"label": "Confetti 2",
-							"hex": "#FDAE75"
+							"hex": "#FFAE75"
 						},
 						{
 							"order": 6,
 							"label": "Confetti 3",
-							"hex": "#FCD269"
+							"hex": "#FFD269"
 						},
 						{
 							"order": 7,
@@ -7411,7 +7411,7 @@
 						{
 							"order": 2,
 							"label": "Fill",
-							"hex": "#B1EAFD"
+							"hex": "#B1EAFF"
 						}
 					]
 				},
@@ -7534,7 +7534,7 @@
 						{
 							"order": 3,
 							"label": "Stud Fill 1",
-							"hex": "#FFFCCB"
+							"hex": "#FFFFCB"
 						},
 						{
 							"order": 4,
@@ -7571,7 +7571,7 @@
 						{
 							"order": 4,
 							"label": "Seat fill",
-							"hex": "#FEFBAA"
+							"hex": "#FFFBAA"
 						},
 						{
 							"order": 5,
@@ -7586,7 +7586,7 @@
 						{
 							"order": 7,
 							"label": "Stud Fill 1",
-							"hex": "#FFFCCB"
+							"hex": "#FFFFCB"
 						},
 						{
 							"order": 8,
@@ -8182,7 +8182,7 @@
 						{
 							"order": 1,
 							"label": "Fill",
-							"hex": "#FCF5DB"
+							"hex": "#FFF5DB"
 						},
 						{
 							"order": 2,
@@ -8376,7 +8376,7 @@
 						{
 							"order": 1,
 							"label": "Fill 2",
-							"hex": "#FCE36D"
+							"hex": "#FFE36D"
 						}
 					]
 				}
@@ -8462,7 +8462,7 @@
 						{
 							"order": 1,
 							"label": "Gradient Middle",
-							"hex": "#B863FC"
+							"hex": "#B863FF"
 						},
 						{
 							"order": 2,
@@ -8472,7 +8472,7 @@
 						{
 							"order": 3,
 							"label": "Highlight",
-							"hex": "#E6C5FD"
+							"hex": "#E6C5FF"
 						}
 					]
 				},
@@ -8819,7 +8819,7 @@
 						{
 							"order": 0,
 							"label": "Outline",
-							"hex": "#AA4401"
+							"hex": "#AA4400"
 						},
 						{
 							"order": 1,
@@ -8841,17 +8841,17 @@
 						{
 							"order": 0,
 							"label": "Gradient Top",
-							"hex": "#422302"
+							"hex": "#422300"
 						},
 						{
 							"order": 1,
 							"label": "Gradient Bottom",
-							"hex": "#CF6E03"
+							"hex": "#CF6E00"
 						},
 						{
 							"order": 2,
 							"label": "Highlight Top",
-							"hex": "#D36E02"
+							"hex": "#D36E00"
 						},
 						{
 							"order": 3,
@@ -8861,7 +8861,7 @@
 						{
 							"order": 4,
 							"label": "Eyelid Highlight",
-							"hex": "#FEFEAE"
+							"hex": "#FFFFAE"
 						}
 					]
 				},
@@ -8873,7 +8873,7 @@
 						{
 							"order": 0,
 							"label": "Outline",
-							"hex": "#AA4401"
+							"hex": "#AA4400"
 						},
 						{
 							"order": 1,
@@ -8952,7 +8952,7 @@
 						{
 							"order": 2,
 							"label": "Blue Fill",
-							"hex": "#D4F3FC"
+							"hex": "#D4F3FF"
 						}
 					]
 				},
@@ -8964,7 +8964,7 @@
 						{
 							"order": 0,
 							"label": "Gradient Top",
-							"hex": "#320141"
+							"hex": "#320041"
 						},
 						{
 							"order": 1,
@@ -8979,7 +8979,7 @@
 						{
 							"order": 3,
 							"label": "Highlight Bottom",
-							"hex": "#FDCAE9"
+							"hex": "#FFCAE9"
 						}
 					]
 				},
@@ -8991,7 +8991,7 @@
 						{
 							"order": 0,
 							"label": "Air Wave",
-							"hex": "#FCFF98"
+							"hex": "#FFFF98"
 						},
 						{
 							"order": 1,
@@ -9166,7 +9166,7 @@
 						{
 							"order": 1,
 							"label": "Fill 1",
-							"hex": "#BBEAFD"
+							"hex": "#BBEAFF"
 						},
 						{
 							"order": 2,
@@ -9305,7 +9305,7 @@
 						{
 							"order": 1,
 							"label": "Fill",
-							"hex": "#FE97FE"
+							"hex": "#FF97FF"
 						}
 					]
 				},
@@ -9776,7 +9776,7 @@
 						{
 							"order": 0,
 							"label": "Fill",
-							"hex": "#FC0000"
+							"hex": "#FF0000"
 						}
 					]
 				},
@@ -9835,7 +9835,7 @@
 						{
 							"order": 5,
 							"label": "Tongue Fill",
-							"hex": "#FE9898"
+							"hex": "#FF9898"
 						}
 					]
 				},
@@ -10241,7 +10241,7 @@
 						{
 							"order": 1,
 							"label": "Moon 2",
-							"hex": "#FDFDCB"
+							"hex": "#FFFFCB"
 						},
 						{
 							"order": 2,
@@ -10375,7 +10375,7 @@
 						{
 							"order": 2,
 							"label": "Fill 2",
-							"hex": "#FDBF36"
+							"hex": "#FFBF36"
 						}
 					]
 				},
@@ -10516,7 +10516,7 @@
 						{
 							"order": 1,
 							"label": "Gradient Bottom",
-							"hex": "#FCEBA5"
+							"hex": "#FFEBA5"
 						},
 						{
 							"order": 2,
@@ -10669,7 +10669,7 @@
 						{
 							"order": 1,
 							"label": "Fill",
-							"hex": "#FAFCEE"
+							"hex": "#FAFFEE"
 						}
 					]
 				},
@@ -10756,7 +10756,7 @@
 						{
 							"order": 1,
 							"label": "Fill",
-							"hex": "#FCF8AC"
+							"hex": "#FFF8AC"
 						},
 						{
 							"order": 2,
@@ -10812,7 +10812,7 @@
 						{
 							"order": 0,
 							"label": "Fill",
-							"hex": "#FCF6AD"
+							"hex": "#FFF6AD"
 						}
 					]
 				},
@@ -10886,7 +10886,7 @@
 						{
 							"order": 4,
 							"label": "Apple Stem 1",
-							"hex": "#DAFC87"
+							"hex": "#DAFF87"
 						},
 						{
 							"order": 5,
@@ -11165,7 +11165,7 @@
 						{
 							"order": 1,
 							"label": "Centers",
-							"hex": "#FDF6B0"
+							"hex": "#FFF6B0"
 						},
 						{
 							"order": 2,
@@ -11245,12 +11245,12 @@
 						{
 							"order": 0,
 							"label": "Gradient Bottom",
-							"hex": "#A9E6FD"
+							"hex": "#A9E6FF"
 						},
 						{
 							"order": 1,
 							"label": "Gradient Middle",
-							"hex": "#6DA4FD"
+							"hex": "#6DA4FF"
 						},
 						{
 							"order": 2,
@@ -11704,7 +11704,7 @@
 						{
 							"order": 1,
 							"label": "Collar Fill",
-							"hex": "#FEFEFE"
+							"hex": "#FFFFFF"
 						},
 						{
 							"order": 2,
@@ -11851,12 +11851,12 @@
 						{
 							"order": 2,
 							"label": "Highlight Top",
-							"hex": "#C3F4FD"
+							"hex": "#C3F4FF"
 						},
 						{
 							"order": 3,
 							"label": "Highlight Bottom",
-							"hex": "#EFFCFC"
+							"hex": "#EFFFFF"
 						}
 					]
 				},
@@ -12445,7 +12445,7 @@
 						{
 							"order": 3,
 							"label": "Stone Fill 1",
-							"hex": "#FEFEFE"
+							"hex": "#FFFFFF"
 						},
 						{
 							"order": 4,
@@ -12960,7 +12960,7 @@
 						{
 							"order": 1,
 							"label": "Fill 1",
-							"hex": "#F2FBFC"
+							"hex": "#F2FBFF"
 						},
 						{
 							"order": 2,
@@ -12982,7 +12982,7 @@
 						{
 							"order": 1,
 							"label": "Gradient Middle",
-							"hex": "#6E9FFC"
+							"hex": "#6E9FFF"
 						},
 						{
 							"order": 2,
@@ -13849,7 +13849,7 @@
 						{
 							"order": 1,
 							"label": "Fill",
-							"hex": "#FCEFB9"
+							"hex": "#FFEFB9"
 						},
 						{
 							"order": 2,
@@ -13925,7 +13925,7 @@
 						{
 							"order": 1,
 							"label": "Side Shine",
-							"hex": "#FCD248"
+							"hex": "#FFD248"
 						},
 						{
 							"order": 2,
@@ -13935,7 +13935,7 @@
 						{
 							"order": 3,
 							"label": "Face Fill",
-							"hex": "#FEDA6C"
+							"hex": "#FFDA6C"
 						}
 					]
 				},
@@ -13952,7 +13952,7 @@
 						{
 							"order": 1,
 							"label": "Gold Tooth Fill",
-							"hex": "#FEDA6C"
+							"hex": "#FFDA6C"
 						},
 						{
 							"order": 2,
@@ -13979,7 +13979,7 @@
 						{
 							"order": 1,
 							"label": "Fill",
-							"hex": "#FD9A97"
+							"hex": "#FF9A97"
 						},
 						{
 							"order": 2,
@@ -14033,7 +14033,7 @@
 						{
 							"order": 1,
 							"label": "Fill 1",
-							"hex": "#FEF7C2"
+							"hex": "#FFF7C2"
 						},
 						{
 							"order": 2,
@@ -14055,7 +14055,7 @@
 						{
 							"order": 1,
 							"label": "Fill 1",
-							"hex": "#FCDB6C"
+							"hex": "#FFDB6C"
 						},
 						{
 							"order": 2,
@@ -14124,12 +14124,12 @@
 						{
 							"order": 1,
 							"label": "Fill 1",
-							"hex": "#FDA258"
+							"hex": "#FFA258"
 						},
 						{
 							"order": 2,
 							"label": "Fill 2",
-							"hex": "#FED17F"
+							"hex": "#FFD17F"
 						}
 					]
 				},
@@ -14328,17 +14328,17 @@
 						{
 							"order": 0,
 							"label": "Outline",
-							"hex": "#FDCC73"
+							"hex": "#FFCC73"
 						},
 						{
 							"order": 1,
 							"label": "Fill 1",
-							"hex": "#FCEBA6"
+							"hex": "#FFEBA6"
 						},
 						{
 							"order": 2,
 							"label": "Fill 2",
-							"hex": "#FDDE8C"
+							"hex": "#FFDE8C"
 						},
 						{
 							"order": 3,
@@ -14439,7 +14439,7 @@
 						{
 							"order": 5,
 							"label": "Skirt Fill",
-							"hex": "#FCF0F7"
+							"hex": "#FFF0F7"
 						},
 						{
 							"order": 6,
@@ -14540,7 +14540,7 @@
 						{
 							"order": 1,
 							"label": "Gradient Bottom",
-							"hex": "#FDED9C"
+							"hex": "#FFED9C"
 						},
 						{
 							"order": 2,
@@ -15211,12 +15211,12 @@
 						{
 							"order": 3,
 							"label": "Eye Stroke",
-							"hex": "#6E0303"
+							"hex": "#6E0000"
 						},
 						{
 							"order": 4,
 							"label": "Eye Fill",
-							"hex": "#DA0101"
+							"hex": "#DA0000"
 						}
 					]
 				},
@@ -15265,22 +15265,22 @@
 						{
 							"order": 2,
 							"label": "Red Outline",
-							"hex": "#6E0303"
+							"hex": "#6E0000"
 						},
 						{
 							"order": 3,
 							"label": "Red Fill 1",
-							"hex": "#B10101"
+							"hex": "#B10000"
 						},
 						{
 							"order": 4,
 							"label": "Red Fill 2",
-							"hex": "#DA0101"
+							"hex": "#DA0000"
 						},
 						{
 							"order": 5,
 							"label": "Red Fill 3",
-							"hex": "#FD080B"
+							"hex": "#FF080B"
 						}
 					]
 				},
@@ -15319,27 +15319,27 @@
 						{
 							"order": 0,
 							"label": "Outline",
-							"hex": "#6E0303"
+							"hex": "#6E0000"
 						},
 						{
 							"order": 1,
 							"label": "Center Fill",
-							"hex": "#FCB3B3"
+							"hex": "#FFB3B3"
 						},
 						{
 							"order": 2,
 							"label": "Fill 1",
-							"hex": "#B10101"
+							"hex": "#B10000"
 						},
 						{
 							"order": 3,
 							"label": "Fill 2",
-							"hex": "#FD080B"
+							"hex": "#FF080B"
 						},
 						{
 							"order": 4,
 							"label": "Fill 3",
-							"hex": "#FE9292"
+							"hex": "#FF9292"
 						}
 					]
 				},
@@ -15351,12 +15351,12 @@
 						{
 							"order": 0,
 							"label": "Magic Aura/Eye Aura",
-							"hex": "#FD080B"
+							"hex": "#FF080B"
 						},
 						{
 							"order": 1,
 							"label": "Iris",
-							"hex": "#B10101"
+							"hex": "#B10000"
 						}
 					]
 				}
@@ -15563,7 +15563,7 @@
 						{
 							"order": 9,
 							"label": "Flower Pedal Fill",
-							"hex": "#FDF6AC"
+							"hex": "#FFF6AC"
 						}
 					]
 				}
@@ -15810,7 +15810,7 @@
 						{
 							"order": 2,
 							"label": "Lightning Fill",
-							"hex": "#FEFE98"
+							"hex": "#FFFF98"
 						},
 						{
 							"order": 3,
@@ -15842,12 +15842,12 @@
 						{
 							"order": 2,
 							"label": "Strap Fill",
-							"hex": "#FDFE98"
+							"hex": "#FFFF98"
 						},
 						{
 							"order": 3,
 							"label": "Spitfire's Strap Fill",
-							"hex": "#FDFEBD"
+							"hex": "#FFFFBD"
 						},
 						{
 							"order": 4,
@@ -15907,7 +15907,7 @@
 						{
 							"order": 2,
 							"label": "Yellow Fill",
-							"hex": "#FEFE98"
+							"hex": "#FFFF98"
 						}
 					]
 				},
@@ -18379,7 +18379,7 @@
 		"243": {
 			"tid": 243,
 			"name": "dog",
-			"title": "",
+			"title": null,
 			"type": "spec",
 			"uses": 0,
 			"synonym_of": 239
@@ -18387,7 +18387,7 @@
 		"244": {
 			"tid": 244,
 			"name": "owlicious",
-			"title": "",
+			"title": null,
 			"type": "char",
 			"uses": 0,
 			"synonym_of": 241
@@ -18395,7 +18395,7 @@
 		"245": {
 			"tid": 245,
 			"name": "owliscius",
-			"title": "",
+			"title": null,
 			"type": "char",
 			"uses": 0,
 			"synonym_of": 241
@@ -18403,7 +18403,7 @@
 		"246": {
 			"tid": 246,
 			"name": "owliscious",
-			"title": "",
+			"title": null,
 			"type": "char",
 			"uses": 0,
 			"synonym_of": 241
@@ -18411,7 +18411,7 @@
 		"247": {
 			"tid": 247,
 			"name": "creatures",
-			"title": "",
+			"title": null,
 			"type": "cat",
 			"uses": 1,
 			"synonym_of": null
@@ -18419,7 +18419,7 @@
 		"248": {
 			"tid": 248,
 			"name": "frog",
-			"title": "",
+			"title": null,
 			"type": "spec",
 			"uses": 1,
 			"synonym_of": null
