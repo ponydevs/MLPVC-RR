@@ -912,7 +912,7 @@ HTML;
 
 		$ColorMapping = array();
 		foreach ($Colors as $row){
-			$label = $row['cglabel'].' '.regex_replace(new RegExp('(\s\d+)?(/.*)?$'),'', $row['label']);
+			$label = $row['cglabel'].' '.regex_replace(new RegExp('^(?:(?:Main|First|Normal)\s)?(.+?)(?:\s\d+)?(?:/.*)?$'),'$1', $row['label']);
 			if (isset($DefaultColorMapping[$label]) && !isset($ColorMapping[$label]))
 				$ColorMapping[$label] = $row['hex'];
 		}
