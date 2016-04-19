@@ -43,7 +43,7 @@
 						},
 						{
 							"order": 5,
-							"label": "Tongue Dark",
+							"label": "Tongue Stroke",
 							"hex": "#BE4406"
 						}
 					]
@@ -597,32 +597,32 @@
 					"Colors": [
 						{
 							"order": 0,
-							"label": "Outline/Blue Fill",
+							"label": "Outline/Fill 1",
 							"hex": "#1B98D1"
 						},
 						{
 							"order": 1,
-							"label": "Red Fill",
+							"label": "Fill 2",
 							"hex": "#EC4141"
 						},
 						{
 							"order": 2,
-							"label": "Orange Fill",
+							"label": "Fill 3",
 							"hex": "#EF7135"
 						},
 						{
 							"order": 3,
-							"label": "Yellow Fill",
+							"label": "Fill 4",
 							"hex": "#FAF5AB"
 						},
 						{
 							"order": 4,
-							"label": "Green Fill",
+							"label": "Fill 5",
 							"hex": "#5FBB4E"
 						},
 						{
 							"order": 5,
-							"label": "Purple Fill",
+							"label": "Fill 6",
 							"hex": "#632E86"
 						}
 					]
@@ -6096,7 +6096,7 @@
 			"order": 42,
 			"label": "Vinyl Scratch / DJ Pon-3",
 			"notes": "Based on S5E9.",
-			"cm_favme": "d58fbhj",
+			"cm_favme": "d9zhh0l",
 			"ishuman": false,
 			"added": "2016-02-28 00:56:35.641502+01",
 			"cm_preview": null,
@@ -6320,11 +6320,11 @@
 			"order": 43,
 			"label": "Rose",
 			"notes": "Far legs use darker colors.",
-			"cm_favme": "d5it5t6",
+			"cm_favme": "d9zhguu",
 			"ishuman": false,
 			"added": "2016-03-25 23:41:37.557224+01",
 			"cm_preview": null,
-			"cm_dir": false,
+			"cm_dir": true,
 			"ColorGroups": {
 				"484": {
 					"groupid": 484,
@@ -7405,7 +7405,7 @@
 						},
 						{
 							"order": 1,
-							"label": "Inside Outlines (Ear, horn)",
+							"label": "Inside Outlines (Ear, Horn)",
 							"hex": "#57ACD4"
 						},
 						{
@@ -10710,10 +10710,10 @@
 			"order": 72,
 			"label": "Big McIntosh",
 			"notes": "Far legs use darker colors.",
-			"cm_favme": "d5dwm4b",
+			"cm_favme": "d9zhgk0",
 			"ishuman": false,
 			"added": "2015-10-04 21:11:42+02",
-			"cm_preview": "https://t10.deviantart.net/RiwtrISi3FaWzJvJQ0U5C0pFIKE=/fit-in/300x900/filters:no_upscale():origin()/pre06/2ab8/th/pre/i/2016/057/d/d/bigmac_cm_by_yanoda-d9t76qn.png",
+			"cm_preview": null,
 			"cm_dir": true,
 			"ColorGroups": {
 				"211": {
@@ -11009,22 +11009,22 @@
 						},
 						{
 							"order": 3,
-							"label": "Pie FIll 1",
+							"label": "Pie Fill 1",
 							"hex": "#B68145"
 						},
 						{
 							"order": 4,
-							"label": "Pie FIll 2",
+							"label": "Pie Fill 2",
 							"hex": "#D29752"
 						},
 						{
 							"order": 5,
-							"label": "Pie FIll 3",
+							"label": "Pie Fill 3",
 							"hex": "#E4A95A"
 						},
 						{
 							"order": 6,
-							"label": "Pie FIll 4",
+							"label": "Pie Fill 4",
 							"hex": "#FBB963"
 						}
 					]
@@ -11456,7 +11456,7 @@
 		"110": {
 			"id": 110,
 			"order": 77,
-			"label": "Octavia",
+			"label": "Octavia Melody",
 			"notes": "",
 			"cm_favme": null,
 			"ishuman": false,
@@ -11579,7 +11579,8 @@
 				2,
 				7,
 				12,
-				223
+				223,
+				260
 			]
 		},
 		"76": {
@@ -12216,7 +12217,7 @@
 						},
 						{
 							"order": 4,
-							"label": "Eyeshadow (Same as mane fill)",
+							"label": "Eyeshadow (Matches Mane Fill)",
 							"hex": "#9885B7"
 						}
 					]
@@ -13226,7 +13227,7 @@
 						},
 						{
 							"order": 1,
-							"label": "Main Fill 1 + Gradient End 1",
+							"label": "Main Fill 1/Gradient End 1",
 							"hex": "#3E3860"
 						},
 						{
@@ -13236,7 +13237,7 @@
 						},
 						{
 							"order": 3,
-							"label": "Gradient End 2 + Stripes",
+							"label": "Stripes/Gradient End 2",
 							"hex": "#339CAB"
 						}
 					]
@@ -14727,9 +14728,166 @@
 				218
 			]
 		},
+		"121": {
+			"id": 121,
+			"order": 96,
+			"label": "Braeburn",
+			"notes": "",
+			"cm_favme": "d9zls6n",
+			"ishuman": false,
+			"added": "2016-04-19 16:48:33.321315+02",
+			"cm_preview": null,
+			"cm_dir": true,
+			"ColorGroups": {
+				"638": {
+					"groupid": 638,
+					"label": "Coat",
+					"order": 0,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#D0A02E"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#EDE58E"
+						},
+						{
+							"order": 2,
+							"label": "Shadow Outline",
+							"hex": "#C4973B"
+						},
+						{
+							"order": 3,
+							"label": "Shadow Fill",
+							"hex": "#D9C273"
+						}
+					]
+				},
+				"639": {
+					"groupid": 639,
+					"label": "Mane & Tail",
+					"order": 1,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#B27B29"
+						},
+						{
+							"order": 1,
+							"label": "Fill 1",
+							"hex": "#DB9E44"
+						},
+						{
+							"order": 2,
+							"label": "Fill 2",
+							"hex": "#E3CC6F"
+						}
+					]
+				},
+				"640": {
+					"groupid": 640,
+					"label": "Iris",
+					"order": 2,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Gradient Top",
+							"hex": "#275C00"
+						},
+						{
+							"order": 1,
+							"label": "Gradient Middle",
+							"hex": "#3EA034"
+						},
+						{
+							"order": 2,
+							"label": "Gradient Bottom",
+							"hex": "#8BE64E"
+						}
+					]
+				},
+				"641": {
+					"groupid": 641,
+					"label": "Cutie Mark",
+					"order": 3,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Stem",
+							"hex": "#41311A"
+						},
+						{
+							"order": 1,
+							"label": "Apple",
+							"hex": "#DE3825"
+						}
+					]
+				},
+				"643": {
+					"groupid": 643,
+					"label": "Shoulder Clothing",
+					"order": 4,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#533619"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#9A642E"
+						},
+						{
+							"order": 2,
+							"label": "Stitches",
+							"hex": "#D5A242"
+						}
+					]
+				},
+				"644": {
+					"groupid": 644,
+					"label": "Hat",
+					"order": 5,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline 1",
+							"hex": "#351E0F"
+						},
+						{
+							"order": 1,
+							"label": "Fill 1",
+							"hex": "#4C3117"
+						},
+						{
+							"order": 2,
+							"label": "Outline 2",
+							"hex": "#52361B"
+						},
+						{
+							"order": 3,
+							"label": "Fill 2",
+							"hex": "#9A642E"
+						}
+					]
+				}
+			},
+			"TagIDs": [
+				2,
+				7,
+				11,
+				258,
+				259
+			]
+		},
 		"64": {
 			"id": 64,
-			"order": 96,
+			"order": 97,
 			"label": "Angel Bunny",
 			"notes": "",
 			"cm_favme": null,
@@ -14842,7 +15000,7 @@
 		},
 		"112": {
 			"id": 112,
-			"order": 97,
+			"order": 98,
 			"label": "Gummy",
 			"notes": "In 3/4 view, the top line on his far eye uses the \"Far Eye Top Line\" color instead of the normal gradient.",
 			"cm_favme": null,
@@ -14901,12 +15059,12 @@
 						{
 							"order": 2,
 							"label": "Lines Gradient Top",
-							"hex": "#B76DF5"
+							"hex": "#B04DF9"
 						},
 						{
 							"order": 3,
 							"label": "Lines Gradient Bottom",
-							"hex": "#B04EF8"
+							"hex": "#B96DF5"
 						},
 						{
 							"order": 4,
@@ -14915,6 +15073,11 @@
 						},
 						{
 							"order": 5,
+							"label": "Gradient Middle",
+							"hex": "#C478F9"
+						},
+						{
+							"order": 6,
 							"label": "Gradient Bottom",
 							"hex": "#E6CCFF"
 						}
@@ -14952,12 +15115,12 @@
 						},
 						{
 							"order": 5,
-							"label": "Mouth Fill",
+							"label": "Fill",
 							"hex": "#990033"
 						},
 						{
 							"order": 6,
-							"label": "Dark Mouth Fill",
+							"label": "Dark Fill",
 							"hex": "#4A001D"
 						}
 					]
@@ -14967,12 +15130,13 @@
 				10,
 				11,
 				230,
-				231
+				231,
+				253
 			]
 		},
 		"116": {
 			"id": 116,
-			"order": 98,
+			"order": 99,
 			"label": "Winona",
 			"notes": "",
 			"cm_favme": null,
@@ -15105,7 +15269,7 @@
 		},
 		"117": {
 			"id": 117,
-			"order": 99,
+			"order": 100,
 			"label": "Owlowiscious",
 			"notes": "",
 			"cm_favme": null,
@@ -15192,7 +15356,7 @@
 		},
 		"119": {
 			"id": 119,
-			"order": 100,
+			"order": 101,
 			"label": "Tank",
 			"notes": "Far Legs use darker colors.\nIn some scenes, Tank uses an alternate set of colors for the tongue.\nFor accurate goggle lenses: Group together the Fill (100% Normal blending) and the Highlights (75% Color Dodge blending) and set the group to 50% opacity.\nFor a less accurate version, group together the Fill and the Highlights (both 100% opacity, Normal blending) and set the group to 50% opacity.",
 			"cm_favme": null,
@@ -15457,9 +15621,205 @@
 				252
 			]
 		},
+		"120": {
+			"id": 120,
+			"order": 102,
+			"label": "Opalescence",
+			"notes": "",
+			"cm_favme": null,
+			"ishuman": false,
+			"added": "2016-04-19 01:38:33.592805+02",
+			"cm_preview": null,
+			"cm_dir": null,
+			"ColorGroups": {
+				"633": {
+					"groupid": 633,
+					"label": "Body",
+					"order": 1,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#B4BACB"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#F0F2F4"
+						},
+						{
+							"order": 2,
+							"label": "Tail Fill",
+							"hex": "#D7DDDF"
+						},
+						{
+							"order": 3,
+							"label": "Claws",
+							"hex": "#66666F"
+						}
+					]
+				},
+				"634": {
+					"groupid": 634,
+					"label": "Face",
+					"order": 2,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Eye/Closed Mouth Outline",
+							"hex": "#2E3640"
+						},
+						{
+							"order": 1,
+							"label": "Eyeshadow",
+							"hex": "#B697C5"
+						},
+						{
+							"order": 2,
+							"label": "Eyeball",
+							"hex": "#CFF379"
+						},
+						{
+							"order": 3,
+							"label": "Nose",
+							"hex": "#FF9999"
+						},
+						{
+							"order": 4,
+							"label": "Whiskers",
+							"hex": "#66666F"
+						}
+					]
+				},
+				"635": {
+					"groupid": 635,
+					"label": "Mouth",
+					"order": 3,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Open Mouth Outline",
+							"hex": "#AE5682"
+						},
+						{
+							"order": 1,
+							"label": "Gums",
+							"hex": "#FF979E"
+						},
+						{
+							"order": 2,
+							"label": "Fill",
+							"hex": "#BF1D7A"
+						},
+						{
+							"order": 3,
+							"label": "Dark Fill",
+							"hex": "#6F1148"
+						},
+						{
+							"order": 4,
+							"label": "Tongue",
+							"hex": "#F17031"
+						},
+						{
+							"order": 5,
+							"label": "Tongue Stroke",
+							"hex": "#BE4406"
+						}
+					]
+				},
+				"636": {
+					"groupid": 636,
+					"label": "Bow",
+					"order": 4,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Bow Outline",
+							"hex": "#674279"
+						},
+						{
+							"order": 1,
+							"label": "Bow Fill",
+							"hex": "#9565A9"
+						},
+						{
+							"order": 2,
+							"label": "Bow Shadow Fill",
+							"hex": "#815293"
+						}
+					]
+				},
+				"637": {
+					"groupid": 637,
+					"label": "Collar",
+					"order": 5,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Fill",
+							"hex": "#674279"
+						},
+						{
+							"order": 1,
+							"label": "Gem Fill",
+							"hex": "#09B8CB"
+						},
+						{
+							"order": 2,
+							"label": "Gem Highlight",
+							"hex": "#FFFFFF"
+						},
+						{
+							"order": 3,
+							"label": "Flower Petals",
+							"hex": "#9565A9"
+						},
+						{
+							"order": 4,
+							"label": "Opal Main Fill",
+							"hex": "#55E4F0"
+						},
+						{
+							"order": 5,
+							"label": "Opal Facet 1",
+							"hex": "#0BB8CB"
+						},
+						{
+							"order": 6,
+							"label": "Opal Facet 2",
+							"hex": "#DFEE5B"
+						},
+						{
+							"order": 7,
+							"label": "Opal Facet 3",
+							"hex": "#A3F090"
+						},
+						{
+							"order": 8,
+							"label": "Opal Facet 4",
+							"hex": "#F87CF9"
+						},
+						{
+							"order": 9,
+							"label": "Opal Highlight (60% Opacity)",
+							"hex": "#FFFFFF"
+						}
+					]
+				}
+			},
+			"TagIDs": [
+				10,
+				12,
+				254,
+				255,
+				256,
+				257
+			]
+		},
 		"33": {
 			"id": 33,
-			"order": 101,
+			"order": 103,
 			"label": "Alicorn Amulet",
 			"notes": "",
 			"cm_favme": null,
@@ -15650,7 +16010,7 @@
 		},
 		"86": {
 			"id": 86,
-			"order": 102,
+			"order": 104,
 			"label": "Scorpan's Medallion",
 			"notes": "",
 			"cm_favme": null,
@@ -15727,7 +16087,7 @@
 		},
 		"94": {
 			"id": 94,
-			"order": 103,
+			"order": 105,
 			"label": "Party Cannon",
 			"notes": "",
 			"cm_favme": null,
@@ -15855,7 +16215,7 @@
 		},
 		"115": {
 			"id": 115,
-			"order": 104,
+			"order": 106,
 			"label": "Fake Timberwolf",
 			"notes": "",
 			"cm_favme": null,
@@ -16063,7 +16423,7 @@
 		},
 		"70": {
 			"id": 70,
-			"order": 105,
+			"order": 107,
 			"label": "Wonderbolt Uniform",
 			"notes": "",
 			"cm_favme": null,
@@ -16160,7 +16520,7 @@
 		},
 		"71": {
 			"id": 71,
-			"order": 106,
+			"order": 108,
 			"label": "Wonderbolt Trainee Uniform",
 			"notes": "",
 			"cm_favme": null,
@@ -16227,7 +16587,7 @@
 		},
 		"105": {
 			"id": 105,
-			"order": 107,
+			"order": 109,
 			"label": "Pony Tones Outfit",
 			"notes": "",
 			"cm_favme": null,
@@ -16328,7 +16688,7 @@
 		},
 		"109": {
 			"id": 109,
-			"order": 108,
+			"order": 110,
 			"label": "Zecora",
 			"notes": "Based on S4E14.",
 			"cm_favme": null,
@@ -16491,7 +16851,7 @@
 		},
 		"113": {
 			"id": 113,
-			"order": 109,
+			"order": 111,
 			"label": "Orange Frog",
 			"notes": "",
 			"cm_favme": null,
@@ -16586,9 +16946,9 @@
 		},
 		"118": {
 			"id": 118,
-			"order": 110,
+			"order": 112,
 			"label": "Princess Ember",
-			"notes": "For bottom stroke on wings, use Outline Bottom Gradient (only apply gradient to wing \"spokes\").  Diamond-like scale coloring is inconsistent between some shots but there's up to four different colors in use, darkening near tail.",
+			"notes": "For bottom stroke on wings use Outline Bottom Gradient (only apply gradient to wing \"spokes\").\nDiamond-like scale coloring is inconsistent between some shots but there's up to four different colors in use, darkening near tail.",
 			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-04-17 16:11:54.678374+02",
@@ -17024,7 +17384,7 @@
 			"name": "earth pony",
 			"title": null,
 			"type": "spec",
-			"uses": 36,
+			"uses": 37,
 			"synonym_of": null
 		},
 		"3": {
@@ -17064,7 +17424,7 @@
 			"name": "minor character",
 			"title": "Ponies who had a speaking role and/or interacted with the mane six",
 			"type": "cat",
-			"uses": 71,
+			"uses": 72,
 			"synonym_of": null
 		},
 		"8": {
@@ -17088,7 +17448,7 @@
 			"name": "pet",
 			"title": null,
 			"type": "cat",
-			"uses": 5,
+			"uses": 6,
 			"synonym_of": null
 		},
 		"11": {
@@ -17096,7 +17456,7 @@
 			"name": "male",
 			"title": null,
 			"type": "gen",
-			"uses": 33,
+			"uses": 34,
 			"synonym_of": null
 		},
 		"12": {
@@ -17104,7 +17464,7 @@
 			"name": "female",
 			"title": null,
 			"type": "gen",
-			"uses": 68,
+			"uses": 69,
 			"synonym_of": null
 		},
 		"14": {
@@ -18696,8 +19056,8 @@
 			"name": "octavia",
 			"title": null,
 			"type": "char",
-			"uses": 1,
-			"synonym_of": null
+			"uses": 0,
+			"synonym_of": 260
 		},
 		"224": {
 			"tid": 224,
@@ -18930,6 +19290,70 @@
 			"type": "spec",
 			"uses": 0,
 			"synonym_of": 251
+		},
+		"253": {
+			"tid": 253,
+			"name": "aligator",
+			"title": null,
+			"type": "spec",
+			"uses": 0,
+			"synonym_of": 230
+		},
+		"254": {
+			"tid": 254,
+			"name": "cat",
+			"title": null,
+			"type": "spec",
+			"uses": 0,
+			"synonym_of": 255
+		},
+		"255": {
+			"tid": 255,
+			"name": "feline",
+			"title": null,
+			"type": "spec",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"256": {
+			"tid": 256,
+			"name": "opalescence",
+			"title": null,
+			"type": "char",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"257": {
+			"tid": 257,
+			"name": "opal",
+			"title": null,
+			"type": "char",
+			"uses": 0,
+			"synonym_of": 256
+		},
+		"258": {
+			"tid": 258,
+			"name": "apple family",
+			"title": null,
+			"type": "cat",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"259": {
+			"tid": 259,
+			"name": "braeburn",
+			"title": null,
+			"type": "char",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"260": {
+			"tid": 260,
+			"name": "octavia melody",
+			"title": null,
+			"type": "char",
+			"uses": 1,
+			"synonym_of": null
 		}
 	}
 }
