@@ -172,7 +172,10 @@ DocReady.push(function Episode(){
 						if (!this.status) return $.Dialog.fail(false, this.message);
 
 						if (this[0] === 2)
-							$epSectionTitle.append('<button class="blue part-switch">Part 2</button>');
+							$playerActions.append($.mk('button').attr('class','blue typcn typcn-media-fast-forward').text('Part 2').on('click',function(){
+								$(this).toggleHtml(['Part 1', 'Part 2']);
+								$embedWrap.children().toggle();
+							}));
 						$embedWrap = $.mk('div').attr('class','resp-embed-wrap').html(this[1]).insertAfter($playerActions);
 						BindPSwitch();
 						$showPlayers
