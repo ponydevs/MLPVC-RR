@@ -140,26 +140,13 @@ DocReady.push(function Episode(){
 		}));
 	});
 
-	var $epSectionTitle = $epSection.children('h2'),
-		$PSwitch;
-	function BindPSwitch(){
-		var $Vids;
-		$PSwitch = $epSectionTitle.children('.part-switch');
-		if ($PSwitch.length){
-			$Vids = $epSection.find('.resp-embed-wrap').children();
-			$PSwitch.on('click', function(){
-				$Vids.toggleClass('hidden');
-				$PSwitch.toggleHtml(['Part 2', 'Part 1']);
-			});
-		}
-	}
-
 	function BindVideoButtons(){
 		var $showPlayers = $('.episode').find('.showplayers').on('scroll-video-into-view',function(){
 				var hh = $header.outerHeight();
 				$.scrollTo($embedWrap.offset().top - (($w.height() - $footer.outerHeight() - hh - $embedWrap.outerHeight()) / 2) - hh, 500);
 			}),
 			$playerActions = $showPlayers.parent(),
+			$partSwitch,
 			$embedWrap;
 		if ($showPlayers.length){
 			$showPlayers.on('click',function(e){
@@ -171,13 +158,14 @@ DocReady.push(function Episode(){
 					$.post('/episode/videos/'+EpID, $.mkAjaxHandler(function(){
 						if (!this.status) return $.Dialog.fail(false, this.message);
 
-						if (this[0] === 2)
-							$playerActions.append($.mk('button').attr('class','blue typcn typcn-media-fast-forward').text('Part 2').on('click',function(){
+						if (this[0] === 2){
+							$partSwitch = $.mk('button').attr('class','blue typcn typcn-media-fast-forward').text('Part 2').on('click',function(){
 								$(this).toggleHtml(['Part 1', 'Part 2']);
 								$embedWrap.children().toggle();
-							}));
+							});
+							$playerActions.append($partSwitch);
+						}
 						$embedWrap = $.mk('div').attr('class','resp-embed-wrap').html(this[1]).insertAfter($playerActions);
-						BindPSwitch();
 						$showPlayers
 							.removeClass('typcn-eye green')
 							.addClass('typcn-eye-outline blue')
@@ -188,7 +176,8 @@ DocReady.push(function Episode(){
 				}
 				else {
 					var show = $showPlayers.hasClass('typcn-eye');
-					$embedWrap.add($PSwitch)[show?'show':'hide']();
+					$embedWrap[show?'show':'hide']();
+					$partSwitch.attr('disabled', !show);
 					$showPlayers.toggleClass('typcn-eye typcn-eye-outline').toggleHtml(['Show on-site player','Hide on-site player']);
 
 					if (show)
@@ -196,8 +185,6 @@ DocReady.push(function Episode(){
 				}
 			});
 		}
-
-		BindPSwitch();
 	}
 	BindVideoButtons();
 
