@@ -54,7 +54,7 @@
 		 * @return string|array
 		 */
 		public function replace($with, $in, $limit = -1, &$count = null){
-			return preg_replace($this->__toString(),$with, $in, $limit = -1, $count = null);
+			return preg_replace($this->__toString(),$with, $in, $limit = -1, $count);
 		}
 
 		/**
