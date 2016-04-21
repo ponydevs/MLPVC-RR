@@ -83,20 +83,6 @@
 					$nr++;
 				}
 
-				if ($this->_page > 1){
-					$prev = $this->_page-1;
-					$Items[$currentIndex-1] = "<li class='spec'><a href='/{$this->_basePath}/$prev'>&lsaquo;</a></li>";
-					if ($this->_page > 2)
-						$Items[0] = "<li class='spec'><a href='/{$this->_basePath}/1'>&laquo;</a></li>";
-				}
-				if ($this->_page < $this->_maxPages){
-					$next = $this->_page+1;
-					$Items[$currentIndex+1] = "<li class='spec'><a href='/{$this->_basePath}/$next'>&rsaquo;</a></li>";
-					if ($this->_page < $this->_maxPages-1){
-						array_pop($Items);
-						$Items[] = "<li class='spec'><a href='/{$this->_basePath}/{$this->_maxPages}'>&raquo;</a></li>";
-					}
-				}
 				$Items = implode('',$Items);
 			}
 			else $Items = '';
