@@ -23,8 +23,8 @@
 	<meta property="og:image" content="<?=$ThumbImage?>">
 	<meta property="og:title" content="<?=$Title?>">
 	<meta property="og:url" content="<?=ABSPATH.ltrim($_SERVER['REQUEST_URI'], '/')?>">
-	<meta property="og:description" content='<?=apos_encode($Description)?>'>
-	<meta name="description" content='<?=apos_encode($Description)?>'>
+	<meta property="og:description" content='<?=CoreUtils::AposEncode($Description)?>'>
+	<meta name="description" content='<?=CoreUtils::AposEncode($Description)?>'>
 	<meta name="format-detection" content="telephone=no">
 	<meta name="theme-color" content="#2C73B1">
 	<link rel="image_src" href="<?=$ThumbImage?>">
@@ -44,7 +44,7 @@
 			<li class="sidebar-toggle">
 				<div class="loader"></div>
 	            <img class="avatar" src="<?=$signedIn?$currentUser['avatar_url']:GUEST_AVATAR?>">
-			</li><?=get_nav_html()?></ul></nav>
+			</li><?=CoreUtils::GetNavigation()?></ul></nav>
 	</header>
 
 	<div id="sidebar">

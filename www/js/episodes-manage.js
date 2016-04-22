@@ -1,4 +1,4 @@
-/* global DocReady,moment,HandleNav */
+/* global DocReady,moment,HandleNav,$content */
 DocReady.push(function EpisodesManage(){
 	'use strict';
 	var $eptableBody = $('#episodes').children('tbody');

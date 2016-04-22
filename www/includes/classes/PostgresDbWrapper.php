@@ -9,7 +9,7 @@
 		 * @param string|int|array $s Season, or array with keys season & episode
 		 * @param string|int|null $e Episode, optional if $s is an array
 		 *
-		 * @return dbObject
+		 * @return PostgresDb
 		 */
 		public function whereEp($s, $e = null){
 			if (!isset($e)){

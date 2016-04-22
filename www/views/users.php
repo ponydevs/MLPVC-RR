@@ -11,18 +11,16 @@
 
 			$Arranged[$u['role']][] = $u;
 		}
-		global $ROLES;
-		foreach (array_reverse($ROLES) as $r){
+		foreach (array_reverse(Permission::$ROLES) as $r => $v){
 			if (empty($Arranged[$r])) continue;
 			$users = $Arranged[$r];
 			$userCount = count($users);
-			$group = $ROLES_ASSOC[$r].($userCount !== 1 ? 's' : '');
-			$groupInitials = '['.label_to_initials($ROLES_ASSOC[$r]).']';
+			$group = Permission::$ROLES_ASSOC[$r].($userCount !== 1 ? 's' : '');
+			$groupInitials = '['.Permission::LabelInitials(Permission::$ROLES_ASSOC[$r]).']';
 			$usersStr = array();
 			foreach ($users as $u)
-				$usersStr[] = profile_link($u);
+				$usersStr[] = User::GetProfileLink($u);
 			$usersStr = implode(', ', $usersStr);
-			global $ROLES_ASSOC;
 			echo <<<HTML
 <section>
 	<h2><strong>$userCount</strong> $group $groupInitials</h2>

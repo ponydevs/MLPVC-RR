@@ -626,19 +626,6 @@ ALTER SEQUENCE reservations_id_seq OWNED BY reservations.id;
 
 
 --
--- Name: roles; Type: TABLE; Schema: public; Owner: mlpvc-rr
---
-
-CREATE TABLE roles (
-    value integer NOT NULL,
-    name character varying(10) NOT NULL,
-    label character varying(30) NOT NULL
-);
-
-
-ALTER TABLE roles OWNER TO "mlpvc-rr";
-
---
 -- Name: sessions; Type: TABLE; Schema: public; Owner: mlpvc-rr
 --
 
@@ -984,22 +971,6 @@ ALTER TABLE ONLY reservations
 
 
 --
--- Name: roles_name; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
---
-
-ALTER TABLE ONLY roles
-    ADD CONSTRAINT roles_name UNIQUE (name);
-
-
---
--- Name: roles_value; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
---
-
-ALTER TABLE ONLY roles
-    ADD CONSTRAINT roles_value PRIMARY KEY (value);
-
-
---
 -- Name: sessions_id; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
@@ -1175,22 +1146,6 @@ ALTER TABLE ONLY log__banish
 
 
 --
--- Name: log__rolechange_newrole_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
---
-
-ALTER TABLE ONLY log__rolechange
-    ADD CONSTRAINT log__rolechange_newrole_fkey FOREIGN KEY (newrole) REFERENCES roles(name) ON UPDATE CASCADE;
-
-
---
--- Name: log__rolechange_oldrole_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
---
-
-ALTER TABLE ONLY log__rolechange
-    ADD CONSTRAINT log__rolechange_oldrole_fkey FOREIGN KEY (oldrole) REFERENCES roles(name) ON UPDATE CASCADE;
-
-
---
 -- Name: log__rolechange_target_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
@@ -1268,22 +1223,6 @@ ALTER TABLE ONLY reservations
 
 ALTER TABLE ONLY sessions
     ADD CONSTRAINT sessions_user_fkey FOREIGN KEY ("user") REFERENCES users(id) ON UPDATE CASCADE ON DELETE CASCADE;
-
-
---
--- Name: usefullinks_minrole_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
---
-
-ALTER TABLE ONLY usefullinks
-    ADD CONSTRAINT usefullinks_minrole_fkey FOREIGN KEY (minrole) REFERENCES roles(name) ON UPDATE CASCADE ON DELETE SET DEFAULT;
-
-
---
--- Name: users_role_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
---
-
-ALTER TABLE ONLY users
-    ADD CONSTRAINT users_role_fkey FOREIGN KEY (role) REFERENCES roles(name) ON UPDATE SET DEFAULT ON DELETE SET DEFAULT;
 
 
 --
@@ -1594,16 +1533,6 @@ REVOKE ALL ON SEQUENCE reservations_id_seq FROM PUBLIC;
 REVOKE ALL ON SEQUENCE reservations_id_seq FROM "mlpvc-rr";
 GRANT ALL ON SEQUENCE reservations_id_seq TO "mlpvc-rr";
 GRANT ALL ON SEQUENCE reservations_id_seq TO postgres;
-
-
---
--- Name: roles; Type: ACL; Schema: public; Owner: mlpvc-rr
---
-
-REVOKE ALL ON TABLE roles FROM PUBLIC;
-REVOKE ALL ON TABLE roles FROM "mlpvc-rr";
-GRANT ALL ON TABLE roles TO "mlpvc-rr";
-GRANT ALL ON TABLE roles TO postgres;
 
 
 --

@@ -37,7 +37,7 @@ for (var i= 0,l=stuff.length;i<l;i++){
 }
 console.writeLine("\n> Huh? What? I'm pancake!   ...I-I mean, awake.\n"+_sep);
 
-var workingDir = __dirname, ready2go = false;
+var workingDir = __dirname;
 
 function Personality(prompt, onerror){
 	if (typeof onerror !== 'object' || typeof onerror.length !== 'number' )

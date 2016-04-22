@@ -3,6 +3,8 @@
 	define('COOKIE_SESSION',true);
 
 	class Cookie {
+		static $session = true;
+
 		static public function exists($name){ return isset($_COOKIE[$name]); }
 		static public function get($name){ return (isset($_COOKIE[$name]) ? $_COOKIE[$name] : null); }
 		static public function set($name, $value, $expires = true, $path = '/', $domain = false){

@@ -1,14 +1,14 @@
 <div id="content">
 	<h1 data-none="No episodes found" data-list="Episode list"><?=empty($Episodes)?'No episodes found':'Episode list'?></h1>
 	<p class="eps-0" style="display: <?=empty($Episodes)?'block':'none'?>">There are no episodes stored in the database</p>
-<?  if (PERM('inspector')) { ?>
+<?  if (Permission::Sufficient('inspector')) { ?>
 	<div class="align-center">
 		<button id="add-episode" class="typcn typcn-plus">Add an episode</button>
 	</div>
-<?      ExportVars(array('EP_TITLE_REGEX' => $EP_TITLE_REGEX));
+<?      CoreUtils::ExportVars(array('EP_TITLE_REGEX' => $EP_TITLE_REGEX));
 	}
 	echo $Pagination;
-	if (!empty($Episodes) || (empty($Episodes) && PERM('inspector'))){ ?>
+	if (!empty($Episodes) || (empty($Episodes) && Permission::Sufficient('inspector'))){ ?>
 	<table id="episodes">
 		<thead>
 			<tr>
@@ -17,7 +17,7 @@
 				<th>Title & Air Date</th>
 			</tr>
 		</thead>
-		<tbody><?=get_eptable_tbody($Episodes)?></tbody>
+		<tbody><?=Episode::GetTableTbody($Episodes)?></tbody>
 	</table>
 <?  }
 	echo $Pagination; ?>
@@ -28,6 +28,6 @@
 				<th>Title &amp; Air Date</th>
 			</tr>
 		</thead>
-		<tbody><?=get_eptable_tbody($Database->where('season', 0)->get('episodes'))?></tbody>
+		<tbody><?=Episode::GetTableTbody($Database->where('season', 0)->get('episodes'))?></tbody>
 	</table>
 </div>

@@ -12,7 +12,7 @@
 
 	<p class='align-center links'>
 		<a class='btn darkblue typcn typcn-arrow-back' href="/<?=$color?>guide<?=$EQG?'/eqg':''?>">Back to <?=($EQG?'EQG ':'').$Color?> Guide</a>
-<?php if (PERM('inspector') && !$EQG){ ?>
+<?php if (Permission::Sufficient('inspector') && !$EQG){ ?>
 		<button class='darkblue typcn typcn-arrow-unsorted' id="guide-reorder"<?=!$GuideOrder?' disabled':''?>>Re-order</button>
 <?php } ?>
 		<a class='btn blue typcn typcn-world' href="/<?=$color?>guide<?=($EQG?'':'/eqg')?>/full">List of <?=$EQG?'Ponies':'Equestria Girls'?></a>
@@ -28,10 +28,10 @@
 		'color' => $color,
 		'EQG' => $EQG,
 	);
-	if (PERM('inspector'))
+	if (Permission::Sufficient('inspector'))
 		$export = array_merge($export,array(
 			'TAG_TYPES_ASSOC' => $TAG_TYPES_ASSOC,
-			'MAX_SIZE' => get_max_upload_size(),
+			'MAX_SIZE' => CoreUtils::GetMaxUploadSize(),
 			'HEX_COLOR_PATTERN' => $HEX_COLOR_PATTERN,
 		));
-	ExportVars($export);
+	CoreUtils::ExportVars($export);

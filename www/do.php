@@ -5,26 +5,22 @@
 	$color = 'color';
 	$signedIn = false;
 	$currentUser = null;
+	$do = !empty($_GET['do']) ? $_GET['do'] : 'index';
+	$data = !empty($_GET['data']) ? $_GET['data'] : '';
 	
 	require "init.php";
 
-	# Chck activity
-	$do = !empty($_GET['do']) ? $_GET['do'] : 'index';
-	
-	# Get additional details
-	$data = !empty($_GET['data']) ? $_GET['data'] : '';
-
 	switch ($do){
 		case GH_WEBHOOK_DO:
-			if (empty(GH_WEBHOOK_DO)) redirect('/', AND_DIE);
+			if (empty(GH_WEBHOOK_DO)) CoreUtils::Redirect('/', AND_DIE);
 
 			if (!empty($_SERVER['HTTP_USER_AGENT']) && strpos($_SERVER['HTTP_USER_AGENT'], 'GitHub-Hookshot/') === 0){
 				if (empty($_SERVER['HTTP_X_GITHUB_EVENT']) || empty($_SERVER['HTTP_X_HUB_SIGNATURE']))
-					do404();
+					CoreUtils::NotFound();
 
 				$payloadHash = hash_hmac('sha1', file_get_contents('php://input'), GH_WEBHOOK_SECRET);
 				if ($_SERVER['HTTP_X_HUB_SIGNATURE'] !== "sha1=$payloadHash")
-					do404();
+					CoreUtils::NotFound();
 
 				switch (strtolower($_SERVER['HTTP_X_GITHUB_EVENT'])) {
 					case 'push':
@@ -33,29 +29,29 @@
 						exec("git pull",$output);
 						$output = implode("\n", $output);
 						if (empty($output))
-							statusCodeHeader(500, AND_DIE);
+							CoreUtils::StatusCode(500, AND_DIE);
 						echo $output;
 					break;
 					case 'ping':
 						echo "pong";
 					break;
-					default: do404();
+					default: CoreUtils::NotFound();
 				}
 
 				exit;
 			}
-			do404();
+			CoreUtils::NotFound();
 		break;
 		case "signout":
-			if (!$signedIn) respond("You've already signed out",1);
-			detectCSRF();
+			if (!$signedIn) CoreUtils::Respond("You've already signed out",1);
+			CSRFProtection::Protect();
 
 			if (isset($_REQUEST['unlink'])){
 				try {
-					da_request('https://www.deviantart.com/oauth2/revoke', null, array('token' => $currentUser['Session']['access']));
+					DeviantArt::Request('https://www.deviantart.com/oauth2/revoke', null, array('token' => $currentUser['Session']['access']));
 				}
 				catch (cURLRequestException $e){
-					respond("Coulnd not revoke the site's access: {$e->getMessage()} (HTTP {$e->getCode()})");
+					CoreUtils::Respond("Coulnd not revoke the site's access: {$e->getMessage()} (HTTP {$e->getCode()})");
 				}
 			}
 
@@ -63,13 +59,13 @@
 				$col = 'user';
 				$val = $currentUser['id'];
 				if (!empty($_POST['username'])){
-					if (!PERM('manager') || isset($_REQUEST['unlink']))
-						respond();
+					if (!Permission::Sufficient('manager') || isset($_REQUEST['unlink']))
+						CoreUtils::Respond();
 					if (!$USERNAME_REGEX->match($_POST['username']))
-						respond('Invalid username');
+						CoreUtils::Respond('Invalid username');
 					$TargetUser = $Database->where('name', $_POST['username'])->getOne('users','id,name');
 					if (empty($TargetUser))
-						respond("Target user doesn't exist");
+						CoreUtils::Respond("Target user doesn't exist");
 					if ($TargetUser['id'] !== $currentUser['id'])
 						$val = $TargetUser['id'];
 					else unset($TargetUser);
@@ -81,29 +77,29 @@
 			}
 
 			if (!$Database->where($col,$val)->delete('sessions'))
-				respond('Could not remove information from database');
+				CoreUtils::Respond('Could not remove information from database');
 
 			if (empty($TargetUser))
 				Cookie::delete('access');
-			respond(true);
+			CoreUtils::Respond(true);
 		break;
 		case "da-auth":
-			da_handle_auth();
+			DeviantArt::HandleAuth();
 		break;
 		case "post":
-			if (RQMTHD !== 'POST') do404();
-			if (!$signedIn) respond();
-			detectCSRF();
+			if (!POST_REQUEST) CoreUtils::NotFound();
+			if (!$signedIn) CoreUtils::Respond();
+			CSRFProtection::Protect();
 
 			$_match = array();
 			if (regex_match(new RegExp('^([gs]et)-(request|reservation)/(\d+)$'), $data, $_match)){
 				$thing = $_match[2];
 				$Post = $Database->where('id', $_match[3])->getOne("{$thing}s");
 				if (empty($Post))
-					respond("The specified $thing does not exist");
+					CoreUtils::Respond("The specified $thing does not exist");
 
-				if (!(PERM('inspector') || ($thing === 'request' && empty($Post['reserved_by']) && $Post['requested_by'] === $currentUser['id'])))
-					respond();
+				if (!(Permission::Sufficient('inspector') || ($thing === 'request' && empty($Post['reserved_by']) && $Post['requested_by'] === $currentUser['id'])))
+					CoreUtils::Respond();
 
 				if ($_match[1] === 'get'){
 					$response = array(
@@ -112,51 +108,51 @@
 					if ($thing === 'request'){
 						$response['type'] = $Post['type'];
 
-						if (PERM('developer') && isset($Post['reserved_at']))
+						if (Permission::Sufficient('developer') && isset($Post['reserved_at']))
 							$response['reserved_at'] = date('c', strtotime($Post['reserved_at']));
 					}
-					if (PERM('developer'))
+					if (Permission::Sufficient('developer'))
 						$response['posted'] = date('c', strtotime($Post['posted']));
-					respond($response);
+					CoreUtils::Respond($response);
 				}
 
 				$update = array();
-				check_post_post($thing, $update, $Post);
+				Posts::CheckPostDetails($thing, $update, $Post);
 
 				if (empty($update))
-					respond('Nothing was changed', 1);
+					CoreUtils::Respond('Nothing was changed', 1);
 
 				if (!$Database->where('id', $Post['id'])->update("{$thing}s", $update))
-					respond(ERR_DB_FAIL);
-				respond($update);
+					CoreUtils::Respond(ERR_DB_FAIL);
+				CoreUtils::Respond($update);
 			}
 			else if (regex_match(new RegExp('^set-(request|reservation)-image/(\d+)$'), $data, $_match)){
 
 				$thing = $_match[1];
 				$Post = $Database->where('id', $_match[2])->getOne("{$thing}s");
 				if (empty($Post))
-					respond("The specified $thing does not exist");
+					CoreUtils::Respond("The specified $thing does not exist");
 				if ($Post['lock'])
-					respond('This post is locked, its image cannot be changed.');
+					CoreUtils::Respond('This post is locked, its image cannot be changed.');
 
-				if (!PERM('inspector') || $thing !== 'request' || !($Post['requested_by'] === $currentUser['id'] && empty($Post['reserved_by'])))
-					respond();
+				if (!Permission::Sufficient('inspector') || $thing !== 'request' || !($Post['requested_by'] === $currentUser['id'] && empty($Post['reserved_by'])))
+					CoreUtils::Respond();
 
-				$Image = check_post_image($Post);
+				$Image = Posts::CheckImage($Post);
 
 				// Check image availability
 				if (!@getimagesize($Image->preview)){
 					sleep(1);
 					if (!@getimagesize($Image->preview))
-						respond("<p class='align-center'>The specified image doesn't seem to exist. Please verify that you can reach the URL below and try again.<br><a href='{$Image->preview}' target='_blank'>{$Image->preview}</a></p>");
+						CoreUtils::Respond("<p class='align-center'>The specified image doesn't seem to exist. Please verify that you can reach the URL below and try again.<br><a href='{$Image->preview}' target='_blank'>{$Image->preview}</a></p>");
 				}
 
 				if (!$Database->where('id', $Post['id'])->update("{$thing}s",array(
 					'preview' => $Image->preview,
 					'fullsize' => $Image->fullsize,
-				))) respond(ERR_DB_FAIL);
+				))) CoreUtils::Respond(ERR_DB_FAIL);
 
-				LogAction('img_update',array(
+				Log::Action('img_update',array(
 					'id' => $Post['id'],
 					'thing' => $thing,
 					'oldpreview' => $Post['preview'],
@@ -165,20 +161,20 @@
 					'newfullsize' => $Image->fullsize,
 				));
 
-				respond(array('preview' => $Image->preview));
+				CoreUtils::Respond(array('preview' => $Image->preview));
 			}
 			else if (regex_match(new RegExp('^fix-(request|reservation)-stash/(\d+)$'), $data, $_match)){
-				if (!PERM('inspector'))
-					respond();
+				if (!Permission::Sufficient('inspector'))
+					CoreUtils::Respond();
 
 				$thing = $_match[1];
 				$Post = $Database->where('id', $_match[2])->getOne("{$thing}s");
 				if (empty($Post))
-					respond("The specified $thing does not exist");
+					CoreUtils::Respond("The specified $thing does not exist");
 
 				// Link is already full size, we're done
 				if (regex_match($FULLSIZE_MATCH_REGEX, $Post['fullsize']))
-					respond(array('fullsize' => $Post['fullsize']));
+					CoreUtils::Respond(array('fullsize' => $Post['fullsize']));
 
 				// Reverse submission lookup
 				$StashItem = $Database
@@ -186,10 +182,10 @@
 					->orWhere('preview', $Post['preview'])
 					->getOne('deviation_cache','id,fullsize,preview');
 				if (empty($StashItem['id']))
-					respond('Stash URL lookup failed');
+					CoreUtils::Respond('Stash URL lookup failed');
 
 				try {
-					$fullsize = get_fullsize_stash_url($StashItem['id']);
+					$fullsize = CoreUtils::GetStashFullsizeURL($StashItem['id']);
 					if (!is_string($fullsize)){
 						if ($fullsize === 404){
 							$Database->where('provider', 'sta.sh')->where('id', $StashItem['id'])->delete('deviation_cache');
@@ -201,52 +197,52 @@
 								'fullsize' => null,
 								'preview' => null,
 							));
-							respond('The original image has been deleted from Sta.sh',0,array('rmdirect' => true));
+							CoreUtils::Respond('The original image has been deleted from Sta.sh',0,array('rmdirect' => true));
 						}
 						else throw new Exception("Code $fullsize; Could not find the URL");
 					}
 				}
 				catch (Exception $e){
-					respond('Error while finding URL: '.$e->getMessage());
+					CoreUtils::Respond('Error while finding URL: '.$e->getMessage());
 				}
 				// Check image availability
 				if (!@getimagesize($fullsize)){
 					sleep(1);
 					if (!@getimagesize($fullsize))
-						respond("The specified image doesn't seem to exist. Please verify that you can reach the URL below and try again.<br><a href='$fullsize' target='_blank'>$fullsize</a>");
+						CoreUtils::Respond("The specified image doesn't seem to exist. Please verify that you can reach the URL below and try again.<br><a href='$fullsize' target='_blank'>$fullsize</a>");
 				}
 
 				if (!$Database->where('id', $Post['id'])->update("{$thing}s",array(
 					'fullsize' => $fullsize,
-				))) respond(ERR_DB_FAIL);
+				))) CoreUtils::Respond(ERR_DB_FAIL);
 
-				respond(array('fullsize' => $fullsize));
+				CoreUtils::Respond(array('fullsize' => $fullsize));
 			}
 
 			$image_check = empty($_POST['what']);
 			if (!$image_check){
-				if (!in_array($_POST['what'],$POST_TYPES))
-					respond('Invalid post type');
+				if (!in_array($_POST['what'],Posts::$TYPES))
+					CoreUtils::Respond('Invalid post type');
 
 				$type = $_POST['what'];
 				if ($type === 'reservation'){
-					if (!PERM('member'))
-						respond();
-					res_limit_check();
+					if (!Permission::Sufficient('member'))
+						CoreUtils::Respond();
+					User::ReservationLimitCheck();
 				}
 			}
 
 			if (!empty($_POST['image_url'])){
-				$Image = check_post_image();
+				$Image = Posts::CheckImage();
 
 				if ($image_check)
-					respond(array(
+					CoreUtils::Respond(array(
 						'preview' => $Image->preview,
 						'title' => $Image->title,
 					));
 			}
 			else if ($image_check)
-				respond("Please provide an image URL!");
+				CoreUtils::Respond("Please provide an image URL!");
 
 			$insert = array(
 				'preview' => $Image->preview,
@@ -254,40 +250,40 @@
 			);
 
 			if (($_POST['season'] != '0' && empty($_POST['season'])) || empty($_POST['episode']))
-				respond('Missing episode identifiers');
-			$epdata = get_real_episode((int)$_POST['season'], (int)$_POST['episode'], ALLOW_SEASON_ZERO);
+				CoreUtils::Respond('Missing episode identifiers');
+			$epdata = Episode::GetActual((int)$_POST['season'], (int)$_POST['episode'], ALLOW_SEASON_ZERO);
 			if (empty($epdata))
-				respond('This episode does not exist');
+				CoreUtils::Respond('This episode does not exist');
 			$insert['season'] = $epdata['season'];
 			$insert['episode'] = $epdata['episode'];
 
 			$ByID = $currentUser['id'];
-			if (PERM('developer') && !empty($_POST['post_as'])){
+			if (Permission::Sufficient('developer') && !empty($_POST['post_as'])){
 				$username = trim($_POST['post_as']);
-				$PostAs = get_user($username, 'name', '');
+				$PostAs = User::Get($username, 'name', '');
 
 				if (empty($PostAs))
-					respond('The user you wanted to post as does not exist');
+					CoreUtils::Respond('The user you wanted to post as does not exist');
 
-				if ($type === 'reservation' && !PERM('member', $PostAs['role']) && !isset($_POST['allow_nonmember']))
-					respond('The user you wanted to post as is not a club member, so you want to post as them anyway?',0,array('canforce' => true));
+				if ($type === 'reservation' && !Permission::Sufficient('member', $PostAs['role']) && !isset($_POST['allow_nonmember']))
+					CoreUtils::Respond('The user you wanted to post as is not a club member, so you want to post as them anyway?',0,array('canforce' => true));
 
 				$ByID = $PostAs['id'];
 			}
 
 			$insert[$type === 'reservation' ? 'reserved_by' : 'requested_by'] = $ByID;
-			check_post_post($type, $insert);
+			Posts::CheckPostDetails($type, $insert);
 
 			$PostID = $Database->insert("{$type}s",$insert,'id');
 			if (!$PostID)
-				respond(ERR_DB_FAIL);
-			respond(array('id' => $PostID));
+				CoreUtils::Respond(ERR_DB_FAIL);
+			CoreUtils::Respond(array('id' => $PostID));
 		break;
 		case "reserving":
-			if (RQMTHD !== 'POST') do404();
+			if (!POST_REQUEST) CoreUtils::NotFound();
 			$match = array();
 			if (empty($data) || !regex_match(new RegExp('^(requests?|reservations?)(?:/(\d+))?$'),$data,$match))
-				respond('Invalid request');
+				CoreUtils::Respond('Invalid request');
 
 			$noaction = true;
 			$canceling = $finishing = $unfinishing = $adding = $deleteing = $locking = false;
@@ -303,27 +299,27 @@
 
 			if (!$adding){
 				if (!isset($match[2]))
-					 respond("Missing $type ID");
+					 CoreUtils::Respond("Missing $type ID");
 				$ID = intval($match[2], 10);
 				$Thing = $Database->where('id', $ID)->getOne("{$type}s");
-				if (empty($Thing)) respond("There's no $type with that ID");
+				if (empty($Thing)) CoreUtils::Respond("There's no $type with that ID");
 
-				if (!empty($Thing['lock']) && !PERM('developer'))
-					respond('This post has been approved and cannot be edited or removed.'.(PERM('inspector') && !PERM('developer')?' If a change is necessary please ask the developer to do it for you.':''));
+				if (!empty($Thing['lock']) && !Permission::Sufficient('developer'))
+					CoreUtils::Respond('This post has been approved and cannot be edited or removed.'.(Permission::Sufficient('inspector') && !Permission::Sufficient('developer')?' If a change is necessary please ask the developer to do it for you.':''));
 
 				if ($deleteing && $type === 'request'){
-					if (!PERM('inspector')){
+					if (!Permission::Sufficient('inspector')){
 						if (!$signedIn || $Thing['requested_by'] !== $currentUser['id'])
-							respond();
+							CoreUtils::Respond();
 
 						if (!empty($Thing['reserved_by']))
-							respond('You cannot delete a request that has already been reserved by a group member');
+							CoreUtils::Respond('You cannot delete a request that has already been reserved by a group member');
 					}
 
 					if (!$Database->where('id', $Thing['id'])->delete('requests'))
-						respond(ERR_DB_FAIL);
+						CoreUtils::Respond(ERR_DB_FAIL);
 
-					LogAction('req_delete',array(
+					Log::Action('req_delete',array(
 						'season' => $Thing['season'],
 						'episode' => $Thing['episode'],
 						'id' => $Thing['id'],
@@ -336,10 +332,10 @@
 						'lock' => $Thing['lock'],
 					));
 
-					respond(true);
+					CoreUtils::Respond(true);
 				}
 
-				if (!PERM('member')) respond();
+				if (!Permission::Sufficient('member')) CoreUtils::Respond();
 				$update = array(
 					'reserved_by' => null,
 					'reserved_at' => null
@@ -349,24 +345,24 @@
 					$usersMatch = $Thing['reserved_by'] === $currentUser['id'];
 					if ($noaction){
 						if ($usersMatch)
-							respond("You've already reserved this $type");
-						else respond("This $type has already been reserved by somepony else");
+							CoreUtils::Respond("You've already reserved this $type");
+						else CoreUtils::Respond("This $type has already been reserved by somepony else");
 					}
 					if ($locking){
 						if (empty($Thing['deviation_id']))
-							respond('Only finished {$type}s can be locked');
-						$Status = is_deviation_in_vectorclub($Thing['deviation_id']);
+							CoreUtils::Respond('Only finished {$type}s can be locked');
+						$Status = CoreUtils::IsDeviationInClub($Thing['deviation_id']);
 						if ($Status !== true)
-							respond(
+							CoreUtils::Respond(
 								$Status === false
 								? "The deviation has not been submitted to/accepted by the group yet"
 								: "There was an issue while checking the acceptance status (Error code: $Status)"
 							);
 
 						if (!$Database->where('id', $Thing['id'])->update("{$type}s", array('lock' => 1)))
-							respond("This $type is already approved", 1);
+							CoreUtils::Respond("This $type is already approved", 1);
 
-						LogAction('post_lock',array(
+						Log::Action('post_lock',array(
 							'type' => $type,
 							'id' => $Thing['id']
 						));
@@ -374,58 +370,58 @@
 						$message = "The image appears to be in the group gallery and as such it is now marked as approved.";
 						if ($usersMatch)
 							$message .= " Thank you for your contribution!";
-						respond($message, 1, array('canedit' => PERM('developer')));
+						CoreUtils::Respond($message, 1, array('canedit' => Permission::Sufficient('developer')));
 					}
 					if ($canceling)
 						$unfinishing = true;
 					if ($unfinishing){
-						if (($canceling && !$usersMatch) && !PERM('inspector')) respond();
+						if (($canceling && !$usersMatch) && !Permission::Sufficient('inspector')) CoreUtils::Respond();
 
 						if (!$canceling && !isset($_REQUEST['unbind'])){
 							if ($type === 'reservation' && empty($Thing['preview']))
-								respond('This reservation was added directly and cannot be marked un-finished. To remove it, check the unbind from user checkbox.');
+								CoreUtils::Respond('This reservation was added directly and cannot be marked un-finished. To remove it, check the unbind from user checkbox.');
 							unset($update['reserved_by']);
 						}
 
 						if (($canceling || isset($_REQUEST['unbind'])) && $type === 'reservation'){
 							if (!$Database->where('id', $Thing['id'])->delete('reservations'))
-								respond(ERR_DB_FAIL);
+								CoreUtils::Respond(ERR_DB_FAIL);
 
 							if (!$canceling)
-								respond('Reservation deleted', 1);
+								CoreUtils::Respond('Reservation deleted', 1);
 						}
 						if (!$canceling){
 							if (isset($_REQUEST['unbind']) && $type === 'request'){
-								if (!PERM('inspector') && !$usersMatch)
-									respond('You cannot remove the reservation from this post');
+								if (!Permission::Sufficient('inspector') && !$usersMatch)
+									CoreUtils::Respond('You cannot remove the reservation from this post');
 							}
 							else $update = array();
 							$update['deviation_id'] = null;
 						}
 					}
 					else if ($finishing){
-						if (!$usersMatch && !PERM('inspector'))
-							respond();
-						$update = check_request_finish_image($Thing['reserved_by']);
+						if (!$usersMatch && !Permission::Sufficient('inspector'))
+							CoreUtils::Respond();
+						$update = Posts::CheckRequestFinishingImage($Thing['reserved_by']);
 					}
 				}
-				else if ($finishing) respond("This $type has not yet been reserved");
+				else if ($finishing) CoreUtils::Respond("This $type has not yet been reserved");
 				else if (!$canceling){
-					res_limit_check();
+					User::ReservationLimitCheck();
 
 					if (!empty($_POST['post_as'])){
-						if (!PERM('developer'))
-							respond('Reserving as other users is only allowed to the developer');
+						if (!Permission::Sufficient('developer'))
+							CoreUtils::Respond('Reserving as other users is only allowed to the developer');
 
 						$post_as = trim($_POST['post_as']);
 						if (!$USERNAME_REGEX->match($post_as))
-							respond('Username format is invalid');
+							CoreUtils::Respond('Username format is invalid');
 
-						$User = get_user($post_as, 'name');
+						$User = User::Get($post_as, 'name');
 						if (empty($User))
-							respond('User does not exist');
-						if (!PERM('member',$User['role']))
-							respond('User does not have permission to reserve posts');
+							CoreUtils::Respond('User does not exist');
+						if (!Permission::Sufficient('member', $User['role']))
+							CoreUtils::Respond('User does not have permission to reserve posts');
 
 						$update['reserved_by'] = $User['id'];
 					}
@@ -434,7 +430,7 @@
 				}
 
 				if ((!$canceling || $type !== 'reservation') && !$Database->where('id', $Thing['id'])->update("{$type}s",$update))
-					respond('Nothing has been changed');
+					CoreUtils::Respond('Nothing has been changed');
 
 				foreach ($update as $k => $v)
 					$Thing[$k] = $v;
@@ -442,130 +438,131 @@
 				if (!$canceling && ($finishing || $unfinishing)){
 					$out = array();
 					if ($finishing && $type === 'request'){
-						$u = get_user($Thing['requested_by'],'id','name');
+						$u = User::Get($Thing['requested_by'],'id','name');
 						if (!empty($u) && $Thing['requested_by'] !== $currentUser['id'])
 							$out['message'] = "<p class='align-center'>You may want to mention <strong>{$u['name']}</strong> in the deviation description to let them know that their request has been fulfilled.</p>";
 					}
-					respond($out);
+					CoreUtils::Respond($out);
 				}
 
 				if ($type === 'request')
-					respond(array('li' => get_r_li($Thing, true)));
+					CoreUtils::Respond(array('li' => Posts::GetLi($Thing, true)));
 				else if ($type === 'reservation' && $canceling)
-					respond(array('remove' => true));
-				else respond(true);
+					CoreUtils::Respond(array('remove' => true));
+				else CoreUtils::Respond(true);
 			}
 			else if ($type === 'reservation'){
-				if (!PERM('inspector'))
-					respond();
+				if (!Permission::Sufficient('inspector'))
+					CoreUtils::Respond();
 				$_POST['allow_overwrite_reserver'] = true;
-				$insert = check_request_finish_image();
+				$insert = Posts::CheckRequestFinishingImage();
 				if (empty($insert['reserved_by']))
 					$insert['reserved_by'] = $currentUser['id'];
-				$epdata = episode_id_parse($_GET['add']);
+				$epdata = Episode::ParseID($_GET['add']);
 				if (empty($epdata))
-					respond('Invalid episode');
-				$epdata = get_real_episode($epdata['season'], $epdata['episode']);
+					CoreUtils::Respond('Invalid episode');
+				$epdata = Episode::GetActual($epdata['season'], $epdata['episode']);
 				if (empty($epdata))
-					respond('The specified episode does not exist');
+					CoreUtils::Respond('The specified episode does not exist');
 				$insert['season'] = $epdata['season'];
 				$insert['episode'] = $epdata['episode'];
 
 				if (!$Database->insert('reservations', $insert))
-					respond(ERR_DB_FAIL);
-				respond('Reservation added',1);
+					CoreUtils::Respond(ERR_DB_FAIL);
+				CoreUtils::Respond('Reservation added',1);
 			}
-			else respond('Invalid request');
+			else CoreUtils::Respond('Invalid request');
 		break;
 		case "ping":
-			if (RQMTHD !== 'POST')
-				do404();
+			if (!POST_REQUEST)
+				CoreUtils::NotFound();
 
-			respond(true);
+			CoreUtils::Respond(true);
 		break;
 		case "setting":
-			if (!PERM('inspector') || RQMTHD !== 'POST')
-				do404();
-			detectCSRF();
+			if (!Permission::Sufficient('inspector') || !POST_REQUEST)
+				CoreUtils::NotFound();
+			CSRFProtection::Protect();
 
 			if (!regex_match(new RegExp('^([gs]et)/([a-z_]+)$'), trim($data), $_match))
-				respond('Setting key invalid');
+				CoreUtils::Respond('Setting key invalid');
 
 			$getting = $_match[1] === 'get';
 			$key = $_match[2];
 
-			$currvalue = get_config_var($key);
+			$currvalue = Configuration::Get($key);
 			if ($currvalue === false)
-				respond('Setting does not exist');
+				CoreUtils::Respond('Setting does not exist');
 			if ($getting)
-				respond(array('value' => $currvalue));
+				CoreUtils::Respond(array('value' => $currvalue));
 
 			if (!isset($_POST['value']))
-				respond('Missing setting value');
+				CoreUtils::Respond('Missing setting value');
 
-			$newvalue = process_config($key);
+			$newvalue = Configuration::Process($key);
 			if ($newvalue === $currvalue)
-				respond(array('value' => $newvalue));
-			if (!$Database->where('key', $key)->update('global_settings', array('value' => $newvalue)))
-				respond(ERR_DB_FAIL);
+				CoreUtils::Respond(array('value' => $newvalue));
+			if (!Configuration::Set($key, $newvalue))
+				CoreUtils::Respond(ERR_DB_FAIL);
 
-			respond(array('value' => $newvalue));
+			CoreUtils::Respond(array('value' => $newvalue));
 		break;
 
 		// PAGES
-		case "index":
-			$CurrentEpisode = get_latest_episode();
-			if (empty($CurrentEpisode)){
-				unset($CurrentEpisode);
-				loadPage(array(
-					'title' => 'Home',
-					'view' => 'episode',
-				));
-			}
-
-			loadEpisodePage($CurrentEpisode);
-		break;
 		case "muffin-rating":
 			$ScorePercent = 100;
 			if (isset($_GET['w']) && regex_match(new RegExp('^(\d|[1-9]\d|100)$'), $_GET['w']))
 				$ScorePercent = intval($_GET['w'], 10);
 			$RatingFile = file_get_contents(APPATH."img/muffin-rating.svg");
-			header('Content-Type: image/svg+xml');;
+			header('Content-Type: image/svg+xml');
 			die(str_replace("width='100'", "width='$ScorePercent'", $RatingFile));
+		break;
+		case "index":
+			$CurrentEpisode = Episode::GetLatest();
+			if (empty($CurrentEpisode)){
+				unset($CurrentEpisode);
+				CoreUtils::LoadPage(array(
+					'title' => 'Home',
+					'view' => 'episode',
+				));
+			}
+
+			Episode::LoadPage($CurrentEpisode);
 		break;
 		case "episode":
 			$_match = array();
 
-			if (RQMTHD === 'POST'){
-				detectCSRF();
+			if (POST_REQUEST){
+				CoreUtils::CanIHas('CSRFProtection');
+				CSRFProtection::Protect();
 
-				if (empty($data)) do404();
+				if (empty($data)) CoreUtils::NotFound();
 
-				$EpData = episode_id_parse($data);
+				$EpData = Episode::ParseID($data);
 				if (!empty($EpData)){
-					$Ep = get_real_episode($EpData['season'],$EpData['episode']);
+					$Ep = Episode::GetActual($EpData['season'],$EpData['episode']);
 					$airs =  strtotime($Ep['airs']);
 					unset($Ep['airs']);
 					$Ep['airdate'] = gmdate('Y-m-d', $airs);
 					$Ep['airtime'] = gmdate('H:i', $airs);
-					respond(array(
+					CoreUtils::Respond(array(
 						'ep' => $Ep,
-						'epid' => format_episode_title($Ep, AS_ARRAY, 'id'),
+						'epid' => Episode::FormatTitle($Ep, AS_ARRAY, 'id'),
 					));
 				}
 				unset($EpData);
 
 				if (regex_match(new RegExp('^delete/'.EPISODE_ID_PATTERN.'$'),$data,$_match)){
-					if (!PERM('inspector')) respond();
+					if (!Permission::Sufficient('inspector')) CoreUtils::Respond();
 					list($season,$episode) = array_splice($_match,1,2);
 
-					$Episode = get_real_episode(intval($season, 10),intval($episode, 10));
+					$Episode = Episode::GetActual(intval($season, 10),intval($episode, 10));
 					if (empty($Episode))
-						respond("There's no episode with this season & episode number");
+						CoreUtils::Respond("There's no episode with this season & episode number");
 
 					if (!$Database->whereEp($Episode)->delete('episodes'))
-						respond(ERR_DB_FAIL);
-					LogAction('episodes',array(
+						CoreUtils::Respond(ERR_DB_FAIL);
+					Log::Action('episodes',array(
 						'action' => 'del',
 						'season' => $Episode['season'],
 						'episode' => $Episode['episode'],
@@ -574,23 +571,23 @@
 						'airs' => $Episode['airs'],
 					));
 					$CGDb->where('name', "s{$Episode['season']}e{$Episode['episode']}")->delete('tags');
-					respond('Episode deleted successfuly',1,array(
-						'upcoming' => get_upcoming_eps(null, NOWRAP),
+					CoreUtils::Respond('Episode deleted successfuly',1,array(
+						'upcoming' => Episode::GetSidebarUpcoming(NOWRAP),
 					));
 				}
 				else if (regex_match(new RegExp('^((?:request|reservation)s)/'.EPISODE_ID_PATTERN.'$'), $data, $_match)){
-					$Episode = get_real_episode($_match[2],$_match[3],ALLOW_SEASON_ZERO);
+					$Episode = Episode::GetActual($_match[2],$_match[3],ALLOW_SEASON_ZERO);
 					if (empty($Episode))
-						respond("There's no episode with this season & episode number");
+						CoreUtils::Respond("There's no episode with this season & episode number");
 					$only = $_match[1] === 'requests' ? ONLY_REQUESTS : ONLY_RESERVATIONS;
-					respond(array(
-						'render' => call_user_func("{$_match[1]}_render",get_posts($Episode['season'], $Episode['episode'], $only)),
+					CoreUtils::Respond(array(
+						'render' => call_user_func("{$_match[1]}_render", Posts::Get($Episode['season'], $Episode['episode'], $only)),
 					));
 				}
 				else if (regex_match(new RegExp('^vote/'.EPISODE_ID_PATTERN.'$'), $data, $_match)){
-					$Episode = get_real_episode($_match[1],$_match[2],ALLOW_SEASON_ZERO);
+					$Episode = Episode::GetActual($_match[1],$_match[2],ALLOW_SEASON_ZERO);
 					if (empty($Episode))
-						respond("There's no episode with this season & episode number");
+						CoreUtils::Respond("There's no episode with this season & episode number");
 
 					if (isset($_REQUEST['detail'])){
 						$VoteCounts = $Database->rawQuery(
@@ -600,47 +597,47 @@
 							GROUP BY v.vote
 							ORDER BY v.vote DESC",array($Episode['season'],$Episode['episode']));
 
-						respond(array('data' => $VoteCounts));
+						CoreUtils::Respond(array('data' => $VoteCounts));
 					}
 
 					if (isset($_REQUEST['html']))
-						respond(array('html' => get_episode_voting($Episode)));
+						CoreUtils::Respond(array('html' => Episode::GetSidebarVoting($Episode)));
 
-					if (!PERM('user'))
-						respond();
+					if (!Permission::Sufficient('user'))
+						CoreUtils::Respond();
 
 					if (!$Episode['aired'])
-						respond('You can only vote on this episode after it has aired.');
+						CoreUtils::Respond('You can only vote on this episode after it has aired.');
 
-					$UserVote = get_episode_user_vote($Episode);
+					$UserVote = Episode::GetUserVote($Episode);
 					if (!empty($UserVote))
-						respond('You already voted for this episode');
+						CoreUtils::Respond('You already voted for this episode');
 
 					if (empty($_POST['vote']) || !is_numeric($_POST['vote']))
-						respond('Vote value missing from request');
+						CoreUtils::Respond('Vote value missing from request');
 
 					$Vote = intval($_POST['vote'], 10);
 					if ($Vote < 1 || $Vote > 5)
-						respond('Vote value must be an integer between 1 and 5 (inclusive)');
+						CoreUtils::Respond('Vote value must be an integer between 1 and 5 (inclusive)');
 
 					if (!$Database->insert('episodes__votes',array(
 						'season' => $Episode['season'],
 						'episode' => $Episode['episode'],
 						'user' => $currentUser['id'],
 						'vote' => $Vote,
-					))) respond(ERR_DB_FAIL);
-					respond(array('newhtml' => get_episode_voting($Episode)));
+					))) CoreUtils::Respond(ERR_DB_FAIL);
+					CoreUtils::Respond(array('newhtml' => Episode::GetSidebarVoting($Episode)));
 				}
 				else if (regex_match(new RegExp('^(([sg])et)?videos/'.EPISODE_ID_PATTERN.'$'), $data, $_match)){
-					$Episode = get_real_episode($_match[3],$_match[4],ALLOW_SEASON_ZERO);
+					$Episode = Episode::GetActual($_match[3],$_match[4],ALLOW_SEASON_ZERO);
 					if (empty($Episode))
-						respond("There's no episode with this season & episode number");
+						CoreUtils::Respond("There's no episode with this season & episode number");
 
 					if (empty($_match[1]))
-						respond(get_ep_video_embeds($Episode));
+						CoreUtils::Respond(Episode::GetVideoEmbeds($Episode));
 
 					$set = $_match[2] === 's';
-					require_once "includes/Video.php";
+					CoreUtils::CanIHas('Video.php');
 
 					if (!$set){
 						$return = array(
@@ -656,7 +653,7 @@
 							if ($prov['fullep'])
 								$return['fullep'][] = $prov['name'];
 						}
-						respond($return);
+						CoreUtils::Respond($return);
 					}
 
 					foreach (array('yt','dm') as $provider){
@@ -664,14 +661,15 @@
 							$set = null;
 							$PostKey = "{$provider}_$part";
 							if (!empty($_POST[$PostKey])){
+								$Provider = Episode::$VIDEO_PROVIDER_NAMES[$provider];
 								try {
 									$vid = new Video($_POST[$PostKey]);
 								}
 								catch (Exception $e){
-									respond("{$VIDEO_PROVIDER_NAMES[$provider]} link issue: ".$e->getMessage());
+									CoreUtils::Respond("$Provider link issue: ".$e->getMessage());
 								};
 								if (!isset($vid->provider) || $vid->provider['name'] !== $provider)
-									respond("Incorrect {$VIDEO_PROVIDER_NAMES[$provider]} URL specified");
+									CoreUtils::Respond("Incorrect $Provider URL specified");
 								/** @noinspection PhpUndefinedFieldInspection */
 								$set = $vid->id;
 							}
@@ -715,60 +713,60 @@
 						}
 					}
 
-					respond('Links updated',1,array('epsection' => render_ep_video($Episode)));
+					CoreUtils::Respond('Links updated',1,array('epsection' => Episode::RenderVideos($Episode)));
 				}
 				else {
-					if (!PERM('inspector')) respond();
+					if (!Permission::Sufficient('inspector')) CoreUtils::Respond();
 					$editing = regex_match(new RegExp('^edit\/'.EPISODE_ID_PATTERN.'$'),$data,$_match);
 					if ($editing){
 						list($season, $episode) = array_map('intval', array_splice($_match, 1, 2));
 						$insert = array();
 					}
 					else if ($data === 'add') $insert = array('posted_by' => $currentUser['id']);
-					else statusCodeHeader(404, AND_DIE);
+					else CoreUtils::StatusCode(404, AND_DIE);
 
 					if (!isset($_POST['season']) || !is_numeric($_POST['season']))
-						respond('Season number is missing or invalid');
+						CoreUtils::Respond('Season number is missing or invalid');
 					$insert['season'] = intval($_POST['season'], 10);
-					if ($insert['season'] < 1 || $insert['season'] > 8) respond('Season number must be between 1 and 8');
+					if ($insert['season'] < 1 || $insert['season'] > 8) CoreUtils::Respond('Season number must be between 1 and 8');
 
 					if (!isset($_POST['episode']) || !is_numeric($_POST['episode']))
-						respond('Episode number is missing or invalid');
+						CoreUtils::Respond('Episode number is missing or invalid');
 					$insert['episode'] = intval($_POST['episode'], 10);
-					if ($insert['episode'] < 1 || $insert['episode'] > 26) respond('Season number must be between 1 and 26');
+					if ($insert['episode'] < 1 || $insert['episode'] > 26) CoreUtils::Respond('Season number must be between 1 and 26');
 
 					if ($editing){
-						$Current = get_real_episode($insert['season'],$insert['episode']);
+						$Current = Episode::GetActual($insert['season'],$insert['episode']);
 						if (empty($Current))
-							respond("This episode doesn't exist");
+							CoreUtils::Respond("This episode doesn't exist");
 					}
-					$Target = get_real_episode($insert['season'],$insert['episode']);
+					$Target = Episode::GetActual($insert['season'],$insert['episode']);
 					if (!empty($Target) && (!$editing || ($editing && ($Target['season'] !== $Current['season'] || $Target['episode'] !== $Current['episode']))))
-						respond("There's already an episode with the same season & episode number");
+						CoreUtils::Respond("There's already an episode with the same season & episode number");
 
 					$insert['twoparter'] = isset($_POST['twoparter']) ? 1 : 0;
 
 					if (empty($_POST['title']))
-						respond('Episode title is missing or invalid');
+						CoreUtils::Respond('Episode title is missing or invalid');
 					$insert['title'] = trim($_POST['title']);
 					if (strlen($insert['title']) < 5 || strlen($insert['title']) > 35)
-						respond('Episode title must be between 5 and 35 characters');
+						CoreUtils::Respond('Episode title must be between 5 and 35 characters');
 					if (!$EP_TITLE_REGEX->match($insert['title']))
-						respond('Episode title contains invalid charcaters');
+						CoreUtils::Respond('Episode title contains invalid charcaters');
 
 					if (empty($_POST['airs']))
 						repond('No air date &time specified');
 					$airs = strtotime($_POST['airs']);
 					if (empty($airs))
-						respond('Invalid air time');
+						CoreUtils::Respond('Invalid air time');
 					$insert['airs'] = date('c',strtotime('this minute', $airs));
 
 					if ($editing){
 						if (!$Database->whereEp($season,$episode)->update('episodes', $insert))
-							respond('Updating episode failed: '.ERR_DB_FAIL);
+							CoreUtils::Respond('Updating episode failed: '.ERR_DB_FAIL);
 					}
 					else if (!$Database->insert('episodes', $insert))
-						respond('Episode creation failed: '.ERR_DB_FAIL);
+						CoreUtils::Respond('Episode creation failed: '.ERR_DB_FAIL);
 
 					$SeasonChanged = $editing && $season !== $insert['season'];
 					$EpisodeChanged = $editing && $episode !== $insert['episode'];
@@ -780,7 +778,7 @@
 							if (!$CGDb->insert('tags', array(
 								'name' => $TagName,
 								'type' => 'ep',
-							))) respond('Episode tag creation failed: '.ERR_DB_FAIL);
+							))) CoreUtils::Respond('Episode tag creation failed: '.ERR_DB_FAIL);
 						}
 						else if ($SeasonChanged || $EpisodeChanged)
 							$CGDb->where('name',$EpTag['name'])->update('tags', array(
@@ -789,7 +787,7 @@
 					}
 
 					if ($editing){
-						$logentry = array('target' => format_episode_title($Current,AS_ARRAY,'id'));
+						$logentry = array('target' => Episode::FormatTitle($Current,AS_ARRAY,'id'));
 						$changes = 0;
 						foreach (array('season', 'episode', 'twoparter', 'title', 'airs') as $k){
 							if (isset($insert[$k]) && $insert[$k] != $Current[$k]){
@@ -798,9 +796,9 @@
 								$changes++;
 							}
 						}
-						if ($changes > 0) LogAction('episode_modify',$logentry);
+						if ($changes > 0) Log::Action('episode_modify',$logentry);
 					}
-					else LogAction('episodes',array(
+					else Log::Action('episodes',array(
 						'action' => 'add',
 						'season' => $insert['season'],
 						'episode' => $insert['episode'],
@@ -808,63 +806,61 @@
 						'title' => $insert['title'],
 						'airs' => $insert['airs'],
 					));
-					respond($editing ? true : array('epid' => format_episode_title($insert,AS_ARRAY,'id')));
+					CoreUtils::Respond($editing ? true : array('epid' => Episode::FormatTitle($insert,AS_ARRAY,'id')));
 				}
 			}
 
-			loadEpisodePage();
+			Episode::LoadPage();
 		break;
 		case "episodes":
-			$ItemsPerPage = 10;
-			$EntryCount = $Database->where('season != 0')->count('episodes');
-			list($Page,$MaxPages) = calc_page($EntryCount);
-			$Pagination = get_pagination_html('episodes');
+			CoreUtils::CanIHas('Pagination');
+			$Pagination = new Pagination('episodes', 10, $Database->where('season != 0')->count('episodes'));
 
-			fix_path("/episodes/$Page");
+			CoreUtils::FixPath("/episodes/{$Pagination->page}");
 			$heading = "Episodes";
-			$title = "Page $Page - $heading";
-			$Episodes = get_episodes(array($ItemsPerPage*($Page-1), $ItemsPerPage));
+			$title = "Page {$Pagination->page} - $heading";
+			$Episodes = Episode::Get($Pagination->GetLimit());
 
 			if (isset($_GET['js']))
-				pagination_response(get_eptable_tbody($Episodes), '#episodes tbody');
+				$Pagination->Respond(Episode::GetTableTbody($Episodes), '#episodes tbody');
 
 			$settings = array(
 				'title' => $title,
 				'do-css',
 				'js' => array('paginate',$do),
 			);
-			if (PERM('inspector'))
+			if (Permission::Sufficient('inspector'))
 				$settings['js'] = array_merge(
 					$settings['js'],
 					array('moment-timezone',"$do-manage")
 				);
-			loadPage($settings);
+			CoreUtils::LoadPage($settings);
 		break;
 		case "eqg":
 			if (!regex_match(new RegExp('^([a-z\-]+|\d+)$'),$data))
-				do404();
+				CoreUtils::NotFound();
 
 			$assoc = array('friendship-games' => 3);
 			$flip_assoc = array_flip($assoc);
 
 			if (!is_numeric($data)){
 				if (empty($assoc[$data]))
-					do404();
+					CoreUtils::NotFound();
 				$url = $data;
 				$data = $assoc[$data];
 			}
 			else {
 				$data = intval($data, 10);
 				if (empty($flip_assoc[$data]))
-					do404();
+					CoreUtils::NotFound();
 				$url = $flip_assoc[$data];
 			}
 
-			loadEpisodePage($data, true);
+			Episode::LoadPage($data);
 		break;
 		case "about":
-			if (RQMTHD === 'POST'){
-				detectCSRF();
+			if (POST_REQUEST){
+				CSRFProtection::Protect();
 				$StatCacheDuration = 5*ONE_HOUR;
 
 				$_match = array();
@@ -872,10 +868,12 @@
 					$stat = $_match[1];
 					$CachePath = APPATH."../stats/$stat.json";
 					if (file_exists($CachePath) && filemtime($CachePath) > time() - $StatCacheDuration)
-						respond(array('data' => JSON::Decode(file_get_contents($CachePath))));
+						CoreUtils::Respond(array('data' => JSON::Decode(file_get_contents($CachePath))));
 
 					$Data = array('datasets' => array(), 'timestamp' => date('c'));
 					$LabelFormat = 'YYYY-MM-DD 00:00:00';
+
+					CoreUtils::CanIHas('Statistics');
 
 					switch ($stat){
 						case 'posts':
@@ -891,7 +889,7 @@
 								GROUP BY key
 								ORDER BY MIN(t.posted)");
 
-							process_stat_labels($Labels, $Data);
+							Statistics::ProcessLabels($Labels, $Data);
 
 							$query =
 								"SELECT
@@ -904,13 +902,13 @@
 							$RequestData = $Database->rawQuery(str_replace('table_name', 'requests', $query));
 							if (!empty($RequestData)){
 								$Dataset = array('label' => 'Requests', 'clrkey' => 0);
-								process_usage_stats($RequestData, $Dataset);
+								Statistics::ProcessUsageData($RequestData, $Dataset);
 								$Data['datasets'][] = $Dataset;
 							}
 							$ReservationData = $Database->rawQuery(str_replace('table_name', 'reservations', $query));
 							if (!empty($ReservationData)){
 								$Dataset = array('label' => 'Reservations', 'clrkey' => 1);
-								process_usage_stats($ReservationData, $Dataset);
+								Statistics::ProcessUsageData($ReservationData, $Dataset);
 								$Data['datasets'][] = $Dataset;
 							}
 						break;
@@ -922,7 +920,7 @@
 								GROUP BY key
 								ORDER BY MIN(timestamp)");
 
-							process_stat_labels($Labels, $Data);
+							Statistics::ProcessLabels($Labels, $Data);
 
 							$Approvals = $Database->rawQuery(
 								"SELECT
@@ -935,54 +933,54 @@
 							);
 							if (!empty($Approvals)){
 								$Dataset = array('label' => 'Approved posts');
-								process_usage_stats($Approvals, $Dataset);
+								Statistics::ProcessUsageData($Approvals, $Dataset);
 								$Data['datasets'][] = $Dataset;
 							}
 						break;
 					}
 
-					timed_stat_data_postprocess($Data);
+					Statistics::PostprocessTimedData($Data);
 
-					upload_folder_create($CachePath);
+					CoreUtils::CreateUploadFolder($CachePath);
 					file_put_contents($CachePath, JSON::Encode($Data));
 
-					respond(array('data' => $Data));
+					CoreUtils::Respond(array('data' => $Data));
 				}
 
-				do404();
+				CoreUtils::NotFound();
 			}
-			loadPage(array(
+			CoreUtils::LoadPage(array(
 				'title' => 'About',
 				'do-css',
 				'js' => array('Chart', $do),
 			));
 		break;
 		case "logs":
-			redirect(rtrim("/admin/logs/$data",'/'), AND_DIE);
+			CoreUtils::Redirect(rtrim("/admin/logs/$data",'/'), AND_DIE);
 		break;
 		case "admin":
-			if (!PERM('inspector'))
-				do404();
+			if (!Permission::Sufficient('inspector'))
+				CoreUtils::NotFound();
 
 			$task = strtok($data, '/');
 			$data = regex_replace(new RegExp('^[^/]*?(?:/(.*))?$'), '$1', $data);
 
-			if (RQMTHD === "POST"){
+			if (POST_REQUEST){
 				switch ($task){
 					case "logs":
 						if (regex_match(new RegExp('^details/(\d+)'), $data, $_match)){
 							$EntryID = intval($_match[1], 10);
 
 							$MainEntry = $Database->where('entryid', $EntryID)->getOne('log');
-							if (empty($MainEntry)) respond('Log entry does not exist');
-							if (empty($MainEntry['refid'])) respond('There are no details to show');
+							if (empty($MainEntry)) CoreUtils::Respond('Log entry does not exist');
+							if (empty($MainEntry['refid'])) CoreUtils::Respond('There are no details to show');
 
 							$Details = $Database->where('entryid', $MainEntry['refid'])->getOne("log__{$MainEntry['reftype']}");
-							if (empty($Details)) respond('Failed to retrieve details');
+							if (empty($Details)) CoreUtils::Respond('Failed to retrieve details');
 
-							respond(format_log_details($MainEntry['reftype'],$Details));
+							CoreUtils::Respond(Log::FormatEntryDetails($MainEntry['reftype'],$Details));
 						}
-						else do404();
+						else CoreUtils::NotFound();
 					break;
 					case "usefullinks":
 						if (regex_match(new RegExp('^([gs]et|del|make)(?:/(\d+))?$'), $data, $_match)){
@@ -992,12 +990,12 @@
 							if (!$creating){
 								$Link = $Database->where('id', $_match[2])->getOne('usefullinks');
 								if (empty($Link))
-									respond('The specified link does not exist');
+									CoreUtils::Respond('The specified link does not exist');
 							}
 
 							switch ($action){
 								case 'get':
-									respond(array(
+									CoreUtils::Respond(array(
 										'label' => $Link['label'],
 										'url' => $Link['url'],
 										'title' => $Link['title'],
@@ -1005,27 +1003,27 @@
 									));
 								case 'del':
 									if (!$Database->where('id', $Link['id'])->delete('usefullinks'))
-										respond(ERR_DB_FAIL);
+										CoreUtils::Respond(ERR_DB_FAIL);
 
-									respond(true);
+									CoreUtils::Respond(true);
 								break;
 								case 'make':
 								case 'set':
 									$data = array();
 
 									if (empty($_POST['label']))
-										respond('Link label is missing');
+										CoreUtils::Respond('Link label is missing');
 									$label = trim($_POST['label']);
 									if ($creating || $Link['label'] !== $label){
 										$ll = strlen($label);
 										if ($ll < 3 || $ll > 40)
-											respond('Link label must be between 3 and 40 characters long');
-										check_string_valid($label, 'Link label', INVERSE_PRINTABLE_ASCII_REGEX);
+											CoreUtils::Respond('Link label must be between 3 and 40 characters long');
+										CoreUtils::CheckStringValidity($label, 'Link label', INVERSE_PRINTABLE_ASCII_REGEX);
 										$data['label'] = $label;
 									}
 
 									if (empty($_POST['url']))
-										respond('Link URL is missing');
+										CoreUtils::Respond('Link URL is missing');
 									$url = trim($_POST['url']);
 									if ($creating || $Link['url'] !== $url){
 										$ul = strlen($url);
@@ -1033,9 +1031,9 @@
 											$url = substr($url, strlen(ABSPATH)-1);
 										if (!regex_match($REWRITE_REGEX,$url) && !regex_match(new RegExp('^#[a-z\-]+$'),$url)){
 											if ($ul < 3 || $ul > 255)
-												respond('Link URL must be between 3 and 255 characters long');
+												CoreUtils::Respond('Link URL must be between 3 and 255 characters long');
 											if (!regex_match(new RegExp('^https?:\/\/.+$'), $url))
-												respond('Link URL does not appear to be a valid link');
+												CoreUtils::Respond('Link URL does not appear to be a valid link');
 										}
 										$data['url'] = $url;
 									}
@@ -1045,57 +1043,57 @@
 										if ($creating || $Link['title'] !== $title){
 											$tl = strlen($title);
 											if ($tl < 3 || $tl > 255)
-												respond('Link title must be between 3 and 255 characters long');
-											check_string_valid($title, 'Link title', INVERSE_PRINTABLE_ASCII_REGEX);
+												CoreUtils::Respond('Link title must be between 3 and 255 characters long');
+											CoreUtils::CheckStringValidity($title, 'Link title', INVERSE_PRINTABLE_ASCII_REGEX);
 											$data['title'] = trim($title);
 										}
 									}
 									else $data['title'] = '';
 
 									if (empty($_POST['minrole']))
-										respond('Minimum role is missing');
+										CoreUtils::Respond('Minimum role is missing');
 									$minrole = trim($_POST['minrole']);
 									if ($creating || $Link['minrole'] !== $minrole){
-										if (!isset($ROLES_ASSOC[$minrole]) || !PERM('user', $minrole))
-											respond('Minumum role is invalid');
+										if (!isset(Permission::$ROLES_ASSOC[$minrole]) || !Permission::Sufficient('user', $minrole))
+											CoreUtils::Respond('Minumum role is invalid');
 										$data['minrole'] = $minrole;
 									}
 
 									if (empty($data))
-										respond('Nothing was changed');
+										CoreUtils::Respond('Nothing was changed');
 									$query = $creating
 										? $Database->insert('usefullinks', $data)
 										: $Database->where('id', $Link['id'])->update('usefullinks', $data);
 									if (!$query)
-										respond(ERR_DB_FAIL);
+										CoreUtils::Respond(ERR_DB_FAIL);
 
-									respond(true);
+									CoreUtils::Respond(true);
 								break;
-								default: do404();
+								default: CoreUtils::NotFound();
 							}
 						}
 						else if ($data === 'reorder'){
 							if (!isset($_POST['list']))
-								respond('Missing ordering information');
+								CoreUtils::Respond('Missing ordering information');
 
 							$list = explode(',',regex_replace(new RegExp('[^\d,]'),'',trim($_POST['list'])));
 							$order = 1;
 							foreach ($list as $id){
 								if (!$Database->where('id', $id)->update('usefullinks', array('order' => $order++)))
-									respond("Updating link #$id failed, process halted");
+									CoreUtils::Respond("Updating link #$id failed, process halted");
 							}
 
-							respond(true);
+							CoreUtils::Respond(true);
 						}
-						else do404();
+						else CoreUtils::NotFound();
 					break;
 					default:
-						do404();
+						CoreUtils::NotFound();
 				}
 			}
 
 			if (empty($task))
-				loadPage(array(
+				CoreUtils::LoadPage(array(
 					'title' => 'Admin Area',
 					'do-css',
 					'js' => array('Sortable','jquery.countdown',$do),
@@ -1103,24 +1101,22 @@
 
 			switch ($task){
 				case "logs":
-					$ItemsPerPage = 20;
-					$EntryCount = $Database->count('log');
-					list($Page,$MaxPages) = calc_page($EntryCount);
+					CoreUtils::CanIHas('Pagination');
+					$Pagination = new Pagination('admin/logs', 20, $Database->count('log'));
 
-					fix_path("/admin/logs/$Page");
+					CoreUtils::FixPath("/admin/logs/{$Pagination->page}");
 					$heading = 'Logs';
-					$title = "Page $Page - $heading";
-					$Pagination = get_pagination_html('admin/logs');
+					$title = "Page {$Pagination->page} - $heading";
 
 					$LogItems = $Database
 						->orderBy('timestamp')
 						->orderBy('entryid')
-						->get('log',array($ItemsPerPage*($Page-1), $ItemsPerPage));
+						->get('log', $Pagination->GetLimit());
 
 					if (isset($_GET['js']))
-						pagination_response(log_tbody_render($LogItems), '#logs tbody');
+						$Pagination->Respond(Log::GetTbody($LogItems), '#logs tbody');
 
-					loadPage(array(
+					CoreUtils::LoadPage(array(
 						'title' => $title,
 						'view' => "$do-logs",
 						'css' => "$do-logs",
@@ -1128,7 +1124,7 @@
 					));
 				break;
 				default:
-					do404();
+					CoreUtils::NotFound();
 			}
 		break;
 		case "u":
@@ -1139,80 +1135,80 @@
 			if (strtolower($data) === 'immortalsexgod')
 				$data = 'DJDavid98';
 
-			if (RQMTHD === 'POST'){
-				if (!PERM('inspector')) respond();
-				detectCSRF();
+			if (POST_REQUEST){
+				if (!Permission::Sufficient('inspector')) CoreUtils::Respond();
+				CSRFProtection::Protect();
 
-				if (empty($data)) do404();
+				if (empty($data)) CoreUtils::NotFound();
 
 				if (regex_match(new RegExp('^newgroup/'.USERNAME_PATTERN.'$'),$data,$_match)){
-					$targetUser = get_user($_match[1], 'name');
+					$targetUser = User::Get($_match[1], 'name');
 					if (empty($targetUser))
-						respond('User not found');
+						CoreUtils::Respond('User not found');
 
 					if ($targetUser['id'] === $currentUser['id'])
-						respond("You cannot modify your own group");
-					if (!PERM($targetUser['role']))
-						respond('You can only modify the group of users who are in the same or a lower-level group than you');
+						CoreUtils::Respond("You cannot modify your own group");
+					if (!Permission::Sufficient($targetUser['role']))
+						CoreUtils::Respond('You can only modify the group of users who are in the same or a lower-level group than you');
 					if ($targetUser['role'] === 'ban')
-						respond('This user is banished, and must be un-banished before changing their group.');
+						CoreUtils::Respond('This user is banished, and must be un-banished before changing their group.');
 
 					if (!isset($_POST['newrole']))
-						respond('The new group is not specified');
+						CoreUtils::Respond('The new group is not specified');
 					$newgroup = trim($_POST['newrole']);
-					if (!in_array($newgroup,$ROLES) || $newgroup === 'ban')
-						respond('The specified group does not exist');
+					if (empty(Permission::$ROLES[$newgroup]))
+						CoreUtils::Respond('The specified group does not exist');
 					if ($targetUser['role'] === $newgroup)
-						respond(array('already_in' => true));
+						CoreUtils::Respond(array('already_in' => true));
 
-					update_role($targetUser,$newgroup);
+					User::UpdateRole($targetUser,$newgroup);
 
-					respond(true);
+					CoreUtils::Respond(true);
 				}
 				else if (regex_match(new RegExp('^sessiondel/(\d+)$'),$data,$_match)){
 					$Session = $Database->where('id', $_match[1])->getOne('sessions');
 					if (empty($Session))
-						respond('This session does not exist');
-					if ($Session['user'] !== $currentUser['id'] && !PERM('inspector'))
-						respond('You are not allowed to delete this session');
+						CoreUtils::Respond('This session does not exist');
+					if ($Session['user'] !== $currentUser['id'] && !Permission::Sufficient('inspector'))
+						CoreUtils::Respond('You are not allowed to delete this session');
 
 					if (!$Database->where('id', $Session['id'])->delete('sessions'))
-						respond('Session could not be deleted');
-					respond('Session successfully removed',1);
+						CoreUtils::Respond('Session could not be deleted');
+					CoreUtils::Respond('Session successfully removed',1);
 				}
 				else if (regex_match(new RegExp('^(un-)?banish/'.USERNAME_PATTERN.'$'), $data, $_match)){
 					$Action = (empty($_match[1]) ? 'Ban' : 'Un-ban').'ish';
 					$action = strtolower($Action);
 					$un = $_match[2];
 
-					$targetUser = get_user($un, 'name');
-					if (empty($targetUser)) respond('User not found');
+					$targetUser = User::Get($un, 'name');
+					if (empty($targetUser)) CoreUtils::Respond('User not found');
 
-					if ($targetUser['id'] === $currentUser['id']) respond("You cannot $action yourself");
-					if (PERM('inspector', $targetUser['role']))
-						respond("You cannot $action people within the inspector or any higher group");
+					if ($targetUser['id'] === $currentUser['id']) CoreUtils::Respond("You cannot $action yourself");
+					if (Permission::Sufficient('inspector', $targetUser['role']))
+						CoreUtils::Respond("You cannot $action people within the inspector or any higher group");
 					if ($action == 'banish' && $targetUser['role'] === 'ban' || $action == 'un-banish' && $targetUser['role'] !== 'ban')
-						respond("This user has already been {$action}ed");
+						CoreUtils::Respond("This user has already been {$action}ed");
 
 					if (empty($_POST['reason']))
-						respond('Please specify a reason');
+						CoreUtils::Respond('Please specify a reason');
 					$reason = trim($_POST['reason']);
 					$rlen = strlen($reason);
 					if ($rlen < 5 || $rlen > 255)
-						respond('Reason length must be between 5 and 255 characters');
+						CoreUtils::Respond('Reason length must be between 5 and 255 characters');
 
 					$changes = array('role' => $action == 'banish' ? 'ban' : 'user');
 					$Database->where('id', $targetUser['id'])->update('users', $changes);
-					LogAction($action,array(
+					Log::Action($action,array(
 						'target' => $targetUser['id'],
 						'reason' => $reason
 					));
-					$changes['role'] = $ROLES_ASSOC[$changes['role']];
-					$changes['badge'] = label_to_initials($changes['role']);
-					if ($action == 'banish') respond($changes);
-					else respond("We welcome {$targetUser['name']} back with open hooves!", 1, $changes);
+					$changes['role'] = Permission::$ROLES_ASSOC[$changes['role']];
+					$changes['badge'] = Permission::LabelInitials($changes['role']);
+					if ($action == 'banish') CoreUtils::Respond($changes);
+					else CoreUtils::Respond("We welcome {$targetUser['name']} back with open hooves!", 1, $changes);
 				}
-				else statusCodeHeader(404, AND_DIE);
+				else CoreUtils::StatusCode(404, AND_DIE);
 			}
 
 			if (empty($data)){
@@ -1225,7 +1221,7 @@
 			if (!isset($un)){
 				if (!isset($MSG)) $MSG = 'Invalid username';
 			}
-			else $User = get_user($un, 'name');
+			else $User = User::Get($un, 'name');
 
 			if (empty($User)){
 				if (isset($User) && $User === false){
@@ -1244,14 +1240,12 @@
 			}
 			else {
 				$sameUser = $signedIn && $User['id'] === $currentUser['id'];
-				$canEdit = !$sameUser && PERM('inspector') && PERM($User['role']);
+				$canEdit = !$sameUser && Permission::Sufficient('inspector') && Permission::Sufficient($User['role']);
 				$pagePath = "/@{$User['name']}";
-				fix_path($pagePath);
+				CoreUtils::FixPath($pagePath);
 			}
-			if ($canEdit)
-				$UsableRoles = $Database->where("value <= (SELECT value FROM roles WHERE name = '{$currentUser['role']}')")->where('value > 0')->get('roles',null,'name, label');
 
-			if (isset($MSG)) statusCodeHeader(404);
+			if (isset($MSG)) CoreUtils::StatusCode(404);
 			else {
 				if ($sameUser){
 					$CurrentSession = $currentUser['Session'];
@@ -1264,13 +1258,13 @@
 			}
 
 			$settings = array(
-				'title' => !isset($MSG) ? ($sameUser?'Your':s($User['name'])).' '.($sameUser || $canEdit?'account':'profile') : 'Account',
+				'title' => !isset($MSG) ? ($sameUser?'Your':CoreUtils::Posess($User['name'])).' '.($sameUser || $canEdit?'account':'profile') : 'Account',
 				'no-robots',
 				'do-css',
 				'js' => array('user'),
 			);
 			if ($canEdit) $settings['js'][] = 'user-manage';
-			loadPage($settings);
+			CoreUtils::LoadPage($settings);
 		break;
 		case "colourguides":
 		case "colourguide":
@@ -1281,11 +1275,10 @@
 
 			$SpriteRelPath = '/img/cg/';
 			$SpritePath = APPATH.substr($SpriteRelPath,1);
-			$ItemsPerPage = 7;
 
-			if (RQMTHD === 'POST' || (isset($_GET['s']) && $data === "gettags")){
-				if (!PERM('inspector')) respond();
-				IF (RQMTHD === "POST") detectCSRF();
+			if (POST_REQUEST || (isset($_GET['s']) && $data === "gettags")){
+				if (!Permission::Sufficient('inspector')) CoreUtils::Respond();
+				if (POST_REQUEST) CSRFProtection::Protect();
 
 				$EQG = isset($_REQUEST['eqg']) ? 1 : 0;
 				$AppearancePage = isset($_POST['APPEARANCE_PAGE']);
@@ -1298,7 +1291,7 @@
 							$Tag = $CGDb->where('tid',$not_tid)->where('"synonym_of" IS NOT NULL')->getOne('tags');
 							if (!empty($Tag)){
 								$Syn = get_tag_synon($Tag,'name');
-								respond("This tag is already a synonym of <strong>{$Syn['name']}</strong>.<br>Would you like to remove the synonym?",0,array('undo' => true));
+								CoreUtils::Respond("This tag is already a synonym of <strong>{$Syn['name']}</strong>.<br>Would you like to remove the synonym?",0,array('undo' => true));
 							}
 						}
 
@@ -1335,24 +1328,24 @@
 					break;
 					case 'full':
 						if (!isset($_REQUEST['reorder']))
-							do404();
+							CoreUtils::NotFound();
 
-						if (!PERM('inspector'))
-							respond();
+						if (!Permission::Sufficient('inspector'))
+							CoreUtils::Respond();
 						if (empty($_POST['list']))
-							respond('The list of IDs is missing');
+							CoreUtils::Respond('The list of IDs is missing');
 
 						$list = trim($_POST['list']);
 						if (!regex_match(new RegExp('^\d+(?:,\d+)+$'), $list))
-							respond('The list of IDs is not formatted properly');
+							CoreUtils::Respond('The list of IDs is not formatted properly');
 
 						reorder_appearances($list);
 
-						respond(array('html' => render_full_list_html(get_appearances($EQG,null,'id,label'), true, NOWRAP)));
+						CoreUtils::Respond(array('html' => render_full_list_html(get_appearances($EQG,null,'id,label'), true, NOWRAP)));
 					break;
 					case "export":
-						if (!PERM('inspector'))
-							do404();
+						if (!Permission::Sufficient('inspector'))
+							CoreUtils::NotFound();
 						$JSON = array(
 							'Appearances' => array(),
 							'Tags' => array(),
@@ -1414,16 +1407,16 @@
 					if (!$creating){
 						$AppearanceID = intval($_match[2], 10);
 						if (strlen($_match[2]) === 0)
-							respond('Missing appearance ID');
+							CoreUtils::Respond('Missing appearance ID');
 						$Appearance = $CGDb->where('id', $AppearanceID)->where('ishuman', $EQG)->getOne('appearances');
 						if (empty($Appearance))
-							respond("The specified appearance does not exist");
+							CoreUtils::Respond("The specified appearance does not exist");
 					}
 					else $Appearance = array('id' => null);
 
 					switch ($action){
 						case "get":
-							respond(array(
+							CoreUtils::Respond(array(
 								'label' => $Appearance['label'],
 								'notes' => $Appearance['notes'],
 								'cm_favme' => !empty($Appearance['cm_favme']) ? "http://fav.me/{$Appearance['cm_favme']}" : null,
@@ -1441,23 +1434,23 @@
 							);
 
 							if (empty($_POST['label']))
-								respond('Label is missing');
+								CoreUtils::Respond('Label is missing');
 							$label = trim($_POST['label']);
 							$ll = strlen($label);
-							check_string_valid($label, "Appearance name", INVERSE_PRINTABLE_ASCII_REGEX);
+							CoreUtils::CheckStringValidity($label, "Appearance name", INVERSE_PRINTABLE_ASCII_REGEX);
 							if ($ll < 4 || $ll > 70)
-								respond('Appearance name must be beetween 4 and 70 characters long');
+								CoreUtils::Respond('Appearance name must be beetween 4 and 70 characters long');
 							if ($creating && $CGDb->where('label', $label)->has('appearances'))
-								respond('An appearance already esists with this name');
+								CoreUtils::Respond('An appearance already esists with this name');
 							$data['label'] = $label;
 
 							if (!empty($_POST['notes'])){
 								$notes = trim($_POST['notes']);
-								check_string_valid($label, "Appearance notes", INVERSE_PRINTABLE_ASCII_REGEX);
+								CoreUtils::CheckStringValidity($label, "Appearance notes", INVERSE_PRINTABLE_ASCII_REGEX);
 								if ($Appearance['id'] === 0)
-									$notes = trim(sanitize_html($notes));
+									$notes = trim(CoreUtils::SanitizeHtml($notes));
 								if (strlen($notes) > 1000 && ($creating || $Appearance['id'] !== 0))
-									respond('Appearance notes cannot be longer than 1000 characters');
+									CoreUtils::Respond('Appearance notes cannot be longer than 1000 characters');
 								if ($creating || $notes !== $Appearance['notes'])
 									$data['notes'] = $notes;
 							}
@@ -1466,19 +1459,19 @@
 							if (!empty($_POST['cm_favme'])){
 								$cm_favme = trim($_POST['cm_favme']);
 								try {
-									require_once 'includes/Image.php';
+									CoreUtils::CanIHas('Image');
 									$Image = new Image($cm_favme, array('fav.me','dA'));
 									$data['cm_favme'] = $Image->id;
 								}
 								catch (MismatchedProviderException $e){
-									respond('The vector must be on DeviantArt, '.$e->getActualProvider().' links are not allowed');
+									CoreUtils::Respond('The vector must be on DeviantArt, '.$e->getActualProvider().' links are not allowed');
 								}
-								catch (Exception $e){ respond("Cutie Mark link issue: ".$e->getMessage()); }
+								catch (Exception $e){ CoreUtils::Respond("Cutie Mark link issue: ".$e->getMessage()); }
 
 								if (empty($_POST['cm_dir']))
-									respond('Cutie mark orientation must be set if a link is provided');
+									CoreUtils::Respond('Cutie mark orientation must be set if a link is provided');
 								if ($_POST['cm_dir'] !== 'th' && $_POST['cm_dir'] !== 'ht')
-									respond('Invalid cutie mark orientation');
+									CoreUtils::Respond('Invalid cutie mark orientation');
 								$cm_dir = $_POST['cm_dir'] === 'ht' ? CM_DIR_HEAD_TO_TAIL : CM_DIR_TAIL_TO_HEAD;
 								if ($creating || $Appearance['cm_dir'] !== $cm_dir)
 									$data['cm_dir'] = $cm_dir;
@@ -1488,11 +1481,11 @@
 									$data['cm_preview'] = null;
 								else if ($creating || $cm_preview !== $Appearance['cm_preview']){
 									try {
-										require_once 'includes/Image.php';
+										CoreUtils::CanIHas('Image');
 										$Image = new Image($cm_preview);
 										$data['cm_preview'] = $Image->preview;
 									}
-									catch (Exception $e){ respond("Cutie Mark preview issue: ".$e->getMessage()); }
+									catch (Exception $e){ CoreUtils::Respond("Cutie Mark preview issue: ".$e->getMessage()); }
 								}
 							}
 							else {
@@ -1504,7 +1497,7 @@
 								? $CGDb->insert('appearances', $data, 'id')
 								: $CGDb->where('id', $Appearance['id'])->update('appearances', $data);
 							if (!$query)
-								respond(ERR_DB_FAIL);
+								CoreUtils::Respond(ERR_DB_FAIL);
 
 							if ($creating){
 								$data['id'] = $query;
@@ -1519,29 +1512,29 @@
 									catch (Exception $e){
 										$response['message'] .= ", but applying the template failed";
 										$response['info'] = "The common color groups could not be added.<br>Reason: ".$e->getMessage();
-										respond($response, 1);
+										CoreUtils::Respond($response, 1);
 									}
 								}
-								respond($response);
+								CoreUtils::Respond($response);
 							}
 							else {
 								clear_rendered_image($Appearance['id']);
 								if ($AppearancePage)
-									respond(true);
+									CoreUtils::Respond(true);
 							}
 
 							$Appearance = array_merge($Appearance, $data);
-							respond(array(
+							CoreUtils::Respond(array(
 								'label' => $Appearance['label'],
 								'notes' => get_notes_html($Appearance, NOWRAP),
 							));
 						break;
 						case "delete":
 							if ($Appearance['id'] === 0)
-								respond('This appearance cannot be deleted');
+								CoreUtils::Respond('This appearance cannot be deleted');
 
 							if (!$CGDb->where('id', $Appearance['id'])->delete('appearances'))
-								respond(ERR_DB_FAIL);
+								CoreUtils::Respond(ERR_DB_FAIL);
 
 							$fpath = APPATH."img/cg/{$Appearance['id']}.png";
 							if (file_exists($fpath))
@@ -1549,29 +1542,29 @@
 
 							clear_rendered_image($Appearance['id']);
 
-							respond('Appearance removed', 1);
+							CoreUtils::Respond('Appearance removed', 1);
 						break;
 						case "getcgs":
 							$cgs = get_cgs($Appearance['id'],'groupid, label');
 							if (empty($cgs))
-								respond('This appearance does not have any color groups');
-							respond(array('cgs' => $cgs));
+								CoreUtils::Respond('This appearance does not have any color groups');
+							CoreUtils::Respond(array('cgs' => $cgs));
 						break;
 						case "setcgs":
 							if (empty($_POST['cgs']))
-								respond("$Color group order data missing");
+								CoreUtils::Respond("$Color group order data missing");
 
 							$groups = array_unique(array_map('intval',explode(',',$_POST['cgs'])));
 							foreach ($groups as $part => $GroupID){
 								if (!$CGDb->where('groupid', $GroupID)->has('colorgroups'))
-									respond("There's no group with the ID of  $GroupID");
+									CoreUtils::Respond("There's no group with the ID of  $GroupID");
 
 								$CGDb->where('groupid', $GroupID)->update('colorgroups',array('order' => $part));
 							}
 
 							clear_rendered_image($Appearance['id']);
 
-							respond(array('cgs' => get_colors_html($Appearance['id'], NOWRAP, !$AppearancePage, $AppearancePage)));
+							CoreUtils::Respond(array('cgs' => get_colors_html($Appearance['id'], NOWRAP, !$AppearancePage, $AppearancePage)));
 						break;
 						case "delsprite":
 						case "getsprite":
@@ -1586,35 +1579,35 @@
 								break;
 								case "delsprite":
 									if (!file_exists($finalpath))
-										respond('No sprite file found');
+										CoreUtils::Respond('No sprite file found');
 
 									if (!unlink($finalpath))
-										respond('File could not be deleted');
+										CoreUtils::Respond('File could not be deleted');
 
-									respond(array('sprite' => get_sprite_url($Appearance, DEFAULT_SPRITE)));
+									CoreUtils::Respond(array('sprite' => get_sprite_url($Appearance, DEFAULT_SPRITE)));
 								break;
 							}
 
-							respond(array("path" => "$SpriteRelPath$fname?".filemtime($finalpath)));
+							CoreUtils::Respond(array("path" => "$SpriteRelPath$fname?".filemtime($finalpath)));
 						break;
 						case "clearrendercache":
 							if (!clear_rendered_image($Appearance['id']))
-								respond('Cache could not be cleared');
+								CoreUtils::Respond('Cache could not be cleared');
 
-							respond('Cached image removed, the image will be re-generated on the next request', 1);
+							CoreUtils::Respond('Cached image removed, the image will be re-generated on the next request', 1);
 						break;
 						case "tag":
 						case "untag":
 							if ($Appearance['id'] === 0)
-								respond("This appearance cannot be tagged");
+								CoreUtils::Respond("This appearance cannot be tagged");
 
 							switch ($action){
 								case "tag":
 									if (empty($_POST['tag_name']))
-										respond('Tag name is not specified');
+										CoreUtils::Respond('Tag name is not specified');
 									$tag_name = strtolower(trim($_POST['tag_name']));
 									if (!regex_match($TAG_NAME_REGEX,$tag_name))
-										respond('Invalid tag name');
+										CoreUtils::Respond('Invalid tag name');
 
 									$TagCheck = ep_tag_name_check($tag_name);
 									if ($TagCheck !== false)
@@ -1622,34 +1615,34 @@
 
 									$Tag = $CGDb->where('name',$tag_name)->getOne('tags');
 									if (empty($Tag))
-										respond("The tag $tag_name does not exist.<br>Would you like to create it?",0,array(
+										CoreUtils::Respond("The tag $tag_name does not exist.<br>Would you like to create it?",0,array(
 											'cancreate' => $tag_name,
 											'typehint' => $TagCheck !== false ? 'ep' : null,
 										));
 
 									if ($CGDb->where('ponyid', $Appearance['id'])->where('tid', $Tag['tid'])->has('tagged'))
-										respond('This appearance already has this tag');
+										CoreUtils::Respond('This appearance already has this tag');
 
 									if (!$CGDb->insert('tagged',array(
 										'ponyid' => $Appearance['id'],
 										'tid' => $Tag['tid'],
-									))) respond(ERR_DB_FAIL);
+									))) CoreUtils::Respond(ERR_DB_FAIL);
 								break;
 								case "untag":
 									if (!isset($_POST['tag']) || !is_numeric($_POST['tag']))
-										respond('Tag ID is not specified');
+										CoreUtils::Respond('Tag ID is not specified');
 									$Tag = $CGDb->where('tid',$_POST['tag'])->getOne('tags');
 									if (empty($Tag))
-										respond('This tag does not exist');
+										CoreUtils::Respond('This tag does not exist');
 									if (!empty($Tag['synonym_of'])){
 										$Syn = get_tag_synon($Tag,'name');
-										respond('Synonym tags cannot be removed from appearances directly. '.
+										CoreUtils::Respond('Synonym tags cannot be removed from appearances directly. '.
 										        "If you want to remove this tag you must remove <strong>{$Syn['name']}</strong> or the synonymization.");
 									}
 
 									if ($CGDb->where('ponyid', $Appearance['id'])->where('tid', $Tag['tid'])->has('tagged')){
 										if (!$CGDb->where('ponyid', $Appearance['id'])->where('tid', $Tag['tid'])->delete('tagged'))
-											respond(ERR_DB_FAIL);
+											CoreUtils::Respond(ERR_DB_FAIL);
 									}
 								break;
 							}
@@ -1663,19 +1656,19 @@
 								$response['needupdate'] = true;
 								$response['eps'] = get_episode_appearances($Appearance['id'], NOWRAP);
 							}
-							respond($response);
+							CoreUtils::Respond($response);
 						break;
 						case "applytemplate":
 							try {
 								apply_template($Appearance['id'], $EQG);
 							}
 							catch (Exception $e){
-								respond("Applying the template failed. Reason: ".$e->getMessage());
+								CoreUtils::Respond("Applying the template failed. Reason: ".$e->getMessage());
 							}
 
-							respond(array('cgs' => get_colors_html($Appearance['id'], NOWRAP, !$AppearancePage, $AppearancePage)));
+							CoreUtils::Respond(array('cgs' => get_colors_html($Appearance['id'], NOWRAP, !$AppearancePage, $AppearancePage)));
 						break;
-						default: statusCodeHeader(400, AND_DIE);
+						default: CoreUtils::StatusCode(404, AND_DIE);
 					}
 				}
 				else if (regex_match(new RegExp('^([gs]et|make|del|merge|recount|(?:un)?synon)tag(?:/(\d+))?$'), $data, $_match)){
@@ -1683,7 +1676,7 @@
 
 					if ($action === 'recount'){
 						if (empty($_POST['tagids']))
-							respond('Missing list of tags to update');
+							CoreUtils::Respond('Missing list of tags to update');
 
 						$tagIDs = array_map('intval', explode(',',trim($_POST['tagids'])));
 						$counts = array();
@@ -1697,7 +1690,7 @@
 							}
 						}
 
-						respond(
+						CoreUtils::Respond(
 							(
 								!$updates
 								? 'There was no change in the tag usage counts'
@@ -1717,29 +1710,29 @@
 
 					if (!$new){
 						if (!isset($_match[2]))
-							respond('Missing tag ID');
+							CoreUtils::Respond('Missing tag ID');
 						$TagID = intval($_match[2], 10);
 						$Tag = $CGDb->where('tid', $TagID)->getOne('tags',isset($query) ? 'tid, name, type':'*');
 						if (empty($Tag))
-							respond("This tag does not exist");
+							CoreUtils::Respond("This tag does not exist");
 
-						if ($getting) respond($Tag);
+						if ($getting) CoreUtils::Respond($Tag);
 
 						if ($deleting){
 							if (!isset($_POST['sanitycheck'])){
 								$tid = !empty($Tag['synonym_of']) ? $Tag['synonym_of'] : $Tag['tid'];
 								$Uses = $CGDb->where('tid',$tid)->count('tagged');
 								if ($Uses > 0)
-									respond('<p>This tag is currently used on '.plur('appearance',$Uses,PREPEND_NUMBER).'</p><p>Deleting will <strong class="color-red">permanently remove</strong> the tag from those appearances!</p><p>Are you <em class="color-red">REALLY</em> sure about this?</p>',0,array('confirm' => true));
+									CoreUtils::Respond('<p>This tag is currently used on '.CoreUtils::MakePlural('appearance',$Uses,PREPEND_NUMBER).'</p><p>Deleting will <strong class="color-red">permanently remove</strong> the tag from those appearances!</p><p>Are you <em class="color-red">REALLY</em> sure about this?</p>',0,array('confirm' => true));
 							}
 
 							if (!$CGDb->where('tid', $Tag['tid'])->delete('tags'))
-								respond(ERR_DB_FAIL);
+								CoreUtils::Respond(ERR_DB_FAIL);
 
 							if (isset($GroupTagIDs_Assoc[$Tag['tid']]))
 								get_sort_reorder_appearances($EQG);
 
-							respond('Tag deleted successfully', 1, $AppearancePage && $Tag['type'] === 'ep' ? array(
+							CoreUtils::Respond('Tag deleted successfully', 1, $AppearancePage && $Tag['type'] === 'ep' ? array(
 								'needupdate' => true,
 								'eps' => get_episode_appearances($Appearance['id'], NOWRAP),
 							) : null);
@@ -1749,15 +1742,15 @@
 
 					if ($merging || $synoning){
 						if ($synoning && !empty($Tag['synonym_of']))
-							respond('This tag is already synonymized with a different tag');
+							CoreUtils::Respond('This tag is already synonymized with a different tag');
 
 						if (empty($_POST['targetid']))
-							respond('Missing target tag ID');
+							CoreUtils::Respond('Missing target tag ID');
 						$Target = $CGDb->where('tid', intval($_POST['targetid'], 10))->getOne('tags');
 						if (empty($Target))
-							respond('Target tag does not exist');
+							CoreUtils::Respond('Target tag does not exist');
 						if (!empty($Target['synonym_of']))
-							respond('Synonym tags cannot be synonymization targets');
+							CoreUtils::Respond('Synonym tags cannot be synonymization targets');
 
 						$_TargetTagged = $CGDb->where('tid', $Target['tid'])->get('tagged',null,'ponyid');
 						$TargetTagged = array();
@@ -1771,7 +1764,7 @@
 							if (!$CGDb->insert('tagged',array(
 								'tid' => $Target['tid'],
 								'ponyid' => $tg['ponyid']
-							))) respond('Tag '.($merging?'merging':'synonimizing')." failed, please re-try.<br>Technical details: ponyid={$tg['ponyid']} tid={$Target['tid']}");
+							))) CoreUtils::Respond('Tag '.($merging?'merging':'synonimizing')." failed, please re-try.<br>Technical details: ponyid={$tg['ponyid']} tid={$Target['tid']}");
 						}
 						if ($merging)
 							// No need to delete "tagged" table entries, constraints do it for us
@@ -1782,11 +1775,11 @@
 						}
 
 						update_tag_count($Target['tid']);
-						respond('Tags successfully '.($merging?'merged':'synonymized'), 1, $synoning ? array('target' => $Target) : null);
+						CoreUtils::Respond('Tags successfully '.($merging?'merged':'synonymized'), 1, $synoning ? array('target' => $Target) : null);
 					}
 					else if ($unsynoning){
 						if (empty($Tag['synonym_of']))
-							respond(true);
+							CoreUtils::Respond(true);
 
 						$keep_tagged = isset($_POST['keep_tagged']);
 						$uses = 0;
@@ -1798,7 +1791,7 @@
 									if (!$CGDb->insert('tagged',array(
 										'tid' => $Tag['tid'],
 										'ponyid' => $tg['ponyid']
-									))) respond("Tag synonym removal process failed, please re-try.<br>Technical details: ponyid={$tg['ponyid']} tid={$Tag['tid']}");
+									))) CoreUtils::Respond("Tag synonym removal process failed, please re-try.<br>Technical details: ponyid={$tg['ponyid']} tid={$Tag['tid']}");
 									$uses++;
 								}
 							}
@@ -1806,21 +1799,21 @@
 						}
 
 						if (!$CGDb->where('tid', $Tag['tid'])->update('tags', array('synonym_of' => null, 'uses' => $uses)))
-							respond(ERR_DB_FAIL);
+							CoreUtils::Respond(ERR_DB_FAIL);
 
-						respond(array('keep_tagged' => $keep_tagged));
+						CoreUtils::Respond(array('keep_tagged' => $keep_tagged));
 					}
 
 					$name = isset($_POST['name']) ? strtolower(trim($_POST['name'])) : null;
 					$nl = !empty($name) ? strlen($name) : 0;
 					if ($nl < 3 || $nl > 30)
-						respond("Tag name must be between 3 and 30 characters");
+						CoreUtils::Respond("Tag name must be between 3 and 30 characters");
 					if ($name[0] === '-')
-						respond('Tag name cannot start with a dash');
-					check_string_valid($name,'Tag name',INVERSE_TAG_NAME_PATTERN);
+						CoreUtils::Respond('Tag name cannot start with a dash');
+					CoreUtils::CheckStringValidity($name,'Tag name',INVERSE_TAG_NAME_PATTERN);
 					$sanitized_name = regex_replace(new RegExp('[^a-z\d]'),'',$name);
 					if (regex_match(new RegExp('^(b+[a4]+w*d+|g+[uo0]+d+|(?:b+[ae3]+|w+[o0]+r+[s5]+[t7])[s5]+t+)(e+r+|e+s+t+)?p+[o0]+[wh]*n+[ye3]*$'),$sanitized_name))
-						respond('Highly opinion-based tags are not allowed');
+						CoreUtils::Respond('Highly opinion-based tags are not allowed');
 					$data['name'] = $name;
 
 					$epTagName = ep_tag_name_check($data['name']);
@@ -1833,11 +1826,11 @@
 					else {
 						$type = trim($_POST['type']);
 						if (!in_array($type, $TAG_TYPES))
-							respond("Invalid tag type: $type");
+							CoreUtils::Respond("Invalid tag type: $type");
 
 						if ($type == 'ep'){
 							if (!$surelyAnEpisodeTag)
-								respond('Episode tags must be in the format of <strong>s##e##[-##]</strong> where # represents a number<br>Allowed seasons: 1-8, episodes: 1-26');
+								CoreUtils::Respond('Episode tags must be in the format of <strong>s##e##[-##]</strong> where # represents a number<br>Allowed seasons: 1-8, episodes: 1-26');
 							$data['name'] = $epTagName;
 						}
 						else if ($surelyAnEpisodeTag)
@@ -1847,37 +1840,37 @@
 
 					if (!$new) $CGDb->where('tid',$Tag['tid'],'!=');
 					if ($CGDb->where('name', $data['name'])->where('type', $data['type'])->has('tags') || $data['name'] === 'wrong cutie mark')
-						respond("A tag with the same name and type already exists");
+						CoreUtils::Respond("A tag with the same name and type already exists");
 
 					if (empty($_POST['title'])) $data['title'] = null;
 					else {
 						$title = trim($_POST['title']);
 						$tl = strlen($title);
 						if ($tl > 255)
-							respond("Your title exceeds the 255 character limit by ".($tl-255)." characters.");
+							CoreUtils::Respond("Your title exceeds the 255 character limit by ".($tl-255)." characters.");
 						$data['title'] = $title;
 					}
 
 					if ($new){
 						$TagID = $CGDb->insert('tags', $data, 'tid');
-						if (!$TagID) respond(ERR_DB_FAIL);
+						if (!$TagID) CoreUtils::Respond(ERR_DB_FAIL);
 						$data['tid'] = $TagID;
 
 						if (!empty($_POST['addto']) && is_numeric($_POST['addto'])){
 							$AppearanceID = intval($_POST['addto'], 10);
 							if ($AppearanceID === 0)
-								respond("The tag was created, <strong>but</strong> it could not be added to the appearance because it can't be tagged.", 1);
+								CoreUtils::Respond("The tag was created, <strong>but</strong> it could not be added to the appearance because it can't be tagged.", 1);
 
 							$Appearance = $CGDb->where('id', $AppearanceID)->getOne('appearances');
 							if (empty($Appearance))
-								respond("The tag was created, <strong>but</strong> it could not be added to the appearance (<a href='/{$color}guide/appearance/$AppearanceID'>#$AppearanceID</a>) because it doesn't seem to exist. Please try adding the tag manually.", 1);
+								CoreUtils::Respond("The tag was created, <strong>but</strong> it could not be added to the appearance (<a href='/{$color}guide/appearance/$AppearanceID'>#$AppearanceID</a>) because it doesn't seem to exist. Please try adding the tag manually.", 1);
 
 							if (!$CGDb->insert('tagged',array(
 								'tid' => $data['tid'],
 								'ponyid' => $Appearance['id']
-							))) respond(ERR_DB_FAIL);
+							))) CoreUtils::Respond(ERR_DB_FAIL);
 							update_tag_count($data['tid']);
-							respond(array('tags' => get_tags_html($Appearance['id'], NOWRAP)));
+							CoreUtils::Respond(array('tags' => get_tags_html($Appearance['id'], NOWRAP)));
 						}
 					}
 					else {
@@ -1885,7 +1878,7 @@
 						$data = array_merge($Tag, $data);
 					}
 
-					respond($data);
+					CoreUtils::Respond($data);
 				}
 				else if (regex_match(new RegExp('^([gs]et|make|del)cg(?:/(\d+))?$'), $data, $_match)){
 					$setting = $_match[1] === 'set';
@@ -1895,53 +1888,53 @@
 
 					if (!$new){
 						if (empty($_match[2]))
-							respond('Missing color group ID');
+							CoreUtils::Respond('Missing color group ID');
 						$GroupID = intval($_match[2], 10);
 						$Group = $CGDb->where('groupid', $GroupID)->getOne('colorgroups');
 						if (empty($GroupID))
-							respond("There's no $color group with the ID of $GroupID");
+							CoreUtils::Respond("There's no $color group with the ID of $GroupID");
 
 						if ($getting){
 							$Group['Colors'] = get_colors($Group['groupid']);
-							respond($Group);
+							CoreUtils::Respond($Group);
 						}
 
 						if ($deleting){
 							if (!$CGDb->where('groupid', $Group['groupid'])->delete('colorgroups'))
-								respond(ERR_DB_FAIL);
-							respond("$Color group deleted successfully", 1);
+								CoreUtils::Respond(ERR_DB_FAIL);
+							CoreUtils::Respond("$Color group deleted successfully", 1);
 						}
 					}
 					$data = array();
 
 					if (empty($_POST['label']))
-						respond('Please specify a group name');
+						CoreUtils::Respond('Please specify a group name');
 					$name = $_POST['label'];
-					check_string_valid($name, "$Color group name", INVERSE_PRINTABLE_ASCII_REGEX);
+					CoreUtils::CheckStringValidity($name, "$Color group name", INVERSE_PRINTABLE_ASCII_REGEX);
 					$nl = strlen($name);
 					if ($nl < 2 || $nl > 30)
-						respond('The group name must be between 2 and 30 characters in length');
+						CoreUtils::Respond('The group name must be between 2 and 30 characters in length');
 					$data['label'] = $name;
 
 					if (!empty($_POST['major'])){
 						$major = true;
 
 						if (empty($_POST['reason']))
-							respond('Please specify a reason');
+							CoreUtils::Respond('Please specify a reason');
 						$reason = $_POST['reason'];
-						check_string_valid($reason, "Change reason", INVERSE_PRINTABLE_ASCII_REGEX);
+						CoreUtils::CheckStringValidity($reason, "Change reason", INVERSE_PRINTABLE_ASCII_REGEX);
 						$rl = strlen($reason);
 						if ($rl < 1 || $rl > 255)
-							respond('The reason must be between 1 and 255 characters in length');
+							CoreUtils::Respond('The reason must be between 1 and 255 characters in length');
 					}
 
 					if ($new){
 						if (!isset($_POST['ponyid']) || !is_numeric($_POST['ponyid']))
-							respond('Missing appearance ID');
+							CoreUtils::Respond('Missing appearance ID');
 						$AppearanceID = intval($_POST['ponyid'], 10);
 						$Appearance = $CGDb->where('id', $AppearanceID)->where('ishuman', $EQG)->getOne('appearances');
 						if (empty($Appearance))
-							respond('The specified appearance odes not exist');
+							CoreUtils::Respond('The specified appearance odes not exist');
 						$data['ponyid'] = $AppearanceID;
 
 						// Attempt to get order number of last color group for the appearance
@@ -1951,36 +1944,36 @@
 
 						$GroupID = $CGDb->insert('colorgroups', $data, 'groupid');
 						if (!$GroupID)
-							respond(ERR_DB_FAIL);
+							CoreUtils::Respond(ERR_DB_FAIL);
 						$Group = array('groupid' => $GroupID);
 					}
 					else $CGDb->where('groupid', $Group['groupid'])->update('colorgroups', $data);
 
 
 					if (empty($_POST['Colors']))
-						respond("Missing list of {$color}s");
+						CoreUtils::Respond("Missing list of {$color}s");
 					$recvColors = JSON::Decode($_POST['Colors'], true);
 					if (empty($recvColors))
-						respond("Missing list of {$color}s");
+						CoreUtils::Respond("Missing list of {$color}s");
 					$colors = array();
 					foreach ($recvColors as $part => $c){
 						$append = array('order' => $part);
 						$index = "(index: $part)";
 
 						if (empty($c['label']))
-							respond("You must specify a $color name $index");
+							CoreUtils::Respond("You must specify a $color name $index");
 						$label = trim($c['label']);
-						check_string_valid($label, "$Color $index name", INVERSE_PRINTABLE_ASCII_REGEX);
+						CoreUtils::CheckStringValidity($label, "$Color $index name", INVERSE_PRINTABLE_ASCII_REGEX);
 						$ll = strlen($label);
 						if ($ll < 3 || $ll > 30)
-							respond("The $color name must be between 3 and 30 characters in length $index");
+							CoreUtils::Respond("The $color name must be between 3 and 30 characters in length $index");
 						$append['label'] = $label;
 
 						if (empty($c['hex']))
-							respond("You must specify a $color code $index");
+							CoreUtils::Respond("You must specify a $color code $index");
 						$hex = trim($c['hex']);
 						if (!$HEX_COLOR_PATTERN->match($hex, $_match))
-							respond("HEX $color is in an invalid format $index");
+							CoreUtils::Respond("HEX $color is in an invalid format $index");
 						$append['hex'] = '#'.strtoupper($_match[1]);
 
 						$colors[] = $append;
@@ -1994,7 +1987,7 @@
 							$colorError = true;
 					}
 					if ($colorError)
-						respond("There were some issues while saving some of the colors. Please let the developer know about this error, so he can look into why this might've happened.");
+						CoreUtils::Respond("There were some issues while saving some of the colors. Please let the developer know about this error, so he can look into why this might've happened.");
 
 					$colon = !$AppearancePage;
 					$outputNames = $AppearancePage;
@@ -2004,7 +1997,7 @@
 
 					$AppearanceID = $new ? $Appearance['id'] : $Group['ponyid'];
 					if (isset($major)){
-						LogAction('color_modify',array(
+						Log::Action('color_modify',array(
 							'ponyid' => $AppearanceID,
 							'reason' => $reason,
 						));
@@ -2016,31 +2009,29 @@
 						$response['cm_img'] = "/{$color}guide/appearance/$AppearanceID.svg?t=".time();
 					else $response['notes'] = get_notes_html($CGDb->where('id', $AppearanceID)->getOne('appearances'),  NOWRAP);
 
-					respond($response);
+					CoreUtils::Respond($response);
 				}
-				else do404();
+				else CoreUtils::NotFound();
 			}
 
 			if (regex_match(new RegExp('^tags'),$data)){
-				$ItemsPerPage = 20;
-				$EntryCount = $CGDb->count('tags');
-				list($Page,$MaxPages) = calc_page($EntryCount);
+				CoreUtils::CanIHas('Pagination');
+				$Pagination = new Pagination("{$color}guide/tags", 20, $CGDb->count('tags'));
 
-				fix_path("/{$color}guide/tags/$Page");
+				CoreUtils::FixPath("/{$color}guide/tags/{$Pagination->page}");
 				$heading = "Tags";
-				$title = "Page $Page - $heading - $Color Guide";
-				$Pagination = get_pagination_html("{$color}guide/tags");
+				$title = "Page $Pagination->page - $heading - $Color Guide";
 
-				$Tags = get_tags(null,array($ItemsPerPage*($Page-1), $ItemsPerPage), true);
+				$Tags = get_tags(null,$Pagination->GetLimit(), true);
 
 				if (isset($_GET['js']))
-					pagination_response(get_taglist_html($Tags, NOWRAP), '#tags tbody');
+					$Pagination->Respond(get_taglist_html($Tags, NOWRAP), '#tags tbody');
 
 				$js = array('paginate');
-				if (PERM('inspector'))
+				if (Permission::Sufficient('inspector'))
 					$js[] = "$do-tags";
 
-				loadPage(array(
+				CoreUtils::LoadPage(array(
 					'title' => $title,
 					'heading' => $heading,
 					'view' => "$do-tags",
@@ -2050,21 +2041,19 @@
 			}
 
 			if (regex_match(new RegExp('^changes'),$data)){
-				$ItemsPerPage = 50;
-				$EntryCount = $Database->count('log__color_modify');
-				list($Page,$MaxPages) = calc_page($EntryCount);
+				CoreUtils::CanIHas('Pagination');
+				$Pagination = new Pagination("{$color}guide/changes", 50, $Database->count('log__color_modify'));
 
-				fix_path("/{$color}guide/changes/$Page");
+				CoreUtils::FixPath("/{$color}guide/changes/{$Pagination->page}");
 				$heading = "Major $Color Changes";
-				$title = "Page $Page - $heading - $Color Guide";
-				$Pagination = get_pagination_html("{$color}guide/changes");
+				$title = "Page $Pagination->page - $heading - $Color Guide";
 
-				$Changes = get_updates(null, ($ItemsPerPage*($Page-1)).", $ItemsPerPage");
+				$Changes = get_updates(null, $Pagination->GetLimitString());
 
 				if (isset($_GET['js']))
-					pagination_response(render_changes_html($Changes, NOWRAP, SHOW_APPEARANCE_NAMES), '#changes');
+					$Pagination->Respond(render_changes_html($Changes, NOWRAP, SHOW_APPEARANCE_NAMES), '#changes');
 
-				loadPage(array(
+				CoreUtils::LoadPage(array(
 					'title' => $title,
 					'heading' => $heading,
 					'view' => "$do-changes",
@@ -2098,7 +2087,7 @@
 			if (regex_match(new RegExp('^appearance/(?:[A-Za-z\d\-]+-)?(\d+)(?:\.(png|svg))?'),$data,$_match)){
 				$Appearance = $CGDb->where('id', (int)$_match[1])->where('ishuman', $EQG)->getOne('appearances');
 				if (empty($Appearance))
-					do404();
+					CoreUtils::NotFound();
 
 				$asFile = !empty($_match[2]);
 				if ($asFile){
@@ -2110,7 +2099,7 @@
 				}
 
 				$SafeLabel = trim(regex_replace(new RegExp('-+'),'-',regex_replace(new RegExp('[^A-Za-z\d\-]'),'-',$Appearance['label'])),'-');
-				fix_path("$CGPath/appearance/$SafeLabel-{$Appearance['id']}");
+				CoreUtils::FixPath("$CGPath/appearance/$SafeLabel-{$Appearance['id']}");
 				$title = $heading = $Appearance['label'];
 				if ($Appearance['id'] === 0 && $color !== 'color')
 					$title = str_replace('color',$color,$title);
@@ -2124,11 +2113,11 @@
 					'css' => array($do, "$do-single"),
 					'js' => array('jquery.qtip', 'jquery.ctxmenu', $do, "$do-single"),
 				);
-				if (PERM('inspector')){
+				if (Permission::Sufficient('inspector')){
 					$settings['css'] = array_merge($settings['css'], $GUIDE_MANAGE_CSS);
 					$settings['js'] = array_merge($settings['js'],$GUIDE_MANAGE_JS);
 				}
-				loadPage($settings);
+				CoreUtils::LoadPage($settings);
 			}
 			else if ($data === 'full'){
 				$GuideOrder = !isset($_REQUEST['alphabetically']) && !$EQG;
@@ -2138,14 +2127,14 @@
 
 
 				if (isset($_REQUEST['ajax']))
-					respond(array('html' => render_full_list_html($Appearances, $GuideOrder, NOWRAP)));
+					CoreUtils::Respond(array('html' => render_full_list_html($Appearances, $GuideOrder, NOWRAP)));
 
 				$js = array();
-				if (PERM('inspector'))
+				if (Permission::Sufficient('inspector'))
 					$js[] = 'Sortable';
 				$js[] = "$do-full";
 
-				loadPage(array(
+				CoreUtils::LoadPage(array(
 					'title' => "Full List - $Color Guide",
 					'view' => "$do-full",
 					'css' => "$do-full",
@@ -2154,12 +2143,13 @@
 			}
 
 			$title = '';
+			$AppearancesPerPage = 7;
 			if (empty($_GET['q']) || regex_match(new RegExp('^\*+$'),$_GET['q'])){
-				$EntryCount = $CGDb->where('ishuman',$EQG)->count('appearances');
-				if (!$EQG)
-					$EntryCount--; // "Universal" appearance
-				list($Page,$MaxPages) = calc_page($EntryCount);
-				$Ponies = get_appearances($EQG, array($ItemsPerPage*($Page-1), $ItemsPerPage));
+				$_EntryCount = $CGDb->where('ishuman',$EQG)->where('id != 0')->count('appearances');
+
+				CoreUtils::CanIHas('Pagination');
+				$Pagination = new Pagination("{$color}guide", $AppearancesPerPage, $_EntryCount);
+				$Ponies = get_appearances($EQG, $Pagination->GetLimit());
 			}
 			else {
 				$SearchQuery = $_GET['q'];
@@ -2201,28 +2191,26 @@
 						$Params[] = $EQG;
 						$Query = "SELECT @coloumn FROM appearances p WHERE ".implode(' AND ',$Restrictions)." AND p.ishuman = ? AND p.id != 0";
 						$EntryCount = $CGDb->rawQuerySingle(str_replace('@coloumn','COUNT(*) as count',$Query),$Params)['count'];
-						list($Page,$MaxPages) = calc_page($EntryCount);
-						$Offset = $ItemsPerPage*($Page-1);
+						$Pagination = new Pagination("{$color}guide", $AppearancesPerPage, $_EntryCount);
 
 						$SearchQuery = str_replace('@coloumn','p.*',$Query);
-						$SearchQuery .= " ORDER BY p.order ASC LIMIT $ItemsPerPage OFFSET $Offset";
+						$SearchQuery .= " ORDER BY p.order ASC {$Pagination->GetLimitString()}";
 						$Ponies = $CGDb->rawQuery($SearchQuery,$Params);
 					}
 				}
 				catch (Exception $e){
 					$_MSG = $e->getMessage();
 					if (isset($_REQUEST['js']))
-						respond($_MSG);
+						CoreUtils::Respond($_MSG);
 				}
 			}
 
-			fix_path("$CGPath/$Page");
+			CoreUtils::FixPath("$CGPath/{$Pagination->page}");
 			$heading = ($EQG?'EQG ':'')."$Color Guide";
-			$title .= "Page $Page - $heading";
-			$Pagination = get_pagination_html("{$color}guide");
+			$title .= "Page {$Pagination->page} - $heading";
 
 			if (isset($_GET['js']))
-				pagination_response(render_ponies_html($Ponies, NOWRAP), '#list');
+				$Pagination->Respond(render_ponies_html($Ponies, NOWRAP), '#list');
 
 			$settings = array(
 				'title' => $title,
@@ -2230,48 +2218,48 @@
 				'css' => array($do),
 				'js' => array('jquery.qtip', 'jquery.ctxmenu', $do, 'paginate'),
 			);
-			if (PERM('inspector')){
+			if (Permission::Sufficient('inspector')){
 				$settings['css'] = array_merge($settings['css'], $GUIDE_MANAGE_CSS);
 				$settings['js'] = array_merge($settings['js'],$GUIDE_MANAGE_JS);
 			}
-			loadPage($settings);
+			CoreUtils::LoadPage($settings);
 		break;
 		case "browser":
 			$AgentString = null;
-			if (is_numeric($data) && PERM('developer')){
+			if (is_numeric($data) && Permission::Sufficient('developer')){
 				$SessionID = intval($data, 10);
 				$Session = $Database->where('id', $SessionID)->getOne('sessions');
 				if (!empty($Session))
 					$AgentString = $Session['user_agent'];
 			}
-			$browser = browser($AgentString);
+			$browser = CoreUtils::DetectBrowser($AgentString);
 
-			fix_path('/browser'.(!empty($Session)?"/{$Session['id']}":''));
+			CoreUtils::FixPath('/browser'.(!empty($Session)?"/{$Session['id']}":''));
 
-			loadPage(array(
+			CoreUtils::LoadPage(array(
 				'title' => 'Browser recognition test page',
 				'do-css',
 				'no-robots',
 			));
 		break;
 		case "users":
-			if (!PERM('inspector'))
-				do404();
+			if (!Permission::Sufficient('inspector'))
+				CoreUtils::NotFound();
 
-			loadPage(array(
+			CoreUtils::LoadPage(array(
 				'title' => 'Users',
 				'do-css'
 			));
 		break;
 		case "blending":
 			$HexPattern = regex_replace(new RegExp('^/(.*)/.*$'),'$1',$HEX_COLOR_PATTERN->jsExport());
-			loadPage(array(
+			CoreUtils::LoadPage(array(
 				'title' => "$Color Blending Calculator",
 				'do-css', 'do-js',
 			));
 		break;
 		case "404":
 		default:
-			do404();
+			CoreUtils::NotFound();
 		break;
 	}

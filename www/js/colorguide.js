@@ -123,7 +123,7 @@ DocReady.push(function Colorguide(){
 			],
 			function($el){ return 'Color: '+$el.attr('oldtitle') }
 		);
-		$('.cm-direction:not(.tipped)').each(function(i){
+		$('.cm-direction:not(.tipped)').each(function(){
 			var $this = $(this),
 				ponyID = $this.closest('li').attr('id').substring(1),
 				base = new Image(),

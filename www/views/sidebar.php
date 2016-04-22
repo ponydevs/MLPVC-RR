@@ -1,20 +1,19 @@
 	<section class='mobile-nav'>
-		<nav><ul><?=get_nav_html()?></ul></nav>
+		<nav><ul><?=CoreUtils::GetNavigation()?></ul></nav>
 	</section>
 <?php
 if (!empty($Database)){ ?>
 	<section class="<?=$signedIn?'welcome':'login'?>">
 		<h2><?=$signedIn?'Signed in as':'Welcome!'?></h2>
 <?php
-	usercard_render(true);
-	if ($signedIn)
-		sidebar_links_render(); ?>
+	User::RenderCard();
+	CoreUtils::RenderSidebarUsefulLinks(); ?>
 		<div class="buttons">
 <?  if ($signedIn){ ?>
 			<button id="signout" class="typcn typcn-arrow-back">Sign out</button>
 <?  } else { ?>
 			<button class="typcn green da-login" id="signin">Sign in</button>
-			<script>var OAUTH_URL = "<?=get_oauth_authorization_url()?>";</script>
+			<script>var OAUTH_URL = "<?=DeviantArt::GetAuthorizationURL()?>";</script>
 <?  } ?>
 			<a class="btn typcn discord-join" href="https://discord.gg/0vv70fepSILbdJOD" target="_blank">Join Discord</a>
 		</div>
@@ -24,7 +23,7 @@ if (!empty($Database)){ ?>
 		$CurrentEpisode['willair'] = gmdate('c', strtotime('+'.(!$CurrentEpisode['twoparter'] ? '30' : '60').' minutes',strtotime($CurrentEpisode['airs']))); ?>
 	<section id="voting">
 		<h2><?=$CurrentEpisode['season']==0?'Movie':'Episode'?> rating</h2>
-		<?=get_episode_voting($CurrentEpisode)?>
+		<?=Episode::GetSidebarVoting($CurrentEpisode)?>
 	</section>
 <?php
 	}
@@ -36,7 +35,7 @@ if (!empty($Database)){ ?>
 	</section>
 <?php
 	}
-	echo get_upcoming_eps();
+	echo Episode::GetSidebarUpcoming();
 } else { ?>
 
 	<section class="login">

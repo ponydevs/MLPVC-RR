@@ -86,12 +86,12 @@
 					}
 
 					try {
-						$CachedDeviation = da_cache_deviation($id,$this->provider);
+						$CachedDeviation = DeviantArt::GetCachedSubmission($id,$this->provider);
 					}
 					catch(cURLRequestException $e){
 						if ($e->getCode() === 404)
-							respond('The requested image could not be found');
-						respond($e->getMessage());
+							throw new Exception('The requested image could not be found');
+						throw new Exception($e->getMessage());
 					}
 
 					$this->preview = $CachedDeviation['preview'];
@@ -114,8 +114,8 @@
 					throw new Exception('The image could not be retrieved');
 			}
 
-			$this->preview = makeHttps($this->preview);
-			$this->fullsize = makeHttps($this->fullsize);
+			$this->preview = URL::MakeHttps($this->preview);
+			$this->fullsize = URL::MakeHttps($this->fullsize);
 
 			$this->id = $id;
 		}

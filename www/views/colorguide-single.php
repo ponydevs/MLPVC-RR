@@ -9,7 +9,7 @@
 	<div id="p<?=$Appearance['id']?>">
 		<div class='align-center'>
 			<a class='darkblue btn typcn typcn-image' href='/<?=$color?>guide/appearance/<?="{$Appearance['id']}.png$FileModTime"?>' target='_blank'>View as PNG</a>
-<?  if (PERM('inspector')){ ?>
+<?  if (Permission::Sufficient('inspector')){ ?>
 			<button class='blue edit typcn typcn-pencil'>Edit metadata</button>
 			<button class='red delete typcn typcn-trash'>Delete apperance</button>
 <?  } ?>
@@ -21,7 +21,7 @@
 			<?=render_changes_html($Changes)?>
 		</section>
 <?  }
-	if ($Appearance['id'] !== 0 && ($CGDb->where('ponyid',$Appearance['id'])->has('tagged') || PERM('inspector'))){ ?>
+	if ($Appearance['id'] !== 0 && ($CGDb->where('ponyid',$Appearance['id'])->has('tagged') || Permission::Sufficient('inspector'))){ ?>
 		<section id="tags">
 			<h2><span class='typcn typcn-tags'></span>Tags</h2>
 			<div class='tags'><?=get_tags_html($Appearance['id'],NOWRAP)?></div>
@@ -40,14 +40,14 @@
 		$preview = get_cm_preview_url($Appearance); ?>
 		<section class="approved-cutie-mark">
 			<h2>Recommended cutie mark vector</h2>
-<?=PERM('inspector')&&!isset($Appearance['cm_dir'])?Notice('fail','Missing CM orientation, falling back to <strong>Tail-Head</strong>. Please edit the appaearance and provide an orientation!'):''?>
+<?=Permission::Sufficient('inspector')&&!isset($Appearance['cm_dir'])?CoreUtils::Notice('fail','Missing CM orientation, falling back to <strong>Tail-Head</strong>. Please edit the appaearance and provide an orientation!'):''?>
 			<a id="pony-cm" href="http://fav.me/<?=$Appearance['cm_favme']?>" style="background-image:url('/colorguide/appearance/<?=$Appearance['id']?>.svg')">
-				<div class="img cm-dir-<?=$Appearance['cm_dir']===CM_DIR_HEAD_TO_TAIL?'ht':'th'?>" style="background-image:url('<?=apos_encode($preview)?>')"></div>
+				<div class="img cm-dir-<?=$Appearance['cm_dir']===CM_DIR_HEAD_TO_TAIL?'ht':'th'?>" style="background-image:url('<?=CoreUtils::AposEncode($preview)?>')"></div>
 			</a>
 			<p class="aside">This is only an illustration, the body shape & colors are <strong>not</strong> guaranteed to reflect the actual design.</p>
 			<p>The image above links to the vector made by <?php
-				$Vector = da_cache_deviation($Appearance['cm_favme']);
-				echo profile_link(get_user($Vector['author'],'name','name, avatar_url'), FULL);
+				$Vector = DeviantArt::GetCachedSubmission($Appearance['cm_favme']);
+				echo User::GetProfileLink(User::Get($Vector['author'],'name','name, avatar_url'), FULL);
 			?> and shows which way the cutie mark should be facing.</p>
 		</section>
 <?  } ?>
@@ -71,10 +71,10 @@
 		'EQG' => $EQG,
 		'AppearancePage' => true,
 	);
-	if (PERM('inspector'))
+	if (Permission::Sufficient('inspector'))
 		$export = array_merge($export, array(
 			'TAG_TYPES_ASSOC' => $TAG_TYPES_ASSOC,
-			'MAX_SIZE' => get_max_upload_size(),
+			'MAX_SIZE' => CoreUtils::GetMaxUploadSize(),
 			'HEX_COLOR_PATTERN' => $HEX_COLOR_PATTERN,
 		));
-	ExportVars($export); ?>
+	CoreUtils::ExportVars($export); ?>

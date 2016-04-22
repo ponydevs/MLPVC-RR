@@ -44,12 +44,12 @@
 		$HTML = $wrap ? "<li id='cg{$Group['groupid']}'>" : '';
 		$HTML .=
 			"<span class='cat'>$label".
-				($colorNames && PERM('inspector')?'<span class="admin"><button class="blue typcn typcn-pencil edit-cg"></button><button class="red typcn typcn-trash delete-cg"></button></span>':'').
+				($colorNames && Permission::Sufficient('inspector')?'<span class="admin"><button class="blue typcn typcn-pencil edit-cg"></button><button class="red typcn typcn-trash delete-cg"></button></span>':'').
 			"</span>";
 		$Colors = get_colors($Group['groupid']);
 		if (!empty($Colors))
 			foreach ($Colors as $i => $c){
-				$title = apos_encode($c['label']);
+				$title = CoreUtils::AposEncode($c['label']);
 				$color = '';
 				if (!empty($c['hex'])){
 					$color = $c['hex'];
@@ -115,7 +115,7 @@
 		global $CGDb;
 
 		if (!$exporting){
-			$showSynonymTags = $showEpTags || PERM('inspector');
+			$showSynonymTags = $showEpTags || Permission::Sufficient('inspector');
 			if (!$showSynonymTags)
 				$CGDb->where('"synonym_of" IS NULL');
 
@@ -142,14 +142,14 @@
 	function get_tags_html($PonyID, $wrap = true, $Search = null){
 		global $CGDb;
 
-		$Tags = get_tags($PonyID, null, PERM('inspector'));
+		$Tags = get_tags($PonyID, null, Permission::Sufficient('inspector'));
 
 		$HTML = $wrap ? "<div class='tags'>" : '';
-		if (PERM('inspector') && $PonyID !== 0)
+		if (Permission::Sufficient('inspector') && $PonyID !== 0)
 			$HTML .= "<input type='text' class='addtag tag' placeholder='Enter tag' pattern='".TAG_NAME_PATTERN."' maxlength='30' required>";
 		if (!empty($Tags)) foreach ($Tags as $i => $t){
 			$class = " class='tag id-{$t['tid']}".(!empty($t['synonym_of'])?' synonym':'').(!empty($t['type'])?' typ-'.$t['type']:'')."'";
-			$title = !empty($t['title']) ? " title='".apos_encode($t['title'])."'" : '';
+			$title = !empty($t['title']) ? " title='".CoreUtils::AposEncode($t['title'])."'" : '';
 			if (!empty($Search['tid_assoc'][$t['tid']]))
 				$t['name'] = "<mark>{$t['name']}</mark>";
 			$HTML .= "<span$class$title>{$t['name']}</span>";
@@ -193,7 +193,7 @@
 			}
 		}
 		else {
-			if (!PERM('inspector')) return '';
+			if (!Permission::Sufficient('inspector')) return '';
 			$notes = '';
 		}
 		return $wrap ? "<div class='notes'>$notes</div>" : $notes;
@@ -213,11 +213,11 @@
 	function get_sprite_html($p){
 		$imgPth = get_sprite_url($p);
 		if (!empty($imgPth)){
-			$img = "<a href='$imgPth' target='_blank' title='Open image in new tab'><img src='$imgPth' alt='".apos_encode($p['label'])."'></a>";
-			if (PERM('inspector'))
+			$img = "<a href='$imgPth' target='_blank' title='Open image in new tab'><img src='$imgPth' alt='".CoreUtils::AposEncode($p['label'])."'></a>";
+			if (Permission::Sufficient('inspector'))
 				$img = "<div class='upload-wrap'>$img</div>";
 		}
-		else if (PERM('inspector'))
+		else if (Permission::Sufficient('inspector'))
 			$img = "<div class='upload-wrap'><a><img src='/img/blank-pixel.png'></a></div>";
 		else return '';
 
@@ -230,10 +230,10 @@
 
 		$update = get_updates($PonyID, MOST_RECENT);
 		if (!empty($update)){
-			$update = "Last updated ".timetag($update['timestamp']);
+			$update = "Last updated ".Time::Tag($update['timestamp']);
 		}
 		else {
-			if (!PERM('inspector')) return '';
+			if (!Permission::Sufficient('inspector')) return '';
 			$update = '';
 		}
 		return $wrap ? "<div class='update'>$update</div>" : $update;
@@ -275,7 +275,7 @@
 			$RenderPath = APPATH."img/cg_render/{$p['id']}.png";
 			$FileModTime = '?t='.(file_exists($RenderPath) ? filemtime($RenderPath) : time());
 			$Actions = "<a class='darkblue btn typcn typcn-image' title='View as PNG' href='/{$color}guide/appearance/{$p['id']}.png$FileModTime' target='_blank'></a>";
-			if (PERM('inspector'))
+			if (Permission::Sufficient('inspector'))
 				$Actions .= "<button class='edit typcn typcn-pencil blue' title='Edit'></button>".
 				            ($p['id']!==0?"<button class='delete typcn typcn-trash red' title='Delete'></button>":'');
 
@@ -387,7 +387,7 @@
 		$order = 1;
 		foreach ($list as $id){
 			if (!$CGDb->where('id', $id)->update('appearances', array('order' => $order++)))
-				respond("Updating appearance #$id failed, process halted");
+				CoreUtils::Respond("Updating appearance #$id failed, process halted");
 		}
 	}
 
@@ -401,10 +401,10 @@
 	function check_image_type($tmp, $allowedMimeTypes){
 		$imageSize = getimagesize($tmp);
 		if (is_array($allowedMimeTypes) && !in_array($imageSize['mime'], $allowedMimeTypes))
-			respond("This type of image is now allowed: ".$imageSize['mime']);
+			CoreUtils::Respond("This type of image is now allowed: ".$imageSize['mime']);
 		list($width,$height) = $imageSize;
 
-		if ($width + $height === 0) respond('The uploaded file is not an image');
+		if ($width + $height === 0) CoreUtils::Respond('The uploaded file is not an image');
 
 		return array($width, $height);
 	}
@@ -413,7 +413,7 @@
 	function check_image_size($path, $width, $height, $minwidth, $minheight){
 		if ($width < $minwidth || $height < $minheight){
 			unlink($path);
-			respond('The image is too small in '.(
+			CoreUtils::Respond('The image is too small in '.(
 				$width < $minwidth
 				?(
 					$height < $minheight
@@ -452,14 +452,14 @@
 			return get_offsite_image($path,$allowedMimeTypes,$minwidth,$minheight);
 		$file = $_FILES[$key];
 		$tmp = $file['tmp_name'];
-		if (strlen($tmp) < 1) respond('File upload failed; Reason unknown');
+		if (strlen($tmp) < 1) CoreUtils::Respond('File upload failed; Reason unknown');
 
 		list($width, $height) = check_image_type($tmp, $allowedMimeTypes);
-		upload_folder_create($path);
+		CoreUtils::CreateUploadFolder($path);
 
 		if (!move_uploaded_file($tmp, $path)){
 			@unlink($tmp);
-			respond('File upload failed; Writing image file was unsuccessful');
+			CoreUtils::Respond('File upload failed; Writing image file was unsuccessful');
 		}
 
 		check_image_size($path, $width, $height, $minwidth, $minheight);
@@ -477,22 +477,22 @@
 	 */
 	function get_offsite_image($path,$allowedMimeTypes,$minwidth,$minheight){
 		if (empty($_POST['image_url']))
-			respond("Please provide an image URL");
+			CoreUtils::Respond("Please provide an image URL");
 
-		require 'includes/Image.php';
+		CoreUtils::CanIHas('Image');
 		try {
 			$Image = new Image($_POST['image_url']);
 		}
-		catch (Exception $e){ respond($e->getMessage()); }
+		catch (Exception $e){ CoreUtils::Respond($e->getMessage()); }
 
 		if ($Image->fullsize === false)
-			respond('Image could not be retrieved from external provider');
+			CoreUtils::Respond('Image could not be retrieved from external provider');
 
 		$remoteFile = @file_get_contents($Image->fullsize);
 		if (empty($remoteFile))
-			respond('Remote file could not be found');
+			CoreUtils::Respond('Remote file could not be found');
 		if (!file_put_contents($path, $remoteFile))
-			respond('Writing local image file was unsuccessful');
+			CoreUtils::Respond('Writing local image file was unsuccessful');
 
 		list($width, $height) = check_image_type($path, $allowedMimeTypes);
 		check_image_size($path, $width, $height, $minwidth, $minheight);
@@ -517,7 +517,7 @@
 		global $TAG_TYPES_ASSOC, $CGDb;
 		$HTML = $wrap ? '<tbody>' : '';
 
-		$canEdit = PERM('inspector');
+		$canEdit = Permission::Sufficient('inspector');
 
 		$utils =
 		$refresh = '';
@@ -531,8 +531,8 @@
 		if (!empty($Tags)) foreach ($Tags as $t){
 			$trClass = $t['type'] ? " class='typ-{$t['type']}'" : '';
 			$type = $t['type'] ? $TAG_TYPES_ASSOC[$t['type']] : '';
-			$search = apos_encode(str_replace(' ','+',$t['name']));
-			$titleName = apos_encode($t['name']);
+			$search = CoreUtils::AposEncode(str_replace(' ','+',$t['name']));
+			$titleName = CoreUtils::AposEncode($t['name']);
 
 			if ($canEdit && !empty($t['synonym_of'])){
 				$Syn = get_tag_synon($t,'name');
@@ -641,17 +641,18 @@ HTML;
 
 	// Gets the list of updates for an appearance
 	define('MOST_RECENT', 1);
+	/**
+	 * @param int       $PonyID
+	 * @param stringint $count
+	 *
+	 * @return null|arrey
+	 */
 	function get_updates($PonyID, $count = null){
 		global $Database;
 
-		if (!empty($count)){
-			if (strpos($count, ',') !== false){
-				$count = explode(',', $count);
-				$LIMIT = "LIMIT {$count[1]} OFFSET {$count[0]}";
-			}
-			else $LIMIT = "LIMIT $count";
-		}
-		else $LIMIT = '';
+		$LIMIT = '';
+		if (isset($count))
+			$LIMIT = is_string($count) ? $count : "LIMIT $count";
 		$WHERE = isset($PonyID) ? "WHERE cm.ponyid = $PonyID" :'';
 		$query = $Database->rawQuery(
 			"SELECT cm.*, l.initiator, l.timestamp
@@ -661,19 +662,21 @@ HTML;
 			ORDER BY l.timestamp DESC
 			{$LIMIT}");
 
-		return ($count === MOST_RECENT && isset($query[0])) ? $query[0] : $query;
+		if ($count === MOST_RECENT)
+			return $query[0] ?? null;
+		return $query;
 	}
 
 	// Renders HTML of the list of changes
 	define('SHOW_APPEARANCE_NAMES', true);
 	function render_changes_html($Changes, $wrap = true, $showAppearance = false){
-		$seeInitiator = PERM('inspector');
+		$seeInitiator = Permission::Sufficient('inspector');
 		$PonyCache = array();
 		$HTML = $wrap ? '<ul id="changes">' : '';
 		foreach ($Changes as $c){
 			$initiator = $appearance = '';
 			if ($seeInitiator)
-				$initiator = " by ".profile_link(get_user($c['initiator']));
+				$initiator = " by ".User::GetProfileLink(User::Get($c['initiator']));
 			if ($showAppearance){
 				global $CGDb, $color;
 
@@ -684,7 +687,7 @@ HTML;
 				$Pony = $PonyCache[$PonyID];
 				$appearance = "<a href='/{$color}guide/appearance/{$Pony['id']}'>{$Pony['label']}</a>: ";
 			}
-			$HTML .= "<li>$appearance{$c['reason']} - ".timetag($c['timestamp'])."$initiator</li>";
+			$HTML .= "<li>$appearance{$c['reason']} - ".Time::Tag($c['timestamp'])."$initiator</li>";
 		}
 		return $HTML . ($wrap ? '</ul>' : '');
 	}
@@ -729,12 +732,27 @@ HTML;
 		return $png;
 	}
 
-	// Draw Rectangle on image
-	function imageDrawRectangle($image, $x, $y, $size, $fill, $outline){
-		if (!empty($fill))
-			$fill = imagecolorallocate($image, ...hex2rgb($fill));
-		if (is_string($outline))
-			$outline = imagecolorallocate($image, ...hex2rgb($outline));
+	/**
+	 * Draw a an (optionally filled) squre on an $image
+	 *
+	 * @noinspection PhpParamsInspection
+	 *
+	 * @param resource   $image
+	 * @param int        $x
+	 * @param int        $y
+	 * @param int|array  $size
+	 * @param string     $fill
+	 * @param string|int $outline
+	 */
+	function imageDrawSquare($image, $x, $y, $size, $fill, $outline){
+		if (!empty($fill)){
+			$fill = CoreUtils::Hex2Rgb($fill);
+			$fill = imagecolorallocate($image, $fill[0], $fill[1], $fill[2]);
+		}
+		if (is_string($outline)){
+			$outline = CoreUtils::Hex2Rgb($outline);
+			$outline = imagecolorallocate($image, $outline[0], $outline[1], $outline[2]);
+		}
 
 		if (is_array($size)){
 			$x2 = $x + $size[0];
@@ -813,7 +831,7 @@ HTML;
 		if (isset($data))
 			$write_callback($path, $data);
 
-		fix_path("$relpath?t=".filemtime($path));
+		CoreUtils::FixPath("$relpath?t=".filemtime($path));
 		header("Content-Type: image/$content_type");
 		readfile($path);
 		exit;
@@ -855,16 +873,16 @@ HTML;
 			$List = '';
 			foreach ($EpAppearances as $tag){
 				$name = strtoupper($tag['name']);
-				$EpData = episode_id_parse($name);
-				$Ep = get_real_episode($EpData['season'], $EpData['episode']);
+				$EpData = Episode::ParseID($name);
+				$Ep = Episode::GetActual($EpData['season'], $EpData['episode']);
 				$List .= (
 					empty($Ep)
 					? $name
-					: "<a href='/episode/S{$Ep['season']}E{$Ep['episode']}'>".format_episode_title($Ep).'</a>'
+					: "<a href='/episode/S{$Ep['season']}E{$Ep['episode']}'>".Episode::FormatTitle($Ep).'</a>'
 				).', ';
 			}
 			$List = rtrim($List, ', ');
-			$N_episodes = plur('episode',count($EpAppearances),PREPEND_NUMBER);
+			$N_episodes = CoreUtils::MakePlural('episode',count($EpAppearances),PREPEND_NUMBER);
 			$hide = '';
 		}
 		else {
@@ -893,7 +911,7 @@ HTML;
 			outputsvg(null,$OutputPath,$FileRelPath);
 
 		if (is_null($dir))
-			do404();
+			CoreUtils::NotFound();
 
 		$DefaultColorMapping = array(
 			'Coat Outline' => '#0D0D0D',
@@ -933,7 +951,7 @@ HTML;
 		if (!empty($Appearance['cm_preview']))
 			$preview = $Appearance['cm_preview'];
 		else {
-			$CM = da_cache_deviation($Appearance['cm_favme']);
+			$CM = DeviantArt::GetCachedSubmission($Appearance['cm_favme']);
 			$preview = $CM['preview'];
 		}
 		return $preview;
@@ -992,7 +1010,7 @@ HTML;
 		$CGsHeight = $CGCount*($GroupLabelBox['height'] + ($CGVerticalMargin*2) + $ColorSquareSize);
 
 		// Get export time & size
-		$ExportTS = "Image last updated: ".format_timestamp(time(), FORMAT_FULL);
+		$ExportTS = "Image last updated: ".Time::Format(time(), FORMAT_FULL);
 		$ExportFontSize = $CGFontSize/1.5;
 		$ExportBox = imagettfsanebbox($ExportFontSize, $FontFile, $ExportTS);
 
@@ -1045,7 +1063,7 @@ HTML;
 							$OutHeight += $SizeIncrease;
 						}
 
-						imageDrawRectangle($BaseImage, $x, $origin['y'], $ColorSquareSize, $c['hex'], $BLACK);
+						imageDrawSquare($BaseImage, $x, $origin['y'], $ColorSquareSize, $c['hex'], $BLACK);
 						$part++;
 					}
 
@@ -1055,11 +1073,11 @@ HTML;
 
 		$sizeArr = array($OutWidth, $OutHeight);
 		$FinalBase = imageCreateWhiteBG(...$sizeArr);
-		imageDrawRectangle($FinalBase, 0, 0, $sizeArr, null, $BLACK);
+		imageDrawSquare($FinalBase, 0, 0, $sizeArr, null, $BLACK);
 		imageCopyExact($FinalBase, $BaseImage, 0, 0, ...$sizeArr);
 
-		if (!upload_folder_create($OutputPath))
-			respond('Failed to create render directory');
+		if (!CoreUtils::CreateUploadFolder($OutputPath))
+			CoreUtils::Respond('Failed to create render directory');
 		outputpng($FinalBase, $OutputPath, $FileRelPath);
 	}
 
@@ -1101,7 +1119,7 @@ HTML;
 		foreach ($tokens as $token){
 			// Search for a tag
 			if (regex_match($TAG_NAME_REGEX, $token)){
-				$err = check_string_valid($token, "Tag name", INVERSE_TAG_NAME_PATTERN, true);
+				$err = CoreUtils::CheckStringValidity($token, "Tag name", INVERSE_TAG_NAME_PATTERN, true);
 				if (is_string($err))
 					throw new Exception($err);
 				$Tag = get_actual_tag($token, 'name', false, 'tid');
@@ -1112,11 +1130,11 @@ HTML;
 			}
 			// Search for a lebel
 			else {
-				$err = check_string_valid($token, "Name wildcard", INVERSE_PRINTABLE_ASCII_REGEX, true);
+				$err = CoreUtils::CheckStringValidity($token, "Name wildcard", INVERSE_PRINTABLE_ASCII_REGEX, true);
 				if (is_string($err))
 					throw new Exception($err);
 
-				$like = escape_like_string(regex_replace(new RegExp('\*+'),'*',$token));
+				$like = CoreUtils::EscapeLikeValue(regex_replace(new RegExp('\*+'),'*',$token));
 				$like = str_replace('*','%',$like);
 				$like = str_replace('?','_',$like);
 				$SearchLabelLIKEs[] = $like;

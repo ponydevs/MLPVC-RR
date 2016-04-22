@@ -95,6 +95,7 @@
 			$this->_conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_WARNING);
 		}
 
+		/** @return PDO */
 		public function pdo(){
 			if (!$this->_conn){
 				$this->_connect();
@@ -556,7 +557,7 @@
 		 * @param string $orderstr  Raw ordering sting
 		 * @param string $direction Order direction
 		 *
-		 * @return dbObject
+		 * @return PostgresDb
 		 */
 		public function orderByLiteral($orderstr, $direction = 'ASC'){
 			$this->_orderBy[$orderstr] = $direction;
@@ -567,10 +568,10 @@
 		/**
 		 * A convenient SELECT * function.
 		 *
-		 * @param string        $tableName The name of the database table to work with.
-		 * @param integer|array $numRows   Array to define SQL limit in format Array ($count, $offset)
-		 *                                 or only $count
-		 * @param string        $columns
+		 * @param string    $tableName The name of the database table to work with.
+		 * @param int|int[] $numRows   Array to define SQL limit in format Array ($count, $offset)
+		 *                             or only $count
+		 * @param string    $columns
 		 *
 		 * @return array Contains the returned rows from the select query.
 		 */
