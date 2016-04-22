@@ -2190,7 +2190,7 @@
 					if (count($Restrictions)){
 						$Params[] = $EQG;
 						$Query = "SELECT @coloumn FROM appearances p WHERE ".implode(' AND ',$Restrictions)." AND p.ishuman = ? AND p.id != 0";
-						$EntryCount = $CGDb->rawQuerySingle(str_replace('@coloumn','COUNT(*) as count',$Query),$Params)['count'];
+						$_EntryCount = $CGDb->rawQuerySingle(str_replace('@coloumn','COUNT(*) as count',$Query),$Params)['count'];
 						$Pagination = new Pagination("{$color}guide", $AppearancesPerPage, $_EntryCount);
 
 						$SearchQuery = str_replace('@coloumn','p.*',$Query);
