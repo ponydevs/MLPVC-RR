@@ -27,7 +27,7 @@
 <?  } ?>
 	</p>
 
-	<form id="search-form"><input name="q" <?=!empty($_GET['q'])?" value='".CoreUtils::AposEncode($_GET['q'])."'":''?> title='Search'> <button class='blue typcn typcn-zoom'></button><button type='reset' class='orange typcn typcn-times' title='Clear'<?=empty($_GET['q'])?'disabled':''?>></button><p>Enter tags/names separated by commas. Force name-based search by using&nbsp;<strong>?</strong>&nbsp;or&nbsp;<strong>*</strong>. You may search using <em>up to 6</em> tokens at a time.</p></form>
+	<form id="search-form"><input name="q" <?=!empty($_GET['q'])?" value='".CoreUtils::AposEncode($_GET['q'])."'":''?> title='Search'> <button class='blue typcn typcn-zoom'></button><button type='reset' class='orange typcn typcn-times' title='Clear'<?=empty($_GET['q'])?' disabled':''?>></button><p>Enter tags/names separated by commas. Force name-based search by using&nbsp;<strong>?</strong>&nbsp;or&nbsp;<strong>*</strong>. You may search using <em>up to 6</em> tokens at a time.</p></form>
 	<?=$Pagination->HTML?>
 	<?=render_ponies_html($Ponies)?>
 	<?=$Pagination->HTML?>
