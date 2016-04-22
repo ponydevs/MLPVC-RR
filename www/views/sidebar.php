@@ -1,6 +1,6 @@
-	<section class='mobile-nav'>
+	<div class='mobile-nav'>
 		<nav><ul><?=CoreUtils::GetNavigation()?></ul></nav>
-	</section>
+	</div>
 <?php
 if (!empty($Database)){ ?>
 	<section class="<?=$signedIn?'welcome':'login'?>">
