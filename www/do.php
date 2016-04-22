@@ -2142,12 +2142,12 @@
 				));
 			}
 
+			CoreUtils::CanIHas('Pagination');
 			$title = '';
 			$AppearancesPerPage = 7;
 			if (empty($_GET['q']) || regex_match(new RegExp('^\*+$'),$_GET['q'])){
 				$_EntryCount = $CGDb->where('ishuman',$EQG)->where('id != 0')->count('appearances');
 
-				CoreUtils::CanIHas('Pagination');
 				$Pagination = new Pagination("{$color}guide", $AppearancesPerPage, $_EntryCount);
 				$Ponies = get_appearances($EQG, $Pagination->GetLimit());
 			}
