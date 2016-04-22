@@ -308,8 +308,7 @@
 
 	// Renders HTML for full guide list
 	function render_full_list_html($Appearances, $GuideOrder, $wrap = WRAP){
-		$elementName = $GuideOrder ? 'ul' : 'div';
-		$HTML = $wrap ? "<$elementName id='full-list'>" : '';
+		$HTML = $wrap ? "<div id='full-list'>" : '';
 		if (!empty($Appearances)){
 			global $color;
 			if (!$GuideOrder){
@@ -341,7 +340,7 @@
 				}
 			}
 		}
-		return $HTML.($wrap?"</$elementName>":'');
+		return $HTML.($wrap?"</div>":'');
 	}
 
 	define('SIMPLE_ARRAY', true);
