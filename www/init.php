@@ -8,6 +8,7 @@
 	define('POST_REQUEST', $_SERVER['REQUEST_METHOD'] === 'POST');
 	define('GITHUB_URL','https://github.com/ponydevs/MLPVC-RR');
 	define('SITE_TITLE', 'MLP Vector Club');
+	define('EXEC_START_MICRO', microtime(true));
 
 	// Imports \\
 	require 'includes/CoreUtils.php';
