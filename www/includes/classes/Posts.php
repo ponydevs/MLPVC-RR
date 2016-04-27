@@ -235,8 +235,6 @@
 		 * @return string|array
 		 */
 		static function GetRequestsSection($Requests, $returnArranged = false){
-			global $REQUEST_TYPES;
-
 			$Arranged = array('finished' => !$returnArranged ? '' : array());
 			if (!$returnArranged){
 				$Arranged['unfinished'] = array();
@@ -264,7 +262,7 @@
 
 			$Groups = '';
 			foreach ($Arranged['unfinished'] as $g => $c)
-				$Groups .= "<div class='group' id='group-$g'><h3>{$REQUEST_TYPES[$g]}:</h3><ul>{$c}</ul></div>";
+				$Groups .= "<div class='group' id='group-$g'><h3>".self::$REQUEST_TYPES[$g].":</h3><ul>$c</ul></div>";
 
 			if (Permission::Sufficient('user')){
 				$makeRq = '<button id="request-btn" class="green">Make a request</button>';
