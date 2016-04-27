@@ -559,7 +559,7 @@
 		 */
 		static function GetFooter(){
 			global $Database;
-			return "Running <strong><a href='".GITHUB_URL."' title='Visit the GitHub repository'>MLPVC-RR</a>@<a href='".GITHUB_URL."/commit/".LATEST_COMMIT_ID."' title='See exactly what was changed and why'>".LATEST_COMMIT_ID."</a></strong> created ".Time::Tag(LATEST_COMMIT_TIME)." | <a class='issues' href='".GITHUB_URL."/issues' target='_blank'>Known issues</a> | ".(isset($Database)?"<a href='#feedback' class='send-feedback'>Send feedback</a>":"<a href='".GITHUB_URL."/issues/new' target='_blank'>Send feedback</a>").' | Render: '.number_format(microtime(true)-EXEC_START_MICRO, 4).'s';
+			return "Running <strong><a href='".GITHUB_URL."' title='Visit the GitHub repository'>MLPVC-RR</a>@<a href='".GITHUB_URL."/commit/".LATEST_COMMIT_ID."' title='See exactly what was changed and why'>".LATEST_COMMIT_ID."</a></strong> created ".Time::Tag(LATEST_COMMIT_TIME)." | <a class='issues' href='".GITHUB_URL."/issues' target='_blank'>Known issues</a> | ".(isset($Database)?"<a href='#feedback' class='send-feedback'>Send feedback</a>":"<a href='".GITHUB_URL."/issues/new' target='_blank'>Send feedback</a>").(Permission::Sufficient('developer')?' | Render: '.number_format(microtime(true)-EXEC_START_MICRO, 4).'s | SQL Queries: '.($Database->query_count+($CGDb->query_count??0)):'');
 		}
 
 		/**

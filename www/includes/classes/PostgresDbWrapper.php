@@ -22,4 +22,11 @@
 			}
 			return $this;
 		}
+
+		public $query_count = 0;
+
+		protected function _execStatement($stmt){
+			$this->query_count++;
+			return parent::_execStatement($stmt);
+		}
 	}
