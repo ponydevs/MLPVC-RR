@@ -1344,7 +1344,7 @@
 						CoreUtils::Respond(array('html' => render_full_list_html(get_appearances($EQG,null,'id,label'), true, NOWRAP)));
 					break;
 					case "export":
-						if (!Permission::Sufficient('inspector'))
+						if (!Permission::Sufficient('developer'))
 							CoreUtils::NotFound();
 						$JSON = array(
 							'Appearances' => array(),

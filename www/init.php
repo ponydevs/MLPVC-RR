@@ -6,7 +6,8 @@
 	define('ABSPATH',(HTTPS?'https':'http').'://'.$_SERVER['SERVER_NAME'].'/');
 	define('APPATH',dirname(__FILE__).DIRECTORY_SEPARATOR);
 	define('POST_REQUEST', $_SERVER['REQUEST_METHOD'] === 'POST');
-	define('GITHUB_URL','https://github.com/ponydevs/MLPVC-RR');
+	define('GITHUB_PROJECT_NAME','ponydevs/MLPVC-RR');
+	define('GITHUB_URL','https://github.com/'.GITHUB_PROJECT_NAME);
 	define('SITE_TITLE', 'MLP Vector Club');
 	define('EXEC_START_MICRO', microtime(true));
 

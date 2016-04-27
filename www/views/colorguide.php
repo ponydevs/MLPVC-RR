@@ -3,7 +3,7 @@
 	<p>A searchable list of character <?=$color?>s from the <?=$EQG?'movies':'show'?></p>
 	<p class="align-center">
 		If you can't find a character here, check the old guides: <a href="https://sta.sh/0kic0ngp3fy">Pony</a> / <a href="http://fav.me/d7120l1">EQG</a><br>
-		Looking for this information in a machine-readable format? <a href="<?=GITHUB_URL?>/blob/master/setup/mlpvc-colorguide.json" target="_blank">JSON</a> / <a href="<?=GITHUB_URL?>/blob/master/setup/mlpvc-colorguide.pg.sql" target="_blank">PgSQL</a></p>
+		Looking for this information in a machine-readable format? <a href="https://raw.githubusercontent.com/<?=GITHUB_PROJECT_NAME?>/master/setup/mlpvc-colorguide.json" target="_blank" download="mlpvc-colorguide.json">JSON</a> / <a href="https://raw.githubusercontent.com/<?=GITHUB_PROJECT_NAME?>/master/setup/mlpvc-colorguide.pg.sql" target="_blank" download="mlpvc-colorguide.pg.sql">PgSQL</a></p>
 <? if (Permission::Sufficient('inspector')){ ?>
 	<div class="notice warn tagediting">
 		<label>Limited editing</label>
@@ -22,7 +22,7 @@
 		<a class='btn darkblue typcn typcn-arrow-forward' href="/blending">Blending Calculator</a>
 		<a class='btn darkblue typcn typcn-tags' href="/<?=$color?>guide/tags">Tags</a>
 		<a class='btn darkblue typcn typcn-warning' href="/<?=$color?>guide/changes">Major Changes</a>
-<?  if (Permission::Sufficient('inspector')){ ?>
+<?  if (Permission::Sufficient('developer')){ ?>
 		<button class='darkblue typcn typcn-download cg-export'>Export</button>
 <?  } ?>
 	</p>
