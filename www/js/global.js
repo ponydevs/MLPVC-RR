@@ -836,6 +836,7 @@ $(function(){
 		$.Dialog.info('How to send feedback',$.mk('div').append(
 			"<p>If you're having an issue with the site and would like to let the developer know, here's how you can contact him:</p>",
 			$.mk('ul').append(
+				"<li><a href='https://discord.gg/0vv70fepSINi2Hy8'>Join our Discord server</a> and describe your issue in the <strong>#support</strong> channel</li>",
 				"<li>Send a note to <a href='http://djdavid98.deviantart.com/'>DJDavid98</a> on DeviantArt</li>",
 				"<li>Send an e-mail to <a href='mailto:seinopsys@gmail.com'>seinopsys@gmail.com</a></li>",
 				"<li>Add <a href='skype:guzsik.david?add'>guzsik.david</a> on Skype</li>"
