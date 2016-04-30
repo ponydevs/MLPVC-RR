@@ -637,7 +637,7 @@
 						CoreUtils::Respond(Episode::GetVideoEmbeds($Episode));
 
 					$set = $_match[2] === 's';
-					CoreUtils::CanIHas('Video.php');
+					CoreUtils::CanIHas('Video');
 
 					if (!$set){
 						$return = array(
