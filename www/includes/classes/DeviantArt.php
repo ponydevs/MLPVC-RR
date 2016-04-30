@@ -274,9 +274,8 @@
 				$Database->insert('sessions', array_merge($AuthData, array('user' => $UserID)));
 			}
 
-			$Database->rawQuery(
-				"DELETE FROM sessions
-				WHERE \"user\" = ? && (scope != ? OR lastvisit <= NOW() - INTERVAL '2 MONTH')", array($UserID,$AuthData['scope']));
+			$interval = $User['name'] === 'dcencia' ? '1 WEEK' : '1 MONTH';
+			$Database->rawQuery("DELETE FROM sessions WHERE \"user\" = ? && lastvisit <= NOW() - INTERVAL '$interval'", array($UserID));
 
 
 			Cookie::set('access', $cookie, ONE_YEAR);
