@@ -83,5 +83,5 @@ DocReady.push(function About(){
 },function(){
 	'use strict';
 	delete window.Chart;
-	$('script').filter('[src^="/js/Chart.js"], [data-src^="/js/Chart.js"]').remove();
+	$('script').filter('[src^="/js/Chart.min.js"], [data-src^="/js/Chart.min.js"]').remove();
 });

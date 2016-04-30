@@ -585,6 +585,7 @@
 				})(0);
 			},
 			_navigateTo = function(url, callback, block_reload){
+				console.clear();
 				console.group('[AJAX-Nav] PING %s (block_reload: %s)', url, block_reload);
 
 				if (_xhr !== false){
@@ -631,6 +632,9 @@
 							ParsedLocation = new URL(location.href),
 							reload = !block_reload && ParsedLocation.pathString === url;
 
+						module.flushDocReady();
+
+						console.group('Checking JS files to skip...');
 						$body.children('script[src], script[data-src]').each(function(){
 							var $this = $(this),
 								src = $this.attr('src') || $this.attr('data-src');
@@ -642,33 +646,41 @@
 
 							var pos = js.indexOf(src);
 
-							if (pos !== -1 && !/js\/colorguide[\.\-]/.test(src))
+							if (pos !== -1 && !/js\/colorguide[\.\-]/.test(src)){
 								js.splice(pos, 1);
+								console.log('%cSkipped %s','color:saddlebrown',src);
+							}
 							else {
 								if (src.indexOf('global') !== -1)
 									return !(doreload = true);
 								$this.remove();
 							}
 						});
+						console.log('%cFinished.','color:green');
+						console.groupEnd();
 						if (doreload !== false){
 							console.log('%cFull page reload forced by changes in global.js', 'font-weight:bold;color:orange');
 							console.groupEnd();
 							return (location.href = url);
 						}
 
+						console.group('Checking CSS files to skip...');
 						var CSSSelector = 'link[href], style[href]';
 						$head.children(CSSSelector).each(function(){
 							var $this = $(this),
 								href = $this.attr('href'),
 								pos = css.indexOf(href);
 
-							if (pos !== -1)
+							if (pos !== -1){
 								css.splice(pos, 1);
+								console.log('%cSkipped %s','color:saddlebrown',href);
+							}
 							else $this.attr('data-remove','true');
 						});
+						console.log('%cFinished.','color:green');
+						console.groupEnd();
 
 						console.groupEnd();
-						console.clear();
 						console.group('[AJAX-Nav] GET %s', url);
 
 						_loadCSS(css, function(){
@@ -688,7 +700,6 @@
 								history[ParsedLocation.pathString === url?'replaceState':'pushState']({'via-js':true},'',url);
 							document.title = pagetitle;
 							module.lastLoadedPathname = window.location.pathname;
-							module.flushDocReady();
 
 							_loadJS(js, function(){
 								$.Navigation.docReady();
