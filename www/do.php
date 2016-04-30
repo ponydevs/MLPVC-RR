@@ -671,7 +671,7 @@
 								if (!isset($vid->provider) || $vid->provider['name'] !== $provider)
 									CoreUtils::Respond("Incorrect $Provider URL specified");
 								/** @noinspection PhpUndefinedFieldInspection */
-								$set = $vid->id;
+								$set = $vid::$id;
 							}
 
 							$fullep = $Episode['twoparter'] ? false : true;

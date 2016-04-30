@@ -7,7 +7,7 @@
 		public function __construct($url){
 			$this->url = trim($url);
 			$this->provider = $this->get_provider($this->url);
-			$this->id = $this->provider['itemid'];
+			self::$id = $this->provider['itemid'];
 			$this->get_embed($this->provider['itemid'], $this->provider['name']);
 		}
 		private static $providerRegexes = array(
