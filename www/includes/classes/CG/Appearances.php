@@ -256,7 +256,7 @@
 		}
 
 		/**
-		 * @param string[]|int[] $ids
+		 * @param string|int[] $ids
 		 */
 		static function Reorder($ids){
 			global $CGDb;

@@ -11,9 +11,9 @@
 		static function CanIHas($class){
 			if (class_exists($class))
 				return;
-			$path = APPATH."includes/classes/$class.php";
+			$path = APPATH.'includes/classes/'.str_replace('\\','/',$class).'.php';
 			if (!file_exists($path))
-				throw new Exception("Could not load class $class: file not found");
+				throw new Exception("Could not load class $class: file ($path) not found");
 			require $path;
 			if (!class_exists($class))
 				throw new Exception("Could not load class $class: class not found in $path");

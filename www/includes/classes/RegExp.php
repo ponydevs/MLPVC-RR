@@ -36,7 +36,7 @@
 		}
 
 		/**
-		 * @param array      $text
+		 * @param string     $text
 		 * @param array|null $matches
 		 *
 		 * @return bool
@@ -71,7 +71,7 @@
 	 * Match text against a RegExp
 	 *
 	 * @param RegExp     $regex   Regular Expression
-	 * @param array      $text    Text to match
+	 * @param string     $text    Text to match
 	 * @param array|null $matches Arry to output matches to
 	 *
 	 * @return bool
