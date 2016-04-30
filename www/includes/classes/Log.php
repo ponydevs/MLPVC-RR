@@ -191,7 +191,7 @@
 			$HTML = '';
 			if (count($LogItems) > 0) foreach ($LogItems as $item){
 				if (!empty($item['initiator'])){
-					$inituser = $Database->where('id',$item['initiator'])->getOne('users');
+					$inituser = User::Get($item['initiator'],'id');
 					if (empty($inituser))
 						$inituser = 'Deleted user';
 					else $inituser = User::GetProfileLink($inituser);
