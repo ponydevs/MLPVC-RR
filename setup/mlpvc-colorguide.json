@@ -5107,9 +5107,483 @@
 				182
 			]
 		},
+		"132": {
+			"id": 132,
+			"order": 29,
+			"label": "King Sombra",
+			"notes": "Far legs use darker colors.\nSombra has a lot of gradients with repeating colors. You can simplify this by using the same gradients in different parts with some tweaking of the size and stop placement.\nThe magic \"bubbles\" are fading gradients that vary according to the animation frame which makes colour picking them nigh impossible, especially amid the compression.\nThe eye smoke is a fading gradient whose color differs in different scenes. This is just a best guess for it.\nThe armor sections are numbered going down the neck i.e. Section 1 is the uppermost one.",
+			"cm_favme": null,
+			"ishuman": false,
+			"added": "2016-04-29 21:44:59.560676+02",
+			"cm_preview": null,
+			"cm_dir": null,
+			"ColorGroups": {
+				"697": {
+					"groupid": 697,
+					"label": "Coat",
+					"order": 0,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#1E1E1E"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#505050"
+						},
+						{
+							"order": 2,
+							"label": "Shadow Outline",
+							"hex": "#161616"
+						},
+						{
+							"order": 3,
+							"label": "Shadow Fill",
+							"hex": "#3D3D3D"
+						},
+						{
+							"order": 4,
+							"label": "Face Strokes",
+							"hex": "#777777"
+						}
+					]
+				},
+				"702": {
+					"groupid": 702,
+					"label": "Horn",
+					"order": 1,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Gradient Tip",
+							"hex": "#E88359"
+						},
+						{
+							"order": 1,
+							"label": "Gradient Middle 1",
+							"hex": "#D6220B"
+						},
+						{
+							"order": 2,
+							"label": "Gradient Middle 2",
+							"hex": "#6D1208"
+						},
+						{
+							"order": 3,
+							"label": "Gradient Base",
+							"hex": "#323232"
+						},
+						{
+							"order": 4,
+							"label": "Bright Spot",
+							"hex": "#4D4D4D"
+						},
+						{
+							"order": 5,
+							"label": "Dark Spot",
+							"hex": "#1B0500"
+						}
+					]
+				},
+				"698": {
+					"groupid": 698,
+					"label": "Mane & Tail",
+					"order": 2,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#404040"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#050505"
+						}
+					]
+				},
+				"699": {
+					"groupid": 699,
+					"label": "Iris",
+					"order": 3,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Pupil",
+							"hex": "#520A00"
+						},
+						{
+							"order": 1,
+							"label": "Gradient Top",
+							"hex": "#951200"
+						},
+						{
+							"order": 2,
+							"label": "Gradient Middle",
+							"hex": "#DE2C12"
+						},
+						{
+							"order": 3,
+							"label": "Gradient Bottom",
+							"hex": "#EB9359"
+						},
+						{
+							"order": 4,
+							"label": "Iris Strokes",
+							"hex": "#D01907"
+						},
+						{
+							"order": 5,
+							"label": "Eyeball (Dark Magic)",
+							"hex": "#00EF00"
+						},
+						{
+							"order": 6,
+							"label": "Eye Smoke (See Notes)",
+							"hex": "#6E00FF"
+						}
+					]
+				},
+				"703": {
+					"groupid": 703,
+					"label": "Mouth",
+					"order": 4,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Fill",
+							"hex": "#75140B"
+						},
+						{
+							"order": 1,
+							"label": "Tongue",
+							"hex": "#F26F32"
+						},
+						{
+							"order": 2,
+							"label": "Teeth Outline",
+							"hex": "#ABB2B2"
+						}
+					]
+				},
+				"704": {
+					"groupid": 704,
+					"label": "Head Armour",
+					"order": 5,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#222222"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#050505"
+						},
+						{
+							"order": 2,
+							"label": "Chevrons",
+							"hex": "#787878"
+						}
+					]
+				},
+				"705": {
+					"groupid": 705,
+					"label": "Circlet",
+					"order": 6,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Arch Outline",
+							"hex": "#404040"
+						},
+						{
+							"order": 1,
+							"label": "Arch Gradient Sides",
+							"hex": "#161616"
+						},
+						{
+							"order": 2,
+							"label": "Arch Gradient Middle",
+							"hex": "#CDCDCD"
+						},
+						{
+							"order": 3,
+							"label": "Arch Highlight Outline",
+							"hex": "#838383"
+						},
+						{
+							"order": 4,
+							"label": "Arch Highlight",
+							"hex": "#FFFFFF"
+						},
+						{
+							"order": 5,
+							"label": "Spine/Oval Outline",
+							"hex": "#5D5D5D"
+						},
+						{
+							"order": 6,
+							"label": "Spine/Oval Fill",
+							"hex": "#838383"
+						},
+						{
+							"order": 7,
+							"label": "Spine/Oval Highlight",
+							"hex": "#C3C3C3"
+						},
+						{
+							"order": 8,
+							"label": "Central Spine Outline",
+							"hex": "#A51C0F"
+						},
+						{
+							"order": 9,
+							"label": "Central Spine Fill",
+							"hex": "#E42E12"
+						}
+					]
+				},
+				"706": {
+					"groupid": 706,
+					"label": "Body Armor Section 1",
+					"order": 7,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#1E1E1E"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#626262"
+						},
+						{
+							"order": 2,
+							"label": "Arch Outline",
+							"hex": "#838383"
+						},
+						{
+							"order": 3,
+							"label": "Arch Gradient Sides",
+							"hex": "#444444"
+						},
+						{
+							"order": 4,
+							"label": "Arch Gradient Middle",
+							"hex": "#CDCDCD"
+						}
+					]
+				},
+				"707": {
+					"groupid": 707,
+					"label": "Body Armor Section 2",
+					"order": 8,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Near Gradient Side",
+							"hex": "#414141"
+						},
+						{
+							"order": 1,
+							"label": "Near Gradient Center",
+							"hex": "#505050"
+						},
+						{
+							"order": 2,
+							"label": "Near Gradient Middle",
+							"hex": "#B4B4B4"
+						},
+						{
+							"order": 3,
+							"label": "Far Gradient Top",
+							"hex": "#7D7D7D"
+						},
+						{
+							"order": 4,
+							"label": "Far Gradient Bottom",
+							"hex": "#505050"
+						}
+					]
+				},
+				"708": {
+					"groupid": 708,
+					"label": "Body Armor Section 3",
+					"order": 9,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Stroke/Rivet Outline",
+							"hex": "#5D5D5D"
+						},
+						{
+							"order": 1,
+							"label": "Rivet Fill",
+							"hex": "#838383"
+						},
+						{
+							"order": 2,
+							"label": "Near Upper Gradient Side",
+							"hex": "#323232"
+						},
+						{
+							"order": 3,
+							"label": "Near Upper Gradient Center",
+							"hex": "#CDCDCD"
+						},
+						{
+							"order": 4,
+							"label": "Near Upper Gradient Middle",
+							"hex": "#626262"
+						},
+						{
+							"order": 5,
+							"label": "Near Lower Gradient Side",
+							"hex": "#323232"
+						},
+						{
+							"order": 6,
+							"label": "Near Lower Gradient Center",
+							"hex": "#B4B4B4"
+						},
+						{
+							"order": 7,
+							"label": "Near Lower Gradient Middle",
+							"hex": "#505050"
+						},
+						{
+							"order": 8,
+							"label": "Far Upper Gradient Top",
+							"hex": "#AAAAAA"
+						},
+						{
+							"order": 9,
+							"label": "Far Upper Gradient Bottom",
+							"hex": "#404040"
+						},
+						{
+							"order": 10,
+							"label": "Far Lower Gradient Top",
+							"hex": "#626262"
+						},
+						{
+							"order": 11,
+							"label": "Far Lower Gradient Bottom",
+							"hex": "#161616"
+						}
+					]
+				},
+				"709": {
+					"groupid": 709,
+					"label": "Cloak",
+					"order": 10,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#5B1108"
+						},
+						{
+							"order": 1,
+							"label": "Gradient Top",
+							"hex": "#C01600"
+						},
+						{
+							"order": 2,
+							"label": "Gradient Middle",
+							"hex": "#710F00"
+						},
+						{
+							"order": 3,
+							"label": "Gradient Bottom",
+							"hex": "#323232"
+						},
+						{
+							"order": 4,
+							"label": "Fur Outline",
+							"hex": "#838383"
+						},
+						{
+							"order": 5,
+							"label": "Fur Fill",
+							"hex": "#C3C3C3"
+						},
+						{
+							"order": 6,
+							"label": "Fur Spot Outline",
+							"hex": "#585858"
+						},
+						{
+							"order": 7,
+							"label": "Fur Spot Fill",
+							"hex": "#3B3B3B"
+						}
+					]
+				},
+				"710": {
+					"groupid": 710,
+					"label": "Armoured Boots",
+					"order": 11,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#1E1E1E"
+						},
+						{
+							"order": 1,
+							"label": "Strokes",
+							"hex": "#505050"
+						},
+						{
+							"order": 2,
+							"label": "Gradient 1",
+							"hex": "#B4B4B4"
+						},
+						{
+							"order": 3,
+							"label": "Gradient 2",
+							"hex": "#505050"
+						},
+						{
+							"order": 4,
+							"label": "Shadow Outline",
+							"hex": "#161616"
+						},
+						{
+							"order": 5,
+							"label": "Shadow Strokes",
+							"hex": "#404040"
+						},
+						{
+							"order": 6,
+							"label": "Shadow Gradient 1",
+							"hex": "#888888"
+						},
+						{
+							"order": 7,
+							"label": "Shadow Gradient 2",
+							"hex": "#404040"
+						}
+					]
+				}
+			},
+			"TagIDs": [
+				1,
+				9,
+				11,
+				268,
+				269
+			]
+		},
 		"77": {
 			"id": 77,
-			"order": 29,
+			"order": 30,
 			"label": "Twist",
 			"notes": "Far legs use darker colors.",
 			"cm_favme": null,
@@ -5249,7 +5723,7 @@
 		},
 		"67": {
 			"id": 67,
-			"order": 30,
+			"order": 31,
 			"label": "Silver Spoon",
 			"notes": "Far legs use darker colors.\nNecklace highlights are not pure white.",
 			"cm_favme": null,
@@ -5431,7 +5905,7 @@
 		},
 		"74": {
 			"id": 74,
-			"order": 31,
+			"order": 32,
 			"label": "Diamond Tiara",
 			"notes": "",
 			"cm_favme": null,
@@ -5556,7 +6030,7 @@
 		},
 		"66": {
 			"id": 66,
-			"order": 32,
+			"order": 33,
 			"label": "Pipsqueak",
 			"notes": "",
 			"cm_favme": null,
@@ -5637,7 +6111,7 @@
 		},
 		"39": {
 			"id": 39,
-			"order": 33,
+			"order": 34,
 			"label": "Button Mash",
 			"notes": "From S5E18.\nFar legs use LIGHTER outlines and fills.",
 			"cm_favme": null,
@@ -5785,7 +6259,7 @@
 		},
 		"81": {
 			"id": 81,
-			"order": 34,
+			"order": 35,
 			"label": "Featherweight",
 			"notes": "Eyes don't have iris highlights.",
 			"cm_favme": null,
@@ -5887,7 +6361,7 @@
 		},
 		"37": {
 			"id": 37,
-			"order": 35,
+			"order": 36,
 			"label": "Dinky Doo",
 			"notes": "From S5E17.\nMagic color is unknown.",
 			"cm_favme": null,
@@ -5978,7 +6452,7 @@
 		},
 		"38": {
 			"id": 38,
-			"order": 36,
+			"order": 37,
 			"label": "Ruby Pinch",
 			"notes": "From S5E17.\nMagic color is unknown.",
 			"cm_favme": null,
@@ -6070,7 +6544,7 @@
 		},
 		"40": {
 			"id": 40,
-			"order": 37,
+			"order": 38,
 			"label": "Lily Longsocks",
 			"notes": "From S5E18.",
 			"cm_favme": null,
@@ -6208,7 +6682,7 @@
 		},
 		"93": {
 			"id": 93,
-			"order": 38,
+			"order": 39,
 			"label": "Zipporwhill",
 			"notes": "Based on S4E14.\nFar legs use darker colors. \nOnly has one iris highlight.\nGlasses don't seem to have lenses.",
 			"cm_favme": null,
@@ -6342,7 +6816,7 @@
 		},
 		"98": {
 			"id": 98,
-			"order": 39,
+			"order": 40,
 			"label": "Tender Taps",
 			"notes": "Far legs use darker colors.\nOn the Cutie Mark, the spotlight's base is layered on top of the spotlight.",
 			"cm_favme": null,
@@ -6476,7 +6950,7 @@
 		},
 		"130": {
 			"id": 130,
-			"order": 40,
+			"order": 41,
 			"label": "Snips",
 			"notes": "",
 			"cm_favme": null,
@@ -6581,7 +7055,7 @@
 		},
 		"131": {
 			"id": 131,
-			"order": 41,
+			"order": 42,
 			"label": "Snails",
 			"notes": "",
 			"cm_favme": null,
@@ -6711,7 +7185,7 @@
 		},
 		"45": {
 			"id": 45,
-			"order": 42,
+			"order": 43,
 			"label": "Penny Curve",
 			"notes": "Vector Club Mascot",
 			"cm_favme": "d9e7zgj",
@@ -6839,7 +7313,7 @@
 		},
 		"10": {
 			"id": 10,
-			"order": 43,
+			"order": 44,
 			"label": "Minuette",
 			"notes": "For convenience, the color of the glass on her cutie mark is solid rather than transparent, thus the sand should be above.",
 			"cm_favme": null,
@@ -6975,7 +7449,7 @@
 		},
 		"16": {
 			"id": 16,
-			"order": 44,
+			"order": 45,
 			"label": "Twinkleshine",
 			"notes": "",
 			"cm_favme": null,
@@ -7085,7 +7559,7 @@
 		},
 		"17": {
 			"id": 17,
-			"order": 45,
+			"order": 46,
 			"label": "Lemon Hearts",
 			"notes": "",
 			"cm_favme": null,
@@ -7215,7 +7689,7 @@
 		},
 		"12": {
 			"id": 12,
-			"order": 46,
+			"order": 47,
 			"label": "Lyra Heartstrings",
 			"notes": "",
 			"cm_favme": null,
@@ -7351,7 +7825,7 @@
 		},
 		"69": {
 			"id": 69,
-			"order": 47,
+			"order": 48,
 			"label": "Vinyl Scratch / DJ Pon-3",
 			"notes": "Based on S5E9.",
 			"cm_favme": "d9zhh0l",
@@ -7575,7 +8049,7 @@
 		},
 		"87": {
 			"id": 87,
-			"order": 48,
+			"order": 49,
 			"label": "Rose",
 			"notes": "Far legs use darker colors.",
 			"cm_favme": "d9zhguu",
@@ -7714,7 +8188,7 @@
 		},
 		"89": {
 			"id": 89,
-			"order": 49,
+			"order": 50,
 			"label": "Twilight Velvet",
 			"notes": "",
 			"cm_favme": null,
@@ -7817,7 +8291,7 @@
 		},
 		"91": {
 			"id": 91,
-			"order": 50,
+			"order": 51,
 			"label": "Night Light",
 			"notes": "",
 			"cm_favme": null,
@@ -7910,7 +8384,7 @@
 		},
 		"36": {
 			"id": 36,
-			"order": 51,
+			"order": 52,
 			"label": "Moon Dancer",
 			"notes": "Far legs use darker colors.",
 			"cm_favme": "d9vcpeu",
@@ -8137,7 +8611,7 @@
 		},
 		"29": {
 			"id": 29,
-			"order": 52,
+			"order": 53,
 			"label": "Starlight Glimmer",
 			"notes": "Her cutie mark does not use pure white for the star fill.\nHer S6 mane style includes an additional shadow fill color",
 			"cm_favme": "d8old4s",
@@ -8309,7 +8783,7 @@
 		},
 		"22": {
 			"id": 22,
-			"order": 53,
+			"order": 54,
 			"label": "Sugar Belle",
 			"notes": "Far legs use darker colors.",
 			"cm_favme": null,
@@ -8507,7 +8981,7 @@
 		},
 		"28": {
 			"id": 28,
-			"order": 54,
+			"order": 55,
 			"label": "Party Favor",
 			"notes": "Magic aura color is unknown.",
 			"cm_favme": null,
@@ -8642,7 +9116,7 @@
 		},
 		"15": {
 			"id": 15,
-			"order": 55,
+			"order": 56,
 			"label": "Sassy Saddles",
 			"notes": "",
 			"cm_favme": null,
@@ -8863,7 +9337,7 @@
 		},
 		"62": {
 			"id": 62,
-			"order": 56,
+			"order": 57,
 			"label": "Sunburst",
 			"notes": "Far legs use darker colors. \nHas no iris highlights.\nGlasses don't seem to have lenses.",
 			"cm_favme": "d9iyv1r",
@@ -9098,7 +9572,7 @@
 		},
 		"14": {
 			"id": 14,
-			"order": 57,
+			"order": 58,
 			"label": "Fashion Plate",
 			"notes": "Far legs use darker colors.",
 			"cm_favme": null,
@@ -9262,7 +9736,7 @@
 		},
 		"13": {
 			"id": 13,
-			"order": 58,
+			"order": 59,
 			"label": "Whoa Nelly",
 			"notes": "Special eyeball color.\nCutie Mark head colors are different from normal ones.",
 			"cm_favme": null,
@@ -9418,7 +9892,7 @@
 		},
 		"72": {
 			"id": 72,
-			"order": 59,
+			"order": 60,
 			"label": "Sweet Biscuit",
 			"notes": "",
 			"cm_favme": "d9tl3qw",
@@ -9531,7 +10005,7 @@
 		},
 		"73": {
 			"id": 73,
-			"order": 60,
+			"order": 61,
 			"label": "Say Cheese",
 			"notes": "",
 			"cm_favme": "d9ts8lk",
@@ -9649,7 +10123,7 @@
 		},
 		"92": {
 			"id": 92,
-			"order": 61,
+			"order": 62,
 			"label": "Trenderhoof",
 			"notes": "Based on S4E13.\nFar legs use darker colors. \nOnly has one iris highlight.",
 			"cm_favme": null,
@@ -9853,7 +10327,7 @@
 		},
 		"108": {
 			"id": 108,
-			"order": 62,
+			"order": 63,
 			"label": "Minty Bubblegum",
 			"notes": "Shadow fill is a guess based on Lyra's colors, as well as bottom eye gradient color.\nMagic aura color is unknown.\nOn the Cutie Mark, the gumballs are layered above the glass.",
 			"cm_favme": "d9yydnz",
@@ -10033,7 +10507,7 @@
 		},
 		"128": {
 			"id": 128,
-			"order": 63,
+			"order": 64,
 			"label": "Fleur-De-Lis",
 			"notes": "",
 			"cm_favme": null,
@@ -10172,7 +10646,7 @@
 		},
 		"129": {
 			"id": 129,
-			"order": 64,
+			"order": 65,
 			"label": "Fancypants",
 			"notes": "The monocle lens has a couple different fill approaches depending on angle and tightness of the shot. If closeup, both fills are transparent, but if far out, second fill is fully opaque.",
 			"cm_favme": null,
@@ -10435,7 +10909,7 @@
 		},
 		"55": {
 			"id": 55,
-			"order": 65,
+			"order": 66,
 			"label": "Spitfire",
 			"notes": "Far legs use darker colors.",
 			"cm_favme": "d5nzngs",
@@ -10563,7 +11037,7 @@
 		},
 		"19": {
 			"id": 19,
-			"order": 66,
+			"order": 67,
 			"label": "Fleetfoot",
 			"notes": "",
 			"cm_favme": "d97x7vd",
@@ -10676,7 +11150,7 @@
 		},
 		"11": {
 			"id": 11,
-			"order": 67,
+			"order": 68,
 			"label": "Derpy / Muffins",
 			"notes": "",
 			"cm_favme": null,
@@ -10777,7 +11251,7 @@
 		},
 		"100": {
 			"id": 100,
-			"order": 68,
+			"order": 69,
 			"label": "Cloudchaser",
 			"notes": "",
 			"cm_favme": null,
@@ -10899,7 +11373,7 @@
 		},
 		"103": {
 			"id": 103,
-			"order": 69,
+			"order": 70,
 			"label": "Flitter",
 			"notes": "",
 			"cm_favme": null,
@@ -11028,7 +11502,7 @@
 		},
 		"101": {
 			"id": 101,
-			"order": 70,
+			"order": 71,
 			"label": "Thunderlane",
 			"notes": "",
 			"cm_favme": null,
@@ -11140,7 +11614,7 @@
 		},
 		"68": {
 			"id": 68,
-			"order": 71,
+			"order": 72,
 			"label": "Blossomforth",
 			"notes": "Imported from the old colour guide",
 			"cm_favme": "d8geiw1",
@@ -11257,7 +11731,7 @@
 		},
 		"104": {
 			"id": 104,
-			"order": 72,
+			"order": 73,
 			"label": "Twilight Sky",
 			"notes": "Based on S2E22.\nFar legs use darker colors.\nDoes not have iris highlights.",
 			"cm_favme": null,
@@ -11350,7 +11824,7 @@
 		},
 		"97": {
 			"id": 97,
-			"order": 73,
+			"order": 74,
 			"label": "Bulk Biceps",
 			"notes": "",
 			"cm_favme": null,
@@ -11526,7 +12000,7 @@
 		},
 		"65": {
 			"id": 65,
-			"order": 74,
+			"order": 75,
 			"label": "Meadow Flower",
 			"notes": "",
 			"cm_favme": "d9ko8le",
@@ -11654,7 +12128,7 @@
 		},
 		"102": {
 			"id": 102,
-			"order": 75,
+			"order": 76,
 			"label": "Thunderclap",
 			"notes": "",
 			"cm_favme": null,
@@ -11798,7 +12272,7 @@
 		},
 		"26": {
 			"id": 26,
-			"order": 76,
+			"order": 77,
 			"label": "Night Glider",
 			"notes": "",
 			"cm_favme": "d8oovxh",
@@ -11937,7 +12411,7 @@
 		},
 		"20": {
 			"id": 20,
-			"order": 77,
+			"order": 78,
 			"label": "Stormy Flare",
 			"notes": "Only has one eye shine.\nFar legs use darker colors.",
 			"cm_favme": "d9acleq",
@@ -12105,7 +12579,7 @@
 		},
 		"21": {
 			"id": 21,
-			"order": 78,
+			"order": 79,
 			"label": "Wind Rider",
 			"notes": "Teeth use a different color than normal.",
 			"cm_favme": "d9ao1qp",
@@ -12367,7 +12841,7 @@
 		},
 		"127": {
 			"id": 127,
-			"order": 79,
+			"order": 80,
 			"label": "Soarin'",
 			"notes": "",
 			"cm_favme": null,
@@ -12465,7 +12939,7 @@
 		},
 		"35": {
 			"id": 35,
-			"order": 80,
+			"order": 81,
 			"label": "Big McIntosh",
 			"notes": "Far legs use darker colors.",
 			"cm_favme": "d9zhgk0",
@@ -12675,7 +13149,7 @@
 		},
 		"18": {
 			"id": 18,
-			"order": 81,
+			"order": 82,
 			"label": "Granny Smith",
 			"notes": "Far legs use darker colors.",
 			"cm_favme": null,
@@ -12835,7 +13309,7 @@
 		},
 		"79": {
 			"id": 79,
-			"order": 82,
+			"order": 83,
 			"label": "Cheerilee",
 			"notes": "",
 			"cm_favme": null,
@@ -12947,7 +13421,7 @@
 		},
 		"80": {
 			"id": 80,
-			"order": 83,
+			"order": 84,
 			"label": "Dr. Hooves / Time Turner",
 			"notes": "",
 			"cm_favme": null,
@@ -13090,7 +13564,7 @@
 		},
 		"111": {
 			"id": 111,
-			"order": 84,
+			"order": 85,
 			"label": "Sweetie Drops / Bon Bon",
 			"notes": "",
 			"cm_favme": null,
@@ -13213,7 +13687,7 @@
 		},
 		"110": {
 			"id": 110,
-			"order": 85,
+			"order": 86,
 			"label": "Octavia Melody",
 			"notes": "",
 			"cm_favme": null,
@@ -13343,7 +13817,7 @@
 		},
 		"76": {
 			"id": 76,
-			"order": 86,
+			"order": 87,
 			"label": "Mayor Mare",
 			"notes": "",
 			"cm_favme": null,
@@ -13534,7 +14008,7 @@
 		},
 		"30": {
 			"id": 30,
-			"order": 87,
+			"order": 88,
 			"label": "Coco Pommel",
 			"notes": "Far legs use darker colors.",
 			"cm_favme": null,
@@ -13743,7 +14217,7 @@
 		},
 		"46": {
 			"id": 46,
-			"order": 88,
+			"order": 89,
 			"label": "Cheese Sandwich",
 			"notes": "",
 			"cm_favme": "d74od89",
@@ -13895,7 +14369,7 @@
 		},
 		"52": {
 			"id": 52,
-			"order": 89,
+			"order": 90,
 			"label": "Maud Pie",
 			"notes": "Far legs use darker colors.",
 			"cm_favme": "d7apvq4",
@@ -14106,7 +14580,7 @@
 		},
 		"51": {
 			"id": 51,
-			"order": 90,
+			"order": 91,
 			"label": "Limestone Pie",
 			"notes": "",
 			"cm_favme": "d9eecqj",
@@ -14225,7 +14699,7 @@
 		},
 		"50": {
 			"id": 50,
-			"order": 91,
+			"order": 92,
 			"label": "Marble Pie",
 			"notes": "Two different hair outline colors.\nEye gradient should be adjusted (lower on eye) to make sure top highlight is easily distinguished from gradient.",
 			"cm_favme": "d9eeci7",
@@ -14339,7 +14813,7 @@
 		},
 		"53": {
 			"id": 53,
-			"order": 92,
+			"order": 93,
 			"label": "Igneous Rock",
 			"notes": "Far legs use darker colors.",
 			"cm_favme": null,
@@ -14481,7 +14955,7 @@
 		},
 		"54": {
 			"id": 54,
-			"order": 93,
+			"order": 94,
 			"label": "Cloudy Quartz",
 			"notes": "",
 			"cm_favme": null,
@@ -14670,7 +15144,7 @@
 		},
 		"27": {
 			"id": 27,
-			"order": 94,
+			"order": 95,
 			"label": "Double Diamond",
 			"notes": "",
 			"cm_favme": null,
@@ -14796,7 +15270,7 @@
 		},
 		"58": {
 			"id": 58,
-			"order": 95,
+			"order": 96,
 			"label": "Tree Hugger",
 			"notes": "Darker highlight color matches the bottom iris gradient color.",
 			"cm_favme": "d8u7pz5",
@@ -14942,7 +15416,7 @@
 		},
 		"59": {
 			"id": 59,
-			"order": 96,
+			"order": 97,
 			"label": "Coloratura",
 			"notes": "",
 			"cm_favme": "d9hm2yd",
@@ -15076,7 +15550,7 @@
 		},
 		"60": {
 			"id": 60,
-			"order": 97,
+			"order": 98,
 			"label": "Rara (Countess Outfit)",
 			"notes": "",
 			"cm_favme": null,
@@ -15374,7 +15848,7 @@
 		},
 		"61": {
 			"id": 61,
-			"order": 98,
+			"order": 99,
 			"label": "Svengallop",
 			"notes": "",
 			"cm_favme": null,
@@ -15586,7 +16060,7 @@
 		},
 		"95": {
 			"id": 95,
-			"order": 99,
+			"order": 100,
 			"label": "Street Rat",
 			"notes": "",
 			"cm_favme": null,
@@ -15834,7 +16308,7 @@
 		},
 		"96": {
 			"id": 96,
-			"order": 100,
+			"order": 101,
 			"label": "Copper Top",
 			"notes": "",
 			"cm_favme": null,
@@ -16053,7 +16527,7 @@
 		},
 		"99": {
 			"id": 99,
-			"order": 101,
+			"order": 102,
 			"label": "Hoofer Steps",
 			"notes": "",
 			"cm_favme": null,
@@ -16243,7 +16717,7 @@
 		},
 		"106": {
 			"id": 106,
-			"order": 102,
+			"order": 103,
 			"label": "Toe Tapper",
 			"notes": "Far legs use darker colors.\nOnly has one eye shine and one iris highlight located in the top part of the iris.",
 			"cm_favme": null,
@@ -16343,7 +16817,7 @@
 		},
 		"107": {
 			"id": 107,
-			"order": 103,
+			"order": 104,
 			"label": "Torch Song",
 			"notes": "Far legs use darker colors.",
 			"cm_favme": null,
@@ -16488,7 +16962,7 @@
 		},
 		"121": {
 			"id": 121,
-			"order": 104,
+			"order": 105,
 			"label": "Braeburn",
 			"notes": "",
 			"cm_favme": "d9zls6n",
@@ -16645,7 +17119,7 @@
 		},
 		"64": {
 			"id": 64,
-			"order": 105,
+			"order": 106,
 			"label": "Angel Bunny",
 			"notes": "",
 			"cm_favme": null,
@@ -16758,7 +17232,7 @@
 		},
 		"112": {
 			"id": 112,
-			"order": 106,
+			"order": 107,
 			"label": "Gummy",
 			"notes": "In 3/4 view, the top line on his far eye uses the \"Far Eye Top Line\" color instead of the normal gradient.",
 			"cm_favme": null,
@@ -16894,7 +17368,7 @@
 		},
 		"116": {
 			"id": 116,
-			"order": 107,
+			"order": 108,
 			"label": "Winona",
 			"notes": "",
 			"cm_favme": null,
@@ -17027,7 +17501,7 @@
 		},
 		"117": {
 			"id": 117,
-			"order": 108,
+			"order": 109,
 			"label": "Owlowiscious",
 			"notes": "",
 			"cm_favme": null,
@@ -17114,7 +17588,7 @@
 		},
 		"119": {
 			"id": 119,
-			"order": 109,
+			"order": 110,
 			"label": "Tank",
 			"notes": "Far Legs use darker colors.\nIn some scenes, Tank uses an alternate set of colors for the tongue.\nFor accurate goggle lenses: Group together the Fill (100% Normal blending) and the Highlights (75% Color Dodge blending) and set the group to 50% opacity.\nFor a less accurate version, group together the Fill and the Highlights (both 100% opacity, Normal blending) and set the group to 50% opacity.",
 			"cm_favme": null,
@@ -17381,7 +17855,7 @@
 		},
 		"120": {
 			"id": 120,
-			"order": 110,
+			"order": 111,
 			"label": "Opalescence",
 			"notes": "",
 			"cm_favme": null,
@@ -17577,7 +18051,7 @@
 		},
 		"33": {
 			"id": 33,
-			"order": 111,
+			"order": 112,
 			"label": "Alicorn Amulet",
 			"notes": "",
 			"cm_favme": null,
@@ -17768,7 +18242,7 @@
 		},
 		"86": {
 			"id": 86,
-			"order": 112,
+			"order": 113,
 			"label": "Scorpan's Medallion",
 			"notes": "",
 			"cm_favme": null,
@@ -17845,7 +18319,7 @@
 		},
 		"94": {
 			"id": 94,
-			"order": 113,
+			"order": 114,
 			"label": "Party Cannon",
 			"notes": "",
 			"cm_favme": null,
@@ -17973,7 +18447,7 @@
 		},
 		"115": {
 			"id": 115,
-			"order": 114,
+			"order": 115,
 			"label": "Fake Timberwolf",
 			"notes": "",
 			"cm_favme": null,
@@ -18181,7 +18655,7 @@
 		},
 		"70": {
 			"id": 70,
-			"order": 115,
+			"order": 116,
 			"label": "Wonderbolt Uniform",
 			"notes": "",
 			"cm_favme": null,
@@ -18278,7 +18752,7 @@
 		},
 		"71": {
 			"id": 71,
-			"order": 116,
+			"order": 117,
 			"label": "Wonderbolt Trainee Uniform",
 			"notes": "",
 			"cm_favme": null,
@@ -18345,7 +18819,7 @@
 		},
 		"105": {
 			"id": 105,
-			"order": 117,
+			"order": 118,
 			"label": "Pony Tones Outfit",
 			"notes": "",
 			"cm_favme": null,
@@ -18446,7 +18920,7 @@
 		},
 		"109": {
 			"id": 109,
-			"order": 118,
+			"order": 119,
 			"label": "Zecora",
 			"notes": "Based on S4E14.",
 			"cm_favme": null,
@@ -18609,7 +19083,7 @@
 		},
 		"113": {
 			"id": 113,
-			"order": 119,
+			"order": 120,
 			"label": "Orange Frog",
 			"notes": "",
 			"cm_favme": null,
@@ -18704,7 +19178,7 @@
 		},
 		"122": {
 			"id": 122,
-			"order": 120,
+			"order": 121,
 			"label": "Pig (Peach Skin)",
 			"notes": "",
 			"cm_favme": null,
@@ -18824,7 +19298,7 @@
 		},
 		"123": {
 			"id": 123,
-			"order": 121,
+			"order": 122,
 			"label": "Pig (Pink Skin)",
 			"notes": "Muddy Nostril color unknown",
 			"cm_favme": null,
@@ -18939,7 +19413,7 @@
 		},
 		"124": {
 			"id": 124,
-			"order": 122,
+			"order": 123,
 			"label": "Pig (Dark Skin)",
 			"notes": "Muddy Nostril color unknown",
 			"cm_favme": null,
@@ -19289,7 +19763,7 @@
 			"name": "unicorn",
 			"title": null,
 			"type": "spec",
-			"uses": 31,
+			"uses": 32,
 			"synonym_of": null
 		},
 		"2": {
@@ -19353,7 +19827,7 @@
 			"name": "antagonist",
 			"title": null,
 			"type": "cat",
-			"uses": 9,
+			"uses": 10,
 			"synonym_of": null
 		},
 		"10": {
@@ -19369,7 +19843,7 @@
 			"name": "male",
 			"title": null,
 			"type": "gen",
-			"uses": 40,
+			"uses": 41,
 			"synonym_of": null
 		},
 		"12": {
@@ -21322,6 +21796,38 @@
 			"title": null,
 			"type": "char",
 			"uses": 1,
+			"synonym_of": null
+		},
+		"268": {
+			"tid": 268,
+			"name": "king sombra",
+			"title": null,
+			"type": "char",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"269": {
+			"tid": 269,
+			"name": "sombra",
+			"title": null,
+			"type": "char",
+			"uses": 0,
+			"synonym_of": 268
+		},
+		"270": {
+			"tid": 270,
+			"name": "s6e10",
+			"title": null,
+			"type": "ep",
+			"uses": 0,
+			"synonym_of": null
+		},
+		"271": {
+			"tid": 271,
+			"name": "s6e11",
+			"title": null,
+			"type": "ep",
+			"uses": 0,
 			"synonym_of": null
 		}
 	}
