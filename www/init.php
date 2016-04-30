@@ -11,8 +11,8 @@
 	define('SITE_TITLE', 'MLP Vector Club');
 	define('EXEC_START_MICRO', microtime(true));
 
-	// Imports \\
-	require 'includes/CoreUtils.php';
+	// Autoload classes \\
+	require 'includes/classes/CoreUtils.php';
 	spl_autoload_register(function($class){
 		CoreUtils::CanIHas($class);
 	});
