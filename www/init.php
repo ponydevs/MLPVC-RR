@@ -88,7 +88,7 @@
 	define('INVERSE_PRINTABLE_ASCII_REGEX','[^ -~]');
 	define('NEWEST_FIRST', 'DESC');
 	define('OLDEST_FIRST', 'ASC');
-	$REWRITE_REGEX = new RegExp('^/(?:([\w\.\-]+|-?\d+)(?:/((?:[\w\-]+|-?\d+)(?:/(?:[\w\-]+|-?\d+))?))?/?)?$','i');
+	$REWRITE_REGEX = new RegExp('^/([\w\-]+|-?\d+)(?:\/((?:[\w\-]+|-?\d+)(?:\/(?:[\w\-]+|-?\d+))?(?:\/(?:[\w\-]+|-?\d+))?))?\/?$','i');
 
 	// Color Guide regular expression \\
 	$EQG_URL_PATTERN = new RegExp('^eqg/');
