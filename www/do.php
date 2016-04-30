@@ -579,9 +579,13 @@
 					if (empty($Episode))
 						CoreUtils::Respond("There's no episode with this season & episode number");
 					$only = $_match[1] === 'requests' ? ONLY_REQUESTS : ONLY_RESERVATIONS;
-					CoreUtils::Respond(array(
-						'render' => call_user_func("{$_match[1]}_render", Posts::Get($Episode['season'], $Episode['episode'], $only)),
-					));
+					$posts = Posts::Get($Episode['season'], $Episode['episode'], $only);
+
+					switch ($only){
+						case ONLY_REQUESTS: $rendered = Posts::GetRequestsSection($posts); break;
+						case ONLY_RESERVATIONS: $rendered = Posts::GetReservationsSection($posts); break;
+					}
+					CoreUtils::Respond(array('render' => $rendered));
 				}
 				else if (regex_match(new RegExp('^vote/'.EPISODE_ID_PATTERN.'$'), $data, $_match)){
 					$Episode = Episode::GetActual($_match[1],$_match[2],ALLOW_SEASON_ZERO);

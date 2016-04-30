@@ -389,6 +389,21 @@
 			return str_pad((string) $input, $pad_length, $pad_string, $pad_type);
 		}
 
+		/**
+		 * Capitalizes the first leter of a string
+		 *
+		 * @param string $str
+		 * @param bool   $all
+		 *
+		 * @return string
+		 */
+		static function Capitalize($str, $all = false){
+			if ($all) return preg_replace_callback(new RegExp('((?:^|\s)[a-z])'), function($match){
+				return strtoupper($match[1]);
+			}, $str);
+			else return strlen($str) === 1 ? strtoupper($str) : strtoupper($str[0]).substr($str,1);
+		}
+
 		// Turns a file size ini setting value into bytes
 		private static function _shortSizeInBytes($size){
 			$unit = substr($size, -1);
@@ -556,7 +571,7 @@
 		 * @return string
 		 */
 		static function GetFooter(){
-			global $Database;
+			global $Database, $CGDb;
 			return "Running <strong><a href='".GITHUB_URL."' title='Visit the GitHub repository'>MLPVC-RR</a>@<a href='".GITHUB_URL."/commit/".LATEST_COMMIT_ID."' title='See exactly what was changed and why'>".LATEST_COMMIT_ID."</a></strong> created ".Time::Tag(LATEST_COMMIT_TIME)." | <a class='issues' href='".GITHUB_URL."/issues' target='_blank'>Known issues</a> | ".(isset($Database)?"<a href='#feedback' class='send-feedback'>Send feedback</a>":"<a href='".GITHUB_URL."/issues/new' target='_blank'>Send feedback</a>").(Permission::Sufficient('developer')?' | Render: '.number_format(microtime(true)-EXEC_START_MICRO, 4).'s | SQL Queries: '.($Database->query_count+($CGDb->query_count??0)):'');
 		}
 
