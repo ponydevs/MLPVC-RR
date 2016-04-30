@@ -148,15 +148,14 @@
 		 *
 		 * @param array|null $Post Existing post for comparison
 		 *
-		 * @return Image
+		 * @return ImageProvider
 		 */
 		static function CheckImage($Post = null){
 			if (empty($_POST['image_url']))
 				CoreUtils::Respond('Please enter an image URL');
 
-			CoreUtils::CanIHas('Image');
 			try {
-				$Image = new Image($_POST['image_url']);
+				$Image = new ImageProvider($_POST['image_url']);
 			}
 			catch (Exception $e){ CoreUtils::Respond($e->getMessage()); }
 
@@ -191,8 +190,7 @@
 				CoreUtils::Respond('Please specify a deviation URL');
 			$deviation = $_POST['deviation'];
 			try {
-				CoreUtils::CanIHas('Image');
-				$Image = new Image($deviation, array('fav.me','dA'));
+				$Image = new ImageProvider($deviation, array('fav.me', 'dA'));
 
 				foreach (Posts::$TYPES as $what){
 					if ($Database->where('deviation_id', $Image->id)->has("{$what}s"))

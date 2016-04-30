@@ -4,21 +4,19 @@
 		/**
 		 * Loads a single class or a set of classes
 		 *
-		 * @param string[] $classes
+		 * @param string $class
 		 *
 		 * @throws Exception
 		 */
-		static function CanIHas(...$classes){
-			foreach ($classes as $class){
-				if (class_exists($class))
-					continue;
-				$path = APPATH."includes/classes/$class.php";
-				if (!file_exists($path))
-					throw new Exception("Could not load class $class: file not found");
-				require $path;
-				if (!class_exists($class))
-					throw new Exception("Could not load class $class: class not found in $path");
-			}
+		static function CanIHas($class){
+			if (class_exists($class))
+				return;
+			$path = APPATH."includes/classes/$class.php";
+			if (!file_exists($path))
+				throw new Exception("Could not load class $class: file not found");
+			require $path;
+			if (!class_exists($class))
+				throw new Exception("Could not load class $class: class not found in $path");
 		}
 
 		/**
@@ -765,7 +763,6 @@
 		 * @return array
 		 */
 		static function DetectBrowser($user_agent = null){
-			CoreUtils::CanIHas('Browser');
 			$Return = array('user_agent' => !empty($user_agent) ? $user_agent : $_SERVER['HTTP_USER_AGENT']);
 			$browser = new Browser($Return['user_agent']);
 			$name = $browser->getBrowser();

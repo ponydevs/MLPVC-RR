@@ -1,6 +1,6 @@
 <?php
 
-	class Video {
+	class VideoProvider {
 		public static $id, $embed;
 		public $provider;
 		private $url;

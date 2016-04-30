@@ -1,0 +1,434 @@
+<?php
+
+	namespace CG;
+
+	class Appearances {
+		/**
+		 * @param bool      $EQG
+		 * @param int|int[] $limit
+		 * @param  string   $cols
+		 *
+		 * @return array
+		 */
+		static function Get($EQG, $limit = null, $cols = '*'){
+			global $CGDb;
+
+			self::_order();
+			if (isset($EQG))
+				$CGDb->where('ishuman', $EQG)->where('id',0,'!=');
+			return $CGDb->get('appearances', $limit, $cols);
+		}
+
+		/**
+		 * Order appearances
+		 *
+		 * @param string $dir
+		 */
+		private static function _order($dir = 'ASC'){
+			global $CGDb;
+			$CGDb
+				->orderByLiteral('CASE WHEN "order" IS NULL THEN 1 ELSE 0 END', $dir)
+				->orderBy('"order"', $dir)
+				->orderBy('id', $dir);
+		}
+
+		/**
+		 * @param array $Ponies
+		 * @param bool  $wrap
+		 *
+		 * @return string
+		 */
+		static function GetHTML($Ponies, $wrap = WRAP){
+			global $CGDb, $_MSG, $color, $Search;
+
+			$HTML = '';
+			if (!empty($Ponies)) foreach ($Ponies as $p){
+				$p['label'] = htmlspecialchars($p['label']);
+
+				$img = self::GetSpriteHTML($p);
+				$updates = self::GetUpdatesHTML($p['id']);
+				$notes = self::GetNotesHTML($p);
+				$tags = $p['id'] ? self::GetTagsHTML($p['id'], true, $Search) : '';
+				$colors = self::GetColorsHTML($p['id']);
+				$eqgp = $p['ishuman'] ? 'eqg/' : '';
+
+				$RenderPath = APPATH."img/cg_render/{$p['id']}.png";
+				$FileModTime = '?t='.(file_exists($RenderPath) ? filemtime($RenderPath) : time());
+				$Actions = "<a class='darkblue btn typcn typcn-image' title='View as PNG' href='/{$color}guide/{$eqgp}appearance/{$p['id']}.png$FileModTime' target='_blank'></a>";
+				if (\Permission::Sufficient('inspector'))
+					$Actions .= "<button class='edit typcn typcn-pencil blue' title='Edit'></button>".
+					            ($p['id']!==0?"<button class='delete typcn typcn-trash red' title='Delete'></button>":'');
+
+				$HTML .= "<li id='p{$p['id']}'>$img<div><strong><a href='/colorguide/appearance/{$p['id']}'>{$p['label']}</a>$Actions</strong>$updates$notes$tags$colors</div></li>";
+			}
+			else {
+				if (empty($_MSG))
+					$_MSG = "No appearances to show";
+				$HTML .= "<div class='notice info align-center'><label>$_MSG</label></div>";
+			}
+
+			return $wrap ? "<ul id='list' class='appearance-list'>$HTML</ul>" : $HTML;
+		}
+
+		/**
+		 * Returns the markup of the color list for a specific appearance
+		 *
+		 * @param int $PonyID
+		 * @param bool $wrap
+		 * @param bool $colon
+		 * @param bool $colorNames
+		 *
+		 * @return string
+		 */
+		static function GetColorsHTML($PonyID, $wrap = WRAP, $colon = true, $colorNames = false){
+			global $CGDb;
+
+			$ColorGroups = ColorGroups::Get($PonyID);
+
+			$HTML = '';
+			if (!empty($ColorGroups)) foreach ($ColorGroups as $cg)
+				$HTML .= ColorGroups::GetHTML($cg, WRAP, $colon, $colorNames);
+
+			return $wrap ? "<ul class='colors'>$HTML</ul>" : $HTML;
+		}
+
+		/**
+		 * Return the markup of a set of tags belonging to a specific pony
+		 *
+		 * @param int         $PonyID
+		 * @param bool        $wrap
+		 * @param string|null $Search
+		 *
+		 * @return string
+		 */
+		static function GetTagsHTML($PonyID, $wrap = WRAP, $Search = null){
+			global $CGDb;
+
+			$Tags = Tags::Get($PonyID, null, \Permission::Sufficient('inspector'));
+
+			$HTML = '';
+			if (\Permission::Sufficient('inspector') && $PonyID !== 0)
+				$HTML .= "<input type='text' class='addtag tag' placeholder='Enter tag' pattern='".TAG_NAME_PATTERN."' maxlength='30' required>";
+			if (!empty($Tags)) foreach ($Tags as $i => $t){
+				$class = " class='tag id-{$t['tid']}".(!empty($t['synonym_of'])?' synonym':'').(!empty($t['type'])?' typ-'.$t['type']:'')."'";
+				$title = !empty($t['title']) ? " title='".\CoreUtils::AposEncode($t['title'])."'" : '';
+				if (!empty($Search['tid_assoc'][$t['tid']]))
+					$t['name'] = "<mark>{$t['name']}</mark>";
+				$HTML .= "<span$class$title>{$t['name']}</span>";
+			}
+
+			return $wrap ? "<div class='tags'>$HTML</div>" : $HTML;
+		}
+
+		/**
+		 * Get the notes for a specific appearance
+		 *
+		 * @param array $Appearance
+		 * @param bool  $wrap
+		 * @param bool  $cmLink
+		 *
+		 * @return string
+		 */
+		static function GetNotesHTML($Appearance, $wrap = WRAP, $cmLink = true){
+			$hasNotes = !empty($Appearance['notes']);
+			$hasCM = !empty($Appearance['cm_favme']) && $cmLink !== NOTE_TEXT_ONLY;
+			if ($hasNotes || $hasCM){
+				$notes = '';
+				if ($hasNotes){
+					if ($Appearance['id'] !== 0)
+						$Appearance['notes'] = htmlspecialchars($Appearance['notes']);
+					$notes = '<span>'.nl2br($Appearance['notes']).'</span>';
+				}
+				if ($hasCM){
+					$dir = '';
+					if (isset($Appearance['cm_dir'])){
+						$head_to_tail = $Appearance['cm_dir'] === CM_DIR_HEAD_TO_TAIL;
+						$CMPreviewUrl = self::GetCMPreviewURL($Appearance);
+						$dir = ' <span class="cm-direction" data-cm-preview="'.$CMPreviewUrl.'" data-cm-dir="'.($head_to_tail ? 'ht' : 'th').'"><span class="typcn typcn-info-large"></span> '.($head_to_tail ? 'Head-Tail' : 'Tail-Head').' orientation</span>';
+					}
+					$notes .= "<a href='http://fav.me/{$Appearance['cm_favme']}'><span>Cutie Mark</span>$dir</a>";
+				}
+			}
+			else {
+				if (!\Permission::Sufficient('inspector')) return '';
+				$notes = '';
+			}
+			return $wrap ? "<div class='notes'>$notes</div>" : $notes;
+		}
+
+		/**
+		 * Get sprite URL for an appearance
+		 *
+		 * @param int         $AppearanceID
+		 * @param string|null $fallback
+		 *
+		 * @return string
+		 */
+		static function GetSpriteURL($AppearanceID, $fallback = null){
+			$imgPth = "img/cg/$AppearanceID.png";
+			if (file_Exists(APPATH.$imgPth))
+				return "/$imgPth?".filemtime(APPATH.$imgPth);
+			return $fallback ?? '';
+		}
+
+		/**
+		 * Returns the HTML for sprite images
+		 *
+		 * @param array $Appearance
+		 *
+		 * @return string
+		 */
+		static function GetSpriteHTML($Appearance){
+			$imgPth = self::GetSpriteURL($Appearance['id']);
+			if (!empty($imgPth)){
+				$img = "<a href='$imgPth' target='_blank' title='Open image in new tab'><img src='$imgPth' alt='".\CoreUtils::AposEncode($Appearance['label'])."'></a>";
+				if (\Permission::Sufficient('inspector'))
+					$img = "<div class='upload-wrap'>$img</div>";
+			}
+			else if (\Permission::Sufficient('inspector'))
+				$img = "<div class='upload-wrap'><a><img src='/img/blank-pixel.png'></a></div>";
+			else return '';
+
+			return "<div class='sprite'>$img</div>";
+		}
+
+		/**
+		 * Returns the markup for the time of last update displayed under an appaerance
+		 *
+		 * @param int  $PonyID
+		 * @param bool $wrap
+		 *
+		 * @return string
+		 */
+		static function GetUpdatesHTML($PonyID, $wrap = WRAP){
+			global $Database;
+
+			$update = Updates::Get($PonyID, MOST_RECENT);
+			if (!empty($update)){
+				$update = "Last updated ".\Time::Tag($update['timestamp']);
+			}
+			else {
+				if (!\Permission::Sufficient('inspector')) return '';
+				$update = '';
+			}
+			return $wrap ? "<div class='update'>$update</div>" : $update;
+		}
+
+		/**
+		 * Sort appearances based on tags
+		 *
+		 * @param array $Appearances
+		 * @param bool  $simpleArray
+		 *
+		 * @return array
+		 */
+		static function Sort($Appearances, $simpleArray = false){
+			global $CGDb;
+			$GroupTagIDs = array_keys(\CGUtils::$GroupTagIDs_Assoc);
+			$Sorted = array();
+			foreach($Appearances as $p){
+				$Tagged = $CGDb->rawQuery(
+					'SELECT tags.tid
+					FROM tagged
+					LEFT JOIN tags ON tagged.tid = tags.tid && tagged.ponyid = ?
+					WHERE tags.tid IN ('.implode(',',$GroupTagIDs).')', array($p['id']));
+				if (!empty($Tagged)){
+					if (count($Tagged) > 1)
+						usort($Tagged,function($a,$b) use ($GroupTagIDs){
+							return array_search($a['tid'], $GroupTagIDs) - array_search($b['tid'], $GroupTagIDs);
+						});
+					$tid = $Tagged[0]['tid'];
+				}
+				else $tid = -1;
+				$Sorted[$tid][] = $p;
+			}
+			if ($simpleArray){
+				$idArray = array();
+				foreach (\CGUtils::$GroupTagIDs_Assoc as $Category => $CategoryName){
+					if (empty($Sorted[$Category]))
+						continue;
+					foreach ($Sorted[$Category] as $p)
+						$idArray[] = $p['id'];
+				}
+				return $idArray;
+			}
+			else return $Sorted;
+		}
+
+		/**
+		 * @param string[]|int[] $ids
+		 */
+		static function Reorder($ids){
+			global $CGDb;
+			if (empty($ids))
+				return;
+
+			$list = is_string($ids) ? explode(',', $ids) : $ids;
+			$order = 1;
+			foreach ($list as $id){
+				if (!$CGDb->where('id', $id)->update('appearances', array('order' => $order++)))
+					\CoreUtils::Respond("Updating appearance #$id failed, process halted");
+			}
+		}
+
+
+		/**
+		 * @param bool $EQG
+		 */
+		static function GetSortReorder($EQG){
+			if ($EQG)
+				return;
+			self::Reorder(self::Sort(self::Get($EQG,null,'id'), SIMPLE_ARRAY));
+		}
+
+		/**
+		 * Apply pre-defined template to an appearance
+		 * $EQG controls whether to apply EQG or Pony template
+		 *
+		 * @param int $PonyID
+		 * @param bool $EQG
+		 *
+		 * @throws \Exception
+		 */
+		static function ApplyTemplate($PonyID, $EQG){
+			global $CGDb, $Color;
+
+			if (empty($PonyID) || !is_numeric($PonyID))
+				throw new \Exception('Incorrect value for $PonyID while applying template');
+
+			if ($CGDb->where('ponyid', $PonyID)->has('colorgroups'))
+				throw new \Exception('Template can only be applied to empty appearances');
+
+			$Scheme = $EQG
+				? array(
+					'Skin' => array(
+						'Outline',
+						'Fill',
+					),
+					'Hair' => array(
+						'Outline',
+						'Fill',
+					),
+					'Eyes' => array(
+						'Gradient Top',
+						'Gradient Middle',
+						'Gradient Bottom',
+						'Highlight Top',
+						'Highlight Bottom',
+						'Eyebrows',
+					),
+				)
+				: array(
+					'Coat' => array(
+						'Outline',
+						'Fill',
+						'Shadow Outline',
+						'Shadow Fill',
+					),
+					'Mane & Tail' => array(
+						'Outline',
+						'Fill',
+					),
+					'Iris' => array(
+						'Gradient Top',
+						'Gradient Middle',
+						'Gradient Bottom',
+						'Highlight Top',
+						'Highlight Bottom',
+					),
+					'Cutie Mark' => array(
+						'Fill 1',
+						'Fill 2',
+					),
+					'Magic' => array(
+						'Aura',
+					),
+				);
+
+			$cgi = 0;
+			$ci = 0;
+			foreach ($Scheme as $GroupName => $ColorNames){
+				$GroupID = $CGDb->insert('colorgroups',array(
+					'ponyid' => $PonyID,
+					'label' => $GroupName,
+					'order' => $cgi++,
+				), 'groupid');
+				if (!$GroupID)
+					throw new \Exception(rtrim("Color group \"$GroupName\" could not be created: ".$CGDb->getLastError()), ': ');
+
+				foreach ($ColorNames as $label){
+					if (!$CGDb->insert('colors',array(
+						'groupid' => $GroupID,
+						'label' => $label,
+						'order' => $ci++,
+					))) throw new \Exception(rtrim("Color \"$label\" could not be added: ".$CGDb->getLastError()), ': ');
+				}
+			}
+		}
+
+		/**
+		 * Returns the HTML of the "Appears in # episodes" section of appearance pages
+		 *
+		 * @param int  $AppearanceID
+		 * @param bool $wrap
+		 *
+		 * @return string
+		 */
+		static function GetRelatedEpisodesHTML($AppearanceID, $wrap = WRAP){
+			global $CGDb;
+
+			$EpTagsOnAppearance = $CGDb->rawQuery(
+					"SELECT t.tid
+			FROM tagged tt
+			LEFT JOIN tags t ON tt.tid = t.tid
+			WHERE tt.ponyid = ? &&  t.type = ?",array($AppearanceID, 'ep'));
+			if (!empty($EpTagsOnAppearance)){
+				foreach ($EpTagsOnAppearance as $k => $row)
+					$EpTagsOnAppearance[$k] = $row['tid'];
+
+				$EpAppearances = $CGDb->rawQuery("SELECT DISTINCT t.name FROM tags t WHERE t.tid IN (".implode(',',$EpTagsOnAppearance).")");
+				if (empty($EpAppearances))
+					return '';
+
+				$List = '';
+				foreach ($EpAppearances as $tag){
+					$name = strtoupper($tag['name']);
+					$EpData = \Episode::ParseID($name);
+					$Ep = \Episode::GetActual($EpData['season'], $EpData['episode']);
+					$List .= (
+						empty($Ep)
+						? $name
+						: "<a href='/episode/S{$Ep['season']}E{$Ep['episode']}'>".\Episode::FormatTitle($Ep).'</a>'
+					).', ';
+				}
+				$List = rtrim($List, ', ');
+				$N_episodes = \CoreUtils::MakePlural('episode',count($EpAppearances),PREPEND_NUMBER);
+				$hide = '';
+			}
+			else {
+				$N_episodes = 'no episodes';
+				$List = '';
+				$hide = 'style="display:none"';
+			}
+
+			if (!$wrap)
+				return $List;
+			return <<<HTML
+		<section id="ep-appearances" $hide>
+			<h2><span class='typcn typcn-video'></span>Appears in $N_episodes</h2>
+			<p>$List</p>
+		</section>
+HTML;
+		}
+
+		/**
+		 * Retruns CM preview image link
+		 *
+		 * @param array $Appearance
+		 *
+		 * @return string
+		 */
+		static function GetCMPreviewURL($Appearance){
+			return $Appearance['cm_preview'] ?? \DeviantArt::GetCachedSubmission($Appearance['cm_favme'])['preview'];
+		}
+	}

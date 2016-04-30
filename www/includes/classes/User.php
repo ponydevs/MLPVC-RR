@@ -282,7 +282,6 @@ HTML;
 		 */
 		static function CheckAuth(){
 			global $Database, $signedIn, $currentUser, $Color, $color;
-			CoreUtils::CanIHas('CSRFProtection');
 			CSRFProtection::Detect();
 
 			if (!POST_REQUEST && isset($_GET['CSRF_TOKEN']))

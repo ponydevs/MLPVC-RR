@@ -232,9 +232,8 @@
 				$Videos = !empty($Videos['yt']) ? $Videos['yt'] : $Videos['dm'];
 
 				$Parts = count($Videos);
-				CoreUtils::CanIHas('Video');
 				foreach ($Videos as $v)
-					$embed .= "<div class='responsive-embed".($Episode['twoparter']&& $v['part']!==1?' hidden':'')."'>".Video::get_embed($v['id'], $v['provider'])."</div>";
+					$embed .= "<div class='responsive-embed".($Episode['twoparter']&& $v['part']!==1?' hidden':'')."'>".VideoProvider::get_embed($v['id'], $v['provider'])."</div>";
 			}
 			return array($Parts, $embed);
 		}
@@ -282,9 +281,8 @@
 				}
 
 				$HTML = "<section class='episode'><h2>Watch the ".($isMovie?'Movie':'Episode')."</h2><p class='align-center actions'>";
-				CoreUtils::CanIHas('Video');
 				foreach ($Videos as $v){
-					$url = Video::get_embed($v['id'], $v['provider'], Video::URL_ONLY);
+					$url = VideoProvider::get_embed($v['id'], $v['provider'], VideoProvider::URL_ONLY);
 					$partText = $Episode['twoparter'] ? (
 						!$v['fullep']
 						? " (Part {$v['part']})"

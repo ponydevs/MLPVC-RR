@@ -1,5 +1,5 @@
 <div id="content">
-	<div class="sprite-wrap"><?=get_sprite_html($Appearance)?></div>
+	<div class="sprite-wrap"><?=\CG\Appearances::GetSpriteHTML($Appearance)?></div>
 	<h1><?=$heading?></h1>
 	<p>from the MLP-VectorClub <a href="/<?=$color?>guide"><?=$Color?> Guide</a></p>
 
@@ -18,26 +18,26 @@
 <?  if (!empty($Changes)){ ?>
 		<section>
 			<h2><span class='typcn typcn-warning'></span>List of major changes</h2>
-			<?=render_changes_html($Changes)?>
+			<?=CGUtils::GetChangesHTML($Changes)?>
 		</section>
 <?  }
 	if ($Appearance['id'] !== 0 && ($CGDb->where('ponyid',$Appearance['id'])->has('tagged') || Permission::Sufficient('inspector'))){ ?>
 		<section id="tags">
 			<h2><span class='typcn typcn-tags'></span>Tags</h2>
-			<div class='tags'><?=get_tags_html($Appearance['id'],NOWRAP)?></div>
+			<div class='tags'><?=\CG\Appearances::GetTagsHTML($Appearance['id'],NOWRAP)?></div>
 		</section>
 <?php
 	}
-	echo get_episode_appearances($Appearance['id']);
+	echo \CG\Appearances::GetRelatedEpisodesHTML($Appearance['id']);
 	if (!empty($Appearance['notes'])){ ?>
 		<section>
 			<h2><span class='typcn typcn-info-large'></span>Additional notes</h2>
-			<p id="notes"><?=get_notes_html($Appearance, NOWRAP, NOTE_TEXT_ONLY)?></p>
+			<p id="notes"><?=\CG\Appearances::GetNotesHTML($Appearance, NOWRAP, NOTE_TEXT_ONLY)?></p>
 		</section>
 <?  }
 
 	if (!empty($Appearance['cm_favme'])){
-		$preview = get_cm_preview_url($Appearance); ?>
+		$preview = \CG\Appearances::GetCMPreviewURL($Appearance); ?>
 		<section class="approved-cutie-mark">
 			<h2>Recommended cutie mark vector</h2>
 <?=Permission::Sufficient('inspector')&&!isset($Appearance['cm_dir'])?CoreUtils::Notice('fail','Missing CM orientation, falling back to <strong>Tail-Head</strong>. Please edit the appaearance and provide an orientation!'):''?>
@@ -58,8 +58,8 @@
 				<button class="green typcn typcn-plus create-cg">Create group</button>
 			</div>
 			<ul id="colors" class="colors"><?php
-	foreach (get_cgs($Appearance['id']) as $cg)
-		echo get_cg_html($cg, WRAP, NO_COLON, OUTPUT_COLOR_NAMES);
+	foreach (\CG\ColorGroups::Get($Appearance['id']) as $cg)
+		echo \CG\ColorGroups::GetHTML($cg, WRAP, NO_COLON, OUTPUT_COLOR_NAMES);
 			?></ul>
 		</section>
 	</div>
@@ -73,7 +73,7 @@
 	);
 	if (Permission::Sufficient('inspector'))
 		$export = array_merge($export, array(
-			'TAG_TYPES_ASSOC' => $TAG_TYPES_ASSOC,
+			'TAG_TYPES_ASSOC' => \CG\Tags::$TAG_TYPES_ASSOC,
 			'MAX_SIZE' => CoreUtils::GetMaxUploadSize(),
 			'HEX_COLOR_PATTERN' => $HEX_COLOR_PATTERN,
 		));

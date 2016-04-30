@@ -1,122 +1,253 @@
 <?php
 
-	class MismatchedProviderException extends Exception {
-		private $actualProvider;
-		function __construct($actualProvider){
-			$this->actualProvider = $actualProvider;
-		}
-		function getActualProvider(){ return $this->actualProvider; }
-	}
-
 	class Image {
-		public $preview = false, $fullsize = false, $title = '', $provider, $id, $author = null;
-		public function __construct($url, $reqProv = null){
-			$provider = $this->get_provider(trim($url));
-			if (!empty($reqProv)){
-				if (!is_array($reqProv))
-					$reqProv = array($reqProv);
-				if (!in_array($provider['name'], $reqProv))
-					throw new MismatchedProviderException($provider['name']);
-			}
-			$this->provider = $provider['name'];
-			$this->get_direct_url($provider['itemid']);
+
+		/**
+		 * Checks image type and returns an array containing the image width and height
+		 *
+		 * @param string   $tmp
+		 * @param string[] $allowedMimeTypes
+		 *
+		 * @return int[]
+		 */
+		static function CheckType($tmp, $allowedMimeTypes){
+			$imageSize = getimagesize($tmp);
+			if (is_array($allowedMimeTypes) && !in_array($imageSize['mime'], $allowedMimeTypes))
+				CoreUtils::Respond("This type of image is now allowed: ".$imageSize['mime']);
+			list($width,$height) = $imageSize;
+
+			if ($width + $height === 0) CoreUtils::Respond('The uploaded file is not an image');
+
+			return array($width, $height);
 		}
-		private static $providerRegexes = array(
-			'(?:[A-Za-z\-\d]+\.)?deviantart\.com/art/(?:[A-Za-z\-\d]+-)?(\d+)' => 'dA',
-			'fav\.me/(d[a-z\d]{6,})' => 'fav.me',
-			'sta\.sh/([a-z\d]{10,})' => 'sta.sh',
-			'(?:i\.)?imgur\.com/([A-Za-z\d]{1,7})' => 'imgur',
-			'derpiboo(?:\.ru|ru\.org)/(\d+)' => 'derpibooru',
-			'derpicdn\.net/img/(?:view|download)/\d{4}/\d{1,2}/\d{1,2}/(\d+)' => 'derpibooru',
-			'puu\.sh/([A-Za-z\d]+(?:/[A-Fa-f\d]+)?)' => 'puush',
-			'prntscr\.com/([\da-z]+)' => 'lightshot',
-		);
-		private static function test_provider($url, $pattern, $name){
-			$match = array();
-			if (regex_match(new RegExp("^(?:https?://(?:www\\.)?)?$pattern"), $url, $match))
-				return array(
-					'name' => $name,
-					'itemid' => $match[1]
-				);
-			return false;
-		}
-		public static function get_provider($url){
-			foreach (self::$providerRegexes as $pattern => $name){
-				$test = self::test_provider($url, $pattern, $name);
-				if ($test !== false) return $test;
+
+		/**
+		 * Check image size with a preset minimum
+		 *
+		 * @param string $path
+		 * @param int $width
+		 * @param int $height
+		 * @param int $minwidth
+		 * @param int $minheight
+		 */
+		static function CheckSize($path, $width, $height, $minwidth, $minheight){
+			if ($width < $minwidth || $height < $minheight){
+				unlink($path);
+				CoreUtils::Respond('The image is too small in '.(
+					$width < $minwidth
+					?(
+						$height < $minheight
+						?'width and height'
+						:'width'
+					)
+					:(
+						$height < $minheight
+						?'height'
+						:''
+					)
+				).", please uploadd a bigger image.<br>The minimum size is {$minwidth}px by {$minheight}px.</p>");
 			}
-			throw new Exception("Unsupported provider. Try uploading your image to <a href='http://sta.sh' target='_blank'>sta.sh</a>");
 		}
-		private function get_direct_url($id){
-			switch ($this->provider){
-				case 'imgur':
-					$this->fullsize = "https://i.imgur.com/$id.png";
-					$this->preview = "https://i.imgur.com/{$id}m.png";
-				break;
-				case 'derpibooru':
-					$Data = @file_get_contents("http://derpibooru.org/$id.json");
 
-					if (empty($Data))
-						throw new Exception('The requested image could not be found on Derpibooru');
-					$Data = JSON::Decode($Data, true);
+		/**
+		 * Preseving alpha
+		 *
+		 * @param resource $img
+		 * @param int      $background
+		 *
+		 * @return resource
+		 */
+		static function PreserveAlpha($img, &$background = null) {
+			$background = imagecolorallocatealpha($img, 0, 0, 0, 127);
+			imagecolortransparent($img, $background);
+			imagealphablending($img, false);
+			imagesavealpha($img, true);
+			return $img;
+		}
 
-					if (!$Data['is_rendered'])
-						throw new Exception('The image was found but it hasn\'t been rendered yet. Please wait for it to render and try again shortly.');
+		/**
+		 * Transparent Image creator
+		 *
+		 * @param int      $width
+		 * @param int|null $height
+		 *
+		 * @return resource
+		 */
+		static function CreateTransparent($width, $height = null) {
+			if (!isset($height))
+				$height = $width;
 
-					$this->fullsize = $Data['representations']['full'];
-					$this->preview = $Data['representations']['small'];
-				break;
-				case 'puush':
-					$path = "http://puu.sh/{$id}";
-					$image = @file_get_contents($path);
+			$png = Image::PreserveAlpha(imagecreatetruecolor($width, $height), $transparency);
+			imagefill($png, 0, 0, $transparency);
+			return $png;
+		}
 
-					if (empty($image) || $image === 'That puush could not be found.')
-						throw new Exception('The requested image could not be found on Puu.sh');
-					if ($image === 'You do not have access to view that puush.')
-						throw new Exception('The requested image is a private Puu.sh and the token is missing from the URL');
+		/**
+		 * White Image creator
+		 *
+		 * @param int      $width
+		 * @param int|null $height
+		 *
+		 * @return resource
+		 */
+		static function CreateWhiteBG($width, $height = null) {
+			if (!isset($height))
+				$height = $width;
+			$png = imagecreatetruecolor($width, $height);
 
-					$this->fullsize = $this->preview = $path;
-				break;
-				case 'dA':
-				case 'fav.me':
-				case 'sta.sh':
-					if ($this->provider === 'dA'){
-						$id = 'd'.base_convert($id, 10, 36);
-						$this->provider = 'fav.me';
-					}
+			$white = imagecolorallocate($png, 255, 255, 255);
+			imagefill($png, 0, 0, $white);
+			return $png;
+		}
 
-					try {
-						$CachedDeviation = DeviantArt::GetCachedSubmission($id,$this->provider);
-					}
-					catch(cURLRequestException $e){
-						if ($e->getCode() === 404)
-							throw new Exception('The requested image could not be found');
-						throw new Exception($e->getMessage());
-					}
-
-					$this->preview = $CachedDeviation['preview'];
-					$this->fullsize = $CachedDeviation['fullsize'];
-					$this->title = $CachedDeviation['title'];
-					$this->author = $CachedDeviation['author'];
-				break;
-				case 'lightshot':
-					$page = @file_get_contents("http://prntscr.com/$id");
-					$_match = array();
-					if (empty($page))
-						throw new Exception('The requested page could not be found');
-					if (!regex_match(new RegExp('<img\s+class="image__pic[^"]*"\s+src="http://i\.imgur\.com/([A-Za-z\d]+)\.'), $page, $_match))
-						throw new Exception('The requested image could not be found');
-
-					$this->provider = 'imgur';
-					$this->get_direct_url($_match[1]);
-					break;
-				default:
-					throw new Exception('The image could not be retrieved');
+		/**
+		 * Draw a an (optionally filled) squre on an $image
+		 *
+		 * @noinspection PhpParamsInspection
+		 *
+		 * @param resource   $image
+		 * @param int        $x
+		 * @param int        $y
+		 * @param int|array  $size
+		 * @param string     $fill
+		 * @param string|int $outline
+		 */
+		static function DrawSquare($image, $x, $y, $size, $fill, $outline){
+			if (!empty($fill)){
+				$fill = CoreUtils::Hex2Rgb($fill);
+				$fill = imagecolorallocate($image, $fill[0], $fill[1], $fill[2]);
+			}
+			if (is_string($outline)){
+				$outline = CoreUtils::Hex2Rgb($outline);
+				$outline = imagecolorallocate($image, $outline[0], $outline[1], $outline[2]);
 			}
 
-			$this->preview = URL::MakeHttps($this->preview);
-			$this->fullsize = URL::MakeHttps($this->fullsize);
+			if (is_array($size)){
+				$x2 = $x + $size[0];
+				$y2 = $y + $size[1];
+			}
+			else {
+				$x2 = $x + $size;
+				$y2 = $y + $size;
+			}
 
-			$this->id = $id;
+			$x2--; $y2--;
+
+			if (isset($fill))
+				imagefilledrectangle($image, $x, $y, $x2, $y2, $fill);
+			imagerectangle($image, $x, $y, $x2, $y2, $outline);
+		}
+
+		/**
+		 * Writes on an image
+		 *
+		 * @param resource $image
+		 * @param string   $text
+		 * @param int      $x
+		 * @param int      $fontsize
+		 * @param int      $fontcolor
+		 * @param array    $origin
+		 * @param string   $FontFile
+		 */
+		static function Write($image, $text, $x, $fontsize, $fontcolor, &$origin, $FontFile){
+			if (is_string($fontcolor))
+				$fontcolor = imagecolorallocate($image, 0, 0, 0);
+
+			$box = self::SaneGetTTFBox($fontsize, $FontFile, $text);
+			$origin['y'] += $box['height'];
+
+			imagettftext($image, $fontsize, 0, $x, $origin['y'], $fontcolor, $FontFile, $text);
+		}
+
+
+		/**
+		 * imagettfbbox wrapper with sane output
+		 *
+		 * @param int    $fontsize
+		 * @param string $fontfile
+		 * @param string $text
+		 *
+		 * @return array
+		 */
+		static function SaneGetTTFBox($fontsize, $fontfile, $text){
+			/*
+			    imagettfbbox returns (x,y):
+			    6,7--4,5
+			     |    |
+			     |    |
+			    0,1--2,3
+			*/
+			$box = imagettfbbox($fontsize, 0, $fontfile, $text);
+
+			$return =  array(
+				'bottom left' => array('x' => $box[0], 'y' => $box[1]),
+				'bottom right' => array('x' => $box[2], 'y' => $box[3]),
+				'top right' => array('x' => $box[4], 'y' => $box[5]),
+				'top left' => array('x' => $box[6], 'y' => $box[7]),
+			);
+			$return['width'] = max(
+				$return['top right']['x'] - $return['top left']['x'],
+				$return['bottom right']['x'] - $return['bottom left']['x']
+			);
+			$return['height'] = max(
+				$return['bottom left']['y'] - $return['top left']['y'],
+				$return['bottom right']['y'] - $return['top right']['y']
+			);
+
+			return $return;
+		}
+
+		/**
+		 * Copies the source image to the destination image at the exact same positions
+		 *
+		 * @param resource $dest
+		 * @param resource $source
+		 * @param int      $x
+		 * @param int      $y
+		 * @param int      $w
+		 * @param int      $h
+		 */
+		static function CopyExact($dest, $source, $x, $y, $w, $h){
+			imagecopyresampled($dest, $source, $x, $y, $x, $y, $w, $h, $w, $h);
+		}
+
+
+		/**
+		 * Output png file to browser
+		 *
+		 * @param resource $resource
+		 * @param string   $path
+		 * @param string   $FileRelPath
+		 */
+		static function OutputPNG($resource, $path, $FileRelPath){
+			self::_output($resource, $path, $FileRelPath, function($fp,$fd){ imagepng($fd, $fp); }, 'png');
+		}
+
+		/**
+		 * Output svg file to browser
+		 *
+		 * @param string $svgdata
+		 * @param string $path
+		 * @param string $FileRelPath
+		 */
+		static function OutputSVG($svgdata, $path, $FileRelPath){
+			self::_output($svgdata, $path, $FileRelPath, function($fp,$fd){ file_put_contents($fp, $fd); }, 'svg+xml');
+		}
+
+		/**
+		 * @param resource|string $data
+		 * @param string $path
+		 * @param string $relpath
+		 * @param callable $write_callback
+		 * @param string $content_type
+		 */
+		private static function _output($data, $path, $relpath, $write_callback, $content_type){
+			if (isset($data))
+				$write_callback($path, $data);
+
+			CoreUtils::FixPath("$relpath?t=".filemtime($path));
+			header("Content-Type: image/$content_type");
+			readfile($path);
+			exit;
 		}
 	}

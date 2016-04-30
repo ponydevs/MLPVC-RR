@@ -20,7 +20,7 @@
 		<a class='btn darkblue typcn typcn-warning' href="/<?=$color?>guide/changes">Major Changes</a>
 	</p>
 
-	<?=render_full_list_html($Appearances, $GuideOrder)?>
+	<?=CGUtils::GetFullListHTML($Appearances, $GuideOrder)?>
 </div>
 
 <?  $export = array(
@@ -30,7 +30,7 @@
 	);
 	if (Permission::Sufficient('inspector'))
 		$export = array_merge($export,array(
-			'TAG_TYPES_ASSOC' => $TAG_TYPES_ASSOC,
+			'TAG_TYPES_ASSOC' => \CG\Tags::$TAG_TYPES_ASSOC,
 			'MAX_SIZE' => CoreUtils::GetMaxUploadSize(),
 			'HEX_COLOR_PATTERN' => $HEX_COLOR_PATTERN,
 		));

@@ -20,7 +20,7 @@
 			</tr>
 HTML;
 ?></thead>
-		<?=get_taglist_html($Tags)?>
+		<?=\CG\Tags::GetTagListHTML($Tags)?>
 		<tfoot><?=$thead?></tfoot>
 	</table>
 	<?=$Pagination->HTML?>
@@ -29,5 +29,5 @@ HTML;
 <?  CoreUtils::ExportVars(array(
 		'Color' => $Color,
 		'color' => $color,
-		'TAG_TYPES_ASSOC' => $TAG_TYPES_ASSOC,
+		'TAG_TYPES_ASSOC' => \CG\Tags::$TAG_TYPES_ASSOC,
 	));

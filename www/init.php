@@ -13,7 +13,9 @@
 
 	// Imports \\
 	require 'includes/CoreUtils.php';
-	CoreUtils::CanIHas('PostgresDbWrapper','Cookie','RegExp','JSON','URL','HTTP','Time');
+	spl_autoload_register(function($class){
+		CoreUtils::CanIHas($class);
+	});
 
 	// Some constants \\
 	# integer
@@ -47,6 +49,27 @@
 	define('RETURN_ARRANGED', true); // Posts::GetRequestsSection & Posts::GetReservationsSection
 	define('IS_REQUEST', true); // Posts::GetRequestsSection
 
+	// Color Guide constants \\
+	define('DEFAULT_SPRITE', '/img/blank-pixel.png'); // \CG\Appearances::GetSpriteURL
+	# CM direction
+	define('CM_DIR_TAIL_TO_HEAD', false);
+	define('CM_DIR_HEAD_TO_TAIL', true);
+	define('CM_DIR_ONLY',true);
+	# Color Groups
+	define('NO_COLON', false);
+	define('OUTPUT_COLOR_NAMES', true);
+	# Notes
+	define('NOTE_TEXT_ONLY', false);
+	# Updates
+	define('MOST_RECENT', 1);
+	# Appearance sorting
+	define('SIMPLE_ARRAY', true);
+	# Appearances
+	define('SHOW_APPEARANCE_NAMES', true);
+	# getimagesize() return array keys
+	define('WIDTH', 0);
+	define('HEIGHT', 1);
+
 	// Site-wide regular expressions \\
 	# User
 	define('USERNAME_PATTERN', '([A-Za-z\-\d]{1,20})');
@@ -67,6 +90,13 @@
 	define('OLDEST_FIRST', 'ASC');
 	$REWRITE_REGEX = new RegExp('^/(?:([\w\.\-]+|-?\d+)(?:/((?:[\w\-]+|-?\d+)(?:/(?:[\w\-]+|-?\d+))?))?/?)?$','i');
 
+	// Color Guide regular expression \\
+	$EQG_URL_PATTERN = new RegExp('^eqg/');
+	# Tags
+	define('TAG_NAME_PATTERN', '^[a-z\d ().\-\']{3,30}$');
+	$TAG_NAME_REGEX = new RegExp(TAG_NAME_PATTERN,'u');
+	define('INVERSE_TAG_NAME_PATTERN', '[^a-z\d ().\-\']');
+
 	// Git commit information \\
 	define('LATEST_COMMIT_ID',rtrim(shell_exec('git rev-parse --short=4 HEAD')));
 	define('LATEST_COMMIT_TIME',date('c',strtotime(shell_exec('git log -1 --date=short --pretty=format:%ci'))));
@@ -81,7 +111,6 @@
 		die(require APPATH."views/dberr.php");
 	}
 	$CGDb = new PostgresDbWrapper('mlpvc-colorguide');
-	CoreUtils::CanIHas('Permission','User','Episode','Log','Configuration','Posts','DeviantArt');
 	User::CheckAuth();
 
 	header('Access-Control-Allow-Origin: '.(HTTPS?'http':'https').'://'.$_SERVER['SERVER_NAME']);

@@ -116,8 +116,6 @@
 					return $Deviation;
 				}
 
-				CoreUtils::CanIHas('Image');
-
 				$insert = array(
 					'title' => $json['title'],
 					'preview' => URL::MakeHttps($json['thumbnail_url']),

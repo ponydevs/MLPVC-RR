@@ -533,7 +533,6 @@
 			$_match = array();
 
 			if (POST_REQUEST){
-				CoreUtils::CanIHas('CSRFProtection');
 				CSRFProtection::Protect();
 
 				if (empty($data)) CoreUtils::NotFound();
@@ -637,7 +636,6 @@
 						CoreUtils::Respond(Episode::GetVideoEmbeds($Episode));
 
 					$set = $_match[2] === 's';
-					CoreUtils::CanIHas('Video');
 
 					if (!$set){
 						$return = array(
@@ -649,7 +647,7 @@
 						$Vids = $Database->whereEp($Episode)->get('episodes__videos',null,'provider as name, *');
 						foreach ($Vids as $part => $prov){
 							if (!empty($prov['id']))
-								$return['vidlinks']["{$prov['name']}_{$prov['part']}"] = Video::get_embed($prov['id'], $prov['name'], Video::URL_ONLY);
+								$return['vidlinks']["{$prov['name']}_{$prov['part']}"] = VideoProvider::get_embed($prov['id'], $prov['name'], VideoProvider::URL_ONLY);
 							if ($prov['fullep'])
 								$return['fullep'][] = $prov['name'];
 						}
@@ -663,7 +661,7 @@
 							if (!empty($_POST[$PostKey])){
 								$Provider = Episode::$VIDEO_PROVIDER_NAMES[$provider];
 								try {
-									$vid = new Video($_POST[$PostKey]);
+									$vid = new VideoProvider($_POST[$PostKey]);
 								}
 								catch (Exception $e){
 									CoreUtils::Respond("$Provider link issue: ".$e->getMessage());
@@ -813,7 +811,6 @@
 			Episode::LoadPage();
 		break;
 		case "episodes":
-			CoreUtils::CanIHas('Pagination');
 			$Pagination = new Pagination('episodes', 10, $Database->where('season != 0')->count('episodes'));
 
 			CoreUtils::FixPath("/episodes/{$Pagination->page}");
@@ -872,8 +869,6 @@
 
 					$Data = array('datasets' => array(), 'timestamp' => date('c'));
 					$LabelFormat = 'YYYY-MM-DD 00:00:00';
-
-					CoreUtils::CanIHas('Statistics');
 
 					switch ($stat){
 						case 'posts':
@@ -1101,7 +1096,6 @@
 
 			switch ($task){
 				case "logs":
-					CoreUtils::CanIHas('Pagination');
 					$Pagination = new Pagination('admin/logs', 20, $Database->count('log'));
 
 					CoreUtils::FixPath("/admin/logs/{$Pagination->page}");
@@ -1271,8 +1265,6 @@
 		case "colorguides":
 			$do = 'colorguide';
 		case "colorguide":
-			require_once "includes/CGUtils.php";
-
 			$SpriteRelPath = '/img/cg/';
 			$SpritePath = APPATH.substr($SpriteRelPath,1);
 
@@ -1290,7 +1282,7 @@
 						if (!empty($_POST['action']) && $_POST['action'] === 'synon'){
 							$Tag = $CGDb->where('tid',$not_tid)->where('"synonym_of" IS NOT NULL')->getOne('tags');
 							if (!empty($Tag)){
-								$Syn = get_tag_synon($Tag,'name');
+								$Syn = \CG\Tags::GetSynonymOf($Tag,'name');
 								CoreUtils::Respond("This tag is already a synonym of <strong>{$Syn['name']}</strong>.<br>Would you like to remove the synonym?",0,array('undo' => true));
 							}
 						}
@@ -1300,10 +1292,10 @@
 						$cols = "tid, name, type";
 						if ($viaTypeahead){
 							if (!regex_match($TAG_NAME_REGEX, $_GET['s']))
-								typeahead_results('[]');
+								CGutils::TypeaheadRespond('[]');
 
 							$query = trim(strtolower($_GET['s']));
-							$TagCheck = ep_tag_name_check($query);
+							$TagCheck = CGutil::CheckEpisodeTagName($query);
 							if ($TagCheck !== false)
 								$query = $TagCheck;
 							$CGDb->where('name',"%$query%",'LIKE');
@@ -1324,7 +1316,7 @@
 									$Tags[$i]['synonym_target'] = $Syn['name'];
 							};
 
-						typeahead_results(empty($Tags) ? '[]' : $Tags);
+						CGUtils::TypeaheadRespond(empty($Tags) ? '[]' : $Tags);
 					break;
 					case 'full':
 						if (!isset($_REQUEST['reorder']))
@@ -1339,9 +1331,9 @@
 						if (!regex_match(new RegExp('^\d+(?:,\d+)+$'), $list))
 							CoreUtils::Respond('The list of IDs is not formatted properly');
 
-						reorder_appearances($list);
+						\CG\Appearances::Reorder($list);
 
-						CoreUtils::Respond(array('html' => render_full_list_html(get_appearances($EQG,null,'id,label'), true, NOWRAP)));
+						CoreUtils::Respond(array('html' => CGUtils::GetFullListHTML(\CG\Appearances::Get($EQG,null,'id,label'), true, NOWRAP)));
 					break;
 					case "export":
 						if (!Permission::Sufficient('developer'))
@@ -1356,20 +1348,20 @@
 							$JSON['Tags'][$t['tid']] = $t;
 						}
 
-						$Appearances = get_appearances(null);
+						$Appearances = \CG\Appearances::Get(null);
 						if (!empty($Appearances)) foreach ($Appearances as $p){
 							$AppendAppearance = $p;
 
 							$AppendAppearance['notes'] = regex_replace(new RegExp('(\r\n|\r|\n)'),"\n",$AppendAppearance['notes']);
 
 							$AppendAppearance['ColorGroups'] = array();
-							$ColorGroups = get_cgs($p['id']);
+							$ColorGroups = \CG\ColorGroups::Get($p['id']);
 							if (!empty($ColorGroups)) foreach ($ColorGroups as $cg){
 								$AppendColorGroup = $cg;
 								unset($AppendColorGroup['ponyid']);
 
 								$AppendColorGroup['Colors'] = array();
-								$Colors = get_colors($cg['groupid']);
+								$Colors = \CG\Colors::Get($cg['groupid']);
 								if (!empty($Colors)) foreach ($Colors as $c){
 									unset($c['groupid']);
 									$AppendColorGroup['Colors'][] = $c;
@@ -1379,7 +1371,7 @@
 							}
 
 							$AppendAppearance['TagIDs'] = array();
-							$TagIDs = get_tags($p['id'],null,null,true);
+							$TagIDs = \CG\Tags::Get($p['id'],null,null,true);
 							if (!empty($TagIDs))
 								foreach ($TagIDs as $t)
 									$AppendAppearance['TagIDs'][] = $t['tid'];
@@ -1459,8 +1451,7 @@
 							if (!empty($_POST['cm_favme'])){
 								$cm_favme = trim($_POST['cm_favme']);
 								try {
-									CoreUtils::CanIHas('Image');
-									$Image = new Image($cm_favme, array('fav.me','dA'));
+									$Image = new ImageProvider($cm_favme, array('fav.me', 'dA'));
 									$data['cm_favme'] = $Image->id;
 								}
 								catch (MismatchedProviderException $e){
@@ -1481,8 +1472,7 @@
 									$data['cm_preview'] = null;
 								else if ($creating || $cm_preview !== $Appearance['cm_preview']){
 									try {
-										CoreUtils::CanIHas('Image');
-										$Image = new Image($cm_preview);
+										$Image = new ImageProvider($cm_preview);
 										$data['cm_preview'] = $Image->preview;
 									}
 									catch (Exception $e){ CoreUtils::Respond("Cutie Mark preview issue: ".$e->getMessage()); }
@@ -1507,7 +1497,7 @@
 								);
 								if (isset($_POST['template'])){
 									try {
-										apply_template($query, $EQG);
+										\CG\Appearances::ApplyTemplate($query, $EQG);
 									}
 									catch (Exception $e){
 										$response['message'] .= ", but applying the template failed";
@@ -1518,7 +1508,7 @@
 								CoreUtils::Respond($response);
 							}
 							else {
-								clear_rendered_image($Appearance['id']);
+								CGUtils::ClearRenderedImage($Appearance['id']);
 								if ($AppearancePage)
 									CoreUtils::Respond(true);
 							}
@@ -1526,7 +1516,7 @@
 							$Appearance = array_merge($Appearance, $data);
 							CoreUtils::Respond(array(
 								'label' => $Appearance['label'],
-								'notes' => get_notes_html($Appearance, NOWRAP),
+								'notes' => \CG\Appearances::GetNotesHTML($Appearance, NOWRAP),
 							));
 						break;
 						case "delete":
@@ -1540,12 +1530,12 @@
 							if (file_exists($fpath))
 								unlink($fpath);
 
-							clear_rendered_image($Appearance['id']);
+							CGUtils::ClearRenderedImage($Appearance['id']);
 
 							CoreUtils::Respond('Appearance removed', 1);
 						break;
 						case "getcgs":
-							$cgs = get_cgs($Appearance['id'],'groupid, label');
+							$cgs = \CG\ColorGroups::Get($Appearance['id'],'groupid, label');
 							if (empty($cgs))
 								CoreUtils::Respond('This appearance does not have any color groups');
 							CoreUtils::Respond(array('cgs' => $cgs));
@@ -1562,9 +1552,9 @@
 								$CGDb->where('groupid', $GroupID)->update('colorgroups',array('order' => $part));
 							}
 
-							clear_rendered_image($Appearance['id']);
+							CGUtils::ClearRenderedImage($Appearance['id']);
 
-							CoreUtils::Respond(array('cgs' => get_colors_html($Appearance['id'], NOWRAP, !$AppearancePage, $AppearancePage)));
+							CoreUtils::Respond(array('cgs' => \CG\Appearances::GetColorsHTML($Appearance['id'], NOWRAP, !$AppearancePage, $AppearancePage)));
 						break;
 						case "delsprite":
 						case "getsprite":
@@ -1574,8 +1564,8 @@
 
 							switch ($action){
 								case "setsprite":
-									process_uploaded_image('sprite', $finalpath, array('image/png'), 100);
-									clear_rendered_image($Appearance['id']);
+									CGUtils::ProcessUploadedImage('sprite', $finalpath, array('image/png'), 100);
+									CGUtils::ClearRenderedImage($Appearance['id']);
 								break;
 								case "delsprite":
 									if (!file_exists($finalpath))
@@ -1584,14 +1574,14 @@
 									if (!unlink($finalpath))
 										CoreUtils::Respond('File could not be deleted');
 
-									CoreUtils::Respond(array('sprite' => get_sprite_url($Appearance, DEFAULT_SPRITE)));
+									CoreUtils::Respond(array('sprite' => \CG\Appearances::GetSpriteURL($Appearance['id'], DEFAULT_SPRITE)));
 								break;
 							}
 
 							CoreUtils::Respond(array("path" => "$SpriteRelPath$fname?".filemtime($finalpath)));
 						break;
 						case "clearrendercache":
-							if (!clear_rendered_image($Appearance['id']))
+							if (!CGUtils::ClearRenderedImage($Appearance['id']))
 								CoreUtils::Respond('Cache could not be cleared');
 
 							CoreUtils::Respond('Cached image removed, the image will be re-generated on the next request', 1);
@@ -1609,7 +1599,7 @@
 									if (!regex_match($TAG_NAME_REGEX,$tag_name))
 										CoreUtils::Respond('Invalid tag name');
 
-									$TagCheck = ep_tag_name_check($tag_name);
+									$TagCheck = CGUtils::CheckEpisodeTagName($tag_name);
 									if ($TagCheck !== false)
 										$tag_name = $TagCheck;
 
@@ -1635,7 +1625,7 @@
 									if (empty($Tag))
 										CoreUtils::Respond('This tag does not exist');
 									if (!empty($Tag['synonym_of'])){
-										$Syn = get_tag_synon($Tag,'name');
+										$Syn = \CG\Tags::GetSynonymOf($Tag,'name');
 										CoreUtils::Respond('Synonym tags cannot be removed from appearances directly. '.
 										        "If you want to remove this tag you must remove <strong>{$Syn['name']}</strong> or the synonymization.");
 									}
@@ -1647,26 +1637,26 @@
 								break;
 							}
 
-							update_tag_count($Tag['tid']);
-							if (isset($GroupTagIDs_Assoc[$Tag['tid']]))
-								get_sort_reorder_appearances($EQG);
+							\CG\Tags::UpdateUses($Tag['tid']);
+							if (isset(CGUtils::$GroupTagIDs_Assoc[$Tag['tid']]))
+								\CG\Appearances::GetSortReorder($EQG);
 
-							$response = array('tags' => get_tags_html($Appearance['id'], NOWRAP));
+							$response = array('tags' => \CG\Appearances::GetTagsHTML($Appearance['id'], NOWRAP));
 							if ($AppearancePage && $Tag['type'] === 'ep'){
 								$response['needupdate'] = true;
-								$response['eps'] = get_episode_appearances($Appearance['id'], NOWRAP);
+								$response['eps'] = \CG\Appearances::GetRelatedEpisodesHTML($Appearance['id'], NOWRAP);
 							}
 							CoreUtils::Respond($response);
 						break;
 						case "applytemplate":
 							try {
-								apply_template($Appearance['id'], $EQG);
+								\CG\Appearances::ApplyTemplate($Appearance['id'], $EQG);
 							}
 							catch (Exception $e){
 								CoreUtils::Respond("Applying the template failed. Reason: ".$e->getMessage());
 							}
 
-							CoreUtils::Respond(array('cgs' => get_colors_html($Appearance['id'], NOWRAP, !$AppearancePage, $AppearancePage)));
+							CoreUtils::Respond(array('cgs' => \CG\Appearances::GetColorsHTML($Appearance['id'], NOWRAP, !$AppearancePage, $AppearancePage)));
 						break;
 						default: CoreUtils::StatusCode(404, AND_DIE);
 					}
@@ -1682,8 +1672,8 @@
 						$counts = array();
 						$updates = 0;
 						foreach ($tagIDs as $tid){
-							if (get_actual_tag($tid,'tid',RETURN_AS_BOOL)){
-								$result = update_tag_count($tid, true);
+							if (\CG\Tags::GetActual($tid,'tid',RETURN_AS_BOOL)){
+								$result = \CG\Tags::UpdateUses($tid, true);
 								if ($result['status'])
 									$updates++;
 								$counts[$tid] = $result['count'];
@@ -1729,12 +1719,12 @@
 							if (!$CGDb->where('tid', $Tag['tid'])->delete('tags'))
 								CoreUtils::Respond(ERR_DB_FAIL);
 
-							if (isset($GroupTagIDs_Assoc[$Tag['tid']]))
-								get_sort_reorder_appearances($EQG);
+							if (isset(CGUtils::$GroupTagIDs_Assoc[$Tag['tid']]))
+								\CG\Appearances::GetSortReorder($EQG);
 
 							CoreUtils::Respond('Tag deleted successfully', 1, $AppearancePage && $Tag['type'] === 'ep' ? array(
 								'needupdate' => true,
-								'eps' => get_episode_appearances($Appearance['id'], NOWRAP),
+								'eps' => \CG\Appearances::GetRelatedEpisodesHTML($Appearance['id'], NOWRAP),
 							) : null);
 						}
 					}
@@ -1774,7 +1764,7 @@
 							$CGDb->where('tid', $Tag['tid'])->update('tags', array('synonym_of' => $Target['tid'], 'uses' => 0));
 						}
 
-						update_tag_count($Target['tid']);
+						\CG\Tags::UpdateUses($Target['tid']);
 						CoreUtils::Respond('Tags successfully '.($merging?'merged':'synonymized'), 1, $synoning ? array('target' => $Target) : null);
 					}
 					else if ($unsynoning){
@@ -1816,7 +1806,7 @@
 						CoreUtils::Respond('Highly opinion-based tags are not allowed');
 					$data['name'] = $name;
 
-					$epTagName = ep_tag_name_check($data['name']);
+					$epTagName = CGUtils::CheckEpisodeTagName($data['name']);
 					$surelyAnEpisodeTag = $epTagName !== false;
 					if (empty($_POST['type'])){
 						if ($surelyAnEpisodeTag)
@@ -1825,7 +1815,7 @@
 					}
 					else {
 						$type = trim($_POST['type']);
-						if (!in_array($type, $TAG_TYPES))
+						if (!isset(\CG\Tags::$TAG_TYPES_ASSOC[$type]))
 							CoreUtils::Respond("Invalid tag type: $type");
 
 						if ($type == 'ep'){
@@ -1869,8 +1859,8 @@
 								'tid' => $data['tid'],
 								'ponyid' => $Appearance['id']
 							))) CoreUtils::Respond(ERR_DB_FAIL);
-							update_tag_count($data['tid']);
-							CoreUtils::Respond(array('tags' => get_tags_html($Appearance['id'], NOWRAP)));
+							\CG\Tags::UpdateUses($data['tid']);
+							CoreUtils::Respond(array('tags' => \CG\Appearances::GetTagsHTML($Appearance['id'], NOWRAP)));
 						}
 					}
 					else {
@@ -1895,7 +1885,7 @@
 							CoreUtils::Respond("There's no $color group with the ID of $GroupID");
 
 						if ($getting){
-							$Group['Colors'] = get_colors($Group['groupid']);
+							$Group['Colors'] = \CG\Colors::Get($Group['groupid']);
 							CoreUtils::Respond($Group);
 						}
 
@@ -1938,8 +1928,7 @@
 						$data['ponyid'] = $AppearanceID;
 
 						// Attempt to get order number of last color group for the appearance
-						order_cgs();
-						$LastGroup = get_cgs($AppearanceID, '"order"', 'DESC', 1);
+						$LastGroup = \CG\ColorGroups::Get($AppearanceID, '"order"', 'DESC', 1);
 						$data['order'] =  !empty($LastGroup['order']) ? $LastGroup['order']+1 : 1;
 
 						$GroupID = $CGDb->insert('colorgroups', $data, 'groupid');
@@ -1992,8 +1981,8 @@
 					$colon = !$AppearancePage;
 					$outputNames = $AppearancePage;
 
-					if ($new) $response = array('cgs' => get_colors_html($Appearance['id'], NOWRAP, $colon, $outputNames));
-					else $response = array('cg' => get_cg_html($Group['groupid'], NOWRAP, $colon, $outputNames));
+					if ($new) $response = array('cgs' => \CG\Appearances::GetColorsHTML($Appearance['id'], NOWRAP, $colon, $outputNames));
+					else $response = array('cg' => \CG\ColorGroups::GetHTML($Group['groupid'], NOWRAP, $colon, $outputNames));
 
 					$AppearanceID = $new ? $Appearance['id'] : $Group['ponyid'];
 					if (isset($major)){
@@ -2001,13 +1990,13 @@
 							'ponyid' => $AppearanceID,
 							'reason' => $reason,
 						));
-						$response['update'] = get_update_html($AppearanceID);
+						$response['update'] = \CG\Appearances::GetUpdatesHTML($AppearanceID);
 					}
-					clear_rendered_image($AppearanceID);
+					CGUtils::ClearRenderedImage($AppearanceID);
 
 					if (isset($_POST['APPEARANCE_PAGE']))
 						$response['cm_img'] = "/{$color}guide/appearance/$AppearanceID.svg?t=".time();
-					else $response['notes'] = get_notes_html($CGDb->where('id', $AppearanceID)->getOne('appearances'),  NOWRAP);
+					else $response['notes'] = \CG\Appearances::GetNotesHTML($CGDb->where('id', $AppearanceID)->getOne('appearances'),  NOWRAP);
 
 					CoreUtils::Respond($response);
 				}
@@ -2015,14 +2004,13 @@
 			}
 
 			if (regex_match(new RegExp('^tags'),$data)){
-				CoreUtils::CanIHas('Pagination');
 				$Pagination = new Pagination("{$color}guide/tags", 20, $CGDb->count('tags'));
 
 				CoreUtils::FixPath("/{$color}guide/tags/{$Pagination->page}");
 				$heading = "Tags";
 				$title = "Page $Pagination->page - $heading - $Color Guide";
 
-				$Tags = get_tags(null,$Pagination->GetLimit(), true);
+				$Tags = \CG\Tags::Get(null,$Pagination->GetLimit(), true);
 
 				if (isset($_GET['js']))
 					$Pagination->Respond(get_taglist_html($Tags, NOWRAP), '#tags tbody');
@@ -2041,17 +2029,16 @@
 			}
 
 			if (regex_match(new RegExp('^changes'),$data)){
-				CoreUtils::CanIHas('Pagination');
 				$Pagination = new Pagination("{$color}guide/changes", 50, $Database->count('log__color_modify'));
 
 				CoreUtils::FixPath("/{$color}guide/changes/{$Pagination->page}");
 				$heading = "Major $Color Changes";
 				$title = "Page $Pagination->page - $heading - $Color Guide";
 
-				$Changes = get_updates(null, $Pagination->GetLimitString());
+				$Changes = \CG\Updates::Get(null, $Pagination->GetLimitString());
 
 				if (isset($_GET['js']))
-					$Pagination->Respond(render_changes_html($Changes, NOWRAP, SHOW_APPEARANCE_NAMES), '#changes');
+					$Pagination->Respond(CGUtils::GetChangesHTML($Changes, NOWRAP, SHOW_APPEARANCE_NAMES), '#changes');
 
 				CoreUtils::LoadPage(array(
 					'title' => $title,
@@ -2092,8 +2079,8 @@
 				$asFile = !empty($_match[2]);
 				if ($asFile){
 					switch ($_match[2]){
-						case 'png': render_appearance_png($Appearance);
-						case 'svg': render_cm_direction_svg($Appearance['id'], $Appearance['cm_dir']);
+						case 'png': CGUtils::RenderAppearancePNG($Appearance);
+						case 'svg': CGUtils::RenderCMDirectionSVG($Appearance['id'], $Appearance['cm_dir']);
 					}
 					# rendering functions internally call die(), so execution stops here #
 				}
@@ -2104,7 +2091,7 @@
 				if ($Appearance['id'] === 0 && $color !== 'color')
 					$title = str_replace('color',$color,$title);
 
-				$Changes = get_updates($Appearance['id']);
+				$Changes = \CG\Updates::Get($Appearance['id']);
 
 				$settings = array(
 					'title' => "$title - $Color Guide",
@@ -2123,11 +2110,11 @@
 				$GuideOrder = !isset($_REQUEST['alphabetically']) && !$EQG;
 				if (!$GuideOrder)
 					$CGDb->orderBy('label','ASC');
-				$Appearances = get_appearances($EQG,null,'id,label');
+				$Appearances = \CG\Appearances::Get($EQG,null,'id,label');
 
 
 				if (isset($_REQUEST['ajax']))
-					CoreUtils::Respond(array('html' => render_full_list_html($Appearances, $GuideOrder, NOWRAP)));
+					CoreUtils::Respond(array('html' => CGUtils::GetFullListHTML($Appearances, $GuideOrder, NOWRAP)));
 
 				$js = array();
 				if (Permission::Sufficient('inspector'))
@@ -2142,14 +2129,13 @@
 				));
 			}
 
-			CoreUtils::CanIHas('Pagination');
 			$title = '';
 			$AppearancesPerPage = 7;
 			if (empty($_GET['q']) || regex_match(new RegExp('^\*+$'),$_GET['q'])){
 				$_EntryCount = $CGDb->where('ishuman',$EQG)->where('id != 0')->count('appearances');
 
 				$Pagination = new Pagination("{$color}guide", $AppearancesPerPage, $_EntryCount);
-				$Ponies = get_appearances($EQG, $Pagination->GetLimit());
+				$Ponies = \CG\Appearances::Get($EQG, $Pagination->GetLimit());
 			}
 			else {
 				$SearchQuery = $_GET['q'];
@@ -2157,7 +2143,7 @@
 				$Ponies = false;
 
 				try {
-					$Search = process_search_query($SearchQuery);
+					$Search = CGUtils::ProcessSearch($SearchQuery);
 					$title .= "$SearchQuery - ";
 					$IsHuman = $EQG ? 'true' : 'false';
 
@@ -2210,7 +2196,7 @@
 			$title .= "Page {$Pagination->page} - $heading";
 
 			if (isset($_GET['js']))
-				$Pagination->Respond(render_ponies_html($Ponies, NOWRAP), '#list');
+				$Pagination->Respond(\CG\Appearances::GetHTML($Ponies, NOWRAP), '#list');
 
 			$settings = array(
 				'title' => $title,

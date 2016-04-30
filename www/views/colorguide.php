@@ -12,7 +12,7 @@
 <? }
 	$Universal = $CGDb->where('id',0)->getOne('appearances');
 	if (!empty($Universal))
-		echo "<ul id='universal' class='appearance-list'>".render_ponies_html(array($Universal), NOWRAP)."</ul>"; ?>
+		echo "<ul id='universal' class='appearance-list'>".\CG\Appearances::GetHTML(array($Universal), NOWRAP)."</ul>"; ?>
 	<p class='align-center links'>
 <? if (Permission::Sufficient('inspector')){ ?>
 		<button class='green typcn typcn-plus' id="new-appearance-btn">Add new <?=$EQG?'Character':'Pony'?></button>
@@ -28,9 +28,7 @@
 	</p>
 
 	<form id="search-form"><input name="q" <?=!empty($_GET['q'])?" value='".CoreUtils::AposEncode($_GET['q'])."'":''?> title='Search'> <button class='blue typcn typcn-zoom'></button><button type='reset' class='orange typcn typcn-times' title='Clear'<?=empty($_GET['q'])?' disabled':''?>></button><p>Enter tags/names separated by commas. Force name-based search by using&nbsp;<strong>?</strong>&nbsp;or&nbsp;<strong>*</strong>. You may search using <em>up to 6</em> tokens at a time.</p></form>
-	<?=$Pagination->HTML?>
-	<?=render_ponies_html($Ponies)?>
-	<?=$Pagination->HTML?>
+	<?=$Pagination->HTML . \CG\Appearances::GetHTML($Ponies) . $Pagination->HTML?>
 </div>
 
 <?  $export = array(
@@ -41,7 +39,7 @@
 	);
 	if (Permission::Sufficient('inspector'))
 		$export = array_merge($export, array(
-			'TAG_TYPES_ASSOC' => $TAG_TYPES_ASSOC,
+			'TAG_TYPES_ASSOC' => \CG\Tags::$TAG_TYPES_ASSOC,
 			'MAX_SIZE' => CoreUtils::GetMaxUploadSize(),
 			'HEX_COLOR_PATTERN' => $HEX_COLOR_PATTERN,
 		));

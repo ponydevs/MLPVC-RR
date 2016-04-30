@@ -4,7 +4,7 @@
 
 	$ThumbImage = "/img/logo.png";
 	if (isset($do) && $do === 'colorguide' && !empty($Appearance)){
-		$sprite = get_sprite_url($Appearance);
+		$sprite = \CG\Appearances::GetSpriteURL($Appearance['id']);
 		if ($sprite)
 			$ThumbImage = $sprite;
 
