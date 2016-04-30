@@ -240,7 +240,7 @@
 				'scope' => $json['scope'],
 			);
 
-			$cookie = openssl_random_pseudo_bytes(64);
+			$cookie = random_bytes(64);
 			$AuthData['token'] = sha1($cookie);
 
 			$browser = CoreUtils::DetectBrowser();
