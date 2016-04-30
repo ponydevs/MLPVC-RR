@@ -177,7 +177,8 @@ DocReady.push(function Episode(){
 				else {
 					var show = $showPlayers.hasClass('typcn-eye');
 					$embedWrap[show?'show':'hide']();
-					$partSwitch.attr('disabled', !show);
+					if ($partSwitch instanceof jQuery)
+						$partSwitch.attr('disabled', !show);
 					$showPlayers.toggleClass('typcn-eye typcn-eye-outline').toggleHtml(['Show on-site player','Hide on-site player']);
 
 					if (show)
