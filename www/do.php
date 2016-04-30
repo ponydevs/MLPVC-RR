@@ -52,12 +52,15 @@
 			$do = 'admin';
 			$data = rtrim("logs/$data",'/');
 			CoreUtils::Redirect(rtrim("/$do/$data",'/'));
+		break;
 		case "u":
 			$do = 'user';
+		break;
 		case "colourguides":
 		case "colourguide":
 		case "colorguides":
 			$do = 'colorguide';
+		break;
 	}
 
 	// Load controller
