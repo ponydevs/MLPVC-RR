@@ -27,7 +27,7 @@
 				$cols = "tid, name, type";
 				if ($viaTypeahead){
 					if (!regex_match($TAG_NAME_REGEX, $_GET['s']))
-						CGutils::TypeaheadRespond('[]');
+						CGUtils::TypeaheadRespond('[]');
 
 					$query = trim(strtolower($_GET['s']));
 					$TagCheck = CGutil::CheckEpisodeTagName($query);
