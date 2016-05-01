@@ -137,7 +137,7 @@
 		CoreUtils::LoadPage(array(
 			'title' => 'Admin Area',
 			'do-css',
-			'js' => array('Sortable','jquery.countdown',$do),
+			'js' => array('Sortable',$do),
 		));
 
 	switch ($task){
