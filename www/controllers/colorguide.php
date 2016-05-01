@@ -30,7 +30,7 @@
 						CGUtils::TypeaheadRespond('[]');
 
 					$query = trim(strtolower($_GET['s']));
-					$TagCheck = CGutil::CheckEpisodeTagName($query);
+					$TagCheck = CGUtils::CheckEpisodeTagName($query);
 					if ($TagCheck !== false)
 						$query = $TagCheck;
 					$CGDb->where('name',"%$query%",'LIKE');
