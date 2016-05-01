@@ -244,7 +244,8 @@
 		static function IsClubMember($Username){
 			$RecentlyJoined = HTTP::LegitimateRequest('http://mlp-vectorclub.deviantart.com/modals/memberlist/');
 
-			return !empty($RecentlyJoined) && regex_match(new RegExp('<a class="[a-z ]*username" href="http://'.strtolower($Username).'.deviantart.com/">'.USERNAME_PATTERN.'</a>'), $RecentlyJoined);
+			return !empty($RecentlyJoined['response'])
+				&& regex_match(new RegExp('<a class="[a-z ]*username" href="http://'.strtolower($Username).'.deviantart.com/">'.USERNAME_PATTERN.'</a>'), $RecentlyJoined['response']);
 		}
 
 		/**

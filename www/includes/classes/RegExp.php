@@ -42,11 +42,7 @@
 		 * @return bool
 		 */
 		public function match($text, &$matches = null){
-			$match = (bool) preg_match($this->__toString(), $text, $matches);
-			if (is_array($text)){
-				error_log("\$text is an array!!! PANIC!!\n".print_r(debug_backtrace(), true));
-			}
-			return $match;
+			return (bool) preg_match($this->__toString(), $text, $matches);
 		}
 
 		/**
