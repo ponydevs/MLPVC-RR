@@ -588,7 +588,7 @@
 
 					$Appearance = $CGDb->where('id', $AppearanceID)->getOne('appearances');
 					if (empty($Appearance))
-						CoreUtils::Respond("The tag was created, <strong>but</strong> it could not be added to the appearance (<a href='/{$color}guide/appearance/$AppearanceID'>#$AppearanceID</a>) because it doesn't seem to exist. Please try adding the tag manually.", 1);
+						CoreUtils::Respond("The tag was created, <strong>but</strong> it could not be added to the appearance (<a href='/cg/v/$AppearanceID'>#$AppearanceID</a>) because it doesn't seem to exist. Please try adding the tag manually.", 1);
 
 					if (!$CGDb->insert('tagged',array(
 						'tid' => $data['tid'],
@@ -730,7 +730,7 @@
 			CGUtils::ClearRenderedImage($AppearanceID);
 
 			if (isset($_POST['APPEARANCE_PAGE']))
-				$response['cm_img'] = "/{$color}guide/appearance/$AppearanceID.svg?t=".time();
+				$response['cm_img'] = "/cg/v/$AppearanceID.svg?t=".time();
 			else $response['notes'] = \CG\Appearances::GetNotesHTML($CGDb->where('id', $AppearanceID)->getOne('appearances'),  NOWRAP);
 
 			CoreUtils::Respond($response);
@@ -741,7 +741,7 @@
 	if (regex_match(new RegExp('^tags'),$data)){
 		$Pagination = new Pagination("{$color}guide/tags", 20, $CGDb->count('tags'));
 
-		CoreUtils::FixPath("/{$color}guide/tags/{$Pagination->page}");
+		CoreUtils::FixPath("/cg/tags/{$Pagination->page}");
 		$heading = "Tags";
 		$title = "Page $Pagination->page - $heading - $Color Guide";
 
@@ -766,7 +766,7 @@
 	if (regex_match(new RegExp('^changes'),$data)){
 		$Pagination = new Pagination("{$color}guide/changes", 50, $Database->count('log__color_modify'));
 
-		CoreUtils::FixPath("/{$color}guide/changes/{$Pagination->page}");
+		CoreUtils::FixPath("/cg/changes/{$Pagination->page}");
 		$heading = "Major $Color Changes";
 		$title = "Page $Pagination->page - $heading - $Color Guide";
 
@@ -787,7 +787,7 @@
 	$EQG = $EQG_URL_PATTERN->match($data) ? 1 : 0;
 	if ($EQG)
 		$data = $EQG_URL_PATTERN->replace('', $data);
-	$CGPath = "/{$color}guide".($EQG?'/eqg':'');
+	$CGPath = "/cg".($EQG?'/eqg':'');
 
 	$GUIDE_MANAGE_JS = array(
 		'jquery.uploadzone',
@@ -806,22 +806,23 @@
 	);
 
 	$_match = array();
-	if (regex_match(new RegExp('^appearance/(?:[A-Za-z\d\-]+-)?(\d+)(?:\.(png|svg))?'),$data,$_match)){
-		$Appearance = $CGDb->where('id', (int)$_match[1])->where('ishuman', $EQG)->getOne('appearances');
+	// Matching IDs:                                                    [-1-] [-2-]                               [---3---]
+	if (regex_match(new RegExp('^(?:appearance|v)/(?:.*?(\d+)|(\d+)(?:-.*)?)(?:\.(png|svg))?'),$data,$_match)){
+		$asFile = !empty($_match[3]);
+		$Appearance = $CGDb->where('id', (int)($_match[1]??$_match[2]))->where('ishuman', $EQG)->getOne('appearances', $asFile ? 'id,label,cm_dir' : null);
 		if (empty($Appearance))
 			CoreUtils::NotFound();
 
-		$asFile = !empty($_match[2]);
 		if ($asFile){
-			switch ($_match[2]){
+			switch ($_match[3]){
 				case 'png': CGUtils::RenderAppearancePNG($Appearance);
 				case 'svg': CGUtils::RenderCMDirectionSVG($Appearance['id'], $Appearance['cm_dir']);
 			}
 			# rendering functions internally call die(), so execution stops here #
 		}
 
-		$SafeLabel = trim(regex_replace(new RegExp('-+'),'-',regex_replace(new RegExp('[^A-Za-z\d\-]'),'-',$Appearance['label'])),'-');
-		CoreUtils::FixPath("$CGPath/appearance/$SafeLabel-{$Appearance['id']}");
+		$SafeLabel = \CG\Appearances::GetSafeLabel($Appearance);
+		CoreUtils::FixPath("$CGPath/v/{$Appearance['id']}-$SafeLabel");
 		$title = $heading = $Appearance['label'];
 		if ($Appearance['id'] === 0 && $color !== 'color')
 			$title = str_replace('color',$color,$title);

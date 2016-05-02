@@ -592,9 +592,9 @@
 				'eps' => array('/episodes','Episodes'),
 			);
 			if ($do === 'episodes'){
-				global $Episodes, $Page;
+				global $Episodes, $Pagination;
 				if (isset($Episodes))
-					$NavItems['eps'][1] .= " - Page $Page";
+					$NavItems['eps'][1] .= " - Page {$Pagination->page}";
 			}
 			if ($do === 'episode' && !empty($GLOBALS['CurrentEpisode'])){
 				if (!empty($GLOBALS['Latest']))
@@ -602,13 +602,13 @@
 				else $NavItems['eps']['subitem'] = $GLOBALS['title'];
 			}
 			global $color, $Color, $EQG;
-			$NavItems['colorguide'] = array("/{$color}guide", (!empty($EQG)?'EQG ':'')."$Color Guide");
+			$NavItems['colorguide'] = array("/cg", (!empty($EQG)?'EQG ':'')."$Color Guide");
 			if ($do === 'colorguide'){
-				global $Tags, $Changes, $Ponies, $Page, $Appearance;
+				global $Tags, $Changes, $Ponies, $Pagination, $Appearance;
 				if (!empty($Appearance))
 					$NavItems['colorguide']['subitem'] = $Appearance['label'];
 				else if (isset($Ponies))
-					$NavItems['colorguide'][1] .= " - Page $Page";
+					$NavItems['colorguide'][1] .= " - Page {$Pagination->page}";
 				else {
 					if ($GLOBALS['data'] === 'full'){
 						$NavItems['colorguide']['subitem'] = 'Full List';
@@ -617,7 +617,7 @@
 						if (isset($Tags)) $pagePrefix = 'Tags';
 						else if (isset($Changes)) $pagePrefix = "Major $Color Changes";
 
-						$NavItems['colorguide']['subitem'] = (isset($pagePrefix) ? "$pagePrefix - " : '')."Page $Page";
+						$NavItems['colorguide']['subitem'] = (isset($pagePrefix) ? "$pagePrefix - " : '')."Page {$Pagination->page}";
 					}
 				}
 
@@ -635,8 +635,8 @@
 				$NavItems['admin'] = array('/admin', 'Admin');
 				global $task;
 				if ($task === 'logs'){
-					global $Page;
-					$NavItems['admin']['subitem'] = "Logs - Page $Page";
+					global $Pagination;
+					$NavItems['admin']['subitem'] = "Logs - Page {$Pagination->page}";
 				}
 			}
 			$NavItems[] = array('/about', 'About');

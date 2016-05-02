@@ -56,6 +56,7 @@
 		case "u":
 			$do = 'user';
 		break;
+		case "cg":
 		case "colourguides":
 		case "colourguide":
 		case "colorguides":

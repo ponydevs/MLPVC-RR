@@ -54,12 +54,12 @@
 
 				$RenderPath = APPATH."img/cg_render/{$p['id']}.png";
 				$FileModTime = '?t='.(file_exists($RenderPath) ? filemtime($RenderPath) : time());
-				$Actions = "<a class='darkblue btn typcn typcn-image' title='View as PNG' href='/{$color}guide/{$eqgp}appearance/{$p['id']}.png$FileModTime' target='_blank'></a>";
+				$Actions = "<a class='darkblue btn typcn typcn-image' title='View as PNG' href='/cg/{$eqgp}v/{$p['id']}.png$FileModTime' target='_blank'></a>";
 				if (\Permission::Sufficient('inspector'))
 					$Actions .= "<button class='edit typcn typcn-pencil blue' title='Edit'></button>".
 					            ($p['id']!==0?"<button class='delete typcn typcn-trash red' title='Delete'></button>":'');
-
-				$HTML .= "<li id='p{$p['id']}'>$img<div><strong><a href='/colorguide/appearance/{$p['id']}'>{$p['label']}</a>$Actions</strong>$updates$notes$tags$colors</div></li>";
+				$safelabel = self::GetSafeLabel($p);
+				$HTML .= "<li id='p{$p['id']}'>$img<div><strong><a href='/cg/v/{$p['id']}-$safelabel'>{$p['label']}</a>$Actions</strong>$updates$notes$tags$colors</div></li>";
 			}
 			else {
 				if (empty($_MSG))
@@ -430,5 +430,16 @@ HTML;
 		 */
 		static function GetCMPreviewURL($Appearance){
 			return $Appearance['cm_preview'] ?? \DeviantArt::GetCachedSubmission($Appearance['cm_favme'])['preview'];
+		}
+
+		/**
+		 * Replaces non-alphanumeric characters in the appearance label with dashes
+		 *
+		 * @param array $Appearance
+		 *
+		 * @return string
+		 */
+		static function GetSafeLabel($Appearance){
+			return trim(regex_replace(new \RegExp('-+'),'-',regex_replace(new \RegExp('[^A-Za-z\d\-]'),'-',$Appearance['label'])),'-');
 		}
 	}

@@ -53,7 +53,7 @@
 							$PrevFirstLetter = $FirstLetter;
 							$HTML .= "<section><h2>$PrevFirstLetter</h2><div>";
 						}
-						$HTML .= "<a href='/{$color}guide/appearance/{$p['id']}'>{$p['label']}</a>, ";
+						$HTML .= "<a href='/cg/v/{$p['id']}'>{$p['label']}</a>, ";
 					}
 					$HTML = rtrim($HTML, ', ');
 				}
@@ -65,7 +65,7 @@
 
 						$HTML .= "<section><h2>$CategoryName</h2><div>";
 						foreach ($Sorted[$Category] as $p)
-							$HTML .= "<a href='/{$color}guide/appearance/{$p['id']}'>{$p['label']}</a>, ";
+							$HTML .= "<a href='/cg/v/{$p['id']}'>{$p['label']}</a>, ";
 						$HTML = rtrim($HTML, ', ')."</div></section>";
 					}
 				}
@@ -178,7 +178,7 @@
 						$PonyCache[$PonyID] = $CGDb->where('id', $PonyID)->getOne('appearances');
 					}
 					$Pony = $PonyCache[$PonyID];
-					$appearance = "<a href='/{$color}guide/appearance/{$Pony['id']}'>{$Pony['label']}</a>: ";
+					$appearance = "<a href='/cg/v/{$Pony['id']}'>{$Pony['label']}</a>: ";
 				}
 				$HTML .= "<li>$appearance{$c['reason']} - ".Time::Tag($c['timestamp'])."$initiator</li>";
 			}
@@ -261,7 +261,7 @@
 			global $CGPath;
 
 			$OutputPath = APPATH."img/cg_render/{$Appearance['id']}.png";
-			$FileRelPath = "$CGPath/appearance/{$Appearance['id']}.png";
+			$FileRelPath = "$CGPath/v/{$Appearance['id']}.png";
 			if (file_exists($OutputPath))
 				Image::OutputPNG(null,$OutputPath,$FileRelPath);
 
@@ -384,7 +384,7 @@
 			global $CGDb, $CGPath;
 
 			$OutputPath = APPATH."img/cg_render/$AppearanceID.svg";
-			$FileRelPath = "$CGPath/appearance/$AppearanceID.svg";
+			$FileRelPath = "$CGPath/v/$AppearanceID.svg";
 			if (file_exists($OutputPath))
 				Image::OutputSVG(null,$OutputPath,$FileRelPath);
 
