@@ -316,7 +316,11 @@ HTML;
 						if ($Database->where('id', $currentUser['Session']['id'])->update('sessions', array('lastvisit' => $lastVisitTS)))
 							$currentUser['Session']['lastvisit'] = $lastVisitTS;
 
-						if ($currentUser['name'] === 'Pirill-Poveniy'){
+						$_PrefersColour = array(
+							'Pirill-Poveniy' => true,
+							'itv-canterlot' => true,
+						);
+						if (isset($_PrefersColour[$currentUser['name']])){
 							$Color = 'Colour';
 							$color = 'colour';
 						}
