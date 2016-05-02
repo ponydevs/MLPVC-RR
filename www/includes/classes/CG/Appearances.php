@@ -33,16 +33,16 @@
 		}
 
 		/**
-		 * @param array $Ponies
+		 * @param array $Appearances
 		 * @param bool  $wrap
 		 *
 		 * @return string
 		 */
-		static function GetHTML($Ponies, $wrap = WRAP){
+		static function GetHTML($Appearances, $wrap = WRAP){
 			global $CGDb, $_MSG, $color, $Search;
 
 			$HTML = '';
-			if (!empty($Ponies)) foreach ($Ponies as $p){
+			if (!empty($Appearances)) foreach ($Appearances as $p){
 				$p['label'] = htmlspecialchars($p['label']);
 
 				$img = self::GetSpriteHTML($p);

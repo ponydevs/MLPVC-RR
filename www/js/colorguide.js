@@ -13,7 +13,7 @@ DocReady.push(function Colorguide(){
 			copyHash = !localStorage.getItem('leavehash');
 			$toggler
 				.attr('class','blue typcn typcn-'+(copyHash ? 'tick' : 'times'))
-				.text('Copy # with color codes: '+(copyHash ? 'En':'Dis')+'abled');
+				.text('Copy # with '+color+' codes: '+(copyHash ? 'En':'Dis')+'abled');
 		}).trigger('display-update').off('click').on('click',function(e){
 			e.preventDefault();
 
