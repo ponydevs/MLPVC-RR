@@ -32,11 +32,13 @@
 
 			if (!empty($TaggedAppearances)){ ?>
 	<section class="appearances">
-		<h2>Related <a href="/colorguide"><?=$Color?> Guide</a> <?=CoreUtils::MakePlural('page', count($TaggedAppearances))?></h2>
+		<h2>Related <a href="/cg"><?=$Color?> Guide</a> <?=CoreUtils::MakePlural('page', count($TaggedAppearances))?></h2>
 		<p><?php
 				$HTML = '';
-				foreach ($TaggedAppearances as $p)
-					$HTML .= "<a href='/colorguide/appearance/{$p['id']}'>{$p['label']}</a>, ";
+				foreach ($TaggedAppearances as $p){
+					$safeLabel = \CG\Appearances::GetSafeLabel($p);
+					$HTML .= "<a href='/cg/v/{$p['id']}-$safeLabel'>{$p['label']}</a>, ";
+				}
 				echo rtrim($HTML,', ');
 		?></p>
 	</section>
