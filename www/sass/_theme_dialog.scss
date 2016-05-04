@@ -25,15 +25,15 @@ $ZIndexBase: 21000;
 		margin: auto;
 		max-width: 400px;
 		width: auto;
-		overflow: hidden;
 		flex: 0 0 auto;
+	}
+	#dialogHeader {
 		border-radius: 5px 5px 0 0;
-		background-color: white;
 	}
 	#dialogContent {
 		border: 1px solid $DefaultUIColor;
 		border-top-width: 0;
-
+		background-color: white;
 		overflow: auto;
 	}
 	body.dialog-open #main { padding-right: #{8px + 15px} }
