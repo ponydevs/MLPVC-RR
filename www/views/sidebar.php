@@ -15,7 +15,7 @@ if (!empty($Database)){ ?>
 			<button class="typcn green da-login" id="signin">Sign in</button>
 			<script>var OAUTH_URL = "<?=DeviantArt::GetAuthorizationURL()?>";</script>
 <?  } ?>
-			<a class="btn typcn discord-join" href="https://discord.gg/0vv70fepSILbdJOD" target="_blank">Join Discord</a>
+			<a class="btn typcn discord-join" href="http://fav.me/d9zt1wv" target="_blank">Join Discord</a>
 		</div>
 	</section>
 <?php
