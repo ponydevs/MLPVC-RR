@@ -795,6 +795,18 @@ DocReady.push(function Episode(){
 				});
 			}));
 		});
+		$actions.filter('.share').on('click',function(){
+			var $button = $(this),
+				url = $button.parents('li').children('.post-date').children('a').first().prop('href');
+
+			$.Dialog.info('Sharing '+type+' #'+id, $.mk('div').attr('class','align-center').append(
+				'Use the link below to link to this post directly:',
+				$.mk('div').attr('class','share-link').text(url),
+				$.mk('button').attr('class','blue typcn typcn-clipboard').text('Copy to clipboard').on('click',function(e){
+					$.copy(url,e);
+				})
+			));
+		});
 	}
 
 	$.fn.formBind = function (){

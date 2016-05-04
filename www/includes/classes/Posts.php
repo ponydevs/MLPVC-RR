@@ -513,8 +513,10 @@ HTML;
 				array_splice($Buttons,0,0,array(array('pencil darkblue edit','Edit')));
 
 			$HTML .= "<div class='actions'>";
+			if (!$view_only)
+				$Buttons[] = array('export blue share', 'Share');
 			if (!empty($Buttons)){
-				if ($view_only !== false)
+				if ($view_only)
 					$HTML .="<div><a href='$view_only' class='btn blue typcn typcn-arrow-forward'>View</a></div>";
 				else {
 					$regularButton = count($Buttons) <3;
