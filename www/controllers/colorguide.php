@@ -537,7 +537,7 @@
 				CoreUtils::Respond('Tag name cannot start with a dash');
 			CoreUtils::CheckStringValidity($name,'Tag name',INVERSE_TAG_NAME_PATTERN);
 			$sanitized_name = regex_replace(new RegExp('[^a-z\d]'),'',$name);
-			if (regex_match(new RegExp('^(b+[a4]+w*d+|g+[uo0]+d+|(?:b+[ae3]+|w+[o0]+r+)[s5]+[t7]+)(e+r+|e+s+t+)?p+[o0]+[wh]*n+[ye3]*$'),$sanitized_name))
+			if (regex_match(new RegExp('^(b+[a4]+w*d+|g+[uo0]+d+|(?:b+[ae3]+|w+[o0u]+r+)[s5]+[t7]+)(e+r+|e+s+t+)?p+[o0]+[wh]*n+[ye3]*$'),$sanitized_name))
 				CoreUtils::Respond('Highly opinion-based tags are not allowed');
 			$data['name'] = $name;
 
