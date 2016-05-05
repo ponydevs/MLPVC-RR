@@ -88,6 +88,7 @@
 	<em>$PostedAction under <a href='$link'>$page</a> $posted</em>
 	<div>
 		<a href='$link' class='btn blue typcn typcn-arrow-forward'>View</a>
+		<button class='red typcn typcn-user-delete cancel'>Cancel</button>
 	</div>
 </li>
 

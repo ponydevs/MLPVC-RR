@@ -1,6 +1,30 @@
 /* globals DocReady,$sidebar,$content,HandleNav */
 DocReady.push(function User(){
 	'use strict';
+
+	var $pendingRes = $('.pending-reservations');
+	if ($pendingRes.length){
+		$pendingRes.on('click','button.cancel',function(){
+			var $btn = $(this),
+				$link = $btn.prev();
+			$.Dialog.confirm('Cancel reservation','Are you sure you want to cancel this reservation?',function(sure){
+				if (!sure) return;
+
+				$.Dialog.wait(false, 'Cancelling reservation');
+
+				var id = $link.prop('hash').substring(1).split('-');
+				$.post('/reserving/'+id[0]+'/'+id[1]+'?cancel',$.mkAjaxHandler(function(){
+					if (!this.status) return $.Dialog.fail(false, this.message);
+
+					$btn.closest('li').fadeOut(1000,function(){
+						$(this).remove();
+					});
+					$.Dialog.close();
+				}));
+			});
+		});
+	}
+
 	var $signoutBtn = $('#signout'),
 		$name = $content.children('h1'),
 		$sessionList = $('.session-list'),
