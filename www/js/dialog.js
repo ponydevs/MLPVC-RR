@@ -37,6 +37,7 @@
 		$dialogContent = $('#dialogContent'),
 		$dialogHeader = $('#dialogHeader'),
 		$dialogBox = $('#dialogBox'),
+		$dialogWrap = $('#dialogWrap'),
 		$dialogButtons = $('#dialogButtons');
 
 	$.Dialog = (function(){
@@ -214,11 +215,12 @@
 				$dialogHeader = $makeDiv('dialogHeader').text(params.title||defaultTitles[type]);
 				$dialogContent = $makeDiv('dialogContent');
 				$dialogBox = $makeDiv('dialogBox');
+				$dialogWrap = $makeDiv('dialogWrap');
 
 				$dialogContent.append($contentAdd);
 				$dialogButtons = $makeDiv('dialogButtons').appendTo($dialogContent);
 				$dialogBox.append($dialogHeader).append($dialogContent);
-				$dialogOverlay.append($dialogBox).appendTo($body);
+				$dialogOverlay.append($dialogWrap.append($dialogBox)).appendTo($body);
 
 				$body.addClass('dialog-open');
 			}

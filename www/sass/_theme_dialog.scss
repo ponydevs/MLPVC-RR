@@ -6,26 +6,34 @@ $ZIndexBase: 21000;
 	#dialogOverlay {
 		background-color: white;
 	}
-	#dialogBox {
+	#dialogWrap {
 		width: 100%;
 		height: auto;
 		top: 0 !important;
 		left: 0 !important;
+	}
+	#dialogBox {
+		width: 100%;
+		height: auto;
 	}
 }
 // Desktop-only Styles
 @media all and (min-width: $Breakpoint){
 	#dialogOverlay {
 		background-color: rgba(white, .9);
-		display: flex;
+		display: table;
+	}
+	#dialogWrap {
 		padding: 10px;
+		display: table-cell;
+		vertical-align: middle;
+		text-align: center;
 	}
 	#dialogBox {
-		// http://stackoverflow.com/a/33455342/1344955
-		margin: auto;
 		max-width: 400px;
 		width: auto;
-		flex: 0 0 auto;
+		display: inline-block;
+		text-align: left;
 	}
 	#dialogHeader {
 		border-radius: 5px 5px 0 0;
@@ -52,10 +60,13 @@ body.dialog-open {
 	overflow: auto;
 	box-sizing: border-box;
 }
-#dialogBox {
+#dialogWrap {
 	font-family: 'Segoe UI', 'Open Sans', sans-serif;
-	min-width: 150px;
 	z-index: $ZIndexBase+1;
+}
+#dialogBox {
+	min-width: 150px;
+	z-index: $ZIndexBase+2;
 
 	/* Colors */
 	.blue-bg     { background-color: $NBlue }
