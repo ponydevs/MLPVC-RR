@@ -1817,7 +1817,8 @@
 				12,
 				59,
 				63,
-				138
+				138,
+				183
 			]
 		},
 		"9": {
@@ -6823,11 +6824,11 @@
 			"order": 40,
 			"label": "Tender Taps",
 			"notes": "Far legs use darker colors.\nOn the Cutie Mark, the spotlight's base is layered on top of the spotlight.",
-			"cm_favme": null,
+			"cm_favme": "da1icah",
 			"ishuman": false,
 			"added": "2016-04-10 15:03:53.212811+02",
 			"cm_preview": null,
-			"cm_dir": null,
+			"cm_dir": true,
 			"ColorGroups": {
 				"542": {
 					"groupid": 542,
@@ -8048,7 +8049,8 @@
 				143,
 				144,
 				145,
-				146
+				146,
+				183
 			]
 		},
 		"87": {
@@ -13794,11 +13796,11 @@
 			"order": 86,
 			"label": "Sweetie Drops / Bon Bon",
 			"notes": "",
-			"cm_favme": null,
+			"cm_favme": "d6xmkv9",
 			"ishuman": false,
 			"added": "2016-04-15 00:28:54.267643+02",
 			"cm_preview": null,
-			"cm_dir": null,
+			"cm_dir": true,
 			"ColorGroups": {
 				"595": {
 					"groupid": 595,
@@ -13909,7 +13911,8 @@
 				7,
 				12,
 				224,
-				225
+				225,
+				274
 			]
 		},
 		"110": {
@@ -21555,7 +21558,7 @@
 			"name": "s6e6",
 			"title": null,
 			"type": "ep",
-			"uses": 1,
+			"uses": 3,
 			"synonym_of": null
 		},
 		"184": {
@@ -22269,6 +22272,14 @@
 			"type": "char",
 			"uses": 1,
 			"synonym_of": null
+		},
+		"274": {
+			"tid": 274,
+			"name": "bonbon",
+			"title": null,
+			"type": "char",
+			"uses": 0,
+			"synonym_of": 224
 		}
 	}
 }

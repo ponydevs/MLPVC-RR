@@ -312,7 +312,7 @@ Glasses don''t seem to have lenses.', NULL, false, '2016-03-28 12:19:48.604527+0
 (96, 102, 'Copper Top', '', NULL, false, '2016-04-04 01:58:03.047005+02', NULL, NULL),
 (97, 75, 'Bulk Biceps', '', NULL, false, '2016-04-08 05:33:44.359968+02', NULL, NULL),
 (98, 40, 'Tender Taps', 'Far legs use darker colors.
-On the Cutie Mark, the spotlight''s base is layered on top of the spotlight.', NULL, false, '2016-04-10 15:03:53.212811+02', NULL, NULL),
+On the Cutie Mark, the spotlight''s base is layered on top of the spotlight.', 'da1icah', false, '2016-04-10 15:03:53.212811+02', NULL, true),
 (99, 103, 'Hoofer Steps', '', NULL, false, '2016-04-11 03:44:22.791443+02', NULL, NULL),
 (100, 70, 'Cloudchaser', '', NULL, false, '2016-04-12 11:08:07.863358+02', NULL, NULL),
 (101, 72, 'Thunderlane', '', NULL, false, '2016-04-12 11:13:23.928986+02', NULL, NULL),
@@ -330,7 +330,7 @@ Magic aura color is unknown.
 On the Cutie Mark, the gumballs are layered above the glass.', 'd9yydnz', false, '2016-04-14 04:09:51.571119+02', NULL, false),
 (109, 121, 'Zecora', 'Based on S4E14.', NULL, false, '2016-04-14 13:36:00.618867+02', NULL, NULL),
 (110, 87, 'Octavia Melody', '', NULL, false, '2016-04-14 23:29:54.839394+02', NULL, NULL),
-(111, 86, 'Sweetie Drops / Bon Bon', '', NULL, false, '2016-04-15 00:28:54.267643+02', NULL, NULL),
+(111, 86, 'Sweetie Drops / Bon Bon', '', 'd6xmkv9', false, '2016-04-15 00:28:54.267643+02', NULL, true),
 (112, 108, 'Gummy', 'In 3/4 view, the top line on his far eye uses the "Far Eye Top Line" color instead of the normal gradient.', NULL, false, '2016-04-16 01:36:38.459294+02', NULL, NULL),
 (113, 122, 'Orange Frog', '', NULL, false, '2016-04-16 10:47:17.651278+02', NULL, NULL),
 (114, 12, 'Cutie Mark Crusader Cape', 'Based on S3E4.', NULL, false, '2016-04-16 11:06:58.316031+02', NULL, NULL),
@@ -4195,6 +4195,8 @@ INSERT INTO tagged VALUES
 (182, 125),
 (182, 126),
 (183, 32),
+(183, 34),
+(183, 69),
 (185, 29),
 (185, 44),
 (185, 62),
@@ -4453,7 +4455,7 @@ INSERT INTO tags VALUES
 (180, 's6e3', NULL, 'ep', 3, NULL),
 (181, 's6e4', NULL, 'ep', 4, NULL),
 (182, 's6e5', NULL, 'ep', 4, NULL),
-(183, 's6e6', NULL, 'ep', 1, NULL),
+(183, 's6e6', NULL, 'ep', 3, NULL),
 (184, 's5e1', NULL, 'ep', 0, NULL),
 (185, 's6e1-2', NULL, 'ep', 5, NULL),
 (186, 'princess flurry heart', NULL, 'char', 1, NULL),
@@ -4542,14 +4544,15 @@ INSERT INTO tags VALUES
 (270, 's6e10', NULL, 'ep', 0, NULL),
 (271, 's6e11', NULL, 'ep', 0, NULL),
 (272, 'apple jack', NULL, 'char', 0, 22),
-(273, 'raven', NULL, 'char', 1, NULL);
+(273, 'raven', NULL, 'char', 1, NULL),
+(274, 'bonbon', NULL, 'char', 0, 224);
 
 
 --
 -- Name: tags_tid_seq; Type: SEQUENCE SET; Schema: public; Owner: mlpvc-rr
 --
 
-SELECT pg_catalog.setval('tags_tid_seq', 273, true);
+SELECT pg_catalog.setval('tags_tid_seq', 275, true);
 
 
 --
