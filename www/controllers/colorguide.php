@@ -739,7 +739,7 @@
 	}
 
 	if (regex_match(new RegExp('^tags'),$data)){
-		$Pagination = new Pagination("{$color}guide/tags", 20, $CGDb->count('tags'));
+		$Pagination = new Pagination("cg/tags", 20, $CGDb->count('tags'));
 
 		CoreUtils::FixPath("/cg/tags/{$Pagination->page}");
 		$heading = "Tags";
@@ -764,7 +764,7 @@
 	}
 
 	if (regex_match(new RegExp('^changes'),$data)){
-		$Pagination = new Pagination("{$color}guide/changes", 50, $Database->count('log__color_modify'));
+		$Pagination = new Pagination("cg/changes", 50, $Database->count('log__color_modify'));
 
 		CoreUtils::FixPath("/cg/changes/{$Pagination->page}");
 		$heading = "Major $Color Changes";
@@ -806,7 +806,7 @@
 	);
 
 	$_match = array();
-	// Matching IDs:                                                    [-1-] [-2-]                               [---3---]
+	// Matching IDs:                                    [-1-] [-2-]              [---3---]
 	if (regex_match(new RegExp('^(?:appearance|v)/(?:.*?(\d+)|(\d+)(?:-.*)?)(?:\.(png|svg))?'),$data,$_match)){
 		$asFile = !empty($_match[3]);
 		$Appearance = $CGDb->where('id', (int)($_match[1]??$_match[2]))->where('ishuman', $EQG)->getOne('appearances', $asFile ? 'id,label,cm_dir' : null);
@@ -870,13 +870,12 @@
 	if (empty($_GET['q']) || regex_match(new RegExp('^\*+$'),$_GET['q'])){
 		$_EntryCount = $CGDb->where('ishuman',$EQG)->where('id != 0')->count('appearances');
 
-		$Pagination = new Pagination("{$color}guide", $AppearancesPerPage, $_EntryCount);
+		$Pagination = new Pagination("cg", $AppearancesPerPage, $_EntryCount);
 		$Ponies = \CG\Appearances::Get($EQG, $Pagination->GetLimit());
 	}
 	else {
 		$SearchQuery = $_GET['q'];
-		$Page = $MaxPages = 1;
-		$Ponies = false;
+		$Ponies = null;
 
 		try {
 			$Search = CGUtils::ProcessSearch($SearchQuery);
@@ -913,7 +912,7 @@
 				$Params[] = $EQG;
 				$Query = "SELECT @coloumn FROM appearances p WHERE ".implode(' AND ',$Restrictions)." AND p.ishuman = ? AND p.id != 0";
 				$_EntryCount = $CGDb->rawQuerySingle(str_replace('@coloumn','COUNT(*) as count',$Query),$Params)['count'];
-				$Pagination = new Pagination("{$color}guide", $AppearancesPerPage, $_EntryCount);
+				$Pagination = new Pagination("cg", $AppearancesPerPage, $_EntryCount);
 
 				$SearchQuery = str_replace('@coloumn','p.*',$Query);
 				$SearchQuery .= " ORDER BY p.order ASC {$Pagination->GetLimitString()}";
@@ -925,6 +924,9 @@
 			if (isset($_REQUEST['js']))
 				CoreUtils::Respond($_MSG);
 		}
+
+		if (empty($Pagination))
+			$Pagination = new Pagination("cg", $AppearancesPerPage, 0);
 	}
 
 	CoreUtils::FixPath("$CGPath/{$Pagination->page}");
