@@ -13,25 +13,40 @@ process.stdout.write = console.write = function(str){
 	stdoutw.call(process.stdout, out);
 };
 
-var _sep = '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~';
-console.writeLine('Gulp process awoken. It still appears to be tired.');
-var stuff = [
-	'gulp',
-	'gulp-sourcemaps',
-	'gulp-autoprefixer',
-	'gulp-minify-css',
-	'gulp-rename',
-	'gulp-sass',
-	'gulp-uglify',
-	'gulp-plumber',
-	'gulp-util',
-	'gulp-markdown',
-	'gulp-dom',
-	'fs',
-];
+var _sep = '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~',
+	toRun = process.argv.slice(2).slice(-1)[0] || 'default'; // Works only if task name is the last param
+console.writeLine('Gulp process awoken to run "'+toRun+'". It still appears to be tired.');
+var require_list = ['gulp'];
+if (['js','sass','md','default'].indexOf(toRun) !== -1){
+	require_list.push.apply(require_list, [
+		'gulp-newer',
+		'gulp-sourcemaps',
+		'gulp-rename',
+		'gulp-plumber',
+		'gulp-util',
+	]);
+
+	if (toRun === 'css' || toRun === 'default')
+		require_list.push.apply(require_list, [
+			'gulp-sass',
+			'gulp-autoprefixer',
+			'gulp-minify-css',
+		]);
+	if (toRun === 'js' || toRun === 'default')
+		require_list.push.apply(require_list, [
+			'gulp-uglify',
+		]);
+	if (toRun === 'md' || toRun === 'default')
+		require_list.push.apply(require_list, [
+			'gulp-markdown',
+			'gulp-dom',
+		]);
+}
+else if (toRun === 'pgsort')
+	require_list.push('fs');
 console.write('> *yaaawn*');
-for (var i= 0,l=stuff.length;i<l;i++){
-	var v = stuff[i];
+for (var i= 0,l=require_list.length; i<l; i++){
+	var v = require_list[i];
 	global[v.replace(/^gulp-([a-z]+).*$/, '$1')] = require(v);
 	console.write(' '+v);
 }
@@ -66,11 +81,13 @@ var Flutters = new Personality(
 	]
 );
 gulp.task('sass', function() {
+	var DEST = 'www/css';
 	gulp.src('www/sass/*.scss')
 		.pipe(plumber(function(err){
 			Flutters.error(err.messageFormatted || err);
 			this.emit('end');
 		}))
+		.pipe(newer(DEST))
 		.pipe(sourcemaps.init())
 			.pipe(sass({
 				outputStyle: 'expanded',
@@ -86,7 +103,7 @@ gulp.task('sass', function() {
 			includeContent: false,
 			sourceRoot: '/sass',
 		}))
-		.pipe(gulp.dest('www/css'));
+		.pipe(gulp.dest(DEST));
 });
 
 var Dashie = new Personality(
@@ -100,6 +117,7 @@ var Dashie = new Personality(
 	]
 );
 gulp.task('js', function(){
+	var DEST = 'www/js';
 	gulp.src(['www/js/*.js', '!www/js/*.min.js'])
 		.pipe(plumber(function(err){
 			err =
@@ -109,6 +127,7 @@ gulp.task('js', function(){
 			Dashie.error(err);
 			this.emit('end');
 		}))
+		.pipe(newer(DEST))
 		.pipe(sourcemaps.init())
 			.pipe(uglify({
 				preserveComments: function(_, comment){ return /^!/m.test(comment.value) },
@@ -118,7 +137,7 @@ gulp.task('js', function(){
 			includeContent: false,
 			sourceRoot: '/js',
 		}))
-		.pipe(gulp.dest('www/js'));
+		.pipe(gulp.dest(DEST));
 });
 
 var AJ = new Personality(
@@ -130,11 +149,13 @@ var AJ = new Personality(
 	]
 );
 gulp.task('md', function(){
+	var DEST = 'www/views';
 	gulp.src('README.md')
 		.pipe(plumber(function(err){
 			AJ.error(err);
 			this.emit('end');
 		}))
+		.pipe(newer(DEST))
 		.pipe(markdown())
 		.pipe(dom(function(){
 			var document = this,
@@ -152,7 +173,7 @@ gulp.task('md', function(){
 			return newElements+'\n';
 		}))
 		.pipe(rename('about.html'))
-		.pipe(gulp.dest('www/views'));
+		.pipe(gulp.dest(DEST));
 });
 
 var Rarity = new Personality('pgsort', ['This is the WORST. POSSIBLE. THING!']),
