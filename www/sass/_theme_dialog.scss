@@ -5,12 +5,13 @@ $ZIndexBase: 21000;
 @media all and (max-width: $Breakpoint){
 	#dialogOverlay {
 		background-color: white;
-	}
-	#dialogWrap {
-		width: 100%;
-		height: auto;
-		top: 0 !important;
-		left: 0 !important;
+
+		> div {
+			width: 100%;
+			height: auto;
+			top: 0 !important;
+			left: 0 !important;
+		}
 	}
 	#dialogBox {
 		width: 100%;
@@ -21,7 +22,11 @@ $ZIndexBase: 21000;
 @media all and (min-width: $Breakpoint){
 	#dialogOverlay {
 		background-color: rgba(white, .9);
+	}
+	#dialogScroll {
 		display: table;
+		width: 100%;
+		height: 100%;
 	}
 	#dialogWrap {
 		padding: 10px;
