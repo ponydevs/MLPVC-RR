@@ -17,6 +17,7 @@
 	}
 	$type = rtrim($match[1],'s');
 
+	// TODO Untangle this 3-course meal's worth of spaghetti
 	if (!$adding){
 		if (!isset($match[2]))
 			 CoreUtils::Respond("Missing $type ID");
@@ -62,9 +63,9 @@
 		);
 
 		if (!empty($Thing['reserved_by'])){
-			$usersMatch = $Thing['reserved_by'] === $currentUser['id'];
+			$isUserReserver = $Thing['reserved_by'] === $currentUser['id'];
 			if ($noaction){
-				if ($usersMatch)
+				if ($isUserReserver)
 					CoreUtils::Respond("You've already reserved this $type");
 				else CoreUtils::Respond("This $type has already been reserved by somepony else");
 			}
@@ -88,14 +89,15 @@
 				));
 
 				$message = "The image appears to be in the group gallery and as such it is now marked as approved.";
-				if ($usersMatch)
+				if ($isUserReserver)
 					$message .= " Thank you for your contribution!";
 				CoreUtils::Respond($message, 1, array('canedit' => Permission::Sufficient('developer')));
 			}
 			if ($canceling)
 				$unfinishing = true;
 			if ($unfinishing){
-				if (($canceling && !$usersMatch) && !Permission::Sufficient('inspector')) CoreUtils::Respond();
+				if (($canceling && !$isUserReserver) && Permission::Insufficient('inspector'))
+					CoreUtils::Respond();
 
 				if (!$canceling && !isset($_REQUEST['unbind'])){
 					if ($type === 'reservation' && empty($Thing['preview']))
@@ -112,7 +114,7 @@
 				}
 				if (!$canceling){
 					if (isset($_REQUEST['unbind']) && $type === 'request'){
-						if (!Permission::Sufficient('inspector') && !$usersMatch)
+						if (Permission::Insufficient('inspector') && !$isUserReserver)
 							CoreUtils::Respond('You cannot remove the reservation from this post');
 					}
 					else $update = array();
@@ -120,7 +122,7 @@
 				}
 			}
 			else if ($finishing){
-				if (!$usersMatch && !Permission::Sufficient('inspector'))
+				if (!$isUserReserver && !Permission::Sufficient('inspector'))
 					CoreUtils::Respond();
 				$update = Posts::CheckRequestFinishingImage($Thing['reserved_by']);
 			}
@@ -152,10 +154,9 @@
 		if ((!$canceling || $type !== 'reservation') && !$Database->where('id', $Thing['id'])->update("{$type}s",$update))
 			CoreUtils::Respond('Nothing has been changed');
 
-		foreach ($update as $k => $v)
-			$Thing[$k] = $v;
-
 		if (!$canceling && ($finishing || $unfinishing)){
+			if (isset($update['requested_by']))
+				$Thing['requested_by'] = $update['requested_by'];
 			$out = array();
 			if ($finishing && $type === 'request'){
 				$u = User::Get($Thing['requested_by'],'id','name');
@@ -165,10 +166,20 @@
 			CoreUtils::Respond($out);
 		}
 
-		if ($type === 'request')
-			CoreUtils::Respond(array('li' => Posts::GetLi($Thing, true)));
-		else if ($type === 'reservation' && $canceling)
-			CoreUtils::Respond(array('remove' => true));
+		if ($type === 'request' || ($type === 'reservation' && $canceling)){
+			$ReserverID = $Thing['reserved_by'];
+			if ($type === 'request'){
+				foreach ($update as $k => $v)
+					$Thing[$k] = $v;
+				$r = array('li' => Posts::GetLi($Thing, true));
+			}
+			else $r = array('remove' => true);
+			if (isset($_POST['FROM_PROFILE'])){
+				$sameUser = $signedIn && $ReserverID === $currentUser['id'];
+				$r['pendingReservations'] = User::GetPendingReservationsHTML($ReserverID, $sameUser);
+			}
+			CoreUtils::Respond($r);
+		}
 		else CoreUtils::Respond(true);
 	}
 	else if ($type === 'reservation'){

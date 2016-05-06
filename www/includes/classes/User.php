@@ -329,4 +329,79 @@ HTML;
 			}
 			else Cookie::delete('access');
 		}
+
+		static $PROFILE_SECTION_PRIVACY_LEVEL = array(
+			'developer' => "<span class='typcn typcn-cog color-red' title='Visible to: developer'></span>",
+			'public' => "<span class='typcn typcn-world color-blue' title='Visible to: public'></span>",
+			'inspector' => "<span class='typcn typcn-lock-closed' title='Visible to: you & group administrators'></span>",
+			'private' => "<span class='typcn typcn-lock-closed color-green' title='Visible to: you'></span>",
+		);
+
+		static function GetPendingReservationsHTML($UserID, $sameUser, &$YouHave = null){
+			global $Database;
+
+			$YouHave = $sameUser?'You have':'This user has';
+			$PrivateSection = $sameUser?User::$PROFILE_SECTION_PRIVACY_LEVEL['inspector']:'';
+
+			$cols = "id, season, episode, preview, label, posted";
+			$PendingReservations = $Database->where('reserved_by', $UserID)->where('deviation_id IS NULL')->get('reservations',null,$cols);
+			$PendingRequestReservations = $Database->where('reserved_by', $UserID)->where('deviation_id IS NULL')->get('requests',null,"$cols, reserved_at, true as rq");
+			$TotalPending = count($PendingReservations)+count($PendingRequestReservations);
+			$hasPending = $TotalPending > 0;
+			$HTML = '';
+			if (Permission::Sufficient('inspector') || $sameUser){
+				$pendingCountReadable = ($hasPending>0?"<strong>$TotalPending</strong>":'no');
+				$posts = CoreUtils::MakePlural('reservation', $TotalPending);
+				$HTML .= <<<HTML
+<section class='pending-reservations'>
+<h2>{$PrivateSection}Pending reservations</h2>
+					<span>$YouHave $pendingCountReadable pending $posts
+HTML;
+				if ($hasPending)
+					$HTML .= " which ha".($TotalPending!==1?'ve':'s')."n't been marked as finished yet";
+				$HTML .= ".";
+				if ($sameUser)
+					$HTML .= " Please keep in mind that the global limit is 4 at any given time. If you reach the limit, you can't reserve any more images until you finish or cancel some of your pending reservations.";
+				$HTML .= "</span>";
+
+				if ($hasPending){
+					$Posts = array_merge(
+						Posts::GetReservationsSection($PendingReservations, RETURN_ARRANGED)['unfinished'],
+						array_filter(array_values(Posts::GetRequestsSection($PendingRequestReservations, RETURN_ARRANGED)['unfinished']))
+					);
+					usort($Posts, function($a, $b){
+						$a = strtotime($a['posted']);
+						$b = strtotime($b['posted']);
+
+						return -($a < $b ? -1 : ($a === $b ? 0 : 1));
+					});
+					$LIST = '';
+					foreach ($Posts as $p){
+						list($link,$page) = Posts::GetLink($p);
+						$label = !empty($p['label']) ? "<span class='label'>{$p['label']}</span>" : '';
+						$is_request = isset($p['rq']);
+						$reservation_time_known = !empty($p['reserved_at']);
+						$posted = Time::Tag($is_request && $reservation_time_known ? $p['reserved_at'] : $p['posted']);
+						$PostedAction = $is_request && !$reservation_time_known ? 'Posted' : 'Reserved';
+
+						$LIST .= <<<HTML
+<li>
+	<div class='image screencap'>
+		<a href='$link'><img src='{$p['preview']}'></a>
+	</div>
+	$label
+	<em>$PostedAction under <a href='$link'>$page</a> $posted</em>
+	<div>
+		<a href='$link' class='btn blue typcn typcn-arrow-forward'>View</a>
+		<button class='red typcn typcn-user-delete cancel'>Cancel</button>
+	</div>
+</li>
+HTML;
+					}
+					$HTML .= "<ul>$LIST</ul>";
+				}
+				$HTML .= "</section>";
+			}
+			return $HTML;
+		}
 	}
