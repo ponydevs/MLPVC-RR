@@ -462,4 +462,31 @@ HTML;
 			}
 			return $EpTagIDs;
 		}
+
+		static function GetAppearancesSectionHTML($Epsiode){
+			global $CGDb, $Color;
+
+			$HTML = '';
+			$EpTagIDs = Episode::GetTagIDs($Epsiode);
+			if (!empty($EpTagIDs)){
+				$TaggedAppearances = $CGDb->rawQuery(
+					"SELECT p.id, p.label
+					FROM tagged t
+					LEFT JOIN appearances p ON t.ponyid = p.id
+					WHERE t.tid IN (".implode(',',$EpTagIDs).")
+					ORDER BY p.label");
+
+				if (!empty($TaggedAppearances)){
+					$pages = CoreUtils::MakePlural('page', count($TaggedAppearances));
+					$HTML .= "<section class='appearances'><h2>Related <a href='/cg'>$Color Guide</a> $pages</h2><p>";
+					$LINKS = '';
+					foreach ($TaggedAppearances as $p){
+						$safeLabel = \CG\Appearances::GetSafeLabel($p);
+						$LINKS .= "<a href='/cg/v/{$p['id']}-$safeLabel'>{$p['label']}</a>, ";
+					}
+					$HTML .= rtrim($LINKS,', ').'</p></section>';
+				}
+			}
+			return $HTML;
+		}
 	}

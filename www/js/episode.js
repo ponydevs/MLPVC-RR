@@ -9,7 +9,7 @@ DocReady.push(function Episode(){
 		$epSection = $content.children('section.episode');
 
 	$('#video').on('click',function(){
-		$.Dialog.wait('Video links', 'Requesting links from the server');
+		$.Dialog.wait('Set video links', 'Requesting links from the server');
 
 		$.post('/episode/getvideos/'+EpID,$.mkAjaxHandler(function(){
 			var data = this;
@@ -91,6 +91,79 @@ DocReady.push(function Episode(){
 						else if ($epSection.length){
 							$epSection.remove();
 							$epSection = {length:0};
+						}
+						$.Dialog.close();
+					}));
+				});
+			});
+		}));
+	});
+
+	var $cgRelations = $content.children('section.appearances');
+	$('#cg-relations').on('click',function(){
+		$.Dialog.wait('Guide relation editor', 'Retrieving relations from server');
+
+		$.post('/episode/getcgrelations/'+EpID,$.mkAjaxHandler(function(){
+			if (!this.status) return $.Dialog.fail(false, this.message);
+
+			var data = this,
+				$form = $.mk('form').attr('id','guide-relation-editor'),
+				$selectLinked = $.mk('select').attr({name:'listed',multiple:true}),
+				$selectUnlinked = $.mk('select').attr('multiple', true);
+
+			if (data.linked && data.linked.length)
+				$.each(data.linked,function(_, el){
+					$selectLinked.append($.mk('option').attr('value', el.id).text(el.label));
+				});
+			if (data.unlinked && data.unlinked.length)
+				$.each(data.unlinked,function(_, el){
+					$selectUnlinked.append($.mk('option').attr('value', el.id).text(el.label));
+				});
+
+			$form.append(
+				$.mk('div').attr('class','split-select-wrap').append(
+					$.mk('div').attr('class','split-select').append("<span>Linked</span>",$selectLinked),
+					$.mk('div').attr('class','buttons').append(
+						$.mk('button').attr({'class':'typcn typcn-chevron-left green',title:'Link selected'}).on('click',function(e){
+							e.preventDefault();
+
+							$selectLinked.append($selectUnlinked.children(':selected').prop('selected', false)).children().sort(function(a,b){
+								return a.innerHTML.localeCompare(b.innerHTML);
+							}).appendTo($selectLinked);
+						}),
+						$.mk('button').attr({'class':'typcn typcn-chevron-right red',title:'Unlink selected'}).on('click',function(e){
+							e.preventDefault();
+
+							$selectUnlinked.append($selectLinked.children(':selected').prop('selected', false)).children().sort(function(a,b){
+								return a.innerHTML.localeCompare(b.innerHTML);
+							}).appendTo($selectUnlinked);
+						})
+					),
+					$.mk('div').attr('class','split-select').append("<span>Available</span>",$selectUnlinked)
+				)
+			);
+
+			$.Dialog.request(false,$form,'guide-relation-editor','Save',function($form){
+				$form.on('submit',function(e){
+					e.preventDefault();
+
+					var ids = [];
+					$selectLinked.children().each(function(_, el){ ids.push(el.value) });
+					$.Dialog.wait(false, 'Saving changes');
+
+					$.post('/episode/setcgrelations/'+EpID,{ids:ids.join(',')},$.mkAjaxHandler(function(){
+						if (!this.status) return $.Dialog.fail(false, this.message);
+
+						if (this.section){
+							if (!$cgRelations.length)
+								$cgRelations = $.mk('section')
+									.addClass('appearances')
+									.insertBefore($content.children('.admin'));
+							$cgRelations.html($(this.section).filter('section').html());
+						}
+						else if ($cgRelations.length){
+							$cgRelations.remove();
+							$cgRelations = {length:0};
 						}
 						$.Dialog.close();
 					}));

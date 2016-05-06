@@ -170,6 +170,47 @@ input[type=checkbox] {
 					width: 30%;
 				}
 			}
+
+			.split-select-wrap {
+				display: block;
+				overflow: hidden;
+
+				$ButtonsWidth: 40px;
+				> * {
+					display: inline-block;
+					vertical-align: middle;
+				}
+
+				.buttons {
+					width: $ButtonsWidth;
+					padding: 5px;
+					box-sizing: border-box;
+
+					button {
+						display: block;
+						margin: 0 auto;
+
+						&:not(:last-child) { margin-bottom: 5px }
+					}
+				}
+
+				.split-select {
+					width: calc((100% - #{$ButtonsWidth}) / 2);
+
+					select {
+						display: block;
+						height: 250px;
+						width: 99%;
+						box-sizing: border-box;
+						margin: 0 auto;
+					}
+					> span {
+						display: block;
+						text-align: center;
+						margin-bottom: 5px;
+					}
+				}
+			}
 		}
 		input:not([type=radio]):not([type=checkbox]):not([type=button]):not([type=file]),
 		select,

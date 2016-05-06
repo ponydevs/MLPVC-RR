@@ -21,34 +21,13 @@
 		<h2>Reservation Rules<?=Permission::Sufficient('inspector')?'<button class="orange typcn typcn-pencil" id="edit-reservation_rules">Edit</button>':''?></h2>
 		<?=Configuration::Get('reservation_rules')?>
 	</section>
-<?php   $EpTagIDs = Episode::GetTagIDs($CurrentEpisode);
-		if (!empty($EpTagIDs)){
-			$TaggedAppearances = $CGDb->rawQuery(
-				"SELECT p.id, p.label
-				FROM tagged t
-				LEFT JOIN appearances p ON t.ponyid = p.id
-				WHERE t.tid IN (".implode(',',$EpTagIDs).")
-				ORDER BY p.label");
-
-			if (!empty($TaggedAppearances)){ ?>
-	<section class="appearances">
-		<h2>Related <a href="/cg"><?=$Color?> Guide</a> <?=CoreUtils::MakePlural('page', count($TaggedAppearances))?></h2>
-		<p><?php
-				$HTML = '';
-				foreach ($TaggedAppearances as $p){
-					$safeLabel = \CG\Appearances::GetSafeLabel($p);
-					$HTML .= "<a href='/cg/v/{$p['id']}-$safeLabel'>{$p['label']}</a>, ";
-				}
-				echo rtrim($HTML,', ');
-		?></p>
-	</section>
-<?php		}
-		}
+<?php   echo Episode::GetAppearancesSectionHTML($CurrentEpisode);
 		if (Permission::Sufficient('inspector')){ ?>
 	<section class="admin">
 		<h2>Administration area</h2>
 		<p class="align-center">
-			<button id="video" class="typcn typcn-video large darkblue">Set video links</button>
+			<button id="video" class="typcn typcn-pencil large darkblue">Video links</button>
+			<button id="cg-relations" class="typcn typcn-pencil large darkblue">Guide relations</button>
 		</p>
 	</section>
 <?php   }

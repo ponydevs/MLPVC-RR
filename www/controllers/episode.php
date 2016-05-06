@@ -185,6 +185,61 @@
 
 			CoreUtils::Respond('Links updated',1,array('epsection' => Episode::RenderVideos($Episode)));
 		}
+		else if (regex_match(new RegExp('^([sg])etcgrelations/'.EPISODE_ID_PATTERN.'$'), $data, $_match)){
+			$Episode = Episode::GetActual($_match[2],$_match[3],ALLOW_SEASON_ZERO);
+			if (empty($Episode))
+				CoreUtils::Respond("There's no episode with this season & episode number");
+
+			$set = $_match[1] === 's';
+
+			if (!$set){
+				$CheckTag = array();
+
+				$EpTagIDs = Episode::GetTagIDs($Episode);
+				if (empty($EpTagIDs))
+					CoreUtils::Respond('The episode has no associated tag(s)!');
+
+				$TaggedAppearanceIDs = array();
+				foreach ($EpTagIDs as $tid){
+					$AppearanceIDs = $CGDb->where('tid',$tid)->get('tagged',null,'ponyid');
+					foreach ($AppearanceIDs as $id)
+						$TaggedAppearanceIDs[$id['ponyid']] = true;
+				}
+
+				$Appearances = $CGDb->where('ishuman', 0)->where('"id" != 0')->orderBy('label','ASC')->get('appearances',null,'id,label');
+
+				$Sorted = array(
+					'unlinked' => array(),
+					'linked' => array(),
+				);
+				foreach ($Appearances as $a)
+					$Sorted[isset($TaggedAppearanceIDs[$a['id']]) ? 'linked' : 'unlinked'][] = $a;
+
+				CoreUtils::Respond($Sorted);
+			}
+			else {
+				if (empty($_POST['ids']))
+					CoreUtils::Respond('Missing appearance ID list');
+				if (!regex_match(new RegExp('^\d+(,\d+)*$'), $_POST['ids']))
+					respond('Malformed ID list');
+
+				$EpTagIDs = Episode::GetTagIDs($Episode);
+				if (empty($EpTagIDs))
+					CoreUtils::Respond('The episode has no associated tag(s)!');
+				$EpTagIDs = implode(',',$EpTagIDs);
+				$Tags = $CGDb->where("tid IN ($EpTagIDs)")->orderByLiteral('char_length(name)','DESC')->getOne('tags','tid');
+				$UseID = $Tags['tid'];
+
+				$IDs = explode(',',$_POST['ids']);
+				foreach ($IDs as $id){
+					if (!$CGDb->where("tid IN ($EpTagIDs)")->where('ponyid', $id)->has('tagged'))
+						@$CGDb->insert('tagged', array('tid' => $UseID, 'ponyid' => $id));
+				}
+				$CGDb->where("tid IN ($EpTagIDs)")->where("ponyid NOT IN ({$_POST['ids']})")->delete('tagged');
+
+				CoreUtils::Respond(array('section' => Episode::GetAppearancesSectionHTML($Episode)));
+			}
+		}
 		else {
 			if (!Permission::Sufficient('inspector')) CoreUtils::Respond();
 			$editing = regex_match(new RegExp('^edit\/'.EPISODE_ID_PATTERN.'$'),$data,$_match);
