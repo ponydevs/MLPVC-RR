@@ -1104,7 +1104,8 @@ DocReady.push(function Episode(){
 	$w.on('hashchange', HighlightHash);
 	if (location.hash.length){
 		var $imgs = $content.find('img'),
-			total = $imgs.length, loaded = 0;
+			total = $imgs.length, loaded = 0,
+			postHashRegex = /^#(request|reservation)-\d+$/;
 
 		if (total > 0 && $(location.hash).length > 0){
 			$.Dialog.wait('Scroll post into view','Waiting for page to load');
@@ -1120,5 +1121,7 @@ DocReady.push(function Episode(){
 					HighlightHash({type:'load'});
 				});
 		}
+		else if (postHashRegex.test(location.hash))
+			$.Dialog.info('Scroll post into view',"The "+(location.hash.replace(postHashRegex,'$1'))+" you were linked to has either been deleted or didn't exist in the first place. Sorry.<div class='align-center'><span class='sideways-smiley-face'>:\\</div>");
 	}
 });

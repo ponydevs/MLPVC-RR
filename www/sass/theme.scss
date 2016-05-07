@@ -714,3 +714,20 @@ ul.pagination {
 		background-color: $NRedBG;
 	}
 }
+
+#dialogContent .sideways-smiley-face {
+	display: inline-block;
+	transform: rotate(90deg);
+	font-size: 52px;
+	letter-spacing: .2em;
+	height: 1.5em;
+	width: 1.5em;
+	border: .06em solid;
+	border-radius: 100%;
+	line-height: 1.1em;
+	text-align: center;
+	margin-top: 10px;
+	background: #ddf;
+	padding: 0 0 .1em .1em;
+	box-sizing: border-box;
+}
