@@ -19,7 +19,6 @@ console.writeLine('Gulp process awoken to run "'+toRun+'". It still appears to b
 var require_list = ['gulp'];
 if (['js','sass','md','default'].indexOf(toRun) !== -1){
 	require_list.push.apply(require_list, [
-		'gulp-newer',
 		'gulp-sourcemaps',
 		'gulp-rename',
 		'gulp-plumber',
@@ -81,13 +80,11 @@ var Flutters = new Personality(
 	]
 );
 gulp.task('sass', function() {
-	var DEST = 'www/css';
 	gulp.src('www/sass/*.scss')
 		.pipe(plumber(function(err){
 			Flutters.error(err.messageFormatted || err);
 			this.emit('end');
 		}))
-		.pipe(newer(DEST))
 		.pipe(sourcemaps.init())
 			.pipe(sass({
 				outputStyle: 'expanded',
@@ -103,7 +100,7 @@ gulp.task('sass', function() {
 			includeContent: false,
 			sourceRoot: '/sass',
 		}))
-		.pipe(gulp.dest(DEST));
+		.pipe(gulp.dest('www/css'));
 });
 
 var Dashie = new Personality(
@@ -117,7 +114,6 @@ var Dashie = new Personality(
 	]
 );
 gulp.task('js', function(){
-	var DEST = 'www/js';
 	gulp.src(['www/js/*.js', '!www/js/*.min.js'])
 		.pipe(plumber(function(err){
 			err =
@@ -127,7 +123,6 @@ gulp.task('js', function(){
 			Dashie.error(err);
 			this.emit('end');
 		}))
-		.pipe(newer(DEST))
 		.pipe(sourcemaps.init())
 			.pipe(uglify({
 				preserveComments: function(_, comment){ return /^!/m.test(comment.value) },
@@ -137,7 +132,7 @@ gulp.task('js', function(){
 			includeContent: false,
 			sourceRoot: '/js',
 		}))
-		.pipe(gulp.dest(DEST));
+		.pipe(gulp.dest('www/js'));
 });
 
 var AJ = new Personality(
@@ -149,13 +144,11 @@ var AJ = new Personality(
 	]
 );
 gulp.task('md', function(){
-	var DEST = 'www/views';
 	gulp.src('README.md')
 		.pipe(plumber(function(err){
 			AJ.error(err);
 			this.emit('end');
 		}))
-		.pipe(newer(DEST))
 		.pipe(markdown())
 		.pipe(dom(function(){
 			var document = this,
@@ -173,7 +166,7 @@ gulp.task('md', function(){
 			return newElements+'\n';
 		}))
 		.pipe(rename('about.html'))
-		.pipe(gulp.dest(DEST));
+		.pipe(gulp.dest('www/views'));
 });
 
 var Rarity = new Personality('pgsort', ['This is the WORST. POSSIBLE. THING!']),
