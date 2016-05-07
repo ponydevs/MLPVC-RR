@@ -15,9 +15,10 @@
 	<?php
 	$code = $e->getCode();
 	$CODE_ERRORS = array(
-		7 => 'PostgreSQL server is not running',
+		0 => 'The PDO PostgreSQL extension is not loaded/installed, check the PHP configuration',
+		7 => 'The PostgreSQL database server is down',
 	);
-	echo CoreUtils::Notice('fail','<strong>Probable cause / debug information:</strong><pre><code>'.(isset($CODE_ERRORS[$code]) ? $CODE_ERRORS[$code] : $e->getMessage()).'</code></pre>',true)?>
+	echo CoreUtils::Notice('warn','<strong>Probable cause / debug information:</strong><pre><code>'.(isset($CODE_ERRORS[$code]) ? $CODE_ERRORS[$code] : "Error $code: ".$e->getMessage()).'</code></pre>',true)?>
 </div>
 <?php
 	$customJS = array("/js/global.min.js","/js/moment.min.js","/js/dyntime.min.js");
