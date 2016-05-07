@@ -90,7 +90,7 @@
 
 				$message = "The image appears to be in the group gallery and as such it is now marked as approved.";
 				if ($isUserReserver)
-					$message .= " Thank you for your contribution!";
+					$message .= " Thank you for your contribution!<div class='align-center'><apan class='sideways-smiley-face'>;)</span></div>";
 				CoreUtils::Respond($message, 1, array('canedit' => Permission::Sufficient('developer')));
 			}
 			if ($canceling)
