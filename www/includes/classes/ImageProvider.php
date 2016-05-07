@@ -101,7 +101,6 @@
 				break;
 				case 'lightshot':
 					$page = @file_get_contents("http://prntscr.com/$id");
-					$_match = array();
 					if (empty($page))
 						throw new Exception('The requested page could not be found');
 					if (!regex_match(new RegExp('<img\s+class="image__pic[^"]*"\s+src="http://i\.imgur\.com/([A-Za-z\d]+)\.'), $page, $_match))
@@ -109,7 +108,7 @@
 
 					$this->provider = 'imgur';
 					$this->get_direct_url($_match[1]);
-					break;
+				break;
 				default:
 					throw new Exception('The image could not be retrieved');
 			}
