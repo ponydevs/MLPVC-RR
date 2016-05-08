@@ -11,6 +11,11 @@
 		<div><?=CoreUtils::GetSidebarUsefulLinksList()?></div>
 	</section>
 
+	<section class="overdue-submissions">
+		<h2><span class="typcn typcn-time"></span>Overdue submissions</h2>
+		<div><?=CoreUtils::GetOverdueSubmissionList()?></div>
+	</section>
+
 	<section class="recent-posts">
 		<h2><span class="typcn typcn-bell"></span>Most recent posts</h2>
 		<div><?=Posts::GetMostRecentList()?></div>

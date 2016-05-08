@@ -914,4 +914,32 @@
 
 			return URL::MakeHttps($fullsize_url);
 		}
+
+		static function GetOverdueSubmissionList(){
+			global $Database;
+
+			$Query = $Database->rawQuery(
+				"SELECT reserved_by, COUNT(*) as cnt FROM (
+					SELECT reserved_by FROM reservations
+					WHERE deviation_id IS NOT NULL AND lock = false
+					UNION ALL
+					SELECT reserved_by FROM requests
+					WHERE deviation_id IS NOT NULL AND lock = false
+				) t
+				GROUP BY reserved_by
+				HAVING COUNT(*) >= 5
+				ORDER BY cnt DESC;");
+
+			if (empty($Query))
+				return;
+
+			$HTML = "<table>";
+			foreach ($Query as $row){
+				$link = User::GetProfileLink(User::Get($row['reserved_by']), FORMAT_FULL);
+				$count = "<strong style='color:rgb(".min(round($row['cnt']/10*255),255).",0,0)'>{$row['cnt']}</strong>";
+
+				$HTML .= "<tr><td>$link</td><td>$count</td></tr>";
+			}
+			return "$HTML</table>";
+		}
 	}

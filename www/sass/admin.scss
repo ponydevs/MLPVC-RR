@@ -23,10 +23,23 @@
 			}
 		}
 
-		&.hawk9mm ul {
-			font-size: 1.2em;
-		}
+		&.overdue-submissions table {
+			font-size: 1.7em;
 
+			td {
+				padding: 5px;
+			}
+			.da-userlink {
+				border: 0;
+				background: none;
+
+				img { border: 0 }
+
+				.name {
+					font-size: .8em;
+				}
+			}
+		}
 		&.useful-links {
 			ol {
 				margin: 5px 0 0;

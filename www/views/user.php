@@ -51,7 +51,7 @@
 <?php   if ($sameUser){ ?>
 			<p>After you finish an image and submit it to the group gallery, an inspector will check your vector and may ask you to fix some issues on your image, if any. After an image is accepted to the gallery, it can be marked as "approved", which gives it a green check mark, indicating that it's most likely free of any errors.</p>
 <?php   } ?>
-			<p><?="$YouHave ".(!$AwaitCount?'no':"<strong>$AwaitCount</strong>")?> image<?=$AwaitCount!==1?'s':''?> waiting to be submited to and/or approved by the group<?=!$AwaitCount?'.':(", listed below.".($sameUser?" We suggest that you submit $them to the group gallery at your earliest convenience to have $them spot-checked for any issues and added to the group gallery, making $them easier for others to find.":''))?></p>
+			<p><?="$YouHave ".(!$AwaitCount?'no':"<strong>$AwaitCount</strong>")?> image<?=$AwaitCount!==1?'s':''?> waiting to be submited to and/or approved by the group<?=!$AwaitCount?'.':(", listed below.".($sameUser?" We'd like to ask that you submit $them to the group gallery as soon as possible to have $them spot-checked for any issues. As stated in the rules, the goal is to add finished images to the group gallery, making $them easier to find for everyone.".($AwaitCount>10?" You seem to have a large number of images that have not been approved yet, please submit them to the group soon if you haven't already.":''):''))?></p>
 <?php   if ($AwaitCount){ ?>
 			<ul id="awaiting-deviations"><?
 			foreach ($AwaitingApproval as $row){
