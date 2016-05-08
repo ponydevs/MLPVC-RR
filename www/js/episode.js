@@ -607,12 +607,18 @@ DocReady.push(function Episode(){
 						title: "This submission has been accepted into the group gallery"
 					})
 				);
-				var $editbtn;
+				var $editbtn, $sharebtn = $btn.siblings('.share').detach();
 				if (this.canedit){
 					$editbtn = $btn.siblings('.edit').detach();
-					$editbtn.text($editbtn.attr('title')).removeAttr('title');
+					if ($editbtn.is(':empty'))
+						$editbtn.text($editbtn.attr('title')).removeAttr('title');
 				}
-				$btn.parent().html(this.canedit ? $editbtn : '');
+				if ($sharebtn.is(':empty'))
+					$sharebtn.text($sharebtn.attr('title')).removeAttr('title');
+				var $parent = $btn.parent().empty();
+				if (this.canedit)
+					$parent.append($editbtn);
+				$parent.append($sharebtn);
 
 				if (this.message)
 					$.Dialog.success(false, this.message, true);
