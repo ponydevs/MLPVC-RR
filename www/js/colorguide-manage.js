@@ -19,7 +19,7 @@ DocReady.push(function ColorguideManage(){
 
 	var $EpAppearances;
 	if (AppearancePage)
-		$EpAppearances = $('#ep-appearances').children('p');
+		$EpAppearances = $('#ep-appearances');
 
 	$.fn.reorderTags = function(){
 		return this.each(function(){
@@ -758,8 +758,11 @@ DocReady.push(function ColorguideManage(){
 					$.post('/colorguide/untag/'+ponyID+EQGRq,data,$.mkAjaxHandler(function(){
 						if (!this.status) return $.Dialog.fail(title, this.message);
 
-						if (this.needupdate === true)
-							$EpAppearances.html(this.eps).parent()[this.eps.length?'show':'hide']();
+						if (this.needupdate === true){
+							var $eps = $(this.eps);
+							$EpAppearances.replaceWith($eps);
+							$EpAppearances = $eps;
+						}
 						$tag.qtip('destroy', true);
 						$tag.remove();
 						$.Dialog.close();
@@ -783,8 +786,11 @@ DocReady.push(function ColorguideManage(){
 
 						$.post('/colorguide/deltag/'+tagID+EQGRq,data,$.mkAjaxHandler(function(){
 							if (this.status){
-								if (this.needupdate === true)
-									$EpAppearances.html(this.eps).parent()[this.eps.length?'show':'hide']();
+								if (this.needupdate === true){
+									var $eps = $(this.eps);
+									$EpAppearances.replaceWith($eps);
+									$EpAppearances = $eps;
+								}
 								var $affected = $('.id-' + tagID);
 								$affected.qtip('destroy', true);
 								$affected.remove();
@@ -848,8 +854,11 @@ DocReady.push(function ColorguideManage(){
 					$.post('/colorguide/tag/'+ponyID+EQGRq, data, $.mkAjaxHandler(function(){
 						$input.removeAttr('disabled').parent().removeClass('loading');
 						if (this.status){
-							if (this.needupdate === true)
-								$EpAppearances.html(this.eps).parent().show();
+							if (this.needupdate === true){
+								var $eps = $(this.eps);
+								$EpAppearances.replaceWith($eps);
+								$EpAppearances = $eps;
+							}
 							$tagsDiv.children('[data-hasqtip]').qtip('destroy', true);
 							$tagsDiv.children('.tag').remove();
 							$tagsDiv.append($(this.tags).filter('span'));

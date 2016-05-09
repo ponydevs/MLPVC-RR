@@ -379,7 +379,7 @@
 					$response = array('tags' => \CG\Appearances::GetTagsHTML($Appearance['id'], NOWRAP));
 					if ($AppearancePage && $Tag['type'] === 'ep'){
 						$response['needupdate'] = true;
-						$response['eps'] = \CG\Appearances::GetRelatedEpisodesHTML($Appearance['id'], NOWRAP);
+						$response['eps'] = \CG\Appearances::GetRelatedEpisodesHTML($Appearance['id']);
 					}
 					CoreUtils::Respond($response);
 				break;
@@ -459,7 +459,7 @@
 
 					CoreUtils::Respond('Tag deleted successfully', 1, $AppearancePage && $Tag['type'] === 'ep' ? array(
 						'needupdate' => true,
-						'eps' => \CG\Appearances::GetRelatedEpisodesHTML($Appearance['id'], NOWRAP),
+						'eps' => \CG\Appearances::GetRelatedEpisodesHTML($Appearance['id']),
 					) : null);
 				}
 			}

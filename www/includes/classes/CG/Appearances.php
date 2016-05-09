@@ -370,18 +370,18 @@
 		 * Returns the HTML of the "Appears in # episodes" section of appearance pages
 		 *
 		 * @param int  $AppearanceID
-		 * @param bool $wrap
 		 *
 		 * @return string
 		 */
-		static function GetRelatedEpisodesHTML($AppearanceID, $wrap = WRAP){
+		static function GetRelatedEpisodesHTML($AppearanceID){
 			global $CGDb;
 
 			$EpTagsOnAppearance = $CGDb->rawQuery(
 					"SELECT t.tid
 			FROM tagged tt
 			LEFT JOIN tags t ON tt.tid = t.tid
-			WHERE tt.ponyid = ? &&  t.type = ?",array($AppearanceID, 'ep'));
+			WHERE tt.ponyid = ? &&  t.type = 'ep'",array($AppearanceID));
+
 			if (!empty($EpTagsOnAppearance)){
 				foreach ($EpTagsOnAppearance as $k => $row)
 					$EpTagsOnAppearance[$k] = $row['tid'];
@@ -411,8 +411,6 @@
 				$hide = 'style="display:none"';
 			}
 
-			if (!$wrap)
-				return $List;
 			return <<<HTML
 		<section id="ep-appearances" $hide>
 			<h2><span class='typcn typcn-video'></span>Appears in $N_episodes</h2>
