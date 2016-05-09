@@ -11474,6 +11474,7 @@
 				50,
 				117,
 				118,
+				120,
 				164,
 				167
 			]
@@ -21066,7 +21067,7 @@
 			"name": "s5e9",
 			"title": null,
 			"type": "ep",
-			"uses": 2,
+			"uses": 3,
 			"synonym_of": null
 		},
 		"121": {
@@ -22284,6 +22285,14 @@
 			"type": "char",
 			"uses": 0,
 			"synonym_of": 224
+		},
+		"276": {
+			"tid": 276,
+			"name": "s6e12",
+			"title": null,
+			"type": "ep",
+			"uses": 0,
+			"synonym_of": null
 		}
 	}
 }
