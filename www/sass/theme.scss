@@ -134,7 +134,7 @@
 		padding: 8px 8px #{8px + 38px} 8px;
 	}
 	#sidebar {
-		height: calc(100% - 50px - 38px);
+		height: calc(100% - #{$HeaderHeight} - 38px);
 
 		.mobile-nav { display: none }
 	}
@@ -152,9 +152,6 @@
 }
 // Sidebar always visible
 @media all and (min-width: $SidebarBreakpoint){
-	#sidebar {
-			background: rgba(black, .8) !important;
-	}
 	body.sidebar-open {
 		#sidebar { left: 0 !important }
 		#main { padding-left: calc(#{$SidebarWidth} + 8px) }
@@ -362,8 +359,7 @@ header, #sidebar .mobile-nav {
 	max-width: 100%;
 	box-sizing: border-box;
 	color: #fff;
-	$Background: rgba(black, .9);
-	background: $Background;
+	background: rgba(black, .9);
 	padding: 10px;
 	text-align: center;
 	transition: left .5s ease-in-out, right .5s ease-in-out;
