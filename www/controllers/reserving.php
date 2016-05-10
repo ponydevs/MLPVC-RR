@@ -72,6 +72,7 @@
 			if ($locking){
 				if (empty($Thing['deviation_id']))
 					CoreUtils::Respond('Only finished {$type}s can be locked');
+
 				$Status = CoreUtils::IsDeviationInClub($Thing['deviation_id']);
 				if ($Status !== true)
 					CoreUtils::Respond(

@@ -821,7 +821,12 @@
 			if (!is_int($DeviationID))
 				$DeviationID = intval(substr($DeviationID, 1), 36);
 
-			$DiFiRequest = @HTTP::LegitimateRequest("http://deviantart.com/global/difi/?c[]=\"DeviationView\",\"getAllGroups\",[\"$DeviationID\"]&t=json");
+			try {
+				$DiFiRequest = HTTP::LegitimateRequest("http://deviantart.com/global/difi/?c[]=\"DeviationView\",\"getAllGroups\",[\"$DeviationID\"]&t=json");
+			}
+			catch (cURLRequestException $e){
+				return $e->getCode();
+			}
 			if (empty($DiFiRequest['response']))
 				return 1;
 

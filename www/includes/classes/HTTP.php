@@ -24,7 +24,7 @@
 				CURLOPT_BINARYTRANSFER => true,
 				CURLOPT_FOLLOWLOCATION => true,
 				CURLOPT_RETURNTRANSFER => true,
-				CURLOPT_USERAGENT => "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/49.0.2623.75 Safari/537.36"
+				CURLOPT_USERAGENT => "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/45.0.5678.91 Safari/537.36"
 			);
 			if (isset($referrer))
 				$curl_opt[CURLOPT_REFERER] = $referrer;
