@@ -16,7 +16,7 @@
 			$users = $Arranged[$r];
 			$userCount = count($users);
 			$group = Permission::$ROLES_ASSOC[$r].($userCount !== 1 ? 's' : '');
-			$groupInitials = '['.Permission::LabelInitials(Permission::$ROLES_ASSOC[$r]).']';
+			$groupInitials = '['.Permission::LabelInitials($r).']';
 			$usersStr = array();
 			foreach ($users as $u)
 				$usersStr[] = User::GetProfileLink($u);

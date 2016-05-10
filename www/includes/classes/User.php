@@ -139,7 +139,7 @@
 		static function GetAvatarWrap($User){
 			$badge = '';
 			if (empty($User['guest']))
-				$badge = "<span class='badge'>".Permission::LabelInitials($User['rolelabel'])."</span>";
+				$badge = "<span class='badge'>".Permission::LabelInitials($User['role'])."</span>";
 			return "<div class='avatar-wrap'><img src='{$User['avatar_url']}' class='avatar' alt='avatar'>$badge</div>";
 		}
 

@@ -4,7 +4,8 @@
 		public static
 			$ROLES_ASSOC = array(
 				'ban'       =>  'Banished User',
-				'user'      =>  'deviantArt User',
+				'vie'       =>  'Retired Vector Inspector',
+				'user'      =>  'DeviantArt User',
 				'guest'     =>  'Guest',
 				'member'    =>  'Club Member',
 				'manager'   =>  'Group Manager',
@@ -16,9 +17,20 @@
 				'guest'     => 1,
 				'user'      => 2,
 				'member'    => 3,
+				'vie'       => 3,
 				'inspector' => 4,
 				'manager'   => 5,
 				'developer' => 255,
+			),
+			$ROLE_INITIALS = array(
+				'ban'       =>  'B',
+				'vie'       =>  'VE',
+				'user'      =>  'U',
+				'guest'     =>  'G',
+				'member'    =>  'M',
+				'manager'   =>  'GM',
+				'inspector' =>  'VI',
+				'developer' =>  'SD',
 			);
 
 		/**
@@ -70,11 +82,11 @@
 		 * -------------------------------------
 		 * Related: http://stackoverflow.com/a/30740511/1344955
 		 *
-		 * @param string $label
+		 * @param string $role
 		 *
 		 * @return string
 		 */
-		static function LabelInitials($label){
-			return regex_replace(new RegExp('(?:^|\s)([A-Z])|.'),'$1',$label);
+		static function LabelInitials($role){
+			return self::$ROLE_INITIALS[$role];
 		}
 	}
