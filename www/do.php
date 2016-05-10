@@ -10,6 +10,9 @@
 	
 	require "init.php";
 
+	$phpExtensionPattern = new RegExp('\.php($|\?.*)');
+	if (regex_match($phpExtensionPattern,$_SERVER['REQUEST_URI']))
+		CoreUtils::Redirect(regex_replace($phpExtensionPattern,'$1',$_SERVER['REQUEST_URI']), AND_DIE);
 	if (!regex_match($REWRITE_REGEX,"/$do/$data"))
 		CoreUtils::NotFound();
 
