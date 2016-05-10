@@ -4,19 +4,39 @@
 @import "theme_post-ul";
 
 #content {
-	h1 .da {
-		display: inline;
-		$dalogo: #05cc47;
-
-		svg {
-			height: .75em;
+	h1 {
+		> * {
+			display: inline-block;
+			vertical-align: bottom;
+		}
+		.role-badge {
+			color: #777;
+			background-color: #efefef;
+			font-family: $RegularFont;
+			font-size: .8em;
+			padding: 2px 3px;
+			border-radius: 4px;
+			line-height: .9em;
+			border: 2px solid;
+			text-transform: uppercase;
+			font-weight: bold;
+			margin-right: 10px;
+		}
+		.da {
+			line-height: 1em;
+			height: 1em;
 			width: .6em;
+
+			$dalogo: #05cc47;
+			svg {
+				height: 100%;
+			}
+			path {
+				fill: darken($dalogo, 10);
+				transition: fill .2s linear;
+			}
+			&:hover path { fill: $dalogo }
 		}
-		path {
-			fill: darken($dalogo, 10);
-			transition: fill .2s linear;
-		}
-		&:hover path { fill: $dalogo }
 	}
 	section { @extend %section }
 	.details {

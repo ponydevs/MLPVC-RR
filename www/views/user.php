@@ -6,7 +6,7 @@
 	}
 	else {
 		echo User::GetAvatarWrap($User); ?>
-	<h1><?=$User['name']?> <a class="da" title="Visit DeviantArt profile" href="<?=User::GetDALink($User,LINK_ONLY)?>"><?=str_replace(' fill="#FFF"','',file_get_contents(APPATH.'img/da-logo.svg'))?></a></h1>
+	<h1><span class="role-badge"><?=Permission::LabelInitials($User['role'])?></span><span><?=$User['name']?></span> <a class="da" title="Visit DeviantArt profile" href="<?=User::GetDALink($User,LINK_ONLY)?>"><?=str_replace(' fill="#FFF"','',file_get_contents(APPATH.'img/da-logo.svg'))?></a></h1>
 	<p><?php
 		echo "<span>{$User['rolelabel']}</span>";
 		if ($canEdit){
