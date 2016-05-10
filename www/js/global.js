@@ -813,7 +813,7 @@ $(function(){
 				if (!cdExists || diff.past){
 					if (cdExists)
 						$cd.parents('li').remove();
-					clearInterval(cdtimer);
+					window.clearCD();
 					return window.setCD();
 				}
 				var text = 'in ';
@@ -829,6 +829,12 @@ $(function(){
 				else text = createTimeStr(now, airs);
 				$cd.text(text);
 			};
+		window.clearCD = function(){
+			if (typeof cdtimer !== 'undefined'){
+				clearInterval(cdtimer);
+				cdtimer = undefined;
+			}
+		};
 		window.setCD = function(){
 			var $uc = $('#upcoming');
 			if (!$uc.length)
@@ -839,6 +845,7 @@ $(function(){
 				return $uc.remove();
 
 			$cd = $lis.first().find('time').addClass('nodt');
+			window.clearCD();
 			cdtimer = setInterval(cdupdate, 1000);
 			cdupdate();
 
@@ -852,9 +859,6 @@ $(function(){
 			window.updateTimes();
 		};
 		window.setCD();
-		$w.on('unload',function(){
-			$cd = {parent:false};
-		});
 	})();
 
 	// Feedback form
