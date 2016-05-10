@@ -209,7 +209,6 @@ body.dialog-open {
 
 	button, input {
 		font-weight: 400;
-		font-size: 14px;
 		line-height: 20px;
 		height: 32px;
 		color: #fff;
@@ -219,22 +218,11 @@ body.dialog-open {
 		vertical-align: middle;
 		cursor: pointer;
 		padding: 3px 10px;
-		position: relative;
-		outline: none;
-		opacity: .85;
 		border: 3px solid transparent;
 		border-radius: 4px;
-		box-sizing: border-box;
 		background-color: $DefaultUIColor;
-		transition: opacity .1s;
 
-		&[disabled] { cursor: not-allowed }
 		&:last-child { margin-right: 0 !important }
-		&:hover, &:focus { opacity: 1 }
 		&:focus { border-color: rgba(black, .2) }
-		&:active {
-			top: 1px;
-			left: 1px;
-		}
 	}
 }
