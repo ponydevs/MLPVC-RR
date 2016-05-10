@@ -815,7 +815,7 @@
 		 *
 		 * @param int|string $DeviationID
 		 *
-		 * @return bool
+		 * @return bool|int
 		 */
 		static function IsDeviationInClub($DeviationID){
 			if (!is_int($DeviationID))
