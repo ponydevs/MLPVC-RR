@@ -11380,13 +11380,13 @@
 		"11": {
 			"id": 11,
 			"order": 69,
-			"label": "Derpy / Muffins",
+			"label": "Derpy Hooves / Muffins",
 			"notes": "",
-			"cm_favme": null,
+			"cm_favme": "da27cuh",
 			"ishuman": false,
 			"added": "2015-08-26 05:53:49+02",
 			"cm_preview": null,
-			"cm_dir": null,
+			"cm_dir": true,
 			"ColorGroups": {
 				"22": {
 					"groupid": 22,
@@ -11396,17 +11396,22 @@
 						{
 							"order": 0,
 							"label": "Outline",
-							"hex": "#7F859F"
+							"hex": "#808AA7"
 						},
 						{
 							"order": 1,
 							"label": "Fill",
-							"hex": "#B5BBC7"
+							"hex": "#C2C5D5"
 						},
 						{
 							"order": 2,
+							"label": "Shadow Outline",
+							"hex": "#727B93"
+						},
+						{
+							"order": 3,
 							"label": "Shadow Fill",
-							"hex": "#ADB1BE"
+							"hex": "#ADB2C0"
 						}
 					]
 				},
@@ -11418,12 +11423,12 @@
 						{
 							"order": 0,
 							"label": "Outline",
-							"hex": "#D6CD6B"
+							"hex": "#E8DC64"
 						},
 						{
 							"order": 1,
 							"label": "Fill",
-							"hex": "#E7E6A7"
+							"hex": "#FFFAAD"
 						}
 					]
 				},
@@ -11439,13 +11444,18 @@
 						},
 						{
 							"order": 1,
-							"label": "Gradient Bottom/Highlight Top",
-							"hex": "#D9E985"
+							"label": "Gradient Middle",
+							"hex": "#EDE54F"
 						},
 						{
 							"order": 2,
+							"label": "Gradient Bottom/Highlight Top",
+							"hex": "#EBFC82"
+						},
+						{
+							"order": 3,
 							"label": "Highlight Bottom",
-							"hex": "#E1EBB0"
+							"hex": "#F4FFB9"
 						}
 					]
 				},
@@ -11457,12 +11467,12 @@
 						{
 							"order": 0,
 							"label": "Bubble",
-							"hex": "#CECEEA"
+							"hex": "#DEDEFF"
 						},
 						{
 							"order": 1,
 							"label": "Bubble Highlight",
-							"hex": "#D5E9F0"
+							"hex": "#E4FFFF"
 						}
 					]
 				}
@@ -11476,7 +11486,8 @@
 				118,
 				120,
 				164,
-				167
+				167,
+				183
 			]
 		},
 		"100": {
@@ -17709,9 +17720,234 @@
 				280
 			]
 		},
+		"136": {
+			"id": 136,
+			"order": 108,
+			"label": "Ms. Harshwhinny",
+			"notes": "Far legs use darker colors.\nShe has no iris highlights.",
+			"cm_favme": null,
+			"ishuman": false,
+			"added": "2016-05-11 00:25:06.834527+02",
+			"cm_preview": null,
+			"cm_dir": null,
+			"ColorGroups": {
+				"731": {
+					"groupid": 731,
+					"label": "Coat",
+					"order": 0,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#C37440"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#EF9E5F"
+						},
+						{
+							"order": 2,
+							"label": "Shadow Outline",
+							"hex": "#B16A3B"
+						},
+						{
+							"order": 3,
+							"label": "Shadow Fill",
+							"hex": "#D99156"
+						}
+					]
+				},
+				"732": {
+					"groupid": 732,
+					"label": "Mane & Tail",
+					"order": 1,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#EAC266"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#FFE281"
+						}
+					]
+				},
+				"733": {
+					"groupid": 733,
+					"label": "Iris",
+					"order": 2,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Gradient Top",
+							"hex": "#255789"
+						},
+						{
+							"order": 1,
+							"label": "Gradient Bottom",
+							"hex": "#82E3FF"
+						}
+					]
+				},
+				"734": {
+					"groupid": 734,
+					"label": "Cutie Mark",
+					"order": 3,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Trophy Fill 1",
+							"hex": "#FFD566"
+						},
+						{
+							"order": 1,
+							"label": "Trophy Fill 2",
+							"hex": "#F1BD48"
+						},
+						{
+							"order": 2,
+							"label": "Trophy Shadow Fill",
+							"hex": "#C88C37"
+						},
+						{
+							"order": 3,
+							"label": "Trophy Highlight",
+							"hex": "#FFE29F"
+						}
+					]
+				},
+				"735": {
+					"groupid": 735,
+					"label": "Earrings",
+					"order": 4,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#D59739"
+						},
+						{
+							"order": 1,
+							"label": "Outer Fill",
+							"hex": "#FFCF4E"
+						},
+						{
+							"order": 2,
+							"label": "Inner Fill",
+							"hex": "#FFA3FF"
+						}
+					]
+				},
+				"736": {
+					"groupid": 736,
+					"label": "Scarf",
+					"order": 5,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#DE70EC"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#FFA3FF"
+						}
+					]
+				},
+				"737": {
+					"groupid": 737,
+					"label": "Necklace",
+					"order": 6,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "String",
+							"hex": "#725A46"
+						},
+						{
+							"order": 1,
+							"label": "Outline",
+							"hex": "#D59739"
+						},
+						{
+							"order": 2,
+							"label": "Fill",
+							"hex": "#FFCF4E"
+						}
+					]
+				},
+				"738": {
+					"groupid": 738,
+					"label": "Outfit",
+					"order": 7,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Jacket Outline",
+							"hex": "#76588A"
+						},
+						{
+							"order": 1,
+							"label": "Jacket Fill",
+							"hex": "#A06FAC"
+						},
+						{
+							"order": 2,
+							"label": "Jacket Shadow Outline",
+							"hex": "#6F5483"
+						},
+						{
+							"order": 3,
+							"label": "Jacket Shadow Fill",
+							"hex": "#986AA4"
+						},
+						{
+							"order": 4,
+							"label": "Button Outline",
+							"hex": "#D59739"
+						},
+						{
+							"order": 5,
+							"label": "Button Fill",
+							"hex": "#FFCF4E"
+						},
+						{
+							"order": 6,
+							"label": "Button Shadow Outline",
+							"hex": "#C78E36"
+						},
+						{
+							"order": 7,
+							"label": "Button Shadow Fill",
+							"hex": "#FFC54D"
+						},
+						{
+							"order": 8,
+							"label": "Undershirt",
+							"hex": "#FFFFFF"
+						}
+					]
+				}
+			},
+			"TagIDs": [
+				2,
+				7,
+				12,
+				104,
+				280,
+				281,
+				282,
+				283,
+				284
+			]
+		},
 		"64": {
 			"id": 64,
-			"order": 108,
+			"order": 109,
 			"label": "Angel Bunny",
 			"notes": "",
 			"cm_favme": null,
@@ -17824,7 +18060,7 @@
 		},
 		"112": {
 			"id": 112,
-			"order": 109,
+			"order": 110,
 			"label": "Gummy",
 			"notes": "In 3/4 view, the top line on his far eye uses the \"Far Eye Top Line\" color instead of the normal gradient.",
 			"cm_favme": null,
@@ -17960,7 +18196,7 @@
 		},
 		"116": {
 			"id": 116,
-			"order": 110,
+			"order": 111,
 			"label": "Winona",
 			"notes": "",
 			"cm_favme": null,
@@ -18093,7 +18329,7 @@
 		},
 		"117": {
 			"id": 117,
-			"order": 111,
+			"order": 112,
 			"label": "Owlowiscious",
 			"notes": "",
 			"cm_favme": null,
@@ -18180,7 +18416,7 @@
 		},
 		"119": {
 			"id": 119,
-			"order": 112,
+			"order": 113,
 			"label": "Tank",
 			"notes": "Far Legs use darker colors.\nIn some scenes, Tank uses an alternate set of colors for the tongue.\nFor accurate goggle lenses: Group together the Fill (100% Normal blending) and the Highlights (75% Color Dodge blending) and set the group to 50% opacity.\nFor a less accurate version, group together the Fill and the Highlights (both 100% opacity, Normal blending) and set the group to 50% opacity.",
 			"cm_favme": null,
@@ -18447,7 +18683,7 @@
 		},
 		"120": {
 			"id": 120,
-			"order": 113,
+			"order": 114,
 			"label": "Opalescence",
 			"notes": "",
 			"cm_favme": null,
@@ -18643,7 +18879,7 @@
 		},
 		"33": {
 			"id": 33,
-			"order": 114,
+			"order": 115,
 			"label": "Alicorn Amulet",
 			"notes": "",
 			"cm_favme": null,
@@ -18834,7 +19070,7 @@
 		},
 		"86": {
 			"id": 86,
-			"order": 115,
+			"order": 116,
 			"label": "Scorpan's Medallion",
 			"notes": "",
 			"cm_favme": null,
@@ -18911,7 +19147,7 @@
 		},
 		"94": {
 			"id": 94,
-			"order": 116,
+			"order": 117,
 			"label": "Party Cannon",
 			"notes": "",
 			"cm_favme": null,
@@ -19039,7 +19275,7 @@
 		},
 		"115": {
 			"id": 115,
-			"order": 117,
+			"order": 118,
 			"label": "Fake Timberwolf",
 			"notes": "",
 			"cm_favme": null,
@@ -19247,7 +19483,7 @@
 		},
 		"70": {
 			"id": 70,
-			"order": 118,
+			"order": 119,
 			"label": "Wonderbolt Uniform",
 			"notes": "",
 			"cm_favme": null,
@@ -19345,7 +19581,7 @@
 		},
 		"133": {
 			"id": 133,
-			"order": 119,
+			"order": 120,
 			"label": "Spitfire's Academy Outfit",
 			"notes": "",
 			"cm_favme": null,
@@ -19542,7 +19778,7 @@
 		},
 		"71": {
 			"id": 71,
-			"order": 120,
+			"order": 121,
 			"label": "Wonderbolt Trainee Uniform",
 			"notes": "",
 			"cm_favme": null,
@@ -19609,7 +19845,7 @@
 		},
 		"105": {
 			"id": 105,
-			"order": 121,
+			"order": 122,
 			"label": "Pony Tones Outfit",
 			"notes": "",
 			"cm_favme": null,
@@ -19710,7 +19946,7 @@
 		},
 		"109": {
 			"id": 109,
-			"order": 122,
+			"order": 123,
 			"label": "Zecora",
 			"notes": "Based on S4E14.",
 			"cm_favme": null,
@@ -19873,7 +20109,7 @@
 		},
 		"113": {
 			"id": 113,
-			"order": 123,
+			"order": 124,
 			"label": "Orange Frog",
 			"notes": "",
 			"cm_favme": null,
@@ -19968,7 +20204,7 @@
 		},
 		"122": {
 			"id": 122,
-			"order": 124,
+			"order": 125,
 			"label": "Pig (Peach Skin)",
 			"notes": "",
 			"cm_favme": null,
@@ -20088,7 +20324,7 @@
 		},
 		"123": {
 			"id": 123,
-			"order": 125,
+			"order": 126,
 			"label": "Pig (Pink Skin)",
 			"notes": "Muddy Nostril color unknown",
 			"cm_favme": null,
@@ -20203,7 +20439,7 @@
 		},
 		"124": {
 			"id": 124,
-			"order": 126,
+			"order": 127,
 			"label": "Pig (Dark Skin)",
 			"notes": "Muddy Nostril color unknown",
 			"cm_favme": null,
@@ -20561,7 +20797,7 @@
 			"name": "earth pony",
 			"title": null,
 			"type": "spec",
-			"uses": 39,
+			"uses": 40,
 			"synonym_of": null
 		},
 		"3": {
@@ -20601,7 +20837,7 @@
 			"name": "minor character",
 			"title": "Ponies who had a speaking role and/or interacted with the mane six",
 			"type": "cat",
-			"uses": 80,
+			"uses": 81,
 			"synonym_of": null
 		},
 		"8": {
@@ -20641,7 +20877,7 @@
 			"name": "female",
 			"title": null,
 			"type": "gen",
-			"uses": 72,
+			"uses": 73,
 			"synonym_of": null
 		},
 		"14": {
@@ -21297,7 +21533,7 @@
 			"name": "s4e24",
 			"title": null,
 			"type": "ep",
-			"uses": 1,
+			"uses": 2,
 			"synonym_of": null
 		},
 		"105": {
@@ -21921,7 +22157,7 @@
 			"name": "s6e6",
 			"title": null,
 			"type": "ep",
-			"uses": 3,
+			"uses": 4,
 			"synonym_of": null
 		},
 		"184": {
@@ -22679,6 +22915,38 @@
 		"280": {
 			"tid": 280,
 			"name": "s3e12",
+			"title": null,
+			"type": "ep",
+			"uses": 2,
+			"synonym_of": null
+		},
+		"281": {
+			"tid": 281,
+			"name": "ms. harshwhinny",
+			"title": null,
+			"type": "char",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"282": {
+			"tid": 282,
+			"name": "ms harshwhinny",
+			"title": null,
+			"type": "char",
+			"uses": 0,
+			"synonym_of": 281
+		},
+		"283": {
+			"tid": 283,
+			"name": "harshwhinny",
+			"title": null,
+			"type": "char",
+			"uses": 0,
+			"synonym_of": 281
+		},
+		"284": {
+			"tid": 284,
+			"name": "s4e5",
 			"title": null,
 			"type": "ep",
 			"uses": 1,
