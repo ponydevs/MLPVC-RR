@@ -290,9 +290,8 @@
 				$SpriteWidth = $SpriteSize[WIDTH];
 				$SpriteRealWidth = $SpriteWidth + $SpriteRightMargin;
 
-				$OutWidth += $SpriteRealWidth;
-				if ($SpriteHeight > $OutHeight)
-					$OutHeight = $SpriteHeight;
+				$OutWidth = $SpriteRealWidth;
+				$OutHeight = $SpriteHeight;
 			}
 			else $SpriteRealWidth = 0;
 			$origin = array(
@@ -318,7 +317,7 @@
 			$OutWidth = $origin['x'] + max($NameBox['width'], $ExportBox['width']) + $TextMargin;
 
 			// Set image height
-			$OutHeight = $origin['y'] + (($NameVerticalMargin*3) + $NameBox['height'] + $ExportBox['height']) + $CGsHeight;
+			$OutHeight = max($origin['y'] + (($NameVerticalMargin*3) + $NameBox['height'] + $ExportBox['height']) + $CGsHeight, $OutHeight);
 
 			// Create base image
 			$BaseImage = Image::CreateTransparent($OutWidth, $OutHeight);
