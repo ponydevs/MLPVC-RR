@@ -103,8 +103,6 @@
 		/**
 		 * Draw a an (optionally filled) squre on an $image
 		 *
-		 * @noinspection PhpParamsInspection
-		 *
 		 * @param resource   $image
 		 * @param int        $x
 		 * @param int        $y
@@ -139,24 +137,73 @@
 		}
 
 		/**
+		 * Draw a an (optionally filled) circle on an $image
+		 *
+		 * @param resource   $image
+		 * @param int        $x
+		 * @param int        $y
+		 * @param int|array  $size
+		 * @param string     $fill
+		 * @param string|int $outline
+		 */
+		static function DrawCircle($image, $x, $y, $size, $fill, $outline){
+			if (!empty($fill)){
+				$fill = CoreUtils::Hex2Rgb($fill);
+				$fill = imagecolorallocate($image, $fill[0], $fill[1], $fill[2]);
+			}
+			if (is_string($outline)){
+				$outline = CoreUtils::Hex2Rgb($outline);
+				$outline = imagecolorallocate($image, $outline[0], $outline[1], $outline[2]);
+			}
+
+			if (is_array($size)){
+				$width = $size[0];
+				$height = $size[1];
+				$x2 = $x + $width;
+				$y2 = $y + $height;
+			}
+			else {
+				$x2 = $x + $size;
+				$y2 = $y + $size;
+				$width = $height = $size;
+			}
+			$cx = CoreUtils::Average($x,$x2);
+			$cy = CoreUtils::Average($y,$y2);
+
+			if (isset($fill))
+				imagefilledellipse($image, $cx, $cy, $width, $height, $fill);
+			imageellipse($image, $cx, $cy, $width, $height, $outline);
+		}
+
+		/**
 		 * Writes on an image
 		 *
-		 * @param resource $image
-		 * @param string   $text
-		 * @param int      $x
-		 * @param int      $fontsize
-		 * @param int      $fontcolor
-		 * @param array    $origin
-		 * @param string   $FontFile
+		 * @param resource   $image
+		 * @param string     $text
+		 * @param int        $x
+		 * @param int        $fontsize
+		 * @param int        $fontcolor
+		 * @param array|null $origin
+		 * @param string     $FontFile
+		 * @param array      $box
+		 * @param int        $yOffset
+		 *
+		 * @return array
 		 */
-		static function Write($image, $text, $x, $fontsize, $fontcolor, &$origin, $FontFile){
+		static function Write($image, $text, $x, $fontsize, $fontcolor, &$origin, $FontFile, $box = null, $yOffset = 0){
 			if (is_string($fontcolor))
 				$fontcolor = imagecolorallocate($image, 0, 0, 0);
 
-			$box = self::SaneGetTTFBox($fontsize, $FontFile, $text);
-			$origin['y'] += $box['height'];
+			if (empty($box)){
+				$box = self::SaneGetTTFBox($fontsize, $FontFile, $text);
+				$origin['y'] += $box['height'];
+				$y = $origin['y'] - $box['bottom right']['y'];
+			}
+			else $y = $origin['y'] + $box['height'] - $box['bottom right']['y'];
 
-			imagettftext($image, $fontsize, 0, $x, $origin['y'], $fontcolor, $FontFile, $text);
+			imagettftext($image, $fontsize, 0, $x, $y + $yOffset, $fontcolor, $FontFile, $text);
+
+			return array($x, $y);
 		}
 
 
@@ -185,14 +232,8 @@
 				'top right' => array('x' => $box[4], 'y' => $box[5]),
 				'top left' => array('x' => $box[6], 'y' => $box[7]),
 			);
-			$return['width'] = max(
-				$return['top right']['x'] - $return['top left']['x'],
-				$return['bottom right']['x'] - $return['bottom left']['x']
-			);
-			$return['height'] = max(
-				$return['bottom left']['y'] - $return['top left']['y'],
-				$return['bottom right']['y'] - $return['top right']['y']
-			);
+			$return['width'] = abs($return['bottom right']['x'] - $return['top left']['x']);
+			$return['height'] = abs($return['bottom right']['y'] - $return['top left']['y']);
 
 			return $return;
 		}
@@ -249,5 +290,38 @@
 			header("Content-Type: image/$content_type");
 			readfile($path);
 			exit;
+		}
+
+		/**
+		 * Calculate and recreate the base image in case its size need to be increased
+		 *
+		 * @param int      $OutWidth
+		 * @param int      $OutHeight
+		 * @param int      $WidthIncrease
+		 * @param int      $HeightIncrease
+		 * @param resource $BaseImage
+		 * @param array    $origin
+		 */
+		static function CalcRedraw(&$OutWidth, &$OutHeight, $WidthIncrease, $HeightIncrease, &$BaseImage, $origin){
+			$Redraw = false;
+			if ($origin['x']+$WidthIncrease > $OutWidth){
+				$Redraw = true;
+				$origin['x'] += $WidthIncrease;
+			}
+			if ($origin['y']+$HeightIncrease > $OutHeight){
+				$Redraw = true;
+				$origin['y'] += $HeightIncrease;
+			}
+			if ($Redraw){
+				$NewWidth = max($origin['x'],$OutWidth);
+				$NewHeight = max($origin['y'],$OutHeight);
+				// Create new base image since height will increase, and copy contents of old one
+				$NewBaseImage = Image::CreateTransparent($NewWidth, $NewHeight);
+				Image::CopyExact($NewBaseImage, $BaseImage, 0, 0, $OutWidth, $OutHeight);
+				imagedestroy($BaseImage);
+				$BaseImage = $NewBaseImage;
+				$OutWidth = $NewWidth;
+				$OutHeight = $NewHeight;
+			}
 		}
 	}

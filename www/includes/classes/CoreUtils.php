@@ -812,8 +812,27 @@
 			return preg_replace('~(^|[^\\\\])([%_\[\]])~','$1\\\\$2', $str);
 		}
 
+		/**
+		 * Trims a string while truncating consecutive spaces
+		 *
+		 * @param string $str
+		 * @param string $chars
+		 *
+		 * @return string
+		 */
 		static function Trim($str, $chars = "\t\n\r\0\x0B"){
 			return regex_replace(new RegExp(' +'),' ',trim($str, $chars));
+		}
+
+		/**
+		 * Averages the numbers inside an array
+		 *
+		 * @param int[] $numbers
+		 *
+		 * @return float
+		 */
+		static function Average(...$numbers){
+			return array_sum($numbers)/count($numbers);
 		}
 
 		/**

@@ -272,14 +272,21 @@
 			$OutHeight = 0;
 			$SpriteWidth = $SpriteHeight = 0;
 			$SpriteRightMargin = 10;
-			$ColorSquareSize = 25;
+			$ColorCircleSize = 17;
+			$ColorCircleRMargin = 5;
+			$ColorNameFontSize = 12;
 			$FontFile = APPATH.'font/Celestia Medium Redux.ttf';
+			//$PixelatedFontFile = APPATH.'font/Volter (Goldfish).ttf';
+			$PixelatedFontFile = $FontFile;
 			if (!file_exists($FontFile))
 				throw new Exception('Font file missing');
 			$Name = $Appearance['label'];
 			$NameVerticalMargin = 5;
 			$NameFontSize = 22;
 			$TextMargin = 10;
+			$ColorsOutputted = 0;
+			$SplitTreshold = 12;
+			$ColumnRightMargin = 20;
 
 			// Detect if sprite exists and adjust image size & define starting positions
 			$SpritePath = APPATH.$SpriteRelPath;
@@ -303,14 +310,15 @@
 			// Get color groups & calculate the space they take up
 			$ColorGroups = \CG\ColorGroups::Get($Appearance['id']);
 			$CGCount = count($ColorGroups);
-			$CGFontSize = $NameFontSize/1.5;
-			$CGVerticalMargin = $NameVerticalMargin*1.5;
-			$GroupLabelBox = Image::SaneGetTTFBox($CGFontSize, $FontFile, 'AGIJKFagijkf');
-			$CGsHeight = $CGCount*($GroupLabelBox['height'] + ($CGVerticalMargin*2) + $ColorSquareSize);
+			$CGFontSize = round($NameFontSize/1.25);
+			$CGVerticalMargin = $NameVerticalMargin;
+			$GroupLabelBox = Image::SaneGetTTFBox($CGFontSize, $FontFile, 'ABCDEFGIJKLMOPQRSTUVWQYZabcdefghijklmnopqrstuvwxyz');
+			$ColorNameBox = Image::SaneGetTTFBox($ColorNameFontSize, $PixelatedFontFile, 'AGIJKFagijkf');
+			$CGsHeight = $CGCount*($GroupLabelBox['height'] + ($CGVerticalMargin*2) + $ColorCircleSize);
 
 			// Get export time & size
-			$ExportTS = "Image last updated: ".Time::Format(time(), FORMAT_FULL);
-			$ExportFontSize = $CGFontSize/1.5;
+			$ExportTS = "Generated at: ".Time::Format(time(), FORMAT_FULL);
+			$ExportFontSize = round($CGFontSize/1.5);
 			$ExportBox = Image::SaneGetTTFBox($ExportFontSize, $FontFile, $ExportTS);
 
 			// Check how long & tall appearance name is, and set image width
@@ -318,18 +326,19 @@
 			$OutWidth = $origin['x'] + max($NameBox['width'], $ExportBox['width']) + $TextMargin;
 
 			// Set image height
-			$OutHeight = max($origin['y'] + (($NameVerticalMargin*3) + $NameBox['height'] + $ExportBox['height']) + $CGsHeight, $OutHeight);
+			$OutHeight = max($origin['y'] + (($NameVerticalMargin*4) + $NameBox['height'] + $ExportBox['height'] + $CGsHeight), $OutHeight);
 
 			// Create base image
 			$BaseImage = Image::CreateTransparent($OutWidth, $OutHeight);
 			$BLACK = imagecolorallocate($BaseImage, 0, 0, 0);
+$RED = imagecolorallocate($BaseImage, 255, 0, 0);
 
 			// If sprite exists, output it on base image
 			if ($SpriteExists)
 				Image::CopyExact($BaseImage, $Sprite, 0, 0, $SpriteWidth, $SpriteHeight);
 
 			// Output appearance name
-			$origin['y'] += $NameVerticalMargin;
+			$origin['y'] += $NameVerticalMargin*2;
 			Image::Write($BaseImage, $Name, $origin['x'], $NameFontSize, $BLACK, $origin, $FontFile);
 			$origin['y'] += $NameVerticalMargin;
 
@@ -337,38 +346,59 @@
 			Image::Write($BaseImage, $ExportTS, $origin['x'], $ExportFontSize, $BLACK, $origin, $FontFile);
 			$origin['y'] += $NameVerticalMargin;
 
-			if (!empty($ColorGroups))
+			if (!empty($ColorGroups)){
+				$LargestX = 0;
+				$LargestLabel = '';
 				foreach ($ColorGroups as $cg){
-					Image::Write($BaseImage, $cg['label'], $origin['x'], $CGFontSize , $BLACK, $origin, $FontFile);
-					$origin['y'] += $CGVerticalMargin;
+					$CGLabelBox = Image::SaneGetTTFBox($CGFontSize, $FontFile, $cg['label']);
+					Image::CalcRedraw($OutWidth, $OutHeight, $CGLabelBox['width']+$TextMargin, $GroupLabelBox['height']+$NameVerticalMargin+$CGVerticalMargin, $BaseImage, $origin);
+					Image::Write($BaseImage, $cg['label'], $origin['x'], $CGFontSize, $BLACK, $origin, $FontFile, $GroupLabelBox);
+					$origin['y'] += $GroupLabelBox['height']+$CGVerticalMargin;
+
+					if ($CGLabelBox['width'] > $LargestX){
+						$LargestX = $CGLabelBox['width'];
+						$LargestLabel = $cg['label'];
+					}
 
 					$Colors = \CG\Colors::Get($cg['groupid']);
-					if (!empty($Colors)){
-						$part = 0;
+					if (!empty($Colors))
 						foreach ($Colors as $c){
-							$add = $part === 0 ? 0 : $part*5;
-							$x = $origin['x']+($part*$ColorSquareSize)+$add;
-							if ($x+$ColorSquareSize > $OutWidth){
-								$part = 0;
-								$SizeIncrease = $ColorSquareSize + $CGVerticalMargin;
-								$origin['y'] += $SizeIncrease;
-								$x = $origin['x'];
+							$ColorNameLeftOffset = $ColorCircleSize + $ColorCircleRMargin;
+							$CNBox = Image::SaneGetTTFBox($ColorNameFontSize, $PixelatedFontFile, $c['label']);
 
-								// Create new base image since height will increase, and copy contents of old one
-								$NewBaseImage = Image::CreateTransparent($OutWidth, $OutHeight + $SizeIncrease);
-								Image::CopyExact($NewBaseImage, $BaseImage, 0, 0, $OutWidth, $OutHeight);
-								imagedestroy($BaseImage);
-								$BaseImage = $NewBaseImage;
-								$OutHeight += $SizeIncrease;
+							$WidthIncrease = $ColorNameLeftOffset + $CNBox['width'] + $TextMargin;
+							$HeightIncrease = max($ColorCircleSize, $CNBox['height']) + $CGVerticalMargin;
+							Image::CalcRedraw($OutWidth, $OutHeight, $WidthIncrease, $HeightIncrease, $BaseImage, $origin);
+
+							Image::DrawCircle($BaseImage, $origin['x'], $origin['y'], $ColorCircleSize, $c['hex'], $BLACK);
+
+							$yOffset = 2;
+							Image::Write($BaseImage, $c['label'], $origin['x'] + $ColorNameLeftOffset, $ColorNameFontSize, $BLACK, $origin, $PixelatedFontFile, $ColorNameBox, $yOffset);
+							$origin['y'] += $HeightIncrease;
+
+							$ColorsOutputted++;
+
+							$TotalWidth = $ColorNameLeftOffset+$CNBox['width'];
+							if ($TotalWidth > $LargestX){
+								$LargestX = $TotalWidth;
+								$LargestLabel = $c['label'];
 							}
+						};
 
-							Image::DrawSquare($BaseImage, $x, $origin['y'], $ColorSquareSize, $c['hex'], $BLACK);
-							$part++;
-						}
+					if ($ColorsOutputted > $SplitTreshold){
+						Image::CalcRedraw($OutWidth, $OutHeight, 0, $NameVerticalMargin, $BaseImage, $origin);
+						$origin['y'] =
+							($NameVerticalMargin * 4)
+							+ Image::SaneGetTTFBox($NameFontSize, $FontFile, $Name)['height']
+							+ Image::SaneGetTTFBox($ExportFontSize, $FontFile, $ExportTS)['height'];
 
-						$origin['y'] += $ColorSquareSize + $CGVerticalMargin;
+						$origin['x'] += $LargestX+$ColumnRightMargin;
+						$ColorsOutputted = 0;
+						$LargestX = 0;
 					}
+					else $origin['y'] += $NameVerticalMargin;
 				};
+			}
 
 			$FinalBase = Image::CreateWhiteBG($OutWidth, $OutHeight);
 			Image::DrawSquare($FinalBase, 0, 0, array($OutWidth, $OutHeight), null, $BLACK);
