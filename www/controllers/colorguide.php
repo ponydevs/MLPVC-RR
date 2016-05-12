@@ -809,9 +809,18 @@
 	// Matching IDs:                                    [-1-] [-2-]              [---3---]
 	if (regex_match(new RegExp('^(?:appearance|v)/(?:.*?(\d+)|(\d+)(?:-.*)?)(?:\.(png|svg))?'),$data,$_match)){
 		$asFile = !empty($_match[3]);
-		$Appearance = $CGDb->where('id', (int)($_match[1]??$_match[2]))->where('ishuman', $EQG)->getOne('appearances', $asFile ? 'id,label,cm_dir' : null);
+		$Appearance = $CGDb->where('id', (int)($_match[1]??$_match[2]))->getOne('appearances', $asFile ? 'id,label,cm_dir' : null);
 		if (empty($Appearance))
 			CoreUtils::NotFound();
+
+		if ($Appearance['ishuman'] && !$EQG){
+			$EQG = 1;
+			$CGPath = '/cg/eqg';
+		}
+		else if (!$Appearance['ishuman'] && $EQG){
+			$EQG = 0;
+			$CGPath = '/cg';
+		}
 
 		if ($asFile){
 			switch ($_match[3]){
