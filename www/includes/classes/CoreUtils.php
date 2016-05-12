@@ -214,6 +214,8 @@
 				CoreUtils::Respond("HTTP 404: ".(POST_REQUEST?'Endpoint':'Page')." ($RQURI) does not exist", 0);
 			}
 
+			global $do;
+			$do = '404';
 			self::LoadPage(array(
 				'title' => '404',
 				'view' => '404',
