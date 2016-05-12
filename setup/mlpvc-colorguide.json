@@ -11381,7 +11381,7 @@
 			"id": 11,
 			"order": 69,
 			"label": "Derpy Hooves / Muffins",
-			"notes": "",
+			"notes": "Far legs use darker colors.\nHer top iris highlight is the same color as the bottom stop on the iris gradient.",
 			"cm_favme": "da27cuh",
 			"ishuman": false,
 			"added": "2015-08-26 05:53:49+02",
@@ -17929,6 +17929,83 @@
 							"order": 8,
 							"label": "Undershirt",
 							"hex": "#FFFFFF"
+						}
+					]
+				},
+				"739": {
+					"groupid": 739,
+					"label": "Luggage",
+					"order": 8,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Front",
+							"hex": "#932358"
+						},
+						{
+							"order": 1,
+							"label": "Side/Front Pattern",
+							"hex": "#CA4485"
+						},
+						{
+							"order": 2,
+							"label": "Side Separator",
+							"hex": "#A42B66"
+						},
+						{
+							"order": 3,
+							"label": "Flower Centers",
+							"hex": "#FFFFFF"
+						},
+						{
+							"order": 4,
+							"label": "Flower Petals 1",
+							"hex": "#EB94C6"
+						},
+						{
+							"order": 5,
+							"label": "Flower Petals 2",
+							"hex": "#5F96C9"
+						},
+						{
+							"order": 6,
+							"label": "Flower Petals 3",
+							"hex": "#6CD0A9"
+						},
+						{
+							"order": 7,
+							"label": "Flower Petals 4",
+							"hex": "#5EA8C0"
+						},
+						{
+							"order": 8,
+							"label": "Flower Petals 5",
+							"hex": "#CEA7DB"
+						},
+						{
+							"order": 9,
+							"label": "Flower Petals 5",
+							"hex": "#E08725"
+						},
+						{
+							"order": 10,
+							"label": "Flower Petals 5",
+							"hex": "#E7F7CA"
+						},
+						{
+							"order": 11,
+							"label": "Flower Petals 5",
+							"hex": "#E2C444"
+						},
+						{
+							"order": 12,
+							"label": "Handle",
+							"hex": "#2C1128"
+						},
+						{
+							"order": 13,
+							"label": "Handle Trim",
+							"hex": "#C1B528"
 						}
 					]
 				}

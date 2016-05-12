@@ -209,7 +209,8 @@ INSERT INTO appearances VALUES
 (7, 7, 'Spike', '', NULL, false, '2015-09-21 21:43:59+02', NULL, NULL),
 (9, 14, 'Princess Luna', '', NULL, false, '2015-09-29 20:55:38+02', NULL, NULL),
 (10, 44, 'Minuette', 'For convenience, the color of the glass on her cutie mark is solid rather than transparent, thus the sand should be above.', NULL, false, '2015-07-25 16:49:44+02', NULL, NULL),
-(11, 69, 'Derpy Hooves / Muffins', '', 'da27cuh', false, '2015-08-26 05:53:49+02', NULL, true),
+(11, 69, 'Derpy Hooves / Muffins', 'Far legs use darker colors.
+Her top iris highlight is the same color as the bottom stop on the iris gradient.', 'da27cuh', false, '2015-08-26 05:53:49+02', NULL, true),
 (12, 47, 'Lyra Heartstrings', '', NULL, false, '2015-08-26 06:08:33+02', NULL, NULL),
 (13, 59, 'Whoa Nelly', 'Special eyeball color.
 Cutie Mark head colors are different from normal ones.', NULL, false, '2015-09-17 05:43:22+02', NULL, NULL),
@@ -1037,14 +1038,15 @@ INSERT INTO colorgroups VALUES
 (735, 136, 'Earrings', 4),
 (736, 136, 'Scarf', 5),
 (737, 136, 'Necklace', 6),
-(738, 136, 'Outfit', 7);
+(738, 136, 'Outfit', 7),
+(739, 136, 'Luggage', 8);
 
 
 --
 -- Name: colorgroups_groupid_seq; Type: SEQUENCE SET; Schema: public; Owner: mlpvc-rr
 --
 
-SELECT pg_catalog.setval('colorgroups_groupid_seq', 738, true);
+SELECT pg_catalog.setval('colorgroups_groupid_seq', 739, true);
 
 
 --
@@ -3761,7 +3763,21 @@ INSERT INTO colors VALUES
 (738, 5, 'Button Fill', '#FFCF4E'),
 (738, 6, 'Button Shadow Outline', '#C78E36'),
 (738, 7, 'Button Shadow Fill', '#FFC54D'),
-(738, 8, 'Undershirt', '#FFFFFF');
+(738, 8, 'Undershirt', '#FFFFFF'),
+(739, 0, 'Front', '#932358'),
+(739, 1, 'Side/Front Pattern', '#CA4485'),
+(739, 2, 'Side Separator', '#A42B66'),
+(739, 3, 'Flower Centers', '#FFFFFF'),
+(739, 4, 'Flower Petals 1', '#EB94C6'),
+(739, 5, 'Flower Petals 2', '#5F96C9'),
+(739, 6, 'Flower Petals 3', '#6CD0A9'),
+(739, 7, 'Flower Petals 4', '#5EA8C0'),
+(739, 8, 'Flower Petals 5', '#CEA7DB'),
+(739, 9, 'Flower Petals 5', '#E08725'),
+(739, 10, 'Flower Petals 5', '#E7F7CA'),
+(739, 11, 'Flower Petals 5', '#E2C444'),
+(739, 12, 'Handle', '#2C1128'),
+(739, 13, 'Handle Trim', '#C1B528');
 
 
 --
