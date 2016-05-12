@@ -136,7 +136,7 @@
 				if (!Permission::Sufficient('developer'))
 					CoreUtils::Respond('Reserving as other users is only allowed to the developer');
 
-				$post_as = trim($_POST['post_as']);
+				$post_as = CoreUtils::Trim($_POST['post_as']);
 				if (!$USERNAME_REGEX->match($post_as))
 					CoreUtils::Respond('Username format is invalid');
 

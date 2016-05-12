@@ -438,6 +438,6 @@ HTML;
 		 * @return string
 		 */
 		static function GetSafeLabel($Appearance){
-			return trim(regex_replace(new \RegExp('-+'),'-',regex_replace(new \RegExp('[^A-Za-z\d\-]'),'-',$Appearance['label'])),'-');
+			return \CoreUtils::Trim(regex_replace(new \RegExp('-+'),'-',regex_replace(new \RegExp('[^A-Za-z\d\-]'),'-',$Appearance['label'])),'-');
 		}
 	}

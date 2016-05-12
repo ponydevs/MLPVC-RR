@@ -115,7 +115,7 @@
 
 			$textRows = preg_split("/(\r\n|\n|\r){2}/", $text);
 			foreach ($textRows as $row)
-				$HTML .= '<p>'.trim($row).'</p>';
+				$HTML .= '<p>'.self::Trim($row).'</p>';
 
 			if ($center)
 				$type .= ' align-center';
@@ -810,6 +810,10 @@
 		 */
 		static function EscapeLikeValue($str){
 			return preg_replace('~(^|[^\\\\])([%_\[\]])~','$1\\\\$2', $str);
+		}
+
+		static function Trim($str, $chars = "\t\n\r\0\x0B"){
+			return regex_replace(new RegExp(' +'),' ',trim($str, $chars));
 		}
 
 		/**

@@ -37,7 +37,7 @@
 		 * @return mixed
 		 */
 		static function Process($key){
-			$value = trim($_POST['value']);
+			$value = CoreUtils::Trim($_POST['value']);
 
 			if ($value === '')
 				return null;

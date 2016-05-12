@@ -193,13 +193,14 @@
 		static function ProcessSearch($q){
 			global $CGDb, $TAG_NAME_REGEX;
 
-			$tokens = array_map('trim',explode(',',strtolower($q)));
+			$tokens = explode(',',strtolower($q));
 			if (count($tokens) > 6)
 				throw new Exception('You may only search for up to 6 tags/labels');
 			$SearchTagIDs = array();
 			$SearchLabelLIKEs = array();
 
 			foreach ($tokens as $token){
+				$token = CoreUtils::Trim($token);
 				// Search for a tag
 				if (regex_match($TAG_NAME_REGEX, $token)){
 					$err = CoreUtils::CheckStringValidity($token, "Tag name", INVERSE_TAG_NAME_PATTERN, true);

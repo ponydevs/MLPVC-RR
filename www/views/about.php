@@ -7,7 +7,7 @@
 		echo str_replace(GITHUB_URL.'/blob/master/www','',$about);
 
 		$osver = PHP_OS === 'WINNT'
-			? str_replace('Caption=','',trim(shell_exec('wmic os get Caption /value')))
+			? str_replace('Caption=','',CoreUtils::Trim(shell_exec('wmic os get Caption /value')))
 			: regex_replace(new RegExp('^[\s\S]*Description:\s+(\w+).*(\d+\.\d+(?:\.\d)?)\s+(\(\w+\))[\s\S]*$'),'$1 $2 $3',shell_exec('lsb_release -da'));
 		$phpver = preg_replace('/^(\d+(?:\.\d+)*).*$/','$1',PHP_VERSION);
 		$server = implode(' ',array_slice(preg_split('~[/ ]~',$_SERVER['SERVER_SOFTWARE']),0,2));

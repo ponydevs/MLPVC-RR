@@ -172,7 +172,7 @@
 
 	$ByID = $currentUser['id'];
 	if (Permission::Sufficient('developer') && !empty($_POST['post_as'])){
-		$username = trim($_POST['post_as']);
+		$username = CoreUtils::Trim($_POST['post_as']);
 		$PostAs = User::Get($username, 'name', '');
 
 		if (empty($PostAs))

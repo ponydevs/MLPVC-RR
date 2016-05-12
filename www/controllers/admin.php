@@ -54,7 +54,7 @@
 
 							if (empty($_POST['label']))
 								CoreUtils::Respond('Link label is missing');
-							$label = trim($_POST['label']);
+							$label = CoreUtils::Trim($_POST['label']);
 							if ($creating || $Link['label'] !== $label){
 								$ll = strlen($label);
 								if ($ll < 3 || $ll > 40)
@@ -65,7 +65,7 @@
 
 							if (empty($_POST['url']))
 								CoreUtils::Respond('Link URL is missing');
-							$url = trim($_POST['url']);
+							$url = CoreUtils::Trim($_POST['url']);
 							if ($creating || $Link['url'] !== $url){
 								$ul = strlen($url);
 								if (stripos($url, ABSPATH) === 0)
@@ -80,20 +80,20 @@
 							}
 
 							if (!empty($_POST['title'])){
-								$title = trim($_POST['title']);
+								$title = CoreUtils::Trim($_POST['title']);
 								if ($creating || $Link['title'] !== $title){
 									$tl = strlen($title);
 									if ($tl < 3 || $tl > 255)
 										CoreUtils::Respond('Link title must be between 3 and 255 characters long');
 									CoreUtils::CheckStringValidity($title, 'Link title', INVERSE_PRINTABLE_ASCII_REGEX);
-									$data['title'] = trim($title);
+									$data['title'] = CoreUtils::Trim($title);
 								}
 							}
 							else $data['title'] = '';
 
 							if (empty($_POST['minrole']))
 								CoreUtils::Respond('Minimum role is missing');
-							$minrole = trim($_POST['minrole']);
+							$minrole = CoreUtils::Trim($_POST['minrole']);
 							if ($creating || $Link['minrole'] !== $minrole){
 								if (!isset(Permission::$ROLES_ASSOC[$minrole]) || !Permission::Sufficient('user', $minrole))
 									CoreUtils::Respond('Minumum role is invalid');
@@ -117,7 +117,7 @@
 					if (!isset($_POST['list']))
 						CoreUtils::Respond('Missing ordering information');
 
-					$list = explode(',',regex_replace(new RegExp('[^\d,]'),'',trim($_POST['list'])));
+					$list = explode(',',regex_replace(new RegExp('[^\d,]'),'',CoreUtils::Trim($_POST['list'])));
 					$order = 1;
 					foreach ($list as $id){
 						if (!$Database->where('id', $id)->update('usefullinks', array('order' => $order++)))

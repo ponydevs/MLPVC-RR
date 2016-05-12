@@ -11,7 +11,7 @@
 	class ImageProvider {
 		public $preview = false, $fullsize = false, $title = '', $provider, $id, $author = null;
 		public function __construct($url, $reqProv = null){
-			$provider = $this->get_provider(trim($url));
+			$provider = $this->get_provider(CoreUtils::Trim($url));
 			if (!empty($reqProv)){
 				if (!is_array($reqProv))
 					$reqProv = array($reqProv);

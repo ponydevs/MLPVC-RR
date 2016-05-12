@@ -29,7 +29,7 @@
 					if (!regex_match($TAG_NAME_REGEX, $_GET['s']))
 						CGUtils::TypeaheadRespond('[]');
 
-					$query = trim(strtolower($_GET['s']));
+					$query = CoreUtils::Trim(strtolower($_GET['s']));
 					$TagCheck = CGUtils::CheckEpisodeTagName($query);
 					if ($TagCheck !== false)
 						$query = $TagCheck;
@@ -62,7 +62,7 @@
 				if (empty($_POST['list']))
 					CoreUtils::Respond('The list of IDs is missing');
 
-				$list = trim($_POST['list']);
+				$list = CoreUtils::Trim($_POST['list']);
 				if (!regex_match(new RegExp('^\d+(?:,\d+)+$'), $list))
 					CoreUtils::Respond('The list of IDs is not formatted properly');
 
@@ -162,7 +162,7 @@
 
 					if (empty($_POST['label']))
 						CoreUtils::Respond('Label is missing');
-					$label = trim($_POST['label']);
+					$label = CoreUtils::Trim($_POST['label']);
 					$ll = strlen($label);
 					CoreUtils::CheckStringValidity($label, "Appearance name", INVERSE_PRINTABLE_ASCII_REGEX);
 					if ($ll < 4 || $ll > 70)
@@ -172,10 +172,10 @@
 					$data['label'] = $label;
 
 					if (!empty($_POST['notes'])){
-						$notes = trim($_POST['notes']);
+						$notes = CoreUtils::Trim($_POST['notes']);
 						CoreUtils::CheckStringValidity($label, "Appearance notes", INVERSE_PRINTABLE_ASCII_REGEX);
 						if ($Appearance['id'] === 0)
-							$notes = trim(CoreUtils::SanitizeHtml($notes));
+							$notes = CoreUtils::Trim(CoreUtils::SanitizeHtml($notes));
 						if (strlen($notes) > 1000 && ($creating || $Appearance['id'] !== 0))
 							CoreUtils::Respond('Appearance notes cannot be longer than 1000 characters');
 						if ($creating || $notes !== $Appearance['notes'])
@@ -184,7 +184,7 @@
 					else $data['notes'] = '';
 
 					if (!empty($_POST['cm_favme'])){
-						$cm_favme = trim($_POST['cm_favme']);
+						$cm_favme = CoreUtils::Trim($_POST['cm_favme']);
 						try {
 							$Image = new ImageProvider($cm_favme, array('fav.me', 'dA'));
 							$data['cm_favme'] = $Image->id;
@@ -202,7 +202,7 @@
 						if ($creating || $Appearance['cm_dir'] !== $cm_dir)
 							$data['cm_dir'] = $cm_dir;
 
-						$cm_preview = trim($_POST['cm_preview']);
+						$cm_preview = CoreUtils::Trim($_POST['cm_preview']);
 						if (empty($cm_preview))
 							$data['cm_preview'] = null;
 						else if ($creating || $cm_preview !== $Appearance['cm_preview']){
@@ -330,7 +330,7 @@
 						case "tag":
 							if (empty($_POST['tag_name']))
 								CoreUtils::Respond('Tag name is not specified');
-							$tag_name = strtolower(trim($_POST['tag_name']));
+							$tag_name = strtolower(CoreUtils::Trim($_POST['tag_name']));
 							if (!regex_match($TAG_NAME_REGEX,$tag_name))
 								CoreUtils::Respond('Invalid tag name');
 
@@ -403,7 +403,7 @@
 				if (empty($_POST['tagids']))
 					CoreUtils::Respond('Missing list of tags to update');
 
-				$tagIDs = array_map('intval', explode(',',trim($_POST['tagids'])));
+				$tagIDs = array_map('intval', explode(',',CoreUtils::Trim($_POST['tagids'])));
 				$counts = array();
 				$updates = 0;
 				foreach ($tagIDs as $tid){
@@ -529,7 +529,7 @@
 				CoreUtils::Respond(array('keep_tagged' => $keep_tagged));
 			}
 
-			$name = isset($_POST['name']) ? strtolower(trim($_POST['name'])) : null;
+			$name = isset($_POST['name']) ? strtolower(CoreUtils::Trim($_POST['name'])) : null;
 			$nl = !empty($name) ? strlen($name) : 0;
 			if ($nl < 3 || $nl > 30)
 				CoreUtils::Respond("Tag name must be between 3 and 30 characters");
@@ -549,7 +549,7 @@
 				$data['type'] = $epTagName === false ? null : 'ep';
 			}
 			else {
-				$type = trim($_POST['type']);
+				$type = CoreUtils::Trim($_POST['type']);
 				if (!isset(\CG\Tags::$TAG_TYPES_ASSOC[$type]))
 					CoreUtils::Respond("Invalid tag type: $type");
 
@@ -569,7 +569,7 @@
 
 			if (empty($_POST['title'])) $data['title'] = null;
 			else {
-				$title = trim($_POST['title']);
+				$title = CoreUtils::Trim($_POST['title']);
 				$tl = strlen($title);
 				if ($tl > 255)
 					CoreUtils::Respond("Your title exceeds the 255 character limit by ".($tl-255)." characters.");
@@ -686,7 +686,7 @@
 
 				if (empty($c['label']))
 					CoreUtils::Respond("You must specify a $color name $index");
-				$label = trim($c['label']);
+				$label = CoreUtils::Trim($c['label']);
 				CoreUtils::CheckStringValidity($label, "$Color $index name", INVERSE_PRINTABLE_ASCII_REGEX);
 				$ll = strlen($label);
 				if ($ll < 3 || $ll > 30)
@@ -695,7 +695,7 @@
 
 				if (empty($c['hex']))
 					CoreUtils::Respond("You must specify a $color code $index");
-				$hex = trim($c['hex']);
+				$hex = CoreUtils::Trim($c['hex']);
 				if (!$HEX_COLOR_PATTERN->match($hex, $_match))
 					CoreUtils::Respond("HEX $color is in an invalid format $index");
 				$append['hex'] = '#'.strtoupper($_match[1]);

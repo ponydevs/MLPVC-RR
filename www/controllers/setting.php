@@ -4,7 +4,7 @@
 		CoreUtils::NotFound();
 	CSRFProtection::Protect();
 
-	if (!regex_match(new RegExp('^([gs]et)/([a-z_]+)$'), trim($data), $_match))
+	if (!regex_match(new RegExp('^([gs]et)/([a-z_]+)$'), CoreUtils::Trim($data), $_match))
 		CoreUtils::Respond('Setting key invalid');
 
 	$getting = $_match[1] === 'get';

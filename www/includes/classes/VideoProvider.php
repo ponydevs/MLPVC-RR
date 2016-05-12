@@ -5,7 +5,7 @@
 		public $provider;
 		private $url;
 		public function __construct($url){
-			$this->url = trim($url);
+			$this->url = CoreUtils::Trim($url);
 			$this->provider = $this->get_provider($this->url);
 			self::$id = $this->provider['itemid'];
 			$this->get_embed($this->provider['itemid'], $this->provider['name']);

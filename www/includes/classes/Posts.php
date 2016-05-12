@@ -103,7 +103,7 @@
 			$editing = !empty($Post);
 
 			if (!empty($_POST['label'])){
-				$label = trim($_POST['label']);
+				$label = CoreUtils::Trim($_POST['label']);
 
 				if (!$editing || $label !== $Post['label']){
 					$labellen = strlen($label);

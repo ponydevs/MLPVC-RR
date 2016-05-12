@@ -77,6 +77,6 @@
 				};
 
 			$request = self::LegitimateRequest($url, $cookies, $referrer);
-			return regex_match(new RegExp('Location:\s+([^\r\n]+)'), $request['responseHeaders'], $_match) ? trim($_match[1]) : null;
+			return regex_match(new RegExp('Location:\s+([^\r\n]+)'), $request['responseHeaders'], $_match) ? CoreUtils::Trim($_match[1]) : null;
 		}
 	}

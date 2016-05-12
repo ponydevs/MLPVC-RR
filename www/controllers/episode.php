@@ -273,7 +273,7 @@
 
 			if (empty($_POST['title']))
 				CoreUtils::Respond('Episode title is missing or invalid');
-			$insert['title'] = trim($_POST['title']);
+			$insert['title'] = CoreUtils::Trim($_POST['title']);
 			if (strlen($insert['title']) < 5 || strlen($insert['title']) > 35)
 				CoreUtils::Respond('Episode title must be between 5 and 35 characters');
 			if (!$EP_TITLE_REGEX->match($insert['title']))

@@ -23,7 +23,7 @@
 
 			if (!isset($_POST['newrole']))
 				CoreUtils::Respond('The new group is not specified');
-			$newgroup = trim($_POST['newrole']);
+			$newgroup = CoreUtils::Trim($_POST['newrole']);
 			if (empty(Permission::$ROLES[$newgroup]))
 				CoreUtils::Respond('The specified group does not exist');
 			if ($targetUser['role'] === $newgroup)
@@ -60,7 +60,7 @@
 
 			if (empty($_POST['reason']))
 				CoreUtils::Respond('Please specify a reason');
-			$reason = trim($_POST['reason']);
+			$reason = CoreUtils::Trim($_POST['reason']);
 			$rlen = strlen($reason);
 			if ($rlen < 5 || $rlen > 255)
 				CoreUtils::Respond('Reason length must be between 5 and 255 characters');
