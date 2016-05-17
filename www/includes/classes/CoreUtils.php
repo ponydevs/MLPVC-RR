@@ -731,7 +731,7 @@
 		static function GetSidebarUsefulLinksList($wrap = true){
 			global $Database;
 			$HTML = $wrap ? '<ol>' : '';
-			$UsefulLinks = $Database->get('usefullinks');
+			$UsefulLinks = $Database->orderBy('"order"','ASC')->get('usefullinks');
 			foreach ($UsefulLinks as $l){
 				$href = "href='".CoreUtils::AposEncode($l['url'])."'";
 				if ($l['url'][0] === '#')
