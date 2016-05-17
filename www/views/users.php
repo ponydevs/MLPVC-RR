@@ -14,8 +14,7 @@
 		foreach (array_reverse(Permission::$ROLES) as $r => $v){
 			if (empty($Arranged[$r])) continue;
 			$users = $Arranged[$r];
-			$userCount = count($users);
-			$group = Permission::$ROLES_ASSOC[$r].($userCount !== 1 ? 's' : '');
+			$group = CoreUtils::MakePlural(Permission::$ROLES_ASSOC[$r], count($users), true);
 			$groupInitials = '['.Permission::LabelInitials($r).']';
 			$usersStr = array();
 			foreach ($users as $u)
@@ -23,7 +22,7 @@
 			$usersStr = implode(', ', $usersStr);
 			echo <<<HTML
 <section>
-	<h2><strong>$userCount</strong> $group $groupInitials</h2>
+	<h2>$group $groupInitials</h2>
 	$usersStr
 </section>
 HTML;

@@ -769,8 +769,10 @@
 		 * @return string
 		 */
 		static function MakePlural($w, $in, $prep = false){
-			return ($prep?"$in ":'').$w.($in!=1?'s':'');
+			return ($prep?"$in ":'').$w.($in != 1 && !in_array(strtolower($w),self::$_uncountableWords) ?'s':'');
 		}
+
+		private static $_uncountableWords = array('staff');
 
 		/**
 		 * Detect user's web browser based on user agent
