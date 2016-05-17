@@ -11,7 +11,7 @@
 		if (empty($Post))
 			CoreUtils::Respond("The specified $thing does not exist");
 
-		if (!(Permission::Sufficient('inspector') || ($thing === 'request' && empty($Post['reserved_by']) && $Post['requested_by'] === $currentUser['id'])))
+		if (!(Permission::Sufficient('staff') || ($thing === 'request' && empty($Post['reserved_by']) && $Post['requested_by'] === $currentUser['id'])))
 			CoreUtils::Respond();
 
 		if ($_match[1] === 'get'){
@@ -48,7 +48,7 @@
 		if ($Post['lock'])
 			CoreUtils::Respond('This post is locked, its image cannot be changed.');
 
-		if (!Permission::Sufficient('inspector') || $thing !== 'request' || !($Post['requested_by'] === $currentUser['id'] && empty($Post['reserved_by'])))
+		if (!Permission::Sufficient('staff') || $thing !== 'request' || !($Post['requested_by'] === $currentUser['id'] && empty($Post['reserved_by'])))
 			CoreUtils::Respond();
 
 		$Image = Posts::CheckImage($Post);
@@ -77,7 +77,7 @@
 		CoreUtils::Respond(array('preview' => $Image->preview));
 	}
 	else if (regex_match(new RegExp('^fix-(request|reservation)-stash/(\d+)$'), $data, $_match)){
-		if (!Permission::Sufficient('inspector'))
+		if (!Permission::Sufficient('staff'))
 			CoreUtils::Respond();
 
 		$thing = $_match[1];

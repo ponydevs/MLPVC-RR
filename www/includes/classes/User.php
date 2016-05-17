@@ -330,7 +330,7 @@ HTML;
 		static $PROFILE_SECTION_PRIVACY_LEVEL = array(
 			'developer' => "<span class='typcn typcn-cog color-red' title='Visible to: developer'></span>",
 			'public' => "<span class='typcn typcn-world color-blue' title='Visible to: public'></span>",
-			'inspector' => "<span class='typcn typcn-lock-closed' title='Visible to: you & group administrators'></span>",
+			'staff' => "<span class='typcn typcn-lock-closed' title='Visible to: you & group administrators'></span>",
 			'private' => "<span class='typcn typcn-lock-closed color-green' title='Visible to: you'></span>",
 		);
 
@@ -338,7 +338,7 @@ HTML;
 			global $Database;
 
 			$YouHave = $sameUser?'You have':'This user has';
-			$PrivateSection = $sameUser?User::$PROFILE_SECTION_PRIVACY_LEVEL['inspector']:'';
+			$PrivateSection = $sameUser?User::$PROFILE_SECTION_PRIVACY_LEVEL['staff']:'';
 
 			$cols = "id, season, episode, preview, label, posted";
 			$PendingReservations = $Database->where('reserved_by', $UserID)->where('deviation_id IS NULL')->get('reservations',null,$cols);
@@ -346,7 +346,7 @@ HTML;
 			$TotalPending = count($PendingReservations)+count($PendingRequestReservations);
 			$hasPending = $TotalPending > 0;
 			$HTML = '';
-			if (Permission::Sufficient('inspector') || $sameUser){
+			if (Permission::Sufficient('staff') || $sameUser){
 				$pendingCountReadable = ($hasPending>0?"<strong>$TotalPending</strong>":'no');
 				$posts = CoreUtils::MakePlural('reservation', $TotalPending);
 				$HTML .= <<<HTML

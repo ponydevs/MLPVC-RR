@@ -1,6 +1,6 @@
 <?php
 
-	if (!Permission::Sufficient('inspector') || !POST_REQUEST)
+	if (!Permission::Sufficient('staff') || !POST_REQUEST)
 		CoreUtils::NotFound();
 	CSRFProtection::Protect();
 

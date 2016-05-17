@@ -4,7 +4,7 @@
 	<p class="align-center">
 		If you can't find a character here, check the old guides: <a href="https://sta.sh/0kic0ngp3fy">Pony</a> / <a href="http://fav.me/d7120l1">EQG</a><br>
 		Looking for this information in a machine-readable format? <a href="https://raw.githubusercontent.com/<?=GITHUB_PROJECT_NAME?>/master/setup/mlpvc-colorguide.json" target="_blank" download="mlpvc-colorguide.json">JSON</a> / <a href="https://raw.githubusercontent.com/<?=GITHUB_PROJECT_NAME?>/master/setup/mlpvc-colorguide.pg.sql" target="_blank" download="mlpvc-colorguide.pg.sql">PgSQL</a></p>
-<? if (Permission::Sufficient('inspector')){ ?>
+<? if (Permission::Sufficient('staff')){ ?>
 	<div class="notice warn tagediting">
 		<label>Limited editing</label>
 		<p>Editing tags or colors from the guide page does not work on mobile devices. If you want to edit those, please go the appearance's page.</p>
@@ -14,7 +14,7 @@
 	if (!empty($Universal))
 		echo "<ul id='universal' class='appearance-list'>".\CG\Appearances::GetHTML(array($Universal), NOWRAP)."</ul>"; ?>
 	<p class='align-center links'>
-<? if (Permission::Sufficient('inspector')){ ?>
+<? if (Permission::Sufficient('staff')){ ?>
 		<button class='green typcn typcn-plus' id="new-appearance-btn">Add new <?=$EQG?'Character':'Pony'?></button>
 <? } ?>
 		<a class='btn blue typcn typcn-world' href="/<?=$color?>guide<?=$EQG?'':'/eqg'?>/1">View <?=$EQG?'Ponies':'Equestria Girls'?></a>
@@ -37,7 +37,7 @@
 		'EQG' => $EQG,
 		'AppearancePage' => false,
 	);
-	if (Permission::Sufficient('inspector'))
+	if (Permission::Sufficient('staff'))
 		$export = array_merge($export, array(
 			'TAG_TYPES_ASSOC' => \CG\Tags::$TAG_TYPES_ASSOC,
 			'MAX_SIZE' => CoreUtils::GetMaxUploadSize(),

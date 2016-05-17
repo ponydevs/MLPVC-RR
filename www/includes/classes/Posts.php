@@ -313,7 +313,7 @@ HTML;
 
 			}
 			else $resForm = $makeRes = '';
-			$addRes = Permission::Sufficient('inspector') ? '<button id="add-reservation-btn" class="darkblue">Add a reservation</button>' :'';
+			$addRes = Permission::Sufficient('staff') ? '<button id="add-reservation-btn" class="darkblue">Add a reservation</button>' :'';
 
 			return <<<HTML
 	<section id="reservations">
@@ -427,7 +427,7 @@ HTML;
 				$sameUser = $signedIn && $R['requested_by'] === $currentUser['id'];
 
 				$posted_at .= "Requested $permalink";
-				if (Permission::Sufficient('inspector') || $sameUser)
+				if (Permission::Sufficient('staff') || $sameUser)
 					$posted_at .= ' by '.($sameUser ? 'You' : User::GetProfileLink(User::Get($R['requested_by'])));
 			}
 			else $posted_at .= "Reserved $permalink";
@@ -451,7 +451,7 @@ HTML;
 							$Image .= "<span class='typcn typcn-tick' title='This submission has been accepted into the group gallery'></span>";
 						$Image .= "</a></div>";
 					}
-					if (Permission::Sufficient('inspector')){
+					if (Permission::Sufficient('staff')){
 						$Image .= $post_label.$posted_at.$reserved_at;
 						if (!empty($R['fullsize']))
 							$Image .= "<a href='{$R['fullsize']}' class='original' target='_blank'>Direct link to original image</a>";
@@ -480,7 +480,7 @@ HTML;
 			$sameUser = $signedIn && $By['id'] === $currentUser['id'];
 			$requestedByUser = $isRequest && $signedIn && $R['requested_by'] === $currentUser['id'];
 			$isNotReserved = empty($R['reserved_by']);
-			$CanEdit = (empty($R['lock']) && Permission::Sufficient('inspector')) || Permission::Sufficient('developer') || ($requestedByUser && $isNotReserved);
+			$CanEdit = (empty($R['lock']) && Permission::Sufficient('staff')) || Permission::Sufficient('developer') || ($requestedByUser && $isNotReserved);
 			$Buttons = array();
 
 			if (is_array($R) && $isNotReserved) $HTML = Permission::Sufficient('member') && !$view_only ? "<button class='reserve-request typcn typcn-user-add'>Reserve</button>" : '';
@@ -494,20 +494,20 @@ HTML;
 				$HTML =  "<div class='reserver'>$dAlink</div>";
 
 				$finished = !empty($R['deviation_id']);
-				$inspectorOrSameUser = ($sameUser && Permission::Sufficient('member')) || Permission::Sufficient('inspector');
-				if (!$finished && $inspectorOrSameUser){
+				$staffOrSameUser = ($sameUser && Permission::Sufficient('member')) || Permission::Sufficient('staff');
+				if (!$finished && $staffOrSameUser){
 					$Buttons[] = array('user-delete red cancel', 'Cancel Reservation');
 					$Buttons[] = array('attachment green finish', ($sameUser ? "I'm" : 'Mark as').' finished');
 				}
 				if ($finished && empty($R['lock'])){
-					if (Permission::Sufficient('inspector'))
+					if (Permission::Sufficient('staff'))
 						$Buttons[] = array((empty($R['preview'])?'trash delete-only red':'media-eject orange').' unfinish',empty($R['preview'])?'Delete':'Un-finish');
-					if ($inspectorOrSameUser)
+					if ($staffOrSameUser)
 						$Buttons[] = array('tick green check','Check');
 				}
 			}
 
-			if (empty($R['lock']) && empty($Buttons) && (Permission::Sufficient('inspector') || ($requestedByUser && $isNotReserved)))
+			if (empty($R['lock']) && empty($Buttons) && (Permission::Sufficient('staff') || ($requestedByUser && $isNotReserved)))
 				$Buttons[] = array('trash red delete','Delete');
 			if ($CanEdit)
 				array_splice($Buttons,0,0,array(array('pencil darkblue edit','Edit')));

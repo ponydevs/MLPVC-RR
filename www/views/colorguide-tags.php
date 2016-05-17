@@ -8,8 +8,8 @@
 	<?=$Pagination->HTML?>
 	<table id="tags">
 		<thead><?php
-	$cspan = Permission::Sufficient('inspector') ? '" colspan="2' : '';
-	$refresher = Permission::Sufficient('inspector') ? " <button class='typcn typcn-arrow-sync refresh-all' title='Refresh usage data on this page'></button>" : '';
+	$cspan = Permission::Sufficient('staff') ? '" colspan="2' : '';
+	$refresher = Permission::Sufficient('staff') ? " <button class='typcn typcn-arrow-sync refresh-all' title='Refresh usage data on this page'></button>" : '';
 	echo $thead = <<<HTML
 			<tr>
 				<th class="tid">ID</th>

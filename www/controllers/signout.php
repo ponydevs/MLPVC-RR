@@ -16,7 +16,7 @@
 		$col = 'user';
 		$val = $currentUser['id'];
 		if (!empty($_POST['username'])){
-			if (!Permission::Sufficient('manager') || isset($_REQUEST['unlink']))
+			if (!Permission::Sufficient('staff') || isset($_REQUEST['unlink']))
 				CoreUtils::Respond();
 			if (!$USERNAME_REGEX->match($_POST['username']))
 				CoreUtils::Respond('Invalid username');

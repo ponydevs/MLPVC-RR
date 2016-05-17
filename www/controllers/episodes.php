@@ -15,7 +15,7 @@
 		'do-css',
 		'js' => array('paginate',$do),
 	);
-	if (Permission::Sufficient('inspector'))
+	if (Permission::Sufficient('staff'))
 		$settings['js'] = array_merge(
 			$settings['js'],
 			array('moment-timezone',"$do-manage")

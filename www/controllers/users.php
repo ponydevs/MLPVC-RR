@@ -1,6 +1,6 @@
 <?php
 
-	if (!Permission::Sufficient('inspector'))
+	if (!Permission::Sufficient('staff'))
 		CoreUtils::NotFound();
 
 	CoreUtils::LoadPage(array(

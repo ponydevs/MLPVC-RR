@@ -13,7 +13,7 @@
 			echo ' <button id="change-role" class="blue typcn typcn-spanner'.($User['role']==='ban'?' hidden':'').'" title="Change '.CoreUtils::Posess($User['name']).' group"></button>';
 			$BanLabel = ($User['role']==='ban'?'Un-ban':'Ban').'ish';
 			$Icon = $User['role']==='ban'?'world':'weather-night';
-			if (Permission::Sufficient('inspector', $User['role']))
+			if (Permission::Sufficient('staff', $User['role']))
 				$Icon .= ' hidden';
 			echo ' <button id="ban-toggle" class="darkblue typcn typcn-'.$Icon.' '.strtolower($BanLabel).'" title="'."$BanLabel user".'"></button>';
 		}
@@ -47,9 +47,9 @@
 			$AwaitCount = count($AwaitingApproval);
 			$them = $AwaitCount!==1?'them':'it'; ?>
 		<section class="awaiting-approval">
-			<h2><?=$sameUser?User::$PROFILE_SECTION_PRIVACY_LEVEL['inspector']:''?>Vectors waiting for approval</h2>
+			<h2><?=$sameUser?User::$PROFILE_SECTION_PRIVACY_LEVEL['staff']:''?>Vectors waiting for approval</h2>
 <?php   if ($sameUser){ ?>
-			<p>After you finish an image and submit it to the group gallery, an inspector will check your vector and may ask you to fix some issues on your image, if any. After an image is accepted to the gallery, it can be marked as "approved", which gives it a green check mark, indicating that it's most likely free of any errors.</p>
+			<p>After you finish an image and submit it to the group gallery, an admin will check your vector and may ask you to fix some issues on your image, if any. After an image is accepted to the gallery, it can be marked as "approved", which gives it a green check mark, indicating that it's most likely free of any errors.</p>
 <?php   } ?>
 			<p><?="$YouHave ".(!$AwaitCount?'no':"<strong>$AwaitCount</strong>")?> image<?=$AwaitCount!==1?'s':''?> waiting to be submited to and/or approved by the group<?=!$AwaitCount?'.':(", listed below.".($sameUser?" We'd like to ask that you submit $them to the group gallery as soon as possible to have $them spot-checked for any issues. As stated in the rules, the goal is to add finished images to the group gallery, making $them easier to find for everyone.".($AwaitCount>10?" You seem to have a large number of images that have not been approved yet, please submit them to the group soon if you haven't already.":''):''))?></p>
 <?php   if ($AwaitCount){ ?>
@@ -104,7 +104,7 @@ HTML;
 				unset($Unbanishes);
 			}
 
-			$displayInitiator = Permission::Sufficient('inspector');
+			$displayInitiator = Permission::Sufficient('staff');
 
 			foreach ($Banishes as $b){
 				$initiator = $displayInitiator ? User::Get($b['initiator']) : null;
@@ -116,9 +116,9 @@ HTML;
 		</section>
 	</div>
 	<div class="settings"><?php
-		if ($sameUser || Permission::Sufficient('manager')){ ?>
+		if ($sameUser || Permission::Sufficient('staff')){ ?>
 		<section class="sessions">
-			<h2><?=$sameUser?User::$PROFILE_SECTION_PRIVACY_LEVEL['inspector']:''?>Sessions</h2>
+			<h2><?=$sameUser?User::$PROFILE_SECTION_PRIVACY_LEVEL['staff']:''?>Sessions</h2>
 <?php       if (isset($CurrentSession) || !empty($Sessions)){ ?>
 			<p>Below is a list of all the browsers <?=$sameUser?"you've":'this user has'?> logged in from.</p>
 			<ul class="session-list"><?php

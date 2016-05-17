@@ -4,7 +4,7 @@
 		$data = 'DJDavid98';
 
 	if (POST_REQUEST){
-		if (!Permission::Sufficient('inspector')) CoreUtils::Respond();
+		if (!Permission::Sufficient('staff')) CoreUtils::Respond();
 		CSRFProtection::Protect();
 
 		if (empty($data)) CoreUtils::NotFound();
@@ -37,7 +37,7 @@
 			$Session = $Database->where('id', $_match[1])->getOne('sessions');
 			if (empty($Session))
 				CoreUtils::Respond('This session does not exist');
-			if ($Session['user'] !== $currentUser['id'] && !Permission::Sufficient('inspector'))
+			if ($Session['user'] !== $currentUser['id'] && !Permission::Sufficient('staff'))
 				CoreUtils::Respond('You are not allowed to delete this session');
 
 			if (!$Database->where('id', $Session['id'])->delete('sessions'))
@@ -53,8 +53,8 @@
 			if (empty($targetUser)) CoreUtils::Respond('User not found');
 
 			if ($targetUser['id'] === $currentUser['id']) CoreUtils::Respond("You cannot $action yourself");
-			if (Permission::Sufficient('inspector', $targetUser['role']))
-				CoreUtils::Respond("You cannot $action people within the inspector or any higher group");
+			if (Permission::Sufficient('staff', $targetUser['role']))
+				CoreUtils::Respond("You cannot $action people within the assistant or any higher group");
 			if ($action == 'banish' && $targetUser['role'] === 'ban' || $action == 'un-banish' && $targetUser['role'] !== 'ban')
 				CoreUtils::Respond("This user has already been {$action}ed");
 
@@ -108,7 +108,7 @@
 	}
 	else {
 		$sameUser = $signedIn && $User['id'] === $currentUser['id'];
-		$canEdit = !$sameUser && Permission::Sufficient('inspector') && Permission::Sufficient($User['role']);
+		$canEdit = !$sameUser && Permission::Sufficient('staff') && Permission::Sufficient($User['role']);
 		$pagePath = "/@{$User['name']}";
 		CoreUtils::FixPath($pagePath);
 	}

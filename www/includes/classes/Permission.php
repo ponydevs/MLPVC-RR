@@ -4,12 +4,12 @@
 		public static
 			$ROLES_ASSOC = array(
 				'ban'       => 'Banished User',
-				'user'      => 'DeviantArt User',
 				'guest'     => 'Guest',
+				'user'      => 'DeviantArt User',
 				'member'    => 'Club Member',
-				'manager'   => 'Group Manager',
 				'assistant' => 'Assistant',
-				'inspector' => 'Vector Inspector',
+				'staff'     => 'Staff',
+				'admin'     => 'Administrator',
 				'developer' => 'Site Developer',
 			),
 			$ROLES = array(
@@ -18,19 +18,19 @@
 				'user'      => 2,
 				'member'    => 3,
 				'assistant' => 4,
-				'inspector' => 4,
-				'manager'   => 5,
+				'staff'     => 4,
+				'admin'     => 4,
 				'developer' => 255,
 			),
 			$ROLE_INITIALS = array(
-				'ban'       =>  'B',
-				'user'      =>  'U',
-				'guest'     =>  'G',
-				'member'    =>  'M',
-				'manager'   =>  'GM',
-				'assistant' =>  'A',
-				'inspector' =>  'VI',
-				'developer' =>  'SD',
+				'ban'       => 'B',
+				'guest'     => 'G',
+				'user'      => 'U',
+				'member'    => 'M',
+				'assistant' => 'As',
+				'staff'     => 'S',
+				'admin'     => 'A',
+				'developer' => 'SD',
 			);
 
 		/**

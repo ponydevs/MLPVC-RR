@@ -55,7 +55,7 @@
 				$RenderPath = APPATH."img/cg_render/{$p['id']}.png";
 				$FileModTime = '?t='.(file_exists($RenderPath) ? filemtime($RenderPath) : time());
 				$Actions = "<a class='darkblue btn typcn typcn-image' title='View as PNG' href='/cg/{$eqgp}v/{$p['id']}.png$FileModTime' target='_blank'></a>";
-				if (\Permission::Sufficient('inspector'))
+				if (\Permission::Sufficient('staff'))
 					$Actions .= "<button class='edit typcn typcn-pencil blue' title='Edit'></button>".
 					            ($p['id']!==0?"<button class='delete typcn typcn-trash red' title='Delete'></button>":'');
 				$safelabel = self::GetSafeLabel($p);
@@ -104,10 +104,10 @@
 		static function GetTagsHTML($PonyID, $wrap = WRAP, $Search = null){
 			global $CGDb;
 
-			$Tags = Tags::Get($PonyID, null, \Permission::Sufficient('inspector'));
+			$Tags = Tags::Get($PonyID, null, \Permission::Sufficient('staff'));
 
 			$HTML = '';
-			if (\Permission::Sufficient('inspector') && $PonyID !== 0)
+			if (\Permission::Sufficient('staff') && $PonyID !== 0)
 				$HTML .= "<input type='text' class='addtag tag' placeholder='Enter tag' pattern='".TAG_NAME_PATTERN."' maxlength='30' required>";
 			if (!empty($Tags)) foreach ($Tags as $i => $t){
 				$class = " class='tag id-{$t['tid']}".(!empty($t['synonym_of'])?' synonym':'').(!empty($t['type'])?' typ-'.$t['type']:'')."'";
@@ -150,7 +150,7 @@
 				}
 			}
 			else {
-				if (!\Permission::Sufficient('inspector')) return '';
+				if (!\Permission::Sufficient('staff')) return '';
 				$notes = '';
 			}
 			return $wrap ? "<div class='notes'>$notes</div>" : $notes;
@@ -182,10 +182,10 @@
 			$imgPth = self::GetSpriteURL($Appearance['id']);
 			if (!empty($imgPth)){
 				$img = "<a href='$imgPth' target='_blank' title='Open image in new tab'><img src='$imgPth' alt='".\CoreUtils::AposEncode($Appearance['label'])."'></a>";
-				if (\Permission::Sufficient('inspector'))
+				if (\Permission::Sufficient('staff'))
 					$img = "<div class='upload-wrap'>$img</div>";
 			}
-			else if (\Permission::Sufficient('inspector'))
+			else if (\Permission::Sufficient('staff'))
 				$img = "<div class='upload-wrap'><a><img src='/img/blank-pixel.png'></a></div>";
 			else return '';
 
@@ -208,7 +208,7 @@
 				$update = "Last updated ".\Time::Tag($update['timestamp']);
 			}
 			else {
-				if (!\Permission::Sufficient('inspector')) return '';
+				if (!\Permission::Sufficient('staff')) return '';
 				$update = '';
 			}
 			return $wrap ? "<div class='update'>$update</div>" : $update;

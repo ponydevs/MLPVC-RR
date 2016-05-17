@@ -163,7 +163,7 @@
 
 		// Renders HTML of the list of changes
 		static function GetChangesHTML($Changes, $wrap = true, $showAppearance = false){
-			$seeInitiator = Permission::Sufficient('inspector');
+			$seeInitiator = Permission::Sufficient('staff');
 			$PonyCache = array();
 			$HTML = $wrap ? '<ul id="changes">' : '';
 			foreach ($Changes as $c){

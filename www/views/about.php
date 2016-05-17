@@ -47,7 +47,7 @@ HTML;
 			<p>This website's complete codebase is <a href="<?=GITHUB_URL?>">available for anyone to see on GitHub</a>. The version number is the first few characters of the latest commit's ID. In this case, a commit is basically an update to the site. Whenever a new update is applied, the version number changes automatically.</p>
 		</div>
 	</section>
-<? if (Permission::Sufficient('inspector')){ ?>
+<? if (Permission::Sufficient('staff')){ ?>
 	<section>
 		<h2><a href="/users"><span class="typcn typcn-arrow-back"></span>Linked users</a></h2>
 		<p><em>This section has been moved to its own page.</em></p>

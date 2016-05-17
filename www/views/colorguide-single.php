@@ -9,7 +9,7 @@
 	<div id="p<?=$Appearance['id']?>">
 		<div class='align-center'>
 			<a class='darkblue btn typcn typcn-image' href='/<?=$color?>guide/appearance/<?="{$Appearance['id']}.png$FileModTime"?>' target='_blank'>View as PNG</a>
-<?  if (Permission::Sufficient('inspector')){ ?>
+<?  if (Permission::Sufficient('staff')){ ?>
 			<button class='blue edit typcn typcn-pencil'>Edit metadata</button>
 			<button class='red delete typcn typcn-trash'>Delete apperance</button>
 <?  } ?>
@@ -21,7 +21,7 @@
 			<?=CGUtils::GetChangesHTML($Changes)?>
 		</section>
 <?  }
-	if ($Appearance['id'] !== 0 && ($CGDb->where('ponyid',$Appearance['id'])->has('tagged') || Permission::Sufficient('inspector'))){ ?>
+	if ($Appearance['id'] !== 0 && ($CGDb->where('ponyid',$Appearance['id'])->has('tagged') || Permission::Sufficient('staff'))){ ?>
 		<section id="tags">
 			<h2><span class='typcn typcn-tags'></span>Tags</h2>
 			<div class='tags'><?=\CG\Appearances::GetTagsHTML($Appearance['id'],NOWRAP)?></div>
@@ -40,7 +40,7 @@
 		$preview = \CG\Appearances::GetCMPreviewURL($Appearance); ?>
 		<section class="approved-cutie-mark">
 			<h2>Recommended cutie mark vector</h2>
-<?=Permission::Sufficient('inspector')&&!isset($Appearance['cm_dir'])?CoreUtils::Notice('fail','Missing CM orientation, falling back to <strong>Tail-Head</strong>. Please edit the appaearance and provide an orientation!'):''?>
+<?=Permission::Sufficient('staff')&&!isset($Appearance['cm_dir'])?CoreUtils::Notice('fail','Missing CM orientation, falling back to <strong>Tail-Head</strong>. Please edit the appaearance and provide an orientation!'):''?>
 			<a id="pony-cm" href="http://fav.me/<?=$Appearance['cm_favme']?>" style="background-image:url('/colorguide/appearance/<?=$Appearance['id']?>.svg')">
 				<div class="img cm-dir-<?=$Appearance['cm_dir']===CM_DIR_HEAD_TO_TAIL?'ht':'th'?>" style="background-image:url('<?=CoreUtils::AposEncode($preview)?>')"></div>
 			</a>
@@ -71,7 +71,7 @@
 		'EQG' => $EQG,
 		'AppearancePage' => true,
 	);
-	if (Permission::Sufficient('inspector'))
+	if (Permission::Sufficient('staff'))
 		$export = array_merge($export, array(
 			'TAG_TYPES_ASSOC' => \CG\Tags::$TAG_TYPES_ASSOC,
 			'MAX_SIZE' => CoreUtils::GetMaxUploadSize(),

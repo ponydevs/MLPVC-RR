@@ -27,7 +27,7 @@
 			global $CGDb;
 
 			if (!$exporting){
-				$showSynonymTags = $showEpTags || \Permission::Sufficient('inspector');
+				$showSynonymTags = $showEpTags || \Permission::Sufficient('staff');
 				if (!$showSynonymTags)
 					$CGDb->where('"synonym_of" IS NULL');
 
@@ -122,7 +122,7 @@
 			$utils =
 			$refresh = '';
 
-			$canEdit = \Permission::Sufficient('inspector');
+			$canEdit = \Permission::Sufficient('staff');
 			if ($canEdit){
 				$refresh = " <button class='typcn typcn-arrow-sync refresh' title='Refresh use count'></button>";
 				$utils = "<td class='utils align-center'><button class='typcn typcn-minus delete' title='Delete'></button> ".

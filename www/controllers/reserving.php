@@ -26,10 +26,10 @@
 		if (empty($Thing)) CoreUtils::Respond("There's no $type with that ID");
 
 		if (!empty($Thing['lock']) && !Permission::Sufficient('developer'))
-			CoreUtils::Respond('This post has been approved and cannot be edited or removed.'.(Permission::Sufficient('inspector') && !Permission::Sufficient('developer')?' If a change is necessary please ask the developer to do it for you.':''));
+			CoreUtils::Respond('This post has been approved and cannot be edited or removed.'.(Permission::Sufficient('staff') && !Permission::Sufficient('developer')?' If a change is necessary please ask the developer to do it for you.':''));
 
 		if ($deleteing && $type === 'request'){
-			if (!Permission::Sufficient('inspector')){
+			if (!Permission::Sufficient('staff')){
 				if (!$signedIn || $Thing['requested_by'] !== $currentUser['id'])
 					CoreUtils::Respond();
 
@@ -97,7 +97,7 @@
 			if ($canceling)
 				$unfinishing = true;
 			if ($unfinishing){
-				if (($canceling && !$isUserReserver) && Permission::Insufficient('inspector'))
+				if (($canceling && !$isUserReserver) && Permission::Insufficient('staff'))
 					CoreUtils::Respond();
 
 				if (!$canceling && !isset($_REQUEST['unbind'])){
@@ -115,7 +115,7 @@
 				}
 				if (!$canceling){
 					if (isset($_REQUEST['unbind']) && $type === 'request'){
-						if (Permission::Insufficient('inspector') && !$isUserReserver)
+						if (Permission::Insufficient('staff') && !$isUserReserver)
 							CoreUtils::Respond('You cannot remove the reservation from this post');
 					}
 					else $update = array();
@@ -123,7 +123,7 @@
 				}
 			}
 			else if ($finishing){
-				if (!$isUserReserver && !Permission::Sufficient('inspector'))
+				if (!$isUserReserver && !Permission::Sufficient('staff'))
 					CoreUtils::Respond();
 				$update = Posts::CheckRequestFinishingImage($Thing['reserved_by']);
 			}
@@ -184,7 +184,7 @@
 		else CoreUtils::Respond(true);
 	}
 	else if ($type === 'reservation'){
-		if (!Permission::Sufficient('inspector'))
+		if (!Permission::Sufficient('staff'))
 			CoreUtils::Respond();
 		$_POST['allow_overwrite_reserver'] = true;
 		$insert = Posts::CheckRequestFinishingImage();

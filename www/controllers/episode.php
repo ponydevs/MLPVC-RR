@@ -20,7 +20,7 @@
 		unset($EpData);
 
 		if (regex_match(new RegExp('^delete/'.EPISODE_ID_PATTERN.'$'),$data,$_match)){
-			if (!Permission::Sufficient('inspector')) CoreUtils::Respond();
+			if (!Permission::Sufficient('staff')) CoreUtils::Respond();
 			list($season,$episode) = array_splice($_match,1,2);
 
 			$Episode = Episode::GetActual(intval($season, 10),intval($episode, 10));
@@ -241,7 +241,7 @@
 			}
 		}
 		else {
-			if (!Permission::Sufficient('inspector')) CoreUtils::Respond();
+			if (!Permission::Sufficient('staff')) CoreUtils::Respond();
 			$editing = regex_match(new RegExp('^edit\/'.EPISODE_ID_PATTERN.'$'),$data,$_match);
 			if ($editing){
 				list($season, $episode) = array_map('intval', array_splice($_match, 1, 2));

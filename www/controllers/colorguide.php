@@ -4,7 +4,7 @@
 	$SpritePath = APPATH.substr($SpriteRelPath,1);
 
 	if (POST_REQUEST || (isset($_GET['s']) && $data === "gettags")){
-		if (!Permission::Sufficient('inspector')) CoreUtils::Respond();
+		if (!Permission::Sufficient('staff')) CoreUtils::Respond();
 		if (POST_REQUEST) CSRFProtection::Protect();
 
 		$EQG = isset($_REQUEST['eqg']) ? 1 : 0;
@@ -57,7 +57,7 @@
 				if (!isset($_REQUEST['reorder']))
 					CoreUtils::NotFound();
 
-				if (!Permission::Sufficient('inspector'))
+				if (!Permission::Sufficient('staff'))
 					CoreUtils::Respond();
 				if (empty($_POST['list']))
 					CoreUtils::Respond('The list of IDs is missing');
@@ -751,7 +751,7 @@
 			$Pagination->Respond(get_taglist_html($Tags, NOWRAP), '#tags tbody');
 
 		$js = array('paginate');
-		if (Permission::Sufficient('inspector'))
+		if (Permission::Sufficient('staff'))
 			$js[] = "$do-tags";
 
 		CoreUtils::LoadPage(array(
@@ -845,7 +845,7 @@
 			'css' => array($do, "$do-single"),
 			'js' => array('jquery.qtip', 'jquery.ctxmenu', $do, "$do-single"),
 		);
-		if (Permission::Sufficient('inspector')){
+		if (Permission::Sufficient('staff')){
 			$settings['css'] = array_merge($settings['css'], $GUIDE_MANAGE_CSS);
 			$settings['js'] = array_merge($settings['js'],$GUIDE_MANAGE_JS);
 		}
@@ -862,7 +862,7 @@
 			CoreUtils::Respond(array('html' => CGUtils::GetFullListHTML($Appearances, $GuideOrder, NOWRAP)));
 
 		$js = array();
-		if (Permission::Sufficient('inspector'))
+		if (Permission::Sufficient('staff'))
 			$js[] = 'Sortable';
 		$js[] = "$do-full";
 
@@ -951,7 +951,7 @@
 		'css' => array($do),
 		'js' => array('jquery.qtip', 'jquery.ctxmenu', $do, 'paginate'),
 	);
-	if (Permission::Sufficient('inspector')){
+	if (Permission::Sufficient('staff')){
 		$settings['css'] = array_merge($settings['css'], $GUIDE_MANAGE_CSS);
 		$settings['js'] = array_merge($settings['js'],$GUIDE_MANAGE_JS);
 	}

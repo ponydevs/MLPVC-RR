@@ -317,7 +317,7 @@
 				if (!$isMovie){
 					$Title = Episode::FormatTitle($ep, AS_ARRAY);
 					$href = $PathStart.$Title['id'];
-					if (Permission::Sufficient('inspector'))
+					if (Permission::Sufficient('staff'))
 						$adminControls = "<span class='admincontrols'>" .
 							"<button class='edit-episode typcn typcn-pencil blue' title='Edit episode'></button> " .
 							"<button class='delete-episode typcn typcn-times red' title='Delete episode'></button>" .

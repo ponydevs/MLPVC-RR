@@ -9,20 +9,20 @@
 		$isMovie = $CurrentEpisode['season'] === 0;?>
 	<h1><?=Episode::FormatTitle($CurrentEpisode)?></h1>
 	<p>Vector Requests & Reservations</p>
-<?php   if (Permission::Sufficient('inspector')){ ?>
+<?php   if (Permission::Sufficient('staff')){ ?>
 	<p class="align-center"><em><?=$isMovie?'Movie':'Episode'?> added by <?=User::GetProfileLink(User::Get($CurrentEpisode['posted_by'])).' '.Time::Tag($CurrentEpisode['posted'])?></em></p>
 <?php   }
 	echo Episode::RenderVideos($CurrentEpisode); ?>
 	<section class="about-res">
-		<h2>What Vector Reservations Are<?=Permission::Sufficient('inspector')?'<button class="blue typcn typcn-pencil" id="edit-about_reservations">Edit</button>':''?></h2>
+		<h2>What Vector Reservations Are<?=Permission::Sufficient('staff')?'<button class="blue typcn typcn-pencil" id="edit-about_reservations">Edit</button>':''?></h2>
 		<?=Configuration::Get('about_reservations')?>
 	</section>
 	<section class="rules">
-		<h2>Reservation Rules<?=Permission::Sufficient('inspector')?'<button class="orange typcn typcn-pencil" id="edit-reservation_rules">Edit</button>':''?></h2>
+		<h2>Reservation Rules<?=Permission::Sufficient('staff')?'<button class="orange typcn typcn-pencil" id="edit-reservation_rules">Edit</button>':''?></h2>
 		<?=Configuration::Get('reservation_rules')?>
 	</section>
 <?php   echo Episode::GetAppearancesSectionHTML($CurrentEpisode);
-		if (Permission::Sufficient('inspector')){ ?>
+		if (Permission::Sufficient('staff')){ ?>
 	<section class="admin">
 		<h2>Administration area</h2>
 		<p class="align-center">
@@ -46,7 +46,7 @@
 	<h1>There's nothing here yet&hellip;</h1>
 	<p>&hellip;but there will be!</p>
 
-<?php   if (Permission::Sufficient('inspector'))
+<?php   if (Permission::Sufficient('staff'))
 			echo CoreUtils::Notice('info','No episodes found',"To make the site functional, you must add an episode to the database first. Head on over to the <a href='/episodes'>Episodes</a> page and add one now!");
 	} ?>
 </div>

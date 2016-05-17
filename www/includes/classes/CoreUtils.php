@@ -626,14 +626,14 @@
 			}
 			if ($GLOBALS['signedIn'])
 				$NavItems['u'] = array("/@{$GLOBALS['currentUser']['name']}",'Account');
-			if ($do === 'user' || Permission::Sufficient('inspector')){
+			if ($do === 'user' || Permission::Sufficient('staff')){
 				global $User, $sameUser;
 
-				$NavItems['users'] = array('/users', 'Users', Permission::Sufficient('inspector'));
+				$NavItems['users'] = array('/users', 'Users', Permission::Sufficient('staff'));
 				if (!empty($User) && empty($sameUser))
 					$NavItems['users']['subitem'] = $User['name'];
 			}
-			if (Permission::Sufficient('inspector')){
+			if (Permission::Sufficient('staff')){
 				$NavItems['admin'] = array('/admin', 'Admin');
 				global $task;
 				if ($task === 'logs'){
