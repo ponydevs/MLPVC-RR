@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 9.5.2
--- Dumped by pg_dump version 9.5.2
+-- Dumped from database version 9.5.3
+-- Dumped by pg_dump version 9.5.3
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -3800,6 +3800,7 @@ INSERT INTO colors VALUES
 --
 
 INSERT INTO tagged VALUES
+(1, 1),
 (1, 6),
 (1, 10),
 (1, 12),
@@ -4452,7 +4453,7 @@ INSERT INTO tagged VALUES
 --
 
 INSERT INTO tags VALUES
-(1, 'unicorn', NULL, 'spec', 33, NULL),
+(1, 'unicorn', NULL, 'spec', 34, NULL),
 (2, 'earth pony', NULL, 'spec', 40, NULL),
 (3, 'pegasus', NULL, 'spec', 21, NULL),
 (4, 'alicorn', NULL, 'spec', 5, NULL),
