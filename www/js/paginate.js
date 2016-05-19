@@ -55,7 +55,7 @@
 				});
 			else $.toPage.apply(obj, params);
 		});
-		$.toPage = function(target, silentfail, bypass, overwriteState){
+		$.toPage = function(target, silentfail, bypass, overwriteState, titleProcessor){
 			if (!target) target = location.pathname;
 			var newPageNumber = parseInt(target.replace(/^.*\/(\d+)(?:\?.*)?$/,'$1'), 10),
 				state = this.state || {};
@@ -99,6 +99,8 @@
 					});
 
 				// Preserve static page title component at the end
+				if (typeof titleProcessor === 'function')
+					document.title = titleProcessor(newPageNumber);
 				document.title = document.title.replace(pageRegex, 'Page '+newPageNumber);
 
 				var newURI = this.request_uri || (basePath+newPageNumber+

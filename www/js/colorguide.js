@@ -161,15 +161,21 @@ DocReady.push(function Colorguide(){
 
 		var $this = $(this),
 			$query = $this.find('input[name=q]'),
-			query = $this.serialize();
-		if (query === 'q=') query = false;
+			orig_query = $query.val(),
+			query = orig_query.trim().length === 0 ? false : $this.serialize();
 		$this.find('button[type=reset]').attr('disabled', query === false);
 
 		if (query !== false)
-			$.Dialog.wait('Navigation', 'Searching for <code>'+$query.val().replace(/</g,'&lt;')+'</code>');
+			$.Dialog.wait('Navigation', 'Searching for <code>'+orig_query.replace(/</g,'&lt;')+'</code>');
 		else $.Dialog.success('Navigation', 'Search terms cleared');
 
-		$.toPage.call({query:query}, window.location.pathname.replace(/\d+$/,'1'), true, true);
+		$.toPage.call({query:query}, window.location.pathname.replace(/\d+$/,'1'), true, true, false, function(){
+			if (query !== false)
+				return /^Page \d+/.test(document.title)
+					? orig_query+' - '+document.title
+					: document.title.replace(/^.*( - Page \d+)/, orig_query+'$1');
+			else return document.title.replace(/^.* - (Page \d+)/, '$1');
+		});
 	}).on('reset',function(e){
 		e.preventDefault();
 
