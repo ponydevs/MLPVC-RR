@@ -248,11 +248,12 @@
 							CoreUtils::Respond(true);
 					}
 
-					$Appearance = array_merge($Appearance, $data);
-					CoreUtils::Respond(array(
-						'label' => $Appearance['label'],
-						'notes' => \CG\Appearances::GetNotesHTML($Appearance, NOWRAP),
-					));
+					$EditedAppearance = array_merge($Appearance, $data);
+					$response = array('label' => $EditedAppearance['label']);
+					if ($data['label'] !== $Appearance['label'])
+						$response['newurl'] = $Appearance['id'].'-'.\CG\Appearances::GetSafeLabel($EditedAppearance);
+					$response['notes'] = \CG\Appearances::GetNotesHTML($EditedAppearance, NOWRAP);
+					CoreUtils::Respond($response);
 				break;
 				case "delete":
 					if ($Appearance['id'] === 0)

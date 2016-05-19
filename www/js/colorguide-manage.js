@@ -109,14 +109,15 @@ DocReady.push(function ColorguideManage(){
 					return;
 				$ponyLabel = $content.children('h1');
 			}
-			else $ponyLabel = $this.parent();
+			else $ponyLabel = $this.siblings().first();
 
 			$.Dialog.request(title,$ponyEditor.clone(true,true),'pony-editor','Save',function($form){
-				var $favme = $form.find('input[name=cm_favme]');
+				var $favme = $form.find('input[name=cm_favme]'),
+					ponyID = data.ponyID;
 				if (editing){
 					$form.find('input[name=label]').val(data.label);
 					var $txtarea = $form.find('textarea').val(data.notes);
-					if (parseInt(data.ponyID, 10) === 0)
+					if (parseInt(ponyID, 10) === 0)
 						$txtarea.removeAttr('maxlength');
 					if (data.cm_favme)
 						$favme.val(data.cm_favme);
@@ -135,7 +136,7 @@ DocReady.push(function ColorguideManage(){
 									$.Dialog.close();
 									$.Dialog.wait('Clear appearance image cache','Clearing cache');
 
-									$.post('/colorguide/clearrendercache/'+data.ponyID,$.mkAjaxHandler(function(){
+									$.post('/colorguide/clearrendercache/'+ponyID,$.mkAjaxHandler(function(){
 										if (!this.status) return $.Dialog.fail(false, this.message);
 
 										$.Dialog.success(false, this.message, true);
@@ -160,17 +161,22 @@ DocReady.push(function ColorguideManage(){
 				$form.on('submit',function(e){
 					e.preventDefault();
 
-					var newdata = $form.mkData();
+					var data = $form.mkData();
 					$.Dialog.wait(false, 'Saving changes');
 					if (AppearancePage)
-						newdata.APPEARANCE_PAGE = true;
+						data.APPEARANCE_PAGE = true;
 
-					$.post('/colorguide/'+(editing?'set/'+data.ponyID:'make')+EQGRq,newdata,$.mkAjaxHandler(function(){
+					$.post('/colorguide/'+(editing?'set/'+ponyID:'make')+EQGRq,data,$.mkAjaxHandler(function(){
 						if (!this.status) return $.Dialog.fail(false, this.message);
 
+						data = this;
 						if (editing){
 							if (!AppearancePage){
-								$ponyLabel.children().first().text(this.label);
+								$ponyLabel.text(data.label);
+								if (data.newurl)
+									$ponyLabel.attr('href',function(_, oldhref){
+										return oldhref.replace(/\/[^\/]+$/, '/'+data.newurl);
+									});
 								$ponyNotes.html(this.notes);
 								window.tooltips();
 								$.Dialog.close();
@@ -183,12 +189,11 @@ DocReady.push(function ColorguideManage(){
 							}
 						}
 						else {
-							var id = this.id, info = this.info;
 							$.Dialog.success(title, 'Appearance added');
 							$.Dialog.wait(title, 'Loading appearance page');
-							$.Navigation.visit('/colorguide/appearance/'+id,function(){
-								if (info)
-									$.Dialog.info(title, info);
+							$.Navigation.visit('/colorguide/appearance/'+ponyID,function(){
+								if (data.info)
+									$.Dialog.info(title, data.info);
 								else $.Dialog.close();
 							});
 						}
