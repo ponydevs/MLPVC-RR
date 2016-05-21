@@ -48,7 +48,7 @@
 		$Post = $Database->where('id', $_match[3])->getOne("{$type}s");
 		if (empty($Post)) CoreUtils::Respond("There's no $type with that ID");
 
-		if (!empty($Post['lock']) && Permission::Insufficient('developer'))
+		if (!empty($Post['lock']) && Permission::Insufficient('developer') && $action !== 'unlock')
 			CoreUtils::Respond('This post has been approved and cannot be edited or removed.');
 
 		if ($type === 'request' && $action === 'delete'){
@@ -120,11 +120,13 @@
 					CoreUtils::Respond($response);
 				break;
 				case 'unlock':
+					if (Permission::Insufficient('staff'))
+						CoreUtils::Respond();
 					if (empty($Post['lock']))
 						CoreUtils::Respond("This $type has not been approved yet");
 
 					if (Permission::Insufficient('developer') && CoreUtils::IsDeviationInClub($Post['deviation_id']))
-						CoreUtils::Respond("<a href='http://fav.me/{$Post['deviation_id']}'>This deviation</a> is still in the group and thus the post can't be unlocked");
+						CoreUtils::Respond("<a href='http://fav.me/{$Post['deviation_id']}'>This deviation</a> is part of the group gallery, which prevents the post from being unlocked.");
 
 					$Database->where('id', $Post['id'])->update("{$type}s", array('lock' => false));
 					$Post['lock'] = false;
