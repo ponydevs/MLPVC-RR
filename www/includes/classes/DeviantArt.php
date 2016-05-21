@@ -242,9 +242,9 @@
 			$AuthData['token'] = sha1($cookie);
 
 			$browser = CoreUtils::DetectBrowser();
-			foreach (array_keys($browser) as $v)
-				if (isset($browser[$v]))
-					$AuthData[$v] = $browser[$v];
+			foreach ($browser as $k => $v)
+				if (!empty($v))
+					$AuthData[$k] = $v;
 
 			if (empty($User)){
 				$MoreInfo = array(

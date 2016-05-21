@@ -792,9 +792,7 @@
 				if ($ver !== Browser::VERSION_UNKNOWN)
 					$Return['browser_ver'] = $ver;
 			}
-			$platform = $browser->getPlatform();
-			if ($platform !== Browser::PLATFORM_UNKNOWN)
-				$Return['platform'] = $platform;
+			$Return['platform'] = $browser->getPlatform();
 			return $Return;
 		}
 

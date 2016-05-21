@@ -253,7 +253,7 @@
 		 */
 		static function RenderSessionLi($Session, $current = false){
 			$browserClass = CoreUtils::BrowserNameToClass($Session['browser_name']);
-			$browserTitle = "{$Session['browser_name']} {$Session['browser_ver']}";
+			$browserTitle = !empty($Session['browser_name']) ? "{$Session['browser_name']} {$Session['browser_ver']}" : 'Unrecognized browser';
 			$platform = !empty($Session['platform']) ? "<span class='platform'>on <strong>{$Session['platform']}</strong></span>" : '';
 
 			$signoutText = !$current ? 'Delete' : 'Sign out';

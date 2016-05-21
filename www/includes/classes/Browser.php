@@ -90,7 +90,7 @@ class Browser {
 	const BROWSER_NETPOSITIVE = 'NetPositive'; // http://en.wikipedia.org/wiki/NetPositive (DEPRECATED)
 	const BROWSER_PHOENIX = 'Phoenix'; // http://en.wikipedia.org/wiki/History_of_Mozilla_Firefox (DEPRECATED)
 
-	const PLATFORM_UNKNOWN = 'unknown';
+	const PLATFORM_UNKNOWN = 'Unknown Platform';
 	const PLATFORM_WINDOWS = 'Windows';
 	const PLATFORM_WINPHONE = 'Windows Phone';
 	const PLATFORM_WINDOWS_CE = 'Windows CE';
