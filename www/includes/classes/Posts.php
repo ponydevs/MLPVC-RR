@@ -522,7 +522,7 @@ HTML;
 					$regularButton = count($Buttons) <3;
 					foreach ($Buttons as $b){
 						$WriteOut = "'".($regularButton ? ">{$b[1]}" : " title='".CoreUtils::AposEncode($b[1])."'>");
-						$HTML .= "<button class='typcn typcn-{$b[0]}$WriteOut</button> ";
+						$HTML .= "<button class='typcn typcn-{$b[0]}$WriteOut</button>";
 					}
 				}
 			}

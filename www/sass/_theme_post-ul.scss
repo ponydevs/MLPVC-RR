@@ -164,10 +164,6 @@
 			button {
 				display: inline-block;
 				font-size: 1.2em;
-
-				&:not(:last-child){
-					margin-right: 0;
-				}
 			}
 		}
 	}
