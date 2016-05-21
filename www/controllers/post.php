@@ -39,6 +39,223 @@
 			CoreUtils::Respond(ERR_DB_FAIL);
 		CoreUtils::Respond($update);
 	}
+	else if (regex_match(new RegExp('^((?:un)?(?:finish|lock|reserve)|add|delete)-(request|reservation)s?/(\d+)$'),$data,$_match)){
+		$type = $_match[2];
+		$action = $_match[1];
+
+		if (empty($_match[3]))
+			 CoreUtils::Respond("Missing $type ID");
+		$Post = $Database->where('id', $_match[3])->getOne("{$type}s");
+		if (empty($Post)) CoreUtils::Respond("There's no $type with that ID");
+
+		if (!empty($Post['lock']) && Permission::Insufficient('developer'))
+			CoreUtils::Respond('This post has been approved and cannot be edited or removed.');
+
+		if ($type === 'request' && $action === 'delete'){
+			if (!Permission::Sufficient('staff')){
+				if (!$signedIn || $Post['requested_by'] !== $currentUser['id'])
+					CoreUtils::Respond();
+
+				if (!empty($Post['reserved_by']))
+					CoreUtils::Respond('You cannot delete a request that has already been reserved by a group member');
+			}
+
+			if (!$Database->where('id', $Post['id'])->delete('requests'))
+				CoreUtils::Respond(ERR_DB_FAIL);
+
+			Log::Action('req_delete',array(
+				'season' => $Post['season'],
+				'episode' => $Post['episode'],
+				'id' => $Post['id'],
+				'label' => $Post['label'],
+				'type' => $Post['type'],
+				'requested_by' => $Post['requested_by'],
+				'posted' => $Post['posted'],
+				'reserved_by' => $Post['reserved_by'],
+				'deviation_id' => $Post['deviation_id'],
+				'lock' => $Post['lock'],
+			));
+
+			CoreUtils::Respond(true);
+		}
+
+		if (Permission::Insufficient('member'))
+			CoreUtils::Respond();
+
+		$isUserReserver = $Post['reserved_by'] === $currentUser['id'];
+		if (!empty($Post['reserved_by'])){
+			switch ($action){
+				case 'reserve':
+					if ($isUserReserver)
+						CoreUtils::Respond("You've already reserved this $type");
+					CoreUtils::Respond("This $type has already been reserved by somepony else");
+				break;
+				case 'lock':
+					if (empty($Post['deviation_id']))
+						CoreUtils::Respond("Only finished {$type}s can be locked");
+
+					$Status = CoreUtils::IsDeviationInClub($Post['deviation_id']);
+					if ($Status !== true)
+						CoreUtils::Respond(
+							$Status === false
+							? "The deviation has not been submitted to/accepted by the group yet"
+							: "There was an issue while checking the acceptance status (Error code: $Status)"
+						);
+
+					if (!$Database->where('id', $Post['id'])->update("{$type}s", array('lock' => true)))
+						CoreUtils::Respond(ERR_DB_FAIL);
+
+					Log::Action('post_lock',array(
+						'type' => $type,
+						'id' => $Post['id']
+					));
+
+					$Post['lock'] = true;
+					$response = array(
+						'message' => "The image appears to be in the group gallery and as such it is now marked as approved.",
+						'li' => Posts::GetLi($Post, $type === 'request'),
+					);
+					if ($isUserReserver)
+						$response['message'] .= " Thank you for your contribution!<div class='align-center'><apan class='sideways-smiley-face'>;)</span></div>";
+					CoreUtils::Respond($response);
+				break;
+				case 'unlock':
+					if (empty($Post['lock']))
+						CoreUtils::Respond("This $type has not been approved yet");
+
+					if (Permission::Insufficient('developer') && CoreUtils::IsDeviationInClub($Post['deviation_id']))
+						CoreUtils::Respond("<a href='http://fav.me/{$Post['deviation_id']}'>This deviation</a> is still in the group and thus the post can't be unlocked");
+
+					$Database->where('id', $Post['id'])->update("{$type}s", array('lock' => false));
+					$Post['lock'] = false;
+
+					CoreUtils::Respond(true);
+				break;
+				case 'unreserve':
+					if (!$isUserReserver && Permission::Insufficient('staff'))
+						CoreUtils::Respond();
+
+					if ($type === 'request'){
+						$update = array(
+							'reserved_by' => null,
+							'reserved_at' => null,
+						);
+						break;
+					}
+					else $_REQUEST['unbind'] = true;
+				case 'unfinish':
+					if (!$isUserReserver && Permission::Insufficient('staff'))
+						CoreUtils::Respond();
+
+					if (isset($_REQUEST['unbind'])){
+						if ($type === 'reservation'){
+							if (!$Database->where('id', $Post['id'])->delete('reservations'))
+								CoreUtils::Respond(ERR_DB_FAIL);
+
+							CoreUtils::Respond('Reservation deleted', 1);
+						}
+						else if ($type === 'request' && Permission::Insufficient('staff') && !$isUserReserver)
+							CoreUtils::Respond('You cannot remove the reservation from this post');
+
+						$update = array(
+							'reserved_by' => null,
+							'reserved_at' => null,
+						);
+					}
+					else if ($type === 'reservation' && empty($Post['preview']))
+						CoreUtils::Respond('This reservation was added directly and cannot be marked unfinished. To remove it, check the unbind from user checkbox.');
+
+					$update['deviation_id'] = null;
+
+					if (!$Database->where('id', $Post['id'])->update("{$type}s",$update))
+						CoreUtils::Respond(ERR_DB_FAIL);
+
+					CoreUtils::Respond(true);
+				break;
+				case 'finish':
+					if (!$isUserReserver && Permission::Insufficient('staff'))
+						CoreUtils::Respond();
+
+					$update = Posts::CheckRequestFinishingImage($Post['reserved_by']);
+
+					if (!$Database->where('id', $Post['id'])->update("{$type}s",$update))
+						CoreUtils::Respond(ERR_DB_FAIL);
+
+					$message = '';
+					if (isset($update['lock'])){
+						$message .= "<p>The image appears to be in the group gallery already, so we marked it as approved.</p>";
+
+						Log::Action('post_lock',array(
+							'type' => $type,
+							'id' => $Post['id']
+						));
+					}
+					if ($type === 'request'){
+						$u = User::Get($Post['requested_by'],'id','name');
+						if (!empty($u) && $Post['requested_by'] !== $currentUser['id'])
+							$message .= "<p>You may want to let <strong>{$u['name']}</strong> know that their request has been fulfilled.</p>";
+					}
+					CoreUtils::Respond($message ?? true, 1);
+				break;
+			}
+		}
+		else if ($action === 'finish')
+			CoreUtils::Respond("This $type has not been reserved by anypony yet");
+		else if ($type === 'request' && $action === 'reserve'){
+			User::ReservationLimitCheck();
+
+			if (!empty($_POST['post_as'])){
+				if (Permission::Insufficient('developer'))
+					CoreUtils::Respond('Reserving as other users is only allowed to the developer');
+
+				$post_as = CoreUtils::Trim($_POST['post_as']);
+				if (!$USERNAME_REGEX->match($post_as))
+					CoreUtils::Respond('Username format is invalid');
+
+				$User = User::Get($post_as, 'name');
+				if (empty($User))
+					CoreUtils::Respond('User does not exist');
+				if (!Permission::Sufficient('member', $User['role']))
+					CoreUtils::Respond('User does not have permission to reserve posts');
+
+				$update['reserved_by'] = $User['id'];
+			}
+			else $update['reserved_by'] = $currentUser['id'];
+			$update['reserved_at'] = date('c');
+		}
+
+		if (empty($update) || !$Database->where('id', $Post['id'])->update("{$type}s",$update))
+			CoreUtils::Respond('Nothing has been changed<br>If you tried to do something, then this is actually an error, which you should <a class="send-feedback">tell us</a> about.');
+
+		if ($type === 'request'){
+			$Post = array_merge($Post, $update);
+			$response = array('li' => Posts::GetLi($Post, true));
+			if (isset($_POST['FROM_PROFILE']))
+				$response['pendingReservations'] = User::GetPendingReservationsHTML($Post['reserved_by'], $isUserReserver);
+			CoreUtils::Respond($response);
+		}
+		else CoreUtils::Respond(true);
+	}
+	else if ($data === 'add-reservation'){
+		if (!Permission::Sufficient('staff'))
+			CoreUtils::Respond();
+		$_POST['allow_overwrite_reserver'] = true;
+		$insert = Posts::CheckRequestFinishingImage();
+		if (empty($insert['reserved_by']))
+			$insert['reserved_by'] = $currentUser['id'];
+		$epdata = Episode::ParseID($_POST['epid']);
+		if (empty($epdata))
+			CoreUtils::Respond('Invalid episode');
+		$epdata = Episode::GetActual($epdata['season'], $epdata['episode']);
+		if (empty($epdata))
+			CoreUtils::Respond('The specified episode does not exist');
+		$insert['season'] = $epdata['season'];
+		$insert['episode'] = $epdata['episode'];
+
+		if (!$Database->insert('reservations', $insert))
+			CoreUtils::Respond(ERR_DB_FAIL);
+		CoreUtils::Respond('Reservation added',1);
+	}
 	else if (regex_match(new RegExp('^set-(request|reservation)-image/(\d+)$'), $data, $_match)){
 		$thing = $_match[1];
 		$Post = $Database->where('id', $_match[2])->getOne("{$thing}s");

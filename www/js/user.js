@@ -14,7 +14,7 @@ DocReady.push(function User(){
 					$.Dialog.wait(false, 'Cancelling reservation');
 
 					var id = $link.prop('hash').substring(1).split('-');
-					$.post('/reserving/'+id[0]+'/'+id[1]+'?cancel',{FROM_PROFILE:true},$.mkAjaxHandler(function(){
+					$.post('/post/cancel-'+id[0]+'/'+id[1],{FROM_PROFILE:true},$.mkAjaxHandler(function(){
 						if (!this.status) return $.Dialog.fail(false, this.message);
 
 						var pendingRes = this.pendingReservations;
@@ -126,7 +126,7 @@ DocReady.push(function User(){
 
 		$.Dialog.wait('Deviation acceptance status','Checking');
 
-		$.post('/reserving/'+thing+'s/'+id+'?lock',$.mkAjaxHandler(function(){
+		$.post('/post/lock-'+thing+'/'+id,$.mkAjaxHandler(function(){
 			if (!this.status) return $.Dialog.fail(false, this.message);
 
 			var message = this.message;

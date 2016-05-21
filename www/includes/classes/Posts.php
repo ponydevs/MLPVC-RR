@@ -216,6 +216,10 @@
 					}
 				}
 
+				$InGroupCheck = CoreUtils::IsDeviationInClub($return['deviation_id']);
+				if ($InGroupCheck === true)
+					$return['lock'] = true;
+
 				return $return;
 			}
 			catch (MismatchedProviderException $e){
@@ -501,7 +505,7 @@ HTML;
 				}
 				if ($finished && empty($R['lock'])){
 					if (Permission::Sufficient('staff'))
-						$Buttons[] = array((empty($R['preview'])?'trash delete-only red':'media-eject orange').' unfinish',empty($R['preview'])?'Delete':'Un-finish');
+						$Buttons[] = array((empty($R['preview'])?'trash delete-only red':'media-eject orange').' unfinish',empty($R['preview'])?'Delete':'Unfinish');
 					if ($staffOrSameUser)
 						$Buttons[] = array('tick green check','Check');
 				}
@@ -511,6 +515,8 @@ HTML;
 				$Buttons[] = array('trash red delete','Delete');
 			if ($CanEdit)
 				array_splice($Buttons,0,0,array(array('pencil darkblue edit','Edit')));
+			if ($R['lock'] && Permission::Sufficient('staff'))
+				$Buttons[] = array('lock-open orange unlock','Unlock');
 
 			$HTML .= "<div class='actions'>";
 			if (!$view_only)

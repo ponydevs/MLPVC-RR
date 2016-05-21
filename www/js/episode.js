@@ -445,7 +445,7 @@ DocReady.push(function Episode(){
 				send = function(data){
 					$.Dialog.wait(title, 'Sending reservation to the server');
 
-					$.post("/reserving/request/" + id, data, $.mkAjaxHandler(function(){
+					$.post("/post/reserve-request/" + id, data, $.mkAjaxHandler(function(){
 						if (!this.status) return $.Dialog.fail(false, this.message);
 
 						var $newli = $(this.li);
@@ -492,7 +492,7 @@ DocReady.push(function Episode(){
 
 				$.Dialog.wait(false, 'Cancelling reservation');
 
-				$.post('/reserving/'+type+'/'+id+'?cancel',$.mkAjaxHandler(function(){
+				$.post('/post/unreserve-'+type+'/'+id,$.mkAjaxHandler(function(){
 					if (!this.status) return $.Dialog.fail(false, this.message);
 
 					if (this.remove === true){
@@ -521,7 +521,7 @@ DocReady.push(function Episode(){
 
 					$.Dialog.wait(false, 'Marking reservation as finished');
 
-					var request_url = '/reserving/'+type+'/'+id+'?finish';
+					var request_url = '/post/finish-'+type+'/'+id;
 					$.post(request_url,{deviation:deviation},$.mkAjaxHandler(function(){
 						var data = this,
 							success = function(){
@@ -557,7 +557,7 @@ DocReady.push(function Episode(){
 				Type = $.capitalize(type),
 				what = type.replace(/s$/,'');
 
-			$.Dialog.request((deleteOnly?'Delete':'Un-finish')+' '+what,'<form id="unbind-check"><p>Are you sure you want to '+(deleteOnly?'delete this reservation':'mark this '+what+' as unfinished')+'?</p><hr><label><input type="checkbox" name="unbind"> Unbind '+what+' from user</label></form>','unbind-check','Un-finish',function(){
+			$.Dialog.request((deleteOnly?'Delete':'Unfinish')+' '+what,'<form id="unbind-check"><p>Are you sure you want to '+(deleteOnly?'delete this reservation':'mark this '+what+' as unfinished')+'?</p><hr><label><input type="checkbox" name="unbind"> Unbind '+what+' from user</label></form>','unbind-check','Unfinish',function(){
 				var $form = $('#unbind-check'),
 					$unbind = $form.find('[name=unbind]');
 
@@ -566,11 +566,11 @@ DocReady.push(function Episode(){
 
 				if (type === 'reservation'){
 					$unbind.on('click',function(){
-						$('#dialogButtons').children().first().val(this.checked ? 'Delete' : 'Un-finish');
+						$('#dialogButtons').children().first().val(this.checked ? 'Delete' : 'Unfinish');
 					});
 					if (deleteOnly)
 						$unbind.trigger('click').off('click').on('click keydown touchstart', function(){return false}).css('pointer-events','none').parent().hide();
-					$form.append('<div class="notice warn">Because this '+(!deleteOnly?'is a reservation, unbinding it from the user will <strong>delete</strong> it permanently.':'reservation was added directly, it cannot be marked un-finished, only deleted.')+'</div>');
+					$form.append('<div class="notice warn">Because this '+(!deleteOnly?'is a reservation, unbinding it from the user will <strong>delete</strong> it permanently.':'reservation was added directly, it cannot be marked unfinished, only deleted.')+'</div>');
 				}
 				else
 					$form.append('<div class="notice info">If this is checked, any user will be able to reserve this request again afterwards. If left unchecked, only the current reserver <em>(and Vector Inspectors)</em> will be able to mark it as finished until the reservation is cancelled.</div>');
@@ -582,7 +582,7 @@ DocReady.push(function Episode(){
 
 					$.Dialog.wait(false, 'Removing "finished" flag'+(unbind?' & unbinding from user':''));
 
-					$.post('/reserving/'+type+'/'+id+'?unfinish'+(unbind?'&unbind':''),$.mkAjaxHandler(function(){
+					$.post('/post/unfinish-'+type+'/'+id+(unbind?'?unbind':''),$.mkAjaxHandler(function(){
 						if (!this.status) return $.Dialog.fail(false, this.message);
 
 						$.Dialog.success(false, typeof this.message !== 'undefined' ? this.message : '"finished" flag removed successfully');
@@ -598,31 +598,26 @@ DocReady.push(function Episode(){
 
 			$.Dialog.wait('Submission approval status','Checking');
 
-			$.post('/reserving/'+type+'/'+id+'?lock', $.mkAjaxHandler(function(){
+			$.post('/post/lock-'+type+'/'+id, $.mkAjaxHandler(function(){
 				if (!this.status) return $.Dialog.fail(false, this.message);
 
-				$btn.closest('li').children('.image').children('a').append(
-					$.mk('span').attr({
-						'class': 'typcn typcn-tick',
-						title: "This submission has been accepted into the group gallery"
-					})
-				);
-				var $editbtn, $sharebtn = $btn.siblings('.share').detach();
-				if (this.canedit){
-					$editbtn = $btn.siblings('.edit').detach();
-					if ($editbtn.is(':empty'))
-						$editbtn.text($editbtn.attr('title')).removeAttr('title');
-				}
-				if ($sharebtn.is(':empty'))
-					$sharebtn.text($sharebtn.attr('title')).removeAttr('title');
-				var $parent = $btn.parent().empty();
-				if (this.canedit)
-					$parent.append($editbtn);
-				$parent.append($sharebtn);
+				var message = this.message;
+				updateSection(type, SEASON, EPISODE,function(){
+					$.Dialog.success(false, message, true);
+				});
+			}));
+		});
+		$actions.filter('.unlock').off('click').on('click',function(e){
+			e.preventDefault();
 
-				if (this.message)
-					$.Dialog.success(false, this.message, true);
-				else $.Dialog.close();
+			var $btn = $(this);
+
+			$.Dialog.wait('Unlocking post');
+
+			$.post('/post/unlock-'+type+'/'+id, $.mkAjaxHandler(function(){
+				if (!this.status) return $.Dialog.fail(false, this.message);
+
+				updateSection(type, SEASON, EPISODE);
 			}));
 		});
 		$actions.filter('.delete').on('click',function(){
@@ -633,7 +628,7 @@ DocReady.push(function Episode(){
 
 				$.Dialog.wait(false, 'Sending deletion request');
 
-				$.post('/reserving/request/'+id+'?delete',$.mkAjaxHandler(function(){
+				$.post('/post/delete-request/'+id,$.mkAjaxHandler(function(){
 					if (!this.status) return $.Dialog.fail(false, this.message);
 
 					$.Dialog.close();
@@ -920,7 +915,7 @@ DocReady.push(function Episode(){
 
 					$.Dialog.wait(false, 'Adding reservation');
 
-					$.post('/reserving/reservation?add='+EpID,{deviation:deviation},$.mkAjaxHandler(function(){
+					$.post('/post/add-reservation',{deviation:deviation,epid:EpID},$.mkAjaxHandler(function(){
 						if (!this.status) return $.Dialog.fail(false, this.message);
 
 						$.Dialog.success(false, this.message);
@@ -1077,7 +1072,7 @@ DocReady.push(function Episode(){
 	function updateSection(type, SEASON, EPISODE, callback){
 		var Type = $.capitalize(type),
 			typeWithS = type.replace(/([^s])$/,'$1s');
-		$.Dialog.wait(Type, 'Updating list', true);
+		$.Dialog.wait($.Dialog.isOpen() ? false : Type, 'Updating list', true);
 		$.post('/episode/'+typeWithS+'/S'+SEASON+'E'+EPISODE,$.mkAjaxHandler(function(){
 			if (!this.status) return window.location.reload();
 
