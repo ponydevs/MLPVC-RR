@@ -729,7 +729,7 @@ DocReady.push(function Episode(){
 									$.Dialog.close();
 									var $img = $li.children('.image').find('img'),
 										$ImgUpdateForm = $.mk('form').attr('id', 'img-update-form').append(
-											$.mk('div').attr('class','align-center').append(
+											$.mk('div').attr('class','oldimg').append(
 												$.mk('span').text('Current image'),
 												$img.clone()
 											),

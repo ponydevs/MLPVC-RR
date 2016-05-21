@@ -40,7 +40,6 @@
 		CoreUtils::Respond($update);
 	}
 	else if (regex_match(new RegExp('^set-(request|reservation)-image/(\d+)$'), $data, $_match)){
-
 		$thing = $_match[1];
 		$Post = $Database->where('id', $_match[2])->getOne("{$thing}s");
 		if (empty($Post))
@@ -48,8 +47,17 @@
 		if ($Post['lock'])
 			CoreUtils::Respond('This post is locked, its image cannot be changed.');
 
-		if (!Permission::Sufficient('staff') || $thing !== 'request' || !($Post['requested_by'] === $currentUser['id'] && empty($Post['reserved_by'])))
-			CoreUtils::Respond();
+		if (Permission::Insufficient('staff'))
+			switch ($thing){
+				case 'request':
+					if ($Post['requested_by'] !== $currentUser['id'] || !empty($Post['reserved_by']))
+						CoreUtils::Respond();
+				break;
+				case 'reservation':
+					if ($Post['reserved_by'] !== $currentUser['id'])
+						CoreUtils::Respond();
+				break;
+			};
 
 		$Image = Posts::CheckImage($Post);
 
