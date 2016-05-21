@@ -370,14 +370,15 @@ On the luggage, Side Flower 1 represents the two flowers perpendicular to the te
 (136, 110, 'Ms. Harshwhinny', 'Far legs use darker colors.
 She has no iris highlights.', NULL, false, '2016-05-11 00:25:06.834527+02', NULL, NULL),
 (137, 82, 'Misty Fly', 'Cutie mark is unknown', NULL, false, '2016-05-12 21:08:37.046182+02', NULL, NULL),
-(138, 83, 'Sunshower Raindrops', '', NULL, false, '2016-05-18 12:56:57.19941+02', NULL, NULL);
+(138, 83, 'Sunshower Raindrops', '', NULL, false, '2016-05-18 12:56:57.19941+02', NULL, NULL),
+(139, NULL, 'Cranky Doodle Donkey', '', NULL, false, '2016-05-21 16:58:06.40502+02', NULL, NULL);
 
 
 --
 -- Name: appearances_id_seq; Type: SEQUENCE SET; Schema: public; Owner: mlpvc-rr
 --
 
-SELECT pg_catalog.setval('appearances_id_seq', 138, true);
+SELECT pg_catalog.setval('appearances_id_seq', 139, true);
 
 
 --
@@ -1048,14 +1049,18 @@ INSERT INTO colorgroups VALUES
 (745, 138, 'Coat', 0),
 (746, 138, 'Mane & Tail', 1),
 (747, 138, 'Iris', 2),
-(748, 138, 'Cutie Mark', 3);
+(748, 138, 'Cutie Mark', 3),
+(750, 139, 'Coat', 0),
+(751, 139, 'Mane & Tail', 1),
+(752, 139, 'Iris', 2),
+(754, 139, 'Magic', 4);
 
 
 --
 -- Name: colorgroups_groupid_seq; Type: SEQUENCE SET; Schema: public; Owner: mlpvc-rr
 --
 
-SELECT pg_catalog.setval('colorgroups_groupid_seq', 749, true);
+SELECT pg_catalog.setval('colorgroups_groupid_seq', 754, true);
 
 
 --
@@ -3809,7 +3814,30 @@ INSERT INTO colors VALUES
 (747, 3, 'Highlight Top', '#A1DCF5'),
 (747, 4, 'Highlight Bottom', '#E0F4FF'),
 (748, 0, 'Raindrops', '#68B9DC'),
-(748, 1, 'Highlights', '#FFFFFF');
+(748, 1, 'Highlights', '#FFFFFF'),
+(750, 0, 'Outline', '#746448'),
+(750, 1, 'Fill', '#A3916D'),
+(750, 2, 'Bald shine', '#D3C4A5'),
+(750, 3, 'Shadow Outline', '#63563C'),
+(750, 4, 'Shadow Fill', '#877559'),
+(750, 5, 'Muzzle Outline', '#BDA98D'),
+(750, 6, 'Muzzle Fill', '#E6D8A9'),
+(750, 7, 'Nostril Outline', '#938263'),
+(750, 8, 'Nostril Fill', '#403625'),
+(750, 9, 'Whiskers/Eyebrows', '#40384C'),
+(751, 0, 'Tail Puff / Toupee #1 Outline ', '#131316'),
+(751, 1, 'Tail Puff / Toupee #2 Fill', '#3D394A'),
+(751, 2, 'Toupee #1 Shine', '#545567'),
+(751, 3, 'Tail Fill', '#746448'),
+(751, 4, 'Toupee #2 Outline', '#CF953D'),
+(751, 5, 'Toupee #2 Fill', '#E9C15D'),
+(751, 6, 'Toupee #2 Shine', '#F4D68D'),
+(751, 7, 'Toupee #3 Outline', '#C2580B'),
+(751, 8, 'Toupee #3 Fill', '#FF9A2D'),
+(751, 9, 'Toupee #3 Stripes', '#FFEE5F'),
+(752, 0, 'Gradient Top', '#176878'),
+(752, 1, 'Gradient Bottom', '#ACEAF6'),
+(754, 13, 'Aura', NULL);
 
 
 --
@@ -4008,6 +4036,7 @@ INSERT INTO tagged VALUES
 (7, 136),
 (7, 137),
 (7, 138),
+(7, 139),
 (8, 37),
 (8, 38),
 (8, 39),
@@ -4074,6 +4103,7 @@ INSERT INTO tagged VALUES
 (11, 130),
 (11, 131),
 (11, 132),
+(11, 139),
 (12, 1),
 (12, 2),
 (12, 3),
@@ -4466,7 +4496,9 @@ INSERT INTO tagged VALUES
 (281, 136),
 (284, 136),
 (285, 137),
-(286, 138);
+(286, 138),
+(289, 139),
+(290, 139);
 
 
 --
@@ -4480,11 +4512,11 @@ INSERT INTO tags VALUES
 (4, 'alicorn', NULL, 'spec', 5, NULL),
 (5, 'bat pony', NULL, 'spec', 0, NULL),
 (6, 'mane six', 'Ponies who are one of the show''s six main characters', 'cat', 7, NULL),
-(7, 'minor character', 'Ponies who had a speaking role and/or interacted with the mane six', 'cat', 83, NULL),
+(7, 'minor character', 'Ponies who had a speaking role and/or interacted with the mane six', 'cat', 84, NULL),
 (8, 'background character', 'Ponies whose only purpose is filling crowds, with no to minimal speaking roles', 'cat', 9, NULL),
 (9, 'antagonist', NULL, 'cat', 10, NULL),
 (10, 'pet', NULL, 'cat', 6, NULL),
-(11, 'male', NULL, 'gen', 41, NULL),
+(11, 'male', NULL, 'gen', 42, NULL),
 (12, 'female', NULL, 'gen', 75, NULL),
 (14, 'twilight sparkle', NULL, 'char', 1, NULL),
 (19, 's1e1', NULL, 'ep', 0, NULL),
@@ -4748,14 +4780,17 @@ INSERT INTO tags VALUES
 (285, 'misty fly', NULL, 'char', 1, NULL),
 (286, 'sunshower raindrops', NULL, 'char', 1, NULL),
 (287, 'sunshower', NULL, 'char', 0, 286),
-(288, 'raindrops', NULL, 'char', 0, 286);
+(288, 'raindrops', NULL, 'char', 0, 286),
+(289, 'donkey', NULL, 'spec', 1, NULL),
+(290, 'cranky doodle donkey', NULL, 'char', 1, NULL),
+(291, 'cranky', NULL, 'char', 0, 290);
 
 
 --
 -- Name: tags_tid_seq; Type: SEQUENCE SET; Schema: public; Owner: mlpvc-rr
 --
 
-SELECT pg_catalog.setval('tags_tid_seq', 288, true);
+SELECT pg_catalog.setval('tags_tid_seq', 291, true);
 
 
 --

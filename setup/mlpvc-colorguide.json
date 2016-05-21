@@ -21071,6 +21071,169 @@
 				76,
 				100
 			]
+		},
+		"139": {
+			"id": 139,
+			"order": null,
+			"label": "Cranky Doodle Donkey",
+			"notes": "",
+			"cm_favme": null,
+			"ishuman": false,
+			"added": "2016-05-21 16:58:06.40502+02",
+			"cm_preview": null,
+			"cm_dir": null,
+			"ColorGroups": {
+				"750": {
+					"groupid": 750,
+					"label": "Coat",
+					"order": 0,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#746448"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#A3916D"
+						},
+						{
+							"order": 2,
+							"label": "Bald shine",
+							"hex": "#D3C4A5"
+						},
+						{
+							"order": 3,
+							"label": "Shadow Outline",
+							"hex": "#63563C"
+						},
+						{
+							"order": 4,
+							"label": "Shadow Fill",
+							"hex": "#877559"
+						},
+						{
+							"order": 5,
+							"label": "Muzzle Outline",
+							"hex": "#BDA98D"
+						},
+						{
+							"order": 6,
+							"label": "Muzzle Fill",
+							"hex": "#E6D8A9"
+						},
+						{
+							"order": 7,
+							"label": "Nostril Outline",
+							"hex": "#938263"
+						},
+						{
+							"order": 8,
+							"label": "Nostril Fill",
+							"hex": "#403625"
+						},
+						{
+							"order": 9,
+							"label": "Whiskers/Eyebrows",
+							"hex": "#40384C"
+						}
+					]
+				},
+				"751": {
+					"groupid": 751,
+					"label": "Mane & Tail",
+					"order": 1,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Tail Puff / Toupee #1 Outline ",
+							"hex": "#131316"
+						},
+						{
+							"order": 1,
+							"label": "Tail Puff / Toupee #2 Fill",
+							"hex": "#3D394A"
+						},
+						{
+							"order": 2,
+							"label": "Toupee #1 Shine",
+							"hex": "#545567"
+						},
+						{
+							"order": 3,
+							"label": "Tail Fill",
+							"hex": "#746448"
+						},
+						{
+							"order": 4,
+							"label": "Toupee #2 Outline",
+							"hex": "#CF953D"
+						},
+						{
+							"order": 5,
+							"label": "Toupee #2 Fill",
+							"hex": "#E9C15D"
+						},
+						{
+							"order": 6,
+							"label": "Toupee #2 Shine",
+							"hex": "#F4D68D"
+						},
+						{
+							"order": 7,
+							"label": "Toupee #3 Outline",
+							"hex": "#C2580B"
+						},
+						{
+							"order": 8,
+							"label": "Toupee #3 Fill",
+							"hex": "#FF9A2D"
+						},
+						{
+							"order": 9,
+							"label": "Toupee #3 Stripes",
+							"hex": "#FFEE5F"
+						}
+					]
+				},
+				"752": {
+					"groupid": 752,
+					"label": "Iris",
+					"order": 2,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Gradient Top",
+							"hex": "#176878"
+						},
+						{
+							"order": 1,
+							"label": "Gradient Bottom",
+							"hex": "#ACEAF6"
+						}
+					]
+				},
+				"754": {
+					"groupid": 754,
+					"label": "Magic",
+					"order": 4,
+					"Colors": [
+						{
+							"order": 13,
+							"label": "Aura",
+							"hex": null
+						}
+					]
+				}
+			},
+			"TagIDs": [
+				7,
+				11,
+				289,
+				290,
+				291
+			]
 		}
 	},
 	"Tags": {
@@ -21127,7 +21290,7 @@
 			"name": "minor character",
 			"title": "Ponies who had a speaking role and/or interacted with the mane six",
 			"type": "cat",
-			"uses": 83,
+			"uses": 84,
 			"synonym_of": null
 		},
 		"8": {
@@ -21159,7 +21322,7 @@
 			"name": "male",
 			"title": null,
 			"type": "gen",
-			"uses": 41,
+			"uses": 42,
 			"synonym_of": null
 		},
 		"12": {
@@ -23273,6 +23436,30 @@
 			"type": "char",
 			"uses": 0,
 			"synonym_of": 286
+		},
+		"289": {
+			"tid": 289,
+			"name": "donkey",
+			"title": null,
+			"type": "spec",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"290": {
+			"tid": 290,
+			"name": "cranky doodle donkey",
+			"title": null,
+			"type": "char",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"291": {
+			"tid": 291,
+			"name": "cranky",
+			"title": null,
+			"type": "char",
+			"uses": 0,
+			"synonym_of": 290
 		}
 	}
 }
