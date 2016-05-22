@@ -89,7 +89,7 @@ DocReady.push(function Colorguide(){
 				position: { my: 'bottom center', at: 'top center', viewport: true },
 				style: { classes: 'qtip-see-thru' }
 			});
-		}).off('click').on('click',function(e){
+		}).off('click mousedown').on('click',function(e){
 			e.preventDefault();
 			var $this = $(this),
 				copy = $this.html().trim();
@@ -122,7 +122,10 @@ DocReady.push(function Colorguide(){
 				}},
 			],
 			function($el){ return 'Color: '+$el.attr('oldtitle') }
-		);
+		).on('mousedown', function(e){
+		    if (e.shiftKey)
+		        e.preventDefault();
+		});
 		$('.cm-direction:not(.tipped)').each(function(){
 			var $this = $(this),
 				ponyID = $this.closest('li').attr('id').substring(1),
