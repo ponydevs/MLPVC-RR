@@ -21214,18 +21214,6 @@
 							"hex": "#ACEAF6"
 						}
 					]
-				},
-				"754": {
-					"groupid": 754,
-					"label": "Magic",
-					"order": 4,
-					"Colors": [
-						{
-							"order": 13,
-							"label": "Aura",
-							"hex": null
-						}
-					]
 				}
 			},
 			"TagIDs": [
