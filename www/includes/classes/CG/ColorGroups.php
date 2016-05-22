@@ -47,6 +47,8 @@
 			$GroupIDs = array();
 			foreach ($Groups as $g)
 				$GroupIDs[] = $g['groupid'];
+			if (empty($GroupIDs))
+				return null;
 
 			$data = $CGDb->where('groupid IN ('.implode(',',$GroupIDs).')')->orderBy('groupid','ASC')->orderBy('"order"', 'ASC')->get('colors');
 			if (empty($data))

@@ -112,9 +112,9 @@ DocReady.push(function ColorguideManage(){
 			else $ponyLabel = $this.siblings().first();
 
 			$.Dialog.request(title,$ponyEditor.clone(true,true),'pony-editor','Save',function($form){
-				var $favme = $form.find('input[name=cm_favme]'),
-					ponyID = data.ponyID;
+				var $favme = $form.find('input[name=cm_favme]');
 				if (editing){
+					var ponyID = data.ponyID;
 					$form.find('input[name=label]').val(data.label);
 					var $txtarea = $form.find('textarea').val(data.notes);
 					if (parseInt(ponyID, 10) === 0)
@@ -191,7 +191,7 @@ DocReady.push(function ColorguideManage(){
 						else {
 							$.Dialog.success(title, 'Appearance added');
 							$.Dialog.wait(title, 'Loading appearance page');
-							$.Navigation.visit('/colorguide/appearance/'+ponyID,function(){
+							$.Navigation.visit('/colorguide/appearance/'+data.id,function(){
 								if (data.info)
 									$.Dialog.info(title, data.info);
 								else $.Dialog.close();
