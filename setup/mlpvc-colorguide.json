@@ -14670,7 +14670,8 @@
 				55,
 				104,
 				105,
-				106
+				106,
+				292
 			]
 		},
 		"46": {
@@ -21076,7 +21077,7 @@
 			"id": 139,
 			"order": null,
 			"label": "Cranky Doodle Donkey",
-			"notes": "",
+			"notes": "Toupee #1 is up through half-way of \"A Friend in Deed\"\nToupee #2 is from \"A Friend in Deed\" through most of \"Slice of Life\"\nToupee #2 is from end of \"Slice of Life\" onward.",
 			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-05-21 16:58:06.40502+02",
@@ -21234,6 +21235,175 @@
 				290,
 				291
 			]
+		},
+		"140": {
+			"id": 140,
+			"order": null,
+			"label": "Matilda",
+			"notes": "",
+			"cm_favme": null,
+			"ishuman": false,
+			"added": "2016-05-22 05:05:58.944541+02",
+			"cm_preview": null,
+			"cm_dir": null,
+			"ColorGroups": {
+				"755": {
+					"groupid": 755,
+					"label": "Coat",
+					"order": 0,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#866F3E"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#B8A05F"
+						},
+						{
+							"order": 2,
+							"label": "Shadow Outline",
+							"hex": "#776436"
+						},
+						{
+							"order": 3,
+							"label": "Shadow Fill",
+							"hex": "#A58F56"
+						},
+						{
+							"order": 4,
+							"label": "Muzzle Outline",
+							"hex": "#BBA869"
+						},
+						{
+							"order": 5,
+							"label": "Muzzle Fill",
+							"hex": "#E9DCA6"
+						},
+						{
+							"order": 6,
+							"label": "Nostril Outline",
+							"hex": "#91824E"
+						},
+						{
+							"order": 7,
+							"label": "Nostril Fill",
+							"hex": "#524625"
+						}
+					]
+				},
+				"756": {
+					"groupid": 756,
+					"label": "Mane & Tail",
+					"order": 1,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#1D160D"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#534425"
+						}
+					]
+				},
+				"757": {
+					"groupid": 757,
+					"label": "Iris",
+					"order": 2,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Gradient Top",
+							"hex": "#186A7A"
+						},
+						{
+							"order": 1,
+							"label": "Gradient Bottom",
+							"hex": "#A8E8F6"
+						},
+						{
+							"order": 2,
+							"label": "Eyelid",
+							"hex": "#86703E"
+						}
+					]
+				},
+				"760": {
+					"groupid": 760,
+					"label": "Earrings",
+					"order": 3,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Fill",
+							"hex": "#62C7F0"
+						},
+						{
+							"order": 1,
+							"label": "Shine",
+							"hex": "#BEF8FF"
+						}
+					]
+				},
+				"761": {
+					"groupid": 761,
+					"label": "Neckpiece",
+					"order": 4,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#CBE1F9"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#FFFFFF"
+						},
+						{
+							"order": 2,
+							"label": "Charm Setting Outline",
+							"hex": "#C8B526"
+						},
+						{
+							"order": 3,
+							"label": "Charm Setting Fill",
+							"hex": "#F0E66B"
+						},
+						{
+							"order": 4,
+							"label": "Charm Outline",
+							"hex": "#6699C9"
+						},
+						{
+							"order": 5,
+							"label": "Charm Fill",
+							"hex": "#33628C"
+						},
+						{
+							"order": 6,
+							"label": "Charm Silhouette Outline",
+							"hex": "#CBE1F9"
+						},
+						{
+							"order": 7,
+							"label": "Charm Silhouette Fill",
+							"hex": "#FFFFFF"
+						}
+					]
+				}
+			},
+			"TagIDs": [
+				7,
+				12,
+				289,
+				293
+			]
 		}
 	},
 	"Tags": {
@@ -21290,7 +21460,7 @@
 			"name": "minor character",
 			"title": "Ponies who had a speaking role and/or interacted with the mane six",
 			"type": "cat",
-			"uses": 84,
+			"uses": 85,
 			"synonym_of": null
 		},
 		"8": {
@@ -21330,7 +21500,7 @@
 			"name": "female",
 			"title": null,
 			"type": "gen",
-			"uses": 75,
+			"uses": 76,
 			"synonym_of": null
 		},
 		"14": {
@@ -23442,7 +23612,7 @@
 			"name": "donkey",
 			"title": null,
 			"type": "spec",
-			"uses": 1,
+			"uses": 2,
 			"synonym_of": null
 		},
 		"290": {
@@ -23460,6 +23630,22 @@
 			"type": "char",
 			"uses": 0,
 			"synonym_of": 290
+		},
+		"292": {
+			"tid": 292,
+			"name": "miss pommel",
+			"title": null,
+			"type": "char",
+			"uses": 0,
+			"synonym_of": 55
+		},
+		"293": {
+			"tid": 293,
+			"name": "matilda",
+			"title": null,
+			"type": "char",
+			"uses": 1,
+			"synonym_of": null
 		}
 	}
 }
