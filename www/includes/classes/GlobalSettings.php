@@ -1,18 +1,26 @@
 <?php
 
-	class Configuration {
+	class GlobalSettings {
+		protected static
+			$_db = 'global_settings',
+			$_allowedKeys = array(
+				'reservation_rules' => true,
+				'about_reservations' => true,
+			);
+
 		/**
 		 * Gets a global cofiguration item's value
 		 *
 		 * @param string $key
+		 * @param mixed  $default
 		 *
 		 * @return mixed
 		 */
-		static function Get($key){
+		static function Get($key, $default = false){
 			global $Database;
 
-			$q = $Database->where('key', $key)->getOne('global_settings','value');
-			return isset($q['value']) ? $q['value'] : false;
+			$q = $Database->where('key', $key)->getOne(static::$_db,'value');
+			return isset($q['value']) ? $q['value'] : $default;
 		}
 
 		/**
@@ -26,7 +34,12 @@
 		static function Set($key, $value){
 			global $Database;
 
-			return $Database->where('key', $key)->update('global_settings', array('value' => $value));
+			if (!isset(static::$_allowedKeys[$key]))
+				CoreUtils::Respond("Key $key is not allowed");
+
+			if ($Database->where('key', $key)->has(static::$_db))
+				return $Database->where('key', $key)->update(static::$_db, array('value' => $value));
+			else return $Database->insert(static::$_db, array('key' => $key, 'value' => $value));
 		}
 
 		/**

@@ -707,6 +707,19 @@ ALTER SEQUENCE usefullinks_id_seq OWNED BY usefullinks.id;
 
 
 --
+-- Name: user_prefs; Type: TABLE; Schema: public; Owner: mlpvc-rr
+--
+
+CREATE TABLE user_prefs (
+    "user" uuid NOT NULL,
+    key character varying(50) NOT NULL,
+    value text
+);
+
+
+ALTER TABLE user_prefs OWNER TO "mlpvc-rr";
+
+--
 -- Name: users; Type: TABLE; Schema: public; Owner: mlpvc-rr
 --
 
@@ -987,6 +1000,14 @@ ALTER TABLE ONLY usefullinks
 
 
 --
+-- Name: user_prefs_user_key; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER TABLE ONLY user_prefs
+    ADD CONSTRAINT user_prefs_user_key PRIMARY KEY ("user", key);
+
+
+--
 -- Name: users_id; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
@@ -1223,6 +1244,14 @@ ALTER TABLE ONLY reservations
 
 ALTER TABLE ONLY sessions
     ADD CONSTRAINT sessions_user_fkey FOREIGN KEY ("user") REFERENCES users(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: user_prefs_user_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER TABLE ONLY user_prefs
+    ADD CONSTRAINT user_prefs_user_fkey FOREIGN KEY ("user") REFERENCES users(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
@@ -1573,6 +1602,15 @@ REVOKE ALL ON SEQUENCE usefullinks_id_seq FROM PUBLIC;
 REVOKE ALL ON SEQUENCE usefullinks_id_seq FROM "mlpvc-rr";
 GRANT ALL ON SEQUENCE usefullinks_id_seq TO "mlpvc-rr";
 GRANT ALL ON SEQUENCE usefullinks_id_seq TO postgres;
+
+
+--
+-- Name: user_prefs; Type: ACL; Schema: public; Owner: mlpvc-rr
+--
+
+REVOKE ALL ON TABLE user_prefs FROM PUBLIC;
+REVOKE ALL ON TABLE user_prefs FROM "mlpvc-rr";
+GRANT ALL ON TABLE user_prefs TO "mlpvc-rr";
 
 
 --

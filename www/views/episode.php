@@ -15,11 +15,11 @@
 	echo Episode::RenderVideos($CurrentEpisode); ?>
 	<section class="about-res">
 		<h2>What Vector Reservations Are<?=Permission::Sufficient('staff')?'<button class="blue typcn typcn-pencil" id="edit-about_reservations">Edit</button>':''?></h2>
-		<?=Configuration::Get('about_reservations')?>
+		<?=GlobalSettings::Get('about_reservations')?>
 	</section>
 	<section class="rules">
 		<h2>Reservation Rules<?=Permission::Sufficient('staff')?'<button class="orange typcn typcn-pencil" id="edit-reservation_rules">Edit</button>':''?></h2>
-		<?=Configuration::Get('reservation_rules')?>
+		<?=GlobalSettings::Get('reservation_rules')?>
 	</section>
 <?php   echo Episode::GetAppearancesSectionHTML($CurrentEpisode);
 		if (Permission::Sufficient('staff')){ ?>

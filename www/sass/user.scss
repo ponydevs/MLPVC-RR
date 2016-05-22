@@ -72,7 +72,7 @@
 			ul { @extend %post-ul }
 		}
 	}
-	.settings {
+	#settings {
 		margin-top: 15px;
 		border-top: 2px dashed $ContentOutline;
 		padding-top: 10px;

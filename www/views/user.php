@@ -115,8 +115,20 @@ HTML;
 			?></ul>
 		</section>
 	</div>
-	<div class="settings"><?php
+	<div id="settings"><?php
 		if ($sameUser || Permission::Sufficient('staff')){ ?>
+		<section class="guide-settings">
+			<h2><?=$sameUser?User::$PROFILE_SECTION_PRIVACY_LEVEL['staff']:''?>Color Guide</h2>
+			<form action="/preference/set/cg_itemsperpage">
+				<label>
+					<span>Appearances per page</span>
+					<input type="number" min="7" max="20" name="value" value="<?=UserPrefs::Get('cg_itemsperpage', 7)?>" step="1"<?=!$sameUser?' disabled':''?>>
+<?php       if ($sameUser){ ?>
+					<button class="save typcn typcn-tick green" disabled>Save</button>
+<?php       } ?>
+				</label>
+			</form>
+		</section>
 		<section class="sessions">
 			<h2><?=$sameUser?User::$PROFILE_SECTION_PRIVACY_LEVEL['staff']:''?>Sessions</h2>
 <?php       if (isset($CurrentSession) || !empty($Sessions)){ ?>

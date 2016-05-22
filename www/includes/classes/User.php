@@ -278,7 +278,7 @@ HTML;
 		/**
 		 * Check authentication cookie and set global
 		 */
-		static function CheckAuth(){
+		static function Authenticate(){
 			global $Database, $signedIn, $currentUser, $Color, $color;
 			CSRFProtection::Detect();
 
@@ -309,9 +309,11 @@ HTML;
 
 					if ($tokenvalid){
 						$signedIn = true;
-						$lastVisitTS = date('c');
-						if ($Database->where('id', $currentUser['Session']['id'])->update('sessions', array('lastvisit' => $lastVisitTS)))
-							$currentUser['Session']['lastvisit'] = $lastVisitTS;
+						if (time() - strtotime($currentUser['Session']['lastvisit']) > Time::$IN_SECONDS['minute']){
+							$lastVisitTS = date('c');
+							if ($Database->where('id', $currentUser['Session']['id'])->update('sessions', array('lastvisit' => $lastVisitTS)))
+								$currentUser['Session']['lastvisit'] = $lastVisitTS;
+						}
 
 						$_PrefersColour = array(
 							'Pirill-Poveniy' => true,

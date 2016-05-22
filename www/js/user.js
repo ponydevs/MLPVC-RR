@@ -136,4 +136,28 @@ DocReady.push(function User(){
 			});
 		}));
 	});
+
+	$('#settings').find('form').on('submit',function(e){
+		e.preventDefault();
+
+		var $form = $(this),
+			endpoint = $form.attr('action'),
+			data = $form.mkData(),
+			$input = $form.find('[name="value"]');
+
+		$.Dialog.wait('Saving setting','Please wait');
+
+		$.post(endpoint,data,$.mkAjaxHandler(function(){
+			if (!this.status) return $.Dialog.fail(false, this.message);
+
+			$input.val(this.value).data('orig', this.value).triggerHandler('change');
+			$.Dialog.close();
+		}));
+	}).children('label').children('input,textarea,select').each(function(){
+		(function($el){
+			$el.data('orig', $el.val()).on('keydown change',function(){
+				$el.siblings('.save').attr('disabled', $el.val().trim() === $el.data('orig'));
+			});
+		})($(this));
+	});
 });

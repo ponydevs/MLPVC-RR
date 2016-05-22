@@ -111,7 +111,6 @@
 		die(require APPATH."views/dberr.php");
 	}
 	$CGDb = new PostgresDbWrapper('mlpvc-colorguide');
-	User::CheckAuth();
 
 	header('Access-Control-Allow-Origin: '.(HTTPS?'http':'https').'://'.$_SERVER['SERVER_NAME']);
 

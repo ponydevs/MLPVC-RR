@@ -71,4 +71,6 @@
 	$controller = APPATH."controllers/$do.php";
 	if (!file_exists($controller))
 		CoreUtils::NotFound();
+	if (!($do === 'colorguide' && regex_match(new RegExp('\.(svg|png)$'), $data)))
+		User::Authenticate();
 	require $controller;

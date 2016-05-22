@@ -879,7 +879,7 @@
 	}
 
 	$title = '';
-	$AppearancesPerPage = 7;
+	$AppearancesPerPage = UserPrefs::Get('cg_itemsperpage', 7);
 	if (empty($_GET['q']) || regex_match(new RegExp('^\*+$'),$_GET['q'])){
 		$_EntryCount = $CGDb->where('ishuman',$EQG)->where('id != 0')->count('appearances');
 
