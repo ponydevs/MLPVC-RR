@@ -22,6 +22,19 @@
 		}
 
 		/**
+		 * Get the colors belonging to a color group
+		 *
+		 * @param int $GroupID
+		 *
+		 * @return array
+		 */
+		static function GetColors($GroupID){
+			global $CGDb;
+
+			return $CGDb->where('groupid', $GroupID)->orderBy('groupid', 'ASC')->orderBy('"order"', 'ASC')->get('colors');
+		}
+
+		/**
 		 * Get HTML for a color group
 		 *
 		 * @param int|array $GroupID
@@ -43,7 +56,7 @@
 				"<span class='cat'>$label".
 					($colorNames && \Permission::Sufficient('staff')?'<span class="admin"><button class="blue typcn typcn-pencil edit-cg"></button><button class="red typcn typcn-trash delete-cg"></button></span>':'').
 				"</span>";
-			$Colors = Colors::Get($Group['groupid']);
+			$Colors = self::GetColors($Group['groupid']);
 			if (!empty($Colors))
 				foreach ($Colors as $i => $c){
 					$title = \CoreUtils::AposEncode($c['label']);

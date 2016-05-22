@@ -331,7 +331,6 @@
 			// Create base image
 			$BaseImage = Image::CreateTransparent($OutWidth, $OutHeight);
 			$BLACK = imagecolorallocate($BaseImage, 0, 0, 0);
-$RED = imagecolorallocate($BaseImage, 255, 0, 0);
 
 			// If sprite exists, output it on base image
 			if ($SpriteExists)
@@ -360,7 +359,7 @@ $RED = imagecolorallocate($BaseImage, 255, 0, 0);
 						$LargestLabel = $cg['label'];
 					}
 
-					$Colors = \CG\Colors::Get($cg['groupid']);
+					$Colors = \CG\ColorGroups::GetColors($cg['groupid']);
 					if (!empty($Colors))
 						foreach ($Colors as $c){
 							$ColorNameLeftOffset = $ColorCircleSize + $ColorCircleRMargin;

@@ -96,7 +96,7 @@
 						unset($AppendColorGroup['ponyid']);
 
 						$AppendColorGroup['Colors'] = array();
-						$Colors = \CG\Colors::Get($cg['groupid']);
+						$Colors = \CG\ColorGroups::GetColors($cg['groupid']);
 						if (!empty($Colors)) foreach ($Colors as $c){
 							unset($c['groupid']);
 							$AppendColorGroup['Colors'][] = $c;
@@ -621,7 +621,7 @@
 					CoreUtils::Respond("There's no $color group with the ID of $GroupID");
 
 				if ($getting){
-					$Group['Colors'] = \CG\Colors::Get($Group['groupid']);
+					$Group['Colors'] = \CG\ColorGroups::GetColors($Group['groupid']);
 					CoreUtils::Respond($Group);
 				}
 
