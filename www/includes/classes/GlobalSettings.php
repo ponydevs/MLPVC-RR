@@ -3,9 +3,9 @@
 	class GlobalSettings {
 		protected static
 			$_db = 'global_settings',
-			$_allowedKeys = array(
-				'reservation_rules' => true,
-				'about_reservations' => true,
+			$_defaults = array(
+				'reservation_rules' => '',
+				'about_reservations' => '',
 			);
 
 		/**
@@ -19,6 +19,8 @@
 		static function Get($key, $default = false){
 			global $Database;
 
+			if (isset(static::$_defaults[$key]))
+				$default = static::$_defaults[$key];
 			$q = $Database->where('key', $key)->getOne(static::$_db,'value');
 			return isset($q['value']) ? $q['value'] : $default;
 		}
@@ -34,12 +36,19 @@
 		static function Set($key, $value){
 			global $Database;
 
-			if (!isset(static::$_allowedKeys[$key]))
+			if (!isset(static::$_defaults[$key]))
 				CoreUtils::Respond("Key $key is not allowed");
+			$default = static::$_defaults[$key];
 
-			if ($Database->where('key', $key)->has(static::$_db))
-				return $Database->where('key', $key)->update(static::$_db, array('value' => $value));
-			else return $Database->insert(static::$_db, array('key' => $key, 'value' => $value));
+			if ($Database->where('key', $key)->has(static::$_db)){
+				$Database->where('key', $key);
+				if ($value == $default)
+					$Database->delete(static::$_db);
+				else return $Database->update(static::$_db, array('value' => $value));
+			}
+			else if ($value != $default)
+				return $Database->insert(static::$_db, array('key' => $key, 'value' => $value));
+			else return true;
 		}
 
 		/**

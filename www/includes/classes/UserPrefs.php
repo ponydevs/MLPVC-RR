@@ -3,8 +3,8 @@
 	class UserPrefs extends GlobalSettings {
 		protected static
 			$_db = 'user_prefs',
-			$_allowedKeys = array(
-				'cg_itemsperpage' => true,
+			$_defaults = array(
+				'cg_itemsperpage' => 7,
 			);
 
 		/**
@@ -18,6 +18,8 @@
 		static function Get($key, $default = false){
 			global $Database, $signedIn, $currentUser;
 
+			if (isset(static::$_defaults[$key]))
+				$default = static::$_defaults[$key];
 			if (!$signedIn)
 				return $default;
 			$Database->where('user', $currentUser['id']);
@@ -38,12 +40,19 @@
 			if (!$signedIn)
 				CoreUtils::Respond();
 
-			if (!isset(static::$_allowedKeys[$key]))
+			if (!isset(static::$_defaults[$key]))
 				CoreUtils::Respond("Key $key is not allowed");
+			$default = static::$_defaults[$key];
 
-			if ($Database->where('key', $key)->where('user', $currentUser['id'])->has(static::$_db))
-				return $Database->where('key', $key)->where('user', $currentUser['id'])->update(static::$_db, array('value' => $value));
-			else return $Database->insert(static::$_db, array('user' => $currentUser['id'], 'key' => $key, 'value' => $value));
+			if ($Database->where('key', $key)->where('user', $currentUser['id'])->has(static::$_db)){
+				$Database->where('key', $key)->where('user', $currentUser['id']);
+				if ($value == $default)
+					return $Database->delete(static::$_db);
+				else return $Database->update(static::$_db, array('value' => $value));
+			}
+			else if ($value != $default)
+				return $Database->insert(static::$_db, array('user' => $currentUser['id'], 'key' => $key, 'value' => $value));
+			else return true;
 		}
 
 		/**
