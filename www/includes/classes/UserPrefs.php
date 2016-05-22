@@ -73,9 +73,9 @@
 					$thing = 'Color Guide items per page';
 					if (!is_numeric($value))
 						throw new Exception("$thing must be a number");
+					$value = intval($value, 10);
 					if ($value < 7 || $value > 20)
 						throw new Exception("$thing must be between 7 and 20");
-
 				break;
 			}
 
