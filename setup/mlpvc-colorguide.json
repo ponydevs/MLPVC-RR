@@ -18236,9 +18236,203 @@
 				284
 			]
 		},
+		"141": {
+			"id": 141,
+			"order": 111,
+			"label": "Plaid Stripes",
+			"notes": "Has pointed ear tips",
+			"cm_favme": "da3hzwf",
+			"ishuman": false,
+			"added": "2016-05-22 16:24:54.522725+02",
+			"cm_preview": null,
+			"cm_dir": true,
+			"ColorGroups": {
+				"762": {
+					"groupid": 762,
+					"label": "Coat",
+					"order": 0,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#EA6929"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#FEB568"
+						},
+						{
+							"order": 2,
+							"label": "Shadow Outline",
+							"hex": "#D06025"
+						},
+						{
+							"order": 3,
+							"label": "Shadow Fill",
+							"hex": "#E1A15C"
+						}
+					]
+				},
+				"763": {
+					"groupid": 763,
+					"label": "Mane & Tail",
+					"order": 1,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#623F95"
+						},
+						{
+							"order": 1,
+							"label": "Fill 1",
+							"hex": "#925DC2"
+						},
+						{
+							"order": 2,
+							"label": "Fill 2",
+							"hex": "#B67AD0"
+						}
+					]
+				},
+				"764": {
+					"groupid": 764,
+					"label": "Iris",
+					"order": 2,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Gradient Top",
+							"hex": "#570C37"
+						},
+						{
+							"order": 1,
+							"label": "Gradient Bottom",
+							"hex": "#BD1C75"
+						},
+						{
+							"order": 2,
+							"label": "Highlight Top",
+							"hex": "#D852A0"
+						},
+						{
+							"order": 3,
+							"label": "Highlight Bottom",
+							"hex": "#FDB8DD"
+						}
+					]
+				},
+				"765": {
+					"groupid": 765,
+					"label": "Cutie Mark",
+					"order": 3,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Fill",
+							"hex": "#DC1DA2"
+						},
+						{
+							"order": 1,
+							"label": "Broad stripes",
+							"hex": "#912D9F"
+						},
+						{
+							"order": 2,
+							"label": "Thin stripes",
+							"hex": "#FCE191"
+						}
+					]
+				},
+				"767": {
+					"groupid": 767,
+					"label": "Shirt",
+					"order": 4,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#168CCF"
+						},
+						{
+							"order": 1,
+							"label": "Broad Stripe 1",
+							"hex": "#63CCFF"
+						},
+						{
+							"order": 2,
+							"label": "Broad Stripe 2",
+							"hex": "#95E7FC"
+						},
+						{
+							"order": 3,
+							"label": "Thin Stripe 1",
+							"hex": "#DCF7FF"
+						},
+						{
+							"order": 4,
+							"label": "Thin Stripe 2",
+							"hex": "#DC1C9E"
+						},
+						{
+							"order": 5,
+							"label": "Thin Stripe 3",
+							"hex": "#BEE95A"
+						}
+					]
+				},
+				"768": {
+					"groupid": 768,
+					"label": "Hairband/Boa",
+					"order": 5,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Hairband/Boa Clasp Outline",
+							"hex": "#51B457"
+						},
+						{
+							"order": 1,
+							"label": "Hairband/Boa Clasp Fill",
+							"hex": "#BEE85E"
+						},
+						{
+							"order": 2,
+							"label": "Boa Outline",
+							"hex": "#C52293"
+						},
+						{
+							"order": 3,
+							"label": "Boa Fill",
+							"hex": "#F04495"
+						}
+					]
+				},
+				"769": {
+					"groupid": 769,
+					"label": "Braces",
+					"order": 6,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Braces",
+							"hex": "#8FB2C5"
+						}
+					]
+				}
+			},
+			"TagIDs": [
+				2,
+				7,
+				12,
+				217,
+				294
+			]
+		},
 		"64": {
 			"id": 64,
-			"order": 111,
+			"order": 112,
 			"label": "Angel Bunny",
 			"notes": "",
 			"cm_favme": null,
@@ -18351,7 +18545,7 @@
 		},
 		"112": {
 			"id": 112,
-			"order": 112,
+			"order": 113,
 			"label": "Gummy",
 			"notes": "In 3/4 view, the top line on his far eye uses the \"Far Eye Top Line\" color instead of the normal gradient.",
 			"cm_favme": null,
@@ -18487,7 +18681,7 @@
 		},
 		"116": {
 			"id": 116,
-			"order": 113,
+			"order": 114,
 			"label": "Winona",
 			"notes": "",
 			"cm_favme": null,
@@ -18620,7 +18814,7 @@
 		},
 		"117": {
 			"id": 117,
-			"order": 114,
+			"order": 115,
 			"label": "Owlowiscious",
 			"notes": "",
 			"cm_favme": null,
@@ -18707,7 +18901,7 @@
 		},
 		"119": {
 			"id": 119,
-			"order": 115,
+			"order": 116,
 			"label": "Tank",
 			"notes": "Far Legs use darker colors.\nIn some scenes, Tank uses an alternate set of colors for the tongue.\nFor accurate goggle lenses: Group together the Fill (100% Normal blending) and the Highlights (75% Color Dodge blending) and set the group to 50% opacity.\nFor a less accurate version, group together the Fill and the Highlights (both 100% opacity, Normal blending) and set the group to 50% opacity.",
 			"cm_favme": null,
@@ -18974,7 +19168,7 @@
 		},
 		"120": {
 			"id": 120,
-			"order": 116,
+			"order": 117,
 			"label": "Opalescence",
 			"notes": "",
 			"cm_favme": null,
@@ -19170,7 +19364,7 @@
 		},
 		"33": {
 			"id": 33,
-			"order": 117,
+			"order": 118,
 			"label": "Alicorn Amulet",
 			"notes": "",
 			"cm_favme": null,
@@ -19361,7 +19555,7 @@
 		},
 		"86": {
 			"id": 86,
-			"order": 118,
+			"order": 119,
 			"label": "Scorpan's Medallion",
 			"notes": "",
 			"cm_favme": null,
@@ -19438,7 +19632,7 @@
 		},
 		"94": {
 			"id": 94,
-			"order": 119,
+			"order": 120,
 			"label": "Party Cannon",
 			"notes": "",
 			"cm_favme": null,
@@ -19566,7 +19760,7 @@
 		},
 		"115": {
 			"id": 115,
-			"order": 120,
+			"order": 121,
 			"label": "Fake Timberwolf",
 			"notes": "",
 			"cm_favme": null,
@@ -19774,7 +19968,7 @@
 		},
 		"70": {
 			"id": 70,
-			"order": 121,
+			"order": 122,
 			"label": "Wonderbolt Uniform",
 			"notes": "",
 			"cm_favme": null,
@@ -19872,7 +20066,7 @@
 		},
 		"133": {
 			"id": 133,
-			"order": 122,
+			"order": 123,
 			"label": "Spitfire's Academy Outfit",
 			"notes": "",
 			"cm_favme": null,
@@ -20069,7 +20263,7 @@
 		},
 		"71": {
 			"id": 71,
-			"order": 123,
+			"order": 124,
 			"label": "Wonderbolt Trainee Uniform",
 			"notes": "",
 			"cm_favme": null,
@@ -20136,7 +20330,7 @@
 		},
 		"105": {
 			"id": 105,
-			"order": 124,
+			"order": 125,
 			"label": "Pony Tones Outfit",
 			"notes": "",
 			"cm_favme": null,
@@ -20237,7 +20431,7 @@
 		},
 		"109": {
 			"id": 109,
-			"order": 125,
+			"order": 126,
 			"label": "Zecora",
 			"notes": "Based on S4E14.",
 			"cm_favme": null,
@@ -20400,7 +20594,7 @@
 		},
 		"113": {
 			"id": 113,
-			"order": 126,
+			"order": 127,
 			"label": "Orange Frog",
 			"notes": "",
 			"cm_favme": null,
@@ -20495,7 +20689,7 @@
 		},
 		"122": {
 			"id": 122,
-			"order": 127,
+			"order": 128,
 			"label": "Pig (Peach Skin)",
 			"notes": "",
 			"cm_favme": null,
@@ -20615,7 +20809,7 @@
 		},
 		"123": {
 			"id": 123,
-			"order": 128,
+			"order": 129,
 			"label": "Pig (Pink Skin)",
 			"notes": "Muddy Nostril color unknown",
 			"cm_favme": null,
@@ -20730,7 +20924,7 @@
 		},
 		"124": {
 			"id": 124,
-			"order": 129,
+			"order": 130,
 			"label": "Pig (Dark Skin)",
 			"notes": "Muddy Nostril color unknown",
 			"cm_favme": null,
@@ -20841,6 +21035,326 @@
 			"TagIDs": [
 				247,
 				261
+			]
+		},
+		"139": {
+			"id": 139,
+			"order": 131,
+			"label": "Cranky Doodle Donkey",
+			"notes": "Toupee #1 is up through half-way of \"A Friend in Deed\"\nToupee #2 is from \"A Friend in Deed\" through most of \"Slice of Life\"\nToupee #2 is from end of \"Slice of Life\" onward.",
+			"cm_favme": null,
+			"ishuman": false,
+			"added": "2016-05-21 16:58:06.40502+02",
+			"cm_preview": null,
+			"cm_dir": null,
+			"ColorGroups": {
+				"750": {
+					"groupid": 750,
+					"label": "Coat",
+					"order": 0,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#746448"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#A3916D"
+						},
+						{
+							"order": 2,
+							"label": "Bald shine",
+							"hex": "#D3C4A5"
+						},
+						{
+							"order": 3,
+							"label": "Shadow Outline",
+							"hex": "#63563C"
+						},
+						{
+							"order": 4,
+							"label": "Shadow Fill",
+							"hex": "#877559"
+						},
+						{
+							"order": 5,
+							"label": "Muzzle Outline",
+							"hex": "#BDA98D"
+						},
+						{
+							"order": 6,
+							"label": "Muzzle Fill",
+							"hex": "#E6D8A9"
+						},
+						{
+							"order": 7,
+							"label": "Nostril Outline",
+							"hex": "#938263"
+						},
+						{
+							"order": 8,
+							"label": "Nostril Fill",
+							"hex": "#403625"
+						},
+						{
+							"order": 9,
+							"label": "Whiskers/Eyebrows",
+							"hex": "#40384C"
+						}
+					]
+				},
+				"751": {
+					"groupid": 751,
+					"label": "Mane & Tail",
+					"order": 1,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Tail Puff / Toupee #1 Outline ",
+							"hex": "#131316"
+						},
+						{
+							"order": 1,
+							"label": "Tail Puff / Toupee #2 Fill",
+							"hex": "#3D394A"
+						},
+						{
+							"order": 2,
+							"label": "Toupee #1 Shine",
+							"hex": "#545567"
+						},
+						{
+							"order": 3,
+							"label": "Tail Fill",
+							"hex": "#746448"
+						},
+						{
+							"order": 4,
+							"label": "Toupee #2 Outline",
+							"hex": "#CF953D"
+						},
+						{
+							"order": 5,
+							"label": "Toupee #2 Fill",
+							"hex": "#E9C15D"
+						},
+						{
+							"order": 6,
+							"label": "Toupee #2 Shine",
+							"hex": "#F4D68D"
+						},
+						{
+							"order": 7,
+							"label": "Toupee #3 Outline",
+							"hex": "#C2580B"
+						},
+						{
+							"order": 8,
+							"label": "Toupee #3 Fill",
+							"hex": "#FF9A2D"
+						},
+						{
+							"order": 9,
+							"label": "Toupee #3 Stripes",
+							"hex": "#FFEE5F"
+						}
+					]
+				},
+				"752": {
+					"groupid": 752,
+					"label": "Iris",
+					"order": 2,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Gradient Top",
+							"hex": "#176878"
+						},
+						{
+							"order": 1,
+							"label": "Gradient Bottom",
+							"hex": "#ACEAF6"
+						}
+					]
+				}
+			},
+			"TagIDs": [
+				7,
+				11,
+				289,
+				290,
+				291
+			]
+		},
+		"140": {
+			"id": 140,
+			"order": 132,
+			"label": "Matilda",
+			"notes": "",
+			"cm_favme": null,
+			"ishuman": false,
+			"added": "2016-05-22 05:05:58.944541+02",
+			"cm_preview": null,
+			"cm_dir": null,
+			"ColorGroups": {
+				"755": {
+					"groupid": 755,
+					"label": "Coat",
+					"order": 0,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#866F3E"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#B8A05F"
+						},
+						{
+							"order": 2,
+							"label": "Shadow Outline",
+							"hex": "#776436"
+						},
+						{
+							"order": 3,
+							"label": "Shadow Fill",
+							"hex": "#A58F56"
+						},
+						{
+							"order": 4,
+							"label": "Muzzle Outline",
+							"hex": "#BBA869"
+						},
+						{
+							"order": 5,
+							"label": "Muzzle Fill",
+							"hex": "#E9DCA6"
+						},
+						{
+							"order": 6,
+							"label": "Nostril Outline",
+							"hex": "#91824E"
+						},
+						{
+							"order": 7,
+							"label": "Nostril Fill",
+							"hex": "#524625"
+						}
+					]
+				},
+				"756": {
+					"groupid": 756,
+					"label": "Mane & Tail",
+					"order": 1,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#1D160D"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#534425"
+						}
+					]
+				},
+				"757": {
+					"groupid": 757,
+					"label": "Iris",
+					"order": 2,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Gradient Top",
+							"hex": "#186A7A"
+						},
+						{
+							"order": 1,
+							"label": "Gradient Bottom",
+							"hex": "#A8E8F6"
+						},
+						{
+							"order": 2,
+							"label": "Eyelid",
+							"hex": "#86703E"
+						}
+					]
+				},
+				"760": {
+					"groupid": 760,
+					"label": "Earrings",
+					"order": 3,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Fill",
+							"hex": "#62C7F0"
+						},
+						{
+							"order": 1,
+							"label": "Shine",
+							"hex": "#BEF8FF"
+						}
+					]
+				},
+				"761": {
+					"groupid": 761,
+					"label": "Neckpiece",
+					"order": 4,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#CBE1F9"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#FFFFFF"
+						},
+						{
+							"order": 2,
+							"label": "Charm Setting Outline",
+							"hex": "#C8B526"
+						},
+						{
+							"order": 3,
+							"label": "Charm Setting Fill",
+							"hex": "#F0E66B"
+						},
+						{
+							"order": 4,
+							"label": "Charm Outline",
+							"hex": "#6699C9"
+						},
+						{
+							"order": 5,
+							"label": "Charm Fill",
+							"hex": "#33628C"
+						},
+						{
+							"order": 6,
+							"label": "Charm Silhouette Outline",
+							"hex": "#CBE1F9"
+						},
+						{
+							"order": 7,
+							"label": "Charm Silhouette Fill",
+							"hex": "#FFFFFF"
+						}
+					]
+				}
+			},
+			"TagIDs": [
+				7,
+				12,
+				289,
+				293
 			]
 		},
 		"63": {
@@ -21072,326 +21586,6 @@
 				76,
 				100
 			]
-		},
-		"139": {
-			"id": 139,
-			"order": null,
-			"label": "Cranky Doodle Donkey",
-			"notes": "Toupee #1 is up through half-way of \"A Friend in Deed\"\nToupee #2 is from \"A Friend in Deed\" through most of \"Slice of Life\"\nToupee #2 is from end of \"Slice of Life\" onward.",
-			"cm_favme": null,
-			"ishuman": false,
-			"added": "2016-05-21 16:58:06.40502+02",
-			"cm_preview": null,
-			"cm_dir": null,
-			"ColorGroups": {
-				"750": {
-					"groupid": 750,
-					"label": "Coat",
-					"order": 0,
-					"Colors": [
-						{
-							"order": 0,
-							"label": "Outline",
-							"hex": "#746448"
-						},
-						{
-							"order": 1,
-							"label": "Fill",
-							"hex": "#A3916D"
-						},
-						{
-							"order": 2,
-							"label": "Bald shine",
-							"hex": "#D3C4A5"
-						},
-						{
-							"order": 3,
-							"label": "Shadow Outline",
-							"hex": "#63563C"
-						},
-						{
-							"order": 4,
-							"label": "Shadow Fill",
-							"hex": "#877559"
-						},
-						{
-							"order": 5,
-							"label": "Muzzle Outline",
-							"hex": "#BDA98D"
-						},
-						{
-							"order": 6,
-							"label": "Muzzle Fill",
-							"hex": "#E6D8A9"
-						},
-						{
-							"order": 7,
-							"label": "Nostril Outline",
-							"hex": "#938263"
-						},
-						{
-							"order": 8,
-							"label": "Nostril Fill",
-							"hex": "#403625"
-						},
-						{
-							"order": 9,
-							"label": "Whiskers/Eyebrows",
-							"hex": "#40384C"
-						}
-					]
-				},
-				"751": {
-					"groupid": 751,
-					"label": "Mane & Tail",
-					"order": 1,
-					"Colors": [
-						{
-							"order": 0,
-							"label": "Tail Puff / Toupee #1 Outline ",
-							"hex": "#131316"
-						},
-						{
-							"order": 1,
-							"label": "Tail Puff / Toupee #2 Fill",
-							"hex": "#3D394A"
-						},
-						{
-							"order": 2,
-							"label": "Toupee #1 Shine",
-							"hex": "#545567"
-						},
-						{
-							"order": 3,
-							"label": "Tail Fill",
-							"hex": "#746448"
-						},
-						{
-							"order": 4,
-							"label": "Toupee #2 Outline",
-							"hex": "#CF953D"
-						},
-						{
-							"order": 5,
-							"label": "Toupee #2 Fill",
-							"hex": "#E9C15D"
-						},
-						{
-							"order": 6,
-							"label": "Toupee #2 Shine",
-							"hex": "#F4D68D"
-						},
-						{
-							"order": 7,
-							"label": "Toupee #3 Outline",
-							"hex": "#C2580B"
-						},
-						{
-							"order": 8,
-							"label": "Toupee #3 Fill",
-							"hex": "#FF9A2D"
-						},
-						{
-							"order": 9,
-							"label": "Toupee #3 Stripes",
-							"hex": "#FFEE5F"
-						}
-					]
-				},
-				"752": {
-					"groupid": 752,
-					"label": "Iris",
-					"order": 2,
-					"Colors": [
-						{
-							"order": 0,
-							"label": "Gradient Top",
-							"hex": "#176878"
-						},
-						{
-							"order": 1,
-							"label": "Gradient Bottom",
-							"hex": "#ACEAF6"
-						}
-					]
-				}
-			},
-			"TagIDs": [
-				7,
-				11,
-				289,
-				290,
-				291
-			]
-		},
-		"140": {
-			"id": 140,
-			"order": null,
-			"label": "Matilda",
-			"notes": "",
-			"cm_favme": null,
-			"ishuman": false,
-			"added": "2016-05-22 05:05:58.944541+02",
-			"cm_preview": null,
-			"cm_dir": null,
-			"ColorGroups": {
-				"755": {
-					"groupid": 755,
-					"label": "Coat",
-					"order": 0,
-					"Colors": [
-						{
-							"order": 0,
-							"label": "Outline",
-							"hex": "#866F3E"
-						},
-						{
-							"order": 1,
-							"label": "Fill",
-							"hex": "#B8A05F"
-						},
-						{
-							"order": 2,
-							"label": "Shadow Outline",
-							"hex": "#776436"
-						},
-						{
-							"order": 3,
-							"label": "Shadow Fill",
-							"hex": "#A58F56"
-						},
-						{
-							"order": 4,
-							"label": "Muzzle Outline",
-							"hex": "#BBA869"
-						},
-						{
-							"order": 5,
-							"label": "Muzzle Fill",
-							"hex": "#E9DCA6"
-						},
-						{
-							"order": 6,
-							"label": "Nostril Outline",
-							"hex": "#91824E"
-						},
-						{
-							"order": 7,
-							"label": "Nostril Fill",
-							"hex": "#524625"
-						}
-					]
-				},
-				"756": {
-					"groupid": 756,
-					"label": "Mane & Tail",
-					"order": 1,
-					"Colors": [
-						{
-							"order": 0,
-							"label": "Outline",
-							"hex": "#1D160D"
-						},
-						{
-							"order": 1,
-							"label": "Fill",
-							"hex": "#534425"
-						}
-					]
-				},
-				"757": {
-					"groupid": 757,
-					"label": "Iris",
-					"order": 2,
-					"Colors": [
-						{
-							"order": 0,
-							"label": "Gradient Top",
-							"hex": "#186A7A"
-						},
-						{
-							"order": 1,
-							"label": "Gradient Bottom",
-							"hex": "#A8E8F6"
-						},
-						{
-							"order": 2,
-							"label": "Eyelid",
-							"hex": "#86703E"
-						}
-					]
-				},
-				"760": {
-					"groupid": 760,
-					"label": "Earrings",
-					"order": 3,
-					"Colors": [
-						{
-							"order": 0,
-							"label": "Fill",
-							"hex": "#62C7F0"
-						},
-						{
-							"order": 1,
-							"label": "Shine",
-							"hex": "#BEF8FF"
-						}
-					]
-				},
-				"761": {
-					"groupid": 761,
-					"label": "Neckpiece",
-					"order": 4,
-					"Colors": [
-						{
-							"order": 0,
-							"label": "Outline",
-							"hex": "#CBE1F9"
-						},
-						{
-							"order": 1,
-							"label": "Fill",
-							"hex": "#FFFFFF"
-						},
-						{
-							"order": 2,
-							"label": "Charm Setting Outline",
-							"hex": "#C8B526"
-						},
-						{
-							"order": 3,
-							"label": "Charm Setting Fill",
-							"hex": "#F0E66B"
-						},
-						{
-							"order": 4,
-							"label": "Charm Outline",
-							"hex": "#6699C9"
-						},
-						{
-							"order": 5,
-							"label": "Charm Fill",
-							"hex": "#33628C"
-						},
-						{
-							"order": 6,
-							"label": "Charm Silhouette Outline",
-							"hex": "#CBE1F9"
-						},
-						{
-							"order": 7,
-							"label": "Charm Silhouette Fill",
-							"hex": "#FFFFFF"
-						}
-					]
-				}
-			},
-			"TagIDs": [
-				7,
-				12,
-				289,
-				293
-			]
 		}
 	},
 	"Tags": {
@@ -21408,7 +21602,7 @@
 			"name": "earth pony",
 			"title": null,
 			"type": "spec",
-			"uses": 40,
+			"uses": 41,
 			"synonym_of": null
 		},
 		"3": {
@@ -21448,7 +21642,7 @@
 			"name": "minor character",
 			"title": "Ponies who had a speaking role and/or interacted with the mane six",
 			"type": "cat",
-			"uses": 85,
+			"uses": 86,
 			"synonym_of": null
 		},
 		"8": {
@@ -21488,7 +21682,7 @@
 			"name": "female",
 			"title": null,
 			"type": "gen",
-			"uses": 76,
+			"uses": 77,
 			"synonym_of": null
 		},
 		"14": {
@@ -23032,7 +23226,7 @@
 			"name": "s6e9",
 			"title": null,
 			"type": "ep",
-			"uses": 0,
+			"uses": 1,
 			"synonym_of": null
 		},
 		"218": {
@@ -23630,6 +23824,14 @@
 		"293": {
 			"tid": 293,
 			"name": "matilda",
+			"title": null,
+			"type": "char",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"294": {
+			"tid": 294,
+			"name": "plaid stripes",
 			"title": null,
 			"type": "char",
 			"uses": 1,
