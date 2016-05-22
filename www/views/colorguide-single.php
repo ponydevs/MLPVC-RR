@@ -58,8 +58,10 @@
 				<button class="green typcn typcn-plus create-cg">Create group</button>
 			</div>
 			<ul id="colors" class="colors"><?php
-	foreach (\CG\ColorGroups::Get($Appearance['id']) as $cg)
-		echo \CG\ColorGroups::GetHTML($cg, WRAP, NO_COLON, OUTPUT_COLOR_NAMES);
+	$CGs = \CG\ColorGroups::Get($Appearance['id']);
+	$AllColors = \CG\ColorGroups::GetColorsForEach($CGs);
+	foreach ($CGs as $cg)
+		echo \CG\ColorGroups::GetHTML($cg, $AllColors, WRAP, NO_COLON, OUTPUT_COLOR_NAMES);
 			?></ul>
 		</section>
 	</div>

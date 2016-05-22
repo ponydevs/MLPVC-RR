@@ -84,10 +84,11 @@
 			global $CGDb;
 
 			$ColorGroups = ColorGroups::Get($PonyID);
+			$AllColors = ColorGroups::GetColorsForEach($ColorGroups);
 
 			$HTML = '';
 			if (!empty($ColorGroups)) foreach ($ColorGroups as $cg)
-				$HTML .= ColorGroups::GetHTML($cg, WRAP, $colon, $colorNames);
+				$HTML .= ColorGroups::GetHTML($cg, $AllColors, WRAP, $colon, $colorNames);
 
 			return $wrap ? "<ul class='colors'>$HTML</ul>" : $HTML;
 		}

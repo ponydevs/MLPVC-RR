@@ -91,18 +91,21 @@
 
 					$AppendAppearance['ColorGroups'] = array();
 					$ColorGroups = \CG\ColorGroups::Get($p['id']);
-					if (!empty($ColorGroups)) foreach ($ColorGroups as $cg){
-						$AppendColorGroup = $cg;
-						unset($AppendColorGroup['ponyid']);
+					if (!empty($ColorGroups)){
+						$AllColors = \CG\ColorGroups::GetColorsForEach($ColorGroups);
+						foreach ($ColorGroups as $cg){
+							$AppendColorGroup = $cg;
+							unset($AppendColorGroup['ponyid']);
 
-						$AppendColorGroup['Colors'] = array();
-						$Colors = \CG\ColorGroups::GetColors($cg['groupid']);
-						if (!empty($Colors)) foreach ($Colors as $c){
-							unset($c['groupid']);
-							$AppendColorGroup['Colors'][] = $c;
+							$AppendColorGroup['Colors'] = array();
+							if (!empty($AllColors[$cg['groupid']]))
+								foreach ($AllColors[$cg['groupid']] as $c){
+									unset($c['groupid']);
+									$AppendColorGroup['Colors'][] = $c;
+								};
+
+							$AppendAppearance['ColorGroups'][$cg['groupid']] = $AppendColorGroup;
 						}
-
-						$AppendAppearance['ColorGroups'][$cg['groupid']] = $AppendColorGroup;
 					}
 
 					$AppendAppearance['TagIDs'] = array();
@@ -718,7 +721,7 @@
 			$outputNames = $AppearancePage;
 
 			if ($new) $response = array('cgs' => \CG\Appearances::GetColorsHTML($Appearance['id'], NOWRAP, $colon, $outputNames));
-			else $response = array('cg' => \CG\ColorGroups::GetHTML($Group['groupid'], NOWRAP, $colon, $outputNames));
+			else $response = array('cg' => \CG\ColorGroups::GetHTML($Group['groupid'], null, NOWRAP, $colon, $outputNames));
 
 			$AppearanceID = $new ? $Appearance['id'] : $Group['ponyid'];
 			if (isset($major)){

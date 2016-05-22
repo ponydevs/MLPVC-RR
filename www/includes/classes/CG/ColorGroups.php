@@ -31,20 +31,45 @@
 		static function GetColors($GroupID){
 			global $CGDb;
 
-			return $CGDb->where('groupid', $GroupID)->orderBy('groupid', 'ASC')->orderBy('"order"', 'ASC')->get('colors');
+			return $CGDb->where('groupid', $GroupID)->orderBy('"order"', 'ASC')->get('colors');
+		}
+
+		/**
+		 * Get the colors belonging to a set of color groups
+		 *
+		 * @param int[] $Groups
+		 *
+		 * @return array
+		 */
+		static function GetColorsForEach($Groups){
+			global $CGDb;
+
+			$GroupIDs = array();
+			foreach ($Groups as $g)
+				$GroupIDs[] = $g['groupid'];
+
+			$data = $CGDb->where('groupid IN ('.implode(',',$GroupIDs).')')->orderBy('groupid','ASC')->orderBy('"order"', 'ASC')->get('colors');
+			if (empty($data))
+				return null;
+
+			$sorted = array();
+			foreach ($data as $row)
+				$sorted[$row['groupid']][] = $row;
+			return $sorted;
 		}
 
 		/**
 		 * Get HTML for a color group
 		 *
-		 * @param int|array $GroupID
-		 * @param bool      $wrap
-		 * @param bool      $colon
-		 * @param bool      $colorNames
+		 * @param int|array  $GroupID
+		 * @param array|null $AllColors
+		 * @param bool       $wrap
+		 * @param bool       $colon
+		 * @param bool       $colorNames
 		 *
 		 * @return string
 		 */
-		static function GetHTML($GroupID, $wrap = true, $colon = true, $colorNames = false){
+		static function GetHTML($GroupID, $AllColors = null, $wrap = true, $colon = true, $colorNames = false){
 			global $CGDb;
 
 			if (is_array($GroupID)) $Group = $GroupID;
@@ -56,7 +81,9 @@
 				"<span class='cat'>$label".
 					($colorNames && \Permission::Sufficient('staff')?'<span class="admin"><button class="blue typcn typcn-pencil edit-cg"></button><button class="red typcn typcn-trash delete-cg"></button></span>':'').
 				"</span>";
-			$Colors = self::GetColors($Group['groupid']);
+			if (!isset($AllColors))
+				$Colors = self::GetColors($Group['groupid']);
+			else $Colors = $AllColors[$Group['groupid']] ?? null;
 			if (!empty($Colors))
 				foreach ($Colors as $i => $c){
 					$title = \CoreUtils::AposEncode($c['label']);

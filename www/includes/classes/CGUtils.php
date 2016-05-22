@@ -348,6 +348,7 @@
 			if (!empty($ColorGroups)){
 				$LargestX = 0;
 				$LargestLabel = '';
+				$AllColors = \CG\ColorGroups::GetColorsForEach($ColorGroups);
 				foreach ($ColorGroups as $cg){
 					$CGLabelBox = Image::SaneGetTTFBox($CGFontSize, $FontFile, $cg['label']);
 					Image::CalcRedraw($OutWidth, $OutHeight, $CGLabelBox['width']+$TextMargin, $GroupLabelBox['height']+$NameVerticalMargin+$CGVerticalMargin, $BaseImage, $origin);
@@ -359,9 +360,8 @@
 						$LargestLabel = $cg['label'];
 					}
 
-					$Colors = \CG\ColorGroups::GetColors($cg['groupid']);
-					if (!empty($Colors))
-						foreach ($Colors as $c){
+					if (!empty($AllColors[$cg['groupid']]))
+						foreach ($AllColors[$cg['groupid']] as $c){
 							$ColorNameLeftOffset = $ColorCircleSize + $ColorCircleRMargin;
 							$CNBox = Image::SaneGetTTFBox($ColorNameFontSize, $PixelatedFontFile, $c['label']);
 
