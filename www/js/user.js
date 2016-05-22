@@ -155,7 +155,7 @@ DocReady.push(function User(){
 		}));
 	}).children('label').children('input,textarea,select').each(function(){
 		(function($el){
-			$el.data('orig', $el.val()).on('keydown change',function(){
+			$el.data('orig', $el.val()).on('keydown keyup change',function(){
 				$el.siblings('.save').attr('disabled', $el.val().trim() === $el.data('orig'));
 			});
 		})($(this));
