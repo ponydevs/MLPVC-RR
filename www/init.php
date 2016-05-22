@@ -97,10 +97,6 @@
 	$TAG_NAME_REGEX = new RegExp(TAG_NAME_PATTERN,'u');
 	define('INVERSE_TAG_NAME_PATTERN', '[^a-z\d ().\-\']');
 
-	// Git commit information \\
-	define('LATEST_COMMIT_ID',rtrim(shell_exec('git rev-parse --short=4 HEAD')));
-	define('LATEST_COMMIT_TIME',date('c',strtotime(shell_exec('git log -1 --date=short --pretty=format:%ci'))));
-
 	// Database connection & Auth \\
 	$Database = new PostgresDbWrapper('mlpvc-rr');
 	try {

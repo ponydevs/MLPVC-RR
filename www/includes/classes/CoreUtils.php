@@ -574,7 +574,9 @@
 		 */
 		static function GetFooter(){
 			global $Database, $CGDb;
-			return "Running <strong><a href='".GITHUB_URL."' title='Visit the GitHub repository'>MLPVC-RR</a>@<a href='".GITHUB_URL."/commit/".LATEST_COMMIT_ID."' title='See exactly what was changed and why'>".LATEST_COMMIT_ID."</a></strong> created ".Time::Tag(LATEST_COMMIT_TIME)." | <a class='issues' href='".GITHUB_URL."/issues' target='_blank'>Known issues</a> | ".(isset($Database)?"<a href='#feedback' class='send-feedback'>Send feedback</a>":"<a href='".GITHUB_URL."/issues/new' target='_blank'>Send feedback</a>").(Permission::Sufficient('developer')?' | Render: '.number_format(microtime(true)-EXEC_START_MICRO, 4).'s | SQL Queries: '.($Database->query_count+($CGDb->query_count??0)):'');
+			$commit_id = rtrim(shell_exec('git rev-parse --short=4 HEAD'));
+			$commit_time = Time::Tag(date('c',strtotime(shell_exec('git log -1 --date=short --pretty=format:%ci'))));
+			return "Running <strong><a href='".GITHUB_URL."' title='Visit the GitHub repository'>MLPVC-RR</a>@<a href='".GITHUB_URL."/commit/$commit_id' title='See exactly what was changed and why'>$commit_id</a></strong> created $commit_time | <a class='issues' href='".GITHUB_URL."/issues' target='_blank'>Known issues</a> | ".(isset($Database)?"<a href='#feedback' class='send-feedback'>Send feedback</a>":"<a href='".GITHUB_URL."/issues/new' target='_blank'>Send feedback</a>").(Permission::Sufficient('developer')?' | Render: '.number_format(microtime(true)-EXEC_START_MICRO, 4).'s | SQL Queries: '.($Database->query_count+($CGDb->query_count??0)):'');
 		}
 
 		/**
