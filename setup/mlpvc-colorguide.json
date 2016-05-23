@@ -18430,9 +18430,206 @@
 				294
 			]
 		},
+		"142": {
+			"id": 142,
+			"order": 112,
+			"label": "Mr. Stripes",
+			"notes": "",
+			"cm_favme": null,
+			"ishuman": false,
+			"added": "2016-05-22 18:38:17.026312+02",
+			"cm_preview": null,
+			"cm_dir": null,
+			"ColorGroups": {
+				"770": {
+					"groupid": 770,
+					"label": "Coat",
+					"order": 0,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#9895CB"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#EDF9F1"
+						},
+						{
+							"order": 2,
+							"label": "Shadow Outline",
+							"hex": "#8885B3"
+						},
+						{
+							"order": 3,
+							"label": "Shadow Fill",
+							"hex": "#D5DEDB"
+						},
+						{
+							"order": 4,
+							"label": "Stubble Outline",
+							"hex": "#516C71"
+						},
+						{
+							"order": 5,
+							"label": "Stubble Fill",
+							"hex": "#B3C5C8"
+						}
+					]
+				},
+				"771": {
+					"groupid": 771,
+					"label": "Mane & Tail",
+					"order": 1,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#553E73"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#734EA2"
+						},
+						{
+							"order": 2,
+							"label": "Stripe",
+							"hex": "#7B72AB"
+						}
+					]
+				},
+				"772": {
+					"groupid": 772,
+					"label": "Iris",
+					"order": 2,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Gradient Top",
+							"hex": "#65126A"
+						},
+						{
+							"order": 1,
+							"label": "Gradient Bottom",
+							"hex": "#BC1DAC"
+						}
+					]
+				},
+				"773": {
+					"groupid": 773,
+					"label": "Cutie Mark",
+					"order": 3,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Fill 1",
+							"hex": "#F5A5EC"
+						},
+						{
+							"order": 1,
+							"label": "Fill 2",
+							"hex": "#BE5FC0"
+						}
+					]
+				},
+				"775": {
+					"groupid": 775,
+					"label": "Sweatjacket",
+					"order": 4,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#1E305A"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#4266B4"
+						},
+						{
+							"order": 2,
+							"label": "Hem / Collar Fill",
+							"hex": "#2F4A83"
+						},
+						{
+							"order": 3,
+							"label": "Shadow Outline",
+							"hex": "#172A49"
+						},
+						{
+							"order": 4,
+							"label": "Shadow Fill",
+							"hex": "#3A5AA0"
+						},
+						{
+							"order": 5,
+							"label": "Shadow Hem Fill",
+							"hex": "#294275"
+						},
+						{
+							"order": 6,
+							"label": "Sleeve Stripes",
+							"hex": "#F4FEFC"
+						},
+						{
+							"order": 7,
+							"label": "Front Stripe",
+							"hex": "#8CA2D5"
+						},
+						{
+							"order": 8,
+							"label": "Shirt / Towel Outline",
+							"hex": "#1381BE"
+						},
+						{
+							"order": 9,
+							"label": "Shirt / Towel Fill",
+							"hex": "#4FB5E9"
+						}
+					]
+				},
+				"776": {
+					"groupid": 776,
+					"label": "Necklace",
+					"order": 5,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#F69837"
+						},
+						{
+							"order": 1,
+							"label": "Necklace / Side Fill",
+							"hex": "#FDCE40"
+						},
+						{
+							"order": 2,
+							"label": "Clip Fill",
+							"hex": "#FAE087"
+						},
+						{
+							"order": 3,
+							"label": "Medallion Fill",
+							"hex": "#FDF4BD"
+						}
+					]
+				}
+			},
+			"TagIDs": [
+				2,
+				7,
+				11,
+				217,
+				295
+			]
+		},
 		"64": {
 			"id": 64,
-			"order": 112,
+			"order": 113,
 			"label": "Angel Bunny",
 			"notes": "",
 			"cm_favme": null,
@@ -18545,7 +18742,7 @@
 		},
 		"112": {
 			"id": 112,
-			"order": 113,
+			"order": 114,
 			"label": "Gummy",
 			"notes": "In 3/4 view, the top line on his far eye uses the \"Far Eye Top Line\" color instead of the normal gradient.",
 			"cm_favme": null,
@@ -18681,7 +18878,7 @@
 		},
 		"116": {
 			"id": 116,
-			"order": 114,
+			"order": 115,
 			"label": "Winona",
 			"notes": "",
 			"cm_favme": null,
@@ -18814,7 +19011,7 @@
 		},
 		"117": {
 			"id": 117,
-			"order": 115,
+			"order": 116,
 			"label": "Owlowiscious",
 			"notes": "",
 			"cm_favme": null,
@@ -18901,7 +19098,7 @@
 		},
 		"119": {
 			"id": 119,
-			"order": 116,
+			"order": 117,
 			"label": "Tank",
 			"notes": "Far Legs use darker colors.\nIn some scenes, Tank uses an alternate set of colors for the tongue.\nFor accurate goggle lenses: Group together the Fill (100% Normal blending) and the Highlights (75% Color Dodge blending) and set the group to 50% opacity.\nFor a less accurate version, group together the Fill and the Highlights (both 100% opacity, Normal blending) and set the group to 50% opacity.",
 			"cm_favme": null,
@@ -19168,7 +19365,7 @@
 		},
 		"120": {
 			"id": 120,
-			"order": 117,
+			"order": 118,
 			"label": "Opalescence",
 			"notes": "",
 			"cm_favme": null,
@@ -19364,7 +19561,7 @@
 		},
 		"33": {
 			"id": 33,
-			"order": 118,
+			"order": 119,
 			"label": "Alicorn Amulet",
 			"notes": "",
 			"cm_favme": null,
@@ -19555,7 +19752,7 @@
 		},
 		"86": {
 			"id": 86,
-			"order": 119,
+			"order": 120,
 			"label": "Scorpan's Medallion",
 			"notes": "",
 			"cm_favme": null,
@@ -19632,7 +19829,7 @@
 		},
 		"94": {
 			"id": 94,
-			"order": 120,
+			"order": 121,
 			"label": "Party Cannon",
 			"notes": "",
 			"cm_favme": null,
@@ -19760,7 +19957,7 @@
 		},
 		"115": {
 			"id": 115,
-			"order": 121,
+			"order": 122,
 			"label": "Fake Timberwolf",
 			"notes": "",
 			"cm_favme": null,
@@ -19968,7 +20165,7 @@
 		},
 		"70": {
 			"id": 70,
-			"order": 122,
+			"order": 123,
 			"label": "Wonderbolt Uniform",
 			"notes": "",
 			"cm_favme": null,
@@ -20066,7 +20263,7 @@
 		},
 		"133": {
 			"id": 133,
-			"order": 123,
+			"order": 124,
 			"label": "Spitfire's Academy Outfit",
 			"notes": "",
 			"cm_favme": null,
@@ -20263,7 +20460,7 @@
 		},
 		"71": {
 			"id": 71,
-			"order": 124,
+			"order": 125,
 			"label": "Wonderbolt Trainee Uniform",
 			"notes": "",
 			"cm_favme": null,
@@ -20330,7 +20527,7 @@
 		},
 		"105": {
 			"id": 105,
-			"order": 125,
+			"order": 126,
 			"label": "Pony Tones Outfit",
 			"notes": "",
 			"cm_favme": null,
@@ -20431,7 +20628,7 @@
 		},
 		"109": {
 			"id": 109,
-			"order": 126,
+			"order": 127,
 			"label": "Zecora",
 			"notes": "Based on S4E14.",
 			"cm_favme": null,
@@ -20594,7 +20791,7 @@
 		},
 		"113": {
 			"id": 113,
-			"order": 127,
+			"order": 128,
 			"label": "Orange Frog",
 			"notes": "",
 			"cm_favme": null,
@@ -20689,7 +20886,7 @@
 		},
 		"122": {
 			"id": 122,
-			"order": 128,
+			"order": 129,
 			"label": "Pig (Peach Skin)",
 			"notes": "",
 			"cm_favme": null,
@@ -20809,7 +21006,7 @@
 		},
 		"123": {
 			"id": 123,
-			"order": 129,
+			"order": 130,
 			"label": "Pig (Pink Skin)",
 			"notes": "Muddy Nostril color unknown",
 			"cm_favme": null,
@@ -20924,7 +21121,7 @@
 		},
 		"124": {
 			"id": 124,
-			"order": 130,
+			"order": 131,
 			"label": "Pig (Dark Skin)",
 			"notes": "Muddy Nostril color unknown",
 			"cm_favme": null,
@@ -21039,7 +21236,7 @@
 		},
 		"139": {
 			"id": 139,
-			"order": 131,
+			"order": 132,
 			"label": "Cranky Doodle Donkey",
 			"notes": "Toupee #1 is up through half-way of \"A Friend in Deed\"\nToupee #2 is from \"A Friend in Deed\" through most of \"Slice of Life\"\nToupee #2 is from end of \"Slice of Life\" onward.",
 			"cm_favme": null,
@@ -21190,7 +21387,7 @@
 		},
 		"140": {
 			"id": 140,
-			"order": 132,
+			"order": 133,
 			"label": "Matilda",
 			"notes": "",
 			"cm_favme": null,
@@ -21602,7 +21799,7 @@
 			"name": "earth pony",
 			"title": null,
 			"type": "spec",
-			"uses": 41,
+			"uses": 42,
 			"synonym_of": null
 		},
 		"3": {
@@ -21642,7 +21839,7 @@
 			"name": "minor character",
 			"title": "Ponies who had a speaking role and/or interacted with the mane six",
 			"type": "cat",
-			"uses": 86,
+			"uses": 87,
 			"synonym_of": null
 		},
 		"8": {
@@ -21674,7 +21871,7 @@
 			"name": "male",
 			"title": null,
 			"type": "gen",
-			"uses": 42,
+			"uses": 43,
 			"synonym_of": null
 		},
 		"12": {
@@ -23226,7 +23423,7 @@
 			"name": "s6e9",
 			"title": null,
 			"type": "ep",
-			"uses": 1,
+			"uses": 2,
 			"synonym_of": null
 		},
 		"218": {
@@ -23832,6 +24029,14 @@
 		"294": {
 			"tid": 294,
 			"name": "plaid stripes",
+			"title": null,
+			"type": "char",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"295": {
+			"tid": 295,
+			"name": "mr. stripes",
 			"title": null,
 			"type": "char",
 			"uses": 1,
