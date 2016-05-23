@@ -1125,4 +1125,7 @@ DocReady.push(function Episode(){
 		else if (postHashRegex.test(location.hash))
 			$.Dialog.info('Scroll post into view',"The "+(location.hash.replace(postHashRegex,'$1'))+" you were linked to has either been deleted or didn't exist in the first place. Sorry.<div class='align-center'><span class='sideways-smiley-face'>:\\</div>");
 	}
+},function(){
+	$body.removeClass('no-distractions');
+	$('.fluidbox--opened').fluidbox('close');
 });
