@@ -30,7 +30,7 @@ After some time, the idea of moving the old PNG color guide into an easier to us
  - [Internet Explorer](http://fav.me/d52fp08) by [McSadat](http://mcsadat.deviantart.com/)
  - [Opera](http://fav.me/d52qnaw) by [ParallaxMLP](http://parallaxmlp.deviantart.com/)
  - [Safari](http://fav.me/d530knp) by [ParallaxMLP](http://parallaxmlp.deviantart.com/)
- - [Vivaldi](https://github.com/alrra/browser-logos/blob/1ec2af8325ffb8b3f2c2834da84870341a376efd/vivaldi/vivaldi_256x256.png) from [alrra/browser-logos](https://github.com/alrra/browser-logos)
+ - Vivaldi from [Vivaldi Press Kit](https://vivaldi.com/press/)
  
 **Coding, design & hosting:** [SeinopSys](https://github.com/SeinopSys)
 
