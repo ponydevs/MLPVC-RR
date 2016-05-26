@@ -7,7 +7,9 @@
 	$currentUser = null;
 	$do = !empty($_GET['do']) ? $_GET['do'] : 'index';
 	$data = !empty($_GET['data']) ? $_GET['data'] : '';
-	
+	unset($_REQUEST['do']);
+	unset($_REQUEST['data']);
+
 	require "init.php";
 
 	$phpExtensionPattern = new RegExp('\.php($|\?.*)');
