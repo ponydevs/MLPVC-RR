@@ -14467,7 +14467,7 @@
 		"30": {
 			"id": 30,
 			"order": 91,
-			"label": "Coco Pommel",
+			"label": "Miss Pommel",
 			"notes": "Far legs use darker colors.",
 			"cm_favme": null,
 			"ishuman": false,
@@ -14671,6 +14671,7 @@
 				104,
 				105,
 				106,
+				217,
 				292
 			]
 		},
@@ -18627,9 +18628,271 @@
 				295
 			]
 		},
+		"143": {
+			"id": 143,
+			"order": 113,
+			"label": "Buried Lede",
+			"notes": "",
+			"cm_favme": null,
+			"ishuman": false,
+			"added": "2016-05-24 04:36:04.129849+02",
+			"cm_preview": null,
+			"cm_dir": null,
+			"ColorGroups": {
+				"777": {
+					"groupid": 777,
+					"label": "Coat",
+					"order": 0,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#D47023"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#EDAF56"
+						},
+						{
+							"order": 2,
+							"label": "Shadow Outline",
+							"hex": "#D06E24"
+						},
+						{
+							"order": 3,
+							"label": "Shadow Fill",
+							"hex": "#E8A74F"
+						}
+					]
+				},
+				"778": {
+					"groupid": 778,
+					"label": "Mane & Tail",
+					"order": 1,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#56423E"
+						},
+						{
+							"order": 1,
+							"label": "Main Fill",
+							"hex": "#73604C"
+						},
+						{
+							"order": 2,
+							"label": "Main Stripe",
+							"hex": "#8D7F67"
+						},
+						{
+							"order": 3,
+							"label": "Back Mane Outline",
+							"hex": "#626158"
+						},
+						{
+							"order": 4,
+							"label": "Back Mane Fill",
+							"hex": "#ABAA96"
+						},
+						{
+							"order": 5,
+							"label": "Back Mane Stripe",
+							"hex": "#CAC9BC"
+						}
+					]
+				},
+				"779": {
+					"groupid": 779,
+					"label": "Iris",
+					"order": 2,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Gradient Top",
+							"hex": "#DCB409"
+						},
+						{
+							"order": 1,
+							"label": "Gradient Bottom",
+							"hex": "#F8EF77"
+						},
+						{
+							"order": 2,
+							"label": "Highlight Top",
+							"hex": "#E1C21F"
+						},
+						{
+							"order": 3,
+							"label": "Highlight Bottom",
+							"hex": "#F9F4AA"
+						}
+					]
+				},
+				"780": {
+					"groupid": 780,
+					"label": "Cutie Mark",
+					"order": 3,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Top Sheet",
+							"hex": "#FFFFFF"
+						},
+						{
+							"order": 1,
+							"label": "Pad Sides",
+							"hex": "#D2EBEB"
+						},
+						{
+							"order": 2,
+							"label": "Pad Top",
+							"hex": "#B0DBDD"
+						},
+						{
+							"order": 3,
+							"label": "Pad Shadow",
+							"hex": "#A6C2C9"
+						},
+						{
+							"order": 4,
+							"label": "Pad Rings",
+							"hex": "#98A1A1"
+						},
+						{
+							"order": 5,
+							"label": "Text Lines",
+							"hex": "#A2A8A8"
+						},
+						{
+							"order": 6,
+							"label": "Pencil Side 1",
+							"hex": "#ADE2DC"
+						},
+						{
+							"order": 7,
+							"label": "Pencil Side 2",
+							"hex": "#71B5BA"
+						},
+						{
+							"order": 8,
+							"label": "Eraser",
+							"hex": "#F2665F"
+						},
+						{
+							"order": 9,
+							"label": "Eraser Band",
+							"hex": "#D7EAEA"
+						},
+						{
+							"order": 10,
+							"label": "Wood",
+							"hex": "#EED7A9"
+						},
+						{
+							"order": 11,
+							"label": "Graphite",
+							"hex": "#585853"
+						}
+					]
+				},
+				"782": {
+					"groupid": 782,
+					"label": "Shirt and Tie",
+					"order": 4,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Shirt Outline",
+							"hex": "#89B3B0"
+						},
+						{
+							"order": 1,
+							"label": "Shirt Fill",
+							"hex": "#EAFAF9"
+						},
+						{
+							"order": 2,
+							"label": "Buttons",
+							"hex": "#708D8C"
+						},
+						{
+							"order": 3,
+							"label": "Tie Outline",
+							"hex": "#672525"
+						},
+						{
+							"order": 4,
+							"label": "Tie Fill",
+							"hex": "#C03F39"
+						},
+						{
+							"order": 5,
+							"label": "Tie Stripe",
+							"hex": "#CFB2A4"
+						}
+					]
+				},
+				"783": {
+					"groupid": 783,
+					"label": "Badge",
+					"order": 5,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Clip Outline",
+							"hex": "#6C6C6C"
+						},
+						{
+							"order": 1,
+							"label": "Clip Fill",
+							"hex": "#9F9F9F"
+						},
+						{
+							"order": 2,
+							"label": "Clip Shine",
+							"hex": "#EBEBEB"
+						},
+						{
+							"order": 3,
+							"label": "Badge Outline",
+							"hex": "#9F9F9F"
+						},
+						{
+							"order": 4,
+							"label": "Badge Fill 1",
+							"hex": "#C0C0C0"
+						},
+						{
+							"order": 5,
+							"label": "Badge Fill 2",
+							"hex": "#F4F4F4"
+						},
+						{
+							"order": 6,
+							"label": "Photo Spot",
+							"hex": "#7796BC"
+						},
+						{
+							"order": 7,
+							"label": "Text Lines",
+							"hex": "#6C6C6C"
+						}
+					]
+				}
+			},
+			"TagIDs": [
+				2,
+				7,
+				11,
+				217,
+				296
+			]
+		},
 		"64": {
 			"id": 64,
-			"order": 113,
+			"order": 114,
 			"label": "Angel Bunny",
 			"notes": "",
 			"cm_favme": null,
@@ -18742,7 +19005,7 @@
 		},
 		"112": {
 			"id": 112,
-			"order": 114,
+			"order": 115,
 			"label": "Gummy",
 			"notes": "In 3/4 view, the top line on his far eye uses the \"Far Eye Top Line\" color instead of the normal gradient.",
 			"cm_favme": null,
@@ -18878,7 +19141,7 @@
 		},
 		"116": {
 			"id": 116,
-			"order": 115,
+			"order": 116,
 			"label": "Winona",
 			"notes": "",
 			"cm_favme": null,
@@ -19011,7 +19274,7 @@
 		},
 		"117": {
 			"id": 117,
-			"order": 116,
+			"order": 117,
 			"label": "Owlowiscious",
 			"notes": "",
 			"cm_favme": null,
@@ -19098,7 +19361,7 @@
 		},
 		"119": {
 			"id": 119,
-			"order": 117,
+			"order": 118,
 			"label": "Tank",
 			"notes": "Far Legs use darker colors.\nIn some scenes, Tank uses an alternate set of colors for the tongue.\nFor accurate goggle lenses: Group together the Fill (100% Normal blending) and the Highlights (75% Color Dodge blending) and set the group to 50% opacity.\nFor a less accurate version, group together the Fill and the Highlights (both 100% opacity, Normal blending) and set the group to 50% opacity.",
 			"cm_favme": null,
@@ -19365,7 +19628,7 @@
 		},
 		"120": {
 			"id": 120,
-			"order": 118,
+			"order": 119,
 			"label": "Opalescence",
 			"notes": "",
 			"cm_favme": null,
@@ -19561,7 +19824,7 @@
 		},
 		"33": {
 			"id": 33,
-			"order": 119,
+			"order": 120,
 			"label": "Alicorn Amulet",
 			"notes": "",
 			"cm_favme": null,
@@ -19752,7 +20015,7 @@
 		},
 		"86": {
 			"id": 86,
-			"order": 120,
+			"order": 121,
 			"label": "Scorpan's Medallion",
 			"notes": "",
 			"cm_favme": null,
@@ -19829,7 +20092,7 @@
 		},
 		"94": {
 			"id": 94,
-			"order": 121,
+			"order": 122,
 			"label": "Party Cannon",
 			"notes": "",
 			"cm_favme": null,
@@ -19957,7 +20220,7 @@
 		},
 		"115": {
 			"id": 115,
-			"order": 122,
+			"order": 123,
 			"label": "Fake Timberwolf",
 			"notes": "",
 			"cm_favme": null,
@@ -20165,7 +20428,7 @@
 		},
 		"70": {
 			"id": 70,
-			"order": 123,
+			"order": 124,
 			"label": "Wonderbolt Uniform",
 			"notes": "",
 			"cm_favme": null,
@@ -20263,7 +20526,7 @@
 		},
 		"133": {
 			"id": 133,
-			"order": 124,
+			"order": 125,
 			"label": "Spitfire's Academy Outfit",
 			"notes": "",
 			"cm_favme": null,
@@ -20460,7 +20723,7 @@
 		},
 		"71": {
 			"id": 71,
-			"order": 125,
+			"order": 126,
 			"label": "Wonderbolt Trainee Uniform",
 			"notes": "",
 			"cm_favme": null,
@@ -20527,7 +20790,7 @@
 		},
 		"105": {
 			"id": 105,
-			"order": 126,
+			"order": 127,
 			"label": "Pony Tones Outfit",
 			"notes": "",
 			"cm_favme": null,
@@ -20628,7 +20891,7 @@
 		},
 		"109": {
 			"id": 109,
-			"order": 127,
+			"order": 128,
 			"label": "Zecora",
 			"notes": "Based on S4E14.",
 			"cm_favme": null,
@@ -20791,7 +21054,7 @@
 		},
 		"113": {
 			"id": 113,
-			"order": 128,
+			"order": 129,
 			"label": "Orange Frog",
 			"notes": "",
 			"cm_favme": null,
@@ -20886,7 +21149,7 @@
 		},
 		"122": {
 			"id": 122,
-			"order": 129,
+			"order": 130,
 			"label": "Pig (Peach Skin)",
 			"notes": "",
 			"cm_favme": null,
@@ -21006,7 +21269,7 @@
 		},
 		"123": {
 			"id": 123,
-			"order": 130,
+			"order": 131,
 			"label": "Pig (Pink Skin)",
 			"notes": "Muddy Nostril color unknown",
 			"cm_favme": null,
@@ -21121,7 +21384,7 @@
 		},
 		"124": {
 			"id": 124,
-			"order": 131,
+			"order": 132,
 			"label": "Pig (Dark Skin)",
 			"notes": "Muddy Nostril color unknown",
 			"cm_favme": null,
@@ -21236,7 +21499,7 @@
 		},
 		"139": {
 			"id": 139,
-			"order": 132,
+			"order": 133,
 			"label": "Cranky Doodle Donkey",
 			"notes": "Toupee #1 is up through half-way of \"A Friend in Deed\"\nToupee #2 is from \"A Friend in Deed\" through most of \"Slice of Life\"\nToupee #2 is from end of \"Slice of Life\" onward.",
 			"cm_favme": null,
@@ -21387,7 +21650,7 @@
 		},
 		"140": {
 			"id": 140,
-			"order": 133,
+			"order": 134,
 			"label": "Matilda",
 			"notes": "",
 			"cm_favme": null,
@@ -21799,7 +22062,7 @@
 			"name": "earth pony",
 			"title": null,
 			"type": "spec",
-			"uses": 42,
+			"uses": 43,
 			"synonym_of": null
 		},
 		"3": {
@@ -21839,7 +22102,7 @@
 			"name": "minor character",
 			"title": "Ponies who had a speaking role and/or interacted with the mane six",
 			"type": "cat",
-			"uses": 87,
+			"uses": 88,
 			"synonym_of": null
 		},
 		"8": {
@@ -21871,7 +22134,7 @@
 			"name": "male",
 			"title": null,
 			"type": "gen",
-			"uses": 43,
+			"uses": 44,
 			"synonym_of": null
 		},
 		"12": {
@@ -22183,8 +22446,8 @@
 			"name": "coco pommel",
 			"title": null,
 			"type": "char",
-			"uses": 1,
-			"synonym_of": null
+			"uses": 0,
+			"synonym_of": 292
 		},
 		"57": {
 			"tid": 57,
@@ -23423,7 +23686,7 @@
 			"name": "s6e9",
 			"title": null,
 			"type": "ep",
-			"uses": 2,
+			"uses": 3,
 			"synonym_of": null
 		},
 		"218": {
@@ -24015,8 +24278,8 @@
 			"name": "miss pommel",
 			"title": null,
 			"type": "char",
-			"uses": 0,
-			"synonym_of": 55
+			"uses": 1,
+			"synonym_of": null
 		},
 		"293": {
 			"tid": 293,
@@ -24037,6 +24300,14 @@
 		"295": {
 			"tid": 295,
 			"name": "mr. stripes",
+			"title": null,
+			"type": "char",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"296": {
+			"tid": 296,
+			"name": "buried lede",
 			"title": null,
 			"type": "char",
 			"uses": 1,
