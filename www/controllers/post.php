@@ -206,23 +206,20 @@
 		else if ($type === 'request' && $action === 'reserve'){
 			User::ReservationLimitCheck();
 
-			if (!empty($_POST['post_as'])){
-				if (Permission::Insufficient('developer'))
-					CoreUtils::Respond('Reserving as other users is only allowed to the developer');
+			$update['reserved_by'] = $currentUser['id'];
 
-				$post_as = CoreUtils::Trim($_POST['post_as']);
-				if (!$USERNAME_REGEX->match($post_as))
-					CoreUtils::Respond('Username format is invalid');
+			if (Permission::Sufficient('developer')){
+				$post_as = Posts::ValidatePostAs();
+				if (isset($post_as)){
+					$User = User::Get($post_as, 'name');
+					if (empty($User))
+						CoreUtils::Respond('User does not exist');
+					if (!Permission::Sufficient('member', $User['role']))
+						CoreUtils::Respond('User does not have permission to reserve posts');
 
-				$User = User::Get($post_as, 'name');
-				if (empty($User))
-					CoreUtils::Respond('User does not exist');
-				if (!Permission::Sufficient('member', $User['role']))
-					CoreUtils::Respond('User does not have permission to reserve posts');
-
-				$update['reserved_by'] = $User['id'];
+					$update['reserved_by'] = $User['id'];
+				}
 			}
-			else $update['reserved_by'] = $currentUser['id'];
 			$update['reserved_at'] = date('c');
 		}
 
@@ -245,9 +242,13 @@
 		$insert = Posts::CheckRequestFinishingImage();
 		if (empty($insert['reserved_by']))
 			$insert['reserved_by'] = $currentUser['id'];
-		$epdata = Episode::ParseID($_POST['epid']);
-		if (empty($epdata))
-			CoreUtils::Respond('Invalid episode');
+
+		$epdata = (new Input('epid','epid',array(
+			'errors' => array(
+				Input::$ERROR_MISSING => 'Episode identifier is missing',
+				Input::$ERROR_INVALID => 'Episode identifier (@value) is invalid',
+			)
+		)))->out();
 		$epdata = Episode::GetActual($epdata['season'], $epdata['episode']);
 		if (empty($epdata))
 			CoreUtils::Respond('The specified episode does not exist');
@@ -278,7 +279,12 @@
 				break;
 			};
 
-		$Image = Posts::CheckImage($Post);
+		$image_url = (new Input('image_url','string',array(
+			'errors' => array(
+				Input::$ERROR_MISSING => 'Image URL is missing',
+			)
+		)))->out();
+		$Image = Posts::CheckImage($image_url, $Post);
 
 		// Check image availability
 		if (!@getimagesize($Image->preview)){
@@ -359,56 +365,56 @@
 		CoreUtils::Respond(array('fullsize' => $fullsize));
 	}
 
-	$image_check = empty($_POST['what']);
-	if (!$image_check){
-		if (!in_array($_POST['what'],Posts::$TYPES))
-			CoreUtils::Respond('Invalid post type');
-
-		$type = $_POST['what'];
-		if ($type === 'reservation'){
-			if (!Permission::Sufficient('member'))
-				CoreUtils::Respond();
-			User::ReservationLimitCheck();
-		}
+	$type = (new Input('what',function($value){
+		if (!in_array($value,Posts::$TYPES))
+			return Input::$ERROR_INVALID;
+	},array(
+		'optional' => true,
+		'errors' => array(
+			Input::$ERROR_INVALID => 'Post type (@value) is invalid',
+		)
+	)))->out();
+	if (empty($what) && $type === 'reservation'){
+		if (Permission::Insufficient('member'))
+			CoreUtils::Respond();
+		User::ReservationLimitCheck();
 	}
 
-	if (!empty($_POST['image_url'])){
-		$Image = Posts::CheckImage();
+	$Image = Posts::CheckImage(Posts::ValidateImageURL());
 
-		if ($image_check)
-			CoreUtils::Respond(array(
-				'preview' => $Image->preview,
-				'title' => $Image->title,
-			));
-	}
-	else if ($image_check)
-		CoreUtils::Respond("Please provide an image URL!");
+	if (empty($what))
+		CoreUtils::Respond(array(
+			'preview' => $Image->preview,
+			'title' => $Image->title,
+		));
 
 	$insert = array(
 		'preview' => $Image->preview,
 		'fullsize' => $Image->fullsize,
 	);
 
-	if (($_POST['season'] != '0' && empty($_POST['season'])) || empty($_POST['episode']))
-		CoreUtils::Respond('Missing episode identifiers');
-	$epdata = Episode::GetActual((int)$_POST['season'], (int)$_POST['episode'], ALLOW_SEASON_ZERO);
+	$season = Episode::ValidateSeason();
+	$episode = Episode::ValidateEpisode();
+	$epdata = Episode::GetActual($season, $episode, ALLOW_SEASON_ZERO);
 	if (empty($epdata))
-		CoreUtils::Respond('This episode does not exist');
+		CoreUtils::Respond("The specified episode (S{$season}E$episode) does not exist");
 	$insert['season'] = $epdata['season'];
 	$insert['episode'] = $epdata['episode'];
 
 	$ByID = $currentUser['id'];
-	if (Permission::Sufficient('developer') && !empty($_POST['post_as'])){
-		$username = CoreUtils::Trim($_POST['post_as']);
-		$PostAs = User::Get($username, 'name', '');
+	if (Permission::Sufficient('developer')){
+		$username = Posts::ValidatePostAs();
+		if (isset($username)){
+			$PostAs = User::Get($username, 'name', 'id,role');
 
-		if (empty($PostAs))
-			CoreUtils::Respond('The user you wanted to post as does not exist');
+			if (empty($PostAs))
+				CoreUtils::Respond('The user you wanted to post as does not exist');
 
-		if ($type === 'reservation' && !Permission::Sufficient('member', $PostAs['role']) && !isset($_POST['allow_nonmember']))
-			CoreUtils::Respond('The user you wanted to post as is not a club member, so you want to post as them anyway?',0,array('canforce' => true));
+			if ($type === 'reservation' && !Permission::Sufficient('member', $PostAs['role']) && !isset($_POST['allow_nonmember']))
+				CoreUtils::Respond('The user you wanted to post as is not a club member, so you want to post as them anyway?',0,array('canforce' => true));
 
-		$ByID = $PostAs['id'];
+			$ByID = $PostAs['id'];
+		}
 	}
 
 	$insert[$type === 'reservation' ? 'reserved_by' : 'requested_by'] = $ByID;

@@ -79,13 +79,14 @@
 	define('EPISODE_ID_PATTERN','S0*([0-8])E0*([1-9]|1\d|2[0-6])(?:-0*([1-9]|1\d|2[0-6]))?(?:\D|$)');;
 	$EPISODE_ID_REGEX = new RegExp('^'.EPISODE_ID_PATTERN,'i');
 	$EP_TITLE_REGEX = new RegExp('^[A-Za-z \'\-!\d,&:?]{5,35}$','u');
+	define('INVERSE_EP_TITLE_PATTERN','[^A-Za-z \'\-!\d,&:?]');
 	# Colors
-	$HEX_COLOR_PATTERN = new RegExp('^#?([\dA-Fa-f]{6})$','u');
+	$HEX_COLOR_REGEX = new RegExp('^#?([\dA-Fa-f]{6})$','u');
 	# DeviantArt
 	$FULLSIZE_MATCH_REGEX = new RegExp('^https?:\/\/orig\d+\.');
 	# General
-	define('PRINTABLE_ASCII_REGEX','^[ -~]+$');
-	define('INVERSE_PRINTABLE_ASCII_REGEX','[^ -~]');
+	define('PRINTABLE_ASCII_PATTERN','^[ -~]+$');
+	define('INVERSE_PRINTABLE_ASCII_PATTERN','[^ -~]');
 	define('NEWEST_FIRST', 'DESC');
 	define('OLDEST_FIRST', 'ASC');
 	$REWRITE_REGEX = new RegExp('^/([\w\-]+)(?:/([\w\.\-]+(?:/[\w\.\-]+)*)?)?/?[^\w\.\-]*(?:\.php)?$');

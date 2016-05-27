@@ -5,7 +5,7 @@ DocReady.push(function Admin(){
 	// Manage useful links
 	var $uflol = $('.useful-links').find('ol'),
 		$sbUflContainer = $('#sidebar').find('.welcome .links'),
-		$editForm, PRINTABLE_ASCII_REGEX = $.attributifyRegex(window.PRINTABLE_ASCII_REGEX),
+		$editForm, PRINTABLE_ASCII_PATTERN = $.attributifyRegex(window.PRINTABLE_ASCII_PATTERN),
 		ROLES_ASSOC = window.ROLES_ASSOC;
 
 	$uflol.on('click','.edit-link',function(){
@@ -69,7 +69,7 @@ DocReady.push(function Admin(){
 						type: 'text',
 						name: 'label',
 						maxlength: 30,
-						pattern: PRINTABLE_ASCII_REGEX.replace('+','{3,40}'),
+						pattern: PRINTABLE_ASCII_PATTERN.replace('+','{3,40}'),
 						required: true,
 					})
 				),
@@ -80,7 +80,7 @@ DocReady.push(function Admin(){
 						name: 'url',
 						maxlength: 255,
 						required: true,
-						pattern: PRINTABLE_ASCII_REGEX.replace('+','{3,255}'),
+						pattern: PRINTABLE_ASCII_PATTERN.replace('+','{3,255}'),
 					})
 				),
 				$.mk('label').append(
@@ -89,7 +89,7 @@ DocReady.push(function Admin(){
 						type: 'text',
 						name: 'title',
 						maxlength: 255,
-						pattern: PRINTABLE_ASCII_REGEX.replace('+','{3,255}'),
+						pattern: PRINTABLE_ASCII_PATTERN.replace('+','{3,255}'),
 					})
 				),
 				$.mk('label').append(

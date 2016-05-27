@@ -21,11 +21,15 @@
 			if ($targetUser['role'] === 'ban')
 				CoreUtils::Respond('This user is banished, and must be un-banished before changing their group.');
 
-			if (!isset($_POST['newrole']))
-				CoreUtils::Respond('The new group is not specified');
-			$newgroup = CoreUtils::Trim($_POST['newrole']);
-			if (empty(Permission::$ROLES[$newgroup]))
-				CoreUtils::Respond('The specified group does not exist');
+			$newgroup = (new Input('newrole',function($value){
+				if (!isset(self::$ROLES_ASSOC[$value]))
+					return Input::$ERROR_INVALID;
+			},array(
+				'errors' => array(
+					Input::$ERROR_MISSING => 'The new group is not specified',
+					Input::$ERROR_INVALID => 'The specified group (@value) does not exist',
+				)
+			)))->out();
 			if ($targetUser['role'] === $newgroup)
 				CoreUtils::Respond(array('already_in' => true));
 
@@ -58,12 +62,13 @@
 			if ($action == 'banish' && $targetUser['role'] === 'ban' || $action == 'un-banish' && $targetUser['role'] !== 'ban')
 				CoreUtils::Respond("This user has already been {$action}ed");
 
-			if (empty($_POST['reason']))
-				CoreUtils::Respond('Please specify a reason');
-			$reason = CoreUtils::Trim($_POST['reason']);
-			$rlen = strlen($reason);
-			if ($rlen < 5 || $rlen > 255)
-				CoreUtils::Respond('Reason length must be between 5 and 255 characters');
+			$reason = (new Input('reason','string',array(
+				'range' => [5,255],
+				'errors' => array(
+					Input::$ERROR_MISSING => 'Please specify a reason',
+					Input::$ERROR_RANGE => 'Reason length must be between @min and @max characters'
+				)
+			)))->out();
 
 			$changes = array('role' => $action == 'banish' ? 'ban' : 'user');
 			$Database->where('id', $targetUser['id'])->update('users', $changes);

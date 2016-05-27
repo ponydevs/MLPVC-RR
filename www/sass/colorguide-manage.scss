@@ -11,15 +11,33 @@
 	font-family: $monospace;
 }
 .tag.synonym { opacity: .8 }
-.twitter-typeahead {
-	.tt-dataset { background: #fff }
-	.tag.synonym > .uses {
-
-		.typcn { margin-right: 4px }
+.algolia-autocomplete {
+	.aa-dataset-tags {
+		background: #fff;
 	}
+	.tag.synonym > .uses .typcn { margin-right: 4px }
 	input { font-weight: normal !important }
+	.aa-suggestion .tag {
+		margin: 0 !important;
+		display: block !important;
+	}
+	&.loading {
+		position:relative;
+
+		&:after {
+			content: "";
+			display: block;
+			position: absolute;
+			top: 5px;
+			// padding + border + margin
+			right: 5px + 1px + 5px;
+
+			@include sprite-animation(16px, 16px, 12, 'indicator');
+		}
+	}
+	.addtag { cursor: text }
 }
-.tag.addtag.tt-hint { color: rgba(black, .5) !important }
+.tag.addtag.aa-hint { color: rgba(black, .4) !important }
 
 #edit-tag .type-selector {
 	display: flex;

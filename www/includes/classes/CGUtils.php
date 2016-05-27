@@ -22,7 +22,7 @@
 		 *
 		 * @param string $str
 		 */
-		static function TypeaheadRespond($str){
+		static function AutocompleteRespond($str){
 			header('Content-Type: application/json');
 			if (is_array($str))
 				$str = JSON::Encode($str);
@@ -120,11 +120,8 @@
 		 * @return null
 		 */
 		static function GrabImage($path,$allowedMimeTypes,$minwidth,$minheight){
-			if (empty($_POST['image_url']))
-				CoreUtils::Respond("Please provide an image URL");
-
 			try {
-				$Image = new ImageProvider($_POST['image_url']);
+				$Image = new ImageProvider(Posts::ValidateImageURL());
 			}
 			catch (Exception $e){ CoreUtils::Respond($e->getMessage()); }
 
@@ -214,7 +211,7 @@
 				}
 				// Search for a lebel
 				else {
-					$err = CoreUtils::CheckStringValidity($token, "Name wildcard", INVERSE_PRINTABLE_ASCII_REGEX, true);
+					$err = CoreUtils::CheckStringValidity($token, "Name wildcard", INVERSE_PRINTABLE_ASCII_PATTERN, true);
 					if (is_string($err))
 						throw new Exception($err);
 

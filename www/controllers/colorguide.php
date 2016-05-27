@@ -12,22 +12,23 @@
 
 		switch ($data){
 			case 'gettags':
-				if (isset($_POST['not']) && is_numeric($_POST['not']))
-					$not_tid = intval($_POST['not'], 10);
-				if (!empty($_POST['action']) && $_POST['action'] === 'synon'){
-					$Tag = $CGDb->where('tid',$not_tid)->where('"synonym_of" IS NOT NULL')->getOne('tags');
+				$not_tid = (new Input('not','int',array('optional' => true)))->out();
+				if ((new Input('action','string',array('optional' => true)))->out() === 'synon'){
+					if (isset($not_tid))
+						$CGDb->where('tid',$not_tid);
+					$Tag = $CGDb->where('"synonym_of" IS NOT NULL')->getOne('tags');
 					if (!empty($Tag)){
 						$Syn = \CG\Tags::GetSynonymOf($Tag,'name');
 						CoreUtils::Respond("This tag is already a synonym of <strong>{$Syn['name']}</strong>.<br>Would you like to remove the synonym?",0,array('undo' => true));
 					}
 				}
 
-				$viaTypeahead = !empty($_GET['s']);
+				$viaAutocomplete = !empty($_GET['s']);
 				$limit = null;
 				$cols = "tid, name, type";
-				if ($viaTypeahead){
+				if ($viaAutocomplete){
 					if (!regex_match($TAG_NAME_REGEX, $_GET['s']))
-						CGUtils::TypeaheadRespond('[]');
+						CGUtils::AutocompleteRespond('[]');
 
 					$query = CoreUtils::Trim(strtolower($_GET['s']));
 					$TagCheck = CGUtils::CheckEpisodeTagName($query);
@@ -35,23 +36,24 @@
 						$query = $TagCheck;
 					$CGDb->where('name',"%$query%",'LIKE');
 					$limit = 5;
-					$cols = "tid, name, CONCAT('typ-', type) as type";
+					$cols = "tid, name, 'typ-'||type as type";
+					$CGDb->orderBy('uses','DESC');
 				}
 				else $CGDb->orderBy('type','ASC')->where('"synonym_of" IS NULL');
 
-				if (isset($_POST['not']) && is_numeric($_POST['not']))
+				if (isset($not_tid))
 					$CGDb->where('tid',$not_tid,'!=');
 				$Tags = $CGDb->orderBy('name','ASC')->get('tags',$limit,"$cols, uses, synonym_of");
-				if ($viaTypeahead)
-					foreach ($Tags as $i => $t){
+				if ($viaAutocomplete)
+					foreach ($Tags as &$t){
 						if (empty($t['synonym_of']))
 							continue;
 						$Syn = $CGDb->where('tid', $t['synonym_of'])->getOne('tags','name');
 						if (!empty($Syn))
-							$Tags[$i]['synonym_target'] = $Syn['name'];
+							$t['synonym_target'] = $Syn['name'];
 					};
 
-				CGUtils::TypeaheadRespond(empty($Tags) ? '[]' : $Tags);
+				CGUtils::AutocompleteRespond(empty($Tags) ? '[]' : $Tags);
 			break;
 			case 'full':
 				if (!isset($_REQUEST['reorder']))
@@ -59,14 +61,13 @@
 
 				if (!Permission::Sufficient('staff'))
 					CoreUtils::Respond();
-				if (empty($_POST['list']))
-					CoreUtils::Respond('The list of IDs is missing');
 
-				$list = CoreUtils::Trim($_POST['list']);
-				if (!regex_match(new RegExp('^\d+(?:,\d+)+$'), $list))
-					CoreUtils::Respond('The list of IDs is not formatted properly');
-
-				\CG\Appearances::Reorder($list);
+				\CG\Appearances::Reorder((new Input('list','int[]',array(
+					'errors' => array(
+						Input::$ERROR_MISSING => 'The list of IDs is missing',
+						Input::$ERROR_INVALID => 'The list of IDs is not formatted properly',
+					)
+				)))->out());
 
 				CoreUtils::Respond(array('html' => CGUtils::GetFullListHTML(\CG\Appearances::Get($EQG,null,'id,label'), true, NOWRAP)));
 			break;
@@ -87,7 +88,7 @@
 				if (!empty($Appearances)) foreach ($Appearances as $p){
 					$AppendAppearance = $p;
 
-					$AppendAppearance['notes'] = regex_replace(new RegExp('(\r\n|\r|\n)'),"\n",$AppendAppearance['notes']);
+					$AppendAppearance['notes'] = CoreUtils::TrimMultiline($AppendAppearance['notes']);
 
 					$AppendAppearance['ColorGroups'] = array();
 					$ColorGroups = \CG\ColorGroups::Get($p['id']);
@@ -163,31 +164,36 @@
 					    'cm_favme' => null,
 					);
 
-					if (empty($_POST['label']))
-						CoreUtils::Respond('Label is missing');
-					$label = CoreUtils::Trim($_POST['label']);
-					$ll = strlen($label);
-					CoreUtils::CheckStringValidity($label, "Appearance name", INVERSE_PRINTABLE_ASCII_REGEX);
-					if ($ll < 4 || $ll > 70)
-						CoreUtils::Respond('Appearance name must be beetween 4 and 70 characters long');
+					$label = (new Input('label','string',array(
+						'range' => [4,70],
+						'errors' => array(
+							Input::$ERROR_MISSING => 'Appearance name is missing',
+							Input::$ERROR_RANGE => 'Appearance name must be beetween @min and @max characters long',
+						)
+					)))->out();
+					CoreUtils::CheckStringValidity($label, "Appearance name", INVERSE_PRINTABLE_ASCII_PATTERN);
 					if ($creating && $CGDb->where('label', $label)->has('appearances'))
 						CoreUtils::Respond('An appearance already esists with this name');
 					$data['label'] = $label;
 
-					if (!empty($_POST['notes'])){
-						$notes = CoreUtils::Trim($_POST['notes']);
-						CoreUtils::CheckStringValidity($label, "Appearance notes", INVERSE_PRINTABLE_ASCII_REGEX);
+					$notes = (new Input('notes','string',array(
+						'optional' => true,
+						'range' => $creating || $Appearance['id'] !== 0 ? [null,1000] : null,
+						'errors' => array(
+							Input::$ERROR_RANGE => 'Appearance notes cannot be longer than @max characters',
+						)
+					)))->out();
+					if (isset($notes)){
+						CoreUtils::CheckStringValidity($notes, "Appearance notes", INVERSE_PRINTABLE_ASCII_PATTERN);
 						if ($Appearance['id'] === 0)
-							$notes = CoreUtils::Trim(CoreUtils::SanitizeHtml($notes));
-						if (strlen($notes) > 1000 && ($creating || $Appearance['id'] !== 0))
-							CoreUtils::Respond('Appearance notes cannot be longer than 1000 characters');
+							$notes = CoreUtils::SanitizeHtml($notes);
 						if ($creating || $notes !== $Appearance['notes'])
 							$data['notes'] = $notes;
 					}
 					else $data['notes'] = '';
 
-					if (!empty($_POST['cm_favme'])){
-						$cm_favme = CoreUtils::Trim($_POST['cm_favme']);
+					$cm_favme = (new Input('cm_favme','string',array('optional' => true)))->out();
+					if (isset($cm_favme)){
 						try {
 							$Image = new ImageProvider($cm_favme, array('fav.me', 'dA'));
 							$data['cm_favme'] = $Image->id;
@@ -197,15 +203,20 @@
 						}
 						catch (Exception $e){ CoreUtils::Respond("Cutie Mark link issue: ".$e->getMessage()); }
 
-						if (empty($_POST['cm_dir']))
-							CoreUtils::Respond('Cutie mark orientation must be set if a link is provided');
-						if ($_POST['cm_dir'] !== 'th' && $_POST['cm_dir'] !== 'ht')
-							CoreUtils::Respond('Invalid cutie mark orientation');
-						$cm_dir = $_POST['cm_dir'] === 'ht' ? CM_DIR_HEAD_TO_TAIL : CM_DIR_TAIL_TO_HEAD;
+						$cm_dir = (new Input('cm_dir',function($value){
+							if ($value !== 'th' && $value !== 'ht')
+								return Input::$ERROR_INVALID;
+						},array(
+							'errors' => array(
+								Input::$ERROR_MISSING => 'Cutie mark orientation must be set if a link is provided',
+								Input::$ERROR_INVALID => 'Cutie mark orientation (@value) is invalid',
+							)
+						)))->out();
+						$cm_dir = $cm_dir === 'ht' ? CM_DIR_HEAD_TO_TAIL : CM_DIR_TAIL_TO_HEAD;
 						if ($creating || $Appearance['cm_dir'] !== $cm_dir)
 							$data['cm_dir'] = $cm_dir;
 
-						$cm_preview = CoreUtils::Trim($_POST['cm_preview']);
+						$cm_preview = (new Input('cm_preview','string',array('optional' => true)))->out();
 						if (empty($cm_preview))
 							$data['cm_preview'] = null;
 						else if ($creating || $cm_preview !== $Appearance['cm_preview']){
@@ -280,10 +291,11 @@
 					CoreUtils::Respond(array('cgs' => $cgs));
 				break;
 				case "setcgs":
-					if (empty($_POST['cgs']))
-						CoreUtils::Respond("$Color group order data missing");
-
-					$groups = array_unique(array_map('intval',explode(',',$_POST['cgs'])));
+					$groups = (new Input('cgs','int[]',array(
+						'errors' => array(
+							Input::$ERROR_MISSING => "$Color group order data missing"
+						)
+					)))->out();
 					foreach ($groups as $part => $GroupID){
 						if (!$CGDb->where('groupid', $GroupID)->has('colorgroups'))
 							CoreUtils::Respond("There's no group with the ID of  $GroupID");
@@ -332,11 +344,12 @@
 
 					switch ($action){
 						case "tag":
-							if (empty($_POST['tag_name']))
-								CoreUtils::Respond('Tag name is not specified');
-							$tag_name = strtolower(CoreUtils::Trim($_POST['tag_name']));
-							if (!regex_match($TAG_NAME_REGEX,$tag_name))
-								CoreUtils::Respond('Invalid tag name');
+							$tag_name = strtolower((new Input('tag_name',$TAG_NAME_REGEX,array(
+								'errors' => array (
+									Input::$ERROR_MISSING => 'Tag name is missing',
+									Input::$ERROR_INVALID => 'Tag name (@value) is invalid',
+								)
+							)))->out());
 
 							$TagCheck = CGUtils::CheckEpisodeTagName($tag_name);
 							if ($TagCheck !== false)
@@ -358,9 +371,13 @@
 							))) CoreUtils::Respond(ERR_DB_FAIL);
 						break;
 						case "untag":
-							if (!isset($_POST['tag']) || !is_numeric($_POST['tag']))
-								CoreUtils::Respond('Tag ID is not specified');
-							$Tag = $CGDb->where('tid',$_POST['tag'])->getOne('tags');
+							$tag_id = (new Input('tag','int',array(
+								'errors' => array (
+									Input::$ERROR_MISSING => 'Tag ID is missing',
+									Input::$ERROR_INVALID => 'Tag ID (@value) is invalid',
+								)
+							)))->out();
+							$Tag = $CGDb->where('tid',$tag_id)->getOne('tags');
 							if (empty($Tag))
 								CoreUtils::Respond('This tag does not exist');
 							if (!empty($Tag['synonym_of'])){
@@ -404,10 +421,12 @@
 			$action = $_match[1];
 
 			if ($action === 'recount'){
-				if (empty($_POST['tagids']))
-					CoreUtils::Respond('Missing list of tags to update');
-
-				$tagIDs = array_map('intval', explode(',',CoreUtils::Trim($_POST['tagids'])));
+				$tagIDs = (new Input('tagids','int[]',array(
+					'errors' => array(
+						Input::$ERROR_MISSING => 'Missing list of tags to update',
+						Input::$ERROR_INVALID => 'List of tags is invalid',
+					)
+				)))->out();
 				$counts = array();
 				$updates = 0;
 				foreach ($tagIDs as $tid){
@@ -430,6 +449,8 @@
 				);
 			}
 
+
+			// TODO Untangle spaghetti
 			$getting = $action === 'get';
 			$deleting = $action === 'del';
 			$new = $action === 'make';
@@ -473,9 +494,12 @@
 				if ($synoning && !empty($Tag['synonym_of']))
 					CoreUtils::Respond('This tag is already synonymized with a different tag');
 
-				if (empty($_POST['targetid']))
-					CoreUtils::Respond('Missing target tag ID');
-				$Target = $CGDb->where('tid', intval($_POST['targetid'], 10))->getOne('tags');
+				$targetid = (new Input('targetid','int',array(
+					'errors' => array(
+						Input::$ERROR_MISSING => 'Missing target tag ID',
+					)
+				)))->out();
+				$Target = $CGDb->where('tid', $targetid)->getOne('tags');
 				if (empty($Target))
 					CoreUtils::Respond('Target tag does not exist');
 				if (!empty($Target['synonym_of']))
@@ -533,30 +557,43 @@
 				CoreUtils::Respond(array('keep_tagged' => $keep_tagged));
 			}
 
-			$name = isset($_POST['name']) ? strtolower(CoreUtils::Trim($_POST['name'])) : null;
-			$nl = !empty($name) ? strlen($name) : 0;
-			if ($nl < 3 || $nl > 30)
-				CoreUtils::Respond("Tag name must be between 3 and 30 characters");
-			if ($name[0] === '-')
-				CoreUtils::Respond('Tag name cannot start with a dash');
+			$name = strtolower((new Input('name',function($value, $range){
+				if (Input::CheckStringLength($value,$range,$code))
+					return $code;
+				if ($value[0] === '-')
+					return 'dash';
+				$sanitized_name = regex_replace(new RegExp('[^a-z\d]'),'',$value);
+				if (regex_match(new RegExp('^(b+[a4]+w*d+|g+[uo0]+d+|(?:b+[ae3]+|w+[o0u]+r+)[s5]+[t7]+)(e+r+|e+s+t+)?p+[o0]+[wh]*n+[ye3]*'),$sanitized_name))
+					return 'opinionbased';
+			},array(
+				'range' => [3,30],
+				'errors' => array(
+					Input::$ERROR_MISSING => 'Tag name cannot be empty',
+					Input::$ERROR_RANGE => 'Tag name must be between @min and @max characters',
+					'dash' => 'Tag name cannot start with a dash',
+					'opinionbased' => 'Highly opinion-based tags are not allowed',
+				)
+			)))->out());
 			CoreUtils::CheckStringValidity($name,'Tag name',INVERSE_TAG_NAME_PATTERN);
-			$sanitized_name = regex_replace(new RegExp('[^a-z\d]'),'',$name);
-			if (regex_match(new RegExp('^(b+[a4]+w*d+|g+[uo0]+d+|(?:b+[ae3]+|w+[o0u]+r+)[s5]+[t7]+)(e+r+|e+s+t+)?p+[o0]+[wh]*n+[ye3]*'),$sanitized_name))
-				CoreUtils::Respond('Highly opinion-based tags are not allowed');
 			$data['name'] = $name;
 
 			$epTagName = CGUtils::CheckEpisodeTagName($data['name']);
 			$surelyAnEpisodeTag = $epTagName !== false;
-			if (empty($_POST['type'])){
+			$type = (new Input('type',function($value){
+				if (!isset(\CG\Tags::$TAG_TYPES_ASSOC[$value]))
+					return Input::$ERROR_INVALID;
+			},array(
+				'optional' => true,
+				'errors' => array(
+					Input::$ERROR_INVALID => 'Invalid tag type: @value',
+				)
+			)))->out();
+			if (empty($type)){
 				if ($surelyAnEpisodeTag)
 					$data['name'] = $epTagName;
 				$data['type'] = $epTagName === false ? null : 'ep';
 			}
 			else {
-				$type = CoreUtils::Trim($_POST['type']);
-				if (!isset(\CG\Tags::$TAG_TYPES_ASSOC[$type]))
-					CoreUtils::Respond("Invalid tag type: $type");
-
 				if ($type == 'ep'){
 					if (!$surelyAnEpisodeTag)
 						CoreUtils::Respond('Episode tags must be in the format of <strong>s##e##[-##]</strong> where # represents a number<br>Allowed seasons: 1-8, episodes: 1-26');
@@ -571,22 +608,21 @@
 			if ($CGDb->where('name', $data['name'])->where('type', $data['type'])->has('tags') || $data['name'] === 'wrong cutie mark')
 				CoreUtils::Respond("A tag with the same name and type already exists");
 
-			if (empty($_POST['title'])) $data['title'] = null;
-			else {
-				$title = CoreUtils::Trim($_POST['title']);
-				$tl = strlen($title);
-				if ($tl > 255)
-					CoreUtils::Respond("Your title exceeds the 255 character limit by ".($tl-255)." characters.");
-				$data['title'] = $title;
-			}
+			$data['title'] = (new Input('title','string',array(
+				'optional' => true,
+				'range' => [null,255],
+				'errors' => array(
+					Input::$ERROR_RANGE => 'Tag title must fit within @max characters'
+				)
+			)))->out();
 
 			if ($new){
 				$TagID = $CGDb->insert('tags', $data, 'tid');
 				if (!$TagID) CoreUtils::Respond(ERR_DB_FAIL);
 				$data['tid'] = $TagID;
 
-				if (!empty($_POST['addto']) && is_numeric($_POST['addto'])){
-					$AppearanceID = intval($_POST['addto'], 10);
+				$AppearanceID = (new Input('addto','int',array('optional' => true)))->out();
+				if (isset($AppearanceID)){
 					if ($AppearanceID === 0)
 						CoreUtils::Respond("The tag was created, <strong>but</strong> it could not be added to the appearance because it can't be tagged.", 1);
 
@@ -610,10 +646,9 @@
 			CoreUtils::Respond($data);
 		}
 		else if (regex_match(new RegExp('^([gs]et|make|del)cg(?:/(\d+))?$'), $data, $_match)){
-			$setting = $_match[1] === 'set';
-			$getting = $_match[1] === 'get';
-			$deleting = $_match[1] === 'del';
-			$new = $_match[1] === 'make';
+			$action = $_match[1];
+			$new = $action === 'make';
+
 
 			if (!$new){
 				if (empty($_match[2]))
@@ -623,12 +658,12 @@
 				if (empty($GroupID))
 					CoreUtils::Respond("There's no $color group with the ID of $GroupID");
 
-				if ($getting){
+				if ($action === 'get'){
 					$Group['Colors'] = \CG\ColorGroups::GetColors($Group['groupid']);
 					CoreUtils::Respond($Group);
 				}
 
-				if ($deleting){
+				if ($action === 'del'){
 					if (!$CGDb->where('groupid', $Group['groupid'])->delete('colorgroups'))
 						CoreUtils::Respond(ERR_DB_FAIL);
 					CoreUtils::Respond("$Color group deleted successfully", 1);
@@ -636,31 +671,33 @@
 			}
 			$data = array();
 
-			if (empty($_POST['label']))
-				CoreUtils::Respond('Please specify a group name');
-			$name = $_POST['label'];
-			CoreUtils::CheckStringValidity($name, "$Color group name", INVERSE_PRINTABLE_ASCII_REGEX);
-			$nl = strlen($name);
-			if ($nl < 2 || $nl > 30)
-				CoreUtils::Respond('The group name must be between 2 and 30 characters in length');
-			$data['label'] = $name;
+			$data['label'] = (new Input('label','string',array(
+				'range' => [2,30],
+				'errors' => array(
+					Input::$ERROR_MISSING => 'Please specify a group name',
+					Input::$ERROR_RANGE => 'The group name must be between @min and @max characters in length',
+				)
+			)))->out();
+			CoreUtils::CheckStringValidity($data['label'], "$Color group name", INVERSE_PRINTABLE_ASCII_PATTERN, true);
 
-			if (!empty($_POST['major'])){
-				$major = true;
-
-				if (empty($_POST['reason']))
-					CoreUtils::Respond('Please specify a reason');
-				$reason = $_POST['reason'];
-				CoreUtils::CheckStringValidity($reason, "Change reason", INVERSE_PRINTABLE_ASCII_REGEX);
-				$rl = strlen($reason);
-				if ($rl < 1 || $rl > 255)
-					CoreUtils::Respond('The reason must be between 1 and 255 characters in length');
+			$major = isset($_POST['major']);
+			if ($major){
+				$reason = (new Input('reason','string',array(
+					'range' => [null,255],
+					'errors' => array(
+						Input::$ERROR_MISSING => 'Please specify a reason for the changes',
+						Input::$ERROR_RANGE => 'The reason must fit within @max characters',
+					),
+				)))->out();
+				CoreUtils::CheckStringValidity($reason, "Change reason", INVERSE_PRINTABLE_ASCII_PATTERN);
 			}
 
 			if ($new){
-				if (!isset($_POST['ponyid']) || !is_numeric($_POST['ponyid']))
-					CoreUtils::Respond('Missing appearance ID');
-				$AppearanceID = intval($_POST['ponyid'], 10);
+				$AppearanceID = (new Input('ponyid','int',array(
+					'errors' => array(
+						Input::$ERROR_MISSING => 'Missing appearance ID',
+					)
+				)))->out();
 				$Appearance = $CGDb->where('id', $AppearanceID)->where('ishuman', $EQG)->getOne('appearances');
 				if (empty($Appearance))
 					CoreUtils::Respond('The specified appearance odes not exist');
@@ -677,12 +714,12 @@
 			}
 			else $CGDb->where('groupid', $Group['groupid'])->update('colorgroups', $data);
 
-
-			if (empty($_POST['Colors']))
-				CoreUtils::Respond("Missing list of {$color}s");
-			$recvColors = JSON::Decode($_POST['Colors'], true);
-			if (empty($recvColors))
-				CoreUtils::Respond("Missing list of {$color}s");
+			$recvColors = (new Input('Colors','json',array(
+				'errors' => array(
+					Input::$ERROR_MISSING => "Missing list of {$color}s",
+					Input::$ERROR_INVALID => "List of {$color}s is invalid",
+				)
+			)))->out();
 			$colors = array();
 			foreach ($recvColors as $part => $c){
 				$append = array('order' => $part);
@@ -691,7 +728,7 @@
 				if (empty($c['label']))
 					CoreUtils::Respond("You must specify a $color name $index");
 				$label = CoreUtils::Trim($c['label']);
-				CoreUtils::CheckStringValidity($label, "$Color $index name", INVERSE_PRINTABLE_ASCII_REGEX);
+				CoreUtils::CheckStringValidity($label, "$Color $index name", INVERSE_PRINTABLE_ASCII_PATTERN);
 				$ll = strlen($label);
 				if ($ll < 3 || $ll > 30)
 					CoreUtils::Respond("The $color name must be between 3 and 30 characters in length $index");
@@ -700,7 +737,7 @@
 				if (empty($c['hex']))
 					CoreUtils::Respond("You must specify a $color code $index");
 				$hex = CoreUtils::Trim($c['hex']);
-				if (!$HEX_COLOR_PATTERN->match($hex, $_match))
+				if (!$HEX_COLOR_REGEX->match($hex, $_match))
 					CoreUtils::Respond("HEX $color is in an invalid format $index");
 				$append['hex'] = '#'.strtoupper($_match[1]);
 
@@ -724,7 +761,7 @@
 			else $response = array('cg' => \CG\ColorGroups::GetHTML($Group['groupid'], null, NOWRAP, $colon, $outputNames));
 
 			$AppearanceID = $new ? $Appearance['id'] : $Group['ponyid'];
-			if (isset($major)){
+			if ($major){
 				Log::Action('color_modify',array(
 					'ponyid' => $AppearanceID,
 					'reason' => $reason,
@@ -795,7 +832,7 @@
 
 	$GUIDE_MANAGE_JS = array(
 		'jquery.uploadzone',
-		'twitter-typeahead',
+		'autocomplete.jquery',
 		'handlebars-v3.0.3',
 		'Sortable',
 		'ace',

@@ -489,4 +489,25 @@ HTML;
 			}
 			return $HTML;
 		}
+
+		static function ValidateSeason(){
+			return (new Input('season','int',array(
+				'range' => [1,8],
+				'errors' => array(
+					Input::$ERROR_MISSING => 'Season number is missing',
+					Input::$ERROR_INVALID => 'Season number (@value) is invalid',
+					Input::$ERROR_RANGE => 'Season number must be between @min and @max',
+				)
+			)))->out();
+		}
+		static function ValidateEpisode(){
+			return (new Input('episode','int',array(
+				'range' => [1,26],
+				'errors' => array(
+					Input::$ERROR_MISSING => 'Episode number is missing',
+					Input::$ERROR_INVALID => 'Episode number (@value) is invalid',
+					Input::$ERROR_RANGE => 'Episode number must be between @min and @max',
+				)
+			)))->out();
+		}
 	}

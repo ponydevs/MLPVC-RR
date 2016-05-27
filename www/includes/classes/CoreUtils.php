@@ -837,6 +837,18 @@
 		}
 
 		/**
+		 * Trims a string while truncating consecutive spaces and normalizing newlines
+		 *
+		 * @param string $str
+		 * @param string $chars
+		 *
+		 * @return string
+		 */
+		static function TrimMultiline($str, $chars = "\t\n\r\0\x0B"){
+			return regex_replace(new RegExp('(\r\n|\r)'),"\n",self::Trim($str,$chars));
+		}
+
+		/**
 		 * Averages the numbers inside an array
 		 *
 		 * @param int[] $numbers

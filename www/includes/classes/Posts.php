@@ -102,14 +102,16 @@
 		static function CheckPostDetails($thing, &$array, $Post = null){
 			$editing = !empty($Post);
 
-			if (!empty($_POST['label'])){
-				$label = CoreUtils::Trim($_POST['label']);
-
+			$label = (new Input('label','string',array(
+				'optional' => true,
+				'range' => [3,255],
+				'errors' => array(
+					Input::$ERROR_RANGE => 'The description must be between @min and @max characters'
+				)
+			)))->out();
+			if (isset($label)){
 				if (!$editing || $label !== $Post['label']){
-					$labellen = strlen($label);
-					if ($labellen < 3 || $labellen > 255)
-						CoreUtils::Respond("The description must be between 3 and 255 characters in length");
-					CoreUtils::CheckStringValidity($label,'The description',INVERSE_PRINTABLE_ASCII_REGEX);
+					CoreUtils::CheckStringValidity($label,'The description',INVERSE_PRINTABLE_ASCII_PATTERN);
 					$array['label'] = $label;
 				}
 			}
@@ -117,45 +119,59 @@
 				CoreUtils::Respond('Description cannot be empty');
 
 			if ($thing === 'request'){
-				if (!empty($_POST['type'])){
-					if (!in_array($_POST['type'],array('chr','obj','bg')))
-						CoreUtils::Respond("Invalid request type");
+				$type = (new Input('type',function($value){
+					if (!in_array($value,array('chr','obj','bg')))
+						return Input::$ERROR_INVALID;
+				},array(
+					'optional' => true,
+					'errors' => array(
+						Input::$ERROR_INVALID => "Request type (@value) is invalid"
+					)
+				)))->out();
+				if (isset($type)){
+
 				}
 				else if (!$editing)
 					respnd("Missing request type");
 
-				if (!$editing || (!empty($_POST['type']) && $_POST['type'] !== $Post['type']))
-					$array['type'] = $_POST['type'];
+				if (!$editing || (isset($type) && $type !== $Post['type']))
+					$array['type'] = $type;
 
-				if (!empty($_POST['reserved_at'])){
-					if (!Permission::Sufficient('developer'))
-						CoreUtils::Respond();
-
-					$array['reserved_at'] = date('c', strtotime($_POST['reserved_at']));
+				if (Permission::Sufficient('developer')){
+					$reserved_at = (new Input('reserved_at','timestamp',array(
+						'optional' => true,
+						'errors' => array(
+							Input::$ERROR_INVALID => '"Reserved at" timestamp (@value) is invalid',
+						)
+					)))->out();
+					if (isset($reserved_at) && $reserved_at !== strtotime($Post['reserved_at']))
+						$array['reserved_at'] = date('c', $reserved_at);
 				}
 			}
 
-			if (!empty($_POST['posted'])){
-				if (!Permission::Sufficient('developer'))
-					CoreUtils::Respond();
-
-				$array['posted'] = date('c', strtotime($_POST['posted']));
+			if (Permission::Sufficient('developer')){
+				$posted = (new Input('posted','timestamp',array(
+					'optional' => true,
+					'errors' => array(
+						Input::$ERROR_INVALID => '"Posted" timestamp (@value) is invalid',
+					)
+				)))->out();
+				if (isset($posted) && $posted !== strtotime($Post['posted']))
+					$array['posted'] = date('c', $posted);
 			}
 		}
 
 		/**
 		 * Check image URL in POST request
 		 *
+		 * @param string $image_url
 		 * @param array|null $Post Existing post for comparison
 		 *
 		 * @return ImageProvider
 		 */
-		static function CheckImage($Post = null){
-			if (empty($_POST['image_url']))
-				CoreUtils::Respond('Please enter an image URL');
-
+		static function CheckImage($image_url, $Post = null){
 			try {
-				$Image = new ImageProvider($_POST['image_url']);
+				$Image = new ImageProvider($image_url);
 			}
 			catch (Exception $e){ CoreUtils::Respond($e->getMessage()); }
 
@@ -186,9 +202,11 @@
 		 */
 		static function CheckRequestFinishingImage($ReserverID = null){
 			global $Database;
-			if (!isset($_POST['deviation']))
-				CoreUtils::Respond('Please specify a deviation URL');
-			$deviation = $_POST['deviation'];
+			$deviation = (new Input('deviation','string',array(
+				'errors' => array(
+					Input::$ERROR_MISSING => 'Please specify a deviation URL',
+				)
+			)))->out();
 			try {
 				$Image = new ImageProvider($deviation, array('fav.me', 'dA'));
 
@@ -535,5 +553,22 @@ HTML;
 			$HTML .= '</div>';
 
 			return $HTML;
+		}
+
+		static function ValidateImageURL(){
+			return (new Input('image_url','string',array(
+				'errors' => array(
+					Input::$ERROR_MISSING => 'Please provide an image URL.',
+				)
+			)))->out();
+		}
+
+		static function ValidatePostAs(){
+			return (new Input('post_as','username',array(
+				'optional' => true,
+				'errors' => array(
+					Input::$ERROR_INVALID => '"Post as" username (@value) is invalid',
+				)
+			)))->out();
 		}
 	}

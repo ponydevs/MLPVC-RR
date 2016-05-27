@@ -15,12 +15,16 @@
 	if (isset($_REQUEST['unlink']) || isset($_REQUEST['everywhere'])){
 		$col = 'user';
 		$val = $currentUser['id'];
-		if (!empty($_POST['username'])){
+		$username = (new Input('username','username',array(
+			'optional' => true,
+			'errors' => array(
+				Input::$ERROR_INVALID => 'Username (@value) is invalid',
+			),
+		)))->out();
+		if (isset($username)){
 			if (!Permission::Sufficient('staff') || isset($_REQUEST['unlink']))
 				CoreUtils::Respond();
-			if (!$USERNAME_REGEX->match($_POST['username']))
-				CoreUtils::Respond('Invalid username');
-			$TargetUser = $Database->where('name', $_POST['username'])->getOne('users','id,name');
+			$TargetUser = $Database->where('name', $username)->getOne('users','id,name');
 			if (empty($TargetUser))
 				CoreUtils::Respond("Target user doesn't exist");
 			if ($TargetUser['id'] !== $currentUser['id'])

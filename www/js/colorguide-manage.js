@@ -1,4 +1,4 @@
-/* globals $body,$content,DocReady,HandleNav,mk,Sortable,Bloodhound,Handlebars,SHORT_HEX_COLOR_PATTERN,PRINTABLE_ASCII_REGEX,Key,ace */
+/* globals $body,$content,DocReady,HandleNav,mk,Sortable,Bloodhound,Handlebars,SHORT_HEX_COLOR_PATTERN,PRINTABLE_ASCII_PATTERN,Key,ace */
 DocReady.push(function ColorguideManage(){
 	'use strict';
 	var Color = window.Color, color = window.color, TAG_TYPES_ASSOC = window.TAG_TYPES_ASSOC, $colorGroups,
@@ -43,7 +43,7 @@ DocReady.push(function ColorguideManage(){
 					$.mk('input').attr({
 						name: 'label',
 						placeholder: 'Enter a name',
-						pattern: PRINTABLE_ASCII_REGEX.replace('+', '{4,70}'),
+						pattern: PRINTABLE_ASCII_PATTERN.replace('+', '{4,70}'),
 						required: true,
 						maxlength: 70
 					})
@@ -322,6 +322,7 @@ DocReady.push(function ColorguideManage(){
 						window.tooltips();
 						ctxmenus();
 					}
+					$._tagAutocompleteCache = {};
 					$.Dialog.close();
 				}));
 			});
@@ -330,7 +331,7 @@ DocReady.push(function ColorguideManage(){
 
 	var $cgEditor = $.mk('form').attr('id','cg-editor'),
 		$colorPreview = $.mk('span').attr('class','clrp'),
-		colorLabelPattern = PRINTABLE_ASCII_REGEX.replace('+', '{3,30}'),
+		colorLabelPattern = PRINTABLE_ASCII_PATTERN.replace('+', '{3,30}'),
 		$colorInput =
 			$.mk('input').attr({
 				'class': 'clri',
@@ -477,7 +478,7 @@ DocReady.push(function ColorguideManage(){
 			$.mk('input').attr({
 				type: 'text',
 				name: 'label',
-				pattern: PRINTABLE_ASCII_REGEX.replace('+','{2,30}'),
+				pattern: PRINTABLE_ASCII_PATTERN.replace('+','{2,30}'),
 				required: true,
 			})
 		),
@@ -496,7 +497,7 @@ DocReady.push(function ColorguideManage(){
 			$.mk('input').attr({
 				type: 'text',
 				name: 'reason',
-				pattern: PRINTABLE_ASCII_REGEX.replace('+','{1,255}'),
+				pattern: PRINTABLE_ASCII_PATTERN.replace('+','{1,255}'),
 				required: true,
 				disabled: true,
 			})
@@ -799,6 +800,7 @@ DocReady.push(function ColorguideManage(){
 								var $affected = $('.id-' + tagID);
 								$affected.qtip('destroy', true);
 								$affected.remove();
+								$._tagAutocompleteCache = {};
 								$.Dialog.close();
 							}
 							else if (this.confirm)
@@ -819,25 +821,33 @@ DocReady.push(function ColorguideManage(){
 			}},
 		], function($el){ return 'Tag: '+$el.text().trim() });
 
-		var taglist = new Bloodhound({
-			datumTokenizer: Bloodhound.tokenizers.obj.whitespace('value'),
-			queryTokenizer: Bloodhound.tokenizers.whitespace,
-			remote: {
-				url: '/colorguide/gettags?s=%QUERY',
-				wildcard: '%QUERY'
-			}
-		}), insertKeys = [Key.Enter, Key.Comma];
+		var insertKeys = [Key.Enter, Key.Comma];
 		$tags.children('.addtag').each(function(){
 			var $input = $(this),
 				ponyID = $input.closest('[id^=p]').attr('id').substring(1);
-			$input.typeahead(null, {
-				name: 'tags',
-				display: 'name',
-				source: taglist,
-				templates: {
-					suggestion: Handlebars.compile('<span class="tag id-{{tid}} {{type}} {{#if synonym_of}}synonym{{else}}monospace{{/if}}">{{name}} <span class="uses">{{#if synonym_of}}<span class="typcn typcn-flow-children"></span>{{synonym_target}}{{else}}{{uses}}{{/if}}</span></span>')
-				}
-			});
+			$input.autocomplete(
+				{
+					minLength: 3,
+				},
+				[
+					{
+						name: 'tags',
+						display: 'name',
+						source: function(query, callback){
+							if (typeof $._tagAutocompleteCache === 'undefined')
+								$._tagAutocompleteCache = {};
+							else if (typeof $._tagAutocompleteCache[query] !== 'undefined')
+								return callback($._tagAutocompleteCache[query]);
+							$.get('/cg/gettags?s='+encodeURIComponent(query), $.mkAjaxHandler(function(){
+								callback($._tagAutocompleteCache[query] = this);
+							}));
+						},
+						templates: {
+							suggestion: Handlebars.compile('<span class="tag id-{{tid}} {{type}} {{#if synonym_of}}synonym{{else}}monospace{{/if}}">{{name}} <span class="uses">{{#if synonym_of}}<span class="typcn typcn-flow-children"></span>{{synonym_target}}{{else}}{{uses}}{{/if}}</span></span>')
+						}
+					}
+				]
+			);
 			$input.on('keydown',function(e){
 				if (insertKeys.indexOf(e.keyCode) !== -1){
 					e.preventDefault();
@@ -851,6 +861,7 @@ DocReady.push(function ColorguideManage(){
 
 					$.Dialog.setFocusedElement($input.attr('disabled', true));
 					$input.parent().addClass('loading');
+					$input.autocomplete('val', tag_name);
 
 					var data = {tag_name:tag_name};
 					if (AppearancePage)
@@ -869,7 +880,8 @@ DocReady.push(function ColorguideManage(){
 							$tagsDiv.append($(this.tags).filter('span'));
 							window.tooltips();
 							ctxmenus();
-							$input.typeahead('val', '').focus();
+							$._tagAutocompleteCache = {};
+							$input.autocomplete('val', '').focus();
 						}
 						else if (typeof this.cancreate === 'string'){
 							var new_name = this.cancreate,
@@ -884,7 +896,7 @@ DocReady.push(function ColorguideManage(){
 					}));
 				}
 			});
-			$input.nextAll('.tt-menu').on('click', '.tag', function(){
+			$input.nextAll('.aa-menu').on('click', '.tag', function(){
 				$input.trigger({
 					type: 'keydown',
 					keyCode: 13,

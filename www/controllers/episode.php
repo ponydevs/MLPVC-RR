@@ -84,18 +84,19 @@
 			if (!empty($UserVote))
 				CoreUtils::Respond('You already voted for this episode');
 
-			if (empty($_POST['vote']) || !is_numeric($_POST['vote']))
-				CoreUtils::Respond('Vote value missing from request');
-
-			$Vote = intval($_POST['vote'], 10);
-			if ($Vote < 1 || $Vote > 5)
-				CoreUtils::Respond('Vote value must be an integer between 1 and 5 (inclusive)');
+			$vote = (new Input('vote','int',array(
+				'range' => [1,5],
+				'errors' => array(
+					Input::$ERROR_MISSING => 'Vote value missing from request',
+					Input::$ERROR_RANGE => 'Vote value must be an integer between @min and @max (inclusive)',
+				)
+			)))->out();
 
 			if (!$Database->insert('episodes__votes',array(
 				'season' => $Episode['season'],
 				'episode' => $Episode['episode'],
 				'user' => $currentUser['id'],
-				'vote' => $Vote,
+				'vote' => $vote,
 			))) CoreUtils::Respond(ERR_DB_FAIL);
 			CoreUtils::Respond(array('newhtml' => Episode::GetSidebarVoting($Episode)));
 		}
@@ -218,10 +219,12 @@
 				CoreUtils::Respond($Sorted);
 			}
 			else {
-				if (empty($_POST['ids']))
-					CoreUtils::Respond('Missing appearance ID list');
-				if (!regex_match(new RegExp('^\d+(,\d+)*$'), $_POST['ids']))
-					respond('Malformed ID list');
+				$AppearanceIDs = (new Input('ids','int[]',array(
+					'errors' => array(
+						Input::$ERROR_MISSING => 'Missing appearance ID list',
+						Input::$ERROR_INVALID => 'Appearance ID list is invalid',
+					)
+				)))->out();
 
 				$EpTagIDs = Episode::GetTagIDs($Episode);
 				if (empty($EpTagIDs))
@@ -230,12 +233,11 @@
 				$Tags = $CGDb->where("tid IN ($EpTagIDs)")->orderByLiteral('char_length(name)','DESC')->getOne('tags','tid');
 				$UseID = $Tags['tid'];
 
-				$IDs = explode(',',$_POST['ids']);
-				foreach ($IDs as $id){
+				foreach ($AppearanceIDs as $id){
 					if (!$CGDb->where("tid IN ($EpTagIDs)")->where('ponyid', $id)->has('tagged'))
 						@$CGDb->insert('tagged', array('tid' => $UseID, 'ponyid' => $id));
 				}
-				$CGDb->where("tid IN ($EpTagIDs)")->where("ponyid NOT IN ({$_POST['ids']})")->delete('tagged');
+				$CGDb->where("tid IN ($EpTagIDs)")->where('ponyid NOT IN ('.implode(',',$AppearanceIDs).')')->delete('tagged');
 
 				CoreUtils::Respond(array('section' => Episode::GetAppearancesSectionHTML($Episode)));
 			}
@@ -250,15 +252,8 @@
 			else if ($data === 'add') $insert = array('posted_by' => $currentUser['id']);
 			else CoreUtils::StatusCode(404, AND_DIE);
 
-			if (!isset($_POST['season']) || !is_numeric($_POST['season']))
-				CoreUtils::Respond('Season number is missing or invalid');
-			$insert['season'] = intval($_POST['season'], 10);
-			if ($insert['season'] < 1 || $insert['season'] > 8) CoreUtils::Respond('Season number must be between 1 and 8');
-
-			if (!isset($_POST['episode']) || !is_numeric($_POST['episode']))
-				CoreUtils::Respond('Episode number is missing or invalid');
-			$insert['episode'] = intval($_POST['episode'], 10);
-			if ($insert['episode'] < 1 || $insert['episode'] > 26) CoreUtils::Respond('Season number must be between 1 and 26');
+			$insert['season'] = Episode::ValidateSeason();
+			$insert['episode'] = Episode::ValidateEpisode();
 
 			if ($editing){
 				$Current = Episode::GetActual($insert['season'],$insert['episode']);
@@ -271,19 +266,21 @@
 
 			$insert['twoparter'] = isset($_POST['twoparter']) ? 1 : 0;
 
-			if (empty($_POST['title']))
-				CoreUtils::Respond('Episode title is missing or invalid');
-			$insert['title'] = CoreUtils::Trim($_POST['title']);
-			if (strlen($insert['title']) < 5 || strlen($insert['title']) > 35)
-				CoreUtils::Respond('Episode title must be between 5 and 35 characters');
-			if (!$EP_TITLE_REGEX->match($insert['title']))
-				CoreUtils::Respond('Episode title contains invalid charcaters');
+			$insert['title'] = (new Input('title','string',array(
+				'range' => [5,35],
+				'errors' => array(
+					Input::$ERROR_MISSING => 'Episode title is missing',
+					Input::$ERROR_RANGE => 'Episode title must be between @min and @max characters',
+				)
+			)))->out();
+			CoreUtils::CheckStringValidity($insert['title'], 'Episode title', INVERSE_EP_TITLE_PATTERN);
 
-			if (empty($_POST['airs']))
-				repond('No air date &time specified');
-			$airs = strtotime($_POST['airs']);
-			if (empty($airs))
-				CoreUtils::Respond('Invalid air time');
+			$airs = (new Input('airs','timestamp',array(
+				'errors' => array(
+					Input::$ERROR_MISSING => 'No air date & time specified',
+					Input::$ERROR_INVALID => 'Invalid air date and/or time (@value) specified'
+				)
+			)))->out();
 			$insert['airs'] = date('c',strtotime('this minute', $airs));
 
 			if ($editing){

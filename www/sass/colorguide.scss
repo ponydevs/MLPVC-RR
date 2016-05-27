@@ -276,26 +276,6 @@ div.tags {
 	margin: 0 6px 6px 0;
 	vertical-align: top;
 }
-.twitter-typeahead {
-	&.loading {
-		position:relative;
-
-		&:after {
-			content: "";
-			display: block;
-			position: absolute;
-			top: 5px;
-			// padding + border + margin
-			right: 5px + 1px + 5px;
-
-			@include sprite-animation(16px, 16px, 12, 'indicator');
-		}
-	}
-	.addtag {
-		margin-right: 0;
-		cursor: text;
-	}
-}
 .tag {
 	display: inline-block;
 	font-weight: bold;

@@ -52,53 +52,60 @@
 						case 'set':
 							$data = array();
 
-							if (empty($_POST['label']))
-								CoreUtils::Respond('Link label is missing');
-							$label = CoreUtils::Trim($_POST['label']);
+							$label = (new Input('label','string',array(
+								'errors' => array(
+									Input::$ERROR_MISSING => 'Link label is missing',
+									Input::$ERROR_RANGE => 'Link label must be between @min and @max characters long',
+								)
+							)))->out();
 							if ($creating || $Link['label'] !== $label){
-								$ll = strlen($label);
-								if ($ll < 3 || $ll > 40)
-									CoreUtils::Respond('Link label must be between 3 and 40 characters long');
-								CoreUtils::CheckStringValidity($label, 'Link label', INVERSE_PRINTABLE_ASCII_REGEX);
+								CoreUtils::CheckStringValidity($label, 'Link label', INVERSE_PRINTABLE_ASCII_PATTERN);
 								$data['label'] = $label;
 							}
 
-							if (empty($_POST['url']))
-								CoreUtils::Respond('Link URL is missing');
-							$url = CoreUtils::Trim($_POST['url']);
-							if ($creating || $Link['url'] !== $url){
-								$ul = strlen($url);
-								if (stripos($url, ABSPATH) === 0)
-									$url = substr($url, strlen(ABSPATH)-1);
-								if (!regex_match($REWRITE_REGEX,$url) && !regex_match(new RegExp('^#[a-z\-]+$'),$url)){
-									if ($ul < 3 || $ul > 255)
-										CoreUtils::Respond('Link URL must be between 3 and 255 characters long');
+							$url = (new Input('url',function($value, $range) use ($REWRITE_REGEX){
+								if (!regex_match($REWRITE_REGEX,$value) && !regex_match(new RegExp('^#[a-z\-]+$'),$value)){
+									if (stripos($value, ABSPATH) === 0)
+										$url = substr($value, strlen(ABSPATH)-1);
+									if (Input::CheckStringLength($value, $range, $code))
+										return $code;
 									if (!regex_match(new RegExp('^https?:\/\/.+$'), $url))
 										CoreUtils::Respond('Link URL does not appear to be a valid link');
 								}
+							},array(
+								'range' => [3,255],
+								'errors' => array(
+									Input::$ERROR_MISSING => 'Link URL is missing',
+									Input::$ERROR_RANGE => 'Link URL must be between @min and @max characters long',
+								)
+							)))->out();
+							if ($creating || $Link['url'] !== $url)
 								$data['url'] = $url;
+
+							$title = (new Input('title','string',array(
+								'range' => [3,255],
+								'errors' => array(
+									Input::$ERROR_RANGE => 'Link title must be between @min and @max characters long',
+								)
+							)))->out();
+							if (!isset($title))
+								$data['title'] = '';
+							else if ($creating || $Link['title'] !== $title){
+								CoreUtils::CheckStringValidity($title, 'Link title', INVERSE_PRINTABLE_ASCII_PATTERN);
+								$data['title'] = $title;
 							}
 
-							if (!empty($_POST['title'])){
-								$title = CoreUtils::Trim($_POST['title']);
-								if ($creating || $Link['title'] !== $title){
-									$tl = strlen($title);
-									if ($tl < 3 || $tl > 255)
-										CoreUtils::Respond('Link title must be between 3 and 255 characters long');
-									CoreUtils::CheckStringValidity($title, 'Link title', INVERSE_PRINTABLE_ASCII_REGEX);
-									$data['title'] = CoreUtils::Trim($title);
-								}
-							}
-							else $data['title'] = '';
-
-							if (empty($_POST['minrole']))
-								CoreUtils::Respond('Minimum role is missing');
-							$minrole = CoreUtils::Trim($_POST['minrole']);
-							if ($creating || $Link['minrole'] !== $minrole){
-								if (!isset(Permission::$ROLES_ASSOC[$minrole]) || !Permission::Sufficient('user', $minrole))
-									CoreUtils::Respond('Minumum role is invalid');
+							$minrole = (new Input('minrole',function($value){
+								if (!isset(Permission::$ROLES_ASSOC[$value]) || !Permission::Sufficient('user', $value))
+									CoreUtils::Respond();
+							},array(
+								'errors' => array(
+									Input::$ERROR_MISSING => 'Minumum role is missing',
+									Input::$ERROR_INVALID => 'Minumum role (@value) is invalid',
+								)
+							)))->out();
+							if ($creating || $Link['minrole'] !== $minrole)
 								$data['minrole'] = $minrole;
-							}
 
 							if (empty($data))
 								CoreUtils::Respond('Nothing was changed');
@@ -114,10 +121,11 @@
 					}
 				}
 				else if ($data === 'reorder'){
-					if (!isset($_POST['list']))
-						CoreUtils::Respond('Missing ordering information');
-
-					$list = explode(',',regex_replace(new RegExp('[^\d,]'),'',CoreUtils::Trim($_POST['list'])));
+					$list = (new Input('list','int[]',array(
+						'errors' => array(
+							Input::$ERROR_MISSING => 'Missing ordering information',
+						)
+					)))->out();
 					$order = 1;
 					foreach ($list as $id){
 						if (!$Database->where('id', $id)->update('usefullinks', array('order' => $order++)))

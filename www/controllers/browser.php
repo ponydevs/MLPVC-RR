@@ -9,7 +9,7 @@
 	}
 	$browser = CoreUtils::DetectBrowser($AgentString);
 	if (empty($browser['platform']))
-		error_log('Could not find platform based on the following UA string: '.regex_replace(new RegExp(INVERSE_PRINTABLE_ASCII_REGEX), '', $AgentString));
+		error_log('Could not find platform based on the following UA string: '.regex_replace(new RegExp(INVERSE_PRINTABLE_ASCII_PATTERN), '', $AgentString));
 
 	CoreUtils::FixPath('/browser'.(!empty($Session)?"/{$Session['id']}":''));
 

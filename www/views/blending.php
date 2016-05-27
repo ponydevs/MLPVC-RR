@@ -54,4 +54,4 @@
 		<?=CoreUtils::Notice('warn',"<span class='typcn typcn-warning'></span> The result may not be accurate as the difference between the optimal $color and the closest match is too large", true)?>
 	</div>
 </div>
-<?  CoreUtils::ExportVars(array('HEX_COLOR_PATTERN' => $HEX_COLOR_PATTERN));
+<?  CoreUtils::ExportVars(array('HEX_COLOR_PATTERN' => $HEX_COLOR_REGEX));

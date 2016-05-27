@@ -77,6 +77,6 @@
 		$export = array_merge($export, array(
 			'TAG_TYPES_ASSOC' => \CG\Tags::$TAG_TYPES_ASSOC,
 			'MAX_SIZE' => CoreUtils::GetMaxUploadSize(),
-			'HEX_COLOR_PATTERN' => $HEX_COLOR_PATTERN,
+			'HEX_COLOR_PATTERN' => $HEX_COLOR_REGEX,
 		));
 	CoreUtils::ExportVars($export); ?>
