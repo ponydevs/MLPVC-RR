@@ -789,7 +789,7 @@
 		$Tags = \CG\Tags::Get(null,$Pagination->GetLimit(), true);
 
 		if (isset($_GET['js']))
-			$Pagination->Respond(get_taglist_html($Tags, NOWRAP), '#tags tbody');
+			$Pagination->Respond(\CG\Tags::GetTagListHTML($Tags, NOWRAP), '#tags tbody');
 
 		$js = array('paginate');
 		if (Permission::Sufficient('staff'))
