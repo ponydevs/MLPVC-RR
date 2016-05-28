@@ -93,7 +93,6 @@
 	$.pad.right = !($.pad.left = true);
 
 	$.scaleResize = function(w, h, p){
-		console.log('[scaleresize]',arguments);
 		var div, d = {
 			scale: p.scale,
 			width: p.width,
@@ -114,7 +113,6 @@
 			d.scale = div;
 		}
 		else throw new Error('[scalaresize] Invalid arguments');
-		console.log('[scaleresize]',d);
 		return d;
 	};
 

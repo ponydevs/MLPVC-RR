@@ -1,23 +1,63 @@
 $UIColor: #fff;
 $UIBackground: darkslategray;
+$DebugImgTopLeft: #77f;
+$DebugImgCenter: #f77;
+$DebugWrapCenter: #7f7;
+%debug-point {
+	content: "";
+	display:block;
+	position:absolute;
+	z-index:5;
+	width: 6px;
+	height: 6px;
+	border-radius:100%;
+	border: 2px solid white;
+}
 .poly-wrap {
 	position: relative;
 	overflow: hidden;
 	box-sizing: border-box;
 	user-select: none;
 
+	&:before {
+		@extend %debug-point;
+		top: calc(50% - 5px);
+		left: calc(50% - 5px);
+		background-color: $DebugWrapCenter;
+	}
+
 	.poly-image-element {
 		position: absolute;
 		z-index: 1;
+	}
+
+	.poly-imgc-expected {
+		@extend %debug-point;
+		top: calc(50% - 5px);
+		left: calc(50% - 5px);
+		background-color: $DebugImgCenter;
 	}
 
 	.poly-image-overlay {
 		position: absolute;
 		z-index: 2;
 		cursor: move;
-		border: 1px solid rgba(red, .5);
-		background: rgba(red, .3);
+		border: 1px solid rgba(black, .9);
+		background: rgba(black, .5);
 		box-sizing: border-box;
+
+		&:before {
+			@extend %debug-point;
+			top: -5px;
+			left: -5px;
+			background-color: $DebugImgTopLeft;
+		}
+		&:after {
+			@extend %debug-point;
+			top: calc(50% - 5px);
+			left: calc(50% - 5px);
+			background-color: black;
+		}
 	}
 
 	$margin: 10px;
@@ -50,7 +90,7 @@ $UIBackground: darkslategray;
 			box-sizing: border-box;
 		}
 		button { display: inline-block }
-		span {
+		.poly-zoom-perc {
 			display: block;
 			cursor: text;
 
@@ -58,6 +98,28 @@ $UIBackground: darkslategray;
 				background-color: $UIColor;
 				color: $UIBackground;
 			}
+
+			~ span {
+				cursor: default;
+				display: block;
+				font-size: .8em;
+			}
+		}
+
+		.poly-imgtl { color: $DebugImgTopLeft }
+		.poly-imgc { color: $DebugImgCenter }
+		.poly-wrapc { color: $DebugWrapCenter }
+		.poly-imgtl, .poly-imgc, .poly-wrapc {
+			font-weight: bold;
+			$size: .5px;
+			$color: black;
+			text-shadow:
+				0 0 $size $color,
+				0 0 $size $color,
+				0 0 $size $color,
+				0 0 $size $color,
+				0 0 $size $color,
+				0 0 $size $color;
 		}
 	}
 
@@ -69,6 +131,5 @@ $UIBackground: darkslategray;
     line-height: 32px;
     height: 32px;
     width: 100%;
-    text-align: center;
 	}
 }
