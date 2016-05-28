@@ -374,7 +374,7 @@
 			Input::$ERROR_INVALID => 'Post type (@value) is invalid',
 		)
 	)))->out();
-	if (empty($what) && $type === 'reservation'){
+	if (empty($type) && $type === 'reservation'){
 		if (Permission::Insufficient('member'))
 			CoreUtils::Respond();
 		User::ReservationLimitCheck();
@@ -382,7 +382,7 @@
 
 	$Image = Posts::CheckImage(Posts::ValidateImageURL());
 
-	if (empty($what))
+	if (empty($type))
 		CoreUtils::Respond(array(
 			'preview' => $Image->preview,
 			'title' => $Image->title,

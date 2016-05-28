@@ -61,7 +61,7 @@
 				$this->_outputError('Input key missing or invalid');
 			$this->_key = $key;
 
-			if (!isset($_POST[$key]))
+			if (!isset($_POST[$key]) || strlen($_POST[$key]) === 0)
 				$result = empty($o['optional']) ? self::$ERROR_MISSING : self::$ERROR_NONE;
 			else {
 				$this->_value = CoreUtils::Trim($_POST[$key]);
