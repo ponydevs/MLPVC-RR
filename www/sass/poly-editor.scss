@@ -1,0 +1,74 @@
+$UIColor: #fff;
+$UIBackground: darkslategray;
+.poly-wrap {
+	position: relative;
+	overflow: hidden;
+	box-sizing: border-box;
+	user-select: none;
+
+	.poly-image-element {
+		position: absolute;
+		z-index: 1;
+	}
+
+	.poly-image-overlay {
+		position: absolute;
+		z-index: 2;
+		cursor: move;
+		border: 1px solid rgba(red, .5);
+		background: rgba(red, .3);
+		box-sizing: border-box;
+	}
+
+	$margin: 10px;
+	.poly-actions {
+		position: absolute;
+		z-index: 3;
+		border-radius: 5px;
+		background-color: $UIBackground;
+		color: $UIColor;
+		border: $margin/2 solid $UIColor;
+		padding: 5px;
+		text-align: center;
+
+		button {
+			cursor: pointer;
+			border: 0;
+
+			&:active { background: rgba(white, .1) }
+		}
+	}
+	.poly-actions-bl {
+		left: $margin/2;
+		bottom: $margin/2;
+
+		> * {
+			padding: 4px;
+			margin: 0;
+			color: inherit;
+			background-color: transparent;
+			box-sizing: border-box;
+		}
+		button { display: inline-block }
+		span {
+			display: block;
+			cursor: text;
+
+			&:focus {
+				background-color: $UIColor;
+				color: $UIBackground;
+			}
+		}
+	}
+
+	.poly-loader {
+    position: absolute;
+    font-size: 32px;
+    text-align: center;
+    top: calc(50% - 32px);
+    line-height: 32px;
+    height: 32px;
+    width: 100%;
+    text-align: center;
+	}
+}

@@ -92,6 +92,45 @@
 	};
 	$.pad.right = !($.pad.left = true);
 
+	$.scaleResize = function(w, h, p){
+		console.log('[scaleresize]',arguments);
+		var div, d = {
+			scale: p.scale,
+			width: p.width,
+			height: p.height
+		};
+		if (!isNaN(d.scale)){
+			d.height = Math.round(h * d.scale);
+			d.width = Math.round(w * d.scale);
+		}
+		else if (isNaN(d.width)){
+			div = d.height / h;
+			d.width = Math.round(w * div);
+			d.scale = div;
+		}
+		else if (isNaN(d.height)){
+			div = d.width / w;
+			d.height = Math.round(h * div);
+			d.scale = div;
+		}
+		else throw new Error('[scalaresize] Invalid arguments');
+		console.log('[scaleresize]',d);
+		return d;
+	};
+
+	// http://stackoverflow.com/a/3169849/1344955
+	$.clearSelection = function(){
+		if (window.getSelection){
+			var sel = window.getSelection();
+			if (sel.empty) // Chrome
+				sel.empty();
+			else if (sel.removeAllRanges) // Firefox
+				sel.removeAllRanges();
+		}
+		else if (document.selection)  // IE?
+			document.selection.empty();
+	};
+
 	// Create AJAX response handling function
 	$w.on('ajaxerror',function(){
 		var details = '';
@@ -310,6 +349,14 @@
 		return Math.min(max, Math.max(min, input));
 	};
 
+	$.fn.select = function(){
+		var range = document.createRange();
+	    range.selectNodeContents(this.get(0));
+	    var sel = window.getSelection();
+	    sel.removeAllRanges();
+	    sel.addRange(range);
+	};
+
 	var shortHex = /^#?([A-Fa-f0-9]{3})$/;
 	window.SHORT_HEX_COLOR_PATTERN = shortHex;
 	$.hexpand = function(shorthex){
@@ -352,17 +399,8 @@
 		return this;
 	};
 
-	$.fn.enable = function(){
-		this.attr('disabled', false);
-
-		return this;
-	};
-
-	$.fn.disable = function(){
-		this.attr('disabled', true);
-
-		return this;
-	};
+	$.fn.enable = function(){ return this.attr('disabled', false) };
+	$.fn.disable = function(){ return this.attr('disabled', true) };
 
 	$.scrollTo = function(pos, speed, callback){ $('html,body').animate({scrollTop:pos},speed,callback) };
 
