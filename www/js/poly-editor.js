@@ -5,21 +5,16 @@
 		$doc = $(document);
 
 	$.fn.polyEditor = function(options){
-		function topleft(center, Z, size){
+		function topleft(imgoffset, scalefactor){
 			console.group('topleft');
 			var framecenter = wrapcenterpos(),
-				CX = center.left,
-				CY = center.top,
+				TX = imgoffset.left,
+				TY = imgoffset.top,
 				FX = framecenter.left,
-				FY = framecenter.top,
-				W = size.width,
-				H = size.height;
-			console.log('CX=%f CY=%f FX=%f FY=%f Z=%f',CX,CY,FX,FY,Z);
-			var NCX = FX + Z * ( CX - FX ),
-				NCY = FY + Z * ( CY - FY );
-			console.log('NCX=%f NCY=%f',NCX,NCY);
-			var NTX = NCX -  W / 2,
-				NTY = NCY -  H / 2;
+				FY = framecenter.top;
+			console.log('TX=%f TY=%f FX=%f FY=%f Z2/Z1=%f',TX,TY,FX,FY,scalefactor);
+			var NTX = FX + scalefactor * ( TX - FX ),
+				NTY = FY + scalefactor * ( TY - FY );
 			console.log('NTX=%f NTY=%f',NTX,NTY);
 			console.groupEnd();
 			return {
@@ -46,10 +41,16 @@
 			$imgc = $.mk('span').attr('title', 'Image center').attr('class',classStart+'imgc').text('?, ?'),
 			$wrapc = $.mk('span').attr('title', 'Wrapper center').attr('class',classStart+'wrapc').text('?, ?'),
 			$imgcExpected = $.mk('cpan').attr('class', classStart+'imgc-expected'),
+			imagepos = function(imgoffset) {
+				return {
+					top: imgoffset.top-wrapoffset.top,
+					left: imgoffset.left-wrapoffset.left,
+				};
+			},
 			imagecenterpos = function(imgoffset, resized){
 				return {
-					top: wrapoffset.top+(imgoffset.top-wrapoffset.top)+(resized.height/2),
-					left: wrapoffset.left+(imgoffset.left-wrapoffset.left)+(resized.width/2),
+					top: (imgoffset.top-wrapoffset.top)+(resized.height/2),
+					left: (imgoffset.left-wrapoffset.left)+(resized.width/2),
 				};
 			},
 			wrapcenterpos = function(){
@@ -80,17 +81,7 @@
 						stroke:"red",
 						'stroke-width':"5",
 						'stroke-miterlimit':"10",
-					})/*,
-					$(document.createElementNS("http://www.w3.org/2000/svg", "line")).attr({
-						x1:end.left * (scalefactor + 0.1),
-						y1:end.top * (scalefactor + 0.1),
-						x2:wrapcenter.left,
-						y2:wrapcenter.top,
-						fill:"none",
-						stroke:"lime",
-						'stroke-width':"5",
-						'stroke-miterlimit':"10",
-					})*/
+					})
 				);
 			},
 			updateperc = function(top,left,resized){
@@ -106,8 +97,8 @@
 				var imgcenter = imagecenterpos($imageElement.offset(), resized);
 				$imgc.text($.roundTo(imgcenter.top,2)+','+$.roundTo(imgcenter.left,2));
 				$imgcExpected.css({
-					top: imgcenter.top-wrapoffset.top-5,
-					left: imgcenter.left-wrapoffset.left-5,
+					top: imgcenter.top-5,
+					left: imgcenter.left-5,
 				});
 				var wrapcenter = wrapcenterpos();
 				$wrapc.text($.roundTo(wrapcenter.top,2)+','+$.roundTo(wrapcenter.left,2));
@@ -119,17 +110,22 @@
 					return;
 
 				var newzoomlevel = $.rangeLimit(perc, false, 0.1, 2.5),
-					newsize;
+					newsize,
+					oldzoomlevel;
 				if (newzoomlevel !== zoomlevel){
 					newsize = $.scaleResize(size.width, size.height, {scale: newzoomlevel});
+					oldzoomlevel = zoomlevel;
 					zoomlevel = newsize.scale;
 				}
-				else newsize = {
-					width: $imageElement.width(),
-					height: $imageElement.height(),
-				};
+				else {
+					newsize = {
+						width: $imageElement.width(),
+						height: $imageElement.height(),
+					};
+					oldzoomlevel = zoomlevel;
+				}
 				var imgoffset = $imageElement.offset();
-				var zoomed = topleft(imagecenterpos(imgoffset, newsize), zoomlevel, newsize);
+				var zoomed = topleft(imagepos(imgoffset), newzoomlevel/oldzoomlevel);
 				renderdebuglines(imgoffset, zoomed);
 
 				$imageOverlay.add($imageElement)/*.add($svgWrap)*/.css({
@@ -262,7 +258,7 @@
 					},
 					imgoffset = $imageElement.offset();
 
-				renderdebuglines(imgoffset, topleft(imagecenterpos(imgoffset, size), zoomlevel, size));
+				renderdebuglines(imgoffset, topleft(imagepos(imgoffset), 1));
 				updateperc(top, left, size);
 			});
 
