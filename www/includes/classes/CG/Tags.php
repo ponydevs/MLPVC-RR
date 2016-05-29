@@ -132,7 +132,7 @@
 			if (!empty($Tags)) foreach ($Tags as $t){
 				$trClass = $t['type'] ? " class='typ-{$t['type']}'" : '';
 				$type = $t['type'] ? self::$TAG_TYPES_ASSOC[$t['type']] : '';
-				$search = \CoreUtils::AposEncode(str_replace(' ','+',$t['name']));
+				$search = \CoreUtils::AposEncode(urlencode($t['name']));
 				$titleName = \CoreUtils::AposEncode($t['name']);
 
 				if ($canEdit && !empty($t['synonym_of'])){
@@ -143,7 +143,7 @@
 				$HTML .= <<<HTML
 				<tr$trClass>
 					<td class="tid">{$t['tid']}</td>
-					<td class="name"><a href='/colorguide/?q=$search' title='Search for $titleName'><span class="typcn typcn-zoom"></span>{$t['name']}</a></td>$utils
+					<td class="name"><a href='/cg?q=$search' title='Search for $titleName'><span class="typcn typcn-zoom"></span>{$t['name']}</a></td>$utils
 					<td class="title">{$t['title']}</td>
 					<td class="type">$type</td>
 					<td class="uses"><span>{$t['uses']}</span>$refresh</td>

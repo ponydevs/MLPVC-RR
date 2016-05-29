@@ -41,7 +41,6 @@
 		static function GetFullListHTML($Appearances, $GuideOrder, $wrap = WRAP){
 			$HTML = $wrap ? "<div id='full-list'>" : '';
 			if (!empty($Appearances)){
-				global $color;
 				if (!$GuideOrder){
 					$PrevFirstLetter = '';
 					foreach ($Appearances as $p){
@@ -168,7 +167,7 @@
 				if ($seeInitiator)
 					$initiator = " by ".User::GetProfileLink(User::Get($c['initiator']));
 				if ($showAppearance){
-					global $CGDb, $color;
+					global $CGDb;
 
 					$PonyID = $c['ponyid'];
 					if (empty($PonyCache[$PonyID])){

@@ -39,7 +39,7 @@
 		 * @return string
 		 */
 		static function GetHTML($Appearances, $wrap = WRAP){
-			global $CGDb, $_MSG, $color, $Search;
+			global $CGDb, $_MSG, $Search;
 
 			$HTML = '';
 			if (!empty($Appearances)) foreach ($Appearances as $p){

@@ -25,7 +25,7 @@ DocReady.push(function ColorguideTags(){
 
 					$.Dialog.wait(false,'Sending removal request');
 
-					$.post('/colorguide/deltag/'+tagID,$.mkAjaxHandler(function(){
+					$.post('/cg/deltag/'+tagID,$.mkAjaxHandler(function(){
 						updateList.call(this, $tr, action);
 					}));
 				});
@@ -37,7 +37,7 @@ DocReady.push(function ColorguideTags(){
 
 				$.Dialog.wait(Action+' '+tagName+' into another tag', 'Retrieving tag list from server');
 
-				$.post('/colorguide/gettags',{not:tagID,action:action},$.mkAjaxHandler(function(){
+				$.post('/cg/gettags',{not:tagID,action:action},$.mkAjaxHandler(function(){
 					if (!this.length){
 						if (this.undo)
 							return window.CGTagEditing.call(this, tagName, tagID, 'unsynon', $tr);
@@ -83,7 +83,7 @@ DocReady.push(function ColorguideTags(){
 							var sent = $form.mkData();
 							$.Dialog.wait(false, (merging?'Merging':'Synonymizing')+' tags');
 
-							$.post('/colorguide/'+action+'tag/'+tagID,sent, $.mkAjaxHandler(function(){
+							$.post('/cg/'+action+'tag/'+tagID,sent, $.mkAjaxHandler(function(){
 								updateList.call(this, $tr, action);
 							}));
 						});
@@ -128,7 +128,7 @@ DocReady.push(function ColorguideTags(){
 								var data = $form.mkData();
 								$.Dialog.wait(false, 'Removing synonym');
 
-								$.post('/colorguide/unsynontag/'+tagID,data,$.mkAjaxHandler(function(){
+								$.post('/cg/unsynontag/'+tagID,data,$.mkAjaxHandler(function(){
 									updateList.call(this, $tr, action);
 								}));
 							});
@@ -139,7 +139,7 @@ DocReady.push(function ColorguideTags(){
 			case "refresh":
 				$.Dialog.wait('Refresh use count of '+tagName, 'Updating use count');
 
-				$.post('/colorguide/recounttag',{tagids:tagID}, TagUseUpdateHandler());
+				$.post('/cg/recounttag',{tagids:tagID}, TagUseUpdateHandler());
 			break;
 		}
 	};
@@ -183,6 +183,6 @@ DocReady.push(function ColorguideTags(){
 
 		$.Dialog.wait(title, 'Updating use count'+(tagIDs.length!==1?'s':''));
 
-		$.post('/colorguide/recounttag',{tagids:tagIDs.join(',')}, TagUseUpdateHandler(true));
+		$.post('/cg/recounttag',{tagids:tagIDs.join(',')}, TagUseUpdateHandler(true));
 	});
 });

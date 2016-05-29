@@ -42,12 +42,14 @@
 			$wrapc = $.mk('span').attr('title', 'Wrapper center').attr('class',classStart+'wrapc').text('?, ?'),
 			$imgcExpected = $.mk('cpan').attr('class', classStart+'imgc-expected'),
 			imagepos = function(imgoffset) {
+				var wrapoffset = wrappos();
 				return {
 					top: imgoffset.top-wrapoffset.top,
 					left: imgoffset.left-wrapoffset.left,
 				};
 			},
 			imagecenterpos = function(imgoffset, resized){
+				var wrapoffset = wrappos();
 				return {
 					top: (imgoffset.top-wrapoffset.top)+(resized.height/2),
 					left: (imgoffset.left-wrapoffset.left)+(resized.width/2),
@@ -59,30 +61,11 @@
 					left: wrapwidth/2,
 				};
 			},
-			renderdebuglines = function(end, end2){
-				var wrapcenter = wrapcenterpos();
-				$svgElement.empty().append(
-					$(document.createElementNS("http://www.w3.org/2000/svg", "line")).attr({
-						x1:end.left,
-						y1:end.top,
-						x2:wrapcenter.left,
-						y2:wrapcenter.top,
-						fill:"none",
-						stroke:"blue",
-						'stroke-width':"5",
-						'stroke-miterlimit':"10",
-					}),
-					$(document.createElementNS("http://www.w3.org/2000/svg", "line")).attr({
-						x1:end2.left,
-						y1:end2.top,
-						x2:wrapcenter.left,
-						y2:wrapcenter.top,
-						fill:"none",
-						stroke:"red",
-						'stroke-width':"5",
-						'stroke-miterlimit':"10",
-					})
-				);
+			wrappos = function(){
+				var wrapoffset = $wrap.offset();
+				wrapoffset.top -= (wrapheight - $wrap.outerHeight())/2;
+				wrapoffset.left -= (wrapwidth - $wrap.outerWidth())/2;
+				return wrapoffset;
 			},
 			updateperc = function(top,left,resized){
 				$zoomperc.text($.roundTo(zoomlevel*100,2)+'%');
@@ -126,7 +109,6 @@
 				}
 				var imgoffset = $imageElement.offset();
 				var zoomed = topleft(imagepos(imgoffset), newzoomlevel/oldzoomlevel);
-				renderdebuglines(imgoffset, zoomed);
 
 				$imageOverlay.add($imageElement)/*.add($svgWrap)*/.css({
 					top: zoomed.top,
@@ -203,16 +185,12 @@
 			}),
 			$imageOverlay = $.mk('div').attr('class',classStart+'image-overlay').appendTo($wrap),
 			$loader = $.mk('div').attr('class',classStart+'loader').html('Loading&hellip;'),
-			wrapheight,
 			wrapwidth,
-			wrapoffset,
+			wrapheight,
 			movehandler,
 			resizehandler = $.throttle(250, function(e){
 				wrapwidth = $wrap.innerWidth();
 				wrapheight = $wrap.innerHeight();
-				wrapoffset = $wrap.offset();
-				wrapoffset.top -= (wrapheight - $wrap.outerHeight())/2;
-				wrapoffset.left -= (wrapwidth - $wrap.outerWidth())/2;
 
 				if (typeof zoomlevel === 'number')
 					zoomto(zoomlevel);
@@ -242,11 +220,12 @@
 				e.preventDefault();
 
 				var mouse = {
-					top: e.pageY,
-					left: e.pageX,
-				},
-				top = (initial.top+(mouse.top-initialmouse.top))-wrapoffset.top,
-				left = (initial.left+(mouse.left-initialmouse.left))-wrapoffset.left;
+						top: e.pageY,
+						left: e.pageX,
+					},
+					wrapoffset = wrappos(),
+					top = (initial.top+(mouse.top-initialmouse.top))-wrapoffset.top,
+					left = (initial.left+(mouse.left-initialmouse.left))-wrapoffset.left;
 				$imageOverlay.add($imageElement)/*.add($svgWrap)*/.css({
 					top: top,
 					left: left,
@@ -258,7 +237,6 @@
 					},
 					imgoffset = $imageElement.offset();
 
-				renderdebuglines(imgoffset, topleft(imagepos(imgoffset), 1));
 				updateperc(top, left, size);
 			});
 
@@ -279,6 +257,7 @@
 			});
 		});
 		$doc.on('mousemove', $.throttle(50,function(e){
+			var wrapoffset = wrappos();
 			$mousepos.text((e.pageX-wrapoffset.left)+','+(e.pageY-wrapoffset.top));
 		}));
 

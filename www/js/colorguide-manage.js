@@ -136,7 +136,7 @@ DocReady.push(function ColorguideManage(){
 									$.Dialog.close();
 									$.Dialog.wait('Clear appearance image cache','Clearing cache');
 
-									$.post('/colorguide/clearrendercache/'+ponyID,$.mkAjaxHandler(function(){
+									$.post('/cg/clearrendercache/'+ponyID,$.mkAjaxHandler(function(){
 										if (!this.status) return $.Dialog.fail(false, this.message);
 
 										$.Dialog.success(false, this.message, true);
@@ -166,7 +166,7 @@ DocReady.push(function ColorguideManage(){
 					if (AppearancePage)
 						data.APPEARANCE_PAGE = true;
 
-					$.post('/colorguide/'+(editing?'set/'+ponyID:'make')+EQGRq,data,$.mkAjaxHandler(function(){
+					$.post('/cg/'+(editing?'set/'+ponyID:'make')+EQGRq,data,$.mkAjaxHandler(function(){
 						if (!this.status) return $.Dialog.fail(false, this.message);
 
 						data = this;
@@ -191,7 +191,7 @@ DocReady.push(function ColorguideManage(){
 						else {
 							$.Dialog.success(title, 'Appearance added');
 							$.Dialog.wait(title, 'Loading appearance page');
-							$.Navigation.visit('/colorguide/appearance/'+data.id,function(){
+							$.Navigation.visit('/cg/v/'+data.id,function(){
 								if (data.info)
 									$.Dialog.info(title, data.info);
 								else $.Dialog.close();
@@ -313,7 +313,7 @@ DocReady.push(function ColorguideManage(){
 				var data = $form.mkData();
 				$.Dialog.wait(false, 'Creating tag');
 
-				$.post('/colorguide/maketag'+EQGRq,data,$.mkAjaxHandler(function(){
+				$.post('/cg/maketag'+EQGRq,data,$.mkAjaxHandler(function(){
 					if (!this.status) return $.Dialog.fail(false, this.message);
 
 					if (this.tags){
@@ -650,7 +650,7 @@ DocReady.push(function ColorguideManage(){
 
 				$.Dialog.wait(false, 'Saving changes');
 
-				$.post('/colorguide/'+(editing?'set':'make')+'cg'+(editing?'/'+groupID:'')+EQGRq, data, $.mkAjaxHandler(function(){
+				$.post('/cg/'+(editing?'set':'make')+'cg'+(editing?'/'+groupID:'')+EQGRq, data, $.mkAjaxHandler(function(){
 					if (!this.status) return $.Dialog.fail(false, this.message);
 
 					if (this.cg || this.cgs){
@@ -707,7 +707,7 @@ DocReady.push(function ColorguideManage(){
 
 				$.Dialog.wait(title, 'Retrieveing tag details from server');
 
-				$.post('/colorguide/gettag/'+tagID+EQGRq,$.mkAjaxHandler(function(){
+				$.post('/cg/gettag/'+tagID+EQGRq,$.mkAjaxHandler(function(){
 					var tag = this;
 					if (this.status) $.Dialog.request(title,$tagEditForm.clone(true, true).data('tag', tag),'edit-tag','Save',function($form){
 						$form.find('input[name=type][value='+tag.type+']').prop('checked', true);
@@ -721,7 +721,7 @@ DocReady.push(function ColorguideManage(){
 							var data = $form.mkData();
 							$.Dialog.wait(false, 'Saving changes');
 
-							$.post('/colorguide/settag/'+tagID+EQGRq, data, $.mkAjaxHandler(function(){
+							$.post('/cg/settag/'+tagID+EQGRq, data, $.mkAjaxHandler(function(){
 								if (!this.status) return $.Dialog.fail(false, this.message);
 
 								var data = this,
@@ -761,7 +761,7 @@ DocReady.push(function ColorguideManage(){
 					if (AppearancePage)
 						data.APPEARANCE_PAGE = true;
 
-					$.post('/colorguide/untag/'+ponyID+EQGRq,data,$.mkAjaxHandler(function(){
+					$.post('/cg/untag/'+ponyID+EQGRq,data,$.mkAjaxHandler(function(){
 						if (!this.status) return $.Dialog.fail(title, this.message);
 
 						if (this.needupdate === true){
@@ -790,7 +790,7 @@ DocReady.push(function ColorguideManage(){
 					(function Send(data){
 						$.Dialog.wait(title,'Sending removal request');
 
-						$.post('/colorguide/deltag/'+tagID+EQGRq,data,$.mkAjaxHandler(function(){
+						$.post('/cg/deltag/'+tagID+EQGRq,data,$.mkAjaxHandler(function(){
 							if (this.status){
 								if (this.needupdate === true){
 									var $eps = $(this.eps);
@@ -867,7 +867,7 @@ DocReady.push(function ColorguideManage(){
 					if (AppearancePage)
 						data.APPEARANCE_PAGE = true;
 
-					$.post('/colorguide/tag/'+ponyID+EQGRq, data, $.mkAjaxHandler(function(){
+					$.post('/cg/tag/'+ponyID+EQGRq, data, $.mkAjaxHandler(function(){
 						$input.removeAttr('disabled').parent().removeClass('loading');
 						if (this.status){
 							if (this.needupdate === true){
@@ -918,7 +918,7 @@ DocReady.push(function ColorguideManage(){
 
 					$.Dialog.wait(title, 'Retrieving color group list from server');
 
-					$.post('/colorguide/getcgs/'+ponyID+EQGRq, $.mkAjaxHandler(function(){
+					$.post('/cg/getcgs/'+ponyID+EQGRq, $.mkAjaxHandler(function(){
 						if (!this.status) return $.Dialog.fail(this.message);
 
 						var $form = $cgReordering.clone(),
@@ -953,7 +953,7 @@ DocReady.push(function ColorguideManage(){
 								if (AppearancePage)
 									data.APPEARANCE_PAGE = true;
 
-								$.post('/colorguide/setcgs/'+ponyID+EQGRq,data,$.mkAjaxHandler(function(){
+								$.post('/cg/setcgs/'+ponyID+EQGRq,data,$.mkAjaxHandler(function(){
 									if (!this.status) return $.Dialog.fail(null, this.message);
 
 									$colors.html(this.cgs);
@@ -975,7 +975,7 @@ DocReady.push(function ColorguideManage(){
 
 						$.Dialog.wait(false, 'Applying template');
 
-						$.post('/colorguide/applytemplate/'+ponyID+EQGRq,$.mkAjaxHandler(function(){
+						$.post('/cg/applytemplate/'+ponyID+EQGRq,$.mkAjaxHandler(function(){
 							if (!this.status) return $.Dialog.fail(false, this.message);
 
 							var $pony = $('#p'+ponyID);
@@ -1001,7 +1001,7 @@ DocReady.push(function ColorguideManage(){
 
 					$.Dialog.wait(title, 'Retrieving '+color+' group details from server');
 
-					$.post('/colorguide/getcg/'+groupID+EQGRq,$.mkAjaxHandler(function(){
+					$.post('/cg/getcg/'+groupID+EQGRq,$.mkAjaxHandler(function(){
 						if (!this.status) return $.Dialog.fail(title, this.message);
 
 						CGEditorMaker.call(this, title, $group);
@@ -1017,7 +1017,7 @@ DocReady.push(function ColorguideManage(){
 
 						$.Dialog.wait(title, 'Sending removal request');
 
-						$.post('/colorguide/delcg/'+groupID+EQGRq,$.mkAjaxHandler(function(){
+						$.post('/cg/delcg/'+groupID+EQGRq,$.mkAjaxHandler(function(){
 							if (this.status){
 								$group.children('[data-hasqtip]').qtip('destroy', true);
 								$group.remove();
@@ -1074,7 +1074,7 @@ DocReady.push(function ColorguideManage(){
 					requestKey: 'sprite',
 					title: 'Upload sprite',
 					accept: 'image/png',
-					target: '/colorguide/setsprite/'+ponyID,
+					target: '/cg/setsprite/'+ponyID,
 				}).on('uz-uploadstart',function(){
 					$.Dialog.close();
 				}).on('uz-uploadfinish',function(){
@@ -1104,7 +1104,7 @@ DocReady.push(function ColorguideManage(){
 
 								$.Dialog.wait(title, 'Downloading external image to the server');
 
-								$.post('/colorguide/setsprite/'+ponyID+EQGRq,{image_url: image_url}, $.mkAjaxHandler(function(){
+								$.post('/cg/setsprite/'+ponyID+EQGRq,{image_url: image_url}, $.mkAjaxHandler(function(){
 									if (this.status) $uploadInput.trigger('set-image', [this.path]);
 									else $.Dialog.fail(title,this.message);
 								}));
@@ -1117,7 +1117,7 @@ DocReady.push(function ColorguideManage(){
 
 							$.Dialog.wait(false, 'Removing image');
 
-							$.post('/colorguide/delsprite/'+ponyID, $.mkAjaxHandler(function(){
+							$.post('/cg/delsprite/'+ponyID, $.mkAjaxHandler(function(){
 								if (!this.status) return $.Dialog.fail(false, this.message);
 
 								$this.find('img').attr('src', this.sprite);
@@ -1154,7 +1154,7 @@ DocReady.push(function ColorguideManage(){
 
 			$.Dialog.wait(title, 'Retrieving appearance details from server');
 
-			$.post('/colorguide/get/'+ponyID+EQGRq,$.mkAjaxHandler(function(){
+			$.post('/cg/get/'+ponyID+EQGRq,$.mkAjaxHandler(function(){
 				if (!this.status) return $.Dialog.fail(false, this.message);
 
 				var data = this;
@@ -1175,7 +1175,7 @@ DocReady.push(function ColorguideManage(){
 
 				$.Dialog.wait(title, 'Sending removal request');
 
-				$.post('/colorguide/delete/'+ponyID+EQGRq,$.mkAjaxHandler(function(){
+				$.post('/cg/delete/'+ponyID+EQGRq,$.mkAjaxHandler(function(){
 					if (this.status){
 						$li.remove();
 						$.Dialog.success(title, this.message);
@@ -1185,7 +1185,7 @@ DocReady.push(function ColorguideManage(){
 							path = path.replace(/(\d+)$/,function(n){ return n > 1 ? n-1 : n });
 						if (AppearancePage){
 							$.Dialog.wait('Navigation', 'Loading page 1');
-							$.Navigation.visit('/colorguide/1',function(){
+							$.Navigation.visit('/cg/1',function(){
 								$.Dialog.close();
 							});
 						}
@@ -1211,7 +1211,7 @@ DocReady.push(function ColorguideManage(){
 	$('.cg-export').on('click',function(){
 		$.mk('form').attr({
 			method:'POST',
-			action:'/colorguide/export',
+			action:'/cg/export',
 			target: '_blank',
 		}).html(
 			$.mk('input').attr('name','CSRF_TOKEN').val($.getCSRFToken())

@@ -2,8 +2,8 @@
 	<h1><?=$heading?></h1>
 	<p>Displaying <?=$Pagination->itemsPerPage?> items/page</p>
 	<p class='align-center links'>
-		<a class='btn darkblue typcn typcn-arrow-back' href="/<?=$color?>guide">Back to <?=$Color?> Guide</a>
-		<a class='btn darkblue typcn typcn-warning' href="/<?=$color?>guide/changes">Major Changes</a>
+		<a class='btn darkblue typcn typcn-arrow-back' href="/cg">Back to <?=$Color?> Guide</a>
+		<a class='btn darkblue typcn typcn-warning' href="/cg/changes">Major Changes</a>
 	</p>
 	<?=$Pagination->HTML?>
 	<table id="tags">

@@ -129,7 +129,7 @@
 					}
 				break;
 				case "color_modify":
-					$details[] = array('Appearance',"<a href='/colorguide/appearance/{$data['ponyid']}'>#{$data['ponyid']}</a>");
+					$details[] = array('Appearance',"<a href='/cg/v/{$data['ponyid']}'>#{$data['ponyid']}</a>");
 					$details[] = array('Reason',htmlspecialchars($data['reason']));
 				break;
 				case "req_delete":

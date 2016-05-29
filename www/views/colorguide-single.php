@@ -1,14 +1,14 @@
 <div id="content">
 	<div class="sprite-wrap"><?=\CG\Appearances::GetSpriteHTML($Appearance)?></div>
 	<h1><?=$heading?></h1>
-	<p>from the MLP-VectorClub <a href="/<?=$color?>guide"><?=$Color?> Guide</a></p>
+	<p>from the MLP-VectorClub <a href="/cg"><?=$Color?> Guide</a></p>
 
 <?php
 	$RenderPath = APPATH."img/cg_render/{$Appearance['id']}.png";
 	$FileModTime = '?t='.(file_exists($RenderPath) ? filemtime($RenderPath) : time()); ?>
 	<div id="p<?=$Appearance['id']?>">
 		<div class='align-center'>
-			<a class='darkblue btn typcn typcn-image' href='/<?=$color?>guide/appearance/<?="{$Appearance['id']}.png$FileModTime"?>' target='_blank'>View as PNG</a>
+			<a class='darkblue btn typcn typcn-image' href='/cg/v/<?="{$Appearance['id']}.png$FileModTime"?>' target='_blank'>View as PNG</a>
 <?  if (Permission::Sufficient('staff')){ ?>
 			<button class='blue edit typcn typcn-pencil'>Edit metadata</button>
 			<button class='red delete typcn typcn-trash'>Delete apperance</button>
@@ -41,7 +41,7 @@
 		<section class="approved-cutie-mark">
 			<h2>Recommended cutie mark vector</h2>
 <?=Permission::Sufficient('staff')&&!isset($Appearance['cm_dir'])?CoreUtils::Notice('fail','Missing CM orientation, falling back to <strong>Tail-Head</strong>. Please edit the appaearance and provide an orientation!'):''?>
-			<a id="pony-cm" href="http://fav.me/<?=$Appearance['cm_favme']?>" style="background-image:url('/colorguide/appearance/<?=$Appearance['id']?>.svg')">
+			<a id="pony-cm" href="http://fav.me/<?=$Appearance['cm_favme']?>" style="background-image:url('/cg/v/<?=$Appearance['id']?>.svg')">
 				<div class="img cm-dir-<?=$Appearance['cm_dir']===CM_DIR_HEAD_TO_TAIL?'ht':'th'?>" style="background-image:url('<?=CoreUtils::AposEncode($preview)?>')"></div>
 			</a>
 			<p class="aside">This is only an illustration, the body shape & colors are <strong>not</strong> guaranteed to reflect the actual design.</p>

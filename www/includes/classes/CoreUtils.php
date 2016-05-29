@@ -615,7 +615,7 @@
 					$NavItems['latest'][0] = $_SERVER['REQUEST_URI'];
 				else $NavItems['eps']['subitem'] = $GLOBALS['title'];
 			}
-			global $color, $Color, $EQG;
+			global $Color, $EQG;
 			$NavItems['colorguide'] = array("/cg", (!empty($EQG)?'EQG ':'')."$Color Guide");
 			if ($do === 'colorguide'){
 				global $Tags, $Changes, $Ponies, $Pagination, $Appearance;
