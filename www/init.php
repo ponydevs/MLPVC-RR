@@ -78,8 +78,8 @@
 	# Episode
 	define('EPISODE_ID_PATTERN','S0*([0-8])E0*([1-9]|1\d|2[0-6])(?:-0*([1-9]|1\d|2[0-6]))?(?:\D|$)');;
 	$EPISODE_ID_REGEX = new RegExp('^'.EPISODE_ID_PATTERN,'i');
-	$EP_TITLE_REGEX = new RegExp('^[A-Za-z \'\-!\d,&:?]{5,35}$','u');
-	define('INVERSE_EP_TITLE_PATTERN','[^A-Za-z \'\-!\d,&:?]');
+	$EP_TITLE_REGEX = new RegExp('^[A-Za-z \'"\-!\d,&:?]{5,35}$','u');
+	define('INVERSE_EP_TITLE_PATTERN','[^A-Za-z \'"\-!\d,&:?]');
 	# Colors
 	$HEX_COLOR_REGEX = new RegExp('^#?([\dA-Fa-f]{6})$','u');
 	# DeviantArt

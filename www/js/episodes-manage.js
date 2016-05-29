@@ -40,22 +40,28 @@ DocReady.push(function EpisodesManage(){
 	var date = saturday.toAirDate(), time = saturday.toAirTime();
 
 	var EP_TITLE_REGEX = window.EP_TITLE_REGEX,
-		EP_TITLE_HTML_REGEX = EP_TITLE_REGEX.toString().split('/')[1],
 		$pageTitle = $content.children('h1').first();
 
 	function EpisodeForm(id){
-		var $form = $.mk('form').attr('id', id).html(
-			'<div class="label">' +
+		var $form = $.mk('form').attr('id', id).append(
+			'<div class="label">'+
 				'<span>Season &amp; Episode</span>'+
 				'<div class=input-group-2>'+
 					'<input type="number" min="1" max="8" name="season" placeholder="Season #" required>'+
 					'<input type="number" min="1" max="26" name="episode" placeholder="Episode #" required>'+
 				'</div>'+
-			'</div>'+
-			'<label>'+
-				'<span>Title (5-35 chars.)</span>'+
-				'<input type="text" maxlength="35" name="title" placeholder="Title" pattern="'+EP_TITLE_HTML_REGEX+'" autocomplete="off" required>'+
-			'</label>'+
+			'</label>',
+			$.mk('label').append(
+				'<span>Title (5-35 chars.)</span>',
+				$.mk('input').attr({
+					type: 'text',
+					maxlength: 35,
+					name: 'title',
+					placeholder: 'Title',
+					autocomplete: 'off',
+					required: true,
+				}).patternAttr(EP_TITLE_REGEX)
+			),
 			'<div class="label">' +
 				'<span>Air Date</span>'+
 				'<div class="input-group-2">'+
@@ -69,7 +75,8 @@ DocReady.push(function EpisodesManage(){
 			'<label><input type="checkbox" name="twoparter"> Has two parts</label>'+
 			'<div class="notice info align-center">'+
 				'<p>If this is checked, only specify the episode number of the first part</p>'+
-			'</div>');
+			'</div>'
+		);
 
 		$.mk('button').text('Set time to '+time+' this Saturday').on('click',function(e){
 			e.preventDefault();
