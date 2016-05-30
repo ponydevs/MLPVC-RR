@@ -353,7 +353,15 @@ DocReady.push(function ColorguideManage(){
 						var val = $.hexpand(input.value);
 						if (HEX_COLOR_PATTERN.test(val)){
 							val = val.replace(HEX_COLOR_PATTERN, '#$1').toUpperCase();
-							var $input = $(input);
+							var $input = $(input),
+								rgb = $.hex2rgb(val);
+							$.each(rgb, function(channel, value){
+								if (value <= 3)
+									rgb[channel] = 0;
+								else if (value >= 252)
+									rgb[channel] = 255;
+							});
+							val = $.rgb2hex(rgb);
 							switch (e.type){
 								case 'paste':
 									$input.next().focus();
