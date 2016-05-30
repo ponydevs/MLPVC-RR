@@ -29,7 +29,7 @@ DocReady.push(function Colorguide(){
 	var $SearchForm = $('#search-form');
 
 	function tooltips(){
-		var isGuest = $SearchForm.length + $('button.edit').length === 0,
+		var isGuest = false,
 			$tags = $('.tags').children('span.tag');
 		$tags.each(function(){
 			var $this = $(this),
@@ -39,7 +39,7 @@ DocReady.push(function Colorguide(){
 
 			tagstyle = !tagstyle ? '' : ' qtip-tag-'+tagstyle[1];
 
-			if (!title && !isGuest){
+			if (!title){
 				var titletext = $this.text().trim();
 				title = /^s\d+e\d+(-\d+)?$/i.test(titletext)
 					? titletext.toUpperCase()
@@ -47,23 +47,17 @@ DocReady.push(function Colorguide(){
 			}
 
 			if (title){
-				if (isGuest)
-					$this.css('cursor','help');
 				$this.qtip({
-					content: (
-						isGuest
-						? { text: title }
-						: {
-							text: text,
-							title: title
-						}
-					),
+					content: {
+						text: text,
+						title: title
+					},
 					position: {my: 'bottom center', at: 'top center', viewport: true},
 					style: {classes: 'qtip-tag' + tagstyle}
 				});
 			}
 		});
-		if (!isGuest) $tags.css('cursor','pointer').off('click').on('click',function(e){
+		$tags.css('cursor','pointer').off('click').on('click',function(e){
 			e.preventDefault();
 
 			var query = this.innerHTML.trim();
