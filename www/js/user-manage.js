@@ -34,7 +34,7 @@ DocReady.push(function UserManage(){
 
 					if (!this.status) return $.Dialog.fail(false, this.message);
 
-					$.Dialog.info(false, 'Reloading page', true);
+					$.Dialog.wait(false, 'Reloading page', true);
 					$.Navigation.reload(function(){
 						$.Dialog.close();
 					});
