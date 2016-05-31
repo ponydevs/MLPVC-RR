@@ -311,6 +311,8 @@
 			if ($editing){
 				$logentry = array('target' => Episode::FormatTitle($Current,AS_ARRAY,'id'));
 				$changes = 0;
+				if (!empty($Current['airs']))
+					$Current['airs'] = date('c',strtotime($Current['airs']));
 				foreach (array('season', 'episode', 'twoparter', 'title', 'airs') as $k){
 					if (isset($insert[$k]) && $insert[$k] != $Current[$k]){
 						$logentry["old$k"] = $Current[$k];
