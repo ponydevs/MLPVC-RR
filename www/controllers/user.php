@@ -22,7 +22,7 @@
 				CoreUtils::Respond('This user is banished, and must be un-banished before changing their group.');
 
 			$newgroup = (new Input('newrole',function($value){
-				if (!isset(self::$ROLES_ASSOC[$value]))
+				if (!isset(Permission::$ROLES_ASSOC[$value]))
 					return Input::$ERROR_INVALID;
 			},array(
 				'errors' => array(
