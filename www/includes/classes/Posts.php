@@ -446,11 +446,11 @@ HTML;
 			$posted_at = '<em class="post-date">';
 			if ($isRequest){
 				global $signedIn, $currentUser;
-				$sameUser = $signedIn && $R['requested_by'] === $currentUser['id'];
+				$isRequester = $R['requested_by'] === $currentUser['id'];
 
 				$posted_at .= "Requested $permalink";
-				if (Permission::Sufficient('staff') || $sameUser)
-					$posted_at .= ' by '.($sameUser ? 'You' : User::GetProfileLink(User::Get($R['requested_by'])));
+				if ($signedIn && (Permission::Sufficient('staff') || $isRequester || $R['reserved_by'] === $currentUser['id']))
+					$posted_at .= ' by '.($isRequester ? 'You' : User::GetProfileLink(User::Get($R['requested_by'])));
 			}
 			else $posted_at .= "Reserved $permalink";
 			$posted_at .= "</em>";
