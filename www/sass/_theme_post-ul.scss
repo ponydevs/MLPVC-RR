@@ -127,6 +127,9 @@
 
 			@extend %reserve-button;
 		}
+		.contest-note {
+			cursor: help;
+		}
 		.reserver {
 			display: inline-block;
 			margin-top: 5px;

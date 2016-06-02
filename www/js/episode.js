@@ -703,6 +703,18 @@ DocReady.push(function Episode(){
 							})
 						)
 					);
+				if (typeof postdata.finished_at === 'string')
+					$Form.append(
+						$.mk('label').append(
+							$.mk('span').text('Finished at'),
+							$.mk('input').attr({
+								type: 'datetime',
+								name: 'finished_at',
+								required: true,
+								spellcheck: false,
+							})
+						)
+					);
 
 				var show_img_update_btn = $li.children('.image').find('.typcn-tick').length === 0,
 					finished = $li.closest('div').attr('class') === 'finished',
@@ -795,7 +807,7 @@ DocReady.push(function Episode(){
 				$.Dialog.request(false, $Form, 'post-edit-form', 'Save', function($form){
 					var $label = $form.find('[name=label]'),
 						$type = $form.find('[name=type]'),
-						$date, $reserved_at;
+						$date, $reserved_at, $finished_at;
 					if (postdata.label)
 						$label.val(postdata.label);
 					if (postdata.type)
@@ -814,6 +826,12 @@ DocReady.push(function Episode(){
 						var reserved = moment(postdata.reserved_at);
 						$reserved_at.val(reserved.format('YYYY-MM-DD\THH:mm:ssZ'));
 					}
+					if (typeof postdata.finished_at === 'string'){
+						$finished_at = $form.find('[name=finished_at]');
+
+						var finished = moment(postdata.finished_at);
+						$finished_at.val(finished.format('YYYY-MM-DD\THH:mm:ssZ'));
+					}
 					$form.on('submit',function(e){
 						e.preventDefault();
 
@@ -829,8 +847,14 @@ DocReady.push(function Episode(){
 						if (typeof postdata.reserved_at === 'string'){
 							data.reserved_at = new Date($reserved_at.val());
 							if (isNaN(data.reserved_at.getTime()))
-								return $.Dialog.fail(false, 'Reserved at timestamp is invalid');
+								return $.Dialog.fail(false, '"Reserved at" timestamp is invalid');
 							data.reserved_at = data.reserved_at.toISOString();
+						}
+						if (typeof postdata.finished_at === 'string'){
+							data.finished_at = new Date($finished_at.val());
+							if (isNaN(data.finished_at.getTime()))
+								return $.Dialog.fail(false, '"Finished at" timestamp is invalid');
+							data.finished_at = data.finished_at.toISOString();
 						}
 
 						$.Dialog.wait(false, 'Saving changes');
@@ -838,29 +862,14 @@ DocReady.push(function Episode(){
 						$.post('/post/set-'+type+'/'+id,data, $.mkAjaxHandler(function(){
 							if (!this.status) return $.Dialog.fail(false, this.message);
 
-							if (this.label){
-								var $label = $li.children('.label');
-								if (!$label.length)
-									$.mk('span').attr('class','lebel').insertAfter($li.children('.image'));
-								$li.children('.label').text(this.label);
-							}
-							if (this.type && !$li.parent().parent().hasClass('finished')){
-								var $group = $('#group-'+this.type).children('ul'),
-									getTimeValue = function(el){
-										return new Date($(el).children('em').find('time').attr('datetime')).getTime();
-									};
-								$group.append($li);
-								$group.children().sort(function(a,b){
-									return getTimeValue(a) - getTimeValue(b);
-								}).appendTo($group);
-							}
-							if (this.posted){
-								$li.children('.post-date').find('time').attr('datetime', this.posted);
+							if (this.li){
+								var $newli = $(this.li);
+								if ($li.hasClass('highlight'))
+									$newli.addClass('highlight');
+								$li.replaceWith($newli);
+								$newli.rebindFluidbox();
 								window.updateTimes();
-							}
-							if (this.reserved_at){
-								$li.children('.reserve-date').find('time').attr('datetime', this.reserved_at);
-								window.updateTimes();
+								Bind($newli, id, type);
 							}
 
 							$.Dialog.close();

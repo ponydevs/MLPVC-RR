@@ -593,7 +593,8 @@ CREATE TABLE requests (
     reserved_by uuid,
     deviation_id character varying(7),
     lock boolean DEFAULT false NOT NULL,
-    reserved_at timestamp with time zone
+    reserved_at timestamp with time zone,
+    finished_at timestamp with time zone
 );
 
 
@@ -634,7 +635,8 @@ CREATE TABLE reservations (
     posted timestamp with time zone DEFAULT now() NOT NULL,
     reserved_by uuid,
     deviation_id character varying(7),
-    lock boolean DEFAULT false NOT NULL
+    lock boolean DEFAULT false NOT NULL,
+    finished_at timestamp with time zone
 );
 
 

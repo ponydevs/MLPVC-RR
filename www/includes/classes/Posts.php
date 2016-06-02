@@ -158,6 +158,15 @@
 				)))->out();
 				if (isset($posted) && $posted !== strtotime($Post['posted']))
 					$array['posted'] = date('c', $posted);
+
+				$finished_at = (new Input('finished_at','timestamp',array(
+					'optional' => true,
+					'errors' => array(
+						Input::$ERROR_INVALID => '"Finished at" timestamp (@value) is invalid',
+					)
+				)))->out();
+				if (isset($finished_at) && $finished_at !== strtotime($Post['finished_at']))
+					$array['finished_at'] = date('c', $finished_at);
 			}
 		}
 
@@ -424,7 +433,7 @@ HTML;
 		}
 
 		static function IsOverdue($Post){
-			return isset($Post['requested_by']) && isset($Post['reserved_by']) && time() - strtotime($Post['reserved_at']) > Time::$IN_SECONDS['week']*3;
+			return isset($Post['requested_by']) && isset($Post['reserved_by']) && time() - strtotime($Post['reserved_at']) >= Time::$IN_SECONDS['week']*3;
 		}
 
 		/**
@@ -452,8 +461,11 @@ HTML;
 				$isRequester = $R['requested_by'] === $currentUser['id'];
 				$isReserver = $R['reserved_by'] === $currentUser['id'];
 
-				if (!$finished && !$isReserver && Permission::Sufficient('member') && Permission::Insufficient('staff') && self::IsOverdue($R))
-					$R['reserved_by'] = null;
+				if (!$finished && !empty($R['reserved_by']) && !$isReserver && Permission::Sufficient('member') && self::IsOverdue($R)){
+					if (Permission::Sufficient('staff'))
+						$overdue = true;
+					else $R['reserved_by'] = null;
+				}
 
 				$posted_at .= "Requested $permalink";
 				if ($signedIn && (Permission::Sufficient('staff') || $isRequester || $isReserver))
@@ -465,7 +477,7 @@ HTML;
 			$R['reserver'] = false;
 			if (!empty($R['reserved_by'])){
 				$R['reserver'] = User::Get($R['reserved_by']);
-				$reserved_at = $isRequest && !empty($R['reserved_at']) ? "<em class='reserve-date'>Reserved <a href='#$ID'>".Time::Tag($R['reserved_at'])."</a></em>" : '';
+				$reserved_at = $isRequest && !empty($R['reserved_at']) ? "<em class='reserve-date'>Reserved <strong>".Time::Tag($R['reserved_at'])."</strong></em>" : '';
 				if ($finished){
 					$Deviation = DeviantArt::GetCachedSubmission($R['deviation_id'],'fav.me',true);
 					if (empty($Deviation)){
@@ -481,14 +493,18 @@ HTML;
 						$Image .= "</a></div>";
 					}
 					if (Permission::Sufficient('staff')){
-						$Image .= $post_label.$posted_at.$reserved_at;
+						$finished_at = !empty($R['finished_at']) ? "<em class='finish-date'>Finished <strong>".Time::Tag($R['finished_at'])."</strong></em>" : '';
+						$Image .= $post_label.$posted_at.$reserved_at.$finished_at;
 						if (!empty($R['fullsize']))
-							$Image .= "<a href='{$R['fullsize']}' class='original' target='_blank'>Direct link to original image</a>";
+							$Image .= "<a href='{$R['fullsize']}' class='original color-green' target='_blank'><span class='typcn typcn-link'></span> Original image</a>";
 					}
 				}
 				else $Image .= $post_label.$posted_at.$reserved_at;
 			}
 			else $Image .= $post_label.$posted_at;
+
+			if (!empty($overdue))
+				$Image .= "<strong class='color-blue contest-note' title='This request was reserved more than 3 weeks ago and appears available to other members'><span class='typcn typcn-info-large'></span> Can be contested</strong>";
 
 			return "<li id='$ID'>$Image".self::_getPostActions($R['reserver'], $R, $isRequest, $view_only ? $postlink : false).'</li>';
 		}

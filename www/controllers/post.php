@@ -21,8 +21,12 @@
 			if ($thing === 'request'){
 				$response['type'] = $Post['type'];
 
-				if (Permission::Sufficient('developer') && isset($Post['reserved_at']))
-					$response['reserved_at'] = date('c', strtotime($Post['reserved_at']));
+				if (Permission::Sufficient('developer')){
+					if (!empty($Post['reserved_at']))
+						$response['reserved_at'] = date('c', strtotime($Post['reserved_at']));
+					if (!empty($Post['finished_at']))
+						$response['finished_at'] = date('c', strtotime($Post['finished_at']));
+				}
 			}
 			if (Permission::Sufficient('developer'))
 				$response['posted'] = date('c', strtotime($Post['posted']));
@@ -37,7 +41,8 @@
 
 		if (!$Database->where('id', $Post['id'])->update("{$thing}s", $update))
 			CoreUtils::Respond(ERR_DB_FAIL);
-		CoreUtils::Respond($update);
+		$Post = array_merge($Post, $update);
+		CoreUtils::Respond(array('li' => Posts::GetLi($Post, $thing === 'request')));
 	}
 	else if (regex_match(new RegExp('^((?:un)?(?:finish|lock|reserve)|add|delete)-(request|reservation)s?/(\d+)$'),$data,$_match)){
 		$type = $_match[2];
@@ -170,12 +175,14 @@
 						$update = array(
 							'reserved_by' => null,
 							'reserved_at' => null,
+							'finished_at' => null,
 						);
 					}
 					else if ($type === 'reservation' && empty($Post['preview']))
 						CoreUtils::Respond('This reservation was added directly and cannot be marked unfinished. To remove it, check the unbind from user checkbox.');
 
 					$update['deviation_id'] = null;
+					$update['finished_at'] = null;
 
 					if (!$Database->where('id', $Post['id'])->update("{$type}s",$update))
 						CoreUtils::Respond(ERR_DB_FAIL);
@@ -187,6 +194,7 @@
 						CoreUtils::Respond();
 
 					$update = Posts::CheckRequestFinishingImage($Post['reserved_by']);
+					$update['finished_at'] = date('c');
 
 					if (!$Database->where('id', $Post['id'])->update("{$type}s",$update))
 						CoreUtils::Respond(ERR_DB_FAIL);
