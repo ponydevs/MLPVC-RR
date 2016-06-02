@@ -467,8 +467,19 @@ DocReady.push(function Episode(){
 						$.mk('input').attr({
 							type: 'text',
 							name: 'post_as',
+							required: true,
 							placeholder: 'Username',
 						}).patternAttr(USERNAME_REGEX)
+					),
+					$.mk('label').append(
+						$.mk('span').text('Reserved at'),
+						$.mk('input').attr({
+							type: 'datetime',
+							name: 'reserved_at',
+							spellcheck: false,
+							autocomplete: 'off',
+							placeholder: 'time()',
+						})
 					)
 				);
 				$.Dialog.request(title, $ReserveAsForm,'reserve-as','Reserve',function($form){
@@ -514,7 +525,32 @@ DocReady.push(function Episode(){
 			});
 		});
 		$actions.filter('.finish').off('click').on('click',function(){
-			$.Dialog.request('Finish reservation','<form id="finish-res"><input type="text" name="deviation" placeholder="Deviation URL" required></form>','finish-res','Finish',function($form){
+			var $form = $.mk('form').attr('id', 'finish-res').append(
+				$.mk('label').append(
+					$.mk('span').text('Deviation URL'),
+					$.mk('input').attr({
+						type: 'text',
+						name: 'deviation',
+						spellcheck: false,
+						autocomplete: 'off',
+						required: true,
+					})
+				)
+			);
+			if (typeof USERNAME_REGEX !== 'undefined')
+				$form.append(
+					$.mk('label').append(
+						$.mk('span').text('Finished at'),
+						$.mk('input').attr({
+							type: 'datetime',
+							name: 'finished_at',
+							spellcheck: false,
+							autocomplete: 'off',
+							placeholder: 'time()',
+						})
+					)
+				);
+			$.Dialog.request('Finish reservation',$form,'finish-res','Finish',function($form){
 				$form.on('submit',function(e){
 					e.preventDefault();
 
@@ -688,6 +724,7 @@ DocReady.push(function Episode(){
 								name: 'date',
 								required: true,
 								spellcheck: false,
+								autocomplete: 'off',
 							})
 						)
 					);
@@ -698,8 +735,8 @@ DocReady.push(function Episode(){
 							$.mk('input').attr({
 								type: 'datetime',
 								name: 'reserved_at',
-								required: true,
 								spellcheck: false,
+								autocomplete: 'off',
 							})
 						)
 					);
@@ -710,8 +747,8 @@ DocReady.push(function Episode(){
 							$.mk('input').attr({
 								type: 'datetime',
 								name: 'finished_at',
-								required: true,
 								spellcheck: false,
+								autocomplete: 'off',
 							})
 						)
 					);
@@ -823,14 +860,18 @@ DocReady.push(function Episode(){
 					if (typeof postdata.reserved_at === 'string'){
 						$reserved_at = $form.find('[name=reserved_at]');
 
-						var reserved = moment(postdata.reserved_at);
-						$reserved_at.val(reserved.format('YYYY-MM-DD\THH:mm:ssZ'));
+						if (postdata.reserved_at.length){
+							var reserved = moment(postdata.reserved_at);
+							$reserved_at.val(reserved.format('YYYY-MM-DD\THH:mm:ssZ'));
+						}
 					}
 					if (typeof postdata.finished_at === 'string'){
 						$finished_at = $form.find('[name=finished_at]');
 
-						var finished = moment(postdata.finished_at);
-						$finished_at.val(finished.format('YYYY-MM-DD\THH:mm:ssZ'));
+						if (postdata.finished_at.length){
+							var finished = moment(postdata.finished_at);
+							$finished_at.val(finished.format('YYYY-MM-DD\THH:mm:ssZ'));
+						}
 					}
 					$form.on('submit',function(e){
 						e.preventDefault();
@@ -845,16 +886,22 @@ DocReady.push(function Episode(){
 							data.posted = data.posted.toISOString();
 						}
 						if (typeof postdata.reserved_at === 'string'){
-							data.reserved_at = new Date($reserved_at.val());
-							if (isNaN(data.reserved_at.getTime()))
-								return $.Dialog.fail(false, '"Reserved at" timestamp is invalid');
-							data.reserved_at = data.reserved_at.toISOString();
+							var reserved_at = $reserved_at.val();
+							if (reserved_at.length){
+								data.reserved_at = new Date();
+								if (isNaN(data.reserved_at.getTime()))
+									return $.Dialog.fail(false, '"Reserved at" timestamp is invalid');
+								data.reserved_at = data.reserved_at.toISOString();
+							}
 						}
 						if (typeof postdata.finished_at === 'string'){
-							data.finished_at = new Date($finished_at.val());
-							if (isNaN(data.finished_at.getTime()))
-								return $.Dialog.fail(false, '"Finished at" timestamp is invalid');
-							data.finished_at = data.finished_at.toISOString();
+							var finished_at = $finished_at.val().trim();
+							if (finished_at.length){
+								data.finished_at = new Date(finished_at);
+								if (isNaN(data.finished_at.getTime()))
+									return $.Dialog.fail(false, '"Finished at" timestamp is invalid');
+								data.finished_at = data.finished_at.toISOString();
+							}
 						}
 
 						$.Dialog.wait(false, 'Saving changes');

@@ -22,10 +22,11 @@
 				$response['type'] = $Post['type'];
 
 				if (Permission::Sufficient('developer')){
-					if (!empty($Post['reserved_at']))
-						$response['reserved_at'] = date('c', strtotime($Post['reserved_at']));
-					if (!empty($Post['finished_at']))
-						$response['finished_at'] = date('c', strtotime($Post['finished_at']));
+					if (!empty($Post['reserved_by'])){
+						$response['reserved_at'] = !empty($Post['reserved_at']) ? date('c', strtotime($Post['reserved_at'])) : '';
+						if (!empty($Post['deviation_id']))
+							$response['finished_at'] = !empty($Post['finished_at']) ? date('c', strtotime($Post['finished_at'])) : '';
+					}
 				}
 			}
 			if (Permission::Sufficient('developer'))
@@ -154,6 +155,7 @@
 						$update = array(
 							'reserved_by' => null,
 							'reserved_at' => null,
+							'finished_at' => null,
 						);
 						break;
 					}
@@ -175,7 +177,6 @@
 						$update = array(
 							'reserved_by' => null,
 							'reserved_at' => null,
-							'finished_at' => null,
 						);
 					}
 					else if ($type === 'reservation' && empty($Post['preview']))
@@ -224,11 +225,10 @@
 			User::ReservationLimitCheck();
 
 			$update['reserved_by'] = $currentUser['id'];
-
 			if (Permission::Sufficient('developer')){
-				$post_as = Posts::ValidatePostAs();
-				if (isset($post_as)){
-					$User = User::Get($post_as, 'name');
+				$reserve_as = Posts::ValidatePostAs();
+				if (isset($reserve_as)){
+					$User = User::Get($reserve_as, 'name');
 					if (empty($User))
 						CoreUtils::Respond('User does not exist');
 					if (!Permission::Sufficient('member', $User['role']))
@@ -238,6 +238,11 @@
 				}
 			}
 			$update['reserved_at'] = date('c');
+			if (Permission::Sufficient('developer')){
+				$reserved_at = Posts::ValidateReservedAt();
+				if (isset($reserved_at))
+					$update['reserved_at'] = date('c', $reserved_at);
+			}
 		}
 
 		if (empty($update) || !$Database->where('id', $Post['id'])->update("{$type}s",$update))

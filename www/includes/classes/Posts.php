@@ -138,14 +138,12 @@
 					$array['type'] = $type;
 
 				if (Permission::Sufficient('developer')){
-					$reserved_at = (new Input('reserved_at','timestamp',array(
-						'optional' => true,
-						'errors' => array(
-							Input::$ERROR_INVALID => '"Reserved at" timestamp (@value) is invalid',
-						)
-					)))->out();
-					if (isset($reserved_at) && $reserved_at !== strtotime($Post['reserved_at']))
-						$array['reserved_at'] = date('c', $reserved_at);
+					$reserved_at = self::ValidateReservedAt();
+					if (isset($reserved_at)){
+						if ($reserved_at !== strtotime($Post['reserved_at']))
+							$array['reserved_at'] = date('c', $reserved_at);
+					}
+					else $array['reserved_at'] = null;
 				}
 			}
 
@@ -165,8 +163,11 @@
 						Input::$ERROR_INVALID => '"Finished at" timestamp (@value) is invalid',
 					)
 				)))->out();
-				if (isset($finished_at) && $finished_at !== strtotime($Post['finished_at']))
-					$array['finished_at'] = date('c', $finished_at);
+				if (isset($finished_at)){
+					if ($finished_at !== strtotime($Post['finished_at']))
+						$array['finished_at'] = date('c', $finished_at);
+				}
+				else $array['finished_at'] = null;
 			}
 		}
 
@@ -591,6 +592,15 @@ HTML;
 				'optional' => true,
 				'errors' => array(
 					Input::$ERROR_INVALID => '"Post as" username (@value) is invalid',
+				)
+			)))->out();
+		}
+
+		static function ValidateReservedAt(){
+			return (new Input('reserved_at','timestamp',array(
+				'optional' => true,
+				'errors' => array(
+					Input::$ERROR_INVALID => '"Reserved at" timestamp (@value) is invalid',
 				)
 			)))->out();
 		}
