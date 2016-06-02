@@ -37,6 +37,7 @@ DocReady.push(function Logs(){
 							});
 
 							$dataDiv.insertAfter($this).slideDown();
+							window.updateTimes();
 							$this.addClass('typcn-minus color-darkblue');
 						})).always(function(){
 							requesting = false;

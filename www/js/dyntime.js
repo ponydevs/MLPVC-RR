@@ -37,7 +37,7 @@
 				if (result === false) return;
 			}
 
-			if ($elapsedHolder.length > 0){
+			if ($elapsedHolder.length > 0 || $this.hasClass('no-dynt-el')){
 				$this.html(Timestamp.format(showDayOfWeek ? dateformat.orderwd : dateformat.order));
 				$elapsedHolder.html(timeAgoStr);
 			}

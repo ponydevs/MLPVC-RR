@@ -86,6 +86,14 @@
 		if (!empty($Post['reserved_by'])){
 			switch ($action){
 				case 'reserve':
+					if (Posts::IsOverdue($Post)){
+						$overdue = array(
+							'reserved_by' => $Post['reserved_by'],
+							'reserved_at' => $Post['reserved_at'],
+						);
+						$Post['reserved_by'] = null;
+						break;
+					}
 					if ($isUserReserver)
 						CoreUtils::Respond("You've already reserved this $type");
 					CoreUtils::Respond("This $type has already been reserved by somepony else");
@@ -203,7 +211,8 @@
 		}
 		else if ($action === 'finish')
 			CoreUtils::Respond("This $type has not been reserved by anypony yet");
-		else if ($type === 'request' && $action === 'reserve'){
+
+		if (empty($Post['reserved_by']) && $type === 'request' && $action === 'reserve'){
 			User::ReservationLimitCheck();
 
 			$update['reserved_by'] = $currentUser['id'];
@@ -225,6 +234,15 @@
 
 		if (empty($update) || !$Database->where('id', $Post['id'])->update("{$type}s",$update))
 			CoreUtils::Respond('Nothing has been changed<br>If you tried to do something, then this is actually an error, which you should <a href="#feedback" class="send-feedback">tell us</a> about.');
+
+		if (!empty($overdue))
+			Log::Action('res_overtake',array_merge(
+				array(
+					'id' => $Post['id'],
+					'type' => $type
+				),
+				$overdue
+			));
 
 		if ($type === 'request'){
 			$Post = array_merge($Post, $update);

@@ -418,6 +418,42 @@ ALTER SEQUENCE log__req_delete_entryid_seq OWNED BY log__req_delete.entryid;
 
 
 --
+-- Name: log__res_overtake; Type: TABLE; Schema: public; Owner: mlpvc-rr
+--
+
+CREATE TABLE log__res_overtake (
+    entryid integer NOT NULL,
+    type character varying(11) NOT NULL,
+    id integer NOT NULL,
+    reserved_at timestamp with time zone,
+    reserved_by uuid NOT NULL
+);
+
+
+ALTER TABLE log__res_overtake OWNER TO "mlpvc-rr";
+
+--
+-- Name: log__res_overtake_entryid_seq; Type: SEQUENCE; Schema: public; Owner: mlpvc-rr
+--
+
+CREATE SEQUENCE log__res_overtake_entryid_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE log__res_overtake_entryid_seq OWNER TO "mlpvc-rr";
+
+--
+-- Name: log__res_overtake_entryid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER SEQUENCE log__res_overtake_entryid_seq OWNED BY log__res_overtake.entryid;
+
+
+--
 -- Name: log__rolechange; Type: TABLE; Schema: public; Owner: mlpvc-rr
 --
 
@@ -788,6 +824,13 @@ ALTER TABLE ONLY log__post_lock ALTER COLUMN entryid SET DEFAULT nextval('log__p
 --
 
 ALTER TABLE ONLY log__req_delete ALTER COLUMN entryid SET DEFAULT nextval('log__req_delete_entryid_seq'::regclass);
+
+
+--
+-- Name: entryid; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER TABLE ONLY log__res_overtake ALTER COLUMN entryid SET DEFAULT nextval('log__res_overtake_entryid_seq'::regclass);
 
 
 --
@@ -1452,6 +1495,24 @@ REVOKE ALL ON SEQUENCE log__req_delete_entryid_seq FROM PUBLIC;
 REVOKE ALL ON SEQUENCE log__req_delete_entryid_seq FROM "mlpvc-rr";
 GRANT ALL ON SEQUENCE log__req_delete_entryid_seq TO "mlpvc-rr";
 GRANT ALL ON SEQUENCE log__req_delete_entryid_seq TO postgres;
+
+
+--
+-- Name: log__res_overtake; Type: ACL; Schema: public; Owner: mlpvc-rr
+--
+
+REVOKE ALL ON TABLE log__res_overtake FROM PUBLIC;
+REVOKE ALL ON TABLE log__res_overtake FROM "mlpvc-rr";
+GRANT ALL ON TABLE log__res_overtake TO "mlpvc-rr";
+
+
+--
+-- Name: log__res_overtake_entryid_seq; Type: ACL; Schema: public; Owner: mlpvc-rr
+--
+
+REVOKE ALL ON SEQUENCE log__res_overtake_entryid_seq FROM PUBLIC;
+REVOKE ALL ON SEQUENCE log__res_overtake_entryid_seq FROM "mlpvc-rr";
+GRANT ALL ON SEQUENCE log__res_overtake_entryid_seq TO "mlpvc-rr";
 
 
 --

@@ -108,11 +108,11 @@
 		 *
 		 * @param string|int $timestamp
 		 * @param bool       $extended
-		 * @param bool       $allowDyntime
+		 * @param string     $allowDyntime
 		 *
 		 * @return string
 		 */
-		static function Tag($timestamp, $extended = false, $allowDyntime = true){
+		static function Tag($timestamp, $extended = false, $allowDyntime = 'yes'){
 			if (is_string($timestamp))
 				$timestamp = strtotime($timestamp);
 			if ($timestamp === false) return null;
@@ -121,14 +121,20 @@
 			$full = Time::Format($timestamp,FORMAT_FULL);
 			$text = Time::Format($timestamp,FORMAT_READABLE);
 
-			if ($allowDyntime === NO_DYNTIME)
-				$datetime .= "' class='nodt";
+			switch ($allowDyntime){
+				case NO_DYNTIME:
+					$datetime .= "' class='nodt";
+				break;
+				case STATIC_DYNTIME:
+					$datetime .= "' class='no-dynt-el";
+				break;
+			}
 
 			return
 				!$extended
 				? "<time datetime='$datetime' title='$full'>$text</time>"
 				:"<time datetime='$datetime'>$full</time>".(
-					$allowDyntime !== NO_DYNTIME
+					$allowDyntime === 'yes'
 					?"<span class='dynt-el'>$text</span>"
 					:''
 				);

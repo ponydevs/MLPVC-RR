@@ -449,6 +449,8 @@ DocReady.push(function Episode(){
 						if (!this.status) return $.Dialog.fail(false, this.message);
 
 						var $newli = $(this.li);
+						if ($li.hasClass('highlight'))
+							$newli.addClass('highlight');
 						$li.replaceWith($newli);
 						$newli.rebindFluidbox();
 						window.updateTimes();
@@ -501,6 +503,8 @@ DocReady.push(function Episode(){
 					}
 
 					var $newli = $(this.li);
+					if ($li.hasClass('highlight'))
+						$newli.addClass('highlight');
 					$li.replaceWith($newli);
 					$newli.rebindFluidbox();
 					window.updateTimes();
@@ -594,8 +598,6 @@ DocReady.push(function Episode(){
 		$actions.filter('.check').off('click').on('click',function(e){
 			e.preventDefault();
 
-			var $btn = $(this);
-
 			$.Dialog.wait('Submission approval status','Checking');
 
 			$.post('/post/lock-'+type+'/'+id, $.mkAjaxHandler(function(){
@@ -609,8 +611,6 @@ DocReady.push(function Episode(){
 		});
 		$actions.filter('.unlock').off('click').on('click',function(e){
 			e.preventDefault();
-
-			var $btn = $(this);
 
 			$.Dialog.wait('Unlocking post');
 
@@ -1126,6 +1126,7 @@ DocReady.push(function Episode(){
 			$.Dialog.info('Scroll post into view',"The "+(location.hash.replace(postHashRegex,'$1'))+" you were linked to has either been deleted or didn't exist in the first place. Sorry.<div class='align-center'><span class='sideways-smiley-face'>:\\</div>");
 	}
 },function(){
+	'use strict';
 	$body.removeClass('no-distractions');
 	$('.fluidbox--opened').fluidbox('close');
 });

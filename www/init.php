@@ -42,7 +42,8 @@
 	define('WRAP', !NOWRAP);
 	define('FORMAT_READABLE',true); // Time::Format
 	define('EXTENDED', true); // Time::Tag
-	define('NO_DYNTIME', false); // Time::Tag
+	define('NO_DYNTIME', 'no'); // Time::Tag
+	define('STATIC_DYNTIME', 'static'); // Time::Tag
 	define('ONLY_REQUESTS', 1); // Posts::Get
 	define('ONLY_RESERVATIONS', 2); // Posts::Get
 	define('CURRENT',true); // render_session_li()

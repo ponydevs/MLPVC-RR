@@ -13,6 +13,7 @@
 			'color_modify' => 'Major appearance update',
 			'req_delete' => 'Request deleted',
 			'img_update' => 'Post image updated',
+			'res_overtake' => 'Overtook post reservation',
 		);
 
 		/**
@@ -50,15 +51,16 @@
 		/**
 		 * Format log entry details
 		 *
-		 * @param string $reftype Log entry type
-		 * @param array  $data    Data to process
+		 * @param array $MainEntry Main log entry
+		 * @param array $data      Data to process (sub-log entry)
 		 *
 		 * @return array
 		 */
-		static function FormatEntryDetails($reftype, $data){
+		static function FormatEntryDetails($MainEntry, $data){
 			global $Database;
 			$details = array();
 
+			$reftype = $MainEntry['reftype'];
 			switch ($reftype){
 				case "rolechange":
 					$target =  $Database->where('id',$data['target'])->getOne('users');
@@ -74,7 +76,7 @@
 					$details[] = array('Action', $actions[$data['action']]);
 					$details[] = array('Name', Episode::FormatTitle($data));
 					if (!empty($data['airs']))
-						$details[] = array('Airs', Time::Tag($data['airs'], EXTENDED, NO_DYNTIME));
+						$details[] = array('Airs', Time::Tag($data['airs'], EXTENDED, STATIC_DYNTIME));
 				break;
 				case "episode_modify":
 					$details[] = array('Target episode', $data['target']);
@@ -92,8 +94,8 @@
 					}
 
 					if (!empty($newOld['airs'])){
-						$newOld['airs']['old'] =  Time::Tag($newOld['airs']['old'], EXTENDED, NO_DYNTIME);
-						$newOld['airs']['new'] =  Time::Tag($newOld['airs']['new'], EXTENDED, NO_DYNTIME);
+						$newOld['airs']['old'] =  Time::Tag($newOld['airs']['old'], EXTENDED, STATIC_DYNTIME);
+						$newOld['airs']['new'] =  Time::Tag($newOld['airs']['new'], EXTENDED, STATIC_DYNTIME);
 					}
 
 					foreach ($newOld as $thing => $ver){
@@ -143,7 +145,7 @@
 					$details[] = array('Type',$typeNames[$data['type']]);
 					$IDstr = "S{$data['season']}E{$data['episode']}";
 					$details[] = array('Episode', "<a href='/episode/$IDstr'>$IDstr</a>");
-					$details[] = array('Posted', Time::Tag($data['posted'], EXTENDED, NO_DYNTIME));
+					$details[] = array('Posted', Time::Tag($data['posted'], EXTENDED, STATIC_DYNTIME));
 					if (!empty($data['requested_by']))
 						$details[] = array('Requested by', User::GetProfileLink(User::Get($data['requested_by'])));
 					if (!empty($data['reserved_by']))
@@ -168,6 +170,36 @@
 					}
 					$details[] = array('Old',"<a href='{$data['oldfullsize']}' target='_blank'>Full size</a><div><img src='{$data['oldpreview']}'></div>");
 					$details[] = array('New',"<a href='{$data['newfullsize']}' target='_blank'>Full size</a><div><img src='{$data['newpreview']}'></div>");
+				break;
+				case "res_overtake":
+					$Post = $Database->where('id', $data['id'])->getOne("{$data['type']}s");
+					if (empty($Post))
+						$details[] = array('Notice', 'The post has been deleted, some details are unavailable');
+					$details[] = array('ID',$data['id']);
+					$details[] = array('Type',$data['type']);
+					if (!empty($Post)){
+						$Fragment = "#{$data['type']}-{$data['id']}";
+						if ($Post['season'] == 0){
+							$IDstr = "EQG{$Post['episode']}";
+							$Link = "/eqg/{$Post['episode']}";
+						}
+						else{
+							$IDstr = "S{$Post['season']}E{$Post['episode']}";
+							$Link = "/episode/$IDstr";
+						}
+						$details[] = array('Link',"<a href='$Link$Fragment'>$IDstr$Fragment</a>");
+					}
+					$details[] = array('Previous reserver',User::GetProfileLink(User::Get($data['reserved_by'])));
+					$details[] = array('Previously reserved at', Time::Tag($data['reserved_at'], EXTENDED, STATIC_DYNTIME));
+
+					$diff_text = '';
+					$diff = Time::Difference(strtotime($MainEntry['timestamp']), strtotime($data['reserved_at']));
+					foreach (array_keys(Time::$IN_SECONDS) as $unit){
+						if (empty($diff[$unit]))
+							continue;
+						$diff_text .= CoreUtils::MakePlural($unit, $diff[$unit], PREPEND_NUMBER).' ';
+					}
+					$details[] = array('In progress for', rtrim($diff_text));
 				break;
 				default:
 					$details[] = array('Could not process details','No data processor defined for this entry type');

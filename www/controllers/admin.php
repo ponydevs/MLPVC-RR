@@ -19,7 +19,7 @@
 					$Details = $Database->where('entryid', $MainEntry['refid'])->getOne("log__{$MainEntry['reftype']}");
 					if (empty($Details)) CoreUtils::Respond('Failed to retrieve details');
 
-					CoreUtils::Respond(Log::FormatEntryDetails($MainEntry['reftype'],$Details));
+					CoreUtils::Respond(Log::FormatEntryDetails($MainEntry,$Details));
 				}
 				else CoreUtils::NotFound();
 			break;

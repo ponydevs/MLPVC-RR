@@ -423,6 +423,9 @@ HTML;
 			return $HTML;
 		}
 
+		static function IsOverdue($Post){
+			return isset($Post['requested_by']) && isset($Post['reserved_by']) && time() - strtotime($Post['reserved_at']) > Time::$IN_SECONDS['week']*3;
+		}
 
 		/**
 		 * List ltem generator function for request & reservation generators
@@ -447,9 +450,13 @@ HTML;
 			if ($isRequest){
 				global $signedIn, $currentUser;
 				$isRequester = $R['requested_by'] === $currentUser['id'];
+				$isReserver = $R['reserved_by'] === $currentUser['id'];
+
+				if (!$finished && !$isReserver && Permission::Sufficient('member') && Permission::Insufficient('staff') && self::IsOverdue($R))
+					$R['reserved_by'] = null;
 
 				$posted_at .= "Requested $permalink";
-				if ($signedIn && (Permission::Sufficient('staff') || $isRequester || $R['reserved_by'] === $currentUser['id']))
+				if ($signedIn && (Permission::Sufficient('staff') || $isRequester || $isReserver))
 					$posted_at .= ' by '.($isRequester ? 'You' : User::GetProfileLink(User::Get($R['requested_by'])));
 			}
 			else $posted_at .= "Reserved $permalink";
