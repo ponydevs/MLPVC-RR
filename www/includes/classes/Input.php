@@ -9,6 +9,7 @@
 				'bool' => true,
 				'int' => true,
 				'float' => true,
+				'text' => true,
 				'string' => true,
 				'uuid' => true,
 				'username' => true,
@@ -64,7 +65,7 @@
 			if (!isset($_POST[$key]) || strlen($_POST[$key]) === 0)
 				$result = empty($o['optional']) ? self::$ERROR_MISSING : self::$ERROR_NONE;
 			else {
-				$this->_value = CoreUtils::Trim($_POST[$key]);
+				$this->_value = $this->_type === 'text' ? CoreUtils::TrimMultiline($_POST[$key]) : CoreUtils::Trim($_POST[$key]);
 				$this->_origValue = $this->_value;
 				$this->_range = $o['range'] ?? null;
 
@@ -103,6 +104,7 @@
 					if (self::CheckNumberRange($this->_value, $this->_range, $code))
 						return $code;
 				break;
+				case "text":
 				case "string":
 					if (!is_string($this->_value))
 						return self::$ERROR_INVALID;

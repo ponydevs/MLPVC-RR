@@ -496,7 +496,7 @@
 				$whitelist = array_merge($whitelist, $allowed);
 			$config->set('HTML.AllowedElements', $whitelist);
 			$purifier = new HTMLPurifier($config);
-			return $purifier->purify($dirty_html);
+			return self::TrimMultiline($purifier->purify($dirty_html));
 		}
 
 		/**
@@ -555,8 +555,16 @@
 			if (regex_match(new RegExp($pattern,'u'), $string, $fails)){
 				$invalid = array();
 				foreach ($fails as $f)
-					if (!in_array($f, $invalid))
-						$invalid[] = $f;
+					if (!in_array($f, $invalid)){
+						switch ($f){
+							case "\n":
+								$invalid[] = '\n';
+							case "\r":
+								$invalid[] = '\r';
+							default:
+								$invalid[] = $f;
+						}
+					}
 
 				$s = count($invalid)!==1?'s':'';
 				$the_following = count($invalid)!==1?' the following':'an';

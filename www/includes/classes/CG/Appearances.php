@@ -135,11 +135,8 @@
 			$hasCM = !empty($Appearance['cm_favme']) && $cmLink !== NOTE_TEXT_ONLY;
 			if ($hasNotes || $hasCM){
 				$notes = '';
-				if ($hasNotes){
-					if ($Appearance['id'] !== 0)
-						$Appearance['notes'] = htmlspecialchars($Appearance['notes']);
+				if ($hasNotes)
 					$notes = '<span>'.nl2br($Appearance['notes']).'</span>';
-				}
 				if ($hasCM){
 					$dir = '';
 					if (isset($Appearance['cm_dir'])){

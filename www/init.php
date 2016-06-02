@@ -85,8 +85,8 @@
 	# DeviantArt
 	$FULLSIZE_MATCH_REGEX = new RegExp('^https?:\/\/orig\d+\.');
 	# General
-	define('PRINTABLE_ASCII_PATTERN','^[ -~]+$');
-	define('INVERSE_PRINTABLE_ASCII_PATTERN','[^ -~]');
+	define('PRINTABLE_ASCII_PATTERN','^[ -~\n]+$');
+	define('INVERSE_PRINTABLE_ASCII_PATTERN','[^ -~\n]');
 	define('NEWEST_FIRST', 'DESC');
 	define('OLDEST_FIRST', 'ASC');
 	$REWRITE_REGEX = new RegExp('^/([\w\-]+)(?:/([\w\.\-]+(?:/[\w\.\-]+)*)?)?/?[^\w\.\-]*(?:\.php)?$');

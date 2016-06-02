@@ -176,7 +176,7 @@
 						CoreUtils::Respond('An appearance already esists with this name');
 					$data['label'] = $label;
 
-					$notes = (new Input('notes','string',array(
+					$notes = (new Input('notes','text',array(
 						'optional' => true,
 						'range' => $creating || $Appearance['id'] !== 0 ? [null,1000] : null,
 						'errors' => array(
@@ -185,8 +185,7 @@
 					)))->out();
 					if (isset($notes)){
 						CoreUtils::CheckStringValidity($notes, "Appearance notes", INVERSE_PRINTABLE_ASCII_PATTERN);
-						if ($Appearance['id'] === 0)
-							$notes = CoreUtils::SanitizeHtml($notes);
+						$notes = CoreUtils::SanitizeHtml($notes);
 						if ($creating || $notes !== $Appearance['notes'])
 							$data['notes'] = $notes;
 					}
