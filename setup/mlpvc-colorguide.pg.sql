@@ -365,7 +365,10 @@ The armor sections are numbered going down the neck i.e. Section 1 is the upperm
 (134, 50, 'Raven', 'Glasses don''t seem to have lenses.
 The iris gradient has a sharper transition than usual.
 Appears as both Unicorn and Earth Pony in different episodes.', NULL, false, '2016-05-03 12:12:33.570228+02', NULL, NULL),
-(135, 110, 'Ms. Peachbottom', 'Far legs use darker colors. On the luggage, Side Flower 1 represents the two flowers perpendicular to the tear. Side Flower 2 is the top flower in line with the tear. Side Flower 3 is the bottom one in line with the tear.', NULL, false, '2016-05-10 14:59:53.741872+02', NULL, NULL),
+(135, 110, 'Ms. Peachbottom', 'Far legs use darker colors. On the luggage:
+<b>Side Flower 1</b> represents the two flowers perpendicular to the tear
+<b>Side Flower 2</b> is the top flower in line with the tear
+<b>Side Flower 3</b> is the bottom one in line with the tear.', NULL, false, '2016-05-10 14:59:53.741872+02', NULL, NULL),
 (136, 111, 'Ms. Harshwhinny', 'Far legs use darker colors.
 She has no iris highlights.', NULL, false, '2016-05-11 00:25:06.834527+02', NULL, NULL),
 (137, 72, 'Misty Fly', 'Cutie mark is unknown', NULL, false, '2016-05-12 21:08:37.046182+02', NULL, NULL),
