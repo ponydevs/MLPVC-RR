@@ -757,7 +757,7 @@ DocReady.push(function Episode(){
 					finished = $li.closest('div').attr('class') === 'finished',
 					$fullsize_link = finished ? $li.children('.original') : $li.children('.image').children('a'),
 					fullsize_url = $fullsize_link.attr('href'),
-					show_stash_fix_btn = !FULLSIZE_MATCH_REGEX.test(fullsize_url) && /deviantart\.net\//.test(fullsize_url);
+					show_stash_fix_btn = !finished && !FULLSIZE_MATCH_REGEX.test(fullsize_url) && /deviantart\.net\//.test(fullsize_url);
 
 				if (show_img_update_btn || show_stash_fix_btn){
 					$Form.append(
