@@ -21,16 +21,14 @@
 			if ($thing === 'request'){
 				$response['type'] = $Post['type'];
 
-				if (Permission::Sufficient('developer')){
-					if (!empty($Post['reserved_by'])){
-						$response['reserved_at'] = !empty($Post['reserved_at']) ? date('c', strtotime($Post['reserved_at'])) : '';
-						if (!empty($Post['deviation_id']))
-							$response['finished_at'] = !empty($Post['finished_at']) ? date('c', strtotime($Post['finished_at'])) : '';
-					}
-				}
+				if (Permission::Sufficient('developer') && !empty($Post['reserved_by']))
+					$response['reserved_at'] = !empty($Post['reserved_at']) ? date('c', strtotime($Post['reserved_at'])) : '';
 			}
-			if (Permission::Sufficient('developer'))
+			if (Permission::Sufficient('developer')){
 				$response['posted'] = date('c', strtotime($Post['posted']));
+				if (!empty($Post['reserved_by']) && !empty($Post['deviation_id']))
+						$response['finished_at'] = !empty($Post['finished_at']) ? date('c', strtotime($Post['finished_at'])) : '';
+			}
 			CoreUtils::Respond($response);
 		}
 
