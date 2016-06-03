@@ -649,13 +649,17 @@ DocReady.push(function Episode(){
 		$actions.filter('.unlock').off('click').on('click',function(e){
 			e.preventDefault();
 
-			$.Dialog.wait('Unlocking post');
+			$.Dialog.confirm('Unlocking post','Are you sure you want to unlock this post?',function(sure){
+				if (!sure) return;
 
-			$.post('/post/unlock-'+type+'/'+id, $.mkAjaxHandler(function(){
-				if (!this.status) return $.Dialog.fail(false, this.message);
+				$.Dialog.wait(false);
 
-				updateSection(type, SEASON, EPISODE);
-			}));
+				$.post('/post/unlock-'+type+'/'+id, $.mkAjaxHandler(function(){
+					if (!this.status) return $.Dialog.fail(false, this.message);
+
+					updateSection(type, SEASON, EPISODE);
+				}))
+			});;
 		});
 		$actions.filter('.delete').on('click',function(){
 			var $this = $(this);
