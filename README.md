@@ -13,7 +13,7 @@ After some time, the idea of moving the old PNG color guide into an easier to us
 
 ## Attributions
 
-**Used libraries & icons include:** [jQuery](http://jquery.com/), [qTip2](http://qtip2.com/), [autocomplete.js](https://github.com/algolia/autocomplete.js), [Chart.js](http://www.chartjs.org/), [Sortable](https://github.com/RubaXa/Sortable), [Ace Editor](https://ace.c9.io/), [PostgresDb](https://github.com/SeinopSys/PHP-PostgreSQL-Database-Class), [Browser.php](https://github.com/cbschuld/Browser.php), [Typicons](http://www.typicons.com/), [Uglify-js](https://www.npmjs.com/package/uglify-js), [SASS](http://sass-lang.com/), [Gulp](http://gulpjs.com/)<br>
+**Used libraries & icons include:** [jQuery](http://jquery.com/), [qTip2](http://qtip2.com/), [autocomplete.js](https://github.com/algolia/autocomplete.js), [Chart.js](http://www.chartjs.org/), [Sortable](https://github.com/RubaXa/Sortable), [Ace Editor](https://ace.c9.io/), [imagesLoaded](http://imagesloaded.desandro.com/), [PostgresDb](https://github.com/SeinopSys/PHP-PostgreSQL-Database-Class), [Browser.php](https://github.com/cbschuld/Browser.php), [Typicons](http://www.typicons.com/), [Uglify-js](https://www.npmjs.com/package/uglify-js), [SASS](http://sass-lang.com/), [Gulp](http://gulpjs.com/)<br>
 **[Color Belending Calculator](https://mlpvc-rr.ml/blending)** originally made by [DASPRiD](https://github.com/dasprid)<br>
 **Headings' font:** [Celestia Medium Redux](http://www.mattyhex.net/CMR/)<br>
 **DeviantArt logo** *(used on profile pages)* &copy; [DeviantArt](http://www.deviantart.com/)<br>

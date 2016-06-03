@@ -1160,28 +1160,40 @@ DocReady.push(function Episode(){
 		}, 1);
 	}
 	$w.on('hashchange', HighlightHash);
-	if (location.hash.length){
-		var $imgs = $content.find('img'),
-			total = $imgs.length, loaded = 0,
-			postHashRegex = /^#(request|reservation)-\d+$/;
 
-		if (total > 0 && $(location.hash).length > 0){
+	var $imgs = $content.find('img'),
+		total = $imgs.length, loaded = 0,
+		postHashRegex = /^#(request|reservation)-\d+$/,
+		showdialog = location.hash.length;
+
+	if (total > 0 && (!showdialog || $(location.hash).length > 0)){
+		if (showdialog)
 			$.Dialog.wait('Scroll post into view','Waiting for page to load');
-			var $progress = $.mk('progress').attr({max:total,value:0}).css({display:'block',width:'100%',marginTop:'5px'});
-			$('#dialogContent').children('div:not([id])').last().addClass('align-center').append($progress);
-			$content.imagesLoaded()
-				.progress(function(_, img){
-					if (img.isLoaded)
-						$progress.attr('value', ++loaded);
+		var $progress = $.mk('progress').attr({max:total,value:0}).css({display:'block',width:'100%',marginTop:'5px'}),
+			attempts = {};
+		$('#dialogContent').children('div:not([id])').last().addClass('align-center').append($progress);
+		$content.imagesLoaded()
+			.progress(function(_, image){
+				if (image.isLoaded)
+					$progress.attr('value', ++loaded);
+				else {
+					var src = image.img.src;
+					if (typeof attempts[src] === 'undefined')
+						attempts[src] = 0;
+					if (attempts[src] < 1){
+						attempts[src]++;
+						image.img.src = '';
+						image.img.src = src;
+					}
 					else $progress.attr('max', --total);
-				})
-				.always(function(){
-					HighlightHash({type:'load'});
-				});
-		}
-		else if (postHashRegex.test(location.hash))
-			$.Dialog.info('Scroll post into view',"The "+(location.hash.replace(postHashRegex,'$1'))+" you were linked to has either been deleted or didn't exist in the first place. Sorry.<div class='align-center'><span class='sideways-smiley-face'>:\\</div>");
+				}
+			})
+			.always(function(){
+				HighlightHash({type:'load'});
+			});
 	}
+	else if (showdialog && postHashRegex.test(location.hash))
+		$.Dialog.info('Scroll post into view',"The "+(location.hash.replace(postHashRegex,'$1'))+" you were linked to has either been deleted or didn't exist in the first place. Sorry.<div class='align-center'><span class='sideways-smiley-face'>:\\</div>");
 },function(){
 	'use strict';
 	$body.removeClass('no-distractions');
