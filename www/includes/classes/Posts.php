@@ -475,7 +475,7 @@ HTML;
 				$R['reserver'] = User::Get($R['reserved_by']);
 				$reserved_at = $isRequest && !empty($R['reserved_at']) ? "<em class='reserve-date'>Reserved <strong>".Time::Tag($R['reserved_at'])."</strong></em>" : '';
 				if ($finished){
-					$Deviation = DeviantArt::GetCachedSubmission($R['deviation_id'],'fav.me',true);
+					$Deviation = DeviantArt::GetCachedSubmission($R['deviation_id'],'fav.me');
 					if (empty($Deviation)){
 						$ImageLink = $view_only ? $postlink : "http://fav.me/{$R['deviation_id']}";
 						$Image = "<div class='image deviation error'><a href='$ImageLink'>Preview unavailable<br><small>Click to view</small></a></div>";

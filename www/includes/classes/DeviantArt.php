@@ -2,9 +2,7 @@
 
 	class DeviantArt {
 		private static
-			$_CACHE_BAILOUT = false,
-			$_MASS_CACHE_LIMIT = 5,
-			$_MASS_CACHE_USED = 0;
+			$_CACHE_BAILOUT = false;
 
 		// oAuth Error Response Messages \\
 		static $OAUTH_RESPONSE = array(
@@ -86,18 +84,17 @@
 		 *
 		 * @param string      $ID
 		 * @param null|string $type
-		 * @param bool        $mass
 		 *
 		 * @return array|null
 		 */
-		static function GetCachedSubmission($ID, $type = 'fav.me', $mass = false){
+		static function GetCachedSubmission($ID, $type = 'fav.me'){
 			global $Database, $FULLSIZE_MATCH_REGEX;
 
 			if ($type === 'sta.sh')
 				$ID = CoreUtils::NomralizeStashID($ID);
 
 			$Deviation = $Database->where('id',$ID)->getOne('deviation_cache');
-			if (!self::$_CACHE_BAILOUT && (empty($Deviation) && self::$_MASS_CACHE_USED <= self::$_MASS_CACHE_LIMIT) || (!empty($Deviation['updated_on']) && strtotime($Deviation['updated_on'])+(ONE_HOUR*5) < time())){
+			if (!self::$_CACHE_BAILOUT || (!empty($Deviation['updated_on']) && strtotime($Deviation['updated_on'])+(ONE_HOUR*5) < time())){
 				try {
 					$json = self::oEmbed($ID, $type);
 				}
@@ -140,7 +137,6 @@
 					$insert['id'] = $ID;
 				}
 
-				self::$_MASS_CACHE_USED++;
 				$Deviation = $insert;
 			}
 			else if (!empty($Deviation['updated_on'])){
