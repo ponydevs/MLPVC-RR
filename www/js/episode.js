@@ -658,8 +658,8 @@ DocReady.push(function Episode(){
 					if (!this.status) return $.Dialog.fail(false, this.message);
 
 					updateSection(type, SEASON, EPISODE);
-				}))
-			});;
+				}));
+			});
 		});
 		$actions.filter('.delete').on('click',function(){
 			var $this = $(this);
@@ -1180,17 +1180,7 @@ DocReady.push(function Episode(){
 			.progress(function(_, image){
 				if (image.isLoaded)
 					$progress.attr('value', ++loaded);
-				else {
-					var src = image.img.src;
-					if (typeof attempts[src] === 'undefined')
-						attempts[src] = 0;
-					if (attempts[src] < 1){
-						attempts[src]++;
-						image.img.src = '';
-						image.img.src = src;
-					}
-					else $progress.attr('max', --total);
-				}
+				else $progress.attr('max', --total);
 			})
 			.always(function(){
 				HighlightHash({type:'load'});
