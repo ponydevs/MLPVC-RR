@@ -888,7 +888,7 @@ DocReady.push(function Episode(){
 						if (typeof postdata.reserved_at === 'string'){
 							var reserved_at = $reserved_at.val();
 							if (reserved_at.length){
-								data.reserved_at = new Date();
+								data.reserved_at = new Date(reserved_at);
 								if (isNaN(data.reserved_at.getTime()))
 									return $.Dialog.fail(false, '"Reserved at" timestamp is invalid');
 								data.reserved_at = data.reserved_at.toISOString();
