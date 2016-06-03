@@ -1173,8 +1173,7 @@ DocReady.push(function Episode(){
 	if (total > 0 && (!showdialog || $(location.hash).length > 0)){
 		if (showdialog)
 			$.Dialog.wait('Scroll post into view','Waiting for page to load');
-		var $progress = $.mk('progress').attr({max:total,value:0}).css({display:'block',width:'100%',marginTop:'5px'}),
-			attempts = {};
+		var $progress = $.mk('progress').attr({max:total,value:0}).css({display:'block',width:'100%',marginTop:'5px'});
 		$('#dialogContent').children('div:not([id])').last().addClass('align-center').append($progress);
 		$content.imagesLoaded()
 			.progress(function(_, image){
@@ -1198,7 +1197,6 @@ DocReady.push(function Episode(){
 							Bind($newli, id, type);
 						}));
 					}
-					else console.log($li, image.img);
 					$progress.attr('max', --total);
 				}
 			})
