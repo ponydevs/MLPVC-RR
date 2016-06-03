@@ -43,6 +43,14 @@
 		$Post = array_merge($Post, $update);
 		CoreUtils::Respond(array('li' => Posts::GetLi($Post, $thing === 'request')));
 	}
+	if (regex_match(new RegExp('^reload-(request|reservation)/(\d+)$'), $data, $_match)){
+		$thing = $_match[1];
+		$Post = $Database->where('id', $_match[2])->getOne("{$thing}s");
+		if (empty($Post))
+			CoreUtils::Respond("The specified $thing does not exist");
+
+		CoreUtils::Respond(array('li' => Posts::GetLi($Post, $thing === 'request', isset($_POST['FROM_PROFILE']))));
+	}
 	else if (regex_match(new RegExp('^((?:un)?(?:finish|lock|reserve)|add|delete)-(request|reservation)s?/(\d+)$'),$data,$_match)){
 		$type = $_match[2];
 		$action = $_match[1];

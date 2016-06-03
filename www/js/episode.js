@@ -1180,7 +1180,27 @@ DocReady.push(function Episode(){
 			.progress(function(_, image){
 				if (image.isLoaded)
 					$progress.attr('value', ++loaded);
-				else $progress.attr('max', --total);
+				else if (image.img.src){
+					var $li = $(image.img).closest('li[id]');
+					if ($li.length === 1){
+						var _idAttr = $li.attr('id').split('-'),
+							type =_idAttr[0],
+							id = _idAttr[1];
+						$.post('/post/reload-'+type+'/'+id,$.mkAjaxHandler(function(){
+							if (!this.status) return;
+
+							var $newli = $(this.li);
+							if ($li.hasClass('highlight'))
+								$newli.addClass('highlight');
+							$li.replaceWith($newli);
+							$newli.rebindFluidbox();
+							window.updateTimes();
+							Bind($newli, id, type);
+						}));
+					}
+					else console.log($li, image.img);
+					$progress.attr('max', --total);
+				}
 			})
 			.always(function(){
 				HighlightHash({type:'load'});
