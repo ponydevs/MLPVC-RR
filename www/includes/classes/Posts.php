@@ -157,12 +157,7 @@
 				if (isset($posted) && $posted !== strtotime($Post['posted']))
 					$array['posted'] = date('c', $posted);
 
-				$finished_at = (new Input('finished_at','timestamp',array(
-					'optional' => true,
-					'errors' => array(
-						Input::$ERROR_INVALID => '"Finished at" timestamp (@value) is invalid',
-					)
-				)))->out();
+				$finished_at = self::ValidateFinishedAt();
 				if (isset($finished_at)){
 					if ($finished_at !== strtotime($Post['finished_at']))
 						$array['finished_at'] = date('c', $finished_at);
@@ -601,6 +596,15 @@ HTML;
 				'optional' => true,
 				'errors' => array(
 					Input::$ERROR_INVALID => '"Reserved at" timestamp (@value) is invalid',
+				)
+			)))->out();
+		}
+
+		static function ValidateFinishedAt(){
+			return (new Input('finished_at','timestamp',array(
+				'optional' => true,
+				'errors' => array(
+					Input::$ERROR_INVALID => '"Finished at" timestamp (@value) is invalid',
 				)
 			)))->out();
 		}

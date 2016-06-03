@@ -559,10 +559,11 @@ DocReady.push(function Episode(){
 					if (typeof deviation !== 'string' || deviation.length === 0)
 						return $.Dialog.fail(false, 'Please enter a deviation URL');
 
+					var request_url = '/post/finish-'+type+'/'+id,
+						sent_data = $form.mkData();
 					$.Dialog.wait(false, 'Marking reservation as finished');
 
-					var request_url = '/post/finish-'+type+'/'+id;
-					$.post(request_url,{deviation:deviation},$.mkAjaxHandler(function(){
+					$.post(request_url,sent_data,$.mkAjaxHandler(function(){
 						var data = this,
 							success = function(){
 								$.Dialog.success(false, 'Reservation has been marked as finished');
@@ -577,8 +578,8 @@ DocReady.push(function Episode(){
 						else if (data.retry){
 							$.Dialog.confirm(false, data.message, ["Continue","Cancel"], function(sure){
 								if (!sure) return;
-
-								$.post(request_url,{deviation:deviation,allow_overwrite_reserver:true}, $.mkAjaxHandler(function(){
+								sent_data.allow_overwrite_reserver = true;
+								$.post(request_url,sent_data,$.mkAjaxHandler(function(){
 									if (!this.status) return $.Dialog.fail(false, this.message);
 
 									data = this;
