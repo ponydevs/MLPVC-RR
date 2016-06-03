@@ -193,7 +193,10 @@
 						CoreUtils::Respond();
 
 					$update = Posts::CheckRequestFinishingImage($Post['reserved_by']);
-					$update['finished_at'] = date('c', Posts::ValidateFinishedAt());
+					$finished_at = Posts::ValidateFinishedAt();
+					if (isset($finished_at))
+						$update['finished_at'] = date('c', $finished_at);
+					else $update['finished_at'] = date('c');
 
 					if (!$Database->where('id', $Post['id'])->update("{$type}s",$update))
 						CoreUtils::Respond(ERR_DB_FAIL);
