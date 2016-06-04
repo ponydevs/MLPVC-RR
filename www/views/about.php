@@ -42,15 +42,9 @@ HTML;
 		</div>
 	</section>
 	<section>
-		<h2>Why does the version number look so&hellip; <em>random</em>?</h2>
+		<h2>What are those characters and numbers in the footer?</h2>
 		<div>
-			<p>This website's complete codebase is <a href="<?=GITHUB_URL?>">available for anyone to see on GitHub</a>. The version number is the first few characters of the latest commit's ID. In this case, a commit is basically an update to the site. Whenever a new update is applied, the version number changes automatically.</p>
+			<p>This website's complete codebase is available for anyone to see on GitHub at <a href="<?=GITHUB_URL?>"><?=GITHUB_URL?></a>. What you're seeing is the version number, which consists of the first few characters of the latest commit's ID. In this case, a commit is simply an update to the site. Whenever a new update is applied, the version number changes automatically.</p>
 		</div>
 	</section>
-<? if (Permission::Sufficient('staff')){ ?>
-	<section>
-		<h2><a href="/users"><span class="typcn typcn-arrow-back"></span>Linked users</a></h2>
-		<p><em>This section has been moved to its own page.</em></p>
-	</section>
-<?  } ?>
 </div>
