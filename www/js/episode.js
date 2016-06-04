@@ -756,7 +756,7 @@ DocReady.push(function Episode(){
 			$.Dialog.confirm('Deleteing request', 'You are about to permanently delete this request.<br>Are you sure about this?', function(sure){
 				if (!sure) return;
 
-				$.Dialog.wait(false, 'Sending deletion request');
+				$.Dialog.wait(false);
 
 				$.post('/post/delete-request/'+id,$.mkAjaxHandler(function(){
 					if (!this.status) return $.Dialog.fail(false, this.message);
@@ -1155,6 +1155,9 @@ DocReady.push(function Episode(){
 			e.preventDefault();
 			var title = Type+' process';
 
+			if (typeof $formImgInput.data('prev-url') === 'undefined')
+				return $.Dialog.fail(title, 'Please click the '+CHECK_BTN+' button before submitting your '+type+'!');
+
 			if (!screwchanges && $formImgInput.data('prev-url') !== $formImgInput.val())
 				return $.Dialog.confirm(
 					title,
@@ -1165,9 +1168,6 @@ DocReady.push(function Episode(){
 						$form.triggerHandler('submit',[true]);
 					}
 				);
-
-			if (typeof $formImgInput.data('prev-url') === 'undefined')
-				return $.Dialog.fail(title, 'Please click the '+CHECK_BTN+' button before submitting your '+type+'!');
 
 			if (!sanityCheck && type === 'request'){
 				var label = $formDescInput.val(),
@@ -1205,6 +1205,8 @@ DocReady.push(function Episode(){
 						});
 					}
 
+					$.Dialog.success(false, Type+' posted');
+
 					var id = this.id;
 					updateSection(type, function(){
 						$.Dialog.close();
@@ -1231,7 +1233,7 @@ DocReady.push(function Episode(){
 				window.location.reload();
 			};
 		if (silent !== true)
-			$.Dialog.wait($.Dialog.isOpen() ? false : Type, 'Updating list', true);
+			$.Dialog.wait($.Dialog.isOpen() ? false : Type, 'Updating list of '+typeWithS, true);
 		$.ajax('/episode/'+typeWithS+'/S'+SEASON+'E'+EPISODE,{
 			method: "POST",
 			success: $.mkAjaxHandler(function(){
