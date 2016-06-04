@@ -288,6 +288,7 @@
 				$dialogButtons.append($button);
 			});
 			_setFocus();
+			$w.trigger('dialog-opened');
 
 			$.callCallback(callback, [$requestContentDiv]);
 		}

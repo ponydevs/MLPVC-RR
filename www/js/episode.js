@@ -568,7 +568,7 @@ DocReady.push(function Episode(){
 							success = function(){
 								$.Dialog.success(false, 'Reservation has been marked as finished');
 
-								updateSection(type, SEASON, EPISODE, function(){
+								updateSection(type, function(){
 									if (typeof data.message === 'string')
 										$.Dialog.success(false, data.message, true);
 									else $.Dialog.close();
@@ -627,7 +627,7 @@ DocReady.push(function Episode(){
 						if (!this.status) return $.Dialog.fail(false, this.message);
 
 						$.Dialog.success(false, typeof this.message !== 'undefined' ? this.message : '"finished" flag removed successfully');
-						updateSection(type, SEASON, EPISODE);
+						updateSection(type);
 					}));
 				});
 			});
@@ -641,7 +641,7 @@ DocReady.push(function Episode(){
 				if (!this.status) return $.Dialog.fail(false, this.message);
 
 				var message = this.message;
-				updateSection(type, SEASON, EPISODE,function(){
+				updateSection(type, function(){
 					$.Dialog.success(false, message, true);
 				});
 			}));
@@ -657,7 +657,7 @@ DocReady.push(function Episode(){
 				$.post('/post/unlock-'+type+'/'+id, $.mkAjaxHandler(function(){
 					if (!this.status) return $.Dialog.fail(false, this.message);
 
-					updateSection(type, SEASON, EPISODE);
+					updateSection(type);
 				}));
 			});
 		});
@@ -807,7 +807,7 @@ DocReady.push(function Episode(){
 
 												$.Dialog.success(false, 'Image has been updated');
 
-												updateSection(type, SEASON, EPISODE);
+												updateSection(type);
 											}));
 										});
 									});
@@ -958,6 +958,7 @@ DocReady.push(function Episode(){
 
 		if ($previewIMG.length === 0) $previewIMG = $(new Image()).appendTo($formImgPreview);
 		$('#'+type+'-btn').on('click',function(){
+			disableLiveUpdate();
 			if (!$form.is(':visible')){
 				$form.show();
 				$formDescInput.focus();
@@ -980,7 +981,7 @@ DocReady.push(function Episode(){
 						if (!this.status) return $.Dialog.fail(false, this.message);
 
 						$.Dialog.success(false, this.message);
-						updateSection(type, SEASON, EPISODE);
+						updateSection(type);
 					}));
 				});
 			});
@@ -1116,7 +1117,7 @@ DocReady.push(function Episode(){
 					}
 
 					var id = this.id;
-					updateSection(type, SEASON, EPISODE, function(){
+					updateSection(type, function(){
 						$.Dialog.close();
 						$('#'+type+'-'+id).find('em.post-date').children('a').triggerHandler('click');
 					});
@@ -1130,10 +1131,11 @@ DocReady.push(function Episode(){
 			$(this).hide();
 		});
 	};
-	function updateSection(type, SEASON, EPISODE, callback){
+	function updateSection(type, callback, silent){
 		var Type = $.capitalize(type),
 			typeWithS = type.replace(/([^s])$/,'$1s');
-		$.Dialog.wait($.Dialog.isOpen() ? false : Type, 'Updating list', true);
+		if (silent !== true)
+			$.Dialog.wait($.Dialog.isOpen() ? false : Type, 'Updating list', true);
 		$.post('/episode/'+typeWithS+'/S'+SEASON+'E'+EPISODE,$.mkAjaxHandler(function(){
 			if (!this.status) return window.location.reload();
 
@@ -1143,10 +1145,96 @@ DocReady.push(function Episode(){
 			$section.find('.post-form').attr('data-type',type).formBind();
 			window.updateTimes();
 			if (typeof callback === 'function') callback();
-			else $.Dialog.close();
+			else if (silent !== true) $.Dialog.close();
 		}));
 	}
 	$('.post-form').each($.fn.formBind);
+
+	var $liveUpd = $('#live-update'),
+		$disablebtn;
+	if ($liveUpd.length){
+		var starttime,
+			seconds = 30,
+			resetTimer = function(){
+				$rlbtn.html('Reload now').enable();
+				if (typeof window._rlinterval !== 'undefined'){
+					clearInterval(window._rlinterval);
+					window._rlinterval = undefined;
+				}
+				if ($disablebtn.hasClass('green'))
+					return;
+				starttime = new Date();
+				$rltimer.text(seconds+'s');
+				window._rlinterval = setInterval(ticker,1000);
+			},
+			$rltimer = $liveUpd.find('.timer'),
+			$rlbtn = $liveUpd.find('button.reload').on('click',function(e){
+				e.preventDefault();
+
+				var goahead = function(closeDialog){
+					$rltimer.html('&hellip;');
+					$rlbtn.disable().html('Reloading&hellip;');
+					var cnt = 0,
+						done = function(){
+							cnt++;
+							if (cnt < 2)
+								return;
+
+							HighlightHash();
+							resetTimer();
+							if (closeDialog)
+								$.Dialog.close();
+						};
+					updateSection('reservation', done, true);
+					updateSection('request', done, true);
+				};
+				if ($('.post-form').filter(':visible').length > 0)
+					$.Dialog.confirm('Reloading posts','You are in the process of posting a request/reservation. Reloading the posts will clear your progress.<br><br>Continue reloading?',function(sure){
+						if (!sure) return;
+
+						$.Dialog.wait(false, 'Updating posts');
+						goahead(true);
+					});
+				else goahead();
+			}),
+			ticker = function(){
+				if (typeof starttime === 'undefined')
+					starttime = new Date();
+				var diff = Math.round((starttime.getTime()-new Date().getTime())/1000)*-1;
+				$rltimer.text((seconds-diff)+'s');
+
+				if (diff >= seconds){
+					clearInterval(window._rlinterval);
+					window._rlinterval = undefined;
+
+					$rlbtn.triggerHandler('click');
+				}
+			};
+		$disablebtn = $liveUpd.find('button.disable').on('click',function(e){
+			e.preventDefault();
+
+			var disabling = $disablebtn.hasClass('red');
+			$disablebtn.toggleHtml(['Enable','Disable']).toggleClass('red green typcn-times typcn-tick');
+
+			if (disabling){
+				clearInterval(window._rlinterval);
+				window._rlinterval = undefined;
+
+				$rltimer.parent().hide().next().show();
+			}
+			else {
+				$rltimer.parent().show().next().hide();
+				resetTimer();
+			}
+		});
+		ticker();
+		window._rlinterval = setInterval(ticker,1000);
+		$w.on('dialog-opened',disableLiveUpdate);
+	}
+	function disableLiveUpdate(){
+		if (typeof $disablebtn !== 'undefined')
+			$disablebtn.filter('.red').triggerHandler('click');
+	}
 
 	function HighlightHash(e){
 		$('.highlight').removeClass('highlight');
@@ -1210,4 +1298,6 @@ DocReady.push(function Episode(){
 	'use strict';
 	$body.removeClass('no-distractions');
 	$('.fluidbox--opened').fluidbox('close');
+	if (typeof window._rlinterval === 'number')
+		clearInterval(window._rlinterval);
 });

@@ -366,26 +366,20 @@
 	};
 
 	$.fn.toggleHtml = function(contentArray){
-		this.html(contentArray[$.rangeLimit(contentArray.indexOf(this.html())+1, true, contentArray.length-1)]);
-
-		return this;
+		return this.html(contentArray[$.rangeLimit(contentArray.indexOf(this.html())+1, true, contentArray.length-1)]);
 	};
 
 	$.fn.moveAttr = function(from, to){
-		this.each(function(){
+		return this.each(function(){
 			var $el = $(this),
 				value = $el.attr(from);
 			if (typeof value !== 'undefined')
 				$el.removeAttr(from).attr(to, value);
 		});
-
-		return this;
 	};
 
 	$.fn.backgroundImageUrl = function(url){
-		this.css('background-image', 'url("'+url.replace(/"/g,'%22')+'")');
-
-		return this;
+		return this.css('background-image', 'url("'+url.replace(/"/g,'%22')+'")');
 	};
 
 	$.attributifyRegex = function(regex){

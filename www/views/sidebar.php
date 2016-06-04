@@ -26,6 +26,19 @@ if (!empty($Database)){ ?>
 		<?=Episode::GetSidebarVoting($CurrentEpisode)?>
 	</section>
 <?php
+		$rluntil = strtotime($CurrentEpisode['airs']) + (Time::$IN_SECONDS['hour']*4);
+		if (Episode::IsLatest($CurrentEpisode) && time() < $rluntil){ ?>
+	<section id="live-update">
+		<h2>Live reload</h2>
+		<p>(hides <?=Time::Tag($rluntil)?>)</p>
+		<p>The episode has just aired, and posts are likely changing faster than usual.</p>
+		<div>
+			<p>The posts will reload in <strong class="timer">&hellip;</strong> to reflect the changes.</p>
+			<p class="hidden">Live reloading is disabled.</p>
+			<button class="blue reload typcn typcn-refresh">Reload now</button> <button class="red disable typcn typcn-times">Disable</button>
+		</div>
+	</section>
+<?php   }
 	}
 	if ($do === 'colorguide' && (!empty($Appearance) || !empty($Ponies))){ ?>
 	<section id="hash-copy">
