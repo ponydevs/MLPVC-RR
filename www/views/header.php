@@ -69,6 +69,7 @@ ga('require','displayfeatures');
 ga('send','pageview');
 </script>
 <?  } ?>
+<script type="text/javascript" src="/js/newrelic.browser.min.js"></script>
 </head>
 <body class="loading">
 
