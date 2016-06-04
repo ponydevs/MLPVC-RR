@@ -30,7 +30,6 @@ if (!empty($Database)){ ?>
 		if (Episode::IsLatest($CurrentEpisode) && time() < $rluntil){ ?>
 	<section id="live-update">
 		<h2>Live reload</h2>
-		<p>(hides <?=Time::Tag($rluntil)?>)</p>
 		<p>The episode has just aired, and posts are likely changing faster than usual.</p>
 		<div>
 			<p>The posts will reload in <strong class="timer">&hellip;</strong> to reflect the changes.</p>

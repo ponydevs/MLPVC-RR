@@ -1164,7 +1164,7 @@ DocReady.push(function Episode(){
 				if ($disablebtn.hasClass('green'))
 					return;
 				starttime = new Date();
-				$rltimer.text(seconds+'s');
+				$rltimer.text(seconds+'s').css('color','');
 				window._rlinterval = setInterval(ticker,1000);
 			},
 			$rltimer = $liveUpd.find('.timer'),
@@ -1172,7 +1172,7 @@ DocReady.push(function Episode(){
 				e.preventDefault();
 
 				var goahead = function(closeDialog){
-					$rltimer.html('&hellip;');
+					$rltimer.html('&hellip;').css('color','');
 					$rlbtn.disable().html('Reloading&hellip;');
 					var cnt = 0,
 						done = function(){
@@ -1200,8 +1200,9 @@ DocReady.push(function Episode(){
 			ticker = function(){
 				if (typeof starttime === 'undefined')
 					starttime = new Date();
-				var diff = Math.round((starttime.getTime()-new Date().getTime())/1000)*-1;
-				$rltimer.text((seconds-diff)+'s');
+				var diff = Math.round((starttime.getTime()-new Date().getTime())/1000)*-1,
+					b = diff > seconds ? 255 : (diff/seconds)*255;
+				$rltimer.text((seconds-diff)+'s').css('color','rgb(255,'+(255-(b/2))+','+(255-b)+')');
 
 				if (diff >= seconds){
 					clearInterval(window._rlinterval);
