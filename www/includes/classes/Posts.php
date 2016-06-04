@@ -184,14 +184,13 @@
 			foreach (Posts::$TYPES as $type){
 				if (!empty($Post['id']))
 					$Database->where('r.id',$Post['id'],'!=');
-				$Database
-					->join('episodes ep','r.season = ep.season && r.episode = ep.episode')
-					->where('r.preview','','!=')
+				$UsedUnder = $Database
+					->join('episodes ep','r.season = ep.season && r.episode = ep.episode','LEFT')
 					->where('r.preview',$Image->preview)
-					->getOne("{$type}s r",'ep.*, r.id');
-				if (!empty($Used)){
-					$EpID = Episode::FormatTitle($Used,AS_ARRAY,'id');
-					CoreUtils::Respond("This exact image has already been used for a $type under <a href='/episode/$EpID#$type-{$Used['id']}' target='_blank'>$EpID</a>");
+					->getOne("{$type}s r",'ep.*, r.id as post_id');
+				if (!empty($UsedUnder)){
+					$EpID = Episode::FormatTitle($UsedUnder,AS_ARRAY,'id');
+					CoreUtils::Respond("This exact image has already been used for a $type under <a href='/episode/$EpID#$type-{$UsedUnder['post_id']}' target='_blank'>$EpID</a>");
 				}
 			}
 
