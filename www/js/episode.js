@@ -6,7 +6,96 @@ DocReady.push(function Episode(){
 		USERNAME_REGEX = window.USERNAME_REGEX,
 		FULLSIZE_MATCH_REGEX = window.FULLSIZE_MATCH_REGEX,
 		EpID = 'S'+SEASON+'E'+EPISODE,
-		$epSection = $content.children('section.episode');
+		$epSection = $content.children('section.episode'),
+		$liveUpd = $('#live-update'),
+		liveUpdatesVisible = $liveUpd.length,
+		$disableLiveUpdbtn,
+		updateBothSections = function(callback, silent){
+			updateSection('reservation', callback, silent, true);
+			updateSection('request', callback, silent, true);
+		},
+		resetLiveUpdTimer;
+
+	if (liveUpdatesVisible){
+		var starttime,
+			seconds = 30,
+			cleartimerinterval = function(){
+				if (typeof window._rlinterval !== 'undefined'){
+					clearInterval(window._rlinterval);
+					window._rlinterval = undefined;
+				}
+			},
+			$rltimer = $liveUpd.find('.timer'),
+			$rlbtn = $liveUpd.find('button.reload').on('click',function(e){
+				e.preventDefault();
+
+				cleartimerinterval();
+
+				var goahead = function(closeDialog){
+					$rltimer.html('&hellip;').css('color','');
+					$rlbtn.disable().html('Reloading&hellip;');
+					var cnt = 0,
+						total = 2,
+						done = function(status){
+							if (status === false)
+								return disableLiveUpdate();
+							cnt++;
+							if (cnt < total)
+								return;
+
+							HighlightHash();
+							resetLiveUpdTimer();
+							if (closeDialog)
+								$.Dialog.close();
+						};
+					updateBothSections(done, true);
+				};
+				if ($('.post-form').filter(':visible').length > 0)
+					$.Dialog.confirm('Reloading posts','You are in the process of posting a request/reservation. Reloading the posts will clear your progress.<br><br>Continue reloading?',function(sure){
+						if (!sure) return;
+
+						$.Dialog.wait(false, 'Updating posts');
+						goahead(true);
+					});
+				else goahead();
+			}),
+			ticker = function(){
+				var diff = Math.round((starttime.getTime()-new Date().getTime())/1000)*-1,
+					b = diff > seconds ? 255 : (diff/seconds)*255;
+				$rltimer.text((seconds-diff)+'s').css('color','rgb(255,'+(255-(b/2))+','+(255-b)+')');
+
+				if (diff >= seconds)
+					$rlbtn.triggerHandler('click');
+			};
+		resetLiveUpdTimer = function(){
+			$rlbtn.html('Reload now').enable();
+			cleartimerinterval();
+			if ($disableLiveUpdbtn.hasClass('green'))
+				return;
+			starttime = new Date();
+			$rltimer.text(seconds+'s').css('color','');
+			window._rlinterval = setInterval(ticker,1000);
+		};
+		$disableLiveUpdbtn = $liveUpd.find('button.disable').on('click',function(e){
+			e.preventDefault();
+
+			var disabling = $disableLiveUpdbtn.hasClass('red');
+			$disableLiveUpdbtn.toggleHtml(['Enable','Disable']).toggleClass('red green typcn-times typcn-tick');
+
+			if (disabling)
+				$rltimer.parent().hide().next().show();
+			else $rltimer.parent().show().next().hide();
+			resetLiveUpdTimer();
+		});
+		starttime = new Date();
+		ticker();
+		window._rlinterval = setInterval(ticker,1000);
+		$w.on('dialog-opened',disableLiveUpdate);
+	}
+	function disableLiveUpdate(){
+		if (typeof $disableLiveUpdbtn !== 'undefined')
+			$disableLiveUpdbtn.filter('.red').triggerHandler('click');
+	}
 
 	$('#video').on('click',function(){
 		$.Dialog.wait('Set video links', 'Requesting links from the server');
@@ -1131,7 +1220,9 @@ DocReady.push(function Episode(){
 			$(this).hide();
 		});
 	};
-	function updateSection(type, callback, silent){
+	function updateSection(type, callback, silent, updatingboth){
+		if (liveUpdatesVisible && !updatingboth)
+			return updateBothSections(callback, silent);
 		var Type = $.capitalize(type),
 			typeWithS = type.replace(/([^s])$/,'$1s'),
 			fail = function(){
@@ -1158,90 +1249,6 @@ DocReady.push(function Episode(){
 		});
 	}
 	$('.post-form').each($.fn.formBind);
-
-	var $liveUpd = $('#live-update'),
-		$disablebtn;
-	if ($liveUpd.length){
-		var starttime,
-			seconds = 30,
-			cleartimerinterval = function(){
-				if (typeof window._rlinterval !== 'undefined'){
-					clearInterval(window._rlinterval);
-					window._rlinterval = undefined;
-				}
-			},
-			resetTimer = function(){
-				$rlbtn.html('Reload now').enable();
-				cleartimerinterval();
-				if ($disablebtn.hasClass('green'))
-					return;
-				starttime = new Date();
-				$rltimer.text(seconds+'s').css('color','');
-				window._rlinterval = setInterval(ticker,1000);
-			},
-			$rltimer = $liveUpd.find('.timer'),
-			$rlbtn = $liveUpd.find('button.reload').on('click',function(e){
-				e.preventDefault();
-
-				cleartimerinterval();
-
-				var goahead = function(closeDialog){
-					$rltimer.html('&hellip;').css('color','');
-					$rlbtn.disable().html('Reloading&hellip;');
-					var cnt = 0,
-						total = 2,
-						done = function(status){
-							if (status === false)
-								return disableLiveUpdate();
-							cnt++;
-							if (cnt < total)
-								return;
-
-							HighlightHash();
-							resetTimer();
-							if (closeDialog)
-								$.Dialog.close();
-						};
-					updateSection('reservation', done, true);
-					updateSection('request', done, true);
-				};
-				if ($('.post-form').filter(':visible').length > 0)
-					$.Dialog.confirm('Reloading posts','You are in the process of posting a request/reservation. Reloading the posts will clear your progress.<br><br>Continue reloading?',function(sure){
-						if (!sure) return;
-
-						$.Dialog.wait(false, 'Updating posts');
-						goahead(true);
-					});
-				else goahead();
-			}),
-			ticker = function(){
-				var diff = Math.round((starttime.getTime()-new Date().getTime())/1000)*-1,
-					b = diff > seconds ? 255 : (diff/seconds)*255;
-				$rltimer.text((seconds-diff)+'s').css('color','rgb(255,'+(255-(b/2))+','+(255-b)+')');
-
-				if (diff >= seconds)
-					$rlbtn.triggerHandler('click');
-			};
-		$disablebtn = $liveUpd.find('button.disable').on('click',function(e){
-			e.preventDefault();
-
-			var disabling = $disablebtn.hasClass('red');
-			$disablebtn.toggleHtml(['Enable','Disable']).toggleClass('red green typcn-times typcn-tick');
-
-			if (disabling)
-				$rltimer.parent().hide().next().show();
-			else $rltimer.parent().show().next().hide();
-			resetTimer();
-		});
-		starttime = new Date();
-		ticker();
-		window._rlinterval = setInterval(ticker,1000);
-		$w.on('dialog-opened',disableLiveUpdate);
-	}
-	function disableLiveUpdate(){
-		if (typeof $disablebtn !== 'undefined')
-			$disablebtn.filter('.red').triggerHandler('click');
-	}
 
 	function HighlightHash(e){
 		$('.highlight').removeClass('highlight');
