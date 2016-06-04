@@ -159,8 +159,9 @@
 		static function CheckStringLength($value, $range, &$code){
 			return $code = self::_numberInRange(strlen($value), $range);
 		}
-		static function CheckNumberRange($value, $range, &$code){
-			return $code = self::_numberInRange($value, $range);
+		static function CheckNumberRange($value, $range, &$code = false){
+			$result = self::_numberInRange($value, $range);
+			return $code === false ? $result === self::$ERROR_RANGE : $result;
 		}
 
 		private static function _numberInRange($n, $range){

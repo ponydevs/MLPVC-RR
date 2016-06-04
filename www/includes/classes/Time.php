@@ -64,25 +64,8 @@
 		 * @return string
 		 */
 		private static function _from($timestamp){
-			$delta = time() - $timestamp;
-			$past = $delta > 0;
-			if (!$past) $delta *= -1;
-
-			foreach (Time::$IN_SECONDS as $unit => $value){
-				if ($delta >= $value){
-					$left = floor($delta / $value);
-					$delta -= ($left * $value);
-					if (!$past && $unit === 'minute')
-						$left++;
-					$str = $left!=1?"$left {$unit}s":($unit=='hour'?'an':'a')." $unit";
-					break;
-				}
-			}
-
-			if (!isset($str)) return 'just now';
-
-			if ($str == '1 day') return $past ? 'yesterday' : 'tomorrow';
-			else return $past ? "$str ago" : "in $str";
+			\Moment\Moment::setLocale('en_US');
+			return (new \Moment\Moment(date('c',$timestamp)))->fromNow()->getRelative();
 		}
 
 		/**

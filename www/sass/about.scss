@@ -46,7 +46,29 @@
 		&.attributions {
 			p { line-height: 1.4 }
 
-			ul {
+			> ul:nth-of-type(1) {
+				padding: 0;
+				list-style: none;
+				margin: 5px 0;
+				display: flex;
+				flex-flow: row wrap;
+
+				> li {
+					margin-right: 15px;
+					flex: 0 1 auto;
+				}
+
+				li:not(:last-child) { padding-bottom: 3px }
+
+				ul {
+					margin: 5px 0 0;
+					padding-left: 25px;
+					list-style: disc;
+
+					li a + em { display: block }
+				}
+			}
+			> ul:nth-of-type(2) {
 				padding: 0;
 				list-style: none;
 				margin: 5px 0;
@@ -62,6 +84,8 @@
 					}
 					&:not(:last-child) { margin-bottom: 3px }
 				}
+
+
 			}
 
 			.ramnode img {
