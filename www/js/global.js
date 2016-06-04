@@ -394,7 +394,16 @@
 	$.fn.enable = function(){ return this.attr('disabled', false) };
 	$.fn.disable = function(){ return this.attr('disabled', true) };
 
-	$.scrollTo = function(pos, speed, callback){ $('html,body').animate({scrollTop:pos},speed,callback) };
+	$.scrollTo = function(pos, speed, callback){
+		var scrollf = function(){return false};
+		$('html,body')
+			.on('mousewheel scroll',scrollf)
+			.animate({scrollTop:pos},speed,callback)
+			.off('mousewheel scroll',scrollf);
+		$w.on('beforeunload',function(){
+			$('html,body').stop().off('mousewheel scroll',scrollf);
+		});
+	};
 
 	window.URL = function(url){
 		var a = document.createElement('a'),
@@ -743,6 +752,7 @@
 						console.groupEnd();
 						console.group('[AJAX-Nav] GET %s', url);
 
+						$w.trigger('beforeunload');
 						_loadCSS(css, function(){
 							$head.children(CSSSelector.replace(/href/g,'data-remove=true')).remove();
 							$main.addClass('pls-wait').html(content);
