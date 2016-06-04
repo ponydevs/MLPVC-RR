@@ -1,5 +1,5 @@
-$UIColor: #fff;
-$UIBackground: darkslategray;
+$UIColor: silver;
+$UIBackground: #333;
 $DebugImgTopLeft: #99f;
 $DebugImgCenter: #f77;
 $DebugWrapCenter: #7f7;
@@ -78,34 +78,41 @@ $DebugWrapCenter: #7f7;
 	}
 
 	$margin: 10px;
+	$btnsize: 24px;
+	$btnpadding: 4px;
 	.poly-actions {
 		position: absolute;
 		z-index: 4;
 		border-radius: 5px;
 		background-color: $UIBackground;
 		color: $UIColor;
-		border: $margin/2 solid $UIColor;
+		border: 3px solid $UIColor;
 		padding: 5px;
 		text-align: center;
 
-		button {
-			cursor: pointer;
-			border: 0;
-
-			&:active { background: rgba(white, .1) }
-		}
-	}
-	.poly-actions-bl {
-		left: $margin/2;
-		bottom: $margin/2;
-
 		> * {
-			padding: 4px;
+			padding: $btnpadding;
 			margin: 0;
 			color: inherit;
 			background-color: transparent;
 			box-sizing: border-box;
 		}
+
+		button {
+			cursor: pointer;
+			border: 0;
+			font-size: $btnsize;
+			line-height: $btnsize;
+			height: $btnsize + ($btnpadding*2);
+			width: $btnsize + ($btnpadding*2);
+
+			&:active { background: rgba(white, .1) }
+		}
+	}
+	.poly-actions-tl {
+		top: $margin/2;
+		left: $margin/2;
+
 		button { display: inline-block }
 		.poly-zoom-perc {
 			display: block;
@@ -115,14 +122,17 @@ $DebugWrapCenter: #7f7;
 				background-color: $UIColor;
 				color: $UIBackground;
 			}
-
-			~ span {
-				cursor: default;
-				display: block;
-				font-size: .8em;
-			}
 		}
+	}
+	.poly-actions-bl {
+		bottom: $margin/2;
+		left: $margin/2;
 
+		span {
+			cursor: default;
+			display: block;
+			font-size: .8em;
+		}
 		.poly-imgtl { color: $DebugImgTopLeft }
 		.poly-imgc { color: $DebugImgCenter }
 		.poly-wrapc { color: $DebugWrapCenter }

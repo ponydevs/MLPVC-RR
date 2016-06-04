@@ -1,5 +1,6 @@
+/* Basic Polygon editor | by @SeinopSys + Trildar & Masem | for gh:ponydevs/MLPVC-RR */
 /* global Key,$w,console */
-(function($){
+(function($, undefined){
 	'use strict';
 	var classStart = 'poly-',
 		$doc = $(document);
@@ -67,12 +68,15 @@
 				wrapoffset.left -= (wrapwidth - $wrap.outerWidth())/2;
 				return wrapoffset;
 			},
-			updateperc = function(top,left,resized){
+			updatezoomlevel = function(){
 				$zoomperc.text($.roundTo(zoomlevel*100,2)+'%');
 				document.activeElement.blur();
 
 				$zoomout[zoomlevel <= 0.1?'disable':'enable']();
 				$zoomin[zoomlevel >= 2.5?'disable':'enable']();
+			},
+			updatepositions = function(top,left,resized){
+				updatezoomlevel();
 
 				if (typeof top !== 'number')
 					return;
@@ -118,7 +122,7 @@
 				});
 				//$svgElement.attr('viewBox','0 0 '+newsize.width+' '+newsize.height);
 
-				updateperc(zoomed.top,zoomed.left,newsize);
+				updatepositions(zoomed.top,zoomed.left,newsize);
 			},
 			$zoomperc = $.mk('span').attr({
 				'class': classStart+'zoom-perc',
@@ -133,10 +137,24 @@
 				if (!isNaN(perc))
 					zoomto(perc/100);
 
-				updateperc();
+				updatepositions();
+			}).on('mousedown', function(e){
+				$zoomperc.data('mousedown', true);
+			}).on('mouseup',function(){
+				$zoomperc.data('mousedown', false);
 			}).on('click',function(){
+				if ($zoomperc.data('focused') !== true){
+					$zoomperc.data('focused', true);
+					$zoomperc.select();
+				}
+			}).on('dblclick',function(e){
+				e.preventDefault();
 				$zoomperc.select();
-			}).on('blur',function(){
+			}).on('blur',function(e){
+				if (!$zoomperc.data('mousedown'))
+					$zoomperc.data('focused', false);
+				if ($zoomperc.html().trim().length === 0)
+					updatezoomlevel();
 				$.clearSelection();
 			}),
 			$zoomfit = $.mk('button').attr('class',classStart+'zoom-fit typcn typcn typcn-arrow-minimise').on('click', function(e){
@@ -170,11 +188,16 @@
 
 				zoomto((Math.floor(zoomlevel*10)-1)/10);
 			}),
-			$actionsBottomLeft = $.mk('div').attr('class',classStart+'actions '+classStart+'actions-bl').append(
+			$actionTopLeft = $.mk('div').attr('class',classStart+'actions '+classStart+'actions-tl').append(
 				$zoomin,
 				$zoomout,
 				$zoomfit,
-				$zoomperc,
+				$zoomperc
+			).on('mousedown',function(e){
+				e.stopPropagation();
+				$zoomperc.triggerHandler('blur');
+			}),
+			$actionsBottomLeft = $.mk('div').attr('class',classStart+'actions '+classStart+'actions-bl').append(
 				$imgtl,
 				$imgc,
 				$wrapc,
@@ -203,7 +226,8 @@
 		$w.on('resize', resizehandler);
 		resizehandler();
 
-		$wrap.append($actionsBottomLeft,$loader,$imgcExpected,$svgWrap);
+		$wrap.append($actionTopLeft,$actionsBottomLeft,$loader,$imgcExpected,$svgWrap);
+
 		$imageElement.on('load', function(){
 			$imageOverlay.css('opacity',0);
 			$imageElement.appendTo($wrap).data('size',{
@@ -237,7 +261,7 @@
 					},
 					imgoffset = $imageElement.offset();
 
-				updateperc(top, left, size);
+				updatepositions(top, left, size);
 			});
 
 			$doc.on('mousedown',function(e){
