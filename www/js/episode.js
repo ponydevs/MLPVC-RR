@@ -1133,20 +1133,29 @@ DocReady.push(function Episode(){
 	};
 	function updateSection(type, callback, silent){
 		var Type = $.capitalize(type),
-			typeWithS = type.replace(/([^s])$/,'$1s');
+			typeWithS = type.replace(/([^s])$/,'$1s'),
+			fail = function(){
+				if (typeof callback === 'function' && silent === true)
+					return callback(false);
+				window.location.reload();
+			};
 		if (silent !== true)
 			$.Dialog.wait($.Dialog.isOpen() ? false : Type, 'Updating list', true);
-		$.post('/episode/'+typeWithS+'/S'+SEASON+'E'+EPISODE,$.mkAjaxHandler(function(){
-			if (!this.status) return window.location.reload();
+		$.ajax('/episode/'+typeWithS+'/S'+SEASON+'E'+EPISODE,{
+			method: "POST",
+			success: $.mkAjaxHandler(function(){
+				if (!this.status) return fail();
 
-			var $section = $('#'+typeWithS),
-				$newChilds = $(this.render).filter('section').children();
-			$section.empty().append($newChilds).rebindHandlers();
-			$section.find('.post-form').attr('data-type',type).formBind();
-			window.updateTimes();
-			if (typeof callback === 'function') callback();
-			else if (silent !== true) $.Dialog.close();
-		}));
+				var $section = $('#'+typeWithS),
+					$newChilds = $(this.render).filter('section').children();
+				$section.empty().append($newChilds).rebindHandlers();
+				$section.find('.post-form').attr('data-type',type).formBind();
+				window.updateTimes();
+				if (typeof callback === 'function') callback();
+				else if (silent !== true) $.Dialog.close();
+			}),
+			error: fail,
+		});
 	}
 	$('.post-form').each($.fn.formBind);
 
@@ -1155,12 +1164,15 @@ DocReady.push(function Episode(){
 	if ($liveUpd.length){
 		var starttime,
 			seconds = 30,
-			resetTimer = function(){
-				$rlbtn.html('Reload now').enable();
+			cleartimerinterval = function(){
 				if (typeof window._rlinterval !== 'undefined'){
 					clearInterval(window._rlinterval);
 					window._rlinterval = undefined;
 				}
+			},
+			resetTimer = function(){
+				$rlbtn.html('Reload now').enable();
+				cleartimerinterval();
 				if ($disablebtn.hasClass('green'))
 					return;
 				starttime = new Date();
@@ -1171,13 +1183,18 @@ DocReady.push(function Episode(){
 			$rlbtn = $liveUpd.find('button.reload').on('click',function(e){
 				e.preventDefault();
 
+				cleartimerinterval();
+
 				var goahead = function(closeDialog){
 					$rltimer.html('&hellip;').css('color','');
 					$rlbtn.disable().html('Reloading&hellip;');
 					var cnt = 0,
-						done = function(){
+						total = 2,
+						done = function(status){
+							if (status === false)
+								return disableLiveUpdate();
 							cnt++;
-							if (cnt < 2)
+							if (cnt < total)
 								return;
 
 							HighlightHash();
@@ -1198,18 +1215,12 @@ DocReady.push(function Episode(){
 				else goahead();
 			}),
 			ticker = function(){
-				if (typeof starttime === 'undefined')
-					starttime = new Date();
 				var diff = Math.round((starttime.getTime()-new Date().getTime())/1000)*-1,
 					b = diff > seconds ? 255 : (diff/seconds)*255;
 				$rltimer.text((seconds-diff)+'s').css('color','rgb(255,'+(255-(b/2))+','+(255-b)+')');
 
-				if (diff >= seconds){
-					clearInterval(window._rlinterval);
-					window._rlinterval = undefined;
-
+				if (diff >= seconds)
 					$rlbtn.triggerHandler('click');
-				}
 			};
 		$disablebtn = $liveUpd.find('button.disable').on('click',function(e){
 			e.preventDefault();
@@ -1217,17 +1228,12 @@ DocReady.push(function Episode(){
 			var disabling = $disablebtn.hasClass('red');
 			$disablebtn.toggleHtml(['Enable','Disable']).toggleClass('red green typcn-times typcn-tick');
 
-			if (disabling){
-				clearInterval(window._rlinterval);
-				window._rlinterval = undefined;
-
+			if (disabling)
 				$rltimer.parent().hide().next().show();
-			}
-			else {
-				$rltimer.parent().show().next().hide();
-				resetTimer();
-			}
+			else $rltimer.parent().show().next().hide();
+			resetTimer();
 		});
+		starttime = new Date();
 		ticker();
 		window._rlinterval = setInterval(ticker,1000);
 		$w.on('dialog-opened',disableLiveUpdate);
