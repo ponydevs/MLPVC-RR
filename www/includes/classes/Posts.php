@@ -448,7 +448,7 @@ HTML;
 			$postlink = "/episode/S{$R['season']}E{$R['episode']}#$ID";
 			$ImageLink = $view_only ? $postlink : $R['fullsize'];
 			$Image = "<div class='image screencap'><a href='$ImageLink'><img src='{$R['preview']}' alt='$alt'></a></div>";
-			$post_label = !empty($R['label']) ? '<span class="label">'.htmlspecialchars($R['label']).'</span>' : '';
+			$post_label = !empty($R['label']) ? '<span class="label'.(strpos($R['label'],'"') !== false?' noquotes':'').'">'.htmlspecialchars($R['label']).'</span>' : '';
 			$permalink = "<a href='#$ID'>".Time::Tag($R['posted']).'</a>';
 
 			$posted_at = '<em class="post-date">';

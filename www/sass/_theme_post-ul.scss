@@ -111,7 +111,9 @@
 			max-width: 266px;
 			margin-bottom: 5px;
 
-			&:before, &:after { content: '"' }
+			&:not(.noquotes){
+				&:before, &:after { content: '"' }
+			}
 		}
 		.reserver, .reserve-request {
 			height: 40px;
