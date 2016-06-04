@@ -10,7 +10,6 @@
 			$CSRF = !isset($_POST[self::$_cookieKey]) || !Cookie::exists(self::$_cookieKey) || $_POST[self::$_cookieKey] !== Cookie::get(self::$_cookieKey);
 			if (!POST_REQUEST && $CSRF)
 				Cookie::set(self::$_cookieKey,md5(time()+rand()), Cookie::$session);
-			define('CSRF_TOKEN',Cookie::get(self::$_cookieKey));
 		}
 
 		/**

@@ -49,6 +49,7 @@
 	define('CURRENT',true); // render_session_li()
 	define('RETURN_ARRANGED', true); // Posts::GetRequestsSection & Posts::GetReservationsSection
 	define('IS_REQUEST', true); // Posts::GetRequestsSection
+	define('WITH_GIT_INFO', true);
 
 	// Color Guide constants \\
 	define('DEFAULT_SPRITE', '/img/blank-pixel.png'); // \CG\Appearances::GetSpriteURL

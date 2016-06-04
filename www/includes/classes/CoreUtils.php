@@ -306,7 +306,7 @@
 					'title' => (isset($GLOBALS['title'])?$GLOBALS['title'].' - ':'').SITE_TITLE,
 					'content' => self::_clearIndentation($content),
 					'sidebar' => self::_clearIndentation($sidebar),
-					'footer' => CoreUtils::GetFooter(),
+					'footer' => CoreUtils::GetFooter(WITH_GIT_INFO),
 					'avatar' => $GLOBALS['signedIn'] ? $GLOBALS['currentUser']['avatar_url'] : GUEST_AVATAR,
 					'responseURL' => $_SERVER['REQUEST_URI'],
 				));
@@ -577,24 +577,37 @@
 
 		/**
 		 * Returns text HTML of the website's footer
+         *
+		 * @param bool $with_git_info
 		 *
 		 * @return string
 		 */
-		static function GetFooter(){
-			$commit_id = rtrim(shell_exec('git rev-parse --short=4 HEAD'));
-			if (!empty($commit_id)){
-				$commit_time = Time::Tag(date('c',strtotime(shell_exec('git log -1 --date=short --pretty=format:%ci'))));
-				$commit_info = "@<a href='".GITHUB_URL."/commit/$commit_id' title='See exactly what was changed and why'>$commit_id</a></strong> created $commit_time";
-			}
-			else $commit_info = "</strong> (version information unavailable)";
-
-			if (Permission::Sufficient('developer')){
+		static function GetFooter($with_git_info = false){
+			if (Permission::Insufficient('developer'))
+				$append = '';
+			else {
 				global $Database, $CGDb;
 				$append = ' | Render: '.number_format(microtime(true)-EXEC_START_MICRO, 4).'s | SQL Queries: '.($Database->query_count+($CGDb->query_count??0));
 			}
-			else $append = '';
 
-			return "Running <strong><a href='".GITHUB_URL."' title='Visit the GitHub repository'>MLPVC-RR</a>$commit_info | <a class='issues' href='".GITHUB_URL."/issues' target='_blank'>Known issues</a> | <a href='#feedback' class='send-feedback'>Send feedback</a>$append";
+			return ($with_git_info?self::GetFooterGitInfo():'')."<a class='issues' href='".GITHUB_URL."/issues' target='_blank'>Known issues</a> | <a href='#feedback' class='send-feedback'>Send feedback</a>$append";
+		}
+
+		/**
+		 * Returns the HTML of the GIT informaiiton in the website's footer
+		 *
+		 * @return string
+		 */
+		static function GetFooterGitInfo(){
+			$commit_info = "Running <strong><a href='".GITHUB_URL."' title='Visit the GitHub repository'>MLPVC-RR</a>";
+			$commit_id = rtrim(shell_exec('git rev-parse --short=4 HEAD'));
+			if (!empty($commit_id)){
+				$commit_time = Time::Tag(date('c',strtotime(shell_exec('git log -1 --date=short --pretty=format:%ci'))));
+				$commit_info .= "@<a href='".GITHUB_URL."/commit/$commit_id' title='See exactly what was changed and why'>$commit_id</a></strong> created $commit_time";
+			}
+			else $commit_info .= "</strong> (version information unavailable)";
+			$commit_info .= ' | ';
+			return $commit_info;
 		}
 
 		/**

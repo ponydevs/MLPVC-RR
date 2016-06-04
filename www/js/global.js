@@ -815,6 +815,12 @@ $(function(){
 	console.log('[HTTP-Nav] > $(document).ready()');
 	console.group('[HTTP-Nav] GET '+window.location.pathname+window.location.search+window.location.hash);
 
+	// Load footer
+	$.get('/footer-git',$.mkAjaxHandler(function(){
+		if (this.footer)
+			$footer.prepend(this.footer);
+	}));
+
 	// Sidebar toggle handler
 	(function(){
 		var triggerResize = function(){
