@@ -135,7 +135,6 @@
 		.reserver {
 			display: inline-block;
 			margin-top: 5px;
-			overflow: hidden;
 			font-size: 0;
 			position: relative;
 			text-align: left;
@@ -145,6 +144,8 @@
 				position: relative;
 				z-index: 2;
 				min-width: 125px;
+				overflow: hidden;
+				box-sizing: border-box;
 
 				> * {
 					margin-right: 5px;
