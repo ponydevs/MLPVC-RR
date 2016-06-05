@@ -65,7 +65,7 @@ DocReady.push(function Colorguide(){
 				$SearchForm.find('input[name="q"]').val(query);
 				$SearchForm.triggerHandler('submit');
 			}
-			else $.Navigation.visit('/colorguide'+(EQG?'/eqg':'')+'/1?q='+query.replace(/ /g,'+'));
+			else $.Navigation.visit('/cg'+(EQG?'/eqg':'')+'/1?q='+query.replace(/ /g,'+'));
 		});
 		$('ul.colors').children('li').find('.valid-color').each(function(){
 			var $this = $(this),

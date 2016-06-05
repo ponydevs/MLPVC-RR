@@ -456,10 +456,11 @@ HTML;
 				$isRequester = $R['requested_by'] === $currentUser['id'];
 				$isReserver = $R['reserved_by'] === $currentUser['id'];
 
-				if (!$finished && !empty($R['reserved_by']) && !$isReserver && Permission::Sufficient('member') && self::IsOverdue($R)){
-					if (Permission::Sufficient('staff'))
+				if (!$finished && !empty($R['reserved_by']) && Permission::Sufficient('member') && self::IsOverdue($R)){
+					if (Permission::Sufficient('staff') || $isReserver)
 						$overdue = true;
-					else $R['reserved_by'] = null;
+					else if (!$isReserver)
+						$R['reserved_by'] = null;
 				}
 
 				$posted_at .= "Requested $permalink";
@@ -499,7 +500,7 @@ HTML;
 			else $Image .= $post_label.$posted_at;
 
 			if (!empty($overdue))
-				$Image .= "<strong class='color-blue contest-note' title='This request was reserved more than 3 weeks ago and appears available to other members'><span class='typcn typcn-info-large'></span> Can be contested</strong>";
+				$Image .= "<strong class='color-blue contest-note' title=\"Because this request was reserved more than 3 weeks ago it's now available for other members to reserve\"><span class='typcn typcn-info-large'></span> Can be contested</strong>";
 
 			return "<li id='$ID'>$Image".self::_getPostActions($R['reserver'], $R, $isRequest, $view_only ? $postlink : false).'</li>';
 		}
