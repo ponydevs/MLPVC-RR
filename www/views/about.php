@@ -14,7 +14,7 @@
 		$pgver = $Database->rawQuerySingle('SHOW server_version')['server_version'];
 		echo <<<HTML
 <p class="ramnode"><a href="https://clientarea.ramnode.com/aff.php?aff=2648"><img src="https://www.ramnode.com/images/banners/affbannerlightnewlogoblack.png" alt="high performance ssd vps"></a></p>
-<p style="font-size:.9em"><strong>VPS:</strong> OpenVZ SSD, 256MB RAM, 25GB storage, 1000GB bandwidth, <span class="typcn typcn-location"></span> Netherlands<br>
+<p style="font-size:.9em"><strong>VPS:</strong> OpenVZ SSD, 256MB RAM, 25GB storage, 1000GB bandwidth, <span class="typcn typcn-location"></span> New York City<br>
 <strong>Server Software:</strong> $osver, PHP $phpver, $server, PostgreSQL $pgver<br>
 <strong>Fun fact:</strong> The server costs less than $4 per month to run ($8/quarter + VAT).</p>
 </section>
