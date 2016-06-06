@@ -18,6 +18,8 @@
 .algolia-autocomplete {
 	.aa-dataset-tags {
 		background: #fff;
+
+		.tag { white-space: nowrap !important }
 	}
 	.tag.synonym > .uses .typcn { margin-right: 4px }
 	input { font-weight: normal !important }
