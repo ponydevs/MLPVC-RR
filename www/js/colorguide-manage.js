@@ -739,7 +739,10 @@ DocReady.push(function ColorguideManage(){
 								else $affected.removeAttr('title');
 								$affected.text(data.name).data('ctxmenu-items').eq(0).text('Tag: '+data.name);
 								$affected.each(function(){
-									this.className = this.className.replace(/typ-[a-z]+/, data.type ? 'typ-'+data.type : '');
+									if (/typ-[a-z]+/.test(this.className))
+										this.className = this.className.replace(/typ-[a-z]+/, data.type ? 'typ-'+data.type : '');
+									else if (data.type)
+										this.className += ' typ-'+data.type;
 									$(this)[data.synonym_of?'addClass':'removeClass']('synonym').parent().reorderTags();
 								});
 								window.tooltips();
