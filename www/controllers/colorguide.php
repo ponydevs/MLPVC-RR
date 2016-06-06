@@ -527,7 +527,7 @@
 				}
 
 				\CG\Tags::UpdateUses($Target['tid']);
-				CoreUtils::Respond('Tags successfully '.($merging?'merged':'synonymized'), 1, $synoning ? array('target' => $Target) : null);
+				CoreUtils::Respond('Tags successfully '.($merging?'merged':'synonymized'), 1, $synoning || $merging ? array('target' => $Target) : null);
 			}
 			else if ($unsynoning){
 				if (empty($Tag['synonym_of']))

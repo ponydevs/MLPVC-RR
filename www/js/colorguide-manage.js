@@ -241,14 +241,14 @@ DocReady.push(function ColorguideManage(){
 
 			$.Dialog.close(function(){
 				window.CGTagEditing(tagName, tagID, action, function(action){
-					var $affected = $('.tag.id-'+tagID);
+					var $affected = $('.tag.id-'+tagID), target;
 
 					if ($affected.length)
 						switch (action){
 							case "synon":
+								target = this.target;
 								$affected.addClass('synonym');
-								var target = this.target,
-									$ssp =  $affected.eq(0).clone().removeClass('ctxmenu-bound'),
+								var $ssp =  $affected.eq(0).clone().removeClass('ctxmenu-bound'),
 									$tsp = $makeTagSpan(target);
 
 								var $tagsDivs = $affected.add($('.tag.id-'+target.tid)).closest('.tags');
@@ -267,7 +267,15 @@ DocReady.push(function ColorguideManage(){
 								else $affected.remove();
 							break;
 							case "merge":
-								$affected.replaceWith($makeTagSpan(this));
+								target = this.target;
+								$affected.each(function(){
+									var $this = $(this);
+									if ($this.siblings('.id-'+target.tid).length === 0)
+										$this.replaceWith($makeTagSpan(target));
+									else $this.remove();
+								});
+								window.tooltips();
+								ctxmenus();
 							break;
 						}
 
