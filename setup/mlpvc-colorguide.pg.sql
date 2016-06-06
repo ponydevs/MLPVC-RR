@@ -389,9 +389,9 @@ Toupee #2 is from end of "Slice of Life" onward.', NULL, false, '2016-05-21 16:5
 (150, 122, 'Filthy Rich', '', NULL, false, '2016-05-31 05:48:54.084244+02', NULL, NULL),
 (151, 85, 'Zephyr Breeze', 'Has pointed ear tips', 'da570dh', false, '2016-06-05 14:47:27.675071+02', NULL, false),
 (152, 86, 'Mr. Shy', '', NULL, false, '2016-06-05 16:48:12.164299+02', NULL, NULL),
-(153, 87, 'Mrs. Shy', '', NULL, false, '2016-06-05 17:04:47.155208+02', NULL, NULL),
+(153, 87, 'Mrs. Shy', 'There are no extra transparency colors for the glasses lens.', NULL, false, '2016-06-05 17:04:47.155208+02', NULL, NULL),
 (154, 134, 'Twilight''s Crown', 'For S4 onward', NULL, false, '2016-06-05 18:51:20.155674+02', NULL, NULL),
-(155, 123, 'Link', '', NULL, false, '2016-06-05 23:38:41.547672+02', NULL, NULL);
+(155, 123, 'Quarter Hearts', 'aka "Link" pony', NULL, false, '2016-06-05 23:38:41.547672+02', NULL, NULL);
 
 
 --
@@ -5005,7 +5005,7 @@ INSERT INTO tagged VALUES
 (310, 153),
 (311, 154),
 (312, 154),
-(313, 155);
+(314, 155);
 
 
 --
@@ -5311,14 +5311,15 @@ INSERT INTO tags VALUES
 (310, 'mrs. shy', NULL, 'char', 1, NULL),
 (311, 'twilight''s crown', NULL, 'app', 1, NULL),
 (312, 's5e10', NULL, 'ep', 1, NULL),
-(313, 'link', NULL, 'char', 1, NULL);
+(313, 'link', NULL, 'char', 0, 314),
+(314, 'quarter hearts', NULL, 'char', 1, NULL);
 
 
 --
 -- Name: tags_tid_seq; Type: SEQUENCE SET; Schema: public; Owner: mlpvc-rr
 --
 
-SELECT pg_catalog.setval('tags_tid_seq', 313, true);
+SELECT pg_catalog.setval('tags_tid_seq', 314, true);
 
 
 --

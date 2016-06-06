@@ -13843,7 +13843,7 @@
 			"id": 153,
 			"order": 87,
 			"label": "Mrs. Shy",
-			"notes": "",
+			"notes": "There are no extra transparency colors for the glasses lens.",
 			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-06-05 17:04:47.155208+02",
@@ -20332,8 +20332,8 @@
 		"155": {
 			"id": 155,
 			"order": 123,
-			"label": "Link",
-			"notes": "",
+			"label": "Quarter Hearts",
+			"notes": "aka \"Link\" pony",
 			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-06-05 23:38:41.547672+02",
@@ -20434,7 +20434,8 @@
 				8,
 				11,
 				271,
-				313
+				313,
+				314
 			]
 		},
 		"64": {
@@ -26154,6 +26155,14 @@
 		"313": {
 			"tid": 313,
 			"name": "link",
+			"title": null,
+			"type": "char",
+			"uses": 0,
+			"synonym_of": 314
+		},
+		"314": {
+			"tid": 314,
+			"name": "quarter hearts",
 			"title": null,
 			"type": "char",
 			"uses": 1,
