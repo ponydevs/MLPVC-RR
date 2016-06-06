@@ -11,6 +11,7 @@
 			'gen' => 'Gender',
 			'spec' => 'Species',
 			'char' => 'Character',
+			'feat' => 'Feature',
 		);
 
 		/**

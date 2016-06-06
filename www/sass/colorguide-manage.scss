@@ -1,7 +1,6 @@
 @import "vars";
 @import "colorguide_vars";
 
-.tag.synonym { font-weight: normal !important }
 .tag > .uses {
 	font-weight: normal;
 	font-size: .9em;
@@ -10,7 +9,12 @@
 .tag.monospace > .uses {
 	font-family: $monospace;
 }
-.tag.synonym { opacity: .8 }
+.tag.synonym {
+	font-weight: normal !important;
+	opacity: .8;
+	letter-spacing: -.8px;
+	font-size: .9em;
+}
 .algolia-autocomplete {
 	.aa-dataset-tags {
 		background: #fff;

@@ -97,6 +97,10 @@
 				@include tag-style($TCharacter);
 				@include tag-button-style($TCharacter);
 			}
+			&.typ-feat {
+				@include tag-style($TFeature);
+				@include tag-button-style($TFeature);
+			}
 
 			&:last-child td { border-bottom: 0 }
 		}
