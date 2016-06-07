@@ -14,9 +14,6 @@
 	if ($getting)
 		CoreUtils::Respond(array('value' => $currvalue));
 
-	if (!isset($_POST['value']))
-		CoreUtils::Respond('Missing setting value');
-
 	try {
 		$newvalue = UserPrefs::Process($key);
 	}

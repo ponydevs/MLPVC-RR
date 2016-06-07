@@ -193,6 +193,7 @@
 			if (count($tokens) > 6)
 				throw new Exception('You may only search for up to 6 tags/labels');
 			$SearchTagIDs = array();
+			$OriginalTagIDs = array();
 			$SearchLabelLIKEs = array();
 
 			foreach ($tokens as $token){
@@ -205,7 +206,10 @@
 					$Tag = \CG\Tags::GetActual($token, 'name');
 					if (empty($Tag))
 						throw new Exception('Tag (<code>'.htmlspecialchars($token).'</code>) does not exist');
-
+					
+					if (!empty($Tag['Original']))
+						$OriginalTagIDs[] = $Tag['Original']['tid']; 
+					
 					$SearchTagIDs[] = $Tag['tid'];
 				}
 				// Search for a lebel
@@ -222,6 +226,7 @@
 			}
 
 			return array(
+				'orig_tid' => $OriginalTagIDs,
 				'tid' => $SearchTagIDs,
 				'label' => $SearchLabelLIKEs,
 			);

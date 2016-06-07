@@ -137,7 +137,7 @@ DocReady.push(function User(){
 		}));
 	});
 
-	$('#settings').find('form').on('submit',function(e){
+	var $slbl = $('#settings').find('form').on('submit',function(e){
 		e.preventDefault();
 
 		var $form = $(this),
@@ -149,14 +149,26 @@ DocReady.push(function User(){
 
 		$.post(endpoint,data,$.mkAjaxHandler(function(){
 			if (!this.status) return $.Dialog.fail(false, this.message);
-
-			$input.val(this.value).data('orig', this.value).triggerHandler('change');
+			
+			if ($input.is('[type=number]'))
+				$input.val(this.value);
+			else if ($input.is('[type=checkbox]'))
+				$input.prop('checked', this.value);
+			$input.data('orig', this.value).triggerHandler('change');
 			$.Dialog.close();
 		}));
-	}).children('label').children('input,textarea,select').each(function(){
+	}).children('label');
+	$slbl.children('input[type=number]').each(function(){
 		(function($el){
 			$el.data('orig', $el.val()).on('keydown keyup change',function(){
 				$el.siblings('.save').attr('disabled', $el.val().trim() === $el.data('orig'));
+			});
+		})($(this));
+	});
+	$slbl.children('input[type=checkbox]').each(function(){
+		(function($el){
+			$el.data('orig', $el.prop('checked')).on('keydown keyup change',function(){
+				$el.siblings('.save').attr('disabled', $el.prop('checked') === $el.data('orig'));
 			});
 		})($(this));
 	});

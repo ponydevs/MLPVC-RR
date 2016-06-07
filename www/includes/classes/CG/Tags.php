@@ -68,7 +68,9 @@
 
 			if (!empty($Tag['synonym_of'])){
 				$arg2 = $as_bool === RETURN_AS_BOOL ? 'tid' : $arg1[1];
+				$OrigTag = $Tag;
 				$Tag = self::GetSynonymOf($Tag, $arg2);
+				$Tag['Original'] = $OrigTag;
 			}
 
 			return $as_bool === RETURN_AS_BOOL ? !empty($Tag) : $Tag;

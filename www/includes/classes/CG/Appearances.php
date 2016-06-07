@@ -111,10 +111,15 @@
 			$HTML = '';
 			if (\Permission::Sufficient('staff') && $PonyID !== 0)
 				$HTML .= "<input type='text' class='addtag tag' placeholder='Enter tag' pattern='".TAG_NAME_PATTERN."' maxlength='30' required>";
+			$HideSynon = \Permission::Sufficient('staff') && \UserPrefs::Get('cg_hidesynon');
 			if (!empty($Tags)) foreach ($Tags as $i => $t){
-				$class = " class='tag id-{$t['tid']}".(!empty($t['synonym_of'])?' synonym':'').(!empty($t['type'])?' typ-'.$t['type']:'')."'";
+				$isSynon = !empty($t['synonym_of']);
+				$searchedFor = !empty($Search) && in_array($t['tid'],$Search['orig_tid']);
+				if ($isSynon && $HideSynon && !$searchedFor)
+					continue;
+				$class = " class='tag id-{$t['tid']}".($isSynon?' synonym':'').(!empty($t['type'])?' typ-'.$t['type']:'')."'";
 				$title = !empty($t['title']) ? " title='".\CoreUtils::AposEncode($t['title'])."'" : '';
-				if (!empty($Search['tid_assoc'][$t['tid']]))
+				if ($searchedFor || (\Permission::Insufficient('staff') && !empty($Search['tid_assoc'][$t['tid']])))
 					$t['name'] = "<mark>{$t['name']}</mark>";
 				$HTML .= "<span$class$title>{$t['name']}</span>";
 			}

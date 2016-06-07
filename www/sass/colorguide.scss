@@ -299,11 +299,13 @@ div.tags {
 	&.typ-app { @include tag-style($TAppearance, '\e07e') }
 	&.typ-ep { @include tag-style($TEpisode, '\e131') }
 	&.typ-char { @include tag-style($TCharacter, '\e12c') }
+	&.synonym {
+		font-weight: normal !important;
+		opacity: .8;
+		letter-spacing: -.8px;
+		font-size: .9em;
 
-	.tt-dataset & {
-		display: block;
-		margin: 0;
-		white-space: nowrap;
+		> .uses .typcn { margin-right: 4px }
 	}
 }
 

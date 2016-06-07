@@ -5,6 +5,7 @@
 			$_db = 'user_prefs',
 			$_defaults = array(
 				'cg_itemsperpage' => 7,
+				'cg_hidesynon' => 0,
 			);
 
 		/**
@@ -63,7 +64,7 @@
 		 * @return mixed
 		 */
 		static function Process($key){
-			$value = CoreUtils::Trim($_POST['value']);
+			$value = isset($_POST['value']) ? CoreUtils::Trim($_POST['value']) : null;
 
 			if ($value === '')
 				return null;
@@ -76,6 +77,9 @@
 					$value = intval($value, 10);
 					if ($value < 7 || $value > 20)
 						throw new Exception("$thing must be between 7 and 20");
+				break;
+				case "cg_hidesynon":
+					$value = (bool) $value;
 				break;
 			}
 

@@ -128,6 +128,17 @@ HTML;
 <?php       } ?>
 				</label>
 			</form>
+<?php       if (Permission::Sufficient('staff', $User['role'])){ ?>
+			<form action="/preference/set/cg_hidesynon">
+				<label>
+					<input type="checkbox" name="value" value="1"<?=UserPrefs::Get('cg_hidesynon')?' checked':''?> <?=!$sameUser?' disabled':''?>>
+					<span>Hide synonym relations</span>
+<?php           if ($sameUser){ ?>
+					<button class="save typcn typcn-tick green" disabled>Save</button>
+<?php           } ?>
+				</label>
+			</form>
+<?php       } ?>
 		</section>
 		<section class="sessions">
 			<h2><?=$sameUser?User::$PROFILE_SECTION_PRIVACY_LEVEL['staff']:''?>Sessions</h2>

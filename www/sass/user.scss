@@ -86,6 +86,9 @@
 			font-weight: bold;
 			display: block;
 		}
+		form label input[type=checkbox] {
+			vertical-align: middle;
+		}
 		.sessions {
 			.session-list {
 				list-style: none;

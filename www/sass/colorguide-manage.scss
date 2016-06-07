@@ -9,19 +9,16 @@
 .tag.monospace > .uses {
 	font-family: $monospace;
 }
-.tag.synonym {
-	font-weight: normal !important;
-	opacity: .8;
-	letter-spacing: -.8px;
-	font-size: .9em;
-}
 .algolia-autocomplete {
 	.aa-dataset-tags {
 		background: #fff;
 
-		.tag { white-space: nowrap !important }
+		.tag {
+			display: block;
+			margin: 0;
+			white-space: nowrap !important;
+		}
 	}
-	.tag.synonym > .uses .typcn { margin-right: 4px }
 	input { font-weight: normal !important }
 	.aa-suggestion .tag {
 		margin: 0 !important;
