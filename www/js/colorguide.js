@@ -29,8 +29,7 @@ DocReady.push(function Colorguide(){
 	var $SearchForm = $('#search-form');
 
 	function tooltips(){
-		var isGuest = false,
-			$tags = $('.tags').children('span.tag');
+		var $tags = $('.tags').children('span.tag');
 		$tags.each(function(){
 			var $this = $(this),
 				text = 'Click to quick search',
