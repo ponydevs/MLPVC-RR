@@ -487,7 +487,7 @@ GPL;
 			foreach ($CGs as $cg){
 				foreach ($Colors[$cg['groupid']] as $c){
 					$rgb = CoreUtils::Hex2Rgb($c['hex']);
-					$File .= CoreUtils::Pad($rgb[0],3,' ').' '.CoreUtils::Pad($rgb[1],3,' ').' '.CoreUtils::Pad($rgb[2],3,' ').' '.ltrim($c['hex'],'#').PHP_EOL;
+					$File .= CoreUtils::Pad($rgb[0],3,' ').' '.CoreUtils::Pad($rgb[1],3,' ').' '.CoreUtils::Pad($rgb[2],3,' ').' '.$cg['label'].' | '.$c['label'].PHP_EOL;
 				}
 			}
 

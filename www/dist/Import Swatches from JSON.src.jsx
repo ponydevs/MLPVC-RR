@@ -14,7 +14,7 @@ swimg = "\u0089PNG\r\n\x1A\n\x00\x00\x00\rIHDR\x00\x00\x00\u0088\x00\x00\x006\b\
 // <SETUP>
 var madeNewDoc = app.documents.length === 0,
 	_Document = !madeNewDoc ? app.activeDocument : app.documents.add(DocumentColorSpace.RGB),
-	title = 'Import swatches from JSON (by MLP-VectorClub, version 1.0)';
+	title = 'Import swatches from JSON (by MLP-VectorClub, version 1.1)';
 function _RGBColor(r,g,b){
 	var newRGBColor = new RGBColor();
 	newRGBColor.red = r;
@@ -125,7 +125,7 @@ browsebtn.onClick = function(){
 
 						CG.addSwatch(
 							new _Swatch(
-								cgname+' '+colorname,
+								cgname+' | '+colorname,
 								parseInt(color.substring(1, 3), 16),
 								parseInt(color.substring(3, 5), 16),
 								parseInt(color.substring(5, 7), 16)
