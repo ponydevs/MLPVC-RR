@@ -17,13 +17,14 @@ var _sep = '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~',
 	toRun = process.argv.slice(2).slice(-1)[0] || 'default'; // Works only if task name is the last param
 console.writeLine('Gulp process awoken to run "'+toRun+'". It still appears to be tired.');
 var require_list = ['gulp'];
-if (['js','sass','md','default'].indexOf(toRun) !== -1){
+if (['js','dist-js','sass','md','default'].indexOf(toRun) !== -1){
 	require_list.push.apply(require_list, [
-		'gulp-sourcemaps',
 		'gulp-rename',
 		'gulp-plumber',
-		'gulp-util',
 	]);
+
+	if (toRun !== 'dist-js')
+		require_list.push('gulp-sourcemaps');
 
 	if (toRun === 'css' || toRun === 'default')
 		require_list.push.apply(require_list, [
@@ -31,7 +32,7 @@ if (['js','sass','md','default'].indexOf(toRun) !== -1){
 			'gulp-autoprefixer',
 			'gulp-minify-css',
 		]);
-	if (toRun === 'js' || toRun === 'default')
+	if (toRun === 'js' || toRun === 'dist-js' || toRun === 'default')
 		require_list.push.apply(require_list, [
 			'gulp-uglify',
 		]);
@@ -104,35 +105,55 @@ gulp.task('sass', function() {
 });
 
 var Dashie = new Personality(
-	'js',
-	[
-		'OH COME ON!',
-		'Not this again!',
-		'Why does it have to be me?',
-		"This isn't fun at all",
-		"...seriously?",
-	]
-);
+		'js',
+		[
+			'OH COME ON!',
+			'Not this again!',
+			'Why does it have to be me?',
+			"This isn't fun at all",
+			"...seriously?",
+		]
+	),
+	procjs = function(pipe,suffix,noSourcemaps){
+		var renamef = suffix
+			? function(path){ path.basename += suffix }
+			: function(path){ path.basename = path.basename.replace(/\.[^.]+$/i,'') };
+		pipe =  pipe
+			.pipe(plumber(function(err){
+				err =
+					err.fileName
+					? err.fileName.replace(workingDir,'')+'\n  line '+err.lineNumber+': '+err.message.replace(/^[\/\\]/,'').replace(err.fileName+': ','')
+					: err;
+				Dashie.error(err);
+				this.emit('end');
+			}));
+		if (!noSourcemaps)
+			pipe = pipe.pipe(sourcemaps.init());
+		pipe = pipe
+				.pipe(uglify({
+					preserveComments: function(_, comment){ return /^!/m.test(comment.value) },
+					output: { ascii_only: noSourcemaps },
+				}))
+				.pipe(rename(renamef));
+		if (!noSourcemaps)
+			pipe = pipe.pipe(sourcemaps.write('.', {
+				includeContent: false,
+				sourceRoot: '/js',
+			}));
+		return pipe;
+	};
 gulp.task('js', function(){
-	gulp.src(['www/js/*.js', '!www/js/*.min.js'])
-		.pipe(plumber(function(err){
-			err =
-				err.fileName
-				? err.fileName.replace(workingDir,'')+'\n  line '+err.lineNumber+': '+err.message.replace(/^[\/\\]/,'').replace(err.fileName+': ','')
-				: err;
-			Dashie.error(err);
-			this.emit('end');
-		}))
-		.pipe(sourcemaps.init())
-			.pipe(uglify({
-				preserveComments: function(_, comment){ return /^!/m.test(comment.value) },
-			}))
-			.pipe(rename({suffix: '.min' }))
-		.pipe(sourcemaps.write('.', {
-			includeContent: false,
-			sourceRoot: '/js',
-		}))
-		.pipe(gulp.dest('www/js'));
+	procjs(
+		gulp.src(['www/js/*.js', '!www/js/*.min.js']),
+		'.min'
+	).pipe(gulp.dest('www/js'));
+});
+gulp.task('dist-js', function(){
+	procjs(
+		gulp.src(['www/dist/*.src.jsx']),
+		'',
+		true
+	).pipe(gulp.dest('www/dist'));
 });
 
 var AJ = new Personality(
@@ -243,8 +264,9 @@ gulp.task('pgsort', function(){
 	}
 });
 
-gulp.task('default', ['js', 'sass', 'md'], function(){
+gulp.task('default', ['js', 'dist-js', 'sass', 'md'], function(){
 	gulp.watch(['www/js/*.js', '!www/js/*.min.js'], {debounceDelay: 2000}, ['js']);
+	gulp.watch(['www/dist/*.src.jss'], {debounceDelay: 2000}, ['dist-js']);
 	Dashie.log("I got my eyes on you, JavaScript files!");
 	gulp.watch('www/sass/*.scss', {debounceDelay: 2000}, ['sass']);
 	Flutters.log("SCSS files, do you mind if I, um, watch over you for a bit?");

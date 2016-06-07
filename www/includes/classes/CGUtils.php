@@ -448,4 +448,44 @@
 
 			Image::OutputSVG($img,$OutputPath,$FileRelPath);
 		}
+		
+		static function GetSwatchesAI($Appearance){
+			$label = $Appearance['label'];
+			$JSON = array('Exported at' => gmdate('Y-m-d H:i:s \G\M\T'));
+			$JSON[$label] = array();
+			
+			$CGs = \CG\ColorGroups::Get($Appearance['id']);
+			$Colors = \CG\ColorGroups::GetColorsForEach($CGs);
+			foreach ($CGs as $cg){
+				$JSON[$label][$cg['label']] = array();
+				foreach ($Colors[$cg['groupid']] as $c)
+					$JSON[$label][$cg['label']][$c['label']] = $c['hex'];
+			}
+			
+			CoreUtils::DownloadFile(JSON::Encode($JSON), "$label.json");
+		}
+		static function GetSwatchesInkscape($Appearance){
+			$label = $Appearance['label'];
+			$exportts = gmdate('Y-m-d H:i:s \G\M\T');
+			$File = <<<GPL
+GIMP Palette
+Name: $label
+Columns: 6
+#
+# Exported at: $exportts
+#
+
+GPL;
+
+			$CGs = \CG\ColorGroups::Get($Appearance['id']);
+			$Colors = \CG\ColorGroups::GetColorsForEach($CGs);
+			foreach ($CGs as $cg){
+				foreach ($Colors[$cg['groupid']] as $c){
+					$rgb = CoreUtils::Hex2Rgb($c['hex']);
+					$File .= CoreUtils::Pad($rgb[0],3,' ').' '.CoreUtils::Pad($rgb[1],3,' ').' '.CoreUtils::Pad($rgb[2],3,' ').' '.ltrim($c['hex'],'#').PHP_EOL;
+				}
+			}
+
+			CoreUtils::DownloadFile(rtrim($File), "$label.gpl");
+		}
 	}

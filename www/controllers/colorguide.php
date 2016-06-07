@@ -123,10 +123,7 @@
 					return str_pad('',strlen($match[0])/4,"\t", STR_PAD_LEFT);
 				}, $data);
 
-				header('Content-Type: application/octet-stream');
-				header('Content-Transfer-Encoding: Binary');
-				header('Content-disposition: attachment; filename="mlpvc-colorguide.json"');
-				die($data);
+				CoreUtils::DownloadFile($data, 'mlpvc-colorguide.json');
 			break;
 		}
 
@@ -468,6 +465,8 @@
 				if ($getting) CoreUtils::Respond($Tag);
 
 				if ($deleting){
+					$AppearanceID = \CG\Appearances::ValidateAppearancePageID();
+
 					if (!isset($_POST['sanitycheck'])){
 						$tid = !empty($Tag['synonym_of']) ? $Tag['synonym_of'] : $Tag['tid'];
 						$Uses = $CGDb->where('tid',$tid)->count('tagged');
@@ -481,9 +480,9 @@
 					if (isset(CGUtils::$GroupTagIDs_Assoc[$Tag['tid']]))
 						\CG\Appearances::GetSortReorder($EQG);
 
-					CoreUtils::Respond('Tag deleted successfully', 1, $AppearancePage && $Tag['type'] === 'ep' ? array(
+					CoreUtils::Respond('Tag deleted successfully', 1, isset($AppearanceID) && $Tag['type'] === 'ep' ? array(
 						'needupdate' => true,
-						'eps' => \CG\Appearances::GetRelatedEpisodesHTML($Appearance['id']),
+						'eps' => \CG\Appearances::GetRelatedEpisodesHTML($AppearanceID),
 					) : null);
 				}
 			}
@@ -634,7 +633,12 @@
 						'ponyid' => $Appearance['id']
 					))) CoreUtils::Respond(ERR_DB_FAIL);
 					\CG\Tags::UpdateUses($data['tid']);
-					CoreUtils::Respond(array('tags' => \CG\Appearances::GetTagsHTML($Appearance['id'], NOWRAP)));
+					$r = array('tags' => \CG\Appearances::GetTagsHTML($Appearance['id'], NOWRAP));
+					if ($AppearancePage){
+						$r['needupdate'] = true;
+						$r['eps'] = \CG\Appearances::GetRelatedEpisodesHTML($Appearance['id']);
+					}
+					CoreUtils::Respond($r);
 				}
 			}
 			else {
@@ -847,7 +851,7 @@
 
 	$_match = array();
 	// Matching IDs:                                    [-1-] [-2-]              [---3---]
-	if (regex_match(new RegExp('^(?:appearance|v)/(?:.*?(\d+)|(\d+)(?:-.*)?)(?:\.(png|svg))?'),$data,$_match)){
+	if (regex_match(new RegExp('^(?:appearance|v)/(?:.*?(\d+)|(\d+)(?:-.*)?)(?:\.(png|svg|json|gpl))?'),$data,$_match)){
 		$asFile = !empty($_match[3]);
 		$Appearance = $CGDb->where('id', (int)($_match[1]??$_match[2]))->getOne('appearances', $asFile ? 'id,label,cm_dir,ishuman' : null);
 		if (empty($Appearance))
@@ -866,6 +870,8 @@
 			switch ($_match[3]){
 				case 'png': CGUtils::RenderAppearancePNG($Appearance);
 				case 'svg': CGUtils::RenderCMDirectionSVG($Appearance['id'], $Appearance['cm_dir']);
+				case 'json': CGUtils::GetSwatchesAI($Appearance); 
+				case 'gpl': CGUtils::GetSwatchesInkscape($Appearance); 
 			}
 			# rendering functions internally call die(), so execution stops here #
 		}

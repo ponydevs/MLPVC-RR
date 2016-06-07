@@ -37,7 +37,7 @@
 		/**
 		 * Get the colors belonging to a set of color groups
 		 *
-		 * @param int[] $Groups
+		 * @param array $Groups
 		 *
 		 * @return array
 		 */

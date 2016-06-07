@@ -76,12 +76,14 @@ body.dialog-open {
 	/* Colors */
 	.blue-bg     { background-color: $NBlue }
 	.darkblue-bg { background-color: $NDarkBlue }
+	//.teal-bg     { background-color: $NTeal }
 	.green-bg    { background-color: $NGreen }
 	.red-bg      { background-color: $NRed }
 	.orange-bg   { background-color: $NOrange }
 	//.yellow-bg   { background-color: $NYellow }
 	.blue-border     { border-color: $NBlue }
 	.darkblue-border { border-color: $NDarkBlue }
+	//.teal-border     { border-color: $NTeal }
 	.green-border    { border-color: $NGreen }
 	.red-border      { border-color: $NRed }
 	.orange-border   { border-color: $NOrange }
@@ -192,6 +194,7 @@ body.dialog-open {
 	/* Colors */
 	.blue     { color: $NBlue }
 	.darkblue { color: $NDarkBlue }
+	//.teal     { color: $NTeal }
 	.green    { color: $NGreen }
 	.red      { color: $NRed }
 	.orange   { color: $NOrange }

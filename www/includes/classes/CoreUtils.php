@@ -1017,4 +1017,11 @@
 			}
 			return "$HTML</table>";
 		}
+
+		static function DownloadFile($contents, $name){
+			header('Content-Type: application/octet-stream');
+			header('Content-Transfer-Encoding: Binary');
+			header("Content-disposition: attachment; filename=\"$name\"");
+			die($contents);
+		}
 	}

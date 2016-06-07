@@ -9,6 +9,7 @@
 	<div id="p<?=$Appearance['id']?>">
 		<div class='align-center'>
 			<a class='darkblue btn typcn typcn-image' href='/cg/v/<?="{$Appearance['id']}.png$FileModTime"?>' target='_blank'>View as PNG</a>
+			<button class='getswatch typcn typcn-brush teal'>Download swatch file</button>
 <?  if (Permission::Sufficient('staff')){ ?>
 			<button class='blue edit typcn typcn-pencil'>Edit metadata</button>
 			<button class='red delete typcn typcn-trash'>Delete apperance</button>

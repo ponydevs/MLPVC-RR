@@ -146,6 +146,9 @@ DocReady.push(function Colorguide(){
 
 	function Navigation(){
 		$list = $('.appearance-list');
+		if (!AppearancePage)
+			$list.on('click','.getswatch',getswatch);
+		else $('.getswatch').on('click',getswatch);
 		tooltips();
 		copyHashToggler();
 	}
@@ -180,6 +183,68 @@ DocReady.push(function Colorguide(){
 		$this.find('input[name=q]').val('');
 		$this.triggerHandler('submit');
 	});
+
+	var $SwatchDlForm;
+	function getswatch(e){
+		e.preventDefault();
+
+		//jshint -W040
+		var $li = $(this).closest('[id^=p]'),
+			ponyID = $li.attr('id').substring(1);
+
+		if (typeof $SwatchDlForm === 'undefined'){
+			var pressKeys = navigator && navigator.userAgent && /Macintosh/i.test(navigator.userAgent)
+					? "<kbd>\u2318</kbd><kbd>F12</kbd>"
+					: "<kbd>Ctrl</kbd><kbd>F12</kbd>",
+				$instr = $.mk('div').append(
+					$.mk('div').attr('class','hidden ai').append(
+						"<h4>How to import swatches to Adobe Illustrator</h4>",
+						$.mk('ul').append(
+							"<li>Because Illustator uses a proprietary format for swatch files, you must download a script <a href='/dist/Import Swatches from JSON.jsx?v=1' download='Import Swatches from JSON.jsx' class='btn typcn typcn-download'>by clicking here</a> to be able to import them from our site. Once you downloaded it, place it in an easy to find location, because you'll need to use it every time you want to import colors.<br><small>If you place it in <code>&hellip;\\Adobe\\Adobe Illustrator *\\Presets\\*\\Scripts</code> it'll be available as one of the options in the Scripts submenu.</li>",
+							$.mk('li').append(
+								"Once you have the script, ",
+								$.mk('a').attr({
+									href: '/cg/v/'+ponyID+'.json',
+									'class': 'btn blue typcn typcn-download',
+								}).text('click here'),
+								"to download the <code>.json</code> file that you'll need to use for the import."
+							),
+							"<li>Now that you have the 2 files, open Illustrator, create/open a document, then go to <strong>File &rsaquo; Scripts &rsaquo; Other Script</strong> (or press "+pressKeys+") then find the file with the <code>.jsx</code> extension (the one you first downloaded). A dialog will appear telling you what to do next.</li>"
+						)
+					),
+					$.mk('div').attr('class','hidden inkscape').append(
+						"<h4>How to import swatches to Inkscape</h4>",
+						$.mk('p').append(
+							"Download ",
+							$.mk('a').attr({
+								href: '/cg/v/'+ponyID+'.gpl',
+								'class': 'btn blue typcn typcn-download',
+							}).text('this file'),
+							" and place it in the <code>&hellip;\\Inkscape<wbr>\\<wbr>share<wbr>\\<wbr>palettes</code> folder. If you don't plan on using the other swatches, deleting them should make your newly imported swatch easier to find."
+						)
+					)
+				),
+				$appsel = $.mk('select')
+					.attr('required', true)
+					.html('<option value="" selected style="display:none">Choose one</option><option value="inkscape">Inkscape</option><option value="ai">Adobe Illustrator</option>')
+					.on('change',function(){
+						var $sel = $(this),
+							val = $sel.val(),
+							$els = $sel.parent().next().children().hide();
+						if (val)
+							$els.filter('.'+val).show();
+					});
+			$SwatchDlForm = $.mk('form').append(
+				$.mk('label').attr('class','align-center').append(
+					'<span>Choose your drawing program:</span>',
+					$appsel
+				),
+				$instr
+			).on('submit',function(){ return false });
+		}
+
+		$.Dialog.info('Download swatch file',$SwatchDlForm.clone(true,true));
+	}
 }, function(){
 	'use strict';
 	$('.qtip').each(function(){

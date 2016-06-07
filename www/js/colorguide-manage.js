@@ -321,6 +321,9 @@ DocReady.push(function ColorguideManage(){
 				var data = $form.mkData();
 				$.Dialog.wait(false, 'Creating tag');
 
+				if (data.addto && AppearancePage)
+					data.APPEARANCE_PAGE = true;
+
 				$.post('/cg/maketag'+EQGRq,data,$.mkAjaxHandler(function(){
 					if (!this.status) return $.Dialog.fail(false, this.message);
 
@@ -329,6 +332,11 @@ DocReady.push(function ColorguideManage(){
 						$tagsDiv.html(this.tags);
 						window.tooltips();
 						ctxmenus();
+					}
+					if (this.needupdate === true){
+						var $eps = $(this.eps);
+						$EpAppearances.replaceWith($eps);
+						$EpAppearances = $eps;
 					}
 					$._tagAutocompleteCache = {};
 					$.Dialog.close();
@@ -805,7 +813,7 @@ DocReady.push(function ColorguideManage(){
 
 					var data = {};
 					if (AppearancePage)
-						data.APPEARANCE_PAGE = true;
+						data.APPEARANCE_PAGE = $tag.closest('[id^=p]').attr('id').substring(1);
 					(function Send(data){
 						$.Dialog.wait(title,'Sending removal request');
 

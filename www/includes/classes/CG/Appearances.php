@@ -54,7 +54,8 @@
 
 				$RenderPath = APPATH."img/cg_render/{$p['id']}.png";
 				$FileModTime = '?t='.(file_exists($RenderPath) ? filemtime($RenderPath) : time());
-				$Actions = "<a class='darkblue btn typcn typcn-image' title='View as PNG' href='/cg/{$eqgp}v/{$p['id']}.png$FileModTime' target='_blank'></a>";
+				$Actions = "<a class='btn typcn typcn-image darkblue' title='View as PNG' href='/cg/{$eqgp}v/{$p['id']}.png$FileModTime' target='_blank'></a>".
+				           "<button class='getswatch typcn typcn-brush teal' title='Download swatch file'></button>";
 				if (\Permission::Sufficient('staff'))
 					$Actions .= "<button class='edit typcn typcn-pencil blue' title='Edit'></button>".
 					            ($p['id']!==0?"<button class='delete typcn typcn-trash red' title='Delete'></button>":'');
@@ -437,5 +438,15 @@ HTML;
 		 */
 		static function GetSafeLabel($Appearance){
 			return \CoreUtils::Trim(regex_replace(new \RegExp('-+'),'-',regex_replace(new \RegExp('[^A-Za-z\d\-]'),'-',$Appearance['label'])),'-');
+		}
+
+		static function ValidateAppearancePageID(){
+			return (new \Input('APPEARANCE_PAGE','int',array(
+				'optional' => true,
+				'range' => [0,null],
+				'errors' => array(
+					\Input::$ERROR_RANGE => 'Appearance ID is invalid'
+				)
+			)))->out();
 		}
 	}

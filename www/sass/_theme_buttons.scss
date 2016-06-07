@@ -27,6 +27,10 @@ button, .btn, input[type=button] {
 		color: $NDarkBlueBG !important;
 		background-color: $NDarkBlue !important;
 	}
+	&.teal {
+		color: $NTealBG !important;
+		background-color: $NTeal !important;
+	}
 	&.green {
 		color: $NGreenBG !important;
 		background-color: $NGreen !important;
