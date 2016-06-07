@@ -7054,6 +7054,7 @@
 			"TagIDs": [
 				3,
 				7,
+				12,
 				44,
 				192,
 				193,
@@ -8523,7 +8524,8 @@
 				7,
 				12,
 				187,
-				188
+				188,
+				327
 			]
 		},
 		"91": {
@@ -8616,13 +8618,14 @@
 				7,
 				11,
 				188,
-				189
+				189,
+				328
 			]
 		},
 		"128": {
 			"id": 128,
 			"order": 53,
-			"label": "Fleur-De-Lis",
+			"label": "Fleur Dis Lee",
 			"notes": "",
 			"cm_favme": null,
 			"ishuman": false,
@@ -8755,13 +8758,14 @@
 				1,
 				8,
 				12,
-				264
+				264,
+				329
 			]
 		},
 		"129": {
 			"id": 129,
 			"order": 54,
-			"label": "Fancypants",
+			"label": "Fancy Pants",
 			"notes": "The monocle lens has a couple different fill approaches depending on angle and tightness of the shot. If closeup, both fills are transparent, but if far out, second fill is fully opaque.",
 			"cm_favme": null,
 			"ishuman": false,
@@ -9018,7 +9022,8 @@
 				1,
 				7,
 				11,
-				265
+				265,
+				330
 			]
 		},
 		"92": {
@@ -11538,7 +11543,8 @@
 				27,
 				215,
 				263,
-				307
+				307,
+				331
 			]
 		},
 		"11": {
@@ -11865,7 +11871,8 @@
 				12,
 				27,
 				285,
-				307
+				307,
+				332
 			]
 		},
 		"100": {
@@ -22021,7 +22028,8 @@
 			"TagIDs": [
 				64,
 				311,
-				312
+				312,
+				338
 			]
 		},
 		"70": {
@@ -23102,7 +23110,7 @@
 			"id": 139,
 			"order": 144,
 			"label": "Cranky Doodle Donkey",
-			"notes": "Toupee #1 is up through half-way of \"A Friend in Deed\"\nToupee #2 is from \"A Friend in Deed\" through most of \"Slice of Life\"\nToupee #2 is from end of \"Slice of Life\" onward.",
+			"notes": "<strong>Toupee #1</strong> is up through half-way of \"A Friend in Deed\"\n<strong>Toupee #2</strong> is from \"A Friend in Deed\" through most of \"Slice of Life\"\n<strong>Toupee #2</strong> is from end of \"Slice of Life\" onward.",
 			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-05-21 16:58:06.40502+02",
@@ -23861,7 +23869,7 @@
 			"name": "female",
 			"title": null,
 			"type": "gen",
-			"uses": 81,
+			"uses": 82,
 			"synonym_of": null
 		},
 		"14": {
@@ -25781,16 +25789,16 @@
 			"name": "fleur-de-lis",
 			"title": null,
 			"type": "char",
-			"uses": 1,
-			"synonym_of": null
+			"uses": 0,
+			"synonym_of": 329
 		},
 		"265": {
 			"tid": 265,
 			"name": "fancypants",
 			"title": null,
 			"type": "char",
-			"uses": 1,
-			"synonym_of": null
+			"uses": 0,
+			"synonym_of": 330
 		},
 		"266": {
 			"tid": 266,
@@ -26165,6 +26173,62 @@
 			"name": "quarter hearts",
 			"title": null,
 			"type": "char",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"327": {
+			"tid": 327,
+			"name": "mrs. sparkle",
+			"title": null,
+			"type": "char",
+			"uses": 0,
+			"synonym_of": 187
+		},
+		"328": {
+			"tid": 328,
+			"name": "mr. sparkle",
+			"title": null,
+			"type": "char",
+			"uses": 0,
+			"synonym_of": 189
+		},
+		"329": {
+			"tid": 329,
+			"name": "fleur dis lee",
+			"title": null,
+			"type": "char",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"330": {
+			"tid": 330,
+			"name": "fancy pants",
+			"title": null,
+			"type": "char",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"331": {
+			"tid": 331,
+			"name": "soarin",
+			"title": null,
+			"type": "char",
+			"uses": 0,
+			"synonym_of": 263
+		},
+		"332": {
+			"tid": 332,
+			"name": "ice wind",
+			"title": null,
+			"type": "char",
+			"uses": 0,
+			"synonym_of": 285
+		},
+		"338": {
+			"tid": 338,
+			"name": "crown",
+			"title": null,
+			"type": null,
 			"uses": 1,
 			"synonym_of": null
 		}
