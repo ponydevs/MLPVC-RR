@@ -299,7 +299,6 @@ div.tags {
 	&.typ-app { @include tag-style($TAppearance, '\e07e') }
 	&.typ-ep { @include tag-style($TEpisode, '\e131') }
 	&.typ-char { @include tag-style($TCharacter, '\e12c') }
-	&.typ-feat { @include tag-style($TFeature, '\e035') }
 
 	.tt-dataset & {
 		display: block;
@@ -404,7 +403,6 @@ ul.colors {
 .qtip-tag-app { @include tag-style($TAppearance) }
 .qtip-tag-ep { @include tag-style($TEpisode) }
 .qtip-tag-char { @include tag-style($TCharacter) }
-.qtip-tag-feat { @include tag-style($TFeature) }
 
 #search-form {
 	text-align: center;

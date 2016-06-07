@@ -352,8 +352,8 @@ For a less accurate version, group together the Fill and the Highlights (both 10
 (125, 28, 'Garble', '', NULL, false, '2016-04-21 07:40:41.421703+02', NULL, NULL),
 (126, 18, 'Dragon Lord Torch', 'Bottom stroke on wings should use the lower stroke gradient color. Crystals on helmet are numbered 1 starting on his right.', NULL, false, '2016-04-23 16:26:48.818417+02', NULL, NULL),
 (127, 69, 'Soarin''', '', NULL, false, '2016-04-24 16:40:44.192917+02', NULL, NULL),
-(128, 53, 'Fleur-De-Lis', '', NULL, false, '2016-04-25 04:22:23.885302+02', NULL, NULL),
-(129, 54, 'Fancypants', 'The monocle lens has a couple different fill approaches depending on angle and tightness of the shot. If closeup, both fills are transparent, but if far out, second fill is fully opaque.', NULL, false, '2016-04-26 07:01:23.677929+02', NULL, NULL),
+(128, 53, 'Fleur Dis Lee', '', NULL, false, '2016-04-25 04:22:23.885302+02', NULL, NULL),
+(129, 54, 'Fancy Pants', 'The monocle lens has a couple different fill approaches depending on angle and tightness of the shot. If closeup, both fills are transparent, but if far out, second fill is fully opaque.', NULL, false, '2016-04-26 07:01:23.677929+02', NULL, NULL),
 (130, 33, 'Snips', '', NULL, false, '2016-04-26 07:54:08.238033+02', NULL, NULL),
 (131, 34, 'Snails', '', NULL, false, '2016-04-26 07:57:55.52504+02', NULL, NULL),
 (132, 29, 'King Sombra', 'Far legs use darker colors.
@@ -373,9 +373,9 @@ Appears as both Unicorn and Earth Pony in different episodes.', NULL, false, '20
 She has no iris highlights.', NULL, false, '2016-05-11 00:25:06.834527+02', NULL, NULL),
 (137, 72, 'Misty Fly', 'Cutie mark is unknown', NULL, false, '2016-05-12 21:08:37.046182+02', NULL, NULL),
 (138, 84, 'Sunshower Raindrops', '', NULL, false, '2016-05-18 12:56:57.19941+02', NULL, NULL),
-(139, 144, 'Cranky Doodle Donkey', 'Toupee #1 is up through half-way of "A Friend in Deed"
-Toupee #2 is from "A Friend in Deed" through most of "Slice of Life"
-Toupee #2 is from end of "Slice of Life" onward.', NULL, false, '2016-05-21 16:58:06.40502+02', NULL, NULL),
+(139, 144, 'Cranky Doodle Donkey', '<strong>Toupee #1</strong> is up through half-way of "A Friend in Deed"
+<strong>Toupee #2</strong> is from "A Friend in Deed" through most of "Slice of Life"
+<strong>Toupee #2</strong> is from end of "Slice of Life" onward.', NULL, false, '2016-05-21 16:58:06.40502+02', NULL, NULL),
 (140, 145, 'Matilda', '', NULL, false, '2016-05-22 05:05:58.944541+02', NULL, NULL),
 (141, 115, 'Plaid Stripes', 'Has pointed ear tips', 'da3hzwf', false, '2016-05-22 16:24:54.522725+02', NULL, true),
 (142, 116, 'Mr. Stripes', '', NULL, false, '2016-05-22 18:38:17.026312+02', NULL, NULL),
@@ -4620,6 +4620,7 @@ INSERT INTO tagged VALUES
 (12, 87),
 (12, 88),
 (12, 89),
+(12, 93),
 (12, 96),
 (12, 99),
 (12, 100),
@@ -4956,8 +4957,6 @@ INSERT INTO tagged VALUES
 (261, 124),
 (262, 126),
 (263, 127),
-(264, 128),
-(265, 129),
 (266, 130),
 (267, 131),
 (268, 132),
@@ -5005,7 +5004,10 @@ INSERT INTO tagged VALUES
 (310, 153),
 (311, 154),
 (312, 154),
-(314, 155);
+(314, 155),
+(329, 128),
+(330, 129),
+(338, 154);
 
 
 --
@@ -5024,7 +5026,7 @@ INSERT INTO tags VALUES
 (9, 'antagonist', NULL, 'cat', 10, NULL),
 (10, 'pet', NULL, 'cat', 6, NULL),
 (11, 'male', NULL, 'gen', 50, NULL),
-(12, 'female', NULL, 'gen', 81, NULL),
+(12, 'female', NULL, 'gen', 82, NULL),
 (14, 'twilight sparkle', NULL, 'char', 1, NULL),
 (19, 's1e1', NULL, 'ep', 0, NULL),
 (20, 's1e26', NULL, 'ep', 0, NULL),
@@ -5264,8 +5266,8 @@ INSERT INTO tags VALUES
 (261, 'pig', NULL, 'spec', 3, NULL),
 (262, 'dragon lord torch', NULL, 'char', 1, NULL),
 (263, 'soarin''', NULL, 'char', 1, NULL),
-(264, 'fleur-de-lis', NULL, 'char', 1, NULL),
-(265, 'fancypants', NULL, 'char', 1, NULL),
+(264, 'fleur-de-lis', NULL, 'char', 0, 329),
+(265, 'fancypants', NULL, 'char', 0, 330),
 (266, 'snips', NULL, 'char', 1, NULL),
 (267, 'snails', NULL, 'char', 1, NULL),
 (268, 'king sombra', NULL, 'char', 1, NULL),
@@ -5312,14 +5314,21 @@ INSERT INTO tags VALUES
 (311, 'twilight''s crown', NULL, 'app', 1, NULL),
 (312, 's5e10', NULL, 'ep', 1, NULL),
 (313, 'link', NULL, 'char', 0, 314),
-(314, 'quarter hearts', NULL, 'char', 1, NULL);
+(314, 'quarter hearts', NULL, 'char', 1, NULL),
+(327, 'mrs. sparkle', NULL, 'char', 0, 187),
+(328, 'mr. sparkle', NULL, 'char', 0, 189),
+(329, 'fleur dis lee', NULL, 'char', 1, NULL),
+(330, 'fancy pants', NULL, 'char', 1, NULL),
+(331, 'soarin', NULL, 'char', 0, 263),
+(332, 'ice wind', NULL, 'char', 0, 285),
+(338, 'crown', NULL, NULL, 1, NULL);
 
 
 --
 -- Name: tags_tid_seq; Type: SEQUENCE SET; Schema: public; Owner: mlpvc-rr
 --
 
-SELECT pg_catalog.setval('tags_tid_seq', 314, true);
+SELECT pg_catalog.setval('tags_tid_seq', 338, true);
 
 
 --
