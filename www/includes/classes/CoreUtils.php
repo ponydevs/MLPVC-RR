@@ -773,7 +773,7 @@
 				$label = htmlspecialchars_decode($l['label']);
 				$cansee = Permission::$ROLES_ASSOC[$l['minrole']];
 				if ($l['minrole'] !== 'developer')
-					$cansee .= 's and above';
+					$cansee = self::MakePlural($cansee, ALWAYS_PLURAL).' and above';
 				$HTML .= "<li id='ufl-{$l['id']}'><div><a $href title='$title'>{$label}</a></div>".
 				             "<div><span class='typcn typcn-eye'></span> $cansee</div>".
 				             "<div class='buttons'><button class='blue typcn typcn-pencil edit-link'>Edit</button><button class='red typcn typcn-trash delete-link'>Delete</button></div></li>";

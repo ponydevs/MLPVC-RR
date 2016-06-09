@@ -19,6 +19,7 @@
 
 	// Some constants \\
 	# integer
+	// TODO change to Time::$IN_SECONDS[...] references
 	define('EIGHTY_YEARS',2524556160);
 	define('ONE_YEAR',31536000);
 	define('THIRTY_DAYS',2592000);
@@ -27,6 +28,7 @@
 	define('FULL', 0);      // \
 	define('TEXT_ONLY', 1); //  }-> User::GetDALink
 	define('LINK_ONLY', 2); // /
+	define('ALWAYS_PLURAL', 0);
 	# string
 	define('ERR_DB_FAIL','There was an error while saving to the database');
 	define('FORMAT_FULL','jS M Y, g:i:s a T'); // Time::Format
