@@ -13,6 +13,7 @@
 				'string' => true,
 				'uuid' => true,
 				'username' => true,
+				'url' => true,
 				'int[]' => true,
 				'json' => true,
 				'timestamp' => true,
@@ -121,6 +122,19 @@
 					global $USERNAME_REGEX;
 					if (!is_string($this->_value) || !$USERNAME_REGEX->match($this->_value))
 						return self::$ERROR_INVALID;
+				break;
+				case "url":
+					if (!is_string($this->_value))
+						return self::$ERROR_INVALID;
+					global $REWRITE_REGEX;
+					if (stripos($this->_value, ABSPATH) === 0)
+						$this->_value = substr($this->_value, strlen(ABSPATH)-1);
+					if (!regex_match($REWRITE_REGEX,$this->_value) && !regex_match(new RegExp('^#[a-z\-]+$'),$this->_value)){
+						if (self::CheckStringLength($this->_value, $this->_range, $code))
+							return $code;
+						if (!regex_match(new RegExp('^https?://[a-z\d/.-]+/[ -~]+$','i'), $this->_value))
+							CoreUtils::Respond('Link URL does not appear to be a valid link');
+					}
 				break;
 				case "int[]":
 					if (!is_string($this->_value) || !regex_match(new RegExp('^\d{1,5}(?:,\d{1,5})+$'), $this->_value))

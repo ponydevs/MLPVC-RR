@@ -63,16 +63,7 @@
 								$data['label'] = $label;
 							}
 
-							$url = (new Input('url',function($value, $range) use ($REWRITE_REGEX){
-								if (!regex_match($REWRITE_REGEX,$value) && !regex_match(new RegExp('^#[a-z\-]+$'),$value)){
-									if (stripos($value, ABSPATH) === 0)
-										$url = substr($value, strlen(ABSPATH)-1);
-									if (Input::CheckStringLength($value, $range, $code))
-										return $code;
-									if (!regex_match(new RegExp('^https?:\/\/.+$'), $url))
-										CoreUtils::Respond('Link URL does not appear to be a valid link');
-								}
-							},array(
+							$url = (new Input('url','url',array(
 								'range' => [3,255],
 								'errors' => array(
 									Input::$ERROR_MISSING => 'Link URL is missing',
@@ -83,6 +74,7 @@
 								$data['url'] = $url;
 
 							$title = (new Input('title','string',array(
+								'optional' => true,
 								'range' => [3,255],
 								'errors' => array(
 									Input::$ERROR_RANGE => 'Link title must be between @min and @max characters long',
