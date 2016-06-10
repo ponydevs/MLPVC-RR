@@ -15,6 +15,7 @@
 			CoreUtils::Respond(array(
 				'ep' => $Ep,
 				'epid' => Episode::FormatTitle($Ep, AS_ARRAY, 'id'),
+				'caneditid' => Episode::GetPostCount($Ep) === 0,
 			));
 		}
 		unset($EpData);
@@ -247,22 +248,37 @@
 			$editing = regex_match(new RegExp('^edit\/'.EPISODE_ID_PATTERN.'$'),$data,$_match);
 			if ($editing){
 				list($season, $episode) = array_map('intval', array_splice($_match, 1, 2));
+				if ($editing){
+					$Current = Episode::GetActual($season,$episode);
+					if (empty($Current))
+						CoreUtils::Respond("The episode S{$season}E$episode doesn't exist");
+				}
 				$insert = array();
 			}
 			else if ($data === 'add') $insert = array('posted_by' => $currentUser['id']);
 			else CoreUtils::StatusCode(404, AND_DIE);
 
-			$insert['season'] = Episode::ValidateSeason();
-			$insert['episode'] = Episode::ValidateEpisode();
+			$newseason = Episode::ValidateSeason($editing);
+			$newepisode = Episode::ValidateEpisode($editing);
+			$SeasonChanged = isset($newseason) &&  $newseason !== $season;
+			$EpisodeChanged = isset($newepisode) &&  $newepisode !== $episode;
+			$IDChanged = $SeasonChanged || $EpisodeChanged;
+			$notEditingOrIDChanged = !$editing || $IDChanged;
+			if ($IDChanged){
+				if ($SeasonChanged)
+					$insert['season'] = $newseason;
+				if ($EpisodeChanged)
+					$insert['episode'] = $newepisode;
 
-			if ($editing){
-				$Current = Episode::GetActual($insert['season'],$insert['episode']);
-				if (empty($Current))
-					CoreUtils::Respond("This episode doesn't exist");
+				if ($notEditingOrIDChanged){
+					$Target = Episode::GetActual($insert['season'],$insert['episode']);
+					if (!empty($Target))
+						CoreUtils::Respond("There's already an episode with the same season & episode number");
+
+					if (Epsiode::GetPostCount($insert) > 0)
+						CoreUtils::Respond('This epsiode\'s ID cannot be changed because it already has posts and changing it could break links');
+				}
 			}
-			$Target = Episode::GetActual($insert['season'],$insert['episode']);
-			if (!empty($Target) && (!$editing || ($editing && ($Target['season'] !== $Current['season'] || $Target['episode'] !== $Current['episode']))))
-				CoreUtils::Respond("There's already an episode with the same season & episode number");
 
 			$insert['twoparter'] = isset($_POST['twoparter']) ? 1 : 0;
 
@@ -290,9 +306,7 @@
 			else if (!$Database->insert('episodes', $insert))
 				CoreUtils::Respond('Episode creation failed: '.ERR_DB_FAIL);
 
-			$SeasonChanged = $editing && $season !== $insert['season'];
-			$EpisodeChanged = $editing && $episode !== $insert['episode'];
-			if (!$editing || $SeasonChanged || $EpisodeChanged){
+			if ($notEditingOrIDChanged){
 				$TagName = "s{$insert['season']}e{$insert['episode']}";
 				$EpTag = $CGDb->where('name', $editing ? "s{$season}e{$episode}" : $TagName)->getOne('tags');
 
@@ -302,7 +316,7 @@
 						'type' => 'ep',
 					))) CoreUtils::Respond('Episode tag creation failed: '.ERR_DB_FAIL);
 				}
-				else if ($SeasonChanged || $EpisodeChanged)
+				else if ($IDChanged)
 					$CGDb->where('name',$EpTag['name'])->update('tags', array(
 						'name' => $TagName,
 					));

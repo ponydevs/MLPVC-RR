@@ -26,6 +26,7 @@
 	<section class="admin">
 		<h2>Administration area</h2>
 		<p class="align-center">
+			<button id="edit-ep" class="typcn typcn-pencil large darkblue">Metadata</button>
 			<button id="video" class="typcn typcn-pencil large darkblue">Video links</button>
 			<button id="cg-relations" class="typcn typcn-pencil large darkblue">Guide relations</button>
 		</p>
@@ -50,3 +51,6 @@
 			echo CoreUtils::Notice('info','No episodes found',"To make the site functional, you must add an episode to the database first. Head on over to the <a href='/episodes'>Episodes</a> page and add one now!");
 	} ?>
 </div>
+
+<?  if (Permission::Sufficient('staff'))
+		CoreUtils::ExportVars(array('EP_TITLE_REGEX' => $EP_TITLE_REGEX));

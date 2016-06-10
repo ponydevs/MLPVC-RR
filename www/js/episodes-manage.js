@@ -1,7 +1,9 @@
 /* global DocReady,moment,HandleNav,$content */
 DocReady.push(function EpisodesManage(){
 	'use strict';
-	var $eptableBody = $('#episodes').children('tbody');
+	var $eptableBody = $('#episodes').children('tbody'),
+		SEASON = window.SEASON,
+		EPISODE = window.EPISODE;
 	Bind.call({init:true});
 
 	/*!
@@ -128,11 +130,12 @@ DocReady.push(function EpisodesManage(){
 
 			$this.removeAttr('data-epid').data('epid', epid);
 		});
-		$eptableBody.find('.edit-episode').off('click').on('click',function(e){
+		$eptableBody.find('.edit-episode').add('#edit-ep').off('click').on('click',function(e){
 			e.preventDefault();
 
 			var $this = $(this),
-				epid = $this.closest('tr').data('epid');
+				EpisodePage = $this.attr('id') === 'edit-ep',
+				epid = EpisodePage ? 'S'+SEASON+'E'+EPISODE : $this.closest('tr').data('epid');
 
 			$.Dialog.wait('Editing '+epid, 'Getting episode details from server');
 
@@ -143,6 +146,9 @@ DocReady.push(function EpisodesManage(){
 
 				$editepWithData.find('input[name=twoparter]').prop('checked',!!this.ep.twoparter);
 				delete this.ep.twoparter;
+
+				if (!this.caneditid || (EpisodePage && $('#reservations, #requests').find('li').length))
+					$editepWithData.find('input').filter('[name="season"],[name="episode"]').disable();
 
 				var d = mkDate(this.ep.airdate, this.ep.airtime, true);
 				this.ep.airdate = d.toAirDate();

@@ -715,7 +715,7 @@
 
 							var pos = js.indexOf(src);
 
-							if (pos !== -1 && !/js\/colorguide[\.\-]/.test(src)){
+							if (pos !== -1 && !/js\/(colorguide[\.\-]|episodes-manage)/.test(src)){
 								js.splice(pos, 1);
 								console.log('%cSkipped %s','color:saddlebrown',src);
 							}

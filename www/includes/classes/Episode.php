@@ -158,11 +158,17 @@
 			$EpID = self::FormatTitle($CurrentEpisode,AS_ARRAY,'id');
 			CoreUtils::FixPath(!$EQG ? "/episode/$EpID" : "/eqg/{$GLOBALS['url']}");
 
+			$js = array('imagesloaded.pkgd','jquery.ba-throttle-debounce','jquery.fluidbox.min','Chart','episode');
+			if (Permission::Sufficient('staff')){
+				$js[] = 'moment-timezone';
+				$js[] = 'episodes-manage';
+			}
+
 			CoreUtils::LoadPage(array(
 				'title' => self::FormatTitle($CurrentEpisode),
 				'view' => 'episode',
 				'css' => 'episode',
-				'js' => array('imagesloaded.pkgd','jquery.ba-throttle-debounce','jquery.fluidbox.min','Chart','episode'),
+				'js' => $js,
 			));
 		}
 
@@ -490,8 +496,29 @@ HTML;
 			return $HTML;
 		}
 
-		static function ValidateSeason(){
+		/**
+		 * Gets the number of posts bound to an episode
+		 *
+		 * @param array $Episode
+		 *
+		 * @return int
+		 */
+		static function GetPostCount($Episode){
+			global $Database;
+			
+			return (int) $Database->rawQuerySingle(
+				'SELECT SUM(cnt) as postcount FROM (
+					SELECT count(*) as cnt FROM requests WHERE season = :season && episode = :episode
+					UNION ALL
+					SELECT count(*) as cnt FROM reservations WHERE season = :season && episode = :episode
+				) t',
+				array(':season' => $Episode['season'], ':episode' => $Episode['episode'])
+			)['postcount'];
+		}
+
+		static function ValidateSeason($optional = false){
 			return (new Input('season','int',array(
+				'optional' => $optional,
 				'range' => [1,8],
 				'errors' => array(
 					Input::$ERROR_MISSING => 'Season number is missing',
@@ -500,8 +527,9 @@ HTML;
 				)
 			)))->out();
 		}
-		static function ValidateEpisode(){
+		static function ValidateEpisode($optional = false){
 			return (new Input('episode','int',array(
+				'optional' => $optional,
 				'range' => [1,26],
 				'errors' => array(
 					Input::$ERROR_MISSING => 'Episode number is missing',
