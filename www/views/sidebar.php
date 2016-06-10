@@ -26,8 +26,8 @@ if (!empty($Database)){ ?>
 		<?=Episode::GetSidebarVoting($CurrentEpisode)?>
 	</section>
 <?php
-		$rluntil = strtotime($CurrentEpisode['airs']) + (Time::$IN_SECONDS['hour']*4);
-		if (Episode::IsLatest($CurrentEpisode) && time() < $rluntil){ ?>
+		$rluntil = strtotime($CurrentEpisode['airs']);
+		if (Episode::IsLatest($CurrentEpisode) && $rluntil < time() - (Time::$IN_SECONDS['hour']*4)){ ?>
 	<section id="live-update">
 		<h2>Live reload</h2>
 		<p>The episode has just aired, and posts are likely changing faster than usual.</p>
