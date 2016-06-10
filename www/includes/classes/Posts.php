@@ -447,7 +447,7 @@ HTML;
 			$postlink = "/episode/S{$R['season']}E{$R['episode']}#$ID";
 			$ImageLink = $view_only ? $postlink : $R['fullsize'];
 			$Image = "<div class='image screencap'><a href='$ImageLink'><img src='{$R['preview']}' alt='$alt'></a></div>";
-			$post_label = !empty($R['label']) ? '<span class="label'.(strpos($R['label'],'"') !== false?' noquotes':'').'">'.htmlspecialchars($R['label']).'</span>' : '';
+			$post_label = !empty($R['label']) ? '<span class="label'.(strpos($R['label'],'"') !== false?' noquotes':'').'">'.self::ProcessLabel($R['label']).'</span>' : '';
 			$permalink = "<a href='#$ID'>".Time::Tag($R['posted']).'</a>';
 
 			$posted_at = '<em class="post-date">';
@@ -503,6 +503,10 @@ HTML;
 				$Image .= "<strong class='color-blue contest-note' title=\"Because this request was reserved more than 3 weeks ago it's now available for other members to reserve\"><span class='typcn typcn-info-large'></span> Can be contested</strong>";
 
 			return "<li id='$ID'>$Image".self::_getPostActions($R['reserver'], $R, $isRequest, $view_only ? $postlink : false).'</li>';
+		}
+
+		static function ProcessLabel($label){
+			return preg_replace(new RegExp('(?:full[-\s]bod(?:y|ied)(\sversion)?)'),'<strong class="color-darkblue">full body$1</strong>', htmlspecialchars($label));
 		}
 
 		/**
