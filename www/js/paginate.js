@@ -48,15 +48,15 @@
 		});
 		$w.off('nav-popstate').on('nav-popstate',function(e, state, goto){
 			var obj = {state:state},
-				params = [location.pathname, true, undefined, true];
+				params = [location.pathname+location.search+location.hash, true, undefined, true];
 			if (typeof state.baseurl !== 'undefined' && $.Navigation.lastLoadedPathname.replace(/\/\d+($|\?)/,'$1') !== state.baseurl)
-				goto(location.pathname,function(){
+				goto(location.pathname+location.search+location.hash,function(){
 					$.toPage.apply(obj, params);
 				});
 			else $.toPage.apply(obj, params);
 		});
 		$.toPage = function(target, silentfail, bypass, overwriteState, titleProcessor){
-			if (!target) target = location.pathname;
+			if (!target) target = location.pathname+location.search+location.hash;
 			var newPageNumber = parseInt(target.replace(/^.*\/(\d+)(?:\?.*)?$/,'$1'), 10),
 				state = this.state || {};
 
@@ -112,9 +112,7 @@
 					),
 					stateParams = [{paginate:true, page:newPageNumber, baseurl: this.request_uri.replace(/\/\d+($|\?)/,'$1') },'',newURI];
 
-				if (overwriteState === true)
-					history.replaceState(history, stateParams);
-				else if ((state.page !== newPageNumber && !isNaN(newPageNumber)) || extraQuery)
+				if (overwriteState === true || (state.page !== newPageNumber && !isNaN(newPageNumber)) || extraQuery)
 					history.replaceState.apply(history, stateParams);
 
 				$pagination.html(this.pagination);

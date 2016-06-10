@@ -67,8 +67,11 @@ DocReady.push(function Colorguide(){
 			else $.Navigation.visit('/cg'+(EQG?'/eqg':'')+'/1?q='+query.replace(/ /g,'+'));
 		});
 		$('ul.colors').children('li').find('.valid-color').each(function(){
-			var $this = $(this),
-				text = 'Click to copy HEX '+color+' code to clipboard<br>Shift+Click to view RGB values',
+			var $this = $(this);
+			if ($this.hasAttr('data-hasqtip'))
+				$this.data('qtip').destroy();
+
+			var text = 'Click to copy HEX '+color+' code to clipboard<br>Shift+Click to view RGB values',
 				title = $this.attr('title');
 
 			if ($this.is(':empty'))
@@ -82,6 +85,8 @@ DocReady.push(function Colorguide(){
 				position: { my: 'bottom center', at: 'top center', viewport: true },
 				style: { classes: 'qtip-see-thru' }
 			});
+
+			return true;
 		}).off('mousedown touchstart').on('click',function(e){
 			e.preventDefault();
 			var $this = $(this),

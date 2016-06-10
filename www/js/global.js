@@ -394,6 +394,10 @@
 	$.fn.enable = function(){ return this.attr('disabled', false) };
 	$.fn.disable = function(){ return this.attr('disabled', true) };
 
+	$.fn.hasAttr = function(attr){
+		return this.get(0).hasAttribute(attr);
+	};
+
 	$.scrollTo = function(pos, speed, callback){
 		var scrollf = function(){return false};
 		$('html,body')
@@ -703,7 +707,7 @@
 
 						module.flushDocReady();
 
-						console.group('Checking JS files to skip...');
+						console.groupCollapsed('Checking JS files to skip...');
 						$body.children('script[src], script[data-src]').each(function(){
 							var $this = $(this),
 								src = $this.attr('src') || $this.attr('data-src');
@@ -733,7 +737,7 @@
 							return (location.href = url);
 						}
 
-						console.group('Checking CSS files to skip...');
+						console.groupCollapsed('Checking CSS files to skip...');
 						var CSSSelector = 'link[href], style[href]';
 						$head.children(CSSSelector).each(function(){
 							var $this = $(this),
