@@ -7322,7 +7322,8 @@
 			"TagIDs": [
 				1,
 				12,
-				78
+				78,
+				339
 			]
 		},
 		"10": {
@@ -23773,6 +23774,72 @@
 				76,
 				100
 			]
+		},
+		"156": {
+			"id": 156,
+			"order": null,
+			"label": "Rainbow Dash's Bandaids (Newbie Dash)",
+			"notes": "Sampled from Newbie Dash (S6E7)",
+			"cm_favme": null,
+			"ishuman": false,
+			"added": "2016-06-10 20:41:21.723608+02",
+			"cm_preview": null,
+			"cm_dir": null,
+			"ColorGroups": {
+				"846": {
+					"groupid": 846,
+					"label": "Roll Bandage",
+					"order": 1,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#C2E9ED"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#FFFFEB"
+						},
+						{
+							"order": 2,
+							"label": "Shadow Outline",
+							"hex": "#B0D1D2"
+						},
+						{
+							"order": 3,
+							"label": "Sadow Fill",
+							"hex": "#E3E1D2"
+						}
+					]
+				},
+				"847": {
+					"groupid": 847,
+					"label": "Band-Aid",
+					"order": 2,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#ED824E"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#FAC881"
+						},
+						{
+							"order": 2,
+							"label": "Shadow Fill",
+							"hex": "#F8AD72"
+						}
+					]
+				}
+			},
+			"TagIDs": [
+				25,
+				215
+			]
 		}
 	},
 	"Tags": {
@@ -23933,7 +24000,7 @@
 			"name": "rainbow dash",
 			"title": null,
 			"type": "char",
-			"uses": 2,
+			"uses": 3,
 			"synonym_of": null
 		},
 		"26": {
@@ -25397,7 +25464,7 @@
 			"name": "s6e7",
 			"title": null,
 			"type": "ep",
-			"uses": 4,
+			"uses": 5,
 			"synonym_of": null
 		},
 		"216": {
@@ -26229,6 +26296,14 @@
 			"name": "crown",
 			"title": null,
 			"type": null,
+			"uses": 1,
+			"synonym_of": null
+		},
+		"339": {
+			"tid": 339,
+			"name": "penny curve",
+			"title": null,
+			"type": "char",
 			"uses": 1,
 			"synonym_of": null
 		}

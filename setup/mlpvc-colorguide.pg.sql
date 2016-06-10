@@ -391,14 +391,15 @@ She has no iris highlights.', NULL, false, '2016-05-11 00:25:06.834527+02', NULL
 (152, 86, 'Mr. Shy', '', NULL, false, '2016-06-05 16:48:12.164299+02', NULL, NULL),
 (153, 87, 'Mrs. Shy', 'There are no extra transparency colors for the glasses lens.', NULL, false, '2016-06-05 17:04:47.155208+02', NULL, NULL),
 (154, 134, 'Twilight''s Crown', 'For S4 onward', NULL, false, '2016-06-05 18:51:20.155674+02', NULL, NULL),
-(155, 123, 'Quarter Hearts', 'aka "Link" pony', NULL, false, '2016-06-05 23:38:41.547672+02', NULL, NULL);
+(155, 123, 'Quarter Hearts', 'aka "Link" pony', NULL, false, '2016-06-05 23:38:41.547672+02', NULL, NULL),
+(156, NULL, 'Rainbow Dash''s Bandaids (Newbie Dash)', 'Sampled from Newbie Dash (S6E7)', NULL, false, '2016-06-10 20:41:21.723608+02', NULL, NULL);
 
 
 --
 -- Name: appearances_id_seq; Type: SEQUENCE SET; Schema: public; Owner: mlpvc-rr
 --
 
-SELECT pg_catalog.setval('appearances_id_seq', 155, true);
+SELECT pg_catalog.setval('appearances_id_seq', 156, true);
 
 
 --
@@ -1149,14 +1150,16 @@ INSERT INTO colorgroups VALUES
 (841, 155, 'Coat', 0),
 (842, 155, 'Mane & Tail', 1),
 (843, 155, 'Iris', 2),
-(844, 155, 'Cutie Mark', 3);
+(844, 155, 'Cutie Mark', 3),
+(846, 156, 'Roll Bandage', 1),
+(847, 156, 'Band-Aid', 2);
 
 
 --
 -- Name: colorgroups_groupid_seq; Type: SEQUENCE SET; Schema: public; Owner: mlpvc-rr
 --
 
-SELECT pg_catalog.setval('colorgroups_groupid_seq', 845, true);
+SELECT pg_catalog.setval('colorgroups_groupid_seq', 847, true);
 
 
 --
@@ -4263,7 +4266,14 @@ INSERT INTO colors VALUES
 (843, 0, 'Gradient Top', '#304540'),
 (843, 1, 'Gradient Bottom', '#70768E'),
 (844, 0, 'Outline', '#FFE9CB'),
-(844, 1, 'Inner Fill', '#EC6161');
+(844, 1, 'Inner Fill', '#EC6161'),
+(846, 0, 'Outline', '#C2E9ED'),
+(846, 1, 'Fill', '#FFFFEB'),
+(846, 2, 'Shadow Outline', '#B0D1D2'),
+(846, 3, 'Sadow Fill', '#E3E1D2'),
+(847, 0, 'Outline', '#ED824E'),
+(847, 1, 'Fill', '#FAC881'),
+(847, 2, 'Shadow Fill', '#F8AD72');
 
 
 --
@@ -4655,6 +4665,7 @@ INSERT INTO tagged VALUES
 (24, 3),
 (25, 5),
 (25, 144),
+(25, 156),
 (26, 6),
 (27, 19),
 (27, 21),
@@ -4906,6 +4917,7 @@ INSERT INTO tagged VALUES
 (215, 70),
 (215, 110),
 (215, 127),
+(215, 156),
 (216, 9),
 (216, 11),
 (216, 17),
@@ -5007,7 +5019,8 @@ INSERT INTO tagged VALUES
 (314, 155),
 (329, 128),
 (330, 129),
-(338, 154);
+(338, 154),
+(339, 45);
 
 
 --
@@ -5034,7 +5047,7 @@ INSERT INTO tags VALUES
 (22, 'applejack', NULL, 'char', 1, NULL),
 (23, 'pinkie pie', NULL, 'char', 1, NULL),
 (24, 'fluttershy', NULL, 'char', 1, NULL),
-(25, 'rainbow dash', NULL, 'char', 2, NULL),
+(25, 'rainbow dash', NULL, 'char', 3, NULL),
 (26, 'rarity', NULL, 'char', 1, NULL),
 (27, 'wonderbolt', 'Wonderbolt characters', 'cat', 8, NULL),
 (28, 'parent', 'Parents of other characters', 'cat', 4, NULL),
@@ -5217,7 +5230,7 @@ INSERT INTO tags VALUES
 (212, 'pony tones outfit', NULL, 'app', 1, NULL),
 (213, 'pony tones', NULL, 'cat', 3, NULL),
 (214, 'ponytones', NULL, 'cat', 0, 213),
-(215, 's6e7', NULL, 'ep', 4, NULL),
+(215, 's6e7', NULL, 'ep', 5, NULL),
 (216, 's6e8', NULL, 'ep', 3, NULL),
 (217, 's6e9', NULL, 'ep', 3, NULL),
 (218, 'torch song', NULL, 'char', 1, NULL),
@@ -5321,14 +5334,15 @@ INSERT INTO tags VALUES
 (330, 'fancy pants', NULL, 'char', 1, NULL),
 (331, 'soarin', NULL, 'char', 0, 263),
 (332, 'ice wind', NULL, 'char', 0, 285),
-(338, 'crown', NULL, NULL, 1, NULL);
+(338, 'crown', NULL, NULL, 1, NULL),
+(339, 'penny curve', NULL, 'char', 1, NULL);
 
 
 --
 -- Name: tags_tid_seq; Type: SEQUENCE SET; Schema: public; Owner: mlpvc-rr
 --
 
-SELECT pg_catalog.setval('tags_tid_seq', 338, true);
+SELECT pg_catalog.setval('tags_tid_seq', 339, true);
 
 
 --
