@@ -82,7 +82,7 @@ DocReady.push(function Colorguide(){
 				position: { my: 'bottom center', at: 'top center', viewport: true },
 				style: { classes: 'qtip-see-thru' }
 			});
-		}).off('click mousedown').on('click',function(e){
+		}).off('mousedown touchstart').on('click',function(e){
 			e.preventDefault();
 			var $this = $(this),
 				copy = $this.html().trim();
