@@ -20,14 +20,15 @@ if (!empty($Database)){ ?>
 	</section>
 <?php
 	if ($view === 'episode' && !empty($CurrentEpisode)){
-		$CurrentEpisode['willair'] = gmdate('c', strtotime('+'.(!$CurrentEpisode['twoparter'] ? '30' : '60').' minutes',strtotime($CurrentEpisode['airs']))); ?>
+		$willairtime = strtotime('+'.(!$CurrentEpisode['twoparter'] ? '30' : '60').' minutes',strtotime($CurrentEpisode['airs']));
+		$CurrentEpisode['willair'] = gmdate('c', $willairtime); ?>
 	<section id="voting">
 		<h2><?=$CurrentEpisode['season']==0?'Movie':'Episode'?> rating</h2>
 		<?=Episode::GetSidebarVoting($CurrentEpisode)?>
 	</section>
 <?php
-		$rluntil = strtotime($CurrentEpisode['airs']);
-		if (Episode::IsLatest($CurrentEpisode) && $rluntil < time() - (Time::$IN_SECONDS['hour']*4)){ ?>
+
+		if (Episode::IsLatest($CurrentEpisode) && time() > $willairtime && $willairtime + (Time::$IN_SECONDS['hour']*4) > time()){ ?>
 	<section id="live-update">
 		<h2>Live reload</h2>
 		<p>The episode has just aired, and posts are likely changing faster than usual.</p>
