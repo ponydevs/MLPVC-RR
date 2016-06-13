@@ -11,7 +11,7 @@
 	class ImageProvider {
 		public $preview = false, $fullsize = false, $title = '', $provider, $id, $author = null;
 		public function __construct($url, $reqProv = null){
-			$provider = $this->get_provider(CoreUtils::Trim($url));
+			$provider = $this->GetProvider(CoreUtils::Trim($url));
 			if (!empty($reqProv)){
 				if (!is_array($reqProv))
 					$reqProv = array($reqProv);
@@ -19,9 +19,9 @@
 					throw new MismatchedProviderException($provider['name']);
 			}
 			$this->provider = $provider['name'];
-			$this->get_direct_url($provider['itemid']);
+			$this->_getDirectUrl($provider['itemid']);
 		}
-		private static $providerRegexes = array(
+		private static $_providerRegexes = array(
 			'(?:[A-Za-z\-\d]+\.)?deviantart\.com/art/(?:[A-Za-z\-\d]+-)?(\d+)' => 'dA',
 			'fav\.me/(d[a-z\d]{6,})' => 'fav.me',
 			'sta\.sh/([a-z\d]{10,})' => 'sta.sh',
@@ -31,7 +31,9 @@
 			'puu\.sh/([A-Za-z\d]+(?:/[A-Fa-f\d]+)?)' => 'puush',
 			'prntscr\.com/([\da-z]+)' => 'lightshot',
 		);
-		private static function test_provider($url, $pattern, $name){
+		private static $_allowedMimeTypes = array('image/png' => true,'image/jpeg' => true,'image/jpg' => true);
+		private static $_blockedMimeTypes = array('image/gif' => 'Animated GIFs');
+		private static function _testProvider($url, $pattern, $name){
 			$match = array();
 			if (regex_match(new RegExp("^(?:https?://(?:www\\.)?)?$pattern"), $url, $match))
 				return array(
@@ -40,18 +42,28 @@
 				);
 			return false;
 		}
-		public static function get_provider($url){
-			foreach (self::$providerRegexes as $pattern => $name){
-				$test = self::test_provider($url, $pattern, $name);
-				if ($test !== false) return $test;
+		public static function GetProvider($url){
+			foreach (self::$_providerRegexes as $pattern => $name){
+				$test = self::_testProvider($url, $pattern, $name);
+				if ($test !== false)
+					return $test;
 			}
 			throw new Exception("Unsupported provider. Try uploading your image to <a href='http://sta.sh' target='_blank'>sta.sh</a>");
 		}
-		private function get_direct_url($id){
+
+		private static function _checkImageAllowed($url, $ctype = null){
+			if (empty($ctype))
+				$ctype = get_headers($url, 1)['Content-Type'];
+			if (empty(self::$_allowedMimeTypes[$ctype]))
+				throw new Exception((!empty(self::$_blockedMimeTypes[$ctype])?self::$_blockedMimeTypes[$ctype].' are':"Content type \"$ctype\" is")." not allowed, please use a different image.");
+		}
+
+		private function _getDirectUrl($id){
 			switch ($this->provider){
 				case 'imgur':
 					$this->fullsize = "https://i.imgur.com/$id.png";
 					$this->preview = "https://i.imgur.com/{$id}m.png";
+					self::_checkImageAllowed($this->fullsize);
 				break;
 				case 'derpibooru':
 					$Data = @file_get_contents("http://derpibooru.org/$id.json");
@@ -65,6 +77,8 @@
 
 					$this->fullsize = $Data['representations']['full'];
 					$this->preview = $Data['representations']['small'];
+
+					self::_checkImageAllowed($this->fullsize, $Data['mime_type']);
 				break;
 				case 'puush':
 					$path = "http://puu.sh/{$id}";
@@ -75,6 +89,7 @@
 					if ($image === 'You do not have access to view that puush.')
 						throw new Exception('The requested image is a private Puu.sh and the token is missing from the URL');
 
+					self::_checkImageAllowed($path);
 					$this->fullsize = $this->preview = $path;
 				break;
 				case 'dA':
@@ -98,6 +113,9 @@
 					$this->fullsize = $CachedDeviation['fullsize'];
 					$this->title = $CachedDeviation['title'];
 					$this->author = $CachedDeviation['author'];
+
+					self::_checkImageAllowed($this->preview);
+					self::_checkImageAllowed($this->fullsize);
 				break;
 				case 'lightshot':
 					$page = @file_get_contents("http://prntscr.com/$id");
@@ -107,10 +125,10 @@
 						throw new Exception('The requested image could not be found');
 
 					$this->provider = 'imgur';
-					$this->get_direct_url($_match[1]);
+					$this->_getDirectUrl($_match[1]);
 				break;
 				default:
-					throw new Exception('The image could not be retrieved');
+					throw new Exception("The image could not be retrieved due to a missing handler for the provider \"{$this->provider}\"");
 			}
 
 			$this->preview = URL::MakeHttps($this->preview);
