@@ -1026,7 +1026,7 @@ $(function(){
 				};
 			};
 		function WSNotifications(signedIn){
-			if (/^https/.test(location.protocol) || !window.io || !signedIn)
+			if (!window.io || !signedIn || $sidebar.find('.usercard .name').text() !== 'DJDavid98')
 				return;
 
 			var $notifCnt = $sbToggle.children('.notif-cnt'),
@@ -1057,7 +1057,7 @@ $(function(){
 			if (conn)
 				return;
 
-			conn = io(location.protocol+'//'+location.hostname+'/ws', { reconnectionDelay: 5000 });
+			conn = io('https://ws.'+location.hostname+':8667/', { reconnectionDelay: 5000 });
 			conn.on('connect', function(){
 				console.log('[WS] Connected, authenticating…');
 				conn.emit('auth', {access:$.getAccessToken()}, wsdecoder(function(data){

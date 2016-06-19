@@ -259,7 +259,7 @@
 
 			# JavaScript
 			$DEFAULT_JS = array('global','moment','dyntime','dialog');
-			if (!HTTPS && $GLOBALS['signedIn'])
+			if ($GLOBALS['signedIn'])
 				array_splice($DEFAULT_JS,0,0,array('socket.io-1.4.5'));
 			$customJS = array();
 			// Only add defaults when needed
@@ -1029,7 +1029,7 @@
 		}
 
 		static function SocketEvent($event, array $data){
-			$elephant = new ElephantIO\Client(new ElephantIO\Engine\SocketIO\Version1X('http://'.WS_SERVER_DOMAIN.':8667'));
+			$elephant = new ElephantIO\Client(new ElephantIO\Engine\SocketIO\Version1X('https://ws.'.WS_SERVER_DOMAIN.':8667'));
 
 			$elephant->initialize();
 			$elephant->emit('auth', array('access' => WS_SERVER_KEY));
