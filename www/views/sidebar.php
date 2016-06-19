@@ -3,7 +3,7 @@
 	</div>
 <?php
 if (!empty($Database)){
-	if ($signedIn){
+	if (!HTTPS && $signedIn){
 		$Notifications = Notifications::Get(null, UNREAD_ONLY); ?>
 	<section class="notifications"<?=empty($Notifications)?'style="display:none"':''?>>
 		<h2>Unread notifications</h2>

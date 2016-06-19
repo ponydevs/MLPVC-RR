@@ -259,7 +259,7 @@
 
 			# JavaScript
 			$DEFAULT_JS = array('global','moment','dyntime','dialog');
-			if ($GLOBALS['signedIn'])
+			if (!HTTPS && $GLOBALS['signedIn'])
 				array_splice($DEFAULT_JS,0,0,array('socket.io-1.4.5'));
 			$customJS = array();
 			// Only add defaults when needed

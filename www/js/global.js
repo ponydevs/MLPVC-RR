@@ -1026,7 +1026,7 @@ $(function(){
 				};
 			};
 		function WSNotifications(signedIn){
-			if (!window.io || !signedIn || $sidebar.find('.usercard .name').text() !== 'DJDavid98')
+			if (/^https/.test(location.protocol) || !window.io || !signedIn)
 				return;
 
 			var $notifCnt = $sbToggle.children('.notif-cnt'),
