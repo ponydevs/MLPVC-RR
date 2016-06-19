@@ -980,6 +980,8 @@ $(function(){
 		if (link.host !== location.host) return true;
 
 		if (link.pathname === location.pathname && link.search === location.search){
+			if (link.protcol !== location.protocol)
+				return true;
 			e.preventDefault();
 			window._trighashchange = link.hash !== location.hash;
 			if (window._trighashchange === true)
