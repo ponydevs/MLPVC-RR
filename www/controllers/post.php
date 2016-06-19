@@ -125,10 +125,11 @@
 					if (!$Database->where('id', $Post['id'])->update("{$type}s", array('lock' => true)))
 						CoreUtils::Respond(ERR_DB_FAIL);
 
-					Log::Action('post_lock',array(
+					$postdata = array(
 						'type' => $type,
 						'id' => $Post['id']
-					));
+					);
+					Log::Action('post_lock',$postdata);
 
 					$Post['lock'] = true;
 					$response = array(
@@ -137,6 +138,7 @@
 					);
 					if ($isUserReserver)
 						$response['message'] .= " Thank you for your contribution!<div class='align-center'><apan class='sideways-smiley-face'>;)</span></div>";
+					else Notifications::Send($Post['reserved_by'], 'post-approved', $postdata);
 					CoreUtils::Respond($response);
 				break;
 				case 'unlock':
@@ -201,10 +203,9 @@
 						CoreUtils::Respond();
 
 					$update = Posts::CheckRequestFinishingImage($Post['reserved_by']);
+
 					$finished_at = Posts::ValidateFinishedAt();
-					if (isset($finished_at))
-						$update['finished_at'] = date('c', $finished_at);
-					else $update['finished_at'] = date('c');
+					$update['finished_at'] = isset($finished_at) ? date('c', $finished_at) : date('c');
 
 					if (!$Database->where('id', $Post['id'])->update("{$type}s",$update))
 						CoreUtils::Respond(ERR_DB_FAIL);
@@ -218,11 +219,13 @@
 						$message .= "<p>The image appears to be in the group gallery already, so we marked it as approved.</p>";
 
 						Log::Action('post_lock',$postdata);
+						if ($Post['reserved_by'] !== $currentUser['id'])
+							Notifications::Send($Post['reserved_by'], 'post-approved', $postdata);
 					}
 					if ($type === 'request'){
 						$u = User::Get($Post['requested_by'],'id','name');
 						if (!empty($u) && $Post['requested_by'] !== $currentUser['id']){
-							Notifications::Send($u['id'], 'finish', $postdata);
+							Notifications::Send($u['id'], 'post-finished', $postdata);
 							$message .= "<p><strong>{$u['name']}</strong> has been notified.</p>";
 						}
 					}

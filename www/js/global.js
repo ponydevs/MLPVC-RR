@@ -980,8 +980,10 @@ $(function(){
 		if (link.host !== location.host) return true;
 
 		if (link.pathname === location.pathname && link.search === location.search){
-			if (link.protcol !== location.protocol)
+			if (link.protocol !== location.protocol){
+				console.log(link.protcol,location.protocol);
 				return true;
+			}
 			e.preventDefault();
 			window._trighashchange = link.hash !== location.hash;
 			if (window._trighashchange === true)
@@ -1069,7 +1071,7 @@ $(function(){
 			conn.on('notif-cnt', wsdecoder(function(data){
 				console.log('[WS] Got notification count (data.cnt=%d)', parseInt(data.cnt||0));
 				if (!data.cnt){
-					$notifSb.stop().slideUp(undefined,function(){
+					$notifSb.stop().slideUp('fast',function(){
 						$notifSbList.empty();
 						$notifCnt.empty();
 					});
@@ -1077,6 +1079,7 @@ $(function(){
 				else $.post('/notifications/get',$.mkAjaxHandler(function(){
 					$notifCnt.text(data.cnt);
 					$notifSbList.html(this.list);
+					window.updateTimes();
 					$notifSb.stop().slideDown();
 				}));
 			}));

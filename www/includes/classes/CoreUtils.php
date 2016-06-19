@@ -1029,7 +1029,15 @@
 		}
 
 		static function SocketEvent($event, array $data){
-			$elephant = new ElephantIO\Client(new ElephantIO\Engine\SocketIO\Version1X('https://ws.'.WS_SERVER_DOMAIN.':8667'));
+			$options = array();
+			if (regex_match(new RegExp('\.lc$'), WS_SERVER_DOMAIN))
+				$options['context'] = array(
+					"ssl" => array(
+				        "verify_peer" => false,
+				        "verify_peer_name" => false,
+				    ),
+				);
+			$elephant = new ElephantIO\Client(new ElephantIO\Engine\SocketIO\Version1X('https://ws.'.WS_SERVER_DOMAIN.':8667', $options));
 
 			$elephant->initialize();
 			$elephant->emit('auth', array('access' => WS_SERVER_KEY));

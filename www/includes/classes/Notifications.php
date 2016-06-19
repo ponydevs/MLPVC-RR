@@ -2,7 +2,8 @@
 
 	class Notifications {
 		private static $_notifTypes = array(
-			'finish' => true,
+			'post-finished' => true,
+			'post-approved' => true,
 		);
 		
 		static function Get($UserID = null, $only = false){
@@ -32,14 +33,21 @@
 			$HTML = $wrap ? '<ul class="notif-list">' : '';
 			
 			foreach ($Notifications as $n){
-				$data = JSON::Decode($n['data']);
+				$data = !empty($n['data']) ? JSON::Decode($n['data']) : null;
 				switch ($n['type']){
-					case "finish":
+					case "post-finished":
 						$Post = $Database->where('id', $data['id'])->getOne("{$data['type']}s");
 						$Episode = Episode::GetActual($Post['season'],$Post['episode'], ALLOW_SEASON_ZERO);
 						$EpID = Episode::FormatTitle($Episode, AS_ARRAY, 'id');
 						$url = "/episode/$EpID#{$data['type']}-{$data['id']}";
-						$HTML .= self::_getNotifElem("Your <a href='$url'>request</a> under $EpID has been fulfilled", $n['id']);
+						$HTML .= self::_getNotifElem("Your <a href='$url'>request</a> under $EpID has been fulfilled", $n);
+					break;
+					case "post-approved":
+						$Post = $Database->where('id', $data['id'])->getOne("{$data['type']}s");
+						$Episode = Episode::GetActual($Post['season'],$Post['episode'], ALLOW_SEASON_ZERO);
+						$EpID = Episode::FormatTitle($Episode, AS_ARRAY, 'id');
+						$url = "/episode/$EpID#{$data['type']}-{$data['id']}";
+						$HTML .= self::_getNotifElem("A <a href='$url'>post</a> you reserved under $EpID has been added do the club gallery", $n);
 					break;
 				}
 			}
@@ -47,8 +55,8 @@
 			return $HTML.($wrap?'</ul>':'');
 		}
 		
-		private static function _getNotifElem($html,$id){
-			return "<li>$html <span class='mark-read typcn typcn-tick' title='Mark read' data-id='$id'></span></li>";
+		private static function _getNotifElem($html,$n){
+			return "<li>$html <span class='nobr'>&ndash; ".Time::Tag(strtotime($n['sent_at']))."<span class='mark-read typcn typcn-tick' title='Mark read' data-id='{$n['id']}'></span></span></li>";
 		}
 		
 		static function Send($to, $type, $data){

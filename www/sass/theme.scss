@@ -286,7 +286,7 @@ header {
 						background: #fff;
 						border-top-left-radius: 10px;
 						border-bottom-right-radius: 10px;
-						font-size: 14px;
+						font-size: 16px;
 						font-weight: bold;
 						display: inline-block;
 						width: #{$toggleSize / 3};
@@ -504,13 +504,18 @@ header, #sidebar .mobile-nav {
 						color: lighten($LinkHover, 20);
 					}
 				}
-				.mark-read {
-					cursor: pointer;
-					padding: 1px 3px;
-					border-radius: 3px;
-					background: $NGreenBG;
-					color: $NGreen;
-					margin-left: .5em;
+
+				.nobr {
+					white-space: nowrap;
+
+					.mark-read {
+						cursor: pointer;
+						padding: 1px 3px;
+						border-radius: 3px;
+						background: $NGreenBG;
+						color: $NGreen;
+						margin-left: .5em;
+					}
 				}
 			}
 		}
