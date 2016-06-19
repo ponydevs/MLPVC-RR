@@ -7,13 +7,12 @@ button, .btn, input[type=button] {
 	border-radius: 3px;
 	color: #fff;
 	background-color: #777;
-	$vpadding: 2px;
+	$vpadding: 3px;
 	padding: $vpadding 5px;
 	font-family: inherit;
 	$fontsize: 16px;
 	font-size: $fontsize;
 	line-height: $fontsize;
-	height: (1.2*$fontsize) + (2*$vpadding) + (2*$border);
 	text-decoration: none;
 	user-select: none;
 	opacity: .85;
@@ -32,7 +31,6 @@ button, .btn, input[type=button] {
 		$fontsize: 22px;
 		font-size: $fontsize;
 		line-height: $fontsize;
-	height: (1.2*$fontsize) + (2*$vpadding) + (2*$border);
 	}
 	&.blue {
 		color: $NBlueBG !important;
