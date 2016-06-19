@@ -63,7 +63,7 @@
 				for ($lix = 1; $lix < $labelCount-1; $lix++){
 					$diff = $Data['labels'][$lix] - $Data['labels'][$lix-1];
 					//var_dump(array(date('Y-m-d', $Data['labels'][$lix-1]),date('Y-m-d', $Data['labels'][$lix]),$diff));
-					if ($diff > ONE_DAY){
+					if ($diff > Time::$IN_SECONDS['day']){
 						$continue = true;
 						//var_dump('breaks');
 						break;

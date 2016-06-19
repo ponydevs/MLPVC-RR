@@ -1,5 +1,5 @@
 /* jshint bitwise: false */
-/* global $w,$d,$head,$body,$header,$sidebar,$sbToggle,$main,$footer,console,prompt,HandleNav,getTimeDiff,one,createTimeStr,PRINTABLE_ASCII_PATTERN */
+/* global $w,$d,$head,$navbar,$body,$header,$sidebar,$sbToggle,$main,$footer,console,prompt,HandleNav,getTimeDiff,one,createTimeStr,PRINTABLE_ASCII_PATTERN,io */
 (function($){
 	'use strict';
 
@@ -190,6 +190,12 @@
 			return n[1];
 		else throw new Error('Missing CSRF_TOKEN');
 	};
+	// Get Access token from cookies
+	$.getAccessToken = function(){
+		var n = document.cookie.match(/access=([^;]+)(?:$|;)/i);
+		if (n && n.length)
+			return n[1];
+	};
 	$.ajaxPrefilter(function(event, origEvent){
 		if ((origEvent.type||event.type).toUpperCase() !== 'POST')
 			return;
@@ -212,9 +218,9 @@
 				$w.triggerHandler('ajaxerror',[].slice.call(arguments));
 			$body.removeClass('loading');
 		},
-	    beforeSend: function(_, settings) {
-	        lasturl = settings.url;
-	    },
+		beforeSend: function(_, settings) {
+			lasturl = settings.url;
+		},
 		statusCode: {
 			401: function(){
 				$.Dialog.fail(undefined, "Cross-site Request Forgery attack detected. Please notify the site administartors.");
@@ -349,10 +355,10 @@
 
 	$.fn.select = function(){
 		var range = document.createRange();
-	    range.selectNodeContents(this.get(0));
-	    var sel = window.getSelection();
-	    sel.removeAllRanges();
-	    sel.addRange(range);
+		range.selectNodeContents(this.get(0));
+		var sel = window.getSelection();
+		sel.removeAllRanges();
+		sel.addRange(range);
 	};
 
 	var shortHex = /^#?([A-Fa-f0-9]{3})$/;
@@ -465,7 +471,7 @@
 
 					$.Dialog.close();
 					localStorage.setItem('cookie_consent',1);
-					$this.attr('disabled', true);
+					$this.disable();
 
 					var redirect = function(){
 						$.Dialog.wait(false, 'Redirecting you to DeviantArt');
@@ -698,7 +704,8 @@
 							sidebar = this.sidebar,
 							footer = this.footer,
 							pagetitle = this.title,
-							avatar = this.avatar;
+							avatar = this.avatar,
+							signedIn = this.signedIn;
 
 						$main.empty();
 						var doreload = false,
@@ -781,6 +788,9 @@
 								console.groupEnd();
 								$body.removeClass('loading');
 								$main.removeClass('pls-wait');
+
+								if (signedIn)
+									window.WSNotifications(signedIn);
 
 								$.callCallback(callback);
 								//noinspection JSUnusedAssignment
@@ -969,10 +979,17 @@ $(function(){
 		var link = this;
 		if (link.host !== location.host) return true;
 
-		if (link.pathname === location.pathname && link.search === location.search)
-			return true;
+		if (link.pathname === location.pathname && link.search === location.search){
+			e.preventDefault();
+			window._trighashchange = link.hash !== location.hash;
+			if (window._trighashchange === true)
+				history.replaceState(history.state,'',link.href);
+			setTimeout(function(){ delete window._trighashchange },1);
+			$w.triggerHandler('hashchange');
+			return;
+		}
 
-		// Check if link seems to has a file extension
+		// Check if link seems to have a file extension
 		if (!/^.*\/[^.]*$/.test(link.pathname))
 			return true;
 
@@ -984,6 +1001,8 @@ $(function(){
 	});
 
 	$w.on('popstate',function(e){
+		if (typeof window._trighashchange !== 'undefined')
+			return;
 		var state = e.originalEvent.state,
 			goto = function(url,callback){ $.Navigation.visit(url, callback, true) };
 
@@ -991,6 +1010,81 @@ $(function(){
 			return $w.trigger('nav-popstate', [state, goto]);
 		goto(location.href);
 	});
+
+	(function(){
+		var conn,
+			wsdecoder = function(f){
+				return function(data){
+					if (typeof data === 'string'){
+						try {
+							data = JSON.parse(data);
+						}
+						catch(err){}
+					}
+
+					f(data);
+				};
+			};
+		function WSNotifications(signedIn){
+			if (!window.io || !signedIn || $sidebar.find('.usercard .name').text() !== 'DJDavid98')
+				return;
+
+			var $notifCnt = $sbToggle.children('.notif-cnt'),
+				$notifSb = $sidebar.children('.notifications'),
+				$notifSbList = $notifSb.children('.notif-list');
+
+			$notifSbList.off('click','.mark-read').on('click','.mark-read',function(e){
+				e.preventDefault();
+
+				var $el = $(this);
+				if ($el.is(':disabled'))
+					return;
+				$el.css('opacity', '.5').disable();
+
+				var nid = $el.attr('data-id');
+				$.post('/notifications/mark-read/'+nid,$.mkAjaxHandler(function(){
+					if (this.status)
+						return;
+
+					$el.css('opacity', '').enable();
+					return $.Dialog.fail('Mark notification as read', this.message);
+				}));
+			});
+
+			if ($notifCnt.length === 0)
+				$notifCnt = $.mk('span').attr({'class':'notif-cnt',title:'New notifications'}).prependTo($sbToggle);
+
+			if (conn)
+				return;
+
+			conn = io(location.protocol+'//'+location.hostname+'/ws', { reconnectionDelay: 5000 });
+			conn.on('connect', function(){
+				console.log('[WS] Connected, authenticating…');
+				conn.emit('auth', {access:$.getAccessToken()}, wsdecoder(function(data){
+					console.log('[WS] '+data.message);
+				}));
+			});
+			conn.on('notif-cnt', wsdecoder(function(data){
+				console.log('[WS] Got notification count (data.cnt=%d)', parseInt(data.cnt||0));
+				if (!data.cnt){
+					$notifSb.stop().slideUp(undefined,function(){
+						$notifSbList.empty();
+						$notifCnt.empty();
+					});
+				}
+				else $.post('/notifications/get',$.mkAjaxHandler(function(){
+					$notifCnt.text(data.cnt);
+					$notifSbList.html(this.list);
+					$notifSb.stop().slideDown();
+				}));
+			}));
+			conn.on('disconnect',function(){
+				console.log('[WS] Disconnected');
+			});
+		}
+		WSNotifications(window.signedIn);
+		window.WSNotifications = function(uid){WSNotifications(uid)};
+	})();
 
 	$.Navigation.docReady();
 	console.log('%cDocument ready','color:green');

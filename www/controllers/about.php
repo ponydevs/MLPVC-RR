@@ -2,7 +2,7 @@
 
 	if (POST_REQUEST){
 		CSRFProtection::Protect();
-		$StatCacheDuration = 5*ONE_HOUR;
+		$StatCacheDuration = 5*Time::$IN_SECONDS['hour'];
 
 		$_match = array();
 		if (!empty($data) && regex_match(new RegExp('^stats-(posts|approvals)$'),$data,$_match)){

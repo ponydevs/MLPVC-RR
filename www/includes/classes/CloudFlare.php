@@ -32,7 +32,7 @@
 		 */
 		private function _getCFIpRanges(){
 			$cachefile = APPATH.'../cf-ips.txt';
-			if (!file_exists($cachefile) || filemtime($cachefile) > ONE_HOUR*5){
+			if (!file_exists($cachefile) || filemtime($cachefile) > Time::$IN_SECONDS['hour']*5){
 				$data = file_get_contents('https://www.cloudflare.com/ips-v4');
 				file_put_contents($cachefile, $data);
 			}

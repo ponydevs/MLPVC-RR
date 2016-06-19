@@ -2,7 +2,14 @@
 		<nav><ul><?=CoreUtils::GetNavigation()?></ul></nav>
 	</div>
 <?php
-if (!empty($Database)){ ?>
+if (!empty($Database)){
+	if ($signedIn){
+		$Notifications = Notifications::Get(null, UNREAD_ONLY); ?>
+	<section class="notifications"<?=empty($Notifications)?'style="display:none"':''?>>
+		<h2>Unread notifications</h2>
+		<?=Notifications::GetHTML($Notifications)?>
+	</section>
+<?  } ?>
 	<section class="<?=$signedIn?'welcome':'login'?>">
 		<h2><?=$signedIn?'Signed in as':'Welcome!'?></h2>
 <?php
@@ -49,10 +56,12 @@ if (!empty($Database)){ ?>
 <?php
 	}
 	echo Episode::GetSidebarUpcoming();
-} else { ?>
+}
+else { ?>
 
 	<section class="login">
 		<h2>Welcome!</h2>
 		<p>We're having some technical difficulties and signing in is not possible at the moment. Please check back later.</p>
 	</section>
-<? }
+<?php
+}

@@ -13,10 +13,10 @@
 				return;
 			$path = APPATH.'includes/classes/'.str_replace('\\','/',$class).'.php';
 			if (!file_exists($path))
-				throw new Exception("Could not load class $class: file ($path) not found");
+				throw new Exception("Could not load class/interface $class: file ($path) not found");
 			require $path;
-			if (!class_exists($class))
-				throw new Exception("Could not load class $class: class not found in $path");
+			if (!class_exists($class) && !interface_exists($class))
+				throw new Exception("Could not load class/interface $class: definition not found in $path");
 		}
 
 		/**
@@ -246,7 +246,7 @@
 			if (isset($options['title']))
 				$GLOBALS['title'] = $options['title'];
 
-			// SE crawlign disable
+			// SE crawling disable
 			if (in_array('no-robots', $options))
 				$norobots = true;
 
@@ -259,6 +259,8 @@
 
 			# JavaScript
 			$DEFAULT_JS = array('global','moment','dyntime','dialog');
+			if ($GLOBALS['signedIn'])
+				array_splice($DEFAULT_JS,0,0,array('socket.io-1.4.5'));
 			$customJS = array();
 			// Only add defaults when needed
 			if (array_search('no-default-js', $options) === false)
@@ -309,6 +311,7 @@
 					'footer' => CoreUtils::GetFooter(WITH_GIT_INFO),
 					'avatar' => $GLOBALS['signedIn'] ? $GLOBALS['currentUser']['avatar_url'] : GUEST_AVATAR,
 					'responseURL' => $_SERVER['REQUEST_URI'],
+					'signedIn' => $GLOBALS['signedIn'],
 				));
 			}
 		}
@@ -459,7 +462,7 @@
 					break;
 					case "string":
 						// regex test
-						if (regex_match(new RegExp('^/(.*)/([a-z]*)$'), $value, $regex_parts))
+						if (regex_match(new RegExp('^/(.*)/([a-z]*)$','u'), $value, $regex_parts))
 							$value = (new RegExp($regex_parts[1],$regex_parts[2]))->jsExport();
 						else $value = JSON::Encode($value);
 					break;
@@ -1023,5 +1026,14 @@
 			header('Content-Transfer-Encoding: Binary');
 			header("Content-disposition: attachment; filename=\"$name\"");
 			die($contents);
+		}
+
+		static function SocketEvent($event, array $data){
+			$elephant = new ElephantIO\Client(new ElephantIO\Engine\SocketIO\Version1X('http://'.WS_SERVER_DOMAIN.':8667'));
+
+			$elephant->initialize();
+			$elephant->emit('auth', array('access' => WS_SERVER_KEY));
+			$elephant->emit($event, $data);
+			$elephant->close();
 		}
 	}

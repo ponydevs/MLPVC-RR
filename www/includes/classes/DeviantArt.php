@@ -97,7 +97,7 @@
 				$ID = CoreUtils::NomralizeStashID($ID);
 
 			$Deviation = $Database->where('id',$ID)->getOne('deviation_cache');
-			if (!self::$_CACHE_BAILOUT && (empty($Deviation) && (!$mass || self::$_MASS_CACHE_USED <= self::$_MASS_CACHE_LIMIT)) || (!empty($Deviation['updated_on']) && strtotime($Deviation['updated_on'])+(ONE_HOUR*5) < time())){
+			if (!self::$_CACHE_BAILOUT && (empty($Deviation) && (!$mass || self::$_MASS_CACHE_USED <= self::$_MASS_CACHE_LIMIT)) || (!empty($Deviation['updated_on']) && strtotime($Deviation['updated_on'])+(Time::$IN_SECONDS['hour']*5) < time())){
 				try {
 					$json = self::oEmbed($ID, $type);
 				}
@@ -238,7 +238,7 @@
 				'scope' => $json['scope'],
 			);
 
-			$cookie = random_bytes(64);
+			$cookie = bin2hex(random_bytes(64));
 			$AuthData['token'] = sha1($cookie);
 
 			$browser = CoreUtils::DetectBrowser();
@@ -278,7 +278,7 @@
 			$Database->rawQuery("DELETE FROM sessions WHERE \"user\" = ? && lastvisit <= NOW() - INTERVAL '$interval'", array($UserID));
 
 
-			Cookie::set('access', $cookie, ONE_YEAR);
+			Cookie::set('access', $cookie, Time::$IN_SECONDS['year']);
 		}
 
 		/**

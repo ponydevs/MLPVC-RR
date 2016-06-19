@@ -577,6 +577,43 @@ ALTER SEQUENCE log_entryid_seq OWNED BY log.entryid;
 
 
 --
+-- Name: notifications; Type: TABLE; Schema: public; Owner: mlpvc-rr
+--
+
+CREATE TABLE notifications (
+    id integer NOT NULL,
+    "user" uuid NOT NULL,
+    type character varying(15) NOT NULL,
+    data text NOT NULL,
+    sent_at timestamp with time zone DEFAULT now() NOT NULL,
+    read_at timestamp with time zone
+);
+
+
+ALTER TABLE notifications OWNER TO "mlpvc-rr";
+
+--
+-- Name: notifications_id_seq; Type: SEQUENCE; Schema: public; Owner: mlpvc-rr
+--
+
+CREATE SEQUENCE notifications_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE notifications_id_seq OWNER TO "mlpvc-rr";
+
+--
+-- Name: notifications_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER SEQUENCE notifications_id_seq OWNED BY notifications.id;
+
+
+--
 -- Name: requests; Type: TABLE; Schema: public; Owner: mlpvc-rr
 --
 
@@ -854,6 +891,13 @@ ALTER TABLE ONLY "log__un-banish" ALTER COLUMN entryid SET DEFAULT nextval('"log
 --
 
 ALTER TABLE ONLY log__userfetch ALTER COLUMN entryid SET DEFAULT nextval('log__userfetch_entryid_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER TABLE ONLY notifications ALTER COLUMN id SET DEFAULT nextval('notifications_id_seq'::regclass);
 
 
 --
@@ -1585,6 +1629,24 @@ REVOKE ALL ON SEQUENCE log_entryid_seq FROM PUBLIC;
 REVOKE ALL ON SEQUENCE log_entryid_seq FROM "mlpvc-rr";
 GRANT ALL ON SEQUENCE log_entryid_seq TO "mlpvc-rr";
 GRANT ALL ON SEQUENCE log_entryid_seq TO postgres;
+
+
+--
+-- Name: notifications; Type: ACL; Schema: public; Owner: mlpvc-rr
+--
+
+REVOKE ALL ON TABLE notifications FROM PUBLIC;
+REVOKE ALL ON TABLE notifications FROM "mlpvc-rr";
+GRANT ALL ON TABLE notifications TO "mlpvc-rr";
+
+
+--
+-- Name: notifications_id_seq; Type: ACL; Schema: public; Owner: mlpvc-rr
+--
+
+REVOKE ALL ON SEQUENCE notifications_id_seq FROM PUBLIC;
+REVOKE ALL ON SEQUENCE notifications_id_seq FROM "mlpvc-rr";
+GRANT ALL ON SEQUENCE notifications_id_seq TO "mlpvc-rr";
 
 
 --

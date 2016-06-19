@@ -16,6 +16,23 @@ DocReady.push(function Episode(){
 		},
 		resetLiveUpdTimer;
 
+	window._HighlightHash = function (e){
+		$('.highlight').removeClass('highlight');
+
+		var $anchor = $(location.hash);
+		if (!$anchor.length)
+			return;
+		$anchor.addClass('highlight');
+
+		setTimeout(function(){
+			$.scrollTo($anchor.offset().top - $navbar.outerHeight() - 10, 500, function(){
+				if (typeof e === 'object' && e.type === 'load')
+					$.Dialog.close();
+			});
+		}, 1);
+	};
+	$w.on('hashchange', window._HighlightHash);
+
 	if (liveUpdatesVisible){
 		var starttime,
 			seconds = 30,
@@ -43,7 +60,7 @@ DocReady.push(function Episode(){
 							if (cnt < total)
 								return;
 
-							HighlightHash();
+							window._HighlightHash();
 							resetLiveUpdTimer();
 							if (closeDialog)
 								$.Dialog.close();
@@ -579,13 +596,6 @@ DocReady.push(function Episode(){
 					});
 				});
 			}
-		});
-		$li.children('em').children('a:not(.da-userlink)').on('click',function(e){
-			e.preventDefault();
-			e.stopPropagation();
-
-			history.replaceState(history.state,'',this.href);
-			HighlightHash();
 		});
 		var $actions = $li.find('.actions').children();
 		$actions.filter('.cancel').off('click').on('click',function(){
@@ -1252,24 +1262,7 @@ DocReady.push(function Episode(){
 	}
 	$('.post-form').each($.fn.formBind);
 
-	function HighlightHash(e){
-		$('.highlight').removeClass('highlight');
-
-		var $anchor = $(location.hash);
-		if (!$anchor.length)
-			return;
-		$anchor.addClass('highlight');
-
-		setTimeout(function(){
-			$.scrollTo($anchor.offset().top - $navbar.outerHeight() - 10, 500, function(){
-				if (typeof e === 'object' && e.type === 'load')
-					$.Dialog.close();
-			});
-		}, 1);
-	}
-	$w.on('hashchange', HighlightHash);
-
-	var $imgs = $content.find('img'),
+	var $imgs = $content.find('img[src]'),
 		total = $imgs.length, loaded = 0,
 		postHashRegex = /^#(request|reservation)-\d+$/,
 		showdialog = location.hash.length;
@@ -1305,7 +1298,7 @@ DocReady.push(function Episode(){
 				}
 			})
 			.always(function(){
-				HighlightHash({type:'load'});
+				window._HighlightHash({type:'load'});
 			});
 	}
 	else if (showdialog && postHashRegex.test(location.hash))
@@ -1316,4 +1309,6 @@ DocReady.push(function Episode(){
 	$('.fluidbox--opened').fluidbox('close');
 	if (typeof window._rlinterval === 'number')
 		clearInterval(window._rlinterval);
+	$w.off('hashchange', window._HighlightHash);
+	delete window._HighlightHash;
 });

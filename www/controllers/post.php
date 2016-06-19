@@ -209,19 +209,22 @@
 					if (!$Database->where('id', $Post['id'])->update("{$type}s",$update))
 						CoreUtils::Respond(ERR_DB_FAIL);
 
+					$postdata = array(
+						'type' => $type,
+						'id' => $Post['id']
+					);
 					$message = '';
 					if (isset($update['lock'])){
 						$message .= "<p>The image appears to be in the group gallery already, so we marked it as approved.</p>";
 
-						Log::Action('post_lock',array(
-							'type' => $type,
-							'id' => $Post['id']
-						));
+						Log::Action('post_lock',$postdata);
 					}
 					if ($type === 'request'){
 						$u = User::Get($Post['requested_by'],'id','name');
-						if (!empty($u) && $Post['requested_by'] !== $currentUser['id'])
-							$message .= "<p>You may want to let <strong>{$u['name']}</strong> know that their request has been fulfilled.</p>";
+						if (!empty($u)/* && $Post['requested_by'] !== $currentUser['id'] */){
+							Notifications::Send($u['id'], 'finish', $postdata);
+							$message .= "<p><strong>{$u['name']}</strong> has been notified.</p>";
+						}
 					}
 					CoreUtils::Respond($message ?? true, 1);
 				break;
