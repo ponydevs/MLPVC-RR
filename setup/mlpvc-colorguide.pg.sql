@@ -5588,14 +5588,15 @@ INSERT INTO tags VALUES
 (344, 'daring do', NULL, 'char', 1, NULL),
 (345, 'a.k. yearling', NULL, 'char', 1, NULL),
 (346, 'doctor caballeron', NULL, 'char', 1, NULL),
-(347, 'unnamed pony', NULL, 'cat', 1, NULL);
+(347, 'unnamed pony', NULL, 'cat', 1, NULL),
+(348, 'coco', NULL, 'char', 0, 292);
 
 
 --
 -- Name: tags_tid_seq; Type: SEQUENCE SET; Schema: public; Owner: mlpvc-rr
 --
 
-SELECT pg_catalog.setval('tags_tid_seq', 347, true);
+SELECT pg_catalog.setval('tags_tid_seq', 348, true);
 
 
 --

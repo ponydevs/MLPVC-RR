@@ -16514,7 +16514,8 @@
 				105,
 				106,
 				217,
-				292
+				292,
+				348
 			]
 		},
 		"46": {
@@ -27634,6 +27635,14 @@
 			"type": "cat",
 			"uses": 1,
 			"synonym_of": null
+		},
+		"348": {
+			"tid": 348,
+			"name": "coco",
+			"title": null,
+			"type": "char",
+			"uses": 0,
+			"synonym_of": 292
 		}
 	}
 }
