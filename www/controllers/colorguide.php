@@ -850,7 +850,6 @@
 	);
 
 	$_match = array();
-	// Matching IDs:                                    [-1-] [-2-]              [---3---]
 	if (regex_match(new RegExp('^(?:appearance|v)/(?:.*?(\d+)|(\d+)(?:-.*)?)(?:\.(png|svg|json|gpl))?'),$data,$_match)){
 		$asFile = !empty($_match[3]);
 		$Appearance = $CGDb->where('id', (int)($_match[1]??$_match[2]))->getOne('appearances', $asFile ? 'id,label,cm_dir,ishuman' : null);
