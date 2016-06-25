@@ -316,7 +316,6 @@
 			$Body = '';
 			$PathStart = '/episode/';
 			$displayed = false;
-			$LatestEp = Episode::GetLatest();
 			foreach ($Episodes as $i => $ep) {
 				$adminControls = $SeasonEpisode = $DataID = '';
 				$isMovie = $ep['season'] === 0;
@@ -343,11 +342,12 @@ HTML;
 				}
 
 				$star = '';
-				if ($ep['season'] === $LatestEp['season'] && $ep['episode'] === $LatestEp['episode']){
+				if (self::IsLatest($ep)){
 					$displayed = true;
 					$star = '<span class="typcn typcn-home" title="Curently visible on the homepage"></span> ';
 				}
-				$star .= '<span class="typcn typcn-media-play'.(!$ep['aired']?'-outline':'').'" title="'.($isMovie?'Movie':'Episode').' had'.($ep['aired']?' aired, voting enabled':'n\'t aired yet, voting disabled').'"></span> ';
+				if (!$ep['aired'])
+					$star .= '<span class="typcn typcn-media-play-outline" title="'.($isMovie?'Movie':'Episode').' didn\'t air yet, voting disabled"></span>&nbsp;';
 
 				$airs = Time::Tag($ep['airs'], EXTENDED, NO_DYNTIME);
 
