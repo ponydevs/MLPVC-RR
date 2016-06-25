@@ -606,7 +606,7 @@
 
 		// Navigation & page loading
 		var _xhr = false,
-			_loadCSS = function _loadCSS(css, callback){
+			_loadCSS = function _loadCSS(css, tick, callback){
 				if (!css.length)
 					return $.callCallback(callback);
 
@@ -629,11 +629,11 @@
 						error: function(){
 							console.log('%c#%d (%s)', 'color:red', item, requrl);
 						},
-						complete: function(){ _recursivelyLoadCSS(item+1) }
+						complete: function(){ tick(); _recursivelyLoadCSS(item+1) }
 					});
 				})(0);
 			},
-			_loadJS = function _loadJS(js, callback){
+			_loadJS = function _loadJS(js, tick, callback){
 				if (!js.length)
 					return $.callCallback(callback);
 
@@ -659,7 +659,7 @@
 						error: function(){
 							console.log('%c#%d (%s)', 'color:red', item, requrl);
 						},
-						complete: function(){ _recursivelyLoadJS(item+1) }
+						complete: function(){ tick(); _recursivelyLoadJS(item+1) }
 					});
 				})(0);
 			},
@@ -676,6 +676,10 @@
 				}
 
 				$body.addClass('loading');
+				var $loader = $header.children('.loader');
+				if ($loader.length === 0)
+					$loader = $.mk('div').attr('class','loader').appendTo($header);
+				$loader.css('width','0').addClass('loading');
 				var ajaxcall = $.ajax({
 					url: url,
 					data: {'via-js': true},
@@ -692,6 +696,8 @@
 							console.groupEnd();
 							return $.Dialog.fail('Navigation error', this.message);
 						}
+
+						$loader.css('width','20%');
 
 						url = new URL(this.responseURL).pathString+(new URL(url).hash);
 						$w.triggerHandler('unload');
@@ -763,8 +769,14 @@
 						console.groupEnd();
 						console.group('[AJAX-Nav] GET %s', url);
 
+						var loaded = 0,
+							total = css.length+js.length;
 						$w.trigger('beforeunload');
 						_loadCSS(css, function(){
+							loaded++;
+							console.log(loaded,total);
+							$loader.css('width', $.roundTo(100*(loaded/total), 2)+'%');
+						}, function(){
 							$head.children(CSSSelector.replace(/href/g,'data-remove=true')).remove();
 							$main.addClass('pls-wait').html(content);
 							$sidebar.html(sidebar);
@@ -783,6 +795,10 @@
 							module.lastLoadedPathname = window.location.pathname;
 
 							_loadJS(js, function(){
+								loaded++;
+								console.log(loaded,total);
+								$loader.css('width', $.roundTo(100*(loaded/total), 2)+'%');
+							}, function(){
 								$.Navigation.docReady();
 								console.log('%cDocument ready', 'color:green');
 								console.groupEnd();
@@ -793,6 +809,11 @@
 									window.WSNotifications(signedIn);
 
 								$.callCallback(callback);
+								setTimeout(function(){
+									if (_xhr === false)
+										$loader.removeClass('loading');
+								},300);
+
 								//noinspection JSUnusedAssignment
 								_xhr = false;
 							});

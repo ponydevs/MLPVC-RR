@@ -192,6 +192,26 @@ header {
 	height: $HeaderHeight;
 	@include navfoot;
 
+	> .loader {
+		position: absolute;
+		top: 0;
+		left: 0;
+		z-index: -1;
+		height: 100%;
+		background: rgba(0,255,0, .3);
+		background: linear-gradient(to right, rgba(0,255,0, .1) 50%, rgba(0,255,0, .3) 100%);
+		transition: opacity .1s linear;
+		overflow: hidden;
+
+		&:not(.loading) {
+			opacity: 0;
+
+			transition-property: opacity, width;
+			transition-duration: .1s, 2s;
+			transition-timing-function: linear, ease;
+		}
+	}
+
 	// Page layout - Header - Navigation
 	nav {
 		display: block;
