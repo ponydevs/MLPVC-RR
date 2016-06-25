@@ -230,18 +230,16 @@
 			global $CGDb;
 			$GroupTagIDs = array_keys(\CGUtils::$GroupTagIDs_Assoc);
 			$Sorted = array();
-			foreach($Appearances as $p){
-				$Tagged = $CGDb->rawQuery(
-					'SELECT tags.tid
-					FROM tagged
-					LEFT JOIN tags ON tagged.tid = tags.tid && tagged.ponyid = ?
-					WHERE tags.tid IN ('.implode(',',$GroupTagIDs).')', array($p['id']));
-				if (!empty($Tagged)){
-					if (count($Tagged) > 1)
-						usort($Tagged,function($a,$b) use ($GroupTagIDs){
-							return array_search($a['tid'], $GroupTagIDs) - array_search($b['tid'], $GroupTagIDs);
+			$Tagged = array();
+			foreach ($CGDb->where('tid IN ('.implode(',',$GroupTagIDs).')')->orderBy('ponyid','ASC')->get('tagged') as $row)
+				$Tagged[$row['ponyid']][] = $row['tid'];
+			foreach ($Appearances as $p){
+				if (!empty($Tagged[$p['id']])){
+					if (count($Tagged[$p['id']]) > 1)
+						usort($Tagged[$p['id']],function($a,$b) use ($GroupTagIDs){
+							return array_search($a, $GroupTagIDs) - array_search($b, $GroupTagIDs);
 						});
-					$tid = $Tagged[0]['tid'];
+					$tid = $Tagged[$p['id']][0];
 				}
 				else $tid = -1;
 				$Sorted[$tid][] = $p;
