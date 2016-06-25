@@ -86,9 +86,17 @@
 			font-weight: bold;
 			display: block;
 		}
-		form label {
-			input[type=checkbox], button {
-				vertical-align: middle;
+		form {
+			&:not(:last-child){
+				margin-bottom: 10px;
+			}
+			label {
+				input[type=checkbox], button {
+					vertical-align: middle;
+				}
+				.save {
+					margin: 0;
+				}
 			}
 		}
 		.sessions {
