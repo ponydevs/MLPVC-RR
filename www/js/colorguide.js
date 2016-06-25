@@ -145,6 +145,19 @@ DocReady.push(function Colorguide(){
 				style: { classes: 'qtip-link' }
 			});
 		});
+		$list.find('li strong > a.btn.darkblue:not(.tipped)').add($list.find('li > .sprite:not(.tipped)')).each(function(){
+			var $this = $(this),
+				isSprite = this.parentNode.nodeName.toLowerCase() === 'li';
+			$this.addClass('tipped').qtip({
+				content: {
+					text: "Most browsers display colors incorrectly. To ensure that the accuracy of the colors is preserved, "+
+					      "please download or copy the image, instead of using <kbd>PrintScreen</kbd> or programs that let you grab "+
+					      "colors directly from the browser."
+				},
+				position: { my: isSprite ? 'left center' : 'top center', at: isSprite ? 'right center' : 'bottom center', viewport: true },
+				style: { classes: 'qtip-pick-warn' }
+			});
+		});
 	}
 	window.tooltips = function(){tooltips()};
 

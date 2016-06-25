@@ -376,6 +376,14 @@ ul.colors {
 
 	@extend %qtip-custom;
 }
+.qtip-pick-warn {
+	background-color: $NOrangeBG;
+	border: 1px solid $NOrange;
+	box-shadow: 0 0 2px $NOrange;
+	color: $NOrange;
+	font-size: 1.05em;
+	line-height: 1.1em;
+}
 .qtip-link {
 	background-color: white;
 	color: $Link;
