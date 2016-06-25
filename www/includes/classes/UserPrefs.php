@@ -6,6 +6,7 @@
 			$_defaults = array(
 				'cg_itemsperpage' => 7,
 				'cg_hidesynon' => 0,
+				'cg_hideclrinfo' => 0,
 			);
 
 		/**
@@ -79,6 +80,7 @@
 						throw new Exception("$thing must be between 7 and 20");
 				break;
 				case "cg_hidesynon":
+				case "cg_hideclrinfo":
 					$value = (bool) $value;
 				break;
 			}

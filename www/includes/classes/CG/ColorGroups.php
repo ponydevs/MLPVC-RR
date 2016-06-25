@@ -86,7 +86,8 @@
 			if (!isset($AllColors))
 				$Colors = self::GetColors($Group['groupid']);
 			else $Colors = $AllColors[$Group['groupid']] ?? null;
-			if (!empty($Colors))
+			if (!empty($Colors)){
+				$extraInfo = !\UserPrefs::Get('cg_hideclrinfo');
 				foreach ($Colors as $i => $c){
 					$title = \CoreUtils::AposEncode($c['label']);
 					$color = '';
@@ -96,10 +97,18 @@
 					}
 
 					$append = "<span title='$title'>$color</span>";
-					if ($colorNames)
-						$append = "<div class='color-line'>$append<span>{$c['label']}</span></div>";
+					if ($colorNames){
+						$append = "<div class='color-line".(!$extraInfo || empty($color)?' no-detail':'')."'>$append<span><span class='label'>{$c['label']}";
+						if ($extraInfo && !empty($color)){
+							$rgb = \CoreUtils::Hex2Rgb($color);
+							$rgb = 'rgb('.implode(',',$rgb).')';
+							$append .= "</span><span class='ext'>$color &bull; $rgb";
+						}
+						$append .= '</span></div>';
+					}
 					$HTML .= $append;
-				};
+				}
+			}
 
 			if ($wrap) $HTML .= "</li>";
 

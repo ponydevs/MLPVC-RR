@@ -139,6 +139,15 @@ HTML;
 				</label>
 			</form>
 <?php       } ?>
+			<form action="/preference/set/cg_hideclrinfo">
+				<label>
+					<input type="checkbox" name="value" value="1"<?=UserPrefs::Get('cg_hideclrinfo')?' checked':''?> <?=!$sameUser?' disabled':''?>>
+					<span>Hide color details on appearance pages</span>
+<?php           if ($sameUser){ ?>
+					<button class="save typcn typcn-tick green" disabled>Save</button>
+<?php           } ?>
+				</label>
+			</form>
 		</section>
 		<section class="sessions">
 			<h2><?=$sameUser?User::$PROFILE_SECTION_PRIVACY_LEVEL['staff']:''?>Sessions</h2>
