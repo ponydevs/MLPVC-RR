@@ -1090,15 +1090,16 @@ $(function(){
 				}));
 			});
 			conn.on('notif-cnt', wsdecoder(function(data){
-				console.log('[WS] Got notification count (data.cnt=%d)', parseInt(data.cnt||0));
-				if (!data.cnt){
+				var cnt = parseInt(data.cnt||0, 10);
+				console.log('[WS] Got notification count (data.cnt=%d)', cnt);
+				if (!cnt){
 					$notifSb.stop().slideUp('fast',function(){
 						$notifSbList.empty();
 						$notifCnt.empty();
 					});
 				}
 				else $.post('/notifications/get',$.mkAjaxHandler(function(){
-					$notifCnt.text(data.cnt);
+					$notifCnt.text(cnt);
 					$notifSbList.html(this.list);
 					window.updateTimes();
 					$notifSb.stop().slideDown();
