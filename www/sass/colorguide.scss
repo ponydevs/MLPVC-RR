@@ -415,6 +415,7 @@ ul.colors {
 	font-size: 1.2em;
 	button {
 		font-size: 1em;
+		vertical-align: baseline;
 
 		&:not(:last-child) { margin-right: 5px }
 	}
