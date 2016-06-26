@@ -229,7 +229,7 @@
 				$.Dialog.fail(false, "Error 404: The requested endpoint ("+lasturl.replace(/</g,'&lt;').replace(/\//g,'/<wbr>')+") could not be found");
 			},
 			500: function(){
-				$.Dialog.fail(false, 'The request failed due to an internal server error. If this persists, please <a href="#feedback" class="send-feedback">let us know</a>!');
+				$.Dialog.fail(false, 'The request failed due to an internal server error. If this persists, please <a class="send-feedback">let us know</a>!');
 			},
 			503: function(){
 				$.Dialog.fail(false, 'The request failed because the server is temporarily unavailable. This whouldn\'t take too long, please try again in a few seconds.<br>If the problem still persist after a few minutes, please let us know by clicking the "Send feedback" link in the footer.');

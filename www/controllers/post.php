@@ -261,7 +261,7 @@
 		}
 
 		if (empty($update) || !$Database->where('id', $Post['id'])->update("{$type}s",$update))
-			CoreUtils::Respond('Nothing has been changed<br>If you tried to do something, then this is actually an error, which you should <a href="#feedback" class="send-feedback">tell us</a> about.');
+			CoreUtils::Respond('Nothing has been changed<br>If you tried to do something, then this is actually an error, which you should <a class="send-feedback">tell us</a> about.');
 
 		if (!empty($overdue))
 			Log::Action('res_overtake',array_merge(

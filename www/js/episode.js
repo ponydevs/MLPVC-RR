@@ -462,6 +462,7 @@ DocReady.push(function Episode(){
 	$.fn.bindDetails = function(){
 		$(this).find('a.detail').on('click',function(e){
 			e.preventDefault();
+			e.stopPropagation();
 
 			$.Dialog.wait('Voting details','Getting vote distribution information');
 

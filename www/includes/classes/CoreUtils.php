@@ -593,7 +593,7 @@
 				$append = ' | Render: '.number_format(microtime(true)-EXEC_START_MICRO, 4).'s | SQL Queries: '.($Database->query_count+($CGDb->query_count??0));
 			}
 
-			return ($with_git_info?self::GetFooterGitInfo():'')."<a class='issues' href='".GITHUB_URL."/issues' target='_blank'>Known issues</a> | <a href='#feedback' class='send-feedback'>Send feedback</a>$append";
+			return ($with_git_info?self::GetFooterGitInfo():'')."<a class='issues' href='".GITHUB_URL."/issues' target='_blank'>Known issues</a> | <a class='send-feedback'>Send feedback</a>$append";
 		}
 
 		/**
@@ -747,9 +747,7 @@
 				}
 				else $title = '';
 
-				$href = "href='{$l['url']}'";
-				if ($l['url'][0] === '#')
-					$href .= " class='action--".substr($l['url'],1)."'";
+				$href = $l['url'][0] === '#' ? "class='action--".substr($l['url'],1)."'" : "href='{$l['url']}'";
 
 				$Render[] =  "<li id='s-ufl-{$l['id']}'><a $href $title>{$l['label']}</a></li>";
 			}
