@@ -125,11 +125,7 @@
 					if (!$Database->where('id', $Post['id'])->update("{$type}s", array('lock' => true)))
 						CoreUtils::Respond(ERR_DB_FAIL);
 
-					$postdata = array(
-						'type' => $type,
-						'id' => $Post['id']
-					);
-					Log::Action('post_lock',$postdata);
+					$postdata = Posts::Approve($type, $Post['id'], !$isUserReserver ? $Post['reserved_by'] : null);
 
 					$Post['lock'] = true;
 					$response = array(
@@ -138,7 +134,6 @@
 					);
 					if ($isUserReserver)
 						$response['message'] .= " Thank you for your contribution!<div class='align-center'><apan class='sideways-smiley-face'>;)</span></div>";
-					else Notifications::Send($Post['reserved_by'], 'post-approved', $postdata);
 					CoreUtils::Respond($response);
 				break;
 				case 'unlock':
@@ -280,6 +275,45 @@
 			CoreUtils::Respond($response);
 		}
 		else CoreUtils::Respond(true);
+	}
+	else if ($data === 'mass-approve'){
+		if (!Permission::Sufficient('staff'))
+			CoreUtils::Respond();
+
+		$ids = (new Input('ids','int[]',array(
+			'errors' => array(
+			    Input::$ERROR_MISSING => 'List of deviation IDs is missing',
+			    Input::$ERROR_INVALID => 'List of deviation IDs (@value) is invalid',
+			)
+		)))->out();
+
+		$list = "";
+		foreach ($ids as $id)
+			$list .= "'d".base_convert($id, 10, 36)."',";
+		$list = rtrim($list, ',');
+
+		$Posts = $Database->rawQuery(
+			"SELECT 'request' as type, id, deviation_id FROM requests WHERE deviation_id IN ($list) && lock = false
+			UNION ALL
+			SELECT 'reservation' as type, id, deviation_id FROM reservations WHERE deviation_id IN ($list) && lock = false"
+		);
+
+		if (empty($Posts))
+			CoreUtils::Respond('There were no posts in need of marking as approved', 1);
+
+		$approved = 0;
+		foreach ($Posts as $p){
+			if (!CoreUtils::IsDeviationInClub($p['deviation_id']))
+				continue;
+
+			Posts::Approve($p['type'], $p['id']);
+			$approved++;
+		}
+
+		if ($approved === 0)
+			CoreUtils::Respond('There were no posts in need of marking as approved', 1);
+
+		CoreUtils::Respond('Marked '.CoreUtils::MakePlural('post', $approved, PREPEND_NUMBER).' as approved',1,array('reload' => true));
 	}
 	else if ($data === 'add-reservation'){
 		if (!Permission::Sufficient('staff'))

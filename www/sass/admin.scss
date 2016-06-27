@@ -67,6 +67,32 @@
 				}
 			}
 		}
+		&.mass-approve {
+			.textarea {
+				width: 100px;
+				height: 1em;
+				line-height: 1em;
+				border: 1px solid black;
+				background: white;
+				overflow: hidden;
+				padding: 10px;
+				cursor: text;
+				font-family: $monospace;
+
+				&:before {
+					content: "Paste here";
+					position: absolute;
+					color: rgba(black, .5);
+				}
+
+				.reading {
+					background-color: $NGreenBG;
+					pointer-events: none;
+				}
+
+				> * { display: none }
+			}
+		}
 		&.recent-posts ul {
 			@extend %post-ul;
 			margin-bottom: 0;

@@ -16,6 +16,12 @@
 		<div><?=CoreUtils::GetOverdueSubmissionList()?></div>
 	</section>
 
+	<section class="mass-approve">
+		<h2><span class="typcn typcn-tick"></span>Bulk approve posts</h2>
+		<p>If you've approved a bunch of submissions and want to mark all of them as approved on the site, then go to your notifications, open the deviation stack for the new deviations in the club, press <kbd>Ctrl</kbd><kbd>A</kbd> then click into the box below and hit <kbd>Ctrl</kbd><kbd>V</kbd>. The script will look through the page and find any deviation links, and marks them as approved if they are in the club gallery.</p>
+		<div class="textarea" contenteditable="true"></div>
+	</section>
+
 	<section class="recent-posts">
 		<h2><span class="typcn typcn-bell"></span>Most recent posts</h2>
 		<div><?=Posts::GetMostRecentList()?></div>

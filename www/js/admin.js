@@ -1,4 +1,4 @@
-/* global DocReady,HandleNav,Sortable */
+/* global DocReady,HandleNav,Sortable,DOMStringList */
 DocReady.push(function Admin(){
 	'use strict';
 
@@ -147,14 +147,101 @@ DocReady.push(function Admin(){
 		}
 	});
 
-	// Countdown
-	$('.countdown').each(function(){
-		var $this = $(this);
-		$this.countdown(new Date($this.attr('data-time'))).on('update.countdown', function(event) {
-			$(this).html(event.strftime(''
-			+ '<span>%-w</span> week%!w '
-			+ '<span>%-d</span> day%!d<br> '
-			+ '<span>%H:%M:%S</span>'));
+	// Mass-aprove posts
+	(function(){
+
+		function waitForPastedData(elem, savedContent){
+
+			// If data has been processes by browser, process it
+			if (elem.childNodes && elem.childNodes.length > 0){
+
+				// Retrieve pasted content via innerHTML
+				// (Alternatively loop through elem.childNodes or elem.getElementsByTagName here)
+				var pastedData = elem.innerHTML;
+
+				// Restore saved content
+				elem.innerHTML = "";
+				elem.appendChild(savedContent);
+
+				// Call callback
+				processPaste(pastedData);
+			}
+
+			// Else wait 20ms and try again
+			else setTimeout(function(){ waitForPastedData(elem, savedContent) }, 20);
+		}
+
+		var $textarea = $('.mass-approve').children('.textarea').on('paste', function(e){
+			var types, pastedData, savedContent, editableDiv = this;
+
+			// Browsers that support the 'text/html' type in the Clipboard API (Chrome, Firefox 22+)
+			if (e.originalEvent.clipboardData && e.originalEvent.clipboardData.types && e.originalEvent.clipboardData.getData){
+
+				// Check for 'text/html' in types list. See abligh's answer below for deatils on
+				// why the DOMStringList bit is needed. We cannot fall back to 'text/plain' as
+				// Safari/Edge don't advertise HTML data even if it is available
+				types = e.originalEvent.clipboardData.types;
+				if (((types instanceof DOMStringList) && types.contains("text/html")) || (types.indexOf && types.indexOf('text/html') !== -1)){
+
+					// Extract data and pass it to callback
+					pastedData = e.originalEvent.clipboardData.getData('text/html');
+					processPaste(pastedData);
+
+					// Stop the data from actually being pasted
+					e.stopPropagation();
+					e.preventDefault();
+					return false;
+				}
+			}
+
+			// Everything else: Move existing element contents to a DocumentFragment for safekeeping
+			savedContent = document.createDocumentFragment();
+			while (editableDiv.childNodes.length > 0){
+				savedContent.appendChild(editableDiv.childNodes[0]);
+			}
+
+			// Then wait for browser to paste content into it and cleanup
+			waitForPastedData(editableDiv, savedContent);
+			return true;
 		});
-	});
+
+		var deviationRegex = /(?:[A-Za-z\-\d]+\.)?deviantart\.com\/art\/(?:[A-Za-z\-\d]+-)?(\d+)/g,
+			deviationRegexLocal = /\/(?:[A-Za-z\-\d]+-)?(\d+)$/;
+		function processPaste(pastedData){
+			$textarea.addClass('reading');
+			
+			pastedData = pastedData.replace(/<img[^>]+>/g,'').match(deviationRegex);
+			var deviationIDs = {};
+
+			$.each(pastedData,function(_, el){
+				var match = el.match(deviationRegexLocal);
+				if (match && typeof deviationIDs[match[1]] === 'undefined')
+					deviationIDs[match[1]] = true;
+			});
+
+			var deviationIDArray = Object.keys(deviationIDs);
+			console.log(Object.keys(deviationIDArray));
+			if (!deviationIDArray)
+				return $.Dialog.fail('No deviations found on the pasted page.');
+
+			$.Dialog.wait('Bulk approve posts', "Attempting to approve "+(deviationIDArray.length)+' post'+(deviationIDArray.length!==1?'s':''));
+
+			$.post('/post/mass-approve',{ids:deviationIDArray.join(',')},$.mkAjaxHandler(function(){
+				if (!this.status) return $.Dialog.fail(false, this.message);
+
+				var message = this.message,
+					f = function(){
+						if (message)
+							$.Dialog.success(false, message, true);
+						else $.Dialog.close();
+					};
+				if (!this.reload)
+					f();
+				else {
+					$.Dialog.wait(false, "Reloading page");
+					$.Navigation.reload(f);
+				}
+			}));
+		}
+	})();
 });

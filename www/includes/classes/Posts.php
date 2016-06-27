@@ -594,6 +594,31 @@ HTML;
 			return $HTML;
 		}
 
+		/**
+		 * Approves a specific post and optionally notifies it's author
+		 *
+		 * @param string $type         request/reservation
+		 * @param int    $id           post id
+		 * @param string $notifyUserID id of user to notify
+		 *
+		 * @return array
+		 */
+		static function Approve($type, $id, $notifyUserID = null){
+			global $Database;
+			if (!$Database->where('id', $id)->update("{$type}s", array('lock' => true)))
+				CoreUtils::Respond(ERR_DB_FAIL);
+
+			$postdata = array(
+				'type' => $type,
+				'id' => $id
+			);
+			Log::Action('post_lock',$postdata);
+			if (!empty($notifyUserID))
+				Notifications::Send($notifyUserID, 'post-approved', $postdata);
+
+			return $postdata;
+		}
+
 		static function ValidateImageURL(){
 			return (new Input('image_url','string',array(
 				'errors' => array(

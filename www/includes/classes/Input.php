@@ -137,7 +137,7 @@
 					}
 				break;
 				case "int[]":
-					if (!is_string($this->_value) || !regex_match(new RegExp('^\d{1,5}(?:,\d{1,5})+$'), $this->_value))
+					if (!is_string($this->_value) || !regex_match(new RegExp('^\d{1,12}(?:,\d{1,12})+$'), $this->_value))
 						return self::$ERROR_INVALID;
 
 					$this->_value = explode(',',$this->_value);
