@@ -20,12 +20,15 @@
 		static function Get($key, $default = false){
 			global $Database, $signedIn, $currentUser;
 
+			if (isset(User::$_PREF_CACHE[$key]))
+				return User::$_PREF_CACHE[$key];
+
 			if (isset(static::$_defaults[$key]))
 				$default = static::$_defaults[$key];
 			if (!$signedIn)
 				return $default;
 			$Database->where('user', $currentUser['id']);
-			return parent::Get($key, $default);
+			return User::$_PREF_CACHE[$key] = parent::Get($key, $default);
 		}
 
 		/**

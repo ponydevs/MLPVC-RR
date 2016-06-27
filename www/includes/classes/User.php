@@ -3,6 +3,7 @@
 	class User {
 		// Global cache for storing user details
 		static $_USER_CACHE = array();
+		static $_PREF_CACHE = array();
 
 		/**
 		 * User Information Retriever
