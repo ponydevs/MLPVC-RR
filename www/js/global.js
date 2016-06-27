@@ -774,7 +774,6 @@
 						$w.trigger('beforeunload');
 						_loadCSS(css, function(){
 							loaded++;
-							console.log(loaded,total);
 							$loader.css('width', $.roundTo(100*(loaded/total), 2)+'%');
 						}, function(){
 							$head.children(CSSSelector.replace(/href/g,'data-remove=true')).remove();
@@ -796,7 +795,6 @@
 
 							_loadJS(js, function(){
 								loaded++;
-								console.log(loaded,total);
 								$loader.css('width', $.roundTo(100*(loaded/total), 2)+'%');
 							}, function(){
 								$.Navigation.docReady();
