@@ -208,8 +208,6 @@ DocReady.push(function Admin(){
 		var deviationRegex = /(?:[A-Za-z\-\d]+\.)?deviantart\.com\/art\/(?:[A-Za-z\-\d]+-)?(\d+)/g,
 			deviationRegexLocal = /\/(?:[A-Za-z\-\d]+-)?(\d+)$/;
 		function processPaste(pastedData){
-			$textarea.addClass('reading');
-			
 			pastedData = pastedData.replace(/<img[^>]+>/g,'').match(deviationRegex);
 			var deviationIDs = {};
 
