@@ -351,7 +351,7 @@
 							if ($TagCheck !== false)
 								$tag_name = $TagCheck;
 
-							$Tag = $CGDb->where('name',$tag_name)->getOne('tags');
+							$Tag = \CG\Tags::GetActual($tag_name, 'name');
 							if (empty($Tag))
 								CoreUtils::Respond("The tag $tag_name does not exist.<br>Would you like to create it?",0,array(
 									'cancreate' => $tag_name,
