@@ -51,7 +51,7 @@
 		static function GetMostRecentList($wrap = true){
 			global $Database;
 
-			$cols = 'id,season,episode,label,posted,preview,lock,deviation_id,reserved_by';
+			$cols = 'id,season,episode,label,posted,preview,lock,deviation_id,reserved_by,finished_at';
 			$RecentPosts = $Database->rawQuery(
 				"SELECT * FROM
 				(
@@ -442,7 +442,8 @@ HTML;
 		 */
 		static function GetLi($R, $isRequest = false, $view_only = false){
 			$finished = !empty($R['deviation_id']);
-			$ID = ($isRequest ? 'request' : 'reservation').'-'.$R['id'];
+			$type = $isRequest ? 'request' : 'reservation';
+			$ID = "$type-{$R['id']}";
 			$alt = !empty($R['label']) ? CoreUtils::AposEncode($R['label']) : '';
 			$postlink = "/episode/S{$R['season']}E{$R['episode']}#$ID";
 			$ImageLink = $view_only ? $postlink : $R['fullsize'];
@@ -475,6 +476,7 @@ HTML;
 				$R['reserver'] = User::Get($R['reserved_by']);
 				$reserved_at = $isRequest && !empty($R['reserved_at']) ? "<em class='reserve-date'>Reserved <strong>".Time::Tag($R['reserved_at'])."</strong></em>" : '';
 				if ($finished){
+					$approved = !empty($R['lock']);
 					$Deviation = DeviantArt::GetCachedSubmission($R['deviation_id'],'fav.me',true);
 					if (empty($Deviation)){
 						$ImageLink = $view_only ? $postlink : "http://fav.me/{$R['deviation_id']}";
@@ -484,13 +486,27 @@ HTML;
 						$alt = CoreUtils::AposEncode($Deviation['title']);
 						$ImageLink = $view_only ? $postlink : "http://fav.me/{$Deviation['id']}";
 						$Image = "<div class='image deviation'><a href='$ImageLink'><img src='{$Deviation['preview']}' alt='$alt'>";
-						if (!empty($R['lock']))
+						if ($approved)
 							$Image .= "<span class='typcn typcn-tick' title='This submission has been accepted into the group gallery'></span>";
 						$Image .= "</a></div>";
 					}
 					if (Permission::Sufficient('staff')){
 						$finished_at = !empty($R['finished_at']) ? "<em class='finish-date'>Finished <strong>".Time::Tag($R['finished_at'])."</strong></em>" : '';
-						$Image .= $post_label.$posted_at.$reserved_at.$finished_at;
+						$locked_at = '';
+						if ($approved){
+							global $Database;
+
+							$LogEntry = $Database->rawQuerySingle(
+								"SELECT l.timestamp
+								FROM log__post_lock pl
+								LEFT JOIN log l ON l.reftype = 'post_lock' && l.refid = pl.entryid
+								WHERE type = ? && id = ?
+								ORDER BY pl.entryid ASC
+								LIMIT 1", array($type, $R['id'])
+							);
+							$locked_at = $approved ? "<em class='approve-date'>Approved <strong>".Time::Tag(strtotime($LogEntry['timestamp']))."</strong></em>" : '';
+						}
+						$Image .= $post_label.$posted_at.$reserved_at.$finished_at.$locked_at;
 						if (!empty($R['fullsize']))
 							$Image .= "<a href='{$R['fullsize']}' class='original color-green' target='_blank'><span class='typcn typcn-link'></span> Original image</a>";
 					}
