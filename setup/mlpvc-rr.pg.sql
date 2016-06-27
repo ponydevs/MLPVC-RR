@@ -584,7 +584,7 @@ CREATE TABLE notifications (
     id integer NOT NULL,
     "user" uuid NOT NULL,
     type character varying(15) NOT NULL,
-    data text NOT NULL,
+    data jsonb NOT NULL,
     sent_at timestamp with time zone DEFAULT now() NOT NULL,
     read_at timestamp with time zone
 );

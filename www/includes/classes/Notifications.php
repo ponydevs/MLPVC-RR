@@ -65,6 +65,15 @@
 			if (empty(self::$_notifTypes[$type]))
 				throw new Exception("Invalid notification type: $type");
 
+			switch ($type){
+				case 'post-finished':
+				case 'post-approved':
+					$Database->rawQuery(
+						"UPDATE notifications SET read_at = NOW() WHERE \"user\" = ? && type = ? && data->>'id' = ? && data->>'type' = ?",
+						array($to,$type,$data['id'],$data['type'])
+					);
+			}
+			
 			$Database->insert('notifications',array(
 				'user' => $to,
 				'type' => $type,
