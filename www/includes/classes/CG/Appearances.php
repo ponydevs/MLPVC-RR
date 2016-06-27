@@ -121,7 +121,8 @@
 				$title = !empty($t['title']) ? " title='".\CoreUtils::AposEncode($t['title'])."'" : '';
 				if ($searchedFor || (\Permission::Insufficient('staff') && !empty($Search['tid_assoc'][$t['tid']])))
 					$t['name'] = "<mark>{$t['name']}</mark>";
-				$HTML .= "<span$class$title>{$t['name']}</span>";
+				$syn_of = $isSynon ? " data-syn-of='{$t['synonym_of']}'" : '';
+				$HTML .= "<span$class$title$syn_of>{$t['name']}</span>";
 			}
 
 			return $wrap ? "<div class='tags'>$HTML</div>" : $HTML;

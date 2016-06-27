@@ -798,6 +798,7 @@ DocReady.push(function ColorguideManage(){
 						}
 						$tag.qtip('destroy', true);
 						$tag.remove();
+						$('.tag.synonym').filter('[data-syn-of='+tagID+']').remove();
 						$.Dialog.close();
 					}));
 				});
