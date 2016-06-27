@@ -70,12 +70,18 @@
 				confirmBtn = undefined;
 			}
 			var buttons = {};
-			if (formid)
-				buttons[confirmBtn||'Submit'] = {
-					'submit': true,
-					'form': formid,
-				};
-			buttons.Cancel = function(){ Close() };
+			if (confirmBtn !== false){
+				if (formid)
+					buttons[confirmBtn||'Submit'] = {
+						submit: true,
+						form: formid,
+					};
+				buttons.Cancel = function(){ Close() };
+			}
+			else buttons.Close = {
+				action: function(){ Close() },
+				form: formid,
+			};
 
 			Display('request',title,content,buttons,callback);
 		};
@@ -231,7 +237,7 @@
 				$body.addClass('dialog-open');
 			}
 
-			if (!appendingToRequest){
+			if (!appendingToRequest && params.color){
 				$dialogHeader.attr('class',params.color+'-bg');
 				$dialogContent.attr('class',params.color+'-border');
 			}
@@ -247,7 +253,7 @@
 					$requestContentDiv = $('#'+obj.form);
 					if ($requestContentDiv.length === 1){
 						$button.on('click', function(){
-							$requestContentDiv.find('input[type=submit]').trigger('click');
+							$requestContentDiv.find('input[type=submit]').first().trigger('click');
 						});
 						$requestContentDiv.prepend($.mk('input').attr('type','submit').hide());
 					}

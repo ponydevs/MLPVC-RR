@@ -679,7 +679,10 @@ footer {
 	line-height: 18px;
 	@include navfoot;
 
-	a { color: inherit }
+	a {
+		text-decoration: underline;
+		color: inherit;
+	}
 }
 // Colors
 .color-blue { color: $NBlue !important }

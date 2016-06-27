@@ -7,8 +7,6 @@ window.$ColorAvgForm = (function($){
 		var $form = $(this).on('submit',function(e){
 				e.preventDefault();
 
-				storeAvgColors();
-
 				$.Dialog.close();
 			}),
 			defaultInputCount = 10,
@@ -64,38 +62,28 @@ window.$ColorAvgForm = (function($){
 			$ColorAvgInputRow = $.mk('div').attr('class','input-group-3').append(
 				_$baseInput.clone().attr('placeholder','Red'),
 				_$baseInput.clone().attr('placeholder','Green'),
-				_$baseInput.clone().attr('placeholder','Blue')
+				_$baseInput.clone().attr('placeholder','Blue'),
+				$("<input type='text' pattern='^#?([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$' maxlength='7' placeholder='HEX' class='align-center color-ui' spellcheck='false'>").on('change blur',function(e){
+					e.stopPropagation();
+
+					var $el = $(this);
+					if (!$el.is(':valid') || $el.val().trim().length === 0)
+						return;
+
+					var $sib = $el.siblings(),
+						hexstr = $.hexpand($el.val().toUpperCase()),
+						rgb = $.hex2rgb(hexstr);
+
+					$el.val(hexstr);
+					$sib.eq(0).val(rgb.r);
+					$sib.eq(1).val(rgb.g);
+					$sib.eq(2).val(rgb.b).triggerHandler('change');
+				})
 			),
 			$inputsDiv = $.mk('div').attr('class','inputs'),
-			lsColorsStoreKey = 'color-avg-save',
-			storeAvgColors = function(){
-				var parsed = [];
-
-				$form.find('.inputs input').each(function(){
-					parsed.push(this.value.trim());
-				});
-
-				localStorage.setItem(lsColorsStoreKey, JSON.stringify(parsed));
-			},
-			readAvgColors = function(){
-				var data = localStorage.getItem(lsColorsStoreKey),
-					i = 0;
-
+			resetInputs = function(){
 				$inputsDiv.empty();
-				if (typeof data === 'string'){
-					data = JSON.parse(data);
-
-					var $appendto;
-					//noinspection ForLoopThatDoesntUseLoopVariableJS
-					for (var l=data.length; i<l; i++){
-						var eq = i % 3;
-						if (eq === 0)
-							$appendto = $ColorAvgInputRow.clone(true,true).appendTo($inputsDiv);
-
-						$appendto.children().eq(eq).val(data[i]);
-					}
-				}
-				else for (; i < defaultInputCount; i++)
+				for (var i=0; i < defaultInputCount; i++)
 					$inputsDiv.append($ColorAvgInputRow.clone(true,true));
 
 				calcAvg();
@@ -123,7 +111,7 @@ window.$ColorAvgForm = (function($){
 				if (!$this.is(':valid'))
 					return;
 
-				$this.val($this.value().trim()).triggerHandler('change');
+				$this.val($this.val().trim()).triggerHandler('change');
 				var $next = $this.index() < 2 ? $this.next() : $this.parent().next().children().first();
 
 				if ($next.length)
@@ -134,23 +122,16 @@ window.$ColorAvgForm = (function($){
 		$form.append(
 			$inputsDiv,
 			$.mk('div').attr('class', 'btn-group').append(
-				$.mk('button').attr('class','green typcn typcn-plus').text('Inputs').on('click',function(e){
+				$.mk('button').attr('class','green typcn typcn-plus').text('Add row').on('click',function(e){
 					e.preventDefault();
 
 					$inputsDiv.append($ColorAvgInputRow.clone(true,true));
-					calcAvg();
+					//calcAvg();
 				}),
-				$.mk('button').attr('class','orange typcn typcn-times').text('Clear inputs').on('click',function(e){
+				$.mk('button').attr('class','orange typcn typcn-times').text('Reset form').on('click',function(e){
 					e.preventDefault();
 
-					$inputsDiv.find('input').val('');
-					calcAvg();
-				}),
-				$.mk('button').attr('class','red typcn typcn-trash').text('Clear saved').on('click',function(e){
-					e.preventDefault();
-
-					localStorage.removeItem(lsColorsStoreKey);
-					readAvgColors();
+					resetInputs();
 				})
 			),
 			$.mk('table').attr({
@@ -167,6 +148,6 @@ window.$ColorAvgForm = (function($){
 			).find('td').css('border','1px solid black').end()
 		);
 
-		readAvgColors();
+		resetInputs();
 	});
 })(jQuery);
