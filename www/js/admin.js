@@ -220,7 +220,6 @@ DocReady.push(function Admin(){
 			});
 
 			var deviationIDArray = Object.keys(deviationIDs);
-			console.log(Object.keys(deviationIDArray));
 			if (!deviationIDArray)
 				return $.Dialog.fail('No deviations found on the pasted page.');
 
