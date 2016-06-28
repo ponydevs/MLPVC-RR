@@ -5,14 +5,31 @@
 <script>try{history.replaceState('',{},'/')}catch(e){}</script>
 <?  } ?>
 <div id="content">
-<?  if (!empty($CurrentEpisode)){
-		$isMovie = $CurrentEpisode['season'] === 0;?>
-	<h1><?=Episode::FormatTitle($CurrentEpisode)?></h1>
-	<p>Vector Requests & Reservations</p>
-<?php   if (Permission::Sufficient('staff')){ ?>
-	<p class="align-center"><em><?=$isMovie?'Movie':'Episode'?> added by <?=User::GetProfileLink(User::Get($CurrentEpisode['posted_by'])).' '.Time::Tag($CurrentEpisode['posted'])?></em></p>
+<?  if (!empty($CurrentEpisode)){ ?>
+	<div class="heading-wrap">
+<?php   $PrevEpExists = !empty($PrevEpisode);
+		$NextEpExists = !empty($NextEpisode);
+		if ($PrevEpExists){
+			$PrevEpisode = Episode::FormatTitle($PrevEpisode, AS_ARRAY); ?>
+		<div class="prev-ep">
+			<a href="/episode/S<?=$PrevEpisode['season']?>E<?=$PrevEpisode['episode']?>" class="ep-button btn typcn typcn-media-rewind"><span class="typcn typcn-media-rewind"></span><span class="id"><?=$PrevEpisode['id']?>: </span><?=CoreUtils::Cutoff($PrevEpisode['title'],Episode::$cutoff)?></a>
+		</div>
 <?php   }
-	echo Episode::RenderVideos($CurrentEpisode); ?>
+		if ($NextEpExists){
+				$NextEpisode = Episode::FormatTitle($NextEpisode, AS_ARRAY); ?>
+		<div class="next-ep">
+			<a href="/episode/S<?=$NextEpisode['season']?>E<?=$NextEpisode['episode']?>" class="ep-button btn typcn typcn-media-fast-forward"><span class="id"><?=$PrevEpisode['id']?>: </span><?=CoreUtils::Cutoff($NextEpisode['title'],Episode::$cutoff)?><span class="typcn typcn-media-fast-forward"></span></a>
+		</div>
+<?php   } ?>
+		<div class="main">
+			<h1><?=Episode::FormatTitle($CurrentEpisode)?></h1>
+			<p>Vector Requests & Reservations</p>
+<?php   if (Permission::Sufficient('staff')){ ?>
+			<p class="addedby"><em><?=$CurrentEpisode['season'] === 0?'Movie':'Episode'?> added by <?=User::GetProfileLink(User::Get($CurrentEpisode['posted_by'])).' '.Time::Tag($CurrentEpisode['posted'])?></em></p>
+<?php   } ?>
+		</div>
+	</div>
+	<?=Episode::RenderVideos($CurrentEpisode)?>
 	<section class="about-res">
 		<h2>What Vector Reservations Are<?=Permission::Sufficient('staff')?'<button class="blue typcn typcn-pencil" id="edit-about_reservations">Edit</button>':''?></h2>
 		<?=GlobalSettings::Get('about_reservations')?>

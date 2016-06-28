@@ -256,7 +256,7 @@
 				$insert = array();
 			}
 			else if ($data === 'add') $insert = array('posted_by' => $currentUser['id']);
-			else CoreUtils::StatusCode(404, AND_DIE);
+			else CoreUtils::NotFound();
 
 			$newseason = Episode::ValidateSeason($editing);
 			$newepisode = Episode::ValidateEpisode($editing);
@@ -280,6 +280,15 @@
 				}
 			}
 
+			$insert['no'] = (new Input('no','int',array(
+				'optional' => true,
+				'range' => [1,255],
+				'errors' => array(
+				    Input::$ERROR_INVALID => 'Overall episode number (@value) is invalid',
+				    Input::$ERROR_RANGE => 'Overall episode number must be between @min and @max',
+				)
+			)))->out();
+			
 			$insert['twoparter'] = isset($_POST['twoparter']) ? 1 : 0;
 
 			$insert['title'] = (new Input('title','string',array(

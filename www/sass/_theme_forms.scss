@@ -134,42 +134,9 @@ input[type=checkbox] {
 				}
 			}
 
-			.btn-group {
-				display: flex;
-				width: 100%;
-
-				button, .btn {
-					margin: 0;
-					flex: 1 1 auto;
-
-					&:active {
-						transform: none !important;
-						opacity: .8;
-					}
-					&:first-child { border-radius: 3px 0 0 3px }
-					&:last-child { border-radius: 0 3px 3px 0 }
-					&:not(:first-child):not(:last-child) {
-						border-radius: 0;
-					}
-				}
-			}
-
-			.input-group-2 > * {
-				display: inline-block;
-				width: 50%;
-				box-sizing:border-box;
-			}
-
-			.input-group-3 {
-				display: flex !important;
-				width: 100%;
-				align-items: center;
-
-				> * {
-					flex: 1 1 auto;
-					width: 30%;
-				}
-			}
+			.btn-group { @include btn-group }
+			.input-group-2 { @include input-group(2) }
+			.input-group-3 { @include input-group(3) }
 
 			.split-select-wrap {
 				display: block;

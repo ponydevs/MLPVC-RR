@@ -637,7 +637,7 @@
 			if ($do === 'episode' && !empty($GLOBALS['CurrentEpisode'])){
 				if (!empty($GLOBALS['Latest']))
 					$NavItems['latest'][0] = $_SERVER['REQUEST_URI'];
-				else $NavItems['eps']['subitem'] = $GLOBALS['title'];
+				else $NavItems['eps']['subitem'] = CoreUtils::Cutoff($GLOBALS['title'],Episode::$cutoff);
 			}
 			global $Color, $EQG;
 			$NavItems['colorguide'] = array("/cg", (!empty($EQG)?'EQG ':'')."$Color Guide");
@@ -1024,6 +1024,15 @@
 			header('Content-Transfer-Encoding: Binary');
 			header("Content-disposition: attachment; filename=\"$name\"");
 			die($contents);
+		}
+
+		static function Substring(...$args){
+			return function_exists('mb_substr') ? mb_substr(...$args) : substr(...$args);
+		}
+
+		static function Cutoff($str, $len){
+			$strlen = strlen($str);
+			return $strlen > $len ? self::Substring($str, 0, $len-2).'…' : $str;
 		}
 
 		static function SocketEvent($event, array $data){

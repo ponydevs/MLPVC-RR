@@ -1,6 +1,8 @@
 <?php
 
 	class Episode {
+		static $cutoff = 26;
+
 		/**
 		 * Returns all episodes from the database, properly sorted
 		 *
@@ -137,7 +139,7 @@
 		 *                              If array: Uses specified arra as Episode data
 		 */
 		static function LoadPage($force = null){
-			global $data, $CurrentEpisode, $Requests, $Reservations, $Latest, $Database;
+			global $data, $CurrentEpisode, $Requests, $Reservations, $Latest, $Database, $PrevEpisode, $NextEpisode;
 
 			$EQG = is_int($force);
 			if ($EQG)
@@ -163,6 +165,9 @@
 				$js[] = 'moment-timezone';
 				$js[] = 'episodes-manage';
 			}
+
+			$PrevEpisode = $Database->where('no',$CurrentEpisode['no'], '<')->orderBy('no','DESC')->getOne('episodes','season,episode,title,twoparter');
+			$NextEpisode = $Database->where('no',$CurrentEpisode['no'], '>')->orderBy('no','ASC')->getOne('episodes','season,episode,title,twoparter');
 
 			CoreUtils::LoadPage(array(
 				'title' => self::FormatTitle($CurrentEpisode),

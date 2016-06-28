@@ -89,7 +89,8 @@ CREATE TABLE episodes (
     title character varying(35) NOT NULL,
     posted timestamp with time zone DEFAULT now() NOT NULL,
     posted_by uuid,
-    airs timestamp with time zone
+    airs timestamp with time zone,
+    no smallint
 );
 
 

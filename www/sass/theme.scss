@@ -108,6 +108,11 @@
 		padding: 10px 5px;
 		@include white-grid;
 	}
+	#content h1 {
+		font-size: 1.7em;
+
+		+ p { font-size: 1.4em }
+	}
 
 	footer { text-align: center }
 
@@ -132,6 +137,11 @@
 		position: relative;
 		z-index: 1;
 		padding: 8px 8px #{8px + 38px} 8px;
+	}
+	#content h1 {
+		font-size: 2em;
+
+		+ p { font-size: 1.6em }
 	}
 	#sidebar {
 		height: calc(100% - #{$HeaderHeight} - 38px);
@@ -378,14 +388,12 @@ header, #sidebar .mobile-nav {
 	box-sizing: border-box;
 	width: 100%;
 
-	> h1 {
-		font-size: 2em;
+	h1 {
 		text-align: center;
 		margin: 0 0 5px;
 		font-family: "Celestia", sans-serif;
 
 		+ p {
-			font-size: 1.6em;
 			text-align: center;
 			margin: 0 0 10px;
 			font-style: italic;
