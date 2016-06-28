@@ -703,13 +703,14 @@ DocReady.push(function ColorguideManage(){
 						ctxmenus();
 						if (this.update)
 							window.updateTimes();
-						if (AppearancePage && this.cm_img){
+						var $ponycm = $('#pony-cm');
+						if (AppearancePage && $ponycm.length && this.cm_img){
 							$.Dialog.success(false, 'Color group updated');
 							$.Dialog.wait(false, 'Updating cutie mark orientation image');
 							var preload = new Image();
 							preload.src = this.cm_img;
 							$(preload).on('load error',function(){
-								$('#pony-cm').backgroundImageUrl(preload.src);
+								$ponycm.backgroundImageUrl(preload.src);
 								$.Dialog.close();
 							});
 						}
