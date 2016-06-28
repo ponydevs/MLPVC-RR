@@ -446,10 +446,8 @@
 				$ColorMapping['Coat Shadow Outline'] = $ColorMapping['Coat Outline'];
 
 			$img = file_get_contents(APPATH.'img/cm-direction-'.($dir===CM_DIR_HEAD_TO_TAIL?'ht':'th').'.svg');
-			foreach ($DefaultColorMapping as $label => $defhex){
-				if (isset($ColorMapping[$label]))
-					$img = str_replace($defhex, $ColorMapping[$label], $img);
-			}
+			foreach ($DefaultColorMapping as $label => $defhex)
+				$img = str_replace($label, $ColorMapping[$label] ?? $defhex, $img);
 
 			Image::OutputSVG($img,$OutputPath,$FileRelPath);
 		}

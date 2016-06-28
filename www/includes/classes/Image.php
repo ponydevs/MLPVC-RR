@@ -283,8 +283,10 @@
 		 * @param string $content_type
 		 */
 		private static function _output($data, $path, $relpath, $write_callback, $content_type){
-			if (isset($data))
+			if (isset($data)){
+				CoreUtils::CreateUploadFolder($path);
 				$write_callback($path, $data);
+			}
 
 			CoreUtils::FixPath("$relpath?t=".filemtime($path));
 			header("Content-Type: image/$content_type");
