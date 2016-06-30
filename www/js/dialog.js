@@ -1,8 +1,7 @@
 /* globals $body,Key,$w */
 (function ($, undefined) {
 	'use strict';
-	function $makeDiv(id){ return $.mk('div').attr('id', id) }
-	var colors = {
+	let colors = {
 			fail: 'red',
 			success: 'green',
 			wait: 'blue',
@@ -32,117 +31,25 @@
 			request: 'The request did not require any additional info.',
 			confirm: 'Are you sure?',
 			info: 'No message provided.',
-		},
-		$dialogOverlay = $('#dialogOverlay'),
-		$dialogContent = $('#dialogContent'),
-		$dialogHeader = $('#dialogHeader'),
-		$dialogBox = $('#dialogBox'),
-		$dialogWrap = $('#dialogWrap'),
-		$dialogScroll = $('#dialogScroll'),
-		$dialogButtons = $('#dialogButtons');
-
-	$.Dialog = (function(){
-		var _open = $dialogContent.length ? {} : undefined,
-			Dialog = {
-				isOpen: function(){ return typeof _open === 'object' },
-			},
-			CloseButton = { Close: function(){ Close() } };
-
-		// Dialog defintions
-		Dialog.fail = function(title,content,force_new){
-			Display('fail',title,content,CloseButton,force_new === true);
-		};
-		Dialog.success = function(title,content,closeBtn,callback){
-			Display('success',title,content, (closeBtn === true ? CloseButton : undefined), callback);
-		};
-		Dialog.wait = function(title,additional_info,force_new){
-			if (typeof additional_info === 'boolean' && typeof force_new === 'undefined'){
-				force_new = additional_info;
-				additional_info = undefined;
-			}
-			if (typeof additional_info !== 'string')
-				additional_info = 'Sending request';
-			Display('wait',title,$.capitalize(additional_info)+'&hellip;',force_new === true);
-		};
-		Dialog.request = function(title,content,formid,confirmBtn,callback){
-			if (typeof confirmBtn === 'function' && typeof callback === 'undefined'){
-				callback = confirmBtn;
-				confirmBtn = undefined;
-			}
-			var buttons = {};
-			if (confirmBtn !== false){
-				if (formid)
-					buttons[confirmBtn||'Submit'] = {
-						submit: true,
-						form: formid,
-					};
-				buttons.Cancel = function(){ Close() };
-			}
-			else buttons.Close = {
-				action: function(){ Close() },
-				form: formid,
-			};
-
-			Display('request',title,content,buttons,callback);
-		};
-		Dialog.confirm = function(title,content,btnTextArray,handlerFunc){
-			if (typeof btnTextArray === 'function' && typeof handlerFunc === 'undefined')
-				handlerFunc = btnTextArray;
-			
-			if (typeof handlerFunc !== 'function')
-				handlerFunc = function(){ Close() };
-			
-			if (!$.isArray(btnTextArray)) btnTextArray = ['Eeyup','Nope'];
-			var buttons = {};
-			buttons[btnTextArray[0]] = function(){ handlerFunc(true) };
-			buttons[btnTextArray[1]] = function(){ handlerFunc(false); Close.call() };
-			Display('confirm',title,content,buttons);
-		};
-		Dialog.info = function(title,content,callback){
-			Display('info',title,content,CloseButton,callback);
 		};
 
-		// Storing and restoring focus
-		var _$focusedElement;
-		Dialog.setFocusedElement = function($el){
-			if ($el instanceof jQuery)
-				_$focusedElement = $el;
-		};
-		function _storeFocus(){
-			if (typeof _$focusedElement !== 'undefined' && _$focusedElement instanceof jQuery)
-				return;
-			var $focus = $(':focus');
-			_$focusedElement = $focus.length > 0 ? $focus.last() : undefined;
-		}
-		function _restoreFocus(){
-			if (typeof _$focusedElement !== 'undefined' && _$focusedElement instanceof jQuery){
-				_$focusedElement.focus();
-				_$focusedElement = undefined;
-			}
-		}
-		function _setFocus(){
-			var $inputs = $('#dialogContent').find('input,select,textarea').filter(':visible'),
-				$actions = $('#dialogButtons').children();
-			if ($inputs.length > 0) $inputs.first().focus();
-			else if ($actions.length > 0) $actions.first().focus();
+	class Dialog {
+		constructor(){
+			this.$dialogOverlay = $('#dialogOverlay');
+			this.$dialogContent = $('#dialogContent');
+			this.$dialogHeader = $('#dialogHeader');
+			this.$dialogBox = $('#dialogBox');
+			this.$dialogWrap = $('#dialogWrap');
+			this.$dialogScroll = $('#dialogScroll');
+			this.$dialogButtons = $('#dialogButtons');
+			this._open = this.$dialogContent.length ? {} : undefined;
+			this._CloseButton = { Close: function(){ $.Dialog.close() } };
+			this._$focusedElement = undefined;
 		}
 
-		var DISABLE = true,
-			ENABLE = false;
-		function _controlInputs(action){
-			var $inputs = $dialogContent
-				.children(':not(#dialogButtons)')
-				.last()
-				.add($dialogButtons)
-				.find('input, button, select, textarea');
+		isOpen(){ return typeof this._open === 'object' }
 
-			if (action === DISABLE)
-				$inputs.filter(':not(:disabled)').addClass('temp-disable').attr('disabled',DISABLE);
-			else $inputs.filter('.temp-disable').removeClass('temp-disable').attr('disabled',ENABLE);
-		}
-
-		// Displaying dialogs
-		function Display(type,title,content,buttons,callback) {
+		_display(type,title,content,buttons,callback){
 			if (typeof type !== 'string' || typeof colors[type] === 'undefined')
 				throw new TypeError('Invalid dialog type: '+typeof type);
 
@@ -150,7 +57,7 @@
 				callback = buttons;
 				buttons = undefined;
 			}
-			var force_new = false;
+			let force_new = false;
 			if (typeof callback === 'boolean'){
 				force_new = callback;
 				callback = undefined;
@@ -159,14 +66,14 @@
 				force_new = buttons;
 				buttons = undefined;
 			}
-			
+
 			if (typeof title === 'undefined')
 				title = defaultTitles[type];
 			else if (title === false)
 				title = undefined;
 			if (!content)
 				content = defaultContent[type];
-			var params = {
+			let params = {
 				type: type,
 				title: title,
 				content: content||defaultContent[type],
@@ -174,24 +81,24 @@
 				color: colors[type]
 			};
 
-			var append = Boolean(_open),
-				$contentAdd = $makeDiv().append(params.content),
-				appendingToRequest = append && _open.type === 'request' && ['fail','wait'].includes(params.type),
+			let append = Boolean(this._open),
+				$contentAdd = $.mk('div').append(params.content),
+				appendingToRequest = append && this._open.type === 'request' && ['fail','wait'].includes(params.type),
 				$requestContentDiv;
 
 			if (params.color.length)
 				$contentAdd.addClass(params.color);
 			if (append){
-				$dialogOverlay = $('#dialogOverlay');
-				$dialogBox = $('#dialogBox');
-				$dialogHeader = $('#dialogHeader');
+				this.$dialogOverlay = $('#dialogOverlay');
+				this.$dialogBox = $('#dialogBox');
+				this.$dialogHeader = $('#dialogHeader');
 				if (typeof params.title === 'string')
-					$dialogHeader.text(params.title);
-				$dialogContent = $('#dialogContent');
+					this.$dialogHeader.text(params.title);
+				this.$dialogContent = $('#dialogContent');
 
 				if (appendingToRequest && !force_new){
-					$requestContentDiv = $dialogContent.children(':not(#dialogButtons)').last();
-					var $ErrorNotice = $requestContentDiv.children('.notice');
+					$requestContentDiv = this.$dialogContent.children(':not(#dialogButtons)').last();
+					let $ErrorNotice = $requestContentDiv.children('.notice');
 					if (!$ErrorNotice.length){
 						$ErrorNotice = $.mk('div').append($.mk('p'));
 						$requestContentDiv.append($ErrorNotice);
@@ -199,38 +106,38 @@
 					$ErrorNotice
 						.attr('class','notice '+noticeClasses[params.type])
 						.children('p').html(params.content).show();
-					_controlInputs(params.type === 'wait' ? DISABLE : ENABLE);
+					this._controlInputs(params.type === 'wait');
 				}
 				else {
-					_open = params;
-					$dialogButtons = $('#dialogButtons').empty();
-					_controlInputs(DISABLE);
-					$dialogContent.append($contentAdd);
+					this._open = params;
+					this.$dialogButtons = $('#dialogButtons').empty();
+					this._controlInputs(true);
+					this.$dialogContent.append($contentAdd);
 
 					if (params.buttons){
-						if ($dialogButtons.length === 0)
-							$dialogButtons = $makeDiv('dialogButtons');
-						$dialogButtons.appendTo($dialogContent);
+						if (this.$dialogButtons.length === 0)
+							this.$dialogButtons = $.mk('div','dialogButtons');
+						this.$dialogButtons.appendTo(this.$dialogContent);
 					}
 				}
 			}
 			else {
-				_storeFocus();
-				_open = params;
+				this._storeFocus();
+				this._open = params;
 
-				$dialogOverlay = $makeDiv('dialogOverlay');
-				$dialogHeader = $makeDiv('dialogHeader').text(params.title||defaultTitles[type]);
-				$dialogContent = $makeDiv('dialogContent');
-				$dialogBox = $makeDiv('dialogBox');
-				$dialogScroll = $makeDiv('dialogScroll');
-				$dialogWrap = $makeDiv('dialogWrap');
+				this.$dialogOverlay = $.mk('div','dialogOverlay');
+				this.$dialogHeader = $.mk('div','dialogHeader').text(params.title||defaultTitles[type]);
+				this.$dialogContent = $.mk('div','dialogContent');
+				this.$dialogBox = $.mk('div','dialogBox');
+				this.$dialogScroll = $.mk('div','dialogScroll');
+				this.$dialogWrap = $.mk('div','dialogWrap');
 
-				$dialogContent.append($contentAdd);
-				$dialogButtons = $makeDiv('dialogButtons').appendTo($dialogContent);
-				$dialogBox.append($dialogHeader).append($dialogContent);
-				$dialogOverlay.append(
-					$dialogScroll.append(
-						$dialogWrap.append($dialogBox)
+				this.$dialogContent.append($contentAdd);
+				this.$dialogButtons = $.mk('div','dialogButtons').appendTo(this.$dialogContent);
+				this.$dialogBox.append(this.$dialogHeader).append(this.$dialogContent);
+				this.$dialogOverlay.append(
+					this.$dialogScroll.append(
+						this.$dialogWrap.append(this.$dialogBox)
 					)
 				).appendTo($body);
 
@@ -238,19 +145,20 @@
 			}
 
 			if (!appendingToRequest && params.color){
-				$dialogHeader.attr('class',params.color+'-bg');
-				$dialogContent.attr('class',params.color+'-border');
+				this.$dialogHeader.attr('class',`${params.color}-bg`);
+				this.$dialogContent.attr('class',`${params.color}-border`);
 			}
 
-			if (!appendingToRequest && params.buttons) $.each(params.buttons, function (name, obj) {
-				var $button = $.mk('input').attr({
+			let classScope = this;
+			if (!appendingToRequest && params.buttons) $.each(params.buttons, (name, obj) => {
+				let $button = $.mk('input').attr({
 					'type': 'button',
 					'class': params.color+'-bg'
 				});
 				if (typeof obj === 'function')
 					obj = {action: obj};
 				else if (obj.form){
-					$requestContentDiv = $('#'+obj.form);
+					$requestContentDiv = $(`#${obj.form}`);
 					if ($requestContentDiv.length === 1){
 						$button.on('click', function(){
 							$requestContentDiv.find('input[type=submit]').first().trigger('click');
@@ -258,8 +166,8 @@
 						$requestContentDiv.prepend($.mk('input').attr('type','submit').hide());
 					}
 				}
-				$button.val(name).on('keydown', function (e) {
-					if ([Key.Enter, Key.Space].indexOf(e.keyCode) !== -1){
+				$button.val(name).on('keydown', function(e){
+					if ([Key.Enter, Key.Space].includes(e.keyCode)){
 						e.preventDefault();
 
 						$button.trigger('click');
@@ -267,9 +175,9 @@
 					else if ([Key.Tab, Key.LeftArrow, Key.RightArrow].includes(e.keyCode)){
 						e.preventDefault();
 
-						var $dBc = $dialogButtons.children(),
+						let $dBc = classScope.$dialogButtons.children(),
 							$focused = $dBc.filter(':focus'),
-							$inputs = $dialogContent.find(':input');
+							$inputs = classScope.$dialogContent.find(':input');
 
 						if ($.isKey(Key.LeftArrow, e))
 							e.shiftKey = true;
@@ -291,29 +199,121 @@
 
 					$.callCallback(obj.action, [e]);
 				});
-				$dialogButtons.append($button);
+				classScope.$dialogButtons.append($button);
 			});
-			_setFocus();
+			this._setFocus();
 			$w.trigger('dialog-opened');
 
 			$.callCallback(callback, [$requestContentDiv]);
 		}
+		fail(title,content,force_new){
+			this._display('fail',title,content,this._CloseButton,force_new === true);
+		}
+		success(title,content,closeBtn,callback){
+			this._display('success',title,content, (closeBtn === true ? this._CloseButton : undefined), callback);
+		}
+		wait(title,additional_info,force_new){
+			if (typeof additional_info === 'boolean' && typeof force_new === 'undefined'){
+				force_new = additional_info;
+				additional_info = undefined;
+			}
+			if (typeof additional_info !== 'string')
+				additional_info = 'Sending request';
+			this._display('wait',title,$.capitalize(additional_info)+'&hellip;',force_new === true);
+		}
+		request(title,content,confirmBtn,callback){
+			if (typeof confirmBtn === 'function' && typeof callback === 'undefined'){
+				callback = confirmBtn;
+				confirmBtn = undefined;
+			}
+			let buttons = {},
+				formid;
+			if (content instanceof jQuery)
+				formid = content.attr('id');
+			else {
+				let match = content.match(/<form\sid=["']([^"']+)["']/);
+				if (match)
+					formid = match[1];
+			}
+			if (confirmBtn !== false){
+				if (formid)
+					buttons[confirmBtn||'Submit'] = {
+						submit: true,
+						form: formid,
+					};
+				buttons.Cancel = this._CloseButton.Close;
+			}
+			else buttons.Close = {
+				action: this._CloseButton.Close,
+				form: formid,
+			};
 
-		// Close dialog
-		function Close(callback) {
-			if (!Dialog.isOpen())
+			this._display('request',title,content,buttons,callback);
+		}
+		confirm(title,content,btnTextArray,handlerFunc){
+			if (typeof btnTextArray === 'function' && typeof handlerFunc === 'undefined')
+				handlerFunc = btnTextArray;
+
+			if (typeof handlerFunc !== 'function')
+				handlerFunc = this._CloseButton.Close;
+
+			if (!$.isArray(btnTextArray)) btnTextArray = ['Eeyup','Nope'];
+			let buttons = {}, classScope = this;
+			buttons[btnTextArray[0]] = function(){ handlerFunc(true) };
+			buttons[btnTextArray[1]] = function(){ handlerFunc(false); classScope._CloseButton.Close() };
+			this._display('confirm',title,content,buttons);
+		}
+		info(title,content,callback){
+			this._display('info',title,content,this._CloseButton,callback);
+		}
+
+		setFocusedElement($el){
+			if ($el instanceof jQuery)
+				this._$focusedElement = $el;
+		}
+		_storeFocus(){
+			if (typeof this._$focusedElement !== 'undefined' && this._$focusedElement instanceof jQuery)
+				return;
+			let $focus = $(':focus');
+			this._$focusedElement = $focus.length > 0 ? $focus.last() : undefined;
+		}
+		_restoreFocus(){
+			if (typeof this._$focusedElement !== 'undefined' && this._$focusedElement instanceof jQuery){
+				this._$focusedElement.focus();
+				this._$focusedElement = undefined;
+			}
+		}
+		_setFocus(){
+			let $inputs = this.$dialogContent.find('input,select,textarea').filter(':visible'),
+				$actions = this.$dialogButtons.children();
+			if ($inputs.length > 0) $inputs.first().focus();
+			else if ($actions.length > 0) $actions.first().focus();
+		}
+		_controlInputs(disable){
+			let $inputs = this.$dialogContent
+					.children(':not(#dialogButtons)')
+					.last()
+					.add(this.$dialogButtons)
+					.find('input, button, select, textarea');
+
+			if (disable)
+				$inputs.filter(':not(:disabled)').addClass('temp-disable').disable();
+			else $inputs.filter('.temp-disable').removeClass('temp-disable').enable();
+		}
+
+		close(callback){
+			if (!this.isOpen())
 				return $.callCallback(callback, false);
 
-			$dialogOverlay.remove();
-			_open = undefined;
-			_restoreFocus();
+			this.$dialogOverlay.remove();
+			this._open = undefined;
+			this._restoreFocus();
 			$.callCallback(callback);
 
 			$body.removeClass('dialog-open');
 		}
-		Dialog.close = function(){ Close.apply(Dialog, arguments) };
-		Dialog.clearNotice = function(regexp){
-			var $notice = $dialogContent.find('.notice');
+		clearNotice (regexp){
+			let $notice = this.$dialogContent.find('.notice');
 			if (!$notice.length)
 				return false;
 
@@ -327,15 +327,16 @@
 				return true;
 			}
 			return false;
-		};
-		return Dialog;
-	})();
+		}
+	}
 
-	$body.on('keydown',function(e){
+	$.Dialog = new Dialog();
+
+	$body.on('keydown', function(e){
 		if (!$.Dialog.isOpen() || e.keyCode !== Key.Tab)
 			return true;
 
-		var $inputs = $dialogContent.find(':input'),
+		let $inputs = $.Dialog.$dialogContent.find(':input'),
 			$focused = $inputs.filter(e.target),
 			idx = $inputs.index($focused);
 
@@ -346,11 +347,11 @@
 		else if (e.shiftKey){
 			if (idx === 0){
 				e.preventDefault();
-				$dialogButtons.find(':last').focus();
+				$.Dialog.$dialogButtons.find(':last').focus();
 			}
 			else {
-				var $parent = $focused.parent();
-				if (!$parent.is($dialogButtons))
+				let $parent = $focused.parent();
+				if (!$parent.is($.Dialog.$dialogButtons))
 					return true;
 				if ($parent.children().first().is($focused)){
 					e.preventDefault();

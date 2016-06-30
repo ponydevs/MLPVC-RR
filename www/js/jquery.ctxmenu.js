@@ -2,15 +2,15 @@
 /* global $w,$body */
 (function($){
 	'use strict';
-	var $ctxmenu = $.mk('div').attr('id', 'ctxmenu');
+	let $ctxmenu = $.mk('div').attr('id', 'ctxmenu');
 	$ctxmenu
 		.appendTo($body)
-		.on('click',function(e){
+		.on('click', function(e){
 			e.stopPropagation();
 			$ctxmenu.hide();
 		})
 		.on('contextmenu', function(e){
-			var $target = $(e.target);
+			let $target = $(e.target);
 			switch (e.target.nodeName.toLowerCase()){
 				case 'li': $target.children('a').trigger('click'); break;
 				case 'a': $target.trigger('click'); break;
@@ -28,17 +28,15 @@
 
 		return $el;
 	}
-	$.ctxmenu.setTitle = function(){
-		return setTitle.apply(this, arguments);
-	};
+	$.ctxmenu.setTitle = function(){ return setTitle.apply(this, arguments) };
 
 	function addToItems(item, $el){
 		if (!item) return;
 
-		var $item = $.mk('li');
+		let $item = $.mk('li');
 		if (item === $.ctxmenu.separator) $item.addClass('sep');
 		else {
-			var $action = $.mk('a');
+			let $action = $.mk('a');
 			if (item.text) $action.text(item.text);
 			if (item.icon) $action.addClass('typcn typcn-'+item.icon);
 			if (item.default === true) $action.addClass('default');
@@ -48,7 +46,7 @@
 				else $action.attr(item.attr);
 			}
 			if (typeof item.click === 'function')
-				$action.on('click',function(e){
+				$action.on('click', function(e){
 					e.stopPropagation();
 					e.preventDefault();
 					item.click.call($el.get(0), e);
@@ -60,15 +58,15 @@
 	}
 	$.fn.ctxmenu = function(items, title){
 		return $(this).each(function(){
-			var $el = $(this);
+			let $el = $(this);
 
 			setTitle($el, title);
 
-			$.each(items, function(_, item){
+			$.each(items, (_, item) => {
 				addToItems(item, $el);
 			});
 
-			$el.on('contextmenu',function(e){
+			$el.on('contextmenu', function(e){
 				if (e.shiftKey)
 					return;
 				e.preventDefault();
@@ -81,7 +79,7 @@
 					.css({ top: e.pageY, left: e.pageX, opacity: 0 })
 					.show();
 
-				var w = Math.max(document.documentElement.clientWidth, window.innerWidth || 0),
+				let w = Math.max(document.documentElement.clientWidth, window.innerWidth || 0),
 					h = Math.max(document.documentElement.clientHeight, window.innerHeight || 0),
 					d = $(document).scrollTop(),
 					p = $ctxmenu.position(),
@@ -97,35 +95,33 @@
 	};
 	$.ctxmenu.addItem =
 	$.ctxmenu.addItems = function($el){
-		var argl = arguments.length;
-		if (argl < 2) throw new Error('Invalud number of arguments ('+argl+') for $.ctxmenu.addItems');
+		let argl = arguments.length;
+		if (argl < 2) throw new Error(`Invalud number of arguments (${argl}) for $.ctxmenu.addItems`);
 
-		var items = [].slice.apply(arguments);
+		let items = $.toArray(arguments);
 		items.splice(0,1);
 
 		$el.each(function(){
-			var $el = $(this);
+			let $el = $(this);
 
 			if (typeof $el.data('ctxmenu-items') === 'undefined') return $el.ctxmenu(items);
 
 			setTitle($el);
 
-			$.each(items,function(_, item){ addToItems(item, $el) });
+			$.each(items, (_, item) => addToItems(item, $el));
 		});
 	};
-	$.ctxmenu.triggerItem = function($el, nth){
-		var $ch = $el.data('ctxmenu-items').filter(':not(.sep)');
-		if (nth < 1 || $ch.length-1 < nth) throw new Error('There\'s no such menu option: '+nth);
+	$.ctxmenu.triggerItem = ($el, nth) => {
+		let $ch = $el.data('ctxmenu-items').filter(':not(.sep)');
+		if (nth < 1 || $ch.length-1 < nth) throw new Error(`There's no such menu option: ${nth}`);
 		$ch.eq(nth).children('a').triggerHandler('click');
 	};
-	$.ctxmenu.setDefault = function($el, nth){
-		var $ch = $el.data('ctxmenu-items').filter(':not(.sep)');
+	$.ctxmenu.setDefault = ($el, nth) => {
+		let $ch = $el.data('ctxmenu-items').filter(':not(.sep)');
 		$ch.find('a').removeClass('default');
 		$ch.eq(nth).children('a').addClass('default');
 	};
-	$.ctxmenu.runDefault = function($el){
-		$el.data('ctxmenu-items').find('a.default').trigger('click');
-	};
+	$.ctxmenu.runDefault = $el => $el.data('ctxmenu-items').find('a.default').trigger('click');
 
 	$body.on('click contextmenu',function(){ $ctxmenu.hide() });
 	$w.on('blur resize',function(){ $ctxmenu.hide() });

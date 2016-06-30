@@ -2,14 +2,15 @@
 var cl = console.log;
 console.log = console.writeLine = function () {
 	var args = [].slice.call(arguments);
-	if (args.length && /^(\[\d{2}:\d{2}:\d{2}]|Using|Starting|Finished)/.test(args[0]))
+	if (args.length && /^(\[\d{2}:\d{2}:\d{2}]|Using|Finished)/.test(args[0]))
 		return;
 	return cl.apply(console, args);
 };
 var stdoutw = process.stdout.write;
 process.stdout.write = console.write = function(str){
 	var out = [].slice.call(arguments).join(' ');
-	if (/\[.*\d.*]/g.test(out)) return;
+	if (/\[.*?\d{2}.*?:.*?]/.test(out))
+		return;
 	stdoutw.call(process.stdout, out);
 };
 
@@ -21,12 +22,13 @@ if (['js','dist-js','sass','md','default'].indexOf(toRun) !== -1){
 	require_list.push.apply(require_list, [
 		'gulp-rename',
 		'gulp-plumber',
+		'gulp-duration',
 	]);
 
 	if (toRun !== 'dist-js')
 		require_list.push('gulp-sourcemaps');
 
-	if (toRun === 'css' || toRun === 'default')
+	if (toRun === 'sass' || toRun === 'default')
 		require_list.push.apply(require_list, [
 			'gulp-sass',
 			'gulp-autoprefixer',
@@ -35,6 +37,8 @@ if (['js','dist-js','sass','md','default'].indexOf(toRun) !== -1){
 	if (toRun === 'js' || toRun === 'dist-js' || toRun === 'default')
 		require_list.push.apply(require_list, [
 			'gulp-uglify',
+			'gulp-babel',
+			'gulp-cached'
 		]);
 	if (toRun === 'md' || toRun === 'default')
 		require_list.push.apply(require_list, [
@@ -101,6 +105,7 @@ gulp.task('sass', function() {
 			includeContent: false,
 			sourceRoot: '/sass',
 		}))
+		.pipe(duration('sass'))
 		.pipe(gulp.dest('www/css'));
 });
 
@@ -114,11 +119,14 @@ var Dashie = new Personality(
 			"...seriously?",
 		]
 	),
-	procjs = function(pipe,suffix,noSourcemaps){
-		var renamef = suffix
-			? function(path){ path.basename += suffix }
-			: function(path){ path.basename = path.basename.replace(/\.[^.]+$/i,'') };
+	procjs = function(pipe,taskName){
+		var noSourcemaps = taskName === 'dist-js',
+			renamef = !noSourcemaps
+				? function(path){ path.basename += '.min' }
+				: function(path){ path.basename = path.basename.replace(/\.[^.]+$/i,''); path.extname = '.jsx' };
 		pipe =  pipe
+			.pipe(duration(taskName))
+			.pipe(cached(taskName, { optimizeMemory: true }))
 			.pipe(plumber(function(err){
 				err =
 					err.fileName
@@ -130,6 +138,9 @@ var Dashie = new Personality(
 		if (!noSourcemaps)
 			pipe = pipe.pipe(sourcemaps.init());
 		pipe = pipe
+				.pipe(babel({
+					presets: ['es2015']
+				}))
 				.pipe(uglify({
 					preserveComments: function(_, comment){ return /^!/m.test(comment.value) },
 					output: { ascii_only: noSourcemaps },
@@ -145,14 +156,13 @@ var Dashie = new Personality(
 gulp.task('js', function(){
 	procjs(
 		gulp.src(['www/js/*.js', '!www/js/*.min.js']),
-		'.min'
+		'js'
 	).pipe(gulp.dest('www/js'));
 });
 gulp.task('dist-js', function(){
 	procjs(
 		gulp.src(['www/dist/*.src.jsx']),
-		'',
-		true
+		'dist-js'
 	).pipe(gulp.dest('www/dist'));
 });
 
@@ -166,6 +176,7 @@ var AJ = new Personality(
 );
 gulp.task('md', function(){
 	gulp.src('README.md')
+		.pipe(duration('md'))
 		.pipe(plumber(function(err){
 			AJ.error(err);
 			this.emit('end');
@@ -266,11 +277,7 @@ gulp.task('pgsort', function(){
 
 gulp.task('default', ['js', 'dist-js', 'sass', 'md'], function(){
 	gulp.watch(['www/js/*.js', '!www/js/*.min.js'], {debounceDelay: 2000}, ['js']);
-	gulp.watch(['www/dist/*.src.jss'], {debounceDelay: 2000}, ['dist-js']);
-	Dashie.log("I got my eyes on you, JavaScript files!");
+	gulp.watch(['www/dist/*.src.js'], {debounceDelay: 2000}, ['dist-js']);
 	gulp.watch('www/sass/*.scss', {debounceDelay: 2000}, ['sass']);
-	Flutters.log("SCSS files, do you mind if I, um, watch over you for a bit?");
 	gulp.watch('README.md', {debounceDelay: 2000}, ['md']);
-	AJ.log("Readme markdown file is under my radar, sugarcube");
-	Rarity.log("PostgreSQL dump sorting should now be run manually!");
 });

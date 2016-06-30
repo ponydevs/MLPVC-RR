@@ -1,8 +1,8 @@
 /* global ace */
-ace.define("ace/mode/colorguide_highlight_rules",["require","exports","ace/lib/oop","ace/mode/text_highlight_rules"], function(require, exports) {
+ace.define("ace/mode/colorguide_highlight_rules",["require","exports","ace/lib/oop","ace/mode/text_highlight_rules"], (require, exports) => {
 	"use strict";
 
-	var ColorGuideHighlightRules = function() {
+	let ColorGuideHighlightRules = function() {
 		this.$rules = {
 			"start": [
 				{
@@ -62,13 +62,13 @@ ace.define("ace/mode/colorguide_highlight_rules",["require","exports","ace/lib/o
 	exports.ColorGuideHighlightRules = ColorGuideHighlightRules;
 });
 
-ace.define("ace/mode/colorguide",["require","exports","ace/mode/colorguide_highlight_rules","ace/mode/folding/coffee","ace/range","ace/mode/text","ace/lib/oop"], function(require, exports) {
+ace.define("ace/mode/colorguide",["require","exports","ace/mode/colorguide_highlight_rules","ace/mode/folding/coffee","ace/range","ace/mode/text","ace/lib/oop"], (require, exports) => {
 	"use strict";
 
 	function Mode(){ this.HighlightRules = require("./colorguide_highlight_rules").ColorGuideHighlightRules }
 	require("../lib/oop").inherits(Mode, require("./text").Mode);
 
-	Mode.prototype.getNextLineIndent = function(state, line) {
+	Mode.prototype.getNextLineIndent = function(state, line){
 		return this.$getIndent(line);
 	};
 	Mode.prototype.$id = "ace/mode/colorguide";

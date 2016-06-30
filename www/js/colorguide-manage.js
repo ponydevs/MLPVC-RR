@@ -1,30 +1,30 @@
-/* globals $body,$content,DocReady,HandleNav,mk,Sortable,Bloodhound,Handlebars,SHORT_HEX_COLOR_PATTERN,PRINTABLE_ASCII_PATTERN,Key,ace */
+/* globals $body,$content,DocReady,HandleNav,mk,Sortable,Bloodhound,Handlebars,SHORT_HEX_COLOR_PATTERN,PRINTABLE_ASCII_PATTERN,Key,ace,Time */
 DocReady.push(function ColorguideManage(){
 	'use strict';
-	var Color = window.Color, color = window.color, TAG_TYPES_ASSOC = window.TAG_TYPES_ASSOC, $colorGroups,
+	let Color = window.Color, color = window.color, TAG_TYPES_ASSOC = window.TAG_TYPES_ASSOC, $colorGroups,
 		HEX_COLOR_PATTERN = window.HEX_COLOR_PATTERN, isWebkit = 'WebkitAppearance' in document.documentElement.style,
 		EQG = window.EQG, EQGRq = EQG?'?eqg':'', AppearancePage = !!window.AppearancePage,
 		ColorTextParseError = function(line, lineNumber, matches){
-			this.message = 'Parse error on line '+lineNumber+' (shown below)'+
-				'<pre style="font-size:16px"><code>'+line.replace(/</g,'&lt;')+'</code></pre>'+
-				(matches && !matches[2] ? 'The color name is missing from this line.' : 'Please check for any errors before continuing.');
+			this.message = `Parse error on line ${lineNumber} (shown below)
+				<pre style="font-size:16px"><code>${line.replace(/</g,'&lt;')}</code></pre>`
+				+(matches && !matches[2] ? 'The color name is missing from this line.' : 'Please check for any errors before continuing.');
 			this.lineNumber = lineNumber;
 		};
 
-	var $spriteUploadForm = $.mk('form').attr('id', 'sprite-img').html(
-		'<p class="align-center"><a href="#upload">Click here to upload a file</a> (max. '+window.MAX_SIZE+') or enter a URL below.</p>' +
-		'<label><input type="text" name="image_url" placeholder="External image URL" required></label>' +
-		'<p class="align-center">The URL will be checked against the supported provider list, and if an image is found, it\'ll be downloaded to the server and set as this appearance\'s sprite image.</p>'
+	let $SpriteUploadFormTemplate = $.mk('form','sprite-upload').html(
+		`<p class="align-center"><a href="#upload">Click here to upload a file</a> (max. ${window.MAX_SIZE}) or enter a URL below.</p>
+		<label><input type="text" name="image_url" placeholder="External image URL" required></label>
+		<p class="align-center">The URL will be checked against the supported provider list, and if an image is found, it\'ll be downloaded to the server and set as this appearance's sprite image.</p>`
 	);
 
-	var $EpAppearances;
+	let $EpAppearances;
 	if (AppearancePage)
 		$EpAppearances = $('#ep-appearances');
 
 	$.fn.reorderTags = function(){
 		return this.each(function(){
 			$(this).children('.tag').sort(function(a, b){
-				var regex = /^.*typ-([a-z]+).*$/;
+				let regex = /^.*typ-([a-z]+).*$/;
 				a = [a.className.replace(regex,'$1'), a.innerHTML.trim()];
 				b = [b.className.replace(regex,'$1'), b.innerHTML.trim()];
 
@@ -35,72 +35,34 @@ DocReady.push(function ColorguideManage(){
 		});
 	};
 
-	var $list = $('.appearance-list'),
-		$ponyEditor = $.mk('form').attr('id','pony-editor')
+	let $list = $('.appearance-list'),
+		$PonyEditorFormTemplate = $.mk('form','pony-editor')
 			.append(
-				$.mk('label').append(
-					'<span>Name (4-70 chars.)</span>',
-					$.mk('input').attr({
-						name: 'label',
-						placeholder: 'Enter a name',
-						pattern: PRINTABLE_ASCII_PATTERN.replace('+', '{4,70}'),
-						required: true,
-						maxlength: 70
-					})
-				),
-				$.mk('label').append(
-					'<span>Additional notes (1000 chars. max, optional)</span>',
-					$.mk('textarea').attr({
-						name: 'notes',
-						maxlength: 1000
-					})
-				),
-				$.mk('label').append(
-					'<span>Link to cutie mark (optional)</span>',
-					$.mk('input').attr({
-						name: 'cm_favme',
-						placeholder: 'DeviantArt submission URL',
-					}).on('change blur paste keyup',function(){
-						var disable = this.value.trim().length === 0,
-							$cm_dir = $(this).parent().next();
-						$cm_dir.find('input').attr('disabled', disable);
-						$cm_dir.next().find('input').attr('disabled', disable);
-					})
-				),
-				$.mk('div').attr('class','align-center').append(
-					'<p>Cutie mark orientation</p>',
-					$.mk('div').attr('class','radio-group').append(
-						$.mk('label').append(
-							$.mk('input').attr({
-								type: 'radio',
-								name: 'cm_dir',
-								value: 'ht',
-								required: true,
-							}),
-							"<span>Head-Tail</span>"
-						),
-						$.mk('label').append(
-							$.mk('input').attr({
-								type: 'radio',
-								name: 'cm_dir',
-								value: 'th',
-								required: true,
-							}),
-							"<span>Tail-Head</span>"
-						)
-					)
-				),
-				$.mk('label').append(
-					"<span>Link to CM preview image (optional)</span>",
-					$.mk('input').attr({
-						name: 'cm_preview',
-						placeholder: 'Separate preview image',
-					})
-				),
-				'<p class="notice info">The preview of the linked CM above will be used if the preview field is left empty.</p>'
+				`<label>
+					<span>Name (4-70 chars.)</span>
+					<input type="text" name="label" placeholder="Enter a name" pattern="${PRINTABLE_ASCII_PATTERN.replace('+', '{4,70}')}" required maxlength="70">
+				</label>
+				<label>
+					<span>Additional notes (1000 chars. max, optional)</span>
+					<textarea name="notes" maxlength="1000"></textarea>
+				</label>
+				<label>
+					<span>Link to cutie mark (optional)</span>
+					<input type="text" name="cm_favme" placeholder="DeviantArt submission URL">
+				</label>
+				<div class="align-center">
+					<p>Cutie mark orientation</p>
+					<label><input type="radio" name="cm_dir" value="ht" required><span>Head-Tail</span></label>
+					<label><input type="radio" name="cm_dir" value="th" required><span>Tail-Head</span></label>
+				</div>
+				<label>
+					<span>Link to CM preview image (optional)</span>
+					<input type="text" name="cm_preview" placeholder="Separate preview image">
+				</label>
+				<p class="notice info">The preview of the linked CM above will be used if the preview field is left empty.</p>`
 			),
 		mkPonyEditor = function($this, title, data){
-			var editing = !!data,
+			let editing = !!data,
 				$li = $this.parents('[id^=p]'),
 				$ponyNotes = $li.find('.notes'),
 				$ponyLabel;
@@ -111,12 +73,18 @@ DocReady.push(function ColorguideManage(){
 			}
 			else $ponyLabel = $this.siblings().first();
 
-			$.Dialog.request(title,$ponyEditor.clone(true,true),'pony-editor','Save',function($form){
-				var $favme = $form.find('input[name=cm_favme]');
+			$.Dialog.request(title,$PonyEditorFormTemplate.clone(true,true),'Save', function($form){
+				let $favme = $form.find('input[name=cm_favme]').on('change blur paste keyup',function(){
+						let disable = this.value.trim().length === 0,
+							$cm_dir = $(this).parent().next();
+						$cm_dir.find('input').attr('disabled', disable);
+						$cm_dir.next().find('input').attr('disabled', disable);
+					}),
+					ponyID;
 				if (editing){
-					var ponyID = data.ponyID;
+					ponyID = data.ponyID;
 					$form.find('input[name=label]').val(data.label);
-					var $txtarea = $form.find('textarea').val(data.notes);
+					let $txtarea = $form.find('textarea').val(data.notes);
 					if (parseInt(ponyID, 10) === 0)
 						$txtarea.removeAttr('maxlength');
 					if (data.cm_favme)
@@ -130,13 +98,13 @@ DocReady.push(function ColorguideManage(){
 							$.mk('button')
 								.attr('class', 'blue typcn typcn-image')
 								.text('Update rendered image')
-								.on('click',function(e){
+								.on('click', function(e){
 									e.preventDefault();
 									
 									$.Dialog.close();
 									$.Dialog.wait('Clear appearance image cache','Clearing cache');
 
-									$.post('/cg/clearrendercache/'+ponyID,$.mkAjaxHandler(function(){
+									$.post(`/cg/clearrendercache/${ponyID}`,$.mkAjaxHandler(function(){
 										if (!this.status) return $.Dialog.fail(false, this.message);
 
 										$.Dialog.success(false, this.message, true);
@@ -145,28 +113,18 @@ DocReady.push(function ColorguideManage(){
 						)
 					);
 				}
-				else {
-					$form.append(
-						$.mk('label').append(
-							$.mk('input').attr({
-								type: 'checkbox',
-								name: 'template'
-							}),
-							" Pre-fill with common color groups"
-						)
-					);
-				}
+				else $form.append("<label><input type='checkbox' name='template'> Pre-fill with common color groups</label>");
 				$favme.triggerHandler('change');
 
-				$form.on('submit',function(e){
+				$form.on('submit', function(e){
 					e.preventDefault();
 
-					var data = $form.mkData();
+					let data = $form.mkData();
 					$.Dialog.wait(false, 'Saving changes');
 					if (AppearancePage)
 						data.APPEARANCE_PAGE = true;
 
-					$.post('/cg/'+(editing?'set/'+ponyID:'make')+EQGRq,data,$.mkAjaxHandler(function(){
+					$.post(`/cg/${editing?`set/${ponyID}`:'make'}${EQGRq}`,data,$.mkAjaxHandler(function(){
 						if (!this.status) return $.Dialog.fail(false, this.message);
 
 						data = this;
@@ -174,7 +132,7 @@ DocReady.push(function ColorguideManage(){
 							if (!AppearancePage){
 								$ponyLabel.text(data.label);
 								if (data.newurl)
-									$ponyLabel.attr('href',function(_, oldhref){
+									$ponyLabel.attr('href',(_, oldhref) => {
 										return oldhref.replace(/\/[^\/]+$/, '/'+data.newurl);
 									});
 								$ponyNotes.html(this.notes);
@@ -200,40 +158,44 @@ DocReady.push(function ColorguideManage(){
 					}));
 				});
 			});
-		},
-		$cgReordering = $.mk('form').attr('id','cg-reorder').append($.mk('div').attr('class','notice').hide().html('<p></p>'));
+		};
 
 	$('#new-appearance-btn').on('click',function(){
 		mkPonyEditor($(this),'Add new '+(EQG?'Character':'Pony'));
 	});
 
-	var $tagEditForm = $.mk('form').attr('id', 'edit-tag');
-	$tagEditForm
-		.append('<label><span>Tag name (3-30 chars.)</span><input type="text" name="name" required pattern="^.{3,30}$" maxlength="30"></label>');
-	var $_typeSelect = $.mk('div').addClass('type-selector');
+	let $EditTagFormTemplate = $.mk('form','edit-tag');
+	$EditTagFormTemplate.append('<label><span>Tag name (3-30 chars.)</span><input type="text" name="name" required pattern="^.{3,30}$" maxlength="30"></label>');
+	let _typeSelect =
+		`<div class='type-selector'>
+			<label>
+				<input type="radio" name="type" value="" checked>
+				<span class="tag">Typeless</span>
+			</label>`;
 	$.each(TAG_TYPES_ASSOC,function(type, label){
-		var $lbl = $.mk('label'),
-			$chx = $.mk('input')
-				.attr({
-					type: 'checkbox',
-					name: 'type',
-					value: type
-				}).on('change',function(){
-					if (this.checked)
-						$(this).parent().siblings().find('input').prop('checked', false);
-				});
-		$lbl.append($chx, $.mk('span').addClass('tag typ-'+type).text(label)).appendTo($_typeSelect);
+		_typeSelect +=
+			`<label>
+				<input type="radio" name="type" value="${type}">
+				<span class="tag typ-${type}">${label}</span>
+			</label>`;
 	});
-	$tagEditForm.append(
-		$.mk('div').addClass('align-center').append('<span>Tag type (optional)</span><br>',$_typeSelect),
-		$.mk('label').append('<span>Tag description (max 255 chars., optional)</span><br><textarea name="title" maxlength="255"></textarea>'),
+	_typeSelect += '</div>';
+	$EditTagFormTemplate.append(
+		`<div class="align-center">
+			<span>Tag type</span><br>
+			${_typeSelect}
+		</div>
+		<label>
+			<span>Tag description (max 255 chars., optional)</span>
+			<textarea name="title" maxlength="255"></textarea>
+		</label>`,
 		$.mk('div').attr('class','align-center edit-only').append(
 			$.mk('button').attr('class','blue typcn typcn-flow-merge merge').html('Merge&hellip;'),
 			$.mk('button').attr('class','blue typcn typcn-flow-children synon').html('Synonymize&hellip;')
-		).on('click','button',function(e){
+		).on('click','button', function(e){
 			e.preventDefault();
 
-			var $form = $(this).closest('form'),
+			let $form = $(this).closest('form'),
 				tag = $form.data('tag'),
 				tagName = tag.name,
 				tagID = tag.tid,
@@ -241,7 +203,7 @@ DocReady.push(function ColorguideManage(){
 
 			$.Dialog.close(function(){
 				window.CGTagEditing(tagName, tagID, action, function(action){
-					var $affected = $('.tag.id-'+tagID), target;
+					let $affected = $('.tag.id-'+tagID), target;
 
 					if ($affected.length)
 						switch (action){
@@ -249,9 +211,8 @@ DocReady.push(function ColorguideManage(){
 								target = this.target;
 								$affected.addClass('synonym');
 								var $ssp =  $affected.eq(0).clone().removeClass('ctxmenu-bound'),
-									$tsp = $makeTagSpan(target);
-
-								var $tagsDivs = $affected.add($('.tag.id-'+target.tid)).closest('.tags');
+									$tsp = new TagSpan(target),
+									$tagsDivs = $affected.add($('.tag.id-'+target.tid)).closest('.tags');
 								$tagsDivs.filter(function(){
 									return $(this).children('.id-'+tagID).length === 0;
 								}).append($ssp).reorderTags();
@@ -269,9 +230,9 @@ DocReady.push(function ColorguideManage(){
 							case "merge":
 								target = this.target;
 								$affected.each(function(){
-									var $this = $(this);
+									let $this = $(this);
 									if ($this.siblings('.id-'+target.tid).length === 0)
-										$this.replaceWith($makeTagSpan(target));
+										$this.replaceWith(new TagSpan(target));
 									else $this.remove();
 								});
 								window.tooltips();
@@ -285,15 +246,16 @@ DocReady.push(function ColorguideManage(){
 		})
 	);
 
-	function $makeTagSpan(data){
-		return $.mk('span').attr({
-			'class': 'tag id-'+data.tid+(data.type?' typ-'+data.type:'')+(data.synonym_of?' synonym':''),
-			title: data.title,
-		}).text(data.name);
+	class TagSpan extends jQuery {
+		constructor(data){
+			return super(`<span class="tag id-${data.tid}${data.type?` typ-${data.type}`:''}${data.synonym_of?' synonym':''}" data-syn-of="${data.synonym_of}">`)
+				.attr('title', data.title)
+				.text(data.name);
+		}
 	}
 
 	function createNewTag($tag, name, typehint){
-		var title = 'Create new tag',
+		let title = 'Create new tag',
 			$tagsDiv = $tag.closest('.tags'),
 			$li = $tagsDiv.closest('[id^=p]'),
 			ponyID = $li.attr('id').substring(1),
@@ -301,16 +263,16 @@ DocReady.push(function ColorguideManage(){
 				? $tagsDiv.siblings('strong').text().trim()
 				: $content.children('h1').text();
 
-		$.Dialog.request(title,$tagEditForm.clone(true, true),'edit-tag','Create',function($form){
+		$.Dialog.request(title,$EditTagFormTemplate.clone(true, true),'Create', function($form){
 			$form.children('.edit-only').replaceWith(
 				$.mk('label').append(
 					$.mk('input').attr({type:'checkbox',name:'addto'}).val(ponyID).prop('checked', typeof name === 'string'),
-					document.createTextNode(' Add this tag to the appearance "'+ponyName+'" after creation')
+					` Add this tag to the appearance "${ponyName}" after creation`
 				)
 			);
 
 			if (typeof typehint === 'string' && typeof TAG_TYPES_ASSOC[typehint] !== 'undefined')
-				$form.find('input[name=type][value='+typehint+']').prop('checked', true).trigger('change');
+				$form.find(`input[name=type][value=${typehint}]`).prop('checked', true).trigger('change');
 
 			if (typeof name === 'string')
 				$form.find('input[name=name]').val(name);
@@ -318,13 +280,13 @@ DocReady.push(function ColorguideManage(){
 			$form.on('submit', function(e){
 				e.preventDefault();
 
-				var data = $form.mkData();
+				let data = $form.mkData();
 				$.Dialog.wait(false, 'Creating tag');
 
 				if (data.addto && AppearancePage)
 					data.APPEARANCE_PAGE = true;
 
-				$.post('/cg/maketag'+EQGRq,data,$.mkAjaxHandler(function(){
+				$.post(`/cg/maketag${EQGRq}`,data,$.mkAjaxHandler(function(){
 					if (!this.status) return $.Dialog.fail(false, this.message);
 
 					if (this.tags){
@@ -334,7 +296,7 @@ DocReady.push(function ColorguideManage(){
 						ctxmenus();
 					}
 					if (this.needupdate === true){
-						var $eps = $(this.eps);
+						let $eps = $(this.eps);
 						$EpAppearances.replaceWith($eps);
 						$EpAppearances = $eps;
 					}
@@ -345,16 +307,14 @@ DocReady.push(function ColorguideManage(){
 		});
 	}
 
-	var $cgEditor = $.mk('form').attr('id','cg-editor'),
-		$colorPreview = $.mk('span').attr('class','clrp'),
-		colorLabelPattern = PRINTABLE_ASCII_PATTERN.replace('+', '{3,30}'),
+	let $CGEditorFormTemplate = $.mk('form','cg-editor'),
 		$colorInput =
 			$.mk('input').attr({
 				'class': 'clri',
 				autocomplete: 'off',
 				spellcheck: 'false',
 			}).patternAttr(HEX_COLOR_PATTERN).on('keyup change input',function(_, override){
-				var $this = $(this),
+				let $this = $(this),
 					$cp = $this.prev(),
 					color = (typeof override === 'string' ? override : this.value).trim(),
 					valid = HEX_COLOR_PATTERN.test(color);
@@ -363,13 +323,13 @@ DocReady.push(function ColorguideManage(){
 				else $cp.addClass('invalid');
 
 				$this.next().attr('required', valid);
-			}).on('paste blur keyup',function(e){
-				var input = this,
+			}).on('paste blur keyup', function(e){
+				let input = this,
 					f = function(){
-						var val = $.hexpand(input.value);
+						let val = $.hexpand(input.value);
 						if (HEX_COLOR_PATTERN.test(val)){
 							val = val.replace(HEX_COLOR_PATTERN, '#$1').toUpperCase();
-							var $input = $(input),
+							let $input = $(input),
 								rgb = $.hex2rgb(val);
 							$.each(rgb, function(channel, value){
 								if (value <= 3)
@@ -395,15 +355,14 @@ DocReady.push(function ColorguideManage(){
 				if (e.type === 'paste') setTimeout(f, 10);
 				else f();
 			}),
-		$colorLabel = $.mk('input').attr({ 'class': 'clrl', pattern: colorLabelPattern }),
+		$colorLabel = $.mk('input').attr({ 'class': 'clrl', pattern: PRINTABLE_ASCII_PATTERN.replace('+', '{3,30}') }),
 		$colorActions = $.mk('div').attr('class','clra')
 			.append($.mk('span').attr('class','typcn typcn-minus remove red').on('click',function(){
 				$(this).closest('.clr').remove();
 			}))
 			.append($.mk('span').attr('class','typcn typcn-arrow-move move blue')),
 		mkClrDiv = function(color){
-			var $cp = $colorPreview.clone(),
-				$ci = $colorInput.clone(true, true),
+			let $ci = $colorInput.clone(true, true),
 				$cl = $colorLabel.clone(),
 				$ca = $colorActions.clone(true, true),
 				$el = $.mk('div').attr('class','clr');
@@ -413,23 +372,23 @@ DocReady.push(function ColorguideManage(){
 				if (color.label) $cl.val(color.label);
 			}
 
-			$el.append($cp,$ci,$cl,$ca);
+			$el.append("<span class='clrp'></span>",$ci,$cl,$ca);
 			$ci.trigger('change');
 			return $el;
 		},
-		$addBtn = $.mk('button').attr('class','typcn typcn-plus green add-color').text('Add new color').on('click',function(e){
+		$addBtn = $.mk('button').attr('class','typcn typcn-plus green add-color').text('Add new color').on('click', function(e){
 			e.preventDefault();
 
-			var $form = $(this).parents('#cg-editor'),
+			let $form = $(this).parents('#cg-editor'),
 				$colors = $form.children('.clrs');
 			if (!$colors.length)
 				$form.append($colors = $.mk('div').attr('class', 'clrs'));
 
 			if ($colors.hasClass('ace_editor')){
-				var editor = $colors.data('editor');
+				let editor = $colors.data('editor');
 				editor.clearSelection();
 				editor.navigateLineEnd();
-				var curpos = editor.getCursorPosition(),
+				let curpos = editor.getCursorPosition(),
 					trow = curpos.row+1,
 					emptyLine = curpos.column === 0,
 					copyHashEnabled = window.copyHashEnabled();
@@ -442,23 +401,23 @@ DocReady.push(function ColorguideManage(){
 				editor.focus();
 			}
 			else {
-				var $div = mkClrDiv();
+				let $div = mkClrDiv();
 				$colors.append($div);
 				$div.find('.clri').focus();
 			}
 		}),
 		parseColorsText = function(text){
-			var colors = [],
+			let colors = [],
 				lines = text.split('\n');
 
-			for (var lineIndex = 0, lineCount = lines.length; lineIndex < lineCount; lineIndex++){
-				var line = lines[lineIndex];
+			for (let lineIndex = 0, lineCount = lines.length; lineIndex < lineCount; lineIndex++){
+				let line = lines[lineIndex];
 
 				// Comment or empty line
 				if (/^(\/\/.*)?$/.test(line))
 					continue;
 
-				var matches = line.trim().match(/^#([a-f\d]{6}|[a-f\d]{3})(?:\s*([a-z\d][ -~]{2,29}))?$/i);
+				let matches = line.trim().match(/^#([a-f\d]{6}|[a-f\d]{3})(?:\s*([a-z\d][ -~]{2,29}))?$/i);
 				// Valid line
 				if (matches && matches[2]){
 					colors.push({ hex: $.hexpand(matches[1]), label: matches[2] });
@@ -471,10 +430,10 @@ DocReady.push(function ColorguideManage(){
 
 			return colors;
 		},
-		$editorToggle = $.mk('button').attr('class','typcn typcn-document-text darkblue').text('Plain text editor').on('click',function(e){
+		$editorToggle = $.mk('button').attr('class','typcn typcn-document-text darkblue').text('Plain text editor').on('click', function(e){
 			e.preventDefault();
 
-			var $btn = $(this),
+			let $btn = $(this),
 				$form = $btn.parents('#cg-editor');
 
 			$btn.disable();
@@ -484,28 +443,22 @@ DocReady.push(function ColorguideManage(){
 			catch (error){
 				if (!(error instanceof ColorTextParseError))
 					throw error;
-				$btn.enable();
-				var editor = $form.find('.clrs').data('editor');
+				let editor = $form.find('.clrs').data('editor');
 				editor.gotoLine(error.lineNumber);
 				editor.navigateLineEnd();
 				$.Dialog.fail(false, error.message);
 				editor.focus();
+				$btn.enable();
 				return;
 			}
-			$btn.enable().toggleClass('typcn-document-text typcn-pencil').toggleHtml(['Plain text editor','Interactive editor']);
+			$btn.toggleClass('typcn-document-text typcn-pencil').toggleHtml(['Plain text editor','Interactive editor']).enable();
 			$.Dialog.clearNotice(/Parse error on line \d+ \(shown below\)/);
 		});
-	$cgEditor.append(
-		$.mk('label').append(
-			$.mk('span').text('Group name (2-30 chars.)'),
-			mk('br'),
-			$.mk('input').attr({
-				type: 'text',
-				name: 'label',
-				pattern: PRINTABLE_ASCII_PATTERN.replace('+','{2,30}'),
-				required: true,
-			})
-		),
+	$CGEditorFormTemplate.append(
+		`<label>
+			<span>Group name (2-30 chars.)</span>
+			<input type="text" name="label" pattern="${PRINTABLE_ASCII_PATTERN.replace('+','{2,30}')}" required>
+		</label>`,
 		$.mk('label').append(
 			$.mk('input').attr({
 				type: 'checkbox',
@@ -513,30 +466,23 @@ DocReady.push(function ColorguideManage(){
 			}).on('click',function(){
 				$(this).parent().next()[this.checked?'show':'hide']().children('input').attr('disabled', !this.checked);
 			}),
-			$.mk('span').text('This is a major change')
+			'<span>This is a major change</span>'
 		),
-		$.mk('label').append(
-			$.mk('span').text('Change reason (1-255 chars.)'),
-			mk('br'),
-			$.mk('input').attr({
-				type: 'text',
-				name: 'reason',
-				pattern: PRINTABLE_ASCII_PATTERN.replace('+','{1,255}'),
-				required: true,
-				disabled: true,
-			})
-		).hide(),
-		$.mk('p').attr('class', 'align-center').text('The # symbol is optional, rows with invalid '+color+'s will be ignored. Each color must have a short (3-30 chars.) description of its intended use.'),
+		`<label class="hidden">
+			<span>Change reason (1-255 chars.)</span>
+			<input type='text' name='reason' pattern="${PRINTABLE_ASCII_PATTERN.replace('+','{1,255}')}" required disabled>
+		</label>
+		<p class="align-center">The # symbol is optional, rows with invalid ${color}s will be ignored. Each color must have a short (3-30 chars.) description of its intended use.</p>`,
 		$.mk('div').attr('class', 'btn-group').append(
 			$addBtn, $editorToggle
 		),
-		$.mk('div').attr('class', 'clrs')
+		"<div class='clrs'/>"
 	).on('render-color-inputs',function(){
-		var $form = $(this),
+		let $form = $(this),
 			data = $form.data('color_values'),
 			$colors = $form.children('.clrs').empty();
 
-		$.each(data, function(_, color){
+		$.each(data, (_, color) => {
 			$colors.append(mkClrDiv(color));
 		});
 
@@ -546,8 +492,8 @@ DocReady.push(function ColorguideManage(){
 			scroll: false,
 			animation: 150,
 		}));
-	}).on('save-color-inputs',function(_, storeState){
-		var $form = $(this),
+	}).on('save-color-inputs', function(_, storeState){
+		let $form = $(this),
 			$colors = $form.children('.clrs'),
 			is_ace = $colors.hasClass('ace_editor'),
 			editor;
@@ -565,17 +511,17 @@ DocReady.push(function ColorguideManage(){
 		}
 		else {
 			// Saving
-			var data = [];
+			let data = [];
 			$form.find('.clr').each(function(){
-				var $row = $(this),
+				let $row = $(this),
 					$ci = $row.children('.clri'),
-					val = $.hexpand($ci.val());
+					val = $.hexpand($ci.val()).toUpperCase();
 
 				if (!HEX_COLOR_PATTERN.test(val))
 					return;
 
 				data.push({
-					hex: val.replace(HEX_COLOR_PATTERN,'#$1').toUpperCase(),
+					hex: val.replace(HEX_COLOR_PATTERN,'#$1'),
 					label: $row.children('.clrl').val(),
 				});
 			});
@@ -584,12 +530,12 @@ DocReady.push(function ColorguideManage(){
 				return;
 
 			// Switching
-			var editable_content = [
+			let editable_content = [
 				'// One color per line',
 				'// e.g. #012ABC Fill',
 			];
-			$.each(data, function(_, color){
-				var line = [];
+			$.each(data, (_, color) => {
+				let line = [];
 
 				if (typeof color === 'object'){
 					line.push(color.hex ? color.hex : '#_____');
@@ -601,7 +547,7 @@ DocReady.push(function ColorguideManage(){
 			});
 
 			// Remove Sortable
-			var sortable_instance = $colors.data('sortable');
+			let sortable_instance = $colors.data('sortable');
 			if (typeof sortable_instance !== 'undefined')
 				sortable_instance.destroy();
 			$colors.unbind().text(editable_content.join('\n')+'\n');
@@ -609,7 +555,7 @@ DocReady.push(function ColorguideManage(){
 			// Create editor
 			editor = ace.edit($colors[0]);
 			editor.$blockScrolling = Infinity;
-			var session = editor.getSession();
+			let session = editor.getSession();
 			editor.setTheme('ace/theme/colorguide');
 			editor.setShowPrintMargin(false);
 			session.setMode("ace/mode/colorguide");
@@ -622,17 +568,16 @@ DocReady.push(function ColorguideManage(){
 	});
 
 	function CGEditorMaker(title, $group){
-		var dis = this;
+		let dis = this, ponyID, groupID;
 		if (typeof $group !== 'undefined'){
-			var ponyID;
 			if ($group instanceof jQuery){
-				var groupID = $group.attr('id').substring(2);
+				groupID = $group.attr('id').substring(2);
 				ponyID = $group.parents('[id^=p]').attr('id').substring(1);
 			}
 			else ponyID = $group;
 		}
-		$.Dialog.request(title,$cgEditor.clone(true, true),'cg-editor','Save',function($form){
-			var $label = $form.find('input[name=label]'),
+		$.Dialog.request(title,$CGEditorFormTemplate.clone(true, true),'Save', function($form){
+			let $label = $form.find('input[name=label]'),
 				$major = $form.find('input[name=major]'),
 				$reason = $form.find('input[name=reason]'),
 				editing = typeof dis === 'object' && dis.label && dis.Colors;
@@ -641,7 +586,7 @@ DocReady.push(function ColorguideManage(){
 				$label.val(dis.label);
 				$form.data('color_values', dis.Colors).trigger('render-color-inputs');
 			}
-			$form.on('submit',function(e){
+			$form.on('submit', function(e){
 				e.preventDefault();
 
 				try {
@@ -650,7 +595,7 @@ DocReady.push(function ColorguideManage(){
 				catch (error){
 					if (!(error instanceof ColorTextParseError))
 						throw error;
-					var editor = $form.find('.clrs').data('editor');
+					let editor = $form.find('.clrs').data('editor');
 					editor.gotoLine(error.lineNumber);
 					editor.navigateLineEnd();
 					$.Dialog.fail(false, error.message);
@@ -658,7 +603,7 @@ DocReady.push(function ColorguideManage(){
 					return;
 				}
 
-				var data = { label: $label.val(), Colors: $form.data('color_values') };
+				let data = { label: $label.val(), Colors: $form.data('color_values') };
 				if (!editing) data.ponyid = ponyID;
 				if (data.Colors.length === 0)
 					return $.Dialog.fail(false, 'You need to have at least 1 valid color');
@@ -674,11 +619,11 @@ DocReady.push(function ColorguideManage(){
 
 				$.Dialog.wait(false, 'Saving changes');
 
-				$.post('/cg/'+(editing?'set':'make')+'cg'+(editing?'/'+groupID:'')+EQGRq, data, $.mkAjaxHandler(function(){
+				$.post(`/cg/${editing?'set':'make'}cg${editing?`/${groupID}`:''}${EQGRq}`, data, $.mkAjaxHandler(function(){
 					if (!this.status) return $.Dialog.fail(false, this.message);
 
 					if (this.cg || this.cgs){
-						var $pony = $('#p'+ponyID);
+						let $pony = $('#p'+ponyID);
 						if (this.cg){
 							$group.children('[data-hasqtip]').qtip('destroy', true);
 							$group.html(this.cg);
@@ -692,7 +637,7 @@ DocReady.push(function ColorguideManage(){
 							$pony.find('ul.colors').html(this.cgs);
 						}
 						if (!AppearancePage && this.notes){
-							var $notes = $pony.find('.notes');
+							let $notes = $pony.find('.notes');
 							try {
 								$notes.find('.cm-direction').qtip('destroy', true);
 							}catch(e){}
@@ -702,12 +647,12 @@ DocReady.push(function ColorguideManage(){
 						window.tooltips();
 						ctxmenus();
 						if (this.update)
-							window.updateTimes();
-						var $ponycm = $('#pony-cm');
+							Time.Update();
+						let $ponycm = $('#pony-cm');
 						if (AppearancePage && $ponycm.length && this.cm_img){
 							$.Dialog.success(false, 'Color group updated');
 							$.Dialog.wait(false, 'Updating cutie mark orientation image');
-							var preload = new Image();
+							let preload = new Image();
 							preload.src = this.cm_img;
 							$(preload).on('load error',function(){
 								$ponycm.backgroundImageUrl(preload.src);
@@ -722,44 +667,45 @@ DocReady.push(function ColorguideManage(){
 		});
 	}
 
+	let $tags;
 	function ctxmenus(){
 		$tags.children('span:not(.ctxmenu-bound)').ctxmenu([
 			{text: 'Edit tag', icon: 'pencil', click: function(){
-				var $tag = $(this),
+				let $tag = $(this),
 					tagName = $tag.text().trim(),
 					tagID = $tag.attr('class').match(/id-(\d+)(?:\s|$)/)[1],
-					title = 'Editing tag: '+tagName;
+					title = `Editing tag: ${tagName}`;
 
 				$.Dialog.wait(title, 'Retrieveing tag details from server');
 
-				$.post('/cg/gettag/'+tagID+EQGRq,$.mkAjaxHandler(function(){
-					var tag = this;
-					if (this.status) $.Dialog.request(title,$tagEditForm.clone(true, true).data('tag', tag),'edit-tag','Save',function($form){
-						$form.find('input[name=type][value='+tag.type+']').prop('checked', true);
+				$.post(`/cg/gettag/${tagID}${EQGRq}`,$.mkAjaxHandler(function(){
+					let tag = this;
+					if (this.status) $.Dialog.request(title,$EditTagFormTemplate.clone(true, true).data('tag', tag),'Save', function($form){
+						$form.find(`input[name=type][value=${tag.type}]`).prop('checked', true);
 						$form.find('input[type=text][name], textarea[name]').each(function(){
-							var $this = $(this);
+							let $this = $(this);
 							$this.val(tag[$this.attr('name')]);
 						});
 						$form.on('submit', function(e){
 							e.preventDefault();
 
-							var data = $form.mkData();
+							let data = $form.mkData();
 							$.Dialog.wait(false, 'Saving changes');
 
-							$.post('/cg/settag/'+tagID+EQGRq, data, $.mkAjaxHandler(function(){
+							$.post(`/cg/settag/${tagID}${EQGRq}`, data, $.mkAjaxHandler(function(){
 								if (!this.status) return $.Dialog.fail(false, this.message);
 
-								var data = this,
+								let data = this,
 									$affected = $('.id-'+data.tid);
 								$affected.qtip('destroy', true);
 								if (data.title) $affected.attr('title', data.title);
 								else $affected.removeAttr('title');
-								$affected.text(data.name).data('ctxmenu-items').eq(0).text('Tag: '+data.name);
+								$affected.text(data.name).data('ctxmenu-items').eq(0).text(`Tag: ${data.name}`);
 								$affected.each(function(){
 									if (/typ-[a-z]+/.test(this.className))
-										this.className = this.className.replace(/typ-[a-z]+/, data.type ? 'typ-'+data.type : '');
+										this.className = this.className.replace(/typ-[a-z]+/, data.type ? `typ-${data.type}` : '');
 									else if (data.type)
-										this.className += ' typ-'+data.type;
+										this.className += ` typ-${data.type}`;
 									$(this)[data.synonym_of?'addClass':'removeClass']('synonym').parent().reorderTags();
 								});
 								window.tooltips();
@@ -771,62 +717,62 @@ DocReady.push(function ColorguideManage(){
 				}));
 			}},
 			{text: 'Remove tag', icon: 'minus', click: function(){
-				var $tag = $(this),
+				let $tag = $(this),
 					tagID = $tag.attr('class').match(/id-(\d+)(?:\s|$)/);
 
 				if (!tagID) return false;
 				tagID = tagID[1];
 
-				var ponyID = $tag.closest('[id^=p]').attr('id').replace(/\D/g, ''),
+				let ponyID = $tag.closest('[id^=p]').attr('id').replace(/\D/g, ''),
 					tagName = $tag.text().trim(),
-					title = 'Remove tag: '+tagName;
+					title = `Remove tag: ${tagName}`;
 
-				$.Dialog.confirm(title,"The tag <strong>"+tagName+"</strong> will be removed from this appearance.<br>Are you sure?",['Remove it','Nope'],function(sure){
+				$.Dialog.confirm(title,`The tag <strong>${tagName}</strong> will be removed from this appearance.<br>Are you sure?`,['Remove it','Nope'], function(sure){
 					if (!sure) return;
 
-					var data = {tag:tagID};
+					let data = {tag:tagID};
 					$.Dialog.wait(title,'Removing tag');
 					if (AppearancePage)
 						data.APPEARANCE_PAGE = true;
 
-					$.post('/cg/untag/'+ponyID+EQGRq,data,$.mkAjaxHandler(function(){
+					$.post(`/cg/untag/${ponyID}${EQGRq}`,data,$.mkAjaxHandler(function(){
 						if (!this.status) return $.Dialog.fail(title, this.message);
 
 						if (this.needupdate === true){
-							var $eps = $(this.eps);
+							let $eps = $(this.eps);
 							$EpAppearances.replaceWith($eps);
 							$EpAppearances = $eps;
 						}
 						$tag.qtip('destroy', true);
 						$tag.remove();
-						$('.tag.synonym').filter('[data-syn-of='+tagID+']').remove();
+						$('.tag.synonym').filter(`[data-syn-of=${tagID}]`).remove();
 						$.Dialog.close();
 					}));
 				});
 			}},
 			{text: 'Delete tag', icon: 'trash', click: function(){
-				var $tag = $(this),
+				let $tag = $(this),
 					tagName = $tag.text().trim(),
 					tagID = $tag.attr('class').match(/id-(\d+)(?:\s|$)/)[1],
 					title = 'Detele tag: '+tagName;
 
-				$.Dialog.confirm(title,"Deleting this tag will also remove it from every appearance where it's been used.<br>Are you sure?",['Delete it','Nope'],function(sure){
+				$.Dialog.confirm(title,"Deleting this tag will also remove it from every appearance where it's been used.<br>Are you sure?",['Delete it','Nope'], function(sure){
 					if (!sure) return;
 
-					var data = {};
+					let data = {};
 					if (AppearancePage)
 						data.APPEARANCE_PAGE = $tag.closest('[id^=p]').attr('id').substring(1);
 					(function Send(data){
 						$.Dialog.wait(title,'Sending removal request');
 
-						$.post('/cg/deltag/'+tagID+EQGRq,data,$.mkAjaxHandler(function(){
+						$.post(`/cg/deltag/${tagID}${EQGRq}`,data,$.mkAjaxHandler(function(){
 							if (this.status){
 								if (this.needupdate === true){
-									var $eps = $(this.eps);
+									let $eps = $(this.eps);
 									$EpAppearances.replaceWith($eps);
 									$EpAppearances = $eps;
 								}
-								var $affected = $('.id-' + tagID);
+								let $affected = $('.id-' + tagID);
 								$affected.qtip('destroy', true);
 								$affected.remove();
 								$._tagAutocompleteCache = {};
@@ -848,11 +794,11 @@ DocReady.push(function ColorguideManage(){
 			{text: 'Create new tag', icon: 'plus', click: function(){
 				$.ctxmenu.triggerItem($(this).parent(), 1);
 			}},
-		], function($el){ return 'Tag: '+$el.text().trim() });
+		], $el => `Tag: ${$el.text().trim()}` );
 
-		var insertKeys = [Key.Enter, Key.Comma];
+		let insertKeys = [Key.Enter, Key.Comma];
 		$tags.children('.addtag').each(function(){
-			var $input = $(this),
+			let $input = $(this),
 				ponyID = $input.closest('[id^=p]').attr('id').substring(1);
 			$input.autocomplete(
 				{
@@ -862,7 +808,7 @@ DocReady.push(function ColorguideManage(){
 					{
 						name: 'tags',
 						display: 'name',
-						source: function(query, callback){
+						source: (query, callback) => {
 							if (typeof $._tagAutocompleteCache === 'undefined')
 								$._tagAutocompleteCache = {};
 							else if (typeof $._tagAutocompleteCache[query] !== 'undefined')
@@ -877,30 +823,30 @@ DocReady.push(function ColorguideManage(){
 					}
 				]
 			);
-			$input.on('keydown',function(e){
-				if (insertKeys.indexOf(e.keyCode) !== -1){
+			$input.on('keydown', function(e){
+				if (insertKeys.includes(e.keyCode)){
 					e.preventDefault();
-					var tag_name = $input.val().trim(),
+					let tag_name = $input.val().trim(),
 						$tagsDiv = $input.parents('.tags'),
 						$ponyTags = $tagsDiv.children('.tag'),
-						title = 'Adding tag: '+tag_name;
+						title = `Adding tag: ${tag_name}`;
 
-					if ($ponyTags.filter(function(){ return this.innerHTML.trim() === tag_name }).length > 0)
+					if ($ponyTags.filter(() => this.innerHTML.trim() === tag_name).length > 0)
 						return $.Dialog.fail(title, 'This appearance already has this tag');
 
 					$.Dialog.setFocusedElement($input.attr('disabled', true));
 					$input.parent().addClass('loading');
 					$input.autocomplete('val', tag_name);
 
-					var data = {tag_name:tag_name};
+					let data = {tag_name:tag_name};
 					if (AppearancePage)
 						data.APPEARANCE_PAGE = true;
 
-					$.post('/cg/tag/'+ponyID+EQGRq, data, $.mkAjaxHandler(function(){
+					$.post(`/cg/tag/${ponyID}${EQGRq}`, data, $.mkAjaxHandler(function(){
 						$input.removeAttr('disabled').parent().removeClass('loading');
 						if (this.status){
 							if (this.needupdate === true){
-								var $eps = $(this.eps);
+								let $eps = $(this.eps);
 								$EpAppearances.replaceWith($eps);
 								$EpAppearances = $eps;
 							}
@@ -913,7 +859,7 @@ DocReady.push(function ColorguideManage(){
 							$input.autocomplete('val', '').focus();
 						}
 						else if (typeof this.cancreate === 'string'){
-							var new_name = this.cancreate,
+							let new_name = this.cancreate,
 								typehint = this.typehint;
 							title = title.replace(tag_name, new_name);
 							return $.Dialog.confirm(title, this.message, function(sure){
@@ -928,7 +874,7 @@ DocReady.push(function ColorguideManage(){
 			$input.nextAll('.aa-menu').on('click', '.tag', function(){
 				$input.trigger({
 					type: 'keydown',
-					keyCode: 13,
+					keyCode: Key.Enter,
 				});
 			});
 		});
@@ -936,28 +882,30 @@ DocReady.push(function ColorguideManage(){
 		$colorGroups = $('ul.colors').attr('data-color', color);
 		$colorGroups.filter(':not(.ctxmenu-bound)').ctxmenu(
 			[
-				{text: "Re-order "+color+" groups", icon: 'arrow-unsorted', click: function(){
-					var $colors = $(this),
+				{text: `Re-order ${color} groups`, icon: 'arrow-unsorted', click: function(){
+					let $colors = $(this),
 						$li = $colors.closest('[id^=p]'),
 						ponyID = $li.attr('id').substring(1),
 						ponyName = !AppearancePage
 							? $li.children().last().children('strong').text().trim()
 							: $content.children('h1').text(),
-						title = 'Re-order '+color+' groups on appearance: '+ponyName;
+						title = `Re-order ${color} groups on appearance: ${ponyName}`;
 
 					$.Dialog.wait(title, 'Retrieving color group list from server');
 
-					$.post('/cg/getcgs/'+ponyID+EQGRq, $.mkAjaxHandler(function(){
+					$.post(`/cg/getcgs/${ponyID}${EQGRq}`, $.mkAjaxHandler(function(){
 						if (!this.status) return $.Dialog.fail(this.message);
 
-						var $form = $cgReordering.clone(),
+						let $CGReorderForm = $.mk('form','cg-reorder'),
 							$cgs = $.mk('ol');
 
 						$.each(this.cgs,function(_, cg){
 							$cgs.append($.mk('li').attr('data-id', cg.groupid).text(cg.label));
 						});
 
-						$.mk('div').attr('class','cgs').append('<p class="align-center">Drag to re-arrange</p>',$cgs).prependTo($form);
+						$CGReorderForm.append(
+							$.mk('div').attr('class','cgs').append('<p class="align-center">Drag to re-arrange</p>',$cgs)
+						);
 
 						new Sortable($cgs.get(0), {
 							ghostClass: "moving",
@@ -965,10 +913,10 @@ DocReady.push(function ColorguideManage(){
 							animation: 150,
 						});
 
-						$.Dialog.request(title, $form, 'cg-reorder', 'Save', function($form){
+						$.Dialog.request(title, $CGReorderForm, 'Save', function($form){
 							$form.on('submit', function(e){
 								e.preventDefault();
-								var data = {cgs:[]},
+								let data = {cgs:[]},
 									$cgs = $form.children('.cgs');
 
 								if (!$cgs.length)
@@ -982,7 +930,7 @@ DocReady.push(function ColorguideManage(){
 								if (AppearancePage)
 									data.APPEARANCE_PAGE = true;
 
-								$.post('/cg/setcgs/'+ponyID+EQGRq,data,$.mkAjaxHandler(function(){
+								$.post(`/cg/setcgs/${ponyID}${EQGRq}`,data,$.mkAjaxHandler(function(){
 									if (!this.status) return $.Dialog.fail(null, this.message);
 
 									$colors.html(this.cgs);
@@ -995,19 +943,19 @@ DocReady.push(function ColorguideManage(){
 					}));
 				}},
 				{text: "Create new group", icon: 'folder-add', click: function(){
-					CGEditorMaker('Create '+color+' group', $(this).closest('[id^=p]').attr('id').substring(1));
+					CGEditorMaker(`Create ${color} group`, $(this).closest('[id^=p]').attr('id').substring(1));
 				}},
 				{text: "Apply template (if empty)", icon: 'document-add', click: function(){
-					var ponyID = $(this).closest('[id^=p]').attr('id').substring(1);
-					$.Dialog.confirm('Apply template on appearance','Add common color groups to this appearance?<br>Note: This will only work if there are no color groups currently present.',function(sure){
+					let ponyID = $(this).closest('[id^=p]').attr('id').substring(1);
+					$.Dialog.confirm('Apply template on appearance','Add common color groups to this appearance?<br>Note: This will only work if there are no color groups currently present.', function(sure){
 						if (!sure) return;
 
 						$.Dialog.wait(false, 'Applying template');
 
-						$.post('/cg/applytemplate/'+ponyID+EQGRq,$.mkAjaxHandler(function(){
+						$.post(`/cg/applytemplate/${ponyID}${EQGRq}`,$.mkAjaxHandler(function(){
 							if (!this.status) return $.Dialog.fail(false, this.message);
 
-							var $pony = $('#p'+ponyID);
+							let $pony = $('#p'+ponyID);
 							$pony.find('ul.colors').html(this.cgs);
 							window.tooltips();
 							ctxmenus();
@@ -1021,32 +969,32 @@ DocReady.push(function ColorguideManage(){
 		);
 		$colorGroups.children('li').filter(':not(.ctxmenu-bound)').ctxmenu(
 			[
-				{text: "Edit "+color+" group", icon: 'pencil', click: function(){
-					var $this = $(this),
+				{text: `Edit ${color} group`, icon: 'pencil', click: function(){
+					let $this = $(this),
 						$group = $this.closest('li'),
 						groupID = $group.attr('id').substring(2),
 						groupName = $this.children().first().text().replace(/:\s?$/,''),
-						title = 'Editing '+color+' group: '+groupName;
+						title = `Editing ${color} group: `+groupName;
 
-					$.Dialog.wait(title, 'Retrieving '+color+' group details from server');
+					$.Dialog.wait(title, `Retrieving ${color} group details from server`);
 
-					$.post('/cg/getcg/'+groupID+EQGRq,$.mkAjaxHandler(function(){
+					$.post(`/cg/getcg/${groupID}${EQGRq}`,$.mkAjaxHandler(function(){
 						if (!this.status) return $.Dialog.fail(title, this.message);
 
 						CGEditorMaker.call(this, title, $group);
 					}));
 				}},
-				{text: "Delete "+color+" group", icon: 'trash', click: function(){
-					var $group = $(this).closest('li'),
+				{text: `Delete ${color} group`, icon: 'trash', click: function(){
+					let $group = $(this).closest('li'),
 						groupID = $group.attr('id').substring(2),
 						groupName = $group.children().first().text().replace(/:\s?$/,''),
-						title = 'Delete '+color+' group: '+groupName;
-					$.Dialog.confirm(title, 'By deleting this '+color+' group, all '+color+'s within will be removed too.<br>Are you sure?',function(sure){
+						title = `Delete ${color} group: `+groupName;
+					$.Dialog.confirm(title, `By deleting this ${color} group, all `+color+'s within will be removed too.<br>Are you sure?', function(sure){
 						if (!sure) return;
 
 						$.Dialog.wait(title, 'Sending removal request');
 
-						$.post('/cg/delcg/'+groupID+EQGRq,$.mkAjaxHandler(function(){
+						$.post(`/cg/delcg/${groupID}${EQGRq}`,$.mkAjaxHandler(function(){
 							if (this.status){
 								$group.children('[data-hasqtip]').qtip('destroy', true);
 								$group.remove();
@@ -1057,7 +1005,7 @@ DocReady.push(function ColorguideManage(){
 					});
 				}},
 				$.ctxmenu.separator,
-				{text: "Re-order "+color+" groups", icon: 'arrow-unsorted', click: function(){
+				{text: `Re-order ${color} groups`, icon: 'arrow-unsorted', click: function(){
 					$.ctxmenu.triggerItem($(this).parent(), 1);
 				}},
 				{text: "Create new group", icon: 'folder-add', click: function(){
@@ -1066,18 +1014,18 @@ DocReady.push(function ColorguideManage(){
 			],
 			function($el){ return Color+' group: '+$el.children().first().text().trim().replace(':','') }
 		);
-		var $colors = $colorGroups.children('li').find('.valid-color');
+		let $colors = $colorGroups.children('li').find('.valid-color');
 		$.ctxmenu.addItems(
 			$colors.filter('.ctxmenu-bound'),
 			$.ctxmenu.separator,
-			{text: "Edit "+color+" group", icon: 'pencil', click: function(){
+			{text: `Edit ${color} group`, icon: 'pencil', click: function(){
 				$.ctxmenu.triggerItem($(this).parent().closest('.ctxmenu-bound'), 1);
 			}},
-			{text: "Delete "+color+" group", icon: 'trash', click: function(){
+			{text: `Delete ${color} group`, icon: 'trash', click: function(){
 				$.ctxmenu.triggerItem($(this).parent().closest('.ctxmenu-bound'), 2);
 			}},
 			$.ctxmenu.separator,
-			{text: "Re-order "+color+" groups", icon: 'arrow-unsorted', click: function(){
+			{text: `Re-order ${color} groups`, icon: 'arrow-unsorted', click: function(){
 				$.ctxmenu.triggerItem($(this).parent().closest('.ctxmenu-bound'), 3);
 			}},
 			{text: "Create new group", icon: 'folder-add', click: function(){
@@ -1086,13 +1034,13 @@ DocReady.push(function ColorguideManage(){
 		);
 
 		$('.upload-wrap').filter(':not(.ctxmenu-bound)').each(function(){
-			var $this = $(this),
+			let $this = $(this),
 				$li = $this.closest('li');
 			if (!$li.length)
 				$li = $content.children('[id^=p]');
-			var ponyID = $li.attr('id').substring(1);
-			(function($this, ponyID){
-				var imgsrc, hasSprite,
+			let ponyID = $li.attr('id').substring(1);
+			(($this, ponyID) => {
+				let imgsrc, hasSprite,
 					updateSprite = function(){
 						imgsrc = $this.find('img').attr('src');
 						hasSprite = imgsrc.indexOf('blank-pixel.png') === -1;
@@ -1103,7 +1051,7 @@ DocReady.push(function ColorguideManage(){
 					requestKey: 'sprite',
 					title: 'Upload sprite',
 					accept: 'image/png',
-					target: '/cg/setsprite/'+ponyID,
+					target: `/cg/setsprite/${ponyID}`,
 				}).on('uz-uploadstart',function(){
 					$.Dialog.close();
 				}).on('uz-uploadfinish',function(){
@@ -1113,27 +1061,27 @@ DocReady.push(function ColorguideManage(){
 						window.open($this.find('img').attr('src'),'_blank');
 					}},
 					{text: 'Copy image URL', icon: 'clipboard', click: function(){
-						$.copy($.urlToAbsolute($this.find('img').attr('src')));
+						$.copy($.toAbsoluteURL($this.find('img').attr('src')));
 					}},
 					{text: 'Upload new sprite', icon: 'upload', click: function(){
-						var title = 'Upload sprite image',
+						let title = 'Upload sprite image',
 							$uploadInput = $this.find('input[type="file"]');
-						$.Dialog.request(title,$spriteUploadForm.clone(),'sprite-img','Download image',function($form){
-							var $image_url = $form.find('input[name=image_url]');
-							$form.find('a').on('click',function(e){
+						$.Dialog.request(title,$SpriteUploadFormTemplate.clone(),'Download image', function($form){
+							let $image_url = $form.find('input[name=image_url]');
+							$form.find('a').on('click', function(e){
 								e.preventDefault();
 								e.stopPropagation();
 
 								$uploadInput.trigger('click', [true]);
 							});
-							$form.on('submit',function(e){
+							$form.on('submit', function(e){
 								e.preventDefault();
 
-								var image_url = $image_url.val();
+								let image_url = $image_url.val();
 
 								$.Dialog.wait(title, 'Downloading external image to the server');
 
-								$.post('/cg/setsprite/'+ponyID+EQGRq,{image_url: image_url}, $.mkAjaxHandler(function(){
+								$.post(`/cg/setsprite/${ponyID}${EQGRq}`,{image_url: image_url}, $.mkAjaxHandler(function(){
 									if (this.status) $uploadInput.trigger('set-image', [this.path]);
 									else $.Dialog.fail(title,this.message);
 								}));
@@ -1141,12 +1089,12 @@ DocReady.push(function ColorguideManage(){
 						});
 					}},
 					{text: 'Remove sprite image', icon: 'times', click: function(){
-						$.Dialog.confirm('Remove sprite image','Are you sure you want to <strong>permanently delete</strong> the sprite image from the server?',['Wipe it','Nope'],function(sure){
+						$.Dialog.confirm('Remove sprite image','Are you sure you want to <strong>permanently delete</strong> the sprite image from the server?',['Wipe it','Nope'], function(sure){
 							if (!sure) return;
 
 							$.Dialog.wait(false, 'Removing image');
 
-							$.post('/cg/delsprite/'+ponyID, $.mkAjaxHandler(function(){
+							$.post(`/cg/delsprite/${ponyID}`, $.mkAjaxHandler(function(){
 								if (!this.status) return $.Dialog.fail(false, this.message);
 
 								$this.find('img').attr('src', this.sprite);
@@ -1167,13 +1115,12 @@ DocReady.push(function ColorguideManage(){
 	}
 	window.ctxmenus = function(){ctxmenus()};
 
-	var $tags;
 	$list.on('page-switch',BindEditTagsHandlers);
 	BindEditTagsHandlers();
 
 	function BindEditTagsHandlers(){
 		$('button.edit').on('click',function(){
-			var $this = $(this),
+			let $this = $(this),
 				$li = $this.closest('[id^=p]'),
 				ponyID = $li.attr('id').substring(1),
 				ponyName = !AppearancePage
@@ -1183,15 +1130,15 @@ DocReady.push(function ColorguideManage(){
 
 			$.Dialog.wait(title, 'Retrieving appearance details from server');
 
-			$.post('/cg/get/'+ponyID+EQGRq,$.mkAjaxHandler(function(){
+			$.post(`/cg/get/${ponyID}${EQGRq}`,$.mkAjaxHandler(function(){
 				if (!this.status) return $.Dialog.fail(false, this.message);
 
-				var data = this;
+				let data = this;
 				data.ponyID = ponyID;
 				mkPonyEditor($this, title, data);
 			}));
 		}).next('.delete').on('click',function(){
-			var $this = $(this),
+			let $this = $(this),
 				$li = $this.closest('[id^=p]'),
 				ponyID = $li.attr('id').substring(1),
 				ponyName = !AppearancePage
@@ -1199,17 +1146,17 @@ DocReady.push(function ColorguideManage(){
 					: $content.children('h1').text(),
 				title = 'Deleting appearance: '+ponyName;
 
-			$.Dialog.confirm(title,'Deleting this appearance will remove <strong>ALL</strong> of its color groups, the colors within them, and the sprite file, if any.<br>Delete anyway?',function(sure){
+			$.Dialog.confirm(title,'Deleting this appearance will remove <strong>ALL</strong> of its color groups, the colors within them, and the sprite file, if any.<br>Delete anyway?', function(sure){
 				if (!sure) return;
 
 				$.Dialog.wait(title, 'Sending removal request');
 
-				$.post('/cg/delete/'+ponyID+EQGRq,$.mkAjaxHandler(function(){
+				$.post(`/cg/delete/${ponyID}${EQGRq}`,$.mkAjaxHandler(function(){
 					if (this.status){
 						$li.remove();
 						$.Dialog.success(title, this.message);
 
-						var path = window.location.pathname;
+						let path = window.location.pathname;
 						if ($list.children().length === 0)
 							path = path.replace(/(\d+)$/,function(n){ return n > 1 ? n-1 : n });
 						if (AppearancePage){
@@ -1244,6 +1191,6 @@ DocReady.push(function ColorguideManage(){
 			target: '_blank',
 		}).html(
 			$.mk('input').attr('name','CSRF_TOKEN').val($.getCSRFToken())
-		).get(0).submit();
+		).submit();
 	});
 });

@@ -15,7 +15,7 @@ DocReady.push(function Blender(){
 		};
 	}
 
-	var $blendWrap = $('#blend-wrap'),
+	let $blendWrap = $('#blend-wrap'),
 		$form = $blendWrap.children('form'),
 		$inputs = $form.find('input:visible'),
 		$result = $blendWrap.children('.result'),
@@ -27,24 +27,17 @@ DocReady.push(function Blender(){
 		$deltaWarn = $('.delta-warn');
 
 	$inputs.on('keyup change input',function(){
-		var $this = $(this),
-			$cp = $this.prev(),
-			valid = HEX_COLOR_PATTERN.test(this.value);
-		if (valid)
-			$cp.removeClass('invalid').css('background-color', this.value.toUpperCase().replace(HEX_COLOR_PATTERN, '#$1'));
+		let $cp = $(this).prev(),
+			value = $.hexpand(this.value).toUpperCase();
+		if (HEX_COLOR_PATTERN.test(value))
+			$cp.removeClass('invalid').css('background-color', value);
 		else $cp.addClass('invalid');
 
 		$form.triggerHandler('submit');
-	}).on('paste blur',function(e){
-		var input = this,
-			$input = $(input),
-			shortHex = /^#?([A-Fa-f0-9]{3})$/,
+	}).on('paste blur', function(e){
+		let $input = $(this),
 			f = function(){
-				var val = input.value;
-				if (shortHex.test(val)){
-					var match = val.match(shortHex)[1];
-					val = '#'+match[0]+match[0]+match[1]+match[1]+match[2]+match[2];
-				}
+				let val = $.hexpand($input.val());
 				if (HEX_COLOR_PATTERN.test(val)){
 					$input.val(val.replace(HEX_COLOR_PATTERN, '#$1').toUpperCase()).trigger('change');
 					if (e.type !== 'blur')
@@ -55,32 +48,32 @@ DocReady.push(function Blender(){
 		else f();
 	}).trigger('change');
 	$form.on('submit',Calculate).triggerHandler('submit');
-	$form.on('click','td',function(e){
+	$form.on('click','td', function(e){
 		if (!e.shiftKey)
 			return true;
-		var $hexInput = $(this).find('.clri');
+		let $hexInput = $(this).find('.clri');
 		if ($hexInput.length === 0)
 			return true;
 		e.preventDefault();
 
-		var hex = $hexInput.val(),
+		let hex = $hexInput.val(),
 			$prev = $.mk('div').attr('class','preview').css('background-color', hex),
 			OrigRGB = $.hex2rgb(hex),
 			$formInputs = $.mk('div').attr('class','input-group-3').html(
-				"<input type='number' class='color-red' name='r' min='0' max='255' step='1' value='" + OrigRGB.r + "'>" +
-				"<input type='number' class='color-green' name='g' min='0' max='255' step='1' value='" + OrigRGB.g + "'>" +
-				"<input type='number' class='color-darkblue' name='b' min='0' max='255' step='1' value='" + OrigRGB.b + "'>"
+				`<input type='number' class='color-red' name='r' min='0' max='255' step='1' value='${OrigRGB.r}'>
+				<input type='number' class='color-green' name='g' min='0' max='255' step='1' value='${OrigRGB.g}'>
+				<input type='number' class='color-darkblue' name='b' min='0' max='255' step='1' value='${OrigRGB.b}'>`
 			);
 
 		$formInputs.children().on('keyup change input mouseup',function(){
-			var $form = $(this).closest('form');
+			let $form = $(this).closest('form');
 			$form.children('.preview').css('background-color', $.rgb2hex($form.mkData()));
 		});
-		var $rgbform = $.mk('form').attr('id','rgbform').append($formInputs,$prev);
+		let $EnterRGBForm = $.mk('form','enter-rgb').append($formInputs,$prev);
 
 		$.Dialog.setFocusedElement($hexInput);
-		$.Dialog.request('Enter RGB values',$rgbform,'rgbform','Set',function($form){
-			$form.on('submit',function(e){
+		$.Dialog.request('Enter RGB values',$EnterRGBForm,'Set', function($form){
+			$form.on('submit', function(e){
 				e.preventDefault();
 
 				$hexInput.val($.rgb2hex($form.mkData())).trigger('change');
@@ -92,11 +85,11 @@ DocReady.push(function Blender(){
 	function Calculate(e){
 		e.stopPropagation();
 
-		var $validInputs = $inputs.filter(':valid');
+		let $validInputs = $inputs.filter(':valid');
 		if ($validInputs.length !== 4)
 			return SetPreview(false);
 
-		var data = {};
+		let data = {};
 		$validInputs.each(function(_,el){
 			data[el.name] = el.value.toUpperCase();
 		});
@@ -107,15 +100,15 @@ DocReady.push(function Blender(){
 			data[k] = $.hex2rgb(v);
 		});
 
-		var minDelta = 255 * 4,
+		let minDelta = 255 * 4,
 			bestMatch = null;
-		for (var alpha = 1; alpha <= 255; alpha++){
-			var RevRGB1 = reverseRgb(data.bg1, data.blend1, alpha / 255),
+		for (let alpha = 1; alpha <= 255; alpha++){
+			let RevRGB1 = reverseRgb(data.bg1, data.blend1, alpha / 255),
 				RevRGB2 = reverseRgb(data.bg2, data.blend2, alpha / 255);
 
-			var delta = Math.abs(RevRGB1.r - RevRGB2.r)
-				+ Math.abs(RevRGB1.g - RevRGB2.g)
-				+ Math.abs(RevRGB1.b - RevRGB2.b);
+			let delta = Math.abs(RevRGB1.r - RevRGB2.r)
+			            + Math.abs(RevRGB1.g - RevRGB2.g)
+			            + Math.abs(RevRGB1.b - RevRGB2.b);
 
 			if (delta < minDelta){
 				minDelta = delta;
@@ -135,17 +128,17 @@ DocReady.push(function Blender(){
 	}
 
 	function SetPreview(rgba){
-		var hex = '',
+		let hex = '',
 			hexa = '',
 			opacity = '';
 		if (rgba){
 			hex = $.rgb2hex(rgba);
 			$preview.css('background-color', hex);
-			hex = '#<code class="color-red">'+hex.substring(1,3)+'</code><code class="color-green">'+hex.substring(3,5)+'</code><code class="color-darkblue">'+hex.substring(5,7)+'</code>';
-			hexa = hex + '<code>'+(Math.round(255*rgba.a).toString(16).toUpperCase())+'</code>';
-			var alpha = $.roundTo(rgba.a, 2);
-			rgba = 'rgba(<code class="color-red">'+rgba.r+'</code>, <code class="color-green">'+rgba.g+'</code>, <code class="color-darkblue">'+rgba.b+'</code>, '+alpha+')</span>';
-			opacity = (alpha*100)+'% opacity';
+			hex = `#<code class="color-red">${hex.substring(1,3)}</code><code class="color-green">${hex.substring(3,5)}</code><code class="color-darkblue">${hex.substring(5,7)}</code>`;
+			hexa = hex + `<code>${Math.round(255*rgba.a).toString(16).toUpperCase()}</code>`;
+			let alpha = $.roundTo(rgba.a, 2);
+			rgba = `rgba(<code class="color-red">${rgba.r}</code>, <code class="color-green">${rgba.g}</code>, <code class="color-darkblue">${rgba.b}</code>, ${alpha})</span>`;
+			opacity = `${alpha*100}% opacity`;
 		}
 		else {
 			rgba = '';

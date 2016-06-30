@@ -258,7 +258,7 @@
 				$customCSS = array_merge($customCSS, $DEFAULT_CSS);
 
 			# JavaScript
-			$DEFAULT_JS = array('global','moment','dyntime','dialog');
+			$DEFAULT_JS = array('moment','global','dialog');
 			if ($GLOBALS['signedIn'])
 				array_splice($DEFAULT_JS,0,0,array('socket.io-1.4.5'));
 			$customJS = array();
@@ -497,8 +497,10 @@
 			$whitelist = array('strong','b','em','i');
 			if (!empty($allowed))
 				$whitelist = array_merge($whitelist, $allowed);
+			/** @noinspection PhpUndefinedMethodInspection */
 			$config->set('HTML.AllowedElements', $whitelist);
 			$purifier = new HTMLPurifier($config);
+			/** @noinspection PhpUndefinedMethodInspection */
 			return self::TrimMultiline($purifier->purify($dirty_html));
 		}
 

@@ -1,4 +1,4 @@
-/* global DocReady,Chart,$w */
+/* global DocReady,Chart,$w,Time */
 DocReady.push(function About(){
 	'use strict';
 	Chart.defaults.global.responsive = true;
@@ -20,22 +20,24 @@ DocReady.push(function About(){
 		var Data = this.data;
 
 		$.mk('p').append('Last updated: ', $.mk('time').attr('datetime', Data.timestamp)).insertAfter($PostsTitle);
-		window.updateTimes();
+		Time.Update();
 
 		if (Data.datasets.length === 0)
 			return $PostStatsLegend.html('<strong>No data available</strong>');
 		$.each(Data.datasets,function(i,el){
 			var rgb = $.hex2rgb(PostLegendColors[el.clrkey]),
-				rgbstr = rgb.r+','+rgb.g+','+rgb.b;
+				rgbstr = `${rgb.r},${rgb.g},${rgb.b}`,
+				rgbrgbstr = `rgb(${rgbstr})`;
+
 			$.extend(Data.datasets[i], {
-				fillColor: 'rgba('+rgbstr+',0.2)',
-				strokeColor: 'rgb('+rgbstr+')',
-				pointColor: 'rgb('+rgbstr+')',
+				fillColor: `rgba(${rgbstr},0.2)`,
+				strokeColor: rgbrgbstr,
+				pointColor: rgbrgbstr,
 				pointStrokeColor: "#fff",
 				pointHighlightFill: "#fff",
-				pointHighlightStroke: 'rgb('+rgbstr+')',
+				pointHighlightStroke: rgbrgbstr,
 			});
-			$PostStatsLegend.append("<span><span class='sq' style='background-color:rgb("+rgbstr+")'></span><span>"+el.label+"</span></span>");
+			$PostStatsLegend.append(`<span><span class='sq' style='background-color:rgb(${rgbstr})'></span><span>${el.label}</span></span>`);
 		});
 
 		var setChart = function(){ PostsChart = new Chart(PostsCTX).Line(Data) };
@@ -57,22 +59,23 @@ DocReady.push(function About(){
 
 		var Data = this.data,
 			rgb = ApprovalLegendColor,
-			rgbstr = rgb.r+','+rgb.g+','+rgb.b;
+			rgbstr = `${rgb.r},${rgb.g},${rgb.b}`,
+			rgbrgbstr = `rgb(${rgbstr})`;
 
 		$.mk('p').append('Last updated: ', $.mk('time').attr('datetime', Data.timestamp)).insertAfter($ApprovalTitle);
-		window.updateTimes();
+		Time.Update();
 
 		if (Data.datasets.length === 0)
 			return $ApprovalStatsLegend.html('<strong>No data available</strong>');
 		$.extend(Data.datasets[0], {
-			fillColor: 'rgba('+rgbstr+',0.2)',
-			strokeColor: 'rgb('+rgbstr+')',
-			pointColor: 'rgb('+rgbstr+')',
+			fillColor: `rgba(${rgbstr},0.2)`,
+			strokeColor: rgbrgbstr,
+			pointColor: rgbrgbstr,
 			pointStrokeColor: "#fff",
 			pointHighlightFill: "#fff",
-			pointHighlightStroke: 'rgb('+rgbstr+')',
+			pointHighlightStroke: rgbrgbstr,
 		});
-		$ApprovalStatsLegend.append("<span><span class='sq' style='background-color:rgb("+rgbstr+")'></span><span>"+Data.datasets[0].label+"</span></span>");
+		$ApprovalStatsLegend.append(`<span><span class='sq' style='background-color:rgb(${rgbstr})'></span><span>${Data.datasets[0].label}</span></span>`);
 
 		var setChart = function(){ ApprovalChart = new Chart(ApprovalCTX).Line(Data,{ showTooltips: false }) };
 		setChart();

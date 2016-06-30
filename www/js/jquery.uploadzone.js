@@ -37,13 +37,13 @@
 				});
 			});
 		});
-		$input.on('dragenter dragleave',function(e){
+		$input.on('dragenter dragleave', function(e){
 			e.stopPropagation();
 			e.preventDefault();
 
 			$this[e.type === 'dragenter' ? 'addClass' : 'removeClass']('drop');
 		});
-		$input.on('change drop',function(e){
+		$input.on('change drop', function(e){
 			var files = e.target.files || e.originalEvent.dataTransfer.files;
 
 			if (typeof files[0] === 'undefined' || !(files[0] instanceof File))
@@ -80,7 +80,7 @@
 			if (opt.helper) ajaxOpts.xhr = function () {
 				var xhrobj = $.ajaxSettings.xhr();
 				if (xhrobj.upload)
-					xhrobj.upload.addEventListener('progress', function (event) {
+					xhrobj.upload.addEventListener('progress', event => {
 						if (!event.lengthComputable) return true;
 
 						var complete = event.loaded || event.position,

@@ -1,7 +1,7 @@
 /* global DocReady,moment,HandleNav,$content */
 DocReady.push(function EpisodesManage(){
 	'use strict';
-	var $eptableBody = $('#episodes').children('tbody'),
+	let $eptableBody = $('#episodes').children('tbody'),
 		SEASON = window.SEASON,
 		EPISODE = window.EPISODE;
 	Bind.call({init:true});
@@ -13,7 +13,7 @@ DocReady.push(function EpisodesManage(){
 	 */
 	moment.tz.add("America/Los_Angeles|PST PDT PWT PPT|80 70 70 70|010102301010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010|-261q0 1nX0 11B0 1nX0 SgN0 8x10 iy0 5Wp0 1Vb0 3dB0 WL0 1qN0 11z0 1o10 11z0 1o10 11z0 1o10 11z0 1o10 11z0 1qN0 11z0 1o10 11z0 1o10 11z0 1o10 11z0 1o10 11z0 1qN0 WL0 1qN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1a10 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1cN0 1cL0 1cN0 1cL0 s10 1Vz0 LB0 1BX0 1cN0 1fz0 1a10 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1a10 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0");
 
-	var saturday = moment.tz(new Date(), "America/Los_Angeles").set({
+	let saturday = moment.tz(new Date(), "America/Los_Angeles").set({
 		day: 'Saturday',
 		h: 8, m: 30, s: 0,
 	}).toDate();
@@ -24,13 +24,13 @@ DocReady.push(function EpisodesManage(){
 		return arr;
 	}
 	function mkDateArray(datestr){
-		var s = parseIntArray(datestr.split('-'));
+		let s = parseIntArray(datestr.split('-'));
 		s[1]--;
 		return s;
 	}
 	function mkTimeArray(timestr){ return parseIntArray(timestr.split(':')) }
 	function mkDate(datestr, timestr, utc){
-		var dateArr = mkDateArray(datestr),
+		let dateArr = mkDateArray(datestr),
 			timeArr = mkTimeArray(timestr),
 			d = new Date(dateArr[0], dateArr[1], dateArr[2], 10);
 		d['set'+(utc?'UTC':'')+'Hours'](timeArr[0]);
@@ -39,13 +39,13 @@ DocReady.push(function EpisodesManage(){
 	}
 	Date.prototype.toAirDate = function(){ return this.getFullYear()+'-'+$.pad(this.getMonth()+1)+'-'+$.pad(this.getDate()) };
 	Date.prototype.toAirTime = function(){ return $.pad(this.getHours())+':'+$.pad(this.getMinutes()) };
-	var date = saturday.toAirDate(), time = saturday.toAirTime();
+	let date = saturday.toAirDate(), time = saturday.toAirTime();
 
-	var EP_TITLE_REGEX = window.EP_TITLE_REGEX,
+	let EP_TITLE_REGEX = window.EP_TITLE_REGEX,
 		$pageTitle = $content.children('h1').first();
 
 	function EpisodeForm(id){
-		var $form = $.mk('form').attr('id', id).append(
+		let $form = $.mk('form').attr('id', id).append(
 			'<div class="label">'+
 				'<span>Season, Episode & Overall #</span>'+
 				'<div class=input-group-3>'+
@@ -81,23 +81,23 @@ DocReady.push(function EpisodesManage(){
 			'</div>'
 		);
 
-		$.mk('button').text('Set time to '+time+' this Saturday').on('click',function(e){
+		$.mk('button').text('Set time to '+time+' this Saturday').on('click', function(e){
 			e.preventDefault();
 			$(this).parent().prev().children().first().val(date).next().val(time);
 		}).appendTo($form.children('.button-here'));
 
 		return $form;
 	}
-	var $addep = new EpisodeForm('addep'),
-		$editep = new EpisodeForm('editep');
+	let $AddEpFormTemplate = new EpisodeForm('addep'),
+		$EditEpFormTemplate = new EpisodeForm('editep');
 
-	$('#add-episode').on('click',function(e){
+	$('#add-episode').on('click', function(e){
 		e.preventDefault();
 
-		$.Dialog.request('Add Episode',$addep.clone(true, true),'addep','Add',function($form){
-			$form.on('submit',function(e){
+		$.Dialog.request('Add Episode',$AddEpFormTemplate.clone(true, true),'Add', function($form){
+			$form.on('submit', function(e){
 				e.preventDefault();
-				var airdate = $form.find('input[name=airdate]').attr('disabled',true).val(),
+				let airdate = $form.find('input[name=airdate]').attr('disabled',true).val(),
 					airtime = $form.find('input[name=airtime]').attr('disabled',true).val(),
 					airs = mkDate(airdate, airtime).toISOString(),
 					data = $(this).mkData({airs:airs});
@@ -126,47 +126,47 @@ DocReady.push(function EpisodesManage(){
 			$eptableBody.trigger('updatetimes');
 		}
 		$eptableBody.find('tr[data-epid]').each(function(){
-			var $this = $(this),
+			let $this = $(this),
 				epid = $this.attr('data-epid');
 
 			$this.removeAttr('data-epid').data('epid', epid);
 		});
-		$eptableBody.find('.edit-episode').add('#edit-ep').off('click').on('click',function(e){
+		$eptableBody.find('.edit-episode').add('#edit-ep').off('click').on('click', function(e){
 			e.preventDefault();
 
-			var $this = $(this),
+			let $this = $(this),
 				EpisodePage = $this.attr('id') === 'edit-ep',
 				epid = EpisodePage ? 'S'+SEASON+'E'+EPISODE : $this.closest('tr').data('epid');
 
-			$.Dialog.wait('Editing '+epid, 'Getting episode details from server');
+			$.Dialog.wait(`Editing ${epid}`, 'Getting episode details from server');
 
-			$.post("/episode/"+epid, $.mkAjaxHandler(function(){
+			$.post(`/episode/${epid}`, $.mkAjaxHandler(function(){
 				if (!this.status) return $.Dialog.fail(false,this.message);
 
-				var $editepWithData = $editep.clone(true, true);
+				let $EditEpForm = $EditEpFormTemplate.clone(true, true);
 
-				$editepWithData.find('input[name=twoparter]').prop('checked',!!this.ep.twoparter);
+				$EditEpForm.find('input[name=twoparter]').prop('checked',!!this.ep.twoparter);
 				delete this.ep.twoparter;
 
 				if (!this.caneditid || (EpisodePage && $('#reservations, #requests').find('li').length))
-					$editepWithData.find('input').filter('[name="season"],[name="episode"]').disable();
+					$EditEpForm.find('input').filter('[name="season"],[name="episode"]').disable();
 
-				var d = mkDate(this.ep.airdate, this.ep.airtime, true);
+				let d = mkDate(this.ep.airdate, this.ep.airtime, true);
 				this.ep.airdate = d.toAirDate();
 				this.ep.airtime = d.toAirTime();
 
-				var epid = this.epid;
+				let epid = this.epid;
 				delete this.epid;
 
 				$.each(this.ep,function(k,v){
-					$editepWithData.find('input[name='+k+']').val(v);
+					$EditEpForm.find('input[name='+k+']').val(v);
 				});
 
-				$.Dialog.request(false, $editepWithData,'editep','Save',function($form){
-					$form.on('submit',function(e){
+				$.Dialog.request(false, $EditEpForm,'Save', function($form){
+					$form.on('submit', function(e){
 						e.preventDefault();
 
-						var data = $(this).mkData(),
+						let data = $(this).mkData(),
 							d = mkDate(data.airdate, data.airtime);
 						delete data.airdate;
 						delete data.airtime;
@@ -174,7 +174,7 @@ DocReady.push(function EpisodesManage(){
 
 						$.Dialog.wait(false, 'Saving changes');
 
-						$.post('/episode/edit/'+epid, data, $.mkAjaxHandler(function(){
+						$.post(`/episode/edit/${epid}`, data, $.mkAjaxHandler(function(){
 							if (!this.status) return $.Dialog.fail(false, this.message);
 
 							$.Dialog.wait(false, 'Updating page', true);
@@ -187,18 +187,18 @@ DocReady.push(function EpisodesManage(){
 			}));
 		});
 
-		$eptableBody.find('.delete-episode').off('click').on('click',function(e){
+		$eptableBody.find('.delete-episode').off('click').on('click', function(e){
 			e.preventDefault();
 
-			var $this = $(this),
+			let $this = $(this),
 				epid = $this.closest('tr').data('epid');
 
-			$.Dialog.confirm('Deleting '+epid,'<p>This will remove <strong>ALL</strong><ul><li>requests</li><li>reservations</li><li>video links</li><li>and votes</li></ul>associated with the episode, too.</p><p>Are you sure you want to delete it?</p>',function(sure){
+			$.Dialog.confirm('Deleting '+epid,'<p>This will remove <strong>ALL</strong><ul><li>requests</li><li>reservations</li><li>video links</li><li>and votes</li></ul>associated with the episode, too.</p><p>Are you sure you want to delete it?</p>', function(sure){
 				if (!sure) return;
 
 				$.Dialog.wait(false, 'Removing episode');
 
-				$.post('/episode/delete/'+epid, $.mkAjaxHandler(function(){
+				$.post(`/episode/delete/${epid}`, $.mkAjaxHandler(function(){
 					if (!this.status) return $.Dialog.fail(false, this.message);
 
 					$.Dialog.wait(false, 'Reloading page', true);

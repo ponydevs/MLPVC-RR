@@ -442,6 +442,7 @@ header, #sidebar .mobile-nav {
 				text-decoration: none;
 				border-bottom: 1px solid rgba(white, .5);
 				transition: border-bottom-color .1s;
+				cursor: pointer;
 
 				&:hover, &:focus {
 					border-bottom-color: rgba(white, .7);

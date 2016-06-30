@@ -3,11 +3,11 @@ DocReady.push(function ColorguideSingle(){
 	"use strict";
 	window.copyHashToggler();
 
-	var $adminBtns = $('.admin').children();
+	let $adminBtns = $('.admin').children();
 	$adminBtns.filter('.edit-cg').on('click',function(){
 		$.ctxmenu.triggerItem($(this).parents('.ctxmenu-bound'), 1);
 	});
-	var $colors = $('#colors');
+	let $colors = $('#colors');
 	$adminBtns.filter('.reorder-cgs').on('click',function(){
 		$.ctxmenu.triggerItem($colors, 1);
 	});

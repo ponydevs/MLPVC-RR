@@ -1,4 +1,4 @@
-/* global DocReady,$content,$body,$w,$footer,$header,$navbar,moment,Chart */
+/* global DocReady,$content,$body,$w,$footer,$header,$navbar,moment,Chart,Time */
 DocReady.push(function Episode(){
 	'use strict';
 	var SEASON = window.SEASON,
@@ -43,7 +43,7 @@ DocReady.push(function Episode(){
 				}
 			},
 			$rltimer = $liveUpd.find('.timer'),
-			$rlbtn = $liveUpd.find('button.reload').on('click',function(e){
+			$rlbtn = $liveUpd.find('button.reload').on('click', function(e){
 				e.preventDefault();
 
 				cleartimerinterval();
@@ -68,7 +68,7 @@ DocReady.push(function Episode(){
 					updateBothSections(done, true);
 				};
 				if ($('.post-form').filter(':visible').length > 0)
-					$.Dialog.confirm('Reloading posts','You are in the process of posting a request/reservation. Reloading the posts will clear your progress.<br><br>Continue reloading?',function(sure){
+					$.Dialog.confirm('Reloading posts','You are in the process of posting a request/reservation. Reloading the posts will clear your progress.<br><br>Continue reloading?', function(sure){
 						if (!sure) return;
 
 						$.Dialog.wait(false, 'Updating posts');
@@ -93,7 +93,7 @@ DocReady.push(function Episode(){
 			$rltimer.text(seconds+'s').css('color','');
 			window._rlinterval = setInterval(ticker,1000);
 		};
-		$disableLiveUpdbtn = $liveUpd.find('button.disable').on('click',function(e){
+		$disableLiveUpdbtn = $liveUpd.find('button.disable').on('click', function(e){
 			e.preventDefault();
 
 			var disabling = $disableLiveUpdbtn.hasClass('red');
@@ -117,25 +117,25 @@ DocReady.push(function Episode(){
 	$('#video').on('click',function(){
 		$.Dialog.wait('Set video links', 'Requesting links from the server');
 
-		$.post('/episode/getvideos/'+EpID,$.mkAjaxHandler(function(){
+		$.post(`/episode/getvideos/${EpID}`,$.mkAjaxHandler(function(){
 			var data = this;
 
 			if (!data.status) return $.Dialog.fail(false, data.message);
 
 			var $yt_input = $.mk('input').attr({type:'url','class':'yt',name:'yt_1',placeholder:'YouTube',spellcheck:'false',autocomplete:'off'}),
 				$dm_input = $.mk('input').attr({type:'url','class':'dm',name:'dm_1',placeholder:'Dailymotion',spellcheck:'false',autocomplete:'off'}),
-				$form = $.mk('form').attr('id','vidlinks').attr('class','align-center').append(
+				$VidLinksForm = $.mk('form').attr('id','vidlinks').attr('class','align-center').append(
 					$.mk('p').text('Enter vido links below, leave any input blank to remove that video from the episode page.'),
 					$yt_input.clone(),
 					$dm_input.clone()
 				);
 			if (data.twoparter){
-				$.mk('p').html('<strong>~ Part 1 ~</strong>').insertBefore($form.children('input').first());
+				$.mk('p').html('<strong>~ Part 1 ~</strong>').insertBefore($VidLinksForm.children('input').first());
 				var pt2 = {
 					$yt: $yt_input.clone().attr('name', 'yt_2'),
 					$dm: $dm_input.clone().attr('name', 'dm_2')
 				};
-				$form.append(
+				$VidLinksForm.append(
 					$.mk('p').text('Check below if either link contains the full episode instead of just one part'),
 					$.mk('div').append(
 						"<label><input type='checkbox' name='yt_1_full'> YouTube</label> &nbsp; "+
@@ -145,12 +145,12 @@ DocReady.push(function Episode(){
 					pt2.$yt,
 					pt2.$dm
 				);
-				$form.find('input[type="checkbox"]').on('change',function(){
+				$VidLinksForm.find('input[type="checkbox"]').on('change',function(){
 					pt2['$'+($(this).attr('name').replace(/^([a-z]+)_.*$/,'$1'))].attr('disabled', this.checked);
 				});
 				if (data.fullep.length > 0)
 					$.each(data.fullep,function(_,prov){
-						$form
+						$VidLinksForm
 							.find('input[type="checkbox"]')
 							.filter('[name="'+prov+'_1_full"]')
 							.prop('checked', true)
@@ -158,12 +158,12 @@ DocReady.push(function Episode(){
 					});
 			}
 			if (Object.keys(data.vidlinks).length > 0){
-				var $inputs = $form.children('input');
+				var $inputs = $VidLinksForm.children('input');
 				$.each(data.vidlinks,function(k,v){
 					$inputs.filter('[name='+k+']').val(v);
 				});
 			}
-			$.Dialog.request(false,$form,'vidlinks','Save',function($form){
+			$.Dialog.request(false,$VidLinksForm,'Save', function($form){
 				if (data.airs && new Date(data.airs).getTime() > new Date().getTime()){
 					var $lsnotice = $.mk('div').addClass('notice warn').text('If you add this video now, it will be shown as a livestream link!');
 					$form.append($lsnotice);
@@ -177,13 +177,13 @@ DocReady.push(function Episode(){
 						},1);
 					}).triggerHandler('change');
 				}
-				$form.on('submit',function(e){
+				$form.on('submit', function(e){
 					e.preventDefault();
 
 					var data = $form.mkData();
 					$.Dialog.wait(false, 'Saving links');
 					
-					$.post('/episode/setvideos/'+EpID,data,$.mkAjaxHandler(function(){
+					$.post(`/episode/setvideos/${EpID}`,data,$.mkAjaxHandler(function(){
 						if (!this.status) return $.Dialog.fail(false, this.message);
 
 						if (this.epsection){
@@ -209,11 +209,11 @@ DocReady.push(function Episode(){
 	$('#cg-relations').on('click',function(){
 		$.Dialog.wait('Guide relation editor', 'Retrieving relations from server');
 
-		$.post('/episode/getcgrelations/'+EpID,$.mkAjaxHandler(function(){
+		$.post(`/episode/getcgrelations/${EpID}`,$.mkAjaxHandler(function(){
 			if (!this.status) return $.Dialog.fail(false, this.message);
 
 			var data = this,
-				$form = $.mk('form').attr('id','guide-relation-editor'),
+				$GuideRelationEditorForm = $.mk('form').attr('id','guide-relation-editor'),
 				$selectLinked = $.mk('select').attr({name:'listed',multiple:true}),
 				$selectUnlinked = $.mk('select').attr('multiple', true);
 
@@ -226,18 +226,18 @@ DocReady.push(function Episode(){
 					$selectUnlinked.append($.mk('option').attr('value', el.id).text(el.label));
 				});
 
-			$form.append(
+			$GuideRelationEditorForm.append(
 				$.mk('div').attr('class','split-select-wrap').append(
 					$.mk('div').attr('class','split-select').append("<span>Linked</span>",$selectLinked),
 					$.mk('div').attr('class','buttons').append(
-						$.mk('button').attr({'class':'typcn typcn-chevron-left green',title:'Link selected'}).on('click',function(e){
+						$.mk('button').attr({'class':'typcn typcn-chevron-left green',title:'Link selected'}).on('click', function(e){
 							e.preventDefault();
 
 							$selectLinked.append($selectUnlinked.children(':selected').prop('selected', false)).children().sort(function(a,b){
 								return a.innerHTML.localeCompare(b.innerHTML);
 							}).appendTo($selectLinked);
 						}),
-						$.mk('button').attr({'class':'typcn typcn-chevron-right red',title:'Unlink selected'}).on('click',function(e){
+						$.mk('button').attr({'class':'typcn typcn-chevron-right red',title:'Unlink selected'}).on('click', function(e){
 							e.preventDefault();
 
 							$selectUnlinked.append($selectLinked.children(':selected').prop('selected', false)).children().sort(function(a,b){
@@ -249,15 +249,15 @@ DocReady.push(function Episode(){
 				)
 			);
 
-			$.Dialog.request(false,$form,'guide-relation-editor','Save',function($form){
-				$form.on('submit',function(e){
+			$.Dialog.request(false,$GuideRelationEditorForm,'Save', function($form){
+				$form.on('submit', function(e){
 					e.preventDefault();
 
 					var ids = [];
 					$selectLinked.children().each(function(_, el){ ids.push(el.value) });
 					$.Dialog.wait(false, 'Saving changes');
 
-					$.post('/episode/setcgrelations/'+EpID,{ids:ids.join(',')},$.mkAjaxHandler(function(){
+					$.post(`/episode/setcgrelations/${EpID}`,{ids:ids.join(',')},$.mkAjaxHandler(function(){
 						if (!this.status) return $.Dialog.fail(false, this.message);
 
 						if (this.section){
@@ -278,7 +278,7 @@ DocReady.push(function Episode(){
 		}));
 	});
 
-	$('#edit-about_reservations, #edit-reservation_rules').on('click',function(e){
+	$('#edit-about_reservations, #edit-reservation_rules').on('click', function(e){
 		e.preventDefault();
 
 		var $h2 = $(this).parent(),
@@ -287,11 +287,11 @@ DocReady.push(function Episode(){
 		$h2c.children().remove();
 		var text = $h2c.text().trim();
 
-		$.Dialog.wait('Editing "'+text+'"',"Retrieving setting's value");
-		$.post('/setting/get/'+endpoint,$.mkAjaxHandler(function(){
+		$.Dialog.wait(`Editing "${text}"`,"Retrieving setting's value");
+		$.post(`/setting/get/${endpoint}`,$.mkAjaxHandler(function(){
 			if (!this.status) return $.Dialog.fail(false, this.message);
 
-			var $Form = $.mk('form').attr('id', endpoint+'-editor').append(
+			var $EditorForm = $.mk('form').attr('id', endpoint+'-editor').append(
 				$.mk('label').append(
 					$.mk('span').text(text),
 					$.mk('textarea').attr({
@@ -300,14 +300,14 @@ DocReady.push(function Episode(){
 				)
 			);
 
-			$.Dialog.request(false, $Form, $Form.attr('id'), 'Save', function($form){
+			$.Dialog.request(false, $EditorForm, 'Save', function($form){
 				$form.on('submit', function(e){
 					e.preventDefault();
 
 					var data = $form.mkData();
 					$.Dialog.wait(false, 'Saving');
 
-					$.post('/setting/set/'+endpoint, data, $.mkAjaxHandler(function(){
+					$.post(`/setting/set/${endpoint}`, data, $.mkAjaxHandler(function(){
 						if (!this.status) return $.Dialog.fail(false, this.message);
 
 						$h2.siblings().remove();
@@ -328,13 +328,13 @@ DocReady.push(function Episode(){
 			$partSwitch,
 			$embedWrap;
 		if ($showPlayers.length){
-			$showPlayers.on('click',function(e){
+			$showPlayers.on('click', function(e){
 				e.preventDefault();
 
 				if (typeof $embedWrap === 'undefined'){
 					$.Dialog.wait($showPlayers.text());
 
-					$.post('/episode/videos/'+EpID, $.mkAjaxHandler(function(){
+					$.post(`/episode/videos/${EpID}`, $.mkAjaxHandler(function(){
 						if (!this.status) return $.Dialog.fail(false, this.message);
 
 						if (this[0] === 2){
@@ -369,7 +369,7 @@ DocReady.push(function Episode(){
 	BindVideoButtons();
 
 	var $voting = $('#voting');
-	$voting.on('click','.rate',function(e){
+	$voting.on('click','.rate', function(e){
 		e.preventDefault();
 
 		var makeStar = function(v){
@@ -380,7 +380,7 @@ DocReady.push(function Episode(){
 						value: v,
 					}),
 					$.mk('span')
-				).on('mouseenter mouseleave',function(e){
+				).on('mouseenter mouseleave', function(e){
 					var $this = $(this),
 						$checked = $this.parent().find('input:checked'),
 						$parent = $checked.parent(),
@@ -419,8 +419,8 @@ DocReady.push(function Episode(){
 			),
 			$voteButton = $voting.children('.rate');
 
-		$.Dialog.request('Rating '+EpID,$VoteForm,'star-rating','Rate',function($form){
-			$form.on('submit',function(e){
+		$.Dialog.request('Rating '+EpID,$VoteForm,'Rate', function($form){
+			$form.on('submit', function(e){
 				e.preventDefault();
 
 				var data = $form.mkData();
@@ -430,7 +430,7 @@ DocReady.push(function Episode(){
 
 				$.Dialog.wait(false, 'Submitting your rating');
 
-				$.post('/episode/vote/'+EpID,data,$.mkAjaxHandler(function(){
+				$.post(`/episode/vote/${EpID}`,data,$.mkAjaxHandler(function(){
 					if (!this.status) return $.Dialog.fail(false, this.message);
 
 					var $section = $voteButton.closest('section');
@@ -447,7 +447,7 @@ DocReady.push(function Episode(){
 		if (diff.past !== true) return;
 
 		if (!$voting.children('.rate').length){
-			$.post('/episode/vote/'+EpID+'?html',$.mkAjaxHandler(function(){
+			$.post(`/episode/vote/${EpID}?html`,$.mkAjaxHandler(function(){
 				if (!this.status) return $.Dialog.fail('Display voting buttons',this.message);
 
 				$voting.children('h2').nextAll().remove();
@@ -460,13 +460,13 @@ DocReady.push(function Episode(){
 	});
 
 	$.fn.bindDetails = function(){
-		$(this).find('a.detail').on('click',function(e){
+		$(this).find('a.detail').on('click', function(e){
 			e.preventDefault();
 			e.stopPropagation();
 
 			$.Dialog.wait('Voting details','Getting vote distribution information');
 
-			$.post('/episode/vote/'+EpID+'?detail', $.mkAjaxHandler(function(){
+			$.post(`/episode/vote/${EpID}?detail`, $.mkAjaxHandler(function(){
 				if (!this.status) return $.Dialog.fail(false, this.message);
 
 				var $chart = $.mk('canvas').css({
@@ -545,14 +545,14 @@ DocReady.push(function Episode(){
 	};
 	$('#requests, #reservations').rebindHandlers();
 	function Bind($li, id, type){
-		$li.children('button.reserve-request').off('click').on('click',function(e){
+		$li.children('button.reserve-request').off('click').on('click', function(e){
 			e.preventDefault();
 
 			var title = 'Reserving request',
 				send = function(data){
 					$.Dialog.wait(title, 'Sending reservation to the server');
 
-					$.post("/post/reserve-request/" + id, data, $.mkAjaxHandler(function(){
+					$.post(`/post/reserve-request/${id}`, data, $.mkAjaxHandler(function(){
 						if (!this.status) return $.Dialog.fail(false, this.message);
 
 						var $newli = $(this.li);
@@ -560,7 +560,7 @@ DocReady.push(function Episode(){
 							$newli.addClass('highlight');
 						$li.replaceWith($newli);
 						$newli.rebindFluidbox();
-						window.updateTimes();
+						Time.Update();
 						Bind($newli, id, type);
 						$.Dialog.close();
 					}));
@@ -589,8 +589,8 @@ DocReady.push(function Episode(){
 						})
 					)
 				);
-				$.Dialog.request(title, $ReserveAsForm,'reserve-as','Reserve',function($form){
-					$form.on('submit',function(e){
+				$.Dialog.request(title,$ReserveAsForm,'Reserve', function($form){
+					$form.on('submit', function(e){
 						e.preventDefault();
 
 						send($form.mkData());
@@ -600,12 +600,12 @@ DocReady.push(function Episode(){
 		});
 		var $actions = $li.find('.actions').children();
 		$actions.filter('.cancel').off('click').on('click',function(){
-			$.Dialog.confirm('Cancel reservation','Are you sure you want to cancel this reservation?',function(sure){
+			$.Dialog.confirm('Cancel reservation','Are you sure you want to cancel this reservation?', function(sure){
 				if (!sure) return;
 
 				$.Dialog.wait(false, 'Cancelling reservation');
 
-				$.post('/post/unreserve-'+type+'/'+id,$.mkAjaxHandler(function(){
+				$.post(`/post/unreserve-${type}/${id}`,$.mkAjaxHandler(function(){
 					if (!this.status) return $.Dialog.fail(false, this.message);
 
 					if (this.remove === true){
@@ -618,14 +618,14 @@ DocReady.push(function Episode(){
 						$newli.addClass('highlight');
 					$li.replaceWith($newli);
 					$newli.rebindFluidbox();
-					window.updateTimes();
+					Time.Update();
 					Bind($newli, id, type);
 					$.Dialog.close();
 				}));
 			});
 		});
 		$actions.filter('.finish').off('click').on('click',function(){
-			var $form = $.mk('form').attr('id', 'finish-res').append(
+			var $FinishResForm = $.mk('form').attr('id', 'finish-res').append(
 				$.mk('label').append(
 					$.mk('span').text('Deviation URL'),
 					$.mk('input').attr({
@@ -638,7 +638,7 @@ DocReady.push(function Episode(){
 				)
 			);
 			if (typeof USERNAME_REGEX !== 'undefined')
-				$form.append(
+				$FinishResForm.append(
 					$.mk('label').append(
 						$.mk('span').text('Finished at'),
 						$.mk('input').attr({
@@ -650,8 +650,8 @@ DocReady.push(function Episode(){
 						})
 					)
 				);
-			$.Dialog.request('Finish reservation',$form,'finish-res','Finish',function($form){
-				$form.on('submit',function(e){
+			$.Dialog.request('Finish reservation',$FinishResForm,'Finish', function($form){
+				$form.on('submit', function(e){
 					e.preventDefault();
 
 					var deviation = $form.find('[name=deviation]').val();
@@ -698,9 +698,8 @@ DocReady.push(function Episode(){
 				Type = $.capitalize(type),
 				what = type.replace(/s$/,'');
 
-			$.Dialog.request((deleteOnly?'Delete':'Unfinish')+' '+what,'<form id="unbind-check"><p>Are you sure you want to '+(deleteOnly?'delete this reservation':'mark this '+what+' as unfinished')+'?</p><hr><label><input type="checkbox" name="unbind"> Unbind '+what+' from user</label></form>','unbind-check','Unfinish',function(){
-				var $form = $('#unbind-check'),
-					$unbind = $form.find('[name=unbind]');
+			$.Dialog.request((deleteOnly?'Delete':'Unfinish')+' '+what,'<form id="unbind-check"><p>Are you sure you want to '+(deleteOnly?'delete this reservation':'mark this '+what+' as unfinished')+'?</p><hr><label><input type="checkbox" name="unbind"> Unbind '+what+' from user</label></form>','Unfinish', function($form){
+				var $unbind = $form.find('[name=unbind]');
 
 				if (!deleteOnly)
 					$form.prepend('<div class="notice info">By removing the "finished" flag, the post will be moved back to the "List of '+Type+'" section</div>');
@@ -716,14 +715,14 @@ DocReady.push(function Episode(){
 				else
 					$form.append('<div class="notice info">If this is checked, any user will be able to reserve this request again afterwards. If left unchecked, only the current reserver <em>(and Vector Inspectors)</em> will be able to mark it as finished until the reservation is cancelled.</div>');
 				$w.trigger('resize');
-				$form.on('submit',function(e){
+				$form.on('submit', function(e){
 					e.preventDefault();
 
 					var unbind = $unbind.prop('checked');
 
 					$.Dialog.wait(false, 'Removing "finished" flag'+(unbind?' & unbinding from user':''));
 
-					$.post('/post/unfinish-'+type+'/'+id+(unbind?'?unbind':''),$.mkAjaxHandler(function(){
+					$.post(`/post/unfinish-${type}/${id}${unbind?'?unbind':''}`,$.mkAjaxHandler(function(){
 						if (!this.status) return $.Dialog.fail(false, this.message);
 
 						$.Dialog.success(false, typeof this.message !== 'undefined' ? this.message : '"finished" flag removed successfully');
@@ -732,12 +731,12 @@ DocReady.push(function Episode(){
 				});
 			});
 		});
-		$actions.filter('.check').off('click').on('click',function(e){
+		$actions.filter('.check').off('click').on('click', function(e){
 			e.preventDefault();
 
 			$.Dialog.wait('Submission approval status','Checking');
 
-			$.post('/post/lock-'+type+'/'+id, $.mkAjaxHandler(function(){
+			$.post(`/post/lock-${type}/${id}`, $.mkAjaxHandler(function(){
 				if (!this.status) return $.Dialog.fail(false, this.message);
 
 				var message = this.message;
@@ -746,15 +745,15 @@ DocReady.push(function Episode(){
 				});
 			}));
 		});
-		$actions.filter('.unlock').off('click').on('click',function(e){
+		$actions.filter('.unlock').off('click').on('click', function(e){
 			e.preventDefault();
 
-			$.Dialog.confirm('Unlocking post','Are you sure you want to unlock this post?',function(sure){
+			$.Dialog.confirm('Unlocking post','Are you sure you want to unlock this post?', function(sure){
 				if (!sure) return;
 
 				$.Dialog.wait(false);
 
-				$.post('/post/unlock-'+type+'/'+id, $.mkAjaxHandler(function(){
+				$.post(`/post/unlock-${type}/${id}`, $.mkAjaxHandler(function(){
 					if (!this.status) return $.Dialog.fail(false, this.message);
 
 					updateSection(type);
@@ -769,7 +768,7 @@ DocReady.push(function Episode(){
 
 				$.Dialog.wait(false);
 
-				$.post('/post/delete-request/'+id,$.mkAjaxHandler(function(){
+				$.post(`/post/delete-request/${id}`,$.mkAjaxHandler(function(){
 					if (!this.status) return $.Dialog.fail(false, this.message);
 
 					$.Dialog.close();
@@ -786,13 +785,13 @@ DocReady.push(function Episode(){
 				id = _split[1],
 				type = _split[0];
 
-			$.Dialog.wait('Editing '+type+' #'+id, 'Retrieving '+type+' details');
+			$.Dialog.wait(`Editing ${type} #${id}`, `Retrieving ${type} details`);
 
-			$.post('/post/get-'+type+'/'+id,$.mkAjaxHandler(function(){
+			$.post(`/post/get-${type}/${id}`,$.mkAjaxHandler(function(){
 				if (!this.status) return $.Dialog.fail(false, this.message);
 
 				var postdata = this,
-					$Form = $.mk('form').attr('id', 'post-edit-form').append(
+					$PostEditForm = $.mk('form').attr('id', 'post-edit-form').append(
 						$.mk('label').append(
 							$.mk('span').text('Description (3-255 chars.'+(type==='reservation'?', optional':'')+')'),
 							$.mk('input').attr({
@@ -806,7 +805,7 @@ DocReady.push(function Episode(){
 					);
 
 				if (type === 'request')
-					$Form.append(
+					$PostEditForm.append(
 						$.mk('label').append(
 							$.mk('span').text('Request type'),
 							$.mk('select').attr({
@@ -821,7 +820,7 @@ DocReady.push(function Episode(){
 					);
 
 				if (typeof postdata.posted === 'string')
-					$Form.append(
+					$PostEditForm.append(
 						$.mk('label').append(
 							$.mk('span').text('Post timestamp'),
 							$.mk('input').attr({
@@ -834,7 +833,7 @@ DocReady.push(function Episode(){
 						)
 					);
 				if (typeof postdata.reserved_at === 'string')
-					$Form.append(
+					$PostEditForm.append(
 						$.mk('label').append(
 							$.mk('span').text('Reserved at'),
 							$.mk('input').attr({
@@ -846,7 +845,7 @@ DocReady.push(function Episode(){
 						)
 					);
 				if (typeof postdata.finished_at === 'string')
-					$Form.append(
+					$PostEditForm.append(
 						$.mk('label').append(
 							$.mk('span').text('Finished at'),
 							$.mk('input').attr({
@@ -865,14 +864,14 @@ DocReady.push(function Episode(){
 					show_stash_fix_btn = !finished && !FULLSIZE_MATCH_REGEX.test(fullsize_url) && /deviantart\.net\//.test(fullsize_url);
 
 				if (show_img_update_btn || show_stash_fix_btn){
-					$Form.append(
+					$PostEditForm.append(
 						$.mk('label').append(
 							(
 								show_img_update_btn
 								? $.mk('a').text('Update Image').attr({
 									'href':'#update',
 									'class':'btn darkblue typcn typcn-pencil',
-								}).on('click',function(e){
+								}).on('click', function(e){
 									e.preventDefault();
 
 									$.Dialog.close();
@@ -895,14 +894,14 @@ DocReady.push(function Episode(){
 												})
 											)
 										);
-									$.Dialog.request('Update image of '+type+' #'+id,$ImgUpdateForm, 'img-update-form','Update',function($form){
+									$.Dialog.request('Update image of '+type+' #'+id,$ImgUpdateForm,'Update', function($form){
 										$form.on('submit', function(e){
 											e.preventDefault();
 
 											var data = $form.mkData();
 											$.Dialog.wait(false, 'Replacing image');
 
-											$.post('/post/set-'+type+'-image/'+id,data,$.mkAjaxHandler(function(){
+											$.post(`/post/set-${type}-image/${id}`,data,$.mkAjaxHandler(function(){
 												if (!this.status) return $.Dialog.fail(false, this.message);
 
 												$.Dialog.success(false, 'Image has been updated');
@@ -919,17 +918,17 @@ DocReady.push(function Episode(){
 								? $.mk('a').text('Sta.sh fullsize fix').attr({
 									'href':'#fix-stash-fullsize',
 									'class':'btn orange typcn typcn-spanner',
-								}).on('click',function(e){
+								}).on('click', function(e){
 									e.preventDefault();
 									$.Dialog.close();
 									$.Dialog.wait('Fix Sta.sh fullsize URL','Fixing Sta.sh full size image URL');
 
-									$.post('/post/fix-'+type+'-stash/'+id,$.mkAjaxHandler(function(){
+									$.post(`/post/fix-${type}-stash/${id}`,$.mkAjaxHandler(function(){
 										if (!this.status){
 											if (this.rmdirect){
 												if (!finished){
 													$li.find('.post-date').children('a').first().triggerHandler('click');
-													return $.Dialog.fail(false, this.message+'<br>The post might be broken because of this, please check it for any issues.');
+													return $.Dialog.fail(false, `${this.message}<br>The post might be broken because of this, please check it for any issues.`);
 												}
 												$li.children('.original').remove();
 											}
@@ -946,7 +945,7 @@ DocReady.push(function Episode(){
 					);
 				}
 
-				$.Dialog.request(false, $Form, 'post-edit-form', 'Save', function($form){
+				$.Dialog.request(false, $PostEditForm, 'Save', function($form){
 					var $label = $form.find('[name=label]'),
 						$type = $form.find('[name=type]'),
 						$date, $reserved_at, $finished_at;
@@ -978,7 +977,7 @@ DocReady.push(function Episode(){
 							$finished_at.val(finished.format('YYYY-MM-DD\THH:mm:ssZ'));
 						}
 					}
-					$form.on('submit',function(e){
+					$form.on('submit', function(e){
 						e.preventDefault();
 
 						var data = { label: $label.val() };
@@ -1011,7 +1010,7 @@ DocReady.push(function Episode(){
 
 						$.Dialog.wait(false, 'Saving changes');
 
-						$.post('/post/set-'+type+'/'+id,data, $.mkAjaxHandler(function(){
+						$.post(`/post/set-${type}/${id}`,data, $.mkAjaxHandler(function(){
 							if (!this.status) return $.Dialog.fail(false, this.message);
 
 							if (this.li){
@@ -1020,7 +1019,7 @@ DocReady.push(function Episode(){
 									$newli.addClass('highlight');
 								$li.replaceWith($newli);
 								$newli.rebindFluidbox();
-								window.updateTimes();
+								Time.Update();
 								Bind($newli, id, type);
 							}
 
@@ -1037,7 +1036,7 @@ DocReady.push(function Episode(){
 			$.Dialog.info('Sharing '+type+' #'+id, $.mk('div').attr('class','align-center').append(
 				'Use the link below to link to this post directly:',
 				$.mk('div').attr('class','share-link').text(url),
-				$.mk('button').attr('class','blue typcn typcn-clipboard').text('Copy to clipboard').on('click',function(e){
+				$.mk('button').attr('class','blue typcn typcn-clipboard').text('Copy to clipboard').on('click', function(e){
 					$.copy(url,e);
 				})
 			));
@@ -1066,8 +1065,16 @@ DocReady.push(function Episode(){
 			}
 		});
 		if (type === 'reservation') $('#add-reservation-btn').on('click',function(){
-			$.Dialog.request('Add a reservation','<form id="add-reservation"><div class="notice info">This feature should only be used when the vector was made before the episode was displayed here, and all you want to do is link your already-made vector under the newly posted episode.</div><div class="notice warn">If you already posted the reservation, use the <strong class="typcn typcn-attachment">I\'m done</strong> button to mark it as finished instead of adding it here.</div><input type="text" name="deviation" placeholder="Deviation URL"></form>','add-reservation','Finish',function($form){
-				$form.on('submit',function(e){
+			let $AddReservationForm = $.mk('form','add-reservation').html(
+				`<div class="notice info">This feature should only be used when the vector was made before the episode was displayed here, and all you want to do is link your already-made vector under the newly posted episode.</div>
+				<div class="notice warn">If you already posted the reservation, use the <strong class="typcn typcn-attachment">I'm done</strong> button to mark it as finished instead of adding it here.</div>
+				<label>
+					<span>Deviation URL</span>
+					<input type="text" name="deviation">
+				</label>`
+			);
+			$.Dialog.request('Add a reservation',$AddReservationForm,'Finish', function($form){
+				$form.on('submit', function(e){
 					e.preventDefault();
 
 					var deviation = $form.find('[name=deviation]').val();
@@ -1157,7 +1164,7 @@ DocReady.push(function Episode(){
 			}));
 		}
 		var CHECK_BTN = '<strong class="typcn typcn-arrow-repeat" style="display:inline-block">Check image</strong>';
-		$formImgCheck.on('click',function(e){
+		$formImgCheck.on('click', function(e){
 			e.preventDefault();
 
 			checkImage();
@@ -1185,7 +1192,7 @@ DocReady.push(function Episode(){
 					$type = $form.find('select');
 
 				if (label.indexOf('character') > -1 && $type.val() !== 'chr')
-					return $.Dialog.confirm(title, 'Your request label contains the word "character", but the request type isn\'t set to Character.<br>Are you sure you\'re not requesting one (or more) character(s)?',['Let me change the type', 'Carray on'],function(sure){
+					return $.Dialog.confirm(title, 'Your request label contains the word "character", but the request type isn\'t set to Character.<br>Are you sure you\'re not requesting one (or more) character(s)?',['Let me change the type', 'Carray on'], function(sure){
 						if (!sure) return $form.triggerHandler('submit',[screwchanges, true]);
 
 						$.Dialog.close(function(){
@@ -1254,7 +1261,7 @@ DocReady.push(function Episode(){
 					$newChilds = $(this.render).filter('section').children();
 				$section.empty().append($newChilds).rebindHandlers();
 				$section.find('.post-form').attr('data-type',type).formBind();
-				window.updateTimes();
+				Time.Update();
 				if (typeof callback === 'function') callback();
 				else if (silent !== true) $.Dialog.close();
 			}),
@@ -1283,7 +1290,7 @@ DocReady.push(function Episode(){
 						var _idAttr = $li.attr('id').split('-'),
 							type =_idAttr[0],
 							id = _idAttr[1];
-						$.post('/post/reload-'+type+'/'+id,$.mkAjaxHandler(function(){
+						$.post(`/post/reload-${type}/${id}`,$.mkAjaxHandler(function(){
 							if (!this.status) return;
 
 							var $newli = $(this.li);
@@ -1291,7 +1298,7 @@ DocReady.push(function Episode(){
 								$newli.addClass('highlight');
 							$li.replaceWith($newli);
 							$newli.rebindFluidbox();
-							window.updateTimes();
+							Time.Update();
 							Bind($newli, id, type);
 						}));
 					}
