@@ -5,29 +5,28 @@
 		if (isset($SubMSG)) echo "<p>$SubMSG</p>";
 	}
 	else {
-		echo User::GetAvatarWrap($User); ?>
-	<h1><span class="role-badge"><?=Permission::LabelInitials($User['role'])?></span><span><?=$User['name']?></span> <a class="da" title="Visit DeviantArt profile" href="<?=User::GetDALink($User,LINK_ONLY)?>"><?=str_replace(' fill="#FFF"','',file_get_contents(APPATH.'img/da-logo.svg'))?></a></h1>
-	<p><?php
-		echo "<span>{$User['rolelabel']}</span>";
-		if ($canEdit){
-			echo ' <button id="change-role" class="blue typcn typcn-spanner'.($User['role']==='ban'?' hidden':'').'" title="Change '.CoreUtils::Posess($User['name']).' group"></button>';
-			$BanLabel = ($User['role']==='ban'?'Un-ban':'Ban').'ish';
-			$Icon = $User['role']==='ban'?'world':'weather-night';
-			if (Permission::Sufficient('staff', $User['role']))
-				$Icon .= ' hidden';
-			echo ' <button id="ban-toggle" class="darkblue typcn typcn-'.$Icon.' '.strtolower($BanLabel).'" title="'."$BanLabel user".'"></button>';
-		}
-	?></p>
+		$vectorapp = UserPrefs::Get('p_vectorapp', $User['id']); ?>
+	<div class="briefing">
+		<?=User::GetAvatarWrap($User)?>
+		<div class="title">
+			<h1><span class="role-badge"><?=Permission::LabelInitials($User['role'])?></span><span><?=$User['name']?></span><a class="da" title="Visit DeviantArt profile" href="<?=User::GetDALink($User,LINK_ONLY)?>"><?=str_replace(' fill="#FFF"','',file_get_contents(APPATH.'img/da-logo.svg'))?></a><?=!empty($vectorapp)?"<img class='vectorapp-logo' src='/img/vapps/$vectorapp.svg' alt='$vectorapp logo' title='".CoreUtils::$VECTOR_APPS[$vectorapp]." user'>":''?></h1>
+			<p><?php
+	echo "<span>{$User['rolelabel']}</span>";
+	if ($canEdit){
+		echo ' <button id="change-role" class="blue typcn typcn-spanner'.($User['role']==='ban'?' hidden':'').'" title="Change '.CoreUtils::Posess($User['name']).' group"></button>';
+		$BanLabel = ($User['role']==='ban'?'Un-ban':'Ban').'ish';
+		$Icon = $User['role']==='ban'?'world':'weather-night';
+		if (Permission::Sufficient('staff', $User['role']))
+			$Icon .= ' hidden';
+		echo ' <button id="ban-toggle" class="darkblue typcn typcn-'.$Icon.' '.strtolower($BanLabel).'" title="'."$BanLabel user".'"></button>';
+	}
+	if (Permission::Sufficient('developer'))
+		echo " &bullet; <span class='userid'>{$User['id']}</span>";
+			?></p>
+		</div>
+	</div>
 	<div class="details">
 <?php
-
-	if (Permission::Sufficient('developer')){ ?>
-		<section>
-			<h2><?=User::$PROFILE_SECTION_PRIVACY_LEVEL['developer']?>User ID:</h2>
-			<span><?=$User['id']?></span>
-		</section>
-<?  }
-
 	if (Permission::Sufficient('member', $User['role'])){
 		echo User::GetPendingReservationsHTML($User['id'], $sameUser, $YouHave);
 
@@ -122,7 +121,7 @@ HTML;
 			<form action="/preference/set/cg_itemsperpage">
 				<label>
 					<span>Appearances per page</span>
-					<input type="number" min="7" max="20" name="value" value="<?=UserPrefs::Get('cg_itemsperpage')?>" step="1"<?=!$sameUser?' disabled':''?>>
+					<input type="number" min="7" max="20" name="value" value="<?=UserPrefs::Get('cg_itemsperpage', $User['id'])?>" step="1"<?=!$sameUser?' disabled':''?>>
 <?php       if ($sameUser){ ?>
 					<button class="save typcn typcn-tick green" disabled>Save</button>
 <?php       } ?>
@@ -131,7 +130,7 @@ HTML;
 <?php       if (Permission::Sufficient('staff', $User['role'])){ ?>
 			<form action="/preference/set/cg_hidesynon">
 				<label>
-					<input type="checkbox" name="value" value="1"<?=UserPrefs::Get('cg_hidesynon')?' checked':''?> <?=!$sameUser?' disabled':''?>>
+					<input type="checkbox" name="value" value="1"<?=UserPrefs::Get('cg_hidesynon', $User['id'])?' checked':''?> <?=!$sameUser?' disabled':''?>>
 					<span>Hide synonym relations</span>
 <?php           if ($sameUser){ ?>
 					<button class="save typcn typcn-tick green" disabled>Save</button>
@@ -141,8 +140,28 @@ HTML;
 <?php       } ?>
 			<form action="/preference/set/cg_hideclrinfo">
 				<label>
-					<input type="checkbox" name="value" value="1"<?=UserPrefs::Get('cg_hideclrinfo')?' checked':''?> <?=!$sameUser?' disabled':''?>>
+					<input type="checkbox" name="value" value="1"<?=UserPrefs::Get('cg_hideclrinfo', $User['id'])?' checked':''?> <?=!$sameUser?' disabled':''?>>
 					<span>Hide color details on appearance pages</span>
+<?php           if ($sameUser){ ?>
+					<button class="save typcn typcn-tick green" disabled>Save</button>
+<?php           } ?>
+				</label>
+			</form>
+		</section>
+		<section class="personal-settings">
+			<h2><?=$sameUser?User::$PROFILE_SECTION_PRIVACY_LEVEL['staff']:''?>Personal</h2>
+			<form action="/preference/set/p_vectorapp">
+				<label>
+					<span>Publicly show my vector progam of choice: </span>
+					<select name="value"<?=!$sameUser?' disabled':''?>><?php
+				$apps = CoreUtils::$VECTOR_APPS;
+				echo "<option value=''".($vectorapp===''?' selected':'').">{$apps['']}</option>";
+				unset($apps['']);
+				echo "<optgroup label='Vectoring applications'>";
+				foreach ($apps as $id => $label)
+					echo "<option value='$id'".($vectorapp===$id?' selected':'').">$label</option>";
+				echo "</optgroup>";
+					?></select>
 <?php           if ($sameUser){ ?>
 					<button class="save typcn typcn-tick green" disabled>Save</button>
 <?php           } ?>

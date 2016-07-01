@@ -105,7 +105,7 @@
 	}
 	#main {
 		position: initial;
-		padding: 10px 5px;
+		padding: 5px;
 		@include white-grid;
 	}
 	#content h1 {
@@ -774,6 +774,30 @@ kbd {
     border-radius: 4px;
     border-bottom-width: 2px;
     margin: 0 2px;
+}
+// Vector app styles
+@mixin vapp($Base){
+	$RGradTop: lighten($Base, 40);
+	$RGradBot: lighten($Base, 30);
+	$RBorder: desaturate($Base, 30);
+	&.avatar-wrap {
+		border-color: $RBorder;
+		background-color: $RGradTop;
+	}
+	&.reserver .da-userlink {
+		background: linear-gradient(to bottom, $RGradTop 0, $RGradBot 100%) #efefef;
+		border: 1px solid $RBorder;
+		border-radius: 5px;
+	}
+}
+.app-illustrator {
+	@include vapp(#f80);
+}
+.app-inkscape {
+	@include vapp(#0af);
+}
+.app-ponyscape {
+	@include vapp(#f40);
 }
 
 #copy-notify {

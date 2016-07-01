@@ -10,6 +10,7 @@
 	$getting = $_match[1] === 'get';
 	$key = $_match[2];
 
+	// TODO Support changing some preferences of other users by staff
 	$currvalue = UserPrefs::Get($key);
 	if ($getting)
 		CoreUtils::Respond(array('value' => $currvalue));

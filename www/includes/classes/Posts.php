@@ -551,8 +551,8 @@ HTML;
 					$By = $currentUser;
 				}
 				$dAlink = User::GetProfileLink($By, FULL);
-
-				$HTML =  "<div class='reserver'>$dAlink</div>";
+				$vectorapp = User::GetVectorAppClassName($By);
+				$HTML =  "<div class='reserver$vectorapp'>$dAlink</div>";
 
 				$finished = !empty($R['deviation_id']);
 				$staffOrSameUser = ($sameUser && Permission::Sufficient('member')) || Permission::Sufficient('staff');

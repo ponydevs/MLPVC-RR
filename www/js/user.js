@@ -14,7 +14,7 @@ DocReady.push(function User(){
 					$.Dialog.wait(false, 'Cancelling reservation');
 
 					let id = $link.prop('hash').substring(1).split('-');
-					$.post(`/post/cancel-${id.join('/')}`,{FROM_PROFILE:true},$.mkAjaxHandler(function(){
+					$.post(`/post/unreserve-${id.join('/')}`,{FROM_PROFILE:true},$.mkAjaxHandler(function(){
 						if (!this.status) return $.Dialog.fail(false, this.message);
 
 						let pendingRes = this.pendingReservations;
@@ -137,13 +137,35 @@ DocReady.push(function User(){
 		}));
 	});
 
+	function settingChanged(which,from,to_what){
+		switch (which){
+			case "p_vectorapp":
+				if (to_what.length === 0 && from.length !== 0){
+					let className = `app-${from}`;
+					$(`.${className}`).removeClass(className);
+					$('.title h1 .vectorapp-logo').remove();
+					$.Dialog.close();
+				}
+				else {
+					$.Dialog.wait(false,'Reloading page');
+					$.Navigation.reload(function(){
+						$.Dialog.close();
+					});
+				}
+			break;
+			default:
+				$.Dialog.close();
+		}
+	}
+
 	let $slbl = $('#settings').find('form').on('submit', function(e){
 		e.preventDefault();
 
 		let $form = $(this),
 			endpoint = $form.attr('action'),
 			data = $form.mkData(),
-			$input = $form.find('[name="value"]');
+			$input = $form.find('[name="value"]'),
+			orig = $input.data('orig');
 
 		$.Dialog.wait('Saving setting','Please wait');
 
@@ -152,22 +174,36 @@ DocReady.push(function User(){
 			
 			if ($input.is('[type=number]'))
 				$input.val(this.value);
-			else if ($input.is('[type=checkbox]'))
+			else if ($input.is('[type=checkbox]')){
+				this.value = Boolean(this.value);
 				$input.prop('checked', this.value);
+			}
 			$input.data('orig', this.value).triggerHandler('change');
-			$.Dialog.close();
+
+			settingChanged(endpoint.split('/').pop(), orig, this.value);
 		}));
 	}).children('label');
-	$slbl.children('input[type=number]').each(function(){
+	$slbl.children('input[type=number], select').each(function(){
 		let $el = $(this);
-		$el.data('orig', $el.val()).on('keydown keyup change',function(){
+		$el.data('orig', $el.val().trim()).on('keydown keyup change',function(){
+			let $el = $(this);
 			$el.siblings('.save').attr('disabled', $el.val().trim() === $el.data('orig'));
 		});
 	});
 	$slbl.children('input[type=checkbox]').each(function(){
 		let $el = $(this);
 		$el.data('orig', $el.prop('checked')).on('keydown keyup change',function(){
+			let $el = $(this);
 			$el.siblings('.save').attr('disabled', $el.prop('checked') === $el.data('orig'));
 		});
 	});
+/*	$slbl.children('select').each(function(){
+		let $el = $(this);
+		$el.data('orig', $el.find('option:selected').val()).on('keydown keyup change',function(){
+			let $el = $(this),
+				$val = $el.find('option:selected');
+			console.log($val[0], $el.data('orig'));
+			$el.siblings('.save').attr('disabled', $val.val() === $el.data('orig'));
+		});
+	});*/
 });

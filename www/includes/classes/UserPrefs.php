@@ -7,43 +7,48 @@
 				'cg_itemsperpage' => 7,
 				'cg_hidesynon' => 0,
 				'cg_hideclrinfo' => 0,
+				'p_vectorapp' => '',
 			);
 
 		/**
 		 * Gets a user preference item's value
 		 *
 		 * @param string $key
-		 * @param mixed  $default
+		 * @param string $for
 		 *
 		 * @return mixed
 		 */
-		static function Get($key, $default = false){
+		static function Get($key, $for = null){
 			global $Database, $signedIn, $currentUser;
+			if (empty($for))
+				$for = $currentUser['id'];
 
-			if (isset(User::$_PREF_CACHE[$key]))
-				return User::$_PREF_CACHE[$key];
+			if (isset(User::$_PREF_CACHE[$for][$key]))
+				return User::$_PREF_CACHE[$for][$key];
 
+			$default = null;
 			if (isset(static::$_defaults[$key]))
 				$default = static::$_defaults[$key];
 			if (!$signedIn)
 				return $default;
-			$Database->where('user', $currentUser['id']);
-			return User::$_PREF_CACHE[$key] = parent::Get($key, $default);
+
+			$Database->where('user', $for);
+			return User::$_PREF_CACHE[$for][$key] = parent::Get($key, $default);
 		}
 
 		/**
 		 * Sets a preference item's value
 		 *
 		 * @param string $key
-		 * @param mixed $value
+		 * @param mixed  $value
+		 * @param string $for
 		 *
 		 * @return bool
 		 */
-		static function Set($key, $value){
+		static function Set($key, $value, $for = null){
 			global $Database, $signedIn, $currentUser;
-
-			if (!$signedIn)
-				CoreUtils::Respond();
+			if (empty($for))
+				$for = $currentUser['id'];
 
 			if (!isset(static::$_defaults[$key]))
 				CoreUtils::Respond("Key $key is not allowed");
@@ -70,9 +75,6 @@
 		static function Process($key){
 			$value = isset($_POST['value']) ? CoreUtils::Trim($_POST['value']) : null;
 
-			if ($value === '')
-				return null;
-
 			switch ($key){
 				case "cg_itemsperpage":
 					$thing = 'Color Guide items per page';
@@ -84,7 +86,7 @@
 				break;
 				case "cg_hidesynon":
 				case "cg_hideclrinfo":
-					$value = (bool) $value;
+					$value = $value ? 1 : 0;
 				break;
 			}
 

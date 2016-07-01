@@ -897,7 +897,7 @@
 							setTimeout(function(){
 								if (classScope._xhr === false)
 									$loader.removeClass('loading');
-							},300);
+							},200);
 
 							classScope._xhr = false;
 						});
@@ -906,11 +906,8 @@
 			});
 			classScope._xhr = ajaxcall;
 		}
-		reload(callback, delay){
-			let f = (typeof delay === 'number' && delay > 0)
-				? function(){ setTimeout(callback, delay) }
-				: callback;
-			this._navigateTo(location.pathname+location.search+location.hash, f);
+		reload(callback){
+			this.visit(location.pathname+location.search+location.hash, callback);
 		}
 	}
 

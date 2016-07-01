@@ -1053,4 +1053,11 @@
 			$elephant->emit($event, $data);
 			$elephant->close();
 		}
+
+		static $VECTOR_APPS = array(
+			'' => "(don't show)",
+			'illustrator' => 'Adobe Illustrator',
+			'inkscape' => 'Inkscape',
+			'ponyscape' => 'Ponyscape',
+		);
 	}

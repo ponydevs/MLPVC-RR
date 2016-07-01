@@ -138,7 +138,8 @@
 		 * @return string
 		 */
 		static function GetAvatarWrap($User){
-			return "<div class='avatar-wrap'><img src='{$User['avatar_url']}' class='avatar' alt='avatar'></div>";
+			$vectorapp = User::GetVectorAppClassName($User);
+			return "<div class='avatar-wrap$vectorapp'><img src='{$User['avatar_url']}' class='avatar' alt='avatar'></div>";
 		}
 
 		/**
@@ -410,5 +411,10 @@ HTML;
 				$HTML .= "</section>";
 			}
 			return $HTML;
+		}
+		
+		static function GetVectorAppClassName($User){
+			$pref = UserPrefs::Get('p_vectorapp', $User['id']);
+			return !empty($pref) ? " app-$pref" : '';
 		}
 	}

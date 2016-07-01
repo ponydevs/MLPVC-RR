@@ -3,7 +3,8 @@
 @import "theme_section";
 @import "theme_post-ul";
 
-#content {
+// Mobile styles
+@media all and (max-width: $Breakpoint){
 	h1 {
 		> * {
 			display: inline-block;
@@ -22,20 +23,84 @@
 			font-weight: bold;
 			margin-right: 10px;
 		}
-		.da {
-			line-height: 1em;
-			height: 1em;
-			width: .6em;
+	}
+}
+// Desktop styles
+@media all and (min-width: $Breakpoint){
+	.briefing {
+		display: flex;
+		flex-flow: row nowrap;
+		align-items: center;
+		text-align: left;
+		margin-bottom: 10px;
 
-			$dalogo: #05cc47;
-			svg {
-				height: 100%;
+		.avatar-wrap {
+			flex: 0 0 auto;
+		}
+		.title {
+			flex: 1 1 100%;
+			padding: 0 10px;
+
+			> * {
+				text-align: left !important;
 			}
-			path {
-				fill: darken($dalogo, 10);
-				transition: fill .2s linear;
+
+			h1 {
+				font-size: 1.6em !important;
+				line-height: 1.2em;
+
+				> * {
+					display: inline-block;
+					vertical-align: bottom;
+				}
+				.role-badge { display: none }
 			}
-			&:hover path { fill: $dalogo }
+			p {
+				margin-bottom: 0 !important;
+				font-size: 1.2em !important;
+
+				button {
+					vertical-align: middle;
+				}
+			}
+		}
+	}
+}
+
+#content {
+	.briefing {
+		.avatar-wrap {
+			border-width: 3px;
+		}
+		h1 {
+			.da {
+				line-height: 1em;
+				height: 1em;
+				width: .6em;
+				margin-left: .3em;
+
+				$dalogo: #05cc47;
+				svg {
+					height: 100%;
+				}
+				path {
+					fill: darken($dalogo, 10);
+					transition: fill .2s linear;
+				}
+				&:hover path { fill: $dalogo }
+			}
+
+			.vectorapp-logo {
+				height: 1em;
+				width: 1em;
+				margin-left: .3em;
+			}
+		}
+		p {
+			.userid {
+				letter-spacing: -1px;
+				font-size: .8em;
+			}
 		}
 	}
 	section { @extend %section }
@@ -91,11 +156,13 @@
 				margin-bottom: 10px;
 			}
 			label {
-				input[type=checkbox], button {
+				display: inline-block;
+
+				input, button, select {
 					vertical-align: middle;
 				}
 				.save {
-					margin: 0;
+					margin: 0 0 0 5px;
 				}
 			}
 		}
