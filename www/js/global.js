@@ -819,7 +819,8 @@
 
 						let pos = js.indexOf(src);
 
-						if (pos !== -1 && !/js\/(colorguide[\.\-]|episodes-manage)/.test(src)){
+						// TODO Come up with a proper way to handle persistent files rather than re-requesting them
+						if (pos !== -1 && !/js\/(colorguide[\.\-]|episodes-manage|episode)/.test(src)){
 							js.splice(pos, 1);
 							console.log('%cSkipped %s','color:saddlebrown',src);
 						}
