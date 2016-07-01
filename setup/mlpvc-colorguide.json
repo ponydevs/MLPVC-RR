@@ -2037,11 +2037,11 @@
 			"order": 15,
 			"label": "Shining Armor",
 			"notes": "Far legs and hooves use darker colors.\nSpecial eyeball color.",
-			"cm_favme": null,
+			"cm_favme": "d9svi8d",
 			"ishuman": false,
 			"added": "2015-10-23 16:27:32+02",
-			"cm_preview": null,
-			"cm_dir": null,
+			"cm_preview": "https://t02.deviantart.net/UqqzgkZv2R5C9zCyPh3v3UnyXLU=/fit-in/300x900/filters:no_upscale():origin()/pre04/0c2b/th/pre/f/2016/181/0/6/shining_armor_cm_preview_by_djdavid98-da87ggr.png",
+			"cm_dir": true,
 			"ColorGroups": {
 				"257": {
 					"groupid": 257,
@@ -7303,11 +7303,11 @@
 			"order": 42,
 			"label": "Lily Longsocks",
 			"notes": "From S5E18.",
-			"cm_favme": null,
+			"cm_favme": "d9ct35v",
 			"ishuman": false,
 			"added": "2015-10-16 07:37:56+02",
 			"cm_preview": null,
-			"cm_dir": null,
+			"cm_dir": false,
 			"ColorGroups": {
 				"240": {
 					"groupid": 240,
@@ -7435,6 +7435,7 @@
 				12,
 				44,
 				75,
+				306,
 				353
 			]
 		},
@@ -8166,11 +8167,11 @@
 			"order": 49,
 			"label": "Twinkleshine",
 			"notes": "",
-			"cm_favme": null,
+			"cm_favme": "d6t4847",
 			"ishuman": false,
 			"added": "2015-09-21 22:25:31+02",
-			"cm_preview": null,
-			"cm_dir": null,
+			"cm_preview": "https://t04.deviantart.net/L7nV-nZeMYTG1jrGAAFlZv37ZZo=/fit-in/300x900/filters:no_upscale():origin()/pre08/92fa/th/pre/f/2016/181/a/6/twinkleshine_cm_preview_by_djdavid98-da87h7c.png",
+			"cm_dir": true,
 			"ColorGroups": {
 				"85": {
 					"groupid": 85,
@@ -13804,11 +13805,11 @@
 			"order": 84,
 			"label": "Blossomforth",
 			"notes": "Based on Hurricane Fluttershy",
-			"cm_favme": "d8geiw1",
+			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-02-11 19:02:12.030258+01",
 			"cm_preview": null,
-			"cm_dir": true,
+			"cm_dir": null,
 			"ColorGroups": {
 				"382": {
 					"groupid": 382,
@@ -13925,11 +13926,11 @@
 			"order": 85,
 			"label": "Twilight Sky",
 			"notes": "Based on S2E22.\nFar legs use darker colors.\nDoes not have iris highlights.",
-			"cm_favme": null,
+			"cm_favme": "d6t4847",
 			"ishuman": false,
 			"added": "2016-04-12 12:09:35.98652+02",
-			"cm_preview": null,
-			"cm_dir": null,
+			"cm_preview": "https://t03.deviantart.net/82ldiwgyGkLwwcanyuu6hVDEvQ8=/fit-in/300x900/filters:no_upscale():origin()/pre14/7a8f/th/pre/f/2016/181/6/a/twilight_sky_cm_preview_by_djdavid98-da87gwz.png",
+			"cm_dir": true,
 			"ColorGroups": {
 				"569": {
 					"groupid": 569,
@@ -29015,7 +29016,7 @@
 			"name": "s5e18",
 			"title": null,
 			"type": "ep",
-			"uses": 2,
+			"uses": 3,
 			"synonym_of": null
 		},
 		"307": {

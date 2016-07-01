@@ -216,7 +216,7 @@ Her top iris highlight is the same color as the bottom stop on the iris gradient
 Cutie Mark head colors are different from normal ones.', NULL, false, '2015-09-17 05:43:22+02', NULL, NULL),
 (14, 66, 'Fashion Plate', 'Far legs use darker colors.', NULL, false, '2015-09-17 06:02:26+02', NULL, NULL),
 (15, 64, 'Sassy Saddles', '', NULL, false, '2015-09-17 06:22:20+02', NULL, NULL),
-(16, 49, 'Twinkleshine', '', NULL, false, '2015-09-21 22:25:31+02', NULL, NULL),
+(16, 49, 'Twinkleshine', '', 'd6t4847', false, '2015-09-21 22:25:31+02', 'https://t04.deviantart.net/L7nV-nZeMYTG1jrGAAFlZv37ZZo=/fit-in/300x900/filters:no_upscale():origin()/pre08/92fa/th/pre/f/2016/181/a/6/twinkleshine_cm_preview_by_djdavid98-da87h7c.png', true),
 (17, 50, 'Lemon Hearts', '', NULL, false, '2015-09-21 22:30:06+02', NULL, NULL),
 (18, 99, 'Granny Smith', 'Far legs use darker colors.', NULL, false, '2015-09-21 22:37:57+02', NULL, NULL),
 (19, 79, 'Fleetfoot', '', 'd97x7vd', false, '2015-09-21 22:58:56+02', NULL, true),
@@ -247,9 +247,9 @@ Magic color is unknown.', NULL, false, '2015-10-06 05:39:35+02', NULL, NULL),
 Magic color is unknown.', NULL, false, '2015-10-06 05:48:24+02', NULL, NULL),
 (39, 38, 'Button Mash', 'From S5E18.
 Far legs use LIGHTER outlines and fills.', NULL, false, '2015-10-15 05:32:38+02', NULL, NULL),
-(40, 42, 'Lily Longsocks', 'From S5E18.', NULL, false, '2015-10-16 07:37:56+02', NULL, NULL),
+(40, 42, 'Lily Longsocks', 'From S5E18.', 'd9ct35v', false, '2015-10-16 07:37:56+02', NULL, false),
 (44, 15, 'Shining Armor', 'Far legs and hooves use darker colors.
-Special eyeball color.', NULL, false, '2015-10-23 16:27:32+02', NULL, NULL),
+Special eyeball color.', 'd9svi8d', false, '2015-10-23 16:27:32+02', 'https://t02.deviantart.net/UqqzgkZv2R5C9zCyPh3v3UnyXLU=/fit-in/300x900/filters:no_upscale():origin()/pre04/0c2b/th/pre/f/2016/181/0/6/shining_armor_cm_preview_by_djdavid98-da87ggr.png', true),
 (45, 47, 'Penny Curve', 'Vector Club Mascot', 'd9e7zgj', false, '2015-10-25 21:10:21+01', NULL, true),
 (46, 107, 'Cheese Sandwich', '', 'd74od89', false, '2015-10-26 15:27:27+01', NULL, false),
 (50, 110, 'Marble Pie', 'Two different hair outline colors.
@@ -276,7 +276,7 @@ Glasses don''t seem to have lenses.', 'd9iyv1r', false, '2015-12-01 16:18:10.631
 (66, 37, 'Pipsqueak', '', NULL, false, '2016-01-25 01:43:42.292322+01', NULL, NULL),
 (67, 33, 'Silver Spoon', 'Far legs use darker colors.
 Necklace highlights are not pure white.', NULL, false, '2016-01-25 03:40:31.20103+01', NULL, NULL),
-(68, 84, 'Blossomforth', 'Based on Hurricane Fluttershy', 'd8geiw1', false, '2016-02-11 19:02:12.030258+01', NULL, true),
+(68, 84, 'Blossomforth', 'Based on Hurricane Fluttershy', NULL, false, '2016-02-11 19:02:12.030258+01', NULL, NULL),
 (69, 52, 'Vinyl Scratch / DJ Pon-3', 'Based on S5E9.', 'd9zhh0l', false, '2016-02-28 00:56:35.641502+01', NULL, true),
 (70, 149, 'Wonderbolt Uniform', '', 'da7pd3q', false, '2016-02-29 14:00:08.939447+01', 'https://t01.deviantart.net/KcgLhJh7aDbu3oh1bwJfNG6UI48=/fit-in/300x900/filters:no_upscale():origin()/pre09/4530/th/pre/f/2016/177/0/2/export_by_djdavid98-da7pygz.png', true),
 (71, 151, 'Wonderbolt Trainee Uniform', '', NULL, false, '2016-02-29 14:12:07.849625+01', NULL, NULL),
@@ -323,7 +323,7 @@ She has a special eye gradient with four stops and no iris highlights.', 'da7y90
 (103, 82, 'Flitter', 'She has no iris highlights.', NULL, false, '2016-04-12 11:21:48.892267+02', NULL, NULL),
 (104, 85, 'Twilight Sky', 'Based on S2E22.
 Far legs use darker colors.
-Does not have iris highlights.', NULL, false, '2016-04-12 12:09:35.98652+02', NULL, NULL),
+Does not have iris highlights.', 'd6t4847', false, '2016-04-12 12:09:35.98652+02', 'https://t03.deviantart.net/82ldiwgyGkLwwcanyuu6hVDEvQ8=/fit-in/300x900/filters:no_upscale():origin()/pre14/7a8f/th/pre/f/2016/181/6/a/twilight_sky_cm_preview_by_djdavid98-da87gwz.png', true),
 (105, 152, 'Pony Tones Outfit', '', NULL, false, '2016-04-12 13:16:04.154183+02', NULL, NULL),
 (106, 121, 'Toe Tapper', 'Far legs use darker colors.
 Only has one eye shine and one iris highlight located in the top part of the iris.', NULL, false, '2016-04-14 00:34:43.797733+02', NULL, NULL),
@@ -5497,6 +5497,7 @@ INSERT INTO tagged VALUES
 (302, 147),
 (304, 148),
 (305, 149),
+(306, 40),
 (306, 149),
 (306, 150),
 (308, 151),
@@ -5826,7 +5827,7 @@ INSERT INTO tags VALUES
 (302, 'caramel', NULL, 'char', 1, NULL),
 (304, 'birch bucket', NULL, 'char', 1, NULL),
 (305, 'spoiled rich', NULL, 'char', 1, NULL),
-(306, 's5e18', NULL, 'ep', 2, NULL),
+(306, 's5e18', NULL, 'ep', 3, NULL),
 (307, 'pegasi', NULL, 'spec', 0, 3),
 (308, 'zephyr breeze', NULL, 'char', 1, NULL),
 (309, 'mr. shy', NULL, 'char', 1, NULL),
