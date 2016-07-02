@@ -88,7 +88,9 @@ DocReady.push(function Admin(){
 					if (!this.status) return $.Dialog.fail(false, this.message);
 
 					$.Dialog.wait(false, 'Reloading page', true);
-					$.Navigation.reload($.Dialog.close);
+					$.Navigation.reload(function(){
+						$.Dialog.close();
+					});
 				}));
 			});
 		}
