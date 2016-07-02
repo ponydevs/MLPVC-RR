@@ -831,7 +831,7 @@ DocReady.push(function ColorguideManage(){
 						$ponyTags = $tagsDiv.children('.tag'),
 						title = `Adding tag: ${tag_name}`;
 
-					if ($ponyTags.filter(() => this.innerHTML.trim() === tag_name).length > 0)
+					if ($ponyTags.filter(function(){ return this.innerHTML.trim() === tag_name }).length > 0)
 						return $.Dialog.fail(title, 'This appearance already has this tag');
 
 					$.Dialog.setFocusedElement($input.attr('disabled', true));

@@ -89,7 +89,7 @@
 
 				let $active = $navbar.find('li.active').children().last();
 				if (pageRegex.test($active.text()))
-					$active.html(() => this.innerHTML.replace(pageRegex,`Page ${newPageNumber}`));
+					$active.html(function(){ this.innerHTML.replace(pageRegex,`Page ${newPageNumber}`) });
 
 				// Preserve static page title component at the end
 				if (typeof titleProcessor === 'function')
