@@ -340,12 +340,7 @@
 
 					switch ($action){
 						case "tag":
-							$tag_name = strtolower((new Input('tag_name',$TAG_NAME_REGEX,array(
-								'errors' => array (
-									Input::$ERROR_MISSING => 'Tag name is missing',
-									Input::$ERROR_INVALID => 'Tag name (@value) is invalid',
-								)
-							)))->out());
+							$tag_name = CGUtils::ValidateTagName('tag_name');
 
 							$TagCheck = CGUtils::CheckEpisodeTagName($tag_name);
 							if ($TagCheck !== false)
@@ -555,25 +550,7 @@
 				CoreUtils::Respond(array('keep_tagged' => $keep_tagged));
 			}
 
-			$name = strtolower((new Input('name',function($value, $range){
-				if (Input::CheckStringLength($value,$range,$code))
-					return $code;
-				if ($value[0] === '-')
-					return 'dash';
-				$sanitized_name = regex_replace(new RegExp('[^a-z\d]'),'',$value);
-				if (regex_match(new RegExp('^(b+[a4]+w*d+|g+[uo0]+d+|(?:b+[ae3]+|w+[o0u]+r+)[s5]+[t7]+)(e+r+|e+s+t+)?p+[o0]+[wh]*n+[ye3]*'),$sanitized_name))
-					return 'opinionbased';
-			},array(
-				'range' => [3,30],
-				'errors' => array(
-					Input::$ERROR_MISSING => 'Tag name cannot be empty',
-					Input::$ERROR_RANGE => 'Tag name must be between @min and @max characters',
-					'dash' => 'Tag name cannot start with a dash',
-					'opinionbased' => 'Highly opinion-based tags are not allowed',
-				)
-			)))->out());
-			CoreUtils::CheckStringValidity($name,'Tag name',INVERSE_TAG_NAME_PATTERN);
-			$data['name'] = $name;
+			$data['name'] = CGUtils::ValidateTagName('name');
 
 			$epTagName = CGUtils::CheckEpisodeTagName($data['name']);
 			$surelyAnEpisodeTag = $epTagName !== false;
