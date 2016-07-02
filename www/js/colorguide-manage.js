@@ -470,7 +470,7 @@ DocReady.push(function ColorguideManage(){
 			}),
 			'<span>This is a major change</span>'
 		),
-		`<label class="hidden">
+		`<label style="display:none">
 			<span>Change reason (1-255 chars.)</span>
 			<input type='text' name='reason' pattern="${PRINTABLE_ASCII_PATTERN.replace('+','{1,255}')}" required disabled>
 		</label>
