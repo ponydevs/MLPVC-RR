@@ -52,8 +52,10 @@ DocReady.push(function ColorguideManage(){
 				</label>
 				<div class="align-center">
 					<p>Cutie mark orientation</p>
-					<label><input type="radio" name="cm_dir" value="ht" required><span>Head-Tail</span></label>
-					<label><input type="radio" name="cm_dir" value="th" required><span>Tail-Head</span></label>
+					<div class="radio-group">
+						<label><input type="radio" name="cm_dir" value="ht" required><span>Head-Tail</span></label>
+						<label><input type="radio" name="cm_dir" value="th" required><span>Tail-Head</span></label>
+					</div>
 				</div>
 				<label>
 					<span>Link to CM preview image (optional)</span>
