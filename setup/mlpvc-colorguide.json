@@ -23240,9 +23240,120 @@
 				357
 			]
 		},
+		"172": {
+			"id": 172,
+			"order": 138,
+			"label": "Daisy",
+			"notes": "",
+			"cm_favme": null,
+			"ishuman": false,
+			"added": "2016-07-02 17:17:58.045788+02",
+			"cm_preview": null,
+			"cm_dir": null,
+			"ColorGroups": {
+				"942": {
+					"groupid": 942,
+					"label": "Coat",
+					"order": 0,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#F066D7"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#FFA9F8"
+						},
+						{
+							"order": 2,
+							"label": "Shadow Fill",
+							"hex": "#F892F0"
+						}
+					]
+				},
+				"943": {
+					"groupid": 943,
+					"label": "Mane & Tail",
+					"order": 1,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#95DD34"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#C7F184"
+						}
+					]
+				},
+				"944": {
+					"groupid": 944,
+					"label": "Iris",
+					"order": 2,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Gradient Top",
+							"hex": "#256147"
+						},
+						{
+							"order": 1,
+							"label": "Gradient Bottom",
+							"hex": "#33B668"
+						},
+						{
+							"order": 2,
+							"label": "Highlight Top",
+							"hex": "#6CE192"
+						},
+						{
+							"order": 3,
+							"label": "Highlight Bottom",
+							"hex": "#C6EDBB"
+						}
+					]
+				},
+				"945": {
+					"groupid": 945,
+					"label": "Cutie Mark",
+					"order": 3,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Flower Outline",
+							"hex": "#C2BFBF"
+						},
+						{
+							"order": 1,
+							"label": "Flower Fill",
+							"hex": "#FFFFFF"
+						},
+						{
+							"order": 2,
+							"label": "Flower Middle Fill",
+							"hex": "#FFFF00"
+						}
+					]
+				}
+			},
+			"TagIDs": [
+				2,
+				7,
+				8,
+				12,
+				179,
+				353,
+				366,
+				367
+			]
+		},
 		"64": {
 			"id": 64,
-			"order": 138,
+			"order": 139,
 			"label": "Angel Bunny",
 			"notes": "",
 			"cm_favme": null,
@@ -23356,7 +23467,7 @@
 		},
 		"112": {
 			"id": 112,
-			"order": 139,
+			"order": 140,
 			"label": "Gummy",
 			"notes": "In 3/4 view, the top line on his far eye uses the \"Far Eye Top Line\" color instead of the normal gradient.",
 			"cm_favme": null,
@@ -23493,7 +23604,7 @@
 		},
 		"116": {
 			"id": 116,
-			"order": 140,
+			"order": 141,
 			"label": "Winona",
 			"notes": "",
 			"cm_favme": null,
@@ -23627,7 +23738,7 @@
 		},
 		"117": {
 			"id": 117,
-			"order": 141,
+			"order": 142,
 			"label": "Owlowiscious",
 			"notes": "",
 			"cm_favme": null,
@@ -23715,7 +23826,7 @@
 		},
 		"119": {
 			"id": 119,
-			"order": 142,
+			"order": 143,
 			"label": "Tank",
 			"notes": "Far Legs use darker colors.\nIn some scenes, Tank uses an alternate set of colors for the tongue.\nFor accurate goggle lenses: Group together the Fill (100% Normal blending) and the Highlights (75% Color Dodge blending) and set the group to 50% opacity.\nFor a less accurate version, group together the Fill and the Highlights (both 100% opacity, Normal blending) and set the group to 50% opacity.",
 			"cm_favme": null,
@@ -23983,7 +24094,7 @@
 		},
 		"120": {
 			"id": 120,
-			"order": 143,
+			"order": 144,
 			"label": "Opalescence",
 			"notes": "",
 			"cm_favme": null,
@@ -24180,7 +24291,7 @@
 		},
 		"33": {
 			"id": 33,
-			"order": 144,
+			"order": 145,
 			"label": "Alicorn Amulet",
 			"notes": "",
 			"cm_favme": null,
@@ -24371,7 +24482,7 @@
 		},
 		"86": {
 			"id": 86,
-			"order": 145,
+			"order": 146,
 			"label": "Scorpan's Medallion",
 			"notes": "",
 			"cm_favme": null,
@@ -24448,7 +24559,7 @@
 		},
 		"94": {
 			"id": 94,
-			"order": 146,
+			"order": 147,
 			"label": "Party Cannon",
 			"notes": "",
 			"cm_favme": null,
@@ -24576,7 +24687,7 @@
 		},
 		"115": {
 			"id": 115,
-			"order": 147,
+			"order": 148,
 			"label": "Fake Timberwolf",
 			"notes": "",
 			"cm_favme": null,
@@ -24784,7 +24895,7 @@
 		},
 		"154": {
 			"id": 154,
-			"order": 148,
+			"order": 149,
 			"label": "Twilight's Crown",
 			"notes": "For S4 onward",
 			"cm_favme": null,
@@ -24835,7 +24946,7 @@
 		},
 		"70": {
 			"id": 70,
-			"order": 149,
+			"order": 150,
 			"label": "Wonderbolt Uniform",
 			"notes": "",
 			"cm_favme": "da7pd3q",
@@ -24965,7 +25076,7 @@
 		},
 		"133": {
 			"id": 133,
-			"order": 150,
+			"order": 151,
 			"label": "Spitfire's Academy Outfit",
 			"notes": "",
 			"cm_favme": null,
@@ -25162,7 +25273,7 @@
 		},
 		"71": {
 			"id": 71,
-			"order": 151,
+			"order": 152,
 			"label": "Wonderbolt Trainee Uniform",
 			"notes": "",
 			"cm_favme": null,
@@ -25229,7 +25340,7 @@
 		},
 		"105": {
 			"id": 105,
-			"order": 152,
+			"order": 153,
 			"label": "Pony Tones Outfit",
 			"notes": "",
 			"cm_favme": null,
@@ -25330,7 +25441,7 @@
 		},
 		"109": {
 			"id": 109,
-			"order": 153,
+			"order": 154,
 			"label": "Zecora",
 			"notes": "Based on S4E14.",
 			"cm_favme": null,
@@ -25495,7 +25606,7 @@
 		},
 		"113": {
 			"id": 113,
-			"order": 154,
+			"order": 155,
 			"label": "Orange Frog",
 			"notes": "",
 			"cm_favme": null,
@@ -25590,7 +25701,7 @@
 		},
 		"122": {
 			"id": 122,
-			"order": 155,
+			"order": 156,
 			"label": "Pig (Peach Skin)",
 			"notes": "",
 			"cm_favme": null,
@@ -25711,7 +25822,7 @@
 		},
 		"123": {
 			"id": 123,
-			"order": 156,
+			"order": 157,
 			"label": "Pig (Pink Skin)",
 			"notes": "Muddy Nostril color unknown",
 			"cm_favme": null,
@@ -25827,7 +25938,7 @@
 		},
 		"124": {
 			"id": 124,
-			"order": 157,
+			"order": 158,
 			"label": "Pig (Dark Skin)",
 			"notes": "Muddy Nostril color unknown",
 			"cm_favme": null,
@@ -25943,7 +26054,7 @@
 		},
 		"139": {
 			"id": 139,
-			"order": 158,
+			"order": 159,
 			"label": "Cranky Doodle Donkey",
 			"notes": "<strong>Toupee #1</strong> is up through half-way of \"A Friend in Deed\"\n<strong>Toupee #2</strong> is from \"A Friend in Deed\" through most of \"Slice of Life\"\n<strong>Toupee #2</strong> is from end of \"Slice of Life\" onward.",
 			"cm_favme": null,
@@ -26096,7 +26207,7 @@
 		},
 		"140": {
 			"id": 140,
-			"order": 159,
+			"order": 160,
 			"label": "Matilda",
 			"notes": "",
 			"cm_favme": null,
@@ -26267,7 +26378,7 @@
 		},
 		"144": {
 			"id": 144,
-			"order": 160,
+			"order": 161,
 			"label": "Rainbow Dash's Robe",
 			"notes": "",
 			"cm_favme": null,
@@ -26385,7 +26496,7 @@
 		},
 		"156": {
 			"id": 156,
-			"order": 161,
+			"order": 162,
 			"label": "Rainbow Dash's Bandaids (Newbie Dash)",
 			"notes": "Sampled from Newbie Dash (S6E7)",
 			"cm_favme": null,
@@ -26696,7 +26807,7 @@
 			"name": "earth pony",
 			"title": null,
 			"type": "spec",
-			"uses": 54,
+			"uses": 55,
 			"synonym_of": null
 		},
 		"3": {
@@ -26736,7 +26847,7 @@
 			"name": "minor character",
 			"title": "Ponies who had a speaking role and/or interacted with the mane six",
 			"type": "cat",
-			"uses": 117,
+			"uses": 118,
 			"synonym_of": null
 		},
 		"8": {
@@ -26776,7 +26887,7 @@
 			"name": "female",
 			"title": null,
 			"type": "gen",
-			"uses": 89,
+			"uses": 90,
 			"synonym_of": null
 		},
 		"14": {
@@ -28024,7 +28135,7 @@
 			"name": "flower trio",
 			"title": "Flower-themed trio consisting of Rose, Daisy and Lily Valley.",
 			"type": "cat",
-			"uses": 1,
+			"uses": 2,
 			"synonym_of": null
 		},
 		"180": {
@@ -29354,6 +29465,22 @@
 			"type": "char",
 			"uses": 0,
 			"synonym_of": 362
+		},
+		"366": {
+			"tid": 366,
+			"name": "daisy",
+			"title": null,
+			"type": "char",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"367": {
+			"tid": 367,
+			"name": "flower wishes",
+			"title": null,
+			"type": "char",
+			"uses": 0,
+			"synonym_of": 366
 		}
 	}
 }
