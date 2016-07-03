@@ -96,14 +96,14 @@
 			if ($type === 'sta.sh')
 				$ID = CoreUtils::NomralizeStashID($ID);
 
-			$Deviation = $Database->where('id',$ID)->getOne('deviation_cache');
+			$Deviation = $Database->where('id', $ID)->where('provider', $type)->getOne('deviation_cache');
 			if (!self::$_CACHE_BAILOUT && (empty($Deviation) && (!$mass || self::$_MASS_CACHE_USED <= self::$_MASS_CACHE_LIMIT)) || (!empty($Deviation['updated_on']) && strtotime($Deviation['updated_on'])+(Time::$IN_SECONDS['hour']*5) < time())){
 				try {
 					$json = self::oEmbed($ID, $type);
 				}
 				catch (Exception $e){
 					if (!empty($Deviation))
-						$Database->where('id',$Deviation['id'])->update('deviation_cache', array('updated_on' => date('c',strtotime('+1 minute', time()))));
+						$Database->where('id',$Deviation['id'])->update('deviation_cache', array('updated_on' => date('c', time()+Time::$IN_SECONDS['minute'] )));
 
 					$ErrorMSG = "Saving local data for $ID@$type failed: ".$e->getMessage();
 					if (!Permission::Sufficient('developer')) trigger_error($ErrorMSG);
@@ -125,12 +125,14 @@
 					'updated_on' => date('c'),
 				);
 
-				if ($type === 'sta.sh' && !regex_match($FULLSIZE_MATCH_REGEX, $insert['fullsize'])){
-					$fullsize_attempt = CoreUtils::GetStashFullsizeURL($ID);
+				if (!regex_match($FULLSIZE_MATCH_REGEX, $insert['fullsize'])){
+					$fullsize_attempt = CoreUtils::GetFullsizeURL($ID, $type);
 					if (is_string($fullsize_attempt))
 						$insert['fullsize'] = $fullsize_attempt;
 				}
 
+				if (empty($Deviation))
+					$Deviation = $Database->where('id', $ID)->where('provider', $type)->getOne('deviation_cache');
 				if (empty($Deviation)){
 					$insert['id'] = $ID;
 					$Database->insert('deviation_cache', $insert);

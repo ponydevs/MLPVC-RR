@@ -411,7 +411,7 @@
 			CoreUtils::Respond('Stash URL lookup failed');
 
 		try {
-			$fullsize = CoreUtils::GetStashFullsizeURL($StashItem['id']);
+			$fullsize = CoreUtils::GetFullsizeURL($StashItem['id'], 'sta.sh');
 			if (!is_string($fullsize)){
 				if ($fullsize === 404){
 					$Database->where('provider', 'sta.sh')->where('id', $StashItem['id'])->delete('deviation_cache');

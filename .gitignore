@@ -21,3 +21,4 @@ setup/*.sql
 www/includes/MysqliDb.php
 setup/*_full.pg.sql
 www/includes/HTMLPurifier/standalone/HTMLPurifier/DefinitionCache/
+www/controllers/fetch-gallery.php

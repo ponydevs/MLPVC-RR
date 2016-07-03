@@ -950,14 +950,15 @@
 		}
 
 		/**
-		 * Retrieve the full size URL for a Sta.sh submission
+		 * Retrieve the full size URL for a submission
 		 *
-		 * @param string $stash_id
+		 * @param string $id
+		 * @param string $prov
 		 *
 		 * @return null|string
 		 */
-		static function GetStashFullsizeURL($stash_id){
-			$stash_url = "http://sta.sh/$stash_id";
+		static function GetFullsizeURL($id, $prov){
+			$stash_url = $prov === 'sta.sh' ? "http://sta.sh/$id" : "http://fav.me/$id";
 			try {
 				$stashpage = HTTP::LegitimateRequest($stash_url,null,null);
 			}
@@ -972,7 +973,7 @@
 			if (empty($stashpage))
 				return 3;
 
-			$STASH_DL_LINK_REGEX = '(https?://sta.sh/download/\d+/[a-z\d_]+-d[a-z\d]{6,}\.(?:png|jpe?g|bmp)\?[^"]+)';
+			$STASH_DL_LINK_REGEX = '(https?://(sta\.sh|www\.deviantart\.com)/download/\d+/[a-z\d_]+-d[a-z\d]{6,}\.(?:png|jpe?g|bmp)\?[^"]+)';
 			$urlmatch = regex_match(new RegExp('<a\s+class="[^"]*?dev-page-download[^"]*?"\s+href="'.
 				$STASH_DL_LINK_REGEX.'"'), $stashpage['response'], $_match);
 
@@ -985,8 +986,8 @@
 				return 5;
 
 			global $Database;
-			if ($Database->where('id', $stash_id)->where('provider', 'sta.sh')->has('deviation_cache'))
-				$Database->where('id', $stash_id)->where('provider', 'sta.sh')->update('deviation_cache', array(
+			if ($Database->where('id', $id)->where('provider', $prov)->has('deviation_cache'))
+				$Database->where('id', $id)->where('provider', $prov)->update('deviation_cache', array(
 					'fullsize' => $fullsize_url
 				));
 
