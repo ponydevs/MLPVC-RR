@@ -1,9 +1,15 @@
 // jshint ignore: start
-var cl = console.log;
+var cl = console.log,
+	chalk = require('chalk');
 console.log = console.writeLine = function () {
-	var args = [].slice.call(arguments);
-	if (args.length && /^(\[\d{2}:\d{2}:\d{2}]|Using|Finished)/.test(args[0]))
-		return;
+	var args = [].slice.call(arguments), match;
+	if (args.length){
+		if (/^(\[\d{2}:\d{2}:\d{2}]|Using|Finished)/.test(args[0]))
+			return;
+		else if (args[0] == 'Starting' && (match = args[1].match(/^'.*((?:dist-)?js|sass|default|md).*'...$/))){
+			args = ['[' + chalk.green('gulp') + '] ' + match[1] + ': ' + chalk.magenta('start')];
+		}
+	}
 	return cl.apply(console, args);
 };
 var stdoutw = process.stdout.write;
@@ -14,9 +20,8 @@ process.stdout.write = console.write = function(str){
 	stdoutw.call(process.stdout, out);
 };
 
-var _sep = '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~',
-	toRun = process.argv.slice(2).slice(-1)[0] || 'default'; // Works only if task name is the last param
-console.writeLine('Gulp process awoken to run "'+toRun+'". It still appears to be tired.');
+var toRun = process.argv.slice(2).slice(-1)[0] || 'default'; // Works only if task name is the last param
+console.writeLine('Starting Gulp task "'+toRun+'"');
 var require_list = ['gulp'];
 if (['js','dist-js','sass','md','default'].indexOf(toRun) !== -1){
 	require_list.push.apply(require_list, [
@@ -48,46 +53,37 @@ if (['js','dist-js','sass','md','default'].indexOf(toRun) !== -1){
 }
 else if (toRun === 'pgsort')
 	require_list.push('fs');
-console.write('> *yaaawn*');
+console.write('(');
 for (var i= 0,l=require_list.length; i<l; i++){
 	var v = require_list[i];
 	global[v.replace(/^gulp-([a-z]+).*$/, '$1')] = require(v);
 	console.write(' '+v);
 }
-console.writeLine("\n> Huh? What? I'm pancake!   ...I-I mean, awake.\n"+_sep);
+console.writeLine(" )\n");
 
 var workingDir = __dirname;
 
-function Personality(prompt, onerror){
-	if (typeof onerror !== 'object' || typeof onerror.length !== 'number' )
-		onerror = false;
-	var $p = '['+prompt+'] ';
+function Logger(prompt){
+	var $p = '['+chalk.blue(prompt)+'] ';
 	this.log = function(message){
 		console.writeLine($p+message);
 	};
-	var getErrorMessage = function(){
-		return onerror[Math.floor(Math.random()*onerror.length)];
-	};
 	this.error = function(message){
-		if (typeof message === 'string') message = message.trim();
-		else console.log(message);
-		console.error((onerror?$p+getErrorMessage()+'\n':'')+$p+message);
+		if (typeof message === 'string'){
+			message = message.trim()
+				.replace(/[\/\\]?www/,'');
+			console.error($p+'Error in '+message);
+		}
+		else console.log(JSON.stringify(message,null,'4'));
 	};
 	return this;
 }
 
-var Flutters = new Personality(
-	'sass',
-	[
-		"I don't mean to interrupt, but I found a tiny little issue",
-		"This doesn't seem good",
-		"Ouch",
-	]
-);
+var SASSL = new Logger('sass');
 gulp.task('sass', function() {
 	gulp.src('www/sass/*.scss')
 		.pipe(plumber(function(err){
-			Flutters.error(err.messageFormatted || err);
+			SASSL.error(err.relativePath+'\n'+'  line '+err.line+': '+err.messageOriginal);
 			this.emit('end');
 		}))
 		.pipe(sourcemaps.init())
@@ -109,17 +105,9 @@ gulp.task('sass', function() {
 		.pipe(gulp.dest('www/css'));
 });
 
-var Dashie = new Personality(
-		'js',
-		[
-			'OH COME ON!',
-			'Not this again!',
-			'Why does it have to be me?',
-			"This isn't fun at all",
-			"...seriously?",
-		]
-	),
-	procjs = function(pipe,taskName){
+var JSL = new Logger('js'),
+	DJSL = new Logger('dist-js'),
+	jspipe = function(pipe, taskName){
 		var noSourcemaps = taskName === 'dist-js',
 			renamef = !noSourcemaps
 				? function(path){ path.basename += '.min' }
@@ -130,9 +118,15 @@ var Dashie = new Personality(
 			.pipe(plumber(function(err){
 				err =
 					err.fileName
-					? err.fileName.replace(workingDir,'')+'\n  line '+err.lineNumber+': '+err.message.replace(/^[\/\\]/,'').replace(err.fileName+': ','')
+					? err.fileName.replace(workingDir,'')+'\n  line '+(
+						err._babel === true
+						? err.loc.line
+						: err.lineNumber
+					)+': '+err.message.replace(/^[\/\\]/,'')
+					                  .replace(err.fileName.replace(/\\/g,'/')+': ','')
+					                  .replace(/\(\d+(:\d+)?\)$/, '')
 					: err;
-				Dashie.error(err);
+				(noSourcemaps ? DJSL : JSL).error(err);
 				this.emit('end');
 			}));
 		if (!noSourcemaps)
@@ -154,31 +148,24 @@ var Dashie = new Personality(
 		return pipe;
 	};
 gulp.task('js', function(){
-	procjs(
+	jspipe(
 		gulp.src(['www/js/*.js', '!www/js/*.min.js']),
 		'js'
 	).pipe(gulp.dest('www/js'));
 });
 gulp.task('dist-js', function(){
-	procjs(
+	jspipe(
 		gulp.src(['www/dist/*.src.jsx']),
 		'dist-js'
 	).pipe(gulp.dest('www/dist'));
 });
 
-var AJ = new Personality(
-	'md',
-	[
-		'Awe, shucks!',
-		'Stay calm sugarcube',
-		'Ah seem to have a lil\' problem',
-	]
-);
+var MDL = new Logger('md');
 gulp.task('md', function(){
 	gulp.src('README.md')
 		.pipe(duration('md'))
 		.pipe(plumber(function(err){
-			AJ.error(err);
+			MDL.error(err);
 			this.emit('end');
 		}))
 		.pipe(markdown())
@@ -201,7 +188,7 @@ gulp.task('md', function(){
 		.pipe(gulp.dest('www/views'));
 });
 
-var Rarity = new Personality('pgsort', ['This is the WORST. POSSIBLE. THING!']),
+var PGL = new Logger('pgsort'),
 	parseRow = function(r){
 		var match = r.match(/VALUES \((\d+)(?:, (\d+|NULL))?[, )]/);
 		if (!match)
@@ -270,14 +257,18 @@ gulp.task('pgsort', function(){
 		});
 	}
 	catch(err){
-		Rarity.error(err);
+		PGL.error(err);
 		this.emit('end');
 	}
 });
 
 gulp.task('default', ['js', 'dist-js', 'sass', 'md'], function(){
 	gulp.watch(['www/js/*.js', '!www/js/*.min.js'], {debounceDelay: 2000}, ['js']);
+	JSL.log('File watcher active');
 	gulp.watch(['www/dist/*.src.js'], {debounceDelay: 2000}, ['dist-js']);
+	DJSL.log('File watcher active');
 	gulp.watch('www/sass/*.scss', {debounceDelay: 2000}, ['sass']);
+	SASSL.log('File watcher active');
 	gulp.watch('README.md', {debounceDelay: 2000}, ['md']);
+	MDL.log('File watcher active');
 });
