@@ -552,6 +552,8 @@ HTML;
 				}
 				$dAlink = User::GetProfileLink($By, FULL);
 				$vectorapp = User::GetVectorAppClassName($By);
+				if (!empty($vectorapp))
+					$vectorapp .= "' title='Uses ".CoreUtils::$VECTOR_APPS[CoreUtils::Substring($vectorapp,5)]." to make vectors";
 				$HTML =  "<div class='reserver$vectorapp'>$dAlink</div>";
 
 				$finished = !empty($R['deviation_id']);
