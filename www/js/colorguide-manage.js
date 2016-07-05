@@ -42,10 +42,10 @@ DocReady.push(function ColorguideManage(){
 					<span>Name (4-70 chars.)</span>
 					<input type="text" name="label" placeholder="Enter a name" pattern="${PRINTABLE_ASCII_PATTERN.replace('+', '{4,70}')}" required maxlength="70">
 				</label>
-				<label>
+				<div class="label">
 					<span>Additional notes (1000 chars. max, optional)</span>
-					<textarea name="notes" maxlength="1000"></textarea>
-				</label>
+					<div class="ace_editor"></div>
+				</div>
 				<label>
 					<span>Link to cutie mark (optional)</span>
 					<input type="text" name="cm_favme" placeholder="DeviantArt submission URL">
@@ -82,13 +82,27 @@ DocReady.push(function ColorguideManage(){
 						$cm_dir.find('input').attr('disabled', disable);
 						$cm_dir.next().find('input').attr('disabled', disable);
 					}),
-					ponyID;
+					ponyID,
+					$txtarea = $form.find('textarea'), session;
+
+				$.getAceEditor(false, 'html', function(mode){
+					try {
+						let div = $form.find('.ace_editor').get(0),
+							editor = ace.edit(div);
+						session = $.aceInit(editor);
+						session.setMode(mode);
+						session.setUseWrapMode(true);
+
+						if (editing && data.notes)
+							session.setValue(data.notes);
+					}
+					catch(e){ console.error(e) }
+				});
+
 				if (editing){
 					ponyID = data.ponyID;
 					$form.find('input[name=label]').val(data.label);
-					let $txtarea = $form.find('textarea').val(data.notes);
-					if (parseInt(ponyID, 10) === 0)
-						$txtarea.removeAttr('maxlength');
+
 					if (data.cm_favme)
 						$favme.val(data.cm_favme);
 					if (data.cm_preview)
@@ -122,6 +136,7 @@ DocReady.push(function ColorguideManage(){
 					e.preventDefault();
 
 					let data = $form.mkData();
+					data.notes = session.getValue();
 					$.Dialog.wait(false, 'Saving changes');
 					if (AppearancePage)
 						data.APPEARANCE_PAGE = true;
@@ -552,20 +567,19 @@ DocReady.push(function ColorguideManage(){
 			let sortable_instance = $colors.data('sortable');
 			if (typeof sortable_instance !== 'undefined')
 				sortable_instance.destroy();
-			$colors.unbind().text(editable_content.join('\n')+'\n');
+			$colors.unbind().hide().text(editable_content.join('\n')+'\n');
 
 			// Create editor
-			editor = ace.edit($colors[0]);
-			editor.$blockScrolling = Infinity;
-			let session = editor.getSession();
-			editor.setTheme('ace/theme/colorguide');
-			editor.setShowPrintMargin(false);
-			session.setMode("ace/mode/colorguide");
-			session.setTabSize(8);
-			session.setUseSoftTabs(false);
-			editor.navigateFileEnd();
-			editor.focus();
-			$colors.data('editor', editor);
+			$.getAceEditor(false, 'colorguide', (mode) => {
+				$colors.show();
+				editor = ace.edit($colors[0]);
+				let session = $.aceInit(editor);
+				session.setTabSize(8);
+				session.setMode(mode);
+				editor.navigateFileEnd();
+				editor.focus();
+				$colors.data('editor', editor);
+			});
 		}
 	});
 
@@ -1121,7 +1135,7 @@ DocReady.push(function ColorguideManage(){
 	BindEditTagsHandlers();
 
 	function BindEditTagsHandlers(){
-		$('button.edit').on('click',function(){
+		$('button.edit:not(.bound)').addClass('bound').on('click',function(){
 			let $this = $(this),
 				$li = $this.closest('[id^=p]'),
 				ponyID = $li.attr('id').substring(1),

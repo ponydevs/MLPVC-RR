@@ -317,13 +317,9 @@
 			if (!$notice.length)
 				return false;
 
-			if (typeof regexp === 'undefined'){
+			if (typeof regexp === 'undefined' || regexp.test($notice.html())){
 				$notice.hide();
-				return true;
-			}
-
-			if (regexp.test($notice.html())){
-				$notice.hide();
+				this._controlInputs(false);
 				return true;
 			}
 			return false;

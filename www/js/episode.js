@@ -283,53 +283,44 @@ DocReady.push(function Episode(){
 
 		let $h2 = $(this).parent(),
 			$h2c = $h2.clone(),
-			endpoint = this.id.replace(/^.*-/, '');
+			endpoint = this.id.split('-').pop();
 		$h2c.children().remove();
-		let text = $h2c.text().trim(),
-			cont = function(){
-				$.Dialog.wait(false,"Retrieving setting's value");
-				$.post(`/setting/get/${endpoint}`,$.mkAjaxHandler(function(){
-					if (!this.status) return $.Dialog.fail(false, this.message);
+		let text = $h2c.text().trim();
 
-					let $EditorForm = $.mk('form', endpoint+'-editor').html(`<span>${text}</span>`),
-						value = this.value;
+		$.Dialog.wait(`Editing "${text}"`,"Retrieving setting's value");
+		$.post(`/setting/get/${endpoint}`,$.mkAjaxHandler(function(){
+			if (!this.status) return $.Dialog.fail(false, this.message);
 
-					$.Dialog.request(false, $EditorForm, 'Save', function($form){
-					    let editor = ace.edit($.mk('div').appendTo($form).get(0));
-					    let session = editor.getSession();
-					    session.setMode("ace/mode/html");
-					    session.setUseWrapMode(true);
-					    session.setValue(value);
+			let $EditorForm = $.mk('form', `${endpoint}-editor`).html(`<span>${text}</span>`),
+				value = this.value;
 
-						$form.on('submit', function(e){
-							e.preventDefault();
-
-							let data = session.getValue();
-							$.Dialog.wait(false, 'Saving');
-
-							$.post(`/setting/set/${endpoint}`, data, $.mkAjaxHandler(function(){
-								if (!this.status) return $.Dialog.fail(false, this.message);
-
-								$h2.siblings().remove();
-								$h2.parent().append(this.value);
-								$.Dialog.close();
-							}));
-						});
-					});
-				}));
-			};
-
-		if (typeof window.ace === 'undefined'){
-			$.Dialog.wait(`Editing "${text}"`,"Loading editor scripts");
-			$.getScript('/js/ace.min.js', function(){
-				$.getScript('/js/ace-mode-html.min.js', cont).fail(function(){
-					$.Dialog.fail(false, 'Failed to load editor script');
+			$.Dialog.request(false, $EditorForm, 'Save', function($form){
+				let session;
+				$.getAceEditor(false, 'html', function(mode){
+				    let editor = ace.edit($.mk('div').appendTo($form).get(0));
+					editor.setShowPrintMargin(false);
+				    session = $.aceInit(editor);
+				    session.setMode(mode);
+				    session.setUseWrapMode(true);
+				    session.setValue(value);
 				});
-			}).fail(function(){
-				$.Dialog.fail(false, 'Failed to load editor script');
+
+				$form.on('submit', function(e){
+					e.preventDefault();
+
+					let data = session.getValue();
+					$.Dialog.wait(false, 'Saving');
+
+					$.post(`/setting/set/${endpoint}`, data, $.mkAjaxHandler(function(){
+						if (!this.status) return $.Dialog.fail(false, this.message);
+
+						$h2.siblings().remove();
+						$h2.parent().append(this.value);
+						$.Dialog.close();
+					}));
+				});
 			});
-		}
-		else cont();
+		}));
 	});
 
 	function BindVideoButtons(){

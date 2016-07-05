@@ -111,7 +111,8 @@ body.dialog-open {
 				~ select,
 				~ textarea,
 				~ input:not([type=radio]):not([type=checkbox]):not([type=button]),
-				~ .input-group-2 {
+				~ .input-group-2,
+				~ .ace_editor {
 					margin-top: 5px !important;
 					display: block;
 				}

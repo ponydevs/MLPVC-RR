@@ -144,6 +144,9 @@ var JSL = new Logger('js'),
 			pipe = pipe.pipe(sourcemaps.write('.', {
 				includeContent: false,
 				sourceRoot: '/js',
+				sourceMappingURL: function(file){
+					return '/js/'+(file.relative.replace(/^\/+/,''))+'.map';
+				},
 			}));
 		return pipe;
 	};

@@ -815,9 +815,6 @@
 		'autocomplete.jquery',
 		'handlebars-v3.0.3',
 		'Sortable',
-		'ace',
-		'ace-mode-colorguide',
-		'ace-theme-colorguide',
 		"$do-tags",
 		"$do-manage",
 	);

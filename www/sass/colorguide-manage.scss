@@ -42,6 +42,14 @@
 }
 .tag.addtag.aa-hint { color: rgba(black, .4) !important }
 
+#pony-editor .ace_editor {
+	height: 150px;
+
+	&, * {
+		font-size: 13px !important;
+	}
+}
+
 #edit-tag .type-selector {
 	display: flex;
 	flex-flow: row wrap;

@@ -1,5 +1,5 @@
 /* jshint bitwise: false */
-/* global $w,$d,$head,$navbar,$body,$header,$sidebar,$sbToggle,$main,$footer,console,prompt,HandleNav,getTimeDiff,one,createTimeStr,PRINTABLE_ASCII_PATTERN,io,moment,Time */
+/* global $w,$d,$head,$navbar,$body,$header,$sidebar,$sbToggle,$main,$footer,console,prompt,HandleNav,getTimeDiff,one,createTimeStr,PRINTABLE_ASCII_PATTERN,io,moment,Time,ace */
 (function($){
 	'use strict';
 
@@ -508,6 +508,39 @@
 		$w.on('beforeunload',function(){
 			$('html,body').stop().off('mousewheel scroll',scrollf);
 		});
+	};
+	
+	var modelist = {};
+	$.getAceEditor = (title, mode, cb) => {
+		let fail = () => $.Dialog.fail(false, 'Failed to load Ace Editor scripts'),
+			done = () => {
+				$.Dialog.clearNotice();
+				cb(`ace/mode/${mode}`);
+			},
+			gotAce = () => {
+				window.ace.config.set('basePath', '/js');
+				if (typeof (modelist[mode]) === 'undefined')
+					$.getScript(`/js/ace-mode-${mode}.min.js`, function(){
+						modelist[mode] = true;
+						done();
+					}).fail(fail);
+				else done();
+			};
+		if (typeof window.ace === 'undefined'){
+			$.Dialog.wait(title, 'Loading Ace Editor scripts');
+			$.getScript('/js/ace.min.js', gotAce).fail(fail);
+		}
+		else done();
+	};
+	
+	$.aceInit = function(editor){
+		editor.$blockScrolling = Infinity;
+		editor.setShowPrintMargin(false);
+		editor.$blockScrolling = Infinity;
+		let session = editor.getSession();
+		session.setUseSoftTabs(false);
+		session.setOption('indentedSoftWrap', false);
+		return session;
 	};
 
 	window.URL = url => {
