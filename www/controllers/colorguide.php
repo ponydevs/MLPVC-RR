@@ -822,7 +822,6 @@
 		"$do-manage",
 	);
 	$GUIDE_MANAGE_CSS = array(
-		'ace-theme-colorguide',
 		"$do-manage",
 	);
 

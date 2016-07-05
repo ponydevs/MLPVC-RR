@@ -87,15 +87,6 @@
 	}
 
 	.clr { @extend %clr }
-	.clrs.ace_editor {
-		height: 180px;
-		border: 1px solid $DefaultUIColor;
-
-		&, * {
-			font-family: $monospace !important;
-			font-size: 14px !important;
-		}
-	}
 }
 
 #cg-reorder .cgs ol {

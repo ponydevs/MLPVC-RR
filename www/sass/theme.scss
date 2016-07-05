@@ -776,7 +776,7 @@ kbd {
     margin: 0 2px;
 }
 // Vector app styles
-@mixin vapp($Base){
+@mixin vapp($Base, $imgname){
 	$RGradTop: lighten($Base, 40);
 	$RGradBot: lighten($Base, 30);
 	$RBorder: desaturate($Base, 30);
@@ -785,19 +785,54 @@ kbd {
 		background-color: $RGradTop;
 	}
 	&.reserver .da-userlink {
-		background: linear-gradient(to bottom, $RGradTop 0, $RGradBot 100%) #efefef;
-		border: 1px solid $RBorder;
-		border-radius: 5px;
+		> .avatar {
+			transition: opacity .2s ease-out;
+		}
+
+		$avatarsize: 40px;
+		$border: 1px;
+
+		&:after {
+			content: "";
+			display: block;
+			background: url('/img/vapps/#{$imgname}.svg') no-repeat center center;
+			background-size: contain;
+			position: absolute;
+			$size: 12px;
+			$spacearound: $avatarsize - $size - $border;
+			width: $size;
+			height: $size;
+			top: $spacearound;
+			left: $spacearound;
+			opacity: .8;
+
+			transition-property: opacity, top, left, width, height;
+			transition-duration: .2s;
+			transition-timing-function: ease-out;
+		}
+		&:hover {
+			&:after {
+				opacity: 1;
+
+				$size: 24px;
+				$spacearound: $avatarsize - $size - $border;
+				width: $size;
+				height: $size;
+				top: $spacearound;
+				left: $spacearound;
+			}
+			> .avatar { opacity: .7 }
+		}
 	}
 }
 .app-illustrator {
-	@include vapp(#f80);
+	@include vapp(#f80, 'illustrator');
 }
 .app-inkscape {
-	@include vapp(#0af);
+	@include vapp(#0af, 'inkscape');
 }
 .app-ponyscape {
-	@include vapp(#f40);
+	@include vapp(#f40, 'ponyscape');
 }
 
 #copy-notify {
@@ -842,5 +877,53 @@ kbd {
 		margin: 10px 0 5px;
 		padding: 0 0 .1em .1em;
 		box-sizing: border-box;
+	}
+}
+
+.ace_editor {
+	background-color: #FFFFFF;
+	color: black;
+	height: 180px;
+	border: 1px solid $DefaultUIColor;
+
+	&, * {
+		font-family: $monospace !important;
+		font-size: 12px !important;
+	}
+
+	.ace_gutter {
+		background: #ebebeb;
+		color: #333;
+		overflow : hidden;
+	}
+
+	.ace_cursor { color: black }
+	.ace_comment { color: rgba(black,.8) }
+	.ace_color {
+		color: $NDarkBlue;
+		font-weight: bold;
+	}
+	.ace_colorname { color: #006000 }
+	.ace_invalid {
+		background-color: rgba($NRed, .1);
+		color: $NRed;
+	}
+	.ace_marker-layer {
+		.ace_selection {
+			background: rgb(181, 213, 255);
+		}
+
+		.ace_active-line {
+			background: rgba(0, 0, 0, 0.07);
+		}
+
+		.ace_selected-word {
+			background: rgb(250, 250, 255);
+			border: 1px solid rgb(200, 200, 250);
+		}
+	}
+
+	.ace_gutter-active-line {
+			background-color : #dcdcdc;
 	}
 }

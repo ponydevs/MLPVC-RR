@@ -423,15 +423,21 @@
 }
 
 #vidlinks input[type="url"] {
-	width: 350px !important;
+	display: block !important;
 	$height: 4px + 16px + 4px;
 	height: $height + 2px; // + border
-	padding-left: $height;
-	background: url(../img/video_providers.svg) no-repeat;
+	padding-left: $height + 3px;
+	background: url('../img/video_providers.svg') no-repeat;
 	text-align: left;
+	box-sizing: border-box;
 
-	&.dm { background-position: 4px 4px }
-	&.yt { background-position: 4px -20px }
+	&.dm {
+		background-position: 4px 4px;
+		width: 40% !important;
+	}
+	&.yt {
+		background-position: 4px -20px;
+	}
 }
 
 #vote-distrib .tooltip {
