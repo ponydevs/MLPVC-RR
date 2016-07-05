@@ -144,9 +144,9 @@
 				$body.addClass('dialog-open');
 			}
 
-			if (!appendingToRequest && params.color){
-				this.$dialogHeader.attr('class',`${params.color}-bg`);
-				this.$dialogContent.attr('class',`${params.color}-border`);
+			if (!appendingToRequest){
+				this.$dialogHeader.attr('class',params.color ? `${params.color}-bg` : '');
+				this.$dialogContent.attr('class',params.color ? `${params.color}-border` : '');
 			}
 
 			let classScope = this;
