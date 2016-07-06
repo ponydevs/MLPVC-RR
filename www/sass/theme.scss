@@ -770,23 +770,23 @@ ul.pagination {
 }
 // <kbd> style
 kbd {
-    border: 1px solid;
-    padding: 0 3px;
-    border-radius: 4px;
-    border-bottom-width: 2px;
-    margin: 0 2px;
+		border: 1px solid;
+		padding: 0 3px;
+		border-radius: 4px;
+		border-bottom-width: 2px;
+		margin: 0 2px;
 }
 // Vector app styles
 @mixin vapp($Base, $imgname){
 	$RGradTop: lighten($Base, 40);
-	$RBorder: desaturate($Base, 30);
+	$RBorder: desaturate(lighten($Base, 20), 40);
 	&.avatar-wrap {
 		border-color: $RBorder;
 		background-color: $RGradTop;
 	}
 	&.reserver .da-userlink {
-    border-color: mix(#93a98f, $RBorder, 50%);
-		background: mix(#d2dfc5, $RGradTop, 50%) linear-gradient(to bottom, transparent 0, rgba(black, .13) 100%);
+		border-color: mix(#93a98f, $RBorder, 70%);
+		background: mix(#d2dfc5, $RGradTop, 70%);
 		transition: border-color .2s ease-in-out, background-color .2s ease-in-out, color .2s linear !important;
 
 		> .avatar {
@@ -816,7 +816,7 @@ kbd {
 		}
 		&:hover {
 			background-color: $RGradTop;
-	    border-color: $RBorder;
+			border-color: $RBorder;
 
 			&:after {
 				opacity: 1;
@@ -839,7 +839,7 @@ kbd {
 	@include vapp(#0af, 'inkscape');
 }
 .app-ponyscape {
-	@include vapp(#f40, 'ponyscape');
+	@include vapp(#f00, 'ponyscape');
 }
 
 #copy-notify {

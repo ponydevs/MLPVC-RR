@@ -1,4 +1,4 @@
-.fluidbox__loader,.fluidbox__overlay{opacity:0;left:0;bottom:0;right:0;top:0}#content>section ul li>.reserve-request{background:linear-gradient(to bottom,transparent 0,rgba(0,0,0,.1) 100%) #d2dfc5;border:1px solid #93a98f;border-radius:5px}.fluidbox__ghost,.fluidbox__wrap{background-position:center center}/*!
+.fluidbox__loader,.fluidbox__overlay{opacity:0;left:0;bottom:0;right:0;top:0}#content>section ul li>.reserve-request{background:#d2dfc5;border:1px solid #93a98f;border-radius:5px}.fluidbox__ghost,.fluidbox__wrap{background-position:center center}/*!
  * jQuery Fluidbox plugin
  * (sligthly modified to fit project's needs)
  *
