@@ -157,9 +157,8 @@ $ColorPalette:
 
 // Reserve(r) button style
 %reserve-button {
-	$border: #93a98f;
-	background: #efefef linear-gradient(to bottom, #d2dfc5 0%, #bdd1b4 100%);
-	border: 1px solid $border;
+	background: #d2dfc5 linear-gradient(to bottom, transparent 0, rgba(black, .1) 100%);
+	border: 1px solid #93a98f;
 	border-radius: 5px;
 }
 

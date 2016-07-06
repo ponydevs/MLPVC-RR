@@ -779,15 +779,18 @@ kbd {
 // Vector app styles
 @mixin vapp($Base, $imgname){
 	$RGradTop: lighten($Base, 40);
-	$RGradBot: lighten($Base, 30);
 	$RBorder: desaturate($Base, 30);
 	&.avatar-wrap {
 		border-color: $RBorder;
 		background-color: $RGradTop;
 	}
 	&.reserver .da-userlink {
+    border-color: mix(#93a98f, $RBorder, 50%);
+		background: mix(#d2dfc5, $RGradTop, 50%) linear-gradient(to bottom, transparent 0, rgba(black, .13) 100%);
+		transition: border-color .2s ease-in-out, background-color .2s ease-in-out, color .2s linear !important;
+
 		> .avatar {
-			transition: opacity .2s ease-out;
+			transition: opacity .2s ease-in-out;
 		}
 
 		$avatarsize: 40px;
@@ -799,7 +802,7 @@ kbd {
 			background: url('/img/vapps/#{$imgname}.svg') no-repeat center center;
 			background-size: contain;
 			position: absolute;
-			$size: 12px;
+			$size: 18px;
 			$spacearound: $avatarsize - $size - $border;
 			width: $size;
 			height: $size;
@@ -809,20 +812,23 @@ kbd {
 
 			transition-property: opacity, top, left, width, height;
 			transition-duration: .2s;
-			transition-timing-function: ease-out;
+			transition-timing-function: ease-in-out;
 		}
 		&:hover {
+			background-color: $RGradTop;
+	    border-color: $RBorder;
+
 			&:after {
 				opacity: 1;
 
-				$size: 24px;
-				$spacearound: $avatarsize - $size - $border;
+				$size: 32px;
+				$spacearound: $avatarsize - $size - ($border*2);
 				width: $size;
 				height: $size;
-				top: $spacearound;
-				left: $spacearound;
+				top: $spacearound/2;
+				left: $spacearound/2;
 			}
-			> .avatar { opacity: .7 }
+			> .avatar { opacity: .3 }
 		}
 	}
 }
