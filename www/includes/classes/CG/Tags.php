@@ -137,7 +137,7 @@
 				$search = \CoreUtils::AposEncode(urlencode($t['name']));
 				$titleName = \CoreUtils::AposEncode($t['name']);
 
-				if ($canEdit && !empty($t['synonym_of'])){
+				if (!empty($t['synonym_of'])){
 					$Syn = self::GetSynonymOf($t,'name');
 					$t['title'] .= (empty($t['title'])?'':'<br>')."<em>Synonym of <strong>{$Syn['name']}</strong></em>";
 				}
