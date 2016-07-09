@@ -114,13 +114,7 @@
 					if (empty($Post['deviation_id']))
 						CoreUtils::Respond("Only finished {$type}s can be locked");
 
-					$Status = CoreUtils::IsDeviationInClub($Post['deviation_id']);
-					if ($Status !== true)
-						CoreUtils::Respond(
-							$Status === false
-							? "The deviation has not been submitted to/accepted by the group yet"
-							: "There was an issue while checking the acceptance status (Error code: $Status)"
-						);
+					CoreUtils::CheckDeviationInClub($Post['deviation_id']);
 
 					if (!$Database->where('id', $Post['id'])->update("{$type}s", array('lock' => true)))
 						CoreUtils::Respond(ERR_DB_FAIL);
@@ -142,7 +136,7 @@
 					if (empty($Post['lock']))
 						CoreUtils::Respond("This $type has not been approved yet");
 
-					if (Permission::Insufficient('developer') && CoreUtils::IsDeviationInClub($Post['deviation_id']))
+					if (Permission::Insufficient('developer') && CoreUtils::IsDeviationInClub($Post['deviation_id']) === true)
 						CoreUtils::Respond("<a href='http://fav.me/{$Post['deviation_id']}' target='_blank'>This deviation</a> is part of the group gallery, which prevents the post from being unlocked.");
 
 					$Database->where('id', $Post['id'])->update("{$type}s", array('lock' => false));
@@ -303,7 +297,7 @@
 
 		$approved = 0;
 		foreach ($Posts as $p){
-			if (!CoreUtils::IsDeviationInClub($p['deviation_id']))
+			if (CoreUtils::IsDeviationInClub($p['deviation_id']) !== true)
 				continue;
 
 			Posts::Approve($p['type'], $p['id']);

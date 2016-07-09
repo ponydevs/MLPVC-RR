@@ -192,6 +192,7 @@
 					if (isset($cm_favme)){
 						try {
 							$Image = new ImageProvider($cm_favme, array('fav.me', 'dA'));
+							CoreUtils::CheckDeviationInClub($Image->id, true);
 							$data['cm_favme'] = $Image->id;
 						}
 						catch (MismatchedProviderException $e){

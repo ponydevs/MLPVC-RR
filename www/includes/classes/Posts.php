@@ -238,8 +238,7 @@
 					}
 				}
 
-				$InGroupCheck = CoreUtils::IsDeviationInClub($return['deviation_id']);
-				if ($InGroupCheck === true)
+				if (CoreUtils::IsDeviationInClub($return['deviation_id']) === true)
 					$return['lock'] = true;
 
 				return $return;

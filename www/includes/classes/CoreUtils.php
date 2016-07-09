@@ -926,6 +926,26 @@
 		}
 
 		/**
+		 * Checks if a deviation is in the club and stops execution if it isn't
+		 *
+		 * @param string $favme
+		 * @param bool   $throw If true an Exception will be thrown instead of responding
+		 */
+		static function CheckDeviationInClub($favme, $throw = false){
+			$Status = self::IsDeviationInClub($favme);
+			if ($Status !== true){
+				$errmsg = (
+					$Status === false
+					? "The deviation has not been submitted to/accepted by the group yet"
+					: "There was an issue while checking the acceptance status (Error code: $Status)"
+				);
+				if ($throw)
+					throw new Exception($errmsg);
+				CoreUtils::Respond($errmsg);
+			}
+		}
+
+		/**
 		 * Converts a HEX color string to an array of R, G and B values
 		 * Related: http://stackoverflow.com/a/15202130/1344955
 		 *
