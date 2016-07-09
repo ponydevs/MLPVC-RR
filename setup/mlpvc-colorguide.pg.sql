@@ -211,7 +211,7 @@ INSERT INTO appearances VALUES
 (10, 48, 'Minuette', 'For convenience, the color of the glass on her cutie mark is solid rather than transparent, thus the sand should be above.', NULL, false, '2015-07-25 16:49:44+02', NULL, NULL),
 (11, 78, 'Derpy Hooves / Muffins', 'Far legs use darker colors.
 Her top iris highlight is the same color as the bottom stop on the iris gradient.', 'da27cuh', false, '2015-08-26 05:53:49+02', NULL, true),
-(12, 51, 'Lyra Heartstrings', '', NULL, false, '2015-08-26 06:08:33+02', NULL, NULL),
+(12, 51, 'Lyra Heartstrings', '', 'da97br3', false, '2015-08-26 06:08:33+02', NULL, false),
 (13, 67, 'Whoa Nelly', 'Special eyeball color.
 Cutie Mark head colors are different from normal ones.', NULL, false, '2015-09-17 05:43:22+02', NULL, NULL),
 (14, 66, 'Fashion Plate', 'Far legs use darker colors.', NULL, false, '2015-09-17 06:02:26+02', NULL, NULL),
@@ -276,7 +276,7 @@ Glasses don''t seem to have lenses.', 'd9iyv1r', false, '2015-12-01 16:18:10.631
 (66, 37, 'Pipsqueak', '', NULL, false, '2016-01-25 01:43:42.292322+01', NULL, NULL),
 (67, 33, 'Silver Spoon', 'Far legs use darker colors.
 Necklace highlights are not pure white.', NULL, false, '2016-01-25 03:40:31.20103+01', NULL, NULL),
-(68, 84, 'Blossomforth', 'Based on Hurricane Fluttershy', NULL, false, '2016-02-11 19:02:12.030258+01', NULL, NULL),
+(68, 84, 'Blossomforth', 'Based on Hurricane Fluttershy', 'd8geiw1', false, '2016-02-11 19:02:12.030258+01', NULL, true),
 (69, 52, 'Vinyl Scratch / DJ Pon-3', 'Based on S5E9.', 'd9zhh0l', false, '2016-02-28 00:56:35.641502+01', NULL, true),
 (70, 151, 'Wonderbolt Uniform', '', 'da7pd3q', false, '2016-02-29 14:00:08.939447+01', 'https://t01.deviantart.net/KcgLhJh7aDbu3oh1bwJfNG6UI48=/fit-in/300x900/filters:no_upscale():origin()/pre09/4530/th/pre/f/2016/177/0/2/export_by_djdavid98-da7pygz.png', true),
 (71, 153, 'Wonderbolt Trainee Uniform', '', NULL, false, '2016-02-29 14:12:07.849625+01', NULL, NULL),
@@ -1302,22 +1302,22 @@ INSERT INTO colors VALUES
 (24, 3, 'Highlight Bottom', '#F4FFB9'),
 (25, 0, 'Bubble', '#DEDEFF'),
 (25, 1, 'Bubble Highlight', '#E4FFFF'),
-(26, 0, 'Outline', '#3EA679'),
-(26, 1, 'Fill', '#8DEBCD'),
-(26, 2, 'Shadow Fill', '#6ACDA9'),
-(27, 0, 'Outline 1', '#7AD9D7'),
-(27, 1, 'Outline 2', '#55C1C1'),
-(27, 2, 'Fill 1', '#EBEBEB'),
-(27, 3, 'Fill 2', '#A5D7D7'),
-(28, 0, 'Gradient Top', '#D56315'),
-(28, 1, 'Gradient Bottom', '#E3C752'),
-(28, 2, 'Highlight Top', '#EAEA6B'),
-(28, 3, 'Highlight Bottom', '#ECECCF'),
-(29, 0, 'Aura', '#C49159'),
-(30, 0, 'Outline', '#AF821A'),
-(30, 1, 'Fill', '#E1B046'),
-(30, 2, 'Highlight', '#F2D297'),
-(30, 3, 'Strings', '#50B18C'),
+(26, 0, 'Outline', '#2FB17B'),
+(26, 1, 'Fill', '#8CFFDB'),
+(26, 2, 'Shadow Fill', '#62DFB2'),
+(27, 0, 'Outline 1', '#74ECEA'),
+(27, 1, 'Outline 2', '#4AD0CD'),
+(27, 2, 'Fill 1', '#FFFFFF'),
+(27, 3, 'Fill 2', '#ACE9E9'),
+(28, 0, 'Gradient Top', '#E66100'),
+(28, 1, 'Gradient Bottom', '#FAD542'),
+(28, 2, 'Highlight Top', '#FFFF61'),
+(28, 3, 'Highlight Bottom', '#FFFFD9'),
+(29, 0, 'Aura', '#EEA92A'),
+(30, 0, 'Outline', '#B78000'),
+(30, 1, 'Fill', '#F3BA36'),
+(30, 2, 'Highlight', '#FFE8A9'),
+(30, 3, 'Strings', '#40BA8F'),
 (35, 0, 'Outline', '#81CFBD'),
 (35, 1, 'Fill', '#A1FFE9'),
 (35, 2, 'Shadow Fill', '#90E4D0'),
@@ -1677,8 +1677,8 @@ INSERT INTO colors VALUES
 (137, 2, 'Gradient Bottom', '#6EDCFF'),
 (137, 3, 'Highlight Top', '#90E2FF'),
 (137, 4, 'Highlight Bottom', '#D5F3FF'),
-(138, 0, 'Moon 1', '#385E83'),
-(138, 1, 'Moon 2', '#FFFFCB'),
+(138, 0, 'Moon Base', '#385E83'),
+(138, 1, 'Crescent', '#FFFFCB'),
 (138, 2, 'Feather Center', '#D6E4FF'),
 (138, 3, 'Feather Fill 1', '#97ABEB'),
 (138, 4, 'Feather Fill 2', '#6A8AD2'),
@@ -1709,7 +1709,7 @@ INSERT INTO colors VALUES
 (147, 0, 'Balloon Fill 1', '#EB5095'),
 (147, 1, 'Balloon Fill 2', '#F36AAB'),
 (147, 2, 'Balloon Fill 3', '#F88FC2'),
-(147, 3, 'Balloon Fill 4', '#FFD3E9'),
+(147, 3, 'Balloon Highlight', '#FFD3E9'),
 (147, 4, 'Confetti 1', '#7F6DAF'),
 (147, 5, 'Confetti 2', '#FFAE75'),
 (147, 6, 'Confetti 3', '#FFD269'),
@@ -5202,6 +5202,10 @@ INSERT INTO tagged VALUES
 (28, 20),
 (28, 53),
 (28, 54),
+(28, 149),
+(28, 150),
+(28, 152),
+(28, 153),
 (29, 7),
 (29, 118),
 (29, 125),
@@ -5544,7 +5548,12 @@ INSERT INTO tagged VALUES
 (302, 147),
 (304, 148),
 (305, 149),
+(306, 23),
+(306, 24),
+(306, 25),
+(306, 39),
 (306, 40),
+(306, 74),
 (306, 149),
 (306, 150),
 (308, 151),
@@ -5577,7 +5586,9 @@ INSERT INTO tagged VALUES
 (363, 169),
 (364, 170),
 (366, 172),
-(369, 173);
+(369, 173),
+(371, 37),
+(371, 38);
 
 
 --
@@ -5591,8 +5602,8 @@ INSERT INTO tags VALUES
 (4, 'alicorn', NULL, 'spec', 5, NULL),
 (5, 'bat pony', NULL, 'spec', 0, NULL),
 (6, 'mane six', 'Ponies who are one of the show''s six main characters', 'cat', 7, NULL),
-(7, 'minor character', 'Ponies who had a speaking role and/or interacted with the mane six', 'cat', 119, NULL),
-(8, 'background character', 'Ponies whose only purpose is filling crowds, with no to minimal speaking roles', 'cat', 1, 7),
+(7, 'minor character', 'Ponies who had a speaking role, interacted with the mane six, or whose only purpose is to fill crowds.', 'cat', 119, NULL),
+(8, 'background character', NULL, 'cat', 1, 7),
 (9, 'antagonist', NULL, 'cat', 12, NULL),
 (10, 'pet', NULL, 'cat', 6, NULL),
 (11, 'male', NULL, 'gen', 57, NULL),
@@ -5607,7 +5618,7 @@ INSERT INTO tags VALUES
 (25, 'rainbow dash', NULL, 'char', 3, NULL),
 (26, 'rarity', NULL, 'char', 1, NULL),
 (27, 'wonderbolt', 'Wonderbolt characters', 'cat', 9, NULL),
-(28, 'parent', 'Parents of other characters', 'cat', 4, NULL),
+(28, 'parent', 'Parents of other characters', 'cat', 8, NULL),
 (29, 'dragon', NULL, 'spec', 4, NULL),
 (30, 'spike', NULL, 'char', 1, NULL),
 (31, 'minuette', NULL, 'char', 1, NULL),
@@ -5876,7 +5887,7 @@ INSERT INTO tags VALUES
 (302, 'caramel', NULL, 'char', 1, NULL),
 (304, 'birch bucket', NULL, 'char', 1, NULL),
 (305, 'spoiled rich', NULL, 'char', 1, NULL),
-(306, 's5e18', NULL, 'ep', 3, NULL),
+(306, 's5e18', NULL, 'ep', 8, NULL),
 (307, 'pegasi', NULL, 'spec', 0, 3),
 (308, 'zephyr breeze', NULL, 'char', 1, NULL),
 (309, 'mr. shy', NULL, 'char', 1, NULL),
@@ -5922,14 +5933,16 @@ INSERT INTO tags VALUES
 (366, 'daisy', NULL, 'char', 1, NULL),
 (367, 'flower wishes', NULL, 'char', 0, 366),
 (368, 'lily', NULL, 'char', 0, 369),
-(369, 'lily valley', NULL, 'char', 1, NULL);
+(369, 'lily valley', NULL, 'char', 1, NULL),
+(370, 'cmc', NULL, 'cat', 0, 45),
+(371, 's5e17', NULL, 'ep', 2, NULL);
 
 
 --
 -- Name: tags_tid_seq; Type: SEQUENCE SET; Schema: public; Owner: mlpvc-rr
 --
 
-SELECT pg_catalog.setval('tags_tid_seq', 369, true);
+SELECT pg_catalog.setval('tags_tid_seq', 371, true);
 
 
 --

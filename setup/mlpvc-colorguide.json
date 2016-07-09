@@ -1116,7 +1116,9 @@
 				160,
 				237,
 				258,
-				353
+				306,
+				353,
+				370
 			]
 		},
 		"24": {
@@ -1248,8 +1250,10 @@
 				45,
 				47,
 				237,
+				306,
 				307,
-				353
+				353,
+				370
 			]
 		},
 		"25": {
@@ -1393,7 +1397,9 @@
 				45,
 				48,
 				237,
-				353
+				306,
+				353,
+				370
 			]
 		},
 		"78": {
@@ -1541,7 +1547,8 @@
 				132,
 				159,
 				237,
-				353
+				353,
+				370
 			]
 		},
 		"114": {
@@ -1599,7 +1606,8 @@
 				45,
 				96,
 				234,
-				237
+				237,
+				370
 			]
 		},
 		"34": {
@@ -6531,6 +6539,7 @@
 				12,
 				44,
 				127,
+				306,
 				353
 			]
 		},
@@ -7003,6 +7012,7 @@
 				11,
 				44,
 				74,
+				306,
 				351
 			]
 		},
@@ -7201,7 +7211,8 @@
 				44,
 				72,
 				216,
-				353
+				353,
+				371
 			]
 		},
 		"38": {
@@ -7295,7 +7306,8 @@
 				44,
 				73,
 				116,
-				353
+				353,
+				371
 			]
 		},
 		"40": {
@@ -8412,11 +8424,11 @@
 			"order": 51,
 			"label": "Lyra Heartstrings",
 			"notes": "",
-			"cm_favme": null,
+			"cm_favme": "da97br3",
 			"ishuman": false,
 			"added": "2015-08-26 06:08:33+02",
 			"cm_preview": null,
-			"cm_dir": null,
+			"cm_dir": false,
 			"ColorGroups": {
 				"26": {
 					"groupid": 26,
@@ -8426,17 +8438,17 @@
 						{
 							"order": 0,
 							"label": "Outline",
-							"hex": "#3EA679"
+							"hex": "#2FB17B"
 						},
 						{
 							"order": 1,
 							"label": "Fill",
-							"hex": "#8DEBCD"
+							"hex": "#8CFFDB"
 						},
 						{
 							"order": 2,
 							"label": "Shadow Fill",
-							"hex": "#6ACDA9"
+							"hex": "#62DFB2"
 						}
 					]
 				},
@@ -8448,22 +8460,22 @@
 						{
 							"order": 0,
 							"label": "Outline 1",
-							"hex": "#7AD9D7"
+							"hex": "#74ECEA"
 						},
 						{
 							"order": 1,
 							"label": "Outline 2",
-							"hex": "#55C1C1"
+							"hex": "#4AD0CD"
 						},
 						{
 							"order": 2,
 							"label": "Fill 1",
-							"hex": "#EBEBEB"
+							"hex": "#FFFFFF"
 						},
 						{
 							"order": 3,
 							"label": "Fill 2",
-							"hex": "#A5D7D7"
+							"hex": "#ACE9E9"
 						}
 					]
 				},
@@ -8475,22 +8487,22 @@
 						{
 							"order": 0,
 							"label": "Gradient Top",
-							"hex": "#D56315"
+							"hex": "#E66100"
 						},
 						{
 							"order": 1,
 							"label": "Gradient Bottom",
-							"hex": "#E3C752"
+							"hex": "#FAD542"
 						},
 						{
 							"order": 2,
 							"label": "Highlight Top",
-							"hex": "#EAEA6B"
+							"hex": "#FFFF61"
 						},
 						{
 							"order": 3,
 							"label": "Highlight Bottom",
-							"hex": "#ECECCF"
+							"hex": "#FFFFD9"
 						}
 					]
 				},
@@ -8502,22 +8514,22 @@
 						{
 							"order": 0,
 							"label": "Outline",
-							"hex": "#AF821A"
+							"hex": "#B78000"
 						},
 						{
 							"order": 1,
 							"label": "Fill",
-							"hex": "#E1B046"
+							"hex": "#F3BA36"
 						},
 						{
 							"order": 2,
 							"label": "Highlight",
-							"hex": "#F2D297"
+							"hex": "#FFE8A9"
 						},
 						{
 							"order": 3,
 							"label": "Strings",
-							"hex": "#50B18C"
+							"hex": "#40BA8F"
 						}
 					]
 				},
@@ -8529,7 +8541,7 @@
 						{
 							"order": 0,
 							"label": "Aura",
-							"hex": "#C49159"
+							"hex": "#EEA92A"
 						}
 					]
 				}
@@ -10658,7 +10670,7 @@
 						},
 						{
 							"order": 3,
-							"label": "Balloon Fill 4",
+							"label": "Balloon Highlight",
 							"hex": "#FFD3E9"
 						},
 						{
@@ -13806,11 +13818,11 @@
 			"order": 84,
 			"label": "Blossomforth",
 			"notes": "Based on Hurricane Fluttershy",
-			"cm_favme": null,
+			"cm_favme": "d8geiw1",
 			"ishuman": false,
 			"added": "2016-02-11 19:02:12.030258+01",
 			"cm_preview": null,
-			"cm_dir": null,
+			"cm_dir": true,
 			"ColorGroups": {
 				"382": {
 					"groupid": 382,
@@ -14574,12 +14586,12 @@
 					"Colors": [
 						{
 							"order": 0,
-							"label": "Moon 1",
+							"label": "Moon Base",
 							"hex": "#385E83"
 						},
 						{
 							"order": 1,
-							"label": "Moon 2",
+							"label": "Crescent",
 							"hex": "#FFFFCB"
 						},
 						{
@@ -15423,6 +15435,7 @@
 				7,
 				8,
 				11,
+				28,
 				271,
 				307,
 				309,
@@ -15618,6 +15631,7 @@
 				7,
 				8,
 				12,
+				28,
 				271,
 				307,
 				310,
@@ -22286,6 +22300,7 @@
 				7,
 				8,
 				12,
+				28,
 				270,
 				305,
 				306,
@@ -22454,6 +22469,7 @@
 				7,
 				8,
 				11,
+				28,
 				181,
 				306,
 				351
@@ -26969,7 +26985,7 @@
 		"7": {
 			"tid": 7,
 			"name": "minor character",
-			"title": "Ponies who had a speaking role and/or interacted with the mane six",
+			"title": "Ponies who had a speaking role, interacted with the mane six, or whose only purpose is to fill crowds.",
 			"type": "cat",
 			"uses": 119,
 			"synonym_of": null
@@ -26977,7 +26993,7 @@
 		"8": {
 			"tid": 8,
 			"name": "background character",
-			"title": "Ponies whose only purpose is filling crowds, with no to minimal speaking roles",
+			"title": null,
 			"type": "cat",
 			"uses": 1,
 			"synonym_of": 7
@@ -27099,7 +27115,7 @@
 			"name": "parent",
 			"title": "Parents of other characters",
 			"type": "cat",
-			"uses": 4,
+			"uses": 8,
 			"synonym_of": null
 		},
 		"29": {
@@ -29251,7 +29267,7 @@
 			"name": "s5e18",
 			"title": null,
 			"type": "ep",
-			"uses": 3,
+			"uses": 8,
 			"synonym_of": null
 		},
 		"307": {
@@ -29620,6 +29636,22 @@
 			"title": null,
 			"type": "char",
 			"uses": 1,
+			"synonym_of": null
+		},
+		"370": {
+			"tid": 370,
+			"name": "cmc",
+			"title": null,
+			"type": "cat",
+			"uses": 0,
+			"synonym_of": 45
+		},
+		"371": {
+			"tid": 371,
+			"name": "s5e17",
+			"title": null,
+			"type": "ep",
+			"uses": 2,
 			"synonym_of": null
 		}
 	}
