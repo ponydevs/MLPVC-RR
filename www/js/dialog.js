@@ -98,11 +98,12 @@
 
 				if (appendingToRequest && !force_new){
 					$requestContentDiv = this.$dialogContent.children(':not(#dialogButtons)').last();
-					let $ErrorNotice = $requestContentDiv.children('.notice');
+					let $ErrorNotice = $requestContentDiv.children('.notice:last-child');
 					if (!$ErrorNotice.length){
 						$ErrorNotice = $.mk('div').append($.mk('p'));
 						$requestContentDiv.append($ErrorNotice);
 					}
+					else $ErrorNotice.show();
 					$ErrorNotice
 						.attr('class','notice '+noticeClasses[params.type])
 						.children('p').html(params.content).show();
@@ -230,7 +231,7 @@
 				formid;
 			if (content instanceof jQuery)
 				formid = content.attr('id');
-			else {
+			else if (typeof content === 'string'){
 				let match = content.match(/<form\sid=["']([^"']+)["']/);
 				if (match)
 					formid = match[1];
@@ -313,7 +314,7 @@
 			$body.removeClass('dialog-open');
 		}
 		clearNotice (regexp){
-			let $notice = this.$dialogContent.find('.notice');
+			let $notice = this.$dialogContent.children(':not(#dialogButtons)').children('.notice:last-child');
 			if (!$notice.length)
 				return false;
 
