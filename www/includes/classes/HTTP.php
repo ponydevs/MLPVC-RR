@@ -80,12 +80,18 @@
 			return regex_match(new RegExp('Location:\s+([^\r\n]+)'), $request['responseHeaders'], $_match) ? CoreUtils::Trim($_match[1]) : null;
 		}
 
+
+		private static $PUSHED_ASSETS = array();
 		/**
 		 * Suggest files to client via HTTP/2 Server Push
 		 *
 		 * @param string $url
 		 */
 		static function PushResource($url){
-			header("Link: $url; rel=preload", false);
+			self::$PUSHED_ASSETS[] = $url;
+			$headerContent = array();
+			foreach(self::$PUSHED_ASSETS as $asset)
+				$headerContent[] = "<$url>; rel=preload";
+			header('Link: '.implode(',', $headerContent));
 		}
 	}
