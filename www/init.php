@@ -98,14 +98,30 @@
 	$TAG_NAME_REGEX = new RegExp(TAG_NAME_PATTERN,'u');
 	define('INVERSE_TAG_NAME_PATTERN', '[^a-z\d ().\-\']');
 
-	// Database connection & Auth \\
+	// Database connection & Required Functionality Checking \\
+	try {
+		$inipath = php_ini_loaded_file().' then restart '.About::GetServerSoftware();
+		if (!function_exists('curl_init'))
+			throw new Exception("cURL extension is disabled or not installed\n".(PHP_OS !== 'WINNT' ? "Run <strong>sudo apt-get install php7.0-curl</strong>" : "Uncomment/add the line <strong>extension=php_curl.dll</strong> in $inipath").' to fix');
+		if (!class_exists('DOMDocument'))
+			throw new Exception("XML extension is disabled or not installed\n".(PHP_OS !== 'WINNT' ? "Run <strong>sudo apt-get install php7.0-xml</strong> to fix" : ''));
+		if (!function_exists('pdo_drivers'))
+			throw new Exception("PDO extension is disabled or not installed\nThe site requires PHP 7.0+ to function, please upgrade your server.");
+		if (!in_array('pgsql', pdo_drivers()))
+			throw new Exception("PostgreSQL PDO extension is disabled or not installed\n".(PHP_OS !== 'WINNT' ? "Run <strong>sudo apt-get install php7.0-pgsql</strong>" : "Uncomment/add the line <strong>extension=php_pdo_pgsql.dll</strong> in $inipath").' to fix');
+	}
+	catch (Exception $e){
+		$errcause = 'libmiss';
+		die(require APPATH."views/fatalerr.php");
+	}
 	$Database = new PostgresDbWrapper('mlpvc-rr');
 	try {
 		$Database->pdo();
 	}
 	catch (Exception $e){
 		unset($Database);
-		die(require APPATH."views/dberr.php");
+		$errcause = 'db';
+		die(require APPATH."views/fatalerr.php");
 	}
 	$CGDb = new PostgresDbWrapper('mlpvc-colorguide');
 

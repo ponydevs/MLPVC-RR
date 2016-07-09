@@ -77,7 +77,7 @@ ga('send','pageview');
 			<li class="sidebar-toggle">
 				<div class="loader"></div>
 	            <img class="avatar" src="<?=$signedIn?$currentUser['avatar_url']:GUEST_AVATAR?>" alt='<?=($signedIn?CoreUtils::AposEncode(CoreUtils::Posess($currentUser['name'])):'Guest').' avatar'?>'>
-			</li><?=CoreUtils::GetNavigation()?></ul></nav>
+			</li><?=CoreUtils::GetNavigation(isset($view) && $view === 'fatalerr')?></ul></nav>
 	</header>
 
 	<div id="sidebar">

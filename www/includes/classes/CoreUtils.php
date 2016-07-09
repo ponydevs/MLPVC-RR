@@ -618,68 +618,73 @@
 		/**
 		 * Returns the HTML code of the navigation in the header
 		 *
+		 * @param bool $enabled
+		 *
 		 * @return string
 		 */
-		static function GetNavigation(){
+		static function GetNavigation($enabled = true){
 			if (!empty($GLOBALS['NavHTML']))
 				return $GLOBALS['NavHTML'];
 
 			global $do;
 
 			// Navigation items
-			$NavItems = array(
-				'latest' => array('/','Latest episode'),
-				'eps' => array('/episodes','Episodes'),
-			);
-			if ($do === 'episodes'){
-				global $Episodes, $Pagination;
-				if (isset($Episodes))
-					$NavItems['eps'][1] .= " - Page {$Pagination->page}";
-			}
-			if ($do === 'episode' && !empty($GLOBALS['CurrentEpisode'])){
-				if (!empty($GLOBALS['Latest']))
-					$NavItems['latest'][0] = $_SERVER['REQUEST_URI'];
-				else $NavItems['eps']['subitem'] = CoreUtils::Cutoff($GLOBALS['title'],Episode::$cutoff);
-			}
-			global $Color, $EQG;
-			$NavItems['colorguide'] = array("/cg", (!empty($EQG)?'EQG ':'')."$Color Guide");
-			if ($do === 'colorguide'){
-				global $Tags, $Changes, $Ponies, $Pagination, $Appearance;
-				if (!empty($Appearance))
-					$NavItems['colorguide']['subitem'] = $Appearance['label'];
-				else if (isset($Ponies))
-					$NavItems['colorguide'][1] .= " - Page {$Pagination->page}";
-				else {
-					if ($GLOBALS['data'] === 'full'){
-						$NavItems['colorguide']['subitem'] = 'Full List';
-					}
+			if ($enabled){
+				$NavItems = array(
+					'latest' => array('/','Latest episode'),
+					'eps' => array('/episodes','Episodes'),
+				);
+				if ($do === 'episodes'){
+					global $Episodes, $Pagination;
+					if (isset($Episodes))
+						$NavItems['eps'][1] .= " - Page {$Pagination->page}";
+				}
+				if ($do === 'episode' && !empty($GLOBALS['CurrentEpisode'])){
+					if (!empty($GLOBALS['Latest']))
+						$NavItems['latest'][0] = $_SERVER['REQUEST_URI'];
+					else $NavItems['eps']['subitem'] = CoreUtils::Cutoff($GLOBALS['title'],Episode::$cutoff);
+				}
+				global $Color, $EQG;
+				$NavItems['colorguide'] = array("/cg", (!empty($EQG)?'EQG ':'')."$Color Guide");
+				if ($do === 'colorguide'){
+					global $Tags, $Changes, $Ponies, $Pagination, $Appearance;
+					if (!empty($Appearance))
+						$NavItems['colorguide']['subitem'] = $Appearance['label'];
+					else if (isset($Ponies))
+						$NavItems['colorguide'][1] .= " - Page {$Pagination->page}";
 					else {
-						if (isset($Tags)) $pagePrefix = 'Tags';
-						else if (isset($Changes)) $pagePrefix = "Major $Color Changes";
+						if ($GLOBALS['data'] === 'full'){
+							$NavItems['colorguide']['subitem'] = 'Full List';
+						}
+						else {
+							if (isset($Tags)) $pagePrefix = 'Tags';
+							else if (isset($Changes)) $pagePrefix = "Major $Color Changes";
 
-						$NavItems['colorguide']['subitem'] = (isset($pagePrefix) ? "$pagePrefix - " : '')."Page {$Pagination->page}";
+							$NavItems['colorguide']['subitem'] = (isset($pagePrefix) ? "$pagePrefix - " : '')."Page {$Pagination->page}";
+						}
+					}
+
+				}
+				if ($GLOBALS['signedIn'])
+					$NavItems['u'] = array("/@{$GLOBALS['currentUser']['name']}",'Account');
+				if ($do === 'user' || Permission::Sufficient('staff')){
+					global $User, $sameUser;
+
+					$NavItems['users'] = array('/users', 'Users', Permission::Sufficient('staff'));
+					if (!empty($User) && empty($sameUser))
+						$NavItems['users']['subitem'] = $User['name'];
+				}
+				if (Permission::Sufficient('staff')){
+					$NavItems['admin'] = array('/admin', 'Admin');
+					global $task;
+					if ($task === 'logs'){
+						global $Pagination;
+						$NavItems['admin']['subitem'] = "Logs - Page {$Pagination->page}";
 					}
 				}
-
+				$NavItems[] = array('/about', 'About');
 			}
-			if ($GLOBALS['signedIn'])
-				$NavItems['u'] = array("/@{$GLOBALS['currentUser']['name']}",'Account');
-			if ($do === 'user' || Permission::Sufficient('staff')){
-				global $User, $sameUser;
-
-				$NavItems['users'] = array('/users', 'Users', Permission::Sufficient('staff'));
-				if (!empty($User) && empty($sameUser))
-					$NavItems['users']['subitem'] = $User['name'];
-			}
-			if (Permission::Sufficient('staff')){
-				$NavItems['admin'] = array('/admin', 'Admin');
-				global $task;
-				if ($task === 'logs'){
-					global $Pagination;
-					$NavItems['admin']['subitem'] = "Logs - Page {$Pagination->page}";
-				}
-			}
-			$NavItems[] = array('/about', 'About');
+			else $NavItems = array(array(true, 'HTTP 503', false, 'subitem' => 'Service Temporarily Unavailable'));
 
 			$GLOBALS['NavHTML'] = '';
 			$currentSet = false;
