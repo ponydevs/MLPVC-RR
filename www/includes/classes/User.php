@@ -287,15 +287,15 @@ HTML;
 			if (!POST_REQUEST && isset($_GET['CSRF_TOKEN']))
 				CoreUtils::Redirect(CSRFProtection::RemoveParamFromURL($_SERVER['REQUEST_URI']));
 
-			if (!Cookie::exists('access'))
+			if (!Cookie::Exists('access'))
 				return;
-			$authKey = Cookie::get('access');
+			$authKey = Cookie::Get('access');
 			if (!empty($authKey)){
 				if (!regex_match(new RegExp('^[a-f\d]+$','iu'), $authKey)){
 					$oldAuthKey = $authKey;
 					$authKey = bin2hex($authKey);
 					$Database->where('token', sha1($oldAuthKey))->update('sessions',array( 'token' => sha1($authKey) ));
-					Cookie::set('access', $authKey, Time::$IN_SECONDS['year']);
+					Cookie::Set('access', $authKey, time() + Time::$IN_SECONDS['year'], Cookie::HTTPONLY);
 				}
 				$currentUser = User::Get(sha1($authKey),'token');
 			}
@@ -335,7 +335,7 @@ HTML;
 					}
 				}
 			}
-			else Cookie::delete('access');
+			else Cookie::Delete('access', Cookie::HTTPONLY);
 		}
 
 		static $PROFILE_SECTION_PRIVACY_LEVEL = array(

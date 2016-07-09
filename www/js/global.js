@@ -285,12 +285,6 @@
 			return n[1];
 		else throw new Error('Missing CSRF_TOKEN');
 	};
-	// Get Access token from cookies
-	$.getAccessToken = function(){
-		let n = document.cookie.match(/access=([a-f\d]+)/i);
-		if (n && n.length)
-			return n[1];
-	};
 	$.ajaxPrefilter(function(event, origEvent){
 		if ((origEvent.type||event.type).toUpperCase() !== 'POST')
 			return;
@@ -1194,13 +1188,13 @@ $(function(){
 			if (conn)
 				return;
 
-			conn = io('https://ws.'+location.hostname+':8667/', { reconnectionDelay: 5000 });
+			conn = io(`https://ws.${location.hostname}:8667/`, { reconnectionDelay: 5000 });
 			conn.on('connect', function(){
-				console.log('[WS] Connected, authenticating…');
-				conn.emit('auth', {access:$.getAccessToken()}, wsdecoder(function(data){
-					console.log('[WS] %s', data.message);
-				}));
+				console.log('[WS] Connected');
 			});
+			conn.on('auth', wsdecoder(function(data){
+				console.log(`[WS] Authenticated as ${data.name}`);
+			}));
 			conn.on('notif-cnt', wsdecoder(function(data){
 				let cnt = parseInt(data.cnt||0, 10);
 				console.log('[WS] Got notification count (data.cnt=%d)', cnt);
@@ -1217,6 +1211,10 @@ $(function(){
 					$notifSb.stop().slideDown();
 				}));
 			}));
+			conn.on('rip',function(){
+				console.log('[WS] Authentication failed');
+				conn.disconnect(0);
+			});
 			conn.on('disconnect',function(){
 				console.log('[WS] Disconnected');
 			});

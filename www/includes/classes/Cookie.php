@@ -1,34 +1,27 @@
 <?php
 
-	define('COOKIE_SESSION',true);
-
 	class Cookie {
-		static $session = true;
+		const SESSION = 0;
+		const HTTPONLY = true;
 
-		static public function exists($name){ return isset($_COOKIE[$name]); }
-		static public function get($name){ return (isset($_COOKIE[$name]) ? $_COOKIE[$name] : null); }
-		static public function set($name, $value, $expires = true, $path = '/', $domain = false){
-			$retval = false;
-
-			if ($domain === false)
-				$domain = $_SERVER['HTTP_HOST'];
-
-			if (is_numeric($expires))
-				$expires += time();
-			else if (is_string($expires)) $expires = strtotime($expires);
-			else $expires = 0;
-
-			$retval = setcookie($name, $value, $expires, $path, $domain);
-			if ($retval) $_COOKIE[$name] = $value;
-
-			return $retval;
+		static public function Exists($name){
+			return isset($_COOKIE[$name]);
 		}
 
-		static public function delete($name, $path = '/', $domain = false){
+		static public function Get($name){
+			return $_COOKIE[$name] ?? null;
+		}
+
+		static public function Set($name, $value, $expires, $httponly = false, $path = '/'){
+			$success = setcookie($name, $value, $expires, $path, $_SERVER['HTTP_HOST'], true, $httponly);
+			if ($success)
+				$_COOKIE[$name] = $value;
+			return $success;
+		}
+
+		static public function Delete($name, $httponly, $path = '/'){
 			$retval = false;
-			if ($domain === false)
-				$domain = $_SERVER['HTTP_HOST'];
-			$retval = setcookie($name, '', time() - 3600, $path, $domain);
+			$retval = setcookie($name, '', time() - 3600, $path, $_SERVER['HTTP_HOST']);
 
 			unset($_COOKIE[$name]);
 			return $retval;

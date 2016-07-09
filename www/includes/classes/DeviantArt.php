@@ -205,9 +205,9 @@
 			}
 
 			if (empty($json)){
-				if (Cookie::exists('access')){
-					$Database->where('access', Cookie::get('access'))->delete('sessions');
-					Cookie::delete('access');
+				if (Cookie::Exists('access')){
+					$Database->where('access', Cookie::Get('access'))->delete('sessions');
+					Cookie::Delete('access', Cookie::HTTPONLY);
 				}
 				CoreUtils::Redirect("/da-auth?error=server_error&error_description={$http_response_header[0]}");
 			}
@@ -280,7 +280,7 @@
 			$Database->rawQuery("DELETE FROM sessions WHERE \"user\" = ? && lastvisit <= NOW() - INTERVAL '$interval'", array($UserID));
 
 
-			Cookie::set('access', $cookie, Time::$IN_SECONDS['year']);
+			Cookie::Set('access', $cookie, time()+ Time::$IN_SECONDS['year'], Cookie::HTTPONLY);
 		}
 
 		/**

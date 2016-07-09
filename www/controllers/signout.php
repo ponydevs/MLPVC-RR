@@ -41,5 +41,5 @@
 		CoreUtils::Respond('Could not remove information from database');
 
 	if (empty($TargetUser))
-		Cookie::delete('access');
+		Cookie::Delete('access', Cookie::HTTPONLY);
 	CoreUtils::Respond(true);

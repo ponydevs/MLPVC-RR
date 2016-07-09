@@ -7,9 +7,9 @@
 		 * Checks POSTed data for CSRF token validity
 		 */
 		static function Detect(){
-			$CSRF = !isset($_POST[self::$_cookieKey]) || !Cookie::exists(self::$_cookieKey) || $_POST[self::$_cookieKey] !== Cookie::get(self::$_cookieKey);
+			$CSRF = !isset($_POST[self::$_cookieKey]) || !Cookie::Exists(self::$_cookieKey) || $_POST[self::$_cookieKey] !== Cookie::Get(self::$_cookieKey);
 			if (!POST_REQUEST && $CSRF)
-				Cookie::set(self::$_cookieKey,md5(time()+rand()), Cookie::$session);
+				Cookie::Set(self::$_cookieKey,md5(time()+rand()), Cookie::SESSION);
 		}
 
 		/**

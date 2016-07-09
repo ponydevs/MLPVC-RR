@@ -1039,18 +1039,21 @@
 		}
 
 		static function SocketEvent($event, array $data){
-			$options = array();
+			$options = array(
+				'context' => array(
+					'http' => array(
+						'header' => 'Cookie: access='.urlencode(WS_SERVER_KEY)
+					)
+				)
+			);
 			if (regex_match(new RegExp('\.lc$'), WS_SERVER_DOMAIN))
-				$options['context'] = array(
-					"ssl" => array(
-				        "verify_peer" => false,
-				        "verify_peer_name" => false,
-				    ),
+				$options['context']['ssl'] = array(
+			        "verify_peer" => false,
+			        "verify_peer_name" => false,
 				);
 			$elephant = new ElephantIO\Client(new ElephantIO\Engine\SocketIO\Version1X('https://ws.'.WS_SERVER_DOMAIN.':8667', $options));
-
+			
 			$elephant->initialize();
-			$elephant->emit('auth', array('access' => WS_SERVER_KEY));
 			$elephant->emit($event, $data);
 			$elephant->close();
 		}
