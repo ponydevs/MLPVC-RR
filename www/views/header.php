@@ -50,14 +50,15 @@
 	<meta name="msapplication-TileImage" content="/img/favicons-v1/mstile-144x144.png">
 	<meta name="msapplication-config" content="/img/favicons-v1/browserconfig.xml">
 
-<?php if (isset($norobots)){ ?>
-	<meta name="robots" content="noindex, nofollow">
-<?php } ?>
 	<link rel="shortcut icon" href="/favicon.ico">
-<?php if (isset($customCSS)) foreach ($customCSS as $css){ ?>
-	<link rel="stylesheet" href="<?=$css?>">
-<?php } ?>
-<?  if (!empty(GA_TRACKING_CODE) && Permission::Insufficient('developer')){ ?>
+<?php
+	if (isset($norobots))
+		echo'<meta name="robots" content="noindex, nofollow">';
+	if (isset($customCSS)){
+		foreach ($customCSS as $css)
+			echo "<link rel='stylesheet' href='$css'>\n";
+	}
+	if (!empty(GA_TRACKING_CODE) && Permission::Insufficient('developer')){ ?>
 <script>
 (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
 (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
@@ -68,7 +69,7 @@ ga('create','<?=GA_TRACKING_CODE?>','auto');
 ga('require','displayfeatures');
 ga('send','pageview');
 </script>
-<?  } ?>
+<?php } ?>
 </head>
 <body class="loading">
 
