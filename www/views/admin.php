@@ -18,7 +18,7 @@
 
 	<section class="mass-approve">
 		<h2><span class="typcn typcn-tick"></span>Bulk approve posts</h2>
-		<p>If you've approved a bunch of submissions and want to mark all of them as approved on the site, then go to your notifications, open the deviation stack for the new deviations in the club, press <kbd>Ctrl</kbd><kbd>A</kbd> then click into the box below and hit <kbd>Ctrl</kbd><kbd>V</kbd>. The script will look through the page and find any deviation links, and marks them as approved if they are in the club gallery.</p>
+		<p>If you've approved a bunch of submissions and want to mark all of them as approved on the site, then go to your notifications, open the deviation stack for the new deviations in the club, press <kbd>Ctrl</kbd><kbd>A</kbd> followed by <kbd>Ctrl</kbd><kbd>V</kbd> then click into the box below (you should see a blinking cursor afterwards) and hit <kbd>Ctrl</kbd><kbd>V</kbd>. The script will look through the page, collecting any deviation links it finds, then sends the IDs over to the server to mark them as approved if they were used to finish posts on the site.</p>
 		<div class="textarea" contenteditable="true"></div>
 	</section>
 
