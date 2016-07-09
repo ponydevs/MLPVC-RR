@@ -618,18 +618,18 @@
 		/**
 		 * Returns the HTML code of the navigation in the header
 		 *
-		 * @param bool $enabled
+		 * @param bool $disabled
 		 *
 		 * @return string
 		 */
-		static function GetNavigation($enabled = true){
+		static function GetNavigation($disabled = false){
 			if (!empty($GLOBALS['NavHTML']))
 				return $GLOBALS['NavHTML'];
 
 			global $do;
 
 			// Navigation items
-			if ($enabled){
+			if (!$disabled){
 				$NavItems = array(
 					'latest' => array('/','Latest episode'),
 					'eps' => array('/episodes','Episodes'),
