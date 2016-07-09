@@ -79,4 +79,13 @@
 			$request = self::LegitimateRequest($url, $cookies, $referrer);
 			return regex_match(new RegExp('Location:\s+([^\r\n]+)'), $request['responseHeaders'], $_match) ? CoreUtils::Trim($_match[1]) : null;
 		}
+
+		/**
+		 * Suggest files to client via HTTP/2 Server Push
+		 *
+		 * @param string $url
+		 */
+		static function PushResource($url){
+			header("Link: $url; rel=preload", false);
+		}
 	}

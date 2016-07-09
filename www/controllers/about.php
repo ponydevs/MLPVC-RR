@@ -88,6 +88,9 @@
 
 		CoreUtils::NotFound();
 	}
+
+	HTTP::PushResource('/about/stats-posts');
+	HTTP::PushResource('/about/stats-approvals');
 	CoreUtils::LoadPage(array(
 		'title' => 'About',
 		'do-css',
