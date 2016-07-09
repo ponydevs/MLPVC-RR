@@ -62,12 +62,24 @@
 				CoreUtils::Respond("There's no episode with this season & episode number");
 
 			if (isset($_REQUEST['detail'])){
-				$VoteCounts = $Database->rawQuery(
+				$VoteCountQuery = $Database->rawQuery(
 					"SELECT count(*) as value, vote as label
 					FROM episodes__votes v
 					WHERE season = ? && episode = ?
 					GROUP BY v.vote
-					ORDER BY v.vote DESC",array($Episode['season'],$Episode['episode']));
+					ORDER BY v.vote ASC",array($Episode['season'],$Episode['episode']));
+				$VoteCounts = array(
+				    'labels' => array(),
+				    'datasets' => array(
+						array(
+							'data' => array()
+						)
+				    )
+				);
+				foreach ($VoteCountQuery as $row){
+					$VoteCounts['labels'][] = $row['label'];
+					$VoteCounts['datasets'][0]['data'][] = $row['value'];
+				}
 
 				CoreUtils::Respond(array('data' => $VoteCounts));
 			}

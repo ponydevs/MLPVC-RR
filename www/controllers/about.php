@@ -12,7 +12,7 @@
 				CoreUtils::Respond(array('data' => JSON::Decode(file_get_contents($CachePath))));
 
 			$Data = array('datasets' => array(), 'timestamp' => date('c'));
-			$LabelFormat = 'YYYY-MM-DD 00:00:00';
+			$LabelFormat = 'YYYY-MM-DD';
 
 			switch ($stat){
 				case 'posts':
@@ -20,10 +20,10 @@
 						"SELECT key FROM
 						(
 							SELECT posted, to_char(posted,'$LabelFormat') AS key FROM requests
-							WHERE posted > NOW() - INTERVAL '20 DAYS'
+							WHERE posted > NOW() - INTERVAL '2 MONTHS'
 							UNION ALL
 							SELECT posted, to_char(posted,'$LabelFormat') AS key FROM reservations
-							WHERE posted > NOW() - INTERVAL '20 DAYS'
+							WHERE posted > NOW() - INTERVAL '2 MONTHS'
 						) t
 						GROUP BY key
 						ORDER BY MIN(t.posted)");
@@ -35,7 +35,7 @@
 							to_char(MIN(posted),'$LabelFormat') AS key,
 							COUNT(*)::INT AS cnt
 						FROM table_name t
-						WHERE posted > NOW() - INTERVAL '20 DAYS'
+						WHERE posted > NOW() - INTERVAL '2 MONTHS'
 						GROUP BY to_char(posted,'$LabelFormat')
 						ORDER BY MIN(posted)";
 					$RequestData = $Database->rawQuery(str_replace('table_name', 'requests', $query));
@@ -55,7 +55,7 @@
 					$Labels = $Database->rawQuery(
 						"SELECT to_char(timestamp,'$LabelFormat') AS key
 						FROM log
-						WHERE timestamp > NOW() - INTERVAL '20 DAYS' AND reftype = 'post_lock'
+						WHERE timestamp > NOW() - INTERVAL '2 MONTHS' AND reftype = 'post_lock'
 						GROUP BY key
 						ORDER BY MIN(timestamp)");
 
@@ -66,7 +66,7 @@
 							to_char(MIN(timestamp),'$LabelFormat') AS key,
 							COUNT(*)::INT AS cnt
 						FROM log
-						WHERE timestamp > NOW() - INTERVAL '20 DAYS' AND reftype = 'post_lock'
+						WHERE timestamp > NOW() - INTERVAL '2 MONTHS' AND reftype = 'post_lock'
 						GROUP BY to_char(timestamp,'$LabelFormat')
 						ORDER BY MIN(timestamp)"
 					);

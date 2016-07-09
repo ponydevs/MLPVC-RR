@@ -53,34 +53,26 @@
 			foreach ($Data['labels'] as $k => $l)
 				$Data['labels'][$k] = strtotime($l);
 
-			$safety = 0;
 			while (true){
-				if ($safety++ > 20)
-					throw new Exception('Too many loops');
-
-				$continue = false;
+				$break = true;
 				$labelCount = count($Data['labels']);
-				for ($lix = 1; $lix < $labelCount-1; $lix++){
+				for ($lix = 1; $lix < $labelCount; $lix++){
 					$diff = $Data['labels'][$lix] - $Data['labels'][$lix-1];
-					//var_dump(array(date('Y-m-d', $Data['labels'][$lix-1]),date('Y-m-d', $Data['labels'][$lix]),$diff));
 					if ($diff > Time::$IN_SECONDS['day']){
-						$continue = true;
-						//var_dump('breaks');
+						$break = false;
 						break;
 					}
 				}
-				if (!$continue)
+				if ($break)
 					break;
 
-				array_splice($Data['labels'], $lix, 0, array(strtotime('+1 day', $Data['labels'][$lix-1])));
-				foreach ($Data['datasets'] as $k => $_){
-					array_splice($Data['datasets'][$k]['data'], $lix, 0, array(0));
-					//var_dump(array($lix,$Data['datasets'][$k]['data'],$Data['datasets'][$k]['data'][$lix], $Data['datasets'][$k]['data'][$lix - 1],$Data['datasets'][$k]['data'][$lix + 1]));
-					//die();
+				array_splice($Data['labels'], $lix, 0, array($Data['labels'][$lix-1] + Time::$IN_SECONDS['day']));
+				foreach ($Data['datasets'] as &$set){
+					array_splice($set['data'], $lix, 0, array(0));
 				}
 			}
 
 			foreach ($Data['labels'] as $k => $ts)
-				$Data['labels'][$k] = date('jS M',$ts);
+				$Data['labels'][$k] = date('c',$ts);
 		}
 	}

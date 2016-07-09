@@ -473,16 +473,11 @@ DocReady.push(function Episode(){
 			$.post(`/episode/vote/${EpID}?detail`, $.mkAjaxHandler(function(){
 				if (!this.status) return $.Dialog.fail(false, this.message);
 
-				let $chart = $.mk('canvas').css({
-						width: 200,
-						height: 200,
-						display: 'block',
-						margin: '0 auto',
-					}),
+				let $chart = $.mk('canvas'),
 					ctx = $chart.get(0).getContext("2d"),
-					$tooltip = $.mk('p').attr('class','tooltip').html('&nbsp;');
+					$tooltip = $.mk('p').attr('class','tooltip');
 				$.Dialog.info(false, [
-					$.mk('p').text("Here's a chart showing how the votes are distributed."),
+					$.mk('p').text("Here's a chart showing how the votes are distributed. Mouse over the different segments to see the exact number of votes."),
 					$.mk('div').attr('id','vote-distrib').append($chart, $tooltip)
 				]);
 				                   //-- 0 ---,--- 1 ---,--- 2 ---,--- 3 ---,--- 4 ---,--- 5 ---
@@ -490,9 +485,22 @@ DocReady.push(function Episode(){
 					data = this.data,
 					totalVotes = 0;
 
-				$.each(data,function(k,v){
-					$.extend(data[k],{ color: LegendColors[parseInt(v.label, 10)] });
-					totalVotes += parseInt(v.value, 10);
+				data.datasets[0].backgroundColor = [];
+				data.datasets[0].hoverBackgroundColor = [];
+				data.datasets[0].borderWidth = [];
+				data.datasets[0].hoverBorderColor = [];
+				$.each(data.datasets[0].data,function(k,v){
+					let bgcolor = LegendColors[parseInt(data.labels[k], 10)];
+					data.datasets[0].backgroundColor.push(bgcolor);
+					let lighter = $.hex2rgb(bgcolor),
+						mult = 1.06;
+					lighter.r = Math.min(255, lighter.r * mult);
+					lighter.g = Math.min(255, lighter.g * mult);
+					lighter.b = Math.min(255, lighter.b * mult);
+					data.datasets[0].hoverBackgroundColor.push($.rgb2hex(lighter));
+					data.datasets[0].borderWidth.push(2);
+					data.datasets[0].hoverBorderColor.push(`rgba(${lighter.r},${lighter.g},${lighter.b},0.9)`);
+					totalVotes += parseInt(v, 10);
 				});
 
 				if (totalVotes === 0){
@@ -501,21 +509,31 @@ DocReady.push(function Episode(){
 					return;
 				}
 
-				new Chart(ctx).Pie(data,{
-					animationEasing: 'easeInOutExpo',
-					customTooltips: function(tooltip){
-						if (!tooltip){
-							$tooltip.css('color','').html('&nbsp;');
-							return;
+				new Chart(ctx,{
+					type: 'pie',
+					data: data,
+					options: {
+						titleFontColor: '#000',
+						bodyFontColor: '#000',
+						animation: {
+							easing: 'easeInOutExpo',
+						},
+						legend: {
+							display: false,
+						},
+						tooltips: {
+							callbacks: {
+								title: function(tooltip,data){
+									let value = parseInt(data.labels[tooltip[0].index], 10);
+									return `${value} muffin${value!==1?'s':''}`;
+								},
+								label: function(tooltip,data){
+									var voteCount = parseInt(data.datasets[tooltip.datasetIndex].data[tooltip.index],10);
+									let votePerc = Math.round((voteCount/totalVotes)*1000)/10;
+									return `${voteCount} user${voteCount!==1?'s':''} (${votePerc}%)`;
+								}
+							}
 						}
-
-						let dataArray = tooltip.text.split(': '),
-								votePerc = Math.round((parseInt(dataArray[1],10)/totalVotes)*1000)/10;
-						$tooltip.css('color',LegendColors[parseInt(dataArray[0], 10)]).empty().append(
-								$.mk('span').text(dataArray[1]+' ×'),
-								$.mk('span').attr('class','muffins cnt-'+dataArray[0]),
-								$.mk('span').text('('+votePerc+'%)')
-						);
 					}
 				});
 			}));

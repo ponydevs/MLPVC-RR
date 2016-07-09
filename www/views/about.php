@@ -26,14 +26,14 @@ HTML;
 		<p>Here you can see various graphs about the site. The information below is cached to reduce server load, you can see when each graph was last updated below their title.</p>
 		<div id="stats">
 			<div class="stats-posts">
-				<h3>Posts in the last 20 days</h3>
+				<h3>Posts in the last 2 months</h3>
 				<div class="stats-wrapper">
 					<canvas></canvas>
 				</div>
 				<div class="legend"></div>
 			</div>
 			<div class="stats-approvals">
-				<h3>Post approvals in the last 20 days</h3>
+				<h3>Post approvals in the last 2 months</h3>
 				<div class="stats-wrapper">
 					<canvas></canvas>
 				</div>

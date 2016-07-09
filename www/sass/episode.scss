@@ -440,30 +440,23 @@
 	}
 }
 
-#vote-distrib .tooltip {
-	display: block;
-	text-align: center;
-	font-size: 17px;
-	font-weight: bold;
-	line-height: 17px;
-	height: 17px;
-	margin: 5px 0 0;
-
-	> span {
-		display: inline-block;
-		height: 17px;
-		vertical-align: bottom;
-		color: #8a6d31;
+#vote-distrib {
+	canvas {
+		width: 200px;
+		height: 200px;
+		display: block;
+		margin: 10px auto 5px;
 	}
+	.tooltip {
+		display: block;
+		text-align: center;
+		font-size: 17px;
+		font-weight: bold;
+		line-height: 17px;
+		height: 17px;
+		margin: 5px 0 0;
 
-	.muffins {
-		margin: 0 5px;
-		background: url('../img/muffin-rating.svg') no-repeat 0 50%;
-		background-size: 100px 17px;
-
-		@for $i from 1 through 5 {
-			&.cnt-#{$i} { width: #{$i*20px} }
-		}
+		&:empty { display: none }
 	}
 }
 
