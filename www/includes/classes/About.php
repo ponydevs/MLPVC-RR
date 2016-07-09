@@ -16,4 +16,17 @@
 			global $Database;
 			return $Database->rawQuerySingle('SHOW server_version')['server_version'];
 		}
+
+	    private static $INI_BOOL_MAP = array(
+	        1 => true,
+			'on' => true,
+			'true' => true,
+			0 => false,
+			'off' => false,
+			'false' => false,
+		);
+		static function IniGet($key){
+			$val = ini_get($key);
+		    return self::$INI_BOOL_MAP[strtolower($val)] ?? $val;
+		}
 	}

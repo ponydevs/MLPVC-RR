@@ -3,13 +3,16 @@
 	$signedIn = false;
 	header($_SERVER['SERVER_PROTOCOL']." 503 Service Unavailable");
 
+	// TODO Add *that* image of the club mascot above <h1>
+
 	$customCSS = array("/css/theme.min.css");
 	foreach ($customCSS as $k => $el)
 		$customCSS[$k] .= '?'.filemtime(APPATH.substr($el,1));
 	$view = 'fatalerr';
 	require "$DIR/header.php"; ?>
 <div id="content">
-<?  switch($errcause){
+<?php
+	switch($errcause){
 		case "db": ?>
 	<h1>Database connection error</h1>
 	<p>Could not connect to database on <?=DB_HOST?></p>
@@ -23,8 +26,8 @@
 			echo CoreUtils::Notice('warn','<strong>Probable cause / debug information:</strong><pre><code>'.(isset($CODE_ERRORS[$code]) ? $CODE_ERRORS[$code] : "Error $code: ".$e->getMessage()).'</code></pre>',true);
 		break;
 		case "libmiss": ?>
-	<h1>Missing runtime library</h1>
-	<p>A required extension/library is missng</p>
+	<h1>Configuration problem</h1>
+	<p>A required extension/setting is missng</p>
 <?php       echo CoreUtils::Notice('info','<span class="typcn typcn-info-large"></span> One of the site\'s core modules have not been installed yet. This usually happens after a software upgrade/reinstall and is just a temporary issue, no data has been lost and everything will be back to normal very soon. Sorry for the inconvenience. <a class="send-feedback">Notify the developer</a>',true);
 			echo CoreUtils::Notice('warn','<strong>Probable cause / debug information:</strong><pre><code>'.$e->getMessage().'</code></pre>',true);
 	break;

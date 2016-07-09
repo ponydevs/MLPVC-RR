@@ -100,15 +100,17 @@
 
 	// Database connection & Required Functionality Checking \\
 	try {
-		$inipath = php_ini_loaded_file().' then restart '.About::GetServerSoftware();
+		$inipath = 'in/to '.php_ini_loaded_file().' then restart '.About::GetServerSoftware();
+		if (About::IniGet('short_open_tag') !== true)
+			throw new Exception("Short open tags (&lt;?) are disabled\nUncomment/add the line <strong>short_open_tag=On</strong> $inipath to fix");
 		if (!function_exists('curl_init'))
-			throw new Exception("cURL extension is disabled or not installed\n".(PHP_OS !== 'WINNT' ? "Run <strong>sudo apt-get install php7.0-curl</strong>" : "Uncomment/add the line <strong>extension=php_curl.dll</strong> in $inipath").' to fix');
+			throw new Exception("cURL extension is disabled or not installed\n".(PHP_OS !== 'WINNT' ? "Run <strong>sudo apt-get install php7.0-curl</strong>" : "Uncomment/add the line <strong>extension=php_curl.dll</strong> $inipath").' to fix');
 		if (!class_exists('DOMDocument'))
 			throw new Exception("XML extension is disabled or not installed\n".(PHP_OS !== 'WINNT' ? "Run <strong>sudo apt-get install php7.0-xml</strong> to fix" : ''));
 		if (!function_exists('pdo_drivers'))
 			throw new Exception("PDO extension is disabled or not installed\nThe site requires PHP 7.0+ to function, please upgrade your server.");
 		if (!in_array('pgsql', pdo_drivers()))
-			throw new Exception("PostgreSQL PDO extension is disabled or not installed\n".(PHP_OS !== 'WINNT' ? "Run <strong>sudo apt-get install php7.0-pgsql</strong>" : "Uncomment/add the line <strong>extension=php_pdo_pgsql.dll</strong> in $inipath").' to fix');
+			throw new Exception("PostgreSQL PDO extension is disabled or not installed\n".(PHP_OS !== 'WINNT' ? "Run <strong>sudo apt-get install php7.0-pgsql</strong>" : "Uncomment/add the line <strong>extension=php_pdo_pgsql.dll</strong> $inipath").' to fix');
 	}
 	catch (Exception $e){
 		$errcause = 'libmiss';
