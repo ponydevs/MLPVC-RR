@@ -275,9 +275,9 @@
 			CoreUtils::Respond();
 
 		$ids = (new Input('ids','int[]',array(
-			'errors' => array(
-			    Input::$ERROR_MISSING => 'List of deviation IDs is missing',
-			    Input::$ERROR_INVALID => 'List of deviation IDs (@value) is invalid',
+			Input::CUSTOM_ERROR_MESSAGES => array(
+			    Input::ERROR_MISSING => 'List of deviation IDs is missing',
+			    Input::ERROR_INVALID => 'List of deviation IDs (@value) is invalid',
 			)
 		)))->out();
 
@@ -318,9 +318,9 @@
 			$insert['reserved_by'] = $currentUser['id'];
 
 		$epdata = (new Input('epid','epid',array(
-			'errors' => array(
-				Input::$ERROR_MISSING => 'Episode identifier is missing',
-				Input::$ERROR_INVALID => 'Episode identifier (@value) is invalid',
+			Input::CUSTOM_ERROR_MESSAGES => array(
+				Input::ERROR_MISSING => 'Episode identifier is missing',
+				Input::ERROR_INVALID => 'Episode identifier (@value) is invalid',
 			)
 		)))->out();
 		$epdata = Episode::GetActual($epdata['season'], $epdata['episode']);
@@ -354,8 +354,8 @@
 			};
 
 		$image_url = (new Input('image_url','string',array(
-			'errors' => array(
-				Input::$ERROR_MISSING => 'Image URL is missing',
+			Input::CUSTOM_ERROR_MESSAGES => array(
+				Input::ERROR_MISSING => 'Image URL is missing',
 			)
 		)))->out();
 		$Image = Posts::CheckImage($image_url, $Post);
@@ -441,11 +441,11 @@
 
 	$type = (new Input('what',function($value){
 		if (!in_array($value,Posts::$TYPES))
-			return Input::$ERROR_INVALID;
+			return Input::ERROR_INVALID;
 	},array(
-		'optional' => true,
-		'errors' => array(
-			Input::$ERROR_INVALID => 'Post type (@value) is invalid',
+		Input::IS_OPTIONAL => true,
+		Input::CUSTOM_ERROR_MESSAGES => array(
+			Input::ERROR_INVALID => 'Post type (@value) is invalid',
 		)
 	)))->out();
 	if (empty($type) && $type === 'reservation'){

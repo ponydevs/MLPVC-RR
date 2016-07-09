@@ -53,9 +53,9 @@
 							$data = array();
 
 							$label = (new Input('label','string',array(
-								'errors' => array(
-									Input::$ERROR_MISSING => 'Link label is missing',
-									Input::$ERROR_RANGE => 'Link label must be between @min and @max characters long',
+								Input::CUSTOM_ERROR_MESSAGES => array(
+									Input::ERROR_MISSING => 'Link label is missing',
+									Input::ERROR_RANGE => 'Link label must be between @min and @max characters long',
 								)
 							)))->out();
 							if ($creating || $Link['label'] !== $label){
@@ -64,20 +64,20 @@
 							}
 
 							$url = (new Input('url','url',array(
-								'range' => [3,255],
-								'errors' => array(
-									Input::$ERROR_MISSING => 'Link URL is missing',
-									Input::$ERROR_RANGE => 'Link URL must be between @min and @max characters long',
+								Input::IN_RANGE => [3,255],
+								Input::CUSTOM_ERROR_MESSAGES => array(
+									Input::ERROR_MISSING => 'Link URL is missing',
+									Input::ERROR_RANGE => 'Link URL must be between @min and @max characters long',
 								)
 							)))->out();
 							if ($creating || $Link['url'] !== $url)
 								$data['url'] = $url;
 
 							$title = (new Input('title','string',array(
-								'optional' => true,
-								'range' => [3,255],
-								'errors' => array(
-									Input::$ERROR_RANGE => 'Link title must be between @min and @max characters long',
+								Input::IS_OPTIONAL => true,
+								Input::IN_RANGE => [3,255],
+								Input::CUSTOM_ERROR_MESSAGES => array(
+									Input::ERROR_RANGE => 'Link title must be between @min and @max characters long',
 								)
 							)))->out();
 							if (!isset($title))
@@ -91,9 +91,9 @@
 								if (!isset(Permission::$ROLES_ASSOC[$value]) || !Permission::Sufficient('user', $value))
 									CoreUtils::Respond();
 							},array(
-								'errors' => array(
-									Input::$ERROR_MISSING => 'Minumum role is missing',
-									Input::$ERROR_INVALID => 'Minumum role (@value) is invalid',
+								Input::CUSTOM_ERROR_MESSAGES => array(
+									Input::ERROR_MISSING => 'Minumum role is missing',
+									Input::ERROR_INVALID => 'Minumum role (@value) is invalid',
 								)
 							)))->out();
 							if ($creating || $Link['minrole'] !== $minrole)
@@ -114,8 +114,8 @@
 				}
 				else if ($data === 'reorder'){
 					$list = (new Input('list','int[]',array(
-						'errors' => array(
-							Input::$ERROR_MISSING => 'Missing ordering information',
+						Input::CUSTOM_ERROR_MESSAGES => array(
+							Input::ERROR_MISSING => 'Missing ordering information',
 						)
 					)))->out();
 					$order = 1;

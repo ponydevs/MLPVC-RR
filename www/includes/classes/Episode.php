@@ -523,23 +523,23 @@ HTML;
 
 		static function ValidateSeason($optional = false){
 			return (new Input('season','int',array(
-				'optional' => $optional,
-				'range' => [1,8],
-				'errors' => array(
-					Input::$ERROR_MISSING => 'Season number is missing',
-					Input::$ERROR_INVALID => 'Season number (@value) is invalid',
-					Input::$ERROR_RANGE => 'Season number must be between @min and @max',
+				Input::IS_OPTIONAL => $optional,
+				Input::IN_RANGE => [1,8],
+				Input::CUSTOM_ERROR_MESSAGES => array(
+					Input::ERROR_MISSING => 'Season number is missing',
+					Input::ERROR_INVALID => 'Season number (@value) is invalid',
+					Input::ERROR_RANGE => 'Season number must be between @min and @max',
 				)
 			)))->out();
 		}
 		static function ValidateEpisode($optional = false){
 			return (new Input('episode','int',array(
-				'optional' => $optional,
-				'range' => [1,26],
-				'errors' => array(
-					Input::$ERROR_MISSING => 'Episode number is missing',
-					Input::$ERROR_INVALID => 'Episode number (@value) is invalid',
-					Input::$ERROR_RANGE => 'Episode number must be between @min and @max',
+				Input::IS_OPTIONAL => $optional,
+				Input::IN_RANGE => [1,26],
+				Input::CUSTOM_ERROR_MESSAGES => array(
+					Input::ERROR_MISSING => 'Episode number is missing',
+					Input::ERROR_INVALID => 'Episode number (@value) is invalid',
+					Input::ERROR_RANGE => 'Episode number must be between @min and @max',
 				)
 			)))->out();
 		}

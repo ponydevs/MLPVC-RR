@@ -103,10 +103,10 @@
 			$editing = !empty($Post);
 
 			$label = (new Input('label','string',array(
-				'optional' => true,
-				'range' => [3,255],
-				'errors' => array(
-					Input::$ERROR_RANGE => 'The description must be between @min and @max characters'
+				Input::IS_OPTIONAL => true,
+				Input::IN_RANGE => [3,255],
+				Input::CUSTOM_ERROR_MESSAGES => array(
+					Input::ERROR_RANGE => 'The description must be between @min and @max characters'
 				)
 			)))->out();
 			if (isset($label)){
@@ -121,11 +121,11 @@
 			if ($thing === 'request'){
 				$type = (new Input('type',function($value){
 					if (!in_array($value,array('chr','obj','bg')))
-						return Input::$ERROR_INVALID;
+						return Input::ERROR_INVALID;
 				},array(
-					'optional' => true,
-					'errors' => array(
-						Input::$ERROR_INVALID => "Request type (@value) is invalid"
+					Input::IS_OPTIONAL => true,
+					Input::CUSTOM_ERROR_MESSAGES => array(
+						Input::ERROR_INVALID => "Request type (@value) is invalid"
 					)
 				)))->out();
 				if (isset($type)){
@@ -149,9 +149,9 @@
 
 			if (Permission::Sufficient('developer')){
 				$posted = (new Input('posted','timestamp',array(
-					'optional' => true,
-					'errors' => array(
-						Input::$ERROR_INVALID => '"Posted" timestamp (@value) is invalid',
+					Input::IS_OPTIONAL => true,
+					Input::CUSTOM_ERROR_MESSAGES => array(
+						Input::ERROR_INVALID => '"Posted" timestamp (@value) is invalid',
 					)
 				)))->out();
 				if (isset($posted) && $posted !== strtotime($Post['posted']))
@@ -207,8 +207,8 @@
 		static function CheckRequestFinishingImage($ReserverID = null){
 			global $Database;
 			$deviation = (new Input('deviation','string',array(
-				'errors' => array(
-					Input::$ERROR_MISSING => 'Please specify a deviation URL',
+				Input::CUSTOM_ERROR_MESSAGES => array(
+					Input::ERROR_MISSING => 'Please specify a deviation URL',
 				)
 			)))->out();
 			try {
@@ -622,8 +622,8 @@ HTML;
 
 		static function ValidateImageURL(){
 			return (new Input('image_url','string',array(
-				'errors' => array(
-					Input::$ERROR_MISSING => 'Please provide an image URL.',
+				Input::CUSTOM_ERROR_MESSAGES => array(
+					Input::ERROR_MISSING => 'Please provide an image URL.',
 				)
 			)))->out();
 		}
@@ -639,18 +639,18 @@ HTML;
 
 		static function ValidateReservedAt(){
 			return (new Input('reserved_at','timestamp',array(
-				'optional' => true,
-				'errors' => array(
-					Input::$ERROR_INVALID => '"Reserved at" timestamp (@value) is invalid',
+				Input::IS_OPTIONAL => true,
+				Input::CUSTOM_ERROR_MESSAGES => array(
+					Input::ERROR_INVALID => '"Reserved at" timestamp (@value) is invalid',
 				)
 			)))->out();
 		}
 
 		static function ValidateFinishedAt(){
 			return (new Input('finished_at','timestamp',array(
-				'optional' => true,
-				'errors' => array(
-					Input::$ERROR_INVALID => '"Finished at" timestamp (@value) is invalid',
+				Input::IS_OPTIONAL => true,
+				Input::CUSTOM_ERROR_MESSAGES => array(
+					Input::ERROR_INVALID => '"Finished at" timestamp (@value) is invalid',
 				)
 			)))->out();
 		}

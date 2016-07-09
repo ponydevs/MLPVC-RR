@@ -446,10 +446,10 @@ HTML;
 
 		static function ValidateAppearancePageID(){
 			return (new \Input('APPEARANCE_PAGE','int',array(
-				'optional' => true,
-				'range' => [0,null],
-				'errors' => array(
-					\Input::$ERROR_RANGE => 'Appearance ID is invalid'
+				\Input::IS_OPTIONAL => true,
+				\Input::IN_RANGE => [0,null],
+				\Input::CUSTOM_ERROR_MESSAGES => array(
+					\Input::ERROR_RANGE => 'Appearance ID is invalid'
 				)
 			)))->out();
 		}

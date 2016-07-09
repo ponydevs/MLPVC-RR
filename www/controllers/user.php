@@ -23,11 +23,11 @@
 
 			$newgroup = (new Input('newrole',function($value){
 				if (!isset(Permission::$ROLES_ASSOC[$value]))
-					return Input::$ERROR_INVALID;
+					return Input::ERROR_INVALID;
 			},array(
-				'errors' => array(
-					Input::$ERROR_MISSING => 'The new group is not specified',
-					Input::$ERROR_INVALID => 'The specified group (@value) does not exist',
+				Input::CUSTOM_ERROR_MESSAGES => array(
+					Input::ERROR_MISSING => 'The new group is not specified',
+					Input::ERROR_INVALID => 'The specified group (@value) does not exist',
 				)
 			)))->out();
 			if ($targetUser['role'] === $newgroup)
@@ -63,10 +63,10 @@
 				CoreUtils::Respond("This user has already been {$action}ed");
 
 			$reason = (new Input('reason','string',array(
-				'range' => [5,255],
-				'errors' => array(
-					Input::$ERROR_MISSING => 'Please specify a reason',
-					Input::$ERROR_RANGE => 'Reason length must be between @min and @max characters'
+				Input::IN_RANGE => [5,255],
+				Input::CUSTOM_ERROR_MESSAGES => array(
+					Input::ERROR_MISSING => 'Please specify a reason',
+					Input::ERROR_RANGE => 'Reason length must be between @min and @max characters'
 				)
 			)))->out();
 

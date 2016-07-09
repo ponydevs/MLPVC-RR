@@ -98,10 +98,10 @@
 				CoreUtils::Respond('You already voted for this episode');
 
 			$vote = (new Input('vote','int',array(
-				'range' => [1,5],
-				'errors' => array(
-					Input::$ERROR_MISSING => 'Vote value missing from request',
-					Input::$ERROR_RANGE => 'Vote value must be an integer between @min and @max (inclusive)',
+				Input::IN_RANGE => [1,5],
+				Input::CUSTOM_ERROR_MESSAGES => array(
+					Input::ERROR_MISSING => 'Vote value missing from request',
+					Input::ERROR_RANGE => 'Vote value must be an integer between @min and @max (inclusive)',
 				)
 			)))->out();
 
@@ -233,9 +233,9 @@
 			}
 			else {
 				$AppearanceIDs = (new Input('ids','int[]',array(
-					'errors' => array(
-						Input::$ERROR_MISSING => 'Missing appearance ID list',
-						Input::$ERROR_INVALID => 'Appearance ID list is invalid',
+					Input::CUSTOM_ERROR_MESSAGES => array(
+						Input::ERROR_MISSING => 'Missing appearance ID list',
+						Input::ERROR_INVALID => 'Appearance ID list is invalid',
 					)
 				)))->out();
 
@@ -293,29 +293,29 @@
 			}
 
 			$insert['no'] = (new Input('no','int',array(
-				'optional' => true,
-				'range' => [1,255],
-				'errors' => array(
-				    Input::$ERROR_INVALID => 'Overall episode number (@value) is invalid',
-				    Input::$ERROR_RANGE => 'Overall episode number must be between @min and @max',
+				Input::IS_OPTIONAL => true,
+				Input::IN_RANGE => [1,255],
+				Input::CUSTOM_ERROR_MESSAGES => array(
+				    Input::ERROR_INVALID => 'Overall episode number (@value) is invalid',
+				    Input::ERROR_RANGE => 'Overall episode number must be between @min and @max',
 				)
 			)))->out();
 			
 			$insert['twoparter'] = isset($_POST['twoparter']) ? 1 : 0;
 
 			$insert['title'] = (new Input('title','string',array(
-				'range' => [5,35],
-				'errors' => array(
-					Input::$ERROR_MISSING => 'Episode title is missing',
-					Input::$ERROR_RANGE => 'Episode title must be between @min and @max characters',
+				Input::IN_RANGE => [5,35],
+				Input::CUSTOM_ERROR_MESSAGES => array(
+					Input::ERROR_MISSING => 'Episode title is missing',
+					Input::ERROR_RANGE => 'Episode title must be between @min and @max characters',
 				)
 			)))->out();
 			CoreUtils::CheckStringValidity($insert['title'], 'Episode title', INVERSE_EP_TITLE_PATTERN);
 
 			$airs = (new Input('airs','timestamp',array(
-				'errors' => array(
-					Input::$ERROR_MISSING => 'No air date & time specified',
-					Input::$ERROR_INVALID => 'Invalid air date and/or time (@value) specified'
+				Input::CUSTOM_ERROR_MESSAGES => array(
+					Input::ERROR_MISSING => 'No air date & time specified',
+					Input::ERROR_INVALID => 'Invalid air date and/or time (@value) specified'
 				)
 			)))->out();
 			$insert['airs'] = date('c',strtotime('this minute', $airs));

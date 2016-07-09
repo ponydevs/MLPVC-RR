@@ -502,10 +502,10 @@ GPL;
 				if (regex_match(new RegExp('^(b+[a4]+w*d+|g+[uo0]+d+|(?:b+[ae3]+|w+[o0u]+r+)[s5]+[t7]+)(e+r+|e+s+t+)?p+[o0]+[wh]*n+[ye3]*'),$sanitized_name))
 					return 'opinionbased';
 			},array(
-				'range' => [3,30],
-				'errors' => array(
-					Input::$ERROR_MISSING => 'Tag name cannot be empty',
-					Input::$ERROR_RANGE => 'Tag name must be between @min and @max characters',
+				Input::IN_RANGE => [3,30],
+				Input::CUSTOM_ERROR_MESSAGES => array(
+					Input::ERROR_MISSING => 'Tag name cannot be empty',
+					Input::ERROR_RANGE => 'Tag name must be between @min and @max characters',
 					'dash' => 'Tag name cannot start with a dash',
 					'opinionbased' => 'Highly opinion-based tags are not allowed',
 				)

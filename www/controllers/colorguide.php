@@ -12,8 +12,8 @@
 
 		switch ($data){
 			case 'gettags':
-				$not_tid = (new Input('not','int',array('optional' => true)))->out();
-				if ((new Input('action','string',array('optional' => true)))->out() === 'synon'){
+				$not_tid = (new Input('not','int',array(Input::IS_OPTIONAL => true)))->out();
+				if ((new Input('action','string',array(Input::IS_OPTIONAL => true)))->out() === 'synon'){
 					if (isset($not_tid))
 						$CGDb->where('tid',$not_tid);
 					$Tag = $CGDb->where('"synonym_of" IS NOT NULL')->getOne('tags');
@@ -63,9 +63,9 @@
 					CoreUtils::Respond();
 
 				\CG\Appearances::Reorder((new Input('list','int[]',array(
-					'errors' => array(
-						Input::$ERROR_MISSING => 'The list of IDs is missing',
-						Input::$ERROR_INVALID => 'The list of IDs is not formatted properly',
+					Input::CUSTOM_ERROR_MESSAGES => array(
+						Input::ERROR_MISSING => 'The list of IDs is missing',
+						Input::ERROR_INVALID => 'The list of IDs is not formatted properly',
 					)
 				)))->out());
 
@@ -162,10 +162,10 @@
 					);
 
 					$label = (new Input('label','string',array(
-						'range' => [4,70],
-						'errors' => array(
-							Input::$ERROR_MISSING => 'Appearance name is missing',
-							Input::$ERROR_RANGE => 'Appearance name must be beetween @min and @max characters long',
+						Input::IN_RANGE => [4,70],
+						Input::CUSTOM_ERROR_MESSAGES => array(
+							Input::ERROR_MISSING => 'Appearance name is missing',
+							Input::ERROR_RANGE => 'Appearance name must be beetween @min and @max characters long',
 						)
 					)))->out();
 					CoreUtils::CheckStringValidity($label, "Appearance name", INVERSE_PRINTABLE_ASCII_PATTERN);
@@ -174,10 +174,10 @@
 					$data['label'] = $label;
 
 					$notes = (new Input('notes','text',array(
-						'optional' => true,
-						'range' => $creating || $Appearance['id'] !== 0 ? [null,1000] : null,
-						'errors' => array(
-							Input::$ERROR_RANGE => 'Appearance notes cannot be longer than @max characters',
+						Input::IS_OPTIONAL => true,
+						Input::IN_RANGE => $creating || $Appearance['id'] !== 0 ? [null,1000] : null,
+						Input::CUSTOM_ERROR_MESSAGES => array(
+							Input::ERROR_RANGE => 'Appearance notes cannot be longer than @max characters',
 						)
 					)))->out();
 					if (isset($notes)){
@@ -188,7 +188,7 @@
 					}
 					else $data['notes'] = '';
 
-					$cm_favme = (new Input('cm_favme','string',array('optional' => true)))->out();
+					$cm_favme = (new Input('cm_favme','string',array(Input::IS_OPTIONAL => true)))->out();
 					if (isset($cm_favme)){
 						try {
 							$Image = new ImageProvider($cm_favme, array('fav.me', 'dA'));
@@ -202,18 +202,18 @@
 
 						$cm_dir = (new Input('cm_dir',function($value){
 							if ($value !== 'th' && $value !== 'ht')
-								return Input::$ERROR_INVALID;
+								return Input::ERROR_INVALID;
 						},array(
-							'errors' => array(
-								Input::$ERROR_MISSING => 'Cutie mark orientation must be set if a link is provided',
-								Input::$ERROR_INVALID => 'Cutie mark orientation (@value) is invalid',
+							Input::CUSTOM_ERROR_MESSAGES => array(
+								Input::ERROR_MISSING => 'Cutie mark orientation must be set if a link is provided',
+								Input::ERROR_INVALID => 'Cutie mark orientation (@value) is invalid',
 							)
 						)))->out();
 						$cm_dir = $cm_dir === 'ht' ? CM_DIR_HEAD_TO_TAIL : CM_DIR_TAIL_TO_HEAD;
 						if ($creating || $Appearance['cm_dir'] !== $cm_dir)
 							$data['cm_dir'] = $cm_dir;
 
-						$cm_preview = (new Input('cm_preview','string',array('optional' => true)))->out();
+						$cm_preview = (new Input('cm_preview','string',array(Input::IS_OPTIONAL => true)))->out();
 						if (empty($cm_preview))
 							$data['cm_preview'] = null;
 						else if ($creating || $cm_preview !== $Appearance['cm_preview']){
@@ -289,8 +289,8 @@
 				break;
 				case "setcgs":
 					$groups = (new Input('cgs','int[]',array(
-						'errors' => array(
-							Input::$ERROR_MISSING => "$Color group order data missing"
+						Input::CUSTOM_ERROR_MESSAGES => array(
+							Input::ERROR_MISSING => "$Color group order data missing"
 						)
 					)))->out();
 					foreach ($groups as $part => $GroupID){
@@ -364,9 +364,9 @@
 						break;
 						case "untag":
 							$tag_id = (new Input('tag','int',array(
-								'errors' => array (
-									Input::$ERROR_MISSING => 'Tag ID is missing',
-									Input::$ERROR_INVALID => 'Tag ID (@value) is invalid',
+								Input::CUSTOM_ERROR_MESSAGES => array (
+									Input::ERROR_MISSING => 'Tag ID is missing',
+									Input::ERROR_INVALID => 'Tag ID (@value) is invalid',
 								)
 							)))->out();
 							$Tag = $CGDb->where('tid',$tag_id)->getOne('tags');
@@ -414,9 +414,9 @@
 
 			if ($action === 'recount'){
 				$tagIDs = (new Input('tagids','int[]',array(
-					'errors' => array(
-						Input::$ERROR_MISSING => 'Missing list of tags to update',
-						Input::$ERROR_INVALID => 'List of tags is invalid',
+					Input::CUSTOM_ERROR_MESSAGES => array(
+						Input::ERROR_MISSING => 'Missing list of tags to update',
+						Input::ERROR_INVALID => 'List of tags is invalid',
 					)
 				)))->out();
 				$counts = array();
@@ -489,8 +489,8 @@
 					CoreUtils::Respond('This tag is already synonymized with a different tag');
 
 				$targetid = (new Input('targetid','int',array(
-					'errors' => array(
-						Input::$ERROR_MISSING => 'Missing target tag ID',
+					Input::CUSTOM_ERROR_MESSAGES => array(
+						Input::ERROR_MISSING => 'Missing target tag ID',
 					)
 				)))->out();
 				$Target = $CGDb->where('tid', $targetid)->getOne('tags');
@@ -557,11 +557,11 @@
 			$surelyAnEpisodeTag = $epTagName !== false;
 			$type = (new Input('type',function($value){
 				if (!isset(\CG\Tags::$TAG_TYPES_ASSOC[$value]))
-					return Input::$ERROR_INVALID;
+					return Input::ERROR_INVALID;
 			},array(
-				'optional' => true,
-				'errors' => array(
-					Input::$ERROR_INVALID => 'Invalid tag type: @value',
+				Input::IS_OPTIONAL => true,
+				Input::CUSTOM_ERROR_MESSAGES => array(
+					Input::ERROR_INVALID => 'Invalid tag type: @value',
 				)
 			)))->out();
 			if (empty($type)){
@@ -585,10 +585,10 @@
 				CoreUtils::Respond("A tag with the same name and type already exists");
 
 			$data['title'] = (new Input('title','string',array(
-				'optional' => true,
-				'range' => [null,255],
-				'errors' => array(
-					Input::$ERROR_RANGE => 'Tag title must fit within @max characters'
+				Input::IS_OPTIONAL => true,
+				Input::IN_RANGE => [null,255],
+				Input::CUSTOM_ERROR_MESSAGES => array(
+					Input::ERROR_RANGE => 'Tag title must fit within @max characters'
 				)
 			)))->out();
 
@@ -597,7 +597,7 @@
 				if (!$TagID) CoreUtils::Respond(ERR_DB_FAIL);
 				$data['tid'] = $TagID;
 
-				$AppearanceID = (new Input('addto','int',array('optional' => true)))->out();
+				$AppearanceID = (new Input('addto','int',array(Input::IS_OPTIONAL => true)))->out();
 				if (isset($AppearanceID)){
 					if ($AppearanceID === 0)
 						CoreUtils::Respond("The tag was created, <strong>but</strong> it could not be added to the appearance because it can't be tagged.", 1);
@@ -653,10 +653,10 @@
 			$data = array();
 
 			$data['label'] = (new Input('label','string',array(
-				'range' => [2,30],
-				'errors' => array(
-					Input::$ERROR_MISSING => 'Please specify a group name',
-					Input::$ERROR_RANGE => 'The group name must be between @min and @max characters in length',
+				Input::IN_RANGE => [2,30],
+				Input::CUSTOM_ERROR_MESSAGES => array(
+					Input::ERROR_MISSING => 'Please specify a group name',
+					Input::ERROR_RANGE => 'The group name must be between @min and @max characters in length',
 				)
 			)))->out();
 			CoreUtils::CheckStringValidity($data['label'], "$Color group name", INVERSE_PRINTABLE_ASCII_PATTERN, true);
@@ -664,10 +664,10 @@
 			$major = isset($_POST['major']);
 			if ($major){
 				$reason = (new Input('reason','string',array(
-					'range' => [null,255],
-					'errors' => array(
-						Input::$ERROR_MISSING => 'Please specify a reason for the changes',
-						Input::$ERROR_RANGE => 'The reason must fit within @max characters',
+					Input::IN_RANGE => [null,255],
+					Input::CUSTOM_ERROR_MESSAGES => array(
+						Input::ERROR_MISSING => 'Please specify a reason for the changes',
+						Input::ERROR_RANGE => 'The reason must fit within @max characters',
 					),
 				)))->out();
 				CoreUtils::CheckStringValidity($reason, "Change reason", INVERSE_PRINTABLE_ASCII_PATTERN);
@@ -675,8 +675,8 @@
 
 			if ($new){
 				$AppearanceID = (new Input('ponyid','int',array(
-					'errors' => array(
-						Input::$ERROR_MISSING => 'Missing appearance ID',
+					Input::CUSTOM_ERROR_MESSAGES => array(
+						Input::ERROR_MISSING => 'Missing appearance ID',
 					)
 				)))->out();
 				$Appearance = $CGDb->where('id', $AppearanceID)->where('ishuman', $EQG)->getOne('appearances');
@@ -696,9 +696,9 @@
 			else $CGDb->where('groupid', $Group['groupid'])->update('colorgroups', $data);
 
 			$recvColors = (new Input('Colors','json',array(
-				'errors' => array(
-					Input::$ERROR_MISSING => "Missing list of {$color}s",
-					Input::$ERROR_INVALID => "List of {$color}s is invalid",
+				Input::CUSTOM_ERROR_MESSAGES => array(
+					Input::ERROR_MISSING => "Missing list of {$color}s",
+					Input::ERROR_INVALID => "List of {$color}s is invalid",
 				)
 			)))->out();
 			$colors = array();
