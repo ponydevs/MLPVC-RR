@@ -173,7 +173,7 @@ DocReady.push(function Colorguide(){
 	$d.on('paginate-refresh', Navigation);
 	Navigation();
 
-	$SearchForm.on('submit', function(e){
+	$SearchForm.on('submit', function(e, gofast){
 		e.preventDefault();
 
 		let $this = $(this),
@@ -182,11 +182,13 @@ DocReady.push(function Colorguide(){
 			query = orig_query.trim().length === 0 ? false : $this.serialize();
 		$this.find('button[type=reset]').attr('disabled', query === false);
 
-		if (query !== false)
-			$.Dialog.wait('Navigation', `Searching for <code>${orig_query.replace(/</g,'&lt;')}</code>`);
-		else $.Dialog.success('Navigation', 'Search terms cleared');
-
-		$.toPage.call({query:query}, window.location.pathname.replace(/\d+($|\?)/,'1$1'), true, true, false, function(){
+		if (!gofast){
+			if (query !== false)
+				$.Dialog.wait('Navigation', `Searching for <code>${orig_query.replace(/</g,'&lt;')}</code>`);
+			else $.Dialog.success('Navigation', 'Search terms cleared');
+		}
+		
+		$.toPage.call({query:query,gofast:gofast}, window.location.pathname.replace(/\d+($|\?)/,'1$1'), true, true, false, function(){
 			if (query !== false)
 				return /^Page \d+/.test(document.title)
 					? `${orig_query} - ${document.title}`
@@ -199,6 +201,8 @@ DocReady.push(function Colorguide(){
 		let $this = $(this);
 		$this.find('input[name=q]').val('');
 		$this.triggerHandler('submit');
+	}).on('click','.sanic-button',function(){
+		$SearchForm.triggerHandler('submit', [true])
 	});
 
 	function getswatch(e){

@@ -915,13 +915,11 @@
 			if (!empty($Search['tid'])){
 				$tc = count($Search['tid']);
 				$Restrictions[] = 'p.id IN (
-					--SELECT ponyid FROM (
-						SELECT t.ponyid
-						FROM tagged t
-						WHERE t.tid IN ('.implode(',', $Search['tid']).")
-						GROUP BY t.ponyid
-						HAVING COUNT(t.tid) = $tc
-					--) tg
+					SELECT t.ponyid
+					FROM tagged t
+					WHERE t.tid IN ('.implode(',', $Search['tid']).")
+					GROUP BY t.ponyid
+					HAVING COUNT(t.tid) = $tc
 				)";
 				$Search['tid_assoc'] = array();
 				foreach ($Search['tid'] as $tid)
@@ -942,9 +940,9 @@
 				$_EntryCount = $CGDb->rawQuerySingle(str_replace('@coloumn','COUNT(*) as count',$Query),$Params)['count'];
 				$Pagination = new Pagination("cg", $AppearancesPerPage, $_EntryCount);
 
-				$SearchQuery = str_replace('@coloumn','p.*',$Query);
-				$SearchQuery .= " ORDER BY p.order ASC {$Pagination->GetLimitString()}";
-				$Ponies = $CGDb->rawQuery($SearchQuery,$Params);
+				$SearchSQLQuery = str_replace('@coloumn','p.*',$Query);
+				$SearchSQLQuery .= " ORDER BY p.order ASC {$Pagination->GetLimitString()}";
+				$Ponies = $CGDb->rawQuery($SearchSQLQuery,$Params);
 			}
 		}
 		catch (Exception $e){
@@ -956,8 +954,10 @@
 		if (empty($Pagination))
 			$Pagination = new Pagination("cg", $AppearancesPerPage, 0);
 	}
+	if (isset($_REQUEST['GOFAST']))
+		CoreUtils::Respond(array('goto' => "/cg/v/{$Ponies[0]['id']}"));
 
-	CoreUtils::FixPath("$CGPath/{$Pagination->page}");
+	CoreUtils::FixPath("$CGPath/{$Pagination->page}".(!empty($Restrictions)?"?q=$SearchQuery":''));
 	$heading = ($EQG?'EQG ':'')."$Color Guide";
 	$title .= "Page {$Pagination->page} - $heading";
 
@@ -972,6 +972,6 @@
 	);
 	if (Permission::Sufficient('staff')){
 		$settings['css'] = array_merge($settings['css'], $GUIDE_MANAGE_CSS);
-		$settings['js'] = array_merge($settings['js'],$GUIDE_MANAGE_JS);
+		$settings['js'] = array_merge($settings['js'], $GUIDE_MANAGE_JS);
 	}
 	CoreUtils::LoadPage($settings);

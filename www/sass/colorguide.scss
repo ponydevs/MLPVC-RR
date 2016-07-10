@@ -422,10 +422,10 @@ ul.colors {
 	width: 500px;
 	font-size: 1.2em;
 	button {
-		font-size: 1em;
 		vertical-align: baseline;
+		margin: 0;
 
-		&:not(:last-child) { margin-right: 5px }
+		&:before { line-height: 1em }
 	}
 	input {
 		font-size: 1em;

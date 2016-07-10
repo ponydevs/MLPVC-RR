@@ -44,7 +44,7 @@
 		$w.off('nav-popstate').on('nav-popstate',function(e, state, goto){
 			let obj = {state:state},
 				params = [location.pathname+location.search+location.hash, true, undefined, true];
-			if (typeof state.baseurl !== 'undefined' && $.Navigation.lastLoadedPathname.replace(/\/\d+($|\?)/,'$1') !== state.baseurl)
+			if (typeof state.baseurl !== 'undefined' && $.Navigation._lastLoadedPathname.replace(/\/\d+($|\?)/,'$1') !== state.baseurl)
 				goto(location.pathname+location.search+location.hash,function(){
 					$.toPage.apply(obj, params);
 				});
@@ -80,10 +80,19 @@
 				data[decodeURIComponent(el[0])] = decodeURIComponent(el[1]);
 			});
 
-			$.Dialog.wait(title, `Loading page ${newPageNumber}`);
+			if (this.gofast){
+				$.Dialog.wait(title, `Loading appearance page`);
+				data.GOFAST = true;
+			}
+			else $.Dialog.wait(title, `Loading page ${newPageNumber}`);
 
 			$.get(target, data, $.mkAjaxHandler(function(){
 				if (!this.status) return $.Dialog.fail(title, this.message);
+
+				if (data.GOFAST && this.goto)
+					return $.Navigation.visit(this.goto,function(){
+						$.Dialog.close();
+					});
 
 				newPageNumber = parseInt(this.page, 10);
 
