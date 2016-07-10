@@ -1,8 +1,38 @@
 /* global DocReady,$w,Time */
 DocReady.push(function Logs(){
 	'use strict';
-	let requesting = false;
+	let requesting = false,
+		$FilterForm = $('#filter-form');
+	
+	$FilterForm.on('submit', function(e){
+		e.preventDefault();
 
+		let $_entryType = $FilterForm.find('[name="type"] option:selected'),
+			_entryTypeValue = $_entryType.val(),
+			_byUsername = $FilterForm.find('[name="by"]').val().trim(),
+			title = `${_entryTypeValue.length?`${_entryTypeValue.replace('of type ','')} entries `:''}${_byUsername.length?`${_entryTypeValue.length?'':'Entries'} by ${_byUsername} `:''}`,
+			query = title.length ? $FilterForm.serialize() : false;
+		$FilterForm.find('button[type=reset]').attr('disabled', query === false);
+
+		if (query !== false)
+			$.Dialog.wait('Navigation', `Looking for ${title.replace(/</g,'&lt;')}`);
+		else $.Dialog.success('Navigation', 'Search terms cleared');
+
+		$.toPage.call({query:query}, window.location.pathname.replace(/\d+($|\?)/,'1$1'), true, true, false, function(){
+			if (query !== false)
+				return /^Page \d+/.test(document.title)
+					? `${title} - ${document.title}`
+					: document.title.replace(/^.*( - Page \d+)/, title+'$1');
+			else return document.title.replace(/^.* - (Page \d+)/, '$1');
+		});
+	}).on('reset', function(e){
+		e.preventDefault();
+
+		$FilterForm.find('[name="type"]').val('');
+		$FilterForm.find('[name="by"]').val('');
+		$FilterForm.triggerHandler('submit');
+	});
+	
 	$('#logs').find('tbody').off('page-switch').on('page-switch',function(){
 		$(this).children().each(function(){
 			let $row = $(this);
@@ -49,27 +79,40 @@ DocReady.push(function Logs(){
 					}
 				}
 			});
+			$row.find('.server-init').off('click').on('click',function(){
+				$FilterForm.find('[name="by"]').val($(this).text().trim());
+				$FilterForm.triggerHandler('submit');
+			});
 		});
 	}).trigger('page-switch').on('click','.dynt-el',function(){
 		let ww = $w.width();
-		if (ww < 650){
-			let $this = $(this),
-				$td = $this.parent(),
-				$tr = $td.parent(),
-				$ip = $tr.children('.ip').clone();
+		if (ww >= 650)
+			return true;
 
+		let $this = $(this),
+			$td = $this.parent(),
+			$tr = $td.parent(),
+			$ip = $tr.children('.ip');
+
+		if ($ip.children('a').length){
+			$ip = $ip.clone(true,true);
 			$ip.children('.self').html(function(){
 				return $(this).text();
 			});
-			$ip = $ip.html().split('<br>');
-
-			$.Dialog.info(`Hidden details of entry #${$tr.children('.entryid').text()}`,
-				`<b>Timestamp:</b> ${$td.children('time').html().trim().replace(/<br>/,' ')}
-				<span class="modal-ip"><br>
-					<b>Initiator:</b> ${$ip[0]}<br>
-					<b>IP Address:</b> ${$.mk('div').html($ip[1]).text()}
-				</span>`
-			);
 		}
+		let $split = $ip.contents(),
+			$span = $.mk('span').attr('class','modal-ip').append(
+				'<br><b>Initiator:</b> ',
+				$split.eq(0)
+			);
+		if ($split.length > 1)
+			$span.append(`<br><b>IP Address:</b> ${$split.get(2).textContent}`);
+
+		$.Dialog.info(`Hidden details of entry #${$tr.children('.entryid').text()}`,
+			$.mk('div').append(
+				`<b>Timestamp:</b> ${$td.children('time').html().trim().replace(/<br>/,' ')}`,
+				$span
+			)
+		);
 	});
 });

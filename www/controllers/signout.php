@@ -15,12 +15,7 @@
 	if (isset($_REQUEST['unlink']) || isset($_REQUEST['everywhere'])){
 		$col = 'user';
 		$val = $currentUser['id'];
-		$username = (new Input('username','username',array(
-			'optional' => true,
-			'errors' => array(
-				Input::$ERROR_INVALID => 'Username (@value) is invalid',
-			),
-		)))->out();
+		$username = User::ValidateName('username', null, true);
 		if (isset($username)){
 			if (!Permission::Sufficient('staff') || isset($_REQUEST['unlink']))
 				CoreUtils::Respond();

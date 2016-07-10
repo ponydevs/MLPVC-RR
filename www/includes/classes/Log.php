@@ -235,7 +235,7 @@
 				}
 				else {
 					$inituser = null;
-					$ip = 'Web server';
+					$ip = '<a class="server-init" title="Search for all entries by Web server"><span class="typcn typcn-zoom"></span>&nbsp;Web server</a>';
 				}
 
 				$event = Log::$LOG_DESCRIPTION[$item['reftype']] ?? $item['reftype'];
@@ -254,8 +254,18 @@
 			</tr>
 HTML;
 			}
-			else $HTML = "<tr><td colspan='4'>There are no log items</td></tr>";
+			else $HTML = '<tr><td colspan="4"><div class="notice info align-center"><label>No log items found</label></td></tr>';
 
 			return $HTML;
+		}
+		
+		static function ValidateRefType($key, $optional = false, $method_get = false){
+			return (new Input($key,function($value){
+				if (!isset(self::$LOG_DESCRIPTION[$value]))
+					return Input::ERROR_INVALID;
+			},array(
+				Input::IS_OPTIONAL => $optional,
+				Input::METHOD_GET => $method_get,
+			)))->out();
 		}
 	}

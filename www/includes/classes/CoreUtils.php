@@ -31,6 +31,7 @@
 			if ($die !== STAY_ALIVE) die("<script>location.replace('".$url."')</script>");
 		}
 
+		const FIXPATH_EMPTY = '#';
 		/**
 		 * Forces an URL rewrite to the specified path
 		 *
@@ -38,10 +39,14 @@
 		 * @param int    $http HTPP status code for the redirect
 		 */
 		static function FixPath($fix_uri, $http = 301){
-			list($path, $query) = explode('?', "{$_SERVER['REQUEST_URI']}?");
-			$query = empty($query) ? '' : "?$query";
-			list($fix_path, $fix_query) = explode('?', "$fix_uri?");
-			$fix_query = empty($fix_query) ? '' : "?$fix_query";
+			$_split = explode('?', $_SERVER['REQUEST_URI'], 2);
+			$path = $_split[0];
+			$query = empty($_split[1]) ? '' : "?{$_split[1]}";
+
+			$_split = explode('?', $fix_uri, 2);
+			$fix_path = $_split[0];
+			$fix_query = empty($_split[1]) ? '' : "?{$_split[1]}";
+
 			if (empty($fix_query))
 				$fix_query = $query;
 			else {
@@ -51,9 +56,11 @@
 				foreach ($fix_query_assoc as $key => $item)
 					$merged[$key] = $item;
 				$fix_query_arr = array();
-				foreach ($merged as $key => $item)
-					$fix_query_arr[] = "$key".(!empty($item)?"=$item":'');
-				$fix_query = empty($fix_query_arr) ? '' : implode('&', $fix_query_arr);
+				foreach ($merged as $key => $item){
+					if (!isset($item) || $item !== self::FIXPATH_EMPTY)
+						$fix_query_arr[] = $key.(!empty($item)?'='.urlencode($item):'');
+				}
+				$fix_query = empty($fix_query_arr) ? '' : '?'.implode('&', $fix_query_arr);
 			}
 			if ($path !== $fix_path || $query !== $fix_query)
 				self::Redirect("$fix_path$fix_query", STAY_ALIVE, $http);
@@ -69,7 +76,7 @@
 		static function QueryStringAssoc($query){
 			$assoc = array();
 			if (!empty($query))
-				parse_str($query, $assoc);
+				parse_str(ltrim($query, '?'), $assoc);
 			return $assoc;
 		}
 

@@ -17,6 +17,7 @@ $ZIndexBase: 21000;
 		width: 100%;
 		height: auto;
 	}
+	#dialogContent form { width: 100% }
 }
 // Desktop-only Styles
 @media all and (min-width: $Breakpoint){
@@ -48,6 +49,8 @@ $ZIndexBase: 21000;
 		border-top-width: 0;
 		background-color: white;
 		overflow: auto;
+
+		form { min-width: 350px }
 	}
 	body.dialog-open #main { padding-right: #{8px + 15px} }
 }
@@ -104,8 +107,6 @@ body.dialog-open {
 	color: $DefaultUIColor;
 
 	form {
-		min-width: 350px;
-
 		> label, > .label {
 			> span {
 				~ select,

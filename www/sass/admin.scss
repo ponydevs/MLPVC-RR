@@ -68,6 +68,9 @@
 			}
 		}
 		&.mass-approve {
+			@media all and (max-width: $Breakpoint){
+				display: none;
+			}
 			.textarea {
 				width: 100px;
 				height: 1em;

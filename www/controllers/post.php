@@ -307,7 +307,7 @@
 		if ($approved === 0)
 			CoreUtils::Respond('There were no posts in need of marking as approved', 1);
 
-		CoreUtils::Respond('Marked '.CoreUtils::MakePlural('post', $approved, PREPEND_NUMBER).' as approved',1,array('reload' => true));
+		CoreUtils::Respond('Marked '.CoreUtils::MakePlural('post', $approved, PREPEND_NUMBER).' as approved. To see which ones, check the <a href="/admin/logs/1?type=post_lock&by=you">list of posts you\'ve approved</a>.',1,array('reload' => true));
 	}
 	else if ($data === 'add-reservation'){
 		if (!Permission::Sufficient('staff'))

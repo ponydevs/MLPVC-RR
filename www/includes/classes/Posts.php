@@ -629,12 +629,9 @@ HTML;
 		}
 
 		static function ValidatePostAs(){
-			return (new Input('post_as','username',array(
-				'optional' => true,
-				'errors' => array(
-					Input::$ERROR_INVALID => '"Post as" username (@value) is invalid',
-				)
-			)))->out();
+			return User::ValidateName('post_as', array(
+				Input::ERROR_INVALID => '"Post as" username (@value) is invalid',
+			), true);
 		}
 
 		static function ValidateReservedAt(){

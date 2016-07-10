@@ -1,5 +1,7 @@
 @import "vars";
+$TableHeadingFontSize: 16px;
 
+// Mobile-only
 @media all and (max-width: $Breakpoint){
 	.expand-section {
 		display: block;
@@ -8,15 +10,40 @@
 	.expandable-section {
 		border-top-right-radius: 0 !important;
 	}
-	#logs tr > .timestamp {
-		text-align: center;
-		vertical-align: middle;
+	#logs tr {
+		> .entryid {
+			font-size: 1em !important;
+		}
+		> .timestamp {
+			text-align: center;
+			vertical-align: middle;
+			width: auto !important;
+			padding: 4px;
 
-		time { display: none !important }
-		.dynt-el {
-			text-decoration: underline;
-			color: #059;
-			cursor: pointer;
+			time { display: none !important }
+			.dynt-el {
+				font-size: .9em !important;
+				@include link;
+			}
+
+			&:not(td) {
+				font-size: 0;
+
+				&:before {
+					content: "When";
+					font-size: $TableHeadingFontSize;
+				}
+			}
+		}
+		> .reftype {
+			width: 100% !important;
+			padding: 4px !important;
+		}
+	}
+	#content > #filter-form {
+		select, input {
+			display: block;
+			margin: 5px auto;
 		}
 	}
 }
@@ -26,10 +53,25 @@
 	}
 }
 @media all and (max-width: 500px){
-	#logs tr > .ip {
-		display: none;
+	#logs tr > {
+		.ip, .entryid { display: none }
 	}
 }
+
+#content {
+	> .links {
+		margin: 0 0 5px;
+	}
+	> #filter-form {
+		text-align: center;
+		margin: 0 0 10px;
+
+		button {
+			margin: 0;
+		}
+	}
+}
+
 #logs {
 	width: 100%;
 
@@ -56,6 +98,9 @@
 			width: 40%;
 			padding: 12px;
 		}
+	}
+	thead th {
+		font-size: $TableHeadingFontSize;
 	}
 	tbody .entryid {
 		font-size: 1.6em;

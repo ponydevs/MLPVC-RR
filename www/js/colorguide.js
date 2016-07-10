@@ -186,7 +186,7 @@ DocReady.push(function Colorguide(){
 			$.Dialog.wait('Navigation', `Searching for <code>${orig_query.replace(/</g,'&lt;')}</code>`);
 		else $.Dialog.success('Navigation', 'Search terms cleared');
 
-		$.toPage.call({query:query}, window.location.pathname.replace(/\d+$/,'1'), true, true, false, function(){
+		$.toPage.call({query:query}, window.location.pathname.replace(/\d+($|\?)/,'1$1'), true, true, false, function(){
 			if (query !== false)
 				return /^Page \d+/.test(document.title)
 					? `${orig_query} - ${document.title}`

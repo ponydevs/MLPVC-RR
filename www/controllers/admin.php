@@ -142,12 +142,70 @@
 
 	switch ($task){
 		case "logs":
+
+			$type = Log::ValidateRefType('type', true, true);
+			if (isset($_GET['type']) && regex_match(new RegExp('/^[a-z_]+$/'), $_GET['type']) && isset(Log::$LOG_DESCRIPTION[$_GET['type']]))
+				$type = $_GET['type'];
+
+			if (!isset($_GET['by']))
+				$by = null;
+			else switch(strtolower(CoreUtils::Trim($_GET['by']))){
+				case 'me':
+				case 'you':
+					$initiator = $currentUser['id'];
+					$by = 'you';
+				break;
+				case 'web server':
+					$initiator = 0;
+					$by = 'Web server';
+				break;
+				default:
+					$by = User::ValidateName('by', null, true);
+					if (isset($by)){
+						$by = User::Get($by, 'id,name');
+						$initiator = $by['id'];
+						$by = $initiator === $currentUser['id'] ? 'me' : $by['name'];
+					}
+			};
+
+			$title = '';
+			function processFilter(&$q = null){
+				global $Database, $currentUser, $type, $by, $initiator, $title;
+
+				if (isset($type)){
+					$Database->where('reftype', $type);
+					if (isset($q)){
+						$q[] = "type=$type";
+						$title .= Log::$LOG_DESCRIPTION[$type].' entries ';
+					}
+				}
+				else if (isset($q))
+					$q[] = 'type='.CoreUtils::FIXPATH_EMPTY;
+				if (isset($initiator)){
+					$_params = $initiator === 0 ? array('"initiator" IS NULL') : array('initiator',$initiator);
+					$Database->where(...$_params);
+					if (isset($q) && isset($by)){
+						$q[] = "by=$by";
+						$title .= (!isset($type)?'Entries ':'')."by $by ";
+					}
+				}
+				else if (isset($q))
+					$q[] = 'by='.CoreUtils::FIXPATH_EMPTY;
+			}
+			$q = array();
+			if (isset($_GET['js']))
+				$q[] = 'js='.$_GET['js'];
+			processFilter($q);
+
 			$Pagination = new Pagination('admin/logs', 20, $Database->count('log'));
 
-			CoreUtils::FixPath("/admin/logs/{$Pagination->page}");
-			$heading = 'Logs';
-			$title = "Page {$Pagination->page} - $heading";
+			$heading = 'Global logs';
+			if (!empty($title))
+				$title .= '- ';
+			$title .= "Page {$Pagination->page} - $heading";
+			CoreUtils::FixPath("/admin/logs/{$Pagination->page}".(!empty($q)?'?'.implode('&',$q):''));
 
+			processFilter();
 			$LogItems = $Database
 				->orderBy('timestamp')
 				->orderBy('entryid')

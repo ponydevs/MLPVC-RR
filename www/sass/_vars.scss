@@ -54,6 +54,7 @@ $NoFontChange: true;
 	text-decoration: none !important;
 	transition: color .2s linear;
 	font-weight: bold;
+	cursor: pointer;
 
 	&:hover { color: $hover }
 }

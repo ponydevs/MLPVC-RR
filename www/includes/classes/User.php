@@ -417,4 +417,15 @@ HTML;
 			$pref = UserPrefs::Get('p_vectorapp', $User['id']);
 			return !empty($pref) ? " app-$pref" : '';
 		}
+
+		static function ValidateName($key, $errors, $optional, $method_get = false){
+			return (new Input($key,'username',array(
+				Input::IS_OPTIONAL => true,
+				Input::METHOD_GET => $method_get,
+				Input::CUSTOM_ERROR_MESSAGES => $errors ?? array(
+					Input::ERROR_MISSING => 'Username (@value) is missing',
+					Input::ERROR_INVALID => 'Username (@value) is invalid',
+				)
+			)))->out();
+		}
 	}
