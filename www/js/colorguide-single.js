@@ -3,15 +3,14 @@ DocReady.push(function ColorguideSingle(){
 	"use strict";
 	window.copyHashToggler();
 
-	let $adminBtns = $('.admin').children();
-	$adminBtns.filter('.edit-cg').on('click',function(){
+	let $colors = $('#colors');
+	$colors.on('click','button.edit-cg',function(){
 		$.ctxmenu.triggerItem($(this).parents('.ctxmenu-bound'), 1);
 	});
-	let $colors = $('#colors');
-	$adminBtns.filter('.reorder-cgs').on('click',function(){
+	$colors.on('click','.reorder-cgs',function(){
 		$.ctxmenu.triggerItem($colors, 1);
 	});
-	$adminBtns.filter('.create-cg').on('click',function(){
+	$colors.on('click','.create-cg',function(){
 		$.ctxmenu.triggerItem($colors, 2);
 	});
 });
