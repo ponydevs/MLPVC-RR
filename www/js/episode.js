@@ -1307,6 +1307,7 @@ DocReady.push(function Episode(){
 				if (image.isLoaded)
 					$progress.attr('value', ++loaded);
 				else if (image.img.src){
+					// Attempt to re-load the post to fix image link
 					let $li = $(image.img).closest('li[id]');
 					if ($li.length === 1){
 						let _idAttr = $li.attr('id').split('-'),

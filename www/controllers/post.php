@@ -49,7 +49,7 @@
 		if (empty($Post))
 			CoreUtils::Respond("The specified $thing does not exist");
 
-		CoreUtils::Respond(array('li' => Posts::GetLi($Post, $thing === 'request', isset($_POST['FROM_PROFILE']))));
+		CoreUtils::Respond(array('li' => Posts::GetLi($Post, $thing === 'request', isset($_POST['FROM_PROFILE']), true)));
 	}
 	else if (regex_match(new RegExp('^((?:un)?(?:finish|lock|reserve)|add|delete)-(request|reservation)s?/(\d+)$'),$data,$_match)){
 		$type = $_match[2];

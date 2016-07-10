@@ -433,20 +433,22 @@ HTML;
 		/**
 		 * List ltem generator function for request & reservation generators
 		 *
-		 * @param array $R         Requests/Reservations array
-		 * @param bool  $isRequest Is the array an array of requests
-		 * @param bool  $view_only Only show the "View" button
+		 * @param array $R             Requests/Reservations array
+		 * @param bool  $isRequest     Is the array an array of requests
+		 * @param bool  $view_only     Only show the "View" button
+		 * @param bool  $cachebust_url Append a random string to the image URL to force a re-fetch
 		 *
 		 * @return string
 		 */
-		static function GetLi($R, $isRequest = false, $view_only = false){
+		static function GetLi($R, $isRequest = false, $view_only = false, $cachebust_url = false){
 			$finished = !empty($R['deviation_id']);
 			$type = $isRequest ? 'request' : 'reservation';
 			$ID = "$type-{$R['id']}";
 			$alt = !empty($R['label']) ? CoreUtils::AposEncode($R['label']) : '';
 			$postlink = "/episode/S{$R['season']}E{$R['episode']}#$ID";
 			$ImageLink = $view_only ? $postlink : $R['fullsize'];
-			$Image = "<div class='image screencap'><a href='$ImageLink'><img src='{$R['preview']}' alt='$alt'></a></div>";
+			$cachebust = $cachebust_url ? '?t='.time() : '';
+			$Image = "<div class='image screencap'><a href='$ImageLink'><img src='{$R['preview']}$cachebust' alt='$alt'></a></div>";
 			$post_label = !empty($R['label']) ? '<span class="label'.(strpos($R['label'],'"') !== false?' noquotes':'').'">'.self::ProcessLabel($R['label']).'</span>' : '';
 			$permalink = "<a href='#$ID'>".Time::Tag($R['posted']).'</a>';
 
@@ -484,7 +486,7 @@ HTML;
 					else {
 						$alt = CoreUtils::AposEncode($Deviation['title']);
 						$ImageLink = $view_only ? $postlink : "http://fav.me/{$Deviation['id']}";
-						$Image = "<div class='image deviation'><a href='$ImageLink'><img src='{$Deviation['preview']}' alt='$alt'>";
+						$Image = "<div class='image deviation'><a href='$ImageLink'><img src='{$Deviation['preview']}$cachebust' alt='$alt'>";
 						if ($approved)
 							$Image .= "<span class='typcn typcn-tick' title='This submission has been accepted into the group gallery'></span>";
 						$Image .= "</a></div>";

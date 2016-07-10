@@ -97,7 +97,11 @@
 				$ID = CoreUtils::NomralizeStashID($ID);
 
 			$Deviation = $Database->where('id', $ID)->where('provider', $type)->getOne('deviation_cache');
-			if (!self::$_CACHE_BAILOUT && (empty($Deviation) && (!$mass || self::$_MASS_CACHE_USED <= self::$_MASS_CACHE_LIMIT)) || (!empty($Deviation['updated_on']) && strtotime($Deviation['updated_on'])+(Time::$IN_SECONDS['hour']*5) < time())){
+
+			$cacheExhausted = self::$_MASS_CACHE_USED > self::$_MASS_CACHE_LIMIT;
+			$cacheExpired = empty($Deviation['updated_on']) ? false : strtotime($Deviation['updated_on'])+(Time::$IN_SECONDS['hour']*5) < time();
+
+			if (!self::$_CACHE_BAILOUT && (empty($Deviation) && (($mass && !$cacheExhausted) || (!$mass && $cacheExpired)))){
 				try {
 					$json = self::oEmbed($ID, $type);
 				}
@@ -112,7 +116,7 @@
 						CoreUtils::Respond($ErrorMSG);
 					else echo "<div class='notice fail'><label>da_cache_deviation($ID, $type)</label><p>$ErrorMSG</p></div>";
 
-					$CACHE_BAILOUT = true;
+					self::$_CACHE_BAILOUT = true;
 					return $Deviation;
 				}
 
