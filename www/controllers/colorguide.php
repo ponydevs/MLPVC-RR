@@ -110,7 +110,7 @@
 					}
 
 					$AppendAppearance['TagIDs'] = array();
-					$TagIDs = \CG\Tags::Get($p['id'],null,null,true);
+					$TagIDs = \CG\Tags::GetFor($p['id'],null,null,true);
 					if (!empty($TagIDs))
 						foreach ($TagIDs as $t)
 							$AppendAppearance['TagIDs'][] = $t['tid'];
@@ -767,7 +767,7 @@
 		$heading = "Tags";
 		$title = "Page $Pagination->page - $heading - $Color Guide";
 
-		$Tags = \CG\Tags::Get(null,$Pagination->GetLimit(), true);
+		$Tags = \CG\Tags::GetFor(null,$Pagination->GetLimit(), true);
 
 		if (isset($_GET['js']))
 			$Pagination->Respond(\CG\Tags::GetTagListHTML($Tags, NOWRAP), '#tags tbody');

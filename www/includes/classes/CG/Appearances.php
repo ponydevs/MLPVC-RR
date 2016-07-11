@@ -106,7 +106,7 @@
 		static function GetTagsHTML($PonyID, $wrap = WRAP, $Search = null){
 			global $CGDb;
 
-			$Tags = Tags::Get($PonyID, null, \Permission::Sufficient('staff'));
+			$Tags = Tags::GetFor($PonyID, null, \Permission::Sufficient('staff'));
 
 			$HTML = '';
 			if (\Permission::Sufficient('staff') && $PonyID !== 0)
@@ -380,16 +380,16 @@
 			global $CGDb;
 
 			$EpTagsOnAppearance = $CGDb->rawQuery(
-					"SELECT t.tid
-			FROM tagged tt
-			LEFT JOIN tags t ON tt.tid = t.tid
-			WHERE tt.ponyid = ? &&  t.type = 'ep'",array($AppearanceID));
+				"SELECT t.tid
+				FROM tagged tt
+				LEFT JOIN tags t ON tt.tid = t.tid
+				WHERE tt.ponyid = ? &&  t.type = 'ep'",array($AppearanceID));
 
 			if (!empty($EpTagsOnAppearance)){
 				foreach ($EpTagsOnAppearance as $k => $row)
 					$EpTagsOnAppearance[$k] = $row['tid'];
 
-				$EpAppearances = $CGDb->rawQuery("SELECT DISTINCT t.name FROM tags t WHERE t.tid IN (".implode(',',$EpTagsOnAppearance).")");
+				$EpAppearances = $CGDb->rawQuery("SELECT DISTINCT name FROM tags WHERE tid IN (".implode(',',$EpTagsOnAppearance).") ORDER BY name");
 				if (empty($EpAppearances))
 					return '';
 
@@ -400,7 +400,7 @@
 					$Ep = \Episode::GetActual($EpData['season'], $EpData['episode']);
 					$List .= (
 						empty($Ep)
-						? $name
+						? self::ExpandEpisodeTagName($name)
 						: "<a href='/episode/S{$Ep['season']}E{$Ep['episode']}'>".\Episode::FormatTitle($Ep).'</a>'
 					).', ';
 				}
@@ -420,6 +420,20 @@
 			<p>$List</p>
 		</section>
 HTML;
+		}
+		/**
+		 * Turns "S#E#" into "S0# E0#"
+		 *
+		 * @param string $tagname
+		 *
+		 * @return string
+		 */
+		static function ExpandEpisodeTagName($tagname){
+			global $EPISODE_ID_REGEX;
+			
+			regex_match($EPISODE_ID_REGEX, $tagname, $_match);
+			
+			return 'S'.\CoreUtils::Pad($_match[1]).' E'.\CoreUtils::Pad($_match[2]);
 		}
 
 		/**

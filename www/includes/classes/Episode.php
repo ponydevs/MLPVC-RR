@@ -192,8 +192,8 @@
 			global $EPISODE_ID_REGEX;
 			if (regex_match($EPISODE_ID_REGEX, $id, $match))
 				return array(
-					'season' => intval($match[1]),
-					'episode' => intval($match[2]),
+					'season' => intval($match[1], 10),
+					'episode' => intval($match[2], 10),
 					'twoparter' => !empty($match[3]),
 				);
 			else return null;

@@ -138,7 +138,7 @@
 		}
 
 		/**
-		 * Checks and shortens episode tags
+		 * Checks and normalizes episode tag names
 		 *
 		 * @param string $tag
 		 *
@@ -152,7 +152,7 @@
 				$season = intval($_match[1], 10);
 				if ($season == 0)
 					return false;
-				return 's'.intval($_match[1], 10).'e'.intval($_match[2], 10).(!empty($_match[3]) ? '-'.intval($_match[3], 10) : '');
+				return 's'.CoreUtils::Pad(intval($_match[1], 10)).'e'.CoreUtils::Pad(intval($_match[2], 10)).(!empty($_match[3]) ? '-'.CoreUtils::Pad(intval($_match[3], 10)) : '');
 			}
 			else return false;
 		}

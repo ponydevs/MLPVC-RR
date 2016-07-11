@@ -23,7 +23,7 @@
 		 *
 		 * @return array|null
 		 */
-		static function Get($PonyID = null, $limit = null, $showEpTags = false, $exporting = false){
+		static function GetFor($PonyID = null, $limit = null, $showEpTags = false, $exporting = false){
 			global $CGDb;
 
 			if (!$exporting){

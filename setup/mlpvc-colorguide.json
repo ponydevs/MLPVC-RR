@@ -1859,7 +1859,7 @@
 			"id": 9,
 			"order": 14,
 			"label": "Princess Luna",
-			"notes": "",
+			"notes": "Luna's ears should have pointed tips.",
 			"cm_favme": null,
 			"ishuman": false,
 			"added": "2015-09-29 20:55:38+02",
@@ -8041,11 +8041,11 @@
 			"order": 48,
 			"label": "Minuette",
 			"notes": "For convenience, the color of the glass on her cutie mark is solid rather than transparent, thus the sand should be above.",
-			"cm_favme": null,
+			"cm_favme": "da9hno4",
 			"ishuman": false,
 			"added": "2015-07-25 16:49:44+02",
 			"cm_preview": null,
-			"cm_dir": null,
+			"cm_dir": false,
 			"ColorGroups": {
 				"81": {
 					"groupid": 81,
@@ -8055,12 +8055,12 @@
 						{
 							"order": 0,
 							"label": "Outline",
-							"hex": "#457BBB"
+							"hex": "#467CBB"
 						},
 						{
 							"order": 1,
 							"label": "Fill",
-							"hex": "#81C3EA"
+							"hex": "#83C6ED"
 						},
 						{
 							"order": 2,
@@ -8077,12 +8077,12 @@
 						{
 							"order": 0,
 							"label": "Dark Outline",
-							"hex": "#303296"
+							"hex": "#303297"
 						},
 						{
 							"order": 1,
 							"label": "Dark Fill",
-							"hex": "#393CB0"
+							"hex": "#393CB1"
 						},
 						{
 							"order": 2,
@@ -8092,13 +8092,13 @@
 						{
 							"order": 3,
 							"label": "Light Fill",
-							"hex": "#CED0EC"
+							"hex": "#CFD1EC"
 						}
 					]
 				},
 				"83": {
 					"groupid": 83,
-					"label": "Iris",
+					"label": "Iris ",
 					"order": 0,
 					"Colors": [
 						{
@@ -8109,17 +8109,17 @@
 						{
 							"order": 1,
 							"label": "Gradient Bottom",
-							"hex": "#526BCB"
+							"hex": "#506ACF"
 						},
 						{
 							"order": 2,
 							"label": "Highlight Top",
-							"hex": "#AAAAF8"
+							"hex": "#AAACFB"
 						},
 						{
 							"order": 3,
 							"label": "Highlight Bottom",
-							"hex": "#DBDCFC"
+							"hex": "#DBDCFF"
 						}
 					]
 				},
@@ -8130,23 +8130,28 @@
 					"Colors": [
 						{
 							"order": 0,
-							"label": "Base",
-							"hex": "#DBBF0F"
+							"label": "Glass",
+							"hex": "#BAE9FA"
 						},
 						{
 							"order": 1,
-							"label": "Base Highlight",
-							"hex": "#FBEB98"
+							"label": "Glass Highlight",
+							"hex": "#F6F5EB"
 						},
 						{
 							"order": 2,
-							"label": "Glass",
-							"hex": "#BFEAF8"
+							"label": "Sand",
+							"hex": "#D3CF96"
 						},
 						{
 							"order": 3,
-							"label": "Sand",
-							"hex": "#D4CF97"
+							"label": "Base",
+							"hex": "#DCBE10"
+						},
+						{
+							"order": 4,
+							"label": "Base Highlight",
+							"hex": "#FFEA9B"
 						}
 					]
 				},
@@ -8158,7 +8163,7 @@
 						{
 							"order": 0,
 							"label": "Aura",
-							"hex": "#E8DA9C"
+							"hex": "#F8EA96"
 						}
 					]
 				}
@@ -12377,9 +12382,9 @@
 					"order": 4,
 					"Colors": [
 						{
-							"order": 13,
+							"order": 0,
 							"label": "Aura",
-							"hex": null
+							"hex": "#824581"
 						}
 					]
 				},
@@ -12871,9 +12876,159 @@
 				356
 			]
 		},
+		"174": {
+			"id": 174,
+			"order": 76,
+			"label": "Amethyst Star",
+			"notes": "Does not have a Coat Shadow Fill color.\nAura color <em>might</em> be inaccurate.",
+			"cm_favme": null,
+			"ishuman": false,
+			"added": "2016-07-11 20:35:52.781735+02",
+			"cm_preview": null,
+			"cm_dir": null,
+			"ColorGroups": {
+				"952": {
+					"groupid": 952,
+					"label": "Coat",
+					"order": 0,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#9D53A3"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#F3A3F2"
+						}
+					]
+				},
+				"953": {
+					"groupid": 953,
+					"label": "Mane & Tail",
+					"order": 1,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Lighter Outline",
+							"hex": "#A556D9"
+						},
+						{
+							"order": 1,
+							"label": "Lighter Fill",
+							"hex": "#B572E0"
+						},
+						{
+							"order": 2,
+							"label": "Darker Outline",
+							"hex": "#663297"
+						},
+						{
+							"order": 3,
+							"label": "Darker Fill",
+							"hex": "#8040BE"
+						}
+					]
+				},
+				"954": {
+					"groupid": 954,
+					"label": "Iris",
+					"order": 2,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Gradient Top",
+							"hex": "#3B1E57"
+						},
+						{
+							"order": 1,
+							"label": "Gradient Bottom",
+							"hex": "#A656D9"
+						},
+						{
+							"order": 2,
+							"label": "Highlight Top",
+							"hex": "#B77ADF"
+						},
+						{
+							"order": 3,
+							"label": "Highlight Bottom",
+							"hex": "#E8D5F4"
+						}
+					]
+				},
+				"955": {
+					"groupid": 955,
+					"label": "Cutie Mark",
+					"order": 3,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outer Outline",
+							"hex": "#6BB1B6"
+						},
+						{
+							"order": 1,
+							"label": "Rounded Top",
+							"hex": "#E0F5F1"
+						},
+						{
+							"order": 2,
+							"label": "Downward-Pointing Triangles",
+							"hex": "#BEF1E3"
+						},
+						{
+							"order": 3,
+							"label": "Upward-Pointing Triangles",
+							"hex": "#A6E6D9"
+						},
+						{
+							"order": 4,
+							"label": "Leftmost Cut/Middle Line",
+							"hex": "#D3F2EC"
+						},
+						{
+							"order": 5,
+							"label": "Middle Cut",
+							"hex": "#B3EFDD"
+						},
+						{
+							"order": 6,
+							"label": "Rightmost Cut",
+							"hex": "#89DECC"
+						}
+					]
+				},
+				"956": {
+					"groupid": 956,
+					"label": "Magic",
+					"order": 4,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Aura",
+							"hex": "#E39AEF"
+						}
+					]
+				}
+			},
+			"TagIDs": [
+				1,
+				7,
+				8,
+				12,
+				120,
+				125,
+				191,
+				276,
+				353,
+				373
+			]
+		},
 		"55": {
 			"id": 55,
-			"order": 76,
+			"order": 77,
 			"label": "Spitfire",
 			"notes": "Far legs use darker colors.\nEyelid highlight is only visible while Spitfire is wearing her Wonderbolt uniform (https://mlpvc-rr.ml/cg/v/70-Wonderbolt-Uniform) and appears to have been completely removed in Season 6.",
 			"cm_favme": "d5nzngs",
@@ -12999,7 +13154,7 @@
 		},
 		"127": {
 			"id": 127,
-			"order": 77,
+			"order": 78,
 			"label": "Soarin'",
 			"notes": "",
 			"cm_favme": "d72vipj",
@@ -13102,7 +13257,7 @@
 		},
 		"11": {
 			"id": 11,
-			"order": 78,
+			"order": 79,
 			"label": "Derpy Hooves / Muffins",
 			"notes": "Far legs use darker colors.\nHer top iris highlight is the same color as the bottom stop on the iris gradient.",
 			"cm_favme": "da27cuh",
@@ -13219,7 +13374,7 @@
 		},
 		"19": {
 			"id": 19,
-			"order": 79,
+			"order": 80,
 			"label": "Fleetfoot",
 			"notes": "",
 			"cm_favme": "d97x7vd",
@@ -13336,7 +13491,7 @@
 		},
 		"137": {
 			"id": 137,
-			"order": 80,
+			"order": 81,
 			"label": "Misty Fly",
 			"notes": "Cutie mark is unknown",
 			"cm_favme": null,
@@ -13436,7 +13591,7 @@
 		},
 		"100": {
 			"id": 100,
-			"order": 81,
+			"order": 82,
 			"label": "Cloud Chaser",
 			"notes": "Her eye outline is thicker and goes down further than usual.\nShe has a special eye gradient with four stops and no iris highlights.",
 			"cm_favme": "da7y90w",
@@ -13563,7 +13718,7 @@
 		},
 		"103": {
 			"id": 103,
-			"order": 82,
+			"order": 83,
 			"label": "Flitter",
 			"notes": "She has no iris highlights.",
 			"cm_favme": null,
@@ -13695,7 +13850,7 @@
 		},
 		"101": {
 			"id": 101,
-			"order": 83,
+			"order": 84,
 			"label": "Thunderlane",
 			"notes": "",
 			"cm_favme": "da82bww",
@@ -13815,7 +13970,7 @@
 		},
 		"68": {
 			"id": 68,
-			"order": 84,
+			"order": 85,
 			"label": "Blossomforth",
 			"notes": "Based on Hurricane Fluttershy",
 			"cm_favme": "d8geiw1",
@@ -13936,7 +14091,7 @@
 		},
 		"104": {
 			"id": 104,
-			"order": 85,
+			"order": 86,
 			"label": "Twilight Sky",
 			"notes": "Based on S2E22.\nFar legs use darker colors.\nDoes not have iris highlights.",
 			"cm_favme": "d6t4847",
@@ -14032,7 +14187,7 @@
 		},
 		"97": {
 			"id": 97,
-			"order": 86,
+			"order": 87,
 			"label": "Bulk Biceps",
 			"notes": "",
 			"cm_favme": "da7oq90",
@@ -14211,7 +14366,7 @@
 		},
 		"65": {
 			"id": 65,
-			"order": 87,
+			"order": 88,
 			"label": "Meadow Flower",
 			"notes": "",
 			"cm_favme": "d9ko8le",
@@ -14342,7 +14497,7 @@
 		},
 		"102": {
 			"id": 102,
-			"order": 88,
+			"order": 89,
 			"label": "Thunderclap",
 			"notes": "",
 			"cm_favme": null,
@@ -14489,7 +14644,7 @@
 		},
 		"26": {
 			"id": 26,
-			"order": 89,
+			"order": 90,
 			"label": "Night Glider",
 			"notes": "",
 			"cm_favme": "d8oovxh",
@@ -14631,7 +14786,7 @@
 		},
 		"20": {
 			"id": 20,
-			"order": 90,
+			"order": 91,
 			"label": "Stormy Flare",
 			"notes": "Only has one eye shine.\nFar legs use darker colors.",
 			"cm_favme": "d9acleq",
@@ -14802,7 +14957,7 @@
 		},
 		"21": {
 			"id": 21,
-			"order": 91,
+			"order": 92,
 			"label": "Wind Rider",
 			"notes": "Teeth use a different color than normal.",
 			"cm_favme": "d9ao1qp",
@@ -15067,7 +15222,7 @@
 		},
 		"138": {
 			"id": 138,
-			"order": 92,
+			"order": 93,
 			"label": "Sunshower Raindrops",
 			"notes": "",
 			"cm_favme": "da5vt5m",
@@ -15179,7 +15334,7 @@
 		},
 		"151": {
 			"id": 151,
-			"order": 93,
+			"order": 94,
 			"label": "Zephyr Breeze",
 			"notes": "Has pointed ear tips",
 			"cm_favme": "da570dh",
@@ -15290,7 +15445,7 @@
 		},
 		"152": {
 			"id": 152,
-			"order": 94,
+			"order": 95,
 			"label": "Mr. Shy",
 			"notes": "",
 			"cm_favme": null,
@@ -15444,7 +15599,7 @@
 		},
 		"153": {
 			"id": 153,
-			"order": 95,
+			"order": 96,
 			"label": "Mrs. Shy",
 			"notes": "There are no extra transparency colors for the glasses lens.",
 			"cm_favme": null,
@@ -15640,7 +15795,7 @@
 		},
 		"159": {
 			"id": 159,
-			"order": 96,
+			"order": 97,
 			"label": "Daring Do / A.K. Yearling",
 			"notes": "",
 			"cm_favme": null,
@@ -16001,7 +16156,7 @@
 		},
 		"171": {
 			"id": 171,
-			"order": 97,
+			"order": 98,
 			"label": "Orange Swirl",
 			"notes": "",
 			"cm_favme": "da7y1xt",
@@ -16110,7 +16265,7 @@
 		},
 		"35": {
 			"id": 35,
-			"order": 98,
+			"order": 99,
 			"label": "Big McIntosh",
 			"notes": "Far legs use darker colors.",
 			"cm_favme": "d9zhgk0",
@@ -16323,7 +16478,7 @@
 		},
 		"18": {
 			"id": 18,
-			"order": 99,
+			"order": 100,
 			"label": "Granny Smith",
 			"notes": "Far legs use darker colors.",
 			"cm_favme": null,
@@ -16486,7 +16641,7 @@
 		},
 		"121": {
 			"id": 121,
-			"order": 100,
+			"order": 101,
 			"label": "Braeburn",
 			"notes": "",
 			"cm_favme": "d9zls6n",
@@ -16645,7 +16800,7 @@
 		},
 		"79": {
 			"id": 79,
-			"order": 101,
+			"order": 102,
 			"label": "Cheerilee",
 			"notes": "",
 			"cm_favme": null,
@@ -16759,14 +16914,14 @@
 		},
 		"80": {
 			"id": 80,
-			"order": 102,
+			"order": 103,
 			"label": "Dr. Hooves / Time Turner",
-			"notes": "",
-			"cm_favme": null,
+			"notes": "For convenience, the color of the glass on her cutie mark is solid rather than transparent, thus the sand should be above.",
+			"cm_favme": "da9gbnl",
 			"ishuman": false,
 			"added": "2016-03-12 16:38:44.973718+01",
 			"cm_preview": null,
-			"cm_dir": null,
+			"cm_dir": false,
 			"ColorGroups": {
 				"446": {
 					"groupid": 446,
@@ -16836,27 +16991,27 @@
 					"Colors": [
 						{
 							"order": 0,
-							"label": "Hourglass",
+							"label": "Glass",
 							"hex": "#BAE9FA"
 						},
 						{
 							"order": 1,
+							"label": "Glass Highlights",
+							"hex": "#F6F5EB"
+						},
+						{
+							"order": 2,
 							"label": "Sand",
 							"hex": "#E2D678"
 						},
 						{
-							"order": 2,
-							"label": "Hourglass Highlights",
-							"hex": "#F6F5EB"
-						},
-						{
 							"order": 3,
-							"label": "Bases Fill 1",
+							"label": "Base",
 							"hex": "#F2E257"
 						},
 						{
 							"order": 4,
-							"label": "Bases Fill 2",
+							"label": "Base Highlight",
 							"hex": "#F7EC9B"
 						}
 					]
@@ -16894,17 +17049,19 @@
 				7,
 				8,
 				11,
+				120,
 				134,
 				135,
 				152,
 				153,
 				157,
-				351
+				351,
+				372
 			]
 		},
 		"111": {
 			"id": 111,
-			"order": 103,
+			"order": 104,
 			"label": "Sweetie Drops / Bon Bon",
 			"notes": "",
 			"cm_favme": "d6xmkv9",
@@ -17030,7 +17187,7 @@
 		},
 		"110": {
 			"id": 110,
-			"order": 104,
+			"order": 105,
 			"label": "Octavia Melody",
 			"notes": "",
 			"cm_favme": null,
@@ -17164,7 +17321,7 @@
 		},
 		"76": {
 			"id": 76,
-			"order": 105,
+			"order": 106,
 			"label": "Mayor Mare",
 			"notes": "",
 			"cm_favme": null,
@@ -17357,7 +17514,7 @@
 		},
 		"30": {
 			"id": 30,
-			"order": 106,
+			"order": 107,
 			"label": "Miss Pommel",
 			"notes": "Far legs use darker colors.",
 			"cm_favme": null,
@@ -17571,7 +17728,7 @@
 		},
 		"46": {
 			"id": 46,
-			"order": 107,
+			"order": 108,
 			"label": "Cheese Sandwich",
 			"notes": "",
 			"cm_favme": "d74od89",
@@ -17725,7 +17882,7 @@
 		},
 		"52": {
 			"id": 52,
-			"order": 108,
+			"order": 109,
 			"label": "Maud Pie",
 			"notes": "Far legs use darker colors.",
 			"cm_favme": "d7apvq4",
@@ -17938,7 +18095,7 @@
 		},
 		"51": {
 			"id": 51,
-			"order": 109,
+			"order": 110,
 			"label": "Limestone Pie",
 			"notes": "",
 			"cm_favme": "d9eecqj",
@@ -18059,7 +18216,7 @@
 		},
 		"50": {
 			"id": 50,
-			"order": 110,
+			"order": 111,
 			"label": "Marble Pie",
 			"notes": "Two different hair outline colors.\nEye gradient should be adjusted (lower on eye) to make sure top highlight is easily distinguished from gradient.",
 			"cm_favme": "d9eeci7",
@@ -18175,7 +18332,7 @@
 		},
 		"53": {
 			"id": 53,
-			"order": 111,
+			"order": 112,
 			"label": "Igneous Rock",
 			"notes": "Far legs use darker colors.",
 			"cm_favme": null,
@@ -18319,7 +18476,7 @@
 		},
 		"54": {
 			"id": 54,
-			"order": 112,
+			"order": 113,
 			"label": "Cloudy Quartz",
 			"notes": "",
 			"cm_favme": null,
@@ -18510,7 +18667,7 @@
 		},
 		"27": {
 			"id": 27,
-			"order": 113,
+			"order": 114,
 			"label": "Double Diamond",
 			"notes": "Far legs use darker colors.",
 			"cm_favme": "da8pwr4",
@@ -18638,7 +18795,7 @@
 		},
 		"58": {
 			"id": 58,
-			"order": 114,
+			"order": 115,
 			"label": "Tree Hugger",
 			"notes": "Darker highlight color matches the bottom iris gradient color.",
 			"cm_favme": "d8u7pz5",
@@ -18786,7 +18943,7 @@
 		},
 		"59": {
 			"id": 59,
-			"order": 115,
+			"order": 116,
 			"label": "Coloratura",
 			"notes": "",
 			"cm_favme": "d9hm2yd",
@@ -18922,7 +19079,7 @@
 		},
 		"60": {
 			"id": 60,
-			"order": 116,
+			"order": 117,
 			"label": "Rara (Countess Outfit)",
 			"notes": "",
 			"cm_favme": null,
@@ -19222,7 +19379,7 @@
 		},
 		"61": {
 			"id": 61,
-			"order": 117,
+			"order": 118,
 			"label": "Svengallop",
 			"notes": "",
 			"cm_favme": null,
@@ -19435,7 +19592,7 @@
 		},
 		"95": {
 			"id": 95,
-			"order": 118,
+			"order": 119,
 			"label": "Street Rat",
 			"notes": "",
 			"cm_favme": null,
@@ -19685,7 +19842,7 @@
 		},
 		"96": {
 			"id": 96,
-			"order": 119,
+			"order": 120,
 			"label": "Copper Top",
 			"notes": "",
 			"cm_favme": null,
@@ -19906,7 +20063,7 @@
 		},
 		"99": {
 			"id": 99,
-			"order": 120,
+			"order": 121,
 			"label": "Hoofer Steps",
 			"notes": "",
 			"cm_favme": null,
@@ -20098,7 +20255,7 @@
 		},
 		"106": {
 			"id": 106,
-			"order": 121,
+			"order": 122,
 			"label": "Toe Tapper",
 			"notes": "Far legs use darker colors.\nOnly has one eye shine and one iris highlight located in the top part of the iris.",
 			"cm_favme": null,
@@ -20200,7 +20357,7 @@
 		},
 		"107": {
 			"id": 107,
-			"order": 122,
+			"order": 123,
 			"label": "Torch Song",
 			"notes": "Far legs use darker colors.",
 			"cm_favme": null,
@@ -20347,7 +20504,7 @@
 		},
 		"135": {
 			"id": 135,
-			"order": 123,
+			"order": 124,
 			"label": "Ms. Peachbottom",
 			"notes": "Far legs use darker colors. On the luggage:\n<b>Side Flower 1</b> represents the two flowers perpendicular to the tear\n<b>Side Flower 2</b> is the top flower in line with the tear\n<b>Side Flower 3</b> is the bottom one in line with the tear.",
 			"cm_favme": null,
@@ -20707,7 +20864,7 @@
 		},
 		"136": {
 			"id": 136,
-			"order": 124,
+			"order": 125,
 			"label": "Ms. Harshwhinny",
 			"notes": "Far legs use darker colors.\nShe has no iris highlights.",
 			"cm_favme": null,
@@ -21011,7 +21168,7 @@
 		},
 		"141": {
 			"id": 141,
-			"order": 125,
+			"order": 126,
 			"label": "Plaid Stripes",
 			"notes": "Has pointed ear tips",
 			"cm_favme": "da3hzwf",
@@ -21207,7 +21364,7 @@
 		},
 		"142": {
 			"id": 142,
-			"order": 126,
+			"order": 127,
 			"label": "Mr. Stripes",
 			"notes": "",
 			"cm_favme": null,
@@ -21406,7 +21563,7 @@
 		},
 		"143": {
 			"id": 143,
-			"order": 127,
+			"order": 128,
 			"label": "Buried Lede",
 			"notes": "",
 			"cm_favme": null,
@@ -21670,7 +21827,7 @@
 		},
 		"145": {
 			"id": 145,
-			"order": 128,
+			"order": 129,
 			"label": "Aloe",
 			"notes": "",
 			"cm_favme": "da4gv05",
@@ -21811,7 +21968,7 @@
 		},
 		"146": {
 			"id": 146,
-			"order": 129,
+			"order": 130,
 			"label": "Lotus Blossom",
 			"notes": "",
 			"cm_favme": "da4gvw5",
@@ -21953,7 +22110,7 @@
 		},
 		"147": {
 			"id": 147,
-			"order": 130,
+			"order": 131,
 			"label": "Caramel",
 			"notes": "",
 			"cm_favme": "da4h4c6",
@@ -22053,7 +22210,7 @@
 		},
 		"149": {
 			"id": 149,
-			"order": 131,
+			"order": 132,
 			"label": "Spoiled Rich",
 			"notes": "",
 			"cm_favme": null,
@@ -22309,7 +22466,7 @@
 		},
 		"150": {
 			"id": 150,
-			"order": 132,
+			"order": 133,
 			"label": "Filthy Rich",
 			"notes": "",
 			"cm_favme": null,
@@ -22477,7 +22634,7 @@
 		},
 		"155": {
 			"id": 155,
-			"order": 133,
+			"order": 134,
 			"label": "Quarter Hearts",
 			"notes": "aka \"Link\" pony",
 			"cm_favme": null,
@@ -22588,7 +22745,7 @@
 		},
 		"161": {
 			"id": 161,
-			"order": 134,
+			"order": 135,
 			"label": "S05E06 Unnamed Earth Mare #1",
 			"notes": "The frilly underpants have a lighter shadow outline color than the normal outline.",
 			"cm_favme": null,
@@ -22819,7 +22976,7 @@
 		},
 		"166": {
 			"id": 166,
-			"order": 135,
+			"order": 136,
 			"label": "Cup Cake",
 			"notes": "Ears are pointed.",
 			"cm_favme": null,
@@ -22986,7 +23143,7 @@
 		},
 		"168": {
 			"id": 168,
-			"order": 136,
+			"order": 137,
 			"label": "Carrot Cake",
 			"notes": "",
 			"cm_favme": null,
@@ -23160,7 +23317,7 @@
 		},
 		"165": {
 			"id": 165,
-			"order": 137,
+			"order": 138,
 			"label": "Lucky Clover",
 			"notes": "",
 			"cm_favme": "d68lo5f",
@@ -23259,7 +23416,7 @@
 		},
 		"172": {
 			"id": 172,
-			"order": 138,
+			"order": 139,
 			"label": "Daisy",
 			"notes": "",
 			"cm_favme": "da8l1xp",
@@ -23371,7 +23528,7 @@
 		},
 		"173": {
 			"id": 173,
-			"order": 139,
+			"order": 140,
 			"label": "Lily Valley",
 			"notes": "",
 			"cm_favme": null,
@@ -23493,7 +23650,7 @@
 		},
 		"64": {
 			"id": 64,
-			"order": 140,
+			"order": 141,
 			"label": "Angel Bunny",
 			"notes": "",
 			"cm_favme": null,
@@ -23607,7 +23764,7 @@
 		},
 		"112": {
 			"id": 112,
-			"order": 141,
+			"order": 142,
 			"label": "Gummy",
 			"notes": "In 3/4 view, the top line on his far eye uses the \"Far Eye Top Line\" color instead of the normal gradient.",
 			"cm_favme": null,
@@ -23744,7 +23901,7 @@
 		},
 		"116": {
 			"id": 116,
-			"order": 142,
+			"order": 143,
 			"label": "Winona",
 			"notes": "",
 			"cm_favme": null,
@@ -23878,7 +24035,7 @@
 		},
 		"117": {
 			"id": 117,
-			"order": 143,
+			"order": 144,
 			"label": "Owlowiscious",
 			"notes": "",
 			"cm_favme": null,
@@ -23966,7 +24123,7 @@
 		},
 		"119": {
 			"id": 119,
-			"order": 144,
+			"order": 145,
 			"label": "Tank",
 			"notes": "Far Legs use darker colors.\nIn some scenes, Tank uses an alternate set of colors for the tongue.\nFor accurate goggle lenses: Group together the Fill (100% Normal blending) and the Highlights (75% Color Dodge blending) and set the group to 50% opacity.\nFor a less accurate version, group together the Fill and the Highlights (both 100% opacity, Normal blending) and set the group to 50% opacity.",
 			"cm_favme": null,
@@ -24234,7 +24391,7 @@
 		},
 		"120": {
 			"id": 120,
-			"order": 145,
+			"order": 146,
 			"label": "Opalescence",
 			"notes": "",
 			"cm_favme": null,
@@ -24431,7 +24588,7 @@
 		},
 		"33": {
 			"id": 33,
-			"order": 146,
+			"order": 147,
 			"label": "Alicorn Amulet",
 			"notes": "",
 			"cm_favme": null,
@@ -24622,7 +24779,7 @@
 		},
 		"86": {
 			"id": 86,
-			"order": 147,
+			"order": 148,
 			"label": "Scorpan's Medallion",
 			"notes": "",
 			"cm_favme": null,
@@ -24699,7 +24856,7 @@
 		},
 		"94": {
 			"id": 94,
-			"order": 148,
+			"order": 149,
 			"label": "Party Cannon",
 			"notes": "",
 			"cm_favme": null,
@@ -24827,7 +24984,7 @@
 		},
 		"115": {
 			"id": 115,
-			"order": 149,
+			"order": 150,
 			"label": "Fake Timberwolf",
 			"notes": "",
 			"cm_favme": null,
@@ -25035,7 +25192,7 @@
 		},
 		"154": {
 			"id": 154,
-			"order": 150,
+			"order": 151,
 			"label": "Twilight's Crown",
 			"notes": "For S4 onward",
 			"cm_favme": null,
@@ -25086,7 +25243,7 @@
 		},
 		"70": {
 			"id": 70,
-			"order": 151,
+			"order": 152,
 			"label": "Wonderbolt Uniform",
 			"notes": "",
 			"cm_favme": "da7pd3q",
@@ -25216,7 +25373,7 @@
 		},
 		"133": {
 			"id": 133,
-			"order": 152,
+			"order": 153,
 			"label": "Spitfire's Academy Outfit",
 			"notes": "",
 			"cm_favme": null,
@@ -25413,7 +25570,7 @@
 		},
 		"71": {
 			"id": 71,
-			"order": 153,
+			"order": 154,
 			"label": "Wonderbolt Trainee Uniform",
 			"notes": "",
 			"cm_favme": null,
@@ -25480,7 +25637,7 @@
 		},
 		"105": {
 			"id": 105,
-			"order": 154,
+			"order": 155,
 			"label": "Pony Tones Outfit",
 			"notes": "",
 			"cm_favme": null,
@@ -25581,7 +25738,7 @@
 		},
 		"109": {
 			"id": 109,
-			"order": 155,
+			"order": 156,
 			"label": "Zecora",
 			"notes": "Based on S4E14.",
 			"cm_favme": null,
@@ -25746,7 +25903,7 @@
 		},
 		"113": {
 			"id": 113,
-			"order": 156,
+			"order": 157,
 			"label": "Orange Frog",
 			"notes": "",
 			"cm_favme": null,
@@ -25841,7 +25998,7 @@
 		},
 		"122": {
 			"id": 122,
-			"order": 157,
+			"order": 158,
 			"label": "Pig (Peach Skin)",
 			"notes": "",
 			"cm_favme": null,
@@ -25962,7 +26119,7 @@
 		},
 		"123": {
 			"id": 123,
-			"order": 158,
+			"order": 159,
 			"label": "Pig (Pink Skin)",
 			"notes": "Muddy Nostril color unknown",
 			"cm_favme": null,
@@ -26078,7 +26235,7 @@
 		},
 		"124": {
 			"id": 124,
-			"order": 159,
+			"order": 160,
 			"label": "Pig (Dark Skin)",
 			"notes": "Muddy Nostril color unknown",
 			"cm_favme": null,
@@ -26194,7 +26351,7 @@
 		},
 		"139": {
 			"id": 139,
-			"order": 160,
+			"order": 161,
 			"label": "Cranky Doodle Donkey",
 			"notes": "<strong>Toupee #1</strong> is up through half-way of \"A Friend in Deed\"\n<strong>Toupee #2</strong> is from \"A Friend in Deed\" through most of \"Slice of Life\"\n<strong>Toupee #2</strong> is from end of \"Slice of Life\" onward.",
 			"cm_favme": null,
@@ -26347,7 +26504,7 @@
 		},
 		"140": {
 			"id": 140,
-			"order": 161,
+			"order": 162,
 			"label": "Matilda",
 			"notes": "",
 			"cm_favme": null,
@@ -26518,7 +26675,7 @@
 		},
 		"144": {
 			"id": 144,
-			"order": 162,
+			"order": 163,
 			"label": "Rainbow Dash's Robe",
 			"notes": "",
 			"cm_favme": null,
@@ -26636,7 +26793,7 @@
 		},
 		"156": {
 			"id": 156,
-			"order": 163,
+			"order": 164,
 			"label": "Rainbow Dash's Bandaids (Newbie Dash)",
 			"notes": "Sampled from Newbie Dash (S6E7)",
 			"cm_favme": null,
@@ -26939,7 +27096,7 @@
 			"name": "unicorn",
 			"title": null,
 			"type": "spec",
-			"uses": 41,
+			"uses": 42,
 			"synonym_of": null
 		},
 		"2": {
@@ -26987,7 +27144,7 @@
 			"name": "minor character",
 			"title": "Ponies who had a speaking role, interacted with the mane six, or whose only purpose is to fill crowds.",
 			"type": "cat",
-			"uses": 119,
+			"uses": 120,
 			"synonym_of": null
 		},
 		"8": {
@@ -27027,7 +27184,7 @@
 			"name": "female",
 			"title": null,
 			"type": "gen",
-			"uses": 91,
+			"uses": 92,
 			"synonym_of": null
 		},
 		"14": {
@@ -27040,7 +27197,7 @@
 		},
 		"19": {
 			"tid": 19,
-			"name": "s1e1",
+			"name": "s01e01",
 			"title": null,
 			"type": "ep",
 			"uses": 0,
@@ -27048,7 +27205,7 @@
 		},
 		"20": {
 			"tid": 20,
-			"name": "s1e26",
+			"name": "s01e26",
 			"title": null,
 			"type": "ep",
 			"uses": 0,
@@ -27056,7 +27213,7 @@
 		},
 		"21": {
 			"tid": 21,
-			"name": "s5e12",
+			"name": "s05e12",
 			"title": null,
 			"type": "ep",
 			"uses": 4,
@@ -27224,7 +27381,7 @@
 		},
 		"42": {
 			"tid": 42,
-			"name": "s5e15",
+			"name": "s05e15",
 			"title": null,
 			"type": "ep",
 			"uses": 2,
@@ -27232,7 +27389,7 @@
 		},
 		"43": {
 			"tid": 43,
-			"name": "s5e14",
+			"name": "s05e14",
 			"title": null,
 			"type": "ep",
 			"uses": 4,
@@ -27368,7 +27525,7 @@
 		},
 		"61": {
 			"tid": 61,
-			"name": "s3e5",
+			"name": "s03e05",
 			"title": null,
 			"type": "ep",
 			"uses": 1,
@@ -27400,7 +27557,7 @@
 		},
 		"65": {
 			"tid": 65,
-			"name": "s5e2",
+			"name": "s05e02",
 			"title": null,
 			"type": "ep",
 			"uses": 4,
@@ -27536,7 +27693,7 @@
 		},
 		"86": {
 			"tid": 86,
-			"name": "s5e20",
+			"name": "s05e20",
 			"title": null,
 			"type": "ep",
 			"uses": 5,
@@ -27584,7 +27741,7 @@
 		},
 		"92": {
 			"tid": 92,
-			"name": "s5e22",
+			"name": "s05e22",
 			"title": null,
 			"type": "ep",
 			"uses": 1,
@@ -27600,7 +27757,7 @@
 		},
 		"94": {
 			"tid": 94,
-			"name": "s5e24",
+			"name": "s05e24",
 			"title": null,
 			"type": "ep",
 			"uses": 3,
@@ -27624,7 +27781,7 @@
 		},
 		"97": {
 			"tid": 97,
-			"name": "s5e8",
+			"name": "s05e08",
 			"title": null,
 			"type": "ep",
 			"uses": 0,
@@ -27640,7 +27797,7 @@
 		},
 		"99": {
 			"tid": 99,
-			"name": "s5e26",
+			"name": "s05e26",
 			"title": null,
 			"type": "ep",
 			"uses": 5,
@@ -27656,7 +27813,7 @@
 		},
 		"101": {
 			"tid": 101,
-			"name": "s4e12",
+			"name": "s04e12",
 			"title": null,
 			"type": "ep",
 			"uses": 1,
@@ -27664,7 +27821,7 @@
 		},
 		"102": {
 			"tid": 102,
-			"name": "s5e1-2",
+			"name": "s05e01-02",
 			"title": null,
 			"type": "ep",
 			"uses": 1,
@@ -27672,7 +27829,7 @@
 		},
 		"103": {
 			"tid": 103,
-			"name": "s5e25-26",
+			"name": "s05e25-26",
 			"title": null,
 			"type": "ep",
 			"uses": 1,
@@ -27680,7 +27837,7 @@
 		},
 		"104": {
 			"tid": 104,
-			"name": "s4e24",
+			"name": "s04e24",
 			"title": null,
 			"type": "ep",
 			"uses": 2,
@@ -27688,7 +27845,7 @@
 		},
 		"105": {
 			"tid": 105,
-			"name": "s4e8",
+			"name": "s04e08",
 			"title": null,
 			"type": "ep",
 			"uses": 2,
@@ -27696,7 +27853,7 @@
 		},
 		"106": {
 			"tid": 106,
-			"name": "s5e16",
+			"name": "s05e16",
 			"title": null,
 			"type": "ep",
 			"uses": 1,
@@ -27712,7 +27869,7 @@
 		},
 		"108": {
 			"tid": 108,
-			"name": "s3e7",
+			"name": "s03e07",
 			"title": null,
 			"type": "ep",
 			"uses": 2,
@@ -27720,7 +27877,7 @@
 		},
 		"109": {
 			"tid": 109,
-			"name": "s5e7",
+			"name": "s05e07",
 			"title": null,
 			"type": "ep",
 			"uses": 3,
@@ -27752,7 +27909,7 @@
 		},
 		"113": {
 			"tid": 113,
-			"name": "s5e6",
+			"name": "s05e06",
 			"title": null,
 			"type": "ep",
 			"uses": 1,
@@ -27760,7 +27917,7 @@
 		},
 		"114": {
 			"tid": 114,
-			"name": "s5e5",
+			"name": "s05e05",
 			"title": null,
 			"type": "ep",
 			"uses": 0,
@@ -27808,10 +27965,10 @@
 		},
 		"120": {
 			"tid": 120,
-			"name": "s5e9",
+			"name": "s05e09",
 			"title": null,
 			"type": "ep",
-			"uses": 6,
+			"uses": 8,
 			"synonym_of": null
 		},
 		"121": {
@@ -27840,7 +27997,7 @@
 		},
 		"124": {
 			"tid": 124,
-			"name": "s6e1",
+			"name": "s06e01",
 			"title": null,
 			"type": "ep",
 			"uses": 0,
@@ -27848,15 +28005,15 @@
 		},
 		"125": {
 			"tid": 125,
-			"name": "s5e4",
+			"name": "s05e04",
 			"title": null,
 			"type": "ep",
-			"uses": 0,
+			"uses": 1,
 			"synonym_of": null
 		},
 		"126": {
 			"tid": 126,
-			"name": "s5e3",
+			"name": "s05e03",
 			"title": null,
 			"type": "ep",
 			"uses": 0,
@@ -28184,7 +28341,7 @@
 		},
 		"168": {
 			"tid": 168,
-			"name": "s4e25",
+			"name": "s04e25",
 			"title": null,
 			"type": "ep",
 			"uses": 0,
@@ -28192,7 +28349,7 @@
 		},
 		"169": {
 			"tid": 169,
-			"name": "s4e26",
+			"name": "s04e26",
 			"title": null,
 			"type": "ep",
 			"uses": 0,
@@ -28224,7 +28381,7 @@
 		},
 		"173": {
 			"tid": 173,
-			"name": "s4e25-26",
+			"name": "s04e25-26",
 			"title": null,
 			"type": "ep",
 			"uses": 5,
@@ -28280,7 +28437,7 @@
 		},
 		"180": {
 			"tid": 180,
-			"name": "s6e3",
+			"name": "s06e03",
 			"title": null,
 			"type": "ep",
 			"uses": 3,
@@ -28288,7 +28445,7 @@
 		},
 		"181": {
 			"tid": 181,
-			"name": "s6e4",
+			"name": "s06e04",
 			"title": null,
 			"type": "ep",
 			"uses": 5,
@@ -28296,7 +28453,7 @@
 		},
 		"182": {
 			"tid": 182,
-			"name": "s6e5",
+			"name": "s06e05",
 			"title": null,
 			"type": "ep",
 			"uses": 4,
@@ -28304,7 +28461,7 @@
 		},
 		"183": {
 			"tid": 183,
-			"name": "s6e6",
+			"name": "s06e06",
 			"title": null,
 			"type": "ep",
 			"uses": 4,
@@ -28312,7 +28469,7 @@
 		},
 		"184": {
 			"tid": 184,
-			"name": "s5e1",
+			"name": "s05e01",
 			"title": null,
 			"type": "ep",
 			"uses": 0,
@@ -28320,7 +28477,7 @@
 		},
 		"185": {
 			"tid": 185,
-			"name": "s6e1-2",
+			"name": "s06e01-02",
 			"title": null,
 			"type": "ep",
 			"uses": 5,
@@ -28344,7 +28501,7 @@
 		},
 		"188": {
 			"tid": 188,
-			"name": "s6e2",
+			"name": "s06e02",
 			"title": null,
 			"type": "ep",
 			"uses": 2,
@@ -28368,15 +28525,15 @@
 		},
 		"191": {
 			"tid": 191,
-			"name": "s4e13",
+			"name": "s04e13",
 			"title": null,
 			"type": "ep",
-			"uses": 1,
+			"uses": 2,
 			"synonym_of": null
 		},
 		"192": {
 			"tid": 192,
-			"name": "s4e14",
+			"name": "s04e14",
 			"title": null,
 			"type": "ep",
 			"uses": 5,
@@ -28512,7 +28669,7 @@
 		},
 		"209": {
 			"tid": 209,
-			"name": "s2e22",
+			"name": "s02e22",
 			"title": null,
 			"type": "ep",
 			"uses": 2,
@@ -28552,7 +28709,7 @@
 		},
 		"215": {
 			"tid": 215,
-			"name": "s6e7",
+			"name": "s06e07",
 			"title": null,
 			"type": "ep",
 			"uses": 5,
@@ -28560,7 +28717,7 @@
 		},
 		"216": {
 			"tid": 216,
-			"name": "s6e8",
+			"name": "s06e08",
 			"title": null,
 			"type": "ep",
 			"uses": 3,
@@ -28568,7 +28725,7 @@
 		},
 		"217": {
 			"tid": 217,
-			"name": "s6e9",
+			"name": "s06e09",
 			"title": null,
 			"type": "ep",
 			"uses": 3,
@@ -28696,7 +28853,7 @@
 		},
 		"233": {
 			"tid": 233,
-			"name": "s3e3",
+			"name": "s03e03",
 			"title": null,
 			"type": "ep",
 			"uses": 1,
@@ -28720,7 +28877,7 @@
 		},
 		"236": {
 			"tid": 236,
-			"name": "s3e9",
+			"name": "s03e09",
 			"title": null,
 			"type": "ep",
 			"uses": 1,
@@ -28992,7 +29149,7 @@
 		},
 		"270": {
 			"tid": 270,
-			"name": "s6e10",
+			"name": "s06e10",
 			"title": null,
 			"type": "ep",
 			"uses": 8,
@@ -29000,7 +29157,7 @@
 		},
 		"271": {
 			"tid": 271,
-			"name": "s6e11",
+			"name": "s06e11",
 			"title": null,
 			"type": "ep",
 			"uses": 4,
@@ -29032,10 +29189,10 @@
 		},
 		"276": {
 			"tid": 276,
-			"name": "s6e12",
+			"name": "s06e12",
 			"title": null,
 			"type": "ep",
-			"uses": 4,
+			"uses": 5,
 			"synonym_of": null
 		},
 		"277": {
@@ -29064,7 +29221,7 @@
 		},
 		"280": {
 			"tid": 280,
-			"name": "s3e12",
+			"name": "s03e12",
 			"title": null,
 			"type": "ep",
 			"uses": 2,
@@ -29096,7 +29253,7 @@
 		},
 		"284": {
 			"tid": 284,
-			"name": "s4e5",
+			"name": "s04e05",
 			"title": null,
 			"type": "ep",
 			"uses": 1,
@@ -29264,7 +29421,7 @@
 		},
 		"306": {
 			"tid": 306,
-			"name": "s5e18",
+			"name": "s05e18",
 			"title": null,
 			"type": "ep",
 			"uses": 8,
@@ -29312,7 +29469,7 @@
 		},
 		"312": {
 			"tid": 312,
-			"name": "s5e10",
+			"name": "s05e10",
 			"title": null,
 			"type": "ep",
 			"uses": 1,
@@ -29648,10 +29805,26 @@
 		},
 		"371": {
 			"tid": 371,
-			"name": "s5e17",
+			"name": "s05e17",
 			"title": null,
 			"type": "ep",
 			"uses": 2,
+			"synonym_of": null
+		},
+		"372": {
+			"tid": 372,
+			"name": "dr whooves",
+			"title": null,
+			"type": "char",
+			"uses": 0,
+			"synonym_of": 134
+		},
+		"373": {
+			"tid": 373,
+			"name": "amethyst star",
+			"title": null,
+			"type": "char",
+			"uses": 1,
 			"synonym_of": null
 		}
 	}
