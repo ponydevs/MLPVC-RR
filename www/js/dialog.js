@@ -83,7 +83,7 @@
 
 			let append = Boolean(this._open),
 				$contentAdd = $.mk('div').append(params.content),
-				appendingToRequest = append && this._open.type === 'request' && ['fail','wait'].includes(params.type),
+				appendingToRequest = append && this._open.type === 'request' && ['fail','wait'].includes(params.type) && !force_new,
 				$requestContentDiv;
 
 			if (params.color.length)
@@ -96,7 +96,7 @@
 					this.$dialogHeader.text(params.title);
 				this.$dialogContent = $('#dialogContent');
 
-				if (appendingToRequest && !force_new){
+				if (appendingToRequest){
 					$requestContentDiv = this.$dialogContent.children(':not(#dialogButtons)').last();
 					let $ErrorNotice = $requestContentDiv.children('.notice:last-child');
 					if (!$ErrorNotice.length){
@@ -206,6 +206,19 @@
 			$w.trigger('dialog-opened');
 
 			$.callCallback(callback, [$requestContentDiv]);
+			if (append){
+				let $lastdiv = this.$dialogContent.children(':not(#dialogButtons)').last();
+				if (appendingToRequest)
+					$lastdiv = $lastdiv.children('.notice').last();
+				this.$dialogOverlay.stop().animate(
+					{
+						scrollTop: '+=' +
+						($lastdiv.position().top + parseFloat($lastdiv.css('margin-top'), 10) + parseFloat($lastdiv.css('border-top-width'), 10))
+					},
+					'fast'
+				);
+			}
+
 		}
 		fail(title,content,force_new){
 			this._display('fail',title,content,this._CloseButton,force_new === true);
