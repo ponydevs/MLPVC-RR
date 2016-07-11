@@ -444,6 +444,8 @@
 			}
 			if (!isset($ColorMapping['Coat Shadow Outline']) && isset($ColorMapping['Coat Outline']))
 				$ColorMapping['Coat Shadow Outline'] = $ColorMapping['Coat Outline'];
+			if (!isset($ColorMapping['Coat Shadow Fill']) && isset($ColorMapping['Coat Fill']))
+				$ColorMapping['Coat Shadow Fill'] = $ColorMapping['Coat Fill'];
 
 			$img = file_get_contents(APPATH.'img/cm-direction-'.($dir===CM_DIR_HEAD_TO_TAIL?'ht':'th').'.svg');
 			foreach ($DefaultColorMapping as $label => $defhex)
