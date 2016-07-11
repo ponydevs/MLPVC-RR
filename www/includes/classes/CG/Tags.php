@@ -62,7 +62,7 @@
 		static function GetActual($value, $column = 'tid', $as_bool = false){
 			global $CGDb;
 
-			$arg1 = array('tags', 'synonym_of,tid');
+			$arg1 = array('tags', $as_bool === RETURN_AS_BOOL ? 'synonym_of,tid' : '*');
 
 			$Tag = $CGDb->where($column, $value)->getOne(...$arg1);
 
