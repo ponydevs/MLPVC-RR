@@ -459,17 +459,17 @@ HTML;
 		static function GetTagIDs($Episode){
 			global $CGDb;
 
+			$sn = CoreUtils::Pad($Episode['season']);
+			$en = CoreUtils::Pad($Episode['episode']);
 			$EpTagIDs = array();
-			$EpTagPt1 = $CGDb->where('name',"s{$Episode['season']}e{$Episode['episode']}")->where('type','ep')->getOne('tags','tid');
+			$EpTagPt1 = $CGDb->where('name',"s{$sn}e{$en}")->where('type','ep')->getOne('tags','tid');
 			if (!empty($EpTagPt1))
 				$EpTagIDs[] = $EpTagPt1['tid'];
 			if ($Episode['twoparter']){
-				$EpTagPt2 = $CGDb->where('name',"s{$Episode['season']}e".($Episode['episode']+1))->where('type','ep')->getOne('tags','tid');
-				if (!empty($EpTagPt2))
-					$EpTagIDs[] = $EpTagPt2['tid'];
-				$EpTagBothParts = $CGDb->where('name',"s{$Episode['season']}e{$Episode['episode']}-".($Episode['episode']+1))->where('type','ep')->getOne('tags','tid');
-				if (!empty($EpTagBothParts))
-					$EpTagIDs[] = $EpTagBothParts['tid'];
+				$next_en = CoreUtils::Pad($Episode['episode']+1);
+				$EpTagPt2 = $CGDb->rawQuery("SELECT tid FROM tags WHERE name IN ('s{$sn}e{$next_en}', 's{$sn}e{$en}-{$next_en}') && type = 'ep'");
+				foreach ($EpTagPt2 as $t)
+					$EpTagIDs[] = $t['tid'];
 			}
 			return $EpTagIDs;
 		}

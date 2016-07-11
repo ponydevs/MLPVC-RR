@@ -15,8 +15,10 @@
 	$phpExtensionPattern = new RegExp('\.php($|\?.*)');
 	if (regex_match($phpExtensionPattern,$_SERVER['REQUEST_URI']))
 		CoreUtils::Redirect(regex_replace($phpExtensionPattern,'$1',$_SERVER['REQUEST_URI']), AND_DIE);
-	if (!regex_match($REWRITE_REGEX,"/$do/$data"))
+	if (!regex_match($REWRITE_REGEX,"/$do/$data")){
+		User::Authenticate();
 		CoreUtils::NotFound();
+	}
 
 	if ($do === GH_WEBHOOK_DO){
 		if (empty(GH_WEBHOOK_DO)) CoreUtils::Redirect('/', AND_DIE);
@@ -50,6 +52,12 @@
 		CoreUtils::NotFound();
 	}
 
+/*	$eptags = $CGDb->where('type','ep')->get('tags');
+	foreach ($eptags as $t){
+		$CGDb->where('tid', $t['tid'])->update('tags',array('name' => CGUtils::CheckEpisodeTagName($t['name'])));
+	}
+	die();*/
+
 	// Static redirects
 	switch ($do){
 		// PAGES
@@ -71,8 +79,8 @@
 
 	// Load controller
 	$controller = APPATH."controllers/$do.php";
-	if (!file_exists($controller))
-		CoreUtils::NotFound();
 	if (!($do === 'colorguide' && regex_match(new RegExp('\.(svg|png)$'), $data)))
 		User::Authenticate();
+	if (!file_exists($controller))
+		CoreUtils::NotFound();
 	require $controller;
