@@ -138,12 +138,21 @@
 		 * @return string
 		 */
 		static function GetNotesHTML($Appearance, $wrap = WRAP, $cmLink = true){
+			global $EPISODE_ID_REGEX;
+
 			$hasNotes = !empty($Appearance['notes']);
 			$hasCM = !empty($Appearance['cm_favme']) && $cmLink !== NOTE_TEXT_ONLY;
 			if ($hasNotes || $hasCM){
 				$notes = '';
-				if ($hasNotes)
+				if ($hasNotes){
+					$Appearance['notes'] = preg_replace_callback('/'.EPISODE_ID_PATTERN.'/',function($a){
+						$Ep = \Episode::GetActual((int) $a[1], (int) $a[2]);
+						return !empty($Ep)
+							? "<a href='/episode/S{$Ep['season']}E{$Ep['episode']}'>".\CoreUtils::AposEncode(\Episode::FormatTitle($Ep,AS_ARRAY,'title'))."</a>"
+							: "<a href='/episode/S{$a[1]}E{$a[2]}'>{$a[0]}</a>";
+					},$Appearance['notes']);
 					$notes = '<span>'.nl2br($Appearance['notes']).'</span>';
+				}
 				if ($hasCM){
 					$dir = '';
 					if (isset($Appearance['cm_dir'])){
