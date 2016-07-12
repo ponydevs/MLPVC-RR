@@ -140,7 +140,7 @@
 		 * @param bool|int     $status  Status (truthy/falsy value)
 		 * @param array        $extra   Append additional data to the response
 		 */
-		static function Respond($message = 'Insufficent permissions.', $status = false, $extra = null){
+		static function Respond($message = null, $status = false, $extra = null){
 			header('Content-Type: application/json');
 			if ($message === true)
 				$response = array('status' => true);
@@ -149,7 +149,12 @@
 				$response = $message;
 			}
 			else {
-				if (strpos($message, ERR_DB_FAIL) !== false){
+				if (!isset($message)){
+					global $signedIn;
+
+					$message = $signedIn ? 'Insufficient permissions.' : '<p>You are not signed in (or your session expired).</p><p class="align-center"><button class="typcn green da-login" id="turbo-sign-in" data-url="'.DeviantArt::GetAuthorizationURL().'">Sign back in</button></p>';
+				}
+				else if (strpos($message, ERR_DB_FAIL) !== false){
 					global $Database;
 					$message = rtrim("$message: ".$Database->getLastError(), ': ');
 				}

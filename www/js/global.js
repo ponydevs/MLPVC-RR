@@ -575,14 +575,52 @@
 		popup.resizeTo(w,h);
 		popup.moveTo(calcpos.left,calcpos.top);
 	};
+	let OAUTH_URL = window.OAUTH_URL,
+		signingGenRndKey = () => (~~(Math.random()*99999999)).toString(36);
+	$d.on('click','#turbo-sign-in',function(e){
+		e.preventDefault();
+
+		let $this = $(this),
+			origNotice = $this.parent().html();
+		$this.disable();
+		OAUTH_URL = $this.attr('data-url');
+
+		let rndk = signingGenRndKey(),
+			success = false,
+			closeCheck,
+			popup;
+		window[' '+rndk] = function(){
+			success = true;
+			if ($.Dialog._open.type === 'request')
+				$.Dialog.clearNotice(/Redirecting you to DeviantArt/);
+			else $.Dialog.close();
+			popup.close();
+		};
+		try{
+			popup = window.open(OAUTH_URL+'&state='+rndk);
+		}
+		catch(e){ return $.Dialog.fail(false, 'Could not open login pop-up. Please open another page') }
+
+		$.Dialog.wait(false, 'Redirecting you to DeviantArt');
+		closeCheck = setInterval(function(){
+			try {
+				if (!popup || popup.closed){
+					clearInterval(closeCheck);
+					if (success)
+						return;
+					$.Dialog.fail(false, origNotice);
+				}
+			}catch(e){}
+		}, 500);
+	});
 
 	let DocReadyAlwaysRun = function(){
 		console.log('> DocReadyAlwaysRun()');
 		$d.triggerHandler('paginate-refresh');
 
 		// Sign in button handler
-		let OAUTH_URL = window.OAUTH_URL,
-			consent = localStorage.getItem('cookie_consent');
+		let consent = localStorage.getItem('cookie_consent');
+		OAUTH_URL = window.OAUTH_URL;
 
 		$('#signin').off('click').on('click',function(){
 			let $this = $(this),
@@ -603,7 +641,7 @@
 
 					$.Dialog.wait('Sign-in process', "Opening popup window");
 
-					let rndk = (~~(Math.random()*99999999)).toString(36), success = false, closeCheck, popup;
+					let rndk = signingGenRndKey(), success = false, closeCheck, popup;
 					window[' '+rndk] = function(){
 						success = true;
 						clearInterval(closeCheck);

@@ -333,7 +333,8 @@
 
 			if (typeof regexp === 'undefined' || regexp.test($notice.html())){
 				$notice.hide();
-				this._controlInputs(false);
+				if ($notice.hasClass('info'))
+					this._controlInputs(false);
 				return true;
 			}
 			return false;
