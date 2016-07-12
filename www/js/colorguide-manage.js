@@ -53,8 +53,8 @@ DocReady.push(function ColorguideManage(){
 				<div class="align-center">
 					<p>Cutie mark orientation</p>
 					<div class="radio-group">
-						<label><input type="radio" name="cm_dir" value="ht" required><span>Head-Tail</span></label>
-						<label><input type="radio" name="cm_dir" value="th" required><span>Tail-Head</span></label>
+						<label><input type="radio" name="cm_dir" value="ht" required disabled><span>Head-Tail</span></label>
+						<label><input type="radio" name="cm_dir" value="th" required disabled><span>Tail-Head</span></label>
 					</div>
 				</div>
 				<label>
@@ -82,8 +82,7 @@ DocReady.push(function ColorguideManage(){
 						$cm_dir.find('input').attr('disabled', disable);
 						$cm_dir.next().find('input').attr('disabled', disable);
 					}),
-					ponyID,
-					$txtarea = $form.find('textarea'), session;
+					ponyID, session;
 
 				$.getAceEditor(false, 'html', function(mode){
 					try {
@@ -108,7 +107,7 @@ DocReady.push(function ColorguideManage(){
 					if (data.cm_preview)
 						$form.find('input[name=cm_preview]').val(data.cm_preview);
 					if (data.cm_dir)
-						$form.find('input[name=cm_dir][value='+data.cm_dir+']').prop('checked', true);
+						$form.find('input[name=cm_dir]').enable().filter('[value='+data.cm_dir+']').prop('checked', true);
 					$form.append(
 						$.mk('div').attr('class','align-center').append(
 							$.mk('button')
@@ -480,7 +479,7 @@ DocReady.push(function ColorguideManage(){
 			$.mk('input').attr({
 				type: 'checkbox',
 				name: 'major',
-			}).on('click',function(){
+			}).on('click change',function(){
 				$(this).parent().next()[this.checked?'show':'hide']().children('input').attr('disabled', !this.checked);
 			}),
 			'<span>This is a major change</span>'

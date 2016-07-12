@@ -127,7 +127,9 @@ input[type=checkbox] {
 						transition-duration: .1s;
 					}
 					&:not(:checked) ~ span { opacity: .6 }
-					&:checked ~ span { background-color: lighten($DefaultUIColor, 60); opacity: 1 }
+					&:checked ~ span { background-color: lighten($DefaultUIColor, 60) }
+					&:checked:not(:disabled) ~ span { opacity: 1 }
+					&:checked:disabled ~ span { opacity: .8 }
 					&:focus ~ span { border-style: dashed }
 					&:not(:checked):focus ~ span { opacity: .9 }
 					&:disabled ~ span { cursor: not-allowed }
