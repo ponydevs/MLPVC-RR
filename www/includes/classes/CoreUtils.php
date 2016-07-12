@@ -279,8 +279,8 @@
 				$customJS = array_merge($customJS, $DEFAULT_JS);
 
 			# Check assests
-			self::_checkAssets($options, $customCSS, 'css');
-			self::_checkAssets($options, $customJS, 'js');
+			self::_checkAssets($options, $customCSS, 'scss/min', 'css');
+			self::_checkAssets($options, $customJS, 'js/min', 'js');
 
 			# Add status code
 			if (isset($options['status-code']))
@@ -344,52 +344,46 @@
 		 *
 		 * @param array    $options    Options array
 		 * @param string[] $customType Array of partial file names
-		 * @param string   $type       The literal strings 'css' or 'js'
+		 * @param string   $relpath    File path relative to /
+		 * @param string   $ext        The literal strings 'css' or 'js'
 		 *
 		 * @throws Exception
 		 */
-		private static function _checkAssets($options, &$customType, $type){
-			if (isset($options[$type])){
-				$$type = $options[$type];
-				if (!is_array($$type))
-					$customType[] = $$type;
-				else $customType = array_merge($customType, $$type);
-				if (array_search("do-$type", $options) !== false){
+		private static function _checkAssets($options, &$customType, $relpath, $ext){
+			if (isset($options[$ext])){
+				$$ext = $options[$ext];
+				if (!is_array($$ext))
+					$customType[] = $$ext;
+				else $customType = array_merge($customType, $$ext);
+				if (array_search("do-$ext", $options) !== false){
 					global $do;
 					$customType[] = $do;
 				}
 			}
-			else if (array_search("do-$type", $options) !== false){
+			else if (array_search("do-$ext", $options) !== false){
 				global $do;
 				$customType[] = $do;
 			}
 
-			$pathStart = APPATH."$type/";
-			foreach ($customType as $i => $item){
-				if (file_exists("$pathStart$item.min.$type")){
-					$customType[$i] = self::_formatFilePath("$item.min.$type");
-					continue;
-				}
-				$item .= ".$type";
-				if (!file_exists($pathStart.$item)){
-					array_splice($customType,$i,1);
-					throw new Exception("File /$type/$item does not exist");
-				}
-				else $customType[$i] = self::_formatFilePath($item);
-			}
+			foreach ($customType as $i => &$item)
+				self::_formatFilePath($item, $relpath, $ext);
 		}
 
 		/**
 		 * Turns asset filenames into URLs & adds modification timestamp parameters
 		 *
 		 * @param string $item
+		 * @param string $relpath
+		 * @param string $type
 		 *
 		 * @return string
 		 */
-		private static function _formatFilePath($item){
-			$type = regex_replace(new RegExp('^.*\.(\w+)$'),'$1', $item);
-			$pathStart = APPATH."$type/";
-			return "/$type/$item?".filemtime($pathStart.$item);
+		private static function _formatFilePath(&$item, $relpath, $type){
+			$pathStart = APPATH.$relpath;
+			$item .= ".$type";
+			if (!file_exists("$pathStart/$item"))
+				throw new Exception("File /$relpath/$item does not exist");
+			$item = "/$relpath/$item?".filemtime("$pathStart/$item");
 		}
 
 		/**
@@ -511,6 +505,8 @@
 				$whitelist = array_merge($whitelist, $allowed);
 			/** @noinspection PhpUndefinedMethodInspection */
 			$config->set('HTML.AllowedElements', $whitelist);
+			/** @noinspection PhpUndefinedMethodInspection */
+			$config->set('Core.EscapeInvalidTags', true);
 			$purifier = new HTMLPurifier($config);
 			/** @noinspection PhpUndefinedMethodInspection */
 			return self::TrimMultiline($purifier->purify($dirty_html));

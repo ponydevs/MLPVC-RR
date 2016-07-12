@@ -813,7 +813,7 @@
 
 	$GUIDE_MANAGE_JS = array(
 		'jquery.uploadzone',
-		'autocomplete.jquery',
+		'jquery.autocomplete',
 		'handlebars-v3.0.3',
 		'Sortable',
 		"$do-tags",

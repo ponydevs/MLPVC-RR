@@ -6,7 +6,7 @@ console.log = console.writeLine = function () {
 	if (args.length){
 		if (/^(\[\d{2}:\d{2}:\d{2}]|Using|Finished)/.test(args[0]))
 			return;
-		else if (args[0] == 'Starting' && (match = args[1].match(/^'.*((?:dist-)?js|sass|default|md).*'...$/))){
+		else if (args[0] == 'Starting' && (match = args[1].match(/^'.*((?:dist-)?js|scss|default|md).*'...$/))){
 			args = ['[' + chalk.green('gulp') + '] ' + match[1] + ': ' + chalk.magenta('start')];
 		}
 	}
@@ -23,9 +23,8 @@ process.stdout.write = console.write = function(str){
 var toRun = process.argv.slice(2).slice(-1)[0] || 'default'; // Works only if task name is the last param
 console.writeLine('Starting Gulp task "'+toRun+'"');
 var require_list = ['gulp'];
-if (['js','dist-js','sass','md','default'].indexOf(toRun) !== -1){
+if (['js','dist-js','scss','md','default'].indexOf(toRun) !== -1){
 	require_list.push.apply(require_list, [
-		'gulp-rename',
 		'gulp-plumber',
 		'gulp-duration',
 	]);
@@ -33,7 +32,7 @@ if (['js','dist-js','sass','md','default'].indexOf(toRun) !== -1){
 	if (toRun !== 'dist-js')
 		require_list.push('gulp-sourcemaps');
 
-	if (toRun === 'sass' || toRun === 'default')
+	if (toRun === 'scss' || toRun === 'default')
 		require_list.push.apply(require_list, [
 			'gulp-sass',
 			'gulp-autoprefixer',
@@ -50,6 +49,9 @@ if (['js','dist-js','sass','md','default'].indexOf(toRun) !== -1){
 			'gulp-markdown',
 			'gulp-dom',
 		]);
+
+	if (toRun === 'md' || toRun === 'dist-js' || toRun === 'default')
+		require_list.push('gulp-rename');
 }
 else if (toRun === 'pgsort')
 	require_list.push('fs');
@@ -79,9 +81,9 @@ function Logger(prompt){
 	return this;
 }
 
-var SASSL = new Logger('sass');
-gulp.task('sass', function() {
-	gulp.src('www/sass/*.scss')
+var SASSL = new Logger('scss');
+gulp.task('scss', function() {
+	gulp.src('www/scss/src/*.scss')
 		.pipe(plumber(function(err){
 			SASSL.error(err.relativePath+'\n'+'  line '+err.line+': '+err.messageOriginal);
 			this.emit('end');
@@ -92,26 +94,22 @@ gulp.task('sass', function() {
 				errLogToConsole: true,
 			}))
 			.pipe(autoprefixer('last 2 version'))
-			.pipe(rename({suffix: '.min' }))
 			.pipe(minify({
 				processImport: false,
 				compatibility: '-units.pc,-units.pt'
 			}))
 		.pipe(sourcemaps.write('.', {
 			includeContent: false,
-			sourceRoot: '/sass',
+			sourceRoot: '/scss/src',
 		}))
-		.pipe(duration('sass'))
-		.pipe(gulp.dest('www/css'));
+		.pipe(duration('scss'))
+		.pipe(gulp.dest('www/scss/min'));
 });
 
 var JSL = new Logger('js'),
 	DJSL = new Logger('dist-js'),
 	jspipe = function(pipe, taskName){
-		var noSourcemaps = taskName === 'dist-js',
-			renamef = !noSourcemaps
-				? function(path){ path.basename += '.min' }
-				: function(path){ path.basename = path.basename.replace(/\.[^.]+$/i,''); path.extname = '.jsx' };
+		var noSourcemaps = taskName === 'dist-js';
 		pipe =  pipe
 			.pipe(duration(taskName))
 			.pipe(cached(taskName, { optimizeMemory: true }))
@@ -138,23 +136,28 @@ var JSL = new Logger('js'),
 				.pipe(uglify({
 					preserveComments: function(_, comment){ return /^!/m.test(comment.value) },
 					output: { ascii_only: noSourcemaps },
-				}))
-				.pipe(rename(renamef));
+				}));
+		if (noSourcemaps)
+			pipe = pipe.pipe(rename(function(path){
+				path.basename = path.basename.replace(/\.[^.]+$/i,'');
+				path.extname = '.jsx';
+			}));
 		if (!noSourcemaps)
-			pipe = pipe.pipe(sourcemaps.write('.', {
+			pipe = pipe.pipe(sourcemaps.write('../min', {
 				includeContent: false,
-				sourceRoot: '/js',
+				sourceRoot: '/js/src',
 				sourceMappingURL: function(file){
-					return '/js/'+(file.relative.replace(/^\/+/,''))+'.map';
+					return '/js/min/'+(file.relative.replace(/^\/+/,''))+'.map';
 				},
 			}));
 		return pipe;
-	};
+	},
+	JSWatchArray = ['www/js/src/*.js','www/js/src/**/*.js'];
 gulp.task('js', function(){
 	jspipe(
-		gulp.src(['www/js/*.js', '!www/js/*.min.js']),
+		gulp.src(JSWatchArray),
 		'js'
-	).pipe(gulp.dest('www/js'));
+	).pipe(gulp.dest('www/js/min'));
 });
 gulp.task('dist-js', function(){
 	jspipe(
@@ -265,12 +268,12 @@ gulp.task('pgsort', function(){
 	}
 });
 
-gulp.task('default', ['js', 'dist-js', 'sass', 'md'], function(){
-	gulp.watch(['www/js/*.js', '!www/js/*.min.js'], {debounceDelay: 2000}, ['js']);
+gulp.task('default', ['js', 'dist-js', 'scss', 'md'], function(){
+	gulp.watch(JSWatchArray, {debounceDelay: 2000}, ['js']);
 	JSL.log('File watcher active');
 	gulp.watch(['www/dist/*.src.js'], {debounceDelay: 2000}, ['dist-js']);
 	DJSL.log('File watcher active');
-	gulp.watch('www/sass/*.scss', {debounceDelay: 2000}, ['sass']);
+	gulp.watch('www/scss/src/*.scss', {debounceDelay: 2000}, ['scss']);
 	SASSL.log('File watcher active');
 	gulp.watch('README.md', {debounceDelay: 2000}, ['md']);
 	MDL.log('File watcher active');

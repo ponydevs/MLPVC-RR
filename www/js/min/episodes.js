@@ -1,0 +1,2 @@
+"use strict";DocReady.push(function(){var t=$("#content").children("table").children("tbody");t.on("updatetimes",function(){t.children().children(":last-child").children("time.nodt").each(function(){this.innerHTML=moment($(this).attr("datetime")).format("D-MMMM-YYYY H:mm:ss").replace(/:00$/,"")})}).trigger("updatetimes"),t.on("page-switch",function(){t.trigger("updatetimes")})});
+//# sourceMappingURL=/js/min/episodes.js.map

@@ -1,5 +1,4 @@
 <?php
-	$DIR = dirname(__FILE__);
 	$signedIn = false;
 	header($_SERVER['SERVER_PROTOCOL']." 503 Service Unavailable");
 
@@ -9,7 +8,7 @@
 	foreach ($customCSS as $k => $el)
 		$customCSS[$k] .= '?'.filemtime(APPATH.substr($el,1));
 	$view = 'fatalerr';
-	require "$DIR/header.php"; ?>
+	require "header.php"; ?>
 <div id="content">
 <?php
 	switch($errcause){
@@ -35,7 +34,7 @@
 </div>
 <?php
 	CoreUtils::ExportVars(array('ServiceUnavailableError' => true));
-	$customJS = array("/js/global.min.js","/js/moment.min.js","/js/dialog.min.js");
+	$customJS = array("/js/min/global.js","/js/min/moment.js","/js/min/dialog.js");
 	foreach ($customJS as $k => $el)
 		$customJS[$k] .= '?'.filemtime(APPATH.substr($el,1));
-	require "$DIR/footer.php"; ?>
+	require "footer.php"; ?>

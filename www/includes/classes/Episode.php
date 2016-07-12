@@ -160,7 +160,7 @@
 			$EpID = self::FormatTitle($CurrentEpisode,AS_ARRAY,'id');
 			CoreUtils::FixPath(!$EQG ? "/episode/$EpID" : "/eqg/{$GLOBALS['url']}");
 
-			$js = array('imagesloaded.pkgd','jquery.ba-throttle-debounce','jquery.fluidbox.min','Chart','episode');
+			$js = array('imagesloaded.pkgd','jquery.ba-throttle-debounce','jquery.fluidbox','Chart','episode');
 			if (Permission::Sufficient('staff')){
 				$js[] = 'moment-timezone';
 				$js[] = 'episodes-manage';
