@@ -3,8 +3,8 @@
 
 	<footer><?=CoreUtils::GetFooter()?></footer>
 
-<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
-<script>if(!window.jQuery)document.write('\x3Cscript src="/js/min/jquery-2.1.4.js">\x3C/script>');</script>
+<script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s=" crossorigin="anonymous"></script>
+<script>if(!window.jQuery)document.write('\x3Cscript src="/js/min/jquery-3.1.0.js">\x3C/script>');</script>
 <?php
 	CoreUtils::ExportVars(array(
 		'PRINTABLE_ASCII_PATTERN' => PRINTABLE_ASCII_PATTERN,
