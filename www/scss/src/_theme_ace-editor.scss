@@ -34,7 +34,7 @@
 		.ace_comment { color: rgba(black,.8) }
 		.ace_constant.ace_escape.ace_reference.ace_xml {
 			color: #000;
-			background-color: #FEFDE0;
+			background-color: rgba(255,255,0,.2);
 			font-style: italic;
 		}
 	}
