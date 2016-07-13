@@ -4,7 +4,7 @@
 
 	// TODO Add *that* image of the club mascot above <h1>
 
-	$customCSS = array("/css/theme.min.css");
+	$customCSS = array("/scss/min/theme.css");
 	foreach ($customCSS as $k => $el)
 		$customCSS[$k] .= '?'.filemtime(APPATH.substr($el,1));
 	$view = 'fatalerr';
