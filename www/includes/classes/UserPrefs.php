@@ -8,6 +8,7 @@
 				'cg_hidesynon' => 0,
 				'cg_hideclrinfo' => 0,
 				'p_vectorapp' => '',
+				'p_hidediscord' => 0,
 			);
 
 		/**
@@ -84,6 +85,7 @@
 					if ($value < 7 || $value > 20)
 						throw new Exception("$thing must be between 7 and 20");
 				break;
+				case "p_hidediscord":
 				case "cg_hidesynon":
 				case "cg_hideclrinfo":
 					$value = $value ? 1 : 0;

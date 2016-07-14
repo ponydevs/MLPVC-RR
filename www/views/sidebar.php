@@ -23,8 +23,10 @@
 		else { ?>
 			<button class="typcn green da-login" id="signin">Sign in</button>
 			<script>var OAUTH_URL = "<?=DeviantArt::GetAuthorizationURL()?>";</script>
-<?php   } ?>
+<?php   }
+		if (!UserPrefs::Get('p_hidediscord')){ ?>
 			<a class="btn typcn discord-join" href="http://fav.me/d9zt1wv" target="_blank">Join Discord</a>
+<?php   } ?>
 		</div>
 	</section>
 <?php   if ($view === 'episode' && !empty($CurrentEpisode)){

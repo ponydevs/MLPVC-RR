@@ -167,6 +167,15 @@ HTML;
 <?php           } ?>
 				</label>
 			</form>
+			<form action="/preference/set/p_hidediscord">
+				<label>
+					<input type="checkbox" name="value" value="1"<?=UserPrefs::Get('p_hidediscord', $User['id'])?' checked':''?> <?=!$sameUser?' disabled':''?>>
+					<span>Hide Discord server link from the sidebar</span>
+<?php           if ($sameUser){ ?>
+					<button class="save typcn typcn-tick green" disabled>Save</button>
+<?php           } ?>
+				</label>
+			</form>
 		</section>
 		<section class="sessions">
 			<h2><?=$sameUser?User::$PROFILE_SECTION_PRIVACY_LEVEL['staff']:''?>Sessions</h2>

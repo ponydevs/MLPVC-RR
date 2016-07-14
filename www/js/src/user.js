@@ -153,6 +153,16 @@ DocReady.push(function User(){
 					});
 				}
 			break;
+			case "p_hidediscord":
+				let $discordBtn = $sidebar.find('.welcome .discord-join');
+				if (to_what){
+					if ($discordBtn.length)
+						$discordBtn.remove();
+				}
+				else if (!$discordBtn.length)
+					$sidebar.find('.welcome .buttons').append('<a class="btn typcn discord-join" href="http://fav.me/d9zt1wv" target="_blank">Join Discord</a>');
+				$.Dialog.close();
+			break;
 			default:
 				$.Dialog.close();
 		}
