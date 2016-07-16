@@ -8076,22 +8076,22 @@
 					"Colors": [
 						{
 							"order": 0,
-							"label": "Dark Outline",
+							"label": "Outline 1",
 							"hex": "#303297"
 						},
 						{
 							"order": 1,
-							"label": "Dark Fill",
-							"hex": "#393CB1"
-						},
-						{
-							"order": 2,
-							"label": "Light Outline",
+							"label": "Outline 2",
 							"hex": "#9E9FDC"
 						},
 						{
+							"order": 2,
+							"label": "Fill 1",
+							"hex": "#393CB1"
+						},
+						{
 							"order": 3,
-							"label": "Light Fill",
+							"label": "Fill 2",
 							"hex": "#CFD1EC"
 						}
 					]
@@ -8790,151 +8790,9 @@
 				353
 			]
 		},
-		"87": {
-			"id": 87,
-			"order": 53,
-			"label": "Rose",
-			"notes": "Far legs use darker colors.",
-			"cm_favme": "d9zhguu",
-			"ishuman": false,
-			"added": "2016-03-25 23:41:37.557224+01",
-			"cm_preview": null,
-			"cm_dir": true,
-			"ColorGroups": {
-				"484": {
-					"groupid": 484,
-					"label": "Coat",
-					"order": 0,
-					"Colors": [
-						{
-							"order": 0,
-							"label": "Outline",
-							"hex": "#CCBC96"
-						},
-						{
-							"order": 1,
-							"label": "Fill",
-							"hex": "#FFFBD3"
-						},
-						{
-							"order": 2,
-							"label": "Shadow Outline",
-							"hex": "#B5A887"
-						},
-						{
-							"order": 3,
-							"label": "Shadow Fill",
-							"hex": "#E1DEBA"
-						}
-					]
-				},
-				"485": {
-					"groupid": 485,
-					"label": "Mane & Tail",
-					"order": 1,
-					"Colors": [
-						{
-							"order": 0,
-							"label": "Outline 1",
-							"hex": "#992246"
-						},
-						{
-							"order": 1,
-							"label": "Outline 2",
-							"hex": "#DB6589"
-						},
-						{
-							"order": 2,
-							"label": "Fill 1",
-							"hex": "#B82C57"
-						},
-						{
-							"order": 3,
-							"label": "Fill 2",
-							"hex": "#E2829D"
-						}
-					]
-				},
-				"486": {
-					"groupid": 486,
-					"label": "Iris",
-					"order": 2,
-					"Colors": [
-						{
-							"order": 0,
-							"label": "Gradient Top",
-							"hex": "#3C591E"
-						},
-						{
-							"order": 1,
-							"label": "Gradient Bottom",
-							"hex": "#B8E78C"
-						},
-						{
-							"order": 2,
-							"label": "Highlight Top",
-							"hex": "#D6ECB1"
-						},
-						{
-							"order": 3,
-							"label": "Highlight Bottom",
-							"hex": "#FFFFFF"
-						}
-					]
-				},
-				"487": {
-					"groupid": 487,
-					"label": "Cutie Mark",
-					"order": 3,
-					"Colors": [
-						{
-							"order": 0,
-							"label": "Rose Outline",
-							"hex": "#9B2246"
-						},
-						{
-							"order": 1,
-							"label": "Rose Fill",
-							"hex": "#D13868"
-						},
-						{
-							"order": 2,
-							"label": "Rose Shadow Fill",
-							"hex": "#BA2B57"
-						},
-						{
-							"order": 3,
-							"label": "Leaf Outline",
-							"hex": "#74A639"
-						},
-						{
-							"order": 4,
-							"label": "Leaf Fill",
-							"hex": "#97CC62"
-						},
-						{
-							"order": 5,
-							"label": "Stem",
-							"hex": "#4D7325"
-						}
-					]
-				}
-			},
-			"TagIDs": [
-				1,
-				7,
-				8,
-				12,
-				120,
-				177,
-				178,
-				179,
-				353
-			]
-		},
 		"134": {
 			"id": 134,
-			"order": 54,
+			"order": 53,
 			"label": "Raven",
 			"notes": "Glasses don't seem to have lenses.\nThe iris gradient has a sharper transition than usual.\nAppears as both Unicorn and Earth Pony in different episodes.",
 			"cm_favme": null,
@@ -9157,7 +9015,7 @@
 		},
 		"89": {
 			"id": 89,
-			"order": 55,
+			"order": 54,
 			"label": "Twilight Velvet",
 			"notes": "",
 			"cm_favme": null,
@@ -9263,7 +9121,7 @@
 		},
 		"91": {
 			"id": 91,
-			"order": 56,
+			"order": 55,
 			"label": "Night Light",
 			"notes": "",
 			"cm_favme": null,
@@ -9359,7 +9217,7 @@
 		},
 		"128": {
 			"id": 128,
-			"order": 57,
+			"order": 56,
 			"label": "Fleur Dis Lee",
 			"notes": "",
 			"cm_favme": null,
@@ -9502,7 +9360,7 @@
 		},
 		"129": {
 			"id": 129,
-			"order": 58,
+			"order": 57,
 			"label": "Fancy Pants",
 			"notes": "The monocle lens has a couple different fill approaches depending on angle and tightness of the shot. If closeup, both fills are transparent, but if far out, second fill is fully opaque.",
 			"cm_favme": null,
@@ -9768,7 +9626,7 @@
 		},
 		"92": {
 			"id": 92,
-			"order": 59,
+			"order": 58,
 			"label": "Trenderhoof",
 			"notes": "Based on S4E13.\nFar legs use darker colors. \nOnly has one iris highlight.",
 			"cm_favme": null,
@@ -9974,7 +9832,7 @@
 		},
 		"36": {
 			"id": 36,
-			"order": 60,
+			"order": 59,
 			"label": "Moon Dancer",
 			"notes": "Far legs use darker colors.",
 			"cm_favme": "d9vcpeu",
@@ -10203,7 +10061,7 @@
 		},
 		"29": {
 			"id": 29,
-			"order": 61,
+			"order": 60,
 			"label": "Starlight Glimmer",
 			"notes": "Her cutie mark does not use pure white for the star fill.\nHer S6 mane style includes an additional shadow fill color",
 			"cm_favme": "d8old4s",
@@ -10378,7 +10236,7 @@
 		},
 		"22": {
 			"id": 22,
-			"order": 62,
+			"order": 61,
 			"label": "Sugar Belle",
 			"notes": "Far legs use darker colors.",
 			"cm_favme": null,
@@ -10578,7 +10436,7 @@
 		},
 		"28": {
 			"id": 28,
-			"order": 63,
+			"order": 62,
 			"label": "Party Favor",
 			"notes": "Magic aura color is unknown.",
 			"cm_favme": null,
@@ -10715,7 +10573,7 @@
 		},
 		"15": {
 			"id": 15,
-			"order": 64,
+			"order": 63,
 			"label": "Sassy Saddles",
 			"notes": "",
 			"cm_favme": null,
@@ -10938,7 +10796,7 @@
 		},
 		"62": {
 			"id": 62,
-			"order": 65,
+			"order": 64,
 			"label": "Sunburst",
 			"notes": "Far legs use darker colors. \nHas no iris highlights.\nGlasses don't seem to have lenses.",
 			"cm_favme": "d9iyv1r",
@@ -11175,7 +11033,7 @@
 		},
 		"14": {
 			"id": 14,
-			"order": 66,
+			"order": 65,
 			"label": "Fashion Plate",
 			"notes": "Far legs use darker colors.",
 			"cm_favme": null,
@@ -11341,7 +11199,7 @@
 		},
 		"13": {
 			"id": 13,
-			"order": 67,
+			"order": 66,
 			"label": "Whoa Nelly",
 			"notes": "Special eyeball color.\nCutie Mark head colors are different from normal ones.",
 			"cm_favme": null,
@@ -11499,7 +11357,7 @@
 		},
 		"72": {
 			"id": 72,
-			"order": 68,
+			"order": 67,
 			"label": "Sweet Biscuit",
 			"notes": "",
 			"cm_favme": "d9tl3qw",
@@ -11614,7 +11472,7 @@
 		},
 		"73": {
 			"id": 73,
-			"order": 69,
+			"order": 68,
 			"label": "Say Cheese",
 			"notes": "",
 			"cm_favme": "d9ts8lk",
@@ -11734,7 +11592,7 @@
 		},
 		"108": {
 			"id": 108,
-			"order": 70,
+			"order": 69,
 			"label": "Minty Bubblegum",
 			"notes": "Shadow fill is a guess based on Lyra's colors, as well as bottom eye gradient color.\nMagic aura color is unknown.\nOn the Cutie Mark, the gumballs are layered above the glass.",
 			"cm_favme": "d9yydnz",
@@ -11916,7 +11774,7 @@
 		},
 		"148": {
 			"id": 148,
-			"order": 71,
+			"order": 70,
 			"label": "Birch Bucket",
 			"notes": "",
 			"cm_favme": null,
@@ -12085,7 +11943,7 @@
 		},
 		"157": {
 			"id": 157,
-			"order": 72,
+			"order": 71,
 			"label": "Coriander Cumin",
 			"notes": "",
 			"cm_favme": "da62hka",
@@ -12259,7 +12117,7 @@
 		},
 		"158": {
 			"id": 158,
-			"order": 73,
+			"order": 72,
 			"label": "Saffron Masala",
 			"notes": "",
 			"cm_favme": "da62xsm",
@@ -12559,7 +12417,7 @@
 		},
 		"163": {
 			"id": 163,
-			"order": 74,
+			"order": 73,
 			"label": "Zesty Gourmand",
 			"notes": "No cutie mark shown in episode",
 			"cm_favme": null,
@@ -12746,7 +12604,7 @@
 		},
 		"164": {
 			"id": 164,
-			"order": 75,
+			"order": 74,
 			"label": "Gordon Ramsay",
 			"notes": "No magic used in episode, aura color unknown",
 			"cm_favme": null,
@@ -12878,9 +12736,9 @@
 		},
 		"174": {
 			"id": 174,
-			"order": 76,
+			"order": 75,
 			"label": "Amethyst Star",
-			"notes": "Does not have a Coat Shadow Fill color.\nAura color <em>might</em> be inaccurate.",
+			"notes": "Does not have a Coat Shadow Fill color.",
 			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-07-11 20:35:52.781735+02",
@@ -12911,22 +12769,22 @@
 					"Colors": [
 						{
 							"order": 0,
-							"label": "Lighter Outline",
+							"label": "Outline 1",
 							"hex": "#A556D9"
 						},
 						{
 							"order": 1,
-							"label": "Lighter Fill",
-							"hex": "#B572E0"
-						},
-						{
-							"order": 2,
-							"label": "Darker Outline",
+							"label": "Outline 2",
 							"hex": "#663297"
 						},
 						{
+							"order": 2,
+							"label": "Fill 1",
+							"hex": "#B572E0"
+						},
+						{
 							"order": 3,
-							"label": "Darker Fill",
+							"label": "Fill 2",
 							"hex": "#8040BE"
 						}
 					]
@@ -13008,7 +12866,7 @@
 						{
 							"order": 0,
 							"label": "Aura",
-							"hex": "#E39AEF"
+							"hex": "#B572E0"
 						}
 					]
 				}
@@ -13028,7 +12886,7 @@
 		},
 		"55": {
 			"id": 55,
-			"order": 77,
+			"order": 76,
 			"label": "Spitfire",
 			"notes": "Far legs use darker colors.\nEyelid highlight is only visible while Spitfire is wearing her Wonderbolt uniform (https://mlpvc-rr.ml/cg/v/70-Wonderbolt-Uniform) and appears to have been completely removed in Season 6.",
 			"cm_favme": "d5nzngs",
@@ -13154,7 +13012,7 @@
 		},
 		"127": {
 			"id": 127,
-			"order": 78,
+			"order": 77,
 			"label": "Soarin'",
 			"notes": "",
 			"cm_favme": "d72vipj",
@@ -13257,7 +13115,7 @@
 		},
 		"11": {
 			"id": 11,
-			"order": 79,
+			"order": 78,
 			"label": "Derpy Hooves / Muffins",
 			"notes": "Far legs use darker colors.\nHer top iris highlight is the same color as the bottom stop on the iris gradient.",
 			"cm_favme": "da27cuh",
@@ -13374,7 +13232,7 @@
 		},
 		"19": {
 			"id": 19,
-			"order": 80,
+			"order": 79,
 			"label": "Fleetfoot",
 			"notes": "",
 			"cm_favme": "d97x7vd",
@@ -13491,7 +13349,7 @@
 		},
 		"137": {
 			"id": 137,
-			"order": 81,
+			"order": 80,
 			"label": "Misty Fly",
 			"notes": "Cutie mark is unknown",
 			"cm_favme": null,
@@ -13591,7 +13449,7 @@
 		},
 		"100": {
 			"id": 100,
-			"order": 82,
+			"order": 81,
 			"label": "Cloud Chaser",
 			"notes": "Her eye outline is thicker and goes down further than usual.\nShe has a special eye gradient with four stops and no iris highlights.",
 			"cm_favme": "da7y90w",
@@ -13718,7 +13576,7 @@
 		},
 		"103": {
 			"id": 103,
-			"order": 83,
+			"order": 82,
 			"label": "Flitter",
 			"notes": "She has no iris highlights.",
 			"cm_favme": null,
@@ -13850,7 +13708,7 @@
 		},
 		"101": {
 			"id": 101,
-			"order": 84,
+			"order": 83,
 			"label": "Thunderlane",
 			"notes": "",
 			"cm_favme": "da82bww",
@@ -13970,7 +13828,7 @@
 		},
 		"68": {
 			"id": 68,
-			"order": 85,
+			"order": 84,
 			"label": "Blossomforth",
 			"notes": "Based on Hurricane Fluttershy",
 			"cm_favme": "d8geiw1",
@@ -14091,7 +13949,7 @@
 		},
 		"104": {
 			"id": 104,
-			"order": 86,
+			"order": 85,
 			"label": "Twilight Sky",
 			"notes": "Based on S2E22.\nFar legs use darker colors.\nDoes not have iris highlights.",
 			"cm_favme": "d6t4847",
@@ -14187,7 +14045,7 @@
 		},
 		"97": {
 			"id": 97,
-			"order": 87,
+			"order": 86,
 			"label": "Bulk Biceps",
 			"notes": "",
 			"cm_favme": "da7oq90",
@@ -14366,7 +14224,7 @@
 		},
 		"65": {
 			"id": 65,
-			"order": 88,
+			"order": 87,
 			"label": "Meadow Flower",
 			"notes": "",
 			"cm_favme": "d9ko8le",
@@ -14497,7 +14355,7 @@
 		},
 		"102": {
 			"id": 102,
-			"order": 89,
+			"order": 88,
 			"label": "Thunderclap",
 			"notes": "",
 			"cm_favme": null,
@@ -14644,7 +14502,7 @@
 		},
 		"26": {
 			"id": 26,
-			"order": 90,
+			"order": 89,
 			"label": "Night Glider",
 			"notes": "",
 			"cm_favme": "d8oovxh",
@@ -14786,7 +14644,7 @@
 		},
 		"20": {
 			"id": 20,
-			"order": 91,
+			"order": 90,
 			"label": "Stormy Flare",
 			"notes": "Only has one eye shine.\nFar legs use darker colors.",
 			"cm_favme": "d9acleq",
@@ -14957,7 +14815,7 @@
 		},
 		"21": {
 			"id": 21,
-			"order": 92,
+			"order": 91,
 			"label": "Wind Rider",
 			"notes": "Teeth use a different color than normal.",
 			"cm_favme": "d9ao1qp",
@@ -15222,7 +15080,7 @@
 		},
 		"138": {
 			"id": 138,
-			"order": 93,
+			"order": 92,
 			"label": "Sunshower Raindrops",
 			"notes": "",
 			"cm_favme": "da5vt5m",
@@ -15334,7 +15192,7 @@
 		},
 		"151": {
 			"id": 151,
-			"order": 94,
+			"order": 93,
 			"label": "Zephyr Breeze",
 			"notes": "Has pointed ear tips",
 			"cm_favme": "da570dh",
@@ -15445,7 +15303,7 @@
 		},
 		"152": {
 			"id": 152,
-			"order": 95,
+			"order": 94,
 			"label": "Mr. Shy",
 			"notes": "",
 			"cm_favme": null,
@@ -15599,7 +15457,7 @@
 		},
 		"153": {
 			"id": 153,
-			"order": 96,
+			"order": 95,
 			"label": "Mrs. Shy",
 			"notes": "There are no extra transparency colors for the glasses lens.",
 			"cm_favme": null,
@@ -15795,7 +15653,7 @@
 		},
 		"159": {
 			"id": 159,
-			"order": 97,
+			"order": 96,
 			"label": "Daring Do / A.K. Yearling",
 			"notes": "",
 			"cm_favme": null,
@@ -16156,7 +16014,7 @@
 		},
 		"171": {
 			"id": 171,
-			"order": 98,
+			"order": 97,
 			"label": "Orange Swirl",
 			"notes": "",
 			"cm_favme": "da7y1xt",
@@ -16265,7 +16123,7 @@
 		},
 		"35": {
 			"id": 35,
-			"order": 99,
+			"order": 98,
 			"label": "Big McIntosh",
 			"notes": "Far legs use darker colors.",
 			"cm_favme": "d9zhgk0",
@@ -16478,7 +16336,7 @@
 		},
 		"18": {
 			"id": 18,
-			"order": 100,
+			"order": 99,
 			"label": "Granny Smith",
 			"notes": "Far legs use darker colors.",
 			"cm_favme": null,
@@ -16641,7 +16499,7 @@
 		},
 		"121": {
 			"id": 121,
-			"order": 101,
+			"order": 100,
 			"label": "Braeburn",
 			"notes": "",
 			"cm_favme": "d9zls6n",
@@ -16800,7 +16658,7 @@
 		},
 		"79": {
 			"id": 79,
-			"order": 102,
+			"order": 101,
 			"label": "Cheerilee",
 			"notes": "",
 			"cm_favme": null,
@@ -16914,7 +16772,7 @@
 		},
 		"80": {
 			"id": 80,
-			"order": 103,
+			"order": 102,
 			"label": "Dr. Hooves / Time Turner",
 			"notes": "For convenience, the color of the glass on her cutie mark is solid rather than transparent, thus the sand should be above.",
 			"cm_favme": "da9gbnl",
@@ -17061,7 +16919,7 @@
 		},
 		"111": {
 			"id": 111,
-			"order": 104,
+			"order": 103,
 			"label": "Sweetie Drops / Bon Bon",
 			"notes": "",
 			"cm_favme": "d6xmkv9",
@@ -17187,7 +17045,7 @@
 		},
 		"110": {
 			"id": 110,
-			"order": 105,
+			"order": 104,
 			"label": "Octavia Melody",
 			"notes": "",
 			"cm_favme": null,
@@ -17321,7 +17179,7 @@
 		},
 		"76": {
 			"id": 76,
-			"order": 106,
+			"order": 105,
 			"label": "Mayor Mare",
 			"notes": "",
 			"cm_favme": null,
@@ -17514,7 +17372,7 @@
 		},
 		"30": {
 			"id": 30,
-			"order": 107,
+			"order": 106,
 			"label": "Miss Pommel",
 			"notes": "Far legs use darker colors.",
 			"cm_favme": null,
@@ -17728,7 +17586,7 @@
 		},
 		"46": {
 			"id": 46,
-			"order": 108,
+			"order": 107,
 			"label": "Cheese Sandwich",
 			"notes": "",
 			"cm_favme": "d74od89",
@@ -17882,7 +17740,7 @@
 		},
 		"52": {
 			"id": 52,
-			"order": 109,
+			"order": 108,
 			"label": "Maud Pie",
 			"notes": "Far legs use darker colors.",
 			"cm_favme": "d7apvq4",
@@ -18095,7 +17953,7 @@
 		},
 		"51": {
 			"id": 51,
-			"order": 110,
+			"order": 109,
 			"label": "Limestone Pie",
 			"notes": "",
 			"cm_favme": "d9eecqj",
@@ -18216,7 +18074,7 @@
 		},
 		"50": {
 			"id": 50,
-			"order": 111,
+			"order": 110,
 			"label": "Marble Pie",
 			"notes": "Two different hair outline colors.\nEye gradient should be adjusted (lower on eye) to make sure top highlight is easily distinguished from gradient.",
 			"cm_favme": "d9eeci7",
@@ -18332,7 +18190,7 @@
 		},
 		"53": {
 			"id": 53,
-			"order": 112,
+			"order": 111,
 			"label": "Igneous Rock",
 			"notes": "Far legs use darker colors.",
 			"cm_favme": null,
@@ -18476,7 +18334,7 @@
 		},
 		"54": {
 			"id": 54,
-			"order": 113,
+			"order": 112,
 			"label": "Cloudy Quartz",
 			"notes": "",
 			"cm_favme": null,
@@ -18667,7 +18525,7 @@
 		},
 		"27": {
 			"id": 27,
-			"order": 114,
+			"order": 113,
 			"label": "Double Diamond",
 			"notes": "Far legs use darker colors.",
 			"cm_favme": "da8pwr4",
@@ -18795,7 +18653,7 @@
 		},
 		"58": {
 			"id": 58,
-			"order": 115,
+			"order": 114,
 			"label": "Tree Hugger",
 			"notes": "Darker highlight color matches the bottom iris gradient color.",
 			"cm_favme": "d8u7pz5",
@@ -18943,7 +18801,7 @@
 		},
 		"59": {
 			"id": 59,
-			"order": 116,
+			"order": 115,
 			"label": "Coloratura",
 			"notes": "",
 			"cm_favme": "d9hm2yd",
@@ -19079,7 +18937,7 @@
 		},
 		"60": {
 			"id": 60,
-			"order": 117,
+			"order": 116,
 			"label": "Rara (Countess Outfit)",
 			"notes": "",
 			"cm_favme": null,
@@ -19379,7 +19237,7 @@
 		},
 		"61": {
 			"id": 61,
-			"order": 118,
+			"order": 117,
 			"label": "Svengallop",
 			"notes": "",
 			"cm_favme": null,
@@ -19592,7 +19450,7 @@
 		},
 		"95": {
 			"id": 95,
-			"order": 119,
+			"order": 118,
 			"label": "Street Rat",
 			"notes": "",
 			"cm_favme": null,
@@ -19842,7 +19700,7 @@
 		},
 		"96": {
 			"id": 96,
-			"order": 120,
+			"order": 119,
 			"label": "Copper Top",
 			"notes": "",
 			"cm_favme": null,
@@ -20063,7 +19921,7 @@
 		},
 		"99": {
 			"id": 99,
-			"order": 121,
+			"order": 120,
 			"label": "Hoofer Steps",
 			"notes": "",
 			"cm_favme": null,
@@ -20255,7 +20113,7 @@
 		},
 		"106": {
 			"id": 106,
-			"order": 122,
+			"order": 121,
 			"label": "Toe Tapper",
 			"notes": "Far legs use darker colors.\nOnly has one eye shine and one iris highlight located in the top part of the iris.",
 			"cm_favme": null,
@@ -20357,7 +20215,7 @@
 		},
 		"107": {
 			"id": 107,
-			"order": 123,
+			"order": 122,
 			"label": "Torch Song",
 			"notes": "Far legs use darker colors.",
 			"cm_favme": null,
@@ -20504,7 +20362,7 @@
 		},
 		"135": {
 			"id": 135,
-			"order": 124,
+			"order": 123,
 			"label": "Ms. Peachbottom",
 			"notes": "Far legs use darker colors. On the luggage:\n<b>Side Flower 1</b> represents the two flowers perpendicular to the tear\n<b>Side Flower 2</b> is the top flower in line with the tear\n<b>Side Flower 3</b> is the bottom one in line with the tear.",
 			"cm_favme": null,
@@ -20864,7 +20722,7 @@
 		},
 		"136": {
 			"id": 136,
-			"order": 125,
+			"order": 124,
 			"label": "Ms. Harshwhinny",
 			"notes": "Far legs use darker colors.\nShe has no iris highlights.",
 			"cm_favme": null,
@@ -21168,7 +21026,7 @@
 		},
 		"141": {
 			"id": 141,
-			"order": 126,
+			"order": 125,
 			"label": "Plaid Stripes",
 			"notes": "Has pointed ear tips",
 			"cm_favme": "da3hzwf",
@@ -21364,7 +21222,7 @@
 		},
 		"142": {
 			"id": 142,
-			"order": 127,
+			"order": 126,
 			"label": "Mr. Stripes",
 			"notes": "",
 			"cm_favme": null,
@@ -21563,7 +21421,7 @@
 		},
 		"143": {
 			"id": 143,
-			"order": 128,
+			"order": 127,
 			"label": "Buried Lede",
 			"notes": "",
 			"cm_favme": null,
@@ -21827,7 +21685,7 @@
 		},
 		"145": {
 			"id": 145,
-			"order": 129,
+			"order": 128,
 			"label": "Aloe",
 			"notes": "",
 			"cm_favme": "da4gv05",
@@ -21968,7 +21826,7 @@
 		},
 		"146": {
 			"id": 146,
-			"order": 130,
+			"order": 129,
 			"label": "Lotus Blossom",
 			"notes": "",
 			"cm_favme": "da4gvw5",
@@ -22110,7 +21968,7 @@
 		},
 		"147": {
 			"id": 147,
-			"order": 131,
+			"order": 130,
 			"label": "Caramel",
 			"notes": "",
 			"cm_favme": "da4h4c6",
@@ -22210,7 +22068,7 @@
 		},
 		"149": {
 			"id": 149,
-			"order": 132,
+			"order": 131,
 			"label": "Spoiled Rich",
 			"notes": "",
 			"cm_favme": null,
@@ -22466,7 +22324,7 @@
 		},
 		"150": {
 			"id": 150,
-			"order": 133,
+			"order": 132,
 			"label": "Filthy Rich",
 			"notes": "",
 			"cm_favme": null,
@@ -22634,7 +22492,7 @@
 		},
 		"155": {
 			"id": 155,
-			"order": 134,
+			"order": 133,
 			"label": "Quarter Hearts",
 			"notes": "aka \"Link\" pony",
 			"cm_favme": null,
@@ -22745,7 +22603,7 @@
 		},
 		"161": {
 			"id": 161,
-			"order": 135,
+			"order": 134,
 			"label": "S05E06 Unnamed Earth Mare #1",
 			"notes": "The frilly underpants have a lighter shadow outline color than the normal outline.",
 			"cm_favme": null,
@@ -22976,7 +22834,7 @@
 		},
 		"166": {
 			"id": 166,
-			"order": 136,
+			"order": 135,
 			"label": "Cup Cake",
 			"notes": "Ears are pointed.",
 			"cm_favme": null,
@@ -23143,7 +23001,7 @@
 		},
 		"168": {
 			"id": 168,
-			"order": 137,
+			"order": 136,
 			"label": "Carrot Cake",
 			"notes": "",
 			"cm_favme": null,
@@ -23317,7 +23175,7 @@
 		},
 		"165": {
 			"id": 165,
-			"order": 138,
+			"order": 137,
 			"label": "Lucky Clover",
 			"notes": "",
 			"cm_favme": "d68lo5f",
@@ -23416,7 +23274,7 @@
 		},
 		"172": {
 			"id": 172,
-			"order": 139,
+			"order": 138,
 			"label": "Daisy",
 			"notes": "",
 			"cm_favme": "da8l1xp",
@@ -23528,7 +23386,7 @@
 		},
 		"173": {
 			"id": 173,
-			"order": 140,
+			"order": 139,
 			"label": "Lily Valley",
 			"notes": "",
 			"cm_favme": null,
@@ -23571,12 +23429,12 @@
 						},
 						{
 							"order": 1,
-							"label": "Lighter Fill",
+							"label": "Fill 1",
 							"hex": "#FBECB2"
 						},
 						{
 							"order": 2,
-							"label": "Darker Fill",
+							"label": "Fill 2",
 							"hex": "#F7E18B"
 						}
 					]
@@ -23646,6 +23504,148 @@
 				353,
 				368,
 				369
+			]
+		},
+		"87": {
+			"id": 87,
+			"order": 140,
+			"label": "Rose",
+			"notes": "Far legs use darker colors.",
+			"cm_favme": "d9zhguu",
+			"ishuman": false,
+			"added": "2016-03-25 23:41:37.557224+01",
+			"cm_preview": null,
+			"cm_dir": true,
+			"ColorGroups": {
+				"484": {
+					"groupid": 484,
+					"label": "Coat",
+					"order": 0,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#CCBC96"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#FFFBD3"
+						},
+						{
+							"order": 2,
+							"label": "Shadow Outline",
+							"hex": "#B5A887"
+						},
+						{
+							"order": 3,
+							"label": "Shadow Fill",
+							"hex": "#E1DEBA"
+						}
+					]
+				},
+				"485": {
+					"groupid": 485,
+					"label": "Mane & Tail",
+					"order": 1,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline 1",
+							"hex": "#992246"
+						},
+						{
+							"order": 1,
+							"label": "Outline 2",
+							"hex": "#DB6589"
+						},
+						{
+							"order": 2,
+							"label": "Fill 1",
+							"hex": "#B82C57"
+						},
+						{
+							"order": 3,
+							"label": "Fill 2",
+							"hex": "#E2829D"
+						}
+					]
+				},
+				"486": {
+					"groupid": 486,
+					"label": "Iris",
+					"order": 2,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Gradient Top",
+							"hex": "#3C591E"
+						},
+						{
+							"order": 1,
+							"label": "Gradient Bottom",
+							"hex": "#B8E78C"
+						},
+						{
+							"order": 2,
+							"label": "Highlight Top",
+							"hex": "#D6ECB1"
+						},
+						{
+							"order": 3,
+							"label": "Highlight Bottom",
+							"hex": "#FFFFFF"
+						}
+					]
+				},
+				"487": {
+					"groupid": 487,
+					"label": "Cutie Mark",
+					"order": 3,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Rose Outline",
+							"hex": "#9B2246"
+						},
+						{
+							"order": 1,
+							"label": "Rose Fill",
+							"hex": "#D13868"
+						},
+						{
+							"order": 2,
+							"label": "Rose Shadow Fill",
+							"hex": "#BA2B57"
+						},
+						{
+							"order": 3,
+							"label": "Leaf Outline",
+							"hex": "#74A639"
+						},
+						{
+							"order": 4,
+							"label": "Leaf Fill",
+							"hex": "#97CC62"
+						},
+						{
+							"order": 5,
+							"label": "Stem",
+							"hex": "#4D7325"
+						}
+					]
+				}
+			},
+			"TagIDs": [
+				2,
+				7,
+				8,
+				12,
+				120,
+				177,
+				178,
+				179,
+				353
 			]
 		},
 		"64": {
@@ -27096,7 +27096,7 @@
 			"name": "unicorn",
 			"title": null,
 			"type": "spec",
-			"uses": 42,
+			"uses": 41,
 			"synonym_of": null
 		},
 		"2": {
@@ -27104,7 +27104,7 @@
 			"name": "earth pony",
 			"title": null,
 			"type": "spec",
-			"uses": 56,
+			"uses": 57,
 			"synonym_of": null
 		},
 		"3": {
