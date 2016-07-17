@@ -104,8 +104,9 @@
 		if (!isset($MSG)){
 			$MSG = 'Local user data missing';
 			if (!$signedIn){
-				$exists = 'exsists on DeviantArt';
-				if (isset($un)) $exists = "<a href='http://$un.deviantart.com/'>$exists</a>";
+				$exists = 'exists on DeviantArt';
+				if (isset($un))
+					$exists = "<a href='http://$un.deviantart.com/'>$exists</a>";
 				$SubMSG = "If this user $exists, sign in to import their details.";
 			}
 		}
