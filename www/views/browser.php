@@ -8,6 +8,6 @@
 
 	<section>
 		<h2>Your User Agent string</h2>
-		<p><code><?=!empty($browser['user_agent'])?$browser['user_agent']:'&lt;empty&gt;'?></code></p>
+		<p><code><?=CoreUtils::EscapeHTML(!empty($browser['user_agent'])?$browser['user_agent']:'<empty>')?></code></p>
 	</section>
 </div>

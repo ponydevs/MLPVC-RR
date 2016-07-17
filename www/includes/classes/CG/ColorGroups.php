@@ -77,7 +77,7 @@
 			if (is_array($GroupID)) $Group = $GroupID;
 			else $Group = $CGDb->where('groupid',$GroupID)->getOne('colorgroups');
 
-			$label = htmlspecialchars($Group['label']).($colon?': ':'');
+			$label = \CoreUtils::EscapeHTML($Group['label']).($colon?': ':'');
 			$HTML = $wrap ? "<li id='cg{$Group['groupid']}'>" : '';
 			$HTML .=
 				"<span class='cat'>$label".

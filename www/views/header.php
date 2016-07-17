@@ -11,6 +11,7 @@
 		$Description = 'Show accurate colors for "'.$Appearance['label'].'" from the MLP-VectorClub\'s Official Color Guide';
 	}
 	$ThumbImage = ABSPATH.ltrim($ThumbImage, '/');
+	$Title = CoreUtils::EscapeHTML($Title);
 
 ?>
 <!DOCTYPE html>

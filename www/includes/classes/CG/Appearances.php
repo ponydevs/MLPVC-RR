@@ -43,7 +43,7 @@
 
 			$HTML = '';
 			if (!empty($Appearances)) foreach ($Appearances as $p){
-				$p['label'] = htmlspecialchars($p['label']);
+				$p['label'] = \CoreUtils::EscapeHTML($p['label']);
 
 				$img = self::GetSpriteHTML($p);
 				$updates = self::GetUpdatesHTML($p['id']);

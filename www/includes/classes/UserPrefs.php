@@ -85,6 +85,10 @@
 					if ($value < 7 || $value > 20)
 						throw new Exception("$thing must be between 7 and 20");
 				break;
+				case "p_vectorapp":
+					if (!empty($value) && !isset(CoreUtils::$VECTOR_APPS[$value]))
+						throw new Exception("The specified app is invalid");
+				break;
 				case "p_hidediscord":
 				case "cg_hidesynon":
 				case "cg_hideclrinfo":

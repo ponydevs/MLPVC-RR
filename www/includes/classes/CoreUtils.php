@@ -88,7 +88,12 @@
 		 * @return string Encoded string
 		 */
 		static function AposEncode($str){
-			return str_replace("'", '&apos;', $str);
+			return self::EscapeHTML($str, ENT_QUOTES);
+		}
+
+		static function EscapeHTML($html, $mask = null){
+			$mask = isset($mask) ? $mask | ENT_HTML5 : ENT_HTML5;
+			return htmlspecialchars($html, $mask, 'UTF-8');
 		}
 
 		// Possible notice types
@@ -118,7 +123,7 @@
 
 			$HTML = '';
 			if (!empty($title))
-				$HTML .= '<label>'.htmlspecialchars($title).'</label>';
+				$HTML .= '<label>'.self::EscapeHTML($title).'</label>';
 
 			$textRows = preg_split("/(\r\n|\n|\r){2}/", $text);
 			foreach ($textRows as $row)
@@ -581,7 +586,7 @@
 
 				$s = count($invalid)!==1?'s':'';
 				$the_following = count($invalid)!==1?' the following':'an';
-				$Error = "$Thing (".htmlspecialchars($string).") contains $the_following invalid character$s: ".CoreUtils::ArrayToNaturalString($invalid);
+				$Error = "$Thing (".self::EscapeHTML($string).") contains $the_following invalid character$s: ".CoreUtils::ArrayToNaturalString($invalid);
 				if ($returnError)
 					return $Error;
 				CoreUtils::Respond($Error);

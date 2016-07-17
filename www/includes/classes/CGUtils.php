@@ -205,7 +205,7 @@
 						throw new Exception($err);
 					$Tag = \CG\Tags::GetActual($token, 'name');
 					if (empty($Tag))
-						throw new Exception('Tag (<code>'.htmlspecialchars($token).'</code>) does not exist');
+						throw new Exception('Tag (<code>'.CoreUtils::EscapeHTML($token).'</code>) does not exist');
 					
 					if (!empty($Tag['Original']))
 						$OriginalTagIDs[] = $Tag['Original']['tid']; 

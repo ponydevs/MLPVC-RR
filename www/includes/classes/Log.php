@@ -109,7 +109,7 @@
 				case "banish":
 				case "un-banish":
 					$details[] = array('User', User::GetProfileLink(User::Get($data['target'])));
-					$details[] = array('Reason', htmlspecialchars($data['reason']));
+					$details[] = array('Reason', CoreUtils::EscapeHTML($data['reason']));
 				break;
 				case "post_lock":
 					$Post = $Database->where('id', $data['id'])->getOne("{$data['type']}s");
@@ -132,7 +132,7 @@
 				break;
 				case "color_modify":
 					$details[] = array('Appearance',"<a href='/cg/v/{$data['ponyid']}'>#{$data['ponyid']}</a>");
-					$details[] = array('Reason',htmlspecialchars($data['reason']));
+					$details[] = array('Reason',CoreUtils::EscapeHTML($data['reason']));
 				break;
 				case "req_delete":
 					$details[] = array('Request ID', $data['id']);
@@ -141,7 +141,7 @@
 						'obj' => 'Object',
 						'bg' => 'Background',
 					);
-					$details[] = array('Description',$data['label']);
+					$details[] = array('Description',CoreUtils::EscapeHTML($data['label']));
 					$details[] = array('Type',$typeNames[$data['type']]);
 					$IDstr = "S{$data['season']}E{$data['episode']}";
 					$details[] = array('Episode', "<a href='/episode/$IDstr'>$IDstr</a>");

@@ -207,7 +207,7 @@
 		}
 
 		private function _outputError($message, $errorCode = null){
-			$message = str_replace('@value', htmlspecialchars($this->_value), $message);
+			$message = str_replace('@value', CoreUtils::EscapeHTML($this->_value), $message);
 			if ($errorCode === self::ERROR_RANGE && (isset($this->_range[0]) || isset($this->_range[1]))){
 				if (isset($this->_range[0]))
 					$message = str_replace('@min', $this->_range[0], $message);
