@@ -10,7 +10,7 @@ DocReady.push(function Logs(){
 		let $_entryType = $FilterForm.find('[name="type"] option:selected'),
 			_entryTypeValue = $_entryType.val(),
 			_byUsername = $FilterForm.find('[name="by"]').val().trim(),
-			title = `${_entryTypeValue.length?`${_entryTypeValue.replace('of type ','')} entries `:''}${_byUsername.length?`${_entryTypeValue.length?'':'Entries'} by ${_byUsername} `:''}`,
+			title = `${_entryTypeValue.length?`${$_entryType.text().replace('of type ','')} entries`:''}${_byUsername.length?`${_entryTypeValue.length?'':'entries'} by ${_byUsername}`:''}`,
 			query = title.length ? $FilterForm.serialize() : false;
 		$FilterForm.find('button[type=reset]').attr('disabled', query === false);
 
