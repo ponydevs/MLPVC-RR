@@ -33,7 +33,7 @@ window.$ColorAvgFormTemplate = (function($){
 					bAvg = 0;
 
 				$form.find('.input-group-3').each(function(){
-					let $allInputs = $(this).children(),
+					let $allInputs = $(this).children('[type=number]'),
 						r = $allInputs.eq(0).val(),
 						g = $allInputs.eq(1).val(),
 						b = $allInputs.eq(2).val();
