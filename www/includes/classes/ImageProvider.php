@@ -52,8 +52,11 @@
 		}
 
 		private static function _checkImageAllowed($url, $ctype = null){
-			if (empty($ctype))
+			if (empty($ctype)){
+				if (empty($url))
+					throw new Exception("Resource URL ($url) is empty, please try again.");
 				$ctype = get_headers($url, 1)['Content-Type'];
+			}
 			if (empty(self::$_allowedMimeTypes[$ctype]))
 				throw new Exception((!empty(self::$_blockedMimeTypes[$ctype])?self::$_blockedMimeTypes[$ctype].' are':"Content type \"$ctype\" is")." not allowed, please use a different image.");
 		}

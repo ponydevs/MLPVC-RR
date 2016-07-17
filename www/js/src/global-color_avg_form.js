@@ -74,7 +74,7 @@ window.$ColorAvgFormTemplate = (function($){
 				$AvgColorPreview.css('background-color',hex);
 				$AvgHexTD.text(hex);
 			},
-			_$baseInput = $("<input type='number' min='1' max='255' step='1' class='align-center'>"),
+			_$baseInput = $("<input type='number' min='0' max='255' step='1' class='align-center'>"),
 			$ColorAvgInputRow = $.mk('div').attr('class','input-group-3').append(
 				_$baseInput.clone().attr('placeholder','Red'),
 				_$baseInput.clone().attr('placeholder','Green'),
