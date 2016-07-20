@@ -5465,13 +5465,13 @@
 						},
 						{
 							"order": 1,
-							"label": "Near Gradient Center",
-							"hex": "#505050"
+							"label": "Near Gradient Middle",
+							"hex": "#B4B4B4"
 						},
 						{
 							"order": 2,
-							"label": "Near Gradient Middle",
-							"hex": "#B4B4B4"
+							"label": "Near Gradient Center",
+							"hex": "#505050"
 						},
 						{
 							"order": 3,
@@ -12833,26 +12833,31 @@
 						},
 						{
 							"order": 2,
+							"label": "Rounded Top Outline",
+							"hex": "#DEFFF6"
+						},
+						{
+							"order": 3,
 							"label": "Downward-Pointing Triangles",
 							"hex": "#BEF1E3"
 						},
 						{
-							"order": 3,
+							"order": 4,
 							"label": "Upward-Pointing Triangles",
 							"hex": "#A6E6D9"
 						},
 						{
-							"order": 4,
+							"order": 5,
 							"label": "Leftmost Cut/Middle Line",
 							"hex": "#D3F2EC"
 						},
 						{
-							"order": 5,
+							"order": 6,
 							"label": "Middle Cut",
 							"hex": "#B3EFDD"
 						},
 						{
-							"order": 6,
+							"order": 7,
 							"label": "Rightmost Cut",
 							"hex": "#89DECC"
 						}
@@ -13951,7 +13956,7 @@
 			"id": 104,
 			"order": 85,
 			"label": "Twilight Sky",
-			"notes": "Based on S2E22.\nFar legs use darker colors.\nDoes not have iris highlights.",
+			"notes": "Based on S2E22 <em>(mane, iris)</em> &amp; S1E20 <em>(coat)</em>.\nFar legs use darker colors.\nDoes not have iris highlights.\nAppears as both Pegasus and Earth Pony in different episodes.",
 			"cm_favme": "d6t4847",
 			"ishuman": false,
 			"added": "2016-04-12 12:09:35.98652+02",
@@ -13966,22 +13971,22 @@
 						{
 							"order": 0,
 							"label": "Outline",
-							"hex": "#737373"
+							"hex": "#787878"
 						},
 						{
 							"order": 1,
 							"label": "Fill",
-							"hex": "#989898"
+							"hex": "#A1A1A1"
 						},
 						{
 							"order": 2,
 							"label": "Shadow Outline",
-							"hex": "#776D6D"
+							"hex": "#757879"
 						},
 						{
 							"order": 3,
 							"label": "Shadow Fill",
-							"hex": "#858585"
+							"hex": "#909090"
 						}
 					]
 				},
@@ -14033,6 +14038,7 @@
 				}
 			},
 			"TagIDs": [
+				2,
 				3,
 				7,
 				8,
@@ -27104,7 +27110,7 @@
 			"name": "earth pony",
 			"title": null,
 			"type": "spec",
-			"uses": 57,
+			"uses": 58,
 			"synonym_of": null
 		},
 		"3": {

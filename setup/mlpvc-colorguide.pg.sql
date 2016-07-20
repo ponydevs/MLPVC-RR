@@ -321,9 +321,10 @@ She has a special eye gradient with four stops and no iris highlights.', 'da7y90
 (101, 83, 'Thunderlane', '', 'da82bww', false, '2016-04-12 11:13:23.928986+02', NULL, true),
 (102, 88, 'Thunderclap', '', NULL, false, '2016-04-12 11:16:34.823028+02', NULL, NULL),
 (103, 82, 'Flitter', 'She has no iris highlights.', NULL, false, '2016-04-12 11:21:48.892267+02', NULL, NULL),
-(104, 85, 'Twilight Sky', 'Based on S2E22.
+(104, 85, 'Twilight Sky', 'Based on S2E22 <em>(mane, iris)</em> &amp; S1E20 <em>(coat)</em>.
 Far legs use darker colors.
-Does not have iris highlights.', 'd6t4847', false, '2016-04-12 12:09:35.98652+02', 'https://t03.deviantart.net/82ldiwgyGkLwwcanyuu6hVDEvQ8=/fit-in/300x900/filters:no_upscale():origin()/pre14/7a8f/th/pre/f/2016/181/6/a/twilight_sky_cm_preview_by_djdavid98-da87gwz.png', true),
+Does not have iris highlights.
+Appears as both Pegasus and Earth Pony in different episodes.', 'd6t4847', false, '2016-04-12 12:09:35.98652+02', 'https://t03.deviantart.net/82ldiwgyGkLwwcanyuu6hVDEvQ8=/fit-in/300x900/filters:no_upscale():origin()/pre14/7a8f/th/pre/f/2016/181/6/a/twilight_sky_cm_preview_by_djdavid98-da87gwz.png', true),
 (105, 155, 'Pony Tones Outfit', '', NULL, false, '2016-04-12 13:16:04.154183+02', NULL, NULL),
 (106, 121, 'Toe Tapper', 'Far legs use darker colors.
 Only has one eye shine and one iris highlight located in the top part of the iris.', NULL, false, '2016-04-14 00:34:43.797733+02', NULL, NULL),
@@ -3160,10 +3161,10 @@ INSERT INTO colors VALUES
 (567, 3, 'Body Stripes', '#91E5E2'),
 (568, 0, 'Stroke', '#C65AE1'),
 (568, 1, 'Fill', '#FF97FF'),
-(569, 0, 'Outline', '#737373'),
-(569, 1, 'Fill', '#989898'),
-(569, 2, 'Shadow Outline', '#776D6D'),
-(569, 3, 'Shadow Fill', '#858585'),
+(569, 0, 'Outline', '#787878'),
+(569, 1, 'Fill', '#A1A1A1'),
+(569, 2, 'Shadow Outline', '#757879'),
+(569, 3, 'Shadow Fill', '#909090'),
 (570, 0, 'Outline', '#88DCEE'),
 (570, 1, 'Fill', '#BCFFFF'),
 (571, 0, 'Gradient Top', '#006596'),
@@ -3816,8 +3817,8 @@ INSERT INTO colors VALUES
 (706, 3, 'Arch Gradient Sides', '#444444'),
 (706, 4, 'Arch Gradient Middle', '#CDCDCD'),
 (707, 0, 'Near Gradient Side', '#414141'),
-(707, 1, 'Near Gradient Center', '#505050'),
-(707, 2, 'Near Gradient Middle', '#B4B4B4'),
+(707, 1, 'Near Gradient Middle', '#B4B4B4'),
+(707, 2, 'Near Gradient Center', '#505050'),
 (707, 3, 'Far Gradient Top', '#7D7D7D'),
 (707, 4, 'Far Gradient Bottom', '#505050'),
 (708, 0, 'Stroke/Rivet Outline', '#5D5D5D'),
@@ -4767,11 +4768,12 @@ INSERT INTO colors VALUES
 (954, 3, 'Highlight Bottom', '#E8D5F4'),
 (955, 0, 'Outer Outline', '#6BB1B6'),
 (955, 1, 'Rounded Top', '#E0F5F1'),
-(955, 2, 'Downward-Pointing Triangles', '#BEF1E3'),
-(955, 3, 'Upward-Pointing Triangles', '#A6E6D9'),
-(955, 4, 'Leftmost Cut/Middle Line', '#D3F2EC'),
-(955, 5, 'Middle Cut', '#B3EFDD'),
-(955, 6, 'Rightmost Cut', '#89DECC'),
+(955, 2, 'Rounded Top Outline', '#DEFFF6'),
+(955, 3, 'Downward-Pointing Triangles', '#BEF1E3'),
+(955, 4, 'Upward-Pointing Triangles', '#A6E6D9'),
+(955, 5, 'Leftmost Cut/Middle Line', '#D3F2EC'),
+(955, 6, 'Middle Cut', '#B3EFDD'),
+(955, 7, 'Rightmost Cut', '#89DECC'),
 (956, 0, 'Aura', '#B572E0');
 
 
@@ -4854,6 +4856,7 @@ INSERT INTO tagged VALUES
 (2, 96),
 (2, 98),
 (2, 99),
+(2, 104),
 (2, 106),
 (2, 107),
 (2, 110),
@@ -5631,7 +5634,7 @@ INSERT INTO tagged VALUES
 
 INSERT INTO tags VALUES
 (1, 'unicorn', NULL, 'spec', 41, NULL),
-(2, 'earth pony', NULL, 'spec', 57, NULL),
+(2, 'earth pony', NULL, 'spec', 58, NULL),
 (3, 'pegasus', NULL, 'spec', 28, NULL),
 (4, 'alicorn', NULL, 'spec', 5, NULL),
 (5, 'bat pony', NULL, 'spec', 0, NULL),
