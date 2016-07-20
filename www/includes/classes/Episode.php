@@ -521,9 +521,8 @@ HTML;
 			)['postcount'];
 		}
 
-		static function ValidateSeason($optional = false){
+		static function ValidateSeason(){
 			return (new Input('season','int',array(
-				Input::IS_OPTIONAL => $optional,
 				Input::IN_RANGE => [1,8],
 				Input::CUSTOM_ERROR_MESSAGES => array(
 					Input::ERROR_MISSING => 'Season number is missing',

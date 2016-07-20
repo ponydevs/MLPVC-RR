@@ -1,5 +1,5 @@
 /* jshint bitwise: false */
-/* global $w,$d,$head,$navbar,$body,$header,$sidebar,$sbToggle,$main,$footer,console,prompt,HandleNav,getTimeDiff,one,createTimeStr,PRINTABLE_ASCII_PATTERN,io,moment,Time,ace */
+/* global $w,$d,$head,$navbar,$body,$header,$sidebar,$sbToggle,$main,$footer,console,prompt,HandleNav,getTimeDiff,one,createTimeStr,PRINTABLE_ASCII_PATTERN,io,moment,Time,ace,mk */
 (function($){
 	'use strict';
 
@@ -143,7 +143,7 @@
 				return d;
 			}
 		}
-		Time.prototype.InSeconds = {
+		Time.InSeconds = {
 			'year':   31557600,
 			'month':  2592000,
 			'week':   604800,
@@ -232,7 +232,7 @@
 			let data = $.toArray(arguments, 1);
 			if (data[1] === 'abort')
 				return;
-			details = 'Details:<pre><code>' + data.slice(1).join('\n').replace(/</g,'&lt;') + '</code></pre>Response body:';
+			details = ' Details:<pre><code>' + data.slice(1).join('\n').replace(/</g,'&lt;') + '</code></pre>Response body:';
 			let xdebug = /^(?:<br \/>\n)?(<pre class='xdebug-var-dump'|<font size='1')/;
 			if (xdebug.test(data[0].responseText))
 				details += `<div class="reset">${data[0].responseText.replace(xdebug, '$1')}</div>`;

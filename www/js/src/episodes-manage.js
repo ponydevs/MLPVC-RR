@@ -83,7 +83,7 @@ DocReady.push(function EpisodesManage(){
 
 		$.mk('button').text('Set time to '+time+' this Saturday').on('click', function(e){
 			e.preventDefault();
-			$(this).parent().prev().children().first().val(date).next().val(time);
+			$(this).parents('form').find('input[name="airdate"]').val(date).next().val(time);
 		}).appendTo($form.children('.button-here'));
 
 		return $form;
