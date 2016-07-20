@@ -82,6 +82,10 @@
 				text-align: left;
 
 				.ep-button { margin: 0 10px 10px 0 }
+
+				+ .next-ep + .main > * {
+					margin-left: 0;
+				}
 			}
 			.main {
 				order: 2;
@@ -97,6 +101,9 @@
 				text-align: right;
 
 				.ep-button { margin: 0 0 10px 10px }
+				+ .main > * {
+					margin-left: 50%;
+				}
 			}
 			.ep-button {
 				font-size: 1.2em;
@@ -152,7 +159,8 @@
 		}
 		.main p.addedby {
 			text-align: center;
-			margin: 5px 0 10px;
+			margin-top: 5px;
+			margin-bottom: 10px;
 		}
 	}
 	> .rules {
