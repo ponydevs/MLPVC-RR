@@ -149,7 +149,7 @@
 						$Ep = \Episode::GetActual((int) $a[1], (int) $a[2]);
 						return !empty($Ep)
 							? "<a href='/episode/S{$Ep['season']}E{$Ep['episode']}'>".\CoreUtils::AposEncode(\Episode::FormatTitle($Ep,AS_ARRAY,'title'))."</a>"
-							: "<a href='/episode/S{$a[1]}E{$a[2]}'>{$a[0]}</a>";
+							: "<strong>{$a[0]}</strong>";
 					},$Appearance['notes']);
 					$notes = '<span>'.nl2br($Appearance['notes']).'</span>';
 				}
