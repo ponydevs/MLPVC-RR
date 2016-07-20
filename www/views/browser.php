@@ -1,5 +1,7 @@
 <div id="content">
+<?  if (isset($browser['browser_name'])){ ?>
 	<div class="browser-<?=CoreUtils::BrowserNameToClass($browser['browser_name'])?>"></div>
+<?  } ?>
 	<h1><?=rtrim(($browser['browser_name']??'Unknown browser').' '.($browser['browser_ver']??''))?></h1>
 	<p><?=!empty($browser['platform'])?"on {$browser['platform']}":'Unknown platform'?></p>
 
