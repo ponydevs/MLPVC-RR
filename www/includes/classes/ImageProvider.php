@@ -112,6 +112,9 @@
 						throw new Exception($e->getMessage());
 					}
 
+					if (empty($CachedDeviation))
+						throw new Exception("{$this->provider} submission information could not be fetched for $id");
+
 					$this->preview = $CachedDeviation['preview'];
 					$this->fullsize = $CachedDeviation['fullsize'];
 					$this->title = $CachedDeviation['title'];

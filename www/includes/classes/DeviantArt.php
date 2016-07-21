@@ -99,7 +99,7 @@
 			$Deviation = $Database->where('id', $ID)->where('provider', $type)->getOne('deviation_cache');
 
 			$cacheExhausted = self::$_MASS_CACHE_USED > self::$_MASS_CACHE_LIMIT;
-			$cacheExpired = empty($Deviation['updated_on']) ? false : strtotime($Deviation['updated_on'])+(Time::$IN_SECONDS['hour']*5) < time();
+			$cacheExpired = empty($Deviation['updated_on']) ? true : strtotime($Deviation['updated_on'])+(Time::$IN_SECONDS['hour']*5) < time();
 
 			if (!self::$_CACHE_BAILOUT && (empty($Deviation) && (($mass && !$cacheExhausted) || (!$mass && $cacheExpired)))){
 				try {
@@ -110,7 +110,8 @@
 						$Database->where('id',$Deviation['id'])->update('deviation_cache', array('updated_on' => date('c', time()+Time::$IN_SECONDS['minute'] )));
 
 					$ErrorMSG = "Saving local data for $ID@$type failed: ".$e->getMessage();
-					if (!Permission::Sufficient('developer')) trigger_error($ErrorMSG);
+					if (!Permission::Sufficient('developer'))
+						trigger_error($ErrorMSG);
 
 					if (POST_REQUEST)
 						CoreUtils::Respond($ErrorMSG);
