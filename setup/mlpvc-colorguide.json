@@ -17099,7 +17099,7 @@
 						},
 						{
 							"order": 2,
-							"label": "Stripe",
+							"label": "Stripes",
 							"hex": "#656565"
 						}
 					]
@@ -27158,7 +27158,7 @@
 			"name": "background character",
 			"title": null,
 			"type": "cat",
-			"uses": 1,
+			"uses": 0,
 			"synonym_of": 7
 		},
 		"9": {
@@ -29831,6 +29831,46 @@
 			"title": null,
 			"type": "char",
 			"uses": 1,
+			"synonym_of": null
+		},
+		"374": {
+			"tid": 374,
+			"name": "s06e13",
+			"title": null,
+			"type": "ep",
+			"uses": 0,
+			"synonym_of": null
+		},
+		"375": {
+			"tid": 375,
+			"name": "s06e14",
+			"title": null,
+			"type": "ep",
+			"uses": 0,
+			"synonym_of": null
+		},
+		"376": {
+			"tid": 376,
+			"name": "s06e15",
+			"title": null,
+			"type": "ep",
+			"uses": 0,
+			"synonym_of": null
+		},
+		"377": {
+			"tid": 377,
+			"name": "s06e16",
+			"title": null,
+			"type": "ep",
+			"uses": 0,
+			"synonym_of": null
+		},
+		"378": {
+			"tid": 378,
+			"name": "s06e17",
+			"title": null,
+			"type": "ep",
+			"uses": 0,
 			"synonym_of": null
 		}
 	}

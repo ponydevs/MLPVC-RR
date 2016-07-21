@@ -3255,7 +3255,7 @@ INSERT INTO colors VALUES
 (590, 2, 'Shadow Fill', '#A1A095'),
 (591, 0, 'Outline', '#000000'),
 (591, 1, 'Fill', '#343434'),
-(591, 2, 'Stripe', '#656565'),
+(591, 2, 'Stripes', '#656565'),
 (592, 0, 'Gradient Top', '#491E59'),
 (592, 1, 'Gradient Bottom', '#B465CB'),
 (592, 2, 'Highlight Top', '#9852B0'),
@@ -5640,7 +5640,7 @@ INSERT INTO tags VALUES
 (5, 'bat pony', NULL, 'spec', 0, NULL),
 (6, 'mane six', 'Ponies who are one of the show''s six main characters', 'cat', 7, NULL),
 (7, 'minor character', 'Ponies who had a speaking role, interacted with the mane six, or whose only purpose is to fill crowds.', 'cat', 120, NULL),
-(8, 'background character', NULL, 'cat', 1, 7),
+(8, 'background character', NULL, 'cat', 0, 7),
 (9, 'antagonist', NULL, 'cat', 12, NULL),
 (10, 'pet', NULL, 'cat', 6, NULL),
 (11, 'male', NULL, 'gen', 57, NULL),
@@ -5974,14 +5974,19 @@ INSERT INTO tags VALUES
 (370, 'cmc', NULL, 'cat', 0, 45),
 (371, 's05e17', NULL, 'ep', 2, NULL),
 (372, 'dr whooves', NULL, 'char', 0, 134),
-(373, 'amethyst star', NULL, 'char', 1, NULL);
+(373, 'amethyst star', NULL, 'char', 1, NULL),
+(374, 's06e13', NULL, 'ep', 0, NULL),
+(375, 's06e14', NULL, 'ep', 0, NULL),
+(376, 's06e15', NULL, 'ep', 0, NULL),
+(377, 's06e16', NULL, 'ep', 0, NULL),
+(378, 's06e17', NULL, 'ep', 0, NULL);
 
 
 --
 -- Name: tags_tid_seq; Type: SEQUENCE SET; Schema: public; Owner: mlpvc-rr
 --
 
-SELECT pg_catalog.setval('tags_tid_seq', 373, true);
+SELECT pg_catalog.setval('tags_tid_seq', 378, true);
 
 
 --
