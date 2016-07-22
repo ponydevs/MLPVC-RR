@@ -12739,11 +12739,11 @@
 			"order": 75,
 			"label": "Amethyst Star",
 			"notes": "Does not have a Coat Shadow Fill color.",
-			"cm_favme": null,
+			"cm_favme": "daaeeju",
 			"ishuman": false,
 			"added": "2016-07-11 20:35:52.781735+02",
 			"cm_preview": null,
-			"cm_dir": null,
+			"cm_dir": false,
 			"ColorGroups": {
 				"952": {
 					"groupid": 952,

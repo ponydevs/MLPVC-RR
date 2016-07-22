@@ -412,7 +412,7 @@ She has no iris highlights.', NULL, false, '2016-05-11 00:25:06.834527+02', NULL
 (171, 97, 'Orange Swirl', '', 'da7y1xt', false, '2016-06-27 15:15:27.804257+02', NULL, true),
 (172, 138, 'Daisy', '', 'da8l1xp', false, '2016-07-02 17:17:58.045788+02', NULL, false),
 (173, 139, 'Lily Valley', '', NULL, false, '2016-07-03 20:39:33.753746+02', NULL, NULL),
-(174, 75, 'Amethyst Star', 'Does not have a Coat Shadow Fill color.', NULL, false, '2016-07-11 20:35:52.781735+02', NULL, NULL);
+(174, 75, 'Amethyst Star', 'Does not have a Coat Shadow Fill color.', 'daaeeju', false, '2016-07-11 20:35:52.781735+02', NULL, false);
 
 
 --
