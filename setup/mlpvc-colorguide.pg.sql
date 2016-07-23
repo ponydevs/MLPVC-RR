@@ -419,7 +419,7 @@ She has no iris highlights.', NULL, false, '2016-05-11 00:25:06.834527+02', NULL
 -- Name: appearances_id_seq; Type: SEQUENCE SET; Schema: public; Owner: mlpvc-rr
 --
 
-SELECT pg_catalog.setval('appearances_id_seq', 174, true);
+SELECT pg_catalog.setval('appearances_id_seq', 175, true);
 
 
 --
@@ -760,7 +760,7 @@ INSERT INTO colorgroups VALUES
 (398, 70, 'Costume', 0),
 (400, 70, 'Goggles', 2),
 (402, 71, 'Costume', 0),
-(404, 71, 'Goggles', 2),
+(404, 71, 'Goggles', 1),
 (406, 44, 'Hooves', 1),
 (407, 72, 'Coat', 0),
 (408, 72, 'Mane & Tail', 1),
@@ -1267,14 +1267,16 @@ INSERT INTO colorgroups VALUES
 (953, 174, 'Mane & Tail', 1),
 (954, 174, 'Iris', 2),
 (955, 174, 'Cutie Mark', 3),
-(956, 174, 'Magic', 4);
+(956, 174, 'Magic', 4),
+(957, 71, 'Wingpony Badge', 3),
+(958, 71, 'Lead pony Badge', 2);
 
 
 --
 -- Name: colorgroups_groupid_seq; Type: SEQUENCE SET; Schema: public; Owner: mlpvc-rr
 --
 
-SELECT pg_catalog.setval('colorgroups_groupid_seq', 956, true);
+SELECT pg_catalog.setval('colorgroups_groupid_seq', 958, true);
 
 
 --
@@ -2546,8 +2548,9 @@ INSERT INTO colors VALUES
 (402, 2, 'Yellow Fill', '#FFFF98'),
 (404, 0, 'Frame Fill 1', '#DBD678'),
 (404, 1, 'Frame Fill 2', '#8B792E'),
-(404, 2, 'Strap Fill', '#3E3B43'),
-(404, 3, 'Strap Inner Stroke', '#6B6775'),
+(404, 2, 'Lens (67% Opacity)', '#A0D3E6'),
+(404, 3, 'Strap Fill', '#3E3B43'),
+(404, 4, 'Strap Inner Stroke', '#6B6775'),
 (406, 0, 'Outline', '#2D3558'),
 (406, 1, 'Fill', '#43558C'),
 (406, 2, 'Shadow Outline', '#233250'),
@@ -3717,7 +3720,7 @@ INSERT INTO colors VALUES
 (680, 3, 'Hoof Fill', '#7399BE'),
 (681, 0, 'Outline', '#35699F'),
 (681, 1, 'Fill', '#6699CB'),
-(681, 2, 'Shine (30% opacity)', '#CEE0E6'),
+(681, 2, 'Shine (30% Opacity)', '#CEE0E6'),
 (682, 0, 'Gradient Top', '#21639C'),
 (682, 1, 'Gradient Middle', '#519DCE'),
 (682, 2, 'Gradient Bottom', '#7EBCE8'),
@@ -3731,9 +3734,9 @@ INSERT INTO colors VALUES
 (683, 5, 'Jem Fill 3', '#63466B'),
 (684, 0, 'Aura', '#EAC16A'),
 (685, 0, 'Lens Frame', '#496F7B'),
-(685, 1, 'Lens Fill 1 (50% opacity)', '#B7DEF8'),
-(685, 2, 'Lens Fill 2 (70% opacity)', '#DFEDFE'),
-(685, 3, 'Lens Fill 2a (100% opacity)', '#FAFAFA'),
+(685, 1, 'Lens Fill 1 (50% Opacity)', '#B7DEF8'),
+(685, 2, 'Lens Fill 2 (70% Opacity)', '#DFEDFE'),
+(685, 3, 'Lens Fill 2a (100% Opacity)', '#FAFAFA'),
 (685, 4, 'Clip Outline', '#C5B62C'),
 (685, 5, 'Clip Fill', '#DFD876'),
 (685, 6, 'Chain', '#273E58'),
@@ -4508,7 +4511,7 @@ INSERT INTO colors VALUES
 (872, 0, 'Outline', '#761700'),
 (872, 1, 'Fill', '#FF3300'),
 (872, 2, 'Stud', '#AFB5BF'),
-(872, 3, 'Lens Fill 1 (35% opacity)', '#91B4CA'),
+(872, 3, 'Lens Fill 1 (35% Opacity)', '#91B4CA'),
 (872, 4, 'Lens Fill 2 (35% op.on Fill 1)', '#FFFFFF'),
 (873, 0, 'Outline', '#67594C'),
 (873, 1, 'Fill', '#A3937C'),
@@ -4774,7 +4777,17 @@ INSERT INTO colors VALUES
 (955, 5, 'Leftmost Cut/Middle Line', '#D3F2EC'),
 (955, 6, 'Middle Cut', '#B3EFDD'),
 (955, 7, 'Rightmost Cut', '#89DECC'),
-(956, 0, 'Aura', '#B572E0');
+(956, 0, 'Aura', '#B572E0'),
+(957, 0, 'Outline', '#3465AB'),
+(957, 1, 'Fill', '#BCDFF2'),
+(957, 2, 'Shadow Fill', '#9ECEE2'),
+(957, 3, 'Top Highlight (80% Opacity)', '#CFF1FB'),
+(957, 4, 'Other Highlights', '#D4F4FB'),
+(958, 0, 'Outline', '#917821'),
+(958, 1, 'Fill', '#DFCB45'),
+(958, 2, 'Shadow Fill', '#C4AF31'),
+(958, 3, 'Top Highlight (80% Opacity)', '#F6E680'),
+(958, 4, 'Other Highlights', '#F8ED95');
 
 
 --
@@ -5375,6 +5388,7 @@ INSERT INTO tagged VALUES
 (107, 65),
 (108, 56),
 (108, 65),
+(108, 71),
 (109, 52),
 (109, 57),
 (109, 58),
@@ -5730,7 +5744,7 @@ INSERT INTO tags VALUES
 (105, 's04e08', NULL, 'ep', 2, NULL),
 (106, 's05e16', NULL, 'ep', 1, NULL),
 (107, 'meadow flower', NULL, 'char', 1, NULL),
-(108, 's03e07', NULL, 'ep', 2, NULL),
+(108, 's03e07', NULL, 'ep', 3, NULL),
 (109, 's05e07', NULL, 'ep', 3, NULL),
 (110, 'pipsqueak', NULL, 'char', 1, NULL),
 (111, 'silver spoon', NULL, 'char', 1, NULL),
@@ -5986,7 +6000,7 @@ INSERT INTO tags VALUES
 -- Name: tags_tid_seq; Type: SEQUENCE SET; Schema: public; Owner: mlpvc-rr
 --
 
-SELECT pg_catalog.setval('tags_tid_seq', 378, true);
+SELECT pg_catalog.setval('tags_tid_seq', 379, true);
 
 
 --

@@ -9413,7 +9413,7 @@
 						},
 						{
 							"order": 2,
-							"label": "Shine (30% opacity)",
+							"label": "Shine (30% Opacity)",
 							"hex": "#CEE0E6"
 						}
 					]
@@ -9511,17 +9511,17 @@
 						},
 						{
 							"order": 1,
-							"label": "Lens Fill 1 (50% opacity)",
+							"label": "Lens Fill 1 (50% Opacity)",
 							"hex": "#B7DEF8"
 						},
 						{
 							"order": 2,
-							"label": "Lens Fill 2 (70% opacity)",
+							"label": "Lens Fill 2 (70% Opacity)",
 							"hex": "#DFEDFE"
 						},
 						{
 							"order": 3,
-							"label": "Lens Fill 2a (100% opacity)",
+							"label": "Lens Fill 2a (100% Opacity)",
 							"hex": "#FAFAFA"
 						},
 						{
@@ -15996,7 +15996,7 @@
 						},
 						{
 							"order": 3,
-							"label": "Lens Fill 1 (35% opacity)",
+							"label": "Lens Fill 1 (35% Opacity)",
 							"hex": "#91B4CA"
 						},
 						{
@@ -25610,7 +25610,7 @@
 				"404": {
 					"groupid": 404,
 					"label": "Goggles",
-					"order": 2,
+					"order": 1,
 					"Colors": [
 						{
 							"order": 0,
@@ -25624,13 +25624,82 @@
 						},
 						{
 							"order": 2,
+							"label": "Lens (67% Opacity)",
+							"hex": "#A0D3E6"
+						},
+						{
+							"order": 3,
 							"label": "Strap Fill",
 							"hex": "#3E3B43"
 						},
 						{
-							"order": 3,
+							"order": 4,
 							"label": "Strap Inner Stroke",
 							"hex": "#6B6775"
+						}
+					]
+				},
+				"958": {
+					"groupid": 958,
+					"label": "Lead pony Badge",
+					"order": 2,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#917821"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#DFCB45"
+						},
+						{
+							"order": 2,
+							"label": "Shadow Fill",
+							"hex": "#C4AF31"
+						},
+						{
+							"order": 3,
+							"label": "Top Highlight (80% Opacity)",
+							"hex": "#F6E680"
+						},
+						{
+							"order": 4,
+							"label": "Other Highlights",
+							"hex": "#F8ED95"
+						}
+					]
+				},
+				"957": {
+					"groupid": 957,
+					"label": "Wingpony Badge",
+					"order": 3,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#3465AB"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#BCDFF2"
+						},
+						{
+							"order": 2,
+							"label": "Shadow Fill",
+							"hex": "#9ECEE2"
+						},
+						{
+							"order": 3,
+							"label": "Top Highlight (80% Opacity)",
+							"hex": "#CFF1FB"
+						},
+						{
+							"order": 4,
+							"label": "Other Highlights",
+							"hex": "#D4F4FB"
 						}
 					]
 				}
@@ -25638,6 +25707,7 @@
 			"TagIDs": [
 				27,
 				96,
+				108,
 				131
 			]
 		},
@@ -27878,7 +27948,7 @@
 			"name": "s03e07",
 			"title": null,
 			"type": "ep",
-			"uses": 2,
+			"uses": 3,
 			"synonym_of": null
 		},
 		"109": {
