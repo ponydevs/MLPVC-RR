@@ -3,7 +3,7 @@
 	<p>Sorted <?php
 		if (!$EQG){
 	?><select id="sort-by" data-baseurl="/cg<?=($EQG?'/eqg':'')?>/full">
-		<option value='alphabetically'<?=$GuideOrder?'':' selected'?>>alphabetcally</option>
+		<option value='alphabetically'<?=$GuideOrder?'':' selected'?>>alphabetically</option>
 		<option value=''<?=$GuideOrder?' selected':''?>>by relevance</option>
 	</select><?php
 		}
