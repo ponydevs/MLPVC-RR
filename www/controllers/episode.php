@@ -249,13 +249,20 @@
 			if (!Permission::Sufficient('staff'))
 				CoreUtils::Respond();
 			$editing = $action === 'edit';
+			$canEditID = Episode::GetPostCount($Episode) === 0;
 
 			$insert = array();
 			if (!$editing)
 				$insert['posted_by'] = $currentUser['id'];
 
-			$insert['season'] = Episode::ValidateSeason();
-			$insert['episode'] = Episode::ValidateEpisode();
+			if ($action !== 'edit' || $canEditID){
+				$insert['season'] = Episode::ValidateSeason();
+				$insert['episode'] = Episode::ValidateEpisode();
+			}
+			else if (!$canEditID){
+				$insert['season'] = $Episode['season'];
+				$insert['episode'] = $Episode['episode'];
+			}
 
 			if ($editing){
 				$SeasonChanged = $insert['season'] != $Episode['season'];
