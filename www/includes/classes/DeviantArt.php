@@ -193,6 +193,8 @@
 		 *
 		 * @param string $code
 		 * @param null|string $type
+		 *
+		 * @return array|null
 		 */
 		static function GetToken($code, $type = null){
 			global $Database, $http_response_header;
@@ -268,7 +270,7 @@
 			}
 			else $Database->where('id',$UserID)->update('users', $UserData);
 
-			if (empty($makeDev) && (!empty($User) && !Permission::Sufficient('member', $User['role']) || empty($User)) && User::IsClubMember($UserData['name']))
+			if (empty($makeDev) && (!empty($User) && Permission::Insufficient('member', $User['role']) || empty($User)) && User::IsClubMember($UserData['name']))
 				User::UpdateRole(array(
 					'id' => $UserID,
 					'role' => isset($User['role']) ? $User['role'] : 'user',
@@ -284,46 +286,7 @@
 			$interval = $User['name'] === 'dcencia' ? '1 WEEK' : '1 MONTH';
 			$Database->rawQuery("DELETE FROM sessions WHERE \"user\" = ? && lastvisit <= NOW() - INTERVAL '$interval'", array($UserID));
 
-
 			Cookie::Set('access', $cookie, time()+ Time::$IN_SECONDS['year'], Cookie::HTTPONLY);
-		}
-
-		/**
-		 * Handles the DeviantArt autherntication process
-		 */
-		static function HandleAuth(){
-			global $err, $errdesc, $REWRITE_REGEX;
-
-			if (!isset($_GET['error']) && (empty($_GET['code']) || empty($_GET['state'])))
-				$_GET['error'] = 'unauthorized_client';
-			if (isset($_GET['error'])){
-				$err = $_GET['error'];
-				if (isset($_GET['error_description']))
-					$errdesc = $_GET['error_description'];
-				global $signedIn;
-				if ($signedIn)
-					CoreUtils::Redirect($_GET['state']);
-				Episode::LoadPage();
-			}
-			DeviantArt::GetToken($_GET['code']);
-
-			if (isset($_GET['error'])){
-				$err = $_GET['error'];
-				if (isset($_GET['error_description']))
-					$errdesc = $_GET['error_description'];
-
-				if ($err === 'user_banned')
-					$errdesc .= "\n\nIf you'd like to appeal your ban, please <a href='http://mlp-vectorclub.deviantart.com/notes/'>send the group a note</a>.";
-				Episode::LoadPage();
-			}
-
-			if (regex_match(new RegExp('^[a-z\d]+$','i'), $_GET['state'], $_match)){
-				$confirm = str_replace('{{CODE}}', $_match[0], file_get_contents('views/loginConfrim.html'));
-				die($confirm);
-			}
-			else if (regex_match($REWRITE_REGEX, $_GET['state']))
-				CoreUtils::Redirect($_GET['state']);
-
-			CoreUtils::Redirect('/');
+			return $User ?? null;
 		}
 	}

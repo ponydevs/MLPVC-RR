@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html>
+<head>
 <title>Sign-in process</title>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, maximum-scale=1, user-scalable=no">
-<head>
 <style>
 @font-face {
 	font-family: Celestia;
@@ -52,19 +52,19 @@ body > span > :last-child {
 	color: green;
 }
 </style>
-<script>window.opener.$.PopupMoveCenter(window, 400, 400)</script>
+<script>window.opener.$.PopupMoveCenter(window, 400, 400);try{window.history.replaceState({},'','/hi')}catch(e){}</script>
 </head>
 <body>
 	<span>
 		<span>&#x2713;</span>
 		<span>Welcome<script>
 			try {
-				if (localStorage.getItem('cookie_consent') == '1')
+				if (localStorage.getItem('cookie_consent_v2') == '1')
 					//noinspection DocumentWriteJS
 					document.write(' back')
 			} catch(e){}</script>!</span>
 	</span>
 	
-<script>setTimeout(function(){document.getElementsByTagName('body')[0].className += 'fadein'},1);window.opener[' {{CODE}}']()</script>
+<script>setTimeout(function(){document.getElementsByTagName('body')[0].className += 'fadein'},1);window.opener[' {{CODE}}']('{{USERID}}')</script>
 </body>
 </html>

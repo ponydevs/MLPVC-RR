@@ -41,7 +41,7 @@
 		 * If user isn't logged in, and $compareAgainst is missing, returns false
 		 * If $compareAgainst isn't missing, compare it to $role
 		 *
-		 * @param string $role
+		 * @param string      $role
 		 * @param string|null $compareAgainst
 		 *
 		 * @return bool
@@ -68,7 +68,7 @@
 		 * Save as above, except the return value is inverted
 		 * Added for better code readability
 		 *
-		 * @param string $role
+		 * @param string      $role
 		 * @param string|null $compareAgainst
 		 *
 		 * @return bool
@@ -80,8 +80,6 @@
 		/**
 		 * Converts role label to badge initials
 		 * -------------------------------------
-		 * Related: http://stackoverflow.com/a/30740511/1344955
-		 *
 		 * @param string $role
 		 *
 		 * @return string

@@ -9,6 +9,7 @@
 				'cg_hideclrinfo' => 0,
 				'p_vectorapp' => '',
 				'p_hidediscord' => 0,
+				'p_disable_ga' => 0,
 			);
 
 		/**
@@ -90,6 +91,7 @@
 						throw new Exception("The specified app is invalid");
 				break;
 				case "p_hidediscord":
+				case "p_disable_ga":
 				case "cg_hidesynon":
 				case "cg_hideclrinfo":
 					$value = $value ? 1 : 0;

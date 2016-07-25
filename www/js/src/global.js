@@ -627,7 +627,8 @@
 		$d.triggerHandler('paginate-refresh');
 
 		// Sign in button handler
-		let consent = localStorage.getItem('cookie_consent');
+		localStorage.removeItem('cookie_consent');
+		let consent = localStorage.getItem('cookie_consent_v2');
 		OAUTH_URL = window.OAUTH_URL;
 
 		$('#signin').off('click').on('click',function(){
@@ -636,7 +637,7 @@
 					if (!sure) return;
 
 					$.Dialog.close();
-					localStorage.setItem('cookie_consent',1);
+					localStorage.setItem('cookie_consent_v2',1);
 					$this.disable();
 
 					let redirect = function(){
@@ -650,11 +651,13 @@
 					$.Dialog.wait('Sign-in process', "Opening popup window");
 
 					let rndk = signingGenRndKey(), success = false, closeCheck, popup;
-					window[' '+rndk] = function(){
+					window[' '+rndk] = function(userid){
 						success = true;
 						clearInterval(closeCheck);
 						$.Dialog.wait(false, 'Reloading page');
 						$.Navigation.reload(function(){
+							if (userid)
+								window.ga('set', 'userId', userid);
 							$.Dialog.close();
 							popup.close();
 						});
@@ -688,7 +691,8 @@
 					$.Dialog.wait(false, "Waiting for you to sign in");
 				};
 
-			if (!consent) $.Dialog.confirm('EU Cookie Policy Notice','In compliance with the <a href="http://ec.europa.eu/ipg/basics/legal/cookies/index_en.htm">EU Cookie Policy</a> we must inform you that our website will store cookies on your device to remember your logged in status between browser sessions.<br><br>If you would like to avoid these completly harmless pieces of information required to use this website, click "Decline" and continue browsing as a guest.<br><br>This warning will not appear again if you accept our use of persistent cookies.',['Accept','Decline'],opener);
+			if (!consent) $.Dialog.confirm('Privacy Notice',`<p>Dear User,</p><p>We must inform you that our website will store cookies on your device to remember your logged in status between browser sessions.</p><p>If you would like to avoid these completly harmless pieces of text which are required to use this website, click "Decline" and continue browsing as a guest.</p><p><em>This warning will not appear again if you accept our use of persistent cookies.</em></p>
+<strong>Update (<time datetime="2016-07-25T11:20Z"></time>)</strong><p>In addition to persistent cookies, we use Google Analytics to track website traffic. Recently Google has made available a feature which allows us to tie this data to specific users which helps in debugging certain issues that may arise.</p><p>If you do not wish your activity to be tied to your user ID you'll be able to turn this off by clicking the "Account" menu item and un-ticking the approperiate check box in the "Settings" section after you've logged in, but keep in mind that if you experience issues, tracking down the cause will be harder for me to do so.</p><p>I'd like to take this opportunity to mention <a href="https://www.ublock.org/" target="_blank">uBlock</a>, a great extension that'll prevent not just us but many other sites from tracking your activity. This is not sponsored or anything, I just thought I'd let you know.</p><p>Sincerely,<br>The developer</p>`,['Accept','Decline'],opener);
 			else opener(true);
 		});
 

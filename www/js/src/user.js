@@ -163,6 +163,13 @@ DocReady.push(function User(){
 					$sidebar.find('.welcome .buttons').append('<a class="btn typcn discord-join" href="http://fav.me/d9zt1wv" target="_blank">Join Discord</a>');
 				$.Dialog.close();
 			break;
+			case "p_disable_ga":
+				if (to_what){
+					$.Dialog.wait(false, 'Performing a hard reload to remove user ID from the tracking code');
+					return window.location.reload();
+				}
+				$.Dialog.close();
+			break;
 			default:
 				$.Dialog.close();
 		}

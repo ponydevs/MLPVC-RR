@@ -1,4 +1,4 @@
-/* globals $body,Key,$w */
+/* globals $body,Key,$w,Time */
 (function ($, undefined) {
 	'use strict';
 	let colors = {
@@ -204,6 +204,7 @@
 			});
 			this._setFocus();
 			$w.trigger('dialog-opened');
+			Time.Update();
 
 			$.callCallback(callback, [$requestContentDiv]);
 			if (append){

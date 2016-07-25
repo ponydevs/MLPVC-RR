@@ -1295,17 +1295,22 @@ DocReady.push(function Episode(){
 	let $imgs = $content.find('img[src]'),
 		total = $imgs.length, loaded = 0,
 		postHashRegex = /^#(request|reservation)-\d+$/,
-		showdialog = location.hash.length;
+		showdialog = location.hash.length > 1;
 
-	if (total > 0 && (!showdialog || $(location.hash).length > 0)){
-		if (showdialog)
+	if (total > 0 && showdialog){
+		let $progress;
+		if (showdialog){
 			$.Dialog.wait('Scroll post into view','Waiting for page to load');
-		let $progress = $.mk('progress').attr({max:total,value:0}).css({display:'block',width:'100%',marginTop:'5px'});
-		$('#dialogContent').children('div:not([id])').last().addClass('align-center').append($progress);
+			$progress = $.mk('progress').attr({max:total,value:0}).css({display:'block',width:'100%',marginTop:'5px'});
+			$('#dialogContent').children('div:not([id])').last().addClass('align-center').append($progress);
+		}
 		$content.imagesLoaded()
 			.progress(function(_, image){
-				if (image.isLoaded)
-					$progress.attr('value', ++loaded);
+				if (image.isLoaded){
+					loaded++;
+					if (showdialog)
+						$progress.attr('value', loaded);
+				}
 				else if (image.img.src){
 					// Attempt to re-load the post to fix image link
 					let $li = $(image.img).closest('li[id]');
@@ -1325,7 +1330,9 @@ DocReady.push(function Episode(){
 							Bind($newli, id, type);
 						}));
 					}
-					$progress.attr('max', --total);
+					total--;
+					if (showdialog)
+						$progress.attr('max', total);
 				}
 			})
 			.always(function(){
