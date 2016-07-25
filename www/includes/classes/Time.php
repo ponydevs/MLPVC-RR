@@ -84,6 +84,8 @@
 				return self::_from($time);
 
 			$ts = gmdate($format, $time);
+			if ($format === 'c')
+				$ts = str_replace('+00:00','Z', $ts);
 			if ($format !== 'c' && strpos($format, 'T') === false)
 				$ts .= ' ('.date('T').')';
 			return $ts;
