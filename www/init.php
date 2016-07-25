@@ -22,6 +22,8 @@
 	# string
 	define('OAUTH_REDIRECT_URI', '&redirect_uri='.urlencode(ABSPATH.'da-auth'));
 	define('OAUTH_AUTHORIZATION_URL', "https://www.deviantart.com/oauth2/authorize?response_type=code&scope=user+browse&client_id=".DA_CLIENT.OAUTH_REDIRECT_URI);
+	define('SPRITE_REL_PATH', '/img/cg/');
+	define('SPRITE_PATH', APPATH.ltrim(SPRITE_REL_PATH,'/'));
 	# boolean
 	define('AND_DIE', true); // CoreUtils::StatusCode
 	define('AS_ARRAY',true); // Episode::FormatTitle

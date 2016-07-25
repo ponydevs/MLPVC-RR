@@ -308,7 +308,7 @@
 				case "getsprite":
 				case "setsprite":
 					$fname = $Appearance['id'].'.png';
-					$finalpath = $SpritePath.$fname;
+					$finalpath = SPRITE_PATH.$fname;
 
 					switch ($action){
 						case "setsprite":
@@ -316,7 +316,7 @@
 							CGUtils::ClearRenderedImage($Appearance['id']);
 						break;
 						case "delsprite":
-							if (!file_exists($finalpath))
+							if (empty(\CG\Appearances::GetSpriteURL($finalpath)))
 								Response::Fail('No sprite file found');
 
 							if (!unlink($finalpath))
@@ -326,7 +326,7 @@
 						break;
 					}
 
-					Response::Done(array("path" => "$SpriteRelPath$fname?".filemtime($finalpath)));
+					Response::Done(array("path" => SPRITE_REL_PATH."$fname?".filemtime($finalpath)));
 				break;
 				case "clearrendercache":
 					if (!CGUtils::ClearRenderedImage($Appearance['id']))

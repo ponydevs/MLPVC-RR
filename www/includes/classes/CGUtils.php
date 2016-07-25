@@ -52,7 +52,7 @@
 							$PrevFirstLetter = $FirstLetter;
 							$HTML .= "<section><h2>$PrevFirstLetter</h2><div>";
 						}
-						$HTML .= "<a href='/cg/v/{$p['id']}'>{$p['label']}</a>, ";
+						self::_processFullListLink($p, $HTML);
 					}
 					$HTML = rtrim($HTML, ', ');
 				}
@@ -63,13 +63,27 @@
 							continue;
 
 						$HTML .= "<section><h2>$CategoryName</h2><div>";
-						foreach ($Sorted[$Category] as $p)
-							$HTML .= "<a href='/cg/v/{$p['id']}'>{$p['label']}</a>, ";
+						foreach ($Sorted[$Category] as $p){
+							self::_processFullListLink($p, $HTML);
+						}
 						$HTML = rtrim($HTML, ', ')."</div></section>";
 					}
 				}
 			}
 			return $HTML.($wrap?"</div>":'');
+		}
+
+		static private function _processFullListLink($p, &$HTML){
+			$sprite = '';
+			$url = "/cg/v/{$p['id']}-".\CG\Appearances::GetSafeLabel($p);
+			if (Permission::Sufficient('staff')){
+				$SpriteURL = \CG\Appearances::GetSpriteURL($p['id']);
+				if (!empty($SpriteURL)){
+					$sprite = "<span class='typcn typcn-image' title='Has a sprite'></span>&nbsp;";
+					$url .= "' class='color-green";
+				}
+			}
+			$HTML .= "<a href='$url'>$sprite{$p['label']}</a>, ";
 		}
 
 		/**

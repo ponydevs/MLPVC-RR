@@ -173,16 +173,16 @@
 		/**
 		 * Get sprite URL for an appearance
 		 *
-		 * @param int         $AppearanceID
-		 * @param string|null $fallback
+		 * @param int    $AppearanceID
+		 * @param string $fallback
 		 *
 		 * @return string
 		 */
-		static function GetSpriteURL($AppearanceID, $fallback = null){
-			$imgPth = "img/cg/$AppearanceID.png";
-			if (file_Exists(APPATH.$imgPth))
-				return "/$imgPth?".filemtime(APPATH.$imgPth);
-			return $fallback ?? '';
+		static function GetSpriteURL(int $AppearanceID, string $fallback = ''):string {
+			$fname = "$AppearanceID.png";
+			if (file_exists(SPRITE_PATH.$fname))
+				return SPRITE_REL_PATH."$fname?".filemtime(SPRITE_PATH.$fname);
+			return $fallback;
 		}
 
 		/**
