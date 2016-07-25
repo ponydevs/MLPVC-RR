@@ -1,7 +1,7 @@
 <?php
 
 	if (!POST_REQUEST) CoreUtils::NotFound();
-	if (!$signedIn) CoreUtils::Respond();
+	if (!$signedIn) Response::Fail();
 	CSRFProtection::Protect();
 
 	$_match = array();
@@ -9,10 +9,10 @@
 		$thing = $_match[2];
 		$Post = $Database->where('id', $_match[3])->getOne("{$thing}s");
 		if (empty($Post))
-			CoreUtils::Respond("The specified $thing does not exist");
+			Response::Fail("The specified $thing does not exist");
 
 		if (!(Permission::Sufficient('staff') || ($thing === 'request' && empty($Post['reserved_by']) && $Post['requested_by'] === $currentUser['id'])))
-			CoreUtils::Respond();
+			Response::Fail();
 
 		if ($_match[1] === 'get'){
 			$response = array(
@@ -29,51 +29,51 @@
 				if (!empty($Post['reserved_by']) && !empty($Post['deviation_id']))
 						$response['finished_at'] = !empty($Post['finished_at']) ? date('c', strtotime($Post['finished_at'])) : '';
 			}
-			CoreUtils::Respond($response);
+			Response::Done($response);
 		}
 
 		$update = array();
 		Posts::CheckPostDetails($thing, $update, $Post);
 
 		if (empty($update))
-			CoreUtils::Respond('Nothing was changed', 1);
+			Response::Success('Nothing was changed');
 
 		if (!$Database->where('id', $Post['id'])->update("{$thing}s", $update))
-			CoreUtils::Respond(ERR_DB_FAIL);
+			Response::DBError();
 		$Post = array_merge($Post, $update);
-		CoreUtils::Respond(array('li' => Posts::GetLi($Post, $thing === 'request')));
+		Response::Done(array('li' => Posts::GetLi($Post, $thing === 'request')));
 	}
 	if (regex_match(new RegExp('^reload-(request|reservation)/(\d+)$'), $data, $_match)){
 		$thing = $_match[1];
 		$Post = $Database->where('id', $_match[2])->getOne("{$thing}s");
 		if (empty($Post))
-			CoreUtils::Respond("The specified $thing does not exist");
+			Response::Fail("The specified $thing does not exist");
 
-		CoreUtils::Respond(array('li' => Posts::GetLi($Post, $thing === 'request', isset($_POST['FROM_PROFILE']), true)));
+		Response::Done(array('li' => Posts::GetLi($Post, $thing === 'request', isset($_POST['FROM_PROFILE']), true)));
 	}
 	else if (regex_match(new RegExp('^((?:un)?(?:finish|lock|reserve)|add|delete)-(request|reservation)s?/(\d+)$'),$data,$_match)){
 		$type = $_match[2];
 		$action = $_match[1];
 
 		if (empty($_match[3]))
-			 CoreUtils::Respond("Missing $type ID");
+			 Response::Fail("Missing $type ID");
 		$Post = $Database->where('id', $_match[3])->getOne("{$type}s");
-		if (empty($Post)) CoreUtils::Respond("There's no $type with that ID");
+		if (empty($Post)) Response::Fail("There's no $type with the ID {$_match[3]}");
 
 		if (!empty($Post['lock']) && Permission::Insufficient('developer') && $action !== 'unlock')
-			CoreUtils::Respond('This post has been approved and cannot be edited or removed.');
+			Response::Fail('This post has been approved and cannot be edited or removed.');
 
 		if ($type === 'request' && $action === 'delete'){
 			if (!Permission::Sufficient('staff')){
 				if (!$signedIn || $Post['requested_by'] !== $currentUser['id'])
-					CoreUtils::Respond();
+					Response::Fail();
 
 				if (!empty($Post['reserved_by']))
-					CoreUtils::Respond('You cannot delete a request that has already been reserved by a group member');
+					Response::Fail('You cannot delete a request that has already been reserved by a group member');
 			}
 
 			if (!$Database->where('id', $Post['id'])->delete('requests'))
-				CoreUtils::Respond(ERR_DB_FAIL);
+				Response::DBError();
 
 			Log::Action('req_delete',array(
 				'season' => $Post['season'],
@@ -88,11 +88,11 @@
 				'lock' => $Post['lock'],
 			));
 
-			CoreUtils::Respond(true);
+			Response::Done();
 		}
 
 		if (Permission::Insufficient('member'))
-			CoreUtils::Respond();
+			Response::Fail();
 
 		$isUserReserver = $Post['reserved_by'] === $currentUser['id'];
 		if (!empty($Post['reserved_by'])){
@@ -107,17 +107,17 @@
 						break;
 					}
 					if ($isUserReserver)
-						CoreUtils::Respond("You've already reserved this $type");
-					CoreUtils::Respond("This $type has already been reserved by somepony else");
+						Response::Fail("You've already reserved this $type");
+					Response::Fail("This $type has already been reserved by somepony else");
 				break;
 				case 'lock':
 					if (empty($Post['deviation_id']))
-						CoreUtils::Respond("Only finished {$type}s can be locked");
+						Response::Fail("Only finished {$type}s can be locked");
 
 					CoreUtils::CheckDeviationInClub($Post['deviation_id']);
 
 					if (!$Database->where('id', $Post['id'])->update("{$type}s", array('lock' => true)))
-						CoreUtils::Respond(ERR_DB_FAIL);
+						Response::DBError();
 
 					$postdata = Posts::Approve($type, $Post['id'], !$isUserReserver ? $Post['reserved_by'] : null);
 
@@ -128,25 +128,25 @@
 					);
 					if ($isUserReserver)
 						$response['message'] .= " Thank you for your contribution!<div class='align-center'><apan class='sideways-smiley-face'>;)</span></div>";
-					CoreUtils::Respond($response);
+					Response::Done($response);
 				break;
 				case 'unlock':
 					if (Permission::Insufficient('staff'))
-						CoreUtils::Respond();
+						Response::Fail();
 					if (empty($Post['lock']))
-						CoreUtils::Respond("This $type has not been approved yet");
+						Response::Fail("This $type has not been approved yet");
 
 					if (Permission::Insufficient('developer') && CoreUtils::IsDeviationInClub($Post['deviation_id']) === true)
-						CoreUtils::Respond("<a href='http://fav.me/{$Post['deviation_id']}' target='_blank'>This deviation</a> is part of the group gallery, which prevents the post from being unlocked.");
+						Response::Fail("<a href='http://fav.me/{$Post['deviation_id']}' target='_blank'>This deviation</a> is part of the group gallery, which prevents the post from being unlocked.");
 
 					$Database->where('id', $Post['id'])->update("{$type}s", array('lock' => false));
 					$Post['lock'] = false;
 
-					CoreUtils::Respond(true);
+					Response::Done();
 				break;
 				case 'unreserve':
 					if (!$isUserReserver && Permission::Insufficient('staff'))
-						CoreUtils::Respond();
+						Response::Fail();
 
 					if ($type === 'request'){
 						$update = array(
@@ -159,17 +159,17 @@
 					else $_REQUEST['unbind'] = true;
 				case 'unfinish':
 					if (!$isUserReserver && Permission::Insufficient('staff'))
-						CoreUtils::Respond();
+						Response::Fail();
 
 					if (isset($_REQUEST['unbind'])){
 						if ($type === 'reservation'){
 							if (!$Database->where('id', $Post['id'])->delete('reservations'))
-								CoreUtils::Respond(ERR_DB_FAIL);
+								Response::DBError();
 
-							CoreUtils::Respond('Reservation deleted', 1);
+							Response::Success('Reservation deleted');
 						}
 						else if ($type === 'request' && Permission::Insufficient('staff') && !$isUserReserver)
-							CoreUtils::Respond('You cannot remove the reservation from this post');
+							Response::Fail('You cannot remove the reservation from this post');
 
 						$update = array(
 							'reserved_by' => null,
@@ -177,19 +177,19 @@
 						);
 					}
 					else if ($type === 'reservation' && empty($Post['preview']))
-						CoreUtils::Respond('This reservation was added directly and cannot be marked unfinished. To remove it, check the unbind from user checkbox.');
+						Response::Fail('This reservation was added directly and cannot be marked unfinished. To remove it, check the unbind from user checkbox.');
 
 					$update['deviation_id'] = null;
 					$update['finished_at'] = null;
 
 					if (!$Database->where('id', $Post['id'])->update("{$type}s",$update))
-						CoreUtils::Respond(ERR_DB_FAIL);
+						Response::DBError();
 
-					CoreUtils::Respond(true);
+					Response::Done();
 				break;
 				case 'finish':
 					if (!$isUserReserver && Permission::Insufficient('staff'))
-						CoreUtils::Respond();
+						Response::Fail();
 
 					$update = Posts::CheckRequestFinishingImage($Post['reserved_by']);
 
@@ -197,7 +197,7 @@
 					$update['finished_at'] = isset($finished_at) ? date('c', $finished_at) : date('c');
 
 					if (!$Database->where('id', $Post['id'])->update("{$type}s",$update))
-						CoreUtils::Respond(ERR_DB_FAIL);
+						Response::DBError();
 
 					$postdata = array(
 						'type' => $type,
@@ -218,12 +218,14 @@
 							$message .= "<p><strong>{$u['name']}</strong> has been notified.</p>";
 						}
 					}
-					CoreUtils::Respond($message ?? true, 1);
+					if (!empty($message))
+						Response::Success($message);
+					Response::Done();
 				break;
 			}
 		}
 		else if ($action === 'finish')
-			CoreUtils::Respond("This $type has not been reserved by anypony yet");
+			Response::Fail("This $type has not been reserved by anypony yet");
 
 		if (empty($Post['reserved_by']) && $type === 'request' && $action === 'reserve'){
 			User::ReservationLimitCheck();
@@ -234,9 +236,9 @@
 				if (isset($reserve_as)){
 					$User = User::Get($reserve_as, 'name');
 					if (empty($User))
-						CoreUtils::Respond('User does not exist');
+						Response::Fail('User does not exist');
 					if (!Permission::Sufficient('member', $User['role']))
-						CoreUtils::Respond('User does not have permission to reserve posts');
+						Response::Fail('User does not have permission to reserve posts');
 
 					$update['reserved_by'] = $User['id'];
 				}
@@ -250,7 +252,7 @@
 		}
 
 		if (empty($update) || !$Database->where('id', $Post['id'])->update("{$type}s",$update))
-			CoreUtils::Respond('Nothing has been changed<br>If you tried to do something, then this is actually an error, which you should <a class="send-feedback">tell us</a> about.');
+			Response::Fail('Nothing has been changed<br>If you tried to do something, then this is actually an error, which you should <a class="send-feedback">tell us</a> about.');
 
 		if (!empty($overdue))
 			Log::Action('res_overtake',array_merge(
@@ -266,13 +268,13 @@
 			$response = array('li' => Posts::GetLi($Post, true));
 			if (isset($_POST['FROM_PROFILE']))
 				$response['pendingReservations'] = User::GetPendingReservationsHTML($Post['reserved_by'], $isUserReserver);
-			CoreUtils::Respond($response);
+			Response::Done($response);
 		}
-		else CoreUtils::Respond(true);
+		else Response::Done();
 	}
 	else if ($data === 'mass-approve'){
 		if (!Permission::Sufficient('staff'))
-			CoreUtils::Respond();
+			Response::Fail();
 
 		$ids = (new Input('ids','int[]',array(
 			Input::CUSTOM_ERROR_MESSAGES => array(
@@ -293,7 +295,7 @@
 		);
 
 		if (empty($Posts))
-			CoreUtils::Respond('There were no posts in need of marking as approved', 1);
+			Response::Success('There were no posts in need of marking as approved');
 
 		$approved = 0;
 		foreach ($Posts as $p){
@@ -305,13 +307,13 @@
 		}
 
 		if ($approved === 0)
-			CoreUtils::Respond('There were no posts in need of marking as approved', 1);
+			Response::Success('There were no posts in need of marking as approved');
 
-		CoreUtils::Respond('Marked '.CoreUtils::MakePlural('post', $approved, PREPEND_NUMBER).' as approved. To see which ones, check the <a href="/admin/logs/1?type=post_lock&by=you">list of posts you\'ve approved</a>.',1,array('reload' => true));
+		Response::Success('Marked '.CoreUtils::MakePlural('post', $approved, PREPEND_NUMBER).' as approved. To see which ones, check the <a href="/admin/logs/1?type=post_lock&by=you">list of posts you\'ve approved</a>.',array('reload' => true));
 	}
 	else if ($data === 'add-reservation'){
 		if (!Permission::Sufficient('staff'))
-			CoreUtils::Respond();
+			Response::Fail();
 		$_POST['allow_overwrite_reserver'] = true;
 		$insert = Posts::CheckRequestFinishingImage();
 		if (empty($insert['reserved_by']))
@@ -325,31 +327,31 @@
 		)))->out();
 		$epdata = Episode::GetActual($epdata['season'], $epdata['episode']);
 		if (empty($epdata))
-			CoreUtils::Respond('The specified episode does not exist');
+			Response::Fail('The specified episode does not exist');
 		$insert['season'] = $epdata['season'];
 		$insert['episode'] = $epdata['episode'];
 
 		if (!$Database->insert('reservations', $insert))
-			CoreUtils::Respond(ERR_DB_FAIL);
-		CoreUtils::Respond('Reservation added',1);
+			Response::DBError();
+		Response::Success('Reservation added');
 	}
 	else if (regex_match(new RegExp('^set-(request|reservation)-image/(\d+)$'), $data, $_match)){
 		$thing = $_match[1];
 		$Post = $Database->where('id', $_match[2])->getOne("{$thing}s");
 		if (empty($Post))
-			CoreUtils::Respond("The specified $thing does not exist");
+			Response::Fail("The specified $thing does not exist");
 		if ($Post['lock'])
-			CoreUtils::Respond('This post is locked, its image cannot be changed.');
+			Response::Fail('This post is locked, its image cannot be changed.');
 
 		if (Permission::Insufficient('staff'))
 			switch ($thing){
 				case 'request':
 					if ($Post['requested_by'] !== $currentUser['id'] || !empty($Post['reserved_by']))
-						CoreUtils::Respond();
+						Response::Fail();
 				break;
 				case 'reservation':
 					if ($Post['reserved_by'] !== $currentUser['id'])
-						CoreUtils::Respond();
+						Response::Fail();
 				break;
 			};
 
@@ -364,13 +366,13 @@
 		if (!@getimagesize($Image->preview)){
 			sleep(1);
 			if (!@getimagesize($Image->preview))
-				CoreUtils::Respond("<p class='align-center'>The specified image doesn't seem to exist. Please verify that you can reach the URL below and try again.<br><a href='{$Image->preview}' target='_blank'>{$Image->preview}</a></p>");
+				Response::Fail("<p class='align-center'>The specified image doesn't seem to exist. Please verify that you can reach the URL below and try again.<br><a href='{$Image->preview}' target='_blank'>{$Image->preview}</a></p>");
 		}
 
 		if (!$Database->where('id', $Post['id'])->update("{$thing}s",array(
 			'preview' => $Image->preview,
 			'fullsize' => $Image->fullsize,
-		))) CoreUtils::Respond(ERR_DB_FAIL);
+		))) Response::DBError();
 
 		Log::Action('img_update',array(
 			'id' => $Post['id'],
@@ -381,20 +383,20 @@
 			'newfullsize' => $Image->fullsize,
 		));
 
-		CoreUtils::Respond(array('preview' => $Image->preview));
+		Response::Done(array('preview' => $Image->preview));
 	}
 	else if (regex_match(new RegExp('^fix-(request|reservation)-stash/(\d+)$'), $data, $_match)){
 		if (!Permission::Sufficient('staff'))
-			CoreUtils::Respond();
+			Response::Fail();
 
 		$thing = $_match[1];
 		$Post = $Database->where('id', $_match[2])->getOne("{$thing}s");
 		if (empty($Post))
-			CoreUtils::Respond("The specified $thing does not exist");
+			Response::Fail("The specified $thing does not exist");
 
 		// Link is already full size, we're done
 		if (regex_match($FULLSIZE_MATCH_REGEX, $Post['fullsize']))
-			CoreUtils::Respond(array('fullsize' => $Post['fullsize']));
+			Response::Done(array('fullsize' => $Post['fullsize']));
 
 		// Reverse submission lookup
 		$StashItem = $Database
@@ -402,7 +404,7 @@
 			->orWhere('preview', $Post['preview'])
 			->getOne('deviation_cache','id,fullsize,preview');
 		if (empty($StashItem['id']))
-			CoreUtils::Respond('Stash URL lookup failed');
+			Response::Fail('Stash URL lookup failed');
 
 		try {
 			$fullsize = CoreUtils::GetFullsizeURL($StashItem['id'], 'sta.sh');
@@ -417,26 +419,26 @@
 						'fullsize' => null,
 						'preview' => null,
 					));
-					CoreUtils::Respond('The original image has been deleted from Sta.sh',0,array('rmdirect' => true));
+					Response::Fail('The original image has been deleted from Sta.sh',array('rmdirect' => true));
 				}
 				else throw new Exception("Code $fullsize; Could not find the URL");
 			}
 		}
 		catch (Exception $e){
-			CoreUtils::Respond('Error while finding URL: '.$e->getMessage());
+			Response::Fail('Error while finding URL: '.$e->getMessage());
 		}
 		// Check image availability
 		if (!@getimagesize($fullsize)){
 			sleep(1);
 			if (!@getimagesize($fullsize))
-				CoreUtils::Respond("The specified image doesn't seem to exist. Please verify that you can reach the URL below and try again.<br><a href='$fullsize' target='_blank'>$fullsize</a>");
+				Response::Fail("The specified image doesn't seem to exist. Please verify that you can reach the URL below and try again.<br><a href='$fullsize' target='_blank'>$fullsize</a>");
 		}
 
 		if (!$Database->where('id', $Post['id'])->update("{$thing}s",array(
 			'fullsize' => $fullsize,
-		))) CoreUtils::Respond(ERR_DB_FAIL);
+		))) Response::DBError();
 
-		CoreUtils::Respond(array('fullsize' => $fullsize));
+		Response::Done(array('fullsize' => $fullsize));
 	}
 
 	$type = (new Input('what',function($value){
@@ -450,14 +452,14 @@
 	)))->out();
 	if (empty($type) && $type === 'reservation'){
 		if (Permission::Insufficient('member'))
-			CoreUtils::Respond();
+			Response::Fail();
 		User::ReservationLimitCheck();
 	}
 
 	$Image = Posts::CheckImage(Posts::ValidateImageURL());
 
 	if (empty($type))
-		CoreUtils::Respond(array(
+		Response::Done(array(
 			'preview' => $Image->preview,
 			'title' => $Image->title,
 		));
@@ -469,9 +471,9 @@
 
 	$season = Episode::ValidateSeason();
 	$episode = Episode::ValidateEpisode();
-	$epdata = Episode::GetActual($season, $episode, ALLOW_SEASON_ZERO);
+	$epdata = Episode::GetActual($season, $episode, Episode::ALLOW_SEASON_ZERO);
 	if (empty($epdata))
-		CoreUtils::Respond("The specified episode (S{$season}E$episode) does not exist");
+		Response::Fail("The specified episode (S{$season}E$episode) does not exist");
 	$insert['season'] = $epdata['season'];
 	$insert['episode'] = $epdata['episode'];
 
@@ -482,10 +484,10 @@
 			$PostAs = User::Get($username, 'name', 'id,role');
 
 			if (empty($PostAs))
-				CoreUtils::Respond('The user you wanted to post as does not exist');
+				Response::Fail('The user you wanted to post as does not exist');
 
 			if ($type === 'reservation' && !Permission::Sufficient('member', $PostAs['role']) && !isset($_POST['allow_nonmember']))
-				CoreUtils::Respond('The user you wanted to post as is not a club member, so you want to post as them anyway?',0,array('canforce' => true));
+				Response::Fail('The user you wanted to post as is not a club member, so you want to post as them anyway?',array('canforce' => true));
 
 			$ByID = $PostAs['id'];
 		}
@@ -496,5 +498,5 @@
 
 	$PostID = $Database->insert("{$type}s",$insert,'id');
 	if (!$PostID)
-		CoreUtils::Respond(ERR_DB_FAIL);
-	CoreUtils::Respond(array('id' => $PostID));
+		Response::DBError();
+	Response::Done(array('id' => $PostID));

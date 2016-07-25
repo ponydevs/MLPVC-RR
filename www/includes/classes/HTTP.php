@@ -94,4 +94,68 @@
 				$headerContent[] = "<$url>; rel=preload";
 			header('Link: '.implode(',', $headerContent));
 		}
+
+		public static $STATUS_CODES = array(
+			300 => 'Multiple Choices',
+			301 => 'Moved Permanently',
+			302 => 'Moved Temporarily',
+			303 => 'See Other',
+			304 => 'Not Modified',
+			305 => 'Use Proxy',
+			400 => 'Bad Request',
+			401 => 'Unauthorized',
+			402 => 'Payment Required',
+			403 => 'Forbidden',
+			404 => 'Not Found',
+			405 => 'Method Not Allowed',
+			406 => 'Not Acceptable',
+			407 => 'Proxy Authentication Required',
+			408 => 'Request Time-out',
+			409 => 'Conflict',
+			410 => 'Gone',
+			411 => 'Length Required',
+			412 => 'Precondition Failed',
+			413 => 'Request Entity Too Large',
+			414 => 'Request-URI Too Large',
+			415 => 'Unsupported Media Type',
+			500 => 'Internal Server Error',
+			501 => 'Not Implemented',
+			502 => 'Bad Gateway',
+			503 => 'Service Unavailable',
+			504 => 'Gateway Time-out',
+			505 => 'HTTP Version not supported',
+		);
+
+		/**
+		 * Sends an HTTP status code header with the response
+		 *
+		 * @param int  $code HTTP status code
+		 * @param bool $die  Halt script execution afterwards
+		 *
+		 * @throws Exception
+		 */
+		public static function StatusCode($code, $die = false){
+			if (!isset(self::$STATUS_CODES[$code])){
+				throw new Exception("Unknown status code: $code");
+			}
+
+			header($_SERVER['SERVER_PROTOCOL']." $code ".self::$STATUS_CODES[$code]);
+			if ($die === AND_DIE)
+				die();
+		}
+
+		/**
+		 * Redirection
+		 *
+		 * @param string $url  Redirection target URL
+		 * @param bool   $die  Stop script execution after redirect
+		 * @param int    $http HTTP status code
+		 */
+		public static function Redirect($url = '/', $die = true, $http = 301){
+			header("Location: $url", $die, $http);
+			if ($die !== STAY_ALIVE){
+				$urlenc = CoreUtils::AposEncode($url);
+				die("Click <a href='$urlenc'>here</a> if you aren't redirected.<script>location.replace(".JSON::Encode($url).")</script>");
+			}
+		}
 	}

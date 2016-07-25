@@ -142,6 +142,11 @@
 			return "<div class='avatar-wrap$vectorapp'><img src='{$User['avatar_url']}' class='avatar' alt='avatar'></div>";
 		}
 
+		const
+			LINKFORMAT_FULL = 0,
+			LINKFORMAT_TEXT = 1,
+			LINKFORMAT_URL = 2;
+
 		/**
 		 * Local profile link generator
 		 *
@@ -151,14 +156,14 @@
 		 * @throws Exception
 		 * @return string
 		 */
-		static function GetProfileLink($User, $format = TEXT_ONLY){
+		static function GetProfileLink($User, $format = self::LINKFORMAT_TEXT){
 			if (!is_array($User))
 				throw new Exception('$User is not an array');
 
 			$Username = $User['name'];
-			$avatar = $format == FULL ? "<img src='{$User['avatar_url']}' class='avatar' alt='avatar'> " : '';
+			$avatar = $format == self::LINKFORMAT_FULL ? "<img src='{$User['avatar_url']}' class='avatar' alt='avatar'> " : '';
 
-			return "<a href='/@$Username' class='da-userlink".($format == FULL ? ' with-avatar':'')."'>$avatar<span class='name'>$Username</span></a>";
+			return "<a href='/@$Username' class='da-userlink".($format == self::LINKFORMAT_FULL ? ' with-avatar':'')."'>$avatar<span class='name'>$Username</span></a>";
 		}
 
 		/**
@@ -169,7 +174,7 @@
 		 *
 		 * @return string
 		 */
-		static function GetDALink($User, $format = FULL){
+		static function GetDALink($User, $format = self::LINKFORMAT_FULL){
 			if (!is_array($User)){
 				trigger_error('$User is not an array');
 				if (Permission::Sufficient('developer'))
@@ -178,10 +183,10 @@
 
 			$Username = $User['name'];
 			$username = strtolower($Username);
-			$avatar = $format == FULL ? "<img src='{$User['avatar_url']}' class='avatar' alt='avatar'> " : '';
 			$link = "http://$username.deviantart.com/";
+			if ($format === self::LINKFORMAT_URL) return $link;
 
-			if ($format === LINK_ONLY) return $link;
+			$avatar = $format == self::LINKFORMAT_FULL ? "<img src='{$User['avatar_url']}' class='avatar' alt='avatar'> " : '';
 			return "<a href='$link' class='da-userlink'>$avatar<span class='name'>$Username</span></a>";
 		}
 
@@ -229,7 +234,7 @@
 			);
 
 			if (isset($reservations['count']) && $reservations['count'] >= 4)
-				CoreUtils::Respond("You've already reserved {$reservations['count']} images, and you can't have more than 4 pending reservations at a time. You can review your reservations on your <a href='/user'>profile page</a>, finish at least one of them before trying to reserve another image.");
+				Response::Fail("You've already reserved {$reservations['count']} images, and you can't have more than 4 pending reservations at a time. You can review your reservations on your <a href='/user'>profile page</a>, finish at least one of them before trying to reserve another image.");
 		}
 
 		/**
@@ -285,7 +290,7 @@ HTML;
 			CSRFProtection::Detect();
 
 			if (!POST_REQUEST && isset($_GET['CSRF_TOKEN']))
-				CoreUtils::Redirect(CSRFProtection::RemoveParamFromURL($_SERVER['REQUEST_URI']));
+				HTTP::Redirect(CSRFProtection::RemoveParamFromURL($_SERVER['REQUEST_URI']));
 
 			if (!Cookie::Exists('access'))
 				return;

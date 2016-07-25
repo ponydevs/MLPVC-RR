@@ -1,3 +1,3 @@
 <?php
 	
-	CoreUtils::Respond(array('footer' => CoreUtils::GetFooterGitInfo()));
+	Response::Done(array('footer' => CoreUtils::GetFooterGitInfo()));

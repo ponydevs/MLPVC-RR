@@ -116,7 +116,7 @@
 				}
 			}
 			else if (!$editing && $thing !== 'reservation')
-				CoreUtils::Respond('Description cannot be empty');
+				Response::Fail('Description cannot be empty');
 
 			if ($thing === 'request'){
 				$type = (new Input('type',function($value){
@@ -178,7 +178,7 @@
 			try {
 				$Image = new ImageProvider($image_url);
 			}
-			catch (Exception $e){ CoreUtils::Respond($e->getMessage()); }
+			catch (Exception $e){ Response::Fail($e->getMessage()); }
 
 			global $Database;
 			foreach (Posts::$TYPES as $type){
@@ -190,7 +190,7 @@
 					->getOne("{$type}s r",'ep.*, r.id as post_id');
 				if (!empty($UsedUnder)){
 					$EpID = Episode::FormatTitle($UsedUnder,AS_ARRAY,'id');
-					CoreUtils::Respond("This exact image has already been used for a $type under <a href='/episode/$EpID#$type-{$UsedUnder['post_id']}' target='_blank'>$EpID</a>");
+					Response::Fail("This exact image has already been used for a $type under <a href='/episode/$EpID#$type-{$UsedUnder['post_id']}' target='_blank'>$EpID</a>");
 				}
 			}
 
@@ -216,7 +216,7 @@
 
 				foreach (Posts::$TYPES as $what){
 					if ($Database->where('deviation_id', $Image->id)->has("{$what}s"))
-						CoreUtils::Respond("This exact deviation has already been marked as the finished version of a different $what");
+						Response::Fail("This exact deviation has already been marked as the finished version of a different $what");
 				}
 
 				$return = array('deviation_id' => $Image->id);
@@ -229,9 +229,9 @@
 							global $currentUser;
 							$sameUser = $currentUser['id'] === $ReserverID;
 							$person = $sameUser ? 'you' : 'the user who reserved this post';
-							CoreUtils::Respond("You've linked to an image which was not submitted by $person. If this was intentional, press Continue to proceed with marking the post finished <b>but</b> note that it will make {$Author['name']} the new reserver.".($sameUser
+							Response::Fail("You've linked to an image which was not submitted by $person. If this was intentional, press Continue to proceed with marking the post finished <b>but</b> note that it will make {$Author['name']} the new reserver.".($sameUser
 									? "<br><br>This means that you'll no longer be able to interact with this post until {$Author['name']} or an administrator cancels the reservation on it."
-									: ''), 0, array('retry' => true));
+									: ''), array('retry' => true));
 						}
 
 						$return['reserved_by'] = $Author['id'];
@@ -244,9 +244,9 @@
 				return $return;
 			}
 			catch (MismatchedProviderException $e){
-				CoreUtils::Respond('The finished vector must be uploaded to DeviantArt, '.$e->getActualProvider().' links are not allowed');
+				Response::Fail('The finished vector must be uploaded to DeviantArt, '.$e->getActualProvider().' links are not allowed');
 			}
-			catch (Exception $e){ CoreUtils::Respond($e->getMessage()); }
+			catch (Exception $e){ Response::Fail($e->getMessage()); }
 		}
 
 		/**
@@ -551,7 +551,7 @@ HTML;
 					if (!$signedIn) trigger_error('Trying to get reserver button while not signed in');
 					$By = $currentUser;
 				}
-				$dAlink = User::GetProfileLink($By, FULL);
+				$dAlink = User::GetProfileLink($By, User::LINKFORMAT_FULL);
 				$vectorapp = User::GetVectorAppClassName($By);
 				if (!empty($vectorapp))
 					$vectorapp .= "' title='Uses ".CoreUtils::$VECTOR_APPS[CoreUtils::Substring($vectorapp,5)]." to make vectors";
@@ -609,7 +609,7 @@ HTML;
 		static function Approve($type, $id, $notifyUserID = null){
 			global $Database;
 			if (!$Database->where('id', $id)->update("{$type}s", array('lock' => true)))
-				CoreUtils::Respond(ERR_DB_FAIL);
+				Response::DBError();
 
 			$postdata = array(
 				'type' => $type,

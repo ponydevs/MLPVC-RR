@@ -1,10 +1,10 @@
 	<div class='mobile-nav'>
-		<nav><ul><?=CoreUtils::GetNavigation()?></ul></nav>
+		<nav><ul><?=CoreUtils::GetNavigationHTML()?></ul></nav>
 	</div>
 <?php
 	if (!empty($Database)){
 		if ($signedIn){
-			$Notifications = Notifications::Get(null, UNREAD_ONLY); ?>
+			$Notifications = Notifications::Get(null, Notifications::UNREAD_ONLY); ?>
 	<section class="notifications"<?=empty($Notifications)?'style="display:none"':''?>>
 		<h2>Unread notifications</h2>
 		<?=Notifications::GetHTML($Notifications)?>
@@ -22,7 +22,7 @@
 <?php   }
 		else { ?>
 			<button class="typcn green da-login" id="signin">Sign in</button>
-			<script>var OAUTH_URL = "<?=DeviantArt::GetAuthorizationURL()?>";</script>
+			<script>var OAUTH_URL = "<?=OAUTH_AUTHORIZATION_URL?>";</script>
 <?php   }
 		if (!UserPrefs::Get('p_hidediscord')){ ?>
 			<a class="btn typcn discord-join" href="http://fav.me/d9zt1wv" target="_blank">Join Discord</a>

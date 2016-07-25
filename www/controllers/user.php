@@ -4,7 +4,7 @@
 		$data = 'DJDavid98';
 
 	if (POST_REQUEST){
-		if (!Permission::Sufficient('staff')) CoreUtils::Respond();
+		if (!Permission::Sufficient('staff')) Response::Fail();
 		CSRFProtection::Protect();
 
 		if (empty($data)) CoreUtils::NotFound();
@@ -12,14 +12,14 @@
 		if (regex_match(new RegExp('^newgroup/'.USERNAME_PATTERN.'$'),$data,$_match)){
 			$targetUser = User::Get($_match[1], 'name');
 			if (empty($targetUser))
-				CoreUtils::Respond('User not found');
+				Response::Fail('User not found');
 
 			if ($targetUser['id'] === $currentUser['id'])
-				CoreUtils::Respond("You cannot modify your own group");
+				Response::Fail("You cannot modify your own group");
 			if (!Permission::Sufficient($targetUser['role']))
-				CoreUtils::Respond('You can only modify the group of users who are in the same or a lower-level group than you');
+				Response::Fail('You can only modify the group of users who are in the same or a lower-level group than you');
 			if ($targetUser['role'] === 'ban')
-				CoreUtils::Respond('This user is banished, and must be un-banished before changing their group.');
+				Response::Fail('This user is banished, and must be un-banished before changing their group.');
 
 			$newgroup = (new Input('newrole',function($value){
 				if (!isset(Permission::$ROLES_ASSOC[$value]))
@@ -31,22 +31,22 @@
 				)
 			)))->out();
 			if ($targetUser['role'] === $newgroup)
-				CoreUtils::Respond(array('already_in' => true));
+				Response::Done(array('already_in' => true));
 
 			User::UpdateRole($targetUser,$newgroup);
 
-			CoreUtils::Respond(true);
+			Response::Done();
 		}
 		else if (regex_match(new RegExp('^sessiondel/(\d+)$'),$data,$_match)){
 			$Session = $Database->where('id', $_match[1])->getOne('sessions');
 			if (empty($Session))
-				CoreUtils::Respond('This session does not exist');
+				Response::Fail('This session does not exist');
 			if ($Session['user'] !== $currentUser['id'] && !Permission::Sufficient('staff'))
-				CoreUtils::Respond('You are not allowed to delete this session');
+				Response::Fail('You are not allowed to delete this session');
 
 			if (!$Database->where('id', $Session['id'])->delete('sessions'))
-				CoreUtils::Respond('Session could not be deleted');
-			CoreUtils::Respond('Session successfully removed',1);
+				Response::Fail('Session could not be deleted');
+			Response::Success('Session successfully removed');
 		}
 		else if (regex_match(new RegExp('^(un-)?banish/'.USERNAME_PATTERN.'$'), $data, $_match)){
 			$Action = (empty($_match[1]) ? 'Ban' : 'Un-ban').'ish';
@@ -54,13 +54,13 @@
 			$un = $_match[2];
 
 			$targetUser = User::Get($un, 'name');
-			if (empty($targetUser)) CoreUtils::Respond('User not found');
+			if (empty($targetUser)) Response::Fail('User not found');
 
-			if ($targetUser['id'] === $currentUser['id']) CoreUtils::Respond("You cannot $action yourself");
+			if ($targetUser['id'] === $currentUser['id']) Response::Fail("You cannot $action yourself");
 			if (Permission::Sufficient('staff', $targetUser['role']))
-				CoreUtils::Respond("You cannot $action people within the assistant or any higher group");
+				Response::Fail("You cannot $action people within the assistant or any higher group");
 			if ($action == 'banish' && $targetUser['role'] === 'ban' || $action == 'un-banish' && $targetUser['role'] !== 'ban')
-				CoreUtils::Respond("This user has already been {$action}ed");
+				Response::Fail("This user has already been {$action}ed");
 
 			$reason = (new Input('reason','string',array(
 				Input::IN_RANGE => [5,255],
@@ -78,10 +78,10 @@
 			));
 			$changes['role'] = Permission::$ROLES_ASSOC[$changes['role']];
 			$changes['badge'] = Permission::LabelInitials($changes['role']);
-			if ($action == 'banish') CoreUtils::Respond($changes);
-			else CoreUtils::Respond("We welcome {$targetUser['name']} back with open hooves!", 1, $changes);
+			if ($action == 'banish') Response::Done($changes);
+			else Response::Success("We welcome {$targetUser['name']} back with open hooves!", $changes);
 		}
-		else CoreUtils::StatusCode(404, AND_DIE);
+		else CoreUtils::NotFound();
 	}
 
 	if (empty($data)){
@@ -119,7 +119,7 @@
 		CoreUtils::FixPath($pagePath);
 	}
 
-	if (isset($MSG)) CoreUtils::StatusCode(404);
+	if (isset($MSG)) HTTP::StatusCode(404);
 	else {
 		if ($sameUser){
 			$CurrentSession = $currentUser['Session'];

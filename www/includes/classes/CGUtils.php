@@ -95,14 +95,14 @@
 				return self::GrabImage($path,$allowedMimeTypes,$minwidth,$minheight);
 			$file = $_FILES[$key];
 			$tmp = $file['tmp_name'];
-			if (strlen($tmp) < 1) CoreUtils::Respond('File upload failed; Reason unknown');
+			if (strlen($tmp) < 1) Response::Fail('File upload failed; Reason unknown');
 
 			list($width, $height) = Image::CheckType($tmp, $allowedMimeTypes);
 			CoreUtils::CreateUploadFolder($path);
 
 			if (!move_uploaded_file($tmp, $path)){
 				@unlink($tmp);
-				CoreUtils::Respond('File upload failed; Writing image file was unsuccessful');
+				Response::Fail('File upload failed; Writing image file was unsuccessful');
 			}
 
 			Image::CheckSize($path, $width, $height, $minwidth, $minheight);
@@ -122,16 +122,16 @@
 			try {
 				$Image = new ImageProvider(Posts::ValidateImageURL());
 			}
-			catch (Exception $e){ CoreUtils::Respond($e->getMessage()); }
+			catch (Exception $e){ Response::Fail($e->getMessage()); }
 
 			if ($Image->fullsize === false)
-				CoreUtils::Respond('Image could not be retrieved from external provider');
+				Response::Fail('Image could not be retrieved from external provider');
 
 			$remoteFile = @file_get_contents($Image->fullsize);
 			if (empty($remoteFile))
-				CoreUtils::Respond('Remote file could not be found');
+				Response::Fail('Remote file could not be found');
 			if (!file_put_contents($path, $remoteFile))
-				CoreUtils::Respond('Writing local image file was unsuccessful');
+				Response::Fail('Writing local image file was unsuccessful');
 
 			list($width, $height) = Image::CheckType($path, $allowedMimeTypes);
 			Image::CheckSize($path, $width, $height, $minwidth, $minheight);
@@ -318,7 +318,7 @@
 			$CGsHeight = $CGCount*($GroupLabelBox['height'] + ($CGVerticalMargin*2) + $ColorCircleSize);
 
 			// Get export time & size
-			$ExportTS = "Generated at: ".Time::Format(time(), FORMAT_FULL);
+			$ExportTS = "Generated at: ".Time::Format(time(), Time::FORMAT_FULL);
 			$ExportFontSize = round($CGFontSize/1.5);
 			$ExportBox = Image::SaneGetTTFBox($ExportFontSize, $FontFile, $ExportTS);
 
@@ -405,7 +405,7 @@
 			Image::CopyExact($FinalBase, $BaseImage, 0, 0, $OutWidth, $OutHeight);
 
 			if (!CoreUtils::CreateUploadFolder($OutputPath))
-				CoreUtils::Respond('Failed to create render directory');
+				Response::Fail('Failed to create render directory');
 			Image::OutputPNG($FinalBase, $OutputPath, $FileRelPath);
 		}
 

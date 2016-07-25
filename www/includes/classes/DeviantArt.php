@@ -17,16 +17,6 @@
 			'user_banned' => 'You were banned on our website by a staff member.',
 		);
 
-		// Redirection URI shortcut \\
-		static function OAuthRedirectURI(){
-			return '&redirect_uri='.urlencode(ABSPATH.'da-auth');
-		}
-
-		// oAuth Authorization page URL generator
-		static function GetAuthorizationURL(){
-			return "https://www.deviantart.com/oauth2/authorize?response_type=code&scope=user+browse&client_id=".DA_CLIENT.self::OAuthRedirectURI();
-		}
-
 		/**
 		 * Makes authenticated requests to the DeviantArt API
 		 *
@@ -114,7 +104,7 @@
 						trigger_error($ErrorMSG);
 
 					if (POST_REQUEST)
-						CoreUtils::Respond($ErrorMSG);
+						Response::Fail($ErrorMSG);
 					else echo "<div class='notice fail'><label>da_cache_deviation($ID, $type)</label><p>$ErrorMSG</p></div>";
 
 					self::$_CACHE_BAILOUT = true;
@@ -204,7 +194,7 @@
 
 			switch ($type){
 				case "authorization_code":
-					$json = DeviantArt::Request("$URL_Start&code=$code".DeviantArt::OAuthRedirectURI(),false);
+					$json = DeviantArt::Request("$URL_Start&code=$code".OAUTH_REDIRECT_URI,false);
 				break;
 				case "refresh_token":
 					$json = DeviantArt::Request("$URL_Start&refresh_token=$code",false);
@@ -216,9 +206,9 @@
 					$Database->where('access', Cookie::Get('access'))->delete('sessions');
 					Cookie::Delete('access', Cookie::HTTPONLY);
 				}
-				CoreUtils::Redirect("/da-auth?error=server_error&error_description={$http_response_header[0]}");
+				HTTP::Redirect("/da-auth?error=server_error&error_description={$http_response_header[0]}");
 			}
-			if (empty($json['status'])) CoreUtils::Redirect("/da-auth?error={$json['error']}&error_description={$json['error_description']}");
+			if (empty($json['status'])) HTTP::Redirect("/da-auth?error={$json['error']}&error_description={$json['error_description']}");
 
 			$userdata = DeviantArt::Request('user/whoami', $json['access_token']);
 

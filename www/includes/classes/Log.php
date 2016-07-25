@@ -76,7 +76,7 @@
 					$details[] = array('Action', $actions[$data['action']]);
 					$details[] = array('Name', Episode::FormatTitle($data));
 					if (!empty($data['airs']))
-						$details[] = array('Airs', Time::Tag($data['airs'], EXTENDED, STATIC_DYNTIME));
+						$details[] = array('Airs', Time::Tag($data['airs'], Time::TAG_EXTENDED, Time::TAG_STATIC_DYNTIME));
 				break;
 				case "episode_modify":
 					$details[] = array('Target episode', $data['target']);
@@ -94,8 +94,8 @@
 					}
 
 					if (!empty($newOld['airs'])){
-						$newOld['airs']['old'] =  Time::Tag($newOld['airs']['old'], EXTENDED, STATIC_DYNTIME);
-						$newOld['airs']['new'] =  Time::Tag($newOld['airs']['new'], EXTENDED, STATIC_DYNTIME);
+						$newOld['airs']['old'] =  Time::Tag($newOld['airs']['old'], Time::TAG_EXTENDED, Time::TAG_STATIC_DYNTIME);
+						$newOld['airs']['new'] =  Time::Tag($newOld['airs']['new'], Time::TAG_EXTENDED, Time::TAG_STATIC_DYNTIME);
 					}
 
 					foreach ($newOld as $thing => $ver){
@@ -145,7 +145,7 @@
 					$details[] = array('Type',$typeNames[$data['type']]);
 					$IDstr = "S{$data['season']}E{$data['episode']}";
 					$details[] = array('Episode', "<a href='/episode/$IDstr'>$IDstr</a>");
-					$details[] = array('Posted', Time::Tag($data['posted'], EXTENDED, STATIC_DYNTIME));
+					$details[] = array('Posted', Time::Tag($data['posted'], Time::TAG_EXTENDED, Time::TAG_STATIC_DYNTIME));
 					if (!empty($data['requested_by']))
 						$details[] = array('Requested by', User::GetProfileLink(User::Get($data['requested_by'])));
 					if (!empty($data['reserved_by']))
@@ -190,7 +190,7 @@
 						$details[] = array('Link',"<a href='$Link$Fragment'>$IDstr$Fragment</a>");
 					}
 					$details[] = array('Previous reserver',User::GetProfileLink(User::Get($data['reserved_by'])));
-					$details[] = array('Previously reserved at', Time::Tag($data['reserved_at'], EXTENDED, STATIC_DYNTIME));
+					$details[] = array('Previously reserved at', Time::Tag($data['reserved_at'], Time::TAG_EXTENDED, Time::TAG_STATIC_DYNTIME));
 
 					$diff_text = '';
 					$diff = Time::Difference(strtotime($MainEntry['timestamp']), strtotime($data['reserved_at']));
@@ -241,7 +241,7 @@
 				$event = Log::$LOG_DESCRIPTION[$item['reftype']] ?? $item['reftype'];
 				if (isset($item['refid']))
 					$event = '<span class="expand-section typcn typcn-plus">'.$event.'</span>';
-				$ts = Time::Tag($item['timestamp'], EXTENDED);
+				$ts = Time::Tag($item['timestamp'], Time::TAG_EXTENDED);
 
 				if (!empty($inituser)) $ip = "$inituser<br>$ip";
 

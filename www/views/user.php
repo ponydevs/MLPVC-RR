@@ -9,7 +9,7 @@
 	<div class="briefing">
 		<?=User::GetAvatarWrap($User)?>
 		<div class="title">
-			<h1><span class="role-badge"><?=Permission::LabelInitials($User['role'])?></span><span><?=$User['name']?></span><a class="da" title="Visit DeviantArt profile" href="<?=User::GetDALink($User,LINK_ONLY)?>"><?=str_replace(' fill="#FFF"','',file_get_contents(APPATH.'img/da-logo.svg'))?></a><?=!empty($vectorapp)?"<img class='vectorapp-logo' src='/img/vapps/$vectorapp.svg' alt='$vectorapp logo' title='".CoreUtils::$VECTOR_APPS[$vectorapp]." user'>":''?></h1>
+			<h1><span class="role-badge"><?=Permission::LabelInitials($User['role'])?></span><span><?=$User['name']?></span><a class="da" title="Visit DeviantArt profile" href="<?=User::GetDALink($User,USER::LINKFORMAT_URL)?>"><?=str_replace(' fill="#FFF"','',file_get_contents(APPATH.'img/da-logo.svg'))?></a><?=!empty($vectorapp)?"<img class='vectorapp-logo' src='/img/vapps/$vectorapp.svg' alt='$vectorapp logo' title='".CoreUtils::$VECTOR_APPS[$vectorapp]." user'>":''?></h1>
 			<p><?php
 	echo "<span>{$User['rolelabel']}</span>";
 	if ($canEdit){

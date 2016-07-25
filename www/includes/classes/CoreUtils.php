@@ -19,18 +19,6 @@
 				throw new Exception("Could not load class/interface $class: definition not found in $path");
 		}
 
-		/**
-		 * Redirection
-		 *
-		 * @param string $url  Redirection target URL
-		 * @param bool   $die  Stop script execution after redirect
-		 * @param int    $http HTTP status code
-		 */
-		static function Redirect($url = '/', $die = true, $http = 301){
-			header("Location: $url",$die,$http);
-			if ($die !== STAY_ALIVE) die("<script>location.replace('".$url."')</script>");
-		}
-
 		const FIXPATH_EMPTY = '#';
 		/**
 		 * Forces an URL rewrite to the specified path
@@ -63,7 +51,7 @@
 				$fix_query = empty($fix_query_arr) ? '' : '?'.implode('&', $fix_query_arr);
 			}
 			if ($path !== $fix_path || $query !== $fix_query)
-				self::Redirect("$fix_path$fix_query", STAY_ALIVE, $http);
+				HTTP::Redirect("$fix_path$fix_query", STAY_ALIVE, $http);
 		}
 
 		/**
@@ -135,108 +123,20 @@
 		}
 
 		/**
-		 * Sends replies to AJAX requests in a universal form
-		 * $s respresents the request status, a truthy value
-		 *  means the request was successful, a falsey value
-		 *  means the request failed
-		 * $x can be used to
-		 *
-		 * @param string|array $message Message
-		 * @param bool|int     $status  Status (truthy/falsy value)
-		 * @param array        $extra   Append additional data to the response
-		 */
-		static function Respond($message = null, $status = false, $extra = null){
-			header('Content-Type: application/json');
-			if ($message === true)
-				$response = array('status' => true);
-			else if (is_array($message) && $status == false && empty($extra)){
-				$message['status'] = true;
-				$response = $message;
-			}
-			else {
-				if (!isset($message)){
-					global $signedIn;
-
-					$message = $signedIn ? 'Insufficient permissions.' : '<p>You are not signed in (or your session expired).</p><p class="align-center"><button class="typcn green da-login" id="turbo-sign-in" data-url="'.DeviantArt::GetAuthorizationURL().'">Sign back in</button></p>';
-				}
-				else if (strpos($message, ERR_DB_FAIL) !== false){
-					global $Database;
-					$message = rtrim("$message: ".$Database->getLastError(), ': ');
-				}
-				$response = array(
-					"message" => $message,
-					"status" => (bool) $status,
-				);
-			}
-			if (!empty($extra))
-				$response = array_merge($response, $extra);
-			echo JSON::Encode($response);
-			exit;
-		}
-
-		// HTTP Status Codes
-		static $HTTP_STATUS_CODES = array(
-				300 => 'Multiple Choices',
-				301 => 'Moved Permanently',
-				302 => 'Moved Temporarily',
-				303 => 'See Other',
-				304 => 'Not Modified',
-				305 => 'Use Proxy',
-				400 => 'Bad Request',
-				401 => 'Unauthorized',
-				402 => 'Payment Required',
-				403 => 'Forbidden',
-				404 => 'Not Found',
-				405 => 'Method Not Allowed',
-				406 => 'Not Acceptable',
-				407 => 'Proxy Authentication Required',
-				408 => 'Request Time-out',
-				409 => 'Conflict',
-				410 => 'Gone',
-				411 => 'Length Required',
-				412 => 'Precondition Failed',
-				413 => 'Request Entity Too Large',
-				414 => 'Request-URI Too Large',
-				415 => 'Unsupported Media Type',
-				500 => 'Internal Server Error',
-				501 => 'Not Implemented',
-				502 => 'Bad Gateway',
-				503 => 'Service Unavailable',
-				504 => 'Gateway Time-out',
-				505 => 'HTTP Version not supported',
-			);
-		/**
-		 * Sends an HTTP status code header with the response
-		 *
-		 * @param int  $code HTTP status code
-		 * @param bool $die  Halt script execution afterwards
-		 *
-		 * @throws Exception
-		 */
-		static function StatusCode($code, $die = false){
-			if (!isset(self::$HTTP_STATUS_CODES[$code]))
-				throw new Exception("Unknown status code: $code");
-
-			header($_SERVER['SERVER_PROTOCOL']." $code ".self::$HTTP_STATUS_CODES[$code]);
-			if ($die === AND_DIE)
-				die();
-		}
-
-		/**
 		 * Display a 404 page
 		 */
 		static function NotFound(){
 			if (POST_REQUEST || isset($_GET['via-js'])){
 				$RQURI = rtrim(str_replace('via-js=true','',$_SERVER['REQUEST_URI']),'?&');
-				CoreUtils::Respond("HTTP 404: ".(POST_REQUEST?'Endpoint':'Page')." ($RQURI) does not exist", 0);
+				Response::Fail("HTTP 404: ".(POST_REQUEST?'Endpoint':'Page')." ($RQURI) does not exist");
 			}
 
+			HTTP::StatusCode(404);
 			global $do;
 			$do = '404';
 			self::LoadPage(array(
 				'title' => '404',
 				'view' => '404',
-				'status-code' => 404,
 			));
 		}
 
@@ -250,7 +150,6 @@
 		 *     'no-default-js'        - Disable loading of default JS files
 		 *     'css' => string|array, - Specify a single/multiple CSS files to load
 		 *     'js' => string|array,  - Specify a single/multiple JS files to load
-		 *     'status-code' => int,  - Send a specific HTTP status code along
 		 *     'view' => string,      - Which view file to open (defaults to $do)
 		 *     'do-css',              - Load the CSS file whose name matches $do
 		 *     'do-js',               - Load the JS file whose name matches $do
@@ -287,10 +186,6 @@
 			self::_checkAssets($options, $customCSS, 'scss/min', 'css');
 			self::_checkAssets($options, $customJS, 'js/min', 'js');
 
-			# Add status code
-			if (isset($options['status-code']))
-				CoreUtils::StatusCode($options['status-code']);
-
 			# Import global variables
 			foreach ($GLOBALS as $nev => $ertek)
 				if (!isset($$nev))
@@ -319,7 +214,7 @@
 				ob_start();
 				require $viewPath;
 				$content = ob_get_clean();
-				CoreUtils::Respond(array(
+				Response::Done(array(
 					'css' => $customCSS,
 					'js' => $customJS,
 					'title' => (isset($GLOBALS['title'])?$GLOBALS['title'].' - ':'').SITE_TITLE,
@@ -589,7 +484,7 @@
 				$Error = "$Thing (".self::EscapeHTML($string).") contains $the_following invalid character$s: ".CoreUtils::ArrayToNaturalString($invalid);
 				if ($returnError)
 					return $Error;
-				CoreUtils::Respond($Error);
+				Response::Fail($Error);
 			}
 		}
 
@@ -635,7 +530,7 @@
 		 *
 		 * @return string
 		 */
-		static function GetNavigation($disabled = false){
+		static function GetNavigationHTML($disabled = false){
 			if (!empty($GLOBALS['NavHTML']))
 				return $GLOBALS['NavHTML'];
 
@@ -782,7 +677,7 @@
 		 *
 		 * @return string
 		 */
-		static function GetSidebarUsefulLinksList($wrap = true){
+		static function GetSidebarUsefulLinksListHTML($wrap = true){
 			global $Database;
 			$HTML = $wrap ? '<ol>' : '';
 			$UsefulLinks = $Database->orderBy('"order"','ASC')->get('usefullinks');
@@ -794,7 +689,7 @@
 				$label = htmlspecialchars_decode($l['label']);
 				$cansee = Permission::$ROLES_ASSOC[$l['minrole']];
 				if ($l['minrole'] !== 'developer')
-					$cansee = self::MakePlural($cansee, ALWAYS_PLURAL).' and above';
+					$cansee = self::MakePlural($cansee, 0).' and above';
 				$HTML .= "<li id='ufl-{$l['id']}'><div><a $href title='$title'>{$label}</a></div>".
 				             "<div><span class='typcn typcn-eye'></span> $cansee</div>".
 				             "<div class='buttons'><button class='blue typcn typcn-pencil edit-link'>Edit</button><button class='red typcn typcn-trash delete-link'>Delete</button></div></li>";
@@ -959,7 +854,7 @@
 				);
 				if ($throw)
 					throw new Exception($errmsg);
-				CoreUtils::Respond($errmsg);
+				Response::Fail($errmsg);
 			}
 		}
 
@@ -1052,7 +947,7 @@
 
 			$HTML = "<table>";
 			foreach ($Query as $row){
-				$link = User::GetProfileLink(User::Get($row['reserved_by']), FORMAT_FULL);
+				$link = User::GetProfileLink(User::Get($row['reserved_by']), Time::FORMAT_FULL);
 				$count = "<strong style='color:rgb(".min(round($row['cnt']/10*255),255).",0,0)'>{$row['cnt']}</strong>";
 
 				$HTML .= "<tr><td>$link</td><td>$count</td></tr>";

@@ -13,13 +13,13 @@
 					$EntryID = intval($_match[1], 10);
 
 					$MainEntry = $Database->where('entryid', $EntryID)->getOne('log');
-					if (empty($MainEntry)) CoreUtils::Respond('Log entry does not exist');
-					if (empty($MainEntry['refid'])) CoreUtils::Respond('There are no details to show');
+					if (empty($MainEntry)) Response::Fail('Log entry does not exist');
+					if (empty($MainEntry['refid'])) Response::Fail('There are no details to show');
 
 					$Details = $Database->where('entryid', $MainEntry['refid'])->getOne("log__{$MainEntry['reftype']}");
-					if (empty($Details)) CoreUtils::Respond('Failed to retrieve details');
+					if (empty($Details)) Response::Fail('Failed to retrieve details');
 
-					CoreUtils::Respond(Log::FormatEntryDetails($MainEntry,$Details));
+					Response::Done(Log::FormatEntryDetails($MainEntry,$Details));
 				}
 				else CoreUtils::NotFound();
 			break;
@@ -31,12 +31,12 @@
 					if (!$creating){
 						$Link = $Database->where('id', $_match[2])->getOne('usefullinks');
 						if (empty($Link))
-							CoreUtils::Respond('The specified link does not exist');
+							Response::Fail('The specified link does not exist');
 					}
 
 					switch ($action){
 						case 'get':
-							CoreUtils::Respond(array(
+							Response::Done(array(
 								'label' => $Link['label'],
 								'url' => $Link['url'],
 								'title' => $Link['title'],
@@ -44,9 +44,9 @@
 							));
 						case 'del':
 							if (!$Database->where('id', $Link['id'])->delete('usefullinks'))
-								CoreUtils::Respond(ERR_DB_FAIL);
+								Response::DBError();
 
-							CoreUtils::Respond(true);
+							Response::Done();
 						break;
 						case 'make':
 						case 'set':
@@ -89,7 +89,7 @@
 
 							$minrole = (new Input('minrole',function($value){
 								if (!isset(Permission::$ROLES_ASSOC[$value]) || !Permission::Sufficient('user', $value))
-									CoreUtils::Respond();
+									Response::Fail();
 							},array(
 								Input::CUSTOM_ERROR_MESSAGES => array(
 									Input::ERROR_MISSING => 'Minumum role is missing',
@@ -100,14 +100,14 @@
 								$data['minrole'] = $minrole;
 
 							if (empty($data))
-								CoreUtils::Respond('Nothing was changed');
+								Response::Fail('Nothing was changed');
 							$query = $creating
 								? $Database->insert('usefullinks', $data)
 								: $Database->where('id', $Link['id'])->update('usefullinks', $data);
 							if (!$query)
-								CoreUtils::Respond(ERR_DB_FAIL);
+								Response::DBError();
 
-							CoreUtils::Respond(true);
+							Response::Done();
 						break;
 						default: CoreUtils::NotFound();
 					}
@@ -121,10 +121,10 @@
 					$order = 1;
 					foreach ($list as $id){
 						if (!$Database->where('id', $id)->update('usefullinks', array('order' => $order++)))
-							CoreUtils::Respond("Updating link #$id failed, process halted");
+							Response::Fail("Updating link #$id failed, process halted");
 					}
 
-					CoreUtils::Respond(true);
+					Response::Done();
 				}
 				else CoreUtils::NotFound();
 			break;

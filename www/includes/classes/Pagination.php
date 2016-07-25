@@ -109,7 +109,7 @@
 		 */
 		function Respond($output, $update){
 			$RQURI = rtrim(regex_replace(new RegExp('js=true(?:&|$)'),'',$_SERVER['REQUEST_URI']),'?');
-			CoreUtils::Respond(array(
+			Response::Done(array(
 				'output' => $output,
 				'update' => $update,
 				'pagination' => $this->HTML,

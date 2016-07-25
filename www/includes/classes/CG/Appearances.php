@@ -279,7 +279,7 @@
 			$order = 1;
 			foreach ($list as $id){
 				if (!$CGDb->where('id', $id)->update('appearances', array('order' => $order++)))
-					\CoreUtils::Respond("Updating appearance #$id failed, process halted");
+					\Response::Fail("Updating appearance #$id failed, process halted");
 			}
 		}
 

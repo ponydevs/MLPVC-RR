@@ -8,7 +8,7 @@
 			$errdesc = $_GET['error_description'];
 		global $signedIn;
 		if ($signedIn)
-			CoreUtils::Redirect($_GET['state']);
+			HTTP::Redirect($_GET['state']);
 		Episode::LoadPage();
 	}
 	$currentUser = DeviantArt::GetToken($_GET['code']);
@@ -30,6 +30,6 @@
 		die($confirm);
 	}
 	else if (regex_match($REWRITE_REGEX, $_GET['state']))
-		CoreUtils::Redirect($_GET['state']);
+		HTTP::Redirect($_GET['state']);
 
-	CoreUtils::Redirect('/');
+	HTTP::Redirect('/');

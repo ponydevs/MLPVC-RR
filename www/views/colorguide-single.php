@@ -48,7 +48,7 @@
 			<p class="aside">This is only an illustration, the body shape & colors are <strong>not</strong> guaranteed to reflect the actual design.</p>
 			<p>The image above links to the vector made by <?php
 				$Vector = DeviantArt::GetCachedSubmission($Appearance['cm_favme']);
-				echo User::GetProfileLink(User::Get($Vector['author'],'name','name, avatar_url'), FULL);
+				echo User::GetProfileLink(User::Get($Vector['author'],'name','name, avatar_url'), User::LINKFORMAT_FULL);
 			?> and shows which way the cutie mark should be facing.</p>
 		</section>
 <?  } ?>

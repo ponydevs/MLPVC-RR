@@ -68,6 +68,9 @@
 			return (new \Moment\Moment(date('c',$timestamp)))->fromNow()->getRelative();
 		}
 
+		const
+			FORMAT_FULL = 'jS M Y, g:i:s a T',
+			FORMAT_READABLE = 'readable';
 		/**
 		 * Create an ISO timestamp from the input string
 		 *
@@ -77,7 +80,7 @@
 		 * @return string
 		 */
 		static function Format($time, $format = 'c'){
-			if ($format === FORMAT_READABLE)
+			if ($format === self::FORMAT_READABLE)
 				return self::_from($time);
 
 			$ts = gmdate($format, $time);
@@ -85,6 +88,11 @@
 				$ts .= ' ('.date('T').')';
 			return $ts;
 		}
+
+		const
+			TAG_EXTENDED = true,
+			TAG_NO_DYNTIME = 'no',
+			TAG_STATIC_DYNTIME = 'static';
 
 		/**
 		 * Create <time datetime></time> tag
@@ -100,15 +108,15 @@
 				$timestamp = strtotime($timestamp);
 			if ($timestamp === false) return null;
 
-			$datetime = Time::Format($timestamp);
-			$full = Time::Format($timestamp,FORMAT_FULL);
-			$text = Time::Format($timestamp,FORMAT_READABLE);
+			$datetime = self::Format($timestamp);
+			$full = self::Format($timestamp, self::FORMAT_FULL);
+			$text = self::Format($timestamp, self::FORMAT_READABLE);
 
 			switch ($allowDyntime){
-				case NO_DYNTIME:
+				case self::TAG_NO_DYNTIME:
 					$datetime .= "' class='nodt";
 				break;
-				case STATIC_DYNTIME:
+				case self::TAG_STATIC_DYNTIME:
 					$datetime .= "' class='no-dynt-el";
 				break;
 			}

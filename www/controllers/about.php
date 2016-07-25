@@ -9,7 +9,7 @@
 			$stat = $_match[1];
 			$CachePath = APPATH."../stats/$stat.json";
 			if (file_exists($CachePath) && filemtime($CachePath) > time() - $StatCacheDuration)
-				CoreUtils::Respond(array('data' => JSON::Decode(file_get_contents($CachePath))));
+				Response::Done(array('data' => JSON::Decode(file_get_contents($CachePath))));
 
 			$Data = array('datasets' => array(), 'timestamp' => date('c'));
 			$LabelFormat = 'YYYY-MM-DD';
@@ -83,7 +83,7 @@
 			CoreUtils::CreateUploadFolder($CachePath);
 			file_put_contents($CachePath, JSON::Encode($Data));
 
-			CoreUtils::Respond(array('data' => $Data));
+			Response::Done(array('data' => $Data));
 		}
 
 		CoreUtils::NotFound();

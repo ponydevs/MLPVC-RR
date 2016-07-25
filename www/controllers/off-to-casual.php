@@ -9,4 +9,4 @@
 	);
 
 	$k = isset($_GET['i']) && is_numeric($_GET['i']) ? max(0,min(count($possible_images)-1,intval($_GET['i'], 10))) : array_rand($possible_images);
-	CoreUtils::Redirect($possible_images[$k],true,302);
+	HTTP::Redirect($possible_images[$k], true, 302);

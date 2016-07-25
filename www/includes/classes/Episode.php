@@ -27,23 +27,25 @@
 			else return self::AddAiringData($Database->getOne('episodes'));
 		}
 
+		const ALLOW_SEASON_ZERO = true;
+
 		/**
 		 * If an episode is a two-parter's second part, then returns the first part
 		 * Otherwise returns the episode itself
 		 *
-		 * @param int $episode
-		 * @param int $season
-		 * @param bool $dontIgnoreSeason0 If set to true, season 0 is valid
+		 * @param int  $episode
+		 * @param int  $season
+		 * @param bool $allowSeason0 If set to true, season 0 is valid
+		 *
+		 * @throws Exception
 		 *
 		 * @return array|null
 		 */
-		static function GetActual($season, $episode, $dontIgnoreSeason0 = false){
+		static function GetActual($season, $episode, $allowSeason0 = false){
 			global $Database;
 
-			if (!$dontIgnoreSeason0 && $season == 0){
-				trigger_error('Season 0 ignored', E_USER_ERROR);
-				return null;
-			}
+			if (!$allowSeason0 && $season == 0)
+				throw new Exception('Season 0 ignored');
 
 			$Ep1 = $Database->whereEp($season,$episode)->getOne('episodes');
 			if (!empty($Ep1))
@@ -143,7 +145,7 @@
 
 			$EQG = is_int($force);
 			if ($EQG)
-				$CurrentEpisode = self::GetActual(0, $force, ALLOW_SEASON_ZERO);
+				$CurrentEpisode = self::GetActual(0, $force, self::ALLOW_SEASON_ZERO);
 			else if (is_array($force))
 				$CurrentEpisode = $force;
 			else {
@@ -354,7 +356,7 @@ HTML;
 				if (!$ep['aired'])
 					$star .= '<span class="typcn typcn-media-play-outline" title="'.($isMovie?'Movie':'Episode').' didn\'t air yet, voting disabled"></span>&nbsp;';
 
-				$airs = Time::Tag($ep['airs'], EXTENDED, NO_DYNTIME);
+				$airs = Time::Tag($ep['airs'], Time::TAG_EXTENDED, Time::TAG_NO_DYNTIME);
 
 				$Body .= <<<HTML
 		<tr$DataID>

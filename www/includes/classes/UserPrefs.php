@@ -53,7 +53,7 @@
 				$for = $currentUser['id'];
 
 			if (!isset(static::$_defaults[$key]))
-				CoreUtils::Respond("Key $key is not allowed");
+				Response::Fail("Key $key is not allowed");
 			$default = static::$_defaults[$key];
 
 			if ($Database->where('key', $key)->where('user', $currentUser['id'])->has(static::$_db)){

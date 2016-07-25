@@ -14,7 +14,7 @@
 		unset($Ep['airs']);
 		$Ep['airdate'] = gmdate('Y-m-d', $airs);
 		$Ep['airtime'] = gmdate('H:i', $airs);
-		CoreUtils::Respond(array(
+		Response::Done(array(
 			'ep' => $Ep,
 			'epid' => Episode::FormatTitle($Ep, AS_ARRAY, 'id'),
 			'caneditid' => Episode::GetPostCount($Ep) === 0,
@@ -27,20 +27,20 @@
 	$data = implode('/', $data);
 
 	if (regex_match($EPISODE_ID_REGEX,$data,$_match)){
-		$Episode = Episode::GetActual(intval($_match[1], 10), intval($_match[2], 10), $action !== 'delete' ? ALLOW_SEASON_ZERO : !ALLOW_SEASON_ZERO);
+		$Episode = Episode::GetActual(intval($_match[1], 10), intval($_match[2], 10), $action !== 'delete' ? Episode::ALLOW_SEASON_ZERO : false);
 		if (empty($Episode))
-			CoreUtils::Respond("There's no episode with this season & episode number");
+			Response::Fail("There's no episode with this season & episode number");
 	}
 	else if ($action !== 'add')
-		CoreUtils::StatusCode(400, AND_DIE);
+		CoreUtils::NotFound();
 
 	switch ($action){
 		case "delete":
 			if (!Permission::Sufficient('staff'))
-				CoreUtils::Respond();
+				Response::Fail();
 
 			if (!$Database->whereEp($Episode)->delete('episodes'))
-				CoreUtils::Respond(ERR_DB_FAIL);
+				Response::DBError();
 			Log::Action('episodes',array(
 				'action' => 'del',
 				'season' => $Episode['season'],
@@ -50,7 +50,7 @@
 				'airs' => $Episode['airs'],
 			));
 			$CGDb->where('name', "s{$Episode['season']}e{$Episode['episode']}")->delete('tags');
-			CoreUtils::Respond('Episode deleted successfuly',1,array(
+			Response::Success('Episode deleted successfuly',array(
 				'upcoming' => Episode::GetSidebarUpcoming(NOWRAP),
 			));
 		break;
@@ -63,7 +63,7 @@
 				case ONLY_REQUESTS: $rendered = Posts::GetRequestsSection($posts); break;
 				case ONLY_RESERVATIONS: $rendered = Posts::GetReservationsSection($posts); break;
 			}
-			CoreUtils::Respond(array('render' => $rendered));
+			Response::Done(array('render' => $rendered));
 		break;
 		case "vote":
 			if (isset($_REQUEST['detail'])){
@@ -86,20 +86,20 @@
 					$VoteCounts['datasets'][0]['data'][] = $row['value'];
 				}
 
-				CoreUtils::Respond(array('data' => $VoteCounts));
+				Response::Done(array('data' => $VoteCounts));
 			}
 			else if (isset($_REQUEST['html']))
-				CoreUtils::Respond(array('html' => Episode::GetSidebarVoting($Episode)));
+				Response::Done(array('html' => Episode::GetSidebarVoting($Episode)));
 
 			if (!Permission::Sufficient('user'))
-				CoreUtils::Respond();
+				Response::Fail();
 
 			if (!$Episode['aired'])
-				CoreUtils::Respond('You can only vote on this episode after it has aired.');
+				Response::Fail('You can only vote on this episode after it has aired.');
 
 			$UserVote = Episode::GetUserVote($Episode);
 			if (!empty($UserVote))
-				CoreUtils::Respond('You already voted for this episode');
+				Response::Fail('You already voted for this episode');
 
 			$vote = (new Input('vote','int',array(
 				Input::IN_RANGE => [1,5],
@@ -114,11 +114,11 @@
 				'episode' => $Episode['episode'],
 				'user' => $currentUser['id'],
 				'vote' => $vote,
-			))) CoreUtils::Respond(ERR_DB_FAIL);
-			CoreUtils::Respond(array('newhtml' => Episode::GetSidebarVoting($Episode)));
+			))) Response::DBError();
+			Response::Done(array('newhtml' => Episode::GetSidebarVoting($Episode)));
 		break;
 		case "videos":
-			CoreUtils::Respond(Episode::GetVideoEmbeds($Episode));
+			Response::Done(Episode::GetVideoEmbeds($Episode));
 		break;
 		case "getvideos":
 			$return = array(
@@ -134,7 +134,7 @@
 				if ($prov['fullep'])
 					$return['fullep'][] = $prov['name'];
 			}
-			CoreUtils::Respond($return);
+			Response::Done($return);
 		break;
 		case "setvideos":
 			foreach (array('yt','dm') as $provider){
@@ -147,10 +147,10 @@
 							$vid = new VideoProvider($_POST[$PostKey]);
 						}
 						catch (Exception $e){
-							CoreUtils::Respond("$Provider link issue: ".$e->getMessage());
+							Response::Fail("$Provider link issue: ".$e->getMessage());
 						};
 						if (!isset($vid->provider) || $vid->provider['name'] !== $provider)
-							CoreUtils::Respond("Incorrect $Provider URL specified");
+							Response::Fail("Incorrect $Provider URL specified");
 						/** @noinspection PhpUndefinedFieldInspection */
 						$set = $vid::$id;
 					}
@@ -194,14 +194,14 @@
 				}
 			}
 
-			CoreUtils::Respond('Links updated',1,array('epsection' => Episode::RenderVideos($Episode)));
+			Response::Success('Links updated',array('epsection' => Episode::RenderVideos($Episode)));
 		break;
 		case "getcgrelations":
 			$CheckTag = array();
 
 			$EpTagIDs = Episode::GetTagIDs($Episode);
 			if (empty($EpTagIDs))
-				CoreUtils::Respond('The episode has no associated tag(s)!');
+				Response::Fail('The episode has no associated tag(s)!');
 
 			$TaggedAppearanceIDs = array();
 			foreach ($EpTagIDs as $tid){
@@ -219,7 +219,7 @@
 			foreach ($Appearances as $a)
 				$Sorted[isset($TaggedAppearanceIDs[$a['id']]) ? 'linked' : 'unlinked'][] = $a;
 
-			CoreUtils::Respond($Sorted);
+			Response::Done($Sorted);
 		break;
 		case "setcgrelations":
 			$AppearanceIDs = (new Input('ids','int[]',array(
@@ -231,7 +231,7 @@
 
 			$EpTagIDs = Episode::GetTagIDs($Episode);
 			if (empty($EpTagIDs))
-				CoreUtils::Respond('The episode has no associated tag(s)!');
+				Response::Fail('The episode has no associated tag(s)!');
 			$EpTagIDs = implode(',',$EpTagIDs);
 			$Tags = $CGDb->where("tid IN ($EpTagIDs)")->orderByLiteral('char_length(name)','DESC')->getOne('tags','tid');
 			$UseID = $Tags['tid'];
@@ -242,12 +242,12 @@
 			}
 			$CGDb->where("tid IN ($EpTagIDs)")->where('ponyid NOT IN ('.implode(',',$AppearanceIDs).')')->delete('tagged');
 
-			CoreUtils::Respond(array('section' => Episode::GetAppearancesSectionHTML($Episode)));
+			Response::Done(array('section' => Episode::GetAppearancesSectionHTML($Episode)));
 		break;
 		case "edit":
 		case "add":
 			if (!Permission::Sufficient('staff'))
-				CoreUtils::Respond();
+				Response::Fail();
 			$editing = $action === 'edit';
 			$canEditID = Episode::GetPostCount($Episode) === 0;
 
@@ -273,14 +273,14 @@
 						$insert['episode'] ?? $Episode['episode']
 					);
 					if (!empty($Target))
-						CoreUtils::Respond("There's already an episode with the same season & episode number");
+						Response::Fail("There's already an episode with the same season & episode number");
 
 					if (Episode::GetPostCount($insert) > 0)
-						CoreUtils::Respond('This epsiode\'s ID cannot be changed because it already has posts and this action could break existing links');
+						Response::Fail('This epsiode\'s ID cannot be changed because it already has posts and this action could break existing links');
 				}
 			}
 			else if ($Database->whereEp($insert)->has('episodes'))
-				CoreUtils::Respond('An episode with the same season and episode number already exists');
+				Response::Fail('An episode with the same season and episode number already exists');
 
 			$insert['no'] = (new Input('no','int',array(
 				Input::IS_OPTIONAL => true,
@@ -309,15 +309,15 @@
 				)
 			)))->out();
 			if (empty($airs))
-				CoreUtils::Respond('Please specify an air date & time');
+				Response::Fail('Please specify an air date & time');
 			$insert['airs'] = date('c',strtotime('this minute', $airs));
 
 			if ($editing){
 				if (!$Database->whereEp($Episode)->update('episodes', $insert))
-					CoreUtils::Respond('Updating episode failed: '.ERR_DB_FAIL);
+					Response::DBError('Updating episode failed');
 			}
 			else if (!$Database->insert('episodes', $insert))
-				CoreUtils::Respond('Episode creation failed: '.ERR_DB_FAIL);
+				Response::DBError('Episode creation failed');
 
 			if (!$editing || $SeasonChanged || $EpisodeChanged){
 				$TagName = CGUtils::CheckEpisodeTagName("s{$insert['season']}e{$insert['episode']}");
@@ -333,7 +333,7 @@
 					if (!$CGDb->insert('tags', array(
 						'name' => $TagName,
 						'type' => 'ep',
-					))) CoreUtils::Respond('Episode tag creation failed: '.ERR_DB_FAIL);
+					))) Response::DBError('Episode tag creation failed');
 				}
 			}
 
@@ -359,6 +359,8 @@
 				'title' => $insert['title'],
 				'airs' => $insert['airs'],
 			));
-			CoreUtils::Respond($editing ? true : array('epid' => Episode::FormatTitle($insert,AS_ARRAY,'id')));
+			if ($editing)
+				Response::Done();
+			Response::Done(array('epid' => Episode::FormatTitle($insert,AS_ARRAY,'id')));
 		break;
 	}

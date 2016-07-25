@@ -26,7 +26,7 @@
 			if ($return_as_bool === RETURN_AS_BOOL)
 				return $is_forged;
 			else if ($is_forged)
-				CoreUtils::StatusCode(401, AND_DIE);
+				HTTP::StatusCode(401, AND_DIE);
 		}
 
 		/**

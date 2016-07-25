@@ -18,33 +18,22 @@
 	});
 
 	// Some constants \\
-	# integer
-	define('FULL', 0);      // \
-	define('TEXT_ONLY', 1); //  }-> User::GetDALink
-	define('LINK_ONLY', 2); // /
-	define('ALWAYS_PLURAL', 0);
-	define('UNREAD_ONLY', 0); // Notifications::Get
-	define('READ_ONLY', 1); // Notifications::Get
+	# integer - none
 	# string
-	define('ERR_DB_FAIL','There was an error while saving to the database');
-	define('FORMAT_FULL','jS M Y, g:i:s a T'); // Time::Format
+	define('OAUTH_REDIRECT_URI', '&redirect_uri='.urlencode(ABSPATH.'da-auth'));
+	define('OAUTH_AUTHORIZATION_URL', "https://www.deviantart.com/oauth2/authorize?response_type=code&scope=user+browse&client_id=".DA_CLIENT.OAUTH_REDIRECT_URI);
 	# boolean
-	define('ALLOW_SEASON_ZERO', true); // Epsiode::Get
 	define('AND_DIE', true); // CoreUtils::StatusCode
 	define('AS_ARRAY',true); // Episode::FormatTitle
 	define('RETURN_AS_BOOL', true); // CSRFProtection::Protect
-	define('STAY_ALIVE', false); // CoreUtils::Redirect
+	define('STAY_ALIVE', false); // HTTP::Redirect
 	define('HTML_ONLY', true); // CoreUtils::_processHeaderLink
 	define('PREPEND_NUMBER', true); // CoreUtils::MakePlural
 	define('NOWRAP', false);
 	define('WRAP', !NOWRAP);
-	define('FORMAT_READABLE',true); // Time::Format
-	define('EXTENDED', true); // Time::Tag
-	define('NO_DYNTIME', 'no'); // Time::Tag
-	define('STATIC_DYNTIME', 'static'); // Time::Tag
 	define('ONLY_REQUESTS', 1); // Posts::Get
 	define('ONLY_RESERVATIONS', 2); // Posts::Get
-	define('CURRENT',true); // render_session_li()
+	define('CURRENT',true); // User::RenderSessionLi
 	define('RETURN_ARRANGED', true); // Posts::GetRequestsSection & Posts::GetReservationsSection
 	define('IS_REQUEST', true); // Posts::GetRequestsSection
 	define('WITH_GIT_INFO', true); // CoreUtils::GetFooter
@@ -76,7 +65,7 @@
 	$USERNAME_REGEX = new RegExp('^'.USERNAME_PATTERN.'$');
 	define('GUEST_AVATAR','/img/guest.svg');
 	# Episode
-	define('EPISODE_ID_PATTERN','S0*([0-8])E0*([1-9]|1\d|2[0-6])(?:-0*([1-9]|1\d|2[0-6]))?(?:\D|$)');;
+	define('EPISODE_ID_PATTERN','S0*([0-8])E0*([1-9]|1\d|2[0-6])(?:-0*([1-9]|1\d|2[0-6]))?(?:\b|$)');;
 	$EPISODE_ID_REGEX = new RegExp('^'.EPISODE_ID_PATTERN,'i');
 	$EP_TITLE_REGEX = new RegExp('^[A-Za-z \'"\-!\d,&:?]{5,35}$','u');
 	define('INVERSE_EP_TITLE_PATTERN','[^A-Za-z \'"\-!\d,&:?]');

@@ -4,7 +4,7 @@
 	$SpritePath = APPATH.substr($SpriteRelPath,1);
 
 	if (POST_REQUEST || (isset($_GET['s']) && $data === "gettags")){
-		if (!Permission::Sufficient('staff')) CoreUtils::Respond();
+		if (!Permission::Sufficient('staff')) Response::Fail();
 		if (POST_REQUEST) CSRFProtection::Protect();
 
 		$EQG = isset($_REQUEST['eqg']) ? 1 : 0;
@@ -19,7 +19,7 @@
 					$Tag = $CGDb->where('"synonym_of" IS NOT NULL')->getOne('tags');
 					if (!empty($Tag)){
 						$Syn = \CG\Tags::GetSynonymOf($Tag,'name');
-						CoreUtils::Respond("This tag is already a synonym of <strong>{$Syn['name']}</strong>.<br>Would you like to remove the synonym?",0,array('undo' => true));
+						Response::Fail("This tag is already a synonym of <strong>{$Syn['name']}</strong>.<br>Would you like to remove the synonym?",array('undo' => true));
 					}
 				}
 
@@ -60,7 +60,7 @@
 					CoreUtils::NotFound();
 
 				if (!Permission::Sufficient('staff'))
-					CoreUtils::Respond();
+					Response::Fail();
 
 				\CG\Appearances::Reorder((new Input('list','int[]',array(
 					Input::CUSTOM_ERROR_MESSAGES => array(
@@ -69,7 +69,7 @@
 					)
 				)))->out());
 
-				CoreUtils::Respond(array('html' => CGUtils::GetFullListHTML(\CG\Appearances::Get($EQG,null,'id,label'), true, NOWRAP)));
+				Response::Done(array('html' => CGUtils::GetFullListHTML(\CG\Appearances::Get($EQG,null,'id,label'), true, NOWRAP)));
 			break;
 			case "export":
 				if (!Permission::Sufficient('developer'))
@@ -135,16 +135,16 @@
 			if (!$creating){
 				$AppearanceID = intval($_match[2], 10);
 				if (strlen($_match[2]) === 0)
-					CoreUtils::Respond('Missing appearance ID');
+					Response::Fail('Missing appearance ID');
 				$Appearance = $CGDb->where('id', $AppearanceID)->where('ishuman', $EQG)->getOne('appearances');
 				if (empty($Appearance))
-					CoreUtils::Respond("The specified appearance does not exist");
+					Response::Fail("The specified appearance does not exist");
 			}
 			else $Appearance = array('id' => null);
 
 			switch ($action){
 				case "get":
-					CoreUtils::Respond(array(
+					Response::Done(array(
 						'label' => $Appearance['label'],
 						'notes' => $Appearance['notes'],
 						'cm_favme' => !empty($Appearance['cm_favme']) ? "http://fav.me/{$Appearance['cm_favme']}" : null,
@@ -170,7 +170,7 @@
 					)))->out();
 					CoreUtils::CheckStringValidity($label, "Appearance name", INVERSE_PRINTABLE_ASCII_PATTERN);
 					if ($creating && $CGDb->where('label', $label)->has('appearances'))
-						CoreUtils::Respond('An appearance already esists with this name');
+						Response::Fail('An appearance already esists with this name');
 					$data['label'] = $label;
 
 					$notes = (new Input('notes','text',array(
@@ -196,9 +196,9 @@
 							$data['cm_favme'] = $Image->id;
 						}
 						catch (MismatchedProviderException $e){
-							CoreUtils::Respond('The vector must be on DeviantArt, '.$e->getActualProvider().' links are not allowed');
+							Response::Fail('The vector must be on DeviantArt, '.$e->getActualProvider().' links are not allowed');
 						}
-						catch (Exception $e){ CoreUtils::Respond("Cutie Mark link issue: ".$e->getMessage()); }
+						catch (Exception $e){ Response::Fail("Cutie Mark link issue: ".$e->getMessage()); }
 
 						$cm_dir = (new Input('cm_dir',function($value){
 							if ($value !== 'th' && $value !== 'ht')
@@ -221,7 +221,7 @@
 								$Image = new ImageProvider($cm_preview);
 								$data['cm_preview'] = $Image->preview;
 							}
-							catch (Exception $e){ CoreUtils::Respond("Cutie Mark preview issue: ".$e->getMessage()); }
+							catch (Exception $e){ Response::Fail("Cutie Mark preview issue: ".$e->getMessage()); }
 						}
 					}
 					else {
@@ -233,7 +233,7 @@
 						? $CGDb->insert('appearances', $data, 'id')
 						: $CGDb->where('id', $Appearance['id'])->update('appearances', $data);
 					if (!$query)
-						CoreUtils::Respond(ERR_DB_FAIL);
+						Response::DBError();
 
 					if ($creating){
 						$data['id'] = $query;
@@ -248,15 +248,15 @@
 							catch (Exception $e){
 								$response['message'] .= ", but applying the template failed";
 								$response['info'] = "The common color groups could not be added.<br>Reason: ".$e->getMessage();
-								CoreUtils::Respond($response, 1);
+								Response::Done($response);
 							}
 						}
-						CoreUtils::Respond($response);
+						Response::Done($response);
 					}
 					else {
 						CGUtils::ClearRenderedImage($Appearance['id']);
 						if ($AppearancePage)
-							CoreUtils::Respond(true);
+							Response::Done();
 					}
 
 					$EditedAppearance = array_merge($Appearance, $data);
@@ -264,14 +264,14 @@
 					if ($data['label'] !== $Appearance['label'])
 						$response['newurl'] = $Appearance['id'].'-'.\CG\Appearances::GetSafeLabel($EditedAppearance);
 					$response['notes'] = \CG\Appearances::GetNotesHTML($EditedAppearance, NOWRAP);
-					CoreUtils::Respond($response);
+					Response::Done($response);
 				break;
 				case "delete":
 					if ($Appearance['id'] === 0)
-						CoreUtils::Respond('This appearance cannot be deleted');
+						Response::Fail('This appearance cannot be deleted');
 
 					if (!$CGDb->where('id', $Appearance['id'])->delete('appearances'))
-						CoreUtils::Respond(ERR_DB_FAIL);
+						Response::DBError();
 
 					$fpath = APPATH."img/cg/{$Appearance['id']}.png";
 					if (file_exists($fpath))
@@ -279,13 +279,13 @@
 
 					CGUtils::ClearRenderedImage($Appearance['id']);
 
-					CoreUtils::Respond('Appearance removed', 1);
+					Response::Success('Appearance removed');
 				break;
 				case "getcgs":
 					$cgs = \CG\ColorGroups::Get($Appearance['id'],'groupid, label');
 					if (empty($cgs))
-						CoreUtils::Respond('This appearance does not have any color groups');
-					CoreUtils::Respond(array('cgs' => $cgs));
+						Response::Fail('This appearance does not have any color groups');
+					Response::Done(array('cgs' => $cgs));
 				break;
 				case "setcgs":
 					$groups = (new Input('cgs','int[]',array(
@@ -295,14 +295,14 @@
 					)))->out();
 					foreach ($groups as $part => $GroupID){
 						if (!$CGDb->where('groupid', $GroupID)->has('colorgroups'))
-							CoreUtils::Respond("There's no group with the ID of  $GroupID");
+							Response::Fail("There's no group with the ID of $GroupID");
 
 						$CGDb->where('groupid', $GroupID)->update('colorgroups',array('order' => $part));
 					}
 
 					CGUtils::ClearRenderedImage($Appearance['id']);
 
-					CoreUtils::Respond(array('cgs' => \CG\Appearances::GetColorsHTML($Appearance['id'], NOWRAP, !$AppearancePage, $AppearancePage)));
+					Response::Done(array('cgs' => \CG\Appearances::GetColorsHTML($Appearance['id'], NOWRAP, !$AppearancePage, $AppearancePage)));
 				break;
 				case "delsprite":
 				case "getsprite":
@@ -317,27 +317,27 @@
 						break;
 						case "delsprite":
 							if (!file_exists($finalpath))
-								CoreUtils::Respond('No sprite file found');
+								Response::Fail('No sprite file found');
 
 							if (!unlink($finalpath))
-								CoreUtils::Respond('File could not be deleted');
+								Response::Fail('File could not be deleted');
 
-							CoreUtils::Respond(array('sprite' => \CG\Appearances::GetSpriteURL($Appearance['id'], DEFAULT_SPRITE)));
+							Response::Done(array('sprite' => \CG\Appearances::GetSpriteURL($Appearance['id'], DEFAULT_SPRITE)));
 						break;
 					}
 
-					CoreUtils::Respond(array("path" => "$SpriteRelPath$fname?".filemtime($finalpath)));
+					Response::Done(array("path" => "$SpriteRelPath$fname?".filemtime($finalpath)));
 				break;
 				case "clearrendercache":
 					if (!CGUtils::ClearRenderedImage($Appearance['id']))
-						CoreUtils::Respond('Cache could not be cleared');
+						Response::Fail('Cache could not be cleared');
 
-					CoreUtils::Respond('Cached image removed, the image will be re-generated on the next request', 1);
+					Response::Success('Cached image removed, the image will be re-generated on the next request');
 				break;
 				case "tag":
 				case "untag":
 					if ($Appearance['id'] === 0)
-						CoreUtils::Respond("This appearance cannot be tagged");
+						Response::Fail("This appearance cannot be tagged");
 
 					switch ($action){
 						case "tag":
@@ -349,18 +349,18 @@
 
 							$Tag = \CG\Tags::GetActual($tag_name, 'name');
 							if (empty($Tag))
-								CoreUtils::Respond("The tag $tag_name does not exist.<br>Would you like to create it?",0,array(
+								Response::Fail("The tag $tag_name does not exist.<br>Would you like to create it?",array(
 									'cancreate' => $tag_name,
 									'typehint' => $TagCheck !== false ? 'ep' : null,
 								));
 
 							if ($CGDb->where('ponyid', $Appearance['id'])->where('tid', $Tag['tid'])->has('tagged'))
-								CoreUtils::Respond('This appearance already has this tag');
+								Response::Fail('This appearance already has this tag');
 
 							if (!$CGDb->insert('tagged',array(
 								'ponyid' => $Appearance['id'],
 								'tid' => $Tag['tid'],
-							))) CoreUtils::Respond(ERR_DB_FAIL);
+							))) Response::DBError();
 						break;
 						case "untag":
 							$tag_id = (new Input('tag','int',array(
@@ -371,16 +371,16 @@
 							)))->out();
 							$Tag = $CGDb->where('tid',$tag_id)->getOne('tags');
 							if (empty($Tag))
-								CoreUtils::Respond('This tag does not exist');
+								Response::Fail('This tag does not exist');
 							if (!empty($Tag['synonym_of'])){
 								$Syn = \CG\Tags::GetSynonymOf($Tag,'name');
-								CoreUtils::Respond('Synonym tags cannot be removed from appearances directly. '.
+								Response::Fail('Synonym tags cannot be removed from appearances directly. '.
 								        "If you want to remove this tag you must remove <strong>{$Syn['name']}</strong> or the synonymization.");
 							}
 
 							if ($CGDb->where('ponyid', $Appearance['id'])->where('tid', $Tag['tid'])->has('tagged')){
 								if (!$CGDb->where('ponyid', $Appearance['id'])->where('tid', $Tag['tid'])->delete('tagged'))
-									CoreUtils::Respond(ERR_DB_FAIL);
+									Response::DBError();
 							}
 						break;
 					}
@@ -394,19 +394,19 @@
 						$response['needupdate'] = true;
 						$response['eps'] = \CG\Appearances::GetRelatedEpisodesHTML($Appearance['id']);
 					}
-					CoreUtils::Respond($response);
+					Response::Done($response);
 				break;
 				case "applytemplate":
 					try {
 						\CG\Appearances::ApplyTemplate($Appearance['id'], $EQG);
 					}
 					catch (Exception $e){
-						CoreUtils::Respond("Applying the template failed. Reason: ".$e->getMessage());
+						Response::Fail("Applying the template failed. Reason: ".$e->getMessage());
 					}
 
-					CoreUtils::Respond(array('cgs' => \CG\Appearances::GetColorsHTML($Appearance['id'], NOWRAP, !$AppearancePage, $AppearancePage)));
+					Response::Done(array('cgs' => \CG\Appearances::GetColorsHTML($Appearance['id'], NOWRAP, !$AppearancePage, $AppearancePage)));
 				break;
-				default: CoreUtils::StatusCode(404, AND_DIE);
+				default: CoreUtils::NotFound();
 			}
 		}
 		else if (regex_match(new RegExp('^([gs]et|make|del|merge|recount|(?:un)?synon)tag(?:/(\d+))?$'), $data, $_match)){
@@ -430,13 +430,12 @@
 					}
 				}
 
-				CoreUtils::Respond(
+				Response::Success(
 					(
 						!$updates
 						? 'There was no change in the tag usage counts'
 						: "$updates tag".($updates!==1?"s'":"'s").' use count'.($updates!==1?'s were':' was').' updated'
 					),
-					1,
 					array('counts' => $counts)
 				);
 			}
@@ -452,13 +451,13 @@
 
 			if (!$new){
 				if (!isset($_match[2]))
-					CoreUtils::Respond('Missing tag ID');
+					Response::Fail('Missing tag ID');
 				$TagID = intval($_match[2], 10);
 				$Tag = $CGDb->where('tid', $TagID)->getOne('tags',isset($query) ? 'tid, name, type':'*');
 				if (empty($Tag))
-					CoreUtils::Respond("This tag does not exist");
+					Response::Fail("This tag does not exist");
 
-				if ($getting) CoreUtils::Respond($Tag);
+				if ($getting) Response::Done($Tag);
 
 				if ($deleting){
 					$AppearanceID = \CG\Appearances::ValidateAppearancePageID();
@@ -467,16 +466,16 @@
 						$tid = !empty($Tag['synonym_of']) ? $Tag['synonym_of'] : $Tag['tid'];
 						$Uses = $CGDb->where('tid',$tid)->count('tagged');
 						if ($Uses > 0)
-							CoreUtils::Respond('<p>This tag is currently used on '.CoreUtils::MakePlural('appearance',$Uses,PREPEND_NUMBER).'</p><p>Deleting will <strong class="color-red">permanently remove</strong> the tag from those appearances!</p><p>Are you <em class="color-red">REALLY</em> sure about this?</p>',0,array('confirm' => true));
+							Response::Fail('<p>This tag is currently used on '.CoreUtils::MakePlural('appearance',$Uses,PREPEND_NUMBER).'</p><p>Deleting will <strong class="color-red">permanently remove</strong> the tag from those appearances!</p><p>Are you <em class="color-red">REALLY</em> sure about this?</p>',array('confirm' => true));
 					}
 
 					if (!$CGDb->where('tid', $Tag['tid'])->delete('tags'))
-						CoreUtils::Respond(ERR_DB_FAIL);
+						Response::DBError();
 
 					if (isset(CGUtils::$GroupTagIDs_Assoc[$Tag['tid']]))
 						\CG\Appearances::GetSortReorder($EQG);
 
-					CoreUtils::Respond('Tag deleted successfully', 1, isset($AppearanceID) && $Tag['type'] === 'ep' ? array(
+					Response::Success('Tag deleted successfully', isset($AppearanceID) && $Tag['type'] === 'ep' ? array(
 						'needupdate' => true,
 						'eps' => \CG\Appearances::GetRelatedEpisodesHTML($AppearanceID),
 					) : null);
@@ -486,7 +485,7 @@
 
 			if ($merging || $synoning){
 				if ($synoning && !empty($Tag['synonym_of']))
-					CoreUtils::Respond('This tag is already synonymized with a different tag');
+					Response::Fail('This tag is already synonymized with a different tag');
 
 				$targetid = (new Input('targetid','int',array(
 					Input::CUSTOM_ERROR_MESSAGES => array(
@@ -495,9 +494,9 @@
 				)))->out();
 				$Target = $CGDb->where('tid', $targetid)->getOne('tags');
 				if (empty($Target))
-					CoreUtils::Respond('Target tag does not exist');
+					Response::Fail('Target tag does not exist');
 				if (!empty($Target['synonym_of']))
-					CoreUtils::Respond('Synonym tags cannot be synonymization targets');
+					Response::Fail('Synonym tags cannot be synonymization targets');
 
 				$_TargetTagged = $CGDb->where('tid', $Target['tid'])->get('tagged',null,'ponyid');
 				$TargetTagged = array();
@@ -511,7 +510,7 @@
 					if (!$CGDb->insert('tagged',array(
 						'tid' => $Target['tid'],
 						'ponyid' => $tg['ponyid']
-					))) CoreUtils::Respond('Tag '.($merging?'merging':'synonimizing')." failed, please re-try.<br>Technical details: ponyid={$tg['ponyid']} tid={$Target['tid']}");
+					))) Response::Fail('Tag '.($merging?'merging':'synonimizing')." failed, please re-try.<br>Technical details: ponyid={$tg['ponyid']} tid={$Target['tid']}");
 				}
 				if ($merging)
 					// No need to delete "tagged" table entries, constraints do it for us
@@ -522,11 +521,11 @@
 				}
 
 				\CG\Tags::UpdateUses($Target['tid']);
-				CoreUtils::Respond('Tags successfully '.($merging?'merged':'synonymized'), 1, $synoning || $merging ? array('target' => $Target) : null);
+				Response::Success('Tags successfully '.($merging?'merged':'synonymized'), $synoning || $merging ? array('target' => $Target) : null);
 			}
 			else if ($unsynoning){
 				if (empty($Tag['synonym_of']))
-					CoreUtils::Respond(true);
+					Response::Done();
 
 				$keep_tagged = isset($_POST['keep_tagged']);
 				$uses = 0;
@@ -538,7 +537,7 @@
 							if (!$CGDb->insert('tagged',array(
 								'tid' => $Tag['tid'],
 								'ponyid' => $tg['ponyid']
-							))) CoreUtils::Respond("Tag synonym removal process failed, please re-try.<br>Technical details: ponyid={$tg['ponyid']} tid={$Tag['tid']}");
+							))) Response::Fail("Tag synonym removal process failed, please re-try.<br>Technical details: ponyid={$tg['ponyid']} tid={$Tag['tid']}");
 							$uses++;
 						}
 					}
@@ -546,9 +545,9 @@
 				}
 
 				if (!$CGDb->where('tid', $Tag['tid'])->update('tags', array('synonym_of' => null, 'uses' => $uses)))
-					CoreUtils::Respond(ERR_DB_FAIL);
+					Response::DBError();
 
-				CoreUtils::Respond(array('keep_tagged' => $keep_tagged));
+				Response::Done(array('keep_tagged' => $keep_tagged));
 			}
 
 			$data['name'] = CGUtils::ValidateTagName('name');
@@ -572,7 +571,7 @@
 			else {
 				if ($type == 'ep'){
 					if (!$surelyAnEpisodeTag)
-						CoreUtils::Respond('Episode tags must be in the format of <strong>s##e##[-##]</strong> where # represents a number<br>Allowed seasons: 1-8, episodes: 1-26');
+						Response::Fail('Episode tags must be in the format of <strong>s##e##[-##]</strong> where # represents a number<br>Allowed seasons: 1-8, episodes: 1-26');
 					$data['name'] = $epTagName;
 				}
 				else if ($surelyAnEpisodeTag)
@@ -582,7 +581,7 @@
 
 			if (!$new) $CGDb->where('tid',$Tag['tid'],'!=');
 			if ($CGDb->where('name', $data['name'])->where('type', $data['type'])->has('tags') || $data['name'] === 'wrong cutie mark')
-				CoreUtils::Respond("A tag with the same name and type already exists");
+				Response::Fail("A tag with the same name and type already exists");
 
 			$data['title'] = (new Input('title','string',array(
 				Input::IS_OPTIONAL => true,
@@ -594,29 +593,29 @@
 
 			if ($new){
 				$TagID = $CGDb->insert('tags', $data, 'tid');
-				if (!$TagID) CoreUtils::Respond(ERR_DB_FAIL);
+				if (!$TagID) Response::DBError();
 				$data['tid'] = $TagID;
 
 				$AppearanceID = (new Input('addto','int',array(Input::IS_OPTIONAL => true)))->out();
 				if (isset($AppearanceID)){
 					if ($AppearanceID === 0)
-						CoreUtils::Respond("The tag was created, <strong>but</strong> it could not be added to the appearance because it can't be tagged.", 1);
+						Response::Success("The tag was created, <strong>but</strong> it could not be added to the appearance because it can't be tagged.");
 
 					$Appearance = $CGDb->where('id', $AppearanceID)->getOne('appearances');
 					if (empty($Appearance))
-						CoreUtils::Respond("The tag was created, <strong>but</strong> it could not be added to the appearance (<a href='/cg/v/$AppearanceID'>#$AppearanceID</a>) because it doesn't seem to exist. Please try adding the tag manually.", 1);
+						Response::Success("The tag was created, <strong>but</strong> it could not be added to the appearance (<a href='/cg/v/$AppearanceID'>#$AppearanceID</a>) because it doesn't seem to exist. Please try adding the tag manually.");
 
 					if (!$CGDb->insert('tagged',array(
 						'tid' => $data['tid'],
 						'ponyid' => $Appearance['id']
-					))) CoreUtils::Respond(ERR_DB_FAIL);
+					))) Response::DBError();
 					\CG\Tags::UpdateUses($data['tid']);
 					$r = array('tags' => \CG\Appearances::GetTagsHTML($Appearance['id'], NOWRAP));
 					if ($AppearancePage){
 						$r['needupdate'] = true;
 						$r['eps'] = \CG\Appearances::GetRelatedEpisodesHTML($Appearance['id']);
 					}
-					CoreUtils::Respond($r);
+					Response::Done($r);
 				}
 			}
 			else {
@@ -624,7 +623,7 @@
 				$data = array_merge($Tag, $data);
 			}
 
-			CoreUtils::Respond($data);
+			Response::Done($data);
 		}
 		else if (regex_match(new RegExp('^([gs]et|make|del)cg(?:/(\d+))?$'), $data, $_match)){
 			$action = $_match[1];
@@ -633,21 +632,21 @@
 
 			if (!$new){
 				if (empty($_match[2]))
-					CoreUtils::Respond('Missing color group ID');
+					Response::Fail('Missing color group ID');
 				$GroupID = intval($_match[2], 10);
 				$Group = $CGDb->where('groupid', $GroupID)->getOne('colorgroups');
 				if (empty($GroupID))
-					CoreUtils::Respond("There's no $color group with the ID of $GroupID");
+					Response::Fail("There's no $color group with the ID of $GroupID");
 
 				if ($action === 'get'){
 					$Group['Colors'] = \CG\ColorGroups::GetColors($Group['groupid']);
-					CoreUtils::Respond($Group);
+					Response::Done($Group);
 				}
 
 				if ($action === 'del'){
 					if (!$CGDb->where('groupid', $Group['groupid'])->delete('colorgroups'))
-						CoreUtils::Respond(ERR_DB_FAIL);
-					CoreUtils::Respond("$Color group deleted successfully", 1);
+						Response::DBError();
+					Response::Success("$Color group deleted successfully");
 				}
 			}
 			$data = array();
@@ -681,7 +680,7 @@
 				)))->out();
 				$Appearance = $CGDb->where('id', $AppearanceID)->where('ishuman', $EQG)->getOne('appearances');
 				if (empty($Appearance))
-					CoreUtils::Respond('The specified appearance odes not exist');
+					Response::Fail('The specified appearance odes not exist');
 				$data['ponyid'] = $AppearanceID;
 
 				// Attempt to get order number of last color group for the appearance
@@ -690,7 +689,7 @@
 
 				$GroupID = $CGDb->insert('colorgroups', $data, 'groupid');
 				if (!$GroupID)
-					CoreUtils::Respond(ERR_DB_FAIL);
+					Response::DBError();
 				$Group = array('groupid' => $GroupID);
 			}
 			else $CGDb->where('groupid', $Group['groupid'])->update('colorgroups', $data);
@@ -707,19 +706,19 @@
 				$index = "(index: $part)";
 
 				if (empty($c['label']))
-					CoreUtils::Respond("You must specify a $color name $index");
+					Response::Fail("You must specify a $color name $index");
 				$label = CoreUtils::Trim($c['label']);
 				CoreUtils::CheckStringValidity($label, "$Color $index name", INVERSE_PRINTABLE_ASCII_PATTERN);
 				$ll = strlen($label);
 				if ($ll < 3 || $ll > 30)
-					CoreUtils::Respond("The $color name must be between 3 and 30 characters in length $index");
+					Response::Fail("The $color name must be between 3 and 30 characters in length $index");
 				$append['label'] = $label;
 
 				if (empty($c['hex']))
-					CoreUtils::Respond("You must specify a $color code $index");
+					Response::Fail("You must specify a $color code $index");
 				$hex = CoreUtils::Trim($c['hex']);
 				if (!$HEX_COLOR_REGEX->match($hex, $_match))
-					CoreUtils::Respond("HEX $color is in an invalid format $index");
+					Response::Fail("HEX $color is in an invalid format $index");
 				$append['hex'] = '#'.strtoupper($_match[1]);
 
 				$colors[] = $append;
@@ -733,7 +732,7 @@
 					$colorError = true;
 			}
 			if ($colorError)
-				CoreUtils::Respond("There were some issues while saving some of the colors. Please let the developer know about this error, so he can look into why this might've happened.");
+				Response::Fail("There were some issues while saving some of the colors. Please let the developer know about this error, so he can look into why this might've happened.");
 
 			$colon = !$AppearancePage;
 			$outputNames = $AppearancePage;
@@ -755,7 +754,7 @@
 				$response['cm_img'] = "/cg/v/$AppearanceID.svg?t=".time();
 			else $response['notes'] = \CG\Appearances::GetNotesHTML($CGDb->where('id', $AppearanceID)->getOne('appearances'),  NOWRAP);
 
-			CoreUtils::Respond($response);
+			Response::Done($response);
 		}
 		else CoreUtils::NotFound();
 	}
@@ -878,7 +877,7 @@
 
 
 		if (isset($_REQUEST['ajax']))
-			CoreUtils::Respond(array('html' => CGUtils::GetFullListHTML($Appearances, $GuideOrder, NOWRAP)));
+			Response::Done(array('html' => CGUtils::GetFullListHTML($Appearances, $GuideOrder, NOWRAP)));
 
 		$js = array();
 		if (Permission::Sufficient('staff'))
@@ -948,14 +947,14 @@
 		catch (Exception $e){
 			$_MSG = $e->getMessage();
 			if (isset($_REQUEST['js']))
-				CoreUtils::Respond($_MSG);
+				Response::Done($_MSG);
 		}
 
 		if (empty($Pagination))
 			$Pagination = new Pagination("cg", $AppearancesPerPage, 0);
 	}
 	if (isset($_REQUEST['GOFAST']))
-		CoreUtils::Respond(array('goto' => "/cg/v/{$Ponies[0]['id']}"));
+		Response::Done(array('goto' => "/cg/v/{$Ponies[0]['id']}"));
 
 	CoreUtils::FixPath("$CGPath/{$Pagination->page}".(!empty($Restrictions)?"?q=$SearchQuery":''));
 	$heading = ($EQG?'EQG ':'')."$Color Guide";

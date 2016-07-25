@@ -151,7 +151,7 @@
 						if (self::CheckStringLength($this->_value, $this->_range, $code))
 							return $code;
 						if (!regex_match(new RegExp('^https?://[a-z\d/.-]+/[ -~]+$','i'), $this->_value))
-							CoreUtils::Respond('Link URL does not appear to be a valid link');
+							Response::Fail('Link URL does not appear to be a valid link');
 					}
 				break;
 				case "int[]":
@@ -217,7 +217,7 @@
 			if ($this->_silentFail)
 				return error_log("Silenced Input validation error: $message\nKey: $this->_key\nOptions: _source={$this->_source}, _origValue={$this->_origValue}, _respond={$this->_respond}");
 			if ($this->_respond)
-				CoreUtils::Respond($message);
+				Response::Fail($message);
 			throw new Exception($message);
 		}
 

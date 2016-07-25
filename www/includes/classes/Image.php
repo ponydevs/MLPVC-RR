@@ -13,10 +13,10 @@
 		static function CheckType($tmp, $allowedMimeTypes){
 			$imageSize = getimagesize($tmp);
 			if (is_array($allowedMimeTypes) && !in_array($imageSize['mime'], $allowedMimeTypes))
-				CoreUtils::Respond("This type of image is now allowed: ".$imageSize['mime']);
+				Response::Fail("This type of image is now allowed: ".$imageSize['mime']);
 			list($width,$height) = $imageSize;
 
-			if ($width + $height === 0) CoreUtils::Respond('The uploaded file is not an image');
+			if ($width + $height === 0) Response::Fail('The uploaded file is not an image');
 
 			return array($width, $height);
 		}
@@ -33,7 +33,7 @@
 		static function CheckSize($path, $width, $height, $minwidth, $minheight){
 			if ($width < $minwidth || $height < $minheight){
 				unlink($path);
-				CoreUtils::Respond('The image is too small in '.(
+				Response::Fail('The image is too small in '.(
 					$width < $minwidth
 					?(
 						$height < $minheight
