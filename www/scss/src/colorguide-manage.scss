@@ -38,7 +38,10 @@
 			@include sprite-animation(16px, 16px, 12, 'indicator');
 		}
 	}
-	.addtag { cursor: text }
+	.addtag {
+		cursor: text;
+		margin: 0;
+	}
 }
 .tag.addtag.aa-hint { color: rgba(black, .4) !important }
 
