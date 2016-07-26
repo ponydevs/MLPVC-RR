@@ -17,6 +17,12 @@ DocReady.push(function ColorguideSpriteedit(){
 		`<optgroup label="Universal colors">
 			<option value="#FFFFFF">Eye | Shines</option>
 			<option value="#000000">Eye | Pupil</option>
+		</optgroup>
+		<optgroup label="Uniform mannequin">
+			<option value="#D8D8D8">Mannequin | Outline</option>
+			<option value="#E6E6E6">Mannequin | Fill</option>
+			<option value="#BFBFBF">Mannequin | Shadow Outline</option>
+			<option value="#CCCCCC">Mannequin | Shdow Fill</option>
 		</optgroup>`
 	);
 
