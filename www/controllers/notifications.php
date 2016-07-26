@@ -8,7 +8,7 @@
 
 	switch($action){
 		case 'get':
-			Response::Done(array('list' => Notifications::GetHTML(Notifications::Get(null,self::UNREAD_ONLY),NOWRAP)));
+			Response::Done(array('list' => Notifications::GetHTML(Notifications::Get(null,Notifications::UNREAD_ONLY),NOWRAP)));
 		break;
 		case 'mark-read':
 			$nid = intval($data, 10);

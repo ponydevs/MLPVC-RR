@@ -995,7 +995,7 @@
 		catch (Exception $e){
 			$_MSG = $e->getMessage();
 			if (isset($_REQUEST['js']))
-				Response::Done($_MSG);
+				Response::Fail($_MSG);
 		}
 
 		if (empty($Pagination))
