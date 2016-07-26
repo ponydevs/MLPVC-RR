@@ -1,9 +1,9 @@
-.idea
 www/conf.php
 mlpvc-rr-error.log
 *.opdownload
 node_modules
 www/img/cg/
+www/img/sprites/
 www/img/cg_render/
 *.crdownload
 www/css/*.scss*
@@ -12,13 +12,10 @@ www/mywot*.html
 cf-ips.txt
 stats/
 stash-cache/
-
-# PostgreSQL switch
 *.sh
 *.bat
 setup/*.sql
 !setup/*.pg.sql
-www/includes/MysqliDb.php
 setup/*_full.pg.sql
 www/includes/HTMLPurifier/standalone/HTMLPurifier/DefinitionCache/
 www/controllers/fetch-gallery.php
