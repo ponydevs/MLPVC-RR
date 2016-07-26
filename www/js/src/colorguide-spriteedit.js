@@ -71,16 +71,7 @@ DocReady.push(function ColorguideSpriteedit(){
 								return;
 
 							val = val.replace(HEX_COLOR_REGEX, '#$1').toUpperCase();
-							let $input = $(input),
-								rgb = $.hex2rgb(val);
-
-							$.each(rgb, function(channel, value){
-								if (value <= 3)
-									rgb[channel] = 0;
-								else if (value >= 252)
-									rgb[channel] = 255;
-							});
-							val = $.rgb2hex(rgb);
+							let $input = $(input);
 							switch (e.type){
 								case 'paste':
 								case 'blur':
