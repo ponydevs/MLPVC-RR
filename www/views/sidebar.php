@@ -48,7 +48,7 @@
 	</section>
 <?php       }
 		}
-		if ($do === 'colorguide' && (!empty($Appearance) || !empty($Ponies))){ ?>
+		if ($do === 'colorguide' && (!empty($Appearance) || !empty($Ponies)) && empty($Map)){ ?>
 	<section id="hash-copy">
 		<h2>Color Guide</h2>
 		<p>You can click any <?=$color?>ed square on this page to copy its HEX <?=$color?> code to your clipboard. Holding Shift while clicking will display a dialog with the RGB <?=$color?> values instead.</p>

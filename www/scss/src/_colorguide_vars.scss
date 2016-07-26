@@ -37,7 +37,7 @@ $TFeature:  adjust_hue($_TBase, 20);
 		&:active { transform: scale(.9) }
 	}
 	&:empty {
-		background: url(../img/transparency.svg);
+		background: url(../../img/transparency.svg);
 		background-size: 8px;
 	}
 	&:not(:last-child){ margin-right: 4px }

@@ -12,6 +12,7 @@
 			<button class='getswatch typcn typcn-brush teal'>Download swatch file</button>
 <?  if (Permission::Sufficient('staff')){ ?>
 			<button class='blue edit typcn typcn-pencil'>Edit metadata</button>
+			<a class='btn blue typcn typcn-pencil' href="/cg/sprite-<?=$color?>s/<?=$Appearance['id']?>/">Edit sprite</a>
 			<button class='red delete typcn typcn-trash'>Delete apperance</button>
 <?  } ?>
 		</div>

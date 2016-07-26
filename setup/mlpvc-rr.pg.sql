@@ -62,6 +62,19 @@ SET default_tablespace = '';
 SET default_with_oids = false;
 
 --
+-- Name: cg_sprite_colormap; Type: TABLE; Schema: public; Owner: mlpvc-rr
+--
+
+CREATE TABLE cg_sprite_colormap (
+    ponyid integer NOT NULL,
+    placeholder integer NOT NULL,
+    actual character varying(7) NOT NULL
+);
+
+
+ALTER TABLE cg_sprite_colormap OWNER TO "mlpvc-rr";
+
+--
 -- Name: deviation_cache; Type: TABLE; Schema: public; Owner: mlpvc-rr
 --
 
@@ -930,6 +943,14 @@ ALTER TABLE ONLY usefullinks ALTER COLUMN id SET DEFAULT nextval('usefullinks_id
 
 
 --
+-- Name: cg_sprite_colormap_ponyid_placeholder; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER TABLE ONLY cg_sprite_colormap
+    ADD CONSTRAINT cg_sprite_colormap_ponyid_placeholder PRIMARY KEY (ponyid, placeholder);
+
+
+--
 -- Name: deviation_cache_provider_id; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
@@ -1353,6 +1374,15 @@ REVOKE ALL ON SCHEMA public FROM postgres;
 GRANT ALL ON SCHEMA public TO postgres;
 GRANT ALL ON SCHEMA public TO PUBLIC;
 GRANT USAGE ON SCHEMA public TO "mlpvc-rr";
+
+
+--
+-- Name: cg_sprite_colormap; Type: ACL; Schema: public; Owner: mlpvc-rr
+--
+
+REVOKE ALL ON TABLE cg_sprite_colormap FROM PUBLIC;
+REVOKE ALL ON TABLE cg_sprite_colormap FROM "mlpvc-rr";
+GRANT ALL ON TABLE cg_sprite_colormap TO "mlpvc-rr";
 
 
 --

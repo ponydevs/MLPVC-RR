@@ -111,7 +111,7 @@
 		 * @param string|int $outline
 		 */
 		static function DrawSquare($image, $x, $y, $size, $fill, $outline){
-			if (!empty($fill)){
+			if (!empty($fill) && is_string($fill)){
 				$fill = CoreUtils::Hex2Rgb($fill);
 				$fill = imagecolorallocate($image, $fill[0], $fill[1], $fill[2]);
 			}
@@ -133,7 +133,8 @@
 
 			if (isset($fill))
 				imagefilledrectangle($image, $x, $y, $x2, $y2, $fill);
-			imagerectangle($image, $x, $y, $x2, $y2, $outline);
+			if (isset($outline))
+				imagerectangle($image, $x, $y, $x2, $y2, $outline);
 		}
 
 		/**
@@ -261,7 +262,7 @@
 		 * @param string   $FileRelPath
 		 */
 		static function OutputPNG($resource, $path, $FileRelPath){
-			self::_output($resource, $path, $FileRelPath, function($fp,$fd){ imagepng($fd, $fp); }, 'png');
+			self::_output($resource, $path, $FileRelPath, function($fp,$fd){ imagepng($fd, $fp, 9, PNG_NO_FILTER); }, 'png');
 		}
 
 		/**

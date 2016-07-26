@@ -555,9 +555,9 @@
 				global $Color, $EQG;
 				$NavItems['colorguide'] = array("/cg", (!empty($EQG)?'EQG ':'')."$Color Guide");
 				if ($do === 'colorguide'){
-					global $Tags, $Changes, $Ponies, $Pagination, $Appearance;
+					global $Tags, $Changes, $Ponies, $Pagination, $Appearance, $Map;
 					if (!empty($Appearance))
-						$NavItems['colorguide']['subitem'] = $Appearance['label'];
+						$NavItems['colorguide']['subitem'] = (isset($Map)?"Sprite {$Color}s - ":'').$Appearance['label'];
 					else if (isset($Ponies))
 						$NavItems['colorguide'][1] .= " - Page {$Pagination->page}";
 					else {

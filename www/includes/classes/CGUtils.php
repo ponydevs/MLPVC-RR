@@ -247,21 +247,19 @@
 		}
 
 		/**
-		 * Deletes a rendered image (effectively forcing its re-generation on next visit)
+		 * Deletes rendered images of an appearance (forcing its re-generation)
 		 *
 		 * @param int  $AppearanceID
-		 * @param bool $cm_dir_only  Only clear out CM direction preview
 		 *
 		 * @return bool
 		 */
-		static function ClearRenderedImage($AppearanceID, $cm_dir_only = false){
+		static function ClearRenderedImages($AppearanceID){
 			$RenderedPath = APPATH."img/cg_render/$AppearanceID";
 			$success = array();
-			if ($cm_dir_only !== CM_DIR_ONLY && file_exists("$RenderedPath.png"))
-				$success[] = unlink("$RenderedPath.png");
-			if (file_exists("$RenderedPath.svg"))
-				$success[] = unlink("$RenderedPath.svg");
-
+			foreach (array('palette.png','cmdir.svg','sprite.png','colormap.json.gz') as $suffix){
+				if (file_exists("$RenderedPath-$suffix"))
+					$success[] = unlink("$RenderedPath-$suffix");
+			}
 			return !in_array(false, $success);
 		}
 
@@ -276,12 +274,10 @@
 		static function RenderAppearancePNG($Appearance){
 			global $CGPath;
 
-			$OutputPath = APPATH."img/cg_render/{$Appearance['id']}.png";
+			$OutputPath = APPATH."img/cg_render/{$Appearance['id']}-palette.png";
 			$FileRelPath = "$CGPath/v/{$Appearance['id']}.png";
 			if (file_exists($OutputPath))
 				Image::OutputPNG(null,$OutputPath,$FileRelPath);
-
-			$SpriteRelPath = "img/cg/{$Appearance['id']}.png";
 
 			$OutWidth = 0;
 			$OutHeight = 0;
@@ -304,7 +300,7 @@
 			$ColumnRightMargin = 20;
 
 			// Detect if sprite exists and adjust image size & define starting positions
-			$SpritePath = APPATH.$SpriteRelPath;
+			$SpritePath = SPRITE_PATH."{$Appearance['id']}.png";
 			$SpriteExists = file_exists($SpritePath);
 			if ($SpriteExists){
 				$SpriteSize = getimagesize($SpritePath);
@@ -427,12 +423,12 @@
 		static function RenderCMDirectionSVG($AppearanceID, $dir){
 			global $CGDb, $CGPath;
 
-			$OutputPath = APPATH."img/cg_render/$AppearanceID.svg";
+			$OutputPath = APPATH."img/cg_render/$AppearanceID-cmdir.svg";
 			$FileRelPath = "$CGPath/v/$AppearanceID.svg";
 			if (file_exists($OutputPath))
 				Image::OutputSVG(null,$OutputPath,$FileRelPath);
 
-			if (is_null($dir))
+			if (!isset($dir))
 				CoreUtils::NotFound();
 
 			$DefaultColorMapping = array(
@@ -466,6 +462,131 @@
 				$img = str_replace($label, $ColorMapping[$label] ?? $defhex, $img);
 
 			Image::OutputSVG($img,$OutputPath,$FileRelPath);
+		}
+
+		static function Int2Hex(int $int){
+			return '#'.strtoupper(CoreUtils::Pad(dechex($int), 6));
+		}
+
+		static function GetSpriteImageMap($AppearanceID){
+			$MapPath = APPATH."img/cg_render/$AppearanceID-colormap.json.gz";
+			if (!file_exists($MapPath))
+				return null;
+			return JSON::Decode(gzuncompress(file_get_contents($MapPath)));
+		}
+
+		static function RenderSpritePNG($AppearanceID, $output = true){
+			global $CGPath, $Database;
+
+			$OutputPath = APPATH."img/cg_render/{$AppearanceID}-sprite.png";
+			$FileRelPath = "$CGPath/v/{$AppearanceID}s.png";
+			if (file_exists($OutputPath))
+				Image::OutputPNG(null,$OutputPath,$FileRelPath);
+
+			$MapPath = APPATH."img/cg_render/$AppearanceID-colormap.json.gz";
+			if (!file_exists($MapPath)){
+				$PNGPath = SPRITE_PATH."$AppearanceID.png";
+				if (!file_exists($PNGPath))
+					CoreUtils::NotFound();
+
+				list($PNGWidth, $PNGHeight) = getimagesize($PNGPath);
+				$PNG = imagecreatefrompng($PNGPath);
+				imagesavealpha($PNG, true);
+
+				$allcolors = array();
+				function coords($w, $h){
+					for ($y = 0; $y < $h; $y++){
+						for ($x = 0; $x < $w; $x++)
+							yield array($x, $y);
+					}
+				}
+				foreach (coords($PNGWidth,$PNGHeight) as $pos){
+					list($x, $y) = $pos;
+					$rgb = imagecolorat($PNG, $x, $y);
+					$colors = imagecolorsforindex($PNG, $rgb);
+					$hex = strtoupper('#'.CoreUtils::Pad(dechex($colors['red'])).CoreUtils::Pad(dechex($colors['green'])).CoreUtils::Pad(dechex($colors['blue'])));
+					$opacity = floatval(number_format(1-($colors['alpha']/127), 2, '.', ''));
+					if ($opacity == 0)
+						continue;
+					$allcolors[$hex][$opacity][] = array($x,$y);
+				}
+
+				$colormap = array();
+				$mapping = 0;
+
+				$currLine = null;
+				$lines = array();
+				$lastx = -2;
+				$lasty = -2;
+				foreach ($allcolors as $hex => $opacities){
+					$oldhex = $hex;
+					$index = $mapping++;
+					$hex = self::Int2Hex($index);
+					$colormap[$index] = $oldhex;
+					foreach ($opacities as $opacity => $coords){
+						foreach ($coords as $pos){
+							list($x, $y) = $pos;
+
+							if ($x-1 != $lastx || $y != $lasty){
+								if (isset($currLine))
+									$lines[] = $currLine;
+								$currLine = array(
+									'x' => $x,
+									'y' => $y,
+									'width' => 1,
+									'hex' => $hex,
+									'opacity' => $opacity,
+								);
+							}
+							else $currLine['width']++;
+
+							$lastx = $x;
+							$lasty = $y;
+						}
+					}
+				}
+				if (isset($currLine))
+					$lines[] = $currLine;
+
+				$Output = array(
+					'width' => $PNGWidth,
+					'height' => $PNGHeight,
+					'linedata' => array(),
+				);
+				foreach ($lines as $line)
+					$Output['linedata'][] = $line;
+
+				$Database->where('ponyid', $AppearanceID)->delete('cg_sprite_colormap');
+				foreach ($colormap as $placeholder => $actual)
+					$Database->insert('cg_sprite_colormap',array(
+						'ponyid' => $AppearanceID,
+						'placeholder' => $placeholder,
+						'actual' => $actual,
+					));
+
+				$Map = $Output;
+				file_put_contents($MapPath, gzcompress(JSON::Encode($Output), 9));
+			}
+			else if ($output)
+				$Map = JSON::Decode(gzuncompress(file_get_contents($MapPath)));
+			if (!$output)
+				return;
+
+			$SizeFactor = 2;
+			$PNG = Image::CreateTransparent($Map['width']*$SizeFactor, $Map['height']*$SizeFactor);
+			$ColorMap = array();
+			foreach ($Database->where('ponyid', $AppearanceID)->get('cg_sprite_colormap') as $row){
+				$placeholder = self::Int2Hex($row['placeholder']);
+				$ColorMap[$placeholder] = $row['actual'];
+			}
+			foreach ($Map['linedata'] as $line){
+				$line['hex'] = $ColorMap[$line['hex']];
+				$rgb = CoreUtils::Hex2Rgb($line['hex']);
+				$color = imagecolorallocatealpha($PNG, $rgb[0], $rgb[1], $rgb[2], 127-(int)round($line['opacity']*127));
+				Image::DrawSquare($PNG, $line['x']*$SizeFactor, $line['y']*$SizeFactor, array($line['width']*$SizeFactor, $SizeFactor), $color, null);
+			}
+
+			Image::OutputPNG($PNG, $OutputPath, $FileRelPath);
 		}
 		
 		static function GetSwatchesAI($Appearance){

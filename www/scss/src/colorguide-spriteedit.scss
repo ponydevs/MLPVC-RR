@@ -1,0 +1,93 @@
+@import "vars";
+@import "colorguide_vars";
+
+@media all and (min-width: $Breakpoint){
+	#content section {
+		display: flex;
+		flex-flow: row nowrap;
+		align-items: center;
+
+		> * {
+			flex: 1 1 50%;
+		}
+
+		#svg-cont {
+			margin-right: 10px;
+		}
+	}
+}
+
+#content {
+	#svg-cont {
+		border: 1px dashed rgba(black,.5);
+		background: url('../../img/transparency.svg');
+		background-size: 16px;
+
+		svg {
+			max-height: 600px;
+			max-width: 100%;
+
+			.highlight {
+				fill: white;
+				animation: hl-color 1s linear infinite;
+
+				@keyframes hl-color {
+					from { fill: white }
+					50% { fill: red }
+					to { fill: white }
+				}
+			}
+		}
+	}
+
+	#form-cont {
+		display: flex;
+		flex-flow: column nowrap;
+
+		&:before {
+			content: "Color Bindings";
+			display: block;
+			font-size: 28px;
+			margin: 0 0 10px;
+			font-family: "Celestia", sans-serif;
+			font-weight: normal;
+		}
+
+		> div {
+			display: flex;
+			flex-flow: row nowrap;
+
+			> * {
+				height: 30px;
+				box-sizing: border-box;
+			}
+			.color-preview {
+				flex: 0 0 30px;
+				display: block;
+				border: 1px solid #000;
+				width: 30px;
+				box-sizing: border-box;
+				transition: background-color .2s linear, border .2s linear;
+
+				&.invalid { @include clrp-invalid(30px) }
+			}
+			select {
+				display: inline-block;
+				flex: 1 1 40%;
+			}
+			input {
+				display: inline-block;
+				flex: 1 1 60%;
+				font-family: $monospace;
+			}
+		}
+		> button {
+			flex: 1 1 auto;
+			display: block;
+			margin: 10px 0 0;
+			width: 100%;
+			font-size: 40px;
+			line-height: 60px;
+		}
+	}
+}

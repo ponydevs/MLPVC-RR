@@ -1,8 +1,5 @@
 <?php
 
-	$SpriteRelPath = '/img/cg/';
-	$SpritePath = APPATH.substr($SpriteRelPath,1);
-
 	if (POST_REQUEST || (isset($_GET['s']) && $data === "gettags")){
 		if (!Permission::Sufficient('staff')) Response::Fail();
 		if (POST_REQUEST) CSRFProtection::Protect();
@@ -254,7 +251,7 @@
 						Response::Done($response);
 					}
 					else {
-						CGUtils::ClearRenderedImage($Appearance['id']);
+						CGUtils::ClearRenderedImages($Appearance['id']);
 						if ($AppearancePage)
 							Response::Done();
 					}
@@ -277,7 +274,7 @@
 					if (file_exists($fpath))
 						unlink($fpath);
 
-					CGUtils::ClearRenderedImage($Appearance['id']);
+					CGUtils::ClearRenderedImages($Appearance['id']);
 
 					Response::Success('Appearance removed');
 				break;
@@ -300,7 +297,7 @@
 						$CGDb->where('groupid', $GroupID)->update('colorgroups',array('order' => $part));
 					}
 
-					CGUtils::ClearRenderedImage($Appearance['id']);
+					CGUtils::ClearRenderedImages($Appearance['id']);
 
 					Response::Done(array('cgs' => \CG\Appearances::GetColorsHTML($Appearance['id'], NOWRAP, !$AppearancePage, $AppearancePage)));
 				break;
@@ -313,7 +310,7 @@
 					switch ($action){
 						case "setsprite":
 							CGUtils::ProcessUploadedImage('sprite', $finalpath, array('image/png'), 100);
-							CGUtils::ClearRenderedImage($Appearance['id']);
+							CGUtils::ClearRenderedImages($Appearance['id']);
 						break;
 						case "delsprite":
 							if (empty(\CG\Appearances::GetSpriteURL($finalpath)))
@@ -326,13 +323,13 @@
 						break;
 					}
 
-					Response::Done(array("path" => SPRITE_REL_PATH."$fname?".filemtime($finalpath)));
+					Response::Done(array("path" => "/cg/v/{$fname}s.png?t=".filemtime($finalpath)));
 				break;
 				case "clearrendercache":
-					if (!CGUtils::ClearRenderedImage($Appearance['id']))
+					if (!CGUtils::ClearRenderedImages($Appearance['id']))
 						Response::Fail('Cache could not be cleared');
 
-					Response::Success('Cached image removed, the image will be re-generated on the next request');
+					Response::Success('Cached images removed, they will be re-generated on the next request');
 				break;
 				case "tag":
 				case "untag":
@@ -748,7 +745,7 @@
 				));
 				$response['update'] = \CG\Appearances::GetUpdatesHTML($AppearanceID);
 			}
-			CGUtils::ClearRenderedImage($AppearanceID);
+			CGUtils::ClearRenderedImages($AppearanceID);
 
 			if (isset($_POST['APPEARANCE_PAGE']))
 				$response['cm_img'] = "/cg/v/$AppearanceID.svg?t=".time();
@@ -823,9 +820,9 @@
 	);
 
 	$_match = array();
-	if (regex_match(new RegExp('^(?:appearance|v)/(?:.*?(\d+)|(\d+)(?:-.*)?)(?:\.(png|svg|json|gpl))?'),$data,$_match)){
-		$asFile = !empty($_match[3]);
-		$Appearance = $CGDb->where('id', (int)($_match[1]??$_match[2]))->getOne('appearances', $asFile ? 'id,label,cm_dir,ishuman' : null);
+	if (regex_match(new RegExp('^(?:appearance|v)/(?:.*?(\d+)|(\d+)(?:-.*)?)(?:(s)?\.(png|svg|json|gpl))?'),$data,$_match)){
+		$asFile = !empty($_match[4]);
+		$Appearance = $CGDb->where('id', intval($_match[1]??$_match[2], 10))->getOne('appearances', $asFile ? 'id,label,cm_dir,ishuman' : null);
 		if (empty($Appearance))
 			CoreUtils::NotFound();
 
@@ -839,8 +836,11 @@
 		}
 
 		if ($asFile){
-			switch ($_match[3]){
-				case 'png': CGUtils::RenderAppearancePNG($Appearance);
+			switch ($_match[4]){
+				case 'png':
+					if ($_match[3] === 's')
+						CGUtils::RenderSpritePNG($Appearance['id']);
+					CGUtils::RenderAppearancePNG($Appearance);
 				case 'svg': CGUtils::RenderCMDirectionSVG($Appearance['id'], $Appearance['cm_dir']);
 				case 'json': CGUtils::GetSwatchesAI($Appearance); 
 				case 'gpl': CGUtils::GetSwatchesInkscape($Appearance); 
@@ -869,12 +869,60 @@
 		}
 		CoreUtils::LoadPage($settings);
 	}
+	else if (regex_match(new RegExp('^sprite-colou?rs/(\d+)(?:-.*)?$'),$data,$_match)){
+		$Appearance = $CGDb->where('id', intval($_match[1], 10))->getOne('appearances', 'id,label');
+		if (empty($Appearance))
+			CoreUtils::NotFound();
+
+		$Map = CGUtils::GetSpriteImageMap($Appearance['id']);
+		if (empty($Map)){
+			CGUtils::RenderSpritePNG($Appearance['id'], STAY_ALIVE);
+			$Map = CGUtils::GetSpriteImageMap($Appearance['id']);
+			if (empty($Map))
+				CoreUtils::NotFound();
+		}
+		$ColorMap = \CG\Appearances::GetSpriteColorMap($Appearance['id']);
+
+		$ColorGroups = \CG\ColorGroups::Get($Appearance['id'], 'groupid,label');
+		$SortedColorGroups = array();
+		foreach ($ColorGroups as $cg)
+			$SortedColorGroups[$cg['groupid']] = $cg;
+
+		$GroupedColors = \CG\ColorGroups::GetColorsForEach($ColorGroups);
+		$Colors = array();
+		foreach ($GroupedColors as $cg){
+			foreach ($cg as $c){
+				$c['label'] = $SortedColorGroups[$c['groupid']]['label'].' | '.$c['label'];
+				$Colors[] = $c;
+			}
+		}
+
+		$IMGWidth = $Map['width'];
+		$IMGHeight = $Map['height'];
+		$SVG = "<svg version='1.1' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 $IMGWidth $IMGHeight' enable-background='new 0 0 $IMGWidth $IMGHeight' xml:space='preserve' xmlns:data='http://example.com/data'>";
+		foreach ($Map['linedata'] as $line){
+			$hex = $ColorMap[$line['hex']];
+			if ($line['opacity'] !== 1)
+				$hex .= "' opacity='{$line['opacity']}";
+			$SVG .= "<rect x='{$line['x']}px' y='{$line['y']}px' width='{$line['width']}px' height='1px' fill='$hex' data:ph='{$line['hex']}'/>";
+		}
+		$SVG .= '</svg>';
+
+		$SafeLabel = \CG\Appearances::GetSafeLabel($Appearance);
+		CoreUtils::FixPath("$CGPath/sprite-{$color}s/{$Appearance['id']}-$SafeLabel");
+
+		CoreUtils::LoadPage(array(
+			'view' => "$do-spriteedit",
+			'title' => "Sprite of {$Appearance['label']}",
+			'css' => "$do-spriteedit",
+			'js' => "$do-spriteedit",
+		));
+	}
 	else if ($data === 'full'){
 		$GuideOrder = !isset($_REQUEST['alphabetically']) && !$EQG;
 		if (!$GuideOrder)
 			$CGDb->orderBy('label','ASC');
 		$Appearances = \CG\Appearances::Get($EQG,null,'id,label');
-
 
 		if (isset($_REQUEST['ajax']))
 			Response::Done(array('html' => CGUtils::GetFullListHTML($Appearances, $GuideOrder, NOWRAP)));

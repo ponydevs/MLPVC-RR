@@ -179,9 +179,9 @@
 		 * @return string
 		 */
 		static function GetSpriteURL(int $AppearanceID, string $fallback = ''):string {
-			$fname = "$AppearanceID.png";
-			if (file_exists(SPRITE_PATH.$fname))
-				return SPRITE_REL_PATH."$fname?".filemtime(SPRITE_PATH.$fname);
+			$fpath = SPRITE_PATH."$AppearanceID.png";
+			if (file_exists($fpath))
+				return "/cg/v/{$AppearanceID}s.png?t=".filemtime($fpath);
 			return $fallback;
 		}
 
@@ -465,6 +465,15 @@ HTML;
 		 */
 		static function GetSafeLabel($Appearance){
 			return \CoreUtils::Trim(regex_replace(new \RegExp('-+'),'-',regex_replace(new \RegExp('[^A-Za-z\d\-]'),'-',$Appearance['label'])),'-');
+		}
+
+		static function GetSpriteColorMap($AppearanceID){
+			global $Database;
+			$ColorMapData = $Database->where('ponyid', $AppearanceID)->get('cg_sprite_colormap', null, 'placeholder,actual');
+			$ColorMap = array();
+			foreach ($ColorMapData as $row)
+				$ColorMap[\CGUtils::Int2Hex($row['placeholder'])] = $row['actual'];
+			return $ColorMap;
 		}
 
 		static function ValidateAppearancePageID(){

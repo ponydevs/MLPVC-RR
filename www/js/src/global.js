@@ -461,6 +461,12 @@
 		return '#'+match[0]+match[0]+match[1]+match[1]+match[2]+match[2];
 	};
 
+	// http://stackoverflow.com/questions/11867545#comment52204960_11868398
+	$.yiq = hex => {
+		const rgb = $.hex2rgb(hex);
+	    return ((rgb.r*299)+(rgb.g*587)+(rgb.b*114))/1000;
+	};
+
 	$.fn.toggleHtml = function(contentArray){
 		return this.html(contentArray[$.rangeLimit(contentArray.indexOf(this.html())+1, true, contentArray.length-1)]);
 	};
@@ -784,7 +790,7 @@
 					url: requrl,
 					dataType: 'text',
 					success: function(data){
-						data = data.replace(/url\((['"])?\.\.\//g,'url($1/');
+						data = data.replace(/url\((['"])?(?:\.\.\/)+/g,'url($1/');
 						$head.append($.mk('style').attr('href',requrl).text(data));
 						console.log('%c#%d (%s)', 'color:green', item, requrl);
 					},

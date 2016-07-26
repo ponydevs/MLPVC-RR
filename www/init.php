@@ -22,8 +22,7 @@
 	# string
 	define('OAUTH_REDIRECT_URI', '&redirect_uri='.urlencode(ABSPATH.'da-auth'));
 	define('OAUTH_AUTHORIZATION_URL', "https://www.deviantart.com/oauth2/authorize?response_type=code&scope=user+browse&client_id=".DA_CLIENT.OAUTH_REDIRECT_URI);
-	define('SPRITE_REL_PATH', '/img/cg/');
-	define('SPRITE_PATH', APPATH.ltrim(SPRITE_REL_PATH,'/'));
+	define('SPRITE_PATH', APPATH.'img/sprites/');
 	# boolean
 	define('AND_DIE', true); // CoreUtils::StatusCode
 	define('AS_ARRAY',true); // Episode::FormatTitle
@@ -39,6 +38,7 @@
 	define('RETURN_ARRANGED', true); // Posts::GetRequestsSection & Posts::GetReservationsSection
 	define('IS_REQUEST', true); // Posts::GetRequestsSection
 	define('WITH_GIT_INFO', true); // CoreUtils::GetFooter
+	define('RETURN_MAP', true); // CGUtils::RenderSpritePNG
 
 	// Color Guide constants \\
 	define('DEFAULT_SPRITE', '/img/blank-pixel.png'); // \CG\Appearances::GetSpriteURL
