@@ -11,7 +11,7 @@ DocReady.push(function ColorguideSpriteedit(){
 		AppearanceColorIterator = 1;
 
 	$.each(AppearanceColors, (_, color) => {
-		AppearanceColorObject[color.hex] = AppearanceColorIterator++;
+		AppearanceColorObject[color.label] = AppearanceColorIterator++;
 		$ColorSelect.append(`<option value="${color.hex}">${color.label}</option>`);
 	});
 	$ColorSelect.append(
@@ -58,9 +58,9 @@ DocReady.push(function ColorguideSpriteedit(){
 		);
 	});
 	$InputList.children('div').sort(function(a,b){
-		let at = AppearanceColorObject[$(a).children('select').children('option:selected').val()] || -1,
-			bt = AppearanceColorObject[$(b).children('select').children('option:selected').val()] || -1;
+		let at = AppearanceColorObject[$(a).children('select').children('option:selected').text()] || -1,
+			bt = AppearanceColorObject[$(b).children('select').children('option:selected').text()] || -1;
 
-		return at === bt ? 0 : (at > bt ? 1 : -1);
+		return at === bt ? 0 : (at < bt ? -1 : 1);
 	}).prependTo($InputList);
 });
