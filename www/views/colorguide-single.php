@@ -12,8 +12,10 @@
 			<button class='getswatch typcn typcn-brush teal'>Download swatch file</button>
 <?  if (Permission::Sufficient('staff')){ ?>
 			<button class='blue edit typcn typcn-pencil'>Edit metadata</button>
+<?php   if ($Appearance['id']){ ?>
 			<button class='red delete typcn typcn-trash'>Delete apperance</button>
-<?  } ?>
+<?php   }
+	} ?>
 		</div>
 
 <?  if (!empty($Changes)){ ?>

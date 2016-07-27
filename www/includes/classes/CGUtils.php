@@ -246,17 +246,24 @@
 			);
 		}
 
+		const
+			CLEAR_PALETTE = 'palette.png',
+			CLEAR_CMDIR = 'cmdir.svg',
+			CLEAR_SPRITE = 'sprite.png',
+			CLEAR_SPRITE_MAP = 'colormap.json.gz';
+
 		/**
 		 * Deletes rendered images of an appearance (forcing its re-generation)
 		 *
-		 * @param int  $AppearanceID
+		 * @param int   $AppearanceID
+		 * @param array $which
 		 *
 		 * @return bool
 		 */
-		static function ClearRenderedImages($AppearanceID){
+		static function ClearRenderedImages(int $AppearanceID, array $which = array(self::CLEAR_PALETTE,self::CLEAR_CMDIR,self::CLEAR_SPRITE,self::CLEAR_SPRITE_MAP)):bool {
 			$RenderedPath = APPATH."img/cg_render/$AppearanceID";
 			$success = array();
-			foreach (array('palette.png','cmdir.svg','sprite.png','colormap.json.gz') as $suffix){
+			foreach ($which as $suffix){
 				if (file_exists("$RenderedPath-$suffix"))
 					$success[] = unlink("$RenderedPath-$suffix");
 			}
@@ -519,10 +526,6 @@
 				$lastx = -2;
 				$lasty = -2;
 				foreach ($allcolors as $hex => $opacities){
-					$oldhex = $hex;
-					$index = $mapping++;
-					$hex = self::Int2Hex($index);
-					$colormap[$index] = $oldhex;
 					foreach ($opacities as $opacity => $coords){
 						foreach ($coords as $pos){
 							list($x, $y) = $pos;
@@ -556,14 +559,6 @@
 				foreach ($lines as $line)
 					$Output['linedata'][] = $line;
 
-				$Database->where('ponyid', $AppearanceID)->delete('cg_sprite_colormap');
-				foreach ($colormap as $placeholder => $actual)
-					$Database->insert('cg_sprite_colormap',array(
-						'ponyid' => $AppearanceID,
-						'placeholder' => $placeholder,
-						'actual' => $actual,
-					));
-
 				$Map = $Output;
 				file_put_contents($MapPath, gzcompress(JSON::Encode($Output), 9));
 			}
@@ -574,13 +569,7 @@
 
 			$SizeFactor = 2;
 			$PNG = Image::CreateTransparent($Map['width']*$SizeFactor, $Map['height']*$SizeFactor);
-			$ColorMap = array();
-			foreach ($Database->where('ponyid', $AppearanceID)->get('cg_sprite_colormap') as $row){
-				$placeholder = self::Int2Hex($row['placeholder']);
-				$ColorMap[$placeholder] = $row['actual'];
-			}
 			foreach ($Map['linedata'] as $line){
-				$line['hex'] = $ColorMap[$line['hex']];
 				$rgb = CoreUtils::Hex2Rgb($line['hex']);
 				$color = imagecolorallocatealpha($PNG, $rgb[0], $rgb[1], $rgb[2], 127-(int)round($line['opacity']*127));
 				Image::DrawSquare($PNG, $line['x']*$SizeFactor, $line['y']*$SizeFactor, array($line['width']*$SizeFactor, $SizeFactor), $color, null);

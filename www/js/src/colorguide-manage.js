@@ -112,7 +112,7 @@ DocReady.push(function ColorguideManage(){
 						$.mk('div').attr('class','align-center').append(
 							$.mk('button')
 								.attr('class', 'blue typcn typcn-image')
-								.text('Update rendered image')
+								.text('Purge cached images')
 								.on('click', function(e){
 									e.preventDefault();
 									

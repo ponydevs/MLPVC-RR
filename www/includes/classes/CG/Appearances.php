@@ -467,15 +467,6 @@ HTML;
 			return \CoreUtils::Trim(regex_replace(new \RegExp('-+'),'-',regex_replace(new \RegExp('[^A-Za-z\d\-]'),'-',$Appearance['label'])),'-');
 		}
 
-		static function GetSpriteColorMap($AppearanceID){
-			global $Database;
-			$ColorMapData = $Database->where('ponyid', $AppearanceID)->get('cg_sprite_colormap', null, 'placeholder,actual');
-			$ColorMap = array();
-			foreach ($ColorMapData as $row)
-				$ColorMap[\CGUtils::Int2Hex($row['placeholder'])] = $row['actual'];
-			return $ColorMap;
-		}
-
 		static function ValidateAppearancePageID(){
 			return (new \Input('APPEARANCE_PAGE','int',array(
 				\Input::IS_OPTIONAL => true,
