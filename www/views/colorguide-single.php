@@ -18,12 +18,8 @@
 	} ?>
 		</div>
 
-<?  if (!empty($Changes)){ ?>
-		<section>
-			<h2><span class='typcn typcn-warning'></span>List of major changes</h2>
-			<?=CGUtils::GetChangesHTML($Changes)?>
-		</section>
-<?  }
+<?  if (!empty($Changes))
+		echo str_replace('@',CGUtils::GetChangesHTML($Changes),CGUtils::CHANGES_SECTION);
 	if ($Appearance['id'] !== 0 && ($CGDb->where('ponyid',$Appearance['id'])->has('tagged') || Permission::Sufficient('staff'))){ ?>
 		<section id="tags">
 			<h2><span class='typcn typcn-tags'></span>Tags</h2>

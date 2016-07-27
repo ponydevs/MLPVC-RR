@@ -171,6 +171,13 @@
 			else return false;
 		}
 
+		const CHANGES_SECTION = <<<HTML
+	<section>
+		<h2><span class='typcn typcn-warning'></span>List of major changes</h2>
+		@
+	</section>
+HTML;
+
 		// Renders HTML of the list of changes
 		static function GetChangesHTML($Changes, $wrap = true, $showAppearance = false){
 			$seeInitiator = Permission::Sufficient('staff');

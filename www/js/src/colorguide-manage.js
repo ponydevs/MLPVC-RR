@@ -583,7 +583,10 @@ DocReady.push(function ColorguideManage(){
 	});
 
 	function CGEditorMaker(title, $group){
-		let dis = this, ponyID, groupID;
+		let dis = this,
+			$changes = $('#changes'),
+			ponyID,
+			groupID;
 		if (typeof $group !== 'undefined'){
 			if ($group instanceof jQuery){
 				groupID = $group.attr('id').substring(2);
@@ -631,6 +634,8 @@ DocReady.push(function ColorguideManage(){
 
 				if (AppearancePage)
 					data.APPEARANCE_PAGE = true;
+				if (!$changes.length)
+					data.FULL_CHANGES_SECTION = true;
 
 				$.Dialog.wait(false, 'Saving changes');
 
@@ -642,13 +647,8 @@ DocReady.push(function ColorguideManage(){
 						if (this.cg){
 							$group.children('[data-hasqtip]').qtip('destroy', true);
 							$group.html(this.cg);
-
-							if (this.update)
-								$group.parents('li').find('.update').html(this.update);
 						}
 						else if (this.cgs){
-							if (this.update)
-								$pony.find('.update').html(this.update);
 							$pony.find('ul.colors').html(this.cgs);
 						}
 						if (!AppearancePage && this.notes){
@@ -658,10 +658,21 @@ DocReady.push(function ColorguideManage(){
 							}catch(e){}
 							$notes.html(this.notes);
 						}
+						if (this.update){ // Guide Page
+							let $updateDiv = $pony.find('.update');
+							if ($updateDiv.length)
+								$updateDiv.replaceWith(this.update);
+							else $(this.update).insertAfter($pony.find('strong'));
+						}
+						if (this.changes){ // Appearance Page
+							if ($changes.length)
+								$changes.replaceWith(this.changes);
+							else $(this.changes).insertBefore($('#tags'));
+						}
 
 						window.tooltips();
 						ctxmenus();
-						if (this.update)
+						if (this.update || this.changes)
 							Time.Update();
 						let $ponycm = $('#pony-cm');
 						if (AppearancePage && $ponycm.length && this.cm_img){

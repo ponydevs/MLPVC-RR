@@ -751,7 +751,13 @@
 					'ponyid' => $AppearanceID,
 					'reason' => $reason,
 				));
-				$response['update'] = \CG\Appearances::GetUpdatesHTML($AppearanceID);
+				if ($AppearancePage){
+					$FullChangesSection = isset($_POST['FULL_CHANGES_SECTION']);
+					$response['changes'] = CGUtils::GetChangesHTML(\CG\Updates::Get($AppearanceID), $FullChangesSection);
+					if ($FullChangesSection)
+						$response['changes'] = str_replace('@',$response['changes'],CGUtils::CHANGES_SECTION);
+				}
+				else $response['update'] = \CG\Appearances::GetUpdatesHTML($AppearanceID);
 			}
 			CGUtils::ClearRenderedImages($AppearanceID, array(CGUtils::CLEAR_PALETTE));
 
