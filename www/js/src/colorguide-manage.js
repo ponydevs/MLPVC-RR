@@ -1055,12 +1055,12 @@ DocReady.push(function ColorguideManage(){
 				$li = $content.children('[id^=p]');
 			let ponyID = $li.attr('id').substring(1);
 			(($this, ponyID) => {
-				let imgsrc, hasSprite,
+				let imgsrc = $this.find('img').attr('src'), hasSprite,
 					updateSprite = function(){
 						imgsrc = $this.find('img').attr('src');
 						hasSprite = imgsrc.indexOf('blank-pixel.png') === -1;
 						$this[hasSprite?'removeClass':'addClass']('nosprite');
-						$.ctxmenu.setDefault($this, hasSprite ? 1 : 3);
+						$.ctxmenu.setDefault($this, hasSprite ? 1 : 4);
 					};
 				$this.uploadZone({
 					requestKey: 'sprite',
@@ -1073,12 +1073,18 @@ DocReady.push(function ColorguideManage(){
 					updateSprite();
 				}).ctxmenu([
 					{text: 'Open image in new tab', icon: 'arrow-forward', click: function(){
+						if (imgsrc.indexOf('blank-pixel.png') !== -1)
+							return $.Dialog.fail('Open image in new tab','This appearance lacks a sprite image');
 						window.open($this.find('img').attr('src'),'_blank');
 					}},
 					{text: 'Copy image URL', icon: 'clipboard', click: function(){
+						if (imgsrc.indexOf('blank-pixel.png') !== -1)
+							return $.Dialog.fail('Copy image URL','This appearance lacks a sprite image');
 						$.copy($.toAbsoluteURL($this.find('img').attr('src')));
 					}},
 					{text: 'Check sprite colors', icon: 'adjust-contrast', click: function(){
+						if (imgsrc.indexOf('blank-pixel.png') !== -1)
+							return $.Dialog.fail('Check sprite colors','This appearance lacks a sprite image');
 						$.Navigation.visit('/cg/sprite/'+ponyID);
 					}},
 					{text: 'Upload new sprite', icon: 'upload', click: function(){
@@ -1107,6 +1113,8 @@ DocReady.push(function ColorguideManage(){
 						});
 					}},
 					{text: 'Remove sprite image', icon: 'times', click: function(){
+						if (imgsrc.indexOf('blank-pixel.png') !== -1)
+							return $.Dialog.fail('Remove sprite image','This appearance lacks a sprite image');
 						$.Dialog.confirm('Remove sprite image','Are you sure you want to <strong>permanently delete</strong> the sprite image from the server?',['Wipe it','Nope'], function(sure){
 							if (!sure) return;
 
