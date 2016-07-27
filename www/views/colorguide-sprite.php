@@ -10,6 +10,5 @@
 <?php
 	CoreUtils::ExportVars(array(
 		'AppearanceColors' => $Colors,
-		'HEX_COLOR_REGEX' =>  $HEX_COLOR_REGEX,
-		'SpriteColorMap' => $ColorMap,
+		'SpriteColorList' => $Map['colors'],
 	));

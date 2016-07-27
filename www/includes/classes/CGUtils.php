@@ -524,7 +524,13 @@
 				$lines = array();
 				$lastx = -2;
 				$lasty = -2;
+				$_colorsAssoc = array();
+				$colorno = 0;
 				foreach ($allcolors as $hex => $opacities){
+					if (!isset($_colorsAssoc[$hex])){
+						$_colorsAssoc[$hex] = $colorno;
+						$colorno++;
+					}
 					foreach ($opacities as $opacity => $coords){
 						foreach ($coords as $pos){
 							list($x, $y) = $pos;
@@ -536,7 +542,7 @@
 									'x' => $x,
 									'y' => $y,
 									'width' => 1,
-									'hex' => $hex,
+									'colorid' => $_colorsAssoc[$hex],
 									'opacity' => $opacity,
 								);
 							}
@@ -554,6 +560,7 @@
 					'width' => $PNGWidth,
 					'height' => $PNGHeight,
 					'linedata' => array(),
+					'colors' => array_flip($_colorsAssoc),
 				);
 				foreach ($lines as $line)
 					$Output['linedata'][] = $line;
@@ -569,7 +576,7 @@
 			$SizeFactor = 2;
 			$PNG = Image::CreateTransparent($Map['width']*$SizeFactor, $Map['height']*$SizeFactor);
 			foreach ($Map['linedata'] as $line){
-				$rgb = CoreUtils::Hex2Rgb($line['hex']);
+				$rgb = CoreUtils::Hex2Rgb($Map['colors'][$line['colorid']]);
 				$color = imagecolorallocatealpha($PNG, $rgb[0], $rgb[1], $rgb[2], 127-(int)round($line['opacity']*127));
 				Image::DrawSquare($PNG, $line['x']*$SizeFactor, $line['y']*$SizeFactor, array($line['width']*$SizeFactor, $SizeFactor), $color, null);
 			}

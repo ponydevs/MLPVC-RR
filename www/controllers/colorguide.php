@@ -901,12 +901,12 @@
 		$IMGHeight = $Map['height'];
 		$MatrixRegular =   '1 0 0 0 0 0  1 0 0 0 0 0  1 0 0 0 0 0 1 0';
 		$MatrixInverted = '-1 0 0 0 1 0 -1 0 0 1 0 0 -1 0 1 0 0 0 1 0';
-		$SVG = "<svg version='1.1' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 $IMGWidth $IMGHeight' enable-background='new 0 0 $IMGWidth $IMGHeight' xml:space='preserve' xmlns:data='http://example.com/data'>";
+		$SVG = "<svg version='1.1' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 $IMGWidth $IMGHeight' enable-background='new 0 0 $IMGWidth $IMGHeight' xml:space='preserve'>";
 		foreach ($Map['linedata'] as $line){
-			$hex = $line['hex'];
+			$hex = $Map['colors'][$line['colorid']];
 			if ($line['opacity'] !== 1)
 				$hex .= "' opacity='{$line['opacity']}";
-			$SVG .= "<rect x='{$line['x']}px' y='{$line['y']}px' width='{$line['width']}px' height='1px' fill='$hex' data:ph='{$line['hex']}'/>";
+			$SVG .= "<rect x='{$line['x']}px' y='{$line['y']}px' width='{$line['width']}px' height='1px' fill='$hex'/>";
 		}
 		$SVG .= '</svg>';
 

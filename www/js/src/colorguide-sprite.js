@@ -2,15 +2,16 @@
 DocReady.push(function ColorguideSpriteedit(){
 	'use strict';
 
-	let Map = window.SpriteColorMap,
-		AppearanceColors = window.AppearanceColors,
-		HEX_COLOR_REGEX = window.HEX_COLOR_REGEX,
+	let AppearanceColors = window.AppearanceColors,
+		SpriteColorList = window.SpriteColorList,
 		$InputList = $('#input-cont').empty(),
 		$ColorSelect = $.mk('select').disable().append('<option value="" style="display:none">(unrecognized color)</option>'),
-		$SVG = $('#svg-cont').children();
+		$SVG = $('#svg-cont').children(),
+		AppearanceColorObject = {},
+		AppearanceColorIterator = 1;
 
-	$.each(AppearanceColors, function(_, color){
-	    let bgcolor = ($.yiq(color.hex) >= 128) ? 'black' : 'white';
+	$.each(AppearanceColors, (_, color) => {
+		AppearanceColorObject[color.hex] = AppearanceColorIterator++;
 		$ColorSelect.append(`<option value="${color.hex}">${color.label}</option>`);
 	});
 	$ColorSelect.append(
@@ -31,7 +32,7 @@ DocReady.push(function ColorguideSpriteedit(){
 		$rect.addClass($.yiq($rect.attr('fill')) > (0xFF/2) ? 'bright' : 'dark');
 	});
 
-	$.each(Map, function(placeholder, actual){
+	$.each(SpriteColorList, function(index, actual){
 		let $select = $ColorSelect.clone();
 		$select.find(`option[value="${actual}"]`).first().attr('selected', true);
 		$select.on('change',function(){
@@ -41,7 +42,7 @@ DocReady.push(function ColorguideSpriteedit(){
 				$this.siblings('input').val(val).triggerHandler('change', [true]);
 		});
 		$InputList.append(
-			$.mk('div').attr('data-ph', placeholder).append(
+			$.mk('div').append(
 				`<span class="color-preview" style="background-color:${actual}"></span>`,
 				$select,
 				$.mk('input').attr({
@@ -50,20 +51,16 @@ DocReady.push(function ColorguideSpriteedit(){
 					readonly: true,
 				})
 			).on('mouseenter',function(){
-				let $rect = $SVG.find('rect').filter(function(){
-					let attrval = this.getAttribute('data:ph');
-					return typeof attrval === 'string' && attrval === placeholder;
-				});
-				$rect.addClass('highlight');
+				$SVG.find(`rect[fill="${actual}"]`).addClass('highlight');
 			}).on('mouseleave',function(){
 				$SVG.find('.highlight').removeClass('highlight');
 			})
 		);
 	});
 	$InputList.children('div').sort(function(a,b){
-		let at = $(a).children('select').children('option:selected').text() || '',
-			bt = $(b).children('select').children('option:selected').text() || '';
+		let at = AppearanceColorObject[$(a).children('select').children('option:selected').val()] || -1,
+			bt = AppearanceColorObject[$(b).children('select').children('option:selected').val()] || -1;
 
-		return at.localeCompare(bt);
+		return at === bt ? 0 : (at > bt ? 1 : -1);
 	}).prependTo($InputList);
 });
