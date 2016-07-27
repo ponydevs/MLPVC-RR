@@ -5,9 +5,18 @@ DocReady.push(function ColorguideManage(){
 		HEX_COLOR_PATTERN = window.HEX_COLOR_PATTERN, isWebkit = 'WebkitAppearance' in document.documentElement.style,
 		EQG = window.EQG, EQGRq = EQG?'?eqg':'', AppearancePage = !!window.AppearancePage,
 		ColorTextParseError = function(line, lineNumber, matches){
+			let missing = [];
+			if (!matches || !matches[1])
+				missing.push('HEX color');
+			if (!matches || !matches[2])
+				missing.push('color name');
 			this.message = `Parse error on line ${lineNumber} (shown below)
-				<pre style="font-size:16px"><code>${line.replace(/</g,'&lt;')}</code></pre>`
-				+(matches && !matches[2] ? 'The color name is missing from this line.' : 'Please check for any errors before continuing.');
+				<pre style="font-size:16px"><code>${line.replace(/</g,'&lt;')}</code></pre>
+				${
+					missing.length
+					? `The ${missing.join(' and ')} is missing from this line.`
+					: 'Please check for any typos before continuing.'
+				}`;
 			this.lineNumber = lineNumber;
 		};
 
@@ -422,7 +431,7 @@ DocReady.push(function ColorguideManage(){
 				$div.find('.clri').focus();
 			}
 		}),
-		parseColorsText = function(text){
+		parseColorsText = function(text, strict){
 			let colors = [],
 				lines = text.split('\n');
 
@@ -433,10 +442,10 @@ DocReady.push(function ColorguideManage(){
 				if (/^(\/\/.*)?$/.test(line))
 					continue;
 
-				let matches = line.trim().match(/^#([a-f\d]{6}|[a-f\d]{3})(?:\s*([a-z\d][ -~]{2,29}))?$/i);
+				let matches = line.trim().match(/^#?([a-f\d]{6}|[a-f\d]{3})?(?:\s*([a-z\d][ -~]{2,29}))?$/i);
 				// Valid line
-				if (matches && matches[2]){
-					colors.push({ hex: $.hexpand(matches[1]), label: matches[2] });
+				if (matches && matches[2] && (strict ? matches[1] : true)){
+					colors.push({ hex: matches[1] ?  $.hexpand(matches[1]) : undefined, label: matches[2] });
 					continue;
 				}
 
@@ -508,7 +517,7 @@ DocReady.push(function ColorguideManage(){
 			scroll: false,
 			animation: 150,
 		}));
-	}).on('save-color-inputs', function(_, storeState){
+	}).on('save-color-inputs', function(_, storeState, strict){
 		let $form = $(this),
 			$colors = $form.children('.clrs'),
 			is_ace = $colors.hasClass('ace_editor'),
@@ -516,7 +525,7 @@ DocReady.push(function ColorguideManage(){
 		if (is_ace){
 			// Saving
 			editor =  $colors.data('editor');
-			$form.data('color_values',parseColorsText(editor.getValue()));
+			$form.data('color_values',parseColorsText(editor.getValue(), storeState || strict));
 			if (storeState)
 				return;
 
@@ -531,13 +540,14 @@ DocReady.push(function ColorguideManage(){
 			$form.find('.clr').each(function(){
 				let $row = $(this),
 					$ci = $row.children('.clri'),
-					val = $.hexpand($ci.val()).toUpperCase();
+					val = $ci.val(),
+					valid = HEX_COLOR_PATTERN.test(val);
 
-				if (!HEX_COLOR_PATTERN.test(val))
+				if (!valid && (val.length || strict))
 					return;
 
 				data.push({
-					hex: val.replace(HEX_COLOR_PATTERN,'#$1'),
+					hex: valid ? $.hexpand(val).toUpperCase().replace(HEX_COLOR_PATTERN,'#$1') : undefined,
 					label: $row.children('.clrl').val(),
 				});
 			});
@@ -554,7 +564,7 @@ DocReady.push(function ColorguideManage(){
 				let line = [];
 
 				if (typeof color === 'object'){
-					line.push(color.hex ? color.hex : '#_____');
+					line.push(color.hex ? color.hex : '#');
 					if (color.label)
 						line.push(color.label);
 				}
@@ -608,7 +618,7 @@ DocReady.push(function ColorguideManage(){
 				e.preventDefault();
 
 				try {
-					$form.trigger('save-color-inputs', [true]);
+					$form.trigger('save-color-inputs', [true, true]);
 				}
 				catch (error){
 					if (!(error instanceof ColorTextParseError))
@@ -624,7 +634,7 @@ DocReady.push(function ColorguideManage(){
 				let data = { label: $label.val(), Colors: $form.data('color_values') };
 				if (!editing) data.ponyid = ponyID;
 				if (data.Colors.length === 0)
-					return $.Dialog.fail(false, 'You need to have at least 1 valid color');
+					return $.Dialog.fail(false, 'You need to add at least one valid color');
 				data.Colors = JSON.stringify(data.Colors);
 
 				if ($major.is(':checked')){
