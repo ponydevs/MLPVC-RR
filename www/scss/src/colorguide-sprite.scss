@@ -26,68 +26,80 @@
 		svg {
 			max-height: 600px;
 			max-width: 100%;
-
-			.highlight {
-				fill: white;
-				animation: hl-color 1s linear infinite;
-
-				@keyframes hl-color {
-					from { fill: white }
-					50% { fill: red }
-					to { fill: white }
-				}
-			}
 		}
 	}
 
-	#form-cont {
-		display: flex;
-		flex-flow: column nowrap;
+	#input-cont {
+		max-height: 600px;
+		overflow-y: auto;
 
 		&:before {
 			content: "Color Bindings";
 			display: block;
 			font-size: 28px;
-			margin: 0 0 10px;
+			padding: 5px 0 10px;
+			text-align:center;
 			font-family: "Celestia", sans-serif;
 			font-weight: normal;
+			color: #fff;
+			background: $HeaderBlue url('../../img/grid-w-.1.svg') repeat;
+			background-size: 4px;
+			border: 1px solid black;
+			border-bottom: 0;
 		}
 
 		> div {
 			display: flex;
 			flex-flow: row nowrap;
+			color: black;
+			border: 1px solid currentColor;
+			transition: color .2s linear, border-color .2s linear, background-color .2s linear;
+
+			&:not(:last-child) {
+				border-bottom: 0;
+			}
+
+			&:hover {
+				color: $NOrange;
+
+				select, input {
+					background-color: $NOrangeBG;
+				}
+			}
 
 			> * {
 				height: 30px;
 				box-sizing: border-box;
+				border: 0;
+
+				&:not(:last-child){
+					border-right: 1px solid currentColor;
+				}
 			}
 			.color-preview {
 				flex: 0 0 30px;
 				display: block;
-				border: 1px solid #000;
 				width: 30px;
 				box-sizing: border-box;
-				transition: background-color .2s linear, border .2s linear;
 
 				&.invalid { @include clrp-invalid(30px) }
 			}
+			select, input {
+				display: inline-block;
+				flex: 1 1 50%;
+				padding: 5px 7px;
+			}
 			select {
 				display: inline-block;
-				flex: 1 1 40%;
+				flex: 1 1 50%;
+				opacity: 1 !important;
+				cursor: not-allowed;
+				-webkit-appearance: none;
+				-moz-appearance: none;
 			}
 			input {
-				display: inline-block;
-				flex: 1 1 60%;
 				font-family: $monospace;
 			}
-		}
-		> button {
-			flex: 1 1 auto;
-			display: block;
-			margin: 10px 0 0;
-			width: 100%;
-			font-size: 40px;
-			line-height: 60px;
 		}
 	}
 }

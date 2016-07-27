@@ -1078,6 +1078,9 @@ DocReady.push(function ColorguideManage(){
 					{text: 'Copy image URL', icon: 'clipboard', click: function(){
 						$.copy($.toAbsoluteURL($this.find('img').attr('src')));
 					}},
+					{text: 'Check sprite colors', icon: 'adjust-contrast', click: function(){
+						$.Navigation.visit('/cg/sprite/'+ponyID);
+					}},
 					{text: 'Upload new sprite', icon: 'upload', click: function(){
 						let title = 'Upload sprite image',
 							$uploadInput = $this.find('input[type="file"]');

@@ -869,7 +869,7 @@
 		}
 		CoreUtils::LoadPage($settings);
 	}
-	else if (regex_match(new RegExp('^sprite-colou?rs/(\d+)(?:-.*)?$'),$data,$_match)){
+	else if (regex_match(new RegExp('^sprite(?:-colou?rs)?/(\d+)(?:-.*)?$'),$data,$_match)){
 		$Appearance = $CGDb->where('id', intval($_match[1], 10))->getOne('appearances', 'id,label');
 		if (empty($Appearance))
 			CoreUtils::NotFound();
@@ -899,7 +899,25 @@
 
 		$IMGWidth = $Map['width'];
 		$IMGHeight = $Map['height'];
-		$SVG = "<svg version='1.1' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 $IMGWidth $IMGHeight' enable-background='new 0 0 $IMGWidth $IMGHeight' xml:space='preserve' xmlns:data='http://example.com/data'>";
+		$MatrixRegular =   '1 0 0 0 0 0  1 0 0 0 0 0  1 0 0 0 0 0 1 0';
+		$MatrixInverted = '-1 0 0 0 1 0 -1 0 0 1 0 0 -1 0 1 0 0 0 1 0';
+		$SVG = <<<SVG
+<svg version='1.1' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 $IMGWidth $IMGHeight' enable-background='new 0 0 $IMGWidth $IMGHeight' xml:space='preserve' xmlns:data='http://example.com/data'>
+	<defs>
+		<filter id='invert'>
+			<feColorMatrix in='SourceGraphic' type='matrix' values='-1 0 0 0 1 0 -1 0 0 1 0 0 -1 0 1 0 0 0 1 0'>
+			<animate
+			    attributeName="values" 
+			    from="$MatrixRegular" 
+			    to="$MatrixRegular"
+			    dur=".75s"
+				values="$MatrixRegular; $MatrixRegular; $MatrixInverted; $MatrixRegular; $MatrixRegular"
+				keyTimes="0; 0.1; 0.5; 0.9; 1"
+			    repeatCount="indefinite" />
+			</feColorMatrix>
+		</filter>
+	</defs>
+SVG;
 		foreach ($Map['linedata'] as $line){
 			$hex = $ColorMap[$line['hex']];
 			if ($line['opacity'] !== 1)
@@ -909,13 +927,13 @@
 		$SVG .= '</svg>';
 
 		$SafeLabel = \CG\Appearances::GetSafeLabel($Appearance);
-		CoreUtils::FixPath("$CGPath/sprite-{$color}s/{$Appearance['id']}-$SafeLabel");
+		CoreUtils::FixPath("$CGPath/sprite/{$Appearance['id']}-$SafeLabel");
 
 		CoreUtils::LoadPage(array(
-			'view' => "$do-spriteedit",
+			'view' => "$do-sprite",
 			'title' => "Sprite of {$Appearance['label']}",
-			'css' => "$do-spriteedit",
-			'js' => "$do-spriteedit",
+			'css' => "$do-sprite",
+			'js' => "$do-sprite",
 		));
 	}
 	else if ($data === 'full'){
