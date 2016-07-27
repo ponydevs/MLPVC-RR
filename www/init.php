@@ -83,7 +83,7 @@
 	$REWRITE_REGEX = new RegExp('^/([\w\-]+)(?:/([\w\.\-]+(?:/[\w\.\-]+)*)?)?/?[^\w\.\-]*(?:\.php)?$');
 
 	// Color Guide regular expression \\
-	$EQG_URL_PATTERN = new RegExp('^eqg/');
+	$EQG_URL_PATTERN = new RegExp('^eqg/?');
 	# Tags
 	define('TAG_NAME_PATTERN', '^[a-z\d ().\-\']{3,30}$');
 	$TAG_NAME_REGEX = new RegExp(TAG_NAME_PATTERN,'u');
