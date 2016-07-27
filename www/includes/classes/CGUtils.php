@@ -250,7 +250,7 @@
 			CLEAR_PALETTE = 'palette.png',
 			CLEAR_CMDIR = 'cmdir.svg',
 			CLEAR_SPRITE = 'sprite.png',
-			CLEAR_SPRITE_MAP = 'colormap.json.gz';
+			CLEAR_SPRITE_MAP = 'linedata.json.gz';
 
 		/**
 		 * Deletes rendered images of an appearance (forcing its re-generation)
@@ -476,7 +476,7 @@
 		}
 
 		static function GetSpriteImageMap($AppearanceID){
-			$MapPath = APPATH."img/cg_render/$AppearanceID-colormap.json.gz";
+			$MapPath = APPATH."img/cg_render/$AppearanceID-linedata.json.gz";
 			if (!file_exists($MapPath))
 				return null;
 			return JSON::Decode(gzuncompress(file_get_contents($MapPath)));
@@ -490,7 +490,7 @@
 			if (file_exists($OutputPath))
 				Image::OutputPNG(null,$OutputPath,$FileRelPath);
 
-			$MapPath = APPATH."img/cg_render/$AppearanceID-colormap.json.gz";
+			$MapPath = APPATH."img/cg_render/$AppearanceID-linedata.json.gz";
 			if (!file_exists($MapPath)){
 				$PNGPath = SPRITE_PATH."$AppearanceID.png";
 				if (!file_exists($PNGPath))
@@ -518,7 +518,6 @@
 					$allcolors[$hex][$opacity][] = array($x,$y);
 				}
 
-				$colormap = array();
 				$mapping = 0;
 
 				$currLine = null;
