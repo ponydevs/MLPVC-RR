@@ -32,6 +32,23 @@
 		svg {
 			max-height: 600px;
 			max-width: 100%;
+
+			.highlight {
+				&.bright {
+					animation: hl-bright .75s linear infinite;
+
+					@keyframes hl-bright {
+						50% { fill: #000 }
+					}
+				}
+				&.dark {
+					animation: hl-dark .75s linear infinite;
+
+					@keyframes hl-dark {
+						50% { fill: #FFF }
+					}
+				}
+			}
 		}
 	}
 

@@ -26,6 +26,11 @@ DocReady.push(function ColorguideSpriteedit(){
 		</optgroup>`
 	);
 
+	$SVG.find('rect').each(function(){
+		let $rect = $(this);
+		$rect.addClass($.yiq($rect.attr('fill')) > (0xFF/2) ? 'bright' : 'dark');
+	});
+
 	$.each(Map, function(placeholder, actual){
 		let $select = $ColorSelect.clone();
 		$select.find(`option[value="${actual}"]`).first().attr('selected', true);
@@ -49,9 +54,9 @@ DocReady.push(function ColorguideSpriteedit(){
 					let attrval = this.getAttribute('data:ph');
 					return typeof attrval === 'string' && attrval === placeholder;
 				});
-				$rect.addClass('highlight').attr('filter','url(#invert)');
+				$rect.addClass('highlight');
 			}).on('mouseleave',function(){
-				$SVG.find('.highlight').removeClass('highlight').attr('filter','');
+				$SVG.find('.highlight').removeClass('highlight');
 			})
 		);
 	});

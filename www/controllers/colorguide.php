@@ -901,23 +901,7 @@
 		$IMGHeight = $Map['height'];
 		$MatrixRegular =   '1 0 0 0 0 0  1 0 0 0 0 0  1 0 0 0 0 0 1 0';
 		$MatrixInverted = '-1 0 0 0 1 0 -1 0 0 1 0 0 -1 0 1 0 0 0 1 0';
-		$SVG = <<<SVG
-<svg version='1.1' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 $IMGWidth $IMGHeight' enable-background='new 0 0 $IMGWidth $IMGHeight' xml:space='preserve' xmlns:data='http://example.com/data'>
-	<defs>
-		<filter id='invert'>
-			<feColorMatrix in='SourceGraphic' type='matrix' values='-1 0 0 0 1 0 -1 0 0 1 0 0 -1 0 1 0 0 0 1 0'>
-			<animate
-			    attributeName="values" 
-			    from="$MatrixRegular" 
-			    to="$MatrixRegular"
-			    dur=".75s"
-				values="$MatrixRegular; $MatrixRegular; $MatrixInverted; $MatrixRegular; $MatrixRegular"
-				keyTimes="0; 0.1; 0.5; 0.9; 1"
-			    repeatCount="indefinite" />
-			</feColorMatrix>
-		</filter>
-	</defs>
-SVG;
+		$SVG = "<svg version='1.1' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 $IMGWidth $IMGHeight' enable-background='new 0 0 $IMGWidth $IMGHeight' xml:space='preserve' xmlns:data='http://example.com/data'>";
 		foreach ($Map['linedata'] as $line){
 			$hex = $ColorMap[$line['hex']];
 			if ($line['opacity'] !== 1)
