@@ -8,11 +8,17 @@
 		align-items: center;
 
 		> * {
+			max-height: 602px;
 			flex: 1 1 50%;
+			box-sizing: border-box;
 		}
 
 		#svg-cont {
 			margin-right: 10px;
+		}
+
+		#input-cont {
+			overflow-y: auto;
 		}
 	}
 }
@@ -30,9 +36,6 @@
 	}
 
 	#input-cont {
-		max-height: 600px;
-		overflow-y: auto;
-
 		&:before {
 			content: "Color Bindings";
 			display: block;
