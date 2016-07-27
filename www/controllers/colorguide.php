@@ -267,8 +267,15 @@
 					if ($Appearance['id'] === 0)
 						Response::Fail('This appearance cannot be deleted');
 
+					$Tagged = \CG\Tags::GetFor($Appearance['id'], null, true, false);
+
 					if (!$CGDb->where('id', $Appearance['id'])->delete('appearances'))
 						Response::DBError();
+
+					if (!empty($Tagged))
+						foreach($Tagged as $tag){
+							\CG\Tags::UpdateUses($tag['tid']);
+						};
 
 					$fpath = APPATH."img/cg/{$Appearance['id']}.png";
 					if (file_exists($fpath))

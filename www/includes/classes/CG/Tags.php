@@ -99,14 +99,15 @@
 		 * @param int  $TagID
 		 * @param bool $returnCount
 		 *
-		 * @return bool|int
+		 * @return array
 		 */
-		static function UpdateUses($TagID, $returnCount = false){
+		static function UpdateUses(int $TagID, bool $returnCount = false):array {
 			global $CGDb;
 
 			$Tagged = $CGDb->where('tid', $TagID)->count('tagged');
 			$return = array('status' => $CGDb->where('tid', $TagID)->update('tags',array('uses' => $Tagged)));
-			if ($returnCount) $return['count'] = $Tagged;
+			if ($returnCount)
+				$return['count'] = $Tagged;
 			return $return;
 		}
 
