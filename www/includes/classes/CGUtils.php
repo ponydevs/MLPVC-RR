@@ -519,8 +519,8 @@ HTML;
 					$rgb = imagecolorat($PNG, $x, $y);
 					$colors = imagecolorsforindex($PNG, $rgb);
 					$hex = strtoupper('#'.CoreUtils::Pad(dechex($colors['red'])).CoreUtils::Pad(dechex($colors['green'])).CoreUtils::Pad(dechex($colors['blue'])));
-					$opacity = floatval(number_format(1-($colors['alpha']/127), 2, '.', ''));
-					if ($opacity == 0)
+					$opacity = $colors['alpha'] ?? 0;
+					if ($opacity === 127)
 						continue;
 					$allcolors[$hex][$opacity][] = array($x,$y);
 				}
@@ -584,7 +584,7 @@ HTML;
 			$PNG = Image::CreateTransparent($Map['width']*$SizeFactor, $Map['height']*$SizeFactor);
 			foreach ($Map['linedata'] as $line){
 				$rgb = CoreUtils::Hex2Rgb($Map['colors'][$line['colorid']]);
-				$color = imagecolorallocatealpha($PNG, $rgb[0], $rgb[1], $rgb[2], 127-(int)round($line['opacity']*127));
+				$color = imagecolorallocatealpha($PNG, $rgb[0], $rgb[1], $rgb[2], $line['opacity']);
 				Image::DrawSquare($PNG, $line['x']*$SizeFactor, $line['y']*$SizeFactor, array($line['width']*$SizeFactor, $SizeFactor), $color, null);
 			}
 
