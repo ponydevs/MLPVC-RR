@@ -95,7 +95,7 @@
 						updateHandler = $this.data('dyntime-beforeupdate');
 
 					if (typeof updateHandler === 'function'){
-						let result = updateHandler(this.Difference(Now.toDate(), Timestamp.toDate()));
+						let result = updateHandler(Time.Difference(Now.toDate(), Timestamp.toDate()));
 						if (result === false) return;
 					}
 
