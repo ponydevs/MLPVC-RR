@@ -934,14 +934,22 @@
 		$IMGHeight = $Map['height'];
 		$MatrixRegular =   '1 0 0 0 0 0  1 0 0 0 0 0  1 0 0 0 0 0 1 0';
 		$MatrixInverted = '-1 0 0 0 1 0 -1 0 0 1 0 0 -1 0 1 0 0 0 1 0';
-		$SVG = "<svg version='1.1' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 $IMGWidth $IMGHeight' enable-background='new 0 0 $IMGWidth $IMGHeight' xml:space='preserve'>";
+		$strokes = array();
 		foreach ($Map['linedata'] as $line){
 			$hex = $Map['colors'][$line['colorid']];
 			if ($line['opacity'] !== 0){
 				$opacity = floatval(number_format((127-$line['opacity'])/127, 2, '.', ''));
 				$hex .= "' opacity='{$opacity}";
 			}
-			$SVG .= "<rect x='{$line['x']}px' y='{$line['y']}px' width='{$line['width']}px' height='1px' fill='$hex'/>";
+			$strokes[$hex][] = "M{$line['x']} {$line['y']} l{$line['width']} 0Z";
+		}
+		$SVG = "<svg version='1.1' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 $IMGWidth $IMGHeight' enable-background='new 0 0 $IMGWidth $IMGHeight' xml:space='preserve'>";
+		foreach ($strokes as $hex => $defs){
+			$d = '';
+			foreach ($defs as $def)
+				$d .= "$def ";
+			$d = rtrim($d);
+			$SVG .= "<path stroke='$hex' d='$d'/>";
 		}
 		$SVG .= '</svg>';
 

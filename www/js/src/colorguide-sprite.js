@@ -27,9 +27,9 @@ DocReady.push(function ColorguideSpriteedit(){
 		AppearanceColorObject[color.label] = AppearanceColorIterator++;
 	});
 
-	$SVG.find('rect').each(function(){
+	$SVG.children().each(function(){
 		let $rect = $(this);
-		$rect.addClass($.yiq($rect.attr('fill')) > (0xFF/2) ? 'bright' : 'dark');
+		$rect.addClass($.yiq($rect.attr('stroke')) > (0xFF/2) ? 'bright' : 'dark');
 	});
 
 	$.each(SpriteColorList, function(index, actual){
@@ -43,7 +43,7 @@ DocReady.push(function ColorguideSpriteedit(){
 				<td class="label"><ul>${labels.join('')}</ul></td>
 				<td class="color">${actual}</td>`
 			).on('mouseenter',function(){
-				$SVG.find(`rect[fill="${actual}"]`).addClass('highlight');
+				$SVG.children().filter(`[stroke="${actual}"]`).addClass('highlight');
 			}).on('mouseleave',function(){
 				$SVG.find('.highlight').removeClass('highlight');
 			})
