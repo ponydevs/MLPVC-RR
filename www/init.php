@@ -49,6 +49,7 @@
 	# Color Groups
 	define('NO_COLON', false);
 	define('OUTPUT_COLOR_NAMES', true);
+	define('FORCE_EXTRA_INFO', true);
 	# Notes
 	define('NOTE_TEXT_ONLY', false);
 	# Updates

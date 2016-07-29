@@ -892,14 +892,14 @@
 		if (empty($Map))
 			CoreUtils::NotFound();
 
-		$ColorGroups = \CG\ColorGroups::Get($Appearance['id'], 'groupid,label');
+		$ColorGroups = \CG\ColorGroups::Get($Appearance['id']);
 		$SortedColorGroups = array();
 		foreach ($ColorGroups as $cg)
 			$SortedColorGroups[$cg['groupid']] = $cg;
 
-		$GroupedColors = \CG\ColorGroups::GetColorsForEach($ColorGroups);
+		$AllColors = \CG\ColorGroups::GetColorsForEach($ColorGroups);
 		$Colors = array();
-		foreach ($GroupedColors as $cg){
+		foreach ($AllColors as $cg){
 			foreach ($cg as $c){
 				$c['label'] = $SortedColorGroups[$c['groupid']]['label'].' | '.$c['label'];
 				$Colors[] = $c;
@@ -927,7 +927,7 @@
 		CoreUtils::LoadPage(array(
 			'view' => "$do-sprite",
 			'title' => "Sprite of {$Appearance['label']}",
-			'css' => "$do-sprite",
+			'css' => array("$do-single","$do-sprite"),
 			'js' => "$do-sprite",
 		));
 	}

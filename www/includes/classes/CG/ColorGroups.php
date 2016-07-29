@@ -68,18 +68,18 @@
 		 * @param bool       $wrap
 		 * @param bool       $colon
 		 * @param bool       $colorNames
+		 * @param bool       $force_extra_info
 		 *
 		 * @return string
 		 */
-		static function GetHTML($GroupID, $AllColors = null, $wrap = true, $colon = true, $colorNames = false){
+		static function GetHTML($GroupID, $AllColors = null, bool $wrap = true, bool $colon = true, bool $colorNames = false, bool $force_extra_info = false):string {
 			global $CGDb;
 
 			if (is_array($GroupID)) $Group = $GroupID;
 			else $Group = $CGDb->where('groupid',$GroupID)->getOne('colorgroups');
 
 			$label = \CoreUtils::EscapeHTML($Group['label']).($colon?': ':'');
-			$HTML = $wrap ? "<li id='cg{$Group['groupid']}'>" : '';
-			$HTML .=
+			$HTML =
 				"<span class='cat'>$label".
 					($colorNames && \Permission::Sufficient('staff')?'<span class="admin"><button class="blue typcn typcn-pencil edit-cg"></button><button class="red typcn typcn-trash delete-cg"></button></span>':'').
 				"</span>";
@@ -87,7 +87,7 @@
 				$Colors = self::GetColors($Group['groupid']);
 			else $Colors = $AllColors[$Group['groupid']] ?? null;
 			if (!empty($Colors)){
-				$extraInfo = !\UserPrefs::Get('cg_hideclrinfo');
+				$extraInfo = $force_extra_info || !\UserPrefs::Get('cg_hideclrinfo');
 				foreach ($Colors as $i => $c){
 					$title = \CoreUtils::AposEncode($c['label']);
 					$color = '';
@@ -110,9 +110,7 @@
 				}
 			}
 
-			if ($wrap) $HTML .= "</li>";
-
-			return $HTML;
+			return $wrap ? "<li id='cg{$Group['groupid']}'>$HTML</li>" : $HTML;
 		}
 
 		/**
