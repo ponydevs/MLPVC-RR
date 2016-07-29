@@ -892,19 +892,43 @@
 		if (empty($Map))
 			CoreUtils::NotFound();
 
-		$ColorGroups = \CG\ColorGroups::Get($Appearance['id']);
-		$SortedColorGroups = array();
-		foreach ($ColorGroups as $cg)
-			$SortedColorGroups[$cg['groupid']] = $cg;
-
-		$AllColors = \CG\ColorGroups::GetColorsForEach($ColorGroups);
 		$Colors = array();
-		foreach ($AllColors as $cg){
-			foreach ($cg as $c){
-				$c['label'] = $SortedColorGroups[$c['groupid']]['label'].' | '.$c['label'];
-				$Colors[] = $c;
+
+		foreach (array(0, $Appearance['id']) as $AppearanceID){
+			$ColorGroups = \CG\ColorGroups::Get($AppearanceID);
+			$SortedColorGroups = array();
+			foreach ($ColorGroups as $cg)
+				$SortedColorGroups[$cg['groupid']] = $cg;
+
+			$AllColors = \CG\ColorGroups::GetColorsForEach($ColorGroups);
+			foreach ($AllColors as $cg){
+				foreach ($cg as $c)
+					$Colors[] = array(
+						'hex' => $c['hex'],
+						'label' => $SortedColorGroups[$c['groupid']]['label'].' | '.$c['label'],
+					);
 			}
 		}
+		$Colors = array_merge($Colors,
+			array(
+				array(
+					'hex' => '#D8D8D8',
+					'label' => 'Mannequin | Outline',
+				),
+				array(
+	                'hex' => '#E6E6E6',
+	                'label' => 'Mannequin | Fill',
+				),
+				array(
+	                'hex' => '#BFBFBF',
+	                'label' => 'Mannequin | Shadow Outline',
+				),
+				array(
+	                'hex' => '#CCCCCC',
+	                'label' => 'Mannequin | Shdow Fill',
+				)
+			)
+		);
 
 		$IMGWidth = $Map['width'];
 		$IMGHeight = $Map['height'];
@@ -913,8 +937,8 @@
 		$SVG = "<svg version='1.1' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 $IMGWidth $IMGHeight' enable-background='new 0 0 $IMGWidth $IMGHeight' xml:space='preserve'>";
 		foreach ($Map['linedata'] as $line){
 			$hex = $Map['colors'][$line['colorid']];
-			if ($line['opacity'] !== 127){
-				$opacity = number_format((127-$line['opacity'])/127, 2, '.', '');
+			if ($line['opacity'] !== 0){
+				$opacity = floatval(number_format((127-$line['opacity'])/127, 2, '.', ''));
 				$hex .= "' opacity='{$opacity}";
 			}
 			$SVG .= "<rect x='{$line['x']}px' y='{$line['y']}px' width='{$line['width']}px' height='1px' fill='$hex'/>";

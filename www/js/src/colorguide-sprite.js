@@ -4,28 +4,28 @@ DocReady.push(function ColorguideSpriteedit(){
 
 	let AppearanceColors = window.AppearanceColors,
 		SpriteColorList = window.SpriteColorList,
-		$InputList = $('#input-cont').empty(),
-		$ColorSelect = $.mk('select').disable().append('<option value="" style="display:none">(unrecognized color)</option>'),
+		$Table = $.mk('table').appendTo($('#input-cont').empty()),
 		$SVG = $('#svg-cont').children(),
 		AppearanceColorObject = {},
-		AppearanceColorIterator = 1;
+		AppearanceColorIterator = 1,
+		mapColor = function(key, val){
+			let result = [];
+			for (let i = 0,l = AppearanceColors.length; i<l; i++){
+				let el = AppearanceColors[i];
+				if (el[key] === val)
+					result.push(el);
+			}
+			if (!result.length)
+				result.push({
+					label: '(unrecognized color)',
+					hex: '',
+				});
+			return result;
+		};
 
 	$.each(AppearanceColors, (_, color) => {
 		AppearanceColorObject[color.label] = AppearanceColorIterator++;
-		$ColorSelect.append(`<option value="${color.hex}">${color.label}</option>`);
 	});
-	$ColorSelect.append(
-		`<optgroup label="Universal colors">
-			<option value="#FFFFFF">Eye | Shines</option>
-			<option value="#000000">Eye | Pupil</option>
-		</optgroup>
-		<optgroup label="Uniform mannequin">
-			<option value="#D8D8D8">Mannequin | Outline</option>
-			<option value="#E6E6E6">Mannequin | Fill</option>
-			<option value="#BFBFBF">Mannequin | Shadow Outline</option>
-			<option value="#CCCCCC">Mannequin | Shdow Fill</option>
-		</optgroup>`
-	);
 
 	$SVG.find('rect').each(function(){
 		let $rect = $(this);
@@ -33,23 +33,15 @@ DocReady.push(function ColorguideSpriteedit(){
 	});
 
 	$.each(SpriteColorList, function(index, actual){
-		let $select = $ColorSelect.clone();
-		$select.find(`option[value="${actual}"]`).first().attr('selected', true);
-		$select.on('change',function(){
-			let $this = $(this),
-				val = $this.find('option:selected').val();
-			if (val.length)
-				$this.siblings('input').val(val).triggerHandler('change', [true]);
+		let matchingColors = mapColor('hex', actual), labels = [];
+		$.each(matchingColors, (_, color) => {
+			labels.push(`<li>${color.label}</li>`);
 		});
-		$InputList.append(
-			$.mk('div').append(
-				`<span class="color-preview" style="background-color:${actual}"></span>`,
-				$select,
-				$.mk('input').attr({
-					type: 'text',
-					value: actual,
-					readonly: true,
-				})
+		$Table.append(
+			$.mk('tr').html(
+				`<td class="color-preview" style="background-color:${actual}"></td>
+				<td class="label"><ul>${labels.join('')}</ul></td>
+				<td class="color">${actual}</td>`
 			).on('mouseenter',function(){
 				$SVG.find(`rect[fill="${actual}"]`).addClass('highlight');
 			}).on('mouseleave',function(){
@@ -57,10 +49,10 @@ DocReady.push(function ColorguideSpriteedit(){
 			})
 		);
 	});
-	$InputList.children('div').sort(function(a,b){
-		let at = AppearanceColorObject[$(a).children('select').children('option:selected').text()] || -1,
-			bt = AppearanceColorObject[$(b).children('select').children('option:selected').text()] || -1;
+	$Table.children('tr').sort(function(a,b){
+		let at = AppearanceColorObject[$(a).children('td.label li').first().text()] || -1,
+			bt = AppearanceColorObject[$(b).children('td.label li').first().text()] || -1;
 
 		return at === bt ? 0 : (at < bt ? -1 : 1);
-	}).prependTo($InputList);
+	}).prependTo($Table);
 });

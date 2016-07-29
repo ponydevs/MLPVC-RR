@@ -2,6 +2,13 @@
 @import "colorguide_vars";
 @import "theme_section";
 
+// Mobile
+@media all and (max-width: $Breakpoint){
+	#input-cont {
+		margin-top: 10px;
+	}
+}
+// Desktop
 @media all and (min-width: $Breakpoint){
 	#content > .checker {
 		display: flex;
@@ -22,6 +29,7 @@
 			overflow-y: auto;
 		}
 	}
+	#input-cont td br { display: none }
 }
 
 #content {
@@ -71,58 +79,47 @@
 			border-bottom: 0;
 		}
 
-		> div {
-			display: flex;
-			flex-flow: row nowrap;
-			color: black;
-			border: 1px solid currentColor;
-			transition: color .2s linear, border-color .2s linear, background-color .2s linear;
-			margin: 0;
+		> table {
+			border-collapse: collapse;
+			width: 100%;
+			table-layout: fixed;
 
-			&:not(:last-child) {
-				border-bottom: 0;
-			}
-
-			&:hover {
-				color: $NOrange;
-
-				select, input {
-					background-color: $NOrangeBG;
+			tr {
+				td {
+					color: black;
+					border: 1px solid currentColor;
+					transition: color .2s linear, border-color .2s linear, background-color .2s linear;
 				}
-			}
 
-			> * {
-				height: 30px;
-				box-sizing: border-box;
-				border: 0;
+				&:hover {
+					td {
+						color: $NOrange;
+						border-color: $NOrange;
 
-				&:not(:last-child){
-					border-right: 1px solid currentColor;
+						&.label, &.color {
+							background-color: $NOrangeBG;
+						}
+					}
 				}
-			}
-			.color-preview {
-				flex: 0 0 30px;
-				display: block;
-				width: 30px;
-				box-sizing: border-box;
 
-				&.invalid { @include clrp-invalid(30px) }
-			}
-			select, input {
-				display: inline-block;
-				flex: 1 1 50%;
-				padding: 5px 7px;
-			}
-			select {
-				display: inline-block;
-				flex: 1 1 50%;
-				opacity: 1 !important;
-				cursor: not-allowed;
-				-webkit-appearance: none;
-				-moz-appearance: none;
-			}
-			input {
-				font-family: $monospace;
+				.color-preview {
+					width: 30px;
+					box-sizing: border-box;
+
+					&.invalid { @include clrp-invalid(30px) }
+				}
+				.label, .color {
+					padding: 5px 7px;
+					background: #efefef;
+				}
+				.label ul {
+					padding: 0;
+					margin: 0;
+					list-style: inside;
+				}
+				.color {
+					font-family: $monospace;
+				}
 			}
 		}
 	}
