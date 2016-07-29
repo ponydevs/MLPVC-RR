@@ -927,7 +927,7 @@
 		CoreUtils::LoadPage(array(
 			'view' => "$do-sprite",
 			'title' => "Sprite of {$Appearance['label']}",
-			'css' => array("$do-single","$do-sprite"),
+			'css' => "$do-sprite",
 			'js' => "$do-sprite",
 		));
 	}

@@ -1,8 +1,9 @@
 @import "vars";
 @import "colorguide_vars";
+@import "theme_section";
 
 @media all and (min-width: $Breakpoint){
-	#content section {
+	#content > .checker {
 		display: flex;
 		flex-flow: row nowrap;
 		align-items: center;
@@ -24,6 +25,8 @@
 }
 
 #content {
+	section { @extend %section }
+
 	#svg-cont {
 		border: 1px dashed rgba(black,.5);
 		background: url('../../img/transparency.svg');
@@ -125,7 +128,13 @@
 	}
 
 	#colors {
+		@extend %colors-ul;
+
 		margin: 0;
+
+		.admin {
+			display: none !important;
+		}
 
 		li > .cat ~ .color-line > :first-child:not(:empty) {
 			cursor: default;

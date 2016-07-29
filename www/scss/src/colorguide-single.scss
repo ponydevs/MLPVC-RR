@@ -8,56 +8,14 @@
 		margin-left: auto;
 		margin-right: auto;
 
-
 		@include pony-cm-image(200px);
-	}
-
-	#content {
-		.cat {
-			line-height: 1em;
-
-			.admin {
-				margin-top: 5px;
-				display: block;
-				font-size: .9em;
-
-				button {
-					margin: 0;
-
-					&:not(:last-child){ margin-right: 5px }
-				}
-			}
-		}
-		#colors {
-			li {
-				display: block;
-				max-width: 100%;
-
-				&:not(:last-child) {
-					margin: 0 0 10px;
-				}
-			}
-		}
 	}
 }
 // Desktop-only
 @media all and (min-width: $Breakpoint){
 	#pony-cm { @include pony-cm-image }
 
-	#content {
-		.admin { display: none }
-
-		#colors {
-			display: flex;
-			flex-flow: row wrap;
-			justify-content: flex-start;
-
-			li {
-				margin: 5px;
-				flex: 1 0 auto;
-			}
-		}
-	}
+	#content .admin { display: none }
 }
 
 #content {
@@ -133,82 +91,5 @@
 		}
 	}
 
-	#colors {
-		padding: 0;
-		list-style: none;
-
-		li {
-			padding: 10px;
-			color: #434343;
-			background-color: rgba(0,0,0,.07);
-			border: 1px solid rgba(0,0,0,.2);
-			font-size: 12px;
-			font-family: 'Verdana', sans-serif;
-			text-align: center;
-			box-sizing: border-box;
-
-			> .cat {
-				font-size: 2.2em;
-				font-weight: bold;
-				display: block;
-				margin: 0 0 5px;
-				font-family: 'Celestia', sans-serif;
-
-				~ span {
-					@include colored-square(35px);
-				}
-				~ .color-line {
-					display: flex;
-
-					&:not(:last-child){
-						margin-bottom: 5px;
-					}
-
-					> :first-child {
-						display: block;
-						flex: 0 0 35px;
-
-						@include colored-square(35px);
-
-						+ span {
-							display: block;
-							flex: 1 1 auto;
-							text-align: left;
-							box-sizing: border-box;
-							padding-left: 5px;
-
-							.label {
-								font-size: 20px;
-								line-height: 35px;
-								height: 35px;
-								white-space: nowrap;
-								overflow: hidden;
-								text-overflow: ellipsis;
-							}
-						}
-					}
-
-					&:not(.no-detail) > :first-child + span {
-						display: flex;
-						flex-flow: column nowrap;
-
-						.label {
-							display: block;
-							flex: 0 0 23px;
-							line-height: 16px;
-							height: 23px;
-							font-size: 18px;
-						}
-						.ext {
-							flex: 0 0 12px;
-							display: block;
-							line-height: 12px;
-							height: 12px;
-							font-size: 12px;
-						}
-					}
-				}
-			}
-		}
-	}
+	#colors { @extend %colors-ul }
 }
