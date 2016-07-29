@@ -855,7 +855,10 @@
 					if ($_match[3] === 's')
 						CGUtils::RenderSpritePNG($Appearance['id']);
 					CGUtils::RenderAppearancePNG($Appearance);
-				case 'svg': CGUtils::RenderCMDirectionSVG($Appearance['id'], $Appearance['cm_dir']);
+				case 'svg':
+					if ($_match[3] === 's')
+						CGUtils::RenderSpriteSVG($Appearance['id']);
+					CGUtils::RenderCMDirectionSVG($Appearance['id'], $Appearance['cm_dir']);
 				case 'json': CGUtils::GetSwatchesAI($Appearance); 
 				case 'gpl': CGUtils::GetSwatchesInkscape($Appearance); 
 			}
@@ -929,29 +932,6 @@
 				)
 			)
 		);
-
-		$IMGWidth = $Map['width'];
-		$IMGHeight = $Map['height'];
-		$MatrixRegular =   '1 0 0 0 0 0  1 0 0 0 0 0  1 0 0 0 0 0 1 0';
-		$MatrixInverted = '-1 0 0 0 1 0 -1 0 0 1 0 0 -1 0 1 0 0 0 1 0';
-		$strokes = array();
-		foreach ($Map['linedata'] as $line){
-			$hex = $Map['colors'][$line['colorid']];
-			if ($line['opacity'] !== 0){
-				$opacity = floatval(number_format((127-$line['opacity'])/127, 2, '.', ''));
-				$hex .= "' opacity='{$opacity}";
-			}
-			$strokes[$hex][] = "M{$line['x']} {$line['y']} l{$line['width']} 0Z";
-		}
-		$SVG = "<svg version='1.1' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 $IMGWidth $IMGHeight' enable-background='new 0 0 $IMGWidth $IMGHeight' xml:space='preserve'>";
-		foreach ($strokes as $hex => $defs){
-			$d = '';
-			foreach ($defs as $def)
-				$d .= "$def ";
-			$d = rtrim($d);
-			$SVG .= "<path stroke='$hex' d='$d'/>";
-		}
-		$SVG .= '</svg>';
 
 		$SafeLabel = \CG\Appearances::GetSafeLabel($Appearance);
 		CoreUtils::FixPath("$CGPath/sprite/{$Appearance['id']}-$SafeLabel");

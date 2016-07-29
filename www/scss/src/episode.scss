@@ -263,7 +263,7 @@
 						transform: translate(-50%, -50%);
 						overflow: hidden;
 
-						@include sprite-animation(64px, 49px, 8, 'preloader');
+						@include loading-indicator(64px);
 					}
 
 					iframe, object, embed {

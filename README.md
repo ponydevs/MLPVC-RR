@@ -16,6 +16,7 @@ After some time, the idea of moving the old PNG color guide into an easier to us
 **Used libraries & icons include:**
  - Front-end:
    - [Typicons](http://www.typicons.com/)
+   - [loading.io](http://loading.io/)
    - [jQuery](http://jquery.com/)
    - [qTip2](http://qtip2.com/)
    - [autocomplete.js](https://github.com/algolia/autocomplete.js)

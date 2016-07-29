@@ -2,10 +2,11 @@
 DocReady.push(function ColorguideSpriteedit(){
 	'use strict';
 
-	let AppearanceColors = window.AppearanceColors,
+	let AppearanceID = window.AppearanceID,
+		AppearanceColors = window.AppearanceColors,
 		SpriteColorList = window.SpriteColorList,
 		$Table = $.mk('table').appendTo($('#input-cont').empty()),
-		$SVG = $('#svg-cont').children(),
+		$SVG,
 		AppearanceColorObject = {},
 		AppearanceColorIterator = 1,
 		mapColor = function(key, val){
@@ -27,9 +28,17 @@ DocReady.push(function ColorguideSpriteedit(){
 		AppearanceColorObject[color.label] = AppearanceColorIterator++;
 	});
 
-	$SVG.children().each(function(){
-		let $rect = $(this);
-		$rect.addClass($.yiq($rect.attr('stroke')) > (0xFF/2) ? 'bright' : 'dark');
+	$.ajax({
+		url: `/cg/v/${AppearanceID}s.svg`,
+		dataType: 'html',
+		success: function(data){
+			$SVG = $(data);
+			$('#svg-cont').html($SVG);
+			$SVG.children().each(function(){
+				let $el = $(this);
+				$el.addClass($.yiq($el.attr('stroke')) > (0xFF/2) ? 'bright' : 'dark');
+			});
+		}
 	});
 
 	$.each(SpriteColorList, function(index, actual){
@@ -43,9 +52,11 @@ DocReady.push(function ColorguideSpriteedit(){
 				<td class="label"><ul>${labels.join('')}</ul></td>
 				<td class="color">${actual}</td>`
 			).on('mouseenter',function(){
-				$SVG.children().filter(`[stroke="${actual}"]`).addClass('highlight');
+				if ($SVG instanceof jQuery)
+					$SVG.children().filter(`[stroke="${actual}"]`).addClass('highlight');
 			}).on('mouseleave',function(){
-				$SVG.find('.highlight').removeClass('highlight');
+				if ($SVG instanceof jQuery)
+					$SVG.find('.highlight').removeClass('highlight');
 			})
 		);
 	});

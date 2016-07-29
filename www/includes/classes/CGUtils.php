@@ -567,7 +567,7 @@ HTML;
 		}
 
 		static function RenderSpritePNG($AppearanceID){
-			global $CGPath, $Database;
+			global $CGPath;
 
 			$OutputPath = APPATH."img/cg_render/{$AppearanceID}-sprite.png";
 			$FileRelPath = "$CGPath/v/{$AppearanceID}s.png";
@@ -585,6 +585,43 @@ HTML;
 			}
 
 			Image::OutputPNG($PNG, $OutputPath, $FileRelPath);
+		}
+
+		static function RenderSpriteSVG($AppearanceID){
+			global $CGPath;
+			$Map = self::GetSpriteImageMap($AppearanceID);
+			if (empty($Map))
+				CoreUtils::NotFound();
+
+			$OutputPath = APPATH."img/cg_render/{$AppearanceID}-sprite.svg";
+			$FileRelPath = "$CGPath/v/{$AppearanceID}s.svg";
+			if (file_exists($OutputPath))
+				Image::OutputPNG(null,$OutputPath,$FileRelPath);
+
+			$IMGWidth = $Map['width'];
+			$IMGHeight = $Map['height'];
+			$MatrixRegular =   '1 0 0 0 0 0  1 0 0 0 0 0  1 0 0 0 0 0 1 0';
+			$MatrixInverted = '-1 0 0 0 1 0 -1 0 0 1 0 0 -1 0 1 0 0 0 1 0';
+			$strokes = array();
+			foreach ($Map['linedata'] as $line){
+				$hex = $Map['colors'][$line['colorid']];
+				if ($line['opacity'] !== 0){
+					$opacity = floatval(number_format((127-$line['opacity'])/127, 2, '.', ''));
+					$hex .= "' opacity='{$opacity}";
+				}
+				$strokes[$hex][] = "M{$line['x']} {$line['y']} l{$line['width']} 0Z";
+			}
+			$SVG = "<svg version='1.1' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 $IMGWidth $IMGHeight' enable-background='new 0 0 $IMGWidth $IMGHeight' xml:space='preserve'>";
+			foreach ($strokes as $hex => $defs){
+				$d = '';
+				foreach ($defs as $def)
+					$d .= "$def ";
+				$d = rtrim($d);
+				$SVG .= "<path stroke='$hex' d='$d'/>";
+			}
+			$SVG .= '</svg>';
+
+			Image::OutputSVG($SVG, $OutputPath, $FileRelPath);
 		}
 		
 		static function GetSwatchesAI($Appearance){

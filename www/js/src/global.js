@@ -236,7 +236,8 @@
 			let xdebug = /^(?:<br \/>\n)?(<pre class='xdebug-var-dump'|<font size='1')/;
 			if (xdebug.test(data[0].responseText))
 				details += `<div class="reset">${data[0].responseText.replace(xdebug, '$1')}</div>`;
-			else details += `<pre><code>${data[0].responseText.replace(/</g,'&lt;')}</code></pre>`;
+			else if (typeof data[0].responseText === 'string')
+				details += `<pre><code>${data[0].responseText.replace(/</g,'&lt;')}</code></pre>`;
 		}
 		$.Dialog.fail(false,`There was an error while processing your request.${details}`);
 	});

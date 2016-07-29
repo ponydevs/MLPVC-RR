@@ -40,6 +40,14 @@
 		background: url('../../img/transparency.svg');
 		background-size: 16px;
 
+		&:empty:before {
+			content: '';
+			display: block;
+			margin: calc(300px - 40px) auto;
+
+			@include loading-indicator(80px);
+		}
+
 		svg {
 			max-height: 600px;
 			max-width: 100%;

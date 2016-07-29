@@ -35,7 +35,7 @@
 			// padding + border + margin
 			right: 5px + 1px + 5px;
 
-			@include sprite-animation(16px, 16px, 12, 'indicator');
+			@include loading-indicator(16px);
 		}
 	}
 	.addtag { cursor: text }

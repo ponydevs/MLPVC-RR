@@ -293,7 +293,7 @@ header {
 						height: 27px;
 						margin: 7px;
 
-						@include sprite-animation(27px, 27px, 12, 'loading-indicator');
+						@include loading-indicator(27px);
 					}
 					> .avatar {
 						width: 100%;
