@@ -10,10 +10,7 @@
 	$EpData = Episode::ParseID($data);
 	if (!empty($EpData)){
 		$Ep = Episode::GetActual($EpData['season'],$EpData['episode']);
-		$airs =  strtotime($Ep['airs']);
-		unset($Ep['airs']);
-		$Ep['airdate'] = gmdate('Y-m-d', $airs);
-		$Ep['airtime'] = gmdate('H:i', $airs);
+		$Ep['airs'] =  date('c',strtotime($Ep['airs']));
 		Response::Done(array(
 			'ep' => $Ep,
 			'epid' => Episode::FormatTitle($Ep, AS_ARRAY, 'id'),

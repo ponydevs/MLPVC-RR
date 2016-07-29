@@ -16,48 +16,34 @@ DocReady.push(function EpisodesManage(){
 	let saturday = moment.tz(new Date(), "America/Los_Angeles").set({
 		day: 'Saturday',
 		h: 8, m: 30, s: 0,
-	}).toDate();
-	function parseIntArray(arr){
-		$.each(arr,function(i,el){
-			arr[i] = parseInt(el, 10);
-		});
-		return arr;
-	}
-	function mkDateArray(datestr){
-		let s = parseIntArray(datestr.split('-'));
-		s[1]--;
-		return s;
-	}
-	function mkTimeArray(timestr){ return parseIntArray(timestr.split(':')) }
+	}).local();
 	function mkDate(datestr, timestr, utc){
-		let dateArr = mkDateArray(datestr),
-			timeArr = mkTimeArray(timestr),
-			d = new Date(dateArr[0], dateArr[1], dateArr[2], 10);
-		d['set'+(utc?'UTC':'')+'Hours'](timeArr[0]);
-		d['set'+(utc?'UTC':'')+'Minutes'](timeArr[1]);
-		return d;
+		return moment(datestr+'T'+timestr+(utc?'Z':''));
 	}
-	Date.prototype.toAirDate = function(){ return this.getFullYear()+'-'+$.pad(this.getMonth()+1)+'-'+$.pad(this.getDate()) };
-	Date.prototype.toAirTime = function(){ return $.pad(this.getHours())+':'+$.pad(this.getMinutes()) };
-	let date = saturday.toAirDate(), time = saturday.toAirTime();
+	const DateToAirDate = date => date.format('YYYY-MM-DD');
+	const DateToAirTime = date => date.format('HH:mm');
+	const sat_date = DateToAirDate(saturday);
+	const sat_time = DateToAirTime(saturday);
+	const sat_day = saturday.format('dddd');
 
 	let EP_TITLE_REGEX = window.EP_TITLE_REGEX,
 		$pageTitle = $content.children('h1').first();
 
 	function EpisodeForm(id){
 		let $form = $.mk('form').attr('id', id).append(
-			'<div class="label">'+
-				'<span>Season, Episode & Overall #</span>'+
-				'<div class=input-group-3>'+
-					'<input type="number" min="1" max="8" name="season" placeholder="Season #" required>'+
-					'<input type="number" min="1" max="26" name="episode" placeholder="Episode #" required>'+
-					'<input type="number" min="1" max="255" name="no" placeholder="Overall #" required>'+
-				'</div>'+
-			'</label>',
+			`<div class="label">
+				<span>Season, Episode & Overall #</span>
+				<div class=input-group-3>
+					<input type="number" min="1" max="8" name="season" placeholder="Season #" required>
+					<input type="number" min="1" max="26" name="episode" placeholder="Episode #" required>
+					<input type="number" min="1" max="255" name="no" placeholder="Overall #" required>
+				</div>
+			</label>`,
 			$.mk('label').append(
 				'<span>Title (5-35 chars.)</span>',
 				$.mk('input').attr({
 					type: 'text',
+					minlength: 5,
 					maxlength: 35,
 					name: 'title',
 					placeholder: 'Title',
@@ -65,25 +51,25 @@ DocReady.push(function EpisodesManage(){
 					required: true,
 				}).patternAttr(EP_TITLE_REGEX)
 			),
-			'<div class="label">' +
-				'<span>Air Date</span>'+
-				'<div class="input-group-2">'+
-					'<input type="date" name="airdate" placeholder="YYYY-MM-DD" required>'+
-					'<input type="time" name="airtime" placeholder="HH:MM" required>'+
-				'</div>'+
-			'</div>'+
-			'<div class="notice info align-center button-here">'+
-				'<p>Specify when the episode will air, in <strong>your computer\'s timezone</strong>.</p>'+
-			'</div>'+
-			'<label><input type="checkbox" name="twoparter"> Has two parts</label>'+
-			'<div class="notice info align-center">'+
-				'<p>If this is checked, only specify the episode number of the first part</p>'+
-			'</div>'
+			`<div class="label">
+				<span>Air Date</span>
+				<div class="input-group-2">
+					<input type="date" name="airdate" placeholder="YYYY-MM-DD" required>
+					<input type="time" name="airtime" placeholder="HH:MM" required>
+				</div>
+			</div>
+			<div class="notice info align-center button-here">
+				<p>Specify when the episode will air, in <strong>your computer's timezone</strong>.</p>
+			</div>
+			<label><input type="checkbox" name="twoparter"> Has two parts</label>
+			<div class="notice info align-center">
+				<p>If this is checked, only specify the episode number of the first part</p>
+			</div>`
 		);
 
-		$.mk('button').text('Set time to '+time+' this Saturday').on('click', function(e){
+		$.mk('button').text('Set time to '+sat_time+' this '+sat_day).on('click', function(e){
 			e.preventDefault();
-			$(this).parents('form').find('input[name="airdate"]').val(date).next().val(time);
+			$(this).parents('form').find('input[name="airdate"]').val(sat_date).next().val(sat_time);
 		}).appendTo($form.children('.button-here'));
 
 		return $form;
@@ -151,9 +137,9 @@ DocReady.push(function EpisodesManage(){
 				if (!this.caneditid || (EpisodePage && $('#reservations, #requests').find('li').length))
 					$EditEpForm.find('input').filter('[name="season"],[name="episode"]').disable();
 
-				let d = mkDate(this.ep.airdate, this.ep.airtime, true);
-				this.ep.airdate = d.toAirDate();
-				this.ep.airtime = d.toAirTime();
+				let d = moment(this.ep.airs);
+				this.ep.airdate = DateToAirDate(d);
+				this.ep.airtime = DateToAirTime(d);
 
 				let epid = this.epid;
 				delete this.epid;
