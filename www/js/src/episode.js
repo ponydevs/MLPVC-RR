@@ -308,7 +308,7 @@ DocReady.push(function Episode(){
 				$form.on('submit', function(e){
 					e.preventDefault();
 
-					let data = session.getValue();
+					let data = { value: session.getValue() };
 					$.Dialog.wait(false, 'Saving');
 
 					$.post(`/setting/set/${endpoint}`, data, $.mkAjaxHandler(function(){
