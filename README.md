@@ -29,6 +29,7 @@ After some time, the idea of moving the old PNG color guide into an easier to us
    - [PostgresDb](https://github.com/SeinopSys/PHP-PostgreSQL-Database-Class)
    - [Browser.php](https://github.com/cbschuld/Browser.php) *(custom version)*
    - [HTML Purifier](http://htmlpurifier.org/)
+   - [socket.io](http://socket.io)
    - [Elephant.io](https://github.com/wisembly/elephant.io)
    - [MLPVC-WS](https://github.com/ponydevs/MLPVC-WS)
  - Development tools:
