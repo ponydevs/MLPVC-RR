@@ -484,24 +484,12 @@ HTML;
 
 		static function GetSpriteImageMap($AppearanceID){
 			$MapPath = APPATH."img/cg_render/$AppearanceID-linedata.json.gz";
-			if (!file_exists($MapPath))
-				return null;
-			return JSON::Decode(gzuncompress(file_get_contents($MapPath)));
-		}
-
-		static function RenderSpritePNG($AppearanceID, $output = true){
-			global $CGPath, $Database;
-
-			$OutputPath = APPATH."img/cg_render/{$AppearanceID}-sprite.png";
-			$FileRelPath = "$CGPath/v/{$AppearanceID}s.png";
-			if (file_exists($OutputPath))
-				Image::OutputPNG(null,$OutputPath,$FileRelPath);
-
-			$MapPath = APPATH."img/cg_render/$AppearanceID-linedata.json.gz";
-			if (!file_exists($MapPath)){
+			if (file_exists($MapPath))
+				$Map = JSON::Decode(gzuncompress(file_get_contents($MapPath)));
+			else {
 				$PNGPath = SPRITE_PATH."$AppearanceID.png";
 				if (!file_exists($PNGPath))
-					CoreUtils::NotFound();
+					return null;
 
 				list($PNGWidth, $PNGHeight) = getimagesize($PNGPath);
 				$PNG = imagecreatefrompng($PNGPath);
@@ -575,10 +563,18 @@ HTML;
 				$Map = $Output;
 				file_put_contents($MapPath, gzcompress(JSON::Encode($Output), 9));
 			}
-			else if ($output)
-				$Map = JSON::Decode(gzuncompress(file_get_contents($MapPath)));
-			if (!$output)
-				return;
+			return $Map;
+		}
+
+		static function RenderSpritePNG($AppearanceID){
+			global $CGPath, $Database;
+
+			$OutputPath = APPATH."img/cg_render/{$AppearanceID}-sprite.png";
+			$FileRelPath = "$CGPath/v/{$AppearanceID}s.png";
+			if (file_exists($OutputPath))
+				Image::OutputPNG(null,$OutputPath,$FileRelPath);
+
+			$Map = self::GetSpriteImageMap($AppearanceID);
 
 			$SizeFactor = 2;
 			$PNG = Image::CreateTransparent($Map['width']*$SizeFactor, $Map['height']*$SizeFactor);

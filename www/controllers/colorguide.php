@@ -889,12 +889,8 @@
 			CoreUtils::NotFound();
 
 		$Map = CGUtils::GetSpriteImageMap($Appearance['id']);
-		if (empty($Map)){
-			CGUtils::RenderSpritePNG($Appearance['id'], STAY_ALIVE);
-			$Map = CGUtils::GetSpriteImageMap($Appearance['id']);
-			if (empty($Map))
-				CoreUtils::NotFound();
-		}
+		if (empty($Map))
+			CoreUtils::NotFound();
 
 		$ColorGroups = \CG\ColorGroups::Get($Appearance['id'], 'groupid,label');
 		$SortedColorGroups = array();
