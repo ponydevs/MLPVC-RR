@@ -156,6 +156,49 @@ CREATE TABLE log (
 ALTER TABLE log OWNER TO "mlpvc-rr";
 
 --
+-- Name: log__appearances; Type: TABLE; Schema: public; Owner: mlpvc-rr
+--
+
+CREATE TABLE log__appearances (
+    entryid integer NOT NULL,
+    action character(3) NOT NULL,
+    id integer NOT NULL,
+    "order" integer,
+    label character varying(70) NOT NULL,
+    notes text NOT NULL,
+    cm_favme character varying(20),
+    ishuman boolean NOT NULL,
+    added timestamp with time zone,
+    cm_preview character varying(255),
+    cm_dir boolean,
+    usetemplate boolean DEFAULT false NOT NULL
+);
+
+
+ALTER TABLE log__appearances OWNER TO "mlpvc-rr";
+
+--
+-- Name: log__appearances_entryid_seq; Type: SEQUENCE; Schema: public; Owner: mlpvc-rr
+--
+
+CREATE SEQUENCE log__appearances_entryid_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE log__appearances_entryid_seq OWNER TO "mlpvc-rr";
+
+--
+-- Name: log__appearances_entryid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER SEQUENCE log__appearances_entryid_seq OWNED BY log__appearances.entryid;
+
+
+--
 -- Name: log__banish; Type: TABLE; Schema: public; Owner: mlpvc-rr
 --
 
@@ -821,6 +864,13 @@ ALTER TABLE ONLY log ALTER COLUMN entryid SET DEFAULT nextval('log_entryid_seq':
 -- Name: entryid; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
 --
 
+ALTER TABLE ONLY log__appearances ALTER COLUMN entryid SET DEFAULT nextval('log__appearances_entryid_seq'::regclass);
+
+
+--
+-- Name: entryid; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
+--
+
 ALTER TABLE ONLY log__banish ALTER COLUMN entryid SET DEFAULT nextval('log__banish_entryid_seq'::regclass);
 
 
@@ -1412,6 +1462,24 @@ REVOKE ALL ON TABLE log FROM PUBLIC;
 REVOKE ALL ON TABLE log FROM "mlpvc-rr";
 GRANT ALL ON TABLE log TO "mlpvc-rr";
 GRANT ALL ON TABLE log TO postgres;
+
+
+--
+-- Name: log__appearances; Type: ACL; Schema: public; Owner: mlpvc-rr
+--
+
+REVOKE ALL ON TABLE log__appearances FROM PUBLIC;
+REVOKE ALL ON TABLE log__appearances FROM "mlpvc-rr";
+GRANT ALL ON TABLE log__appearances TO "mlpvc-rr";
+
+
+--
+-- Name: log__appearances_entryid_seq; Type: ACL; Schema: public; Owner: mlpvc-rr
+--
+
+REVOKE ALL ON SEQUENCE log__appearances_entryid_seq FROM PUBLIC;
+REVOKE ALL ON SEQUENCE log__appearances_entryid_seq FROM "mlpvc-rr";
+GRANT ALL ON SEQUENCE log__appearances_entryid_seq TO "mlpvc-rr";
 
 
 --

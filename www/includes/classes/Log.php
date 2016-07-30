@@ -14,6 +14,7 @@
 			'req_delete' => 'Request deleted',
 			'img_update' => 'Post image updated',
 			'res_overtake' => 'Overtook post reservation',
+			'appearances' => 'Appearance management',
 		);
 
 		/**
@@ -48,6 +49,11 @@
 			return (bool) $Database->insert("log",$central);
 		}
 
+		static $ACTIONS = array(
+			'add' => '<span class="color-green"><span class="typcn typcn-plus"></span> Create</span>',
+			'del' => '<span class="color-red"><span class="typcn typcn-trash"></span> Delete</span>'
+		);
+
 		/**
 		 * Format log entry details
 		 *
@@ -72,8 +78,7 @@
 					);
 				break;
 				case "episodes":
-					$actions = array('add' => 'create', 'del' => 'delete');
-					$details[] = array('Action', $actions[$data['action']]);
+					$details[] = array('Action', self::$ACTIONS[$data['action']]);
 					$details[] = array('Name', Episode::FormatTitle($data));
 					if (!empty($data['airs']))
 						$details[] = array('Airs', Time::Tag($data['airs'], Time::TAG_EXTENDED, Time::TAG_STATIC_DYNTIME));
@@ -200,6 +205,37 @@
 						$diff_text .= CoreUtils::MakePlural($unit, $diff[$unit], PREPEND_NUMBER).' ';
 					}
 					$details[] = array('In progress for', rtrim($diff_text));
+				break;
+				case "appearances":
+					$details[] = array('Action', self::$ACTIONS[$data['action']]);
+
+					$PonyGuide = empty($data['ishuman']);
+					$details[] = array('Guide', $PonyGuide ? 'Pony' : 'EQG');
+					$ID = '#'.$data['id'];
+					global $CGDb;
+					if ($CGDb->where('id', $data['id'])->has('appearances')){
+						$EQGUrl = $PonyGuide ? '' : '/eqg';
+						$ID = "<a href='/cg/{$EQGUrl}v/{$data['id']}'>$ID</a>";
+					}
+					else if ($data['action'] === 'add')
+						$ID .= ' (now deleted)';
+					$details[] = array('ID', $ID);
+					$details[] = array('Label', $data['label']);
+					if (!empty($data['order']))
+						$details[] = array('Ordering Index', $data['order']);
+					if (!empty($data['notes']))
+						$details[] = array('Notes', '<div>'.nl2br($data['notes']).'</div>');
+					if (!empty($data['cm_favme'])){
+						$cmfavmeurl = "http://fav.me/{$data['cm_favme']}";
+						$details[] = array('CM Submission', "<a href='$cmfavmeurl'>$cmfavmeurl</a>");
+						$details[] = array('CM Orientation', $data['cm_dir'] === CM_DIR_HEAD_TO_TAIL ? 'Head-tail' : 'Tail-head');
+						if (!empty($data['cm_preview']))
+							$details[] = array('Custom CM Preview', "<img src='".CoreUtils::AposEncode($data['cm_preview'])."'>");
+					}
+					if (!empty($data['usetemplate']))
+						$details[] = array('Template applied', true);
+					if (!empty($data['added']))
+						$details[] = array('Added', Time::Tag($data['added'], Time::TAG_EXTENDED, Time::TAG_STATIC_DYNTIME));
 				break;
 				default:
 					$details[] = array('Could not process details','No data processor defined for this entry type');

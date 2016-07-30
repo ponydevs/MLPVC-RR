@@ -132,8 +132,10 @@ $TableHeadingFontSize: 16px;
 	background-color: rgba(0,0,0,.075);
 	border-radius: 0 8px 8px 8px;
 
-	p {
-		margin: 0;
+	> div {
+		&:not(:last-child){
+			margin-bottom: 5px;
+		}
 
 		i { font-size: .8em }
 	}

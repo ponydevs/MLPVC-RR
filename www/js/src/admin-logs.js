@@ -64,7 +64,7 @@ DocReady.push(function Logs(){
 								let char = /[a-z]$/i;
 								el[0] = `<strong>${el[0]}${char.test(el[0]) ? ':' : ''}</strong>`;
 
-								$dataDiv.append(`<p>${el.join(' ')}</p>`);
+								$dataDiv.append(`<div>${el.join(' ')}</div>`);
 							});
 
 							$dataDiv.insertAfter($this).slideDown();

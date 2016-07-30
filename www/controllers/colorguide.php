@@ -238,7 +238,8 @@
 							'message' => 'Appearance added successfully',
 							'id' => $query,
 						);
-						if (isset($_POST['template'])){
+						$usetemplate = isset($_POST['template']);
+						if ($usetemplate){
 							try {
 								\CG\Appearances::ApplyTemplate($query, $EQG);
 							}
@@ -248,6 +249,19 @@
 								Response::Done($response);
 							}
 						}
+
+						Log::Action('appearances',array(
+							'action' => 'add',
+						    'id' => $data['id'],
+						    'order' => $data['order'] ?? null,
+						    'label' => $data['label'],
+						    'notes' => $data['notes'],
+						    'cm_favme' => $data['cm_favme'] ?? null,
+						    'ishuman' => $data['ishuman'],
+						    'cm_preview' => $data['cm_preview'],
+						    'cm_dir' => $data['cm_dir'],
+							'usetemplate' => $usetemplate ? 1 : 0,
+						));
 						Response::Done($response);
 					}
 					else {
@@ -282,6 +296,19 @@
 						unlink($fpath);
 
 					CGUtils::ClearRenderedImages($Appearance['id']);
+
+					Log::Action('appearances',array(
+						'action' => 'del',
+					    'id' => $Appearance['id'],
+					    'order' => $Appearance['order'],
+					    'label' => $Appearance['label'],
+					    'notes' => $Appearance['notes'],
+					    'cm_favme' => $Appearance['cm_favme'],
+					    'ishuman' => $Appearance['ishuman'],
+					    'added' => $Appearance['added'],
+					    'cm_preview' => $Appearance['cm_preview'],
+					    'cm_dir' => $Appearance['cm_dir'],
+					));
 
 					Response::Success('Appearance removed');
 				break;
