@@ -12913,17 +12913,17 @@
 						{
 							"order": 0,
 							"label": "Outline",
-							"hex": "#BCAA20"
+							"hex": "#C3B533"
 						},
 						{
 							"order": 1,
 							"label": "Fill",
-							"hex": "#F4E55D"
+							"hex": "#EBE983"
 						},
 						{
 							"order": 2,
 							"label": "Shadow Fill",
-							"hex": "#DFCD40"
+							"hex": "#DBD562"
 						}
 					]
 				},
@@ -12935,12 +12935,12 @@
 						{
 							"order": 0,
 							"label": "Outline",
-							"hex": "#403853"
+							"hex": "#4F4F75"
 						},
 						{
 							"order": 1,
 							"label": "Fill",
-							"hex": "#574D6E"
+							"hex": "#66669B"
 						}
 					]
 				},
@@ -12952,12 +12952,12 @@
 						{
 							"order": 0,
 							"label": "Gradient Top",
-							"hex": "#352853"
+							"hex": "#43336F"
 						},
 						{
 							"order": 1,
 							"label": "Gradient Bottom",
-							"hex": "#A7BCB9"
+							"hex": "#9ECBEA"
 						}
 					]
 				},
@@ -12969,12 +12969,12 @@
 						{
 							"order": 0,
 							"label": "Star",
-							"hex": "#55506A"
+							"hex": "#666B9A"
 						},
 						{
 							"order": 1,
 							"label": "Trail Fill 1",
-							"hex": "#BFDFDE"
+							"hex": "#C1E0E0"
 						},
 						{
 							"order": 2,
@@ -16881,7 +16881,7 @@
 			"id": 80,
 			"order": 103,
 			"label": "Dr. Hooves / Time Turner",
-			"notes": "For convenience, the color of the glass on her cutie mark is solid rather than transparent, thus the sand should be above.",
+			"notes": "For convenience, the color of the glass on his cutie mark is solid rather than transparent, thus the sand should be above.",
 			"cm_favme": "da9gbnl",
 			"ishuman": false,
 			"added": "2016-03-12 16:38:44.973718+01",
@@ -16895,8 +16895,8 @@
 					"Colors": [
 						{
 							"order": 0,
-							"label": "Shadow Fill",
-							"hex": "#AF9A66"
+							"label": "Outline",
+							"hex": "#98824C"
 						},
 						{
 							"order": 1,
@@ -16905,8 +16905,8 @@
 						},
 						{
 							"order": 2,
-							"label": "Outline",
-							"hex": "#98824C"
+							"label": "Shadow Fill",
+							"hex": "#AF9A66"
 						}
 					]
 				},
@@ -16917,13 +16917,13 @@
 					"Colors": [
 						{
 							"order": 0,
-							"label": "Fill",
-							"hex": "#524226"
+							"label": "Outline",
+							"hex": "#332919"
 						},
 						{
 							"order": 1,
-							"label": "Outline",
-							"hex": "#332919"
+							"label": "Fill",
+							"hex": "#524226"
 						}
 					]
 				},
@@ -16934,8 +16934,8 @@
 					"Colors": [
 						{
 							"order": 0,
-							"label": "Gradient Bottom",
-							"hex": "#A9E6FF"
+							"label": "Gradient Top",
+							"hex": "#1A3C84"
 						},
 						{
 							"order": 1,
@@ -16944,8 +16944,8 @@
 						},
 						{
 							"order": 2,
-							"label": "Gradient Top",
-							"hex": "#1A3C84"
+							"label": "Gradient Bottom",
+							"hex": "#A9E6FF"
 						}
 					]
 				},
