@@ -548,6 +548,7 @@ DocReady.push(function Episode(){
 				loader: true,
 			})
 			.on('openstart.fluidbox',function(){
+				disableLiveUpdate();
 				$body.addClass('no-distractions');
 			})
 			.on('closestart.fluidbox', function() {
