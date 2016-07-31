@@ -27,6 +27,55 @@
 		return $el;
 	};
 
+	class EmulatedStorage {
+		constructor(){
+			this.emulatedStorage = {};
+		}
+		getItem(k){
+			return typeof this.emulatedStorage[k] === 'undefined' ? null : this.emulatedStorage[k];
+		}
+		setItem(k, v){
+			this.emulatedStorage[k] = typeof v === 'string' ? v : ''+v;
+		}
+		removeItem(k){
+			delete this.emulatedStorage[k];
+		}
+	}
+
+	// Storage wrapper with try...catch blocks for incompetent browsers
+	class StorageWrapper {
+		constructor(store){
+			let storeName = store+'Storage';
+			try {
+				this.store = window[store+'Storage'];
+			}catch(e){
+				console.error(storeName+' is unavailable, falling back to EmulatedStorage');
+				this.store = new EmulatedStorage();
+			}
+		}
+		get(key){
+			let val = null;
+			try {
+				val = this.store.getItem(key);
+			}catch(e){}
+			return val;
+		}
+		set(key, value){
+			try {
+				this.store.setItem(key, value);
+			}catch(e){}
+		}
+		remove(key){
+			try {
+				this.store.removeItem(key);
+			}catch(e){}
+		}
+	}
+
+	$.LocalStorage = new StorageWrapper('local');
+
+	$.SessionStorage = new StorageWrapper('session');
+
 	// Convert relative URL to absolute
 	$.toAbsoluteURL = url => {
 		let a = mk('a');
@@ -634,8 +683,8 @@
 		$d.triggerHandler('paginate-refresh');
 
 		// Sign in button handler
-		localStorage.removeItem('cookie_consent');
-		let consent = localStorage.getItem('cookie_consent_v2');
+		$.LocalStorage.remove('cookie_consent');
+		let consent = $.LocalStorage.get('cookie_consent_v2');
 		OAUTH_URL = window.OAUTH_URL;
 
 		$('#signin').off('click').on('click',function(){
@@ -644,7 +693,7 @@
 					if (!sure) return;
 
 					$.Dialog.close();
-					localStorage.setItem('cookie_consent_v2',1);
+					$.LocalStorage.set('cookie_consent_v2',1);
 					$this.disable();
 
 					let redirect = function(){
@@ -725,7 +774,7 @@
 		try {
 			if (/^https/.test(location.protocol))
 				throw undefined;
-			let canhttps = sessionStorage.getItem('canhttps');
+			let canhttps = $.SessionStorage.get('canhttps');
 			if (canhttps === 'false')
 				throw undefined;
 			$.ajax({
@@ -739,9 +788,9 @@
 								href: location.href.replace(/^http:/,'https:')
 							}).text('Switch to HTTPS')
 						);
-					sessionStorage.setItem('canhttps', canhttps = this.status.toString());
+					$.SessionStorage.set('canhttps', canhttps = this.status.toString());
 				}),
-				error: function(){ sessionStorage.setItem('canhttps', canhttps = 'false') }
+				error: function(){ $.SessionStorage.set('canhttps', canhttps = 'false') }
 			});
 		}
 		catch(e){}
@@ -1029,6 +1078,7 @@ $(function(){
 				$w.trigger('resize');
 			},510);
 		};
+
 		$sbToggle.off('click sb-open sb-close').on('click', function(e){
 			e.preventDefault();
 
@@ -1036,10 +1086,17 @@ $(function(){
 		}).on('sb-open sb-close', function(e){
 			let close = e.type.substring(3) === 'close';
 			$body[close ? 'removeClass' : 'addClass']('sidebar-open');
-			localStorage[close ? 'setItem' : 'removeItem']('sidebar-closed', 'true');
+			try {
+				$.LocalStorage[close ? 'set' : 'remove']('sidebar-closed', 'true');
+			}catch(_){}
 			triggerResize();
 		});
-		if (localStorage.getItem('sidebar-closed') !== 'true' && window.OpenSidebarByDefault()){
+
+		let sbclosed;
+		try {
+			sbclosed = $.LocalStorage.get('sidebar-closed');
+		}catch(_){}
+		if (sbclosed !== 'true' && window.OpenSidebarByDefault()){
 			$body.addClass('sidebar-open');
 			triggerResize();
 		}

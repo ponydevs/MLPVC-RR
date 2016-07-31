@@ -5,7 +5,7 @@
 	if (!empty($Database)){
 		if ($signedIn){
 			$Notifications = Notifications::Get(null, Notifications::UNREAD_ONLY); ?>
-	<section class="notifications"<?=empty($Notifications)?'style="display:none"':''?>>
+	<section class="notifications"<?=empty($Notifications)?' style="display:none"':''?>>
 		<h2>Unread notifications</h2>
 		<?=Notifications::GetHTML($Notifications)?>
 	</section>

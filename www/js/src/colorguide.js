@@ -4,21 +4,21 @@ DocReady.push(function Colorguide(){
 	//noinspection JSUnusedLocalSymbols
 	let Color = window.Color, color = window.color, $list = $('.appearance-list'), EQG = window.EQG, AppearancePage = !!window.AppearancePage;
 
-	let copyHash = !localStorage.getItem('leavehash'), $toggler;
+	let copyHash = !$.LocalStorage.get('leavehash'), $toggler;
 	function copyHashToggler(){
 		$toggler = $('#toggle-copy-hash');
 		if (!$toggler.length)
 			return;
 		$toggler.off('display-update').on('display-update',function(){
-			copyHash = !localStorage.getItem('leavehash');
+			copyHash = !$.LocalStorage.get('leavehash');
 			$toggler
 				.attr('class','blue typcn typcn-'+(copyHash ? 'tick' : 'times'))
 				.text(`Copy # with ${color} codes: `+(copyHash ? 'En':'Dis')+'abled');
 		}).trigger('display-update').off('click').on('click', function(e){
 			e.preventDefault();
 
-			if (copyHash) localStorage.setItem('leavehash', 1);
-			else localStorage.removeItem('leavehash');
+			if (copyHash) $.LocalStorage.set('leavehash', 1);
+			else $.LocalStorage.remove('leavehash');
 
 			$toggler.triggerHandler('display-update');
 		});
