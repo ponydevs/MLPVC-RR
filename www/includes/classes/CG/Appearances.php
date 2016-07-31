@@ -151,6 +151,16 @@
 							? "<a href='/episode/S{$Ep['season']}E{$Ep['episode']}'>".\CoreUtils::AposEncode(\Episode::FormatTitle($Ep,AS_ARRAY,'title'))."</a>"
 							: "<strong>{$a[0]}</strong>";
 					},$Appearance['notes']);
+					$Appearance['notes'] = preg_replace_callback('/(?:^|[^\\\\])\K(?:#(\d+))\b/',function($a){
+						global $CGDb;
+						$Appearance = $CGDb->where('id', $a[1])->getOne('appearances');
+						return (
+							!empty($Appearance)
+							? "<a href='/cg/v/{$Appearance['id']}'>{$Appearance['label']}</a>"
+							: "$a[0]"
+						);
+					},$Appearance['notes']);
+					$Appearance['notes'] = str_replace('\#', '#', $Appearance['notes']);
 					$notes = '<span>'.nl2br($Appearance['notes']).'</span>';
 				}
 				if ($hasCM){
