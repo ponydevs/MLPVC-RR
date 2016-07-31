@@ -29,7 +29,7 @@ DocReady.push(function ColorguideSpriteedit(){
 	});
 
 	$.ajax({
-		url: `/cg/v/${AppearanceID}s.svg`,
+		url: `/cg/v/${AppearanceID}s.svg?t=`+Math.round(new Date().getTime()/1000),
 		dataType: 'html',
 		success: function(data){
 			$SVG = $(data);
