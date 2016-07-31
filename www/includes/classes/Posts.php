@@ -461,7 +461,7 @@ HTML;
 
 				$posted_at .= "Requested $permalink";
 				if ($signedIn && (Permission::Sufficient('staff') || $isRequester || $isReserver))
-					$posted_at .= ' by '.($isRequester ? 'You' : User::GetProfileLink(User::Get($R['requested_by'])));
+					$posted_at .= ' by '.($isRequester ? "<a href='/@{$currentUser['name']}'>You</a>" : User::GetProfileLink(User::Get($R['requested_by'])));
 			}
 			else {
 				$overdue = false;
