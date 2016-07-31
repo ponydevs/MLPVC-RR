@@ -457,25 +457,22 @@ HTML;
 				global $signedIn, $currentUser;
 				$isRequester = $R['requested_by'] === $currentUser['id'];
 				$isReserver = $R['reserved_by'] === $currentUser['id'];
-
-				if (!$finished && !empty($R['reserved_by']) && Permission::Sufficient('member') && self::IsOverdue($R)){
-					if (Permission::Sufficient('staff') || $isReserver)
-						$overdue = true;
-					else if (!$isReserver)
-						$R['reserved_by'] = null;
-				}
+				$overdue = !$finished && !empty($R['reserved_by']) && Permission::Sufficient('member') && self::IsOverdue($R);
 
 				$posted_at .= "Requested $permalink";
 				if ($signedIn && (Permission::Sufficient('staff') || $isRequester || $isReserver))
 					$posted_at .= ' by '.($isRequester ? 'You' : User::GetProfileLink(User::Get($R['requested_by'])));
 			}
-			else $posted_at .= "Reserved $permalink";
+			else {
+				$overdue = false;
+				$posted_at .= "Reserved $permalink";
+			}
 			$posted_at .= "</em>";
 
-			$R['reserver'] = false;
 			if (!empty($R['reserved_by'])){
 				$R['reserver'] = User::Get($R['reserved_by']);
-				$reserved_at = $isRequest && !empty($R['reserved_at']) ? "<em class='reserve-date'>Reserved <strong>".Time::Tag($R['reserved_at'])."</strong></em>" : '';
+				$reserved_by = $overdue && !$isReserver ? ' by '.User::GetProfileLink($R['reserver']) : '';
+				$reserved_at = $isRequest && !empty($R['reserved_at']) ? "<em class='reserve-date'>Reserved <strong>".Time::Tag($R['reserved_at'])."</strong>$reserved_by</em>" : '';
 				if ($finished){
 					$approved = !empty($R['lock']);
 					$Deviation = DeviantArt::GetCachedSubmission($R['deviation_id'],'fav.me',true);
@@ -516,8 +513,13 @@ HTML;
 			}
 			else $Image .= $post_label.$posted_at;
 
-			if (!empty($overdue))
+			if ($overdue && (Permission::Sufficient('staff') || $isReserver))
 				$Image .= "<strong class='color-blue contest-note' title=\"Because this request was reserved more than 3 weeks ago it's now available for other members to reserve\"><span class='typcn typcn-info-large'></span> Can be contested</strong>";
+
+			if (!isset($R['reserver']) || ($overdue && !$isReserver)){
+				$R['reserver'] = false;
+				$R['reserved_by'] = null;
+			}
 
 			return "<li id='$ID'>$Image".self::_getPostActions($R['reserver'], $R, $isRequest, $view_only ? $postlink : false).'</li>';
 		}
