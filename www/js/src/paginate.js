@@ -122,6 +122,14 @@
 						newURI
 					];
 
+				if (typeof window.ga === 'function')
+					window.ga('send', {
+						hitType: 'pageview',
+						page: newURI,
+						title: document.title,
+					});
+
+
 				if (overwriteState === true || (state.page !== newPageNumber && !isNaN(newPageNumber)) || extraQuery)
 					history.replaceState.apply(history, stateParams);
 
