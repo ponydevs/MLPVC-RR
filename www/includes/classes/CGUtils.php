@@ -257,6 +257,7 @@ HTML;
 			CLEAR_PALETTE = 'palette.png',
 			CLEAR_CMDIR = 'cmdir.svg',
 			CLEAR_SPRITE = 'sprite.png',
+			CLEAR_SPRITE_SVG = 'sprite.svg',
 			CLEAR_SPRITE_MAP = 'linedata.json.gz';
 
 		/**
@@ -267,7 +268,7 @@ HTML;
 		 *
 		 * @return bool
 		 */
-		static function ClearRenderedImages(int $AppearanceID, array $which = array(self::CLEAR_PALETTE,self::CLEAR_CMDIR,self::CLEAR_SPRITE,self::CLEAR_SPRITE_MAP)):bool {
+		static function ClearRenderedImages(int $AppearanceID, array $which = array(self::CLEAR_PALETTE,self::CLEAR_CMDIR,self::CLEAR_SPRITE,self::CLEAR_SPRITE_SVG,self::CLEAR_SPRITE_MAP)):bool {
 			$RenderedPath = APPATH."img/cg_render/$AppearanceID";
 			$success = array();
 			foreach ($which as $suffix){
