@@ -523,7 +523,9 @@ HTML;
 		}
 
 		static function ProcessLabel($label){
-			return preg_replace(new RegExp('(?:(f)ull[-\s](b)od(?:y|ied)(\sversion)?)','i'),'<strong class="color-darkblue">$1ull $2ody$3</strong>', CoreUtils::EscapeHTML($label));
+			$label = preg_replace(new RegExp('(?:(f)ull[-\s](b)od(?:y|ied)(\sversion)?)','i'),'<strong class="color-darkblue">$1ull $2ody</strong>$3', CoreUtils::EscapeHTML($label));
+			$label = preg_replace(new RegExp('(?:(f)ace[-\s](o)nly(\sversion)?)','i'),'<strong class="color-darkblue">$1ace $2nly</strong>$3', $label);
+			return $label;
 		}
 
 		/**
