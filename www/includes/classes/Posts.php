@@ -516,10 +516,8 @@ HTML;
 			if ($overdue && (Permission::Sufficient('staff') || $isReserver))
 				$Image .= "<strong class='color-blue contest-note' title=\"Because this request was reserved more than 3 weeks ago it's now available for other members to reserve\"><span class='typcn typcn-info-large'></span> Can be contested</strong>";
 
-			if (!isset($R['reserver']) || ($overdue && !$isReserver)){
+			if (!isset($R['reserver']) || ($overdue && !$isReserver))
 				$R['reserver'] = false;
-				$R['reserved_by'] = null;
-			}
 
 			return "<li id='$ID'>$Image".self::_getPostActions($R['reserver'], $R, $isRequest, $view_only ? $postlink : false).'</li>';
 		}
@@ -531,34 +529,32 @@ HTML;
 		/**
 		 * Generate HTML for post action buttons
 		 *
-		 * @param array      $By
-		 * @param array|bool $R
+		 * @param array|bool $By
+		 * @param array      $R
 		 * @param bool       $isRequest
 		 * @param bool       $view_only Only show the "View" button
 		 *
 		 * @return string
 		 */
-		private static function _getPostActions($By = null, $R = false, $isRequest = false, $view_only = false){
+		private static function _getPostActions($By, $R, $isRequest, $view_only){
 			global $signedIn, $currentUser;
 
 			$sameUser = $signedIn && $By['id'] === $currentUser['id'];
 			$requestedByUser = $isRequest && $signedIn && $R['requested_by'] === $currentUser['id'];
-			$isNotReserved = empty($R['reserved_by']);
+			$isNotReserved = empty($By);
 			$CanEdit = (empty($R['lock']) && Permission::Sufficient('staff')) || Permission::Sufficient('developer') || ($requestedByUser && $isNotReserved);
 			$Buttons = array();
 
-			if (is_array($R) && $isNotReserved) $HTML = Permission::Sufficient('member') && !$view_only ? "<button class='reserve-request typcn typcn-user-add'>Reserve</button>" : '';
+			if ($isNotReserved)
+				$HTML = Permission::Sufficient('member') && !$view_only ? "<button class='reserve-request typcn typcn-user-add'>Reserve</button>" : '';
 			else {
-				if (empty($By) || $By === true){
-					if (!$signedIn) trigger_error('Trying to get reserver button while not signed in');
-					$By = $currentUser;
-				}
 				$dAlink = User::GetProfileLink($By, User::LINKFORMAT_FULL);
 				$vectorapp = User::GetVectorAppClassName($By);
 				if (!empty($vectorapp))
 					$vectorapp .= "' title='Uses ".CoreUtils::$VECTOR_APPS[CoreUtils::Substring($vectorapp,5)]." to make vectors";
 				$HTML =  "<div class='reserver$vectorapp'>$dAlink</div>";
-
+			}
+			if (!empty($R['reserved_by'])){
 				$finished = !empty($R['deviation_id']);
 				$staffOrSameUser = ($sameUser && Permission::Sufficient('member')) || Permission::Sufficient('staff');
 				if (!$finished && $staffOrSameUser){
