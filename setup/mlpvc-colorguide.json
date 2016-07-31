@@ -7212,7 +7212,8 @@
 				72,
 				216,
 				353,
-				371
+				371,
+				384
 			]
 		},
 		"38": {
@@ -23874,9 +23875,134 @@
 				380
 			]
 		},
+		"178": {
+			"id": 178,
+			"order": 143,
+			"label": "Quibble Pants",
+			"notes": "Shirt colors are same as for Daring Do",
+			"cm_favme": "dac5ypu",
+			"ishuman": false,
+			"added": "2016-07-31 14:25:29.382017+02",
+			"cm_preview": null,
+			"cm_dir": false,
+			"ColorGroups": {
+				"970": {
+					"groupid": 970,
+					"label": "Coat",
+					"order": 0,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#A1614C"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#DDA351"
+						},
+						{
+							"order": 2,
+							"label": "Shadow Outline",
+							"hex": "#88523B"
+						},
+						{
+							"order": 3,
+							"label": "Shadow Fill",
+							"hex": "#BD8B44"
+						}
+					]
+				},
+				"971": {
+					"groupid": 971,
+					"label": "Mane & Tail",
+					"order": 1,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline / Fill 5",
+							"hex": "#252525"
+						},
+						{
+							"order": 1,
+							"label": "Fill 1",
+							"hex": "#989898"
+						},
+						{
+							"order": 2,
+							"label": "Fill 2",
+							"hex": "#727272"
+						},
+						{
+							"order": 3,
+							"label": "Fill 3",
+							"hex": "#505050"
+						},
+						{
+							"order": 4,
+							"label": "Fill 4",
+							"hex": "#4D4D4D"
+						},
+						{
+							"order": 5,
+							"label": "Fill 6",
+							"hex": "#000000"
+						}
+					]
+				},
+				"972": {
+					"groupid": 972,
+					"label": "Iris",
+					"order": 2,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Gradient Top",
+							"hex": "#193A85"
+						},
+						{
+							"order": 1,
+							"label": "Gradient Middle",
+							"hex": "#6193F7"
+						},
+						{
+							"order": 2,
+							"label": "Gradient Bottom",
+							"hex": "#ABE5FF"
+						}
+					]
+				},
+				"973": {
+					"groupid": 973,
+					"label": "Cutie Mark",
+					"order": 3,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#C8DAAD"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#FFFFFF"
+						}
+					]
+				}
+			},
+			"TagIDs": [
+				2,
+				7,
+				8,
+				11,
+				351,
+				374,
+				386
+			]
+		},
 		"64": {
 			"id": 64,
-			"order": 143,
+			"order": 144,
 			"label": "Angel Bunny",
 			"notes": "",
 			"cm_favme": null,
@@ -23990,7 +24116,7 @@
 		},
 		"112": {
 			"id": 112,
-			"order": 144,
+			"order": 145,
 			"label": "Gummy",
 			"notes": "In 3/4 view, the top line on his far eye uses the \"Far Eye Top Line\" color instead of the normal gradient.",
 			"cm_favme": null,
@@ -24128,7 +24254,7 @@
 		},
 		"116": {
 			"id": 116,
-			"order": 145,
+			"order": 146,
 			"label": "Winona",
 			"notes": "",
 			"cm_favme": null,
@@ -24262,7 +24388,7 @@
 		},
 		"117": {
 			"id": 117,
-			"order": 146,
+			"order": 147,
 			"label": "Owlowiscious",
 			"notes": "",
 			"cm_favme": null,
@@ -24350,7 +24476,7 @@
 		},
 		"119": {
 			"id": 119,
-			"order": 147,
+			"order": 148,
 			"label": "Tank",
 			"notes": "Far Legs use darker colors.\nIn some scenes, Tank uses an alternate set of colors for the tongue.\nFor the goggle lenses, group together the Fill and the Highlights (100% Normal blending) and set the group to 50% opacity.",
 			"cm_favme": null,
@@ -24618,7 +24744,7 @@
 		},
 		"120": {
 			"id": 120,
-			"order": 148,
+			"order": 149,
 			"label": "Opalescence",
 			"notes": "",
 			"cm_favme": null,
@@ -24815,7 +24941,7 @@
 		},
 		"33": {
 			"id": 33,
-			"order": 149,
+			"order": 150,
 			"label": "Alicorn Amulet",
 			"notes": "",
 			"cm_favme": null,
@@ -25006,7 +25132,7 @@
 		},
 		"86": {
 			"id": 86,
-			"order": 150,
+			"order": 151,
 			"label": "Scorpan's Medallion",
 			"notes": "",
 			"cm_favme": null,
@@ -25083,7 +25209,7 @@
 		},
 		"94": {
 			"id": 94,
-			"order": 151,
+			"order": 152,
 			"label": "Party Cannon",
 			"notes": "",
 			"cm_favme": null,
@@ -25211,7 +25337,7 @@
 		},
 		"115": {
 			"id": 115,
-			"order": 152,
+			"order": 153,
 			"label": "Fake Timberwolf",
 			"notes": "",
 			"cm_favme": null,
@@ -25419,7 +25545,7 @@
 		},
 		"154": {
 			"id": 154,
-			"order": 153,
+			"order": 154,
 			"label": "Twilight's Crown",
 			"notes": "For S4 onward",
 			"cm_favme": null,
@@ -25470,7 +25596,7 @@
 		},
 		"70": {
 			"id": 70,
-			"order": 154,
+			"order": 155,
 			"label": "Wonderbolt Uniform",
 			"notes": "",
 			"cm_favme": "da7pd3q",
@@ -25600,7 +25726,7 @@
 		},
 		"133": {
 			"id": 133,
-			"order": 155,
+			"order": 156,
 			"label": "Spitfire's Academy Outfit",
 			"notes": "",
 			"cm_favme": null,
@@ -25797,7 +25923,7 @@
 		},
 		"71": {
 			"id": 71,
-			"order": 156,
+			"order": 157,
 			"label": "Wonderbolt Trainee Uniform",
 			"notes": "The uppermost highlight on the Lead pony and Wingpony badges uses a different color and opacity than the rest.\nThe lenses of the goggles are comprised of two objects that do not overlap. The fill uses 67% normal blending and the highlight uses 50% overlay blending as far as we can tell.",
 			"cm_favme": null,
@@ -25939,7 +26065,7 @@
 		},
 		"105": {
 			"id": 105,
-			"order": 157,
+			"order": 158,
 			"label": "Pony Tones Outfit",
 			"notes": "",
 			"cm_favme": null,
@@ -26040,7 +26166,7 @@
 		},
 		"109": {
 			"id": 109,
-			"order": 158,
+			"order": 159,
 			"label": "Zecora",
 			"notes": "Based on S4E14.",
 			"cm_favme": null,
@@ -26205,7 +26331,7 @@
 		},
 		"113": {
 			"id": 113,
-			"order": 159,
+			"order": 160,
 			"label": "Orange Frog",
 			"notes": "",
 			"cm_favme": null,
@@ -26295,12 +26421,13 @@
 				232,
 				233,
 				247,
-				248
+				248,
+				385
 			]
 		},
 		"122": {
 			"id": 122,
-			"order": 160,
+			"order": 161,
 			"label": "Pig (Peach Skin)",
 			"notes": "",
 			"cm_favme": null,
@@ -26416,12 +26543,13 @@
 			"TagIDs": [
 				247,
 				261,
-				270
+				270,
+				385
 			]
 		},
 		"123": {
 			"id": 123,
-			"order": 161,
+			"order": 162,
 			"label": "Pig (Pink Skin)",
 			"notes": "Muddy Nostril color unknown",
 			"cm_favme": null,
@@ -26532,12 +26660,13 @@
 			"TagIDs": [
 				247,
 				261,
-				270
+				270,
+				385
 			]
 		},
 		"124": {
 			"id": 124,
-			"order": 162,
+			"order": 163,
 			"label": "Pig (Dark Skin)",
 			"notes": "Muddy Nostril color unknown",
 			"cm_favme": null,
@@ -26648,12 +26777,13 @@
 			"TagIDs": [
 				247,
 				261,
-				270
+				270,
+				385
 			]
 		},
 		"139": {
 			"id": 139,
-			"order": 163,
+			"order": 164,
 			"label": "Cranky Doodle Donkey",
 			"notes": "<strong>Toupee #1</strong> is up through half-way of \"A Friend in Deed\"\n<strong>Toupee #2</strong> is from \"A Friend in Deed\" through most of \"Slice of Life\"\n<strong>Toupee #2</strong> is from end of \"Slice of Life\" onward.",
 			"cm_favme": null,
@@ -26806,7 +26936,7 @@
 		},
 		"140": {
 			"id": 140,
-			"order": 164,
+			"order": 165,
 			"label": "Matilda",
 			"notes": "",
 			"cm_favme": null,
@@ -26977,7 +27107,7 @@
 		},
 		"144": {
 			"id": 144,
-			"order": 165,
+			"order": 166,
 			"label": "Rainbow Dash's Robe",
 			"notes": "",
 			"cm_favme": null,
@@ -27095,7 +27225,7 @@
 		},
 		"156": {
 			"id": 156,
-			"order": 166,
+			"order": 167,
 			"label": "Rainbow Dash's Bandaids (Newbie Dash)",
 			"notes": "Sampled from Newbie Dash (S6E7)",
 			"cm_favme": null,
@@ -27406,7 +27536,7 @@
 			"name": "earth pony",
 			"title": null,
 			"type": "spec",
-			"uses": 59,
+			"uses": 60,
 			"synonym_of": null
 		},
 		"3": {
@@ -27446,7 +27576,7 @@
 			"name": "minor character",
 			"title": "Ponies who had a speaking role, interacted with the mane six, or whose only purpose is to fill crowds.",
 			"type": "cat",
-			"uses": 122,
+			"uses": 123,
 			"synonym_of": null
 		},
 		"8": {
@@ -27478,7 +27608,7 @@
 			"name": "male",
 			"title": null,
 			"type": "gen",
-			"uses": 58,
+			"uses": 59,
 			"synonym_of": null
 		},
 		"12": {
@@ -29270,8 +29400,8 @@
 			"name": "creatures",
 			"title": null,
 			"type": "cat",
-			"uses": 4,
-			"synonym_of": null
+			"uses": 0,
+			"synonym_of": 385
 		},
 		"248": {
 			"tid": 248,
@@ -30134,7 +30264,7 @@
 			"name": "s06e13",
 			"title": null,
 			"type": "ep",
-			"uses": 0,
+			"uses": 1,
 			"synonym_of": null
 		},
 		"375": {
@@ -30196,6 +30326,30 @@
 		"383": {
 			"tid": 383,
 			"name": "comet trail",
+			"title": null,
+			"type": "char",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"384": {
+			"tid": 384,
+			"name": "dinky",
+			"title": null,
+			"type": "char",
+			"uses": 0,
+			"synonym_of": 72
+		},
+		"385": {
+			"tid": 385,
+			"name": "creature",
+			"title": null,
+			"type": "cat",
+			"uses": 4,
+			"synonym_of": null
+		},
+		"386": {
+			"tid": 386,
+			"name": "quibble pants",
 			"title": null,
 			"type": "char",
 			"uses": 1,
