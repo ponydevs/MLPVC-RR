@@ -1,5 +1,7 @@
 <?php
 
+	use Exceptions\cURLRequestException;
+
 	class CoreUtils {
 		/**
 		 * Loads a single class or a set of classes
@@ -984,8 +986,9 @@
 			        "verify_peer" => false,
 			        "verify_peer_name" => false,
 				);
+
 			$elephant = new ElephantIO\Client(new ElephantIO\Engine\SocketIO\Version1X('https://ws.'.WS_SERVER_DOMAIN.':8667', $options));
-			
+
 			$elephant->initialize();
 			$elephant->emit($event, $data);
 			$elephant->close();

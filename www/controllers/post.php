@@ -214,8 +214,8 @@
 					if ($type === 'request'){
 						$u = User::Get($Post['requested_by'],'id','name,id');
 						if (!empty($u) && $Post['requested_by'] !== $currentUser['id']){
-							Notifications::Send($u['id'], 'post-finished', $postdata);
-							$message .= "<p><strong>{$u['name']}</strong> has been notified.</p>";
+							$notifSent = Notifications::Send($u['id'], 'post-finished', $postdata);
+							$message .= "<p><strong>{$u['name']}</strong> ".($notifSent === 0?'has been notified':'will receive a notification shortly').'.'.(is_string($notifSent)?"</p><div class='notice fail'><strong>Error:</strong> $notifSent":'')."</div>";
 						}
 					}
 					if (!empty($message))

@@ -1,5 +1,7 @@
 <?php
 
+	use Exceptions\cURLRequestException;
+
 	class HTTP {
 		/**
 		 * Simulate a user visiting the URL from a browser as closely as we can

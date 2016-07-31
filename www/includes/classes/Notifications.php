@@ -83,8 +83,16 @@
 				'type' => $type,
 				'data' => JSON::Encode($data),
 			));
-			
-			CoreUtils::SocketEvent('notify-pls',array('user' => $to));
+
+			try {
+				CoreUtils::SocketEvent('notify-pls',array('user' => $to));
+			}
+			catch (ElephantIO\Exception\ServerConnectionFailureException $e){
+				error_log("Error while notifying $to with type $type (data:".JSON::Encode($data).")\nError message: {$e->getMessage()}");
+				return 'Notification server is down! Please <a class="send-feedback">let us know</a>.';
+			}
+
+			return 0;
 		}
 		
 		static function MarkRead($nid){

@@ -1,5 +1,7 @@
 <?php
 
+	use Exceptions\cURLRequestException;
+
 	class MismatchedProviderException extends Exception {
 		private $actualProvider;
 		function __construct($actualProvider){

@@ -1,5 +1,7 @@
 <?php
 
+	use Exceptions\cURLRequestException;
+
 	if (!$signedIn) Response::Success("You've already signed out");
 	CSRFProtection::Protect();
 

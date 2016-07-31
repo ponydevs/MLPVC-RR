@@ -1,5 +1,7 @@
 <?php
 
+	use Exceptions\cURLRequestException;
+
 	class DeviantArt {
 		private static
 			$_CACHE_BAILOUT = false,

@@ -1114,15 +1114,15 @@ $(function(){
 		e.stopPropagation();
 		$('#ctxmenu').hide();
 
-		$.Dialog.info('How to send feedback',
-			`<p>If you're having an issue with the site and would like to let the developer know, here's how you can contact him:</p>
+		$.Dialog.info($.Dialog.isOpen() ? undefined : 'Send feedback',
+			`<h3>How to send feedback</h3>
+			<p>If you're having an issue with the site and would like to let us know or have an idea/feature request you'd like to share, here's how:</p>
 			<ul>
 				<li><a href='https://discord.gg/0vv70fepSINi2Hy8'>Join our Discord server</a> and describe your issue in the <strong>#support</strong> channel</li>
-				<li>Send a note to <a href='http://djdavid98.deviantart.com/'>DJDavid98</a> on DeviantArt</li>
-				<li>Send an e-mail to <a href='mailto:seinopsys@gmail.com'>seinopsys@gmail.com</a></li>
-				<li>Add <a href='skype:guzsik.david?add'>guzsik.david</a> on Skype</li>
-			</ul>
-			<p class='notice info'>If you have a GitHub account, please <a href="${$footer.find('a.issues').attr('href')}">create an issue</a> on the project's GitHub page instead of using the methods above.</p>`
+				<li><a href='http://mlp-vectorclub.deviantart.com/notes/'>Send a note </a>to the group on DeviantArt</li>
+				<li><a href='mailto:seinopsys@gmail.com'>Send an e-mail</a> to seinopsys@gmail.com</li>
+				<li>If you have a GitHub account, you can also  <a href="${$footer.find('a.issues').attr('href')}">create an issue</a> on the project's GitHub page.
+			</ul>`
 		);
 	});
 

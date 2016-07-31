@@ -16,6 +16,15 @@
 			if (empty($Notif))
 				Response::Fail("The notification (#$nid) does not exist");
 
-			Notifications::MarkRead($Notif['id']);
+			try {
+				Notifications::MarkRead($Notif['id']);
+			}
+			catch (ElephantIO\Exception\ServerConnectionFailureException $e){
+				error_log("Notification server down!\n".$e->getMessage());
+				Response::Fail('Notification server is down! Please <a class="send-feedback">let us know</a>.');
+			}
+			catch (Exception $e){
+				Response::Fail('SocketEvent Error: '.$e->getMessage());
+			}
 			Response::Done();
 	}
