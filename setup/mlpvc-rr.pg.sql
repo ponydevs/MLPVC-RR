@@ -498,6 +498,41 @@ ALTER SEQUENCE log__res_overtake_entryid_seq OWNED BY log__res_overtake.entryid;
 
 
 --
+-- Name: log__res_transfer; Type: TABLE; Schema: public; Owner: mlpvc-rr
+--
+
+CREATE TABLE log__res_transfer (
+    entryid integer NOT NULL,
+    type character varying(11) NOT NULL,
+    id integer NOT NULL,
+    "to" uuid NOT NULL
+);
+
+
+ALTER TABLE log__res_transfer OWNER TO "mlpvc-rr";
+
+--
+-- Name: log__res_transfer_entryid_seq; Type: SEQUENCE; Schema: public; Owner: mlpvc-rr
+--
+
+CREATE SEQUENCE log__res_transfer_entryid_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE log__res_transfer_entryid_seq OWNER TO "mlpvc-rr";
+
+--
+-- Name: log__res_transfer_entryid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER SEQUENCE log__res_transfer_entryid_seq OWNED BY log__res_transfer.entryid;
+
+
+--
 -- Name: log__rolechange; Type: TABLE; Schema: public; Owner: mlpvc-rr
 --
 
@@ -630,7 +665,8 @@ CREATE TABLE notifications (
     type character varying(15) NOT NULL,
     data jsonb NOT NULL,
     sent_at timestamp with time zone DEFAULT now() NOT NULL,
-    read_at timestamp with time zone
+    read_at timestamp with time zone,
+    read_action character varying(10)
 );
 
 
@@ -927,6 +963,13 @@ ALTER TABLE ONLY log__res_overtake ALTER COLUMN entryid SET DEFAULT nextval('log
 -- Name: entryid; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
 --
 
+ALTER TABLE ONLY log__res_transfer ALTER COLUMN entryid SET DEFAULT nextval('log__res_transfer_entryid_seq'::regclass);
+
+
+--
+-- Name: entryid; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
+--
+
 ALTER TABLE ONLY log__rolechange ALTER COLUMN entryid SET DEFAULT nextval('log__rolechange_entryid_seq'::regclass);
 
 
@@ -1020,6 +1063,14 @@ ALTER TABLE ONLY global_settings
 
 
 --
+-- Name: log__appearances_entryid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER TABLE ONLY log__appearances
+    ADD CONSTRAINT log__appearances_entryid PRIMARY KEY (entryid);
+
+
+--
 -- Name: log__banish_entryid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
@@ -1076,6 +1127,14 @@ ALTER TABLE ONLY log__req_delete
 
 
 --
+-- Name: log__res_transfer_entryid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER TABLE ONLY log__res_transfer
+    ADD CONSTRAINT log__res_transfer_entryid PRIMARY KEY (entryid);
+
+
+--
 -- Name: log__rolechange_entryid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
@@ -1105,6 +1164,14 @@ ALTER TABLE ONLY log__userfetch
 
 ALTER TABLE ONLY log
     ADD CONSTRAINT log_entryid PRIMARY KEY (entryid);
+
+
+--
+-- Name: notifications_id; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER TABLE ONLY notifications
+    ADD CONSTRAINT notifications_id PRIMARY KEY (id);
 
 
 --
@@ -1628,6 +1695,24 @@ GRANT ALL ON TABLE log__res_overtake TO "mlpvc-rr";
 REVOKE ALL ON SEQUENCE log__res_overtake_entryid_seq FROM PUBLIC;
 REVOKE ALL ON SEQUENCE log__res_overtake_entryid_seq FROM "mlpvc-rr";
 GRANT ALL ON SEQUENCE log__res_overtake_entryid_seq TO "mlpvc-rr";
+
+
+--
+-- Name: log__res_transfer; Type: ACL; Schema: public; Owner: mlpvc-rr
+--
+
+REVOKE ALL ON TABLE log__res_transfer FROM PUBLIC;
+REVOKE ALL ON TABLE log__res_transfer FROM "mlpvc-rr";
+GRANT ALL ON TABLE log__res_transfer TO "mlpvc-rr";
+
+
+--
+-- Name: log__res_transfer_entryid_seq; Type: ACL; Schema: public; Owner: mlpvc-rr
+--
+
+REVOKE ALL ON SEQUENCE log__res_transfer_entryid_seq FROM PUBLIC;
+REVOKE ALL ON SEQUENCE log__res_transfer_entryid_seq FROM "mlpvc-rr";
+GRANT ALL ON SEQUENCE log__res_transfer_entryid_seq TO "mlpvc-rr";
 
 
 --

@@ -51,7 +51,7 @@
 
 		Response::Done(array('li' => Posts::GetLi($Post, $thing === 'request', isset($_POST['FROM_PROFILE']), true)));
 	}
-	else if (regex_match(new RegExp('^((?:un)?(?:finish|lock|reserve)|add|delete)-(request|reservation)s?/(\d+)$'),$data,$_match)){
+	else if (regex_match(new RegExp('^((?:un)?(?:finish|lock|reserve)|add|delete|pls-transfer)-(request|reservation)s?/(\d+)$'),$data,$_match)){
 		$type = $_match[2];
 		$action = $_match[1];
 
@@ -75,6 +75,9 @@
 			if (!$Database->where('id', $Post['id'])->delete('requests'))
 				Response::DBError();
 
+			if (!empty($Post['reserved_by']))
+				Posts::ClearTransferAttempts($Post, $type, 'del');
+
 			Log::Action('req_delete',array(
 				'season' => $Post['season'],
 				'episode' => $Post['episode'],
@@ -94,10 +97,60 @@
 		if (Permission::Insufficient('member'))
 			Response::Fail();
 
+		if ($action === 'pls-transfer'){
+			$reserved_by = $Post['reserved_by'] ?? null;
+			$checkIfUserCanReserve = function(&$message, &$data) use ($Post, $reserved_by, $type, $currentUser){
+				Posts::ClearTransferAttempts($Post, $type, 'free', $currentUser['id'], $reserved_by);
+				if (!User::ReservationLimitCheck(RETURN_AS_BOOL)){
+					$message .= '<br>Would you like to reserve it now?';
+					$data = array('canreserve' => true);
+				}
+				else {
+					$message .= "<br>However, you have 4 reservations already which means you can't reserve any more posts. Please review your pending reservations on your <a href='/user'>Account page</a> and cancel/finish at least one before trying to take on another.";
+					$data = array();
+				}
+			};
+
+			if (empty($reserved_by)){
+				$message = 'This post is not reserved by anyone so there no need to ask for anyone\'s confirmation.';
+				$checkIfUserCanReserve($message, $data, 'overdue');
+				Response::Fail($message, $data);
+			}
+			if ($reserved_by === $currentUser['id'])
+				Response::Fail("You've already reserved this $type");
+			if (Posts::IsOverdue($Post)){
+				$message = "This post was reserved ".Time::Tag($Post['reserved_at'])." so anyone's free to reserve it now.";
+				$checkIfUserCanReserve($message, $data, 'overdue');
+				Response::Fail($message, $data);
+			}
+
+			User::ReservationLimitCheck();
+
+			if (!Posts::IsTransferable($Post))
+				Response::Fail("This $type was reserved recently, please allow up to 5 days before asking for a transfer");
+
+			$ReserverLink = User::GetProfileLink(User::Get($reserved_by, 'id', 'name'));
+
+			$PreviousAttempts = Posts::GetTransferAttempts($Post, $type, $currentUser['id'], $reserved_by);
+
+			if (!empty($PreviousAttempts[0]) && empty($PreviousAttempts[0]['read_at']))
+				Response::Fail("You already expressed your interest in this post to $ReserverLink ".Time::Tag($PreviousAttempts[0]['sent_at']).', please wait for them to respond.');
+
+			$notifSent = Notifications::Send($Post['reserved_by'],'post-passon',array(
+				'type' => $type,
+				'id' => $Post['id'],
+				'user' => $currentUser['id'],
+			));
+
+			Response::Success("A notification has been sent to $ReserverLink, please wait for them to react.<br>If they don't visit the site often, it'd be a good idea to send them a note asking him to consider your inquiry.");
+		}
+
 		$isUserReserver = $Post['reserved_by'] === $currentUser['id'];
 		if (!empty($Post['reserved_by'])){
 			switch ($action){
 				case 'reserve':
+					if ($isUserReserver)
+						Response::Fail("You've already reserved this $type", array('li' => Posts::GetLi($Post, true)));
 					if (Posts::IsOverdue($Post)){
 						$overdue = array(
 							'reserved_by' => $Post['reserved_by'],
@@ -106,9 +159,7 @@
 						$Post['reserved_by'] = null;
 						break;
 					}
-					if ($isUserReserver)
-						Response::Fail("You've already reserved this $type");
-					Response::Fail("This $type has already been reserved by somepony else");
+					Response::Fail("This $type has already been reserved by ".User::GetProfileLink(User::Get($Post['reserved_by'])), array('li' => Posts::GetLi($Post, true)));
 				break;
 				case 'lock':
 					if (empty($Post['deviation_id']))
@@ -224,6 +275,8 @@
 				break;
 			}
 		}
+		else if ($action === 'unreserve')
+			Response::Done(array('li' => Posts::GetLi($Post, true)));
 		else if ($action === 'finish')
 			Response::Fail("This $type has not been reserved by anypony yet");
 
@@ -262,6 +315,12 @@
 				),
 				$overdue
 			));
+
+		if (!empty($update['reserved_by']))
+			Posts::ClearTransferAttempts($Post, $type, 'snatch');
+		else if (!empty($Post['reserved_by'])){
+			Posts::ClearTransferAttempts($Post, $type, 'free');
+		}
 
 		if ($type === 'request'){
 			$Post = array_merge($Post, $update);

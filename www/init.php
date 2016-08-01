@@ -26,7 +26,7 @@
 	# boolean
 	define('AND_DIE', true); // CoreUtils::StatusCode
 	define('AS_ARRAY',true); // Episode::FormatTitle
-	define('RETURN_AS_BOOL', true); // CSRFProtection::Protect
+	define('RETURN_AS_BOOL', true); // CSRFProtection::Protect & User::ReservationLimitCheck
 	define('STAY_ALIVE', false); // HTTP::Redirect
 	define('HTML_ONLY', true); // CoreUtils::_processHeaderLink
 	define('PREPEND_NUMBER', true); // CoreUtils::MakePlural

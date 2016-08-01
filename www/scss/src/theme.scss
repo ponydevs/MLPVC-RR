@@ -532,10 +532,10 @@ button.da-login:before { background-image: url('../../img/da-logo.svg') }
 				}
 				a {
 					@include link;
-					color: lighten($Link, 20);
+					color: lighten($Link, 30);
 
 					&:hover {
-						color: lighten($LinkHover, 20);
+						color: lighten($LinkHover, 30);
 					}
 				}
 
@@ -546,9 +546,19 @@ button.da-login:before { background-image: url('../../img/da-logo.svg') }
 						cursor: pointer;
 						padding: 1px 3px;
 						border-radius: 3px;
-						background: $NGreenBG;
-						color: $NGreen;
-						margin-left: .5em;
+
+						&:first-of-type { margin-left: .5em }
+						&:not(:first-of-type) { margin-left: 3px }
+
+
+						&.variant-green {
+							color: $NGreen;
+							background: $NGreenBG;
+						}
+						&.variant-red {
+							color: $NRed;
+							background: $NRedBG;
+						}
 					}
 				}
 			}
@@ -699,13 +709,20 @@ footer {
 	}
 }
 // Colors
-.color-blue { color: $NBlue !important }
+.color-blue     { color: $NBlue !important }
 .color-darkblue { color: $NDarkBlue !important }
-.color-teal { color: $NTeal !important }
-.color-green { color: $NGreen !important }
-.color-red { color: $NRed !important }
-.color-orange { color: $NOrange !important }
-.color-yellow { color: $NYellow !important }
+.color-teal     { color: $NTeal !important }
+.color-green    { color: $NGreen !important }
+.color-red      { color: $NRed !important }
+.color-orange   { color: $NOrange !important }
+.color-yellow   { color: $NYellow !important }
+.color-lightblue     { color: darken($NBlueBG, 10) !important }
+.color-lightdarkblue { color: darken($NDarkBlueBG, 10) !important }
+.color-lightteal     { color: darken($NTealBG, 10) !important }
+.color-lightgreen    { color: darken($NGreenBG, 10) !important }
+.color-lightred      { color: darken($NRedBG, 10) !important }
+.color-lightorange   { color: darken($NOrangeBG, 10) !important }
+.color-lightyellow   { color: darken($NYellowBG, 10) !important }
 @import "theme_notices";
 @import "theme_buttons";
 // Alignment

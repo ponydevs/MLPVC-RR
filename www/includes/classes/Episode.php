@@ -163,6 +163,8 @@
 			CoreUtils::FixPath(!$EQG ? "/episode/$EpID" : "/eqg/{$GLOBALS['url']}");
 
 			$js = array('imagesloaded.pkgd','jquery.ba-throttle-debounce','jquery.fluidbox','Chart','episode');
+			if (Permission::Sufficient('member'))
+				$js[] = 'episode-manage';
 			if (Permission::Sufficient('staff')){
 				$js[] = 'moment-timezone';
 				$js[] = 'episodes-manage';

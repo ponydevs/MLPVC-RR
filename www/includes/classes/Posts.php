@@ -430,6 +430,62 @@ HTML;
 			return isset($Post['requested_by']) && isset($Post['reserved_by']) && time() - strtotime($Post['reserved_at']) >= Time::$IN_SECONDS['week']*3;
 		}
 
+		static function IsTransferable($Post){
+			if (!isset($Post['reserved_by']))
+				return true;
+			$ts = isset($Post['requested_by']) ? $Post['reserved_at'] : $Post['posted'];
+			return time() - strtotime($ts) >= Time::$IN_SECONDS['day']*5;
+		}
+
+		static function GetTransferAttempts($Post, $type, $sent_by = null, $reserved_by = null, $cols = 'read_at,sent_at'){
+			global $Database, $currentUser;
+			if (!empty($reserved_by))
+				$Database->where("user", $reserved_by);
+			if (!empty($sent_by))
+				$Database->where("data->>'user'", $sent_by);
+			return $Database
+				->where('type', 'post-passon')
+				->where("data->>'type'", $type)
+				->where("data->>'id'", $Post['id'])
+				->orderBy('sent_at', NEWEST_FIRST)
+				->get('notifications',null,$cols);
+		}
+
+		static $TRANSFER_ATTEMPT_CLEAR_REASONS = array(
+			'del' => 'the post was deleted',
+			'snatch' => 'the post was reserved by someone else',
+			'deny' => 'the post was transferred to someone else',
+			'perm' => 'the previous reserver could no longer act on the post',
+			'free' => 'the post became free for anyone to reserve',
+		);
+
+		static function ClearTransferAttempts(array $Post, string $type, string $reason, $sent_by = null, $reserved_by = null){
+			global $currentUser, $Database;
+
+			if (!isset(self::$TRANSFER_ATTEMPT_CLEAR_REASONS[$reason]))
+				throw new Exception("Invalid clear reason $reason");
+
+			$Database->where('read_at IS NULL');
+			$TransferAttempts = Posts::GetTransferAttempts($Post, $type, $sent_by, $reserved_by, 'id,data');
+			if (!empty($TransferAttempts)){
+				$SentFor = array();
+				foreach ($TransferAttempts as $n){
+					Notifications::SafeMarkRead($n['id']);
+
+					$data = JSON::Decode($n['data']);
+					if (!empty($SentFor[$data['user']][$reason]["{$data['type']}-{$data['id']}"]))
+						continue;
+
+					Notifications::Send($data['user'], "post-pass$reason", array(
+						'id' => $data['id'],
+						'type' => $data['type'],
+						'by' => $currentUser['id'],
+					));
+					$SentFor[$data['user']][$reason]["{$data['type']}-{$data['id']}"] = true;
+				}
+			}
+		}
+
 		/**
 		 * List ltem generator function for request & reservation generators
 		 *
@@ -541,9 +597,9 @@ HTML;
 		private static function _getPostActions($By, $R, $isRequest, $view_only){
 			global $signedIn, $currentUser;
 
-			$sameUser = $signedIn && $By['id'] === $currentUser['id'];
 			$requestedByUser = $isRequest && $signedIn && $R['requested_by'] === $currentUser['id'];
 			$isNotReserved = empty($By);
+			$sameUser = $signedIn && $R['reserved_by'] === $currentUser['id'];
 			$CanEdit = (empty($R['lock']) && Permission::Sufficient('staff')) || Permission::Sufficient('developer') || ($requestedByUser && $isNotReserved);
 			$Buttons = array();
 
@@ -559,9 +615,13 @@ HTML;
 			if (!empty($R['reserved_by'])){
 				$finished = !empty($R['deviation_id']);
 				$staffOrSameUser = ($sameUser && Permission::Sufficient('member')) || Permission::Sufficient('staff');
-				if (!$finished && $staffOrSameUser){
-					$Buttons[] = array('user-delete red cancel', 'Cancel Reservation');
-					$Buttons[] = array('attachment green finish', ($sameUser ? "I'm" : 'Mark as').' finished');
+				if (!$finished){
+					if (!$sameUser && Permission::Sufficient('member') && Posts::IsTransferable($R) && !Posts::IsOverdue($R))
+						$Buttons[] = array('user-add darkblue pls-transfer', 'Take on');
+					if ($staffOrSameUser){
+						$Buttons[] = array('user-delete red cancel', 'Cancel Reservation');
+						$Buttons[] = array('attachment green finish', ($sameUser ? "I'm" : 'Mark as').' finished');
+					}
 				}
 				if ($finished && empty($R['lock'])){
 					if (Permission::Sufficient('staff'))

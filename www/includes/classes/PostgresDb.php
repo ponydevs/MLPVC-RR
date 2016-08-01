@@ -201,6 +201,10 @@
 			}
 		}
 
+		protected function _escapeApostrophe($str){
+			return preg_replace('~(^|[^\'])\'~', '$1\'\'', $str);
+		}
+
 		/**
 		 * Abstraction method that will build the part of the WHERE conditions
 		 */
@@ -214,8 +218,8 @@
 
 			foreach ($this->_where as $cond){
 				list ($concat, $varName, $operator, $val) = $cond;
-				if (preg_match('~^[a-z_\-\d]+$~', $varName)){
-					$varName = "\"$varName\"";
+				if (preg_match('~^"?([a-z_\-\d]+)"?(?:->>\'?([\w\d\-]+)\'?)?$~', $varName, $match)){
+					$varName = "\"$match[1]\"".(isset($match[2]) ? "->>'".self::_escapeApostrophe($match[2])."'" : '');
 				}
 				$this->_query .= ' '.trim("$concat $varName");
 

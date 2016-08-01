@@ -15,6 +15,7 @@
 			'img_update' => 'Post image updated',
 			'res_overtake' => 'Overtook post reservation',
 			'appearances' => 'Appearance management',
+			'res_transfer' => 'Reservation transferred',
 		);
 
 		/**
@@ -236,6 +237,26 @@
 						$details[] = array('Template applied', true);
 					if (!empty($data['added']))
 						$details[] = array('Added', Time::Tag($data['added'], Time::TAG_EXTENDED, Time::TAG_STATIC_DYNTIME));
+				break;
+				case "res_transfer":
+					$Post = $Database->where('id', $data['id'])->getOne("{$data['type']}s");
+					if (empty($Post))
+						$details[] = array('Notice', 'The post has been deleted, some details are unavailable');
+					$details[] = array('ID',$data['id']);
+					$details[] = array('Type',$data['type']);
+					if (!empty($Post)){
+						$Fragment = "#{$data['type']}-{$data['id']}";
+						if ($Post['season'] == 0){
+							$IDstr = "EQG{$Post['episode']}";
+							$Link = "/eqg/{$Post['episode']}";
+						}
+						else{
+							$IDstr = "S{$Post['season']}E{$Post['episode']}";
+							$Link = "/episode/$IDstr";
+						}
+						$details[] = array('Link',"<a href='$Link$Fragment'>$IDstr$Fragment</a>");
+					}
+					$details[] = array('New reserver',User::GetProfileLink(User::Get($data['to'])));
 				break;
 				default:
 					$details[] = array('Could not process details','No data processor defined for this entry type');

@@ -4,6 +4,27 @@
 		private static $_notifTypes = array(
 			'post-finished' => true,
 			'post-approved' => true,
+			'post-passon' => true,
+				'post-passdeny' => true,
+				'post-passallow' => true,
+				'post-passfree' => true,
+				'post-passdel' => true,
+				'post-passsnatch' => true,
+				'post-passperm' => true,
+		);
+		public static $ACTIONABLE_NOTIF_OPTIONS = array(
+			'post-passon' => array(
+				'true'  => array(
+					'label' => 'Allow',
+					'icon' => 'tick',
+					'color' => 'green',
+				),
+				'false' => array(
+					'label' => 'Deny',
+					'icon' => 'times',
+					'color' => 'red',
+				),
+			)
 		);
 
 		const
@@ -53,6 +74,56 @@
 						$url = "/episode/$EpID#{$data['type']}-{$data['id']}";
 						$HTML .= self::_getNotifElem("A <a href='$url'>post</a> you reserved under $EpID has been added do the club gallery", $n);
 					break;
+					case "post-passon":
+						$Post = $Database->where('id', $data['id'])->getOne("{$data['type']}s");
+						$Episode = Episode::GetActual($Post['season'],$Post['episode'], Episode::ALLOW_SEASON_ZERO);
+						$EpID = Episode::FormatTitle($Episode, AS_ARRAY, 'id');
+						$url = "/episode/$EpID#{$data['type']}-{$data['id']}";
+						$User = User::Get($data['user']);
+						$userlink = User::GetProfileLink($User);
+						$HTML .= self::_getNotifElem("$userlink is interested in finishing a <a href='$url'>post</a> you reserved under $EpID. Would you like to pass the reservation to them?", $n);
+					break;
+					case "post-passdeny":
+					case "post-passallow":
+					case "post-passfree":
+					case "post-passdel":
+					case "post-passsnatch":
+					case "post-passperm":
+						$Post = $Database->where('id', $data['id'])->getOne("{$data['type']}s");
+						$Episode = Episode::GetActual($Post['season'],$Post['episode'], Episode::ALLOW_SEASON_ZERO);
+						$EpID = Episode::FormatTitle($Episode, AS_ARRAY, 'id');
+						$url = "/episode/$EpID#{$data['type']}-{$data['id']}";
+						$User = User::Get($data['by']);
+						$userlink = User::GetProfileLink($User);
+
+						$passaction = str_replace('post-pass','',$n['type']);
+						switch($passaction){
+							case "allow":
+								$HTML .= self::_getNotifElem("Reservation transfer status: $userlink <strong class='color-lightgreen'>transferred</strong> the reservation of <a href='$url'>this post</a> under $EpID to you!", $n);
+							break;
+							case "deny":
+								$HTML .= self::_getNotifElem("Reservation transfer status: $userlink <strong class='color-lightred'>denied</strong> transferring the reservation of <a href='$url'>this post</a> under $EpID to you.", $n);
+							break;
+							case 'free':
+							case 'del':
+							case 'snatch':
+							case 'perm':
+								$message = Posts::$TRANSFER_ATTEMPT_CLEAR_REASONS[$passaction];
+								$message = str_replace('post', "<a href='$url'>post</a>", $message);
+								switch ($passaction){
+									case 'del':
+										$message .= " by $userlink";
+									break;
+									case "perm":
+										$message = str_replace('the previous reserver', $userlink, $message);
+									break;
+								}
+								$HTML .= self::_getNotifElem("Reservation transfer status: $message", $n);
+							break;
+						}
+					break;
+					default:
+						$HTML .= "<li><code>Notification({$n['type']})#{$n['id']}</code> <span class='nobr'>&ndash; Missing handler</span></li>";
 				}
 			}
 			
@@ -60,7 +131,14 @@
 		}
 		
 		private static function _getNotifElem($html,$n){
-			return "<li>$html <span class='nobr'>&ndash; ".Time::Tag(strtotime($n['sent_at']))."<span class='mark-read typcn typcn-tick' title='Mark read' data-id='{$n['id']}'></span></span></li>";
+			if (empty(self::$ACTIONABLE_NOTIF_OPTIONS[$n['type']]))
+				$actions = "<span class='mark-read variant-green typcn typcn-tick' title='Mark read' data-id='{$n['id']}'></span>";
+			else {
+				$actions = '';
+				foreach (self::$ACTIONABLE_NOTIF_OPTIONS[$n['type']] as $value => $opt)
+					$actions .= "<span class='mark-read variant-{$opt['color']} typcn typcn-{$opt['icon']}' title='{$opt['label']}' data-id='{$n['id']}' data-value='$value'></span>";
+			}
+			return "<li>$html <span class='nobr'>&ndash; ".Time::Tag(strtotime($n['sent_at']))."$actions</span></li>";
 		}
 		
 		static function Send($to, $type, $data){
@@ -95,7 +173,21 @@
 			return 0;
 		}
 		
-		static function MarkRead($nid){
-			CoreUtils::SocketEvent('mark-read',array('nid' => $nid));
+		static function MarkRead($nid, $action = null){
+			CoreUtils::SocketEvent('mark-read',array('nid' => $nid, 'action' => $action));
+		}
+
+		static function SafeMarkRead($NotifID, $action = null){
+			try {
+				Notifications::MarkRead($NotifID, $action);
+			}
+			catch (ElephantIO\Exception\ServerConnectionFailureException $e){
+				error_log("Notification server down!\n".$e->getMessage());
+				Response::Fail('Notification server is down! Please <a class="send-feedback">let us know</a>.');
+			}
+			catch (Exception $e){
+				error_log("SocketEvent Error\n".$e->getMessage());
+				Response::Fail('SocketEvent Error: '.$e->getMessage());
+			}
 		}
 	}

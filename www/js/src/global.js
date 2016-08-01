@@ -1022,8 +1022,7 @@
 							$body.removeClass('loading');
 							$main.removeClass('pls-wait');
 
-							if (signedIn)
-								window.WSNotifications(signedIn);
+							window.WSNotifications(signedIn);
 
 							$.callCallback(callback);
 							setTimeout(function(){
@@ -1265,14 +1264,22 @@ $(function(){
 					}
 
 					f(data);
-				};
-		function WSNotifications(signedIn){
+				},
+			$notifCnt,
+			$notifSb,
+			$notifSbList,
+			essentialElements = function(){
+				$notifCnt = $sbToggle.children('.notif-cnt');
+				if ($notifCnt.length === 0)
+					$notifCnt = $.mk('span').attr({'class':'notif-cnt',title:'New notifications'}).prependTo($sbToggle);
+				$notifSb = $sidebar.children('.notifications');
+				$notifSbList = $notifSb.children('.notif-list');
+			};
+		function WSNotifs(signedIn){
 			if (!window.io || !signedIn)
 				return;
 
-			let $notifCnt = $sbToggle.children('.notif-cnt'),
-				$notifSb = $sidebar.children('.notifications'),
-				$notifSbList = $notifSb.children('.notif-list');
+			essentialElements();
 
 			$notifSbList.off('click','.mark-read').on('click','.mark-read', function(e){
 				e.preventDefault();
@@ -1280,20 +1287,30 @@ $(function(){
 				let $el = $(this);
 				if ($el.is(':disabled'))
 					return;
-				$el.css('opacity', '.5').disable();
 
-				let nid = $el.attr('data-id');
-				$.post(`/notifications/mark-read/${nid}`,$.mkAjaxHandler(function(){
-					if (this.status)
-						return;
+				let nid = $el.attr('data-id'),
+					data = {read_action: $el.attr('data-value')},
+					send = function(){
+						$el.css('opacity', '.5').disable();
 
-					$el.css('opacity', '').enable();
-					return $.Dialog.fail('Mark notification as read', this.message);
-				}));
+						$.post(`/notifications/mark-read/${nid}`,data,$.mkAjaxHandler(function(){
+							if (this.status)
+								return;
+
+							$el.css('opacity', '').enable();
+							return $.Dialog.fail('Mark notification as read', this.message);
+						}));
+					};
+
+				if (data.read_action)
+					$.Dialog.confirm('Actionable notification',`Please confirm your choice: <strong class="color-${$el.attr('class').replace(/^.*variant-(\w+)\b.*$/,'$1')}">${$el.attr('title')}</strong>`,['Confirm','Cancel'], sure => {
+						if (!sure) return;
+
+						$.Dialog.close();
+						send();
+					});
+				else send();
 			});
-
-			if ($notifCnt.length === 0)
-				$notifCnt = $.mk('span').attr({'class':'notif-cnt',title:'New notifications'}).prependTo($sbToggle);
 
 			if (conn)
 				return;
@@ -1306,9 +1323,12 @@ $(function(){
 				console.log(`[WS] Authenticated as ${data.name}`);
 			}));
 			conn.on('notif-cnt', wsdecoder(function(data){
-				let cnt = parseInt(data.cnt||0, 10);
-				console.log('[WS] Got notification count (data.cnt=%d)', cnt);
-				if (!cnt){
+				let cnt = data.cnt ? parseInt(data.cnt, 10) : 0;
+				console.log('[WS] Got notification count (data.cnt=%d, cnt=%d)', data.cnt, cnt);
+
+				essentialElements();
+
+				if (cnt === 0){
 					$notifSb.stop().slideUp('fast',function(){
 						$notifSbList.empty();
 						$notifCnt.empty();
@@ -1329,8 +1349,8 @@ $(function(){
 				console.log('[WS] Disconnected');
 			});
 		}
-		WSNotifications(window.signedIn);
-		window.WSNotifications = function(uid){WSNotifications(uid)};
+		WSNotifs(window.signedIn);
+		window.WSNotifications = function(signedIn){WSNotifs(signedIn)};
 	})();
 
 	$.Navigation.docReady();

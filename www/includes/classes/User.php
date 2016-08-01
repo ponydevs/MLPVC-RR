@@ -215,8 +215,12 @@
 
 		/**
 		 * Check maximum simultaneous reservation count
+		 *
+		 * @param bool $return_as_bool
+		 *
+		 * @return bool|null
 		 */
-		static function ReservationLimitCheck(){
+		static function ReservationLimitCheck(bool $return_as_bool = false){
 			global $Database, $currentUser;
 
 			$reservations = $Database->rawQuerySingle(
@@ -235,8 +239,11 @@
 				array($currentUser['id'])
 			);
 
-			if (isset($reservations['count']) && $reservations['count'] >= 4)
-				Response::Fail("You've already reserved {$reservations['count']} images, and you can't have more than 4 pending reservations at a time. You can review your reservations on your <a href='/user'>profile page</a>, finish at least one of them before trying to reserve another image.");
+			$overTheLimit = isset($reservations['count']) && $reservations['count'] >= 4;
+			if ($return_as_bool)
+				return $overTheLimit;
+			if ($overTheLimit)
+				Response::Fail("You've already reserved {$reservations['count']} images, and you can't have more than 4 pending reservations at a time. You can review your reservations on your <a href='/user'>Account page</a>, finish at least one of them before trying to reserve another image.");
 		}
 
 		/**
