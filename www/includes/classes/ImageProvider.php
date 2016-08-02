@@ -107,6 +107,20 @@
 
 					try {
 						$CachedDeviation = DeviantArt::GetCachedSubmission($id,$this->provider);
+						if (!@getimagesize($CachedDeviation['preview'])){
+							sleep(1);
+							if (!@getimagesize($CachedDeviation['preview'])){
+								$preview = CoreUtils::AposEncode($CachedDeviation['preview']);
+								throw new Exception("The preview image appears to be unavailable. Please make sure <a href='$preview'>this link</a> works and try again, or re-submit the deviation if this persists.");
+							}
+						}
+						if (!@getimagesize($CachedDeviation['fullsize'])){
+							sleep(1);
+							if (!@getimagesize($CachedDeviation['fullsize'])){
+								$fullsize = CoreUtils::AposEncode($CachedDeviation['fullsize']);
+								throw new Exception("The submission appears to be unavailable. Please make sure <a href='$fullsize'>this link</a> works and try again, or re-submit the deviation if this persists.");
+							}
+						}
 					}
 					catch(cURLRequestException $e){
 						if ($e->getCode() === 404)
