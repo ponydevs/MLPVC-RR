@@ -280,7 +280,7 @@ DocReady.push(function Episode(){
 	$voting.bindDetails();
 
 	$.fn.rebindFluidbox = function(){
-		$(this).find('.screencap > a')
+		$(this).find('.screencap > a:not(.fluidbox--initialized)')
 			.fluidbox({
 				immediateOpen: true,
 				loader: true,
@@ -317,6 +317,8 @@ DocReady.push(function Episode(){
 			id = ident.id,
 			$actions = $li.find('.actions').children();
 
+		$li.rebindFluidbox();
+
 		$actions.filter('.share').on('click',function(){
 			let $button = $(this),
 				url = $button.parents('li').children('.post-date').children('a').first().prop('href');
@@ -351,7 +353,7 @@ DocReady.push(function Episode(){
 					if (!this.status) return fail();
 
 					let $newChilds = $(this.render).filter('section').children();
-					$section.empty().append($newChilds).trigger('rebind-handlers');
+					$section.empty().append($newChilds).rebindHandlers();
 					$section.find('.post-form').attr('data-type',type).formBind();
 					Time.Update();
 					if (typeof callback === 'function') callback();
