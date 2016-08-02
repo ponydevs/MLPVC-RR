@@ -289,7 +289,7 @@ Forelock has an outline with a unique color (Short Forelock Outline).', NULL, fa
 (76, 106, 'Mayor Mare', '', NULL, false, '2016-03-07 01:23:19.786499+01', NULL, NULL),
 (77, 32, 'Twist', 'Far legs use darker colors.', NULL, false, '2016-03-07 03:53:42.051112+01', NULL, NULL),
 (78, 11, 'Babs Seed', '', 'd8rnkgc', false, '2016-03-12 07:47:50.907346+01', NULL, true),
-(79, 102, 'Cheerilee', '', NULL, false, '2016-03-12 08:12:21.28273+01', NULL, NULL),
+(79, 102, 'Cheerilee', 'Far legs use darker colors.', NULL, false, '2016-03-12 08:12:21.28273+01', NULL, NULL),
 (80, 103, 'Dr. Hooves / Time Turner', 'For convenience, the color of the glass on his cutie mark is solid rather than transparent, thus the sand should be above.', 'da9gbnl', false, '2016-03-12 16:38:44.973718+01', NULL, false),
 (81, 39, 'Featherweight', 'Eyes don''t have iris highlights.', NULL, false, '2016-03-13 15:23:00.43058+01', NULL, NULL),
 (82, 24, 'Lord Tirek (1st Form)', 'The nose ring uses the accessory highlight color as the fill.', NULL, false, '2016-03-20 12:16:44.670192+01', NULL, NULL),
@@ -348,7 +348,7 @@ Diamond-like scale coloring is inconsistent between some shots but there''s up t
 In some scenes, Tank uses an alternate set of colors for the tongue.
 For the goggle lenses, group together the Fill and the Highlights (100% Normal blending) and set the group to 50% opacity.', NULL, false, '2016-04-17 16:21:24.581344+02', NULL, NULL),
 (120, 149, 'Opalescence', '', NULL, false, '2016-04-19 01:38:33.592805+02', NULL, NULL),
-(121, 101, 'Braeburn', '', 'd9zls6n', false, '2016-04-19 16:48:33.321315+02', NULL, true),
+(121, 101, 'Braeburn', 'Far legs use darker colors.', 'd9zls6n', false, '2016-04-19 16:48:33.321315+02', NULL, true),
 (122, 161, 'Pig (Peach Skin)', '', NULL, false, '2016-04-20 15:38:25.304409+02', NULL, NULL),
 (123, 162, 'Pig (Pink Skin)', 'Muddy Nostril color unknown', NULL, false, '2016-04-20 16:21:01.680143+02', NULL, NULL),
 (124, 163, 'Pig (Dark Skin)', 'Muddy Nostril color unknown', NULL, false, '2016-04-20 17:29:20.143035+02', NULL, NULL),
@@ -418,14 +418,15 @@ Name is based on the MLP Wiki name for this character.', NULL, false, '2016-06-1
 (176, 142, 'Cherry Berry', '', NULL, false, '2016-07-26 14:36:33.944509+02', NULL, NULL),
 (177, 76, 'Comet Trail', 'Based on S5E9
 Magic aura color is unknown.', 'dabxlg3', false, '2016-07-29 15:58:59.843318+02', NULL, true),
-(178, 143, 'Quibble Pants', 'Shirt colors are same as for Daring Do', 'dac5ypu', false, '2016-07-31 14:25:29.382017+02', NULL, false);
+(178, 143, 'Quibble Pants', 'Shirt colors are same as for #159', 'dac5ypu', false, '2016-07-31 14:25:29.382017+02', NULL, false),
+(179, NULL, 'Cipactli', 'Eyes use radial gradient; inner color should be set about 50% position and then outer color at 100% position', NULL, false, '2016-08-01 00:33:04.898926+02', NULL, NULL);
 
 
 --
 -- Name: appearances_id_seq; Type: SEQUENCE SET; Schema: public; Owner: mlpvc-rr
 --
 
-SELECT pg_catalog.setval('appearances_id_seq', 178, true);
+SELECT pg_catalog.setval('appearances_id_seq', 179, true);
 
 
 --
@@ -995,7 +996,7 @@ INSERT INTO colorgroups VALUES
 (639, 121, 'Mane & Tail', 1),
 (640, 121, 'Iris', 2),
 (641, 121, 'Cutie Mark', 3),
-(643, 121, 'Shoulder Clothing', 4),
+(643, 121, 'Vest', 4),
 (644, 121, 'Hat', 5),
 (645, 122, 'Body', 1),
 (646, 122, 'Eyes', 2),
@@ -1287,14 +1288,19 @@ INSERT INTO colorgroups VALUES
 (970, 178, 'Coat', 0),
 (971, 178, 'Mane & Tail', 1),
 (972, 178, 'Iris', 2),
-(973, 178, 'Cutie Mark', 3);
+(973, 178, 'Cutie Mark', 3),
+(975, 179, 'Body', 1),
+(976, 179, 'Other Body Parts ', 2),
+(977, 179, 'Eyes', 3),
+(978, 179, 'Mouth and Teeth', 4),
+(979, 179, 'Foot and Tail Bands', 5);
 
 
 --
 -- Name: colorgroups_groupid_seq; Type: SEQUENCE SET; Schema: public; Owner: mlpvc-rr
 --
 
-SELECT pg_catalog.setval('colorgroups_groupid_seq', 974, true);
+SELECT pg_catalog.setval('colorgroups_groupid_seq', 979, true);
 
 
 --
@@ -3522,7 +3528,7 @@ INSERT INTO colors VALUES
 (643, 2, 'Stitches', '#D5A242'),
 (644, 0, 'Outline 1', '#351E0F'),
 (644, 1, 'Fill 1', '#4C3117'),
-(644, 2, 'Outline 2', '#52361B'),
+(644, 2, 'Outline 2', '#533619'),
 (644, 3, 'Fill 2', '#9A642E'),
 (645, 0, 'Outline', '#DBC3B0'),
 (645, 1, 'Fill', '#FEF7DD'),
@@ -4845,7 +4851,39 @@ INSERT INTO colors VALUES
 (972, 1, 'Gradient Middle', '#6193F7'),
 (972, 2, 'Gradient Bottom', '#ABE5FF'),
 (973, 0, 'Outline', '#C8DAAD'),
-(973, 1, 'Fill', '#FFFFFF');
+(973, 1, 'Fill', '#FFFFFF'),
+(975, 0, 'Back Stroke', '#233C41'),
+(975, 1, 'Back Fill', '#426259'),
+(975, 2, 'Back Spots', '#16A8A4'),
+(975, 3, 'Belly Stroke', '#585133'),
+(975, 4, 'Belly Fill', '#ABBF7A'),
+(975, 5, 'Foot Claw Ring', '#6ACFC7'),
+(975, 6, 'Foot Claw Ring Shadow', '#48A295'),
+(976, 0, 'Crest Outline', '#192D1B'),
+(976, 1, 'Crest Fill', '#365135'),
+(976, 2, 'Horn/Tail Outline', '#41442A'),
+(976, 3, 'Horn/Tail Fill', '#747D54'),
+(976, 4, 'Spike Outline', '#DB8413'),
+(976, 5, 'Spike Fill 1', '#F5B845'),
+(976, 6, 'Spike Fill 2', '#F7EB80'),
+(977, 0, 'Outline', '#2C5B5B'),
+(977, 1, 'Outside Iris', '#2F9BA2'),
+(977, 2, 'Inside Iris Outer Gradient', '#31D5D5'),
+(977, 3, 'Inside Iris Inner Gradient', '#5DF3DC'),
+(977, 4, 'Pupil', '#122F31'),
+(978, 0, 'Front Cheek Outline', '#623737'),
+(978, 1, 'Front Cheek Fill', '#955650'),
+(978, 2, 'Back Cheek Outline', '#0A0000'),
+(978, 3, 'Back Cheek Fill', '#5E3B48'),
+(978, 4, 'Tongue Outline', '#D84A4A'),
+(978, 5, 'Tongue Fill', '#FF7465'),
+(978, 6, 'Teeth Outline', '#F0B84C'),
+(978, 7, 'Teeth Fill', '#FFFFD0'),
+(978, 8, 'Throat Fill', '#4B2631'),
+(979, 0, 'Outline', '#D28012'),
+(979, 1, 'Fill 1', '#F6B744'),
+(979, 2, 'Fill 2', '#FFEB81'),
+(979, 3, 'Jewel', '#19A8A4');
 
 
 --
@@ -5195,6 +5233,7 @@ INSERT INTO tagged VALUES
 (11, 170),
 (11, 177),
 (11, 178),
+(11, 179),
 (12, 1),
 (12, 2),
 (12, 3),
@@ -5704,7 +5743,9 @@ INSERT INTO tagged VALUES
 (371, 37),
 (371, 38),
 (373, 174),
+(374, 159),
 (374, 178),
+(374, 179),
 (380, 176),
 (382, 177),
 (383, 177),
@@ -5712,7 +5753,9 @@ INSERT INTO tagged VALUES
 (385, 122),
 (385, 123),
 (385, 124),
-(386, 178);
+(385, 179),
+(386, 178),
+(388, 179);
 
 
 --
@@ -5730,7 +5773,7 @@ INSERT INTO tags VALUES
 (8, 'background character', NULL, 'cat', 0, 7),
 (9, 'antagonist', NULL, 'cat', 12, NULL),
 (10, 'pet', NULL, 'cat', 6, NULL),
-(11, 'male', NULL, 'gen', 59, NULL),
+(11, 'male', NULL, 'gen', 60, NULL),
 (12, 'female', NULL, 'gen', 93, NULL),
 (14, 'twilight sparkle', NULL, 'char', 1, NULL),
 (19, 's01e01', NULL, 'ep', 0, NULL),
@@ -6062,7 +6105,7 @@ INSERT INTO tags VALUES
 (371, 's05e17', NULL, 'ep', 2, NULL),
 (372, 'dr whooves', NULL, 'char', 0, 134),
 (373, 'amethyst star', NULL, 'char', 1, NULL),
-(374, 's06e13', NULL, 'ep', 1, NULL),
+(374, 's06e13', NULL, 'ep', 3, NULL),
 (375, 's06e14', NULL, 'ep', 0, NULL),
 (376, 's06e15', NULL, 'ep', 0, NULL),
 (377, 's06e16', NULL, 'ep', 0, NULL),
@@ -6072,15 +6115,18 @@ INSERT INTO tags VALUES
 (382, 's04e02', NULL, 'ep', 1, NULL),
 (383, 'comet trail', NULL, 'char', 1, NULL),
 (384, 'dinky', NULL, 'char', 0, 72),
-(385, 'creature', NULL, 'cat', 4, NULL),
-(386, 'quibble pants', NULL, 'char', 1, NULL);
+(385, 'creature', NULL, 'cat', 5, NULL),
+(386, 'quibble pants', NULL, 'char', 1, NULL),
+(387, 's06e19', NULL, 'ep', 0, NULL),
+(388, 'cipactli', NULL, 'char', 1, NULL),
+(389, 'mrs shy', NULL, 'char', 0, 310);
 
 
 --
 -- Name: tags_tid_seq; Type: SEQUENCE SET; Schema: public; Owner: mlpvc-rr
 --
 
-SELECT pg_catalog.setval('tags_tid_seq', 386, true);
+SELECT pg_catalog.setval('tags_tid_seq', 389, true);
 
 
 --

@@ -15768,7 +15768,8 @@
 				271,
 				307,
 				310,
-				353
+				353,
+				389
 			]
 		},
 		"159": {
@@ -16129,7 +16130,8 @@
 				307,
 				344,
 				345,
-				353
+				353,
+				374
 			]
 		},
 		"171": {
@@ -16609,7 +16611,7 @@
 			"id": 121,
 			"order": 101,
 			"label": "Braeburn",
-			"notes": "",
+			"notes": "Far legs use darker colors.",
 			"cm_favme": "d9zls6n",
 			"ishuman": false,
 			"added": "2016-04-19 16:48:33.321315+02",
@@ -16706,7 +16708,7 @@
 				},
 				"643": {
 					"groupid": 643,
-					"label": "Shoulder Clothing",
+					"label": "Vest",
 					"order": 4,
 					"Colors": [
 						{
@@ -16744,7 +16746,7 @@
 						{
 							"order": 2,
 							"label": "Outline 2",
-							"hex": "#52361B"
+							"hex": "#533619"
 						},
 						{
 							"order": 3,
@@ -16768,7 +16770,7 @@
 			"id": 79,
 			"order": 102,
 			"label": "Cheerilee",
-			"notes": "",
+			"notes": "Far legs use darker colors.",
 			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-03-12 08:12:21.28273+01",
@@ -23879,7 +23881,7 @@
 			"id": 178,
 			"order": 143,
 			"label": "Quibble Pants",
-			"notes": "Shirt colors are same as for Daring Do",
+			"notes": "Shirt colors are same as for #159",
 			"cm_favme": "dac5ypu",
 			"ishuman": false,
 			"added": "2016-07-31 14:25:29.382017+02",
@@ -27520,6 +27522,222 @@
 				100,
 				353
 			]
+		},
+		"179": {
+			"id": 179,
+			"order": null,
+			"label": "Cipactli",
+			"notes": "Eyes use radial gradient; inner color should be set about 50% position and then outer color at 100% position",
+			"cm_favme": null,
+			"ishuman": false,
+			"added": "2016-08-01 00:33:04.898926+02",
+			"cm_preview": null,
+			"cm_dir": null,
+			"ColorGroups": {
+				"975": {
+					"groupid": 975,
+					"label": "Body",
+					"order": 1,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Back Stroke",
+							"hex": "#233C41"
+						},
+						{
+							"order": 1,
+							"label": "Back Fill",
+							"hex": "#426259"
+						},
+						{
+							"order": 2,
+							"label": "Back Spots",
+							"hex": "#16A8A4"
+						},
+						{
+							"order": 3,
+							"label": "Belly Stroke",
+							"hex": "#585133"
+						},
+						{
+							"order": 4,
+							"label": "Belly Fill",
+							"hex": "#ABBF7A"
+						},
+						{
+							"order": 5,
+							"label": "Foot Claw Ring",
+							"hex": "#6ACFC7"
+						},
+						{
+							"order": 6,
+							"label": "Foot Claw Ring Shadow",
+							"hex": "#48A295"
+						}
+					]
+				},
+				"976": {
+					"groupid": 976,
+					"label": "Other Body Parts ",
+					"order": 2,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Crest Outline",
+							"hex": "#192D1B"
+						},
+						{
+							"order": 1,
+							"label": "Crest Fill",
+							"hex": "#365135"
+						},
+						{
+							"order": 2,
+							"label": "Horn/Tail Outline",
+							"hex": "#41442A"
+						},
+						{
+							"order": 3,
+							"label": "Horn/Tail Fill",
+							"hex": "#747D54"
+						},
+						{
+							"order": 4,
+							"label": "Spike Outline",
+							"hex": "#DB8413"
+						},
+						{
+							"order": 5,
+							"label": "Spike Fill 1",
+							"hex": "#F5B845"
+						},
+						{
+							"order": 6,
+							"label": "Spike Fill 2",
+							"hex": "#F7EB80"
+						}
+					]
+				},
+				"977": {
+					"groupid": 977,
+					"label": "Eyes",
+					"order": 3,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#2C5B5B"
+						},
+						{
+							"order": 1,
+							"label": "Outside Iris",
+							"hex": "#2F9BA2"
+						},
+						{
+							"order": 2,
+							"label": "Inside Iris Outer Gradient",
+							"hex": "#31D5D5"
+						},
+						{
+							"order": 3,
+							"label": "Inside Iris Inner Gradient",
+							"hex": "#5DF3DC"
+						},
+						{
+							"order": 4,
+							"label": "Pupil",
+							"hex": "#122F31"
+						}
+					]
+				},
+				"978": {
+					"groupid": 978,
+					"label": "Mouth and Teeth",
+					"order": 4,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Front Cheek Outline",
+							"hex": "#623737"
+						},
+						{
+							"order": 1,
+							"label": "Front Cheek Fill",
+							"hex": "#955650"
+						},
+						{
+							"order": 2,
+							"label": "Back Cheek Outline",
+							"hex": "#0A0000"
+						},
+						{
+							"order": 3,
+							"label": "Back Cheek Fill",
+							"hex": "#5E3B48"
+						},
+						{
+							"order": 4,
+							"label": "Tongue Outline",
+							"hex": "#D84A4A"
+						},
+						{
+							"order": 5,
+							"label": "Tongue Fill",
+							"hex": "#FF7465"
+						},
+						{
+							"order": 6,
+							"label": "Teeth Outline",
+							"hex": "#F0B84C"
+						},
+						{
+							"order": 7,
+							"label": "Teeth Fill",
+							"hex": "#FFFFD0"
+						},
+						{
+							"order": 8,
+							"label": "Throat Fill",
+							"hex": "#4B2631"
+						}
+					]
+				},
+				"979": {
+					"groupid": 979,
+					"label": "Foot and Tail Bands",
+					"order": 5,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#D28012"
+						},
+						{
+							"order": 1,
+							"label": "Fill 1",
+							"hex": "#F6B744"
+						},
+						{
+							"order": 2,
+							"label": "Fill 2",
+							"hex": "#FFEB81"
+						},
+						{
+							"order": 3,
+							"label": "Jewel",
+							"hex": "#19A8A4"
+						}
+					]
+				}
+			},
+			"TagIDs": [
+				11,
+				247,
+				351,
+				374,
+				385,
+				388
+			]
 		}
 	},
 	"Tags": {
@@ -27608,7 +27826,7 @@
 			"name": "male",
 			"title": null,
 			"type": "gen",
-			"uses": 59,
+			"uses": 60,
 			"synonym_of": null
 		},
 		"12": {
@@ -30264,7 +30482,7 @@
 			"name": "s06e13",
 			"title": null,
 			"type": "ep",
-			"uses": 1,
+			"uses": 3,
 			"synonym_of": null
 		},
 		"375": {
@@ -30344,7 +30562,7 @@
 			"name": "creature",
 			"title": null,
 			"type": "cat",
-			"uses": 4,
+			"uses": 5,
 			"synonym_of": null
 		},
 		"386": {
@@ -30354,6 +30572,30 @@
 			"type": "char",
 			"uses": 1,
 			"synonym_of": null
+		},
+		"387": {
+			"tid": 387,
+			"name": "s06e19",
+			"title": null,
+			"type": "ep",
+			"uses": 0,
+			"synonym_of": null
+		},
+		"388": {
+			"tid": 388,
+			"name": "cipactli",
+			"title": null,
+			"type": "char",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"389": {
+			"tid": 389,
+			"name": "mrs shy",
+			"title": null,
+			"type": "char",
+			"uses": 0,
+			"synonym_of": 310
 		}
 	}
 }
