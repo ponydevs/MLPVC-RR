@@ -117,6 +117,7 @@
 			}
 			else if (!$editing && $thing !== 'reservation')
 				Response::Fail('Description cannot be empty');
+			else $array['label'] = null;
 
 			if ($thing === 'request'){
 				$type = (new Input('type',function($value){
