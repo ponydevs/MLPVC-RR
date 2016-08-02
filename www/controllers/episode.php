@@ -246,7 +246,7 @@
 			if (!Permission::Sufficient('staff'))
 				Response::Fail();
 			$editing = $action === 'edit';
-			$canEditID = Episode::GetPostCount($Episode) === 0;
+			$canEditID = !empty($Episode) && Episode::GetPostCount($Episode) === 0;
 
 			$insert = array();
 			if (!$editing)
