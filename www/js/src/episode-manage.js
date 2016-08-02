@@ -278,7 +278,6 @@ DocReady.push(function EpisodeManage(){
 						if ($li.hasClass('highlight'))
 							$newli.addClass('highlight');
 						$li.replaceWith($newli);
-						$newli.rebindFluidbox();
 						Time.Update();
 						$newli.trigger('bind-more-handlers', [id, type]);
 					}
@@ -352,7 +351,6 @@ DocReady.push(function EpisodeManage(){
 					if ($li.hasClass('highlight'))
 						$newli.addClass('highlight');
 					$li.replaceWith($newli);
-					$newli.rebindFluidbox();
 					Time.Update();
 					$newli.trigger('bind-more-handlers', [id, type]);
 					$.Dialog.close();
@@ -753,7 +751,6 @@ DocReady.push(function EpisodeManage(){
 								if ($li.hasClass('highlight'))
 									$newli.addClass('highlight');
 								$li.replaceWith($newli);
-								$newli.rebindFluidbox();
 								Time.Update();
 								$newli.trigger('bind-more-handlers', [id, type]);
 							}
@@ -793,4 +790,8 @@ DocReady.push(function EpisodeManage(){
 	$('#requests, #reservations')
 		.on('bind-more-handlers','li[id]',additionalHandlerAttacher)
 		.find('li[id]').each(additionalHandlerAttacher);
+},function(){
+	'use strict';
+
+	delete window.moment.tz;
 });

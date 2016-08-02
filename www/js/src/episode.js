@@ -307,7 +307,7 @@ DocReady.push(function Episode(){
 
 			$li.trigger('bind-more-handlers', [ident.id, ident.type]);
 		});
-		this.closest('section').find('.unfinished').rebindFluidbox();
+		this.closest('section').rebindFluidbox();
 		return this;
 	};
 	let additionalHandlerAttacher = function(){
