@@ -259,7 +259,7 @@ Eye gradient should be adjusted (lower on eye) to make sure top highlight is eas
 (53, 112, 'Igneous Rock', 'Far legs use darker colors.', NULL, false, '2015-10-31 23:30:14+01', NULL, NULL),
 (54, 113, 'Cloudy Quartz', '', NULL, false, '2015-10-31 23:43:48.197299+01', NULL, NULL),
 (55, 77, 'Spitfire', 'Far legs use darker colors.
-Eyelid highlight is only visible while Spitfire is wearing her Wonderbolt uniform (https://mlpvc-rr.ml/cg/v/70-Wonderbolt-Uniform) and appears to have been completely removed in Season 6.', 'd5nzngs', false, '2015-11-04 23:58:36.915265+01', NULL, false),
+Eyelid highlight is only visible while Spitfire is wearing her #70 and appears to have been completely removed in Season 6.', 'd5nzngs', false, '2015-11-04 23:58:36.915265+01', NULL, false),
 (56, 22, 'Lightning Dust', 'Far legs use LIGHTER outlines and darker fills.
 Eyes don''t have iris highlights.', 'd9fl30m', false, '2015-11-05 00:10:40.321984+01', NULL, true),
 (57, 20, 'Discord', '', NULL, false, '2015-11-14 04:28:38.262247+01', NULL, NULL),
