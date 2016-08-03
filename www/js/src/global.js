@@ -951,7 +951,7 @@
 						let pos = js.indexOf(src);
 
 						// TODO Come up with a proper way to handle persistent files rather than re-requesting them
-						if (pos !== -1 && !/min\/(colorguide[\.\-]|episodes-manage|moment\.tz|episode)/.test(src)){
+						if (pos !== -1 && !/min\/(colorguide[\.\-]|episodes-manage|moment-timezone|episode)/.test(src)){
 							js.splice(pos, 1);
 							console.log('%cSkipped %s','color:saddlebrown',src);
 						}
