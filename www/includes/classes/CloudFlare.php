@@ -32,12 +32,20 @@
 		 */
 		private function _getCFIpRanges(){
 			$cachefile = APPATH.'../cf-ips.txt';
-			if (!file_exists($cachefile) || filemtime($cachefile) > Time::$IN_SECONDS['hour']*5){
-				$data = file_get_contents('https://www.cloudflare.com/ips-v4');
-				file_put_contents($cachefile, $data);
+			$fileExists = file_exists($cachefile);
+			if (!$fileExists || filemtime($cachefile)+Time::$IN_SECONDS['hour']*5 < time()){
+				$data = @file_get_contents('https://www.cloudflare.com/ips-v4');
+				if (empty($data)){
+					error_log('CloudFlare IPv4 data is empty!');
+					if (!$fileExists)
+						file_put_contents($cachefile, '');
+					$data = file_get_contents($cachefile);
+				}
+				else file_put_contents($cachefile, $data);
 			}
 			else $data = file_get_contents($cachefile);
-			return explode("\n", $data);
+			$data = trim($data);
+			return strlen($data) > 0 ? explode("\n", $data) : array();
 		}
 
 		/**
