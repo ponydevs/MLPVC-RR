@@ -122,9 +122,3 @@
 	$CGDb = new PostgresDbWrapper('mlpvc-colorguide');
 
 	header('Access-Control-Allow-Origin: '.(HTTPS?'http':'https').'://'.$_SERVER['SERVER_NAME']);
-
-	if (isset($_SERVER['HTTP_CF_CONNECTING_IP'])){
-		CoreUtils::CanIHas('CloudFlare');
-		if (CloudFlare::CheckUserIP())
-			$_SERVER['REMOTE_ADDR'] = $_SERVER['HTTP_CF_CONNECTING_IP'];
-	}
