@@ -597,7 +597,7 @@ HTML;
 			$OutputPath = APPATH."img/cg_render/{$AppearanceID}-sprite.svg";
 			$FileRelPath = "$CGPath/v/{$AppearanceID}s.svg";
 			if (file_exists($OutputPath))
-				Image::OutputPNG(null,$OutputPath,$FileRelPath);
+				Image::OutputSVG(null,$OutputPath,$FileRelPath);
 
 			$IMGWidth = $Map['width'];
 			$IMGHeight = $Map['height'];
