@@ -914,6 +914,9 @@
 		CoreUtils::LoadPage($settings);
 	}
 	else if (regex_match(new RegExp('^sprite(?:-colou?rs)?/(\d+)(?:-.*)?$'),$data,$_match)){
+		if (!Permission::Sufficient('staff'))
+			CoreUtils::NotFound();
+
 		$Appearance = $CGDb->where('id', intval($_match[1], 10))->getOne('appearances', 'id,label');
 		if (empty($Appearance))
 			CoreUtils::NotFound();

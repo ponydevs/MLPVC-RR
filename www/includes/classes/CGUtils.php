@@ -484,11 +484,11 @@ HTML;
 		}
 
 		static function GetSpriteImageMap($AppearanceID){
+			$PNGPath = SPRITE_PATH."$AppearanceID.png";
 			$MapPath = APPATH."img/cg_render/$AppearanceID-linedata.json.gz";
-			if (file_exists($MapPath))
+			if (file_exists($MapPath) && filemtime($MapPath) >= filemtime($PNGPath))
 				$Map = JSON::Decode(gzuncompress(file_get_contents($MapPath)));
 			else {
-				$PNGPath = SPRITE_PATH."$AppearanceID.png";
 				if (!file_exists($PNGPath))
 					return null;
 
