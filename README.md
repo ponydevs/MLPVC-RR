@@ -56,7 +56,7 @@ After some time, the idea of moving the old PNG color guide into an easier to us
  - [Firefox](http://fav.me/d4b6f4v) by [NoReasonToHope](http://noreasontohope.deviantart.com/)
  - [Google Chrome](http://fav.me/d523s3y) by [he4rtofcourage](http://he4rtofcourage.deviantart.com/)
  - [Internet Explorer](http://fav.me/d52fp08) by [McSadat](http://mcsadat.deviantart.com/)
- - [Opera](http://fav.me/d52qnaw) by [ParallaxMLP](http://parallaxmlp.deviantart.com/)
+ - [Opera](http://fav.me/dacngnh) by [masemj](http://masemj.deviantart.com/) ([designed](http://fav.me/d52qnaw) by [ParallaxMLP](http://parallaxmlp.deviantart.com/))
  - [Safari](http://fav.me/d530knp) by [ParallaxMLP](http://parallaxmlp.deviantart.com/)
  - Vivaldi from [Vivaldi Press Kit](https://vivaldi.com/press/)
  
