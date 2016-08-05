@@ -3,7 +3,10 @@
 	if (!regex_match(new RegExp('^([a-z\-]+|\d+)$'),$data))
 		CoreUtils::NotFound();
 
-	$assoc = array('friendship-games' => 3);
+	$assoc = array(
+		'friendship-games' => 3,
+		'legends-of-everfree' => 4,
+	);
 	$flip_assoc = array_flip($assoc);
 
 	if (!is_numeric($data)){
