@@ -9,7 +9,15 @@
 
 	$EpData = Episode::ParseID($data);
 	if (!empty($EpData)){
-		$Ep = Episode::GetActual($EpData['season'],$EpData['episode']);
+		try {
+			$Ep = Episode::GetActual($EpData['season'],$EpData['episode']);
+		}
+		catch (Exception $e){
+			if ($e->getMessage() === 'Season 0 ignored')
+				Response::Fail('Movies cannot be edited, ask the developer if changes need to be made.');
+
+			throw $e;
+		}
 		$Ep['airs'] =  date('c',strtotime($Ep['airs']));
 		Response::Done(array(
 			'ep' => $Ep,
@@ -24,7 +32,15 @@
 	$data = implode('/', $data);
 
 	if (regex_match($EPISODE_ID_REGEX,$data,$_match)){
-		$Episode = Episode::GetActual(intval($_match[1], 10), intval($_match[2], 10), $action !== 'delete' ? Episode::ALLOW_SEASON_ZERO : false);
+		try {
+			$Episode = Episode::GetActual(intval($_match[1], 10), intval($_match[2], 10), $action !== 'delete' ? Episode::ALLOW_SEASON_ZERO : false);
+		}
+		catch (Exception $e){
+			if ($e->getMessage() === 'Season 0 ignored')
+				Response::Fail('Movies cannot be edited, ask the developer if changes need to be made.');
+
+			throw $e;
+		}
 		if (empty($Episode))
 			Response::Fail("There's no episode with this season & episode number");
 	}

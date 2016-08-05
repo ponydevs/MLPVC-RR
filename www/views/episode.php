@@ -43,7 +43,9 @@
 	<section class="admin">
 		<h2>Administration area</h2>
 		<p class="align-center">
+<?php       if ($CurrentEpisode['season'] > 0){ ?>
 			<button id="edit-ep" class="typcn typcn-pencil large darkblue">Metadata</button>
+<?php       } ?>
 			<button id="video" class="typcn typcn-pencil large darkblue">Video links</button>
 			<button id="cg-relations" class="typcn typcn-pencil large darkblue">Guide relations</button>
 		</p>
