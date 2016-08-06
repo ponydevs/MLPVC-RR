@@ -7,18 +7,16 @@
 <div id="content">
 <?  if (!empty($CurrentEpisode)){ ?>
 	<div class="heading-wrap">
-<?php   $PrevEpExists = !empty($PrevEpisode);
-		$NextEpExists = !empty($NextEpisode);
-		if ($PrevEpExists){
-			$PrevEpisode = Episode::FormatTitle($PrevEpisode, AS_ARRAY); ?>
+<?php   if (!empty($PrevEpisode)){
+			$PrevEpisode = Episode::FormatTitle($PrevEpisode, AS_ARRAY, null, false); ?>
 		<div class="prev-ep">
-			<a href="/episode/S<?=$PrevEpisode['season']?>E<?=$PrevEpisode['episode']?>" class="ep-button btn typcn typcn-media-rewind"><span class="typcn typcn-media-rewind"></span><span class="id"><?=$PrevEpisode['id']?>: </span><?=CoreUtils::Cutoff($PrevEpisode['title'],Episode::$cutoff)?></a>
+			<a href="<?=Episode::FormatURL($PrevEpisode)?>" class="ep-button btn typcn typcn-media-rewind"><span class="typcn typcn-media-rewind"></span><span class="id"><?=$PrevEpisode['id']?>: </span><?=CoreUtils::Cutoff(Episode::RemoveTitlePrefix($PrevEpisode['title']),Episode::TITLE_CUTOFF)?></a>
 		</div>
 <?php   }
-		if ($NextEpExists){
-				$NextEpisode = Episode::FormatTitle($NextEpisode, AS_ARRAY); ?>
+		if (!empty($NextEpisode)){
+				$NextEpisode = Episode::FormatTitle($NextEpisode, AS_ARRAY, null, false); ?>
 		<div class="next-ep">
-			<a href="/episode/S<?=$NextEpisode['season']?>E<?=$NextEpisode['episode']?>" class="ep-button btn typcn typcn-media-fast-forward"><span class="id"><?=$PrevEpisode['id']?>: </span><?=CoreUtils::Cutoff($NextEpisode['title'],Episode::$cutoff)?><span class="typcn typcn-media-fast-forward"></span></a>
+			<a href="<?=Episode::FormatURL($NextEpisode)?>" class="ep-button btn typcn typcn-media-fast-forward"><span class="id"><?=$NextEpisode['id']?>: </span><?=CoreUtils::Cutoff(Episode::RemoveTitlePrefix($NextEpisode['title']),Episode::TITLE_CUTOFF)?><span class="typcn typcn-media-fast-forward"></span></a>
 		</div>
 <?php   } ?>
 		<div class="main">

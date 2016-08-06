@@ -105,8 +105,10 @@
 		 * @return int
 		 */
 		private function _validate(){
-			if (isset($this->_validator))
-				return call_user_func($this->_validator, $this->_value, $this->_range) ?? self::ERROR_NONE;
+			if (isset($this->_validator)){
+				$call_params = array( &$this->_value, $this->_range );
+				return call_user_func_array($this->_validator, $call_params) ?? self::ERROR_NONE;
+			}
 			switch ($this->_type){
 				case "bool":
 					if (!in_array($this->_value,array('1','0','true','false')))
@@ -198,7 +200,7 @@
 
 		private static function _numberInRange($n, $range){
 			if (isset($range[0]) || isset($range[1])){
-				if (isset($range[0]) && $n < $range[0])
+				if (isset($range[0]) ? $n < $range[0] : $n < 1)
 					return self::ERROR_RANGE;
 				if (isset($range[1]) && $n > $range[1])
 					return self::ERROR_RANGE;
@@ -208,14 +210,14 @@
 
 		private function _outputError($message, $errorCode = null){
 			$message = str_replace('@value', CoreUtils::EscapeHTML($this->_value), $message);
-			if ($errorCode === self::ERROR_RANGE && (isset($this->_range[0]) || isset($this->_range[1]))){
+			if ($errorCode === self::ERROR_RANGE){
 				if (isset($this->_range[0]))
 					$message = str_replace('@min', $this->_range[0], $message);
 				if (isset($this->_range[1]))
 					$message = str_replace('@max', $this->_range[1], $message);
 			}
 			if ($this->_silentFail)
-				return error_log("Silenced Input validation error: $message\nKey: $this->_key\nOptions: _source={$this->_source}, _origValue={$this->_origValue}, _respond={$this->_respond}");
+				return error_log("Silenced Input validation error: $message\nKey: $this->_key\nOptions: _source={$this->_source}, _origValue={$this->_origValue}, _respond={$this->_respond}, request_uri={$_SERVER['REQUEST_URI']}");
 			if ($this->_respond)
 				Response::Fail($message);
 			throw new Exception($message);

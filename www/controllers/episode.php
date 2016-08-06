@@ -4,50 +4,32 @@
 		Episode::LoadPage();
 
 	CSRFProtection::Protect();
-
-	if (empty($data)) CoreUtils::NotFound();
-
-	$EpData = Episode::ParseID($data);
-	if (!empty($EpData)){
-		try {
-			$Ep = Episode::GetActual($EpData['season'],$EpData['episode']);
-		}
-		catch (Exception $e){
-			if ($e->getMessage() === 'Season 0 ignored')
-				Response::Fail('Movies cannot be edited, ask the developer if changes need to be made.');
-
-			throw $e;
-		}
-		$Ep['airs'] =  date('c',strtotime($Ep['airs']));
-		Response::Done(array(
-			'ep' => $Ep,
-			'epid' => Episode::FormatTitle($Ep, AS_ARRAY, 'id'),
-			'caneditid' => Episode::GetPostCount($Ep) === 0,
-		));
-	}
-	unset($EpData);
+	if (empty($data))
+		CoreUtils::NotFound();
 
 	$data = explode('/', $data);
 	$action = array_splice($data, 0, 1)[0] ?? null;
 	$data = implode('/', $data);
 
-	if (regex_match($EPISODE_ID_REGEX,$data,$_match)){
-		try {
-			$Episode = Episode::GetActual(intval($_match[1], 10), intval($_match[2], 10), $action !== 'delete' ? Episode::ALLOW_SEASON_ZERO : false);
-		}
-		catch (Exception $e){
-			if ($e->getMessage() === 'Season 0 ignored')
-				Response::Fail('Movies cannot be edited, ask the developer if changes need to be made.');
-
-			throw $e;
-		}
+	$EpData = Episode::ParseID(!empty($data) ? $data : ($_POST['epid'] ?? null));
+	if (!empty($EpData)){
+		$Episode = Episode::GetActual($EpData['season'],$EpData['episode'], Episode::ALLOW_MOVIES);
 		if (empty($Episode))
 			Response::Fail("There's no episode with this season & episode number");
+		$isMovie = $Episode['season'] === 0;
 	}
 	else if ($action !== 'add')
 		CoreUtils::NotFound();
 
 	switch ($action){
+		case "get":
+			$Episode['airs'] =  date('c',strtotime($Episode['airs']));
+			Response::Done(array(
+				'ep' => $Episode,
+				'epid' => Episode::FormatTitle($Episode, AS_ARRAY, 'id'),
+				'caneditid' => Episode::GetPostCount($Episode) === 0,
+			));
+		break;
 		case "delete":
 			if (!Permission::Sufficient('staff'))
 				Response::Fail();
@@ -268,22 +250,27 @@
 			if (!$editing)
 				$insert['posted_by'] = $currentUser['id'];
 
-			if ($action !== 'edit' || $canEditID){
-				$insert['season'] = Episode::ValidateSeason();
-				$insert['episode'] = Episode::ValidateEpisode();
+			if (!$editing || $canEditID){
+				$insert['season'] = Episode::ValidateSeason(Episode::ALLOW_MOVIES);
+				$isMovie = $insert['season'] === 0;
+				$insert['episode'] = Episode::ValidateEpisode($isMovie);
 			}
 			else if (!$canEditID){
-				$insert['season'] = $Episode['season'];
+				$isMovie = $Episode['season'] === 0;
+				$insert['season'] = $isMovie ? 0 : $Episode['season'];
 				$insert['episode'] = $Episode['episode'];
 			}
+			$What = $isMovie ? 'Movie' : 'Episode';
+			$what = strtolower($What);
 
 			if ($editing){
-				$SeasonChanged = $insert['season'] != $Episode['season'];
+				$SeasonChanged = $isMovie ? false : $insert['season'] != $Episode['season'];
 				$EpisodeChanged = $insert['episode'] != $Episode['episode'];
 				if ($SeasonChanged || $EpisodeChanged){
 					$Target = Episode::GetActual(
 						$insert['season'] ?? $Episode['season'],
-						$insert['episode'] ?? $Episode['episode']
+						$insert['episode'] ?? $Episode['episode'],
+						Episode::ALLOW_MOVIES
 					);
 					if (!empty($Target))
 						Response::Fail("There's already an episode with the same season & episode number");
@@ -292,28 +279,63 @@
 						Response::Fail('This epsiode\'s ID cannot be changed because it already has posts and this action could break existing links');
 				}
 			}
-			else if ($Database->whereEp($insert)->has('episodes'))
-				Response::Fail('An episode with the same season and episode number already exists');
+			else {
+				$MatchingID = $Database->whereEp($insert)->getOne('episodes');
+				if (!empty($MatchingID))
+					Response::Fail(($isMovie?'A movie':'An episode').' with the same '.($isMovie?'overall':'season and episode').' number already exists');
+			}
 
-			$insert['no'] = (new Input('no','int',array(
-				Input::IS_OPTIONAL => true,
-				Input::IN_RANGE => [1,255],
-				Input::CUSTOM_ERROR_MESSAGES => array(
-				    Input::ERROR_INVALID => 'Overall episode number (@value) is invalid',
-				    Input::ERROR_RANGE => 'Overall episode number must be between @min and @max',
-				)
-			)))->out();
+			if (!$isMovie)
+				$insert['no'] = (new Input('no','int',array(
+					Input::IS_OPTIONAL => true,
+					Input::IN_RANGE => [1,255],
+					Input::CUSTOM_ERROR_MESSAGES => array(
+					    Input::ERROR_INVALID => 'Overall episode number (@value) is invalid',
+					    Input::ERROR_RANGE => 'Overall episode number must be between @min and @max',
+					)
+				)))->out();
 
-			$insert['twoparter'] = isset($_POST['twoparter']) ? 1 : 0;
+			$insert['twoparter'] = !$isMovie  && isset($_POST['twoparter']) ? 1 : 0;
 
-			$insert['title'] = (new Input('title','string',array(
+			$insert['title'] = (new Input('title',function(&$value, $range) use ($isMovie){
+				global $PREFIX_REGEX;
+				$prefixed = $PREFIX_REGEX->match($value, $match);
+				if ($prefixed){
+					if (!$isMovie){
+						return 'prefix-movieonly';
+					}
+					if (!isset(Episode::$ALLOWED_PREFIXES[$match[1]])){
+						$mostSimilar = null;
+						$mostMatcing = 0;
+						foreach (Episode::$ALLOWED_PREFIXES as $prefix => $shorthand){
+							foreach (array($prefix, $shorthand) as $test){
+								$matchingChars = similar_text(strtolower($match[1]), strtolower($test));
+								if ($matchingChars >= 3 && $matchingChars > $mostMatcing){
+									$mostMatcing = $matchingChars;
+									$mostSimilar = $prefix;
+								}
+							}
+						}
+						Response::Fail("Unsupported prefix: {$match[1]}. ".(isset($mostSimilar) ? "<em>Did you mean <span class='color-ui'>$mostSimilar</span></em>?" : 'Use a backslash if the colon is part of the title (e.g. <code>\:</code>)'));
+					}
+
+					$title = Episode::RemoveTitlePrefix($value);
+					if (Input::CheckStringLength($title, $range, $code))
+						return $code;
+
+					$value = "{$match[1]}: $title";
+				}
+				else if (Input::CheckStringLength($value, $range, $code))
+					return $code;
+			},array(
 				Input::IN_RANGE => [5,35],
 				Input::CUSTOM_ERROR_MESSAGES => array(
-					Input::ERROR_MISSING => 'Episode title is missing',
-					Input::ERROR_RANGE => 'Episode title must be between @min and @max characters',
+					Input::ERROR_MISSING => "$What title is missing",
+					Input::ERROR_RANGE => "$What title must be between @min and @max characters",
+					'prefix-movieonly' => "Prefixes can only be used for movies",
 				)
 			)))->out();
-			CoreUtils::CheckStringValidity($insert['title'], 'Episode title', INVERSE_EP_TITLE_PATTERN);
+			CoreUtils::CheckStringValidity($insert['title'], "$What title", INVERSE_EP_TITLE_PATTERN);
 
 			$airs = (new Input('airs','timestamp',array(
 				Input::CUSTOM_ERROR_MESSAGES => array(
@@ -362,7 +384,8 @@
 						$changes++;
 					}
 				}
-				if ($changes > 0) Log::Action('episode_modify',$logentry);
+				if ($changes > 0)
+					Log::Action('episode_modify',$logentry);
 			}
 			else Log::Action('episodes',array(
 				'action' => 'add',
@@ -374,6 +397,6 @@
 			));
 			if ($editing)
 				Response::Done();
-			Response::Done(array('epid' => Episode::FormatTitle($insert,AS_ARRAY,'id')));
+			Response::Done(array('url' => Episode::FormatURL($insert)));
 		break;
 	}

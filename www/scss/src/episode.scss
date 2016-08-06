@@ -75,7 +75,7 @@
 				display: block;
 			}
 			.prev-ep, .next-ep {
-				flex: 1 1 25%;
+				flex: 1 1 20%;
 			}
 			.prev-ep {
 				order: 1;
@@ -89,7 +89,7 @@
 			}
 			.main {
 				order: 2;
-				flex: 1 1 50%;
+				flex: 1 1 60%;
 				text-align: center;
 
 				&:nth-child(2) > * {

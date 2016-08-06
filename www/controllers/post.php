@@ -528,9 +528,9 @@
 		'fullsize' => $Image->fullsize,
 	);
 
-	$season = Episode::ValidateSeason();
+	$season = Episode::ValidateSeason(Episode::ALLOW_MOVIES);
 	$episode = Episode::ValidateEpisode();
-	$epdata = Episode::GetActual($season, $episode, Episode::ALLOW_SEASON_ZERO);
+	$epdata = Episode::GetActual($season, $episode, Episode::ALLOW_MOVIES);
 	if (empty($epdata))
 		Response::Fail("The specified episode (S{$season}E$episode) does not exist");
 	$insert['season'] = $epdata['season'];

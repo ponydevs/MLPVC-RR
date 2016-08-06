@@ -7,6 +7,9 @@ DocReady.push(function EpisodeManage(){
 		USERNAME_REGEX = window.USERNAME_REGEX,
 		FULLSIZE_MATCH_REGEX = window.FULLSIZE_MATCH_REGEX,
 		EpID = 'S'+SEASON+'E'+EPISODE,
+		isMovie = SEASON === 0,
+		What = isMovie ? 'Movie' : 'Episode',
+		what = What.toLowerCase(),
 		$epSection = $content.children('section.episode');
 
 	$('#video').on('click',function(){
@@ -20,7 +23,7 @@ DocReady.push(function EpisodeManage(){
 			let yt_input = `<input type='url' class='yt' name='yt_1' placeholder='YouTube' spellcheck='false' autocomplete='off'>`,
 				dm_input = `<input type='url' class='dm' name='dm_1' placeholder='Dailymotion' spellcheck='false' autocomplete='off'>`,
 				$VidLinksForm = $.mk('form').attr('id','vidlinks').attr('class','align-center').html(
-					`<p>Enter vido links below, leave any input blank to remove that video from the episode page.</p>
+					`<p>Enter vido links below, leave any input blank to remove that video from the ${what} page.</p>
 					<div class='input-group-2'>
 						${yt_input}
 						${dm_input}
@@ -29,7 +32,7 @@ DocReady.push(function EpisodeManage(){
 			if (data.twoparter){
 				$.mk('p').html('<strong>~ Part 1 ~</strong>').insertBefore($VidLinksForm.children('input').first());
 				$VidLinksForm.append(
-					`<p>Check below if either link contains the full episode instead of just one part</p>
+					`<p>Check below if either link contains the full ${what} instead of just one part</p>
 					<div>
 						<label><input type='checkbox' name='yt_1_full'> YouTube</label> &nbsp; <label><input type='checkbox' name='dm_1_full'> Dailymotion</label>
 					</div>

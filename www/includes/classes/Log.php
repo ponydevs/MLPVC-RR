@@ -81,11 +81,23 @@
 				case "episodes":
 					$details[] = array('Action', self::$ACTIONS[$data['action']]);
 					$details[] = array('Name', Episode::FormatTitle($data));
+					if ($data['season'] === 0)
+						$details[] = array('Overall', "#{$data['episode']}");
 					if (!empty($data['airs']))
-						$details[] = array('Airs', Time::Tag($data['airs'], Time::TAG_EXTENDED, Time::TAG_STATIC_DYNTIME));
+						$details[] = array('Air date', Time::Tag($data['airs'], Time::TAG_EXTENDED, Time::TAG_STATIC_DYNTIME));
+					$details[] = array('Two parts', !empty($data['twoparter']));
 				break;
 				case "episode_modify":
-					$details[] = array('Target episode', $data['target']);
+					$link = $data['target'];
+					$EpData = Episode::ParseID($data['target']);
+					if (!empty($EpData)){
+						$Episode = Episode::GetActual($EpData['season'], $EpData['episode'], Episode::ALLOW_MOVIES);
+						if (!empty($Episode))
+							$link = "<a href='".Episode::FormatURL($Episode)."'>".Episode::FormatTitle($Episode, AS_ARRAY, 'id')."</a>";
+					}
+					$details[] = array('Episode', $link);
+					if (empty($Episode))
+						$details[] = array('Still exists', false);
 
 					$newOld = array();
 					unset($data['entryid'], $data['target']);
@@ -119,22 +131,7 @@
 				break;
 				case "post_lock":
 					$Post = $Database->where('id', $data['id'])->getOne("{$data['type']}s");
-					if (empty($Post))
-						$details[] = array('Notice', 'The post has been deleted, some details are unavailable');
-					$details[] = array('ID',$data['id']);
-					$details[] = array('Type',$data['type']);
-					if (!empty($Post)){
-						$Fragment = "#{$data['type']}-{$data['id']}";
-						if ($Post['season'] == 0){
-							$IDstr = "EQG{$Post['episode']}";
-							$Link = "/eqg/{$Post['episode']}";
-						}
-						else{
-							$IDstr = "S{$Post['season']}E{$Post['episode']}";
-							$Link = "/episode/$IDstr";
-						}
-						$details[] = array('Link',"<a href='$Link$Fragment'>$IDstr$Fragment</a>");
-					}
+					self::GenericPostInfo($Post, $data, $details);
 				break;
 				case "color_modify":
 					$details[] = array('Appearance',"<a href='/cg/v/{$data['ponyid']}'>#{$data['ponyid']}</a>");
@@ -166,35 +163,14 @@
 				break;
 				case "img_update":
 					$Post = $Database->where('id', $data['id'])->getOne("{$data['thing']}s");
-					if (empty($Post))
-						$details[] = array('Notice', 'The post has been deleted, some details are unavailable');
-					$details[] = array('Post ID',$data['id']);
-					$details[] = array('Type',$data['thing']);
-					if (!empty($Post)){
-						$IDstr = "S{$Post['season']}E{$Post['episode']}#{$data['thing']}-{$data['id']}";
-						$details[] = array('Link',"<a href='/episode/$IDstr'>$IDstr</a>");
-					}
+					$data['type'] = $data['thing'];
+					self::GenericPostInfo($Post, $data, $details);
 					$details[] = array('Old',"<a href='{$data['oldfullsize']}' target='_blank'>Full size</a><div><img src='{$data['oldpreview']}'></div>");
 					$details[] = array('New',"<a href='{$data['newfullsize']}' target='_blank'>Full size</a><div><img src='{$data['newpreview']}'></div>");
 				break;
 				case "res_overtake":
 					$Post = $Database->where('id', $data['id'])->getOne("{$data['type']}s");
-					if (empty($Post))
-						$details[] = array('Notice', 'The post has been deleted, some details are unavailable');
-					$details[] = array('ID',$data['id']);
-					$details[] = array('Type',$data['type']);
-					if (!empty($Post)){
-						$Fragment = "#{$data['type']}-{$data['id']}";
-						if ($Post['season'] == 0){
-							$IDstr = "EQG{$Post['episode']}";
-							$Link = "/eqg/{$Post['episode']}";
-						}
-						else{
-							$IDstr = "S{$Post['season']}E{$Post['episode']}";
-							$Link = "/episode/$IDstr";
-						}
-						$details[] = array('Link',"<a href='$Link$Fragment'>$IDstr$Fragment</a>");
-					}
+					self::GenericPostInfo($Post, $data, $details);
 					$details[] = array('Previous reserver',User::GetProfileLink(User::Get($data['reserved_by'])));
 					$details[] = array('Previously reserved at', Time::Tag($data['reserved_at'], Time::TAG_EXTENDED, Time::TAG_STATIC_DYNTIME));
 
@@ -240,22 +216,7 @@
 				break;
 				case "res_transfer":
 					$Post = $Database->where('id', $data['id'])->getOne("{$data['type']}s");
-					if (empty($Post))
-						$details[] = array('Notice', 'The post has been deleted, some details are unavailable');
-					$details[] = array('ID',$data['id']);
-					$details[] = array('Type',$data['type']);
-					if (!empty($Post)){
-						$Fragment = "#{$data['type']}-{$data['id']}";
-						if ($Post['season'] == 0){
-							$IDstr = "EQG{$Post['episode']}";
-							$Link = "/eqg/{$Post['episode']}";
-						}
-						else{
-							$IDstr = "S{$Post['season']}E{$Post['episode']}";
-							$Link = "/episode/$IDstr";
-						}
-						$details[] = array('Link',"<a href='$Link$Fragment'>$IDstr$Fragment</a>");
-					}
+					self::GenericPostInfo($Post, $data, $details);
 					$details[] = array('New reserver',User::GetProfileLink(User::Get($data['to'])));
 				break;
 				default:
@@ -265,6 +226,17 @@
 			}
 
 			return array('details' => $details);
+		}
+
+		static function GenericPostInfo(array $Post, array $data, array &$details){
+			$label = CoreUtils::Capitalize($data['type'])." #{$data['id']}";
+			if (!empty($Post)){
+				list($link) = Posts::GetLink($Post, $data['type']);
+				$label = "<a href='$link'>$label</a>";
+			}
+			$details[] = array('Post',$label);
+			if (empty($Post))
+				$details[] = array('Still exists', false);
 		}
 
 		/**

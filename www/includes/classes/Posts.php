@@ -74,20 +74,22 @@
 		/**
 		 * Get link to a specific post
 		 *
-		 * @param array $Post
+		 * @param array  $Post
+		 * @param string $thing 'request'/'reservation'
 		 *
 		 * @return array
 		 */
-		static function GetLink($Post){
-			$thing = empty($Post['rq']) ? 'reservation' : 'request';
+		static function GetLink(array $Post, string $thing = null):array {
+			if (empty($thing))
+				$thing = empty($Post['requested_by']) ? 'reservation' : 'request';
 			$id = "$thing-{$Post['id']}";
 			if ($Post['season'] !== 0){
 				$page = "S{$Post['season']}E{$Post['episode']}";
 				$link = "/episode/$page#$id";
 			}
 			else {
-				$page = "EQG {$Post['episode']}";
-				$link = "/eqg/{$Post['episode']}";
+				$page = 'Movie#'.$Post['episode'];
+				$link = Episode::FormatURL($Post).'#'.$id;
 			}
 			return array($link,$page);
 		}

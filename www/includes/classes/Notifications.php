@@ -62,21 +62,21 @@
 				switch ($n['type']){
 					case "post-finished":
 						$Post = $Database->where('id', $data['id'])->getOne("{$data['type']}s");
-						$Episode = Episode::GetActual($Post['season'],$Post['episode'], Episode::ALLOW_SEASON_ZERO);
+						$Episode = Episode::GetActual($Post['season'],$Post['episode'], Episode::ALLOW_MOVIES);
 						$EpID = Episode::FormatTitle($Episode, AS_ARRAY, 'id');
 						$url = "/episode/$EpID#{$data['type']}-{$data['id']}";
 						$HTML .= self::_getNotifElem("Your <a href='$url'>request</a> under $EpID has been fulfilled", $n);
 					break;
 					case "post-approved":
 						$Post = $Database->where('id', $data['id'])->getOne("{$data['type']}s");
-						$Episode = Episode::GetActual($Post['season'],$Post['episode'], Episode::ALLOW_SEASON_ZERO);
+						$Episode = Episode::GetActual($Post['season'],$Post['episode'], Episode::ALLOW_MOVIES);
 						$EpID = Episode::FormatTitle($Episode, AS_ARRAY, 'id');
 						$url = "/episode/$EpID#{$data['type']}-{$data['id']}";
 						$HTML .= self::_getNotifElem("A <a href='$url'>post</a> you reserved under $EpID has been added do the club gallery", $n);
 					break;
 					case "post-passon":
 						$Post = $Database->where('id', $data['id'])->getOne("{$data['type']}s");
-						$Episode = Episode::GetActual($Post['season'],$Post['episode'], Episode::ALLOW_SEASON_ZERO);
+						$Episode = Episode::GetActual($Post['season'],$Post['episode'], Episode::ALLOW_MOVIES);
 						$EpID = Episode::FormatTitle($Episode, AS_ARRAY, 'id');
 						$url = "/episode/$EpID#{$data['type']}-{$data['id']}";
 						$User = User::Get($data['user']);
@@ -90,7 +90,7 @@
 					case "post-passsnatch":
 					case "post-passperm":
 						$Post = $Database->where('id', $data['id'])->getOne("{$data['type']}s");
-						$Episode = Episode::GetActual($Post['season'],$Post['episode'], Episode::ALLOW_SEASON_ZERO);
+						$Episode = Episode::GetActual($Post['season'],$Post['episode'], Episode::ALLOW_MOVIES);
 						$EpID = Episode::FormatTitle($Episode, AS_ARRAY, 'id');
 						$url = "/episode/$EpID#{$data['type']}-{$data['id']}";
 						$User = User::Get($data['by']);

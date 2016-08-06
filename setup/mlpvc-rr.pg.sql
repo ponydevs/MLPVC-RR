@@ -86,7 +86,7 @@ CREATE TABLE episodes (
     season integer NOT NULL,
     episode integer NOT NULL,
     twoparter boolean DEFAULT false NOT NULL,
-    title character varying(35) NOT NULL,
+    title text NOT NULL,
     posted timestamp with time zone DEFAULT now() NOT NULL,
     posted_by uuid,
     airs timestamp with time zone,
@@ -272,15 +272,15 @@ ALTER SEQUENCE log__color_modify_entryid_seq OWNED BY log__color_modify.entryid;
 
 CREATE TABLE log__episode_modify (
     entryid integer NOT NULL,
-    target character varying(6) NOT NULL,
+    target text NOT NULL,
     oldseason integer,
     newseason integer,
     oldepisode integer,
     newepisode integer,
     oldtwoparter boolean,
     newtwoparter boolean,
-    oldtitle character varying(35),
-    newtitle character varying(35),
+    oldtitle text,
+    newtitle text,
     oldairs timestamp without time zone,
     newairs timestamp without time zone
 );
@@ -319,7 +319,7 @@ CREATE TABLE log__episodes (
     season integer NOT NULL,
     episode integer NOT NULL,
     twoparter boolean NOT NULL,
-    title character varying(35) NOT NULL,
+    title text NOT NULL,
     airs timestamp without time zone
 );
 

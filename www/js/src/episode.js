@@ -232,9 +232,9 @@ DocReady.push(function Episode(){
 					data.datasets[0].backgroundColor.push(bgcolor);
 					let lighter = $.hex2rgb(bgcolor),
 						mult = 1.06;
-					lighter.r = Math.min(255, lighter.r * mult);
-					lighter.g = Math.min(255, lighter.g * mult);
-					lighter.b = Math.min(255, lighter.b * mult);
+					lighter.r = Math.round(Math.min(255, lighter.r * mult));
+					lighter.g = Math.round(Math.min(255, lighter.g * mult));
+					lighter.b = Math.round(Math.min(255, lighter.b * mult));
 					data.datasets[0].hoverBackgroundColor.push($.rgb2hex(lighter));
 					data.datasets[0].borderWidth.push(2);
 					data.datasets[0].hoverBorderColor.push(`rgba(${lighter.r},${lighter.g},${lighter.b},0.9)`);

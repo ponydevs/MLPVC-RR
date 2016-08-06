@@ -367,7 +367,7 @@ HTML;
 
 			$cols = "id, season, episode, preview, label, posted";
 			$PendingReservations = $Database->where('reserved_by', $UserID)->where('deviation_id IS NULL')->get('reservations',null,$cols);
-			$PendingRequestReservations = $Database->where('reserved_by', $UserID)->where('deviation_id IS NULL')->get('requests',null,"$cols, reserved_at, true as rq");
+			$PendingRequestReservations = $Database->where('reserved_by', $UserID)->where('deviation_id IS NULL')->get('requests',null,"$cols, reserved_at, true as requested_by");
 			$TotalPending = count($PendingReservations)+count($PendingRequestReservations);
 			$hasPending = $TotalPending > 0;
 			$HTML = '';

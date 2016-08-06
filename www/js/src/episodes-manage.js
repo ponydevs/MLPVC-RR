@@ -1,10 +1,9 @@
 /* global DocReady,moment,HandleNav,$content */
 DocReady.push(function EpisodesManage(){
 	'use strict';
-	let $eptableBody = $('#episodes').children('tbody'),
+	let $tables = $('#content').find('table'),
 		SEASON = window.SEASON,
 		EPISODE = window.EPISODE;
-	Bind.call({init:true});
 
 	/*!
 	 * Timezone data string taken from:
@@ -31,43 +30,50 @@ DocReady.push(function EpisodesManage(){
 
 	function EpisodeForm(id){
 		let $form = $.mk('form').attr('id', id).append(
-			`<div class="label">
+			`<div class="label episode-only">
 				<span>Season, Episode & Overall #</span>
 				<div class=input-group-3>
 					<input type="number" min="1" max="8" name="season" placeholder="Season #" required>
 					<input type="number" min="1" max="26" name="episode" placeholder="Episode #" required>
 					<input type="number" min="1" max="255" name="no" placeholder="Overall #" required>
 				</div>
-			</label>`,
+			</div>
+			<div class="label movie-only">
+				<span>Overall movie number</span>
+				<input type="number" min="1" max="26" name="episode" placeholder="Overall #" required>
+			</div>
+			<input class="movie-only" type="hidden" name="season" value="0">`,
 			$.mk('label').append(
 				'<span>Title (5-35 chars.)</span>',
 				$.mk('input').attr({
 					type: 'text',
 					minlength: 5,
-					maxlength: 35,
 					name: 'title',
 					placeholder: 'Title',
 					autocomplete: 'off',
 					required: true,
 				}).patternAttr(EP_TITLE_REGEX)
 			),
-			`<div class="label">
-				<span>Air Date</span>
+			`<div class="notice info align-center movie-only">
+				<p>Include "Equestria Girls: " if applicable. Prefixes don't count towards the character limit.</p>
+			</div>
+			<div class="label">
+				<span>Air date & time</span>
 				<div class="input-group-2">
 					<input type="date" name="airdate" placeholder="YYYY-MM-DD" required>
 					<input type="time" name="airtime" placeholder="HH:MM" required>
 				</div>
 			</div>
 			<div class="notice info align-center button-here">
-				<p>Specify when the episode will air, in <strong>your computer's timezone</strong>.</p>
+				<p>Specify the <span class="episode-only">episode</span><span class="movie-only">movie</span>'s air date and time in <strong>your computer's timezone</strong>.</p>
 			</div>
-			<label><input type="checkbox" name="twoparter"> Has two parts</label>
-			<div class="notice info align-center">
+			<label class="episode-only"><input type="checkbox" name="twoparter"> Has two parts</label>
+			<div class="notice info align-center episode-only">
 				<p>If this is checked, only specify the episode number of the first part</p>
 			</div>`
 		);
 
-		$.mk('button').text('Set time to '+sat_time+' this '+sat_day).on('click', function(e){
+		$.mk('button').attr('class','episode-only').text('Set time to '+sat_time+' this '+sat_day).on('click', function(e){
 			e.preventDefault();
 			$(this).parents('form').find('input[name="airdate"]').val(sat_date).next().val(sat_time);
 		}).appendTo($form.children('.button-here'));
@@ -77,10 +83,14 @@ DocReady.push(function EpisodesManage(){
 	let $AddEpFormTemplate = new EpisodeForm('addep'),
 		$EditEpFormTemplate = new EpisodeForm('editep');
 
-	$('#add-episode').on('click', function(e){
+	$('#add-episode, #add-movie').on('click', function(e){
 		e.preventDefault();
 
-		$.Dialog.request('Add Episode',$AddEpFormTemplate.clone(true, true),'Add', function($form){
+		const movie = /movie/.test(this.id);
+		let $AddEpForm = $AddEpFormTemplate.clone(true, true);
+		$AddEpForm.find(movie ? '.episode-only' : '.movie-only').remove();
+
+		$.Dialog.request(`Add ${movie?'Movie':'Episode'}`, $AddEpForm,'Add', function($form){
 			$form.on('submit', function(e){
 				e.preventDefault();
 				let airdate = $form.find('input[name=airdate]').attr('disabled',true).val(),
@@ -88,14 +98,14 @@ DocReady.push(function EpisodesManage(){
 					airs = mkDate(airdate, airtime).toISOString(),
 					data = $(this).mkData({airs:airs});
 
-				$.Dialog.wait(false, 'Adding episode to database');
+				$.Dialog.wait(false, `Adding ${movie?'movie':'episode'} to database`);
 
 				$.post('/episode/add', data, $.mkAjaxHandler(function(){
 					if (!this.status) return $.Dialog.fail(false, this.message);
 
-					$.Dialog.wait(false, 'Opening episode page', true);
+					$.Dialog.wait(false, `Opening ${movie?'movie':'episode'} page`, true);
 
-					$.Navigation.visit('/episode/'+this.epid,function(){
+					$.Navigation.visit(this.url,function(){
 						$.Dialog.close();
 					});
 				}));
@@ -103,100 +113,88 @@ DocReady.push(function EpisodesManage(){
 		});
 	});
 
-	function Bind(tbody){
-		if (typeof tbody === 'string'){
-			$eptableBody.html(tbody);
-			if ($eptableBody.children('.empty').length)
-				$pageTitle.html($pageTitle.data('none')).next().show();
-			else $pageTitle.html($pageTitle.data('list')).next().hide();
-			$eptableBody.trigger('updatetimes');
-		}
-		$eptableBody.find('tr[data-epid]').each(function(){
-			let $this = $(this),
-				epid = $this.attr('data-epid');
+	function EditEp(e){
+		e.preventDefault();
 
-			$this.removeAttr('data-epid').data('epid', epid);
-		});
-		$eptableBody.find('.edit-episode').add('#edit-ep').off('click').on('click', function(e){
-			e.preventDefault();
+		let $this = $(this),
+			EpisodePage = $this.attr('id') === 'edit-ep',
+			epid = EpisodePage
+				? SEASON ? 'S'+SEASON+'E'+EPISODE : 'Movie#'+EPISODE
+				: $this.closest('tr').attr('data-epid'),
+			movie = /^Movie/.test(epid);
 
-			let $this = $(this),
-				EpisodePage = $this.attr('id') === 'edit-ep',
-				epid = EpisodePage ? 'S'+SEASON+'E'+EPISODE : $this.closest('tr').data('epid');
+		$.Dialog.wait(`Editing ${epid}`, `Getting ${movie?'movie':'episode'} details from server`);
 
-			$.Dialog.wait(`Editing ${epid}`, 'Getting episode details from server');
+		$.post(`/episode/get`, {epid:epid}, $.mkAjaxHandler(function(){
+			if (!this.status) return $.Dialog.fail(false,this.message);
 
-			$.post(`/episode/${epid}`, $.mkAjaxHandler(function(){
-				if (!this.status) return $.Dialog.fail(false,this.message);
+			let $EditEpForm = $EditEpFormTemplate.clone(true, true);
+			$EditEpForm.find(movie ? '.episode-only' : '.movie-only').remove();
 
-				let $EditEpForm = $EditEpFormTemplate.clone(true, true);
-
+			if (!movie)
 				$EditEpForm.find('input[name=twoparter]').prop('checked',!!this.ep.twoparter);
-				delete this.ep.twoparter;
+			delete this.ep.twoparter;
 
-				if (!this.caneditid || (EpisodePage && $('#reservations, #requests').find('li').length))
-					$EditEpForm.find('input').filter('[name="season"],[name="episode"]').disable();
+			if (!this.caneditid || (EpisodePage && $('#reservations, #requests').find('li').length))
+				$EditEpForm.find('input').filter('[name="season"],[name="episode"]').disable();
 
-				let d = moment(this.ep.airs);
-				this.ep.airdate = DateToAirDate(d);
-				this.ep.airtime = DateToAirTime(d);
+			let d = moment(this.ep.airs);
+			this.ep.airdate = DateToAirDate(d);
+			this.ep.airtime = DateToAirTime(d);
 
-				let epid = this.epid;
-				delete this.epid;
+			let epid = this.epid;
+			delete this.epid;
 
-				$.each(this.ep,function(k,v){
-					$EditEpForm.find('input[name='+k+']').val(v);
+			$.each(this.ep,function(k,v){
+				$EditEpForm.find('input[name='+k+']').val(v);
+			});
+
+			$.Dialog.request(false, $EditEpForm,'Save', function($form){
+				$form.on('submit', function(e){
+					e.preventDefault();
+
+					let data = $(this).mkData(),
+						d = mkDate(data.airdate, data.airtime);
+					delete data.airdate;
+					delete data.airtime;
+					data.airs = d.toISOString();
+
+					$.Dialog.wait(false, 'Saving changes');
+
+					data.epid = epid;
+					$.post(`/episode/edit`, data, $.mkAjaxHandler(function(){
+						if (!this.status) return $.Dialog.fail(false, this.message);
+
+						$.Dialog.wait(false, 'Updating page', true);
+						$.Navigation.reload(function(){
+							$.Dialog.close();
+						});
+					}));
 				});
+			});
+		}));
+	}
+	$('#edit-ep').on('click', EditEp);
+	$tables.on('click', '.edit-episode', EditEp).on('click', '.delete-episode', function(e){
+		e.preventDefault();
 
-				$.Dialog.request(false, $EditEpForm,'Save', function($form){
-					$form.on('submit', function(e){
-						e.preventDefault();
+		let $this = $(this),
+			epid = $this.closest('tr').data('epid'),
+			movie = /^Movie/.test(epid);
 
-						let data = $(this).mkData(),
-							d = mkDate(data.airdate, data.airtime);
-						delete data.airdate;
-						delete data.airtime;
-						data.airs = d.toISOString();
+		$.Dialog.confirm(`Deleting ${epid}`,`<p>This will remove <strong>ALL</strong><ul><li>requests</li><li>reservations</li><li>video links</li><li>and votes</li></ul>associated with the ${movie?'movie':'episode'}, too.</p><p>Are you sure you want to delete it?</p>`, function(sure){
+			if (!sure) return;
 
-						$.Dialog.wait(false, 'Saving changes');
+			$.Dialog.wait(false, 'Removing episode');
 
-						$.post(`/episode/edit/${epid}`, data, $.mkAjaxHandler(function(){
-							if (!this.status) return $.Dialog.fail(false, this.message);
+			$.post(`/episode/delete`, {epid:epid}, $.mkAjaxHandler(function(){
+				if (!this.status) return $.Dialog.fail(false, this.message);
 
-							$.Dialog.wait(false, 'Updating page', true);
-							$.Navigation.reload(function(){
-								$.Dialog.close();
-							});
-						}));
-					});
+				$.Dialog.wait(false, 'Reloading page', true);
+				$.Navigation.reload(function(){
+					$.Dialog.close();
 				});
 			}));
 		});
-
-		$eptableBody.find('.delete-episode').off('click').on('click', function(e){
-			e.preventDefault();
-
-			let $this = $(this),
-				epid = $this.closest('tr').data('epid');
-
-			$.Dialog.confirm('Deleting '+epid,'<p>This will remove <strong>ALL</strong><ul><li>requests</li><li>reservations</li><li>video links</li><li>and votes</li></ul>associated with the episode, too.</p><p>Are you sure you want to delete it?</p>', function(sure){
-				if (!sure) return;
-
-				$.Dialog.wait(false, 'Removing episode');
-
-				$.post(`/episode/delete/${epid}`, $.mkAjaxHandler(function(){
-					if (!this.status) return $.Dialog.fail(false, this.message);
-
-					$.Dialog.wait(false, 'Reloading page', true);
-					$.Navigation.reload(function(){
-						$.Dialog.close();
-					});
-				}));
-			});
-		});
-	}
-
-	$eptableBody.on('page-switch',function(){
-		Bind();
 	});
 });

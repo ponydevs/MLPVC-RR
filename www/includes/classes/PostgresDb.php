@@ -744,12 +744,12 @@
 			$this->_lastQuery = isset($this->_bindParams)
 				? $this->_replacePlaceHolders($this->_query, $this->_bindParams)
 				: $this->_query;
-			$this->_reset();
+			$this->reset();
 
 			return $result;
 		}
 
-		protected function _reset(){
+		public function reset(){
 			$this->_where = array();
 			$this->_join = array();
 			$this->_orderBy = array();

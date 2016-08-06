@@ -25,6 +25,7 @@ After some time, the idea of moving the old PNG color guide into an easier to us
    - [Ace Editor](https://ace.c9.io/)
    - [imagesLoaded](http://imagesloaded.desandro.com/)
    - [moment.js](http://momentjs.com/)
+   - [simplemarquee](https://github.com/IndigoUnited/jquery.simplemarquee)
  - Back-end:
    - [moment.php](https://github.com/fightbulc/moment.php)
    - [PostgresDb](https://github.com/SeinopSys/PHP-PostgreSQL-Database-Class)

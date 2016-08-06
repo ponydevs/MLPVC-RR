@@ -1,9 +1,11 @@
 <div id="content">
-	<h1 data-none="No episodes found" data-list="Episode list"><?=empty($Episodes)?'No episodes found':'Episode list'?></h1>
-	<p class="eps-0" style="display: <?=empty($Episodes)?'block':'none'?>">There are no episodes stored in the database</p>
-<?  if (Permission::Sufficient('staff')) { ?>
-	<div class="align-center">
-		<button id="add-episode" class="typcn typcn-plus">Add an episode</button>
+	<h1><?=empty($Episodes)?'No episodes found':'Episode list'?></h1>
+<?  if (empty($Episodes)){ ?>
+	<p>There are no episodes stored in the database</p>
+<?  }
+	if (Permission::Sufficient('staff')) { ?>
+	<div class="actions">
+		<button id="add-episode" class="green typcn typcn-plus">Add Episode</button>
 	</div>
 <?      CoreUtils::ExportVars(array('EP_TITLE_REGEX' => $EP_TITLE_REGEX));
 	}
@@ -20,14 +22,26 @@
 		<tbody><?=Episode::GetTableTbody($Episodes)?></tbody>
 	</table>
 <?  }
-	echo $Pagination; ?>
+	echo $Pagination;
+	$Movies = $Database->where('season', 0)->orderBy('episode','DESC')->get('episodes'); ?>
 	<h1>Movies</h1>
+<?  if (empty($Episodes)){ ?>
+	<p>There are no movies stored in the database</p>
+<?  }
+	if (Permission::Sufficient('staff')) { ?>
+	<div class="actions">
+		<button id="add-movie" class="green typcn typcn-plus">Add Movie</button>
+	</div>
+<?  }
+	if (!empty($Episodes) || (empty($Episodes) && Permission::Sufficient('staff'))){ ?>
 	<table id="movies">
 		<thead>
 			<tr>
+				<th><span class="mobile-hide">Overall </span>#</th>
 				<th>Title &amp; Air Date</th>
 			</tr>
 		</thead>
-		<tbody><?=Episode::GetTableTbody($Database->where('season', 0)->get('episodes'))?></tbody>
+		<tbody><?=Episode::GetTableTbody($Movies, true)?></tbody>
 	</table>
+<?  } ?>
 </div>

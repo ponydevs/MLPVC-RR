@@ -1,7 +1,10 @@
 <?php
 
 	class Episode {
-		static $cutoff = 26;
+		const TITLE_CUTOFF = 26;
+		static $ALLOWED_PREFIXES = array(
+			'Equestria Girls' => 'EQG',
+		);
 
 		/**
 		 * Returns all episodes from the database, properly sorted
@@ -27,7 +30,7 @@
 			else return self::AddAiringData($Database->getOne('episodes'));
 		}
 
-		const ALLOW_SEASON_ZERO = true;
+		const ALLOW_MOVIES = true;
 
 		/**
 		 * If an episode is a two-parter's second part, then returns the first part
@@ -35,17 +38,17 @@
 		 *
 		 * @param int  $episode
 		 * @param int  $season
-		 * @param bool $allowSeason0 If set to true, season 0 is valid
+		 * @param bool $allowMovies
 		 *
 		 * @throws Exception
 		 *
 		 * @return array|null
 		 */
-		static function GetActual($season, $episode, $allowSeason0 = false){
+		static function GetActual(int $season, int $episode, bool $allowMovies = false){
 			global $Database;
 
-			if (!$allowSeason0 && $season == 0)
-				throw new Exception('Season 0 ignored');
+			if (!$allowMovies && $season == 0)
+				throw new Exception('This action cannot be performed on movies');
 
 			$Ep1 = $Database->whereEp($season,$episode)->getOne('episodes');
 			if (!empty($Ep1))
@@ -63,7 +66,7 @@
 		 * @return array
 		 */
 		static function GetLatest(){
-			return self::Get(1,"airs < NOW() + INTERVAL '24 HOUR'");
+			return self::Get(1,"airs < NOW() + INTERVAL '24 HOUR' && season != 0");
 		}
 
 		/**
@@ -102,20 +105,26 @@
 		 * @param array  $Episode     Episode row from the database
 		 * @param bool   $returnArray Whether to return as an array instead of string
 		 * @param string $arrayKey
+		 * @param bool   $append_num  Append overall # to ID
 		 *
 		 * @return string|array
 		 */
-		static function FormatTitle($Episode, $returnArray = false, $arrayKey = null){
-			$EpNumber = intval($Episode['episode']);
+		static function FormatTitle($Episode, $returnArray = false, $arrayKey = null, $append_num = true){
+			global $PREFIX_REGEX;
+			$EpNumber = intval($Episode['episode'], 10);
+			$twoparter = !empty($Episode['twoparter']);
+			$isMovie = $Episode['season'] == 0;
 
 			if ($returnArray === AS_ARRAY) {
-				if ($Episode['twoparter'])
+				if ($twoparter)
 					$Episode['episode'] = $EpNumber.'-'.($EpNumber+1);
 				$arr = array(
-					'id' => "S{$Episode['season']}E{$Episode['episode']}",
-					'season' => $Episode['season'],
-					'episode' => $Episode['episode'],
-					'title' => $Episode['title'],
+					'id' => !$isMovie
+						? "S{$Episode['season']}E{$Episode['episode']}"
+						: self::GetMovieID($Episode, $append_num),
+					'season' => $Episode['season'] ?? null,
+					'episode' => $Episode['episode'] ?? null,
+					'title' => $Episode['title'] ?? null,
 				);
 
 				if (!empty($arrayKey))
@@ -123,30 +132,45 @@
 				else return $arr;
 			}
 
-			if ($Episode['season'] == 0)
-				return "Equestria Girls: {$Episode['title']}";
+			if ($isMovie)
+				return $Episode['title'];
 
-			if ($Episode['twoparter'])
+			if ($twoparter)
 				$Episode['episode'] = CoreUtils::Pad($EpNumber).'-'.CoreUtils::Pad($EpNumber+1);
 			else $Episode['episode'] = CoreUtils::Pad($Episode['episode']);
 			$Episode['season'] = CoreUtils::Pad($Episode['season']);
 			return "S{$Episode['season']} E{$Episode['episode']}: {$Episode['title']}";
 		}
 
+		static function GetMovieID($Movie, $append_num = true){
+			return 'Movie'.($append_num?'#'.$Movie['episode']:'');
+		}
+
+		static function RemoveTitlePrefix($title){
+			global $PREFIX_REGEX;
+
+			return $PREFIX_REGEX->replace('', $title);
+		}
+
+		static function ShortenTitlePrefix($title){
+			global $PREFIX_REGEX;
+
+			if (!$PREFIX_REGEX->match($title, $match) || !isset(self::$ALLOWED_PREFIXES[$match[1]]))
+				return $title;
+
+			return self::$ALLOWED_PREFIXES[$match[1]].': '.self::RemoveTitlePrefix($title);
+		}
+
 		/**
 		 * Loads the episode page
 		 *
 		 * @param null|int|array $force If null: Parses $data and loads approperiate epaisode
-		 *                              If int: Loads Equestria Girls "episode"
 		 *                              If array: Uses specified arra as Episode data
 		 */
 		static function LoadPage($force = null){
 			global $data, $CurrentEpisode, $Requests, $Reservations, $Latest, $Database, $PrevEpisode, $NextEpisode;
 
-			$EQG = is_int($force);
-			if ($EQG)
-				$CurrentEpisode = self::GetActual(0, $force, self::ALLOW_SEASON_ZERO);
-			else if (is_array($force))
+			if (is_array($force))
 				$CurrentEpisode = $force;
 			else {
 				$EpData = self::ParseID($data);
@@ -159,8 +183,8 @@
 				list($Requests, $Reservations) = Posts::Get($CurrentEpisode['season'], $CurrentEpisode['episode']);
 			}
 
-			$EpID = self::FormatTitle($CurrentEpisode,AS_ARRAY,'id');
-			CoreUtils::FixPath(!$EQG ? "/episode/$EpID" : "/eqg/{$GLOBALS['url']}");
+			$url = self::FormatURL($CurrentEpisode, $isMovie);
+			CoreUtils::FixPath($url);
 
 			$js = array('imagesloaded.pkgd','jquery.ba-throttle-debounce','jquery.fluidbox','Chart','episode');
 			if (Permission::Sufficient('member'))
@@ -170,11 +194,33 @@
 				$js[] = 'episodes-manage';
 			}
 
-			$PrevEpisode = $Database->where('no',$CurrentEpisode['no'], '<')->orderBy('no','DESC')->getOne('episodes','season,episode,title,twoparter');
-			$NextEpisode = $Database->where('no',$CurrentEpisode['no'], '>')->orderBy('no','ASC')->getOne('episodes','season,episode,title,twoparter');
+			if (!$isMovie){
+				$PrevEpisode = $Database
+					->where('no',$CurrentEpisode['no'], '<')
+					->where('season', 0, '!=')
+					->orderBy('no','DESC')
+					->getOne('episodes','season,episode,title,twoparter');
+				$NextEpisode = $Database
+					->where('no',$CurrentEpisode['no'], '>')
+					->where('season', 0, '!=')
+					->orderBy('no','ASC')
+					->getOne('episodes','season,episode,title,twoparter');
+			}
+			else {
+				$PrevEpisode = $Database
+					->where('season', 0)
+					->where('episode',$CurrentEpisode['episode'], '<')
+					->orderBy('episode','DESC')
+					->getOne('episodes','season,episode,title');
+				$NextEpisode = $Database
+					->where('season', 0)
+					->where('episode',$CurrentEpisode['episode'], '>')
+					->orderBy('episode','ASC')
+					->getOne('episodes','season,episode,title');
+			}
 
 			CoreUtils::LoadPage(array(
-				'title' => self::FormatTitle($CurrentEpisode),
+				'title' => self::FormatTitle($CurrentEpisode).' - Vector Requests & Reservations' ,
 				'view' => 'episode',
 				'css' => 'episode',
 				'js' => $js,
@@ -193,14 +239,36 @@
 		 * @return null|array
 		 */
 		static function ParseID($id){
-			global $EPISODE_ID_REGEX;
+			if (empty($id))
+				return null;
+
+			global $EPISODE_ID_REGEX, $MOVIE_ID_REGEX;
 			if (regex_match($EPISODE_ID_REGEX, $id, $match))
 				return array(
 					'season' => intval($match[1], 10),
 					'episode' => intval($match[2], 10),
 					'twoparter' => !empty($match[3]),
 				);
+			else if (regex_match($MOVIE_ID_REGEX, $id, $match))
+				return array(
+					'season' => 0,
+					'episode' => intval($match[1], 10),
+					'twoparter' => false,
+				);
 			else return null;
+		}
+
+		static function MovieSafeTitle($title){
+			return regex_replace(new RegExp('-{2,}'), '-', regex_replace(new RegExp('[^a-z]','i'), '-', $title));
+		}
+
+		static function FormatURL($Episode, &$isMovie = null){
+			if (!isset($isMovie))
+				$isMovie = $Episode['season'] == 0;
+
+			if (!$isMovie)
+				return '/episode/'.self::FormatTitle($Episode,AS_ARRAY,'id');
+			return "/movie/{$Episode['episode']}".(!empty($Episode['title'])?'-'.self::MovieSafeTitle($Episode['title']):'');
 		}
 
 		/**
@@ -315,50 +383,52 @@
 		 * Get the <tbody> contents for the episode list table
 		 *
 		 * @param array|null $Episodes
+		 * @param bool       $areMovies
 		 *
 		 * @return string
 		 */
-		static function GetTableTbody($Episodes = null){
+		static function GetTableTbody($Episodes = null, bool $areMovies = false):string {
 			if (empty($Episodes))
-				return "<tr class='empty align-center'><td colspan='3'><em>There are no episodes to display</em></td></tr>";
+				return "<tr class='empty align-center'><td colspan='3'><em>There are no ".($areMovies?'movies':'episodes')." to display</em></td></tr>";
 
 			$Body = '';
 			$PathStart = '/episode/';
 			$displayed = false;
-			foreach ($Episodes as $i => $ep) {
-				$adminControls = $SeasonEpisode = $DataID = '';
-				$isMovie = $ep['season'] === 0;
+			foreach ($Episodes as $Episode) {
+				$adminControls = Permission::Insufficient('staff') ? '' : <<<HTML
+<span class='admincontrols'>
+	<button class='edit-episode typcn typcn-pencil blue' title='Edit episode'></button>
+	<button class='delete-episode typcn typcn-times red' title='Delete episode'></button>
+</span>
+HTML;
+				$SeasonEpisode = $DataID = '';
+				$isMovie = $Episode['season'] === 0;
+				$Title = Episode::FormatTitle($Episode, AS_ARRAY);
 				if (!$isMovie){
-					$Title = Episode::FormatTitle($ep, AS_ARRAY);
 					$href = $PathStart.$Title['id'];
-					if (Permission::Sufficient('staff'))
-						$adminControls = "<span class='admincontrols'>" .
-							"<button class='edit-episode typcn typcn-pencil blue' title='Edit episode'></button> " .
-							"<button class='delete-episode typcn typcn-times red' title='Delete episode'></button>" .
-						"</span>";
 
 					$SeasonEpisode = <<<HTML
 				<td class='season' rowspan='2'>{$Title['season']}</td>
 				<td class='episode' rowspan='2'>{$Title['episode']}</td>
 HTML;
 
-					$DataID = " data-epid='{$Title['id']}'";
 				}
 				else {
-					$Title = array('title' => "Equestria Girls: {$ep['title']}");
-					$href = "/eqg/{$ep['episode']}";
-					$ep = self::AddAiringData($ep);
+					$href = self::FormatURL($Episode);
+					$Episode = self::AddAiringData($Episode);
+					$SeasonEpisode = "<td class='episode' rowspan='2'>{$Title['episode']}</td>";
 				}
+				$DataID = " data-epid='{$Title['id']}'";
 
 				$star = '';
-				if (self::IsLatest($ep)){
+				if (self::IsLatest($Episode)){
 					$displayed = true;
 					$star = '<span class="typcn typcn-home" title="Curently visible on the homepage"></span> ';
 				}
-				if (!$ep['aired'])
+				if (!$Episode['aired'])
 					$star .= '<span class="typcn typcn-media-play-outline" title="'.($isMovie?'Movie':'Episode').' didn\'t air yet, voting disabled"></span>&nbsp;';
 
-				$airs = Time::Tag($ep['airs'], Time::TAG_EXTENDED, Time::TAG_NO_DYNTIME);
+				$airs = Time::Tag($Episode['airs'], Time::TAG_EXTENDED, Time::TAG_NO_DYNTIME);
 
 				$Body .= <<<HTML
 		<tr$DataID>
@@ -379,12 +449,12 @@ HTML;
 		 * @return string
 		 */
 		static function GetSidebarUpcoming($wrap = true){
-			global $Database;
+			global $Database, $PREFIX_REGEX;
 			$Upcoming = $Database->where('airs > NOW()')->orderBy('airs', 'ASC')->get('episodes');
 			if (empty($Upcoming)) return;
 
 			$HTML = $wrap ? '<section id="upcoming"><h2>Upcoming episodes</h2><ul>' : '';
-			foreach ($Upcoming as $i => $Episode){
+			foreach ($Upcoming as $Episode){
 				$airtime = strtotime($Episode['airs']);
 				$airs = date('c', $airtime);
 				$month = date('M', $airtime);
@@ -406,7 +476,13 @@ HTML;
 				}
 				else $time = Time::Tag($Episode['airs']);
 
-				$title = ($Episode['season'] === 0 ? 'EQG: ' : '').$Episode['title'];
+				$title = $Episode['season'] !== 0
+					? $Episode['title']
+					: (
+						$PREFIX_REGEX->match($Episode['title'])
+						? Episode::ShortenTitlePrefix($Episode['title'])
+						: "Movie: {$Episode['title']}"
+					);
 
 				$HTML .= "<li><div class='calendar'><span class='top'>$month</span><span class='bottom'>$day</span></div>".
 					"<div class='meta'><span class='title'>$title</span>$time</div></li>";
@@ -525,9 +601,9 @@ HTML;
 			)['postcount'];
 		}
 
-		static function ValidateSeason(){
+		static function ValidateSeason($allowMovies = false){
 			return (new Input('season','int',array(
-				Input::IN_RANGE => [1,8],
+				Input::IN_RANGE => [$allowMovies ? 0 : 1, 8],
 				Input::CUSTOM_ERROR_MESSAGES => array(
 					Input::ERROR_MISSING => 'Season number is missing',
 					Input::ERROR_INVALID => 'Season number (@value) is invalid',
@@ -535,14 +611,15 @@ HTML;
 				)
 			)))->out();
 		}
-		static function ValidateEpisode($optional = false){
+		static function ValidateEpisode($optional = false, $EQG = false){
+			$FieldName = $EQG ? 'Overall movie number' : 'Episode number';
 			return (new Input('episode','int',array(
 				Input::IS_OPTIONAL => $optional,
 				Input::IN_RANGE => [1,26],
 				Input::CUSTOM_ERROR_MESSAGES => array(
-					Input::ERROR_MISSING => 'Episode number is missing',
-					Input::ERROR_INVALID => 'Episode number (@value) is invalid',
-					Input::ERROR_RANGE => 'Episode number must be between @min and @max',
+					Input::ERROR_MISSING => "$FieldName is missing",
+					Input::ERROR_INVALID => "$FieldName (@value) is invalid",
+					Input::ERROR_RANGE => "$FieldName must be between @min and @max",
 				)
 			)))->out();
 		}

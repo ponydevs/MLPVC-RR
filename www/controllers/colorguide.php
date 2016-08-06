@@ -619,7 +619,7 @@
 				Input::IS_OPTIONAL => true,
 				Input::IN_RANGE => [null,255],
 				Input::CUSTOM_ERROR_MESSAGES => array(
-					Input::ERROR_RANGE => 'Tag title must fit within @max characters'
+					Input::ERROR_RANGE => 'Tag title cannot be longer than @max characters'
 				)
 			)))->out();
 
@@ -698,7 +698,7 @@
 					Input::IN_RANGE => [null,255],
 					Input::CUSTOM_ERROR_MESSAGES => array(
 						Input::ERROR_MISSING => 'Please specify a reason for the changes',
-						Input::ERROR_RANGE => 'The reason must fit within @max characters',
+						Input::ERROR_RANGE => 'The reason cannot be longer than @max characters',
 					),
 				)))->out();
 				CoreUtils::CheckStringValidity($reason, "Change reason", INVERSE_PRINTABLE_ASCII_PATTERN);

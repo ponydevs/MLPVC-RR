@@ -18,10 +18,10 @@
 
 			$read_action = (new Input('read_action','string',array(
 				Input::IS_OPTIONAL => true,
-				Input::IN_RANGE => [null, 10],
+				Input::IN_RANGE => [null,10],
 				Input::CUSTOM_ERROR_MESSAGES => array(
 					Input::ERROR_INVALID => 'Action (@value) is invalid',
-					Input::ERROR_RANGE => 'Action must be between @min and @max characters',
+					Input::ERROR_RANGE => 'Action cannot be longer than @max characters',
 				)
 			)))->out();
 			if (!empty($read_action)){

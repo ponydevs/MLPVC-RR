@@ -18,6 +18,10 @@
 			$this->_modifiers = is_string($modifiers) ? $modifiers : '';
 		}
 
+		public function getPattern(){
+			return $this->_pattern;
+		}
+
 		public function __toString(){
 			if (!isset($this->_phpRegex))
 				$this->_phpRegex = $this->_delimiter.$this->_escape($this->_pattern,$this->_delimiter).$this->_delimiter.$this->_modifiers;

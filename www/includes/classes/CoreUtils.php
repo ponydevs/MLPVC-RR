@@ -552,7 +552,7 @@
 				if ($do === 'episode' && !empty($GLOBALS['CurrentEpisode'])){
 					if (!empty($GLOBALS['Latest']))
 						$NavItems['latest'][0] = $_SERVER['REQUEST_URI'];
-					else $NavItems['eps']['subitem'] = CoreUtils::Cutoff($GLOBALS['title'],Episode::$cutoff);
+					else $NavItems['eps']['subitem'] = CoreUtils::Cutoff($GLOBALS['title'],Episode::TITLE_CUTOFF);
 				}
 				global $Color, $EQG;
 				$NavItems['colorguide'] = array("/cg", (!empty($EQG)?'EQG ':'')."$Color Guide");

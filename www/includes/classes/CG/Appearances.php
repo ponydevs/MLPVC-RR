@@ -482,7 +482,7 @@ HTML;
 				\Input::IS_OPTIONAL => true,
 				\Input::IN_RANGE => [0,null],
 				\Input::CUSTOM_ERROR_MESSAGES => array(
-					\Input::ERROR_RANGE => 'Appearance ID is invalid'
+					\Input::ERROR_RANGE => 'Appearance ID must be greater than or equal to @min'
 				)
 			)))->out();
 		}

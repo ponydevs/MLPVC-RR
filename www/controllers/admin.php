@@ -53,6 +53,7 @@
 							$data = array();
 
 							$label = (new Input('label','string',array(
+								Input::IN_RANGE => [3,35],
 								Input::CUSTOM_ERROR_MESSAGES => array(
 									Input::ERROR_MISSING => 'Link label is missing',
 									Input::ERROR_RANGE => 'Link label must be between @min and @max characters long',
