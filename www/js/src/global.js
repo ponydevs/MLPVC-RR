@@ -1183,10 +1183,11 @@ $(function(){
 				cache: true,
 				success: function(){
 					$lis.find('.title').simplemarquee({
-					    speed: 15,
+					    speed: 25,
 					    cycles: Infinity,
 					    space: 25,
 					    handleHover: false,
+					    delayBetweenCycles: 0,
 					}).addClass('marquee');
 				}
 			});
