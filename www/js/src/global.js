@@ -1135,8 +1135,10 @@ $(function(){
 					diff = Time.Difference(now, airs);
 				}
 				if (!cdExists || diff.past){
-					if (cdExists)
+					if (cdExists){
+						$cd.find('.marquee').trigger('destroy.simplemarquee');
 						$cd.parents('li').remove();
+					}
 					clearCD();
 					return window.setUpcomingEpisodeCountdown();
 				}

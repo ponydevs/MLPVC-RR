@@ -58,13 +58,12 @@ DocReady.push(function Logs(){
 
 							let $dataDiv = $.mk('div').attr('class','expandable-section').css('display','none');
 							$.each(this.details, (i,el) => {
+								let $info, $key = $.mk('strong').text(el[0]+': ');
 								if (typeof el[1] === 'boolean')
-									el[1] = `<span class="color-${el[1]?'green':'red'}">${el[1]?'yes':'no'}</span>`;
+									$info = $.mk('span').addClass(`color-${el[1]?'green':'red'}`).text(el[1]?'yes':'no');
+								else $info = el[1];
 
-								let char = /[a-z]$/i;
-								el[0] = `<strong>${el[0]}${char.test(el[0]) ? ':' : ''}</strong>`;
-
-								$dataDiv.append(`<div>${el.join(' ')}</div>`);
+								$dataDiv.append($.mk('div').append($key,$info));
 							});
 
 							$dataDiv.insertAfter($this).slideDown();

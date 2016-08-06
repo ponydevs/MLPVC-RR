@@ -165,8 +165,8 @@
 					$Post = $Database->where('id', $data['id'])->getOne("{$data['thing']}s");
 					$data['type'] = $data['thing'];
 					self::GenericPostInfo($Post, $data, $details);
-					$details[] = array('Old',"<a href='{$data['oldfullsize']}' target='_blank'>Full size</a><div><img src='{$data['oldpreview']}'></div>");
-					$details[] = array('New',"<a href='{$data['newfullsize']}' target='_blank'>Full size</a><div><img src='{$data['newpreview']}'></div>");
+					$details[] = array('Old image',"<a href='{$data['oldfullsize']}' target='_blank'>Full size</a><div><img src='{$data['oldpreview']}'></div>");
+					$details[] = array('New image',"<a href='{$data['newfullsize']}' target='_blank'>Full size</a><div><img src='{$data['newpreview']}'></div>");
 				break;
 				case "res_overtake":
 					$Post = $Database->where('id', $data['id'])->getOne("{$data['type']}s");
@@ -237,6 +237,19 @@
 			$details[] = array('Post',$label);
 			if (empty($Post))
 				$details[] = array('Still exists', false);
+			$EpID = Episode::FormatTitle($Post,AS_ARRAY,'id');
+			$EpData = Episode::ParseID($EpID);
+			$Episode = Episode::GetActual($EpData['season'], $EpData['episode'], Episode::ALLOW_MOVIES);
+
+			$details[] = array('Posted under', !empty($Episode) ? "<a href='".Episode::FormatURL($Episode)."'>$EpID</a>" : $EpID.' (now deleted/moved)');
+			if (!empty($Post)){
+				$details[] = array(($data['type'] === 'request'?'Requested':'Reserved').' by', User::GetProfileLink(User::Get($Post[$data['type'] === 'request' ? 'requested_by' : 'reserved_by'])));
+				if ($data['type'] === 'request'){
+					if (!empty($Post['reserved_by']))
+						$details[] = array('Reserved by', User::GetProfileLink(User::Get($Post['reserved_by'])));
+					else $details[] = array('Reserved', false);
+				}
+			}
 		}
 
 		/**
