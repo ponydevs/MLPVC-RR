@@ -5744,6 +5744,7 @@ INSERT INTO tagged VALUES
 (371, 38),
 (373, 174),
 (374, 159),
+(374, 160),
 (374, 178),
 (374, 179),
 (380, 176),
@@ -6105,7 +6106,7 @@ INSERT INTO tags VALUES
 (371, 's05e17', NULL, 'ep', 2, NULL),
 (372, 'dr whooves', NULL, 'char', 0, 134),
 (373, 'amethyst star', NULL, 'char', 1, NULL),
-(374, 's06e13', NULL, 'ep', 3, NULL),
+(374, 's06e13', NULL, 'ep', 4, NULL),
 (375, 's06e14', NULL, 'ep', 0, NULL),
 (376, 's06e15', NULL, 'ep', 0, NULL),
 (377, 's06e16', NULL, 'ep', 0, NULL),
@@ -6119,14 +6120,15 @@ INSERT INTO tags VALUES
 (386, 'quibble pants', NULL, 'char', 1, NULL),
 (387, 's06e19', NULL, 'ep', 0, NULL),
 (388, 'cipactli', NULL, 'char', 1, NULL),
-(389, 'mrs shy', NULL, 'char', 0, 310);
+(389, 'mrs shy', NULL, 'char', 0, 310),
+(390, 'caballeron', NULL, 'char', 0, 346);
 
 
 --
 -- Name: tags_tid_seq; Type: SEQUENCE SET; Schema: public; Owner: mlpvc-rr
 --
 
-SELECT pg_catalog.setval('tags_tid_seq', 389, true);
+SELECT pg_catalog.setval('tags_tid_seq', 390, true);
 
 
 --

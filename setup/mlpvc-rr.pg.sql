@@ -1335,13 +1335,6 @@ CREATE INDEX usefullinks_minrole ON usefullinks USING btree (minrole);
 
 
 --
--- Name: users_role; Type: INDEX; Schema: public; Owner: mlpvc-rr
---
-
-CREATE INDEX users_role ON users USING btree (role);
-
-
---
 -- Name: episodes__votes_season_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 

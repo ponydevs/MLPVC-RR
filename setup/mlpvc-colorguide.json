@@ -5845,7 +5845,9 @@
 				9,
 				11,
 				346,
-				351
+				351,
+				374,
+				390
 			]
 		},
 		"162": {
@@ -30482,7 +30484,7 @@
 			"name": "s06e13",
 			"title": null,
 			"type": "ep",
-			"uses": 3,
+			"uses": 4,
 			"synonym_of": null
 		},
 		"375": {
@@ -30596,6 +30598,14 @@
 			"type": "char",
 			"uses": 0,
 			"synonym_of": 310
+		},
+		"390": {
+			"tid": 390,
+			"name": "caballeron",
+			"title": null,
+			"type": "char",
+			"uses": 0,
+			"synonym_of": 346
 		}
 	}
 }
