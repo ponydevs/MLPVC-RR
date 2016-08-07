@@ -504,12 +504,12 @@ HTML;
 			$type = $isRequest ? 'request' : 'reservation';
 			$ID = "$type-{$R['id']}";
 			$alt = !empty($R['label']) ? CoreUtils::AposEncode($R['label']) : '';
-			$postlink = "/episode/S{$R['season']}E{$R['episode']}#$ID";
+			$postlink = Episode::FormatURL($R)."#$ID";
 			$ImageLink = $view_only ? $postlink : $R['fullsize'];
 			$cachebust = $cachebust_url ? '?t='.time() : '';
 			$Image = "<div class='image screencap'><a href='$ImageLink'><img src='{$R['preview']}$cachebust' alt='$alt'></a></div>";
 			$post_label = !empty($R['label']) ? '<span class="label'.(strpos($R['label'],'"') !== false?' noquotes':'').'">'.self::ProcessLabel($R['label']).'</span>' : '';
-			$permalink = "<a href='#$ID'>".Time::Tag($R['posted']).'</a>';
+			$permalink = "<a href='$postlink'>".Time::Tag($R['posted']).'</a>';
 
 			$posted_at = '<em class="post-date">';
 			if ($isRequest){

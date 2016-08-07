@@ -174,6 +174,12 @@
 				$CurrentEpisode = $force;
 			else {
 				$EpData = self::ParseID($data);
+
+				if ($EpData['season'] === 0){
+					error_log("Attempted visit to $data from ".(!empty($_SERVER['HTTP_REFERER'])?$_SERVER['HTTP_REFERER']:'[unknown referrer]').', redirecting to /movie page');
+					HTTP::Redirect('/movie/'.$EpData['episode']);
+				}
+
 				$CurrentEpisode = empty($EpData)
 					? self::GetLatest()
 					: self::GetActual($EpData['season'], $EpData['episode']);
