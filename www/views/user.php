@@ -91,7 +91,7 @@ HTML;
 		</section>
 <?  } ?>
 		<section class="bans">
-			<h2><?=User::$PROFILE_SECTION_PRIVACY_LEVEL['public']?>Banishment history</h2>
+			<h2><?=$sameUser?User::$PROFILE_SECTION_PRIVACY_LEVEL['public']:''?>Banishment history</h2>
 			<ul><?php
 		$Actions = array('Banish','Un-banish');
 		$Banishes = $Database
