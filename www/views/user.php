@@ -31,26 +31,37 @@
 		echo User::GetPendingReservationsHTML($User['id'], $sameUser, $YouHave);
 
 		$cols = "id, season, episode, deviation_id as deviation";
-			$AwaitingApproval = array_merge(
-				$Database
-					->where('reserved_by', $User['id'])
-					->where('deviation_id IS NOT NULL')
-					->where('"lock" IS NOT TRUE')
-					->get('reservations',null,$cols),
-				$Database
-					->where('reserved_by', $User['id'])
-					->where('deviation_id IS NOT NULL')
-					->where('"lock" IS NOT TRUE')
-					->get('requests',null,"$cols, true as rq")
-			);
-			$AwaitCount = count($AwaitingApproval);
-			$them = $AwaitCount!==1?'them':'it'; ?>
+		$AwaitingApproval = array_merge(
+			$Database
+				->where('reserved_by', $User['id'])
+				->where('deviation_id IS NOT NULL')
+				->where('"lock" IS NOT TRUE')
+				->get('reservations',null,$cols),
+			$Database
+				->where('reserved_by', $User['id'])
+				->where('deviation_id IS NOT NULL')
+				->where('"lock" IS NOT TRUE')
+				->get('requests',null,"$cols, true as rq")
+		);
+		$AwaitCount = count($AwaitingApproval);
+		$them = $AwaitCount!==1?'them':'it'; ?>
 		<section class="awaiting-approval">
-			<h2><?=$sameUser?User::$PROFILE_SECTION_PRIVACY_LEVEL['staff']:''?>Vectors waiting for approval</h2>
+			<h2><?=$sameUser?User::$PROFILE_SECTION_PRIVACY_LEVEL['public']:''?>Vectors waiting for approval</h2>
 <?php   if ($sameUser){ ?>
 			<p>After you finish an image and submit it to the group gallery, an admin will check your vector and may ask you to fix some issues on your image, if any. After an image is accepted to the gallery, it can be marked as "approved", which gives it a green check mark, indicating that it's most likely free of any errors.</p>
 <?php   } ?>
-			<p><?="$YouHave ".(!$AwaitCount?'no':"<strong>$AwaitCount</strong>")?> image<?=$AwaitCount!==1?'s':''?> waiting to be submited to and/or approved by the group<?=!$AwaitCount?'.':(", listed below.".($sameUser?" We'd like to ask that you submit $them to the group gallery as soon as possible to have $them spot-checked for any issues. As stated in the rules, the goal is to add finished images to the group gallery, making $them easier to find for everyone.".($AwaitCount>10?" You seem to have a large number of images that have not been approved yet, please submit them to the group soon if you haven't already.":''):''))?></p>
+			<p><?="$YouHave ".(!$AwaitCount?'no':"<strong>$AwaitCount</strong>")?> image<?=$AwaitCount!==1?'s':''?> waiting to be submited to and/or approved by the group<?=
+				!$AwaitCount
+					? '.'
+					: ", listed below.".(
+						$sameUser
+						? "Please submit $them to the group gallery as soon as possible to have $them spot-checked for any issues. As stated in the rules, the goal is to add finished images to the group gallery, making $them easier to find for everyone.".(
+							$AwaitCount>10
+							? " You seem to have a large number of images that have not been approved yet, please submit them to the group soon if you haven't already."
+							: ''
+						)
+						:''
+					).'</p><p>You can click the <strong class="color-green"><span class="typcn typcn-tick"></span> Check</strong> button below the '.CoreUtils::MakePlural('image',$AwaitCount).' in case we forgot to click it ourselves after accepting it.'?></p>
 <?php   if ($AwaitCount){ ?>
 			<ul id="awaiting-deviations"><?
 			foreach ($AwaitingApproval as $row){

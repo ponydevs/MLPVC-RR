@@ -530,10 +530,13 @@ HTML;
 			}
 			$posted_at .= "</em>";
 
+			$hide_reserved_status = !isset($R['reserved_by']) || ($overdue && !$isReserver);
 			if (!empty($R['reserved_by'])){
 				$R['reserver'] = User::Get($R['reserved_by']);
-				$reserved_by = $overdue && !$isReserver && Permission::Sufficient('staff') ? ' by '.User::GetProfileLink($R['reserver']) : '';
-				$reserved_at = $isRequest && !empty($R['reserved_at']) ? "<em class='reserve-date'>Reserved <strong>".Time::Tag($R['reserved_at'])."</strong>$reserved_by</em>" : '';
+				$reserved_by = $overdue && !$isReserver ? ' by '.User::GetProfileLink($R['reserver']) : '';
+				$reserved_at = $isRequest && !empty($R['reserved_at']) && !($hide_reserved_status || Permission::Insufficient('staff'))
+					? "<em class='reserve-date'>Reserved <strong>".Time::Tag($R['reserved_at'])."</strong>$reserved_by</em>"
+					: '';
 				if ($finished){
 					$approved = !empty($R['lock']);
 					$Deviation = DeviantArt::GetCachedSubmission($R['deviation_id'],'fav.me',true);
@@ -577,7 +580,7 @@ HTML;
 			if ($overdue && (Permission::Sufficient('staff') || $isReserver))
 				$Image .= self::CONTESTABLE;
 
-			if (!isset($R['reserver']) || ($overdue && !$isReserver))
+			if ($hide_reserved_status)
 				$R['reserver'] = false;
 
 			return "<li id='$ID'>$Image".self::_getPostActions($R['reserver'], $R, $isRequest, $view_only ? $postlink : false).'</li>';
