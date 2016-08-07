@@ -360,12 +360,12 @@ HTML;
 		);
 
 		static function GetPendingReservationsHTML($UserID, $sameUser, &$YouHave = null){
-			global $Database;
+			global $Database, $currentUser;
 
 			$YouHave = $sameUser?'You have':'This user has';
 			$PrivateSection = $sameUser?User::$PROFILE_SECTION_PRIVACY_LEVEL['staff']:'';
 
-			$cols = "id, season, episode, preview, label, posted";
+			$cols = "id, season, episode, preview, label, posted, reserved_by";
 			$PendingReservations = $Database->where('reserved_by', $UserID)->where('deviation_id IS NULL')->get('reservations',null,$cols);
 			$PendingRequestReservations = $Database->where('reserved_by', $UserID)->where('deviation_id IS NULL')->get('requests',null,"$cols, reserved_at, true as requested_by");
 			$TotalPending = count($PendingReservations)+count($PendingRequestReservations);
@@ -405,6 +405,7 @@ HTML;
 						$reservation_time_known = !empty($p['reserved_at']);
 						$posted = Time::Tag($is_request && $reservation_time_known ? $p['reserved_at'] : $p['posted']);
 						$PostedAction = $is_request && !$reservation_time_known ? 'Posted' : 'Reserved';
+						$contestable = Posts::IsOverdue($p)  ? Posts::CONTESTABLE : '';
 
 						$LIST .= <<<HTML
 <li>
@@ -412,7 +413,7 @@ HTML;
 		<a href='$link'><img src='{$p['preview']}'></a>
 	</div>
 	$label
-	<em>$PostedAction under <a href='$link'>$page</a> $posted</em>
+	<em>$PostedAction under <a href='$link'>$page</a> $posted</em>$contestable
 	<div>
 		<a href='$link' class='btn blue typcn typcn-arrow-forward'>View</a>
 		<button class='red typcn typcn-user-delete cancel'>Cancel</button>

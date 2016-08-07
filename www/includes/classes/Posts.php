@@ -430,7 +430,7 @@ HTML;
 		}
 
 		static function IsOverdue($Post){
-			return isset($Post['requested_by']) && isset($Post['reserved_by']) && time() - strtotime($Post['reserved_at']) >= Time::$IN_SECONDS['week']*3;
+			return empty($Post['deviation_id']) && isset($Post['requested_by']) && isset($Post['reserved_by']) && time() - strtotime($Post['reserved_at']) >= Time::$IN_SECONDS['week']*3;
 		}
 
 		static function IsTransferable($Post){
@@ -489,6 +489,8 @@ HTML;
 			}
 		}
 
+			const CONTESTABLE = "<strong class='color-blue contest-note' title=\"Because this request was reserved more than 3 weeks ago it's now available for other members to reserve\"><span class='typcn typcn-info-large'></span> Can be contested</strong>";
+
 		/**
 		 * List ltem generator function for request & reservation generators
 		 *
@@ -516,7 +518,7 @@ HTML;
 				global $signedIn, $currentUser;
 				$isRequester = $R['requested_by'] === $currentUser['id'];
 				$isReserver = $R['reserved_by'] === $currentUser['id'];
-				$overdue = !$finished && !empty($R['reserved_by']) && Permission::Sufficient('member') && self::IsOverdue($R);
+				$overdue = Permission::Sufficient('member') && self::IsOverdue($R);
 
 				$posted_at .= "Requested $permalink";
 				if ($signedIn && (Permission::Sufficient('staff') || $isRequester || $isReserver))
@@ -530,7 +532,7 @@ HTML;
 
 			if (!empty($R['reserved_by'])){
 				$R['reserver'] = User::Get($R['reserved_by']);
-				$reserved_by = $overdue && !$isReserver ? ' by '.User::GetProfileLink($R['reserver']) : '';
+				$reserved_by = $overdue && !$isReserver && Permission::Sufficient('staff') ? ' by '.User::GetProfileLink($R['reserver']) : '';
 				$reserved_at = $isRequest && !empty($R['reserved_at']) ? "<em class='reserve-date'>Reserved <strong>".Time::Tag($R['reserved_at'])."</strong>$reserved_by</em>" : '';
 				if ($finished){
 					$approved = !empty($R['lock']);
@@ -573,7 +575,7 @@ HTML;
 			else $Image .= $post_label.$posted_at;
 
 			if ($overdue && (Permission::Sufficient('staff') || $isReserver))
-				$Image .= "<strong class='color-blue contest-note' title=\"Because this request was reserved more than 3 weeks ago it's now available for other members to reserve\"><span class='typcn typcn-info-large'></span> Can be contested</strong>";
+				$Image .= self::CONTESTABLE;
 
 			if (!isset($R['reserver']) || ($overdue && !$isReserver))
 				$R['reserver'] = false;

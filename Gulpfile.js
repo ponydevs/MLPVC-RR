@@ -85,7 +85,7 @@ var SASSL = new Logger('scss');
 gulp.task('scss', function() {
 	gulp.src('www/scss/src/*.scss')
 		.pipe(plumber(function(err){
-			SASSL.error(err.relativePath+'\n'+'  line '+err.line+': '+err.messageOriginal);
+			SASSL.error(err.relativePath+'\n'+' line '+err.line+': '+err.messageOriginal);
 			this.emit('end');
 		}))
 		.pipe(sourcemaps.init())
