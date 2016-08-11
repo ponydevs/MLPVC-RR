@@ -463,7 +463,9 @@ HTML;
 
 			$ColorMapping = array();
 			foreach ($Colors as $row){
-				$label = regex_replace(new RegExp('^(Costume|Dress)$'),'Coat',$row['cglabel']).' '.regex_replace(new RegExp('^(?:(?:Main|First|Normal)\s)?(.+?)(?:\s\d+)?(?:/.*)?$'),'$1', $row['label']);
+				$cglabel = regex_replace(new RegExp('^(Costume|Dress)$'),'Coat',$row['cglabel']);
+				$colorlabel = regex_replace(new RegExp('^(?:(?:Main|First|Normal|Gradient(?:\s(?:Light|Dark))?)\s)?(.+?)(?:\s\d+)?(?:/.*)?$'),'$1', $row['label']);
+				$label = "$cglabel $colorlabel";
 				if (isset($DefaultColorMapping[$label]) && !isset($ColorMapping[$label]))
 					$ColorMapping[$label] = $row['hex'];
 			}
