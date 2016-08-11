@@ -1127,6 +1127,14 @@ ALTER TABLE ONLY log__req_delete
 
 
 --
+-- Name: log__res_overtake_entryid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER TABLE ONLY log__res_overtake
+    ADD CONSTRAINT log__res_overtake_entryid PRIMARY KEY (entryid);
+
+
+--
 -- Name: log__res_transfer_entryid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
@@ -1241,20 +1249,6 @@ CREATE INDEX episodes_posted_by ON episodes USING btree (posted_by);
 --
 
 CREATE INDEX log__banish_target ON log__banish USING btree (target);
-
-
---
--- Name: log__rolechange_newrole; Type: INDEX; Schema: public; Owner: mlpvc-rr
---
-
-CREATE INDEX log__rolechange_newrole ON log__rolechange USING btree (newrole);
-
-
---
--- Name: log__rolechange_oldrole; Type: INDEX; Schema: public; Owner: mlpvc-rr
---
-
-CREATE INDEX log__rolechange_oldrole ON log__rolechange USING btree (oldrole);
 
 
 --

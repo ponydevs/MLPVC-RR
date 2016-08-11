@@ -238,7 +238,7 @@ Her S6 mane style includes an additional shadow fill color', 'd8old4s', false, '
 (31, 23, 'Suri Polomare', 'Far legs use darker colors.', NULL, false, '2015-09-30 07:35:59+02', NULL, NULL),
 (32, 21, 'Trixie Lulamoon', 'Eyes don''t have iris highlights.', 'd9bxest', false, '2015-10-03 17:35:08+02', NULL, true),
 (33, 151, 'Alicorn Amulet', '', NULL, false, '2015-10-03 18:22:13+02', NULL, NULL),
-(34, 13, 'Princess Celestia', 'Make sure to use appropriate references when picking gradient angles and stops. They''ll differ based on the hair shape and angle.', NULL, false, '2015-10-03 21:26:50+02', NULL, NULL),
+(34, 13, 'Princess Celestia', 'Make sure to use appropriate references when picking gradient angles and stops. They''ll differ based on the hair shape and angle.', 'dadnimc', false, '2015-10-03 21:26:50+02', NULL, true),
 (35, 100, 'Big McIntosh', 'Far legs use darker colors.', 'd9zhgk0', false, '2015-10-04 21:11:42+02', NULL, true),
 (36, 60, 'Moon Dancer', 'Far legs use darker colors.', 'd9vcpeu', false, '2015-10-05 07:17:36+02', NULL, true),
 (37, 40, 'Dinky Doo', 'From S5E17.

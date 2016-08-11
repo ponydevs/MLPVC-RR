@@ -1615,11 +1615,11 @@
 			"order": 13,
 			"label": "Princess Celestia",
 			"notes": "Make sure to use appropriate references when picking gradient angles and stops. They'll differ based on the hair shape and angle.",
-			"cm_favme": null,
+			"cm_favme": "dadnimc",
 			"ishuman": false,
 			"added": "2015-10-03 21:26:50+02",
 			"cm_preview": null,
-			"cm_dir": null,
+			"cm_dir": true,
 			"ColorGroups": {
 				"204": {
 					"groupid": 204,
