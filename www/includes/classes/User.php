@@ -433,7 +433,7 @@ HTML;
 			return !empty($pref) ? " app-$pref" : '';
 		}
 
-		static function ValidateName($key, $errors, $optional, $method_get = false){
+		static function ValidateName($key, $errors, $method_get = false){
 			return (new Input($key,'username',array(
 				Input::IS_OPTIONAL => true,
 				Input::METHOD_GET => $method_get,

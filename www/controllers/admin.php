@@ -143,7 +143,6 @@
 
 	switch ($task){
 		case "logs":
-
 			$type = Log::ValidateRefType('type', true, true);
 			if (isset($_GET['type']) && regex_match(new RegExp('/^[a-z_]+$/'), $_GET['type']) && isset(Log::$LOG_DESCRIPTION[$_GET['type']]))
 				$type = $_GET['type'];
@@ -163,7 +162,7 @@
 				default:
 					$by = User::ValidateName('by', null, true);
 					if (isset($by)){
-						$by = User::Get($by, 'id,name');
+						$by = User::Get($by, 'name', 'id,name');
 						$initiator = $by['id'];
 						$by = $initiator === $currentUser['id'] ? 'me' : $by['name'];
 					}
@@ -204,7 +203,7 @@
 			if (!empty($title))
 				$title .= '- ';
 			$title .= "Page {$Pagination->page} - $heading";
-			CoreUtils::FixPath("/admin/logs/{$Pagination->page}".(!empty($q)?'?'.implode('&',$q):''));
+			CoreUtils::FixPath("/admin/logs/{$Pagination->page}".(!empty($q)?'?'.implode('&',$q):''), 302);
 
 			processFilter();
 			$LogItems = $Database
