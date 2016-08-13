@@ -29,7 +29,7 @@ if (['js','dist-js','scss','md','default'].indexOf(toRun) !== -1){
 		'gulp-duration',
 	]);
 
-	if (toRun !== 'dist-js')
+	if (toRun !== 'dist-js' && toRun !== 'md')
 		require_list.push('gulp-sourcemaps');
 
 	if (toRun === 'scss' || toRun === 'default')
