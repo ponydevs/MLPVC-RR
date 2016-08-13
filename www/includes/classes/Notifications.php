@@ -72,7 +72,7 @@
 						$Episode = Episode::GetActual($Post['season'],$Post['episode'], Episode::ALLOW_MOVIES);
 						$EpID = Episode::FormatTitle($Episode, AS_ARRAY, 'id');
 						$url = "/episode/$EpID#{$data['type']}-{$data['id']}";
-						$HTML .= self::_getNotifElem("A <a href='$url'>post</a> you reserved under $EpID has been added do the club gallery", $n);
+						$HTML .= self::_getNotifElem("A <a href='$url'>post</a> you reserved under $EpID has been added to the club gallery", $n);
 					break;
 					case "post-passon":
 						$Post = $Database->where('id', $data['id'])->getOne("{$data['type']}s");
