@@ -220,7 +220,7 @@
 		 *
 		 * @return bool|null
 		 */
-		static function ReservationLimitCheck(bool $return_as_bool = false){
+		static function ReservationLimitExceeded(bool $return_as_bool = false){
 			global $Database, $currentUser;
 
 			$reservations = $Database->rawQuerySingle(

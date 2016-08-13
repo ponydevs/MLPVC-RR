@@ -101,7 +101,7 @@
 			$reserved_by = $Post['reserved_by'] ?? null;
 			$checkIfUserCanReserve = function(&$message, &$data) use ($Post, $reserved_by, $type, $currentUser){
 				Posts::ClearTransferAttempts($Post, $type, 'free', $currentUser['id'], $reserved_by);
-				if (!User::ReservationLimitCheck(RETURN_AS_BOOL)){
+				if (!User::ReservationLimitExceeded(RETURN_AS_BOOL)){
 					$message .= '<br>Would you like to reserve it now?';
 					$data = array('canreserve' => true);
 				}
@@ -124,7 +124,7 @@
 				Response::Fail($message, $data);
 			}
 
-			User::ReservationLimitCheck();
+			User::ReservationLimitExceeded();
 
 			if (!Posts::IsTransferable($Post))
 				Response::Fail("This $type was reserved recently, please allow up to 5 days before asking for a transfer");
@@ -281,7 +281,7 @@
 			Response::Fail("This $type has not been reserved by anypony yet");
 
 		if (empty($Post['reserved_by']) && $type === 'request' && $action === 'reserve'){
-			User::ReservationLimitCheck();
+			User::ReservationLimitExceeded();
 
 			$update['reserved_by'] = $currentUser['id'];
 			if (Permission::Sufficient('developer')){
@@ -519,10 +519,11 @@
 			Input::ERROR_INVALID => 'Post type (@value) is invalid',
 		)
 	)))->out();
-	if (empty($type) && $type === 'reservation'){
+
+	if (!empty($type) && $type === 'reservation'){
 		if (Permission::Insufficient('member'))
 			Response::Fail();
-		User::ReservationLimitCheck();
+		User::ReservationLimitExceeded();
 	}
 
 	$Image = Posts::CheckImage(Posts::ValidateImageURL());
