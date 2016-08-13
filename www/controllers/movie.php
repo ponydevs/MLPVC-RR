@@ -4,7 +4,7 @@
 		CoreUtils::NotFound();
 
 	$Database->where('season', 0);
-	if (is_numeric($title[1]))
+	if (isset($title[1]) && is_numeric($title[1]))
 		$Database->where('episode', intval($data, 10));
 	else if (!empty($title[2])){
 		$data = strtolower($title[2]);
