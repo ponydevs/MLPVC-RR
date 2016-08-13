@@ -375,10 +375,10 @@ DocReady.push(function Episode(){
 			$notice = $formImgPreview.children('.notice'),
 			noticeHTML = $notice.html(),
 			$previewIMG = $formImgPreview.children('img'),
-			type = $form.attr('data-type'), Type = $.capitalize(type);
+			type = $form.attr('data-type').replace(/s$/,''), Type = $.capitalize(type);
 
 		if ($previewIMG.length === 0) $previewIMG = $(new Image()).appendTo($formImgPreview);
-		$('#'+type+'-btn').on('click',function(){
+		$(`#${type}-btn`).on('click',function(){
 			disableLiveUpdate();
 			if (!$form.is(':visible')){
 				$form.show();
@@ -547,11 +547,10 @@ DocReady.push(function Episode(){
 
 					$.Dialog.success(false, Type+' posted');
 
-					let id = this.id;
-
+					const id = this.id;
 					$(`#${type}s`).trigger('pls-update', [function(){
 						$.Dialog.close();
-						$('#'+type+'-'+id).find('em.post-date').children('a').triggerHandler('click');
+						$(`#${type}-${id}`).find('em.post-date').children('a').triggerHandler('click');
 					}]);
 				}));
 			})();

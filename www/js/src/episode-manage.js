@@ -788,7 +788,7 @@ DocReady.push(function EpisodeManage(){
 						$.Dialog.success(false, this.message, true);
 					}));
 				});
-		})
+		});
 	};
 	$('#requests, #reservations')
 		.on('bind-more-handlers','li[id]',additionalHandlerAttacher)

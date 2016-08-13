@@ -390,8 +390,18 @@
 		$insert['season'] = $epdata['season'];
 		$insert['episode'] = $epdata['episode'];
 
-		if (!$Database->insert('reservations', $insert))
+		$insert['finished_at'] = date('c');
+
+		$postid = $Database->insert('reservations', $insert, 'id');
+		if (!is_int($postid))
 			Response::DBError();
+
+		if ($insert['lock'])
+			Log::Action('post_lock',array(
+				'type' => 'reservation',
+				'id' => $postid,
+			));
+
 		Response::Success('Reservation added');
 	}
 	else if (regex_match(new RegExp('^set-(request|reservation)-image/(\d+)$'), $data, $_match)){

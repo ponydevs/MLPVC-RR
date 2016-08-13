@@ -15,7 +15,9 @@
 		static function DBError(string $message = ''){
 			global $Database;
 
-			$message .= rtrim(': Error while saving to database: '.$Database->getLastError(), ': ');
+			if (!empty($message))
+				$message .= ': ';
+			$message .= rtrim('Error while saving to database: '.$Database->getLastError(), ': ');
 
 			self::_respond(false, $message, array());
 		}
