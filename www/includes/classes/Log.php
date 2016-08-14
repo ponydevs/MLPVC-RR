@@ -254,7 +254,8 @@
 
 					$olddir = isset($newOld['cm_dir']['old']) ? CGUtils::$CM_DIR[$newOld['cm_dir']['old']] : '';
 					$newdir = isset($newOld['cm_dir']['new']) ? CGUtils::$CM_DIR[$newOld['cm_dir']['new']] : '';
-					$details[] = array('CM Orientation', self::CharDiff($olddir, $newdir, 'inline'));
+					if ($olddir || $newdir)
+						$details[] = array('CM Orientation', self::CharDiff($olddir, $newdir, 'inline', FineDiff::$paragraphGranularity));
 
 					if (isset($newOld['cm_preview']['new']))
 						$details[] = array('New Custom CM Preview', "<img src='".CoreUtils::AposEncode($newOld['cm_preview']['new'])."'>");
@@ -385,8 +386,10 @@ HTML;
 			)))->out();
 		}
 
-		static function CharDiff(string $old, string $new, $type = 'inline'):string {
-			$opcodes = FineDiff::getDiffOpcodes($old, $new, FineDiff::$characterGranularity);
+		static function CharDiff(string $old, string $new, $type = 'inline', $gran = null):string {
+			if (!isset($gran))
+				$gran = FineDiff::$characterGranularity;
+			$opcodes = FineDiff::getDiffOpcodes($old, $new, $gran);
 			$diff = FineDiff::renderDiffToHTMLFromOpcodes($old, $opcodes);
 
 			return "<span class='btn darkblue view-switch' title='Left/Right click to change view mode'>diff</span><div class='log-diff $type'>$diff</div>";
