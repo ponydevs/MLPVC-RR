@@ -347,7 +347,7 @@ DocReady.push(function Episode(){
 				};
 			if (silent !== true)
 				$.Dialog.wait($.Dialog.isOpen() ? false : Type, 'Updating list of '+typeWithS, true);
-			$.ajax('/episode/'+typeWithS+'/S'+SEASON+'E'+EPISODE,{
+			$.ajax('/episode/'+typeWithS+'/'+EpID,{
 				method: "POST",
 				success: $.mkAjaxHandler(function(){
 					if (!this.status) return fail();
@@ -562,14 +562,47 @@ DocReady.push(function Episode(){
 			$(this).hide();
 		});
 	};
-	$('.post-form').each($.fn.formBind);
 
-	let $imgs = $content.find('img[src]'),
-		total = $imgs.length, loaded = 0,
-		postHashRegex = /^#(request|reservation)-\d+$/,
+	let load = ['requests','reservations'],
+		done = 0,
+		loading = {},
+		loadSections = function(_, force){
+			$.each(load, function(_, el){
+				(function(el){
+					let $section = $('#'+el);
+					if (loading[el] === true || (!$.isInViewport($section.get(0)) && !force))
+						return;
+
+					loading[el] = true;
+					console.log('[DYN-POSTS] Loading %s section (force=%s)',el,force);
+
+					$section.trigger('pls-update', [function(){
+						load.splice(load.indexOf(el), 1);
+						console.log('[DYN-POSTS] Loaded %s section',el);
+						if (++done === 2){
+							$w.off('scroll', loadSections);
+							directLinkHandler(true);
+						}
+					}, true, true]);
+				})(el);
+			});
+		};
+	$w.on('scroll touchmove', $.throttle(250, loadSections));
+	loadSections();
+
+	let postHashRegex = /^#(request|reservation)-\d+$/,
 		showdialog = location.hash.length > 1 && postHashRegex.test(location.hash);
 
-	if (total > 0 && showdialog){
+	if (showdialog)
+		loadSections(null, true);
+
+	function directLinkHandler(){
+		let $imgs = $content.find('img[src]'),
+			total = $imgs.length, loaded = 0;
+
+		if (!total || !showdialog)
+			return;
+
 		let $progress;
 		if (showdialog){
 			$.Dialog.wait('Scroll post into view','Waiting for page to load');

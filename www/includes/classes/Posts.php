@@ -257,10 +257,11 @@
 		 *
 		 * @param array $Requests
 		 * @param bool  $returnArranged Return an arranged array of posts instead of raw HTML
+		 * @param bool  $loaders        Display loaders insead of empty sections
 		 *
 		 * @return string|array
 		 */
-		static function GetRequestsSection($Requests, $returnArranged = false){
+		static function GetRequestsSection($Requests, $returnArranged = false, $loaders = false){
 			$Arranged = array('finished' => !$returnArranged ? '' : array());
 			if (!$returnArranged){
 				$Arranged['unfinished'] = array();
@@ -296,13 +297,15 @@
 			}
 			else $reqForm = $makeRq = '';
 
+			$loading = $loaders ? ' loading' : '';
+
 			return <<<HTML
 	<section id="requests">
-		<div class="unfinished">
+		<div class="unfinished$loading">
 			<h2>List of Requests$makeRq</h2>
 			$Groups
 		</div>
-		<div class="finished">
+		<div class="finished$loading">
 			<h2>Finished Requests</h2>
 			<ul>{$Arranged['finished']}</ul>
 		</div>$reqForm
@@ -316,10 +319,11 @@ HTML;
 		 *
 		 * @param array $Reservations
 		 * @param bool  $returnArranged Return an arranged array of posts instead of raw HTML
+		 * @param bool  $loaders        Display loaders insead of empty sections
 		 *
 		 * @return string|array
 		 */
-		static function GetReservationsSection($Reservations, $returnArranged = false){
+		static function GetReservationsSection($Reservations, $returnArranged = false, $loaders = false){
 			$Arranged = array();
 			$Arranged['unfinished'] =
 			$Arranged['finished'] = !$returnArranged ? '' : array();
@@ -343,13 +347,15 @@ HTML;
 			else $resForm = $makeRes = '';
 			$addRes = Permission::Sufficient('staff') ? '<button id="add-reservation-btn" class="darkblue">Add a reservation</button>' :'';
 
+			$loading = $loaders ? ' loading' : '';
+
 			return <<<HTML
 	<section id="reservations">
-		<div class="unfinished">
+		<div class="unfinished$loading">
 			<h2>List of Reservations$makeRes</h2>
 			<ul>{$Arranged['unfinished']}</ul>
 		</div>
-		<div class="finished">
+		<div class="finished$loading">
 			<h2>Finished Reservations$addRes</h2>
 			<ul>{$Arranged['finished']}</ul>
 		</div>$resForm
@@ -534,7 +540,7 @@ HTML;
 			if (!empty($R['reserved_by'])){
 				$R['reserver'] = User::Get($R['reserved_by']);
 				$reserved_by = $overdue && !$isReserver ? ' by '.User::GetProfileLink($R['reserver']) : '';
-				$reserved_at = $isRequest && !empty($R['reserved_at']) && !($hide_reserved_status || Permission::Insufficient('staff'))
+				$reserved_at = $isRequest && !empty($R['reserved_at']) && !($hide_reserved_status && Permission::Insufficient('staff'))
 					? "<em class='reserve-date'>Reserved <strong>".Time::Tag($R['reserved_at'])."</strong>$reserved_by</em>"
 					: '';
 				if ($finished){

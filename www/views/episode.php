@@ -20,7 +20,7 @@
 		</div>
 <?php   } ?>
 		<div class="main">
-			<h1><?=Episode::FormatTitle($CurrentEpisode)?></h1>
+			<h1><?=$heading?></h1>
 			<p>Vector Requests & Reservations</p>
 <?php   if (Permission::Sufficient('staff')){ ?>
 			<p class="addedby"><em><?=$CurrentEpisode['season'] === 0?'Movie':'Episode'?> added by <?=User::GetProfileLink(User::Get($CurrentEpisode['posted_by'])).' '.Time::Tag($CurrentEpisode['posted'])?></em></p>
@@ -49,8 +49,8 @@
 		</p>
 	</section>
 <?php   }
-		echo Posts::GetReservationsSection($Reservations);
-		echo Posts::GetRequestsSection($Requests);
+		echo Posts::GetReservationsSection(null,false,true);
+		echo Posts::GetRequestsSection(null,false,true);
 		$export = array(
 			'SEASON' => $CurrentEpisode['season'],
 			'EPISODE' => $CurrentEpisode['episode'],

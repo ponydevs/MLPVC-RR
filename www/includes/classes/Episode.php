@@ -168,7 +168,7 @@
 		 *                              If array: Uses specified arra as Episode data
 		 */
 		static function LoadPage($force = null){
-			global $data, $CurrentEpisode, $Requests, $Reservations, $Latest, $Database, $PrevEpisode, $NextEpisode;
+			global $data, $CurrentEpisode, $Latest, $Database, $PrevEpisode, $NextEpisode;
 
 			if (is_array($force))
 				$CurrentEpisode = $force;
@@ -184,10 +184,8 @@
 					? self::GetLatest()
 					: self::GetActual($EpData['season'], $EpData['episode']);
 			}
-			if (!empty($CurrentEpisode)){
+			if (!empty($CurrentEpisode))
 				$Latest = empty($EpData) ? true : self::IsLatest($CurrentEpisode);
-				list($Requests, $Reservations) = Posts::Get($CurrentEpisode['season'], $CurrentEpisode['episode']);
-			}
 
 			$url = self::FormatURL($CurrentEpisode, $isMovie);
 			CoreUtils::FixPath($url);
@@ -225,8 +223,10 @@
 					->getOne('episodes','season,episode,title');
 			}
 
+			$heading = Episode::FormatTitle($CurrentEpisode);
 			CoreUtils::LoadPage(array(
-				'title' => self::FormatTitle($CurrentEpisode).' - Vector Requests & Reservations' ,
+				'title' => "$heading - Vector Requests & Reservations",
+				'heading' => $heading,
 				'view' => 'episode',
 				'css' => 'episode',
 				'js' => $js,

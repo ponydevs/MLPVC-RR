@@ -615,6 +615,19 @@
 		return session;
 	};
 
+	// http://stackoverflow.com/a/16270434/1344955
+	$.isInViewport = el => {
+		let rect;
+		try {
+	        rect = el.getBoundingClientRect();
+		}catch(e){ return true }
+
+	    return rect.bottom > 0 &&
+	        rect.right > 0 &&
+	        rect.left < (window.innerWidth || document.documentElement.clientWidth) /* or $(window).width() */ &&
+	        rect.top < (window.innerHeight || document.documentElement.clientHeight) /* or $(window).height() */;
+	};
+
 	window.URL = url => {
 		let a = document.createElement('a'),
 			parsed = {};
@@ -817,7 +830,7 @@
 			this._lastLoadedPathname = window.location.pathname;
 			this.firstLoadDone = false;
 		}
-		docReady(){
+		_docReady(){
 			console.log('> _docReady()');
 
 			DocReadyAlwaysRun();
@@ -1032,8 +1045,9 @@
 							loaded++;
 							$loader.css('width', $.roundTo(100*(loaded/total), 2)+'%');
 						}, function(){
-							classScope.docReady();
-							console.log('%cDocument ready', 'color:green');
+							console.log('> $(document).ready() [simulated]');
+							classScope._docReady();
+							console.log('%cDocument ready handlers called','color:green');
 							console.groupEnd();
 							$body.removeClass('loading');
 							$main.removeClass('pls-wait');
@@ -1386,8 +1400,8 @@ $(function(){
 		window.WSNotifications = function(signedIn){WSNotifs(signedIn)};
 	})();
 
-	$.Navigation.docReady();
-	console.log('%cDocument ready','color:green');
+	$.Navigation._docReady();
+	console.log('%cDocument ready handlers called','color:green');
 	console.groupEnd();
 });
 

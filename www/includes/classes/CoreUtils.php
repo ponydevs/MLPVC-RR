@@ -164,6 +164,10 @@
 			if (isset($options['title']))
 				$GLOBALS['title'] = $options['title'];
 
+			// Page heading
+			if (isset($options['heading']))
+				$GLOBALS['heading'] = $options['heading'];
+
 			// SE crawling disable
 			if (in_array('no-robots', $options))
 				$norobots = true;
@@ -552,7 +556,7 @@
 				if ($do === 'episode' && !empty($GLOBALS['CurrentEpisode'])){
 					if (!empty($GLOBALS['Latest']))
 						$NavItems['latest'][0] = $_SERVER['REQUEST_URI'];
-					else $NavItems['eps']['subitem'] = CoreUtils::Cutoff($GLOBALS['title'],Episode::TITLE_CUTOFF);
+					else $NavItems['eps']['subitem'] = CoreUtils::Cutoff($GLOBALS['heading'],Episode::TITLE_CUTOFF);
 				}
 				global $Color, $EQG;
 				$NavItems['colorguide'] = array("/cg", (!empty($EQG)?'EQG ':'')."$Color Guide");
