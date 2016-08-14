@@ -18,7 +18,7 @@
 			'res_transfer' => 'Reservation transferred',
 			'cg_modify' => 'Color group updated',
 			'cgs' => 'Color group management',
-			//'cg_order' => 'Color groups re-ordered',
+			'cg_order' => 'Color groups re-ordered',
 		);
 
 		/**
@@ -119,7 +119,7 @@
 						$newOld['airs']['new'] =  Time::Tag($newOld['airs']['new'], Time::TAG_EXTENDED, Time::TAG_STATIC_DYNTIME);
 					}
 					if (isset($newOld['title']['old']) && isset($newOld['title']['new'])){
-						$details[] = array('Title', CoreUtils::CharDiff($newOld['title']['old'], $newOld['title']['new']));
+						$details[] = array('Title', self::CharDiff($newOld['title']['old'], $newOld['title']['new']));
 						unset($newOld['title']);
 					}
 
@@ -227,9 +227,9 @@
 					}
 					else $details[] = array('Group', "{$CG['label']} (#{$data['groupid']})");
 					if (isset($data['newlabel']))
-						$details[] = array('Label', CoreUtils::CharDiff($data['oldlabel'] ?? '', $data['newlabel'], 'inline'));
+						$details[] = array('Label', self::CharDiff($data['oldlabel'] ?? '', $data['newlabel']));
 					if (isset($data['newcolors']))
-						$details[] = array('Colors', CoreUtils::CharDiff($data['oldcolors'] ?? '', $data['newcolors'], 'block'));
+						$details[] = array('Colors', self::CharDiff($data['oldcolors'] ?? '', $data['newcolors'], 'block'));
 				break;
 				case "cgs":
 					$details[] = array('Action', self::$ACTIONS[$data['action']]);
@@ -240,7 +240,8 @@
 						$details[] = array('Ordering index', $data['order']);
 				break;
 				case "cg_order":
-					# TODO
+					$details[] = array('Appearance',self::GetAppearanceLink($data['ponyid']));
+					$details[] = array('Order',self::CharDiff($data['oldgroups'], $data['newgroups'], 'block'));
 				break;
 				default:
 					$details[] = array('Could not process details','No data processor defined for this entry type');
@@ -345,5 +346,12 @@ HTML;
 				Input::IS_OPTIONAL => $optional,
 				Input::METHOD_GET => $method_get,
 			)))->out();
+		}
+
+		static function CharDiff(string $old, string $new, $type = 'inline'):string {
+			$opcodes = FineDiff::getDiffOpcodes($old, $new, FineDiff::$characterGranularity);
+			$diff = FineDiff::renderDiffToHTMLFromOpcodes($old, $opcodes);
+
+			return "<span class='btn darkblue view-switch' title='Toggle view mode'>diff</span><div class='log-diff $type'>$diff</div>";
 		}
 	}

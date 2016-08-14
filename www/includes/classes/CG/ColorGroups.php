@@ -137,4 +137,15 @@
 
 			return implode("\n", $return);
 		}
+
+		static function Stringify($cgs){
+			if (empty($cgs))
+				return null;
+
+			$return = array();
+			foreach ($cgs as $i => $c)
+				$return[] = $c['label'];
+
+			return implode("\n", $return);
+		}
 	}

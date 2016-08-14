@@ -271,6 +271,41 @@ ALTER SEQUENCE log__cg_modify_entryid_seq OWNED BY log__cg_modify.entryid;
 
 
 --
+-- Name: log__cg_order; Type: TABLE; Schema: public; Owner: mlpvc-rr
+--
+
+CREATE TABLE log__cg_order (
+    entryid integer NOT NULL,
+    ponyid integer NOT NULL,
+    oldgroups text NOT NULL,
+    newgroups text NOT NULL
+);
+
+
+ALTER TABLE log__cg_order OWNER TO "mlpvc-rr";
+
+--
+-- Name: log__cg_order_entryid_seq; Type: SEQUENCE; Schema: public; Owner: mlpvc-rr
+--
+
+CREATE SEQUENCE log__cg_order_entryid_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE log__cg_order_entryid_seq OWNER TO "mlpvc-rr";
+
+--
+-- Name: log__cg_order_entryid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER SEQUENCE log__cg_order_entryid_seq OWNED BY log__cg_order.entryid;
+
+
+--
 -- Name: log__cgs; Type: TABLE; Schema: public; Owner: mlpvc-rr
 --
 
@@ -996,6 +1031,13 @@ ALTER TABLE ONLY log__cg_modify ALTER COLUMN entryid SET DEFAULT nextval('log__c
 -- Name: entryid; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
 --
 
+ALTER TABLE ONLY log__cg_order ALTER COLUMN entryid SET DEFAULT nextval('log__cg_order_entryid_seq'::regclass);
+
+
+--
+-- Name: entryid; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
+--
+
 ALTER TABLE ONLY log__cgs ALTER COLUMN entryid SET DEFAULT nextval('log__cgs_entryid_seq'::regclass);
 
 
@@ -1173,6 +1215,14 @@ ALTER TABLE ONLY log__banish
 
 ALTER TABLE ONLY log__cg_modify
     ADD CONSTRAINT log__cg_modify_entryid PRIMARY KEY (entryid);
+
+
+--
+-- Name: log__cg_order_entryid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER TABLE ONLY log__cg_order
+    ADD CONSTRAINT log__cg_order_entryid PRIMARY KEY (entryid);
 
 
 --
@@ -1677,6 +1727,24 @@ GRANT ALL ON TABLE log__cg_modify TO "mlpvc-rr";
 REVOKE ALL ON SEQUENCE log__cg_modify_entryid_seq FROM PUBLIC;
 REVOKE ALL ON SEQUENCE log__cg_modify_entryid_seq FROM "mlpvc-rr";
 GRANT ALL ON SEQUENCE log__cg_modify_entryid_seq TO "mlpvc-rr";
+
+
+--
+-- Name: log__cg_order; Type: ACL; Schema: public; Owner: mlpvc-rr
+--
+
+REVOKE ALL ON TABLE log__cg_order FROM PUBLIC;
+REVOKE ALL ON TABLE log__cg_order FROM "mlpvc-rr";
+GRANT ALL ON TABLE log__cg_order TO "mlpvc-rr";
+
+
+--
+-- Name: log__cg_order_entryid_seq; Type: ACL; Schema: public; Owner: mlpvc-rr
+--
+
+REVOKE ALL ON SEQUENCE log__cg_order_entryid_seq FROM PUBLIC;
+REVOKE ALL ON SEQUENCE log__cg_order_entryid_seq FROM "mlpvc-rr";
+GRANT ALL ON SEQUENCE log__cg_order_entryid_seq TO "mlpvc-rr";
 
 
 --

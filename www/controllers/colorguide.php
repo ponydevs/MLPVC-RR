@@ -319,19 +319,32 @@
 					Response::Done(array('cgs' => $cgs));
 				break;
 				case "setcgs":
-					$groups = (new Input('cgs','int[]',array(
+					$order = (new Input('cgs','int[]',array(
 						Input::CUSTOM_ERROR_MESSAGES => array(
 							Input::ERROR_MISSING => "$Color group order data missing"
 						)
 					)))->out();
-					foreach ($groups as $part => $GroupID){
-						if (!$CGDb->where('groupid', $GroupID)->has('colorgroups'))
-							Response::Fail("There's no group with the ID of $GroupID");
+					$oldCGs = \CG\ColorGroups::Get($Appearance['id']);
+					$possibleIDs = array();
+					foreach ($oldCGs as $cg)
+						$possibleIDs[$cg['groupid']] = true;
+					foreach ($order as $i => $GroupID){
+						if (empty($possibleIDs[$GroupID]))
+							Response::Fail("There's no group with the ID of $GroupID on this appearance");
 
-						$CGDb->where('groupid', $GroupID)->update('colorgroups',array('order' => $part));
+						$CGDb->where('groupid', $GroupID)->update('colorgroups',array('order' => $i));
 					}
+					$newCGs = \CG\ColorGroups::Get($Appearance['id']);
 
 					CGUtils::ClearRenderedImages($Appearance['id'], array(CGUtils::CLEAR_PALETTE));
+
+					$oldCGs = \CG\ColorGroups::Stringify($oldCGs);
+					$newCGs = \CG\ColorGroups::Stringify($newCGs);
+					if ($oldCGs !== $newCGs) Log::Action('cg_order',array(
+						'ponyid' => $Appearance['id'],
+						'oldgroups' => $oldCGs,
+						'newgroups' => $newCGs,
+					));
 
 					Response::Done(array('cgs' => \CG\Appearances::GetColorsHTML($Appearance['id'], NOWRAP, !$AppearancePage, $AppearancePage)));
 				break;
