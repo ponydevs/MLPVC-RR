@@ -5,7 +5,7 @@
 	class DeviantArt {
 		private static
 			$_CACHE_BAILOUT = false,
-			$_MASS_CACHE_LIMIT = 5,
+			$_MASS_CACHE_LIMIT = 30,
 			$_MASS_CACHE_USED = 0;
 
 		// oAuth Error Response Messages \\

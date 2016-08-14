@@ -593,14 +593,41 @@ DocReady.push(function Episode(){
 	let postHashRegex = /^#(request|reservation)-\d+$/,
 		showdialog = location.hash.length > 1 && postHashRegex.test(location.hash);
 
-	if (showdialog)
+	if (showdialog){
+		$.Dialog.wait('Scroll post into view', 'Preloading all posts, please wait');
 		loadSections(null, true);
+	}
+
+	let reloading = {};
+	$.fn.reloadLi = function(){
+		let $li = $(this),
+			_idAttr = $li.attr('id').split('-'),
+			type =_idAttr[0],
+			id = _idAttr[1];
+
+		if (reloading[_idAttr])
+			return;
+		reloading[_idAttr] = true;
+
+		console.log(`[POST-FIX] Attemting to reload ${type} #${id}`);
+		$.post(`/post/reload-${type}/${id}`,$.mkAjaxHandler(function(){
+			if (!this.status) return;
+
+			let $newli = $(this.li);
+			if ($li.hasClass('highlight'))
+				$newli.addClass('highlight');
+			$li.replaceWith($newli);
+			$newli.rebindFluidbox();
+			Time.Update();
+			$newli.trigger('rebind-handlers', [id, type]);
+		}));
+	};
 
 	function directLinkHandler(){
 		let $imgs = $content.find('img[src]'),
 			total = $imgs.length, loaded = 0;
 
-		if (!total || !showdialog)
+		if (!total)
 			return;
 
 		let $progress;
@@ -619,22 +646,8 @@ DocReady.push(function Episode(){
 				else if (image.img.src){
 					// Attempt to re-load the post to fix image link
 					let $li = $(image.img).closest('li[id]');
-					if ($li.length === 1){
-						let _idAttr = $li.attr('id').split('-'),
-							type =_idAttr[0],
-							id = _idAttr[1];
-						$.post(`/post/reload-${type}/${id}`,$.mkAjaxHandler(function(){
-							if (!this.status) return;
-
-							let $newli = $(this.li);
-							if ($li.hasClass('highlight'))
-								$newli.addClass('highlight');
-							$li.replaceWith($newli);
-							$newli.rebindFluidbox();
-							Time.Update();
-							$newli.trigger('rebind-handlers', [id, type]);
-						}));
-					}
+					if ($li.length === 1)
+						$li.reloadLi();
 					total--;
 					if (showdialog)
 						$progress.attr('max', total);
@@ -642,7 +655,7 @@ DocReady.push(function Episode(){
 			})
 			.always(function(){
 				let found = window._HighlightHash({type:'load'});
-				if (found === false)
+				if (found === false && showdialog)
 					$.Dialog.info('Scroll post into view',"The "+(location.hash.replace(postHashRegex,'$1'))+" you were linked to has either been deleted or didn't exist in the first place. Sorry.<div class='align-center'><span class='sideways-smiley-face'>:\\</div>");
 			});
 	}
@@ -655,4 +668,5 @@ DocReady.push(function Episode(){
 		clearInterval(window._rlinterval);
 	$w.off('hashchange', window._HighlightHash);
 	delete window._HighlightHash;
+	delete $.fn.reloadLi;
 });
