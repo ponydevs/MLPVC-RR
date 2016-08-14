@@ -126,7 +126,7 @@
 				"18": {
 					"groupid": 18,
 					"label": "Mane & Tail",
-					"order": 0,
+					"order": 1,
 					"Colors": [
 						{
 							"order": 0,
@@ -153,7 +153,7 @@
 				"19": {
 					"groupid": 19,
 					"label": "Iris",
-					"order": 0,
+					"order": 2,
 					"Colors": [
 						{
 							"order": 0,
@@ -180,7 +180,7 @@
 				"20": {
 					"groupid": 20,
 					"label": "Cutie Mark",
-					"order": 0,
+					"order": 3,
 					"Colors": [
 						{
 							"order": 0,
@@ -197,7 +197,7 @@
 				"21": {
 					"groupid": 21,
 					"label": "Magic",
-					"order": 0,
+					"order": 4,
 					"Colors": [
 						{
 							"order": 0,
@@ -873,7 +873,7 @@
 				"79": {
 					"groupid": 79,
 					"label": "Mouth",
-					"order": 0,
+					"order": 1,
 					"Colors": [
 						{
 							"order": 0,
@@ -895,7 +895,7 @@
 				"76": {
 					"groupid": 76,
 					"label": "Spikes",
-					"order": 1,
+					"order": 2,
 					"Colors": [
 						{
 							"order": 0,
@@ -912,7 +912,7 @@
 				"78": {
 					"groupid": 78,
 					"label": "Ears",
-					"order": 2,
+					"order": 3,
 					"Colors": [
 						{
 							"order": 0,
@@ -929,7 +929,7 @@
 				"77": {
 					"groupid": 77,
 					"label": "Iris",
-					"order": 3,
+					"order": 4,
 					"Colors": [
 						{
 							"order": 0,
@@ -1565,7 +1565,7 @@
 				"606": {
 					"groupid": 606,
 					"label": "Cape",
-					"order": 1,
+					"order": 0,
 					"Colors": [
 						{
 							"order": 0,
@@ -1582,7 +1582,7 @@
 				"607": {
 					"groupid": 607,
 					"label": "Patch",
-					"order": 2,
+					"order": 1,
 					"Colors": [
 						{
 							"order": 0,
@@ -27992,6 +27992,240 @@
 				375,
 				392
 			]
+		},
+		"182": {
+			"id": 182,
+			"order": null,
+			"label": "Rainbow Cookie Zombie Effects",
+			"notes": "Colors of this effect are not muted even if the pony's coat ends up muted. This effect is dimmed with any night filters.\nTo get the muted coat/mane/other colors for any character, take the RGB value of the color, average the R, G, B values, and adjust each RGB value 50% of the way to that average. For example, if RGB is 120, 60, 120, the average is 100. The R value of 120 would then move 50%*(120-100) or 10 (ending up at 110), the G value of 60 would move 50%*(100-60) or 20 (ending up at 80). ",
+			"cm_favme": null,
+			"ishuman": false,
+			"added": "2016-08-14 14:35:38.812358+02",
+			"cm_preview": null,
+			"cm_dir": null,
+			"ColorGroups": {
+				"990": {
+					"groupid": 990,
+					"label": "Mouth",
+					"order": 1,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Stroke",
+							"hex": "#8B1999"
+						},
+						{
+							"order": 1,
+							"label": "Fill 1",
+							"hex": "#FFE531"
+						},
+						{
+							"order": 2,
+							"label": "Fill 2",
+							"hex": "#FF702F"
+						},
+						{
+							"order": 3,
+							"label": "Fill 3",
+							"hex": "#FF323B"
+						},
+						{
+							"order": 4,
+							"label": "Fill 4",
+							"hex": "#A42DE1"
+						},
+						{
+							"order": 5,
+							"label": "Fill 5",
+							"hex": "#2B96E2"
+						},
+						{
+							"order": 6,
+							"label": "Fill 6",
+							"hex": "#2CCB27"
+						}
+					]
+				}
+			},
+			"TagIDs": [
+				376
+			]
+		},
+		"183": {
+			"id": 183,
+			"order": null,
+			"label": "Filly Scout Uniform",
+			"notes": "",
+			"cm_favme": null,
+			"ishuman": false,
+			"added": "2016-08-14 15:01:51.282362+02",
+			"cm_preview": null,
+			"cm_dir": null,
+			"ColorGroups": {
+				"991": {
+					"groupid": 991,
+					"label": "Hat",
+					"order": 1,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Brim Outline",
+							"hex": "#2C2C2C"
+						},
+						{
+							"order": 1,
+							"label": "Brim Fill",
+							"hex": "#474747"
+						},
+						{
+							"order": 2,
+							"label": "Band Outline",
+							"hex": "#F8BE50"
+						},
+						{
+							"order": 3,
+							"label": "Band Fill",
+							"hex": "#F6E978"
+						},
+						{
+							"order": 4,
+							"label": "Hat Outline",
+							"hex": "#394129"
+						},
+						{
+							"order": 5,
+							"label": "Hat Fill",
+							"hex": "#54633F"
+						},
+						{
+							"order": 6,
+							"label": "Earhole Outline",
+							"hex": "#000000"
+						}
+					]
+				},
+				"992": {
+					"groupid": 992,
+					"label": "Kerchief / Tail Band",
+					"order": 2,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#8C0F20"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#D91D2F"
+						},
+						{
+							"order": 2,
+							"label": "Stripe",
+							"hex": "#F5EA79"
+						}
+					]
+				},
+				"993": {
+					"groupid": 993,
+					"label": "Sash",
+					"order": 3,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#293322"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#566240"
+						},
+						{
+							"order": 2,
+							"label": "Merit Badge Outline",
+							"hex": "#D6D367"
+						},
+						{
+							"order": 3,
+							"label": "Forest Badge Background",
+							"hex": "#84BF39"
+						},
+						{
+							"order": 4,
+							"label": "Forest Badge Foreground",
+							"hex": "#264A47"
+						},
+						{
+							"order": 5,
+							"label": "Fire-making Badge Background",
+							"hex": "#E00E2A"
+						},
+						{
+							"order": 6,
+							"label": "Fire-making Badge Flames 1",
+							"hex": "#F6ED7D"
+						},
+						{
+							"order": 7,
+							"label": "Fire-making Badge Flames 2",
+							"hex": "#F9BA4C"
+						},
+						{
+							"order": 8,
+							"label": "Fire-making Badge Logs",
+							"hex": "#70372D"
+						}
+					]
+				},
+				"994": {
+					"groupid": 994,
+					"label": "Logo",
+					"order": 4,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#F7F081"
+						},
+						{
+							"order": 1,
+							"label": "Background",
+							"hex": "#696014"
+						},
+						{
+							"order": 2,
+							"label": "Pony Outline",
+							"hex": "#816E16"
+						},
+						{
+							"order": 3,
+							"label": "Pony Fill",
+							"hex": "#B7A023"
+						},
+						{
+							"order": 4,
+							"label": "Pony Fill Highlights/Mane",
+							"hex": "#C3B340"
+						},
+						{
+							"order": 5,
+							"label": "Sash Fill",
+							"hex": "#7C6E16"
+						},
+						{
+							"order": 6,
+							"label": "Sash Badge",
+							"hex": "#C2B148"
+						}
+					]
+				}
+			},
+			"TagIDs": [
+				96,
+				376,
+				393
+			]
 		}
 	},
 	"Tags": {
@@ -28680,7 +28914,7 @@
 			"name": "outfit",
 			"title": "Alternative character outfits",
 			"type": null,
-			"uses": 8,
+			"uses": 9,
 			"synonym_of": null
 		},
 		"97": {
@@ -30752,7 +30986,7 @@
 			"name": "s06e15",
 			"title": null,
 			"type": "ep",
-			"uses": 0,
+			"uses": 2,
 			"synonym_of": null
 		},
 		"377": {
@@ -30872,6 +31106,14 @@
 			"name": "cheerleader",
 			"title": null,
 			"type": null,
+			"uses": 1,
+			"synonym_of": null
+		},
+		"393": {
+			"tid": 393,
+			"name": "filly scout uniform",
+			"title": null,
+			"type": "app",
 			"uses": 1,
 			"synonym_of": null
 		}

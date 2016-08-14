@@ -421,14 +421,17 @@ Magic aura color is unknown.', 'dabxlg3', false, '2016-07-29 15:58:59.843318+02'
 (178, 144, 'Quibble Pants', 'Shirt colors are same as for #159', 'dac5ypu', false, '2016-07-31 14:25:29.382017+02', NULL, false),
 (179, 169, 'Cipactli', 'Eyes use radial gradient; inner color should be set about 50% position and then outer color at 100% position', NULL, false, '2016-08-01 00:33:04.898926+02', NULL, NULL),
 (180, 47, 'Crackle Pop', 'Eye gradient is reversed compared to most ponies - darker color at bottom', NULL, false, '2016-08-07 13:24:18.786575+02', NULL, NULL),
-(181, NULL, 'Cheerilee''s Cheerleader Outfit', 'Worn by #79 in S6E14', NULL, false, '2016-08-07 13:34:13.886075+02', NULL, NULL);
+(181, NULL, 'Cheerilee''s Cheerleader Outfit', 'Worn by #79 in S6E14', NULL, false, '2016-08-07 13:34:13.886075+02', NULL, NULL),
+(182, NULL, 'Rainbow Cookie Zombie Effects', 'Colors of this effect are not muted even if the pony''s coat ends up muted. This effect is dimmed with any night filters.
+To get the muted coat/mane/other colors for any character, take the RGB value of the color, average the R, G, B values, and adjust each RGB value 50% of the way to that average. For example, if RGB is 120, 60, 120, the average is 100. The R value of 120 would then move 50%*(120-100) or 10 (ending up at 110), the G value of 60 would move 50%*(100-60) or 20 (ending up at 80). ', NULL, false, '2016-08-14 14:35:38.812358+02', NULL, NULL),
+(183, NULL, 'Filly Scout Uniform', '', NULL, false, '2016-08-14 15:01:51.282362+02', NULL, NULL);
 
 
 --
 -- Name: appearances_id_seq; Type: SEQUENCE SET; Schema: public; Owner: mlpvc-rr
 --
 
-SELECT pg_catalog.setval('appearances_id_seq', 181, true);
+SELECT pg_catalog.setval('appearances_id_seq', 183, true);
 
 
 --
@@ -437,10 +440,10 @@ SELECT pg_catalog.setval('appearances_id_seq', 181, true);
 
 INSERT INTO colorgroups VALUES
 (17, 1, 'Coat', 0),
-(18, 1, 'Mane & Tail', 0),
-(19, 1, 'Iris', 0),
-(20, 1, 'Cutie Mark', 0),
-(21, 1, 'Magic', 0),
+(18, 1, 'Mane & Tail', 1),
+(19, 1, 'Iris', 2),
+(20, 1, 'Cutie Mark', 3),
+(21, 1, 'Magic', 4),
 (22, 11, 'Coat', 0),
 (23, 11, 'Mane & Tail', 0),
 (24, 11, 'Iris', 0),
@@ -490,10 +493,10 @@ INSERT INTO colorgroups VALUES
 (73, 6, 'Iris', 2),
 (74, 6, 'Cutie Mark', 3),
 (75, 7, 'Body', 0),
-(76, 7, 'Spikes', 1),
-(77, 7, 'Iris', 3),
-(78, 7, 'Ears', 2),
-(79, 7, 'Mouth', 0),
+(76, 7, 'Spikes', 2),
+(77, 7, 'Iris', 4),
+(78, 7, 'Ears', 3),
+(79, 7, 'Mouth', 1),
 (80, 6, 'Magic', 4),
 (81, 10, 'Coat', 0),
 (82, 10, 'Mane & Tail', 0),
@@ -962,8 +965,8 @@ INSERT INTO colorgroups VALUES
 (603, 64, 'Mouth', 4),
 (604, 113, 'Body', 0),
 (605, 113, 'Legs', 2),
-(606, 114, 'Cape', 1),
-(607, 114, 'Patch', 2),
+(606, 114, 'Cape', 0),
+(607, 114, 'Patch', 1),
 (608, 115, 'Head Log', 1),
 (609, 115, 'Head Details', 2),
 (610, 115, 'Body Log', 3),
@@ -1303,14 +1306,19 @@ INSERT INTO colorgroups VALUES
 (985, 181, 'Shirt', 1),
 (986, 181, 'Skirt', 2),
 (987, 181, 'Bow', 3),
-(988, 181, 'Poms', 4);
+(988, 181, 'Poms', 4),
+(990, 182, 'Mouth', 1),
+(991, 183, 'Hat', 1),
+(992, 183, 'Kerchief / Tail Band', 2),
+(993, 183, 'Sash', 3),
+(994, 183, 'Logo', 4);
 
 
 --
 -- Name: colorgroups_groupid_seq; Type: SEQUENCE SET; Schema: public; Owner: mlpvc-rr
 --
 
-SELECT pg_catalog.setval('colorgroups_groupid_seq', 988, true);
+SELECT pg_catalog.setval('colorgroups_groupid_seq', 994, true);
 
 
 --
@@ -4923,7 +4931,40 @@ INSERT INTO colors VALUES
 (988, 4, 'Shadow Band Outline', '#43376B'),
 (988, 5, 'Shadow Band Fill', '#5C5293'),
 (988, 6, 'Shadow Pom Outline', '#BA902D'),
-(988, 7, 'Shadow Pom Fill', '#DBBB5E');
+(988, 7, 'Shadow Pom Fill', '#DBBB5E'),
+(990, 0, 'Stroke', '#8B1999'),
+(990, 1, 'Fill 1', '#FFE531'),
+(990, 2, 'Fill 2', '#FF702F'),
+(990, 3, 'Fill 3', '#FF323B'),
+(990, 4, 'Fill 4', '#A42DE1'),
+(990, 5, 'Fill 5', '#2B96E2'),
+(990, 6, 'Fill 6', '#2CCB27'),
+(991, 0, 'Brim Outline', '#2C2C2C'),
+(991, 1, 'Brim Fill', '#474747'),
+(991, 2, 'Band Outline', '#F8BE50'),
+(991, 3, 'Band Fill', '#F6E978'),
+(991, 4, 'Hat Outline', '#394129'),
+(991, 5, 'Hat Fill', '#54633F'),
+(991, 6, 'Earhole Outline', '#000000'),
+(992, 0, 'Outline', '#8C0F20'),
+(992, 1, 'Fill', '#D91D2F'),
+(992, 2, 'Stripe', '#F5EA79'),
+(993, 0, 'Outline', '#293322'),
+(993, 1, 'Fill', '#566240'),
+(993, 2, 'Merit Badge Outline', '#D6D367'),
+(993, 3, 'Forest Badge Background', '#84BF39'),
+(993, 4, 'Forest Badge Foreground', '#264A47'),
+(993, 5, 'Fire-making Badge Background', '#E00E2A'),
+(993, 6, 'Fire-making Badge Flames 1', '#F6ED7D'),
+(993, 7, 'Fire-making Badge Flames 2', '#F9BA4C'),
+(993, 8, 'Fire-making Badge Logs', '#70372D'),
+(994, 0, 'Outline', '#F7F081'),
+(994, 1, 'Background', '#696014'),
+(994, 2, 'Pony Outline', '#816E16'),
+(994, 3, 'Pony Fill', '#B7A023'),
+(994, 4, 'Pony Fill Highlights/Mane', '#C3B340'),
+(994, 5, 'Sash Fill', '#7C6E16'),
+(994, 6, 'Sash Badge', '#C2B148');
 
 
 --
@@ -5520,6 +5561,7 @@ INSERT INTO tagged VALUES
 (96, 133),
 (96, 144),
 (96, 181),
+(96, 183),
 (98, 62),
 (99, 22),
 (99, 26),
@@ -5794,6 +5836,8 @@ INSERT INTO tagged VALUES
 (374, 179),
 (375, 180),
 (375, 181),
+(376, 182),
+(376, 183),
 (380, 176),
 (382, 177),
 (383, 177),
@@ -5805,7 +5849,8 @@ INSERT INTO tagged VALUES
 (386, 178),
 (388, 179),
 (391, 180),
-(392, 181);
+(392, 181),
+(393, 183);
 
 
 --
@@ -5898,7 +5943,7 @@ INSERT INTO tags VALUES
 (93, 'rara', NULL, 'char', 0, 158),
 (94, 's05e24', NULL, 'ep', 3, NULL),
 (95, 'svengallop', NULL, 'char', 1, NULL),
-(96, 'outfit', 'Alternative character outfits', NULL, 8, NULL),
+(96, 'outfit', 'Alternative character outfits', NULL, 9, NULL),
 (97, 's05e08', NULL, 'ep', 0, NULL),
 (98, 'sunburst', NULL, 'char', 1, NULL),
 (99, 's05e26', NULL, 'ep', 5, NULL),
@@ -6157,7 +6202,7 @@ INSERT INTO tags VALUES
 (373, 'amethyst star', NULL, 'char', 1, NULL),
 (374, 's06e13', NULL, 'ep', 4, NULL),
 (375, 's06e14', NULL, 'ep', 2, NULL),
-(376, 's06e15', NULL, 'ep', 0, NULL),
+(376, 's06e15', NULL, 'ep', 2, NULL),
 (377, 's06e16', NULL, 'ep', 0, NULL),
 (378, 's06e17', NULL, 'ep', 0, NULL),
 (380, 'cherry berry', NULL, 'char', 1, NULL),
@@ -6172,14 +6217,15 @@ INSERT INTO tags VALUES
 (389, 'mrs shy', NULL, 'char', 0, 310),
 (390, 'caballeron', NULL, 'char', 0, 346),
 (391, 'crackle pop', NULL, 'char', 1, NULL),
-(392, 'cheerleader', NULL, NULL, 1, NULL);
+(392, 'cheerleader', NULL, NULL, 1, NULL),
+(393, 'filly scout uniform', NULL, 'app', 1, NULL);
 
 
 --
 -- Name: tags_tid_seq; Type: SEQUENCE SET; Schema: public; Owner: mlpvc-rr
 --
 
-SELECT pg_catalog.setval('tags_tid_seq', 392, true);
+SELECT pg_catalog.setval('tags_tid_seq', 393, true);
 
 
 --
