@@ -126,4 +126,15 @@
 				->orderBy('"order"', $dir)
 				->orderBy('groupid', $dir);
 		}
+
+		static function StringifyColors($colors){
+			if (empty($colors))
+				return null;
+
+			$return = array();
+			foreach ($colors as $c)
+				$return[] = "{$c['hex']} {$c['label']}";
+
+			return implode("\n", $return);
+		}
 	}

@@ -16,6 +16,9 @@
 			'res_overtake' => 'Overtook post reservation',
 			'appearances' => 'Appearance management',
 			'res_transfer' => 'Reservation transferred',
+			'cg_modify' => 'Color group updated',
+			'cgs' => 'Color group management',
+			//'cg_order' => 'Color groups re-ordered',
 		);
 
 		/**
@@ -64,7 +67,7 @@
 		 * @return array
 		 */
 		static function FormatEntryDetails($MainEntry, $data){
-			global $Database;
+			global $Database, $CGDb;
 			$details = array();
 
 			$reftype = $MainEntry['reftype'];
@@ -115,6 +118,10 @@
 						$newOld['airs']['old'] =  Time::Tag($newOld['airs']['old'], Time::TAG_EXTENDED, Time::TAG_STATIC_DYNTIME);
 						$newOld['airs']['new'] =  Time::Tag($newOld['airs']['new'], Time::TAG_EXTENDED, Time::TAG_STATIC_DYNTIME);
 					}
+					if (isset($newOld['title']['old']) && isset($newOld['title']['new'])){
+						$details[] = array('Title', CoreUtils::CharDiff($newOld['title']['old'], $newOld['title']['new']));
+						unset($newOld['title']);
+					}
 
 					foreach ($newOld as $thing => $ver){
 						$details[] = array("Old $thing",$ver['old']);
@@ -134,7 +141,7 @@
 					self::GenericPostInfo($Post, $data, $details);
 				break;
 				case "color_modify":
-					$details[] = array('Appearance',"<a href='/cg/v/{$data['ponyid']}'>#{$data['ponyid']}</a>");
+					$details[] = array('Appearance',self::GetAppearanceLink($data['ponyid']));
 					$details[] = array('Reason',CoreUtils::EscapeHTML($data['reason']));
 				break;
 				case "req_delete":
@@ -188,18 +195,10 @@
 
 					$PonyGuide = empty($data['ishuman']);
 					$details[] = array('Guide', $PonyGuide ? 'Pony' : 'EQG');
-					$ID = '#'.$data['id'];
-					global $CGDb;
-					if ($CGDb->where('id', $data['id'])->has('appearances')){
-						$EQGUrl = $PonyGuide ? '' : '/eqg';
-						$ID = "<a href='/cg/{$EQGUrl}v/{$data['id']}'>$ID</a>";
-					}
-					else if ($data['action'] === 'add')
-						$ID .= ' (now deleted)';
-					$details[] = array('ID', $ID);
+					$details[] = array('ID', self::GetAppearanceLink($data['id']));
 					$details[] = array('Label', $data['label']);
 					if (!empty($data['order']))
-						$details[] = array('Ordering Index', $data['order']);
+						$details[] = array('Ordering index', $data['order']);
 					if (!empty($data['notes']))
 						$details[] = array('Notes', '<div>'.nl2br($data['notes']).'</div>');
 					if (!empty($data['cm_favme'])){
@@ -219,6 +218,30 @@
 					self::GenericPostInfo($Post, $data, $details);
 					$details[] = array('New reserver',User::GetProfileLink(User::Get($data['to'])));
 				break;
+				case "cg_modify":
+					$details[] = array('Appearance',self::GetAppearanceLink($data['ponyid']));
+					$CG = $CGDb->where('groupid', $data['groupid'])->getOne('colorgroups');
+					if (empty($CG)){
+						$details[] = array('Color group ID', '#'.$data['groupid']);
+						$details[] = array('Still exists', false);
+					}
+					else $details[] = array('Group', "{$CG['label']} (#{$data['groupid']})");
+					if (isset($data['newlabel']))
+						$details[] = array('Label', CoreUtils::CharDiff($data['oldlabel'] ?? '', $data['newlabel'], 'inline'));
+					if (isset($data['newcolors']))
+						$details[] = array('Colors', CoreUtils::CharDiff($data['oldcolors'] ?? '', $data['newcolors'], 'block'));
+				break;
+				case "cgs":
+					$details[] = array('Action', self::$ACTIONS[$data['action']]);
+					$details[] = array('Color group ID', '#'.$data['groupid']);
+					$details[] = array('Label', $data['label']);
+					$details[] = array('Appearance',self::GetAppearanceLink($data['ponyid']));
+					if (isset($data['order']))
+						$details[] = array('Ordering index', $data['order']);
+				break;
+				case "cg_order":
+					# TODO
+				break;
 				default:
 					$details[] = array('Could not process details','No data processor defined for this entry type');
 					$details[] = array('Raw details', '<pre>'.var_export($data, true).'</pre>');
@@ -228,7 +251,7 @@
 			return array('details' => $details);
 		}
 
-		static function GenericPostInfo(array $Post, array $data, array &$details){
+		private static function GenericPostInfo(array $Post, array $data, array &$details){
 			$label = CoreUtils::Capitalize($data['type'])." #{$data['id']}";
 			if (!empty($Post)){
 				list($link) = Posts::GetLink($Post, $data['type']);
@@ -250,6 +273,19 @@
 					else $details[] = array('Reserved', false);
 				}
 			}
+		}
+
+		private static function GetAppearanceLink($id){
+			global $CGDb;
+
+			$ID = "#$id";
+			$Appearance = $CGDb->where('id', $id)->getOne('appearances');
+			if (!empty($Appearance)){
+				$EQGUrl = $Appearance['ishuman'] ? '/eqg' : '';
+				$ID = "<a href='/cg/{$EQGUrl}v/$id'>".htmlspecialchars($Appearance['label'])."</a> ($ID)";
+			}
+
+			return $ID;
 		}
 
 		/**

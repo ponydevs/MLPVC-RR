@@ -32,8 +32,9 @@ DocReady.push(function Logs(){
 		$FilterForm.find('[name="by"]').val('');
 		$FilterForm.triggerHandler('submit');
 	});
-	
-	$('#logs').find('tbody').off('page-switch').on('page-switch',function(){
+
+	let $logsTable = $('#logs');
+	$logsTable.find('tbody').off('page-switch').on('page-switch',function(){
 		$(this).children().each(function(){
 			let $row = $(this);
 
@@ -51,10 +52,16 @@ DocReady.push(function Logs(){
 
 						$this.removeClass('typcn-minus typcn-plus').addClass('typcn-refresh');
 
-						let EntryID = parseInt($row.children().first().text());
+						let EntryID = parseInt($row.children().first().text()),
+							fail = function(){
+								$this.addClass('typcn-times color-red').css('cursor','not-allowed').off('click');
+							};
 
 						$.post(`/admin/logs/details/${EntryID}`, $.mkAjaxHandler(function(){
-							if (!this.status) $.Dialog.fail(title,this.message);
+							if (!this.status){
+								$.Dialog.fail(title,this.message);
+								return fail();
+							}
 
 							let $dataDiv = $.mk('div').attr('class','expandable-section').css('display','none');
 							$.each(this.details, (i,el) => {
@@ -72,9 +79,7 @@ DocReady.push(function Logs(){
 						})).always(function(){
 							requesting = false;
 							$this.removeClass('typcn-refresh');
-						}).fail(function(){
-							$this.addClass('typcn-times color-red').css('cursor','not-allowed').off('click');
-						});
+						}).fail(fail);
 					}
 				}
 			});
@@ -113,5 +118,50 @@ DocReady.push(function Logs(){
 				$span
 			)
 		);
+	});
+
+	const viewStates = [
+		{
+			className: 'darkblue',
+			showins: true,
+			showdel: true,
+			title: 'diff',
+		},
+		{
+			className: 'green',
+			showins: true,
+			showdel: false,
+			title: 'new',
+		},
+		{
+			className: 'red',
+			showins: false,
+			showdel: true,
+			title: 'old',
+		}
+	];
+
+	$logsTable.on('click', '.btn.view-switch', function(e){
+		e.preventDefault();
+
+		let $btn = $(this),
+			$diffWrap = $btn.next(),
+			state = $btn.attr('class').match(/\b(darkblue|green|red)\b/)[1],
+			nextState;
+
+		for (let i=0; i<viewStates.length; i++){
+			if (viewStates[i].className === state)
+				nextState = viewStates[i+1];
+		}
+		if (typeof nextState === 'undefined')
+			nextState = viewStates[0];
+
+		$diffWrap.find('ins')[nextState.showins ? 'show' : 'hide']();
+		$diffWrap.find('del')[nextState.showdel ? 'show' : 'hide']();
+		$diffWrap[!nextState.showins || !nextState.showdel ? 'addClass' : 'removeClass']('no-colors');
+		$diffWrap[$diffWrap.contents().filter(function(){
+			return /^(del|ins)$/.test(this.nodeName.toLowerCase()) ? this.style.display !== 'none' : true;
+		}).length === 0 ? 'addClass' : 'removeClass']('empty');
+		$btn.removeClass(state).addClass(nextState.className).text(nextState.title);
 	});
 });

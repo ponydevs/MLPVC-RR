@@ -233,6 +233,81 @@ ALTER SEQUENCE log__banish_entryid_seq OWNED BY log__banish.entryid;
 
 
 --
+-- Name: log__cg_modify; Type: TABLE; Schema: public; Owner: mlpvc-rr
+--
+
+CREATE TABLE log__cg_modify (
+    entryid integer NOT NULL,
+    groupid integer NOT NULL,
+    oldlabel character varying(255),
+    newlabel character varying(255),
+    oldcolors text,
+    newcolors text,
+    ponyid integer NOT NULL
+);
+
+
+ALTER TABLE log__cg_modify OWNER TO "mlpvc-rr";
+
+--
+-- Name: log__cg_modify_entryid_seq; Type: SEQUENCE; Schema: public; Owner: mlpvc-rr
+--
+
+CREATE SEQUENCE log__cg_modify_entryid_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE log__cg_modify_entryid_seq OWNER TO "mlpvc-rr";
+
+--
+-- Name: log__cg_modify_entryid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER SEQUENCE log__cg_modify_entryid_seq OWNED BY log__cg_modify.entryid;
+
+
+--
+-- Name: log__cgs; Type: TABLE; Schema: public; Owner: mlpvc-rr
+--
+
+CREATE TABLE log__cgs (
+    entryid integer NOT NULL,
+    action character(3) NOT NULL,
+    groupid integer NOT NULL,
+    ponyid integer NOT NULL,
+    label character varying(255) NOT NULL,
+    "order" integer
+);
+
+
+ALTER TABLE log__cgs OWNER TO "mlpvc-rr";
+
+--
+-- Name: log__cgs_entryid_seq; Type: SEQUENCE; Schema: public; Owner: mlpvc-rr
+--
+
+CREATE SEQUENCE log__cgs_entryid_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE log__cgs_entryid_seq OWNER TO "mlpvc-rr";
+
+--
+-- Name: log__cgs_entryid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER SEQUENCE log__cgs_entryid_seq OWNED BY log__cgs.entryid;
+
+
+--
 -- Name: log__color_modify; Type: TABLE; Schema: public; Owner: mlpvc-rr
 --
 
@@ -914,6 +989,20 @@ ALTER TABLE ONLY log__banish ALTER COLUMN entryid SET DEFAULT nextval('log__bani
 -- Name: entryid; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
 --
 
+ALTER TABLE ONLY log__cg_modify ALTER COLUMN entryid SET DEFAULT nextval('log__cg_modify_entryid_seq'::regclass);
+
+
+--
+-- Name: entryid; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER TABLE ONLY log__cgs ALTER COLUMN entryid SET DEFAULT nextval('log__cgs_entryid_seq'::regclass);
+
+
+--
+-- Name: entryid; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
+--
+
 ALTER TABLE ONLY log__color_modify ALTER COLUMN entryid SET DEFAULT nextval('log__color_modify_entryid_seq'::regclass);
 
 
@@ -1076,6 +1165,22 @@ ALTER TABLE ONLY log__appearances
 
 ALTER TABLE ONLY log__banish
     ADD CONSTRAINT log__banish_entryid PRIMARY KEY (entryid);
+
+
+--
+-- Name: log__cg_modify_entryid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER TABLE ONLY log__cg_modify
+    ADD CONSTRAINT log__cg_modify_entryid PRIMARY KEY (entryid);
+
+
+--
+-- Name: log__cgs_entryid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER TABLE ONLY log__cgs
+    ADD CONSTRAINT log__cgs_entryid PRIMARY KEY (entryid);
 
 
 --
@@ -1554,6 +1659,42 @@ REVOKE ALL ON SEQUENCE log__banish_entryid_seq FROM PUBLIC;
 REVOKE ALL ON SEQUENCE log__banish_entryid_seq FROM "mlpvc-rr";
 GRANT ALL ON SEQUENCE log__banish_entryid_seq TO "mlpvc-rr";
 GRANT ALL ON SEQUENCE log__banish_entryid_seq TO postgres;
+
+
+--
+-- Name: log__cg_modify; Type: ACL; Schema: public; Owner: mlpvc-rr
+--
+
+REVOKE ALL ON TABLE log__cg_modify FROM PUBLIC;
+REVOKE ALL ON TABLE log__cg_modify FROM "mlpvc-rr";
+GRANT ALL ON TABLE log__cg_modify TO "mlpvc-rr";
+
+
+--
+-- Name: log__cg_modify_entryid_seq; Type: ACL; Schema: public; Owner: mlpvc-rr
+--
+
+REVOKE ALL ON SEQUENCE log__cg_modify_entryid_seq FROM PUBLIC;
+REVOKE ALL ON SEQUENCE log__cg_modify_entryid_seq FROM "mlpvc-rr";
+GRANT ALL ON SEQUENCE log__cg_modify_entryid_seq TO "mlpvc-rr";
+
+
+--
+-- Name: log__cgs; Type: ACL; Schema: public; Owner: mlpvc-rr
+--
+
+REVOKE ALL ON TABLE log__cgs FROM PUBLIC;
+REVOKE ALL ON TABLE log__cgs FROM "mlpvc-rr";
+GRANT ALL ON TABLE log__cgs TO "mlpvc-rr";
+
+
+--
+-- Name: log__cgs_entryid_seq; Type: ACL; Schema: public; Owner: mlpvc-rr
+--
+
+REVOKE ALL ON SEQUENCE log__cgs_entryid_seq FROM PUBLIC;
+REVOKE ALL ON SEQUENCE log__cgs_entryid_seq FROM "mlpvc-rr";
+GRANT ALL ON SEQUENCE log__cgs_entryid_seq TO "mlpvc-rr";
 
 
 --

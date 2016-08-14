@@ -661,7 +661,6 @@
 			$action = $_match[1];
 			$new = $action === 'make';
 
-
 			if (!$new){
 				if (empty($_match[2]))
 					Response::Fail('Missing color group ID');
@@ -678,6 +677,15 @@
 				if ($action === 'del'){
 					if (!$CGDb->where('groupid', $Group['groupid'])->delete('colorgroups'))
 						Response::DBError();
+
+					Log::Action('cgs',array(
+						'action' => 'del',
+						'groupid' => $Group['groupid'],
+						'ponyid' => $Group['ponyid'],
+						'label' => $Group['label'],
+						'order' => $Group['order'] ?? null,
+					));
+
 					Response::Success("$Color group deleted successfully");
 				}
 			}
@@ -726,6 +734,8 @@
 			}
 			else $CGDb->where('groupid', $Group['groupid'])->update('colorgroups', $data);
 
+			$origColors = $new ? null : \CG\ColorGroups::GetColors($Group['groupid']);
+
 			$recvColors = (new Input('Colors','json',array(
 				Input::CUSTOM_ERROR_MESSAGES => array(
 					Input::ERROR_MISSING => "Missing list of {$color}s",
@@ -758,10 +768,12 @@
 			if (!$new)
 				$CGDb->where('groupid', $Group['groupid'])->delete('colors');
 			$colorError = false;
-			foreach ($colors as $i => $c){
+			foreach ($colors as $c){
 				$c['groupid'] = $Group['groupid'];
-				if (!$CGDb->insert('colors', $c) && !$colorError)
+				if (!$CGDb->insert('colors', $c)){
 					$colorError = true;
+					error_log("Database error triggered by user {$currentUser['id']} ({$currentUser['name']}) while saving colors: ".$CGDb->getLastError());
+				}
 			}
 			if ($colorError)
 				Response::Fail("There were some issues while saving some of the colors. Please let the developer know about this error, so he can look into why this might've happened.");
@@ -791,6 +803,32 @@
 			if (isset($_POST['APPEARANCE_PAGE']))
 				$response['cm_img'] = "/cg/v/$AppearanceID.svg?t=".time();
 			else $response['notes'] = \CG\Appearances::GetNotesHTML($CGDb->where('id', $AppearanceID)->getOne('appearances'),  NOWRAP);
+
+			$logdata = array();
+			if ($new) Log::Action('cgs',array(
+				'action' => 'add',
+				'groupid' => $Group['groupid'],
+				'ponyid' => $AppearanceID,
+				'label' => $data['label'],
+				'order' => $data['order'] ?? null,
+			));
+			else if ($data['label'] !== $Group['label']){
+				$logdata['oldlabel'] = $Group['label'];
+				$logdata['newlabel'] = $data['label'];
+			}
+
+			$origColors = \CG\ColorGroups::StringifyColors($origColors);
+			$recvColors = \CG\ColorGroups::StringifyColors($recvColors);
+			$colorsChanged = $origColors !== $recvColors;
+			if ($colorsChanged){
+				$logdata['oldcolors'] = $origColors;
+				$logdata['newcolors'] = $recvColors;
+			}
+			if (!empty($logdata)){
+				$logdata['groupid'] = $Group['groupid'];
+				$logdata['ponyid'] = $AppearanceID;
+				Log::Action('cg_modify', $logdata);
+			}
 
 			Response::Done($response);
 		}

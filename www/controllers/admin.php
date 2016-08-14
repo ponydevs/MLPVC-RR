@@ -17,7 +17,11 @@
 					if (empty($MainEntry['refid'])) Response::Fail('There are no details to show');
 
 					$Details = $Database->where('entryid', $MainEntry['refid'])->getOne("log__{$MainEntry['reftype']}");
-					if (empty($Details)) Response::Fail('Failed to retrieve details');
+					if (empty($Details)){
+						error_log("Could not find details for entry {$MainEntry['reftype']}#{$MainEntry['refid']}, NULL-ing refid of Main#{$MainEntry['entryid']}");
+						$Database->where('entryid', $MainEntry['entryid'])->update('log', array('refid' => null));
+						Response::Fail('Failed to retrieve details');
+					}
 
 					Response::Done(Log::FormatEntryDetails($MainEntry,$Details));
 				}

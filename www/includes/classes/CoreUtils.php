@@ -1000,4 +1000,10 @@
 			'inkscape' => 'Inkscape',
 			'ponyscape' => 'Ponyscape',
 		);
+
+		static function CharDiff(string $old, string $new, $wrap = 'inline'):string {
+			$opcodes = FineDiff::getDiffOpcodes($old, $new, FineDiff::$characterGranularity);
+			$diff = FineDiff::renderDiffToHTMLFromOpcodes($old, $opcodes);
+			return !empty($wrap) ? "<span class='btn darkblue view-switch' title='Toggle view mode'>diff</span><div class='log-diff {$wrap}'>$diff</div>" : $diff;
+		}
 	}

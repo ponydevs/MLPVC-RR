@@ -138,6 +138,64 @@ $TableHeadingFontSize: 16px;
 		}
 
 		i { font-size: .8em }
+
+		.view-switch {
+			margin: 0 7px 0 0;
+			text-transform: uppercase;
+			font-size: 12px;
+			font-family: $monospace;
+			text-align: center;
+			width: 45px;
+			line-height: 1em;
+			padding: 2px 2px;
+
+			&, & + .log-diff {
+				vertical-align: baseline;
+			}
+		}
+
+		.log-diff {
+			border: 1px solid black;
+			background: #fff;
+			white-space: pre;
+
+			&.empty {
+				overflow: hidden !important;
+				background-image: url('../../img/grid-g.svg');
+				background-size: .5em;
+
+				&:before {
+					content: "EMPTY";
+					display: block;
+					opacity: .76;
+					font-style: italic;
+					font-family: $RegularFont;
+					text-align: center;
+					padding: 1px 0;
+					font-weight: bold;
+				}
+			}
+
+			ins, del {
+				text-decoration: none;
+			}
+
+			&:not(.no-colors){
+				ins { background: desaturate(lighten($NGreen, 40), 20) }
+				del { background: desaturate(lighten($NRed,   40), 20) }
+			}
+		}
+		.log-diff.inline {
+			display: inline;
+			padding: 2px 3px;
+		}
+		.log-diff.block {
+			display: block;
+			overflow: auto;
+			padding: 3px;
+			font-family: $monospace;
+			margin-top: 5px;
+		}
 	}
 
 	pre {
