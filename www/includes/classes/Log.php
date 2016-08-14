@@ -16,9 +16,10 @@
 			'res_overtake' => 'Overtook post reservation',
 			'appearances' => 'Appearance management',
 			'res_transfer' => 'Reservation transferred',
-			'cg_modify' => 'Color group updated',
+			'cg_modify' => 'Color group modified',
 			'cgs' => 'Color group management',
 			'cg_order' => 'Color groups re-ordered',
+			'appearance_modify' => 'Appearance modified',
 		);
 
 		/**
@@ -102,17 +103,8 @@
 					if (empty($Episode))
 						$details[] = array('Still exists', false);
 
-					$newOld = array();
 					unset($data['entryid'], $data['target']);
-					foreach ($data as $k => $v){
-						if (is_null($v)) continue;
-
-						$thing = substr($k, 3);
-						$type = substr($k, 0, 3);
-						if (!isset($newOld[$thing]))
-							$newOld[$thing] = array();
-						$newOld[$thing][$type] = $thing === 'twoparter' ? !!$v : $v;
-					}
+					$newOld = self::_arrangeNewOld($data);
 
 					if (!empty($newOld['airs'])){
 						$newOld['airs']['old'] =  Time::Tag($newOld['airs']['old'], Time::TAG_EXTENDED, Time::TAG_STATIC_DYNTIME);
@@ -138,10 +130,10 @@
 				break;
 				case "post_lock":
 					$Post = $Database->where('id', $data['id'])->getOne("{$data['type']}s");
-					self::GenericPostInfo($Post, $data, $details);
+					self::_genericPostInfo($Post, $data, $details);
 				break;
 				case "color_modify":
-					$details[] = array('Appearance',self::GetAppearanceLink($data['ponyid']));
+					$details[] = array('Appearance',self::_getAppearanceLink($data['ponyid']));
 					$details[] = array('Reason',CoreUtils::EscapeHTML($data['reason']));
 				break;
 				case "req_delete":
@@ -162,22 +154,20 @@
 						$details[] = array('Reserved by', User::GetProfileLink(User::Get($data['reserved_by'])));
 					$details[] = array('Finished', !empty($data['deviation_id']));
 					if (!empty($data['deviation_id'])){
-						$DeviationURL = "http://fav.me/{$data['deviation_id']}";
-						$details[] = array('Deviation', "<a href='$DeviationURL'>$DeviationURL</a>");
-
+						$details[] = array('Deviation', self::_link("http://fav.me/{$data['deviation_id']}"));
 						$details[] = array('Approved', $data['lock']);
 					}
 				break;
 				case "img_update":
 					$Post = $Database->where('id', $data['id'])->getOne("{$data['thing']}s");
 					$data['type'] = $data['thing'];
-					self::GenericPostInfo($Post, $data, $details);
+					self::_genericPostInfo($Post, $data, $details);
 					$details[] = array('Old image',"<a href='{$data['oldfullsize']}' target='_blank'>Full size</a><div><img src='{$data['oldpreview']}'></div>");
 					$details[] = array('New image',"<a href='{$data['newfullsize']}' target='_blank'>Full size</a><div><img src='{$data['newpreview']}'></div>");
 				break;
 				case "res_overtake":
 					$Post = $Database->where('id', $data['id'])->getOne("{$data['type']}s");
-					self::GenericPostInfo($Post, $data, $details);
+					self::_genericPostInfo($Post, $data, $details);
 					$details[] = array('Previous reserver',User::GetProfileLink(User::Get($data['reserved_by'])));
 					$details[] = array('Previously reserved at', Time::Tag($data['reserved_at'], Time::TAG_EXTENDED, Time::TAG_STATIC_DYNTIME));
 
@@ -195,16 +185,15 @@
 
 					$PonyGuide = empty($data['ishuman']);
 					$details[] = array('Guide', $PonyGuide ? 'Pony' : 'EQG');
-					$details[] = array('ID', self::GetAppearanceLink($data['id']));
+					$details[] = array('ID', self::_getAppearanceLink($data['id']));
 					$details[] = array('Label', $data['label']);
 					if (!empty($data['order']))
 						$details[] = array('Ordering index', $data['order']);
 					if (!empty($data['notes']))
 						$details[] = array('Notes', '<div>'.nl2br($data['notes']).'</div>');
 					if (!empty($data['cm_favme'])){
-						$cmfavmeurl = "http://fav.me/{$data['cm_favme']}";
-						$details[] = array('CM Submission', "<a href='$cmfavmeurl'>$cmfavmeurl</a>");
-						$details[] = array('CM Orientation', $data['cm_dir'] === CM_DIR_HEAD_TO_TAIL ? 'Head-tail' : 'Tail-head');
+						$details[] = array('CM Submission', self::_link("http://fav.me/{$data['cm_favme']}"));
+						$details[] = array('CM Orientation', CGUtils::$CM_DIR[$data['cm_dir']]);
 						if (!empty($data['cm_preview']))
 							$details[] = array('Custom CM Preview', "<img src='".CoreUtils::AposEncode($data['cm_preview'])."'>");
 					}
@@ -215,11 +204,11 @@
 				break;
 				case "res_transfer":
 					$Post = $Database->where('id', $data['id'])->getOne("{$data['type']}s");
-					self::GenericPostInfo($Post, $data, $details);
+					self::_genericPostInfo($Post, $data, $details);
 					$details[] = array('New reserver',User::GetProfileLink(User::Get($data['to'])));
 				break;
 				case "cg_modify":
-					$details[] = array('Appearance',self::GetAppearanceLink($data['ponyid']));
+					$details[] = array('Appearance',self::_getAppearanceLink($data['ponyid']));
 					$CG = $CGDb->where('groupid', $data['groupid'])->getOne('colorgroups');
 					if (empty($CG)){
 						$details[] = array('Color group ID', '#'.$data['groupid']);
@@ -235,13 +224,42 @@
 					$details[] = array('Action', self::$ACTIONS[$data['action']]);
 					$details[] = array('Color group ID', '#'.$data['groupid']);
 					$details[] = array('Label', $data['label']);
-					$details[] = array('Appearance',self::GetAppearanceLink($data['ponyid']));
+					$details[] = array('Appearance',self::_getAppearanceLink($data['ponyid']));
 					if (isset($data['order']))
 						$details[] = array('Ordering index', $data['order']);
 				break;
 				case "cg_order":
-					$details[] = array('Appearance',self::GetAppearanceLink($data['ponyid']));
+					$details[] = array('Appearance',self::_getAppearanceLink($data['ponyid']));
 					$details[] = array('Order',self::CharDiff($data['oldgroups'], $data['newgroups'], 'block'));
+				break;
+				case "appearance_modify":
+					$details[] = array('Appearance',self::_getAppearanceLink($data['ponyid']));
+					$changes = JSON::Decode($data['changes']);
+					$newOld = self::_arrangeNewOld($changes);
+
+					if (isset($newOld['label']['new']))
+						$details[] = array('Label', self::CharDiff($newOld['label']['old'], $newOld['label']['new'], 'block'));
+
+					if (isset($newOld['notes']['new']) || isset($newOld['notes']['old']))
+						$details[] = array('Notes', self::CharDiff($newOld['notes']['old'] ?? '', $newOld['notes']['new'] ?? '', 'block smaller'));
+
+					if (isset($newOld['cm_favme']['old']))
+						$details[] = array('Old CM Submission', self::_link('http://fav.me/'.$newOld['cm_favme']['old']));
+					else if (isset($newOld['cm_favme']['new']))
+						$details[] = array('Old CM Submission', null);
+					if (isset($newOld['cm_favme']['new']))
+						$details[] = array('New CM Submission', self::_link('http://fav.me/'.$newOld['cm_favme']['new']));
+					else if (isset($newOld['cm_favme']['old']))
+						$details[] = array('New CM Submission', null);
+
+					$olddir = isset($newOld['cm_dir']['old']) ? CGUtils::$CM_DIR[$newOld['cm_dir']['old']] : '';
+					$newdir = isset($newOld['cm_dir']['new']) ? CGUtils::$CM_DIR[$newOld['cm_dir']['new']] : '';
+					$details[] = array('CM Orientation', self::CharDiff($olddir, $newdir, 'inline'));
+
+					if (isset($newOld['cm_preview']['new']))
+						$details[] = array('New Custom CM Preview', "<img src='".CoreUtils::AposEncode($newOld['cm_preview']['new'])."'>");
+					else if (isset($newOld['cm_preview']['old']))
+						$details[] = array('New Custom CM Preview', null);
 				break;
 				default:
 					$details[] = array('Could not process details','No data processor defined for this entry type');
@@ -252,7 +270,7 @@
 			return array('details' => $details);
 		}
 
-		private static function GenericPostInfo(array $Post, array $data, array &$details){
+		private static function _genericPostInfo(array $Post, array $data, array &$details){
 			$label = CoreUtils::Capitalize($data['type'])." #{$data['id']}";
 			if (!empty($Post)){
 				list($link) = Posts::GetLink($Post, $data['type']);
@@ -276,7 +294,7 @@
 			}
 		}
 
-		private static function GetAppearanceLink($id){
+		private static function _getAppearanceLink($id){
 			global $CGDb;
 
 			$ID = "#$id";
@@ -287,6 +305,25 @@
 			}
 
 			return $ID;
+		}
+
+		private static function _arrangeNewOld($data){
+			$newOld = array();
+			unset($data['entryid'], $data['target']);
+			foreach ($data as $k => $v){
+				if (is_null($v)) continue;
+
+				$thing = substr($k, 3);
+				$type = substr($k, 0, 3);
+				if (!isset($newOld[$thing]))
+					$newOld[$thing] = array();
+				$newOld[$thing][$type] = $thing === 'twoparter' ? !!$v : $v;
+			}
+			return $newOld;
+		}
+
+		private static function _link($url, $blank = false){
+			return "<a href='".CoreUtils::AposEncode($url)."'".($blank?' target="_blank"':'').">$url</a>";
 		}
 
 		/**
@@ -352,6 +389,6 @@ HTML;
 			$opcodes = FineDiff::getDiffOpcodes($old, $new, FineDiff::$characterGranularity);
 			$diff = FineDiff::renderDiffToHTMLFromOpcodes($old, $opcodes);
 
-			return "<span class='btn darkblue view-switch' title='Toggle view mode'>diff</span><div class='log-diff $type'>$diff</div>";
+			return "<span class='btn darkblue view-switch' title='Left/Right click to change view mode'>diff</span><div class='log-diff $type'>$diff</div>";
 		}
 	}

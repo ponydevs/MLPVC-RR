@@ -264,17 +264,31 @@
 						));
 						Response::Done($response);
 					}
-					else {
-						CGUtils::ClearRenderedImages($Appearance['id'], array(CGUtils::CLEAR_PALETTE));
-						if ($AppearancePage)
-							Response::Done();
+
+					CGUtils::ClearRenderedImages($Appearance['id'], array(CGUtils::CLEAR_PALETTE));
+
+					$response = array();
+					$EditedAppearance = array_merge($Appearance, $data);
+
+					$diff = array();
+					foreach (array('label','notes','cm_favme','cm_dir','cm_preview') as $key){
+						if ($EditedAppearance[$key] !== $Appearance[$key]){
+							$diff["old$key"] = $Appearance[$key];
+							$diff["new$key"] = $EditedAppearance[$key];
+						}
+					}
+					if (!empty($diff)) Log::Action('appearance_modify',array(
+						'ponyid' => $Appearance['id'],
+						'changes' => JSON::Encode($diff),
+					));
+
+					if (!$AppearancePage){
+						$response['label'] = $EditedAppearance['label'];
+						if ($data['label'] !== $Appearance['label'])
+							$response['newurl'] = $Appearance['id'].'-'.\CG\Appearances::GetSafeLabel($EditedAppearance);
+						$response['notes'] = \CG\Appearances::GetNotesHTML($EditedAppearance, NOWRAP);
 					}
 
-					$EditedAppearance = array_merge($Appearance, $data);
-					$response = array('label' => $EditedAppearance['label']);
-					if ($data['label'] !== $Appearance['label'])
-						$response['newurl'] = $Appearance['id'].'-'.\CG\Appearances::GetSafeLabel($EditedAppearance);
-					$response['notes'] = \CG\Appearances::GetNotesHTML($EditedAppearance, NOWRAP);
 					Response::Done($response);
 				break;
 				case "delete":

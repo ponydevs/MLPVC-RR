@@ -157,22 +157,16 @@ $TableHeadingFontSize: 16px;
 		.log-diff {
 			border: 1px solid black;
 			background: #fff;
-			white-space: pre;
+			white-space: pre-wrap;
 
 			&.empty {
 				overflow: hidden !important;
-				background-image: url('../../img/grid-g.svg');
-				background-size: .5em;
 
 				&:before {
-					content: "EMPTY";
-					display: block;
-					opacity: .76;
+					color: $NDarkBlue;
+					content: "empty";
 					font-style: italic;
 					font-family: $RegularFont;
-					text-align: center;
-					padding: 1px 0;
-					font-weight: bold;
 				}
 			}
 
@@ -195,6 +189,18 @@ $TableHeadingFontSize: 16px;
 			padding: 3px;
 			font-family: $monospace;
 			margin-top: 5px;
+			max-width: 600px;
+			width: 100%;
+
+			&.empty:before {
+				display: block;
+				text-align: center;
+				padding: 1px 0;
+			}
+
+			&.smaller {
+				font-size: 14px;
+			}
 		}
 	}
 

@@ -688,4 +688,9 @@ GPL;
 			CoreUtils::CheckStringValidity($name,'Tag name',INVERSE_TAG_NAME_PATTERN);
 			return $name;
 		}
+
+		static $CM_DIR = array(
+			CM_DIR_HEAD_TO_TAIL => 'Head-tail',
+			CM_DIR_TAIL_TO_HEAD => 'Tail-head',
+		);
 	}

@@ -156,6 +156,19 @@ CREATE TABLE log (
 ALTER TABLE log OWNER TO "mlpvc-rr";
 
 --
+-- Name: log__appearance_modify; Type: TABLE; Schema: public; Owner: mlpvc-rr
+--
+
+CREATE TABLE log__appearance_modify (
+    entryid integer NOT NULL,
+    ponyid integer NOT NULL,
+    changes jsonb NOT NULL
+);
+
+
+ALTER TABLE log__appearance_modify OWNER TO "mlpvc-rr";
+
+--
 -- Name: log__appearances; Type: TABLE; Schema: public; Owner: mlpvc-rr
 --
 
@@ -745,6 +758,27 @@ ALTER SEQUENCE log__userfetch_entryid_seq OWNED BY log__userfetch.entryid;
 
 
 --
+-- Name: log_appearance_modify_entryid_seq; Type: SEQUENCE; Schema: public; Owner: mlpvc-rr
+--
+
+CREATE SEQUENCE log_appearance_modify_entryid_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE log_appearance_modify_entryid_seq OWNER TO "mlpvc-rr";
+
+--
+-- Name: log_appearance_modify_entryid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER SEQUENCE log_appearance_modify_entryid_seq OWNED BY log__appearance_modify.entryid;
+
+
+--
 -- Name: log_entryid_seq; Type: SEQUENCE; Schema: public; Owner: mlpvc-rr
 --
 
@@ -1004,6 +1038,13 @@ ALTER TABLE users OWNER TO "mlpvc-rr";
 --
 
 ALTER TABLE ONLY log ALTER COLUMN entryid SET DEFAULT nextval('log_entryid_seq'::regclass);
+
+
+--
+-- Name: entryid; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER TABLE ONLY log__appearance_modify ALTER COLUMN entryid SET DEFAULT nextval('log_appearance_modify_entryid_seq'::regclass);
 
 
 --
@@ -1319,6 +1360,14 @@ ALTER TABLE ONLY "log__un-banish"
 
 ALTER TABLE ONLY log__userfetch
     ADD CONSTRAINT log__userfetch_entryid PRIMARY KEY (entryid);
+
+
+--
+-- Name: log_appearance_modify_entryid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER TABLE ONLY log__appearance_modify
+    ADD CONSTRAINT log_appearance_modify_entryid PRIMARY KEY (entryid);
 
 
 --
@@ -1674,6 +1723,15 @@ GRANT ALL ON TABLE log TO postgres;
 
 
 --
+-- Name: log__appearance_modify; Type: ACL; Schema: public; Owner: mlpvc-rr
+--
+
+REVOKE ALL ON TABLE log__appearance_modify FROM PUBLIC;
+REVOKE ALL ON TABLE log__appearance_modify FROM "mlpvc-rr";
+GRANT ALL ON TABLE log__appearance_modify TO "mlpvc-rr";
+
+
+--
 -- Name: log__appearances; Type: ACL; Schema: public; Owner: mlpvc-rr
 --
 
@@ -1969,6 +2027,15 @@ REVOKE ALL ON SEQUENCE log__userfetch_entryid_seq FROM PUBLIC;
 REVOKE ALL ON SEQUENCE log__userfetch_entryid_seq FROM "mlpvc-rr";
 GRANT ALL ON SEQUENCE log__userfetch_entryid_seq TO "mlpvc-rr";
 GRANT ALL ON SEQUENCE log__userfetch_entryid_seq TO postgres;
+
+
+--
+-- Name: log_appearance_modify_entryid_seq; Type: ACL; Schema: public; Owner: mlpvc-rr
+--
+
+REVOKE ALL ON SEQUENCE log_appearance_modify_entryid_seq FROM PUBLIC;
+REVOKE ALL ON SEQUENCE log_appearance_modify_entryid_seq FROM "mlpvc-rr";
+GRANT ALL ON SEQUENCE log_appearance_modify_entryid_seq TO "mlpvc-rr";
 
 
 --

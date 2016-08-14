@@ -66,7 +66,9 @@ DocReady.push(function Logs(){
 							let $dataDiv = $.mk('div').attr('class','expandable-section').css('display','none');
 							$.each(this.details, (i,el) => {
 								let $info, $key = $.mk('strong').text(el[0]+': ');
-								if (typeof el[1] === 'boolean')
+								if (el[1] === null)
+									$info = $.mk('em').addClass(`color-darkblue`).text('empty');
+								else if (typeof el[1] === 'boolean')
 									$info = $.mk('span').addClass(`color-${el[1]?'green':'red'}`).text(el[1]?'yes':'no');
 								else $info = el[1];
 
@@ -141,20 +143,24 @@ DocReady.push(function Logs(){
 		}
 	];
 
-	$logsTable.on('click', '.btn.view-switch', function(e){
+	$logsTable.on('click contextmenu', '.btn.view-switch', e => {
+		let backwards = e.type === 'contextmenu';
+		if (backwards && e.shiftKey)
+			return true;
+
 		e.preventDefault();
 
-		let $btn = $(this),
+		let $btn = $(e.target),
 			$diffWrap = $btn.next(),
 			state = $btn.attr('class').match(/\b(darkblue|green|red)\b/)[1],
 			nextState;
 
-		for (let i=0; i<viewStates.length; i++){
+		for (let i = 0; i<viewStates.length; i++){
 			if (viewStates[i].className === state)
-				nextState = viewStates[i+1];
+				nextState = viewStates[i+(backwards ? -1 : 1)];
 		}
 		if (typeof nextState === 'undefined')
-			nextState = viewStates[0];
+			nextState = viewStates[backwards ? viewStates.length-1 : 0];
 
 		$diffWrap.find('ins')[nextState.showins ? 'show' : 'hide']();
 		$diffWrap.find('del')[nextState.showdel ? 'show' : 'hide']();
