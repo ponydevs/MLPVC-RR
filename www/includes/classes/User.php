@@ -88,7 +88,8 @@
 			$userdata = $userdata['results'][0];
 			$ID = strtolower($userdata['userid']);
 
-			$userExists = $Database->where('id', $ID)->has('users');
+			$DBUser = $Database->where('id', $ID)->getOne('users','name');
+			$userExists = !empty($DBUser);
 
 			$insert = array(
 				'name' => $userdata['username'],
@@ -102,12 +103,17 @@
 
 			if (!$userExists)
 				Log::Action('userfetch',array('userid' => $insert['id']));
-			else if (strcasecmp($username,$insert['name']) !== 0)
-				Log::Action('da_namechange',array(
-					'old' => $username,
-					'new' => $insert['name'],
-					'id' => $ID,
-				), Log::FORCE_INITIATOR_WEBSERVER);
+			$names = array($username);
+			if ($userExists && $DBUser['name'] !== $username)
+				$names[] = $DBUser['name'];
+			foreach ($names as $name){
+				if (strcasecmp($name,$insert['name']) !== 0)
+					Log::Action('da_namechange',array(
+						'old' => $name,
+						'new' => $insert['name'],
+						'id' => $ID,
+					), Log::FORCE_INITIATOR_WEBSERVER);
+			}
 
 			return self::Get($insert['name'], 'name', $dbcols);
 		}
@@ -159,6 +165,19 @@
 			LINKFORMAT_TEXT = 1,
 			LINKFORMAT_URL = 2;
 
+		static $FAKE_USER = array(
+			'name' => 'null',
+			'avatar_url' => '/img/blank-pixel.png',
+			'fake' => true,
+		);
+
+		private function _checkEmptyUser(&$User, $method){
+			if (!is_array($User)){
+				error_log("\$User is not an array, fake user data used in $method.\nValue: ".var_export($User, true)."\nBacktrace:\n".((new \Exception)->getTraceAsString()));
+				$User = self::$FAKE_USER;
+			}
+		}
+
 		/**
 		 * Local profile link generator
 		 *
@@ -169,13 +188,13 @@
 		 * @return string
 		 */
 		static function GetProfileLink($User, $format = self::LINKFORMAT_TEXT){
-			if (!is_array($User))
-				throw new Exception('$User is not an array');
+			self::_checkEmptyUser($User, __METHOD__);
 
 			$Username = $User['name'];
 			$avatar = $format == self::LINKFORMAT_FULL ? "<img src='{$User['avatar_url']}' class='avatar' alt='avatar'> " : '';
+			$href = empty($User['fake']) ? " href='/@$Username'" : '';
 
-			return "<a href='/@$Username' class='da-userlink".($format == self::LINKFORMAT_FULL ? ' with-avatar':'')."'>$avatar<span class='name'>$Username</span></a>";
+			return "<a$href class='da-userlink".($format == self::LINKFORMAT_FULL ? ' with-avatar':'')."'>$avatar<span class='name'>$Username</span></a>";
 		}
 
 		/**
@@ -187,11 +206,7 @@
 		 * @return string
 		 */
 		static function GetDALink($User, $format = self::LINKFORMAT_FULL){
-			if (!is_array($User)){
-				trigger_error('$User is not an array');
-				if (Permission::Sufficient('developer'))
-					var_dump($User);
-			}
+			self::_checkEmptyUser($User, __METHOD__);
 
 			$Username = $User['name'];
 			$username = strtolower($Username);
@@ -199,7 +214,8 @@
 			if ($format === self::LINKFORMAT_URL) return $link;
 
 			$avatar = $format == self::LINKFORMAT_FULL ? "<img src='{$User['avatar_url']}' class='avatar' alt='avatar'> " : '';
-			return "<a href='$link' class='da-userlink'>$avatar<span class='name'>$Username</span></a>";
+			$href = empty($User['fake']) ? " href='$link'" : '';
+			return "<a$href class='da-userlink'>$avatar<span class='name'>$Username</span></a>";
 		}
 
 		/**
