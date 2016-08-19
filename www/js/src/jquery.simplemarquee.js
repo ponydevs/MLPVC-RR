@@ -175,7 +175,7 @@
 				'overflow': 'hidden',
 			});
 
-			this._needsAnimation = this._element[0].scrollWidth > this._element.outerWidth();
+			this._needsAnimation = this._element[0].scrollWidth > Math.ceil(this._element.outerWidth());
 		}
 		else {
 			this._element.css({
@@ -185,7 +185,7 @@
 				'overflow': 'hidden',
 			});
 
-			this._needsAnimation = this._element[0].scrollHeight > this._element.outerHeight();
+			this._needsAnimation = this._element[0].scrollHeight > Math.ceil(this._element.outerHeight());
 		}
 
 		this._element.toggleClass('has-enough-space', !this._needsAnimation);

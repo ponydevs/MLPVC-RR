@@ -214,7 +214,9 @@
 
 	// Array.includes (ES7) polyfill
 	if (typeof Array.prototype.includes !== 'function')
-		Array.prototype.includes = elem => this.indexOf(elem) !== -1;
+		Array.prototype.includes = function(elem){ return this.indexOf(elem) !== -1 };
+	if (typeof String.prototype.includes !== 'function')
+		String.prototype.includes = function(elem){ return this.indexOf(elem) !== -1 };
 
 	$.pad = function(str, char, len, dir){
 		if (typeof str !== 'string')

@@ -366,8 +366,10 @@ DocReady.push(function Episode(){
 		.find('li[id]').each(additionalHandlerAttacher);
 
 	$.fn.formBind = function (){
-		let $form = $(this),
-			$formImgCheck = $form.find('.check-img'),
+		let $form = $(this);
+		if (!$form.length)
+			return;
+		let $formImgCheck = $form.find('.check-img'),
 			$formImgPreview = $form.find('.img-preview'),
 			$formDescInput = $form.find('[name=label]'),
 			$formImgInput = $form.find('[name=image_url]'),
