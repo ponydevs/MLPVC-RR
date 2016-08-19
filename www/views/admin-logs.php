@@ -10,18 +10,22 @@
 		<a class='btn darkblue typcn typcn-arrow-back' href="/admin">Back to Admin Area</a>
 	</p>
 	<form id="filter-form">
-		<strong>Show entries</strong>
-		<select name="type">
-			<option value=''<?=!isset($type)?' selected':''?>>of any type</option>
+		<strong>Show</strong>
+		<select name="type" class="entrytype">
+			<option value=''<?=!isset($type)?' selected':''?>>all</option>
 			<optgroup label="Specific entry type"><?php
 		foreach (Log::$LOG_DESCRIPTION as $value => $label)
-			echo "<option value='$value'".($type===$value?' selected':'').">of type $label</option>";
+			echo "<option value='$value'".($type===$value?' selected':'').">$label</option>";
 		?></optgroup>
 		</select>
-		<strong>by</strong>
-		<input type="text" name="by" placeholder="any user"<?=isset($by)?" value='$by'":''?> pattern="^(<?=USERNAME_PATTERN?>|Web server)$" maxlength="20">
+		<strong>entries from</strong>
+		<input type="text" name="by" class="username" size="22" placeholder="any user"<?=isset($by)?" value='$by'":''?> pattern="^(<?=USERNAME_PATTERN?>|Web server)$" maxlength="20" list="from_values">
 		<button type="submit" class="blue typcn typcn-zoom" title="Apply filter"></button>
 		<button type="reset" class="orange typcn typcn-times" title="Clear filters"<?=isset($by)||isset($type)?'':' disabled'?>></button>
+		<datalist id="from_values">
+			<option>Web server</option>
+			<option>you</option>
+		</datalist>
 	</form>
 	<?=$Pagination->HTML?>
 	<table id="logs">

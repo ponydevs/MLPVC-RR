@@ -21,14 +21,17 @@
 				throw new Exception("Could not load class/interface $class: definition not found in $path");
 		}
 
-		const FIXPATH_EMPTY = '#';
+		const
+			FIXPATH_EMPTY = '#',
+			FIXPATH_PERM = 301,
+			FIXPATH_TEMP = 302;
 		/**
 		 * Forces an URL rewrite to the specified path
 		 *
 		 * @param string $fix_uri  URL to forcibly redirect to
 		 * @param int    $http HTPP status code for the redirect
 		 */
-		static function FixPath($fix_uri, $http = 301){
+		static function FixPath(string $fix_uri, int $http = self::FIXPATH_TEMP){
 			$_split = explode('?', $_SERVER['REQUEST_URI'], 2);
 			$path = $_split[0];
 			$query = empty($_split[1]) ? '' : "?{$_split[1]}";

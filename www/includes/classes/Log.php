@@ -19,18 +19,21 @@
 			'cgs' => 'Color group management',
 			'cg_order' => 'Color groups re-ordered',
 			'appearance_modify' => 'Appearance modified',
-			'da_namechange' => 'DeviantArt name change',
+			'da_namechange' => 'Username change detected',
 		);
+
+		const FORCE_INITIATOR_WEBSERVER = true;
 
 		/**
 		 * Logs a specific set of data (action) in the table belonging to the specified type
 		 *
 		 * @param string $reftype Log entry type
 		 * @param array  $data    Data to be inserted
+		 * @param bool   $forcews Force initiator to be null
 		 *
 		 * @return bool
 		 */
-		static function Action($reftype, $data = null){
+		static function Action($reftype, $data = null, $forcews = false){
 			global $Database, $signedIn, $currentUser;
 			$central = array('ip' => $_SERVER['REMOTE_ADDR']);
 
@@ -49,7 +52,7 @@
 				$central['refid'] = $refid;
 			else if (!empty($data)) return false;
 
-			if ($signedIn)
+			if ($signedIn && !$forcews)
 				$central['initiator'] = $currentUser['id'];
 			return (bool) $Database->insert("log",$central);
 		}

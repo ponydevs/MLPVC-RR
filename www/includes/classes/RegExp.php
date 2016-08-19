@@ -1,6 +1,7 @@
 <?php
 
 	class RegExp {
+		/** @var string */
 		private $_pattern, $_modifiers, $_delimiter, $_jsRegex, $_phpRegex;
 
 		/**
@@ -12,29 +13,25 @@
 		 *
 		 * @return RegExp
 		 */
-		public function __construct($pattern, $modifiers = null, $delimiter = '~'){
-			$this->_delimiter = isset($delimiter[0]) ? $delimiter[0] : '~';
+		public function __construct(string $pattern, string $modifiers = '', string $delimiter = '~'){
+			$this->_delimiter = $delimiter[0] ?? '~';
 			$this->_pattern = $pattern;
-			$this->_modifiers = is_string($modifiers) ? $modifiers : '';
+			$this->_modifiers = strlen($modifiers) ? $modifiers : '';
 		}
 
-		public function getPattern(){
-			return $this->_pattern;
-		}
-
-		public function __toString(){
+		public function __toString():string {
 			if (!isset($this->_phpRegex))
 				$this->_phpRegex = $this->_delimiter.$this->_escape($this->_pattern,$this->_delimiter).$this->_delimiter.$this->_modifiers;
 			return $this->_phpRegex;
 		}
 
-		public function jsExport(){
+		public function jsExport():string {
 			if (!isset($this->_jsRegex))
 				$this->_jsRegex = '/'.$this->_escape($this->_pattern,'/').'/'.preg_replace('/[^img]/','',$this->_modifiers);
 			return $this->_jsRegex;
 		}
 
-		private function _escape($pattern, $delimiter){
+		private function _escape(string $pattern, string $delimiter):string {
 			$d = $delimiter === '~' ? '@' : '~';
 			return preg_replace("$d([^\\\\])(".preg_quote($delimiter).")$d","$1\\\\$2",$pattern);
 		}
@@ -45,7 +42,7 @@
 		 *
 		 * @return bool
 		 */
-		public function match($text, &$matches = null){
+		public function match(string $text, array &$matches = null):bool {
 			return (bool) preg_match($this->__toString(), $text, $matches);
 		}
 
@@ -57,7 +54,7 @@
 		 *
 		 * @return string|array
 		 */
-		public function replace($with, $in, $limit = -1, &$count = null){
+		public function replace(string $with, string $in, int $limit = -1, int &$count = null){
 			return preg_replace($this->__toString(),$with, $in, $limit = -1, $count);
 		}
 
@@ -66,7 +63,7 @@
 		 *
 		 * @return string
 		 */
-		public static function escapeBackslashes($str){
+		public static function escapeBackslashes(string $str):string {
 			return preg_replace('~(\\\\)~','$1$1',$str);
 		}
 	}
@@ -80,7 +77,7 @@
 	 *
 	 * @return bool
 	 */
-	function regex_match(RegExp $regex, $text, &$matches = null){
+	function regex_match(RegExp $regex, string $text, array &$matches = null){
 		return (bool) $regex->match($text, $matches);
 	}
 
@@ -95,6 +92,6 @@
 	 *
 	 * @return string|array
 	 */
-	function regex_replace(RegExp $regex, $with, $in, $limit = -1, &$count = null){
+	function regex_replace(RegExp $regex, string $with, string $in, int $limit = -1, int &$count = null){
 		return $regex->replace($with, $in, $limit, $count);
 	}

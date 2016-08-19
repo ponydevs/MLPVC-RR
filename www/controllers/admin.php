@@ -209,7 +209,7 @@
 			if (!empty($title))
 				$title .= '- ';
 			$title .= "Page {$Pagination->page} - $heading";
-			CoreUtils::FixPath("/admin/logs/{$Pagination->page}".(!empty($q)?'?'.implode('&',$q):''), 302);
+			CoreUtils::FixPath("/admin/logs/{$Pagination->page}".(!empty($q)?'?'.implode('&',$q):''));
 
 			processFilter();
 			$LogItems = $Database

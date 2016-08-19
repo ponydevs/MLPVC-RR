@@ -177,7 +177,7 @@
 .unreadable { font-size: 0 }
 :focus { outline: 0 }
 a > img { border: 0 }
-time[datetime][title] { cursor: help }
+.cursor-help, time[datetime][title] { cursor: help }
 small { font-size: .75em }
 strong.typcn:before, span.typcn:not(:empty):before, em.typcn:before,
 button:not(:empty):before, .btn:not(:empty):before {

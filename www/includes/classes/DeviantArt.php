@@ -260,17 +260,7 @@
 				if ($makeDev)
 					User::UpdateRole($Insert, 'developer');
 			}
-			else {
-				$Database->where('id',$UserID)->update('users', $UserData);
-
-				// TODO Implement old name checking based on log before requesting data from dA
-				if ($User['name'] !== $UserData['name'])
-					Log::Action('da_namechange',array(
-						'old' => $User['name'],
-						'new' => $UserData['name'],
-						'id' => $UserID,
-					));
-			}
+			else $Database->where('id',$UserID)->update('users', $UserData);
 
 			if (empty($makeDev) && (!empty($User) && Permission::Insufficient('member', $User['role']) || empty($User)) && User::IsClubMember($UserData['name']))
 				User::UpdateRole(array(

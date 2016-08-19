@@ -71,11 +71,15 @@
 			if (!$USERNAME_REGEX->match($username))
 				return null;
 
+			$oldName = $Database->where('old', $username)->getOne('log__da_namechange','id');
+			if (!empty($oldName))
+				return self::Get($oldName['id'], 'id', $dbcols);
+
 			try {
 				$userdata = DeviantArt::Request('user/whois', null, array('usernames[0]' => $username));
 			}
 			catch (cURLRequestException $e){
-				return false;
+				return null;
 			}
 
 			if (empty($userdata['results'][0]))
@@ -98,6 +102,12 @@
 
 			if (!$userExists)
 				Log::Action('userfetch',array('userid' => $insert['id']));
+			else if (strcasecmp($username,$insert['name']) !== 0)
+				Log::Action('da_namechange',array(
+					'old' => $username,
+					'new' => $insert['name'],
+					'id' => $ID,
+				), Log::FORCE_INITIATOR_WEBSERVER);
 
 			return self::Get($insert['name'], 'name', $dbcols);
 		}

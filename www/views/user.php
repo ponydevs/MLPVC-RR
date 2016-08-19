@@ -27,6 +27,18 @@
 	</div>
 	<div class="details">
 <?php
+	if ($sameUser || Permission::Sufficient('staff')){
+		$OldNames = $Database->where('id', $User['id'])->orderBy('entryid',OLDEST_FIRST)->get('log__da_namechange',null,'old');
+		if (!empty($OldNames)){
+			$PrevNames = array();
+			foreach ($OldNames as $row)
+				$PrevNames[] = $row['old']; ?>
+		<section class="old-names">
+			<h2><?=$sameUser?User::$PROFILE_SECTION_PRIVACY_LEVEL['staff']:''?>Previous names <span class="typcn typcn-info color-blue cursor-help" title="Upper/lower-case letters may not match"></span></h2>
+			<div><?=implode(', ',$PrevNames)?></div>
+		</section>
+<?php   }
+	}
 	if (Permission::Sufficient('member', $User['role'])){
 		echo User::GetPendingReservationsHTML($User['id'], $sameUser, $YouHave);
 
