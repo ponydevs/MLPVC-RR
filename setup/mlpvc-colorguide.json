@@ -1057,17 +1057,17 @@
 						},
 						{
 							"order": 1,
-							"label": "Shield Fill 1: AB Mane Fill",
+							"label": "Shield Fill 1",
 							"hex": "#F5415F"
 						},
 						{
 							"order": 2,
-							"label": "Shield Fill 2: SB Mane Fill",
+							"label": "Shield Fill 2",
 							"hex": "#F6B8D2"
 						},
 						{
 							"order": 3,
-							"label": "Shield Fill 3: Sc Mane Fill",
+							"label": "Shield Fill 3",
 							"hex": "#BF5D93"
 						},
 						{
@@ -1215,17 +1215,17 @@
 						},
 						{
 							"order": 1,
-							"label": "Shield Fill 1: AB Mane Fill",
+							"label": "Shield Fill 1",
 							"hex": "#F5415F"
 						},
 						{
 							"order": 2,
-							"label": "Shield Fill 2: SB Mane Fill",
+							"label": "Shield Fill 2",
 							"hex": "#F6B8D2"
 						},
 						{
 							"order": 3,
-							"label": "Shield Fill 3: Sc Mane Fill",
+							"label": "Shield Fill 3",
 							"hex": "#BF5D93"
 						},
 						{
@@ -1350,17 +1350,17 @@
 						},
 						{
 							"order": 1,
-							"label": "Shield Fill 1: AB Mane Fill",
+							"label": "Shield Fill 1",
 							"hex": "#F5415F"
 						},
 						{
 							"order": 2,
-							"label": "Shield Fill 2: SB Mane Fill",
+							"label": "Shield Fill 2",
 							"hex": "#F6B8D2"
 						},
 						{
 							"order": 3,
-							"label": "Shield Fill 3: Sc Mane Fill",
+							"label": "Shield Fill 3",
 							"hex": "#BF5D93"
 						},
 						{
