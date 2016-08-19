@@ -2,7 +2,6 @@
 
 	class Log {
 		static $LOG_DESCRIPTION = array(
-			'junk' => 'Junk entry',
 			'episodes' => 'Episode management',
 			'episode_modify' => 'Episode modified',
 			'rolechange' => 'User group change',
@@ -20,6 +19,7 @@
 			'cgs' => 'Color group management',
 			'cg_order' => 'Color groups re-ordered',
 			'appearance_modify' => 'Appearance modified',
+			'da_namechange' => 'DeviantArt name change',
 		);
 
 		/**
@@ -58,6 +58,10 @@
 			'add' => '<span class="color-green"><span class="typcn typcn-plus"></span> Create</span>',
 			'del' => '<span class="color-red"><span class="typcn typcn-trash"></span> Delete</span>'
 		);
+
+		const
+			KEYCOLOR_INFO = 'blue',
+			KEYCOLOR_ERROR = 'red';
 
 		/**
 		 * Format log entry details
@@ -262,8 +266,18 @@
 					else if (isset($newOld['cm_preview']['old']))
 						$details[] = array('New Custom CM Preview', null);
 				break;
+				case "da_namechange":
+					$User = User::Get($data['id'], 'id', 'name');
+					$newIsCurrent = $User['name'] === $data['new'];
+					$details[] = array('User', User::GetProfileLink($User));
+					if ($newIsCurrent)
+						$details[] = array('Old name', $data['old']);
+					else {
+						$details[] = array('Name', Log::CharDiff($data['old'], $data['new']));
+					}
+				break;
 				default:
-					$details[] = array('Could not process details','No data processor defined for this entry type');
+					$details[] = array('<span class="typcn typcn-warning"></span> Couldn\'t process details','No data processor defined for this entry type',self::KEYCOLOR_ERROR);
 					$details[] = array('Raw details', '<pre>'.var_export($data, true).'</pre>');
 				break;
 			}

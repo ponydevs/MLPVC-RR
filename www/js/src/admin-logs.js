@@ -59,18 +59,22 @@ DocReady.push(function Logs(){
 
 						$.post(`/admin/logs/details/${EntryID}`, $.mkAjaxHandler(function(){
 							if (!this.status){
+								if (this.unlickable === true)
+									$this.replaceWith($this.text().trim());
 								$.Dialog.fail(title,this.message);
 								return fail();
 							}
 
 							let $dataDiv = $.mk('div').attr('class','expandable-section').css('display','none');
-							$.each(this.details, (i,el) => {
-								let $info, $key = $.mk('strong').text(el[0]+': ');
-								if (el[1] === null)
+							$.each(this.details, (_, detail) => {
+								let $info, $key = $.mk('strong').html(detail[0]+': ');
+								if (typeof detail[2] === 'string')
+									$key.addClass(`color-${detail[2]}`);
+								if (detail[1] === null)
 									$info = $.mk('em').addClass(`color-darkblue`).text('empty');
-								else if (typeof el[1] === 'boolean')
-									$info = $.mk('span').addClass(`color-${el[1]?'green':'red'}`).text(el[1]?'yes':'no');
-								else $info = el[1];
+								else if (typeof detail[1] === 'boolean')
+									$info = $.mk('span').addClass(`color-${detail[1]?'green':'red'}`).text(detail[1]?'yes':'no');
+								else $info = detail[1];
 
 								$dataDiv.append($.mk('div').append($key,$info));
 							});

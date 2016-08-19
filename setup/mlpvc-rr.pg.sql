@@ -390,6 +390,41 @@ ALTER SEQUENCE log__color_modify_entryid_seq OWNED BY log__color_modify.entryid;
 
 
 --
+-- Name: log__da_namechange; Type: TABLE; Schema: public; Owner: mlpvc-rr
+--
+
+CREATE TABLE log__da_namechange (
+    entryid integer NOT NULL,
+    old citext NOT NULL,
+    new citext NOT NULL,
+    id uuid NOT NULL
+);
+
+
+ALTER TABLE log__da_namechange OWNER TO "mlpvc-rr";
+
+--
+-- Name: log__da_namechange_entryid_seq; Type: SEQUENCE; Schema: public; Owner: mlpvc-rr
+--
+
+CREATE SEQUENCE log__da_namechange_entryid_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE log__da_namechange_entryid_seq OWNER TO "mlpvc-rr";
+
+--
+-- Name: log__da_namechange_entryid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER SEQUENCE log__da_namechange_entryid_seq OWNED BY log__da_namechange.entryid;
+
+
+--
 -- Name: log__episode_modify; Type: TABLE; Schema: public; Owner: mlpvc-rr
 --
 
@@ -1093,6 +1128,13 @@ ALTER TABLE ONLY log__color_modify ALTER COLUMN entryid SET DEFAULT nextval('log
 -- Name: entryid; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
 --
 
+ALTER TABLE ONLY log__da_namechange ALTER COLUMN entryid SET DEFAULT nextval('log__da_namechange_entryid_seq'::regclass);
+
+
+--
+-- Name: entryid; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
+--
+
 ALTER TABLE ONLY log__episode_modify ALTER COLUMN entryid SET DEFAULT nextval('log__episode_modify_entryid_seq'::regclass);
 
 
@@ -1283,6 +1325,14 @@ ALTER TABLE ONLY log__color_modify
 
 
 --
+-- Name: log__da_namechange_entryid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER TABLE ONLY log__da_namechange
+    ADD CONSTRAINT log__da_namechange_entryid PRIMARY KEY (entryid);
+
+
+--
 -- Name: log__episode_modify_entryid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
@@ -1456,6 +1506,13 @@ CREATE INDEX log__banish_target ON log__banish USING btree (target);
 
 
 --
+-- Name: log__da_namechange_id; Type: INDEX; Schema: public; Owner: mlpvc-rr
+--
+
+CREATE INDEX log__da_namechange_id ON log__da_namechange USING btree (id);
+
+
+--
 -- Name: log__rolechange_target; Type: INDEX; Schema: public; Owner: mlpvc-rr
 --
 
@@ -1562,6 +1619,14 @@ ALTER TABLE ONLY episodes
 
 ALTER TABLE ONLY log__banish
     ADD CONSTRAINT log__banish_target_fkey FOREIGN KEY (target) REFERENCES users(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+
+
+--
+-- Name: log__da_namechange_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER TABLE ONLY log__da_namechange
+    ADD CONSTRAINT log__da_namechange_id_fkey FOREIGN KEY (id) REFERENCES users(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
@@ -1841,6 +1906,24 @@ REVOKE ALL ON SEQUENCE log__color_modify_entryid_seq FROM PUBLIC;
 REVOKE ALL ON SEQUENCE log__color_modify_entryid_seq FROM "mlpvc-rr";
 GRANT ALL ON SEQUENCE log__color_modify_entryid_seq TO "mlpvc-rr";
 GRANT ALL ON SEQUENCE log__color_modify_entryid_seq TO postgres;
+
+
+--
+-- Name: log__da_namechange; Type: ACL; Schema: public; Owner: mlpvc-rr
+--
+
+REVOKE ALL ON TABLE log__da_namechange FROM PUBLIC;
+REVOKE ALL ON TABLE log__da_namechange FROM "mlpvc-rr";
+GRANT ALL ON TABLE log__da_namechange TO "mlpvc-rr";
+
+
+--
+-- Name: log__da_namechange_entryid_seq; Type: ACL; Schema: public; Owner: mlpvc-rr
+--
+
+REVOKE ALL ON SEQUENCE log__da_namechange_entryid_seq FROM PUBLIC;
+REVOKE ALL ON SEQUENCE log__da_namechange_entryid_seq FROM "mlpvc-rr";
+GRANT ALL ON SEQUENCE log__da_namechange_entryid_seq TO "mlpvc-rr";
 
 
 --

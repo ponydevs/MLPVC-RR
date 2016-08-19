@@ -13,14 +13,16 @@
 					$EntryID = intval($_match[1], 10);
 
 					$MainEntry = $Database->where('entryid', $EntryID)->getOne('log');
-					if (empty($MainEntry)) Response::Fail('Log entry does not exist');
-					if (empty($MainEntry['refid'])) Response::Fail('There are no details to show');
+					if (empty($MainEntry))
+						Response::Fail('Log entry does not exist');
+					if (empty($MainEntry['refid']))
+						Response::Fail('There are no details to show', array('unlickable' => true));
 
 					$Details = $Database->where('entryid', $MainEntry['refid'])->getOne("log__{$MainEntry['reftype']}");
 					if (empty($Details)){
 						error_log("Could not find details for entry {$MainEntry['reftype']}#{$MainEntry['refid']}, NULL-ing refid of Main#{$MainEntry['entryid']}");
 						$Database->where('entryid', $MainEntry['entryid'])->update('log', array('refid' => null));
-						Response::Fail('Failed to retrieve details');
+						Response::Fail('Failed to retrieve details', array('unlickable' => true));
 					}
 
 					Response::Done(Log::FormatEntryDetails($MainEntry,$Details));

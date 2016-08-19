@@ -186,7 +186,7 @@
 		 * @param string $code
 		 * @param null|string $type
 		 *
-		 * @return array|null
+		 * @return array|void
 		 */
 		static function GetToken($code, $type = null){
 			global $Database, $http_response_header;
@@ -215,7 +215,7 @@
 			$userdata = DeviantArt::Request('user/whoami', $json['access_token']);
 
 			$User = $Database->where('id',$userdata['userid'])->getOne('users');
-			if ($User['role'] === 'ban'){
+			if (isset($User['role']) && $User['role'] === 'ban'){
 				$_GET['error'] = 'user_banned';
 				$BanReason = $Database
 					->where('target', $User['id'])
@@ -260,7 +260,17 @@
 				if ($makeDev)
 					User::UpdateRole($Insert, 'developer');
 			}
-			else $Database->where('id',$UserID)->update('users', $UserData);
+			else {
+				$Database->where('id',$UserID)->update('users', $UserData);
+
+				// TODO Implement old name checking based on log before requesting data from dA
+				if ($User['name'] !== $UserData['name'])
+					Log::Action('da_namechange',array(
+						'old' => $User['name'],
+						'new' => $UserData['name'],
+						'id' => $UserID,
+					));
+			}
 
 			if (empty($makeDev) && (!empty($User) && Permission::Insufficient('member', $User['role']) || empty($User)) && User::IsClubMember($UserData['name']))
 				User::UpdateRole(array(
