@@ -1121,8 +1121,11 @@
 		if (empty($Pagination))
 			$Pagination = new Pagination("cg", $AppearancesPerPage, 0);
 	}
-	if (isset($_REQUEST['GOFAST']))
+	if (isset($_REQUEST['GOFAST'])){
+		if (empty($Ponies[0]['id']))
+			Response::Fail('The search returned no results.');
 		Response::Done(array('goto' => "/cg/v/{$Ponies[0]['id']}"));
+	}
 
 	CoreUtils::FixPath("$CGPath/{$Pagination->page}".(!empty($Restrictions)?"?q=$SearchQuery":''));
 	$heading = ($EQG?'EQG ':'')."$Color Guide";
