@@ -671,7 +671,7 @@
 				}
 				else $title = '';
 
-				$href = $l['url'][0] === '#' ? "class='action--".substr($l['url'],1)."'" : "href='{$l['url']}'";
+				$href = $l['url'][0] === '#' ? "class='action--".substr($l['url'],1)."'" : "href='".self::AposEncode($l['url'])."'";
 
 				$Render[] =  "<li id='s-ufl-{$l['id']}'><a $href $title>{$l['label']}</a></li>";
 			}
