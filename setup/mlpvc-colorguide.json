@@ -4,7 +4,7 @@
 			"id": 0,
 			"order": 0,
 			"label": "Universal colors",
-			"notes": "These colors apply to most characters in the show. Use these unless a different color is specified.\n<strong>Eye Shines:</strong> Use for eye reflections, sclera and teeth.\n<strong>Eye Pupil:</strong> Use for eye pupil, eyelashes, eye outlines and on eyelids (for emotional turmoil at ~5-15% opacity)",
+			"notes": "These colors apply to most characters in the show. Use these unless a different color is specified.\n<strong>Eye Shines:</strong> Use for eye reflections, sclera and teeth.\n<strong>Eye Pupil:</strong> Use for eye pupil, eyelashes, eye outlines and on eyelids (for emotional turmoil at ~5-15% opacity)\n<strong>Tears:</strong> Always apply the opacity to the entire shape/group to prevent the fill's edges showing under the outline.",
 			"cm_favme": null,
 			"ishuman": false,
 			"added": "2015-12-03 16:57:59.671+01",
@@ -2215,7 +2215,8 @@
 				196,
 				340,
 				341,
-				351
+				351,
+				377
 			]
 		},
 		"75": {
@@ -2452,7 +2453,8 @@
 				197,
 				340,
 				341,
-				353
+				353,
+				377
 			]
 		},
 		"88": {
@@ -2581,7 +2583,8 @@
 				186,
 				340,
 				341,
-				353
+				353,
+				377
 			]
 		},
 		"126": {
@@ -10339,7 +10342,8 @@
 				161,
 				185,
 				216,
-				353
+				353,
+				377
 			]
 		},
 		"22": {
@@ -11136,7 +11140,8 @@
 				98,
 				99,
 				185,
-				351
+				351,
+				377
 			]
 		},
 		"14": {
@@ -17252,7 +17257,8 @@
 				224,
 				225,
 				274,
-				353
+				353,
+				394
 			]
 		},
 		"110": {
@@ -24104,9 +24110,151 @@
 				386
 			]
 		},
+		"185": {
+			"id": 185,
+			"order": 145,
+			"label": "Crystal Hoof / Thorax",
+			"notes": "",
+			"cm_favme": null,
+			"ishuman": false,
+			"added": "2016-08-21 15:14:51.553613+02",
+			"cm_preview": null,
+			"cm_dir": null,
+			"ColorGroups": {
+				"1002": {
+					"groupid": 1002,
+					"label": "Coat",
+					"order": 0,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#3C8193"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#80C6D3"
+						},
+						{
+							"order": 2,
+							"label": "Shadow Outline",
+							"hex": "#43889A"
+						},
+						{
+							"order": 3,
+							"label": "Shadow Fill",
+							"hex": "#6BB0C1"
+						}
+					]
+				},
+				"1003": {
+					"groupid": 1003,
+					"label": "Mane & Tail",
+					"order": 1,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline Gradient Top",
+							"hex": "#2B3F4C"
+						},
+						{
+							"order": 1,
+							"label": "Outline Gradient Bottom",
+							"hex": "#0C1318"
+						},
+						{
+							"order": 2,
+							"label": "Fill 1 Gradient Top",
+							"hex": "#385366"
+						},
+						{
+							"order": 3,
+							"label": "Fill 1 Gradient Bottom",
+							"hex": "#242832"
+						},
+						{
+							"order": 4,
+							"label": "Fill 2 Gradient Top",
+							"hex": "#55809D"
+						},
+						{
+							"order": 5,
+							"label": "Fill 2 Gradient Bottom",
+							"hex": "#2C4453"
+						},
+						{
+							"order": 6,
+							"label": "Headband Outline",
+							"hex": "#48AAA4"
+						},
+						{
+							"order": 7,
+							"label": "Headband Fill",
+							"hex": "#90E3D9"
+						}
+					]
+				},
+				"1004": {
+					"groupid": 1004,
+					"label": "Iris",
+					"order": 2,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Gradient Top",
+							"hex": "#007782"
+						},
+						{
+							"order": 1,
+							"label": "Gradient Bottom",
+							"hex": "#88EBDB"
+						}
+					]
+				},
+				"1005": {
+					"groupid": 1005,
+					"label": "Cutie Mark",
+					"order": 3,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Vase Base Fill",
+							"hex": "#385369"
+						},
+						{
+							"order": 1,
+							"label": "Vase Stripes",
+							"hex": "#203341"
+						},
+						{
+							"order": 2,
+							"label": "Mid-Section Fill / Handles",
+							"hex": "#317190"
+						},
+						{
+							"order": 3,
+							"label": "Horseshoes",
+							"hex": "#7FE8E8"
+						}
+					]
+				}
+			},
+			"TagIDs": [
+				2,
+				7,
+				8,
+				11,
+				351,
+				377,
+				398,
+				400,
+				401
+			]
+		},
 		"64": {
 			"id": 64,
-			"order": 145,
+			"order": 146,
 			"label": "Angel Bunny",
 			"notes": "",
 			"cm_favme": null,
@@ -24220,7 +24368,7 @@
 		},
 		"112": {
 			"id": 112,
-			"order": 146,
+			"order": 147,
 			"label": "Gummy",
 			"notes": "In 3/4 view, the top line on his far eye uses the \"Far Eye Top Line\" color instead of the normal gradient.",
 			"cm_favme": null,
@@ -24358,7 +24506,7 @@
 		},
 		"116": {
 			"id": 116,
-			"order": 147,
+			"order": 148,
 			"label": "Winona",
 			"notes": "",
 			"cm_favme": null,
@@ -24492,7 +24640,7 @@
 		},
 		"117": {
 			"id": 117,
-			"order": 148,
+			"order": 149,
 			"label": "Owlowiscious",
 			"notes": "",
 			"cm_favme": null,
@@ -24580,7 +24728,7 @@
 		},
 		"119": {
 			"id": 119,
-			"order": 149,
+			"order": 150,
 			"label": "Tank",
 			"notes": "Far Legs use darker colors.\nIn some scenes, Tank uses an alternate set of colors for the tongue.\nFor the goggle lenses, group together the Fill and the Highlights (100% Normal blending) and set the group to 50% opacity.",
 			"cm_favme": null,
@@ -24848,7 +24996,7 @@
 		},
 		"120": {
 			"id": 120,
-			"order": 150,
+			"order": 151,
 			"label": "Opalescence",
 			"notes": "",
 			"cm_favme": null,
@@ -25045,7 +25193,7 @@
 		},
 		"33": {
 			"id": 33,
-			"order": 151,
+			"order": 152,
 			"label": "Alicorn Amulet",
 			"notes": "",
 			"cm_favme": null,
@@ -25236,7 +25384,7 @@
 		},
 		"86": {
 			"id": 86,
-			"order": 152,
+			"order": 153,
 			"label": "Scorpan's Medallion",
 			"notes": "",
 			"cm_favme": null,
@@ -25313,7 +25461,7 @@
 		},
 		"94": {
 			"id": 94,
-			"order": 153,
+			"order": 154,
 			"label": "Party Cannon",
 			"notes": "",
 			"cm_favme": null,
@@ -25441,7 +25589,7 @@
 		},
 		"115": {
 			"id": 115,
-			"order": 154,
+			"order": 155,
 			"label": "Fake Timberwolf",
 			"notes": "",
 			"cm_favme": null,
@@ -25649,9 +25797,9 @@
 		},
 		"154": {
 			"id": 154,
-			"order": 155,
+			"order": 156,
 			"label": "Twilight's Crown",
-			"notes": "For S4 onward",
+			"notes": "From S4 onward",
 			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-06-05 18:51:20.155674+02",
@@ -25700,7 +25848,7 @@
 		},
 		"70": {
 			"id": 70,
-			"order": 156,
+			"order": 157,
 			"label": "Wonderbolt Uniform",
 			"notes": "",
 			"cm_favme": "da7pd3q",
@@ -25830,7 +25978,7 @@
 		},
 		"133": {
 			"id": 133,
-			"order": 157,
+			"order": 158,
 			"label": "Spitfire's Academy Outfit",
 			"notes": "",
 			"cm_favme": null,
@@ -26027,7 +26175,7 @@
 		},
 		"71": {
 			"id": 71,
-			"order": 158,
+			"order": 159,
 			"label": "Wonderbolt Trainee Uniform",
 			"notes": "The uppermost highlight on the Lead pony and Wingpony badges uses a different color and opacity than the rest.\nThe lenses of the goggles are comprised of two objects that do not overlap. The fill uses 67% normal blending and the highlight uses 50% overlay blending as far as we can tell.",
 			"cm_favme": null,
@@ -26169,7 +26317,7 @@
 		},
 		"105": {
 			"id": 105,
-			"order": 159,
+			"order": 160,
 			"label": "Pony Tones Outfit",
 			"notes": "",
 			"cm_favme": null,
@@ -26270,7 +26418,7 @@
 		},
 		"109": {
 			"id": 109,
-			"order": 160,
+			"order": 161,
 			"label": "Zecora",
 			"notes": "Based on S4E14.",
 			"cm_favme": null,
@@ -26435,7 +26583,7 @@
 		},
 		"113": {
 			"id": 113,
-			"order": 161,
+			"order": 162,
 			"label": "Orange Frog",
 			"notes": "",
 			"cm_favme": null,
@@ -26531,7 +26679,7 @@
 		},
 		"122": {
 			"id": 122,
-			"order": 162,
+			"order": 163,
 			"label": "Pig (Peach Skin)",
 			"notes": "",
 			"cm_favme": null,
@@ -26653,7 +26801,7 @@
 		},
 		"123": {
 			"id": 123,
-			"order": 163,
+			"order": 164,
 			"label": "Pig (Pink Skin)",
 			"notes": "Muddy Nostril color unknown",
 			"cm_favme": null,
@@ -26770,7 +26918,7 @@
 		},
 		"124": {
 			"id": 124,
-			"order": 164,
+			"order": 165,
 			"label": "Pig (Dark Skin)",
 			"notes": "Muddy Nostril color unknown",
 			"cm_favme": null,
@@ -26887,9 +27035,9 @@
 		},
 		"139": {
 			"id": 139,
-			"order": 165,
+			"order": 166,
 			"label": "Cranky Doodle Donkey",
-			"notes": "<strong>Toupee #1</strong> is up through half-way of \"A Friend in Deed\"\n<strong>Toupee #2</strong> is from \"A Friend in Deed\" through most of \"Slice of Life\"\n<strong>Toupee #2</strong> is from end of \"Slice of Life\" onward.",
+			"notes": "<strong>Toupee \\#1</strong> is up through half-way of \"A Friend in Deed\"\n<strong>Toupee \\#2</strong> is from \"A Friend in Deed\" through most of \"Slice of Life\"\n<strong>Toupee \\#3</strong> is from end of \"Slice of Life\" onward.",
 			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-05-21 16:58:06.40502+02",
@@ -27040,7 +27188,7 @@
 		},
 		"140": {
 			"id": 140,
-			"order": 166,
+			"order": 167,
 			"label": "Matilda",
 			"notes": "",
 			"cm_favme": null,
@@ -27211,7 +27359,7 @@
 		},
 		"144": {
 			"id": 144,
-			"order": 167,
+			"order": 168,
 			"label": "Rainbow Dash's Robe",
 			"notes": "",
 			"cm_favme": null,
@@ -27329,9 +27477,9 @@
 		},
 		"156": {
 			"id": 156,
-			"order": 168,
+			"order": 169,
 			"label": "Rainbow Dash's Bandaids (Newbie Dash)",
-			"notes": "Sampled from Newbie Dash (S6E7)",
+			"notes": "Sampled from S6E7",
 			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-06-10 20:41:21.723608+02",
@@ -27395,7 +27543,7 @@
 		},
 		"179": {
 			"id": 179,
-			"order": 169,
+			"order": 170,
 			"label": "Cipactli",
 			"notes": "Eyes use radial gradient; inner color should be set about 50% position and then outer color at 100% position",
 			"cm_favme": null,
@@ -27607,6 +27755,578 @@
 				374,
 				385,
 				388
+			]
+		},
+		"181": {
+			"id": 181,
+			"order": 171,
+			"label": "Cheerilee's Cheerleader Outfit",
+			"notes": "Worn by #79 in S6E14",
+			"cm_favme": null,
+			"ishuman": false,
+			"added": "2016-08-07 13:34:13.886075+02",
+			"cm_preview": null,
+			"cm_dir": null,
+			"ColorGroups": {
+				"985": {
+					"groupid": 985,
+					"label": "Shirt",
+					"order": 1,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#FFCB30"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#FFF9E7"
+						},
+						{
+							"order": 2,
+							"label": "Stripe 1",
+							"hex": "#6A5EAC"
+						},
+						{
+							"order": 3,
+							"label": "Stripe 2",
+							"hex": "#FFDC72"
+						}
+					]
+				},
+				"986": {
+					"groupid": 986,
+					"label": "Skirt",
+					"order": 2,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#F7A11E"
+						},
+						{
+							"order": 1,
+							"label": "Outer Pleat Fill",
+							"hex": "#FFDC72"
+						},
+						{
+							"order": 2,
+							"label": "Inner Pleat Fill",
+							"hex": "#FFCB30"
+						},
+						{
+							"order": 3,
+							"label": "Stripe",
+							"hex": "#6A5EAC"
+						}
+					]
+				},
+				"987": {
+					"groupid": 987,
+					"label": "Bow",
+					"order": 3,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#4C4484"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#6A5EAC"
+						},
+						{
+							"order": 2,
+							"label": "Shadow Fill",
+							"hex": "#574C97"
+						},
+						{
+							"order": 3,
+							"label": "Stripe",
+							"hex": "#FFDC72"
+						}
+					]
+				},
+				"988": {
+					"groupid": 988,
+					"label": "Poms",
+					"order": 4,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Band Outline",
+							"hex": "#4C4484"
+						},
+						{
+							"order": 1,
+							"label": "Band Fill",
+							"hex": "#6A5EAC"
+						},
+						{
+							"order": 2,
+							"label": "Pom Outline",
+							"hex": "#F7A11E"
+						},
+						{
+							"order": 3,
+							"label": "Pom Fill",
+							"hex": "#FFDC72"
+						},
+						{
+							"order": 4,
+							"label": "Shadow Band Outline",
+							"hex": "#43376B"
+						},
+						{
+							"order": 5,
+							"label": "Shadow Band Fill",
+							"hex": "#5C5293"
+						},
+						{
+							"order": 6,
+							"label": "Shadow Pom Outline",
+							"hex": "#BA902D"
+						},
+						{
+							"order": 7,
+							"label": "Shadow Pom Fill",
+							"hex": "#DBBB5E"
+						}
+					]
+				}
+			},
+			"TagIDs": [
+				96,
+				133,
+				165,
+				226,
+				227,
+				228,
+				229,
+				375,
+				392
+			]
+		},
+		"182": {
+			"id": 182,
+			"order": 172,
+			"label": "Rainbow Cookie Zombie Effects",
+			"notes": "Colors of this effect are not muted even if the pony's coat ends up muted. This effect is dimmed with any night filters.\nTo get the muted coat/mane/other colors for any character, take the RGB value of the color, average the R, G, B values, and adjust each RGB value 50% of the way to that average. For example, if RGB is 120, 60, 120, the average is 100. The R value of 120 would then move 50%*(120-100) or 10 (ending up at 110), the G value of 60 would move 50%*(100-60) or 20 (ending up at 80). ",
+			"cm_favme": null,
+			"ishuman": false,
+			"added": "2016-08-14 14:35:38.812358+02",
+			"cm_preview": null,
+			"cm_dir": null,
+			"ColorGroups": {
+				"990": {
+					"groupid": 990,
+					"label": "Mouth",
+					"order": 1,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Stroke",
+							"hex": "#8B1999"
+						},
+						{
+							"order": 1,
+							"label": "Fill 1",
+							"hex": "#FFE531"
+						},
+						{
+							"order": 2,
+							"label": "Fill 2",
+							"hex": "#FF702F"
+						},
+						{
+							"order": 3,
+							"label": "Fill 3",
+							"hex": "#FF323B"
+						},
+						{
+							"order": 4,
+							"label": "Fill 4",
+							"hex": "#A42DE1"
+						},
+						{
+							"order": 5,
+							"label": "Fill 5",
+							"hex": "#2B96E2"
+						},
+						{
+							"order": 6,
+							"label": "Fill 6",
+							"hex": "#2CCB27"
+						}
+					]
+				}
+			},
+			"TagIDs": [
+				376
+			]
+		},
+		"183": {
+			"id": 183,
+			"order": 173,
+			"label": "Filly Scout Uniform",
+			"notes": "",
+			"cm_favme": null,
+			"ishuman": false,
+			"added": "2016-08-14 15:01:51.282362+02",
+			"cm_preview": null,
+			"cm_dir": null,
+			"ColorGroups": {
+				"991": {
+					"groupid": 991,
+					"label": "Hat",
+					"order": 1,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Brim Outline",
+							"hex": "#2C2C2C"
+						},
+						{
+							"order": 1,
+							"label": "Brim Fill",
+							"hex": "#474747"
+						},
+						{
+							"order": 2,
+							"label": "Band Outline",
+							"hex": "#F8BE50"
+						},
+						{
+							"order": 3,
+							"label": "Band Fill",
+							"hex": "#F6E978"
+						},
+						{
+							"order": 4,
+							"label": "Hat Outline",
+							"hex": "#394129"
+						},
+						{
+							"order": 5,
+							"label": "Hat Fill",
+							"hex": "#54633F"
+						},
+						{
+							"order": 6,
+							"label": "Earhole Outline",
+							"hex": "#000000"
+						}
+					]
+				},
+				"992": {
+					"groupid": 992,
+					"label": "Kerchief / Tail Band",
+					"order": 2,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#8C0F20"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#D91D2F"
+						},
+						{
+							"order": 2,
+							"label": "Stripe",
+							"hex": "#F5EA79"
+						}
+					]
+				},
+				"993": {
+					"groupid": 993,
+					"label": "Sash",
+					"order": 3,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#293322"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#566240"
+						},
+						{
+							"order": 2,
+							"label": "Merit Badge Outline",
+							"hex": "#D6D367"
+						},
+						{
+							"order": 3,
+							"label": "Forest Badge Background",
+							"hex": "#84BF39"
+						},
+						{
+							"order": 4,
+							"label": "Forest Badge Foreground",
+							"hex": "#264A47"
+						},
+						{
+							"order": 5,
+							"label": "Fire-making Badge Background",
+							"hex": "#E00E2A"
+						},
+						{
+							"order": 6,
+							"label": "Fire-making Badge Flames 1",
+							"hex": "#F6ED7D"
+						},
+						{
+							"order": 7,
+							"label": "Fire-making Badge Flames 2",
+							"hex": "#F9BA4C"
+						},
+						{
+							"order": 8,
+							"label": "Fire-making Badge Logs",
+							"hex": "#70372D"
+						}
+					]
+				},
+				"994": {
+					"groupid": 994,
+					"label": "Logo",
+					"order": 4,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#F7F081"
+						},
+						{
+							"order": 1,
+							"label": "Background",
+							"hex": "#696014"
+						},
+						{
+							"order": 2,
+							"label": "Pony Outline",
+							"hex": "#816E16"
+						},
+						{
+							"order": 3,
+							"label": "Pony Fill",
+							"hex": "#B7A023"
+						},
+						{
+							"order": 4,
+							"label": "Pony Fill Highlights/Mane",
+							"hex": "#C3B340"
+						},
+						{
+							"order": 5,
+							"label": "Sash Fill",
+							"hex": "#7C6E16"
+						},
+						{
+							"order": 6,
+							"label": "Sash Badge",
+							"hex": "#C2B148"
+						}
+					]
+				}
+			},
+			"TagIDs": [
+				96,
+				376,
+				393
+			]
+		},
+		"184": {
+			"id": 184,
+			"order": 174,
+			"label": "Thorax / Changeling",
+			"notes": "",
+			"cm_favme": null,
+			"ishuman": false,
+			"added": "2016-08-21 14:52:09.065305+02",
+			"cm_preview": null,
+			"cm_dir": null,
+			"ColorGroups": {
+				"995": {
+					"groupid": 995,
+					"label": "Body",
+					"order": 1,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#151515"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#2A2A2A"
+						},
+						{
+							"order": 2,
+							"label": "Shadow Fill",
+							"hex": "#212121"
+						},
+						{
+							"order": 3,
+							"label": "Shine",
+							"hex": "#565656"
+						},
+						{
+							"order": 4,
+							"label": "Segment Lines",
+							"hex": "#424242"
+						},
+						{
+							"order": 5,
+							"label": "Inside Ear Fill",
+							"hex": "#3F3F3F"
+						}
+					]
+				},
+				"996": {
+					"groupid": 996,
+					"label": "\"Mane\" / Tail",
+					"order": 2,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#161616"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#3F3F3F"
+						},
+						{
+							"order": 2,
+							"label": "Stripes",
+							"hex": "#696969"
+						}
+					]
+				},
+				"997": {
+					"groupid": 997,
+					"label": "Mouth",
+					"order": 3,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Teeth Outline",
+							"hex": "#AEC0C3"
+						},
+						{
+							"order": 1,
+							"label": "Teeth Fill",
+							"hex": "#FFFFFF"
+						},
+						{
+							"order": 2,
+							"label": "Gums",
+							"hex": "#BF002F"
+						},
+						{
+							"order": 3,
+							"label": "Tongue",
+							"hex": "#F63E3E"
+						},
+						{
+							"order": 4,
+							"label": "Fill 1",
+							"hex": "#86002A"
+						}
+					]
+				},
+				"998": {
+					"groupid": 998,
+					"label": "Eyes",
+					"order": 4,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outer color",
+							"hex": "#00CBCB"
+						},
+						{
+							"order": 1,
+							"label": "Inner color",
+							"hex": "#ACFFF0"
+						}
+					]
+				},
+				"999": {
+					"groupid": 999,
+					"label": "Wings",
+					"order": 5,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Stroke",
+							"hex": "#239891"
+						},
+						{
+							"order": 1,
+							"label": "Fill (50% opacity)",
+							"hex": "#24C6B5"
+						}
+					]
+				},
+				"1000": {
+					"groupid": 1000,
+					"label": "Carapace",
+					"order": 6,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Darker fill gradiant",
+							"hex": "#0F404B"
+						},
+						{
+							"order": 1,
+							"label": "Lighter fill gradiant",
+							"hex": "#196A75"
+						},
+						{
+							"order": 2,
+							"label": "Shine",
+							"hex": "#7FC5D4"
+						}
+					]
+				},
+				"1001": {
+					"groupid": 1001,
+					"label": "Transformation Effect",
+					"order": 7,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Fill 1",
+							"hex": "#8DFFFF"
+						},
+						{
+							"order": 1,
+							"label": "Fill 2",
+							"hex": "#FFFFFF"
+						}
+					]
+				}
+			},
+			"TagIDs": [
+				7,
+				8,
+				11,
+				351,
+				377,
+				398,
+				399
 			]
 		},
 		"63": {
@@ -27840,392 +28560,6 @@
 				100,
 				353
 			]
-		},
-		"181": {
-			"id": 181,
-			"order": null,
-			"label": "Cheerilee's Cheerleader Outfit",
-			"notes": "Worn by #79 in S6E14",
-			"cm_favme": null,
-			"ishuman": false,
-			"added": "2016-08-07 13:34:13.886075+02",
-			"cm_preview": null,
-			"cm_dir": null,
-			"ColorGroups": {
-				"985": {
-					"groupid": 985,
-					"label": "Shirt",
-					"order": 1,
-					"Colors": [
-						{
-							"order": 0,
-							"label": "Outline",
-							"hex": "#FFCB30"
-						},
-						{
-							"order": 1,
-							"label": "Fill",
-							"hex": "#FFF9E7"
-						},
-						{
-							"order": 2,
-							"label": "Stripe 1",
-							"hex": "#6A5EAC"
-						},
-						{
-							"order": 3,
-							"label": "Stripe 2",
-							"hex": "#FFDC72"
-						}
-					]
-				},
-				"986": {
-					"groupid": 986,
-					"label": "Skirt",
-					"order": 2,
-					"Colors": [
-						{
-							"order": 0,
-							"label": "Outline",
-							"hex": "#F7A11E"
-						},
-						{
-							"order": 1,
-							"label": "Outer Pleat Fill",
-							"hex": "#FFDC72"
-						},
-						{
-							"order": 2,
-							"label": "Inner Pleat Fill",
-							"hex": "#FFCB30"
-						},
-						{
-							"order": 3,
-							"label": "Stripe",
-							"hex": "#6A5EAC"
-						}
-					]
-				},
-				"987": {
-					"groupid": 987,
-					"label": "Bow",
-					"order": 3,
-					"Colors": [
-						{
-							"order": 0,
-							"label": "Outline",
-							"hex": "#4C4484"
-						},
-						{
-							"order": 1,
-							"label": "Fill",
-							"hex": "#6A5EAC"
-						},
-						{
-							"order": 2,
-							"label": "Shadow Fill",
-							"hex": "#574C97"
-						},
-						{
-							"order": 3,
-							"label": "Stripe",
-							"hex": "#FFDC72"
-						}
-					]
-				},
-				"988": {
-					"groupid": 988,
-					"label": "Poms",
-					"order": 4,
-					"Colors": [
-						{
-							"order": 0,
-							"label": "Band Outline",
-							"hex": "#4C4484"
-						},
-						{
-							"order": 1,
-							"label": "Band Fill",
-							"hex": "#6A5EAC"
-						},
-						{
-							"order": 2,
-							"label": "Pom Outline",
-							"hex": "#F7A11E"
-						},
-						{
-							"order": 3,
-							"label": "Pom Fill",
-							"hex": "#FFDC72"
-						},
-						{
-							"order": 4,
-							"label": "Shadow Band Outline",
-							"hex": "#43376B"
-						},
-						{
-							"order": 5,
-							"label": "Shadow Band Fill",
-							"hex": "#5C5293"
-						},
-						{
-							"order": 6,
-							"label": "Shadow Pom Outline",
-							"hex": "#BA902D"
-						},
-						{
-							"order": 7,
-							"label": "Shadow Pom Fill",
-							"hex": "#DBBB5E"
-						}
-					]
-				}
-			},
-			"TagIDs": [
-				96,
-				133,
-				165,
-				226,
-				227,
-				228,
-				229,
-				375,
-				392
-			]
-		},
-		"182": {
-			"id": 182,
-			"order": null,
-			"label": "Rainbow Cookie Zombie Effects",
-			"notes": "Colors of this effect are not muted even if the pony's coat ends up muted. This effect is dimmed with any night filters.\nTo get the muted coat/mane/other colors for any character, take the RGB value of the color, average the R, G, B values, and adjust each RGB value 50% of the way to that average. For example, if RGB is 120, 60, 120, the average is 100. The R value of 120 would then move 50%*(120-100) or 10 (ending up at 110), the G value of 60 would move 50%*(100-60) or 20 (ending up at 80). ",
-			"cm_favme": null,
-			"ishuman": false,
-			"added": "2016-08-14 14:35:38.812358+02",
-			"cm_preview": null,
-			"cm_dir": null,
-			"ColorGroups": {
-				"990": {
-					"groupid": 990,
-					"label": "Mouth",
-					"order": 1,
-					"Colors": [
-						{
-							"order": 0,
-							"label": "Stroke",
-							"hex": "#8B1999"
-						},
-						{
-							"order": 1,
-							"label": "Fill 1",
-							"hex": "#FFE531"
-						},
-						{
-							"order": 2,
-							"label": "Fill 2",
-							"hex": "#FF702F"
-						},
-						{
-							"order": 3,
-							"label": "Fill 3",
-							"hex": "#FF323B"
-						},
-						{
-							"order": 4,
-							"label": "Fill 4",
-							"hex": "#A42DE1"
-						},
-						{
-							"order": 5,
-							"label": "Fill 5",
-							"hex": "#2B96E2"
-						},
-						{
-							"order": 6,
-							"label": "Fill 6",
-							"hex": "#2CCB27"
-						}
-					]
-				}
-			},
-			"TagIDs": [
-				376
-			]
-		},
-		"183": {
-			"id": 183,
-			"order": null,
-			"label": "Filly Scout Uniform",
-			"notes": "",
-			"cm_favme": null,
-			"ishuman": false,
-			"added": "2016-08-14 15:01:51.282362+02",
-			"cm_preview": null,
-			"cm_dir": null,
-			"ColorGroups": {
-				"991": {
-					"groupid": 991,
-					"label": "Hat",
-					"order": 1,
-					"Colors": [
-						{
-							"order": 0,
-							"label": "Brim Outline",
-							"hex": "#2C2C2C"
-						},
-						{
-							"order": 1,
-							"label": "Brim Fill",
-							"hex": "#474747"
-						},
-						{
-							"order": 2,
-							"label": "Band Outline",
-							"hex": "#F8BE50"
-						},
-						{
-							"order": 3,
-							"label": "Band Fill",
-							"hex": "#F6E978"
-						},
-						{
-							"order": 4,
-							"label": "Hat Outline",
-							"hex": "#394129"
-						},
-						{
-							"order": 5,
-							"label": "Hat Fill",
-							"hex": "#54633F"
-						},
-						{
-							"order": 6,
-							"label": "Earhole Outline",
-							"hex": "#000000"
-						}
-					]
-				},
-				"992": {
-					"groupid": 992,
-					"label": "Kerchief / Tail Band",
-					"order": 2,
-					"Colors": [
-						{
-							"order": 0,
-							"label": "Outline",
-							"hex": "#8C0F20"
-						},
-						{
-							"order": 1,
-							"label": "Fill",
-							"hex": "#D91D2F"
-						},
-						{
-							"order": 2,
-							"label": "Stripe",
-							"hex": "#F5EA79"
-						}
-					]
-				},
-				"993": {
-					"groupid": 993,
-					"label": "Sash",
-					"order": 3,
-					"Colors": [
-						{
-							"order": 0,
-							"label": "Outline",
-							"hex": "#293322"
-						},
-						{
-							"order": 1,
-							"label": "Fill",
-							"hex": "#566240"
-						},
-						{
-							"order": 2,
-							"label": "Merit Badge Outline",
-							"hex": "#D6D367"
-						},
-						{
-							"order": 3,
-							"label": "Forest Badge Background",
-							"hex": "#84BF39"
-						},
-						{
-							"order": 4,
-							"label": "Forest Badge Foreground",
-							"hex": "#264A47"
-						},
-						{
-							"order": 5,
-							"label": "Fire-making Badge Background",
-							"hex": "#E00E2A"
-						},
-						{
-							"order": 6,
-							"label": "Fire-making Badge Flames 1",
-							"hex": "#F6ED7D"
-						},
-						{
-							"order": 7,
-							"label": "Fire-making Badge Flames 2",
-							"hex": "#F9BA4C"
-						},
-						{
-							"order": 8,
-							"label": "Fire-making Badge Logs",
-							"hex": "#70372D"
-						}
-					]
-				},
-				"994": {
-					"groupid": 994,
-					"label": "Logo",
-					"order": 4,
-					"Colors": [
-						{
-							"order": 0,
-							"label": "Outline",
-							"hex": "#F7F081"
-						},
-						{
-							"order": 1,
-							"label": "Background",
-							"hex": "#696014"
-						},
-						{
-							"order": 2,
-							"label": "Pony Outline",
-							"hex": "#816E16"
-						},
-						{
-							"order": 3,
-							"label": "Pony Fill",
-							"hex": "#B7A023"
-						},
-						{
-							"order": 4,
-							"label": "Pony Fill Highlights/Mane",
-							"hex": "#C3B340"
-						},
-						{
-							"order": 5,
-							"label": "Sash Fill",
-							"hex": "#7C6E16"
-						},
-						{
-							"order": 6,
-							"label": "Sash Badge",
-							"hex": "#C2B148"
-						}
-					]
-				}
-			},
-			"TagIDs": [
-				96,
-				376,
-				393
-			]
 		}
 	},
 	"Tags": {
@@ -28242,7 +28576,7 @@
 			"name": "earth pony",
 			"title": null,
 			"type": "spec",
-			"uses": 60,
+			"uses": 61,
 			"synonym_of": null
 		},
 		"3": {
@@ -28282,7 +28616,7 @@
 			"name": "minor character",
 			"title": "Ponies who had a speaking role, interacted with the mane six, or whose only purpose is to fill crowds.",
 			"type": "cat",
-			"uses": 123,
+			"uses": 125,
 			"synonym_of": null
 		},
 		"8": {
@@ -28314,7 +28648,7 @@
 			"name": "male",
 			"title": null,
 			"type": "gen",
-			"uses": 61,
+			"uses": 63,
 			"synonym_of": null
 		},
 		"12": {
@@ -30994,7 +31328,7 @@
 			"name": "s06e16",
 			"title": null,
 			"type": "ep",
-			"uses": 0,
+			"uses": 7,
 			"synonym_of": null
 		},
 		"378": {
@@ -31114,6 +31448,70 @@
 			"name": "filly scout uniform",
 			"title": null,
 			"type": "app",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"394": {
+			"tid": 394,
+			"name": "bon-bon",
+			"title": null,
+			"type": "char",
+			"uses": 0,
+			"synonym_of": 224
+		},
+		"395": {
+			"tid": 395,
+			"name": "s06e18",
+			"title": null,
+			"type": "ep",
+			"uses": 0,
+			"synonym_of": null
+		},
+		"396": {
+			"tid": 396,
+			"name": "s06e20",
+			"title": null,
+			"type": "ep",
+			"uses": 0,
+			"synonym_of": null
+		},
+		"397": {
+			"tid": 397,
+			"name": "s06e21",
+			"title": null,
+			"type": "ep",
+			"uses": 0,
+			"synonym_of": null
+		},
+		"398": {
+			"tid": 398,
+			"name": "thorax",
+			"title": null,
+			"type": "char",
+			"uses": 2,
+			"synonym_of": null
+		},
+		"399": {
+			"tid": 399,
+			"name": "changeling",
+			"title": null,
+			"type": "spec",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"400": {
+			"tid": 400,
+			"name": "crystal hoof",
+			"title": null,
+			"type": "char",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"401": {
+			"tid": 401,
+			"name": "crystal pony",
+			"title": null,
+			"type": "spec",
 			"uses": 1,
 			"synonym_of": null
 		}
