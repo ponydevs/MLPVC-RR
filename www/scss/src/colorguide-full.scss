@@ -17,19 +17,16 @@
 	}
 
 	&.sorting {
-		section > div {
+		section > ul {
 			font-size: 0;
 
-			> a {
+			li > a {
 				color: $HeaderBlue !important;
 				text-decoration: underline !important;
 				font-size: 20px;
 				cursor: move;
 
-				&.moving { text-shadow: 0 0 5px rgba($HeaderBlue,.7), 0 0 10px rgba($HeaderBlue,.5) }
-				&:not(:last-child) {
-					margin-right: 10px;
-				}
+				&.moving { text-shadow: 0 0 5px currentColor, 0 0 10px currentColor }
 			}
 		}
 	}
@@ -37,10 +34,19 @@
 	section {
 		@extend %section;
 
-		div {
+		ul {
 			font-size: 20px;
+			list-style: none;
+			padding: 0;
+			margin: 0;
 
-			a { display: inline-block }
+			li {
+				display: inline;
+
+				&:not(:last-child) {
+					margin-right: 1em;
+				}
+			}
 		}
 	}
 }

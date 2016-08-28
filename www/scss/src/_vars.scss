@@ -208,3 +208,13 @@ $NoScrollbar: false;
 	background-size: $size $size;
 	box-sizing: border-box;
 }
+
+%appearance-preview {
+	display: inline-block;
+	height: 1em;
+	width: 1em;
+	vertical-align: middle;
+	border: 1px solid black;
+	box-sizing: border-box;
+	margin-right: .2em;
+}

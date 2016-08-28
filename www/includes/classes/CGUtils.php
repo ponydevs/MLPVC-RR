@@ -47,14 +47,13 @@
 						$FirstLetter = strtoupper($p['label'][0]);
 						if ($FirstLetter !== $PrevFirstLetter){
 							if ($PrevFirstLetter !== ''){
-								$HTML = rtrim($HTML, ', ')."</div></section>";
+								$HTML = rtrim($HTML, ', ')."</ul></section>";
 							}
 							$PrevFirstLetter = $FirstLetter;
-							$HTML .= "<section><h2>$PrevFirstLetter</h2><div>";
+							$HTML .= "<section><h2>$PrevFirstLetter</h2><ul>";
 						}
 						self::_processFullListLink($p, $HTML);
 					}
-					$HTML = rtrim($HTML, ', ');
 				}
 				else {
 					$Sorted = \CG\Appearances::Sort($Appearances);
@@ -62,15 +61,14 @@
 						if (empty($Sorted[$Category]))
 							continue;
 
-						$HTML .= "<section><h2>$CategoryName</h2><div>";
-						foreach ($Sorted[$Category] as $p){
+						$HTML .= "<section><h2>$CategoryName</h2><ul>";
+						foreach ($Sorted[$Category] as $p)
 							self::_processFullListLink($p, $HTML);
-						}
-						$HTML = rtrim($HTML, ', ')."</div></section>";
+						$HTML .= "</ul></section>";
 					}
 				}
 			}
-			return $HTML.($wrap?"</div>":'');
+			return $HTML.($wrap?"</ul>":'');
 		}
 
 		static private function _processFullListLink($p, &$HTML){
@@ -83,7 +81,7 @@
 					$url .= "' class='color-green";
 				}
 			}
-			$HTML .= "<a href='$url'>$sprite{$p['label']}</a>, ";
+			$HTML .= "<li><a href='$url'>$sprite{$p['label']}</a></li>";
 		}
 
 		/**
@@ -254,11 +252,21 @@ HTML;
 		}
 
 		const
+			CLEAR_PREVIEW = 'preview.png',
 			CLEAR_PALETTE = 'palette.png',
 			CLEAR_CMDIR = 'cmdir.svg',
 			CLEAR_SPRITE = 'sprite.png',
 			CLEAR_SPRITE_SVG = 'sprite.svg',
 			CLEAR_SPRITE_MAP = 'linedata.json.gz';
+
+		const CLEAR_BY_DEFAULT = array(
+			self::CLEAR_PREVIEW,
+			self::CLEAR_PALETTE,
+			self::CLEAR_CMDIR,
+			self::CLEAR_SPRITE,
+			self::CLEAR_SPRITE_SVG,
+			self::CLEAR_SPRITE_MAP,
+		);
 
 		/**
 		 * Deletes rendered images of an appearance (forcing its re-generation)
@@ -268,7 +276,7 @@ HTML;
 		 *
 		 * @return bool
 		 */
-		static function ClearRenderedImages(int $AppearanceID, array $which = array(self::CLEAR_PALETTE,self::CLEAR_CMDIR,self::CLEAR_SPRITE,self::CLEAR_SPRITE_SVG,self::CLEAR_SPRITE_MAP)):bool {
+		static function ClearRenderedImages(int $AppearanceID, array $which = self::CLEAR_BY_DEFAULT):bool {
 			$RenderedPath = APPATH."img/cg_render/$AppearanceID";
 			$success = array();
 			foreach ($which as $suffix){
@@ -622,6 +630,62 @@ HTML;
 				$d = rtrim($d);
 				$SVG .= "<path stroke='$hex' d='$d'/>";
 			}
+			$SVG .= '</svg>';
+
+			Image::OutputSVG($SVG, $OutputPath, $FileRelPath);
+		}
+
+		static function RenderPreviewSVG($AppearanceID){
+			global $CGPath, $CGDb;
+
+			$OutputPath = APPATH."img/cg_render/{$AppearanceID}-preview.svg";
+			$FileRelPath = "$CGPath/v/{$AppearanceID}p.svg";
+			if (file_exists($OutputPath))
+				Image::OutputSVG(null,$OutputPath,$FileRelPath);
+
+			$SVG = "<svg version='1.1' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 2 2' enable-background='new 0 0 2 2' xml:space='preserve' preserveAspectRatio='xMidYMid slice'>";
+			$colors = array();
+			$ColorQuery = $CGDb->rawQuery(
+				'SELECT c.hex FROM colors c
+				LEFT JOIN colorgroups cg ON c.groupid = cg.groupid
+				WHERE cg.ponyid = ?
+				ORDER BY cg."order" ASC, c."order" ASC
+				LIMIT 4', array($AppearanceID));
+
+			if (!empty($ColorQuery))
+				usort($ColorQuery, function($a, $b){
+					return CoreUtils::YIQ($b['hex']) <=> CoreUtils::YIQ($a['hex']);
+				});
+
+			switch (count($ColorQuery)){
+				case 1:
+					$SVG .= "<rect x='0' y='0' width='2' height='2' fill='{$ColorQuery[0]['hex']}'/>";
+				break;
+				case 3:
+					$SVG .= <<<XML
+<rect x='0' y='0' width='2' height='2' fill='{$ColorQuery[0]['hex']}'/>
+<rect x='0' y='1' width='1' height='1' fill='{$ColorQuery[1]['hex']}'/>
+<rect x='1' y='1' width='1' height='1' fill='{$ColorQuery[2]['hex']}'/>
+XML;
+				break;
+				case 2:
+				case 4:
+					$x = 0;
+					$y = 0;
+					foreach ($ColorQuery as $c){
+						$w = $x % 2 == 0 ? 2 : 1;
+						$h = $y % 2 == 0 ? 2 : 1;
+						$SVG .= "<rect x='$x' y='$y' width='$w' height='$h' fill='{$c['hex']}'/>";
+						$x++;
+						if ($x > 1){
+							$x = 0;
+							$y = 1;
+						}
+					}
+				break;
+			}
+
+
 			$SVG .= '</svg>';
 
 			Image::OutputSVG($SVG, $OutputPath, $FileRelPath);

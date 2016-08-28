@@ -265,7 +265,7 @@
 						Response::Done($response);
 					}
 
-					CGUtils::ClearRenderedImages($Appearance['id'], array(CGUtils::CLEAR_PALETTE));
+					CGUtils::ClearRenderedImages($Appearance['id'], array(CGUtils::CLEAR_PALETTE, CGUtils::CLEAR_PREVIEW));
 
 					$response = array();
 					$EditedAppearance = array_merge($Appearance, $data);
@@ -350,7 +350,7 @@
 					}
 					$newCGs = \CG\ColorGroups::Get($Appearance['id']);
 
-					CGUtils::ClearRenderedImages($Appearance['id'], array(CGUtils::CLEAR_PALETTE));
+					CGUtils::ClearRenderedImages($Appearance['id'], array(CGUtils::CLEAR_PALETTE, CGUtils::CLEAR_PREVIEW));
 
 					$oldCGs = \CG\ColorGroups::Stringify($oldCGs);
 					$newCGs = \CG\ColorGroups::Stringify($newCGs);
@@ -825,7 +825,7 @@
 				}
 				else $response['update'] = \CG\Appearances::GetUpdatesHTML($AppearanceID);
 			}
-			CGUtils::ClearRenderedImages($AppearanceID, array(CGUtils::CLEAR_PALETTE));
+			CGUtils::ClearRenderedImages($AppearanceID, array(CGUtils::CLEAR_PALETTE, CGUtils::CLEAR_PREVIEW));
 
 			if (isset($_POST['APPEARANCE_PAGE']))
 				$response['cm_img'] = "/cg/v/$AppearanceID.svg?t=".time();
@@ -926,9 +926,10 @@
 	);
 
 	$_match = array();
-	if (regex_match(new RegExp('^(?:appearance|v)/(?:.*?(\d+)|(\d+)(?:-.*)?)(?:(s)?\.(png|svg|json|gpl))?'),$data,$_match)){
+	if (regex_match(new RegExp('^(?:appearance|v)/(?:.*?(\d+)|(\d+)(?:-.*)?)(?:([sp])?\.(png|svg|json|gpl))?'),$data,$_match)){
 		$asFile = !empty($_match[4]);
-		$Appearance = $CGDb->where('id', intval($_match[1]??$_match[2], 10))->getOne('appearances', $asFile ? 'id,label,cm_dir,ishuman' : null);
+		$AppearanceID = intval(!empty($_match[1]) ? $_match[1] : $_match[2], 10);
+		$Appearance = $CGDb->where('id', $AppearanceID)->getOne('appearances', $asFile ? 'id,label,cm_dir,ishuman' : null);
 		if (empty($Appearance))
 			CoreUtils::NotFound();
 
@@ -944,17 +945,22 @@
 		if ($asFile){
 			switch ($_match[4]){
 				case 'png':
-					if ($_match[3] === 's')
-						CGUtils::RenderSpritePNG($Appearance['id']);
+					if (!empty($_match[3])) switch ($_match[3]){
+						case "s": CGUtils::RenderSpritePNG($Appearance['id']);
+						default: CoreUtils::NotFound();
+					}
 					CGUtils::RenderAppearancePNG($Appearance);
 				case 'svg':
-					if ($_match[3] === 's')
-						CGUtils::RenderSpriteSVG($Appearance['id']);
+					if (!empty($_match[3])) switch ($_match[3]){
+						case "s": CGUtils::RenderSpriteSVG($Appearance['id']);
+						case "p": CGUtils::RenderPreviewSVG($Appearance['id']);
+						default: CoreUtils::NotFound();
+					}
 					CGUtils::RenderCMDirectionSVG($Appearance['id'], $Appearance['cm_dir']);
 				case 'json': CGUtils::GetSwatchesAI($Appearance); 
 				case 'gpl': CGUtils::GetSwatchesInkscape($Appearance); 
 			}
-			# rendering functions internally call die(), so execution stops here #
+			# rendering functions internally call die(), so execution stops above #
 		}
 
 		$SafeLabel = \CG\Appearances::GetSafeLabel($Appearance);

@@ -467,6 +467,17 @@ HTML;
 		}
 
 		/**
+		 * Retruns preview image link
+		 *
+		 * @param array $Appearance
+		 *
+		 * @return string
+		 */
+		static function GetPreviewURL($Appearance){
+			return "/cg/v/{$Appearance['id']}p.svg";
+		}
+
+		/**
 		 * Replaces non-alphanumeric characters in the appearance label with dashes
 		 *
 		 * @param array $Appearance
