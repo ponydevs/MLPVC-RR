@@ -1,6 +1,8 @@
 <?php
 
-	class Posts {
+use DB\Episode;
+
+class Posts {
 		static
 			$TYPES = array('request','reservation'),
 			$REQUEST_TYPES = array(
@@ -75,22 +77,16 @@
 		 * Get link to a specific post
 		 *
 		 * @param array  $Post
-		 * @param string $thing 'request'/'reservation'
+		 * @param string $thing 'request' or 'reservation'
 		 *
 		 * @return array
 		 */
-		static function GetLink(array $Post, string $thing = null):array {
+		static function GetLink($Post, string $thing = null):array {
 			if (empty($thing))
 				$thing = empty($Post['requested_by']) ? 'reservation' : 'request';
-			$id = "$thing-{$Post['id']}";
-			if ($Post['season'] !== 0){
-				$page = "S{$Post['season']}E{$Post['episode']}";
-				$link = "/episode/$page#$id";
-			}
-			else {
-				$page = 'Movie#'.$Post['episode'];
-				$link = Episode::FormatURL($Post).'#'.$id;
-			}
+			$Episode = new Episode($Post);
+			$link = $Episode->formatURL()."#$thing-{$Post['id']}";
+			$page = $Episode->formatTitle(AS_ARRAY, 'id');
 			return array($link,$page);
 		}
 
@@ -192,8 +188,9 @@
 					->where('r.preview',$Image->preview)
 					->getOne("{$type}s r",'ep.*, r.id as post_id');
 				if (!empty($UsedUnder)){
-					$EpID = Episode::FormatTitle($UsedUnder,AS_ARRAY,'id');
-					Response::Fail("This exact image has already been used for a $type under <a href='/episode/$EpID#$type-{$UsedUnder['post_id']}' target='_blank'>$EpID</a>");
+					$Episode = new Episode($UsedUnder);
+					$EpID = $Episode->formatTitle(AS_ARRAY,'id');
+					Response::Fail("This exact image has already been used for a $type under <a href='{$Episode->formatURL()}#$type-{$UsedUnder['post_id']}' target='_blank'>$EpID</a>");
 				}
 			}
 
@@ -512,7 +509,7 @@ HTML;
 			$type = $isRequest ? 'request' : 'reservation';
 			$ID = "$type-{$R['id']}";
 			$alt = !empty($R['label']) ? CoreUtils::AposEncode($R['label']) : '';
-			$postlink = Episode::FormatURL($R)."#$ID";
+			$postlink = (new Episode($R))->formatURL()."#$ID";
 			$ImageLink = $view_only ? $postlink : $R['fullsize'];
 			$cachebust = $cachebust_url ? '?t='.time() : '';
 			$Image = "<div class='image screencap'><a href='$ImageLink'><img src='{$R['preview']}$cachebust' alt='$alt'></a></div>";

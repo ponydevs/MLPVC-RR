@@ -19,7 +19,7 @@
 				<th>Title & Air Date</th>
 			</tr>
 		</thead>
-		<tbody><?=Episode::GetTableTbody($Episodes)?></tbody>
+		<tbody><?=Episodes::GetTableTbody($Episodes)?></tbody>
 	</table>
 <?  }
 	echo $Pagination;
@@ -41,7 +41,7 @@
 				<th>Title &amp; Air Date</th>
 			</tr>
 		</thead>
-		<tbody><?=Episode::GetTableTbody($Movies, true)?></tbody>
+		<tbody><?=Episodes::GetTableTbody($Movies, true)?></tbody>
 	</table>
 <?  } ?>
 </div>

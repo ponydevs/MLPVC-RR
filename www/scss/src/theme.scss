@@ -619,7 +619,7 @@ button.da-login:before { background-image: url('../../img/da-logo.svg') }
 					margin: 2.5px 0 2.5px 5px;
 					max-width: calc(100% - 45px);
 				}
-				.title, time, .countdown {
+				.title, .time, .countdown {
 					display: block;
 					overflow: hidden;
 					text-overflow: ellipsis;
@@ -628,11 +628,9 @@ button.da-login:before { background-image: url('../../img/da-logo.svg') }
 					font-size: 18px;
 					height: 21px;
 				}
-				time, .countdown {
+				.time, .countdown {
 					font-size: 12px;
 					height: 14px;
-
-					&:before { content: "Airs " }
 				}
 			}
 		}

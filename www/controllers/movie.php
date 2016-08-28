@@ -15,9 +15,10 @@
 		CoreUtils::NotFound();
 	}
 
+	/** @var $CurrtentEpisode \DB\Episode */
 	$CurrtentEpisode = $Database->getOne('episodes');
 	if (empty($CurrtentEpisode))
 		CoreUtils::NotFound();
 
-	$CurrtentEpisode = Episode::AddAiringData($CurrtentEpisode);
-	Episode::LoadPage($CurrtentEpisode);
+	$CurrtentEpisode = $CurrtentEpisode->addAiringData();
+	Episodes::LoadPage($CurrtentEpisode);

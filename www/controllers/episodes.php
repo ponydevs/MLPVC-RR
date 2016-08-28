@@ -5,10 +5,10 @@
 	CoreUtils::FixPath("/episodes/{$Pagination->page}");
 	$heading = "Episodes";
 	$title = "Page {$Pagination->page} - $heading";
-	$Episodes = Episode::Get($Pagination->GetLimit());
+	$Episodes = Episodes::Get($Pagination->GetLimit());
 
 	if (isset($_GET['js']))
-		$Pagination->Respond(Episode::GetTableTbody($Episodes), '#episodes tbody');
+		$Pagination->Respond(Episodes::GetTableTbody($Episodes), '#episodes tbody');
 
 	$settings = array(
 		'title' => $title,

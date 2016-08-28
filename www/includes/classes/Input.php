@@ -181,7 +181,7 @@
 						return $code;
 				break;
 				case "epid":
-					$this->_value = Episode::ParseID($this->_value);
+					$this->_value = Episodes::ParseID($this->_value);
 					if (empty($this->_value))
 						return self::ERROR_INVALID;
 				break;

@@ -384,11 +384,11 @@
 				Input::ERROR_INVALID => 'Episode identifier (@value) is invalid',
 			)
 		)))->out();
-		$epdata = Episode::GetActual($epdata['season'], $epdata['episode']);
+		$epdata = Episodes::GetActual($epdata['season'], $epdata['episode']);
 		if (empty($epdata))
 			Response::Fail('The specified episode does not exist');
-		$insert['season'] = $epdata['season'];
-		$insert['episode'] = $epdata['episode'];
+		$insert['season'] = $epdata->season;
+		$insert['episode'] = $epdata->episode;
 
 		$insert['finished_at'] = date('c');
 
@@ -539,13 +539,13 @@
 		'fullsize' => $Image->fullsize,
 	);
 
-	$season = Episode::ValidateSeason(Episode::ALLOW_MOVIES);
-	$episode = Episode::ValidateEpisode();
-	$epdata = Episode::GetActual($season, $episode, Episode::ALLOW_MOVIES);
+	$season = Episodes::ValidateSeason(Episodes::ALLOW_MOVIES);
+	$episode = Episodes::ValidateEpisode();
+	$epdata = Episodes::GetActual($season, $episode, Episodes::ALLOW_MOVIES);
 	if (empty($epdata))
 		Response::Fail("The specified episode (S{$season}E$episode) does not exist");
-	$insert['season'] = $epdata['season'];
-	$insert['episode'] = $epdata['episode'];
+	$insert['season'] = $epdata->season;
+	$insert['episode'] = $epdata->episode;
 
 	$ByID = $currentUser['id'];
 	if (Permission::Sufficient('developer')){

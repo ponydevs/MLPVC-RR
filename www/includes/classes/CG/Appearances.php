@@ -146,9 +146,9 @@
 				$notes = '';
 				if ($hasNotes){
 					$Appearance['notes'] = preg_replace_callback('/'.EPISODE_ID_PATTERN.'/',function($a){
-						$Ep = \Episode::GetActual((int) $a[1], (int) $a[2]);
+						$Ep = \Episodes::GetActual((int) $a[1], (int) $a[2]);
 						return !empty($Ep)
-							? "<a href='/episode/S{$Ep['season']}E{$Ep['episode']}'>".\CoreUtils::AposEncode(\Episode::FormatTitle($Ep,AS_ARRAY,'title'))."</a>"
+							? "<a href='{$Ep->formatURL()}'>".\CoreUtils::AposEncode($Ep->formatTitle(AS_ARRAY,'title'))."</a>"
 							: "<strong>{$a[0]}</strong>";
 					},$Appearance['notes']);
 					$Appearance['notes'] = preg_replace_callback('/(?:^|[^\\\\])\K(?:#(\d+))\b/',function($a){
@@ -415,12 +415,12 @@
 				$List = '';
 				foreach ($EpAppearances as $tag){
 					$name = strtoupper($tag['name']);
-					$EpData = \Episode::ParseID($name);
-					$Ep = \Episode::GetActual($EpData['season'], $EpData['episode']);
+					$EpData = \Episodes::ParseID($name);
+					$Ep = \Episodes::GetActual($EpData['season'], $EpData['episode']);
 					$List .= (
 						empty($Ep)
 						? self::ExpandEpisodeTagName($name)
-						: "<a href='/episode/S{$Ep['season']}E{$Ep['episode']}'>".\Episode::FormatTitle($Ep).'</a>'
+						: "<a href='{$Ep->formatURL()}'>".$Ep->formatTitle().'</a>'
 					).', ';
 				}
 				$List = rtrim($List, ', ');

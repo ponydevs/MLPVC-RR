@@ -1,12 +1,10 @@
 <?php
 
-	$CurrentEpisode = Episode::GetLatest();
-	if (empty($CurrentEpisode)){
-		unset($CurrentEpisode);
+	$CurrentEpisode = Episodes::GetLatest();
+	if (empty($CurrentEpisode))
 		CoreUtils::LoadPage(array(
 			'title' => 'Home',
 			'view' => 'episode',
 		));
-	}
 
-	Episode::LoadPage($CurrentEpisode);
+	Episodes::LoadPage($CurrentEpisode);

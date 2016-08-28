@@ -29,14 +29,12 @@
 <?php   } ?>
 		</div>
 	</section>
-<?php   if ($view === 'episode' && !empty($CurrentEpisode)){
-			$willairtime = strtotime('+'.(!$CurrentEpisode['twoparter'] ? '30' : '60').' minutes',strtotime($CurrentEpisode['airs']));
-			$CurrentEpisode['willair'] = gmdate('c', $willairtime); ?>
+<?php   if ($view === 'episode' && !empty($CurrentEpisode)){ ?>
 	<section id="voting">
-		<h2><?=$CurrentEpisode['season']==0?'Movie':'Episode'?> rating</h2>
-		<?=Episode::GetSidebarVoting($CurrentEpisode)?>
+		<h2><?=$CurrentEpisode->isMovie?'Movie':'Episode'?> rating</h2>
+		<?=Episodes::GetSidebarVoting($CurrentEpisode)?>
 	</section>
-<?php       if (Episode::IsLatest($CurrentEpisode) && time() > $willairtime && $willairtime + (Time::$IN_SECONDS['hour']*4) > time()){ ?>
+<?php       if ($CurrentEpisode->isLatest() && time() > $CurrentEpisode->willairts && $CurrentEpisode->willairts + (Time::$IN_SECONDS['hour']*4) > time()){ ?>
 	<section id="live-update">
 		<h2>Live reload</h2>
 		<p>The episode has just aired, and posts are likely changing faster than usual.</p>
@@ -56,7 +54,7 @@
 	</section>
 <?php
 		}
-		echo Episode::GetSidebarUpcoming();
+		echo Episodes::GetSidebarUpcoming();
 	}
 	else { ?>
 

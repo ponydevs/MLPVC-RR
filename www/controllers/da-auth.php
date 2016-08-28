@@ -9,7 +9,7 @@
 		global $signedIn;
 		if ($signedIn)
 			HTTP::Redirect($_GET['state']);
-		Episode::LoadPage();
+		Episodes::LoadPage();
 	}
 	$currentUser = DeviantArt::GetToken($_GET['code']);
 	$signedIn = !empty($currentUser);
@@ -21,7 +21,7 @@
 
 		if ($err === 'user_banned')
 			$errdesc .= "\n\nIf you'd like to appeal your ban, please <a href='http://mlp-vectorclub.deviantart.com/notes/'>send the group a note</a>.";
-		Episode::LoadPage();
+		Episodes::LoadPage();
 	}
 
 	if (regex_match(new RegExp('^[a-z\d]+$','i'), $_GET['state'], $_match)){

@@ -644,7 +644,7 @@
 	window.OpenSidebarByDefault = () => Math.max(document.documentElement.clientWidth, window.innerWidth || 0) >= 1200;
 	
 	// http://stackoverflow.com/a/16861050
-	let PopupCalcCenter = (w, h) => {
+	let popupCalcCenter = (w, h) => {
 		let dualScreenLeft = typeof window.screenLeft !== 'undefined' ? window.screenLeft : screen.left,
 			dualScreenTop = typeof window.screenTop !== 'undefined' ? window.screenTop : screen.top,
 			width = window.innerWidth ? window.innerWidth : document.documentElement.clientWidth ? document.documentElement.clientWidth : screen.width,
@@ -655,7 +655,7 @@
 		return {top:top, left:left};
 	};
 	$.PopupOpenCenter = (url, title, w, h) => {
-		let calcpos = PopupCalcCenter(w,h),
+		let calcpos = popupCalcCenter(w,h),
 			newWindow = window.open(url,title,`scrollbars=yes,width=${w},height=${h},top=${calcpos.top},left=${calcpos.left}`);
 
 		if (window.focus)
@@ -664,7 +664,7 @@
 		return newWindow;
 	};
 	$.PopupMoveCenter = (popup, w, h) => {
-		let calcpos = PopupCalcCenter(w,h);
+		let calcpos = popupCalcCenter(w,h);
 		popup.resizeTo(w,h);
 		popup.moveTo(calcpos.left,calcpos.top);
 	};
@@ -707,8 +707,8 @@
 		}, 500);
 	});
 
-	let DocReadyAlwaysRun = function(){
-		console.log('> DocReadyAlwaysRun()');
+	let docReadyAlwaysRun = function(){
+		console.log('> docReadyAlwaysRun()');
 		$d.triggerHandler('paginate-refresh');
 
 		// Sign in button handler
@@ -835,7 +835,7 @@
 		_docReady(){
 			console.log('> _docReady()');
 
-			DocReadyAlwaysRun();
+			docReadyAlwaysRun();
 
 			for (var i = 0, l = this._DocReadyHandlers.length; i<l; i++){
 				this._DocReadyHandlers[i].call(window);
@@ -982,7 +982,7 @@
 						let pos = js.indexOf(src);
 
 						// TODO Come up with a proper way to handle persistent files rather than re-requesting them
-						if (pos !== -1 && !/min\/(colorguide[\.\-]|episodes-manage|moment-timezone|episode)/.test(src)){
+						if (pos !== -1 && !/min\/(colorguide[.\-]|episodes-manage|moment-timezone|episode)/.test(src)){
 							js.splice(pos, 1);
 							console.log('%cSkipped %s','color:saddlebrown',src);
 						}
@@ -1324,7 +1324,7 @@ $(function(){
 				$notifSb = $sidebar.children('.notifications');
 				$notifSbList = $notifSb.children('.notif-list');
 			};
-		function WSNotifs(signedIn){
+		function wsNotifs(signedIn){
 			if (!window.io || !signedIn)
 				return;
 
@@ -1398,8 +1398,8 @@ $(function(){
 				console.log('[WS] Disconnected');
 			});
 		}
-		WSNotifs(window.signedIn);
-		window.WSNotifications = function(signedIn){WSNotifs(signedIn)};
+		wsNotifs(window.signedIn);
+		window.WSNotifications = function(signedIn){wsNotifs(signedIn)};
 	})();
 
 	$.Navigation._docReady();

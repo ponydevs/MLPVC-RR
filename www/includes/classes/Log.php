@@ -1,6 +1,8 @@
 <?php
 
-	class Log {
+use DB\Episode;
+
+class Log {
 		static $LOG_DESCRIPTION = array(
 			'episodes' => 'Episode management',
 			'episode_modify' => 'Episode modified',
@@ -91,7 +93,7 @@
 				break;
 				case "episodes":
 					$details[] = array('Action', self::$ACTIONS[$data['action']]);
-					$details[] = array('Name', Episode::FormatTitle($data));
+					$details[] = array('Name', (new Episode($data))->formatTitle());
 					if ($data['season'] === 0)
 						$details[] = array('Overall', "#{$data['episode']}");
 					if (!empty($data['airs']))
@@ -100,11 +102,11 @@
 				break;
 				case "episode_modify":
 					$link = $data['target'];
-					$EpData = Episode::ParseID($data['target']);
+					$EpData = Episodes::ParseID($data['target']);
 					if (!empty($EpData)){
-						$Episode = Episode::GetActual($EpData['season'], $EpData['episode'], Episode::ALLOW_MOVIES);
+						$Episode = Episodes::GetActual($EpData['season'], $EpData['episode'], Episodes::ALLOW_MOVIES);
 						if (!empty($Episode))
-							$link = "<a href='".Episode::FormatURL($Episode)."'>".Episode::FormatTitle($Episode, AS_ARRAY, 'id')."</a>";
+							$link = "<a href='".$Episode->formatURL()."'>".$Episode->formatTitle(AS_ARRAY, 'id')."</a>";
 					}
 					$details[] = array('Episode', $link);
 					if (empty($Episode))
@@ -297,11 +299,11 @@
 			$details[] = array('Post',$label);
 			if (empty($Post))
 				$details[] = array('Still exists', false);
-			$EpID = Episode::FormatTitle($Post,AS_ARRAY,'id');
-			$EpData = Episode::ParseID($EpID);
-			$Episode = Episode::GetActual($EpData['season'], $EpData['episode'], Episode::ALLOW_MOVIES);
+			$EpID = (new Episode($Post))->formatTitle(AS_ARRAY,'id');
+			$EpData = Episodes::ParseID($EpID);
+			$Episode = Episodes::GetActual($EpData['season'], $EpData['episode'], Episodes::ALLOW_MOVIES);
 
-			$details[] = array('Posted under', !empty($Episode) ? "<a href='".Episode::FormatURL($Episode)."'>$EpID</a>" : $EpID.' (now deleted/moved)');
+			$details[] = array('Posted under', !empty($Episode) ? "<a href='".$Episode->formatURL()."'>$EpID</a>" : $EpID.' (now deleted/moved)');
 			if (!empty($Post)){
 				$details[] = array(($data['type'] === 'request'?'Requested':'Reserved').' by', User::GetProfileLink(User::Get($Post[$data['type'] === 'request' ? 'requested_by' : 'reserved_by'])));
 				if ($data['type'] === 'request'){
