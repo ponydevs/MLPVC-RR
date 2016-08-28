@@ -427,14 +427,19 @@ Magic aura color is unknown.', 'dabxlg3', false, '2016-07-29 15:58:59.843318+02'
 To get the muted coat/mane/other colors for any character, take the RGB value of the color, average the R, G, B values, and adjust each RGB value 50% of the way to that average. For example, if RGB is 120, 60, 120, the average is 100. The R value of 120 would then move 50%*(120-100) or 10 (ending up at 110), the G value of 60 would move 50%*(100-60) or 20 (ending up at 80). ', NULL, false, '2016-08-14 14:35:38.812358+02', NULL, NULL),
 (183, 173, 'Filly Scout Uniform', '', NULL, false, '2016-08-14 15:01:51.282362+02', NULL, NULL),
 (184, 174, 'Thorax / Changeling', '', NULL, false, '2016-08-21 14:52:09.065305+02', NULL, NULL),
-(185, 145, 'Crystal Hoof / Thorax', '', NULL, false, '2016-08-21 15:14:51.553613+02', NULL, NULL);
+(185, 145, 'Crystal Hoof / Thorax', '', NULL, false, '2016-08-21 15:14:51.553613+02', NULL, NULL),
+(186, NULL, 'Crystal Empire Guard Armor', '', NULL, false, '2016-08-24 04:33:35.761717+02', NULL, NULL),
+(187, NULL, 'Rainbow Rogue Outfit', 'Use standard cutie mark vector for broach and belt decoration', NULL, false, '2016-08-28 16:03:12.541741+02', NULL, NULL),
+(188, NULL, 'Bard Pie Outfit', '', NULL, false, '2016-08-28 18:46:45.218965+02', NULL, NULL),
+(189, NULL, 'Garbunkle''s Outfit', '', NULL, false, '2016-08-28 20:10:18.724558+02', NULL, NULL),
+(190, NULL, 'Sir McBiggen', '', NULL, false, '2016-08-28 21:13:58.627955+02', NULL, NULL);
 
 
 --
 -- Name: appearances_id_seq; Type: SEQUENCE SET; Schema: public; Owner: mlpvc-rr
 --
 
-SELECT pg_catalog.setval('appearances_id_seq', 185, true);
+SELECT pg_catalog.setval('appearances_id_seq', 190, true);
 
 
 --
@@ -1325,14 +1330,30 @@ INSERT INTO colorgroups VALUES
 (1002, 185, 'Coat', 0),
 (1003, 185, 'Mane & Tail', 1),
 (1004, 185, 'Iris', 2),
-(1005, 185, 'Cutie Mark', 3);
+(1005, 185, 'Cutie Mark', 3),
+(1007, 186, 'Helmet', 1),
+(1008, 187, 'Cloak', 1),
+(1009, 187, 'Tunic', 2),
+(1010, 187, 'Boots', 3),
+(1011, 188, 'Shirt', 1),
+(1012, 188, 'Skirt / Hat', 2),
+(1013, 188, 'Right Sleeve/Pantsleg', 3),
+(1014, 188, 'Left Sleeve/Pantsleg', 4),
+(1015, 188, 'Bells and Earrings', 5),
+(1016, 189, 'Clothes', 1),
+(1017, 189, 'Beard', 2),
+(1018, 189, 'Boots', 3),
+(1019, 189, 'Staff', 4),
+(1020, 190, 'Facial Stubble', 1),
+(1021, 190, 'Helmet', 2),
+(1022, 190, 'Armor', 3);
 
 
 --
 -- Name: colorgroups_groupid_seq; Type: SEQUENCE SET; Schema: public; Owner: mlpvc-rr
 --
 
-SELECT pg_catalog.setval('colorgroups_groupid_seq', 1006, true);
+SELECT pg_catalog.setval('colorgroups_groupid_seq', 1022, true);
 
 
 --
@@ -5019,7 +5040,131 @@ INSERT INTO colors VALUES
 (1005, 0, 'Vase Base Fill', '#385369'),
 (1005, 1, 'Vase Stripes', '#203341'),
 (1005, 2, 'Mid-Section Fill / Handles', '#317190'),
-(1005, 3, 'Horseshoes', '#7FE8E8');
+(1005, 3, 'Horseshoes', '#7FE8E8'),
+(1007, 0, 'Stroke Bottom Gradient', '#3C64A0'),
+(1007, 1, 'Stroke Top Gradient', '#8EAFC8'),
+(1007, 2, 'Main Fill Bottom Gradient', '#658EC9'),
+(1007, 3, 'Main Fill Top Gradient', '#B9E8E1'),
+(1007, 4, 'Secondary Fill Bottom Gradient', '#739CD0'),
+(1007, 5, 'Secondary Fill Top Gradient', '#D2F4F4'),
+(1007, 6, 'Decorative Stroke Btm Gradient', '#547BB3'),
+(1007, 7, 'Decorative Stroke Top Gradient', '#96B8CF'),
+(1007, 8, 'Decorative Fill Btm Gradient', '#E0EEEE'),
+(1007, 9, 'Decorative Fill Top Gradient', '#E3F0F0'),
+(1008, 0, 'Outline', '#66817E'),
+(1008, 1, 'Fill', '#9EB8B2'),
+(1008, 2, 'Stitches/Wear & Tear', '#89A39D'),
+(1008, 3, 'Stripe ', '#B7E7E3'),
+(1008, 4, 'Scarf Fill ', '#7E9C98'),
+(1008, 5, 'Broach Outline', '#B6B6B6'),
+(1008, 6, 'Broach Fill', '#EEEEEE'),
+(1009, 0, 'Outline', '#5F8090'),
+(1009, 1, 'Fill 1', '#6D9BAE'),
+(1009, 2, 'Fill 2', '#7599AA'),
+(1009, 3, 'Belt Outline', '#2F2C35'),
+(1009, 4, 'Belt Fill', '#42384F'),
+(1009, 5, 'Pouch/Armor Outline', '#9AA4A4'),
+(1009, 6, 'Pouch/Armor Fill', '#E5EBEB'),
+(1009, 7, 'Pouch Button/Armor Fill/Marks', '#C1C9C9'),
+(1009, 8, 'Buckle Outline', '#A2A2AC'),
+(1009, 9, 'Buckle Fill', '#EEEEEE'),
+(1010, 0, 'Outline', '#4E5B64'),
+(1010, 1, 'Fill', '#6B7782'),
+(1010, 2, 'Strap Outline', '#2F2C35'),
+(1010, 3, 'Strap Fill', '#42384F'),
+(1010, 4, 'Shadow Outline', '#484E54'),
+(1010, 5, 'Shadow Fill', '#5A656E'),
+(1010, 6, 'Shadow Strap Outline', '#272836'),
+(1010, 7, 'Shadow Strap Fill', '#393343'),
+(1011, 0, 'Undershirt Outline', '#5A919B'),
+(1011, 1, 'Undershirt Fill', '#79B8C0'),
+(1011, 2, 'Vest Outline', '#ECCD8C'),
+(1011, 3, 'Vest Fill', '#FFF3CE'),
+(1011, 4, 'Shadow Vest Fill', '#ECDCB8'),
+(1011, 5, 'Lacing Outline', '#A64D37'),
+(1011, 6, 'Lacing/Button Fill', '#C76545'),
+(1012, 0, 'Outline', '#517785'),
+(1012, 1, 'Fill 1', '#79B8C0'),
+(1012, 2, 'Fill 2', '#FFF3CE'),
+(1012, 3, 'Belt Outline', '#A64D37'),
+(1012, 4, 'Belt Fill', '#C76545'),
+(1012, 5, 'Buckle/Pouch Outline', '#E29D38'),
+(1012, 6, 'Buckle/Pouch Fill', '#F8BF46'),
+(1012, 7, 'Feather 1 Outline', '#E09C39'),
+(1012, 8, 'Feather 1 Fill', '#FFCF7A'),
+(1012, 9, 'Feather 2 Outline', '#E49F2D'),
+(1012, 10, 'Feature 2 Fill', '#F9BF45'),
+(1013, 0, 'Outline', '#517785'),
+(1013, 1, 'Fill 1', '#5593AA'),
+(1013, 2, 'Fill 2', '#F9E8A8'),
+(1013, 3, 'Shadow Fill', '#4A8291'),
+(1013, 4, 'Boot Outline', '#A64D37'),
+(1013, 5, 'Boot Fill', '#C76545'),
+(1014, 0, 'Outline', '#E19B32'),
+(1014, 1, 'Main Fill', '#F9BF46'),
+(1014, 2, 'Cuff Fill', '#F3AE3A'),
+(1014, 3, 'Shadow Fill', '#EB9D2A'),
+(1014, 4, 'Boot Outline', '#A54C2D'),
+(1014, 5, 'Boot Fill', '#B45431'),
+(1015, 0, 'Outline', '#A2AE9C'),
+(1015, 1, 'Fill', '#E3EDDF'),
+(1016, 0, 'Cloak Outline', '#2B6166'),
+(1016, 1, 'Cloak Fill', '#3E858C'),
+(1016, 2, 'Shirt Outline', '#8FB5C0'),
+(1016, 3, 'Shirt Fill', '#96D6D5'),
+(1016, 4, 'Belt Outline', '#2C2230'),
+(1016, 5, 'Belt Fill', '#3A3441'),
+(1016, 6, 'Belt Buckle Outline', '#878787'),
+(1016, 7, 'Belt Buckle Fill', '#B1B1B1'),
+(1016, 8, 'Hat Outline', '#397179'),
+(1016, 9, 'Hat Fill', '#37ACA1'),
+(1016, 10, 'Hat Shadow Fill', '#2B8B7F'),
+(1017, 0, 'Outline', '#8D9083'),
+(1017, 1, 'Fill 1', '#D3DAB6'),
+(1017, 2, 'Fill 2', '#E1E8CD'),
+(1018, 0, 'Outline', '#26242E'),
+(1018, 1, 'Fill', '#3A3541'),
+(1018, 2, 'Cuff Fill', '#5A5263'),
+(1018, 3, 'Sole Fill', '#231F29'),
+(1019, 0, 'Staff Outline', '#634530'),
+(1019, 1, 'Staff Fill', '#946646'),
+(1019, 2, 'Gem Outline', '#05DC9E'),
+(1019, 3, 'Gem Fill', '#84EEB0'),
+(1019, 4, 'Gem Highlight 1', '#DCFFE1'),
+(1019, 5, 'Gem Highlight 2', '#B9FFCA'),
+(1019, 6, 'Magic Effect', '#A2FFCF'),
+(1020, 0, 'Outline', '#74172F'),
+(1020, 1, 'Fill', '#AC3644'),
+(1020, 2, 'Stubble', '#491622'),
+(1021, 0, 'Outline', '#22262B'),
+(1021, 1, 'Base Fill', '#384045'),
+(1021, 2, 'Base Marks', '#646C73'),
+(1021, 3, 'Plating Fill', '#637078'),
+(1021, 4, 'Plating Shine', '#959EA7'),
+(1021, 5, 'Horn/Spike Outline', '#7C8A92'),
+(1021, 6, 'Horn/Spike Fill', '#CBD0D3'),
+(1021, 7, 'Horn/Spike Shine', '#E9EBED'),
+(1021, 8, 'Horn/Spike Shadow Fill', '#909AA3'),
+(1021, 9, 'Horn/Spike Shadow Shine', '#B2B9BE'),
+(1022, 0, 'Chain Shirt Outline', '#41484E'),
+(1022, 1, 'Chain Shirt Fill', '#636F78'),
+(1022, 2, 'Armor Outline', '#000000'),
+(1022, 3, 'Armor Fill', '#232323'),
+(1022, 4, 'Armor Marks', '#384046'),
+(1022, 5, 'Chestpiece Outline', '#21262B'),
+(1022, 6, 'Chestpiece Fill', '#384045'),
+(1022, 7, 'Chestpiece Shine', '#65727B'),
+(1022, 8, 'Chestpiece Marks', '#546066'),
+(1022, 9, 'Shoulderpiece Outline', '#21262A'),
+(1022, 10, 'Shoulderpiece Fill', '#384045'),
+(1022, 11, 'Shoulderpiece Shine', '#4D555C'),
+(1022, 12, 'Shoulderpiece Mark', '#575F65'),
+(1022, 13, 'Shoulderpiece Shadow Outline', '#1C2323'),
+(1022, 14, 'Shoulderpiece Shadow Fill', '#32393E'),
+(1022, 15, 'Shoulderpiece Shadow Shine', '#454B52'),
+(1022, 16, 'Spike Outline', '#7C8A92'),
+(1022, 17, 'Spike Fill', '#1C2323'),
+(1022, 18, 'Spike Shine', '#1C2323');
 
 
 --
@@ -5477,10 +5622,12 @@ INSERT INTO tagged VALUES
 (21, 36),
 (22, 2),
 (23, 4),
+(23, 188),
 (24, 3),
 (25, 5),
 (25, 144),
 (25, 156),
+(25, 187),
 (26, 6),
 (27, 5),
 (27, 19),
@@ -5504,6 +5651,7 @@ INSERT INTO tagged VALUES
 (29, 125),
 (29, 126),
 (30, 7),
+(30, 189),
 (31, 10),
 (32, 12),
 (33, 14),
@@ -5622,6 +5770,10 @@ INSERT INTO tagged VALUES
 (96, 144),
 (96, 181),
 (96, 183),
+(96, 186),
+(96, 187),
+(96, 188),
+(96, 189),
 (98, 62),
 (99, 22),
 (99, 26),
@@ -5905,6 +6057,12 @@ INSERT INTO tagged VALUES
 (377, 88),
 (377, 184),
 (377, 185),
+(377, 186),
+(378, 35),
+(378, 57),
+(378, 187),
+(378, 188),
+(378, 189),
 (380, 176),
 (382, 177),
 (383, 177),
@@ -5922,7 +6080,11 @@ INSERT INTO tagged VALUES
 (398, 185),
 (399, 184),
 (400, 185),
-(401, 185);
+(401, 185),
+(402, 186),
+(403, 187),
+(404, 188),
+(405, 189);
 
 
 --
@@ -5947,14 +6109,14 @@ INSERT INTO tags VALUES
 (20, 's01e26', NULL, 'ep', 0, NULL),
 (21, 's05e12', NULL, 'ep', 4, NULL),
 (22, 'applejack', NULL, 'char', 1, NULL),
-(23, 'pinkie pie', NULL, 'char', 1, NULL),
+(23, 'pinkie pie', NULL, 'char', 2, NULL),
 (24, 'fluttershy', NULL, 'char', 1, NULL),
-(25, 'rainbow dash', NULL, 'char', 3, NULL),
+(25, 'rainbow dash', NULL, 'char', 4, NULL),
 (26, 'rarity', NULL, 'char', 1, NULL),
 (27, 'wonderbolt', 'Wonderbolt characters', 'cat', 9, NULL),
 (28, 'parent', 'Parents of other characters', 'cat', 8, NULL),
 (29, 'dragon', NULL, 'spec', 4, NULL),
-(30, 'spike', NULL, 'char', 1, NULL),
+(30, 'spike', NULL, 'char', 2, NULL),
 (31, 'minuette', NULL, 'char', 1, NULL),
 (32, 'lyra heartstrings', NULL, 'char', 1, NULL),
 (33, 'fashion plate', NULL, 'char', 1, NULL),
@@ -6015,7 +6177,7 @@ INSERT INTO tags VALUES
 (93, 'rara', NULL, 'char', 0, 158),
 (94, 's05e24', NULL, 'ep', 3, NULL),
 (95, 'svengallop', NULL, 'char', 1, NULL),
-(96, 'outfit', 'Alternative character outfits', NULL, 9, NULL),
+(96, 'outfit', 'Alternative character outfits', NULL, 13, NULL),
 (97, 's05e08', NULL, 'ep', 0, NULL),
 (98, 'sunburst', NULL, 'char', 1, NULL),
 (99, 's05e26', NULL, 'ep', 5, NULL),
@@ -6275,8 +6437,8 @@ INSERT INTO tags VALUES
 (374, 's06e13', NULL, 'ep', 4, NULL),
 (375, 's06e14', NULL, 'ep', 2, NULL),
 (376, 's06e15', NULL, 'ep', 2, NULL),
-(377, 's06e16', NULL, 'ep', 7, NULL),
-(378, 's06e17', NULL, 'ep', 0, NULL),
+(377, 's06e16', NULL, 'ep', 8, NULL),
+(378, 's06e17', NULL, 'ep', 5, NULL),
 (380, 'cherry berry', NULL, 'char', 1, NULL),
 (381, 'gummy snap', NULL, 'char', 0, 231),
 (382, 's04e02', NULL, 'ep', 1, NULL),
@@ -6298,14 +6460,18 @@ INSERT INTO tags VALUES
 (398, 'thorax', NULL, 'char', 2, NULL),
 (399, 'changeling', NULL, 'spec', 1, NULL),
 (400, 'crystal hoof', NULL, 'char', 1, NULL),
-(401, 'crystal pony', NULL, 'spec', 1, NULL);
+(401, 'crystal pony', NULL, 'spec', 1, NULL),
+(402, 'guard armor', NULL, 'app', 1, NULL),
+(403, 'rainbow rogue', NULL, 'app', 1, NULL),
+(404, 'bard pie outfit', NULL, 'app', 1, NULL),
+(405, 'garbunkle', NULL, 'char', 1, NULL);
 
 
 --
 -- Name: tags_tid_seq; Type: SEQUENCE SET; Schema: public; Owner: mlpvc-rr
 --
 
-SELECT pg_catalog.setval('tags_tid_seq', 401, true);
+SELECT pg_catalog.setval('tags_tid_seq', 405, true);
 
 
 --

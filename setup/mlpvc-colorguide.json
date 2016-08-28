@@ -3781,7 +3781,8 @@
 				90,
 				92,
 				109,
-				351
+				351,
+				378
 			]
 		},
 		"32": {
@@ -16548,7 +16549,8 @@
 				149,
 				150,
 				258,
-				351
+				351,
+				378
 			]
 		},
 		"18": {
@@ -28560,6 +28562,828 @@
 				100,
 				353
 			]
+		},
+		"186": {
+			"id": 186,
+			"order": null,
+			"label": "Crystal Empire Guard Armor",
+			"notes": "",
+			"cm_favme": null,
+			"ishuman": false,
+			"added": "2016-08-24 04:33:35.761717+02",
+			"cm_preview": null,
+			"cm_dir": null,
+			"ColorGroups": {
+				"1007": {
+					"groupid": 1007,
+					"label": "Helmet",
+					"order": 1,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Stroke Bottom Gradient",
+							"hex": "#3C64A0"
+						},
+						{
+							"order": 1,
+							"label": "Stroke Top Gradient",
+							"hex": "#8EAFC8"
+						},
+						{
+							"order": 2,
+							"label": "Main Fill Bottom Gradient",
+							"hex": "#658EC9"
+						},
+						{
+							"order": 3,
+							"label": "Main Fill Top Gradient",
+							"hex": "#B9E8E1"
+						},
+						{
+							"order": 4,
+							"label": "Secondary Fill Bottom Gradient",
+							"hex": "#739CD0"
+						},
+						{
+							"order": 5,
+							"label": "Secondary Fill Top Gradient",
+							"hex": "#D2F4F4"
+						},
+						{
+							"order": 6,
+							"label": "Decorative Stroke Btm Gradient",
+							"hex": "#547BB3"
+						},
+						{
+							"order": 7,
+							"label": "Decorative Stroke Top Gradient",
+							"hex": "#96B8CF"
+						},
+						{
+							"order": 8,
+							"label": "Decorative Fill Btm Gradient",
+							"hex": "#E0EEEE"
+						},
+						{
+							"order": 9,
+							"label": "Decorative Fill Top Gradient",
+							"hex": "#E3F0F0"
+						}
+					]
+				}
+			},
+			"TagIDs": [
+				96,
+				377,
+				402
+			]
+		},
+		"187": {
+			"id": 187,
+			"order": null,
+			"label": "Rainbow Rogue Outfit",
+			"notes": "Use standard cutie mark vector for broach and belt decoration",
+			"cm_favme": null,
+			"ishuman": false,
+			"added": "2016-08-28 16:03:12.541741+02",
+			"cm_preview": null,
+			"cm_dir": null,
+			"ColorGroups": {
+				"1008": {
+					"groupid": 1008,
+					"label": "Cloak",
+					"order": 1,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#66817E"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#9EB8B2"
+						},
+						{
+							"order": 2,
+							"label": "Stitches/Wear & Tear",
+							"hex": "#89A39D"
+						},
+						{
+							"order": 3,
+							"label": "Stripe ",
+							"hex": "#B7E7E3"
+						},
+						{
+							"order": 4,
+							"label": "Scarf Fill ",
+							"hex": "#7E9C98"
+						},
+						{
+							"order": 5,
+							"label": "Broach Outline",
+							"hex": "#B6B6B6"
+						},
+						{
+							"order": 6,
+							"label": "Broach Fill",
+							"hex": "#EEEEEE"
+						}
+					]
+				},
+				"1009": {
+					"groupid": 1009,
+					"label": "Tunic",
+					"order": 2,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#5F8090"
+						},
+						{
+							"order": 1,
+							"label": "Fill 1",
+							"hex": "#6D9BAE"
+						},
+						{
+							"order": 2,
+							"label": "Fill 2",
+							"hex": "#7599AA"
+						},
+						{
+							"order": 3,
+							"label": "Belt Outline",
+							"hex": "#2F2C35"
+						},
+						{
+							"order": 4,
+							"label": "Belt Fill",
+							"hex": "#42384F"
+						},
+						{
+							"order": 5,
+							"label": "Pouch/Armor Outline",
+							"hex": "#9AA4A4"
+						},
+						{
+							"order": 6,
+							"label": "Pouch/Armor Fill",
+							"hex": "#E5EBEB"
+						},
+						{
+							"order": 7,
+							"label": "Pouch Button/Armor Fill/Marks",
+							"hex": "#C1C9C9"
+						},
+						{
+							"order": 8,
+							"label": "Buckle Outline",
+							"hex": "#A2A2AC"
+						},
+						{
+							"order": 9,
+							"label": "Buckle Fill",
+							"hex": "#EEEEEE"
+						}
+					]
+				},
+				"1010": {
+					"groupid": 1010,
+					"label": "Boots",
+					"order": 3,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#4E5B64"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#6B7782"
+						},
+						{
+							"order": 2,
+							"label": "Strap Outline",
+							"hex": "#2F2C35"
+						},
+						{
+							"order": 3,
+							"label": "Strap Fill",
+							"hex": "#42384F"
+						},
+						{
+							"order": 4,
+							"label": "Shadow Outline",
+							"hex": "#484E54"
+						},
+						{
+							"order": 5,
+							"label": "Shadow Fill",
+							"hex": "#5A656E"
+						},
+						{
+							"order": 6,
+							"label": "Shadow Strap Outline",
+							"hex": "#272836"
+						},
+						{
+							"order": 7,
+							"label": "Shadow Strap Fill",
+							"hex": "#393343"
+						}
+					]
+				}
+			},
+			"TagIDs": [
+				25,
+				96,
+				378,
+				403
+			]
+		},
+		"188": {
+			"id": 188,
+			"order": null,
+			"label": "Bard Pie Outfit",
+			"notes": "",
+			"cm_favme": null,
+			"ishuman": false,
+			"added": "2016-08-28 18:46:45.218965+02",
+			"cm_preview": null,
+			"cm_dir": null,
+			"ColorGroups": {
+				"1011": {
+					"groupid": 1011,
+					"label": "Shirt",
+					"order": 1,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Undershirt Outline",
+							"hex": "#5A919B"
+						},
+						{
+							"order": 1,
+							"label": "Undershirt Fill",
+							"hex": "#79B8C0"
+						},
+						{
+							"order": 2,
+							"label": "Vest Outline",
+							"hex": "#ECCD8C"
+						},
+						{
+							"order": 3,
+							"label": "Vest Fill",
+							"hex": "#FFF3CE"
+						},
+						{
+							"order": 4,
+							"label": "Shadow Vest Fill",
+							"hex": "#ECDCB8"
+						},
+						{
+							"order": 5,
+							"label": "Lacing Outline",
+							"hex": "#A64D37"
+						},
+						{
+							"order": 6,
+							"label": "Lacing/Button Fill",
+							"hex": "#C76545"
+						}
+					]
+				},
+				"1012": {
+					"groupid": 1012,
+					"label": "Skirt / Hat",
+					"order": 2,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#517785"
+						},
+						{
+							"order": 1,
+							"label": "Fill 1",
+							"hex": "#79B8C0"
+						},
+						{
+							"order": 2,
+							"label": "Fill 2",
+							"hex": "#FFF3CE"
+						},
+						{
+							"order": 3,
+							"label": "Belt Outline",
+							"hex": "#A64D37"
+						},
+						{
+							"order": 4,
+							"label": "Belt Fill",
+							"hex": "#C76545"
+						},
+						{
+							"order": 5,
+							"label": "Buckle/Pouch Outline",
+							"hex": "#E29D38"
+						},
+						{
+							"order": 6,
+							"label": "Buckle/Pouch Fill",
+							"hex": "#F8BF46"
+						},
+						{
+							"order": 7,
+							"label": "Feather 1 Outline",
+							"hex": "#E09C39"
+						},
+						{
+							"order": 8,
+							"label": "Feather 1 Fill",
+							"hex": "#FFCF7A"
+						},
+						{
+							"order": 9,
+							"label": "Feather 2 Outline",
+							"hex": "#E49F2D"
+						},
+						{
+							"order": 10,
+							"label": "Feature 2 Fill",
+							"hex": "#F9BF45"
+						}
+					]
+				},
+				"1013": {
+					"groupid": 1013,
+					"label": "Right Sleeve/Pantsleg",
+					"order": 3,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#517785"
+						},
+						{
+							"order": 1,
+							"label": "Fill 1",
+							"hex": "#5593AA"
+						},
+						{
+							"order": 2,
+							"label": "Fill 2",
+							"hex": "#F9E8A8"
+						},
+						{
+							"order": 3,
+							"label": "Shadow Fill",
+							"hex": "#4A8291"
+						},
+						{
+							"order": 4,
+							"label": "Boot Outline",
+							"hex": "#A64D37"
+						},
+						{
+							"order": 5,
+							"label": "Boot Fill",
+							"hex": "#C76545"
+						}
+					]
+				},
+				"1014": {
+					"groupid": 1014,
+					"label": "Left Sleeve/Pantsleg",
+					"order": 4,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#E19B32"
+						},
+						{
+							"order": 1,
+							"label": "Main Fill",
+							"hex": "#F9BF46"
+						},
+						{
+							"order": 2,
+							"label": "Cuff Fill",
+							"hex": "#F3AE3A"
+						},
+						{
+							"order": 3,
+							"label": "Shadow Fill",
+							"hex": "#EB9D2A"
+						},
+						{
+							"order": 4,
+							"label": "Boot Outline",
+							"hex": "#A54C2D"
+						},
+						{
+							"order": 5,
+							"label": "Boot Fill",
+							"hex": "#B45431"
+						}
+					]
+				},
+				"1015": {
+					"groupid": 1015,
+					"label": "Bells and Earrings",
+					"order": 5,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#A2AE9C"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#E3EDDF"
+						}
+					]
+				}
+			},
+			"TagIDs": [
+				23,
+				96,
+				147,
+				378,
+				404
+			]
+		},
+		"189": {
+			"id": 189,
+			"order": null,
+			"label": "Garbunkle's Outfit",
+			"notes": "",
+			"cm_favme": null,
+			"ishuman": false,
+			"added": "2016-08-28 20:10:18.724558+02",
+			"cm_preview": null,
+			"cm_dir": null,
+			"ColorGroups": {
+				"1016": {
+					"groupid": 1016,
+					"label": "Clothes",
+					"order": 1,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Cloak Outline",
+							"hex": "#2B6166"
+						},
+						{
+							"order": 1,
+							"label": "Cloak Fill",
+							"hex": "#3E858C"
+						},
+						{
+							"order": 2,
+							"label": "Shirt Outline",
+							"hex": "#8FB5C0"
+						},
+						{
+							"order": 3,
+							"label": "Shirt Fill",
+							"hex": "#96D6D5"
+						},
+						{
+							"order": 4,
+							"label": "Belt Outline",
+							"hex": "#2C2230"
+						},
+						{
+							"order": 5,
+							"label": "Belt Fill",
+							"hex": "#3A3441"
+						},
+						{
+							"order": 6,
+							"label": "Belt Buckle Outline",
+							"hex": "#878787"
+						},
+						{
+							"order": 7,
+							"label": "Belt Buckle Fill",
+							"hex": "#B1B1B1"
+						},
+						{
+							"order": 8,
+							"label": "Hat Outline",
+							"hex": "#397179"
+						},
+						{
+							"order": 9,
+							"label": "Hat Fill",
+							"hex": "#37ACA1"
+						},
+						{
+							"order": 10,
+							"label": "Hat Shadow Fill",
+							"hex": "#2B8B7F"
+						}
+					]
+				},
+				"1017": {
+					"groupid": 1017,
+					"label": "Beard",
+					"order": 2,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#8D9083"
+						},
+						{
+							"order": 1,
+							"label": "Fill 1",
+							"hex": "#D3DAB6"
+						},
+						{
+							"order": 2,
+							"label": "Fill 2",
+							"hex": "#E1E8CD"
+						}
+					]
+				},
+				"1018": {
+					"groupid": 1018,
+					"label": "Boots",
+					"order": 3,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#26242E"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#3A3541"
+						},
+						{
+							"order": 2,
+							"label": "Cuff Fill",
+							"hex": "#5A5263"
+						},
+						{
+							"order": 3,
+							"label": "Sole Fill",
+							"hex": "#231F29"
+						}
+					]
+				},
+				"1019": {
+					"groupid": 1019,
+					"label": "Staff",
+					"order": 4,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Staff Outline",
+							"hex": "#634530"
+						},
+						{
+							"order": 1,
+							"label": "Staff Fill",
+							"hex": "#946646"
+						},
+						{
+							"order": 2,
+							"label": "Gem Outline",
+							"hex": "#05DC9E"
+						},
+						{
+							"order": 3,
+							"label": "Gem Fill",
+							"hex": "#84EEB0"
+						},
+						{
+							"order": 4,
+							"label": "Gem Highlight 1",
+							"hex": "#DCFFE1"
+						},
+						{
+							"order": 5,
+							"label": "Gem Highlight 2",
+							"hex": "#B9FFCA"
+						},
+						{
+							"order": 6,
+							"label": "Magic Effect",
+							"hex": "#A2FFCF"
+						}
+					]
+				}
+			},
+			"TagIDs": [
+				30,
+				96,
+				378,
+				405
+			]
+		},
+		"190": {
+			"id": 190,
+			"order": null,
+			"label": "Sir McBiggen",
+			"notes": "",
+			"cm_favme": null,
+			"ishuman": false,
+			"added": "2016-08-28 21:13:58.627955+02",
+			"cm_preview": null,
+			"cm_dir": null,
+			"ColorGroups": {
+				"1020": {
+					"groupid": 1020,
+					"label": "Facial Stubble",
+					"order": 1,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#74172F"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#AC3644"
+						},
+						{
+							"order": 2,
+							"label": "Stubble",
+							"hex": "#491622"
+						}
+					]
+				},
+				"1021": {
+					"groupid": 1021,
+					"label": "Helmet",
+					"order": 2,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#22262B"
+						},
+						{
+							"order": 1,
+							"label": "Base Fill",
+							"hex": "#384045"
+						},
+						{
+							"order": 2,
+							"label": "Base Marks",
+							"hex": "#646C73"
+						},
+						{
+							"order": 3,
+							"label": "Plating Fill",
+							"hex": "#637078"
+						},
+						{
+							"order": 4,
+							"label": "Plating Shine",
+							"hex": "#959EA7"
+						},
+						{
+							"order": 5,
+							"label": "Horn/Spike Outline",
+							"hex": "#7C8A92"
+						},
+						{
+							"order": 6,
+							"label": "Horn/Spike Fill",
+							"hex": "#CBD0D3"
+						},
+						{
+							"order": 7,
+							"label": "Horn/Spike Shine",
+							"hex": "#E9EBED"
+						},
+						{
+							"order": 8,
+							"label": "Horn/Spike Shadow Fill",
+							"hex": "#909AA3"
+						},
+						{
+							"order": 9,
+							"label": "Horn/Spike Shadow Shine",
+							"hex": "#B2B9BE"
+						}
+					]
+				},
+				"1022": {
+					"groupid": 1022,
+					"label": "Armor",
+					"order": 3,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Chain Shirt Outline",
+							"hex": "#41484E"
+						},
+						{
+							"order": 1,
+							"label": "Chain Shirt Fill",
+							"hex": "#636F78"
+						},
+						{
+							"order": 2,
+							"label": "Armor Outline",
+							"hex": "#000000"
+						},
+						{
+							"order": 3,
+							"label": "Armor Fill",
+							"hex": "#232323"
+						},
+						{
+							"order": 4,
+							"label": "Armor Marks",
+							"hex": "#384046"
+						},
+						{
+							"order": 5,
+							"label": "Chestpiece Outline",
+							"hex": "#21262B"
+						},
+						{
+							"order": 6,
+							"label": "Chestpiece Fill",
+							"hex": "#384045"
+						},
+						{
+							"order": 7,
+							"label": "Chestpiece Shine",
+							"hex": "#65727B"
+						},
+						{
+							"order": 8,
+							"label": "Chestpiece Marks",
+							"hex": "#546066"
+						},
+						{
+							"order": 9,
+							"label": "Shoulderpiece Outline",
+							"hex": "#21262A"
+						},
+						{
+							"order": 10,
+							"label": "Shoulderpiece Fill",
+							"hex": "#384045"
+						},
+						{
+							"order": 11,
+							"label": "Shoulderpiece Shine",
+							"hex": "#4D555C"
+						},
+						{
+							"order": 12,
+							"label": "Shoulderpiece Mark",
+							"hex": "#575F65"
+						},
+						{
+							"order": 13,
+							"label": "Shoulderpiece Shadow Outline",
+							"hex": "#1C2323"
+						},
+						{
+							"order": 14,
+							"label": "Shoulderpiece Shadow Fill",
+							"hex": "#32393E"
+						},
+						{
+							"order": 15,
+							"label": "Shoulderpiece Shadow Shine",
+							"hex": "#454B52"
+						},
+						{
+							"order": 16,
+							"label": "Spike Outline",
+							"hex": "#7C8A92"
+						},
+						{
+							"order": 17,
+							"label": "Spike Fill",
+							"hex": "#CBD0D3"
+						},
+						{
+							"order": 18,
+							"label": "Spike Shine",
+							"hex": "#E9EBED"
+						}
+					]
+				}
+			},
+			"TagIDs": []
 		}
 	},
 	"Tags": {
@@ -28704,7 +29528,7 @@
 			"name": "pinkie pie",
 			"title": null,
 			"type": "char",
-			"uses": 1,
+			"uses": 2,
 			"synonym_of": null
 		},
 		"24": {
@@ -28720,7 +29544,7 @@
 			"name": "rainbow dash",
 			"title": null,
 			"type": "char",
-			"uses": 3,
+			"uses": 4,
 			"synonym_of": null
 		},
 		"26": {
@@ -28760,7 +29584,7 @@
 			"name": "spike",
 			"title": null,
 			"type": "char",
-			"uses": 1,
+			"uses": 2,
 			"synonym_of": null
 		},
 		"31": {
@@ -29248,7 +30072,7 @@
 			"name": "outfit",
 			"title": "Alternative character outfits",
 			"type": null,
-			"uses": 9,
+			"uses": 13,
 			"synonym_of": null
 		},
 		"97": {
@@ -31328,7 +32152,7 @@
 			"name": "s06e16",
 			"title": null,
 			"type": "ep",
-			"uses": 7,
+			"uses": 8,
 			"synonym_of": null
 		},
 		"378": {
@@ -31336,7 +32160,7 @@
 			"name": "s06e17",
 			"title": null,
 			"type": "ep",
-			"uses": 0,
+			"uses": 5,
 			"synonym_of": null
 		},
 		"380": {
@@ -31512,6 +32336,38 @@
 			"name": "crystal pony",
 			"title": null,
 			"type": "spec",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"402": {
+			"tid": 402,
+			"name": "guard armor",
+			"title": null,
+			"type": "app",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"403": {
+			"tid": 403,
+			"name": "rainbow rogue",
+			"title": null,
+			"type": "app",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"404": {
+			"tid": 404,
+			"name": "bard pie outfit",
+			"title": null,
+			"type": "app",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"405": {
+			"tid": 405,
+			"name": "garbunkle",
+			"title": null,
+			"type": "char",
 			"uses": 1,
 			"synonym_of": null
 		}
