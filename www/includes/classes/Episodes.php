@@ -563,13 +563,13 @@ HTML;
 
 				if (!empty($TaggedAppearances)){
 					$pages = CoreUtils::MakePlural('page', count($TaggedAppearances));
-					$HTML .= "<section class='appearances'><h2>Related <a href='/cg'>$Color Guide</a> $pages</h2><p>";
-					$LINKS = '';
+					$HTML .= "<section class='appearances'><h2>Related <a href='/cg'>$Color Guide</a> $pages</h2>";
+					$LINKS = '<ul>';
 					foreach ($TaggedAppearances as $p){
 						$safeLabel = \CG\Appearances::GetSafeLabel($p);
-						$LINKS .= "<a href='/cg/v/{$p['id']}-$safeLabel'>{$p['label']}</a>, ";
+						$LINKS .= "<li><a href='/cg/v/{$p['id']}-$safeLabel'>{$p['label']}</a></li>";
 					}
-					$HTML .= rtrim($LINKS,', ').'</p></section>';
+					$HTML .= "$LINKS</p></section>";
 				}
 			}
 			return $HTML;

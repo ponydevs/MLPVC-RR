@@ -297,7 +297,7 @@ class Posts {
 			$loading = $loaders ? ' loading' : '';
 
 			return <<<HTML
-	<section id="requests">
+	<section id="requests" class="posts">
 		<div class="unfinished$loading">
 			<h2>List of Requests$makeRq</h2>
 			$Groups
@@ -347,7 +347,7 @@ HTML;
 			$loading = $loaders ? ' loading' : '';
 
 			return <<<HTML
-	<section id="reservations">
+	<section id="reservations" class="posts">
 		<div class="unfinished$loading">
 			<h2>List of Reservations$makeRes</h2>
 			<ul>{$Arranged['unfinished']}</ul>
