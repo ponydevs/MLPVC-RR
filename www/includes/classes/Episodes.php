@@ -151,7 +151,7 @@ class Episodes {
 		 *                              If array: Uses specified arra as Episode data
 		 */
 		static function LoadPage($force = null){
-			global $data, $CurrentEpisode, $Latest, $Database, $PrevEpisode, $NextEpisode;
+			global $data, $CurrentEpisode, $Database, $PrevEpisode, $NextEpisode;
 
 			if ($force instanceof Episode)
 				$CurrentEpisode = $force;
@@ -167,8 +167,8 @@ class Episodes {
 					? self::GetLatest()
 					: self::GetActual($EpData['season'], $EpData['episode']);
 			}
-			if (!empty($CurrentEpisode))
-				$Latest = empty($EpData) ? true : $CurrentEpisode->isLatest();
+			if (empty($CurrentEpisode))
+				CoreUtils::NotFound();
 
 			$url = $CurrentEpisode->formatURL();
 			CoreUtils::FixPath($url);
