@@ -140,7 +140,7 @@ ALTER TABLE tagged OWNER TO "mlpvc-rr";
 
 CREATE TABLE tags (
     tid integer NOT NULL,
-    name character varying(25) NOT NULL,
+    name character varying(30) NOT NULL,
     title character varying(255),
     type character varying(4),
     uses integer DEFAULT 0 NOT NULL,

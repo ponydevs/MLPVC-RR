@@ -190,7 +190,7 @@ DocReady.push(function ColorguideManage(){
 	});
 
 	let $EditTagFormTemplate = $.mk('form','edit-tag');
-	$EditTagFormTemplate.append('<label><span>Tag name (3-30 chars.)</span><input type="text" name="name" required pattern="^.{3,30}$" maxlength="30"></label>');
+	$EditTagFormTemplate.append('<label><span>Tag name (3-30 chars.)</span><input type="text" name="name" required pattern="^[^-][ -~]{2,29}$" maxlength="30"></label>');
 	let _typeSelect =
 		`<div class='type-selector'>
 			<label>
