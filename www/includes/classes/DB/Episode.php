@@ -30,7 +30,7 @@ class Episode extends AbstractFillable {
 	 * @param array|object
 	 */
 	public function __construct($iter = null){
-		parent::__construct($iter);
+		parent::__construct($this, $iter);
 
 		$this->isMovie = $this->season === 0;
 		$this->twoparter = !empty($this->twoparter);

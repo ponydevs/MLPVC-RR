@@ -6,12 +6,14 @@ abstract class AbstractFillable {
 	/**
 	 * Makes the class' properties fillable from an array/object for easy instantiation
 	 *
-	 * @param array|object
+	 * @param object       $child
+	 * @param array|object $iteratable
 	 */
-	public function __construct($iteratable = null){
+	public function __construct($child, $iteratable = null){
 		if (!empty($iteratable)){
+			$childClassName = get_class($child);
 			foreach ($iteratable as $k => $v)
-				if (property_exists(get_called_class(), $k))
+				if (property_exists($childClassName, $k))
 					$this->$k = $v;
 		}
 	}
