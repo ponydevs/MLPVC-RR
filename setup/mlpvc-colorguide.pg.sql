@@ -5870,7 +5870,11 @@ INSERT INTO tagged VALUES
 (101, 46),
 (102, 29),
 (103, 29),
+(104, 9),
+(104, 11),
 (104, 30),
+(104, 34),
+(104, 75),
 (104, 136),
 (105, 30),
 (105, 31),
@@ -5927,6 +5931,10 @@ INSERT INTO tagged VALUES
 (171, 83),
 (171, 84),
 (171, 85),
+(173, 9),
+(173, 34),
+(173, 57),
+(173, 75),
 (173, 82),
 (173, 83),
 (173, 84),
@@ -6174,7 +6182,10 @@ INSERT INTO tagged VALUES
 (404, 188),
 (405, 189),
 (406, 190),
-(407, 191);
+(407, 191),
+(409, 101),
+(411, 64),
+(411, 120);
 
 
 --
@@ -6556,14 +6567,18 @@ INSERT INTO tags VALUES
 (404, 'bard pie outfit', NULL, 'app', 1, NULL),
 (405, 'garbunkle', NULL, 'char', 1, NULL),
 (406, 'sir mcbiggen', NULL, 'char', 1, NULL),
-(407, 'captain wuzz', NULL, 'char', 1, NULL);
+(407, 'captain wuzz', NULL, 'char', 1, NULL),
+(408, 'false', NULL, 'ep', 0, NULL),
+(409, 's04e23', NULL, 'ep', 0, NULL),
+(410, 's04e22', NULL, 'ep', 0, NULL),
+(411, 's04e21', NULL, 'ep', 0, NULL);
 
 
 --
 -- Name: tags_tid_seq; Type: SEQUENCE SET; Schema: public; Owner: mlpvc-rr
 --
 
-SELECT pg_catalog.setval('tags_tid_seq', 407, true);
+SELECT pg_catalog.setval('tags_tid_seq', 411, true);
 
 
 --
