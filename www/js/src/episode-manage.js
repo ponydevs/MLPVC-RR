@@ -276,6 +276,16 @@ DocReady.push(function EpisodeManage(){
 				$.Dialog.wait(title, 'Sending reservation to the server');
 
 				$.post(`/post/reserve-request/${id}`, data, $.mkAjaxHandler(function(){
+					if (this.retry)
+						return $.Dialog.confirm(false, this.message, function(sure){
+							if (!sure) return;
+
+							data.screwit = true;
+							send(data);
+						});
+					else if (!this.status)
+						return $.Dialog.fail(false, this.message);
+
 					if (this.li){
 						let $newli = $(this.li);
 						if ($li.hasClass('highlight'))
@@ -284,9 +294,7 @@ DocReady.push(function EpisodeManage(){
 						Time.Update();
 						$newli.trigger('bind-more-handlers', [id, type]);
 					}
-					if (!this.status)
-						return $.Dialog.fail(false, this.message);
-					else $.Dialog.close();
+					$.Dialog.close();
 				}));
 			};
 

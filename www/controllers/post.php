@@ -290,8 +290,8 @@
 					$User = User::Get($reserve_as, 'name');
 					if (empty($User))
 						Response::Fail('User does not exist');
-					if (!Permission::Sufficient('member', $User['role']))
-						Response::Fail('User does not have permission to reserve posts');
+					if (!Permission::Sufficient('member', $User['role']) && !isset($_POST['screwit']))
+						Response::Fail('User does not have permission to reserve posts, continue anyway?', array('retry' => true));
 
 					$update['reserved_by'] = $User['id'];
 				}
