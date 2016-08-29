@@ -11,8 +11,8 @@ abstract class AbstractFillable {
 	public function __construct($iteratable = null){
 		if (!empty($iteratable)){
 			foreach ($iteratable as $k => $v)
-				if (property_exists(__CLASS__, $k))
-					$this->{$k} = $v;
+				if (property_exists(get_called_class(), $k))
+					$this->$k = $v;
 		}
 	}
 }
