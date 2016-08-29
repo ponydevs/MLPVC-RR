@@ -282,7 +282,7 @@ if (!POST_REQUEST)
 				}
 			}
 			else {
-				$MatchingID = $Database->whereEp($insert)->getOne('episodes');
+				$MatchingID = $Database->whereEp($insert['season'], $insert['episode'])->getOne('episodes');
 				if (!empty($MatchingID))
 					Response::Fail(($isMovie?'A movie':'An episode').' with the same '.($isMovie?'overall':'season and episode').' number already exists');
 			}
