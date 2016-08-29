@@ -562,13 +562,19 @@ HTML;
 					ORDER BY p.label");
 
 				if (!empty($TaggedAppearances)){
+					$hidePreviews = UserPrefs::Get('ep_noappprev');
 					$pages = CoreUtils::MakePlural('page', count($TaggedAppearances));
 					$HTML .= "<section class='appearances'><h2>Related <a href='/cg'>$Color Guide</a> $pages</h2>";
 					$LINKS = '<ul>';
 					foreach ($TaggedAppearances as $p){
 						$safeLabel = \CG\Appearances::GetSafeLabel($p);
-						$preview = \CG\Appearances::GetPreviewURL($p);
-						$LINKS .= "<li><a href='/cg/v/{$p['id']}-$safeLabel'><img src='$preview' class='preview'>{$p['label']}</a></li>";
+						if ($hidePreviews)
+							$preview = '';
+						else {
+							$preview = \CG\Appearances::GetPreviewURL($p);
+							$preview = "<img src='$preview' class='preview'>";
+						}
+						$LINKS .= "<li><a href='/cg/v/{$p['id']}-$safeLabel'>$preview{$p['label']}</a></li>";
 					}
 					$HTML .= "$LINKS</p></section>";
 				}

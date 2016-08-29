@@ -171,6 +171,18 @@ HTML;
 				</label>
 			</form>
 		</section>
+		<section class="eppage-settings">
+			<h2><?=$sameUser?User::$PROFILE_SECTION_PRIVACY_LEVEL['staff']:''?>Episode pages</h2>
+			<form action="/preference/set/ep_noappprev">
+				<label>
+					<input type="checkbox" name="value" value="1"<?=UserPrefs::Get('ep_noappprev', $User['id'])?' checked':''?> <?=!$sameUser?' disabled':''?>>
+					<span>Hide preview squares in front of related appearance names</span>
+<?php           if ($sameUser){ ?>
+					<button class="save typcn typcn-tick green" disabled>Save</button>
+<?php           } ?>
+				</label>
+			</form>
+		</section>
 		<section class="personal-settings">
 			<h2><?=$sameUser?User::$PROFILE_SECTION_PRIVACY_LEVEL['staff']:''?>Personal</h2>
 <?php           if (Permission::Insufficient('developer', $User['role'])){ ?>

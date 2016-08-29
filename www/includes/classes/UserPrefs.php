@@ -10,6 +10,7 @@
 				'p_vectorapp' => '',
 				'p_hidediscord' => 0,
 				'p_disable_ga' => 0,
+				'ep_noappprev' => 0,
 			);
 
 		/**
