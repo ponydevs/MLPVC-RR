@@ -77,6 +77,14 @@
 						throw new Exception('The requested image could not be found on Derpibooru');
 					$Data = JSON::Decode($Data, true);
 
+					if (isset($Data['duplicate_of']))
+						return $this->_getDirectUrl($Data['duplicate_of']);
+
+					if (!isset($Data['is_rendered'])){
+						error_log("Invalid Derpibooru response for ID $id\n".var_export($Data,true));
+						throw new Exception('Derpibooru returned an invalid API response. This issue has been logged, please <a class="send-feedback">remind us</a> to take a look.');
+					}
+
 					if (!$Data['is_rendered'])
 						throw new Exception('The image was found but it hasn\'t been rendered yet. Please wait for it to render and try again shortly.');
 

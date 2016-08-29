@@ -396,7 +396,7 @@
 		if (!is_int($postid))
 			Response::DBError();
 
-		if ($insert['lock'])
+		if (!empty($insert['lock']))
 			Log::Action('post_lock',array(
 				'type' => 'reservation',
 				'id' => $postid,

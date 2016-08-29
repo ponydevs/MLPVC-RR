@@ -90,7 +90,7 @@ DocReady.push(function EpisodeManage(){
 									.addClass('episode')
 									.insertBefore($content.children('section').first());
 							$epSection.html($(this.epsection).filter('section').html());
-							BindVideoButtons();
+							bindVideoButtons();
 						}
 						else if ($epSection.length){
 							$epSection.remove();
@@ -221,7 +221,7 @@ DocReady.push(function EpisodeManage(){
 		}));
 	});
 
-	function BindVideoButtons(){
+	function bindVideoButtons(){
 		let $embedWrap,
 			$showPlayers = $('.episode').find('.showplayers').on('scroll-video-into-view',function(){
 				let hh = $header.outerHeight();
@@ -268,7 +268,7 @@ DocReady.push(function EpisodeManage(){
 			});
 		}
 	}
-	BindVideoButtons();
+	bindVideoButtons();
 
 	function reservePost($li, reserveAs, id, type){
 		let title = 'Reserving request',
