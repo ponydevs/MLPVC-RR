@@ -28641,7 +28641,7 @@
 		"187": {
 			"id": 187,
 			"order": null,
-			"label": "Rainbow Rogue Outfit",
+			"label": "Rainbow Rogue's Outfit",
 			"notes": "Use standard cutie mark vector for broach and belt decoration",
 			"cm_favme": null,
 			"ishuman": false,
@@ -28806,7 +28806,7 @@
 		"188": {
 			"id": 188,
 			"order": null,
-			"label": "Bard Pie Outfit",
+			"label": "Bard Pie's Outfit",
 			"notes": "",
 			"cm_favme": null,
 			"ishuman": false,
@@ -29193,7 +29193,7 @@
 		"190": {
 			"id": 190,
 			"order": null,
-			"label": "Sir McBiggen",
+			"label": "Sir McBiggen's Outfit",
 			"notes": "",
 			"cm_favme": null,
 			"ishuman": false,
@@ -29381,9 +29381,458 @@
 							"hex": "#E9EBED"
 						}
 					]
+				},
+				"1023": {
+					"groupid": 1023,
+					"label": "Scabboard",
+					"order": 4,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#382E2A"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#533B2C"
+						},
+						{
+							"order": 2,
+							"label": "Support Outline",
+							"hex": "#554D49"
+						},
+						{
+							"order": 3,
+							"label": "Support Fill",
+							"hex": "#736A66"
+						},
+						{
+							"order": 4,
+							"label": "Wrap Outline/Strap",
+							"hex": "#261D1B"
+						},
+						{
+							"order": 5,
+							"label": "Wrap Fill",
+							"hex": "#302621"
+						}
+					]
+				},
+				"1024": {
+					"groupid": 1024,
+					"label": "Sword",
+					"order": 5,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Blade Outline",
+							"hex": "#382F2C"
+						},
+						{
+							"order": 1,
+							"label": "Blade Fill",
+							"hex": "#726A65"
+						},
+						{
+							"order": 2,
+							"label": "Blade Flat Fill",
+							"hex": "#534D4C"
+						},
+						{
+							"order": 3,
+							"label": "Blade Shine",
+							"hex": "#817674"
+						},
+						{
+							"order": 4,
+							"label": "Blade Flat Shine",
+							"hex": "#655D5A"
+						},
+						{
+							"order": 5,
+							"label": "Hilt Outline",
+							"hex": "#866A27"
+						},
+						{
+							"order": 6,
+							"label": "Hilt Fill",
+							"hex": "#CFAD62"
+						},
+						{
+							"order": 7,
+							"label": "Hilt Fill 2",
+							"hex": "#AF8C34"
+						},
+						{
+							"order": 8,
+							"label": "Handle Wrap Outline",
+							"hex": "#3B2E28"
+						},
+						{
+							"order": 9,
+							"label": "Handle Wrap Fill",
+							"hex": "#51433D"
+						}
+					]
+				},
+				"1025": {
+					"groupid": 1025,
+					"label": "Magic",
+					"order": 6,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Aura",
+							"hex": "#EFBF71"
+						}
+					]
 				}
 			},
-			"TagIDs": []
+			"TagIDs": [
+				66,
+				96,
+				149,
+				150,
+				378,
+				406
+			]
+		},
+		"191": {
+			"id": 191,
+			"order": null,
+			"label": "Captain Wuzz's Outfit",
+			"notes": "",
+			"cm_favme": null,
+			"ishuman": false,
+			"added": "2016-08-29 00:32:59.43181+02",
+			"cm_preview": null,
+			"cm_dir": null,
+			"ColorGroups": {
+				"1026": {
+					"groupid": 1026,
+					"label": "Hair",
+					"order": 1,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Flowing Hair Outline",
+							"hex": "#E2CC65"
+						},
+						{
+							"order": 1,
+							"label": "Flowing Hair Fill",
+							"hex": "#FFFFDD"
+						},
+						{
+							"order": 2,
+							"label": "Braid Outline",
+							"hex": "#E4D181"
+						},
+						{
+							"order": 3,
+							"label": "Braid Fill 1",
+							"hex": "#FFF3C6"
+						},
+						{
+							"order": 4,
+							"label": "Braid Fill 2",
+							"hex": "#FFEEAD"
+						}
+					]
+				},
+				"1027": {
+					"groupid": 1027,
+					"label": "Tunic",
+					"order": 2,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Tunic Outline",
+							"hex": "#5B7950"
+						},
+						{
+							"order": 1,
+							"label": "Tunic Fill",
+							"hex": "#82A758"
+						},
+						{
+							"order": 2,
+							"label": "Tunic Marks",
+							"hex": "#A7C577"
+						},
+						{
+							"order": 3,
+							"label": "Cloak Outline",
+							"hex": "#AB7A32"
+						},
+						{
+							"order": 4,
+							"label": "Cloak Fill",
+							"hex": "#DDA538"
+						},
+						{
+							"order": 5,
+							"label": "Cloak Shadow Fill",
+							"hex": "#BA8733"
+						},
+						{
+							"order": 6,
+							"label": "Broach Outline",
+							"hex": "#F4D75D"
+						},
+						{
+							"order": 7,
+							"label": "Broach Fill 1",
+							"hex": "#FFF6B5"
+						},
+						{
+							"order": 8,
+							"label": "Broach Fill 2",
+							"hex": "#FFF29C"
+						},
+						{
+							"order": 9,
+							"label": "Strap Outline",
+							"hex": "#291F14"
+						},
+						{
+							"order": 10,
+							"label": "Strap Fill",
+							"hex": "#493B29"
+						},
+						{
+							"order": 11,
+							"label": "Gem Outline",
+							"hex": "#DDA538"
+						},
+						{
+							"order": 12,
+							"label": "Gem Fill 1",
+							"hex": "#FFEC50"
+						},
+						{
+							"order": 13,
+							"label": "Gem Fill 2",
+							"hex": "#FFF7A2"
+						},
+						{
+							"order": 14,
+							"label": "Gem Fill 3",
+							"hex": "#F7D75B"
+						},
+						{
+							"order": 15,
+							"label": "Gem Fill 4",
+							"hex": "#EFC55C"
+						},
+						{
+							"order": 16,
+							"label": "Gem Fill 5",
+							"hex": "#E7B64F"
+						},
+						{
+							"order": 17,
+							"label": "Buckle Outline",
+							"hex": "#DDA538"
+						},
+						{
+							"order": 18,
+							"label": "Buckle Fill",
+							"hex": "#F4D75D"
+						}
+					]
+				},
+				"1028": {
+					"groupid": 1028,
+					"label": "Arms/Bucklers",
+					"order": 3,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Sleeve Outline",
+							"hex": "#56544C"
+						},
+						{
+							"order": 1,
+							"label": "Sleeve Fill",
+							"hex": "#79726B"
+						},
+						{
+							"order": 2,
+							"label": "Buckler Outline",
+							"hex": "#292115"
+						},
+						{
+							"order": 3,
+							"label": "Buckler Fill",
+							"hex": "#493B27"
+						},
+						{
+							"order": 4,
+							"label": "Buckler Straps",
+							"hex": "#DCA539"
+						},
+						{
+							"order": 5,
+							"label": "Parsnip Hand Outline",
+							"hex": "#D8B776"
+						},
+						{
+							"order": 6,
+							"label": "Parsnip Hand Fill",
+							"hex": "#F9ECB9"
+						}
+					]
+				},
+				"1029": {
+					"groupid": 1029,
+					"label": "Boots",
+					"order": 4,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Boots Outline",
+							"hex": "#2D1F0D"
+						},
+						{
+							"order": 1,
+							"label": "Boots Fill",
+							"hex": "#493B27"
+						},
+						{
+							"order": 2,
+							"label": "Cuff Outline",
+							"hex": "#57534D"
+						},
+						{
+							"order": 3,
+							"label": "Cuff Fill",
+							"hex": "#75736B"
+						}
+					]
+				},
+				"1030": {
+					"groupid": 1030,
+					"label": "Bow",
+					"order": 5,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Bow",
+							"hex": "#AD9572"
+						},
+						{
+							"order": 1,
+							"label": "Handle",
+							"hex": "#745A32"
+						},
+						{
+							"order": 2,
+							"label": "Handle Wrap",
+							"hex": "#728B7F"
+						},
+						{
+							"order": 3,
+							"label": "Handle Wrap Edge",
+							"hex": "#516960"
+						},
+						{
+							"order": 4,
+							"label": "Drawstring",
+							"hex": "#B7CAD0"
+						},
+						{
+							"order": 5,
+							"label": "Arrowhead Edge",
+							"hex": "#9BACB8"
+						},
+						{
+							"order": 6,
+							"label": "Arrowhead Flat",
+							"hex": "#506A78"
+						},
+						{
+							"order": 7,
+							"label": "Arrowhead base",
+							"hex": "#632919"
+						},
+						{
+							"order": 8,
+							"label": "Arrow",
+							"hex": "#59472A"
+						},
+						{
+							"order": 9,
+							"label": "Arrow Tail Fill 1",
+							"hex": "#E9E1D6"
+						},
+						{
+							"order": 10,
+							"label": "Arrow Tail Fill 2",
+							"hex": "#3983CD"
+						}
+					]
+				},
+				"1031": {
+					"groupid": 1031,
+					"label": "Quiver",
+					"order": 6,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#6F4F2D"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#936737"
+						},
+						{
+							"order": 2,
+							"label": "Stripe",
+							"hex": "#DEB25C"
+						},
+						{
+							"order": 3,
+							"label": "Shadow Fill",
+							"hex": "#7E582E"
+						},
+						{
+							"order": 4,
+							"label": "Arrow Outline",
+							"hex": "#4A5640"
+						},
+						{
+							"order": 5,
+							"label": "Arrow 1 Fill 1",
+							"hex": "#6D7B5E"
+						},
+						{
+							"order": 6,
+							"label": "Arrow 1 Fill 2",
+							"hex": "#8C9A7E"
+						},
+						{
+							"order": 7,
+							"label": "Arrow 2 Fill 1 ",
+							"hex": "#56654D"
+						},
+						{
+							"order": 8,
+							"label": "Arrow 2 Fill 2",
+							"hex": "#6E8065"
+						}
+					]
+				}
+			},
+			"TagIDs": [
+				89,
+				96,
+				378,
+				407
+			]
 		}
 	},
 	"Tags": {
@@ -29864,7 +30313,7 @@
 			"name": "big mcintosh",
 			"title": null,
 			"type": "char",
-			"uses": 1,
+			"uses": 2,
 			"synonym_of": null
 		},
 		"68": {
@@ -30016,7 +30465,7 @@
 			"name": "discord",
 			"title": null,
 			"type": "char",
-			"uses": 1,
+			"uses": 2,
 			"synonym_of": null
 		},
 		"90": {
@@ -30072,7 +30521,7 @@
 			"name": "outfit",
 			"title": "Alternative character outfits",
 			"type": null,
-			"uses": 13,
+			"uses": 15,
 			"synonym_of": null
 		},
 		"97": {
@@ -32160,7 +32609,7 @@
 			"name": "s06e17",
 			"title": null,
 			"type": "ep",
-			"uses": 5,
+			"uses": 7,
 			"synonym_of": null
 		},
 		"380": {
@@ -32366,6 +32815,22 @@
 		"405": {
 			"tid": 405,
 			"name": "garbunkle",
+			"title": null,
+			"type": "char",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"406": {
+			"tid": 406,
+			"name": "sir mcbiggen",
+			"title": null,
+			"type": "char",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"407": {
+			"tid": 407,
+			"name": "captain wuzz",
 			"title": null,
 			"type": "char",
 			"uses": 1,

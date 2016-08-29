@@ -429,17 +429,18 @@ To get the muted coat/mane/other colors for any character, take the RGB value of
 (184, 174, 'Thorax / Changeling', '', NULL, false, '2016-08-21 14:52:09.065305+02', NULL, NULL),
 (185, 145, 'Crystal Hoof / Thorax', '', NULL, false, '2016-08-21 15:14:51.553613+02', NULL, NULL),
 (186, NULL, 'Crystal Empire Guard Armor', '', NULL, false, '2016-08-24 04:33:35.761717+02', NULL, NULL),
-(187, NULL, 'Rainbow Rogue Outfit', 'Use standard cutie mark vector for broach and belt decoration', NULL, false, '2016-08-28 16:03:12.541741+02', NULL, NULL),
-(188, NULL, 'Bard Pie Outfit', '', NULL, false, '2016-08-28 18:46:45.218965+02', NULL, NULL),
+(187, NULL, 'Rainbow Rogue''s Outfit', 'Use standard cutie mark vector for broach and belt decoration', NULL, false, '2016-08-28 16:03:12.541741+02', NULL, NULL),
+(188, NULL, 'Bard Pie''s Outfit', '', NULL, false, '2016-08-28 18:46:45.218965+02', NULL, NULL),
 (189, NULL, 'Garbunkle''s Outfit', '', NULL, false, '2016-08-28 20:10:18.724558+02', NULL, NULL),
-(190, NULL, 'Sir McBiggen', '', NULL, false, '2016-08-28 21:13:58.627955+02', NULL, NULL);
+(190, NULL, 'Sir McBiggen''s Outfit', '', NULL, false, '2016-08-28 21:13:58.627955+02', NULL, NULL),
+(191, NULL, 'Captain Wuzz''s Outfit', '', NULL, false, '2016-08-29 00:32:59.43181+02', NULL, NULL);
 
 
 --
 -- Name: appearances_id_seq; Type: SEQUENCE SET; Schema: public; Owner: mlpvc-rr
 --
 
-SELECT pg_catalog.setval('appearances_id_seq', 190, true);
+SELECT pg_catalog.setval('appearances_id_seq', 191, true);
 
 
 --
@@ -1346,14 +1347,23 @@ INSERT INTO colorgroups VALUES
 (1019, 189, 'Staff', 4),
 (1020, 190, 'Facial Stubble', 1),
 (1021, 190, 'Helmet', 2),
-(1022, 190, 'Armor', 3);
+(1022, 190, 'Armor', 3),
+(1023, 190, 'Scabboard', 4),
+(1024, 190, 'Sword', 5),
+(1025, 190, 'Magic', 6),
+(1026, 191, 'Hair', 1),
+(1027, 191, 'Tunic', 2),
+(1028, 191, 'Arms/Bucklers', 3),
+(1029, 191, 'Boots', 4),
+(1030, 191, 'Bow', 5),
+(1031, 191, 'Quiver', 6);
 
 
 --
 -- Name: colorgroups_groupid_seq; Type: SEQUENCE SET; Schema: public; Owner: mlpvc-rr
 --
 
-SELECT pg_catalog.setval('colorgroups_groupid_seq', 1022, true);
+SELECT pg_catalog.setval('colorgroups_groupid_seq', 1031, true);
 
 
 --
@@ -5163,8 +5173,80 @@ INSERT INTO colors VALUES
 (1022, 14, 'Shoulderpiece Shadow Fill', '#32393E'),
 (1022, 15, 'Shoulderpiece Shadow Shine', '#454B52'),
 (1022, 16, 'Spike Outline', '#7C8A92'),
-(1022, 17, 'Spike Fill', '#1C2323'),
-(1022, 18, 'Spike Shine', '#1C2323');
+(1022, 17, 'Spike Fill', '#CBD0D3'),
+(1022, 18, 'Spike Shine', '#E9EBED'),
+(1023, 0, 'Outline', '#382E2A'),
+(1023, 1, 'Fill', '#533B2C'),
+(1023, 2, 'Support Outline', '#554D49'),
+(1023, 3, 'Support Fill', '#736A66'),
+(1023, 4, 'Wrap Outline/Strap', '#261D1B'),
+(1023, 5, 'Wrap Fill', '#302621'),
+(1024, 0, 'Blade Outline', '#382F2C'),
+(1024, 1, 'Blade Fill', '#726A65'),
+(1024, 2, 'Blade Flat Fill', '#534D4C'),
+(1024, 3, 'Blade Shine', '#817674'),
+(1024, 4, 'Blade Flat Shine', '#655D5A'),
+(1024, 5, 'Hilt Outline', '#866A27'),
+(1024, 6, 'Hilt Fill', '#CFAD62'),
+(1024, 7, 'Hilt Fill 2', '#AF8C34'),
+(1024, 8, 'Handle Wrap Outline', '#3B2E28'),
+(1024, 9, 'Handle Wrap Fill', '#51433D'),
+(1025, 0, 'Aura', '#EFBF71'),
+(1026, 0, 'Flowing Hair Outline', '#E2CC65'),
+(1026, 1, 'Flowing Hair Fill', '#FFFFDD'),
+(1026, 2, 'Braid Outline', '#E4D181'),
+(1026, 3, 'Braid Fill 1', '#FFF3C6'),
+(1026, 4, 'Braid Fill 2', '#FFEEAD'),
+(1027, 0, 'Tunic Outline', '#5B7950'),
+(1027, 1, 'Tunic Fill', '#82A758'),
+(1027, 2, 'Tunic Marks', '#A7C577'),
+(1027, 3, 'Cloak Outline', '#AB7A32'),
+(1027, 4, 'Cloak Fill', '#DDA538'),
+(1027, 5, 'Cloak Shadow Fill', '#BA8733'),
+(1027, 6, 'Broach Outline', '#F4D75D'),
+(1027, 7, 'Broach Fill 1', '#FFF6B5'),
+(1027, 8, 'Broach Fill 2', '#FFF29C'),
+(1027, 9, 'Strap Outline', '#291F14'),
+(1027, 10, 'Strap Fill', '#493B29'),
+(1027, 11, 'Gem Outline', '#DDA538'),
+(1027, 12, 'Gem Fill 1', '#FFEC50'),
+(1027, 13, 'Gem Fill 2', '#FFF7A2'),
+(1027, 14, 'Gem Fill 3', '#F7D75B'),
+(1027, 15, 'Gem Fill 4', '#EFC55C'),
+(1027, 16, 'Gem Fill 5', '#E7B64F'),
+(1027, 17, 'Buckle Outline', '#DDA538'),
+(1027, 18, 'Buckle Fill', '#F4D75D'),
+(1028, 0, 'Sleeve Outline', '#56544C'),
+(1028, 1, 'Sleeve Fill', '#79726B'),
+(1028, 2, 'Buckler Outline', '#292115'),
+(1028, 3, 'Buckler Fill', '#493B27'),
+(1028, 4, 'Buckler Straps', '#DCA539'),
+(1028, 5, 'Parsnip Hand Outline', '#D8B776'),
+(1028, 6, 'Parsnip Hand Fill', '#F9ECB9'),
+(1029, 0, 'Boots Outline', '#2D1F0D'),
+(1029, 1, 'Boots Fill', '#493B27'),
+(1029, 2, 'Cuff Outline', '#57534D'),
+(1029, 3, 'Cuff Fill', '#75736B'),
+(1030, 0, 'Bow', '#AD9572'),
+(1030, 1, 'Handle', '#745A32'),
+(1030, 2, 'Handle Wrap', '#728B7F'),
+(1030, 3, 'Handle Wrap Edge', '#516960'),
+(1030, 4, 'Drawstring', '#B7CAD0'),
+(1030, 5, 'Arrowhead Edge', '#9BACB8'),
+(1030, 6, 'Arrowhead Flat', '#506A78'),
+(1030, 7, 'Arrowhead base', '#632919'),
+(1030, 8, 'Arrow', '#59472A'),
+(1030, 9, 'Arrow Tail Fill 1', '#E9E1D6'),
+(1030, 10, 'Arrow Tail Fill 2', '#3983CD'),
+(1031, 0, 'Outline', '#6F4F2D'),
+(1031, 1, 'Fill', '#936737'),
+(1031, 2, 'Stripe', '#DEB25C'),
+(1031, 3, 'Shadow Fill', '#7E582E'),
+(1031, 4, 'Arrow Outline', '#4A5640'),
+(1031, 5, 'Arrow 1 Fill 1', '#6D7B5E'),
+(1031, 6, 'Arrow 1 Fill 2', '#8C9A7E'),
+(1031, 7, 'Arrow 2 Fill 1 ', '#56654D'),
+(1031, 8, 'Arrow 2 Fill 2', '#6E8065');
 
 
 --
@@ -5727,6 +5809,7 @@ INSERT INTO tagged VALUES
 (65, 27),
 (65, 28),
 (66, 35),
+(66, 190),
 (72, 37),
 (74, 39),
 (75, 40),
@@ -5754,6 +5837,7 @@ INSERT INTO tagged VALUES
 (87, 133),
 (88, 56),
 (89, 57),
+(89, 191),
 (90, 57),
 (91, 58),
 (92, 57),
@@ -5774,6 +5858,8 @@ INSERT INTO tagged VALUES
 (96, 187),
 (96, 188),
 (96, 189),
+(96, 190),
+(96, 191),
 (98, 62),
 (99, 22),
 (99, 26),
@@ -6063,6 +6149,8 @@ INSERT INTO tagged VALUES
 (378, 187),
 (378, 188),
 (378, 189),
+(378, 190),
+(378, 191),
 (380, 176),
 (382, 177),
 (383, 177),
@@ -6084,7 +6172,9 @@ INSERT INTO tagged VALUES
 (402, 186),
 (403, 187),
 (404, 188),
-(405, 189);
+(405, 189),
+(406, 190),
+(407, 191);
 
 
 --
@@ -6151,7 +6241,7 @@ INSERT INTO tags VALUES
 (63, 'princess celestia', NULL, 'char', 1, NULL),
 (64, 'object', NULL, 'cat', 5, NULL),
 (65, 's05e02', NULL, 'ep', 4, NULL),
-(66, 'big mcintosh', NULL, 'char', 1, NULL),
+(66, 'big mcintosh', NULL, 'char', 2, NULL),
 (68, 'moondancer', NULL, 'char', 0, 162),
 (72, 'dinky doo', NULL, 'char', 1, NULL),
 (73, 'berry pinch', NULL, 'char', 0, 116),
@@ -6170,14 +6260,14 @@ INSERT INTO tags VALUES
 (86, 's05e20', NULL, 'ep', 5, NULL),
 (87, 'spitfire', NULL, 'char', 2, NULL),
 (88, 'lightning dust', NULL, 'char', 1, NULL),
-(89, 'discord', NULL, 'char', 1, NULL),
+(89, 'discord', NULL, 'char', 2, NULL),
 (90, 'draconequus', NULL, 'spec', 1, NULL),
 (91, 'tree hugger', NULL, 'char', 1, NULL),
 (92, 's05e22', NULL, 'ep', 1, NULL),
 (93, 'rara', NULL, 'char', 0, 158),
 (94, 's05e24', NULL, 'ep', 3, NULL),
 (95, 'svengallop', NULL, 'char', 1, NULL),
-(96, 'outfit', 'Alternative character outfits', NULL, 13, NULL),
+(96, 'outfit', 'Alternative character outfits', NULL, 15, NULL),
 (97, 's05e08', NULL, 'ep', 0, NULL),
 (98, 'sunburst', NULL, 'char', 1, NULL),
 (99, 's05e26', NULL, 'ep', 5, NULL),
@@ -6438,7 +6528,7 @@ INSERT INTO tags VALUES
 (375, 's06e14', NULL, 'ep', 2, NULL),
 (376, 's06e15', NULL, 'ep', 2, NULL),
 (377, 's06e16', NULL, 'ep', 8, NULL),
-(378, 's06e17', NULL, 'ep', 5, NULL),
+(378, 's06e17', NULL, 'ep', 7, NULL),
 (380, 'cherry berry', NULL, 'char', 1, NULL),
 (381, 'gummy snap', NULL, 'char', 0, 231),
 (382, 's04e02', NULL, 'ep', 1, NULL),
@@ -6464,14 +6554,16 @@ INSERT INTO tags VALUES
 (402, 'guard armor', NULL, 'app', 1, NULL),
 (403, 'rainbow rogue', NULL, 'app', 1, NULL),
 (404, 'bard pie outfit', NULL, 'app', 1, NULL),
-(405, 'garbunkle', NULL, 'char', 1, NULL);
+(405, 'garbunkle', NULL, 'char', 1, NULL),
+(406, 'sir mcbiggen', NULL, 'char', 1, NULL),
+(407, 'captain wuzz', NULL, 'char', 1, NULL);
 
 
 --
 -- Name: tags_tid_seq; Type: SEQUENCE SET; Schema: public; Owner: mlpvc-rr
 --
 
-SELECT pg_catalog.setval('tags_tid_seq', 405, true);
+SELECT pg_catalog.setval('tags_tid_seq', 407, true);
 
 
 --
