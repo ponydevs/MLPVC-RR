@@ -557,7 +557,7 @@
 				Response::Fail('The user you wanted to post as does not exist');
 
 			if ($type === 'reservation' && !Permission::Sufficient('member', $PostAs['role']) && !isset($_POST['allow_nonmember']))
-				Response::Fail('The user you wanted to post as is not a club member, so you want to post as them anyway?',array('canforce' => true));
+				Response::Fail('The user you wanted to post as is not a club member, do you want to post as them anyway?',array('canforce' => true));
 
 			$ByID = $PostAs['id'];
 		}

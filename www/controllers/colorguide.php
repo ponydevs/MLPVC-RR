@@ -924,7 +924,7 @@
 	$GUIDE_MANAGE_CSS = array(
 		"$do-manage",
 	);
-
+	//                                                  [111]             [22]    [3333333333333333]
 	if (regex_match(new RegExp('^(?:appearance|v)/(?:.*?(\d+)(?:-.*)?)(?:([sp])?\.(png|svg|json|gpl))?'),$data,$_match)){
 		$asFile = !empty($_match[3]);
 		$AppearanceID = intval($_match[1], 10);
@@ -944,13 +944,13 @@
 		if ($asFile){
 			switch ($_match[3]){
 				case 'png':
-					if (!empty($_match[2])) switch ($_match[3]){
+					if (!empty($_match[2])) switch ($_match[2]){
 						case "s": CGUtils::RenderSpritePNG($Appearance['id']);
 						default: CoreUtils::NotFound();
 					}
 					CGUtils::RenderAppearancePNG($Appearance);
 				case 'svg':
-					if (!empty($_match[2])) switch ($_match[3]){
+					if (!empty($_match[2])) switch ($_match[2]){
 						case "s": CGUtils::RenderSpriteSVG($Appearance['id']);
 						case "p": CGUtils::RenderPreviewSVG($Appearance['id']);
 						default: CoreUtils::NotFound();
