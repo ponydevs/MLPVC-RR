@@ -52,12 +52,6 @@
 		CoreUtils::NotFound();
 	}
 
-/*	$eptags = $CGDb->where('type','ep')->get('tags');
-	foreach ($eptags as $t){
-		$CGDb->where('tid', $t['tid'])->update('tags',array('name' => CGUtils::CheckEpisodeTagName($t['name'])));
-	}
-	die();*/
-
 	// Static redirects
 	switch ($do){
 		// PAGES

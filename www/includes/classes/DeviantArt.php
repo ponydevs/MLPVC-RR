@@ -114,7 +114,7 @@
 				}
 
 				$insert = array(
-					'title' => $json['title'],
+					'title' => regex_replace(new RegExp('\\\\\''),"'",$json['title']),
 					'preview' => URL::MakeHttps($json['thumbnail_url']),
 					'fullsize' => URL::MakeHttps(isset($json['fullsize_url']) ? $json['fullsize_url'] : $json['url']),
 					'provider' => $type,
