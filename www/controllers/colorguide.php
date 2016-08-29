@@ -925,10 +925,9 @@
 		"$do-manage",
 	);
 
-	$_match = array();
-	if (regex_match(new RegExp('^(?:appearance|v)/(?:.*?(\d+)|(\d+)(?:-.*)?)(?:([sp])?\.(png|svg|json|gpl))?'),$data,$_match)){
-		$asFile = !empty($_match[4]);
-		$AppearanceID = intval(!empty($_match[1]) ? $_match[1] : $_match[2], 10);
+	if (regex_match(new RegExp('^(?:appearance|v)/(?:.*?(\d+)(?:-.*)?)(?:([sp])?\.(png|svg|json|gpl))?'),$data,$_match)){
+		$asFile = !empty($_match[3]);
+		$AppearanceID = intval($_match[1], 10);
 		$Appearance = $CGDb->where('id', $AppearanceID)->getOne('appearances', $asFile ? 'id,label,cm_dir,ishuman' : null);
 		if (empty($Appearance))
 			CoreUtils::NotFound();
@@ -943,15 +942,15 @@
 		}
 
 		if ($asFile){
-			switch ($_match[4]){
+			switch ($_match[3]){
 				case 'png':
-					if (!empty($_match[3])) switch ($_match[3]){
+					if (!empty($_match[2])) switch ($_match[3]){
 						case "s": CGUtils::RenderSpritePNG($Appearance['id']);
 						default: CoreUtils::NotFound();
 					}
 					CGUtils::RenderAppearancePNG($Appearance);
 				case 'svg':
-					if (!empty($_match[3])) switch ($_match[3]){
+					if (!empty($_match[2])) switch ($_match[3]){
 						case "s": CGUtils::RenderSpriteSVG($Appearance['id']);
 						case "p": CGUtils::RenderPreviewSVG($Appearance['id']);
 						default: CoreUtils::NotFound();
