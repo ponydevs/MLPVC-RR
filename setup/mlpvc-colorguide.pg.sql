@@ -3850,7 +3850,7 @@ INSERT INTO colors VALUES
 (689, 1, 'Eyebrows', '#67431C'),
 (690, 0, 'Fill 1', '#FFFFFF'),
 (690, 1, 'Fill 2', '#D2E9E6'),
-(691, 13, 'Aura', NULL),
+(691, 0, 'Aura', '#B1DEF3'),
 (692, 0, 'Outline', '#C0860D'),
 (692, 1, 'Fill', '#F1B83F'),
 (692, 2, 'Shadow Outline', '#B07C10'),

@@ -6646,9 +6646,9 @@
 					"order": 4,
 					"Colors": [
 						{
-							"order": 13,
+							"order": 0,
 							"label": "Aura",
-							"hex": null
+							"hex": "#B1DEF3"
 						}
 					]
 				}
