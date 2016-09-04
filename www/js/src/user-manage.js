@@ -3,7 +3,7 @@ DocReady.push(function UserManage(){
 	'use strict';
 	if (typeof window.ROLES === 'undefined') return;
 	var $content = $('#content'),
-		$name = $content.children('h1').children().eq(1),
+		$name = $content.find('.briefing h1').children().eq(1),
 		name = $name.text().trim(),
 		$currRole = $name.parent().next(),
 		currRole = $currRole.children('span').text(),
