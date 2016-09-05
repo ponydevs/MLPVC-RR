@@ -6778,9 +6778,9 @@
 					"order": 4,
 					"Colors": [
 						{
-							"order": 13,
+							"order": 0,
 							"label": "Aura",
-							"hex": null
+							"hex": "#A98FD2"
 						}
 					]
 				}
@@ -29844,6 +29844,71 @@
 				378,
 				407
 			]
+		},
+		"192": {
+			"id": 192,
+			"order": null,
+			"label": "Ponyville Buckball Uniform",
+			"notes": "",
+			"cm_favme": null,
+			"ishuman": false,
+			"added": "2016-09-04 18:51:17.047778+02",
+			"cm_preview": null,
+			"cm_dir": null,
+			"ColorGroups": {
+				"1032": {
+					"groupid": 1032,
+					"label": "Uniform",
+					"order": 1,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#553A96"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#6962BA"
+						},
+						{
+							"order": 2,
+							"label": "Stripe",
+							"hex": "#CCF2F2"
+						},
+						{
+							"order": 3,
+							"label": "Pinstripe",
+							"hex": "#77CDD2"
+						},
+						{
+							"order": 4,
+							"label": "Buttons",
+							"hex": "#4E1F69"
+						},
+						{
+							"order": 5,
+							"label": "Shadow Outline",
+							"hex": "#481E88"
+						},
+						{
+							"order": 6,
+							"label": "Shadow Fill",
+							"hex": "#5C44AA"
+						},
+						{
+							"order": 7,
+							"label": "Shadow Pinstripe",
+							"hex": "#74ACCB"
+						}
+					]
+				}
+			},
+			"TagIDs": [
+				96,
+				395,
+				412
+			]
 		}
 	},
 	"Tags": {
@@ -30532,7 +30597,7 @@
 			"name": "outfit",
 			"title": "Alternative character outfits",
 			"type": null,
-			"uses": 15,
+			"uses": 16,
 			"synonym_of": null
 		},
 		"97": {
@@ -32748,7 +32813,7 @@
 			"name": "s06e18",
 			"title": null,
 			"type": "ep",
-			"uses": 0,
+			"uses": 1,
 			"synonym_of": null
 		},
 		"396": {
@@ -32877,6 +32942,14 @@
 			"title": null,
 			"type": "ep",
 			"uses": 0,
+			"synonym_of": null
+		},
+		"412": {
+			"tid": 412,
+			"name": "ponyville buckball team",
+			"title": null,
+			"type": "app",
+			"uses": 1,
 			"synonym_of": null
 		}
 	}

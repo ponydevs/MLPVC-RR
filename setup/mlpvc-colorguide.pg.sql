@@ -433,14 +433,15 @@ To get the muted coat/mane/other colors for any character, take the RGB value of
 (188, NULL, 'Bard Pie''s Outfit', '', NULL, false, '2016-08-28 18:46:45.218965+02', NULL, NULL),
 (189, NULL, 'Garbunkle''s Outfit', '', NULL, false, '2016-08-28 20:10:18.724558+02', NULL, NULL),
 (190, NULL, 'Sir McBiggen''s Outfit', '', NULL, false, '2016-08-28 21:13:58.627955+02', NULL, NULL),
-(191, NULL, 'Captain Wuzz''s Outfit', '', NULL, false, '2016-08-29 00:32:59.43181+02', NULL, NULL);
+(191, NULL, 'Captain Wuzz''s Outfit', '', NULL, false, '2016-08-29 00:32:59.43181+02', NULL, NULL),
+(192, NULL, 'Ponyville Buckball Uniform', '', NULL, false, '2016-09-04 18:51:17.047778+02', NULL, NULL);
 
 
 --
 -- Name: appearances_id_seq; Type: SEQUENCE SET; Schema: public; Owner: mlpvc-rr
 --
 
-SELECT pg_catalog.setval('appearances_id_seq', 191, true);
+SELECT pg_catalog.setval('appearances_id_seq', 192, true);
 
 
 --
@@ -1356,14 +1357,15 @@ INSERT INTO colorgroups VALUES
 (1028, 191, 'Arms/Bucklers', 3),
 (1029, 191, 'Boots', 4),
 (1030, 191, 'Bow', 5),
-(1031, 191, 'Quiver', 6);
+(1031, 191, 'Quiver', 6),
+(1032, 192, 'Uniform', 1);
 
 
 --
 -- Name: colorgroups_groupid_seq; Type: SEQUENCE SET; Schema: public; Owner: mlpvc-rr
 --
 
-SELECT pg_catalog.setval('colorgroups_groupid_seq', 1031, true);
+SELECT pg_catalog.setval('colorgroups_groupid_seq', 1032, true);
 
 
 --
@@ -3865,7 +3867,7 @@ INSERT INTO colors VALUES
 (695, 3, 'Snail Shell Lines', '#7B44A8'),
 (695, 4, 'Eyes', '#FFFFFF'),
 (695, 5, 'Irises', '#000000'),
-(696, 13, 'Aura', NULL),
+(696, 0, 'Aura', '#A98FD2'),
 (697, 0, 'Outline', '#1E1E1E'),
 (697, 1, 'Fill', '#505050'),
 (697, 2, 'Shadow Outline', '#161616'),
@@ -5246,7 +5248,15 @@ INSERT INTO colors VALUES
 (1031, 5, 'Arrow 1 Fill 1', '#6D7B5E'),
 (1031, 6, 'Arrow 1 Fill 2', '#8C9A7E'),
 (1031, 7, 'Arrow 2 Fill 1 ', '#56654D'),
-(1031, 8, 'Arrow 2 Fill 2', '#6E8065');
+(1031, 8, 'Arrow 2 Fill 2', '#6E8065'),
+(1032, 0, 'Outline', '#553A96'),
+(1032, 1, 'Fill', '#6962BA'),
+(1032, 2, 'Stripe', '#CCF2F2'),
+(1032, 3, 'Pinstripe', '#77CDD2'),
+(1032, 4, 'Buttons', '#4E1F69'),
+(1032, 5, 'Shadow Outline', '#481E88'),
+(1032, 6, 'Shadow Fill', '#5C44AA'),
+(1032, 7, 'Shadow Pinstripe', '#74ACCB');
 
 
 --
@@ -5860,6 +5870,7 @@ INSERT INTO tagged VALUES
 (96, 189),
 (96, 190),
 (96, 191),
+(96, 192),
 (98, 62),
 (99, 22),
 (99, 26),
@@ -6172,6 +6183,7 @@ INSERT INTO tagged VALUES
 (391, 180),
 (392, 181),
 (393, 183),
+(395, 192),
 (398, 184),
 (398, 185),
 (399, 184),
@@ -6185,7 +6197,8 @@ INSERT INTO tagged VALUES
 (407, 191),
 (409, 101),
 (411, 64),
-(411, 120);
+(411, 120),
+(412, 192);
 
 
 --
@@ -6278,7 +6291,7 @@ INSERT INTO tags VALUES
 (93, 'rara', NULL, 'char', 0, 158),
 (94, 's05e24', NULL, 'ep', 3, NULL),
 (95, 'svengallop', NULL, 'char', 1, NULL),
-(96, 'outfit', 'Alternative character outfits', NULL, 15, NULL),
+(96, 'outfit', 'Alternative character outfits', NULL, 16, NULL),
 (97, 's05e08', NULL, 'ep', 0, NULL),
 (98, 'sunburst', NULL, 'char', 1, NULL),
 (99, 's05e26', NULL, 'ep', 5, NULL),
@@ -6555,7 +6568,7 @@ INSERT INTO tags VALUES
 (392, 'cheerleader', NULL, NULL, 1, NULL),
 (393, 'filly scout uniform', NULL, 'app', 1, NULL),
 (394, 'bon-bon', NULL, 'char', 0, 224),
-(395, 's06e18', NULL, 'ep', 0, NULL),
+(395, 's06e18', NULL, 'ep', 1, NULL),
 (396, 's06e20', NULL, 'ep', 0, NULL),
 (397, 's06e21', NULL, 'ep', 0, NULL),
 (398, 'thorax', NULL, 'char', 2, NULL),
@@ -6571,14 +6584,15 @@ INSERT INTO tags VALUES
 (408, 'false', NULL, 'ep', 0, NULL),
 (409, 's04e23', NULL, 'ep', 0, NULL),
 (410, 's04e22', NULL, 'ep', 0, NULL),
-(411, 's04e21', NULL, 'ep', 0, NULL);
+(411, 's04e21', NULL, 'ep', 0, NULL),
+(412, 'ponyville buckball team', NULL, 'app', 1, NULL);
 
 
 --
 -- Name: tags_tid_seq; Type: SEQUENCE SET; Schema: public; Owner: mlpvc-rr
 --
 
-SELECT pg_catalog.setval('tags_tid_seq', 411, true);
+SELECT pg_catalog.setval('tags_tid_seq', 412, true);
 
 
 --
