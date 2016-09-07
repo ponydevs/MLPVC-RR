@@ -12,6 +12,7 @@ swimg = "\u0089PNG\r\n\x1A\n\x00\x00\x00\rIHDR\x00\x00\x00\u0088\x00\x00\x006\b\
 // </JSON_PARSER>
 
 // <SETUP>
+// jshint -W055
 var madeNewDoc = app.documents.length === 0,
 	_Document = !madeNewDoc ? app.activeDocument : app.documents.add(DocumentColorSpace.RGB),
 	title = 'Import swatches from JSON (by MLP-VectorClub, version 1.1)';
@@ -121,11 +122,17 @@ browsebtn.onClick = function(){
 						if (!cg.hasOwnProperty(colorname))
 							continue;
 
-						var color = cg[colorname];
+						var color = cg[colorname],
+							swatchName = cgname+' | '+colorname,
+							capitalMatch = /(^|\s)([A-Z])[^.\s]+/;
+
+						while (swatchName.length > 31 && capitalMatch.test(swatchName)){
+							swatchName = swatchName.replace(capitalMatch,'$1$2.');
+						}
 
 						CG.addSwatch(
 							new _Swatch(
-								cgname+' | '+colorname,
+								swatchName,
 								parseInt(color.substring(1, 3), 16),
 								parseInt(color.substring(3, 5), 16),
 								parseInt(color.substring(5, 7), 16)

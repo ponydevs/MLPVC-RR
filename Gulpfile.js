@@ -1,13 +1,14 @@
 // jshint ignore: start
 var cl = console.log,
+	stripAnsi = require('strip-ansi'),
 	chalk = require('chalk');
 console.log = console.writeLine = function () {
-	var args = [].slice.call(arguments), match;
+	var args = [].slice.call(arguments);
 	if (args.length){
 		if (/^(\[\d{2}:\d{2}:\d{2}]|Using|Finished)/.test(args[0]))
 			return;
-		else if (args[0] == 'Starting' && (match = args[1].match(/^'.*((?:dist-)?js|scss|default|md).*'...$/))){
-			args = ['[' + chalk.green('gulp') + '] ' + match[1] + ': ' + chalk.magenta('start')];
+		else if (args[0] == 'Starting'){
+			args = ['[' + chalk.green('gulp') + '] ' + stripAnsi(args[1]).replace(/^'(.*)'.*$/,'$1') + ': ' + chalk.magenta('start')];
 		}
 	}
 	return cl.apply(console, args);
@@ -271,7 +272,7 @@ gulp.task('pgsort', function(){
 gulp.task('default', ['js', 'dist-js', 'scss', 'md'], function(){
 	gulp.watch(JSWatchArray, {debounceDelay: 2000}, ['js']);
 	JSL.log('File watcher active');
-	gulp.watch(['www/dist/*.src.js'], {debounceDelay: 2000}, ['dist-js']);
+	gulp.watch(['www/dist/*.src.jsx'], {debounceDelay: 2000}, ['dist-js']);
 	DJSL.log('File watcher active');
 	gulp.watch('www/scss/src/*.scss', {debounceDelay: 2000}, ['scss']);
 	SASSL.log('File watcher active');
