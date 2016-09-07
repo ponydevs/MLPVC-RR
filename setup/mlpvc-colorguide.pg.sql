@@ -208,6 +208,8 @@ ALTER TABLE ONLY tags ALTER COLUMN tid SET DEFAULT nextval('tags_tid_seq'::regcl
 -- Data for Name: appearance_relations; Type: TABLE DATA; Schema: public; Owner: mlpvc-rr
 --
 
+INSERT INTO appearance_relations VALUES
+(57, 191);
 
 
 --

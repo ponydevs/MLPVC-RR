@@ -83,7 +83,8 @@
 					]
 				}
 			},
-			"TagIDs": []
+			"TagIDs": [],
+			"RelatedAppearances": []
 		},
 		"1": {
 			"id": 1,
@@ -219,7 +220,8 @@
 				340,
 				341,
 				353
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"2": {
 			"id": 2,
@@ -351,7 +353,8 @@
 				258,
 				272,
 				353
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"3": {
 			"id": 3,
@@ -455,7 +458,8 @@
 				24,
 				307,
 				353
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"4": {
 			"id": 4,
@@ -565,7 +569,8 @@
 				85,
 				147,
 				353
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"5": {
 			"id": 5,
@@ -700,7 +705,8 @@
 				27,
 				307,
 				353
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"6": {
 			"id": 6,
@@ -825,7 +831,8 @@
 				12,
 				26,
 				353
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"7": {
 			"id": 7,
@@ -961,7 +968,8 @@
 				30,
 				182,
 				351
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"23": {
 			"id": 23,
@@ -1119,7 +1127,8 @@
 				306,
 				353,
 				370
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"24": {
 			"id": 24,
@@ -1254,7 +1263,8 @@
 				307,
 				353,
 				370
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"25": {
 			"id": 25,
@@ -1400,7 +1410,8 @@
 				306,
 				353,
 				370
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"78": {
 			"id": 78,
@@ -1549,7 +1560,8 @@
 				237,
 				353,
 				370
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"114": {
 			"id": 114,
@@ -1608,7 +1620,8 @@
 				234,
 				237,
 				370
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"34": {
 			"id": 34,
@@ -1855,7 +1868,8 @@
 				340,
 				341,
 				353
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"9": {
 			"id": 9,
@@ -2042,7 +2056,8 @@
 				340,
 				341,
 				353
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"44": {
 			"id": 44,
@@ -2221,7 +2236,8 @@
 				341,
 				351,
 				377
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"75": {
 			"id": 75,
@@ -2461,7 +2477,8 @@
 				341,
 				353,
 				377
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"88": {
 			"id": 88,
@@ -2591,7 +2608,8 @@
 				341,
 				353,
 				377
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"126": {
 			"id": 126,
@@ -3104,7 +3122,8 @@
 				340,
 				341,
 				351
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"118": {
 			"id": 118,
@@ -3498,299 +3517,345 @@
 				340,
 				341,
 				353
-			]
+			],
+			"RelatedAppearances": []
 		},
-		"57": {
-			"id": 57,
-			"order": 20,
-			"label": "Discord",
+		"191": {
+			"id": 191,
+			"order": null,
+			"label": "Captain Wuzz's Outfit",
 			"notes": "",
 			"cm_favme": null,
 			"ishuman": false,
-			"added": "2015-11-14 04:28:38.262247+01",
+			"added": "2016-08-29 00:32:59.43181+02",
 			"cm_preview": null,
 			"cm_dir": null,
 			"ColorGroups": {
-				"314": {
-					"groupid": 314,
-					"label": "Head",
+				"1026": {
+					"groupid": 1026,
+					"label": "Hair",
 					"order": 1,
 					"Colors": [
 						{
 							"order": 0,
-							"label": "Outline",
-							"hex": "#6E6956"
+							"label": "Flowing Hair Outline",
+							"hex": "#E2CC65"
 						},
 						{
 							"order": 1,
-							"label": "Fill",
-							"hex": "#ACA793"
+							"label": "Flowing Hair Fill",
+							"hex": "#FFFFDD"
 						},
 						{
 							"order": 2,
-							"label": "Beard/Eyebrow Outline",
-							"hex": "#E1DACA"
+							"label": "Braid Outline",
+							"hex": "#E4D181"
 						},
 						{
 							"order": 3,
-							"label": "Beard/Eyebrow Fill",
-							"hex": "#FFFFFF"
+							"label": "Braid Fill 1",
+							"hex": "#FFF3C6"
 						},
 						{
 							"order": 4,
-							"label": "Ear inside",
-							"hex": "#E7B4D5"
-						},
-						{
-							"order": 5,
-							"label": "Mane Outline",
-							"hex": "#000000"
-						},
-						{
-							"order": 6,
-							"label": "Mane Fill",
-							"hex": "#252525"
+							"label": "Braid Fill 2",
+							"hex": "#FFEEAD"
 						}
 					]
 				},
-				"315": {
-					"groupid": 315,
-					"label": "Fang",
+				"1027": {
+					"groupid": 1027,
+					"label": "Tunic",
 					"order": 2,
 					"Colors": [
 						{
 							"order": 0,
-							"label": "Outline",
-							"hex": "#D4CD9D"
+							"label": "Tunic Outline",
+							"hex": "#5B7950"
 						},
 						{
 							"order": 1,
-							"label": "Fill",
-							"hex": "#F7F4D0"
+							"label": "Tunic Fill",
+							"hex": "#82A758"
+						},
+						{
+							"order": 2,
+							"label": "Tunic Marks",
+							"hex": "#A7C577"
+						},
+						{
+							"order": 3,
+							"label": "Cloak Outline",
+							"hex": "#AB7A32"
+						},
+						{
+							"order": 4,
+							"label": "Cloak Fill",
+							"hex": "#DDA538"
+						},
+						{
+							"order": 5,
+							"label": "Cloak Shadow Fill",
+							"hex": "#BA8733"
+						},
+						{
+							"order": 6,
+							"label": "Broach Outline",
+							"hex": "#F4D75D"
+						},
+						{
+							"order": 7,
+							"label": "Broach Fill 1",
+							"hex": "#FFF6B5"
+						},
+						{
+							"order": 8,
+							"label": "Broach Fill 2",
+							"hex": "#FFF29C"
+						},
+						{
+							"order": 9,
+							"label": "Strap Outline",
+							"hex": "#291F14"
+						},
+						{
+							"order": 10,
+							"label": "Strap Fill",
+							"hex": "#493B29"
+						},
+						{
+							"order": 11,
+							"label": "Gem Outline",
+							"hex": "#DDA538"
+						},
+						{
+							"order": 12,
+							"label": "Gem Fill 1",
+							"hex": "#FFEC50"
+						},
+						{
+							"order": 13,
+							"label": "Gem Fill 2",
+							"hex": "#FFF7A2"
+						},
+						{
+							"order": 14,
+							"label": "Gem Fill 3",
+							"hex": "#F7D75B"
+						},
+						{
+							"order": 15,
+							"label": "Gem Fill 4",
+							"hex": "#EFC55C"
+						},
+						{
+							"order": 16,
+							"label": "Gem Fill 5",
+							"hex": "#E7B64F"
+						},
+						{
+							"order": 17,
+							"label": "Buckle Outline",
+							"hex": "#DDA538"
+						},
+						{
+							"order": 18,
+							"label": "Buckle Fill",
+							"hex": "#F4D75D"
 						}
 					]
 				},
-				"316": {
-					"groupid": 316,
-					"label": "Eyes",
+				"1028": {
+					"groupid": 1028,
+					"label": "Arms/Bucklers",
 					"order": 3,
 					"Colors": [
 						{
 							"order": 0,
-							"label": "Sclera",
-							"hex": "#EAE13D"
+							"label": "Sleeve Outline",
+							"hex": "#56544C"
 						},
 						{
 							"order": 1,
-							"label": "Iris/Pupil",
-							"hex": "#D53338"
+							"label": "Sleeve Fill",
+							"hex": "#79726B"
+						},
+						{
+							"order": 2,
+							"label": "Buckler Outline",
+							"hex": "#292115"
+						},
+						{
+							"order": 3,
+							"label": "Buckler Fill",
+							"hex": "#493B27"
+						},
+						{
+							"order": 4,
+							"label": "Buckler Straps",
+							"hex": "#DCA539"
+						},
+						{
+							"order": 5,
+							"label": "Parsnip Hand Outline",
+							"hex": "#D8B776"
+						},
+						{
+							"order": 6,
+							"label": "Parsnip Hand Fill",
+							"hex": "#F9ECB9"
 						}
 					]
 				},
-				"317": {
-					"groupid": 317,
-					"label": "Horns",
+				"1029": {
+					"groupid": 1029,
+					"label": "Boots",
 					"order": 4,
 					"Colors": [
 						{
 							"order": 0,
-							"label": "Antler Fill",
-							"hex": "#F7F3D3"
+							"label": "Boots Outline",
+							"hex": "#2D1F0D"
 						},
 						{
 							"order": 1,
-							"label": "Horn Outline",
-							"hex": "#7DB6D5"
+							"label": "Boots Fill",
+							"hex": "#493B27"
 						},
 						{
 							"order": 2,
-							"label": "Horn Fill",
-							"hex": "#CAF3F2"
+							"label": "Cuff Outline",
+							"hex": "#57534D"
+						},
+						{
+							"order": 3,
+							"label": "Cuff Fill",
+							"hex": "#75736B"
 						}
 					]
 				},
-				"318": {
-					"groupid": 318,
-					"label": "Body",
+				"1030": {
+					"groupid": 1030,
+					"label": "Bow",
 					"order": 5,
 					"Colors": [
 						{
 							"order": 0,
-							"label": "Outline",
-							"hex": "#321F1A"
+							"label": "Bow",
+							"hex": "#AD9572"
 						},
 						{
 							"order": 1,
-							"label": "Fill",
-							"hex": "#68413D"
+							"label": "Handle",
+							"hex": "#745A32"
+						},
+						{
+							"order": 2,
+							"label": "Handle Wrap",
+							"hex": "#728B7F"
+						},
+						{
+							"order": 3,
+							"label": "Handle Wrap Edge",
+							"hex": "#516960"
+						},
+						{
+							"order": 4,
+							"label": "Drawstring",
+							"hex": "#B7CAD0"
+						},
+						{
+							"order": 5,
+							"label": "Arrowhead Edge",
+							"hex": "#9BACB8"
+						},
+						{
+							"order": 6,
+							"label": "Arrowhead Flat",
+							"hex": "#506A78"
+						},
+						{
+							"order": 7,
+							"label": "Arrowhead base",
+							"hex": "#632919"
+						},
+						{
+							"order": 8,
+							"label": "Arrow",
+							"hex": "#59472A"
+						},
+						{
+							"order": 9,
+							"label": "Arrow Tail Fill 1",
+							"hex": "#E9E1D6"
+						},
+						{
+							"order": 10,
+							"label": "Arrow Tail Fill 2",
+							"hex": "#3983CD"
 						}
 					]
 				},
-				"319": {
-					"groupid": 319,
-					"label": "Arms",
+				"1031": {
+					"groupid": 1031,
+					"label": "Quiver",
 					"order": 6,
 					"Colors": [
 						{
 							"order": 0,
-							"label": "Talon Outline",
-							"hex": "#BB9415"
-						},
-						{
-							"order": 1,
-							"label": "Talon Fill",
-							"hex": "#EAE13D"
-						},
-						{
-							"order": 2,
-							"label": "Paw Outline",
-							"hex": "#B99C1A"
-						},
-						{
-							"order": 3,
-							"label": "Paw Fill",
-							"hex": "#EBD379"
-						},
-						{
-							"order": 4,
-							"label": "Paw Pad",
-							"hex": "#65423B"
-						}
-					]
-				},
-				"320": {
-					"groupid": 320,
-					"label": "Wings",
-					"order": 7,
-					"Colors": [
-						{
-							"order": 0,
-							"label": "Feathered Wing Outline",
-							"hex": "#1187B2"
-						},
-						{
-							"order": 1,
-							"label": "Feathered Wing Fill",
-							"hex": "#16A4D8"
-						},
-						{
-							"order": 2,
-							"label": "Bat Wing Outline",
-							"hex": "#3A3752"
-						},
-						{
-							"order": 3,
-							"label": "Bat Wing Fill",
-							"hex": "#5F5D87"
-						}
-					]
-				},
-				"321": {
-					"groupid": 321,
-					"label": "Tail",
-					"order": 8,
-					"Colors": [
-						{
-							"order": 0,
 							"label": "Outline",
-							"hex": "#7A3333"
+							"hex": "#6F4F2D"
 						},
 						{
 							"order": 1,
 							"label": "Fill",
-							"hex": "#AA4747"
+							"hex": "#936737"
 						},
 						{
 							"order": 2,
-							"label": "Scales Outline",
-							"hex": "#925A5A"
+							"label": "Stripe",
+							"hex": "#DEB25C"
 						},
 						{
 							"order": 3,
-							"label": "Scales Fill",
-							"hex": "#E8B4D3"
+							"label": "Shadow Fill",
+							"hex": "#7E582E"
 						},
 						{
 							"order": 4,
-							"label": "Scale Marks",
-							"hex": "#FFB8C6"
+							"label": "Arrow Outline",
+							"hex": "#4A5640"
 						},
 						{
 							"order": 5,
-							"label": "Tail Puff Outline",
-							"hex": "#E1DACA"
+							"label": "Arrow 1 Fill 1",
+							"hex": "#6D7B5E"
 						},
 						{
 							"order": 6,
-							"label": "Tail Puff Fill",
-							"hex": "#FFFFFF"
-						}
-					]
-				},
-				"322": {
-					"groupid": 322,
-					"label": "Legs",
-					"order": 9,
-					"Colors": [
-						{
-							"order": 0,
-							"label": "Hoof Leg Outline",
-							"hex": "#88682A"
-						},
-						{
-							"order": 1,
-							"label": "Hoof Leg Fill",
-							"hex": "#C0994E"
-						},
-						{
-							"order": 2,
-							"label": "Hoof Outline",
-							"hex": "#2E270F"
-						},
-						{
-							"order": 3,
-							"label": "Hoof Fill",
-							"hex": "#563F27"
-						},
-						{
-							"order": 4,
-							"label": "Talon Leg Outline",
-							"hex": "#439939"
-						},
-						{
-							"order": 5,
-							"label": "Talon Leg Fill",
-							"hex": "#75C76C"
-						},
-						{
-							"order": 6,
-							"label": "Talon Leg Scale Marks",
-							"hex": "#BCED9F"
+							"label": "Arrow 1 Fill 2",
+							"hex": "#8C9A7E"
 						},
 						{
 							"order": 7,
-							"label": "Talon Outline",
-							"hex": "#D6CE9C"
+							"label": "Arrow 2 Fill 1 ",
+							"hex": "#56654D"
 						},
 						{
 							"order": 8,
-							"label": "Talon Fill",
-							"hex": "#F8F2D0"
+							"label": "Arrow 2 Fill 2",
+							"hex": "#6E8065"
 						}
 					]
 				}
 			},
 			"TagIDs": [
-				9,
-				11,
 				89,
-				90,
-				92,
-				109,
-				173,
-				351,
-				378
-			]
+				96,
+				378,
+				407
+			],
+			"RelatedAppearances": []
 		},
 		"32": {
 			"id": 32,
@@ -4011,7 +4076,8 @@
 				176,
 				183,
 				353
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"56": {
 			"id": 56,
@@ -4126,7 +4192,8 @@
 				108,
 				307,
 				353
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"31": {
 			"id": 31,
@@ -4319,7 +4386,8 @@
 				58,
 				105,
 				353
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"82": {
 			"id": 82,
@@ -4503,7 +4571,8 @@
 				172,
 				173,
 				351
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"83": {
 			"id": 83,
@@ -4690,7 +4759,8 @@
 				172,
 				173,
 				351
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"84": {
 			"id": 84,
@@ -4877,7 +4947,8 @@
 				172,
 				173,
 				351
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"85": {
 			"id": 85,
@@ -5064,7 +5135,8 @@
 				172,
 				173,
 				351
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"125": {
 			"id": 125,
@@ -5190,7 +5262,8 @@
 				29,
 				182,
 				351
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"132": {
 			"id": 132,
@@ -5665,7 +5738,8 @@
 				268,
 				269,
 				351
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"160": {
 			"id": 160,
@@ -5859,7 +5933,8 @@
 				351,
 				374,
 				390
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"162": {
 			"id": 162,
@@ -6100,7 +6175,8 @@
 				350,
 				351,
 				352
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"77": {
 			"id": 77,
@@ -6242,7 +6318,8 @@
 				44,
 				130,
 				353
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"67": {
 			"id": 67,
@@ -6426,7 +6503,8 @@
 				44,
 				111,
 				353
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"74": {
 			"id": 74,
@@ -6554,7 +6632,8 @@
 				127,
 				306,
 				353
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"130": {
 			"id": 130,
@@ -6661,7 +6740,8 @@
 				44,
 				266,
 				351
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"131": {
 			"id": 131,
@@ -6793,7 +6873,8 @@
 				44,
 				267,
 				351
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"66": {
 			"id": 66,
@@ -6876,7 +6957,8 @@
 				44,
 				110,
 				351
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"39": {
 			"id": 39,
@@ -7027,7 +7109,8 @@
 				74,
 				306,
 				351
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"81": {
 			"id": 81,
@@ -7131,7 +7214,8 @@
 				44,
 				136,
 				351
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"37": {
 			"id": 37,
@@ -7227,7 +7311,8 @@
 				353,
 				371,
 				384
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"38": {
 			"id": 38,
@@ -7322,7 +7407,8 @@
 				116,
 				353,
 				371
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"40": {
 			"id": 40,
@@ -7463,7 +7549,8 @@
 				75,
 				306,
 				353
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"93": {
 			"id": 93,
@@ -7601,7 +7688,8 @@
 				195,
 				307,
 				353
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"98": {
 			"id": 98,
@@ -7737,7 +7825,8 @@
 				181,
 				203,
 				351
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"169": {
 			"id": 169,
@@ -7839,7 +7928,8 @@
 				44,
 				353,
 				363
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"170": {
 			"id": 170,
@@ -7918,7 +8008,8 @@
 				307,
 				351,
 				364
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"180": {
 			"id": 180,
@@ -8018,7 +8109,8 @@
 				351,
 				375,
 				391
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"45": {
 			"id": 45,
@@ -8153,7 +8245,8 @@
 				78,
 				339,
 				353
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"10": {
 			"id": 10,
@@ -8296,7 +8389,8 @@
 				31,
 				119,
 				353
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"16": {
 			"id": 16,
@@ -8408,7 +8502,8 @@
 				21,
 				35,
 				353
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"17": {
 			"id": 17,
@@ -8541,7 +8636,8 @@
 				36,
 				216,
 				353
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"12": {
 			"id": 12,
@@ -8679,7 +8775,8 @@
 				120,
 				121,
 				353
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"69": {
 			"id": 69,
@@ -8907,7 +9004,8 @@
 				183,
 				216,
 				353
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"134": {
 			"id": 134,
@@ -9130,7 +9228,8 @@
 				12,
 				273,
 				353
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"89": {
 			"id": 89,
@@ -9236,7 +9335,8 @@
 				188,
 				327,
 				353
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"91": {
 			"id": 91,
@@ -9332,7 +9432,8 @@
 				189,
 				328,
 				351
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"128": {
 			"id": 128,
@@ -9475,7 +9576,8 @@
 				329,
 				353,
 				354
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"129": {
 			"id": 129,
@@ -9741,7 +9843,8 @@
 				265,
 				330,
 				351
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"92": {
 			"id": 92,
@@ -9947,7 +10050,8 @@
 				190,
 				191,
 				351
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"36": {
 			"id": 36,
@@ -10176,7 +10280,8 @@
 				68,
 				162,
 				353
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"29": {
 			"id": 29,
@@ -10352,7 +10457,8 @@
 				216,
 				353,
 				377
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"22": {
 			"id": 22,
@@ -10552,7 +10658,8 @@
 				65,
 				99,
 				353
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"28": {
 			"id": 28,
@@ -10689,7 +10796,8 @@
 				99,
 				163,
 				351
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"15": {
 			"id": 15,
@@ -10912,7 +11020,8 @@
 				12,
 				34,
 				353
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"62": {
 			"id": 62,
@@ -11150,7 +11259,8 @@
 				185,
 				351,
 				377
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"14": {
 			"id": 14,
@@ -11316,7 +11426,8 @@
 				33,
 				43,
 				351
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"13": {
 			"id": 13,
@@ -11474,7 +11585,8 @@
 				51,
 				148,
 				353
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"72": {
 			"id": 72,
@@ -11589,7 +11701,8 @@
 				43,
 				122,
 				353
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"73": {
 			"id": 73,
@@ -11709,7 +11822,8 @@
 				43,
 				123,
 				353
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"108": {
 			"id": 108,
@@ -11891,7 +12005,8 @@
 				181,
 				220,
 				353
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"148": {
 			"id": 148,
@@ -12060,7 +12175,8 @@
 				270,
 				304,
 				351
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"157": {
 			"id": 157,
@@ -12234,7 +12350,8 @@
 				276,
 				342,
 				351
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"158": {
 			"id": 158,
@@ -12534,7 +12651,8 @@
 				276,
 				343,
 				353
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"163": {
 			"id": 163,
@@ -12721,7 +12839,8 @@
 				276,
 				353,
 				355
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"164": {
 			"id": 164,
@@ -12853,7 +12972,8 @@
 				276,
 				351,
 				356
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"174": {
 			"id": 174,
@@ -13008,7 +13128,8 @@
 				276,
 				353,
 				373
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"177": {
 			"id": 177,
@@ -13109,7 +13230,8 @@
 				351,
 				382,
 				383
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"55": {
 			"id": 55,
@@ -13235,7 +13357,8 @@
 				87,
 				307,
 				353
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"127": {
 			"id": 127,
@@ -13338,7 +13461,8 @@
 				307,
 				331,
 				351
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"11": {
 			"id": 11,
@@ -13456,7 +13580,8 @@
 				216,
 				307,
 				353
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"19": {
 			"id": 19,
@@ -13573,7 +13698,8 @@
 				215,
 				307,
 				353
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"137": {
 			"id": 137,
@@ -13673,7 +13799,8 @@
 				307,
 				332,
 				353
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"100": {
 			"id": 100,
@@ -13800,7 +13927,8 @@
 				353,
 				362,
 				365
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"103": {
 			"id": 103,
@@ -13932,7 +14060,8 @@
 				208,
 				307,
 				353
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"101": {
 			"id": 101,
@@ -14053,7 +14182,8 @@
 				307,
 				351,
 				409
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"68": {
 			"id": 68,
@@ -14174,7 +14304,8 @@
 				209,
 				307,
 				353
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"104": {
 			"id": 104,
@@ -14271,7 +14402,8 @@
 				210,
 				307,
 				351
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"97": {
 			"id": 97,
@@ -14450,7 +14582,8 @@
 				202,
 				307,
 				351
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"65": {
 			"id": 65,
@@ -14581,7 +14714,8 @@
 				108,
 				307,
 				353
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"102": {
 			"id": 102,
@@ -14728,7 +14862,8 @@
 				207,
 				307,
 				351
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"26": {
 			"id": 26,
@@ -14870,7 +15005,8 @@
 				99,
 				307,
 				353
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"20": {
 			"id": 20,
@@ -15041,7 +15177,8 @@
 				42,
 				307,
 				353
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"21": {
 			"id": 21,
@@ -15306,7 +15443,8 @@
 				42,
 				307,
 				351
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"138": {
 			"id": 138,
@@ -15418,7 +15556,8 @@
 				288,
 				307,
 				353
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"151": {
 			"id": 151,
@@ -15529,7 +15668,8 @@
 				307,
 				308,
 				351
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"152": {
 			"id": 152,
@@ -15683,7 +15823,8 @@
 				307,
 				309,
 				351
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"153": {
 			"id": 153,
@@ -15887,7 +16028,8 @@
 				310,
 				353,
 				389
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"159": {
 			"id": 159,
@@ -16249,7 +16391,8 @@
 				345,
 				353,
 				374
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"171": {
 			"id": 171,
@@ -16358,7 +16501,8 @@
 				12,
 				307,
 				353
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"35": {
 			"id": 35,
@@ -16560,7 +16704,8 @@
 				258,
 				351,
 				378
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"18": {
 			"id": 18,
@@ -16723,7 +16868,8 @@
 				37,
 				258,
 				353
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"121": {
 			"id": 121,
@@ -16882,7 +17028,8 @@
 				258,
 				259,
 				351
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"79": {
 			"id": 79,
@@ -16996,7 +17143,8 @@
 				228,
 				229,
 				353
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"80": {
 			"id": 80,
@@ -17143,7 +17291,8 @@
 				157,
 				351,
 				372
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"111": {
 			"id": 111,
@@ -17270,7 +17419,8 @@
 				274,
 				353,
 				394
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"110": {
 			"id": 110,
@@ -17404,7 +17554,8 @@
 				223,
 				260,
 				353
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"76": {
 			"id": 76,
@@ -17597,7 +17748,8 @@
 				12,
 				129,
 				353
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"30": {
 			"id": 30,
@@ -17811,7 +17963,8 @@
 				292,
 				348,
 				353
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"46": {
 			"id": 46,
@@ -17965,7 +18118,8 @@
 				79,
 				101,
 				351
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"52": {
 			"id": 52,
@@ -18178,7 +18332,8 @@
 				151,
 				180,
 				353
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"51": {
 			"id": 51,
@@ -18299,7 +18454,8 @@
 				85,
 				86,
 				353
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"50": {
 			"id": 50,
@@ -18415,7 +18571,8 @@
 				85,
 				86,
 				353
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"53": {
 			"id": 53,
@@ -18559,7 +18716,8 @@
 				85,
 				86,
 				351
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"54": {
 			"id": 54,
@@ -18750,7 +18908,8 @@
 				85,
 				86,
 				353
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"27": {
 			"id": 27,
@@ -18878,7 +19037,8 @@
 				65,
 				99,
 				351
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"58": {
 			"id": 58,
@@ -19026,7 +19186,8 @@
 				109,
 				181,
 				353
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"59": {
 			"id": 59,
@@ -19162,7 +19323,8 @@
 				94,
 				158,
 				353
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"60": {
 			"id": 60,
@@ -19462,7 +19624,8 @@
 				96,
 				158,
 				353
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"61": {
 			"id": 61,
@@ -19675,7 +19838,8 @@
 				94,
 				95,
 				351
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"95": {
 			"id": 95,
@@ -19925,7 +20089,8 @@
 				180,
 				199,
 				351
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"96": {
 			"id": 96,
@@ -20146,7 +20311,8 @@
 				180,
 				201,
 				353
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"99": {
 			"id": 99,
@@ -20338,7 +20504,8 @@
 				181,
 				204,
 				353
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"106": {
 			"id": 106,
@@ -20440,7 +20607,8 @@
 				214,
 				219,
 				351
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"107": {
 			"id": 107,
@@ -20587,7 +20755,8 @@
 				214,
 				218,
 				353
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"135": {
 			"id": 135,
@@ -20947,7 +21116,8 @@
 				279,
 				280,
 				353
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"136": {
 			"id": 136,
@@ -21251,7 +21421,8 @@
 				283,
 				284,
 				353
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"141": {
 			"id": 141,
@@ -21447,7 +21618,8 @@
 				217,
 				294,
 				353
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"142": {
 			"id": 142,
@@ -21646,7 +21818,8 @@
 				217,
 				295,
 				351
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"143": {
 			"id": 143,
@@ -21910,7 +22083,8 @@
 				217,
 				296,
 				351
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"145": {
 			"id": 145,
@@ -22051,7 +22225,8 @@
 				298,
 				301,
 				353
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"146": {
 			"id": 146,
@@ -22193,7 +22368,8 @@
 				300,
 				301,
 				353
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"147": {
 			"id": 147,
@@ -22293,7 +22469,8 @@
 				270,
 				302,
 				351
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"149": {
 			"id": 149,
@@ -22549,7 +22726,8 @@
 				305,
 				306,
 				353
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"150": {
 			"id": 150,
@@ -22717,7 +22895,8 @@
 				181,
 				306,
 				351
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"155": {
 			"id": 155,
@@ -22828,7 +23007,8 @@
 				313,
 				314,
 				351
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"161": {
 			"id": 161,
@@ -23059,7 +23239,8 @@
 				113,
 				347,
 				353
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"166": {
 			"id": 166,
@@ -23226,7 +23407,8 @@
 				353,
 				358,
 				359
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"168": {
 			"id": 168,
@@ -23400,7 +23582,8 @@
 				351,
 				360,
 				361
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"165": {
 			"id": 165,
@@ -23499,7 +23682,8 @@
 				11,
 				351,
 				357
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"172": {
 			"id": 172,
@@ -23611,7 +23795,8 @@
 				353,
 				366,
 				367
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"173": {
 			"id": 173,
@@ -23733,7 +23918,8 @@
 				353,
 				368,
 				369
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"87": {
 			"id": 87,
@@ -23875,7 +24061,8 @@
 				178,
 				179,
 				353
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"176": {
 			"id": 176,
@@ -23994,7 +24181,8 @@
 				12,
 				353,
 				380
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"178": {
 			"id": 178,
@@ -24119,7 +24307,8 @@
 				351,
 				374,
 				386
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"185": {
 			"id": 185,
@@ -24261,7 +24450,8 @@
 				398,
 				400,
 				401
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"64": {
 			"id": 64,
@@ -24376,7 +24566,8 @@
 				156,
 				351,
 				411
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"112": {
 			"id": 112,
@@ -24514,7 +24705,8 @@
 				253,
 				351,
 				381
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"116": {
 			"id": 116,
@@ -24648,7 +24840,8 @@
 				239,
 				243,
 				353
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"117": {
 			"id": 117,
@@ -24736,7 +24929,8 @@
 				245,
 				246,
 				351
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"119": {
 			"id": 119,
@@ -25004,7 +25198,8 @@
 				251,
 				252,
 				351
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"120": {
 			"id": 120,
@@ -25202,7 +25397,8 @@
 				257,
 				353,
 				411
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"33": {
 			"id": 33,
@@ -25393,7 +25589,8 @@
 				62,
 				64,
 				174
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"86": {
 			"id": 86,
@@ -25470,7 +25667,8 @@
 				64,
 				173,
 				175
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"94": {
 			"id": 94,
@@ -25598,7 +25796,8 @@
 			"TagIDs": [
 				64,
 				198
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"115": {
 			"id": 115,
@@ -25806,7 +26005,8 @@
 				64,
 				235,
 				236
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"154": {
 			"id": 154,
@@ -25857,7 +26057,8 @@
 				311,
 				312,
 				338
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"70": {
 			"id": 70,
@@ -25987,7 +26188,8 @@
 				96,
 				131,
 				215
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"133": {
 			"id": 133,
@@ -26184,7 +26386,8 @@
 				87,
 				96,
 				131
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"71": {
 			"id": 71,
@@ -26326,7 +26529,8 @@
 				96,
 				108,
 				131
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"105": {
 			"id": 105,
@@ -26427,7 +26631,8 @@
 				212,
 				213,
 				214
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"109": {
 			"id": 109,
@@ -26592,7 +26797,8 @@
 				221,
 				222,
 				353
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"113": {
 			"id": 113,
@@ -26688,7 +26894,8 @@
 				247,
 				248,
 				385
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"122": {
 			"id": 122,
@@ -26810,7 +27017,8 @@
 				261,
 				270,
 				385
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"123": {
 			"id": 123,
@@ -26927,7 +27135,8 @@
 				261,
 				270,
 				385
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"124": {
 			"id": 124,
@@ -27044,7 +27253,8 @@
 				261,
 				270,
 				385
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"139": {
 			"id": 139,
@@ -27197,7 +27407,8 @@
 				290,
 				291,
 				351
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"140": {
 			"id": 140,
@@ -27368,7 +27579,8 @@
 				289,
 				293,
 				353
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"144": {
 			"id": 144,
@@ -27486,7 +27698,8 @@
 				96,
 				270,
 				297
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"156": {
 			"id": 156,
@@ -27552,7 +27765,8 @@
 			"TagIDs": [
 				25,
 				215
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"179": {
 			"id": 179,
@@ -27768,7 +27982,8 @@
 				374,
 				385,
 				388
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"181": {
 			"id": 181,
@@ -27920,7 +28135,8 @@
 				229,
 				375,
 				392
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"182": {
 			"id": 182,
@@ -27978,7 +28194,8 @@
 			},
 			"TagIDs": [
 				376
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"183": {
 			"id": 183,
@@ -28154,7 +28371,8 @@
 				96,
 				376,
 				393
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"184": {
 			"id": 184,
@@ -28340,7 +28558,8 @@
 				377,
 				398,
 				399
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"63": {
 			"id": 63,
@@ -28572,7 +28791,8 @@
 				76,
 				100,
 				353
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"186": {
 			"id": 186,
@@ -28647,7 +28867,8 @@
 				96,
 				377,
 				402
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"187": {
 			"id": 187,
@@ -28812,7 +29033,8 @@
 				96,
 				378,
 				403
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"188": {
 			"id": 188,
@@ -29027,7 +29249,8 @@
 				147,
 				378,
 				404
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"189": {
 			"id": 189,
@@ -29199,7 +29422,8 @@
 				96,
 				378,
 				405
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"190": {
 			"id": 190,
@@ -29507,343 +29731,8 @@
 				150,
 				378,
 				406
-			]
-		},
-		"191": {
-			"id": 191,
-			"order": null,
-			"label": "Captain Wuzz's Outfit",
-			"notes": "",
-			"cm_favme": null,
-			"ishuman": false,
-			"added": "2016-08-29 00:32:59.43181+02",
-			"cm_preview": null,
-			"cm_dir": null,
-			"ColorGroups": {
-				"1026": {
-					"groupid": 1026,
-					"label": "Hair",
-					"order": 1,
-					"Colors": [
-						{
-							"order": 0,
-							"label": "Flowing Hair Outline",
-							"hex": "#E2CC65"
-						},
-						{
-							"order": 1,
-							"label": "Flowing Hair Fill",
-							"hex": "#FFFFDD"
-						},
-						{
-							"order": 2,
-							"label": "Braid Outline",
-							"hex": "#E4D181"
-						},
-						{
-							"order": 3,
-							"label": "Braid Fill 1",
-							"hex": "#FFF3C6"
-						},
-						{
-							"order": 4,
-							"label": "Braid Fill 2",
-							"hex": "#FFEEAD"
-						}
-					]
-				},
-				"1027": {
-					"groupid": 1027,
-					"label": "Tunic",
-					"order": 2,
-					"Colors": [
-						{
-							"order": 0,
-							"label": "Tunic Outline",
-							"hex": "#5B7950"
-						},
-						{
-							"order": 1,
-							"label": "Tunic Fill",
-							"hex": "#82A758"
-						},
-						{
-							"order": 2,
-							"label": "Tunic Marks",
-							"hex": "#A7C577"
-						},
-						{
-							"order": 3,
-							"label": "Cloak Outline",
-							"hex": "#AB7A32"
-						},
-						{
-							"order": 4,
-							"label": "Cloak Fill",
-							"hex": "#DDA538"
-						},
-						{
-							"order": 5,
-							"label": "Cloak Shadow Fill",
-							"hex": "#BA8733"
-						},
-						{
-							"order": 6,
-							"label": "Broach Outline",
-							"hex": "#F4D75D"
-						},
-						{
-							"order": 7,
-							"label": "Broach Fill 1",
-							"hex": "#FFF6B5"
-						},
-						{
-							"order": 8,
-							"label": "Broach Fill 2",
-							"hex": "#FFF29C"
-						},
-						{
-							"order": 9,
-							"label": "Strap Outline",
-							"hex": "#291F14"
-						},
-						{
-							"order": 10,
-							"label": "Strap Fill",
-							"hex": "#493B29"
-						},
-						{
-							"order": 11,
-							"label": "Gem Outline",
-							"hex": "#DDA538"
-						},
-						{
-							"order": 12,
-							"label": "Gem Fill 1",
-							"hex": "#FFEC50"
-						},
-						{
-							"order": 13,
-							"label": "Gem Fill 2",
-							"hex": "#FFF7A2"
-						},
-						{
-							"order": 14,
-							"label": "Gem Fill 3",
-							"hex": "#F7D75B"
-						},
-						{
-							"order": 15,
-							"label": "Gem Fill 4",
-							"hex": "#EFC55C"
-						},
-						{
-							"order": 16,
-							"label": "Gem Fill 5",
-							"hex": "#E7B64F"
-						},
-						{
-							"order": 17,
-							"label": "Buckle Outline",
-							"hex": "#DDA538"
-						},
-						{
-							"order": 18,
-							"label": "Buckle Fill",
-							"hex": "#F4D75D"
-						}
-					]
-				},
-				"1028": {
-					"groupid": 1028,
-					"label": "Arms/Bucklers",
-					"order": 3,
-					"Colors": [
-						{
-							"order": 0,
-							"label": "Sleeve Outline",
-							"hex": "#56544C"
-						},
-						{
-							"order": 1,
-							"label": "Sleeve Fill",
-							"hex": "#79726B"
-						},
-						{
-							"order": 2,
-							"label": "Buckler Outline",
-							"hex": "#292115"
-						},
-						{
-							"order": 3,
-							"label": "Buckler Fill",
-							"hex": "#493B27"
-						},
-						{
-							"order": 4,
-							"label": "Buckler Straps",
-							"hex": "#DCA539"
-						},
-						{
-							"order": 5,
-							"label": "Parsnip Hand Outline",
-							"hex": "#D8B776"
-						},
-						{
-							"order": 6,
-							"label": "Parsnip Hand Fill",
-							"hex": "#F9ECB9"
-						}
-					]
-				},
-				"1029": {
-					"groupid": 1029,
-					"label": "Boots",
-					"order": 4,
-					"Colors": [
-						{
-							"order": 0,
-							"label": "Boots Outline",
-							"hex": "#2D1F0D"
-						},
-						{
-							"order": 1,
-							"label": "Boots Fill",
-							"hex": "#493B27"
-						},
-						{
-							"order": 2,
-							"label": "Cuff Outline",
-							"hex": "#57534D"
-						},
-						{
-							"order": 3,
-							"label": "Cuff Fill",
-							"hex": "#75736B"
-						}
-					]
-				},
-				"1030": {
-					"groupid": 1030,
-					"label": "Bow",
-					"order": 5,
-					"Colors": [
-						{
-							"order": 0,
-							"label": "Bow",
-							"hex": "#AD9572"
-						},
-						{
-							"order": 1,
-							"label": "Handle",
-							"hex": "#745A32"
-						},
-						{
-							"order": 2,
-							"label": "Handle Wrap",
-							"hex": "#728B7F"
-						},
-						{
-							"order": 3,
-							"label": "Handle Wrap Edge",
-							"hex": "#516960"
-						},
-						{
-							"order": 4,
-							"label": "Drawstring",
-							"hex": "#B7CAD0"
-						},
-						{
-							"order": 5,
-							"label": "Arrowhead Edge",
-							"hex": "#9BACB8"
-						},
-						{
-							"order": 6,
-							"label": "Arrowhead Flat",
-							"hex": "#506A78"
-						},
-						{
-							"order": 7,
-							"label": "Arrowhead base",
-							"hex": "#632919"
-						},
-						{
-							"order": 8,
-							"label": "Arrow",
-							"hex": "#59472A"
-						},
-						{
-							"order": 9,
-							"label": "Arrow Tail Fill 1",
-							"hex": "#E9E1D6"
-						},
-						{
-							"order": 10,
-							"label": "Arrow Tail Fill 2",
-							"hex": "#3983CD"
-						}
-					]
-				},
-				"1031": {
-					"groupid": 1031,
-					"label": "Quiver",
-					"order": 6,
-					"Colors": [
-						{
-							"order": 0,
-							"label": "Outline",
-							"hex": "#6F4F2D"
-						},
-						{
-							"order": 1,
-							"label": "Fill",
-							"hex": "#936737"
-						},
-						{
-							"order": 2,
-							"label": "Stripe",
-							"hex": "#DEB25C"
-						},
-						{
-							"order": 3,
-							"label": "Shadow Fill",
-							"hex": "#7E582E"
-						},
-						{
-							"order": 4,
-							"label": "Arrow Outline",
-							"hex": "#4A5640"
-						},
-						{
-							"order": 5,
-							"label": "Arrow 1 Fill 1",
-							"hex": "#6D7B5E"
-						},
-						{
-							"order": 6,
-							"label": "Arrow 1 Fill 2",
-							"hex": "#8C9A7E"
-						},
-						{
-							"order": 7,
-							"label": "Arrow 2 Fill 1 ",
-							"hex": "#56654D"
-						},
-						{
-							"order": 8,
-							"label": "Arrow 2 Fill 2",
-							"hex": "#6E8065"
-						}
-					]
-				}
-			},
-			"TagIDs": [
-				89,
-				96,
-				378,
-				407
-			]
+			],
+			"RelatedAppearances": []
 		},
 		"192": {
 			"id": 192,
@@ -29908,7 +29797,8 @@
 				96,
 				395,
 				412
-			]
+			],
+			"RelatedAppearances": []
 		}
 	},
 	"Tags": {
