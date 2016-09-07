@@ -133,6 +133,84 @@ DocReady.push(function ColorguideManage(){
 
 										$.Dialog.success(false, this.message, true);
 									}));
+								}),
+							$.mk('button')
+								.attr('class', 'darkblue typcn typcn-pencil')
+								.text('Related appearances')
+								.on('click', function(e){
+									e.preventDefault();
+
+									$.Dialog.close();
+									$.Dialog.wait('Appearance relation editor', 'Retrieving relations from server');
+
+									let $cgRelations = $('#content').find('section.related');
+									$.post(`/cg/getrelations/${ponyID}`,$.mkAjaxHandler(function(){
+										if (!this.status) return $.Dialog.fail(false, this.message);
+
+										let data = this,
+											$GuideRelationEditorForm = $.mk('form').attr('id','guide-relation-editor'),
+											$selectLinked = $.mk('select').attr({name:'listed',multiple:true}),
+											$selectUnlinked = $.mk('select').attr('multiple', true);
+
+										if (data.linked && data.linked.length)
+											$.each(data.linked,function(_, el){
+												$selectLinked.append($.mk('option').attr('value', el.id).text(el.label));
+											});
+										if (data.unlinked && data.unlinked.length)
+											$.each(data.unlinked,function(_, el){
+												$selectUnlinked.append($.mk('option').attr('value', el.id).text(el.label));
+											});
+
+										$GuideRelationEditorForm.append(
+											$.mk('div').attr('class','split-select-wrap').append(
+												$.mk('div').attr('class','split-select').append("<span>Linked</span>",$selectLinked),
+												$.mk('div').attr('class','buttons').append(
+													$.mk('button').attr({'class':'typcn typcn-chevron-left green',title:'Link selected'}).on('click', function(e){
+														e.preventDefault();
+
+														$selectLinked.append($selectUnlinked.children(':selected').prop('selected', false)).children().sort(function(a,b){
+															return a.innerHTML.localeCompare(b.innerHTML);
+														}).appendTo($selectLinked);
+													}),
+													$.mk('button').attr({'class':'typcn typcn-chevron-right red',title:'Unlink selected'}).on('click', function(e){
+														e.preventDefault();
+
+														$selectUnlinked.append($selectLinked.children(':selected').prop('selected', false)).children().sort(function(a,b){
+															return a.innerHTML.localeCompare(b.innerHTML);
+														}).appendTo($selectUnlinked);
+													})
+												),
+												$.mk('div').attr('class','split-select').append("<span>Available</span>",$selectUnlinked)
+											)
+										);
+
+										$.Dialog.request(false,$GuideRelationEditorForm,'Save', function($form){
+											$form.on('submit', function(e){
+												e.preventDefault();
+
+												let ids = [];
+												$selectLinked.children().each(function(_, el){ ids.push(el.value) });
+												$.Dialog.wait(false, 'Saving changes');
+
+												$.post(`/cg/setrelations/${ponyID}`,{ids:ids.join(',')},$.mkAjaxHandler(function(){
+													if (!this.status) return $.Dialog.fail(false, this.message);
+
+													if (this.section){
+														if (!$cgRelations.length)
+															$cgRelations = $.mk('section')
+																.addClass('related')
+																.appendTo($content);
+														$cgRelations.html($(this.section).filter('section').html());
+													}
+													else if ($cgRelations.length){
+														$cgRelations.remove();
+														$cgRelations = {length:0};
+													}
+													$.Dialog.close();
+												}));
+											});
+										});
+									}));
 								})
 						)
 					);
@@ -592,9 +670,8 @@ DocReady.push(function ColorguideManage(){
 		}
 	});
 
-	function CGEditorMaker(title, $group){
-		let dis = this,
-			$changes = $('#changes'),
+	function cgEditorMaker(title, $group, dis){
+		let $changes = $('#changes'),
 			ponyID,
 			groupID;
 		if (typeof $group !== 'undefined'){
@@ -798,7 +875,7 @@ DocReady.push(function ColorguideManage(){
 					let data = {};
 					if (AppearancePage)
 						data.APPEARANCE_PAGE = $tag.closest('[id^=p]').attr('id').substring(1);
-					(function Send(data){
+					(function send(data){
 						$.Dialog.wait(title,'Sending removal request');
 
 						$.post(`/cg/deltag/${tagID}${EQGRq}`,data,$.mkAjaxHandler(function(){
@@ -819,7 +896,7 @@ DocReady.push(function ColorguideManage(){
 									if (!sure) return;
 
 									data.sanitycheck = true;
-									Send(data);
+									send(data);
 								});
 							else $.Dialog.fail(title, this.message);
 						}));
@@ -943,6 +1020,7 @@ DocReady.push(function ColorguideManage(){
 							$.mk('div').attr('class','cgs').append('<p class="align-center">Drag to re-arrange</p>',$cgs)
 						);
 
+						// jshint -W031
 						new Sortable($cgs.get(0), {
 							ghostClass: "moving",
 							scroll: false,
@@ -979,7 +1057,7 @@ DocReady.push(function ColorguideManage(){
 					}));
 				}},
 				{text: "Create new group", icon: 'folder-add', click: function(){
-					CGEditorMaker(`Create ${color} group`, $(this).closest('[id^=p]').attr('id').substring(1));
+					cgEditorMaker(`Create ${color} group`, $(this).closest('[id^=p]').attr('id').substring(1));
 				}},
 				{text: "Apply template (if empty)", icon: 'document-add', click: function(){
 					let ponyID = $(this).closest('[id^=p]').attr('id').substring(1);
@@ -1017,7 +1095,7 @@ DocReady.push(function ColorguideManage(){
 					$.post(`/cg/getcg/${groupID}${EQGRq}`,$.mkAjaxHandler(function(){
 						if (!this.status) return $.Dialog.fail(title, this.message);
 
-						CGEditorMaker.call(this, title, $group);
+						cgEditorMaker(title, $group, this);
 					}));
 				}},
 				{text: `Delete ${color} group`, icon: 'trash', click: function(){

@@ -488,6 +488,30 @@ HTML;
 			return \CoreUtils::Trim(regex_replace(new \RegExp('-+'),'-',regex_replace(new \RegExp('[^A-Za-z\d\-]'),'-',$Appearance['label'])),'-');
 		}
 
+		static function GetRelated(int $AppearanceID){
+			global $CGDb;
+
+			return $CGDb->rawQuery(
+				"SELECT p.id, p.label
+				FROM appearance_relations r
+				LEFT JOIN appearances p ON p.id = r.target
+				WHERE r.source = ?
+				ORDER BY p.\"order\"", array($AppearanceID));
+		}
+
+		static function GetRelatedHTML(array $Related):string {
+			if (empty($Related))
+				return '';
+			$LINKS = '';
+			foreach ($Related as $p){
+				$safeLabel = self::GetSafeLabel($p);
+				$preview = self::GetPreviewURL($p);
+				$preview = "<img src='$preview' class='preview'>";
+				$LINKS .= "<li><a href='/cg/v/{$p['id']}-$safeLabel'>$preview{$p['label']}</a></li>";
+			}
+			return "<section class='related'><h2>Related appearances</h2><ul>$LINKS</ul></section>";
+		}
+
 		static function ValidateAppearancePageID(){
 			return (new \Input('APPEARANCE_PAGE','int',array(
 				\Input::IS_OPTIONAL => true,

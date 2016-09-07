@@ -63,6 +63,7 @@
 		echo \CG\ColorGroups::GetHTML($cg, $AllColors, WRAP, NO_COLON, OUTPUT_COLOR_NAMES);
 			?></ul>
 		</section>
+		<?=\CG\Appearances::GetRelatedHTML(\CG\Appearances::GetRelated($Appearance['id']))?>
 	</div>
 </div>
 

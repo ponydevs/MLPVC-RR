@@ -91,5 +91,9 @@
 		}
 	}
 
+	.related {
+		@extend %appearance-ul;
+	}
+
 	#colors { @extend %colors-ul }
 }

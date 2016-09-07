@@ -112,6 +112,12 @@
 						foreach ($TagIDs as $t)
 							$AppendAppearance['TagIDs'][] = $t['tid'];
 
+					$AppendAppearance['RelatedAppearances'] = array();
+					$RelatedIDs = \CG\Appearances::GetRelated($p['id']);
+					if (!empty($RelatedIDs))
+						foreach ($RelatedIDs as $p)
+							$AppendAppearance['RelatedAppearances'][] = $p['id'];
+
 					$JSON['Appearances'][$p['id']] = $AppendAppearance;
 				}
 
@@ -125,7 +131,7 @@
 		}
 
 		$_match = array();
-		if (regex_match(new RegExp('^(rename|delete|make|(?:[gs]et|del)(?:sprite|cgs)?|tag|untag|clearrendercache|applytemplate)(?:/(\d+))?$'), $data, $_match)){
+		if (regex_match(new RegExp('^(rename|delete|make|(?:[gs]et|del)(?:sprite|cgs|relations)?|tag|untag|clearrendercache|applytemplate)(?:/(\d+))?$'), $data, $_match)){
 			$action = $_match[1];
 			$creating = $action === 'make';
 
@@ -386,6 +392,43 @@
 					}
 
 					Response::Done(array("path" => "/cg/v/{$Appearance['id']}s.png?t=".filemtime($finalpath)));
+				break;
+				case "getrelations":
+					$CheckTag = array();
+
+					$RelatedAppearances = \CG\Appearances::GetRelated($Appearance['id']);
+					$RelatedAppearanceIDs = array();
+					foreach ($RelatedAppearances as $p)
+						$RelatedAppearanceIDs[$p['id']] = true;
+
+					$Appearances = $CGDb->where('ishuman', $EQG)->where('"id" NOT IN (0,'.$Appearance['id'].')')->orderBy('label','ASC')->get('appearances',null,'id,label');
+
+					$Sorted = array(
+						'unlinked' => array(),
+						'linked' => array(),
+					);
+					foreach ($Appearances as $a)
+						$Sorted[isset($RelatedAppearanceIDs[$a['id']]) ? 'linked' : 'unlinked'][] = $a;
+
+					Response::Done($Sorted);
+				break;
+				case "setrelations":
+					$AppearanceIDs = (new Input('ids','int[]',array(
+						Input::IS_OPTIONAL => true,
+						Input::CUSTOM_ERROR_MESSAGES => array(
+							Input::ERROR_MISSING => 'Missing appearance ID list',
+							Input::ERROR_INVALID => 'Appearance ID list is invalid',
+						)
+					)))->out();
+
+					$CGDb->where('source', $Appearance['id'])->delete('appearance_relations');
+					if (!empty($AppearanceIDs))
+						foreach ($AppearanceIDs as $id){
+							if (!$CGDb->where('source', $Appearance['id'])->where('target', $id)->has('appearance_relations'))
+								@$CGDb->insert('appearance_relations', array('source' => $Appearance['id'], 'target' => $id));
+						};
+
+					Response::Done(array('section' => \CG\Appearances::GetRelatedHTML(\CG\Appearances::GetRelated($Appearance['id']))));
 				break;
 				case "clearrendercache":
 					if (!CGUtils::ClearRenderedImages($Appearance['id']))

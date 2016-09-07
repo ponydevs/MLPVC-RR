@@ -34,6 +34,18 @@ SET default_tablespace = '';
 SET default_with_oids = false;
 
 --
+-- Name: appearance_relations; Type: TABLE; Schema: public; Owner: mlpvc-rr
+--
+
+CREATE TABLE appearance_relations (
+    source integer NOT NULL,
+    target integer NOT NULL
+);
+
+
+ALTER TABLE appearance_relations OWNER TO "mlpvc-rr";
+
+--
 -- Name: appearances; Type: TABLE; Schema: public; Owner: mlpvc-rr
 --
 
@@ -190,6 +202,12 @@ ALTER TABLE ONLY colorgroups ALTER COLUMN groupid SET DEFAULT nextval('colorgrou
 --
 
 ALTER TABLE ONLY tags ALTER COLUMN tid SET DEFAULT nextval('tags_tid_seq'::regclass);
+
+
+--
+-- Data for Name: appearance_relations; Type: TABLE DATA; Schema: public; Owner: mlpvc-rr
+--
+
 
 
 --
@@ -6596,6 +6614,14 @@ SELECT pg_catalog.setval('tags_tid_seq', 412, true);
 
 
 --
+-- Name: appearance_relations_source_target; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER TABLE ONLY appearance_relations
+    ADD CONSTRAINT appearance_relations_source_target UNIQUE (source, target);
+
+
+--
 -- Name: appearances_id; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
@@ -6654,6 +6680,22 @@ CREATE INDEX colors_groupid ON colors USING btree (groupid);
 --
 
 CREATE INDEX tags_synonym_of ON tags USING btree (synonym_of);
+
+
+--
+-- Name: appearance_relations_source_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER TABLE ONLY appearance_relations
+    ADD CONSTRAINT appearance_relations_source_fkey FOREIGN KEY (source) REFERENCES appearances(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: appearance_relations_target_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER TABLE ONLY appearance_relations
+    ADD CONSTRAINT appearance_relations_target_fkey FOREIGN KEY (target) REFERENCES appearances(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --

@@ -305,24 +305,8 @@
 
 				&:after { border-left-color: $NGreen }
 			}
-			ul {
-				font-size: 1.2em;
-				font-weight: bold;
-				color: black;
-				padding: 0;
-				margin: 0;
-				list-style: none;
 
-				li {
-					display: inline;
-
-					&:not(:last-child){
-						margin-right: 1em;
-					}
-
-					.preview { @extend %appearance-preview }
-				}
-			}
+			@extend %appearance-ul;
 		}
 		&.admin {
 			color: $NDarkBlue;

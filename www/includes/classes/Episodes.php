@@ -576,7 +576,7 @@ HTML;
 						}
 						$LINKS .= "<li><a href='/cg/v/{$p['id']}-$safeLabel'>$preview{$p['label']}</a></li>";
 					}
-					$HTML .= "$LINKS</p></section>";
+					$HTML .= "$LINKS</ul></section>";
 				}
 			}
 			return $HTML;

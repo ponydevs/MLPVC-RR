@@ -220,6 +220,7 @@ if (!POST_REQUEST)
 		break;
 		case "setcgrelations":
 			$AppearanceIDs = (new Input('ids','int[]',array(
+				Input::IS_OPTIONAL => true,
 				Input::CUSTOM_ERROR_MESSAGES => array(
 					Input::ERROR_MISSING => 'Missing appearance ID list',
 					Input::ERROR_INVALID => 'Appearance ID list is invalid',
@@ -233,11 +234,14 @@ if (!POST_REQUEST)
 			$Tags = $CGDb->where("tid IN ($EpTagIDs)")->orderByLiteral('char_length(name)','DESC')->getOne('tags','tid');
 			$UseID = $Tags['tid'];
 
-			foreach ($AppearanceIDs as $id){
-				if (!$CGDb->where("tid IN ($EpTagIDs)")->where('ponyid', $id)->has('tagged'))
-					@$CGDb->insert('tagged', array('tid' => $UseID, 'ponyid' => $id));
+			if (!empty($AppearanceIDs)){
+				foreach ($AppearanceIDs as $id){
+					if (!$CGDb->where("tid IN ($EpTagIDs)")->where('ponyid', $id)->has('tagged'))
+						@$CGDb->insert('tagged', array('tid' => $UseID, 'ponyid' => $id));
+				}
+				$CGDb->where('ponyid NOT IN ('.implode(',',$AppearanceIDs).')');
 			}
-			$CGDb->where("tid IN ($EpTagIDs)")->where('ponyid NOT IN ('.implode(',',$AppearanceIDs).')')->delete('tagged');
+			$CGDb->where("tid IN ($EpTagIDs)")->delete('tagged');
 
 			Response::Done(array('section' => Episodes::GetAppearancesSectionHTML($Episode)));
 		break;
