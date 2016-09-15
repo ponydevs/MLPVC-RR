@@ -37,7 +37,7 @@ if (['js','dist-js','scss','md','default'].indexOf(toRun) !== -1){
 		require_list.push.apply(require_list, [
 			'gulp-sass',
 			'gulp-autoprefixer',
-			'gulp-minify-css',
+			'gulp-clean-css',
 		]);
 	if (toRun === 'js' || toRun === 'dist-js' || toRun === 'default')
 		require_list.push.apply(require_list, [
@@ -58,8 +58,11 @@ else if (toRun === 'pgsort')
 	require_list.push('fs');
 console.write('(');
 for (var i= 0,l=require_list.length; i<l; i++){
-	var v = require_list[i];
-	global[v.replace(/^gulp-([a-z]+).*$/, '$1')] = require(v);
+	var v = require_list[i],
+		key = v.replace(/^gulp-([a-z-]+)$/, '$1').replace(/-(\w)/,function(_, a){
+			return a.toUpperCase();
+		});
+	global[key] = require(v);
 	console.write(' '+v);
 }
 console.writeLine(" )\n");
@@ -95,7 +98,7 @@ gulp.task('scss', function() {
 				errLogToConsole: true,
 			}))
 			.pipe(autoprefixer('last 2 version'))
-			.pipe(minify({
+			.pipe(cleanCss({
 				processImport: false,
 				compatibility: '-units.pc,-units.pt'
 			}))
