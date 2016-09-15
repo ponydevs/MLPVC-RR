@@ -1,6 +1,8 @@
 <?php
 
-	if (!POST_REQUEST) CoreUtils::NotFound();
+use DB\Post;
+
+if (!POST_REQUEST) CoreUtils::NotFound();
 
 	if (regex_match(new RegExp('^reload-(request|reservation)/(\d+)$'), $data, $_match)){
 		$thing = $_match[1];
@@ -8,7 +10,7 @@
 		if (empty($Post))
 			Response::Fail("The specified $thing does not exist");
 
-		Response::Done(array('li' => Posts::GetLi($Post, $thing === 'request', isset($_POST['FROM_PROFILE']), true)));
+		Response::Done(array('li' => Posts::GetLi($Post, isset($_POST['FROM_PROFILE']), true)));
 	}
 	if (!$signedIn) Response::Fail();
 	CSRFProtection::Protect();
@@ -16,41 +18,42 @@
 	$_match = array();
 	if (regex_match(new RegExp('^([gs]et)-(request|reservation)/(\d+)$'), $data, $_match)){
 		$thing = $_match[2];
+		/** @var $Post \DB\Request|\DB\Reservation */
 		$Post = $Database->where('id', $_match[3])->getOne("{$thing}s");
 		if (empty($Post))
 			Response::Fail("The specified $thing does not exist");
 
-		if (!(Permission::Sufficient('staff') || ($thing === 'request' && empty($Post['reserved_by']) && $Post['requested_by'] === $currentUser->id)))
+		if (!(Permission::Sufficient('staff') || ($thing === 'request' && empty($Post->reserved_by) && $Post->requested_by === $currentUser->id)))
 			Response::Fail();
 
 		if ($_match[1] === 'get'){
 			$response = array(
-				'label' => $Post['label'],
+				'label' => $Post->label,
 			);
 			if ($thing === 'request'){
-				$response['type'] = $Post['type'];
+				$response['type'] = $Post->type;
 
-				if (Permission::Sufficient('developer') && !empty($Post['reserved_by']))
-					$response['reserved_at'] = !empty($Post['reserved_at']) ? date('c', strtotime($Post['reserved_at'])) : '';
+				if (Permission::Sufficient('developer') && !empty($Post->reserved_by))
+					$response['reserved_at'] = !empty($Post->reserved_at) ? date('c', strtotime($Post->reserved_at)) : '';
 			}
 			if (Permission::Sufficient('developer')){
-				$response['posted'] = date('c', strtotime($Post['posted']));
-				if (!empty($Post['reserved_by']) && !empty($Post['deviation_id']))
-						$response['finished_at'] = !empty($Post['finished_at']) ? date('c', strtotime($Post['finished_at'])) : '';
+				$response['posted'] = date('c', strtotime($Post->posted));
+				if (!empty($Post->reserved_by) && !empty($Post->deviation_id))
+						$response['finished_at'] = !empty($Post->finished_at) ? date('c', strtotime($Post->finished_at)) : '';
 			}
 			Response::Done($response);
 		}
 
 		$update = array();
-		Posts::CheckPostDetails($thing, $update, $Post);
+		Posts::CheckPostDetails($update, $Post);
 
 		if (empty($update))
 			Response::Success('Nothing was changed');
 
-		if (!$Database->where('id', $Post['id'])->update("{$thing}s", $update))
+		if (!$Database->where('id', $Post->id)->update("{$thing}s", $update))
 			Response::DBError();
-		$Post = array_merge($Post, $update);
-		Response::Done(array('li' => Posts::GetLi($Post, $thing === 'request')));
+		$Post->__construct($update);
+		Response::Done(array('li' => Posts::GetLi($Post)));
 	}
 	if (regex_match(new RegExp('^((?:un)?(?:finish|lock|reserve)|add|delete|pls-transfer)-(request|reservation)s?/(\d+)$'),$data,$_match)){
 		$type = $_match[2];
@@ -61,35 +64,35 @@
 		$Post = $Database->where('id', $_match[3])->getOne("{$type}s");
 		if (empty($Post)) Response::Fail("There's no $type with the ID {$_match[3]}");
 
-		if (!empty($Post['lock']) && Permission::Insufficient('developer') && $action !== 'unlock')
+		if (!empty($Post->lock) && Permission::Insufficient('developer') && $action !== 'unlock')
 			Response::Fail('This post has been approved and cannot be edited or removed.');
 
 		if ($type === 'request' && $action === 'delete'){
 			if (!Permission::Sufficient('staff')){
-				if (!$signedIn || $Post['requested_by'] !== $currentUser->id)
+				if (!$signedIn || $Post->requested_by !== $currentUser->id)
 					Response::Fail();
 
-				if (!empty($Post['reserved_by']))
+				if (!empty($Post->reserved_by))
 					Response::Fail('You cannot delete a request that has already been reserved by a group member');
 			}
 
-			if (!$Database->where('id', $Post['id'])->delete('requests'))
+			if (!$Database->where('id', $Post->id)->delete('requests'))
 				Response::DBError();
 
-			if (!empty($Post['reserved_by']))
+			if (!empty($Post->reserved_by))
 				Posts::ClearTransferAttempts($Post, $type, 'del');
 
 			Log::Action('req_delete',array(
-				'season' => $Post['season'],
-				'episode' => $Post['episode'],
-				'id' => $Post['id'],
-				'label' => $Post['label'],
-				'type' => $Post['type'],
-				'requested_by' => $Post['requested_by'],
-				'posted' => $Post['posted'],
-				'reserved_by' => $Post['reserved_by'],
-				'deviation_id' => $Post['deviation_id'],
-				'lock' => $Post['lock'],
+				'season' => $Post->season,
+				'episode' => $Post->episode,
+				'id' => $Post->id,
+				'label' => $Post->label,
+				'type' => $Post->type,
+				'requested_by' => $Post->requested_by,
+				'posted' => $Post->posted,
+				'reserved_by' => $Post->reserved_by,
+				'deviation_id' => $Post->deviation_id,
+				'lock' => $Post->lock,
 			));
 
 			Response::Done();
@@ -99,7 +102,7 @@
 			Response::Fail();
 
 		if ($action === 'pls-transfer'){
-			$reserved_by = $Post['reserved_by'] ?? null;
+			$reserved_by = $Post->reserved_by ?? null;
 			$checkIfUserCanReserve = function(&$message, &$data) use ($Post, $reserved_by, $type, $currentUser){
 				Posts::ClearTransferAttempts($Post, $type, 'free', $currentUser->id, $reserved_by);
 				if (!Users::ReservationLimitExceeded(RETURN_AS_BOOL)){
@@ -119,15 +122,15 @@
 			}
 			if ($reserved_by === $currentUser->id)
 				Response::Fail("You've already reserved this $type");
-			if (Posts::IsOverdue($Post)){
-				$message = "This post was reserved ".Time::Tag($Post['reserved_at'])." so anyone's free to reserve it now.";
+			if ($Post->isOverdue()){
+				$message = "This post was reserved ".Time::Tag($Post->reserved_at)." so anyone's free to reserve it now.";
 				$checkIfUserCanReserve($message, $data, 'overdue');
 				Response::Fail($message, $data);
 			}
 
 			Users::ReservationLimitExceeded();
 
-			if (!Posts::IsTransferable($Post))
+			if (!$Post->isTransferable())
 				Response::Fail("This $type was reserved recently, please allow up to 5 days before asking for a transfer");
 
 			$ReserverLink = Users::Get($reserved_by, 'id', 'name')->getProfileLink();
@@ -137,46 +140,46 @@
 			if (!empty($PreviousAttempts[0]) && empty($PreviousAttempts[0]['read_at']))
 				Response::Fail("You already expressed your interest in this post to $ReserverLink ".Time::Tag($PreviousAttempts[0]['sent_at']).', please wait for them to respond.');
 
-			$notifSent = Notifications::Send($Post['reserved_by'],'post-passon',array(
+			$notifSent = Notifications::Send($Post->reserved_by,'post-passon',array(
 				'type' => $type,
-				'id' => $Post['id'],
+				'id' => $Post->id,
 				'user' => $currentUser->id,
 			));
 
 			Response::Success("A notification has been sent to $ReserverLink, please wait for them to react.<br>If they don't visit the site often, it'd be a good idea to send them a note asking him to consider your inquiry.");
 		}
 
-		$isUserReserver = $Post['reserved_by'] === $currentUser->id;
-		if (!empty($Post['reserved_by'])){
+		$isUserReserver = $Post->reserved_by === $currentUser->id;
+		if (!empty($Post->reserved_by)){
 			switch ($action){
 				case 'reserve':
 					if ($isUserReserver)
-						Response::Fail("You've already reserved this $type", array('li' => Posts::GetLi($Post, true)));
-					if (Posts::IsOverdue($Post)){
+						Response::Fail("You've already reserved this $type", array('li' => Posts::GetLi($Post)));
+					if ($Post->isOverdue()){
 						$overdue = array(
-							'reserved_by' => $Post['reserved_by'],
-							'reserved_at' => $Post['reserved_at'],
+							'reserved_by' => $Post->reserved_by,
+							'reserved_at' => $Post->reserved_at,
 						);
-						$Post['reserved_by'] = null;
+						$Post->reserved_by = null;
 						break;
 					}
-					Response::Fail("This $type has already been reserved by ".Users::Get($Post['reserved_by'])->getProfileLink(), array('li' => Posts::GetLi($Post, true)));
+					Response::Fail("This $type has already been reserved by ".Users::Get($Post->reserved_by)->getProfileLink(), array('li' => Posts::GetLi($Post)));
 				break;
 				case 'lock':
-					if (empty($Post['deviation_id']))
+					if (empty($Post->deviation_id))
 						Response::Fail("Only finished {$type}s can be locked");
 
-					CoreUtils::CheckDeviationInClub($Post['deviation_id']);
+					CoreUtils::CheckDeviationInClub($Post->deviation_id);
 
-					if (!$Database->where('id', $Post['id'])->update("{$type}s", array('lock' => true)))
+					if (!$Database->where('id', $Post->id)->update("{$type}s", array('lock' => true)))
 						Response::DBError();
 
-					$postdata = Posts::Approve($type, $Post['id'], !$isUserReserver ? $Post['reserved_by'] : null);
+					$postdata = Posts::Approve($type, $Post->id, !$isUserReserver ? $Post->reserved_by : null);
 
-					$Post['lock'] = true;
+					$Post->lock = true;
 					$response = array(
 						'message' => "The image appears to be in the group gallery and as such it is now marked as approved.",
-						'li' => Posts::GetLi($Post, $type === 'request'),
+						'li' => Posts::GetLi($Post),
 					);
 					if ($isUserReserver)
 						$response['message'] .= " Thank you for your contribution!<div class='align-center'><apan class='sideways-smiley-face'>;)</span></div>";
@@ -185,14 +188,14 @@
 				case 'unlock':
 					if (Permission::Insufficient('staff'))
 						Response::Fail();
-					if (empty($Post['lock']))
+					if (empty($Post->lock))
 						Response::Fail("This $type has not been approved yet");
 
-					if (Permission::Insufficient('developer') && CoreUtils::IsDeviationInClub($Post['deviation_id']) === true)
-						Response::Fail("<a href='http://fav.me/{$Post['deviation_id']}' target='_blank'>This deviation</a> is part of the group gallery, which prevents the post from being unlocked.");
+					if (Permission::Insufficient('developer') && CoreUtils::IsDeviationInClub($Post->deviation_id) === true)
+						Response::Fail("<a href='http://fav.me/{$Post->deviation_id}' target='_blank'>This deviation</a> is part of the group gallery, which prevents the post from being unlocked.");
 
-					$Database->where('id', $Post['id'])->update("{$type}s", array('lock' => false));
-					$Post['lock'] = false;
+					$Database->where('id', $Post->id)->update("{$type}s", array('lock' => false));
+					$Post->lock = false;
 
 					Response::Done();
 				break;
@@ -215,7 +218,7 @@
 
 					if (isset($_REQUEST['unbind'])){
 						if ($type === 'reservation'){
-							if (!$Database->where('id', $Post['id'])->delete('reservations'))
+							if (!$Database->where('id', $Post->id)->delete('reservations'))
 								Response::DBError();
 
 							Response::Success('Reservation deleted');
@@ -228,13 +231,13 @@
 							'reserved_at' => null,
 						);
 					}
-					else if ($type === 'reservation' && empty($Post['preview']))
+					else if ($type === 'reservation' && empty($Post->preview))
 						Response::Fail('This reservation was added directly and cannot be marked unfinished. To remove it, check the unbind from user checkbox.');
 
 					$update['deviation_id'] = null;
 					$update['finished_at'] = null;
 
-					if (!$Database->where('id', $Post['id'])->update("{$type}s",$update))
+					if (!$Database->where('id', $Post->id)->update("{$type}s",$update))
 						Response::DBError();
 
 					Response::Done();
@@ -243,29 +246,29 @@
 					if (!$isUserReserver && Permission::Insufficient('staff'))
 						Response::Fail();
 
-					$update = Posts::CheckRequestFinishingImage($Post['reserved_by']);
+					$update = Posts::CheckRequestFinishingImage($Post->reserved_by);
 
 					$finished_at = Posts::ValidateFinishedAt();
 					$update['finished_at'] = isset($finished_at) ? date('c', $finished_at) : date('c');
 
-					if (!$Database->where('id', $Post['id'])->update("{$type}s",$update))
+					if (!$Database->where('id', $Post->id)->update("{$type}s",$update))
 						Response::DBError();
 
 					$postdata = array(
 						'type' => $type,
-						'id' => $Post['id']
+						'id' => $Post->id
 					);
 					$message = '';
 					if (isset($update['lock'])){
 						$message .= "<p>The image appears to be in the group gallery already, so we marked it as approved.</p>";
 
 						Log::Action('post_lock',$postdata);
-						if ($Post['reserved_by'] !== $currentUser->id)
-							Notifications::Send($Post['reserved_by'], 'post-approved', $postdata);
+						if ($Post->reserved_by !== $currentUser->id)
+							Notifications::Send($Post->reserved_by, 'post-approved', $postdata);
 					}
 					if ($type === 'request'){
-						$u = Users::Get($Post['requested_by'],'id','name,id');
-						if (!empty($u) && $Post['requested_by'] !== $currentUser->id){
+						$u = Users::Get($Post->requested_by,'id','name,id');
+						if (!empty($u) && $Post->requested_by !== $currentUser->id){
 							$notifSent = Notifications::Send($u->id, 'post-finished', $postdata);
 							$message .= "<p><strong>{$u->name}</strong> ".($notifSent === 0?'has been notified':'will receive a notification shortly').'.'.(is_string($notifSent)?"</p><div class='notice fail'><strong>Error:</strong> $notifSent":'')."</div>";
 						}
@@ -277,11 +280,11 @@
 			}
 		}
 		else if ($action === 'unreserve')
-			Response::Done(array('li' => Posts::GetLi($Post, true)));
+			Response::Done(array('li' => Posts::GetLi($Post)));
 		else if ($action === 'finish')
 			Response::Fail("This $type has not been reserved by anypony yet");
 
-		if (empty($Post['reserved_by']) && $type === 'request' && $action === 'reserve'){
+		if (empty($Post->reserved_by) && $type === 'request' && $action === 'reserve'){
 			Users::ReservationLimitExceeded();
 
 			$update['reserved_by'] = $currentUser->id;
@@ -305,13 +308,13 @@
 			}
 		}
 
-		if (empty($update) || !$Database->where('id', $Post['id'])->update("{$type}s",$update))
+		if (empty($update) || !$Database->where('id', $Post->id)->update("{$type}s",$update))
 			Response::Fail('Nothing has been changed<br>If you tried to do something, then this is actually an error, which you should <a class="send-feedback">tell us</a> about.');
 
 		if (!empty($overdue))
 			Log::Action('res_overtake',array_merge(
 				array(
-					'id' => $Post['id'],
+					'id' => $Post->id,
 					'type' => $type
 				),
 				$overdue
@@ -319,15 +322,15 @@
 
 		if (!empty($update['reserved_by']))
 			Posts::ClearTransferAttempts($Post, $type, 'snatch');
-		else if (!empty($Post['reserved_by'])){
+		else if (!empty($Post->reserved_by)){
 			Posts::ClearTransferAttempts($Post, $type, 'free');
 		}
 
 		if ($type === 'request'){
-			$Post = array_merge($Post, $update);
-			$response = array('li' => Posts::GetLi($Post, true));
+			$Post->__construct($update);
+			$response = array('li' => Posts::GetLi($Post));
 			if (isset($_POST['FROM_PROFILE']))
-				$response['pendingReservations'] = Users::GetPendingReservationsHTML($Post['reserved_by'], $isUserReserver);
+				$response['pendingReservations'] = Users::GetPendingReservationsHTML($Post->reserved_by, $isUserReserver);
 			Response::Done($response);
 		}
 		else Response::Done();
@@ -410,17 +413,17 @@
 		$Post = $Database->where('id', $_match[2])->getOne("{$thing}s");
 		if (empty($Post))
 			Response::Fail("The specified $thing does not exist");
-		if ($Post['lock'])
+		if ($Post->lock)
 			Response::Fail('This post is locked, its image cannot be changed.');
 
 		if (Permission::Insufficient('staff'))
 			switch ($thing){
 				case 'request':
-					if ($Post['requested_by'] !== $currentUser->id || !empty($Post['reserved_by']))
+					if ($Post->requested_by !== $currentUser->id || !empty($Post->reserved_by))
 						Response::Fail();
 				break;
 				case 'reservation':
-					if ($Post['reserved_by'] !== $currentUser->id)
+					if ($Post->reserved_by !== $currentUser->id)
 						Response::Fail();
 				break;
 			};
@@ -439,16 +442,16 @@
 				Response::Fail("<p class='align-center'>The specified image doesn't seem to exist. Please verify that you can reach the URL below and try again.<br><a href='{$Image->preview}' target='_blank'>{$Image->preview}</a></p>");
 		}
 
-		if (!$Database->where('id', $Post['id'])->update("{$thing}s",array(
+		if (!$Database->where('id', $Post->id)->update("{$thing}s",array(
 			'preview' => $Image->preview,
 			'fullsize' => $Image->fullsize,
 		))) Response::DBError();
 
 		Log::Action('img_update',array(
-			'id' => $Post['id'],
+			'id' => $Post->id,
 			'thing' => $thing,
-			'oldpreview' => $Post['preview'],
-			'oldfullsize' => $Post['fullsize'],
+			'oldpreview' => $Post->preview,
+			'oldfullsize' => $Post->fullsize,
 			'newpreview' => $Image->preview,
 			'newfullsize' => $Image->fullsize,
 		));
@@ -465,13 +468,13 @@
 			Response::Fail("The specified $thing does not exist");
 
 		// Link is already full size, we're done
-		if (regex_match($FULLSIZE_MATCH_REGEX, $Post['fullsize']))
-			Response::Done(array('fullsize' => $Post['fullsize']));
+		if (regex_match($FULLSIZE_MATCH_REGEX, $Post->fullsize))
+			Response::Done(array('fullsize' => $Post->fullsize));
 
 		// Reverse submission lookup
 		$StashItem = $Database
-			->where('fullsize', $Post['fullsize'])
-			->orWhere('preview', $Post['preview'])
+			->where('fullsize', $Post->fullsize)
+			->orWhere('preview', $Post->preview)
 			->getOne('deviation_cache','id,fullsize,preview');
 		if (empty($StashItem['id']))
 			Response::Fail('Stash URL lookup failed');
@@ -504,7 +507,7 @@
 				Response::Fail("The specified image doesn't seem to exist. Please verify that you can reach the URL below and try again.<br><a href='$fullsize' target='_blank'>$fullsize</a>");
 		}
 
-		if (!$Database->where('id', $Post['id'])->update("{$thing}s",array(
+		if (!$Database->where('id', $Post->id)->update("{$thing}s",array(
 			'fullsize' => $fullsize,
 		))) Response::DBError();
 

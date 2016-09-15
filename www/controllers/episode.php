@@ -54,7 +54,7 @@ if (!POST_REQUEST)
 		case "requests":
 		case "reservations":
 			$only = $action === 'requests' ? ONLY_REQUESTS : ONLY_RESERVATIONS;
-			$posts = Posts::Get($Episode->season, $Episode->episode, $only);
+			$posts = Posts::Get($Episode, $only);
 
 			switch ($only){
 				case ONLY_REQUESTS: $rendered = Posts::GetRequestsSection($posts); break;

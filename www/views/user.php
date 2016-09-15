@@ -33,8 +33,8 @@ if (isset($MSG)){
 		$OldNames = $Database->where('id', $User->id)->orderBy('entryid',OLDEST_FIRST)->get('log__da_namechange',null,'old');
 		if (!empty($OldNames)){
 			$PrevNames = array();
-			foreach ($OldNames as $row)
-				$PrevNames[] = $row['old']; ?>
+			foreach ($OldNames as $Post)
+				$PrevNames[] = $Post['old']; ?>
 		<section class="old-names">
 			<h2><?=$sameUser? Users::$PROFILE_SECTION_PRIVACY_LEVEL['staff']:''?>Previous names <span class="typcn typcn-info color-blue cursor-help" title="Upper/lower-case letters may not match"></span></h2>
 			<div><?=implode(', ',$PrevNames)?></div>
@@ -44,7 +44,8 @@ if (isset($MSG)){
 	if (Permission::Sufficient('member', $User->role)){
 		echo Users::GetPendingReservationsHTML($User->id, $sameUser, $YouHave);
 
-		$cols = "id, season, episode, deviation_id as deviation";
+		$cols = "id, season, episode, deviation_id";
+		/** @var $AwaitingApproval \DB\Post[] */
 		$AwaitingApproval = array_merge(
 			$Database
 				->where('reserved_by', $User->id)
@@ -55,7 +56,7 @@ if (isset($MSG)){
 				->where('reserved_by', $User->id)
 				->where('deviation_id IS NOT NULL')
 				->where('"lock" IS NOT TRUE')
-				->get('requests',null,"$cols, true as rq")
+				->get('requests',null,$cols)
 		);
 		$AwaitCount = count($AwaitingApproval);
 		$them = $AwaitCount!==1?'them':'it'; ?>
@@ -78,24 +79,26 @@ if (isset($MSG)){
 					).'</p><p>You can click the <strong class="color-green"><span class="typcn typcn-tick"></span> Check</strong> button below the '.CoreUtils::MakePlural('image',$AwaitCount).' in case we forgot to click it ourselves after accepting it.'?></p>
 <?php   if ($AwaitCount){ ?>
 			<ul id="awaiting-deviations"><?
-			foreach ($AwaitingApproval as $row){
-				$deviation = DeviantArt::GetCachedSubmission($row['deviation']);
+			foreach ($AwaitingApproval as $Post){
+				$deviation = DeviantArt::GetCachedSubmission($Post->deviation_id);
 				$url = "http://{$deviation['provider']}/{$deviation['id']}";
-				list($link,$page) = Posts::GetLink($row);
-				$thing = isset($row['rq']) ? 'request' : 'reservation';
-				$checkBtn = Permission::Sufficient('member') ? "\n\t\t<button class='green typcn typcn-tick check'>Check</button>" : '';
+				unset($_);
+				$postLink = $Post->toLink($_);
+				$postAnchor = $Post->toAnchor(null, $_);
+				$checkBtn = Permission::Sufficient('member') ? "<button class='green typcn typcn-tick check'>Check</button>" : '';
 
 				echo <<<HTML
-<li id="{$thing}-{$row['id']}">
+<li id="{$Post->getID()}">
 	<div class="image deviation">
 		<a href="$url" target="_blank">
 			<img src="{$deviation['preview']}" alt="{$deviation['title']}">
 		</a>
 	</div>
 	<span class="label"><a href="$url" target="_blank">{$deviation['title']}</a></span>
-	<em>Posted under <a href='$link'>$page</a></em>
+	<em>Posted under $postAnchor</em>
 	<div>
-		<a href='$link' class='btn blue typcn typcn-arrow-forward'>View</a>$checkBtn
+		<a href='$postLink' class='btn blue typcn typcn-arrow-forward'>View</a>
+		$checkBtn
 	</div>
 </li>
 HTML;

@@ -291,12 +291,11 @@ class Log {
 			return array('details' => $details);
 		}
 
-		private static function _genericPostInfo(array $Post, array $data, array &$details){
+		private static function _genericPostInfo(\DB\Post $Post, array $data, array &$details){
 			$label = CoreUtils::Capitalize($data['type'])." #{$data['id']}";
-			if (!empty($Post)){
-				list($link) = Posts::GetLink($Post, $data['type']);
-				$label = "<a href='$link'>$label</a>";
-			}
+			if (!empty($Post))
+				$label = $Post->toAnchor($label);
+
 			$details[] = array('Post',$label);
 			if (empty($Post))
 				$details[] = array('Still exists', false);
@@ -308,8 +307,8 @@ class Log {
 			if (!empty($Post)){
 				$details[] = array(($data['type'] === 'request'?'Requested':'Reserved').' by', Users::Get($Post[$data['type'] === 'request' ? 'requested_by' : 'reserved_by'])->getProfileLink());
 				if ($data['type'] === 'request'){
-					if (!empty($Post['reserved_by']))
-						$details[] = array('Reserved by', Users::Get($Post['reserved_by'])->getProfileLink());
+					if (!empty($Post->reserved_by))
+						$details[] = array('Reserved by', Users::Get($Post->reserved_by)->getProfileLink());
 					else $details[] = array('Reserved', false);
 				}
 			}

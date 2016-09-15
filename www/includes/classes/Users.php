@@ -1,5 +1,6 @@
 <?php
 
+use DB\Post;
 use DB\User;
 use Exceptions\cURLRequestException;
 
@@ -322,35 +323,38 @@ HTML;
 				$HTML .= "</span>";
 
 				if ($hasPending){
+					/** @var $Posts Post[] */
 					$Posts = array_merge(
 						Posts::GetReservationsSection($PendingReservations, RETURN_ARRANGED)['unfinished'],
 						array_filter(array_values(Posts::GetRequestsSection($PendingRequestReservations, RETURN_ARRANGED)['unfinished']))
 					);
-					usort($Posts, function($a, $b){
-						$a = strtotime($a['posted']);
-						$b = strtotime($b['posted']);
+					usort($Posts, function(Post $a, Post $b){
+						$a = strtotime($a->posted);
+						$b = strtotime($b->posted);
 
 						return -($a < $b ? -1 : ($a === $b ? 0 : 1));
 					});
 					$LIST = '';
-					foreach ($Posts as $p){
-						list($link,$page) = Posts::GetLink($p);
-						$label = !empty($p['label']) ? "<span class='label'>{$p['label']}</span>" : '';
-						$is_request = isset($p['rq']);
-						$reservation_time_known = !empty($p['reserved_at']);
-						$posted = Time::Tag($is_request && $reservation_time_known ? $p['reserved_at'] : $p['posted']);
+					foreach ($Posts as $Post){
+						unset($_);
+						$postLink = $Post->toLink($_);
+						$postAnchor = $Post->toAnchor(null, $_);
+						$label = !empty($Post->label) ? "<span class='label'>{$Post->label}</span>" : '';
+						$is_request = isset($Post->rq);
+						$reservation_time_known = !empty($Post->reserved_at);
+						$posted = Time::Tag($is_request && $reservation_time_known ? $Post->reserved_at : $Post->posted);
 						$PostedAction = $is_request && !$reservation_time_known ? 'Posted' : 'Reserved';
-						$contestable = Posts::IsOverdue($p)  ? Posts::CONTESTABLE : '';
+						$contestable = $Post->isOverdue() ? Posts::CONTESTABLE : '';
 
 						$LIST .= <<<HTML
 <li>
 	<div class='image screencap'>
-		<a href='$link'><img src='{$p['preview']}'></a>
+		<a href='$postLink'><img src='{$Post->preview}'></a>
 	</div>
 	$label
-	<em>$PostedAction under <a href='$link'>$page</a> $posted</em>$contestable
+	<em>$PostedAction under $postAnchor $posted</em>$contestable
 	<div>
-		<a href='$link' class='btn blue typcn typcn-arrow-forward'>View</a>
+		<a href='$postLink' class='btn blue typcn typcn-arrow-forward'>View</a>
 		<button class='red typcn typcn-user-delete cancel'>Cancel</button>
 	</div>
 </li>
