@@ -9,7 +9,7 @@
 		<h2>Unread notifications</h2>
 <?php
 		try {
-			Notifications::GetHTML($Notifications);
+			echo Notifications::GetHTML($Notifications);
 		}
 		catch(Throwable $e){
 			error_log('Exception caught when rendering notifications: '.$e->getMessage()."\n".$e->getTraceAsString());
