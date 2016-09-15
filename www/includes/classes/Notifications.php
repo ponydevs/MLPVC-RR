@@ -59,26 +59,21 @@
 			
 			foreach ($Notifications as $n){
 				$data = !empty($n['data']) ? JSON::Decode($n['data']) : null;
+				if (regex_match(new RegExp('^post-'),$n['type'])){
+					/** @var $Post \DB\Post */
+					$Post = $Database->where('id', $data['id'])->getOne("{$data['type']}s");
+					$Episode = Episodes::GetActual($Post->season, $Post->episode, Episodes::ALLOW_MOVIES);
+					$EpID = $Episode->formatTitle(AS_ARRAY, 'id');
+					$url = $Post->toLink($Episode);
+				}
 				switch ($n['type']){
 					case "post-finished":
-						$Post = $Database->where('id', $data['id'])->getOne("{$data['type']}s");
-						$Episode = Episodes::GetActual($Post['season'], $Post['episode'], Episodes::ALLOW_MOVIES);
-						$EpID = $Episode->formatTitle(AS_ARRAY, 'id');
-						$url = "/episode/$EpID#{$data['type']}-{$data['id']}";
 						$HTML .= self::_getNotifElem("Your <a href='$url'>request</a> under $EpID has been fulfilled", $n);
 					break;
 					case "post-approved":
-						$Post = $Database->where('id', $data['id'])->getOne("{$data['type']}s");
-						$Episode = Episodes::GetActual($Post['season'], $Post['episode'], Episodes::ALLOW_MOVIES);
-						$EpID = $Episode->formatTitle(AS_ARRAY, 'id');
-						$url = "/episode/$EpID#{$data['type']}-{$data['id']}";
 						$HTML .= self::_getNotifElem("A <a href='$url'>post</a> you reserved under $EpID has been added to the club gallery", $n);
 					break;
 					case "post-passon":
-						$Post = $Database->where('id', $data['id'])->getOne("{$data['type']}s");
-						$Episode = Episodes::GetActual($Post['season'], $Post['episode'], Episodes::ALLOW_MOVIES);
-						$EpID = $Episode->formatTitle(AS_ARRAY, 'id');
-						$url = "/episode/$EpID#{$data['type']}-{$data['id']}";
 						$userlink = Users::Get($data['user'])->getProfileLink();
 						$HTML .= self::_getNotifElem("$userlink is interested in finishing a <a href='$url'>post</a> you reserved under $EpID. Would you like to pass the reservation to them?", $n);
 					break;
@@ -88,10 +83,6 @@
 					case "post-passdel":
 					case "post-passsnatch":
 					case "post-passperm":
-						$Post = $Database->where('id', $data['id'])->getOne("{$data['type']}s");
-						$Episode = Episodes::GetActual($Post['season'], $Post['episode'], Episodes::ALLOW_MOVIES);
-						$EpID = $Episode->formatTitle(AS_ARRAY, 'id');
-						$url = "/episode/$EpID#{$data['type']}-{$data['id']}";
 						$userlink =Users::Get($data['by'])->getProfileLink();
 
 						$passaction = str_replace('post-pass','',$n['type']);

@@ -8,7 +8,14 @@
 
 	switch($action){
 		case 'get':
-			Response::Done(array('list' => Notifications::GetHTML(Notifications::Get(null,Notifications::UNREAD_ONLY),NOWRAP)));
+			try {
+				$Notifications = Notifications::GetHTML(Notifications::Get(null,Notifications::UNREAD_ONLY),NOWRAP);
+				Response::Done(array('list' => $Notifications));
+			}
+			catch (Throwable $e){
+				error_log('Exception caught when fetching notifications: '.$e->getMessage()."\n".$e->getTraceAsString());
+				Response::Fail('An error prevented the notifications from appearing. If this persists, <a class="send-feedback">let us know</a>.');
+			}
 		break;
 		case 'mark-read':
 			$nid = intval($data, 10);

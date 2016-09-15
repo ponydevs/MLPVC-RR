@@ -7,7 +7,14 @@
 			$Notifications = Notifications::Get(null, Notifications::UNREAD_ONLY); ?>
 	<section class="notifications"<?=empty($Notifications)?' style="display:none"':''?>>
 		<h2>Unread notifications</h2>
-		<?=Notifications::GetHTML($Notifications)?>
+<?php
+		try {
+			Notifications::GetHTML($Notifications);
+		}
+		catch(Throwable $e){
+			error_log('Exception caught when rendering notifications: '.$e->getMessage()."\n".$e->getTraceAsString());
+			echo '<ul class="notif-list"><li>An error prevented the notifications from appearing. If this persists, <a class="send-feedback">let us know</a>.</li></ul>';
+		} ?>
 	</section>
 <?php   } ?>
 	<section class="<?=$signedIn?'welcome':'login'?>">
