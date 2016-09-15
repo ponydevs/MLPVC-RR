@@ -1,6 +1,15 @@
 <?php
 
 	if (!POST_REQUEST) CoreUtils::NotFound();
+
+	if (regex_match(new RegExp('^reload-(request|reservation)/(\d+)$'), $data, $_match)){
+		$thing = $_match[1];
+		$Post = $Database->where('id', $_match[2])->getOne("{$thing}s");
+		if (empty($Post))
+			Response::Fail("The specified $thing does not exist");
+
+		Response::Done(array('li' => Posts::GetLi($Post, $thing === 'request', isset($_POST['FROM_PROFILE']), true)));
+	}
 	if (!$signedIn) Response::Fail();
 	CSRFProtection::Protect();
 
@@ -11,7 +20,7 @@
 		if (empty($Post))
 			Response::Fail("The specified $thing does not exist");
 
-		if (!(Permission::Sufficient('staff') || ($thing === 'request' && empty($Post['reserved_by']) && $Post['requested_by'] === $currentUser['id'])))
+		if (!(Permission::Sufficient('staff') || ($thing === 'request' && empty($Post['reserved_by']) && $Post['requested_by'] === $currentUser->id)))
 			Response::Fail();
 
 		if ($_match[1] === 'get'){
@@ -43,15 +52,7 @@
 		$Post = array_merge($Post, $update);
 		Response::Done(array('li' => Posts::GetLi($Post, $thing === 'request')));
 	}
-	if (regex_match(new RegExp('^reload-(request|reservation)/(\d+)$'), $data, $_match)){
-		$thing = $_match[1];
-		$Post = $Database->where('id', $_match[2])->getOne("{$thing}s");
-		if (empty($Post))
-			Response::Fail("The specified $thing does not exist");
-
-		Response::Done(array('li' => Posts::GetLi($Post, $thing === 'request', isset($_POST['FROM_PROFILE']), true)));
-	}
-	else if (regex_match(new RegExp('^((?:un)?(?:finish|lock|reserve)|add|delete|pls-transfer)-(request|reservation)s?/(\d+)$'),$data,$_match)){
+	if (regex_match(new RegExp('^((?:un)?(?:finish|lock|reserve)|add|delete|pls-transfer)-(request|reservation)s?/(\d+)$'),$data,$_match)){
 		$type = $_match[2];
 		$action = $_match[1];
 
@@ -65,7 +66,7 @@
 
 		if ($type === 'request' && $action === 'delete'){
 			if (!Permission::Sufficient('staff')){
-				if (!$signedIn || $Post['requested_by'] !== $currentUser['id'])
+				if (!$signedIn || $Post['requested_by'] !== $currentUser->id)
 					Response::Fail();
 
 				if (!empty($Post['reserved_by']))
@@ -100,8 +101,8 @@
 		if ($action === 'pls-transfer'){
 			$reserved_by = $Post['reserved_by'] ?? null;
 			$checkIfUserCanReserve = function(&$message, &$data) use ($Post, $reserved_by, $type, $currentUser){
-				Posts::ClearTransferAttempts($Post, $type, 'free', $currentUser['id'], $reserved_by);
-				if (!User::ReservationLimitExceeded(RETURN_AS_BOOL)){
+				Posts::ClearTransferAttempts($Post, $type, 'free', $currentUser->id, $reserved_by);
+				if (!Users::ReservationLimitExceeded(RETURN_AS_BOOL)){
 					$message .= '<br>Would you like to reserve it now?';
 					$data = array('canreserve' => true);
 				}
@@ -116,7 +117,7 @@
 				$checkIfUserCanReserve($message, $data, 'overdue');
 				Response::Fail($message, $data);
 			}
-			if ($reserved_by === $currentUser['id'])
+			if ($reserved_by === $currentUser->id)
 				Response::Fail("You've already reserved this $type");
 			if (Posts::IsOverdue($Post)){
 				$message = "This post was reserved ".Time::Tag($Post['reserved_at'])." so anyone's free to reserve it now.";
@@ -124,14 +125,14 @@
 				Response::Fail($message, $data);
 			}
 
-			User::ReservationLimitExceeded();
+			Users::ReservationLimitExceeded();
 
 			if (!Posts::IsTransferable($Post))
 				Response::Fail("This $type was reserved recently, please allow up to 5 days before asking for a transfer");
 
-			$ReserverLink = User::GetProfileLink(User::Get($reserved_by, 'id', 'name'));
+			$ReserverLink = Users::Get($reserved_by, 'id', 'name')->getProfileLink();
 
-			$PreviousAttempts = Posts::GetTransferAttempts($Post, $type, $currentUser['id'], $reserved_by);
+			$PreviousAttempts = Posts::GetTransferAttempts($Post, $type, $currentUser->id, $reserved_by);
 
 			if (!empty($PreviousAttempts[0]) && empty($PreviousAttempts[0]['read_at']))
 				Response::Fail("You already expressed your interest in this post to $ReserverLink ".Time::Tag($PreviousAttempts[0]['sent_at']).', please wait for them to respond.');
@@ -139,13 +140,13 @@
 			$notifSent = Notifications::Send($Post['reserved_by'],'post-passon',array(
 				'type' => $type,
 				'id' => $Post['id'],
-				'user' => $currentUser['id'],
+				'user' => $currentUser->id,
 			));
 
 			Response::Success("A notification has been sent to $ReserverLink, please wait for them to react.<br>If they don't visit the site often, it'd be a good idea to send them a note asking him to consider your inquiry.");
 		}
 
-		$isUserReserver = $Post['reserved_by'] === $currentUser['id'];
+		$isUserReserver = $Post['reserved_by'] === $currentUser->id;
 		if (!empty($Post['reserved_by'])){
 			switch ($action){
 				case 'reserve':
@@ -159,7 +160,7 @@
 						$Post['reserved_by'] = null;
 						break;
 					}
-					Response::Fail("This $type has already been reserved by ".User::GetProfileLink(User::Get($Post['reserved_by'])), array('li' => Posts::GetLi($Post, true)));
+					Response::Fail("This $type has already been reserved by ".Users::Get($Post['reserved_by'])->getProfileLink(), array('li' => Posts::GetLi($Post, true)));
 				break;
 				case 'lock':
 					if (empty($Post['deviation_id']))
@@ -259,14 +260,14 @@
 						$message .= "<p>The image appears to be in the group gallery already, so we marked it as approved.</p>";
 
 						Log::Action('post_lock',$postdata);
-						if ($Post['reserved_by'] !== $currentUser['id'])
+						if ($Post['reserved_by'] !== $currentUser->id)
 							Notifications::Send($Post['reserved_by'], 'post-approved', $postdata);
 					}
 					if ($type === 'request'){
-						$u = User::Get($Post['requested_by'],'id','name,id');
-						if (!empty($u) && $Post['requested_by'] !== $currentUser['id']){
-							$notifSent = Notifications::Send($u['id'], 'post-finished', $postdata);
-							$message .= "<p><strong>{$u['name']}</strong> ".($notifSent === 0?'has been notified':'will receive a notification shortly').'.'.(is_string($notifSent)?"</p><div class='notice fail'><strong>Error:</strong> $notifSent":'')."</div>";
+						$u = Users::Get($Post['requested_by'],'id','name,id');
+						if (!empty($u) && $Post['requested_by'] !== $currentUser->id){
+							$notifSent = Notifications::Send($u->id, 'post-finished', $postdata);
+							$message .= "<p><strong>{$u->name}</strong> ".($notifSent === 0?'has been notified':'will receive a notification shortly').'.'.(is_string($notifSent)?"</p><div class='notice fail'><strong>Error:</strong> $notifSent":'')."</div>";
 						}
 					}
 					if (!empty($message))
@@ -281,19 +282,19 @@
 			Response::Fail("This $type has not been reserved by anypony yet");
 
 		if (empty($Post['reserved_by']) && $type === 'request' && $action === 'reserve'){
-			User::ReservationLimitExceeded();
+			Users::ReservationLimitExceeded();
 
-			$update['reserved_by'] = $currentUser['id'];
+			$update['reserved_by'] = $currentUser->id;
 			if (Permission::Sufficient('developer')){
 				$reserve_as = Posts::ValidatePostAs();
 				if (isset($reserve_as)){
-					$User = User::Get($reserve_as, 'name');
+					$User = Users::Get($reserve_as, 'name');
 					if (empty($User))
 						Response::Fail('User does not exist');
-					if (!Permission::Sufficient('member', $User['role']) && !isset($_POST['screwit']))
+					if (!Permission::Sufficient('member', $User->role) && !isset($_POST['screwit']))
 						Response::Fail('User does not have permission to reserve posts, continue anyway?', array('retry' => true));
 
-					$update['reserved_by'] = $User['id'];
+					$update['reserved_by'] = $User->id;
 				}
 			}
 			$update['reserved_at'] = date('c');
@@ -326,7 +327,7 @@
 			$Post = array_merge($Post, $update);
 			$response = array('li' => Posts::GetLi($Post, true));
 			if (isset($_POST['FROM_PROFILE']))
-				$response['pendingReservations'] = User::GetPendingReservationsHTML($Post['reserved_by'], $isUserReserver);
+				$response['pendingReservations'] = Users::GetPendingReservationsHTML($Post['reserved_by'], $isUserReserver);
 			Response::Done($response);
 		}
 		else Response::Done();
@@ -376,7 +377,7 @@
 		$_POST['allow_overwrite_reserver'] = true;
 		$insert = Posts::CheckRequestFinishingImage();
 		if (empty($insert['reserved_by']))
-			$insert['reserved_by'] = $currentUser['id'];
+			$insert['reserved_by'] = $currentUser->id;
 
 		$epdata = (new Input('epid','epid',array(
 			Input::CUSTOM_ERROR_MESSAGES => array(
@@ -415,11 +416,11 @@
 		if (Permission::Insufficient('staff'))
 			switch ($thing){
 				case 'request':
-					if ($Post['requested_by'] !== $currentUser['id'] || !empty($Post['reserved_by']))
+					if ($Post['requested_by'] !== $currentUser->id || !empty($Post['reserved_by']))
 						Response::Fail();
 				break;
 				case 'reservation':
-					if ($Post['reserved_by'] !== $currentUser['id'])
+					if ($Post['reserved_by'] !== $currentUser->id)
 						Response::Fail();
 				break;
 			};
@@ -523,7 +524,7 @@
 	if (!empty($type) && $type === 'reservation'){
 		if (Permission::Insufficient('member'))
 			Response::Fail();
-		User::ReservationLimitExceeded();
+		Users::ReservationLimitExceeded();
 	}
 
 	$Image = Posts::CheckImage(Posts::ValidateImageURL());
@@ -547,19 +548,19 @@
 	$insert['season'] = $epdata->season;
 	$insert['episode'] = $epdata->episode;
 
-	$ByID = $currentUser['id'];
+	$ByID = $currentUser->id;
 	if (Permission::Sufficient('developer')){
 		$username = Posts::ValidatePostAs();
 		if (isset($username)){
-			$PostAs = User::Get($username, 'name', 'id,role');
+			$PostAs = Users::Get($username, 'name', 'id,role');
 
 			if (empty($PostAs))
 				Response::Fail('The user you wanted to post as does not exist');
 
-			if ($type === 'reservation' && !Permission::Sufficient('member', $PostAs['role']) && !isset($_POST['allow_nonmember']))
+			if ($type === 'reservation' && !Permission::Sufficient('member', $PostAs->role) && !isset($_POST['allow_nonmember']))
 				Response::Fail('The user you wanted to post as is not a club member, do you want to post as them anyway?',array('canforce' => true));
 
-			$ByID = $PostAs['id'];
+			$ByID = $PostAs->id;
 		}
 	}
 

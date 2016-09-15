@@ -13,7 +13,7 @@
 	<section class="<?=$signedIn?'welcome':'login'?>">
 		<h2><?=$signedIn?'Signed in as':'Welcome!'?></h2>
 <?php
-		User::RenderCard();
+		Users::RenderCard();
 		CoreUtils::RenderSidebarUsefulLinks(); ?>
 		<div class="buttons">
 <?php

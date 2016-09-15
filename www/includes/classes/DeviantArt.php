@@ -1,6 +1,7 @@
 <?php
 
-	use Exceptions\cURLRequestException;
+use DB\User;
+use Exceptions\cURLRequestException;
 
 	class DeviantArt {
 		private static
@@ -33,7 +34,7 @@
 
 			$requestHeaders = array("Accept-Encoding: gzip","User-Agent: MLPVC-RR @ ".GITHUB_URL);
 			if (!isset($token) && $signedIn)
-				$token = $currentUser['Session']['access'];
+				$token = $currentUser->Session['access'];
 			if (!empty($token)) $requestHeaders[] = "Authorization: Bearer $token";
 			else if ($token !== false) return null;
 
@@ -186,9 +187,9 @@
 		 * @param string $code
 		 * @param null|string $type
 		 *
-		 * @return array|void
+		 * @return User|void
 		 */
-		static function GetToken($code, $type = null){
+		static function GetToken(string $code, string $type = null){
 			global $Database, $http_response_header;
 
 			if (empty($type) || !in_array($type,array('authorization_code','refresh_token'))) $type = 'authorization_code';
@@ -214,11 +215,12 @@
 
 			$userdata = DeviantArt::Request('user/whoami', $json['access_token']);
 
+			/** @var $User User */
 			$User = $Database->where('id',$userdata['userid'])->getOne('users');
-			if (isset($User['role']) && $User['role'] === 'ban'){
+			if (isset($User->role) && $User->role === 'ban'){
 				$_GET['error'] = 'user_banned';
 				$BanReason = $Database
-					->where('target', $User['id'])
+					->where('target', $User->id)
 					->orderBy('entryid', 'ASC')
 					->getOne('log__banish');
 				if (!empty($BanReason))
@@ -258,24 +260,24 @@
 				$Insert = array_merge($UserData, $MoreInfo);
 				$Database->insert('users', $Insert);
 				if ($makeDev)
-					User::UpdateRole($Insert, 'developer');
+					(new User($Insert))->updateRole('developer');
 			}
 			else $Database->where('id',$UserID)->update('users', $UserData);
 
-			if (empty($makeDev) && (!empty($User) && Permission::Insufficient('member', $User['role']) || empty($User)) && User::IsClubMember($UserData['name']))
-				User::UpdateRole(array(
+			if (empty($makeDev) && (!empty($User) && Permission::Insufficient('member', $User->role) || empty($User)) && Users::IsClubMember($UserData['name']))
+				(new User(array(
 					'id' => $UserID,
-					'role' => isset($User['role']) ? $User['role'] : 'user',
-				), 'member');
+					'role' => $User->role ?? 'user',
+				)))->updateRole('member');
 
 			if ($type === 'refresh_token')
 				$Database->where('refresh', $code)->update('sessions',$AuthData);
 			else {
-				$Database->where('user', $User['id'])->where('scope', $AuthData['scope'], '!=')->delete('sessions');
+				$Database->where('user', $User->id)->where('scope', $AuthData['scope'], '!=')->delete('sessions');
 				$Database->insert('sessions', array_merge($AuthData, array('user' => $UserID)));
 			}
 
-			$interval = $User['name'] === 'dcencia' ? '1 WEEK' : '1 MONTH';
+			$interval = $User->name === 'dcencia' ? '1 WEEK' : '1 MONTH';
 			$Database->rawQuery("DELETE FROM sessions WHERE \"user\" = ? && lastvisit <= NOW() - INTERVAL '$interval'", array($UserID));
 
 			Cookie::Set('access', $cookie, time()+ Time::$IN_SECONDS['year'], Cookie::HTTPONLY);

@@ -109,7 +109,7 @@ if (!POST_REQUEST)
 			if (!$Database->insert('episodes__votes',array(
 				'season' => $Episode->season,
 				'episode' => $Episode->episode,
-				'user' => $currentUser['id'],
+				'user' => $currentUser->id,
 				'vote' => $vote,
 			))) Response::DBError();
 			Response::Done(array('newhtml' => Episodes::GetSidebarVoting($Episode)));
@@ -254,7 +254,7 @@ if (!POST_REQUEST)
 
 			$insert = array();
 			if (!$editing)
-				$insert['posted_by'] = $currentUser['id'];
+				$insert['posted_by'] = $currentUser->id;
 
 			if (!$editing || $canEditID){
 				$insert['season'] = Episodes::ValidateSeason(Episodes::ALLOW_MOVIES);

@@ -1,6 +1,7 @@
 <?php
 
-	use Exceptions\cURLRequestException;
+use DB\User;
+use Exceptions\cURLRequestException;
 
 	class CoreUtils {
 		/**
@@ -230,7 +231,7 @@
 					'content' => self::_clearIndentation($content),
 					'sidebar' => self::_clearIndentation($sidebar),
 					'footer' => CoreUtils::GetFooter(WITH_GIT_INFO),
-					'avatar' => $GLOBALS['signedIn'] ? $GLOBALS['currentUser']['avatar_url'] : GUEST_AVATAR,
+					'avatar' => $GLOBALS['signedIn'] ? $GLOBALS['currentUser']->avatar_url : GUEST_AVATAR,
 					'responseURL' => $_SERVER['REQUEST_URI'],
 					'signedIn' => $GLOBALS['signedIn'],
 				));
@@ -583,13 +584,13 @@
 
 				}
 				if ($GLOBALS['signedIn'])
-					$NavItems['u'] = array("/@{$GLOBALS['currentUser']['name']}",'Account');
+					$NavItems['u'] = array("/@{$GLOBALS['currentUser']->name}",'Account');
 				if ($do === 'user' || Permission::Sufficient('staff')){
 					global $User, $sameUser;
 
 					$NavItems['users'] = array('/users', 'Users', Permission::Sufficient('staff'));
 					if (!empty($User) && empty($sameUser))
-						$NavItems['users']['subitem'] = $User['name'];
+						$NavItems['users']['subitem'] = $User->name;
 				}
 				if (Permission::Sufficient('staff')){
 					$NavItems['admin'] = array('/admin', 'Admin');
@@ -656,7 +657,7 @@
 		 * Renders the "Useful links" section of the sidebar
 		 */
 		static function RenderSidebarUsefulLinks(){
-			global $Database, $signedIn, $currentUser;
+			global $Database, $signedIn;
 			if (!$signedIn) return;
 			$Links = $Database->orderBy('"order"','ASC')->get('usefullinks');
 
@@ -956,7 +957,7 @@
 
 			$HTML = "<table>";
 			foreach ($Query as $row){
-				$link = User::GetProfileLink(User::Get($row['reserved_by']), Time::FORMAT_FULL);
+				$link = Users::Get($row['reserved_by'])->getProfileLink(User::LINKFORMAT_FULL);
 				$count = "<strong style='color:rgb(".min(round($row['cnt']/10*255),255).",0,0)'>{$row['cnt']}</strong>";
 
 				$HTML .= "<tr><td>$link</td><td>$count</td></tr>";

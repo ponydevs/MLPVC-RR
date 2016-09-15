@@ -1,6 +1,7 @@
 <?php
 
 use DB\Episode;
+use DB\User;
 
 class Posts {
 		static
@@ -222,19 +223,19 @@ class Posts {
 				$return = array('deviation_id' => $Image->id);
 				$Deviation = DeviantArt::GetCachedSubmission($Image->id);
 				if (!empty($Deviation['author'])){
-					$Author = User::Get($Deviation['author'], 'name');
+					$Author = Users::Get($Deviation['author'], 'name');
 
 					if (!empty($Author)){
-						if (!isset($_POST['allow_overwrite_reserver']) && !empty($ReserverID) && $Author['id'] !== $ReserverID){
+						if (!isset($_POST['allow_overwrite_reserver']) && !empty($ReserverID) && $Author->id !== $ReserverID){
 							global $currentUser;
-							$sameUser = $currentUser['id'] === $ReserverID;
+							$sameUser = $currentUser->id === $ReserverID;
 							$person = $sameUser ? 'you' : 'the user who reserved this post';
-							Response::Fail("You've linked to an image which was not submitted by $person. If this was intentional, press Continue to proceed with marking the post finished <b>but</b> note that it will make {$Author['name']} the new reserver.".($sameUser
-									? "<br><br>This means that you'll no longer be able to interact with this post until {$Author['name']} or an administrator cancels the reservation on it."
+							Response::Fail("You've linked to an image which was not submitted by $person. If this was intentional, press Continue to proceed with marking the post finished <b>but</b> note that it will make {$Author->name} the new reserver.".($sameUser
+									? "<br><br>This means that you'll no longer be able to interact with this post until {$Author->name} or an administrator cancels the reservation on it."
 									: ''), array('retry' => true));
 						}
 
-						$return['reserved_by'] = $Author['id'];
+						$return['reserved_by'] = $Author->id;
 					}
 				}
 
@@ -485,7 +486,7 @@ HTML;
 					Notifications::Send($data['user'], "post-pass$reason", array(
 						'id' => $data['id'],
 						'type' => $data['type'],
-						'by' => $currentUser['id'],
+						'by' => $currentUser->id,
 					));
 					$SentFor[$data['user']][$reason]["{$data['type']}-{$data['id']}"] = true;
 				}
@@ -519,13 +520,13 @@ HTML;
 			$posted_at = '<em class="post-date">';
 			if ($isRequest){
 				global $signedIn, $currentUser;
-				$isRequester = $R['requested_by'] === $currentUser['id'];
-				$isReserver = $R['reserved_by'] === $currentUser['id'];
+				$isRequester = $signedIn && $R['requested_by'] === $currentUser->id;
+				$isReserver = $signedIn && $R['reserved_by'] === $currentUser->id;
 				$overdue = Permission::Sufficient('member') && self::IsOverdue($R);
 
 				$posted_at .= "Requested $permalink";
 				if ($signedIn && (Permission::Sufficient('staff') || $isRequester || $isReserver))
-					$posted_at .= ' by '.($isRequester ? "<a href='/@{$currentUser['name']}'>You</a>" : User::GetProfileLink(User::Get($R['requested_by'])));
+					$posted_at .= ' by '.($isRequester ? "<a href='/@{$currentUser->name}'>You</a>" : Users::Get($R['requested_by'])->getProfileLink());
 			}
 			else {
 				$overdue = false;
@@ -535,8 +536,8 @@ HTML;
 
 			$hide_reserved_status = !isset($R['reserved_by']) || ($overdue && !$isReserver);
 			if (!empty($R['reserved_by'])){
-				$R['reserver'] = User::Get($R['reserved_by']);
-				$reserved_by = $overdue && !$isReserver ? ' by '.User::GetProfileLink($R['reserver']) : '';
+				$R['reserver'] = Users::Get($R['reserved_by']);
+				$reserved_by = $overdue && !$isReserver ? ' by '.$R['reserver']->getProfileLink() : '';
 				$reserved_at = $isRequest && !empty($R['reserved_at']) && !($hide_reserved_status && Permission::Insufficient('staff'))
 					? "<em class='reserve-date'>Reserved <strong>".Time::Tag($R['reserved_at'])."</strong>$reserved_by</em>"
 					: '';
@@ -600,29 +601,29 @@ HTML;
 		/**
 		 * Generate HTML for post action buttons
 		 *
-		 * @param array|bool $By
-		 * @param array      $R
-		 * @param bool       $isRequest
-		 * @param bool       $view_only Only show the "View" button
+		 * @param User|bool $By
+		 * @param array     $R
+		 * @param bool      $isRequest
+		 * @param bool      $view_only Only show the "View" button
 		 *
 		 * @return string
 		 */
 		private static function _getPostActions($By, $R, $isRequest, $view_only){
 			global $signedIn, $currentUser;
 
-			$requestedByUser = $isRequest && $signedIn && $R['requested_by'] === $currentUser['id'];
+			$requestedByUser = $isRequest && $signedIn && $R['requested_by'] === $currentUser->id;
 			$isNotReserved = empty($By);
-			$sameUser = $signedIn && $R['reserved_by'] === $currentUser['id'];
+			$sameUser = $signedIn && $R['reserved_by'] === $currentUser->id;
 			$CanEdit = (empty($R['lock']) && Permission::Sufficient('staff')) || Permission::Sufficient('developer') || ($requestedByUser && $isNotReserved);
 			$Buttons = array();
 
 			if ($isNotReserved)
 				$HTML = Permission::Sufficient('member') && !$view_only ? "<button class='reserve-request typcn typcn-user-add'>Reserve</button>" : '';
 			else {
-				$dAlink = User::GetProfileLink($By, User::LINKFORMAT_FULL);
-				$vectorapp = User::GetVectorAppClassName($By);
+				$dAlink = $By->getProfileLink(User::LINKFORMAT_FULL);
+				$vectorapp = $By->getVectorAppClassName();
 				if (!empty($vectorapp))
-					$vectorapp .= "' title='Uses ".CoreUtils::$VECTOR_APPS[CoreUtils::Substring($vectorapp,5)]." to make vectors";
+					$vectorapp .= "' title='Uses ".$By->getVectorAppName()." to make vectors";
 				$HTML =  "<div class='reserver$vectorapp'>$dAlink</div>";
 			}
 			if (!empty($R['reserved_by'])){
@@ -704,7 +705,7 @@ HTML;
 		}
 
 		static function ValidatePostAs(){
-			return User::ValidateName('post_as', array(
+			return Users::ValidateName('post_as', array(
 				Input::ERROR_INVALID => '"Post as" username (@value) is invalid',
 			));
 		}

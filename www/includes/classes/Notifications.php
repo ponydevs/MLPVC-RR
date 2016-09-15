@@ -38,7 +38,7 @@
 				global $signedIn, $currentUser;
 				if (!$signedIn)
 					return null;
-				$UserID = $currentUser['id'];
+				$UserID = $currentUser->id;
 			}
 
 			switch($only){
@@ -79,8 +79,7 @@
 						$Episode = Episodes::GetActual($Post['season'], $Post['episode'], Episodes::ALLOW_MOVIES);
 						$EpID = $Episode->formatTitle(AS_ARRAY, 'id');
 						$url = "/episode/$EpID#{$data['type']}-{$data['id']}";
-						$User = User::Get($data['user']);
-						$userlink = User::GetProfileLink($User);
+						$userlink = Users::Get($data['user'])->getProfileLink();
 						$HTML .= self::_getNotifElem("$userlink is interested in finishing a <a href='$url'>post</a> you reserved under $EpID. Would you like to pass the reservation to them?", $n);
 					break;
 					case "post-passdeny":
@@ -93,8 +92,7 @@
 						$Episode = Episodes::GetActual($Post['season'], $Post['episode'], Episodes::ALLOW_MOVIES);
 						$EpID = $Episode->formatTitle(AS_ARRAY, 'id');
 						$url = "/episode/$EpID#{$data['type']}-{$data['id']}";
-						$User = User::Get($data['by']);
-						$userlink = User::GetProfileLink($User);
+						$userlink =Users::Get($data['by'])->getProfileLink();
 
 						$passaction = str_replace('post-pass','',$n['type']);
 						switch($passaction){

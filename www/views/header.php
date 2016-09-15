@@ -68,7 +68,7 @@ m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
 
 ga('create','<?=GA_TRACKING_CODE?>','auto');
 <?php   if ($signedIn && !UserPrefs::Get('p_disable_ga')){ ?>
-ga('set', 'userId', '<?=$currentUser['id']?>');
+ga('set', 'userId', '<?=$currentUser->id?>');
 <?php   } ?>
 ga('require','displayfeatures');
 ga('send','pageview');
@@ -81,7 +81,7 @@ ga('send','pageview');
 		<nav><ul>
 			<li class="sidebar-toggle">
 				<div class="loader"></div>
-	            <img class="avatar" src="<?=$signedIn?$currentUser['avatar_url']:GUEST_AVATAR?>" alt='<?=($signedIn?CoreUtils::AposEncode(CoreUtils::Posess($currentUser['name'])):'Guest').' avatar'?>'>
+	            <img class="avatar" src="<?=$signedIn?$currentUser->avatar_url:GUEST_AVATAR?>" alt='<?=($signedIn?CoreUtils::AposEncode(CoreUtils::Posess($currentUser->name)):'Guest').' avatar'?>'>
 			</li><?=CoreUtils::GetNavigationHTML(isset($view) && $view === 'fatalerr')?></ul></nav>
 	</header>
 

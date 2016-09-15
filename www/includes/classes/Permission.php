@@ -53,7 +53,7 @@
 				global $signedIn, $currentUser;
 				if (!$signedIn)
 					return false;
-				$checkRole = $currentUser['role'];
+				$checkRole = $currentUser->role;
 			}
 			else $checkRole = $compareAgainst;
 

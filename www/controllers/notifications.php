@@ -12,7 +12,7 @@
 		break;
 		case 'mark-read':
 			$nid = intval($data, 10);
-			$Notif = $Database->where('id', $nid)->where('user', $currentUser['id'])->getOne('notifications');
+			$Notif = $Database->where('id', $nid)->where('user', $currentUser->id)->getOne('notifications');
 			if (empty($Notif))
 				Response::Fail("The notification (#$nid) does not exist");
 
@@ -36,8 +36,8 @@
 							Response::Fail("The {$data['type']} doesn't exist or has been deleted");
 						}
 						if ($read_action === 'true'){
-							if ($Post['reserved_by'] !== $currentUser['id']){
-								Posts::ClearTransferAttempts($Post, $data['type'], 'perm', null, $currentUser['id']);
+							if ($Post['reserved_by'] !== $currentUser->id){
+								Posts::ClearTransferAttempts($Post, $data['type'], 'perm', null, $currentUser->id);
 								Response::Fail('You are not allowed to transfer this reservation');
 							}
 
@@ -45,7 +45,7 @@
 							Notifications::Send($data['user'], "post-passallow", array(
 								'id' => $data['id'],
 								'type' => $data['type'],
-								'by' => $currentUser['id'],
+								'by' => $currentUser->id,
 							));
 							$Database->where('id', $data['id'])->update("{$data['type']}s",array(
 								'reserved_by' => $data['user'],
@@ -65,7 +65,7 @@
 							Notifications::Send($data['user'], "post-passdeny", array(
 								'id' => $data['id'],
 								'type' => $data['type'],
-								'by' => $currentUser['id'],
+								'by' => $currentUser->id,
 							));
 						}
 

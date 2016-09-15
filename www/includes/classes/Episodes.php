@@ -280,7 +280,7 @@ class Episodes {
 			if (!$signedIn) return null;
 			return $Database
 				->whereEp($Ep)
-				->where('user', $currentUser['id'])
+				->where('user', $currentUser->id)
 				->getOne('episodes__votes');
 		}
 
@@ -376,7 +376,7 @@ class Episodes {
 		 * Get the <tbody> contents for the episode list table
 		 *
 		 * @param Episode[]|null $Episodes
-		 * @param bool               $areMovies
+		 * @param bool           $areMovies
 		 *
 		 * @return string
 		 */
@@ -387,7 +387,6 @@ class Episodes {
 			$Body = '';
 			$PathStart = '/episode/';
 			$displayed = false;
-			/** @var Episode */
 			foreach ($Episodes as $Episode) {
 				$adminControls = Permission::Insufficient('staff') ? '' : <<<HTML
 <span class='admincontrols'>
@@ -437,17 +436,17 @@ HTML;
 		/**
 		 * Render upcoming episode HTML
 		 *
-		 * @param bool $wrap Whether to output the wrapper element
+		 * @param bool $wrap Whether to output the wrapper elements
 		 *
 		 * @return string
 		 */
-		static function GetSidebarUpcoming($wrap = true){
+		static function GetSidebarUpcoming($wrap = WRAP){
 			global $Database, $PREFIX_REGEX;
+			/** @var $Upcoming Episode[] */
 			$Upcoming = $Database->where('airs > NOW()')->orderBy('airs', 'ASC')->get('episodes');
 			if (empty($Upcoming)) return;
 
-			$HTML = $wrap ? '<section id="upcoming"><h2>Upcoming episodes</h2><ul>' : '';
-			/** @var Episode */
+			$HTML = '';
 			foreach ($Upcoming as $Episode){
 				$airtime = strtotime($Episode->airs);
 				$airs = date('c', $airtime);
@@ -481,7 +480,7 @@ HTML;
 				$HTML .= "<li><div class='calendar'><span class='top'>$month</span><span class='bottom'>$day</span></div>".
 					"<div class='meta'><span class='title'>$title</span><span class='time'>Airs $time</span></div></li>";
 			}
-			return $HTML.($wrap?'</ul></section>':'');
+			return $wrap ? "<section id='upcoming'><h2>Upcoming episodes</h2><ul>$HTML</ul></section>" : $HTML;
 		}
 
 		/**
@@ -491,7 +490,7 @@ HTML;
 		 *
 		 * @return string
 		 */
-		static function GetSidebarVoting($Episode){
+		static function GetSidebarVoting(Episode $Episode):string {
 			$thing = $Episode->isMovie ? 'movie' : 'episode';
 			if (!$Episode->aired)
 				return "<p>Voting will start ".Time::Tag($Episode->willair).", after the $thing had aired.</p>";
@@ -530,7 +529,7 @@ HTML;
 		 *
 		 * @return int[]
 		 */
-		static function GetTagIDs($Episode){
+		static function GetTagIDs(Episode $Episode):array {
 			global $CGDb;
 
 			$sn = CoreUtils::Pad($Episode->season);
@@ -548,7 +547,7 @@ HTML;
 			return $EpTagIDs;
 		}
 
-		static function GetAppearancesSectionHTML($Epsiode){
+		static function GetAppearancesSectionHTML(Episode $Epsiode):string {
 			global $CGDb, $Color;
 
 			$HTML = '';

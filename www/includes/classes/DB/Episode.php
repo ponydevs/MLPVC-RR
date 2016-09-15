@@ -26,9 +26,7 @@ class Episode extends AbstractFillable {
 		$aired,
 		$isMovie;
 
-	/*
-	 * @param array|object
-	 */
+	/** @param array|object */
 	public function __construct($iter = null){
 		parent::__construct($this, $iter);
 

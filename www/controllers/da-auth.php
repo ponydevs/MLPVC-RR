@@ -26,7 +26,7 @@
 
 	if (regex_match(new RegExp('^[a-z\d]+$','i'), $_GET['state'], $_match)){
 		$confirm = str_replace('{{CODE}}', $_match[0], file_get_contents('views/loginConfrim.html'));
-		$confirm = str_replace('{{USERID}}', Permission::Sufficient('developer') || UserPrefs::Get('p_disable_ga') ? '' : $currentUser['id'], $confirm);
+		$confirm = str_replace('{{USERID}}', Permission::Sufficient('developer') || UserPrefs::Get('p_disable_ga') ? '' : $currentUser->id, $confirm);
 		die($confirm);
 	}
 	else if (regex_match($REWRITE_REGEX, $_GET['state']))

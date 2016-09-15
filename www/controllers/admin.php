@@ -158,7 +158,7 @@
 			else switch(strtolower(CoreUtils::Trim($_GET['by']))){
 				case 'me':
 				case 'you':
-					$initiator = $currentUser['id'];
+					$initiator = $currentUser->id;
 					$by = 'you';
 				break;
 				case 'web server':
@@ -166,17 +166,17 @@
 					$by = 'Web server';
 				break;
 				default:
-					$by = User::ValidateName('by', null, true);
+					$by = Users::ValidateName('by', null, true);
 					if (isset($by)){
-						$by = User::Get($by, 'name', 'id,name');
+						$by = Users::Get($by, 'name', 'id,name');
 						$initiator = $by['id'];
-						$by = $initiator === $currentUser['id'] ? 'me' : $by['name'];
+						$by = $initiator === $currentUser->id ? 'me' : $by->name;
 					}
 			};
 
 			$title = '';
 			function processFilter(&$q = null){
-				global $Database, $currentUser, $type, $by, $initiator, $title;
+				global $Database, $type, $by, $initiator, $title;
 
 				if (isset($type)){
 					$Database->where('reftype', $type);

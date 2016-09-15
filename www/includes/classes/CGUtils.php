@@ -184,7 +184,7 @@ HTML;
 			foreach ($Changes as $c){
 				$initiator = $appearance = '';
 				if ($seeInitiator)
-					$initiator = " by ".User::GetProfileLink(User::Get($c['initiator']));
+					$initiator = " by ".Users::Get($c['initiator'])->getProfileLink();
 				if ($showAppearance){
 					global $CGDb;
 

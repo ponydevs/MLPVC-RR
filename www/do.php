@@ -4,6 +4,7 @@
 	$Color = 'Color';
 	$color = 'color';
 	$signedIn = false;
+	/** @var $currentUser \DB\User */
 	$currentUser = null;
 	$do = !empty($_GET['do']) ? $_GET['do'] : 'index';
 	$data = !empty($_GET['data']) ? $_GET['data'] : '';
@@ -16,7 +17,7 @@
 	if (regex_match($phpExtensionPattern,$_SERVER['REQUEST_URI']))
 		HTTP::Redirect(regex_replace($phpExtensionPattern, '$1', $_SERVER['REQUEST_URI']));
 	if (!regex_match($REWRITE_REGEX,"/$do/$data")){
-		User::Authenticate();
+		Users::Authenticate();
 		CoreUtils::NotFound();
 	}
 
@@ -74,7 +75,7 @@
 	// Load controller
 	$controller = APPATH."controllers/$do.php";
 	if (!($do === 'colorguide' && regex_match(new RegExp('\.(svg|png)$'), $data)))
-		User::Authenticate();
+		Users::Authenticate();
 	if (!file_exists($controller))
 		CoreUtils::NotFound();
 	require $controller;

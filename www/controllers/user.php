@@ -1,6 +1,8 @@
 <?php
 
-	if (strtolower($data) === 'immortalsexgod')
+use DB\User;
+
+if (strtolower($data) === 'immortalsexgod')
 		$data = 'DJDavid98';
 
 	if (POST_REQUEST){
@@ -10,15 +12,15 @@
 		if (empty($data)) CoreUtils::NotFound();
 
 		if (regex_match(new RegExp('^newgroup/'.USERNAME_PATTERN.'$'),$data,$_match)){
-			$targetUser = User::Get($_match[1], 'name');
+			$targetUser = Users::Get($_match[1], 'name');
 			if (empty($targetUser))
 				Response::Fail('User not found');
 
-			if ($targetUser['id'] === $currentUser['id'])
+			if ($targetUser->id === $currentUser->id)
 				Response::Fail("You cannot modify your own group");
-			if (!Permission::Sufficient($targetUser['role']))
+			if (!Permission::Sufficient($targetUser->role))
 				Response::Fail('You can only modify the group of users who are in the same or a lower-level group than you');
-			if ($targetUser['role'] === 'ban')
+			if ($targetUser->role === 'ban')
 				Response::Fail('This user is banished, and must be un-banished before changing their group.');
 
 			$newgroup = (new Input('newrole',function($value){
@@ -30,10 +32,10 @@
 					Input::ERROR_INVALID => 'The specified group (@value) does not exist',
 				)
 			)))->out();
-			if ($targetUser['role'] === $newgroup)
+			if ($targetUser->role === $newgroup)
 				Response::Done(array('already_in' => true));
 
-			User::UpdateRole($targetUser,$newgroup);
+			$targetUser->updateRole($newgroup);
 
 			Response::Done();
 		}
@@ -41,7 +43,7 @@
 			$Session = $Database->where('id', $_match[1])->getOne('sessions');
 			if (empty($Session))
 				Response::Fail('This session does not exist');
-			if ($Session['user'] !== $currentUser['id'] && !Permission::Sufficient('staff'))
+			if ($Session['user'] !== $currentUser->id && !Permission::Sufficient('staff'))
 				Response::Fail('You are not allowed to delete this session');
 
 			if (!$Database->where('id', $Session['id'])->delete('sessions'))
@@ -53,13 +55,14 @@
 			$action = strtolower($Action);
 			$un = $_match[2];
 
-			$targetUser = User::Get($un, 'name');
+			$targetUser = Users::Get($un, 'name');
 			if (empty($targetUser)) Response::Fail('User not found');
 
-			if ($targetUser['id'] === $currentUser['id']) Response::Fail("You cannot $action yourself");
-			if (Permission::Sufficient('staff', $targetUser['role']))
+			if ($targetUser->id === $currentUser->id)
+				Response::Fail("You cannot $action yourself");
+			if (Permission::Sufficient('staff', $targetUser->role))
 				Response::Fail("You cannot $action people within the assistant or any higher group");
-			if ($action == 'banish' && $targetUser['role'] === 'ban' || $action == 'un-banish' && $targetUser['role'] !== 'ban')
+			if ($action == 'banish' && $targetUser->role === 'ban' || $action == 'un-banish' && $targetUser->role !== 'ban')
 				Response::Fail("This user has already been {$action}ed");
 
 			$reason = (new Input('reason','string',array(
@@ -71,21 +74,24 @@
 			)))->out();
 
 			$changes = array('role' => $action == 'banish' ? 'ban' : 'user');
-			$Database->where('id', $targetUser['id'])->update('users', $changes);
+			$Database->where('id', $targetUser->id)->update('users', $changes);
 			Log::Action($action,array(
-				'target' => $targetUser['id'],
+				'target' => $targetUser->id,
 				'reason' => $reason
 			));
 			$changes['role'] = Permission::$ROLES_ASSOC[$changes['role']];
 			$changes['badge'] = Permission::LabelInitials($changes['role']);
-			if ($action == 'banish') Response::Done($changes);
-			else Response::Success("We welcome {$targetUser['name']} back with open hooves!", $changes);
+
+			if ($action == 'banish')
+				Response::Done($changes);
+
+			Response::Success("We welcome {$targetUser->name} back with open hooves!", $changes);
 		}
 		else CoreUtils::NotFound();
 	}
 
 	if (empty($data)){
-		if ($signedIn) $un = $currentUser['name'];
+		if ($signedIn) $un = $currentUser->name;
 		else $MSG = 'Sign in to view your settings';
 	}
 	else if (regex_match($USERNAME_REGEX, $data, $_match))
@@ -94,7 +100,7 @@
 	if (!isset($un)){
 		if (!isset($MSG)) $MSG = 'Invalid username';
 	}
-	else $User = User::Get($un, 'name');
+	else $User = Users::Get($un, 'name');
 
 	if (empty($User)){
 		if (isset($User) && $User === false){
@@ -113,26 +119,26 @@
 		$canEdit = $sameUser = false;
 	}
 	else {
-		$sameUser = $signedIn && $User['id'] === $currentUser['id'];
-		$canEdit = !$sameUser && Permission::Sufficient('staff') && Permission::Sufficient($User['role']);
-		$pagePath = "/@{$User['name']}";
+		$sameUser = $signedIn && $User->id === $currentUser->id;
+		$canEdit = !$sameUser && Permission::Sufficient('staff') && Permission::Sufficient($User->role);
+		$pagePath = "/@{$User->name}";
 		CoreUtils::FixPath($pagePath);
 	}
 
 	if (isset($MSG)) HTTP::StatusCode(404);
 	else {
 		if ($sameUser){
-			$CurrentSession = $currentUser['Session'];
+			$CurrentSession = $currentUser->Session;
 			$Database->where('id != ?',array($CurrentSession['id']));
 		}
 		$Sessions = $Database
-			->where('user',$User['id'])
+			->where('user',$User->id)
 			->orderBy('lastvisit','DESC')
 			->get('sessions',null,'id,created,lastvisit,platform,browser_name,browser_ver,user_agent,scope');
 	}
 
 	$settings = array(
-		'title' => !isset($MSG) ? ($sameUser?'Your':CoreUtils::Posess($User['name'])).' '.($sameUser || $canEdit?'account':'profile') : 'Account',
+		'title' => !isset($MSG) ? ($sameUser?'Your':CoreUtils::Posess($User->name)).' '.($sameUser || $canEdit?'account':'profile') : 'Account',
 		'no-robots',
 		'do-css',
 		'js' => array('user'),

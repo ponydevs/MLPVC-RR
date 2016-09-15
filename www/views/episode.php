@@ -28,7 +28,7 @@
 			<h1><?=$heading?></h1>
 			<p>Vector Requests & Reservations</p>
 <?php   if (Permission::Sufficient('staff')){ ?>
-			<p class="addedby"><em><?=$CurrentEpisode->isMovie?'Movie':'Episode'?> added by <?=User::GetProfileLink(User::Get($CurrentEpisode->posted_by)).' '.Time::Tag($CurrentEpisode->posted)?></em></p>
+			<p class="addedby"><em><?=$CurrentEpisode->isMovie?'Movie':'Episode'?> added by <?=Users::Get($CurrentEpisode->posted_by)->getProfileLink().' '.Time::Tag($CurrentEpisode->posted)?></em></p>
 <?php   } ?>
 		</div>
 	</div>

@@ -55,7 +55,7 @@ class Log {
 			else if (!empty($data)) return false;
 
 			if ($signedIn && !$forcews)
-				$central['initiator'] = $currentUser['id'];
+				$central['initiator'] = $currentUser->id;
 			return (bool) $Database->insert("log",$central);
 		}
 
@@ -83,10 +83,11 @@ class Log {
 			$reftype = $MainEntry['reftype'];
 			switch ($reftype){
 				case "rolechange":
+					/** @var $target \DB\User */
 					$target =  $Database->where('id',$data['target'])->getOne('users');
 
 					$details = array(
-						array('Target user', User::GetProfileLink($target)),
+						array('Target user', $target->getProfileLink()),
 						array('Old group', Permission::$ROLES_ASSOC[$data['oldrole']]),
 						array('New group', Permission::$ROLES_ASSOC[$data['newrole']])
 					);
@@ -130,11 +131,11 @@ class Log {
 					}
 				break;
 				case "userfetch":
-					$details[] = array('User', User::GetProfileLink(User::Get($data['userid'])));
+					$details[] = array('User', Users::Get($data['userid'])->getProfileLink());
 				break;
 				case "banish":
 				case "un-banish":
-					$details[] = array('User', User::GetProfileLink(User::Get($data['target'])));
+					$details[] = array('User', Users::Get($data['target'])->getProfileLink());
 					$details[] = array('Reason', CoreUtils::EscapeHTML($data['reason']));
 				break;
 				case "post_lock":
@@ -158,9 +159,9 @@ class Log {
 					$details[] = array('Episode', "<a href='/episode/$IDstr'>$IDstr</a>");
 					$details[] = array('Posted', Time::Tag($data['posted'], Time::TAG_EXTENDED, Time::TAG_STATIC_DYNTIME));
 					if (!empty($data['requested_by']))
-						$details[] = array('Requested by', User::GetProfileLink(User::Get($data['requested_by'])));
+						$details[] = array('Requested by', Users::Get($data['requested_by'])->getProfileLink());
 					if (!empty($data['reserved_by']))
-						$details[] = array('Reserved by', User::GetProfileLink(User::Get($data['reserved_by'])));
+						$details[] = array('Reserved by', Users::Get($data['reserved_by'])->getProfileLink());
 					$details[] = array('Finished', !empty($data['deviation_id']));
 					if (!empty($data['deviation_id'])){
 						$details[] = array('Deviation', self::_link("http://fav.me/{$data['deviation_id']}"));
@@ -177,7 +178,7 @@ class Log {
 				case "res_overtake":
 					$Post = $Database->where('id', $data['id'])->getOne("{$data['type']}s");
 					self::_genericPostInfo($Post, $data, $details);
-					$details[] = array('Previous reserver',User::GetProfileLink(User::Get($data['reserved_by'])));
+					$details[] = array('Previous reserver', Users::Get($data['reserved_by'])->getProfileLink());
 					$details[] = array('Previously reserved at', Time::Tag($data['reserved_at'], Time::TAG_EXTENDED, Time::TAG_STATIC_DYNTIME));
 
 					$diff_text = '';
@@ -214,7 +215,7 @@ class Log {
 				case "res_transfer":
 					$Post = $Database->where('id', $data['id'])->getOne("{$data['type']}s");
 					self::_genericPostInfo($Post, $data, $details);
-					$details[] = array('New reserver',User::GetProfileLink(User::Get($data['to'])));
+					$details[] = array('New reserver', Users::Get($data['to'])->getProfileLink());
 				break;
 				case "cg_modify":
 					$details[] = array('Appearance',self::_getAppearanceLink($data['ponyid']));
@@ -272,9 +273,9 @@ class Log {
 						$details[] = array('New Custom CM Preview', null);
 				break;
 				case "da_namechange":
-					$User = User::Get($data['id'], 'id', 'name');
-					$newIsCurrent = $User['name'] === $data['new'];
-					$details[] = array('User', User::GetProfileLink($User));
+					$User = Users::Get($data['id'], 'id', 'name');
+					$newIsCurrent = $User->name === $data['new'];
+					$details[] = array('User', $User->getProfileLink());
 					if ($newIsCurrent)
 						$details[] = array('Old name', $data['old']);
 					else {
@@ -305,10 +306,10 @@ class Log {
 
 			$details[] = array('Posted under', !empty($Episode) ? "<a href='".$Episode->formatURL()."'>$EpID</a>" : $EpID.' (now deleted/moved)');
 			if (!empty($Post)){
-				$details[] = array(($data['type'] === 'request'?'Requested':'Reserved').' by', User::GetProfileLink(User::Get($Post[$data['type'] === 'request' ? 'requested_by' : 'reserved_by'])));
+				$details[] = array(($data['type'] === 'request'?'Requested':'Reserved').' by', Users::Get($Post[$data['type'] === 'request' ? 'requested_by' : 'reserved_by'])->getProfileLink());
 				if ($data['type'] === 'request'){
 					if (!empty($Post['reserved_by']))
-						$details[] = array('Reserved by', User::GetProfileLink(User::Get($Post['reserved_by'])));
+						$details[] = array('Reserved by', Users::Get($Post['reserved_by'])->getProfileLink());
 					else $details[] = array('Reserved', false);
 				}
 			}
@@ -359,10 +360,10 @@ class Log {
 			$HTML = '';
 			if (count($LogItems) > 0) foreach ($LogItems as $item){
 				if (!empty($item['initiator'])){
-					$inituser = User::Get($item['initiator'],'id');
+					$inituser = Users::Get($item['initiator'],'id');
 					if (empty($inituser))
 						$inituser = 'Deleted user';
-					else $inituser = User::GetProfileLink($inituser);
+					else $inituser = $inituser->getProfileLink();
 
 					$ip = in_array($item['ip'], array('::1', '127.0.0.1')) ? "localhost" : $item['ip'];
 

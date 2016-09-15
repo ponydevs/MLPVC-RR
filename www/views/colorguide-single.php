@@ -4,6 +4,8 @@
 	<p>from the MLP-VectorClub <a href="/cg"><?=$Color?> Guide</a></p>
 
 <?php
+	use DB\User;
+
 	$RenderPath = APPATH."img/cg_render/{$Appearance['id']}.png";
 	$FileModTime = '?t='.(file_exists($RenderPath) ? filemtime($RenderPath) : time()); ?>
 	<div id="p<?=$Appearance['id']?>">
@@ -46,7 +48,7 @@
 			<p class="aside">This is only an illustration, the body shape & colors are <strong>not</strong> guaranteed to reflect the actual design.</p>
 			<p>The image above links to the vector made by <?php
 				$Vector = DeviantArt::GetCachedSubmission($Appearance['cm_favme']);
-				echo User::GetProfileLink(User::Get($Vector['author'],'name','name, avatar_url'), User::LINKFORMAT_FULL);
+				echo Users::Get($Vector['author'],'name','name, avatar_url')->getProfileLink(User::LINKFORMAT_FULL);
 			?> and shows which way the cutie mark should be facing.</p>
 		</section>
 <?  } ?>

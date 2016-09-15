@@ -842,7 +842,7 @@
 				$c['groupid'] = $Group['groupid'];
 				if (!$CGDb->insert('colors', $c)){
 					$colorError = true;
-					error_log("Database error triggered by user {$currentUser['id']} ({$currentUser['name']}) while saving colors: ".$CGDb->getLastError());
+					error_log("Database error triggered by user {$currentUser->id} ({$currentUser->name}) while saving colors: ".$CGDb->getLastError());
 				}
 			}
 			if ($colorError)

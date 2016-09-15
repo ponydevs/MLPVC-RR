@@ -7,7 +7,7 @@
 
 	if (isset($_REQUEST['unlink'])){
 		try {
-			DeviantArt::Request('https://www.deviantart.com/oauth2/revoke', null, array('token' => $currentUser['Session']['access']));
+			DeviantArt::Request('https://www.deviantart.com/oauth2/revoke', null, array('token' => $currentUser->Session['access']));
 		}
 		catch (cURLRequestException $e){
 			Response::Fail("Coulnd not revoke the site's access: {$e->getMessage()} (HTTP {$e->getCode()})");
@@ -16,22 +16,23 @@
 
 	if (isset($_REQUEST['unlink']) || isset($_REQUEST['everywhere'])){
 		$col = 'user';
-		$val = $currentUser['id'];
-		$username = User::ValidateName('username', null, true);
+		$val = $currentUser->id;
+		$username = Users::ValidateName('username', null, true);
 		if (isset($username)){
 			if (!Permission::Sufficient('staff') || isset($_REQUEST['unlink']))
 				Response::Fail();
+			/** @var $TargetUser \DB\User */
 			$TargetUser = $Database->where('name', $username)->getOne('users','id,name');
 			if (empty($TargetUser))
 				Response::Fail("Target user doesn't exist");
-			if ($TargetUser['id'] !== $currentUser['id'])
-				$val = $TargetUser['id'];
+			if ($TargetUser->id !== $currentUser->id)
+				$val = $TargetUser->id;
 			else unset($TargetUser);
 		}
 	}
 	else {
 		$col = 'id';
-		$val = $currentUser['Session']['id'];
+		$val = $currentUser->Session['id'];
 	}
 
 	if (!$Database->where($col,$val)->delete('sessions'))

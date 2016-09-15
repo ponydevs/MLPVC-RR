@@ -23,11 +23,11 @@
 		 */
 		static function Get($key, $for = null){
 			global $Database, $signedIn, $currentUser;
-			if (empty($for))
-				$for = $currentUser['id'];
+			if (empty($for) && $signedIn)
+				$for = $currentUser->id;
 
-			if (isset(User::$_PREF_CACHE[$for][$key]))
-				return User::$_PREF_CACHE[$for][$key];
+			if (isset(Users::$_PREF_CACHE[$for][$key]))
+				return Users::$_PREF_CACHE[$for][$key];
 
 			$default = null;
 			if (isset(static::$_defaults[$key]))
@@ -36,7 +36,7 @@
 				return $default;
 
 			$Database->where('user', $for);
-			return User::$_PREF_CACHE[$for][$key] = parent::Get($key, $default);
+			return Users::$_PREF_CACHE[$for][$key] = parent::Get($key, $default);
 		}
 
 		/**
@@ -51,20 +51,20 @@
 		static function Set($key, $value, $for = null){
 			global $Database, $signedIn, $currentUser;
 			if (empty($for))
-				$for = $currentUser['id'];
+				$for = $currentUser->id;
 
 			if (!isset(static::$_defaults[$key]))
 				Response::Fail("Key $key is not allowed");
 			$default = static::$_defaults[$key];
 
-			if ($Database->where('key', $key)->where('user', $currentUser['id'])->has(static::$_db)){
-				$Database->where('key', $key)->where('user', $currentUser['id']);
+			if ($Database->where('key', $key)->where('user', $currentUser->id)->has(static::$_db)){
+				$Database->where('key', $key)->where('user', $currentUser->id);
 				if ($value == $default)
 					return $Database->delete(static::$_db);
 				else return $Database->update(static::$_db, array('value' => $value));
 			}
 			else if ($value != $default)
-				return $Database->insert(static::$_db, array('user' => $currentUser['id'], 'key' => $key, 'value' => $value));
+				return $Database->insert(static::$_db, array('user' => $currentUser->id, 'key' => $key, 'value' => $value));
 			else return true;
 		}
 

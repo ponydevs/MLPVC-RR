@@ -1,8 +1,9 @@
 <?php
 
-	use Exceptions\cURLRequestException;
+use DB\User;
+use Exceptions\cURLRequestException;
 
-	class User {
+	class Users {
 		// Global cache for storing user details
 		static $_USER_CACHE = array();
 		static $_PREF_CACHE = array();
@@ -22,7 +23,7 @@
 		 * @param string $dbcols
 		 *
 		 * @throws Exception
-		 * @return array|null
+		 * @return User|null|false
 		 */
 		static function Get($value, $coloumn = 'id', $dbcols = null){
 			global $Database;
@@ -30,7 +31,8 @@
 			if ($coloumn === "token"){
 				$Auth = $Database->where('token', $value)->getOne('sessions');
 
-				if (empty($Auth)) return null;
+				if (empty($Auth))
+					return null;
 				$coloumn = 'id';
 				$value = $Auth['user'];
 			}
@@ -43,14 +45,11 @@
 			if (empty($User) && $coloumn === 'name')
 				$User = self::Fetch($value, $dbcols);
 
-			if (!empty($User['role']))
-				$User['rolelabel'] = Permission::$ROLES_ASSOC[$User['role']];
-
 			if (empty($dbcols) && !empty($User) && isset($Auth))
-				$User['Session'] = $Auth;
+				$User->Session = $Auth;
 
-			if (isset($User['id']))
-				self::$_USER_CACHE[$User['id']] = $User;
+			if (isset($User->id))
+				self::$_USER_CACHE[$User->id] = $User;
 
 			return $User;
 		}
@@ -63,7 +62,7 @@
 		 * @param string $username
 		 * @param string $dbcols
 		 *
-		 * @return array|null
+		 * @return User|null|false
 		 */
 		function Fetch($username, $dbcols = null){
 			global $Database, $USERNAME_REGEX;
@@ -83,11 +82,12 @@
 			}
 
 			if (empty($userdata['results'][0]))
-				return null;
+				return false;
 
 			$userdata = $userdata['results'][0];
 			$ID = strtolower($userdata['userid']);
 
+			/** @var $DBUser User */
 			$DBUser = $Database->where('id', $ID)->getOne('users','name');
 			$userExists = !empty($DBUser);
 
@@ -104,8 +104,8 @@
 			if (!$userExists)
 				Log::Action('userfetch',array('userid' => $insert['id']));
 			$names = array($username);
-			if ($userExists && $DBUser['name'] !== $username)
-				$names[] = $DBUser['name'];
+			if ($userExists && $DBUser->name !== $username)
+				$names[] = $DBUser->name;
 			foreach ($names as $name){
 				if (strcasecmp($name,$insert['name']) !== 0)
 					Log::Action('da_namechange',array(
@@ -126,117 +126,26 @@
 		static function RenderCard($showAvatar = false){
 			global $signedIn, $currentUser;
 			if ($signedIn){
-				$avatar = $currentUser['avatar_url'];
-				$username = self::GetProfileLink($currentUser);
-				$rolelabel = $currentUser['rolelabel'];
-				$Avatar = $showAvatar ? self::GetAvatarWrap($currentUser) : '';
+				$avatar = $currentUser->avatar_url;
+				$username = $currentUser->getProfileLink();
+				$rolelabel = $currentUser->rolelabel;
+				$Avatar = $showAvatar ? $currentUser->getAvatarWrap() : '';
 			}
 			else {
 				$avatar = GUEST_AVATAR;
 				$username = 'Curious Pony';
 				$rolelabel = 'Guest';
 				$Avatar = $showAvatar
-					? self::GetAvatarWrap(array(
+					? (new User(array(
 						'avatar_url' => $avatar,
 						'name' => $username,
 						'rolelabel' => $rolelabel,
 						'guest' => true,
-					))
+					)))->getAvatarWrap()
 					: '';
 			}
 
 			echo "<div class='usercard'>$Avatar<span class='un'>$username</span><span class='role'>$rolelabel</span></div>";
-		}
-
-		/**
-		 * Renders avatar wrapper for a specific user
-		 *
-		 * @param array $User
-		 *
-		 * @return string
-		 */
-		static function GetAvatarWrap($User){
-			$vectorapp = User::GetVectorAppClassName($User);
-			return "<div class='avatar-wrap$vectorapp'><img src='{$User['avatar_url']}' class='avatar' alt='avatar'></div>";
-		}
-
-		const
-			LINKFORMAT_FULL = 0,
-			LINKFORMAT_TEXT = 1,
-			LINKFORMAT_URL = 2;
-
-		static $FAKE_USER = array(
-			'name' => 'null',
-			'avatar_url' => '/img/blank-pixel.png',
-			'fake' => true,
-		);
-
-		private function _checkEmptyUser(&$User, $method){
-			if (!is_array($User)){
-				error_log("\$User is not an array, fake user data used in $method.\nValue: ".var_export($User, true)."\nBacktrace:\n".((new \Exception)->getTraceAsString()));
-				$User = self::$FAKE_USER;
-			}
-		}
-
-		/**
-		 * Local profile link generator
-		 *
-		 * @param array $User
-		 * @param int $format
-		 *
-		 * @throws Exception
-		 * @return string
-		 */
-		static function GetProfileLink($User, $format = self::LINKFORMAT_TEXT){
-			self::_checkEmptyUser($User, __METHOD__);
-
-			$Username = $User['name'];
-			$avatar = $format == self::LINKFORMAT_FULL ? "<img src='{$User['avatar_url']}' class='avatar' alt='avatar'> " : '';
-			$href = empty($User['fake']) ? " href='/@$Username'" : '';
-
-			return "<a$href class='da-userlink".($format == self::LINKFORMAT_FULL ? ' with-avatar':'')."'>$avatar<span class='name'>$Username</span></a>";
-		}
-
-		/**
-		 * DeviantArt profile link generator
-		 *
-		 * @param array $User
-		 * @param int $format
-		 *
-		 * @return string
-		 */
-		static function GetDALink($User, $format = self::LINKFORMAT_FULL){
-			self::_checkEmptyUser($User, __METHOD__);
-
-			$Username = $User['name'];
-			$username = strtolower($Username);
-			$link = "http://$username.deviantart.com/";
-			if ($format === self::LINKFORMAT_URL) return $link;
-
-			$avatar = $format == self::LINKFORMAT_FULL ? "<img src='{$User['avatar_url']}' class='avatar' alt='avatar'> " : '';
-			$href = empty($User['fake']) ? " href='$link'" : '';
-			return "<a$href class='da-userlink'>$avatar<span class='name'>$Username</span></a>";
-		}
-
-		/**
-		 * Update a user's role
-		 *
-		 * @param array $targetUser
-		 * @param string $newgroup
-		 *
-		 * @return bool
-		 */
-		static function UpdateRole($targetUser, $newgroup){
-			global $Database;
-			$response = $Database->where('id', $targetUser['id'])->update('users',array('role' => $newgroup));
-
-			if ($response) Log::Action('rolechange',array(
-				'target' => $targetUser['id'],
-				'oldrole' => $targetUser['role'],
-				'newrole' => $newgroup
-			));
-
-			return $response;
 		}
 
 		/**
@@ -262,7 +171,7 @@
 					  WHERE req.reserved_by = u.id && req.deviation_id IS NULL)
 				) as "count"
 				FROM users u WHERE u.id = ?',
-				array($currentUser['id'])
+				array($currentUser->id)
 			);
 
 			$overTheLimit = isset($reservations['count']) && $reservations['count'] >= 4;
@@ -337,38 +246,38 @@ HTML;
 					$Database->where('token', sha1($oldAuthKey))->update('sessions',array( 'token' => sha1($authKey) ));
 					Cookie::Set('access', $authKey, time() + Time::$IN_SECONDS['year'], Cookie::HTTPONLY);
 				}
-				$currentUser = User::Get(sha1($authKey),'token');
+				$currentUser = Users::Get(sha1($authKey),'token');
 			}
 
 			if (!empty($currentUser)){
-				if ($currentUser['role'] === 'ban')
-					$Database->where('id', $currentUser['id'])->delete('sessions');
+				if ($currentUser->role === 'ban')
+					$Database->where('id', $currentUser->id)->delete('sessions');
 				else {
-					if (strtotime($currentUser['Session']['expires']) < time()){
+					if (strtotime($currentUser->Session['expires']) < time()){
 						try {
-							DeviantArt::GetToken($currentUser['Session']['refresh'], 'refresh_token');
+							DeviantArt::GetToken($currentUser->Session['refresh'], 'refresh_token');
 							$tokenvalid = true;
 						}
 						catch (cURLRequestException $e){
-							$Database->where('id', $currentUser['Session']['id'])->delete('sessions');
-							trigger_error("Session refresh failed for {$currentUser['name']} ({$currentUser['id']}) | {$e->getMessage()} (HTTP {$e->getCode()})", E_USER_WARNING);
+							$Database->where('id', $currentUser->Session['id'])->delete('sessions');
+							trigger_error("Session refresh failed for {$currentUser->name} ({$currentUser->id}) | {$e->getMessage()} (HTTP {$e->getCode()})", E_USER_WARNING);
 						}
 					}
 					else $tokenvalid = true;
 
 					if ($tokenvalid){
 						$signedIn = true;
-						if (time() - strtotime($currentUser['Session']['lastvisit']) > Time::$IN_SECONDS['minute']){
+						if (time() - strtotime($currentUser->Session['lastvisit']) > Time::$IN_SECONDS['minute']){
 							$lastVisitTS = date('c');
-							if ($Database->where('id', $currentUser['Session']['id'])->update('sessions', array('lastvisit' => $lastVisitTS)))
-								$currentUser['Session']['lastvisit'] = $lastVisitTS;
+							if ($Database->where('id', $currentUser->Session['id'])->update('sessions', array('lastvisit' => $lastVisitTS)))
+								$currentUser->Session['lastvisit'] = $lastVisitTS;
 						}
 
 						$_PrefersColour = array(
 							'Pirill-Poveniy' => true,
 							'itv-canterlot' => true,
 						);
-						if (isset($_PrefersColour[$currentUser['name']])){
+						if (isset($_PrefersColour[$currentUser->name])){
 							$Color = 'Colour';
 							$color = 'colour';
 						}
@@ -389,7 +298,7 @@ HTML;
 			global $Database, $currentUser;
 
 			$YouHave = $sameUser?'You have':'This user has';
-			$PrivateSection = $sameUser?User::$PROFILE_SECTION_PRIVACY_LEVEL['staff']:'';
+			$PrivateSection = $sameUser? Users::$PROFILE_SECTION_PRIVACY_LEVEL['staff']:'';
 
 			$cols = "id, season, episode, preview, label, posted, reserved_by";
 			$PendingReservations = $Database->where('reserved_by', $UserID)->where('deviation_id IS NULL')->get('reservations',null,$cols);
@@ -452,11 +361,6 @@ HTML;
 				$HTML .= "</section>";
 			}
 			return $HTML;
-		}
-		
-		static function GetVectorAppClassName($User){
-			$pref = UserPrefs::Get('p_vectorapp', $User['id']);
-			return !empty($pref) ? " app-$pref" : '';
 		}
 
 		static function ValidateName($key, $errors, $method_get = false){
