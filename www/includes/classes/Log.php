@@ -305,7 +305,14 @@ class Log {
 
 			$details[] = array('Posted under', !empty($Episode) ? "<a href='".$Episode->formatURL()."'>$EpID</a>" : $EpID.' (now deleted/moved)');
 			if (!empty($Post)){
-				$details[] = array(($data['type'] === 'request'?'Requested':'Reserved').' by', Users::Get($Post[$data['type'] === 'request' ? 'requested_by' : 'reserved_by'])->getProfileLink());
+				$details[] = array(
+					($data['type'] === 'request'?'Requested':'Reserved').' by',
+					Users::Get(
+						$data['type'] === 'request'
+						? $Post->requested_by
+						: $Post->reserved_by
+					)->getProfileLink()
+				);
 				if ($data['type'] === 'request'){
 					if (!empty($Post->reserved_by))
 						$details[] = array('Reserved by', Users::Get($Post->reserved_by)->getProfileLink());
