@@ -557,8 +557,9 @@ use Exceptions\cURLRequestException;
 					if (isset($Episodes))
 						$NavItems['eps'][1] .= " - Page {$Pagination->page}";
 				}
-				if ($do === 'episode' && !empty($GLOBALS['CurrentEpisode'])){
-					if (!empty($GLOBALS['Latest']))
+				global $CurrentEpisode;
+				if ($do === 'episode' && !empty($CurrentEpisode)){
+					if ($CurrentEpisode->isLatest())
 						$NavItems['latest'][0] = $_SERVER['REQUEST_URI'];
 					else $NavItems['eps']['subitem'] = CoreUtils::Cutoff($GLOBALS['heading'],Episodes::TITLE_CUTOFF);
 				}
