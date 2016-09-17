@@ -388,7 +388,7 @@ The armor sections are numbered going down the neck i.e. Section 1 is the upperm
 (133, 162, 'Spitfire''s Academy Outfit', '', NULL, false, '2016-05-01 21:45:08.857979+02', NULL, NULL),
 (134, 55, 'Raven', 'Glasses don''t seem to have lenses.
 The iris gradient has a sharper transition than usual.
-Appears as both Unicorn and Earth Pony in different episodes.', NULL, false, '2016-05-03 12:12:33.570228+02', NULL, NULL),
+Appears as both Unicorn and Earth Pony in different episodes.', 'dahve54', false, '2016-05-03 12:12:33.570228+02', NULL, false),
 (135, 127, 'Ms. Peachbottom', 'Far legs use darker colors. On the luggage:
 <b>Side Flower 1</b> represents the two flowers perpendicular to the tear
 <b>Side Flower 2</b> is the top flower in line with the tear
@@ -459,7 +459,7 @@ To get the muted coat/mane/other colors for any character, take the RGB value of
 (194, 48, 'Petunia Paleo', '', NULL, false, '2016-09-11 20:30:58.514576+02', NULL, NULL),
 (195, 148, 'Mrs. Paleo', '', NULL, false, '2016-09-12 02:57:42.944404+02', NULL, NULL),
 (196, 149, 'Mr. Paleo', '', NULL, false, '2016-09-12 03:20:30.857887+02', NULL, NULL),
-(197, 79, 'Blue Note', '', NULL, false, '2016-09-12 03:56:55.806349+02', NULL, NULL);
+(197, 79, 'Blue Note', '', 'dahn9dl', false, '2016-09-12 03:56:55.806349+02', NULL, true);
 
 
 --
@@ -1410,14 +1410,15 @@ INSERT INTO colorgroups VALUES
 (1059, 197, 'Cutie Mark', 3),
 (1060, 197, 'Magic', 4),
 (1061, 197, 'Shirt and Tie', 5),
-(1062, 197, 'Saxophone', 6);
+(1062, 197, 'Saxophone', 6),
+(1063, 193, 'Mail', 6);
 
 
 --
 -- Name: colorgroups_groupid_seq; Type: SEQUENCE SET; Schema: public; Owner: mlpvc-rr
 --
 
-SELECT pg_catalog.setval('colorgroups_groupid_seq', 1062, true);
+SELECT pg_catalog.setval('colorgroups_groupid_seq', 1063, true);
 
 
 --
@@ -2179,7 +2180,7 @@ INSERT INTO colors VALUES
 (245, 2, 'Shield Fill 2', '#F6B8D2'),
 (245, 3, 'Shield Fill 3', '#BF5D93'),
 (245, 4, 'Star Fill', '#A02699'),
-(245, 5, 'Eight Note Fill', '#FD41F8'),
+(245, 5, 'Eighth Note Fill', '#FD41F8'),
 (246, 0, 'Aura', '#C4FBB0'),
 (257, 0, 'Outline', '#9C9AAD'),
 (257, 1, 'Fill', '#FFFFFF'),
@@ -5439,7 +5440,15 @@ INSERT INTO colors VALUES
 (1062, 3, 'Shadow/Valves/Piping', '#F4AB47'),
 (1062, 4, 'Inside/Valve Levers', '#D78917'),
 (1062, 5, 'Strap Outline', '#9E5A41'),
-(1062, 6, 'Strap Fill', '#C37D5D');
+(1062, 6, 'Strap Fill', '#C37D5D'),
+(1063, 0, 'Envelope 1 Outline', '#B8C1A6'),
+(1063, 1, 'Envelope 1 Fill', '#FFFFF0'),
+(1063, 2, 'Envelope 1 Stamp', '#989898'),
+(1063, 3, 'Envelope 2 Outline', '#EDDC9C'),
+(1063, 4, 'Envelope 2 Fill', '#F8F1B6'),
+(1063, 5, 'Envelope 3 Outline', '#B8C1A6'),
+(1063, 6, 'Envelope 3 Fill', '#FFF7DD'),
+(1063, 7, 'Envelope 3 Stamp', '#646464');
 
 
 --
@@ -6801,14 +6810,18 @@ INSERT INTO tags VALUES
 (415, 'petunia paleo', NULL, 'char', 1, NULL),
 (416, 'mrs. paleo', NULL, 'char', 1, NULL),
 (417, 'mr. paleo', NULL, 'char', 1, NULL),
-(418, 'blue note', NULL, 'char', 1, NULL);
+(418, 'blue note', NULL, 'char', 1, NULL),
+(419, 's06e22', NULL, 'ep', 0, NULL),
+(420, 's06e23', NULL, 'ep', 0, NULL),
+(421, 's06e24', NULL, 'ep', 0, NULL),
+(422, 's06e25', NULL, 'ep', 0, NULL);
 
 
 --
 -- Name: tags_tid_seq; Type: SEQUENCE SET; Schema: public; Owner: mlpvc-rr
 --
 
-SELECT pg_catalog.setval('tags_tid_seq', 418, true);
+SELECT pg_catalog.setval('tags_tid_seq', 422, true);
 
 
 --

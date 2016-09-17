@@ -1380,7 +1380,7 @@
 						},
 						{
 							"order": 5,
-							"label": "Eight Note Fill",
+							"label": "Eighth Note Fill",
 							"hex": "#FD41F8"
 						}
 					]
@@ -9150,11 +9150,11 @@
 			"order": 55,
 			"label": "Raven",
 			"notes": "Glasses don't seem to have lenses.\nThe iris gradient has a sharper transition than usual.\nAppears as both Unicorn and Earth Pony in different episodes.",
-			"cm_favme": null,
+			"cm_favme": "dahve54",
 			"ishuman": false,
 			"added": "2016-05-03 12:12:33.570228+02",
 			"cm_preview": null,
-			"cm_dir": null,
+			"cm_dir": false,
 			"ColorGroups": {
 				"715": {
 					"groupid": 715,
@@ -13376,11 +13376,11 @@
 			"order": 79,
 			"label": "Blue Note",
 			"notes": "",
-			"cm_favme": null,
+			"cm_favme": "dahn9dl",
 			"ishuman": false,
 			"added": "2016-09-12 03:56:55.806349+02",
 			"cm_preview": null,
-			"cm_dir": null,
+			"cm_dir": true,
 			"ColorGroups": {
 				"1056": {
 					"groupid": 1056,
@@ -30515,6 +30515,53 @@
 							"hex": "#A77646"
 						}
 					]
+				},
+				"1063": {
+					"groupid": 1063,
+					"label": "Mail",
+					"order": 6,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Envelope 1 Outline",
+							"hex": "#B8C1A6"
+						},
+						{
+							"order": 1,
+							"label": "Envelope 1 Fill",
+							"hex": "#FFFFF0"
+						},
+						{
+							"order": 2,
+							"label": "Envelope 1 Stamp",
+							"hex": "#989898"
+						},
+						{
+							"order": 3,
+							"label": "Envelope 2 Outline",
+							"hex": "#EDDC9C"
+						},
+						{
+							"order": 4,
+							"label": "Envelope 2 Fill",
+							"hex": "#F8F1B6"
+						},
+						{
+							"order": 5,
+							"label": "Envelope 3 Outline",
+							"hex": "#B8C1A6"
+						},
+						{
+							"order": 6,
+							"label": "Envelope 3 Fill",
+							"hex": "#FFF7DD"
+						},
+						{
+							"order": 7,
+							"label": "Envelope 3 Stamp",
+							"hex": "#646464"
+						}
+					]
 				}
 			},
 			"TagIDs": [
@@ -33849,6 +33896,38 @@
 			"title": null,
 			"type": "char",
 			"uses": 1,
+			"synonym_of": null
+		},
+		"419": {
+			"tid": 419,
+			"name": "s06e22",
+			"title": null,
+			"type": "ep",
+			"uses": 0,
+			"synonym_of": null
+		},
+		"420": {
+			"tid": 420,
+			"name": "s06e23",
+			"title": null,
+			"type": "ep",
+			"uses": 0,
+			"synonym_of": null
+		},
+		"421": {
+			"tid": 421,
+			"name": "s06e24",
+			"title": null,
+			"type": "ep",
+			"uses": 0,
+			"synonym_of": null
+		},
+		"422": {
+			"tid": 422,
+			"name": "s06e25",
+			"title": null,
+			"type": "ep",
+			"uses": 0,
 			"synonym_of": null
 		}
 	}
