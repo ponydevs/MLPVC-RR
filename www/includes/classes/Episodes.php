@@ -407,7 +407,6 @@ HTML;
 				}
 				else {
 					$href = $Episode->formatURL();
-					$Episode = $Episode->addAiringData();
 					$SeasonEpisode = "<td class='episode' rowspan='2'>{$title['episode']}</td>";
 				}
 				$DataID = " data-epid='{$title['id']}'";
@@ -417,6 +416,7 @@ HTML;
 					$displayed = true;
 					$star = '<span class="typcn typcn-home" title="Curently visible on the homepage"></span> ';
 				}
+				$Episode->addAiringData();
 				if (!$Episode->aired)
 					$star .= '<span class="typcn typcn-media-play-outline" title="'.($Episode->isMovie?'Movie':'Episode').' didn\'t air yet, voting disabled"></span>&nbsp;';
 
