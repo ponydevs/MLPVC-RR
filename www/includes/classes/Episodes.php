@@ -398,7 +398,8 @@ HTML;
 				$title = $Episode->formatTitle(AS_ARRAY);
 				if (!$Episode->isMovie){
 					$href = $PathStart.$title['id'];
-
+					if ($Episode->twoparter)
+						$title['episode'] .= '-'.(intval($title['episode'],10)+1);
 					$SeasonEpisode = <<<HTML
 				<td class='season' rowspan='2'>{$title['season']}</td>
 				<td class='episode' rowspan='2'>{$title['episode']}</td>
