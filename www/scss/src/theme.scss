@@ -203,26 +203,6 @@ header {
 	height: $HeaderHeight;
 	@include navfoot;
 
-	> .loader {
-		position: absolute;
-		top: 0;
-		left: 0;
-		z-index: -1;
-		height: 100%;
-		background: rgba(0,255,0, .3);
-		background: linear-gradient(to right, rgba(0,255,0, .1) 50%, rgba(0,255,0, .3) 100%);
-		transition: opacity .1s linear;
-		overflow: hidden;
-
-		&:not(.loading) {
-			opacity: 0;
-
-			transition-property: opacity, width;
-			transition-duration: .1s, 2s;
-			transition-timing-function: linear, ease;
-		}
-	}
-
 	// Page layout - Header - Navigation
 	nav {
 		display: block;
@@ -267,13 +247,14 @@ header {
 
 				&.sidebar-toggle {
 					$toggleSize: 45px;
+					$toggleBorderWidth: 2px;
 					position: relative;
 					margin: 2.5px;
 					width: $toggleSize;
 					height: $toggleSize;
 					cursor: pointer;
 					border-radius: 100%;
-					border: 2.5px solid white;
+					border: $toggleBorderWidth solid $HeaderFooterBG;
 					background-color: rgba(black, .6);
 
 					body.loading & {
@@ -281,19 +262,30 @@ header {
 
 						> .loader { display: block }
 						> .avatar { opacity: .5 }
+						> .loading-indicator {
+							> .loading-circle {
+								stroke: #afa !important;
+								opacity: 1;
+								transition: stroke .2s linear, stroke-dashoffset .2s ease-out;
+							}
+						}
 					}
 
-					> .loader {
+					> .loading-indicator {
 						position: absolute;
-						top: 0;
-						left: 0;
+						top: -$toggleBorderWidth;
+						left: -$toggleBorderWidth;
 						z-index: 2;
-						display: none;
-						width: 27px;
-						height: 27px;
-						margin: 7px;
+						width: $toggleSize;
+						height: $toggleSize;
 
-						@include loading-indicator(27px);
+						> .loading-circle {
+							fill: transparent;
+							stroke: #fff;
+							stroke-width: $toggleBorderWidth;
+							transform: rotate(-90deg);
+							transition: stroke .2s linear, stroke-dashoffset .35s linear;
+						}
 					}
 					> .avatar {
 						width: 100%;
@@ -304,6 +296,7 @@ header {
 						left: 0;
 						border-radius: 100%;
 						box-sizing: border-box;
+						transition: opacity .35s linear;
 					}
 					> .notif-cnt {
 						position: absolute;

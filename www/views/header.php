@@ -80,6 +80,9 @@ ga('send','pageview');
 	<header>
 		<nav><ul>
 			<li class="sidebar-toggle">
+				<svg class="loading-indicator" viewBox="0 0 45 45" version="1.1" xmlns="http://www.w3.org/2000/svg">
+					<circle r="20" cx="22.5" cy="22.5" class="loading-circle"></circle>
+				</svg>
 				<div class="loader"></div>
 	            <img class="avatar" src="<?=$signedIn?$currentUser->avatar_url:GUEST_AVATAR?>" alt='<?=($signedIn?CoreUtils::AposEncode(CoreUtils::Posess($currentUser->name)):'Guest').' avatar'?>'>
 			</li><?=CoreUtils::GetNavigationHTML(isset($view) && $view === 'fatalerr')?></ul></nav>

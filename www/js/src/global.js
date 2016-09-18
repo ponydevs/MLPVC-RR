@@ -825,6 +825,80 @@
 		catch(e){}
 	};
 
+	class Loader {
+		constructor(o){
+			this._options = $.extend({
+				min: 0,
+				max: 0.98,
+				intervalEnabled: true,
+				intervalDelay: 800,
+				randomIncrement: 0.08,
+			},o);
+			this._$element = $header.find('.loading-indicator').children('.loading-circle');
+			if (this._$element.length !== 1)
+				throw new Error('Loader: Element not found');
+
+			this._circumference = this._$element.attr('r')*2*Math.PI;
+			this._$element.css({
+				'stroke-dasharray': this._circumference,
+				'transform-origin': this._$element.attr('cx')+'px '+this._$element.attr('cy')+'px ',
+			});
+			this.val(1, 1);
+		}
+		show(){
+			$body.addClass('loading');
+			this.val(0);
+			this._startInterval();
+		}
+		_startInterval(){
+			if (!this._options.intervalEnabled)
+				return;
+			if (typeof this._interval !== 'undefined')
+				return;
+			this._interval = setInterval(() => {
+				this.inc(null, 0.5);
+			}, this._options.intervalDelay);
+		}
+		_clearInterval(){
+			if (typeof this._interval === 'undefined')
+				return false;
+
+			clearInterval(this._interval);
+			this._interval = undefined;
+		}
+		enableInterval(){
+			this._options.intervalEnabled = true;
+			this._startInterval();
+		}
+		disableInterval(){
+			this._options.intervalEnabled = false;
+			this._clearInterval();
+		}
+		val(p, upto){
+			if (!isNaN(p))
+				this.at = $.rangeLimit(p, false, this._options.min, upto||this._options.max);
+			this._$element.css('stroke-dashoffset', this._circumference*(1-this.at));
+		}
+		inc(p, upto){
+			if (!isNaN(p))
+				p = Math.random() * this._options.randomIncrement;
+
+			if (this._options.max < this.at+p)
+				return false;
+			this.val(this.at+p, upto);
+		}
+		finish(){
+			this.val(1, 1);
+			this.hide();
+		}
+		hide(){
+			this._clearInterval();
+			$body.removeClass('loading');
+		}
+	}
+
+	$.Loader = new Loader();
+
 	class Navigation {
 		constructor(){
 			this._DocReadyHandlers = [];
@@ -924,11 +998,8 @@
 				classScope._xhr = false;
 			}
 
-			$body.addClass('loading');
-			let $loader = $header.children('.loader');
-			if ($loader.length === 0)
-				$loader = $.mk('div').attr('class','loader').appendTo($header);
-			$loader.css('width','0').addClass('loading');
+			$.Loader.show();
+			$.Loader.enableInterval();
 			let ajaxcall = $.ajax({
 				url: url,
 				data: {'via-js': true},
@@ -940,13 +1011,16 @@
 					}
 					if (!this.status){
 						$body.removeClass('loading');
+						$.Loader.finish();
+
 						classScope._xhr = false;
 						console.log('%cNavigation error %s', 'color:red', this.message);
 						console.groupEnd();
 						return $.Dialog.fail('Navigation error', this.message);
 					}
 
-					$loader.css('width','20%');
+					$.Loader.val(0.5);
+					$.Loader.disableInterval();
 
 					url = new URL(this.responseURL).pathString+(new URL(url).hash);
 					$w.triggerHandler('unload');
@@ -1024,7 +1098,7 @@
 					$w.trigger('beforeunload');
 					classScope._loadCSS(css, function(){
 						loaded++;
-						$loader.css('width', $.roundTo(100*(loaded/total), 2)+'%');
+						$.Loader.val(0.5+((loaded/total)*0.5));
 					}, function(){
 						$head.children(CSSSelector.replace(/href/g,'data-remove=true')).remove();
 						$main.addClass('pls-wait').html(content);
@@ -1045,23 +1119,18 @@
 
 						classScope._loadJS(js, function(){
 							loaded++;
-							$loader.css('width', $.roundTo(100*(loaded/total), 2)+'%');
+							$.Loader.val(0.5+((loaded/total)*0.5));
 						}, function(){
 							console.log('> $(document).ready() [simulated]');
 							classScope._docReady();
 							console.log('%cDocument ready handlers called','color:green');
 							console.groupEnd();
-							$body.removeClass('loading');
 							$main.removeClass('pls-wait');
 
 							window.WSNotifications(signedIn);
 
 							$.callCallback(callback);
-							setTimeout(function(){
-								if (classScope._xhr === false)
-									$loader.removeClass('loading');
-							},200);
-
+							$.Loader.finish();
 							classScope._xhr = false;
 						});
 					});
