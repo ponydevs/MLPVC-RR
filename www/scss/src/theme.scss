@@ -283,7 +283,6 @@ header {
 							fill: transparent;
 							stroke: #fff;
 							stroke-width: $toggleBorderWidth;
-							transform: rotate(-90deg);
 							transition: stroke .2s linear, stroke-dashoffset .35s linear;
 						}
 					}

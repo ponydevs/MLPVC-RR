@@ -839,10 +839,7 @@
 				throw new Error('Loader: Element not found');
 
 			this._circumference = this._$element.attr('r')*2*Math.PI;
-			this._$element.css({
-				'stroke-dasharray': this._circumference,
-				'transform-origin': this._$element.attr('cx')+'px '+this._$element.attr('cy')+'px ',
-			});
+			this._$element.css('stroke-dasharray', this._circumference);
 			this.val(1, 1);
 		}
 		show(){
