@@ -185,7 +185,9 @@ use Exceptions\cURLRequestException;
 
 			# JavaScript
 			$DEFAULT_JS = array('moment','global','dialog');
-			if ($GLOBALS['signedIn'])
+			// TODO Reenable after WS server is fixed
+			//if ($GLOBALS['signedIn'])
+			if (Permission::Sufficient('developer'))
 				array_splice($DEFAULT_JS,0,0,array('socket.io-1.4.5'));
 			$customJS = array();
 			// Only add defaults when needed
