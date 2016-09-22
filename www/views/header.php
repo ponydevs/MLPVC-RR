@@ -15,7 +15,13 @@
 		break;
 		case "s":
 			if (!empty($LinkedPost)){
-				$ThumbImage = $LinkedPost->preview;
+				if (!$LinkedPost->isFinished)
+					$ThumbImage = $LinkedPost->preview;
+				else {
+					$finishdeviation = DeviantArt::GetCachedSubmission($LinkedPost->deviation_id);
+					if (!empty($finishdeviation['preview']))
+						$ThumbImage  = $finishdeviation['preview'];
+				}
 				$Title = $LinkedPost->label;
 				if ($LinkedPost->isRequest)
 					$Description = 'A request';
