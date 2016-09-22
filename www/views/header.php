@@ -3,12 +3,29 @@
 	$Description = "Handling requests, reservations & the Color Guide since 2015";
 
 	$ThumbImage = "/img/logo.png";
-	if (isset($do) && $do === 'colorguide' && !empty($Appearance)){
-		$sprite = \CG\Appearances::GetSpriteURL($Appearance['id']);
-		if ($sprite)
-			$ThumbImage = $sprite;
+	switch ($do ?? null){
+		case "colorguide":
+			if (!empty($Appearance)){
+				$sprite = \CG\Appearances::GetSpriteURL($Appearance['id']);
+				if ($sprite)
+					$ThumbImage = $sprite;
 
-		$Description = 'Show accurate colors for "'.$Appearance['label'].'" from the MLP-VectorClub\'s Official Color Guide';
+				$Description = 'Show accurate colors for "'.$Appearance['label'].'" from the MLP-VectorClub\'s Official Color Guide';
+			}
+		break;
+		case "s":
+			if (!empty($LinkedPost)){
+				$ThumbImage = $LinkedPost->preview;
+				$Title = $LinkedPost->label;
+				if ($LinkedPost->isRequest)
+					$Description = 'A request';
+				else {
+					$_user = Users::Get($LinkedPost->reserved_by,'id','name');
+					$Description = 'A reservation'.(!empty($_user->name) ? " by {$_user->name}" : '');
+				}
+				$Description .= ' on the MLP-VectorClub\'s website';
+			}
+		break;
 	}
 	$ThumbImage = ABSPATH.ltrim($ThumbImage, '/');
 	$Title = CoreUtils::EscapeHTML($Title);
@@ -55,6 +72,8 @@
 <?php
 	if (isset($norobots))
 		echo'<meta name="robots" content="noindex, nofollow">';
+	if (isset($redirectto))
+		echo'<script>history.replaceState&&history.replaceState(history.state,"",'.JSON::Encode($redirectto).')</script>'."\n";
 	if (isset($customCSS)){
 		foreach ($customCSS as $css)
 			echo "<link rel='stylesheet' href='$css'>\n";

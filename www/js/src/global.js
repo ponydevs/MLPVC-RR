@@ -1430,7 +1430,7 @@ $(function(){
 			if (conn)
 				return;
 
-			conn = io(`https://ws.${location.hostname}:8667/`, { reconnectionDelay: 5000 });
+			conn = io(`https://ws.${location.hostname}:8667/`, { reconnectionDelay: 10000 });
 			conn.on('connect', function(){
 				console.log('[WS] Connected');
 			});

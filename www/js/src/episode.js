@@ -321,7 +321,7 @@ DocReady.push(function Episode(){
 
 		$actions.filter('.share').on('click',function(){
 			let $button = $(this),
-				url = $button.parents('li').children('.post-date').children('a').first().prop('href');
+				url = `${window.location.href.replace(/([^:/]\/).*$/,'$1')}s/${$button.parents('li').attr('id').replace(/^(re[qs])[^-]+?-(\d+)$/,'$1/$2')}`;
 
 			$.Dialog.info(`Sharing ${type.replace(/s$/,'')} #${id}`, $.mk('div').attr('class','align-center').append(
 				'Use the link below to link to this post directly:',
@@ -329,7 +329,9 @@ DocReady.push(function Episode(){
 				$.mk('button').attr('class','blue typcn typcn-clipboard').text('Copy to clipboard').on('click', function(e){
 					$.copy(url,e);
 				})
-			));
+			),function(){
+				$('#dialogContent').find('.share-link').select();
+			});
 		});
 	};
 	$('#requests, #reservations')
@@ -630,7 +632,7 @@ DocReady.push(function Episode(){
 			total = $imgs.length, loaded = 0;
 
 		if (!total)
-			return;
+			return $.Dialog.close();
 
 		let $progress;
 		if (showdialog){

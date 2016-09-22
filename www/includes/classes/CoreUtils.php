@@ -57,7 +57,7 @@ use Exceptions\cURLRequestException;
 				$fix_query = empty($fix_query_arr) ? '' : '?'.implode('&', $fix_query_arr);
 			}
 			if ($path !== $fix_path || $query !== $fix_query)
-				HTTP::Redirect("$fix_path$fix_query", STAY_ALIVE, $http);
+				HTTP::Redirect("$fix_path$fix_query", $http);
 		}
 
 		/**
@@ -159,6 +159,7 @@ use Exceptions\cURLRequestException;
 		 *     'view' => string,      - Which view file to open (defaults to $do)
 		 *     'do-css',              - Load the CSS file whose name matches $do
 		 *     'do-js',               - Load the JS file whose name matches $do
+		 *     'url' => string,       - A URL which will replace the one sent to the browser
 		 * );
 		 *
 		 * @param array $options
@@ -175,6 +176,10 @@ use Exceptions\cURLRequestException;
 			// SE crawling disable
 			if (in_array('no-robots', $options))
 				$norobots = true;
+
+			// Set new URL option
+			if (!empty($options['url']))
+				$redirectto = $options['url'];
 
 			# CSS
 			$DEFAULT_CSS = array('theme');
@@ -197,9 +202,9 @@ use Exceptions\cURLRequestException;
 			self::_checkAssets($options, $customJS, 'js/min', 'js');
 
 			# Import global variables
-			foreach ($GLOBALS as $nev => $ertek)
-				if (!isset($$nev))
-					$$nev = $ertek;
+			foreach ($GLOBALS as $k => $v)
+				if (!isset($$k))
+					$$k = $v;
 
 			# Putting it together
 			$view = empty($options['view']) ? $GLOBALS['do'] : $options['view'];

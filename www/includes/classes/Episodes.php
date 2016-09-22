@@ -147,11 +147,12 @@ class Episodes {
 		/**
 		 * Loads the episode page
 		 *
-		 * @param null|int|Episode $force If null: Parses $data and loads approperiate epaisode
-		 *                              If array: Uses specified arra as Episode data
+		 * @param null|int|Episode $force              If null: Parses $data and loads approperiate epaisode
+		 *                                             If array: Uses specified arra as Episode data
+		 * @param bool             $serverSideRedirect Handle redirection to the correct page on the server/client side
 		 */
-		static function LoadPage($force = null){
-			global $data, $CurrentEpisode, $Database, $PrevEpisode, $NextEpisode;
+		static function LoadPage($force = null, $serverSideRedirect = true){
+			global $data, $CurrentEpisode, $Database, $PrevEpisode, $NextEpisode, $LinkedPost;
 
 			if ($force instanceof Episode)
 				$CurrentEpisode = $force;
@@ -171,7 +172,11 @@ class Episodes {
 				CoreUtils::NotFound();
 
 			$url = $CurrentEpisode->formatURL();
-			CoreUtils::FixPath($url);
+			if (!empty($LinkedPost)){
+				$url .= '#'.$LinkedPost->getID();
+			}
+			if ($serverSideRedirect)
+				CoreUtils::FixPath($url);
 
 			$js = array('imagesloaded.pkgd','jquery.ba-throttle-debounce','jquery.fluidbox','Chart','episode');
 			if (Permission::Sufficient('member'))
@@ -213,6 +218,7 @@ class Episodes {
 				'view' => 'episode',
 				'css' => 'episode',
 				'js' => $js,
+				'url' => $serverSideRedirect ? null : $url,
 			));
 		}
 

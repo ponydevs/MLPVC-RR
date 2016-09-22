@@ -5,7 +5,7 @@
 		 * Execute where method with the specified episode and season numbers
 		 *
 		 * @param string|int|\DB\Episode $s Season, or array with keys season & episode
-		 * @param string|int|null $e Episode, optional if $s is an array
+		 * @param string|int|null        $e Episode, optional if $s is an array
 		 *
 		 * @return self
 		 */

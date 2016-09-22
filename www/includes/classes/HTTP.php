@@ -150,14 +150,11 @@
 		 * Redirection
 		 *
 		 * @param string $url  Redirection target URL
-		 * @param bool   $die  Stop script execution after redirect
 		 * @param int    $http HTTP status code
 		 */
-		public static function Redirect($url = '/', $die = true, $http = 301){
-			header("Location: $url", $die, $http);
-			if ($die !== STAY_ALIVE){
-				$urlenc = CoreUtils::AposEncode($url);
-				die("Click <a href='$urlenc'>here</a> if you aren't redirected.<script>location.replace(".JSON::Encode($url).")</script>");
-			}
+		public static function Redirect($url = '/', $http = 301){
+			header("Location: $url", true, $http);
+			$urlenc = CoreUtils::AposEncode($url);
+			die("Click <a href='$urlenc'>here</a> if you aren't redirected.<script>location.replace(".JSON::Encode($url).")</script>");
 		}
 	}
