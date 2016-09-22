@@ -10,9 +10,6 @@ www/css/*.scss*
 www/google*.html
 www/mywot*.html
 stats/
-stash-cache/
-*.sh
-*.bat
 setup/*.sql
 !setup/*.pg.sql
 setup/*_full.pg.sql
