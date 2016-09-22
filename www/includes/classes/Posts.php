@@ -99,12 +99,12 @@ class Posts {
 			if (isset($label)){
 				if (!$editing || $label !== $Post->label){
 					CoreUtils::CheckStringValidity($label,'The description',INVERSE_PRINTABLE_ASCII_PATTERN);
-					$array['label'] = $label;
+					CoreUtils::Set($array, 'label', $label);
 				}
 			}
 			else if (!$editing && $thing !== 'reservation')
 				Response::Fail('Description cannot be empty');
-			else $array['label'] = null;
+			else CoreUtils::Set($array,'label',null);
 
 			if ($thing === 'request'){
 				$type = (new Input('type',function($value){
@@ -120,15 +120,15 @@ class Posts {
 					respnd("Missing request type");
 
 				if (!$editing || (isset($type) && $type !== $Post->type))
-					$array['type'] = $type;
+					CoreUtils::Set($array,'type',$type);
 
 				if (Permission::Sufficient('developer')){
 					$reserved_at = self::ValidateReservedAt();
 					if (isset($reserved_at)){
 						if ($reserved_at !== strtotime($Post->reserved_at))
-							$array['reserved_at'] = date('c', $reserved_at);
+							CoreUtils::Set($array,'reserved_at',date('c', $reserved_at));
 					}
-					else $array['reserved_at'] = null;
+					else CoreUtils::Set($array,'reserved_at',null);
 				}
 			}
 
@@ -140,14 +140,14 @@ class Posts {
 					)
 				)))->out();
 				if (isset($posted) && $posted !== strtotime($Post->posted))
-					$array['posted'] = date('c', $posted);
+					CoreUtils::Set($array,'posted',date('c', $posted));
 
 				$finished_at = self::ValidateFinishedAt();
 				if (isset($finished_at)){
 					if ($finished_at !== strtotime($Post->finished_at))
-						$array['finished_at'] = date('c', $finished_at);
+						CoreUtils::Set($array,'finished_at',date('c', $finished_at));
 				}
-				else $array['finished_at'] = null;
+				else CoreUtils::Set($array,'finished_at',null);
 			}
 		}
 

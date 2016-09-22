@@ -1019,4 +1019,18 @@ use Exceptions\cURLRequestException;
 			$rgb = self::Hex2Rgb($hex);
 		    return (($rgb[0]*299)+($rgb[1]*587)+($rgb[2]*114))/1000;
 		}
+
+		/**
+		 * Universal method for setting keys/properties of arrays/objects
+		 * @param array|object $on
+		 * @param string       $key
+		 * @param mixed        $value
+		 */
+		static function Set(&$on, $key, $value){
+			if (is_object($on))
+				$on->$key = $value;
+			else if (is_array($on))
+				$on[$key] = $value;
+			else throw new Exception('$on is of invalid type ('.gettype($on).')');
+		}
 	}

@@ -45,7 +45,7 @@ if (!POST_REQUEST) CoreUtils::NotFound();
 		}
 
 		$update = array();
-		Posts::CheckPostDetails($update, $Post);
+		Posts::CheckPostDetails($thing, $update, $Post);
 
 		if (empty($update))
 			Response::Success('Nothing was changed');
