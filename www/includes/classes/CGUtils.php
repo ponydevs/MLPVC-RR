@@ -209,7 +209,8 @@ HTML;
 			global $CGDb, $TAG_NAME_REGEX;
 
 			$tokens = explode(',',strtolower($q));
-			if (count($tokens) > 6)
+			$tokenCount = count($tokens);
+			if ($tokenCount > 6)
 				throw new Exception('You may only search for up to 6 tags/labels');
 			$SearchTagIDs = array();
 			$OriginalTagIDs = array();
@@ -223,8 +224,13 @@ HTML;
 					if (is_string($err))
 						throw new Exception($err);
 					$Tag = \CG\Tags::GetActual($token, 'name');
-					if (empty($Tag))
+					if (empty($Tag)){
+						if ($tokenCount === 1){
+							$SearchLabelLIKEs[] = '%'.CoreUtils::EscapeLikeValue($token).'%';
+							continue;
+						}
 						throw new Exception('Tag (<code>'.CoreUtils::EscapeHTML($token).'</code>) does not exist');
+					}
 					
 					if (!empty($Tag['Original']))
 						$OriginalTagIDs[] = $Tag['Original']['tid']; 
