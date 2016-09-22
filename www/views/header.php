@@ -27,7 +27,8 @@
 			}
 		break;
 	}
-	$ThumbImage = ABSPATH.ltrim($ThumbImage, '/');
+	if ($ThumbImage[0] === '/')
+		$ThumbImage = ABSPATH.ltrim($ThumbImage, '/');
 	$Title = CoreUtils::EscapeHTML($Title);
 
 ?>
