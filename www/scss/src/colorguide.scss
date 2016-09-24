@@ -335,6 +335,7 @@ ul.colors {
 	margin: 0;
 
 	&:empty:before {
+		content: "There are no " attr(data-color) " groups for this appearance, add one by right-clicking here";
 		font-size: 1.4em;
 		font-style: italic;
 	}
