@@ -70,7 +70,8 @@ DocReady.push(function ColorguideManage(){
 					<span>Link to CM preview image (optional)</span>
 					<input type="text" name="cm_preview" placeholder="Separate preview image">
 				</label>
-				<p class="notice info">The preview of the linked CM above will be used if the preview field is left empty.</p>`
+				<p class="notice info">The preview of the linked CM above will be used if the preview field is left empty.</p>
+				<label><input type='checkbox' name='private'> Make private (only visible to admins)</label>`
 			),
 		mkPonyEditor = function($this, title, data){
 			let editing = !!data,
@@ -117,6 +118,8 @@ DocReady.push(function ColorguideManage(){
 						$form.find('input[name=cm_preview]').val(data.cm_preview);
 					if (data.cm_dir)
 						$form.find('input[name=cm_dir]').enable().filter('[value='+data.cm_dir+']').prop('checked', true);
+					if (data.private)
+						$form.find('input[name=private]').prop('checked', true);
 					$form.append(
 						$.mk('div').attr('class','align-center').append(
 							$.mk('button')

@@ -42,25 +42,25 @@
 			global $CGDb, $_MSG, $Search;
 
 			$HTML = '';
-			if (!empty($Appearances)) foreach ($Appearances as $p){
-				$p['label'] = \CoreUtils::EscapeHTML($p['label']);
+			if (!empty($Appearances)) foreach ($Appearances as $Appearance){
+				$Appearance['label'] = \CoreUtils::EscapeHTML($Appearance['label']);
 
-				$img = self::GetSpriteHTML($p);
-				$updates = self::GetUpdatesHTML($p['id']);
-				$notes = self::GetNotesHTML($p);
-				$tags = $p['id'] ? self::GetTagsHTML($p['id'], true, $Search) : '';
-				$colors = self::GetColorsHTML($p['id']);
-				$eqgp = $p['ishuman'] ? 'eqg/' : '';
+				$img = self::GetSpriteHTML($Appearance);
+				$updates = self::GetUpdatesHTML($Appearance['id']);
+				$notes = self::GetNotesHTML($Appearance);
+				$tags = $Appearance['id'] ? self::GetTagsHTML($Appearance['id'], true, $Search) : '';
+				$colors = self::GetColorsHTML($Appearance);
+				$eqgp = $Appearance['ishuman'] ? 'eqg/' : '';
 
-				$RenderPath = APPATH."img/cg_render/{$p['id']}.png";
+				$RenderPath = APPATH."img/cg_render/{$Appearance['id']}.png";
 				$FileModTime = '?t='.(file_exists($RenderPath) ? filemtime($RenderPath) : time());
-				$Actions = "<a class='btn typcn typcn-image darkblue' title='View as PNG' href='/cg/{$eqgp}v/{$p['id']}.png$FileModTime' target='_blank'></a>".
+				$Actions = "<a class='btn typcn typcn-image darkblue' title='View as PNG' href='/cg/{$eqgp}v/{$Appearance['id']}.png$FileModTime' target='_blank'></a>".
 				           "<button class='getswatch typcn typcn-brush teal' title='Download swatch file'></button>";
 				if (\Permission::Sufficient('staff'))
 					$Actions .= "<button class='edit typcn typcn-pencil blue' title='Edit'></button>".
-					            ($p['id']!==0?"<button class='delete typcn typcn-trash red' title='Delete'></button>":'');
-				$safelabel = self::GetSafeLabel($p);
-				$HTML .= "<li id='p{$p['id']}'>$img<div><strong><a href='/cg/v/{$p['id']}-$safelabel'>{$p['label']}</a>$Actions</strong>$updates$notes$tags$colors</div></li>";
+					            ($Appearance['id']!==0?"<button class='delete typcn typcn-trash red' title='Delete'></button>":'');
+				$safelabel = self::GetSafeLabel($Appearance);
+				$HTML .= "<li id='p{$Appearance['id']}'>$img<div><strong><a href='/cg/v/{$Appearance['id']}-$safelabel'>{$Appearance['label']}</a>$Actions</strong>$updates$notes$tags$colors</div></li>";
 			}
 			else {
 				if (empty($_MSG))
@@ -71,20 +71,36 @@
 			return $wrap ? "<ul id='list' class='appearance-list'>$HTML</ul>" : $HTML;
 		}
 
+		static function IsPrivate($Appearance):bool {
+			return !empty($Appearance['private']) && \Permission::Insufficient('staff');
+		}
+
 		/**
-		 * Returns the markup of the color list for a specific appearance
-		 *
-		 * @param int $PonyID
-		 * @param bool $wrap
-		 * @param bool $colon
-		 * @param bool $colorNames
+		 * @param array $Appearance
 		 *
 		 * @return string
 		 */
-		static function GetColorsHTML($PonyID, $wrap = WRAP, $colon = true, $colorNames = false){
+		static function GetPendingPlaceholderFor($Appearance):string {
+			return self::IsPrivate($Appearance) ? "<div class='colors-pending'><span class='typcn typcn-time'></span> This appearance will be finished soon, please check back later &mdash; ".\Time::Tag($Appearance['added']).'</div>' : false;
+		}
+
+		/**
+		 * Returns the markup of the color list for a specific appearance
+		 *
+		 * @param array $Appearance
+		 * @param bool  $wrap
+		 * @param bool  $colon
+		 * @param bool  $colorNames
+		 *
+		 * @return string
+		 */
+		static function GetColorsHTML($Appearance, bool $wrap = WRAP, $colon = true, $colorNames = false){
 			global $CGDb;
 
-			$ColorGroups = ColorGroups::Get($PonyID);
+			if ($placehold = self::GetPendingPlaceholderFor($Appearance))
+				return $placehold;
+
+			$ColorGroups = ColorGroups::Get($Appearance['id']);
 			$AllColors = ColorGroups::GetColorsForEach($ColorGroups);
 
 			$HTML = '';

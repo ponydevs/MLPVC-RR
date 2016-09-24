@@ -152,9 +152,12 @@
 						'notes' => $Appearance['notes'],
 						'cm_favme' => !empty($Appearance['cm_favme']) ? "http://fav.me/{$Appearance['cm_favme']}" : null,
 						'cm_preview' => $Appearance['cm_preview'],
-						'cm_dir' => isset($Appearance['cm_dir'])
+						'cm_dir' => (
+							isset($Appearance['cm_dir'])
 							? ($Appearance['cm_dir'] === CM_DIR_HEAD_TO_TAIL ? 'ht' : 'th')
 							: null
+						),
+						'private' => $Appearance['private'],
 					));
 				break;
 				case "set":
@@ -232,6 +235,8 @@
 						$data['cm_preview'] = null;
 					}
 
+					$data['private'] = isset($_POST['private']);
+
 					$query = $creating
 						? $CGDb->insert('appearances', $data, 'id')
 						: $CGDb->where('id', $Appearance['id'])->update('appearances', $data);
@@ -252,7 +257,7 @@
 							catch (Exception $e){
 								$response['message'] .= ", but applying the template failed";
 								$response['info'] = "The common color groups could not be added.<br>Reason: ".$e->getMessage();
-								Response::Done($response);
+								$usetemplate = false;
 							}
 						}
 
@@ -267,6 +272,7 @@
 						    'cm_preview' => $data['cm_preview'],
 						    'cm_dir' => $data['cm_dir'],
 							'usetemplate' => $usetemplate ? 1 : 0,
+							'private' => $data['private'] ? 1 : 0,
 						));
 						Response::Done($response);
 					}
@@ -328,6 +334,7 @@
 					    'added' => $Appearance['added'],
 					    'cm_preview' => $Appearance['cm_preview'],
 					    'cm_dir' => $Appearance['cm_dir'],
+					    'private' => $Appearance['private'],
 					));
 
 					Response::Success('Appearance removed');
@@ -366,7 +373,7 @@
 						'newgroups' => $newCGs,
 					));
 
-					Response::Done(array('cgs' => \CG\Appearances::GetColorsHTML($Appearance['id'], NOWRAP, !$AppearancePage, $AppearancePage)));
+					Response::Done(array('cgs' => \CG\Appearances::GetColorsHTML($Appearance, NOWRAP, !$AppearancePage, $AppearancePage)));
 				break;
 				case "delsprite":
 				case "getsprite":
@@ -506,7 +513,7 @@
 						Response::Fail("Applying the template failed. Reason: ".$e->getMessage());
 					}
 
-					Response::Done(array('cgs' => \CG\Appearances::GetColorsHTML($Appearance['id'], NOWRAP, !$AppearancePage, $AppearancePage)));
+					Response::Done(array('cgs' => \CG\Appearances::GetColorsHTML($Appearance, NOWRAP, !$AppearancePage, $AppearancePage)));
 				break;
 				default: CoreUtils::NotFound();
 			}
@@ -851,7 +858,7 @@
 			$colon = !$AppearancePage;
 			$outputNames = $AppearancePage;
 
-			if ($new) $response = array('cgs' => \CG\Appearances::GetColorsHTML($Appearance['id'], NOWRAP, $colon, $outputNames));
+			if ($new) $response = array('cgs' => \CG\Appearances::GetColorsHTML($Appearance, NOWRAP, $colon, $outputNames));
 			else $response = array('cg' => \CG\ColorGroups::GetHTML($Group['groupid'], null, NOWRAP, $colon, $outputNames));
 
 			$AppearanceID = $new ? $Appearance['id'] : $Group['ponyid'];

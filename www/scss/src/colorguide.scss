@@ -313,6 +313,20 @@ div.tags {
 	margin-bottom: 10px;
 }
 
+
+div.colors-pending, ul.colors:empty:before {
+	display: block;
+	width: 100%;
+	text-align: center;
+	padding: .2em;
+	box-sizing: border-box;
+	border: 1px dashed rgba(black,.5);
+}
+div.colors-pending {
+	font-size: 1.2em;
+	color: $NDarkBlue;
+}
+
 ul.colors {
 	display: block;
 	padding: 0;
@@ -320,21 +334,16 @@ ul.colors {
 	white-space: initial !important;
 	margin: 0;
 
-	&:not(#colors) { user-select: none }
-
 	&:empty:before {
 		font-size: 1.4em;
 		font-style: italic;
-		content: "There are no " attr(data-color) " groups for this appearance, add one by right-clicking here";
-		display: block;
-		width: 100%;
-		text-align: center;
-		padding: .2em;
-		box-sizing: border-box;
-		border: 1px dashed rgba(black,.5);
 	}
-	&:not(#colors):empty:before {
-		font-size: 18px;
+	&:not(#colors) {
+		user-select: none;
+
+		&:empty:before {
+			font-size: 18px;
+		}
 	}
 
 	> li {

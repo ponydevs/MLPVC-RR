@@ -58,15 +58,19 @@
 				<button class="darkblue typcn typcn-arrow-unsorted reorder-cgs">Re-order groups</button>
 				<button class="green typcn typcn-plus create-cg">Create group</button>
 			</div>
+<?  if ($placehold = \CG\Appearances::GetPendingPlaceholderFor($Appearance))
+		echo $placehold;
+	else { ?>
 			<ul id="colors" class="colors"><?php
-	$CGs = \CG\ColorGroups::Get($Appearance['id']);
-	$AllColors = \CG\ColorGroups::GetColorsForEach($CGs);
-	foreach ($CGs as $cg)
-		echo \CG\ColorGroups::GetHTML($cg, $AllColors, WRAP, NO_COLON, OUTPUT_COLOR_NAMES);
+		$CGs = \CG\ColorGroups::Get($Appearance['id']);
+		$AllColors = \CG\ColorGroups::GetColorsForEach($CGs);
+		foreach ($CGs as $cg)
+			echo \CG\ColorGroups::GetHTML($cg, $AllColors, WRAP, NO_COLON, OUTPUT_COLOR_NAMES);
 			?></ul>
 		</section>
 		<?=\CG\Appearances::GetRelatedHTML(\CG\Appearances::GetRelated($Appearance['id']))?>
 	</div>
+<?  } ?>
 </div>
 
 <?  $export = array(

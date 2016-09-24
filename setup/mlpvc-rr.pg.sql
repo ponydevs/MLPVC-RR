@@ -184,7 +184,8 @@ CREATE TABLE log__appearances (
     added timestamp with time zone,
     cm_preview character varying(255),
     cm_dir boolean,
-    usetemplate boolean DEFAULT false NOT NULL
+    usetemplate boolean DEFAULT false NOT NULL,
+    private boolean DEFAULT false NOT NULL
 );
 
 

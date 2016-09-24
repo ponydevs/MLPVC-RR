@@ -561,7 +561,7 @@ HTML;
 			$EpTagIDs = Episodes::GetTagIDs($Epsiode);
 			if (!empty($EpTagIDs)){
 				$TaggedAppearances = $CGDb->rawQuery(
-					"SELECT p.id, p.label
+					"SELECT p.id, p.label, p.private
 					FROM tagged t
 					LEFT JOIN appearances p ON t.ponyid = p.id
 					WHERE t.tid IN (".implode(',',$EpTagIDs).")
@@ -574,11 +574,15 @@ HTML;
 					$LINKS = '<ul>';
 					foreach ($TaggedAppearances as $p){
 						$safeLabel = \CG\Appearances::GetSafeLabel($p);
-						if ($hidePreviews)
-							$preview = '';
+						if (\CG\Appearances::IsPrivate($p))
+							$preview = "<span class='typcn typcn-time color-darkblue'></span> ";
 						else {
-							$preview = \CG\Appearances::GetPreviewURL($p);
-							$preview = "<img src='$preview' class='preview'>";
+							if ($hidePreviews)
+								$preview = '';
+							else {
+								$preview = \CG\Appearances::GetPreviewURL($p);
+								$preview = "<img src='$preview' class='preview'>";
+							}
 						}
 						$LINKS .= "<li><a href='/cg/v/{$p['id']}-$safeLabel'>$preview{$p['label']}</a></li>";
 					}
