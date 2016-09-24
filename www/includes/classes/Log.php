@@ -66,7 +66,8 @@ class Log {
 
 		const
 			KEYCOLOR_INFO = 'blue',
-			KEYCOLOR_ERROR = 'red';
+			KEYCOLOR_ERROR = 'red',
+			SKIP_VALUE = array();
 
 		/**
 		 * Format log entry details
@@ -209,6 +210,7 @@ class Log {
 					}
 					if (!empty($data['usetemplate']))
 						$details[] = array('Template applied', true);
+					$details[] = array('Private', !empty($data['private']));
 					if (!empty($data['added']))
 						$details[] = array('Added', Time::Tag($data['added'], Time::TAG_EXTENDED, Time::TAG_STATIC_DYNTIME));
 				break;
@@ -266,6 +268,9 @@ class Log {
 					$newdir = isset($newOld['cm_dir']['new']) ? CGUtils::$CM_DIR[$newOld['cm_dir']['new']] : '';
 					if ($olddir || $newdir)
 						$details[] = array('CM Orientation', self::CharDiff($olddir, $newdir, 'inline', FineDiff::$paragraphGranularity));
+
+					if (isset($newOld['private']['new']))
+						$details[] = array('<span class="typcn typcn-lock-'.($newOld['private']['new']?'closed':'open').'"></span> '.($newOld['private']['new'] ? 'Marked private' : 'No longer private'),self::SKIP_VALUE,self::KEYCOLOR_INFO);
 
 					if (isset($newOld['cm_preview']['new']))
 						$details[] = array('New Custom CM Preview', "<img src='".CoreUtils::AposEncode($newOld['cm_preview']['new'])."'>");

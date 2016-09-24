@@ -74,6 +74,10 @@ DocReady.push(function Logs(){
 									$info = $.mk('em').addClass(`color-darkblue`).text('empty');
 								else if (typeof detail[1] === 'boolean')
 									$info = $.mk('span').addClass(`color-${detail[1]?'green':'red'}`).text(detail[1]?'yes':'no');
+								else if ($.isArray(detail[1])){
+									$info = undefined;
+									$key.html($key.html().replace(/:\s$/, ''));
+								}
 								else $info = detail[1];
 
 								$dataDiv.append($.mk('div').append($key,$info));

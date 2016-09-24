@@ -283,7 +283,7 @@
 					$EditedAppearance = array_merge($Appearance, $data);
 
 					$diff = array();
-					foreach (array('label','notes','cm_favme','cm_dir','cm_preview') as $key){
+					foreach (array('label','notes','cm_favme','cm_dir','cm_preview','private') as $key){
 						if ($EditedAppearance[$key] !== $Appearance[$key]){
 							$diff["old$key"] = $Appearance[$key];
 							$diff["new$key"] = $EditedAppearance[$key];
