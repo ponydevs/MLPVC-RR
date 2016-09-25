@@ -256,7 +256,7 @@ Cutie Mark colors subject to change on further episodes.', NULL, false, '2015-09
 (28, 64, 'Party Favor', 'Magic aura color is unknown.', NULL, false, '2015-09-26 19:34:42+02', NULL, NULL, false),
 (29, 62, 'Starlight Glimmer', 'Her cutie mark does not use pure white for the star fill.
 Her S6 mane style includes an additional shadow fill color', 'd8old4s', false, '2015-09-26 20:01:51+02', NULL, true, false),
-(30, 110, 'Miss Pommel', 'Far legs use darker colors.', NULL, false, '2015-09-26 23:18:32+02', NULL, NULL, false),
+(30, 110, 'Miss Pommel', 'Far legs use darker colors.', 'dafcpik', false, '2015-09-26 23:18:32+02', NULL, false, false),
 (31, 23, 'Suri Polomare', 'Far legs use darker colors.', NULL, false, '2015-09-30 07:35:59+02', NULL, NULL, false),
 (32, 21, 'Trixie Lulamoon', 'Eyes don''t have iris highlights.', 'd9bxest', false, '2015-10-03 17:35:08+02', NULL, true, false),
 (33, 157, 'Alicorn Amulet', '', NULL, false, '2015-10-03 18:22:13+02', NULL, NULL, false),
@@ -380,7 +380,7 @@ For the goggle lenses, group together the Fill and the Highlights (100% Normal b
 (128, 58, 'Fleur Dis Lee', '', NULL, false, '2016-04-25 04:22:23.885302+02', NULL, NULL, false),
 (129, 59, 'Fancy Pants', 'The monocle lens has a couple different fill approaches depending on angle and tightness of the shot. If closeup, both fills are transparent, but if far out, second fill is fully opaque.', NULL, false, '2016-04-26 07:01:23.677929+02', NULL, NULL, false),
 (130, 35, 'Snips', 'Teeth use the body outline color as opposed to the universal teeth outline color.', NULL, false, '2016-04-26 07:54:08.238033+02', NULL, NULL, false),
-(131, 36, 'Snails', '', 'dahejg0', false, '2016-04-26 07:57:55.52504+02', NULL, true, false),
+(131, 36, 'Snails', 'Far legs use darker colors.', 'dahejg0', false, '2016-04-26 07:57:55.52504+02', NULL, true, false),
 (132, 29, 'King Sombra', 'Far legs use darker colors.
 Sombra has a lot of gradients with repeating colors. You can simplify this by using the same gradients in different parts with some tweaking of the size and stop placement.
 The magic "bubbles" are fading gradients that vary according to the animation frame which makes colour picking them nigh impossible, especially amid the compression.
@@ -463,8 +463,8 @@ To get the muted coat/mane/other colors for any character, take the RGB value of
 (197, 79, 'Blue Note', '', 'dahn9dl', false, '2016-09-12 03:56:55.806349+02', NULL, true, false),
 (198, 150, 'Gladmane', 'Ears are pointed.
 Only fill on cloak is transparent; sparkles are 100% opaque atop except for one color.', 'daiiefe', false, '2016-09-18 15:52:04.162692+02', NULL, true, false),
-(199, NULL, 'Hypnotized Mane 6 Eyes (pending)', 'Eye colors for the Mane 6 (less Twilight) due to Starlight Glimmer''s spell from S6E21 .
-(Pending entry)', NULL, false, '2016-09-24 21:16:19.303343+02', NULL, NULL, false);
+(199, NULL, 'Hypnotized Mane 6 Eyes', 'Eye colors for the Mane 6 (except Twilight) due to Starlight Glimmer''s spell from S6E21.
+All other body and mane/tail colors remain the same.', NULL, false, '2016-09-24 21:16:19.303343+02', NULL, NULL, false);
 
 
 --
@@ -1086,12 +1086,10 @@ INSERT INTO colorgroups VALUES
 (686, 129, 'Jacket', 6),
 (687, 130, 'Coat', 0),
 (688, 130, 'Mane & Tail', 1),
-(689, 130, 'Iris', 2),
 (690, 130, 'Cutie Mark', 3),
 (691, 130, 'Magic', 4),
 (692, 131, 'Coat', 0),
 (693, 131, 'Mane & Tail', 1),
-(694, 131, 'Iris', 2),
 (695, 131, 'Cutie Mark', 3),
 (696, 131, 'Magic', 4),
 (697, 132, 'Coat', 0),
@@ -1425,14 +1423,19 @@ INSERT INTO colorgroups VALUES
 (1070, 198, 'Jacket', 5),
 (1071, 198, 'Epulette', 6),
 (1072, 198, 'Cloak', 7),
-(1073, 164, 'Magic', 5);
+(1073, 164, 'Magic', 5),
+(1074, 199, 'Rainbow Dash', 1),
+(1075, 199, 'Pinkie Pie', 2),
+(1076, 199, 'Applejack', 3),
+(1077, 199, 'Fluttershy', 4),
+(1078, 199, 'Rarity', 5);
 
 
 --
 -- Name: colorgroups_groupid_seq; Type: SEQUENCE SET; Schema: public; Owner: mlpvc-rr
 --
 
-SELECT pg_catalog.setval('colorgroups_groupid_seq', 1073, true);
+SELECT pg_catalog.setval('colorgroups_groupid_seq', 1078, true);
 
 
 --
@@ -3913,10 +3916,9 @@ INSERT INTO colors VALUES
 (687, 0, 'Outline', '#438989'),
 (687, 1, 'Fill', '#9ACCCC'),
 (687, 2, 'Shadow Fill', '#7AB1B2'),
+(687, 3, 'Eyebrows', '#67431C'),
 (688, 0, 'Outline', '#A9541A'),
 (688, 1, 'Fill', '#EA8B21'),
-(689, 0, 'Iris', '#000000'),
-(689, 1, 'Eyebrows', '#67431C'),
 (690, 0, 'Fill 1', '#FFFFFF'),
 (690, 1, 'Fill 2/Pivot', '#D2E9E6'),
 (691, 0, 'Aura', '#B1DEF3'),
@@ -3924,10 +3926,9 @@ INSERT INTO colors VALUES
 (692, 1, 'Fill', '#F1B83F'),
 (692, 2, 'Shadow Outline', '#B07C10'),
 (692, 3, 'Shadow Fill', '#DEAA3D'),
+(692, 4, 'Freckles', '#FFD385'),
 (693, 0, 'Outline', '#3A9985'),
 (693, 1, 'Fill', '#53BEA7'),
-(694, 0, 'Iris', '#000000'),
-(694, 1, 'Freckles', '#FFD385'),
 (695, 0, 'Snail Body Fill', '#FE97CD'),
 (695, 1, 'Snail Mouth', '#A84291'),
 (695, 2, 'Snail Shell Fill', '#B58AD7'),
@@ -5511,7 +5512,27 @@ INSERT INTO colors VALUES
 (1072, 6, 'Sparkle 5', '#52EBB6'),
 (1072, 7, 'Sparkle 6', '#EBFFFF'),
 (1072, 8, 'Trans. Sparkle (80% opacity)', '#4DE9B1'),
-(1073, 0, 'Aura', '#75C5A7');
+(1073, 0, 'Aura', '#75C5A7'),
+(1074, 0, 'Gradient Top', '#AB8598'),
+(1074, 1, 'Gradient Bottom', '#DD8EB8'),
+(1074, 2, 'Upper Highlight', '#EEA8D2'),
+(1074, 3, 'Lower Highlight', '#FFDAF0'),
+(1075, 0, 'Gradient Top', '#8AB7C9'),
+(1075, 1, 'Gradient Bottom', '#BCE6F4'),
+(1075, 2, 'Upper Highlight', '#D2EEF8'),
+(1075, 3, 'Lower Highlight', '#EEEFFF'),
+(1076, 0, 'Gradient Top', '#91BA8A'),
+(1076, 1, 'Gradient Bottom', '#AEDBA4'),
+(1076, 2, 'Upper Highlight', '#BCEBB1'),
+(1076, 3, 'Lower Highlight', '#E0F7DF'),
+(1077, 0, 'Gradient Top', '#7DAA9F'),
+(1077, 1, 'Gradient Bottom', '#7FD5CD'),
+(1077, 2, 'Upper Highlight', '#9CE2DB'),
+(1077, 3, 'Lower Highlight', '#C0E7E3'),
+(1078, 0, 'Gradient Top', '#8EA2B4'),
+(1078, 1, 'Gradient Bottom', '#9ABBDD'),
+(1078, 2, 'Upper Highlight', '#A8C9E6'),
+(1078, 3, 'Lower Highlight', '#B4D5F5');
 
 
 --
