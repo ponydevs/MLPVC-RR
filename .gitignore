@@ -1,3 +1,4 @@
+www/.well-known # Let's encrypt
 www/conf.php
 mlpvc-rr-error.log
 *.opdownload
