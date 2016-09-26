@@ -169,7 +169,7 @@
 					$by = Users::ValidateName('by', null, true);
 					if (isset($by)){
 						$by = Users::Get($by, 'name', 'id,name');
-						$initiator = $by['id'];
+						$initiator = $by->id;
 						$by = $initiator === $currentUser->id ? 'me' : $by->name;
 					}
 			};
