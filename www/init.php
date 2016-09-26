@@ -101,7 +101,7 @@
 			throw new Exception("cURL extension is disabled or not installed\n".(PHP_OS !== 'WINNT' ? "Run <strong>sudo apt-get install php7.0-curl</strong>" : "Uncomment/add the line <strong>extension=php_curl.dll</strong> $inipath").' to fix');
 		if (!function_exists('imagecreatefrompng'))
 			throw new Exception("GD extension is disabled or not installed\n".(PHP_OS !== 'WINNT' ? "Run <strong>sudo apt-get install php7.0-gd</strong> to fix" : ""));
-		if (!class_exists('DOMDocument'))
+		if (!class_exists('DOMDocument', false))
 			throw new Exception("XML extension is disabled or not installed\n".(PHP_OS !== 'WINNT' ? "Run <strong>sudo apt-get install php7.0-xml</strong> to fix" : ''));
 		if (!function_exists('pdo_drivers'))
 			throw new Exception("PDO extension is disabled or not installed\nThe site requires PHP 7.0+ to function, please upgrade your server.");
