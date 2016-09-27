@@ -641,10 +641,12 @@ HTML;
 			Image::OutputSVG($SVG, $OutputPath, $FileRelPath);
 		}
 
+		const PREVIEW_SVG_PATH = APPATH."img/cg_render/#-preview.svg";
+
 		static function RenderPreviewSVG($AppearanceID){
 			global $CGPath, $CGDb;
 
-			$OutputPath = APPATH."img/cg_render/{$AppearanceID}-preview.svg";
+			$OutputPath = str_replace('#',$AppearanceID,self::PREVIEW_SVG_PATH);
 			$FileRelPath = "$CGPath/v/{$AppearanceID}p.svg";
 			if (file_exists($OutputPath))
 				Image::OutputSVG(null,$OutputPath,$FileRelPath);
@@ -658,10 +660,12 @@ HTML;
 				ORDER BY cg."order" ASC, c."order" ASC
 				LIMIT 4', array($AppearanceID));
 
-			if (!empty($ColorQuery))
-				usort($ColorQuery, function($a, $b){
-					return CoreUtils::YIQ($b['hex']) <=> CoreUtils::YIQ($a['hex']);
-				});
+			if (empty($ColorQuery))
+				CoreUtils::NotFound();
+
+			usort($ColorQuery, function($a, $b){
+				return CoreUtils::YIQ($b['hex']) <=> CoreUtils::YIQ($a['hex']);
+			});
 
 			switch (count($ColorQuery)){
 				case 1:

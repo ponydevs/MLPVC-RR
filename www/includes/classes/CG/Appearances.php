@@ -490,7 +490,8 @@ HTML;
 		 * @return string
 		 */
 		static function GetPreviewURL($Appearance){
-			return "/cg/v/{$Appearance['id']}p.svg";
+			$path = str_replace('#',$Appearance['id'],\CGUtils::PREVIEW_SVG_PATH);
+			return "/cg/v/{$Appearance['id']}p.svg?t=".(file_exists($path) ? filemtime($path) : time());
 		}
 
 		/**
