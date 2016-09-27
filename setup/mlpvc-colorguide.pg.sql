@@ -464,14 +464,15 @@ To get the muted coat/mane/other colors for any character, take the RGB value of
 (198, 150, 'Gladmane', 'Ears are pointed.
 Only fill on cloak is transparent; sparkles are 100% opaque atop except for one color.', 'daiiefe', false, '2016-09-18 15:52:04.162692+02', NULL, true, false),
 (199, NULL, 'Hypnotized Mane 6 Eyes', 'Eye colors for the Mane 6 (except Twilight) due to Starlight Glimmer''s spell from S6E21.
-All other body and mane/tail colors remain the same.', NULL, false, '2016-09-24 21:16:19.303343+02', NULL, NULL, false);
+All other body and mane/tail colors remain the same.', NULL, false, '2016-09-24 21:16:19.303343+02', NULL, NULL, false),
+(200, NULL, 'Impossibly Rich', '', NULL, false, '2016-09-26 02:02:26.436446+02', NULL, NULL, false);
 
 
 --
 -- Name: appearances_id_seq; Type: SEQUENCE SET; Schema: public; Owner: mlpvc-rr
 --
 
-SELECT pg_catalog.setval('appearances_id_seq', 199, true);
+SELECT pg_catalog.setval('appearances_id_seq', 200, true);
 
 
 --
@@ -1428,14 +1429,19 @@ INSERT INTO colorgroups VALUES
 (1075, 199, 'Pinkie Pie', 2),
 (1076, 199, 'Applejack', 3),
 (1077, 199, 'Fluttershy', 4),
-(1078, 199, 'Rarity', 5);
+(1078, 199, 'Rarity', 5),
+(1079, 200, 'Earring/Anklet', 0),
+(1080, 200, 'Dress', 3),
+(1081, 200, 'Boa', 1),
+(1082, 200, 'Wig', 2),
+(1083, 200, 'Sunglasses', 4);
 
 
 --
 -- Name: colorgroups_groupid_seq; Type: SEQUENCE SET; Schema: public; Owner: mlpvc-rr
 --
 
-SELECT pg_catalog.setval('colorgroups_groupid_seq', 1078, true);
+SELECT pg_catalog.setval('colorgroups_groupid_seq', 1083, true);
 
 
 --
@@ -5532,7 +5538,49 @@ INSERT INTO colors VALUES
 (1078, 0, 'Gradient Top', '#8EA2B4'),
 (1078, 1, 'Gradient Bottom', '#9ABBDD'),
 (1078, 2, 'Upper Highlight', '#A8C9E6'),
-(1078, 3, 'Lower Highlight', '#B4D5F5');
+(1078, 3, 'Lower Highlight', '#B4D5F5'),
+(1079, 0, 'Fill 1', '#F29B0F'),
+(1079, 1, 'Fill 2', '#FFCB32'),
+(1079, 2, 'Fill 3', '#FFE683'),
+(1079, 3, 'Inside Fill 1', '#ACEEF6'),
+(1079, 4, 'Inside Fill 2', '#6DCFEF'),
+(1079, 5, 'Shadow Fill 1', '#BD870B'),
+(1079, 6, 'Shadow Fill 2', '#DAA92D'),
+(1079, 7, 'Shadow Fill 3', '#EDBF4E'),
+(1079, 8, 'Shadow Inside Fill 1', '#8ACAD6'),
+(1079, 9, 'Shadow Inside Fill 2', '#5AB0CD'),
+(1080, 0, 'Outline', '#3B2460'),
+(1080, 1, 'Fill', '#4E3286'),
+(1080, 2, 'Sparkle 1', '#4088D6'),
+(1080, 3, 'Sparkle 2', '#743EB8'),
+(1080, 4, 'Sparkle 3', '#5743BE'),
+(1080, 5, 'Sparkle 4', '#373DC6'),
+(1080, 6, 'Sparkle 5', '#563999'),
+(1080, 7, 'Shadow Outline', '#2D1F57'),
+(1080, 8, 'Shadow Fill', '#432A70'),
+(1080, 9, 'Shadow Sparkle 1', '#3790B1'),
+(1080, 10, 'Shadow Sparkle 2', '#60349B'),
+(1080, 11, 'Shadow Sparkle 3', '#4A389E'),
+(1080, 12, 'Shadow Sparkle 4', '#3632A4'),
+(1080, 13, 'Straps Fill', '#7651BE'),
+(1080, 14, 'Bead Fill 1', '#D6F8F8'),
+(1080, 15, 'Bead Fill 2', '#A1CFF2'),
+(1081, 0, 'Outline', '#3F88D7'),
+(1081, 1, 'Fill', '#76BAE8'),
+(1082, 0, 'Outline', '#548E4A'),
+(1082, 1, 'Fill 1', '#9AC86E'),
+(1082, 2, 'Fill 2', '#7EB663'),
+(1083, 0, 'Top Outline', '#3A2563'),
+(1083, 1, 'Top Main Fill', '#7651BE'),
+(1083, 2, 'Top Side Fill', '#513288'),
+(1083, 3, 'Bead Fill 1', '#D6F8F8'),
+(1083, 4, 'Bead Fill 2', '#A1CFF2'),
+(1083, 5, 'Lens Fill 1', '#A3E9F6'),
+(1083, 6, 'Lens Fill 2', '#C6F2FA'),
+(1083, 7, 'Lens Fill 3', '#E9FFFF'),
+(1083, 8, 'Frame Outline ', '#092F56'),
+(1083, 9, 'Frame Front Fill', '#0D4178'),
+(1083, 10, 'Frame Side Fill', '#0B3461');
 
 
 --
@@ -6009,6 +6057,7 @@ INSERT INTO tagged VALUES
 (23, 4),
 (23, 188),
 (24, 3),
+(24, 200),
 (25, 5),
 (25, 144),
 (25, 156),
@@ -6165,6 +6214,7 @@ INSERT INTO tagged VALUES
 (96, 190),
 (96, 191),
 (96, 192),
+(96, 200),
 (98, 62),
 (99, 22),
 (99, 26),
@@ -6486,6 +6536,7 @@ INSERT INTO tagged VALUES
 (395, 192),
 (396, 164),
 (396, 198),
+(396, 200),
 (397, 199),
 (398, 184),
 (398, 185),
@@ -6510,7 +6561,8 @@ INSERT INTO tagged VALUES
 (418, 197),
 (423, 198),
 (424, 182),
-(424, 199);
+(424, 199),
+(425, 200);
 
 
 --
@@ -6536,7 +6588,7 @@ INSERT INTO tags VALUES
 (21, 's05e12', NULL, 'ep', 4, NULL),
 (22, 'applejack', NULL, 'char', 1, NULL),
 (23, 'pinkie pie', NULL, 'char', 2, NULL),
-(24, 'fluttershy', NULL, 'char', 1, NULL),
+(24, 'fluttershy', NULL, 'char', 2, NULL),
 (25, 'rainbow dash', NULL, 'char', 4, NULL),
 (26, 'rarity', NULL, 'char', 1, NULL),
 (27, 'wonderbolt', 'Wonderbolt characters', 'cat', 9, NULL),
@@ -6603,7 +6655,7 @@ INSERT INTO tags VALUES
 (93, 'rara', NULL, 'char', 0, 158),
 (94, 's05e24', NULL, 'ep', 3, NULL),
 (95, 'svengallop', NULL, 'char', 1, NULL),
-(96, 'outfit', 'Alternative character outfits', NULL, 16, NULL),
+(96, 'outfit', 'Alternative character outfits', NULL, 17, NULL),
 (97, 's05e08', NULL, 'ep', 0, NULL),
 (98, 'sunburst', NULL, 'char', 1, NULL),
 (99, 's05e26', NULL, 'ep', 5, NULL),
@@ -6881,7 +6933,7 @@ INSERT INTO tags VALUES
 (393, 'filly scout uniform', NULL, 'app', 1, NULL),
 (394, 'bon-bon', NULL, 'char', 0, 224),
 (395, 's06e18', NULL, 'ep', 2, NULL),
-(396, 's06e20', NULL, 'ep', 2, NULL),
+(396, 's06e20', NULL, 'ep', 3, NULL),
 (397, 's06e21', NULL, 'ep', 1, NULL),
 (398, 'thorax', NULL, 'char', 2, NULL),
 (399, 'changeling', NULL, 'spec', 1, NULL),
@@ -6909,14 +6961,15 @@ INSERT INTO tags VALUES
 (421, 's06e24', NULL, 'ep', 0, NULL),
 (422, 's06e25', NULL, 'ep', 0, NULL),
 (423, 'gladmane', NULL, 'char', 1, NULL),
-(424, 'alternate pony colors', 'For alternate colors of existing ponies (eg discorded, equalized, etc.)', 'cat', 2, NULL);
+(424, 'alternate pony colors', 'For alternate colors of existing ponies (eg discorded, equalized, etc.)', 'cat', 2, NULL),
+(425, 'impossibly rich', NULL, 'char', 1, NULL);
 
 
 --
 -- Name: tags_tid_seq; Type: SEQUENCE SET; Schema: public; Owner: mlpvc-rr
 --
 
-SELECT pg_catalog.setval('tags_tid_seq', 424, true);
+SELECT pg_catalog.setval('tags_tid_seq', 425, true);
 
 
 --
