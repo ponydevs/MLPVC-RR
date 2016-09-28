@@ -66,4 +66,4 @@ After some time, the idea of moving the old PNG color guide into an easier to us
 
 ## Contributing
 
-This project is maintained by me, and me alone, and as such, I do not expect code contributions. If you have an idea that you'd like to share, [open an issue](https://github.com/ponydevs/MLPVC-RR/issues/new) instead.
+See [CONTRIBUTING.md](https://github.com/ponydevs/MLPVC-RR/blob/master/CONTRIBUTING.md).
