@@ -2633,7 +2633,7 @@
 			"id": 126,
 			"order": 18,
 			"label": "Dragon Lord Torch",
-			"notes": "Bottom stroke on wings should use the lower stroke gradient color. Crystals on helmet are numbered 1 starting on his right.",
+			"notes": "Bottom stroke on wings should use the lower stroke gradient color. \nCrystals on helmet are numbered 1 starting from the right.",
 			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-04-23 16:26:48.818417+02",
@@ -2663,12 +2663,12 @@
 						},
 						{
 							"order": 3,
-							"label": "Light Scale Marks/Muzzle",
+							"label": "Light Scales/Muzzle",
 							"hex": "#477084"
 						},
 						{
 							"order": 4,
-							"label": "Dark Scale Marks",
+							"label": "Dark Scales",
 							"hex": "#3A577A"
 						},
 						{
@@ -2683,12 +2683,12 @@
 						},
 						{
 							"order": 7,
-							"label": "Shadow Light Scale Marks",
+							"label": "Shadow Light Scales",
 							"hex": "#355564"
 						},
 						{
 							"order": 8,
-							"label": "Shadow Dark Scale Marks",
+							"label": "Shadow Dark Scales",
 							"hex": "#2A4259"
 						}
 					]
@@ -2866,7 +2866,7 @@
 						},
 						{
 							"order": 12,
-							"label": "Fill 12 (tip of horn)",
+							"label": "Fill 12 (Tip of horn)",
 							"hex": "#D47E5D"
 						}
 					]
@@ -2883,12 +2883,12 @@
 						},
 						{
 							"order": 1,
-							"label": "Main Fill 1",
+							"label": "Main Fill",
 							"hex": "#3D364A"
 						},
 						{
 							"order": 2,
-							"label": "Main Fill 2",
+							"label": "Main Highlight",
 							"hex": "#524964"
 						},
 						{
@@ -2898,25 +2898,25 @@
 						},
 						{
 							"order": 4,
-							"label": "Band Fill 1",
+							"label": "Band Fill",
 							"hex": "#FCA621"
 						},
 						{
 							"order": 5,
-							"label": "Band Fill 2",
+							"label": "Band Highlight",
 							"hex": "#FCD656"
 						}
 					]
 				},
 				"665": {
 					"groupid": 665,
-					"label": "Helmet",
+					"label": "Crown",
 					"order": 7,
 					"Colors": [
 						{
 							"order": 0,
 							"label": "Base Outline",
-							"hex": "#1C161F"
+							"hex": "#191920"
 						},
 						{
 							"order": 1,
@@ -3007,7 +3007,7 @@
 						},
 						{
 							"order": 1,
-							"label": "Fill 1 (at neck)",
+							"label": "Fill 1 (At neck)",
 							"hex": "#615A70"
 						},
 						{
@@ -3017,7 +3017,7 @@
 						},
 						{
 							"order": 3,
-							"label": "Shadow Fill (at neck)",
+							"label": "Shadow Neck Fill",
 							"hex": "#2B2532"
 						},
 						{
@@ -3089,7 +3089,7 @@
 						},
 						{
 							"order": 1,
-							"label": "Fill 1",
+							"label": "Fill 1 (Uppermost)",
 							"hex": "#494155"
 						},
 						{
