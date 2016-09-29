@@ -12,25 +12,31 @@
 <div id="content">
 <?  if (!empty($CurrentEpisode)){ ?>
 	<div class="heading-wrap">
-<?php   if (!empty($PrevEpisode)){
+		<div class="prev-ep"><?php
+		if (!empty($PrevEpisode)){
 			$PrevEpisodeTitle = $PrevEpisode->formatTitle(AS_ARRAY, null, false); ?>
-		<div class="prev-ep">
-			<a href="<?=$PrevEpisode->formatURL()?>" class="ep-button btn typcn typcn-media-rewind"><span class="typcn typcn-media-rewind"></span><span class="id"><?=$PrevEpisodeTitle['id']?>: </span><?=CoreUtils::Cutoff(Episodes::RemoveTitlePrefix($PrevEpisodeTitle['title']),Episodes::TITLE_CUTOFF)?></a>
-		</div>
+			<div>
+				<a href="<?=$PrevEpisode->formatURL()?>" class="ep-button btn typcn typcn-media-rewind"><span class="typcn typcn-media-rewind"></span><span class="id"><?=$PrevEpisodeTitle['id']?>: </span><?=CoreUtils::Cutoff(Episodes::RemoveTitlePrefix($PrevEpisodeTitle['title']),Episodes::TITLE_CUTOFF)?></a>
+			</div>
 <?php   }
+		else echo "&nbsp;"; ?></div>
+		<div class="main">
+			<div>
+				<h1><?=$heading?></h1>
+				<p>Vector Requests & Reservations</p>
+<?php   if (Permission::Sufficient('staff')){ ?>
+				<p class="addedby"><em><?=$CurrentEpisode->isMovie?'Movie':'Episode'?> added by <?=Users::Get($CurrentEpisode->posted_by)->getProfileLink().' '.Time::Tag($CurrentEpisode->posted)?></em></p>
+<?php   } ?>
+			</div>
+		</div>
+		<div class="next-ep"><?php
 		if (!empty($NextEpisode)){
 			$NextEpisodeTitle = $NextEpisode->formatTitle(AS_ARRAY, null, false); ?>
-		<div class="next-ep">
-			<a href="<?=$NextEpisode->formatURL()?>" class="ep-button btn typcn typcn-media-fast-forward"><span class="id"><?=$NextEpisodeTitle['id']?>: </span><?=CoreUtils::Cutoff(Episodes::RemoveTitlePrefix($NextEpisodeTitle['title']),Episodes::TITLE_CUTOFF)?><span class="typcn typcn-media-fast-forward"></span></a>
-		</div>
-<?php   } ?>
-		<div class="main">
-			<h1><?=$heading?></h1>
-			<p>Vector Requests & Reservations</p>
-<?php   if (Permission::Sufficient('staff')){ ?>
-			<p class="addedby"><em><?=$CurrentEpisode->isMovie?'Movie':'Episode'?> added by <?=Users::Get($CurrentEpisode->posted_by)->getProfileLink().' '.Time::Tag($CurrentEpisode->posted)?></em></p>
-<?php   } ?>
-		</div>
+			<div>
+				<a href="<?=$NextEpisode->formatURL()?>" class="ep-button btn typcn typcn-media-fast-forward"><span class="id"><?=$NextEpisodeTitle['id']?>: </span><?=CoreUtils::Cutoff(Episodes::RemoveTitlePrefix($NextEpisodeTitle['title']),Episodes::TITLE_CUTOFF)?><span class="typcn typcn-media-fast-forward"></span></a>
+			</div>
+<?php   }
+		else echo "&nbsp;"; ?></div>
 	</div>
 	<?=Episodes::GetVideosHTML($CurrentEpisode)?>
 	<section class="about-res">
