@@ -1,0 +1,16 @@
+{
+    "name": "ponydevs/mlpvc-rr",
+    "type": "project",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "SeinopSys",
+            "email": "seinopsys@gmail.com"
+        }
+    ],
+	"require": {
+		"fightbulc/moment": "*",
+		"wisembly/elephant.io": "*",
+        "ezyang/htmlpurifier": "^4.8"
+    }
+}

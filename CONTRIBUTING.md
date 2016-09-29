@@ -16,7 +16,7 @@ The site is known to work with the following set of software, assuming correct c
 
 If you can get it to work on some other setup then congratulations, but I cannot guarantee that everything will function as intended. 
 
-### Ideal configuration
+## Configuration
 
 This is the way my development enviromnemt is set up, so if you follow these steps I can guarantee with 50% accuracy that your setup will work as well. These values are for **local development only** and some are not meant to be used in production!
 
@@ -39,7 +39,7 @@ I recommend [Adminer](https://www.adminer.org/) for schema importing/editing, un
 
 ### PHP
 
-Make sure `short_open_tags` is set to `On` or another truth-y value in `php.ini`. File uploading should be enabled and a reasonable maximum POST-able/uploadable file size must be set to be able to uplod sprite images in the Color Guide. You'll need to copy the `conf.php` file into the `www` directory and change the empty values to whatever your environment uses.
+Make sure `short_open_tag` is set to `On` or another truth-y value in `php.ini`. File uploading should be enabled and a reasonable maximum POST-able/uploadable file size must be set to be able to uplod sprite images in the Color Guide. You'll need to copy the `setup/conf.php` file into the `includes` directory and change the empty values to whatever your environment uses.
 
 Optionally, use the `xdebug` extension or [Kint](http://raveren.github.io/kint/) to ease debugging with stack traces/cleaner var_dump outputs. Setting `max_execution_time` to `10` *(seconds)* or below is also recommended for development in case an infinite loop breaks loose. You never know.
 

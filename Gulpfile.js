@@ -195,7 +195,7 @@ gulp.task('md', function(){
 			return newElements+'\n';
 		}))
 		.pipe(rename('about.html'))
-		.pipe(gulp.dest('www/views'));
+		.pipe(gulp.dest('includes/views'));
 });
 
 var PGL = new Logger('pgsort'),

@@ -1,5 +1,5 @@
 /* jshint bitwise: false */
-/* global $w,$d,$head,$navbar,$body,$header,$sidebar,$sbToggle,$main,$footer,console,prompt,HandleNav,getTimeDiff,one,createTimeStr,PRINTABLE_ASCII_PATTERN,io,moment,Time,ace,mk */
+/* global $w,$d,$head,$navbar,$body,$header,$sidebar,$sbToggle,$main,$footer,console,prompt,HandleNav,getTimeDiff,one,createTimeStr,PRINTABLE_ASCII_PATTERN,io,moment,Time,ace,mk,WSNotifications */
 (function($){
 	'use strict';
 
@@ -372,7 +372,9 @@
 				$w.triggerHandler('ajaxerror',$.toArray(arguments));
 			$body.removeClass('loading');
 		},
-		beforeSend: (_, settings) =>  lasturl = settings.url,
+		beforeSend: function(_, settings){
+			lasturl = settings.url;
+		},
 		statusCode: statusCodeHandlers,
 	});
 
@@ -792,6 +794,7 @@
 				$.post('/signout',$.mkAjaxHandler(function(){
 					if (!this.status) return $.Dialog.fail(title,this.message);
 
+					WSNotifications.disconnect('signout');
 					$.Navigation.reload(function(){
 						$.Dialog.close();
 					});
@@ -1369,6 +1372,7 @@ $(function(){
 
 	(function(){
 		let conn,
+			connpath = `https://ws.${location.hostname}:8667/`,
 			wsdecoder = f =>
 				function(data){
 					if (typeof data === 'string'){
@@ -1391,81 +1395,103 @@ $(function(){
 				$notifSbList = $notifSb.children('.notif-list');
 			};
 		function wsNotifs(signedIn){
-			if (!window.io || !signedIn)
+			if (!signedIn)
 				return;
 
-			essentialElements();
-
-			$notifSbList.off('click','.mark-read').on('click','.mark-read', function(e){
-				e.preventDefault();
-
-				let $el = $(this);
-				if ($el.is(':disabled'))
-					return;
-
-				let nid = $el.attr('data-id'),
-					data = {read_action: $el.attr('data-value')},
-					send = function(){
-						$el.css('opacity', '.5').disable();
-
-						$.post(`/notifications/mark-read/${nid}`,data,$.mkAjaxHandler(function(){
-							if (this.status)
-								return;
-
-							$el.css('opacity', '').enable();
-							return $.Dialog.fail('Mark notification as read', this.message);
-						}));
-					};
-
-				if (data.read_action)
-					$.Dialog.confirm('Actionable notification',`Please confirm your choice: <strong class="color-${$el.attr('class').replace(/^.*variant-(\w+)\b.*$/,'$1')}">${$el.attr('title')}</strong>`,['Confirm','Cancel'], sure => {
-						if (!sure) return;
-
-						$.Dialog.close();
-						send();
-					});
-				else send();
-			});
-
-			if (conn)
-				return;
-
-			conn = io(`https://ws.${location.hostname}:8667/`, { reconnectionDelay: 10000 });
-			conn.on('connect', function(){
-				console.log('[WS] Connected');
-			});
-			conn.on('auth', wsdecoder(function(data){
-				console.log(`[WS] Authenticated as ${data.name}`);
-			}));
-			conn.on('notif-cnt', wsdecoder(function(data){
-				let cnt = data.cnt ? parseInt(data.cnt, 10) : 0;
-				console.log('[WS] Got notification count (data.cnt=%d, cnt=%d)', data.cnt, cnt);
-
+			let success = function(){
 				essentialElements();
 
-				if (cnt === 0){
-					$notifSb.stop().slideUp('fast',function(){
-						$notifSbList.empty();
-						$notifCnt.empty();
-					});
-				}
-				else $.post('/notifications/get',$.mkAjaxHandler(function(){
-					$notifCnt.text(cnt);
-					$notifSbList.html(this.list);
-					Time.Update();
-					$notifSb.stop().slideDown();
+				$notifSbList.off('click','.mark-read').on('click','.mark-read', function(e){
+					e.preventDefault();
+
+					let $el = $(this);
+					if ($el.is(':disabled'))
+						return;
+
+					let nid = $el.attr('data-id'),
+						data = {read_action: $el.attr('data-value')},
+						send = function(){
+							$el.css('opacity', '.5').disable();
+
+							$.post(`/notifications/mark-read/${nid}`,data,$.mkAjaxHandler(function(){
+								if (this.status)
+									return;
+
+								$el.css('opacity', '').enable();
+								return $.Dialog.fail('Mark notification as read', this.message);
+							}));
+						};
+
+					if (data.read_action)
+						$.Dialog.confirm('Actionable notification',`Please confirm your choice: <strong class="color-${$el.attr('class').replace(/^.*variant-(\w+)\b.*$/,'$1')}">${$el.attr('title')}</strong>`,['Confirm','Cancel'], sure => {
+							if (!sure) return;
+
+							$.Dialog.close();
+							send();
+						});
+					else send();
+				});
+
+				if (conn)
+					return;
+
+				conn = io(connpath, { reconnectionDelay: 10000 });
+				conn.on('connect', function(){
+					console.log('[WS] Connected');
+				});
+				conn.on('auth', wsdecoder(function(data){
+					console.log(`[WS] Authenticated as ${data.name}`);
 				}));
-			}));
-			conn.on('rip',function(){
-				console.log('[WS] Authentication failed');
-				conn.disconnect(0);
-			});
-			conn.on('disconnect',function(){
-				console.log('[WS] Disconnected');
-			});
+				conn.on('notif-cnt', wsdecoder(function(data){
+					let cnt = data.cnt ? parseInt(data.cnt, 10) : 0;
+					console.log('[WS] Got notification count (data.cnt=%d, cnt=%d)', data.cnt, cnt);
+
+					essentialElements();
+
+					if (cnt === 0){
+						$notifSb.stop().slideUp('fast',function(){
+							$notifSbList.empty();
+							$notifCnt.empty();
+						});
+					}
+					else $.post('/notifications/get',$.mkAjaxHandler(function(){
+						$notifCnt.text(cnt);
+						$notifSbList.html(this.list);
+						Time.Update();
+						$notifSb.stop().slideDown();
+					}));
+				}));
+				conn.on('rip',function(){
+					console.log('[WS] Authentication failed');
+					conn.disconnect(0);
+				});
+				conn.on('disconnect',function(){
+					console.log('[WS] Disconnected');
+				});
+			};
+			if (!window.io)
+				$.ajax({
+					url: `${connpath}socket.io/socket.io.js`,
+					cache: 'true',
+					dataType: 'script',
+					success: success,
+					statusCode: {
+						404: function(){
+							console.log('%c[WS] Server down!','color:red');
+						}
+					}
+				});
+			else success();
 		}
 		wsNotifs(window.signedIn);
-		window.WSNotifications = function(signedIn){wsNotifs(signedIn)};
+		window.WSNotifications = (function(){
+			let dis = (signedIn) => wsNotifs(signedIn);
+			dis.disconnect = function(reason){
+				console.log(`[WS] Forced disconnect (reason=${reason})`);
+				conn.disconnect(0);
+			};
+			return dis;
+		})();
 	})();
 
 	$.Navigation._docReady();
