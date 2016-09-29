@@ -512,7 +512,7 @@ use Exceptions\cURLRequestException;
 				$append = '';
 			else {
 				global $Database, $CGDb;
-				$append = ' | Render: '.number_format(microtime(true)-EXEC_START_MICRO, 4).'s | SQL Queries: '.($Database->query_count+($CGDb->query_count??0));
+				$append = ' | Render: '.round((microtime(true)-EXEC_START_MICRO)*1000).'ms | SQL Queries: '.($Database->query_count+($CGDb->query_count??0));
 			}
 
 			return ($with_git_info?self::GetFooterGitInfo():'')."<a class='issues' href='".GITHUB_URL."/issues' target='_blank'>Known issues</a> | <a class='send-feedback'>Send feedback</a>$append";
