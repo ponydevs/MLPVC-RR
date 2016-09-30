@@ -1487,6 +1487,9 @@ $(function(){
 		window.WSNotifications = (function(){
 			let dis = (signedIn) => wsNotifs(signedIn);
 			dis.disconnect = function(reason){
+				if (typeof conn === 'undefined')
+					return;
+
 				console.log(`[WS] Forced disconnect (reason=${reason})`);
 				conn.disconnect(0);
 			};
