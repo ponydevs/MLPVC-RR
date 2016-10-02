@@ -61,7 +61,7 @@ class Posts {
 			$HTML = $wrap ? '<ul>' : '';
 			foreach ($RecentPosts as $Post){
 				$className = '\DB\\'.($Post['rq'] ? 'Request' : 'Reservation');
-				$HTML .= self::GetLi(new $className($Post));
+				$HTML .= self::GetLi(new $className($Post), true);
 			}
 			return $HTML.($wrap?'</ul>':'');
 		}
