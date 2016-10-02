@@ -41,7 +41,8 @@
 					$output = implode("\n", $output);
 					if (empty($output))
 						HTTP::StatusCode(500, AND_DIE);
-					exec("composer update",$output);
+					exec("composer update",$arr);
+					$output .= implode("\n", $arr);
 					echo $output;
 				break;
 				case 'ping':
