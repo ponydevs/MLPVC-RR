@@ -88,23 +88,26 @@
 					$AppendAppearance['notes'] = CoreUtils::TrimMultiline($AppendAppearance['notes']);
 
 					$AppendAppearance['ColorGroups'] = array();
-					$ColorGroups = \CG\ColorGroups::Get($p['id']);
-					if (!empty($ColorGroups)){
-						$AllColors = \CG\ColorGroups::GetColorsForEach($ColorGroups);
-						foreach ($ColorGroups as $cg){
-							$AppendColorGroup = $cg;
-							unset($AppendColorGroup['ponyid']);
+					if (empty($AppendAppearance['private'])){
+						$ColorGroups = \CG\ColorGroups::Get($p['id']);
+						if (!empty($ColorGroups)){
+							$AllColors = \CG\ColorGroups::GetColorsForEach($ColorGroups);
+							foreach ($ColorGroups as $cg){
+								$AppendColorGroup = $cg;
+								unset($AppendColorGroup['ponyid']);
 
-							$AppendColorGroup['Colors'] = array();
-							if (!empty($AllColors[$cg['groupid']]))
-								foreach ($AllColors[$cg['groupid']] as $c){
-									unset($c['groupid']);
-									$AppendColorGroup['Colors'][] = $c;
-								};
+								$AppendColorGroup['Colors'] = array();
+								if (!empty($AllColors[$cg['groupid']]))
+									foreach ($AllColors[$cg['groupid']] as $c){
+										unset($c['groupid']);
+										$AppendColorGroup['Colors'][] = $c;
+									};
 
-							$AppendAppearance['ColorGroups'][$cg['groupid']] = $AppendColorGroup;
+								$AppendAppearance['ColorGroups'][$cg['groupid']] = $AppendColorGroup;
+							}
 						}
 					}
+					else $AppendAppearance['ColorGroups']['_hidden'] = true;
 
 					$AppendAppearance['TagIDs'] = array();
 					$TagIDs = \CG\Tags::GetFor($p['id'],null,null,true);
