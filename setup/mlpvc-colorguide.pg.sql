@@ -288,7 +288,7 @@ Eyes don''t have iris highlights.', 'd9fl30m', false, '2015-11-05 00:10:40.32198
 (58, 118, 'Tree Hugger', 'Darker highlight color matches the bottom iris gradient color.', 'd8u7pz5', false, '2015-11-14 05:07:04.439467+01', NULL, false, false),
 (59, 119, 'Coloratura', '', 'd9hm2yd', false, '2015-11-24 05:28:54.164681+01', NULL, true, false),
 (60, 120, 'Rara (Countess Outfit)', '', NULL, false, '2015-11-24 05:42:00.076945+01', NULL, NULL, false),
-(61, 121, 'Svengallop', '', NULL, false, '2015-11-24 07:28:47.770494+01', NULL, NULL, false),
+(61, 121, 'Svengallop', 'Has no shadow colors.', NULL, false, '2015-11-24 07:28:47.770494+01', NULL, NULL, false),
 (62, 66, 'Sunburst', 'Far legs use darker colors. 
 Has no iris highlights.
 Glasses don''t seem to have lenses.', 'd9iyv1r', false, '2015-12-01 16:18:10.631048+01', NULL, true, false),
@@ -466,14 +466,18 @@ To get the muted coat/mane/other colors for any character, take the RGB value of
 Only fill on cloak is transparent; sparkles are 100% opaque atop except for one color.', 'daiiefe', false, '2016-09-18 15:52:04.162692+02', NULL, true, false),
 (199, NULL, 'Hypnotized Mane 6 Eyes', 'Eye colors for the Mane 6 (except Twilight) due to Starlight Glimmer''s spell from S6E21.
 All other body and mane/tail colors remain the same.', NULL, false, '2016-09-24 21:16:19.303343+02', NULL, NULL, false),
-(200, NULL, 'Impossibly Rich', '', NULL, false, '2016-09-26 02:02:26.436446+02', NULL, NULL, false);
+(200, NULL, 'Impossibly Rich', '', NULL, false, '2016-09-26 02:02:26.436446+02', NULL, NULL, false),
+(201, NULL, 'Rarity''s Titanic Outfit', '', NULL, true, '2016-10-02 00:17:25.771874+02', NULL, NULL, true),
+(202, NULL, 'Captain Jackbeard', '', NULL, false, '2016-10-02 00:18:24.884029+02', NULL, NULL, true),
+(203, NULL, 'Captain Rarity', '', NULL, false, '2016-10-02 00:19:10.88123+02', NULL, NULL, true),
+(204, NULL, 'Tri-horned Bunyip', '', NULL, false, '2016-10-02 00:19:36.338675+02', NULL, NULL, true);
 
 
 --
 -- Name: appearances_id_seq; Type: SEQUENCE SET; Schema: public; Owner: mlpvc-rr
 --
 
-SELECT pg_catalog.setval('appearances_id_seq', 200, true);
+SELECT pg_catalog.setval('appearances_id_seq', 204, true);
 
 
 --
@@ -761,10 +765,9 @@ INSERT INTO colorgroups VALUES
 (342, 61, 'Iris', 2),
 (344, 61, 'Glasses', 3),
 (345, 61, 'Suit', 4),
-(346, 61, 'Shirt', 5),
+(346, 61, 'Undershirt', 5),
 (347, 61, 'Tie', 6),
 (348, 61, 'Vest', 7),
-(349, 61, 'Tail band', 8),
 (350, 62, 'Coat', 0),
 (351, 62, 'Mane & Tail', 1),
 (352, 62, 'Iris', 2),
@@ -2510,6 +2513,8 @@ INSERT INTO colors VALUES
 (341, 1, 'Inside Stroke', '#F8E2D8'),
 (341, 2, 'Fill 1', '#EFB69C'),
 (341, 3, 'Fill 2', '#F6D8C8'),
+(341, 4, 'Tail Band Outline', '#AC6534'),
+(341, 5, 'Tail Band Fill', '#BF7741'),
 (342, 0, 'Gradient Top', '#562B0C'),
 (342, 1, 'Gradient Middle', '#994C18'),
 (342, 2, 'Gradient Bottom', '#F0E3AB'),
@@ -2518,18 +2523,16 @@ INSERT INTO colors VALUES
 (344, 2, 'Lens Fill 1 (50% Opacity)', '#80ECEC'),
 (344, 3, 'Lens Fill 2 (50% Opacity)', '#2CB9C6'),
 (345, 0, 'Outline', '#172E5D'),
-(345, 1, 'Fill 1', '#23629C'),
-(345, 2, 'Fill 2', '#1C5183'),
+(345, 1, 'Fill', '#1C5183'),
+(345, 2, 'Pocket / Collar Fill', '#23629C'),
 (346, 0, 'Outline', '#A8DADA'),
 (346, 1, 'Fill', '#D1ECED'),
 (346, 2, 'Pinstripe', '#FFFFFF'),
 (347, 0, 'Outline', '#581326'),
-(347, 1, 'Fill 1', '#A12147'),
-(347, 2, 'Fill 2', '#831E3C'),
+(347, 1, 'Fill', '#A12147'),
+(347, 2, 'Pattern', '#831E3C'),
 (348, 0, 'Outline', '#C2921E'),
 (348, 1, 'Fill', '#E2B443'),
-(349, 0, 'Outline', '#AC6534'),
-(349, 1, 'Fill', '#BF7741'),
 (350, 0, 'Outline', '#F99000'),
 (350, 1, 'Fill', '#FEBC40'),
 (350, 2, 'Shadow Outline', '#DE8200'),
@@ -6055,6 +6058,7 @@ INSERT INTO tagged VALUES
 (21, 17),
 (21, 36),
 (22, 2),
+(22, 202),
 (23, 4),
 (23, 188),
 (24, 3),
@@ -6064,6 +6068,8 @@ INSERT INTO tagged VALUES
 (25, 156),
 (25, 187),
 (26, 6),
+(26, 201),
+(26, 203),
 (27, 5),
 (27, 19),
 (27, 21),
@@ -6216,6 +6222,9 @@ INSERT INTO tagged VALUES
 (96, 191),
 (96, 192),
 (96, 200),
+(96, 201),
+(96, 202),
+(96, 203),
 (98, 62),
 (99, 22),
 (99, 26),
@@ -6523,6 +6532,7 @@ INSERT INTO tagged VALUES
 (385, 123),
 (385, 124),
 (385, 179),
+(385, 204),
 (386, 178),
 (387, 193),
 (387, 194),
@@ -6560,10 +6570,16 @@ INSERT INTO tagged VALUES
 (416, 195),
 (417, 196),
 (418, 197),
+(419, 201),
+(419, 202),
+(419, 203),
+(419, 204),
 (423, 198),
 (424, 182),
 (424, 199),
-(425, 200);
+(425, 200),
+(426, 204),
+(427, 204);
 
 
 --
@@ -6587,11 +6603,11 @@ INSERT INTO tags VALUES
 (19, 's01e01', NULL, 'ep', 0, NULL),
 (20, 's01e26', NULL, 'ep', 0, NULL),
 (21, 's05e12', NULL, 'ep', 4, NULL),
-(22, 'applejack', NULL, 'char', 1, NULL),
+(22, 'applejack', NULL, 'char', 2, NULL),
 (23, 'pinkie pie', NULL, 'char', 2, NULL),
 (24, 'fluttershy', NULL, 'char', 2, NULL),
 (25, 'rainbow dash', NULL, 'char', 4, NULL),
-(26, 'rarity', NULL, 'char', 1, NULL),
+(26, 'rarity', NULL, 'char', 3, NULL),
 (27, 'wonderbolt', 'Wonderbolt characters', 'cat', 9, NULL),
 (28, 'parent', 'Parents of other characters', 'cat', 8, NULL),
 (29, 'dragon', NULL, 'spec', 4, NULL),
@@ -6656,7 +6672,7 @@ INSERT INTO tags VALUES
 (93, 'rara', NULL, 'char', 0, 158),
 (94, 's05e24', NULL, 'ep', 3, NULL),
 (95, 'svengallop', NULL, 'char', 1, NULL),
-(96, 'outfit', 'Alternative character outfits', NULL, 17, NULL),
+(96, 'outfit', 'Alternative character outfits', NULL, 20, NULL),
 (97, 's05e08', NULL, 'ep', 0, NULL),
 (98, 'sunburst', NULL, 'char', 1, NULL),
 (99, 's05e26', NULL, 'ep', 5, NULL),
@@ -6923,7 +6939,7 @@ INSERT INTO tags VALUES
 (382, 's04e02', NULL, 'ep', 1, NULL),
 (383, 'comet trail', NULL, 'char', 1, NULL),
 (384, 'dinky', NULL, 'char', 0, 72),
-(385, 'creature', NULL, 'cat', 5, NULL),
+(385, 'creature', NULL, 'cat', 6, NULL),
 (386, 'quibble pants', NULL, 'char', 1, NULL),
 (387, 's06e19', NULL, 'ep', 5, NULL),
 (388, 'cipactli', NULL, 'char', 1, NULL),
@@ -6957,20 +6973,22 @@ INSERT INTO tags VALUES
 (416, 'mrs. paleo', NULL, 'char', 1, NULL),
 (417, 'mr. paleo', NULL, 'char', 1, NULL),
 (418, 'blue note', NULL, 'char', 1, NULL),
-(419, 's06e22', NULL, 'ep', 0, NULL),
+(419, 's06e22', NULL, 'ep', 4, NULL),
 (420, 's06e23', NULL, 'ep', 0, NULL),
 (421, 's06e24', NULL, 'ep', 0, NULL),
 (422, 's06e25', NULL, 'ep', 0, NULL),
 (423, 'gladmane', NULL, 'char', 1, NULL),
 (424, 'alternate pony colors', 'For alternate colors of existing ponies (eg discorded, equalized, etc.)', 'cat', 2, NULL),
-(425, 'impossibly rich', NULL, 'char', 1, NULL);
+(425, 'impossibly rich', NULL, 'char', 1, NULL),
+(426, 'bunyip', NULL, 'spec', 1, NULL),
+(427, 'tri-horned bunyip', NULL, 'spec', 1, NULL);
 
 
 --
 -- Name: tags_tid_seq; Type: SEQUENCE SET; Schema: public; Owner: mlpvc-rr
 --
 
-SELECT pg_catalog.setval('tags_tid_seq', 425, true);
+SELECT pg_catalog.setval('tags_tid_seq', 427, true);
 
 
 --

@@ -20086,7 +20086,7 @@
 			"id": 61,
 			"order": 121,
 			"label": "Svengallop",
-			"notes": "",
+			"notes": "Has no shadow colors.",
 			"cm_favme": null,
 			"ishuman": false,
 			"added": "2015-11-24 07:28:47.770494+01",
@@ -20135,6 +20135,16 @@
 							"order": 3,
 							"label": "Fill 2",
 							"hex": "#F6D8C8"
+						},
+						{
+							"order": 4,
+							"label": "Tail Band Outline",
+							"hex": "#AC6534"
+						},
+						{
+							"order": 5,
+							"label": "Tail Band Fill",
+							"hex": "#BF7741"
 						}
 					]
 				},
@@ -20199,19 +20209,19 @@
 						},
 						{
 							"order": 1,
-							"label": "Fill 1",
-							"hex": "#23629C"
+							"label": "Fill",
+							"hex": "#1C5183"
 						},
 						{
 							"order": 2,
-							"label": "Fill 2",
-							"hex": "#1C5183"
+							"label": "Pocket / Collar Fill",
+							"hex": "#23629C"
 						}
 					]
 				},
 				"346": {
 					"groupid": 346,
-					"label": "Shirt",
+					"label": "Undershirt",
 					"order": 5,
 					"Colors": [
 						{
@@ -20243,12 +20253,12 @@
 						},
 						{
 							"order": 1,
-							"label": "Fill 1",
+							"label": "Fill",
 							"hex": "#A12147"
 						},
 						{
 							"order": 2,
-							"label": "Fill 2",
+							"label": "Pattern",
 							"hex": "#831E3C"
 						}
 					]
@@ -20267,23 +20277,6 @@
 							"order": 1,
 							"label": "Fill",
 							"hex": "#E2B443"
-						}
-					]
-				},
-				"349": {
-					"groupid": 349,
-					"label": "Tail band",
-					"order": 8,
-					"Colors": [
-						{
-							"order": 0,
-							"label": "Outline",
-							"hex": "#AC6534"
-						},
-						{
-							"order": 1,
-							"label": "Fill",
-							"hex": "#BF7741"
 						}
 					]
 				}
@@ -31724,6 +31717,93 @@
 				425
 			],
 			"RelatedAppearances": []
+		},
+		"201": {
+			"id": 201,
+			"order": null,
+			"label": "Rarity's Titanic Outfit",
+			"notes": "",
+			"cm_favme": null,
+			"ishuman": true,
+			"added": "2016-10-02 00:17:25.771874+02",
+			"cm_preview": null,
+			"cm_dir": null,
+			"private": true,
+			"ColorGroups": {
+				"_hidden": true
+			},
+			"TagIDs": [
+				26,
+				96,
+				419
+			],
+			"RelatedAppearances": []
+		},
+		"202": {
+			"id": 202,
+			"order": null,
+			"label": "Captain Jackbeard",
+			"notes": "",
+			"cm_favme": null,
+			"ishuman": false,
+			"added": "2016-10-02 00:18:24.884029+02",
+			"cm_preview": null,
+			"cm_dir": null,
+			"private": true,
+			"ColorGroups": {
+				"_hidden": true
+			},
+			"TagIDs": [
+				22,
+				96,
+				272,
+				419
+			],
+			"RelatedAppearances": []
+		},
+		"203": {
+			"id": 203,
+			"order": null,
+			"label": "Captain Rarity",
+			"notes": "",
+			"cm_favme": null,
+			"ishuman": false,
+			"added": "2016-10-02 00:19:10.88123+02",
+			"cm_preview": null,
+			"cm_dir": null,
+			"private": true,
+			"ColorGroups": {
+				"_hidden": true
+			},
+			"TagIDs": [
+				26,
+				96,
+				419
+			],
+			"RelatedAppearances": []
+		},
+		"204": {
+			"id": 204,
+			"order": null,
+			"label": "Tri-horned Bunyip",
+			"notes": "",
+			"cm_favme": null,
+			"ishuman": false,
+			"added": "2016-10-02 00:19:36.338675+02",
+			"cm_preview": null,
+			"cm_dir": null,
+			"private": true,
+			"ColorGroups": {
+				"_hidden": true
+			},
+			"TagIDs": [
+				247,
+				385,
+				419,
+				426,
+				427
+			],
+			"RelatedAppearances": []
 		}
 	},
 	"Tags": {
@@ -31860,7 +31940,7 @@
 			"name": "applejack",
 			"title": null,
 			"type": "char",
-			"uses": 1,
+			"uses": 2,
 			"synonym_of": null
 		},
 		"23": {
@@ -31892,7 +31972,7 @@
 			"name": "rarity",
 			"title": null,
 			"type": "char",
-			"uses": 1,
+			"uses": 3,
 			"synonym_of": null
 		},
 		"27": {
@@ -32412,7 +32492,7 @@
 			"name": "outfit",
 			"title": "Alternative character outfits",
 			"type": null,
-			"uses": 17,
+			"uses": 20,
 			"synonym_of": null
 		},
 		"97": {
@@ -34548,7 +34628,7 @@
 			"name": "creature",
 			"title": null,
 			"type": "cat",
-			"uses": 5,
+			"uses": 6,
 			"synonym_of": null
 		},
 		"386": {
@@ -34820,7 +34900,7 @@
 			"name": "s06e22",
 			"title": null,
 			"type": "ep",
-			"uses": 0,
+			"uses": 4,
 			"synonym_of": null
 		},
 		"420": {
@@ -34868,6 +34948,22 @@
 			"name": "impossibly rich",
 			"title": null,
 			"type": "char",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"426": {
+			"tid": 426,
+			"name": "bunyip",
+			"title": null,
+			"type": "spec",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"427": {
+			"tid": 427,
+			"name": "tri-horned bunyip",
+			"title": null,
+			"type": "spec",
 			"uses": 1,
 			"synonym_of": null
 		}
