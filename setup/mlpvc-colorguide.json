@@ -31728,9 +31728,253 @@
 			"added": "2016-10-02 00:17:25.771874+02",
 			"cm_preview": null,
 			"cm_dir": null,
-			"private": true,
+			"private": false,
 			"ColorGroups": {
-				"_hidden": true
+				"1084": {
+					"groupid": 1084,
+					"label": "Hat",
+					"order": 1,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Hat Outline",
+							"hex": "#392538"
+						},
+						{
+							"order": 1,
+							"label": "Hat Fill",
+							"hex": "#573955"
+						},
+						{
+							"order": 2,
+							"label": "Bow Outline",
+							"hex": "#E0A9A8"
+						},
+						{
+							"order": 3,
+							"label": "Bow Fill",
+							"hex": "#FFFBF0"
+						},
+						{
+							"order": 4,
+							"label": "Bow Stripe 1",
+							"hex": "#EEDDCF"
+						},
+						{
+							"order": 5,
+							"label": "Bow Stripe 2",
+							"hex": "#E6CAC0"
+						},
+						{
+							"order": 6,
+							"label": "Bow Stripe 3",
+							"hex": "#CEBBBC"
+						}
+					]
+				},
+				"1085": {
+					"groupid": 1085,
+					"label": "Dress",
+					"order": 2,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#F8CEBA"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#FFFBF2"
+						},
+						{
+							"order": 2,
+							"label": "Main Pinstripes",
+							"hex": "#E0CBC2"
+						},
+						{
+							"order": 3,
+							"label": "Sleeve Pinstripes",
+							"hex": "#F8CEBA"
+						},
+						{
+							"order": 4,
+							"label": "Shadow Outline/Pinestripes",
+							"hex": "#E0BBA6"
+						},
+						{
+							"order": 5,
+							"label": "Shadow Fill",
+							"hex": "#E1E0D5"
+						},
+						{
+							"order": 6,
+							"label": "Cuff Outline",
+							"hex": "#3B2F3E"
+						},
+						{
+							"order": 7,
+							"label": "Cuff Fill",
+							"hex": "#5D4D68"
+						},
+						{
+							"order": 8,
+							"label": "Cuff Shadow Outline",
+							"hex": "#332A38"
+						},
+						{
+							"order": 9,
+							"label": "Cuff Shadow Fill",
+							"hex": "#53465B"
+						},
+						{
+							"order": 10,
+							"label": "Belt/Collar Outline",
+							"hex": "#482D42"
+						},
+						{
+							"order": 11,
+							"label": "Belt/Collar Fill",
+							"hex": "#563954"
+						},
+						{
+							"order": 12,
+							"label": "Collar Stripe",
+							"hex": "#E5C9C1"
+						},
+						{
+							"order": 13,
+							"label": "Belt Hole",
+							"hex": "#37303F"
+						},
+						{
+							"order": 14,
+							"label": "Buttons",
+							"hex": "#4B4159"
+						}
+					]
+				},
+				"1086": {
+					"groupid": 1086,
+					"label": "Blouse and Neckpiece",
+					"order": 3,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Blouse Outline",
+							"hex": "#F6E9D1"
+						},
+						{
+							"order": 1,
+							"label": "Blouse Fill",
+							"hex": "#FFFFFF"
+						},
+						{
+							"order": 2,
+							"label": "Neckpiece Chain",
+							"hex": "#F8CFB9"
+						},
+						{
+							"order": 3,
+							"label": "Neckpiece Base",
+							"hex": "#321F2F"
+						},
+						{
+							"order": 4,
+							"label": "Gem Center Fill",
+							"hex": "#AEF2F8"
+						},
+						{
+							"order": 5,
+							"label": "Gem Facet Fill 1 (top right)",
+							"hex": "#CFF1F8"
+						},
+						{
+							"order": 6,
+							"label": "Gem Facet Fill 2 (top left)",
+							"hex": "#9AE2F5"
+						},
+						{
+							"order": 7,
+							"label": "Gem Facet Fill 3 (sides)",
+							"hex": "#7CD1F3"
+						},
+						{
+							"order": 8,
+							"label": "Gem Facet Fill 4 (bottom rt)",
+							"hex": "#31ABE5"
+						},
+						{
+							"order": 9,
+							"label": "Gem Facet Fill 5 (bottom left)",
+							"hex": "#1997CF"
+						}
+					]
+				},
+				"1087": {
+					"groupid": 1087,
+					"label": "Earring",
+					"order": 4,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Center",
+							"hex": "#AEF2F8"
+						},
+						{
+							"order": 1,
+							"label": "Fill 1",
+							"hex": "#CFF1F8"
+						},
+						{
+							"order": 2,
+							"label": "Fill 2",
+							"hex": "#9AE2F5"
+						},
+						{
+							"order": 3,
+							"label": "Fill 3",
+							"hex": "#7CD1F3"
+						},
+						{
+							"order": 4,
+							"label": "Fill 4",
+							"hex": "#31ABE5"
+						},
+						{
+							"order": 5,
+							"label": "Fill 5",
+							"hex": "#1997CF"
+						}
+					]
+				},
+				"1088": {
+					"groupid": 1088,
+					"label": "Gloves",
+					"order": 5,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#B8A5A9"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#E2D1D5"
+						},
+						{
+							"order": 2,
+							"label": "Shadow Outline",
+							"hex": "#A59598"
+						},
+						{
+							"order": 3,
+							"label": "Shadow Fill",
+							"hex": "#CABABE"
+						}
+					]
+				}
 			},
 			"TagIDs": [
 				26,
@@ -31749,9 +31993,121 @@
 			"added": "2016-10-02 00:18:24.884029+02",
 			"cm_preview": null,
 			"cm_dir": null,
-			"private": true,
+			"private": false,
 			"ColorGroups": {
-				"_hidden": true
+				"1089": {
+					"groupid": 1089,
+					"label": "Overcoat",
+					"order": 1,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#39343E"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#57525C"
+						},
+						{
+							"order": 2,
+							"label": "Shadow Outline",
+							"hex": "#312C34"
+						},
+						{
+							"order": 3,
+							"label": "Shadow Fill",
+							"hex": "#49444C"
+						},
+						{
+							"order": 4,
+							"label": "Collar Fill",
+							"hex": "#413A45"
+						},
+						{
+							"order": 5,
+							"label": "Button Outline",
+							"hex": "#A9744C"
+						},
+						{
+							"order": 6,
+							"label": "Button Fill 1",
+							"hex": "#E4C07D"
+						},
+						{
+							"order": 7,
+							"label": "Button Fill 2",
+							"hex": "#C49C61"
+						}
+					]
+				},
+				"1090": {
+					"groupid": 1090,
+					"label": "Sweater",
+					"order": 2,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#84A63E"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#BFD66E"
+						},
+						{
+							"order": 2,
+							"label": "Shadow Outline",
+							"hex": "#708D35"
+						},
+						{
+							"order": 3,
+							"label": "Shadow Fill",
+							"hex": "#A2B65D"
+						}
+					]
+				},
+				"1091": {
+					"groupid": 1091,
+					"label": "Hat",
+					"order": 3,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#A71C1C"
+						},
+						{
+							"order": 1,
+							"label": "Fill 1",
+							"hex": "#F2562C"
+						},
+						{
+							"order": 2,
+							"label": "Fill 2",
+							"hex": "#C6311F"
+						}
+					]
+				},
+				"1092": {
+					"groupid": 1092,
+					"label": "Eyepatch",
+					"order": 4,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#9BAFC4"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#FFFFFF"
+						}
+					]
+				}
 			},
 			"TagIDs": [
 				22,
@@ -31792,9 +32148,212 @@
 			"added": "2016-10-02 00:19:36.338675+02",
 			"cm_preview": null,
 			"cm_dir": null,
-			"private": true,
+			"private": false,
 			"ColorGroups": {
-				"_hidden": true
+				"1093": {
+					"groupid": 1093,
+					"label": "Body",
+					"order": 0,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#5B2438"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#87455B"
+						},
+						{
+							"order": 2,
+							"label": "Shadow Outline",
+							"hex": "#471C34"
+						},
+						{
+							"order": 3,
+							"label": "Shadow Fill",
+							"hex": "#743B4E"
+						},
+						{
+							"order": 4,
+							"label": "Belly Outline",
+							"hex": "#98524C"
+						},
+						{
+							"order": 5,
+							"label": "Belly Fill",
+							"hex": "#C87660"
+						},
+						{
+							"order": 6,
+							"label": "Scale Marks",
+							"hex": "#D8968A"
+						},
+						{
+							"order": 7,
+							"label": "Flipper Outline",
+							"hex": "#391D3A"
+						},
+						{
+							"order": 8,
+							"label": "Flipper Fill",
+							"hex": "#543855"
+						},
+						{
+							"order": 9,
+							"label": "Flipper Shadow Outline",
+							"hex": "#201927"
+						},
+						{
+							"order": 10,
+							"label": "Flipper Shadow Fill",
+							"hex": "#473047"
+						}
+					]
+				},
+				"1099": {
+					"groupid": 1099,
+					"label": "Spines",
+					"order": 1,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#C95845"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#E66F4B"
+						}
+					]
+				},
+				"1094": {
+					"groupid": 1094,
+					"label": "Ear Flaps",
+					"order": 2,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#C26764"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#E19586"
+						}
+					]
+				},
+				"1095": {
+					"groupid": 1095,
+					"label": "Eyes",
+					"order": 3,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Gradient Top",
+							"hex": "#B9B832"
+						},
+						{
+							"order": 1,
+							"label": "Gradient Bottom",
+							"hex": "#AAAF30"
+						}
+					]
+				},
+				"1096": {
+					"groupid": 1096,
+					"label": "Horns",
+					"order": 4,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#DD9363"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#FFBE81"
+						}
+					]
+				},
+				"1097": {
+					"groupid": 1097,
+					"label": "Nose",
+					"order": 5,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#362039"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#543855"
+						},
+						{
+							"order": 2,
+							"label": "Nostril Fill 1",
+							"hex": "#432C46"
+						},
+						{
+							"order": 3,
+							"label": "Nostril Fill 2",
+							"hex": "#3F283F"
+						},
+						{
+							"order": 4,
+							"label": "Whisker",
+							"hex": "#543855"
+						}
+					]
+				},
+				"1098": {
+					"groupid": 1098,
+					"label": "Mouth",
+					"order": 6,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Teeth Outline",
+							"hex": "#E7C47B"
+						},
+						{
+							"order": 1,
+							"label": "Teeth Fill",
+							"hex": "#FAF5CF"
+						},
+						{
+							"order": 2,
+							"label": "Teeth Shadow Outline",
+							"hex": "#B7B07E"
+						},
+						{
+							"order": 3,
+							"label": "Teeth Shadow Fill",
+							"hex": "#E2D8B7"
+						},
+						{
+							"order": 4,
+							"label": "Cheek Outline",
+							"hex": "#43001E"
+						},
+						{
+							"order": 5,
+							"label": "Cheek Fill",
+							"hex": "#BA1C73"
+						},
+						{
+							"order": 6,
+							"label": "Tongue",
+							"hex": "#F07033"
+						}
+					]
+				}
 			},
 			"TagIDs": [
 				247,
