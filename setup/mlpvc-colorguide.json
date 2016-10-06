@@ -20086,7 +20086,7 @@
 			"id": 61,
 			"order": 121,
 			"label": "Svengallop",
-			"notes": "Has no shadow colors.",
+			"notes": "Has no shadow colors.\nFor the glasses, group together the Fill and the Highlight (100% Normal blending) and set the group to 50% opacity.",
 			"cm_favme": null,
 			"ishuman": false,
 			"added": "2015-11-24 07:28:47.770494+01",
@@ -20187,13 +20187,13 @@
 						},
 						{
 							"order": 2,
-							"label": "Lens Fill 1 (50% Opacity)",
-							"hex": "#80ECEC"
+							"label": "Lens Fill (See Notes)",
+							"hex": "#2CB9C6"
 						},
 						{
 							"order": 3,
-							"label": "Lens Fill 2 (50% Opacity)",
-							"hex": "#2CB9C6"
+							"label": "Lens Highlight (See Notes)",
+							"hex": "#80ECEC"
 						}
 					]
 				},
@@ -32363,6 +32363,57 @@
 				427
 			],
 			"RelatedAppearances": []
+		},
+		"205": {
+			"id": 205,
+			"order": null,
+			"label": "Lifejacket",
+			"notes": "",
+			"cm_favme": null,
+			"ishuman": false,
+			"added": "2016-10-04 03:47:22.688623+02",
+			"cm_preview": null,
+			"cm_dir": null,
+			"private": false,
+			"ColorGroups": {
+				"1100": {
+					"groupid": 1100,
+					"label": "Lifejacket",
+					"order": 1,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#B44905"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#FF6906"
+						},
+						{
+							"order": 2,
+							"label": "Shadow Fill",
+							"hex": "#D85A08"
+						},
+						{
+							"order": 3,
+							"label": "Strap Outline",
+							"hex": "#2D2D2D"
+						},
+						{
+							"order": 4,
+							"label": "Strap Fill",
+							"hex": "#4D4D4D"
+						}
+					]
+				}
+			},
+			"TagIDs": [
+				96,
+				419
+			],
+			"RelatedAppearances": []
 		}
 	},
 	"Tags": {
@@ -33051,7 +33102,7 @@
 			"name": "outfit",
 			"title": "Alternative character outfits",
 			"type": null,
-			"uses": 20,
+			"uses": 21,
 			"synonym_of": null
 		},
 		"97": {
@@ -35459,7 +35510,7 @@
 			"name": "s06e22",
 			"title": null,
 			"type": "ep",
-			"uses": 4,
+			"uses": 5,
 			"synonym_of": null
 		},
 		"420": {

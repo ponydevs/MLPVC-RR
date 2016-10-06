@@ -288,7 +288,8 @@ Eyes don''t have iris highlights.', 'd9fl30m', false, '2015-11-05 00:10:40.32198
 (58, 118, 'Tree Hugger', 'Darker highlight color matches the bottom iris gradient color.', 'd8u7pz5', false, '2015-11-14 05:07:04.439467+01', NULL, false, false),
 (59, 119, 'Coloratura', '', 'd9hm2yd', false, '2015-11-24 05:28:54.164681+01', NULL, true, false),
 (60, 120, 'Rara (Countess Outfit)', '', NULL, false, '2015-11-24 05:42:00.076945+01', NULL, NULL, false),
-(61, 121, 'Svengallop', 'Has no shadow colors.', NULL, false, '2015-11-24 07:28:47.770494+01', NULL, NULL, false),
+(61, 121, 'Svengallop', 'Has no shadow colors.
+For the glasses, group together the Fill and the Highlight (100% Normal blending) and set the group to 50% opacity.', NULL, false, '2015-11-24 07:28:47.770494+01', NULL, NULL, false),
 (62, 66, 'Sunburst', 'Far legs use darker colors. 
 Has no iris highlights.
 Glasses don''t seem to have lenses.', 'd9iyv1r', false, '2015-12-01 16:18:10.631048+01', NULL, true, false),
@@ -470,14 +471,15 @@ All other body and mane/tail colors remain the same.', NULL, false, '2016-09-24 
 (201, NULL, 'Rarity''s Titanic Outfit', '', NULL, true, '2016-10-02 00:17:25.771874+02', NULL, NULL, false),
 (202, NULL, 'Captain Jackbeard', '', NULL, false, '2016-10-02 00:18:24.884029+02', NULL, NULL, false),
 (203, NULL, 'Captain Rarity', '', NULL, false, '2016-10-02 00:19:10.88123+02', NULL, NULL, true),
-(204, NULL, 'Tri-horned Bunyip', '', NULL, false, '2016-10-02 00:19:36.338675+02', NULL, NULL, false);
+(204, NULL, 'Tri-horned Bunyip', '', NULL, false, '2016-10-02 00:19:36.338675+02', NULL, NULL, false),
+(205, NULL, 'Lifejacket', '', NULL, false, '2016-10-04 03:47:22.688623+02', NULL, NULL, false);
 
 
 --
 -- Name: appearances_id_seq; Type: SEQUENCE SET; Schema: public; Owner: mlpvc-rr
 --
 
-SELECT pg_catalog.setval('appearances_id_seq', 204, true);
+SELECT pg_catalog.setval('appearances_id_seq', 205, true);
 
 
 --
@@ -1454,14 +1456,15 @@ INSERT INTO colorgroups VALUES
 (1096, 204, 'Horns', 4),
 (1097, 204, 'Nose', 5),
 (1098, 204, 'Mouth', 6),
-(1099, 204, 'Spines', 1);
+(1099, 204, 'Spines', 1),
+(1100, 205, 'Lifejacket', 1);
 
 
 --
 -- Name: colorgroups_groupid_seq; Type: SEQUENCE SET; Schema: public; Owner: mlpvc-rr
 --
 
-SELECT pg_catalog.setval('colorgroups_groupid_seq', 1099, true);
+SELECT pg_catalog.setval('colorgroups_groupid_seq', 1100, true);
 
 
 --
@@ -2536,8 +2539,8 @@ INSERT INTO colors VALUES
 (342, 2, 'Gradient Bottom', '#F0E3AB'),
 (344, 0, 'Frame Outline', '#543520'),
 (344, 1, 'Frame Fill', '#79554E'),
-(344, 2, 'Lens Fill 1 (50% Opacity)', '#80ECEC'),
-(344, 3, 'Lens Fill 2 (50% Opacity)', '#2CB9C6'),
+(344, 2, 'Lens Fill (See Notes)', '#2CB9C6'),
+(344, 3, 'Lens Highlight (See Notes)', '#80ECEC'),
 (345, 0, 'Outline', '#172E5D'),
 (345, 1, 'Fill', '#1C5183'),
 (345, 2, 'Pocket / Collar Fill', '#23629C'),
@@ -5690,7 +5693,12 @@ INSERT INTO colors VALUES
 (1098, 5, 'Cheek Fill', '#BA1C73'),
 (1098, 6, 'Tongue', '#F07033'),
 (1099, 0, 'Outline', '#C95845'),
-(1099, 1, 'Fill', '#E66F4B');
+(1099, 1, 'Fill', '#E66F4B'),
+(1100, 0, 'Outline', '#B44905'),
+(1100, 1, 'Fill', '#FF6906'),
+(1100, 2, 'Shadow Fill', '#D85A08'),
+(1100, 3, 'Strap Outline', '#2D2D2D'),
+(1100, 4, 'Strap Fill', '#4D4D4D');
 
 
 --
@@ -6331,6 +6339,7 @@ INSERT INTO tagged VALUES
 (96, 201),
 (96, 202),
 (96, 203),
+(96, 205),
 (98, 62),
 (99, 22),
 (99, 26),
@@ -6680,6 +6689,7 @@ INSERT INTO tagged VALUES
 (419, 202),
 (419, 203),
 (419, 204),
+(419, 205),
 (423, 198),
 (424, 182),
 (424, 199),
@@ -6778,7 +6788,7 @@ INSERT INTO tags VALUES
 (93, 'rara', NULL, 'char', 0, 158),
 (94, 's05e24', NULL, 'ep', 3, NULL),
 (95, 'svengallop', NULL, 'char', 1, NULL),
-(96, 'outfit', 'Alternative character outfits', NULL, 20, NULL),
+(96, 'outfit', 'Alternative character outfits', NULL, 21, NULL),
 (97, 's05e08', NULL, 'ep', 0, NULL),
 (98, 'sunburst', NULL, 'char', 1, NULL),
 (99, 's05e26', NULL, 'ep', 5, NULL),
@@ -7079,7 +7089,7 @@ INSERT INTO tags VALUES
 (416, 'mrs. paleo', NULL, 'char', 1, NULL),
 (417, 'mr. paleo', NULL, 'char', 1, NULL),
 (418, 'blue note', NULL, 'char', 1, NULL),
-(419, 's06e22', NULL, 'ep', 4, NULL),
+(419, 's06e22', NULL, 'ep', 5, NULL),
 (420, 's06e23', NULL, 'ep', 0, NULL),
 (421, 's06e24', NULL, 'ep', 0, NULL),
 (422, 's06e25', NULL, 'ep', 0, NULL),
