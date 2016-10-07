@@ -449,6 +449,7 @@ DocReady.push(function Episode(){
 					$notice.children('p:not(.keep)').remove();
 					$notice.prepend($.mk('p').attr('class','color-red').html(data.message)).show();
 					$previewIMG.hide();
+					$formImgCheck.enable();
 					return $.Dialog.close();
 				}
 
@@ -485,6 +486,7 @@ DocReady.push(function Episode(){
 							return;
 						}
 						$.Dialog.fail(title,"There was an error while attempting to load the image. Make sure the URL is correct and try again!");
+						$formImgCheck.enable();
 					});
 				}
 				load(data, 0);
