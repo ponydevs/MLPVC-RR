@@ -472,14 +472,15 @@ All other body and mane/tail colors remain the same.', NULL, false, '2016-09-24 
 (202, NULL, 'Captain Jackbeard', '', NULL, false, '2016-10-02 00:18:24.884029+02', NULL, NULL, false),
 (203, NULL, 'Captain Rarity', '', NULL, false, '2016-10-02 00:19:10.88123+02', NULL, NULL, true),
 (204, NULL, 'Tri-horned Bunyip', '', NULL, false, '2016-10-02 00:19:36.338675+02', NULL, NULL, false),
-(205, NULL, 'Lifejacket', '', NULL, false, '2016-10-04 03:47:22.688623+02', NULL, NULL, false);
+(205, NULL, 'Lifejacket', '', NULL, false, '2016-10-04 03:47:22.688623+02', NULL, NULL, false),
+(206, NULL, 'Derpy''s Mail Uniform', '', NULL, false, '2016-10-07 04:48:56.941256+02', NULL, NULL, true);
 
 
 --
 -- Name: appearances_id_seq; Type: SEQUENCE SET; Schema: public; Owner: mlpvc-rr
 --
 
-SELECT pg_catalog.setval('appearances_id_seq', 205, true);
+SELECT pg_catalog.setval('appearances_id_seq', 206, true);
 
 
 --
@@ -6256,6 +6257,7 @@ INSERT INTO tagged VALUES
 (48, 25),
 (49, 26),
 (50, 11),
+(50, 206),
 (51, 13),
 (52, 27),
 (53, 28),
@@ -6340,6 +6342,7 @@ INSERT INTO tagged VALUES
 (96, 202),
 (96, 203),
 (96, 205),
+(96, 206),
 (98, 62),
 (99, 22),
 (99, 26),
@@ -6690,12 +6693,14 @@ INSERT INTO tagged VALUES
 (419, 203),
 (419, 204),
 (419, 205),
+(422, 206),
 (423, 198),
 (424, 182),
 (424, 199),
 (425, 200),
 (426, 204),
-(427, 204);
+(427, 204),
+(428, 206);
 
 
 --
@@ -6747,7 +6752,7 @@ INSERT INTO tags VALUES
 (47, 'scootaloo', NULL, 'char', 1, NULL),
 (48, 'sweetie belle', NULL, 'char', 1, NULL),
 (49, 'night glider', NULL, 'char', 1, NULL),
-(50, 'derpy hooves', NULL, 'char', 1, NULL),
+(50, 'derpy hooves', NULL, 'char', 2, NULL),
 (51, 'whoa nelly', NULL, 'char', 1, NULL),
 (52, 'double diamond', NULL, 'char', 1, NULL),
 (53, 'party favor', NULL, 'char', 1, NULL),
@@ -6788,7 +6793,7 @@ INSERT INTO tags VALUES
 (93, 'rara', NULL, 'char', 0, 158),
 (94, 's05e24', NULL, 'ep', 3, NULL),
 (95, 'svengallop', NULL, 'char', 1, NULL),
-(96, 'outfit', 'Alternative character outfits', NULL, 21, NULL),
+(96, 'outfit', 'Alternative character outfits', NULL, 22, NULL),
 (97, 's05e08', NULL, 'ep', 0, NULL),
 (98, 'sunburst', NULL, 'char', 1, NULL),
 (99, 's05e26', NULL, 'ep', 5, NULL),
@@ -7092,19 +7097,20 @@ INSERT INTO tags VALUES
 (419, 's06e22', NULL, 'ep', 5, NULL),
 (420, 's06e23', NULL, 'ep', 0, NULL),
 (421, 's06e24', NULL, 'ep', 0, NULL),
-(422, 's06e25', NULL, 'ep', 0, NULL),
+(422, 's06e25', NULL, 'ep', 1, NULL),
 (423, 'gladmane', NULL, 'char', 1, NULL),
 (424, 'alternate pony colors', 'For alternate colors of existing ponies (eg discorded, equalized, etc.)', 'cat', 2, NULL),
 (425, 'impossibly rich', NULL, 'char', 1, NULL),
 (426, 'bunyip', NULL, 'spec', 1, NULL),
-(427, 'tri-horned bunyip', NULL, 'spec', 1, NULL);
+(427, 'tri-horned bunyip', NULL, 'spec', 1, NULL),
+(428, 'mailmare', NULL, 'app', 1, NULL);
 
 
 --
 -- Name: tags_tid_seq; Type: SEQUENCE SET; Schema: public; Owner: mlpvc-rr
 --
 
-SELECT pg_catalog.setval('tags_tid_seq', 427, true);
+SELECT pg_catalog.setval('tags_tid_seq', 428, true);
 
 
 --
