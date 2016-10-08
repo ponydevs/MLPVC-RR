@@ -782,7 +782,7 @@ use Exceptions\cURLRequestException;
 		 *
 		 * @return string
 		 */
-		static function Trim($str, $chars = "\t\n\r\0\x0B"){
+		static function Trim($str, $chars = " \t\n\r\0\x0B"){
 			return regex_replace(new RegExp(' +'),' ',trim($str, $chars));
 		}
 
@@ -794,7 +794,7 @@ use Exceptions\cURLRequestException;
 		 *
 		 * @return string
 		 */
-		static function TrimMultiline($str, $chars = "\t\n\r\0\x0B"){
+		static function TrimMultiline($str, $chars = " \t\n\r\0\x0B"){
 			return regex_replace(new RegExp('(\r\n|\r)'),"\n",self::Trim($str,$chars));
 		}
 
