@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "665408933d08281067913f462ca202c4",
-    "content-hash": "537dc273ed384b84779547898568d117",
+    "hash": "0d8ef4bcfb7b42f24e4bf6c24f6c3075",
+    "content-hash": "0b1fbd611e02f241fd62dcbcd7fccefb",
     "packages": [
         {
             "name": "ezyang/htmlpurifier",
@@ -162,6 +162,44 @@
             "time": "2016-09-19 16:02:08"
         },
         {
+            "name": "seinopsys/postgresql-database-class",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/SeinopSys/PHP-PostgreSQL-Database-Class.git",
+                "reference": "a7227739225469cf9d0b9e5a1520552efb39db21"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/SeinopSys/PHP-PostgreSQL-Database-Class/zipball/a7227739225469cf9d0b9e5a1520552efb39db21",
+                "reference": "a7227739225469cf9d0b9e5a1520552efb39db21",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.6.0"
+            },
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "PostgresDb.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-3.0"
+            ],
+            "authors": [
+                {
+                    "name": "SeinopSys",
+                    "email": "seinopsys@gmail.com",
+                    "homepage": "https://github.com/SeinopSys",
+                    "role": "Developer"
+                }
+            ],
+            "description": "PHP wrapper class for PDO-based interaction with PostgreSQL databases, heavily based on joshcam/mysqli-database-class",
+            "time": "2016-10-12 04:13:46"
+        },
+        {
             "name": "wisembly/elephant.io",
             "version": "3.1.0",
             "source": {
@@ -231,7 +269,9 @@
     "packages-dev": [],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "seinopsys/postgresql-database-class": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": [],

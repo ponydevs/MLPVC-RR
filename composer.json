@@ -11,6 +11,7 @@
 	"require": {
 		"fightbulc/moment": "*",
 		"wisembly/elephant.io": "*",
-        "ezyang/htmlpurifier": "^4.8"
+        "ezyang/htmlpurifier": "^4.8",
+        "seinopsys/postgresql-database-class": "dev-master"
     }
 }
