@@ -33,13 +33,9 @@
 		protected function _execStatement($stmt){
 			$className = $this->tableNameToClassName();
 			if (isset($className) && empty($this->_nonexistantClassCache[$className])){
-				try {
-					if (!class_exists("\\DB\\$className"))
-						throw new Exception();
-
-					$this->setClass("\\DB\\$className");
-				}
-				catch (Exception $e){ $this->_nonexistantClassCache[$className] = true; }
+				if (!class_exists("\\DB\\$className"))
+					$this->_nonexistantClassCache[$className] = true;
+				else $this->setClass("\\DB\\$className");
 			}
 
 			$this->query_count++;
