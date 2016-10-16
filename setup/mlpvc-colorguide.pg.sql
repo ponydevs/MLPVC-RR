@@ -479,8 +479,8 @@ All other body and mane/tail colors remain the same.', NULL, false, '2016-09-24 
 (209, 20, 'King Thorax', '', NULL, false, '2016-10-08 18:29:56.051636+02', NULL, NULL, true),
 (210, 201, 'Changeling', '', NULL, false, '2016-10-08 18:30:41.325285+02', NULL, NULL, true),
 (211, 202, 'Changeling Armor', '', NULL, false, '2016-10-08 18:31:05.604404+02', NULL, NULL, true),
-(212, 104, 'Sky Stinger', '', NULL, false, '2016-10-10 09:34:27.424468+02', NULL, NULL, true),
-(213, 105, 'Vapor Trail', '', NULL, false, '2016-10-10 09:35:07.574368+02', NULL, NULL, true),
+(212, 104, 'Sky Stinger', '', NULL, false, '2016-10-10 09:34:27.424468+02', NULL, NULL, false),
+(213, 105, 'Vapor Trail', '', NULL, false, '2016-10-10 09:35:07.574368+02', NULL, NULL, false),
 (214, 106, 'Angel Wings', '', NULL, false, '2016-10-10 09:38:59.135126+02', NULL, NULL, true),
 (215, NULL, 'Rainbow Dash''s Bomber Jacket', '', NULL, false, '2016-10-15 17:38:59.596738+02', NULL, NULL, true);
 
@@ -1490,24 +1490,23 @@ INSERT INTO colorgroups VALUES
 (1120, 212, 'Mane & Tail', 1),
 (1121, 212, 'Iris', 2),
 (1122, 212, 'Cutie Mark', 3),
-(1123, 212, 'Magic', 4),
 (1124, 213, 'Coat', 0),
 (1125, 213, 'Mane & Tail', 1),
 (1126, 213, 'Iris', 2),
 (1127, 213, 'Cutie Mark', 3),
-(1128, 213, 'Magic', 4),
 (1129, 214, 'Coat', 0),
 (1130, 214, 'Mane & Tail', 1),
 (1131, 214, 'Iris', 2),
 (1132, 214, 'Cutie Mark', 3),
-(1133, 214, 'Magic', 4);
+(1133, 214, 'Magic', 4),
+(1134, 213, 'Hair band (Filly)', 4);
 
 
 --
 -- Name: colorgroups_groupid_seq; Type: SEQUENCE SET; Schema: public; Owner: mlpvc-rr
 --
 
-SELECT pg_catalog.setval('colorgroups_groupid_seq', 1133, true);
+SELECT pg_catalog.setval('colorgroups_groupid_seq', 1134, true);
 
 
 --
@@ -5800,34 +5799,34 @@ INSERT INTO colors VALUES
 (1118, 0, 'Fill 1', '#F0FF69'),
 (1118, 1, 'Fill 2', '#4CD6FA'),
 (1118, 2, 'Fill 3', '#EC65CB'),
-(1119, 0, 'Outline', NULL),
-(1119, 1, 'Fill', NULL),
-(1119, 2, 'Shadow Outline', NULL),
-(1119, 3, 'Shadow Fill', NULL),
-(1120, 4, 'Outline', NULL),
-(1120, 5, 'Fill', NULL),
-(1121, 6, 'Gradient Top', NULL),
-(1121, 7, 'Gradient Middle', NULL),
-(1121, 8, 'Gradient Bottom', NULL),
-(1121, 9, 'Highlight Top', NULL),
-(1121, 10, 'Highlight Bottom', NULL),
-(1122, 11, 'Fill 1', NULL),
-(1122, 12, 'Fill 2', NULL),
-(1123, 13, 'Aura', NULL),
-(1124, 0, 'Outline', NULL),
-(1124, 1, 'Fill', NULL),
-(1124, 2, 'Shadow Outline', NULL),
-(1124, 3, 'Shadow Fill', NULL),
-(1125, 4, 'Outline', NULL),
-(1125, 5, 'Fill', NULL),
-(1126, 6, 'Gradient Top', NULL),
-(1126, 7, 'Gradient Middle', NULL),
-(1126, 8, 'Gradient Bottom', NULL),
-(1126, 9, 'Highlight Top', NULL),
-(1126, 10, 'Highlight Bottom', NULL),
-(1127, 11, 'Fill 1', NULL),
-(1127, 12, 'Fill 2', NULL),
-(1128, 13, 'Aura', NULL),
+(1119, 0, 'Outline', '#094A6D'),
+(1119, 1, 'Fill', '#0E81A8'),
+(1119, 2, 'Shadow Outline', '#083D5A'),
+(1119, 3, 'Shadow Fill', '#0C6D90'),
+(1120, 0, 'Outline', '#41BB98'),
+(1120, 1, 'Fill', '#8AECBC'),
+(1120, 2, 'Stripe', '#C9FFE8'),
+(1121, 0, 'Gradient Top', '#208764'),
+(1121, 1, 'Gradient Middle', '#4BBAA3'),
+(1121, 2, 'Gradient Bottom', '#7BEEAC'),
+(1122, 0, 'Fill 1', '#FAFA8A'),
+(1122, 1, 'Fill 2', '#FAB92B'),
+(1122, 2, 'Fill 3', '#F5A830'),
+(1124, 0, 'Outline', '#95D4B4'),
+(1124, 1, 'Fill', '#F5FFF0'),
+(1124, 2, 'Shadow Outline', '#86BEA2'),
+(1124, 3, 'Shadow Fill', '#DAE2D5'),
+(1125, 0, 'Outline', '#6DC3B0'),
+(1125, 1, 'Fill 1', '#F9FFCB'),
+(1125, 2, 'Fill 2', '#CEF7D8'),
+(1125, 3, 'Fill 3', '#D0FBFF'),
+(1126, 0, 'Gradient Top', '#4DB49E'),
+(1126, 1, 'Gradient Bottom', '#AEF1E8'),
+(1126, 2, 'Highlight Top', '#D8F9ED'),
+(1126, 3, 'Highlight Bottom', '#F0FFF9'),
+(1127, 0, 'Star', '#FBEA98'),
+(1127, 1, 'Fill 1', '#FFD163'),
+(1127, 2, 'Fill 2', '#FAB34A'),
 (1129, 0, 'Outline', NULL),
 (1129, 1, 'Fill', NULL),
 (1129, 2, 'Shadow Outline', NULL),
@@ -5841,7 +5840,9 @@ INSERT INTO colors VALUES
 (1131, 10, 'Highlight Bottom', NULL),
 (1132, 11, 'Fill 1', NULL),
 (1132, 12, 'Fill 2', NULL),
-(1133, 13, 'Aura', NULL);
+(1133, 13, 'Aura', NULL),
+(1134, 0, 'Outline', '#267E98'),
+(1134, 1, 'Fill', '#269AAB');
 
 
 --

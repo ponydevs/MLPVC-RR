@@ -17002,9 +17002,101 @@
 			"added": "2016-10-10 09:34:27.424468+02",
 			"cm_preview": null,
 			"cm_dir": null,
-			"private": true,
+			"private": false,
 			"ColorGroups": {
-				"_hidden": true
+				"1119": {
+					"groupid": 1119,
+					"label": "Coat",
+					"order": 0,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#094A6D"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#0E81A8"
+						},
+						{
+							"order": 2,
+							"label": "Shadow Outline",
+							"hex": "#083D5A"
+						},
+						{
+							"order": 3,
+							"label": "Shadow Fill",
+							"hex": "#0C6D90"
+						}
+					]
+				},
+				"1120": {
+					"groupid": 1120,
+					"label": "Mane & Tail",
+					"order": 1,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#41BB98"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#8AECBC"
+						},
+						{
+							"order": 2,
+							"label": "Stripe",
+							"hex": "#C9FFE8"
+						}
+					]
+				},
+				"1121": {
+					"groupid": 1121,
+					"label": "Iris",
+					"order": 2,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Gradient Top",
+							"hex": "#208764"
+						},
+						{
+							"order": 1,
+							"label": "Gradient Middle",
+							"hex": "#4BBAA3"
+						},
+						{
+							"order": 2,
+							"label": "Gradient Bottom",
+							"hex": "#7BEEAC"
+						}
+					]
+				},
+				"1122": {
+					"groupid": 1122,
+					"label": "Cutie Mark",
+					"order": 3,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Fill 1",
+							"hex": "#FAFA8A"
+						},
+						{
+							"order": 1,
+							"label": "Fill 2",
+							"hex": "#FAB92B"
+						},
+						{
+							"order": 2,
+							"label": "Fill 3",
+							"hex": "#F5A830"
+						}
+					]
+				}
 			},
 			"TagIDs": [
 				3,
@@ -17028,9 +17120,128 @@
 			"added": "2016-10-10 09:35:07.574368+02",
 			"cm_preview": null,
 			"cm_dir": null,
-			"private": true,
+			"private": false,
 			"ColorGroups": {
-				"_hidden": true
+				"1124": {
+					"groupid": 1124,
+					"label": "Coat",
+					"order": 0,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#95D4B4"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#F5FFF0"
+						},
+						{
+							"order": 2,
+							"label": "Shadow Outline",
+							"hex": "#86BEA2"
+						},
+						{
+							"order": 3,
+							"label": "Shadow Fill",
+							"hex": "#DAE2D5"
+						}
+					]
+				},
+				"1125": {
+					"groupid": 1125,
+					"label": "Mane & Tail",
+					"order": 1,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#6DC3B0"
+						},
+						{
+							"order": 1,
+							"label": "Fill 1",
+							"hex": "#F9FFCB"
+						},
+						{
+							"order": 2,
+							"label": "Fill 2",
+							"hex": "#CEF7D8"
+						},
+						{
+							"order": 3,
+							"label": "Fill 3",
+							"hex": "#D0FBFF"
+						}
+					]
+				},
+				"1126": {
+					"groupid": 1126,
+					"label": "Iris",
+					"order": 2,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Gradient Top",
+							"hex": "#4DB49E"
+						},
+						{
+							"order": 1,
+							"label": "Gradient Bottom",
+							"hex": "#AEF1E8"
+						},
+						{
+							"order": 2,
+							"label": "Highlight Top",
+							"hex": "#D8F9ED"
+						},
+						{
+							"order": 3,
+							"label": "Highlight Bottom",
+							"hex": "#F0FFF9"
+						}
+					]
+				},
+				"1127": {
+					"groupid": 1127,
+					"label": "Cutie Mark",
+					"order": 3,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Star",
+							"hex": "#FBEA98"
+						},
+						{
+							"order": 1,
+							"label": "Fill 1",
+							"hex": "#FFD163"
+						},
+						{
+							"order": 2,
+							"label": "Fill 2",
+							"hex": "#FAB34A"
+						}
+					]
+				},
+				"1134": {
+					"groupid": 1134,
+					"label": "Hair band (Filly)",
+					"order": 4,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#267E98"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#269AAB"
+						}
+					]
+				}
 			},
 			"TagIDs": [
 				3,
