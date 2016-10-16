@@ -258,7 +258,7 @@ HTML;
 		}
 
 		const
-			CLEAR_PREVIEW = 'preview.png',
+			CLEAR_PREVIEW = 'preview.svg',
 			CLEAR_PALETTE = 'palette.png',
 			CLEAR_CMDIR = 'cmdir.svg',
 			CLEAR_SPRITE = 'sprite.png',
