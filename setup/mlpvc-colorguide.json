@@ -32742,6 +32742,27 @@
 				419
 			],
 			"RelatedAppearances": []
+		},
+		"215": {
+			"id": 215,
+			"order": null,
+			"label": "Rainbow Dash's Bomber Jacket",
+			"notes": "",
+			"cm_favme": null,
+			"ishuman": false,
+			"added": "2016-10-15 17:38:59.596738+02",
+			"cm_preview": null,
+			"cm_dir": null,
+			"private": true,
+			"ColorGroups": {
+				"_hidden": true
+			},
+			"TagIDs": [
+				25,
+				96,
+				421
+			],
+			"RelatedAppearances": []
 		}
 	},
 	"Tags": {
@@ -32902,7 +32923,7 @@
 			"name": "rainbow dash",
 			"title": null,
 			"type": "char",
-			"uses": 4,
+			"uses": 5,
 			"synonym_of": null
 		},
 		"26": {
@@ -33430,7 +33451,7 @@
 			"name": "outfit",
 			"title": "Alternative character outfits",
 			"type": null,
-			"uses": 24,
+			"uses": 25,
 			"synonym_of": null
 		},
 		"97": {
@@ -35854,7 +35875,7 @@
 			"name": "s06e24",
 			"title": null,
 			"type": "ep",
-			"uses": 3,
+			"uses": 4,
 			"synonym_of": null
 		},
 		"422": {

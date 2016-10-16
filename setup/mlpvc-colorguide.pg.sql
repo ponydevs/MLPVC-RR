@@ -481,14 +481,15 @@ All other body and mane/tail colors remain the same.', NULL, false, '2016-09-24 
 (211, 202, 'Changeling Armor', '', NULL, false, '2016-10-08 18:31:05.604404+02', NULL, NULL, true),
 (212, 104, 'Sky Stinger', '', NULL, false, '2016-10-10 09:34:27.424468+02', NULL, NULL, true),
 (213, 105, 'Vapor Trail', '', NULL, false, '2016-10-10 09:35:07.574368+02', NULL, NULL, true),
-(214, 106, 'Angel Wings', '', NULL, false, '2016-10-10 09:38:59.135126+02', NULL, NULL, true);
+(214, 106, 'Angel Wings', '', NULL, false, '2016-10-10 09:38:59.135126+02', NULL, NULL, true),
+(215, NULL, 'Rainbow Dash''s Bomber Jacket', '', NULL, false, '2016-10-15 17:38:59.596738+02', NULL, NULL, true);
 
 
 --
 -- Name: appearances_id_seq; Type: SEQUENCE SET; Schema: public; Owner: mlpvc-rr
 --
 
-SELECT pg_catalog.setval('appearances_id_seq', 214, true);
+SELECT pg_catalog.setval('appearances_id_seq', 215, true);
 
 
 --
@@ -6335,6 +6336,7 @@ INSERT INTO tagged VALUES
 (25, 144),
 (25, 156),
 (25, 187),
+(25, 215),
 (26, 6),
 (26, 201),
 (26, 203),
@@ -6499,6 +6501,7 @@ INSERT INTO tagged VALUES
 (96, 206),
 (96, 207),
 (96, 211),
+(96, 215),
 (98, 62),
 (99, 22),
 (99, 26),
@@ -6864,6 +6867,7 @@ INSERT INTO tagged VALUES
 (421, 212),
 (421, 213),
 (421, 214),
+(421, 215),
 (422, 206),
 (422, 208),
 (422, 209),
@@ -6908,7 +6912,7 @@ INSERT INTO tags VALUES
 (22, 'applejack', NULL, 'char', 2, NULL),
 (23, 'pinkie pie', NULL, 'char', 2, NULL),
 (24, 'fluttershy', NULL, 'char', 2, NULL),
-(25, 'rainbow dash', NULL, 'char', 4, NULL),
+(25, 'rainbow dash', NULL, 'char', 5, NULL),
 (26, 'rarity', NULL, 'char', 3, NULL),
 (27, 'wonderbolt', 'Wonderbolt characters', 'cat', 9, NULL),
 (28, 'parent', 'Parents of other characters', 'cat', 8, NULL),
@@ -6974,7 +6978,7 @@ INSERT INTO tags VALUES
 (93, 'rara', NULL, 'char', 0, 158),
 (94, 's05e24', NULL, 'ep', 3, NULL),
 (95, 'svengallop', NULL, 'char', 1, NULL),
-(96, 'outfit', 'Alternative character outfits', NULL, 24, NULL),
+(96, 'outfit', 'Alternative character outfits', NULL, 25, NULL),
 (97, 's05e08', NULL, 'ep', 0, NULL),
 (98, 'sunburst', NULL, 'char', 1, NULL),
 (99, 's05e26', NULL, 'ep', 5, NULL),
@@ -7277,7 +7281,7 @@ INSERT INTO tags VALUES
 (418, 'blue note', NULL, 'char', 1, NULL),
 (419, 's06e22', NULL, 'ep', 5, NULL),
 (420, 's06e23', NULL, 'ep', 1, NULL),
-(421, 's06e24', NULL, 'ep', 3, NULL),
+(421, 's06e24', NULL, 'ep', 4, NULL),
 (422, 's06e25', NULL, 'ep', 5, NULL),
 (423, 'gladmane', NULL, 'char', 1, NULL),
 (424, 'alternate pony colors', 'For alternate colors of existing ponies (eg discorded, equalized, etc.)', 'cat', 2, NULL),
