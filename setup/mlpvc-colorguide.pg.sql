@@ -210,7 +210,12 @@ ALTER TABLE ONLY tags ALTER COLUMN tid SET DEFAULT nextval('tags_tid_seq'::regcl
 --
 
 INSERT INTO appearance_relations VALUES
-(57, 191);
+(57, 191),
+(118, 7),
+(118, 125),
+(118, 126),
+(126, 7),
+(126, 118);
 
 
 --
@@ -481,8 +486,8 @@ All other body and mane/tail colors remain the same.', NULL, false, '2016-09-24 
 (211, 202, 'Changeling Armor', '', NULL, false, '2016-10-08 18:31:05.604404+02', NULL, NULL, true),
 (212, 104, 'Sky Stinger', '', NULL, false, '2016-10-10 09:34:27.424468+02', NULL, NULL, false),
 (213, 105, 'Vapor Trail', '', NULL, false, '2016-10-10 09:35:07.574368+02', NULL, NULL, false),
-(214, 106, 'Angel Wings', '', NULL, false, '2016-10-10 09:38:59.135126+02', NULL, NULL, true),
-(215, NULL, 'Rainbow Dash''s Bomber Jacket', '', NULL, false, '2016-10-15 17:38:59.596738+02', NULL, NULL, true);
+(214, 106, 'Angel Wings', '', NULL, false, '2016-10-10 09:38:59.135126+02', NULL, NULL, false),
+(215, NULL, 'Rainbow Dash''s Bomber Jacket', '', NULL, false, '2016-10-15 17:38:59.596738+02', NULL, NULL, false);
 
 
 --
@@ -1498,15 +1503,19 @@ INSERT INTO colorgroups VALUES
 (1130, 214, 'Mane & Tail', 1),
 (1131, 214, 'Iris', 2),
 (1132, 214, 'Cutie Mark', 3),
-(1133, 214, 'Magic', 4),
-(1134, 213, 'Hair band (Filly)', 4);
+(1134, 213, 'Hair band (Filly)', 4),
+(1135, 214, 'Bow and Bangles', 4),
+(1136, 215, 'Jacket', 1),
+(1137, 215, 'Wonderbolts Badge', 2),
+(1138, 215, 'Name Badges', 3),
+(1139, 215, 'Rainbow Crash Badge', 4);
 
 
 --
 -- Name: colorgroups_groupid_seq; Type: SEQUENCE SET; Schema: public; Owner: mlpvc-rr
 --
 
-SELECT pg_catalog.setval('colorgroups_groupid_seq', 1134, true);
+SELECT pg_catalog.setval('colorgroups_groupid_seq', 1139, true);
 
 
 --
@@ -5827,22 +5836,58 @@ INSERT INTO colors VALUES
 (1127, 0, 'Star', '#FBEA98'),
 (1127, 1, 'Fill 1', '#FFD163'),
 (1127, 2, 'Fill 2', '#FAB34A'),
-(1129, 0, 'Outline', NULL),
-(1129, 1, 'Fill', NULL),
-(1129, 2, 'Shadow Outline', NULL),
-(1129, 3, 'Shadow Fill', NULL),
-(1130, 4, 'Outline', NULL),
-(1130, 5, 'Fill', NULL),
-(1131, 6, 'Gradient Top', NULL),
-(1131, 7, 'Gradient Middle', NULL),
-(1131, 8, 'Gradient Bottom', NULL),
-(1131, 9, 'Highlight Top', NULL),
-(1131, 10, 'Highlight Bottom', NULL),
-(1132, 11, 'Fill 1', NULL),
-(1132, 12, 'Fill 2', NULL),
-(1133, 13, 'Aura', NULL),
+(1129, 0, 'Outline', '#A27A73'),
+(1129, 1, 'Fill', '#F0E3DB'),
+(1129, 2, 'Shadow Outline', '#7B3F3B'),
+(1129, 3, 'Shadow Fill', '#7B3F3B'),
+(1130, 0, 'Outline', '#7B3F3B'),
+(1130, 1, 'Fill', '#CFACA1'),
+(1130, 2, 'Stripe', '#F34C6C'),
+(1131, 0, 'Gradient Top', '#235B87'),
+(1131, 1, 'Gradient Middle', '#42ADDE'),
+(1131, 2, 'Gradient Bottom', '#8DF2ED'),
+(1131, 3, 'Highlight Top', '#6EDAE8'),
+(1131, 4, 'Highlight Bottom', '#E0F8FF'),
+(1132, 0, 'Heart', '#F44C6C'),
+(1132, 1, 'Wings', '#F8FFF8'),
 (1134, 0, 'Outline', '#267E98'),
-(1134, 1, 'Fill', '#269AAB');
+(1134, 1, 'Fill', '#269AAB'),
+(1135, 0, 'Bow Outline', '#932E4C'),
+(1135, 1, 'Bow Fill', '#F24C6E'),
+(1135, 2, 'Bow Shadow Fill', '#C14367'),
+(1135, 3, 'Bangles Outline', '#E3437A'),
+(1135, 4, 'Bangles Fill', '#F24C6E'),
+(1136, 0, 'Outline', '#324649'),
+(1136, 1, 'Fill', '#507276'),
+(1136, 2, 'Shadow Outline', '#273C3E'),
+(1136, 3, 'Shadow Fill', '#446063'),
+(1136, 4, 'Fur Outline', '#3F585B'),
+(1136, 5, 'Fur and Hem/Cuff Fill', '#AAAE83'),
+(1136, 6, 'Shadow Fur Fill', '#8A8A6A'),
+(1136, 7, 'Shadow Hem Fill', '#8B956F'),
+(1136, 8, 'Sleeve Patch', '#BFC99B'),
+(1136, 9, 'Zipper Outline', '#7AACAC'),
+(1136, 10, 'Zipper Fill', '#C2E2E2'),
+(1137, 0, 'Outline', '#8D6E20'),
+(1137, 1, 'Fill', '#E6D43D'),
+(1137, 2, 'Shine', '#F0E89A'),
+(1138, 0, 'Border Outline', '#3F585B'),
+(1138, 1, 'Border Fill', '#A9AD81'),
+(1138, 2, 'Inside Outline', '#717456'),
+(1138, 3, 'Inside FIll', '#FBFFF6'),
+(1138, 4, 'Writing', '#3F585B'),
+(1139, 0, 'Outline', '#9BB5B5'),
+(1139, 1, 'Background', '#F29982'),
+(1139, 2, 'Stop Sign Fill', '#C01123'),
+(1139, 3, 'Stop Sign Text', '#FFFFFF'),
+(1139, 4, 'Stop Sign Post', '#936647'),
+(1139, 5, 'Crash Fill 1', '#FFE178'),
+(1139, 6, 'Crash Fill 2', '#F8B573'),
+(1139, 7, 'RD Cutie Mark Stripe 1', '#1997D3'),
+(1139, 8, 'RD Cutie Mark Stripe 2', '#FFE868'),
+(1139, 9, 'RD Cutie Mark Stripe 3', '#ED3F42'),
+(1139, 10, 'RD Cutie Mark Cloud Fill', '#FAFAFA'),
+(1139, 11, 'RD Cutie Mark Cloud Outline', '#A0A0A0');
 
 
 --
