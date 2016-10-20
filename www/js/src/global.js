@@ -362,7 +362,7 @@
 				$.Dialog.fail(false, 'The request failed due to an internal server error. If this persists, please <a class="send-feedback">let us know</a>!');
 			},
 			503: function(){
-				$.Dialog.fail(false, 'The request failed because the server is temporarily unavailable. This whouldn\'t take too long, please try again in a few seconds.<br>If the problem still persist after a few minutes, please let us know by clicking the "Send feedback" link in the footer.');
+				$.Dialog.fail(false, 'The request failed because the server is temporarily unavailable. This shouldn\'t take too long, please try again in a few seconds.<br>If the problem still persist after a few minutes, please let us know by clicking the "Send feedback" link in the footer.');
 			}
 		};
 	$.ajaxSetup({
