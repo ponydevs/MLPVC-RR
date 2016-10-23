@@ -94,7 +94,12 @@ use Exceptions\cURLRequestException;
 			$cacheExhausted = self::$_MASS_CACHE_USED > self::$_MASS_CACHE_LIMIT;
 			$cacheExpired = empty($Deviation['updated_on']) ? true : strtotime($Deviation['updated_on'])+(Time::$IN_SECONDS['hour']*5) < time();
 
-			if (!self::$_CACHE_BAILOUT && (empty($Deviation) && (($mass && !$cacheExhausted) || (!$mass && $cacheExpired)))){
+			$lastRequestSuccessful = !self::$_CACHE_BAILOUT;
+			$localDataMissing = empty($Deviation);
+			$massCachingWithinLimit = $mass && !$cacheExhausted;
+			$notMassCachingAndCacheExpired = !$mass && $cacheExpired;
+
+			if ($lastRequestSuccessful && ($localDataMissing || (($massCachingWithinLimit && $cacheExpired) || $notMassCachingAndCacheExpired))){
 				try {
 					$json = self::oEmbed($ID, $type);
 				}
