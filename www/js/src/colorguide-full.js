@@ -29,9 +29,9 @@ DocReady.push(function ColorguideFull(){
 		if (!$ReorderBtn.hasClass('typcn-tick')){
 			$ReorderBtn.removeClass('typcn-arrow-unsorted darkblue').addClass('typcn-tick green').html('Save');
 			$fullList.addClass('sorting').children().each(function(){
-				let $names = $(this).children('div');
-				$names.children().moveAttr('href','data-href');
-				new Sortable($names.get(0), {
+				let $names = $(this).children('ul');
+				$names.children().children().moveAttr('href','data-href');
+				Sortable.create($names.get(0), {
 				    ghostClass: "moving",
 				    scroll: true,
 				    animation: 150,
@@ -42,8 +42,8 @@ DocReady.push(function ColorguideFull(){
 			$.Dialog.wait('Re-ordering appearances');
 
 			let list = [];
-			$fullList.children().children('div').children().each(function(){
-				list.push($(this).attr('data-href').split('/').pop());
+			$fullList.children().children('ul').children().each(function(){
+				list.push($(this).children().attr('data-href').split('/').pop().replace(/^(\d+)\D.*$/,'$1'));
 			});
 
 			$.post('/cg/full?reorder', {list:list.join(',')}, $.mkAjaxHandler(function(){

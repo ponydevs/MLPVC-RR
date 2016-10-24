@@ -12,6 +12,8 @@
 			3  => 'Pegasi',
 			2  => 'Earth Ponies',
 			10 => 'Pets',
+			437 => 'Non-pony Characters',
+			96 => 'Outfits & Clothing',
 			// add other tags here
 			64 => 'Objects',
 			-1 => 'Other',
