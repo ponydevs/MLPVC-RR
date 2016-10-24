@@ -47,7 +47,7 @@
 					$PrevFirstLetter = '';
 					foreach ($Appearances as $p){
 						$FirstLetter = strtoupper($p['label'][0]);
-						if ($FirstLetter !== $PrevFirstLetter){
+						if (!is_numeric($FirstLetter) ? ($FirstLetter !== $PrevFirstLetter) : !is_numeric($PrevFirstLetter)){
 							if ($PrevFirstLetter !== ''){
 								$HTML = rtrim($HTML, ', ')."</ul></section>";
 							}

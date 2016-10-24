@@ -16,7 +16,7 @@ DocReady.push(function ColorguideFull(){
 			if (!this.status) return $.Dialog.fail(false, this.message);
 
 			$fullList.html(this.html);
-			$ReorderBtn.attr('disabled', !val.length);
+			$ReorderBtn.attr('disabled', Boolean(val.length));
 			history.replaceState(history.state,'',stateUrl);
 			$.Dialog.close();
 		}));
