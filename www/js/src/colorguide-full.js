@@ -3,7 +3,8 @@ DocReady.push(function ColorguideFull(){
 	'use strict';
 	let $sortBy = $('#sort-by'),
 		$fullList = $('#full-list'),
-		$ReorderBtn = $('#guide-reorder');
+		$ReorderBtn = $('#guide-reorder'),
+		$ReorderCancelBtn = $('#guide-reorder-cancel');
 	$sortBy.on('change',function(){
 		let baseurl = $sortBy.data('baseurl'),
 			val = $sortBy.val(),
@@ -25,18 +26,30 @@ DocReady.push(function ColorguideFull(){
 	if (typeof window.Sortable !== 'function')
 		return;
 
+	$fullList.on('click','.sort-alpha',function(){
+		var $section = $(this).closest('section'),
+			$ul = $section.children('ul');
+		$ul.children().sort(function(a,b){
+			return $(a).text().trim().localeCompare($(b).text().trim());
+		}).appendTo($ul);
+	});
+
 	$ReorderBtn.on('click',function(){
 		if (!$ReorderBtn.hasClass('typcn-tick')){
 			$ReorderBtn.removeClass('typcn-arrow-unsorted darkblue').addClass('typcn-tick green').html('Save');
 			$fullList.addClass('sorting').children().each(function(){
 				let $names = $(this).children('ul');
-				$names.children().children().moveAttr('href','data-href');
-				Sortable.create($names.get(0), {
+				$names.children().each(function(){
+					let $li = $(this);
+					$li.data('orig-index', $li.index());
+				}).children().moveAttr('href','data-href');
+				$names.data('sortable-instance', new Sortable($names.get(0), {
 				    ghostClass: "moving",
-				    scroll: true,
-				    animation: 150,
-				});
+				    animation: 300,
+				}));
 			});
+			$('.sort-alpha').show();
+			$ReorderCancelBtn.removeClass('hidden');
 		}
 		else {
 			$.Dialog.wait('Re-ordering appearances');
@@ -54,5 +67,21 @@ DocReady.push(function ColorguideFull(){
 				$.Dialog.close();
 			}));
 		}
+	});
+
+	$ReorderCancelBtn.on('click',function(){
+		$ReorderBtn.removeClass('typcn-tick green').addClass('typcn-arrow-unsorted darkblue').html('Re-order');
+		$fullList.removeClass('sorting').children().each(function(){
+			let $names = $(this).children('ul');
+			$names.children().sort(function(a, b){
+				a = $(a).data('orig-index');
+				b = $(b).data('orig-index');
+				return a > b ? 1 : (a < b ? -1 : 0);
+			}).appendTo($names).removeData('orig-index').children().moveAttr('data-href', 'href');
+			$names.data('sortable-instance').destroy();
+			$names.removeData('sortable-instance');
+		});
+		$('.sort-alpha').hide();
+		$ReorderCancelBtn.addClass('hidden');
 	});
 });

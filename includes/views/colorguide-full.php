@@ -14,6 +14,7 @@
 		<a class='btn darkblue typcn typcn-arrow-back' href="/cg<?=$EQG?'/eqg':''?>">Back to <?=($EQG?'EQG ':'').$Color?> Guide</a>
 <?php if (Permission::Sufficient('staff') && !$EQG){ ?>
 		<button class='darkblue typcn typcn-arrow-unsorted' id="guide-reorder"<?=!$GuideOrder?' disabled':''?>>Re-order</button>
+		<button class='red typcn typcn-times hidden' id="guide-reorder-cancel">Cancel</button>
 <?php } ?>
 		<a class='btn blue typcn typcn-world' href="/cg<?=($EQG?'':'/eqg')?>/full">List of <?=$EQG?'Ponies':'Equestria Girls'?></a>
 		<a class='btn darkblue typcn typcn-tags' href="/cg/tags">Tags</a>

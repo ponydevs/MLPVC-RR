@@ -23,7 +23,6 @@
 			font-size: 0;
 
 			li > a {
-				color: $HeaderBlue !important;
 				font-size: $fontsize;
 				cursor: move;
 
@@ -37,6 +36,15 @@
 	section {
 		@extend %section;
 
+		h2 > button {
+			margin-left: 1em;
+			display: inline;
+			margin-top: 0;
+			margin-bottom: 0;
+			padding-top: 0;
+			padding-bottom: 0;
+		}
+
 		ul {
 			font-size: $fontsize;
 			list-style: none;
@@ -44,7 +52,8 @@
 			margin: 0;
 
 			li {
-				display: inline;
+				position: relative;
+				display: inline-block;
 
 				&:not(:last-child) a { margin-right: .8em }
 
@@ -52,6 +61,12 @@
 					display: inline-block;
 					padding: 1px 3px;
 					border: 2px solid transparent;
+					margin-bottom: 1px;
+
+					.typcn, .typcn:before {
+						display: inline !important;
+						font-size: 1em !important;
+					}
 				}
 			}
 		}
