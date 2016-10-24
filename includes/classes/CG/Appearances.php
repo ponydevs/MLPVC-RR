@@ -71,8 +71,11 @@
 			return $wrap ? "<ul id='list' class='appearance-list'>$HTML</ul>" : $HTML;
 		}
 
-		static function IsPrivate($Appearance):bool {
-			return !empty($Appearance['private']) && \Permission::Insufficient('staff');
+		static function IsPrivate($Appearance, bool $ignoreStaff = false):bool {
+			$isPrivate = !empty($Appearance['private']);
+			if (!$ignoreStaff && \Permission::Sufficient('staff'))
+				$isPrivate = false;
+			return $isPrivate;
 		}
 
 		/**

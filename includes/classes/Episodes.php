@@ -572,10 +572,12 @@ HTML;
 					$pages = CoreUtils::MakePlural('page', count($TaggedAppearances));
 					$HTML .= "<section class='appearances'><h2>Related <a href='/cg'>$Color Guide</a> $pages</h2>";
 					$LINKS = '<ul>';
+					$isStaff = Permission::Sufficient('staff');
 					foreach ($TaggedAppearances as $p){
 						$safeLabel = \CG\Appearances::GetSafeLabel($p);
-						if (\CG\Appearances::IsPrivate($p))
-							$preview = "<span class='typcn typcn-time color-darkblue'></span> ";
+						if (\CG\Appearances::IsPrivate($p, true)){
+							$preview = "<span class='typcn typcn-".($isStaff?'lock-closed':'time')." color-".(($isStaff?'orange':'darkblue'))."'></span> ";
+						}
 						else {
 							if ($hidePreviews)
 								$preview = '';

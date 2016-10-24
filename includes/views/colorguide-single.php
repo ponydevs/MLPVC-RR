@@ -3,7 +3,11 @@
 	<h1><?=$heading?></h1>
 	<p>from the MLP-VectorClub <a href="/cg"><?=$Color?> Guide</a></p>
 
+<?  if (Permission::Sufficient('staff')){ ?>
+	<div class="notice warn align-center appearance-private-notice"<?=!empty($Appearance['private'])?'':' style="display:none"'?>><p><span class="typcn typcn-lock-closed"></span> <strong>This appearance is currently private (only viewable by staff members)</strong></p></div>
 <?php
+	}
+
 	use DB\User;
 
 	$RenderPath = FSPATH."cg_render/{$Appearance['id']}.png";
