@@ -16328,11 +16328,11 @@
 			"order": 104,
 			"label": "Sky Stinger",
 			"notes": "",
-			"cm_favme": null,
+			"cm_favme": "dam4jo3",
 			"ishuman": false,
 			"added": "2016-10-10 09:34:27.424468+02",
 			"cm_preview": null,
-			"cm_dir": null,
+			"cm_dir": false,
 			"private": false,
 			"ColorGroups": {
 				"1119": {
@@ -31337,9 +31337,337 @@
 			],
 			"RelatedAppearances": []
 		},
+		"217": {
+			"id": 217,
+			"order": 197,
+			"label": "Rainbow Dash's Mechanics Outfit",
+			"notes": "",
+			"cm_favme": null,
+			"ishuman": false,
+			"added": "2016-10-26 15:42:35.268784+02",
+			"cm_preview": null,
+			"cm_dir": null,
+			"private": false,
+			"ColorGroups": {
+				"1149": {
+					"groupid": 1149,
+					"label": "Coveralls",
+					"order": 1,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#644078"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#7E5A9B"
+						},
+						{
+							"order": 2,
+							"label": "Cuff/Pocket/Zipper Fill",
+							"hex": "#72518F"
+						},
+						{
+							"order": 3,
+							"label": "Pinstripe",
+							"hex": "#EB4141"
+						},
+						{
+							"order": 4,
+							"label": "Shadow Outline",
+							"hex": "#543767"
+						},
+						{
+							"order": 5,
+							"label": "Shadow Fill",
+							"hex": "#6A4C85"
+						},
+						{
+							"order": 6,
+							"label": "Shadow Cuff Fill",
+							"hex": "#614279"
+						},
+						{
+							"order": 7,
+							"label": "Shadow Pinstripe",
+							"hex": "#BF3838"
+						},
+						{
+							"order": 8,
+							"label": "Belt Outline",
+							"hex": "#492C68"
+						},
+						{
+							"order": 9,
+							"label": "Belt Fill",
+							"hex": "#5D367F"
+						}
+					]
+				},
+				"1150": {
+					"groupid": 1150,
+					"label": "Hat",
+					"order": 2,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#C52139"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#EB4141"
+						},
+						{
+							"order": 2,
+							"label": "Top/Inside Fill",
+							"hex": "#CF2837"
+						},
+						{
+							"order": 3,
+							"label": "Logo Wing Outline",
+							"hex": "#648ACB"
+						},
+						{
+							"order": 4,
+							"label": "Logo Wing Fill",
+							"hex": "#D2F2F2"
+						},
+						{
+							"order": 5,
+							"label": "Logo Badge Outline",
+							"hex": "#E9CB2F"
+						},
+						{
+							"order": 6,
+							"label": "Logo Badge Fill",
+							"hex": "#FFFF95"
+						}
+					]
+				}
+			},
+			"TagIDs": [
+				25,
+				96,
+				375
+			],
+			"RelatedAppearances": []
+		},
+		"218": {
+			"id": 218,
+			"order": 198,
+			"label": "Applejack's Mechanics Outfit",
+			"notes": "",
+			"cm_favme": null,
+			"ishuman": false,
+			"added": "2016-10-26 16:00:09.021007+02",
+			"cm_preview": null,
+			"cm_dir": null,
+			"private": false,
+			"ColorGroups": {
+				"1151": {
+					"groupid": 1151,
+					"label": "Coveralls",
+					"order": 1,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#496A7D"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#66A2AD"
+						},
+						{
+							"order": 2,
+							"label": "Cuff/Collar/Pocket/Zipper Fill",
+							"hex": "#50859D"
+						},
+						{
+							"order": 3,
+							"label": "Shadow Outline",
+							"hex": "#3C5B68"
+						},
+						{
+							"order": 4,
+							"label": "Shadow Fill",
+							"hex": "#568994"
+						},
+						{
+							"order": 5,
+							"label": "Shadow Cuff Fill",
+							"hex": "#457088"
+						},
+						{
+							"order": 6,
+							"label": "Belt Outline",
+							"hex": "#60844C"
+						},
+						{
+							"order": 7,
+							"label": "Belt Fill",
+							"hex": "#A5CD5A"
+						}
+					]
+				},
+				"1152": {
+					"groupid": 1152,
+					"label": "Hat",
+					"order": 2,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#5E864D"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#A5CD5B"
+						},
+						{
+							"order": 2,
+							"label": "Top/Inside Fill",
+							"hex": "#8DAD5F"
+						},
+						{
+							"order": 3,
+							"label": "Logo Apple Stem",
+							"hex": "#61BA49"
+						},
+						{
+							"order": 4,
+							"label": "Logo Apple Fill",
+							"hex": "#ED4040"
+						},
+						{
+							"order": 5,
+							"label": "Logo Heart Fill",
+							"hex": "#FF9281"
+						}
+					]
+				}
+			},
+			"TagIDs": [
+				22,
+				96,
+				272,
+				375
+			],
+			"RelatedAppearances": []
+		},
+		"219": {
+			"id": 219,
+			"order": 199,
+			"label": "Rarity's Mechanics Outfit",
+			"notes": "",
+			"cm_favme": null,
+			"ishuman": false,
+			"added": "2016-10-26 16:09:27.776513+02",
+			"cm_preview": null,
+			"cm_dir": null,
+			"private": false,
+			"ColorGroups": {
+				"1153": {
+					"groupid": 1153,
+					"label": "Coveralls",
+					"order": 1,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#0066B7"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#0098DE"
+						},
+						{
+							"order": 2,
+							"label": "Cuff/Collar/Zipper Fill",
+							"hex": "#007ECC"
+						},
+						{
+							"order": 3,
+							"label": "Pocket/Gem Logo Fill",
+							"hex": "#7CD2F5"
+						},
+						{
+							"order": 4,
+							"label": "Shadow Outline",
+							"hex": "#005EA6"
+						},
+						{
+							"order": 5,
+							"label": "Shadow Fill",
+							"hex": "#0087C8"
+						},
+						{
+							"order": 6,
+							"label": "Shadow Cuff Fill",
+							"hex": "#056FB6"
+						},
+						{
+							"order": 7,
+							"label": "Gem Logo Strokes",
+							"hex": "#0B69A7"
+						},
+						{
+							"order": 8,
+							"label": "Belt Outline",
+							"hex": "#00569D"
+						},
+						{
+							"order": 9,
+							"label": "Belt Fill",
+							"hex": "#0A70B4"
+						}
+					]
+				},
+				"1154": {
+					"groupid": 1154,
+					"label": "Hat",
+					"order": 2,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#489EDB"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#7DD0F6"
+						},
+						{
+							"order": 2,
+							"label": "Top/Inside Fill",
+							"hex": "#5CB0E5"
+						},
+						{
+							"order": 3,
+							"label": "Strap Holes",
+							"hex": "#0097E0"
+						}
+					]
+				}
+			},
+			"TagIDs": [
+				26,
+				96,
+				375
+			],
+			"RelatedAppearances": []
+		},
 		"33": {
 			"id": 33,
-			"order": 197,
+			"order": 200,
 			"label": "Alicorn Amulet",
 			"notes": "",
 			"cm_favme": null,
@@ -31532,7 +31860,7 @@
 		},
 		"86": {
 			"id": 86,
-			"order": 198,
+			"order": 201,
 			"label": "Scorpan's Medallion",
 			"notes": "",
 			"cm_favme": null,
@@ -31611,7 +31939,7 @@
 		},
 		"94": {
 			"id": 94,
-			"order": 199,
+			"order": 202,
 			"label": "Party Cannon",
 			"notes": "",
 			"cm_favme": null,
@@ -31741,7 +32069,7 @@
 		},
 		"115": {
 			"id": 115,
-			"order": 200,
+			"order": 203,
 			"label": "Fake Timberwolf",
 			"notes": "",
 			"cm_favme": null,
@@ -31951,7 +32279,7 @@
 		},
 		"154": {
 			"id": 154,
-			"order": 201,
+			"order": 204,
 			"label": "Twilight's Crown",
 			"notes": "From S4 onward",
 			"cm_favme": null,
@@ -32004,7 +32332,7 @@
 		},
 		"156": {
 			"id": 156,
-			"order": 202,
+			"order": 205,
 			"label": "Rainbow Dash's Bandaids (Newbie Dash)",
 			"notes": "Sampled from S6E7",
 			"cm_favme": null,
@@ -32072,7 +32400,7 @@
 		},
 		"182": {
 			"id": 182,
-			"order": 203,
+			"order": 206,
 			"label": "Rainbow Cookie Zombie Effects",
 			"notes": "Colors of this effect are not muted even if the pony's coat ends up muted. This effect is dimmed with any night filters.\nTo get the muted coat/mane/other colors for any character, take the RGB value of the color, average the R, G, B values, and adjust each RGB value 50% of the way to that average. For example, if RGB is 120, 60, 120, the average is 100. The R value of 120 would then move 50%*(120-100) or 10 (ending up at 110), the G value of 60 would move 50%*(100-60) or 20 (ending up at 80).",
 			"cm_favme": null,
@@ -32133,7 +32461,7 @@
 		},
 		"199": {
 			"id": 199,
-			"order": 204,
+			"order": 207,
 			"label": "Hypnotized Mane 6 Eyes",
 			"notes": "Eye colors for the Mane 6 (except Twilight) due to Starlight Glimmer's spell from S6E21.\nAll other body and mane/tail colors remain the same.",
 			"cm_favme": null,
@@ -32919,7 +33247,7 @@
 			"name": "applejack",
 			"title": null,
 			"type": "char",
-			"uses": 2,
+			"uses": 3,
 			"synonym_of": null
 		},
 		"23": {
@@ -32943,7 +33271,7 @@
 			"name": "rainbow dash",
 			"title": null,
 			"type": "char",
-			"uses": 5,
+			"uses": 6,
 			"synonym_of": null
 		},
 		"26": {
@@ -32951,7 +33279,7 @@
 			"name": "rarity",
 			"title": null,
 			"type": "char",
-			"uses": 3,
+			"uses": 4,
 			"synonym_of": null
 		},
 		"27": {
@@ -33471,7 +33799,7 @@
 			"name": "outfit",
 			"title": "Alternative character outfits",
 			"type": null,
-			"uses": 26,
+			"uses": 29,
 			"synonym_of": null
 		},
 		"97": {
@@ -35535,7 +35863,7 @@
 			"name": "s06e14",
 			"title": null,
 			"type": "ep",
-			"uses": 2,
+			"uses": 5,
 			"synonym_of": null
 		},
 		"376": {
