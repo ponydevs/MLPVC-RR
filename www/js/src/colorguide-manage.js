@@ -157,12 +157,62 @@ DocReady.push(function ColorguideManage(){
 
 										if (data.linked && data.linked.length)
 											$.each(data.linked,function(_, el){
-												$selectLinked.append($.mk('option').attr('value', el.id).text(el.label));
+												let $option = $.mk('option').attr('value', el.id).text(el.label);
+												if (el.mutual)
+													$option.attr('data-mutual', true).text('(M) '+$option.text());
+												$selectLinked.append($option);
 											});
 										if (data.unlinked && data.unlinked.length)
 											$.each(data.unlinked,function(_, el){
 												$selectUnlinked.append($.mk('option').attr('value', el.id).text(el.label));
 											});
+
+										let $mutualness = $.mk('div').attr('class','mutual-fieldset-wrap').html(
+											`<fieldset>
+												<legend data-placeholder="Relation type"></legend>
+												<div class="radio-group">
+													<label><input type="radio" class="mutual-checkbox" name="mutual" value="1" required disabled><span>Mutual</span></label>
+													<label><input type="radio" class="mutual-checkbox" name="mutual" value="0" required disabled><span>One way</span></label>
+												</div>
+												<div class="notice"></div>
+											</fieldset>`),
+											$mutualNotice = $mutualness.find('.notice'),
+											$mutualLegend = $mutualness.find('legend'),
+											mutualTextRegex = /^\(M\) /;
+
+										$mutualness.find('input').on('change click',function(){
+											let $this = $(this);
+											if ($this.hasAttr('disabled'))
+												return;
+
+											let $selected = $selectLinked.children(':selected'),
+												mutual = $this.is(':checked') && $this.attr('value') === '1',
+												hasDataAttr = $selected.hasAttr('data-mutual');
+											console.log($selected, mutual, hasDataAttr);
+											if (mutual){
+												if (!hasDataAttr)
+													$selected.attr('data-mutual', true).text('(M) '+$selected.text());
+											}
+											else if (hasDataAttr)
+												$selected.removeAttr('data-mutual').text($selected.text().replace(mutualTextRegex,''));
+										});
+
+										$selectLinked.on('change',function(){
+											let $selected = $selectLinked.children(':selected');
+											if ($selected.length === 1){
+												$mutualness.find('input').enable();
+												$mutualNotice.hide();
+												$mutualLegend.text('Relation to '+($selected.text().replace(mutualTextRegex,'')));
+												$mutualness.find(`input[value="${$selected.hasAttr('data-mutual')?'1':'0'}"]`).prop('checked', true);
+											}
+											else {
+												$mutualness.find('input').disable();
+												$mutualLegend.empty();
+												if ($selected.length > 1)
+													$mutualNotice.attr('class','notice fail').text('Multiple appearances are selected').show();
+												else $mutualNotice.attr('class','notice info').text('Select a relation on the left to change the type').show();
+											}
+										}).triggerHandler('change');
 
 										$GuideRelationEditorForm.append(
 											$.mk('div').attr('class','split-select-wrap').append(
@@ -184,18 +234,29 @@ DocReady.push(function ColorguideManage(){
 													})
 												),
 												$.mk('div').attr('class','split-select').append("<span>Available</span>",$selectUnlinked)
-											)
+											),
+											$mutualness
 										);
 
 										$.Dialog.request(false,$GuideRelationEditorForm,'Save', function($form){
 											$form.on('submit', function(e){
 												e.preventDefault();
 
-												let ids = [];
-												$selectLinked.children().each(function(_, el){ ids.push(el.value) });
+												let ids = [],
+													mutuals = [];
+												$selectLinked.children().each(function(_, el){
+													let $el = $(el),
+														val = $el.attr('value');
+													ids.push(val);
+													if ($el.hasAttr('data-mutual'))
+														mutuals.push(val);
+												});
 												$.Dialog.wait(false, 'Saving changes');
 
-												$.post(`/cg/setrelations/${ponyID}`,{ids:ids.join(',')},$.mkAjaxHandler(function(){
+												$.post(`/cg/setrelations/${ponyID}`,{
+													ids: ids.join(','),
+													mutuals: mutuals.join(','),
+												},$.mkAjaxHandler(function(){
 													if (!this.status) return $.Dialog.fail(false, this.message);
 
 													if (this.section){

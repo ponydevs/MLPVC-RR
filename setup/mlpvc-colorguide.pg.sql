@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 9.5.4
--- Dumped by pg_dump version 9.5.4
+-- Dumped from database version 9.5.5
+-- Dumped by pg_dump version 9.5.5
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -39,7 +39,8 @@ SET default_with_oids = false;
 
 CREATE TABLE appearance_relations (
     source integer NOT NULL,
-    target integer NOT NULL
+    target integer NOT NULL,
+    mutual boolean DEFAULT false NOT NULL
 );
 
 
@@ -210,14 +211,15 @@ ALTER TABLE ONLY tags ALTER COLUMN tid SET DEFAULT nextval('tags_tid_seq'::regcl
 --
 
 INSERT INTO appearance_relations VALUES
-(57, 191),
-(118, 7),
-(118, 125),
-(118, 126),
-(118, 216),
-(126, 7),
-(126, 118),
-(216, 118);
+(57, 191, false),
+(118, 7, false),
+(118, 125, false),
+(118, 126, false),
+(118, 216, false),
+(126, 7, false),
+(126, 118, false),
+(156, 5, false),
+(216, 118, false);
 
 
 --

@@ -409,7 +409,7 @@
 					$RelatedAppearances = \CG\Appearances::GetRelated($Appearance['id']);
 					$RelatedAppearanceIDs = array();
 					foreach ($RelatedAppearances as $p)
-						$RelatedAppearanceIDs[$p['id']] = true;
+						$RelatedAppearanceIDs[$p['id']] = $p['mutual'];
 
 					$Appearances = $CGDb->where('ishuman', $EQG)->where('"id" NOT IN (0,'.$Appearance['id'].')')->orderBy('label','ASC')->get('appearances',null,'id,label');
 
@@ -417,8 +417,12 @@
 						'unlinked' => array(),
 						'linked' => array(),
 					);
-					foreach ($Appearances as $a)
-						$Sorted[isset($RelatedAppearanceIDs[$a['id']]) ? 'linked' : 'unlinked'][] = $a;
+					foreach ($Appearances as $a){
+						$linked = isset($RelatedAppearanceIDs[$a['id']]);
+						if ($linked)
+							$a['mutual'] = $RelatedAppearanceIDs[$a['id']];
+						$Sorted[$linked ? 'linked' : 'unlinked'][] = $a;
+					}
 
 					Response::Done($Sorted);
 				break;
@@ -426,16 +430,46 @@
 					$AppearanceIDs = (new Input('ids','int[]',array(
 						Input::IS_OPTIONAL => true,
 						Input::CUSTOM_ERROR_MESSAGES => array(
-							Input::ERROR_MISSING => 'Missing appearance ID list',
 							Input::ERROR_INVALID => 'Appearance ID list is invalid',
 						)
 					)))->out();
+					$MutualIDs = (new Input('mutuals','int[]',array(
+						Input::IS_OPTIONAL => true,
+						Input::CUSTOM_ERROR_MESSAGES => array(
+							Input::ERROR_INVALID => 'Mutial relation ID list is invalid',
+						)
+					)))->out();
 
-					$CGDb->where('source', $Appearance['id'])->delete('appearance_relations');
+					$appearances = [];
 					if (!empty($AppearanceIDs))
 						foreach ($AppearanceIDs as $id){
-							if (!$CGDb->where('source', $Appearance['id'])->where('target', $id)->has('appearance_relations'))
-								@$CGDb->insert('appearance_relations', array('source' => $Appearance['id'], 'target' => $id));
+							$appearances[$id] = true;
+						};
+
+					$mutuals = array();
+					if (!empty($MutualIDs))
+						foreach ($MutualIDs as $id){
+							$mutuals[$id] = true;
+							unset($appearances[$id]);
+						};
+
+					$CGDb->where('source', $Appearance['id'])->delete('appearance_relations');
+					if (!empty($appearances))
+						foreach ($appearances as $id => $_){
+							@$CGDb->insert('appearance_relations', array(
+								'source' => $Appearance['id'],
+								'target' => $id,
+								'mutual' => isset($mutuals[$id]),
+							));
+						};
+					$CGDb->where('target', $Appearance['id'])->where('mutual', true)->delete('appearance_relations');
+					if (!empty($mutuals))
+						foreach ($MutualIDs as $id){
+							@$CGDb->insert('appearance_relations', array(
+								'source' => $id,
+								'target' => $Appearance['id'],
+								'mutual' => true,
+							));
 						};
 
 					Response::Done(array('section' => \CG\Appearances::GetRelatedHTML(\CG\Appearances::GetRelated($Appearance['id']))));

@@ -512,11 +512,21 @@ HTML;
 			global $CGDb;
 
 			return $CGDb->rawQuery(
-				"SELECT p.id, p.label
-				FROM appearance_relations r
-				LEFT JOIN appearances p ON p.id = r.target
-				WHERE r.source = ?
-				ORDER BY p.\"order\"", array($AppearanceID));
+				/** @lang PostgreSQL */
+				"(
+					SELECT p.id, p.order, p.label, r.mutual
+					FROM appearance_relations r
+					LEFT JOIN appearances p ON p.id = r.target
+					WHERE r.source = :id
+				)
+				UNION ALL
+				(
+					SELECT p.id, p.order, p.label, r.mutual
+					FROM appearance_relations r
+					LEFT JOIN appearances p ON p.id = r.source
+					WHERE r.target = :id && mutual = true
+				)
+				ORDER BY \"order\"", array(':id' => $AppearanceID));
 		}
 
 		static function GetRelatedHTML(array $Related):string {

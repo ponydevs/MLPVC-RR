@@ -135,3 +135,11 @@
 		}
 	}
 }
+
+#guide-relation-editor {
+	.mutual-fieldset-wrap legend {
+		&:empty:before {
+			content: attr(data-placeholder);
+		}
+	}
+}
