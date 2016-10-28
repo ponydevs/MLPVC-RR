@@ -1100,7 +1100,7 @@
 		$GuideOrder = !isset($_REQUEST['alphabetically']) && !$EQG;
 		if (!$GuideOrder)
 			$CGDb->orderBy('label','ASC');
-		$Appearances = \CG\Appearances::Get($EQG,null,'id,label');
+		$Appearances = \CG\Appearances::Get($EQG,null,'id,label,private');
 
 		if (isset($_REQUEST['ajax']))
 			Response::Done(array('html' => CGUtils::GetFullListHTML($Appearances, $GuideOrder, NOWRAP)));

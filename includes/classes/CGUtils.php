@@ -80,8 +80,12 @@
 				$SpriteURL = \CG\Appearances::GetSpriteURL($p['id']);
 				if (!empty($SpriteURL)){
 					$sprite = "<span class='typcn typcn-image' title='Has a sprite'></span>&nbsp;";
-					$url .= "' class='color-green";
+					$class = 'color-green';
 				}
+				if (!empty($p['private']))
+					$class = 'color-orange';
+				if (!empty($class))
+					$url .= "' class='$class";
 			}
 			$HTML .= "<li><a href='$url'>$sprite{$p['label']}</a></li>";
 		}
