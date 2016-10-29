@@ -116,7 +116,7 @@
 	}
 	catch (Exception $e){
 		$errcause = 'libmiss';
-		die(require APPATH."views/fatalerr.php");
+		die(require INCPATH."views/fatalerr.php");
 	}
 	$Database = new PostgresDbWrapper('mlpvc-rr');
 	try {
@@ -125,7 +125,7 @@
 	catch (Exception $e){
 		unset($Database);
 		$errcause = 'db';
-		die(require APPATH."views/fatalerr.php");
+		die(require INCPATH."views/fatalerr.php");
 	}
 	$CGDb = new PostgresDbWrapper('mlpvc-colorguide');
 

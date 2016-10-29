@@ -3,7 +3,7 @@
 use DB\Episode;
 /** @var $Episode Episode */
 
-if (!POST_REQUEST)
+	if (!POST_REQUEST)
 		Episodes::LoadPage();
 
 	CSRFProtection::Protect();
