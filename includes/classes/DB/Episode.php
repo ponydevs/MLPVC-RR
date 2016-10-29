@@ -11,6 +11,7 @@ class Episode extends AbstractFillable {
 		$season,
 		$episode,
 		$no,
+		$score,
 		$willairts;
 	/** @var string */
 	public
@@ -32,6 +33,7 @@ class Episode extends AbstractFillable {
 
 		$this->isMovie = $this->season === 0;
 		$this->twoparter = !empty($this->twoparter);
+		$this->_formatScore();
 	}
 
 	/**
@@ -147,5 +149,20 @@ class Episode extends AbstractFillable {
 		if (!$this->isMovie)
 			return '/episode/'.$this->formatTitle(AS_ARRAY,'id');
 		return "/movie/{$this->episode}".(!empty($this->title)?'-'.$this->movieSafeTitle():'');
+	}
+
+	private function _formatScore(){
+		if (isset($this->score))
+			$this->score = number_format($this->score,1);
+	}
+
+	public function updateScore(){
+		global $Database;
+
+		$Score = $Database->whereEp($this)->getOne('episodes__votes','AVG(vote) as score');
+		$this->score = !empty($Score['score']) ? $Score['score'] : 0;
+		$this->_formatScore();
+
+		$Database->whereEp($this)->update('episodes', array('score' => $this->score));
 	}
 }

@@ -504,16 +504,13 @@ HTML;
 			global $Database, $signedIn, $currentUser;
 			$HTML = '';
 
-			$Score = $Database->whereEp($Episode)->getOne('episodes__votes','AVG(vote) as score, COUNT(vote) as votes');
-			$Votes = !empty($Score['votes']) ? $Score['votes'] : 0;
-			if (!empty($Score['score']))
-				$Score = $Score['score'];
-			else $Score = 0;
+			if (empty($Episode->score))
+				$Episode->updateScore();
 
-			$Score = round($Score*10)/10;
+			$Score = number_format($Episode->score,1);
 			$ScorePercent = round(($Score/5)*1000)/10;
 
-			$HTML .= '<p>'.(!empty($Score) ? "This $thing is rated $Score/5 (<a class='detail'>".CoreUtils::MakePlural('vote', $Votes, true).'</a>)' : 'Nopony voted yet.').'</p>';
+			$HTML .= '<p>'.(!empty($Score) ? "This $thing is rated $Score/5 (<a class='detail'>Details</a>)" : 'Nopony voted yet.').'</p>';
 			if ($Score > 0)
 				$HTML .= "<img src='/muffin-rating?w=$ScorePercent' id='muffins' alt='muffin rating svg'>";
 

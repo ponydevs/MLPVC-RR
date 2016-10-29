@@ -131,7 +131,8 @@ CREATE TABLE colors (
     groupid integer NOT NULL,
     "order" integer,
     label character varying(255) NOT NULL,
-    hex character(7)
+    hex character(7),
+    CONSTRAINT colors_hex_check CHECK ((hex ~* '^#[\da-f]{6}$'::text))
 );
 
 

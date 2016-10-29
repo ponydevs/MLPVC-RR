@@ -91,7 +91,8 @@ CREATE TABLE episodes (
     posted timestamp with time zone DEFAULT now() NOT NULL,
     posted_by uuid,
     airs timestamp with time zone,
-    no smallint
+    no smallint,
+    score double precision
 );
 
 
@@ -122,7 +123,8 @@ CREATE TABLE episodes__votes (
     season integer NOT NULL,
     episode integer NOT NULL,
     "user" uuid NOT NULL,
-    vote smallint NOT NULL
+    vote smallint NOT NULL,
+    CONSTRAINT episodes__votes_vote_check CHECK (((vote >= 1) AND (vote <= 5)))
 );
 
 
