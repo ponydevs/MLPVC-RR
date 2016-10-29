@@ -118,8 +118,8 @@
 					$AppendAppearance['RelatedAppearances'] = array();
 					$RelatedIDs = \CG\Appearances::GetRelated($p['id']);
 					if (!empty($RelatedIDs))
-						foreach ($RelatedIDs as $p)
-							$AppendAppearance['RelatedAppearances'][] = $p['id'];
+						foreach ($RelatedIDs as $rel)
+							$AppendAppearance['RelatedAppearances'][] = $rel['id'];
 
 					$JSON['Appearances'][$p['id']] = $AppendAppearance;
 				}

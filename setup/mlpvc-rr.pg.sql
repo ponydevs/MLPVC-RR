@@ -2,11 +2,12 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 9.5.5
--- Dumped by pg_dump version 9.5.5
+-- Dumped from database version 9.6.1
+-- Dumped by pg_dump version 9.6.1
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
 SET client_encoding = 'UTF8';
 SET standard_conforming_strings = on;
 SET check_function_bodies = false;
@@ -1070,175 +1071,175 @@ CREATE TABLE users (
 ALTER TABLE users OWNER TO "mlpvc-rr";
 
 --
--- Name: entryid; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
+-- Name: log entryid; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY log ALTER COLUMN entryid SET DEFAULT nextval('log_entryid_seq'::regclass);
 
 
 --
--- Name: entryid; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
+-- Name: log__appearance_modify entryid; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY log__appearance_modify ALTER COLUMN entryid SET DEFAULT nextval('log_appearance_modify_entryid_seq'::regclass);
 
 
 --
--- Name: entryid; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
+-- Name: log__appearances entryid; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY log__appearances ALTER COLUMN entryid SET DEFAULT nextval('log__appearances_entryid_seq'::regclass);
 
 
 --
--- Name: entryid; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
+-- Name: log__banish entryid; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY log__banish ALTER COLUMN entryid SET DEFAULT nextval('log__banish_entryid_seq'::regclass);
 
 
 --
--- Name: entryid; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
+-- Name: log__cg_modify entryid; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY log__cg_modify ALTER COLUMN entryid SET DEFAULT nextval('log__cg_modify_entryid_seq'::regclass);
 
 
 --
--- Name: entryid; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
+-- Name: log__cg_order entryid; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY log__cg_order ALTER COLUMN entryid SET DEFAULT nextval('log__cg_order_entryid_seq'::regclass);
 
 
 --
--- Name: entryid; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
+-- Name: log__cgs entryid; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY log__cgs ALTER COLUMN entryid SET DEFAULT nextval('log__cgs_entryid_seq'::regclass);
 
 
 --
--- Name: entryid; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
+-- Name: log__color_modify entryid; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY log__color_modify ALTER COLUMN entryid SET DEFAULT nextval('log__color_modify_entryid_seq'::regclass);
 
 
 --
--- Name: entryid; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
+-- Name: log__da_namechange entryid; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY log__da_namechange ALTER COLUMN entryid SET DEFAULT nextval('log__da_namechange_entryid_seq'::regclass);
 
 
 --
--- Name: entryid; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
+-- Name: log__episode_modify entryid; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY log__episode_modify ALTER COLUMN entryid SET DEFAULT nextval('log__episode_modify_entryid_seq'::regclass);
 
 
 --
--- Name: entryid; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
+-- Name: log__episodes entryid; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY log__episodes ALTER COLUMN entryid SET DEFAULT nextval('log__episodes_entryid_seq'::regclass);
 
 
 --
--- Name: entryid; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
+-- Name: log__img_update entryid; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY log__img_update ALTER COLUMN entryid SET DEFAULT nextval('log__img_update_entryid_seq'::regclass);
 
 
 --
--- Name: entryid; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
+-- Name: log__post_lock entryid; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY log__post_lock ALTER COLUMN entryid SET DEFAULT nextval('log__post_lock_entryid_seq'::regclass);
 
 
 --
--- Name: entryid; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
+-- Name: log__req_delete entryid; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY log__req_delete ALTER COLUMN entryid SET DEFAULT nextval('log__req_delete_entryid_seq'::regclass);
 
 
 --
--- Name: entryid; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
+-- Name: log__res_overtake entryid; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY log__res_overtake ALTER COLUMN entryid SET DEFAULT nextval('log__res_overtake_entryid_seq'::regclass);
 
 
 --
--- Name: entryid; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
+-- Name: log__res_transfer entryid; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY log__res_transfer ALTER COLUMN entryid SET DEFAULT nextval('log__res_transfer_entryid_seq'::regclass);
 
 
 --
--- Name: entryid; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
+-- Name: log__rolechange entryid; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY log__rolechange ALTER COLUMN entryid SET DEFAULT nextval('log__rolechange_entryid_seq'::regclass);
 
 
 --
--- Name: entryid; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
+-- Name: log__un-banish entryid; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY "log__un-banish" ALTER COLUMN entryid SET DEFAULT nextval('"log__un-banish_entryid_seq"'::regclass);
 
 
 --
--- Name: entryid; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
+-- Name: log__userfetch entryid; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY log__userfetch ALTER COLUMN entryid SET DEFAULT nextval('log__userfetch_entryid_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
+-- Name: notifications id; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY notifications ALTER COLUMN id SET DEFAULT nextval('notifications_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
+-- Name: requests id; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY requests ALTER COLUMN id SET DEFAULT nextval('requests_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
+-- Name: reservations id; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY reservations ALTER COLUMN id SET DEFAULT nextval('reservations_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
+-- Name: sessions id; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY sessions ALTER COLUMN id SET DEFAULT nextval('sessions_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
+-- Name: usefullinks id; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY usefullinks ALTER COLUMN id SET DEFAULT nextval('usefullinks_id_seq'::regclass);
 
 
 --
--- Name: deviation_cache_provider_id; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
+-- Name: deviation_cache deviation_cache_provider_id; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY deviation_cache
@@ -1246,7 +1247,7 @@ ALTER TABLE ONLY deviation_cache
 
 
 --
--- Name: episodes__videos_season_episode_provider_part; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
+-- Name: episodes__videos episodes__videos_season_episode_provider_part; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY episodes__videos
@@ -1254,7 +1255,7 @@ ALTER TABLE ONLY episodes__videos
 
 
 --
--- Name: episodes__votes_season_episode_user; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
+-- Name: episodes__votes episodes__votes_season_episode_user; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY episodes__votes
@@ -1262,7 +1263,7 @@ ALTER TABLE ONLY episodes__votes
 
 
 --
--- Name: episodes_season_episode; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
+-- Name: episodes episodes_season_episode; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY episodes
@@ -1270,7 +1271,7 @@ ALTER TABLE ONLY episodes
 
 
 --
--- Name: global_settings_key; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
+-- Name: global_settings global_settings_key; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY global_settings
@@ -1278,7 +1279,7 @@ ALTER TABLE ONLY global_settings
 
 
 --
--- Name: log__appearances_entryid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
+-- Name: log__appearances log__appearances_entryid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY log__appearances
@@ -1286,7 +1287,7 @@ ALTER TABLE ONLY log__appearances
 
 
 --
--- Name: log__banish_entryid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
+-- Name: log__banish log__banish_entryid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY log__banish
@@ -1294,7 +1295,7 @@ ALTER TABLE ONLY log__banish
 
 
 --
--- Name: log__cg_modify_entryid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
+-- Name: log__cg_modify log__cg_modify_entryid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY log__cg_modify
@@ -1302,7 +1303,7 @@ ALTER TABLE ONLY log__cg_modify
 
 
 --
--- Name: log__cg_order_entryid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
+-- Name: log__cg_order log__cg_order_entryid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY log__cg_order
@@ -1310,7 +1311,7 @@ ALTER TABLE ONLY log__cg_order
 
 
 --
--- Name: log__cgs_entryid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
+-- Name: log__cgs log__cgs_entryid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY log__cgs
@@ -1318,7 +1319,7 @@ ALTER TABLE ONLY log__cgs
 
 
 --
--- Name: log__color_modify_entryid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
+-- Name: log__color_modify log__color_modify_entryid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY log__color_modify
@@ -1326,7 +1327,7 @@ ALTER TABLE ONLY log__color_modify
 
 
 --
--- Name: log__da_namechange_entryid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
+-- Name: log__da_namechange log__da_namechange_entryid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY log__da_namechange
@@ -1334,7 +1335,7 @@ ALTER TABLE ONLY log__da_namechange
 
 
 --
--- Name: log__episode_modify_entryid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
+-- Name: log__episode_modify log__episode_modify_entryid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY log__episode_modify
@@ -1342,7 +1343,7 @@ ALTER TABLE ONLY log__episode_modify
 
 
 --
--- Name: log__episodes_entryid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
+-- Name: log__episodes log__episodes_entryid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY log__episodes
@@ -1350,7 +1351,7 @@ ALTER TABLE ONLY log__episodes
 
 
 --
--- Name: log__img_update_entryid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
+-- Name: log__img_update log__img_update_entryid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY log__img_update
@@ -1358,7 +1359,7 @@ ALTER TABLE ONLY log__img_update
 
 
 --
--- Name: log__post_lock_entryid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
+-- Name: log__post_lock log__post_lock_entryid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY log__post_lock
@@ -1366,7 +1367,7 @@ ALTER TABLE ONLY log__post_lock
 
 
 --
--- Name: log__req_delete_entryid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
+-- Name: log__req_delete log__req_delete_entryid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY log__req_delete
@@ -1374,7 +1375,7 @@ ALTER TABLE ONLY log__req_delete
 
 
 --
--- Name: log__res_overtake_entryid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
+-- Name: log__res_overtake log__res_overtake_entryid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY log__res_overtake
@@ -1382,7 +1383,7 @@ ALTER TABLE ONLY log__res_overtake
 
 
 --
--- Name: log__res_transfer_entryid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
+-- Name: log__res_transfer log__res_transfer_entryid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY log__res_transfer
@@ -1390,7 +1391,7 @@ ALTER TABLE ONLY log__res_transfer
 
 
 --
--- Name: log__rolechange_entryid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
+-- Name: log__rolechange log__rolechange_entryid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY log__rolechange
@@ -1398,7 +1399,7 @@ ALTER TABLE ONLY log__rolechange
 
 
 --
--- Name: log__un-banish_entryid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
+-- Name: log__un-banish log__un-banish_entryid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY "log__un-banish"
@@ -1406,7 +1407,7 @@ ALTER TABLE ONLY "log__un-banish"
 
 
 --
--- Name: log__userfetch_entryid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
+-- Name: log__userfetch log__userfetch_entryid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY log__userfetch
@@ -1414,7 +1415,7 @@ ALTER TABLE ONLY log__userfetch
 
 
 --
--- Name: log_appearance_modify_entryid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
+-- Name: log__appearance_modify log_appearance_modify_entryid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY log__appearance_modify
@@ -1422,7 +1423,7 @@ ALTER TABLE ONLY log__appearance_modify
 
 
 --
--- Name: log_entryid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
+-- Name: log log_entryid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY log
@@ -1430,7 +1431,7 @@ ALTER TABLE ONLY log
 
 
 --
--- Name: notifications_id; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
+-- Name: notifications notifications_id; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY notifications
@@ -1438,7 +1439,7 @@ ALTER TABLE ONLY notifications
 
 
 --
--- Name: requests_id; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
+-- Name: requests requests_id; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY requests
@@ -1446,7 +1447,7 @@ ALTER TABLE ONLY requests
 
 
 --
--- Name: reservations_id; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
+-- Name: reservations reservations_id; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY reservations
@@ -1454,7 +1455,7 @@ ALTER TABLE ONLY reservations
 
 
 --
--- Name: sessions_id; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
+-- Name: sessions sessions_id; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY sessions
@@ -1462,7 +1463,7 @@ ALTER TABLE ONLY sessions
 
 
 --
--- Name: usefullinks_id; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
+-- Name: usefullinks usefullinks_id; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY usefullinks
@@ -1470,7 +1471,7 @@ ALTER TABLE ONLY usefullinks
 
 
 --
--- Name: user_prefs_user_key; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
+-- Name: user_prefs user_prefs_user_key; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY user_prefs
@@ -1478,7 +1479,7 @@ ALTER TABLE ONLY user_prefs
 
 
 --
--- Name: users_id; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
+-- Name: users users_id; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY users
@@ -1591,7 +1592,7 @@ CREATE INDEX usefullinks_minrole ON usefullinks USING btree (minrole);
 
 
 --
--- Name: episodes__votes_season_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
+-- Name: episodes__votes episodes__votes_season_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY episodes__votes
@@ -1599,7 +1600,7 @@ ALTER TABLE ONLY episodes__votes
 
 
 --
--- Name: episodes__votes_user_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
+-- Name: episodes__votes episodes__votes_user_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY episodes__votes
@@ -1607,7 +1608,7 @@ ALTER TABLE ONLY episodes__votes
 
 
 --
--- Name: episodes_posted_by_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
+-- Name: episodes episodes_posted_by_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY episodes
@@ -1615,7 +1616,7 @@ ALTER TABLE ONLY episodes
 
 
 --
--- Name: log__banish_target_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
+-- Name: log__banish log__banish_target_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY log__banish
@@ -1623,7 +1624,7 @@ ALTER TABLE ONLY log__banish
 
 
 --
--- Name: log__da_namechange_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
+-- Name: log__da_namechange log__da_namechange_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY log__da_namechange
@@ -1631,7 +1632,7 @@ ALTER TABLE ONLY log__da_namechange
 
 
 --
--- Name: log__rolechange_target_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
+-- Name: log__rolechange log__rolechange_target_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY log__rolechange
@@ -1639,7 +1640,7 @@ ALTER TABLE ONLY log__rolechange
 
 
 --
--- Name: log__un-banish_target_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
+-- Name: log__un-banish log__un-banish_target_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY "log__un-banish"
@@ -1647,7 +1648,7 @@ ALTER TABLE ONLY "log__un-banish"
 
 
 --
--- Name: log__userfetch_userid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
+-- Name: log__userfetch log__userfetch_userid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY log__userfetch
@@ -1655,7 +1656,7 @@ ALTER TABLE ONLY log__userfetch
 
 
 --
--- Name: log_initiator_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
+-- Name: log log_initiator_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY log
@@ -1663,7 +1664,7 @@ ALTER TABLE ONLY log
 
 
 --
--- Name: requests_requested_by_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
+-- Name: requests requests_requested_by_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY requests
@@ -1671,7 +1672,7 @@ ALTER TABLE ONLY requests
 
 
 --
--- Name: requests_reserved_by_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
+-- Name: requests requests_reserved_by_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY requests
@@ -1679,7 +1680,7 @@ ALTER TABLE ONLY requests
 
 
 --
--- Name: requests_season_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
+-- Name: requests requests_season_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY requests
@@ -1687,7 +1688,7 @@ ALTER TABLE ONLY requests
 
 
 --
--- Name: reservations_reserved_by_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
+-- Name: reservations reservations_reserved_by_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY reservations
@@ -1695,7 +1696,7 @@ ALTER TABLE ONLY reservations
 
 
 --
--- Name: reservations_season_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
+-- Name: reservations reservations_season_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY reservations
@@ -1703,7 +1704,7 @@ ALTER TABLE ONLY reservations
 
 
 --
--- Name: sessions_user_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
+-- Name: sessions sessions_user_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY sessions
@@ -1711,7 +1712,7 @@ ALTER TABLE ONLY sessions
 
 
 --
--- Name: user_prefs_user_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
+-- Name: user_prefs user_prefs_user_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY user_prefs
@@ -1722,10 +1723,6 @@ ALTER TABLE ONLY user_prefs
 -- Name: public; Type: ACL; Schema: -; Owner: postgres
 --
 
-REVOKE ALL ON SCHEMA public FROM PUBLIC;
-REVOKE ALL ON SCHEMA public FROM postgres;
-GRANT ALL ON SCHEMA public TO postgres;
-GRANT ALL ON SCHEMA public TO PUBLIC;
 GRANT USAGE ON SCHEMA public TO "mlpvc-rr";
 
 
@@ -1733,9 +1730,6 @@ GRANT USAGE ON SCHEMA public TO "mlpvc-rr";
 -- Name: deviation_cache; Type: ACL; Schema: public; Owner: mlpvc-rr
 --
 
-REVOKE ALL ON TABLE deviation_cache FROM PUBLIC;
-REVOKE ALL ON TABLE deviation_cache FROM "mlpvc-rr";
-GRANT ALL ON TABLE deviation_cache TO "mlpvc-rr";
 GRANT ALL ON TABLE deviation_cache TO postgres;
 
 
@@ -1743,9 +1737,6 @@ GRANT ALL ON TABLE deviation_cache TO postgres;
 -- Name: episodes; Type: ACL; Schema: public; Owner: mlpvc-rr
 --
 
-REVOKE ALL ON TABLE episodes FROM PUBLIC;
-REVOKE ALL ON TABLE episodes FROM "mlpvc-rr";
-GRANT ALL ON TABLE episodes TO "mlpvc-rr";
 GRANT ALL ON TABLE episodes TO postgres;
 
 
@@ -1753,9 +1744,6 @@ GRANT ALL ON TABLE episodes TO postgres;
 -- Name: episodes__videos; Type: ACL; Schema: public; Owner: mlpvc-rr
 --
 
-REVOKE ALL ON TABLE episodes__videos FROM PUBLIC;
-REVOKE ALL ON TABLE episodes__videos FROM "mlpvc-rr";
-GRANT ALL ON TABLE episodes__videos TO "mlpvc-rr";
 GRANT ALL ON TABLE episodes__videos TO postgres;
 
 
@@ -1763,65 +1751,20 @@ GRANT ALL ON TABLE episodes__videos TO postgres;
 -- Name: episodes__votes; Type: ACL; Schema: public; Owner: mlpvc-rr
 --
 
-REVOKE ALL ON TABLE episodes__votes FROM PUBLIC;
-REVOKE ALL ON TABLE episodes__votes FROM "mlpvc-rr";
-GRANT ALL ON TABLE episodes__votes TO "mlpvc-rr";
 GRANT ALL ON TABLE episodes__votes TO postgres;
-
-
---
--- Name: global_settings; Type: ACL; Schema: public; Owner: mlpvc-rr
---
-
-REVOKE ALL ON TABLE global_settings FROM PUBLIC;
-REVOKE ALL ON TABLE global_settings FROM "mlpvc-rr";
-GRANT ALL ON TABLE global_settings TO "mlpvc-rr";
 
 
 --
 -- Name: log; Type: ACL; Schema: public; Owner: mlpvc-rr
 --
 
-REVOKE ALL ON TABLE log FROM PUBLIC;
-REVOKE ALL ON TABLE log FROM "mlpvc-rr";
-GRANT ALL ON TABLE log TO "mlpvc-rr";
 GRANT ALL ON TABLE log TO postgres;
-
-
---
--- Name: log__appearance_modify; Type: ACL; Schema: public; Owner: mlpvc-rr
---
-
-REVOKE ALL ON TABLE log__appearance_modify FROM PUBLIC;
-REVOKE ALL ON TABLE log__appearance_modify FROM "mlpvc-rr";
-GRANT ALL ON TABLE log__appearance_modify TO "mlpvc-rr";
-
-
---
--- Name: log__appearances; Type: ACL; Schema: public; Owner: mlpvc-rr
---
-
-REVOKE ALL ON TABLE log__appearances FROM PUBLIC;
-REVOKE ALL ON TABLE log__appearances FROM "mlpvc-rr";
-GRANT ALL ON TABLE log__appearances TO "mlpvc-rr";
-
-
---
--- Name: log__appearances_entryid_seq; Type: ACL; Schema: public; Owner: mlpvc-rr
---
-
-REVOKE ALL ON SEQUENCE log__appearances_entryid_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE log__appearances_entryid_seq FROM "mlpvc-rr";
-GRANT ALL ON SEQUENCE log__appearances_entryid_seq TO "mlpvc-rr";
 
 
 --
 -- Name: log__banish; Type: ACL; Schema: public; Owner: mlpvc-rr
 --
 
-REVOKE ALL ON TABLE log__banish FROM PUBLIC;
-REVOKE ALL ON TABLE log__banish FROM "mlpvc-rr";
-GRANT ALL ON TABLE log__banish TO "mlpvc-rr";
 GRANT ALL ON TABLE log__banish TO postgres;
 
 
@@ -1829,73 +1772,13 @@ GRANT ALL ON TABLE log__banish TO postgres;
 -- Name: log__banish_entryid_seq; Type: ACL; Schema: public; Owner: mlpvc-rr
 --
 
-REVOKE ALL ON SEQUENCE log__banish_entryid_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE log__banish_entryid_seq FROM "mlpvc-rr";
-GRANT ALL ON SEQUENCE log__banish_entryid_seq TO "mlpvc-rr";
 GRANT ALL ON SEQUENCE log__banish_entryid_seq TO postgres;
-
-
---
--- Name: log__cg_modify; Type: ACL; Schema: public; Owner: mlpvc-rr
---
-
-REVOKE ALL ON TABLE log__cg_modify FROM PUBLIC;
-REVOKE ALL ON TABLE log__cg_modify FROM "mlpvc-rr";
-GRANT ALL ON TABLE log__cg_modify TO "mlpvc-rr";
-
-
---
--- Name: log__cg_modify_entryid_seq; Type: ACL; Schema: public; Owner: mlpvc-rr
---
-
-REVOKE ALL ON SEQUENCE log__cg_modify_entryid_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE log__cg_modify_entryid_seq FROM "mlpvc-rr";
-GRANT ALL ON SEQUENCE log__cg_modify_entryid_seq TO "mlpvc-rr";
-
-
---
--- Name: log__cg_order; Type: ACL; Schema: public; Owner: mlpvc-rr
---
-
-REVOKE ALL ON TABLE log__cg_order FROM PUBLIC;
-REVOKE ALL ON TABLE log__cg_order FROM "mlpvc-rr";
-GRANT ALL ON TABLE log__cg_order TO "mlpvc-rr";
-
-
---
--- Name: log__cg_order_entryid_seq; Type: ACL; Schema: public; Owner: mlpvc-rr
---
-
-REVOKE ALL ON SEQUENCE log__cg_order_entryid_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE log__cg_order_entryid_seq FROM "mlpvc-rr";
-GRANT ALL ON SEQUENCE log__cg_order_entryid_seq TO "mlpvc-rr";
-
-
---
--- Name: log__cgs; Type: ACL; Schema: public; Owner: mlpvc-rr
---
-
-REVOKE ALL ON TABLE log__cgs FROM PUBLIC;
-REVOKE ALL ON TABLE log__cgs FROM "mlpvc-rr";
-GRANT ALL ON TABLE log__cgs TO "mlpvc-rr";
-
-
---
--- Name: log__cgs_entryid_seq; Type: ACL; Schema: public; Owner: mlpvc-rr
---
-
-REVOKE ALL ON SEQUENCE log__cgs_entryid_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE log__cgs_entryid_seq FROM "mlpvc-rr";
-GRANT ALL ON SEQUENCE log__cgs_entryid_seq TO "mlpvc-rr";
 
 
 --
 -- Name: log__color_modify; Type: ACL; Schema: public; Owner: mlpvc-rr
 --
 
-REVOKE ALL ON TABLE log__color_modify FROM PUBLIC;
-REVOKE ALL ON TABLE log__color_modify FROM "mlpvc-rr";
-GRANT ALL ON TABLE log__color_modify TO "mlpvc-rr";
 GRANT ALL ON TABLE log__color_modify TO postgres;
 
 
@@ -1903,37 +1786,13 @@ GRANT ALL ON TABLE log__color_modify TO postgres;
 -- Name: log__color_modify_entryid_seq; Type: ACL; Schema: public; Owner: mlpvc-rr
 --
 
-REVOKE ALL ON SEQUENCE log__color_modify_entryid_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE log__color_modify_entryid_seq FROM "mlpvc-rr";
-GRANT ALL ON SEQUENCE log__color_modify_entryid_seq TO "mlpvc-rr";
 GRANT ALL ON SEQUENCE log__color_modify_entryid_seq TO postgres;
-
-
---
--- Name: log__da_namechange; Type: ACL; Schema: public; Owner: mlpvc-rr
---
-
-REVOKE ALL ON TABLE log__da_namechange FROM PUBLIC;
-REVOKE ALL ON TABLE log__da_namechange FROM "mlpvc-rr";
-GRANT ALL ON TABLE log__da_namechange TO "mlpvc-rr";
-
-
---
--- Name: log__da_namechange_entryid_seq; Type: ACL; Schema: public; Owner: mlpvc-rr
---
-
-REVOKE ALL ON SEQUENCE log__da_namechange_entryid_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE log__da_namechange_entryid_seq FROM "mlpvc-rr";
-GRANT ALL ON SEQUENCE log__da_namechange_entryid_seq TO "mlpvc-rr";
 
 
 --
 -- Name: log__episode_modify; Type: ACL; Schema: public; Owner: mlpvc-rr
 --
 
-REVOKE ALL ON TABLE log__episode_modify FROM PUBLIC;
-REVOKE ALL ON TABLE log__episode_modify FROM "mlpvc-rr";
-GRANT ALL ON TABLE log__episode_modify TO "mlpvc-rr";
 GRANT ALL ON TABLE log__episode_modify TO postgres;
 
 
@@ -1941,9 +1800,6 @@ GRANT ALL ON TABLE log__episode_modify TO postgres;
 -- Name: log__episodes; Type: ACL; Schema: public; Owner: mlpvc-rr
 --
 
-REVOKE ALL ON TABLE log__episodes FROM PUBLIC;
-REVOKE ALL ON TABLE log__episodes FROM "mlpvc-rr";
-GRANT ALL ON TABLE log__episodes TO "mlpvc-rr";
 GRANT ALL ON TABLE log__episodes TO postgres;
 
 
@@ -1951,9 +1807,6 @@ GRANT ALL ON TABLE log__episodes TO postgres;
 -- Name: log__episodes_entryid_seq; Type: ACL; Schema: public; Owner: mlpvc-rr
 --
 
-REVOKE ALL ON SEQUENCE log__episodes_entryid_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE log__episodes_entryid_seq FROM "mlpvc-rr";
-GRANT ALL ON SEQUENCE log__episodes_entryid_seq TO "mlpvc-rr";
 GRANT ALL ON SEQUENCE log__episodes_entryid_seq TO postgres;
 
 
@@ -1961,9 +1814,6 @@ GRANT ALL ON SEQUENCE log__episodes_entryid_seq TO postgres;
 -- Name: log__img_update; Type: ACL; Schema: public; Owner: mlpvc-rr
 --
 
-REVOKE ALL ON TABLE log__img_update FROM PUBLIC;
-REVOKE ALL ON TABLE log__img_update FROM "mlpvc-rr";
-GRANT ALL ON TABLE log__img_update TO "mlpvc-rr";
 GRANT ALL ON TABLE log__img_update TO postgres;
 
 
@@ -1971,9 +1821,6 @@ GRANT ALL ON TABLE log__img_update TO postgres;
 -- Name: log__img_update_entryid_seq; Type: ACL; Schema: public; Owner: mlpvc-rr
 --
 
-REVOKE ALL ON SEQUENCE log__img_update_entryid_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE log__img_update_entryid_seq FROM "mlpvc-rr";
-GRANT ALL ON SEQUENCE log__img_update_entryid_seq TO "mlpvc-rr";
 GRANT ALL ON SEQUENCE log__img_update_entryid_seq TO postgres;
 
 
@@ -1981,9 +1828,6 @@ GRANT ALL ON SEQUENCE log__img_update_entryid_seq TO postgres;
 -- Name: log__post_lock; Type: ACL; Schema: public; Owner: mlpvc-rr
 --
 
-REVOKE ALL ON TABLE log__post_lock FROM PUBLIC;
-REVOKE ALL ON TABLE log__post_lock FROM "mlpvc-rr";
-GRANT ALL ON TABLE log__post_lock TO "mlpvc-rr";
 GRANT ALL ON TABLE log__post_lock TO postgres;
 
 
@@ -1991,9 +1835,6 @@ GRANT ALL ON TABLE log__post_lock TO postgres;
 -- Name: log__post_lock_entryid_seq; Type: ACL; Schema: public; Owner: mlpvc-rr
 --
 
-REVOKE ALL ON SEQUENCE log__post_lock_entryid_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE log__post_lock_entryid_seq FROM "mlpvc-rr";
-GRANT ALL ON SEQUENCE log__post_lock_entryid_seq TO "mlpvc-rr";
 GRANT ALL ON SEQUENCE log__post_lock_entryid_seq TO postgres;
 
 
@@ -2001,9 +1842,6 @@ GRANT ALL ON SEQUENCE log__post_lock_entryid_seq TO postgres;
 -- Name: log__req_delete; Type: ACL; Schema: public; Owner: mlpvc-rr
 --
 
-REVOKE ALL ON TABLE log__req_delete FROM PUBLIC;
-REVOKE ALL ON TABLE log__req_delete FROM "mlpvc-rr";
-GRANT ALL ON TABLE log__req_delete TO "mlpvc-rr";
 GRANT ALL ON TABLE log__req_delete TO postgres;
 
 
@@ -2011,55 +1849,13 @@ GRANT ALL ON TABLE log__req_delete TO postgres;
 -- Name: log__req_delete_entryid_seq; Type: ACL; Schema: public; Owner: mlpvc-rr
 --
 
-REVOKE ALL ON SEQUENCE log__req_delete_entryid_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE log__req_delete_entryid_seq FROM "mlpvc-rr";
-GRANT ALL ON SEQUENCE log__req_delete_entryid_seq TO "mlpvc-rr";
 GRANT ALL ON SEQUENCE log__req_delete_entryid_seq TO postgres;
-
-
---
--- Name: log__res_overtake; Type: ACL; Schema: public; Owner: mlpvc-rr
---
-
-REVOKE ALL ON TABLE log__res_overtake FROM PUBLIC;
-REVOKE ALL ON TABLE log__res_overtake FROM "mlpvc-rr";
-GRANT ALL ON TABLE log__res_overtake TO "mlpvc-rr";
-
-
---
--- Name: log__res_overtake_entryid_seq; Type: ACL; Schema: public; Owner: mlpvc-rr
---
-
-REVOKE ALL ON SEQUENCE log__res_overtake_entryid_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE log__res_overtake_entryid_seq FROM "mlpvc-rr";
-GRANT ALL ON SEQUENCE log__res_overtake_entryid_seq TO "mlpvc-rr";
-
-
---
--- Name: log__res_transfer; Type: ACL; Schema: public; Owner: mlpvc-rr
---
-
-REVOKE ALL ON TABLE log__res_transfer FROM PUBLIC;
-REVOKE ALL ON TABLE log__res_transfer FROM "mlpvc-rr";
-GRANT ALL ON TABLE log__res_transfer TO "mlpvc-rr";
-
-
---
--- Name: log__res_transfer_entryid_seq; Type: ACL; Schema: public; Owner: mlpvc-rr
---
-
-REVOKE ALL ON SEQUENCE log__res_transfer_entryid_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE log__res_transfer_entryid_seq FROM "mlpvc-rr";
-GRANT ALL ON SEQUENCE log__res_transfer_entryid_seq TO "mlpvc-rr";
 
 
 --
 -- Name: log__rolechange; Type: ACL; Schema: public; Owner: mlpvc-rr
 --
 
-REVOKE ALL ON TABLE log__rolechange FROM PUBLIC;
-REVOKE ALL ON TABLE log__rolechange FROM "mlpvc-rr";
-GRANT ALL ON TABLE log__rolechange TO "mlpvc-rr";
 GRANT ALL ON TABLE log__rolechange TO postgres;
 
 
@@ -2067,9 +1863,6 @@ GRANT ALL ON TABLE log__rolechange TO postgres;
 -- Name: log__rolechange_entryid_seq; Type: ACL; Schema: public; Owner: mlpvc-rr
 --
 
-REVOKE ALL ON SEQUENCE log__rolechange_entryid_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE log__rolechange_entryid_seq FROM "mlpvc-rr";
-GRANT ALL ON SEQUENCE log__rolechange_entryid_seq TO "mlpvc-rr";
 GRANT ALL ON SEQUENCE log__rolechange_entryid_seq TO postgres;
 
 
@@ -2077,9 +1870,6 @@ GRANT ALL ON SEQUENCE log__rolechange_entryid_seq TO postgres;
 -- Name: log__un-banish; Type: ACL; Schema: public; Owner: mlpvc-rr
 --
 
-REVOKE ALL ON TABLE "log__un-banish" FROM PUBLIC;
-REVOKE ALL ON TABLE "log__un-banish" FROM "mlpvc-rr";
-GRANT ALL ON TABLE "log__un-banish" TO "mlpvc-rr";
 GRANT ALL ON TABLE "log__un-banish" TO postgres;
 
 
@@ -2087,9 +1877,6 @@ GRANT ALL ON TABLE "log__un-banish" TO postgres;
 -- Name: log__un-banish_entryid_seq; Type: ACL; Schema: public; Owner: mlpvc-rr
 --
 
-REVOKE ALL ON SEQUENCE "log__un-banish_entryid_seq" FROM PUBLIC;
-REVOKE ALL ON SEQUENCE "log__un-banish_entryid_seq" FROM "mlpvc-rr";
-GRANT ALL ON SEQUENCE "log__un-banish_entryid_seq" TO "mlpvc-rr";
 GRANT ALL ON SEQUENCE "log__un-banish_entryid_seq" TO postgres;
 
 
@@ -2097,9 +1884,6 @@ GRANT ALL ON SEQUENCE "log__un-banish_entryid_seq" TO postgres;
 -- Name: log__userfetch; Type: ACL; Schema: public; Owner: mlpvc-rr
 --
 
-REVOKE ALL ON TABLE log__userfetch FROM PUBLIC;
-REVOKE ALL ON TABLE log__userfetch FROM "mlpvc-rr";
-GRANT ALL ON TABLE log__userfetch TO "mlpvc-rr";
 GRANT ALL ON TABLE log__userfetch TO postgres;
 
 
@@ -2107,56 +1891,20 @@ GRANT ALL ON TABLE log__userfetch TO postgres;
 -- Name: log__userfetch_entryid_seq; Type: ACL; Schema: public; Owner: mlpvc-rr
 --
 
-REVOKE ALL ON SEQUENCE log__userfetch_entryid_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE log__userfetch_entryid_seq FROM "mlpvc-rr";
-GRANT ALL ON SEQUENCE log__userfetch_entryid_seq TO "mlpvc-rr";
 GRANT ALL ON SEQUENCE log__userfetch_entryid_seq TO postgres;
-
-
---
--- Name: log_appearance_modify_entryid_seq; Type: ACL; Schema: public; Owner: mlpvc-rr
---
-
-REVOKE ALL ON SEQUENCE log_appearance_modify_entryid_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE log_appearance_modify_entryid_seq FROM "mlpvc-rr";
-GRANT ALL ON SEQUENCE log_appearance_modify_entryid_seq TO "mlpvc-rr";
 
 
 --
 -- Name: log_entryid_seq; Type: ACL; Schema: public; Owner: mlpvc-rr
 --
 
-REVOKE ALL ON SEQUENCE log_entryid_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE log_entryid_seq FROM "mlpvc-rr";
-GRANT ALL ON SEQUENCE log_entryid_seq TO "mlpvc-rr";
 GRANT ALL ON SEQUENCE log_entryid_seq TO postgres;
-
-
---
--- Name: notifications; Type: ACL; Schema: public; Owner: mlpvc-rr
---
-
-REVOKE ALL ON TABLE notifications FROM PUBLIC;
-REVOKE ALL ON TABLE notifications FROM "mlpvc-rr";
-GRANT ALL ON TABLE notifications TO "mlpvc-rr";
-
-
---
--- Name: notifications_id_seq; Type: ACL; Schema: public; Owner: mlpvc-rr
---
-
-REVOKE ALL ON SEQUENCE notifications_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE notifications_id_seq FROM "mlpvc-rr";
-GRANT ALL ON SEQUENCE notifications_id_seq TO "mlpvc-rr";
 
 
 --
 -- Name: requests; Type: ACL; Schema: public; Owner: mlpvc-rr
 --
 
-REVOKE ALL ON TABLE requests FROM PUBLIC;
-REVOKE ALL ON TABLE requests FROM "mlpvc-rr";
-GRANT ALL ON TABLE requests TO "mlpvc-rr";
 GRANT ALL ON TABLE requests TO postgres;
 
 
@@ -2164,9 +1912,6 @@ GRANT ALL ON TABLE requests TO postgres;
 -- Name: requests_id_seq; Type: ACL; Schema: public; Owner: mlpvc-rr
 --
 
-REVOKE ALL ON SEQUENCE requests_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE requests_id_seq FROM "mlpvc-rr";
-GRANT ALL ON SEQUENCE requests_id_seq TO "mlpvc-rr";
 GRANT ALL ON SEQUENCE requests_id_seq TO postgres;
 
 
@@ -2174,9 +1919,6 @@ GRANT ALL ON SEQUENCE requests_id_seq TO postgres;
 -- Name: reservations; Type: ACL; Schema: public; Owner: mlpvc-rr
 --
 
-REVOKE ALL ON TABLE reservations FROM PUBLIC;
-REVOKE ALL ON TABLE reservations FROM "mlpvc-rr";
-GRANT ALL ON TABLE reservations TO "mlpvc-rr";
 GRANT ALL ON TABLE reservations TO postgres;
 
 
@@ -2184,9 +1926,6 @@ GRANT ALL ON TABLE reservations TO postgres;
 -- Name: reservations_id_seq; Type: ACL; Schema: public; Owner: mlpvc-rr
 --
 
-REVOKE ALL ON SEQUENCE reservations_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE reservations_id_seq FROM "mlpvc-rr";
-GRANT ALL ON SEQUENCE reservations_id_seq TO "mlpvc-rr";
 GRANT ALL ON SEQUENCE reservations_id_seq TO postgres;
 
 
@@ -2194,9 +1933,6 @@ GRANT ALL ON SEQUENCE reservations_id_seq TO postgres;
 -- Name: sessions; Type: ACL; Schema: public; Owner: mlpvc-rr
 --
 
-REVOKE ALL ON TABLE sessions FROM PUBLIC;
-REVOKE ALL ON TABLE sessions FROM "mlpvc-rr";
-GRANT ALL ON TABLE sessions TO "mlpvc-rr";
 GRANT ALL ON TABLE sessions TO postgres;
 
 
@@ -2204,9 +1940,6 @@ GRANT ALL ON TABLE sessions TO postgres;
 -- Name: sessions_id_seq; Type: ACL; Schema: public; Owner: mlpvc-rr
 --
 
-REVOKE ALL ON SEQUENCE sessions_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE sessions_id_seq FROM "mlpvc-rr";
-GRANT ALL ON SEQUENCE sessions_id_seq TO "mlpvc-rr";
 GRANT ALL ON SEQUENCE sessions_id_seq TO postgres;
 
 
@@ -2214,9 +1947,6 @@ GRANT ALL ON SEQUENCE sessions_id_seq TO postgres;
 -- Name: usefullinks; Type: ACL; Schema: public; Owner: mlpvc-rr
 --
 
-REVOKE ALL ON TABLE usefullinks FROM PUBLIC;
-REVOKE ALL ON TABLE usefullinks FROM "mlpvc-rr";
-GRANT ALL ON TABLE usefullinks TO "mlpvc-rr";
 GRANT ALL ON TABLE usefullinks TO postgres;
 
 
@@ -2224,28 +1954,13 @@ GRANT ALL ON TABLE usefullinks TO postgres;
 -- Name: usefullinks_id_seq; Type: ACL; Schema: public; Owner: mlpvc-rr
 --
 
-REVOKE ALL ON SEQUENCE usefullinks_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE usefullinks_id_seq FROM "mlpvc-rr";
-GRANT ALL ON SEQUENCE usefullinks_id_seq TO "mlpvc-rr";
 GRANT ALL ON SEQUENCE usefullinks_id_seq TO postgres;
-
-
---
--- Name: user_prefs; Type: ACL; Schema: public; Owner: mlpvc-rr
---
-
-REVOKE ALL ON TABLE user_prefs FROM PUBLIC;
-REVOKE ALL ON TABLE user_prefs FROM "mlpvc-rr";
-GRANT ALL ON TABLE user_prefs TO "mlpvc-rr";
 
 
 --
 -- Name: users; Type: ACL; Schema: public; Owner: mlpvc-rr
 --
 
-REVOKE ALL ON TABLE users FROM PUBLIC;
-REVOKE ALL ON TABLE users FROM "mlpvc-rr";
-GRANT ALL ON TABLE users TO "mlpvc-rr";
 GRANT ALL ON TABLE users TO postgres;
 
 
@@ -2253,8 +1968,6 @@ GRANT ALL ON TABLE users TO postgres;
 -- Name: DEFAULT PRIVILEGES FOR SEQUENCES; Type: DEFAULT ACL; Schema: public; Owner: postgres
 --
 
-ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public REVOKE ALL ON SEQUENCES  FROM PUBLIC;
-ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public REVOKE ALL ON SEQUENCES  FROM postgres;
 ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public GRANT SELECT,USAGE ON SEQUENCES  TO "mlpvc-rr";
 
 
@@ -2262,8 +1975,6 @@ ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public GRANT SELECT,USAGE O
 -- Name: DEFAULT PRIVILEGES FOR TABLES; Type: DEFAULT ACL; Schema: public; Owner: postgres
 --
 
-ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public REVOKE ALL ON TABLES  FROM PUBLIC;
-ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public REVOKE ALL ON TABLES  FROM postgres;
 ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public GRANT SELECT ON TABLES  TO "mlpvc-rr";
 
 
@@ -2271,8 +1982,6 @@ ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public GRANT SELECT ON TABL
 -- Name: DEFAULT PRIVILEGES FOR TABLES; Type: DEFAULT ACL; Schema: public; Owner: mlpvc-rr
 --
 
-ALTER DEFAULT PRIVILEGES FOR ROLE "mlpvc-rr" IN SCHEMA public REVOKE ALL ON TABLES  FROM PUBLIC;
-ALTER DEFAULT PRIVILEGES FOR ROLE "mlpvc-rr" IN SCHEMA public REVOKE ALL ON TABLES  FROM "mlpvc-rr";
 ALTER DEFAULT PRIVILEGES FOR ROLE "mlpvc-rr" IN SCHEMA public GRANT SELECT,INSERT,DELETE,UPDATE ON TABLES  TO "mlpvc-rr";
 
 

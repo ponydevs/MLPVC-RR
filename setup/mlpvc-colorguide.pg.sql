@@ -2,11 +2,12 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 9.5.5
--- Dumped by pg_dump version 9.5.5
+-- Dumped from database version 9.6.1
+-- Dumped by pg_dump version 9.6.1
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
 SET client_encoding = 'UTF8';
 SET standard_conforming_strings = on;
 SET check_function_bodies = false;
@@ -186,21 +187,21 @@ ALTER SEQUENCE tags_tid_seq OWNED BY tags.tid;
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
+-- Name: appearances id; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY appearances ALTER COLUMN id SET DEFAULT nextval('appearances_id_seq'::regclass);
 
 
 --
--- Name: groupid; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
+-- Name: colorgroups groupid; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY colorgroups ALTER COLUMN groupid SET DEFAULT nextval('colorgroups_groupid_seq'::regclass);
 
 
 --
--- Name: tid; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
+-- Name: tags tid; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY tags ALTER COLUMN tid SET DEFAULT nextval('tags_tid_seq'::regclass);
@@ -218,8 +219,12 @@ INSERT INTO appearance_relations VALUES
 (118, 216, false),
 (126, 7, false),
 (126, 118, false),
+(144, 5, true),
 (156, 5, false),
-(216, 118, false);
+(182, 5, true),
+(215, 5, true),
+(216, 118, false),
+(217, 5, true);
 
 
 --
@@ -7487,7 +7492,7 @@ SELECT pg_catalog.setval('tags_tid_seq', 437, true);
 
 
 --
--- Name: appearance_relations_source_target; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
+-- Name: appearance_relations appearance_relations_source_target; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY appearance_relations
@@ -7495,7 +7500,7 @@ ALTER TABLE ONLY appearance_relations
 
 
 --
--- Name: appearances_id; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
+-- Name: appearances appearances_id; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY appearances
@@ -7503,7 +7508,7 @@ ALTER TABLE ONLY appearances
 
 
 --
--- Name: colorgroups_groupid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
+-- Name: colorgroups colorgroups_groupid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY colorgroups
@@ -7511,7 +7516,7 @@ ALTER TABLE ONLY colorgroups
 
 
 --
--- Name: colorgroups_groupid_label; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
+-- Name: colorgroups colorgroups_groupid_label; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY colorgroups
@@ -7519,7 +7524,7 @@ ALTER TABLE ONLY colorgroups
 
 
 --
--- Name: tagged_tid_ponyid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
+-- Name: tagged tagged_tid_ponyid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY tagged
@@ -7527,7 +7532,7 @@ ALTER TABLE ONLY tagged
 
 
 --
--- Name: tags_tid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
+-- Name: tags tags_tid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY tags
@@ -7556,7 +7561,7 @@ CREATE INDEX tags_synonym_of ON tags USING btree (synonym_of);
 
 
 --
--- Name: appearance_relations_source_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
+-- Name: appearance_relations appearance_relations_source_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY appearance_relations
@@ -7564,7 +7569,7 @@ ALTER TABLE ONLY appearance_relations
 
 
 --
--- Name: appearance_relations_target_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
+-- Name: appearance_relations appearance_relations_target_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY appearance_relations
@@ -7572,7 +7577,7 @@ ALTER TABLE ONLY appearance_relations
 
 
 --
--- Name: colorgroups_ponyid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
+-- Name: colorgroups colorgroups_ponyid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY colorgroups
@@ -7580,7 +7585,7 @@ ALTER TABLE ONLY colorgroups
 
 
 --
--- Name: colors_groupid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
+-- Name: colors colors_groupid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY colors
@@ -7588,7 +7593,7 @@ ALTER TABLE ONLY colors
 
 
 --
--- Name: tagged_ponyid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
+-- Name: tagged tagged_ponyid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY tagged
@@ -7596,7 +7601,7 @@ ALTER TABLE ONLY tagged
 
 
 --
--- Name: tagged_tid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
+-- Name: tagged tagged_tid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY tagged
@@ -7604,7 +7609,7 @@ ALTER TABLE ONLY tagged
 
 
 --
--- Name: tags_synonym_of_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
+-- Name: tags tags_synonym_of_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY tags
@@ -7612,22 +7617,9 @@ ALTER TABLE ONLY tags
 
 
 --
--- Name: public; Type: ACL; Schema: -; Owner: postgres
---
-
-REVOKE ALL ON SCHEMA public FROM PUBLIC;
-REVOKE ALL ON SCHEMA public FROM postgres;
-GRANT ALL ON SCHEMA public TO postgres;
-GRANT ALL ON SCHEMA public TO PUBLIC;
-
-
---
 -- Name: appearances; Type: ACL; Schema: public; Owner: mlpvc-rr
 --
 
-REVOKE ALL ON TABLE appearances FROM PUBLIC;
-REVOKE ALL ON TABLE appearances FROM "mlpvc-rr";
-GRANT ALL ON TABLE appearances TO "mlpvc-rr";
 GRANT ALL ON TABLE appearances TO postgres;
 
 
@@ -7635,9 +7627,6 @@ GRANT ALL ON TABLE appearances TO postgres;
 -- Name: colorgroups; Type: ACL; Schema: public; Owner: mlpvc-rr
 --
 
-REVOKE ALL ON TABLE colorgroups FROM PUBLIC;
-REVOKE ALL ON TABLE colorgroups FROM "mlpvc-rr";
-GRANT ALL ON TABLE colorgroups TO "mlpvc-rr";
 GRANT ALL ON TABLE colorgroups TO postgres;
 
 
@@ -7645,9 +7634,6 @@ GRANT ALL ON TABLE colorgroups TO postgres;
 -- Name: colors; Type: ACL; Schema: public; Owner: mlpvc-rr
 --
 
-REVOKE ALL ON TABLE colors FROM PUBLIC;
-REVOKE ALL ON TABLE colors FROM "mlpvc-rr";
-GRANT ALL ON TABLE colors TO "mlpvc-rr";
 GRANT ALL ON TABLE colors TO postgres;
 
 
@@ -7655,9 +7641,6 @@ GRANT ALL ON TABLE colors TO postgres;
 -- Name: tagged; Type: ACL; Schema: public; Owner: mlpvc-rr
 --
 
-REVOKE ALL ON TABLE tagged FROM PUBLIC;
-REVOKE ALL ON TABLE tagged FROM "mlpvc-rr";
-GRANT ALL ON TABLE tagged TO "mlpvc-rr";
 GRANT ALL ON TABLE tagged TO postgres;
 
 
@@ -7665,10 +7648,14 @@ GRANT ALL ON TABLE tagged TO postgres;
 -- Name: tags; Type: ACL; Schema: public; Owner: mlpvc-rr
 --
 
-REVOKE ALL ON TABLE tags FROM PUBLIC;
-REVOKE ALL ON TABLE tags FROM "mlpvc-rr";
-GRANT ALL ON TABLE tags TO "mlpvc-rr";
 GRANT ALL ON TABLE tags TO postgres;
+
+
+--
+-- Name: DEFAULT PRIVILEGES FOR TABLES; Type: DEFAULT ACL; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER DEFAULT PRIVILEGES FOR ROLE "mlpvc-rr" IN SCHEMA public GRANT SELECT,INSERT,DELETE,UPDATE ON TABLES  TO "mlpvc-rr";
 
 
 --
