@@ -112,6 +112,7 @@ use DB\Episode;
 				'user' => $currentUser->id,
 				'vote' => $vote,
 			))) Response::DBError();
+			$Episode->updateScore();
 			Response::Done(array('newhtml' => Episodes::GetSidebarVoting($Episode)));
 		break;
 		case "videos":
