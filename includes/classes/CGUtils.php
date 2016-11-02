@@ -709,7 +709,10 @@ XML;
 		
 		static function GetSwatchesAI($Appearance){
 			$label = $Appearance['label'];
-			$JSON = array('Exported at' => gmdate('Y-m-d H:i:s \G\M\T'));
+			$JSON = array(
+				'Exported at' => gmdate('Y-m-d H:i:s \G\M\T'),
+				'Version' => '1.4',
+			);
 			$JSON[$label] = array();
 			
 			$CGs = \CG\ColorGroups::Get($Appearance['id']);
