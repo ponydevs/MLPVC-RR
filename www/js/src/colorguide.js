@@ -161,7 +161,7 @@ DocReady.push(function Colorguide(){
 	}
 	window.tooltips = function(){tooltips()};
 
-	function Navigation(){
+	function navigation(){
 		$list = $('.appearance-list');
 		if (!AppearancePage)
 			$list.off('click','.getswatch',getswatch).on('click','.getswatch',getswatch);
@@ -169,9 +169,9 @@ DocReady.push(function Colorguide(){
 		tooltips();
 		copyHashToggler();
 	}
-	$list.filter('#list').on('page-switch', Navigation);
-	$d.on('paginate-refresh', Navigation);
-	Navigation();
+	$list.filter('#list').on('page-switch', navigation);
+	$d.on('paginate-refresh', navigation);
+	navigation();
 
 	$SearchForm.on('submit', function(e, gofast){
 		e.preventDefault();
@@ -222,11 +222,17 @@ DocReady.push(function Colorguide(){
 						<li>Once you have the script, <a href="/cg/v/${ponyID}.json" class="btn blue typcn typcn-download">click here</a> to download the <code>.json</code> file that you'll need to use for the import.</li>
 						<li>Now that you have the 2 files, open Illustrator, create/open a document, then go to <strong>File &rsaquo; Scripts &rsaquo; Other Script</strong> (or press ${pressAi}) then find the file with the <code>.jsx</code> extension (the one you first downloaded). A dialog will appear telling you what to do next.</li>
 					</ul>
+					<div class="responsive-embed">
+						<iframe src="https://www.youtube.com/embed/oobQZ2xiDB8" allowfullscreen async defer></iframe>
+					</div>
 				</div>
 				<div class='hidden section inkscape'>
 					<h4>How to import swatches to Inkscape</h4>
 					<p>Download <a href='/cg/v/${ponyID}.gpl' class='btn blue typcn typcn-download'>this file</a> and place it in the <code>&hellip;\\Inkscape<wbr>\\<wbr>share<wbr>\\<wbr>palettes</code> folder. If you don't plan on using the other swatches, deleting them should make your newly imported swatch easier to find.</p>
 					<p>You will most likely have to restart Inkscape for the swatch to show up in the <em>Swatches</em> (<kbd>F6</kbd>) tool window's menu.</p>
+					<div class="responsive-embed">
+						<iframe src="https://www.youtube.com/embed/zmaJhbIKQqM" allowfullscreen async defer></iframe>
+					</div>
 				</div>`
 			),
 			$appsel = $.mk('select')

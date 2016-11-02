@@ -187,6 +187,8 @@ img.avatar {
 	width: $AvatarSize;
 	height: $AvatarSize;
 }
+.resp-embed-wrap { @extend %resp-embed-wrap }
+.responsive-embed { @extend %responsive-embed }
 // Page layout
 body {
 	margin: 0;
