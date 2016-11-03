@@ -223,6 +223,8 @@ INSERT INTO appearance_relations VALUES
 (144, 5, true),
 (156, 5, false),
 (182, 5, true),
+(212, 71, false),
+(213, 212, true),
 (215, 5, true),
 (216, 118, false),
 (217, 5, true);
@@ -490,12 +492,13 @@ All other body and mane/tail colors remain the same.', NULL, false, '2016-09-24 
 (205, 191, 'Lifejacket', '', NULL, false, '2016-10-04 03:47:22.688623+02', NULL, NULL, false),
 (206, 192, 'Derpy''s Mail Uniform', '', NULL, false, '2016-10-07 04:48:56.941256+02', NULL, NULL, false),
 (207, 193, '80s Cheerilee Outfit', '', NULL, false, '2016-10-08 18:26:49.928814+02', NULL, NULL, false),
-(208, 33, 'Queen Chrysalis', '', NULL, false, '2016-10-08 18:29:05.702941+02', NULL, NULL, true),
+(208, 33, 'Queen Chrysalis', 'Her magic aura (if not blurred) has 7 paths, all based on the horn shape, growing or shrinking with a width equivalent to the body stroke. Most of these paths are based on the standard aura color; the path just outside the horn is 80%, the next 60%, 40%, and then 20%; the path just inside the horn is 60% and then 20%. One path may be colored with a more-yellow highlight aura color. Note that there is a throbbing effect based on these colors too.', NULL, false, '2016-10-08 18:29:05.702941+02', NULL, NULL, false),
 (209, 20, 'King Thorax', '', NULL, false, '2016-10-08 18:29:56.051636+02', NULL, NULL, true),
 (210, 173, 'Changeling', '', NULL, false, '2016-10-08 18:30:41.325285+02', NULL, NULL, true),
 (211, 194, 'Changeling Armor', '', NULL, false, '2016-10-08 18:31:05.604404+02', NULL, NULL, true),
 (212, 104, 'Sky Stinger', '', 'dam4jo3', false, '2016-10-10 09:34:27.424468+02', NULL, false, false),
-(213, 105, 'Vapor Trail', '', 'dalflvq', false, '2016-10-10 09:35:07.574368+02', NULL, true, false),
+(213, 105, 'Vapor Trail', 'Far legs use darker colors.
+Pay close attention to her hair fills when vectoring her. The colors can be hard to distinguish.', 'dalflvq', false, '2016-10-10 09:35:07.574368+02', NULL, true, false),
 (214, 106, 'Angel Wings', '', NULL, false, '2016-10-10 09:38:59.135126+02', NULL, NULL, false),
 (215, 195, 'Rainbow Dash''s Bomber Jacket', '', NULL, false, '2016-10-15 17:38:59.596738+02', NULL, NULL, false),
 (216, 196, 'Princess Ember''s Disguise', '', NULL, false, '2016-10-23 20:10:17.020952+02', NULL, NULL, true),
@@ -1489,7 +1492,7 @@ INSERT INTO colorgroups VALUES
 (1102, 208, 'Mane & Tail', 1),
 (1103, 208, 'Iris', 2),
 (1104, 208, 'Crown', 3),
-(1105, 208, 'Magic', 4),
+(1105, 208, 'Magic (See notes)', 4),
 (1106, 209, 'Coat', 0),
 (1107, 209, 'Mane & Tail', 1),
 (1108, 209, 'Iris', 2),
@@ -1535,14 +1538,15 @@ INSERT INTO colorgroups VALUES
 (1151, 218, 'Coveralls', 1),
 (1152, 218, 'Hat', 2),
 (1153, 219, 'Coveralls', 1),
-(1154, 219, 'Hat', 2);
+(1154, 219, 'Hat', 2),
+(1155, 208, 'Wings', 6);
 
 
 --
 -- Name: colorgroups_groupid_seq; Type: SEQUENCE SET; Schema: public; Owner: mlpvc-rr
 --
 
-SELECT pg_catalog.setval('colorgroups_groupid_seq', 1154, true);
+SELECT pg_catalog.setval('colorgroups_groupid_seq', 1155, true);
 
 
 --
@@ -5760,7 +5764,8 @@ INSERT INTO colors VALUES
 (1104, 1, 'Fill', '#2A2A2A'),
 (1104, 2, 'Bauble Fill 1', '#218796'),
 (1104, 3, 'Bauble Fill 2', '#47C4CA'),
-(1105, 13, 'Aura', NULL),
+(1105, 0, 'Aura', '#00F600'),
+(1105, 1, 'Highlighted Aura', '#82FF65'),
 (1106, 0, 'Outline', NULL),
 (1106, 1, 'Fill', NULL),
 (1106, 2, 'Shadow Outline', NULL),
@@ -5815,8 +5820,8 @@ INSERT INTO colors VALUES
 (1121, 0, 'Gradient Top', '#208764'),
 (1121, 1, 'Gradient Middle', '#4BBAA3'),
 (1121, 2, 'Gradient Bottom', '#7BEEAC'),
-(1122, 0, 'Fill 1', '#FAFA8A'),
-(1122, 1, 'Fill 2', '#FAB92B'),
+(1122, 0, 'Fill 1', '#FAB92B'),
+(1122, 1, 'Fill 2', '#FAFA8A'),
 (1122, 2, 'Fill 3', '#F5A830'),
 (1124, 0, 'Outline', '#95D4B4'),
 (1124, 1, 'Fill', '#F5FFF0'),
@@ -6002,7 +6007,13 @@ INSERT INTO colors VALUES
 (1154, 0, 'Outline', '#489EDB'),
 (1154, 1, 'Fill', '#7DD0F6'),
 (1154, 2, 'Top/Inside Fill', '#5CB0E5'),
-(1154, 3, 'Strap Holes', '#0097E0');
+(1154, 3, 'Strap Holes', '#0097E0'),
+(1155, 0, 'Outline, Lower Gradient (50%)', '#4AC1D4'),
+(1155, 1, 'Outline, Upper Gradient (35%)', '#69BBBD'),
+(1155, 2, 'Fill, Lower Gradient (50%)', '#2894A2'),
+(1155, 3, 'Fill, Upper Gradient (35%)', '#367370'),
+(1155, 4, 'Fold Fill, Lower Grdnt (50%)', '#2894A2'),
+(1155, 5, 'Fold Fill, Upper Grdnt (25%)', '#367370');
 
 
 --
@@ -7475,7 +7486,7 @@ INSERT INTO tags VALUES
 (427, 'tri-horned bunyip', NULL, 'spec', 1, NULL),
 (428, 'mailmare', NULL, 'app', 1, NULL),
 (429, '80s cheerilee', NULL, 'app', 1, NULL),
-(430, 'queen chrsalis', NULL, 'char', 1, NULL),
+(430, 'queen chrysalis', NULL, 'char', 1, NULL),
 (431, 'king thorax', NULL, 'char', 1, NULL),
 (432, 'spoiled milk', NULL, 'char', 0, 305),
 (433, 'sky stinger', NULL, 'char', 1, NULL),

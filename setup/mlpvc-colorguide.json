@@ -6018,15 +6018,233 @@
 			"id": 208,
 			"order": 33,
 			"label": "Queen Chrysalis",
-			"notes": "",
+			"notes": "Her magic aura (if not blurred) has 7 paths, all based on the horn shape, growing or shrinking with a width equivalent to the body stroke. Most of these paths are based on the standard aura color; the path just outside the horn is 80%, the next 60%, 40%, and then 20%; the path just inside the horn is 60% and then 20%. One path may be colored with a more-yellow highlight aura color. Note that there is a throbbing effect based on these colors too.",
 			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-10-08 18:29:05.702941+02",
 			"cm_preview": null,
 			"cm_dir": null,
-			"private": true,
+			"private": false,
 			"ColorGroups": {
-				"_hidden": true
+				"1101": {
+					"groupid": 1101,
+					"label": "Coat",
+					"order": 0,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#141414"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#2A2A2A"
+						},
+						{
+							"order": 2,
+							"label": "Shadow Outline",
+							"hex": "#111111"
+						},
+						{
+							"order": 3,
+							"label": "Shadow Fill",
+							"hex": "#252525"
+						},
+						{
+							"order": 4,
+							"label": "Blemishes",
+							"hex": "#3F3F3F"
+						}
+					]
+				},
+				"1102": {
+					"groupid": 1102,
+					"label": "Mane & Tail",
+					"order": 1,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#2D89AD"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#1E5972"
+						}
+					]
+				},
+				"1103": {
+					"groupid": 1103,
+					"label": "Iris",
+					"order": 2,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Eyeball",
+							"hex": "#B3ECD8"
+						},
+						{
+							"order": 1,
+							"label": "Gradient Top",
+							"hex": "#004449"
+						},
+						{
+							"order": 2,
+							"label": "Gradient Middle",
+							"hex": "#369D69"
+						},
+						{
+							"order": 3,
+							"label": "Gradient Bottom",
+							"hex": "#CDE67E"
+						},
+						{
+							"order": 4,
+							"label": "Outer Pupil",
+							"hex": "#00393C"
+						},
+						{
+							"order": 5,
+							"label": "Inner Pupil",
+							"hex": "#FFFFFF"
+						},
+						{
+							"order": 6,
+							"label": "Eyelid Fill 1",
+							"hex": "#093434"
+						},
+						{
+							"order": 7,
+							"label": "Eyelid Fill 2",
+							"hex": "#0F5351"
+						}
+					]
+				},
+				"1104": {
+					"groupid": 1104,
+					"label": "Crown",
+					"order": 3,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#151515"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#2A2A2A"
+						},
+						{
+							"order": 2,
+							"label": "Bauble Fill 1",
+							"hex": "#218796"
+						},
+						{
+							"order": 3,
+							"label": "Bauble Fill 2",
+							"hex": "#47C4CA"
+						}
+					]
+				},
+				"1105": {
+					"groupid": 1105,
+					"label": "Magic (See notes)",
+					"order": 4,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Aura",
+							"hex": "#00F600"
+						},
+						{
+							"order": 1,
+							"label": "Highlighted Aura",
+							"hex": "#82FF65"
+						}
+					]
+				},
+				"1148": {
+					"groupid": 1148,
+					"label": "Carapace",
+					"order": 5,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Upper Carapace Outline",
+							"hex": "#113A47"
+						},
+						{
+							"order": 1,
+							"label": "Upper Carapace Gradient Front",
+							"hex": "#00454A"
+						},
+						{
+							"order": 2,
+							"label": "Upper Carapace Gradient Back",
+							"hex": "#52B648"
+						},
+						{
+							"order": 3,
+							"label": "Upper Carapace Shine",
+							"hex": "#B8FFFA"
+						},
+						{
+							"order": 4,
+							"label": "Lower Carapace Outline",
+							"hex": "#248697"
+						},
+						{
+							"order": 5,
+							"label": "Lower Carapace Gradient Bottom",
+							"hex": "#00485F"
+						},
+						{
+							"order": 6,
+							"label": "Lower Carapace Gradient Top",
+							"hex": "#459D72"
+						}
+					]
+				},
+				"1155": {
+					"groupid": 1155,
+					"label": "Wings",
+					"order": 6,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline, Lower Gradient (50%)",
+							"hex": "#4AC1D4"
+						},
+						{
+							"order": 1,
+							"label": "Outline, Upper Gradient (35%)",
+							"hex": "#69BBBD"
+						},
+						{
+							"order": 2,
+							"label": "Fill, Lower Gradient (50%)",
+							"hex": "#2894A2"
+						},
+						{
+							"order": 3,
+							"label": "Fill, Upper Gradient (35%)",
+							"hex": "#367370"
+						},
+						{
+							"order": 4,
+							"label": "Fold Fill, Lower Grdnt (50%)",
+							"hex": "#2894A2"
+						},
+						{
+							"order": 5,
+							"label": "Fold Fill, Upper Grdnt (25%)",
+							"hex": "#367370"
+						}
+					]
+				}
 			},
 			"TagIDs": [
 				9,
@@ -16872,12 +17090,12 @@
 						{
 							"order": 0,
 							"label": "Fill 1",
-							"hex": "#FAFA8A"
+							"hex": "#FAB92B"
 						},
 						{
 							"order": 1,
 							"label": "Fill 2",
-							"hex": "#FAB92B"
+							"hex": "#FAFA8A"
 						},
 						{
 							"order": 2,
@@ -16897,13 +17115,16 @@
 				421,
 				433
 			],
-			"RelatedAppearances": []
+			"RelatedAppearances": [
+				213,
+				71
+			]
 		},
 		"213": {
 			"id": 213,
 			"order": 105,
 			"label": "Vapor Trail",
-			"notes": "",
+			"notes": "Far legs use darker colors.\nPay close attention to her hair fills when vectoring her. The colors can be hard to distinguish.",
 			"cm_favme": "dalflvq",
 			"ishuman": false,
 			"added": "2016-10-10 09:35:07.574368+02",
@@ -17042,7 +17263,9 @@
 				421,
 				434
 			],
-			"RelatedAppearances": []
+			"RelatedAppearances": [
+				212
+			]
 		},
 		"214": {
 			"id": 214,
@@ -37121,7 +37344,7 @@
 		},
 		"430": {
 			"tid": 430,
-			"name": "queen chrsalis",
+			"name": "queen chrysalis",
 			"title": null,
 			"type": "char",
 			"uses": 1,
