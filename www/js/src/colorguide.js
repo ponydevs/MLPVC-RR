@@ -87,7 +87,7 @@ DocReady.push(function Colorguide(){
 			});
 
 			return true;
-		}).off('mousedown touchstart').on('click', function(e){
+		}).off('mousedown touchstart click').on('click', function(e){
 			e.preventDefault();
 			let $this = $(this),
 				copy = $this.html().trim();
