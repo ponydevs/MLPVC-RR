@@ -6252,7 +6252,8 @@
 				353,
 				399,
 				422,
-				430
+				430,
+				438
 			],
 			"RelatedAppearances": []
 		},
@@ -37405,6 +37406,14 @@
 			"type": "cat",
 			"uses": 12,
 			"synonym_of": null
+		},
+		"438": {
+			"tid": 438,
+			"name": "chrysalis",
+			"title": null,
+			"type": "char",
+			"uses": 0,
+			"synonym_of": 430
 		}
 	}
 }

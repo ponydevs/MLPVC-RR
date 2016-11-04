@@ -7493,14 +7493,15 @@ INSERT INTO tags VALUES
 (434, 'vapor trail', NULL, 'char', 1, NULL),
 (435, 'angel wings', NULL, 'char', 1, NULL),
 (436, 'princess ember''s disguise', NULL, 'app', 1, NULL),
-(437, 'non-pony character', NULL, 'cat', 12, NULL);
+(437, 'non-pony character', NULL, 'cat', 12, NULL),
+(438, 'chrysalis', NULL, 'char', 0, 430);
 
 
 --
 -- Name: tags_tid_seq; Type: SEQUENCE SET; Schema: public; Owner: mlpvc-rr
 --
 
-SELECT pg_catalog.setval('tags_tid_seq', 437, true);
+SELECT pg_catalog.setval('tags_tid_seq', 438, true);
 
 
 --
