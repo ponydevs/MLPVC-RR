@@ -282,8 +282,7 @@ use Exceptions\cURLRequestException;
 				$Database->insert('sessions', array_merge($AuthData, array('user' => $UserID)));
 			}
 
-			$interval = $User->name === 'dcencia' ? '1 WEEK' : '1 MONTH';
-			$Database->rawQuery("DELETE FROM sessions WHERE \"user\" = ? && lastvisit <= NOW() - INTERVAL '$interval'", array($UserID));
+			$Database->rawQuery("DELETE FROM sessions WHERE \"user\" = ? && lastvisit <= NOW() - INTERVAL '1 MONTH'", array($UserID));
 
 			Cookie::Set('access', $cookie, time()+ Time::$IN_SECONDS['year'], Cookie::HTTPONLY);
 			return $User ?? null;
