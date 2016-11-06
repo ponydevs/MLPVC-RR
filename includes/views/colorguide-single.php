@@ -4,7 +4,7 @@
 	<p>from the MLP-VectorClub <a href="/cg"><?=$Color?> Guide</a></p>
 
 <?  if (Permission::Sufficient('staff')){ ?>
-	<div class="notice warn align-center appearance-private-notice"<?=!empty($Appearance['private'])?'':' style="display:none"'?>><p><span class="typcn typcn-lock-closed"></span> <strong>This appearance is currently private (it colors are only visible to staff members)</strong></p></div>
+	<div class="notice warn align-center appearance-private-notice"<?=!empty($Appearance['private'])?'':' style="display:none"'?>><p><span class="typcn typcn-lock-closed"></span> <strong>This appearance is currently private (its colors are only visible to staff members)</strong></p></div>
 <?php
 	}
 
