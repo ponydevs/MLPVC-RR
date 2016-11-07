@@ -213,6 +213,7 @@ ALTER TABLE ONLY tags ALTER COLUMN tid SET DEFAULT nextval('tags_tid_seq'::regcl
 --
 
 INSERT INTO appearance_relations VALUES
+(5, 187, true),
 (57, 191, false),
 (118, 7, false),
 (118, 125, false),
@@ -222,9 +223,12 @@ INSERT INTO appearance_relations VALUES
 (126, 118, false),
 (144, 5, true),
 (156, 5, false),
+(181, 79, true),
 (182, 5, true),
+(207, 79, true),
 (212, 71, false),
-(213, 212, true),
+(212, 213, true),
+(213, 71, false),
 (215, 5, true),
 (216, 118, false),
 (217, 5, true);
@@ -485,9 +489,9 @@ Only fill on cloak is transparent; sparkles are 100% opaque atop except for one 
 (199, 207, 'Hypnotized Mane 6 Eyes', 'Eye colors for the Mane 6 (except Twilight) due to Starlight Glimmer''s spell from S6E21.
 All other body and mane/tail colors remain the same.', NULL, false, '2016-09-24 21:16:19.303343+02', NULL, NULL, false),
 (200, 188, 'Impossibly Rich', '', NULL, false, '2016-09-26 02:02:26.436446+02', NULL, NULL, false),
-(201, NULL, 'Rarity''s Titanic Outfit', '', NULL, true, '2016-10-02 00:17:25.771874+02', NULL, NULL, false),
+(201, NULL, 'Rarity''s Titanic Outfit', '', NULL, false, '2016-10-02 00:17:25.771874+02', NULL, NULL, false),
 (202, 189, 'Captain Jackbeard', '', NULL, false, '2016-10-02 00:18:24.884029+02', NULL, NULL, false),
-(203, 190, 'Captain Rarity', '', NULL, false, '2016-10-02 00:19:10.88123+02', NULL, NULL, true),
+(203, 190, 'Captain Rarity', '', NULL, false, '2016-10-02 00:19:10.88123+02', NULL, NULL, false),
 (204, 172, 'Tri-horned Bunyip', '', NULL, false, '2016-10-02 00:19:36.338675+02', NULL, NULL, false),
 (205, 191, 'Lifejacket', '', NULL, false, '2016-10-04 03:47:22.688623+02', NULL, NULL, false),
 (206, 192, 'Derpy''s Mail Uniform', '', NULL, false, '2016-10-07 04:48:56.941256+02', NULL, NULL, false),
@@ -504,14 +508,15 @@ Pay close attention to her hair fills when vectoring her. The colors can be hard
 (216, 196, 'Princess Ember''s Disguise', '', NULL, false, '2016-10-23 20:10:17.020952+02', NULL, NULL, true),
 (217, 197, 'Rainbow Dash''s Mechanics Outfit', '', NULL, false, '2016-10-26 15:42:35.268784+02', NULL, NULL, false),
 (218, 198, 'Applejack''s Mechanics Outfit', '', NULL, false, '2016-10-26 16:00:09.021007+02', NULL, NULL, false),
-(219, 199, 'Rarity''s Mechanics Outfit', '', NULL, false, '2016-10-26 16:09:27.776513+02', NULL, NULL, false);
+(219, 199, 'Rarity''s Mechanics Outfit', '', NULL, false, '2016-10-26 16:09:27.776513+02', NULL, NULL, false),
+(220, NULL, 'Sunset Shimmer (FG, LoE)', 'Sunset Shimmer''s appearance from Friendship Games, onward. Note the lighter hair colors.', NULL, true, '2016-11-07 03:10:05.472298+01', NULL, NULL, false);
 
 
 --
 -- Name: appearances_id_seq; Type: SEQUENCE SET; Schema: public; Owner: mlpvc-rr
 --
 
-SELECT pg_catalog.setval('appearances_id_seq', 219, true);
+SELECT pg_catalog.setval('appearances_id_seq', 220, true);
 
 
 --
@@ -1539,14 +1544,24 @@ INSERT INTO colorgroups VALUES
 (1152, 218, 'Hat', 2),
 (1153, 219, 'Coveralls', 1),
 (1154, 219, 'Hat', 2),
-(1155, 208, 'Wings', 6);
+(1155, 208, 'Wings', 6),
+(1156, 203, 'Glasses', 1),
+(1157, 203, 'Hat', 2),
+(1158, 203, 'Shirt and Tie', 3),
+(1159, 203, 'Jacket', 4),
+(1160, 220, 'Skin', 1),
+(1161, 220, 'Hair', 2),
+(1162, 220, 'Eyes', 3),
+(1163, 220, 'Jacket', 4),
+(1164, 220, 'Dress and Leggings', 5),
+(1165, 220, 'Boots', 6);
 
 
 --
 -- Name: colorgroups_groupid_seq; Type: SEQUENCE SET; Schema: public; Owner: mlpvc-rr
 --
 
-SELECT pg_catalog.setval('colorgroups_groupid_seq', 1155, true);
+SELECT pg_catalog.setval('colorgroups_groupid_seq', 1165, true);
 
 
 --
@@ -6013,7 +6028,85 @@ INSERT INTO colors VALUES
 (1155, 2, 'Fill, Lower Gradient (50%)', '#2894A2'),
 (1155, 3, 'Fill, Upper Gradient (35%)', '#367370'),
 (1155, 4, 'Fold Fill, Lower Grdnt (50%)', '#2894A2'),
-(1155, 5, 'Fold Fill, Upper Grdnt (25%)', '#367370');
+(1155, 5, 'Fold Fill, Upper Grdnt (25%)', '#367370'),
+(1156, 0, 'Frame Outline', '#1D4857'),
+(1156, 1, 'Light Fill', '#0CBBA0'),
+(1156, 2, 'Dark Fill', '#006868'),
+(1156, 3, 'Lens (0% to 80% opacity)', '#2BD6C0'),
+(1156, 4, 'Rim Outline', '#0F2C35'),
+(1156, 5, 'Rim Fill', '#003F41'),
+(1156, 6, 'Gem Fill 1', '#7BD1F4'),
+(1156, 7, 'Gem Fill 2', '#0B8BB9'),
+(1157, 0, 'Main Outline', '#A9D1D1'),
+(1157, 1, 'Main Fill', '#FFFFFF'),
+(1157, 2, 'Brim/Logo Outline', '#22223D'),
+(1157, 3, 'Brim/Logo Fill', '#203048'),
+(1157, 4, 'Brim Shine', '#4B6FA8'),
+(1157, 5, 'Piping Outline', '#DA7D14'),
+(1157, 6, 'Piping Fill', '#EBA206'),
+(1157, 7, 'Piping Detail Outline', '#F8B525'),
+(1157, 8, 'Piping Detail Fill', '#FFDE67'),
+(1157, 9, 'Logo Band Outline', '#E79E08'),
+(1157, 10, 'Logo Band Fill', '#FFD656'),
+(1157, 11, 'Gem Fill 1', '#7BD1F4'),
+(1157, 12, 'Gem Fill 2', '#0B8BB9'),
+(1158, 0, 'Shirt Outline', '#AAD2D0'),
+(1158, 1, 'Shirt Fill', '#FFFFFF'),
+(1158, 2, 'Shirt Shadow Outline', '#99C8D2'),
+(1158, 3, 'Shirt Shadow Fill', '#E3E3E3'),
+(1158, 4, 'Bow Tie Outline', '#086786'),
+(1158, 5, 'Bow Tie Fill', '#0B8BB9'),
+(1158, 6, 'Gem Button Fill 1', '#7BD1F4'),
+(1158, 7, 'Gem Button Fill 2', '#0B8BB9'),
+(1159, 0, 'Outline', '#22223D'),
+(1159, 1, 'Jacket Fill', '#2C4266'),
+(1159, 2, 'Shadow Outline', '#1B3333'),
+(1159, 3, 'Shadow Fill', '#283C5C'),
+(1159, 4, 'Collar Fill', '#203048'),
+(1159, 5, 'Epaulet Outline', '#DA7D14'),
+(1159, 6, 'Epaulet Fill 1', '#EBA206'),
+(1159, 7, 'Epaulet Fill 2', '#F5C137'),
+(1159, 8, 'Sleeve Striping', '#E9A40A'),
+(1159, 9, 'Cufflink Fill 1', '#F4C031'),
+(1159, 10, 'Cufflink Fill 2', '#E9A40A'),
+(1159, 11, 'Shadow Sleeve Striping', '#D09100'),
+(1159, 12, 'Button Outline', '#061023'),
+(1159, 13, 'Button Fill', '#22223E'),
+(1159, 14, 'Medal Outline', '#F3B62B'),
+(1159, 15, 'Medal Fill', '#FFDD62'),
+(1159, 16, 'Sequin Shine 1', '#0B8BB5'),
+(1159, 17, 'Sequin Shine 2', '#4E6EA8'),
+(1159, 18, 'Sequin Shine 3', '#AAD8E6'),
+(1159, 19, 'Shadow Sequin Shine 1', '#0C7CA0'),
+(1159, 20, 'Shadow Sequin Shine 2', '#466191'),
+(1159, 21, 'Shadow Sequin Shine 3', '#95C0D2'),
+(1160, 0, 'Outline', '#DE9E04'),
+(1160, 1, 'Fill', '#FFD678'),
+(1161, 0, 'Outline', '#A31538'),
+(1161, 1, 'Fill 1', '#E4484E'),
+(1161, 2, 'Fill 2', '#FFEC8C'),
+(1162, 0, 'Iris Gradient Top', '#128C7E'),
+(1162, 1, 'Iris Gradient Bottom', '#7EF8D0'),
+(1162, 2, 'Upper Highlight', '#D8FFF0'),
+(1162, 3, 'Lower Highlight', '#96FBDB'),
+(1162, 4, 'Eyebrows', '#000000'),
+(1163, 0, 'Outline', '#000000'),
+(1163, 1, 'Fill', '#2C2C2C'),
+(1163, 2, 'Stripe', '#FF9E0D'),
+(1163, 3, 'Zipper/Pockets', '#909090'),
+(1164, 0, 'Top Outline', '#6399AA'),
+(1164, 1, 'Top Fill', '#A8E4D4'),
+(1164, 2, 'Skirt Outline', '#FB9E0F'),
+(1164, 3, 'Skirt Fill (80% opacity)', '#FFFBC2'),
+(1164, 4, 'Leggings Outline', '#30526F'),
+(1164, 5, 'Leggings Fill', '#629AAB'),
+(1165, 0, 'Outline, Sole, Strap', '#1A1A1A'),
+(1165, 1, 'Toe and Upper Fill', '#5C5C5C'),
+(1165, 2, 'Top Fill', '#434343'),
+(1165, 3, 'Back Fill', '#252525'),
+(1165, 4, 'Stripe', '#FF9E0D'),
+(1165, 5, 'Buckle Outline', '#639AAA'),
+(1165, 6, 'Buckle Fill', '#EBF8FF');
 
 
 --
@@ -6493,6 +6586,7 @@ INSERT INTO tagged VALUES
 (12, 208),
 (12, 213),
 (12, 214),
+(12, 220),
 (14, 1),
 (21, 10),
 (21, 16),
@@ -6621,6 +6715,7 @@ INSERT INTO tagged VALUES
 (74, 39),
 (75, 40),
 (76, 63),
+(76, 220),
 (77, 44),
 (78, 45),
 (79, 46),
@@ -6688,6 +6783,7 @@ INSERT INTO tagged VALUES
 (99, 28),
 (99, 62),
 (100, 63),
+(100, 220),
 (101, 46),
 (102, 29),
 (103, 29),
@@ -7100,7 +7196,7 @@ INSERT INTO tags VALUES
 (9, 'antagonist', NULL, 'cat', 13, NULL),
 (10, 'pet', NULL, 'cat', 6, NULL),
 (11, 'male', NULL, 'gen', 68, NULL),
-(12, 'female', NULL, 'gen', 99, NULL),
+(12, 'female', NULL, 'gen', 100, NULL),
 (14, 'twilight sparkle', NULL, 'char', 1, NULL),
 (19, 's01e01', NULL, 'ep', 0, NULL),
 (20, 's01e26', NULL, 'ep', 0, NULL),
@@ -7154,7 +7250,7 @@ INSERT INTO tags VALUES
 (73, 'berry pinch', NULL, 'char', 0, 116),
 (74, 'button mash', NULL, 'char', 1, NULL),
 (75, 'lily longsocks', NULL, 'char', 1, NULL),
-(76, 'human', NULL, 'spec', 1, NULL),
+(76, 'human', NULL, 'spec', 2, NULL),
 (77, 'shining armor', NULL, 'char', 1, NULL),
 (78, 'original character', 'Characters not canon to the show''s universe', 'cat', 1, NULL),
 (79, 'cheese sandwich', NULL, 'char', 1, NULL),
@@ -7178,7 +7274,7 @@ INSERT INTO tags VALUES
 (97, 's05e08', NULL, 'ep', 0, NULL),
 (98, 'sunburst', NULL, 'char', 1, NULL),
 (99, 's05e26', NULL, 'ep', 5, NULL),
-(100, 'sunset shimmer', NULL, 'char', 1, NULL),
+(100, 'sunset shimmer', NULL, 'char', 2, NULL),
 (101, 's04e12', NULL, 'ep', 1, NULL),
 (102, 's05e01-02', NULL, 'ep', 1, NULL),
 (103, 's05e25-26', NULL, 'ep', 1, NULL),

@@ -714,6 +714,7 @@
 			],
 			"RelatedAppearances": [
 				144,
+				187,
 				215,
 				217,
 				182
@@ -17265,7 +17266,8 @@
 				434
 			],
 			"RelatedAppearances": [
-				212
+				212,
+				71
 			]
 		},
 		"214": {
@@ -18069,7 +18071,10 @@
 				353,
 				420
 			],
-			"RelatedAppearances": []
+			"RelatedAppearances": [
+				181,
+				207
+			]
 		},
 		"80": {
 			"id": 80,
@@ -29826,7 +29831,9 @@
 				375,
 				392
 			],
-			"RelatedAppearances": []
+			"RelatedAppearances": [
+				79
+			]
 		},
 		"183": {
 			"id": 183,
@@ -30248,7 +30255,9 @@
 				378,
 				403
 			],
-			"RelatedAppearances": []
+			"RelatedAppearances": [
+				5
+			]
 		},
 		"188": {
 			"id": 188,
@@ -31766,9 +31775,291 @@
 			"added": "2016-10-02 00:19:10.88123+02",
 			"cm_preview": null,
 			"cm_dir": null,
-			"private": true,
+			"private": false,
 			"ColorGroups": {
-				"_hidden": true
+				"1156": {
+					"groupid": 1156,
+					"label": "Glasses",
+					"order": 1,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Frame Outline",
+							"hex": "#1D4857"
+						},
+						{
+							"order": 1,
+							"label": "Light Fill",
+							"hex": "#0CBBA0"
+						},
+						{
+							"order": 2,
+							"label": "Dark Fill",
+							"hex": "#006868"
+						},
+						{
+							"order": 3,
+							"label": "Lens (0% to 80% opacity)",
+							"hex": "#2BD6C0"
+						},
+						{
+							"order": 4,
+							"label": "Rim Outline",
+							"hex": "#0F2C35"
+						},
+						{
+							"order": 5,
+							"label": "Rim Fill",
+							"hex": "#003F41"
+						},
+						{
+							"order": 6,
+							"label": "Gem Fill 1",
+							"hex": "#7BD1F4"
+						},
+						{
+							"order": 7,
+							"label": "Gem Fill 2",
+							"hex": "#0B8BB9"
+						}
+					]
+				},
+				"1157": {
+					"groupid": 1157,
+					"label": "Hat",
+					"order": 2,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Main Outline",
+							"hex": "#A9D1D1"
+						},
+						{
+							"order": 1,
+							"label": "Main Fill",
+							"hex": "#FFFFFF"
+						},
+						{
+							"order": 2,
+							"label": "Brim/Logo Outline",
+							"hex": "#22223D"
+						},
+						{
+							"order": 3,
+							"label": "Brim/Logo Fill",
+							"hex": "#203048"
+						},
+						{
+							"order": 4,
+							"label": "Brim Shine",
+							"hex": "#4B6FA8"
+						},
+						{
+							"order": 5,
+							"label": "Piping Outline",
+							"hex": "#DA7D14"
+						},
+						{
+							"order": 6,
+							"label": "Piping Fill",
+							"hex": "#EBA206"
+						},
+						{
+							"order": 7,
+							"label": "Piping Detail Outline",
+							"hex": "#F8B525"
+						},
+						{
+							"order": 8,
+							"label": "Piping Detail Fill",
+							"hex": "#FFDE67"
+						},
+						{
+							"order": 9,
+							"label": "Logo Band Outline",
+							"hex": "#E79E08"
+						},
+						{
+							"order": 10,
+							"label": "Logo Band Fill",
+							"hex": "#FFD656"
+						},
+						{
+							"order": 11,
+							"label": "Gem Fill 1",
+							"hex": "#7BD1F4"
+						},
+						{
+							"order": 12,
+							"label": "Gem Fill 2",
+							"hex": "#0B8BB9"
+						}
+					]
+				},
+				"1158": {
+					"groupid": 1158,
+					"label": "Shirt and Tie",
+					"order": 3,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Shirt Outline",
+							"hex": "#AAD2D0"
+						},
+						{
+							"order": 1,
+							"label": "Shirt Fill",
+							"hex": "#FFFFFF"
+						},
+						{
+							"order": 2,
+							"label": "Shirt Shadow Outline",
+							"hex": "#99C8D2"
+						},
+						{
+							"order": 3,
+							"label": "Shirt Shadow Fill",
+							"hex": "#E3E3E3"
+						},
+						{
+							"order": 4,
+							"label": "Bow Tie Outline",
+							"hex": "#086786"
+						},
+						{
+							"order": 5,
+							"label": "Bow Tie Fill",
+							"hex": "#0B8BB9"
+						},
+						{
+							"order": 6,
+							"label": "Gem Button Fill 1",
+							"hex": "#7BD1F4"
+						},
+						{
+							"order": 7,
+							"label": "Gem Button Fill 2",
+							"hex": "#0B8BB9"
+						}
+					]
+				},
+				"1159": {
+					"groupid": 1159,
+					"label": "Jacket",
+					"order": 4,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#22223D"
+						},
+						{
+							"order": 1,
+							"label": "Jacket Fill",
+							"hex": "#2C4266"
+						},
+						{
+							"order": 2,
+							"label": "Shadow Outline",
+							"hex": "#1B3333"
+						},
+						{
+							"order": 3,
+							"label": "Shadow Fill",
+							"hex": "#283C5C"
+						},
+						{
+							"order": 4,
+							"label": "Collar Fill",
+							"hex": "#203048"
+						},
+						{
+							"order": 5,
+							"label": "Epaulet Outline",
+							"hex": "#DA7D14"
+						},
+						{
+							"order": 6,
+							"label": "Epaulet Fill 1",
+							"hex": "#EBA206"
+						},
+						{
+							"order": 7,
+							"label": "Epaulet Fill 2",
+							"hex": "#F5C137"
+						},
+						{
+							"order": 8,
+							"label": "Sleeve Striping",
+							"hex": "#E9A40A"
+						},
+						{
+							"order": 9,
+							"label": "Cufflink Fill 1",
+							"hex": "#F4C031"
+						},
+						{
+							"order": 10,
+							"label": "Cufflink Fill 2",
+							"hex": "#E9A40A"
+						},
+						{
+							"order": 11,
+							"label": "Shadow Sleeve Striping",
+							"hex": "#D09100"
+						},
+						{
+							"order": 12,
+							"label": "Button Outline",
+							"hex": "#061023"
+						},
+						{
+							"order": 13,
+							"label": "Button Fill",
+							"hex": "#22223E"
+						},
+						{
+							"order": 14,
+							"label": "Medal Outline",
+							"hex": "#F3B62B"
+						},
+						{
+							"order": 15,
+							"label": "Medal Fill",
+							"hex": "#FFDD62"
+						},
+						{
+							"order": 16,
+							"label": "Sequin Shine 1",
+							"hex": "#0B8BB5"
+						},
+						{
+							"order": 17,
+							"label": "Sequin Shine 2",
+							"hex": "#4E6EA8"
+						},
+						{
+							"order": 18,
+							"label": "Sequin Shine 3",
+							"hex": "#AAD8E6"
+						},
+						{
+							"order": 19,
+							"label": "Shadow Sequin Shine 1",
+							"hex": "#0C7CA0"
+						},
+						{
+							"order": 20,
+							"label": "Shadow Sequin Shine 2",
+							"hex": "#466191"
+						},
+						{
+							"order": 21,
+							"label": "Shadow Sequin Shine 3",
+							"hex": "#95C0D2"
+						}
+					]
+				}
 			},
 			"TagIDs": [
 				26,
@@ -32133,7 +32424,9 @@
 				420,
 				429
 			],
-			"RelatedAppearances": []
+			"RelatedAppearances": [
+				79
+			]
 		},
 		"211": {
 			"id": 211,
@@ -33906,7 +34199,7 @@
 			"label": "Rarity's Titanic Outfit",
 			"notes": "",
 			"cm_favme": null,
-			"ishuman": true,
+			"ishuman": false,
 			"added": "2016-10-02 00:17:25.771874+02",
 			"cm_preview": null,
 			"cm_dir": null,
@@ -34164,6 +34457,204 @@
 				419
 			],
 			"RelatedAppearances": []
+		},
+		"220": {
+			"id": 220,
+			"order": null,
+			"label": "Sunset Shimmer (FG, LoE)",
+			"notes": "Sunset Shimmer's appearance from Friendship Games, onward. Note the lighter hair colors.",
+			"cm_favme": null,
+			"ishuman": true,
+			"added": "2016-11-07 03:10:05.472298+01",
+			"cm_preview": null,
+			"cm_dir": null,
+			"private": false,
+			"ColorGroups": {
+				"1160": {
+					"groupid": 1160,
+					"label": "Skin",
+					"order": 1,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#DE9E04"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#FFD678"
+						}
+					]
+				},
+				"1161": {
+					"groupid": 1161,
+					"label": "Hair",
+					"order": 2,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#A31538"
+						},
+						{
+							"order": 1,
+							"label": "Fill 1",
+							"hex": "#E4484E"
+						},
+						{
+							"order": 2,
+							"label": "Fill 2",
+							"hex": "#FFEC8C"
+						}
+					]
+				},
+				"1162": {
+					"groupid": 1162,
+					"label": "Eyes",
+					"order": 3,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Iris Gradient Top",
+							"hex": "#128C7E"
+						},
+						{
+							"order": 1,
+							"label": "Iris Gradient Bottom",
+							"hex": "#7EF8D0"
+						},
+						{
+							"order": 2,
+							"label": "Upper Highlight",
+							"hex": "#D8FFF0"
+						},
+						{
+							"order": 3,
+							"label": "Lower Highlight",
+							"hex": "#96FBDB"
+						},
+						{
+							"order": 4,
+							"label": "Eyebrows",
+							"hex": "#000000"
+						}
+					]
+				},
+				"1163": {
+					"groupid": 1163,
+					"label": "Jacket",
+					"order": 4,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#000000"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#2C2C2C"
+						},
+						{
+							"order": 2,
+							"label": "Stripe",
+							"hex": "#FF9E0D"
+						},
+						{
+							"order": 3,
+							"label": "Zipper/Pockets",
+							"hex": "#909090"
+						}
+					]
+				},
+				"1164": {
+					"groupid": 1164,
+					"label": "Dress and Leggings",
+					"order": 5,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Top Outline",
+							"hex": "#6399AA"
+						},
+						{
+							"order": 1,
+							"label": "Top Fill",
+							"hex": "#A8E4D4"
+						},
+						{
+							"order": 2,
+							"label": "Skirt Outline",
+							"hex": "#FB9E0F"
+						},
+						{
+							"order": 3,
+							"label": "Skirt Fill (80% opacity)",
+							"hex": "#FFFBC2"
+						},
+						{
+							"order": 4,
+							"label": "Leggings Outline",
+							"hex": "#30526F"
+						},
+						{
+							"order": 5,
+							"label": "Leggings Fill",
+							"hex": "#629AAB"
+						}
+					]
+				},
+				"1165": {
+					"groupid": 1165,
+					"label": "Boots",
+					"order": 6,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline, Sole, Strap",
+							"hex": "#1A1A1A"
+						},
+						{
+							"order": 1,
+							"label": "Toe and Upper Fill",
+							"hex": "#5C5C5C"
+						},
+						{
+							"order": 2,
+							"label": "Top Fill",
+							"hex": "#434343"
+						},
+						{
+							"order": 3,
+							"label": "Back Fill",
+							"hex": "#252525"
+						},
+						{
+							"order": 4,
+							"label": "Stripe",
+							"hex": "#FF9E0D"
+						},
+						{
+							"order": 5,
+							"label": "Buckle Outline",
+							"hex": "#639AAA"
+						},
+						{
+							"order": 6,
+							"label": "Buckle Fill",
+							"hex": "#EBF8FF"
+						}
+					]
+				}
+			},
+			"TagIDs": [
+				12,
+				76,
+				100,
+				353
+			],
+			"RelatedAppearances": []
 		}
 	},
 	"Tags": {
@@ -34260,7 +34751,7 @@
 			"name": "female",
 			"title": null,
 			"type": "gen",
-			"uses": 99,
+			"uses": 100,
 			"synonym_of": null
 		},
 		"14": {
@@ -34692,7 +35183,7 @@
 			"name": "human",
 			"title": null,
 			"type": "spec",
-			"uses": 1,
+			"uses": 2,
 			"synonym_of": null
 		},
 		"77": {
@@ -34884,7 +35375,7 @@
 			"name": "sunset shimmer",
 			"title": null,
 			"type": "char",
-			"uses": 1,
+			"uses": 2,
 			"synonym_of": null
 		},
 		"101": {
