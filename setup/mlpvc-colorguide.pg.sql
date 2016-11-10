@@ -225,13 +225,16 @@ INSERT INTO appearance_relations VALUES
 (156, 5, false),
 (181, 79, true),
 (182, 5, true),
+(201, 6, true),
+(203, 6, true),
 (207, 79, true),
 (212, 71, false),
 (212, 213, true),
 (213, 71, false),
 (215, 5, true),
 (216, 118, false),
-(217, 5, true);
+(217, 5, true),
+(219, 6, true);
 
 
 --
@@ -509,14 +512,15 @@ Pay close attention to her hair fills when vectoring her. The colors can be hard
 (217, 197, 'Rainbow Dash''s Mechanics Outfit', '', NULL, false, '2016-10-26 15:42:35.268784+02', NULL, NULL, false),
 (218, 198, 'Applejack''s Mechanics Outfit', '', NULL, false, '2016-10-26 16:00:09.021007+02', NULL, NULL, false),
 (219, 199, 'Rarity''s Mechanics Outfit', '', NULL, false, '2016-10-26 16:09:27.776513+02', NULL, NULL, false),
-(220, NULL, 'Sunset Shimmer (FG, LoE)', 'Sunset Shimmer''s appearance from Friendship Games, onward. Note the lighter hair colors.', NULL, true, '2016-11-07 03:10:05.472298+01', NULL, NULL, false);
+(220, NULL, 'Sunset Shimmer (FG, LoE)', 'Sunset Shimmer''s appearance from Friendship Games, onward. Note the lighter hair colors.', NULL, true, '2016-11-07 03:10:05.472298+01', NULL, NULL, false),
+(221, NULL, 'Twilight Sparkle (Pony)', 'The version of Twilight that passed through the mirror.', NULL, true, '2016-11-10 06:26:41.632611+01', NULL, NULL, false);
 
 
 --
 -- Name: appearances_id_seq; Type: SEQUENCE SET; Schema: public; Owner: mlpvc-rr
 --
 
-SELECT pg_catalog.setval('appearances_id_seq', 220, true);
+SELECT pg_catalog.setval('appearances_id_seq', 221, true);
 
 
 --
@@ -1554,14 +1558,20 @@ INSERT INTO colorgroups VALUES
 (1162, 220, 'Eyes', 3),
 (1163, 220, 'Jacket', 4),
 (1164, 220, 'Dress and Leggings', 5),
-(1165, 220, 'Boots', 6);
+(1165, 220, 'Boots', 6),
+(1166, 221, 'Skin', 1),
+(1167, 221, 'Hair', 2),
+(1168, 221, 'Eyes', 3),
+(1169, 221, 'Blouse', 4),
+(1170, 221, 'Skirt', 5),
+(1171, 221, 'Boots', 6);
 
 
 --
 -- Name: colorgroups_groupid_seq; Type: SEQUENCE SET; Schema: public; Owner: mlpvc-rr
 --
 
-SELECT pg_catalog.setval('colorgroups_groupid_seq', 1165, true);
+SELECT pg_catalog.setval('colorgroups_groupid_seq', 1171, true);
 
 
 --
@@ -6106,7 +6116,37 @@ INSERT INTO colors VALUES
 (1165, 3, 'Back Fill', '#252525'),
 (1165, 4, 'Stripe', '#FF9E0D'),
 (1165, 5, 'Buckle Outline', '#639AAA'),
-(1165, 6, 'Buckle Fill', '#EBF8FF');
+(1165, 6, 'Buckle Fill', '#EBF8FF'),
+(1166, 0, 'Outline', '#A76BBF'),
+(1166, 1, 'Fill', '#EFC6FB'),
+(1167, 0, 'Outline', '#15214A'),
+(1167, 1, 'Fill', '#273874'),
+(1167, 2, 'Stripe 1', '#ED438C'),
+(1167, 3, 'Stripe 2', '#662D8A'),
+(1168, 0, 'Iris Gradient Top', '#210A3F'),
+(1168, 1, 'Iris Gradient Bottom', '#672F8B'),
+(1168, 2, 'Highlight Top', '#8E5CA5'),
+(1168, 3, 'Highlight Bottom', '#CDB3D7'),
+(1168, 4, 'Eyebrows', '#662D8B'),
+(1169, 0, 'Outline', '#609FF0'),
+(1169, 1, 'Fill', '#A7D8FF'),
+(1169, 2, 'Buttons', '#3A3B72'),
+(1169, 3, 'Bow Outline', '#AA1D60'),
+(1169, 4, 'Bow Fill', '#ED448D'),
+(1170, 0, 'Outline', '#411C54'),
+(1170, 1, 'Main Fill', '#662D8A'),
+(1170, 2, 'Inner Pleat Fill', '#7B36A8'),
+(1170, 3, 'Cutie Mark Main Star', '#ED448D'),
+(1170, 4, 'Cutie Mark BG Star', '#F8C1E2'),
+(1170, 5, 'Cutie Mark Smaller Stars', '#FFFFFF'),
+(1171, 0, 'Sock Outline', '#AA1D60'),
+(1171, 1, 'Sock Fill', '#ED448D'),
+(1171, 2, 'Boot Outline', '#411C55'),
+(1171, 3, 'Boot Fill', '#662D8A'),
+(1171, 4, 'Argyle Stripes', '#FFFFFF'),
+(1171, 5, 'Argyle Fill', '#B480D5'),
+(1171, 6, 'Sole Bottom', '#000000'),
+(1171, 7, 'Sole Top', '#1F1F1F');
 
 
 --
@@ -6587,7 +6627,9 @@ INSERT INTO tagged VALUES
 (12, 213),
 (12, 214),
 (12, 220),
+(12, 221),
 (14, 1),
+(14, 221),
 (21, 10),
 (21, 16),
 (21, 17),
@@ -6716,6 +6758,7 @@ INSERT INTO tagged VALUES
 (75, 40),
 (76, 63),
 (76, 220),
+(76, 221),
 (77, 44),
 (78, 45),
 (79, 46),
@@ -7196,8 +7239,8 @@ INSERT INTO tags VALUES
 (9, 'antagonist', NULL, 'cat', 13, NULL),
 (10, 'pet', NULL, 'cat', 6, NULL),
 (11, 'male', NULL, 'gen', 68, NULL),
-(12, 'female', NULL, 'gen', 100, NULL),
-(14, 'twilight sparkle', NULL, 'char', 1, NULL),
+(12, 'female', NULL, 'gen', 101, NULL),
+(14, 'twilight sparkle', NULL, 'char', 2, NULL),
 (19, 's01e01', NULL, 'ep', 0, NULL),
 (20, 's01e26', NULL, 'ep', 0, NULL),
 (21, 's05e12', NULL, 'ep', 4, NULL),
@@ -7250,7 +7293,7 @@ INSERT INTO tags VALUES
 (73, 'berry pinch', NULL, 'char', 0, 116),
 (74, 'button mash', NULL, 'char', 1, NULL),
 (75, 'lily longsocks', NULL, 'char', 1, NULL),
-(76, 'human', NULL, 'spec', 2, NULL),
+(76, 'human', NULL, 'spec', 3, NULL),
 (77, 'shining armor', NULL, 'char', 1, NULL),
 (78, 'original character', 'Characters not canon to the show''s universe', 'cat', 1, NULL),
 (79, 'cheese sandwich', NULL, 'char', 1, NULL),
