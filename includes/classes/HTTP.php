@@ -9,10 +9,11 @@
 		 * @param string      $url
 		 * @param array|null  $cookies
 		 * @param string|null $referrer
+		 * @param bool        $skipBody
 		 *
 		 * @return array
 		 */
-		static function LegitimateRequest($url, $cookies = null, $referrer = null){
+		static function LegitimateRequest($url, $cookies = null, $referrer = null, bool $skipBody = false){
 			$r = curl_init();
 			$curl_opt = array(
 				CURLOPT_HTTPHEADER => array(
@@ -32,6 +33,8 @@
 				$curl_opt[CURLOPT_REFERER] = $referrer;
 			if (is_array($cookies))
 				$curl_opt[CURLOPT_COOKIE] = implode('; ', $cookies);
+			if ($skipBody === true)
+				$curl_opt[CURLOPT_NOBODY] = $skipBody;
 			curl_setopt_array($r, $curl_opt);
 
 			$response = curl_exec($r);
@@ -78,7 +81,7 @@
 					$cookies[] = $cookie[1];
 				};
 
-			$request = self::LegitimateRequest($url, $cookies, $referrer);
+			$request = self::LegitimateRequest($url, $cookies, $referrer, true);
 			return regex_match(new RegExp('Location:\s+([^\r\n]+)'), $request['responseHeaders'], $_match) ? CoreUtils::Trim($_match[1]) : null;
 		}
 

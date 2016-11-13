@@ -1030,4 +1030,29 @@ use Exceptions\cURLRequestException;
 				$on[$key] = $value;
 			else throw new Exception('$on is of invalid type ('.gettype($on).')');
 		}
+
+		/**
+		 * Checks if an image exists on the web
+		 *
+		 * @param string $url
+		 *
+		 * @return bool
+		 */
+		static function ImageExists(string $url):bool{
+			$ch = curl_init();
+			curl_setopt_array($ch, array(
+				CURLOPT_URL => $url,
+				CURLOPT_NOBODY => 1,
+				CURLOPT_FAILONERROR => 1,
+				CURLOPT_RETURNTRANSFER => 1,
+			));
+			$return = curl_exec($ch) !== false;
+			curl_close($ch);
+
+			return $return;
+		}
+
+		static function MSleep(int $ms){
+			usleep($ms*1000);
+		}
 	}

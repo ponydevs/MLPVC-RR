@@ -436,9 +436,9 @@ if (!POST_REQUEST) CoreUtils::NotFound();
 		$Image = Posts::CheckImage($image_url, $Post);
 
 		// Check image availability
-		if (!@getimagesize($Image->preview)){
-			sleep(1);
-			if (!@getimagesize($Image->preview))
+		if (!CoreUtils::ImageExists($Image->preview)){
+			CoreUtils::MSleep(1500);
+			if (!CoreUtils::ImageExists($Image->preview))
 				Response::Fail("<p class='align-center'>The specified image doesn't seem to exist. Please verify that you can reach the URL below and try again.<br><a href='{$Image->preview}' target='_blank'>{$Image->preview}</a></p>");
 		}
 
@@ -501,9 +501,9 @@ if (!POST_REQUEST) CoreUtils::NotFound();
 			Response::Fail('Error while finding URL: '.$e->getMessage());
 		}
 		// Check image availability
-		if (!@getimagesize($fullsize)){
-			sleep(1);
-			if (!@getimagesize($fullsize))
+		if (!CoreUtils::ImageExists($fullsize)){
+			CoreUtils::MSleep(1500);
+			if (!CoreUtils::ImageExists($fullsize))
 				Response::Fail("The specified image doesn't seem to exist. Please verify that you can reach the URL below and try again.<br><a href='$fullsize' target='_blank'>$fullsize</a>");
 		}
 
