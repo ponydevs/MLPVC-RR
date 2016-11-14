@@ -1,6 +1,7 @@
 <?php
 
 use DB\Episode;
+use cogpowered\FineDiff;
 
 class Log {
 		static $LOG_DESCRIPTION = array(
@@ -268,7 +269,7 @@ class Log {
 					$olddir = isset($newOld['cm_dir']['old']) ? CGUtils::$CM_DIR[$newOld['cm_dir']['old']] : '';
 					$newdir = isset($newOld['cm_dir']['new']) ? CGUtils::$CM_DIR[$newOld['cm_dir']['new']] : '';
 					if ($olddir || $newdir)
-						$details[] = array('CM Orientation', self::CharDiff($olddir, $newdir, 'inline', FineDiff::$paragraphGranularity));
+						$details[] = array('CM Orientation', self::CharDiff($olddir, $newdir, 'inline', new FineDiff\Granularity\Paragraph));
 
 					if (isset($newOld['private']['new']))
 						$details[] = array('<span class="typcn typcn-lock-'.($newOld['private']['new']?'closed':'open').'"></span> '.($newOld['private']['new'] ? 'Marked private' : 'No longer private'),self::SKIP_VALUE,self::KEYCOLOR_INFO);
@@ -427,11 +428,10 @@ HTML;
 			)))->out();
 		}
 
-		static function CharDiff(string $old, string $new, $type = 'inline', $gran = null):string {
+		static function CharDiff(string $old, string $new, $type = 'inline', FineDiff\Granularity\Granularity $gran = null):string {
 			if (!isset($gran))
-				$gran = FineDiff::$characterGranularity;
-			$opcodes = FineDiff::getDiffOpcodes($old, $new, $gran);
-			$diff = FineDiff::renderDiffToHTMLFromOpcodes($old, $opcodes);
+				$gran = new FineDiff\Granularity\Character;
+			$diff = (new FineDiff\Diff($gran))->render($old, $new);
 
 			return "<span class='btn darkblue view-switch' title='Left/Right click to change view mode'>diff</span><div class='log-diff $type'>$diff</div>";
 		}

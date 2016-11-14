@@ -1,17 +1,18 @@
 {
-    "name": "ponydevs/mlpvc-rr",
-    "type": "project",
-    "license": "MIT",
-    "authors": [
-        {
-            "name": "SeinopSys",
-            "email": "seinopsys@gmail.com"
-        }
-    ],
+	"name": "ponydevs/mlpvc-rr",
+	"type": "project",
+	"license": "MIT",
+	"authors": [
+		{
+			"name": "SeinopSys",
+			"email": "seinopsys@gmail.com"
+		}
+	],
 	"require": {
 		"fightbulc/moment": "*",
 		"wisembly/elephant.io": "*",
-        "ezyang/htmlpurifier": "^4.8",
-        "seinopsys/postgresql-database-class": "dev-master"
-    }
+		"ezyang/htmlpurifier": "^4.8",
+		"seinopsys/postgresql-database-class": "dev-master",
+		"cogpowered/finediff": "0.3.*"
+	}
 }

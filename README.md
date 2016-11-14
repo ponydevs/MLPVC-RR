@@ -34,7 +34,7 @@ After some time, the idea of moving the old PNG color guide into an easier to us
    - [socket.io](http://socket.io)
    - [Elephant.io](https://github.com/wisembly/elephant.io)
    - [MLPVC-WS](https://github.com/ponydevs/MLPVC-WS)
-   - [PHP-FineDiff](https://github.com/gorhill/PHP-FineDiff)
+   - [FineDiff](https://github.com/cogpowered/FineDiff)
  - Development tools:
    - [Gulp](http://gulpjs.com/)
    - [Uglify-js](https://www.npmjs.com/package/uglify-js)

@@ -4,9 +4,60 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "0d8ef4bcfb7b42f24e4bf6c24f6c3075",
-    "content-hash": "0b1fbd611e02f241fd62dcbcd7fccefb",
+    "hash": "233af9dec64e7c614ad730a669a233cf",
+    "content-hash": "8943ed99d6741cbf64e0b9519608473c",
     "packages": [
+        {
+            "name": "cogpowered/finediff",
+            "version": "0.3.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/cogpowered/FineDiff.git",
+                "reference": "339ddc8c3afb656efed4f2f0a80e5c3d026f8ea8"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/cogpowered/FineDiff/zipball/339ddc8c3afb656efed4f2f0a80e5c3d026f8ea8",
+                "reference": "339ddc8c3afb656efed4f2f0a80e5c3d026f8ea8",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "require-dev": {
+                "mockery/mockery": "*",
+                "phpunit/phpunit": "*"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "cogpowered\\FineDiff": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Rob Crowe",
+                    "email": "rob@cogpowered.com"
+                },
+                {
+                    "name": "Raymond Hill"
+                }
+            ],
+            "description": "PHP implementation of a Fine granularity Diff engine",
+            "homepage": "https://github.com/cogpowered/FineDiff",
+            "keywords": [
+                "diff",
+                "finediff",
+                "opcode",
+                "string",
+                "text"
+            ],
+            "time": "2014-05-19 10:25:02"
+        },
         {
             "name": "ezyang/htmlpurifier",
             "version": "v4.8.0",
@@ -53,16 +104,16 @@
         },
         {
             "name": "fightbulc/moment",
-            "version": "1.23.1",
+            "version": "1.25.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/fightbulc/moment.php.git",
-                "reference": "b8e50ad6d3db387b3f143a6ff6a314ef92e17ab7"
+                "reference": "de8e0892fa889ae2770b52064f5b2da1b19036ae"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/fightbulc/moment.php/zipball/b8e50ad6d3db387b3f143a6ff6a314ef92e17ab7",
-                "reference": "b8e50ad6d3db387b3f143a6ff6a314ef92e17ab7",
+                "url": "https://api.github.com/repos/fightbulc/moment.php/zipball/de8e0892fa889ae2770b52064f5b2da1b19036ae",
+                "reference": "de8e0892fa889ae2770b52064f5b2da1b19036ae",
                 "shasum": ""
             },
             "require": {
@@ -112,20 +163,20 @@
                 "translation",
                 "validate"
             ],
-            "time": "2016-09-28 06:17:33"
+            "time": "2016-11-05 20:36:51"
         },
         {
             "name": "psr/log",
-            "version": "1.0.1",
+            "version": "1.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-fig/log.git",
-                "reference": "5277094ed527a1c4477177d102fe4c53551953e0"
+                "reference": "4ebe3a8bf773a19edfe0a84b6585ba3d401b724d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-fig/log/zipball/5277094ed527a1c4477177d102fe4c53551953e0",
-                "reference": "5277094ed527a1c4477177d102fe4c53551953e0",
+                "url": "https://api.github.com/repos/php-fig/log/zipball/4ebe3a8bf773a19edfe0a84b6585ba3d401b724d",
+                "reference": "4ebe3a8bf773a19edfe0a84b6585ba3d401b724d",
                 "shasum": ""
             },
             "require": {
@@ -159,7 +210,7 @@
                 "psr",
                 "psr-3"
             ],
-            "time": "2016-09-19 16:02:08"
+            "time": "2016-10-10 12:19:37"
         },
         {
             "name": "seinopsys/postgresql-database-class",
@@ -167,12 +218,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/SeinopSys/PHP-PostgreSQL-Database-Class.git",
-                "reference": "a7227739225469cf9d0b9e5a1520552efb39db21"
+                "reference": "86164f91ee5d4b00a88193166f6e4ba9436d989b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/SeinopSys/PHP-PostgreSQL-Database-Class/zipball/a7227739225469cf9d0b9e5a1520552efb39db21",
-                "reference": "a7227739225469cf9d0b9e5a1520552efb39db21",
+                "url": "https://api.github.com/repos/SeinopSys/PHP-PostgreSQL-Database-Class/zipball/86164f91ee5d4b00a88193166f6e4ba9436d989b",
+                "reference": "86164f91ee5d4b00a88193166f6e4ba9436d989b",
                 "shasum": ""
             },
             "require": {
@@ -197,20 +248,20 @@
                 }
             ],
             "description": "PHP wrapper class for PDO-based interaction with PostgreSQL databases, heavily based on joshcam/mysqli-database-class",
-            "time": "2016-10-12 04:13:46"
+            "time": "2016-10-13 20:52:24"
         },
         {
             "name": "wisembly/elephant.io",
-            "version": "3.1.0",
+            "version": "v3.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Wisembly/elephant.io.git",
-                "reference": "8d8087551a0db14d258e7427eaeafad8bc6ea303"
+                "reference": "e08dfbf261b759e76ebe403aeed0e4a50b613c7e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Wisembly/elephant.io/zipball/8d8087551a0db14d258e7427eaeafad8bc6ea303",
-                "reference": "8d8087551a0db14d258e7427eaeafad8bc6ea303",
+                "url": "https://api.github.com/repos/Wisembly/elephant.io/zipball/e08dfbf261b759e76ebe403aeed0e4a50b613c7e",
+                "reference": "e08dfbf261b759e76ebe403aeed0e4a50b613c7e",
                 "shasum": ""
             },
             "require": {
@@ -263,7 +314,7 @@
                 "real time",
                 "websocket"
             ],
-            "time": "2016-02-05 00:32:18"
+            "time": "2016-10-25 07:52:01"
         }
     ],
     "packages-dev": [],
