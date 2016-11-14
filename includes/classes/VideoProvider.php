@@ -15,7 +15,15 @@
 			'youtu(?:\.be/|be.com/watch.*[&?]v=)([^&?=]+)(?:&|$)' => 'yt',
 			'dai(?:\.ly/|lymotion.com/video/(?:embed/)?)([a-z\d]+)(?:_|$)' => 'dm'
 		);
-		private static function test_provider(string $url, string $pattern, string $name):\DB\EpisodeVideo {
+
+		/**
+		 * @param string $url
+		 * @param string $pattern
+		 * @param string $name
+		 *
+		 * @return \DB\EpisodeVideo|null
+		 */
+		private static function testProvider(string $url, string $pattern, string $name) {
 			$match = array();
 			if (regex_match(new RegExp("^(?:https?://(?:www\\.)?)?$pattern"), $url, $match))
 				return new \DB\EpisodeVideo(array(
@@ -26,7 +34,7 @@
 		}
 		public static function getEpisodeVideo(string $url):\DB\EpisodeVideo {
 			foreach (self::$providerRegexes as $pattern => $name){
-				$test = self::test_provider($url, $pattern, $name);
+				$test = self::testProvider($url, $pattern, $name);
 				if (!empty($test))
 					return $test;
 			}
