@@ -1045,6 +1045,37 @@ ALTER SEQUENCE sessions_id_seq OWNED BY sessions.id;
 
 
 --
+-- Name: users; Type: TABLE; Schema: public; Owner: mlpvc-rr
+--
+
+CREATE TABLE users (
+    id uuid NOT NULL,
+    name citext NOT NULL,
+    role character varying(10) DEFAULT 'user'::character varying NOT NULL,
+    avatar_url character varying(255) NOT NULL,
+    signup_date timestamp with time zone DEFAULT now() NOT NULL
+);
+
+
+ALTER TABLE users OWNER TO "mlpvc-rr";
+
+--
+-- Name: unread_notifications; Type: VIEW; Schema: public; Owner: mlpvc-rr
+--
+
+CREATE VIEW unread_notifications AS
+ SELECT u.name AS "user",
+    count(n.id) AS count
+   FROM (notifications n
+     LEFT JOIN users u ON ((n."user" = u.id)))
+  WHERE (n.read_at IS NULL)
+  GROUP BY u.name
+  ORDER BY (count(n.id)) DESC;
+
+
+ALTER TABLE unread_notifications OWNER TO "mlpvc-rr";
+
+--
 -- Name: usefullinks; Type: TABLE; Schema: public; Owner: mlpvc-rr
 --
 
@@ -1093,21 +1124,6 @@ CREATE TABLE user_prefs (
 
 
 ALTER TABLE user_prefs OWNER TO "mlpvc-rr";
-
---
--- Name: users; Type: TABLE; Schema: public; Owner: mlpvc-rr
---
-
-CREATE TABLE users (
-    id uuid NOT NULL,
-    name citext NOT NULL,
-    role character varying(10) DEFAULT 'user'::character varying NOT NULL,
-    avatar_url character varying(255) NOT NULL,
-    signup_date timestamp with time zone DEFAULT now() NOT NULL
-);
-
-
-ALTER TABLE users OWNER TO "mlpvc-rr";
 
 --
 -- Name: log entryid; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
@@ -1646,6 +1662,14 @@ CREATE INDEX usefullinks_minrole ON usefullinks USING btree (minrole);
 
 
 --
+-- Name: episodes__videos episodes__videos_season_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER TABLE ONLY episodes__videos
+    ADD CONSTRAINT episodes__videos_season_fkey FOREIGN KEY (season, episode) REFERENCES episodes(season, episode) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
 -- Name: episodes__votes episodes__votes_season_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
@@ -1666,7 +1690,7 @@ ALTER TABLE ONLY episodes__votes
 --
 
 ALTER TABLE ONLY episodes
-    ADD CONSTRAINT episodes_posted_by_fkey FOREIGN KEY (posted_by) REFERENCES users(id) ON UPDATE SET NULL ON DELETE SET NULL;
+    ADD CONSTRAINT episodes_posted_by_fkey FOREIGN KEY (posted_by) REFERENCES users(id) ON UPDATE CASCADE ON DELETE SET NULL;
 
 
 --
@@ -1683,6 +1707,22 @@ ALTER TABLE ONLY log__banish
 
 ALTER TABLE ONLY log__da_namechange
     ADD CONSTRAINT log__da_namechange_id_fkey FOREIGN KEY (id) REFERENCES users(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: log__res_overtake log__res_overtake_reserved_by_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER TABLE ONLY log__res_overtake
+    ADD CONSTRAINT log__res_overtake_reserved_by_fkey FOREIGN KEY (reserved_by) REFERENCES users(id) ON UPDATE CASCADE;
+
+
+--
+-- Name: log__res_transfer log__res_transfer_to_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER TABLE ONLY log__res_transfer
+    ADD CONSTRAINT log__res_transfer_to_fkey FOREIGN KEY ("to") REFERENCES users(id) ON UPDATE CASCADE;
 
 
 --
@@ -1723,6 +1763,14 @@ ALTER TABLE ONLY log__video_broken
 
 ALTER TABLE ONLY log
     ADD CONSTRAINT log_initiator_fkey FOREIGN KEY (initiator) REFERENCES users(id) ON UPDATE CASCADE;
+
+
+--
+-- Name: notifications notifications_user_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER TABLE ONLY notifications
+    ADD CONSTRAINT notifications_user_fkey FOREIGN KEY ("user") REFERENCES users(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
@@ -2006,6 +2054,13 @@ GRANT ALL ON SEQUENCE sessions_id_seq TO postgres;
 
 
 --
+-- Name: users; Type: ACL; Schema: public; Owner: mlpvc-rr
+--
+
+GRANT ALL ON TABLE users TO postgres;
+
+
+--
 -- Name: usefullinks; Type: ACL; Schema: public; Owner: mlpvc-rr
 --
 
@@ -2017,13 +2072,6 @@ GRANT ALL ON TABLE usefullinks TO postgres;
 --
 
 GRANT ALL ON SEQUENCE usefullinks_id_seq TO postgres;
-
-
---
--- Name: users; Type: ACL; Schema: public; Owner: mlpvc-rr
---
-
-GRANT ALL ON TABLE users TO postgres;
 
 
 --
