@@ -109,7 +109,8 @@ CREATE TABLE episodes__videos (
     id character varying(15) NOT NULL,
     part integer DEFAULT 1 NOT NULL,
     fullep boolean DEFAULT true NOT NULL,
-    modified timestamp with time zone DEFAULT now()
+    modified timestamp with time zone DEFAULT now(),
+    not_broken_at timestamp with time zone
 );
 
 
@@ -797,6 +798,42 @@ ALTER SEQUENCE log__userfetch_entryid_seq OWNED BY log__userfetch.entryid;
 
 
 --
+-- Name: log__video_broken; Type: TABLE; Schema: public; Owner: mlpvc-rr
+--
+
+CREATE TABLE log__video_broken (
+    entryid integer NOT NULL,
+    season integer NOT NULL,
+    episode integer NOT NULL,
+    provider character(2) NOT NULL,
+    id character varying(15) NOT NULL
+);
+
+
+ALTER TABLE log__video_broken OWNER TO "mlpvc-rr";
+
+--
+-- Name: log__video_broken_entryid_seq; Type: SEQUENCE; Schema: public; Owner: mlpvc-rr
+--
+
+CREATE SEQUENCE log__video_broken_entryid_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE log__video_broken_entryid_seq OWNER TO "mlpvc-rr";
+
+--
+-- Name: log__video_broken_entryid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER SEQUENCE log__video_broken_entryid_seq OWNED BY log__video_broken.entryid;
+
+
+--
 -- Name: log_appearance_modify_entryid_seq; Type: SEQUENCE; Schema: public; Owner: mlpvc-rr
 --
 
@@ -1206,6 +1243,13 @@ ALTER TABLE ONLY log__userfetch ALTER COLUMN entryid SET DEFAULT nextval('log__u
 
 
 --
+-- Name: log__video_broken entryid; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER TABLE ONLY log__video_broken ALTER COLUMN entryid SET DEFAULT nextval('log__video_broken_entryid_seq'::regclass);
+
+
+--
 -- Name: notifications id; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
 --
 
@@ -1414,6 +1458,14 @@ ALTER TABLE ONLY "log__un-banish"
 
 ALTER TABLE ONLY log__userfetch
     ADD CONSTRAINT log__userfetch_entryid PRIMARY KEY (entryid);
+
+
+--
+-- Name: log__video_broken log__video_broken_entryid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER TABLE ONLY log__video_broken
+    ADD CONSTRAINT log__video_broken_entryid PRIMARY KEY (entryid);
 
 
 --
@@ -1655,6 +1707,14 @@ ALTER TABLE ONLY "log__un-banish"
 
 ALTER TABLE ONLY log__userfetch
     ADD CONSTRAINT log__userfetch_userid_fkey FOREIGN KEY (userid) REFERENCES users(id) ON UPDATE CASCADE;
+
+
+--
+-- Name: log__video_broken log__video_broken_season_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER TABLE ONLY log__video_broken
+    ADD CONSTRAINT log__video_broken_season_fkey FOREIGN KEY (season, episode) REFERENCES episodes(season, episode) ON UPDATE CASCADE;
 
 
 --

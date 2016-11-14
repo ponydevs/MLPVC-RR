@@ -125,12 +125,13 @@ use DB\Episode;
 				'fullep' => array(),
 				'airs' => date('c',strtotime($Episode->airs)),
 			);
-			$Vids = $Database->whereEp($Episode)->get('episodes__videos',null,'provider as name, *');
-			foreach ($Vids as $part => $prov){
-				if (!empty($prov['id']))
-					$return['vidlinks']["{$prov['name']}_{$prov['part']}"] = VideoProvider::get_embed($prov['id'], $prov['name'], VideoProvider::URL_ONLY);
-				if ($prov['fullep'])
-					$return['fullep'][] = $prov['name'];
+			/** @var $Vids \DB\EpisodeVideo[] */
+			$Vids = $Database->whereEp($Episode)->get('episodes__videos');
+			foreach ($Vids as $part => $vid){
+				if (!empty($vid->id))
+					$return['vidlinks']["{$vid->provider}_{$vid->part}"] = VideoProvider::getEmbed($vid, VideoProvider::URL_ONLY);
+				if ($vid->fullep)
+					$return['fullep'][] = $vid->provider;
 			}
 			Response::Done($return);
 		break;
@@ -142,15 +143,15 @@ use DB\Episode;
 					if (!empty($_POST[$PostKey])){
 						$Provider = Episodes::$VIDEO_PROVIDER_NAMES[$provider];
 						try {
-							$vid = new VideoProvider($_POST[$PostKey]);
+							$vidProvider = new VideoProvider($_POST[$PostKey]);
 						}
 						catch (Exception $e){
 							Response::Fail("$Provider link issue: ".$e->getMessage());
 						};
-						if (!isset($vid->provider) || $vid->provider['name'] !== $provider)
+						if (!isset($vidProvider->episodeVideo) || $vidProvider->episodeVideo->provider !== $provider)
 							Response::Fail("Incorrect $Provider URL specified");
 						/** @noinspection PhpUndefinedFieldInspection */
-						$set = $vid::$id;
+						$set = $vidProvider::$id;
 					}
 
 					$fullep = $Episode->twoparter ? false : true;
@@ -193,6 +194,34 @@ use DB\Episode;
 			}
 
 			Response::Success('Links updated',array('epsection' => Episodes::GetVideosHTML($Episode)));
+		break;
+		case "brokenvideos":
+			/** @var $videos \DB\EpisodeVideo[] */
+			$videos = $Database
+				->whereEp($Episode)
+				->get('episodes__videos');
+
+			$removed = 0;
+			foreach ($videos as $video){
+				if (!$video->isBroken())
+					continue;
+
+				$removed++;
+				$Database->whereEp($Episode)->where('provider', $video->provider)->where('id', $video->id)->delete('episodes__videos');
+				Log::Action('video_broken',array(
+					'season' => $Episode->season,
+					'episode' => $Episode->episode,
+					'provider' => $video->provider,
+					'id' => $video->id,
+				));
+			}
+
+			if ($removed === 0)
+				return Response::Success('No broken videos found under this '.($Episode->isMovie?'movie':'episode').'.');
+
+			Response::Success("$removed video link".($removed===1?' has':'s have')." been removed from the site. Thank you for letting us know.",array(
+				'epsection' => Episodes::GetVideosHTML($Episode),
+			));
 		break;
 		case "getcgrelations":
 			$CheckTag = array();

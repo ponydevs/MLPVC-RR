@@ -300,6 +300,7 @@ class Episodes {
 		static function GetVideoEmbeds($Episode):array {
 			global $Database;
 
+			/** @var $EpVideos \DB\EpisodeVideo[] */
 			$EpVideos = $Database
 				->whereEp($Episode)
 				->orderBy('provider', 'ASC')
@@ -310,13 +311,13 @@ class Episodes {
 			if (!empty($EpVideos)){
 				$Videos = array();
 				foreach ($EpVideos as $v)
-					$Videos[$v['provider']][(int)$v['part']] = $v;
+					$Videos[$v->provider][$v->part] = $v;
 				// YouTube embed preferred
 				$Videos = !empty($Videos['yt']) ? $Videos['yt'] : $Videos['dm'];
 
 				$Parts = count($Videos);
 				foreach ($Videos as $v)
-					$embed .= "<div class='responsive-embed".($Episode->twoparter&& $v['part']!==1?' hidden':'')."'>".VideoProvider::get_embed($v['id'], $v['provider'])."</div>";
+					$embed .= "<div class='responsive-embed".($Episode->twoparter && $v->part!==1?' hidden':'')."'>".VideoProvider::getEmbed($v)."</div>";
 			}
 			return array($Parts, $embed);
 		}
@@ -334,13 +335,15 @@ class Episodes {
 		 * Renders the HTML of the "Watch the Episode" section along with the buttons/links
 		 *
 		 * @param Episode $Episode
+		 * @param bool    $wrap
 		 *
 		 * @return string
 		 */
-		static function GetVideosHTML($Episode):string {
+		static function GetVideosHTML($Episode, bool $wrap = WRAP):string {
 			global $Database;
 
 			$HTML = '';
+			/** @var $Videos \DB\EpisodeVideo[] */
 			$Videos = $Database
 				->whereEp($Episode)
 				->orderBy('provider', 'ASC')
@@ -349,9 +352,9 @@ class Episodes {
 
 			if (!empty($Videos)){
 				$fullep = $Episode->twoparter ? 'Full episode' : '';
-				if (count($Videos) === 1 && $Videos[0]['provider'] === 'yt'){
+				if (count($Videos) === 1 && $Videos[0]->provider === 'yt'){
 					$airtime = strtotime($Episode->airs);
-					$modified = $Videos[0]['modified'];
+					$modified = $Videos[0]->modified;
 					if (!empty($modified) && $airtime > strtotime($modified)){
 						$fullep = 'Livestream';
 						$Episode = $Episode->addAiringData();
@@ -362,17 +365,19 @@ class Episodes {
 					}
 				}
 
-				$HTML = "<section class='episode'><h2>Watch the ".($Episode->isMovie?'Movie':'Episode')."</h2><p class='align-center actions'>";
+				$HTML = ($wrap ? "<section class='episode'>" : '')."<h2>Watch the ".($Episode->isMovie?'Movie':'Episode')."</h2><p class='align-center actions'>";
 				foreach ($Videos as $v){
-					$url = VideoProvider::get_embed($v['id'], $v['provider'], VideoProvider::URL_ONLY);
+					$url = VideoProvider::getEmbed($v, VideoProvider::URL_ONLY);
 					$partText = $Episode->twoparter ? (
-						!$v['fullep']
-						? " (Part {$v['part']})"
+						!$v->fullep
+						? " (Part {$v->part})"
 						: " ($fullep)"
 					) : $fullep;
-					$HTML .= "<a class='btn typcn ".self::$PROVIDER_BTN_CLASSES[$v['provider']]."' href='$url' target='_blank'>".self::$VIDEO_PROVIDER_NAMES[$v['provider']]."$partText</a>";
+					$HTML .= "<a class='btn typcn ".self::$PROVIDER_BTN_CLASSES[$v->provider]."' href='$url' target='_blank'>".self::$VIDEO_PROVIDER_NAMES[$v->provider]."$partText</a>";
 				}
-				$HTML .= "<button class='green typcn typcn-eye showplayers'>Show on-site player</button></p></section>";
+				$HTML .= "<button class='green typcn typcn-eye showplayers'>Show on-site player</button><button class='orange typcn typcn-flag reportbroken'>Report broken video</button></p>";
+				if ($wrap)
+					$HTML .= '</section>';
 			}
 
 			return $HTML;

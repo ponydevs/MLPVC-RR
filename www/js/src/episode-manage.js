@@ -221,55 +221,6 @@ DocReady.push(function EpisodeManage(){
 		}));
 	});
 
-	function bindVideoButtons(){
-		let $embedWrap,
-			$showPlayers = $('.episode').find('.showplayers').on('scroll-video-into-view',function(){
-				let hh = $header.outerHeight();
-				$.scrollTo($embedWrap.offset().top - (($w.height() - $footer.outerHeight() - hh - $embedWrap.outerHeight()) / 2) - hh, 500);
-			}),
-			$playerActions = $showPlayers.parent(),
-			$partSwitch;
-		if ($showPlayers.length){
-			$showPlayers.on('click', function(e){
-				e.preventDefault();
-
-				if (typeof $embedWrap === 'undefined'){
-					$.Dialog.wait($showPlayers.text());
-
-					$.post(`/episode/videos/${EpID}`, $.mkAjaxHandler(function(){
-						if (!this.status) return $.Dialog.fail(false, this.message);
-
-						if (this[0] === 2){
-							$partSwitch = $.mk('button').attr('class','blue typcn typcn-media-fast-forward').text('Part 2').on('click',function(){
-								$(this).toggleHtml(['Part 1', 'Part 2']);
-								$embedWrap.children().toggle();
-							});
-							$playerActions.append($partSwitch);
-						}
-						$embedWrap = $.mk('div').attr('class','resp-embed-wrap').html(this[1]).insertAfter($playerActions);
-						$showPlayers
-							.removeClass('typcn-eye green')
-							.addClass('typcn-eye-outline blue')
-							.text('Hide on-site player')
-							.triggerHandler('scroll-video-into-view');
-						$.Dialog.close();
-					}));
-				}
-				else {
-					let show = $showPlayers.hasClass('typcn-eye');
-					$embedWrap[show?'show':'hide']();
-					if ($partSwitch instanceof jQuery)
-						$partSwitch.attr('disabled', !show);
-					$showPlayers.toggleClass('typcn-eye typcn-eye-outline').toggleHtml(['Show on-site player','Hide on-site player']);
-
-					if (show)
-						$showPlayers.triggerHandler('scroll-video-into-view');
-				}
-			});
-		}
-	}
-	bindVideoButtons();
-
 	function reservePost($li, reserveAs, id, type){
 		let title = 'Reserving request',
 			send = function(data){

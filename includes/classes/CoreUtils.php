@@ -1038,13 +1038,14 @@ use Exceptions\cURLRequestException;
 		 *
 		 * @return bool
 		 */
-		static function ImageExists(string $url):bool{
+		static function IsURLAvailable(string $url):bool{
 			$ch = curl_init();
 			curl_setopt_array($ch, array(
 				CURLOPT_URL => $url,
 				CURLOPT_NOBODY => 1,
 				CURLOPT_FAILONERROR => 1,
 				CURLOPT_RETURNTRANSFER => 1,
+				CURLOPT_FOLLOWLOCATION => true,
 			));
 			$return = curl_exec($ch) !== false;
 			curl_close($ch);

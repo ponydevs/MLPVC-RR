@@ -22,6 +22,7 @@ class Log {
 			'cg_order' => 'Color groups re-ordered',
 			'appearance_modify' => 'Appearance modified',
 			'da_namechange' => 'Username change detected',
+			'video_broken' => 'Broken video removed',
 		);
 
 		const FORCE_INITIATOR_WEBSERVER = true;
@@ -286,6 +287,15 @@ class Log {
 					else {
 						$details[] = array('Name', Log::CharDiff($data['old'], $data['new']));
 					}
+				break;
+				case "video_broken":
+					$IDstr = "S{$data['season']}E{$data['episode']}";
+					$details[] = array('Episode', "<a href='/episode/$IDstr'>$IDstr</a>");
+					$url = VideoProvider::getEmbed(new \DB\EpisodeVideo(array(
+						'provider' => $data['provider'],
+						'id' => $data['id'],
+					)), VideoProvider::URL_ONLY);
+					$details[] = array('Link',"<a href='$url'>$url</a>");
 				break;
 				default:
 					$details[] = array('<span class="typcn typcn-warning"></span> Couldn\'t process details','No data processor defined for this entry type',self::KEYCOLOR_ERROR);

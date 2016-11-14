@@ -2,44 +2,46 @@
 
 	class VideoProvider {
 		public static $id, $embed;
-		public $provider;
+		/** @var \DB\EpisodeVideo */
+		public $episodeVideo;
 		private $url;
 		public function __construct($url){
 			$this->url = CoreUtils::Trim($url);
-			$this->provider = $this->get_provider($this->url);
-			self::$id = $this->provider['itemid'];
-			$this->get_embed($this->provider['itemid'], $this->provider['name']);
+			$this->episodeVideo = self::getEpisodeVideo($this->url);
+			self::$id = $this->episodeVideo->id;
+			self::getEmbed($this->episodeVideo);
 		}
 		private static $providerRegexes = array(
 			'youtu(?:\.be/|be.com/watch.*[&?]v=)([^&?=]+)(?:&|$)' => 'yt',
 			'dai(?:\.ly/|lymotion.com/video/(?:embed/)?)([a-z\d]+)(?:_|$)' => 'dm'
 		);
-		private static function test_provider($url, $pattern, $name){
+		private static function test_provider(string $url, string $pattern, string $name):\DB\EpisodeVideo {
 			$match = array();
 			if (regex_match(new RegExp("^(?:https?://(?:www\\.)?)?$pattern"), $url, $match))
-				return array(
-					'name' => $name,
-					'itemid' => $match[1]
-				);
-			return false;
+				return new \DB\EpisodeVideo(array(
+					'provider' => $name,
+					'id' => $match[1]
+				));
+			return null;
 		}
-		public static function get_provider($url){
+		public static function getEpisodeVideo(string $url):\DB\EpisodeVideo {
 			foreach (self::$providerRegexes as $pattern => $name){
 				$test = self::test_provider($url, $pattern, $name);
-				if ($test !== false) return $test;
+				if (!empty($test))
+					return $test;
 			}
 			throw new Exception('Unsupported provider');
 		}
 		const URL_ONLY = true;
-		public static function get_embed($id, $prov, $urlOnly = false){
+		public static function getEmbed(\DB\EpisodeVideo $video, bool $urlOnly = false):string {
 			$urlOnly = $urlOnly === self::URL_ONLY;
 
-			switch ($prov){
+			switch ($video->provider){
 				case 'yt':
-					$url = $urlOnly ? "http://youtu.be/$id" : "https://www.youtube.com/embed/$id";
+					$url = $urlOnly ? "http://youtu.be/$video->id" : "https://www.youtube.com/embed/$video->id";
 				break;
 				case 'dm':
-					$url = $urlOnly ? "http://dai.ly/$id" : "https://www.dailymotion.com/embed/video/$id?related=0&quality=1080&highlight=2C73B1";
+					$url = $urlOnly ? "http://dai.ly/$video->id" : "https://www.dailymotion.com/embed/video/$video->id?related=0&quality=1080&highlight=2C73B1";
 				break;
 			}
 

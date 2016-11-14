@@ -261,6 +261,7 @@ $NoScrollbar: false;
 	overflow: hidden;
 	max-width: 100%;
 	box-sizing: border-box;
+	color: $HeaderFooterBG;
 
 	&:before, &:after, iframe, object, embed {
 		position: absolute;
