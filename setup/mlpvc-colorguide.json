@@ -9457,7 +9457,7 @@
 			"id": 89,
 			"order": 58,
 			"label": "Twilight Velvet",
-			"notes": "",
+			"notes": "Magic Aura color is unknown.",
 			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-03-28 05:04:19.54759+02",
@@ -34880,6 +34880,542 @@
 				353
 			],
 			"RelatedAppearances": []
+		},
+		"222": {
+			"id": 222,
+			"order": null,
+			"label": "Twilight Sparkle (Human)",
+			"notes": "Twilight Sparkle from the human world",
+			"cm_favme": null,
+			"ishuman": true,
+			"added": "2016-11-11 04:27:57.107617+01",
+			"cm_preview": null,
+			"cm_dir": null,
+			"private": false,
+			"ColorGroups": {
+				"1172": {
+					"groupid": 1172,
+					"label": "Skin",
+					"order": 1,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#A76BBF"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#EFC6FB"
+						}
+					]
+				},
+				"1173": {
+					"groupid": 1173,
+					"label": "Hair",
+					"order": 2,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#15214A"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#273874"
+						},
+						{
+							"order": 2,
+							"label": "Stripe 1",
+							"hex": "#ED438C"
+						},
+						{
+							"order": 3,
+							"label": "Stripe 2",
+							"hex": "#662D8A"
+						},
+						{
+							"order": 4,
+							"label": "Hairpiece Fill 1",
+							"hex": "#EC438A"
+						},
+						{
+							"order": 5,
+							"label": "Hairpiece Fill 2",
+							"hex": "#F8C1E2"
+						}
+					]
+				},
+				"1174": {
+					"groupid": 1174,
+					"label": "Eyes",
+					"order": 3,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Iris Gradient Top",
+							"hex": "#210A3F"
+						},
+						{
+							"order": 1,
+							"label": "Iris Gradient Bottom",
+							"hex": "#672F8B"
+						},
+						{
+							"order": 2,
+							"label": "Highlight Top",
+							"hex": "#8E5CA5"
+						},
+						{
+							"order": 3,
+							"label": "Highlight Bottom",
+							"hex": "#CDB3D7"
+						},
+						{
+							"order": 4,
+							"label": "Eyebrows",
+							"hex": "#662D8B"
+						}
+					]
+				},
+				"1175": {
+					"groupid": 1175,
+					"label": "Glasses",
+					"order": 4,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Frame",
+							"hex": "#2E222C"
+						},
+						{
+							"order": 1,
+							"label": "Pins",
+							"hex": "#FFFFFF"
+						},
+						{
+							"order": 2,
+							"label": "Lens Inner Gradient (10% Op.)",
+							"hex": "#C1F4EC"
+						},
+						{
+							"order": 3,
+							"label": "Lens Outer Gradient (30% Op.)",
+							"hex": "#D8EEFB"
+						}
+					]
+				},
+				"1176": {
+					"groupid": 1176,
+					"label": "Shirt and Vest",
+					"order": 5,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Shirt Outline",
+							"hex": "#98DAE7"
+						},
+						{
+							"order": 1,
+							"label": "Shirt Fill",
+							"hex": "#D0EDF4"
+						},
+						{
+							"order": 2,
+							"label": "Tie Outline",
+							"hex": "#282446"
+						},
+						{
+							"order": 3,
+							"label": "Tie Fill",
+							"hex": "#3B3468"
+						},
+						{
+							"order": 4,
+							"label": "Vest Outline",
+							"hex": "#4F1C3D"
+						},
+						{
+							"order": 5,
+							"label": "Vest Fill",
+							"hex": "#6F244E"
+						},
+						{
+							"order": 6,
+							"label": "Vest Stripes",
+							"hex": "#B1ABB9"
+						},
+						{
+							"order": 7,
+							"label": "Vest Bottom Hem",
+							"hex": "#23214F"
+						},
+						{
+							"order": 8,
+							"label": "Cuff Outline",
+							"hex": "#787187"
+						},
+						{
+							"order": 9,
+							"label": "Cuff Fill",
+							"hex": "#B1ABBA"
+						},
+						{
+							"order": 10,
+							"label": "Buttons",
+							"hex": "#ADF4FB"
+						}
+					]
+				},
+				"1177": {
+					"groupid": 1177,
+					"label": "Skirt",
+					"order": 6,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#5B2146"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#813269"
+						},
+						{
+							"order": 2,
+							"label": "Interior Fill",
+							"hex": "#712B58"
+						},
+						{
+							"order": 3,
+							"label": "Pleat Fill",
+							"hex": "#341C36"
+						},
+						{
+							"order": 4,
+							"label": "Horizontal Stripe 1",
+							"hex": "#9B4FA3"
+						},
+						{
+							"order": 5,
+							"label": "Horizontal Stripe 2",
+							"hex": "#F3E38D"
+						},
+						{
+							"order": 6,
+							"label": "Vertical Stripe 1",
+							"hex": "#26A3D1"
+						},
+						{
+							"order": 7,
+							"label": "Vertical Stripe 2",
+							"hex": "#AFACB8"
+						},
+						{
+							"order": 8,
+							"label": "Top Hem Outline",
+							"hex": "#282446"
+						},
+						{
+							"order": 9,
+							"label": "Top Hem Fill",
+							"hex": "#3B3468"
+						}
+					]
+				},
+				"1178": {
+					"groupid": 1178,
+					"label": "Stockings and Shoes",
+					"order": 7,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Stocking Outline",
+							"hex": "#322D57"
+						},
+						{
+							"order": 1,
+							"label": "Stocking Fill",
+							"hex": "#4C4488"
+						},
+						{
+							"order": 2,
+							"label": "Stocking Top Outline",
+							"hex": "#797187"
+						},
+						{
+							"order": 3,
+							"label": "Stocking Top Fill",
+							"hex": "#B1ABBA"
+						},
+						{
+							"order": 4,
+							"label": "Shoe Outline",
+							"hex": "#060B10"
+						},
+						{
+							"order": 5,
+							"label": "Shoe Fill",
+							"hex": "#182C4A"
+						},
+						{
+							"order": 6,
+							"label": "Shoe Stripe",
+							"hex": "#3F6FB6"
+						},
+						{
+							"order": 7,
+							"label": "Shoe Strap Fill 1",
+							"hex": "#3F6FB6"
+						},
+						{
+							"order": 8,
+							"label": "Shoe Strap Fill 2",
+							"hex": "#42A6DF"
+						},
+						{
+							"order": 9,
+							"label": "Shoe Buckle Fill 1",
+							"hex": "#57C1DB"
+						},
+						{
+							"order": 10,
+							"label": "Shoe Buckle Fill 2",
+							"hex": "#ACF4FB"
+						}
+					]
+				}
+			},
+			"TagIDs": [
+				12,
+				14,
+				76,
+				140,
+				141,
+				353
+			],
+			"RelatedAppearances": []
+		},
+		"223": {
+			"id": 223,
+			"order": null,
+			"label": "Applejack (EQG)",
+			"notes": "",
+			"cm_favme": null,
+			"ishuman": true,
+			"added": "2016-11-12 14:18:11.550993+01",
+			"cm_preview": null,
+			"cm_dir": null,
+			"private": false,
+			"ColorGroups": {
+				"1179": {
+					"groupid": 1179,
+					"label": "Skin",
+					"order": 1,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#EEA967"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#FFD69A"
+						},
+						{
+							"order": 2,
+							"label": "Freckles",
+							"hex": "#FFFFFF"
+						}
+					]
+				},
+				"1180": {
+					"groupid": 1180,
+					"label": "Hair and Hat",
+					"order": 2,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#EBD564"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#FFF6AE"
+						},
+						{
+							"order": 2,
+							"label": "Hairband",
+							"hex": "#ED4043"
+						},
+						{
+							"order": 3,
+							"label": "Hat Outline",
+							"hex": "#B4874F"
+						},
+						{
+							"order": 4,
+							"label": "Hat Fill",
+							"hex": "#CC9958"
+						}
+					]
+				},
+				"1181": {
+					"groupid": 1181,
+					"label": "Eyes",
+					"order": 3,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Iris Gradient Top",
+							"hex": "#297A16"
+						},
+						{
+							"order": 1,
+							"label": "Iris Gradient Bottom",
+							"hex": "#60BD4B"
+						},
+						{
+							"order": 2,
+							"label": "Upper Highlight",
+							"hex": "#7AD964"
+						},
+						{
+							"order": 3,
+							"label": "Lower Highlight",
+							"hex": "#CCEDC5"
+						}
+					]
+				},
+				"1182": {
+					"groupid": 1182,
+					"label": "Shirt",
+					"order": 4,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#A7BBDB"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#F0ECE6"
+						},
+						{
+							"order": 2,
+							"label": "Top Outline",
+							"hex": "#347224"
+						},
+						{
+							"order": 3,
+							"label": "Top Fill",
+							"hex": "#459A32"
+						}
+					]
+				},
+				"1183": {
+					"groupid": 1183,
+					"label": "Skirt",
+					"order": 5,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Skirt Outline",
+							"hex": "#3A5C90"
+						},
+						{
+							"order": 1,
+							"label": "Skirt Fill",
+							"hex": "#4E78B7"
+						},
+						{
+							"order": 2,
+							"label": "Skirt Stitching",
+							"hex": "#C0E3FB"
+						},
+						{
+							"order": 3,
+							"label": "Hem Outline",
+							"hex": "#7DC8F8"
+						},
+						{
+							"order": 4,
+							"label": "Hem Fill",
+							"hex": "#EECA55"
+						},
+						{
+							"order": 5,
+							"label": "Belt Outline",
+							"hex": "#7F3316"
+						},
+						{
+							"order": 6,
+							"label": "Belt Fill",
+							"hex": "#A5441F"
+						},
+						{
+							"order": 7,
+							"label": "Buckle Outline",
+							"hex": "#AA1616"
+						},
+						{
+							"order": 8,
+							"label": "Buckle Fill",
+							"hex": "#F13C35"
+						}
+					]
+				},
+				"1184": {
+					"groupid": 1184,
+					"label": "Boots",
+					"order": 6,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#7C3317"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#A85A2C"
+						},
+						{
+							"order": 2,
+							"label": "Top/Bottom Fill",
+							"hex": "#CC9958"
+						},
+						{
+							"order": 3,
+							"label": "Sole Fill",
+							"hex": "#BA8558"
+						},
+						{
+							"order": 4,
+							"label": "Apple Fill",
+							"hex": "#F13C34"
+						},
+						{
+							"order": 5,
+							"label": "Apple Leaf Fill",
+							"hex": "#5FBB4C"
+						}
+					]
+				}
+			},
+			"TagIDs": [
+				12,
+				22,
+				76,
+				272,
+				353
+			],
+			"RelatedAppearances": []
 		}
 	},
 	"Tags": {
@@ -34976,7 +35512,7 @@
 			"name": "female",
 			"title": null,
 			"type": "gen",
-			"uses": 101,
+			"uses": 103,
 			"synonym_of": null
 		},
 		"14": {
@@ -34984,7 +35520,7 @@
 			"name": "twilight sparkle",
 			"title": null,
 			"type": "char",
-			"uses": 2,
+			"uses": 3,
 			"synonym_of": null
 		},
 		"19": {
@@ -35016,7 +35552,7 @@
 			"name": "applejack",
 			"title": null,
 			"type": "char",
-			"uses": 3,
+			"uses": 4,
 			"synonym_of": null
 		},
 		"23": {
@@ -35408,7 +35944,7 @@
 			"name": "human",
 			"title": null,
 			"type": "spec",
-			"uses": 3,
+			"uses": 5,
 			"synonym_of": null
 		},
 		"77": {

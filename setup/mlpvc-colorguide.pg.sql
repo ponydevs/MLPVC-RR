@@ -348,7 +348,7 @@ The difference between the third and final forms are the body and shadow colors.
 (86, 201, 'Scorpan''s Medallion', '', NULL, false, '2016-03-20 16:08:58.951886+01', NULL, NULL, false),
 (87, 149, 'Rose', 'Far legs use darker colors.', 'd9zhguu', false, '2016-03-25 23:41:37.557224+01', NULL, true, false),
 (88, 17, 'Princess Flurry Heart', '', NULL, false, '2016-03-28 04:08:29.923679+02', NULL, NULL, false),
-(89, 58, 'Twilight Velvet', '', NULL, false, '2016-03-28 05:04:19.54759+02', NULL, NULL, false),
+(89, 58, 'Twilight Velvet', 'Magic Aura color is unknown.', NULL, false, '2016-03-28 05:04:19.54759+02', NULL, NULL, false),
 (91, 59, 'Night Light', '', NULL, false, '2016-03-28 05:10:24.723284+02', NULL, NULL, false),
 (92, 62, 'Trenderhoof', 'Based on S4E13.
 Far legs use darker colors. 
@@ -513,14 +513,16 @@ Pay close attention to her hair fills when vectoring her. The colors can be hard
 (218, 198, 'Applejack''s Mechanics Outfit', '', NULL, false, '2016-10-26 16:00:09.021007+02', NULL, NULL, false),
 (219, 199, 'Rarity''s Mechanics Outfit', '', NULL, false, '2016-10-26 16:09:27.776513+02', NULL, NULL, false),
 (220, NULL, 'Sunset Shimmer (FG, LoE)', 'Sunset Shimmer''s appearance from Friendship Games, onward. Note the lighter hair colors.', NULL, true, '2016-11-07 03:10:05.472298+01', NULL, NULL, false),
-(221, NULL, 'Twilight Sparkle (Pony)', 'The version of Twilight that passed through the mirror.', NULL, true, '2016-11-10 06:26:41.632611+01', NULL, NULL, false);
+(221, NULL, 'Twilight Sparkle (Pony)', 'The version of Twilight that passed through the mirror.', NULL, true, '2016-11-10 06:26:41.632611+01', NULL, NULL, false),
+(222, NULL, 'Twilight Sparkle (Human)', 'Twilight Sparkle from the human world', NULL, true, '2016-11-11 04:27:57.107617+01', NULL, NULL, false),
+(223, NULL, 'Applejack (EQG)', '', NULL, true, '2016-11-12 14:18:11.550993+01', NULL, NULL, false);
 
 
 --
 -- Name: appearances_id_seq; Type: SEQUENCE SET; Schema: public; Owner: mlpvc-rr
 --
 
-SELECT pg_catalog.setval('appearances_id_seq', 221, true);
+SELECT pg_catalog.setval('appearances_id_seq', 223, true);
 
 
 --
@@ -1564,14 +1566,27 @@ INSERT INTO colorgroups VALUES
 (1168, 221, 'Eyes', 3),
 (1169, 221, 'Blouse', 4),
 (1170, 221, 'Skirt', 5),
-(1171, 221, 'Boots', 6);
+(1171, 221, 'Boots', 6),
+(1172, 222, 'Skin', 1),
+(1173, 222, 'Hair', 2),
+(1174, 222, 'Eyes', 3),
+(1175, 222, 'Glasses', 4),
+(1176, 222, 'Shirt and Vest', 5),
+(1177, 222, 'Skirt', 6),
+(1178, 222, 'Stockings and Shoes', 7),
+(1179, 223, 'Skin', 1),
+(1180, 223, 'Hair and Hat', 2),
+(1181, 223, 'Eyes', 3),
+(1182, 223, 'Shirt', 4),
+(1183, 223, 'Skirt', 5),
+(1184, 223, 'Boots', 6);
 
 
 --
 -- Name: colorgroups_groupid_seq; Type: SEQUENCE SET; Schema: public; Owner: mlpvc-rr
 --
 
-SELECT pg_catalog.setval('colorgroups_groupid_seq', 1171, true);
+SELECT pg_catalog.setval('colorgroups_groupid_seq', 1184, true);
 
 
 --
@@ -6146,7 +6161,87 @@ INSERT INTO colors VALUES
 (1171, 4, 'Argyle Stripes', '#FFFFFF'),
 (1171, 5, 'Argyle Fill', '#B480D5'),
 (1171, 6, 'Sole Bottom', '#000000'),
-(1171, 7, 'Sole Top', '#1F1F1F');
+(1171, 7, 'Sole Top', '#1F1F1F'),
+(1172, 0, 'Outline', '#A76BBF'),
+(1172, 1, 'Fill', '#EFC6FB'),
+(1173, 0, 'Outline', '#15214A'),
+(1173, 1, 'Fill', '#273874'),
+(1173, 2, 'Stripe 1', '#ED438C'),
+(1173, 3, 'Stripe 2', '#662D8A'),
+(1173, 4, 'Hairpiece Fill 1', '#EC438A'),
+(1173, 5, 'Hairpiece Fill 2', '#F8C1E2'),
+(1174, 0, 'Iris Gradient Top', '#210A3F'),
+(1174, 1, 'Iris Gradient Bottom', '#672F8B'),
+(1174, 2, 'Highlight Top', '#8E5CA5'),
+(1174, 3, 'Highlight Bottom', '#CDB3D7'),
+(1174, 4, 'Eyebrows', '#662D8B'),
+(1175, 0, 'Frame', '#2E222C'),
+(1175, 1, 'Pins', '#FFFFFF'),
+(1175, 2, 'Lens Inner Gradient (10% Op.)', '#C1F4EC'),
+(1175, 3, 'Lens Outer Gradient (30% Op.)', '#D8EEFB'),
+(1176, 0, 'Shirt Outline', '#98DAE7'),
+(1176, 1, 'Shirt Fill', '#D0EDF4'),
+(1176, 2, 'Tie Outline', '#282446'),
+(1176, 3, 'Tie Fill', '#3B3468'),
+(1176, 4, 'Vest Outline', '#4F1C3D'),
+(1176, 5, 'Vest Fill', '#6F244E'),
+(1176, 6, 'Vest Stripes', '#B1ABB9'),
+(1176, 7, 'Vest Bottom Hem', '#23214F'),
+(1176, 8, 'Cuff Outline', '#787187'),
+(1176, 9, 'Cuff Fill', '#B1ABBA'),
+(1176, 10, 'Buttons', '#ADF4FB'),
+(1177, 0, 'Outline', '#5B2146'),
+(1177, 1, 'Fill', '#813269'),
+(1177, 2, 'Interior Fill', '#712B58'),
+(1177, 3, 'Pleat Fill', '#341C36'),
+(1177, 4, 'Horizontal Stripe 1', '#9B4FA3'),
+(1177, 5, 'Horizontal Stripe 2', '#F3E38D'),
+(1177, 6, 'Vertical Stripe 1', '#26A3D1'),
+(1177, 7, 'Vertical Stripe 2', '#AFACB8'),
+(1177, 8, 'Top Hem Outline', '#282446'),
+(1177, 9, 'Top Hem Fill', '#3B3468'),
+(1178, 0, 'Stocking Outline', '#322D57'),
+(1178, 1, 'Stocking Fill', '#4C4488'),
+(1178, 2, 'Stocking Top Outline', '#797187'),
+(1178, 3, 'Stocking Top Fill', '#B1ABBA'),
+(1178, 4, 'Shoe Outline', '#060B10'),
+(1178, 5, 'Shoe Fill', '#182C4A'),
+(1178, 6, 'Shoe Stripe', '#3F6FB6'),
+(1178, 7, 'Shoe Strap Fill 1', '#3F6FB6'),
+(1178, 8, 'Shoe Strap Fill 2', '#42A6DF'),
+(1178, 9, 'Shoe Buckle Fill 1', '#57C1DB'),
+(1178, 10, 'Shoe Buckle Fill 2', '#ACF4FB'),
+(1179, 0, 'Outline', '#EEA967'),
+(1179, 1, 'Fill', '#FFD69A'),
+(1179, 2, 'Freckles', '#FFFFFF'),
+(1180, 0, 'Outline', '#EBD564'),
+(1180, 1, 'Fill', '#FFF6AE'),
+(1180, 2, 'Hairband', '#ED4043'),
+(1180, 3, 'Hat Outline', '#B4874F'),
+(1180, 4, 'Hat Fill', '#CC9958'),
+(1181, 0, 'Iris Gradient Top', '#297A16'),
+(1181, 1, 'Iris Gradient Bottom', '#60BD4B'),
+(1181, 2, 'Upper Highlight', '#7AD964'),
+(1181, 3, 'Lower Highlight', '#CCEDC5'),
+(1182, 0, 'Outline', '#A7BBDB'),
+(1182, 1, 'Fill', '#F0ECE6'),
+(1182, 2, 'Top Outline', '#347224'),
+(1182, 3, 'Top Fill', '#459A32'),
+(1183, 0, 'Skirt Outline', '#3A5C90'),
+(1183, 1, 'Skirt Fill', '#4E78B7'),
+(1183, 2, 'Skirt Stitching', '#C0E3FB'),
+(1183, 3, 'Hem Outline', '#7DC8F8'),
+(1183, 4, 'Hem Fill', '#EECA55'),
+(1183, 5, 'Belt Outline', '#7F3316'),
+(1183, 6, 'Belt Fill', '#A5441F'),
+(1183, 7, 'Buckle Outline', '#AA1616'),
+(1183, 8, 'Buckle Fill', '#F13C35'),
+(1184, 0, 'Outline', '#7C3317'),
+(1184, 1, 'Fill', '#A85A2C'),
+(1184, 2, 'Top/Bottom Fill', '#CC9958'),
+(1184, 3, 'Sole Fill', '#BA8558'),
+(1184, 4, 'Apple Fill', '#F13C34'),
+(1184, 5, 'Apple Leaf Fill', '#5FBB4C');
 
 
 --
@@ -6628,8 +6723,11 @@ INSERT INTO tagged VALUES
 (12, 214),
 (12, 220),
 (12, 221),
+(12, 222),
+(12, 223),
 (14, 1),
 (14, 221),
+(14, 222),
 (21, 10),
 (21, 16),
 (21, 17),
@@ -6637,6 +6735,7 @@ INSERT INTO tagged VALUES
 (22, 2),
 (22, 202),
 (22, 218),
+(22, 223),
 (23, 4),
 (23, 188),
 (24, 3),
@@ -6759,6 +6858,8 @@ INSERT INTO tagged VALUES
 (76, 63),
 (76, 220),
 (76, 221),
+(76, 222),
+(76, 223),
 (77, 44),
 (78, 45),
 (79, 46),
@@ -7239,12 +7340,12 @@ INSERT INTO tags VALUES
 (9, 'antagonist', NULL, 'cat', 13, NULL),
 (10, 'pet', NULL, 'cat', 6, NULL),
 (11, 'male', NULL, 'gen', 68, NULL),
-(12, 'female', NULL, 'gen', 101, NULL),
-(14, 'twilight sparkle', NULL, 'char', 2, NULL),
+(12, 'female', NULL, 'gen', 103, NULL),
+(14, 'twilight sparkle', NULL, 'char', 3, NULL),
 (19, 's01e01', NULL, 'ep', 0, NULL),
 (20, 's01e26', NULL, 'ep', 0, NULL),
 (21, 's05e12', NULL, 'ep', 4, NULL),
-(22, 'applejack', NULL, 'char', 3, NULL),
+(22, 'applejack', NULL, 'char', 4, NULL),
 (23, 'pinkie pie', NULL, 'char', 2, NULL),
 (24, 'fluttershy', NULL, 'char', 2, NULL),
 (25, 'rainbow dash', NULL, 'char', 6, NULL),
@@ -7293,7 +7394,7 @@ INSERT INTO tags VALUES
 (73, 'berry pinch', NULL, 'char', 0, 116),
 (74, 'button mash', NULL, 'char', 1, NULL),
 (75, 'lily longsocks', NULL, 'char', 1, NULL),
-(76, 'human', NULL, 'spec', 3, NULL),
+(76, 'human', NULL, 'spec', 5, NULL),
 (77, 'shining armor', NULL, 'char', 1, NULL),
 (78, 'original character', 'Characters not canon to the show''s universe', 'cat', 1, NULL),
 (79, 'cheese sandwich', NULL, 'char', 1, NULL),
