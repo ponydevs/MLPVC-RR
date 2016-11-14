@@ -255,6 +255,7 @@ HTML;
 					$Database->where('id', $currentUser->id)->delete('sessions');
 				else {
 					if (strtotime($currentUser->Session['expires']) < time()){
+						$tokenvalid = false;
 						try {
 							DeviantArt::GetToken($currentUser->Session['refresh'], 'refresh_token');
 							$tokenvalid = true;

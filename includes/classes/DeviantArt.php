@@ -102,6 +102,8 @@ use Exceptions\cURLRequestException;
 			if ($lastRequestSuccessful && ($localDataMissing || (($massCachingWithinLimit && $cacheExpired) || $notMassCachingAndCacheExpired))){
 				try {
 					$json = self::oEmbed($ID, $type);
+					if (empty($json))
+						throw new Exception();
 				}
 				catch (Exception $e){
 					if (!empty($Deviation))
@@ -264,16 +266,15 @@ use Exceptions\cURLRequestException;
 					$MoreInfo['id'] = strtoupper($MoreInfo['id']);
 				$Insert = array_merge($UserData, $MoreInfo);
 				$Database->insert('users', $Insert);
+
+				$User = new User($Insert);
 				if ($makeDev)
-					(new User($Insert))->updateRole('developer');
+					$User->updateRole('developer');
 			}
 			else $Database->where('id',$UserID)->update('users', $UserData);
 
-			if (empty($makeDev) && (!empty($User) && Permission::Insufficient('member', $User->role) || empty($User)) && Users::IsClubMember($UserData['name']))
-				(new User(array(
-					'id' => $UserID,
-					'role' => $User->role ?? 'user',
-				)))->updateRole('member');
+			if (empty($makeDev) && !empty($User) && Permission::Insufficient('member', $User->role) && Users::IsClubMember($User->name))
+				$User->updateRole('member');
 
 			if ($type === 'refresh_token')
 				$Database->where('refresh', $code)->update('sessions',$AuthData);
