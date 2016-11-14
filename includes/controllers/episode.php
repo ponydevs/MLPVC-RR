@@ -220,7 +220,7 @@ use DB\Episode;
 				return Response::Success('No broken videos found under this '.($Episode->isMovie?'movie':'episode').'.');
 
 			Response::Success("$removed video link".($removed===1?' has':'s have')." been removed from the site. Thank you for letting us know.",array(
-				'epsection' => Episodes::GetVideosHTML($Episode),
+				'epsection' => Episodes::GetVideosHTML($Episode, NOWRAP),
 			));
 		break;
 		case "getcgrelations":
