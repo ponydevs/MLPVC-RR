@@ -436,11 +436,8 @@ if (!POST_REQUEST) CoreUtils::NotFound();
 		$Image = Posts::CheckImage($image_url, $Post);
 
 		// Check image availability
-		if (!CoreUtils::IsURLAvailable($Image->preview)){
-			CoreUtils::MSleep(1500);
-			if (!CoreUtils::IsURLAvailable($Image->preview))
-				Response::Fail("<p class='align-center'>The specified image doesn't seem to exist. Please verify that you can reach the URL below and try again.<br><a href='{$Image->preview}' target='_blank'>{$Image->preview}</a></p>");
-		}
+		if (!DeviantArt::IsImageAvailable($Image->preview))
+			Response::Fail("<p class='align-center'>The specified image doesn't seem to exist. Please verify that you can reach the URL below and try again.<br><a href='{$Image->preview}' target='_blank'>{$Image->preview}</a></p>");
 
 		if (!$Database->where('id', $Post->id)->update("{$thing}s",array(
 			'preview' => $Image->preview,
@@ -501,11 +498,8 @@ if (!POST_REQUEST) CoreUtils::NotFound();
 			Response::Fail('Error while finding URL: '.$e->getMessage());
 		}
 		// Check image availability
-		if (!CoreUtils::IsURLAvailable($fullsize)){
-			CoreUtils::MSleep(1500);
-			if (!CoreUtils::IsURLAvailable($fullsize))
-				Response::Fail("The specified image doesn't seem to exist. Please verify that you can reach the URL below and try again.<br><a href='$fullsize' target='_blank'>$fullsize</a>");
-		}
+		if (!!DeviantArt::IsImageAvailable($fullsize))
+			Response::Fail("The specified image doesn't seem to exist. Please verify that you can reach the URL below and try again.<br><a href='$fullsize' target='_blank'>$fullsize</a>");
 
 		if (!$Database->where('id', $Post->id)->update("{$thing}s",array(
 			'fullsize' => $fullsize,

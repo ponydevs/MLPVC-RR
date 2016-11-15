@@ -288,4 +288,19 @@ use Exceptions\cURLRequestException;
 			Cookie::Set('access', $cookie, time()+ Time::$IN_SECONDS['year'], Cookie::HTTPONLY);
 			return $User ?? null;
 		}
+
+		static function IsImageAvailable(string $url):bool {
+			if (CoreUtils::IsURLAvailable($url))
+				return true;
+			CoreUtils::MSleep(300);
+			if (CoreUtils::IsURLAvailable($url))
+				return true;
+			CoreUtils::MSleep(300);
+			if (CoreUtils::IsURLAvailable("$url?"))
+				return true;
+			CoreUtils::MSleep(300);
+			if (CoreUtils::IsURLAvailable("$url?"))
+				return true;
+			return false;
+		}
 	}

@@ -115,19 +115,14 @@
 
 					try {
 						$CachedDeviation = DeviantArt::GetCachedSubmission($id,$this->provider);
-						if (!CoreUtils::IsURLAvailable($CachedDeviation['preview'])){
-							CoreUtils::MSleep(1500);
-							if (!CoreUtils::IsURLAvailable($CachedDeviation['preview'])){
-								$preview = CoreUtils::AposEncode($CachedDeviation['preview']);
-								throw new Exception("The preview image appears to be unavailable. Please make sure <a href='$preview'>this link</a> works and try again, or re-submit the deviation if this persists.");
-							}
+
+						if (!DeviantArt::IsImageAvailable($CachedDeviation['preview'])){
+							$preview = CoreUtils::AposEncode($CachedDeviation['preview']);
+							throw new Exception("The preview image appears to be unavailable. Please make sure <a href='$preview'>this link</a> works and try again, or re-submit the deviation if this persists.");
 						}
-						if (!CoreUtils::IsURLAvailable($CachedDeviation['fullsize'])){
-							CoreUtils::MSleep(1500);
-							if (!CoreUtils::IsURLAvailable($CachedDeviation['fullsize'])){
-								$fullsize = CoreUtils::AposEncode($CachedDeviation['fullsize']);
-								throw new Exception("The submission appears to be unavailable. Please make sure <a href='$fullsize'>this link</a> works and try again, or re-submit the deviation if this persists.");
-							}
+						if (!DeviantArt::IsImageAvailable($CachedDeviation['fullsize'])){
+							$fullsize = CoreUtils::AposEncode($CachedDeviation['fullsize']);
+							throw new Exception("The submission appears to be unavailable. Please make sure <a href='$fullsize'>this link</a> works and try again, or re-submit the deviation if this persists.");
 						}
 					}
 					catch(cURLRequestException $e){
