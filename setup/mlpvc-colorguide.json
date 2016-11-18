@@ -35416,6 +35416,219 @@
 				353
 			],
 			"RelatedAppearances": []
+		},
+		"224": {
+			"id": 224,
+			"order": null,
+			"label": "Fluttershy (EQG)",
+			"notes": "",
+			"cm_favme": null,
+			"ishuman": true,
+			"added": "2016-11-17 05:07:45.28054+01",
+			"cm_preview": null,
+			"cm_dir": null,
+			"private": false,
+			"ColorGroups": {
+				"1185": {
+					"groupid": 1185,
+					"label": "Skin",
+					"order": 1,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#F0DA86"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#FFF8C5"
+						}
+					]
+				},
+				"1186": {
+					"groupid": 1186,
+					"label": "Hair",
+					"order": 2,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#E881B4"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#F3B6D1"
+						},
+						{
+							"order": 2,
+							"label": "Butterfly Clip Wings",
+							"hex": "#FFFFFF"
+						},
+						{
+							"order": 3,
+							"label": "Butterfly Clip Body",
+							"hex": "#B1DD73"
+						}
+					]
+				},
+				"1187": {
+					"groupid": 1187,
+					"label": "Eyes",
+					"order": 3,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Iris Gradient Top",
+							"hex": "#005252"
+						},
+						{
+							"order": 1,
+							"label": "Iris Gradient Bottom",
+							"hex": "#00ACA8"
+						},
+						{
+							"order": 2,
+							"label": "Upper Highlight",
+							"hex": "#3DBFBA"
+						},
+						{
+							"order": 3,
+							"label": "Lower Highlight",
+							"hex": "#89D1D5"
+						}
+					]
+				},
+				"1188": {
+					"groupid": 1188,
+					"label": "Shirt",
+					"order": 4,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#FAD1E0"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#FFFFFF"
+						}
+					]
+				},
+				"1189": {
+					"groupid": 1189,
+					"label": "Skirt",
+					"order": 5,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Skirt Outline",
+							"hex": "#7CBD53"
+						},
+						{
+							"order": 1,
+							"label": "Skirt Fill",
+							"hex": "#B0DB72"
+						},
+						{
+							"order": 2,
+							"label": "Hem Outline (85% Opacity)",
+							"hex": "#E8A4C2"
+						},
+						{
+							"order": 3,
+							"label": "Hem Fill (85% Opacity)",
+							"hex": "#FFDAE7"
+						},
+						{
+							"order": 4,
+							"label": "Hem Spots",
+							"hex": "#FFFFFF"
+						},
+						{
+							"order": 5,
+							"label": "Butterfly Fill 1",
+							"hex": "#FFFFFF"
+						},
+						{
+							"order": 6,
+							"label": "Butterfly Fill 2",
+							"hex": "#F07EAD"
+						},
+						{
+							"order": 7,
+							"label": "Butterfly Fill 3",
+							"hex": "#F9D1E1"
+						}
+					]
+				},
+				"1190": {
+					"groupid": 1190,
+					"label": "Boots",
+					"order": 6,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#7CBD53"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#B0DB72"
+						},
+						{
+							"order": 2,
+							"label": "Fringe Outline",
+							"hex": "#F9D1E1"
+						},
+						{
+							"order": 3,
+							"label": "Fringe Fill",
+							"hex": "#FFFFFF"
+						},
+						{
+							"order": 4,
+							"label": "Socks Outline",
+							"hex": "#EF7EAD"
+						},
+						{
+							"order": 5,
+							"label": "Socks Fill",
+							"hex": "#F5A4C5"
+						},
+						{
+							"order": 6,
+							"label": "Socks Spots",
+							"hex": "#FFFFFF"
+						},
+						{
+							"order": 7,
+							"label": "Sole Outline",
+							"hex": "#F8D1E1"
+						},
+						{
+							"order": 8,
+							"label": "Sole Fill",
+							"hex": "#FFFFFF"
+						},
+						{
+							"order": 9,
+							"label": "Sole Bottom Fill",
+							"hex": "#F7F7F7"
+						}
+					]
+				}
+			},
+			"TagIDs": [
+				12,
+				24,
+				76,
+				353
+			],
+			"RelatedAppearances": []
 		}
 	},
 	"Tags": {
@@ -35512,7 +35725,7 @@
 			"name": "female",
 			"title": null,
 			"type": "gen",
-			"uses": 103,
+			"uses": 104,
 			"synonym_of": null
 		},
 		"14": {
@@ -35568,7 +35781,7 @@
 			"name": "fluttershy",
 			"title": null,
 			"type": "char",
-			"uses": 2,
+			"uses": 3,
 			"synonym_of": null
 		},
 		"25": {
@@ -35944,7 +36157,7 @@
 			"name": "human",
 			"title": null,
 			"type": "spec",
-			"uses": 5,
+			"uses": 6,
 			"synonym_of": null
 		},
 		"77": {

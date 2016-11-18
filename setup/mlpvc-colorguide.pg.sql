@@ -515,14 +515,15 @@ Pay close attention to her hair fills when vectoring her. The colors can be hard
 (220, NULL, 'Sunset Shimmer (FG, LoE)', 'Sunset Shimmer''s appearance from Friendship Games, onward. Note the lighter hair colors.', NULL, true, '2016-11-07 03:10:05.472298+01', NULL, NULL, false),
 (221, NULL, 'Twilight Sparkle (Pony)', 'The version of Twilight that passed through the mirror.', NULL, true, '2016-11-10 06:26:41.632611+01', NULL, NULL, false),
 (222, NULL, 'Twilight Sparkle (Human)', 'Twilight Sparkle from the human world', NULL, true, '2016-11-11 04:27:57.107617+01', NULL, NULL, false),
-(223, NULL, 'Applejack (EQG)', '', NULL, true, '2016-11-12 14:18:11.550993+01', NULL, NULL, false);
+(223, NULL, 'Applejack (EQG)', '', NULL, true, '2016-11-12 14:18:11.550993+01', NULL, NULL, false),
+(224, NULL, 'Fluttershy (EQG)', '', NULL, true, '2016-11-17 05:07:45.28054+01', NULL, NULL, false);
 
 
 --
 -- Name: appearances_id_seq; Type: SEQUENCE SET; Schema: public; Owner: mlpvc-rr
 --
 
-SELECT pg_catalog.setval('appearances_id_seq', 223, true);
+SELECT pg_catalog.setval('appearances_id_seq', 224, true);
 
 
 --
@@ -1579,14 +1580,20 @@ INSERT INTO colorgroups VALUES
 (1181, 223, 'Eyes', 3),
 (1182, 223, 'Shirt', 4),
 (1183, 223, 'Skirt', 5),
-(1184, 223, 'Boots', 6);
+(1184, 223, 'Boots', 6),
+(1185, 224, 'Skin', 1),
+(1186, 224, 'Hair', 2),
+(1187, 224, 'Eyes', 3),
+(1188, 224, 'Shirt', 4),
+(1189, 224, 'Skirt', 5),
+(1190, 224, 'Boots', 6);
 
 
 --
 -- Name: colorgroups_groupid_seq; Type: SEQUENCE SET; Schema: public; Owner: mlpvc-rr
 --
 
-SELECT pg_catalog.setval('colorgroups_groupid_seq', 1184, true);
+SELECT pg_catalog.setval('colorgroups_groupid_seq', 1190, true);
 
 
 --
@@ -6241,7 +6248,37 @@ INSERT INTO colors VALUES
 (1184, 2, 'Top/Bottom Fill', '#CC9958'),
 (1184, 3, 'Sole Fill', '#BA8558'),
 (1184, 4, 'Apple Fill', '#F13C34'),
-(1184, 5, 'Apple Leaf Fill', '#5FBB4C');
+(1184, 5, 'Apple Leaf Fill', '#5FBB4C'),
+(1185, 0, 'Outline', '#F0DA86'),
+(1185, 1, 'Fill', '#FFF8C5'),
+(1186, 0, 'Outline', '#E881B4'),
+(1186, 1, 'Fill', '#F3B6D1'),
+(1186, 2, 'Butterfly Clip Wings', '#FFFFFF'),
+(1186, 3, 'Butterfly Clip Body', '#B1DD73'),
+(1187, 0, 'Iris Gradient Top', '#005252'),
+(1187, 1, 'Iris Gradient Bottom', '#00ACA8'),
+(1187, 2, 'Upper Highlight', '#3DBFBA'),
+(1187, 3, 'Lower Highlight', '#89D1D5'),
+(1188, 0, 'Outline', '#FAD1E0'),
+(1188, 1, 'Fill', '#FFFFFF'),
+(1189, 0, 'Skirt Outline', '#7CBD53'),
+(1189, 1, 'Skirt Fill', '#B0DB72'),
+(1189, 2, 'Hem Outline (85% Opacity)', '#E8A4C2'),
+(1189, 3, 'Hem Fill (85% Opacity)', '#FFDAE7'),
+(1189, 4, 'Hem Spots', '#FFFFFF'),
+(1189, 5, 'Butterfly Fill 1', '#FFFFFF'),
+(1189, 6, 'Butterfly Fill 2', '#F07EAD'),
+(1189, 7, 'Butterfly Fill 3', '#F9D1E1'),
+(1190, 0, 'Outline', '#7CBD53'),
+(1190, 1, 'Fill', '#B0DB72'),
+(1190, 2, 'Fringe Outline', '#F9D1E1'),
+(1190, 3, 'Fringe Fill', '#FFFFFF'),
+(1190, 4, 'Socks Outline', '#EF7EAD'),
+(1190, 5, 'Socks Fill', '#F5A4C5'),
+(1190, 6, 'Socks Spots', '#FFFFFF'),
+(1190, 7, 'Sole Outline', '#F8D1E1'),
+(1190, 8, 'Sole Fill', '#FFFFFF'),
+(1190, 9, 'Sole Bottom Fill', '#F7F7F7');
 
 
 --
@@ -6725,6 +6762,7 @@ INSERT INTO tagged VALUES
 (12, 221),
 (12, 222),
 (12, 223),
+(12, 224),
 (14, 1),
 (14, 221),
 (14, 222),
@@ -6740,6 +6778,7 @@ INSERT INTO tagged VALUES
 (23, 188),
 (24, 3),
 (24, 200),
+(24, 224),
 (25, 5),
 (25, 144),
 (25, 156),
@@ -6860,6 +6899,7 @@ INSERT INTO tagged VALUES
 (76, 221),
 (76, 222),
 (76, 223),
+(76, 224),
 (77, 44),
 (78, 45),
 (79, 46),
@@ -7340,14 +7380,14 @@ INSERT INTO tags VALUES
 (9, 'antagonist', NULL, 'cat', 13, NULL),
 (10, 'pet', NULL, 'cat', 6, NULL),
 (11, 'male', NULL, 'gen', 68, NULL),
-(12, 'female', NULL, 'gen', 103, NULL),
+(12, 'female', NULL, 'gen', 104, NULL),
 (14, 'twilight sparkle', NULL, 'char', 3, NULL),
 (19, 's01e01', NULL, 'ep', 0, NULL),
 (20, 's01e26', NULL, 'ep', 0, NULL),
 (21, 's05e12', NULL, 'ep', 4, NULL),
 (22, 'applejack', NULL, 'char', 4, NULL),
 (23, 'pinkie pie', NULL, 'char', 2, NULL),
-(24, 'fluttershy', NULL, 'char', 2, NULL),
+(24, 'fluttershy', NULL, 'char', 3, NULL),
 (25, 'rainbow dash', NULL, 'char', 6, NULL),
 (26, 'rarity', NULL, 'char', 4, NULL),
 (27, 'wonderbolt', 'Wonderbolt characters', 'cat', 9, NULL),
@@ -7394,7 +7434,7 @@ INSERT INTO tags VALUES
 (73, 'berry pinch', NULL, 'char', 0, 116),
 (74, 'button mash', NULL, 'char', 1, NULL),
 (75, 'lily longsocks', NULL, 'char', 1, NULL),
-(76, 'human', NULL, 'spec', 5, NULL),
+(76, 'human', NULL, 'spec', 6, NULL),
 (77, 'shining armor', NULL, 'char', 1, NULL),
 (78, 'original character', 'Characters not canon to the show''s universe', 'cat', 1, NULL),
 (79, 'cheese sandwich', NULL, 'char', 1, NULL),
