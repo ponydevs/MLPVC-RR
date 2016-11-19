@@ -4,6 +4,8 @@
 		protected static
 			$_db = 'user_prefs',
 			$_defaults = array(
+				'discord_token' => '',
+
 				'cg_itemsperpage' => 7,
 				'cg_hidesynon' => 0,
 				'cg_hideclrinfo' => 0,
@@ -57,8 +59,8 @@
 				Response::Fail("Key $key is not allowed");
 			$default = static::$_defaults[$key];
 
-			if ($Database->where('key', $key)->where('user', $currentUser->id)->has(static::$_db)){
-				$Database->where('key', $key)->where('user', $currentUser->id);
+			if ($Database->where('key', $key)->where('user', $for)->has(static::$_db)){
+				$Database->where('key', $key)->where('user', $for);
 				if ($value == $default)
 					return $Database->delete(static::$_db);
 				else return $Database->update(static::$_db, array('value' => $value));
@@ -97,6 +99,9 @@
 				case "cg_hideclrinfo":
 					$value = $value ? 1 : 0;
 				break;
+
+				case "discord_token":
+					Response::Fail("You cannot change the $key setting");
 			}
 
 			return $value;

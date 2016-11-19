@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "233af9dec64e7c614ad730a669a233cf",
+    "hash": "ef56b9d2108332b7db954e1d05829679",
     "content-hash": "8943ed99d6741cbf64e0b9519608473c",
     "packages": [
         {
@@ -218,12 +218,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/SeinopSys/PHP-PostgreSQL-Database-Class.git",
-                "reference": "86164f91ee5d4b00a88193166f6e4ba9436d989b"
+                "reference": "a92513568361b9cc07a9f69a4db203e3b620c89c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/SeinopSys/PHP-PostgreSQL-Database-Class/zipball/86164f91ee5d4b00a88193166f6e4ba9436d989b",
-                "reference": "86164f91ee5d4b00a88193166f6e4ba9436d989b",
+                "url": "https://api.github.com/repos/SeinopSys/PHP-PostgreSQL-Database-Class/zipball/a92513568361b9cc07a9f69a4db203e3b620c89c",
+                "reference": "a92513568361b9cc07a9f69a4db203e3b620c89c",
                 "shasum": ""
             },
             "require": {
@@ -248,7 +248,7 @@
                 }
             ],
             "description": "PHP wrapper class for PDO-based interaction with PostgreSQL databases, heavily based on joshcam/mysqli-database-class",
-            "time": "2016-10-13 20:52:24"
+            "time": "2016-11-19 20:09:38"
         },
         {
             "name": "wisembly/elephant.io",

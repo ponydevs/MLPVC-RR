@@ -1,11 +1,41 @@
 <?php
 
-use DB\User;
-
-if (strtolower($data) === 'immortalsexgod')
-		$data = 'DJDavid98';
+	use DB\User;
 
 	if (POST_REQUEST){
+		if ($data === 'discord-verify'){
+			if (!empty($_GET['token'])){
+				$targetUser = $Database->where('key','discord_token')->where('value',$_GET['token'])->getOne('user_prefs','user');
+				if (empty($targetUser))
+					Response::Fail('Invalid token');
+
+				$user = Users::Get($targetUser['user']);
+				UserPrefs::Set('discord_token','true',$user->id);
+				Response::Done(array(
+					'name' => $user->name,
+					'role' => $user->role,
+				));
+			}
+
+			$ismember = Permission::Sufficient('member', $currentUser->role);
+			$isstaff = Permission::Sufficient('staff', $currentUser->role);
+			if (!$ismember || $isstaff){
+				UserPrefs::Set('discord_token','');
+				Response::Fail(!$ismember ? 'You are not a club member' : 'Staff members cannot use this feature');
+			}
+
+			$token = UserPrefs::Get('discord_token');
+			if ($token === 'true')
+				Response::Fail("You have already been verified using this automated method. If - for yome reason - you still don't have the Club Members role please ask for assistance in the <strong>#support</strong> channel.");
+
+			if (empty($token)){
+				$token = regex_replace(new RegExp('[^a-z\d]','i'),'',base64_encode(random_bytes(12)));
+				UserPrefs::Set('discord_token', $token);
+			}
+
+			Response::Done(array('token' => $token));
+		}
+
 		if (!Permission::Sufficient('staff')) Response::Fail();
 		CSRFProtection::Protect();
 
@@ -89,6 +119,9 @@ if (strtolower($data) === 'immortalsexgod')
 		}
 		else CoreUtils::NotFound();
 	}
+
+	if (strtolower($data) === 'immortalsexgod')
+		$data = 'DJDavid98';
 
 	if (empty($data)){
 		if ($signedIn) $un = $currentUser->name;
