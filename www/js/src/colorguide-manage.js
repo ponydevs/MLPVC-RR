@@ -147,7 +147,7 @@ DocReady.push(function ColorguideManage(){
 									$.Dialog.wait('Appearance relation editor', 'Retrieving relations from server');
 
 									let $cgRelations = $('#content').find('section.related');
-									$.post(`/cg/getrelations/${ponyID}`,$.mkAjaxHandler(function(){
+									$.post(`/cg/getrelations/${ponyID}${EQGRq}`,$.mkAjaxHandler(function(){
 										if (!this.status) return $.Dialog.fail(false, this.message);
 
 										let data = this,
@@ -188,7 +188,6 @@ DocReady.push(function ColorguideManage(){
 											let $selected = $selectLinked.children(':selected'),
 												mutual = $this.is(':checked') && $this.attr('value') === '1',
 												hasDataAttr = $selected.hasAttr('data-mutual');
-											console.log($selected, mutual, hasDataAttr);
 											if (mutual){
 												if (!hasDataAttr)
 													$selected.attr('data-mutual', true).text('(M) '+$selected.text());
@@ -253,7 +252,7 @@ DocReady.push(function ColorguideManage(){
 												});
 												$.Dialog.wait(false, 'Saving changes');
 
-												$.post(`/cg/setrelations/${ponyID}`,{
+												$.post(`/cg/setrelations/${ponyID}${EQGRq}`,{
 													ids: ids.join(','),
 													mutuals: mutuals.join(','),
 												},$.mkAjaxHandler(function(){
@@ -867,6 +866,8 @@ DocReady.push(function ColorguideManage(){
 							e.preventDefault();
 
 							let data = $form.mkData();
+							if (AppearancePage)
+								data.APPEARANCE_PAGE = $tag.closest('div[id^=p]').attr('id').replace(/\D/g, '');
 							$.Dialog.wait(false, 'Saving changes');
 
 							$.post(`/cg/settag/${tagID}${EQGRq}`, data, $.mkAjaxHandler(function(){
@@ -886,6 +887,12 @@ DocReady.push(function ColorguideManage(){
 									$(this)[data.synonym_of?'addClass':'removeClass']('synonym').parent().reorderTags();
 								});
 								window.tooltips();
+
+								if (AppearancePage && data.needupdate){
+									let $newEpSection = $(data.eps);
+									$EpAppearances.replaceWith($newEpSection);
+									$EpAppearances = $newEpSection;
+								}
 								$.Dialog.close();
 							}));
 						});
@@ -1304,10 +1311,10 @@ DocReady.push(function ColorguideManage(){
 	}
 	window.ctxmenus = function(){ctxmenus()};
 
-	$list.on('page-switch',BindEditTagsHandlers);
-	BindEditTagsHandlers();
+	$list.on('page-switch',bindEditTagsHandlers);
+	bindEditTagsHandlers();
 
-	function BindEditTagsHandlers(){
+	function bindEditTagsHandlers(){
 		$('button.edit:not(.bound)').addClass('bound').on('click',function(){
 			let $this = $(this),
 				$li = $this.closest('[id^=p]'),

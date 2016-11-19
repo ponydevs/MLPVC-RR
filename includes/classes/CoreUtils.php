@@ -566,7 +566,7 @@ use Exceptions\cURLRequestException;
 					else $NavItems['eps']['subitem'] = CoreUtils::Cutoff($GLOBALS['heading'],Episodes::TITLE_CUTOFF);
 				}
 				global $Color, $EQG;
-				$NavItems['colorguide'] = array("/cg", (!empty($EQG)?'EQG ':'')."$Color Guide");
+				$NavItems['colorguide'] = array("/cg".(!empty($EQG)?'/eqg':''), (!empty($EQG)?'EQG ':'')."$Color Guide");
 				if ($do === 'colorguide'){
 					global $Tags, $Changes, $Ponies, $Pagination, $Appearance, $Map;
 					if (!empty($Appearance))

@@ -73,9 +73,10 @@
 	$USERNAME_REGEX = new RegExp('^'.USERNAME_PATTERN.'$');
 	define('GUEST_AVATAR','/img/guest.svg');
 	# Episode
-	define('EPISODE_ID_PATTERN','S0*([0-8])E0*([1-9]|1\d|2[0-6])(?:-0*([1-9]|1\d|2[0-6]))?(?:\b|$)');;
+	define('EPISODE_ID_PATTERN','S0*([0-8])E0*([1-9]|1\d|2[0-6])(?:-0*([1-9]|1\d|2[0-6]))?(?:\b|$)');
 	$EPISODE_ID_REGEX = new RegExp('^'.EPISODE_ID_PATTERN,'i');
-	$MOVIE_ID_REGEX = new RegExp('^(?:EQG|Movie#)0*(\d)(?:\b|$)','i');
+	define('MOVIE_ID_PATTERN','(?:movie#)0*(\d+)(?:\b|$)');
+	$MOVIE_ID_REGEX = new RegExp('^'.MOVIE_ID_PATTERN,'i');
 	$EP_TITLE_REGEX = new RegExp('^([A-Za-z\s]+: )?[A-Za-z \'"\-!\d,&:?.()]{5,35}$','u');
 	define('INVERSE_EP_TITLE_PATTERN','[^A-Za-z \'"\-!\d,&:?.()]');
 	$PREFIX_REGEX = new RegExp('^\s*(^|.*?[^\\\\]):\s*');
@@ -93,9 +94,9 @@
 	// Color Guide regular expression \\
 	$EQG_URL_PATTERN = new RegExp('^eqg/?');
 	# Tags
-	define('TAG_NAME_PATTERN', '^[a-z\d ().\-\']{3,30}$');
+	define('TAG_NAME_PATTERN', '^[a-z\d ().\-\'#]{3,30}$');
 	$TAG_NAME_REGEX = new RegExp(TAG_NAME_PATTERN,'u');
-	define('INVERSE_TAG_NAME_PATTERN', '[^a-z\d ().\-\']');
+	define('INVERSE_TAG_NAME_PATTERN', '[^a-z\d ().\-\'#]');
 
 	// Database connection & Required Functionality Checking \\
 	try {

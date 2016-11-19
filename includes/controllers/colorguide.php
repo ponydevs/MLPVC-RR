@@ -134,6 +134,7 @@
 		}
 
 		$_match = array();
+		// Appearance actions
 		if (regex_match(new RegExp('^(rename|delete|make|(?:[gs]et|del)(?:sprite|cgs|relations)?|tag|untag|clearrendercache|applytemplate)(?:/(\d+))?$'), $data, $_match)){
 			$action = $_match[1];
 			$creating = $action === 'make';
@@ -178,8 +179,13 @@
 						)
 					)))->out();
 					CoreUtils::CheckStringValidity($label, "Appearance name", INVERSE_PRINTABLE_ASCII_PATTERN);
-					if ($creating && $CGDb->where('ishuman', $data['ishuman'])->where('label', $label)->has('appearances'))
-						Response::Fail('An appearance already esists with this name');
+					if (!$creating)
+						$CGDb->where('id', $Appearance['id'], '!=');
+					$dupe = $CGDb->where('ishuman', $data['ishuman'])->where('label', $label)->getOne('appearances');
+					if (!empty($dupe)){
+						$eqg_url = $EQG ? '/eqg':'';
+						Response::Fail("An appearance <a href='/cg$eqg_url/v/{$dupe['id']}' target='_blank'>already esists</a> in the ".($EQG?'EQG':'Pony').' guide with this exact name. Consider adding an identifier in backets or choosing a different name.');
+					}
 					$data['label'] = $label;
 
 					$notes = (new Input('notes','text',array(
@@ -195,7 +201,7 @@
 						if ($creating || $notes !== $Appearance['notes'])
 							$data['notes'] = $notes;
 					}
-					else $data['notes'] = '';
+					else $data['notes'] = null;
 
 					$cm_favme = (new Input('cm_favme','string',array(Input::IS_OPTIONAL => true)))->out();
 					if (isset($cm_favme)){
@@ -538,7 +544,7 @@
 					$response = array('tags' => \CG\Appearances::GetTagsHTML($Appearance['id'], NOWRAP));
 					if ($AppearancePage && $Tag['type'] === 'ep'){
 						$response['needupdate'] = true;
-						$response['eps'] = \CG\Appearances::GetRelatedEpisodesHTML($Appearance['id']);
+						$response['eps'] = \CG\Appearances::GetRelatedEpisodesHTML($Appearance, $EQG);
 					}
 					Response::Done($response);
 				break;
@@ -555,6 +561,7 @@
 				default: CoreUtils::NotFound();
 			}
 		}
+		// Tag actions
 		else if (regex_match(new RegExp('^([gs]et|make|del|merge|recount|(?:un)?synon)tag(?:/(\d+))?$'), $data, $_match)){
 			$action = $_match[1];
 
@@ -586,26 +593,22 @@
 				);
 			}
 
+			$adding = $action === 'make';
 
-			// TODO Untangle spaghetti
-			$getting = $action === 'get';
-			$deleting = $action === 'del';
-			$new = $action === 'make';
-			$merging = $action === 'merge';
-			$synoning = $action === 'synon';
-			$unsynoning = $action === 'unsynon';
-
-			if (!$new){
+			if (!$adding){
 				if (!isset($_match[2]))
 					Response::Fail('Missing tag ID');
 				$TagID = intval($_match[2], 10);
 				$Tag = $CGDb->where('tid', $TagID)->getOne('tags',isset($query) ? 'tid, name, type':'*');
 				if (empty($Tag))
 					Response::Fail("This tag does not exist");
+			}
+			$data = array();
 
-				if ($getting) Response::Done($Tag);
-
-				if ($deleting){
+			switch ($action){
+				case 'get':
+					Response::Done($Tag);
+				case 'del':
 					$AppearanceID = \CG\Appearances::ValidateAppearancePageID();
 
 					if (!isset($_POST['sanitycheck'])){
@@ -623,12 +626,144 @@
 
 					Response::Success('Tag deleted successfully', isset($AppearanceID) && $Tag['type'] === 'ep' ? array(
 						'needupdate' => true,
-						'eps' => \CG\Appearances::GetRelatedEpisodesHTML($AppearanceID),
+						'eps' => \CG\Appearances::GetRelatedEpisodesHTML($AppearanceID, $EQG),
 					) : null);
-				}
-			}
-			$data = array();
+				break;
+				case 'unsynon':
+					if (empty($Tag['synonym_of']))
+						Response::Done();
 
+					$keep_tagged = isset($_POST['keep_tagged']);
+					$uses = 0;
+					if ($keep_tagged){
+						$Target = $CGDb->where('tid', $Tag['synonym_of'])->getOne('tags','tid');
+						if (!empty($Target)){
+							$TargetTagged = $CGDb->where('tid', $Target['tid'])->get('tagged',null,'ponyid');
+							foreach ($TargetTagged as $tg){
+								if (!$CGDb->insert('tagged',array(
+									'tid' => $Tag['tid'],
+									'ponyid' => $tg['ponyid']
+								))) Response::Fail("Tag synonym removal process failed, please re-try.<br>Technical details: ponyid={$tg['ponyid']} tid={$Tag['tid']}");
+								$uses++;
+							}
+						}
+						else $keep_tagged = false;
+					}
+
+					if (!$CGDb->where('tid', $Tag['tid'])->update('tags', array('synonym_of' => null, 'uses' => $uses)))
+						Response::DBError();
+
+					Response::Done(array('keep_tagged' => $keep_tagged));
+				break;
+				case 'make':
+				case 'set':
+					$data['name'] = CGUtils::ValidateTagName('name');
+
+					$epTagName = CGUtils::CheckEpisodeTagName($data['name']);
+					$surelyAnEpisodeTag = $epTagName !== false;
+					$type = (new Input('type',function($value){
+						if (!isset(\CG\Tags::$TAG_TYPES_ASSOC[$value]))
+							return Input::ERROR_INVALID;
+					},array(
+						Input::IS_OPTIONAL => true,
+						Input::CUSTOM_ERROR_MESSAGES => array(
+							Input::ERROR_INVALID => 'Invalid tag type: @value',
+						)
+					)))->out();
+					if (empty($type)){
+						if ($surelyAnEpisodeTag)
+							$data['name'] = $epTagName;
+						$data['type'] = $epTagName === false ? null : 'ep';
+					}
+					else {
+						if ($type == 'ep'){
+							if (!$surelyAnEpisodeTag){
+								$errmsg = <<<HTML
+Episode tags must be in one of the following formats:
+<ol>
+	<li>
+		<code>s<var>S</var>e<var>E<sub>1</sub></var>[-<var>E<sub>2</sub></var>]</code> where
+		<ul>
+			<li><var>S</var> ∈ <var>{1, 2, 3, &hellip; 8}</var></li>
+			<li><var>E<sub>1</sub></var>, <var>E<sub>2</sub></var> ∈ <var>{1, 2, 3, &hellip; 26}</var></li>
+			<li>if specified: <var>E<sub>1</sub></var>+1 = <var>E<sub>2</sub></var></li>
+		</ul>
+	</li>
+	<li>
+		<code>movie#<var>M</var></code> where <var>M</var> ∈ <var>&#x2124;<sup>+</sup></var>
+	</li>
+</ol>
+HTML;
+
+								Response::Fail($errmsg);
+							}
+							$data['name'] = $epTagName;
+						}
+						else if ($surelyAnEpisodeTag)
+							$type = $ep;
+						$data['type'] = $type;
+					}
+
+					if (!$adding) $CGDb->where('tid', $Tag['tid'],'!=');
+					if ($CGDb->where('name', $data['name'])->where('type', $data['type'])->has('tags') || $data['name'] === 'wrong cutie mark')
+						Response::Fail("A tag with the same name and type already exists");
+
+					$data['title'] = (new Input('title','string',array(
+						Input::IS_OPTIONAL => true,
+						Input::IN_RANGE => [null,255],
+						Input::CUSTOM_ERROR_MESSAGES => array(
+							Input::ERROR_RANGE => 'Tag title cannot be longer than @max characters'
+						)
+					)))->out();
+
+					if ($adding){
+						$TagID = $CGDb->insert('tags', $data, 'tid');
+						if (!$TagID)
+							Response::DBError();
+						$data['tid'] = $TagID;
+
+						$AppearanceID = (new Input('addto','int',array(Input::IS_OPTIONAL => true)))->out();
+						if (isset($AppearanceID)){
+							if ($AppearanceID === 0)
+								Response::Success("The tag was created, <strong>but</strong> it could not be added to the appearance because it can't be tagged.");
+
+							$Appearance = $CGDb->where('id', $AppearanceID)->getOne('appearances');
+							if (empty($Appearance))
+								Response::Success("The tag was created, <strong>but</strong> it could not be added to the appearance (<a href='/cg/v/$AppearanceID'>#$AppearanceID</a>) because it doesn't seem to exist. Please try adding the tag manually.");
+
+							if (!$CGDb->insert('tagged',array(
+								'tid' => $data['tid'],
+								'ponyid' => $Appearance['id']
+							))) Response::DBError();
+							\CG\Tags::UpdateUses($data['tid']);
+							$r = array('tags' => \CG\Appearances::GetTagsHTML($Appearance['id'], NOWRAP));
+							if ($AppearancePage){
+								$r['needupdate'] = true;
+								$r['eps'] = \CG\Appearances::GetRelatedEpisodesHTML($Appearance, $EQG);
+							}
+							Response::Done($r);
+						}
+					}
+					else {
+						$CGDb->where('tid', $Tag['tid'])->update('tags', $data);
+						$data = array_merge($Tag, $data);
+						if ($AppearancePage){
+							$ponyid = intval($_POST['APPEARANCE_PAGE'],10);
+							if ($CGDb->where('ponyid', $ponyid)->where('tid', $Tag['tid'])->has('tagged')){
+								$data['needupdate'] = true;
+								$Appearance = $CGDb->where('id', $ponyid)->getOne('appearances');
+								$data['eps'] = \CG\Appearances::GetRelatedEpisodesHTML($Appearance, $EQG);
+							}
+						}
+					}
+
+					Response::Done($data);
+				break;
+			}
+
+			// TODO Untangle spaghetti
+			$merging = $action === 'merge';
+			$synoning = $action === 'synon';
 			if ($merging || $synoning){
 				if ($synoning && !empty($Tag['synonym_of']))
 					Response::Fail('This tag is already synonymized with a different tag');
@@ -669,113 +804,13 @@
 				\CG\Tags::UpdateUses($Target['tid']);
 				Response::Success('Tags successfully '.($merging?'merged':'synonymized'), $synoning || $merging ? array('target' => $Target) : null);
 			}
-			else if ($unsynoning){
-				if (empty($Tag['synonym_of']))
-					Response::Done();
-
-				$keep_tagged = isset($_POST['keep_tagged']);
-				$uses = 0;
-				if ($keep_tagged){
-					$Target = $CGDb->where('tid', $Tag['synonym_of'])->getOne('tags','tid');
-					if (!empty($Target)){
-						$TargetTagged = $CGDb->where('tid', $Target['tid'])->get('tagged',null,'ponyid');
-						foreach ($TargetTagged as $tg){
-							if (!$CGDb->insert('tagged',array(
-								'tid' => $Tag['tid'],
-								'ponyid' => $tg['ponyid']
-							))) Response::Fail("Tag synonym removal process failed, please re-try.<br>Technical details: ponyid={$tg['ponyid']} tid={$Tag['tid']}");
-							$uses++;
-						}
-					}
-					else $keep_tagged = false;
-				}
-
-				if (!$CGDb->where('tid', $Tag['tid'])->update('tags', array('synonym_of' => null, 'uses' => $uses)))
-					Response::DBError();
-
-				Response::Done(array('keep_tagged' => $keep_tagged));
-			}
-
-			$data['name'] = CGUtils::ValidateTagName('name');
-
-			$epTagName = CGUtils::CheckEpisodeTagName($data['name']);
-			$surelyAnEpisodeTag = $epTagName !== false;
-			$type = (new Input('type',function($value){
-				if (!isset(\CG\Tags::$TAG_TYPES_ASSOC[$value]))
-					return Input::ERROR_INVALID;
-			},array(
-				Input::IS_OPTIONAL => true,
-				Input::CUSTOM_ERROR_MESSAGES => array(
-					Input::ERROR_INVALID => 'Invalid tag type: @value',
-				)
-			)))->out();
-			if (empty($type)){
-				if ($surelyAnEpisodeTag)
-					$data['name'] = $epTagName;
-				$data['type'] = $epTagName === false ? null : 'ep';
-			}
-			else {
-				if ($type == 'ep'){
-					if (!$surelyAnEpisodeTag)
-						Response::Fail('Episode tags must be in the format of <strong>s##e##[-##]</strong> where # represents a number<br>Allowed seasons: 1-8, episodes: 1-26');
-					$data['name'] = $epTagName;
-				}
-				else if ($surelyAnEpisodeTag)
-					$type = $ep;
-				$data['type'] = $type;
-			}
-
-			if (!$new) $CGDb->where('tid',$Tag['tid'],'!=');
-			if ($CGDb->where('name', $data['name'])->where('type', $data['type'])->has('tags') || $data['name'] === 'wrong cutie mark')
-				Response::Fail("A tag with the same name and type already exists");
-
-			$data['title'] = (new Input('title','string',array(
-				Input::IS_OPTIONAL => true,
-				Input::IN_RANGE => [null,255],
-				Input::CUSTOM_ERROR_MESSAGES => array(
-					Input::ERROR_RANGE => 'Tag title cannot be longer than @max characters'
-				)
-			)))->out();
-
-			if ($new){
-				$TagID = $CGDb->insert('tags', $data, 'tid');
-				if (!$TagID) Response::DBError();
-				$data['tid'] = $TagID;
-
-				$AppearanceID = (new Input('addto','int',array(Input::IS_OPTIONAL => true)))->out();
-				if (isset($AppearanceID)){
-					if ($AppearanceID === 0)
-						Response::Success("The tag was created, <strong>but</strong> it could not be added to the appearance because it can't be tagged.");
-
-					$Appearance = $CGDb->where('id', $AppearanceID)->getOne('appearances');
-					if (empty($Appearance))
-						Response::Success("The tag was created, <strong>but</strong> it could not be added to the appearance (<a href='/cg/v/$AppearanceID'>#$AppearanceID</a>) because it doesn't seem to exist. Please try adding the tag manually.");
-
-					if (!$CGDb->insert('tagged',array(
-						'tid' => $data['tid'],
-						'ponyid' => $Appearance['id']
-					))) Response::DBError();
-					\CG\Tags::UpdateUses($data['tid']);
-					$r = array('tags' => \CG\Appearances::GetTagsHTML($Appearance['id'], NOWRAP));
-					if ($AppearancePage){
-						$r['needupdate'] = true;
-						$r['eps'] = \CG\Appearances::GetRelatedEpisodesHTML($Appearance['id']);
-					}
-					Response::Done($r);
-				}
-			}
-			else {
-				$CGDb->where('tid', $Tag['tid'])->update('tags', $data);
-				$data = array_merge($Tag, $data);
-			}
-
-			Response::Done($data);
 		}
+		// Color group actions
 		else if (regex_match(new RegExp('^([gs]et|make|del)cg(?:/(\d+))?$'), $data, $_match)){
 			$action = $_match[1];
-			$new = $action === 'make';
+			$adding = $action === 'make';
 
-			if (!$new){
+			if (!$adding){
 				if (empty($_match[2]))
 					Response::Fail('Missing color group ID');
 				$GroupID = intval($_match[2], 10);
@@ -826,7 +861,7 @@
 				CoreUtils::CheckStringValidity($reason, "Change reason", INVERSE_PRINTABLE_ASCII_PATTERN);
 			}
 
-			if ($new){
+			if ($adding){
 				$AppearanceID = (new Input('ponyid','int',array(
 					Input::CUSTOM_ERROR_MESSAGES => array(
 						Input::ERROR_MISSING => 'Missing appearance ID',
@@ -848,7 +883,7 @@
 			}
 			else $CGDb->where('groupid', $Group['groupid'])->update('colorgroups', $data);
 
-			$origColors = $new ? null : \CG\ColorGroups::GetColors($Group['groupid']);
+			$origColors = $adding ? null : \CG\ColorGroups::GetColors($Group['groupid']);
 
 			$recvColors = (new Input('Colors','json',array(
 				Input::CUSTOM_ERROR_MESSAGES => array(
@@ -879,7 +914,7 @@
 
 				$colors[] = $append;
 			}
-			if (!$new)
+			if (!$adding)
 				$CGDb->where('groupid', $Group['groupid'])->delete('colors');
 			$colorError = false;
 			foreach ($colors as $c){
@@ -895,10 +930,10 @@
 			$colon = !$AppearancePage;
 			$outputNames = $AppearancePage;
 
-			if ($new) $response = array('cgs' => \CG\Appearances::GetColorsHTML($Appearance, NOWRAP, $colon, $outputNames));
+			if ($adding) $response = array('cgs' => \CG\Appearances::GetColorsHTML($Appearance, NOWRAP, $colon, $outputNames));
 			else $response = array('cg' => \CG\ColorGroups::GetHTML($Group['groupid'], null, NOWRAP, $colon, $outputNames));
 
-			$AppearanceID = $new ? $Appearance['id'] : $Group['ponyid'];
+			$AppearanceID = $adding ? $Appearance['id'] : $Group['ponyid'];
 			if ($major){
 				Log::Action('color_modify',array(
 					'ponyid' => $AppearanceID,
@@ -919,7 +954,7 @@
 			else $response['notes'] = \CG\Appearances::GetNotesHTML($CGDb->where('id', $AppearanceID)->getOne('appearances'),  NOWRAP);
 
 			$logdata = array();
-			if ($new) Log::Action('cgs',array(
+			if ($adding) Log::Action('cgs',array(
 				'action' => 'add',
 				'groupid' => $Group['groupid'],
 				'ponyid' => $AppearanceID,
@@ -949,6 +984,7 @@
 		else CoreUtils::NotFound();
 	}
 
+	// Tag list
 	if (regex_match(new RegExp('^tags'),$data)){
 		$Pagination = new Pagination("cg/tags", 20, $CGDb->count('tags'));
 
@@ -974,6 +1010,7 @@
 		));
 	}
 
+	// Change list
 	if (regex_match(new RegExp('^changes'),$data)){
 		$Pagination = new Pagination("cg/changes", 50, $Database->count('log__color_modify'));
 
@@ -1011,6 +1048,7 @@
 	$GUIDE_MANAGE_CSS = array(
 		"$do-manage",
 	);
+	// Appearance pages
 	//                                                  [111]             [22]    [3333333333333333]
 	if (regex_match(new RegExp('^(?:appearance|v)/(?:.*?(\d+)(?:-.*)?)(?:([sp])?\.(png|svg|json|gpl))?'),$data,$_match)){
 		$asFile = !empty($_match[3]);
@@ -1070,6 +1108,7 @@
 		}
 		CoreUtils::LoadPage($settings);
 	}
+	// Sprite color inspector
 	else if (regex_match(new RegExp('^sprite(?:-colou?rs)?/(\d+)(?:-.*)?$'),$data,$_match)){
 		if (!Permission::Sufficient('staff'))
 			CoreUtils::NotFound();
@@ -1130,6 +1169,7 @@
 			'js' => "$do-sprite",
 		));
 	}
+	// Full guide
 	else if ($data === 'full'){
 		$GuideOrder = !isset($_REQUEST['alphabetically']) && !$EQG;
 		if (!$GuideOrder)
@@ -1152,6 +1192,7 @@
 		));
 	}
 
+	// Guide page output & display
 	$title = '';
 	$AppearancesPerPage = UserPrefs::Get('cg_itemsperpage');
 	if (empty($_GET['q']) || regex_match(new RegExp('^\*+$'),$_GET['q'])){

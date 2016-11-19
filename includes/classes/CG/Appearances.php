@@ -170,6 +170,12 @@
 							? "<a href='{$Ep->formatURL()}'>".\CoreUtils::AposEncode($Ep->formatTitle(AS_ARRAY,'title'))."</a>"
 							: "<strong>{$a[0]}</strong>";
 					},$Appearance['notes']);
+					$Appearance['notes'] = preg_replace_callback('/'.MOVIE_ID_PATTERN.'/',function($a){
+						$Ep = \Episodes::GetActual(0, (int) $a[1], true);
+						return !empty($Ep)
+							? "<a href='{$Ep->formatURL()}'>".\CoreUtils::AposEncode($Ep->formatTitle(AS_ARRAY,'title'))."</a>"
+							: "<strong>{$a[0]}</strong>";
+					},$Appearance['notes']);
 					$Appearance['notes'] = preg_replace_callback('/(?:^|[^\\\\])\K(?:#(\d+))\b/',function($a){
 						global $CGDb;
 						$Appearance = $CGDb->where('id', $a[1])->getOne('appearances');
@@ -410,18 +416,19 @@
 		/**
 		 * Returns the HTML of the "Appears in # episodes" section of appearance pages
 		 *
-		 * @param int  $AppearanceID
+		 * @param array $Appearance
+		 * @param bool  $allowMovies
 		 *
 		 * @return string
 		 */
-		static function GetRelatedEpisodesHTML($AppearanceID){
+		static function GetRelatedEpisodesHTML($Appearance, $allowMovies = false){
 			global $CGDb;
 
 			$EpTagsOnAppearance = $CGDb->rawQuery(
 				"SELECT t.tid
 				FROM tagged tt
 				LEFT JOIN tags t ON tt.tid = t.tid
-				WHERE tt.ponyid = ? &&  t.type = 'ep'",array($AppearanceID));
+				WHERE tt.ponyid = ? &&  t.type = 'ep'",array($Appearance['id']));
 
 			if (!empty($EpTagsOnAppearance)){
 				foreach ($EpTagsOnAppearance as $k => $row)
@@ -435,7 +442,7 @@
 				foreach ($EpAppearances as $tag){
 					$name = strtoupper($tag['name']);
 					$EpData = \Episodes::ParseID($name);
-					$Ep = \Episodes::GetActual($EpData['season'], $EpData['episode']);
+					$Ep = \Episodes::GetActual($EpData['season'], $EpData['episode'], $allowMovies);
 					$List .= (
 						empty($Ep)
 						? self::ExpandEpisodeTagName($name)
@@ -443,7 +450,7 @@
 					).', ';
 				}
 				$List = rtrim($List, ', ');
-				$N_episodes = \CoreUtils::MakePlural('episode',count($EpAppearances),PREPEND_NUMBER);
+				$N_episodes = \CoreUtils::MakePlural($Appearance['ishuman'] ? 'movie' : 'episode',count($EpAppearances),PREPEND_NUMBER);
 				$hide = '';
 			}
 			else {
@@ -466,12 +473,14 @@ HTML;
 		 *
 		 * @return string
 		 */
-		static function ExpandEpisodeTagName($tagname){
-			global $EPISODE_ID_REGEX;
+		static function ExpandEpisodeTagName(string $tagname):string {
+			global $EPISODE_ID_REGEX, $MOVIE_ID_REGEX;
 			
-			regex_match($EPISODE_ID_REGEX, $tagname, $_match);
-			
-			return 'S'.\CoreUtils::Pad($_match[1]).' E'.\CoreUtils::Pad($_match[2]);
+			if (regex_match($EPISODE_ID_REGEX, $tagname, $_match))
+				return 'S'.\CoreUtils::Pad($_match[1]).' E'.\CoreUtils::Pad($_match[2]);
+			if (regex_match($MOVIE_ID_REGEX, $tagname, $_match))
+				return "Movie #{$_match[1]}";
+			return $tagname;
 		}
 
 		/**

@@ -162,17 +162,51 @@
 		 *
 		 * @return string|false
 		 */
-		static function CheckEpisodeTagName($tag){
-			global $EPISODE_ID_REGEX;
+		static function CheckEpisodeTagName(string $tag){
+			global $EPISODE_ID_REGEX, $MOVIE_ID_REGEX;
 
 			$_match = array();
 			if (regex_match($EPISODE_ID_REGEX,$tag,$_match)){
 				$season = intval($_match[1], 10);
 				if ($season == 0)
 					return false;
-				return 's'.CoreUtils::Pad(intval($_match[1], 10)).'e'.CoreUtils::Pad(intval($_match[2], 10)).(!empty($_match[3]) ? '-'.CoreUtils::Pad(intval($_match[3], 10)) : '');
+				$episode = intval($_match[2], 10);
+				$name = 's'.CoreUtils::Pad($season).'e'.CoreUtils::Pad($episode);
+				$episodeIsRange = !empty($_match[3]);
+				if ($episodeIsRange){
+					$episodeTo = intval($_match[3], 10);
+					if ($episodeTo-1 !== $episode)
+						return false;
+
+					$name .= '-'.CoreUtils::Pad($episodeTo);
+				}
+
+				return $name;
+			}
+			if (regex_match($MOVIE_ID_REGEX,$tag,$_match)){
+				$movie = intval($_match[1], 10);
+				if ($movie <= 0)
+					return false;
+				return "movie#$movie";
 			}
 			else return false;
+		}
+
+		/**
+		 * Checks the type of an episode tag name
+		 *
+		 * @param string $name
+		 *
+		 * @return string|false
+		 */
+		static function CheckEpisodeTagType(string $name):string {
+			global $EPISODE_ID_REGEX, $MOVIE_ID_REGEX;
+
+			if (regex_match($EPISODE_ID_REGEX,$name,$_match))
+				return 'episode';
+			if (regex_match($MOVIE_ID_REGEX,$name,$_match))
+				return 'movie';
+			return null;
 		}
 
 		const CHANGES_SECTION = <<<HTML

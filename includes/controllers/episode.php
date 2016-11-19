@@ -237,7 +237,7 @@ use DB\Episode;
 					$TaggedAppearanceIDs[$id['ponyid']] = true;
 			}
 
-			$Appearances = $CGDb->where('ishuman', 0)->where('"id" != 0')->orderBy('label','ASC')->get('appearances',null,'id,label');
+			$Appearances = $CGDb->where('ishuman', $Episode->isMovie)->where('"id" != 0')->orderBy('label','ASC')->get('appearances',null,'id,label');
 
 			$Sorted = array(
 				'unlinked' => array(),
@@ -315,7 +315,7 @@ use DB\Episode;
 						Response::Fail('This epsiode\'s ID cannot be changed because it already has posts and this action could break existing links');
 				}
 			}
-			else {
+			else if ($canEditID){
 				$MatchingID = $Database->whereEp($insert['season'], $insert['episode'])->getOne('episodes');
 				if (!empty($MatchingID))
 					Response::Fail(($isMovie?'A movie':'An episode').' with the same '.($isMovie?'overall':'season and episode').' number already exists');

@@ -512,7 +512,7 @@ HTML;
 			if (empty($Episode->score))
 				$Episode->updateScore();
 
-			$Score = number_format($Episode->score,1);
+			$Score = regex_replace(new RegExp('^(\d+)\.0+$'),'$1',number_format($Episode->score,1));
 			$ScorePercent = round(($Score/5)*1000)/10;
 
 			$HTML .= '<p>'.(!empty($Score) ? "This $thing is rated $Score/5 (<a class='detail'>Details</a>)" : 'Nopony voted yet.').'</p>';
@@ -541,33 +541,42 @@ HTML;
 		static function GetTagIDs(Episode $Episode):array {
 			global $CGDb;
 
-			$sn = CoreUtils::Pad($Episode->season);
-			$en = CoreUtils::Pad($Episode->episode);
-			$EpTagIDs = array();
-			$EpTagPt1 = $CGDb->where('name',"s{$sn}e{$en}")->where('type','ep')->getOne('tags','tid');
-			if (!empty($EpTagPt1))
-				$EpTagIDs[] = $EpTagPt1['tid'];
-			if ($Episode->twoparter){
-				$next_en = CoreUtils::Pad($Episode->episode+1);
-				$EpTagPt2 = $CGDb->rawQuery("SELECT tid FROM tags WHERE name IN ('s{$sn}e{$next_en}', 's{$sn}e{$en}-{$next_en}') && type = 'ep'");
-				foreach ($EpTagPt2 as $t)
-					$EpTagIDs[] = $t['tid'];
+			if ($Episode->isMovie){
+				$MovieTagIDs = [];
+				$MovieTag = $CGDb->where('name',"movie#$Episode->episode")->where('type','ep')->getOne('tags','tid');
+				if (!empty($MovieTag['tid']))
+					$MovieTagIDs[] = $MovieTag['tid'];
+				return $MovieTagIDs;
 			}
-			return $EpTagIDs;
+			else {
+				$sn = CoreUtils::Pad($Episode->season);
+				$en = CoreUtils::Pad($Episode->episode);
+				$EpTagIDs = array();
+				$EpTagPt1 = $CGDb->where('name',"s{$sn}e{$en}")->where('type','ep')->getOne('tags','tid');
+				if (!empty($EpTagPt1))
+					$EpTagIDs[] = $EpTagPt1['tid'];
+				if ($Episode->twoparter){
+					$next_en = CoreUtils::Pad($Episode->episode+1);
+					$EpTagPt2 = $CGDb->rawQuery("SELECT tid FROM tags WHERE name IN ('s{$sn}e{$next_en}', 's{$sn}e{$en}-{$next_en}') && type = 'ep'");
+					foreach ($EpTagPt2 as $t)
+						$EpTagIDs[] = $t['tid'];
+				}
+				return $EpTagIDs;
+			}
 		}
 
-		static function GetAppearancesSectionHTML(Episode $Epsiode):string {
+		static function GetAppearancesSectionHTML(Episode $Episode):string {
 			global $CGDb, $Color;
 
 			$HTML = '';
-			$EpTagIDs = Episodes::GetTagIDs($Epsiode);
+			$EpTagIDs = Episodes::GetTagIDs($Episode);
 			if (!empty($EpTagIDs)){
 				$TaggedAppearances = $CGDb->rawQuery(
 					"SELECT p.id, p.label, p.private
 					FROM tagged t
 					LEFT JOIN appearances p ON t.ponyid = p.id
-					WHERE t.tid IN (".implode(',',$EpTagIDs).")
-					ORDER BY p.label");
+					WHERE t.tid IN (".implode(',',$EpTagIDs).") && p.ishuman = ?
+					ORDER BY p.label",array($Episode->isMovie));
 
 				if (!empty($TaggedAppearances)){
 					$hidePreviews = UserPrefs::Get('ep_noappprev');

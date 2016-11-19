@@ -33,7 +33,7 @@
 		</section>
 <?php
 	}
-	echo \CG\Appearances::GetRelatedEpisodesHTML($Appearance['id']);
+	echo \CG\Appearances::GetRelatedEpisodesHTML($Appearance, $EQG);
 	if (!empty($Appearance['notes'])){ ?>
 		<section>
 			<h2><span class='typcn typcn-info-large'></span>Additional notes</h2>
