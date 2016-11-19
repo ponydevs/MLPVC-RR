@@ -299,6 +299,8 @@ use DB\Episode;
 			$What = $isMovie ? 'Movie' : 'Episode';
 			$what = strtolower($What);
 
+			$EpisodeChanged = true;
+			$SeasonChanged = true;
 			if ($editing){
 				$SeasonChanged = $isMovie ? false : $insert['season'] != $Episode->season;
 				$EpisodeChanged = $insert['episode'] != $Episode->episode;
@@ -391,20 +393,41 @@ use DB\Episode;
 				Response::DBError('Episode creation failed');
 
 			if (!$editing || $SeasonChanged || $EpisodeChanged){
-				$TagName = CGUtils::CheckEpisodeTagName("s{$insert['season']}e{$insert['episode']}");
-				$EpTag = $CGDb->where('name', $editing ? "s{$Episode->season}e{$Episode->episode}" : $TagName)->getOne('tags', 'tid');
+				if ($isMovie){
+					if ($EpisodeChanged){
+						$TagName = CGUtils::CheckEpisodeTagName("movie#{$insert['episode']}");
+						$MovieTag = $CGDb->where('name', $editing ? "movie#{$Episode->episode}" : $TagName)->getOne('tags', 'tid');
 
-				if (!empty($EpTag)){
-					if ($editing)
-						$CGDb->where('tid',$EpTag['tid'])->update('tags', array(
-							'name' => $TagName,
-						));
+						if (!empty($MovieTag)){
+							if ($editing)
+								$CGDb->where('tid',$MovieTag['tid'])->update('tags', array(
+									'name' => $TagName,
+								));
+						}
+						else {
+							if (!$CGDb->insert('tags', array(
+								'name' => $TagName,
+								'type' => 'ep',
+							))) Response::DBError('Episode tag creation failed');
+						}
+					}
 				}
-				else {
-					if (!$CGDb->insert('tags', array(
-						'name' => $TagName,
-						'type' => 'ep',
-					))) Response::DBError('Episode tag creation failed');
+				else if ($SeasonChanged || $EpisodeChanged){
+					$TagName = CGUtils::CheckEpisodeTagName("s{$insert['season']}e{$insert['episode']}");
+					$EpTag = $CGDb->where('name', $editing ? "s{$Episode->season}e{$Episode->episode}" : $TagName)->getOne('tags', 'tid');
+
+					if (!empty($EpTag)){
+						if ($editing)
+							$CGDb->where('tid',$EpTag['tid'])->update('tags', array(
+								'name' => $TagName,
+							));
+					}
+					else {
+						if (!$CGDb->insert('tags', array(
+							'name' => $TagName,
+							'type' => 'ep',
+						))) Response::DBError('Episode tag creation failed');
+					}
 				}
 			}
 
