@@ -178,7 +178,7 @@
 						)
 					)))->out();
 					CoreUtils::CheckStringValidity($label, "Appearance name", INVERSE_PRINTABLE_ASCII_PATTERN);
-					if ($creating && $CGDb->where('label', $label)->has('appearances'))
+					if ($creating && $CGDb->where('ishuman', $data['ishuman'])->where('label', $label)->has('appearances'))
 						Response::Fail('An appearance already esists with this name');
 					$data['label'] = $label;
 
