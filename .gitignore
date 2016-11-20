@@ -15,3 +15,4 @@ setup/*.sql
 !setup/*.pg.sql
 setup/*_full.pg.sql
 /vendor/
+/nbproject/private/

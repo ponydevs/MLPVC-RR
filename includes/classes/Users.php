@@ -108,12 +108,15 @@ use Exceptions\cURLRequestException;
 			if ($userExists && $DBUser->name !== $username)
 				$names[] = $DBUser->name;
 			foreach ($names as $name){
-				if (strcasecmp($name,$insert['name']) !== 0)
+				if (strcasecmp($name,$insert['name']) !== 0){
+					if (UserPrefs::Get('discord_token',$ID) === 'true')
+						UserPrefs::Set('discord_token','',$ID);
 					Log::Action('da_namechange',array(
 						'old' => $name,
 						'new' => $insert['name'],
 						'id' => $ID,
 					), Log::FORCE_INITIATOR_WEBSERVER);
+				}
 			}
 
 			return self::Get($insert['name'], 'name', $dbcols);
