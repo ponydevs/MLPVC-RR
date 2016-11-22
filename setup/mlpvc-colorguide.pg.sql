@@ -7361,7 +7361,14 @@ INSERT INTO tagged VALUES
 (437, 184),
 (437, 193),
 (437, 204),
-(437, 210);
+(437, 210),
+(439, 220),
+(439, 221),
+(439, 222),
+(439, 223),
+(439, 224),
+(440, 220),
+(441, 63);
 
 
 --
@@ -7774,14 +7781,17 @@ INSERT INTO tags VALUES
 (435, 'angel wings', NULL, 'char', 1, NULL),
 (436, 'princess ember''s disguise', NULL, 'app', 1, NULL),
 (437, 'non-pony character', NULL, 'cat', 12, NULL),
-(438, 'chrysalis', NULL, 'char', 0, 430);
+(438, 'chrysalis', NULL, 'char', 0, 430),
+(439, 'movie#4', NULL, 'ep', 1, NULL),
+(440, 'movie#3', NULL, 'ep', 1, NULL),
+(441, 'movie#2', NULL, 'ep', 1, NULL);
 
 
 --
 -- Name: tags_tid_seq; Type: SEQUENCE SET; Schema: public; Owner: mlpvc-rr
 --
 
-SELECT pg_catalog.setval('tags_tid_seq', 438, true);
+SELECT pg_catalog.setval('tags_tid_seq', 441, true);
 
 
 --
