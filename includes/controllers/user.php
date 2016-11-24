@@ -36,10 +36,23 @@
 			Response::Done(array('token' => $token));
 		}
 
-		if (!Permission::Sufficient('staff')) Response::Fail();
 		CSRFProtection::Protect();
 
 		if (empty($data)) CoreUtils::NotFound();
+
+		if (regex_match(new RegExp('^sessiondel/(\d+)$'),$data,$_match)){
+			$Session = $Database->where('id', $_match[1])->getOne('sessions');
+			if (empty($Session))
+				Response::Fail('This session does not exist');
+			if ($Session['user'] !== $currentUser->id && !Permission::Sufficient('staff'))
+				Response::Fail('You are not allowed to delete this session');
+
+			if (!$Database->where('id', $Session['id'])->delete('sessions'))
+				Response::Fail('Session could not be deleted');
+			Response::Success('Session successfully removed');
+		}
+
+		if (!Permission::Sufficient('staff')) Response::Fail();
 
 		if (regex_match(new RegExp('^newgroup/'.USERNAME_PATTERN.'$'),$data,$_match)){
 			$targetUser = Users::Get($_match[1], 'name');
@@ -68,17 +81,6 @@
 			$targetUser->updateRole($newgroup);
 
 			Response::Done();
-		}
-		else if (regex_match(new RegExp('^sessiondel/(\d+)$'),$data,$_match)){
-			$Session = $Database->where('id', $_match[1])->getOne('sessions');
-			if (empty($Session))
-				Response::Fail('This session does not exist');
-			if ($Session['user'] !== $currentUser->id && !Permission::Sufficient('staff'))
-				Response::Fail('You are not allowed to delete this session');
-
-			if (!$Database->where('id', $Session['id'])->delete('sessions'))
-				Response::Fail('Session could not be deleted');
-			Response::Success('Session successfully removed');
 		}
 		else if (regex_match(new RegExp('^(un-)?banish/'.USERNAME_PATTERN.'$'), $data, $_match)){
 			$Action = (empty($_match[1]) ? 'Ban' : 'Un-ban').'ish';

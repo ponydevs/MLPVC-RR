@@ -34,9 +34,8 @@ DocReady.push(function User(){
 	})();
 
 	let $signoutBtn = $('#signout'),
-		$name = $content.children('h1').children().eq(1),
 		$sessionList = $('.session-list'),
-		name = $name.text().trim(),
+		name = $content.find('.title .username').text().trim(),
 		sameUser = name === $sidebar.children('.welcome').find('.un').text().trim();
 	$sessionList.find('button.remove').off('click').on('click', function(e){
 		e.preventDefault();
