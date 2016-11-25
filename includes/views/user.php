@@ -13,7 +13,7 @@ if (isset($MSG)){
 		<div class="title">
 			<h1><span class="role-badge"><?=Permission::LabelInitials($User->role)?></span><span class="username"><?=$User->name?></span><a class="da" title="Visit DeviantArt profile" href="<?=$User->getDALink(User::LINKFORMAT_URL)?>"><?=str_replace(' fill="#FFF"','',file_get_contents(APPATH.'img/da-logo.svg'))?></a><?=!empty($vectorapp)?"<img class='vectorapp-logo' src='/img/vapps/$vectorapp.svg' alt='$vectorapp logo' title='".CoreUtils::$VECTOR_APPS[$vectorapp]." user'>":''?></h1>
 			<p><?php
-	echo "<span>{$User->rolelabel}</span>";
+	echo "<span class='rolelabel'>{$User->rolelabel}</span>";
 	if ($canEdit){
 		echo ' <button id="change-role" class="blue typcn typcn-spanner'.($User->role==='ban'?' hidden':'').'" title="Change '.CoreUtils::Posess($User->name).' group"></button>';
 		$BanLabel = ($User->role==='ban'?'Un-ban':'Ban').'ish';

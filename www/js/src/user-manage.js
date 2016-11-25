@@ -2,10 +2,9 @@
 DocReady.push(function UserManage(){
 	'use strict';
 	if (typeof window.ROLES === 'undefined') return;
-	var $content = $('#content'),
-		$name = $content.find('.briefing h1').children().eq(1),
-		name = $name.text().trim(),
-		$currRole = $name.parent().next(),
+	var $briefing = $('#content').children('.briefing'),
+		name = $briefing.find('.username').text().trim(),
+		$currRole = $briefing.find('.rolelabel'),
 		currRole = $currRole.children('span').text(),
 		$RoleModFormTemplate = $.mk('form').attr('id','rolemod').html('<select name="newrole" required><optgroup label="Possible roles"></optgroup></select>'),
 		$OptGrp = $RoleModFormTemplate.find('optgroup'),
