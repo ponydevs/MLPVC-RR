@@ -1389,4 +1389,18 @@ DocReady.push(function ColorguideManage(){
 			$.mk('input').attr('name','CSRF_TOKEN').val($.getCSRFToken())
 		).submit();
 	});
+
+	$('.cg-reindex').on('click',function(){
+		$.Dialog.confirm('Re-index all appearances','Wipe and rebuild ElasticSearch index?',function(sure){
+			if (!sure) return;
+
+			$.Dialog.wait(false);
+
+			$.post('/cg/reindex',$.mkAjaxHandler(function(){
+				if (!this.status) return $.Dialog.fail(false, this.message);
+
+				$.Dialog.success(false, this.message, true);
+			}));
+		});
+	});
 });

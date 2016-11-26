@@ -2,6 +2,8 @@
 
 	namespace CG;
 
+	use Elasticsearch\Common\Exceptions\Missing404Exception as ElasticMissing404Exception;
+
 	class Appearances {
 		/**
 		 * @param bool      $EQG
@@ -310,11 +312,16 @@
 			if (empty($ids))
 				return;
 
+			$elastiClient = \CoreUtils::ElasticClient();
 			$list = is_string($ids) ? explode(',', $ids) : $ids;
-			$order = 1;
-			foreach ($list as $id){
-				if (!$CGDb->where('id', $id)->update('appearances', array('order' => $order++)))
+			foreach ($list as $i => $id){
+				$order = $i+1;
+				if (!$CGDb->where('id', $id)->update('appearances', array('order' => $order)))
 					\Response::Fail("Updating appearance #$id failed, process halted");
+
+				$elastiClient->update(array_merge(self::GetElasticMeta(['id' => $id]), [
+					'body' => [ 'doc' => ['order' => $order] ],
+				]));
 			}
 		}
 
@@ -559,5 +566,121 @@ HTML;
 					\Input::ERROR_RANGE => 'Appearance ID must be greater than or equal to @min'
 				)
 			)))->out();
+		}
+
+		const ELASTIC_COLUMNS = 'id,label,order,ishuman,private';
+
+		static function Reindex(){
+			global $CGDb;
+
+			$elasticClient = \CoreUtils::ElasticClient();
+			try {
+				$elasticClient->indices()->delete(\CGUtils::ELASTIC_BASE);
+			}
+			catch(ElasticMissing404Exception $e){
+				$message = \JSON::Decode($e->getMessage());
+
+				// Eat exception if the index we're re-creating does not exist yet
+				if ($message['error']['type'] !== 'index_not_found_exception' || $message['error']['index'] !== \CGUtils::ELASTIC_BASE['index'])
+					throw $e;
+			}
+			$params = array_merge(\CGUtils::ELASTIC_BASE, [
+				"body" => [
+					"mappings" => [
+						"entry" => [
+							"_all" => [ "enabled" => false  ],
+							"properties" => [
+								"label" => [
+									"type" => "text",
+									"analyzer" => "overkill",
+									"copy_to" => ["did_you_mean"],
+								],
+								"order" => [ "type" => "integer" ],
+								"ishuman" => [ "type" => "boolean" ],
+								"private" => [ "type" => "boolean" ],
+								"tags" => [
+									"type" => "text",
+									"analyzer" => "overkill",
+								],
+							],
+						],
+					],
+					"settings" => [
+						"analysis" => [
+							"analyzer" => [
+								"overkill" => [
+									"type" => "custom",
+									"tokenizer" => "overkill",
+								],
+							],
+							"tokenizer" => [
+								"overkill" => [
+									"type" => "edge_ngram",
+									"min_gram" => 2,
+									"max_gram" => 6,
+									"token_chars" => [
+										"letter",
+										"digit",
+									],
+								],
+							],
+						],
+					],
+				]
+			]);
+			$elasticClient->indices()->create(array_merge($params));
+			$Appearances = $CGDb->get('appearances',null,self::ELASTIC_COLUMNS);
+
+			$params = array('body' => []);
+			foreach ($Appearances as $i => $a){
+				$meta = self::GetElasticMeta($a);
+			    $params['body'][] = [
+			        'index' => [
+			            '_index' => $meta['index'],
+			            '_type' => $meta['type'],
+			            '_id' => $meta['id'],
+			        ]
+			    ];
+
+			    $params['body'][] = self::ToElasticArray($a);
+
+			    if ($i % 100 == 0) {
+			        $elasticClient->bulk($params);
+			        $params = ['body' => []];
+			    }
+			}
+			if (!empty($params['body'])) {
+		        $elasticClient->bulk($params);
+			}
+
+			\Response::Success('Re-index completed');
+		}
+
+		static function GetElasticMeta($Appearance){
+			return array_merge(\CGUtils::ELASTIC_BASE,[
+				'type' => 'entry',
+				'id' => $Appearance['id'],
+			]);
+		}
+
+		static function GetElasticBody($Appearance){
+			$tags = Tags::GetFor($Appearance['id'], null, false, true);
+			foreach ($tags as $k => $tag)
+				$tags[$k] = $tag['name'];
+			return [
+				'label' => $Appearance['label'],
+				'order' => $Appearance['order'],
+				'private' => $Appearance['private'],
+				'ishuman' => $Appearance['ishuman'],
+				'tags' =>  $tags,
+			];
+		}
+
+		static function ToElasticArray(array $Appearance, bool $no_body = false):array {
+			$params = self::GetElasticMeta($Appearance);
+			if ($no_body)
+				return $params;
+			$params['body'] = self::GetElasticBody($Appearance);
+			return $params;
 		}
 	}

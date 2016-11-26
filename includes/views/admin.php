@@ -22,6 +22,14 @@
 		<div class="textarea" contenteditable="true"></div>
 	</section>
 
+<? if (Permission::Sufficient('developer')){ ?>
+	<section class="elastic-status">
+		<h2>Elastic status</h2>
+		<pre><code><strong>Indices</strong><br><?=CoreUtils::ElasticClient()->cat()->indices(['v' => true])?></code></pre>
+		<pre><code><strong>Nodes</strong><br><?=CoreUtils::ElasticClient()->cat()->nodes(['v' => true])?></code></pre>
+	</section>
+<? } ?>
+
 	<section class="recent-posts">
 		<h2><span class="typcn typcn-bell"></span>Most recent posts</h2>
 		<div><?=Posts::GetMostRecentList()?></div>

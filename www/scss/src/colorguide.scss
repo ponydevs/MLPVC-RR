@@ -35,12 +35,20 @@
 			}
 
 			div.tags {
+				display: flex;
 				width: 100%;
+				flex-flow: row wrap;
 
 				&:empty { display: none }
 
-				> .addtag, > .twitter-typeahead {
-					display: none !important;
+				.addtag {
+					margin: 0;
+					width: 100%;
+				}
+				> * {
+					flex: 1 1 auto;
+
+					margin: 2.5px !important;
 				}
 			}
 
@@ -104,6 +112,10 @@
 	}
 
 	.notice.tagediting { display: none }
+
+	#search-form {
+		font-size: 1.7em;
+	}
 }
 
 #content > p.links { margin: 0 0 5px }
@@ -271,6 +283,10 @@
 div.tags {
 	user-select: none;
 	margin-top: 6px;
+
+	.addtag {
+		margin-bottom: 5px;
+	}
 }
 .tag:not(.addtag), div.tags .twitter-typeahead {
 	margin: 0 6px 6px 0;
@@ -313,7 +329,6 @@ div.tags {
 	margin-bottom: 10px;
 }
 
-
 div.colors-pending, ul.colors:empty:before {
 	display: block;
 	width: 100%;
@@ -338,6 +353,7 @@ ul.colors {
 		content: "There are no " attr(data-color) " groups for this appearance, add one by right-clicking here";
 		font-size: 1.4em;
 		font-style: italic;
+		margin-top: 5px;
 	}
 	&:not(#colors) {
 		user-select: none;
@@ -425,29 +441,53 @@ ul.colors {
 .qtip-tag-char { @include tag-style($TCharacter) }
 
 #search-form {
+	display: flex;
+	flex-flow: row;
+	max-width: 600px;
+	width: 100%;
 	text-align: center;
 	margin: 0 auto 10px;
-	display: block;
-	max-width: 100%;
-	width: 500px;
-	font-size: 1.2em;
-	button {
-		vertical-align: baseline;
-		margin: 0;
 
-		&:before { line-height: 1em }
+	> * {
+		border-radius: 0;
 	}
+
+	:first-child {
+		border-top-left-radius: 5px;
+		border-bottom-left-radius: 5px;
+	}
+	:last-child {
+		border-top-right-radius: 5px;
+		border-bottom-right-radius: 5px;
+	}
+
+	$SearchBorder: #222;
 	input {
 		font-size: 1em;
 		line-height: .9em;
 		height: 1em;
-	}
-	p {
-		font-size: .7em;
-		margin: 5px 0 0;
-		font-style: italic;
+		margin: 0;
+		padding: .3em;
+		border-color: $SearchBorder;
 
-		em { text-decoration: underline }
+		flex: 1 1 70%;
+    width: 70%;
+	}
+	button {
+		vertical-align: baseline;
+		margin: 0;
+		flex: 0 0 auto;
+		font-size: .8em;
+		border: 1px solid $SearchBorder;
+		border-left: 0;
+		transform: none !important;
+
+		&:before { line-height: 1em }
+
+		&:not(:hover) {
+			color: $SearchBorder !important;
+			background-color: #ccc !important;
+		}
 	}
 }
 

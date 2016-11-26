@@ -10,8 +10,9 @@
 		$phpver = About::GetPHPVersion();
 		$server = About::GetServerSoftware();
 		$pgver = About::GetPostgresVersion();
+		$esver = About::GetElasticSearchVersion();
 		echo <<<HTML
-<strong>Server Software:</strong> $osver, PHP $phpver, $server, PostgreSQL $pgver<br>
+<strong>Server Software:</strong> $osver, PHP $phpver, $server, PostgreSQL $pgver, ElasticSearch $esver<br>
 </section>
 HTML;
 	}

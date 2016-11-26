@@ -1,5 +1,9 @@
 <?php
 
+	use ONGR\ElasticsearchDSL;
+	use ONGR\ElasticsearchDSL\Query\BoolQuery;
+	use ONGR\ElasticsearchDSL\Query\TermQuery;
+
 	if (POST_REQUEST || (isset($_GET['s']) && $data === "gettags")){
 		if (!Permission::Sufficient('staff')) Response::Fail();
 		if (POST_REQUEST) CSRFProtection::Protect();
@@ -131,6 +135,11 @@
 
 				CoreUtils::DownloadFile($data, 'mlpvc-colorguide.json');
 			break;
+			case "reindex":
+				if (Permission::Insufficient('developer'))
+					Response::Fail();
+				\CG\Appearances::Reindex();
+			break;
 		}
 
 		$_match = array();
@@ -252,6 +261,9 @@
 					if (!$query)
 						Response::DBError();
 
+					$EditedAppearance = $CGDb->where('id', $creating ? $query : $Appearance['id'])->getOne('appearances', \CG\Appearances::ELASTIC_COLUMNS);
+					CoreUtils::ElasticClient()->index(\CG\Appearances::ToElasticArray($EditedAppearance));
+
 					if ($creating){
 						$data['id'] = $query;
 						$response = array(
@@ -289,8 +301,6 @@
 					CGUtils::ClearRenderedImages($Appearance['id'], array(CGUtils::CLEAR_PALETTE, CGUtils::CLEAR_PREVIEW));
 
 					$response = array();
-					$EditedAppearance = array_merge($Appearance, $data);
-
 					$diff = array();
 					foreach (array('label','notes','cm_favme','cm_dir','cm_preview','private') as $key){
 						if ($EditedAppearance[$key] !== $Appearance[$key]){
@@ -320,6 +330,17 @@
 
 					if (!$CGDb->where('id', $Appearance['id'])->delete('appearances'))
 						Response::DBError();
+
+					try {
+						CoreUtils::ElasticClient()->delete(\CG\Appearances::ToElasticArray($Appearance, true));
+					}
+					catch (Elasticsearch\Common\Exceptions\Missing404Exception $e){
+						$message = JSON::Decode($e->getMessage());
+
+						// Eat error if appearance was not indexed
+						if ($message['found'] !== false)
+							throw $e;
+					}
 
 					if (!empty($Tagged))
 						foreach($Tagged as $tag){
@@ -536,6 +557,8 @@
 							}
 						break;
 					}
+
+					CoreUtils::ElasticClient()->index(\CG\Appearances::ToElasticArray($Appearance));
 
 					\CG\Tags::UpdateUses($Tag['tid']);
 					if (isset(CGUtils::$GroupTagIDs_Assoc[$Tag['tid']]))
@@ -1195,65 +1218,69 @@ HTML;
 	// Guide page output & display
 	$title = '';
 	$AppearancesPerPage = UserPrefs::Get('cg_itemsperpage');
-	if (empty($_GET['q']) || regex_match(new RegExp('^\*+$'),$_GET['q'])){
-		$_EntryCount = $CGDb->where('ishuman',$EQG)->where('id != 0')->count('appearances');
-
-		$Pagination = new Pagination("cg", $AppearancesPerPage, $_EntryCount);
-		$Ponies = \CG\Appearances::Get($EQG, $Pagination->GetLimit());
+	$Ponies = [];
+	try {
+		$elasticAvail = CoreUtils::ElasticClient()->ping();
 	}
-	else {
-		$SearchQuery = $_GET['q'];
-		$Ponies = null;
+	catch (Elasticsearch\Common\Exceptions\NoNodesAvailableException $e){
+		$elasticAvail = false;
+	}
+	if ($elasticAvail){
+		$search = new ElasticsearchDSL\Search();
 
-		try {
-			$Search = CGUtils::ProcessSearch($SearchQuery);
+		// Search query exists
+		if (!empty($_GET['q']) && mb_strlen(trim($_GET['q'])) > 0){
+			$SearchQuery = regex_replace(new RegExp('[^\w\d\s]'),'',trim($_GET['q']));
 			$title .= "$SearchQuery - ";
-			$IsHuman = $EQG ? 'true' : 'false';
 
-			$Restrictions = array();
-			$Params = array();
-			if (!empty($Search['tid'])){
-				$tc = count($Search['tid']);
-				$Restrictions[] = 'p.id IN (
-					SELECT t.ponyid
-					FROM tagged t
-					WHERE t.tid IN ('.implode(',', $Search['tid']).")
-					GROUP BY t.ponyid
-					HAVING COUNT(t.tid) = $tc
-				)";
-				$Search['tid_assoc'] = array();
-				foreach ($Search['tid'] as $tid)
-					$Search['tid_assoc'][$tid] = true;
-			}
-			if (!empty($Search['label'])){
-				$collect = array();
-				foreach ($Search['label'] as $l){
-					$collect[] = 'lower(p.label) LIKE ?';
-					$Params[] = $l;
-				}
-				$Restrictions[] = implode(' AND ', $collect);
-			}
-
-			if (count($Restrictions)){
-				$Params[] = $EQG;
-				$Query = "SELECT @coloumn FROM appearances p WHERE ".implode(' AND ',$Restrictions)." AND p.ishuman = ? AND p.id != 0";
-				$_EntryCount = $CGDb->rawQuerySingle(str_replace('@coloumn','COUNT(*) as count',$Query),$Params)['count'];
-				$Pagination = new Pagination("cg", $AppearancesPerPage, $_EntryCount);
-
-				$SearchSQLQuery = str_replace('@coloumn','p.*',$Query);
-				$SearchSQLQuery .= " ORDER BY p.order ASC {$Pagination->GetLimitString()}";
-				$Ponies = $CGDb->rawQuery($SearchSQLQuery,$Params);
-			}
-		}
-		catch (Exception $e){
-			$_MSG = $e->getMessage();
-			if (isset($_REQUEST['js']))
-				Response::Fail($_MSG);
+			$multiMatch = new ElasticsearchDSL\Query\MultiMatchQuery(
+				['body.tags','body.label^20'],
+				$SearchQuery,
+				[ 'type' => 'cross_fields' ]
+			);
+			$search->addQuery($multiMatch);
 		}
 
-		if (empty($Pagination))
-			$Pagination = new Pagination("cg", $AppearancesPerPage, 0);
+		$boolquery = new BoolQuery();
+		if (Permission::Insufficient('staff'))
+			$boolquery->add(new TermQuery('body.private', false), BoolQuery::MUST_NOT);
+		$boolquery->add(new TermQuery('body.ishuman', $EQG), BoolQuery::MUST);
+		$boolquery->add(new TermQuery('id', 0), BoolQuery::MUST_NOT);
+		$search->addQuery($boolquery);
+
+	    $Pagination = new Pagination('cg', $AppearancesPerPage);
+		$search = $search->toArray();
+		$aearch['query']['function_score'] = [
+			'functions' => [
+				[
+					'field_value_factor' => [
+						'field' => 'body.order',
+                        'factor' => 1.2,
+                        'missing' => 1,
+					],
+				],
+			],
+		];
+		$search['sort'][] = ['body.order' => 'asc'];
+		$search['_source'] = false;
+		$search = CGUtils::SearchElastic($search, $Pagination);
+		$Pagination->calcMaxPages($search['hits']['total']);
+
+		if (!empty($search['hits']['hits'])){
+			$ids = [];
+			foreach($search['hits']['hits'] as $hit)
+				$ids[] = $hit['_id'];
+
+			$Ponies = $CGDb->where('id IN ('.implode(',', $ids).')')->orderBy('order','ASC')->get('appearances');
+		}
 	}
+	if (!$elasticAvail) {
+        $_EntryCount = $CGDb->where('ishuman',$EQG)->where('id != 0')->count('appearances');
+
+        $Pagination = new Pagination('cg', $AppearancesPerPage, $_EntryCount);
+        $Ponies = \CG\Appearances::Get($EQG, $Pagination->GetLimit());
+	}
+
 	if (isset($_REQUEST['GOFAST'])){
 		if (empty($Ponies[0]['id']))
 			Response::Fail('The search returned no results.');

@@ -19,20 +19,27 @@
 		 *
 		 * @return Pagination
 		 */
-		function __construct($basePath, $ItemsPerPage, $EntryCount, $wrap = true, $context = 2){
+		function __construct($basePath, $ItemsPerPage, $EntryCount = null, $wrap = true, $context = 2){
 			global $data;
 
-			foreach (array('basePath','EntryCount','ItemsPerPage') as $var)
+			foreach (array('basePath','ItemsPerPage') as $var)
 				if (!isset($$var))
 					trigger_error("Missing variable \$$var", E_USER_ERROR);
 
 			$this->itemsPerPage = (int) $ItemsPerPage;
-			$this->maxPages = (int) max(1, ceil($EntryCount/$this->itemsPerPage));
-			$this->page = (int) min(max(intval(regex_replace(new RegExp('^.*\/(\d+)$'),'$1',$data), 10), 1), $this->maxPages);
+			$this->page = (int) max(intval(regex_replace(new RegExp('^.*\/(\d+)$'),'$1',$data), 10), 1);
 			$this->_context = $context;
 			$this->_wrap = (bool) $wrap;
 			$this->_basePath = $basePath;
 
+			if (isset($EntryCount))
+				$this->calcMaxPages($EntryCount);
+		}
+
+		public function calcMaxPages(int $EntryCount){
+			$this->maxPages = (int) max(1, ceil($EntryCount/$this->itemsPerPage));
+			if ($this->page > $this->maxPages)
+				$this->page = $this->maxPages;
 			$this->HTML = $this->__toString();
 		}
 
@@ -42,6 +49,9 @@
 		 * @return array
 		 */
 		private function _getLinks(){
+			if (!isset($this->maxPages))
+				throw new Exception('$this->maxPages must be defined');
+
 			return array_unique(
 				array_merge(
 					range(1, 1 + $this->_context),
@@ -71,6 +81,9 @@
 		 * @return string
 		 */
 		public function __toString(){
+			if (!isset($this->maxPages))
+				throw new Exception('$this->maxPages must be defined');
+
 			if (!($this->page === 1 && $this->maxPages === 1)){
 				$Items = array();
 				$previousPage = 0;
@@ -101,6 +114,13 @@
 			return $this->_wrap ? "<ul class='pagination'>$Items</ul>" : $Items;
 		}
 
+		public function toElastic(){
+			return [
+				'size' => $this->itemsPerPage,
+				'from' => ($this->page-1)*$this->itemsPerPage
+			];
+		}
+
 		/**
 		 * Respond to paginated result requests
 		 *
@@ -124,7 +144,8 @@
 		 * @return int[]
 		 */
 		function GetLimit(){
-			return array($this->itemsPerPage*($this->page-1), $this->itemsPerPage);
+			$arr = $this->toElastic();
+			return array($arr['from'], $arr['size']);
 		}
 
 		/**

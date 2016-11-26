@@ -13,6 +13,8 @@
 		"wisembly/elephant.io": "*",
 		"ezyang/htmlpurifier": "^4.8",
 		"seinopsys/postgresql-database-class": "dev-master",
-		"cogpowered/finediff": "0.3.*"
+		"cogpowered/finediff": "0.3.*",
+		"elasticsearch/elasticsearch": "~5.0",
+		"ongr/elasticsearch-dsl": ">=2.2"
 	}
 }

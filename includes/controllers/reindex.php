@@ -1,0 +1,3 @@
+<?php
+
+	\CG\Appearances::Reindex();

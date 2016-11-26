@@ -24,16 +24,18 @@
 		<a class='btn darkblue typcn typcn-warning' href="/cg/changes">Major Changes</a>
 <?  if (Permission::Sufficient('developer')){ ?>
 		<button class='darkblue typcn typcn-download cg-export'>Export</button>
+		<button class='darkblue typcn typcn-document cg-reindex'>Re-index</button>
 <?  } ?>
 	</p>
-
+<? if ($elasticAvail){ ?>
 	<form id="search-form">
 		<input name="q" <?=!empty($_GET['q'])?" value='".CoreUtils::AposEncode($_GET['q'])."'":''?> title='Search'>
-		<button type='submit' class='blue typcn typcn-zoom'></button>
+		<button type='submit'  class='blue'>Search</button>
 		<button type='button' class='green typcn typcn-flash sanic-button' title="I'm feeling lucky"></button>
-		<button type='reset' class='orange typcn typcn-times' title='Clear'<?=empty($_GET['q'])?' disabled':''?>></button>
-		<p>Enter tags separated by commas. Use <strong>?</strong>&nbsp;or&nbsp;<strong>*</strong> to search names.<br>You may search using <em>up to 6</em> values at a time.</p>
+		<button type='reset' class='red typcn typcn-times' title='Clear'<?=empty($_GET['q'])?' disabled':''?>></button>
 	</form>
+<?  }
+	else echo CoreUtils::Notice('warn','<span class="typcn typcn-warning"></span> <strong>ElasticSearch server is down!</strong> Please <a class="send-feedback">let us know</a>, and in the meantime, use the <a class="btn darkblue typcn typcn-th-menu" href="/cg'.($EQG?'/eqg':'').'/full">Full List</a> to find appearances faster. Sorry for the inconvenience.',true); ?>
 	<?=$Pagination->HTML . \CG\Appearances::GetHTML($Ponies) . $Pagination->HTML?>
 </div>
 

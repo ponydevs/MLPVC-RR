@@ -240,63 +240,6 @@ HTML;
 			return $HTML . ($wrap ? '</ul>' : '');
 		}
 
-		/**
-		 * @param string $q Search query
-		 *
-		 * @return array
-		 */
-		static function ProcessSearch($q){
-			global $CGDb, $TAG_NAME_REGEX;
-
-			$tokens = explode(',',strtolower($q));
-			$tokenCount = count($tokens);
-			if ($tokenCount > 6)
-				throw new Exception('You may only search for up to 6 tags/labels');
-			$SearchTagIDs = array();
-			$OriginalTagIDs = array();
-			$SearchLabelLIKEs = array();
-
-			foreach ($tokens as $token){
-				$token = CoreUtils::Trim($token);
-				// Search for a tag
-				if (regex_match($TAG_NAME_REGEX, $token)){
-					$err = CoreUtils::CheckStringValidity($token, "Tag name", INVERSE_TAG_NAME_PATTERN, true);
-					if (is_string($err))
-						throw new Exception($err);
-					$Tag = \CG\Tags::GetActual($token, 'name');
-					if (empty($Tag)){
-						if ($tokenCount === 1){
-							$SearchLabelLIKEs[] = '%'.CoreUtils::EscapeLikeValue($token).'%';
-							continue;
-						}
-						throw new Exception('Tag (<code>'.CoreUtils::EscapeHTML($token).'</code>) does not exist');
-					}
-					
-					if (!empty($Tag['Original']))
-						$OriginalTagIDs[] = $Tag['Original']['tid']; 
-					
-					$SearchTagIDs[] = $Tag['tid'];
-				}
-				// Search for a lebel
-				else {
-					$err = CoreUtils::CheckStringValidity($token, "Name wildcard", INVERSE_PRINTABLE_ASCII_PATTERN, true);
-					if (is_string($err))
-						throw new Exception($err);
-
-					$like = CoreUtils::EscapeLikeValue(regex_replace(new RegExp('\*+'),'*',$token));
-					$like = str_replace('*','%',$like);
-					$like = str_replace('?','_',$like);
-					$SearchLabelLIKEs[] = $like;
-				}
-			}
-
-			return array(
-				'orig_tid' => $OriginalTagIDs,
-				'tid' => $SearchTagIDs,
-				'label' => $SearchLabelLIKEs,
-			);
-		}
-
 		const
 			CLEAR_PREVIEW = 'preview.svg',
 			CLEAR_PALETTE = 'palette.png',
@@ -810,4 +753,24 @@ GPL;
 			CM_DIR_HEAD_TO_TAIL => 'Head-tail',
 			CM_DIR_TAIL_TO_HEAD => 'Tail-head',
 		);
+
+		const ELASTIC_BASE = array(
+			'index' => 'appearances',
+		);
+
+		/**
+		 * Performs an ElasticSearch search operation
+		 *
+		 * @param array       $body
+		 * @param $Pagination $Pagination
+		 *
+		 * @return array
+		 */
+		static function SearchElastic(array $body, Pagination $Pagination){
+			$params = array_merge(self::ELASTIC_BASE, $Pagination->toElastic(), array(
+				'type' => 'entry',
+				'body' => $body,
+			));
+			return CoreUtils::ElasticClient()->search($params);
+		}
 	}

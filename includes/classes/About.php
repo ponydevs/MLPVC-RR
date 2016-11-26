@@ -16,6 +16,10 @@
 			global $Database;
 			return $Database->rawQuerySingle('SHOW server_version')['server_version'];
 		}
+		static function GetElasticSearchVersion(){
+			$info = CoreUtils::ElasticClient()->info();
+			return $info['version']['number'];
+		}
 
 	    private static $INI_BOOL_MAP = array(
 	        1 => true,

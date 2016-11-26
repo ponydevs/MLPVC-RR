@@ -189,6 +189,12 @@ DocReady.push(function Colorguide(){
 		}
 		
 		$.toPage.call({query:query,gofast:gofast}, window.location.pathname.replace(/\d+($|\?)/,'1$1'), true, true, false, function(){
+			$('.qtip').each(function(){
+				let $this = $(this);
+				$this.data('qtip').destroy();
+				$this.remove();
+			});
+
 			if (query !== false)
 				return /^Page \d+/.test(document.title)
 					? `${orig_query} - ${document.title}`

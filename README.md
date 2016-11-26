@@ -35,6 +35,8 @@ After some time, the idea of moving the old PNG color guide into an easier to us
    - [Elephant.io](https://github.com/wisembly/elephant.io)
    - [MLPVC-WS](https://github.com/ponydevs/MLPVC-WS)
    - [FineDiff](https://github.com/cogpowered/FineDiff)
+   - [elasticsearch-php](https://github.com/elastic/elasticsearch-php)
+   - [ElasticsearchDSL](https://github.com/ongr-io/ElasticsearchDSL)
  - Development tools:
    - [Gulp](http://gulpjs.com/)
    - [Uglify-js](https://www.npmjs.com/package/uglify-js)

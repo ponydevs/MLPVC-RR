@@ -1058,4 +1058,14 @@ use Exceptions\cURLRequestException;
 		static function MSleep(int $ms){
 			usleep($ms*1000);
 		}
+
+		/** @var Elasticsearch\Client */
+		private static $_elastiClient;
+
+		static function ElasticClient():Elasticsearch\Client {
+			if (!isset(self::$_elastiClient))
+				self::$_elastiClient = Elasticsearch\ClientBuilder::create()->setHosts(['127.0.0.1:9200'])->build();
+
+			return self::$_elastiClient;
+		}
 	}
