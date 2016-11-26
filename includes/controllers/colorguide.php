@@ -1230,15 +1230,23 @@ HTML;
 
 		// Search query exists
 		if (!empty($_GET['q']) && mb_strlen(trim($_GET['q'])) > 0){
-			$SearchQuery = regex_replace(new RegExp('[^\w\d\s]'),'',trim($_GET['q']));
+			$SearchQuery = regex_replace(new RegExp('[^\w\d\s\*\?]'),'',trim($_GET['q']));
 			$title .= "$SearchQuery - ";
-
-			$multiMatch = new ElasticsearchDSL\Query\MultiMatchQuery(
-				['body.tags','body.label^20'],
-				$SearchQuery,
-				[ 'type' => 'cross_fields' ]
-			);
-			$search->addQuery($multiMatch);
+			if (regex_match(new RegExp('[\*\?]'), $SearchQuery)){
+				$queryString = new ElasticsearchDSL\Query\QueryStringQuery(
+					$SearchQuery,
+					[ "fields" => ["body.label", "body.tags"] ]
+				);
+				$search->addQuery($queryString);
+			}
+			else {
+				$multiMatch = new ElasticsearchDSL\Query\MultiMatchQuery(
+					['body.tags','body.label^20'],
+					$SearchQuery,
+					[ 'type' => 'cross_fields' ]
+				);
+				$search->addQuery($multiMatch);
+			}
 		}
 
 		$boolquery = new BoolQuery();
