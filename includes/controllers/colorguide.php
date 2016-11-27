@@ -1228,24 +1228,28 @@ HTML;
 	if ($elasticAvail){
 		$search = new ElasticsearchDSL\Search();
 		$orderByID = true;
+	    $Pagination = new Pagination('cg', $AppearancesPerPage);
 
 		// Search query exists
 		if (!empty($_GET['q']) && mb_strlen(trim($_GET['q'])) > 0){
 			$SearchQuery = regex_replace(new RegExp('[^\w\d\s\*\?]'),'',trim($_GET['q']));
 			$title .= "$SearchQuery - ";
 			if (regex_match(new RegExp('[\*\?]'), $SearchQuery)){
-				$queryString = new ElasticsearchDSL\Query\SimpleQueryStringQuery(
+				$queryString = new ElasticsearchDSL\Query\QueryStringQuery(
 					$SearchQuery,
-					[ 'fields' => ['body.label^10', 'body.tags'] ]
+					[ 'fields' => ['body.label^20', 'body.tags'] ]
 				);
 				$search->addQuery($queryString);
 				$orderByID = false;
 			}
 			else {
 				$multiMatch = new ElasticsearchDSL\Query\MultiMatchQuery(
-					['body.label^2','body.tags'],
+					['body.label^20','body.tags'],
 					$SearchQuery,
-					[ 'type' => 'cross_fields' ]
+					[
+						'type' => 'cross_fields',
+						'minimum_should_match' => '100%',
+					]
 				);
 				$search->addQuery($multiMatch);
 			}
@@ -1258,21 +1262,7 @@ HTML;
 		$boolquery->add(new TermQuery('id', 0), BoolQuery::MUST_NOT);
 		$search->addQuery($boolquery);
 
-		$functionScore = new ElasticsearchDSL\Query\FunctionScoreQuery(
-			new ElasticsearchDSL\Query\MatchAllQuery(),
-			[
-				"boost" => "5",
-				"score_mode" => "avg",
-			]
-		);
-		$orderExists = new ElasticsearchDSL\Query\ExistsQuery('body.order');
-		$functionScore->addFieldValueFactorFunction('body.order', 50, 'reciprocal', $orderExists);
-		$search->addQuery($functionScore);
-
-	    $Pagination = new Pagination('cg', $AppearancesPerPage);
 		$search = $search->toArray();
-		if ($orderByID)
-			$search['sort'][] = ['body.order' => 'asc'];
 		$search['_source'] = false;
 		$search = CGUtils::SearchElastic($search, $Pagination);
 		$Pagination->calcMaxPages($search['hits']['total']);
