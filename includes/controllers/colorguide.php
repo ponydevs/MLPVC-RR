@@ -1237,7 +1237,11 @@ HTML;
 			if (regex_match(new RegExp('[\*\?]'), $SearchQuery)){
 				$queryString = new ElasticsearchDSL\Query\QueryStringQuery(
 					$SearchQuery,
-					[ 'fields' => ['body.label^20', 'body.tags'] ]
+					[
+						'fields' => ['body.label^20','body.tags'],
+						'default_operator' => 'and',
+						'phrase_slop' => 3,
+					]
 				);
 				$search->addQuery($queryString);
 				$orderByID = false;
