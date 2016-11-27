@@ -1258,6 +1258,10 @@ HTML;
 				$search->addQuery($multiMatch);
 			}
 		}
+		else {
+			$sort = new ElasticsearchDSL\Sort\FieldSort('body.order','asc');
+            $search->addSort($sort);
+		}
 
 		$boolquery = new BoolQuery();
 		if (Permission::Insufficient('staff'))
