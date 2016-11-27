@@ -182,7 +182,7 @@ CREATE TABLE log__appearances (
     id integer NOT NULL,
     "order" integer,
     label character varying(70) NOT NULL,
-    notes text NOT NULL,
+    notes text,
     cm_favme character varying(20),
     ishuman boolean NOT NULL,
     added timestamp with time zone,
