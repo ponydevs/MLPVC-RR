@@ -255,14 +255,16 @@
 
 					$data['private'] = isset($_POST['private']);
 
+					if ($creating)
+						$data['order'] = $CGDb->getOne('appearances','MAX("order") as "order"')['order'];
+
 					$query = $creating
 						? $CGDb->insert('appearances', $data, 'id')
 						: $CGDb->where('id', $Appearance['id'])->update('appearances', $data);
 					if (!$query)
 						Response::DBError();
 
-					$EditedAppearance = $CGDb->where('id', $creating ? $query : $Appearance['id'])->getOne('appearances', \CG\Appearances::ELASTIC_COLUMNS);
-					CoreUtils::ElasticClient()->index(\CG\Appearances::ToElasticArray($EditedAppearance));
+					$EditedAppearance = \CG\Appearances::UpdateIndex($creating ? $query : $Appearance['id'], '*');
 
 					if ($creating){
 						$data['id'] = $query;
@@ -285,7 +287,7 @@
 						Log::Action('appearances',array(
 							'action' => 'add',
 						    'id' => $data['id'],
-						    'order' => $data['order'] ?? null,
+						    'order' => $data['order'],
 						    'label' => $data['label'],
 						    'notes' => $data['notes'],
 						    'cm_favme' => $data['cm_favme'] ?? null,
@@ -558,7 +560,7 @@
 						break;
 					}
 
-					CoreUtils::ElasticClient()->index(\CG\Appearances::ToElasticArray($Appearance));
+					\CG\Appearances::UpdateIndex($Appearance['id']);
 
 					\CG\Tags::UpdateUses($Tag['tid']);
 					if (isset(CGUtils::$GroupTagIDs_Assoc[$Tag['tid']]))
@@ -634,11 +636,12 @@
 				case 'del':
 					$AppearanceID = \CG\Appearances::ValidateAppearancePageID();
 
+					$tid = !empty($Tag['synonym_of']) ? $Tag['synonym_of'] : $Tag['tid'];
+					$Uses = $CGDb->where('tid',$tid)->get('tagged',null,'ponyid');
+					$UseCount = count($Uses);
 					if (!isset($_POST['sanitycheck'])){
-						$tid = !empty($Tag['synonym_of']) ? $Tag['synonym_of'] : $Tag['tid'];
-						$Uses = $CGDb->where('tid',$tid)->count('tagged');
-						if ($Uses > 0)
-							Response::Fail('<p>This tag is currently used on '.CoreUtils::MakePlural('appearance',$Uses,PREPEND_NUMBER).'</p><p>Deleting will <strong class="color-red">permanently remove</strong> the tag from those appearances!</p><p>Are you <em class="color-red">REALLY</em> sure about this?</p>',array('confirm' => true));
+						if ($UseCount > 0)
+							Response::Fail('<p>This tag is currently used on '.CoreUtils::MakePlural('appearance',$UseCount,PREPEND_NUMBER).'</p><p>Deleting will <strong class="color-red">permanently remove</strong> the tag from those appearances!</p><p>Are you <em class="color-red">REALLY</em> sure about this?</p>',array('confirm' => true));
 					}
 
 					if (!$CGDb->where('tid', $Tag['tid'])->delete('tags'))
@@ -646,6 +649,8 @@
 
 					if (isset(CGUtils::$GroupTagIDs_Assoc[$Tag['tid']]))
 						\CG\Appearances::GetSortReorder($EQG);
+					foreach ($Uses as $use)
+						\CG\Appearances::UpdateIndex($use['ponyid']);
 
 					Response::Success('Tag deleted successfully', isset($AppearanceID) && $Tag['type'] === 'ep' ? array(
 						'needupdate' => true,
@@ -658,20 +663,22 @@
 
 					$keep_tagged = isset($_POST['keep_tagged']);
 					$uses = 0;
-					if ($keep_tagged){
-						$Target = $CGDb->where('tid', $Tag['synonym_of'])->getOne('tags','tid');
-						if (!empty($Target)){
-							$TargetTagged = $CGDb->where('tid', $Target['tid'])->get('tagged',null,'ponyid');
+					$Target = $CGDb->where('tid', $Tag['synonym_of'])->getOne('tags','tid');
+					if (!empty($Target)){
+						$TargetTagged = $CGDb->where('tid', $Target['tid'])->get('tagged', null, 'ponyid');
+						if ($keep_tagged){
 							foreach ($TargetTagged as $tg){
-								if (!$CGDb->insert('tagged',array(
-									'tid' => $Tag['tid'],
-									'ponyid' => $tg['ponyid']
-								))) Response::Fail("Tag synonym removal process failed, please re-try.<br>Technical details: ponyid={$tg['ponyid']} tid={$Tag['tid']}");
+								if (!$CGDb->insert('tagged', array('tid' => $Tag['tid'], 'ponyid' => $tg['ponyid'])))
+									Response::Fail("Tag synonym removal process failed, please re-try.<br>Technical details: ponyid={$tg['ponyid']} tid={$Tag['tid']}");
 								$uses++;
 							}
 						}
-						else $keep_tagged = false;
+						else {
+							foreach ($TargetTagged as $tg)
+								\CG\Appearances::UpdateIndex($tg['ponyid']);
+						}
 					}
+					else $keep_tagged = false;
 
 					if (!$CGDb->where('tid', $Tag['tid'])->update('tags', array('synonym_of' => null, 'uses' => $uses)))
 						Response::DBError();
@@ -758,6 +765,7 @@ HTML;
 								'tid' => $data['tid'],
 								'ponyid' => $Appearance['id']
 							))) Response::DBError();
+							\CG\Appearances::UpdateIndex($Appearance['id']);
 							\CG\Tags::UpdateUses($data['tid']);
 							$r = array('tags' => \CG\Appearances::GetTagsHTML($Appearance['id'], NOWRAP));
 							if ($AppearancePage){
@@ -776,6 +784,7 @@ HTML;
 								$data['needupdate'] = true;
 								$Appearance = $CGDb->where('id', $ponyid)->getOne('appearances');
 								$data['eps'] = \CG\Appearances::GetRelatedEpisodesHTML($Appearance, $EQG);
+								\CG\Appearances::UpdateIndex($Appearance['id']);
 							}
 						}
 					}
@@ -823,6 +832,8 @@ HTML;
 					$CGDb->where('tid', $Tag['tid'])->delete('tagged');
 					$CGDb->where('tid', $Tag['tid'])->update('tags', array('synonym_of' => $Target['tid'], 'uses' => 0));
 				}
+				foreach ($TargetTagged as $id)
+					\CG\Appearances::UpdateIndex($id);
 
 				\CG\Tags::UpdateUses($Target['tid']);
 				Response::Success('Tags successfully '.($merging?'merged':'synonymized'), $synoning || $merging ? array('target' => $Target) : null);
@@ -1238,7 +1249,7 @@ HTML;
 				$queryString = new ElasticsearchDSL\Query\QueryStringQuery(
 					$SearchQuery,
 					[
-						'fields' => ['body.label^20','body.tags'],
+						'fields' => ['label^20','tags'],
 						'default_operator' => 'and',
 						'phrase_slop' => 3,
 					]
@@ -1248,7 +1259,7 @@ HTML;
 			}
 			else {
 				$multiMatch = new ElasticsearchDSL\Query\MultiMatchQuery(
-					['body.label^20','body.tags'],
+					['label^20','tags'],
 					$SearchQuery,
 					[
 						'type' => 'cross_fields',
@@ -1259,14 +1270,14 @@ HTML;
 			}
 		}
 		else {
-			$sort = new ElasticsearchDSL\Sort\FieldSort('body.order','asc');
+			$sort = new ElasticsearchDSL\Sort\FieldSort('order','asc');
             $search->addSort($sort);
 		}
 
 		$boolquery = new BoolQuery();
 		if (Permission::Insufficient('staff'))
-			$boolquery->add(new TermQuery('body.private', true), BoolQuery::MUST_NOT);
-		$boolquery->add(new TermQuery('body.ishuman', $EQG), BoolQuery::MUST);
+			$boolquery->add(new TermQuery('private', true), BoolQuery::MUST_NOT);
+		$boolquery->add(new TermQuery('ishuman', $EQG), BoolQuery::MUST);
 		$boolquery->add(new TermQuery('id', 0), BoolQuery::MUST_NOT);
 		$search->addQuery($boolquery);
 

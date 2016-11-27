@@ -593,7 +593,6 @@ HTML;
 								"label" => [
 									"type" => "text",
 									"analyzer" => "overkill",
-									"copy_to" => ["did_you_mean"],
 								],
 								"order" => [ "type" => "integer" ],
 								"ishuman" => [ "type" => "boolean" ],
@@ -611,6 +610,9 @@ HTML;
 								"overkill" => [
 									"type" => "custom",
 									"tokenizer" => "overkill",
+									"filter" => [
+										"lowercase"
+									]
 								],
 							],
 							"tokenizer" => [
@@ -642,7 +644,7 @@ HTML;
 			        ]
 			    ];
 
-			    $params['body'][] = self::ToElasticArray($a);
+			    $params['body'][] = self::GetElasticBody($a);
 
 			    if ($i % 100 == 0) {
 			        $elasticClient->bulk($params);
@@ -656,6 +658,15 @@ HTML;
 			\Response::Success('Re-index completed');
 		}
 
+		static function UpdateIndex(int $AppearanceID, string $fields = self::ELASTIC_COLUMNS):array {
+			global $CGDb;
+
+			$Appearance = $CGDb->where('id', $AppearanceID)->getOne('appearances', $fields);
+			\CoreUtils::ElasticClient()->update(self::ToElasticArray($Appearance, false, true));
+
+			return $Appearance;
+		}
+
 		static function GetElasticMeta($Appearance){
 			return array_merge(\CGUtils::ELASTIC_BASE,[
 				'type' => 'entry',
@@ -664,7 +675,7 @@ HTML;
 		}
 
 		static function GetElasticBody($Appearance){
-			$tags = Tags::GetFor($Appearance['id'], null, false, true);
+			$tags = Tags::GetFor($Appearance['id'], null, true, true);
 			foreach ($tags as $k => $tag)
 				$tags[$k] = $tag['name'];
 			return [
@@ -676,11 +687,16 @@ HTML;
 			];
 		}
 
-		static function ToElasticArray(array $Appearance, bool $no_body = false):array {
+		static function ToElasticArray(array $Appearance, bool $no_body = false, bool $update = false):array {
 			$params = self::GetElasticMeta($Appearance);
 			if ($no_body)
 				return $params;
 			$params['body'] = self::GetElasticBody($Appearance);
+			if ($update)
+				$params['body'] = [
+					'doc' => $params['body'],
+					'upsert' => $params['body'],
+				];
 			return $params;
 		}
 	}

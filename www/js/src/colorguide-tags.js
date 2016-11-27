@@ -96,7 +96,7 @@ DocReady.push(function ColorguideTags(){
 					$.Dialog.confirm(`Remove synonym from ${tagName}`, message, ['Yes, continue…','Cancel'], function(sure){
 						if (!sure) return;
 
-						let targetTagName = $(message).filter('strong').prop('outerHTML'),
+						let targetTagName = $.mk('div').html(message).find('strong').prop('outerHTML'),
 							$SynonRemoveForm = $.mk('form','synon-remove').html(
 								`<p>If you leave the option below checked, <strong>${tagName}</strong> will be added to all appearances where ${targetTagName} is used, preserving how the tags worked while the synonym was active.</p>
 								<p>If you made these tags synonyms by accident and don't want <strong>${tagName}</strong> to be added to each appearance where ${targetTagName} is used, you should uncheck the box below.</p>

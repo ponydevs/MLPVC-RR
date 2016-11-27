@@ -43,10 +43,12 @@
 				$CGDb->orderBy('tags.tid','ASC');
 			}
 			return isset($PonyID)
-				? $CGDb
-					->join('tags','tagged.tid = tags.tid'.($showSynonymTags?' OR tagged.tid = tags.synonym_of':''),'LEFT')
-					->where('tagged.ponyid',$PonyID)
-					->get('tagged',$limit,'tags.*')
+				? $CGDb->rawQuery(
+					'SELECT tags.* FROM tagged
+					LEFT JOIN tags ON (tagged.tid = tags.tid'.($showSynonymTags?' OR tagged.tid = tags.synonym_of':'').')'.
+					'WHERE tagged.ponyid = ?'.
+					(isset($limit)?"LIMIT $limit[1] OFFSET $limit[0]":''), array($PonyID)
+				)
 				: $CGDb->get('tags',$limit);
 		}
 
