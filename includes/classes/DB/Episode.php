@@ -12,7 +12,8 @@ class Episode extends AbstractFillable {
 		$episode,
 		$no,
 		$score,
-		$willairts;
+		$willairts,
+		$isMovie;
 	/** @var string */
 	public
 		$title,
@@ -24,14 +25,13 @@ class Episode extends AbstractFillable {
 	public
 		$twoparter,
 		$displayed,
-		$aired,
-		$isMovie;
+		$aired;
 
 	/** @param array|object */
 	public function __construct($iter = null){
 		parent::__construct($this, $iter);
 
-		$this->isMovie = $this->season === 0;
+		$this->isMovie = $this->season === 0 ? 1 : 0;
 		$this->twoparter = !empty($this->twoparter);
 		$this->_formatScore();
 	}
