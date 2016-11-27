@@ -219,7 +219,7 @@ DocReady.push(function Colorguide(){
 			ponyID = $li.attr('id').substring(1),
 			ponyName = (
 				!AppearancePage
-				? $li.find('strong')
+				? $li.find('strong').first()
 				: $content.children('h1')
 			).text().trim(),
 			pressAi = navigator && navigator.userAgent && /Macintosh/i.test(navigator.userAgent)

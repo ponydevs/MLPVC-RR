@@ -1278,7 +1278,6 @@ HTML;
 		if (Permission::Insufficient('staff'))
 			$boolquery->add(new TermQuery('private', true), BoolQuery::MUST_NOT);
 		$boolquery->add(new TermQuery('ishuman', $EQG), BoolQuery::MUST);
-		$boolquery->add(new TermQuery('id', 0), BoolQuery::MUST_NOT);
 		$search->addQuery($boolquery);
 
 		$search = $search->toArray();

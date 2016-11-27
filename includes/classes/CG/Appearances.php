@@ -631,7 +631,7 @@ HTML;
 				]
 			]);
 			$elasticClient->indices()->create(array_merge($params));
-			$Appearances = $CGDb->get('appearances',null,self::ELASTIC_COLUMNS);
+			$Appearances = $CGDb->where('id != 0')->get('appearances',null,self::ELASTIC_COLUMNS);
 
 			$params = array('body' => []);
 			foreach ($Appearances as $i => $a){
