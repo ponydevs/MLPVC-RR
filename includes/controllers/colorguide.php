@@ -1292,7 +1292,7 @@ HTML;
 	if (isset($_REQUEST['GOFAST'])){
 		if (empty($Ponies[0]['id']))
 			Response::Fail('The search returned no results.');
-		Response::Done(array('goto' => "/cg/v/{$Ponies[0]['id']}-".\CG\Appearances::GetSafeLabel($Ponies[0])));
+		Response::Done(array('goto' => "$CGPath/v/{$Ponies[0]['id']}-".\CG\Appearances::GetSafeLabel($Ponies[0])));
 	}
 
 	CoreUtils::FixPath("$CGPath/{$Pagination->page}".(!empty($Restrictions)?"?q=$SearchQuery":''));
