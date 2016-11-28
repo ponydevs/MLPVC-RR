@@ -264,6 +264,9 @@
 					if (!$query)
 						Response::DBError();
 
+					if ((isset($data['cm_dir']) && $data['cm_dir'] !== $Appearance['cm_dir']) || (isset($data['cm_preview']) && $data['cm_preview'] != $Appearance['cm_preview']))
+						CGUtils::ClearRenderedImages($Appearance['id'], array(CGUtils::CLEAR_CMDIR));
+
 					$EditedAppearance = \CG\Appearances::UpdateIndex($creating ? $query : $Appearance['id'], '*');
 
 					if ($creating){

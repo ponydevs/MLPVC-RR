@@ -46,7 +46,7 @@
 		<section class="approved-cutie-mark">
 			<h2>Recommended cutie mark vector</h2>
 <?=Permission::Sufficient('staff')&&!isset($Appearance['cm_dir'])?CoreUtils::Notice('fail','Missing CM orientation, falling back to <strong>Tail-Head</strong>. Please edit the appaearance and provide an orientation!'):''?>
-			<a id="pony-cm" href="http://fav.me/<?=$Appearance['cm_favme']?>" style="background-image:url('/cg/v/<?=$Appearance['id']?>.svg')">
+			<a id="pony-cm" href="http://fav.me/<?=$Appearance['cm_favme']?>" style="background-image:url('<?=\CG\Appearances::GetCMPreviewSVGURL($Appearance['id'])?>')">
 				<div class="img cm-dir-<?=$Appearance['cm_dir']===CM_DIR_HEAD_TO_TAIL?'ht':'th'?>" style="background-image:url('<?=CoreUtils::AposEncode($preview)?>')"></div>
 			</a>
 			<p class="aside">This is only an illustration, the body shape & colors are <strong>not</strong> guaranteed to reflect the actual design.</p>

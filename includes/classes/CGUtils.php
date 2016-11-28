@@ -431,11 +431,13 @@ HTML;
 			Image::OutputPNG($FinalBase, $OutputPath, $FileRelPath);
 		}
 
+		const CMDIR_SVG_PATH = FSPATH."cg_render/#-cmdir.svg";
+
 		// Generate CM preview image
 		static function RenderCMDirectionSVG($AppearanceID, $dir){
 			global $CGDb, $CGPath;
 
-			$OutputPath = FSPATH."cg_render/$AppearanceID-cmdir.svg";
+			$OutputPath = str_replace('#',$AppearanceID,self::CMDIR_SVG_PATH);
 			$FileRelPath = "$CGPath/v/$AppearanceID.svg";
 			if (file_exists($OutputPath))
 				Image::OutputSVG(null,$OutputPath,$FileRelPath);

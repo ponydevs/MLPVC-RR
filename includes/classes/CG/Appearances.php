@@ -502,6 +502,18 @@ HTML;
 		}
 
 		/**
+		 * Retruns CM preview SVG image link (pony butt)
+		 *
+		 * @param int $AppearanceID
+		 *
+		 * @return string
+		 */
+		static function GetCMPreviewSVGURL(int $AppearanceID){
+			$path = str_replace('#',$AppearanceID,\CGUtils::CMDIR_SVG_PATH);
+			return "/cg/v/{$AppearanceID}.svg?t=".(file_exists($path) ? filemtime($path) : time());
+		}
+
+		/**
 		 * Retruns preview image link
 		 *
 		 * @param array $Appearance
