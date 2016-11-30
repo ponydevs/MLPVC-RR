@@ -115,9 +115,10 @@
 
 					$AppendAppearance['TagIDs'] = array();
 					$TagIDs = \CG\Tags::GetFor($p['id'],null,null,true);
-					if (!empty($TagIDs))
+					if (!empty($TagIDs)){
 						foreach ($TagIDs as $t)
 							$AppendAppearance['TagIDs'][] = $t['tid'];
+					}
 
 					$AppendAppearance['RelatedAppearances'] = array();
 					$RelatedIDs = \CG\Appearances::GetRelated($p['id']);

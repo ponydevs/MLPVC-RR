@@ -40,13 +40,15 @@
 			}
 			else {
 				$showSynonymTags = true;
-				$CGDb->orderBy('tags.tid','ASC');
+				if (isset($PonyID))
+					$ODER_BY = ' ORDER BY tags.tid ASC';
+				else $CGDb->orderBy('tags.tid','ASC');
 			}
 			return isset($PonyID)
 				? $CGDb->rawQuery(
 					'SELECT tags.* FROM tagged
 					LEFT JOIN tags ON (tagged.tid = tags.tid'.($showSynonymTags?' OR tagged.tid = tags.synonym_of':'').')'.
-					'WHERE tagged.ponyid = ?'.
+					"WHERE tagged.ponyid = ?".($ODER_BY ?? '').
 					(isset($limit)?"LIMIT $limit[1] OFFSET $limit[0]":''), array($PonyID)
 				)
 				: $CGDb->get('tags',$limit);

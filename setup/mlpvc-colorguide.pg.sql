@@ -405,7 +405,7 @@ Crystals on helmet are numbered 1 starting from the right.', NULL, false, '2016-
 (127, 83, 'Soarin''', NULL, 'd72vipj', false, '2016-04-24 16:40:44.192917+02', NULL, true, false),
 (128, 60, 'Fleur Dis Lee', NULL, NULL, false, '2016-04-25 04:22:23.885302+02', NULL, NULL, false),
 (129, 61, 'Fancy Pants', 'The monocle lens has a couple different fill approaches depending on angle and tightness of the shot. If closeup, both fills are transparent, but if far out, second fill is fully opaque.', NULL, false, '2016-04-26 07:01:23.677929+02', NULL, NULL, false),
-(130, 37, 'Snips', 'Teeth use the body outline color as opposed to the universal teeth outline color.', NULL, false, '2016-04-26 07:54:08.238033+02', NULL, NULL, false),
+(130, 37, 'Snips', 'Teeth use the body outline color as opposed to the universal teeth outline color.', 'dapc722', false, '2016-04-26 07:54:08.238033+02', NULL, false, false),
 (131, 38, 'Snails', 'Far legs use darker colors.', 'dahejg0', false, '2016-04-26 07:57:55.52504+02', NULL, true, false),
 (132, 30, 'King Sombra', 'Far legs use darker colors.
 Sombra has a lot of gradients with repeating colors. You can simplify this by using the same gradients in different parts with some tweaking of the size and stop placement.
@@ -517,8 +517,8 @@ Pay close attention to her hair fills when vectoring her. The colors can be hard
 (222, 1, 'Twilight Sparkle (Human)', 'Twilight Sparkle from the human world', NULL, true, '2016-11-11 04:27:57.107617+01', NULL, NULL, false),
 (223, 1, 'Applejack', NULL, NULL, true, '2016-11-12 14:18:11.550993+01', NULL, NULL, false),
 (224, 1, 'Fluttershy', NULL, NULL, true, '2016-11-17 05:07:45.28054+01', NULL, NULL, false),
-(225, 156, 'Sheriff Silverstar', 'Note that both "Over the Barrel" and "Appleloosa''s Most Wanted" have overly-bright reference colors, but these are the only refs we have for Silverstar', NULL, false, '2016-11-24 16:16:30.243944+01', NULL, NULL, false),
-(226, 157, 'Troubleshoes Clyde', 'Colors from "Appleloosa''s Most Wanted" are overly bright, but this is the only episode reference for Troubleshoes.', NULL, false, '2016-11-24 16:35:36.654407+01', NULL, NULL, false);
+(225, 156, 'Sheriff Silverstar', 'Note that both "Over the Barrel" and S5E6 have overly-bright reference colors, but these are the only refs we have for Silverstar', NULL, false, '2016-11-24 16:16:30.243944+01', NULL, NULL, false),
+(226, 157, 'Troubleshoes Clyde', 'Colors from S5E6 are overly bright, but this is the only episode reference for Troubleshoes.', NULL, false, '2016-11-24 16:35:36.654407+01', NULL, NULL, false);
 
 
 --
@@ -7850,14 +7850,15 @@ INSERT INTO tags VALUES
 (440, 'movie#3', NULL, 'ep', 1, NULL),
 (441, 'movie#2', NULL, 'ep', 1, NULL),
 (442, 'sheriff silverstar', NULL, 'char', 1, NULL),
-(443, 'troubleshoes clyde', NULL, 'char', 1, NULL);
+(443, 'troubleshoes clyde', NULL, 'char', 1, NULL),
+(444, 'trouble shoes', NULL, 'char', 0, 443);
 
 
 --
 -- Name: tags_tid_seq; Type: SEQUENCE SET; Schema: public; Owner: mlpvc-rr
 --
 
-SELECT pg_catalog.setval('tags_tid_seq', 443, true);
+SELECT pg_catalog.setval('tags_tid_seq', 444, true);
 
 
 --

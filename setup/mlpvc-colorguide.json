@@ -8130,11 +8130,11 @@
 			"order": 37,
 			"label": "Snips",
 			"notes": "Teeth use the body outline color as opposed to the universal teeth outline color.",
-			"cm_favme": null,
+			"cm_favme": "dapc722",
 			"ishuman": false,
 			"added": "2016-04-26 07:54:08.238033+02",
 			"cm_preview": null,
-			"cm_dir": null,
+			"cm_dir": false,
 			"private": false,
 			"ColorGroups": {
 				"687": {
@@ -27562,7 +27562,7 @@
 			"id": 225,
 			"order": 156,
 			"label": "Sheriff Silverstar",
-			"notes": "Note that both \"Over the Barrel\" and \"Appleloosa's Most Wanted\" have overly-bright reference colors, but these are the only refs we have for Silverstar",
+			"notes": "Note that both \"Over the Barrel\" and S5E6 have overly-bright reference colors, but these are the only refs we have for Silverstar",
 			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-11-24 16:16:30.243944+01",
@@ -27732,7 +27732,7 @@
 			"id": 226,
 			"order": 157,
 			"label": "Troubleshoes Clyde",
-			"notes": "Colors from \"Appleloosa's Most Wanted\" are overly bright, but this is the only episode reference for Troubleshoes.",
+			"notes": "Colors from S5E6 are overly bright, but this is the only episode reference for Troubleshoes.",
 			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-11-24 16:35:36.654407+01",
@@ -27892,7 +27892,8 @@
 				8,
 				11,
 				351,
-				443
+				443,
+				444
 			],
 			"RelatedAppearances": []
 		},
@@ -39264,6 +39265,14 @@
 			"type": "char",
 			"uses": 1,
 			"synonym_of": null
+		},
+		"444": {
+			"tid": 444,
+			"name": "trouble shoes",
+			"title": null,
+			"type": "char",
+			"uses": 0,
+			"synonym_of": 443
 		}
 	}
 }
