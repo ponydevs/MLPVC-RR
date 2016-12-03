@@ -3,6 +3,7 @@
 	namespace CG;
 
 	use Elasticsearch\Common\Exceptions\Missing404Exception as ElasticMissing404Exception;
+	use Elasticsearch\Common\Exceptions\NoNodesAvailableException as ElasticNoNodesAvailableException;
 
 	class Appearances {
 		/**
@@ -595,6 +596,9 @@ HTML;
 				// Eat exception if the index we're re-creating does not exist yet
 				if ($message['error']['type'] !== 'index_not_found_exception' || $message['error']['index'] !== \CGUtils::ELASTIC_BASE['index'])
 					throw $e;
+			}
+			catch (ElasticNoNodesAvailableException $e){
+				\Response::Fail('Re-index failed, ElasticSearch server is down!');
 			}
 			$params = array_merge(\CGUtils::ELASTIC_BASE, [
 				"body" => [

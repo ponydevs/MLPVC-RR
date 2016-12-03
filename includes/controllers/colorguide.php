@@ -3,6 +3,7 @@
 	use ONGR\ElasticsearchDSL;
 	use ONGR\ElasticsearchDSL\Query\BoolQuery;
 	use ONGR\ElasticsearchDSL\Query\TermQuery;
+	use Elasticsearch\Common\Exceptions\Missing404Exception as ElasticMissing404Exception;
 
 	if (POST_REQUEST || (isset($_GET['s']) && $data === "gettags")){
 		if (!Permission::Sufficient('staff')) Response::Fail();
@@ -340,7 +341,7 @@
 					try {
 						CoreUtils::ElasticClient()->delete(\CG\Appearances::ToElasticArray($Appearance, true));
 					}
-					catch (Elasticsearch\Common\Exceptions\Missing404Exception $e){
+					catch (ElasticMissing404Exception $e){
 						$message = JSON::Decode($e->getMessage());
 
 						// Eat error if appearance was not indexed
