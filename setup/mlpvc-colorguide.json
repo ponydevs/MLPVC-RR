@@ -35253,9 +35253,123 @@
 				6
 			]
 		},
+		"228": {
+			"id": 228,
+			"order": 204,
+			"label": "Rarity's Detective Outfit",
+			"notes": "From \"Rarity Investigates\"",
+			"cm_favme": null,
+			"ishuman": false,
+			"added": "2016-12-03 07:47:29.233869+01",
+			"cm_preview": null,
+			"cm_dir": null,
+			"private": false,
+			"ColorGroups": {
+				"1209": {
+					"groupid": 1209,
+					"label": "Hat",
+					"order": 1,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#211B24"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#45354B"
+						},
+						{
+							"order": 2,
+							"label": "Shadow Fill",
+							"hex": "#2F2432"
+						},
+						{
+							"order": 3,
+							"label": "Ribbon Outline",
+							"hex": "#CF5B48"
+						},
+						{
+							"order": 4,
+							"label": "Ribbon Fill",
+							"hex": "#E8887E"
+						}
+					]
+				},
+				"1210": {
+					"groupid": 1210,
+					"label": "Overcoat",
+					"order": 2,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#60262C"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#944444"
+						},
+						{
+							"order": 2,
+							"label": "Lapel/Hem Fill",
+							"hex": "#84393D"
+						},
+						{
+							"order": 3,
+							"label": "Inside Fill",
+							"hex": "#753535"
+						},
+						{
+							"order": 4,
+							"label": "Shadow Fill",
+							"hex": "#8B3F3E"
+						},
+						{
+							"order": 5,
+							"label": "Shadow Hem Fill",
+							"hex": "#7B3638"
+						},
+						{
+							"order": 6,
+							"label": "Tie/Belt Outline",
+							"hex": "#CF5B48"
+						},
+						{
+							"order": 7,
+							"label": "Tie/Belt Fill",
+							"hex": "#E8887E"
+						},
+						{
+							"order": 8,
+							"label": "Tie/Belt Shadow Fill",
+							"hex": "#DA7166"
+						},
+						{
+							"order": 9,
+							"label": "Button/Buckle Outline",
+							"hex": "#2E222F"
+						},
+						{
+							"order": 10,
+							"label": "Button/Buckle/Undercoat Fill",
+							"hex": "#46354A"
+						}
+					]
+				}
+			},
+			"TagIDs": [
+				26,
+				42,
+				96
+			],
+			"RelatedAppearances": []
+		},
 		"33": {
 			"id": 33,
-			"order": 204,
+			"order": 205,
 			"label": "Alicorn Amulet",
 			"notes": "",
 			"cm_favme": null,
@@ -35448,7 +35562,7 @@
 		},
 		"86": {
 			"id": 86,
-			"order": 205,
+			"order": 206,
 			"label": "Scorpan's Medallion",
 			"notes": "",
 			"cm_favme": null,
@@ -35527,7 +35641,7 @@
 		},
 		"94": {
 			"id": 94,
-			"order": 206,
+			"order": 207,
 			"label": "Party Cannon",
 			"notes": "",
 			"cm_favme": null,
@@ -35657,7 +35771,7 @@
 		},
 		"115": {
 			"id": 115,
-			"order": 207,
+			"order": 208,
 			"label": "Fake Timberwolf",
 			"notes": "",
 			"cm_favme": null,
@@ -35867,7 +35981,7 @@
 		},
 		"154": {
 			"id": 154,
-			"order": 208,
+			"order": 209,
 			"label": "Twilight's Crown",
 			"notes": "From S4 onward",
 			"cm_favme": null,
@@ -35920,7 +36034,7 @@
 		},
 		"156": {
 			"id": 156,
-			"order": 209,
+			"order": 210,
 			"label": "Rainbow Dash's Bandaids (Newbie Dash)",
 			"notes": "Sampled from S6E7",
 			"cm_favme": null,
@@ -35990,7 +36104,7 @@
 		},
 		"182": {
 			"id": 182,
-			"order": 210,
+			"order": 211,
 			"label": "Rainbow Cookie Zombie Effects",
 			"notes": "Colors of this effect are not muted even if the pony's coat ends up muted. This effect is dimmed with any night filters.\nTo get the muted coat/mane/other colors for any character, take the RGB value of the color, average the R, G, B values, and adjust each RGB value 50% of the way to that average. For example, if RGB is 120, 60, 120, the average is 100. The R value of 120 would then move 50%*(120-100) or 10 (ending up at 110), the G value of 60 would move 50%*(100-60) or 20 (ending up at 80).",
 			"cm_favme": null,
@@ -36053,7 +36167,7 @@
 		},
 		"199": {
 			"id": 199,
-			"order": 211,
+			"order": 212,
 			"label": "Hypnotized Mane 6 Eyes",
 			"notes": "Eye colors for the Mane 6 (except Twilight) due to Starlight Glimmer's spell from S6E21.\nAll other body and mane/tail colors remain the same.",
 			"cm_favme": null,
@@ -36372,7 +36486,7 @@
 			"name": "rarity",
 			"title": null,
 			"type": "char",
-			"uses": 4,
+			"uses": 5,
 			"synonym_of": null
 		},
 		"27": {
@@ -36500,7 +36614,7 @@
 			"name": "s05e15",
 			"title": null,
 			"type": "ep",
-			"uses": 2,
+			"uses": 3,
 			"synonym_of": null
 		},
 		"43": {
@@ -36892,7 +37006,7 @@
 			"name": "outfit",
 			"title": "Alternative character outfits",
 			"type": null,
-			"uses": 29,
+			"uses": 30,
 			"synonym_of": null
 		},
 		"97": {
