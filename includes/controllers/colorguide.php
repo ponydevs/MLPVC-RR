@@ -1285,8 +1285,8 @@ HTML;
 		$boolquery->add(new TermQuery('ishuman', $EQG), BoolQuery::MUST);
 		$search->addQuery($boolquery);
 
+		$search->setSource(false);
 		$search = $search->toArray();
-		$search['_source'] = false;
 		$search = CGUtils::SearchElastic($search, $Pagination);
 		$Pagination->calcMaxPages($search['hits']['total']);
 

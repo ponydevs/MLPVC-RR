@@ -699,6 +699,11 @@ footer {
 		text-decoration: underline;
 		color: inherit;
 	}
+	abbr {
+		border-bottom: 1px dashed;
+		cursor: help;
+		font-weight: bold;
+	}
 }
 // Colors
 .color-blue     { color: $NBlue !important }

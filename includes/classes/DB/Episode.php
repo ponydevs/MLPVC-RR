@@ -131,7 +131,7 @@ class Episode extends AbstractFillable {
 				'id' => $this->getID(array('append_num' => $append_num)),
 				'season' => $this->season ?? null,
 				'episode' => $this->episode ?? null,
-				'title' => $this->title ?? null,
+				'title' => isset($this->title) ? CoreUtils::EscapeHTML($this->title) : null,
 			);
 
 			if (!empty($arrayKey))

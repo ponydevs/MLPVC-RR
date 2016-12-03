@@ -508,22 +508,24 @@ use Exceptions\cURLRequestException;
 		 * @return string
 		 */
 		static function GetFooter($with_git_info = false){
-			if (Permission::Insufficient('developer'))
-				$append = '';
-			else {
-				global $Database, $CGDb;
-				$append = ' | Render: '.round((microtime(true)-EXEC_START_MICRO)*1000).'ms | SQL Queries: '.($Database->query_count+($CGDb->query_count??0));
-			}
-
-			return ($with_git_info?self::GetFooterGitInfo():'')."<a class='issues' href='".GITHUB_URL."/issues' target='_blank'>Known issues</a> | <a class='send-feedback'>Send feedback</a>$append";
+			$out = [];
+			if ($with_git_info)
+				$out[] = self::GetFooterGitInfo(false);
+			$out[] = "<a class='issues' href='".GITHUB_URL."/issues' target='_blank'>Known issues</a> | ";
+			$out[] = '<a class="send-feedback">Send feedback</a>';
+			global $Database, $CGDb;
+			$out[] = 'Performance: <abbr title="Time spent rendering the page (ms)">R</abbr>'.round((microtime(true)-EXEC_START_MICRO)*1000).'<abbr title="Number of SQL quesries used to fetch this page">S</abbr>'.($Database->query_count+($CGDb->query_count??0)).'<abbr title="Requests sent to DeviantArt\'s servers (significantly increases render time)">D</abbr>'.DeviantArt::$requestCount;
+			return implode(' | ',$out);
 		}
 
 		/**
 		 * Returns the HTML of the GIT informaiiton in the website's footer
 		 *
+		 * @param bool $separate
+		 *
 		 * @return string
 		 */
-		static function GetFooterGitInfo(){
+		static function GetFooterGitInfo(bool $separate = true):string {
 			$commit_info = "Running <strong><a href='".GITHUB_URL."' title='Visit the GitHub repository'>MLPVC-RR</a>";
 			$commit_id = rtrim(shell_exec('git rev-parse --short=4 HEAD'));
 			if (!empty($commit_id)){
@@ -572,7 +574,7 @@ use Exceptions\cURLRequestException;
 				if ($do === 'colorguide'){
 					global $Tags, $Changes, $Ponies, $Pagination, $Appearance, $Map;
 					if (!empty($Appearance))
-						$NavItems['colorguide']['subitem'] = (isset($Map)?"Sprite {$Color}s - ":'').$Appearance['label'];
+						$NavItems['colorguide']['subitem'] = (isset($Map)?"Sprite {$Color}s - ":'').CoreUtils::EscapeHTML($Appearance['label']);
 					else if (isset($Ponies))
 						$NavItems['colorguide'][1] .= " - Page {$Pagination->page}";
 					else {

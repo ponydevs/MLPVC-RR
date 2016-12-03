@@ -1,6 +1,6 @@
 <div id="content">
 	<div class="sprite-wrap"><?=\CG\Appearances::GetSpriteHTML($Appearance)?></div>
-	<h1><?=$heading?></h1>
+	<h1><?=CoreUtils::EscapeHTML($heading)?></h1>
 	<p>from the MLP-VectorClub <a href="/cg"><?=$Color?> Guide</a></p>
 
 <?  if (Permission::Sufficient('staff')){ ?>
