@@ -357,6 +357,7 @@ DocReady.push(function Episode(){
 					let $newChilds = $(this.render).filter('section').children();
 					$section.empty().append($newChilds).rebindHandlers();
 					$section.find('.post-form').attr('data-type',type).formBind();
+					$section.find('h2 > button').enable();
 					Time.Update();
 					if (typeof callback === 'function') callback();
 					else if (silent !== true) $.Dialog.close();

@@ -282,7 +282,7 @@ class Posts {
 				$Groups .= "<div class='group' id='group-$g'><h3>".self::$REQUEST_TYPES[$g].":</h3><ul>$c</ul></div>";
 
 			if (Permission::Sufficient('user')){
-				$makeRq = '<button id="request-btn" class="green">Make a request</button>';
+				$makeRq = '<button id="request-btn" class="green" disabled>Make a request</button>';
 				$reqForm = self::_getForm('request');
 			}
 			else $reqForm = $makeRq = '';
@@ -331,11 +331,11 @@ HTML;
 				return $Arranged;
 
 			if (Permission::Sufficient('member')){
-				$makeRes = '<button id="reservation-btn" class="green">Make a reservation</button>';
+				$makeRes = '<button id="reservation-btn" class="green" disabled>Make a reservation</button>';
 				$resForm = self::_getForm('reservation');
 			}
 			else $resForm = $makeRes = '';
-			$addRes = Permission::Sufficient('staff') ? '<button id="add-reservation-btn" class="darkblue">Add a reservation</button>' :'';
+			$addRes = Permission::Sufficient('staff') ? '<button id="add-reservation-btn" class="darkblue" disabled>Add a reservation</button>' :'';
 
 			$loading = $loaders ? ' loading' : '';
 
