@@ -17,12 +17,7 @@
 	<p>Could not connect to database on <?=DB_HOST?></p>
 <?php
 			echo CoreUtils::Notice('info','<span class="typcn typcn-info-large"></span> The database of our website cannot be reached. Hopefully this is just a temporary issue and everything will be back to normal soon. Sorry for the inconvenience. <a class="send-feedback">Notify the developer</a>',true);
-			$code = $e->getCode();
-			$CODE_ERRORS = array(
-				0 => 'The PDO PostgreSQL extension is not loaded/installed, check the PHP configuration',
-				7 => 'The PostgreSQL database server is down',
-			);
-			echo CoreUtils::Notice('warn','<strong>Probable cause / debug information:</strong><pre><code>'.(isset($CODE_ERRORS[$code]) ? $CODE_ERRORS[$code] : "Error $code: ".$e->getMessage()).'</code></pre>',true);
+			echo CoreUtils::Notice('warn','<strong>Probable cause / debug information:</strong><pre><code>'.$e->getMessage().'</code></pre>',true);
 		break;
 		case "libmiss": ?>
 	<h1>Configuration problem</h1>
