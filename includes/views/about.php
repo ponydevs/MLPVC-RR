@@ -11,8 +11,9 @@
 		$server = About::GetServerSoftware();
 		$pgver = About::GetPostgresVersion();
 		$esver = About::GetElasticSearchVersion();
+		$elastic = isset($esver) ? ", ElasticSearch $esver" : '';
 		echo <<<HTML
-<strong>Server Software:</strong> $osver, PHP $phpver, $server, PostgreSQL $pgver, ElasticSearch $esver<br>
+<strong>Server Software:</strong> $osver, PHP $phpver, $server, PostgreSQL $pgver$elastic<br>
 </section>
 HTML;
 	}

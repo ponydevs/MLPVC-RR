@@ -1,5 +1,7 @@
 <?php
 
+	use Elasticsearch\Common\Exceptions\NoNodesAvailableException as ElasticNoNodesAvailableException;
+
 	class About {
 		static function GetServerOS(){
 			return PHP_OS === 'WINNT'
@@ -17,7 +19,12 @@
 			return $Database->rawQuerySingle('SHOW server_version')['server_version'];
 		}
 		static function GetElasticSearchVersion(){
-			$info = CoreUtils::ElasticClient()->info();
+			try {
+				$info = CoreUtils::ElasticClient()->info();
+			}
+			catch (ElasticNoNodesAvailableException $e){
+				return;
+			}
 			return $info['version']['number'];
 		}
 
