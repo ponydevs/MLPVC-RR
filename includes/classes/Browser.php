@@ -1,5 +1,7 @@
 <?php
 
+namespace App;
+
 /**
  * File: Browser.php
  * Author: Chris Schuld (http://chrisschuld.com/)
@@ -110,7 +112,7 @@ class Browser {
 
 	const OPERATING_SYSTEM_UNKNOWN = 'unknown';
 
-	public function Browser($userAgent = null){
+	public function __construct($userAgent = null){
 		$this->reset();
 		if (!empty($userAgent))
 			$this->setUserAgent($userAgent);

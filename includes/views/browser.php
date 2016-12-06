@@ -1,3 +1,6 @@
+<?php
+use App\CoreUtils;
+use App\Users; ?>
 <div id="content">
 <?  if (isset($browser['browser_name'])){ ?>
 	<div class="browser-<?=CoreUtils::BrowserNameToClass($browser['browser_name'])?>"></div>

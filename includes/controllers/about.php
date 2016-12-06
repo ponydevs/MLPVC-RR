@@ -1,5 +1,14 @@
 <?php
 
+use App\CSRFProtection;
+use App\HTTP;
+use App\Time;
+use App\RegExp;
+use App\Response;
+use App\JSON;
+use App\Statistics;
+use App\CoreUtils;
+
 	if (POST_REQUEST){
 		CSRFProtection::Protect();
 		$StatCacheDuration = 5*Time::$IN_SECONDS['hour'];

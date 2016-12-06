@@ -1,9 +1,11 @@
 <?php
 
-namespace DB;
-use \RegExp;
-use \Episodes;
-use \CoreUtils;
+namespace App;
+
+use App\RegExp;
+use App\Episodes;
+use App\CoreUtils;
+use GuzzleHttp\Tests\Ring\CoreTest;
 
 class Episode extends AbstractFillable {
 	/** @var int */
@@ -33,7 +35,7 @@ class Episode extends AbstractFillable {
 
 		$this->isMovie = $this->season === 0 ? 1 : 0;
 		$this->twoparter = !empty($this->twoparter);
-		$this->_formatScore();
+		$this->formatScore();
 	}
 
 	/**
@@ -48,17 +50,16 @@ class Episode extends AbstractFillable {
 		$episode = $this->episode;
 		$season = $this->season;
 
-		if (!empty($o['pad'])){
+		if (empty($o['pad'])){
 			if ($this->twoparter)
-				$episode = CoreUtils::Pad($episode).'-'.CoreUtils::Pad($episode+1);
-			else $episode = CoreUtils::Pad($episode);
-
-			return "S{$season} E{$episode}";
+				$episode = $episode.'-'.($episode+1);
+			return "S{$season}E{$episode}";
 		}
 
-		if ($this->twoparter)
-			$episode = $episode.'-'.($episode+1);
-		return "S{$season}E{$episode}";
+		$episode = CoreUtils::Pad($episode).($this->twoparter ? '-'.CoreUtils::Pad($episode+1) : '');
+		$season = CoreUtils::Pad($season);
+
+		return "S{$season} E{$episode}";
 	}
 
 	/**
@@ -83,11 +84,11 @@ class Episode extends AbstractFillable {
 	 * @return string
 	 */
 	public function movieSafeTitle():string {
-		return regex_replace(new RegExp('-{2,}'), '-', regex_replace(new RegExp('[^a-z]','i'), '-', $this->title));
+		return (new RegExp('-{2,}'))->replace('-', (new RegExp('[^a-z]','i'))->replace('-', $this->title));
 	}
 
 	/**
-	 * @param \DB\Episode $ep
+	 * @param Episode $ep
 	 *
 	 * @return bool
 	 */
@@ -102,14 +103,19 @@ class Episode extends AbstractFillable {
 	}
 
 	/**
+	 * @param int $now Current time (for testing purposes)
+	 *
 	 * @return self
 	 */
-	public function addAiringData(){
+	public function addAiringData($now = null){
 		if (!empty($this->airs)){
+			if (!isset($now))
+				$now = time();
+
 			$airtime = strtotime($this->airs);
-			$this->displayed = strtotime('-24 hours', $airtime) < time();
-			$this->aired = strtotime('+'.($this->season===0?'2 hours':((!$this->twoparter?30:60).' minutes')), $airtime) < time();
-			$this->willairts = strtotime('+'.(!$this->twoparter ? '30' : '60').' minutes',strtotime($this->airs));
+			$this->displayed = strtotime('-24 hours', $airtime) < $now;
+			$this->willairts = strtotime('+'.($this->isMovie?'2 hours':((!$this->twoparter?30:60).' minutes')), $airtime);
+			$this->aired = $this->willairts < $now;
 			$this->willair = gmdate('c', $this->willairts);
 		}
 
@@ -151,7 +157,7 @@ class Episode extends AbstractFillable {
 		return "/movie/{$this->episode}".(!empty($this->title)?'-'.$this->movieSafeTitle():'');
 	}
 
-	private function _formatScore(){
+	public function formatScore(){
 		if (isset($this->score))
 			$this->score = number_format($this->score,1);
 	}
@@ -161,7 +167,7 @@ class Episode extends AbstractFillable {
 
 		$Score = $Database->whereEp($this)->getOne('episodes__votes','AVG(vote) as score');
 		$this->score = !empty($Score['score']) ? $Score['score'] : 0;
-		$this->_formatScore();
+		$this->formatScore();
 
 		$Database->whereEp($this)->update('episodes', array('score' => $this->score));
 	}

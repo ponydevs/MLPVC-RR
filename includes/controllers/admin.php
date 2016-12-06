@@ -1,5 +1,14 @@
 <?php
 
+use App\CoreUtils;
+use App\Input;
+use App\Log;
+use App\Pagination;
+use App\Permission;
+use App\RegExp;
+use App\Response;
+use App\Users;
+
 	if (!Permission::Sufficient('staff'))
 		CoreUtils::NotFound();
 

@@ -1,3 +1,9 @@
+<?php
+use App\Permission;
+use App\CGUtils;
+use App\CoreUtils;
+use App\Tags;
+?>
 <div id="content">
 	<h1>Complete <?=$EQG?'EQG Character':'Pony'?> List</h1>
 	<p>Sorted <?php
@@ -31,7 +37,7 @@
 	);
 	if (Permission::Sufficient('staff'))
 		$export = array_merge($export,array(
-			'TAG_TYPES_ASSOC' => \CG\Tags::$TAG_TYPES_ASSOC,
+			'TAG_TYPES_ASSOC' => Tags::$TAG_TYPES_ASSOC,
 			'MAX_SIZE' => CoreUtils::GetMaxUploadSize(),
 			'HEX_COLOR_PATTERN' => $HEX_COLOR_REGEX,
 		));

@@ -1,3 +1,7 @@
+<?php
+use App\CoreUtils;
+use App\Episodes;
+use App\Permission; ?>
 <div id="content">
 	<h1><?=empty($Episodes)?'No episodes found':'Episode list'?></h1>
 <?  if (empty($Episodes)){ ?>

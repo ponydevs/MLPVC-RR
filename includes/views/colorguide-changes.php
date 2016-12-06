@@ -1,3 +1,7 @@
+<?php
+use App\CoreUtils;
+use App\CGUtils;
+use App\Tags; ?>
 <div id="content">
 	<h1><?=$heading?></h1>
 	<p>Displaying <?=$Pagination->itemsPerPage?> items/page</p>
@@ -11,5 +15,5 @@
 <?  CoreUtils::ExportVars(array(
 		'Color' => $Color,
 		'color' => $color,
-		'TAG_TYPES_ASSOC' => \CG\Tags::$TAG_TYPES_ASSOC,
+		'TAG_TYPES_ASSOC' => Tags::$TAG_TYPES_ASSOC,
 	));

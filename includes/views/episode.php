@@ -1,11 +1,21 @@
 <?php
+use App\CoreUtils;
+use App\DeviantArt;
+use App\Episodes;
+use App\GlobalSettings;
+use App\Permission;
+use App\Posts;
+use App\Time;
+use App\Users;
+use App\Episode;
+
 /**
- * @var $CurrentEpisode \DB\Episode
- * @var $NextEpisode    \DB\Episode
- * @var $PrevEpisode    \DB\Episode
+ * @var $CurrentEpisode Episode
+ * @var $NextEpisode    Episode
+ * @var $PrevEpisode    Episode
  */
 
-	if ($do === 'da-auth' && isset($err)){
+if ($do === 'da-auth' && isset($err)){
 		echo CoreUtils::Notice('fail',"There was a(n) <strong>$err</strong> error while trying to authenticate with DeviantArt".(isset(DeviantArt::$OAUTH_RESPONSE[$err])?'; '.DeviantArt::$OAUTH_RESPONSE[$err]:'.').(!empty($errdesc)?"\n\nAdditional details: $errdesc":''),true) ?>
 <script>try{history.replaceState('',{},'/')}catch(e){}</script>
 <?  } ?>

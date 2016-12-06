@@ -1,6 +1,6 @@
 <?php
 
-namespace DB;
+namespace App;
 
 class Request extends Post {
 	/** @param array|object */

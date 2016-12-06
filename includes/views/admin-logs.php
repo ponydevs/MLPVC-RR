@@ -1,3 +1,5 @@
+<?php
+use App\Log; ?>
 <div id="content">
 	<h1><?=$heading?></h1>
 <?php

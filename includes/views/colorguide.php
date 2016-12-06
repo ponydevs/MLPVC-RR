@@ -1,3 +1,9 @@
+<?php
+use App\CoreUtils;
+use App\Permission;
+use App\Appearances;
+use App\Tags;
+?>
 <div id="content">
 	<h1><?=$heading?></h1>
 	<p>A searchable list of character <?=$color?>s from the <?=$EQG?'movies':'show'?></p>
@@ -12,7 +18,7 @@
 <?  }
 	$Universal = $CGDb->where('id',0)->getOne('appearances');
 	if (!empty($Universal))
-		echo "<ul id='universal' class='appearance-list'>".\CG\Appearances::GetHTML(array($Universal), NOWRAP)."</ul>"; ?>
+		echo "<ul id='universal' class='appearance-list'>".Appearances::GetHTML(array($Universal), NOWRAP)."</ul>"; ?>
 	<p class='align-center links'>
 <?  if (Permission::Sufficient('staff')){ ?>
 		<button class='green typcn typcn-plus' id="new-appearance-btn">Add new <?=$EQG?'Character':'Pony'?></button>
@@ -36,7 +42,7 @@
 	</form>
 <?  }
 	else echo CoreUtils::Notice('warn','<span class="typcn typcn-warning"></span> <strong>ElasticSearch server is down!</strong> Please <a class="send-feedback">let us know</a>, and in the meantime, use the <a class="btn darkblue typcn typcn-th-menu" href="/cg'.($EQG?'/eqg':'').'/full">Full List</a> to find appearances faster. Sorry for the inconvenience.',true); ?>
-	<?=$Pagination->HTML . \CG\Appearances::GetHTML($Ponies) . $Pagination->HTML?>
+	<?=$Pagination->HTML . Appearances::GetHTML($Ponies) . $Pagination->HTML?>
 </div>
 
 <?  $export = array(
@@ -47,7 +53,7 @@
 	);
 	if (Permission::Sufficient('staff'))
 		$export = array_merge($export, array(
-			'TAG_TYPES_ASSOC' => \CG\Tags::$TAG_TYPES_ASSOC,
+			'TAG_TYPES_ASSOC' => Tags::$TAG_TYPES_ASSOC,
 			'MAX_SIZE' => CoreUtils::GetMaxUploadSize(),
 			'HEX_COLOR_PATTERN' => $HEX_COLOR_REGEX,
 		));

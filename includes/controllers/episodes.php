@@ -1,23 +1,28 @@
 <?php
 
-	$Pagination = new Pagination('episodes', 10, $Database->where('season != 0')->count('episodes'));
+use App\CoreUtils;
+use App\Episodes;
+use App\Pagination;
+use App\Permission;
 
-	CoreUtils::FixPath("/episodes/{$Pagination->page}");
-	$heading = "Episodes";
-	$title = "Page {$Pagination->page} - $heading";
-	$Episodes = Episodes::Get($Pagination->GetLimit());
+$Pagination = new Pagination('episodes', 10, $Database->where('season != 0')->count('episodes'));
 
-	if (isset($_GET['js']))
-		$Pagination->Respond(Episodes::GetTableTbody($Episodes), '#episodes tbody');
+CoreUtils::FixPath("/episodes/{$Pagination->page}");
+$heading = "Episodes";
+$title = "Page {$Pagination->page} - $heading";
+$Episodes = Episodes::Get($Pagination->GetLimit());
 
-	$settings = array(
-		'title' => $title,
-		'do-css',
-		'js' => array('paginate',$do),
+if (isset($_GET['js']))
+	$Pagination->Respond(Episodes::GetTableTbody($Episodes), '#episodes tbody');
+
+$settings = array(
+	'title' => $title,
+	'do-css',
+	'js' => array('paginate',$do),
+);
+if (Permission::Sufficient('staff'))
+	$settings['js'] = array_merge(
+		$settings['js'],
+		array('moment-timezone',"$do-manage")
 	);
-	if (Permission::Sufficient('staff'))
-		$settings['js'] = array_merge(
-			$settings['js'],
-			array('moment-timezone',"$do-manage")
-		);
-	CoreUtils::LoadPage($settings);
+CoreUtils::LoadPage($settings);

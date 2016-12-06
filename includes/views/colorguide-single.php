@@ -1,5 +1,15 @@
+<?php
+use App\CGUtils;
+use App\CoreUtils;
+use App\User;
+use App\DeviantArt;
+use App\Permission;
+use App\Users;
+use App\Appearances;
+use App\ColorGroups;
+use App\Tags; ?>
 <div id="content">
-	<div class="sprite-wrap"><?=\CG\Appearances::GetSpriteHTML($Appearance)?></div>
+	<div class="sprite-wrap"><?=Appearances::GetSpriteHTML($Appearance)?></div>
 	<h1><?=CoreUtils::EscapeHTML($heading)?></h1>
 	<p>from the MLP-VectorClub <a href="/cg"><?=$Color?> Guide</a></p>
 
@@ -7,8 +17,6 @@
 	<div class="notice warn align-center appearance-private-notice"<?=!empty($Appearance['private'])?'':' style="display:none"'?>><p><span class="typcn typcn-lock-closed"></span> <strong>This appearance is currently private (its colors are only visible to staff members)</strong></p></div>
 <?php
 	}
-
-	use DB\User;
 
 	$RenderPath = FSPATH."cg_render/{$Appearance['id']}.png";
 	$FileModTime = '?t='.(file_exists($RenderPath) ? filemtime($RenderPath) : time()); ?>
@@ -29,24 +37,24 @@
 	if ($Appearance['id'] !== 0 && ($CGDb->where('ponyid',$Appearance['id'])->has('tagged') || Permission::Sufficient('staff'))){ ?>
 		<section id="tags">
 			<h2><span class='typcn typcn-tags'></span>Tags</h2>
-			<div class='tags'><?=\CG\Appearances::GetTagsHTML($Appearance['id'],NOWRAP)?></div>
+			<div class='tags'><?=Appearances::GetTagsHTML($Appearance['id'],NOWRAP)?></div>
 		</section>
 <?php
 	}
-	echo \CG\Appearances::GetRelatedEpisodesHTML($Appearance, $EQG);
+	echo Appearances::GetRelatedEpisodesHTML($Appearance, $EQG);
 	if (!empty($Appearance['notes'])){ ?>
 		<section>
 			<h2><span class='typcn typcn-info-large'></span>Additional notes</h2>
-			<p id="notes"><?=\CG\Appearances::GetNotesHTML($Appearance, NOWRAP, NOTE_TEXT_ONLY)?></p>
+			<p id="notes"><?=Appearances::GetNotesHTML($Appearance, NOWRAP, NOTE_TEXT_ONLY)?></p>
 		</section>
 <?  }
 
 	if (!empty($Appearance['cm_favme'])){
-		$preview = \CG\Appearances::GetCMPreviewURL($Appearance); ?>
+		$preview = Appearances::GetCMPreviewURL($Appearance); ?>
 		<section class="approved-cutie-mark">
 			<h2>Recommended cutie mark vector</h2>
 <?=Permission::Sufficient('staff')&&!isset($Appearance['cm_dir'])?CoreUtils::Notice('fail','Missing CM orientation, falling back to <strong>Tail-Head</strong>. Please edit the appaearance and provide an orientation!'):''?>
-			<a id="pony-cm" href="http://fav.me/<?=$Appearance['cm_favme']?>" style="background-image:url('<?=\CG\Appearances::GetCMPreviewSVGURL($Appearance['id'])?>')">
+			<a id="pony-cm" href="http://fav.me/<?=$Appearance['cm_favme']?>" style="background-image:url('<?=Appearances::GetCMPreviewSVGURL($Appearance['id'])?>')">
 				<div class="img cm-dir-<?=$Appearance['cm_dir']===CM_DIR_HEAD_TO_TAIL?'ht':'th'?>" style="background-image:url('<?=CoreUtils::AposEncode($preview)?>')"></div>
 			</a>
 			<p class="aside">This is only an illustration, the body shape & colors are <strong>not</strong> guaranteed to reflect the actual design.</p>
@@ -62,17 +70,17 @@
 				<button class="darkblue typcn typcn-arrow-unsorted reorder-cgs">Re-order groups</button>
 				<button class="green typcn typcn-plus create-cg">Create group</button>
 			</div>
-<?  if ($placehold = \CG\Appearances::GetPendingPlaceholderFor($Appearance))
+<?  if ($placehold = Appearances::GetPendingPlaceholderFor($Appearance))
 		echo $placehold;
 	else { ?>
 			<ul id="colors" class="colors"><?php
-		$CGs = \CG\ColorGroups::Get($Appearance['id']);
-		$AllColors = \CG\ColorGroups::GetColorsForEach($CGs);
+		$CGs = ColorGroups::Get($Appearance['id']);
+		$AllColors = ColorGroups::GetColorsForEach($CGs);
 		foreach ($CGs as $cg)
-			echo \CG\ColorGroups::GetHTML($cg, $AllColors, WRAP, NO_COLON, OUTPUT_COLOR_NAMES);
+			echo ColorGroups::GetHTML($cg, $AllColors, WRAP, NO_COLON, OUTPUT_COLOR_NAMES);
 			?></ul>
 		</section>
-		<?=\CG\Appearances::GetRelatedHTML(\CG\Appearances::GetRelated($Appearance['id']))?>
+		<?=Appearances::GetRelatedHTML(Appearances::GetRelated($Appearance['id']))?>
 	</div>
 <?  } ?>
 </div>
@@ -85,7 +93,7 @@
 	);
 	if (Permission::Sufficient('staff'))
 		$export = array_merge($export, array(
-			'TAG_TYPES_ASSOC' => \CG\Tags::$TAG_TYPES_ASSOC,
+			'TAG_TYPES_ASSOC' => Tags::$TAG_TYPES_ASSOC,
 			'MAX_SIZE' => CoreUtils::GetMaxUploadSize(),
 			'HEX_COLOR_PATTERN' => $HEX_COLOR_REGEX,
 		));

@@ -1,3 +1,3 @@
 <?php
 
-	\CG\Appearances::Reindex();
+App\Appearances::Reindex();

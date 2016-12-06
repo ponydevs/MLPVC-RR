@@ -1,3 +1,10 @@
+<?php
+use App\CoreUtils;
+use App\Episodes;
+use App\Notifications;
+use App\Time;
+use App\UserPrefs;
+use App\Users; ?>
 	<div class='mobile-nav'>
 		<nav><ul><?=CoreUtils::GetNavigationHTML()?></ul></nav>
 	</div>

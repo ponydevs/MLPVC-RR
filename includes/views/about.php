@@ -2,22 +2,26 @@
 	<img src="/img/logo.svg" alt="MLP Vector Club Website Logo">
 	<h1><a href="http://mlp-vectorclub.deviantart.com/">MLP-VectorClub</a> Website</h1>
 	<p>Handling requests, reservations & the Color Guide since 2015</p>
-<?  $about = file_get_contents(INCPATH.'views/about.html');
-	if (!empty($about)){
-		echo str_replace(GITHUB_URL.'/blob/master/www','',$about);
+<?php
+use App\About;
+use App\CoreUtils;
 
-		$osver = About::GetServerOS();
-		$phpver = About::GetPHPVersion();
-		$server = About::GetServerSoftware();
-		$pgver = About::GetPostgresVersion();
-		$esver = About::GetElasticSearchVersion();
-		$elastic = isset($esver) ? ", ElasticSearch $esver" : '';
-		echo <<<HTML
+$about = file_get_contents(INCPATH.'views/about.html');
+if (!empty($about)){
+	echo str_replace(GITHUB_URL.'/blob/master/www','',$about);
+
+	$osver = About::GetServerOS();
+	$phpver = About::GetPHPVersion();
+	$server = About::GetServerSoftware();
+	$pgver = About::GetPostgresVersion();
+	$esver = About::GetElasticSearchVersion();
+	$elastic = isset($esver) ? ", ElasticSearch $esver" : '';
+	echo <<<HTML
 <strong>Server Software:</strong> $osver, PHP $phpver, $server, PostgreSQL $pgver$elastic<br>
 </section>
 HTML;
-	}
-	else echo CoreUtils::Notice('warn','This section went missing due to a bug, and will be restored ASAP. Until then the section\'s contents are available at <a href="'.GITHUB_URL.'#attributions">'.GITHUB_URL.'#attributions</a>'); ?>
+}
+else echo CoreUtils::Notice('warn','This section went missing due to a bug, and will be restored ASAP. Until then the section\'s contents are available at <a href="'.GITHUB_URL.'#attributions">'.GITHUB_URL.'#attributions</a>'); ?>
 	<section>
 		<h2>Statistics</h2>
 		<p>Here you can see various graphs about the site. The information below is cached to reduce server load, you can see when each graph was last updated below their title.</p>

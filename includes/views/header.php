@@ -1,43 +1,49 @@
 <?php
-	$Title = (isset($title)?$title.' - ':'').SITE_TITLE;
-	$Description = "Handling requests, reservations & the Color Guide since 2015";
+use App\Appearances;
+use App\DeviantArt;
+use App\JSON;
+use App\Permission;
+use App\UserPrefs;
+use App\Users;
+use App\CoreUtils;
 
-	$ThumbImage = "/img/logo.png";
-	switch ($do ?? null){
-		case "colorguide":
-			if (!empty($Appearance)){
-				$sprite = \CG\Appearances::GetSpriteURL($Appearance['id']);
-				if ($sprite)
-					$ThumbImage = $sprite;
+$Title = (isset($title)?$title.' - ':'').SITE_TITLE;
+$Description = "Handling requests, reservations & the Color Guide since 2015";
 
-				$Description = 'Show accurate colors for "'.$Appearance['label'].'" from the MLP-VectorClub\'s Official Color Guide';
+$ThumbImage = "/img/logo.png";
+switch ($do ?? null){
+	case "colorguide":
+		if (!empty($Appearance)){
+			$sprite = Appearances::GetSpriteURL($Appearance['id']);
+			if ($sprite)
+				$ThumbImage = $sprite;
+
+			$Description = 'Show accurate colors for "'.$Appearance['label'].'" from the MLP-VectorClub\'s Official Color Guide';
+		}
+	break;
+	case "s":
+		if (!empty($LinkedPost)){
+			if (!$LinkedPost->isFinished)
+				$ThumbImage = $LinkedPost->preview;
+			else {
+				$finishdeviation = DeviantArt::GetCachedSubmission($LinkedPost->deviation_id);
+				if (!empty($finishdeviation['preview']))
+					$ThumbImage  = $finishdeviation['preview'];
 			}
-		break;
-		case "s":
-			if (!empty($LinkedPost)){
-				if (!$LinkedPost->isFinished)
-					$ThumbImage = $LinkedPost->preview;
-				else {
-					$finishdeviation = DeviantArt::GetCachedSubmission($LinkedPost->deviation_id);
-					if (!empty($finishdeviation['preview']))
-						$ThumbImage  = $finishdeviation['preview'];
-				}
-				$Title = $LinkedPost->label;
-				if ($LinkedPost->isRequest)
-					$Description = 'A request';
-				else {
-					$_user = Users::Get($LinkedPost->reserved_by,'id','name');
-					$Description = 'A reservation'.(!empty($_user->name) ? " by {$_user->name}" : '');
-				}
-				$Description .= ' on the MLP-VectorClub\'s website';
+			$Title = $LinkedPost->label;
+			if ($LinkedPost->isRequest)
+				$Description = 'A request';
+			else {
+				$_user = Users::Get($LinkedPost->reserved_by,'id','name');
+				$Description = 'A reservation'.(!empty($_user->name) ? " by {$_user->name}" : '');
 			}
-		break;
-	}
-	if ($ThumbImage[0] === '/')
-		$ThumbImage = ABSPATH.ltrim($ThumbImage, '/');
-	$Title = CoreUtils::EscapeHTML($Title);
-
-?>
+			$Description .= ' on the MLP-VectorClub\'s website';
+		}
+	break;
+}
+if ($ThumbImage[0] === '/')
+	$ThumbImage = ABSPATH.ltrim($ThumbImage, '/');
+$Title = CoreUtils::EscapeHTML($Title); ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>

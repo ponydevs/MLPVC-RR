@@ -1,4 +1,5 @@
-
+<?php
+use App\CoreUtils; ?>
 	</div>
 
 	<footer><?=CoreUtils::GetFooter()?></footer>

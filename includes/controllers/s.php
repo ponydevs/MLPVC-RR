@@ -1,22 +1,27 @@
 <?php
 
-	if (POST_REQUEST)
-		HTTP::StatusCode(400, AND_DIE);
+use App\CoreUtils;
+use App\Episodes;
+use App\HTTP;
+use App\RegExp;
 
-	if (!regex_match(new RegExp('^(req|res)/(\d+)$'), $data, $match))
-		CoreUtils::NotFound();
+if (POST_REQUEST)
+	HTTP::StatusCode(400, AND_DIE);
 
-	$match[1] .= (array('req' => 'uest', 'res' => 'ervation'))[$match[1]];
+if (!regex_match(new RegExp('^(req|res)/(\d+)$'), $data, $match))
+	CoreUtils::NotFound();
 
-	/** @var $LinkedPost \DB\Post */
-	$LinkedPost = $Database->where('id', $match[2])->getOne("{$match[1]}s");
-	if (empty($LinkedPost))
-		CoreUtils::NotFound();
+$match[1] .= (array('req' => 'uest', 'res' => 'ervation'))[$match[1]];
 
-	$Episode = Episodes::GetActual($LinkedPost->season, $LinkedPost->episode);
-	if (empty($Episode))
-		CoreUtils::NotFound();
+/** @var $LinkedPost App\Post */
+$LinkedPost = $Database->where('id', $match[2])->getOne("{$match[1]}s");
+if (empty($LinkedPost))
+	CoreUtils::NotFound();
 
-	$Episode->LinkedPost = $LinkedPost;
+$Episode = Episodes::GetActual($LinkedPost->season, $LinkedPost->episode);
+if (empty($Episode))
+	CoreUtils::NotFound();
 
-	Episodes::LoadPage($Episode, false);
+$Episode->LinkedPost = $LinkedPost;
+
+Episodes::LoadPage($Episode, false);

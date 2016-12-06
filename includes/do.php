@@ -4,7 +4,7 @@
 	$Color = 'Color';
 	$color = 'color';
 	$signedIn = false;
-	/** @var $currentUser \DB\User */
+	/** @var $currentUser App\User */
 	$currentUser = null;
 	$do = !empty($_GET['do']) ? $_GET['do'] : 'index';
 	$data = !empty($_GET['data']) ? $_GET['data'] : '';
@@ -12,6 +12,11 @@
 	unset($_REQUEST['data']);
 
 	require "../includes/init.php";
+
+	use App\RegExp;
+	use App\HTTP;
+	use App\Users;
+	use App\CoreUtils;
 
 	$phpExtensionPattern = new RegExp('\.php($|\?.*)');
 

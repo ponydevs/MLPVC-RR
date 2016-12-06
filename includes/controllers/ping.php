@@ -1,6 +1,9 @@
 <?php
 
-	if (!POST_REQUEST)
-		CoreUtils::NotFound();
+use App\CoreUtils;
+use App\Response;
 
-	Response::Done();
+if (!POST_REQUEST)
+	CoreUtils::NotFound();
+
+Response::Done();

@@ -1,6 +1,8 @@
 <?php
 
-	CoreUtils::LoadPage(array(
-		'title' => 'Components',
-		'no-robots',
-	));
+use App\CoreUtils;
+
+CoreUtils::LoadPage(array(
+	'title' => 'Components',
+	'no-robots',
+));

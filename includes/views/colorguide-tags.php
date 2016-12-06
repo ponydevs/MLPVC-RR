@@ -1,3 +1,7 @@
+<?php
+use App\Tags;
+use App\CoreUtils;
+use App\Permission; ?>
 <div id="content">
 	<h1><?=$heading?></h1>
 	<p>Displaying <?=$Pagination->itemsPerPage?> items/page</p>
@@ -20,7 +24,7 @@
 			</tr>
 HTML;
 ?></thead>
-		<?=\CG\Tags::GetTagListHTML($Tags)?>
+		<?=Tags::GetTagListHTML($Tags)?>
 		<tfoot><?=$thead?></tfoot>
 	</table>
 	<?=$Pagination->HTML?>
@@ -29,5 +33,5 @@ HTML;
 <?  CoreUtils::ExportVars(array(
 		'Color' => $Color,
 		'color' => $color,
-		'TAG_TYPES_ASSOC' => \CG\Tags::$TAG_TYPES_ASSOC,
+		'TAG_TYPES_ASSOC' => Tags::$TAG_TYPES_ASSOC,
 	));

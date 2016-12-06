@@ -1,28 +1,35 @@
 <?php
 
-	if (!Permission::Sufficient('user') || !POST_REQUEST)
-		CoreUtils::NotFound();
-	CSRFProtection::Protect();
+use App\CoreUtils;
+use App\CSRFProtection;
+use App\Permission;
+use App\RegExp;
+use App\Response;
+use App\UserPrefs;
 
-	if (!regex_match(new RegExp('^([gs]et)/([a-z_]+)$'), CoreUtils::Trim($data), $_match))
-		Response::Fail('Preference key invalid');
+if (!Permission::Sufficient('user') || !POST_REQUEST)
+	CoreUtils::NotFound();
+CSRFProtection::Protect();
 
-	$getting = $_match[1] === 'get';
-	$key = $_match[2];
+if (!regex_match(new RegExp('^([gs]et)/([a-z_]+)$'), CoreUtils::Trim($data), $_match))
+	Response::Fail('Preference key invalid');
 
-	// TODO Support changing some preferences of other users by staff
-	$currvalue = UserPrefs::Get($key);
-	if ($getting)
-		Response::Done(array('value' => $currvalue));
+$getting = $_match[1] === 'get';
+$key = $_match[2];
 
-	try {
-		$newvalue = UserPrefs::Process($key);
-	}
-	catch (Exception $e){ Response::Fail('Preference value error: '.$e->getMessage()); }
+// TODO Support changing some preferences of other users by staff
+$currvalue = UserPrefs::Get($key);
+if ($getting)
+	Response::Done(array('value' => $currvalue));
 
-	if ($newvalue === $currvalue)
-		Response::Done(array('value' => $newvalue));
-	if (!UserPrefs::Set($key, $newvalue))
-		Response::DBError();
+try {
+	$newvalue = UserPrefs::Process($key);
+}
+catch (Exception $e){ Response::Fail('Preference value error: '.$e->getMessage()); }
 
+if ($newvalue === $currvalue)
 	Response::Done(array('value' => $newvalue));
+if (!UserPrefs::Set($key, $newvalue))
+	Response::DBError();
+
+Response::Done(array('value' => $newvalue));

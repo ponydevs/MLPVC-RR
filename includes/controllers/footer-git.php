@@ -1,3 +1,5 @@
 <?php
-	
-	Response::Done(array('footer' => CoreUtils::GetFooterGitInfo()));
+
+namespace App;
+
+Response::Done(array('footer' => CoreUtils::GetFooterGitInfo()));

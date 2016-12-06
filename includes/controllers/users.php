@@ -1,9 +1,12 @@
 <?php
 
-	if (!Permission::Sufficient('staff'))
-		CoreUtils::NotFound();
+use App\CoreUtils;
+use App\Permission;
 
-	CoreUtils::LoadPage(array(
-		'title' => 'Users',
-		'do-css'
-	));
+if (!Permission::Sufficient('staff'))
+	CoreUtils::NotFound();
+
+CoreUtils::LoadPage(array(
+	'title' => 'Users',
+	'do-css'
+));

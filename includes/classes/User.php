@@ -1,9 +1,11 @@
 <?php
 
-namespace DB;
+namespace App;
 
-use Log;
-use UserPrefs;
+use App\CoreUtils;
+use App\Log;
+use App\Permission;
+use App\UserPrefs;
 
 class User extends AbstractFillable {
 	/** @var string */
@@ -25,7 +27,7 @@ class User extends AbstractFillable {
 		parent::__construct($this, $iter);
 
 		if (!empty($this->role))
-			$this->rolelabel = \Permission::$ROLES_ASSOC[$this->role];
+			$this->rolelabel = Permission::$ROLES_ASSOC[$this->role];
 	}
 
 	const
@@ -57,7 +59,8 @@ class User extends AbstractFillable {
 	 *
 	 * @param int $format
 	 *
-	 * @throws Exception
+	 * @throws \Exception
+	 *
 	 * @return string
 	 */
 	function getProfileLink(int $format = self::LINKFORMAT_TEXT):string {
@@ -93,23 +96,26 @@ class User extends AbstractFillable {
 	/**
 	 * Returns avatar wrapper for user
 	 *
+	 * @param string $vectorapp
+	 *
 	 * @return string
 	 */
-	function getAvatarWrap():string {
-		$vectorapp = $this->getVectorAppClassName();
+	function getAvatarWrap(string $vectorapp = ''):string {
+		if (empty($vectorapp))
+			$vectorapp = $this->getVectorAppClassName();
 		return "<div class='avatar-wrap$vectorapp'><img src='{$this->avatar_url}' class='avatar' alt='avatar'></div>";
 	}
 
 	function getVectorAppClassName():string {
-		$pref = \UserPrefs::Get('p_vectorapp', $this->id);
+		$pref = UserPrefs::Get('p_vectorapp', $this->id);
 
 		return !empty($pref) ? " app-$pref" : '';
 	}
 
 	function getVectorAppName():string {
-		$pref = \UserPrefs::Get('p_vectorapp', $this->id);
+		$pref = UserPrefs::Get('p_vectorapp', $this->id);
 
-		return \CoreUtils::$VECTOR_APPS[$pref] ?? 'unrecognized application';
+		return CoreUtils::$VECTOR_APPS[$pref] ?? 'unrecognized application';
 	}
 
 	/**
