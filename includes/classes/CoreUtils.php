@@ -511,7 +511,7 @@ class CoreUtils {
 		$out = [];
 		if ($with_git_info)
 			$out[] = self::getFooterGitInfo(false);
-		$out[] = "<a class='issues' href='".GITHUB_URL."/issues' target='_blank'>Known issues</a> | ";
+		$out[] = "<a class='issues' href='".GITHUB_URL."/issues' target='_blank'>Known issues</a>";
 		$out[] = '<a class="send-feedback">Send feedback</a>';
 		global $Database, $CGDb;
 		$out[] = 'Performance: <abbr title="Time spent rendering the page (ms)">R</abbr>'.round((microtime(true)-EXEC_START_MICRO)*1000).'<abbr title="Number of SQL quesries used to fetch this page">S</abbr>'.($Database->query_count+($CGDb->query_count??0)).'<abbr title="Requests sent to DeviantArt\'s servers (significantly increases render time)">D</abbr>'.DeviantArt::$requestCount;
@@ -521,11 +521,11 @@ class CoreUtils {
 	/**
 	 * Returns the HTML of the GIT informaiiton in the website's footer
 	 *
-	 * @param bool $separate
+	 * @param bool $appendSeparator
 	 *
 	 * @return string
 	 */
-	static function getFooterGitInfo(bool $separate = true):string {
+	static function getFooterGitInfo(bool $appendSeparator = true):string {
 		$commit_info = "Running <strong><a href='".GITHUB_URL."' title='Visit the GitHub repository'>MLPVC-RR</a>";
 		$commit_id = rtrim(shell_exec('git rev-parse --short=4 HEAD'));
 		if (!empty($commit_id)){
@@ -533,7 +533,8 @@ class CoreUtils {
 			$commit_info .= "@<a href='".GITHUB_URL."/commit/$commit_id' title='See exactly what was changed and why'>$commit_id</a></strong> created $commit_time";
 		}
 		else $commit_info .= "</strong> (version information unavailable)";
-		$commit_info .= ' | ';
+		if ($appendSeparator)
+			$commit_info .= ' | ';
 		return $commit_info;
 	}
 
