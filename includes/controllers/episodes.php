@@ -7,13 +7,13 @@ use App\Permission;
 
 $Pagination = new Pagination('episodes', 10, $Database->where('season != 0')->count('episodes'));
 
-CoreUtils::FixPath("/episodes/{$Pagination->page}");
+CoreUtils::fixPath("/episodes/{$Pagination->page}");
 $heading = "Episodes";
 $title = "Page {$Pagination->page} - $heading";
-$Episodes = Episodes::Get($Pagination->GetLimit());
+$Episodes = Episodes::get($Pagination->GetLimit());
 
 if (isset($_GET['js']))
-	$Pagination->Respond(Episodes::GetTableTbody($Episodes), '#episodes tbody');
+	$Pagination->Respond(Episodes::getTableTbody($Episodes), '#episodes tbody');
 
 $settings = array(
 	'title' => $title,
@@ -25,4 +25,4 @@ if (Permission::Sufficient('staff'))
 		$settings['js'],
 		array('moment-timezone',"$do-manage")
 	);
-CoreUtils::LoadPage($settings);
+CoreUtils::loadPage($settings);

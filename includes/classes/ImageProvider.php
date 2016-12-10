@@ -8,7 +8,7 @@ use App\Exceptions\MismatchedProviderException;
 class ImageProvider {
 	public $preview = false, $fullsize = false, $title = '', $provider, $id, $author = null;
 	public function __construct($url, $reqProv = null){
-		$provider = self::GetProvider(CoreUtils::Trim($url));
+		$provider = self::GetProvider(CoreUtils::trim($url));
 		if (!empty($reqProv)){
 			if (!is_array($reqProv))
 				$reqProv = array($reqProv);
@@ -32,7 +32,7 @@ class ImageProvider {
 	private static $_blockedMimeTypes = array('image/gif' => 'Animated GIFs');
 	private static function _testProvider($url, $pattern, $name){
 		$match = array();
-		if (regex_match(new RegExp("^(?:https?://(?:www\\.)?)?$pattern"), $url, $match))
+		if (preg_match(new RegExp("^(?:https?://(?:www\\.)?)?$pattern"), $url, $match))
 			return array(
 				'name' => $name,
 				'itemid' => $match[1]
@@ -112,11 +112,11 @@ class ImageProvider {
 					$CachedDeviation = DeviantArt::GetCachedSubmission($id,$this->provider);
 
 					if (!DeviantArt::IsImageAvailable($CachedDeviation['preview'])){
-						$preview = CoreUtils::AposEncode($CachedDeviation['preview']);
+						$preview = CoreUtils::aposEncode($CachedDeviation['preview']);
 						throw new \Exception("The preview image appears to be unavailable. Please make sure <a href='$preview'>this link</a> works and try again, or re-submit the deviation if this persists.");
 					}
 					if (!DeviantArt::IsImageAvailable($CachedDeviation['fullsize'])){
-						$fullsize = CoreUtils::AposEncode($CachedDeviation['fullsize']);
+						$fullsize = CoreUtils::aposEncode($CachedDeviation['fullsize']);
 						throw new \Exception("The submission appears to be unavailable. Please make sure <a href='$fullsize'>this link</a> works and try again, or re-submit the deviation if this persists.");
 					}
 				}
@@ -141,7 +141,7 @@ class ImageProvider {
 				$page = @file_get_contents("http://prntscr.com/$id");
 				if (empty($page))
 					throw new \Exception('The requested page could not be found');
-				if (!regex_match(new RegExp('<img\s+class="image__pic[^"]*"\s+src="http://i\.imgur\.com/([A-Za-z\d]+)\.'), $page, $_match))
+				if (!preg_match(new RegExp('<img\s+class="image__pic[^"]*"\s+src="http://i\.imgur\.com/([A-Za-z\d]+)\.'), $page, $_match))
 					throw new \Exception('The requested image could not be found');
 
 				$this->provider = 'imgur';
@@ -151,8 +151,8 @@ class ImageProvider {
 				throw new \Exception("The image could not be retrieved due to a missing handler for the provider \"{$this->provider}\"");
 		}
 
-		$this->preview = URL::MakeHttps($this->preview);
-		$this->fullsize = URL::MakeHttps($this->fullsize);
+		$this->preview = URL::makeHttps($this->preview);
+		$this->fullsize = URL::makeHttps($this->fullsize);
 
 		$this->id = $id;
 	}

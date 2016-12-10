@@ -6,7 +6,7 @@ use App\Time;
 use App\UserPrefs;
 use App\Users; ?>
 	<div class='mobile-nav'>
-		<nav><ul><?=CoreUtils::GetNavigationHTML()?></ul></nav>
+		<nav><ul><?=CoreUtils::getNavigationHTML()?></ul></nav>
 	</div>
 <?php
 	if (!empty($Database)){
@@ -28,7 +28,7 @@ use App\Users; ?>
 		<h2><?=$signedIn?'Signed in as':'Welcome!'?></h2>
 <?php
 		Users::RenderCard();
-		CoreUtils::RenderSidebarUsefulLinks(); ?>
+		CoreUtils::renderSidebarUsefulLinks(); ?>
 		<div class="buttons">
 <?php
 		if ($signedIn){ ?>
@@ -46,7 +46,7 @@ use App\Users; ?>
 <?php   if ($view === 'episode' && !empty($CurrentEpisode)){ ?>
 	<section id="voting">
 		<h2><?=$CurrentEpisode->isMovie?'Movie':'Episode'?> rating</h2>
-		<?=Episodes::GetSidebarVoting($CurrentEpisode)?>
+		<?=Episodes::getSidebarVoting($CurrentEpisode)?>
 	</section>
 <?php       if ($CurrentEpisode->isLatest() && time() > $CurrentEpisode->willairts && $CurrentEpisode->willairts + (Time::$IN_SECONDS['hour']*4) > time()){ ?>
 	<section id="live-update">
@@ -68,7 +68,7 @@ use App\Users; ?>
 	</section>
 <?php
 		}
-		echo Episodes::GetSidebarUpcoming();
+		echo Episodes::getSidebarUpcoming();
 	}
 	else { ?>
 

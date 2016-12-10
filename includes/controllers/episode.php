@@ -15,25 +15,25 @@ use App\VideoProvider;
 
 /** @var $Episode Episode */
 if (!POST_REQUEST)
-	Episodes::LoadPage();
+	Episodes::loadPage();
 
 CSRFProtection::Protect();
 if (empty($data))
-	CoreUtils::NotFound();
+	CoreUtils::notFound();
 
 $data = explode('/', $data);
 $action = array_splice($data, 0, 1)[0] ?? null;
 $data = implode('/', $data);
 
-$EpData = Episodes::ParseID(!empty($data) ? $data : ($_POST['epid'] ?? null));
+$EpData = Episodes::parseID(!empty($data) ? $data : ($_POST['epid'] ?? null));
 if (!empty($EpData)){
-	$Episode = Episodes::GetActual($EpData['season'], $EpData['episode'], Episodes::ALLOW_MOVIES);
+	$Episode = Episodes::getActual($EpData['season'], $EpData['episode'], Episodes::ALLOW_MOVIES);
 	if (empty($Episode))
 		Response::Fail("There's no episode with this season & episode number");
 	$isMovie = $Episode->isMovie;
 }
 else if ($action !== 'add')
-	CoreUtils::NotFound();
+	CoreUtils::notFound();
 
 switch ($action){
 	case "get":
@@ -49,7 +49,7 @@ switch ($action){
 
 		if (!$Database->whereEp($Episode)->delete('episodes'))
 			Response::DBError();
-		Logs::Action('episodes',array(
+		Logs::action('episodes',array(
 			'action' => 'del',
 			'season' => $Episode->season,
 			'episode' => $Episode->episode,
@@ -59,7 +59,7 @@ switch ($action){
 		));
 		$CGDb->where('name', "s{$Episode->season}e{$Episode->episode}")->delete('tags');
 		Response::Success('Episode deleted successfuly',array(
-			'upcoming' => Episodes::GetSidebarUpcoming(NOWRAP),
+			'upcoming' => Episodes::getSidebarUpcoming(NOWRAP),
 		));
 	break;
 	case "requests":
@@ -97,7 +97,7 @@ switch ($action){
 			Response::Done(array('data' => $VoteCounts));
 		}
 		else if (isset($_REQUEST['html']))
-			Response::Done(array('html' => Episodes::GetSidebarVoting($Episode)));
+			Response::Done(array('html' => Episodes::getSidebarVoting($Episode)));
 
 		if (!Permission::Sufficient('user'))
 			Response::Fail();
@@ -105,7 +105,7 @@ switch ($action){
 		if (!$Episode->aired)
 			Response::Fail('You can only vote on this episode after it has aired.');
 
-		$UserVote = Episodes::GetUserVote($Episode);
+		$UserVote = Episodes::getUserVote($Episode);
 		if (!empty($UserVote))
 			Response::Fail('You already voted for this episode');
 
@@ -124,10 +124,10 @@ switch ($action){
 			'vote' => $vote,
 		))) Response::DBError();
 		$Episode->updateScore();
-		Response::Done(array('newhtml' => Episodes::GetSidebarVoting($Episode)));
+		Response::Done(array('newhtml' => Episodes::getSidebarVoting($Episode)));
 	break;
 	case "videos":
-		Response::Done(Episodes::GetVideoEmbeds($Episode));
+		Response::Done(Episodes::getVideoEmbeds($Episode));
 	break;
 	case "getvideos":
 		$return = array(
@@ -204,7 +204,7 @@ switch ($action){
 			}
 		}
 
-		Response::Success('Links updated',array('epsection' => Episodes::GetVideosHTML($Episode)));
+		Response::Success('Links updated',array('epsection' => Episodes::getVideosHTML($Episode)));
 	break;
 	case "brokenvideos":
 		/** @var $videos EpisodeVideo[] */
@@ -219,7 +219,7 @@ switch ($action){
 
 			$removed++;
 			$Database->whereEp($Episode)->where('provider', $video->provider)->where('id', $video->id)->delete('episodes__videos');
-			Logs::Action('video_broken',array(
+			Logs::action('video_broken',array(
 				'season' => $Episode->season,
 				'episode' => $Episode->episode,
 				'provider' => $video->provider,
@@ -231,13 +231,13 @@ switch ($action){
 			return Response::Success('No broken videos found under this '.($Episode->isMovie?'movie':'episode').'.');
 
 		Response::Success("$removed video link".($removed===1?' has':'s have')." been removed from the site. Thank you for letting us know.",array(
-			'epsection' => Episodes::GetVideosHTML($Episode, NOWRAP),
+			'epsection' => Episodes::getVideosHTML($Episode, NOWRAP),
 		));
 	break;
 	case "getcgrelations":
 		$CheckTag = array();
 
-		$EpTagIDs = Episodes::GetTagIDs($Episode);
+		$EpTagIDs = Episodes::getTagIDs($Episode);
 		if (empty($EpTagIDs))
 			Response::Fail('The episode has no associated tag(s)!');
 
@@ -268,7 +268,7 @@ switch ($action){
 			)
 		)))->out();
 
-		$EpTagIDs = Episodes::GetTagIDs($Episode);
+		$EpTagIDs = Episodes::getTagIDs($Episode);
 		if (empty($EpTagIDs))
 			Response::Fail('The episode has no associated tag(s)!');
 		$EpTagIDs = implode(',',$EpTagIDs);
@@ -284,7 +284,7 @@ switch ($action){
 		}
 		$CGDb->where("tid IN ($EpTagIDs)")->delete('tagged');
 
-		Response::Done(array('section' => Episodes::GetAppearancesSectionHTML($Episode)));
+		Response::Done(array('section' => Episodes::getAppearancesSectionHTML($Episode)));
 	break;
 	case "edit":
 	case "add":
@@ -298,9 +298,9 @@ switch ($action){
 			$insert['posted_by'] = $currentUser->id;
 
 		if (!$editing || $canEditID){
-			$insert['season'] = Episodes::ValidateSeason(Episodes::ALLOW_MOVIES);
+			$insert['season'] = Episodes::validateSeason(Episodes::ALLOW_MOVIES);
 			$isMovie = $insert['season'] === 0;
-			$insert['episode'] = Episodes::ValidateEpisode($isMovie);
+			$insert['episode'] = Episodes::validateEpisode($isMovie);
 		}
 		else if (!$canEditID){
 			$isMovie = $Episode->season === 0;
@@ -316,7 +316,7 @@ switch ($action){
 			$SeasonChanged = $isMovie ? false : $insert['season'] != $Episode->season;
 			$EpisodeChanged = $insert['episode'] != $Episode->episode;
 			if ($SeasonChanged || $EpisodeChanged){
-				$Target = Episodes::GetActual(
+				$Target = Episodes::getActual(
 					$insert['season'] ?? $Episode->season,
 					$insert['episode'] ?? $Episode->episode,
 					Episodes::ALLOW_MOVIES
@@ -368,7 +368,7 @@ switch ($action){
 					Response::Fail("Unsupported prefix: {$match[1]}. ".(isset($mostSimilar) ? "<em>Did you mean <span class='color-ui'>$mostSimilar</span></em>?" : 'Use a backslash if the colon is part of the title (e.g. <code>\:</code>)'));
 				}
 
-				$title = Episodes::RemoveTitlePrefix($value);
+				$title = Episodes::removeTitlePrefix($value);
 				if (Input::CheckStringLength($title, $range, $code))
 					return $code;
 
@@ -384,7 +384,7 @@ switch ($action){
 				'prefix-movieonly' => "Prefixes can only be used for movies",
 			)
 		)))->out();
-		CoreUtils::CheckStringValidity($insert['title'], "$What title", INVERSE_EP_TITLE_PATTERN);
+		CoreUtils::checkStringValidity($insert['title'], "$What title", INVERSE_EP_TITLE_PATTERN);
 
 		$airs = (new Input('airs','timestamp',array(
 			Input::CUSTOM_ERROR_MESSAGES => array(
@@ -455,9 +455,9 @@ switch ($action){
 				}
 			}
 			if ($changes > 0)
-				Logs::Action('episode_modify',$logentry);
+				Logs::action('episode_modify',$logentry);
 		}
-		else Logs::Action('episodes',array(
+		else Logs::action('episodes',array(
 			'action' => 'add',
 			'season' => $insert['season'],
 			'episode' => $insert['episode'],

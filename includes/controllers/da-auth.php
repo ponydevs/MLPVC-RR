@@ -16,7 +16,7 @@ if (isset($_GET['error'])){
 	global $signedIn;
 	if ($signedIn)
 		HTTP::Redirect($_GET['state']);
-	Episodes::LoadPage();
+	Episodes::loadPage();
 }
 $currentUser = DeviantArt::GetToken($_GET['code']);
 $signedIn = !empty($currentUser);
@@ -28,16 +28,16 @@ if (isset($_GET['error'])){
 
 	if ($err === 'user_banned')
 		$errdesc .= "\n\nIf you'd like to appeal your ban, please <a href='http://mlp-vectorclub.deviantart.com/notes/'>send the group a note</a>.";
-	Episodes::LoadPage();
+	Episodes::loadPage();
 }
 
 
-if (regex_match(new RegExp('^[a-z\d]+$','i'), $_GET['state'], $_match)){
+if (preg_match(new RegExp('^[a-z\d]+$','i'), $_GET['state'], $_match)){
 	$confirm = str_replace('{{CODE}}', $_match[0], file_get_contents(INCPATH.'views/loginConfrim.html'));
 	$confirm = str_replace('{{USERID}}', Permission::Sufficient('developer') || UserPrefs::Get('p_disable_ga') ? '' : $currentUser->id, $confirm);
 	die($confirm);
 }
-else if (regex_match($REWRITE_REGEX, $_GET['state']))
+else if (preg_match($REWRITE_REGEX, $_GET['state']))
 	HTTP::Redirect($_GET['state']);
 
 HTTP::Redirect('/');

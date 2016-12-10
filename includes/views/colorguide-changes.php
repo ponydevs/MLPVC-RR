@@ -12,7 +12,7 @@ use App\Tags; ?>
 	<?=$Pagination->HTML . CGUtils::GetChangesHTML($Changes, WRAP, SHOW_APPEARANCE_NAMES) . $Pagination->HTML?>
 </div>
 
-<?  CoreUtils::ExportVars(array(
+<?  echo CoreUtils::exportVars(array(
 		'Color' => $Color,
 		'color' => $color,
 		'TAG_TYPES_ASSOC' => Tags::$TAG_TYPES_ASSOC,

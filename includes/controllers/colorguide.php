@@ -46,10 +46,10 @@ if (POST_REQUEST || (isset($_GET['s']) && $data === "gettags")){
 			$limit = null;
 			$cols = "tid, name, type";
 			if ($viaAutocomplete){
-				if (!regex_match($TAG_NAME_REGEX, $_GET['s']))
+				if (!preg_match($TAG_NAME_REGEX, $_GET['s']))
 					CGUtils::AutocompleteRespond('[]');
 
-				$query = CoreUtils::Trim(strtolower($_GET['s']));
+				$query = CoreUtils::trim(strtolower($_GET['s']));
 				$TagCheck = CGUtils::CheckEpisodeTagName($query);
 				if ($TagCheck !== false)
 					$query = $TagCheck;
@@ -76,7 +76,7 @@ if (POST_REQUEST || (isset($_GET['s']) && $data === "gettags")){
 		break;
 		case 'full':
 			if (!isset($_REQUEST['reorder']))
-				CoreUtils::NotFound();
+				CoreUtils::notFound();
 
 			if (!Permission::Sufficient('staff'))
 				Response::Fail();
@@ -92,7 +92,7 @@ if (POST_REQUEST || (isset($_GET['s']) && $data === "gettags")){
 		break;
 		case "export":
 			if (!Permission::Sufficient('developer'))
-				CoreUtils::NotFound();
+				CoreUtils::notFound();
 			$JSON = array(
 				'Appearances' => array(),
 				'Tags' => array(),
@@ -107,7 +107,7 @@ if (POST_REQUEST || (isset($_GET['s']) && $data === "gettags")){
 			if (!empty($Appearances)) foreach ($Appearances as $p){
 				$AppendAppearance = $p;
 
-				$AppendAppearance['notes'] = CoreUtils::TrimMultiline($AppendAppearance['notes']);
+				$AppendAppearance['notes'] = CoreUtils::trim($AppendAppearance['notes'],true);
 
 				$AppendAppearance['ColorGroups'] = array();
 				if (empty($AppendAppearance['private'])){
@@ -149,10 +149,10 @@ if (POST_REQUEST || (isset($_GET['s']) && $data === "gettags")){
 
 			$data = JSON::Encode($JSON, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
 			$data = preg_replace_callback('/^\s+/m', function($match){
-				return str_pad('',strlen($match[0])/4,"\t", STR_PAD_LEFT);
+				return str_pad('',CoreUtils::length($match[0])/4,"\t", STR_PAD_LEFT);
 			}, $data);
 
-			CoreUtils::DownloadFile($data, 'mlpvc-colorguide.json');
+			CoreUtils::downloadFile($data, 'mlpvc-colorguide.json');
 		break;
 		case "reindex":
 			if (Permission::Insufficient('developer'))
@@ -163,13 +163,13 @@ if (POST_REQUEST || (isset($_GET['s']) && $data === "gettags")){
 
 	$_match = array();
 	// Appearance actions
-	if (regex_match(new RegExp('^(rename|delete|make|(?:[gs]et|del)(?:sprite|cgs|relations)?|tag|untag|clearrendercache|applytemplate)(?:/(\d+))?$'), $data, $_match)){
+	if (preg_match(new RegExp('^(rename|delete|make|(?:[gs]et|del)(?:sprite|cgs|relations)?|tag|untag|clearrendercache|applytemplate)(?:/(\d+))?$'), $data, $_match)){
 		$action = $_match[1];
 		$creating = $action === 'make';
 
 		if (!$creating){
 			$AppearanceID = intval($_match[2], 10);
-			if (strlen($_match[2]) === 0)
+			if (CoreUtils::length($_match[2]) === 0)
 				Response::Fail('Missing appearance ID');
 			$Appearance = $CGDb->where('id', $AppearanceID)->where('ishuman', $EQG)->getOne('appearances');
 			if (empty($Appearance))
@@ -206,7 +206,7 @@ if (POST_REQUEST || (isset($_GET['s']) && $data === "gettags")){
 						Input::ERROR_RANGE => 'Appearance name must be beetween @min and @max characters long',
 					)
 				)))->out();
-				CoreUtils::CheckStringValidity($label, "Appearance name", INVERSE_PRINTABLE_ASCII_PATTERN);
+				CoreUtils::checkStringValidity($label, "Appearance name", INVERSE_PRINTABLE_ASCII_PATTERN);
 				if (!$creating)
 					$CGDb->where('id', $Appearance['id'], '!=');
 				$dupe = $CGDb->where('ishuman', $data['ishuman'])->where('label', $label)->getOne('appearances');
@@ -224,8 +224,8 @@ if (POST_REQUEST || (isset($_GET['s']) && $data === "gettags")){
 					)
 				)))->out();
 				if (isset($notes)){
-					CoreUtils::CheckStringValidity($notes, "Appearance notes", INVERSE_PRINTABLE_ASCII_PATTERN);
-					$notes = CoreUtils::SanitizeHtml($notes);
+					CoreUtils::checkStringValidity($notes, "Appearance notes", INVERSE_PRINTABLE_ASCII_PATTERN);
+					$notes = CoreUtils::sanitizeHtml($notes);
 					if ($creating || $notes !== $Appearance['notes'])
 						$data['notes'] = $notes;
 				}
@@ -235,7 +235,7 @@ if (POST_REQUEST || (isset($_GET['s']) && $data === "gettags")){
 				if (isset($cm_favme)){
 					try {
 						$Image = new ImageProvider($cm_favme, array('fav.me', 'dA'));
-						CoreUtils::CheckDeviationInClub($Image->id, true);
+						CoreUtils::checkDeviationInClub($Image->id, true);
 						$data['cm_favme'] = $Image->id;
 					}
 					catch (MismatchedProviderException $e){
@@ -306,7 +306,7 @@ if (POST_REQUEST || (isset($_GET['s']) && $data === "gettags")){
 						}
 					}
 
-					Logs::Action('appearances',array(
+					Logs::action('appearances',array(
 						'action' => 'add',
 					    'id' => $data['id'],
 					    'order' => $data['order'],
@@ -332,7 +332,7 @@ if (POST_REQUEST || (isset($_GET['s']) && $data === "gettags")){
 						$diff["new$key"] = $EditedAppearance[$key];
 					}
 				}
-				if (!empty($diff)) Logs::Action('appearance_modify',array(
+				if (!empty($diff)) Logs::action('appearance_modify',array(
 					'ponyid' => $Appearance['id'],
 					'changes' => JSON::Encode($diff),
 				));
@@ -356,7 +356,7 @@ if (POST_REQUEST || (isset($_GET['s']) && $data === "gettags")){
 					Response::DBError();
 
 				try {
-					CoreUtils::ElasticClient()->delete(Appearances::ToElasticArray($Appearance, true));
+					CoreUtils::elasticClient()->delete(Appearances::ToElasticArray($Appearance, true));
 				}
 				catch (ElasticMissing404Exception $e){
 					$message = JSON::Decode($e->getMessage());
@@ -377,7 +377,7 @@ if (POST_REQUEST || (isset($_GET['s']) && $data === "gettags")){
 
 				CGUtils::ClearRenderedImages($Appearance['id']);
 
-				Logs::Action('appearances',array(
+				Logs::action('appearances',array(
 					'action' => 'del',
 				    'id' => $Appearance['id'],
 				    'order' => $Appearance['order'],
@@ -421,7 +421,7 @@ if (POST_REQUEST || (isset($_GET['s']) && $data === "gettags")){
 
 				$oldCGs = ColorGroups::Stringify($oldCGs);
 				$newCGs = ColorGroups::Stringify($newCGs);
-				if ($oldCGs !== $newCGs) Logs::Action('cg_order',array(
+				if ($oldCGs !== $newCGs) Logs::action('cg_order',array(
 					'ponyid' => $Appearance['id'],
 					'oldgroups' => $oldCGs,
 					'newgroups' => $newCGs,
@@ -605,11 +605,11 @@ if (POST_REQUEST || (isset($_GET['s']) && $data === "gettags")){
 
 				Response::Done(array('cgs' => Appearances::GetColorsHTML($Appearance, NOWRAP, !$AppearancePage, $AppearancePage)));
 			break;
-			default: CoreUtils::NotFound();
+			default: CoreUtils::notFound();
 		}
 	}
 	// Tag actions
-	else if (regex_match(new RegExp('^([gs]et|make|del|merge|recount|(?:un)?synon)tag(?:/(\d+))?$'), $data, $_match)){
+	else if (preg_match(new RegExp('^([gs]et|make|del|merge|recount|(?:un)?synon)tag(?:/(\d+))?$'), $data, $_match)){
 		$action = $_match[1];
 
 		if ($action === 'recount'){
@@ -663,7 +663,7 @@ if (POST_REQUEST || (isset($_GET['s']) && $data === "gettags")){
 				$UseCount = count($Uses);
 				if (!isset($_POST['sanitycheck'])){
 					if ($UseCount > 0)
-						Response::Fail('<p>This tag is currently used on '.CoreUtils::MakePlural('appearance',$UseCount,PREPEND_NUMBER).'</p><p>Deleting will <strong class="color-red">permanently remove</strong> the tag from those appearances!</p><p>Are you <em class="color-red">REALLY</em> sure about this?</p>',array('confirm' => true));
+						Response::Fail('<p>This tag is currently used on '.CoreUtils::makePlural('appearance',$UseCount,PREPEND_NUMBER).'</p><p>Deleting will <strong class="color-red">permanently remove</strong> the tag from those appearances!</p><p>Are you <em class="color-red">REALLY</em> sure about this?</p>',array('confirm' => true));
 				}
 
 				if (!$CGDb->where('tid', $Tag['tid'])->delete('tags'))
@@ -862,7 +862,7 @@ HTML;
 		}
 	}
 	// Color group actions
-	else if (regex_match(new RegExp('^([gs]et|make|del)cg(?:/(\d+))?$'), $data, $_match)){
+	else if (preg_match(new RegExp('^([gs]et|make|del)cg(?:/(\d+))?$'), $data, $_match)){
 		$action = $_match[1];
 		$adding = $action === 'make';
 
@@ -883,7 +883,7 @@ HTML;
 				if (!$CGDb->where('groupid', $Group['groupid'])->delete('colorgroups'))
 					Response::DBError();
 
-				Logs::Action('cgs',array(
+				Logs::action('cgs',array(
 					'action' => 'del',
 					'groupid' => $Group['groupid'],
 					'ponyid' => $Group['ponyid'],
@@ -903,7 +903,7 @@ HTML;
 				Input::ERROR_RANGE => 'The group name must be between @min and @max characters in length',
 			)
 		)))->out();
-		CoreUtils::CheckStringValidity($data['label'], "$Color group name", INVERSE_PRINTABLE_ASCII_PATTERN, true);
+		CoreUtils::checkStringValidity($data['label'], "$Color group name", INVERSE_PRINTABLE_ASCII_PATTERN, true);
 
 		$major = isset($_POST['major']);
 		if ($major){
@@ -914,7 +914,7 @@ HTML;
 					Input::ERROR_RANGE => 'The reason cannot be longer than @max characters',
 				),
 			)))->out();
-			CoreUtils::CheckStringValidity($reason, "Change reason", INVERSE_PRINTABLE_ASCII_PATTERN);
+			CoreUtils::checkStringValidity($reason, "Change reason", INVERSE_PRINTABLE_ASCII_PATTERN);
 		}
 
 		if ($adding){
@@ -954,16 +954,16 @@ HTML;
 
 			if (empty($c['label']))
 				Response::Fail("You must specify a $color name $index");
-			$label = CoreUtils::Trim($c['label']);
-			CoreUtils::CheckStringValidity($label, "$Color $index name", INVERSE_PRINTABLE_ASCII_PATTERN);
-			$ll = strlen($label);
+			$label = CoreUtils::trim($c['label']);
+			CoreUtils::checkStringValidity($label, "$Color $index name", INVERSE_PRINTABLE_ASCII_PATTERN);
+			$ll = CoreUtils::length($label);
 			if ($ll < 3 || $ll > 30)
 				Response::Fail("The $color name must be between 3 and 30 characters in length $index");
 			$append['label'] = $label;
 
 			if (empty($c['hex']))
 				Response::Fail("You must specify a $color code $index");
-			$hex = CoreUtils::Trim($c['hex']);
+			$hex = CoreUtils::trim($c['hex']);
 			if (!$HEX_COLOR_REGEX->match($hex, $_match))
 				Response::Fail("HEX $color is in an invalid format $index");
 			$append['hex'] = '#'.strtoupper($_match[1]);
@@ -991,7 +991,7 @@ HTML;
 
 		$AppearanceID = $adding ? $Appearance['id'] : $Group['ponyid'];
 		if ($major){
-			Logs::Action('color_modify',array(
+			Logs::action('color_modify',array(
 				'ponyid' => $AppearanceID,
 				'reason' => $reason,
 			));
@@ -1010,7 +1010,7 @@ HTML;
 		else $response['notes'] = Appearances::GetNotesHTML($CGDb->where('id', $AppearanceID)->getOne('appearances'),  NOWRAP);
 
 		$logdata = array();
-		if ($adding) Logs::Action('cgs',array(
+		if ($adding) Logs::action('cgs',array(
 			'action' => 'add',
 			'groupid' => $Group['groupid'],
 			'ponyid' => $AppearanceID,
@@ -1032,19 +1032,19 @@ HTML;
 		if (!empty($logdata)){
 			$logdata['groupid'] = $Group['groupid'];
 			$logdata['ponyid'] = $AppearanceID;
-			Logs::Action('cg_modify', $logdata);
+			Logs::action('cg_modify', $logdata);
 		}
 
 		Response::Done($response);
 	}
-	else CoreUtils::NotFound();
+	else CoreUtils::notFound();
 }
 
 // Tag list
-if (regex_match(new RegExp('^tags'),$data)){
+if (preg_match(new RegExp('^tags'),$data)){
 	$Pagination = new Pagination("cg/tags", 20, $CGDb->count('tags'));
 
-	CoreUtils::FixPath("/cg/tags/{$Pagination->page}");
+	CoreUtils::fixPath("/cg/tags/{$Pagination->page}");
 	$heading = "Tags";
 	$title = "Page $Pagination->page - $heading - $Color Guide";
 
@@ -1057,7 +1057,7 @@ if (regex_match(new RegExp('^tags'),$data)){
 	if (Permission::Sufficient('staff'))
 		$js[] = "$do-tags";
 
-	CoreUtils::LoadPage(array(
+	CoreUtils::loadPage(array(
 		'title' => $title,
 		'heading' => $heading,
 		'view' => "$do-tags",
@@ -1067,10 +1067,10 @@ if (regex_match(new RegExp('^tags'),$data)){
 }
 
 // Change list
-if (regex_match(new RegExp('^changes'),$data)){
+if (preg_match(new RegExp('^changes'),$data)){
 	$Pagination = new Pagination("cg/changes", 50, $Database->count('log__color_modify'));
 
-	CoreUtils::FixPath("/cg/changes/{$Pagination->page}");
+	CoreUtils::fixPath("/cg/changes/{$Pagination->page}");
 	$heading = "Major $Color Changes";
 	$title = "Page $Pagination->page - $heading - $Color Guide";
 
@@ -1079,7 +1079,7 @@ if (regex_match(new RegExp('^changes'),$data)){
 	if (isset($_GET['js']))
 		$Pagination->Respond(CGUtils::GetChangesHTML($Changes, NOWRAP, SHOW_APPEARANCE_NAMES), '#changes');
 
-	CoreUtils::LoadPage(array(
+	CoreUtils::loadPage(array(
 		'title' => $title,
 		'heading' => $heading,
 		'view' => "$do-changes",
@@ -1106,12 +1106,12 @@ $GUIDE_MANAGE_CSS = array(
 );
 // Appearance pages
 //                                                  [111]             [22]    [3333333333333333]
-if (regex_match(new RegExp('^(?:appearance|v)/(?:.*?(\d+)(?:-.*)?)(?:([sp])?\.(png|svg|json|gpl))?'),$data,$_match)){
+if (preg_match(new RegExp('^(?:appearance|v)/(?:.*?(\d+)(?:-.*)?)(?:([sp])?\.(png|svg|json|gpl))?'),$data,$_match)){
 	$asFile = !empty($_match[3]);
 	$AppearanceID = intval($_match[1], 10);
 	$Appearance = $CGDb->where('id', $AppearanceID)->getOne('appearances', $asFile ? 'id,label,cm_dir,ishuman' : null);
 	if (empty($Appearance))
-		CoreUtils::NotFound();
+		CoreUtils::notFound();
 
 	if ($Appearance['ishuman'] && !$EQG){
 		$EQG = 1;
@@ -1127,14 +1127,14 @@ if (regex_match(new RegExp('^(?:appearance|v)/(?:.*?(\d+)(?:-.*)?)(?:([sp])?\.(p
 			case 'png':
 				if (!empty($_match[2])) switch ($_match[2]){
 					case "s": CGUtils::RenderSpritePNG($Appearance['id']);
-					default: CoreUtils::NotFound();
+					default: CoreUtils::notFound();
 				}
 				CGUtils::RenderAppearancePNG($Appearance);
 			case 'svg':
 				if (!empty($_match[2])) switch ($_match[2]){
 					case "s": CGUtils::RenderSpriteSVG($Appearance['id']);
 					case "p": CGUtils::RenderPreviewSVG($Appearance['id']);
-					default: CoreUtils::NotFound();
+					default: CoreUtils::notFound();
 				}
 				CGUtils::RenderCMDirectionSVG($Appearance['id'], $Appearance['cm_dir']);
 			case 'json': CGUtils::GetSwatchesAI($Appearance);
@@ -1144,7 +1144,7 @@ if (regex_match(new RegExp('^(?:appearance|v)/(?:.*?(\d+)(?:-.*)?)(?:([sp])?\.(p
 	}
 
 	$SafeLabel = Appearances::GetSafeLabel($Appearance);
-	CoreUtils::FixPath("$CGPath/v/{$Appearance['id']}-$SafeLabel");
+	CoreUtils::fixPath("$CGPath/v/{$Appearance['id']}-$SafeLabel");
 	$title = $heading = $Appearance['label'];
 	if ($Appearance['id'] === 0 && $color !== 'color')
 		$title = str_replace('color',$color,$title);
@@ -1162,20 +1162,20 @@ if (regex_match(new RegExp('^(?:appearance|v)/(?:.*?(\d+)(?:-.*)?)(?:([sp])?\.(p
 		$settings['css'] = array_merge($settings['css'], $GUIDE_MANAGE_CSS);
 		$settings['js'] = array_merge($settings['js'],$GUIDE_MANAGE_JS);
 	}
-	CoreUtils::LoadPage($settings);
+	CoreUtils::loadPage($settings);
 }
 // Sprite color inspector
-else if (regex_match(new RegExp('^sprite(?:-colou?rs)?/(\d+)(?:-.*)?$'),$data,$_match)){
+else if (preg_match(new RegExp('^sprite(?:-colou?rs)?/(\d+)(?:-.*)?$'),$data,$_match)){
 	if (!Permission::Sufficient('staff'))
-		CoreUtils::NotFound();
+		CoreUtils::notFound();
 
 	$Appearance = $CGDb->where('id', intval($_match[1], 10))->getOne('appearances', 'id,label');
 	if (empty($Appearance))
-		CoreUtils::NotFound();
+		CoreUtils::notFound();
 
 	$Map = CGUtils::GetSpriteImageMap($Appearance['id']);
 	if (empty($Map))
-		CoreUtils::NotFound();
+		CoreUtils::notFound();
 
 	$Colors = array();
 
@@ -1216,9 +1216,9 @@ else if (regex_match(new RegExp('^sprite(?:-colou?rs)?/(\d+)(?:-.*)?$'),$data,$_
 	);
 
 	$SafeLabel = Appearances::GetSafeLabel($Appearance);
-	CoreUtils::FixPath("$CGPath/sprite/{$Appearance['id']}-$SafeLabel");
+	CoreUtils::fixPath("$CGPath/sprite/{$Appearance['id']}-$SafeLabel");
 
-	CoreUtils::LoadPage(array(
+	CoreUtils::loadPage(array(
 		'view' => "$do-sprite",
 		'title' => "Sprite of {$Appearance['label']}",
 		'css' => "$do-sprite",
@@ -1240,7 +1240,7 @@ else if ($data === 'full'){
 		$js[] = 'Sortable';
 	$js[] = "$do-full";
 
-	CoreUtils::LoadPage(array(
+	CoreUtils::loadPage(array(
 		'title' => "Full List - $Color Guide",
 		'view' => "$do-full",
 		'css' => "$do-full",
@@ -1253,7 +1253,7 @@ $title = '';
 $AppearancesPerPage = UserPrefs::Get('cg_itemsperpage');
 $Ponies = [];
 try {
-	$elasticAvail = CoreUtils::ElasticClient()->ping();
+	$elasticAvail = CoreUtils::elasticClient()->ping();
 }
 catch (Elasticsearch\Common\Exceptions\NoNodesAvailableException $e){
 	$elasticAvail = false;
@@ -1265,9 +1265,9 @@ if ($elasticAvail){
 
 	// Search query exists
 	if (!empty($_GET['q']) && mb_strlen(trim($_GET['q'])) > 0){
-		$SearchQuery = regex_replace(new RegExp('[^\w\d\s\*\?]'),'',trim($_GET['q']));
+		$SearchQuery = preg_replace(new RegExp('[^\w\d\s\*\?]'),'',trim($_GET['q']));
 		$title .= "$SearchQuery - ";
-		if (regex_match(new RegExp('[\*\?]'), $SearchQuery)){
+		if (preg_match(new RegExp('[\*\?]'), $SearchQuery)){
 			$queryString = new ElasticsearchDSL\Query\QueryStringQuery(
 				$SearchQuery,
 				[
@@ -1328,7 +1328,7 @@ if (isset($_REQUEST['GOFAST'])){
 	Response::Done(array('goto' => "$CGPath/v/{$Ponies[0]['id']}-".Appearances::GetSafeLabel($Ponies[0])));
 }
 
-CoreUtils::FixPath("$CGPath/{$Pagination->page}".(!empty($Restrictions)?"?q=$SearchQuery":''));
+CoreUtils::fixPath("$CGPath/{$Pagination->page}".(!empty($Restrictions)?"?q=$SearchQuery":''));
 $heading = ($EQG?'EQG ':'')."$Color Guide";
 $title .= "Page {$Pagination->page} - $heading";
 
@@ -1345,4 +1345,4 @@ if (Permission::Sufficient('staff')){
 	$settings['css'] = array_merge($settings['css'], $GUIDE_MANAGE_CSS);
 	$settings['js'] = array_merge($settings['js'], $GUIDE_MANAGE_JS);
 }
-CoreUtils::LoadPage($settings);
+CoreUtils::loadPage($settings);

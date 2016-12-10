@@ -80,7 +80,7 @@ class UserPrefs extends GlobalSettings {
 	 * @return mixed
 	 */
 	static function Process($key){
-		$value = isset($_POST['value']) ? CoreUtils::Trim($_POST['value']) : null;
+		$value = isset($_POST['value']) ? CoreUtils::trim($_POST['value']) : null;
 
 		switch ($key){
 			case "cg_itemsperpage":

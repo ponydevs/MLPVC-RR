@@ -20,7 +20,7 @@ if (!empty($Users)){
 		if (empty($Arranged[$r])) continue;
 		/** @var $users \App\Models\User[] */
 		$users = $Arranged[$r];
-		$group = CoreUtils::MakePlural(Permission::$ROLES_ASSOC[$r], count($users), true);
+		$group = CoreUtils::makePlural(Permission::$ROLES_ASSOC[$r], count($users), true);
 		$groupInitials = '['.Permission::LabelInitials($r).']';
 		$usersStr = array();
 		foreach ($users as $u)

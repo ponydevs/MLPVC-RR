@@ -96,7 +96,7 @@ class Users {
 
 		$insert = array(
 			'name' => $userdata['username'],
-			'avatar_url' => URL::MakeHttps($userdata['usericon']),
+			'avatar_url' => URL::makeHttps($userdata['usericon']),
 		);
 		if (!$userExists)
 			$insert['id'] = $ID;
@@ -105,7 +105,7 @@ class Users {
 			throw new \Exception('Saving user data failed'.(Permission::Sufficient('developer')?': '.$Database->getLastError():''));
 
 		if (!$userExists)
-			Logs::Action('userfetch',array('userid' => $insert['id']));
+			Logs::action('userfetch',array('userid' => $insert['id']));
 		$names = array($username);
 		if ($userExists && $DBUser->name !== $username)
 			$names[] = $DBUser->name;
@@ -113,7 +113,7 @@ class Users {
 			if (strcasecmp($name,$insert['name']) !== 0){
 				if (UserPrefs::Get('discord_token',$ID) === 'true')
 					UserPrefs::Set('discord_token','',$ID);
-				Logs::Action('da_namechange',array(
+				Logs::action('da_namechange',array(
 					'old' => $name,
 					'new' => $insert['name'],
 					'id' => $ID,
@@ -199,7 +199,7 @@ class Users {
 		$RecentlyJoined = HTTP::LegitimateRequest('http://mlp-vectorclub.deviantart.com/modals/memberlist/');
 
 		return !empty($RecentlyJoined['response'])
-			&& regex_match(new RegExp('<a class="[a-z ]*username" href="http://'.strtolower($Username).'.deviantart.com/">'.USERNAME_PATTERN.'</a>'), $RecentlyJoined['response']);
+			&& preg_match(new RegExp('<a class="[a-z ]*username" href="http://'.strtolower($Username).'.deviantart.com/">'.USERNAME_PATTERN.'</a>'), $RecentlyJoined['response']);
 	}
 
 	/**
@@ -209,19 +209,19 @@ class Users {
 	 * @param bool $current
 	 */
 	static function RenderSessionLi($Session, $current = false){
-		$browserClass = CoreUtils::BrowserNameToClass($Session['browser_name']);
+		$browserClass = CoreUtils::browserNameToClass($Session['browser_name']);
 		$browserTitle = !empty($Session['browser_name']) ? "{$Session['browser_name']} {$Session['browser_ver']}" : 'Unrecognized browser';
 		$platform = !empty($Session['platform']) ? "<span class='platform'>on <strong>{$Session['platform']}</strong></span>" : '';
 
 		$signoutText = !$current ? 'Delete' : 'Sign out';
 		$buttons = "<button class='typcn remove ".(!$current?'typcn-trash red':'typcn-arrow-back')."' data-sid='{$Session['id']}'>$signoutText</button>";
 		if (Permission::Sufficient('developer') && !empty($Session['user_agent'])){
-			$buttons .= "<br><button class='darkblue typcn typcn-eye useragent' data-agent='".CoreUtils::AposEncode($Session['user_agent'])."'>UA</button>".
+			$buttons .= "<br><button class='darkblue typcn typcn-eye useragent' data-agent='".CoreUtils::aposEncode($Session['user_agent'])."'>UA</button>".
 				"<a class='btn orange typcn typcn-chevron-right' href='/browser/{$Session['id']}'>Debug</a>";
 		}
 
-		$firstuse = Time::Tag($Session['created']);
-		$lastuse = !$current ? 'Last used: '.Time::Tag($Session['lastvisit']) : '<em>Current session</em>';
+		$firstuse = Time::tag($Session['created']);
+		$lastuse = !$current ? 'Last used: '.Time::tag($Session['lastvisit']) : '<em>Current session</em>';
 		echo <<<HTML
 <li class="browser-$browserClass" id="session-{$Session['id']}">
 <span class="browser">$browserTitle</span>
@@ -246,7 +246,7 @@ HTML;
 			return;
 		$authKey = Cookie::Get('access');
 		if (!empty($authKey)){
-			if (!regex_match(new RegExp('^[a-f\d]+$','iu'), $authKey)){
+			if (!preg_match(new RegExp('^[a-f\d]+$','iu'), $authKey)){
 				$oldAuthKey = $authKey;
 				$authKey = bin2hex($authKey);
 				$Database->where('token', sha1($oldAuthKey))->update('sessions',array( 'token' => sha1($authKey) ));
@@ -315,7 +315,7 @@ HTML;
 		$HTML = '';
 		if (Permission::Sufficient('staff') || $sameUser){
 			$pendingCountReadable = ($hasPending>0?"<strong>$TotalPending</strong>":'no');
-			$posts = CoreUtils::MakePlural('reservation', $TotalPending);
+			$posts = CoreUtils::makePlural('reservation', $TotalPending);
 			$HTML .= <<<HTML
 <section class='pending-reservations'>
 <h2>{$PrivateSection}Pending reservations</h2>
@@ -348,7 +348,7 @@ HTML;
 					$label = !empty($Post->label) ? "<span class='label'>{$Post->label}</span>" : '';
 					$is_request = isset($Post->rq);
 					$reservation_time_known = !empty($Post->reserved_at);
-					$posted = Time::Tag($is_request && $reservation_time_known ? $Post->reserved_at : $Post->posted);
+					$posted = Time::tag($is_request && $reservation_time_known ? $Post->reserved_at : $Post->posted);
 					$PostedAction = $is_request && !$reservation_time_known ? 'Posted' : 'Reserved';
 					$contestable = $Post->isOverdue() ? Posts::CONTESTABLE : '';
 

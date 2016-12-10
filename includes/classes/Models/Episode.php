@@ -57,8 +57,8 @@ class Episode extends AbstractFillable {
 			return "S{$season}E{$episode}";
 		}
 
-		$episode = CoreUtils::Pad($episode).($this->twoparter ? '-'.CoreUtils::Pad($episode+1) : '');
-		$season = CoreUtils::Pad($season);
+		$episode = CoreUtils::pad($episode).($this->twoparter ? '-'.CoreUtils::pad($episode+1) : '');
+		$season = CoreUtils::pad($season);
 
 		return "S{$season} E{$episode}";
 	}
@@ -99,7 +99,7 @@ class Episode extends AbstractFillable {
 	}
 
 	public function isLatest():bool {
-		$latest = Episodes::GetLatest();
+		$latest = Episodes::getLatest();
 		return $this->is($latest);
 	}
 
@@ -138,7 +138,7 @@ class Episode extends AbstractFillable {
 				'id' => $this->getID(array('append_num' => $append_num)),
 				'season' => $this->season ?? null,
 				'episode' => $this->episode ?? null,
-				'title' => isset($this->title) ? CoreUtils::EscapeHTML($this->title) : null,
+				'title' => isset($this->title) ? CoreUtils::escapeHTML($this->title) : null,
 			);
 
 			if (!empty($arrayKey))

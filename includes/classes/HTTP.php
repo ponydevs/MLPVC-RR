@@ -43,8 +43,8 @@ class HTTP {
 		$responseCode = curl_getinfo($r, CURLINFO_HTTP_CODE);
 		$headerSize = curl_getinfo($r, CURLINFO_HEADER_SIZE);
 
-		$responseHeaders = rtrim(substr($response, 0, $headerSize));
-		$response = substr($response, $headerSize);
+		$responseHeaders = rtrim(CoreUtils::substring($response, 0, $headerSize));
+		$response = CoreUtils::substring($response, $headerSize);
 		$curlError = curl_error($r);
 		curl_close($r);
 
@@ -54,7 +54,7 @@ class HTTP {
 		global $http_response_header;
 		$http_response_header = array_map("rtrim",explode("\n",$responseHeaders));
 
-		if (regex_match(new RegExp('Content-Encoding:\s?gzip'), $responseHeaders))
+		if (preg_match(new RegExp('Content-Encoding:\s?gzip'), $responseHeaders))
 			$response = gzdecode($response);
 		return array(
 			'responseHeaders' => $responseHeaders,
@@ -76,15 +76,15 @@ class HTTP {
 		$cookies = array();
 		if (!empty($http_response_header))
 			foreach ($http_response_header as $header){
-				if (!regex_match(new RegExp('^([^:]+): (.*)$'), $header, $parts) || $parts[1] !== 'Set-Cookie')
+				if (!preg_match(new RegExp('^([^:]+): (.*)$'), $header, $parts) || $parts[1] !== 'Set-Cookie')
 					continue;
 
-				regex_match(new RegExp('\s*([^=]+=[^;]+)(?:;|$)'), $parts[2], $cookie);
+				preg_match(new RegExp('\s*([^=]+=[^;]+)(?:;|$)'), $parts[2], $cookie);
 				$cookies[] = $cookie[1];
 			};
 
 		$request = self::LegitimateRequest($url, $cookies, $referrer, true);
-		return regex_match(new RegExp('Location:\s+([^\r\n]+)'), $request['responseHeaders'], $_match) ? CoreUtils::Trim($_match[1]) : null;
+		return preg_match(new RegExp('Location:\s+([^\r\n]+)'), $request['responseHeaders'], $_match) ? CoreUtils::trim($_match[1]) : null;
 	}
 
 
@@ -159,7 +159,7 @@ class HTTP {
 	 */
 	public static function Redirect($url = '/', $http = 301){
 		header("Location: $url", true, $http);
-		$urlenc = CoreUtils::AposEncode($url);
+		$urlenc = CoreUtils::aposEncode($url);
 		die("Click <a href='$urlenc'>here</a> if you aren't redirected.<script>location.replace(".JSON::Encode($url).")</script>");
 	}
 }

@@ -43,7 +43,7 @@ switch ($do ?? null){
 }
 if ($ThumbImage[0] === '/')
 	$ThumbImage = ABSPATH.ltrim($ThumbImage, '/');
-$Title = CoreUtils::EscapeHTML($Title); ?>
+$Title = CoreUtils::escapeHTML($Title); ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -54,8 +54,8 @@ $Title = CoreUtils::EscapeHTML($Title); ?>
 	<meta property="og:image" content="<?=$ThumbImage?>">
 	<meta property="og:title" content="<?=$Title?>">
 	<meta property="og:url" content="<?=ABSPATH.ltrim($_SERVER['REQUEST_URI'], '/')?>">
-	<meta property="og:description" content='<?=CoreUtils::AposEncode($Description)?>'>
-	<meta name="description" content='<?=CoreUtils::AposEncode($Description)?>'>
+	<meta property="og:description" content='<?=CoreUtils::aposEncode($Description)?>'>
+	<meta name="description" content='<?=CoreUtils::aposEncode($Description)?>'>
 	<meta name="format-detection" content="telephone=no">
 	<meta name="theme-color" content="#2C73B1">
 	<link rel="image_src" href="<?=$ThumbImage?>">
@@ -116,8 +116,8 @@ ga('send','pageview');
 					<circle r="20" cx="22.5" cy="22.5" class="loading-circle" transform="rotate(-90 22.5 22.5)"></circle>
 				</svg>
 				<div class="loader"></div>
-	            <img class="avatar" src="<?=$signedIn?$currentUser->avatar_url:GUEST_AVATAR?>" alt='<?=($signedIn?CoreUtils::AposEncode(CoreUtils::Posess($currentUser->name)):'Guest').' avatar'?>'>
-			</li><?=CoreUtils::GetNavigationHTML(isset($view) && $view === 'fatalerr')?></ul></nav>
+	            <img class="avatar" src="<?=$signedIn?$currentUser->avatar_url:GUEST_AVATAR?>" alt='<?=($signedIn?CoreUtils::aposEncode(CoreUtils::posess($currentUser->name)):'Guest').' avatar'?>'>
+			</li><?=CoreUtils::getNavigationHTML(isset($view) && $view === 'fatalerr')?></ul></nav>
 	</header>
 
 	<div id="sidebar">

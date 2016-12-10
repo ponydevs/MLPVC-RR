@@ -19,7 +19,7 @@ class CoreUtils {
 	 * @param string $fix_uri  URL to forcibly redirect to
 	 * @param int    $http HTPP status code for the redirect
 	 */
-	static function FixPath(string $fix_uri, int $http = self::FIXPATH_TEMP){
+	static function fixPath(string $fix_uri, int $http = self::FIXPATH_TEMP){
 		$_split = explode('?', $_SERVER['REQUEST_URI'], 2);
 		$path = $_split[0];
 		$query = empty($_split[1]) ? '' : "?{$_split[1]}";
@@ -31,8 +31,8 @@ class CoreUtils {
 		if (empty($fix_query))
 			$fix_query = $query;
 		else {
-			$query_assoc = self::QueryStringAssoc($query);
-			$fix_query_assoc = self::QueryStringAssoc($fix_query);
+			$query_assoc = self::queryStringAssoc($query);
+			$fix_query_assoc = self::queryStringAssoc($fix_query);
 			$merged = $query_assoc;
 			foreach ($fix_query_assoc as $key => $item)
 				$merged[$key] = $item;
@@ -54,7 +54,7 @@ class CoreUtils {
 	 *
 	 * @return array
 	 */
-	static function QueryStringAssoc($query){
+	static function queryStringAssoc($query){
 		$assoc = array();
 		if (!empty($query))
 			parse_str(ltrim($query, '?'), $assoc);
@@ -68,11 +68,11 @@ class CoreUtils {
 	 *
 	 * @return string Encoded string
 	 */
-	static function AposEncode($str){
-		return self::EscapeHTML($str, ENT_QUOTES);
+	static function aposEncode($str){
+		return self::escapeHTML($str, ENT_QUOTES);
 	}
 
-	static function EscapeHTML($html, $mask = null){
+	static function escapeHTML($html, $mask = null){
 		$mask = isset($mask) ? $mask | ENT_HTML5 : ENT_HTML5;
 		return htmlspecialchars($html, $mask, 'UTF-8');
 	}
@@ -91,7 +91,7 @@ class CoreUtils {
 	 *
 	 * @return string
 	 */
-	static function Notice($type, $title, $text = null, $center = false){
+	static function notice($type, $title, $text = null, $center = false){
 		if (!in_array($type, self::$NOTICE_TYPES))
 			throw new \Exception("Invalid notice type $type");
 
@@ -104,11 +104,11 @@ class CoreUtils {
 
 		$HTML = '';
 		if (!empty($title))
-			$HTML .= '<label>'.self::EscapeHTML($title).'</label>';
+			$HTML .= '<label>'.self::escapeHTML($title).'</label>';
 
 		$textRows = preg_split("/(\r\n|\n|\r){2}/", $text);
 		foreach ($textRows as $row)
-			$HTML .= '<p>'.self::Trim($row).'</p>';
+			$HTML .= '<p>'.self::trim($row).'</p>';
 
 		if ($center)
 			$type .= ' align-center';
@@ -118,7 +118,7 @@ class CoreUtils {
 	/**
 	 * Display a 404 page
 	 */
-	static function NotFound(){
+	static function notFound(){
 		if (POST_REQUEST || isset($_GET['via-js'])){
 			$RQURI = rtrim(str_replace('via-js=true','',$_SERVER['REQUEST_URI']),'?&');
 			Response::Fail("HTTP 404: ".(POST_REQUEST?'Endpoint':'Page')." ($RQURI) does not exist");
@@ -127,7 +127,7 @@ class CoreUtils {
 		HTTP::StatusCode(404);
 		global $do;
 		$do = '404';
-		self::LoadPage(array(
+		self::loadPage(array(
 			'title' => '404',
 			'view' => '404',
 		));
@@ -151,7 +151,7 @@ class CoreUtils {
 	 *
 	 * @param array $options
 	 */
-	static function LoadPage($options){
+	static function loadPage($options){
 		// Page <title>
 		if (isset($options['title']))
 			$GLOBALS['title'] = $options['title'];
@@ -220,7 +220,7 @@ class CoreUtils {
 				'title' => (isset($GLOBALS['title'])?$GLOBALS['title'].' - ':'').SITE_TITLE,
 				'content' => self::_clearIndentation($content),
 				'sidebar' => self::_clearIndentation($sidebar),
-				'footer' => CoreUtils::GetFooter(WITH_GIT_INFO),
+				'footer' => CoreUtils::getFooter(WITH_GIT_INFO),
 				'avatar' => $GLOBALS['signedIn'] ? $GLOBALS['currentUser']->avatar_url : GUEST_AVATAR,
 				'responseURL' => $_SERVER['REQUEST_URI'],
 				'signedIn' => $GLOBALS['signedIn'],
@@ -236,11 +236,11 @@ class CoreUtils {
 	 * @return string
 	 */
 	private static function _clearIndentation($HTML){
-		return regex_replace(new RegExp('(\n|\r|\r\n)[\t ]*'), '$1', $HTML);
+		return preg_replace(new RegExp('(\n|\r|\r\n)[\t ]*'), '$1', $HTML);
 	}
 
 	/**
-	 * Checks assets from LoadPage()
+	 * Checks assets from loadPage()
 	 *
 	 * @param array    $options    Options array
 	 * @param string[] $customType Array of partial file names
@@ -296,7 +296,7 @@ class CoreUtils {
 	 *
 	 * @return string
 	 */
-	static function Pad($input, $pad_length = 2, $pad_string = '0', $pad_type = STR_PAD_LEFT){
+	static function pad($input, $pad_length = 2, $pad_string = '0', $pad_type = STR_PAD_LEFT){
 		return str_pad((string) $input, $pad_length, $pad_string, $pad_type);
 	}
 
@@ -308,17 +308,17 @@ class CoreUtils {
 	 *
 	 * @return string
 	 */
-	static function Capitalize($str, $all = false){
-		if ($all) return preg_replace_callback(new RegExp('((?:^|\s)[a-z])'), function($match){
-			return strtoupper($match[1]);
+	static function capitalize($str, $all = false){
+		if ($all) return preg_replace_callback(new RegExp('((?:^|\s)[a-z])(\w+\b)?','i'), function($match){
+			return strtoupper($match[1]).strtolower($match[2]);
 		}, $str);
-		else return strlen($str) === 1 ? strtoupper($str) : strtoupper($str[0]).substr($str,1);
+		else return self::length($str) === 1 ? strtoupper($str) : strtoupper($str[0]).CoreUtils::substring($str,1);
 	}
 
 	// Turns a file size ini setting value into bytes
 	private static function _shortSizeInBytes($size){
-		$unit = substr($size, -1);
-		$value = intval(substr($size, 0, -1), 10);
+		$unit = CoreUtils::substring($size, -1);
+		$value = intval(CoreUtils::substring($size, 0, -1), 10);
 		switch(strtoupper($unit)){
 			case 'G':
 				$value *= 1024;
@@ -334,10 +334,13 @@ class CoreUtils {
 	/**
 	 * Returns the maximum uploadable file size in a readable format
 	 *
+	 * @param array $sizes For use in tests
+	 *
 	 * @return string
 	 */
-	static function GetMaxUploadSize(){
-		$sizes = array(ini_get('post_max_size'), ini_get('upload_max_filesize'));
+	static function getMaxUploadSize($sizes = null){
+		if (!isset($sizes))
+			$sizes = array(ini_get('post_max_size'), ini_get('upload_max_filesize'));
 
 		$workWith = $sizes[0];
 		if ($sizes[1] !== $sizes[0]){
@@ -346,7 +349,7 @@ class CoreUtils {
 				$workWith = $sizes[1];
 		}
 
-		return regex_replace(new RegExp('^(\d+)([GMk])$','i'), '$1 $2B', strtoupper($workWith));
+		return preg_replace(new RegExp('^(\d+)([GMk])$','i'), '$1 $2B', strtoupper($workWith));
 	}
 
 	/**
@@ -354,8 +357,12 @@ class CoreUtils {
 	 *
 	 * @param array $export Associative aray where keys are the desired JS variable names
 	 * @throws \Exception
+	 *
+	 * @return string
 	 */
-	static function ExportVars($export){
+	static function exportVars(array $export):string {
+		if (empty($export))
+			return '';
 		/** @noinspection ES6ConvertVarToLetConst */
 		$HTML =  '<script>var ';
 		foreach ($export as $name => $value){
@@ -369,7 +376,7 @@ class CoreUtils {
 				break;
 				case "string":
 					// regex test
-					if (regex_match(new RegExp('^/(.*)/([a-z]*)$','u'), $value, $regex_parts))
+					if (preg_match(new RegExp('^/(.*)/([a-z]*)$','u'), $value, $regex_parts))
 						$value = (new RegExp($regex_parts[1],$regex_parts[2]))->jsExport();
 					else $value = JSON::Encode($value);
 				break;
@@ -387,7 +394,7 @@ class CoreUtils {
 			}
 			$HTML .= "$name=$value,";
 		}
-		echo rtrim($HTML,',').'</script>';
+		return rtrim($HTML,',').'</script>';
 	}
 
 	/**
@@ -398,7 +405,7 @@ class CoreUtils {
 	 *
 	 * @return string Sanitized HTML code
 	 */
-	static function SanitizeHtml($dirty_html, $allowed = null){
+	static function sanitizeHtml($dirty_html, $allowed = null){
 		$config = \HTMLPurifier_Config::createDefault();
 		$whitelist = array('strong','b','em','i');
 		if (!empty($allowed))
@@ -409,7 +416,7 @@ class CoreUtils {
 		$config->set('Core.EscapeInvalidTags', true);
 		$purifier = new \HTMLPurifier($config);
 		/** @noinspection PhpUndefinedMethodInspection */
-		return self::TrimMultiline($purifier->purify($dirty_html));
+		return self::trim($purifier->purify($dirty_html), true);
 	}
 
 	/**
@@ -419,9 +426,9 @@ class CoreUtils {
 	 *
 	 * @return bool Whether the folder was sucessfully created
 	 */
-	static function CreateUploadFolder($path){
+	static function createUploadFolder(string $path):bool {
 		$DS = RegExp::escapeBackslashes('\/');
-		$folder = regex_replace(new RegExp("^(.*[$DS])[^$DS]+$"),'$1',regex_replace(new RegExp('$DS'),'\\',$path));
+		$folder = preg_replace(new RegExp("^(.*[$DS])[^$DS]+$"),'$1',preg_replace(new RegExp('$DS'),'\\',$path));
 		return !is_dir($folder) ? mkdir($folder,0777,true) : true;
 	}
 
@@ -431,10 +438,11 @@ class CoreUtils {
 	 * @param string[] $list
 	 * @param string   $append
 	 * @param string   $separator
+	 * @param bool     $noescape  Set to true to prevent character escaping
 	 *
 	 * @return string
 	 */
-	static function ArrayToNaturalString($list, $append = 'and', $separator = ','){
+	static function arrayToNaturalString(array $list, string $append = 'and', string $separator = ',', $noescape = false):string {
 		if (is_string($list)) $list = explode($separator, $list);
 
 		if (count($list) > 1){
@@ -443,13 +451,16 @@ class CoreUtils {
 			$i = 0;
 			$maxDest = count($list_str)-3;
 			while ($i < $maxDest){
-				if ($i == count($list_str)-1) continue;
+				if ($i == count($list_str)-1)
+					continue;
 				$list_str[$i] = $list_str[$i].',';
 				$i++;
 			}
 			$list_str = implode(' ',$list_str);
 		}
 		else $list_str = $list[0];
+		if (!$noescape)
+			$list_str = self::escapeHTML($list_str);
 		return $list_str;
 	}
 
@@ -460,14 +471,14 @@ class CoreUtils {
 	 * @param string $string      The value bein checked
 	 * @param string $Thing       Human-readable name for $string
 	 * @param string $pattern     An inverse pattern that matches INVALID characters
-	 * @param bool   $returnError Whether to return the error or just spit it out
+	 * @param bool   $returnError If true retursn the error message instead of responding
 	 *
 	 * @return null|string
 	 */
-	static function CheckStringValidity($string, $Thing, $pattern, $returnError = false){
-		if (regex_match(new RegExp($pattern,'u'), $string, $fails)){
+	static function checkStringValidity($string, $Thing, $pattern, $returnError = false){
+		if (preg_match_all(new RegExp($pattern,'u'), $string, $fails)){
 			$invalid = array();
-			foreach ($fails as $f)
+			foreach ($fails[0] as $f)
 				if (!in_array($f, $invalid)){
 					switch ($f){
 						case "\n":
@@ -479,9 +490,10 @@ class CoreUtils {
 					}
 				}
 
-			$s = count($invalid)!==1?'s':'';
-			$the_following = count($invalid)!==1?' the following':'an';
-			$Error = "$Thing (".self::EscapeHTML($string).") contains $the_following invalid character$s: ".CoreUtils::ArrayToNaturalString($invalid);
+			$count = count($invalid);
+			$s = $count!==1?'s':'';
+			$the_following = $count!==1?'the following':'an';
+			$Error = "$Thing (".self::escapeHTML($string).") contains $the_following invalid character$s: ".CoreUtils::arrayToNaturalString($invalid);
 			if ($returnError)
 				return $Error;
 			Response::Fail($Error);
@@ -490,15 +502,15 @@ class CoreUtils {
 
 	/**
 	 * Returns text HTML of the website's footer
-     *
+	 *
 	 * @param bool $with_git_info
 	 *
 	 * @return string
 	 */
-	static function GetFooter($with_git_info = false){
+	static function getFooter($with_git_info = false){
 		$out = [];
 		if ($with_git_info)
-			$out[] = self::GetFooterGitInfo(false);
+			$out[] = self::getFooterGitInfo(false);
 		$out[] = "<a class='issues' href='".GITHUB_URL."/issues' target='_blank'>Known issues</a> | ";
 		$out[] = '<a class="send-feedback">Send feedback</a>';
 		global $Database, $CGDb;
@@ -513,11 +525,11 @@ class CoreUtils {
 	 *
 	 * @return string
 	 */
-	static function GetFooterGitInfo(bool $separate = true):string {
+	static function getFooterGitInfo(bool $separate = true):string {
 		$commit_info = "Running <strong><a href='".GITHUB_URL."' title='Visit the GitHub repository'>MLPVC-RR</a>";
 		$commit_id = rtrim(shell_exec('git rev-parse --short=4 HEAD'));
 		if (!empty($commit_id)){
-			$commit_time = Time::Tag(date('c',strtotime(shell_exec('git log -1 --date=short --pretty=format:%ci'))));
+			$commit_time = Time::tag(date('c',strtotime(shell_exec('git log -1 --date=short --pretty=format:%ci'))));
 			$commit_info .= "@<a href='".GITHUB_URL."/commit/$commit_id' title='See exactly what was changed and why'>$commit_id</a></strong> created $commit_time";
 		}
 		else $commit_info .= "</strong> (version information unavailable)";
@@ -532,7 +544,7 @@ class CoreUtils {
 	 *
 	 * @return string
 	 */
-	static function GetNavigationHTML($disabled = false){
+	static function getNavigationHTML($disabled = false){
 		if (!empty($GLOBALS['NavHTML']))
 			return $GLOBALS['NavHTML'];
 
@@ -555,14 +567,14 @@ class CoreUtils {
 					$NavItems['eps'][1] = 'Movies';
 				if ($CurrentEpisode->isLatest())
 					$NavItems['latest'][0] = $_SERVER['REQUEST_URI'];
-				else $NavItems['eps']['subitem'] = CoreUtils::Cutoff($GLOBALS['heading'],Episodes::TITLE_CUTOFF);
+				else $NavItems['eps']['subitem'] = CoreUtils::cutoff($GLOBALS['heading'],Episodes::TITLE_CUTOFF);
 			}
 			global $Color, $EQG;
 			$NavItems['colorguide'] = array("/cg".(!empty($EQG)?'/eqg':''), (!empty($EQG)?'EQG ':'')."$Color Guide");
 			if ($do === 'colorguide'){
 				global $Tags, $Changes, $Ponies, $Pagination, $Appearance, $Map;
 				if (!empty($Appearance))
-					$NavItems['colorguide']['subitem'] = (isset($Map)?"Sprite {$Color}s - ":'').CoreUtils::EscapeHTML($Appearance['label']);
+					$NavItems['colorguide']['subitem'] = (isset($Map)?"Sprite {$Color}s - ":'').CoreUtils::escapeHTML($Appearance['label']);
 				else if (isset($Ponies))
 					$NavItems['colorguide'][1] .= " - Page {$Pagination->page}";
 				else {
@@ -629,7 +641,7 @@ class CoreUtils {
 
 		list($path, $label) = $item;
 		$RQURI = strtok($_SERVER['REQUEST_URI'], '?');
-		$current = (!$currentSet || $htmlOnly === HTML_ONLY) && ($path === true || regex_match(new RegExp("^$path($|/)"), $RQURI));
+		$current = (!$currentSet || $htmlOnly === HTML_ONLY) && ($path === true || preg_match(new RegExp("^$path($|/)"), $RQURI));
 		$class = '';
 		if ($current){
 			$currentSet = true;
@@ -650,7 +662,7 @@ class CoreUtils {
 	/**
 	 * Renders the "Useful links" section of the sidebar
 	 */
-	static function RenderSidebarUsefulLinks(){
+	static function renderSidebarUsefulLinks(){
 		global $Database, $signedIn;
 		if (!$signedIn) return;
 		$Links = $Database->orderBy('"order"','ASC')->get('usefullinks');
@@ -666,7 +678,7 @@ class CoreUtils {
 			}
 			else $title = '';
 
-			$href = $l['url'][0] === '#' ? "class='action--".substr($l['url'],1)."'" : "href='".self::AposEncode($l['url'])."'";
+			$href = $l['url'][0] === '#' ? "class='action--".CoreUtils::substring($l['url'],1)."'" : "href='".self::aposEncode($l['url'])."'";
 
 			$Render[] =  "<li id='s-ufl-{$l['id']}'><a $href $title>{$l['label']}</a></li>";
 		}
@@ -681,19 +693,19 @@ class CoreUtils {
 	 *
 	 * @return string
 	 */
-	static function GetSidebarUsefulLinksListHTML($wrap = true){
+	static function getSidebarUsefulLinksListHTML($wrap = true){
 		global $Database;
 		$HTML = $wrap ? '<ol>' : '';
 		$UsefulLinks = $Database->orderBy('"order"','ASC')->get('usefullinks');
 		foreach ($UsefulLinks as $l){
-			$href = "href='".CoreUtils::AposEncode($l['url'])."'";
+			$href = "href='".CoreUtils::aposEncode($l['url'])."'";
 			if ($l['url'][0] === '#')
-				$href .= " class='action--".substr($l['url'],1)."'";
-			$title = CoreUtils::AposEncode($l['title']);
+				$href .= " class='action--".CoreUtils::substring($l['url'],1)."'";
+			$title = CoreUtils::aposEncode($l['title']);
 			$label = htmlspecialchars_decode($l['label']);
 			$cansee = Permission::$ROLES_ASSOC[$l['minrole']];
 			if ($l['minrole'] !== 'developer')
-				$cansee = self::MakePlural($cansee, 0).' and above';
+				$cansee = self::makePlural($cansee, 0).' and above';
 			$HTML .= "<li id='ufl-{$l['id']}'><div><a $href title='$title'>{$label}</a></div>".
 			             "<div><span class='typcn typcn-eye'></span> $cansee</div>".
 			             "<div class='buttons'><button class='blue typcn typcn-pencil edit-link'>Edit</button><button class='red typcn typcn-trash delete-link'>Delete</button></div></li>";
@@ -708,8 +720,8 @@ class CoreUtils {
 	 *
 	 * @return string
 	 */
-	static function Posess($w){
-		return "$w'".(substr($w, -1) !== 's'?'s':'');
+	static function posess($w){
+		return "$w'".(CoreUtils::substring($w, -1) !== 's'?'s':'');
 	}
 
 	/**
@@ -721,7 +733,7 @@ class CoreUtils {
 	 *
 	 * @return string
 	 */
-	static function MakePlural($w, $in, $prep = false){
+	static function makePlural($w, $in, $prep = false){
 		return ($prep?"$in ":'').$w.($in != 1 && !in_array(strtolower($w),self::$_uncountableWords) ?'s':'');
 	}
 
@@ -734,7 +746,7 @@ class CoreUtils {
 	 *
 	 * @return array
 	 */
-	static function DetectBrowser($user_agent = null){
+	static function detectBrowser($user_agent = null){
 		$Return = array('user_agent' => !empty($user_agent) ? $user_agent : $_SERVER['HTTP_USER_AGENT']);
 		$browser = new Browser($Return['user_agent']);
 		$name = $browser->getBrowser();
@@ -750,19 +762,8 @@ class CoreUtils {
 	}
 
 	// Converts a browser name to it's equivalent class name
-	static function BrowserNameToClass($BrowserName){
-		return regex_replace(new RegExp('[^a-z]'),'',strtolower($BrowserName));
-	}
-
-	/**
-	 * Escapes values for use in LIKE checks
-	 *
-	 * @param string $str
-	 *
-	 * @return string
-	 */
-	static function EscapeLikeValue($str){
-		return preg_replace('~(^|[^\\\\])([%_\[\]])~','$1\\\\$2', $str);
+	static function browserNameToClass($BrowserName){
+		return preg_replace(new RegExp('[^a-z]'),'',strtolower($BrowserName));
 	}
 
 	/**
@@ -770,23 +771,16 @@ class CoreUtils {
 	 *
 	 * @param string $str
 	 * @param string $chars
+	 * @param bool   $multiline
 	 *
 	 * @return string
 	 */
-	static function Trim($str, $chars = " \t\n\r\0\x0B"){
-		return regex_replace(new RegExp(' +'),' ',trim($str, $chars));
-	}
+	static function trim(string $str, bool $multiline = false, string $chars = " \t\n\r\0\x0B"){
+		$out = preg_replace(new RegExp(' +'),' ',trim($str, $chars));
+		if ($multiline)
+			$out = preg_replace(new RegExp('(\r\n|\r)'),"\n",$out);
 
-	/**
-	 * Trims a string while truncating consecutive spaces and normalizing newlines
-	 *
-	 * @param string $str
-	 * @param string $chars
-	 *
-	 * @return string
-	 */
-	static function TrimMultiline($str, $chars = " \t\n\r\0\x0B"){
-		return regex_replace(new RegExp('(\r\n|\r)'),"\n",self::Trim($str,$chars));
+		return $out;
 	}
 
 	/**
@@ -796,20 +790,20 @@ class CoreUtils {
 	 *
 	 * @return float
 	 */
-	static function Average(...$numbers){
+	static function average(...$numbers){
 		return array_sum($numbers)/count($numbers);
 	}
 
 	/**
-	 * Checks if a deviation is in the group
+	 * Checks if a deviation is in the club
 	 *
 	 * @param int|string $DeviationID
 	 *
 	 * @return bool|int
 	 */
-	static function IsDeviationInClub($DeviationID){
+	static function isDeviationInClub($DeviationID){
 		if (!is_int($DeviationID))
-			$DeviationID = intval(substr($DeviationID, 1), 36);
+			$DeviationID = intval(CoreUtils::substring($DeviationID, 1), 36);
 
 		try {
 			$DiFiRequest = HTTP::LegitimateRequest("http://deviantart.com/global/difi/?c[]=\"DeviationView\",\"getAllGroups\",[\"$DeviationID\"]&t=json");
@@ -848,8 +842,8 @@ class CoreUtils {
 	 * @param string $favme
 	 * @param bool   $throw If true an Exception will be thrown instead of responding
 	 */
-	static function CheckDeviationInClub($favme, $throw = false){
-		$Status = self::IsDeviationInClub($favme);
+	static function checkDeviationInClub($favme, $throw = false){
+		$Status = self::isDeviationInClub($favme);
 		if ($Status !== true){
 			$errmsg = (
 				$Status === false
@@ -870,7 +864,7 @@ class CoreUtils {
 	 *
 	 * @return int[]
 	 */
-	static function Hex2Rgb($hex){
+	static function hex2Rgb($hex){
 		return sscanf($hex, "#%02x%02x%02x");
 	}
 
@@ -881,9 +875,9 @@ class CoreUtils {
 	 *
 	 * @return string
 	 */
-	static function NomralizeStashID($id){
+	static function nomralizeStashID($id){
 		$normalized = ltrim($id,'0');
-		return strlen($normalized) < 12 ? '0'.$normalized : $normalized;
+		return self::length($normalized) < 12 ? '0'.$normalized : $normalized;
 	}
 
 	/**
@@ -894,7 +888,7 @@ class CoreUtils {
 	 *
 	 * @return null|string
 	 */
-	static function GetFullsizeURL($id, $prov){
+	static function getFullsizeURL($id, $prov){
 		$stash_url = $prov === 'sta.sh' ? "http://sta.sh/$id" : "http://fav.me/$id";
 		try {
 			$stashpage = HTTP::LegitimateRequest($stash_url,null,null);
@@ -911,7 +905,7 @@ class CoreUtils {
 			return 3;
 
 		$STASH_DL_LINK_REGEX = '(https?://(sta\.sh|www\.deviantart\.com)/download/\d+/[a-z\d_]+-d[a-z\d]{6,}\.(?:png|jpe?g|bmp)\?[^"]+)';
-		$urlmatch = regex_match(new RegExp('<a\s+class="[^"]*?dev-page-download[^"]*?"\s+href="'.
+		$urlmatch = preg_match(new RegExp('<a\s+class="[^"]*?dev-page-download[^"]*?"\s+href="'.
 			$STASH_DL_LINK_REGEX.'"'), $stashpage['response'], $_match);
 
 		if (!$urlmatch)
@@ -928,10 +922,10 @@ class CoreUtils {
 				'fullsize' => $fullsize_url
 			));
 
-		return URL::MakeHttps($fullsize_url);
+		return URL::makeHttps($fullsize_url);
 	}
 
-	static function GetOverdueSubmissionList(){
+	static function getOverdueSubmissionList(){
 		global $Database;
 
 		$Query = $Database->rawQuery(
@@ -959,23 +953,35 @@ class CoreUtils {
 		return "$HTML</table>";
 	}
 
-	static function DownloadFile($contents, $name){
+	static function downloadFile($contents, $name){
 		header('Content-Type: application/octet-stream');
 		header('Content-Transfer-Encoding: Binary');
 		header("Content-disposition: attachment; filename=\"$name\"");
 		die($contents);
 	}
 
-	static function Substring(...$args){
-		return function_exists('mb_substr') ? mb_substr(...$args) : substr(...$args);
+	static function substring(...$args){
+		return mb_substr(...$args);
 	}
 
-	static function Cutoff($str, $len){
-		$strlen = strlen($str);
-		return $strlen > $len ? self::Substring($str, 0, $len-2).'…' : $str;
+	static function length(...$args){
+		return mb_strlen(...$args);
 	}
 
-	static function SocketEvent($event, array $data){
+	/**
+	 * Cut a string to the specified length
+	 *
+	 * @param string $str
+	 * @param int    $len
+	 *
+	 * @return string
+	 */
+	static function cutoff(string $str, $len){
+		$strlen = self::length($str);
+		return $strlen > $len ? self::trim(self::substring($str, 0, $len-1)).'…' : $str;
+	}
+
+	static function socketEvent($event, array $data){
 		$options = array(
 			'context' => array(
 				'http' => array(
@@ -983,7 +989,7 @@ class CoreUtils {
 				)
 			)
 		);
-		if (regex_match(new RegExp('\.lc$'), WS_SERVER_DOMAIN))
+		if (preg_match(new RegExp('\.lc$'), WS_SERVER_DOMAIN))
 			$options['context']['ssl'] = array(
 		        "verify_peer" => false,
 		        "verify_peer_name" => false,
@@ -1003,8 +1009,8 @@ class CoreUtils {
 		'ponyscape' => 'Ponyscape',
 	);
 
-	static function YIQ($hex){
-		$rgb = self::Hex2Rgb($hex);
+	static function yiq($hex){
+		$rgb = self::hex2Rgb($hex);
 	    return (($rgb[0]*299)+($rgb[1]*587)+($rgb[2]*114))/1000;
 	}
 
@@ -1014,7 +1020,7 @@ class CoreUtils {
 	 * @param string       $key
 	 * @param mixed        $value
 	 */
-	static function Set(&$on, $key, $value){
+	static function set(&$on, $key, $value){
 		if (is_object($on))
 			$on->$key = $value;
 		else if (is_array($on))
@@ -1029,7 +1035,7 @@ class CoreUtils {
 	 *
 	 * @return bool
 	 */
-	static function IsURLAvailable(string $url):bool{
+	static function isURLAvailable(string $url):bool{
 		$ch = curl_init();
 		curl_setopt_array($ch, array(
 			CURLOPT_URL => $url,
@@ -1044,14 +1050,14 @@ class CoreUtils {
 		return $return;
 	}
 
-	static function MSleep(int $ms){
+	static function msleep(int $ms){
 		usleep($ms*1000);
 	}
 
 	/** @var Client */
 	private static $_elastiClient;
 
-	static function ElasticClient():Client {
+	static function elasticClient():Client {
 		if (!isset(self::$_elastiClient))
 			self::$_elastiClient = ClientBuilder::create()->setHosts(['127.0.0.1:9200'])->build();
 

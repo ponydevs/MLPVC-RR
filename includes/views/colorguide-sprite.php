@@ -17,7 +17,7 @@ use App\CoreUtils; ?>
 	</section>
 </div>
 <?php
-	CoreUtils::ExportVars(array(
+	echo CoreUtils::exportVars(array(
 		'AppearanceID' => $Appearance['id'],
 		'AppearanceColors' => $Colors,
 		'SpriteColorList' => $Map['colors'],

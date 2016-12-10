@@ -35,7 +35,7 @@ class EpisodeVideo extends AbstractFillable  {
 		$url = VideoProvider::getEmbed($this, VideoProvider::URL_ONLY);
 		if ($this->provider === 'yt')
 			$url = "http://www.youtube.com/oembed?url=$url";
-		$broken = !CoreUtils::IsURLAvailable($url);
+		$broken = !CoreUtils::isURLAvailable($url);
 
 		if (!$broken){
 			$this->not_broken_at = date('c');

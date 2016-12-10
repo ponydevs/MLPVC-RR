@@ -115,10 +115,10 @@ class CGUtils {
 			return self::GrabImage($path,$allowedMimeTypes,$minwidth,$minheight);
 		$file = $_FILES[$key];
 		$tmp = $file['tmp_name'];
-		if (strlen($tmp) < 1) Response::Fail('File upload failed; Reason unknown');
+		if (CoreUtils::length($tmp) < 1) Response::Fail('File upload failed; Reason unknown');
 
 		list($width, $height) = Image::CheckType($tmp, $allowedMimeTypes);
-		CoreUtils::CreateUploadFolder($path);
+		CoreUtils::createUploadFolder($path);
 
 		if (!move_uploaded_file($tmp, $path)){
 			@unlink($tmp);
@@ -168,24 +168,24 @@ class CGUtils {
 		global $EPISODE_ID_REGEX, $MOVIE_ID_REGEX;
 
 		$_match = array();
-		if (regex_match($EPISODE_ID_REGEX,$tag,$_match)){
+		if (preg_match($EPISODE_ID_REGEX,$tag,$_match)){
 			$season = intval($_match[1], 10);
 			if ($season == 0)
 				return false;
 			$episode = intval($_match[2], 10);
-			$name = 's'.CoreUtils::Pad($season).'e'.CoreUtils::Pad($episode);
+			$name = 's'.CoreUtils::pad($season).'e'.CoreUtils::pad($episode);
 			$episodeIsRange = !empty($_match[3]);
 			if ($episodeIsRange){
 				$episodeTo = intval($_match[3], 10);
 				if ($episodeTo-1 !== $episode)
 					return false;
 
-				$name .= '-'.CoreUtils::Pad($episodeTo);
+				$name .= '-'.CoreUtils::pad($episodeTo);
 			}
 
 			return $name;
 		}
-		if (regex_match($MOVIE_ID_REGEX,$tag,$_match)){
+		if (preg_match($MOVIE_ID_REGEX,$tag,$_match)){
 			$movie = intval($_match[1], 10);
 			if ($movie <= 0)
 				return false;
@@ -204,9 +204,9 @@ class CGUtils {
 	static function CheckEpisodeTagType(string $name):string {
 		global $EPISODE_ID_REGEX, $MOVIE_ID_REGEX;
 
-		if (regex_match($EPISODE_ID_REGEX,$name,$_match))
+		if (preg_match($EPISODE_ID_REGEX,$name,$_match))
 			return 'episode';
-		if (regex_match($MOVIE_ID_REGEX,$name,$_match))
+		if (preg_match($MOVIE_ID_REGEX,$name,$_match))
 			return 'movie';
 		return null;
 	}
@@ -237,7 +237,7 @@ HTML;
 				$Pony = $PonyCache[$PonyID];
 				$appearance = "<a href='/cg/v/{$Pony['id']}'>{$Pony['label']}</a>: ";
 			}
-			$HTML .= "<li>$appearance{$c['reason']} - ".Time::Tag($c['timestamp'])."$initiator</li>";
+			$HTML .= "<li>$appearance{$c['reason']} - ".Time::tag($c['timestamp'])."$initiator</li>";
 		}
 		return $HTML . ($wrap ? '</ul>' : '');
 	}
@@ -342,7 +342,7 @@ HTML;
 		$CGsHeight = $CGCount*($GroupLabelBox['height'] + ($CGVerticalMargin*2) + $ColorCircleSize);
 
 		// Get export time & size
-		$ExportTS = "Generated at: ".Time::Format(time(), Time::FORMAT_FULL);
+		$ExportTS = "Generated at: ".Time::format(time(), Time::FORMAT_FULL);
 		$ExportFontSize = round($CGFontSize/1.5);
 		$ExportBox = Image::SaneGetTTFBox($ExportFontSize, $FontFile, $ExportTS);
 
@@ -428,7 +428,7 @@ HTML;
 		Image::DrawSquare($FinalBase, 0, 0, array($OutWidth, $OutHeight), null, $BLACK);
 		Image::CopyExact($FinalBase, $BaseImage, 0, 0, $OutWidth, $OutHeight);
 
-		if (!CoreUtils::CreateUploadFolder($OutputPath))
+		if (!CoreUtils::createUploadFolder($OutputPath))
 			Response::Fail('Failed to create render directory');
 		Image::OutputPNG($FinalBase, $OutputPath, $FileRelPath);
 	}
@@ -445,7 +445,7 @@ HTML;
 			Image::OutputSVG(null,$OutputPath,$FileRelPath);
 
 		if (!isset($dir))
-			CoreUtils::NotFound();
+			CoreUtils::notFound();
 
 		$DefaultColorMapping = array(
 			'Coat Outline' => '#0D0D0D',
@@ -464,8 +464,8 @@ HTML;
 
 		$ColorMapping = array();
 		foreach ($Colors as $row){
-			$cglabel = regex_replace(new RegExp('^(Costume|Dress)$'),'Coat',$row['cglabel']);
-			$colorlabel = regex_replace(new RegExp('^(?:(?:Main|First|Normal|Gradient(?:\s(?:Light|Dark))?)\s)?(.+?)(?:\s\d+)?(?:/.*)?$'),'$1', $row['label']);
+			$cglabel = preg_replace(new RegExp('^(Costume|Dress)$'),'Coat',$row['cglabel']);
+			$colorlabel = preg_replace(new RegExp('^(?:(?:Main|First|Normal|Gradient(?:\s(?:Light|Dark))?)\s)?(.+?)(?:\s\d+)?(?:/.*)?$'),'$1', $row['label']);
 			$label = "$cglabel $colorlabel";
 			if (isset($DefaultColorMapping[$label]) && !isset($ColorMapping[$label]))
 				$ColorMapping[$label] = $row['hex'];
@@ -483,7 +483,7 @@ HTML;
 	}
 
 	static function Int2Hex(int $int){
-		return '#'.strtoupper(CoreUtils::Pad(dechex($int), 6));
+		return '#'.strtoupper(CoreUtils::pad(dechex($int), 6));
 	}
 
 	static function GetSpriteImageMap($AppearanceID){
@@ -510,7 +510,7 @@ HTML;
 				list($x, $y) = $pos;
 				$rgb = imagecolorat($PNG, $x, $y);
 				$colors = imagecolorsforindex($PNG, $rgb);
-				$hex = strtoupper('#'.CoreUtils::Pad(dechex($colors['red'])).CoreUtils::Pad(dechex($colors['green'])).CoreUtils::Pad(dechex($colors['blue'])));
+				$hex = strtoupper('#'.CoreUtils::pad(dechex($colors['red'])).CoreUtils::pad(dechex($colors['green'])).CoreUtils::pad(dechex($colors['blue'])));
 				$opacity = $colors['alpha'] ?? 0;
 				if ($opacity === 127)
 					continue;
@@ -583,7 +583,7 @@ HTML;
 		$SizeFactor = 2;
 		$PNG = Image::CreateTransparent($Map['width']*$SizeFactor, $Map['height']*$SizeFactor);
 		foreach ($Map['linedata'] as $line){
-			$rgb = CoreUtils::Hex2Rgb($Map['colors'][$line['colorid']]);
+			$rgb = CoreUtils::hex2Rgb($Map['colors'][$line['colorid']]);
 			$color = imagecolorallocatealpha($PNG, $rgb[0], $rgb[1], $rgb[2], $line['opacity']);
 			Image::DrawSquare($PNG, $line['x']*$SizeFactor, $line['y']*$SizeFactor, array($line['width']*$SizeFactor, $SizeFactor), $color, null);
 		}
@@ -595,7 +595,7 @@ HTML;
 		global $CGPath;
 		$Map = self::GetSpriteImageMap($AppearanceID);
 		if (empty($Map))
-			CoreUtils::NotFound();
+			CoreUtils::notFound();
 
 		$OutputPath = FSPATH."cg_render/{$AppearanceID}-sprite.svg";
 		$FileRelPath = "$CGPath/v/{$AppearanceID}s.svg";
@@ -648,10 +648,10 @@ HTML;
 			LIMIT 4', array($AppearanceID));
 
 		if (empty($ColorQuery))
-			CoreUtils::NotFound();
+			CoreUtils::notFound();
 
 		usort($ColorQuery, function($a, $b){
-			return CoreUtils::YIQ($b['hex']) <=> CoreUtils::YIQ($a['hex']);
+			return CoreUtils::yiq($b['hex']) <=> CoreUtils::yiq($a['hex']);
 		});
 
 		switch (count($ColorQuery)){
@@ -704,7 +704,7 @@ XML;
 				$JSON[$label][$cg['label']][$c['label']] = $c['hex'];
 		}
 
-		CoreUtils::DownloadFile(JSON::Encode($JSON), "$label.json");
+		CoreUtils::downloadFile(JSON::Encode($JSON), "$label.json");
 	}
 	static function GetSwatchesInkscape($Appearance){
 		$label = $Appearance['label'];
@@ -723,12 +723,12 @@ GPL;
 		$Colors = ColorGroups::GetColorsForEach($CGs);
 		foreach ($CGs as $cg){
 			foreach ($Colors[$cg['groupid']] as $c){
-				$rgb = CoreUtils::Hex2Rgb($c['hex']);
-				$File .= CoreUtils::Pad($rgb[0],3,' ').' '.CoreUtils::Pad($rgb[1],3,' ').' '.CoreUtils::Pad($rgb[2],3,' ').' '.$cg['label'].' | '.$c['label'].PHP_EOL;
+				$rgb = CoreUtils::hex2Rgb($c['hex']);
+				$File .= CoreUtils::pad($rgb[0],3,' ').' '.CoreUtils::pad($rgb[1],3,' ').' '.CoreUtils::pad($rgb[2],3,' ').' '.$cg['label'].' | '.$c['label'].PHP_EOL;
 			}
 		}
 
-		CoreUtils::DownloadFile(rtrim($File), "$label.gpl");
+		CoreUtils::downloadFile(rtrim($File), "$label.gpl");
 	}
 
 	static function ValidateTagName($key){
@@ -737,8 +737,8 @@ GPL;
 				return $code;
 			if ($value[0] === '-')
 				return 'dash';
-			$sanitized_name = regex_replace(new RegExp('[^a-z\d]'),'',$value);
-			if (regex_match(new RegExp('^(b+[a4]+w*d+|g+[uo0]+d+|(?:b+[ae3]+|w+[o0u]+r+)[s5]+[t7]+)(e+r+|e+s+t+)?p+[o0]+[wh]*n+[ye3]*'),$sanitized_name))
+			$sanitized_name = preg_replace(new RegExp('[^a-z\d]'),'',$value);
+			if (preg_match(new RegExp('^(b+[a4]+w*d+|g+[uo0]+d+|(?:b+[ae3]+|w+[o0u]+r+)[s5]+[t7]+)(e+r+|e+s+t+)?p+[o0]+[wh]*n+[ye3]*'),$sanitized_name))
 				return 'opinionbased';
 		},array(
 			Input::IN_RANGE => [3,30],
@@ -749,7 +749,7 @@ GPL;
 				'opinionbased' => 'Highly opinion-based tags are not allowed',
 			)
 		)))->out());
-		CoreUtils::CheckStringValidity($name,'Tag name',INVERSE_TAG_NAME_PATTERN);
+		CoreUtils::checkStringValidity($name,'Tag name',INVERSE_TAG_NAME_PATTERN);
 		return $name;
 	}
 
@@ -775,6 +775,6 @@ GPL;
 			'type' => 'entry',
 			'body' => $body,
 		));
-		return CoreUtils::ElasticClient()->search($params);
+		return CoreUtils::elasticClient()->search($params);
 	}
 }

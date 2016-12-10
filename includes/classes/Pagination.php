@@ -29,7 +29,7 @@ class Pagination {
 				trigger_error("Missing variable \$$var", E_USER_ERROR);
 
 		$this->itemsPerPage = (int) $ItemsPerPage;
-		$this->page = (int) max(intval(regex_replace(new RegExp('^.*\/(\d+)$'),'$1',$data), 10), 1);
+		$this->page = (int) max(intval(preg_replace(new RegExp('^.*\/(\d+)$'),'$1',$data), 10), 1);
 		$this->_context = $context;
 		$this->_wrap = (bool) $wrap;
 		$this->_basePath = $basePath;
@@ -130,7 +130,7 @@ class Pagination {
 	 * @param string $update The CSS selector specifying which element to place $output in
 	 */
 	function Respond($output, $update){
-		$RQURI = rtrim(regex_replace(new RegExp('js=true(?:&|$)'),'',$_SERVER['REQUEST_URI']),'?');
+		$RQURI = rtrim(preg_replace(new RegExp('js=true(?:&|$)'),'',$_SERVER['REQUEST_URI']),'?');
 		Response::Done(array(
 			'output' => $output,
 			'update' => $update,

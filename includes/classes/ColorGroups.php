@@ -82,7 +82,7 @@ class ColorGroups {
 		if (is_array($GroupID)) $Group = $GroupID;
 		else $Group = $CGDb->where('groupid',$GroupID)->getOne('colorgroups');
 
-		$label = CoreUtils::EscapeHTML($Group['label']).($colon?': ':'');
+		$label = CoreUtils::escapeHTML($Group['label']).($colon?': ':'');
 		$HTML =
 			"<span class='cat'>$label".
 				($colorNames && Permission::Sufficient('staff')?'<span class="admin"><button class="blue typcn typcn-pencil edit-cg"></button><button class="red typcn typcn-trash delete-cg"></button></span>':'').
@@ -93,7 +93,7 @@ class ColorGroups {
 		if (!empty($Colors)){
 			$extraInfo = $force_extra_info || !UserPrefs::Get('cg_hideclrinfo');
 			foreach ($Colors as $i => $c){
-				$title = CoreUtils::AposEncode($c['label']);
+				$title = CoreUtils::aposEncode($c['label']);
 				$color = '';
 				if (!empty($c['hex'])){
 					$color = $c['hex'];
@@ -104,7 +104,7 @@ class ColorGroups {
 				if ($colorNames){
 					$append = "<div class='color-line".(!$extraInfo || empty($color)?' no-detail':'')."'>$append<span><span class='label'>{$c['label']}";
 					if ($extraInfo && !empty($color)){
-						$rgb = CoreUtils::Hex2Rgb($color);
+						$rgb = CoreUtils::hex2Rgb($color);
 						$rgb = 'rgb('.implode(',',$rgb).')';
 						$append .= "</span><span class='ext'>$color &bull; $rgb";
 					}

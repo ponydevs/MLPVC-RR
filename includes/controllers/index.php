@@ -3,11 +3,11 @@
 use App\Episodes;
 use App\CoreUtils;
 
-$CurrentEpisode = Episodes::GetLatest();
+$CurrentEpisode = Episodes::getLatest();
 if (empty($CurrentEpisode))
-	CoreUtils::LoadPage(array(
+	CoreUtils::loadPage(array(
 		'title' => 'Home',
 		'view' => 'episode',
 	));
 
-Episodes::LoadPage($CurrentEpisode);
+Episodes::loadPage($CurrentEpisode);

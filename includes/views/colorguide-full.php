@@ -38,7 +38,7 @@ use App\Tags;
 	if (Permission::Sufficient('staff'))
 		$export = array_merge($export,array(
 			'TAG_TYPES_ASSOC' => Tags::$TAG_TYPES_ASSOC,
-			'MAX_SIZE' => CoreUtils::GetMaxUploadSize(),
+			'MAX_SIZE' => CoreUtils::getMaxUploadSize(),
 			'HEX_COLOR_PATTERN' => $HEX_COLOR_REGEX,
 		));
-	CoreUtils::ExportVars($export);
+	echo CoreUtils::exportVars($export);

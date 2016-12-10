@@ -61,7 +61,7 @@ class GlobalSettings {
 	 * @return mixed
 	 */
 	static function Process($key){
-		$value = CoreUtils::Trim($_POST['value']);
+		$value = CoreUtils::trim($_POST['value']);
 
 		if ($value === '')
 			return null;
@@ -69,7 +69,7 @@ class GlobalSettings {
 		switch ($key){
 			case "reservation_rules":
 			case "about_reservations":
-				$value = CoreUtils::SanitizeHtml($value, $key === 'reservation_rules'? array('li', 'ol') : array('p'));
+				$value = CoreUtils::sanitizeHtml($value, $key === 'reservation_rules'? array('li', 'ol') : array('p'));
 			break;
 		}
 

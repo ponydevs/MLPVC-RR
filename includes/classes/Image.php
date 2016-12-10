@@ -114,11 +114,11 @@ class Image {
 	 */
 	static function DrawSquare($image, $x, $y, $size, $fill, $outline){
 		if (!empty($fill) && is_string($fill)){
-			$fill = CoreUtils::Hex2Rgb($fill);
+			$fill = CoreUtils::hex2Rgb($fill);
 			$fill = imagecolorallocate($image, $fill[0], $fill[1], $fill[2]);
 		}
 		if (is_string($outline)){
-			$outline = CoreUtils::Hex2Rgb($outline);
+			$outline = CoreUtils::hex2Rgb($outline);
 			$outline = imagecolorallocate($image, $outline[0], $outline[1], $outline[2]);
 		}
 
@@ -151,11 +151,11 @@ class Image {
 	 */
 	static function DrawCircle($image, $x, $y, $size, $fill, $outline){
 		if (!empty($fill)){
-			$fill = CoreUtils::Hex2Rgb($fill);
+			$fill = CoreUtils::hex2Rgb($fill);
 			$fill = imagecolorallocate($image, $fill[0], $fill[1], $fill[2]);
 		}
 		if (is_string($outline)){
-			$outline = CoreUtils::Hex2Rgb($outline);
+			$outline = CoreUtils::hex2Rgb($outline);
 			$outline = imagecolorallocate($image, $outline[0], $outline[1], $outline[2]);
 		}
 
@@ -170,8 +170,8 @@ class Image {
 			$y2 = $y + $size;
 			$width = $height = $size;
 		}
-		$cx = CoreUtils::Average($x,$x2);
-		$cy = CoreUtils::Average($y,$y2);
+		$cx = CoreUtils::average($x,$x2);
+		$cy = CoreUtils::average($y,$y2);
 
 		if (isset($fill))
 			imagefilledellipse($image, $cx, $cy, $width, $height, $fill);
@@ -287,11 +287,11 @@ class Image {
 	 */
 	private static function _output($data, $path, $relpath, $write_callback, $content_type){
 		if (isset($data)){
-			CoreUtils::CreateUploadFolder($path);
+			CoreUtils::createUploadFolder($path);
 			$write_callback($path, $data);
 		}
 
-		CoreUtils::FixPath("$relpath?t=".filemtime($path));
+		CoreUtils::fixPath("$relpath?t=".filemtime($path));
 		header("Content-Type: image/$content_type");
 		readfile($path);
 		exit;

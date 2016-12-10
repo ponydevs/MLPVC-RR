@@ -2,4 +2,4 @@
 
 namespace App;
 
-Response::Done(array('footer' => CoreUtils::GetFooterGitInfo()));
+Response::Done(array('footer' => CoreUtils::getFooterGitInfo()));

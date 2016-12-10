@@ -12,12 +12,12 @@ use App\Posts; ?>
 	<section class="useful-links">
 		<h2><span class="typcn typcn-link"></span>Manage useful links</h2>
 		<p><button class="green typcn typcn-plus" id="add-link">Add link</button><button class='darkblue typcn typcn-arrow-unsorted' id="reorder-links">Re-order links</button></p>
-		<div><?=CoreUtils::GetSidebarUsefulLinksListHTML()?></div>
+		<div><?=CoreUtils::getSidebarUsefulLinksListHTML()?></div>
 	</section>
 
 	<section class="overdue-submissions">
 		<h2><span class="typcn typcn-time"></span>Overdue submissions</h2>
-		<div><?=CoreUtils::GetOverdueSubmissionList()?></div>
+		<div><?=CoreUtils::getOverdueSubmissionList()?></div>
 	</section>
 
 	<section class="mass-approve">
@@ -30,7 +30,7 @@ use App\Posts; ?>
 	<section class="elastic-status">
 		<h2>Elastic status</h2>
 <?php   try {
-			$client = CoreUtils::ElasticClient();
+			$client = CoreUtils::elasticClient();
 			$client->ping(); ?>
 		<pre><code><strong>Indices</strong><br><?=$client->cat()->indices(['v' => true])?></code></pre>
 		<pre><code><strong>Nodes</strong><br><?=$client->cat()->nodes(['v' => true])?></code></pre>
@@ -48,7 +48,7 @@ use App\Posts; ?>
 </div>
 
 <?php
-	CoreUtils::ExportVars(array(
+	echo CoreUtils::exportVars(array(
 		'ROLES_ASSOC' => Permission::$ROLES_ASSOC,
 		'PRINTABLE_ASCII_PATTERN' => PRINTABLE_ASCII_PATTERN
 	));

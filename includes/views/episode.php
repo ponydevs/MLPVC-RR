@@ -16,7 +16,7 @@ use App\Models\Episode;
  */
 
 if ($do === 'da-auth' && isset($err)){
-		echo CoreUtils::Notice('fail',"There was a(n) <strong>$err</strong> error while trying to authenticate with DeviantArt".(isset(DeviantArt::$OAUTH_RESPONSE[$err])?'; '.DeviantArt::$OAUTH_RESPONSE[$err]:'.').(!empty($errdesc)?"\n\nAdditional details: $errdesc":''),true) ?>
+		echo CoreUtils::notice('fail',"There was a(n) <strong>$err</strong> error while trying to authenticate with DeviantArt".(isset(DeviantArt::$OAUTH_RESPONSE[$err])?'; '.DeviantArt::$OAUTH_RESPONSE[$err]:'.').(!empty($errdesc)?"\n\nAdditional details: $errdesc":''),true) ?>
 <script>try{history.replaceState('',{},'/')}catch(e){}</script>
 <?  } ?>
 <div id="content">
@@ -26,16 +26,16 @@ if ($do === 'da-auth' && isset($err)){
 		if (!empty($PrevEpisode)){
 			$PrevEpisodeTitle = $PrevEpisode->formatTitle(AS_ARRAY, null, false); ?>
 			<div>
-				<a href="<?=$PrevEpisode->formatURL()?>" class="ep-button btn typcn typcn-media-rewind"><span class="typcn typcn-media-rewind"></span><span class="id"><?=$PrevEpisodeTitle['id']?>: </span><?=CoreUtils::Cutoff(Episodes::RemoveTitlePrefix($PrevEpisodeTitle['title']),Episodes::TITLE_CUTOFF)?></a>
+				<a href="<?=$PrevEpisode->formatURL()?>" class="ep-button btn typcn typcn-media-rewind"><span class="typcn typcn-media-rewind"></span><span class="id"><?=$PrevEpisodeTitle['id']?>: </span><?=CoreUtils::cutoff(Episodes::removeTitlePrefix($PrevEpisodeTitle['title']),Episodes::TITLE_CUTOFF)?></a>
 			</div>
 <?php   }
 		else echo "&nbsp;"; ?></div>
 		<div class="main">
 			<div>
-				<h1><?=CoreUtils::EscapeHTML($heading)?></h1>
+				<h1><?=CoreUtils::escapeHTML($heading)?></h1>
 				<p>Vector Requests & Reservations</p>
 <?php   if (Permission::Sufficient('staff')){ ?>
-				<p class="addedby"><em><?=$CurrentEpisode->isMovie?'Movie':'Episode'?> added by <?=Users::Get($CurrentEpisode->posted_by)->getProfileLink().' '.Time::Tag($CurrentEpisode->posted)?></em></p>
+				<p class="addedby"><em><?=$CurrentEpisode->isMovie?'Movie':'Episode'?> added by <?=Users::Get($CurrentEpisode->posted_by)->getProfileLink().' '.Time::tag($CurrentEpisode->posted)?></em></p>
 <?php   } ?>
 			</div>
 		</div>
@@ -43,12 +43,12 @@ if ($do === 'da-auth' && isset($err)){
 		if (!empty($NextEpisode)){
 			$NextEpisodeTitle = $NextEpisode->formatTitle(AS_ARRAY, null, false); ?>
 			<div>
-				<a href="<?=$NextEpisode->formatURL()?>" class="ep-button btn typcn typcn-media-fast-forward"><span class="id"><?=$NextEpisodeTitle['id']?>: </span><?=CoreUtils::Cutoff(Episodes::RemoveTitlePrefix($NextEpisodeTitle['title']),Episodes::TITLE_CUTOFF)?><span class="typcn typcn-media-fast-forward"></span></a>
+				<a href="<?=$NextEpisode->formatURL()?>" class="ep-button btn typcn typcn-media-fast-forward"><span class="id"><?=$NextEpisodeTitle['id']?>: </span><?=CoreUtils::cutoff(Episodes::removeTitlePrefix($NextEpisodeTitle['title']),Episodes::TITLE_CUTOFF)?><span class="typcn typcn-media-fast-forward"></span></a>
 			</div>
 <?php   }
 		else echo "&nbsp;"; ?></div>
 	</div>
-	<?=Episodes::GetVideosHTML($CurrentEpisode)?>
+	<?=Episodes::getVideosHTML($CurrentEpisode)?>
 	<section class="about-res">
 		<h2>What Vector Reservations Are<?=Permission::Sufficient('staff')?'<button class="blue typcn typcn-pencil" id="edit-about_reservations">Edit</button>':''?></h2>
 		<?=GlobalSettings::Get('about_reservations')?>
@@ -57,7 +57,7 @@ if ($do === 'da-auth' && isset($err)){
 		<h2>Reservation Rules<?=Permission::Sufficient('staff')?'<button class="orange typcn typcn-pencil" id="edit-reservation_rules">Edit</button>':''?></h2>
 		<?=GlobalSettings::Get('reservation_rules')?>
 	</section>
-<?php   echo Episodes::GetAppearancesSectionHTML($CurrentEpisode);
+<?php   echo Episodes::getAppearancesSectionHTML($CurrentEpisode);
 		if (Permission::Sufficient('staff')){ ?>
 	<section class="admin">
 		<h2>Administration area</h2>
@@ -78,15 +78,15 @@ if ($do === 'da-auth' && isset($err)){
 			$export['USERNAME_REGEX'] = $USERNAME_REGEX;
 		if ($signedIn)
 			$export['FULLSIZE_MATCH_REGEX'] = $FULLSIZE_MATCH_REGEX;
-		CoreUtils::ExportVars($export);
+		echo CoreUtils::exportVars($export);
 	} else { ?>
 	<h1>There's nothing here yet&hellip;</h1>
 	<p>&hellip;but there will be!</p>
 
 <?php   if (Permission::Sufficient('staff'))
-			echo CoreUtils::Notice('info','No episodes found',"To make the site functional, you must add an episode to the database first. Head on over to the <a href='/episodes'>Episodes</a> page and add one now!");
+			echo CoreUtils::notice('info','No episodes found',"To make the site functional, you must add an episode to the database first. Head on over to the <a href='/episodes'>Episodes</a> page and add one now!");
 	} ?>
 </div>
 
 <?  if (Permission::Sufficient('staff'))
-		CoreUtils::ExportVars(array('EP_TITLE_REGEX' => $EP_TITLE_REGEX));
+		echo CoreUtils::exportVars(array('EP_TITLE_REGEX' => $EP_TITLE_REGEX));

@@ -22,7 +22,7 @@ else {
 			<p><?php
 echo "<span class='rolelabel'>{$User->rolelabel}</span>";
 if ($canEdit){
-	echo ' <button id="change-role" class="blue typcn typcn-spanner'.($User->role==='ban'?' hidden':'').'" title="Change '.CoreUtils::Posess($User->name).' group"></button>';
+	echo ' <button id="change-role" class="blue typcn typcn-spanner'.($User->role==='ban'?' hidden':'').'" title="Change '.CoreUtils::posess($User->name).' group"></button>';
 	$BanLabel = ($User->role==='ban'?'Un-ban':'Ban').'ish';
 	$Icon = $User->role==='ban'?'world':'weather-night';
 	if (Permission::Sufficient('staff', $User->role))
@@ -84,7 +84,7 @@ if (Permission::Sufficient('member', $User->role)){
 							: ''
 						)
 						:''
-					).'</p><p>You can click the <strong class="color-green"><span class="typcn typcn-tick"></span> Check</strong> button below the '.CoreUtils::MakePlural('image',$AwaitCount).' in case we forgot to click it ourselves after accepting it.'?></p>
+					).'</p><p>You can click the <strong class="color-green"><span class="typcn typcn-tick"></span> Check</strong> button below the '.CoreUtils::makePlural('image',$AwaitCount).' in case we forgot to click it ourselves after accepting it.'?></p>
 <?  if ($AwaitCount){ ?>
 			<ul id="awaiting-deviations"><?
 		foreach ($AwaitingApproval as $Post){
@@ -145,7 +145,7 @@ if (!empty($Banishes)){
 	foreach ($Banishes as $b){
 		$initiator = $displayInitiator ? Users::Get($b['initiator']) : null;
 		$b['reason'] = htmlspecialchars($b['reason']);
-		echo "<li class=".strtolower($Actions[$b['action']])."><blockquote>{$b['reason']}</blockquote> - ".(isset($initiator)?$initiator->getProfileLink().' ':'').Time::Tag($b['timestamp'])."</li>";
+		echo "<li class=".strtolower($Actions[$b['action']])."><blockquote>{$b['reason']}</blockquote> - ".(isset($initiator)?$initiator->getProfileLink().' ':'').Time::tag($b['timestamp'])."</li>";
 	}
 }
 			?></ul>
@@ -286,7 +286,7 @@ if ($canEdit){
 			$ROLES[$name] = $label;
 		}
 	}
-	echo CoreUtils::ExportVars(array(
+	echo CoreUtils::exportVars(array(
 		'ROLES' => $ROLES,
 	));
 } ?>

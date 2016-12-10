@@ -9,7 +9,7 @@ use App\Notifications;
 use App\Posts;
 use App\Response;
 
-if (!POST_REQUEST) CoreUtils::NotFound();
+if (!POST_REQUEST) CoreUtils::notFound();
 if (!$signedIn) Response::Fail();
 CSRFProtection::Protect();
 
@@ -70,7 +70,7 @@ switch($action){
 
 						Posts::ClearTransferAttempts($Post, $data['type'], 'deny');
 
-						Logs::Action('res_transfer',array(
+						Logs::action('res_transfer',array(
 							'id' => $data['id'],
 							'type' => $data['type'],
 							'to' => $data['user'],

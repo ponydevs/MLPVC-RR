@@ -10,15 +10,15 @@ use App\Response;
 use App\Users;
 
 	if (!Permission::Sufficient('staff'))
-		CoreUtils::NotFound();
+		CoreUtils::notFound();
 
 	$task = strtok($data, '/');
-	$data = regex_replace(new RegExp('^[^/]*?(?:/(.*))?$'), '$1', $data);
+	$data = preg_replace(new RegExp('^[^/]*?(?:/(.*))?$'), '$1', $data);
 
 	if (POST_REQUEST){
 		switch ($task){
 			case "logs":
-				if (regex_match(new RegExp('^details/(\d+)'), $data, $_match)){
+				if (preg_match(new RegExp('^details/(\d+)'), $data, $_match)){
 					$EntryID = intval($_match[1], 10);
 
 					$MainEntry = $Database->where('entryid', $EntryID)->getOne('log');
@@ -34,12 +34,12 @@ use App\Users;
 						Response::Fail('Failed to retrieve details', array('unlickable' => true));
 					}
 
-					Response::Done(Logs::FormatEntryDetails($MainEntry,$Details));
+					Response::Done(Logs::formatEntryDetails($MainEntry,$Details));
 				}
-				else CoreUtils::NotFound();
+				else CoreUtils::notFound();
 			break;
 			case "usefullinks":
-				if (regex_match(new RegExp('^([gs]et|del|make)(?:/(\d+))?$'), $data, $_match)){
+				if (preg_match(new RegExp('^([gs]et|del|make)(?:/(\d+))?$'), $data, $_match)){
 					$action = $_match[1];
 					$creating = $action === 'make';
 
@@ -75,7 +75,7 @@ use App\Users;
 								)
 							)))->out();
 							if ($creating || $Link['label'] !== $label){
-								CoreUtils::CheckStringValidity($label, 'Link label', INVERSE_PRINTABLE_ASCII_PATTERN);
+								CoreUtils::checkStringValidity($label, 'Link label', INVERSE_PRINTABLE_ASCII_PATTERN);
 								$data['label'] = $label;
 							}
 
@@ -99,7 +99,7 @@ use App\Users;
 							if (!isset($title))
 								$data['title'] = '';
 							else if ($creating || $Link['title'] !== $title){
-								CoreUtils::CheckStringValidity($title, 'Link title', INVERSE_PRINTABLE_ASCII_PATTERN);
+								CoreUtils::checkStringValidity($title, 'Link title', INVERSE_PRINTABLE_ASCII_PATTERN);
 								$data['title'] = $title;
 							}
 
@@ -125,7 +125,7 @@ use App\Users;
 
 							Response::Done();
 						break;
-						default: CoreUtils::NotFound();
+						default: CoreUtils::notFound();
 					}
 				}
 				else if ($data === 'reorder'){
@@ -142,15 +142,15 @@ use App\Users;
 
 					Response::Done();
 				}
-				else CoreUtils::NotFound();
+				else CoreUtils::notFound();
 			break;
 			default:
-				CoreUtils::NotFound();
+				CoreUtils::notFound();
 		}
 	}
 
 	if (empty($task))
-		CoreUtils::LoadPage(array(
+		CoreUtils::loadPage(array(
 			'title' => 'Admin Area',
 			'do-css',
 			'js' => array('Sortable',$do),
@@ -158,13 +158,13 @@ use App\Users;
 
 	switch ($task){
 		case "logs":
-			$type = Logs::ValidateRefType('type', true, true);
-			if (isset($_GET['type']) && regex_match(new RegExp('/^[a-z_]+$/'), $_GET['type']) && isset(Logs::$LOG_DESCRIPTION[$_GET['type']]))
+			$type = Logs::validateRefType('type', true, true);
+			if (isset($_GET['type']) && preg_match(new RegExp('/^[a-z_]+$/'), $_GET['type']) && isset(Logs::$LOG_DESCRIPTION[$_GET['type']]))
 				$type = $_GET['type'];
 
 			if (!isset($_GET['by']))
 				$by = null;
-			else switch(strtolower(CoreUtils::Trim($_GET['by']))){
+			else switch(strtolower(CoreUtils::trim($_GET['by']))){
 				case 'me':
 				case 'you':
 					$initiator = $currentUser->id;
@@ -218,7 +218,7 @@ use App\Users;
 			if (!empty($title))
 				$title .= '- ';
 			$title .= "Page {$Pagination->page} - $heading";
-			CoreUtils::FixPath("/admin/logs/{$Pagination->page}".(!empty($q)?'?'.implode('&',$q):''));
+			CoreUtils::fixPath("/admin/logs/{$Pagination->page}".(!empty($q)?'?'.implode('&',$q):''));
 
 			processFilter();
 			$LogItems = $Database
@@ -227,9 +227,9 @@ use App\Users;
 				->get('log', $Pagination->GetLimit());
 
 			if (isset($_GET['js']))
-				$Pagination->Respond(Logs::GetTbody($LogItems), '#logs tbody');
+				$Pagination->Respond(Logs::getTbody($LogItems), '#logs tbody');
 
-			CoreUtils::LoadPage(array(
+			CoreUtils::loadPage(array(
 				'title' => $title,
 				'view' => "$do-logs",
 				'css' => "$do-logs",
@@ -237,5 +237,5 @@ use App\Users;
 			));
 		break;
 		default:
-			CoreUtils::NotFound();
+			CoreUtils::notFound();
 	}

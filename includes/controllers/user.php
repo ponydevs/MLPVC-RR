@@ -39,7 +39,7 @@ if (POST_REQUEST){
 			Response::Fail("You have already been verified using this automated method. If - for yome reason - you still don't have the Club Members role please ask for assistance in the <strong>#support</strong> channel.");
 
 		if (empty($token)){
-			$token = regex_replace(new RegExp('[^a-z\d]','i'),'',base64_encode(random_bytes(12)));
+			$token = preg_replace(new RegExp('[^a-z\d]','i'),'',base64_encode(random_bytes(12)));
 			UserPrefs::Set('discord_token', $token);
 		}
 
@@ -48,9 +48,9 @@ if (POST_REQUEST){
 
 	CSRFProtection::Protect();
 
-	if (empty($data)) CoreUtils::NotFound();
+	if (empty($data)) CoreUtils::notFound();
 
-	if (regex_match(new RegExp('^sessiondel/(\d+)$'),$data,$_match)){
+	if (preg_match(new RegExp('^sessiondel/(\d+)$'),$data,$_match)){
 		$Session = $Database->where('id', $_match[1])->getOne('sessions');
 		if (empty($Session))
 			Response::Fail('This session does not exist');
@@ -64,7 +64,7 @@ if (POST_REQUEST){
 
 	if (!Permission::Sufficient('staff')) Response::Fail();
 
-	if (regex_match(new RegExp('^newgroup/'.USERNAME_PATTERN.'$'),$data,$_match)){
+	if (preg_match(new RegExp('^newgroup/'.USERNAME_PATTERN.'$'),$data,$_match)){
 		$targetUser = Users::Get($_match[1], 'name');
 		if (empty($targetUser))
 			Response::Fail('User not found');
@@ -92,7 +92,7 @@ if (POST_REQUEST){
 
 		Response::Done();
 	}
-	else if (regex_match(new RegExp('^(un-)?banish/'.USERNAME_PATTERN.'$'), $data, $_match)){
+	else if (preg_match(new RegExp('^(un-)?banish/'.USERNAME_PATTERN.'$'), $data, $_match)){
 		$Action = (empty($_match[1]) ? 'Ban' : 'Un-ban').'ish';
 		$action = strtolower($Action);
 		$un = $_match[2];
@@ -117,7 +117,7 @@ if (POST_REQUEST){
 
 		$changes = array('role' => $action == 'banish' ? 'ban' : 'user');
 		$Database->where('id', $targetUser->id)->update('users', $changes);
-		Logs::Action($action,array(
+		Logs::action($action,array(
 			'target' => $targetUser->id,
 			'reason' => $reason
 		));
@@ -129,7 +129,7 @@ if (POST_REQUEST){
 
 		Response::Success("We welcome {$targetUser->name} back with open hooves!", $changes);
 	}
-	else CoreUtils::NotFound();
+	else CoreUtils::notFound();
 }
 
 if (strtolower($data) === 'immortalsexgod')
@@ -139,7 +139,7 @@ if (empty($data)){
 	if ($signedIn) $un = $currentUser->name;
 	else $MSG = 'Sign in to view your settings';
 }
-else if (regex_match($USERNAME_REGEX, $data, $_match))
+else if (preg_match($USERNAME_REGEX, $data, $_match))
 	$un = $_match[1];
 
 if (!isset($un)){
@@ -167,7 +167,7 @@ else {
 	$sameUser = $signedIn && $User->id === $currentUser->id;
 	$canEdit = !$sameUser && Permission::Sufficient('staff') && Permission::Sufficient($User->role);
 	$pagePath = "/@{$User->name}";
-	CoreUtils::FixPath($pagePath);
+	CoreUtils::fixPath($pagePath);
 }
 
 if (isset($MSG)) HTTP::StatusCode(404);
@@ -183,10 +183,10 @@ else {
 }
 
 $settings = array(
-	'title' => !isset($MSG) ? ($sameUser?'Your':CoreUtils::Posess($User->name)).' '.($sameUser || $canEdit?'account':'profile') : 'Account',
+	'title' => !isset($MSG) ? ($sameUser?'Your':CoreUtils::posess($User->name)).' '.($sameUser || $canEdit?'account':'profile') : 'Account',
 	'no-robots',
 	'do-css',
 	'js' => array('user'),
 );
 if ($canEdit) $settings['js'][] = 'user-manage';
-CoreUtils::LoadPage($settings);
+CoreUtils::loadPage($settings);

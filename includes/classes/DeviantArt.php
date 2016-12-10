@@ -43,7 +43,7 @@ class DeviantArt {
 		if (!empty($token)) $requestHeaders[] = "Authorization: Bearer $token";
 		else if ($token !== false) return null;
 
-		$requestURI  = regex_match(new RegExp('^https?://'), $endpoint) ? $endpoint : "https://www.deviantart.com/api/v1/oauth2/$endpoint";
+		$requestURI  = preg_match(new RegExp('^https?://'), $endpoint) ? $endpoint : "https://www.deviantart.com/api/v1/oauth2/$endpoint";
 
 		$r = curl_init($requestURI);
 		$curl_opt = array(
@@ -64,8 +64,8 @@ class DeviantArt {
 		$responseCode = curl_getinfo($r, CURLINFO_HTTP_CODE);
 		$headerSize = curl_getinfo($r, CURLINFO_HEADER_SIZE);
 
-		$responseHeaders = rtrim(substr($response, 0, $headerSize));
-		$response = substr($response, $headerSize);
+		$responseHeaders = rtrim(CoreUtils::substring($response, 0, $headerSize));
+		$response = CoreUtils::substring($response, $headerSize);
 		$http_response_header = array_map("rtrim",explode("\n",$responseHeaders));
 		$curlError = curl_error($r);
 		curl_close($r);
@@ -74,7 +74,7 @@ class DeviantArt {
 		if ($responseCode < 200 || $responseCode >= 300)
 			throw new cURLRequestException(rtrim("cURL fail for URL \"$requestURI\" (HTTP $responseCode); $curlError",' ;'), $responseCode);
 
-		if (regex_match(new RegExp('Content-Encoding:\s?gzip'), $responseHeaders))
+		if (preg_match(new RegExp('Content-Encoding:\s?gzip'), $responseHeaders))
 			$response = gzdecode($response);
 		return JSON::Decode($response, true);
 	}
@@ -93,7 +93,7 @@ class DeviantArt {
 		global $Database, $FULLSIZE_MATCH_REGEX;
 
 		if ($type === 'sta.sh')
-			$ID = CoreUtils::NomralizeStashID($ID);
+			$ID = CoreUtils::nomralizeStashID($ID);
 
 		$Deviation = $Database->where('id', $ID)->where('provider', $type)->getOne('deviation_cache');
 
@@ -128,16 +128,16 @@ class DeviantArt {
 			}
 
 			$insert = array(
-				'title' => regex_replace(new RegExp('\\\\\''),"'",$json['title']),
-				'preview' => URL::MakeHttps($json['thumbnail_url']),
-				'fullsize' => URL::MakeHttps(isset($json['fullsize_url']) ? $json['fullsize_url'] : $json['url']),
+				'title' => preg_replace(new RegExp('\\\\\''),"'",$json['title']),
+				'preview' => URL::makeHttps($json['thumbnail_url']),
+				'fullsize' => URL::makeHttps(isset($json['fullsize_url']) ? $json['fullsize_url'] : $json['url']),
 				'provider' => $type,
 				'author' => $json['author_name'],
 				'updated_on' => date('c'),
 			);
 
-			if (!regex_match($FULLSIZE_MATCH_REGEX, $insert['fullsize'])){
-				$fullsize_attempt = CoreUtils::GetFullsizeURL($ID, $type);
+			if (!preg_match($FULLSIZE_MATCH_REGEX, $insert['fullsize'])){
+				$fullsize_attempt = CoreUtils::getFullsizeURL($ID, $type);
 				if (is_string($fullsize_attempt))
 					$insert['fullsize'] = $fullsize_attempt;
 			}
@@ -180,7 +180,7 @@ class DeviantArt {
 		if (empty($type) || !in_array($type,array('fav.me','sta.sh'))) $type = 'fav.me';
 
 		if ($type === 'sta.sh')
-			$ID = CoreUtils::NomralizeStashID($ID);
+			$ID = CoreUtils::nomralizeStashID($ID);
 		try {
 			$data = DeviantArt::Request('http://backend.deviantart.com/oembed?url='.urlencode("http://$type/$ID"),false);
 		}
@@ -245,7 +245,7 @@ class DeviantArt {
 		$UserID = strtolower($userdata['userid']);
 		$UserData = array(
 			'name' => $userdata['username'],
-			'avatar_url' => URL::MakeHttps($userdata['usericon']),
+			'avatar_url' => URL::makeHttps($userdata['usericon']),
 		);
 		$AuthData = array(
 			'access' => $json['access_token'],
@@ -257,7 +257,7 @@ class DeviantArt {
 		$cookie = bin2hex(random_bytes(64));
 		$AuthData['token'] = sha1($cookie);
 
-		$browser = CoreUtils::DetectBrowser();
+		$browser = CoreUtils::detectBrowser();
 		foreach ($browser as $k => $v)
 			if (!empty($v))
 				$AuthData[$k] = $v;
@@ -296,16 +296,16 @@ class DeviantArt {
 	}
 
 	static function IsImageAvailable(string $url):bool {
-		if (CoreUtils::IsURLAvailable($url))
+		if (CoreUtils::isURLAvailable($url))
 			return true;
-		CoreUtils::MSleep(300);
-		if (CoreUtils::IsURLAvailable($url))
+		CoreUtils::msleep(300);
+		if (CoreUtils::isURLAvailable($url))
 			return true;
-		CoreUtils::MSleep(300);
-		if (CoreUtils::IsURLAvailable("$url?"))
+		CoreUtils::msleep(300);
+		if (CoreUtils::isURLAvailable("$url?"))
 			return true;
-		CoreUtils::MSleep(300);
-		if (CoreUtils::IsURLAvailable("$url?"))
+		CoreUtils::msleep(300);
+		if (CoreUtils::isURLAvailable("$url?"))
 			return true;
 		return false;
 	}

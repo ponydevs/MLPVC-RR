@@ -18,45 +18,30 @@ class Time {
 	/**
 	 * Gets the difference between 2 timestamps
 	 *
-	 * @param $now
-	 * @param $target
+	 * @param int $now
+	 * @param int $target
 	 *
 	 * @return array
 	 */
-	static function Difference($now, $target){
-		$substract = $now - $target;
-		$delta = array(
-			'past' => $substract > 0,
-			'time' => abs($substract),
+	static function difference(int $now, int $target):array {
+		$nowdt = new \DateTime();
+		$nowdt->setTimestamp($now);
+		$targetdt = new \DateTime();
+		$targetdt->setTimestamp($target);
+		$diff = date_diff($nowdt, $targetdt, true);
+		$subtract = $now - $target;
+
+		return array(
+			'year' => $diff->y,
+			'month' => $diff->m,
+			'day' => $diff->d,
+			'hour' => $diff->h,
+			'minute' => $diff->i,
+			'second' => $diff->s,
+			'past' => $subtract > 0,
+			'time' => abs($subtract),
 			'target' => $target
 		);
-		$time = $delta['time'];
-
-		$delta['day'] = floor($time/self::$IN_SECONDS['day']);
-		$time -= $delta['day'] * self::$IN_SECONDS['day'];
-
-		$delta['hour'] = floor($time/self::$IN_SECONDS['hour']);
-		$time -= $delta['hour'] * self::$IN_SECONDS['hour'];
-
-		$delta['minute'] = floor($time/self::$IN_SECONDS['minute']);
-		$time -= $delta['minute'] * self::$IN_SECONDS['minute'];
-
-		$delta['second'] = floor($time);
-
-		if (!empty($delta['day']) && $delta['day'] >= 7){
-			$delta['week'] = floor($delta['day']/7);
-			$delta['day'] -= $delta['week']*7;
-		}
-		if (!empty($delta['week']) && $delta['week'] >= 4){
-			$delta['month'] = floor($delta['week']/4);
-			$delta['week'] -= $delta['month']*4;
-		}
-		if (!empty($delta['month']) && $delta['month'] >= 12){
-			$delta['year'] = floor($delta['month']/12);
-			$delta['month'] -= $delta['year']*12;
-		}
-
-		return $delta;
 	}
 
 	/**
@@ -64,12 +49,17 @@ class Time {
 	 * Always uses the largest unit available
 	 *
 	 * @param int $timestamp
+	 * @param int $now       For use in tests
 	 *
 	 * @return string
 	 */
-	private static function _from($timestamp){
+	private static function _from(int $timestamp, $now = null):string {
 		Moment::setLocale('en_US');
-		return (new Moment(date('c',$timestamp)))->fromNow()->getRelative();
+		$out = new Moment(date('c',$timestamp));
+		if (isset($now))
+			$out = $out->from(new Moment(date('c', $now)));
+		else $out = $out->fromNow();
+		return $out->getRelative();
 	}
 
 	const
@@ -78,14 +68,15 @@ class Time {
 	/**
 	 * Create an ISO timestamp from the input string
 	 *
-	 * @param int $time
+	 * @param int    $time
 	 * @param string $format
+	 * @param int    $now    For use in tests (with the readable format)
 	 *
 	 * @return string
 	 */
-	static function Format($time, $format = 'c'){
+	static function format(int $time, string $format = 'c', $now = null):string {
 		if ($format === self::FORMAT_READABLE)
-			return self::_from($time);
+			return self::_from($time, $now);
 
 		$ts = gmdate($format, $time);
 		if ($format === 'c')
@@ -97,6 +88,7 @@ class Time {
 
 	const
 		TAG_EXTENDED = true,
+		TAG_ALLOW_DYNTIME = 'yes',
 		TAG_NO_DYNTIME = 'no',
 		TAG_STATIC_DYNTIME = 'static';
 
@@ -106,17 +98,18 @@ class Time {
 	 * @param string|int $timestamp
 	 * @param bool       $extended
 	 * @param string     $allowDyntime
+	 * @param int        $now           For use in tests
 	 *
 	 * @return string
 	 */
-	static function Tag($timestamp, $extended = false, $allowDyntime = 'yes'){
+	static function tag($timestamp, $extended = false, $allowDyntime = self::TAG_ALLOW_DYNTIME, $now = null){
 		if (is_string($timestamp))
 			$timestamp = strtotime($timestamp);
 		if ($timestamp === false) return null;
 
-		$datetime = self::Format($timestamp);
-		$full = self::Format($timestamp, self::FORMAT_FULL);
-		$text = self::Format($timestamp, self::FORMAT_READABLE);
+		$datetime = self::format($timestamp);
+		$full = self::format($timestamp, self::FORMAT_FULL);
+		$text = self::format($timestamp, self::FORMAT_READABLE, $now);
 
 		switch ($allowDyntime){
 			case self::TAG_NO_DYNTIME:
@@ -131,7 +124,7 @@ class Time {
 			!$extended
 			? "<time datetime='$datetime' title='$full'>$text</time>"
 			:"<time datetime='$datetime'>$full</time>".(
-				$allowDyntime === 'yes'
+				$allowDyntime === self::TAG_ALLOW_DYNTIME
 				?"<span class='dynt-el'>$text</span>"
 				:''
 			);

@@ -4,9 +4,9 @@ use App\CoreUtils;
 use App\Permission;
 
 if (!Permission::Sufficient('staff'))
-	CoreUtils::NotFound();
+	CoreUtils::notFound();
 
-CoreUtils::LoadPage(array(
+CoreUtils::loadPage(array(
 	'title' => 'Users',
 	'do-css'
 ));

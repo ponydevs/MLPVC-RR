@@ -39,7 +39,7 @@ use App\Logs; ?>
 				<th class="reftype">Event</th>
 			</tr>
 		</thead>
-		<tbody><?=Logs::GetTbody($LogItems)?></tbody>
+		<tbody><?=Logs::getTbody($LogItems)?></tbody>
 	</table>
 <?php
 		echo $Pagination->HTML;

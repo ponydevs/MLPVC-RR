@@ -46,7 +46,7 @@ class Appearances {
 
 		$HTML = '';
 		if (!empty($Appearances)) foreach ($Appearances as $Appearance){
-			$Appearance['label'] = CoreUtils::EscapeHTML($Appearance['label']);
+			$Appearance['label'] = CoreUtils::escapeHTML($Appearance['label']);
 
 			$img = self::GetSpriteHTML($Appearance);
 			$updates = self::GetUpdatesHTML($Appearance['id']);
@@ -87,7 +87,7 @@ class Appearances {
 	 * @return string
 	 */
 	static function GetPendingPlaceholderFor($Appearance):string {
-		return self::IsPrivate($Appearance) ? "<div class='colors-pending'><span class='typcn typcn-time'></span> This appearance will be finished soon, please check back later &mdash; ".Time::Tag($Appearance['added']).'</div>' : false;
+		return self::IsPrivate($Appearance) ? "<div class='colors-pending'><span class='typcn typcn-time'></span> This appearance will be finished soon, please check back later &mdash; ".Time::tag($Appearance['added']).'</div>' : false;
 	}
 
 	/**
@@ -140,7 +140,7 @@ class Appearances {
 			if ($isSynon && $HideSynon && !$searchedFor)
 				continue;
 			$class = " class='tag id-{$t['tid']}".($isSynon?' synonym':'').(!empty($t['type'])?' typ-'.$t['type']:'')."'";
-			$title = !empty($t['title']) ? " title='".CoreUtils::AposEncode($t['title'])."'" : '';
+			$title = !empty($t['title']) ? " title='".CoreUtils::aposEncode($t['title'])."'" : '';
 			if ($searchedFor || (Permission::Insufficient('staff') && !empty($Search['tid_assoc'][$t['tid']])))
 				$t['name'] = "<mark>{$t['name']}</mark>";
 			$syn_of = $isSynon ? " data-syn-of='{$t['synonym_of']}'" : '';
@@ -168,15 +168,15 @@ class Appearances {
 			$notes = '';
 			if ($hasNotes){
 				$Appearance['notes'] = preg_replace_callback('/'.EPISODE_ID_PATTERN.'/',function($a){
-					$Ep = Episodes::GetActual((int) $a[1], (int) $a[2]);
+					$Ep = Episodes::getActual((int) $a[1], (int) $a[2]);
 					return !empty($Ep)
-						? "<a href='{$Ep->formatURL()}'>".CoreUtils::AposEncode($Ep->formatTitle(AS_ARRAY,'title'))."</a>"
+						? "<a href='{$Ep->formatURL()}'>".CoreUtils::aposEncode($Ep->formatTitle(AS_ARRAY,'title'))."</a>"
 						: "<strong>{$a[0]}</strong>";
 				},$Appearance['notes']);
 				$Appearance['notes'] = preg_replace_callback('/'.MOVIE_ID_PATTERN.'/',function($a){
-					$Ep = Episodes::GetActual(0, (int) $a[1], true);
+					$Ep = Episodes::getActual(0, (int) $a[1], true);
 					return !empty($Ep)
-						? "<a href='{$Ep->formatURL()}'>".CoreUtils::AposEncode($Ep->formatTitle(AS_ARRAY,'title'))."</a>"
+						? "<a href='{$Ep->formatURL()}'>".CoreUtils::aposEncode($Ep->formatTitle(AS_ARRAY,'title'))."</a>"
 						: "<strong>{$a[0]}</strong>";
 				},$Appearance['notes']);
 				$Appearance['notes'] = preg_replace_callback('/(?:^|[^\\\\])\K(?:#(\d+))\b/',function($a){
@@ -233,7 +233,7 @@ class Appearances {
 	static function GetSpriteHTML($Appearance){
 		$imgPth = self::GetSpriteURL($Appearance['id']);
 		if (!empty($imgPth)){
-			$img = "<a href='$imgPth' target='_blank' title='Open image in new tab'><img src='$imgPth' alt='".CoreUtils::AposEncode($Appearance['label'])."'></a>";
+			$img = "<a href='$imgPth' target='_blank' title='Open image in new tab'><img src='$imgPth' alt='".CoreUtils::aposEncode($Appearance['label'])."'></a>";
 			if (Permission::Sufficient('staff'))
 				$img = "<div class='upload-wrap'>$img</div>";
 		}
@@ -257,7 +257,7 @@ class Appearances {
 
 		$update = Updates::Get($PonyID, MOST_RECENT);
 		if (!empty($update)){
-			$update = "Last updated ".Time::Tag($update['timestamp']);
+			$update = "Last updated ".Time::tag($update['timestamp']);
 		}
 		else {
 			if (!Permission::Sufficient('staff')) return '';
@@ -313,7 +313,7 @@ class Appearances {
 		if (empty($ids))
 			return;
 
-		$elastiClient = CoreUtils::ElasticClient();
+		$elastiClient = CoreUtils::elasticClient();
 		$list = is_string($ids) ? explode(',', $ids) : $ids;
 		foreach ($list as $i => $id){
 			$order = $i+1;
@@ -449,8 +449,8 @@ class Appearances {
 			$List = '';
 			foreach ($EpAppearances as $tag){
 				$name = strtoupper($tag['name']);
-				$EpData = Episodes::ParseID($name);
-				$Ep = Episodes::GetActual($EpData['season'], $EpData['episode'], $allowMovies);
+				$EpData = Episodes::parseID($name);
+				$Ep = Episodes::getActual($EpData['season'], $EpData['episode'], $allowMovies);
 				$List .= (
 					empty($Ep)
 					? self::ExpandEpisodeTagName($name)
@@ -458,7 +458,7 @@ class Appearances {
 				).', ';
 			}
 			$List = rtrim($List, ', ');
-			$N_episodes = CoreUtils::MakePlural($Appearance['ishuman'] ? 'movie' : 'episode',count($EpAppearances),PREPEND_NUMBER);
+			$N_episodes = CoreUtils::makePlural($Appearance['ishuman'] ? 'movie' : 'episode',count($EpAppearances),PREPEND_NUMBER);
 			$hide = '';
 		}
 		else {
@@ -484,9 +484,9 @@ HTML;
 	static function ExpandEpisodeTagName(string $tagname):string {
 		global $EPISODE_ID_REGEX, $MOVIE_ID_REGEX;
 
-		if (regex_match($EPISODE_ID_REGEX, $tagname, $_match))
-			return 'S'.CoreUtils::Pad($_match[1]).' E'.CoreUtils::Pad($_match[2]);
-		if (regex_match($MOVIE_ID_REGEX, $tagname, $_match))
+		if (preg_match($EPISODE_ID_REGEX, $tagname, $_match))
+			return 'S'.CoreUtils::pad($_match[1]).' E'.CoreUtils::pad($_match[2]);
+		if (preg_match($MOVIE_ID_REGEX, $tagname, $_match))
 			return "Movie #{$_match[1]}";
 		return $tagname;
 	}
@@ -534,7 +534,7 @@ HTML;
 	 * @return string
 	 */
 	static function GetSafeLabel($Appearance){
-		return CoreUtils::Trim(regex_replace(new RegExp('-+'),'-',regex_replace(new RegExp('[^A-Za-z\d\-]'),'-',$Appearance['label'])),'-');
+		return CoreUtils::trim(preg_replace(new RegExp('-+'),'-',preg_replace(new RegExp('[^A-Za-z\d\-]'),'-', $Appearance['label'])),'-');
 	}
 
 	static function GetRelated(int $AppearanceID){
@@ -586,7 +586,7 @@ HTML;
 	static function Reindex(){
 		global $CGDb;
 
-		$elasticClient = CoreUtils::ElasticClient();
+		$elasticClient = CoreUtils::elasticClient();
 		try {
 			$elasticClient->indices()->delete(CGUtils::ELASTIC_BASE);
 		}
@@ -678,7 +678,7 @@ HTML;
 		global $CGDb;
 
 		$Appearance = $CGDb->where('id', $AppearanceID)->getOne('appearances', $fields);
-		CoreUtils::ElasticClient()->update(self::ToElasticArray($Appearance, false, true));
+		CoreUtils::elasticClient()->update(self::ToElasticArray($Appearance, false, true));
 
 		return $Appearance;
 	}

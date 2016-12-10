@@ -83,10 +83,10 @@ class Input {
 
 		$this->_source = $SRC = isset($o[self::METHOD_GET]) && $o[self::METHOD_GET] === true ? '_GET' : '_POST';
 		$_SRC = $GLOBALS[$SRC];
-		if (!isset($_SRC[$key]) || strlen($_SRC[$key]) === 0)
+		if (!isset($_SRC[$key]) || CoreUtils::length($_SRC[$key]) === 0)
 			$result = empty($o[self::IS_OPTIONAL]) ? self::ERROR_MISSING : self::ERROR_NONE;
 		else {
-			$this->_value = $this->_type === 'text' ? CoreUtils::TrimMultiline($_SRC[$key]) : CoreUtils::Trim($_SRC[$key]);
+			$this->_value = $this->_type === 'text' ? CoreUtils::trim($_SRC[$key], true) : CoreUtils::trim($_SRC[$key]);
 			$this->_origValue = $this->_value;
 			$this->_range = $o[self::IN_RANGE] ?? null;
 
@@ -135,7 +135,7 @@ class Input {
 					return $code;
 			break;
 			case "uuid":
-				if (!is_string($this->_value) || !regex_match(new RegExp('^[a-f0-9]{8}\-[a-f0-9]{4}\-4[a-f0-9]{3}\-[89ab][a-f0-9]{3}\-[a-f0-9]{12}$','i'), $this->_value))
+				if (!is_string($this->_value) || !preg_match(new RegExp('^[a-f0-9]{8}\-[a-f0-9]{4}\-4[a-f0-9]{3}\-[89ab][a-f0-9]{3}\-[a-f0-9]{12}$','i'), $this->_value))
 					return self::ERROR_INVALID;
 
 				$this->_value = strtolower($this->_value);
@@ -150,16 +150,16 @@ class Input {
 					return self::ERROR_INVALID;
 				global $REWRITE_REGEX;
 				if (stripos($this->_value, ABSPATH) === 0)
-					$this->_value = substr($this->_value, strlen(ABSPATH)-1);
-				if (!regex_match($REWRITE_REGEX,$this->_value) && !regex_match(new RegExp('^#[a-z\-]+$'),$this->_value)){
+					$this->_value = CoreUtils::substring($this->_value, CoreUtils::length(ABSPATH)-1);
+				if (!preg_match($REWRITE_REGEX,$this->_value) && !preg_match(new RegExp('^#[a-z\-]+$'),$this->_value)){
 					if (self::CheckStringLength($this->_value, $this->_range, $code))
 						return $code;
-					if (!regex_match(new RegExp('^https?://[a-z\d/.-]+/[ -~]+$','i'), $this->_value))
+					if (!preg_match(new RegExp('^https?://[a-z\d/.-]+/[ -~]+$','i'), $this->_value))
 						Response::Fail('Link URL does not appear to be a valid link');
 				}
 			break;
 			case "int[]":
-				if (!is_string($this->_value) || !regex_match(new RegExp('^\d{1,12}(?:,\d{1,12})*$'), $this->_value))
+				if (!is_string($this->_value) || !preg_match(new RegExp('^\d{1,12}(?:,\d{1,12})*$'), $this->_value))
 					return self::ERROR_INVALID;
 
 				$this->_value = explode(',',$this->_value);
@@ -183,7 +183,7 @@ class Input {
 					return $code;
 			break;
 			case "epid":
-				$this->_value = Episodes::ParseID($this->_value);
+				$this->_value = Episodes::parseID($this->_value);
 				if (empty($this->_value))
 					return self::ERROR_INVALID;
 			break;
@@ -193,7 +193,7 @@ class Input {
 	}
 
 	static function CheckStringLength($value, $range, &$code){
-		return $code = self::_numberInRange(strlen($value), $range);
+		return $code = self::_numberInRange(CoreUtils::length($value), $range);
 	}
 	static function CheckNumberRange($value, $range, &$code = false){
 		$result = self::_numberInRange($value, $range);
@@ -211,7 +211,7 @@ class Input {
 	}
 
 	private function _outputError($message, $errorCode = null){
-		$message = str_replace('@value', CoreUtils::EscapeHTML($this->_value), $message);
+		$message = str_replace('@value', CoreUtils::escapeHTML($this->_value), $message);
 		if ($errorCode === self::ERROR_RANGE){
 			if (isset($this->_range[0]))
 				$message = str_replace('@min', $this->_range[0], $message);

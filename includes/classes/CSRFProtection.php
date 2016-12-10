@@ -39,6 +39,6 @@ class CSRFProtection {
 	 * @return string
 	 */
 	static function RemoveParamFromURL($url){
-		return rtrim(regex_replace(new RegExp(preg_quote(self::$_cookieKey).'=[^&]+(&|$)'),'',$url),'?&');
+		return rtrim(preg_replace(new RegExp(preg_quote(self::$_cookieKey).'=[^&]+(&|$)'),'',$url),'?&');
 	}
 }

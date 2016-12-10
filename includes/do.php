@@ -20,11 +20,11 @@
 
 	$phpExtensionPattern = new RegExp('\.php($|\?.*)');
 
-	if (regex_match($phpExtensionPattern,$_SERVER['REQUEST_URI']))
-		HTTP::Redirect(regex_replace($phpExtensionPattern, '$1', $_SERVER['REQUEST_URI']));
-	if (!regex_match($REWRITE_REGEX,"/$do/$data")){
+	if (preg_match($phpExtensionPattern,$_SERVER['REQUEST_URI']))
+		HTTP::Redirect(preg_replace($phpExtensionPattern, '$1', $_SERVER['REQUEST_URI']));
+	if (!preg_match($REWRITE_REGEX,"/$do/$data")){
 		Users::Authenticate();
-		CoreUtils::NotFound();
+		CoreUtils::notFound();
 	}
 
 	if ($do === GH_WEBHOOK_DO){
@@ -32,11 +32,11 @@
 
 		if (!empty($_SERVER['HTTP_USER_AGENT']) && strpos($_SERVER['HTTP_USER_AGENT'], 'GitHub-Hookshot/') === 0){
 			if (empty($_SERVER['HTTP_X_GITHUB_EVENT']) || empty($_SERVER['HTTP_X_HUB_SIGNATURE']))
-				CoreUtils::NotFound();
+				CoreUtils::notFound();
 
 			$payloadHash = hash_hmac('sha1', file_get_contents('php://input'), GH_WEBHOOK_SECRET);
 			if ($_SERVER['HTTP_X_HUB_SIGNATURE'] !== "sha1=$payloadHash")
-				CoreUtils::NotFound();
+				CoreUtils::notFound();
 
 			switch (strtolower($_SERVER['HTTP_X_GITHUB_EVENT'])) {
 				case 'push':
@@ -53,12 +53,12 @@
 				case 'ping':
 					echo "pong";
 				break;
-				default: CoreUtils::NotFound();
+				default: CoreUtils::notFound();
 			}
 
 			exit;
 		}
-		CoreUtils::NotFound();
+		CoreUtils::notFound();
 	}
 
 	// Static redirects
@@ -82,8 +82,8 @@
 
 	// Load controller
 	$controller = INCPATH."controllers/$do.php";
-	if (!($do === 'colorguide' && regex_match(new RegExp('\.(svg|png)$'), $data)))
+	if (!($do === 'colorguide' && preg_match(new RegExp('\.(svg|png)$'), $data)))
 		Users::Authenticate();
 	if (!file_exists($controller))
-		CoreUtils::NotFound();
+		CoreUtils::notFound();
 	require $controller;

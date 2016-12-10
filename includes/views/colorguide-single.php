@@ -10,7 +10,7 @@ use App\ColorGroups;
 use App\Tags; ?>
 <div id="content">
 	<div class="sprite-wrap"><?=Appearances::GetSpriteHTML($Appearance)?></div>
-	<h1><?=CoreUtils::EscapeHTML($heading)?></h1>
+	<h1><?=CoreUtils::escapeHTML($heading)?></h1>
 	<p>from the MLP-VectorClub <a href="/cg"><?=$Color?> Guide</a></p>
 
 <?  if (Permission::Sufficient('staff')){ ?>
@@ -53,9 +53,9 @@ use App\Tags; ?>
 		$preview = Appearances::GetCMPreviewURL($Appearance); ?>
 		<section class="approved-cutie-mark">
 			<h2>Recommended cutie mark vector</h2>
-<?=Permission::Sufficient('staff')&&!isset($Appearance['cm_dir'])?CoreUtils::Notice('fail','Missing CM orientation, falling back to <strong>Tail-Head</strong>. Please edit the appaearance and provide an orientation!'):''?>
+<?=Permission::Sufficient('staff')&&!isset($Appearance['cm_dir'])?CoreUtils::notice('fail','Missing CM orientation, falling back to <strong>Tail-Head</strong>. Please edit the appaearance and provide an orientation!'):''?>
 			<a id="pony-cm" href="http://fav.me/<?=$Appearance['cm_favme']?>" style="background-image:url('<?=Appearances::GetCMPreviewSVGURL($Appearance['id'])?>')">
-				<div class="img cm-dir-<?=$Appearance['cm_dir']===CM_DIR_HEAD_TO_TAIL?'ht':'th'?>" style="background-image:url('<?=CoreUtils::AposEncode($preview)?>')"></div>
+				<div class="img cm-dir-<?=$Appearance['cm_dir']===CM_DIR_HEAD_TO_TAIL?'ht':'th'?>" style="background-image:url('<?=CoreUtils::aposEncode($preview)?>')"></div>
 			</a>
 			<p class="aside">This is only an illustration, the body shape & colors are <strong>not</strong> guaranteed to reflect the actual design.</p>
 			<p>The image above links to the vector made by <?php
@@ -94,7 +94,7 @@ use App\Tags; ?>
 	if (Permission::Sufficient('staff'))
 		$export = array_merge($export, array(
 			'TAG_TYPES_ASSOC' => Tags::$TAG_TYPES_ASSOC,
-			'MAX_SIZE' => CoreUtils::GetMaxUploadSize(),
+			'MAX_SIZE' => CoreUtils::getMaxUploadSize(),
 			'HEX_COLOR_PATTERN' => $HEX_COLOR_REGEX,
 		));
-	CoreUtils::ExportVars($export); ?>
+	echo CoreUtils::exportVars($export); ?>

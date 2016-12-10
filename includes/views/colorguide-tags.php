@@ -30,7 +30,7 @@ HTML;
 	<?=$Pagination->HTML?>
 </div>
 
-<?  CoreUtils::ExportVars(array(
+<?  echo CoreUtils::exportVars(array(
 		'Color' => $Color,
 		'color' => $color,
 		'TAG_TYPES_ASSOC' => Tags::$TAG_TYPES_ASSOC,

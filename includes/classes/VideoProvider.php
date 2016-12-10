@@ -10,7 +10,7 @@ class VideoProvider {
 	public $episodeVideo;
 	private $url;
 	public function __construct($url){
-		$this->url = CoreUtils::Trim($url);
+		$this->url = CoreUtils::trim($url);
 		$this->episodeVideo = self::getEpisodeVideo($this->url);
 		self::$id = $this->episodeVideo->id;
 		self::getEmbed($this->episodeVideo);
@@ -29,7 +29,7 @@ class VideoProvider {
 	 */
 	private static function testProvider(string $url, string $pattern, string $name) {
 		$match = array();
-		if (regex_match(new RegExp("^(?:https?://(?:www\\.)?)?$pattern"), $url, $match))
+		if (preg_match(new RegExp("^(?:https?://(?:www\\.)?)?$pattern"), $url, $match))
 			return new EpisodeVideo(array(
 				'provider' => $name,
 				'id' => $match[1]

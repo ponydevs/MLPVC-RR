@@ -14,7 +14,7 @@ use App\CoreUtils;
 		$StatCacheDuration = 5*Time::$IN_SECONDS['hour'];
 
 		$_match = array();
-		if (!empty($data) && regex_match(new RegExp('^stats-(posts|approvals)$'),$data,$_match)){
+		if (!empty($data) && preg_match(new RegExp('^stats-(posts|approvals)$'),$data,$_match)){
 			$stat = $_match[1];
 			$CachePath = APPATH."../fs/stats/$stat.json";
 			if (file_exists($CachePath) && filemtime($CachePath) > time() - $StatCacheDuration)
@@ -89,18 +89,18 @@ use App\CoreUtils;
 
 			Statistics::PostprocessTimedData($Data);
 
-			CoreUtils::CreateUploadFolder($CachePath);
+			CoreUtils::createUploadFolder($CachePath);
 			file_put_contents($CachePath, JSON::Encode($Data));
 
 			Response::Done(array('data' => $Data));
 		}
 
-		CoreUtils::NotFound();
+		CoreUtils::notFound();
 	}
 
 	HTTP::PushResource('/about/stats-posts');
 	HTTP::PushResource('/about/stats-approvals');
-	CoreUtils::LoadPage(array(
+	CoreUtils::loadPage(array(
 		'title' => 'About',
 		'do-css',
 		'js' => array('Chart', $do),

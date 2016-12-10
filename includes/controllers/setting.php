@@ -8,10 +8,10 @@ use App\RegExp;
 use App\Response;
 
 if (!Permission::Sufficient('staff') || !POST_REQUEST)
-	CoreUtils::NotFound();
+	CoreUtils::notFound();
 CSRFProtection::Protect();
 
-if (!regex_match(new RegExp('^([gs]et)/([a-z_]+)$'), CoreUtils::Trim($data), $_match))
+if (!preg_match(new RegExp('^([gs]et)/([a-z_]+)$'), CoreUtils::trim($data), $_match))
 	Response::Fail('Setting key invalid');
 
 $getting = $_match[1] === 'get';

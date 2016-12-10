@@ -35,13 +35,13 @@ use App\Tags;
 	</p>
 <? if ($elasticAvail){ ?>
 	<form id="search-form">
-		<input name="q" <?=!empty($_GET['q'])?" value='".CoreUtils::AposEncode($_GET['q'])."'":''?> title='Search'>
+		<input name="q" <?=!empty($_GET['q'])?" value='".CoreUtils::aposEncode($_GET['q'])."'":''?> title='Search'>
 		<button type='submit'  class='blue'>Search</button>
 		<button type='button' class='green typcn typcn-flash sanic-button' title="I'm feeling lucky"></button>
 		<button type='reset' class='red typcn typcn-times' title='Clear'<?=empty($_GET['q'])?' disabled':''?>></button>
 	</form>
 <?  }
-	else echo CoreUtils::Notice('warn','<span class="typcn typcn-warning"></span> <strong>ElasticSearch server is down!</strong> Please <a class="send-feedback">let us know</a>, and in the meantime, use the <a class="btn darkblue typcn typcn-th-menu" href="/cg'.($EQG?'/eqg':'').'/full">Full List</a> to find appearances faster. Sorry for the inconvenience.',true); ?>
+	else echo CoreUtils::notice('warn','<span class="typcn typcn-warning"></span> <strong>ElasticSearch server is down!</strong> Please <a class="send-feedback">let us know</a>, and in the meantime, use the <a class="btn darkblue typcn typcn-th-menu" href="/cg'.($EQG?'/eqg':'').'/full">Full List</a> to find appearances faster. Sorry for the inconvenience.',true); ?>
 	<?=$Pagination->HTML . Appearances::GetHTML($Ponies) . $Pagination->HTML?>
 </div>
 
@@ -54,7 +54,7 @@ use App\Tags;
 	if (Permission::Sufficient('staff'))
 		$export = array_merge($export, array(
 			'TAG_TYPES_ASSOC' => Tags::$TAG_TYPES_ASSOC,
-			'MAX_SIZE' => CoreUtils::GetMaxUploadSize(),
+			'MAX_SIZE' => CoreUtils::getMaxUploadSize(),
 			'HEX_COLOR_PATTERN' => $HEX_COLOR_REGEX,
 		));
-	CoreUtils::ExportVars($export); ?>
+	echo CoreUtils::exportVars($export); ?>

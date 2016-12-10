@@ -101,13 +101,13 @@ class Posts {
 		)))->out();
 		if (isset($label)){
 			if (!$editing || $label !== $Post->label){
-				CoreUtils::CheckStringValidity($label,'The description',INVERSE_PRINTABLE_ASCII_PATTERN);
-				CoreUtils::Set($array, 'label', $label);
+				CoreUtils::checkStringValidity($label,'The description',INVERSE_PRINTABLE_ASCII_PATTERN);
+				CoreUtils::set($array, 'label', $label);
 			}
 		}
 		else if (!$editing && $thing !== 'reservation')
 			Response::Fail('Description cannot be empty');
-		else CoreUtils::Set($array,'label',null);
+		else CoreUtils::set($array,'label',null);
 
 		if ($thing === 'request'){
 			$type = (new Input('type',function($value){
@@ -123,15 +123,15 @@ class Posts {
 				respnd("Missing request type");
 
 			if (!$editing || (isset($type) && $type !== $Post->type))
-				CoreUtils::Set($array,'type',$type);
+				CoreUtils::set($array,'type',$type);
 
 			if (Permission::Sufficient('developer')){
 				$reserved_at = self::ValidateReservedAt();
 				if (isset($reserved_at)){
 					if ($reserved_at !== strtotime($Post->reserved_at))
-						CoreUtils::Set($array,'reserved_at',date('c', $reserved_at));
+						CoreUtils::set($array,'reserved_at',date('c', $reserved_at));
 				}
-				else CoreUtils::Set($array,'reserved_at',null);
+				else CoreUtils::set($array,'reserved_at',null);
 			}
 		}
 
@@ -143,14 +143,14 @@ class Posts {
 				)
 			)))->out();
 			if (isset($posted) && $posted !== strtotime($Post->posted))
-				CoreUtils::Set($array,'posted',date('c', $posted));
+				CoreUtils::set($array,'posted',date('c', $posted));
 
 			$finished_at = self::ValidateFinishedAt();
 			if (isset($finished_at)){
 				if ($finished_at !== strtotime($Post->finished_at))
-					CoreUtils::Set($array,'finished_at',date('c', $finished_at));
+					CoreUtils::set($array,'finished_at',date('c', $finished_at));
 			}
-			else CoreUtils::Set($array,'finished_at',null);
+			else CoreUtils::set($array,'finished_at',null);
 		}
 	}
 
@@ -180,7 +180,7 @@ class Posts {
 				->getOne("{$type}s r",'r.id, ep.season, ep.episode, ep.twoparter');
 			if (!empty($UsedUnder)){
 				/** @var $UsedUnderPost Post */
-				$className = CoreUtils::Capitalize($type);
+				$className = '\App\Models\\'.CoreUtils::capitalize($type);
 				$UsedUnderPost = new $className($UsedUnder);
 				$UsedUnderEpisode = new Episode($UsedUnder);
 
@@ -232,7 +232,7 @@ class Posts {
 				}
 			}
 
-			if (CoreUtils::IsDeviationInClub($return['deviation_id']) === true)
+			if (CoreUtils::isDeviationInClub($return['deviation_id']) === true)
 				$return['lock'] = true;
 
 			return $return;
@@ -367,7 +367,7 @@ HTML;
 	private static function _getForm($type){
 		global $currentUser;
 
-		$Type = strtoupper($type[0]).substr($type,1);
+		$Type = strtoupper($type[0]).CoreUtils::substring($type,1);
 		$optional = $type === 'reservation' ? 'optional, ' : '';
 		$optreq = $type === 'reservation' ? '' : 'required';
 
@@ -509,13 +509,13 @@ HTML;
 		$isRequest = $Post->isRequest;
 		$type = $isRequest ? 'request' : 'reservation';
 		$ID = "$type-{$Post->id}";
-		$alt = !empty($Post->label) ? CoreUtils::AposEncode($Post->label) : '';
+		$alt = !empty($Post->label) ? CoreUtils::aposEncode($Post->label) : '';
 		$postlink = (new Episode($Post))->formatURL()."#$ID";
 		$ImageLink = $view_only ? $postlink : $Post->fullsize;
 		$cachebust = $cachebust_url ? '?t='.time() : '';
 		$Image = "<div class='image screencap'><a href='$ImageLink'><img src='{$Post->preview}$cachebust' alt='$alt'></a></div>";
 		$post_label = !empty($Post->label) ? '<span class="label'.(strpos($Post->label,'"') !== false?' noquotes':'').'">'.$Post->processLabel().'</span>' : '';
-		$permalink = "<a href='$postlink'>".Time::Tag($Post->posted).'</a>';
+		$permalink = "<a href='$postlink'>".Time::tag($Post->posted).'</a>';
 
 		$posted_at = '<em class="post-date">';
 		if ($isRequest){
@@ -539,7 +539,7 @@ HTML;
 			$Post->Reserver = Users::Get($Post->reserved_by);
 			$reserved_by = $overdue && !$isReserver ? ' by '.$Post->Reserver->getProfileLink() : '';
 			$reserved_at = $isRequest && !empty($Post->reserved_at) && !($hide_reserved_status && Permission::Insufficient('staff'))
-				? "<em class='reserve-date'>Reserved <strong>".Time::Tag($Post->reserved_at)."</strong>$reserved_by</em>"
+				? "<em class='reserve-date'>Reserved <strong>".Time::tag($Post->reserved_at)."</strong>$reserved_by</em>"
 				: '';
 			if ($finished){
 				$approved = !empty($Post->lock);
@@ -549,7 +549,7 @@ HTML;
 					$Image = "<div class='image deviation error'><a href='$ImageLink'>Preview unavailable<br><small>Click to view</small></a></div>";
 				}
 				else {
-					$alt = CoreUtils::AposEncode($Deviation['title']);
+					$alt = CoreUtils::aposEncode($Deviation['title']);
 					$ImageLink = $view_only ? $postlink : "http://fav.me/{$Deviation['id']}";
 					$Image = "<div class='image deviation'><a href='$ImageLink'><img src='{$Deviation['preview']}$cachebust' alt='$alt'>";
 					if ($approved)
@@ -557,7 +557,7 @@ HTML;
 					$Image .= "</a></div>";
 				}
 				if (Permission::Sufficient('staff')){
-					$finished_at = !empty($Post->finished_at) ? "<em class='finish-date'>Finished <strong>".Time::Tag($Post->finished_at)."</strong></em>" : '';
+					$finished_at = !empty($Post->finished_at) ? "<em class='finish-date'>Finished <strong>".Time::tag($Post->finished_at)."</strong></em>" : '';
 					$locked_at = '';
 					if ($approved){
 						global $Database;
@@ -570,7 +570,7 @@ HTML;
 							ORDER BY pl.entryid ASC
 							LIMIT 1", array($type, $Post->id)
 						);
-						$locked_at = $approved ? "<em class='approve-date'>Approved <strong>".Time::Tag(strtotime($LogEntry['timestamp']))."</strong></em>" : '';
+						$locked_at = $approved ? "<em class='approve-date'>Approved <strong>".Time::tag(strtotime($LogEntry['timestamp']))."</strong></em>" : '';
 					}
 					$Image .= $post_label.$posted_at.$reserved_at.$finished_at.$locked_at;
 					if (!empty($Post->fullsize))
@@ -653,7 +653,7 @@ HTML;
 			else {
 				$regularButton = count($Buttons) <3;
 				foreach ($Buttons as $b){
-					$WriteOut = "'".($regularButton ? ">{$b[1]}" : " title='".CoreUtils::AposEncode($b[1])."'>");
+					$WriteOut = "'".($regularButton ? ">{$b[1]}" : " title='".CoreUtils::aposEncode($b[1])."'>");
 					$HTML .= "<button class='typcn typcn-{$b[0]}$WriteOut</button>";
 				}
 			}
@@ -681,7 +681,7 @@ HTML;
 			'type' => $type,
 			'id' => $id
 		);
-		Logs::Action('post_lock',$postdata);
+		Logs::action('post_lock',$postdata);
 		if (!empty($notifyUserID))
 			Notifications::Send($notifyUserID, 'post-approved', $postdata);
 

@@ -18,7 +18,7 @@ class RegExp {
 	public function __construct(string $pattern, string $modifiers = '', string $delimiter = '~'){
 		$this->_delimiter = $delimiter[0] ?? '~';
 		$this->_pattern = $pattern;
-		$this->_modifiers = strlen($modifiers) ? $modifiers : '';
+		$this->_modifiers = CoreUtils::length($modifiers) ? $modifiers : '';
 	}
 
 	public function __toString():string {

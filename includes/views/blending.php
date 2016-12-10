@@ -5,7 +5,7 @@ use App\Users; ?>
 <div id="content">
 	<h1><?=$title?></h1>
 	<p>Originally made by <?=Users::Get('dasprid','name','name, avatar_url')->getProfileLink(User::LINKFORMAT_FULL)?></p>
-	<?=CoreUtils::Notice('info',"<p><span class='typcn typcn-info-large'></span> This is a tool which helps you to find an original $color, given two different background {$color}s and the resulting blended $color, when the original $color is blended over it.</p><p><strong>Shift+Click</strong> an input to open a dialog where you can enter RGB values</p><a class='btn typcn typcn-arrow-back' href='/cg'>Back to $Color Guide</a>", true)?>
+	<?=CoreUtils::notice('info',"<p><span class='typcn typcn-info-large'></span> This is a tool which helps you to find an original $color, given two different background {$color}s and the resulting blended $color, when the original $color is blended over it.</p><p><strong>Shift+Click</strong> an input to open a dialog where you can enter RGB values</p><a class='btn typcn typcn-arrow-back' href='/cg'>Back to $Color Guide</a>", true)?>
 
 	<div id="blend-wrap">
 		<form autocomplete="off">
@@ -55,7 +55,7 @@ use App\Users; ?>
 		</div>
 	</div>
 	<div class="hidden delta-warn">
-		<?=CoreUtils::Notice('warn',"<span class='typcn typcn-warning'></span> The result may not be accurate as the difference between the optimal $color and the closest match is too large", true)?>
+		<?=CoreUtils::notice('warn',"<span class='typcn typcn-warning'></span> The result may not be accurate as the difference between the optimal $color and the closest match is too large", true)?>
 	</div>
 </div>
-<?  CoreUtils::ExportVars(array('HEX_COLOR_PATTERN' => $HEX_COLOR_REGEX));
+<?  echo CoreUtils::exportVars(array('HEX_COLOR_PATTERN' => $HEX_COLOR_REGEX));

@@ -8,10 +8,10 @@ use App\Response;
 use App\UserPrefs;
 
 if (!Permission::Sufficient('user') || !POST_REQUEST)
-	CoreUtils::NotFound();
+	CoreUtils::notFound();
 CSRFProtection::Protect();
 
-if (!regex_match(new RegExp('^([gs]et)/([a-z_]+)$'), CoreUtils::Trim($data), $_match))
+if (!preg_match(new RegExp('^([gs]et)/([a-z_]+)$'), CoreUtils::trim($data), $_match))
 	Response::Fail('Preference key invalid');
 
 $getting = $_match[1] === 'get';

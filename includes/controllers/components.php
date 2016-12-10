@@ -2,7 +2,7 @@
 
 use App\CoreUtils;
 
-CoreUtils::LoadPage(array(
+CoreUtils::loadPage(array(
 	'title' => 'Components',
 	'no-robots',
 ));

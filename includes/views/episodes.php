@@ -11,7 +11,7 @@ use App\Permission; ?>
 	<div class="actions">
 		<button id="add-episode" class="green typcn typcn-plus">Add Episode</button>
 	</div>
-<?      CoreUtils::ExportVars(array('EP_TITLE_REGEX' => $EP_TITLE_REGEX));
+<?      echo CoreUtils::exportVars(array('EP_TITLE_REGEX' => $EP_TITLE_REGEX));
 	}
 	echo $Pagination;
 	if (!empty($Episodes) || (empty($Episodes) && Permission::Sufficient('staff'))){ ?>
@@ -23,7 +23,7 @@ use App\Permission; ?>
 				<th>Title & Air Date</th>
 			</tr>
 		</thead>
-		<tbody><?=Episodes::GetTableTbody($Episodes)?></tbody>
+		<tbody><?=Episodes::getTableTbody($Episodes)?></tbody>
 	</table>
 <?  }
 	echo $Pagination;
@@ -45,7 +45,7 @@ use App\Permission; ?>
 				<th>Title &amp; Air Date</th>
 			</tr>
 		</thead>
-		<tbody><?=Episodes::GetTableTbody($Movies, true)?></tbody>
+		<tbody><?=Episodes::getTableTbody($Movies, true)?></tbody>
 	</table>
 <?  } ?>
 </div>

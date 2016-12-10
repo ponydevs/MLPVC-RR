@@ -64,10 +64,10 @@ class Notifications {
 
 		foreach ($Notifications as $n){
 			$data = !empty($n['data']) ? JSON::Decode($n['data']) : null;
-			if (regex_match(new RegExp('^post-'),$n['type'])){
+			if (preg_match(new RegExp('^post-'),$n['type'])){
 				/** @var $Post Post */
 				$Post = $Database->where('id', $data['id'])->getOne("{$data['type']}s");
-				$Episode = Episodes::GetActual($Post->season, $Post->episode, Episodes::ALLOW_MOVIES);
+				$Episode = Episodes::getActual($Post->season, $Post->episode, Episodes::ALLOW_MOVIES);
 				$EpID = $Episode->formatTitle(AS_ARRAY, 'id');
 				$url = $Post->toLink($Episode);
 			}
@@ -132,7 +132,7 @@ class Notifications {
 			foreach (self::$ACTIONABLE_NOTIF_OPTIONS[$n['type']] as $value => $opt)
 				$actions .= "<span class='mark-read variant-{$opt['color']} typcn typcn-{$opt['icon']}' title='{$opt['label']}' data-id='{$n['id']}' data-value='$value'></span>";
 		}
-		return "<li>$html <span class='nobr'>&ndash; ".Time::Tag(strtotime($n['sent_at']))."$actions</span></li>";
+		return "<li>$html <span class='nobr'>&ndash; ".Time::tag(strtotime($n['sent_at']))."$actions</span></li>";
 	}
 
 	static function Send($to, $type, $data){
@@ -157,7 +157,7 @@ class Notifications {
 		));
 
 		try {
-			CoreUtils::SocketEvent('notify-pls',array('user' => $to));
+			CoreUtils::socketEvent('notify-pls',array('user' => $to));
 		}
 		catch (ServerConnectionFailureException $e){
 			error_log("Error while notifying $to with type $type (data:".JSON::Encode($data).")\nError message: {$e->getMessage()}");
@@ -168,7 +168,7 @@ class Notifications {
 	}
 
 	static function MarkRead($nid, $action = null){
-		CoreUtils::SocketEvent('mark-read',array('nid' => $nid, 'action' => $action));
+		CoreUtils::socketEvent('mark-read',array('nid' => $nid, 'action' => $action));
 	}
 
 	static function SafeMarkRead($NotifID, $action = null){

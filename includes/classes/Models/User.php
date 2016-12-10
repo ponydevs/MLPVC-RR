@@ -131,7 +131,7 @@ class User extends AbstractFillable {
 		$response = $Database->where('id', $this->id)->update('users', array('role' => $newgroup));
 
 		if ($response){
-			Logs::Action('rolechange', array(
+			Logs::action('rolechange', array(
 				'target' => $this->id,
 				'oldrole' => $this->role,
 				'newrole' => $newgroup

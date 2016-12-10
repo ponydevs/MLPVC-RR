@@ -17,9 +17,9 @@ use App\Response;
 use App\Time;
 use App\Users;
 
-if (!POST_REQUEST) CoreUtils::NotFound();
+if (!POST_REQUEST) CoreUtils::notFound();
 
-if (regex_match(new RegExp('^reload-(request|reservation)/(\d+)$'), $data, $_match)){
+if (preg_match(new RegExp('^reload-(request|reservation)/(\d+)$'), $data, $_match)){
 	$thing = $_match[1];
 	$Post = $Database->where('id', $_match[2])->getOne("{$thing}s");
 	if (empty($Post))
@@ -31,7 +31,7 @@ if (!$signedIn) Response::Fail();
 CSRFProtection::Protect();
 
 $_match = array();
-if (regex_match(new RegExp('^([gs]et)-(request|reservation)/(\d+)$'), $data, $_match)){
+if (preg_match(new RegExp('^([gs]et)-(request|reservation)/(\d+)$'), $data, $_match)){
 	$thing = $_match[2];
 	/** @var $Post Request|Reservation */
 	$Post = $Database->where('id', $_match[3])->getOne("{$thing}s");
@@ -70,7 +70,7 @@ if (regex_match(new RegExp('^([gs]et)-(request|reservation)/(\d+)$'), $data, $_m
 	$Post->__construct($update);
 	Response::Done(array('li' => Posts::GetLi($Post)));
 }
-if (regex_match(new RegExp('^((?:un)?(?:finish|lock|reserve)|add|delete|pls-transfer)-(request|reservation)s?/(\d+)$'),$data,$_match)){
+if (preg_match(new RegExp('^((?:un)?(?:finish|lock|reserve)|add|delete|pls-transfer)-(request|reservation)s?/(\d+)$'),$data,$_match)){
 	$type = $_match[2];
 	$action = $_match[1];
 
@@ -97,7 +97,7 @@ if (regex_match(new RegExp('^((?:un)?(?:finish|lock|reserve)|add|delete|pls-tran
 		if (!empty($Post->reserved_by))
 			Posts::ClearTransferAttempts($Post, $type, 'del');
 
-		Logs::Action('req_delete',array(
+		Logs::action('req_delete',array(
 			'season' => $Post->season,
 			'episode' => $Post->episode,
 			'id' => $Post->id,
@@ -138,7 +138,7 @@ if (regex_match(new RegExp('^((?:un)?(?:finish|lock|reserve)|add|delete|pls-tran
 		if ($reserved_by === $currentUser->id)
 			Response::Fail("You've already reserved this $type");
 		if ($Post->isOverdue()){
-			$message = "This post was reserved ".Time::Tag($Post->reserved_at)." so anyone's free to reserve it now.";
+			$message = "This post was reserved ".Time::tag($Post->reserved_at)." so anyone's free to reserve it now.";
 			$checkIfUserCanReserve($message, $data, 'overdue');
 			Response::Fail($message, $data);
 		}
@@ -153,7 +153,7 @@ if (regex_match(new RegExp('^((?:un)?(?:finish|lock|reserve)|add|delete|pls-tran
 		$PreviousAttempts = Posts::GetTransferAttempts($Post, $type, $currentUser->id, $reserved_by);
 
 		if (!empty($PreviousAttempts[0]) && empty($PreviousAttempts[0]['read_at']))
-			Response::Fail("You already expressed your interest in this post to $ReserverLink ".Time::Tag($PreviousAttempts[0]['sent_at']).', please wait for them to respond.');
+			Response::Fail("You already expressed your interest in this post to $ReserverLink ".Time::tag($PreviousAttempts[0]['sent_at']).', please wait for them to respond.');
 
 		$notifSent = Notifications::Send($Post->reserved_by,'post-passon',array(
 			'type' => $type,
@@ -184,7 +184,7 @@ if (regex_match(new RegExp('^((?:un)?(?:finish|lock|reserve)|add|delete|pls-tran
 				if (empty($Post->deviation_id))
 					Response::Fail("Only finished {$type}s can be locked");
 
-				CoreUtils::CheckDeviationInClub($Post->deviation_id);
+				CoreUtils::checkDeviationInClub($Post->deviation_id);
 
 				if (!$Database->where('id', $Post->id)->update("{$type}s", array('lock' => true)))
 					Response::DBError();
@@ -206,7 +206,7 @@ if (regex_match(new RegExp('^((?:un)?(?:finish|lock|reserve)|add|delete|pls-tran
 				if (empty($Post->lock))
 					Response::Fail("This $type has not been approved yet");
 
-				if (Permission::Insufficient('developer') && CoreUtils::IsDeviationInClub($Post->deviation_id) === true)
+				if (Permission::Insufficient('developer') && CoreUtils::isDeviationInClub($Post->deviation_id) === true)
 					Response::Fail("<a href='http://fav.me/{$Post->deviation_id}' target='_blank'>This deviation</a> is part of the group gallery, which prevents the post from being unlocked.");
 
 				$Database->where('id', $Post->id)->update("{$type}s", array('lock' => false));
@@ -277,7 +277,7 @@ if (regex_match(new RegExp('^((?:un)?(?:finish|lock|reserve)|add|delete|pls-tran
 				if (isset($update['lock'])){
 					$message .= "<p>The image appears to be in the group gallery already, so we marked it as approved.</p>";
 
-					Logs::Action('post_lock',$postdata);
+					Logs::action('post_lock',$postdata);
 					if ($Post->reserved_by !== $currentUser->id)
 						Notifications::Send($Post->reserved_by, 'post-approved', $postdata);
 				}
@@ -327,7 +327,7 @@ if (regex_match(new RegExp('^((?:un)?(?:finish|lock|reserve)|add|delete|pls-tran
 		Response::Fail('Nothing has been changed<br>If you tried to do something, then this is actually an error, which you should <a class="send-feedback">tell us</a> about.');
 
 	if (!empty($overdue))
-		Logs::Action('res_overtake',array_merge(
+		Logs::action('res_overtake',array_merge(
 			array(
 				'id' => $Post->id,
 				'type' => $type
@@ -377,7 +377,7 @@ else if ($data === 'mass-approve'){
 
 	$approved = 0;
 	foreach ($Posts as $p){
-		if (CoreUtils::IsDeviationInClub($p['deviation_id']) !== true)
+		if (CoreUtils::isDeviationInClub($p['deviation_id']) !== true)
 			continue;
 
 		Posts::Approve($p['type'], $p['id']);
@@ -387,7 +387,7 @@ else if ($data === 'mass-approve'){
 	if ($approved === 0)
 		Response::Success('There were no posts in need of marking as approved');
 
-	Response::Success('Marked '.CoreUtils::MakePlural('post', $approved, PREPEND_NUMBER).' as approved. To see which ones, check the <a href="/admin/logs/1?type=post_lock&by=you">list of posts you\'ve approved</a>.',array('reload' => true));
+	Response::Success('Marked '.CoreUtils::makePlural('post', $approved, PREPEND_NUMBER).' as approved. To see which ones, check the <a href="/admin/logs/1?type=post_lock&by=you">list of posts you\'ve approved</a>.',array('reload' => true));
 }
 else if ($data === 'add-reservation'){
 	if (!Permission::Sufficient('staff'))
@@ -403,7 +403,7 @@ else if ($data === 'add-reservation'){
 			Input::ERROR_INVALID => 'Episode identifier (@value) is invalid',
 		)
 	)))->out();
-	$epdata = Episodes::GetActual($epdata['season'], $epdata['episode']);
+	$epdata = Episodes::getActual($epdata['season'], $epdata['episode']);
 	if (empty($epdata))
 		Response::Fail('The specified episode does not exist');
 	$insert['season'] = $epdata->season;
@@ -416,14 +416,14 @@ else if ($data === 'add-reservation'){
 		Response::DBError();
 
 	if (!empty($insert['lock']))
-		Logs::Action('post_lock',array(
+		Logs::action('post_lock',array(
 			'type' => 'reservation',
 			'id' => $postid,
 		));
 
 	Response::Success('Reservation added');
 }
-else if (regex_match(new RegExp('^set-(request|reservation)-image/(\d+)$'), $data, $_match)){
+else if (preg_match(new RegExp('^set-(request|reservation)-image/(\d+)$'), $data, $_match)){
 	$thing = $_match[1];
 	$Post = $Database->where('id', $_match[2])->getOne("{$thing}s");
 	if (empty($Post))
@@ -459,7 +459,7 @@ else if (regex_match(new RegExp('^set-(request|reservation)-image/(\d+)$'), $dat
 		'fullsize' => $Image->fullsize,
 	))) Response::DBError();
 
-	Logs::Action('img_update',array(
+	Logs::action('img_update',array(
 		'id' => $Post->id,
 		'thing' => $thing,
 		'oldpreview' => $Post->preview,
@@ -470,7 +470,7 @@ else if (regex_match(new RegExp('^set-(request|reservation)-image/(\d+)$'), $dat
 
 	Response::Done(array('preview' => $Image->preview));
 }
-else if (regex_match(new RegExp('^fix-(request|reservation)-stash/(\d+)$'), $data, $_match)){
+else if (preg_match(new RegExp('^fix-(request|reservation)-stash/(\d+)$'), $data, $_match)){
 	if (!Permission::Sufficient('staff'))
 		Response::Fail();
 
@@ -480,7 +480,7 @@ else if (regex_match(new RegExp('^fix-(request|reservation)-stash/(\d+)$'), $dat
 		Response::Fail("The specified $thing does not exist");
 
 	// Link is already full size, we're done
-	if (regex_match($FULLSIZE_MATCH_REGEX, $Post->fullsize))
+	if (preg_match($FULLSIZE_MATCH_REGEX, $Post->fullsize))
 		Response::Done(array('fullsize' => $Post->fullsize));
 
 	// Reverse submission lookup
@@ -492,7 +492,7 @@ else if (regex_match(new RegExp('^fix-(request|reservation)-stash/(\d+)$'), $dat
 		Response::Fail('Stash URL lookup failed');
 
 	try {
-		$fullsize = CoreUtils::GetFullsizeURL($StashItem['id'], 'sta.sh');
+		$fullsize = CoreUtils::getFullsizeURL($StashItem['id'], 'sta.sh');
 		if (!is_string($fullsize)){
 			if ($fullsize === 404){
 				$Database->where('provider', 'sta.sh')->where('id', $StashItem['id'])->delete('deviation_cache');
@@ -552,9 +552,9 @@ $insert = array(
 	'fullsize' => $Image->fullsize,
 );
 
-$season = Episodes::ValidateSeason(Episodes::ALLOW_MOVIES);
-$episode = Episodes::ValidateEpisode();
-$epdata = Episodes::GetActual($season, $episode, Episodes::ALLOW_MOVIES);
+$season = Episodes::validateSeason(Episodes::ALLOW_MOVIES);
+$episode = Episodes::validateEpisode();
+$epdata = Episodes::getActual($season, $episode, Episodes::ALLOW_MOVIES);
 if (empty($epdata))
 	Response::Fail("The specified episode (S{$season}E$episode) does not exist");
 $insert['season'] = $epdata->season;

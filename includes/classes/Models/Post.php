@@ -63,8 +63,8 @@ abstract class Post extends AbstractFillable {
 		if (empty($label))
 			$label = $Episode->formatTitle(AS_ARRAY, 'id');
 		else $label = htmlspecialchars($label);
-		$target = $newtab ? 'target=\'_blank\'' : '';
-		return "<a href='$link' $target>$label</a>";
+		$target = $newtab ? ' target=\'_blank\'' : '';
+		return "<a href='$link'{$target}>$label</a>";
 	}
 
 	public function isTransferable($now = null):bool {
@@ -76,12 +76,14 @@ abstract class Post extends AbstractFillable {
 		return $now - strtotime($ts) >= Time::$IN_SECONDS['day']*5;
 	}
 
-	public function isOverdue():bool {
-		return $this->isRequest && empty($this->deviation_id) && isset($this->reserved_by) && time() - strtotime($this->reserved_at) >= Time::$IN_SECONDS['week']*3;
+	public function isOverdue($now = null):bool {
+		if (!isset($now))
+			$now = time();
+		return $this->isRequest && empty($this->deviation_id) && isset($this->reserved_by) && $now - strtotime($this->reserved_at) >= Time::$IN_SECONDS['week']*3;
 	}
 
 	public function processLabel():string {
-		$label = preg_replace(new RegExp('(?:(f)ull[-\s](b)od(?:y|ied)(\sversion)?)','i'),'<strong class="color-darkblue">$1ull $2ody</strong>$3', CoreUtils::EscapeHTML($this->label));
+		$label = preg_replace(new RegExp('(?:(f)ull[-\s](b)od(?:y|ied)(\sversion)?)','i'),'<strong class="color-darkblue">$1ull $2ody</strong>$3', CoreUtils::escapeHTML($this->label));
 		$label = preg_replace(new RegExp('(?:(f)ace[-\s](o)nly(\sversion)?)','i'),'<strong class="color-darkblue">$1ace $2nly</strong>$3', $label);
 		$label = preg_replace(new RegExp('(?:(f)ull\s(s)cene?)','i'),'<strong class="color-darkblue">$1ull $2cene</strong>$3', $label);
 		$label = preg_replace(new RegExp('(?:(e)ntire\s(s)cene?)','i'),'<strong class="color-darkblue">$1ntire $2cene</strong>$3', $label);

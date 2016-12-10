@@ -142,8 +142,8 @@ class Tags {
 		if (!empty($Tags)) foreach ($Tags as $t){
 			$trClass = $t['type'] ? " class='typ-{$t['type']}'" : '';
 			$type = $t['type'] ? self::$TAG_TYPES_ASSOC[$t['type']] : '';
-			$search = CoreUtils::AposEncode(urlencode($t['name']));
-			$titleName = CoreUtils::AposEncode($t['name']);
+			$search = CoreUtils::aposEncode(urlencode($t['name']));
+			$titleName = CoreUtils::aposEncode($t['name']);
 
 			if (!empty($t['synonym_of'])){
 				$Syn = self::GetSynonymOf($t,'name');
