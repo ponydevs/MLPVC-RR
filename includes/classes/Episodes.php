@@ -3,7 +3,8 @@
 namespace App;
 
 use App\Appearances;
-use App\Episode;
+use App\Models\Episode;
+use App\Models\EpisodeVideo;
 
 class Episodes {
 	const TITLE_CUTOFF = 26;

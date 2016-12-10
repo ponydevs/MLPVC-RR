@@ -1,7 +1,7 @@
 <div id="content">
 <?php
 use App\CoreUtils;
-use App\User;
+use App\Models\User;
 use App\DeviantArt;
 use App\JSON;
 use App\Permission;
@@ -53,7 +53,7 @@ if (Permission::Sufficient('member', $User->role)){
 	echo Users::GetPendingReservationsHTML($User->id, $sameUser, $YouHave);
 
 	$cols = "id, season, episode, deviation_id";
-	/** @var $AwaitingApproval App\Post[] */
+	/** @var $AwaitingApproval \App\Models\Post[] */
 	$AwaitingApproval = array_merge(
 		$Database
 			->where('reserved_by', $User->id)
@@ -273,9 +273,9 @@ if (!empty($Banishes)){
 } ?>
 </div>
 
-<?php if ($canEdit){ ?>
-<script>var ROLES = <?php
-	$Echo = array();
+<?php
+if ($canEdit){
+	$ROLES = array();
 	if ($canEdit){
 		$_Roles = Permission::$ROLES_ASSOC;
 		unset($_Roles['guest']);
@@ -283,9 +283,10 @@ if (!empty($Banishes)){
 		foreach ($_Roles as $name => $label){
 			if (Permission::Insufficient($name, $currentUser->role))
 				continue;
-			$Echo[$name] = $label;
+			$ROLES[$name] = $label;
 		}
 	}
-	echo JSON::Encode($Echo);
-?>;</script>
-<?php } ?>
+	echo CoreUtils::ExportVars(array(
+		'ROLES' => $ROLES,
+	));
+} ?>

@@ -1,6 +1,6 @@
 <?php
 use App\CoreUtils;
-use App\User;
+use App\Models\User;
 use App\Users; ?>
 <div id="content">
 	<h1><?=$title?></h1>

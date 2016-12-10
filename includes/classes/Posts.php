@@ -2,11 +2,11 @@
 
 namespace App;
 
-use App\Episode;
-use App\Post;
-use App\Request;
-use App\Reservation;
-use App\User;
+use App\Models\Episode;
+use App\Models\Post;
+use App\Models\Request;
+use App\Models\Reservation;
+use App\Models\User;
 use App\Exceptions\MismatchedProviderException;
 
 class Posts {
@@ -63,7 +63,7 @@ class Posts {
 
 		$HTML = $wrap ? '<ul>' : '';
 		foreach ($RecentPosts as $Post){
-			$className = '\\App\\'.($Post['rq'] ? 'Request' : 'Reservation');
+			$className = '\\App\\Models\\'.($Post['rq'] ? 'Request' : 'Reservation');
 			$HTML .= self::GetLi(new $className($Post), true);
 		}
 		return $HTML.($wrap?'</ul>':'');
@@ -681,7 +681,7 @@ HTML;
 			'type' => $type,
 			'id' => $id
 		);
-		Log::Action('post_lock',$postdata);
+		Logs::Action('post_lock',$postdata);
 		if (!empty($notifyUserID))
 			Notifications::Send($notifyUserID, 'post-approved', $postdata);
 

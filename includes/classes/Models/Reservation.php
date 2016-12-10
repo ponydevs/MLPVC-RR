@@ -1,6 +1,8 @@
 <?php
 
-namespace App;
+namespace App\Models;
+
+use App\Models\Post;
 
 class Reservation extends Post {
 	/** @param array|object */

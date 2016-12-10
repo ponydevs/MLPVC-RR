@@ -2,10 +2,13 @@
 
 namespace App;
 
-use App\Episode;
+use App\Models\Episode;
+use App\Models\EpisodeVideo;
+use App\Models\Post;
+use App\Models\User;
 use cogpowered\FineDiff;
 
-class Log {
+class Logs {
 	static $LOG_DESCRIPTION = array(
 		'episodes' => 'Episode management',
 		'episode_modify' => 'Episode modified',
@@ -288,7 +291,7 @@ class Log {
 				if ($newIsCurrent)
 					$details[] = array('Old name', $data['old']);
 				else {
-					$details[] = array('Name', Log::CharDiff($data['old'], $data['new']));
+					$details[] = array('Name', Logs::CharDiff($data['old'], $data['new']));
 				}
 			break;
 			case "video_broken":
@@ -399,7 +402,7 @@ class Log {
 				$ip = '<a class="server-init" title="Search for all entries by Web server"><span class="typcn typcn-zoom"></span>&nbsp;Web server</a>';
 			}
 
-			$event = Log::$LOG_DESCRIPTION[$item['reftype']] ?? $item['reftype'];
+			$event = Logs::$LOG_DESCRIPTION[$item['reftype']] ?? $item['reftype'];
 			if (isset($item['refid']))
 				$event = '<span class="expand-section typcn typcn-plus">'.$event.'</span>';
 			$ts = Time::Tag($item['timestamp'], Time::TAG_EXTENDED);

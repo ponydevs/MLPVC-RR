@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Models\Post;
 use ElephantIO\Exception\ServerConnectionFailureException;
 
 class Notifications {

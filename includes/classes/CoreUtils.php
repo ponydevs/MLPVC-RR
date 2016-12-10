@@ -2,7 +2,7 @@
 
 namespace App;
 
-use App\User;
+use App\Models\User;
 use Elasticsearch\Client;
 use Elasticsearch\ClientBuilder;
 use ElephantIO\Engine\SocketIO\Version1X as SocketIOEngineVersion1X;

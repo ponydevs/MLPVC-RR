@@ -2,13 +2,13 @@
 
 use App\CoreUtils;
 use App\CSRFProtection;
-use App\Post;
-use App\Request;
-use App\Reservation;
+use App\Models\Post;
+use App\Models\Request;
+use App\Models\Reservation;
 use App\DeviantArt;
 use App\Episodes;
 use App\Input;
-use App\Log;
+use App\Logs;
 use App\Notifications;
 use App\Permission;
 use App\Posts;
@@ -97,7 +97,7 @@ if (regex_match(new RegExp('^((?:un)?(?:finish|lock|reserve)|add|delete|pls-tran
 		if (!empty($Post->reserved_by))
 			Posts::ClearTransferAttempts($Post, $type, 'del');
 
-		Log::Action('req_delete',array(
+		Logs::Action('req_delete',array(
 			'season' => $Post->season,
 			'episode' => $Post->episode,
 			'id' => $Post->id,
@@ -277,7 +277,7 @@ if (regex_match(new RegExp('^((?:un)?(?:finish|lock|reserve)|add|delete|pls-tran
 				if (isset($update['lock'])){
 					$message .= "<p>The image appears to be in the group gallery already, so we marked it as approved.</p>";
 
-					Log::Action('post_lock',$postdata);
+					Logs::Action('post_lock',$postdata);
 					if ($Post->reserved_by !== $currentUser->id)
 						Notifications::Send($Post->reserved_by, 'post-approved', $postdata);
 				}
@@ -327,7 +327,7 @@ if (regex_match(new RegExp('^((?:un)?(?:finish|lock|reserve)|add|delete|pls-tran
 		Response::Fail('Nothing has been changed<br>If you tried to do something, then this is actually an error, which you should <a class="send-feedback">tell us</a> about.');
 
 	if (!empty($overdue))
-		Log::Action('res_overtake',array_merge(
+		Logs::Action('res_overtake',array_merge(
 			array(
 				'id' => $Post->id,
 				'type' => $type
@@ -416,7 +416,7 @@ else if ($data === 'add-reservation'){
 		Response::DBError();
 
 	if (!empty($insert['lock']))
-		Log::Action('post_lock',array(
+		Logs::Action('post_lock',array(
 			'type' => 'reservation',
 			'id' => $postid,
 		));
@@ -459,7 +459,7 @@ else if (regex_match(new RegExp('^set-(request|reservation)-image/(\d+)$'), $dat
 		'fullsize' => $Image->fullsize,
 	))) Response::DBError();
 
-	Log::Action('img_update',array(
+	Logs::Action('img_update',array(
 		'id' => $Post->id,
 		'thing' => $thing,
 		'oldpreview' => $Post->preview,

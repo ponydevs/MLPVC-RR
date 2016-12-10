@@ -3,11 +3,11 @@
 use App\CGUtils;
 use App\CoreUtils;
 use App\CSRFProtection;
-use App\Episode;
-use App\EpisodeVideo;
+use App\Models\Episode;
+use App\Models\EpisodeVideo;
 use App\Episodes;
 use App\Input;
-use App\Log;
+use App\Logs;
 use App\Permission;
 use App\Posts;
 use App\Response;
@@ -49,7 +49,7 @@ switch ($action){
 
 		if (!$Database->whereEp($Episode)->delete('episodes'))
 			Response::DBError();
-		Log::Action('episodes',array(
+		Logs::Action('episodes',array(
 			'action' => 'del',
 			'season' => $Episode->season,
 			'episode' => $Episode->episode,
@@ -219,7 +219,7 @@ switch ($action){
 
 			$removed++;
 			$Database->whereEp($Episode)->where('provider', $video->provider)->where('id', $video->id)->delete('episodes__videos');
-			Log::Action('video_broken',array(
+			Logs::Action('video_broken',array(
 				'season' => $Episode->season,
 				'episode' => $Episode->episode,
 				'provider' => $video->provider,
@@ -455,9 +455,9 @@ switch ($action){
 				}
 			}
 			if ($changes > 0)
-				Log::Action('episode_modify',$logentry);
+				Logs::Action('episode_modify',$logentry);
 		}
-		else Log::Action('episodes',array(
+		else Logs::Action('episodes',array(
 			'action' => 'add',
 			'season' => $insert['season'],
 			'episode' => $insert['episode'],

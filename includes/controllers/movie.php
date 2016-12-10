@@ -1,7 +1,7 @@
 <?php
 
 use App\CoreUtils;
-use App\Episode;
+use App\Models\Episode;
 use App\Episodes;
 use App\RegExp;
 

@@ -4,7 +4,7 @@ use App\CoreUtils;
 use App\CSRFProtection;
 use App\Input;
 use App\JSON;
-use App\Log;
+use App\Logs;
 use App\Notifications;
 use App\Posts;
 use App\Response;
@@ -70,7 +70,7 @@ switch($action){
 
 						Posts::ClearTransferAttempts($Post, $data['type'], 'deny');
 
-						Log::Action('res_transfer',array(
+						Logs::Action('res_transfer',array(
 							'id' => $data['id'],
 							'type' => $data['type'],
 							'to' => $data['user'],

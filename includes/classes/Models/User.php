@@ -1,9 +1,10 @@
 <?php
 
-namespace App;
+namespace App\Models;
 
+use App\Models\AbstractFillable;
 use App\CoreUtils;
-use App\Log;
+use App\Logs;
 use App\Permission;
 use App\UserPrefs;
 
@@ -130,7 +131,7 @@ class User extends AbstractFillable {
 		$response = $Database->where('id', $this->id)->update('users', array('role' => $newgroup));
 
 		if ($response){
-			Log::Action('rolechange', array(
+			Logs::Action('rolechange', array(
 				'target' => $this->id,
 				'oldrole' => $this->role,
 				'newrole' => $newgroup

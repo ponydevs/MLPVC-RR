@@ -2,7 +2,7 @@
 
 namespace App;
 
-use App\User;
+use App\Models\User;
 use App\Exceptions\cURLRequestException;
 
 class DeviantArt {

@@ -4,7 +4,7 @@
 	$Color = 'Color';
 	$color = 'color';
 	$signedIn = false;
-	/** @var $currentUser App\User */
+	/** @var $currentUser \App\Models\User */
 	$currentUser = null;
 	$do = !empty($_GET['do']) ? $_GET['do'] : 'index';
 	$data = !empty($_GET['data']) ? $_GET['data'] : '';

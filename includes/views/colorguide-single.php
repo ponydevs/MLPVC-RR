@@ -1,7 +1,7 @@
 <?php
 use App\CGUtils;
 use App\CoreUtils;
-use App\User;
+use App\Models\User;
 use App\DeviantArt;
 use App\Permission;
 use App\Users;

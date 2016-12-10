@@ -13,7 +13,7 @@ if (!regex_match(new RegExp('^(req|res)/(\d+)$'), $data, $match))
 
 $match[1] .= (array('req' => 'uest', 'res' => 'ervation'))[$match[1]];
 
-/** @var $LinkedPost App\Post */
+/** @var $LinkedPost \App\Models\Post */
 $LinkedPost = $Database->where('id', $match[2])->getOne("{$match[1]}s");
 if (empty($LinkedPost))
 	CoreUtils::NotFound();

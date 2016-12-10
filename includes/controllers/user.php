@@ -2,10 +2,10 @@
 
 use App\CoreUtils;
 use App\CSRFProtection;
-use App\User;
+use App\Models\User;
 use App\HTTP;
 use App\Input;
-use App\Log;
+use App\Logs;
 use App\Permission;
 use App\RegExp;
 use App\Response;
@@ -117,7 +117,7 @@ if (POST_REQUEST){
 
 		$changes = array('role' => $action == 'banish' ? 'ban' : 'user');
 		$Database->where('id', $targetUser->id)->update('users', $changes);
-		Log::Action($action,array(
+		Logs::Action($action,array(
 			'target' => $targetUser->id,
 			'reason' => $reason
 		));

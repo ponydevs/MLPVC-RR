@@ -2,6 +2,8 @@
 
 namespace App;
 
+use App\Models\Episode;
+
 class PostgresDbWrapper extends \PostgresDb {
 	/**
 	 * Execute where method with the specified episode and season numbers
@@ -36,10 +38,10 @@ class PostgresDbWrapper extends \PostgresDb {
 		$className = $this->tableNameToClassName();
 		if (isset($className) && empty($this->_nonexistantClassCache[$className])){
 			try {
-				if (!class_exists("\\App\\$className"))
+				if (!class_exists("\\App\\Models\\$className"))
 					throw new \Exception();
 
-				$this->setClass("\\App\\$className");
+				$this->setClass("\\App\\Models\\$className");
 			}
 			catch (\Exception $e){ $this->_nonexistantClassCache[$className] = true; }
 		}

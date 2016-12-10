@@ -7,7 +7,7 @@ use App\Exceptions\cURLRequestException;
 use App\Permission;
 use App\Response;
 use App\Users;
-use App\User;
+use App\Models\User;
 
 if (!$signedIn) Response::Success("You've already signed out");
 CSRFProtection::Protect();

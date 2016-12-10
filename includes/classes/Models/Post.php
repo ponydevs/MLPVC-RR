@@ -1,10 +1,13 @@
 <?php
 
-namespace App;
+namespace App\Models;
 
+use App\Models\AbstractFillable;
+use App\Models\Episode;
 use App\Time;
 use App\RegExp;
 use App\CoreUtils;
+use App\Models\User;
 
 abstract class Post extends AbstractFillable {
 	/** @var int */
@@ -60,8 +63,8 @@ abstract class Post extends AbstractFillable {
 		if (empty($label))
 			$label = $Episode->formatTitle(AS_ARRAY, 'id');
 		else $label = htmlspecialchars($label);
-		$target = $newtab ? ' target=\'_blank\'' : '';
-		return "<a href='$link'{$target}>$label</a>";
+		$target = $newtab ? 'target=\'_blank\'' : '';
+		return "<a href='$link' $target>$label</a>";
 	}
 
 	public function isTransferable($now = null):bool {

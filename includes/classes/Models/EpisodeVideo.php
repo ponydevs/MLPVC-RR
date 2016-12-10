@@ -1,10 +1,11 @@
 <?php
 
-namespace App;
+namespace App\Models;
 
-use \App\CoreUtils;
-use \App\Time;
-use \App\VideoProvider;
+use App\CoreUtils;
+use App\Models\AbstractFillable;
+use App\Time;
+use App\VideoProvider;
 
 class EpisodeVideo extends AbstractFillable  {
 	/** @var int */

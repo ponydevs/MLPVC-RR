@@ -1,5 +1,5 @@
 <?php
-use App\Log; ?>
+use App\Logs; ?>
 <div id="content">
 	<h1><?=$heading?></h1>
 <?php
@@ -16,7 +16,7 @@ use App\Log; ?>
 		<select name="type" class="entrytype">
 			<option value=''<?=!isset($type)?' selected':''?>>all</option>
 			<optgroup label="Specific entry type"><?php
-		foreach (Log::$LOG_DESCRIPTION as $value => $label)
+		foreach (Logs::$LOG_DESCRIPTION as $value => $label)
 			echo "<option value='$value'".($type===$value?' selected':'').">$label</option>";
 		?></optgroup>
 		</select>
@@ -39,7 +39,7 @@ use App\Log; ?>
 				<th class="reftype">Event</th>
 			</tr>
 		</thead>
-		<tbody><?=Log::GetTbody($LogItems)?></tbody>
+		<tbody><?=Logs::GetTbody($LogItems)?></tbody>
 	</table>
 <?php
 		echo $Pagination->HTML;

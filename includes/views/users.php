@@ -7,7 +7,7 @@
 use App\CoreUtils;
 use App\Permission;
 
-/** @var $Users App\User[] */
+/** @var $Users \App\Models\User[] */
 $Users = $Database->orderBy('name','asc')->get('users');
 if (!empty($Users)){
 	$Arranged = array();
@@ -18,7 +18,7 @@ if (!empty($Users)){
 	}
 	foreach (array_reverse(Permission::$ROLES) as $r => $v){
 		if (empty($Arranged[$r])) continue;
-		/** @var $users App\User[] */
+		/** @var $users \App\Models\User[] */
 		$users = $Arranged[$r];
 		$group = CoreUtils::MakePlural(Permission::$ROLES_ASSOC[$r], count($users), true);
 		$groupInitials = '['.Permission::LabelInitials($r).']';

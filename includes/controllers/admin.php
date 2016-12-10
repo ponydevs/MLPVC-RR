@@ -2,7 +2,7 @@
 
 use App\CoreUtils;
 use App\Input;
-use App\Log;
+use App\Logs;
 use App\Pagination;
 use App\Permission;
 use App\RegExp;
@@ -34,7 +34,7 @@ use App\Users;
 						Response::Fail('Failed to retrieve details', array('unlickable' => true));
 					}
 
-					Response::Done(Log::FormatEntryDetails($MainEntry,$Details));
+					Response::Done(Logs::FormatEntryDetails($MainEntry,$Details));
 				}
 				else CoreUtils::NotFound();
 			break;
@@ -158,8 +158,8 @@ use App\Users;
 
 	switch ($task){
 		case "logs":
-			$type = Log::ValidateRefType('type', true, true);
-			if (isset($_GET['type']) && regex_match(new RegExp('/^[a-z_]+$/'), $_GET['type']) && isset(Log::$LOG_DESCRIPTION[$_GET['type']]))
+			$type = Logs::ValidateRefType('type', true, true);
+			if (isset($_GET['type']) && regex_match(new RegExp('/^[a-z_]+$/'), $_GET['type']) && isset(Logs::$LOG_DESCRIPTION[$_GET['type']]))
 				$type = $_GET['type'];
 
 			if (!isset($_GET['by']))
@@ -191,7 +191,7 @@ use App\Users;
 					$Database->where('reftype', $type);
 					if (isset($q)){
 						$q[] = "type=$type";
-						$title .= Log::$LOG_DESCRIPTION[$type].' entries ';
+						$title .= Logs::$LOG_DESCRIPTION[$type].' entries ';
 					}
 				}
 				else if (isset($q))
@@ -227,7 +227,7 @@ use App\Users;
 				->get('log', $Pagination->GetLimit());
 
 			if (isset($_GET['js']))
-				$Pagination->Respond(Log::GetTbody($LogItems), '#logs tbody');
+				$Pagination->Respond(Logs::GetTbody($LogItems), '#logs tbody');
 
 			CoreUtils::LoadPage(array(
 				'title' => $title,

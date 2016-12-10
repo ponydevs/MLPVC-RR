@@ -7,7 +7,7 @@ use App\Permission;
 use App\Posts;
 use App\Time;
 use App\Users;
-use App\Episode;
+use App\Models\Episode;
 
 /**
  * @var $CurrentEpisode Episode

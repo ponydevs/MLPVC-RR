@@ -2,8 +2,8 @@
 
 namespace App;
 
-use App\Post;
-use App\User;
+use App\Models\Post;
+use App\Models\User;
 use App\Exceptions\cURLRequestException;
 
 class Users {
@@ -105,7 +105,7 @@ class Users {
 			throw new \Exception('Saving user data failed'.(Permission::Sufficient('developer')?': '.$Database->getLastError():''));
 
 		if (!$userExists)
-			Log::Action('userfetch',array('userid' => $insert['id']));
+			Logs::Action('userfetch',array('userid' => $insert['id']));
 		$names = array($username);
 		if ($userExists && $DBUser->name !== $username)
 			$names[] = $DBUser->name;
@@ -113,11 +113,11 @@ class Users {
 			if (strcasecmp($name,$insert['name']) !== 0){
 				if (UserPrefs::Get('discord_token',$ID) === 'true')
 					UserPrefs::Set('discord_token','',$ID);
-				Log::Action('da_namechange',array(
+				Logs::Action('da_namechange',array(
 					'old' => $name,
 					'new' => $insert['name'],
 					'id' => $ID,
-				), Log::FORCE_INITIATOR_WEBSERVER);
+				), Logs::FORCE_INITIATOR_WEBSERVER);
 			}
 		}
 

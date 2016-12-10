@@ -2,6 +2,8 @@
 
 namespace App;
 
+use App\Models\EpisodeVideo;
+
 class VideoProvider {
 	public static $id, $embed;
 	/** @var EpisodeVideo */

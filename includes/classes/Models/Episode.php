@@ -1,7 +1,8 @@
 <?php
 
-namespace App;
+namespace App\Models;
 
+use App\Models\AbstractFillable;
 use App\RegExp;
 use App\Episodes;
 use App\CoreUtils;

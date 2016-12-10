@@ -7,7 +7,7 @@ use App\Exceptions\MismatchedProviderException;
 use App\ImageProvider;
 use App\Input;
 use App\JSON;
-use App\Log;
+use App\Logs;
 use App\Pagination;
 use App\Permission;
 use App\RegExp;
@@ -306,7 +306,7 @@ if (POST_REQUEST || (isset($_GET['s']) && $data === "gettags")){
 						}
 					}
 
-					Log::Action('appearances',array(
+					Logs::Action('appearances',array(
 						'action' => 'add',
 					    'id' => $data['id'],
 					    'order' => $data['order'],
@@ -332,7 +332,7 @@ if (POST_REQUEST || (isset($_GET['s']) && $data === "gettags")){
 						$diff["new$key"] = $EditedAppearance[$key];
 					}
 				}
-				if (!empty($diff)) Log::Action('appearance_modify',array(
+				if (!empty($diff)) Logs::Action('appearance_modify',array(
 					'ponyid' => $Appearance['id'],
 					'changes' => JSON::Encode($diff),
 				));
@@ -377,7 +377,7 @@ if (POST_REQUEST || (isset($_GET['s']) && $data === "gettags")){
 
 				CGUtils::ClearRenderedImages($Appearance['id']);
 
-				Log::Action('appearances',array(
+				Logs::Action('appearances',array(
 					'action' => 'del',
 				    'id' => $Appearance['id'],
 				    'order' => $Appearance['order'],
@@ -421,7 +421,7 @@ if (POST_REQUEST || (isset($_GET['s']) && $data === "gettags")){
 
 				$oldCGs = ColorGroups::Stringify($oldCGs);
 				$newCGs = ColorGroups::Stringify($newCGs);
-				if ($oldCGs !== $newCGs) Log::Action('cg_order',array(
+				if ($oldCGs !== $newCGs) Logs::Action('cg_order',array(
 					'ponyid' => $Appearance['id'],
 					'oldgroups' => $oldCGs,
 					'newgroups' => $newCGs,
@@ -883,7 +883,7 @@ HTML;
 				if (!$CGDb->where('groupid', $Group['groupid'])->delete('colorgroups'))
 					Response::DBError();
 
-				Log::Action('cgs',array(
+				Logs::Action('cgs',array(
 					'action' => 'del',
 					'groupid' => $Group['groupid'],
 					'ponyid' => $Group['ponyid'],
@@ -991,7 +991,7 @@ HTML;
 
 		$AppearanceID = $adding ? $Appearance['id'] : $Group['ponyid'];
 		if ($major){
-			Log::Action('color_modify',array(
+			Logs::Action('color_modify',array(
 				'ponyid' => $AppearanceID,
 				'reason' => $reason,
 			));
@@ -1010,7 +1010,7 @@ HTML;
 		else $response['notes'] = Appearances::GetNotesHTML($CGDb->where('id', $AppearanceID)->getOne('appearances'),  NOWRAP);
 
 		$logdata = array();
-		if ($adding) Log::Action('cgs',array(
+		if ($adding) Logs::Action('cgs',array(
 			'action' => 'add',
 			'groupid' => $Group['groupid'],
 			'ponyid' => $AppearanceID,
@@ -1032,7 +1032,7 @@ HTML;
 		if (!empty($logdata)){
 			$logdata['groupid'] = $Group['groupid'];
 			$logdata['ponyid'] = $AppearanceID;
-			Log::Action('cg_modify', $logdata);
+			Logs::Action('cg_modify', $logdata);
 		}
 
 		Response::Done($response);
