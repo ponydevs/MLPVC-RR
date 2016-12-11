@@ -3,37 +3,36 @@
 namespace App;
 
 class Permission {
-	public static
-		$ROLES_ASSOC = array(
-			'ban'       => 'Banished User',
-			'guest'     => 'Guest',
-			'user'      => 'DeviantArt User',
-			'member'    => 'Club Member',
-			'assistant' => 'Assistant',
-			'staff'     => 'Staff',
-			'admin'     => 'Administrator',
-			'developer' => 'Site Developer',
-		),
-		$ROLES = array(
-			'ban'       => 0,
-			'guest'     => 1,
-			'user'      => 2,
-			'member'    => 3,
-			'assistant' => 4,
-			'staff'     => 4,
-			'admin'     => 4,
-			'developer' => 255,
-		),
-		$ROLE_INITIALS = array(
-			'ban'       => 'B',
-			'guest'     => 'G',
-			'user'      => 'U',
-			'member'    => 'M',
-			'assistant' => 'As',
-			'staff'     => 'S',
-			'admin'     => 'A',
-			'developer' => 'SD',
-		);
+	const ROLES_ASSOC = array(
+		'ban'       => 'Banished User',
+		'guest'     => 'Guest',
+		'user'      => 'DeviantArt User',
+		'member'    => 'Club Member',
+		'assistant' => 'Assistant',
+		'staff'     => 'Staff',
+		'admin'     => 'Administrator',
+		'developer' => 'Site Developer',
+	);
+	const ROLES = array(
+		'ban'       => 0,
+		'guest'     => 1,
+		'user'      => 2,
+		'member'    => 3,
+		'assistant' => 4,
+		'staff'     => 4,
+		'admin'     => 4,
+		'developer' => 255,
+	);
+	const ROLE_INITIALS = array(
+		'ban'       => 'B',
+		'guest'     => 'G',
+		'user'      => 'U',
+		'member'    => 'M',
+		'assistant' => 'As',
+		'staff'     => 'S',
+		'admin'     => 'A',
+		'developer' => 'SD',
+	);
 
 	/**
 	 * Permission checking function
@@ -48,7 +47,7 @@ class Permission {
 	 *
 	 * @return bool
 	 */
-	static function Sufficient($role, $compareAgainst = null){
+	static function sufficient($role, $compareAgainst = null){
 		if (!is_string($role)) return false;
 
 		if (empty($compareAgainst)){
@@ -59,11 +58,11 @@ class Permission {
 		}
 		else $checkRole = $compareAgainst;
 
-		if (!isset(self::$ROLES[$role]))
+		if (empty(self::ROLES[$role]))
 			throw new \Exception('Invalid role: '.$role);
 		$targetRole = $role;
 
-		return self::$ROLES[$checkRole] >= self::$ROLES[$targetRole];
+		return self::ROLES[$checkRole] >= self::ROLES[$targetRole];
 	}
 
 	/**
@@ -75,8 +74,8 @@ class Permission {
 	 *
 	 * @return bool
 	 */
-	static function Insufficient($role, $compareAgainst = null){
-		return !self::Sufficient($role, $compareAgainst);
+	static function insufficient($role, $compareAgainst = null){
+		return !self::sufficient($role, $compareAgainst);
 	}
 
 	/**
@@ -86,7 +85,7 @@ class Permission {
 	 *
 	 * @return string
 	 */
-	static function LabelInitials($role){
-		return self::$ROLE_INITIALS[$role];
+	static function labelInitials($role){
+		return self::ROLE_INITIALS[$role];
 	}
 }

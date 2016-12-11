@@ -13,8 +13,8 @@ use \App\RegExp;
 // Database connection & Required Functionality Checking \\
 try {
 	if (PHP_OS === 'WINNT')
-		$inipath = 'in/to '.php_ini_loaded_file().' then restart '.About::GetServerSoftware();
-	if (About::IniGet('short_open_tag') !== true)
+		$inipath = 'in/to '.php_ini_loaded_file().' then restart '.About::getServerSoftware();
+	if (About::iniGet('short_open_tag') !== true)
 		throw new Exception("Short open tags (&lt;?) are disabled\nUncomment/add the line <strong>short_open_tag=On</strong> $inipath to fix");
 	if (!function_exists('curl_init'))
 		throw new Exception("cURL extension is disabled or not installed\n".(PHP_OS !== 'WINNT' ? "Run <strong>sudo apt-get install php7.0-curl</strong>" : "Uncomment/add the line <strong>extension=php_curl.dll</strong> $inipath").' to fix');

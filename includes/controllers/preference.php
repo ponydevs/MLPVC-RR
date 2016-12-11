@@ -7,29 +7,31 @@ use App\RegExp;
 use App\Response;
 use App\UserPrefs;
 
-if (!Permission::Sufficient('user') || !POST_REQUEST)
+/** @var $data string */
+
+if (!Permission::sufficient('user') || !POST_REQUEST)
 	CoreUtils::notFound();
-CSRFProtection::Protect();
+CSRFProtection::protect();
 
 if (!preg_match(new RegExp('^([gs]et)/([a-z_]+)$'), CoreUtils::trim($data), $_match))
-	Response::Fail('Preference key invalid');
+	Response::fail('Preference key invalid');
 
 $getting = $_match[1] === 'get';
 $key = $_match[2];
 
 // TODO Support changing some preferences of other users by staff
-$currvalue = UserPrefs::Get($key);
+$currvalue = UserPrefs::get($key);
 if ($getting)
-	Response::Done(array('value' => $currvalue));
+	Response::done(array('value' => $currvalue));
 
 try {
-	$newvalue = UserPrefs::Process($key);
+	$newvalue = UserPrefs::process($key);
 }
-catch (Exception $e){ Response::Fail('Preference value error: '.$e->getMessage()); }
+catch (Exception $e){ Response::fail('Preference value error: '.$e->getMessage()); }
 
 if ($newvalue === $currvalue)
-	Response::Done(array('value' => $newvalue));
-if (!UserPrefs::Set($key, $newvalue))
-	Response::DBError();
+	Response::done(array('value' => $newvalue));
+if (!UserPrefs::set($key, $newvalue))
+	Response::dbError();
 
-Response::Done(array('value' => $newvalue));
+Response::done(array('value' => $newvalue));

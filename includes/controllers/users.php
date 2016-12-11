@@ -3,7 +3,7 @@
 use App\CoreUtils;
 use App\Permission;
 
-if (!Permission::Sufficient('staff'))
+if (!Permission::sufficient('staff'))
 	CoreUtils::notFound();
 
 CoreUtils::loadPage(array(

@@ -21,14 +21,14 @@
 	$phpExtensionPattern = new RegExp('\.php($|\?.*)');
 
 	if (preg_match($phpExtensionPattern,$_SERVER['REQUEST_URI']))
-		HTTP::Redirect(preg_replace($phpExtensionPattern, '$1', $_SERVER['REQUEST_URI']));
+		HTTP::redirect(preg_replace($phpExtensionPattern, '$1', $_SERVER['REQUEST_URI']));
 	if (!preg_match($REWRITE_REGEX,"/$do/$data")){
-		Users::Authenticate();
+		Users::authenticate();
 		CoreUtils::notFound();
 	}
 
 	if ($do === GH_WEBHOOK_DO){
-		if (empty(GH_WEBHOOK_DO)) HTTP::Redirect('/');
+		if (empty(GH_WEBHOOK_DO)) HTTP::redirect('/');
 
 		if (!empty($_SERVER['HTTP_USER_AGENT']) && strpos($_SERVER['HTTP_USER_AGENT'], 'GitHub-Hookshot/') === 0){
 			if (empty($_SERVER['HTTP_X_GITHUB_EVENT']) || empty($_SERVER['HTTP_X_HUB_SIGNATURE']))
@@ -45,7 +45,7 @@
 					exec("git pull",$output);
 					$output = implode("\n", $output);
 					if (empty($output))
-						HTTP::StatusCode(500, AND_DIE);
+						HTTP::statusCode(500, AND_DIE);
 					exec("composer update 2>&1",$arr);
 					$output .= implode("\n", $arr);
 					echo $output;
@@ -67,7 +67,7 @@
 		case "logs":
 			$do = 'admin';
 			$data = rtrim("logs/$data",'/');
-			HTTP::Redirect(rtrim("/$do/$data", '/'));
+			HTTP::redirect(rtrim("/$do/$data", '/'));
 		break;
 		case "u":
 			$do = 'user';
@@ -83,7 +83,7 @@
 	// Load controller
 	$controller = INCPATH."controllers/$do.php";
 	if (!($do === 'colorguide' && preg_match(new RegExp('\.(svg|png)$'), $data)))
-		Users::Authenticate();
+		Users::authenticate();
 	if (!file_exists($controller))
 		CoreUtils::notFound();
 	require $controller;

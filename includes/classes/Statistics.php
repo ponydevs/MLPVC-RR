@@ -9,7 +9,7 @@ class Statistics {
 	 * @param array $Labels Labels to append to data
 	 * @param array $Data   Data array reference
 	 */
-	static function ProcessLabels(&$Labels, &$Data){
+	static function processLabels(&$Labels, &$Data){
 		if (empty($Labels))
 			$Labels = array();
 		else {
@@ -26,7 +26,7 @@ class Statistics {
 	 * @param array $Rows    Database rows obtained with rawQuery
 	 * @param array $Dataset Array to process data into
 	 */
-	static function ProcessUsageData($Rows, &$Dataset){
+	static function processUsageData($Rows, &$Dataset){
 		$Dataset['labels'] =
 		$Dataset['data'] = array();
 
@@ -51,7 +51,7 @@ class Statistics {
 	 *
 	 * @param array $Data
 	 */
-	static function PostprocessTimedData(&$Data){
+	static function postprocessTimedData(&$Data){
 		foreach ($Data['labels'] as $k => $l)
 			$Data['labels'][$k] = strtotime($l);
 

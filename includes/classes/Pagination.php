@@ -129,9 +129,9 @@ class Pagination {
 	 * @param string $output The HTML of the paginated content
 	 * @param string $update The CSS selector specifying which element to place $output in
 	 */
-	function Respond($output, $update){
+	function respond($output, $update){
 		$RQURI = rtrim(preg_replace(new RegExp('js=true(?:&|$)'),'',$_SERVER['REQUEST_URI']),'?');
-		Response::Done(array(
+		Response::done(array(
 			'output' => $output,
 			'update' => $update,
 			'pagination' => $this->HTML,
@@ -145,7 +145,7 @@ class Pagination {
 	 *
 	 * @return int[]
 	 */
-	function GetLimit(){
+	function getLimit(){
 		$arr = $this->toElastic();
 		return array($arr['from'], $arr['size']);
 	}
@@ -155,8 +155,8 @@ class Pagination {
 	 *
 	 * @return string
 	 */
-	function GetLimitString(){
-		$limit = $this->GetLimit();
+	function getLimitString(){
+		$limit = $this->getLimit();
 		return "LIMIT $limit[1] OFFSET $limit[0]";
 	}
 }

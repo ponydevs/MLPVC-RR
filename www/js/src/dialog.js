@@ -28,10 +28,29 @@
 		defaultContent = {
 			fail: 'There was an issue while processing the request.',
 			success: 'Whatever you just did, it was completed successfully.',
+			wait: 'Sending request',
 			request: 'The request did not require any additional info.',
 			confirm: 'Are you sure?',
 			info: 'No message provided.',
-		};
+		},
+		closeAction = () => { $.Dialog.close() };
+
+	class DialogButton {
+		constructor(label, options){
+			this.label = label;
+			$.each(options, (k,v)=>this[k]=v);
+		}
+
+		setLabel(newlabel){
+			this.label = newlabel;
+			return this;
+		}
+
+		setFormId(formid){
+			this.formid = formid;
+			return this;
+		}
+	}
 
 	class Dialog {
 		constructor(){
@@ -43,47 +62,26 @@
 			this.$dialogScroll = $('#dialogScroll');
 			this.$dialogButtons = $('#dialogButtons');
 			this._open = this.$dialogContent.length ? {} : undefined;
-			this._CloseButton = { Close: function(){ $.Dialog.close() } };
+			this._CloseButton = new DialogButton('Close', { action: closeAction });
 			this._$focusedElement = undefined;
 		}
 
 		isOpen(){ return typeof this._open === 'object' }
 
-		_display(type,title,content,buttons,callback){
-			if (typeof type !== 'string' || typeof colors[type] === 'undefined')
-				throw new TypeError('Invalid dialog type: '+typeof type);
+		_display(options){
+			if (typeof options.type !== 'string' || typeof colors[options.type] === 'undefined')
+				throw new TypeError('Invalid dialog type: '+typeof options.type);
 
-			if (typeof buttons === 'function' && typeof callback !== 'function'){
-				callback = buttons;
-				buttons = undefined;
-			}
-			let force_new = false;
-			if (typeof callback === 'boolean'){
-				force_new = callback;
-				callback = undefined;
-			}
-			else if (typeof buttons === 'boolean' && typeof callback === 'undefined'){
-				force_new = buttons;
-				buttons = undefined;
-			}
-
-			if (typeof title === 'undefined')
-				title = defaultTitles[type];
-			else if (title === false)
-				title = undefined;
-			if (!content)
-				content = defaultContent[type];
-			let params = {
-				type: type,
-				title: title,
-				content: content||defaultContent[type],
-				buttons: buttons,
-				color: colors[type]
-			};
+			if (!options.content)
+				options.content = defaultContent[options.type];
+			let params = $.extend({
+				content: defaultContent[options.type],
+			},options);
+			params.color =  colors[options.type];
 
 			let append = Boolean(this._open),
 				$contentAdd = $.mk('div').append(params.content),
-				appendingToRequest = append && this._open.type === 'request' && ['fail','wait'].includes(params.type) && !force_new,
+				appendingToRequest = append && this._open.type === 'request' && ['fail','wait'].includes(params.type) && !params.forceNew,
 				$requestContentDiv;
 
 			if (params.color.length)
@@ -127,7 +125,9 @@
 				this._open = params;
 
 				this.$dialogOverlay = $.mk('div','dialogOverlay');
-				this.$dialogHeader = $.mk('div','dialogHeader').text(params.title||defaultTitles[type]);
+				this.$dialogHeader = $.mk('div','dialogHeader');
+				if (typeof params.title === 'string')
+					this.$dialogHeader.text(params.title);
 				this.$dialogContent = $.mk('div','dialogContent');
 				this.$dialogBox = $.mk('div','dialogBox');
 				this.$dialogScroll = $.mk('div','dialogScroll');
@@ -150,15 +150,12 @@
 				this.$dialogContent.attr('class',params.color ? `${params.color}-border` : '');
 			}
 
-			let classScope = this;
-			if (!appendingToRequest && params.buttons) $.each(params.buttons, (name, obj) => {
+			if (!appendingToRequest && params.buttons) $.each(params.buttons, (_, obj) => {
 				let $button = $.mk('input').attr({
-					'type': 'button',
-					'class': params.color+'-bg'
-				});
-				if (typeof obj === 'function')
-					obj = {action: obj};
-				else if (obj.form){
+						'type': 'button',
+						'class': params.color+'-bg'
+					});
+				if (obj.form){
 					$requestContentDiv = $(`#${obj.form}`);
 					if ($requestContentDiv.length === 1){
 						$button.on('click', function(){
@@ -167,7 +164,7 @@
 						$requestContentDiv.prepend($.mk('input').attr('type','submit').hide());
 					}
 				}
-				$button.val(name).on('keydown', function(e){
+				$button.val(obj.label).on('keydown', (e) => {
 					if ([Key.Enter, Key.Space].includes(e.keyCode)){
 						e.preventDefault();
 
@@ -176,9 +173,9 @@
 					else if ([Key.Tab, Key.LeftArrow, Key.RightArrow].includes(e.keyCode)){
 						e.preventDefault();
 
-						let $dBc = classScope.$dialogButtons.children(),
+						let $dBc = this.$dialogButtons.children(),
 							$focused = $dBc.filter(':focus'),
-							$inputs = classScope.$dialogContent.find(':input');
+							$inputs = this.$dialogContent.find(':input');
 
 						if ($.isKey(Key.LeftArrow, e))
 							e.shiftKey = true;
@@ -200,13 +197,13 @@
 
 					$.callCallback(obj.action, [e]);
 				});
-				classScope.$dialogButtons.append($button);
+				this.$dialogButtons.append($button);
 			});
 			this._setFocus();
 			$w.trigger('dialog-opened');
 			Time.Update();
 
-			$.callCallback(callback, [$requestContentDiv]);
+			$.callCallback(params.callback, [$requestContentDiv]);
 			if (append){
 				let $lastdiv = this.$dialogContent.children(':not(#dialogButtons)').last();
 				if (appendingToRequest)
@@ -221,27 +218,68 @@
 			}
 
 		}
-		fail(title,content,force_new){
-			this._display('fail',title,content,this._CloseButton,force_new === true);
+		/**
+		 * Display a dialog asking for user input
+		 *
+		 * @param {string}        title
+		 * @param {string|jQuery} content
+		 * @param {bool}          forceNew
+		 */
+		fail(title = defaultTitles.fail, content = defaultContent.fail, forceNew = false){
+			this._display({
+				type: 'fail',
+				title,
+				content,
+				buttons: [this._CloseButton],
+				forceNew
+			});
 		}
-		success(title,content,closeBtn,callback){
-			this._display('success',title,content, (closeBtn === true ? this._CloseButton : undefined), callback);
+		/**
+		 * Display a dialog asking for user input
+		 *
+		 * @param {string}        title
+		 * @param {string|jQuery} content
+		 * @param {bool}          closeBtn
+		 * @param {function}      callback
+		 */
+		success(title = defaultTitles.success, content = defaultContent.success, closeBtn = false, callback = undefined){
+			this._display({
+				type: 'success',
+				title,
+				content,
+				buttons: (closeBtn ? [this._CloseButton] : undefined),
+				callback,
+			});
 		}
-		wait(title,additional_info,force_new){
-			if (typeof additional_info === 'boolean' && typeof force_new === 'undefined'){
-				force_new = additional_info;
-				additional_info = undefined;
-			}
-			if (typeof additional_info !== 'string')
-				additional_info = 'Sending request';
-			this._display('wait',title,$.capitalize(additional_info)+'&hellip;',force_new === true);
+		/**
+		 * Display a dialog informing the user of an action in progress
+		 *
+		 * @param {string}        title
+		 * @param {string|jQuery} content
+		 * @param {bool}          forceNew
+		 */
+		wait(title = defaultTitles.wait, content = defaultContent.wait, forceNew = false){
+			this._display({
+				type: 'wait',
+				title,
+				content: $.capitalize(content)+'&hellip;',
+				forceNew,
+			});
 		}
-		request(title,content,confirmBtn,callback){
+		/**
+		 * Display a dialog asking for user input
+		 *
+		 * @param {string}          title
+		 * @param {string|jQuery}   content
+		 * @param {string|function} confirmBtn
+		 * @param {function}        callback
+		 */
+		request(title = defaultTitles.request, content = defaultContent.request, confirmBtn = 'Submit', callback = undefined){
 			if (typeof confirmBtn === 'function' && typeof callback === 'undefined'){
 				callback = confirmBtn;
 				confirmBtn = undefined;
 			}
-			let buttons = {},
+			let buttons = [],
 				formid;
 			if (content instanceof jQuery)
 				formid = content.attr('id');
@@ -252,34 +290,61 @@
 			}
 			if (confirmBtn !== false){
 				if (formid)
-					buttons[confirmBtn||'Submit'] = {
+					buttons.push(new DialogButton(confirmBtn, {
 						submit: true,
 						form: formid,
-					};
-				buttons.Cancel = this._CloseButton.Close;
+					}));
+				buttons.push(new DialogButton('Cancel', { action: closeAction }));
 			}
-			else buttons.Close = {
-				action: this._CloseButton.Close,
-				form: formid,
-			};
+			else buttons.push(new DialogButton('Close', { formid }));
 
-			this._display('request',title,content,buttons,callback);
+			this._display({
+				type: 'request',
+				title,
+				content,
+				buttons,
+				callback
+			});
 		}
-		confirm(title,content,btnTextArray,handlerFunc){
-			if (typeof btnTextArray === 'function' && typeof handlerFunc === 'undefined')
-				handlerFunc = btnTextArray;
+		/**
+		 * Display a dialog asking for confirmation regarding an action
+		 *
+		 * @param {string}            title
+		 * @param {string|jQuery}     content
+		 * @param {string[]|function} btnTextArray
+		 * @param {function}          handlerFunc
+		 */
+		confirm(title = defaultTitles.confirm, content = defaultContent.confirm, btnTextArray = ['Eeyup','Nope'], handlerFunc = undefined){
+			console.log(btnTextArray, handlerFunc);
+			if (typeof handlerFunc === 'undefined')
+				handlerFunc = typeof btnTextArray === 'function' ? btnTextArray : closeAction;
 
-			if (typeof handlerFunc !== 'function')
-				handlerFunc = this._CloseButton.Close;
+			if (!$.isArray(btnTextArray))
+				btnTextArray = ['Eeyup','Nope'];
 
-			if (!$.isArray(btnTextArray)) btnTextArray = ['Eeyup','Nope'];
-			let buttons = {}, classScope = this;
-			buttons[btnTextArray[0]] = function(){ handlerFunc(true) };
-			buttons[btnTextArray[1]] = function(){ handlerFunc(false); classScope._CloseButton.Close() };
-			this._display('confirm',title,content,buttons);
+			let buttons = [
+				new DialogButton(btnTextArray[0], {
+					action: () => { handlerFunc(true) }
+				}),
+				new DialogButton(btnTextArray[1], {
+					action: () => { handlerFunc(false); this._CloseButton.action() }
+				})
+			];
+			this._display({
+				type: 'confirm',
+				title,
+				content,
+				buttons
+			});
 		}
-		info(title,content,callback){
-			this._display('info',title,content,this._CloseButton,callback);
+		info(title = defaultTitles.info, content = defaultContent.info, callback = undefined){
+			this._display({
+				type: 'info',
+				title,
+				content,
+				buttons: [this._CloseButton],
+				callback,
+			});
 		}
 
 		setFocusedElement($el){

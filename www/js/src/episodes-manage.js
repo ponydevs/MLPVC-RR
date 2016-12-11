@@ -19,14 +19,13 @@ DocReady.push(function EpisodesManage(){
 	function mkDate(datestr, timestr, utc){
 		return moment(datestr+'T'+timestr+(utc?'Z':''));
 	}
-	const DateToAirDate = date => date.format('YYYY-MM-DD');
-	const DateToAirTime = date => date.format('HH:mm');
-	const sat_date = DateToAirDate(saturday);
-	const sat_time = DateToAirTime(saturday);
+	const dateToAirDate = date => date.format('YYYY-MM-DD');
+	const dateToAirTime = date => date.format('HH:mm');
+	const sat_date = dateToAirDate(saturday);
+	const sat_time = dateToAirTime(saturday);
 	const sat_day = saturday.format('dddd');
 
-	let EP_TITLE_REGEX = window.EP_TITLE_REGEX,
-		$pageTitle = $content.children('h1').first();
+	let EP_TITLE_REGEX = window.EP_TITLE_REGEX;
 
 	function EpisodeForm(id){
 		let $form = $.mk('form').attr('id', id).append(
@@ -139,8 +138,8 @@ DocReady.push(function EpisodesManage(){
 				$EditEpForm.find('input').filter('[name="season"],[name="episode"]').disable();
 
 			let d = moment(this.ep.airs);
-			this.ep.airdate = DateToAirDate(d);
-			this.ep.airtime = DateToAirTime(d);
+			this.ep.airdate = dateToAirDate(d);
+			this.ep.airtime = dateToAirTime(d);
 
 			let epid = this.epid;
 			delete this.epid;

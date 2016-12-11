@@ -3,7 +3,7 @@
 use App\CoreUtils;
 use App\Permission;
 
-if (Permission::Insufficient('developer'))
+if (Permission::insufficient('developer'))
 	CoreUtils::notFound();
 
 header('Content-Type: text/plain; charset=utf-8;');

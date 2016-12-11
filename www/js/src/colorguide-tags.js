@@ -16,6 +16,25 @@ DocReady.push(function ColorguideTags(){
 			if ($tbody.children().length === 0)
 				path = path.replace(/(\d+)$/,function(n){ return n > 1 ? n-1 : n });
 			$.toPage(path,true,true);
+		},
+		tagUseUpdateHandler = function(successDialog){
+			return $.mkAjaxHandler(function(){
+				if (!this.status) $.Dialog.fail(false, this.message);
+
+				if (this.counts){
+					let counts = this.counts;
+					$tbody.children().each(function(){
+						let $ch = $(this).children(),
+							tid = parseInt($ch.first().text().trim(), 10);
+
+						if (typeof counts[tid] !== 'undefined')
+							$ch.last().children('span').text(counts[tid]);
+					});
+				}
+
+				if (successDialog) $.Dialog.success(false, this.message, true);
+				else $.Dialog.close();
+			});
 		};
 	window.CGTagEditing = function(tagName, tagID, action, $tr){
 		switch (action){
@@ -121,7 +140,7 @@ DocReady.push(function ColorguideTags(){
 			case "refresh":
 				$.Dialog.wait(`Refresh use count of ${tagName}`, 'Updating use count');
 
-				$.post('/cg/recounttag',{tagids:tagID}, TagUseUpdateHandler());
+				$.post('/cg/recounttag',{tagids:tagID}, tagUseUpdateHandler());
 			break;
 		}
 	};
@@ -136,26 +155,6 @@ DocReady.push(function ColorguideTags(){
 
 		window.CGTagEditing(tagName, tagID, action, $tr);
 	});
-
-	let TagUseUpdateHandler = function(successDialog){
-			return $.mkAjaxHandler(function(){
-				if (!this.status) $.Dialog.fail(false, this.message);
-
-				if (this.counts){
-					let counts = this.counts;
-					$tbody.children().each(function(){
-						let $ch = $(this).children(),
-							tid = parseInt($ch.first().text().trim(), 10);
-
-						if (typeof counts[tid] !== 'undefined')
-							$ch.last().children('span').text(counts[tid]);
-					});
-				}
-
-				if (successDialog) $.Dialog.success(false, this.message, true);
-				else $.Dialog.close();
-			});
-		};
 	$('.refresh-all').on('click',function(){
 		let tagIDs = [],
 			title = 'Recalculate tag usage data';
@@ -165,6 +164,6 @@ DocReady.push(function ColorguideTags(){
 
 		$.Dialog.wait(title, 'Updating use count'+(tagIDs.length!==1?'s':''));
 
-		$.post('/cg/recounttag',{tagids:tagIDs.join(',')}, TagUseUpdateHandler(true));
+		$.post('/cg/recounttag',{tagids:tagIDs.join(',')}, tagUseUpdateHandler(true));
 	});
 });

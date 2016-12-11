@@ -6,7 +6,7 @@
 
 	'use strict';
 
-	var cssPrefixes = ['-webkit-', '-moz-', '-o-', ''],
+	let cssPrefixes = ['-webkit-', '-moz-', '-o-', ''],
 		eventPrefixes = ['webkit', 'moz', 'MS', 'o', ''];
 
 	function prefixedEvent(element, name, callback){
@@ -164,7 +164,7 @@
 	};
 
 	SimpleMarquee.prototype._setup = function(){
-		var wrapper;
+		let wrapper;
 
 		// Set necessary wrap styles and decide if we need the marquee
 		if (this._horizontal){
@@ -222,7 +222,7 @@
 	};
 
 	SimpleMarquee.prototype._setupAnimation = function(){
-		var styleStr;
+		let styleStr;
 
 		// Add the style element
 		styleStr = '<style>\n';
@@ -328,7 +328,7 @@
 
 	$.fn.simplemarquee = function(options){
 		this.each(function(index, el){
-			var instance;
+			let instance;
 
 			el = $(el);
 			instance = el.data('_simplemarquee');

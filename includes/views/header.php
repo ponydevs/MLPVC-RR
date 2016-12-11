@@ -7,6 +7,8 @@ use App\UserPrefs;
 use App\Users;
 use App\CoreUtils;
 
+/** @var $signedIn bool */
+
 $Title = (isset($title)?$title.' - ':'').SITE_TITLE;
 $Description = "Handling requests, reservations & the Color Guide since 2015";
 
@@ -14,7 +16,7 @@ $ThumbImage = "/img/logo.png";
 switch ($do ?? null){
 	case "colorguide":
 		if (!empty($Appearance)){
-			$sprite = Appearances::GetSpriteURL($Appearance['id']);
+			$sprite = Appearances::getSpriteURL($Appearance['id']);
 			if ($sprite)
 				$ThumbImage = $sprite;
 
@@ -26,7 +28,7 @@ switch ($do ?? null){
 			if (!$LinkedPost->isFinished)
 				$ThumbImage = $LinkedPost->preview;
 			else {
-				$finishdeviation = DeviantArt::GetCachedSubmission($LinkedPost->deviation_id);
+				$finishdeviation = DeviantArt::getCachedSubmission($LinkedPost->deviation_id);
 				if (!empty($finishdeviation['preview']))
 					$ThumbImage  = $finishdeviation['preview'];
 			}
@@ -34,7 +36,7 @@ switch ($do ?? null){
 			if ($LinkedPost->isRequest)
 				$Description = 'A request';
 			else {
-				$_user = Users::Get($LinkedPost->reserved_by,'id','name');
+				$_user = Users::get($LinkedPost->reserved_by,'id','name');
 				$Description = 'A reservation'.(!empty($_user->name) ? " by {$_user->name}" : '');
 			}
 			$Description .= ' on the MLP-VectorClub\'s website';
@@ -86,12 +88,12 @@ $Title = CoreUtils::escapeHTML($Title); ?>
 	if (isset($norobots))
 		echo'<meta name="robots" content="noindex, nofollow">';
 	if (isset($redirectto))
-		echo'<script>history.replaceState&&history.replaceState(history.state,"",'.JSON::Encode($redirectto).')</script>'."\n";
+		echo'<script>history.replaceState&&history.replaceState(history.state,"",'.JSON::encode($redirectto).')</script>'."\n";
 	if (isset($customCSS)){
 		foreach ($customCSS as $css)
 			echo "<link rel='stylesheet' href='$css'>\n";
 	}
-	if (!empty(GA_TRACKING_CODE) && Permission::Insufficient('developer')){ ?>
+	if (!empty(GA_TRACKING_CODE) && Permission::insufficient('developer')){ ?>
 <script>
 (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
 (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
@@ -99,7 +101,7 @@ m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
 })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
 
 ga('create','<?=GA_TRACKING_CODE?>','auto');
-<?php   if ($signedIn && !UserPrefs::Get('p_disable_ga')){ ?>
+<?php   if ($signedIn && !UserPrefs::get('p_disable_ga')){ ?>
 ga('set', 'userId', '<?=$currentUser->id?>');
 <?php   } ?>
 ga('require','displayfeatures');

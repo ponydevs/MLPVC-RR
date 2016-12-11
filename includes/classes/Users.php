@@ -4,7 +4,7 @@ namespace App;
 
 use App\Models\Post;
 use App\Models\User;
-use App\Exceptions\cURLRequestException;
+use App\Exceptions\CURLRequestException;
 
 class Users {
 	// Global cache for storing user details
@@ -28,7 +28,7 @@ class Users {
 	 * @throws \Exception
 	 * @return User|null|false
 	 */
-	static function Get($value, $coloumn = 'id', $dbcols = null){
+	static function get($value, $coloumn = 'id', $dbcols = null){
 		global $Database;
 
 		if ($coloumn === "token"){
@@ -46,7 +46,7 @@ class Users {
 		$User = $Database->where($coloumn, $value)->getOne('users',$dbcols);
 
 		if (empty($User) && $coloumn === 'name')
-			$User = self::Fetch($value, $dbcols);
+			$User = self::fetch($value, $dbcols);
 
 		if (empty($dbcols) && !empty($User) && isset($Auth))
 			$User->Session = $Auth;
@@ -67,7 +67,7 @@ class Users {
 	 *
 	 * @return User|null|false
 	 */
-	function Fetch($username, $dbcols = null){
+	function fetch($username, $dbcols = null){
 		global $Database, $USERNAME_REGEX;
 
 		if (!$USERNAME_REGEX->match($username))
@@ -75,12 +75,12 @@ class Users {
 
 		$oldName = $Database->where('old', $username)->getOne('log__da_namechange','id');
 		if (!empty($oldName))
-			return self::Get($oldName['id'], 'id', $dbcols);
+			return self::get($oldName['id'], 'id', $dbcols);
 
 		try {
-			$userdata = DeviantArt::Request('user/whois', null, array('usernames[0]' => $username));
+			$userdata = DeviantArt::request('user/whois', null, array('usernames[0]' => $username));
 		}
-		catch (cURLRequestException $e){
+		catch (CURLRequestException $e){
 			return null;
 		}
 
@@ -102,7 +102,7 @@ class Users {
 			$insert['id'] = $ID;
 
 		if (!($userExists ? $Database->where('id', $ID)->update('users', $insert) : $Database->insert('users',$insert)))
-			throw new \Exception('Saving user data failed'.(Permission::Sufficient('developer')?': '.$Database->getLastError():''));
+			throw new \Exception('Saving user data failed'.(Permission::sufficient('developer')?': '.$Database->getLastError():''));
 
 		if (!$userExists)
 			Logs::action('userfetch',array('userid' => $insert['id']));
@@ -111,8 +111,8 @@ class Users {
 			$names[] = $DBUser->name;
 		foreach ($names as $name){
 			if (strcasecmp($name,$insert['name']) !== 0){
-				if (UserPrefs::Get('discord_token',$ID) === 'true')
-					UserPrefs::Set('discord_token','',$ID);
+				if (UserPrefs::get('discord_token',$ID) === 'true')
+					UserPrefs::set('discord_token','',$ID);
 				Logs::action('da_namechange',array(
 					'old' => $name,
 					'new' => $insert['name'],
@@ -121,7 +121,7 @@ class Users {
 			}
 		}
 
-		return self::Get($insert['name'], 'name', $dbcols);
+		return self::get($insert['name'], 'name', $dbcols);
 	}
 
 	/**
@@ -129,7 +129,7 @@ class Users {
 	 *
 	 * @param bool $showAvatar
 	 */
-	static function RenderCard($showAvatar = false){
+	static function renderCard($showAvatar = false){
 		global $signedIn, $currentUser;
 		if ($signedIn){
 			$avatar = $currentUser->avatar_url;
@@ -161,7 +161,7 @@ class Users {
 	 *
 	 * @return bool|null
 	 */
-	static function ReservationLimitExceeded(bool $return_as_bool = false){
+	static function reservationLimitExceeded(bool $return_as_bool = false){
 		global $Database, $currentUser;
 
 		$reservations = $Database->rawQuerySingle(
@@ -184,22 +184,7 @@ class Users {
 		if ($return_as_bool)
 			return $overTheLimit;
 		if ($overTheLimit)
-			Response::Fail("You've already reserved {$reservations['count']} images, and you can't have more than 4 pending reservations at a time. You can review your reservations on your <a href='/user'>Account page</a>, finish at least one of them before trying to reserve another image.");
-	}
-
-	/**
-	 * Checks if a user is a club member
-	 * (currently only works for recently added members, does not deal with old members or admins)
-	 *
-	 * @param int|string $Username
-	 *
-	 * @return bool
-	 */
-	static function IsClubMember($Username){
-		$RecentlyJoined = HTTP::LegitimateRequest('http://mlp-vectorclub.deviantart.com/modals/memberlist/');
-
-		return !empty($RecentlyJoined['response'])
-			&& preg_match(new RegExp('<a class="[a-z ]*username" href="http://'.strtolower($Username).'.deviantart.com/">'.USERNAME_PATTERN.'</a>'), $RecentlyJoined['response']);
+			Response::fail("You've already reserved {$reservations['count']} images, and you can't have more than 4 pending reservations at a time. You can review your reservations on your <a href='/user'>Account page</a>, finish at least one of them before trying to reserve another image.");
 	}
 
 	/**
@@ -208,14 +193,14 @@ class Users {
 	 * @param array $Session
 	 * @param bool $current
 	 */
-	static function RenderSessionLi($Session, $current = false){
+	static function renderSessionLi($Session, $current = false){
 		$browserClass = CoreUtils::browserNameToClass($Session['browser_name']);
 		$browserTitle = !empty($Session['browser_name']) ? "{$Session['browser_name']} {$Session['browser_ver']}" : 'Unrecognized browser';
 		$platform = !empty($Session['platform']) ? "<span class='platform'>on <strong>{$Session['platform']}</strong></span>" : '';
 
 		$signoutText = !$current ? 'Delete' : 'Sign out';
 		$buttons = "<button class='typcn remove ".(!$current?'typcn-trash red':'typcn-arrow-back')."' data-sid='{$Session['id']}'>$signoutText</button>";
-		if (Permission::Sufficient('developer') && !empty($Session['user_agent'])){
+		if (Permission::sufficient('developer') && !empty($Session['user_agent'])){
 			$buttons .= "<br><button class='darkblue typcn typcn-eye useragent' data-agent='".CoreUtils::aposEncode($Session['user_agent'])."'>UA</button>".
 				"<a class='btn orange typcn typcn-chevron-right' href='/browser/{$Session['id']}'>Debug</a>";
 		}
@@ -235,24 +220,24 @@ HTML;
 	/**
 	 * Check authentication cookie and set global
 	 */
-	static function Authenticate(){
+	static function authenticate(){
 		global $Database, $signedIn, $currentUser, $Color, $color;
-		CSRFProtection::Detect();
+		CSRFProtection::detect();
 
 		if (!POST_REQUEST && isset($_GET['CSRF_TOKEN']))
-			HTTP::Redirect(CSRFProtection::RemoveParamFromURL($_SERVER['REQUEST_URI']));
+			HTTP::redirect(CSRFProtection::removeParamFromURL($_SERVER['REQUEST_URI']));
 
-		if (!Cookie::Exists('access'))
+		if (!Cookie::exists('access'))
 			return;
-		$authKey = Cookie::Get('access');
+		$authKey = Cookie::get('access');
 		if (!empty($authKey)){
 			if (!preg_match(new RegExp('^[a-f\d]+$','iu'), $authKey)){
 				$oldAuthKey = $authKey;
 				$authKey = bin2hex($authKey);
 				$Database->where('token', sha1($oldAuthKey))->update('sessions',array( 'token' => sha1($authKey) ));
-				Cookie::Set('access', $authKey, time() + Time::$IN_SECONDS['year'], Cookie::HTTPONLY);
+				Cookie::set('access', $authKey, time() + Time::$IN_SECONDS['year'], Cookie::HTTPONLY);
 			}
-			$currentUser = Users::Get(sha1($authKey),'token');
+			$currentUser = Users::get(sha1($authKey),'token');
 		}
 
 		if (!empty($currentUser)){
@@ -262,10 +247,10 @@ HTML;
 				if (strtotime($currentUser->Session['expires']) < time()){
 					$tokenvalid = false;
 					try {
-						DeviantArt::GetToken($currentUser->Session['refresh'], 'refresh_token');
+						DeviantArt::getToken($currentUser->Session['refresh'], 'refresh_token');
 						$tokenvalid = true;
 					}
-					catch (cURLRequestException $e){
+					catch (CURLRequestException $e){
 						$Database->where('id', $currentUser->Session['id'])->delete('sessions');
 						trigger_error("Session refresh failed for {$currentUser->name} ({$currentUser->id}) | {$e->getMessage()} (HTTP {$e->getCode()})", E_USER_WARNING);
 					}
@@ -291,21 +276,21 @@ HTML;
 				}
 			}
 		}
-		else Cookie::Delete('access', Cookie::HTTPONLY);
+		else Cookie::delete('access', Cookie::HTTPONLY);
 	}
 
-	static $PROFILE_SECTION_PRIVACY_LEVEL = array(
+	const PROFILE_SECTION_PRIVACY_LEVEL = array(
 		'developer' => "<span class='typcn typcn-cog color-red' title='Visible to: developer'></span>",
 		'public' => "<span class='typcn typcn-world color-blue' title='Visible to: public'></span>",
 		'staff' => "<span class='typcn typcn-lock-closed' title='Visible to: you & group administrators'></span>",
 		'private' => "<span class='typcn typcn-lock-closed color-green' title='Visible to: you'></span>",
 	);
 
-	static function GetPendingReservationsHTML($UserID, $sameUser, &$YouHave = null){
+	static function getPendingReservationsHTML($UserID, $sameUser, &$YouHave = null){
 		global $Database, $currentUser;
 
 		$YouHave = $sameUser?'You have':'This user has';
-		$PrivateSection = $sameUser? Users::$PROFILE_SECTION_PRIVACY_LEVEL['staff']:'';
+		$PrivateSection = $sameUser? Users::PROFILE_SECTION_PRIVACY_LEVEL['staff']:'';
 
 		$cols = "id, season, episode, preview, label, posted, reserved_by";
 		$PendingReservations = $Database->where('reserved_by', $UserID)->where('deviation_id IS NULL')->get('reservations',null,$cols);
@@ -313,7 +298,7 @@ HTML;
 		$TotalPending = count($PendingReservations)+count($PendingRequestReservations);
 		$hasPending = $TotalPending > 0;
 		$HTML = '';
-		if (Permission::Sufficient('staff') || $sameUser){
+		if (Permission::sufficient('staff') || $sameUser){
 			$pendingCountReadable = ($hasPending>0?"<strong>$TotalPending</strong>":'no');
 			$posts = CoreUtils::makePlural('reservation', $TotalPending);
 			$HTML .= <<<HTML
@@ -331,8 +316,8 @@ HTML;
 			if ($hasPending){
 				/** @var $Posts Post[] */
 				$Posts = array_merge(
-					Posts::GetReservationsSection($PendingReservations, RETURN_ARRANGED)['unfinished'],
-					array_filter(array_values(Posts::GetRequestsSection($PendingRequestReservations, RETURN_ARRANGED)['unfinished']))
+					Posts::getReservationsSection($PendingReservations, RETURN_ARRANGED)['unfinished'],
+					array_filter(array_values(Posts::getRequestsSection($PendingRequestReservations, RETURN_ARRANGED)['unfinished']))
 				);
 				usort($Posts, function(Post $a, Post $b){
 					$a = strtotime($a->posted);
@@ -373,7 +358,7 @@ HTML;
 		return $HTML;
 	}
 
-	static function ValidateName($key, $errors, $method_get = false){
+	static function validateName($key, $errors, $method_get = false){
 		return (new Input($key,'username',array(
 			Input::IS_OPTIONAL => true,
 			Input::METHOD_GET => $method_get,

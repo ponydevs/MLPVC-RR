@@ -8,10 +8,10 @@ class CSRFProtection {
 	/**
 	 * Checks POSTed data for CSRF token validity
 	 */
-	static function Detect(){
-		$CSRF = !isset($_POST[self::$_cookieKey]) || !Cookie::Exists(self::$_cookieKey) || $_POST[self::$_cookieKey] !== Cookie::Get(self::$_cookieKey);
+	static function detect(){
+		$CSRF = !isset($_POST[self::$_cookieKey]) || !Cookie::exists(self::$_cookieKey) || $_POST[self::$_cookieKey] !== Cookie::get(self::$_cookieKey);
 		if (!POST_REQUEST && $CSRF)
-			Cookie::Set(self::$_cookieKey,md5(time()+rand()), Cookie::SESSION);
+			Cookie::set(self::$_cookieKey,md5(time()+rand()), Cookie::SESSION);
 	}
 
 	/**
@@ -21,14 +21,14 @@ class CSRFProtection {
 	 *
 	 * @return null|bool
 	 */
-	static function Protect($return_as_bool = false){
+	static function protect($return_as_bool = false){
 		global $CSRF;
 		$is_forged = isset($CSRF) && $CSRF;
 
 		if ($return_as_bool === RETURN_AS_BOOL)
 			return $is_forged;
 		else if ($is_forged)
-			HTTP::StatusCode(401, AND_DIE);
+			HTTP::statusCode(401, AND_DIE);
 	}
 
 	/**
@@ -38,7 +38,7 @@ class CSRFProtection {
 	 *
 	 * @return string
 	 */
-	static function RemoveParamFromURL($url){
+	static function removeParamFromURL($url){
 		return rtrim(preg_replace(new RegExp(preg_quote(self::$_cookieKey).'=[^&]+(&|$)'),'',$url),'?&');
 	}
 }

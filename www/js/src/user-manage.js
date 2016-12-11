@@ -2,7 +2,7 @@
 DocReady.push(function UserManage(){
 	'use strict';
 	if (typeof window.ROLES === 'undefined') return;
-	var $briefing = $('#content').children('.briefing'),
+	let $briefing = $('#content').children('.briefing'),
 		name = $briefing.find('.username').text().trim(),
 		$currRole = $briefing.find('.rolelabel'),
 		currRole = $currRole.children('span').text(),

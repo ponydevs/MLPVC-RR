@@ -36,7 +36,7 @@ class Notifications {
 		UNREAD_ONLY = 0,
 		READ_ONLY = 1;
 
-	static function Get($UserID = null, $only = false){
+	static function get($UserID = null, $only = false){
 		global $Database;
 
 		if (empty($UserID)){
@@ -58,12 +58,12 @@ class Notifications {
 		return $Database->where('user', $UserID)->get('notifications');
 	}
 
-	static function GetHTML($Notifications, $wrap = true){
+	static function getHTML($Notifications, $wrap = true){
 		global $Database;
 		$HTML = $wrap ? '<ul class="notif-list">' : '';
 
 		foreach ($Notifications as $n){
-			$data = !empty($n['data']) ? JSON::Decode($n['data']) : null;
+			$data = !empty($n['data']) ? JSON::decode($n['data']) : null;
 			if (preg_match(new RegExp('^post-'),$n['type'])){
 				/** @var $Post Post */
 				$Post = $Database->where('id', $data['id'])->getOne("{$data['type']}s");
@@ -79,7 +79,7 @@ class Notifications {
 					$HTML .= self::_getNotifElem("A <a href='$url'>post</a> you reserved under $EpID has been added to the club gallery", $n);
 				break;
 				case "post-passon":
-					$userlink = Users::Get($data['user'])->getProfileLink();
+					$userlink = Users::get($data['user'])->getProfileLink();
 					$HTML .= self::_getNotifElem("$userlink is interested in finishing a <a href='$url'>post</a> you reserved under $EpID. Would you like to pass the reservation to them?", $n);
 				break;
 				case "post-passdeny":
@@ -88,7 +88,7 @@ class Notifications {
 				case "post-passdel":
 				case "post-passsnatch":
 				case "post-passperm":
-					$userlink =Users::Get($data['by'])->getProfileLink();
+					$userlink =Users::get($data['by'])->getProfileLink();
 
 					$passaction = str_replace('post-pass','',$n['type']);
 					switch($passaction){
@@ -102,7 +102,7 @@ class Notifications {
 						case 'del':
 						case 'snatch':
 						case 'perm':
-							$message = Posts::$TRANSFER_ATTEMPT_CLEAR_REASONS[$passaction];
+							$message = Posts::TRANSFER_ATTEMPT_CLEAR_REASONS[$passaction];
 							$message = str_replace('post', "<a href='$url'>post</a>", $message);
 							switch ($passaction){
 								case 'del':
@@ -135,7 +135,7 @@ class Notifications {
 		return "<li>$html <span class='nobr'>&ndash; ".Time::tag(strtotime($n['sent_at']))."$actions</span></li>";
 	}
 
-	static function Send($to, $type, $data){
+	static function send($to, $type, $data){
 		global $Database;
 
 		if (empty(self::$_notifTypes[$type]))
@@ -153,35 +153,35 @@ class Notifications {
 		$Database->insert('notifications',array(
 			'user' => $to,
 			'type' => $type,
-			'data' => JSON::Encode($data),
+			'data' => JSON::encode($data),
 		));
 
 		try {
 			CoreUtils::socketEvent('notify-pls',array('user' => $to));
 		}
 		catch (ServerConnectionFailureException $e){
-			error_log("Error while notifying $to with type $type (data:".JSON::Encode($data).")\nError message: {$e->getMessage()}");
+			error_log("Error while notifying $to with type $type (data:".JSON::encode($data).")\nError message: {$e->getMessage()}");
 			return 'Notification server is down! Please <a class="send-feedback">let us know</a>.';
 		}
 
 		return 0;
 	}
 
-	static function MarkRead($nid, $action = null){
+	static function markRead($nid, $action = null){
 		CoreUtils::socketEvent('mark-read',array('nid' => $nid, 'action' => $action));
 	}
 
-	static function SafeMarkRead($NotifID, $action = null){
+	static function safeMarkRead($NotifID, $action = null){
 		try {
-			Notifications::MarkRead($NotifID, $action);
+			Notifications::markRead($NotifID, $action);
 		}
 		catch (ServerConnectionFailureException $e){
 			error_log("Notification server down!\n".$e->getMessage());
-			Response::Fail('Notification server is down! Please <a class="send-feedback">let us know</a>.');
+			Response::fail('Notification server is down! Please <a class="send-feedback">let us know</a>.');
 		}
 		catch (\Exception $e){
 			error_log("SocketEvent Error\n".$e->getMessage());
-			Response::Fail('SocketEvent Error: '.$e->getMessage());
+			Response::fail('SocketEvent Error: '.$e->getMessage());
 		}
 	}
 }

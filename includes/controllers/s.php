@@ -6,7 +6,9 @@ use App\HTTP;
 use App\RegExp;
 
 if (POST_REQUEST)
-	HTTP::StatusCode(400, AND_DIE);
+	HTTP::statusCode(400, AND_DIE);
+
+/** @var $data string */
 
 if (!preg_match(new RegExp('^(req|res)/(\d+)$'), $data, $match))
 	CoreUtils::notFound();

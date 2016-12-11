@@ -8,6 +8,7 @@
 	$.fn.polyEditor = function(options){
 		if (!options.image)
 			throw new Error('Missing image');
+		//noinspection ES6ConvertVarToLetConst
 		var $imageElement = $(new Image()).attr({
 				src: options.image,
 				'class': classStart+'image',

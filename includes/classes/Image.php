@@ -12,13 +12,13 @@ class Image {
 	 *
 	 * @return int[]
 	 */
-	static function CheckType($tmp, $allowedMimeTypes){
+	static function checkType($tmp, $allowedMimeTypes){
 		$imageSize = getimagesize($tmp);
 		if (is_array($allowedMimeTypes) && !in_array($imageSize['mime'], $allowedMimeTypes))
-			Response::Fail("This type of image is now allowed: ".$imageSize['mime']);
+			Response::fail("This type of image is now allowed: ".$imageSize['mime']);
 		list($width,$height) = $imageSize;
 
-		if ($width + $height === 0) Response::Fail('The uploaded file is not an image');
+		if ($width + $height === 0) Response::fail('The uploaded file is not an image');
 
 		return array($width, $height);
 	}
@@ -32,10 +32,10 @@ class Image {
 	 * @param int $minwidth
 	 * @param int $minheight
 	 */
-	static function CheckSize($path, $width, $height, $minwidth, $minheight){
+	static function checkSize($path, $width, $height, $minwidth, $minheight){
 		if ($width < $minwidth || $height < $minheight){
 			unlink($path);
-			Response::Fail('The image is too small in '.(
+			Response::fail('The image is too small in '.(
 				$width < $minwidth
 				?(
 					$height < $minheight
@@ -59,7 +59,7 @@ class Image {
 	 *
 	 * @return resource
 	 */
-	static function PreserveAlpha($img, &$background = null) {
+	static function preserveAlpha($img, &$background = null) {
 		$background = imagecolorallocatealpha($img, 0, 0, 0, 127);
 		imagecolortransparent($img, $background);
 		imagealphablending($img, false);
@@ -75,11 +75,11 @@ class Image {
 	 *
 	 * @return resource
 	 */
-	static function CreateTransparent($width, $height = null) {
+	static function createTransparent($width, $height = null) {
 		if (!isset($height))
 			$height = $width;
 
-		$png = Image::PreserveAlpha(imagecreatetruecolor($width, $height), $transparency);
+		$png = Image::preserveAlpha(imagecreatetruecolor($width, $height), $transparency);
 		imagefill($png, 0, 0, $transparency);
 		return $png;
 	}
@@ -92,7 +92,7 @@ class Image {
 	 *
 	 * @return resource
 	 */
-	static function CreateWhiteBG($width, $height = null) {
+	static function createWhiteBG($width, $height = null) {
 		if (!isset($height))
 			$height = $width;
 		$png = imagecreatetruecolor($width, $height);
@@ -112,7 +112,7 @@ class Image {
 	 * @param string     $fill
 	 * @param string|int $outline
 	 */
-	static function DrawSquare($image, $x, $y, $size, $fill, $outline){
+	static function drawSquare($image, $x, $y, $size, $fill, $outline){
 		if (!empty($fill) && is_string($fill)){
 			$fill = CoreUtils::hex2Rgb($fill);
 			$fill = imagecolorallocate($image, $fill[0], $fill[1], $fill[2]);
@@ -149,7 +149,7 @@ class Image {
 	 * @param string     $fill
 	 * @param string|int $outline
 	 */
-	static function DrawCircle($image, $x, $y, $size, $fill, $outline){
+	static function drawCircle($image, $x, $y, $size, $fill, $outline){
 		if (!empty($fill)){
 			$fill = CoreUtils::hex2Rgb($fill);
 			$fill = imagecolorallocate($image, $fill[0], $fill[1], $fill[2]);
@@ -193,12 +193,12 @@ class Image {
 	 *
 	 * @return array
 	 */
-	static function Write($image, $text, $x, $fontsize, $fontcolor, &$origin, $FontFile, $box = null, $yOffset = 0){
+	static function writeOn($image, $text, $x, $fontsize, $fontcolor, &$origin, $FontFile, $box = null, $yOffset = 0){
 		if (is_string($fontcolor))
 			$fontcolor = imagecolorallocate($image, 0, 0, 0);
 
 		if (empty($box)){
-			$box = self::SaneGetTTFBox($fontsize, $FontFile, $text);
+			$box = self::saneGetTTFBox($fontsize, $FontFile, $text);
 			$origin['y'] += $box['height'];
 			$y = $origin['y'] - $box['bottom right']['y'];
 		}
@@ -219,7 +219,7 @@ class Image {
 	 *
 	 * @return array
 	 */
-	static function SaneGetTTFBox($fontsize, $fontfile, $text){
+	static function saneGetTTFBox($fontsize, $fontfile, $text){
 		/*
 		    imagettfbbox returns (x,y):
 		    6,7--4,5
@@ -251,7 +251,7 @@ class Image {
 	 * @param int      $w
 	 * @param int      $h
 	 */
-	static function CopyExact($dest, $source, $x, $y, $w, $h){
+	static function copyExact($dest, $source, $x, $y, $w, $h){
 		imagecopyresampled($dest, $source, $x, $y, $x, $y, $w, $h, $w, $h);
 	}
 
@@ -263,7 +263,7 @@ class Image {
 	 * @param string   $path
 	 * @param string   $FileRelPath
 	 */
-	static function OutputPNG($resource, $path, $FileRelPath){
+	static function outputPNG($resource, $path, $FileRelPath){
 		self::_output($resource, $path, $FileRelPath, function($fp,$fd){ imagepng($fd, $fp, 9, PNG_NO_FILTER); }, 'png');
 	}
 
@@ -274,7 +274,7 @@ class Image {
 	 * @param string $path
 	 * @param string $FileRelPath
 	 */
-	static function OutputSVG($svgdata, $path, $FileRelPath){
+	static function outputSVG($svgdata, $path, $FileRelPath){
 		self::_output($svgdata, $path, $FileRelPath, function($fp,$fd){ file_put_contents($fp, $fd); }, 'svg+xml');
 	}
 
@@ -307,7 +307,7 @@ class Image {
 	 * @param resource $BaseImage
 	 * @param array    $origin
 	 */
-	static function CalcRedraw(&$OutWidth, &$OutHeight, $WidthIncrease, $HeightIncrease, &$BaseImage, $origin){
+	static function calcRedraw(&$OutWidth, &$OutHeight, $WidthIncrease, $HeightIncrease, &$BaseImage, $origin){
 		$Redraw = false;
 		if ($origin['x']+$WidthIncrease > $OutWidth){
 			$Redraw = true;
@@ -321,8 +321,8 @@ class Image {
 			$NewWidth = max($origin['x'],$OutWidth);
 			$NewHeight = max($origin['y'],$OutHeight);
 			// Create new base image since height will increase, and copy contents of old one
-			$NewBaseImage = Image::CreateTransparent($NewWidth, $NewHeight);
-			Image::CopyExact($NewBaseImage, $BaseImage, 0, 0, $OutWidth, $OutHeight);
+			$NewBaseImage = Image::createTransparent($NewWidth, $NewHeight);
+			Image::copyExact($NewBaseImage, $BaseImage, 0, 0, $OutWidth, $OutHeight);
 			imagedestroy($BaseImage);
 			$BaseImage = $NewBaseImage;
 			$OutWidth = $NewWidth;

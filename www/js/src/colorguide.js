@@ -208,7 +208,7 @@ DocReady.push(function Colorguide(){
 		$this.find('input[name=q]').val('');
 		$this.triggerHandler('submit');
 	}).on('click','.sanic-button',function(){
-		$SearchForm.triggerHandler('submit', [true])
+		$SearchForm.triggerHandler('submit', [true]);
 	});
 
 	function getswatch(e){

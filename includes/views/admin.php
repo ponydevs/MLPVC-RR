@@ -1,7 +1,8 @@
 <?php
 use App\CoreUtils;
 use App\Permission;
-use App\Posts; ?>
+use App\Posts;
+/** @var $title string */ ?>
 <div id="content">
 	<h1><?=$title?></h1>
 	<p>Various tools related to managing the site</p>
@@ -26,7 +27,7 @@ use App\Posts; ?>
 		<div class="textarea" contenteditable="true"></div>
 	</section>
 
-<?  if (Permission::Sufficient('developer')){ ?>
+<?  if (Permission::sufficient('developer')){ ?>
 	<section class="elastic-status">
 		<h2>Elastic status</h2>
 <?php   try {
@@ -43,12 +44,12 @@ use App\Posts; ?>
 
 	<section class="recent-posts">
 		<h2><span class="typcn typcn-bell"></span>Most recent posts</h2>
-		<div><?=Posts::GetMostRecentList()?></div>
+		<div><?=Posts::getMostRecentList()?></div>
 	</section>
 </div>
 
 <?php
 	echo CoreUtils::exportVars(array(
-		'ROLES_ASSOC' => Permission::$ROLES_ASSOC,
+		'ROLES_ASSOC' => Permission::ROLES_ASSOC,
 		'PRINTABLE_ASCII_PATTERN' => PRINTABLE_ASCII_PATTERN
 	));

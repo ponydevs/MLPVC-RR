@@ -4,8 +4,10 @@ use App\CoreUtils;
 use App\Permission;
 use App\RegExp;
 
+/** @var $data string */
+
 $AgentString = null;
-if (is_numeric($data) && Permission::Sufficient('developer')){
+if (is_numeric($data) && Permission::sufficient('developer')){
 	$SessionID = intval($data, 10);
 	$Session = $Database->where('id', $SessionID)->getOne('sessions');
 	if (!empty($Session))

@@ -87,7 +87,7 @@ DocReady.push(function Blender(){
 
 		let $validInputs = $inputs.filter(':valid');
 		if ($validInputs.length !== 4)
-			return SetPreview(false);
+			return setPreview(false);
 
 		let data = {};
 		$validInputs.each(function(_,el){
@@ -95,7 +95,7 @@ DocReady.push(function Blender(){
 		});
 
 		if (data.bg1 === data.bg2)
-			return SetPreview(false);
+			return setPreview(false);
 		$.each(data,function(k,v){
 			data[k] = $.hex2rgb(v);
 		});
@@ -117,9 +117,9 @@ DocReady.push(function Blender(){
 		}
 
 		if (bestMatch === null)
-			return SetPreview(false);
+			return setPreview(false);
 		$deltaWarn[minDelta > 10?'show':'hide']();
-		SetPreview({
+		setPreview({
 			r: Math.round(bestMatch.r),
 			g: Math.round(bestMatch.g),
 			b: Math.round(bestMatch.b),
@@ -127,7 +127,7 @@ DocReady.push(function Blender(){
 		});
 	}
 
-	function SetPreview(rgba){
+	function setPreview(rgba){
 		let hex = '',
 			hexa = '',
 			opacity = '';

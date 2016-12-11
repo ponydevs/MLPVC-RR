@@ -6,7 +6,7 @@ use App\Models\User;
 use Elasticsearch\Client;
 use Elasticsearch\ClientBuilder;
 use ElephantIO\Engine\SocketIO\Version1X as SocketIOEngineVersion1X;
-use App\Exceptions\cURLRequestException;
+use App\Exceptions\CURLRequestException;
 
 class CoreUtils {
 	const
@@ -44,7 +44,7 @@ class CoreUtils {
 			$fix_query = empty($fix_query_arr) ? '' : '?'.implode('&', $fix_query_arr);
 		}
 		if ($path !== $fix_path || $query !== $fix_query)
-			HTTP::Redirect("$fix_path$fix_query", $http);
+			HTTP::redirect("$fix_path$fix_query", $http);
 	}
 
 	/**
@@ -121,10 +121,10 @@ class CoreUtils {
 	static function notFound(){
 		if (POST_REQUEST || isset($_GET['via-js'])){
 			$RQURI = rtrim(str_replace('via-js=true','',$_SERVER['REQUEST_URI']),'?&');
-			Response::Fail("HTTP 404: ".(POST_REQUEST?'Endpoint':'Page')." ($RQURI) does not exist");
+			Response::fail("HTTP 404: ".(POST_REQUEST?'Endpoint':'Page')." ($RQURI) does not exist");
 		}
 
-		HTTP::StatusCode(404);
+		HTTP::statusCode(404);
 		global $do;
 		$do = '404';
 		self::loadPage(array(
@@ -207,14 +207,14 @@ class CoreUtils {
 			die();
 		}
 		else {
-			$_SERVER['REQUEST_URI'] = rtrim(str_replace('via-js=true','',CSRFProtection::RemoveParamFromURL($_SERVER['REQUEST_URI'])), '?&');
+			$_SERVER['REQUEST_URI'] = rtrim(str_replace('via-js=true','',CSRFProtection::removeParamFromURL($_SERVER['REQUEST_URI'])), '?&');
 			ob_start();
 			require INCPATH.'views/sidebar.php';
 			$sidebar = ob_get_clean();
 			ob_start();
 			require $viewPath;
 			$content = ob_get_clean();
-			Response::Done(array(
+			Response::done(array(
 				'css' => $customCSS,
 				'js' => $customJS,
 				'title' => (isset($GLOBALS['title'])?$GLOBALS['title'].' - ':'').SITE_TITLE,
@@ -372,13 +372,13 @@ class CoreUtils {
 					$value = $value ? 'true' : 'false';
 				break;
 				case "array":
-					$value = JSON::Encode($value);
+					$value = JSON::encode($value);
 				break;
 				case "string":
 					// regex test
 					if (preg_match(new RegExp('^/(.*)/([a-z]*)$','u'), $value, $regex_parts))
 						$value = (new RegExp($regex_parts[1],$regex_parts[2]))->jsExport();
-					else $value = JSON::Encode($value);
+					else $value = JSON::encode($value);
 				break;
 				case "integer":
 				case "float":
@@ -496,7 +496,7 @@ class CoreUtils {
 			$Error = "$Thing (".self::escapeHTML($string).") contains $the_following invalid character$s: ".CoreUtils::arrayToNaturalString($invalid);
 			if ($returnError)
 				return $Error;
-			Response::Fail($Error);
+			Response::fail($Error);
 		}
 	}
 
@@ -514,7 +514,7 @@ class CoreUtils {
 		$out[] = "<a class='issues' href='".GITHUB_URL."/issues' target='_blank'>Known issues</a>";
 		$out[] = '<a class="send-feedback">Send feedback</a>';
 		global $Database, $CGDb;
-		$out[] = 'Performance: <abbr title="Time spent rendering the page (ms)">R</abbr>'.round((microtime(true)-EXEC_START_MICRO)*1000).'<abbr title="Number of SQL quesries used to fetch this page">S</abbr>'.($Database->query_count+($CGDb->query_count??0)).'<abbr title="Requests sent to DeviantArt\'s servers (significantly increases render time)">D</abbr>'.DeviantArt::$requestCount;
+		$out[] = 'Performance: <abbr title="Time spent rendering the page (ms)">R</abbr>'.round((microtime(true)-EXEC_START_MICRO)*1000).'<abbr title="Number of SQL quesries used to fetch this page">S</abbr>'.($Database->queryCount+($CGDb->queryCount??0)).'<abbr title="Requests sent to DeviantArt\'s servers (significantly increases render time)">D</abbr>'.DeviantArt::$requestCount;
 		return implode(' | ',$out);
 	}
 
@@ -593,14 +593,14 @@ class CoreUtils {
 			}
 			if ($GLOBALS['signedIn'])
 				$NavItems['u'] = array("/@{$GLOBALS['currentUser']->name}",'Account');
-			if ($do === 'user' || Permission::Sufficient('staff')){
+			if ($do === 'user' || Permission::sufficient('staff')){
 				global $User, $sameUser;
 
-				$NavItems['users'] = array('/users', 'Users', Permission::Sufficient('staff'));
+				$NavItems['users'] = array('/users', 'Users', Permission::sufficient('staff'));
 				if (!empty($User) && empty($sameUser))
 					$NavItems['users']['subitem'] = $User->name;
 			}
-			if (Permission::Sufficient('staff')){
+			if (Permission::sufficient('staff')){
 				$NavItems['admin'] = array('/admin', 'Admin');
 				global $task;
 				if ($task === 'logs'){
@@ -670,7 +670,7 @@ class CoreUtils {
 
 		$Render = array();
 		foreach ($Links as $l){
-			if (Permission::Insufficient($l['minrole']))
+			if (Permission::insufficient($l['minrole']))
 				continue;
 
 			if (!empty($l['title'])){
@@ -704,7 +704,7 @@ class CoreUtils {
 				$href .= " class='action--".CoreUtils::substring($l['url'],1)."'";
 			$title = CoreUtils::aposEncode($l['title']);
 			$label = htmlspecialchars_decode($l['label']);
-			$cansee = Permission::$ROLES_ASSOC[$l['minrole']];
+			$cansee = Permission::ROLES_ASSOC[$l['minrole']];
 			if ($l['minrole'] !== 'developer')
 				$cansee = self::makePlural($cansee, 0).' and above';
 			$HTML .= "<li id='ufl-{$l['id']}'><div><a $href title='$title'>{$label}</a></div>".
@@ -807,15 +807,15 @@ class CoreUtils {
 			$DeviationID = intval(CoreUtils::substring($DeviationID, 1), 36);
 
 		try {
-			$DiFiRequest = HTTP::LegitimateRequest("http://deviantart.com/global/difi/?c[]=\"DeviationView\",\"getAllGroups\",[\"$DeviationID\"]&t=json");
+			$DiFiRequest = HTTP::legitimateRequest("http://deviantart.com/global/difi/?c[]=\"DeviationView\",\"getAllGroups\",[\"$DeviationID\"]&t=json");
 		}
-		catch (cURLRequestException $e){
+		catch (CURLRequestException $e){
 			return $e->getCode();
 		}
 		if (empty($DiFiRequest['response']))
 			return 1;
 
-		$DiFiRequest = @JSON::Decode($DiFiRequest['response'], JSON::$AsObject);
+		$DiFiRequest = @JSON::decode($DiFiRequest['response'], JSON::AS_OBJECT);
 		if (empty($DiFiRequest->DiFi->status))
 			return 2;
 		if ($DiFiRequest->DiFi->status !== 'SUCCESS')
@@ -853,7 +853,7 @@ class CoreUtils {
 			);
 			if ($throw)
 				throw new \Exception($errmsg);
-			Response::Fail($errmsg);
+			Response::fail($errmsg);
 		}
 	}
 
@@ -892,9 +892,9 @@ class CoreUtils {
 	static function getFullsizeURL($id, $prov){
 		$stash_url = $prov === 'sta.sh' ? "http://sta.sh/$id" : "http://fav.me/$id";
 		try {
-			$stashpage = HTTP::LegitimateRequest($stash_url,null,null);
+			$stashpage = HTTP::legitimateRequest($stash_url,null,null);
 		}
-		catch (cURLRequestException $e){
+		catch (CURLRequestException $e){
 			if ($e->getCode() === 404)
 				return 404;
 			return 1;
@@ -912,7 +912,7 @@ class CoreUtils {
 		if (!$urlmatch)
 			return 4;
 
-		$fullsize_url = HTTP::FindRedirectTarget(htmlspecialchars_decode($_match[1]), $stash_url);
+		$fullsize_url = HTTP::findRedirectTarget(htmlspecialchars_decode($_match[1]), $stash_url);
 
 		if (empty($fullsize_url))
 			return 5;
@@ -946,7 +946,7 @@ class CoreUtils {
 
 		$HTML = "<table>";
 		foreach ($Query as $row){
-			$link = Users::Get($row['reserved_by'])->getProfileLink(User::LINKFORMAT_FULL);
+			$link = Users::get($row['reserved_by'])->getProfileLink(User::LINKFORMAT_FULL);
 			$count = "<strong style='color:rgb(".min(round($row['cnt']/10*255),255).",0,0)'>{$row['cnt']}</strong>";
 
 			$HTML .= "<tr><td>$link</td><td>$count</td></tr>";

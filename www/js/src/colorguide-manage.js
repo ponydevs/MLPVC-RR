@@ -376,9 +376,10 @@ DocReady.push(function ColorguideManage(){
 							case "synon":
 								target = this.target;
 								$affected.addClass('synonym');
-								var $ssp =  $affected.eq(0).clone().removeClass('ctxmenu-bound'),
+								//noinspection ES6ConvertVarToLetConst
+								var $ssp = $affected.eq(0).clone().removeClass('ctxmenu-bound'),
 									$tsp = new TagSpan(target),
-									$tagsDivs = $affected.add($('.tag.id-'+target.tid)).closest('.tags');
+									$tagsDivs = $affected.add($('.tag.id-' + target.tid)).closest('.tags');
 								$tagsDivs.filter(function(){
 									return $(this).children('.id-'+tagID).length === 0;
 								}).append($ssp).reorderTags();

@@ -2,7 +2,7 @@
 
 namespace App;
 
-use \App\Exceptions\cURLRequestException;
+use \App\Exceptions\CURLRequestException;
 
 class HTTP {
 	/**
@@ -15,7 +15,7 @@ class HTTP {
 	 *
 	 * @return array
 	 */
-	static function LegitimateRequest($url, $cookies = null, $referrer = null, bool $skipBody = false){
+	static function legitimateRequest($url, $cookies = null, $referrer = null, bool $skipBody = false){
 		$r = curl_init();
 		$curl_opt = array(
 			CURLOPT_HTTPHEADER => array(
@@ -49,7 +49,7 @@ class HTTP {
 		curl_close($r);
 
 		if ($responseCode < 200 || $responseCode >= 300)
-			throw new cURLRequestException(rtrim("cURL fail for URL \"$url\" (HTTP $responseCode); $curlError",' ;'), $responseCode);
+			throw new CURLRequestException(rtrim("cURL fail for URL \"$url\" (HTTP $responseCode); $curlError",' ;'), $responseCode);
 
 		global $http_response_header;
 		$http_response_header = array_map("rtrim",explode("\n",$responseHeaders));
@@ -70,7 +70,7 @@ class HTTP {
 	 *
 	 * @return string|null
 	 */
-	static function FindRedirectTarget($url, $referrer = null){
+	static function findRedirectTarget($url, $referrer = null){
 		global $http_response_header;
 
 		$cookies = array();
@@ -83,7 +83,7 @@ class HTTP {
 				$cookies[] = $cookie[1];
 			};
 
-		$request = self::LegitimateRequest($url, $cookies, $referrer, true);
+		$request = self::legitimateRequest($url, $cookies, $referrer, true);
 		return preg_match(new RegExp('Location:\s+([^\r\n]+)'), $request['responseHeaders'], $_match) ? CoreUtils::trim($_match[1]) : null;
 	}
 
@@ -94,7 +94,7 @@ class HTTP {
 	 *
 	 * @param string $url
 	 */
-	static function PushResource($url){
+	static function pushResource($url){
 		self::$PUSHED_ASSETS[] = $url;
 		$headerContent = array();
 		foreach(self::$PUSHED_ASSETS as $asset)
@@ -141,7 +141,7 @@ class HTTP {
 	 *
 	 * @throws \Exception
 	 */
-	public static function StatusCode($code, $die = false){
+	public static function statusCode($code, $die = false){
 		if (!isset(self::$STATUS_CODES[$code])){
 			throw new \Exception("Unknown status code: $code");
 		}
@@ -157,9 +157,9 @@ class HTTP {
 	 * @param string $url  Redirection target URL
 	 * @param int    $http HTTP status code
 	 */
-	public static function Redirect($url = '/', $http = 301){
+	public static function redirect($url = '/', $http = 301){
 		header("Location: $url", true, $http);
 		$urlenc = CoreUtils::aposEncode($url);
-		die("Click <a href='$urlenc'>here</a> if you aren't redirected.<script>location.replace(".JSON::Encode($url).")</script>");
+		die("Click <a href='$urlenc'>here</a> if you aren't redirected.<script>location.replace(".JSON::encode($url).")</script>");
 	}
 }

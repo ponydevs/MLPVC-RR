@@ -15,10 +15,10 @@ if (isset($_GET['error'])){
 		$errdesc = $_GET['error_description'];
 	global $signedIn;
 	if ($signedIn)
-		HTTP::Redirect($_GET['state']);
+		HTTP::redirect($_GET['state']);
 	Episodes::loadPage();
 }
-$currentUser = DeviantArt::GetToken($_GET['code']);
+$currentUser = DeviantArt::getToken($_GET['code']);
 $signedIn = !empty($currentUser);
 
 if (isset($_GET['error'])){
@@ -34,10 +34,10 @@ if (isset($_GET['error'])){
 
 if (preg_match(new RegExp('^[a-z\d]+$','i'), $_GET['state'], $_match)){
 	$confirm = str_replace('{{CODE}}', $_match[0], file_get_contents(INCPATH.'views/loginConfrim.html'));
-	$confirm = str_replace('{{USERID}}', Permission::Sufficient('developer') || UserPrefs::Get('p_disable_ga') ? '' : $currentUser->id, $confirm);
+	$confirm = str_replace('{{USERID}}', Permission::sufficient('developer') || UserPrefs::get('p_disable_ga') ? '' : $currentUser->id, $confirm);
 	die($confirm);
 }
 else if (preg_match($REWRITE_REGEX, $_GET['state']))
-	HTTP::Redirect($_GET['state']);
+	HTTP::redirect($_GET['state']);
 
-HTTP::Redirect('/');
+HTTP::redirect('/');

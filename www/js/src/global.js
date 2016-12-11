@@ -458,7 +458,7 @@
 	// :valid pseudo polyfill
 	if (typeof $.expr[':'].valid !== 'function')
 		$.expr[':'].valid = el => typeof el.validity === 'object' ? el.validity.valid : ((el) => {
-			var $el = $(el),
+			let $el = $(el),
 				pattern = $el.attr('pattern'),
 				required = $el.hasAttr('required'),
 				val = $el.val();
@@ -553,13 +553,13 @@
 	};
 
 	$.fn.isOverflowing = function(){
-		var el = this.get(0),
+		let el = this.get(0),
 			curOverflow = el.style.overflow;
 
 		if (!curOverflow || curOverflow === "visible")
 			el.style.overflow = "hidden";
 
-		var isOverflowing = el.clientWidth < el.scrollWidth || el.clientHeight < el.scrollHeight;
+		let isOverflowing = el.clientWidth < el.scrollWidth || el.clientHeight < el.scrollHeight;
 
 		el.style.overflow = curOverflow;
 
@@ -910,7 +910,7 @@
 
 			docReadyAlwaysRun();
 
-			for (var i = 0, l = this._DocReadyHandlers.length; i<l; i++){
+			for (let i = 0, l = this._DocReadyHandlers.length; i<l; i++){
 				this._DocReadyHandlers[i].call(window);
 				console.log('> DocReadyHandlers[%d]()',i);
 			}

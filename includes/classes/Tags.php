@@ -26,11 +26,11 @@ class Tags {
 	 *
 	 * @return array|null
 	 */
-	static function GetFor($PonyID = null, $limit = null, $showEpTags = false, $exporting = false){
+	static function getFor($PonyID = null, $limit = null, $showEpTags = false, $exporting = false){
 		global $CGDb;
 
 		if (!$exporting){
-			$showSynonymTags = $showEpTags || Permission::Sufficient('staff');
+			$showSynonymTags = $showEpTags || Permission::sufficient('staff');
 			if (!$showSynonymTags)
 				$CGDb->where('"synonym_of" IS NULL');
 
@@ -66,7 +66,7 @@ class Tags {
 	 *
 	 * @return array|bool
 	 */
-	static function GetActual($value, $column = 'tid', $as_bool = false){
+	static function getActual($value, $column = 'tid', $as_bool = false){
 		global $CGDb;
 
 		$arg1 = array('tags', $as_bool === RETURN_AS_BOOL ? 'synonym_of,tid' : '*');
@@ -76,7 +76,7 @@ class Tags {
 		if (!empty($Tag['synonym_of'])){
 			$arg2 = $as_bool === RETURN_AS_BOOL ? 'tid' : $arg1[1];
 			$OrigTag = $Tag;
-			$Tag = self::GetSynonymOf($Tag, $arg2);
+			$Tag = self::getSynonymOf($Tag, $arg2);
 			$Tag['Original'] = $OrigTag;
 		}
 
@@ -91,7 +91,7 @@ class Tags {
 	 *
 	 * @return array
 	 */
-	static function GetSynonymOf($Tag, $returnCols = null){
+	static function getSynonymOf($Tag, $returnCols = null){
 		global $CGDb;
 
 		if (empty($Tag['synonym_of']))
@@ -108,7 +108,7 @@ class Tags {
 	 *
 	 * @return array
 	 */
-	static function UpdateUses(int $TagID, bool $returnCount = false):array {
+	static function updateUses(int $TagID, bool $returnCount = false):array {
 		global $CGDb;
 
 		$Tagged = $CGDb->where('tid', $TagID)->count('tagged');
@@ -126,13 +126,13 @@ class Tags {
 	 *
 	 * @return string
 	 */
-	static function GetTagListHTML($Tags, $wrap = WRAP){
+	static function getTagListHTML($Tags, $wrap = WRAP){
 		global $CGDb;
 		$HTML =
 		$utils =
 		$refresh = '';
 
-		$canEdit = Permission::Sufficient('staff');
+		$canEdit = Permission::sufficient('staff');
 		if ($canEdit){
 			$refresh = " <button class='typcn typcn-arrow-sync refresh' title='Refresh use count'></button>";
 			$utils = "<td class='utils align-center'><button class='typcn typcn-minus delete' title='Delete'></button> ".
@@ -146,12 +146,12 @@ class Tags {
 			$titleName = CoreUtils::aposEncode($t['name']);
 
 			if (!empty($t['synonym_of'])){
-				$Syn = self::GetSynonymOf($t,'name');
+				$Syn = self::getSynonymOf($t,'name');
 				$t['title'] .= (empty($t['title'])?'':'<br>')."<em>Synonym of <strong>{$Syn['name']}</strong></em>";
 			}
 
 			$HTML .= <<<HTML
-			<tr$trClass>
+			<tr $trClass>
 				<td class="tid">{$t['tid']}</td>
 				<td class="name"><a href='/cg?q=$search' title='Search for $titleName'><span class="typcn typcn-zoom"></span>{$t['name']}</a></td>$utils
 				<td class="title">{$t['title']}</td>

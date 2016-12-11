@@ -4,19 +4,21 @@ use App\Episodes;
 use App\Notifications;
 use App\Time;
 use App\UserPrefs;
-use App\Users; ?>
+use App\Users;
+/** @var $signedIn bool */
+/** @var $do string */ ?>
 	<div class='mobile-nav'>
 		<nav><ul><?=CoreUtils::getNavigationHTML()?></ul></nav>
 	</div>
 <?php
 	if (!empty($Database)){
 		if ($signedIn){
-			$Notifications = Notifications::Get(null, Notifications::UNREAD_ONLY); ?>
+			$Notifications = Notifications::get(null, Notifications::UNREAD_ONLY); ?>
 	<section class="notifications"<?=empty($Notifications)?' style="display:none"':''?>>
 		<h2>Unread notifications</h2>
 <?php
 		try {
-			echo Notifications::GetHTML($Notifications);
+			echo Notifications::getHTML($Notifications);
 		}
 		catch(Throwable $e){
 			error_log('Exception caught when rendering notifications: '.$e->getMessage()."\n".$e->getTraceAsString());
@@ -27,7 +29,7 @@ use App\Users; ?>
 	<section class="<?=$signedIn?'welcome':'login'?>">
 		<h2><?=$signedIn?'Signed in as':'Welcome!'?></h2>
 <?php
-		Users::RenderCard();
+		Users::renderCard();
 		CoreUtils::renderSidebarUsefulLinks(); ?>
 		<div class="buttons">
 <?php
@@ -36,9 +38,10 @@ use App\Users; ?>
 <?php   }
 		else { ?>
 			<button class="typcn green da-login" id="signin">Sign in</button>
+			<!--suppress ES6ConvertVarToLetConst, JSUnusedLocalSymbols -->
 			<script>var OAUTH_URL = "<?=OAUTH_AUTHORIZATION_URL?>";</script>
 <?php   }
-		if (!UserPrefs::Get('p_hidediscord')){ ?>
+		if (!UserPrefs::get('p_hidediscord')){ ?>
 			<a class="btn typcn discord-join" href="http://fav.me/d9zt1wv" target="_blank">Join Discord</a>
 <?php   } ?>
 		</div>

@@ -2,7 +2,7 @@
 
 namespace App\Exceptions;
 
-class cURLRequestException extends \Exception {
+class CURLRequestException extends \Exception {
 	public function __construct($errMsg, $errCode){
 		$this->message = $errMsg;
 		$this->code = $errCode;

@@ -2,6 +2,8 @@
 
 use App\HTTP;
 
+/** @var $data string */
+
 if (is_numeric($data))
-	HTTP::Redirect("/movie/$data");
-else HTTP::Redirect("/movie/equestria-girls-$data");
+	HTTP::redirect("/movie/$data");
+else HTTP::redirect("/movie/equestria-girls-$data");

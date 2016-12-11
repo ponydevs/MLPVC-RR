@@ -1,3 +1,4 @@
+<?php /** @var $title string */ ?>
 <div id="content">
 	<h1><?=$title?></h1>
 	<p>List of all users in the database</p>
@@ -16,12 +17,12 @@ if (!empty($Users)){
 
 		$Arranged[$u->role][] = $u;
 	}
-	foreach (array_reverse(Permission::$ROLES) as $r => $v){
+	foreach (array_reverse(Permission::ROLES) as $r => $v){
 		if (empty($Arranged[$r])) continue;
 		/** @var $users \App\Models\User[] */
 		$users = $Arranged[$r];
-		$group = CoreUtils::makePlural(Permission::$ROLES_ASSOC[$r], count($users), true);
-		$groupInitials = '['.Permission::LabelInitials($r).']';
+		$group = CoreUtils::makePlural(Permission::ROLES_ASSOC[$r], count($users), true);
+		$groupInitials = '['.Permission::labelInitials($r).']';
 		$usersStr = array();
 		foreach ($users as $u)
 			$usersStr[] = $u->getProfileLink();

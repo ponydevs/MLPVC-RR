@@ -2,10 +2,12 @@
 
 namespace App\Models;
 
+use App\HTTP;
 use App\Models\AbstractFillable;
 use App\CoreUtils;
 use App\Logs;
 use App\Permission;
+use App\RegExp;
 use App\UserPrefs;
 
 class User extends AbstractFillable {
@@ -28,7 +30,7 @@ class User extends AbstractFillable {
 		parent::__construct($this, $iter);
 
 		if (!empty($this->role))
-			$this->rolelabel = Permission::$ROLES_ASSOC[$this->role];
+			$this->rolelabel = Permission::ROLES_ASSOC[$this->role];
 	}
 
 	const
@@ -90,8 +92,8 @@ class User extends AbstractFillable {
 		if ($format === self::LINKFORMAT_URL) return $link;
 
 		$avatar = $format == self::LINKFORMAT_FULL ? "<img src='{$this->avatar_url}' class='avatar' alt='avatar'> " : '';
-		$href = empty($this->fake) ? " href='$link'" : '';
-		return "<a$href class='da-userlink'>$avatar<span class='name'>$Username</span></a>";
+		$href = empty($this->fake) ? "href='$link'" : '';
+		return "<a $href class='da-userlink'>$avatar<span class='name'>$Username</span></a>";
 	}
 
 	/**
@@ -108,13 +110,13 @@ class User extends AbstractFillable {
 	}
 
 	function getVectorAppClassName():string {
-		$pref = UserPrefs::Get('p_vectorapp', $this->id);
+		$pref = UserPrefs::get('p_vectorapp', $this->id);
 
 		return !empty($pref) ? " app-$pref" : '';
 	}
 
 	function getVectorAppName():string {
-		$pref = UserPrefs::Get('p_vectorapp', $this->id);
+		$pref = UserPrefs::get('p_vectorapp', $this->id);
 
 		return CoreUtils::$VECTOR_APPS[$pref] ?? 'unrecognized application';
 	}
@@ -139,5 +141,18 @@ class User extends AbstractFillable {
 		}
 
 		return (bool)$response;
+	}
+
+	/**
+	 * Checks if a user is a club member
+	 * (currently only works for recently added members, does not deal with old members or admins)
+	 *
+	 * @return bool
+	 */
+	function isClubMember(){
+		$RecentlyJoined = HTTP::legitimateRequest('http://mlp-vectorclub.deviantart.com/modals/memberlist/');
+
+		return !empty($RecentlyJoined['response'])
+			&& preg_match(new RegExp('<a class="[a-z ]*username" href="http://'.strtolower($this->name).'.deviantart.com/">'.USERNAME_PATTERN.'</a>'), $RecentlyJoined['response']);
 	}
 }

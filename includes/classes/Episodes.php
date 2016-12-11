@@ -115,7 +115,7 @@ class Episodes {
 
 			if ($EpData['season'] === 0){
 				error_log("Attempted visit to $data from ".(!empty($_SERVER['HTTP_REFERER'])?$_SERVER['HTTP_REFERER']:'[unknown referrer]').', redirecting to /movie page');
-				HTTP::Redirect('/movie/'.$EpData['episode']);
+				HTTP::redirect('/movie/'.$EpData['episode']);
 			}
 
 			$CurrentEpisode = empty($EpData)
@@ -133,9 +133,9 @@ class Episodes {
 			CoreUtils::fixPath($url);
 
 		$js = array('imagesloaded.pkgd','jquery.ba-throttle-debounce','jquery.fluidbox','Chart','episode');
-		if (Permission::Sufficient('member'))
+		if (Permission::sufficient('member'))
 			$js[] = 'episode-manage';
-		if (Permission::Sufficient('staff')){
+		if (Permission::sufficient('staff')){
 			$js[] = 'moment-timezone';
 			$js[] = 'episodes-manage';
 		}
@@ -335,7 +335,7 @@ class Episodes {
 		$PathStart = '/episode/';
 		$displayed = false;
 		foreach ($Episodes as $Episode) {
-			$adminControls = Permission::Insufficient('staff') ? '' : <<<HTML
+			$adminControls = Permission::insufficient('staff') ? '' : <<<HTML
 <span class='admincontrols'>
 <button class='edit-episode typcn typcn-pencil blue' title='Edit episode'></button>
 <button class='delete-episode typcn typcn-times red' title='Delete episode'></button>
@@ -513,21 +513,21 @@ HTML;
 				ORDER BY p.label",array($Episode->isMovie));
 
 			if (!empty($TaggedAppearances)){
-				$hidePreviews = UserPrefs::Get('ep_noappprev');
+				$hidePreviews = UserPrefs::get('ep_noappprev');
 				$pages = CoreUtils::makePlural('page', count($TaggedAppearances));
 				$HTML .= "<section class='appearances'><h2>Related <a href='/cg'>$Color Guide</a> $pages</h2>";
 				$LINKS = '<ul>';
-				$isStaff = Permission::Sufficient('staff');
+				$isStaff = Permission::sufficient('staff');
 				foreach ($TaggedAppearances as $p){
-					$safeLabel = Appearances::GetSafeLabel($p);
-					if (Appearances::IsPrivate($p, true)){
+					$safeLabel = Appearances::getSafeLabel($p);
+					if (Appearances::isPrivate($p, true)){
 						$preview = "<span class='typcn typcn-".($isStaff?'lock-closed':'time')." color-".(($isStaff?'orange':'darkblue'))."'></span> ";
 					}
 					else {
 						if ($hidePreviews)
 							$preview = '';
 						else {
-							$preview = Appearances::GetPreviewURL($p);
+							$preview = Appearances::getPreviewURL($p);
 							$preview = "<img src='$preview' class='preview'>";
 						}
 					}

@@ -3,7 +3,7 @@
 namespace App;
 
 use App\Models\User;
-use App\Exceptions\cURLRequestException;
+use App\Exceptions\CURLRequestException;
 
 class DeviantArt {
 	private static
@@ -34,7 +34,7 @@ class DeviantArt {
 	 *
 	 * @return array
 	 */
-	static function Request($endpoint, $token = null, $postdata = null){
+	static function request($endpoint, $token = null, $postdata = null){
 		global $signedIn, $currentUser, $http_response_header;
 
 		$requestHeaders = array("Accept-Encoding: gzip","User-Agent: MLPVC-RR @ ".GITHUB_URL);
@@ -72,11 +72,11 @@ class DeviantArt {
 		self::$requestCount++;
 
 		if ($responseCode < 200 || $responseCode >= 300)
-			throw new cURLRequestException(rtrim("cURL fail for URL \"$requestURI\" (HTTP $responseCode); $curlError",' ;'), $responseCode);
+			throw new CURLRequestException(rtrim("cURL fail for URL \"$requestURI\" (HTTP $responseCode); $curlError",' ;'), $responseCode);
 
 		if (preg_match(new RegExp('Content-Encoding:\s?gzip'), $responseHeaders))
 			$response = gzdecode($response);
-		return JSON::Decode($response, true);
+		return JSON::decode($response);
 	}
 
 	/**
@@ -89,7 +89,7 @@ class DeviantArt {
 	 *
 	 * @return array|null
 	 */
-	static function GetCachedSubmission($ID, $type = 'fav.me', $mass = false){
+	static function getCachedSubmission($ID, $type = 'fav.me', $mass = false){
 		global $Database, $FULLSIZE_MATCH_REGEX;
 
 		if ($type === 'sta.sh')
@@ -116,11 +116,11 @@ class DeviantArt {
 					$Database->where('id',$Deviation['id'])->update('deviation_cache', array('updated_on' => date('c', time()+Time::$IN_SECONDS['minute'] )));
 
 				$ErrorMSG = "Saving local data for $ID@$type failed: ".$e->getMessage();
-				if (!Permission::Sufficient('developer'))
+				if (!Permission::sufficient('developer'))
 					trigger_error($ErrorMSG);
 
 				if (POST_REQUEST)
-					Response::Fail($ErrorMSG);
+					Response::fail($ErrorMSG);
 				else echo "<div class='notice fail'><label>da_cache_deviation($ID, $type)</label><p>$ErrorMSG</p></div>";
 
 				self::$_CACHE_BAILOUT = true;
@@ -182,9 +182,9 @@ class DeviantArt {
 		if ($type === 'sta.sh')
 			$ID = CoreUtils::nomralizeStashID($ID);
 		try {
-			$data = DeviantArt::Request('http://backend.deviantart.com/oembed?url='.urlencode("http://$type/$ID"),false);
+			$data = DeviantArt::request('http://backend.deviantart.com/oembed?url='.urlencode("http://$type/$ID"),false);
 		}
-		catch (cURLRequestException $e){
+		catch (CURLRequestException $e){
 			if ($e->getCode() == 404)
 				throw new \Exception("Image not found. The URL may be incorrect or the image has been deleted.");
 			else throw new \Exception("Image could not be retrieved (HTTP {$e->getCode()})");
@@ -202,7 +202,7 @@ class DeviantArt {
 	 *
 	 * @return User|void
 	 */
-	static function GetToken(string $code, string $type = null){
+	static function getToken(string $code, string $type = null){
 		global $Database, $http_response_header;
 
 		if (empty($type) || !in_array($type,array('authorization_code','refresh_token'))) $type = 'authorization_code';
@@ -210,25 +210,25 @@ class DeviantArt {
 
 		switch ($type){
 			case "authorization_code":
-				$json = DeviantArt::Request("$URL_Start&code=$code".OAUTH_REDIRECT_URI,false);
+				$json = DeviantArt::request("$URL_Start&code=$code".OAUTH_REDIRECT_URI,false);
 			break;
 			case "refresh_token":
-				$json = DeviantArt::Request("$URL_Start&refresh_token=$code",false);
+				$json = DeviantArt::request("$URL_Start&refresh_token=$code",false);
 			break;
 		}
 
 		if (empty($json)){
-			if (Cookie::Exists('access')){
-				$Database->where('access', Cookie::Get('access'))->delete('sessions');
-				Cookie::Delete('access', Cookie::HTTPONLY);
+			if (Cookie::exists('access')){
+				$Database->where('access', Cookie::get('access'))->delete('sessions');
+				Cookie::delete('access', Cookie::HTTPONLY);
 			}
-			HTTP::Redirect("/da-auth?error=server_error&error_description={$http_response_header[0]}");
+			HTTP::redirect("/da-auth?error=server_error&error_description={$http_response_header[0]}");
 		}
-		if (empty($json['status'])) HTTP::Redirect("/da-auth?error={$json['error']}&error_description={$json['error_description']}");
+		if (empty($json['status'])) HTTP::redirect("/da-auth?error={$json['error']}&error_description={$json['error_description']}");
 
-		$userdata = DeviantArt::Request('user/whoami', $json['access_token']);
+		$userdata = DeviantArt::request('user/whoami', $json['access_token']);
 
-		/** @var $User User */
+		/** @var $User Models\User */
 		$User = $Database->where('id',$userdata['userid'])->getOne('users');
 		if (isset($User->role) && $User->role === 'ban'){
 			$_GET['error'] = 'user_banned';
@@ -279,7 +279,7 @@ class DeviantArt {
 		}
 		else $Database->where('id',$UserID)->update('users', $UserData);
 
-		if (empty($makeDev) && !empty($User) && Permission::Insufficient('member', $User->role) && Users::IsClubMember($User->name))
+		if (empty($makeDev) && !empty($User) && Permission::insufficient('member', $User->role) && $User->isClubMember())
 			$User->updateRole('member');
 
 		if ($type === 'refresh_token')
@@ -291,11 +291,11 @@ class DeviantArt {
 
 		$Database->rawQuery("DELETE FROM sessions WHERE \"user\" = ? && lastvisit <= NOW() - INTERVAL '1 MONTH'", array($UserID));
 
-		Cookie::Set('access', $cookie, time()+ Time::$IN_SECONDS['year'], Cookie::HTTPONLY);
+		Cookie::set('access', $cookie, time()+ Time::$IN_SECONDS['year'], Cookie::HTTPONLY);
 		return $User ?? null;
 	}
 
-	static function IsImageAvailable(string $url):bool {
+	static function isImageAvailable(string $url):bool {
 		if (CoreUtils::isURLAvailable($url))
 			return true;
 		CoreUtils::msleep(300);

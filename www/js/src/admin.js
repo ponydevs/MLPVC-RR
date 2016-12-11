@@ -17,7 +17,7 @@ DocReady.push(function Admin(){
 			if (!this.status) return $.Dialog.fail(false, this.message);
 
 			let data = this;
-			$.Dialog.request(false, GetLinkEditForm(linkid), 'Save changes', function($form){
+			$.Dialog.request(false, getLinkEditForm(linkid), 'Save changes', function($form){
 				$form.find('input[name=label]').val(data.label);
 				$form.find('input[name=url]').val(data.url);
 				$form.find('input[name=title]').val(data.title);
@@ -46,9 +46,9 @@ DocReady.push(function Admin(){
 		});
 	});
 	$('#add-link').on('click',function(){
-		$.Dialog.request('Add a link', GetLinkEditForm(), 'Add');
+		$.Dialog.request('Add a link', getLinkEditForm(), 'Add');
 	});
-	function GetLinkEditForm(linkid){
+	function getLinkEditForm(linkid){
 		if (typeof $LinkEditFormTemplate === 'undefined'){
 			let roleSelect =
 				`<select name='minrole' required>

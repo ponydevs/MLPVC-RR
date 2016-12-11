@@ -27,7 +27,7 @@ DocReady.push(function ColorguideFull(){
 		return;
 
 	$fullList.on('click','.sort-alpha',function(){
-		var $section = $(this).closest('section'),
+		let $section = $(this).closest('section'),
 			$ul = $section.children('ul');
 		$ul.children().sort(function(a,b){
 			return $(a).text().trim().localeCompare($(b).text().trim());

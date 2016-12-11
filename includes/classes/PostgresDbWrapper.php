@@ -25,7 +25,7 @@ class PostgresDbWrapper extends \PostgresDb {
 		return $this;
 	}
 
-	public $query_count = 0;
+	public $queryCount = 0;
 
 	private $_nonexistantClassCache = array();
 
@@ -46,7 +46,7 @@ class PostgresDbWrapper extends \PostgresDb {
 			catch (\Exception $e){ $this->_nonexistantClassCache[$className] = true; }
 		}
 
-		$this->query_count++;
+		$this->queryCount++;
 		return parent::_execStatement($stmt);
 	}
 }

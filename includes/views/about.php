@@ -10,11 +10,11 @@ $about = file_get_contents(INCPATH.'views/about.html');
 if (!empty($about)){
 	echo str_replace(GITHUB_URL.'/blob/master/www','',$about);
 
-	$osver = About::GetServerOS();
-	$phpver = About::GetPHPVersion();
-	$server = About::GetServerSoftware();
-	$pgver = About::GetPostgresVersion();
-	$esver = About::GetElasticSearchVersion();
+	$osver = About::getServerOS();
+	$phpver = About::getPHPVersion();
+	$server = About::getServerSoftware();
+	$pgver = About::getPostgresVersion();
+	$esver = About::getElasticSearchVersion();
 	$elastic = isset($esver) ? ", ElasticSearch $esver" : '';
 	echo <<<HTML
 <strong>Server Software:</strong> $osver, PHP $phpver, $server, PostgreSQL $pgver$elastic<br>

@@ -266,8 +266,8 @@ DocReady.push(function Episode(){
 									return `${value} muffin${value!==1?'s':''}`;
 								},
 								label: function(tooltip,data){
-									var voteCount = parseInt(data.datasets[tooltip.datasetIndex].data[tooltip.index],10);
-									let votePerc = Math.round((voteCount/totalVotes)*1000)/10;
+									let voteCount = parseInt(data.datasets[tooltip.datasetIndex].data[tooltip.index],10),
+										votePerc = Math.round((voteCount/totalVotes)*1000)/10;
 									return `${voteCount} user${voteCount!==1?'s':''} (${votePerc}%)`;
 								}
 							}

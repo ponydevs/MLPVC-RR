@@ -12,72 +12,75 @@ use App\Response;
 use App\UserPrefs;
 use App\Users;
 
+/** @var $data string */
+/** @var $signedIn bool */
+
 if (POST_REQUEST){
 	if ($data === 'discord-verify'){
 		if (!empty($_GET['token'])){
 			$targetUser = $Database->where('key','discord_token')->where('value',$_GET['token'])->getOne('user_prefs','user');
 			if (empty($targetUser))
-				Response::Fail('Invalid token');
+				Response::fail('Invalid token');
 
-			$user = Users::Get($targetUser['user']);
-			UserPrefs::Set('discord_token','true',$user->id);
-			Response::Done(array(
+			$user = Users::get($targetUser['user']);
+			UserPrefs::set('discord_token','true',$user->id);
+			Response::done(array(
 				'name' => $user->name,
 				'role' => $user->role,
 			));
 		}
 
-		$ismember = Permission::Sufficient('member', $currentUser->role);
-		$isstaff = Permission::Sufficient('staff', $currentUser->role);
+		$ismember = Permission::sufficient('member', $currentUser->role);
+		$isstaff = Permission::sufficient('staff', $currentUser->role);
 		if (!$ismember || $isstaff){
-			UserPrefs::Set('discord_token','');
-			Response::Fail(!$ismember ? 'You are not a club member' : 'Staff members cannot use this feature');
+			UserPrefs::set('discord_token','');
+			Response::fail(!$ismember ? 'You are not a club member' : 'Staff members cannot use this feature');
 		}
 
-		$token = UserPrefs::Get('discord_token');
+		$token = UserPrefs::get('discord_token');
 		if ($token === 'true')
-			Response::Fail("You have already been verified using this automated method. If - for yome reason - you still don't have the Club Members role please ask for assistance in the <strong>#support</strong> channel.");
+			Response::fail("You have already been verified using this automated method. If - for yome reason - you still don't have the Club Members role please ask for assistance in the <strong>#support</strong> channel.");
 
 		if (empty($token)){
 			$token = preg_replace(new RegExp('[^a-z\d]','i'),'',base64_encode(random_bytes(12)));
-			UserPrefs::Set('discord_token', $token);
+			UserPrefs::set('discord_token', $token);
 		}
 
-		Response::Done(array('token' => $token));
+		Response::done(array('token' => $token));
 	}
 
-	CSRFProtection::Protect();
+	CSRFProtection::protect();
 
 	if (empty($data)) CoreUtils::notFound();
 
 	if (preg_match(new RegExp('^sessiondel/(\d+)$'),$data,$_match)){
 		$Session = $Database->where('id', $_match[1])->getOne('sessions');
 		if (empty($Session))
-			Response::Fail('This session does not exist');
-		if ($Session['user'] !== $currentUser->id && !Permission::Sufficient('staff'))
-			Response::Fail('You are not allowed to delete this session');
+			Response::fail('This session does not exist');
+		if ($Session['user'] !== $currentUser->id && !Permission::sufficient('staff'))
+			Response::fail('You are not allowed to delete this session');
 
 		if (!$Database->where('id', $Session['id'])->delete('sessions'))
-			Response::Fail('Session could not be deleted');
-		Response::Success('Session successfully removed');
+			Response::fail('Session could not be deleted');
+		Response::success('Session successfully removed');
 	}
 
-	if (!Permission::Sufficient('staff')) Response::Fail();
+	if (!Permission::sufficient('staff')) Response::fail();
 
 	if (preg_match(new RegExp('^newgroup/'.USERNAME_PATTERN.'$'),$data,$_match)){
-		$targetUser = Users::Get($_match[1], 'name');
+		$targetUser = Users::get($_match[1], 'name');
 		if (empty($targetUser))
-			Response::Fail('User not found');
+			Response::fail('User not found');
 
 		if ($targetUser->id === $currentUser->id)
-			Response::Fail("You cannot modify your own group");
-		if (!Permission::Sufficient($targetUser->role))
-			Response::Fail('You can only modify the group of users who are in the same or a lower-level group than you');
+			Response::fail("You cannot modify your own group");
+		if (!Permission::sufficient($targetUser->role))
+			Response::fail('You can only modify the group of users who are in the same or a lower-level group than you');
 		if ($targetUser->role === 'ban')
-			Response::Fail('This user is banished, and must be un-banished before changing their group.');
+			Response::fail('This user is banished, and must be un-banished before changing their group.');
 
 		$newgroup = (new Input('newrole',function($value){
-			if (!isset(Permission::$ROLES_ASSOC[$value]))
+			if (empty(Permission::ROLES_ASSOC[$value]))
 				return Input::ERROR_INVALID;
 		},array(
 			Input::CUSTOM_ERROR_MESSAGES => array(
@@ -86,26 +89,26 @@ if (POST_REQUEST){
 			)
 		)))->out();
 		if ($targetUser->role === $newgroup)
-			Response::Done(array('already_in' => true));
+			Response::done(array('already_in' => true));
 
 		$targetUser->updateRole($newgroup);
 
-		Response::Done();
+		Response::done();
 	}
 	else if (preg_match(new RegExp('^(un-)?banish/'.USERNAME_PATTERN.'$'), $data, $_match)){
 		$Action = (empty($_match[1]) ? 'Ban' : 'Un-ban').'ish';
 		$action = strtolower($Action);
 		$un = $_match[2];
 
-		$targetUser = Users::Get($un, 'name');
-		if (empty($targetUser)) Response::Fail('User not found');
+		$targetUser = Users::get($un, 'name');
+		if (empty($targetUser)) Response::fail('User not found');
 
 		if ($targetUser->id === $currentUser->id)
-			Response::Fail("You cannot $action yourself");
-		if (Permission::Sufficient('staff', $targetUser->role))
-			Response::Fail("You cannot $action people within the assistant or any higher group");
+			Response::fail("You cannot $action yourself");
+		if (Permission::sufficient('staff', $targetUser->role))
+			Response::fail("You cannot $action people within the assistant or any higher group");
 		if ($action == 'banish' && $targetUser->role === 'ban' || $action == 'un-banish' && $targetUser->role !== 'ban')
-			Response::Fail("This user has already been {$action}ed");
+			Response::fail("This user has already been {$action}ed");
 
 		$reason = (new Input('reason','string',array(
 			Input::IN_RANGE => [5,255],
@@ -121,13 +124,13 @@ if (POST_REQUEST){
 			'target' => $targetUser->id,
 			'reason' => $reason
 		));
-		$changes['role'] = Permission::$ROLES_ASSOC[$changes['role']];
-		$changes['badge'] = Permission::LabelInitials($changes['role']);
+		$changes['role'] = Permission::ROLES_ASSOC[$changes['role']];
+		$changes['badge'] = Permission::labelInitials($changes['role']);
 
 		if ($action == 'banish')
-			Response::Done($changes);
+			Response::done($changes);
 
-		Response::Success("We welcome {$targetUser->name} back with open hooves!", $changes);
+		Response::success("We welcome {$targetUser->name} back with open hooves!", $changes);
 	}
 	else CoreUtils::notFound();
 }
@@ -145,7 +148,7 @@ else if (preg_match($USERNAME_REGEX, $data, $_match))
 if (!isset($un)){
 	if (!isset($MSG)) $MSG = 'Invalid username';
 }
-else $User = Users::Get($un, 'name');
+else $User = Users::get($un, 'name');
 
 if (empty($User)){
 	if (isset($User) && $User === false){
@@ -165,12 +168,12 @@ if (empty($User)){
 }
 else {
 	$sameUser = $signedIn && $User->id === $currentUser->id;
-	$canEdit = !$sameUser && Permission::Sufficient('staff') && Permission::Sufficient($User->role);
+	$canEdit = !$sameUser && Permission::sufficient('staff') && Permission::sufficient($User->role);
 	$pagePath = "/@{$User->name}";
 	CoreUtils::fixPath($pagePath);
 }
 
-if (isset($MSG)) HTTP::StatusCode(404);
+if (isset($MSG)) HTTP::statusCode(404);
 else {
 	if ($sameUser){
 		$CurrentSession = $currentUser->Session;

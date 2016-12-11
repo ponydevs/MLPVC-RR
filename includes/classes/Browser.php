@@ -42,16 +42,16 @@ namespace App;
  */
 class Browser {
 	private $_agent = '';
-	private $_browser_name = '';
+	private $_browserName = '';
 	private $_version = '';
 	private $_platform = '';
 	private $_os = '';
-	private $_is_aol = false;
-	private $_is_mobile = false;
-	private $_is_tablet = false;
-	private $_is_robot = false;
-	private $_is_facebook = false;
-	private $_aol_version = '';
+	private $_isAol = false;
+	private $_isMobile = false;
+	private $_isTablet = false;
+	private $_isRobot = false;
+	private $_isFacebook = false;
+	private $_aolVersion = '';
 
 	const BROWSER_UNKNOWN = 'unknown';
 	const VERSION_UNKNOWN = 'unknown';
@@ -124,16 +124,16 @@ class Browser {
 	 */
 	public function reset(){
 		$this->_agent = isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : "";
-		$this->_browser_name = self::BROWSER_UNKNOWN;
+		$this->_browserName = self::BROWSER_UNKNOWN;
 		$this->_version = self::VERSION_UNKNOWN;
 		$this->_platform = self::PLATFORM_UNKNOWN;
 		$this->_os = self::OPERATING_SYSTEM_UNKNOWN;
-		$this->_is_aol = false;
-		$this->_is_mobile = false;
-		$this->_is_tablet = false;
-		$this->_is_robot = false;
-		$this->_is_facebook = false;
-		$this->_aol_version = self::VERSION_UNKNOWN;
+		$this->_isAol = false;
+		$this->_isMobile = false;
+		$this->_isTablet = false;
+		$this->_isRobot = false;
+		$this->_isFacebook = false;
+		$this->_aolVersion = self::VERSION_UNKNOWN;
 	}
 
 	/**
@@ -144,7 +144,7 @@ class Browser {
 	 * @return bool True if the browser is the specified browser
 	 */
 	function isBrowser($browserName){
-		return (0 == strcasecmp($this->_browser_name, trim($browserName)));
+		return (0 == strcasecmp($this->_browserName, trim($browserName)));
 	}
 
 	/**
@@ -152,7 +152,7 @@ class Browser {
 	 * @return string Name of the browser
 	 */
 	public function getBrowser(){
-		return $this->_browser_name;
+		return $this->_browserName;
 	}
 
 	/**
@@ -161,7 +161,7 @@ class Browser {
 	 * @param $browser string The name of the Browser
 	 */
 	public function setBrowser($browser){
-		$this->_browser_name = $browser;
+		$this->_browserName = $browser;
 	}
 
 	/**
@@ -203,7 +203,7 @@ class Browser {
 	 * @return string Version of AOL (will only contain alpha-numeric characters and a period)
 	 */
 	public function getAolVersion(){
-		return $this->_aol_version;
+		return $this->_aolVersion;
 	}
 
 	/**
@@ -212,7 +212,7 @@ class Browser {
 	 * @param string $version The version of AOL
 	 */
 	public function setAolVersion($version){
-		$this->_aol_version = preg_replace('/[^0-9,.,a-z,A-Z]/', '', $version);
+		$this->_aolVersion = preg_replace('/[^0-9,.,a-z,A-Z]/', '', $version);
 	}
 
 	/**
@@ -220,7 +220,7 @@ class Browser {
 	 * @return boolean True if the browser is from AOL otherwise false
 	 */
 	public function isAol(){
-		return $this->_is_aol;
+		return $this->_isAol;
 	}
 
 	/**
@@ -228,7 +228,7 @@ class Browser {
 	 * @return boolean True if the browser is from a mobile device otherwise false
 	 */
 	public function isMobile(){
-		return $this->_is_mobile;
+		return $this->_isMobile;
 	}
 
 	/**
@@ -236,7 +236,7 @@ class Browser {
 	 * @return boolean True if the browser is from a tablet device otherwise false
 	 */
 	public function isTablet(){
-		return $this->_is_tablet;
+		return $this->_isTablet;
 	}
 
 	/**
@@ -244,7 +244,7 @@ class Browser {
 	 * @return boolean True if the browser is from a robot otherwise false
 	 */
 	public function isRobot(){
-		return $this->_is_robot;
+		return $this->_isRobot;
 	}
 
 	/**
@@ -252,7 +252,7 @@ class Browser {
 	 * @return boolean True if the browser is from facebook otherwise false
 	 */
 	public function isFacebook(){
-		return $this->_is_facebook;
+		return $this->_isFacebook;
 	}
 
 	/**
@@ -261,7 +261,7 @@ class Browser {
 	 * @param $isAol
 	 */
 	public function setAol($isAol){
-		$this->_is_aol = $isAol;
+		$this->_isAol = $isAol;
 	}
 
 	/**
@@ -270,7 +270,7 @@ class Browser {
 	 * @param boolean $value is the browser a mobile browser or not
 	 */
 	protected function setMobile($value = true){
-		$this->_is_mobile = $value;
+		$this->_isMobile = $value;
 	}
 
 	/**
@@ -279,7 +279,7 @@ class Browser {
 	 * @param boolean $value is the browser a tablet browser or not
 	 */
 	protected function setTablet($value = true){
-		$this->_is_tablet = $value;
+		$this->_isTablet = $value;
 	}
 
 	/**
@@ -288,7 +288,7 @@ class Browser {
 	 * @param boolean $value is the browser a robot or not
 	 */
 	protected function setRobot($value = true){
-		$this->_is_robot = $value;
+		$this->_isRobot = $value;
 	}
 
 	/**
@@ -297,7 +297,7 @@ class Browser {
 	 * @param boolean $value is the browser a robot or not
 	 */
 	protected function setFacebook($value = true){
-		$this->_is_facebook = $value;
+		$this->_isFacebook = $value;
 	}
 
 	/**
@@ -423,7 +423,7 @@ class Browser {
 			if (isset($aresult[1])){
 				$aversion = explode(' ', $aresult[1]);
 				$this->setVersion($aversion[0]);
-				$this->_browser_name = self::BROWSER_BLACKBERRY;
+				$this->_browserName = self::BROWSER_BLACKBERRY;
 				$this->setMobile(true);
 
 				return true;
@@ -464,7 +464,7 @@ class Browser {
 			if (isset($aresult[1])){
 				$aversion = explode(' ', $aresult[1]);
 				$this->setVersion(str_replace(';', '', $aversion[0]));
-				$this->_browser_name = self::BROWSER_GOOGLEBOT;
+				$this->_browserName = self::BROWSER_GOOGLEBOT;
 				$this->setRobot(true);
 
 				return true;
@@ -484,7 +484,7 @@ class Browser {
 			if (isset($aresult[1])){
 				$aversion = explode(" ", $aresult[1]);
 				$this->setVersion(str_replace(";", "", $aversion[0]));
-				$this->_browser_name = self::BROWSER_MSNBOT;
+				$this->_browserName = self::BROWSER_MSNBOT;
 				$this->setRobot(true);
 
 				return true;
@@ -504,7 +504,7 @@ class Browser {
 			if (isset($aresult[1])){
 				$aversion = explode(" ", $aresult[1]);
 				$this->setVersion(str_replace(";", "", $aversion[0]));
-				$this->_browser_name = self::BROWSER_BINGBOT;
+				$this->_browserName = self::BROWSER_BINGBOT;
 				$this->setRobot(true);
 
 				return true;
@@ -524,7 +524,7 @@ class Browser {
 			if (isset($aresult[1])){
 				$aversion = explode(' ', $aresult[1]);
 				$this->setVersion($aversion[0]);
-				$this->_browser_name = self::BROWSER_W3CVALIDATOR;
+				$this->_browserName = self::BROWSER_W3CVALIDATOR;
 
 				return true;
 			}
@@ -536,13 +536,13 @@ class Browser {
 			if (isset($aresult[1])){
 				$aversion = explode(' ', $aresult[1]);
 				$this->setVersion($aversion[0]);
-				$this->_browser_name = self::BROWSER_W3CVALIDATOR;
+				$this->_browserName = self::BROWSER_W3CVALIDATOR;
 
 				return true;
 			}
 		}
 		else if (stripos($this->_agent, 'W3C-mobileOK') !== false){
-			$this->_browser_name = self::BROWSER_W3CVALIDATOR;
+			$this->_browserName = self::BROWSER_W3CVALIDATOR;
 			$this->setMobile(true);
 
 			return true;
@@ -561,7 +561,7 @@ class Browser {
 			if (isset($aresult[1])){
 				$aversion = explode(' ', $aresult[1]);
 				$this->setVersion($aversion[0]);
-				$this->_browser_name = self::BROWSER_SLURP;
+				$this->_browserName = self::BROWSER_SLURP;
 				$this->setRobot(true);
 				$this->setMobile(false);
 
@@ -674,7 +674,7 @@ class Browser {
 					$this->setVersion($aversion[1]);
 				}
 			}
-			$this->_browser_name = self::BROWSER_OPERA_MINI;
+			$this->_browserName = self::BROWSER_OPERA_MINI;
 			$this->setMobile(true);
 
 			return true;
@@ -698,7 +698,7 @@ class Browser {
 			if (stripos($this->_agent, 'Opera Mobi') !== false){
 				$this->setMobile(true);
 			}
-			$this->_browser_name = self::BROWSER_OPERA;
+			$this->_browserName = self::BROWSER_OPERA;
 
 			return true;
 		}
@@ -714,7 +714,7 @@ class Browser {
 			if (stripos($this->_agent, 'Mobile') !== false){
 				$this->setMobile(true);
 			}
-			$this->_browser_name = self::BROWSER_OPERA;
+			$this->_browserName = self::BROWSER_OPERA;
 
 			return true;
 		}

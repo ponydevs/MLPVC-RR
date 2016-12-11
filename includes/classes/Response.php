@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App;
 
 class Response {
-	static function Fail(string $message = '', $data = array()){
+	static function fail(string $message = '', $data = array()){
 		if (empty($message)){
 			global $signedIn;
 
@@ -14,7 +14,7 @@ class Response {
 
 		self::_respond(false, $message, $data);
 	}
-	static function DBError(string $message = ''){
+	static function dbError(string $message = ''){
 		global $Database;
 
 		if (!empty($message))
@@ -24,10 +24,10 @@ class Response {
 		self::_respond(false, $message, array());
 	}
 
-	static function Success(string $message, $data = array()){
+	static function success(string $message, $data = array()){
 		self::_respond(true, $message, $data);
 	}
-	static function Done(array $data = array()){
+	static function done(array $data = array()){
 		self::_respond(true, '', $data);
 	}
 
@@ -38,7 +38,7 @@ class Response {
 			$response['message'] = $message;
 		if (!empty($data) && is_array($data))
 			$response = array_merge($data, $response);
-		echo JSON::Encode($response);
+		echo JSON::encode($response);
 		exit;
 	}
 }

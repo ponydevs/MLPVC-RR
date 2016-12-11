@@ -17,7 +17,7 @@ class ColorGroups {
 	 *
 	 * @return array
 	 */
-	static function Get($PonyID, $cols = '*', $sort_dir = 'ASC', $cnt = null){
+	static function get($PonyID, $cols = '*', $sort_dir = 'ASC', $cnt = null){
 		global $CGDb;
 
 		self::_order($sort_dir);
@@ -32,7 +32,7 @@ class ColorGroups {
 	 *
 	 * @return array
 	 */
-	static function GetColors($GroupID){
+	static function getColors($GroupID){
 		global $CGDb;
 
 		return $CGDb->where('groupid', $GroupID)->orderBy('"order"', 'ASC')->get('colors');
@@ -45,7 +45,7 @@ class ColorGroups {
 	 *
 	 * @return array
 	 */
-	static function GetColorsForEach($Groups){
+	static function getColorsForEach($Groups){
 		global $CGDb;
 
 		$GroupIDs = array();
@@ -76,7 +76,7 @@ class ColorGroups {
 	 *
 	 * @return string
 	 */
-	static function GetHTML($GroupID, $AllColors = null, bool $wrap = true, bool $colon = true, bool $colorNames = false, bool $force_extra_info = false):string {
+	static function getHTML($GroupID, $AllColors = null, bool $wrap = true, bool $colon = true, bool $colorNames = false, bool $force_extra_info = false):string {
 		global $CGDb;
 
 		if (is_array($GroupID)) $Group = $GroupID;
@@ -85,13 +85,13 @@ class ColorGroups {
 		$label = CoreUtils::escapeHTML($Group['label']).($colon?': ':'');
 		$HTML =
 			"<span class='cat'>$label".
-				($colorNames && Permission::Sufficient('staff')?'<span class="admin"><button class="blue typcn typcn-pencil edit-cg"></button><button class="red typcn typcn-trash delete-cg"></button></span>':'').
+				($colorNames && Permission::sufficient('staff')?'<span class="admin"><button class="blue typcn typcn-pencil edit-cg"></button><button class="red typcn typcn-trash delete-cg"></button></span>':'').
 			"</span>";
 		if (!isset($AllColors))
-			$Colors = self::GetColors($Group['groupid']);
+			$Colors = self::getColors($Group['groupid']);
 		else $Colors = $AllColors[$Group['groupid']] ?? null;
 		if (!empty($Colors)){
-			$extraInfo = $force_extra_info || !UserPrefs::Get('cg_hideclrinfo');
+			$extraInfo = $force_extra_info || !UserPrefs::get('cg_hideclrinfo');
 			foreach ($Colors as $i => $c){
 				$title = CoreUtils::aposEncode($c['label']);
 				$color = '';
@@ -131,7 +131,7 @@ class ColorGroups {
 			->orderBy('groupid', $dir);
 	}
 
-	static function StringifyColors($colors){
+	static function stringifyColors($colors){
 		if (empty($colors))
 			return null;
 
@@ -142,7 +142,7 @@ class ColorGroups {
 		return implode("\n", $return);
 	}
 
-	static function Stringify($cgs){
+	static function stringify($cgs){
 		if (empty($cgs))
 			return null;
 

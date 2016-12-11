@@ -17,7 +17,7 @@ use App\VideoProvider;
 if (!POST_REQUEST)
 	Episodes::loadPage();
 
-CSRFProtection::Protect();
+CSRFProtection::protect();
 if (empty($data))
 	CoreUtils::notFound();
 
@@ -29,7 +29,7 @@ $EpData = Episodes::parseID(!empty($data) ? $data : ($_POST['epid'] ?? null));
 if (!empty($EpData)){
 	$Episode = Episodes::getActual($EpData['season'], $EpData['episode'], Episodes::ALLOW_MOVIES);
 	if (empty($Episode))
-		Response::Fail("There's no episode with this season & episode number");
+		Response::fail("There's no episode with this season & episode number");
 	$isMovie = $Episode->isMovie;
 }
 else if ($action !== 'add')
@@ -37,18 +37,18 @@ else if ($action !== 'add')
 
 switch ($action){
 	case "get":
-		Response::Done(array(
+		Response::done(array(
 			'ep' => $Episode,
 			'epid' => $Episode->formatTitle(AS_ARRAY, 'id'),
 			'caneditid' => $Episode->getPostCount() === 0,
 		));
 	break;
 	case "delete":
-		if (!Permission::Sufficient('staff'))
-			Response::Fail();
+		if (!Permission::sufficient('staff'))
+			Response::fail();
 
 		if (!$Database->whereEp($Episode)->delete('episodes'))
-			Response::DBError();
+			Response::dbError();
 		Logs::action('episodes',array(
 			'action' => 'del',
 			'season' => $Episode->season,
@@ -58,20 +58,20 @@ switch ($action){
 			'airs' => $Episode->airs,
 		));
 		$CGDb->where('name', "s{$Episode->season}e{$Episode->episode}")->delete('tags');
-		Response::Success('Episode deleted successfuly',array(
+		Response::success('Episode deleted successfuly',array(
 			'upcoming' => Episodes::getSidebarUpcoming(NOWRAP),
 		));
 	break;
 	case "requests":
 	case "reservations":
 		$only = $action === 'requests' ? ONLY_REQUESTS : ONLY_RESERVATIONS;
-		$posts = Posts::Get($Episode, $only);
+		$posts = Posts::get($Episode, $only);
 
 		switch ($only){
-			case ONLY_REQUESTS: $rendered = Posts::GetRequestsSection($posts); break;
-			case ONLY_RESERVATIONS: $rendered = Posts::GetReservationsSection($posts); break;
+			case ONLY_REQUESTS: $rendered = Posts::getRequestsSection($posts); break;
+			case ONLY_RESERVATIONS: $rendered = Posts::getReservationsSection($posts); break;
 		}
-		Response::Done(array('render' => $rendered));
+		Response::done(array('render' => $rendered));
 	break;
 	case "vote":
 		if (isset($_REQUEST['detail'])){
@@ -94,20 +94,20 @@ switch ($action){
 				$VoteCounts['datasets'][0]['data'][] = $row['value'];
 			}
 
-			Response::Done(array('data' => $VoteCounts));
+			Response::done(array('data' => $VoteCounts));
 		}
 		else if (isset($_REQUEST['html']))
-			Response::Done(array('html' => Episodes::getSidebarVoting($Episode)));
+			Response::done(array('html' => Episodes::getSidebarVoting($Episode)));
 
-		if (!Permission::Sufficient('user'))
-			Response::Fail();
+		if (!Permission::sufficient('user'))
+			Response::fail();
 
 		if (!$Episode->aired)
-			Response::Fail('You can only vote on this episode after it has aired.');
+			Response::fail('You can only vote on this episode after it has aired.');
 
 		$UserVote = Episodes::getUserVote($Episode);
 		if (!empty($UserVote))
-			Response::Fail('You already voted for this episode');
+			Response::fail('You already voted for this episode');
 
 		$vote = (new Input('vote','int',array(
 			Input::IN_RANGE => [1,5],
@@ -122,12 +122,12 @@ switch ($action){
 			'episode' => $Episode->episode,
 			'user' => $currentUser->id,
 			'vote' => $vote,
-		))) Response::DBError();
+		))) Response::dbError();
 		$Episode->updateScore();
-		Response::Done(array('newhtml' => Episodes::getSidebarVoting($Episode)));
+		Response::done(array('newhtml' => Episodes::getSidebarVoting($Episode)));
 	break;
 	case "videos":
-		Response::Done(Episodes::getVideoEmbeds($Episode));
+		Response::done(Episodes::getVideoEmbeds($Episode));
 	break;
 	case "getvideos":
 		$return = array(
@@ -144,7 +144,7 @@ switch ($action){
 			if ($vid->fullep)
 				$return['fullep'][] = $vid->provider;
 		}
-		Response::Done($return);
+		Response::done($return);
 	break;
 	case "setvideos":
 		foreach (array('yt','dm') as $provider){
@@ -157,10 +157,10 @@ switch ($action){
 						$vidProvider = new VideoProvider($_POST[$PostKey]);
 					}
 					catch (Exception $e){
-						Response::Fail("$Provider link issue: ".$e->getMessage());
+						Response::fail("$Provider link issue: ".$e->getMessage());
 					};
 					if (!isset($vidProvider->episodeVideo) || $vidProvider->episodeVideo->provider !== $provider)
-						Response::Fail("Incorrect $Provider URL specified");
+						Response::fail("Incorrect $Provider URL specified");
 					/** @noinspection PhpUndefinedFieldInspection */
 					$set = $vidProvider::$id;
 				}
@@ -204,7 +204,7 @@ switch ($action){
 			}
 		}
 
-		Response::Success('Links updated',array('epsection' => Episodes::getVideosHTML($Episode)));
+		Response::success('Links updated',array('epsection' => Episodes::getVideosHTML($Episode)));
 	break;
 	case "brokenvideos":
 		/** @var $videos EpisodeVideo[] */
@@ -228,9 +228,9 @@ switch ($action){
 		}
 
 		if ($removed === 0)
-			return Response::Success('No broken videos found under this '.($Episode->isMovie?'movie':'episode').'.');
+			return Response::success('No broken videos found under this '.($Episode->isMovie?'movie':'episode').'.');
 
-		Response::Success("$removed video link".($removed===1?' has':'s have')." been removed from the site. Thank you for letting us know.",array(
+		Response::success("$removed video link".($removed===1?' has':'s have')." been removed from the site. Thank you for letting us know.",array(
 			'epsection' => Episodes::getVideosHTML($Episode, NOWRAP),
 		));
 	break;
@@ -239,7 +239,7 @@ switch ($action){
 
 		$EpTagIDs = Episodes::getTagIDs($Episode);
 		if (empty($EpTagIDs))
-			Response::Fail('The episode has no associated tag(s)!');
+			Response::fail('The episode has no associated tag(s)!');
 
 		$TaggedAppearanceIDs = array();
 		foreach ($EpTagIDs as $tid){
@@ -257,7 +257,7 @@ switch ($action){
 		foreach ($Appearances as $a)
 			$Sorted[isset($TaggedAppearanceIDs[$a['id']]) ? 'linked' : 'unlinked'][] = $a;
 
-		Response::Done($Sorted);
+		Response::done($Sorted);
 	break;
 	case "setcgrelations":
 		$AppearanceIDs = (new Input('ids','int[]',array(
@@ -270,7 +270,7 @@ switch ($action){
 
 		$EpTagIDs = Episodes::getTagIDs($Episode);
 		if (empty($EpTagIDs))
-			Response::Fail('The episode has no associated tag(s)!');
+			Response::fail('The episode has no associated tag(s)!');
 		$EpTagIDs = implode(',',$EpTagIDs);
 		$Tags = $CGDb->where("tid IN ($EpTagIDs)")->orderByLiteral('char_length(name)','DESC')->getOne('tags','tid');
 		$UseID = $Tags['tid'];
@@ -284,12 +284,12 @@ switch ($action){
 		}
 		$CGDb->where("tid IN ($EpTagIDs)")->delete('tagged');
 
-		Response::Done(array('section' => Episodes::getAppearancesSectionHTML($Episode)));
+		Response::done(array('section' => Episodes::getAppearancesSectionHTML($Episode)));
 	break;
 	case "edit":
 	case "add":
-		if (!Permission::Sufficient('staff'))
-			Response::Fail();
+		if (!Permission::sufficient('staff'))
+			Response::fail();
 		$editing = $action === 'edit';
 		$canEditID = !empty($Episode) && $Episode->getPostCount() === 0;
 
@@ -322,16 +322,16 @@ switch ($action){
 					Episodes::ALLOW_MOVIES
 				);
 				if (!empty($Target))
-					Response::Fail("There's already an episode with the same season & episode number");
+					Response::fail("There's already an episode with the same season & episode number");
 
 				if ((new Episode($insert))->getPostCount() > 0)
-					Response::Fail('This epsiode\'s ID cannot be changed because it already has posts and this action could break existing links');
+					Response::fail('This epsiode\'s ID cannot be changed because it already has posts and this action could break existing links');
 			}
 		}
 		else if ($canEditID){
 			$MatchingID = $Database->whereEp($insert['season'], $insert['episode'])->getOne('episodes');
 			if (!empty($MatchingID))
-				Response::Fail(($isMovie?'A movie':'An episode').' with the same '.($isMovie?'overall':'season and episode').' number already exists');
+				Response::fail(($isMovie?'A movie':'An episode').' with the same '.($isMovie?'overall':'season and episode').' number already exists');
 		}
 
 		if (!$isMovie)
@@ -365,16 +365,16 @@ switch ($action){
 							}
 						}
 					}
-					Response::Fail("Unsupported prefix: {$match[1]}. ".(isset($mostSimilar) ? "<em>Did you mean <span class='color-ui'>$mostSimilar</span></em>?" : 'Use a backslash if the colon is part of the title (e.g. <code>\:</code>)'));
+					Response::fail("Unsupported prefix: {$match[1]}. ".(isset($mostSimilar) ? "<em>Did you mean <span class='color-ui'>$mostSimilar</span></em>?" : 'Use a backslash if the colon is part of the title (e.g. <code>\:</code>)'));
 				}
 
 				$title = Episodes::removeTitlePrefix($value);
-				if (Input::CheckStringLength($title, $range, $code))
+				if (Input::checkStringLength($title, $range, $code))
 					return $code;
 
 				$value = "{$match[1]}: $title";
 			}
-			else if (Input::CheckStringLength($value, $range, $code))
+			else if (Input::checkStringLength($value, $range, $code))
 				return $code;
 		},array(
 			Input::IN_RANGE => [5,35],
@@ -393,20 +393,20 @@ switch ($action){
 			)
 		)))->out();
 		if (empty($airs))
-			Response::Fail('Please specify an air date & time');
+			Response::fail('Please specify an air date & time');
 		$insert['airs'] = date('c',strtotime('this minute', $airs));
 
 		if ($editing){
 			if (!$Database->whereEp($Episode)->update('episodes', $insert))
-				Response::DBError('Updating episode failed');
+				Response::dbError('Updating episode failed');
 		}
 		else if (!$Database->insert('episodes', $insert))
-			Response::DBError('Episode creation failed');
+			Response::dbError('Episode creation failed');
 
 		if (!$editing || $SeasonChanged || $EpisodeChanged){
 			if ($isMovie){
 				if ($EpisodeChanged){
-					$TagName = CGUtils::CheckEpisodeTagName("movie#{$insert['episode']}");
+					$TagName = CGUtils::checkEpisodeTagName("movie#{$insert['episode']}");
 					$MovieTag = $CGDb->where('name', $editing ? "movie#{$Episode->episode}" : $TagName)->getOne('tags', 'tid');
 
 					if (!empty($MovieTag)){
@@ -419,12 +419,12 @@ switch ($action){
 						if (!$CGDb->insert('tags', array(
 							'name' => $TagName,
 							'type' => 'ep',
-						))) Response::DBError('Episode tag creation failed');
+						))) Response::dbError('Episode tag creation failed');
 					}
 				}
 			}
 			else if ($SeasonChanged || $EpisodeChanged){
-				$TagName = CGUtils::CheckEpisodeTagName("s{$insert['season']}e{$insert['episode']}");
+				$TagName = CGUtils::checkEpisodeTagName("s{$insert['season']}e{$insert['episode']}");
 				$EpTag = $CGDb->where('name', $editing ? "s{$Episode->season}e{$Episode->episode}" : $TagName)->getOne('tags', 'tid');
 
 				if (!empty($EpTag)){
@@ -437,7 +437,7 @@ switch ($action){
 					if (!$CGDb->insert('tags', array(
 						'name' => $TagName,
 						'type' => 'ep',
-					))) Response::DBError('Episode tag creation failed');
+					))) Response::dbError('Episode tag creation failed');
 				}
 			}
 		}
@@ -466,7 +466,7 @@ switch ($action){
 			'airs' => $insert['airs'],
 		));
 		if ($editing)
-			Response::Done();
-		Response::Done(array('url' => (new Episode($insert))->formatURL()));
+			Response::done();
+		Response::done(array('url' => (new Episode($insert))->formatURL()));
 	break;
 }

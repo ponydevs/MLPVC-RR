@@ -105,7 +105,7 @@
 					document.title = titleProcessor(newPageNumber);
 				document.title = document.title.replace(pageRegex, `Page ${newPageNumber}`);
 				$navbar.find('li.active').children().last().html(function(){
-					return this.innerHTML.replace(pageRegex, `Page ${newPageNumber}`)
+					return this.innerHTML.replace(pageRegex, `Page ${newPageNumber}`);
 				});
 
 				let newURI = this.request_uri || (basePath+newPageNumber+

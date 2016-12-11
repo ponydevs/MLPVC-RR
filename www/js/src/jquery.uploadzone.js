@@ -2,7 +2,7 @@
 /* global File */
 (function(){
 	'use strict';
-	var defaults = {
+	let defaults = {
 		requestKey: 'file',
 		title: 'Image upload',
 		accept: 'image/*',
@@ -13,7 +13,7 @@
 	$.fn.uploadZone = function(opt){
 		opt = $.extend(true,{},defaults,opt);
 
-		var title = opt.title,
+		let title = opt.title,
 			$this = $(this).first(),
 			$input = $.mk('input').attr({
 				'type': 'file',
@@ -29,7 +29,7 @@
 			$.Dialog.close(function(){
 				$this.removeClass('uploading');
 				$input.prev().attr('href', path).children('img').fadeTo(200,0,function(){
-					var $image = $(this);
+					let $image = $(this);
 					$image.attr('src',path).on('load',function(){
 						$image.fadeTo(200,1);
 					});
@@ -44,18 +44,18 @@
 			$this[e.type === 'dragenter' ? 'addClass' : 'removeClass']('drop');
 		});
 		$input.on('change drop', function(e){
-			var files = e.target.files || e.originalEvent.dataTransfer.files;
+			let files = e.target.files || e.originalEvent.dataTransfer.files;
 
 			if (typeof files[0] === 'undefined' || !(files[0] instanceof File))
 				return true;
 
 			$this.trigger('uz-uploadstart').removeClass('drop').addClass('uploading');
 
-			var fd = new FormData();
+			let fd = new FormData();
 			fd.append('sprite', files[0]);
 			fd.append('CSRF_TOKEN', $.getCSRFToken());
 
-			var ajaxOpts = {
+			let ajaxOpts = {
 				url: opt.target,
 				type: "POST",
 				contentType: false,
@@ -78,12 +78,12 @@
 				}
 			};
 			if (opt.helper) ajaxOpts.xhr = function () {
-				var xhrobj = $.ajaxSettings.xhr();
+				let xhrobj = $.ajaxSettings.xhr();
 				if (xhrobj.upload)
 					xhrobj.upload.addEventListener('progress', event => {
 						if (!event.lengthComputable) return true;
 
-						var complete = event.loaded || event.position,
+						let complete = event.loaded || event.position,
 							total = event.total;
 						$helper.attr('data-progress', Math.round(complete / total * 100));
 					}, false);

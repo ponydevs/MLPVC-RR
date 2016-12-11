@@ -7,14 +7,14 @@ use App\Permission; ?>
 <?  if (empty($Episodes)){ ?>
 	<p>There are no episodes stored in the database</p>
 <?  }
-	if (Permission::Sufficient('staff')) { ?>
+	if (Permission::sufficient('staff')) { ?>
 	<div class="actions">
 		<button id="add-episode" class="green typcn typcn-plus">Add Episode</button>
 	</div>
 <?      echo CoreUtils::exportVars(array('EP_TITLE_REGEX' => $EP_TITLE_REGEX));
 	}
 	echo $Pagination;
-	if (!empty($Episodes) || (empty($Episodes) && Permission::Sufficient('staff'))){ ?>
+	if (!empty($Episodes) || (empty($Episodes) && Permission::sufficient('staff'))){ ?>
 	<table id="episodes">
 		<thead>
 			<tr>
@@ -32,12 +32,12 @@ use App\Permission; ?>
 <?  if (empty($Episodes)){ ?>
 	<p>There are no movies stored in the database</p>
 <?  }
-	if (Permission::Sufficient('staff')) { ?>
+	if (Permission::sufficient('staff')) { ?>
 	<div class="actions">
 		<button id="add-movie" class="green typcn typcn-plus">Add Movie</button>
 	</div>
 <?  }
-	if (!empty($Episodes) || (empty($Episodes) && Permission::Sufficient('staff'))){ ?>
+	if (!empty($Episodes) || (empty($Episodes) && Permission::sufficient('staff'))){ ?>
 	<table id="movies">
 		<thead>
 			<tr>

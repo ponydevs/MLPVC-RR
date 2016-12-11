@@ -1,4 +1,4 @@
-/* global DocReady,$content,$w,$header,$footer,ace,Time,moment */
+/* global DocReady,$content,$w,$header,$footer,ace,Time,moment,bindVideoButtons */
 DocReady.push(function EpisodeManage(){
 	'use strict';
 

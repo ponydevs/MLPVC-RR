@@ -3,7 +3,7 @@
 namespace App;
 
 class CGUtils {
-	static $GroupTagIDs_Assoc = array(
+	const GROUP_TAG_IDS_ASSOC = array(
 		6  => 'Mane Six & Spike',
 		45 => 'Cutie Mark Crusaders',
 		59 => 'Royalty',
@@ -26,10 +26,10 @@ class CGUtils {
 	 *
 	 * @param string $str
 	 */
-	static function AutocompleteRespond($str){
+	static function autocompleteRespond($str){
 		header('Content-Type: application/json');
 		if (is_array($str))
-			$str = JSON::Encode($str);
+			$str = JSON::encode($str);
 		die($str);
 	}
 
@@ -42,7 +42,7 @@ class CGUtils {
 	 *
 	 * @return string
 	 */
-	static function GetFullListHTML($Appearances, $GuideOrder, $wrap = WRAP){
+	static function getFullListHTML($Appearances, $GuideOrder, $wrap = WRAP){
 		$HTML = $wrap ? "<div id='full-list'>" : '';
 		if (!empty($Appearances)){
 			if (!$GuideOrder){
@@ -60,8 +60,8 @@ class CGUtils {
 				}
 			}
 			else {
-				$Sorted = Appearances::Sort($Appearances);
-				foreach (CGUtils::$GroupTagIDs_Assoc as $Category => $CategoryName){
+				$Sorted = Appearances::sort($Appearances);
+				foreach (CGUtils::GROUP_TAG_IDS_ASSOC as $Category => $CategoryName){
 					if (empty($Sorted[$Category]))
 						continue;
 
@@ -77,9 +77,9 @@ class CGUtils {
 
 	static private function _processFullListLink($p, &$HTML){
 		$sprite = '';
-		$url = "/cg/v/{$p['id']}-".Appearances::GetSafeLabel($p);
-		if (Permission::Sufficient('staff')){
-			$SpriteURL = Appearances::GetSpriteURL($p['id']);
+		$url = "/cg/v/{$p['id']}-".Appearances::getSafeLabel($p);
+		if (Permission::sufficient('staff')){
+			$SpriteURL = Appearances::getSpriteURL($p['id']);
 			if (!empty($SpriteURL)){
 				$sprite = "<span class='typcn typcn-image' title='Has a sprite'></span>&nbsp;";
 				$class = 'color-green';
@@ -109,23 +109,23 @@ class CGUtils {
 	 *
 	 * @return null
 	 */
-	static function ProcessUploadedImage($key,$path,$allowedMimeTypes,$minwidth,$minheight = null){
+	static function processUploadedImage($key, $path, $allowedMimeTypes, $minwidth, $minheight = null){
 		if (!isset($minheight)) $minheight = $minwidth;
 		if (!isset($_FILES[$key]))
-			return self::GrabImage($path,$allowedMimeTypes,$minwidth,$minheight);
+			return self::grabImage($path,$allowedMimeTypes,$minwidth,$minheight);
 		$file = $_FILES[$key];
 		$tmp = $file['tmp_name'];
-		if (CoreUtils::length($tmp) < 1) Response::Fail('File upload failed; Reason unknown');
+		if (CoreUtils::length($tmp) < 1) Response::fail('File upload failed; Reason unknown');
 
-		list($width, $height) = Image::CheckType($tmp, $allowedMimeTypes);
+		list($width, $height) = Image::checkType($tmp, $allowedMimeTypes);
 		CoreUtils::createUploadFolder($path);
 
 		if (!move_uploaded_file($tmp, $path)){
 			@unlink($tmp);
-			Response::Fail('File upload failed; Writing image file was unsuccessful');
+			Response::fail('File upload failed; Writing image file was unsuccessful');
 		}
 
-		Image::CheckSize($path, $width, $height, $minwidth, $minheight);
+		Image::checkSize($path, $width, $height, $minwidth, $minheight);
 	}
 
 	/**
@@ -138,23 +138,23 @@ class CGUtils {
 	 *
 	 * @return null
 	 */
-	static function GrabImage($path,$allowedMimeTypes,$minwidth,$minheight){
+	static function grabImage($path, $allowedMimeTypes, $minwidth, $minheight){
 		try {
-			$Image = new ImageProvider(Posts::ValidateImageURL());
+			$Image = new ImageProvider(Posts::validateImageURL());
 		}
-		catch (\Exception $e){ Response::Fail($e->getMessage()); }
+		catch (\Exception $e){ Response::fail($e->getMessage()); }
 
 		if ($Image->fullsize === false)
-			Response::Fail('Image could not be retrieved from external provider');
+			Response::fail('Image could not be retrieved from external provider');
 
 		$remoteFile = @file_get_contents($Image->fullsize);
 		if (empty($remoteFile))
-			Response::Fail('Remote file could not be found');
+			Response::fail('Remote file could not be found');
 		if (!file_put_contents($path, $remoteFile))
-			Response::Fail('Writing local image file was unsuccessful');
+			Response::fail('Writing local image file was unsuccessful');
 
-		list($width, $height) = Image::CheckType($path, $allowedMimeTypes);
-		Image::CheckSize($path, $width, $height, $minwidth, $minheight);
+		list($width, $height) = Image::checkType($path, $allowedMimeTypes);
+		Image::checkSize($path, $width, $height, $minwidth, $minheight);
 	}
 
 	/**
@@ -164,7 +164,7 @@ class CGUtils {
 	 *
 	 * @return string|false
 	 */
-	static function CheckEpisodeTagName(string $tag){
+	static function checkEpisodeTagName(string $tag){
 		global $EPISODE_ID_REGEX, $MOVIE_ID_REGEX;
 
 		$_match = array();
@@ -201,7 +201,7 @@ class CGUtils {
 	 *
 	 * @return string|false
 	 */
-	static function CheckEpisodeTagType(string $name):string {
+	static function checkEpisodeTagType(string $name):string {
 		global $EPISODE_ID_REGEX, $MOVIE_ID_REGEX;
 
 		if (preg_match($EPISODE_ID_REGEX,$name,$_match))
@@ -219,14 +219,14 @@ class CGUtils {
 HTML;
 
 	// Renders HTML of the list of changes
-	static function GetChangesHTML($Changes, $wrap = true, $showAppearance = false){
-		$seeInitiator = Permission::Sufficient('staff');
+	static function getChangesHTML($Changes, $wrap = true, $showAppearance = false){
+		$seeInitiator = Permission::sufficient('staff');
 		$PonyCache = array();
 		$HTML = $wrap ? '<ul id="changes">' : '';
 		foreach ($Changes as $c){
 			$initiator = $appearance = '';
 			if ($seeInitiator)
-				$initiator = " by ".Users::Get($c['initiator'])->getProfileLink();
+				$initiator = " by ".Users::get($c['initiator'])->getProfileLink();
 			if ($showAppearance){
 				global $CGDb;
 
@@ -267,7 +267,7 @@ HTML;
 	 *
 	 * @return bool
 	 */
-	static function ClearRenderedImages(int $AppearanceID, array $which = self::CLEAR_BY_DEFAULT):bool {
+	static function clearRenderedImages(int $AppearanceID, array $which = self::CLEAR_BY_DEFAULT):bool {
 		$RenderedPath = FSPATH."cg_render/$AppearanceID";
 		$success = array();
 		foreach ($which as $suffix){
@@ -285,13 +285,13 @@ HTML;
 	 *
 	 * @throws \Exception
 	 */
-	static function RenderAppearancePNG($Appearance){
+	static function renderAppearancePNG($Appearance){
 		global $CGPath;
 
 		$OutputPath = FSPATH."cg_render/{$Appearance['id']}-palette.png";
 		$FileRelPath = "$CGPath/v/{$Appearance['id']}.png";
 		if (file_exists($OutputPath))
-			Image::OutputPNG(null,$OutputPath,$FileRelPath);
+			Image::outputPNG(null,$OutputPath,$FileRelPath);
 
 		$OutWidth = 0;
 		$OutHeight = 0;
@@ -318,7 +318,7 @@ HTML;
 		$SpriteExists = file_exists($SpritePath);
 		if ($SpriteExists){
 			$SpriteSize = getimagesize($SpritePath);
-			$Sprite = Image::PreserveAlpha(imagecreatefrompng($SpritePath));
+			$Sprite = Image::preserveAlpha(imagecreatefrompng($SpritePath));
 			$SpriteHeight = $SpriteSize[HEIGHT];
 			$SpriteWidth = $SpriteSize[WIDTH];
 			$SpriteRealWidth = $SpriteWidth + $SpriteRightMargin;
@@ -333,51 +333,51 @@ HTML;
 		);
 
 		// Get color groups & calculate the space they take up
-		$ColorGroups = ColorGroups::Get($Appearance['id']);
+		$ColorGroups = ColorGroups::get($Appearance['id']);
 		$CGCount = count($ColorGroups);
 		$CGFontSize = round($NameFontSize/1.25);
 		$CGVerticalMargin = $NameVerticalMargin;
-		$GroupLabelBox = Image::SaneGetTTFBox($CGFontSize, $FontFile, 'ABCDEFGIJKLMOPQRSTUVWQYZabcdefghijklmnopqrstuvwxyz');
-		$ColorNameBox = Image::SaneGetTTFBox($ColorNameFontSize, $PixelatedFontFile, 'AGIJKFagijkf');
+		$GroupLabelBox = Image::saneGetTTFBox($CGFontSize, $FontFile, 'ABCDEFGIJKLMOPQRSTUVWQYZabcdefghijklmnopqrstuvwxyz');
+		$ColorNameBox = Image::saneGetTTFBox($ColorNameFontSize, $PixelatedFontFile, 'AGIJKFagijkf');
 		$CGsHeight = $CGCount*($GroupLabelBox['height'] + ($CGVerticalMargin*2) + $ColorCircleSize);
 
 		// Get export time & size
 		$ExportTS = "Generated at: ".Time::format(time(), Time::FORMAT_FULL);
 		$ExportFontSize = round($CGFontSize/1.5);
-		$ExportBox = Image::SaneGetTTFBox($ExportFontSize, $FontFile, $ExportTS);
+		$ExportBox = Image::saneGetTTFBox($ExportFontSize, $FontFile, $ExportTS);
 
 		// Check how long & tall appearance name is, and set image width
-		$NameBox = Image::SaneGetTTFBox($NameFontSize, $FontFile, $Name);
+		$NameBox = Image::saneGetTTFBox($NameFontSize, $FontFile, $Name);
 		$OutWidth = $origin['x'] + max($NameBox['width'], $ExportBox['width']) + $TextMargin;
 
 		// Set image height
 		$OutHeight = max($origin['y'] + (($NameVerticalMargin*4) + $NameBox['height'] + $ExportBox['height'] + $CGsHeight), $OutHeight);
 
 		// Create base image
-		$BaseImage = Image::CreateTransparent($OutWidth, $OutHeight);
+		$BaseImage = Image::createTransparent($OutWidth, $OutHeight);
 		$BLACK = imagecolorallocate($BaseImage, 0, 0, 0);
 
 		// If sprite exists, output it on base image
 		if ($SpriteExists)
-			Image::CopyExact($BaseImage, $Sprite, 0, 0, $SpriteWidth, $SpriteHeight);
+			Image::copyExact($BaseImage, $Sprite, 0, 0, $SpriteWidth, $SpriteHeight);
 
 		// Output appearance name
 		$origin['y'] += $NameVerticalMargin*2;
-		Image::Write($BaseImage, $Name, $origin['x'], $NameFontSize, $BLACK, $origin, $FontFile);
+		Image::writeOn($BaseImage, $Name, $origin['x'], $NameFontSize, $BLACK, $origin, $FontFile);
 		$origin['y'] += $NameVerticalMargin;
 
 		// Output generation time
-		Image::Write($BaseImage, $ExportTS, $origin['x'], $ExportFontSize, $BLACK, $origin, $FontFile);
+		Image::writeOn($BaseImage, $ExportTS, $origin['x'], $ExportFontSize, $BLACK, $origin, $FontFile);
 		$origin['y'] += $NameVerticalMargin;
 
 		if (!empty($ColorGroups)){
 			$LargestX = 0;
 			$LargestLabel = '';
-			$AllColors = ColorGroups::GetColorsForEach($ColorGroups);
+			$AllColors = ColorGroups::getColorsForEach($ColorGroups);
 			foreach ($ColorGroups as $cg){
-				$CGLabelBox = Image::SaneGetTTFBox($CGFontSize, $FontFile, $cg['label']);
-				Image::CalcRedraw($OutWidth, $OutHeight, $CGLabelBox['width']+$TextMargin, $GroupLabelBox['height']+$NameVerticalMargin+$CGVerticalMargin, $BaseImage, $origin);
-				Image::Write($BaseImage, $cg['label'], $origin['x'], $CGFontSize, $BLACK, $origin, $FontFile, $GroupLabelBox);
+				$CGLabelBox = Image::saneGetTTFBox($CGFontSize, $FontFile, $cg['label']);
+				Image::calcRedraw($OutWidth, $OutHeight, $CGLabelBox['width']+$TextMargin, $GroupLabelBox['height']+$NameVerticalMargin+$CGVerticalMargin, $BaseImage, $origin);
+				Image::writeOn($BaseImage, $cg['label'], $origin['x'], $CGFontSize, $BLACK, $origin, $FontFile, $GroupLabelBox);
 				$origin['y'] += $GroupLabelBox['height']+$CGVerticalMargin;
 
 				if ($CGLabelBox['width'] > $LargestX){
@@ -388,16 +388,16 @@ HTML;
 				if (!empty($AllColors[$cg['groupid']]))
 					foreach ($AllColors[$cg['groupid']] as $c){
 						$ColorNameLeftOffset = $ColorCircleSize + $ColorCircleRMargin;
-						$CNBox = Image::SaneGetTTFBox($ColorNameFontSize, $PixelatedFontFile, $c['label']);
+						$CNBox = Image::saneGetTTFBox($ColorNameFontSize, $PixelatedFontFile, $c['label']);
 
 						$WidthIncrease = $ColorNameLeftOffset + $CNBox['width'] + $TextMargin;
 						$HeightIncrease = max($ColorCircleSize, $CNBox['height']) + $CGVerticalMargin;
-						Image::CalcRedraw($OutWidth, $OutHeight, $WidthIncrease, $HeightIncrease, $BaseImage, $origin);
+						Image::calcRedraw($OutWidth, $OutHeight, $WidthIncrease, $HeightIncrease, $BaseImage, $origin);
 
-						Image::DrawCircle($BaseImage, $origin['x'], $origin['y'], $ColorCircleSize, $c['hex'], $BLACK);
+						Image::drawCircle($BaseImage, $origin['x'], $origin['y'], $ColorCircleSize, $c['hex'], $BLACK);
 
 						$yOffset = 2;
-						Image::Write($BaseImage, $c['label'], $origin['x'] + $ColorNameLeftOffset, $ColorNameFontSize, $BLACK, $origin, $PixelatedFontFile, $ColorNameBox, $yOffset);
+						Image::writeOn($BaseImage, $c['label'], $origin['x'] + $ColorNameLeftOffset, $ColorNameFontSize, $BLACK, $origin, $PixelatedFontFile, $ColorNameBox, $yOffset);
 						$origin['y'] += $HeightIncrease;
 
 						$ColorsOutputted++;
@@ -410,11 +410,11 @@ HTML;
 					};
 
 				if ($ColorsOutputted > $SplitTreshold){
-					Image::CalcRedraw($OutWidth, $OutHeight, 0, $NameVerticalMargin, $BaseImage, $origin);
+					Image::calcRedraw($OutWidth, $OutHeight, 0, $NameVerticalMargin, $BaseImage, $origin);
 					$origin['y'] =
 						($NameVerticalMargin * 4)
-						+ Image::SaneGetTTFBox($NameFontSize, $FontFile, $Name)['height']
-						+ Image::SaneGetTTFBox($ExportFontSize, $FontFile, $ExportTS)['height'];
+						+ Image::saneGetTTFBox($NameFontSize, $FontFile, $Name)['height']
+						+ Image::saneGetTTFBox($ExportFontSize, $FontFile, $ExportTS)['height'];
 
 					$origin['x'] += $LargestX+$ColumnRightMargin;
 					$ColorsOutputted = 0;
@@ -424,25 +424,25 @@ HTML;
 			};
 		}
 
-		$FinalBase = Image::CreateWhiteBG($OutWidth, $OutHeight);
-		Image::DrawSquare($FinalBase, 0, 0, array($OutWidth, $OutHeight), null, $BLACK);
-		Image::CopyExact($FinalBase, $BaseImage, 0, 0, $OutWidth, $OutHeight);
+		$FinalBase = Image::createWhiteBG($OutWidth, $OutHeight);
+		Image::drawSquare($FinalBase, 0, 0, array($OutWidth, $OutHeight), null, $BLACK);
+		Image::copyExact($FinalBase, $BaseImage, 0, 0, $OutWidth, $OutHeight);
 
 		if (!CoreUtils::createUploadFolder($OutputPath))
-			Response::Fail('Failed to create render directory');
-		Image::OutputPNG($FinalBase, $OutputPath, $FileRelPath);
+			Response::fail('Failed to create render directory');
+		Image::outputPNG($FinalBase, $OutputPath, $FileRelPath);
 	}
 
 	const CMDIR_SVG_PATH = FSPATH."cg_render/#-cmdir.svg";
 
 	// Generate CM preview image
-	static function RenderCMDirectionSVG($AppearanceID, $dir){
+	static function renderCMDirectionSVG($AppearanceID, $dir){
 		global $CGDb, $CGPath;
 
 		$OutputPath = str_replace('#',$AppearanceID,self::CMDIR_SVG_PATH);
 		$FileRelPath = "$CGPath/v/$AppearanceID.svg";
 		if (file_exists($OutputPath))
-			Image::OutputSVG(null,$OutputPath,$FileRelPath);
+			Image::outputSVG(null,$OutputPath,$FileRelPath);
 
 		if (!isset($dir))
 			CoreUtils::notFound();
@@ -479,18 +479,18 @@ HTML;
 		foreach ($DefaultColorMapping as $label => $defhex)
 			$img = str_replace($label, $ColorMapping[$label] ?? $defhex, $img);
 
-		Image::OutputSVG($img,$OutputPath,$FileRelPath);
+		Image::outputSVG($img,$OutputPath,$FileRelPath);
 	}
 
-	static function Int2Hex(int $int){
+	static function int2Hex(int $int){
 		return '#'.strtoupper(CoreUtils::pad(dechex($int), 6));
 	}
 
-	static function GetSpriteImageMap($AppearanceID){
+	static function getSpriteImageMap($AppearanceID){
 		$PNGPath = SPRITE_PATH."$AppearanceID.png";
 		$MapPath = FSPATH."cg_render/$AppearanceID-linedata.json.gz";
 		if (file_exists($MapPath) && filemtime($MapPath) >= filemtime($PNGPath))
-			$Map = JSON::Decode(gzuncompress(file_get_contents($MapPath)));
+			$Map = JSON::decode(gzuncompress(file_get_contents($MapPath)));
 		else {
 			if (!file_exists($PNGPath))
 				return null;
@@ -565,42 +565,42 @@ HTML;
 				$Output['linedata'][] = $line;
 
 			$Map = $Output;
-			file_put_contents($MapPath, gzcompress(JSON::Encode($Output), 9));
+			file_put_contents($MapPath, gzcompress(JSON::encode($Output), 9));
 		}
 		return $Map;
 	}
 
-	static function RenderSpritePNG($AppearanceID){
+	static function renderSpritePNG($AppearanceID){
 		global $CGPath;
 
 		$OutputPath = FSPATH."cg_render/{$AppearanceID}-sprite.png";
 		$FileRelPath = "$CGPath/v/{$AppearanceID}s.png";
 		if (file_exists($OutputPath))
-			Image::OutputPNG(null,$OutputPath,$FileRelPath);
+			Image::outputPNG(null,$OutputPath,$FileRelPath);
 
-		$Map = self::GetSpriteImageMap($AppearanceID);
+		$Map = self::getSpriteImageMap($AppearanceID);
 
 		$SizeFactor = 2;
-		$PNG = Image::CreateTransparent($Map['width']*$SizeFactor, $Map['height']*$SizeFactor);
+		$PNG = Image::createTransparent($Map['width']*$SizeFactor, $Map['height']*$SizeFactor);
 		foreach ($Map['linedata'] as $line){
 			$rgb = CoreUtils::hex2Rgb($Map['colors'][$line['colorid']]);
 			$color = imagecolorallocatealpha($PNG, $rgb[0], $rgb[1], $rgb[2], $line['opacity']);
-			Image::DrawSquare($PNG, $line['x']*$SizeFactor, $line['y']*$SizeFactor, array($line['width']*$SizeFactor, $SizeFactor), $color, null);
+			Image::drawSquare($PNG, $line['x']*$SizeFactor, $line['y']*$SizeFactor, array($line['width']*$SizeFactor, $SizeFactor), $color, null);
 		}
 
-		Image::OutputPNG($PNG, $OutputPath, $FileRelPath);
+		Image::outputPNG($PNG, $OutputPath, $FileRelPath);
 	}
 
-	static function RenderSpriteSVG($AppearanceID){
+	static function renderSpriteSVG($AppearanceID){
 		global $CGPath;
-		$Map = self::GetSpriteImageMap($AppearanceID);
+		$Map = self::getSpriteImageMap($AppearanceID);
 		if (empty($Map))
 			CoreUtils::notFound();
 
 		$OutputPath = FSPATH."cg_render/{$AppearanceID}-sprite.svg";
 		$FileRelPath = "$CGPath/v/{$AppearanceID}s.svg";
 		if (file_exists($OutputPath))
-			Image::OutputSVG(null,$OutputPath,$FileRelPath);
+			Image::outputSVG(null,$OutputPath,$FileRelPath);
 
 		$IMGWidth = $Map['width'];
 		$IMGHeight = $Map['height'];
@@ -615,30 +615,34 @@ HTML;
 			}
 			$strokes[$hex][] = "M{$line['x']} {$line['y']} l{$line['width']} 0Z";
 		}
-		$SVG = "<svg version='1.1' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 $IMGWidth $IMGHeight' enable-background='new 0 0 $IMGWidth $IMGHeight' xml:space='preserve'>";
+		$SVG = <<<XML
+<svg version='1.1' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 $IMGWidth $IMGHeight' enable-background='new 0 0 $IMGWidth $IMGHeight' xml:space='preserve'>
+XML;
 		foreach ($strokes as $hex => $defs){
 			$d = '';
 			foreach ($defs as $def)
 				$d .= "$def ";
 			$d = rtrim($d);
-			$SVG .= "<path stroke='$hex' d='$d'/>";
+			$SVG .= /** @lang XML */
+				"<path stroke='$hex' d='$d'/>";
 		}
 		$SVG .= '</svg>';
 
-		Image::OutputSVG($SVG, $OutputPath, $FileRelPath);
+		Image::outputSVG($SVG, $OutputPath, $FileRelPath);
 	}
 
 	const PREVIEW_SVG_PATH = FSPATH."cg_render/#-preview.svg";
 
-	static function RenderPreviewSVG($AppearanceID){
+	static function renderPreviewSVG($AppearanceID){
 		global $CGPath, $CGDb;
 
 		$OutputPath = str_replace('#',$AppearanceID,self::PREVIEW_SVG_PATH);
 		$FileRelPath = "$CGPath/v/{$AppearanceID}p.svg";
 		if (file_exists($OutputPath))
-			Image::OutputSVG(null,$OutputPath,$FileRelPath);
+			Image::outputSVG(null,$OutputPath,$FileRelPath);
 
-		$SVG = "<svg version='1.1' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 2 2' enable-background='new 0 0 2 2' xml:space='preserve' preserveAspectRatio='xMidYMid slice'>";
+
+		$SVG = '';
 		$colors = array();
 		$ColorQuery = $CGDb->rawQuery(
 			'SELECT c.hex FROM colors c
@@ -656,7 +660,8 @@ HTML;
 
 		switch (count($ColorQuery)){
 			case 1:
-				$SVG .= "<rect x='0' y='0' width='2' height='2' fill='{$ColorQuery[0]['hex']}'/>";
+				$SVG .= /** @lang XML */
+					"<rect x='0' y='0' width='2' height='2' fill='{$ColorQuery[0]['hex']}'/>";
 			break;
 			case 3:
 				$SVG .= <<<XML
@@ -683,12 +688,13 @@ XML;
 		}
 
 
-		$SVG .= '</svg>';
+		$SVG = /** @lang XML */
+			"<svg version='1.1' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 2 2' enable-background='new 0 0 2 2' xml:space='preserve' preserveAspectRatio='xMidYMid slice'>$SVG</svg>";
 
-		Image::OutputSVG($SVG, $OutputPath, $FileRelPath);
+		Image::outputSVG($SVG, $OutputPath, $FileRelPath);
 	}
 
-	static function GetSwatchesAI($Appearance){
+	static function getSwatchesAI($Appearance){
 		$label = $Appearance['label'];
 		$JSON = array(
 			'Exported at' => gmdate('Y-m-d H:i:s \G\M\T'),
@@ -696,17 +702,17 @@ XML;
 		);
 		$JSON[$label] = array();
 
-		$CGs = ColorGroups::Get($Appearance['id']);
-		$Colors = ColorGroups::GetColorsForEach($CGs);
+		$CGs = ColorGroups::get($Appearance['id']);
+		$Colors = ColorGroups::getColorsForEach($CGs);
 		foreach ($CGs as $cg){
 			$JSON[$label][$cg['label']] = array();
 			foreach ($Colors[$cg['groupid']] as $c)
 				$JSON[$label][$cg['label']][$c['label']] = $c['hex'];
 		}
 
-		CoreUtils::downloadFile(JSON::Encode($JSON), "$label.json");
+		CoreUtils::downloadFile(JSON::encode($JSON), "$label.json");
 	}
-	static function GetSwatchesInkscape($Appearance){
+	static function getSwatchesInkscape($Appearance){
 		$label = $Appearance['label'];
 		$exportts = gmdate('Y-m-d H:i:s \G\M\T');
 		$File = <<<GPL
@@ -719,8 +725,8 @@ Columns: 6
 
 GPL;
 
-		$CGs = ColorGroups::Get($Appearance['id']);
-		$Colors = ColorGroups::GetColorsForEach($CGs);
+		$CGs = ColorGroups::get($Appearance['id']);
+		$Colors = ColorGroups::getColorsForEach($CGs);
 		foreach ($CGs as $cg){
 			foreach ($Colors[$cg['groupid']] as $c){
 				$rgb = CoreUtils::hex2Rgb($c['hex']);
@@ -731,9 +737,9 @@ GPL;
 		CoreUtils::downloadFile(rtrim($File), "$label.gpl");
 	}
 
-	static function ValidateTagName($key){
+	static function validateTagName($key){
 		$name = strtolower((new Input($key,function($value, $range){
-			if (Input::CheckStringLength($value,$range,$code))
+			if (Input::checkStringLength($value,$range,$code))
 				return $code;
 			if ($value[0] === '-')
 				return 'dash';
@@ -770,7 +776,7 @@ GPL;
 	 *
 	 * @return array
 	 */
-	static function SearchElastic(array $body, Pagination $Pagination){
+	static function searchElastic(array $body, Pagination $Pagination){
 		$params = array_merge(self::ELASTIC_BASE, $Pagination->toElastic(), array(
 			'type' => 'entry',
 			'body' => $body,

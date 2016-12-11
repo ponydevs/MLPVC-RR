@@ -25,7 +25,7 @@ class UserPrefs extends GlobalSettings {
 	 *
 	 * @return mixed
 	 */
-	static function Get($key, $for = null){
+	static function get($key, $for = null){
 		global $Database, $signedIn, $currentUser;
 		if (empty($for) && $signedIn)
 			$for = $currentUser->id;
@@ -40,7 +40,7 @@ class UserPrefs extends GlobalSettings {
 			return $default;
 
 		$Database->where('user', $for);
-		return Users::$_PREF_CACHE[$for][$key] = parent::Get($key, $default);
+		return Users::$_PREF_CACHE[$for][$key] = parent::get($key, $default);
 	}
 
 	/**
@@ -52,13 +52,13 @@ class UserPrefs extends GlobalSettings {
 	 *
 	 * @return bool
 	 */
-	static function Set($key, $value, $for = null){
+	static function set($key, $value, $for = null){
 		global $Database, $signedIn, $currentUser;
 		if (empty($for))
 			$for = $currentUser->id;
 
 		if (!isset(static::$_defaults[$key]))
-			Response::Fail("Key $key is not allowed");
+			Response::fail("Key $key is not allowed");
 		$default = static::$_defaults[$key];
 
 		if ($Database->where('key', $key)->where('user', $for)->has(static::$_db)){
@@ -79,7 +79,7 @@ class UserPrefs extends GlobalSettings {
 	 *
 	 * @return mixed
 	 */
-	static function Process($key){
+	static function process($key){
 		$value = isset($_POST['value']) ? CoreUtils::trim($_POST['value']) : null;
 
 		switch ($key){
@@ -103,7 +103,7 @@ class UserPrefs extends GlobalSettings {
 			break;
 
 			case "discord_token":
-				Response::Fail("You cannot change the $key setting");
+				Response::fail("You cannot change the $key setting");
 		}
 
 		return $value;

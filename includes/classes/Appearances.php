@@ -13,7 +13,7 @@ class Appearances {
 	 *
 	 * @return array
 	 */
-	static function Get($EQG, $limit = null, $cols = '*'){
+	static function get($EQG, $limit = null, $cols = '*'){
 		global $CGDb;
 
 		self::_order();
@@ -41,28 +41,28 @@ class Appearances {
 	 *
 	 * @return string
 	 */
-	static function GetHTML($Appearances, $wrap = WRAP){
+	static function getHTML($Appearances, $wrap = WRAP){
 		global $CGDb, $_MSG, $Search;
 
 		$HTML = '';
 		if (!empty($Appearances)) foreach ($Appearances as $Appearance){
 			$Appearance['label'] = CoreUtils::escapeHTML($Appearance['label']);
 
-			$img = self::GetSpriteHTML($Appearance);
-			$updates = self::GetUpdatesHTML($Appearance['id']);
-			$notes = self::GetNotesHTML($Appearance);
-			$tags = $Appearance['id'] ? self::GetTagsHTML($Appearance['id'], true, $Search) : '';
-			$colors = self::GetColorsHTML($Appearance);
+			$img = self::getSpriteHTML($Appearance);
+			$updates = self::getUpdatesHTML($Appearance['id']);
+			$notes = self::getNotesHTML($Appearance);
+			$tags = $Appearance['id'] ? self::getTagsHTML($Appearance['id'], true, $Search) : '';
+			$colors = self::getColorsHTML($Appearance);
 			$eqgp = $Appearance['ishuman'] ? 'eqg/' : '';
 
 			$RenderPath = FSPATH."cg_render/{$Appearance['id']}.png";
 			$FileModTime = '?t='.(file_exists($RenderPath) ? filemtime($RenderPath) : time());
 			$Actions = "<a class='btn typcn typcn-image darkblue' title='View as PNG' href='/cg/{$eqgp}v/{$Appearance['id']}.png$FileModTime' target='_blank'></a>".
 			           "<button class='getswatch typcn typcn-brush teal' title='Download swatch file'></button>";
-			if (Permission::Sufficient('staff'))
+			if (Permission::sufficient('staff'))
 				$Actions .= "<button class='edit typcn typcn-pencil blue' title='Edit'></button>".
 				            ($Appearance['id']!==0?"<button class='delete typcn typcn-trash red' title='Delete'></button>":'');
-			$safelabel = self::GetSafeLabel($Appearance);
+			$safelabel = self::getSafeLabel($Appearance);
 			$HTML .= "<li id='p{$Appearance['id']}'>$img<div><strong><a href='/cg/v/{$Appearance['id']}-$safelabel'>{$Appearance['label']}</a>$Actions</strong>$updates$notes$tags$colors</div></li>";
 		}
 		else {
@@ -74,9 +74,9 @@ class Appearances {
 		return $wrap ? "<ul id='list' class='appearance-list'>$HTML</ul>" : $HTML;
 	}
 
-	static function IsPrivate($Appearance, bool $ignoreStaff = false):bool {
+	static function isPrivate($Appearance, bool $ignoreStaff = false):bool {
 		$isPrivate = !empty($Appearance['private']);
-		if (!$ignoreStaff && Permission::Sufficient('staff'))
+		if (!$ignoreStaff && Permission::sufficient('staff'))
 			$isPrivate = false;
 		return $isPrivate;
 	}
@@ -86,8 +86,8 @@ class Appearances {
 	 *
 	 * @return string
 	 */
-	static function GetPendingPlaceholderFor($Appearance):string {
-		return self::IsPrivate($Appearance) ? "<div class='colors-pending'><span class='typcn typcn-time'></span> This appearance will be finished soon, please check back later &mdash; ".Time::tag($Appearance['added']).'</div>' : false;
+	static function getPendingPlaceholderFor($Appearance):string {
+		return self::isPrivate($Appearance) ? "<div class='colors-pending'><span class='typcn typcn-time'></span> This appearance will be finished soon, please check back later &mdash; ".Time::tag($Appearance['added']).'</div>' : false;
 	}
 
 	/**
@@ -100,18 +100,18 @@ class Appearances {
 	 *
 	 * @return string
 	 */
-	static function GetColorsHTML($Appearance, bool $wrap = WRAP, $colon = true, $colorNames = false){
+	static function getColorsHTML($Appearance, bool $wrap = WRAP, $colon = true, $colorNames = false){
 		global $CGDb;
 
-		if ($placehold = self::GetPendingPlaceholderFor($Appearance))
+		if ($placehold = self::getPendingPlaceholderFor($Appearance))
 			return $placehold;
 
-		$ColorGroups = ColorGroups::Get($Appearance['id']);
-		$AllColors = ColorGroups::GetColorsForEach($ColorGroups);
+		$ColorGroups = ColorGroups::get($Appearance['id']);
+		$AllColors = ColorGroups::getColorsForEach($ColorGroups);
 
 		$HTML = '';
 		if (!empty($ColorGroups)) foreach ($ColorGroups as $cg)
-			$HTML .= ColorGroups::GetHTML($cg, $AllColors, WRAP, $colon, $colorNames);
+			$HTML .= ColorGroups::getHTML($cg, $AllColors, WRAP, $colon, $colorNames);
 
 		return $wrap ? "<ul class='colors'>$HTML</ul>" : $HTML;
 	}
@@ -125,15 +125,15 @@ class Appearances {
 	 *
 	 * @return string
 	 */
-	static function GetTagsHTML($PonyID, $wrap = WRAP, $Search = null){
+	static function getTagsHTML($PonyID, $wrap = WRAP, $Search = null){
 		global $CGDb;
 
-		$Tags = Tags::GetFor($PonyID, null, Permission::Sufficient('staff'));
+		$Tags = Tags::getFor($PonyID, null, Permission::sufficient('staff'));
 
 		$HTML = '';
-		if (Permission::Sufficient('staff') && $PonyID !== 0)
+		if (Permission::sufficient('staff') && $PonyID !== 0)
 			$HTML .= "<input type='text' class='addtag tag' placeholder='Enter tag' pattern='".TAG_NAME_PATTERN."' maxlength='30' required>";
-		$HideSynon = Permission::Sufficient('staff') && UserPrefs::Get('cg_hidesynon');
+		$HideSynon = Permission::sufficient('staff') && UserPrefs::get('cg_hidesynon');
 		if (!empty($Tags)) foreach ($Tags as $i => $t){
 			$isSynon = !empty($t['synonym_of']);
 			$searchedFor = !empty($Search) && in_array($t['tid'],$Search['orig_tid']);
@@ -141,7 +141,7 @@ class Appearances {
 				continue;
 			$class = " class='tag id-{$t['tid']}".($isSynon?' synonym':'').(!empty($t['type'])?' typ-'.$t['type']:'')."'";
 			$title = !empty($t['title']) ? " title='".CoreUtils::aposEncode($t['title'])."'" : '';
-			if ($searchedFor || (Permission::Insufficient('staff') && !empty($Search['tid_assoc'][$t['tid']])))
+			if ($searchedFor || (Permission::insufficient('staff') && !empty($Search['tid_assoc'][$t['tid']])))
 				$t['name'] = "<mark>{$t['name']}</mark>";
 			$syn_of = $isSynon ? " data-syn-of='{$t['synonym_of']}'" : '';
 			$HTML .= "<span$class$title$syn_of>{$t['name']}</span>";
@@ -159,7 +159,7 @@ class Appearances {
 	 *
 	 * @return string
 	 */
-	static function GetNotesHTML($Appearance, $wrap = WRAP, $cmLink = true){
+	static function getNotesHTML($Appearance, $wrap = WRAP, $cmLink = true){
 		global $EPISODE_ID_REGEX;
 
 		$hasNotes = !empty($Appearance['notes']);
@@ -195,14 +195,14 @@ class Appearances {
 				$dir = '';
 				if (isset($Appearance['cm_dir'])){
 					$head_to_tail = $Appearance['cm_dir'] === CM_DIR_HEAD_TO_TAIL;
-					$CMPreviewUrl = self::GetCMPreviewURL($Appearance);
+					$CMPreviewUrl = self::getCMPreviewURL($Appearance);
 					$dir = ' <span class="cm-direction" data-cm-preview="'.$CMPreviewUrl.'" data-cm-dir="'.($head_to_tail ? 'ht' : 'th').'"><span class="typcn typcn-info-large"></span> '.($head_to_tail ? 'Head-Tail' : 'Tail-Head').' orientation</span>';
 				}
 				$notes .= "<a href='http://fav.me/{$Appearance['cm_favme']}'><span>Cutie Mark</span>$dir</a>";
 			}
 		}
 		else {
-			if (!Permission::Sufficient('staff')) return '';
+			if (!Permission::sufficient('staff')) return '';
 			$notes = '';
 		}
 		return $wrap ? "<div class='notes'>$notes</div>" : $notes;
@@ -216,7 +216,7 @@ class Appearances {
 	 *
 	 * @return string
 	 */
-	static function GetSpriteURL(int $AppearanceID, string $fallback = ''):string {
+	static function getSpriteURL(int $AppearanceID, string $fallback = ''):string {
 		$fpath = SPRITE_PATH."$AppearanceID.png";
 		if (file_exists($fpath))
 			return "/cg/v/{$AppearanceID}s.png?t=".filemtime($fpath);
@@ -230,14 +230,14 @@ class Appearances {
 	 *
 	 * @return string
 	 */
-	static function GetSpriteHTML($Appearance){
-		$imgPth = self::GetSpriteURL($Appearance['id']);
+	static function getSpriteHTML($Appearance){
+		$imgPth = self::getSpriteURL($Appearance['id']);
 		if (!empty($imgPth)){
 			$img = "<a href='$imgPth' target='_blank' title='Open image in new tab'><img src='$imgPth' alt='".CoreUtils::aposEncode($Appearance['label'])."'></a>";
-			if (Permission::Sufficient('staff'))
+			if (Permission::sufficient('staff'))
 				$img = "<div class='upload-wrap'>$img</div>";
 		}
-		else if (Permission::Sufficient('staff'))
+		else if (Permission::sufficient('staff'))
 			$img = "<div class='upload-wrap'><a><img src='/img/blank-pixel.png'></a></div>";
 		else return '';
 
@@ -252,15 +252,15 @@ class Appearances {
 	 *
 	 * @return string
 	 */
-	static function GetUpdatesHTML($PonyID, $wrap = WRAP){
+	static function getUpdatesHTML($PonyID, $wrap = WRAP){
 		global $Database;
 
-		$update = Updates::Get($PonyID, MOST_RECENT);
+		$update = Updates::get($PonyID, MOST_RECENT);
 		if (!empty($update)){
 			$update = "Last updated ".Time::tag($update['timestamp']);
 		}
 		else {
-			if (!Permission::Sufficient('staff')) return '';
+			if (!Permission::sufficient('staff')) return '';
 			$update = '';
 		}
 		return $wrap ? "<div class='update'>$update</div>" : $update;
@@ -274,9 +274,9 @@ class Appearances {
 	 *
 	 * @return array
 	 */
-	static function Sort($Appearances, $simpleArray = false){
+	static function sort($Appearances, $simpleArray = false){
 		global $CGDb;
-		$GroupTagIDs = array_keys(CGUtils::$GroupTagIDs_Assoc);
+		$GroupTagIDs = array_keys(CGUtils::GROUP_TAG_IDS_ASSOC);
 		$Sorted = array();
 		$Tagged = array();
 		foreach ($CGDb->where('tid IN ('.implode(',',$GroupTagIDs).')')->orderBy('ponyid','ASC')->get('tagged') as $row)
@@ -294,7 +294,7 @@ class Appearances {
 		}
 		if ($simpleArray){
 			$idArray = array();
-			foreach (CGUtils::$GroupTagIDs_Assoc as $Category => $CategoryName){
+			foreach (CGUtils::GROUP_TAG_IDS_ASSOC as $Category => $CategoryName){
 				if (empty($Sorted[$Category]))
 					continue;
 				foreach ($Sorted[$Category] as $p)
@@ -308,7 +308,7 @@ class Appearances {
 	/**
 	 * @param string|int[] $ids
 	 */
-	static function Reorder($ids){
+	static function reorder($ids){
 		global $CGDb;
 		if (empty($ids))
 			return;
@@ -318,9 +318,9 @@ class Appearances {
 		foreach ($list as $i => $id){
 			$order = $i+1;
 			if (!$CGDb->where('id', $id)->update('appearances', array('order' => $order)))
-				Response::Fail("Updating appearance #$id failed, process halted");
+				Response::fail("Updating appearance #$id failed, process halted");
 
-			$elastiClient->update(array_merge(self::GetElasticMeta(['id' => $id]), [
+			$elastiClient->update(array_merge(self::getElasticMeta(['id' => $id]), [
 				'body' => [ 'doc' => ['order' => $order] ],
 			]));
 		}
@@ -330,28 +330,28 @@ class Appearances {
 	/**
 	 * @param bool $EQG
 	 */
-	static function GetSortReorder($EQG){
+	static function getSortReorder($EQG){
 		if ($EQG)
 			return;
-		self::Reorder(self::Sort(self::Get($EQG,null,'id'), SIMPLE_ARRAY));
+		self::reorder(self::sort(self::get($EQG,null,'id'), SIMPLE_ARRAY));
 	}
 
 	/**
 	 * Apply pre-defined template to an appearance
 	 * $EQG controls whether to apply EQG or Pony template
 	 *
-	 * @param int $PonyID
+	 * @param int  $AppearanceID
 	 * @param bool $EQG
 	 *
 	 * @throws \Exception
 	 */
-	static function ApplyTemplate($PonyID, $EQG){
+	static function applyTemplate($AppearanceID, $EQG){
 		global $CGDb, $Color;
 
-		if (empty($PonyID) || !is_numeric($PonyID))
+		if (empty($AppearanceID) || !is_numeric($AppearanceID))
 			throw new \Exception('Incorrect value for $PonyID while applying template');
 
-		if ($CGDb->where('ponyid', $PonyID)->has('colorgroups'))
+		if ($CGDb->where('ponyid', $AppearanceID)->has('colorgroups'))
 			throw new \Exception('Template can only be applied to empty appearances');
 
 		$Scheme = $EQG
@@ -404,7 +404,7 @@ class Appearances {
 		$ci = 0;
 		foreach ($Scheme as $GroupName => $ColorNames){
 			$GroupID = $CGDb->insert('colorgroups',array(
-				'ponyid' => $PonyID,
+				'ponyid' => $AppearanceID,
 				'label' => $GroupName,
 				'order' => $cgi++,
 			), 'groupid');
@@ -429,7 +429,7 @@ class Appearances {
 	 *
 	 * @return string
 	 */
-	static function GetRelatedEpisodesHTML($Appearance, $allowMovies = false){
+	static function getRelatedEpisodesHTML($Appearance, $allowMovies = false){
 		global $CGDb;
 
 		$EpTagsOnAppearance = $CGDb->rawQuery(
@@ -453,7 +453,7 @@ class Appearances {
 				$Ep = Episodes::getActual($EpData['season'], $EpData['episode'], $allowMovies);
 				$List .= (
 					empty($Ep)
-					? self::ExpandEpisodeTagName($name)
+					? self::expandEpisodeTagName($name)
 					: "<a href='{$Ep->formatURL()}'>".$Ep->formatTitle().'</a>'
 				).', ';
 			}
@@ -481,7 +481,7 @@ HTML;
 	 *
 	 * @return string
 	 */
-	static function ExpandEpisodeTagName(string $tagname):string {
+	static function expandEpisodeTagName(string $tagname):string {
 		global $EPISODE_ID_REGEX, $MOVIE_ID_REGEX;
 
 		if (preg_match($EPISODE_ID_REGEX, $tagname, $_match))
@@ -498,8 +498,8 @@ HTML;
 	 *
 	 * @return string
 	 */
-	static function GetCMPreviewURL($Appearance){
-		return $Appearance['cm_preview'] ?? DeviantArt::GetCachedSubmission($Appearance['cm_favme'])['preview'];
+	static function getCMPreviewURL($Appearance){
+		return $Appearance['cm_preview'] ?? DeviantArt::getCachedSubmission($Appearance['cm_favme'])['preview'];
 	}
 
 	/**
@@ -509,7 +509,7 @@ HTML;
 	 *
 	 * @return string
 	 */
-	static function GetCMPreviewSVGURL(int $AppearanceID){
+	static function getCMPreviewSVGURL(int $AppearanceID){
 		$path = str_replace('#',$AppearanceID,CGUtils::CMDIR_SVG_PATH);
 		return "/cg/v/{$AppearanceID}.svg?t=".(file_exists($path) ? filemtime($path) : time());
 	}
@@ -521,7 +521,7 @@ HTML;
 	 *
 	 * @return string
 	 */
-	static function GetPreviewURL($Appearance){
+	static function getPreviewURL($Appearance){
 		$path = str_replace('#',$Appearance['id'],CGUtils::PREVIEW_SVG_PATH);
 		return "/cg/v/{$Appearance['id']}p.svg?t=".(file_exists($path) ? filemtime($path) : time());
 	}
@@ -533,11 +533,11 @@ HTML;
 	 *
 	 * @return string
 	 */
-	static function GetSafeLabel($Appearance){
+	static function getSafeLabel($Appearance){
 		return CoreUtils::trim(preg_replace(new RegExp('-+'),'-',preg_replace(new RegExp('[^A-Za-z\d\-]'),'-', $Appearance['label'])),'-');
 	}
 
-	static function GetRelated(int $AppearanceID){
+	static function getRelated(int $AppearanceID){
 		global $CGDb;
 
 		return $CGDb->rawQuery(
@@ -558,20 +558,20 @@ HTML;
 			ORDER BY \"order\"", array(':id' => $AppearanceID));
 	}
 
-	static function GetRelatedHTML(array $Related):string {
+	static function getRelatedHTML(array $Related):string {
 		if (empty($Related))
 			return '';
 		$LINKS = '';
 		foreach ($Related as $p){
-			$safeLabel = self::GetSafeLabel($p);
-			$preview = self::GetPreviewURL($p);
+			$safeLabel = self::getSafeLabel($p);
+			$preview = self::getPreviewURL($p);
 			$preview = "<img src='$preview' class='preview'>";
 			$LINKS .= "<li><a href='/cg/v/{$p['id']}-$safeLabel'>$preview{$p['label']}</a></li>";
 		}
 		return "<section class='related'><h2>Related appearances</h2><ul>$LINKS</ul></section>";
 	}
 
-	static function ValidateAppearancePageID(){
+	static function validateAppearancePageID(){
 		return (new Input('APPEARANCE_PAGE','int',array(
 			Input::IS_OPTIONAL => true,
 			Input::IN_RANGE => [0,null],
@@ -583,7 +583,7 @@ HTML;
 
 	const ELASTIC_COLUMNS = 'id,label,order,ishuman,private';
 
-	static function Reindex(){
+	static function reindex(){
 		global $CGDb;
 
 		$elasticClient = CoreUtils::elasticClient();
@@ -591,14 +591,14 @@ HTML;
 			$elasticClient->indices()->delete(CGUtils::ELASTIC_BASE);
 		}
 		catch(ElasticMissing404Exception $e){
-			$message = JSON::Decode($e->getMessage());
+			$message = JSON::decode($e->getMessage());
 
 			// Eat exception if the index we're re-creating does not exist yet
 			if ($message['error']['type'] !== 'index_not_found_exception' || $message['error']['index'] !== CGUtils::ELASTIC_BASE['index'])
 				throw $e;
 		}
 		catch (ElasticNoNodesAvailableException $e){
-			Response::Fail('Re-index failed, ElasticSearch server is down!');
+			Response::fail('Re-index failed, ElasticSearch server is down!');
 		}
 		$params = array_merge(CGUtils::ELASTIC_BASE, [
 			"body" => [
@@ -651,7 +651,7 @@ HTML;
 
 		$params = array('body' => []);
 		foreach ($Appearances as $i => $a){
-			$meta = self::GetElasticMeta($a);
+			$meta = self::getElasticMeta($a);
 		    $params['body'][] = [
 		        'index' => [
 		            '_index' => $meta['index'],
@@ -660,7 +660,7 @@ HTML;
 		        ]
 		    ];
 
-		    $params['body'][] = self::GetElasticBody($a);
+		    $params['body'][] = self::getElasticBody($a);
 
 		    if ($i % 100 == 0) {
 		        $elasticClient->bulk($params);
@@ -671,27 +671,32 @@ HTML;
 	        $elasticClient->bulk($params);
 		}
 
-		Response::Success('Re-index completed');
+		Response::success('Re-index completed');
 	}
 
-	static function UpdateIndex(int $AppearanceID, string $fields = self::ELASTIC_COLUMNS):array {
+	static function updateIndex(int $AppearanceID, string $fields = self::ELASTIC_COLUMNS):array {
 		global $CGDb;
 
 		$Appearance = $CGDb->where('id', $AppearanceID)->getOne('appearances', $fields);
-		CoreUtils::elasticClient()->update(self::ToElasticArray($Appearance, false, true));
+		try {
+			CoreUtils::elasticClient()->update(self::toElasticArray($Appearance, false, true));
+		}
+		catch (ElasticNoNodesAvailableException $e){
+			error_log('ElasticSearch server was down when server attempted to index appearance '.$AppearanceID);
+		}
 
 		return $Appearance;
 	}
 
-	static function GetElasticMeta($Appearance){
+	static function getElasticMeta($Appearance){
 		return array_merge(CGUtils::ELASTIC_BASE,[
 			'type' => 'entry',
 			'id' => $Appearance['id'],
 		]);
 	}
 
-	static function GetElasticBody($Appearance){
-		$tags = Tags::GetFor($Appearance['id'], null, true, true);
+	static function getElasticBody($Appearance){
+		$tags = Tags::getFor($Appearance['id'], null, true, true);
 		foreach ($tags as $k => $tag)
 			$tags[$k] = $tag['name'];
 		return [
@@ -703,11 +708,11 @@ HTML;
 		];
 	}
 
-	static function ToElasticArray(array $Appearance, bool $no_body = false, bool $update = false):array {
-		$params = self::GetElasticMeta($Appearance);
+	static function toElasticArray(array $Appearance, bool $no_body = false, bool $update = false):array {
+		$params = self::getElasticMeta($Appearance);
 		if ($no_body)
 			return $params;
-		$params['body'] = self::GetElasticBody($Appearance);
+		$params['body'] = self::getElasticBody($Appearance);
 		if ($update)
 			$params['body'] = [
 				'doc' => $params['body'],

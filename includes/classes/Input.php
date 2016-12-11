@@ -124,14 +124,14 @@ class Input {
 				$this->_value = $this->_type === 'int'
 					? intval($this->_value, 10)
 					: floatval($this->_value, 10);
-				if (self::CheckNumberRange($this->_value, $this->_range, $code))
+				if (self::checkNumberRange($this->_value, $this->_range, $code))
 					return $code;
 			break;
 			case "text":
 			case "string":
 				if (!is_string($this->_value))
 					return self::ERROR_INVALID;
-				if (self::CheckStringLength($this->_value, $this->_range, $code))
+				if (self::checkStringLength($this->_value, $this->_range, $code))
 					return $code;
 			break;
 			case "uuid":
@@ -152,10 +152,10 @@ class Input {
 				if (stripos($this->_value, ABSPATH) === 0)
 					$this->_value = CoreUtils::substring($this->_value, CoreUtils::length(ABSPATH)-1);
 				if (!preg_match($REWRITE_REGEX,$this->_value) && !preg_match(new RegExp('^#[a-z\-]+$'),$this->_value)){
-					if (self::CheckStringLength($this->_value, $this->_range, $code))
+					if (self::checkStringLength($this->_value, $this->_range, $code))
 						return $code;
 					if (!preg_match(new RegExp('^https?://[a-z\d/.-]+/[ -~]+$','i'), $this->_value))
-						Response::Fail('Link URL does not appear to be a valid link');
+						Response::fail('Link URL does not appear to be a valid link');
 				}
 			break;
 			case "int[]":
@@ -166,7 +166,7 @@ class Input {
 			break;
 			case "json":
 				try {
-					$this->_value = JSON::Decode($this->_value);
+					$this->_value = JSON::decode($this->_value);
 					if (empty($this->_value))
 						throw new \Exception(rtrim('Could not decode JSON; '.json_last_error(),'; '));
 				}
@@ -179,7 +179,7 @@ class Input {
 				$this->_value = strtotime($this->_value);
 				if ($this->_value === false)
 					return self::ERROR_INVALID;
-				if (self::CheckNumberRange($this->_value, $this->_range, $code))
+				if (self::checkNumberRange($this->_value, $this->_range, $code))
 					return $code;
 			break;
 			case "epid":
@@ -192,10 +192,10 @@ class Input {
 		return self::ERROR_NONE;
 	}
 
-	static function CheckStringLength($value, $range, &$code){
+	static function checkStringLength($value, $range, &$code){
 		return $code = self::_numberInRange(CoreUtils::length($value), $range);
 	}
-	static function CheckNumberRange($value, $range, &$code = false){
+	static function checkNumberRange($value, $range, &$code = false){
 		$result = self::_numberInRange($value, $range);
 		return $code === false ? $result === self::ERROR_RANGE : $result;
 	}
@@ -221,7 +221,7 @@ class Input {
 		if ($this->_silentFail)
 			return error_log("Silenced Input validation error: $message\nKey: $this->_key\nOptions: _source={$this->_source}, _origValue={$this->_origValue}, _respond={$this->_respond}, request_uri={$_SERVER['REQUEST_URI']}");
 		if ($this->_respond)
-			Response::Fail($message);
+			Response::fail($message);
 		throw new \Exception($message);
 	}
 

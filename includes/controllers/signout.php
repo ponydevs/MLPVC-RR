@@ -3,35 +3,37 @@
 use App\Cookie;
 use App\CSRFProtection;
 use App\DeviantArt;
-use App\Exceptions\cURLRequestException;
+use App\Exceptions\CURLRequestException;
 use App\Permission;
 use App\Response;
 use App\Users;
 use App\Models\User;
 
-if (!$signedIn) Response::Success("You've already signed out");
-CSRFProtection::Protect();
+/** @var $signedIn bool */
+
+if (!$signedIn) Response::success("You've already signed out");
+CSRFProtection::protect();
 
 if (isset($_REQUEST['unlink'])){
 	try {
-		DeviantArt::Request('https://www.deviantart.com/oauth2/revoke', null, array('token' => $currentUser->Session['access']));
+		DeviantArt::request('https://www.deviantart.com/oauth2/revoke', null, array('token' => $currentUser->Session['access']));
 	}
-	catch (cURLRequestException $e){
-		Response::Fail("Coulnd not revoke the site's access: {$e->getMessage()} (HTTP {$e->getCode()})");
+	catch (CURLRequestException $e){
+		Response::fail("Coulnd not revoke the site's access: {$e->getMessage()} (HTTP {$e->getCode()})");
 	}
 }
 
 if (isset($_REQUEST['unlink']) || isset($_REQUEST['everywhere'])){
 	$col = 'user';
 	$val = $currentUser->id;
-	$username = Users::ValidateName('username', null, true);
+	$username = Users::validateName('username', null, true);
 	if (isset($username)){
-		if (!Permission::Sufficient('staff') || isset($_REQUEST['unlink']))
-			Response::Fail();
+		if (!Permission::sufficient('staff') || isset($_REQUEST['unlink']))
+			Response::fail();
 		/** @var $TargetUser User */
 		$TargetUser = $Database->where('name', $username)->getOne('users','id,name');
 		if (empty($TargetUser))
-			Response::Fail("Target user doesn't exist");
+			Response::fail("Target user doesn't exist");
 		if ($TargetUser->id !== $currentUser->id)
 			$val = $TargetUser->id;
 		else unset($TargetUser);
@@ -43,8 +45,8 @@ else {
 }
 
 if (!$Database->where($col,$val)->delete('sessions'))
-	Response::Fail('Could not remove information from database');
+	Response::fail('Could not remove information from database');
 
 if (empty($TargetUser))
-	Cookie::Delete('access', Cookie::HTTPONLY);
-Response::Done();
+	Cookie::delete('access', Cookie::HTTPONLY);
+Response::done();

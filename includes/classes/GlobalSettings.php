@@ -18,7 +18,7 @@ class GlobalSettings {
 	 *
 	 * @return mixed
 	 */
-	static function Get($key, $default = false){
+	static function get($key, $default = false){
 		global $Database;
 
 		if (isset(static::$_defaults[$key]))
@@ -35,11 +35,11 @@ class GlobalSettings {
 	 *
 	 * @return bool
 	 */
-	static function Set($key, $value){
+	static function set($key, $value){
 		global $Database;
 
 		if (!isset(static::$_defaults[$key]))
-			Response::Fail("Key $key is not allowed");
+			Response::fail("Key $key is not allowed");
 		$default = static::$_defaults[$key];
 
 		if ($Database->where('key', $key)->has(static::$_db)){
@@ -60,7 +60,7 @@ class GlobalSettings {
 	 *
 	 * @return mixed
 	 */
-	static function Process($key){
+	static function process($key){
 		$value = CoreUtils::trim($_POST['value']);
 
 		if ($value === '')

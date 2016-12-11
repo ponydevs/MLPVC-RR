@@ -1,3 +1,3 @@
 <?php
 
-App\Appearances::Reindex();
+App\Appearances::reindex();

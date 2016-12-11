@@ -2,13 +2,13 @@
 
 namespace App;
 
-use App\Exceptions\cURLRequestException;
+use App\Exceptions\CURLRequestException;
 use App\Exceptions\MismatchedProviderException;
 
 class ImageProvider {
 	public $preview = false, $fullsize = false, $title = '', $provider, $id, $author = null;
 	public function __construct($url, $reqProv = null){
-		$provider = self::GetProvider(CoreUtils::trim($url));
+		$provider = self::getProvider(CoreUtils::trim($url));
 		if (!empty($reqProv)){
 			if (!is_array($reqProv))
 				$reqProv = array($reqProv);
@@ -39,7 +39,7 @@ class ImageProvider {
 			);
 		return false;
 	}
-	public static function GetProvider($url){
+	public static function getProvider($url){
 		foreach (self::$_providerRegexes as $pattern => $name){
 			$test = self::_testProvider($url, $pattern, $name);
 			if ($test !== false)
@@ -70,7 +70,7 @@ class ImageProvider {
 
 				if (empty($Data))
 					throw new \Exception('The requested image could not be found on Derpibooru');
-				$Data = JSON::Decode($Data, true);
+				$Data = JSON::decode($Data);
 
 				if (isset($Data['duplicate_of']))
 					return $this->_getDirectUrl($Data['duplicate_of']);
@@ -109,18 +109,18 @@ class ImageProvider {
 				}
 
 				try {
-					$CachedDeviation = DeviantArt::GetCachedSubmission($id,$this->provider);
+					$CachedDeviation = DeviantArt::getCachedSubmission($id,$this->provider);
 
-					if (!DeviantArt::IsImageAvailable($CachedDeviation['preview'])){
+					if (!DeviantArt::isImageAvailable($CachedDeviation['preview'])){
 						$preview = CoreUtils::aposEncode($CachedDeviation['preview']);
 						throw new \Exception("The preview image appears to be unavailable. Please make sure <a href='$preview'>this link</a> works and try again, or re-submit the deviation if this persists.");
 					}
-					if (!DeviantArt::IsImageAvailable($CachedDeviation['fullsize'])){
+					if (!DeviantArt::isImageAvailable($CachedDeviation['fullsize'])){
 						$fullsize = CoreUtils::aposEncode($CachedDeviation['fullsize']);
 						throw new \Exception("The submission appears to be unavailable. Please make sure <a href='$fullsize'>this link</a> works and try again, or re-submit the deviation if this persists.");
 					}
 				}
-				catch(cURLRequestException $e){
+				catch(CURLRequestException $e){
 					if ($e->getCode() === 404)
 						throw new \Exception('The requested image could not be found');
 					throw new \Exception($e->getMessage());
