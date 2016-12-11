@@ -512,7 +512,7 @@ HTML;
 		$ImageLink = $view_only ? $postlink : $Post->fullsize;
 		$cachebust = $cachebust_url ? '?t='.time() : '';
 		$Image = "<div class='image screencap'><a href='$ImageLink'><img src='{$Post->preview}$cachebust' alt='$alt'></a></div>";
-		$post_label = !empty($Post->label) ? '<span class="label'.(strpos($Post->label,'"') !== false?' noquotes':'').'">'.$Post->processLabel().'</span>' : '';
+		$post_label = self::_getPostLabel($Post);
 		$permalink = "<a href='$postlink'>".Time::tag($Post->posted).'</a>';
 
 		$posted_at = '<em class="post-date">';
@@ -589,6 +589,62 @@ HTML;
 	}
 
 	/**
+	 * List ltem generator function for reservation suggestions
+	 * This function assumes that the post it's being used for is not reserved or it can be contested.
+	 *
+	 * @param Request $Request
+	 *
+	 * @return string
+	 */
+	static function getSuggestionLi(Request $Request):string {
+		$escapedLabel = CoreUtils::aposEncode($Request->label);
+		$label = self::_getPostLabel($Request);
+		$time_ago = Time::tag($Request->posted);
+		$reserve = self::getPostReserveButton($Request, null, false);
+		return <<<HTML
+<li id="request-{$Request->id}">
+	<div class="image screencap">
+		<a href="{$Request->fullsize}" target="_blank">
+			<img src="{$Request->fullsize}" alt="{$escapedLabel}">
+		</a>
+	</div>
+	$label
+	<em class="post-date">Requested <a href="{$Request->toLink()}">$time_ago</a> under {$Request->toAnchor()}</em>
+	$reserve
+</li>
+HTML;
+
+	}
+
+	/**
+	 * @param Post      $Post
+	 * @param User|null $reservedBy
+	 * @param bool      $view_only
+	 *
+	 * @return string
+	 */
+	static function getPostReserveButton(Post $Post, $reservedBy, $view_only):string {
+		if (empty($reservedBy))
+			return Permission::sufficient('member') && !$view_only ? "<button class='reserve-request typcn typcn-user-add'>Reserve</button>" : '';
+		else {
+			$dAlink = $reservedBy->getProfileLink(User::LINKFORMAT_FULL);
+			$vectorapp = $reservedBy->getVectorAppClassName();
+			if (!empty($vectorapp))
+				$vectorapp .= "' title='Uses ".$reservedBy->getVectorAppName()." to make vectors";
+			return "<div class='reserver$vectorapp'>$dAlink</div>";
+		}
+	}
+
+	/**
+	 * @param Post $Post
+	 *
+	 * @return string
+	 */
+	private static function _getPostLabel(Post $Post):string {
+		return !empty($Post->label) ? '<span class="label'.(strpos($Post->label,'"') !== false?' noquotes':'').'">'.$Post->processLabel().'</span>' : '';
+	}
+
+	/**
 	 * Generate HTML for post action buttons
 	 *
 	 * @param Post $Post
@@ -597,7 +653,7 @@ HTML;
 	 *
 	 * @return string
 	 */
-	private static function _getPostActions($Post, $isRequest, $view_only){
+	private static function _getPostActions(Post $Post, bool $isRequest, bool $view_only):string {
 		global $signedIn, $currentUser;
 
 		$By = $Post->Reserver;
@@ -607,15 +663,7 @@ HTML;
 		$CanEdit = (empty($Post->lock) && Permission::sufficient('staff')) || Permission::sufficient('developer') || ($requestedByUser && $isNotReserved);
 		$Buttons = array();
 
-		if ($isNotReserved)
-			$HTML = Permission::sufficient('member') && !$view_only ? "<button class='reserve-request typcn typcn-user-add'>Reserve</button>" : '';
-		else {
-			$dAlink = $By->getProfileLink(User::LINKFORMAT_FULL);
-			$vectorapp = $By->getVectorAppClassName();
-			if (!empty($vectorapp))
-				$vectorapp .= "' title='Uses ".$By->getVectorAppName()." to make vectors";
-			$HTML =  "<div class='reserver$vectorapp'>$dAlink</div>";
-		}
+		$HTML = self::getPostReserveButton($Post, $By, $view_only);
 		if (!empty($Post->reserved_by)){
 			$finished = !empty($Post->deviation_id);
 			$staffOrSameUser = ($sameUser && Permission::sufficient('member')) || Permission::sufficient('staff');

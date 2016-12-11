@@ -315,7 +315,6 @@
 		 * @param {function}          handlerFunc
 		 */
 		confirm(title = defaultTitles.confirm, content = defaultContent.confirm, btnTextArray = ['Eeyup','Nope'], handlerFunc = undefined){
-			console.log(btnTextArray, handlerFunc);
 			if (typeof handlerFunc === 'undefined')
 				handlerFunc = typeof btnTextArray === 'function' ? btnTextArray : closeAction;
 

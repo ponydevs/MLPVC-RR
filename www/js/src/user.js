@@ -2,36 +2,33 @@
 DocReady.push(function User(){
 	'use strict';
 
-	(function rebind(){
-		let $pendingRes = $('.pending-reservations');
-		if ($pendingRes.length){
-			$pendingRes.on('click','button.cancel',function(){
-				let $btn = $(this),
-					$link = $btn.prev();
-				$.Dialog.confirm('Cancel reservation','Are you sure you want to cancel this reservation?', function(sure){
-					if (!sure) return;
+	let $pendingRes = $('.pending-reservations');
+	if ($pendingRes.length){
+		$pendingRes.on('click','button.cancel',function(){
+			let $btn = $(this),
+				$link = $btn.prev();
+			$.Dialog.confirm('Cancel reservation','Are you sure you want to cancel this reservation?', function(sure){
+				if (!sure) return;
 
-					$.Dialog.wait(false, 'Cancelling reservation');
+				$.Dialog.wait(false, 'Cancelling reservation');
 
-					let id = $link.prop('hash').substring(1).split('-');
-					$.post(`/post/unreserve-${id.join('/')}`,{FROM_PROFILE:true},$.mkAjaxHandler(function(){
-						if (!this.status) return $.Dialog.fail(false, this.message);
+				let id = $link.prop('hash').substring(1).split('-');
+				$.post(`/post/unreserve-${id.join('/')}`,{FROM_PROFILE:true},$.mkAjaxHandler(function(){
+					if (!this.status) return $.Dialog.fail(false, this.message);
 
-						let pendingRes = this.pendingReservations;
-						$btn.closest('li').fadeOut(1000,function(){
-							$(this).remove();
-							if (pendingRes){
-								$pendingRes.replaceWith(pendingRes);
-								Time.Update();
-								rebind();
-							}
-						});
-						$.Dialog.close();
-					}));
-				});
+					let pendingRes = this.pendingReservations;
+					$btn.closest('li').fadeOut(1000,function(){
+						$(this).remove();
+						if (pendingRes){
+							$pendingRes.html($(pendingRes).children());
+							Time.Update();
+						}
+					});
+					$.Dialog.close();
+				}));
 			});
-		}
-	})();
+		});
+	}
 
 	let $signoutBtn = $('#signout'),
 		$sessionList = $('.session-list'),

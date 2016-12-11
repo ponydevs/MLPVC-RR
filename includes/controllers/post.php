@@ -345,10 +345,17 @@ if (preg_match(new RegExp('^((?:un)?(?:finish|lock|reserve)|add|delete|pls-trans
 	}
 
 	if ($type === 'request'){
+		$oldReserver = $Post->reserved_by;
 		$Post->__construct($update);
-		$response = array('li' => Posts::getLi($Post));
-		if (isset($_POST['FROM_PROFILE']))
-			$response['pendingReservations'] = Users::getPendingReservationsHTML($Post->reserved_by, $isUserReserver);
+		$response = [];
+		$suggested = isset($_POST['SUGGESTED']);
+		$fromProfile = isset($_POST['FROM_PROFILE']);
+		if ($suggested)
+			$response['button'] = Posts::getPostReserveButton($Post, Users::get($Post->reserved_by), false);
+		else  if (!$fromProfile || $action !== 'unreserve')
+			$response['li'] = Posts::getLi($Post);
+		if ($fromProfile || $suggested)
+			$response['pendingReservations'] = Users::getPendingReservationsHTML($suggested ? $Post->reserved_by : $oldReserver, $suggested ? true : $isUserReserver);
 		Response::done($response);
 	}
 	else Response::done();

@@ -301,9 +301,10 @@ HTML;
 		if (Permission::sufficient('staff') || $sameUser){
 			$pendingCountReadable = ($hasPending>0?"<strong>$TotalPending</strong>":'no');
 			$posts = CoreUtils::makePlural('reservation', $TotalPending);
+			$gamble = $TotalPending < 4 && $sameUser ? ' <button id="suggestion" class="btn orange typcn typcn-lightbulb">Suggestion</button>' : '';
 			$HTML .= <<<HTML
 <section class='pending-reservations'>
-<h2>{$PrivateSection}Pending reservations</h2>
+<h2>{$PrivateSection}Pending reservations$gamble</h2>
 				<span>$YouHave $pendingCountReadable pending $posts
 HTML;
 			if ($hasPending)

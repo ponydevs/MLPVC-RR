@@ -1,0 +1,34 @@
+@import "vars";
+@import "theme_post-ul";
+
+#suggestion-output {
+	@extend %post-ul;
+
+	&:empty {
+		display: none;
+	}
+
+	margin: 5px 0;
+
+	li {
+		max-width: 100%;
+		margin: 0;
+		box-sizing: border-box;
+
+		.image {
+			a { cursor: zoom-in }
+			img {
+				height: auto;
+				max-width: 100%;
+			}
+		}
+		.label {
+			max-width: 400px;
+			font-size: 1.4em;
+		}
+
+		> .reserver {
+			@extend %reserver;
+		}
+	}
+}

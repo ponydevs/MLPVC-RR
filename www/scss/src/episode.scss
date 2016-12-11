@@ -260,24 +260,7 @@
 			.unfinished ul li {
 				.image > a.fluidbox--initialized { cursor: zoom-in }
 				> .reserver {
-					.da-userlink.with-avatar {
-						&:before {
-							content: "Reserved by:";
-							position: absolute;
-							left: 46px;
-							font-size: 11px;
-							font-style: italic;
-							font-weight: normal;
-							display: block;
-							height: 16px;
-							z-index: 1;
-							color: #666;
-						}
-						.name {
-							line-height: 26px;
-							height: 28px;
-						}
-					}
+					@extend %reserver;
 				}
 			}
 			.finished ul li {

@@ -9,7 +9,7 @@ button, .btn, input[type=button] {
 	background-color: #777;
 	$vpadding: 3px;
 	padding: $vpadding 5px;
-	font-family: inherit;
+	font-family: $RegularFont;
 	$fontsize: 17px;
 	font-size: $fontsize;
 	line-height: $fontsize;

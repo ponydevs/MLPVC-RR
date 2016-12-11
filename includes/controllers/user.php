@@ -11,6 +11,7 @@ use App\RegExp;
 use App\Response;
 use App\UserPrefs;
 use App\Users;
+use App\Posts;
 
 /** @var $data string */
 /** @var $signedIn bool */
@@ -51,7 +52,27 @@ if (POST_REQUEST){
 
 	CSRFProtection::protect();
 
-	if (empty($data)) CoreUtils::notFound();
+	if (empty($data))
+		CoreUtils::notFound();
+
+	if ($data === 'suggestion'){
+		if (Permission::insufficient('member'))
+			Response::fail('You must be a club member to use this feature.');
+
+		if (Users::reservationLimitExceeded(RETURN_AS_BOOL))
+			Response::fail('You already have the maximum  4 reservations. Close this dialog to view or cancel them.',['limithit' => true]);
+
+		$postIDs = $Database->rawQuery(
+			'SELECT id FROM requests
+			WHERE deviation_id IS NULL && (reserved_by IS NULL OR reserved_at < NOW() - INTERVAL \'3 WEEK\')');
+		$drawArray = [];
+		foreach ($postIDs as $post)
+			$drawArray[] = $post['id'];
+		$chosen = $drawArray[array_rand($drawArray)];
+		/** @var $Request \App\Models\Request */
+		$Request = $Database->where('id', $chosen)->getOne('requests');
+		Response::done(array('suggestion' => Posts::getSuggestionLi($Request)));
+	}
 
 	if (preg_match(new RegExp('^sessiondel/(\d+)$'),$data,$_match)){
 		$Session = $Database->where('id', $_match[1])->getOne('sessions');
@@ -191,5 +212,11 @@ $settings = array(
 	'do-css',
 	'js' => array('user'),
 );
-if ($canEdit) $settings['js'][] = 'user-manage';
+if ($canEdit)
+	$settings['js'][] = 'user-manage';
+$showSuggestions = $User->getPendingReservationCount() < 4;
+if ($showSuggestions){
+	$settings['js'][] = 'user-suggestion';
+	$settings['css'][] = 'user-suggestion';
+}
 CoreUtils::loadPage($settings);
