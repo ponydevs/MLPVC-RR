@@ -467,12 +467,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/SeinopSys/PHP-PostgreSQL-Database-Class.git",
-                "reference": "135125ccd027bbadd33d9cb9d2e2acdf5c11dc4c"
+                "reference": "1804c486397bed6e3552bbd924954a575d0b0f59"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/SeinopSys/PHP-PostgreSQL-Database-Class/zipball/135125ccd027bbadd33d9cb9d2e2acdf5c11dc4c",
-                "reference": "135125ccd027bbadd33d9cb9d2e2acdf5c11dc4c",
+                "url": "https://api.github.com/repos/SeinopSys/PHP-PostgreSQL-Database-Class/zipball/1804c486397bed6e3552bbd924954a575d0b0f59",
+                "reference": "1804c486397bed6e3552bbd924954a575d0b0f59",
                 "shasum": ""
             },
             "require": {
@@ -497,7 +497,7 @@
                 }
             ],
             "description": "PHP wrapper class for PDO-based interaction with PostgreSQL databases, heavily based on joshcam/mysqli-database-class",
-            "time": "2016-11-26 16:55:48"
+            "time": "2016-12-11 10:53:42"
         },
         {
             "name": "symfony/serializer",
