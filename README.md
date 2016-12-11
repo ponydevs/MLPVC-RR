@@ -1,7 +1,7 @@
 <p align="center"><img src="https://raw.githubusercontent.com/ponydevs/MLPVC-RR/master/www/img/logo.png" alt=""></p>
 
 <h1 align="center"><a href="http://mlp-vectorclub.deviantart.com/">MLP-VectorClub</a> Website</h1>
-<p align="center"><em>Handling requests, reservations & the Color Guide since 2015</em><br><a href='https://www.versioneye.com/user/projects/583a3a11e7cea00039353d05'><img src='https://www.versioneye.com/user/projects/583a3a11e7cea00039353d05/badge.svg?style=flat-square' alt="Dependency Status"></a></p>
+<p align="center"><em>Handling requests, reservations & the Color Guide since 2015</em><br><a href='https://www.versioneye.com/user/projects/583a3a11e7cea00039353d05'><img src='https://www.versioneye.com/user/projects/583a3a11e7cea00039353d05/badge.svg?style=flat-square' alt="Dependency Status"></a> <a href="https://travis-ci.org/ponydevs/MLPVC-RR"><img src="https://travis-ci.org/ponydevs/MLPVC-RR.svg?branch=master" alt="Build Status"></a></p>
 
 ## What's this site?
 
