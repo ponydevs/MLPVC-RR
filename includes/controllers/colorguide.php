@@ -111,8 +111,9 @@ if (POST_REQUEST || (isset($_GET['s']) && $data === "gettags")){
 			if (!empty($Appearances)) foreach ($Appearances as $p){
 				$AppendAppearance = $p;
 
-				if (isset($AppendAppearance['notes']))
-					$AppendAppearance['notes'] = CoreUtils::trim($AppendAppearance['notes'],true);
+				$AppendAppearance['notes'] = isset($AppendAppearance['notes'])
+					? CoreUtils::trim($AppendAppearance['notes'],true)
+					: '';
 
 				$AppendAppearance['ColorGroups'] = array();
 				if (empty($AppendAppearance['private'])){
