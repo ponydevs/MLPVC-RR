@@ -450,13 +450,13 @@
 				}
 			},
 			"TagIDs": [
-				7,
-				8,
+				9,
 				12,
 				76,
 				100,
 				353,
-				441
+				441,
+				446
 			],
 			"RelatedAppearances": []
 		},
@@ -35367,9 +35367,150 @@
 			],
 			"RelatedAppearances": []
 		},
+		"229": {
+			"id": 229,
+			"order": 205,
+			"label": "Rarity's Seductive Dress",
+			"notes": "From \"Rarity Investigates\"\n\nThe outfit is not shown where there would be a shadow color for one of the forelegs.",
+			"cm_favme": null,
+			"ishuman": false,
+			"added": "2016-12-03 15:49:27.463194+01",
+			"cm_preview": null,
+			"cm_dir": null,
+			"private": false,
+			"ColorGroups": {
+				"1211": {
+					"groupid": 1211,
+					"label": "Hat",
+					"order": 1,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#0A131B"
+						},
+						{
+							"order": 1,
+							"label": "Fill 1",
+							"hex": "#223B53"
+						},
+						{
+							"order": 2,
+							"label": "Fill 2",
+							"hex": "#192A3B"
+						},
+						{
+							"order": 3,
+							"label": "Feathers Outline",
+							"hex": "#2C1428"
+						},
+						{
+							"order": 4,
+							"label": "Features Fill",
+							"hex": "#612B4E"
+						},
+						{
+							"order": 5,
+							"label": "Veil Outline",
+							"hex": "#182A3B"
+						},
+						{
+							"order": 6,
+							"label": "Veil Fill (50% Opacity)",
+							"hex": "#85AACB"
+						}
+					]
+				},
+				"1212": {
+					"groupid": 1212,
+					"label": "Shirt/Tie",
+					"order": 2,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Shirt Outline",
+							"hex": "#96C8C8"
+						},
+						{
+							"order": 1,
+							"label": "Shirt Fill",
+							"hex": "#FFFFFF"
+						},
+						{
+							"order": 2,
+							"label": "Shirt Shadow Fill",
+							"hex": "#E2EFEF"
+						},
+						{
+							"order": 3,
+							"label": "Tie Outline",
+							"hex": "#0A131B"
+						},
+						{
+							"order": 4,
+							"label": "Tie Fill 1",
+							"hex": "#223B53"
+						},
+						{
+							"order": 5,
+							"label": "Tie Fill 2",
+							"hex": "#192A3B"
+						}
+					]
+				},
+				"1213": {
+					"groupid": 1213,
+					"label": "Jacket/Skirt/Boa",
+					"order": 3,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Jacket/Skirt Outline",
+							"hex": "#2C1428"
+						},
+						{
+							"order": 1,
+							"label": "Jacket/Skirt Fill",
+							"hex": "#612B4E"
+						},
+						{
+							"order": 2,
+							"label": "Jacket Hems Fill",
+							"hex": "#451E3B"
+						},
+						{
+							"order": 3,
+							"label": "Buttons Outline",
+							"hex": "#2C1428"
+						},
+						{
+							"order": 4,
+							"label": "Buttons Fill",
+							"hex": "#612B4E"
+						},
+						{
+							"order": 5,
+							"label": "Boa Outline",
+							"hex": "#BA88BC"
+						},
+						{
+							"order": 6,
+							"label": "Boa Fill",
+							"hex": "#D3BBD8"
+						}
+					]
+				}
+			},
+			"TagIDs": [
+				26,
+				42,
+				96
+			],
+			"RelatedAppearances": []
+		},
 		"33": {
 			"id": 33,
-			"order": 205,
+			"order": 206,
 			"label": "Alicorn Amulet",
 			"notes": "",
 			"cm_favme": null,
@@ -35562,7 +35703,7 @@
 		},
 		"86": {
 			"id": 86,
-			"order": 206,
+			"order": 207,
 			"label": "Scorpan's Medallion",
 			"notes": "",
 			"cm_favme": null,
@@ -35641,7 +35782,7 @@
 		},
 		"94": {
 			"id": 94,
-			"order": 207,
+			"order": 208,
 			"label": "Party Cannon",
 			"notes": "",
 			"cm_favme": null,
@@ -35771,7 +35912,7 @@
 		},
 		"115": {
 			"id": 115,
-			"order": 208,
+			"order": 209,
 			"label": "Fake Timberwolf",
 			"notes": "",
 			"cm_favme": null,
@@ -35981,7 +36122,7 @@
 		},
 		"154": {
 			"id": 154,
-			"order": 209,
+			"order": 210,
 			"label": "Twilight's Crown",
 			"notes": "From S4 onward",
 			"cm_favme": null,
@@ -36034,7 +36175,7 @@
 		},
 		"156": {
 			"id": 156,
-			"order": 210,
+			"order": 211,
 			"label": "Rainbow Dash's Bandaids (Newbie Dash)",
 			"notes": "Sampled from S6E7",
 			"cm_favme": null,
@@ -36104,7 +36245,7 @@
 		},
 		"182": {
 			"id": 182,
-			"order": 211,
+			"order": 212,
 			"label": "Rainbow Cookie Zombie Effects",
 			"notes": "Colors of this effect are not muted even if the pony's coat ends up muted. This effect is dimmed with any night filters.\nTo get the muted coat/mane/other colors for any character, take the RGB value of the color, average the R, G, B values, and adjust each RGB value 50% of the way to that average. For example, if RGB is 120, 60, 120, the average is 100. The R value of 120 would then move 50%*(120-100) or 10 (ending up at 110), the G value of 60 would move 50%*(100-60) or 20 (ending up at 80).",
 			"cm_favme": null,
@@ -36167,7 +36308,7 @@
 		},
 		"199": {
 			"id": 199,
-			"order": 212,
+			"order": 213,
 			"label": "Hypnotized Mane 6 Eyes",
 			"notes": "Eye colors for the Mane 6 (except Twilight) due to Starlight Glimmer's spell from S6E21.\nAll other body and mane/tail colors remain the same.",
 			"cm_favme": null,
@@ -36374,7 +36515,7 @@
 			"name": "minor character",
 			"title": "Ponies who had a speaking role, interacted with the mane six, or whose only purpose is to fill crowds.",
 			"type": "cat",
-			"uses": 137,
+			"uses": 136,
 			"synonym_of": null
 		},
 		"8": {
@@ -36390,7 +36531,7 @@
 			"name": "antagonist",
 			"title": null,
 			"type": "cat",
-			"uses": 13,
+			"uses": 14,
 			"synonym_of": null
 		},
 		"10": {
@@ -36486,7 +36627,7 @@
 			"name": "rarity",
 			"title": null,
 			"type": "char",
-			"uses": 5,
+			"uses": 6,
 			"synonym_of": null
 		},
 		"27": {
@@ -36614,7 +36755,7 @@
 			"name": "s05e15",
 			"title": null,
 			"type": "ep",
-			"uses": 3,
+			"uses": 4,
 			"synonym_of": null
 		},
 		"43": {
@@ -37006,7 +37147,7 @@
 			"name": "outfit",
 			"title": "Alternative character outfits",
 			"type": null,
-			"uses": 30,
+			"uses": 31,
 			"synonym_of": null
 		},
 		"97": {
@@ -39622,6 +39763,14 @@
 			"name": "trapeze star",
 			"title": null,
 			"type": "char",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"446": {
+			"tid": 446,
+			"name": "movie#1",
+			"title": "Equestria Girls (the first one)",
+			"type": "ep",
 			"uses": 1,
 			"synonym_of": null
 		}
