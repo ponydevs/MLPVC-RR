@@ -230,6 +230,11 @@ DocReady.push(function ColorguideManage(){
 														$selectUnlinked.append($selectLinked.children(':selected').prop('selected', false)).children().sort(function(a,b){
 															return a.innerHTML.localeCompare(b.innerHTML);
 														}).appendTo($selectUnlinked);
+														if ($selectLinked.children().length === 0){
+															$mutualness.find('input').disable();
+															$mutualLegend.empty();
+															$mutualness.find('.notice').show();
+														}
 													})
 												),
 												$.mk('div').attr('class','split-select').append("<span>Available</span>",$selectUnlinked)
@@ -252,10 +257,13 @@ DocReady.push(function ColorguideManage(){
 												});
 												$.Dialog.wait(false, 'Saving changes');
 
-												$.post(`/cg/setrelations/${ponyID}${EQGRq}`,{
+												let data = {
 													ids: ids.join(','),
 													mutuals: mutuals.join(','),
-												},$.mkAjaxHandler(function(){
+												};
+												if (AppearancePage)
+													data.APPEARANCE_PAGE = true;
+												$.post(`/cg/setrelations/${ponyID}${EQGRq}`,data,$.mkAjaxHandler(function(){
 													if (!this.status) return $.Dialog.fail(false, this.message);
 
 													if (this.section){

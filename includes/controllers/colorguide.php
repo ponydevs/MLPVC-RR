@@ -532,7 +532,10 @@ if (POST_REQUEST || (isset($_GET['s']) && $data === "gettags")){
 						));
 					};
 
-				Response::done(array('section' => Appearances::getRelatedHTML(Appearances::getRelated($Appearance['id']))));
+				$out = [];
+				if ($AppearancePage)
+					$out['section'] = Appearances::getRelatedHTML(Appearances::getRelated($Appearance['id']));
+				Response::done($out);
 			break;
 			case "clearrendercache":
 				if (!CGUtils::clearRenderedImages($Appearance['id']))
