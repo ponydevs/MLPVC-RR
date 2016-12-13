@@ -647,13 +647,14 @@ HTML;
 	/**
 	 * Generate HTML for post action buttons
 	 *
-	 * @param Post $Post
-	 * @param bool $isRequest
-	 * @param bool $view_only Only show the "View" button
+	 * @param Post         $Post
+	 * @param bool         $isRequest
+	 * @param false|string $view_only Only show the "View" button
+	 *                                Contains HREF attribute of button if string
 	 *
 	 * @return string
 	 */
-	private static function _getPostActions(Post $Post, bool $isRequest, bool $view_only):string {
+	private static function _getPostActions(Post $Post, bool $isRequest, $view_only):string {
 		global $signedIn, $currentUser;
 
 		$By = $Post->Reserver;
