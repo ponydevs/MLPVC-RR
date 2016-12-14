@@ -47,6 +47,7 @@
 					$output = implode("\n", $output);
 					if (empty($output))
 						HTTP::statusCode(500, AND_DIE);
+					$arr[] = "\n";
 					exec("composer update --no-dev 2>&1",$arr);
 					$output .= implode("\n", $arr);
 					echo $output;
