@@ -41,12 +41,13 @@
 			switch (strtolower($_SERVER['HTTP_X_GITHUB_EVENT'])) {
 				case 'push':
 					$output = array();
+					chdir(PROJPATH);
 					exec("git reset HEAD --hard",$output);
 					exec("git pull",$output);
 					$output = implode("\n", $output);
 					if (empty($output))
 						HTTP::statusCode(500, AND_DIE);
-					exec("composer update 2>&1",$arr);
+					exec("composer update --no-dev 2>&1",$arr);
 					$output .= implode("\n", $arr);
 					echo $output;
 				break;

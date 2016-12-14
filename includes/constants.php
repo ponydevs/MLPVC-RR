@@ -5,9 +5,10 @@ use App\RegExp;
 // Configuration \\
 define('HTTPS', !empty($_SERVER['HTTPS']));
 define('ABSPATH',(HTTPS?'https':'http').'://'.$_SERVER['SERVER_NAME'].'/');
-define('APPATH',realpath(dirname(__FILE__).'/../www').DIRECTORY_SEPARATOR);
-define('FSPATH',realpath(APPATH.'../fs').DIRECTORY_SEPARATOR);
-define('INCPATH',realpath(APPATH.'../includes').DIRECTORY_SEPARATOR);
+define('PROJPATH',realpath(dirname(__FILE__).'/../').DIRECTORY_SEPARATOR);
+define('APPATH',  PROJPATH.'www'.DIRECTORY_SEPARATOR);
+define('FSPATH',  PROJPATH.'fs'.DIRECTORY_SEPARATOR);
+define('INCPATH', PROJPATH.'includes'.DIRECTORY_SEPARATOR);
 define('POST_REQUEST', $_SERVER['REQUEST_METHOD'] === 'POST');
 define('GITHUB_PROJECT_NAME','ponydevs/MLPVC-RR');
 define('GITHUB_URL','https://github.com/'.GITHUB_PROJECT_NAME);
