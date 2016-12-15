@@ -213,18 +213,47 @@ ALTER TABLE ONLY tags ALTER COLUMN tid SET DEFAULT nextval('tags_tid_seq'::regcl
 --
 
 INSERT INTO appearance_relations VALUES
+(1, 117, true),
+(1, 154, true),
+(2, 116, true),
+(2, 202, true),
+(3, 64, true),
+(3, 105, true),
+(4, 94, true),
+(4, 112, true),
+(4, 188, true),
+(5, 119, true),
 (5, 187, true),
+(6, 105, true),
+(6, 120, true),
+(6, 228, true),
+(6, 229, true),
+(7, 189, true),
+(11, 206, true),
+(35, 105, true),
+(35, 190, true),
 (57, 191, false),
+(59, 61, true),
+(106, 105, true),
+(107, 105, true),
 (118, 7, false),
 (118, 125, false),
 (118, 126, false),
 (118, 216, false),
 (126, 7, false),
 (126, 118, false),
+(142, 141, true),
 (144, 5, true),
+(146, 145, true),
+(149, 74, true),
+(150, 74, true),
+(150, 149, true),
 (156, 5, false),
 (181, 79, true),
 (182, 5, true),
+(194, 195, true),
+(196, 194, true),
+(196, 195, true),
 (201, 6, true),
 (203, 6, true),
 (207, 79, true),
@@ -232,7 +261,6 @@ INSERT INTO appearance_relations VALUES
 (212, 213, true),
 (213, 71, false),
 (215, 5, true),
-(216, 118, false),
 (217, 5, true),
 (219, 6, true);
 
@@ -521,7 +549,7 @@ Pay close attention to her hair fills when vectoring her. The colors can be hard
 (226, 157, 'Troubleshoes Clyde', 'Colors from S5E6 are overly bright, but this is the only episode reference for Troubleshoes.', NULL, false, '2016-11-24 16:35:36.654407+01', NULL, NULL, false),
 (227, 158, 'Trapeze Star', 'Cutie mark is not fully visible in any shot', NULL, false, '2016-12-02 06:14:18.964948+01', NULL, NULL, false),
 (228, 204, 'Rarity''s Detective Outfit', 'From "Rarity Investigates"', NULL, false, '2016-12-03 07:47:29.233869+01', NULL, NULL, false),
-(229, 205, 'Rarity''s Seductive Dress', 'From "Rarity Investigates"
+(229, 205, 'Rarity''s Seductive Dress', 'From S5E15
 
 The outfit is not shown where there would be a shadow color for one of the forelegs.', NULL, false, '2016-12-03 15:49:27.463194+01', NULL, NULL, false);
 
