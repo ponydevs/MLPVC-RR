@@ -200,6 +200,7 @@ if (POST_REQUEST || (isset($_GET['s']) && $data === "gettags")){
 			break;
 			case "set":
 			case "make":
+				/** @var $data array */
 				$data = array(
 					'ishuman' => $EQG,
 				    'cm_favme' => null,
@@ -662,6 +663,7 @@ if (POST_REQUEST || (isset($_GET['s']) && $data === "gettags")){
 			if (empty($Tag))
 				Response::fail("This tag does not exist");
 		}
+		/** @var $data array */
 		$data = array();
 
 		switch ($action){
@@ -686,9 +688,10 @@ if (POST_REQUEST || (isset($_GET['s']) && $data === "gettags")){
 				foreach ($Uses as $use)
 					Appearances::updateIndex($use['ponyid']);
 
+				$Appearance = $CGDb->where('id',$AppearanceID)->getOne('appearances','id,ishuman');
 				Response::success('Tag deleted successfully', isset($AppearanceID) && $Tag['type'] === 'ep' ? array(
 					'needupdate' => true,
-					'eps' => Appearances::getRelatedEpisodesHTML($AppearanceID, $EQG),
+					'eps' => Appearances::getRelatedEpisodesHTML($Appearance, $EQG),
 				) : null);
 			break;
 			case 'unsynon':
@@ -906,6 +909,7 @@ HTML;
 				Response::success("$Color group deleted successfully");
 			}
 		}
+		/** @var $data array */
 		$data = array();
 
 		$data['label'] = (new Input('label','string',array(

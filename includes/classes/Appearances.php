@@ -571,6 +571,9 @@ HTML;
 		return "<section class='related'><h2>Related appearances</h2><ul>$LINKS</ul></section>";
 	}
 
+	/**
+	 * @return int
+	 */
 	static function validateAppearancePageID(){
 		return (new Input('APPEARANCE_PAGE','int',array(
 			Input::IS_OPTIONAL => true,

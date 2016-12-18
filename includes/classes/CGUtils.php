@@ -351,7 +351,7 @@ HTML;
 		$OutWidth = $origin['x'] + max($NameBox['width'], $ExportBox['width']) + $TextMargin;
 
 		// Set image height
-		$OutHeight = max($origin['y'] + (($NameVerticalMargin*4) + $NameBox['height'] + $ExportBox['height'] + $CGsHeight), $OutHeight);
+		$OutHeight = max($origin['y'] + (($NameVerticalMargin*4) + $NameBox['height'] + $ExportBox['height']), $OutHeight);
 
 		// Create base image
 		$BaseImage = Image::createTransparent($OutWidth, $OutHeight);
