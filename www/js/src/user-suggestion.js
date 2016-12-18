@@ -26,6 +26,7 @@ DocReady.push(function UserSuggestion(){
 									console.log($output);
 									$output.remove();
 								}
+								else $btn.enable();
 								return $.Dialog.fail(false, this.message);
 							}
 
@@ -48,11 +49,15 @@ DocReady.push(function UserSuggestion(){
 								}));
 							});
 							$output.html($result);
-						}));
+							$btn.enable();
+						})).fail(function(){
+							$btn.enable();
+						});
 					};
 				$btn.on('click',function(e){
 					e.preventDefault();
 
+					$btn.disable();
 					$loadNotice.hide();
 
 					if (!pluginsLoaded){
