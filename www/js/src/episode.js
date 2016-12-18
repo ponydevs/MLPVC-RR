@@ -281,16 +281,9 @@ DocReady.push(function Episode(){
 
 	$.fn.rebindFluidbox = function(){
 		$(this).find('.screencap > a:not(.fluidbox--initialized)')
-			.fluidbox({
-				immediateOpen: true,
-				loader: true,
-			})
+			.fluidboxThis()
 			.on('openstart.fluidbox',function(){
 				disableLiveUpdate();
-				$body.addClass('no-distractions');
-			})
-			.on('closestart.fluidbox', function() {
-				$body.removeClass('no-distractions');
 			});
 	};
 	$._getLiTypeId = function($li){
@@ -744,7 +737,7 @@ DocReady.push(function Episode(){
 
 },function(){
 	'use strict';
-	$body.removeClass('no-distractions');
+	$body.removeClass('fluidbox-open');
 	$('.fluidbox--opened').fluidbox('close');
 	if (typeof window._rlinterval === 'number')
 		clearInterval(window._rlinterval);

@@ -6,6 +6,8 @@ DocReady.push(function UserSuggestion(){
 	$pendingReservations.on('click','#suggestion',function(e){
 		e.preventDefault();
 
+		let pluginsLoaded = false;
+
 		$.Dialog.info(
 			'Suggest a reservation',
 			`<p>Feeel like making a vector but don't have any screencap in mind? Why not fulfill a request?</p>
@@ -15,46 +17,53 @@ DocReady.push(function UserSuggestion(){
 				let $btn = $('#dialogContent').find('#suggestion-press'),
 					$output = $.mk('ul','suggestion-output').insertAfter($btn),
 					$loadNotice = $.mk('div').addClass('notice fail').hide().text('The image apparently failed to load - just click the button again to get a different suggestion.').insertAfter($output),
-					opened;
+					$pluginNotice = $.mk('div').addClass('notice info').hide().html('Loading Fluidbox plugin&hellip;').insertAfter($output),
+					suggest = function(){
+						$.post('/user/suggestion',$.mkAjaxHandler(function(){
+							if (!this.status){
+								if (this.limithit){
+									$btn.disable();
+									console.log($output);
+									$output.remove();
+								}
+								return $.Dialog.fail(false, this.message);
+							}
+
+							let $result = $(this.suggestion),
+								postID = $result.attr('id');
+							$result.find('img').on('load',function(){
+								let $this = $(this);
+								$this.parents('.image').addClass('loaded');
+								$this.parents('a').fluidboxThis();
+							}).on('error',function(){
+								$loadNotice.show();
+							});
+							$result.find('.reserve-request').on('click',function(){
+								let $this = $(this);
+								$.post('/post/reserve-'+(postID.replace('-','/')),{SUGGESTED:true},$.mkAjaxHandler(function(){
+									if (!this.status) return $.Dialog.fail(false, this.message);
+
+									$this.replaceWith(this.button);
+									$pendingReservations.html($(this.pendingReservations).children());
+								}));
+							});
+							$output.html($result);
+						}));
+					};
 				$btn.on('click',function(e){
 					e.preventDefault();
 
 					$loadNotice.hide();
-					if (opened){
-						opened.close();
-						opened = undefined;
+
+					if (!pluginsLoaded){
+						$pluginNotice.show();
+						$output.find('.screencap > a').fluidboxThis(function(){
+							pluginsLoaded = true;
+							$pluginNotice.remove();
+							suggest();
+						});
 					}
-					$.post('/user/suggestion',$.mkAjaxHandler(function(){
-						if (!this.status){
-							if (this.limithit){
-								$btn.disable();
-								console.log($output);
-								$output.remove();
-							}
-							return $.Dialog.fail(false, this.message);
-						}
-
-						let $result = $(this.suggestion),
-							postID = $result.attr('id');
-						$result.find('img').on('error',function(){
-							$loadNotice.show();
-						});
-						$result.find('.screencap > a').on('click',function(e){
-							let $this = $(this);
-							opened = $.PopupOpenCenter($this.attr('href'), 'suggestion_popup',800,450);
-							e.preventDefault();
-						});
-						$result.find('.reserve-request').on('click',function(){
-							let $this = $(this);
-							$.post('/post/reserve-'+(postID.replace('-','/')),{SUGGESTED:true},$.mkAjaxHandler(function(){
-								if (!this.status) return $.Dialog.fail(false, this.message);
-
-								$this.replaceWith(this.button);
-								$pendingReservations.html($(this.pendingReservations).children());
-							}));
-						});
-						$output.html($result);
-					}));
+					else suggest();
 				});
 			}
 		);

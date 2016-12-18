@@ -235,3 +235,7 @@ body.dialog-open {
 		&:focus { border-color: rgba(black, .2) }
 	}
 }
+
+body.fluidbox-in-dialog #dialogContent {
+	overflow: visible;
+}

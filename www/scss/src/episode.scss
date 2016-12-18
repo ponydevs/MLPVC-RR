@@ -1,7 +1,6 @@
 @import "vars";
-@import "jquery.fluidbox";
+@import "fluidbox";
 @import "theme_post-ul";
-.fluidbox__overlay { background: rgba(0,0,0,.9) !important }
 
 
 /* Mobile-only Styles */
@@ -60,7 +59,7 @@
 }
 /* Desktop-only Styles */
 @media all and (min-width: $Breakpoint){
-	body.no-distractions {
+	body.fluidbox-open {
 		overflow: hidden;
 		padding-right: 18px;
 
@@ -253,9 +252,8 @@
 		}
 		&.posts {
 			ul {
-				li .image > a .fluidbox__wrap { max-width: inherit }
-
 				@extend %post-ul;
+				@extend %post-ul-fluidbox;
 			}
 			.unfinished ul li {
 				.image > a.fluidbox--initialized { cursor: zoom-in }

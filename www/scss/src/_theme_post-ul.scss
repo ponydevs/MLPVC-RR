@@ -175,3 +175,6 @@
 	}
 	&:empty:before { content: "None yet." }
 }
+%post-ul-fluidbox {
+	li .image > a .fluidbox__wrap { max-width: inherit }
+}

@@ -644,6 +644,62 @@
 	};
 
 	window.OpenSidebarByDefault = () => Math.max(document.documentElement.clientWidth, window.innerWidth || 0) >= 1200;
+
+	let fluidboxThisAction = (jQueryObject) => {
+		jQueryObject.fluidbox({
+			immediateOpen: true,
+			loader: true,
+		})
+		.on('openstart.fluidbox',function(){
+			$body.addClass('fluidbox-open');
+			let $this = $(this);
+			if ($this.parents('#dialogContent').length)
+				$body.addClass('fluidbox-in-dialog');
+		})
+		.on('openend.fluidbox',function(){
+			let $this = $(this),
+				href = $this.attr('href');
+			$this.data('href', href);
+			$this.removeAttr('href');
+			let $ghost = $this.find('.fluidbox__ghost');
+			if ($ghost.children().length === 0)
+				$this.find('.fluidbox__ghost').append(
+					$.mk('img').attr('src',href).css({
+						opacity: 0,
+						width: '100%',
+						height: '100%',
+					})
+				);
+		})
+		.on('closestart.fluidbox', function() {
+			$body.removeClass('fluidbox-open');
+			let $this = $(this);
+			$this.attr('href', $this.data('href'));
+			$this.removeData('href');
+		})
+		.on('closeend.fluidbox',function(){
+			$body.removeClass('fluidbox-in-dialog');
+		});
+	};
+	$.fn.fluidboxThis = function(callback){
+		if (typeof $.fn.fluidbox === 'function'){
+			fluidboxThisAction(this);
+			$.callCallback(callback);
+		}
+		else {
+			$.getScript('/js/min/jquery.ba-throttle-debounce.js',() => {
+				$.getScript('/js/min/jquery.fluidbox.js',() => {
+					fluidboxThisAction(this);
+					$.callCallback(callback);
+				}).fail(function(){
+					$.Dialog.fail(false, 'Loading Fluidbox plugin failed');
+				});
+			}).fail(function(){
+				$.Dialog.fail(false, 'Loading Debounce/throttle plugin failed');
+			});
+		}
+		return this;
+	};
 	
 	// http://stackoverflow.com/a/16861050
 	let popupCalcCenter = (w, h) => {

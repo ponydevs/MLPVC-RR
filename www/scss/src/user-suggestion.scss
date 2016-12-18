@@ -1,8 +1,10 @@
 @import "vars";
 @import "theme_post-ul";
+@import "fluidbox";
 
 #suggestion-output {
 	@extend %post-ul;
+	@extend %post-ul-fluidbox;
 
 	&:empty {
 		display: none;
@@ -16,10 +18,29 @@
 		box-sizing: border-box;
 
 		.image {
-			a { cursor: zoom-in }
-			img {
-				height: auto;
-				max-width: 100%;
+			&:not(.loaded){
+				// Image + Margin + Borders
+				$height: 200px + 10px + 2px;
+				width: $height*(1.77);
+				height: $height;
+				background: url(/img/loading-ring.svg) no-repeat center;
+				background-size: 50%;
+
+				> a { opacity: 0 }
+			}
+			&.loaded {
+				> a {
+					opacity: 1;
+					transition: opacity .3s linear;
+				}
+				img {
+					height: auto;
+					max-width: 100%;
+					max-height: 200px;
+				}
+			}
+			> a {
+				cursor: zoom-in;
 			}
 		}
 		.label {
