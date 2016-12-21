@@ -296,7 +296,7 @@
 					}));
 				buttons.push(new DialogButton('Cancel', { action: closeAction }));
 			}
-			else buttons.push(new DialogButton('Close', { formid }));
+			else buttons.push(new DialogButton('Close', { action: closeAction }));
 
 			this._display({
 				type: 'request',

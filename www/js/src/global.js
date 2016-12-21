@@ -1363,8 +1363,9 @@ $(function(){
 		let title = 'Colour Average Calculator',
 			callme = function(){
 				$.Dialog.close();
-				$.Dialog.request(title,window.$ColorAvgFormTemplate.clone(true,true),false, function($form){
-					$form.triggerHandler('added');
+				let $clone = window.$ColorAvgFormTemplate.clone(true,true);
+				$.Dialog.request(title,$clone,false, function(){
+					$clone.triggerHandler('added');
 				});
 			};
 
