@@ -293,8 +293,9 @@ DocReady.push(function Episode(){
 			type: ident[0]+'s',
 		};
 	};
-	$.fn.rebindHandlers = function(){
-		this.find('li[id]').each(function(){
+	$.fn.rebindHandlers = function(isLi){
+		let $collection = isLi ? this : this.find('li[id]');
+		$collection.each(function(){
 			let $li = $(this),
 				ident = $._getLiTypeId($li);
 
@@ -619,7 +620,8 @@ DocReady.push(function Episode(){
 			$li.replaceWith($newli);
 			$newli.rebindFluidbox();
 			Time.Update();
-			$newli.rebindHandlers();
+			$newli.rebindHandlers(true);
+			console.log(`[POST-FIX] Reloaded ${type} #${id}`);
 		}));
 	};
 
