@@ -514,6 +514,7 @@ HTML;
 		$Image = "<div class='image screencap'><a href='$ImageLink'><img src='{$Post->preview}$cachebust' alt='$alt'></a></div>";
 		$post_label = self::_getPostLabel($Post);
 		$permalink = "<a href='$postlink'>".Time::tag($Post->posted).'</a>';
+		$isStaff = Permission::sufficient('staff');
 
 		$posted_at = '<em class="post-date">';
 		if ($isRequest){
@@ -523,7 +524,7 @@ HTML;
 			$overdue = Permission::sufficient('member') && $Post->isOverdue();
 
 			$posted_at .= "Requested $permalink";
-			if ($signedIn && (Permission::sufficient('staff') || $isRequester || $isReserver))
+			if ($signedIn && ($isStaff || $isRequester || $isReserver))
 				$posted_at .= ' by '.($isRequester ? "<a href='/@{$currentUser->name}'>You</a>" : Users::get($Post->requested_by)->getProfileLink());
 		}
 		else {
@@ -532,7 +533,7 @@ HTML;
 		}
 		$posted_at .= "</em>";
 
-		$hide_reserved_status = !isset($Post->reserved_by) || ($overdue && !$isReserver);
+		$hide_reserved_status = !isset($Post->reserved_by) || ($overdue && !$isReserver && !$isStaff);
 		if (!empty($Post->reserved_by)){
 			$Post->Reserver = Users::get($Post->reserved_by);
 			$reserved_by = $overdue && !$isReserver ? ' by '.$Post->Reserver->getProfileLink() : '';
@@ -554,7 +555,7 @@ HTML;
 						$Image .= "<span class='typcn typcn-tick' title='This submission has been accepted into the group gallery'></span>";
 					$Image .= "</a></div>";
 				}
-				if (Permission::sufficient('staff')){
+				if ($isStaff){
 					$finished_at = !empty($Post->finished_at) ? "<em class='finish-date'>Finished <strong>".Time::tag($Post->finished_at)."</strong></em>" : '';
 					$locked_at = '';
 					if ($approved){
@@ -579,7 +580,7 @@ HTML;
 		}
 		else $Image .= $post_label.$posted_at;
 
-		if ($overdue && (Permission::sufficient('staff') || $isReserver))
+		if ($overdue && ($isStaff || $isReserver))
 			$Image .= self::CONTESTABLE;
 
 		if ($hide_reserved_status)
