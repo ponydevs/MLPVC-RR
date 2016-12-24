@@ -458,7 +458,7 @@ DocReady.push(function EpisodeManage(){
 		$actions.filter('.delete').off('click').on('click',function(){
 			let $this = $(this);
 
-			$.Dialog.confirm('Deleteing request', 'You are about to permanently delete this request.<br>Are you sure about this?', function(sure){
+			$.Dialog.confirm(`Deleteing request #${id}`, 'You are about to permanently delete this request.<br>Are you sure about this?', function(sure){
 				if (!sure) return;
 
 				$.Dialog.wait(false);

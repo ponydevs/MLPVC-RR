@@ -619,7 +619,7 @@ DocReady.push(function Episode(){
 			$li.replaceWith($newli);
 			$newli.rebindFluidbox();
 			Time.Update();
-			$newli.trigger('rebind-handlers', [id, type]);
+			$newli.rebindHandlers();
 		}));
 	};
 
