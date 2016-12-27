@@ -543,7 +543,7 @@ DocReady.push(function ColorguideManage(){
 				$el = $.mk('div').attr('class','clr');
 
 			if (typeof color === 'object'){
-				if (color.hex) $ci.val(color.hex);
+				if (color.hex) $ci.val(color.hex.toUpperCase());
 				if (color.label) $cl.val(color.label);
 			}
 
