@@ -42,6 +42,13 @@ class PostController extends Controller {
 		Response::done(array('li' => Posts::getLi($this->_post, isset($_POST['FROM_PROFILE']), true)));
 	}
 
+	function _checkPostEditPermission($thing){
+		global $currentUser;
+
+		if (!(Permission::sufficient('staff') || ($thing === 'request' && empty($this->_post->reserved_by) && $this->_post->requested_by === $currentUser->id)))
+			Response::fail();
+	}
+
 	function action($params){
 		global $Database, $currentUser;
 
@@ -51,11 +58,10 @@ class PostController extends Controller {
 		$action = $params['action'];
 		$this->_initPost($action, $params);
 
-		if (!(Permission::sufficient('staff') || ($thing === 'request' && empty($this->_post->reserved_by) && $this->_post->requested_by === $currentUser->id)))
-			Response::fail();
-
 		switch ($action){
 			case "get":
+				$this->_checkPostEditPermission($thing);
+
 				$response = array(
 					'label' => $this->_post->label,
 				);
@@ -73,6 +79,8 @@ class PostController extends Controller {
 				Response::done($response);
 			break;
 			case "set":
+				$this->_checkPostEditPermission($thing);
+
 				$update = array();
 				Posts::checkPostDetails($thing, $update, $this->_post);
 
