@@ -26986,7 +26986,8 @@
 				377,
 				398,
 				400,
-				401
+				401,
+				431
 			],
 			"RelatedAppearances": []
 		},
@@ -28294,9 +28295,166 @@
 			],
 			"RelatedAppearances": []
 		},
+		"231": {
+			"id": 231,
+			"order": 160,
+			"label": "Leadwing",
+			"notes": "Based on S5E10. Does not have shadow Coat colors. Cutie Mark colors may be inaccurate due to lack of suitable close-ups.\n<b>Lenses</b> are a gradient, starting at 80% opacity on the top and ending at 35% on the bottom.",
+			"cm_favme": null,
+			"ishuman": false,
+			"added": "2016-12-27 13:14:39.655841+01",
+			"cm_preview": null,
+			"cm_dir": null,
+			"private": false,
+			"ColorGroups": {
+				"1219": {
+					"groupid": 1219,
+					"label": "Coat",
+					"order": 0,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#255D81"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#5B8FBD"
+						}
+					]
+				},
+				"1224": {
+					"groupid": 1224,
+					"label": "Hooves",
+					"order": 1,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#122A4E"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#2F5E9F"
+						}
+					]
+				},
+				"1220": {
+					"groupid": 1220,
+					"label": "Mane & Tail",
+					"order": 2,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#0D356D"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#1652AA"
+						}
+					]
+				},
+				"1221": {
+					"groupid": 1221,
+					"label": "Iris",
+					"order": 3,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Gradient Top",
+							"hex": "#183881"
+						},
+						{
+							"order": 1,
+							"label": "Gradient Middle",
+							"hex": "#6D9FF2"
+						},
+						{
+							"order": 2,
+							"label": "Gradient Bottom",
+							"hex": "#B1E1F9"
+						}
+					]
+				},
+				"1222": {
+					"groupid": 1222,
+					"label": "Cutie Mark",
+					"order": 4,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Wings",
+							"hex": "#5D5D5D"
+						},
+						{
+							"order": 1,
+							"label": "Pencil Eraser",
+							"hex": "#F18A67"
+						},
+						{
+							"order": 2,
+							"label": "Pencil Fill 1",
+							"hex": "#F5AD12"
+						},
+						{
+							"order": 3,
+							"label": "Pencil Fill 2",
+							"hex": "#F5C45D"
+						},
+						{
+							"order": 4,
+							"label": "Pencil Head",
+							"hex": "#E4BBAE"
+						},
+						{
+							"order": 5,
+							"label": "Pencil Tip",
+							"hex": "#000000"
+						}
+					]
+				},
+				"1223": {
+					"groupid": 1223,
+					"label": "Glasses",
+					"order": 5,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Frame Outline",
+							"hex": "#353535"
+						},
+						{
+							"order": 1,
+							"label": "Frame Fill",
+							"hex": "#707070"
+						},
+						{
+							"order": 2,
+							"label": "Lens Fill",
+							"hex": "#FFFFFF"
+						}
+					]
+				}
+			},
+			"TagIDs": [
+				2,
+				7,
+				8,
+				11,
+				312,
+				351,
+				450,
+				451
+			],
+			"RelatedAppearances": []
+		},
 		"64": {
 			"id": 64,
-			"order": 160,
+			"order": 161,
 			"label": "Angel Bunny",
 			"notes": "",
 			"cm_favme": null,
@@ -28415,7 +28573,7 @@
 		},
 		"112": {
 			"id": 112,
-			"order": 161,
+			"order": 162,
 			"label": "Gummy",
 			"notes": "In 3/4 view, the top line on his far eye uses the \"Far Eye Top Line\" color instead of the normal gradient.",
 			"cm_favme": null,
@@ -28557,7 +28715,7 @@
 		},
 		"116": {
 			"id": 116,
-			"order": 162,
+			"order": 163,
 			"label": "Winona",
 			"notes": "",
 			"cm_favme": null,
@@ -28695,7 +28853,7 @@
 		},
 		"117": {
 			"id": 117,
-			"order": 163,
+			"order": 164,
 			"label": "Owlowiscious",
 			"notes": "",
 			"cm_favme": null,
@@ -28787,7 +28945,7 @@
 		},
 		"119": {
 			"id": 119,
-			"order": 164,
+			"order": 165,
 			"label": "Tank",
 			"notes": "Far Legs use darker colors.\nIn some scenes, Tank uses an alternate set of colors for the tongue.\nFor the goggle lenses, group together the Fill and the Highlights (100% Normal blending) and set the group to 50% opacity.",
 			"cm_favme": null,
@@ -29059,7 +29217,7 @@
 		},
 		"120": {
 			"id": 120,
-			"order": 165,
+			"order": 166,
 			"label": "Opalescence",
 			"notes": "",
 			"cm_favme": null,
@@ -29261,7 +29419,7 @@
 		},
 		"109": {
 			"id": 109,
-			"order": 166,
+			"order": 167,
 			"label": "Zecora",
 			"notes": "Based on S4E14.",
 			"cm_favme": null,
@@ -29429,7 +29587,7 @@
 		},
 		"113": {
 			"id": 113,
-			"order": 167,
+			"order": 168,
 			"label": "Orange Frog",
 			"notes": "",
 			"cm_favme": null,
@@ -29528,7 +29686,7 @@
 		},
 		"122": {
 			"id": 122,
-			"order": 168,
+			"order": 169,
 			"label": "Pig (Peach Skin)",
 			"notes": "",
 			"cm_favme": null,
@@ -29653,7 +29811,7 @@
 		},
 		"123": {
 			"id": 123,
-			"order": 169,
+			"order": 170,
 			"label": "Pig (Pink Skin)",
 			"notes": "Muddy Nostril color unknown",
 			"cm_favme": null,
@@ -29773,7 +29931,7 @@
 		},
 		"124": {
 			"id": 124,
-			"order": 170,
+			"order": 171,
 			"label": "Pig (Dark Skin)",
 			"notes": "Muddy Nostril color unknown",
 			"cm_favme": null,
@@ -29893,7 +30051,7 @@
 		},
 		"139": {
 			"id": 139,
-			"order": 171,
+			"order": 172,
 			"label": "Cranky Doodle Donkey",
 			"notes": "<strong>Toupee \\#1</strong> is up through half-way of \"A Friend in Deed\"\n<strong>Toupee \\#2</strong> is from \"A Friend in Deed\" through most of \"Slice of Life\"\n<strong>Toupee \\#3</strong> is from end of \"Slice of Life\" onward.",
 			"cm_favme": null,
@@ -30049,7 +30207,7 @@
 		},
 		"140": {
 			"id": 140,
-			"order": 172,
+			"order": 173,
 			"label": "Matilda",
 			"notes": "",
 			"cm_favme": null,
@@ -30223,7 +30381,7 @@
 		},
 		"179": {
 			"id": 179,
-			"order": 173,
+			"order": 174,
 			"label": "Cipactli",
 			"notes": "Eyes use radial gradient; inner color should be set about 50% position and then outer color at 100% position",
 			"cm_favme": null,
@@ -30442,7 +30600,7 @@
 		},
 		"184": {
 			"id": 184,
-			"order": 174,
+			"order": 175,
 			"label": "Thorax / Changeling",
 			"notes": "",
 			"cm_favme": null,
@@ -30625,13 +30783,14 @@
 				377,
 				398,
 				399,
+				431,
 				437
 			],
 			"RelatedAppearances": []
 		},
 		"193": {
 			"id": 193,
-			"order": 175,
+			"order": 176,
 			"label": "Gabby",
 			"notes": "Eyes have three glimmer ovals like pony fillies.",
 			"cm_favme": null,
@@ -30888,7 +31047,7 @@
 		},
 		"204": {
 			"id": 204,
-			"order": 176,
+			"order": 177,
 			"label": "Tri-horned Bunyip",
 			"notes": "",
 			"cm_favme": null,
@@ -31115,7 +31274,7 @@
 		},
 		"210": {
 			"id": 210,
-			"order": 177,
+			"order": 178,
 			"label": "Changeling",
 			"notes": "",
 			"cm_favme": null,
@@ -31136,7 +31295,7 @@
 		},
 		"70": {
 			"id": 70,
-			"order": 178,
+			"order": 179,
 			"label": "Wonderbolt Uniform",
 			"notes": "",
 			"cm_favme": "da7pd3q",
@@ -31268,7 +31427,7 @@
 		},
 		"133": {
 			"id": 133,
-			"order": 179,
+			"order": 180,
 			"label": "Spitfire's Academy Outfit",
 			"notes": "",
 			"cm_favme": null,
@@ -31467,7 +31626,7 @@
 		},
 		"71": {
 			"id": 71,
-			"order": 180,
+			"order": 181,
 			"label": "Wonderbolt Trainee Uniform",
 			"notes": "The uppermost highlight on the Lead pony and Wingpony badges uses a different color and opacity than the rest.\nThe lenses of the goggles are comprised of two objects that do not overlap. The fill uses 67% normal blending and the highlight uses 50% overlay blending as far as we can tell.",
 			"cm_favme": null,
@@ -31611,7 +31770,7 @@
 		},
 		"105": {
 			"id": 105,
-			"order": 181,
+			"order": 182,
 			"label": "Pony Tones Outfit",
 			"notes": "",
 			"cm_favme": null,
@@ -31720,7 +31879,7 @@
 		},
 		"144": {
 			"id": 144,
-			"order": 182,
+			"order": 183,
 			"label": "Rainbow Dash's Robe",
 			"notes": "",
 			"cm_favme": null,
@@ -31842,7 +32001,7 @@
 		},
 		"181": {
 			"id": 181,
-			"order": 183,
+			"order": 184,
 			"label": "Cheerilee's Cheerleader Outfit",
 			"notes": "Worn by #79 in S6E14",
 			"cm_favme": null,
@@ -31998,7 +32157,7 @@
 		},
 		"183": {
 			"id": 183,
-			"order": 184,
+			"order": 185,
 			"label": "Filly Scout Uniform",
 			"notes": "",
 			"cm_favme": null,
@@ -32176,7 +32335,7 @@
 		},
 		"186": {
 			"id": 186,
-			"order": 185,
+			"order": 186,
 			"label": "Crystal Empire Guard Armor",
 			"notes": "",
 			"cm_favme": null,
@@ -32253,7 +32412,7 @@
 		},
 		"187": {
 			"id": 187,
-			"order": 186,
+			"order": 187,
 			"label": "Rainbow Rogue's Outfit",
 			"notes": "Use standard cutie mark vector for broach and belt decoration",
 			"cm_favme": null,
@@ -32422,7 +32581,7 @@
 		},
 		"188": {
 			"id": 188,
-			"order": 187,
+			"order": 188,
 			"label": "Bard Pie's Outfit",
 			"notes": "",
 			"cm_favme": null,
@@ -32641,7 +32800,7 @@
 		},
 		"189": {
 			"id": 189,
-			"order": 188,
+			"order": 189,
 			"label": "Garbunkle's Outfit",
 			"notes": "",
 			"cm_favme": null,
@@ -32817,7 +32976,7 @@
 		},
 		"190": {
 			"id": 190,
-			"order": 189,
+			"order": 190,
 			"label": "Sir McBiggen's Outfit",
 			"notes": "",
 			"cm_favme": null,
@@ -33129,7 +33288,7 @@
 		},
 		"191": {
 			"id": 191,
-			"order": 190,
+			"order": 191,
 			"label": "Captain Wuzz's Outfit",
 			"notes": "",
 			"cm_favme": null,
@@ -33467,7 +33626,7 @@
 		},
 		"192": {
 			"id": 192,
-			"order": 191,
+			"order": 192,
 			"label": "Ponyville Buckball Uniform",
 			"notes": "",
 			"cm_favme": null,
@@ -33534,7 +33693,7 @@
 		},
 		"200": {
 			"id": 200,
-			"order": 192,
+			"order": 193,
 			"label": "Impossibly Rich",
 			"notes": "",
 			"cm_favme": null,
@@ -33800,7 +33959,7 @@
 		},
 		"202": {
 			"id": 202,
-			"order": 193,
+			"order": 194,
 			"label": "Captain Jackbeard",
 			"notes": "",
 			"cm_favme": null,
@@ -33936,7 +34095,7 @@
 		},
 		"203": {
 			"id": 203,
-			"order": 194,
+			"order": 195,
 			"label": "Captain Rarity",
 			"notes": "",
 			"cm_favme": null,
@@ -34241,7 +34400,7 @@
 		},
 		"205": {
 			"id": 205,
-			"order": 195,
+			"order": 196,
 			"label": "Lifejacket",
 			"notes": "",
 			"cm_favme": null,
@@ -34292,7 +34451,7 @@
 		},
 		"206": {
 			"id": 206,
-			"order": 196,
+			"order": 197,
 			"label": "Derpy's Mail Uniform",
 			"notes": "",
 			"cm_favme": null,
@@ -34474,7 +34633,7 @@
 		},
 		"207": {
 			"id": 207,
-			"order": 197,
+			"order": 198,
 			"label": "80s Cheerilee Outfit",
 			"notes": "",
 			"cm_favme": null,
@@ -34594,8 +34753,7 @@
 				227,
 				228,
 				229,
-				420,
-				429
+				420
 			],
 			"RelatedAppearances": [
 				79
@@ -34603,7 +34761,7 @@
 		},
 		"211": {
 			"id": 211,
-			"order": 198,
+			"order": 199,
 			"label": "Changeling Armor",
 			"notes": "",
 			"cm_favme": null,
@@ -34624,7 +34782,7 @@
 		},
 		"215": {
 			"id": 215,
-			"order": 199,
+			"order": 200,
 			"label": "Rainbow Dash's Bomber Jacket",
 			"notes": "",
 			"cm_favme": null,
@@ -34829,7 +34987,7 @@
 		},
 		"216": {
 			"id": 216,
-			"order": 200,
+			"order": 201,
 			"label": "Princess Ember's Disguise",
 			"notes": "",
 			"cm_favme": null,
@@ -34850,7 +35008,7 @@
 		},
 		"217": {
 			"id": 217,
-			"order": 201,
+			"order": 202,
 			"label": "Rainbow Dash's Mechanics Outfit",
 			"notes": "",
 			"cm_favme": null,
@@ -34971,7 +35129,7 @@
 		},
 		"218": {
 			"id": 218,
-			"order": 202,
+			"order": 203,
 			"label": "Applejack's Mechanics Outfit",
 			"notes": "",
 			"cm_favme": null,
@@ -35076,7 +35234,7 @@
 		},
 		"219": {
 			"id": 219,
-			"order": 203,
+			"order": 204,
 			"label": "Rarity's Mechanics Outfit",
 			"notes": "",
 			"cm_favme": null,
@@ -35182,7 +35340,7 @@
 		},
 		"201": {
 			"id": 201,
-			"order": 204,
+			"order": 205,
 			"label": "Rarity's Titanic Outfit",
 			"notes": "",
 			"cm_favme": null,
@@ -35449,7 +35607,7 @@
 		},
 		"228": {
 			"id": 228,
-			"order": 205,
+			"order": 206,
 			"label": "Rarity's Detective Outfit",
 			"notes": "From \"Rarity Investigates\"",
 			"cm_favme": null,
@@ -35565,7 +35723,7 @@
 		},
 		"229": {
 			"id": 229,
-			"order": 206,
+			"order": 207,
 			"label": "Rarity's Seductive Dress",
 			"notes": "From S5E15\n\nThe outfit is not shown where there would be a shadow color for one of the forelegs.",
 			"cm_favme": null,
@@ -35708,7 +35866,7 @@
 		},
 		"33": {
 			"id": 33,
-			"order": 207,
+			"order": 208,
 			"label": "Alicorn Amulet",
 			"notes": "",
 			"cm_favme": null,
@@ -35901,7 +36059,7 @@
 		},
 		"86": {
 			"id": 86,
-			"order": 208,
+			"order": 209,
 			"label": "Scorpan's Medallion",
 			"notes": "",
 			"cm_favme": null,
@@ -35980,7 +36138,7 @@
 		},
 		"94": {
 			"id": 94,
-			"order": 209,
+			"order": 210,
 			"label": "Party Cannon",
 			"notes": "",
 			"cm_favme": null,
@@ -36112,7 +36270,7 @@
 		},
 		"115": {
 			"id": 115,
-			"order": 210,
+			"order": 211,
 			"label": "Fake Timberwolf",
 			"notes": "",
 			"cm_favme": null,
@@ -36322,7 +36480,7 @@
 		},
 		"154": {
 			"id": 154,
-			"order": 211,
+			"order": 212,
 			"label": "Twilight's Crown",
 			"notes": "From S4 onward",
 			"cm_favme": null,
@@ -36377,7 +36535,7 @@
 		},
 		"156": {
 			"id": 156,
-			"order": 212,
+			"order": 213,
 			"label": "Rainbow Dash's Bandaids (Newbie Dash)",
 			"notes": "Sampled from S6E7",
 			"cm_favme": null,
@@ -36447,7 +36605,7 @@
 		},
 		"182": {
 			"id": 182,
-			"order": 213,
+			"order": 214,
 			"label": "Rainbow Cookie Zombie Effects",
 			"notes": "Colors of this effect are not muted even if the pony's coat ends up muted. This effect is dimmed with any night filters.\nTo get the muted coat/mane/other colors for any character, take the RGB value of the color, average the R, G, B values, and adjust each RGB value 50% of the way to that average. For example, if RGB is 120, 60, 120, the average is 100. The R value of 120 would then move 50%*(120-100) or 10 (ending up at 110), the G value of 60 would move 50%*(100-60) or 20 (ending up at 80).",
 			"cm_favme": null,
@@ -36510,7 +36668,7 @@
 		},
 		"199": {
 			"id": 199,
-			"order": 214,
+			"order": 215,
 			"label": "Hypnotized Mane 6 Eyes",
 			"notes": "Eye colors for the Mane 6 (except Twilight) due to Starlight Glimmer's spell from S6E21.\nAll other body and mane/tail colors remain the same.",
 			"cm_favme": null,
@@ -36677,7 +36835,7 @@
 			"name": "earth pony",
 			"title": null,
 			"type": "spec",
-			"uses": 68,
+			"uses": 69,
 			"synonym_of": null
 		},
 		"3": {
@@ -36717,7 +36875,7 @@
 			"name": "minor character",
 			"title": "Ponies who had a speaking role, interacted with the mane six, or whose only purpose is to fill crowds.",
 			"type": "cat",
-			"uses": 137,
+			"uses": 138,
 			"synonym_of": null
 		},
 		"8": {
@@ -36749,7 +36907,7 @@
 			"name": "male",
 			"title": null,
 			"type": "gen",
-			"uses": 70,
+			"uses": 71,
 			"synonym_of": null
 		},
 		"12": {
@@ -39045,7 +39203,7 @@
 			"name": "s05e10",
 			"title": null,
 			"type": "ep",
-			"uses": 1,
+			"uses": 2,
 			"synonym_of": null
 		},
 		"313": {
@@ -39589,8 +39747,8 @@
 			"name": "thorax",
 			"title": null,
 			"type": "char",
-			"uses": 3,
-			"synonym_of": null
+			"uses": 0,
+			"synonym_of": 431
 		},
 		"399": {
 			"tid": 399,
@@ -39832,14 +39990,6 @@
 			"uses": 1,
 			"synonym_of": null
 		},
-		"429": {
-			"tid": 429,
-			"name": "80s cheerilee",
-			"title": null,
-			"type": "app",
-			"uses": 1,
-			"synonym_of": null
-		},
 		"430": {
 			"tid": 430,
 			"name": "queen chrysalis",
@@ -39853,7 +40003,7 @@
 			"name": "king thorax",
 			"title": null,
 			"type": "char",
-			"uses": 1,
+			"uses": 3,
 			"synonym_of": null
 		},
 		"432": {
@@ -39999,6 +40149,22 @@
 			"type": "char",
 			"uses": 0,
 			"synonym_of": 447
+		},
+		"450": {
+			"tid": 450,
+			"name": "andy price",
+			"title": null,
+			"type": "char",
+			"uses": 0,
+			"synonym_of": 451
+		},
+		"451": {
+			"tid": 451,
+			"name": "leadwing",
+			"title": null,
+			"type": "char",
+			"uses": 1,
+			"synonym_of": null
 		}
 	}
 }
