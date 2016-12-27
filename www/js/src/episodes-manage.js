@@ -124,7 +124,7 @@ DocReady.push(function EpisodesManage(){
 
 		$.Dialog.wait(`Editing ${epid}`, `Getting ${movie?'movie':'episode'} details from server`);
 
-		$.post(`/episode/get`, {epid:epid}, $.mkAjaxHandler(function(){
+		$.post(`/episode/get/${epid}`, $.mkAjaxHandler(function(){
 			if (!this.status) return $.Dialog.fail(false,this.message);
 
 			let $EditEpForm = $EditEpFormTemplate.clone(true, true);
@@ -160,8 +160,7 @@ DocReady.push(function EpisodesManage(){
 
 					$.Dialog.wait(false, 'Saving changes');
 
-					data.epid = epid;
-					$.post(`/episode/edit`, data, $.mkAjaxHandler(function(){
+					$.post(`/episode/set/${epid}`, data, $.mkAjaxHandler(function(){
 						if (!this.status) return $.Dialog.fail(false, this.message);
 
 						$.Dialog.wait(false, 'Updating page', true);
@@ -186,7 +185,7 @@ DocReady.push(function EpisodesManage(){
 
 			$.Dialog.wait(false, 'Removing episode');
 
-			$.post(`/episode/delete`, {epid:epid}, $.mkAjaxHandler(function(){
+			$.post(`/episode/delete/${epid}`, $.mkAjaxHandler(function(){
 				if (!this.status) return $.Dialog.fail(false, this.message);
 
 				$.Dialog.wait(false, 'Reloading page', true);

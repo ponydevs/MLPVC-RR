@@ -63,29 +63,10 @@
 		CoreUtils::notFound();
 	}
 
-	// Static redirects
-	switch ($do){
-		// PAGES
-		case "logs":
-			$do = 'admin';
-			$data = rtrim("logs/$data",'/');
-			HTTP::redirect(rtrim("/$do/$data", '/'));
-		break;
-		case "u":
-			$do = 'user';
-		break;
-		case "cg":
-		case "colourguides":
-		case "colourguide":
-		case "colorguides":
-			$do = 'colorguide';
-		break;
-	}
-
-	// Load controller
-	$controller = INCPATH."controllers/$do.php";
-	if (!($do === 'colorguide' && preg_match(new RegExp('\.(svg|png)$'), $data)))
-		Users::authenticate();
-	if (!file_exists($controller))
+	require INCPATH.'routes.php';
+	$path = $do === 'index' ? '/' : "/$do".($data?"/$data":'');
+	$match = $router->match($path);
+	if (!isset($match['target']))
 		CoreUtils::notFound();
-	require $controller;
+	(\App\RouteHelper::processHandler($match['target']))($match['params']);
+

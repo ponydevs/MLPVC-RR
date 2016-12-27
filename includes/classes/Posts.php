@@ -246,9 +246,9 @@ class Posts {
 	/**
 	 * Generate HTML of requests for episode pages
 	 *
-	 * @param Request[] $Requests
-	 * @param bool      $returnArranged Return an arranged array of posts instead of raw HTML
-	 * @param bool      $loaders        Display loaders insead of empty sections
+	 * @param Post[] $Requests
+	 * @param bool   $returnArranged Return an arranged array of posts instead of raw HTML
+	 * @param bool   $loaders        Display loaders insead of empty sections
 	 *
 	 * @return string|array
 	 */
@@ -310,9 +310,9 @@ HTML;
 	/**
 	 * Generate HTML of reservations for episode pages
 	 *
-	 * @param Reservation[] $Reservations
-	 * @param bool          $returnArranged Return an arranged array of posts instead of raw HTML
-	 * @param bool          $loaders        Display loaders insead of empty sections
+	 * @param Post[] $Reservations
+	 * @param bool   $returnArranged Return an arranged array of posts instead of raw HTML
+	 * @param bool   $loaders        Display loaders insead of empty sections
 	 *
 	 * @return string|array
 	 */

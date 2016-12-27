@@ -25,6 +25,7 @@ switch ($do ?? null){
 	break;
 	case "s":
 		if (!empty($LinkedPost)){
+			$_oldTitle = $Title;
 			if (!$LinkedPost->isFinished)
 				$ThumbImage = $LinkedPost->preview;
 			else {
@@ -89,6 +90,8 @@ $Title = CoreUtils::escapeHTML($Title); ?>
 		echo'<meta name="robots" content="noindex, nofollow">';
 	if (isset($redirectto))
 		echo'<script>history.replaceState&&history.replaceState(history.state,"",'.JSON::encode($redirectto).')</script>'."\n";
+	if (isset($_oldTitle))
+		echo '<script>document.title='.JSON::encode($_oldTitle)."</script>\n";
 	if (isset($customCSS)){
 		foreach ($customCSS as $css)
 			echo "<link rel='stylesheet' href='$css'>\n";
@@ -119,7 +122,7 @@ ga('send','pageview');
 				</svg>
 				<div class="loader"></div>
 	            <img class="avatar" src="<?=$signedIn?$currentUser->avatar_url:GUEST_AVATAR?>" alt='<?=($signedIn?CoreUtils::aposEncode(CoreUtils::posess($currentUser->name)):'Guest').' avatar'?>'>
-			</li><?=CoreUtils::getNavigationHTML(isset($view) && $view === 'fatalerr')?></ul></nav>
+			</li><?=CoreUtils::getNavigationHTML(isset($view) && $view === 'fatalerr', $scope)?></ul></nav>
 	</header>
 
 	<div id="sidebar">

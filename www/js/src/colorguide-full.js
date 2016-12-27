@@ -59,7 +59,7 @@ DocReady.push(function ColorguideFull(){
 				list.push($(this).children().attr('data-href').split('/').pop().replace(/^(\d+)\D.*$/,'$1'));
 			});
 
-			$.post('/cg/full?reorder', {list:list.join(',')}, $.mkAjaxHandler(function(){
+			$.post('/cg/full/reorder', {list:list.join(',')}, $.mkAjaxHandler(function(){
 				if (!this.status) return $.Dialog.fail(false, this.message);
 
 				$fullList.removeClass('sorting').html(this.html);

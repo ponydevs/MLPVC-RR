@@ -15,7 +15,8 @@
 		"seinopsys/postgresql-database-class": "dev-master",
 		"cogpowered/finediff": "0.3.*",
 		"elasticsearch/elasticsearch": "~5.0",
-		"ongr/elasticsearch-dsl": ">=2.2"
+		"ongr/elasticsearch-dsl": ">=2.2",
+		"altorouter/altorouter": "1.2.0"
 	},
 	"require-dev": {
 		"phpunit/phpunit": "5.7.4"

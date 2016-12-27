@@ -799,7 +799,7 @@
 						clearInterval(closeCheck);
 						$.Dialog.wait(false, 'Reloading page');
 						$.Navigation.reload(function(){
-							if (userid)
+							if (userid && typeof window.ga === 'function')
 								window.ga('set', 'userId', userid);
 							$.Dialog.close();
 							popup.close();
@@ -846,7 +846,7 @@
 
 				$.Dialog.wait(title,'Signing out');
 
-				$.post('/signout',$.mkAjaxHandler(function(){
+				$.post('/da-auth/signout',$.mkAjaxHandler(function(){
 					if (!this.status) return $.Dialog.fail(title,this.message);
 
 					WSNotifications.disconnect('signout');

@@ -5,7 +5,7 @@ DocReady.push(function UserManage(){
 	let $briefing = $('#content').children('.briefing'),
 		name = $briefing.find('.username').text().trim(),
 		$currRole = $briefing.find('.rolelabel'),
-		currRole = $currRole.children('span').text(),
+		currRole = $currRole.text().trim(),
 		$RoleModFormTemplate = $.mk('form').attr('id','rolemod').html('<select name="newrole" required><optgroup label="Possible roles"></optgroup></select>'),
 		$OptGrp = $RoleModFormTemplate.find('optgroup'),
 		$banToggle = $('#ban-toggle'),
@@ -27,7 +27,7 @@ DocReady.push(function UserManage(){
 				let data = $form.mkData();
 				$.Dialog.wait(false,'Moving user to the new group');
 
-				$.post(`/user/newgroup/${name}`, data, $.mkAjaxHandler(function(){
+				$.post(`/user/setgroup/${name}`, data, $.mkAjaxHandler(function(){
 					if (this.already_in === true)
 						return $.Dialog.close();
 
@@ -71,7 +71,7 @@ DocReady.push(function UserManage(){
 						let message = this.message;
 						$.Dialog.wait(false, 'Reloading page', true);
 						$.Navigation.reload(function(){
-							if (action === 'banish') $.Dialog.success(title, '<p>What had to be done, has been done.</p><img src="/img/post-ban.svg">');
+							if (action === 'banish') $.Dialog.success(title, '<p>What had to be done, has been done.</p><img src="/img/post-ban.svg">', true);
 							else $.Dialog.success(title, message, true);
 						});
 					}));

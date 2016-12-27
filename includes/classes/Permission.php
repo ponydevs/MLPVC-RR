@@ -58,7 +58,8 @@ class Permission {
 		}
 		else $checkRole = $compareAgainst;
 
-		if (empty(self::ROLES[$role]))
+		$_target = self::ROLES[$role] ?? null;
+		if (!isset($_target))
 			throw new \Exception('Invalid role: '.$role);
 		$targetRole = $role;
 

@@ -57,7 +57,7 @@ DocReady.push(function About(){
 		PostsCTX = $PostStats.find('canvas').get(0).getContext("2d"),
 		PostsChart,
 		PostLegendColors = ["#46ACD3","#5240C3"];
-	$.post('/about/stats-posts',$.mkAjaxHandler(function(){
+	$.post('/about/stats?stat=posts',$.mkAjaxHandler(function(){
 		if (!this.status) return $PostStats.remove();
 
 		let Data = this.data;
@@ -105,7 +105,7 @@ DocReady.push(function About(){
 		ApprovalCTX = $ApprovalStats.find('canvas').get(0).getContext("2d"),
 		ApprovalChart,
 		ApprovalLegendColor = $.hex2rgb("#4DC742");
-	$.post('/about/stats-approvals',$.mkAjaxHandler(function(){
+	$.post('/about/stats?stat=approvals',$.mkAjaxHandler(function(){
 		if (!this.status) return $ApprovalStats.remove();
 
 		let Data = this.data,

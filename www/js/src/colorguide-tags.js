@@ -44,7 +44,7 @@ DocReady.push(function ColorguideTags(){
 
 					$.Dialog.wait(false,'Sending removal request');
 
-					$.post(`/cg/deltag/${tagID}`,$.mkAjaxHandler(function(){
+					$.post(`/cg/tag/del/${tagID}`,$.mkAjaxHandler(function(){
 						updateList.call(this, $tr, action);
 					}));
 				});
@@ -56,12 +56,12 @@ DocReady.push(function ColorguideTags(){
 
 				$.Dialog.wait(`${Action} ${tagName} ${merging?'into':'with'} another tag`, 'Retrieving tag list from server');
 
-				$.post('/cg/gettags',{not:tagID,action:action},$.mkAjaxHandler(function(){
+				$.post('/cg/get-tags',{not:tagID,action:action},$.mkAjaxHandler(function(){
 					if (!this.length){
 						if (this.undo)
 							return window.CGTagEditing.call(this, tagName, tagID, 'unsynon', $tr);
 
-						return $.Dialog.fail(false, this.message+'asdasasdasd');
+						return $.Dialog.fail(false, this.message);
 					}
 
 					let $TagActionForm = $.mk('form',`tag-${action}`),
@@ -102,7 +102,7 @@ DocReady.push(function ColorguideTags(){
 							let sent = $form.mkData();
 							$.Dialog.wait(false, (merging?'Merging':'Synonymizing')+' tags');
 
-							$.post(`/cg/${action}tag/${tagID}`,sent, $.mkAjaxHandler(function(){
+							$.post(`/cg/tag/${action}/${tagID}`,sent, $.mkAjaxHandler(function(){
 								updateList.call(this, $tr, action);
 							}));
 						});
@@ -129,7 +129,7 @@ DocReady.push(function ColorguideTags(){
 								let data = $form.mkData();
 								$.Dialog.wait(false, 'Removing synonym');
 
-								$.post(`/cg/unsynontag/${tagID}`,data,$.mkAjaxHandler(function(){
+								$.post(`/cg/tag/unsynon/${tagID}`,data,$.mkAjaxHandler(function(){
 									updateList.call(this, $tr, action);
 								}));
 							});
@@ -140,7 +140,7 @@ DocReady.push(function ColorguideTags(){
 			case "refresh":
 				$.Dialog.wait(`Refresh use count of ${tagName}`, 'Updating use count');
 
-				$.post('/cg/recounttag',{tagids:tagID}, tagUseUpdateHandler());
+				$.post('/cg/tags/recount-uses',{tagids:tagID}, tagUseUpdateHandler());
 			break;
 		}
 	};
@@ -164,6 +164,6 @@ DocReady.push(function ColorguideTags(){
 
 		$.Dialog.wait(title, 'Updating use count'+(tagIDs.length!==1?'s':''));
 
-		$.post('/cg/recounttag',{tagids:tagIDs.join(',')}, tagUseUpdateHandler(true));
+		$.post('/cg/tags/recount-uses',{tagids:tagIDs.join(',')}, tagUseUpdateHandler(true));
 	});
 });

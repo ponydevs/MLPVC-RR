@@ -2,6 +2,8 @@
 
 namespace App;
 
+use App\Models\Episode;
+
 class Input {
 	private $_type, $_source, $_key, $_origValue = null, $_value = null, $_respond = true, $_validator, $_range, $_silentFail;
 	private static $SUPPORTED_TYPES = array(
@@ -154,7 +156,7 @@ class Input {
 				if (!preg_match($REWRITE_REGEX,$this->_value) && !preg_match(new RegExp('^#[a-z\-]+$'),$this->_value)){
 					if (self::checkStringLength($this->_value, $this->_range, $code))
 						return $code;
-					if (!preg_match(new RegExp('^https?://[a-z\d/.-]+/[ -~]+$','i'), $this->_value))
+					if (!preg_match(new RegExp('^https?://[a-z\d/.-]+(?:/[ -~]+)?$','i'), $this->_value))
 						Response::fail('Link URL does not appear to be a valid link');
 				}
 			break;
@@ -183,7 +185,7 @@ class Input {
 					return $code;
 			break;
 			case "epid":
-				$this->_value = Episodes::parseID($this->_value);
+				$this->_value = Episode::parseID($this->_value);
 				if (empty($this->_value))
 					return self::ERROR_INVALID;
 			break;

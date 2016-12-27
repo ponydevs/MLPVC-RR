@@ -15,4 +15,6 @@
 		@include browser-backgrounds();
 	}
 	> section { @extend %section }
+
+	code { font-size: 1.3em }
 }

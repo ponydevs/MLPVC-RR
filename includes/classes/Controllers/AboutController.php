@@ -1,25 +1,35 @@
 <?php
 
+namespace App\Controllers;
+use App\CoreUtils;
 use App\CSRFProtection;
 use App\HTTP;
-use App\Time;
-use App\RegExp;
-use App\Response;
 use App\JSON;
+use App\Response;
 use App\Statistics;
-use App\CoreUtils;
+use App\Time;
 
-/** @var $do string */
+class AboutController extends Controller {
+	public $do = 'about';
 
-if (POST_REQUEST){
-	CSRFProtection::protect();
-	$StatCacheDuration = 5*Time::$IN_SECONDS['hour'];
+	function index(){
+		CoreUtils::loadPage(array(
+			'title' => 'About',
+			'do-css',
+			'js' => array('Chart', $this->do),
+		), $this);
+	}
 
-	$_match = array();
-	if (!empty($data) && preg_match(new RegExp('^stats-(posts|approvals)$'),$data,$_match)){
-		$stat = $_match[1];
+	const STAT_CHACHE_DURATION = 5*Time::IN_SECONDS['hour'];
+
+	function stats(){
+		global $Database;
+
+		CSRFProtection::protect();
+
+		$stat = strtolower(CoreUtils::trim($_GET['stat']));
 		$CachePath = APPATH."../fs/stats/$stat.json";
-		if (file_exists($CachePath) && filemtime($CachePath) > time() - $StatCacheDuration)
+		if (file_exists($CachePath) && filemtime($CachePath) > time() - self::STAT_CHACHE_DURATION)
 			Response::done(array('data' => JSON::decode(file_get_contents($CachePath))));
 
 		$Data = array('datasets' => array(), 'timestamp' => date('c'));
@@ -52,13 +62,13 @@ if (POST_REQUEST){
 				$RequestData = $Database->rawQuery(str_replace('table_name', 'requests', $query));
 				if (!empty($RequestData)){
 					$Dataset = array('label' => 'Requests', 'clrkey' => 0);
-					Statistics::processUsageData($RequestData, $Dataset);
+					Statistics::processUsageData($RequestData, $Dataset, $Labels);
 					$Data['datasets'][] = $Dataset;
 				}
 				$ReservationData = $Database->rawQuery(str_replace('table_name', 'reservations', $query));
 				if (!empty($ReservationData)){
 					$Dataset = array('label' => 'Reservations', 'clrkey' => 1);
-					Statistics::processUsageData($ReservationData, $Dataset);
+					Statistics::processUsageData($ReservationData, $Dataset, $Labels);
 					$Data['datasets'][] = $Dataset;
 				}
 			break;
@@ -83,7 +93,7 @@ if (POST_REQUEST){
 				);
 				if (!empty($Approvals)){
 					$Dataset = array('label' => 'Approved posts');
-					Statistics::processUsageData($Approvals, $Dataset);
+					Statistics::processUsageData($Approvals, $Dataset, $Labels);
 					$Data['datasets'][] = $Dataset;
 				}
 			break;
@@ -96,14 +106,4 @@ if (POST_REQUEST){
 
 		Response::done(array('data' => $Data));
 	}
-
-	CoreUtils::notFound();
 }
-
-HTTP::pushResource('/about/stats-posts');
-HTTP::pushResource('/about/stats-approvals');
-CoreUtils::loadPage(array(
-	'title' => 'About',
-	'do-css',
-	'js' => array('Chart', $do),
-));

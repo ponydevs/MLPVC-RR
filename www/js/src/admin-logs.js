@@ -57,7 +57,7 @@ DocReady.push(function Logs(){
 								$this.addClass('typcn-times color-red').css('cursor','not-allowed').off('click');
 							};
 
-						$.post(`/admin/logs/details/${EntryID}`, $.mkAjaxHandler(function(){
+						$.post(`/admin/logs/details/${EntryID}`,$.mkAjaxHandler(function(){
 							if (!this.status){
 								if (this.unlickable === true)
 									$this.replaceWith($this.text().trim());

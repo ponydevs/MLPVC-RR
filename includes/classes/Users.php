@@ -81,7 +81,7 @@ class Users {
 			$userdata = DeviantArt::request('user/whois', null, array('usernames[0]' => $username));
 		}
 		catch (CURLRequestException $e){
-			return null;
+			return false;
 		}
 
 		if (empty($userdata['results'][0]))
@@ -235,7 +235,7 @@ HTML;
 				$oldAuthKey = $authKey;
 				$authKey = bin2hex($authKey);
 				$Database->where('token', sha1($oldAuthKey))->update('sessions',array( 'token' => sha1($authKey) ));
-				Cookie::set('access', $authKey, time() + Time::$IN_SECONDS['year'], Cookie::HTTPONLY);
+				Cookie::set('access', $authKey, time() + Time::IN_SECONDS['year'], Cookie::HTTPONLY);
 			}
 			$currentUser = Users::get(sha1($authKey),'token');
 		}
@@ -259,7 +259,7 @@ HTML;
 
 				if ($tokenvalid){
 					$signedIn = true;
-					if (time() - strtotime($currentUser->Session['lastvisit']) > Time::$IN_SECONDS['minute']){
+					if (time() - strtotime($currentUser->Session['lastvisit']) > Time::IN_SECONDS['minute']){
 						$lastVisitTS = date('c');
 						if ($Database->where('id', $currentUser->Session['id'])->update('sessions', array('lastvisit' => $lastVisitTS)))
 							$currentUser->Session['lastvisit'] = $lastVisitTS;

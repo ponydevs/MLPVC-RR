@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Models\Episode;
 use Elasticsearch\Common\Exceptions\Missing404Exception as ElasticMissing404Exception;
 use Elasticsearch\Common\Exceptions\NoNodesAvailableException as ElasticNoNodesAvailableException;
 
@@ -57,7 +58,7 @@ class Appearances {
 
 			$RenderPath = FSPATH."cg_render/{$Appearance['id']}.png";
 			$FileModTime = '?t='.(file_exists($RenderPath) ? filemtime($RenderPath) : time());
-			$Actions = "<a class='btn typcn typcn-image darkblue' title='View as PNG' href='/cg/{$eqgp}v/{$Appearance['id']}.png$FileModTime' target='_blank'></a>".
+			$Actions = "<a class='btn typcn typcn-image darkblue' title='View as PNG' href='/cg/{$eqgp}v/{$Appearance['id']}p.png$FileModTime' target='_blank'></a>".
 			           "<button class='getswatch typcn typcn-brush teal' title='Download swatch file'></button>";
 			if (Permission::sufficient('staff'))
 				$Actions .= "<button class='edit typcn typcn-pencil blue' title='Edit'></button>".
@@ -449,7 +450,7 @@ class Appearances {
 			$List = '';
 			foreach ($EpAppearances as $tag){
 				$name = strtoupper($tag['name']);
-				$EpData = Episodes::parseID($name);
+				$EpData = Episode::parseID($name);
 				$Ep = Episodes::getActual($EpData['season'], $EpData['episode'], $allowMovies);
 				$List .= (
 					empty($Ep)
@@ -511,7 +512,7 @@ HTML;
 	 */
 	static function getCMPreviewSVGURL(int $AppearanceID){
 		$path = str_replace('#',$AppearanceID,CGUtils::CMDIR_SVG_PATH);
-		return "/cg/v/{$AppearanceID}.svg?t=".(file_exists($path) ? filemtime($path) : time());
+		return "/cg/v/{$AppearanceID}d.svg?t=".(file_exists($path) ? filemtime($path) : time());
 	}
 
 	/**

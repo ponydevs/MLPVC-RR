@@ -131,7 +131,7 @@ DocReady.push(function ColorguideManage(){
 									$.Dialog.close();
 									$.Dialog.wait('Clear appearance image cache','Clearing cache');
 
-									$.post(`/cg/clearrendercache/${ponyID}`,$.mkAjaxHandler(function(){
+									$.post(`/cg/appearance/clear-cache/${ponyID}`,$.mkAjaxHandler(function(){
 										if (!this.status) return $.Dialog.fail(false, this.message);
 
 										$.Dialog.success(false, this.message, true);
@@ -147,7 +147,7 @@ DocReady.push(function ColorguideManage(){
 									$.Dialog.wait('Appearance relation editor', 'Retrieving relations from server');
 
 									let $cgRelations = $('#content').find('section.related');
-									$.post(`/cg/getrelations/${ponyID}${EQGRq}`,$.mkAjaxHandler(function(){
+									$.post(`/cg/appearance/getrelations/${ponyID}${EQGRq}`,$.mkAjaxHandler(function(){
 										if (!this.status) return $.Dialog.fail(false, this.message);
 
 										let data = this,
@@ -263,7 +263,7 @@ DocReady.push(function ColorguideManage(){
 												};
 												if (AppearancePage)
 													data.APPEARANCE_PAGE = true;
-												$.post(`/cg/setrelations/${ponyID}${EQGRq}`,data,$.mkAjaxHandler(function(){
+												$.post(`/cg/appearance/setrelations/${ponyID}${EQGRq}`,data,$.mkAjaxHandler(function(){
 													if (!this.status) return $.Dialog.fail(false, this.message);
 
 													if (this.section){
@@ -298,7 +298,7 @@ DocReady.push(function ColorguideManage(){
 					if (AppearancePage)
 						data.APPEARANCE_PAGE = true;
 
-					$.post(`/cg/${editing?`set/${ponyID}`:'make'}${EQGRq}`,data,$.mkAjaxHandler(function(){
+					$.post(`/cg/appearance/${editing?`set/${ponyID}`:'make'}${EQGRq}`,data,$.mkAjaxHandler(function(){
 						if (!this.status) return $.Dialog.fail(false, this.message);
 
 						data = this;
@@ -323,7 +323,7 @@ DocReady.push(function ColorguideManage(){
 						else {
 							$.Dialog.success(title, 'Appearance added');
 							$.Dialog.wait(title, 'Loading appearance page');
-							$.Navigation.visit('/cg/v/'+data.id,function(){
+							$.Navigation.visit(`/cg/v/${data.id}`,function(){
 								if (data.info)
 									$.Dialog.info(title, data.info);
 								else $.Dialog.close();
@@ -461,7 +461,7 @@ DocReady.push(function ColorguideManage(){
 				if (data.addto && AppearancePage)
 					data.APPEARANCE_PAGE = true;
 
-				$.post(`/cg/maketag${EQGRq}`,data,$.mkAjaxHandler(function(){
+				$.post(`/cg/tag/make${EQGRq}`,data,$.mkAjaxHandler(function(){
 					if (!this.status) return $.Dialog.fail(false, this.message);
 
 					if (this.tags){
@@ -798,7 +798,7 @@ DocReady.push(function ColorguideManage(){
 
 				$.Dialog.wait(false, 'Saving changes');
 
-				$.post(`/cg/${editing?'set':'make'}cg${editing?`/${groupID}`:''}${EQGRq}`, data, $.mkAjaxHandler(function(){
+				$.post(`/cg/colorgroup/${editing?'set':'make'}${editing?`/${groupID}`:''}${EQGRq}`, data, $.mkAjaxHandler(function(){
 					if (!this.status) return $.Dialog.fail(false, this.message);
 
 					if (this.cg || this.cgs){
@@ -863,7 +863,7 @@ DocReady.push(function ColorguideManage(){
 
 				$.Dialog.wait(title, 'Retrieveing tag details from server');
 
-				$.post(`/cg/gettag/${tagID}${EQGRq}`,$.mkAjaxHandler(function(){
+				$.post(`/cg/tag/get/${tagID}${EQGRq}`,$.mkAjaxHandler(function(){
 					let tag = this;
 					if (this.status) $.Dialog.request(title,$EditTagFormTemplate.clone(true, true).data('tag', tag),'Save', function($form){
 						$form.find(`input[name=type][value=${tag.type}]`).prop('checked', true);
@@ -879,7 +879,7 @@ DocReady.push(function ColorguideManage(){
 								data.APPEARANCE_PAGE = $tag.closest('div[id^=p]').attr('id').replace(/\D/g, '');
 							$.Dialog.wait(false, 'Saving changes');
 
-							$.post(`/cg/settag/${tagID}${EQGRq}`, data, $.mkAjaxHandler(function(){
+							$.post(`/cg/tag/set/${tagID}${EQGRq}`, data, $.mkAjaxHandler(function(){
 								if (!this.status) return $.Dialog.fail(false, this.message);
 
 								let data = this,
@@ -928,7 +928,7 @@ DocReady.push(function ColorguideManage(){
 					if (AppearancePage)
 						data.APPEARANCE_PAGE = true;
 
-					$.post(`/cg/untag/${ponyID}${EQGRq}`,data,$.mkAjaxHandler(function(){
+					$.post(`/cg/appearance/untag/${ponyID}${EQGRq}`,data,$.mkAjaxHandler(function(){
 						if (!this.status) return $.Dialog.fail(title, this.message);
 
 						if (this.needupdate === true){
@@ -958,7 +958,7 @@ DocReady.push(function ColorguideManage(){
 					(function send(data){
 						$.Dialog.wait(title,'Sending removal request');
 
-						$.post(`/cg/deltag/${tagID}${EQGRq}`,data,$.mkAjaxHandler(function(){
+						$.post(`/cg/tag/del/${tagID}${EQGRq}`,data,$.mkAjaxHandler(function(){
 							if (this.status){
 								if (this.needupdate === true){
 									let $eps = $(this.eps);
@@ -994,9 +994,7 @@ DocReady.push(function ColorguideManage(){
 			let $input = $(this),
 				ponyID = $input.closest('[id^=p]').attr('id').substring(1);
 			$input.autocomplete(
-				{
-					minLength: 3,
-				},
+				{ minLength: 3 },
 				[
 					{
 						name: 'tags',
@@ -1006,7 +1004,7 @@ DocReady.push(function ColorguideManage(){
 								$._tagAutocompleteCache = {};
 							else if (typeof $._tagAutocompleteCache[query] !== 'undefined')
 								return callback($._tagAutocompleteCache[query]);
-							$.get('/cg/gettags?s='+encodeURIComponent(query), $.mkAjaxHandler(function(){
+							$.get('/cg/get-tags?s='+encodeURIComponent(query), $.mkAjaxHandler(function(){
 								callback($._tagAutocompleteCache[query] = this);
 							}));
 						},
@@ -1035,7 +1033,7 @@ DocReady.push(function ColorguideManage(){
 					if (AppearancePage)
 						data.APPEARANCE_PAGE = true;
 
-					$.post(`/cg/tag/${ponyID}${EQGRq}`, data, $.mkAjaxHandler(function(){
+					$.post(`/cg/appearance/tag/${ponyID}${EQGRq}`, data, $.mkAjaxHandler(function(){
 						$input.removeAttr('disabled').parent().removeClass('loading');
 						if (this.status){
 							if (this.needupdate === true){
@@ -1086,7 +1084,7 @@ DocReady.push(function ColorguideManage(){
 
 					$.Dialog.wait(title, 'Retrieving color group list from server');
 
-					$.post(`/cg/getcgs/${ponyID}${EQGRq}`, $.mkAjaxHandler(function(){
+					$.post(`/cg/appearance/getcgs/${ponyID}${EQGRq}`, $.mkAjaxHandler(function(){
 						if (!this.status) return $.Dialog.fail(this.message);
 
 						let $CGReorderForm = $.mk('form','cg-reorder'),
@@ -1124,7 +1122,7 @@ DocReady.push(function ColorguideManage(){
 								if (AppearancePage)
 									data.APPEARANCE_PAGE = true;
 
-								$.post(`/cg/setcgs/${ponyID}${EQGRq}`,data,$.mkAjaxHandler(function(){
+								$.post(`/cg/appearance/setcgs/${ponyID}${EQGRq}`,data,$.mkAjaxHandler(function(){
 									if (!this.status) return $.Dialog.fail(null, this.message);
 
 									$colors.html(this.cgs);
@@ -1146,7 +1144,10 @@ DocReady.push(function ColorguideManage(){
 
 						$.Dialog.wait(false, 'Applying template');
 
-						$.post(`/cg/applytemplate/${ponyID}${EQGRq}`,$.mkAjaxHandler(function(){
+						let data = {};
+						if (AppearancePage)
+							data.APPEARANCE_PAGE = true;
+						$.post(`/cg/appearance/applytemplate/${ponyID}${EQGRq}`,data,$.mkAjaxHandler(function(){
 							if (!this.status) return $.Dialog.fail(false, this.message);
 
 							let $pony = $('#p'+ponyID);
@@ -1172,7 +1173,7 @@ DocReady.push(function ColorguideManage(){
 
 					$.Dialog.wait(title, `Retrieving ${color} group details from server`);
 
-					$.post(`/cg/getcg/${groupID}${EQGRq}`,$.mkAjaxHandler(function(){
+					$.post(`/cg/colorgroup/get/${groupID}${EQGRq}`,$.mkAjaxHandler(function(){
 						if (!this.status) return $.Dialog.fail(title, this.message);
 
 						cgEditorMaker(title, $group, this);
@@ -1188,7 +1189,7 @@ DocReady.push(function ColorguideManage(){
 
 						$.Dialog.wait(title, 'Sending removal request');
 
-						$.post(`/cg/delcg/${groupID}${EQGRq}`,$.mkAjaxHandler(function(){
+						$.post(`/cg/colorgroup/del/${groupID}${EQGRq}`,$.mkAjaxHandler(function(){
 							if (this.status){
 								$group.children('[data-hasqtip]').qtip('destroy', true);
 								$group.remove();
@@ -1245,7 +1246,7 @@ DocReady.push(function ColorguideManage(){
 					requestKey: 'sprite',
 					title: 'Upload sprite',
 					accept: 'image/png',
-					target: `/cg/setsprite/${ponyID}`,
+					target: `/cg/appearance/setsprite/${ponyID}`,
 				}).on('uz-uploadstart',function(){
 					$.Dialog.close();
 				}).on('uz-uploadfinish',function(){
@@ -1264,7 +1265,7 @@ DocReady.push(function ColorguideManage(){
 					{text: 'Check sprite colors', icon: 'adjust-contrast', click: function(){
 						if (imgsrc.indexOf('blank-pixel.png') !== -1)
 							return $.Dialog.fail('Check sprite colors','This appearance lacks a sprite image');
-						$.Navigation.visit('/cg/sprite/'+ponyID);
+						$.Navigation.visit(`/cg/sprite/${ponyID}`);
 					}},
 					{text: 'Upload new sprite', icon: 'upload', click: function(){
 						let title = 'Upload sprite image',
@@ -1284,7 +1285,7 @@ DocReady.push(function ColorguideManage(){
 
 								$.Dialog.wait(title, 'Downloading external image to the server');
 
-								$.post(`/cg/setsprite/${ponyID}${EQGRq}`,{image_url: image_url}, $.mkAjaxHandler(function(){
+								$.post(`/cg/appearance/setsprite/${ponyID}${EQGRq}`,{image_url: image_url}, $.mkAjaxHandler(function(){
 									if (this.status) $uploadInput.trigger('set-image', [this.path]);
 									else $.Dialog.fail(title,this.message);
 								}));
@@ -1299,7 +1300,7 @@ DocReady.push(function ColorguideManage(){
 
 							$.Dialog.wait(false, 'Removing image');
 
-							$.post(`/cg/delsprite/${ponyID}`, $.mkAjaxHandler(function(){
+							$.post(`/cg/appearance/delsprite/${ponyID}`, $.mkAjaxHandler(function(){
 								if (!this.status) return $.Dialog.fail(false, this.message);
 
 								$this.find('img').attr('src', this.sprite);
@@ -1335,7 +1336,7 @@ DocReady.push(function ColorguideManage(){
 
 			$.Dialog.wait(title, 'Retrieving appearance details from server');
 
-			$.post(`/cg/get/${ponyID}${EQGRq}`,$.mkAjaxHandler(function(){
+			$.post(`/cg/appearance/get/${ponyID}${EQGRq}`,$.mkAjaxHandler(function(){
 				if (!this.status) return $.Dialog.fail(false, this.message);
 
 				let data = this;
@@ -1356,7 +1357,7 @@ DocReady.push(function ColorguideManage(){
 
 				$.Dialog.wait(title, 'Sending removal request');
 
-				$.post(`/cg/delete/${ponyID}${EQGRq}`,$.mkAjaxHandler(function(){
+				$.post(`/cg/appearance/delete/${ponyID}${EQGRq}`,$.mkAjaxHandler(function(){
 					if (this.status){
 						$li.remove();
 						$.Dialog.success(title, this.message);

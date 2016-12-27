@@ -16,7 +16,7 @@ DocReady.push(function UserSuggestion(){
 			function(){
 				let $btn = $('#dialogContent').find('#suggestion-press'),
 					$output = $.mk('ul','suggestion-output').insertAfter($btn),
-					$loadNotice = $.mk('div').addClass('notice fail').hide().text('The image apparently failed to load - just click the button again to get a different suggestion.').insertAfter($output),
+					$loadNotice = $.mk('div').addClass('notice fail').hide().text('The image failed to load - just click the button again to get a different suggestion.').insertAfter($output),
 					$pluginNotice = $.mk('div').addClass('notice info').hide().html('Loading Fluidbox plugin&hellip;').insertAfter($output),
 					suggest = function(){
 						$.post('/user/suggestion',$.mkAjaxHandler(function(){
@@ -38,6 +38,7 @@ DocReady.push(function UserSuggestion(){
 								$this.parents('a').fluidboxThis();
 							}).on('error',function(){
 								$loadNotice.show();
+								$(this).parents('.image').hide();
 							});
 							$result.find('.reserve-request').on('click',function(){
 								let $this = $(this);

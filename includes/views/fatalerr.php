@@ -9,6 +9,7 @@ $customCSS = array("/scss/min/theme.css");
 foreach ($customCSS as $k => $el)
 	$customCSS[$k] .= '?'.filemtime(APPATH.CoreUtils::substring($el,1));
 $view = 'fatalerr';
+$scope = [];
 require "header.php"; ?>
 <div id="content">
 <?php
@@ -30,7 +31,7 @@ switch($errcause){
 </div>
 <?php
 echo CoreUtils::exportVars(array('ServiceUnavailableError' => true));
-$customJS = array("/js/min/global.js","/js/min/moment.js","/js/min/dialog.js");
+$customJS = array("/js/min/moment.js","/js/min/dialog.js","/js/min/global.js");
 foreach ($customJS as $k => $el)
 	$customJS[$k] .= '?'.filemtime(APPATH.CoreUtils::substring($el,1));
 require "footer.php"; ?>

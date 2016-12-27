@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Controllers\Controller;
 use App\Models\User;
 use Elasticsearch\Client;
 use Elasticsearch\ClientBuilder;
@@ -124,6 +125,8 @@ class CoreUtils {
 			Response::fail("HTTP 404: ".(POST_REQUEST?'Endpoint':'Page')." ($RQURI) does not exist");
 		}
 
+		Users::authenticate();
+
 		HTTP::statusCode(404);
 		global $do;
 		$do = '404';
@@ -149,9 +152,10 @@ class CoreUtils {
 	 *     'url' => string,       - A URL which will replace the one sent to the browser
 	 * );
 	 *
-	 * @param array $options
+	 * @param array                  $options
+	 * @param Controllers\Controller $controller
 	 */
-	static function loadPage($options){
+	static function loadPage($options, Controllers\Controller $controller = null){
 		// Page <title>
 		if (isset($options['title']))
 			$GLOBALS['title'] = $options['title'];
@@ -183,16 +187,25 @@ class CoreUtils {
 			$customJS = array_merge($customJS, $DEFAULT_JS);
 
 		# Check assests
-		self::_checkAssets($options, $customCSS, 'scss/min', 'css');
-		self::_checkAssets($options, $customJS, 'js/min', 'js');
+		self::_checkAssets($options, $customCSS, 'scss/min', 'css', $controller);
+		self::_checkAssets($options, $customJS, 'js/min', 'js', $controller);
 
-		# Import global variables
+		# Import variables
+		if (isset($options['import']) && is_array($options['import'])){
+			$scope = $options['import'];
+			foreach ($scope as $k => $v)
+				if (!isset($$k))
+					$$k = $v;
+		}
+		else $scope = [];
 		foreach ($GLOBALS as $k => $v)
 			if (!isset($$k))
 				$$k = $v;
 
 		# Putting it together
-		$view = empty($options['view']) ? $GLOBALS['do'] : $options['view'];
+		if (empty($options['view']) && !isset($controller->do))
+			throw new \Exception('View cannot be resolved. Specify the \'view\' option or provide the controller as a parameter');
+		$view = empty($options['view']) ? $controller->do : $options['view'];
 		$viewPath = INCPATH."views/{$view}.php";
 
 		header('Content-Type: text/html; charset=utf-8;');
@@ -242,27 +255,27 @@ class CoreUtils {
 	/**
 	 * Checks assets from loadPage()
 	 *
-	 * @param array    $options    Options array
-	 * @param string[] $customType Array of partial file names
-	 * @param string   $relpath    File path relative to /
-	 * @param string   $ext        The literal strings 'css' or 'js'
+	 * @param array                  $options    Options array
+	 * @param string[]               $customType Array of partial file names
+	 * @param string                 $relpath    File path relative to /
+	 * @param string                 $ext        The literal strings 'css' or 'js'
+	 * @param Controllers\Controller $controller
 	 *
 	 * @throws \Exception
 	 */
-	private static function _checkAssets($options, &$customType, $relpath, $ext){
+	private static function _checkAssets($options, &$customType, $relpath, $ext, $controller = null){
 		if (isset($options[$ext])){
 			$$ext = $options[$ext];
 			if (!is_array($$ext))
 				$customType[] = $$ext;
 			else $customType = array_merge($customType, $$ext);
-			if (array_search("do-$ext", $options) !== false){
-				global $do;
-				$customType[] = $do;
-			}
 		}
-		else if (array_search("do-$ext", $options) !== false){
-			global $do;
-			$customType[] = $do;
+		if (array_search("do-$ext", $options) !== false){
+			if (!isset($controller))
+				throw new \Exception("do-$ext used without explicitly passing the controller to ".__METHOD__);
+			else if (!isset($controller->do))
+				throw new \Exception("Controller passed to ".__METHOD__." lacks \$do property");
+			$customType[] = $controller->do;
 		}
 
 		foreach ($customType as $i => &$item)
@@ -541,11 +554,12 @@ class CoreUtils {
 	/**
 	 * Returns the HTML code of the navigation in the header
 	 *
-	 * @param bool $disabled
+	 * @param bool  $disabled
+	 * @param array $scope    Contains the variables passed to the current page
 	 *
 	 * @return string
 	 */
-	static function getNavigationHTML($disabled = false){
+	static function getNavigationHTML($disabled = false, $scope = []){
 		if (!empty($GLOBALS['NavHTML']))
 			return $GLOBALS['NavHTML'];
 
@@ -558,35 +572,32 @@ class CoreUtils {
 				'eps' => array('/episodes','Episodes'),
 			);
 			if ($do === 'episodes'){
-				global $Episodes, $Pagination;
-				if (isset($Episodes))
-					$NavItems['eps'][1] .= " - Page {$Pagination->page}";
+				if (isset($scope['Episodes']))
+					$NavItems['eps'][1] .= " - Page {$scope['Pagination']->page}";
 			}
-			global $CurrentEpisode;
-			if (($do === 'episode' || $do === 's' || $do === 'movie') && !empty($CurrentEpisode)){
-				if ($CurrentEpisode->isMovie)
+			if (($do === 'episode' || $do === 's' || $do === 'movie') && !empty($scope['CurrentEpisode'])){
+				if ($scope['CurrentEpisode']->isMovie)
 					$NavItems['eps'][1] = 'Movies';
-				if ($CurrentEpisode->isLatest())
+				if ($scope['CurrentEpisode']->isLatest())
 					$NavItems['latest'][0] = $_SERVER['REQUEST_URI'];
 				else $NavItems['eps']['subitem'] = CoreUtils::cutoff($GLOBALS['heading'],Episodes::TITLE_CUTOFF);
 			}
-			global $Color, $EQG;
-			$NavItems['colorguide'] = array("/cg".(!empty($EQG)?'/eqg':''), (!empty($EQG)?'EQG ':'')."$Color Guide");
-			if ($do === 'colorguide'){
-				global $Tags, $Changes, $Ponies, $Pagination, $Appearance, $Map;
-				if (!empty($Appearance))
-					$NavItems['colorguide']['subitem'] = (isset($Map)?"Sprite {$Color}s - ":'').CoreUtils::escapeHTML($Appearance['label']);
-				else if (isset($Ponies))
-					$NavItems['colorguide'][1] .= " - Page {$Pagination->page}";
+			global $Color;
+			$NavItems['colorguide'] = array("/cg".(!empty($scope['EQG'])?'/eqg':''), (!empty($scope['EQG'])?'EQG ':'')."$Color Guide");
+			if ($do === 'cg'){
+				if (!empty($scope['Appearance']))
+					$NavItems['colorguide']['subitem'] = (isset($scope['Map'])?"Sprite {$Color}s - ":'').CoreUtils::escapeHTML($scope['Appearance']['label']);
+				else if (isset($scope['Ponies']))
+					$NavItems['colorguide'][1] .= " - Page {$scope['Pagination']->page}";
 				else {
 					if ($GLOBALS['data'] === 'full'){
 						$NavItems['colorguide']['subitem'] = 'Full List';
 					}
 					else {
-						if (isset($Tags)) $pagePrefix = 'Tags';
-						else if (isset($Changes)) $pagePrefix = "Major $Color Changes";
+						if (isset($scope['Tags'])) $pagePrefix = 'Tags';
+						else if (isset($scope['Changes'])) $pagePrefix = "Major $Color Changes";
 
-						$NavItems['colorguide']['subitem'] = (isset($pagePrefix) ? "$pagePrefix - " : '')."Page {$Pagination->page}";
+						$NavItems['colorguide']['subitem'] = (isset($pagePrefix) ? "$pagePrefix - " : '')."Page {$scope['Pagination']->page}";
 					}
 				}
 
@@ -594,16 +605,14 @@ class CoreUtils {
 			if ($GLOBALS['signedIn'])
 				$NavItems['u'] = array("/@{$GLOBALS['currentUser']->name}",'Account');
 			if ($do === 'user' || Permission::sufficient('staff')){
-				global $User, $sameUser;
-
 				$NavItems['users'] = array('/users', 'Users', Permission::sufficient('staff'));
-				if (!empty($User) && empty($sameUser))
-					$NavItems['users']['subitem'] = $User->name;
+				if (!empty($scope['User']) && empty($scope['sameUser']))
+					$NavItems['users']['subitem'] = $scope['User']->name;
 			}
 			if (Permission::sufficient('staff')){
 				$NavItems['admin'] = array('/admin', 'Admin');
-				global $task;
-				if ($task === 'logs'){
+				global $LogItems;
+				if (isset($LogItems)){
 					global $Pagination;
 					$NavItems['admin']['subitem'] = "Logs - Page {$Pagination->page}";
 				}

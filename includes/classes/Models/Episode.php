@@ -172,4 +172,35 @@ class Episode extends AbstractFillable {
 
 		$Database->whereEp($this)->update('episodes', array('score' => $this->score));
 	}
+
+	/**
+	 * Extracts the season and episode numbers from the episode ID string
+	 * Examples:
+	 *   "S1E1" => {season:1,episode:1}
+	 *   "S01E01" => {season:1,episode:1}
+	 *   "S1E1-2" => {season:1,episode:1,twoparter:true}
+	 *   "S01E01-02" => {season:1,episode:1,twoparter:true}
+	 *
+	 * @param string $id
+	 * @return null|array
+	 */
+	static function parseID($id){
+		if (empty($id))
+			return null;
+
+		global $EPISODE_ID_REGEX, $MOVIE_ID_REGEX;
+		if (preg_match($EPISODE_ID_REGEX, $id, $match))
+			return array(
+				'season' => intval($match[1], 10),
+				'episode' => intval($match[2], 10),
+				'twoparter' => !empty($match[3]),
+			);
+		else if (preg_match($MOVIE_ID_REGEX, $id, $match))
+			return array(
+				'season' => 0,
+				'episode' => intval($match[1], 10),
+				'twoparter' => false,
+			);
+		else return null;
+	}
 }

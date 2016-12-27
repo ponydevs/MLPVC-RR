@@ -1,6 +1,6 @@
 <?php
 
-use App\CoreUtils;
+namespace App\Controllers;
 use App\CSRFProtection;
 use App\Input;
 use App\JSON;
@@ -8,29 +8,35 @@ use App\Logs;
 use App\Notifications;
 use App\Posts;
 use App\Response;
+use App\Models\Post;
 
-/** @var $signedIn bool */
-/** @var $data string */
+class NotificationsController extends Controller {
+	public $do = 'notifications';
 
-if (!POST_REQUEST) CoreUtils::notFound();
-if (!$signedIn) Response::fail();
-CSRFProtection::protect();
+	function __construct(){
+		parent::__construct();
 
-list($action, $data) = explode('/',$data.'/');
+		global $signedIn;
+		if (!$signedIn)
+			Response::fail();
+		CSRFProtection::protect();
+	}
 
-switch($action){
-	case 'get':
+	function get(){
 		try {
 			$Notifications = Notifications::getHTML(Notifications::get(null,Notifications::UNREAD_ONLY),NOWRAP);
 			Response::done(array('list' => $Notifications));
 		}
-		catch (Throwable $e){
+		catch (\Throwable $e){
 			error_log('Exception caught when fetching notifications: '.$e->getMessage()."\n".$e->getTraceAsString());
 			Response::fail('An error prevented the notifications from appearing. If this persists, <a class="send-feedback">let us know</a>.');
 		}
-	break;
-	case 'mark-read':
-		$nid = intval($data, 10);
+	}
+
+	function markRead($params){
+		global $Database, $currentUser;
+
+		$nid = intval($params['id'], 10);
 		$Notif = $Database->where('id', $nid)->where('user', $currentUser->id)->getOne('notifications');
 		if (empty($Notif))
 			Response::fail("The notification (#$nid) does not exist");
@@ -45,11 +51,12 @@ switch($action){
 		)))->out();
 		if (!empty($read_action)){
 			if (empty(Notifications::$ACTIONABLE_NOTIF_OPTIONS[$Notif['type']][$read_action]))
-				Response::fail("Invalid read action ($action) specified for notification type {$Notif['type']}");
+				Response::fail("Invalid read action ($read_action) specified for notification type {$Notif['type']}");
 			/** @var $data array */
 			$data = !empty($Notif['data']) ? JSON::decode($Notif['data']) : null;
 			switch ($Notif['type']){
 				case "post-passon":
+					/** @var $Post Post */
 					$Post = $Database->where('id', $data['id'])->getOne("{$data['type']}s");
 					if (empty($Post)){
 						Posts::clearTransferAttempts($Post, $data['type'], 'del');
@@ -98,4 +105,5 @@ switch($action){
 		else Notifications::safeMarkRead($Notif['id']);
 
 		Response::done();
+	}
 }

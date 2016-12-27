@@ -13,7 +13,7 @@ DocReady.push(function Admin(){
 
 		$.Dialog.wait(`Editing link #${linkid}`, 'Retrieving link information from server');
 		
-		$.post(`/admin/usefullinks/get/${linkid}`,$.mkAjaxHandler(function(){
+		$.post(`/admin/usefullinks?action=get&linkid=${linkid}`,$.mkAjaxHandler(function(){
 			if (!this.status) return $.Dialog.fail(false, this.message);
 
 			let data = this;
@@ -34,7 +34,7 @@ DocReady.push(function Admin(){
 
 			$.Dialog.wait(false, 'Removing link');
 
-			$.post(`/admin/usefullinks/del/${linkid}`,$.mkAjaxHandler(function(){
+			$.post(`/admin/usefullinks?action=del&linkid=${linkid}`,$.mkAjaxHandler(function(){
 				if (!this.status) return $.Dialog.fail(false, this.message);
 
 				$li.remove();
@@ -84,7 +84,7 @@ DocReady.push(function Admin(){
 				let data = $(this).serialize();
 				$.Dialog.wait(false);
 
-				$.post(`/admin/usefullinks/${linkid?`set/${linkid}`:'make'}`,data, $.mkAjaxHandler(function(){
+				$.post(`/admin/usefullinks?action=${linkid?`set&linkid=${linkid}`:'make'}`,data, $.mkAjaxHandler(function(){
 					if (!this.status) return $.Dialog.fail(false, this.message);
 
 					$.Dialog.wait(false, 'Reloading page', true);
@@ -178,7 +178,7 @@ DocReady.push(function Admin(){
 
 			$.Dialog.wait('Bulk approve posts', `Attempting to approve ${deviationIDArray.length} post${deviationIDArray.length!==1?'s':''}`);
 
-			$.post('/post/mass-approve',{ids:deviationIDArray.join(',')},$.mkAjaxHandler(function(){
+			$.post('/admin/mass-approve',{ids:deviationIDArray.join(',')},$.mkAjaxHandler(function(){
 				if (!this.status) return $.Dialog.fail(false, this.message);
 
 				let message = this.message,

@@ -28,7 +28,7 @@ class EpisodeVideo extends AbstractFillable  {
 
 		if (isset($this->not_broken_at)){
 			$nb = strtotime($this->not_broken_at);
-			if ($nb+(Time::$IN_SECONDS['hour']*2) > time())
+			if ($nb+(Time::IN_SECONDS['hour']*2) > time())
 				return false;
 		}
 

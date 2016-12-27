@@ -4,9 +4,64 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "67d7404573673d10c73dcc5d29a266ea",
-    "content-hash": "e78ce73d084ea4975fe3666017059369",
+    "hash": "994d5a17a772435f58f8723655966864",
+    "content-hash": "4ba8b778f7a48fd8cb4ad91bed73b08e",
     "packages": [
+        {
+            "name": "altorouter/altorouter",
+            "version": "v1.2.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/dannyvankooten/AltoRouter.git",
+                "reference": "39c50092470128c12284d332bb57f306bb5b58e4"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/dannyvankooten/AltoRouter/zipball/39c50092470128c12284d332bb57f306bb5b58e4",
+                "reference": "39c50092470128c12284d332bb57f306bb5b58e4",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "require-dev": {
+                "codeclimate/php-test-reporter": "dev-master",
+                "phpunit/phpunit": "4.5.*"
+            },
+            "type": "library",
+            "autoload": {
+                "classmap": [
+                    "AltoRouter.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Danny van Kooten",
+                    "email": "dannyvankooten@gmail.com",
+                    "homepage": "http://dannyvankooten.com/"
+                },
+                {
+                    "name": "Koen Punt",
+                    "homepage": "https://github.com/koenpunt"
+                },
+                {
+                    "name": "niahoo",
+                    "homepage": "https://github.com/niahoo"
+                }
+            ],
+            "description": "A lightning fast router for PHP",
+            "homepage": "https://github.com/dannyvankooten/AltoRouter",
+            "keywords": [
+                "lightweight",
+                "router",
+                "routing"
+            ],
+            "time": "2015-11-30 00:47:43"
+        },
         {
             "name": "cogpowered/finediff",
             "version": "0.3.1",
@@ -466,12 +521,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/SeinopSys/PHP-PostgreSQL-Database-Class.git",
-                "reference": "1804c486397bed6e3552bbd924954a575d0b0f59"
+                "reference": "36922653cbaedba4cacc0e38c7a0758f97842dca"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/SeinopSys/PHP-PostgreSQL-Database-Class/zipball/1804c486397bed6e3552bbd924954a575d0b0f59",
-                "reference": "1804c486397bed6e3552bbd924954a575d0b0f59",
+                "url": "https://api.github.com/repos/SeinopSys/PHP-PostgreSQL-Database-Class/zipball/36922653cbaedba4cacc0e38c7a0758f97842dca",
+                "reference": "36922653cbaedba4cacc0e38c7a0758f97842dca",
                 "shasum": ""
             },
             "require": {
@@ -496,7 +551,7 @@
                 }
             ],
             "description": "PHP wrapper class for PDO-based interaction with PostgreSQL databases, heavily based on joshcam/mysqli-database-class",
-            "time": "2016-12-11 10:53:42"
+            "time": "2016-12-26 12:47:05"
         },
         {
             "name": "symfony/serializer",

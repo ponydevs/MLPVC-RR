@@ -111,7 +111,7 @@ class Logs {
 			break;
 			case "episode_modify":
 				$link = $data['target'];
-				$EpData = Episodes::parseID($data['target']);
+				$EpData = Episode::parseID($data['target']);
 				if (!empty($EpData)){
 					$Episode = Episodes::getActual($EpData['season'], $EpData['episode'], Episodes::ALLOW_MOVIES);
 					if (!empty($Episode))
@@ -147,6 +147,7 @@ class Logs {
 				$details[] = array('Reason', CoreUtils::escapeHTML($data['reason']));
 			break;
 			case "post_lock":
+				/** @var $Post Post */
 				$Post = $Database->where('id', $data['id'])->getOne("{$data['type']}s");
 				self::_genericPostInfo($Post, $data, $details);
 			break;
@@ -177,6 +178,7 @@ class Logs {
 				}
 			break;
 			case "img_update":
+				/** @var $Post Post */
 				$Post = $Database->where('id', $data['id'])->getOne("{$data['thing']}s");
 				$data['type'] = $data['thing'];
 				self::_genericPostInfo($Post, $data, $details);
@@ -184,6 +186,7 @@ class Logs {
 				$details[] = array('New image',"<a href='{$data['newfullsize']}' target='_blank'>Full size</a><div><img src='{$data['newpreview']}'></div>");
 			break;
 			case "res_overtake":
+				/** @var $Post Post */
 				$Post = $Database->where('id', $data['id'])->getOne("{$data['type']}s");
 				self::_genericPostInfo($Post, $data, $details);
 				$details[] = array('Previous reserver', Users::get($data['reserved_by'])->getProfileLink());
@@ -191,7 +194,7 @@ class Logs {
 
 				$diff_text = '';
 				$diff = Time::difference(strtotime($MainEntry['timestamp']), strtotime($data['reserved_at']));
-				foreach (array_keys(Time::$IN_SECONDS) as $unit){
+				foreach (array_keys(Time::IN_SECONDS) as $unit){
 					if (empty($diff[$unit]))
 						continue;
 					$diff_text .= CoreUtils::makePlural($unit, $diff[$unit], PREPEND_NUMBER).' ';
@@ -222,6 +225,7 @@ class Logs {
 					$details[] = array('Added', Time::tag($data['added'], Time::TAG_EXTENDED, Time::TAG_STATIC_DYNTIME));
 			break;
 			case "res_transfer":
+				/** @var $Post Post */
 				$Post = $Database->where('id', $data['id'])->getOne("{$data['type']}s");
 				self::_genericPostInfo($Post, $data, $details);
 				$details[] = array('New reserver', Users::get($data['to'])->getProfileLink());
@@ -321,7 +325,7 @@ class Logs {
 		if (empty($Post))
 			$details[] = array('Still exists', false);
 		$EpID = (new Episode($Post))->formatTitle(AS_ARRAY,'id');
-		$EpData = Episodes::parseID($EpID);
+		$EpData = Episode::parseID($EpID);
 		$Episode = Episodes::getActual($EpData['season'], $EpData['episode'], Episodes::ALLOW_MOVIES);
 
 		$details[] = array('Posted under', !empty($Episode) ? "<a href='".$Episode->formatURL()."'>$EpID</a>" : $EpID.' (now deleted/moved)');

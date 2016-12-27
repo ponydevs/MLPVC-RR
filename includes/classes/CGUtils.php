@@ -281,15 +281,14 @@ HTML;
 	/**
 	 * Render appearance PNG image
 	 *
+	 * @param string $CGPath
 	 * @param array $Appearance
 	 *
 	 * @throws \Exception
 	 */
-	static function renderAppearancePNG($Appearance){
-		global $CGPath;
-
+	static function renderAppearancePNG($CGPath, $Appearance){
 		$OutputPath = FSPATH."cg_render/{$Appearance['id']}-palette.png";
-		$FileRelPath = "$CGPath/v/{$Appearance['id']}.png";
+		$FileRelPath = "$CGPath/v/{$Appearance['id']}p.png";
 		if (file_exists($OutputPath))
 			Image::outputPNG(null,$OutputPath,$FileRelPath);
 
@@ -436,11 +435,11 @@ HTML;
 	const CMDIR_SVG_PATH = FSPATH."cg_render/#-cmdir.svg";
 
 	// Generate CM preview image
-	static function renderCMDirectionSVG($AppearanceID, $dir){
-		global $CGDb, $CGPath;
+	static function renderCMDirectionSVG($CGPath, $AppearanceID, $dir){
+		global $CGDb;
 
 		$OutputPath = str_replace('#',$AppearanceID,self::CMDIR_SVG_PATH);
-		$FileRelPath = "$CGPath/v/$AppearanceID.svg";
+		$FileRelPath = "$CGPath/v/{$AppearanceID}d.svg";
 		if (file_exists($OutputPath))
 			Image::outputSVG(null,$OutputPath,$FileRelPath);
 
@@ -475,7 +474,7 @@ HTML;
 		if (!isset($ColorMapping['Coat Shadow Fill']) && isset($ColorMapping['Coat Fill']))
 			$ColorMapping['Coat Shadow Fill'] = $ColorMapping['Coat Fill'];
 
-		$img = file_get_contents(APPATH.'img/cm-direction-'.($dir===CM_DIR_HEAD_TO_TAIL?'ht':'th').'.svg');
+		$img = file_get_contents(APPATH.'img/cm-direction-'.($dir===CM_DIR_HEAD_TO_TAIL?'ht':'th').'d.svg');
 		foreach ($DefaultColorMapping as $label => $defhex)
 			$img = str_replace($label, $ColorMapping[$label] ?? $defhex, $img);
 
@@ -570,9 +569,7 @@ HTML;
 		return $Map;
 	}
 
-	static function renderSpritePNG($AppearanceID){
-		global $CGPath;
-
+	static function renderSpritePNG($CGPath, $AppearanceID){
 		$OutputPath = FSPATH."cg_render/{$AppearanceID}-sprite.png";
 		$FileRelPath = "$CGPath/v/{$AppearanceID}s.png";
 		if (file_exists($OutputPath))
@@ -591,8 +588,7 @@ HTML;
 		Image::outputPNG($PNG, $OutputPath, $FileRelPath);
 	}
 
-	static function renderSpriteSVG($AppearanceID){
-		global $CGPath;
+	static function renderSpriteSVG($CGPath, $AppearanceID){
 		$Map = self::getSpriteImageMap($AppearanceID);
 		if (empty($Map))
 			CoreUtils::notFound();
@@ -633,8 +629,8 @@ XML;
 
 	const PREVIEW_SVG_PATH = FSPATH."cg_render/#-preview.svg";
 
-	static function renderPreviewSVG($AppearanceID){
-		global $CGPath, $CGDb;
+	static function renderPreviewSVG($CGPath, $AppearanceID){
+		global $CGDb;
 
 		$OutputPath = str_replace('#',$AppearanceID,self::PREVIEW_SVG_PATH);
 		$FileRelPath = "$CGPath/v/{$AppearanceID}p.svg";

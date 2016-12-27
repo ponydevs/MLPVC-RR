@@ -335,18 +335,13 @@ DocReady.push(function Episode(){
 			let $section = $(this),
 				type = $section.attr('id'),
 				Type = $.capitalize(type),
-				typeWithS = type.replace(/([^s])$/,'$1s'),
-				fail = function(){
-					if (typeof callback === 'function' && silent === true)
-						return callback(false);
-					window.location.reload();
-				};
+				typeWithS = type.replace(/([^s])$/,'$1s');
 			if (silent !== true)
 				$.Dialog.wait($.Dialog.isOpen() ? false : Type, 'Updating list of '+typeWithS, true);
-			$.ajax('/episode/'+typeWithS+'/'+EpID,{
+			$.ajax(`/episode/postlist/${EpID}?section=${typeWithS}`,{
 				method: "POST",
 				success: $.mkAjaxHandler(function(){
-					if (!this.status) return fail();
+					if (!this.status) return $.Dialog.fail(false, this.message);
 
 					let $newChilds = $(this.render).filter('section').children();
 					$section.empty().append($newChilds).rebindHandlers();
@@ -356,7 +351,6 @@ DocReady.push(function Episode(){
 					if (typeof callback === 'function') callback();
 					else if (silent !== true) $.Dialog.close();
 				}),
-				error: fail,
 			});
 		})
 		.on('bind-more-handlers','li[id]',additionalHandlerAttacher)
@@ -438,7 +432,7 @@ DocReady.push(function Episode(){
 			imgCheckDisabler(true);
 			$.Dialog.wait(title,'Checking image');
 
-			$.post('/post', { image_url: url }, $.mkAjaxHandler(function(){
+			$.post('/post/check-image', { image_url: url }, $.mkAjaxHandler(function(){
 				let data = this;
 				if (!data.status){
 					$notice.children('p:not(.keep)').remove();
@@ -534,7 +528,7 @@ DocReady.push(function Episode(){
 			(function submit(){
 				$.Dialog.wait(title,'Submitting '+type);
 
-				$.post('/post',data,$.mkAjaxHandler(function(){
+				$.post('/post/add',data,$.mkAjaxHandler(function(){
 					if (!this.status){
 						if (!this.canforce)
 							return $.Dialog.fail(false, this.message);
@@ -611,7 +605,7 @@ DocReady.push(function Episode(){
 		reloading[_idAttr] = true;
 
 		console.log(`[POST-FIX] Attemting to reload ${type} #${id}`);
-		$.post(`/post/reload-${type}/${id}`,$.mkAjaxHandler(function(){
+		$.post(`/post/reload/${type}/${id}`,$.mkAjaxHandler(function(){
 			if (!this.status) return;
 
 			let $newli = $(this.li);
@@ -679,17 +673,17 @@ DocReady.push(function Episode(){
 				if (typeof $embedWrap === 'undefined'){
 					$.Dialog.wait($showPlayers.text());
 
-					$.post(`/episode/videos/${EpID}`, $.mkAjaxHandler(function(){
+					$.post(`/episode/video-embeds/${EpID}`, $.mkAjaxHandler(function(){
 						if (!this.status) return $.Dialog.fail(false, this.message);
 
-						if (this[0] === 2){
+						if (this.parts === 2){
 							$partSwitch = $.mk('button').attr('class','blue typcn typcn-media-fast-forward').text('Part 2').on('click',function(){
 								$(this).toggleHtml(['Part 1', 'Part 2']);
 								$embedWrap.children().toggle();
 							});
 							$playerActions.append($partSwitch);
 						}
-						$embedWrap = $.mk('div').attr('class','resp-embed-wrap').html(this[1]).insertAfter($playerActions);
+						$embedWrap = $.mk('div').attr('class','resp-embed-wrap').html(this.html).insertAfter($playerActions);
 						$showPlayers
 							.removeClass('typcn-eye green')
 							.addClass('typcn-eye-outline blue')
@@ -717,7 +711,7 @@ DocReady.push(function Episode(){
 
 					$.Dialog.wait(false, 'Sending report');
 
-					$.post(`/episode/brokenvideos/${EpID}`, $.mkAjaxHandler(function(){
+					$.post(`/episode/broken-videos/${EpID}`, $.mkAjaxHandler(function(){
 						if (!this.status) return $.Dialog.fail(false, this.message);
 
 						if (typeof this.epsection !== 'undefined'){

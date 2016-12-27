@@ -5,7 +5,7 @@ namespace App;
 use Moment\Moment;
 
 class Time {
-	static $IN_SECONDS = array(
+	const IN_SECONDS = array(
 		'year' =>   31557600,
 		'month' =>  2592000,
 		'week' =>   604800,

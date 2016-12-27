@@ -98,7 +98,7 @@ class DeviantArt {
 		$Deviation = $Database->where('id', $ID)->where('provider', $type)->getOne('deviation_cache');
 
 		$cacheExhausted = self::$_MASS_CACHE_USED > self::$_MASS_CACHE_LIMIT;
-		$cacheExpired = empty($Deviation['updated_on']) ? true : strtotime($Deviation['updated_on'])+(Time::$IN_SECONDS['hour']*12) < time();
+		$cacheExpired = empty($Deviation['updated_on']) ? true : strtotime($Deviation['updated_on'])+(Time::IN_SECONDS['hour']*12) < time();
 
 		$lastRequestSuccessful = !self::$_CACHE_BAILOUT;
 		$localDataMissing = empty($Deviation);
@@ -113,7 +113,7 @@ class DeviantArt {
 			}
 			catch (\Exception $e){
 				if (!empty($Deviation))
-					$Database->where('id',$Deviation['id'])->update('deviation_cache', array('updated_on' => date('c', time()+Time::$IN_SECONDS['minute'] )));
+					$Database->where('id',$Deviation['id'])->update('deviation_cache', array('updated_on' => date('c', time()+Time::IN_SECONDS['minute'] )));
 
 				$ErrorMSG = "Saving local data for $ID@$type failed: ".$e->getMessage();
 				if (!Permission::sufficient('developer'))
@@ -291,7 +291,7 @@ class DeviantArt {
 
 		$Database->rawQuery("DELETE FROM sessions WHERE \"user\" = ? && lastvisit <= NOW() - INTERVAL '1 MONTH'", array($UserID));
 
-		Cookie::set('access', $cookie, time()+ Time::$IN_SECONDS['year'], Cookie::HTTPONLY);
+		Cookie::set('access', $cookie, time()+ Time::IN_SECONDS['year'], Cookie::HTTPONLY);
 		return $User ?? null;
 	}
 

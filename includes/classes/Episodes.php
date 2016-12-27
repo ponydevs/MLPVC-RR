@@ -5,6 +5,7 @@ namespace App;
 use App\Appearances;
 use App\Models\Episode;
 use App\Models\EpisodeVideo;
+use App\Models\Post;
 
 class Episodes {
 	const TITLE_CUTOFF = 26;
@@ -104,17 +105,18 @@ class Episodes {
 	 * @param null|int|Episode $force              If null: Parses $data and loads approperiate epaisode
 	 *                                             If array: Uses specified arra as Episode data
 	 * @param bool             $serverSideRedirect Handle redirection to the correct page on the server/client side
+	 * @param Post             $LinkedPost         Linked post (when sharing)
 	 */
-	static function loadPage($force = null, $serverSideRedirect = true){
-		global $data, $CurrentEpisode, $Database, $PrevEpisode, $NextEpisode, $LinkedPost;
+	static function loadPage($force = null, $serverSideRedirect = true, Post $LinkedPost = null){
+		global $Database, $CurrentEpisode;
 
 		if ($force instanceof Episode)
 			$CurrentEpisode = $force;
-		else {
-			$EpData = self::parseID($data);
+		else if (is_string($force)){
+			$EpData = Episode::parseID($force);
 
 			if ($EpData['season'] === 0){
-				error_log("Attempted visit to $data from ".(!empty($_SERVER['HTTP_REFERER'])?$_SERVER['HTTP_REFERER']:'[unknown referrer]').', redirecting to /movie page');
+				error_log("Attempted visit to $force from ".(!empty($_SERVER['HTTP_REFERER'])?$_SERVER['HTTP_REFERER']:'[unknown referrer]').', redirecting to /movie page');
 				HTTP::redirect('/movie/'.$EpData['episode']);
 			}
 
@@ -126,7 +128,7 @@ class Episodes {
 			CoreUtils::notFound();
 
 		$url = $CurrentEpisode->formatURL();
-		if (!empty($LinkedPost)){
+		if (isset($LinkedPost)){
 			$url .= '#'.$LinkedPost->getID();
 		}
 		if ($serverSideRedirect)
@@ -173,38 +175,13 @@ class Episodes {
 			'css' => 'episode',
 			'js' => $js,
 			'url' => $serverSideRedirect ? null : $url,
+			'import' => [
+				'CurrentEpisode' => $CurrentEpisode,
+				'PrevEpisode' => $PrevEpisode,
+				'NextEpisode' => $NextEpisode,
+				'LinkedPost' => $LinkedPost,
+			],
 		));
-	}
-
-	/**
-	 * Extracts the season and episode numbers from the episode ID string
-	 * Examples:
-	 *   "S1E1" => {season:1,episode:1}
-	 *   "S01E01" => {season:1,episode:1}
-	 *   "S1E1-2" => {season:1,episode:1,twoparter:true}
-	 *   "S01E01-02" => {season:1,episode:1,twoparter:true}
-	 *
-	 * @param string $id
-	 * @return null|array
-	 */
-	static function parseID($id){
-		if (empty($id))
-			return null;
-
-		global $EPISODE_ID_REGEX, $MOVIE_ID_REGEX;
-		if (preg_match($EPISODE_ID_REGEX, $id, $match))
-			return array(
-				'season' => intval($match[1], 10),
-				'episode' => intval($match[2], 10),
-				'twoparter' => !empty($match[3]),
-			);
-		else if (preg_match($MOVIE_ID_REGEX, $id, $match))
-			return array(
-				'season' => 0,
-				'episode' => intval($match[1], 10),
-				'twoparter' => false,
-			);
-		else return null;
 	}
 
 	/**
@@ -255,7 +232,10 @@ class Episodes {
 			foreach ($Videos as $v)
 				$embed .= "<div class='responsive-embed".($Episode->twoparter && $v->part!==1?' hidden':'')."'>".VideoProvider::getEmbed($v)."</div>";
 		}
-		return array($Parts, $embed);
+		return [
+			'parts' => $Parts,
+			'html' => $embed
+		];
 	}
 
 	static
@@ -403,7 +383,7 @@ HTML;
 			$diff = Time::difference(time(), $airtime);
 
 			$time = 'in ';
-			if ($diff['time'] < Time::$IN_SECONDS['month']){
+			if ($diff['time'] < Time::IN_SECONDS['month']){
 				$tz = "(".date('T', $airtime).")";
 				if (!empty($diff['day']))
 					$time .=  "{$diff['day']} day".($diff['day']!==1?'s':'').' & ';

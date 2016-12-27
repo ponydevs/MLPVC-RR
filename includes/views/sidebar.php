@@ -8,7 +8,7 @@ use App\Users;
 /** @var $signedIn bool */
 /** @var $do string */ ?>
 	<div class='mobile-nav'>
-		<nav><ul><?=CoreUtils::getNavigationHTML()?></ul></nav>
+		<nav><ul><?=CoreUtils::getNavigationHTML(isset($view) && $view === 'fatalerr', $scope)?></ul></nav>
 	</div>
 <?php
 	if (!empty($Database)){
@@ -51,7 +51,7 @@ use App\Users;
 		<h2><?=$CurrentEpisode->isMovie?'Movie':'Episode'?> rating</h2>
 		<?=Episodes::getSidebarVoting($CurrentEpisode)?>
 	</section>
-<?php       if ($CurrentEpisode->isLatest() && time() > $CurrentEpisode->willairts && $CurrentEpisode->willairts + (Time::$IN_SECONDS['hour']*4) > time()){ ?>
+<?php       if ($CurrentEpisode->isLatest() && time() > $CurrentEpisode->willairts && $CurrentEpisode->willairts + (Time::IN_SECONDS['hour']*4) > time()){ ?>
 	<section id="live-update">
 		<h2>Live reload</h2>
 		<p>The episode has just aired, and posts are likely changing faster than usual.</p>

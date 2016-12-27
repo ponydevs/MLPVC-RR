@@ -15,7 +15,7 @@ DocReady.push(function EpisodeManage(){
 	$('#video').on('click',function(){
 		$.Dialog.wait('Set video links', 'Requesting links from the server');
 
-		$.post(`/episode/getvideos/${EpID}`,$.mkAjaxHandler(function(){
+		$.post(`/episode/video-data/${EpID}?action=get`,$.mkAjaxHandler(function(){
 			let data = this;
 
 			if (!data.status) return $.Dialog.fail(false, data.message);
@@ -81,7 +81,7 @@ DocReady.push(function EpisodeManage(){
 					let data = $form.mkData();
 					$.Dialog.wait(false, 'Saving links');
 
-					$.post(`/episode/setvideos/${EpID}`,data,$.mkAjaxHandler(function(){
+					$.post(`/episode/video-data/${EpID}?action=set`,data,$.mkAjaxHandler(function(){
 						if (!this.status) return $.Dialog.fail(false, this.message);
 
 						if (this.epsection){
@@ -107,7 +107,7 @@ DocReady.push(function EpisodeManage(){
 	$('#cg-relations').on('click',function(){
 		$.Dialog.wait('Guide relation editor', 'Retrieving relations from server');
 
-		$.post(`/episode/getcgrelations/${EpID}`,$.mkAjaxHandler(function(){
+		$.post(`/episode/guide-relations/${EpID}?action=get`,$.mkAjaxHandler(function(){
 			if (!this.status) return $.Dialog.fail(false, this.message);
 
 			let data = this,
@@ -155,7 +155,7 @@ DocReady.push(function EpisodeManage(){
 					$selectLinked.children().each(function(_, el){ ids.push(el.value) });
 					$.Dialog.wait(false, 'Saving changes');
 
-					$.post(`/episode/setcgrelations/${EpID}`,{ids:ids.join(',')},$.mkAjaxHandler(function(){
+					$.post(`/episode/guide-relations/${EpID}?action=set`,{ids:ids.join(',')},$.mkAjaxHandler(function(){
 						if (!this.status) return $.Dialog.fail(false, this.message);
 
 						if (this.section){
@@ -226,7 +226,7 @@ DocReady.push(function EpisodeManage(){
 			send = function(data){
 				$.Dialog.wait(title, 'Sending reservation to the server');
 
-				$.post(`/post/reserve-request/${id}`, data, $.mkAjaxHandler(function(){
+				$.post(`/post/reserve/request/${id}`, data, $.mkAjaxHandler(function(){
 					if (this.retry)
 						return $.Dialog.confirm(false, this.message, function(sure){
 							if (!sure) return;
@@ -301,7 +301,7 @@ DocReady.push(function EpisodeManage(){
 
 				$.Dialog.wait(false, 'Cancelling reservation');
 
-				$.post(`/post/unreserve-${type}/${id}`,$.mkAjaxHandler(function(){
+				$.post(`/post/unreserve/${type}/${id}`,$.mkAjaxHandler(function(){
 					if (!this.status) return $.Dialog.fail(false, this.message);
 
 					if (this.remove === true){
@@ -354,7 +354,7 @@ DocReady.push(function EpisodeManage(){
 					if (typeof deviation !== 'string' || deviation.length === 0)
 						return $.Dialog.fail(false, 'Please enter a deviation URL');
 
-					let request_url = '/post/finish-'+type+'/'+id,
+					let request_url = '/post/finish/'+type+'/'+id,
 						sent_data = $form.mkData();
 					$.Dialog.wait(false, 'Marking reservation as finished');
 
@@ -374,6 +374,7 @@ DocReady.push(function EpisodeManage(){
 							$.Dialog.confirm(false, data.message, ["Continue","Cancel"], function(sure){
 								if (!sure) return;
 								sent_data.allow_overwrite_reserver = true;
+								$.Dialog.wait(false);
 								$.post(request_url,sent_data,$.mkAjaxHandler(function(){
 									if (!this.status) return $.Dialog.fail(false, this.message);
 
@@ -417,7 +418,7 @@ DocReady.push(function EpisodeManage(){
 
 					$.Dialog.wait(false, 'Removing "finished" flag'+(unbind?' & unbinding from user':''));
 
-					$.post(`/post/unfinish-${type}/${id}${unbind?'?unbind':''}`,$.mkAjaxHandler(function(){
+					$.post(`/post/unfinish/${type}/${id}${unbind?'?unbind':''}`,$.mkAjaxHandler(function(){
 						if (!this.status) return $.Dialog.fail(false, this.message);
 
 						$.Dialog.success(false, typeof this.message !== 'undefined' ? this.message : '"finished" flag removed successfully');
@@ -431,7 +432,7 @@ DocReady.push(function EpisodeManage(){
 
 			$.Dialog.wait('Submission approval status','Checking');
 
-			$.post(`/post/lock-${type}/${id}`, $.mkAjaxHandler(function(){
+			$.post(`/post/lock/${type}/${id}`, $.mkAjaxHandler(function(){
 				if (!this.status) return $.Dialog.fail(false, this.message);
 
 				let message = this.message;
@@ -448,7 +449,7 @@ DocReady.push(function EpisodeManage(){
 
 				$.Dialog.wait(false);
 
-				$.post(`/post/unlock-${type}/${id}`, $.mkAjaxHandler(function(){
+				$.post(`/post/unlock/${type}/${id}`, $.mkAjaxHandler(function(){
 					if (!this.status) return $.Dialog.fail(false, this.message);
 
 					$(`#${type}s`).trigger('pls-update');
@@ -482,7 +483,7 @@ DocReady.push(function EpisodeManage(){
 
 			$.Dialog.wait(`Editing ${type} #${id}`, `Retrieving ${type} details`);
 
-			$.post(`/post/get-${type}/${id}`,$.mkAjaxHandler(function(){
+			$.post(`/post/get/${type}/${id}`,$.mkAjaxHandler(function(){
 				if (!this.status) return $.Dialog.fail(false, this.message);
 
 				let postdata = this,
@@ -596,7 +597,7 @@ DocReady.push(function EpisodeManage(){
 											let data = $form.mkData();
 											$.Dialog.wait(false, 'Replacing image');
 
-											$.post(`/post/set-${type}-image/${id}`,data,$.mkAjaxHandler(function(){
+											$.post(`/post/set-image/${type}/${id}`,data,$.mkAjaxHandler(function(){
 												if (!this.status) return $.Dialog.fail(false, this.message);
 
 												$.Dialog.success(false, 'Image has been updated');
@@ -618,7 +619,7 @@ DocReady.push(function EpisodeManage(){
 									$.Dialog.close();
 									$.Dialog.wait('Fix Sta.sh fullsize URL','Fixing Sta.sh full size image URL');
 
-									$.post(`/post/fix-${type}-stash/${id}`,$.mkAjaxHandler(function(){
+									$.post(`/post/fix-stash/${type}/${id}`,$.mkAjaxHandler(function(){
 										if (!this.status){
 											if (this.rmdirect){
 												if (!finished){
@@ -705,7 +706,7 @@ DocReady.push(function EpisodeManage(){
 
 						$.Dialog.wait(false, 'Saving changes');
 
-						$.post(`/post/set-${type}/${id}`,data, $.mkAjaxHandler(function(){
+						$.post(`/post/set/${type}/${id}`,data, $.mkAjaxHandler(function(){
 							if (!this.status) return $.Dialog.fail(false, this.message);
 
 							if (this.li){
@@ -734,7 +735,7 @@ DocReady.push(function EpisodeManage(){
 
 					$.Dialog.wait(false);
 
-					$.post(`/post/pls-transfer-${type}/${id}`,$.mkAjaxHandler(function(){
+					$.post(`/post/transfer/${type}/${id}`,$.mkAjaxHandler(function(){
 						if (this.canreserve)
 							return $.Dialog.confirm(false, this.message, function(sure){
 								if (!sure) return;

@@ -73,13 +73,13 @@ abstract class Post extends AbstractFillable {
 		if (!isset($now))
 			$now = time();
 		$ts = $this->isRequest ? $this->reserved_at : $this->posted;
-		return $now - strtotime($ts) >= Time::$IN_SECONDS['day']*5;
+		return $now - strtotime($ts) >= Time::IN_SECONDS['day']*5;
 	}
 
 	public function isOverdue($now = null):bool {
 		if (!isset($now))
 			$now = time();
-		return $this->isRequest && empty($this->deviation_id) && isset($this->reserved_by) && $now - strtotime($this->reserved_at) >= Time::$IN_SECONDS['week']*3;
+		return $this->isRequest && empty($this->deviation_id) && isset($this->reserved_by) && $now - strtotime($this->reserved_at) >= Time::IN_SECONDS['week']*3;
 	}
 
 	public function processLabel():string {
