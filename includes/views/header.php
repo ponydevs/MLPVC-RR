@@ -14,7 +14,7 @@ $Description = "Handling requests, reservations & the Color Guide since 2015";
 
 $ThumbImage = "/img/logo.png";
 switch ($do ?? null){
-	case "colorguide":
+	case "cg":
 		if (!empty($Appearance)){
 			$sprite = Appearances::getSpriteURL($Appearance['id']);
 			if ($sprite)
