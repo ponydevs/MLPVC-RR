@@ -74,7 +74,7 @@ class EpisodeController extends Controller {
 		if (!Permission::sufficient('staff'))
 			Response::fail();
 
-		global $currentUser, $Database, $CGDb;
+		global $currentUser, $Database, $Database;
 
 		$editing = $action === 'set';
 		if ($editing)
@@ -205,16 +205,16 @@ class EpisodeController extends Controller {
 			if ($isMovie){
 				if ($EpisodeChanged){
 					$TagName = CGUtils::checkEpisodeTagName("movie#{$insert['episode']}");
-					$MovieTag = $CGDb->where('name', $editing ? "movie#{$this->_episode->episode}" : $TagName)->getOne('tags', 'tid');
+					$MovieTag = $Database->where('name', $editing ? "movie#{$this->_episode->episode}" : $TagName)->getOne('tags', 'tid');
 
 					if (!empty($MovieTag)){
 						if ($editing)
-							$CGDb->where('tid',$MovieTag['tid'])->update('tags', array(
+							$Database->where('tid', $MovieTag['tid'])->update('tags', array(
 								'name' => $TagName,
 							));
 					}
 					else {
-						if (!$CGDb->insert('tags', array(
+						if (!$Database->insert('tags', array(
 							'name' => $TagName,
 							'type' => 'ep',
 						))) Response::dbError('Episode tag creation failed');
@@ -223,16 +223,16 @@ class EpisodeController extends Controller {
 			}
 			else if ($SeasonChanged || $EpisodeChanged){
 				$TagName = CGUtils::checkEpisodeTagName("s{$insert['season']}e{$insert['episode']}");
-				$EpTag = $CGDb->where('name', $editing ? "s{$this->_episode->season}e{$this->_episode->episode}" : $TagName)->getOne('tags', 'tid');
+				$EpTag = $Database->where('name', $editing ? "s{$this->_episode->season}e{$this->_episode->episode}" : $TagName)->getOne('tags', 'tid');
 
 				if (!empty($EpTag)){
 					if ($editing)
-						$CGDb->where('tid',$EpTag['tid'])->update('tags', array(
+						$Database->where('tid', $EpTag['tid'])->update('tags', array(
 							'name' => $TagName,
 						));
 				}
 				else {
-					if (!$CGDb->insert('tags', array(
+					if (!$Database->insert('tags', array(
 						'name' => $TagName,
 						'type' => 'ep',
 					))) Response::dbError('Episode tag creation failed');
@@ -279,7 +279,7 @@ class EpisodeController extends Controller {
 	function delete($params){
 		$this->_getEpisode($params);
 
-		global $Database, $CGDb;
+		global $Database, $Database;
 
 		if (!Permission::sufficient('staff'))
 			Response::fail();
@@ -294,7 +294,7 @@ class EpisodeController extends Controller {
 			'title' => $this->_episode->title,
 			'airs' => $this->_episode->airs,
 		));
-		$CGDb->where('name', "s{$this->_episode->season}e{$this->_episode->episode}")->where('uses',0)->delete('tags');
+		$Database->where('name', "s{$this->_episode->season}e{$this->_episode->episode}")->where('uses',0)->delete('tags');
 		Response::success('Episode deleted successfuly',array(
 			'upcoming' => Episodes::getSidebarUpcoming(NOWRAP),
 		));
@@ -500,7 +500,7 @@ class EpisodeController extends Controller {
 	private function _getGuideRelations($params){
 		$this->_getEpisode($params);
 
-		global $CGDb;
+		global $Database;
 
 		$CheckTag = array();
 
@@ -510,12 +510,12 @@ class EpisodeController extends Controller {
 
 		$TaggedAppearanceIDs = array();
 		foreach ($EpTagIDs as $tid){
-			$AppearanceIDs = $CGDb->where('tid',$tid)->get('tagged',null,'ponyid');
+			$AppearanceIDs = $Database->where('tid',$tid)->get('tagged',null,'ponyid');
 			foreach ($AppearanceIDs as $id)
 				$TaggedAppearanceIDs[$id['ponyid']] = true;
 		}
 
-		$Appearances = $CGDb->where('ishuman', $this->_episode->isMovie)->where('"id" != 0')->orderBy('label','ASC')->get('appearances',null,'id,label');
+		$Appearances = $Database->where('ishuman', $this->_episode->isMovie)->where('"id" != 0')->orderBy('label','ASC')->get('appearances',null,'id,label');
 
 		$Sorted = array(
 			'unlinked' => array(),
@@ -530,7 +530,7 @@ class EpisodeController extends Controller {
 	private function _setGuideRelations($params){
 		$this->_getEpisode($params);
 
-		global $CGDb;
+		global $Database;
 
 		/** @var $AppearanceIDs int[] */
 		$AppearanceIDs = (new Input('ids','int[]',array(
@@ -545,17 +545,17 @@ class EpisodeController extends Controller {
 		if (empty($EpTagIDs))
 			Response::fail('The episode has no associated tag(s)!');
 		$EpTagIDs = implode(',',$EpTagIDs);
-		$Tags = $CGDb->where("tid IN ($EpTagIDs)")->orderByLiteral('char_length(name)','DESC')->getOne('tags','tid');
+		$Tags = $Database->where("tid IN ($EpTagIDs)")->orderByLiteral('char_length(name)','DESC')->getOne('tags','tid');
 		$UseID = $Tags['tid'];
 
 		if (!empty($AppearanceIDs)){
 			foreach ($AppearanceIDs as $id){
-				if (!$CGDb->where("tid IN ($EpTagIDs)")->where('ponyid', $id)->has('tagged'))
-					@$CGDb->insert('tagged', array('tid' => $UseID, 'ponyid' => $id));
+				if (!$Database->where("tid IN ($EpTagIDs)")->where('ponyid', $id)->has('tagged'))
+					@$Database->insert('tagged', array('tid' => $UseID, 'ponyid' => $id));
 			}
-			$CGDb->where('ponyid NOT IN ('.implode(',',$AppearanceIDs).')');
+			$Database->where('ponyid NOT IN ('.implode(',',$AppearanceIDs).')');
 		}
-		$CGDb->where("tid IN ($EpTagIDs)")->delete('tagged');
+		$Database->where("tid IN ($EpTagIDs)")->delete('tagged');
 
 		Response::done(array('section' => Episodes::getAppearancesSectionHTML($this->_episode)));
 	}

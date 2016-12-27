@@ -526,8 +526,8 @@ class CoreUtils {
 			$out[] = self::getFooterGitInfo(false);
 		$out[] = "<a class='issues' href='".GITHUB_URL."/issues' target='_blank'>Known issues</a>";
 		$out[] = '<a class="send-feedback">Send feedback</a>';
-		global $Database, $CGDb;
-		$out[] = 'Performance: <abbr title="Time spent rendering the page (ms)">R</abbr>'.round((microtime(true)-EXEC_START_MICRO)*1000).'<abbr title="Number of SQL quesries used to fetch this page">S</abbr>'.(($Database->queryCount??0)+($CGDb->queryCount??0)).'<abbr title="Requests sent to DeviantArt\'s servers (significantly increases render time)">D</abbr>'.DeviantArt::$requestCount;
+		global $Database, $Database;
+		$out[] = 'Performance: <abbr title="Time spent rendering the page (ms)">R</abbr>'.round((microtime(true)-EXEC_START_MICRO)*1000).'<abbr title="Number of SQL quesries used to fetch this page">S</abbr>'.(($Database->queryCount??0)+($Database->queryCount??0)).'<abbr title="Requests sent to DeviantArt\'s servers (significantly increases render time)">D</abbr>'.DeviantArt::$requestCount;
 		return implode(' | ',$out);
 	}
 

@@ -63,6 +63,110 @@ SET default_tablespace = '';
 SET default_with_oids = false;
 
 --
+-- Name: appearance_relations; Type: TABLE; Schema: public; Owner: mlpvc-rr
+--
+
+CREATE TABLE appearance_relations (
+    source integer NOT NULL,
+    target integer NOT NULL,
+    mutual boolean DEFAULT false NOT NULL
+);
+
+
+ALTER TABLE appearance_relations OWNER TO "mlpvc-rr";
+
+--
+-- Name: appearances; Type: TABLE; Schema: public; Owner: mlpvc-rr
+--
+
+CREATE TABLE appearances (
+    id integer NOT NULL,
+    "order" integer NOT NULL,
+    label character varying(70) NOT NULL,
+    notes text,
+    cm_favme character varying(20),
+    ishuman boolean NOT NULL,
+    added timestamp with time zone DEFAULT now(),
+    cm_preview character varying(255),
+    cm_dir boolean,
+    private boolean DEFAULT false NOT NULL
+);
+
+
+ALTER TABLE appearances OWNER TO "mlpvc-rr";
+
+--
+-- Name: appearances_id_seq; Type: SEQUENCE; Schema: public; Owner: mlpvc-rr
+--
+
+CREATE SEQUENCE appearances_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE appearances_id_seq OWNER TO "mlpvc-rr";
+
+--
+-- Name: appearances_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER SEQUENCE appearances_id_seq OWNED BY appearances.id;
+
+
+--
+-- Name: colorgroups; Type: TABLE; Schema: public; Owner: mlpvc-rr
+--
+
+CREATE TABLE colorgroups (
+    groupid integer NOT NULL,
+    ponyid integer NOT NULL,
+    label character varying(255) NOT NULL,
+    "order" integer DEFAULT 0 NOT NULL
+);
+
+
+ALTER TABLE colorgroups OWNER TO "mlpvc-rr";
+
+--
+-- Name: colorgroups_groupid_seq; Type: SEQUENCE; Schema: public; Owner: mlpvc-rr
+--
+
+CREATE SEQUENCE colorgroups_groupid_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE colorgroups_groupid_seq OWNER TO "mlpvc-rr";
+
+--
+-- Name: colorgroups_groupid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER SEQUENCE colorgroups_groupid_seq OWNED BY colorgroups.groupid;
+
+
+--
+-- Name: colors; Type: TABLE; Schema: public; Owner: mlpvc-rr
+--
+
+CREATE TABLE colors (
+    groupid integer NOT NULL,
+    "order" integer,
+    label character varying(255) NOT NULL,
+    hex character(7),
+    CONSTRAINT colors_hex_check CHECK ((hex ~* '^#[\da-f]{6}$'::text))
+);
+
+
+ALTER TABLE colors OWNER TO "mlpvc-rr";
+
+--
 -- Name: deviation_cache; Type: TABLE; Schema: public; Owner: mlpvc-rr
 --
 
@@ -1045,6 +1149,55 @@ ALTER SEQUENCE sessions_id_seq OWNED BY sessions.id;
 
 
 --
+-- Name: tagged; Type: TABLE; Schema: public; Owner: mlpvc-rr
+--
+
+CREATE TABLE tagged (
+    tid integer NOT NULL,
+    ponyid integer NOT NULL
+);
+
+
+ALTER TABLE tagged OWNER TO "mlpvc-rr";
+
+--
+-- Name: tags; Type: TABLE; Schema: public; Owner: mlpvc-rr
+--
+
+CREATE TABLE tags (
+    tid integer NOT NULL,
+    name character varying(30) NOT NULL,
+    title character varying(255),
+    type character varying(4),
+    uses integer DEFAULT 0 NOT NULL,
+    synonym_of integer
+);
+
+
+ALTER TABLE tags OWNER TO "mlpvc-rr";
+
+--
+-- Name: tags_tid_seq; Type: SEQUENCE; Schema: public; Owner: mlpvc-rr
+--
+
+CREATE SEQUENCE tags_tid_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE tags_tid_seq OWNER TO "mlpvc-rr";
+
+--
+-- Name: tags_tid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER SEQUENCE tags_tid_seq OWNED BY tags.tid;
+
+
+--
 -- Name: users; Type: TABLE; Schema: public; Owner: mlpvc-rr
 --
 
@@ -1124,6 +1277,20 @@ CREATE TABLE user_prefs (
 
 
 ALTER TABLE user_prefs OWNER TO "mlpvc-rr";
+
+--
+-- Name: appearances id; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER TABLE ONLY appearances ALTER COLUMN id SET DEFAULT nextval('appearances_id_seq'::regclass);
+
+
+--
+-- Name: colorgroups groupid; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER TABLE ONLY colorgroups ALTER COLUMN groupid SET DEFAULT nextval('colorgroups_groupid_seq'::regclass);
+
 
 --
 -- Name: log entryid; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
@@ -1294,10 +1461,49 @@ ALTER TABLE ONLY sessions ALTER COLUMN id SET DEFAULT nextval('sessions_id_seq':
 
 
 --
+-- Name: tags tid; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER TABLE ONLY tags ALTER COLUMN tid SET DEFAULT nextval('tags_tid_seq'::regclass);
+
+
+--
 -- Name: usefullinks id; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY usefullinks ALTER COLUMN id SET DEFAULT nextval('usefullinks_id_seq'::regclass);
+
+
+--
+-- Name: appearance_relations appearance_relations_source_target; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER TABLE ONLY appearance_relations
+    ADD CONSTRAINT appearance_relations_source_target UNIQUE (source, target);
+
+
+--
+-- Name: appearances appearances_id; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER TABLE ONLY appearances
+    ADD CONSTRAINT appearances_id PRIMARY KEY (id);
+
+
+--
+-- Name: colorgroups colorgroups_groupid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER TABLE ONLY colorgroups
+    ADD CONSTRAINT colorgroups_groupid PRIMARY KEY (groupid);
+
+
+--
+-- Name: colorgroups colorgroups_groupid_label; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER TABLE ONLY colorgroups
+    ADD CONSTRAINT colorgroups_groupid_label UNIQUE (groupid, label);
 
 
 --
@@ -1533,6 +1739,22 @@ ALTER TABLE ONLY sessions
 
 
 --
+-- Name: tagged tagged_tid_ponyid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER TABLE ONLY tagged
+    ADD CONSTRAINT tagged_tid_ponyid PRIMARY KEY (tid, ponyid);
+
+
+--
+-- Name: tags tags_tid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER TABLE ONLY tags
+    ADD CONSTRAINT tags_tid PRIMARY KEY (tid);
+
+
+--
 -- Name: usefullinks usefullinks_id; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
@@ -1554,6 +1776,41 @@ ALTER TABLE ONLY user_prefs
 
 ALTER TABLE ONLY users
     ADD CONSTRAINT users_id PRIMARY KEY (id);
+
+
+--
+-- Name: appearances_ishuman; Type: INDEX; Schema: public; Owner: mlpvc-rr
+--
+
+CREATE INDEX appearances_ishuman ON appearances USING btree (ishuman);
+
+
+--
+-- Name: appearances_label; Type: INDEX; Schema: public; Owner: mlpvc-rr
+--
+
+CREATE INDEX appearances_label ON appearances USING btree (label);
+
+
+--
+-- Name: appearances_order; Type: INDEX; Schema: public; Owner: mlpvc-rr
+--
+
+CREATE INDEX appearances_order ON appearances USING btree ("order");
+
+
+--
+-- Name: colorgroups_ponyid; Type: INDEX; Schema: public; Owner: mlpvc-rr
+--
+
+CREATE INDEX colorgroups_ponyid ON colorgroups USING btree (ponyid);
+
+
+--
+-- Name: colors_groupid; Type: INDEX; Schema: public; Owner: mlpvc-rr
+--
+
+CREATE INDEX colors_groupid ON colors USING btree (groupid);
 
 
 --
@@ -1655,10 +1912,49 @@ CREATE INDEX sessions_user ON sessions USING btree ("user");
 
 
 --
+-- Name: tags_synonym_of; Type: INDEX; Schema: public; Owner: mlpvc-rr
+--
+
+CREATE INDEX tags_synonym_of ON tags USING btree (synonym_of);
+
+
+--
 -- Name: usefullinks_minrole; Type: INDEX; Schema: public; Owner: mlpvc-rr
 --
 
 CREATE INDEX usefullinks_minrole ON usefullinks USING btree (minrole);
+
+
+--
+-- Name: appearance_relations appearance_relations_source_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER TABLE ONLY appearance_relations
+    ADD CONSTRAINT appearance_relations_source_fkey FOREIGN KEY (source) REFERENCES appearances(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: appearance_relations appearance_relations_target_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER TABLE ONLY appearance_relations
+    ADD CONSTRAINT appearance_relations_target_fkey FOREIGN KEY (target) REFERENCES appearances(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: colorgroups colorgroups_ponyid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER TABLE ONLY colorgroups
+    ADD CONSTRAINT colorgroups_ponyid_fkey FOREIGN KEY (ponyid) REFERENCES appearances(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: colors colors_groupid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER TABLE ONLY colors
+    ADD CONSTRAINT colors_groupid_fkey FOREIGN KEY (groupid) REFERENCES colorgroups(groupid) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
@@ -1822,6 +2118,30 @@ ALTER TABLE ONLY sessions
 
 
 --
+-- Name: tagged tagged_ponyid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER TABLE ONLY tagged
+    ADD CONSTRAINT tagged_ponyid_fkey FOREIGN KEY (ponyid) REFERENCES appearances(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: tagged tagged_tid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER TABLE ONLY tagged
+    ADD CONSTRAINT tagged_tid_fkey FOREIGN KEY (tid) REFERENCES tags(tid) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: tags tags_synonym_of_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER TABLE ONLY tags
+    ADD CONSTRAINT tags_synonym_of_fkey FOREIGN KEY (synonym_of) REFERENCES tags(tid) ON UPDATE CASCADE ON DELETE SET NULL;
+
+
+--
 -- Name: user_prefs user_prefs_user_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
@@ -1834,6 +2154,27 @@ ALTER TABLE ONLY user_prefs
 --
 
 GRANT USAGE ON SCHEMA public TO "mlpvc-rr";
+
+
+--
+-- Name: appearances; Type: ACL; Schema: public; Owner: mlpvc-rr
+--
+
+GRANT ALL ON TABLE appearances TO postgres;
+
+
+--
+-- Name: colorgroups; Type: ACL; Schema: public; Owner: mlpvc-rr
+--
+
+GRANT ALL ON TABLE colorgroups TO postgres;
+
+
+--
+-- Name: colors; Type: ACL; Schema: public; Owner: mlpvc-rr
+--
+
+GRANT ALL ON TABLE colors TO postgres;
 
 
 --
@@ -2051,6 +2392,20 @@ GRANT ALL ON TABLE sessions TO postgres;
 --
 
 GRANT ALL ON SEQUENCE sessions_id_seq TO postgres;
+
+
+--
+-- Name: tagged; Type: ACL; Schema: public; Owner: mlpvc-rr
+--
+
+GRANT ALL ON TABLE tagged TO postgres;
+
+
+--
+-- Name: tags; Type: ACL; Schema: public; Owner: mlpvc-rr
+--
+
+GRANT ALL ON TABLE tags TO postgres;
 
 
 --

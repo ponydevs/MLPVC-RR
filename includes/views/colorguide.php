@@ -10,14 +10,14 @@ use App\Tags;
 	<p>A searchable list of character <?=$color?>s from the <?=$EQG?'movies':'show'?></p>
 	<p class="align-center">
 		If you can't find a character here, check the old guides: <a href="https://sta.sh/0kic0ngp3fy">Pony</a> / <a href="http://fav.me/d7120l1">EQG</a><br>
-		Looking for this information in a machine-readable format? <a href="https://raw.githubusercontent.com/<?=GITHUB_PROJECT_NAME?>/master/setup/mlpvc-colorguide.json" target="_blank" download="mlpvc-colorguide.json">JSON</a> / <a href="https://raw.githubusercontent.com/<?=GITHUB_PROJECT_NAME?>/master/setup/mlpvc-colorguide.pg.sql" target="_blank" download="mlpvc-colorguide.pg.sql">PgSQL</a></p>
+		Looking for this information in a machine-readable format? <a href="/dist/mlpvc-colorguide.json" target="_blank" download="mlpvc-colorguide.json">JSON</a></p>
 <?  if (Permission::sufficient('staff')){ ?>
 	<div class="notice warn tagediting">
 		<label>Limited editing</label>
 		<p>Editing tags or colors from the guide page does not work on mobile devices. If you want to edit those, please go the appearance's page.</p>
 	</div>
 <?  }
-	$Universal = $CGDb->where('id',0)->getOne('appearances');
+	$Universal = $Database->where('id',0)->getOne('appearances');
 	if (!empty($Universal))
 		echo "<ul id='universal' class='appearance-list'>".Appearances::getHTML(array($Universal), NOWRAP)."</ul>"; ?>
 	<p class='align-center links'>

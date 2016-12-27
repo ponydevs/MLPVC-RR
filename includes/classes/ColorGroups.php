@@ -18,11 +18,11 @@ class ColorGroups {
 	 * @return array
 	 */
 	static function get($PonyID, $cols = '*', $sort_dir = 'ASC', $cnt = null){
-		global $CGDb;
+		global $Database;
 
 		self::_order($sort_dir);
-		$CGDb->where('ponyid',$PonyID);
-		return $cnt === 1 ? $CGDb->getOne('colorgroups',$cols) : $CGDb->get('colorgroups',$cnt,$cols);
+		$Database->where('ponyid',$PonyID);
+		return $cnt === 1 ? $Database->getOne('colorgroups',$cols) : $Database->get('colorgroups',$cnt,$cols);
 	}
 
 	/**
@@ -33,9 +33,9 @@ class ColorGroups {
 	 * @return array
 	 */
 	static function getColors($GroupID){
-		global $CGDb;
+		global $Database;
 
-		return $CGDb->where('groupid', $GroupID)->orderBy('"order"', 'ASC')->get('colors');
+		return $Database->where('groupid', $GroupID)->orderBy('"order"', 'ASC')->get('colors');
 	}
 
 	/**
@@ -46,7 +46,7 @@ class ColorGroups {
 	 * @return array
 	 */
 	static function getColorsForEach($Groups){
-		global $CGDb;
+		global $Database;
 
 		$GroupIDs = array();
 		foreach ($Groups as $g)
@@ -54,7 +54,7 @@ class ColorGroups {
 		if (empty($GroupIDs))
 			return null;
 
-		$data = $CGDb->where('groupid IN ('.implode(',',$GroupIDs).')')->orderBy('groupid','ASC')->orderBy('"order"', 'ASC')->get('colors');
+		$data = $Database->where('groupid IN ('.implode(',',$GroupIDs).')')->orderBy('groupid','ASC')->orderBy('"order"', 'ASC')->get('colors');
 		if (empty($data))
 			return null;
 
@@ -77,10 +77,10 @@ class ColorGroups {
 	 * @return string
 	 */
 	static function getHTML($GroupID, $AllColors = null, bool $wrap = true, bool $colon = true, bool $colorNames = false, bool $force_extra_info = false):string {
-		global $CGDb;
+		global $Database;
 
 		if (is_array($GroupID)) $Group = $GroupID;
-		else $Group = $CGDb->where('groupid',$GroupID)->getOne('colorgroups');
+		else $Group = $Database->where('groupid',$GroupID)->getOne('colorgroups');
 
 		$label = CoreUtils::escapeHTML($Group['label']).($colon?': ':'');
 		$HTML =
@@ -123,9 +123,9 @@ class ColorGroups {
 	 * @param string $dir
 	 */
 	 private static function _order($dir = 'ASC'){
-		global $CGDb;
+		global $Database;
 
-		$CGDb
+		$Database
 			->orderByLiteral('CASE WHEN "order" IS NULL THEN 1 ELSE 0 END', $dir)
 			->orderBy('"order"', $dir)
 			->orderBy('groupid', $dir);

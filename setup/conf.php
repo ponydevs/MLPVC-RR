@@ -19,3 +19,5 @@
 	// Websocket \\
 	define('WS_SERVER_DOMAIN', '');
 	define('WS_SERVER_KEY', '');
+
+	//define('MAINTENANCE_START', strtotime(''));

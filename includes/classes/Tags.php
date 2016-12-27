@@ -27,34 +27,34 @@ class Tags {
 	 * @return array|null
 	 */
 	static function getFor($PonyID = null, $limit = null, $showEpTags = false, $exporting = false){
-		global $CGDb;
+		global $Database;
 
 		if (!$exporting){
 			$showSynonymTags = $showEpTags || Permission::sufficient('staff');
 			if (!$showSynonymTags)
-				$CGDb->where('"synonym_of" IS NULL');
+				$Database->where('"synonym_of" IS NULL');
 
-			$CGDb
+			$Database
 				->orderByLiteral('CASE WHEN tags.type IS NULL THEN 1 ELSE 0 END')
 				->orderBy('tags.type', 'ASC')
 				->orderBy('tags.name', 'ASC');
 			if (!$showEpTags)
-				$CGDb->where("tags.type != 'ep'");
+				$Database->where("tags.type != 'ep'");
 		}
 		else {
 			$showSynonymTags = true;
 			if (isset($PonyID))
 				$ODER_BY = ' ORDER BY tags.tid ASC';
-			else $CGDb->orderBy('tags.tid','ASC');
+			else $Database->orderBy('tags.tid','ASC');
 		}
 		return isset($PonyID)
-			? $CGDb->rawQuery(
+			? $Database->rawQuery(
 				'SELECT tags.* FROM tagged
 				LEFT JOIN tags ON (tagged.tid = tags.tid'.($showSynonymTags?' OR tagged.tid = tags.synonym_of':'').')'.
 				"WHERE tagged.ponyid = ?".($ODER_BY ?? '').
 				(isset($limit)?"LIMIT $limit[1] OFFSET $limit[0]":''), array($PonyID)
 			)
-			: $CGDb->get('tags',$limit);
+			: $Database->get('tags',$limit);
 	}
 
 	/**
@@ -67,11 +67,11 @@ class Tags {
 	 * @return array|bool
 	 */
 	static function getActual($value, $column = 'tid', $as_bool = false){
-		global $CGDb;
+		global $Database;
 
 		$arg1 = array('tags', $as_bool === RETURN_AS_BOOL ? 'synonym_of,tid' : '*');
 
-		$Tag = $CGDb->where($column, $value)->getOne(...$arg1);
+		$Tag = $Database->where($column, $value)->getOne(...$arg1);
 
 		if (!empty($Tag['synonym_of'])){
 			$arg2 = $as_bool === RETURN_AS_BOOL ? 'tid' : $arg1[1];
@@ -92,12 +92,12 @@ class Tags {
 	 * @return array
 	 */
 	static function getSynonymOf($Tag, $returnCols = null){
-		global $CGDb;
+		global $Database;
 
 		if (empty($Tag['synonym_of']))
 			return null;
 
-		return $CGDb->where('tid', $Tag['synonym_of'])->getOne('tags',$returnCols);
+		return $Database->where('tid', $Tag['synonym_of'])->getOne('tags',$returnCols);
 	}
 
 	/**
@@ -109,10 +109,10 @@ class Tags {
 	 * @return array
 	 */
 	static function updateUses(int $TagID, bool $returnCount = false):array {
-		global $CGDb;
+		global $Database;
 
-		$Tagged = $CGDb->where('tid', $TagID)->count('tagged');
-		$return = array('status' => $CGDb->where('tid', $TagID)->update('tags',array('uses' => $Tagged)));
+		$Tagged = $Database->where('tid', $TagID)->count('tagged');
+		$return = array('status' => $Database->where('tid', $TagID)->update('tags',array('uses' => $Tagged)));
 		if ($returnCount)
 			$return['count'] = $Tagged;
 		return $return;
@@ -127,7 +127,7 @@ class Tags {
 	 * @return string
 	 */
 	static function getTagListHTML($Tags, $wrap = WRAP){
-		global $CGDb;
+		global $Database;
 		$HTML =
 		$utils =
 		$refresh = '';

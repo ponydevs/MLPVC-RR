@@ -228,11 +228,11 @@ HTML;
 			if ($seeInitiator)
 				$initiator = " by ".Users::get($c['initiator'])->getProfileLink();
 			if ($showAppearance){
-				global $CGDb;
+				global $Database;
 
 				$PonyID = $c['ponyid'];
 				if (empty($PonyCache[$PonyID])){
-					$PonyCache[$PonyID] = $CGDb->where('id', $PonyID)->getOne('appearances');
+					$PonyCache[$PonyID] = $Database->where('id', $PonyID)->getOne('appearances');
 				}
 				$Pony = $PonyCache[$PonyID];
 				$appearance = "<a href='/cg/v/{$Pony['id']}'>{$Pony['label']}</a>: ";
@@ -436,7 +436,7 @@ HTML;
 
 	// Generate CM preview image
 	static function renderCMDirectionSVG($CGPath, $AppearanceID, $dir){
-		global $CGDb;
+		global $Database;
 
 		$OutputPath = str_replace('#',$AppearanceID,self::CMDIR_SVG_PATH);
 		$FileRelPath = "$CGPath/v/{$AppearanceID}d.svg";
@@ -454,7 +454,7 @@ HTML;
 			'Mane & Tail Outline' => '#333333',
 			'Mane & Tail Fill' => '#5E5E5E',
 		);
-		$Colors = $CGDb->rawQuery(
+		$Colors = $Database->rawQuery(
 			"SELECT cg.label as cglabel, c.label as label, c.hex
 			FROM colorgroups cg
 			LEFT JOIN colors c on c.groupid = cg.groupid
@@ -630,7 +630,7 @@ XML;
 	const PREVIEW_SVG_PATH = FSPATH."cg_render/#-preview.svg";
 
 	static function renderPreviewSVG($CGPath, $AppearanceID){
-		global $CGDb;
+		global $Database;
 
 		$OutputPath = str_replace('#',$AppearanceID,self::PREVIEW_SVG_PATH);
 		$FileRelPath = "$CGPath/v/{$AppearanceID}p.svg";
@@ -640,7 +640,7 @@ XML;
 
 		$SVG = '';
 		$colors = array();
-		$ColorQuery = $CGDb->rawQuery(
+		$ColorQuery = $Database->rawQuery(
 			'SELECT c.hex FROM colors c
 			LEFT JOIN colorgroups cg ON c.groupid = cg.groupid
 			WHERE cg.ponyid = ?

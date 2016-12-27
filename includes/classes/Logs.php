@@ -85,7 +85,7 @@ class Logs {
 	 * @return array
 	 */
 	static function formatEntryDetails($MainEntry, $data){
-		global $Database, $CGDb;
+		global $Database, $Database;
 		$details = array();
 
 		$reftype = $MainEntry['reftype'];
@@ -232,7 +232,7 @@ class Logs {
 			break;
 			case "cg_modify":
 				$details[] = array('Appearance',self::_getAppearanceLink($data['ponyid']));
-				$CG = $CGDb->where('groupid', $data['groupid'])->getOne('colorgroups');
+				$CG = $Database->where('groupid', $data['groupid'])->getOne('colorgroups');
 				if (empty($CG)){
 					$details[] = array('Color group ID', '#'.$data['groupid']);
 					$details[] = array('Still exists', false);
@@ -347,10 +347,10 @@ class Logs {
 	}
 
 	private static function _getAppearanceLink($id){
-		global $CGDb;
+		global $Database;
 
 		$ID = "#$id";
-		$Appearance = $CGDb->where('id', $id)->getOne('appearances');
+		$Appearance = $Database->where('id', $id)->getOne('appearances');
 		if (!empty($Appearance)){
 			$EQGUrl = $Appearance['ishuman'] ? '/eqg' : '';
 			$ID = "<a href='/cg/{$EQGUrl}v/$id'>".htmlspecialchars($Appearance['label'])."</a> ($ID)";

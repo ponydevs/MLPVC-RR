@@ -15,12 +15,12 @@ class Appearances {
 	 * @return array
 	 */
 	static function get($EQG, $limit = null, $cols = '*'){
-		global $CGDb;
+		global $Database;
 
 		self::_order();
 		if (isset($EQG))
-			$CGDb->where('ishuman', $EQG)->where('id',0,'!=');
-		return $CGDb->get('appearances', $limit, $cols);
+			$Database->where('ishuman', $EQG)->where('id',0,'!=');
+		return $Database->get('appearances', $limit, $cols);
 	}
 
 	/**
@@ -29,8 +29,8 @@ class Appearances {
 	 * @param string $dir
 	 */
 	private static function _order($dir = 'ASC'){
-		global $CGDb;
-		$CGDb
+		global $Database;
+		$Database
 			->orderByLiteral('CASE WHEN "order" IS NULL THEN 1 ELSE 0 END', $dir)
 			->orderBy('"order"', $dir)
 			->orderBy('id', $dir);
@@ -43,7 +43,7 @@ class Appearances {
 	 * @return string
 	 */
 	static function getHTML($Appearances, $wrap = WRAP){
-		global $CGDb, $_MSG, $Search;
+		global $Database, $_MSG, $Search;
 
 		$HTML = '';
 		if (!empty($Appearances)) foreach ($Appearances as $Appearance){
@@ -102,7 +102,7 @@ class Appearances {
 	 * @return string
 	 */
 	static function getColorsHTML($Appearance, bool $wrap = WRAP, $colon = true, $colorNames = false){
-		global $CGDb;
+		global $Database;
 
 		if ($placehold = self::getPendingPlaceholderFor($Appearance))
 			return $placehold;
@@ -127,7 +127,7 @@ class Appearances {
 	 * @return string
 	 */
 	static function getTagsHTML($PonyID, $wrap = WRAP, $Search = null){
-		global $CGDb;
+		global $Database;
 
 		$Tags = Tags::getFor($PonyID, null, Permission::sufficient('staff'));
 
@@ -181,8 +181,8 @@ class Appearances {
 						: "<strong>{$a[0]}</strong>";
 				},$Appearance['notes']);
 				$Appearance['notes'] = preg_replace_callback('/(?:^|[^\\\\])\K(?:#(\d+))\b/',function($a){
-					global $CGDb;
-					$Appearance = $CGDb->where('id', $a[1])->getOne('appearances');
+					global $Database;
+					$Appearance = $Database->where('id', $a[1])->getOne('appearances');
 					return (
 						!empty($Appearance)
 						? "<a href='/cg/v/{$Appearance['id']}'>{$Appearance['label']}</a>"
@@ -276,11 +276,11 @@ class Appearances {
 	 * @return array
 	 */
 	static function sort($Appearances, $simpleArray = false){
-		global $CGDb;
+		global $Database;
 		$GroupTagIDs = array_keys(CGUtils::GROUP_TAG_IDS_ASSOC);
 		$Sorted = array();
 		$Tagged = array();
-		foreach ($CGDb->where('tid IN ('.implode(',',$GroupTagIDs).')')->orderBy('ponyid','ASC')->get('tagged') as $row)
+		foreach ($Database->where('tid IN ('.implode(',',$GroupTagIDs).')')->orderBy('ponyid','ASC')->get('tagged') as $row)
 			$Tagged[$row['ponyid']][] = $row['tid'];
 		foreach ($Appearances as $p){
 			if (!empty($Tagged[$p['id']])){
@@ -310,7 +310,7 @@ class Appearances {
 	 * @param string|int[] $ids
 	 */
 	static function reorder($ids){
-		global $CGDb;
+		global $Database;
 		if (empty($ids))
 			return;
 
@@ -318,7 +318,7 @@ class Appearances {
 		$list = is_string($ids) ? explode(',', $ids) : $ids;
 		foreach ($list as $i => $id){
 			$order = $i+1;
-			if (!$CGDb->where('id', $id)->update('appearances', array('order' => $order)))
+			if (!$Database->where('id', $id)->update('appearances', array('order' => $order)))
 				Response::fail("Updating appearance #$id failed, process halted");
 
 			$elastiClient->update(array_merge(self::getElasticMeta(['id' => $id]), [
@@ -347,12 +347,12 @@ class Appearances {
 	 * @throws \Exception
 	 */
 	static function applyTemplate($AppearanceID, $EQG){
-		global $CGDb, $Color;
+		global $Database, $Color;
 
 		if (empty($AppearanceID) || !is_numeric($AppearanceID))
 			throw new \Exception('Incorrect value for $PonyID while applying template');
 
-		if ($CGDb->where('ponyid', $AppearanceID)->has('colorgroups'))
+		if ($Database->where('ponyid', $AppearanceID)->has('colorgroups'))
 			throw new \Exception('Template can only be applied to empty appearances');
 
 		$Scheme = $EQG
@@ -404,20 +404,20 @@ class Appearances {
 		$cgi = 0;
 		$ci = 0;
 		foreach ($Scheme as $GroupName => $ColorNames){
-			$GroupID = $CGDb->insert('colorgroups',array(
+			$GroupID = $Database->insert('colorgroups',array(
 				'ponyid' => $AppearanceID,
 				'label' => $GroupName,
 				'order' => $cgi++,
 			), 'groupid');
 			if (!$GroupID)
-				throw new \Exception(rtrim("Color group \"$GroupName\" could not be created: ".$CGDb->getLastError()), ': ');
+				throw new \Exception(rtrim("Color group \"$GroupName\" could not be created: ".$Database->getLastError()), ': ');
 
 			foreach ($ColorNames as $label){
-				if (!$CGDb->insert('colors',array(
+				if (!$Database->insert('colors',array(
 					'groupid' => $GroupID,
 					'label' => $label,
 					'order' => $ci++,
-				))) throw new \Exception(rtrim("Color \"$label\" could not be added: ".$CGDb->getLastError()), ': ');
+				))) throw new \Exception(rtrim("Color \"$label\" could not be added: ".$Database->getLastError()), ': ');
 			}
 		}
 	}
@@ -431,9 +431,9 @@ class Appearances {
 	 * @return string
 	 */
 	static function getRelatedEpisodesHTML($Appearance, $allowMovies = false){
-		global $CGDb;
+		global $Database;
 
-		$EpTagsOnAppearance = $CGDb->rawQuery(
+		$EpTagsOnAppearance = $Database->rawQuery(
 			"SELECT t.tid
 			FROM tagged tt
 			LEFT JOIN tags t ON tt.tid = t.tid
@@ -443,7 +443,7 @@ class Appearances {
 			foreach ($EpTagsOnAppearance as $k => $row)
 				$EpTagsOnAppearance[$k] = $row['tid'];
 
-			$EpAppearances = $CGDb->rawQuery("SELECT DISTINCT name FROM tags WHERE tid IN (".implode(',',$EpTagsOnAppearance).") ORDER BY name");
+			$EpAppearances = $Database->rawQuery("SELECT DISTINCT name FROM tags WHERE tid IN (".implode(',',$EpTagsOnAppearance).") ORDER BY name");
 			if (empty($EpAppearances))
 				return '';
 
@@ -539,9 +539,9 @@ HTML;
 	}
 
 	static function getRelated(int $AppearanceID){
-		global $CGDb;
+		global $Database;
 
-		return $CGDb->rawQuery(
+		return $Database->rawQuery(
 			/** @lang PostgreSQL */
 			"(
 				SELECT p.id, p.order, p.label, r.mutual
@@ -588,7 +588,7 @@ HTML;
 	const ELASTIC_COLUMNS = 'id,label,order,ishuman,private';
 
 	static function reindex(){
-		global $CGDb;
+		global $Database;
 
 		$elasticClient = CoreUtils::elasticClient();
 		try {
@@ -651,7 +651,7 @@ HTML;
 			]
 		]);
 		$elasticClient->indices()->create(array_merge($params));
-		$Appearances = $CGDb->where('id != 0')->get('appearances',null,self::ELASTIC_COLUMNS);
+		$Appearances = $Database->where('id != 0')->get('appearances',null,self::ELASTIC_COLUMNS);
 
 		$params = array('body' => []);
 		foreach ($Appearances as $i => $a){
@@ -679,9 +679,9 @@ HTML;
 	}
 
 	static function updateIndex(int $AppearanceID, string $fields = self::ELASTIC_COLUMNS):array {
-		global $CGDb;
+		global $Database;
 
-		$Appearance = $CGDb->where('id', $AppearanceID)->getOne('appearances', $fields);
+		$Appearance = $Database->where('id', $AppearanceID)->getOne('appearances', $fields);
 		try {
 			CoreUtils::elasticClient()->update(self::toElasticArray($Appearance, false, true));
 		}

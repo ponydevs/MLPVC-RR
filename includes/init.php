@@ -10,6 +10,12 @@ use \App\About;
 use \App\PostgresDbWrapper;
 use \App\RegExp;
 
+// Maintenance mode \\
+if (defined('MAINTENANCE_START')){
+	$errcause = 'maintenance';
+	die(require INCPATH."views/fatalerr.php");
+}
+
 // Database connection & Required Functionality Checking \\
 try {
 	if (PHP_OS === 'WINNT')
@@ -42,6 +48,5 @@ catch (Exception $e){
 	$errcause = 'db';
 	die(require INCPATH."views/fatalerr.php");
 }
-$CGDb = new PostgresDbWrapper('mlpvc-colorguide');
 
 header('Access-Control-Allow-Origin: '.(HTTPS?'http':'https').'://'.$_SERVER['SERVER_NAME']);

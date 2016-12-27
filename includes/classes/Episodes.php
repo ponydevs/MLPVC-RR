@@ -453,11 +453,11 @@ HTML;
 	 * @return int[]
 	 */
 	static function getTagIDs(Episode $Episode):array {
-		global $CGDb;
+		global $Database;
 
 		if ($Episode->isMovie){
 			$MovieTagIDs = [];
-			$MovieTag = $CGDb->where('name',"movie#$Episode->episode")->where('type','ep')->getOne('tags','tid');
+			$MovieTag = $Database->where('name',"movie#$Episode->episode")->where('type','ep')->getOne('tags','tid');
 			if (!empty($MovieTag['tid']))
 				$MovieTagIDs[] = $MovieTag['tid'];
 			return $MovieTagIDs;
@@ -466,12 +466,12 @@ HTML;
 			$sn = CoreUtils::pad($Episode->season);
 			$en = CoreUtils::pad($Episode->episode);
 			$EpTagIDs = array();
-			$EpTagPt1 = $CGDb->where('name',"s{$sn}e{$en}")->where('type','ep')->getOne('tags','tid');
+			$EpTagPt1 = $Database->where('name',"s{$sn}e{$en}")->where('type','ep')->getOne('tags','tid');
 			if (!empty($EpTagPt1))
 				$EpTagIDs[] = $EpTagPt1['tid'];
 			if ($Episode->twoparter){
 				$next_en = CoreUtils::pad($Episode->episode+1);
-				$EpTagPt2 = $CGDb->rawQuery("SELECT tid FROM tags WHERE name IN ('s{$sn}e{$next_en}', 's{$sn}e{$en}-{$next_en}') && type = 'ep'");
+				$EpTagPt2 = $Database->rawQuery("SELECT tid FROM tags WHERE name IN ('s{$sn}e{$next_en}', 's{$sn}e{$en}-{$next_en}') && type = 'ep'");
 				foreach ($EpTagPt2 as $t)
 					$EpTagIDs[] = $t['tid'];
 			}
@@ -480,12 +480,12 @@ HTML;
 	}
 
 	static function getAppearancesSectionHTML(Episode $Episode):string {
-		global $CGDb, $Color;
+		global $Database, $Color;
 
 		$HTML = '';
 		$EpTagIDs = Episodes::getTagIDs($Episode);
 		if (!empty($EpTagIDs)){
-			$TaggedAppearances = $CGDb->rawQuery(
+			$TaggedAppearances = $Database->rawQuery(
 				"SELECT p.id, p.label, p.private
 				FROM tagged t
 				LEFT JOIN appearances p ON t.ponyid = p.id

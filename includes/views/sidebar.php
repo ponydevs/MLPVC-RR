@@ -77,7 +77,7 @@ use App\Users;
 
 	<section class="login">
 		<h2>Welcome!</h2>
-		<p>We're having some technical difficulties and signing in is not possible at the moment. Please check back later.</p>
+		<p>Signing in is not possible at the moment. Please check back later.</p>
 	</section>
 <?php
 	}
