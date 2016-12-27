@@ -9,6 +9,7 @@ $router->addMatchTypes([
 	'un' => USERNAME_PATTERN,
 	'au' => '[A-Za-z_]+',
 	'ad' => '[A-Za-z\-]+',
+	'adi' => '[A-Za-z\d\-]+',
 	'epid' => EPISODE_ID_PATTERN,
 	'rr' => '(req|res)',
 	'rrl' => '(request|reservation)',
@@ -33,18 +34,18 @@ $router->map('GET',      '/cg/[eqg:eqg]?/[i]?',                             'Col
 $router->map('GET',      '/cg/[eqg:eqg]?/full',                             'ColorGuideController#fullList');
 $router->map('GET',      '/cg/[eqg:eqg]?/tags/[i]?',                        'ColorGuideController#tagList');
 $router->map('GET',      '/cg/[eqg:eqg]?/changes/[i]?',                     'ColorGuideController#changeList');
-$router->map('GET',      '/cg/[eqg:eqg]?/v/[i:id][ad]?',                    'ColorGuideController#appearancePage');
+$router->map('GET',      '/cg/[eqg:eqg]?/v/[i:id][adi]?',                   'ColorGuideController#appearancePage');
 $router->map('GET',      '/cg/[eqg:eqg]?/v/[i:id][cgimg:type].[cgext:ext]', 'ColorGuideController#appearanceAsFile');
-$router->map('GET',      '/cg/[eqg:eqg]?/sprite(-colors)?/[i:id][ad]?',     'ColorGuideController#spriteColors');
+$router->map('GET',      '/cg/[eqg:eqg]?/sprite(-colors)?/[i:id][adi]?',    'ColorGuideController#spriteColors');
 $router->map('GET|POST', '/cg/get-tags',                                    'ColorGuideController#getTags');
 $router->map('GET',  '/errorlog',                       'ErrorLogController#index');
 $router->map('GET',  '/da-auth',                        'AuthController#auth');
 $router->map('GET',  '/episode/[epid:id]',              'EpisodeController#page');
 $router->map('GET',  '/episodes/[i]?',                  'EpisodesController#index');
 $router->map('GET',  '/eqg/[i:id]',                     'EQGController#redirectInt');
-$router->map('GET',  '/eqg/[ad:id]',                    'EQGController#redirectStr');
-$router->map('GET',  '/movie/[i:id][ad]?',              'MovieController#pageID');
-$router->map('GET',  '/movie/[ad:title]',               'MovieController#pageTitle');
+$router->map('GET',  '/eqg/[adi:id]',                   'EQGController#redirectStr');
+$router->map('GET',  '/movie/[i:id][adi]?',             'MovieController#pageID');
+$router->map('GET',  '/movie/[adi:title]',              'MovieController#pageTitle');
 $router->map('GET',  '/logs/[i]',                       'AdminController#logs');
 $router->map('GET',  '/muffin-rating',                  'MuffinRatingController#image');
 $router->map('GEP',  '/poly',                           'PolyController#index');
