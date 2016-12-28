@@ -179,6 +179,10 @@ class UserController extends Controller {
 	function setGroup($params){
 		global $currentUser;
 
+		CSRFProtection::protect();
+		if (Permission::insufficient('staff'))
+			Response::fail();
+
 		if (!isset($params['name']))
 			Response::fail('Missing username');
 
@@ -212,6 +216,10 @@ class UserController extends Controller {
 
 	private function _banishAction($params, bool $banish){
 		global $Database, $currentUser;
+
+		CSRFProtection::protect();
+		if (Permission::insufficient('staff'))
+			Response::fail();
 
 		if (!isset($params['name']))
 			Response::fail('Missing username');
@@ -258,5 +266,20 @@ class UserController extends Controller {
 
 	function unbanish($params){
 		$this->_banishAction($params, false);
+	}
+
+	function checkCGSlots($params){
+		CSRFProtection::protect();
+
+		if (!isset($params['name']))
+			Response::fail('Missing username');
+
+		$targetUser = Users::get($params['name'], 'name');
+		if (empty($targetUser))
+			Response::fail('User not found');
+
+		if ($targetUser->getPCGAvailableSlots(false))
+			Response::done();
+		Response::fail();
 	}
 }

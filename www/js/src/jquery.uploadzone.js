@@ -30,7 +30,9 @@
 				$this.removeClass('uploading');
 				$input.prev().attr('href', path).children('img').fadeTo(200,0,function(){
 					let $image = $(this);
+					$this.addClass('loading');
 					$image.attr('src',path).on('load',function(){
+						$this.removeClass('loading');
 						$image.fadeTo(200,1);
 					});
 					$this.trigger('uz-uploadfinish');

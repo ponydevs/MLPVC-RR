@@ -244,18 +244,21 @@ HTML;
 			if ($currentUser->role === 'ban')
 				$Database->where('id', $currentUser->id)->delete('sessions');
 			else {
-				if (strtotime($currentUser->Session['expires']) < time()){
-					$tokenvalid = false;
-					try {
-						DeviantArt::getToken($currentUser->Session['refresh'], 'refresh_token');
-						$tokenvalid = true;
+				if (isset($currentUser->Session['expires'])){
+					if (strtotime($currentUser->Session['expires']) < time()){
+						$tokenvalid = false;
+						try {
+							DeviantArt::getToken($currentUser->Session['refresh'], 'refresh_token');
+							$tokenvalid = true;
+						}
+						catch (CURLRequestException $e){
+							$Database->where('id', $currentUser->Session['id'])->delete('sessions');
+							trigger_error("Session refresh failed for {$currentUser->name} ({$currentUser->id}) | {$e->getMessage()} (HTTP {$e->getCode()})", E_USER_WARNING);
+						}
 					}
-					catch (CURLRequestException $e){
-						$Database->where('id', $currentUser->Session['id'])->delete('sessions');
-						trigger_error("Session refresh failed for {$currentUser->name} ({$currentUser->id}) | {$e->getMessage()} (HTTP {$e->getCode()})", E_USER_WARNING);
-					}
+					else $tokenvalid = true;
 				}
-				else $tokenvalid = true;
+				else $tokenvalid = false;
 
 				if ($tokenvalid){
 					$signedIn = true;
@@ -357,6 +360,60 @@ HTML;
 			$HTML .= "</section>";
 		}
 		return $HTML;
+	}
+
+	static function getPersonalColorGuideHTML(User $User, bool $sameUser):string {
+		global $Database;
+		$UserID = $User->id;
+		$sectionIsPrivate = UserPrefs::get('p_hidepcg', $UserID);
+		if ($sectionIsPrivate && (!$sameUser && Permission::insufficient('staff')))
+			return '';
+
+		$HTML = '';
+		$privacy = $sameUser ? Users::PROFILE_SECTION_PRIVACY_LEVEL[$sectionIsPrivate ? 'staff' : 'public'] : '';
+		$whatBtn = $sameUser ? ' <button class="personal-cg-say-what typcn typcn-info-large darkblue">What?</button>':'';
+		$HTML .= <<<HTML
+<section class="personal-cg">
+	<h2>{$privacy}Personal Color Guide{$whatBtn}</h2>
+HTML;
+		if ($sameUser || Permission::sufficient('staff')){
+			$ApprovedFinishedRequests = $User->getApprovedFinishedRequestCount();
+			$SlotCount = Users::calculatePersonalCGSlots($ApprovedFinishedRequests);
+			$ToNextSlot = Users::calculatePersonalCGNextSlot($ApprovedFinishedRequests);
+
+			$ThisUser = $sameUser?'You':'This user';
+			$has = $sameUser?'have':'has';
+			$nApprovedRequests = CoreUtils::makePlural('approved request',$ApprovedFinishedRequests,PREPEND_NUMBER);
+			$grants = 'grant'.($ApprovedFinishedRequests!=1?'':'s');
+			$them = $sameUser?'you':'them';
+			$nSlots = CoreUtils::makePlural('slot',$SlotCount,PREPEND_NUMBER);
+			$goal = $sameUser?' You are '.CoreUtils::makePlural('request',$ToNextSlot,PREPEND_NUMBER).' away from getting another slot.':'';
+		$HTML .= <<<HTML
+	<div class="personal-cg-progress">
+		<p>$ThisUser currently $has $nApprovedRequests on the site, which $grants $them $nSlots.$goal</p>
+	</div>
+HTML;
+		}
+		$PersonalColorGuides = $Database->where('owner',$UserID)->orderBy('order')->get('appearances');
+		if (count($PersonalColorGuides) > 0 || $sameUser){
+			$HTML .= "<ul class='personal-cg-appearances'>";
+			foreach ($PersonalColorGuides as $p)
+				$HTML .= "<li>".Appearances::getLinkWithPreviewHTML($p).'</li>';
+			$HTML .= "</ul>";
+		}
+		if ($sameUser)
+			$HTML .= "<p><a href='/@{$User->name}/cg' class='btn darkblue large typcn typcn-spanner'>Manage Personal Color Guide</a></p>";
+		$HTML .= '</section>';
+
+		return $HTML;
+	}
+
+	static function calculatePersonalCGSlots(int $postcount):int {
+		return $postcount < 10 ? 0 : floor($postcount/10);
+	}
+
+	static function calculatePersonalCGNextSlot(int $postcount):int {
+		return 10+intval(10*floor(log(($postcount-10)*10, 10)))-$postcount;
 	}
 
 	static function validateName($key, $errors, $method_get = false){

@@ -1,6 +1,7 @@
 /* global DocReady,$content,$body,$w,$footer,$header,$navbar,moment,Chart,Time,ace */
-DocReady.push(function Episode(){
+DocReady.push(function(){
 	'use strict';
+
 	let SEASON = window.SEASON,
 		EPISODE = window.EPISODE,
 		EpID = 'S'+SEASON+'E'+EPISODE,

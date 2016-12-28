@@ -1,6 +1,7 @@
 /* globals DocReady,HandleNav */
-DocReady.push(function UserManage(){
+DocReady.push(function(){
 	'use strict';
+
 	if (typeof window.ROLES === 'undefined') return;
 	let $briefing = $('#content').children('.briefing'),
 		name = $briefing.find('.username').text().trim(),

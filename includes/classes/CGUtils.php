@@ -101,16 +101,22 @@ class CGUtils {
 	 *  checks if the size is at least $minwidth by $minheight,
 	 *  then moves it to the requested $path.
 	 *
-	 * @param string $key
-	 * @param string $path
+	 * @param string     $key
+	 * @param string     $path
 	 * @param array|null $allowedMimeTypes
-	 * @param int $minwidth
-	 * @param int|null $minheight
+	 * @param array      $min
+	 * @param array      $max
 	 *
 	 * @return null
 	 */
-	static function processUploadedImage($key, $path, $allowedMimeTypes, $minwidth, $minheight = null){
-		if (!isset($minheight)) $minheight = $minwidth;
+	static function processUploadedImage($key, $path, $allowedMimeTypes, $min = null, $max = null){
+		$minwidth = $min[0] ?? 1;
+		$minheight = $min[1] ?? $minwidth;
+		$maxwidth = $max[0] ?? 1000;
+		$maxheight = $max[1] ?? $maxwidth;
+		$min = [$minwidth,$minheight];
+		$max = [$maxwidth,$maxheight];
+
 		if (!isset($_FILES[$key]))
 			return self::grabImage($path,$allowedMimeTypes,$minwidth,$minheight);
 		$file = $_FILES[$key];
@@ -125,20 +131,20 @@ class CGUtils {
 			Response::fail('File upload failed; Writing image file was unsuccessful');
 		}
 
-		Image::checkSize($path, $width, $height, $minwidth, $minheight);
+		Image::checkSize($path, $width, $height, $min, $max);
 	}
 
 	/**
 	 * Gets the uploaded image for process_uploaded_image
 	 *
-	 * @param string $path
+	 * @param string     $path
 	 * @param array|null $allowedMimeTypes
-	 * @param int $minwidth
-	 * @param int $minheight
+	 * @param array      $min
+	 * @param array      $max
 	 *
 	 * @return null
 	 */
-	static function grabImage($path, $allowedMimeTypes, $minwidth, $minheight){
+	static function grabImage($path, $allowedMimeTypes, $min, $max){
 		try {
 			$Image = new ImageProvider(Posts::validateImageURL());
 		}
@@ -154,7 +160,7 @@ class CGUtils {
 			Response::fail('Writing local image file was unsuccessful');
 
 		list($width, $height) = Image::checkType($path, $allowedMimeTypes);
-		Image::checkSize($path, $width, $height, $minwidth, $minheight);
+		Image::checkSize($path, $width, $height, $min, $max);
 	}
 
 	/**
@@ -637,22 +643,18 @@ XML;
 		if (file_exists($OutputPath))
 			Image::outputSVG(null,$OutputPath,$FileRelPath);
 
-
 		$SVG = '';
-		$colors = array();
 		$ColorQuery = $Database->rawQuery(
 			'SELECT c.hex FROM colors c
 			LEFT JOIN colorgroups cg ON c.groupid = cg.groupid
-			WHERE cg.ponyid = ?
+			WHERE cg.ponyid = ? AND c.hex IS NOT NULL
 			ORDER BY cg."order" ASC, c."order" ASC
 			LIMIT 4', array($AppearanceID));
 
-		if (empty($ColorQuery))
-			CoreUtils::notFound();
-
-		usort($ColorQuery, function($a, $b){
-			return CoreUtils::yiq($b['hex']) <=> CoreUtils::yiq($a['hex']);
-		});
+		if (!empty($ColorQuery))
+			usort($ColorQuery, function($a, $b){
+				return CoreUtils::yiq($b['hex']) <=> CoreUtils::yiq($a['hex']);
+			});
 
 		switch (count($ColorQuery)){
 			case 1:
@@ -665,6 +667,9 @@ XML;
 <rect x='0' y='1' width='1' height='1' fill='{$ColorQuery[1]['hex']}'/>
 <rect x='1' y='1' width='1' height='1' fill='{$ColorQuery[2]['hex']}'/>
 XML;
+			break;
+			case 0:
+				$SVG .= '<rect fill="#FFFFFF" width="2" height="2"/><rect fill="#EFEFEF" width="1" height="1"/><rect fill="#EFEFEF" width="1" height="1" x="1" y="1"/>';
 			break;
 			case 2:
 			case 4:

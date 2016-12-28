@@ -1,5 +1,5 @@
 /* global DocReady,$content,$w,$header,$footer,ace,Time,moment,bindVideoButtons */
-DocReady.push(function EpisodeManage(){
+DocReady.push(function(){
 	'use strict';
 
 	let SEASON = window.SEASON,

@@ -33,6 +33,14 @@
 					height: 300px;
 				}
 
+				&.loading {
+					width: 150px;
+					height: 150px;
+					margin: 75px 0;
+					background: url('/img/loading-ring.svg') no-repeat center;
+					background-size: 125px;
+				}
+
 				a, a > img {
 					display: block;
 				}
@@ -91,7 +99,7 @@
 		}
 	}
 
-	.related {
+	.related ul {
 		@extend %appearance-ul;
 	}
 

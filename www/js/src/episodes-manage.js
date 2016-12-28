@@ -1,6 +1,7 @@
 /* global DocReady,moment,HandleNav,$content */
-DocReady.push(function EpisodesManage(){
+DocReady.push(function(){
 	'use strict';
+
 	let $tables = $('#content').find('table'),
 		SEASON = window.SEASON,
 		EPISODE = window.EPISODE;

@@ -19,42 +19,46 @@ $router->addMatchTypes([
 	'eqg' => 'eqg',
 	'gsd' => '([gs]et|del)',
 	'make' => 'make',
-	'cg' => '(c(olou?r)?g(uide)?)'
+	'cg' => '(c(olou?r)?g(uide)?)',
+	'user' => 'u(ser)?',
+	'v' => '(v|appearance)',
 ]);
 
 // Pages
-$router->map('GET',  '/',                               'EpisodeController#index');
-$router->map('GET',  '/footer-git',                     'FooterController#git');
-$router->map('GET',  '/about',                          'AboutController#index');
-$router->map('GET',  '/admin',                          'AdminController#index');
-$router->map('GET',  '/admin/logs/[i]?',                'AdminController#logs');
-$router->map('GET',  '/blending',                       'BlendingController#index');
-$router->map('GET',  '/browser/[i:session]?',           'BrowserController#index');
-$router->map('GET',  '/components',                     'ComponentsController#index');
-$router->map('GET',      '/[cg]/[eqg:eqg]?/[i]?',                             'ColorGuideController#guide');
-$router->map('GET',      '/[cg]/[eqg:eqg]?/[i]?',                             'ColorGuideController#guide');
-$router->map('GET',      '/[cg]/[eqg:eqg]?/full',                             'ColorGuideController#fullList');
-$router->map('GET',      '/[cg]/[eqg:eqg]?/tags/[i]?',                        'ColorGuideController#tagList');
-$router->map('GET',      '/[cg]/[eqg:eqg]?/changes/[i]?',                     'ColorGuideController#changeList');
-$router->map('GET',      '/[cg]/[eqg:eqg]?/v/[i:id][adi]?',                   'ColorGuideController#appearancePage');
-$router->map('GET',      '/[cg]/[eqg:eqg]?/v/[i:id][cgimg:type].[cgext:ext]', 'ColorGuideController#appearanceAsFile');
-$router->map('GET',      '/[cg]/[eqg:eqg]?/sprite(-colors)?/[i:id][adi]?',    'ColorGuideController#spriteColors');
-$router->map('GET|POST', '/[cg]/get-tags',                                    'ColorGuideController#getTags');
-$router->map('GET',  '/errorlog',                       'ErrorLogController#index');
-$router->map('GET',  '/da-auth',                        'AuthController#auth');
-$router->map('GET',  '/episode/[epid:id]',              'EpisodeController#page');
-$router->map('GET',  '/episodes/[i]?',                  'EpisodesController#index');
-$router->map('GET',  '/eqg/[i:id]',                     'EQGController#redirectInt');
-$router->map('GET',  '/eqg/[adi:id]',                   'EQGController#redirectStr');
-$router->map('GET',  '/movie/[i:id][adi]?',             'MovieController#pageID');
-$router->map('GET',  '/movie/[adi:title]',              'MovieController#pageTitle');
-$router->map('GET',  '/logs/[i]',                       'AdminController#logs');
-$router->map('GET',  '/muffin-rating',                  'MuffinRatingController#image');
-$router->map('GEP',  '/poly',                           'PolyController#index');
-$router->map('GET',  '/s/[rr:thing]/[i:id]',            'PostController#share');
-$router->map('GET',  '/users',                          'UsersController#list');
-$router->map('GET',  '/u/[un:name]?',                   'UserController#profile');
-$router->map('GET',  '/user/[un:name]?',                'UserController#profile');
+$router->map('GET', '/',                               'EpisodeController#index');
+$router->map('GET', '/footer-git',                     'FooterController#git');
+$router->map('GET', '/about',                          'AboutController#index');
+$router->map('GET', '/admin',                          'AdminController#index');
+$router->map('GET', '/admin/logs/[i]?',                'AdminController#logs');
+$router->map('GET', '/blending',                       'BlendingController#index');
+$router->map('GET', '/browser/[i:session]?',           'BrowserController#index');
+$router->map('GET', '/components',                     'ComponentsController#index');
+$router->map('GET',      '/[cg]/[eqg:eqg]?/[i]?',                               'ColorGuideController#guide');
+$router->map('GET',      '/[cg]/[eqg:eqg]?/full',                               'ColorGuideController#fullList');
+$router->map('GET',      '/[cg]/[eqg:eqg]?/tags/[i]?',                          'ColorGuideController#tagList');
+$router->map('GET',      '/[cg]/[eqg:eqg]?/changes/[i]?',                       'ColorGuideController#changeList');
+$router->map('GET',      '/[cg]/[eqg:eqg]?/[v]/[i:id][adi]?',                   'ColorGuideController#appearancePage');
+$router->map('GET',      '/[cg]/[eqg:eqg]?/[v]/[i:id][cgimg:type].[cgext:ext]', 'ColorGuideController#appearanceAsFile');
+$router->map('GET',      '/[cg]/[eqg:eqg]?/sprite(-colors)?/[i:id][adi]?',      'ColorGuideController#spriteColors');
+$router->map('GET|POST', '/[cg]/get-tags',                                      'ColorGuideController#getTags');
+$router->map('GET', '/errorlog',                       'ErrorLogController#index');
+$router->map('GET', '/da-auth',                        'AuthController#auth');
+$router->map('GET', '/episode/[epid:id]',              'EpisodeController#page');
+$router->map('GET', '/episodes/[i]?',                  'EpisodesController#index');
+$router->map('GET', '/eqg/[i:id]',                     'EQGController#redirectInt');
+$router->map('GET', '/eqg/[adi:id]',                   'EQGController#redirectStr');
+$router->map('GET', '/movie/[i:id][adi]?',             'MovieController#pageID');
+$router->map('GET', '/movie/[adi:title]',              'MovieController#pageTitle');
+$router->map('GET', '/logs/[i]',                       'AdminController#logs');
+$router->map('GET', '/muffin-rating',                  'MuffinRatingController#image');
+$router->map('GEP', '/poly',                           'PolyController#index');
+$router->map('GET', '/s/[rr:thing]/[i:id]',            'PostController#share');
+$router->map('GET', '/users',                          'UsersController#list');
+$router->map('GET', '/[user]/[un:name]?',              'UserController#profile');
+$router->map('GET', '/[user]/[un:name]/[cg]/[i]?',     'ColorGuideController#personalGuide');
+$router->map('GET', '/[user]/[un:name]/[cg]/[v]/[i:id][adi]?', 'ColorGuideController#personalAppearancePage');
+$router->map('GET', '/[user]/[un:name]/[cg]/[v]/[i:id][cgimg:type].[cgext:ext]', 'ColorGuideController#personalAppearanceAsFile');
+$router->map('GET', '/[user]/[un:name]/[cg]/[eqg:eqg]?/sprite(-colors)?/[i:id][adi]?', 'ColorGuideController#spriteColors');
 
 // "API" Endpoints
 $router->map('POST', '/about/stats',                         'AboutController#stats');
@@ -71,6 +75,10 @@ $router->map('POST', '/cg/tag/[make:action]',                'ColorGuideControll
 $router->map('POST', '/cg/tags/recount-uses',                'ColorGuideController#recountTagUses');
 $router->map('POST', '/cg/colorgroup/[gsd:action]/[i:id]',   'ColorGuideController#colorGroupAction');
 $router->map('POST', '/cg/colorgroup/[make:action]',         'ColorGuideController#colorGroupAction');
+$router->map('POST', '/[user]/[un:name]/cg/appearance/[ad:action]/[i:id]',  'ColorGuideController#appearanceAction');
+$router->map('POST', '/[user]/[un:name]/cg/appearance/[make:action]',       'ColorGuideController#appearanceAction');
+$router->map('POST', '/[user]/[un:name]/cg/colorgroup/[gsd:action]/[i:id]', 'ColorGuideController#colorGroupAction');
+$router->map('POST', '/[user]/[un:name]/cg/colorgroup/[make:action]',       'ColorGuideController#colorGroupAction');
 //                    /cg/...
 $router->map('POST', '/da-auth/signout',                     'AuthController#signout');
 $router->map('POST', '/episode/postlist/[epid:id]',          'EpisodeController#postList');
@@ -106,3 +114,4 @@ $router->map('POST', '/user/sessiondel/[i:id]',              'UserController#ses
 $router->map('POST', '/user/setgroup/[un:name]',             'UserController#setGroup');
 $router->map('POST', '/user/banish/[un:name]',               'UserController#banish');
 $router->map('POST', '/user/un-banish/[un:name]',            'UserController#unbanish');
+$router->map('POST', '/[user]/[un:name]/cg/slot-check',      'UserController#checkCGSlots');

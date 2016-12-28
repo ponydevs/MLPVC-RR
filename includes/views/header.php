@@ -23,6 +23,14 @@ switch ($do ?? null){
 			$Description = 'Show accurate colors for "'.$Appearance['label'].'" from the MLP-VectorClub\'s Official Color Guide';
 		}
 	break;
+	case "user":
+		if (!empty($Appearance)){
+			$sprite = Appearances::getSpriteURL($Appearance['id']);
+			if ($sprite)
+				$ThumbImage = $sprite;
+
+			$Description = 'Colors for "'.$Appearance['label'].'" from '.CoreUtils::posess($Owner->name).' Personal Color Guide on the the MLP-VectorClub\'s website';
+		}
 	case "s":
 		if (!empty($LinkedPost)){
 			$_oldTitle = $Title;

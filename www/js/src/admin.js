@@ -1,5 +1,5 @@
 /* global DocReady,HandleNav,Sortable,DOMStringList */
-DocReady.push(function Admin(){
+DocReady.push(function(){
 	'use strict';
 
 	// Manage useful links

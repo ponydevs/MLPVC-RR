@@ -238,7 +238,7 @@
 				&:after { border-left-color: $NGreen }
 			}
 
-			@extend %appearance-ul;
+			ul { @extend %appearance-ul }
 		}
 		&.admin {
 			color: $NDarkBlue;

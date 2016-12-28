@@ -10,16 +10,22 @@ class Appearances {
 	/**
 	 * @param bool      $EQG
 	 * @param int|int[] $limit
-	 * @param  string   $cols
+	 * @param string    $userid
+	 * @param string    $cols
 	 *
 	 * @return array
 	 */
-	static function get($EQG, $limit = null, $cols = '*'){
+	static function get($EQG, $limit = null, $userid = null, $cols = null){
 		global $Database;
 
-		self::_order();
-		if (isset($EQG))
-			$Database->where('ishuman', $EQG)->where('id',0,'!=');
+		if (isset($userid)){
+			$Database->where('owner', $userid);
+		}
+		else {
+			self::_order();
+			if (isset($EQG))
+				$Database->where('ishuman', $EQG)->where('id',0,'!=');
+		}
 		return $Database->get('appearances', $limit, $cols);
 	}
 
@@ -39,32 +45,37 @@ class Appearances {
 	/**
 	 * @param array $Appearances
 	 * @param bool  $wrap
+	 * @param bool  $permission
 	 *
 	 * @return string
 	 */
-	static function getHTML($Appearances, $wrap = WRAP){
+	static function getHTML($Appearances, $wrap = WRAP, $permission = null){
 		global $Database, $_MSG, $Search;
+
+		if (!isset($permission))
+			$permission = Permission::sufficient('staff');
 
 		$HTML = '';
 		if (!empty($Appearances)) foreach ($Appearances as $Appearance){
 			$Appearance['label'] = CoreUtils::escapeHTML($Appearance['label']);
 
-			$img = self::getSpriteHTML($Appearance);
-			$updates = self::getUpdatesHTML($Appearance['id']);
+			$img = self::getSpriteHTML($Appearance, $permission);
+			$updates = isset($Appearance['owner']) ? '' : self::getUpdatesHTML($Appearance['id']);
 			$notes = self::getNotesHTML($Appearance);
-			$tags = $Appearance['id'] ? self::getTagsHTML($Appearance['id'], true, $Search) : '';
+			$tags = isset($Appearance['owner']) ? '' : $Appearance['id'] ? self::getTagsHTML($Appearance['id'], true, $Search) : '';
 			$colors = self::getColorsHTML($Appearance);
 			$eqgp = $Appearance['ishuman'] ? 'eqg/' : '';
+			$personalp = isset($Appearance['owner']) ? '/@'.Users::get($Appearance['owner'],'id','name')->name : '';
 
 			$RenderPath = FSPATH."cg_render/{$Appearance['id']}.png";
 			$FileModTime = '?t='.(file_exists($RenderPath) ? filemtime($RenderPath) : time());
-			$Actions = "<a class='btn typcn typcn-image darkblue' title='View as PNG' href='/cg/{$eqgp}v/{$Appearance['id']}p.png$FileModTime' target='_blank'></a>".
+			$Actions = "<a class='btn typcn typcn-image darkblue' title='View as PNG' href='$personalp/cg/{$eqgp}v/{$Appearance['id']}p.png$FileModTime' target='_blank'></a>".
 			           "<button class='getswatch typcn typcn-brush teal' title='Download swatch file'></button>";
-			if (Permission::sufficient('staff'))
+			if ($permission)
 				$Actions .= "<button class='edit typcn typcn-pencil blue' title='Edit'></button>".
 				            ($Appearance['id']!==0?"<button class='delete typcn typcn-trash red' title='Delete'></button>":'');
 			$safelabel = self::getSafeLabel($Appearance);
-			$HTML .= "<li id='p{$Appearance['id']}'>$img<div><strong><a href='/cg/v/{$Appearance['id']}-$safelabel'>{$Appearance['label']}</a>$Actions</strong>$updates$notes$tags$colors</div></li>";
+			$HTML .= "<li id='p{$Appearance['id']}'>$img<div><strong><a href='$personalp/cg/v/{$Appearance['id']}-$safelabel'>{$Appearance['label']}</a>$Actions</strong>$updates$notes$tags$colors</div></li>";
 		}
 		else {
 			if (empty($_MSG))
@@ -76,8 +87,10 @@ class Appearances {
 	}
 
 	static function isPrivate($Appearance, bool $ignoreStaff = false):bool {
+		global $signedIn, $currentUser;
+
 		$isPrivate = !empty($Appearance['private']);
-		if (!$ignoreStaff && Permission::sufficient('staff'))
+		if (!$ignoreStaff && (Permission::sufficient('staff') || $Appearance['owner'] === ($signedIn ? $currentUser->id : null)))
 			$isPrivate = false;
 		return $isPrivate;
 	}
@@ -228,17 +241,18 @@ class Appearances {
 	 * Returns the HTML for sprite images
 	 *
 	 * @param array $Appearance
+	 * @parma bool  $permission
 	 *
 	 * @return string
 	 */
-	static function getSpriteHTML($Appearance){
+	static function getSpriteHTML($Appearance, bool $permission){
 		$imgPth = self::getSpriteURL($Appearance['id']);
 		if (!empty($imgPth)){
 			$img = "<a href='$imgPth' target='_blank' title='Open image in new tab'><img src='$imgPth' alt='".CoreUtils::aposEncode($Appearance['label'])."'></a>";
-			if (Permission::sufficient('staff'))
+			if ($permission)
 				$img = "<div class='upload-wrap'>$img</div>";
 		}
-		else if (Permission::sufficient('staff'))
+		else if ($permission)
 			$img = "<div class='upload-wrap'><a><img src='/img/blank-pixel.png'></a></div>";
 		else return '';
 
@@ -334,7 +348,7 @@ class Appearances {
 	static function getSortReorder($EQG){
 		if ($EQG)
 			return;
-		self::reorder(self::sort(self::get($EQG,null,'id'), SIMPLE_ARRAY));
+		self::reorder(self::sort(self::get($EQG,null,null,'id'), SIMPLE_ARRAY));
 	}
 
 	/**
@@ -559,15 +573,19 @@ HTML;
 			ORDER BY \"order\"", array(':id' => $AppearanceID));
 	}
 
+	static function getLinkWithPreviewHTML($p){
+		$safeLabel = self::getSafeLabel($p);
+		$preview = self::getPreviewURL($p);
+		$preview = "<img src='$preview' class='preview'>";
+		return "<a href='/cg/v/{$p['id']}-$safeLabel'>$preview{$p['label']}</a>";
+	}
+
 	static function getRelatedHTML(array $Related):string {
 		if (empty($Related))
 			return '';
 		$LINKS = '';
 		foreach ($Related as $p){
-			$safeLabel = self::getSafeLabel($p);
-			$preview = self::getPreviewURL($p);
-			$preview = "<img src='$preview' class='preview'>";
-			$LINKS .= "<li><a href='/cg/v/{$p['id']}-$safeLabel'>$preview{$p['label']}</a></li>";
+			$LINKS .= '<li>'.self::getLinkWithPreviewHTML($p).'</li>';
 		}
 		return "<section class='related'><h2>Related appearances</h2><ul>$LINKS</ul></section>";
 	}
@@ -651,7 +669,7 @@ HTML;
 			]
 		]);
 		$elasticClient->indices()->create(array_merge($params));
-		$Appearances = $Database->where('id != 0')->get('appearances',null,self::ELASTIC_COLUMNS);
+		$Appearances = $Database->where('id != 0')->where('owner IS NULL')->get('appearances',null,self::ELASTIC_COLUMNS);
 
 		$params = array('body' => []);
 		foreach ($Appearances as $i => $a){

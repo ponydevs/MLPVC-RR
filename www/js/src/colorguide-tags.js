@@ -1,6 +1,7 @@
 /* globals DocReady */
-DocReady.push(function ColorguideTags(){
+DocReady.push(function(){
 	'use strict';
+
 	let TAG_TYPES_ASSOC = window.TAG_TYPES_ASSOC,
 		$tbody = $('#tags').children('tbody'),
 		updateList = function($tr, action){

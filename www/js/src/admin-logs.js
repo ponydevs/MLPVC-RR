@@ -1,6 +1,7 @@
 /* global DocReady,$w,Time */
-DocReady.push(function Logs(){
+DocReady.push(function(){
 	'use strict';
+
 	let requesting = false,
 		$FilterForm = $('#filter-form');
 	

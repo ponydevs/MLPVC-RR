@@ -2,13 +2,17 @@
 
 namespace App\Models;
 
+use App\Appearances;
+use App\Exceptions\NoPCGSlotsException;
 use App\HTTP;
 use App\Models\AbstractFillable;
 use App\CoreUtils;
 use App\Logs;
+use App\Pagination;
 use App\Permission;
 use App\RegExp;
 use App\UserPrefs;
+use App\Users;
 
 class User extends AbstractFillable {
 	/** @var string */
@@ -163,5 +167,37 @@ class User extends AbstractFillable {
 
 		return !empty($RecentlyJoined['response'])
 			&& preg_match(new RegExp('<a class="[a-z ]*username" href="http://'.strtolower($this->name).'.deviantart.com/">'.USERNAME_PATTERN.'</a>'), $RecentlyJoined['response']);
+	}
+
+	/**
+	 * Get the number of posts finished by the user that have been accepted to the gallery
+	 */
+	function getApprovedFinishedRequestCount(){
+		global $Database;
+
+		return $Database->where('deviation_id IS NOT NULL')->where('reserved_by',$this->id)->where('lock',1)->count('requests');
+	}
+
+	function getPCGAppearances(Pagination $Pagination = null, bool $countOnly = false){
+		global $Database;
+
+		$limit = isset($Pagination) ? $Pagination->getLimit() : null;
+		if (!$countOnly)
+			$Database->orderBy('order','ASC');
+		$return = Appearances::get(null, $limit, $this->id,$countOnly ? 'COUNT(*) as cnt' : '*');
+		return $countOnly ? ($return['cnt'] ?? 0) : $return;
+	}
+
+	function getPCGAvailableSlots(bool $throw = true):int {
+		$afrcount = $this->getApprovedFinishedRequestCount();
+		$totalSlots = Users::calculatePersonalCGSlots($afrcount);
+		if ($totalSlots === 0){
+			if ($throw)
+				throw new NoPCGSlotsException();
+			return 0;
+		}
+		$usedSlots = $this->getPCGAppearances(null, true);
+
+		return $totalSlots-$usedSlots;
 	}
 }

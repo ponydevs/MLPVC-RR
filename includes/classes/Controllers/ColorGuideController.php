@@ -5,10 +5,12 @@ use App\CGUtils;
 use App\CoreUtils;
 use App\CSRFProtection;
 use App\Exceptions\MismatchedProviderException;
+use App\Exceptions\NoPCGSlotsException;
 use App\ImageProvider;
 use App\Input;
 use App\JSON;
 use App\Logs;
+use App\Models\User;
 use App\Pagination;
 use App\Permission;
 use App\RegExp;
@@ -18,7 +20,9 @@ use App\UserPrefs;
 use App\Appearances;
 use App\Tags;
 use App\ColorGroups;
+use App\Users;
 use Elasticsearch\Common\Exceptions\NoNodesAvailableException;
+use GuzzleHttp\Ring\Core;
 use ONGR\ElasticsearchDSL;
 use ONGR\ElasticsearchDSL\Query\BoolQuery;
 use ONGR\ElasticsearchDSL\Query\TermQuery;
@@ -35,13 +39,34 @@ class ColorGuideController extends Controller {
 	}
 
 	/** @var bool */
-	private $_EQG, $_appearancePage;
+	private $_EQG, $_appearancePage, $_personalGuide;
 	/** @var string */
 	private $_cgPath;
-	private function _initialize($params){
-		$this->_EQG = !empty($params['eqg']) ? 1 : 0;
-		$this->_cgPath = "/cg".($this->_EQG?'/eqg':'');
+	private function _initialize($params, bool $setPath = true){
+		$this->_EQG = isset($params['eqg']) ? (!empty($params['eqg']) ? 1 : 0) : null;
+		if ($setPath)
+			$this->_cgPath = "/cg".($this->_EQG?'/eqg':'');
 		$this->_appearancePage = isset($_POST['APPEARANCE_PAGE']);
+		$this->_personalGuide = isset($_POST['PERSONAL_GUIDE']);
+	}
+
+	/** @var User */
+	private $_owner;
+	/** @var bool */
+	private $_isOwner;
+	private function _initPersonal($params, $force = true){
+		global $currentUser, $signedIn;
+
+		$this->_initialize($params, !$force);
+
+		$nameSet = isset($params['name']);
+		if (!$nameSet && $force)
+			CoreUtils::notFound();
+		$this->_owner = $nameSet ? Users::get($params['name'], 'name') : null;
+		$this->_isOwner = $nameSet ? ($signedIn && $currentUser->id === $this->_owner->id) : false;
+
+		if ($nameSet)
+			$this->_cgPath = "/@{$this->_owner->name}/cg";
 	}
 
 	/** @var array */
@@ -52,34 +77,44 @@ class ColorGuideController extends Controller {
 		$asFile = isset($params['ext']);
 		if (!isset($params['id']))
 			Response::fail('Missing appearance ID');
-		$this->_appearance = $Database->where('id', $params['id'])->getOne('appearances', $asFile ? 'id,label,cm_dir,ishuman' : null);
+		$this->_appearance = $Database->where('id', $params['id'])->getOne('appearances', $asFile ? 'id,label,cm_dir,ishuman,owner' : '*');
 		if (empty($this->_appearance))
 			CoreUtils::notFound();
 
-		if ($this->_appearance['ishuman'] && !$this->_EQG){
-			$this->_EQG = 1;
-			$this->_cgPath = '/cg/eqg';
+		if (!isset($this->_appearance['owner'])){
+			if ($this->_appearance['ishuman'] && !$this->_EQG){
+				$this->_EQG = 1;
+				$this->_cgPath = '/cg/eqg';
+			}
+			else if (!$this->_appearance['ishuman'] && $this->_EQG){
+				$this->_EQG = 0;
+				$this->_cgPath = '/cg';
+			}
 		}
-		else if (!$this->_appearance['ishuman'] && $this->_EQG){
-			$this->_EQG = 0;
-			$this->_cgPath = '/cg';
+		else {
+			$this->_EQG = null;
+			$OwnerName = Users::get($this->_appearance['owner'],'id','name')->name;
+			$this->_cgPath = "/@$OwnerName/cg";
 		}
 	}
 
 	function spriteColors($params){
-		if (!Permission::sufficient('staff'))
+		if (Permission::insufficient('member'))
 			CoreUtils::notFound();
 
-		global $Database;
+		global $Database, $currentUser;
 
 		$this->_getAppearance($params);
+		if (Permission::insufficient('staff') && ($this->_appearance['owner'] ?? null) != $currentUser->id)
+			CoreUtils::notFound();
 
 		$Map = CGUtils::getSpriteImageMap($this->_appearance['id']);
 		if (empty($Map))
 			CoreUtils::notFound();
 
 		$Colors = array();
-		foreach (array(0, $this->_appearance['id']) as $AppearanceID){
+		$loop = isset($this->_appearance['owner']) ? [$this->_appearance['id']] : [0, $this->_appearance['id']];
+		foreach ($loop as $AppearanceID){
 			$ColorGroups = ColorGroups::get($AppearanceID);
 			$SortedColorGroups = array();
 			foreach ($ColorGroups as $cg)
@@ -94,26 +129,27 @@ class ColorGuideController extends Controller {
 					);
 			}
 		}
-		$Colors = array_merge($Colors,
-			array(
+		if (!isset($this->_appearance['owner']))
+			$Colors = array_merge($Colors,
 				array(
-					'hex' => '#D8D8D8',
-					'label' => 'Mannequin | Outline',
-				),
-				array(
-	                'hex' => '#E6E6E6',
-	                'label' => 'Mannequin | Fill',
-				),
-				array(
-	                'hex' => '#BFBFBF',
-	                'label' => 'Mannequin | Shadow Outline',
-				),
-				array(
-	                'hex' => '#CCCCCC',
-	                'label' => 'Mannequin | Shdow Fill',
+					array(
+						'hex' => '#D8D8D8',
+						'label' => 'Mannequin | Outline',
+					),
+					array(
+		                'hex' => '#E6E6E6',
+		                'label' => 'Mannequin | Fill',
+					),
+					array(
+		                'hex' => '#BFBFBF',
+		                'label' => 'Mannequin | Shadow Outline',
+					),
+					array(
+		                'hex' => '#CCCCCC',
+		                'label' => 'Mannequin | Shdow Fill',
+					)
 				)
-			)
-		);
+			);
 
 		$this->_initialize($params);
 
@@ -135,8 +171,9 @@ class ColorGuideController extends Controller {
 		));
 	}
 
-	function appearanceAsFile($params){
-		$this->_initialize($params);
+	function appearanceAsFile($params, User $Owner = null){
+		if (!isset($Owner))
+			$this->_initialize($params);
 		$this->_getAppearance($params);
 
 		switch ($params['ext']){
@@ -162,6 +199,12 @@ class ColorGuideController extends Controller {
 		CoreUtils::notFound();
 	}
 
+	function personalAppearanceAsFile($params){
+		$this->_initPersonal($params);
+
+		self::appearanceAsFile($params, $this->_owner);
+	}
+
 	private $_GUIDE_MANAGE_JS = array(
 		'jquery.uploadzone',
 		'jquery.autocomplete',
@@ -175,10 +218,11 @@ class ColorGuideController extends Controller {
 	);
 
 	function appearancePage($params){
-		$this->_initialize($params);
+		if (!isset($this->_owner))
+			$this->_initialize($params);
 		$this->_getAppearance($params);
 
-		global $Color, $color;
+		global $Color, $color, $signedIn, $currentUser;
 
 		$SafeLabel = Appearances::getSafeLabel($this->_appearance);
 		CoreUtils::fixPath("$this->_cgPath/v/{$this->_appearance['id']}-$SafeLabel");
@@ -186,7 +230,6 @@ class ColorGuideController extends Controller {
 		if ($this->_appearance['id'] === 0 && $color !== 'color')
 			$title = str_replace('color',$color,$title);
 
-		$Changes = Updates::get($this->_appearance['id']);
 
 		$settings = array(
 			'title' => "$title - $Color Guide",
@@ -196,15 +239,26 @@ class ColorGuideController extends Controller {
 			'js' => array('jquery.qtip', 'jquery.ctxmenu', $this->do, "{$this->do}-single"),
 			'import' => [
 				'Appearance' => $this->_appearance,
-				'Changes' => $Changes,
 				'EQG' => $this->_EQG,
+				'isOwner' => false,
 			],
 		);
-		if (Permission::sufficient('staff')){
+		if (isset($this->_appearance['owner'])){
+			$settings['import']['Owner'] = $this->_owner;
+			$settings['import']['isOwner'] = $this->_isOwner;
+		}
+		else $settings['import']['Changes'] = Updates::get($this->_appearance['id']);
+		if (Permission::sufficient('staff') || $this->_isOwner){
 			$settings['css'] = array_merge($settings['css'], $this->_GUIDE_MANAGE_CSS);
 			$settings['js'] = array_merge($settings['js'], $this->_GUIDE_MANAGE_JS);
 		}
 		CoreUtils::loadPage($settings);
+	}
+
+	function personalAppearancePage($params){
+		$this->_initPersonal($params);
+
+		self::appearancePage($params);
 	}
 
 	function fullList($params){
@@ -215,7 +269,7 @@ class ColorGuideController extends Controller {
 		$GuideOrder = !isset($_REQUEST['alphabetically']) && !$this->_EQG;
 		if (!$GuideOrder)
 			$Database->orderBy('label','ASC');
-		$Appearances = Appearances::get($this->_EQG,null,'id,label,private');
+		$Appearances = Appearances::get($this->_EQG,null,null,'id,label,private');
 
 		if (isset($_REQUEST['ajax']))
 			Response::done(array('html' => CGUtils::getFullListHTML($Appearances, $GuideOrder, NOWRAP)));
@@ -251,7 +305,7 @@ class ColorGuideController extends Controller {
 			)
 		)))->out());
 
-		Response::done(array('html' => CGUtils::getFullListHTML(Appearances::get($this->_EQG,null,'id,label'), true, NOWRAP)));
+		Response::done(array('html' => CGUtils::getFullListHTML(Appearances::get($this->_EQG,null,null,'id,label'), true, NOWRAP)));
 	}
 
 	function changeList(){
@@ -422,6 +476,46 @@ class ColorGuideController extends Controller {
 		CoreUtils::loadPage($settings, $this);
 	}
 
+	function personalGuide($params){
+		global $Database, $Color;
+
+		$this->_initPersonal($params);
+
+		$title = '';
+		$AppearancesPerPage = UserPrefs::get('cg_itemsperpage');
+		$Ponies = [];
+	    $_EntryCount = $Database->where('owner',$this->_owner->id)->count('appearances');
+
+	    $Pagination = new Pagination("@{$this->_owner->name}/cg", $AppearancesPerPage, $_EntryCount);
+	    $Ponies = $this->_owner->getPCGAppearances($Pagination);
+
+		CoreUtils::fixPath("$this->_cgPath/{$Pagination->page}");
+		$heading = CoreUtils::posess($this->_owner->name)." Personal $Color Guide";
+		$title .= "Page {$Pagination->page} - $heading";
+
+		if (isset($_GET['js']))
+			$Pagination->respond(Appearances::getHTML($Ponies, NOWRAP), '#list');
+
+		$settings = array(
+			'title' => $title,
+			'heading' => $heading,
+			'css' => array('colorguide'),
+			'js' => array('jquery.qtip', 'jquery.ctxmenu', 'colorguide', 'paginate'),
+			'view' => 'user-colorguide',
+			'import' => [
+				'Ponies' => $Ponies,
+				'Pagination' => $Pagination,
+				'Owner' => $this->_owner,
+				'isOwner' => $this->_isOwner,
+			],
+		);
+		if ($this->_isOwner){
+			$settings['css'] = array_merge($settings['css'], $this->_GUIDE_MANAGE_CSS);
+			$settings['js'] = array_merge($settings['js'], $this->_GUIDE_MANAGE_JS);
+		}
+		CoreUtils::loadPage($settings, $this);
+	}
+
 	function export(){
 		global $Database;
 
@@ -548,20 +642,39 @@ class ColorGuideController extends Controller {
 	}
 
 	function appearanceAction($params){
-		global $Database, $Color;
+		global $Database, $Color, $currentUser;
 
-		$this->_initialize($params);
+		$this->_initPersonal($params, false);
 
-		if (Permission::insufficient('staff'))
+		if (Permission::insufficient('member'))
 			Response::fail();
 
 		$action = $params['action'];
 		$creating = $action === 'make';
 
-		if (!$creating){
-			$this->_getAppearance($params);
+		if ($creating){
+			if (Permission::insufficient('staff') && !$this->_personalGuide)
+				Response::fail("You don't have permission to add appearances to the official Color Guide");
+
+			if ($this->_personalGuide){
+				try {
+					$availSlots = $currentUser->getPCGAvailableSlots();
+				}
+				catch (NoPCGSlotsException $e){
+					Response::fail("You don't have any slots. If you'd like to know how to get some, click the blue <strong class='color-darkblue'>What?</strong> button on your <a href='/u'>Account page</a> to learn more about this feature.");
+				}
+				if ($availSlots === 0){
+					$remain = Users::calculatePersonalCGNextSlot($currentUser->getPCGAppearances(null, true));
+					Response::fail("You don't have enough slots to create another appearance. Delete other ones or finish $remain more ".CoreUtils::makePlural('request',$remain).'.');
+				}
+			}
 		}
-		else $this->_appearance = array('id' => null);
+		else {
+			$this->_getAppearance($params);
+
+			if (Permission::insufficient('staff') && !$this->_isOwner)
+				Response::fail();
+		}
 
 		switch ($action){
 			case "get":
@@ -582,7 +695,7 @@ class ColorGuideController extends Controller {
 			case "make":
 				/** @var $data array */
 				$data = array(
-					'ishuman' => $this->_EQG,
+					'ishuman' => $this->_personalGuide ? null : $this->_EQG,
 				    'cm_favme' => null,
 				);
 
@@ -661,8 +774,13 @@ class ColorGuideController extends Controller {
 
 				$data['private'] = isset($_POST['private']);
 
-				if ($creating)
-					$data['order'] = $Database->getOne('appearances','MAX("order") as "order"')['order'];
+				if ($creating){
+					$data['order'] = $Database->getOne('appearances','MAX("order") as "order"')['order']+1;
+					if (Permission::insufficient('staff') || $this->_personalGuide){
+						$data['owner'] = $currentUser->id;
+						$ownerName = $currentUser->name;
+					}
+				}
 
 				$query = $creating
 					? $Database->insert('appearances', $data, 'id')
@@ -679,7 +797,7 @@ class ColorGuideController extends Controller {
 					$data['id'] = $query;
 					$response = array(
 						'message' => 'Appearance added successfully',
-						'id' => $query,
+						'goto' => (isset($ownerName) ? "/@$ownerName" : '')."/cg/v/$query",
 					);
 					$usetemplate = isset($_POST['template']);
 					if ($usetemplate){
@@ -705,6 +823,7 @@ class ColorGuideController extends Controller {
 					    'cm_dir' => $data['cm_dir'],
 						'usetemplate' => $usetemplate ? 1 : 0,
 						'private' => $data['private'] ? 1 : 0,
+						'owner' => $data['owner'] ?? null,
 					));
 					Response::done($response);
 				}
@@ -713,7 +832,7 @@ class ColorGuideController extends Controller {
 
 				$response = array();
 				$diff = array();
-				foreach (array('label','notes','cm_favme','cm_dir','cm_preview','private') as $key){
+				foreach (array('label','notes','cm_favme','cm_dir','cm_preview','private','owner') as $key){
 					if ($EditedAppearance[$key] !== $this->_appearance[$key]){
 						$diff["old$key"] = $this->_appearance[$key];
 						$diff["new$key"] = $EditedAppearance[$key];
@@ -779,6 +898,7 @@ class ColorGuideController extends Controller {
 				    'cm_preview' => $this->_appearance['cm_preview'],
 				    'cm_dir' => $this->_appearance['cm_dir'],
 				    'private' => $this->_appearance['private'],
+				    'owner' => $this->_appearance['owner'],
 				));
 
 				Response::success('Appearance removed');
@@ -827,7 +947,7 @@ class ColorGuideController extends Controller {
 
 				switch ($action){
 					case "setsprite":
-						CGUtils::processUploadedImage('sprite', $finalpath, array('image/png'), 100);
+						CGUtils::processUploadedImage('sprite', $finalpath, array('image/png'), [300], [700,300]);
 						CGUtils::clearRenderedImages($this->_appearance['id']);
 					break;
 					case "delsprite":
@@ -845,6 +965,9 @@ class ColorGuideController extends Controller {
 				Response::done(array("path" => "/cg/v/{$this->_appearance['id']}s.png?t=".filemtime($finalpath)));
 			break;
 			case "getrelations":
+				if (isset($this->_appearance['owner']))
+					Response::fail('Relations are unavailable for appearances in personal guides');
+
 				$CheckTag = array();
 
 				$RelatedAppearances = Appearances::getRelated($this->_appearance['id']);
@@ -868,6 +991,9 @@ class ColorGuideController extends Controller {
 				Response::done($Sorted);
 			break;
 			case "setrelations":
+				if (isset($this->_appearance['owner']))
+					Response::fail('Relations are unavailable for appearances in personal guides');
+
 				$AppearanceIDs = (new Input('ids','int[]',array(
 					Input::IS_OPTIONAL => true,
 					Input::CUSTOM_ERROR_MESSAGES => array(
@@ -926,6 +1052,9 @@ class ColorGuideController extends Controller {
 			break;
 			case "tag":
 			case "untag":
+				if (isset($this->_appearance['owner']))
+					Response::fail('Tagging is unavailable for appearances in personal guides');
+
 				if ($this->_appearance['id'] === 0)
 					Response::fail("This appearance cannot be tagged");
 
@@ -1003,6 +1132,9 @@ class ColorGuideController extends Controller {
 	}
 
 	function recountTagUses(){
+		if (Permission::insufficient('staff'))
+			Response::fail();
+
 		$tagIDs = (new Input('tagids','int[]',array(
 			Input::CUSTOM_ERROR_MESSAGES => array(
 				Input::ERROR_MISSING => 'Missing list of tags to update',
@@ -1267,9 +1399,9 @@ HTML;
 	function colorGroupAction($params){
 		global $Database, $color, $Color, $HEX_COLOR_REGEX, $currentUser;
 
-		$this->_initialize($params);
-		if (Permission::insufficient('staff'))
-			CoreUtils::notFound();
+		$this->_initPersonal($params, false);
+		if (Permission::insufficient('staff') && !$this->_isOwner)
+			Response::fail();
 
 		$action = $params['action'];
 		$adding = $action === 'make';
@@ -1327,18 +1459,16 @@ HTML;
 		}
 
 		if ($adding){
-			$AppearanceID = (new Input('ponyid','int',array(
+			$params['id'] = (new Input('ponyid','int',array(
 				Input::CUSTOM_ERROR_MESSAGES => array(
 					Input::ERROR_MISSING => 'Missing appearance ID',
 				)
 			)))->out();
-			$Appearance = $Database->where('id', $AppearanceID)->where('ishuman', $this->_EQG)->getOne('appearances');
-			if (empty($Appearance))
-				Response::fail('The specified appearance odes not exist');
-			$data['ponyid'] = $AppearanceID;
+			$this->_getAppearance($params);
+			$data['ponyid'] = $params['id'];
 
 			// Attempt to get order number of last color group for the appearance
-			$LastGroup = ColorGroups::get($AppearanceID, '"order"', 'DESC', 1);
+			$LastGroup = ColorGroups::get($params['id'], '"order"', 'DESC', 1);
 			$data['order'] =  !empty($LastGroup['order']) ? $LastGroup['order']+1 : 1;
 
 			$GroupID = $Database->insert('colorgroups', $data, 'groupid');
@@ -1395,10 +1525,10 @@ HTML;
 		$colon = !$this->_appearancePage;
 		$outputNames = $this->_appearancePage;
 
-		if ($adding) $response = array('cgs' => Appearances::getColorsHTML($Appearance, NOWRAP, $colon, $outputNames));
+		if ($adding) $response = array('cgs' => Appearances::getColorsHTML($this->_appearance, NOWRAP, $colon, $outputNames));
 		else $response = array('cg' => ColorGroups::getHTML($Group['groupid'], null, NOWRAP, $colon, $outputNames));
 
-		$AppearanceID = $adding ? $Appearance['id'] : $Group['ponyid'];
+		$AppearanceID = $adding ? $this->_appearance['id'] : $Group['ponyid'];
 		if ($major){
 			Logs::action('color_modify',array(
 				'ponyid' => $AppearanceID,

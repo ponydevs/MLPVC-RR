@@ -1,5 +1,5 @@
 /* global DocReady,HEX_COLOR_PATTERN */
-DocReady.push(function Blender(){
+DocReady.push(function(){
 	'use strict';
 
 	function reverseComponent(backgroundC, blendedC, alpha){

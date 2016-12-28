@@ -29,25 +29,27 @@ class Image {
 	 * @param string $path
 	 * @param int $width
 	 * @param int $height
-	 * @param int $minwidth
-	 * @param int $minheight
+	 * @param array $min
+	 * @param array $max
 	 */
-	static function checkSize($path, $width, $height, $minwidth, $minheight){
-		if ($width < $minwidth || $height < $minheight){
+	static function checkSize($path, $width, $height, $min, $max){
+		$tooSmall = $width < $min[0] || $height < $min[1];
+		$tooBig = $width > $max[0] || $height > $max[1];
+		if ($tooSmall || $tooBig){
 			unlink($path);
-			Response::fail('The image is too small in '.(
-				$width < $minwidth
+			Response::fail('The image\'s '.(
+				($tooBig ? $width > $max[0] : $width < $min[0])
 				?(
-					$height < $minheight
-					?'width and height'
-					:'width'
+					($tooBig ? $height > $max[1] : $height < $min[1])
+					?'width and height are'
+					:'width is'
 				)
 				:(
-					$height < $minheight
-					?'height'
-					:''
+					($tooBig ? $height > $max[1] : $height < $min[1])
+					?'height is'
+					:'dimensions are'
 				)
-			).", please uploadd a bigger image.<br>The minimum size is {$minwidth}px by {$minheight}px.</p>");
+			).' too '.($tooBig?'big':'small').', please upload a '.($tooBig?'smaller':'larger')." image.<br>The ".($tooBig?'maximum':'minimum')." size is ".($tooBig?$max[0]:$min[0])."px wide by ".($tooBig?$max[1]:$min[1])."px tall, and you uploaded an image that's {$width}px wide and {$height}px tall.</p>");
 		}
 	}
 

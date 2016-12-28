@@ -1,5 +1,5 @@
 /* globals DocReady */
-DocReady.push(function UserSuggestion(){
+DocReady.push(function(){
 	'use strict';
 
 	let $pendingReservations = $('.pending-reservations');

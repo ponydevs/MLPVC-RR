@@ -13,7 +13,8 @@ use App\Users;
 
 if (isset($MSG)){
 	echo "<h1>$MSG</h1>";
-	if (isset($SubMSG)) echo "<p>$SubMSG</p>";
+	if (isset($SubMSG))
+		echo "<p>$SubMSG</p>";
 }
 else {
 	$vectorapp = UserPrefs::get('p_vectorapp', $User->id); ?>
@@ -52,6 +53,8 @@ if ($sameUser || Permission::sufficient('staff')){
 	}
 }
 if (Permission::sufficient('member', $User->role)){
+	echo Users::getPersonalColorGuideHTML($User, $sameUser);
+
 	echo Users::getPendingReservationsHTML($User->id, $sameUser, $YouHave);
 
 	$cols = "id, season, episode, deviation_id";
@@ -233,6 +236,15 @@ if (!empty($Banishes)){
 				<label>
 					<input type="checkbox" name="value" value="1"<?=UserPrefs::get('p_hidediscord', $User->id)?' checked':''?> <?=!$sameUser?' disabled':''?>>
 					<span>Hide Discord server link from the sidebar</span>
+<?php   if ($sameUser){ ?>
+					<button class="save typcn typcn-tick green" disabled>Save</button>
+<?php   } ?>
+				</label>
+			</form>
+			<form action="/preference/set/p_hidepcg">
+				<label>
+					<input type="checkbox" name="value" value="1"<?=UserPrefs::get('p_hidepcg', $User->id)?' checked':''?> <?=!$sameUser?' disabled':''?>>
+					<span>Hide my Personal Color Guide from the public</span>
 <?php   if ($sameUser){ ?>
 					<button class="save typcn typcn-tick green" disabled>Save</button>
 <?php   } ?>

@@ -85,11 +85,12 @@ CREATE TABLE appearances (
     label character varying(70) NOT NULL,
     notes text,
     cm_favme character varying(20),
-    ishuman boolean NOT NULL,
+    ishuman boolean,
     added timestamp with time zone DEFAULT now(),
     cm_preview character varying(255),
     cm_dir boolean,
-    private boolean DEFAULT false NOT NULL
+    private boolean DEFAULT false NOT NULL,
+    owner uuid
 );
 
 
@@ -288,12 +289,13 @@ CREATE TABLE log__appearances (
     label character varying(70) NOT NULL,
     notes text,
     cm_favme character varying(20),
-    ishuman boolean NOT NULL,
+    ishuman boolean,
     added timestamp with time zone,
     cm_preview character varying(255),
     cm_dir boolean,
     usetemplate boolean DEFAULT false NOT NULL,
-    private boolean DEFAULT false NOT NULL
+    private boolean DEFAULT false NOT NULL,
+    owner uuid
 );
 
 
@@ -1939,6 +1941,14 @@ ALTER TABLE ONLY appearance_relations
 
 ALTER TABLE ONLY appearance_relations
     ADD CONSTRAINT appearance_relations_target_fkey FOREIGN KEY (target) REFERENCES appearances(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: appearances appearances_owner_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER TABLE ONLY appearances
+    ADD CONSTRAINT appearances_owner_fkey FOREIGN KEY (owner) REFERENCES users(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --

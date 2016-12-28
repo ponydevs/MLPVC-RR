@@ -1,6 +1,7 @@
 /* global DocReady,Sortable */
-DocReady.push(function ColorguideFull(){
+DocReady.push(function(){
 	'use strict';
+
 	let $sortBy = $('#sort-by'),
 		$fullList = $('#full-list'),
 		$ReorderBtn = $('#guide-reorder'),

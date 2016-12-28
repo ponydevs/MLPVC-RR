@@ -1,5 +1,5 @@
 /* global DocReady,$content,SHORT_HEX_COLOR_PATTERN */
-DocReady.push(function ColorguideSpriteedit(){
+DocReady.push(function(){
 	'use strict';
 
 	let AppearanceID = window.AppearanceID,

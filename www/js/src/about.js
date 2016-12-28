@@ -1,6 +1,7 @@
 /* global DocReady,Chart,$w,Time,moment */
-DocReady.push(function About(){
+DocReady.push(function(){
 	'use strict';
+
 	Chart.defaults.global.responsive = true;
 	Chart.defaults.global.maintainAspectRatio = false;
 	Chart.defaults.global.animation = false;

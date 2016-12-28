@@ -1,6 +1,7 @@
 /* globals $w,$d,$content,DocReady,HandleNav */
-DocReady.push(function Colorguide(){
+DocReady.push(function(){
 	'use strict';
+
 	//noinspection JSUnusedLocalSymbols
 	let Color = window.Color, color = window.color, $list = $('.appearance-list'), EQG = window.EQG, AppearancePage = !!window.AppearancePage;
 

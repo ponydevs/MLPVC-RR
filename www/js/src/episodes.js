@@ -1,6 +1,7 @@
 /* global DocReady,moment */
-DocReady.push(function Episodes(){
+DocReady.push(function(){
 	'use strict';
+
 	let $eptableBody = $('#content').children('table').children('tbody');
 	$eptableBody.on('updatetimes',function(){
 		$eptableBody.children().children(':last-child').children('time.nodt').each(function(){

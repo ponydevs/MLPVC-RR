@@ -13,6 +13,7 @@ class UserPrefs extends GlobalSettings {
 			'cg_hideclrinfo' => 0,
 			'p_vectorapp' => '',
 			'p_hidediscord' => 0,
+			'p_hidepcg' => 0,
 			'p_disable_ga' => 0,
 			'ep_noappprev' => 0,
 		);
@@ -36,7 +37,7 @@ class UserPrefs extends GlobalSettings {
 		$default = null;
 		if (isset(static::$_defaults[$key]))
 			$default = static::$_defaults[$key];
-		if (!$signedIn)
+		if (empty($for) && !$signedIn)
 			return $default;
 
 		$Database->where('user', $for);

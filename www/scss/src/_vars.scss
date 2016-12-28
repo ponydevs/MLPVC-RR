@@ -220,23 +220,21 @@ $NoScrollbar: false;
 }
 
 %appearance-ul {
-	ul {
-		font-size: 1.2em;
-		font-weight: bold;
-		color: black;
-		padding: 0;
-		margin: 0;
-		list-style: none;
+	font-size: 1.2em;
+	font-weight: bold;
+	color: black;
+	padding: 0;
+	margin: 0;
+	list-style: none;
 
-		li {
-			display: inline;
+	li {
+		display: inline;
 
-			&:not(:last-child){
-				margin-right: 1em;
-			}
-
-			.preview { @extend %appearance-preview }
+		&:not(:last-child){
+			margin-right: 1em;
 		}
+
+		.preview { @extend %appearance-preview }
 	}
 }
 %resp-embed-wrap {

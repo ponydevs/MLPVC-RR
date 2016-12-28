@@ -380,7 +380,7 @@ class CoreUtils {
 		$HTML =  '<script>var ';
 		foreach ($export as $name => $value){
 			$type = gettype($value);
-			switch ($type){
+			switch (strtolower($type)){
 				case "boolean":
 					$value = $value ? 'true' : 'false';
 				break;
@@ -395,8 +395,10 @@ class CoreUtils {
 				break;
 				case "integer":
 				case "float":
-				case "null":
 					$value = strval($value);
+				break;
+				case "null":
+					$value = 'null';
 				break;
 				default:
 					if ($value instanceof RegExp){
@@ -602,8 +604,11 @@ class CoreUtils {
 				}
 
 			}
-			if ($GLOBALS['signedIn'])
+			if ($GLOBALS['signedIn']){
 				$NavItems['u'] = array("/@{$GLOBALS['currentUser']->name}",'Account');
+				if (isset($scope['Owner']))
+					$NavItems['u']['subitem'] = 'Personal Color Guide';
+			}
 			if ($do === 'user' || Permission::sufficient('staff')){
 				$NavItems['users'] = array('/users', 'Users', Permission::sufficient('staff'));
 				if (!empty($scope['User']) && empty($scope['sameUser']))
@@ -727,11 +732,15 @@ class CoreUtils {
 	 * Adds possessive ’s at the end of a word
 	 *
 	 * @param string $w
+	 * @param bool   $sOnly
 	 *
 	 * @return string
 	 */
-	static function posess($w){
-		return "$w'".(CoreUtils::substring($w, -1) !== 's'?'s':'');
+	static function posess($w, bool $sOnly = false){
+		$s = "'".(CoreUtils::substring($w, -1) !== 's'?'s':'');
+		if ($sOnly)
+			return $s;
+		return $w.$s;
 	}
 
 	/**

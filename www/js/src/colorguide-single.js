@@ -1,6 +1,7 @@
 /* global DocReady */
-DocReady.push(function ColorguideSingle(){
+DocReady.push(function(){
 	"use strict";
+
 	window.copyHashToggler();
 
 	let $colors = $('#colors');

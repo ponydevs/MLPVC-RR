@@ -65,7 +65,7 @@
 			}
 		}
 	}
-	.pending-reservations > h2 button {
+	section > h2 button {
 		vertical-align: baseline;
 		padding: 2px;
 		margin: 0;
@@ -111,14 +111,42 @@
 	section { @extend %section }
 	.details {
 		> section:not(:last-child) { margin-bottom: 15px }
+		.personal-cg {
+			.personal-cg-appearances {
+				@extend %appearance-ul;
+
+				margin: 10px 0;
+				padding: 0;
+				list-style: none;
+				display: block;
+
+				&:empty:before {
+					content: "You haven't added any appearances to your Personal Color Guide yet. If you had, they would be visible here.";
+					font-style: italic;
+					opacity: .7;
+					font-size: 1em;
+					border: 1px dashed;
+					display: block;
+					padding: 3px;
+					font-weight: normal;
+				}
+
+				li {
+					display: inline-block;
+
+					&:not(:last-child) {
+						margin-right: 10px;
+					}
+				}
+			}
+		}
 		.bans ul {
 			margin: 0;
 			padding: 0;
 			list-style: none;
 
 			&:empty:before {
-				content: "This user has no banishments on record";
-				font-style: italic;
+				content: "This user has no banishments on record.";
 			}
 
 			li {

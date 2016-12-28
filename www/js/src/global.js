@@ -538,6 +538,8 @@
 
 	$.attributifyRegex = regex => regex.toString().replace(/(^\/|\/[img]*$)/g,'');
 	$.fn.patternAttr = function(regex){
+		if (typeof regex === 'undefined')
+			throw new Error('$.fn.patternAttr: regex is undefined');
 		return this.attr('pattern', $.attributifyRegex(regex));
 	};
 
@@ -797,12 +799,13 @@
 					window[' '+rndk] = function(userid){
 						success = true;
 						clearInterval(closeCheck);
+						popup.close();
+						$.Dialog.success(false, 'Singed in successfully');
 						$.Dialog.wait(false, 'Reloading page');
 						$.Navigation.reload(function(){
 							if (userid && typeof window.ga === 'function')
 								window.ga('set', 'userId', userid);
 							$.Dialog.close();
-							popup.close();
 						});
 					};
 					try {
@@ -967,8 +970,13 @@
 			docReadyAlwaysRun();
 
 			for (let i = 0, l = this._DocReadyHandlers.length; i<l; i++){
-				this._DocReadyHandlers[i].call(window);
-				console.log('> DocReadyHandlers[%d]()',i);
+				try {
+					this._DocReadyHandlers[i].call(window);
+					console.log('> DocReadyHandlers[%d]()',i);
+				}
+				catch(e){
+					console.error(`Error while executing DocReadyHandlers[${i}]\n${e.stack}`);
+				}
 			}
 		}
 		flushDocReady(){
