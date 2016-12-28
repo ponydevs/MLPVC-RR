@@ -2,12 +2,16 @@
 use App\Appearances;
 use App\DeviantArt;
 use App\JSON;
+use App\Models\User;
 use App\Permission;
 use App\UserPrefs;
 use App\Users;
 use App\CoreUtils;
 
 /** @var $signedIn bool */
+/** @var $Owner User */
+/** @var $User User */
+/** @var $scope array */
 
 $Title = (isset($title)?$title.' - ':'').SITE_TITLE;
 $Description = "Handling requests, reservations & the Color Guide since 2015";
@@ -23,14 +27,21 @@ switch ($do ?? null){
 			$Description = 'Show accurate colors for "'.$Appearance['label'].'" from the MLP-VectorClub\'s Official Color Guide';
 		}
 	break;
-	case "user":
+	case "u":
 		if (!empty($Appearance)){
 			$sprite = Appearances::getSpriteURL($Appearance['id']);
 			if ($sprite)
 				$ThumbImage = $sprite;
+			else $ThumbImage = $Owner->avatar_url;
 
 			$Description = 'Colors for "'.$Appearance['label'].'" from '.CoreUtils::posess($Owner->name).' Personal Color Guide on the the MLP-VectorClub\'s website';
 		}
+		else if (!empty($User)){
+			$ThumbImage = $User->avatar_url;
+
+			$Description = CoreUtils::posess($User->name).' profile on the MLP-VectorClub\'s website';
+		}
+	break;
 	case "s":
 		if (!empty($LinkedPost)){
 			$_oldTitle = $Title;
