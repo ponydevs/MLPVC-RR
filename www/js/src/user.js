@@ -28,7 +28,7 @@ DocReady.push(function(){
 				$.Dialog.wait(false, 'Cancelling reservation');
 
 				let id = $link.prop('hash').substring(1).split('-');
-				$.post(`/post/unreserve-${id.join('/')}`,{FROM_PROFILE:true},$.mkAjaxHandler(function(){
+				$.post(`/post/unreserve/${id.join('/')}`,{FROM_PROFILE:true},$.mkAjaxHandler(function(){
 					if (!this.status) return $.Dialog.fail(false, this.message);
 
 					let pendingRes = this.pendingReservations;

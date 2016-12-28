@@ -42,7 +42,7 @@ DocReady.push(function(){
 							});
 							$result.find('.reserve-request').on('click',function(){
 								let $this = $(this);
-								$.post('/post/reserve-'+(postID.replace('-','/')),{SUGGESTED:true},$.mkAjaxHandler(function(){
+								$.post('/post/reserve/'+(postID.replace('-','/')),{SUGGESTED:true},$.mkAjaxHandler(function(){
 									if (!this.status) return $.Dialog.fail(false, this.message);
 
 									$this.replaceWith(this.button);
