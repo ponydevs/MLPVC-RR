@@ -19,6 +19,7 @@ $router->addMatchTypes([
 	'eqg' => 'eqg',
 	'gsd' => '([gs]et|del)',
 	'make' => 'make',
+	'cg' => '(c(olou?r)?g(uide)?)'
 ]);
 
 // Pages
@@ -30,14 +31,15 @@ $router->map('GET',  '/admin/logs/[i]?',                'AdminController#logs');
 $router->map('GET',  '/blending',                       'BlendingController#index');
 $router->map('GET',  '/browser/[i:session]?',           'BrowserController#index');
 $router->map('GET',  '/components',                     'ComponentsController#index');
-$router->map('GET',      '/cg/[eqg:eqg]?/[i]?',                             'ColorGuideController#guide');
-$router->map('GET',      '/cg/[eqg:eqg]?/full',                             'ColorGuideController#fullList');
-$router->map('GET',      '/cg/[eqg:eqg]?/tags/[i]?',                        'ColorGuideController#tagList');
-$router->map('GET',      '/cg/[eqg:eqg]?/changes/[i]?',                     'ColorGuideController#changeList');
-$router->map('GET',      '/cg/[eqg:eqg]?/v/[i:id][adi]?',                   'ColorGuideController#appearancePage');
-$router->map('GET',      '/cg/[eqg:eqg]?/v/[i:id][cgimg:type].[cgext:ext]', 'ColorGuideController#appearanceAsFile');
-$router->map('GET',      '/cg/[eqg:eqg]?/sprite(-colors)?/[i:id][adi]?',    'ColorGuideController#spriteColors');
-$router->map('GET|POST', '/cg/get-tags',                                    'ColorGuideController#getTags');
+$router->map('GET',      '/[cg]/[eqg:eqg]?/[i]?',                             'ColorGuideController#guide');
+$router->map('GET',      '/[cg]/[eqg:eqg]?/[i]?',                             'ColorGuideController#guide');
+$router->map('GET',      '/[cg]/[eqg:eqg]?/full',                             'ColorGuideController#fullList');
+$router->map('GET',      '/[cg]/[eqg:eqg]?/tags/[i]?',                        'ColorGuideController#tagList');
+$router->map('GET',      '/[cg]/[eqg:eqg]?/changes/[i]?',                     'ColorGuideController#changeList');
+$router->map('GET',      '/[cg]/[eqg:eqg]?/v/[i:id][adi]?',                   'ColorGuideController#appearancePage');
+$router->map('GET',      '/[cg]/[eqg:eqg]?/v/[i:id][cgimg:type].[cgext:ext]', 'ColorGuideController#appearanceAsFile');
+$router->map('GET',      '/[cg]/[eqg:eqg]?/sprite(-colors)?/[i:id][adi]?',    'ColorGuideController#spriteColors');
+$router->map('GET|POST', '/[cg]/get-tags',                                    'ColorGuideController#getTags');
 $router->map('GET',  '/errorlog',                       'ErrorLogController#index');
 $router->map('GET',  '/da-auth',                        'AuthController#auth');
 $router->map('GET',  '/episode/[epid:id]',              'EpisodeController#page');
