@@ -22,6 +22,7 @@ class Appearances {
 			$Database->where('owner', $userid);
 		}
 		else {
+			$Database->where('owner IS NULL');
 			self::_order();
 			if (isset($EQG))
 				$Database->where('ishuman', $EQG)->where('id',0,'!=');
@@ -241,7 +242,7 @@ class Appearances {
 	 * Returns the HTML for sprite images
 	 *
 	 * @param array $Appearance
-	 * @parma bool  $permission
+	 * @param bool  $permission
 	 *
 	 * @return string
 	 */

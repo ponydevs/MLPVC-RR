@@ -535,6 +535,7 @@ class ColorGuideController extends Controller {
 		$Appearances = Appearances::get(null);
 		if (!empty($Appearances)) foreach ($Appearances as $p){
 			$AppendAppearance = $p;
+			unset($AppendAppearance['owner']);
 
 			$AppendAppearance['notes'] = isset($AppendAppearance['notes'])
 				? CoreUtils::trim($AppendAppearance['notes'],true)
