@@ -21,6 +21,7 @@ use App\Appearances;
 use App\Tags;
 use App\ColorGroups;
 use App\Users;
+use Elasticsearch\Common\Exceptions\ClientErrorResponseException;
 use Elasticsearch\Common\Exceptions\NoNodesAvailableException;
 use GuzzleHttp\Ring\Core;
 use ONGR\ElasticsearchDSL;
@@ -43,7 +44,7 @@ class ColorGuideController extends Controller {
 	/** @var string */
 	private $_cgPath;
 	private function _initialize($params, bool $setPath = true){
-		$this->_EQG = isset($params['eqg']) ? (!empty($params['eqg']) ? 1 : 0) : null;
+		$this->_EQG = !empty($params['eqg']) ? 1 : 0;
 		if ($setPath)
 			$this->_cgPath = "/cg".($this->_EQG?'/eqg':'');
 		$this->_appearancePage = isset($_POST['APPEARANCE_PAGE']);
@@ -709,8 +710,13 @@ class ColorGuideController extends Controller {
 				CoreUtils::checkStringValidity($label, "Appearance name", INVERSE_PRINTABLE_ASCII_PATTERN);
 				if (!$creating)
 					$Database->where('id', $this->_appearance['id'], '!=');
-				$dupe = $Database->where('ishuman', $data['ishuman'])->where('label', $label)->getOne('appearances');
+				if ($this->_personalGuide)
+					$dupe = $Database->where('owner', $currentUser->id)->where('label', $label)->getOne('appearances');
+				else $dupe = $Database->where('ishuman', $data['ishuman'])->where('label', $label)->getOne('appearances');
 				if (!empty($dupe)){
+					if ($this->_personalGuide)
+						Response::fail('You already have an appearance with the same name in your Personal Color Guide');
+
 					$eqg_url = $this->_EQG ? '/eqg':'';
 					Response::fail("An appearance <a href='/cg$eqg_url/v/{$dupe['id']}' target='_blank'>already esists</a> in the ".($this->_EQG?'EQG':'Pony').' guide with this exact name. Consider adding an identifier in backets or choosing a different name.');
 				}
