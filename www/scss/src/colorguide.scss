@@ -101,7 +101,7 @@
 // Desktop-only
 @media all and (min-width: $Breakpoint){
 	.appearance-list > li > div {
-		&:last-child { max-width: calc(100% - 160px) }
+		&:last-child:not(:first-child) { max-width: calc(100% - 160px) }
 
 		.update time { border-bottom: 1px dashed }
 		div.notes > span + a {
