@@ -7,8 +7,10 @@ DocReady.push(function(){
 
 		$.Dialog.info('About Personal Color Guides',
 			`<p>We are forever grateful to our members who help others out by fulfilling their requests on our website. As a means of giving back, we're introducing Personal Color Guides. This is a place where you can store and share colors for any of your OCs, similar to our <a href="/cg/">Official Color Guide</a>.</p>
-			<p><em>&ldquo;So where's the catch?&rdquo;</em> &mdash; you might ask. Everyone starts with 0 slots, which they can increase by fulfilling requests on our website, then submitting them to the club and getting them approved. You'll get your first slot after you've fulfilled 10 requests, all of which got approved by our staff to the club gallery. After that, you will be granted an additional slot for every 10 requests you finish and we approve.</p>
-			<p>A few things to keep in mind:</p>
+			<p><em>&ldquo;So where's the catch?&rdquo;</em> &mdash; you might ask. Everyone starts with 0 slots*, which they can increase by fulfilling requests on our website, then submitting them to the club and getting them approved. You'll get your first slot after you've fulfilled 10 requests, all of which got approved by our staff to the club gallery. After that, you will be granted an additional slot for every 10 requests you finish and we approve.</p>
+			<p><small>* Staff members get an honorary slot for free</small></p>
+			<br>
+			<p><strong>However</strong>, there are a few things to keep in mind:</p>
 			<ul>
 				<li>You may only add characters made by you, for you, or characters you've purchased to your Personal Color Guide. If we're asked to remove someone else's character from your guide we'll certainly comply.</li>
 				<li>Finished requests only count toward additional slots after they have been submitted to the group and have been accepted to the gallery. This is indicated by a tick symbol (<span class="color-green typcn typcn-tick"></span>) on the post throughout the site.</li>
