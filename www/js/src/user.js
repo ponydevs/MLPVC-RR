@@ -166,7 +166,7 @@ DocReady.push(function(){
 
 		$.Dialog.wait('Deviation acceptance status','Checking');
 
-		$.post(`/post/lock-${thing}/${id}`,$.mkAjaxHandler(function(){
+		$.post(`/post/lock/${thing}/${id}`,$.mkAjaxHandler(function(){
 			if (!this.status) return $.Dialog.fail(false, this.message);
 
 			let message = this.message;
