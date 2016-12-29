@@ -377,8 +377,9 @@ HTML;
 	<h2>{$privacy}Personal Color Guide{$whatBtn}</h2>
 HTML;
 		if ($sameUser || Permission::sufficient('staff')){
-			$ApprovedFinishedRequests = $User->getApprovedFinishedRequestCount();
-			$SlotCount = Users::calculatePersonalCGSlots($ApprovedFinishedRequests);
+			$pcgLimits = $User->getPCGAvailableSlots(false, true);
+			$ApprovedFinishedRequests = $pcgLimits['postcount'];
+			$SlotCount = $pcgLimits['totalslots'];
 			$ToNextSlot = Users::calculatePersonalCGNextSlot($ApprovedFinishedRequests);
 
 			$ThisUser = $sameUser?'You':'This user';
@@ -386,11 +387,12 @@ HTML;
 			$nApprovedRequests = CoreUtils::makePlural('approved request',$ApprovedFinishedRequests,PREPEND_NUMBER);
 			$grants = 'grant'.($ApprovedFinishedRequests!=1?'':'s');
 			$them = $sameUser?'you':'them';
-			$nSlots = CoreUtils::makePlural('slot',$SlotCount,PREPEND_NUMBER);
+			$nSlots = CoreUtils::makePlural('slot',$pcgLimits['totalslots'],PREPEND_NUMBER);
 			$goal = $sameUser?' You are '.CoreUtils::makePlural('request',$ToNextSlot,PREPEND_NUMBER).' away from getting another slot.':'';
+			$forStaff = Permission::sufficient('staff', $User->role) ? ' (staff members get a free slot)' : '';
 		$HTML .= <<<HTML
 	<div class="personal-cg-progress">
-		<p>$ThisUser currently $has $nApprovedRequests on the site, which $grants $them $nSlots.$goal</p>
+		<p>$ThisUser currently $has $nApprovedRequests on the site, which $grants $them $nSlots$forStaff.$goal</p>
 	</div>
 HTML;
 		}
@@ -409,7 +411,7 @@ HTML;
 	}
 
 	static function calculatePersonalCGSlots(int $postcount):int {
-		return $postcount < 10 ? 0 : floor($postcount/10);
+		return floor($postcount/10);
 	}
 
 	static function calculatePersonalCGNextSlot(int $postcount):int {

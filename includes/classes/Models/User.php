@@ -188,16 +188,35 @@ class User extends AbstractFillable {
 		return $countOnly ? ($return['cnt'] ?? 0) : $return;
 	}
 
-	function getPCGAvailableSlots(bool $throw = true):int {
-		$afrcount = $this->getApprovedFinishedRequestCount();
-		$totalSlots = Users::calculatePersonalCGSlots($afrcount);
-		if ($totalSlots === 0){
+	/**
+	 * @param bool $throw
+	 * @param bool $returnArray
+	 *
+	 * @return int|array
+	 */
+	function getPCGAvailableSlots(bool $throw = true, bool $returnArray = false){
+		$postcount = $this->getApprovedFinishedRequestCount();
+		$totalslots = floor($postcount/10);
+		if (Permission::sufficient('staff', $this->role))
+			$totalslots++;
+		if ($totalslots === 0){
 			if ($throw)
 				throw new NoPCGSlotsException();
-			return 0;
+			return $returnArray ? [
+				'postcount' => $postcount,
+				'totalslots' => 0,
+				'available' => 0,
+			] :0;
 		}
 		$usedSlots = $this->getPCGAppearances(null, true);
 
-		return $totalSlots-$usedSlots;
+		$available = $totalslots-$usedSlots;
+		if (!$returnArray)
+			return $available;
+		return [
+			'postcount' => $postcount,
+			'totalslots' => $totalslots,
+			'available' => $available,
+		];
 	}
 }
