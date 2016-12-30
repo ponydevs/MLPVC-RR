@@ -109,7 +109,7 @@ class ImageProvider {
 				}
 
 				try {
-					$CachedDeviation = DeviantArt::getCachedSubmission($id,$this->provider);
+					$CachedDeviation = DeviantArt::getCachedDeviation($id,$this->provider);
 
 					if (!DeviantArt::isImageAvailable($CachedDeviation['preview'])){
 						$preview = CoreUtils::aposEncode($CachedDeviation['preview']);

@@ -105,7 +105,7 @@ class Users {
 			throw new \Exception('Saving user data failed'.(Permission::sufficient('developer')?': '.$Database->getLastError():''));
 
 		if (!$userExists)
-			Logs::action('userfetch',array('userid' => $insert['id']));
+			Logs::logAction('userfetch',array('userid' => $insert['id']));
 		$names = array($username);
 		if ($userExists && $DBUser->name !== $username)
 			$names[] = $DBUser->name;
@@ -113,7 +113,7 @@ class Users {
 			if (strcasecmp($name,$insert['name']) !== 0){
 				if (UserPrefs::get('discord_token',$ID) === 'true')
 					UserPrefs::set('discord_token','',$ID);
-				Logs::action('da_namechange',array(
+				Logs::logAction('da_namechange',array(
 					'old' => $name,
 					'new' => $insert['name'],
 					'id' => $ID,
@@ -331,14 +331,12 @@ HTML;
 				});
 				$LIST = '';
 				foreach ($Posts as $Post){
-					unset($_);
 					$postLink = $Post->toLink($_);
 					$postAnchor = $Post->toAnchor(null, $_);
 					$label = !empty($Post->label) ? "<span class='label'>{$Post->label}</span>" : '';
-					$is_request = isset($Post->rq);
-					$reservation_time_known = !empty($Post->reserved_at);
-					$posted = Time::tag($is_request && $reservation_time_known ? $Post->reserved_at : $Post->posted);
-					$PostedAction = $is_request && !$reservation_time_known ? 'Posted' : 'Reserved';
+					$actionCond = $Post->isRequest && !empty($Post->reserved_at);
+					$posted = Time::tag($actionCond ? $Post->reserved_at : $Post->posted);
+					$PostedAction = $actionCond ? 'Reserved' : 'Posted';
 					$contestable = $Post->isOverdue() ? Posts::CONTESTABLE : '';
 
 					$LIST .= <<<HTML
@@ -354,6 +352,8 @@ $label
 </div>
 </li>
 HTML;
+					// Clearing variable set via reference by the toLink method call
+					unset($_);
 				}
 				$HTML .= "<ul>$LIST</ul>";
 			}

@@ -293,7 +293,10 @@ class Image {
 			$write_callback($path, $data);
 		}
 
-		CoreUtils::fixPath("$relpath?t=".filemtime($path));
+		$filePortion = strtok($relpath,'?');
+		$fpl = strlen($filePortion);
+		$params = strlen($relpath) > $fpl ? '&'.CoreUtils::substring($relpath, $fpl+1) : '';
+		CoreUtils::fixPath("$filePortion?t=".filemtime($path).$params);
 		header("Content-Type: image/$content_type");
 		readfile($path);
 		exit;

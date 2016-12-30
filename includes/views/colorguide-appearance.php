@@ -1,6 +1,7 @@
 <?php
 use App\CGUtils;
 use App\CoreUtils;
+use App\Cutiemarks;
 use App\Models\User;
 use App\DeviantArt;
 use App\Permission;
@@ -10,7 +11,9 @@ use App\ColorGroups;
 use App\Tags;
 /** @var $Appearance array */
 /** @var $Owner User */
-/** @var $heading string */ ?>
+/** @var $EQG int */
+/** @var $heading string */
+/** @var $isOwner bool */ ?>
 <div id="content">
 	<div class="sprite-wrap"><?=Appearances::getSpriteHTML($Appearance, Permission::sufficient('staff') || $isOwner)?></div>
 	<h1><?=CoreUtils::escapeHTML($heading)?></h1>
@@ -25,10 +28,10 @@ use App\Tags;
 	$FileModTime = '?t='.(file_exists($RenderPath) ? filemtime($RenderPath) : time()); ?>
 	<div id="p<?=$Appearance['id']?>">
 		<div class='align-center'>
-			<a class='darkblue btn typcn typcn-image' href='/cg/v/<?="{$Appearance['id']}p.png$FileModTime"?>' target='_blank'>View as PNG</a>
+			<a class='blue btn typcn typcn-image' href='/cg/v/<?="{$Appearance['id']}p.png$FileModTime"?>' target='_blank'>View as PNG</a>
 			<button class='getswatch typcn typcn-brush teal'>Download swatch file</button>
 <?  if (Permission::sufficient('staff') || $isOwner){ ?>
-			<button class='blue edit typcn typcn-pencil'>Edit metadata</button>
+			<button class='darkblue edit typcn typcn-pencil'>Edit metadata</button>
 <?php   if ($Appearance['id']){ ?>
 			<button class='red delete typcn typcn-trash'>Delete apperance</button>
 <?php   }
@@ -55,19 +58,12 @@ use App\Tags;
 <?php
 	}
 
-	if (!empty($Appearance['cm_favme'])){
-		$preview = Appearances::getCMPreviewURL($Appearance); ?>
+	$CutieMarks = Cutiemarks::get($Appearance['id']);
+	if (!empty($CutieMarks)){ ?>
 		<section class="approved-cutie-mark">
-			<h2>Recommended cutie mark vector</h2>
-<?=(Permission::sufficient('staff')||$isOwner)&&!isset($Appearance['cm_dir'])?CoreUtils::notice('fail','Missing CM orientation, falling back to <strong>Tail-Head</strong>. Please edit the appaearance and provide an orientation!'):''?>
-			<a id="pony-cm" href="http://fav.me/<?=$Appearance['cm_favme']?>" style="background-image:url('<?=Appearances::getCMPreviewSVGURL($Appearance['id'])?>')">
-				<div class="img cm-dir-<?=$Appearance['cm_dir']===CM_DIR_HEAD_TO_TAIL?'ht':'th'?>" style="background-image:url('<?=CoreUtils::aposEncode($preview)?>')"></div>
-			</a>
-			<p class="aside">This is only an illustration, the body shape & colors are <strong>not</strong> guaranteed to reflect the actual design.</p>
-			<p>The image above links to the vector made by <?php
-				$Vector = DeviantArt::getCachedSubmission($Appearance['cm_favme']);
-				echo Users::get($Vector['author'],'name','name, avatar_url')->getProfileLink(User::LINKFORMAT_FULL);
-			?> and shows which way the cutie mark should be facing.</p>
+			<h2>Cutie Mark</h2>
+			<p class="aside"><?=count($CutieMarks)===1?'This is just an illustration':'These are just illustrations'?>, the body shape & colors are <strong>not</strong> guaranteed to reflect the actual design.</p>
+			<?=Cutiemarks::getListForAppearancePage($CutieMarks)?>
 		</section>
 <?  } ?>
 		<section class="color-list">
@@ -97,7 +93,7 @@ use App\Tags;
 		'color' => $color,
 		'EQG' => $EQG,
 		'AppearancePage' => true,
-		'PersonalGuide' => $Owner->name,
+		'PersonalGuide' => $Owner->name ?? false,
 	);
 	if (Permission::sufficient('staff') || $isOwner)
 		$export = array_merge($export, array(

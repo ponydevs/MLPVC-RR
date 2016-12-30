@@ -178,8 +178,7 @@ class Appearances {
 		global $EPISODE_ID_REGEX;
 
 		$hasNotes = !empty($Appearance['notes']);
-		$hasCM = !empty($Appearance['cm_favme']) && $cmLink !== NOTE_TEXT_ONLY;
-		if ($hasNotes || $hasCM){
+		if ($hasNotes){
 			$notes = '';
 			if ($hasNotes){
 				$Appearance['notes'] = preg_replace_callback('/'.EPISODE_ID_PATTERN.'/',function($a){
@@ -205,15 +204,6 @@ class Appearances {
 				},$Appearance['notes']);
 				$Appearance['notes'] = str_replace('\#', '#', $Appearance['notes']);
 				$notes = '<span>'.nl2br($Appearance['notes']).'</span>';
-			}
-			if ($hasCM){
-				$dir = '';
-				if (isset($Appearance['cm_dir'])){
-					$head_to_tail = $Appearance['cm_dir'] === CM_DIR_HEAD_TO_TAIL;
-					$CMPreviewUrl = self::getCMPreviewURL($Appearance);
-					$dir = ' <span class="cm-direction" data-cm-preview="'.$CMPreviewUrl.'" data-cm-dir="'.($head_to_tail ? 'ht' : 'th').'"><span class="typcn typcn-info-large"></span> '.($head_to_tail ? 'Head-Tail' : 'Tail-Head').' orientation</span>';
-				}
-				$notes .= "<a href='http://fav.me/{$Appearance['cm_favme']}'><span>Cutie Mark</span>$dir</a>";
 			}
 		}
 		else {
@@ -508,26 +498,15 @@ HTML;
 	}
 
 	/**
-	 * Retruns CM preview image link
-	 *
-	 * @param array $Appearance
-	 *
-	 * @return string
-	 */
-	static function getCMPreviewURL($Appearance){
-		return $Appearance['cm_preview'] ?? DeviantArt::getCachedSubmission($Appearance['cm_favme'])['preview'];
-	}
-
-	/**
 	 * Retruns CM preview SVG image link (pony butt)
 	 *
-	 * @param int $AppearanceID
+	 * @param \App\Models\Cutiemark $cm
 	 *
 	 * @return string
 	 */
-	static function getCMPreviewSVGURL(int $AppearanceID){
-		$path = str_replace('#',$AppearanceID,CGUtils::CMDIR_SVG_PATH);
-		return "/cg/v/{$AppearanceID}d.svg?t=".(file_exists($path) ? filemtime($path) : time());
+	static function getCMPreviewSVGURL($cm){
+		$path = str_replace('#',$cm->ponyid,CGUtils::CMDIR_SVG_PATH);
+		return "/cg/v/{$cm->ponyid}d.svg?facing={$cm->facing}&t=".(file_exists($path) ? filemtime($path) : time());
 	}
 
 	/**

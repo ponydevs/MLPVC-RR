@@ -230,7 +230,7 @@ class PostController extends Controller {
 				if (isset($update['lock'])){
 					$message .= "<p>The image appears to be in the group gallery already, so we marked it as approved.</p>";
 
-					Logs::action('post_lock',$postdata);
+					Logs::logAction('post_lock',$postdata);
 					if ($this->_post->reserved_by !== $currentUser->id)
 						Notifications::send($this->_post->reserved_by, 'post-approved', $postdata);
 				}
@@ -262,7 +262,7 @@ class PostController extends Controller {
 			Response::fail('Nothing has been changed<br>If you tried to do something, then this is actually an error, which you should <a class="send-feedback">tell us</a> about.');
 
 		if (!empty($overdue))
-			Logs::action('res_overtake',array_merge(
+			Logs::logAction('res_overtake',array_merge(
 				array(
 					'id' => $this->_post->id,
 					'type' => $thing
@@ -404,7 +404,7 @@ class PostController extends Controller {
 		if (!empty($this->_post->reserved_by))
 			Posts::clearTransferAttempts($this->_post, $params['thing'], 'del');
 
-		Logs::action('req_delete',array(
+		Logs::logAction('req_delete',array(
 			'season' =>       $this->_post->season,
 			'episode' =>      $this->_post->episode,
 			'id' =>           $this->_post->id,
@@ -515,7 +515,7 @@ class PostController extends Controller {
 			'fullsize' => $Image->fullsize,
 		))) Response::dbError();
 
-		Logs::action('img_update',array(
+		Logs::logAction('img_update',array(
 			'id' => $this->_post->id,
 			'thing' => $thing,
 			'oldpreview' => $this->_post->preview,
@@ -613,7 +613,7 @@ class PostController extends Controller {
 			Response::dbError();
 
 		if (!empty($insert['lock']))
-			Logs::action('post_lock',array(
+			Logs::logAction('post_lock',array(
 				'type' => 'reservation',
 				'id' => $postid,
 			));

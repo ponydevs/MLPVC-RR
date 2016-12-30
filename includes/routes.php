@@ -66,6 +66,7 @@ $router->map('POST', '/admin/logs/details/[i:id]',           'AdminController#lo
 $router->map('POST', '/admin/usefullinks',                   'AdminController#usefulLinks');
 $router->map('POST', '/admin/usefullinks/reorder',           'AdminController#reorderUsefulLinks');
 $router->map('POST', '/admin/mass-approve',                  'AdminController#massApprove');
+$router->map('POST', '/admin/recent-posts',                  'AdminController#recentPosts');
 $router->map('POST', '/cg/full/reorder',                     'ColorGuideController#reorderFullList');
 $router->map('POST', '/cg/export',                           'ColorGuideController#export');
 $router->map('POST', '/cg/appearance/[ad:action]/[i:id]',    'ColorGuideController#appearanceAction');
@@ -79,7 +80,6 @@ $router->map('POST', '/[user]/[un:name]/cg/appearance/[ad:action]/[i:id]',  'Col
 $router->map('POST', '/[user]/[un:name]/cg/appearance/[make:action]',       'ColorGuideController#appearanceAction');
 $router->map('POST', '/[user]/[un:name]/cg/colorgroup/[gsd:action]/[i:id]', 'ColorGuideController#colorGroupAction');
 $router->map('POST', '/[user]/[un:name]/cg/colorgroup/[make:action]',       'ColorGuideController#colorGroupAction');
-//                    /cg/...
 $router->map('POST', '/da-auth/signout',                     'AuthController#signout');
 $router->map('POST', '/episode/postlist/[epid:id]',          'EpisodeController#postList');
 $router->map('POST', '/episode/get/[epid:id]',               'EpisodeController#get');
@@ -115,3 +115,6 @@ $router->map('POST', '/user/setgroup/[un:name]',             'UserController#set
 $router->map('POST', '/user/banish/[un:name]',               'UserController#banish');
 $router->map('POST', '/user/un-banish/[un:name]',            'UserController#unbanish');
 $router->map('POST', '/[user]/[un:name]/cg/slot-check',      'UserController#checkCGSlots');
+
+// Temporary
+$router->map('GET', '/cg/move-cm-data', 'ColorGuideController#moveCMData');

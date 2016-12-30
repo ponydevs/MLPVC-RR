@@ -68,30 +68,28 @@ $TFeature:  adjust_hue($_TBase, 20);
 }
 
 @mixin pony-cm-image($SquareSize: 250px){
-		display: block;
-		width: $SquareSize;
-		height: $SquareSize;
-		position: relative;
-		font-size: 0;
+	display: block;
+	width: $SquareSize;
+	height: $SquareSize;
+	position: relative;
+	font-size: 0;
+	margin: 0 auto;
 
-		//noinspection CssOptimizeSimilarProperties
-		.img {
-			$CMSize: $SquareSize * 0.4857;
+	//noinspection CssOptimizeSimilarProperties
+	.img {
+		$CMSize: $SquareSize * 0.4857;
 
-			position: absolute;
-			top: 0;
-			left: 0;
-			width: $CMSize;
-			height: $CMSize;
-			margin: ($SquareSize - $CMSize)/2;
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: $CMSize;
+		height: $CMSize;
+		margin: ($SquareSize - $CMSize)/2;
 
-			&.cm-dir-th { transform: rotateZ(20deg) }
-			&.cm-dir-ht { transform: rotateZ(-20deg) }
-
-			background-repeat: no-repeat;
-			background-position: center center;
-			background-size: contain;
-		}
+		background-repeat: no-repeat;
+		background-position: center center;
+		background-size: contain;
+	}
 }
 
 %clr {
@@ -251,6 +249,30 @@ $TFeature:  adjust_hue($_TBase, 20);
 					}
 				}
 			}
+		}
+	}
+}
+
+@mixin pony-cm {
+	border: 1px solid #afafaf;
+	background: #fff;
+	margin: 5px;
+	text-align: center;
+	padding: 5px;
+
+	.title {
+		font-size: 20px;
+		display: block;
+		margin-bottom: 5px;
+		font-weight: bold;
+	}
+
+	.madeby {
+		display: block;
+		margin: 10px 0 5px;
+
+		&, .da-userlink {
+			font-size: 18px;
 		}
 	}
 }

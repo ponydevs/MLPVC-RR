@@ -153,8 +153,8 @@ body.dialog-open {
 	> div {
 		&:not(:first-child):not(#dialogButtons) {
 			border-top: 1px solid;
-			padding-top: 5px;
-			margin-top: 4px;
+			padding-top: 10px;
+			margin-top: 9px;
 		}
 
 		&:not([class]) > .notice {

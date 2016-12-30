@@ -633,6 +633,9 @@
 	        rect.left < (window.innerWidth || document.documentElement.clientWidth) /* or $(window).width() */ &&
 	        rect.top < (window.innerHeight || document.documentElement.clientHeight) /* or $(window).height() */;
 	};
+	$.fn.isInViewport = function(){
+		return this[0] ? $.isInViewport(this[0]) : false;
+	};
 
 	window.URL = url => {
 		let a = document.createElement('a'),

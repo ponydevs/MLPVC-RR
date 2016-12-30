@@ -670,21 +670,24 @@ button.da-login:before { background-image: url('../../img/da-logo.svg') }
 .da-userlink.with-avatar {
 	@extend %reserve-button;
 	display: inline-block;
-	font-style: normal;
-	height: 1.4em;
 	white-space: nowrap;
+	overflow: hidden;
+	font-style: normal;
+	font-size: 1.1em;
+  vertical-align: middle;
 
 	> * {
 		display: inline-block;
-		vertical-align: middle;
+    vertical-align: bottom;
 	}
 	.avatar {
 		height: 1.4em;
 		width: 1.4em;
 	}
 	.name {
-		font-size: 1.2em;
+		display: inline-block;
 		margin-right: 5px;
+		line-height: 1.4em;
 	}
 }
 // Page layout - Footer

@@ -89,7 +89,7 @@ class DeviantArt {
 	 *
 	 * @return array|null
 	 */
-	static function getCachedSubmission($ID, $type = 'fav.me', $mass = false){
+	static function getCachedDeviation($ID, $type = 'fav.me', $mass = false){
 		global $Database, $FULLSIZE_MATCH_REGEX;
 
 		if ($type === 'sta.sh')

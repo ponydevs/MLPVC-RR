@@ -42,7 +42,7 @@ class Logs {
 	 *
 	 * @return bool
 	 */
-	static function action($reftype, $data = null, $forcews = false){
+	static function logAction($reftype, $data = null, $forcews = false){
 		global $Database, $signedIn, $currentUser;
 		$central = array('ip' => $_SERVER['REMOTE_ADDR']);
 

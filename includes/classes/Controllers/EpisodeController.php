@@ -253,9 +253,9 @@ class EpisodeController extends Controller {
 				}
 			}
 			if ($changes > 0)
-				Logs::action('episode_modify',$logentry);
+				Logs::logAction('episode_modify',$logentry);
 		}
-		else Logs::action('episodes',array(
+		else Logs::logAction('episodes',array(
 			'action' => 'add',
 			'season' => $insert['season'],
 			'episode' => $insert['episode'],
@@ -286,7 +286,7 @@ class EpisodeController extends Controller {
 
 		if (!$Database->whereEp($this->_episode)->delete('episodes'))
 			Response::dbError();
-		Logs::action('episodes',array(
+		Logs::logAction('episodes',array(
 			'action' => 'del',
 			'season' => $this->_episode->season,
 			'episode' => $this->_episode->episode,
@@ -481,7 +481,7 @@ class EpisodeController extends Controller {
 
 			$removed++;
 			$Database->whereEp($this->_episode)->where('provider', $video->provider)->where('id', $video->id)->delete('episodes__videos');
-			Logs::action('video_broken',array(
+			Logs::logAction('video_broken',array(
 				'season' => $this->_episode->season,
 				'episode' => $this->_episode->episode,
 				'provider' => $video->provider,

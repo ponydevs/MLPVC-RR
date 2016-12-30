@@ -58,24 +58,55 @@ DocReady.push(function(){
 					<span>Additional notes (1000 chars. max, optional)</span>
 					<div class="ace_editor"></div>
 				</div>
-				<label>
-					<span>Link to cutie mark (optional)</span>
-					<input type="text" name="cm_favme" placeholder="DeviantArt submission URL">
-				</label>
-				<div class="align-center">
-					<p>Cutie mark orientation</p>
-					<div class="radio-group">
-						<label><input type="radio" name="cm_dir" value="ht" required disabled><span>Head-Tail</span></label>
-						<label><input type="radio" name="cm_dir" value="th" required disabled><span>Tail-Head</span></label>
-					</div>
-				</div>
-				<label>
-					<span>Link to CM preview image (optional)</span>
-					<input type="text" name="cm_preview" placeholder="Separate preview image">
-				</label>
-				<p class="notice info">The preview of the linked CM above will be used if the preview field is left empty.</p>
 				<label><input type='checkbox' name='private'> Make private (only ${PersonalGuide?'you':'admins'} can see added colors)</label>`
 			),
+		mkCMDataLi = function(el = {}){
+			let $facingSelector = $.mk('div').html(
+				`<p>Body orientation</p>
+				<div class="radio-group">
+					<label><input type="radio" name="facing[]" value="left" required><span>Left</span></label>
+					<label><input type="radio" name="facing[]" value="right" required><span>Right</span></label>
+					<label><input type="radio" name="facing[]" value="" required><span>Symmetrical</span></label>
+				</div>`
+			);
+			$facingSelector.find(`input[value='${el.facing?el.facing:''}']`).prop('checked', true);
+			return $.mk('li').append(
+					$.mk('input').attr({
+						type: 'hidden',
+						value: el.cmid,
+						name: 'cmid[]',
+					}),
+					$.mk('label').append(
+						"<span>Deviation link</span>",
+						$.mk('input').attr({
+							type: 'url',
+							name: 'favme[]',
+							required: true,
+						}).val(el.favme?`http://fav.me/${el.favme}`:undefined)
+					),
+					$facingSelector,
+					`<div class="notice info">If the CM is symmetrical the left facing image will be shown, but with a "Symmetrical" label.</div>`,
+					$.mk('div').attr('class','label').append(
+						"<span>Preview rotation (<span class='rotation-display'></span>°)</span>",
+						$.mk('input').attr({
+							type: 'range',
+							name: 'favme_rotation[]',
+							min: -180,
+							max: 180,
+							step: 2,
+							'class': 'rotation-range',
+							required: true,
+						}).val(el.favme_rotation)
+					),
+					$.mk('label').append(
+						"<span>Custom preview (optional)</span>",
+						$.mk('input').attr({
+							type: 'url',
+							name: 'preview_src[]',
+						}).val(el.preview_src)
+					)
+				);
+		},
 		mkPonyEditor = function($this, title, data){
 			let editing = !!data,
 				$li = $this.parents('[id^=p]'),
@@ -89,13 +120,7 @@ DocReady.push(function(){
 			else $ponyLabel = $this.siblings().first();
 
 			$.Dialog.request(title,$PonyEditorFormTemplate.clone(true,true),'Save', function($form){
-				let $favme = $form.find('input[name=cm_favme]').on('change blur paste keyup',function(){
-						let disable = this.value.trim().length === 0,
-							$cm_dir = $(this).parent().next();
-						$cm_dir.find('input').attr('disabled', disable);
-						$cm_dir.next().find('input').attr('disabled', disable);
-					}),
-					ponyID, session;
+				let ponyID, session;
 
 				$.getAceEditor(false, 'html', function(mode){
 					try {
@@ -115,8 +140,6 @@ DocReady.push(function(){
 					ponyID = data.ponyID;
 					$form.find('input[name=label]').val(data.label);
 
-					if (data.cm_favme)
-						$favme.val(data.cm_favme);
 					if (data.cm_preview)
 						$form.find('input[name=cm_preview]').val(data.cm_preview);
 					if (data.cm_dir)
@@ -126,8 +149,8 @@ DocReady.push(function(){
 					$form.append(
 						$.mk('div').attr('class','align-center').append(
 							$.mk('button')
-								.attr('class', 'blue typcn typcn-image')
-								.text('Purge cached images')
+								.attr('class', 'orange typcn typcn-refresh')
+								.text('Wipe cache')
 								.on('click', function(e){
 									e.preventDefault();
 									
@@ -142,14 +165,14 @@ DocReady.push(function(){
 								}),
 							PersonalGuide ? undefined : $.mk('button')
 								.attr('class', 'darkblue typcn typcn-pencil')
-								.text('Related appearances')
+								.text('Relations')
 								.on('click', function(e){
 									e.preventDefault();
 
 									$.Dialog.close();
 									$.Dialog.wait('Appearance relation editor', 'Retrieving relations from server');
 
-									let $cgRelations = $('#content').find('section.related');
+									let $cgRelations = $content.find('section.related');
 									$.post(`${PGRq}/cg/appearance/getrelations/${ponyID}${EQGRq}`,$.mkAjaxHandler(function(){
 										if (!this.status) return $.Dialog.fail(false, this.message);
 
@@ -285,12 +308,142 @@ DocReady.push(function(){
 											});
 										});
 									}));
+								}),
+							$.mk('button')
+								.attr('class', 'darkblue typcn typcn-pencil')
+								.text('Cutie Mark')
+								.on('click',function(e){
+									e.preventDefault();
+
+									let ponyLabel = data.label;
+									$.Dialog.close();
+									$.Dialog.wait('Manage Cutie Mark of '+ponyLabel, 'Retrieving CM data from server');
+									let $cmSection = $content.find('section.approved-cutie-mark');
+									$.post(`${PGRq}/cg/appearance/getcms/${ponyID}${EQGRq}`,$.mkAjaxHandler(function(){
+										if (!this.status) return $.Dialog.fail(false, this.message);
+
+										let data = this,
+											$CMPreviewImage = $.mk('img'),
+											$CMPreview = $.mk('div').attr('class','dialog-preview'),
+											$CMList = $.mk('ul').attr('class','cm-list'),
+											updateRQ = false,
+											updateText = 'Update preview',
+											$UpdatePreviewButton = $.mk('button').attr('class','darkblue typcn typcn-arrow-sync').text(updateText).on('click',function(e){
+												e.preventDefault();
+
+												if (updateRQ !== false){
+													updateRQ.abort();
+													updateRQ = false;
+												}
+
+												let $this = $(this),
+													data = $this.closest('form').mkData();
+												$this.disable().html('Upading preview&hellip;');
+												$CMPreview.addClass('loading');
+												updateRQ = $.post(`${PGRq}/cg/appearance/getcmpreview/${ponyID}${EQGRq}`,data,$.mkAjaxHandler(function(){
+													$this.text(updateText).enable();
+													$CMPreview.removeClass('loading');
+													updateRQ = false;
+
+													if (!this.status) return $.Dialog.fail(false, this.message);
+
+													$.Dialog.clearNotice(/preview/);
+													$CMPreview.html(this.html);
+													$CMPreviewImage = $CMPreview.find('.img');
+													$CMList.find('.rotation-range').trigger('change');
+												}));
+											}),
+											$DeleteButton = $.mk('button').attr('class','red typcn typcn-trash').text('Delete Cutie Marks').on('click',function(e){
+												e.preventDefault();
+
+												if (updateRQ !== false){
+													updateRQ.abort();
+													updateRQ = false;
+												}
+
+												$.Dialog.close(function(){
+													$.Dialog.confirm('Delete Cutie Marks of '+ponyLabel,'Are you sure you want to remove the cutie mark(s) associated with this appearance?', sure => {
+														if (!sure) return;
+
+														$.Dialog.wait(false,'Sending removal request');
+
+														$.post(`${PGRq}/cg/appearance/delcms/${ponyID}${EQGRq}`,$.mkAjaxHandler(function(){
+															if (!this.status) return $.Dialog.fail(false, this.message);
+
+															if ($cmSection.length)
+																$cmSection.remove();
+															$.Dialog.close();
+														}));
+													});
+												});
+											}),
+											$CMDataEditorForm = $.mk('form').attr('id','cm-data-editor').append(
+												$CMPreview,
+												$CMList,
+												$UpdatePreviewButton
+											).on('change mousemove keydown','.rotation-range',function(){
+												let $this = $(this),
+													val = $this.val();
+												$this.prev().children('.rotation-display').text(val);
+												$CMPreviewImage.css('transform',`rotateZ(${val}deg)`);
+											}).on('change click keydown','input[name="facing[]"]',function(){
+												let $this = $(this),
+													$rangeSelector = $this.parents('form').find('.rotation-range'),
+													$group = $this.parents('.radio-group'),
+													$checked = $group.find('input:checked'),
+													isFacingRight = $checked.val() === 'right',
+													val = $rangeSelector.val();
+												if ((val < 0 && isFacingRight) || (val > 0 && !isFacingRight)){
+													$rangeSelector.val(val*-1).trigger('change');
+													$UpdatePreviewButton.triggerHandler('click');
+												}
+											});
+
+										if (data.cms.length){
+											$.each(data.cms,(_,el)=>{
+												$CMList.append(
+													mkCMDataLi(el)
+												);
+											});
+											$CMDataEditorForm.append($DeleteButton);
+										}
+										else {
+											$CMList.append(mkCMDataLi());
+										}
+										$CMList.find('.rotation-range').trigger('change');
+
+										$.Dialog.request(false,$CMDataEditorForm,'Save',function($form){
+											if (!$form[0].checkValidity || $form[0].checkValidity())
+												$UpdatePreviewButton.triggerHandler('click');
+											$form.on('submit',function(e){
+												e.preventDefault();
+
+												if (updateRQ !== false){
+													updateRQ.abort();
+													updateRQ = false;
+												}
+
+												let data = $form.mkData();
+												if (AppearancePage)
+													data.APPEARANCE_PAGE = true;
+												$.Dialog.wait(false,'Saving cutie mark data');
+												$.post(`${PGRq}/cg/appearance/setcms/${ponyID}${EQGRq}`,data,$.mkAjaxHandler(function(){
+													if (!this.status) return $.Dialog.fail(false, this.message);
+
+													$.Dialog.close();
+													if ($cmSection.length){
+														$cmSection.children(':not(h2,p)').remove();
+														$cmSection.append(this.html);
+													}
+												}));
+											});
+										});
+									}));
 								})
 						)
 					);
 				}
 				else $form.append("<label><input type='checkbox' name='template'> Pre-fill with common color groups</label>");
-				$favme.triggerHandler('change');
 
 				$form.on('submit', function(e){
 					e.preventDefault();

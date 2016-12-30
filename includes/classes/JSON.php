@@ -1,6 +1,7 @@
 <?php
 
 namespace App;
+use App\Exceptions\JSONParseException;
 
 /**
  * A custom JSON class wraper for native json_* functions
@@ -8,10 +9,23 @@ namespace App;
  */
 class JSON {
 	const AS_OBJECT = false;
-	public static function decode($json, $assoc = true, $depth = 512, $options = JSON_BIGINT_AS_STRING){
-		return json_decode($json, $assoc, $depth, $options);
+	/**
+	 * @param string $json
+	 * @param bool   $assoc
+	 * @param int    $depth
+	 * @param int    $options
+	 *
+	 * @throws JSONParseException
+	 *
+	 * @return mixed
+	 */
+	public static function decode(string $json, bool $assoc = true, int $depth = 20, int $options = JSON_BIGINT_AS_STRING){
+		$decoded = json_decode($json, $assoc, $depth, $options);
+		if (!isset($decoded) && ($err = json_last_error()) !== JSON_ERROR_NONE)
+			throw new JSONParseException(json_last_error_msg(), $err);
+		return $decoded;
 	}
-	public static function encode($value, $options = JSON_UNESCAPED_SLASHES, $depth = 512){
+	public static function encode($value, int $options = JSON_UNESCAPED_SLASHES, int $depth = 100){
 		return json_encode($value, $options, $depth);
 	}
 }

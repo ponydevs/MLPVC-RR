@@ -143,3 +143,84 @@
 		}
 	}
 }
+
+#cm-data-editor {
+	text-align: center;
+
+	.dialog-preview {
+		@include pony-cm;
+		display: inline-block !important;
+		margin: 0 auto 10px;
+
+		&:empty, &.loading {
+			position: relative;
+			width: 210px !important;
+			height: 288px !important;
+			box-sizing: border-box;
+		}
+		&:not(.loading):empty:before {
+			position: absolute;
+			top: 0;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			content: "Preview goes here";
+			padding: 10px;
+			font-size: 3em;
+			line-height: #{268px / 3};
+			opacity: .5;
+			background-color: #efefef;
+		}
+		&.loading {
+			background: url('/img/loading-ring.svg') no-repeat center;
+			background-size: 50%;
+			padding: 10px;
+
+			> * {
+				display: none !important;
+			}
+		}
+		&:not(:empty):not(.loading) {
+			width: auto !important;
+		}
+
+		.preview { @include pony-cm-image(200px) }
+	}
+	.cm-list {
+		list-style: none;
+		border: 0;
+		padding: 0;
+
+		> li {
+			display: block;
+
+			> * {
+				display: block;
+
+				&:not(:last-child){
+					margin-bottom: 10px;
+				}
+
+				> span {
+					display: block;
+					margin-bottom: 5px;
+				}
+				> input {
+					&[type="text"], &[type="url"] {
+						display: block;
+						width: 100%;
+						box-sizing: border-box;
+					}
+				}
+			}
+		}
+	}
+	.rotation-display {
+		font-family: $monospace;
+	}
+	.rotation-range {
+		display: block;
+		width: 95%;
+		margin: 0 auto;
+	}
+}

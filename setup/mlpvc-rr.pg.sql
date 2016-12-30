@@ -168,6 +168,45 @@ CREATE TABLE colors (
 ALTER TABLE colors OWNER TO "mlpvc-rr";
 
 --
+-- Name: cutiemarks; Type: TABLE; Schema: public; Owner: mlpvc-rr
+--
+
+CREATE TABLE cutiemarks (
+    cmid integer NOT NULL,
+    ponyid integer NOT NULL,
+    facing character varying(10),
+    favme character varying(7) NOT NULL,
+    favme_rotation smallint NOT NULL,
+    preview character varying(255),
+    preview_src character varying(255),
+    CONSTRAINT favme_rotation_constraint CHECK (((favme_rotation >= '-180'::integer) AND (favme_rotation <= 180)))
+);
+
+
+ALTER TABLE cutiemarks OWNER TO "mlpvc-rr";
+
+--
+-- Name: cutiemarks_cmid_seq; Type: SEQUENCE; Schema: public; Owner: mlpvc-rr
+--
+
+CREATE SEQUENCE cutiemarks_cmid_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE cutiemarks_cmid_seq OWNER TO "mlpvc-rr";
+
+--
+-- Name: cutiemarks_cmid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER SEQUENCE cutiemarks_cmid_seq OWNED BY cutiemarks.cmid;
+
+
+--
 -- Name: deviation_cache; Type: TABLE; Schema: public; Owner: mlpvc-rr
 --
 
@@ -464,6 +503,75 @@ ALTER TABLE log__cgs_entryid_seq OWNER TO "mlpvc-rr";
 --
 
 ALTER SEQUENCE log__cgs_entryid_seq OWNED BY log__cgs.entryid;
+
+
+--
+-- Name: log__cm_delete; Type: TABLE; Schema: public; Owner: mlpvc-rr
+--
+
+CREATE TABLE log__cm_delete (
+    entryid integer NOT NULL,
+    ponyid integer NOT NULL,
+    data jsonb NOT NULL
+);
+
+
+ALTER TABLE log__cm_delete OWNER TO "mlpvc-rr";
+
+--
+-- Name: log__cm_delete_entryid_seq; Type: SEQUENCE; Schema: public; Owner: mlpvc-rr
+--
+
+CREATE SEQUENCE log__cm_delete_entryid_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE log__cm_delete_entryid_seq OWNER TO "mlpvc-rr";
+
+--
+-- Name: log__cm_delete_entryid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER SEQUENCE log__cm_delete_entryid_seq OWNED BY log__cm_delete.entryid;
+
+
+--
+-- Name: log__cm_modify; Type: TABLE; Schema: public; Owner: mlpvc-rr
+--
+
+CREATE TABLE log__cm_modify (
+    entryid integer NOT NULL,
+    ponyid integer NOT NULL,
+    olddata jsonb NOT NULL,
+    newdata jsonb NOT NULL
+);
+
+
+ALTER TABLE log__cm_modify OWNER TO "mlpvc-rr";
+
+--
+-- Name: log__cm_modify_entryid_seq; Type: SEQUENCE; Schema: public; Owner: mlpvc-rr
+--
+
+CREATE SEQUENCE log__cm_modify_entryid_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE log__cm_modify_entryid_seq OWNER TO "mlpvc-rr";
+
+--
+-- Name: log__cm_modify_entryid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER SEQUENCE log__cm_modify_entryid_seq OWNED BY log__cm_modify.entryid;
 
 
 --
@@ -1295,6 +1403,13 @@ ALTER TABLE ONLY colorgroups ALTER COLUMN groupid SET DEFAULT nextval('colorgrou
 
 
 --
+-- Name: cutiemarks cmid; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER TABLE ONLY cutiemarks ALTER COLUMN cmid SET DEFAULT nextval('cutiemarks_cmid_seq'::regclass);
+
+
+--
 -- Name: log entryid; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
 --
 
@@ -1341,6 +1456,20 @@ ALTER TABLE ONLY log__cg_order ALTER COLUMN entryid SET DEFAULT nextval('log__cg
 --
 
 ALTER TABLE ONLY log__cgs ALTER COLUMN entryid SET DEFAULT nextval('log__cgs_entryid_seq'::regclass);
+
+
+--
+-- Name: log__cm_delete entryid; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER TABLE ONLY log__cm_delete ALTER COLUMN entryid SET DEFAULT nextval('log__cm_delete_entryid_seq'::regclass);
+
+
+--
+-- Name: log__cm_modify entryid; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER TABLE ONLY log__cm_modify ALTER COLUMN entryid SET DEFAULT nextval('log__cm_modify_entryid_seq'::regclass);
 
 
 --
@@ -1506,6 +1635,22 @@ ALTER TABLE ONLY colorgroups
 
 ALTER TABLE ONLY colorgroups
     ADD CONSTRAINT colorgroups_groupid_label UNIQUE (groupid, label);
+
+
+--
+-- Name: cutiemarks cutiemarks_cmid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER TABLE ONLY cutiemarks
+    ADD CONSTRAINT cutiemarks_cmid PRIMARY KEY (cmid);
+
+
+--
+-- Name: cutiemarks cutiemarks_ponyid_facing; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER TABLE ONLY cutiemarks
+    ADD CONSTRAINT cutiemarks_ponyid_facing UNIQUE (ponyid, facing);
 
 
 --
@@ -1965,6 +2110,14 @@ ALTER TABLE ONLY colorgroups
 
 ALTER TABLE ONLY colors
     ADD CONSTRAINT colors_groupid_fkey FOREIGN KEY (groupid) REFERENCES colorgroups(groupid) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: cutiemarks cutiemarks_ponyid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER TABLE ONLY cutiemarks
+    ADD CONSTRAINT cutiemarks_ponyid_fkey FOREIGN KEY (ponyid) REFERENCES appearances(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --

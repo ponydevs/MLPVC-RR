@@ -288,4 +288,10 @@ class AdminController extends Controller {
 
 		Response::success('Marked '.CoreUtils::makePlural('post', $approved, PREPEND_NUMBER).' as approved. To see which ones, check the <a href="/admin/logs/1?type=post_lock&by=you">list of posts you\'ve approved</a>.',array('reload' => true));
 	}
+
+	function recentPosts(){
+		CSRFProtection::protect();
+
+		Response::done(['html' => Posts::getMostRecentList(WRAP)]);
+	}
 }

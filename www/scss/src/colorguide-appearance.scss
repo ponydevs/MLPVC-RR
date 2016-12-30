@@ -4,18 +4,36 @@
 
 // Mobile-only
 @media all and (max-width: $Breakpoint){
-	#pony-cm {
-		margin-left: auto;
-		margin-right: auto;
+	#pony-cm-list {
+		display: flex;
+		flex-flow: row wrap;
 
-		@include pony-cm-image(200px);
+		.pony-cm {
+			display: block;
+
+			@include pony-cm;
+
+			.preview {
+				margin-left: auto;
+				margin-right: auto;
+				@include pony-cm-image(200px);
+			}
+		}
 	}
 }
 // Desktop-only
 @media all and (min-width: $Breakpoint){
-	#pony-cm { @include pony-cm-image }
+	.pony-cm .preview { @include pony-cm-image }
 
 	#content .admin { display: none }
+
+	#pony-cm-list {
+		.pony-cm {
+			display: inline-block;
+
+			@include pony-cm;
+		}
+	}
 }
 
 #content {
@@ -92,7 +110,10 @@
 	}
 
 	.approved-cutie-mark {
-		#pony-cm { margin-bottom: 10px }
+		&:not(:last-child){
+			margin-bottom: 10px;
+		}
+
 		.aside {
 			font-size: small;
 			margin-bottom: 4px;
@@ -104,4 +125,11 @@
 	}
 
 	#colors { @extend %colors-ul }
+}
+
+#pony-cm-list {
+	display: block;
+	margin: 10px 0 0;
+	padding: 0;
+	font-size: 0;
 }

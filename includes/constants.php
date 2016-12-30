@@ -46,9 +46,8 @@ define('RETURN_MAP', true); // CGUtils::RenderSpritePNG
 // Color Guide constants \\
 define('DEFAULT_SPRITE', '/img/blank-pixel.png'); // \CG\Appearances::GetSpriteURL
 # CM direction
-define('CM_DIR_TAIL_TO_HEAD', false);
-define('CM_DIR_HEAD_TO_TAIL', true);
-define('CM_DIR_ONLY',true);
+define('CM_FACING_RIGHT', 'right');
+define('CM_FACING_LEFT', 'left');
 # Color Groups
 define('NO_COLON', false);
 define('OUTPUT_COLOR_NAMES', true);

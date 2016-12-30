@@ -1,4 +1,4 @@
-/* global DocReady,HandleNav,Sortable,DOMStringList */
+/* global DocReady,HandleNav,Sortable,DOMStringList,$w */
 DocReady.push(function(){
 	'use strict';
 
@@ -196,4 +196,26 @@ DocReady.push(function(){
 			}));
 		}
 	})();
+
+	// Get recent posts
+	let $recents = $('.recent-posts'),
+		fetchingRecents = false;
+	window._AdminRecentScroll = function(){
+		if (fetchingRecents || !$recents.isInViewport())
+			return;
+		let $div = $recents.children('div');
+		if ($div.is(':empty')){
+			fetchingRecents = true;
+			$.post('/admin/recent-posts',$.mkAjaxHandler(function(){
+				if (!this.status) return $div.append('<div class="notice fail align-center">This section failed to load.</div>');
+
+				$div.html(this.html);
+			}));
+		}
+	};
+	$w.on('scroll',window._AdminRecentScroll);
+	window._AdminRecentScroll();
+},function(){
+	'use strict';
+	$w.off('scroll',window._AdminRecentScroll);
 });

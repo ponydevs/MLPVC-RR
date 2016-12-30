@@ -91,18 +91,27 @@
 				> * { display: none }
 			}
 		}
-		&.recent-posts ul {
-			@extend %post-ul;
-			margin-bottom: 0;
-
-			&:empty:before {
-				content: "No recent posts to show";
-				font-style: italic;
+		&.recent-posts {
+			> div:empty {
+				height: 100px;
+				width: 100%;
+				margin: 10px 0 0;
+				background: url('/img/loading-ring.svg') no-repeat center;
+				background-size: contain;
 			}
+			ul {
+				@extend %post-ul;
+				margin-bottom: 0;
 
-			li .reserver .da-userlink .name {
-				font-size: 16px;
-				vertical-align: middle;
+				&:empty:before {
+					content: "No recent posts to show";
+					font-style: italic;
+				}
+
+				li .reserver .da-userlink .name {
+					font-size: 16px;
+					vertical-align: middle;
+				}
 			}
 		}
 	}

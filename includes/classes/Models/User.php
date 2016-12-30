@@ -96,8 +96,9 @@ class User extends AbstractFillable {
 		if ($format === self::LINKFORMAT_URL) return $link;
 
 		$avatar = $format == self::LINKFORMAT_FULL ? "<img src='{$this->avatar_url}' class='avatar' alt='avatar'> " : '';
+		$withav = $format == self::LINKFORMAT_FULL ? ' with-avatar' : '';
 		$href = empty($this->fake) ? "href='$link'" : '';
-		return "<a $href class='da-userlink'>$avatar<span class='name'>$Username</span></a>";
+		return "<a $href class='da-userlink$withav'>$avatar<span class='name'>$Username</span></a>";
 	}
 
 	/**
@@ -146,7 +147,7 @@ class User extends AbstractFillable {
 		$response = $Database->where('id', $this->id)->update('users', array('role' => $newgroup));
 
 		if ($response){
-			Logs::action('rolechange', array(
+			Logs::logAction('rolechange', array(
 				'target' => $this->id,
 				'oldrole' => $this->role,
 				'newrole' => $newgroup

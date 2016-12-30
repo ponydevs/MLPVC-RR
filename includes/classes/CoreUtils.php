@@ -69,7 +69,7 @@ class CoreUtils {
 	 *
 	 * @return string Encoded string
 	 */
-	static function aposEncode($str){
+	static function aposEncode(string $str):string {
 		return self::escapeHTML($str, ENT_QUOTES);
 	}
 

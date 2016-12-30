@@ -438,19 +438,24 @@ HTML;
 		Image::outputPNG($FinalBase, $OutputPath, $FileRelPath);
 	}
 
-	const CMDIR_SVG_PATH = FSPATH."cg_render/#-cmdir.svg";
+	const CMDIR_SVG_PATH = FSPATH."cg_render/#-cmdir-@.svg";
 
 	// Generate CM preview image
-	static function renderCMDirectionSVG($CGPath, $AppearanceID, $dir){
+	static function renderCMDirectionSVG($CGPath, $AppearanceID){
 		global $Database;
 
-		$OutputPath = str_replace('#',$AppearanceID,self::CMDIR_SVG_PATH);
-		$FileRelPath = "$CGPath/v/{$AppearanceID}d.svg";
+		if (empty($_GET['facing']))
+			$Facing = 'left';
+		else {
+			$Facing = $_GET['facing'];
+			if (!in_array($Facing, Cutiemarks::VALID_FACING_VALUES, true))
+				Response::fail('Invalid facing value specified!');
+		}
+
+		$OutputPath = str_replace('@',$Facing,str_replace('#',$AppearanceID,self::CMDIR_SVG_PATH));
+		$FileRelPath = "$CGPath/v/{$AppearanceID}d.svg?facing=$Facing";
 		if (file_exists($OutputPath))
 			Image::outputSVG(null,$OutputPath,$FileRelPath);
-
-		if (!isset($dir))
-			CoreUtils::notFound();
 
 		$DefaultColorMapping = array(
 			'Coat Outline' => '#0D0D0D',
@@ -480,7 +485,7 @@ HTML;
 		if (!isset($ColorMapping['Coat Shadow Fill']) && isset($ColorMapping['Coat Fill']))
 			$ColorMapping['Coat Shadow Fill'] = $ColorMapping['Coat Fill'];
 
-		$img = file_get_contents(APPATH.'img/cm-direction-'.($dir===CM_DIR_HEAD_TO_TAIL?'ht':'th').'.svg');
+		$img = file_get_contents(APPATH.'img/cm_facing/'.($Facing===CM_FACING_RIGHT?'right':'left').'.svg');
 		foreach ($DefaultColorMapping as $label => $defhex)
 			$img = str_replace($label, $ColorMapping[$label] ?? $defhex, $img);
 
@@ -761,8 +766,8 @@ GPL;
 	}
 
 	static $CM_DIR = array(
-		CM_DIR_HEAD_TO_TAIL => 'Head-tail',
-		CM_DIR_TAIL_TO_HEAD => 'Tail-head',
+		CM_FACING_LEFT => 'Head-tail',
+		CM_FACING_RIGHT => 'Tail-head',
 	);
 
 	const ELASTIC_BASE = array(

@@ -69,19 +69,6 @@ class Posts {
 		return $HTML.($wrap?'</ul>':'');
 	}
 
-
-	/**
-	 * Get link to a specific post
-	 *
-	 * @param Post   $Post
-	 *
-	 * @deprecated
-	 * @return array
-	 */
-	static function getLink(Post $Post):array {
-		die(trigger_error(__METHOD__.' is deprecated.', E_USER_DEPRECATED));
-	}
-
 	/**
 	 * POST data validator function used when creating/editing posts
 	 *
@@ -214,7 +201,7 @@ class Posts {
 			}
 
 			$return = array('deviation_id' => $Image->id);
-			$Deviation = DeviantArt::getCachedSubmission($Image->id);
+			$Deviation = DeviantArt::getCachedDeviation($Image->id);
 			if (!empty($Deviation['author'])){
 				$Author = Users::get($Deviation['author'], 'name');
 
@@ -542,7 +529,7 @@ HTML;
 				: '';
 			if ($finished){
 				$approved = !empty($Post->lock);
-				$Deviation = DeviantArt::getCachedSubmission($Post->deviation_id,'fav.me',true);
+				$Deviation = DeviantArt::getCachedDeviation($Post->deviation_id,'fav.me',true);
 				if (empty($Deviation)){
 					$ImageLink = $view_only ? $postlink : "http://fav.me/{$Post->deviation_id}";
 					$Image = "<div class='image deviation error'><a href='$ImageLink'>Preview unavailable<br><small>Click to view</small></a></div>";
@@ -729,7 +716,7 @@ HTML;
 			'type' => $type,
 			'id' => $id
 		);
-		Logs::action('post_lock',$postdata);
+		Logs::logAction('post_lock',$postdata);
 		if (!empty($notifyUserID))
 			Notifications::send($notifyUserID, 'post-approved', $postdata);
 

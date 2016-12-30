@@ -81,7 +81,7 @@ class NotificationsController extends Controller {
 
 						Posts::clearTransferAttempts($Post, $data['type'], 'deny');
 
-						Logs::action('res_transfer',array(
+						Logs::logAction('res_transfer',array(
 							'id' => $data['id'],
 							'type' => $data['type'],
 							'to' => $data['user'],

@@ -10,6 +10,8 @@ use App\UserPrefs;
 use App\Users;
 
 /** @var $User User */
+/** @var $sameUser bool */
+/** @var $canEdit bool */
 
 if (isset($MSG)){
 	echo "<h1>$MSG</h1>";
@@ -93,7 +95,7 @@ if (Permission::sufficient('member', $User->role)){
 <?  if ($AwaitCount){ ?>
 			<ul id="awaiting-deviations"><?
 		foreach ($AwaitingApproval as $Post){
-			$deviation = DeviantArt::getCachedSubmission($Post->deviation_id);
+			$deviation = DeviantArt::getCachedDeviation($Post->deviation_id);
 			$url = "http://{$deviation['provider']}/{$deviation['id']}";
 			unset($_);
 			$postLink = $Post->toLink($_);

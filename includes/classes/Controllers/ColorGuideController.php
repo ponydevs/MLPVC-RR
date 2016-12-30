@@ -4,12 +4,14 @@ namespace App\Controllers;
 use App\CGUtils;
 use App\CoreUtils;
 use App\CSRFProtection;
+use App\Cutiemarks;
 use App\Exceptions\MismatchedProviderException;
 use App\Exceptions\NoPCGSlotsException;
 use App\ImageProvider;
 use App\Input;
 use App\JSON;
 use App\Logs;
+use App\Models\Cutiemark;
 use App\Models\User;
 use App\Pagination;
 use App\Permission;
@@ -189,7 +191,7 @@ class ColorGuideController extends Controller {
 				if (!empty($params['type'])) switch ($params['type']){
 					case "s": CGUtils::renderSpriteSVG($this->_cgPath, $this->_appearance['id']);
 					case "p": CGUtils::renderPreviewSVG($this->_cgPath, $this->_appearance['id']);
-					case "d": CGUtils::renderCMDirectionSVG($this->_cgPath, $this->_appearance['id'], $this->_appearance['cm_dir']);
+					case "d": CGUtils::renderCMDirectionSVG($this->_cgPath, $this->_appearance['id']);
 					default: CoreUtils::notFound();
 				}
 			case 'json': CGUtils::getSwatchesAI($this->_appearance);
@@ -235,9 +237,9 @@ class ColorGuideController extends Controller {
 		$settings = array(
 			'title' => "$title - $Color Guide",
 			'heading' => $heading,
-			'view' => "{$this->do}-single",
-			'css' => array($this->do, "{$this->do}-single"),
-			'js' => array('jquery.qtip', 'jquery.ctxmenu', $this->do, "{$this->do}-single"),
+			'view' => "{$this->do}-appearance",
+			'css' => array($this->do, "{$this->do}-appearance"),
+			'js' => array('jquery.qtip', 'jquery.ctxmenu', $this->do, "{$this->do}-appearance"),
 			'import' => [
 				'Appearance' => $this->_appearance,
 				'EQG' => $this->_EQG,
@@ -683,13 +685,6 @@ class ColorGuideController extends Controller {
 				Response::done(array(
 					'label' => $this->_appearance['label'],
 					'notes' => $this->_appearance['notes'],
-					'cm_favme' => !empty($this->_appearance['cm_favme']) ? "http://fav.me/{$this->_appearance['cm_favme']}" : null,
-					'cm_preview' => $this->_appearance['cm_preview'],
-					'cm_dir' => (
-						isset($this->_appearance['cm_dir'])
-						? ($this->_appearance['cm_dir'] === CM_DIR_HEAD_TO_TAIL ? 'ht' : 'th')
-						: null
-					),
 					'private' => $this->_appearance['private'],
 				));
 			break;
@@ -738,47 +733,6 @@ class ColorGuideController extends Controller {
 				}
 				else $data['notes'] = null;
 
-				$cm_favme = (new Input('cm_favme','string',array(Input::IS_OPTIONAL => true)))->out();
-				if (isset($cm_favme)){
-					try {
-						$Image = new ImageProvider($cm_favme, array('fav.me', 'dA'));
-						CoreUtils::checkDeviationInClub($Image->id, true);
-						$data['cm_favme'] = $Image->id;
-					}
-					catch (MismatchedProviderException $e){
-						Response::fail('The vector must be on DeviantArt, '.$e->getActualProvider().' links are not allowed');
-					}
-					catch (\Exception $e){ Response::fail("Cutie Mark link issue: ".$e->getMessage()); }
-
-					$cm_dir = (new Input('cm_dir',function($value){
-						if ($value !== 'th' && $value !== 'ht')
-							return Input::ERROR_INVALID;
-					},array(
-						Input::CUSTOM_ERROR_MESSAGES => array(
-							Input::ERROR_MISSING => 'Cutie mark orientation must be set if a link is provided',
-							Input::ERROR_INVALID => 'Cutie mark orientation (@value) is invalid',
-						)
-					)))->out();
-					$cm_dir = $cm_dir === 'ht' ? CM_DIR_HEAD_TO_TAIL : CM_DIR_TAIL_TO_HEAD;
-					if ($creating || $this->_appearance['cm_dir'] !== $cm_dir)
-						$data['cm_dir'] = $cm_dir;
-
-					$cm_preview = (new Input('cm_preview','string',array(Input::IS_OPTIONAL => true)))->out();
-					if (empty($cm_preview))
-						$data['cm_preview'] = null;
-					else if ($creating || $cm_preview !== $this->_appearance['cm_preview']){
-						try {
-							$Image = new ImageProvider($cm_preview);
-							$data['cm_preview'] = $Image->preview;
-						}
-						catch (\Exception $e){ Response::fail("Cutie Mark preview issue: ".$e->getMessage()); }
-					}
-				}
-				else {
-					$data['cm_dir'] = null;
-					$data['cm_preview'] = null;
-				}
-
 				$data['private'] = isset($_POST['private']);
 
 				if ($creating){
@@ -818,16 +772,13 @@ class ColorGuideController extends Controller {
 						}
 					}
 
-					Logs::action('appearances',array(
+					Logs::logAction('appearances',array(
 						'action' => 'add',
 					    'id' => $data['id'],
 					    'order' => $data['order'],
 					    'label' => $data['label'],
 					    'notes' => $data['notes'],
-					    'cm_favme' => $data['cm_favme'] ?? null,
 					    'ishuman' => $data['ishuman'],
-					    'cm_preview' => $data['cm_preview'],
-					    'cm_dir' => $data['cm_dir'],
 						'usetemplate' => $usetemplate ? 1 : 0,
 						'private' => $data['private'] ? 1 : 0,
 						'owner' => $data['owner'] ?? null,
@@ -845,7 +796,7 @@ class ColorGuideController extends Controller {
 						$diff["new$key"] = $EditedAppearance[$key];
 					}
 				}
-				if (!empty($diff)) Logs::action('appearance_modify',array(
+				if (!empty($diff)) Logs::logAction('appearance_modify',array(
 					'ponyid' => $this->_appearance['id'],
 					'changes' => JSON::encode($diff),
 				));
@@ -893,13 +844,12 @@ class ColorGuideController extends Controller {
 
 				CGUtils::clearRenderedImages($this->_appearance['id']);
 
-				Logs::action('appearances',array(
+				Logs::logAction('appearances',array(
 					'action' => 'del',
 				    'id' => $this->_appearance['id'],
 				    'order' => $this->_appearance['order'],
 				    'label' => $this->_appearance['label'],
 				    'notes' => $this->_appearance['notes'],
-				    'cm_favme' => $this->_appearance['cm_favme'],
 				    'ishuman' => $this->_appearance['ishuman'],
 				    'added' => $this->_appearance['added'],
 				    'cm_preview' => $this->_appearance['cm_preview'],
@@ -938,7 +888,7 @@ class ColorGuideController extends Controller {
 
 				$oldCGs = ColorGroups::stringify($oldCGs);
 				$newCGs = ColorGroups::stringify($newCGs);
-				if ($oldCGs !== $newCGs) Logs::action('cg_order',array(
+				if ($oldCGs !== $newCGs) Logs::logAction('cg_order',array(
 					'ponyid' => $this->_appearance['id'],
 					'oldgroups' => $oldCGs,
 					'newgroups' => $newCGs,
@@ -1050,6 +1000,87 @@ class ColorGuideController extends Controller {
 				if ($this->_appearancePage)
 					$out['section'] = Appearances::getRelatedHTML(Appearances::getRelated($this->_appearance['id']));
 				Response::done($out);
+			break;
+			case "getcms":
+				$CMs = Cutiemarks::get($this->_appearance['id'],'cmid,favme,favme_rotation,preview_src,facing');
+
+				Response::done(['cms' => $CMs]);
+			break;
+			case "getcmpreview":
+				// TODO Handle the rest of the facing options
+				$data = [
+					'ponyid' => $this->_appearance['id'],
+				];
+				Cutiemarks::postProcess($data, 0);
+
+				$cm = new Cutiemark($data);
+				Response::done(['html' => Cutiemarks::getListItemForAppearancePage($cm, NOWRAP)]);
+			break;
+			case "setcms":
+				// TODO Handle the rest of the facing options
+				$data = [];
+				$newFacingValues = [];
+				//for ($i = 0; $i < 2; $i++){
+				$i = 0;
+					$data[$i] = [
+						'ponyid' => $this->_appearance['id'],
+					];
+					if (Cutiemarks::postProcess($data[$i], $i) === false){
+						unset($data[$i]);
+						break;
+					}
+					if (isset($_POST['cmid'][$i])){
+						$data[$i]['cmid'] = intval($_POST['cmid'][$i]);
+						if (!$Database->where('cmid', $data[$i]['cmid'])->has('cutiemarks'))
+							Response::fail('The cutie makr you\'re trying to update does not exist');
+					}
+					$newFacingValues[$data[$i]['facing']] = $data[$i]['cmid'] ?? null;
+				//}
+
+				$CurrentCMs = Cutiemarks::get($this->_appearance['id']);
+				$usedFacingValues = [];
+				if (!empty($CurrentCMs)){
+					foreach ($CurrentCMs as $cm)
+						$usedFacingValues[$cm->facing] = $cm->cmid;
+				}
+				$newfacing = implode(',',array_keys($newFacingValues));
+				if (!in_array($newfacing,Cutiemarks::VALID_FACING_COMBOS))
+					Response::fail("The used combination of facing values ($newfacing) is not allowed");
+
+				foreach ($data as $cmdata){
+					if (isset($cmdata['cmid'])){
+						$Database->where('cmid', $cmdata['cmid']);
+						unset($cmdata['cmid']);
+						$Database->update('cutiemarks', $cmdata);
+					}
+					else $Database->insert('cutiemarks', $cmdata);
+				}
+
+				$CutieMarks = Cutiemarks::get($this->_appearance['id']);
+				Logs::logAction('cm_modify',[
+					'ponyid' => $this->_appearance['id'],
+					'olddata' => Cutiemarks::convertDataForLogs($CurrentCMs),
+					'newdata' =>  Cutiemarks::convertDataForLogs($CutieMarks),
+				]);
+
+				$data = [];
+				if ($this->_appearancePage && !empty($CutieMarks))
+					$data['html'] = Cutiemarks::getListForAppearancePage($CutieMarks);
+				Response::done($data);
+			break;
+			case "delcms":
+				$CMs = Cutiemarks::get($this->_appearance['id']);
+				if (empty($CMs))
+					Response::done();
+				if (!$Database->where('ponyid', $this->_appearance['id'])->delete('cutiemarks'))
+					Response::dbError('Removing Cutie Marka failed');
+
+				Logs::logAction('cm_delete',[
+					'ponyid' => $this->_appearance['id'],
+					'data' => Cutiemarks::convertDataForLogs($CMs),
+				]);
+
+				Response::done();
 			break;
 			case "clear-cache":
 				if (!CGUtils::clearRenderedImages($this->_appearance['id']))
@@ -1430,7 +1461,7 @@ HTML;
 				if (!$Database->where('groupid', $Group['groupid'])->delete('colorgroups'))
 					Response::dbError();
 
-				Logs::action('cgs',array(
+				Logs::logAction('cgs',array(
 					'action' => 'del',
 					'groupid' => $Group['groupid'],
 					'ponyid' => $Group['ponyid'],
@@ -1537,7 +1568,7 @@ HTML;
 
 		$AppearanceID = $adding ? $this->_appearance['id'] : $Group['ponyid'];
 		if ($major){
-			Logs::action('color_modify',array(
+			Logs::logAction('color_modify',array(
 				'ponyid' => $AppearanceID,
 				'reason' => $reason,
 			));
@@ -1556,7 +1587,7 @@ HTML;
 		else $response['notes'] = Appearances::getNotesHTML($Database->where('id', $AppearanceID)->getOne('appearances'),  NOWRAP);
 
 		$logdata = array();
-		if ($adding) Logs::action('cgs',array(
+		if ($adding) Logs::logAction('cgs',array(
 			'action' => 'add',
 			'groupid' => $Group['groupid'],
 			'ponyid' => $AppearanceID,
@@ -1578,9 +1609,29 @@ HTML;
 		if (!empty($logdata)){
 			$logdata['groupid'] = $Group['groupid'];
 			$logdata['ponyid'] = $AppearanceID;
-			Logs::action('cg_modify', $logdata);
+			Logs::logAction('cg_modify', $logdata);
 		}
 
 		Response::done($response);
+	}
+
+	function moveCMData(){
+		if (Permission::insufficient('developer'))
+			Response::fail();
+
+		global $Database;
+		$AppearancesWithCMs = $Database->where('cm_favme IS NOT NULL')->get('appearances',null,'id,cm_favme,cm_preview,cm_dir');
+
+		$Database->delete('cutiemarks');
+		foreach ($AppearancesWithCMs as $p){
+			$Database->insert('cutiemarks',[
+				'ponyid' => $p['id'],
+				'facing' => $p['cm_dir']==CM_FACING_LEFT?'left':'right',
+				'favme' => $p['cm_favme'],
+				'favme_rotation' => $p['cm_dir']==CM_FACING_LEFT ? -20 : 20,
+				'preview' => $p['cm_preview'],
+				'preview_src' => null,
+			]);
+		}
 	}
 }

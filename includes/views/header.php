@@ -48,7 +48,7 @@ switch ($do ?? null){
 			if (!$LinkedPost->isFinished)
 				$ThumbImage = $LinkedPost->preview;
 			else {
-				$finishdeviation = DeviantArt::getCachedSubmission($LinkedPost->deviation_id);
+				$finishdeviation = DeviantArt::getCachedDeviation($LinkedPost->deviation_id);
 				if (!empty($finishdeviation['preview']))
 					$ThumbImage  = $finishdeviation['preview'];
 			}

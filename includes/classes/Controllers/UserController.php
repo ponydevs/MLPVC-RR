@@ -247,7 +247,7 @@ class UserController extends Controller {
 
 		$changes = array('role' => $action == 'banish' ? 'ban' : 'user');
 		$Database->where('id', $targetUser->id)->update('users', $changes);
-		Logs::action($action,array(
+		Logs::logAction($action,array(
 			'target' => $targetUser->id,
 			'reason' => $reason
 		));

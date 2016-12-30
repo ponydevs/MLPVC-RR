@@ -44,7 +44,7 @@ use App\Posts;
 
 	<section class="recent-posts">
 		<h2><span class="typcn typcn-bell"></span>Most recent posts</h2>
-		<div><?=Posts::getMostRecentList()?></div>
+		<div></div>
 	</section>
 </div>
 
