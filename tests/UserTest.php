@@ -24,7 +24,7 @@ class UserTest extends TestCase {
 		$result = $User->getDALink(\App\Models\User::LINKFORMAT_TEXT);
 		static::assertEquals("<a href='http://testuser.deviantart.com/' class='da-userlink'><span class='name'>TestUser</span></a>", $result, "Testing default parameter return value format");
 		$result = $User->getDALink();
-		static::assertEquals("<a href='http://testuser.deviantart.com/' class='da-userlink'><img src='/img/guest.svg' class='avatar' alt='avatar'> <span class='name'>TestUser</span></a>", $result, "Testing default parameter return value format");
+		static::assertEquals("<a href='http://testuser.deviantart.com/' class='da-userlink with-avatar'><img src='/img/guest.svg' class='avatar' alt='avatar'> <span class='name'>TestUser</span></a>", $result, "Testing default parameter return value format");
 	}
 
 	function testGetAvatarWrap(){
