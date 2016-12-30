@@ -115,6 +115,3 @@ $router->map('POST', '/user/setgroup/[un:name]',             'UserController#set
 $router->map('POST', '/user/banish/[un:name]',               'UserController#banish');
 $router->map('POST', '/user/un-banish/[un:name]',            'UserController#unbanish');
 $router->map('POST', '/[user]/[un:name]/cg/slot-check',      'UserController#checkCGSlots');
-
-// Temporary
-$router->map('GET', '/cg/move-cm-data', 'ColorGuideController#moveCMData');

@@ -84,11 +84,8 @@ CREATE TABLE appearances (
     "order" integer NOT NULL,
     label character varying(70) NOT NULL,
     notes text,
-    cm_favme character varying(20),
     ishuman boolean,
     added timestamp with time zone DEFAULT now(),
-    cm_preview character varying(255),
-    cm_dir boolean,
     private boolean DEFAULT false NOT NULL,
     owner uuid
 );

@@ -251,7 +251,8 @@ HTML;
 	const
 		CLEAR_PREVIEW = 'preview.svg',
 		CLEAR_PALETTE = 'palette.png',
-		CLEAR_CMDIR = 'cmdir.svg',
+		CLEAR_CMDIR_LEFT = 'cmdir-left.svg',
+		CLEAR_CMDIR_RIGHT = 'cmdir-right.svg',
 		CLEAR_SPRITE = 'sprite.png',
 		CLEAR_SPRITE_SVG = 'sprite.svg',
 		CLEAR_SPRITE_MAP = 'linedata.json.gz';
@@ -259,7 +260,8 @@ HTML;
 	const CLEAR_BY_DEFAULT = array(
 		self::CLEAR_PREVIEW,
 		self::CLEAR_PALETTE,
-		self::CLEAR_CMDIR,
+		self::CLEAR_CMDIR_LEFT,
+		self::CLEAR_CMDIR_RIGHT,
 		self::CLEAR_SPRITE,
 		self::CLEAR_SPRITE_SVG,
 		self::CLEAR_SPRITE_MAP,

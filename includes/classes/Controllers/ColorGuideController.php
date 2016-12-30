@@ -80,7 +80,7 @@ class ColorGuideController extends Controller {
 		$asFile = isset($params['ext']);
 		if (!isset($params['id']))
 			Response::fail('Missing appearance ID');
-		$this->_appearance = $Database->where('id', $params['id'])->getOne('appearances', $asFile ? 'id,label,cm_dir,ishuman,owner' : '*');
+		$this->_appearance = $Database->where('id', $params['id'])->getOne('appearances', $asFile ? 'id,label,ishuman,owner' : '*');
 		if (empty($this->_appearance))
 			CoreUtils::notFound();
 
@@ -749,9 +749,6 @@ class ColorGuideController extends Controller {
 				if (!$query)
 					Response::dbError();
 
-				if ((isset($data['cm_dir']) && $data['cm_dir'] !== $this->_appearance['cm_dir']) || (isset($data['cm_preview']) && $data['cm_preview'] != $this->_appearance['cm_preview']))
-					CGUtils::clearRenderedImages($this->_appearance['id'], array(CGUtils::CLEAR_CMDIR));
-
 				$EditedAppearance = Appearances::updateIndex($creating ? $query : $this->_appearance['id'], '*');
 
 				if ($creating){
@@ -790,7 +787,7 @@ class ColorGuideController extends Controller {
 
 				$response = array();
 				$diff = array();
-				foreach (array('label','notes','cm_favme','cm_dir','cm_preview','private','owner') as $key){
+				foreach (array('label','notes','private','owner') as $key){
 					if ($EditedAppearance[$key] !== $this->_appearance[$key]){
 						$diff["old$key"] = $this->_appearance[$key];
 						$diff["new$key"] = $EditedAppearance[$key];
@@ -852,8 +849,6 @@ class ColorGuideController extends Controller {
 				    'notes' => $this->_appearance['notes'],
 				    'ishuman' => $this->_appearance['ishuman'],
 				    'added' => $this->_appearance['added'],
-				    'cm_preview' => $this->_appearance['cm_preview'],
-				    'cm_dir' => $this->_appearance['cm_dir'],
 				    'private' => $this->_appearance['private'],
 				    'owner' => $this->_appearance['owner'],
 				));
@@ -1046,6 +1041,14 @@ class ColorGuideController extends Controller {
 				$newfacing = implode(',',array_keys($newFacingValues));
 				if (!in_array($newfacing,Cutiemarks::VALID_FACING_COMBOS))
 					Response::fail("The used combination of facing values ($newfacing) is not allowed");
+
+				$cleanRendered = [];
+				if (!in_array('left', $newFacingValues))
+					$cleanRendered[] = CGUtils::CLEAR_CMDIR_LEFT;
+				if (!in_array('right', $newFacingValues))
+					$cleanRendered[] = CGUtils::CLEAR_CMDIR_RIGHT;
+				if (!empty($cleanRendered))
+					CGUtils::clearRenderedImages($this->_appearance['id'], $cleanRendered);
 
 				foreach ($data as $cmdata){
 					if (isset($cmdata['cmid'])){
@@ -1613,25 +1616,5 @@ HTML;
 		}
 
 		Response::done($response);
-	}
-
-	function moveCMData(){
-		if (Permission::insufficient('developer'))
-			Response::fail();
-
-		global $Database;
-		$AppearancesWithCMs = $Database->where('cm_favme IS NOT NULL')->get('appearances',null,'id,cm_favme,cm_preview,cm_dir');
-
-		$Database->delete('cutiemarks');
-		foreach ($AppearancesWithCMs as $p){
-			$Database->insert('cutiemarks',[
-				'ponyid' => $p['id'],
-				'facing' => $p['cm_dir']==CM_FACING_LEFT?'left':'right',
-				'favme' => $p['cm_favme'],
-				'favme_rotation' => $p['cm_dir']==CM_FACING_LEFT ? -20 : 20,
-				'preview' => $p['cm_preview'],
-				'preview_src' => null,
-			]);
-		}
 	}
 }
