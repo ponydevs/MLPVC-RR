@@ -70,13 +70,13 @@ class Appearances {
 
 			$RenderPath = FSPATH."cg_render/{$Appearance['id']}.png";
 			$FileModTime = '?t='.(file_exists($RenderPath) ? filemtime($RenderPath) : time());
-			$Actions = "<a class='btn typcn typcn-image darkblue' title='View as PNG' href='$personalp/cg/{$eqgp}v/{$Appearance['id']}p.png$FileModTime' target='_blank'></a>".
+			$Actions = "<a class='btn typcn typcn-image blue' title='View as PNG' href='$personalp/cg/{$eqgp}v/{$Appearance['id']}p.png$FileModTime' target='_blank'></a>".
 			           "<button class='getswatch typcn typcn-brush teal' title='Download swatch file'></button>";
 			if ($permission)
-				$Actions .= "<button class='edit typcn typcn-pencil blue' title='Edit'></button>".
+				$Actions .= "<button class='edit typcn typcn-pencil darkblue' title='Edit'></button>".
 				            ($Appearance['id']!==0?"<button class='delete typcn typcn-trash red' title='Delete'></button>":'');
 			$safelabel = self::getSafeLabel($Appearance);
-			$HTML .= "<li id='p{$Appearance['id']}'>$img<div><strong><a href='$personalp/cg/v/{$Appearance['id']}-$safelabel'>{$Appearance['label']}</a>$Actions</strong>$updates$notes$tags$colors</div></li>";
+			$HTML .= "<li id='p{$Appearance['id']}'>$img<div><strong><a href='$personalp/cg/{$eqgp}v/{$Appearance['id']}-$safelabel'>{$Appearance['label']}</a>$Actions</strong>$updates$notes$tags$colors</div></li>";
 		}
 		else {
 			if (empty($_MSG))
