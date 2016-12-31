@@ -91,6 +91,9 @@
 				> * { display: none }
 			}
 		}
+		&.elastic-status pre {
+			overflow: auto;
+		}
 		&.recent-posts {
 			> div:empty {
 				height: 100px;
