@@ -11,6 +11,7 @@ use App\CoreUtils;
 /** @var $signedIn bool */
 /** @var $Owner User */
 /** @var $User User */
+/** @var $currentUser User|null */
 /** @var $scope array */
 
 $Title = (isset($title)?$title.' - ':'').SITE_TITLE;
