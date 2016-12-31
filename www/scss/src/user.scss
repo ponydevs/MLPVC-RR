@@ -5,24 +5,9 @@
 
 // Mobile styles
 @media all and (max-width: $Breakpoint){
-	h1 {
-		> * {
-			display: inline-block;
-			vertical-align: bottom;
-		}
-		.role-badge {
-			color: #777;
-			background-color: #efefef;
-			font-family: $RegularFont;
-			font-size: .8em;
-			padding: 2px 3px;
-			border-radius: 4px;
-			line-height: .9em;
-			border: 2px solid;
-			text-transform: uppercase;
-			font-weight: bold;
-			margin-right: 10px;
-		}
+	h1 > * {
+		display: inline-block;
+		vertical-align: bottom;
 	}
 }
 // Desktop styles
@@ -53,7 +38,6 @@
 					display: inline-block;
 					vertical-align: bottom;
 				}
-				.role-badge { display: none }
 			}
 			p {
 				margin-bottom: 0 !important;

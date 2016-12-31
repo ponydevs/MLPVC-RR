@@ -403,8 +403,8 @@ HTML;
 				$HTML .= "<li>".Appearances::getLinkWithPreviewHTML($p).'</li>';
 			$HTML .= "</ul>";
 		}
-		if ($sameUser)
-			$HTML .= "<p><a href='/@{$User->name}/cg' class='btn darkblue large typcn typcn-spanner'>Manage Personal Color Guide</a></p>";
+		$Action = $sameUser ? 'Manage' : 'View';
+		$HTML .= "<p><a href='/@{$User->name}/cg' class='btn darkblue typcn typcn-arrow-forward'>$Action Personal Color Guide</a></p>";
 		$HTML .= '</section>';
 
 		return $HTML;

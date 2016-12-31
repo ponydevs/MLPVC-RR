@@ -22,7 +22,6 @@ if (!empty($Users)){
 		/** @var $users \App\Models\User[] */
 		$users = $Arranged[$r];
 		$group = CoreUtils::makePlural(Permission::ROLES_ASSOC[$r], count($users), true);
-		$groupInitials = '['.Permission::labelInitials($r).']';
 		if (count($users) > 50){
 			$usersOut = array();
 			foreach ($users as $u){
@@ -47,7 +46,7 @@ if (!empty($Users)){
 		}
 		echo <<<HTML
 <section>
-	<h2>$group $groupInitials</h2>
+	<h2>$group</h2>
 	<div>$usersStr</div>
 </section>
 HTML;

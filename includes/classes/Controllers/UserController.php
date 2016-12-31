@@ -251,13 +251,12 @@ class UserController extends Controller {
 			'target' => $targetUser->id,
 			'reason' => $reason
 		));
-		$changes['badge'] = Permission::labelInitials($changes['role']);
 		$changes['role'] = Permission::ROLES_ASSOC[$changes['role']];
 
 		if ($action == 'banish')
-			Response::done($changes);
+			Response::done();
 
-		Response::success("We welcome {$targetUser->name} back with open hooves!", $changes);
+		Response::success("We welcome {$targetUser->name} back with open hooves!");
 	}
 
 	function banish($params){

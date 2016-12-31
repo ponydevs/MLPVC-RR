@@ -23,16 +23,6 @@ class Permission {
 		'admin'     => 4,
 		'developer' => 255,
 	);
-	const ROLE_INITIALS = array(
-		'ban'       => 'B',
-		'guest'     => 'G',
-		'user'      => 'U',
-		'member'    => 'M',
-		'assistant' => 'As',
-		'staff'     => 'S',
-		'admin'     => 'A',
-		'developer' => 'SD',
-	);
 
 	/**
 	 * Permission checking function
@@ -77,16 +67,5 @@ class Permission {
 	 */
 	static function insufficient($role, $compareAgainst = null){
 		return !self::sufficient($role, $compareAgainst);
-	}
-
-	/**
-	 * Converts role label to badge initials
-	 * -------------------------------------
-	 * @param string $role
-	 *
-	 * @return string
-	 */
-	static function labelInitials($role){
-		return self::ROLE_INITIALS[$role];
 	}
 }
