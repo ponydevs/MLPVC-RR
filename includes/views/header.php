@@ -96,7 +96,7 @@ $Title = CoreUtils::escapeHTML($Title); ?>
 	<link rel="icon" type="image/png" href="/img/favicons-v1/android-chrome-192x192.png" sizes="192x192">
 	<link rel="icon" type="image/png" href="/img/favicons-v1/favicon-96x96.png" sizes="96x96">
 	<link rel="icon" type="image/png" href="/img/favicons-v1/favicon-16x16.png" sizes="16x16">
-	<link rel="manifest" href="/img/favicons-v1/manifest.json">
+	<link rel="manifest" href="/img/favicons-v1/manifest-201612311729.json">
 	<link rel="mask-icon" href="/img/favicons-v1/safari-pinned-tab.svg" color="#2c73b1">
 	<meta name="apple-mobile-web-app-title" content="MLP-VectorClub">
 	<meta name="application-name" content="MLP-VectorClub">
