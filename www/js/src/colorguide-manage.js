@@ -71,11 +71,11 @@ DocReady.push(function(){
 			);
 			$facingSelector.find(`input[value='${el.facing?el.facing:''}']`).prop('checked', true);
 			return $.mk('li').append(
-					$.mk('input').attr({
+					el.cmid ? $.mk('input').attr({
 						type: 'hidden',
 						value: el.cmid,
 						name: 'cmid[]',
-					}),
+					}) : undefined,
 					$.mk('label').append(
 						"<span>Deviation link</span>",
 						$.mk('input').attr({
@@ -371,7 +371,7 @@ DocReady.push(function(){
 															if (!this.status) return $.Dialog.fail(false, this.message);
 
 															if ($cmSection.length)
-																$cmSection.remove();
+																$cmSection.addClass('hidden').children(':not(h2,p)').remove();
 															$.Dialog.close();
 														}));
 													});
@@ -433,7 +433,7 @@ DocReady.push(function(){
 													$.Dialog.close();
 													if ($cmSection.length){
 														$cmSection.children(':not(h2,p)').remove();
-														$cmSection.append(this.html);
+														$cmSection.removeClass('hidden').append(this.html);
 													}
 												}));
 											});

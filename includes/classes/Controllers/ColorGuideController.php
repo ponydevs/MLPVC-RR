@@ -1027,7 +1027,7 @@ class ColorGuideController extends Controller {
 					if (isset($_POST['cmid'][$i])){
 						$data[$i]['cmid'] = intval($_POST['cmid'][$i]);
 						if (!$Database->where('cmid', $data[$i]['cmid'])->has('cutiemarks'))
-							Response::fail('The cutie makr you\'re trying to update does not exist');
+							Response::fail('The cutie mark you\'re trying to update does not exist');
 					}
 					$newFacingValues[$data[$i]['facing']] = $data[$i]['cmid'] ?? null;
 				//}

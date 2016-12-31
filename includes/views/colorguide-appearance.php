@@ -59,13 +59,14 @@ use App\Tags;
 	}
 
 	$CutieMarks = Cutiemarks::get($Appearance['id']);
-	if (!empty($CutieMarks)){ ?>
-		<section class="approved-cutie-mark">
+	$hideList = empty($CutieMarks); ?>
+		<section class="approved-cutie-mark<?=$hideList?' hidden':''?>">
 			<h2>Cutie Mark</h2>
 			<p class="aside"><?=count($CutieMarks)===1?'This is just an illustration':'These are just illustrations'?>, the body shape & colors are <strong>not</strong> guaranteed to reflect the actual design.</p>
-			<?=Cutiemarks::getListForAppearancePage($CutieMarks)?>
+<?php
+	if (!$hideList)
+		Cutiemarks::getListForAppearancePage($CutieMarks); ?>
 		</section>
-<?  } ?>
 		<section class="color-list">
 			<h2 class="admin">Color groups</h2>
 			<div class="admin">
