@@ -23,14 +23,32 @@ if (!empty($Users)){
 		$users = $Arranged[$r];
 		$group = CoreUtils::makePlural(Permission::ROLES_ASSOC[$r], count($users), true);
 		$groupInitials = '['.Permission::labelInitials($r).']';
-		$usersStr = array();
-		foreach ($users as $u)
-			$usersStr[] = $u->getProfileLink();
-		$usersStr = implode(', ', $usersStr);
+		if (count($users) > 50){
+			$usersOut = array();
+			foreach ($users as $u){
+				$firstletter = strtoupper($u->name[0]);
+				if (preg_match(new \App\RegExp('^[^a-z]$','i'), $firstletter))
+					$firstletter = '#';
+				$usersOut[$firstletter][] = $u->getProfileLink();
+			}
+
+			ksort($usersOut);
+
+			$usersStr = '';
+			foreach ($usersOut as $chr => $users){
+				$usersStr .= " <strong>$chr</strong> ".implode(', ',$users);
+			}
+		}
+		else {
+			$usersOut = array();
+			foreach ($users as $u)
+				$usersOut[] = $u->getProfileLink();
+			$usersStr = implode(', ',$usersOut);
+		}
 		echo <<<HTML
 <section>
 	<h2>$group $groupInitials</h2>
-	$usersStr
+	<div>$usersStr</div>
 </section>
 HTML;
 	}
