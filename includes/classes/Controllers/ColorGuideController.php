@@ -693,7 +693,6 @@ class ColorGuideController extends Controller {
 				/** @var $data array */
 				$data = array(
 					'ishuman' => $this->_personalGuide ? null : $this->_EQG,
-				    'cm_favme' => null,
 				);
 
 				$label = (new Input('label','string',array(
