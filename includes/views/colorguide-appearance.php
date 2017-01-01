@@ -65,7 +65,7 @@ use App\Tags;
 			<p class="aside"><?=count($CutieMarks)===1?'This is just an illustration':'These are just illustrations'?>, the body shape & colors are <strong>not</strong> guaranteed to reflect the actual design.</p>
 <?php
 	if (!$hideList)
-		Cutiemarks::getListForAppearancePage($CutieMarks); ?>
+		echo Cutiemarks::getListForAppearancePage($CutieMarks); ?>
 		</section>
 		<section class="color-list">
 			<h2 class="admin">Color groups</h2>
