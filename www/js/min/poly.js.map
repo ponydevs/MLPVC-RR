@@ -1,1 +1,1 @@
-{"version":3,"sources":["poly.js"],"names":["DocReady","push","$","_editor","polyEditor","image","destroy"],"mappings":"YACAA,UAASC,KAAK,WACbC,EAAAC,QAAAD,EAAA,gBAAAE,YAGCC,MAAO,0DAAP,WAJFH,EAMEC,QAAAG","file":"../src/poly.js","sourceRoot":"/js/src"}
+{"version":3,"sources":["poly.js"],"names":["DocReady","push","$","_editor","polyEditor","image","destroy"],"mappings":"YACAA,UAASC,KAAK,WACbC,EAAAC,QAAAD,EAAA,gBAAAE,YAGCC,MAAO,0DAAPA,WAJFH,EAMEC,QAAAG","file":"../src/poly.js","sourceRoot":"/js/src"}
