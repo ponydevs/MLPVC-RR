@@ -114,4 +114,5 @@ $router->map('POST', '/user/sessiondel/[i:id]',              'UserController#ses
 $router->map('POST', '/user/setgroup/[un:name]',             'UserController#setGroup');
 $router->map('POST', '/user/banish/[un:name]',               'UserController#banish');
 $router->map('POST', '/user/un-banish/[un:name]',            'UserController#unbanish');
-$router->map('POST', '/[user]/[un:name]/cg/slot-check',      'UserController#checkCGSlots');
+$router->map('POST', '/user/awaiting-approval/[un:name]',    'UserController#awaitingApproval');
+$router->map('POST', '/user/[un:name]/cg/slot-check',        'UserController#checkCGSlots');

@@ -57,72 +57,10 @@ if ($sameUser || Permission::sufficient('staff')){
 if (Permission::sufficient('member', $User->role)){
 	echo Users::getPersonalColorGuideHTML($User, $sameUser);
 
-	echo Users::getPendingReservationsHTML($User->id, $sameUser, $YouHave);
+	echo Users::getPendingReservationsHTML($User->id, $sameUser); ?>
 
-	$cols = "id, season, episode, deviation_id";
-	/** @var $AwaitingApproval \App\Models\Post[] */
-	$AwaitingApproval = array_merge(
-		$Database
-			->where('reserved_by', $User->id)
-			->where('deviation_id IS NOT NULL')
-			->where('"lock" IS NOT TRUE')
-			->get('reservations',null,$cols),
-		$Database
-			->where('reserved_by', $User->id)
-			->where('deviation_id IS NOT NULL')
-			->where('"lock" IS NOT TRUE')
-			->get('requests',null,$cols)
-	);
-	$AwaitCount = count($AwaitingApproval);
-	$them = $AwaitCount!==1?'them':'it'; ?>
-		<section class="awaiting-approval">
-			<h2><?=$sameUser? Users::PROFILE_SECTION_PRIVACY_LEVEL['public']:''?>Vectors waiting for approval</h2>
-<?  if ($sameUser){ ?>
-			<p>After you finish an image and submit it to the group gallery, an admin will check your vector and may ask you to fix some issues on your image, if any. After an image is accepted to the gallery, it can be marked as "approved", which gives it a green check mark, indicating that it's most likely free of any errors.</p>
-<?  } ?>
-			<p><?="$YouHave ".(!$AwaitCount?'no':"<strong>$AwaitCount</strong>")?> image<?=$AwaitCount!==1?'s':''?> waiting to be submited to and/or approved by the group<?=
-				!$AwaitCount
-					? '.'
-					: ", listed below.".(
-						$sameUser
-						? "Please submit $them to the group gallery as soon as possible to have $them spot-checked for any issues. As stated in the rules, the goal is to add finished images to the group gallery, making $them easier to find for everyone.".(
-							$AwaitCount>10
-							? " You seem to have a large number of images that have not been approved yet, please submit them to the group soon if you haven't already."
-							: ''
-						)
-						:''
-					).'</p><p>You can click the <strong class="color-green"><span class="typcn typcn-tick"></span> Check</strong> button below the '.CoreUtils::makePlural('image',$AwaitCount).' in case we forgot to click it ourselves after accepting it.'?></p>
-<?  if ($AwaitCount){ ?>
-			<ul id="awaiting-deviations"><?
-		foreach ($AwaitingApproval as $Post){
-			$deviation = DeviantArt::getCachedDeviation($Post->deviation_id);
-			$url = "http://{$deviation['provider']}/{$deviation['id']}";
-			unset($_);
-			$postLink = $Post->toLink($_);
-			$postAnchor = $Post->toAnchor(null, $_);
-			$checkBtn = Permission::sufficient('member') ? "<button class='green typcn typcn-tick check'>Check</button>" : '';
-
-			echo <<<HTML
-<li id="{$Post->getID()}">
-	<div class="image deviation">
-		<a href="$url" target="_blank">
-			<img src="{$deviation['preview']}" alt="{$deviation['title']}">
-		</a>
-	</div>
-	<span class="label"><a href="$url" target="_blank">{$deviation['title']}</a></span>
-	<em>Posted under $postAnchor</em>
-	<div>
-		<a href='$postLink' class='btn blue typcn typcn-arrow-forward'>View</a>
-		$checkBtn
-	</div>
-</li>
-HTML;
-
-		} ?></ul>
-<?  } ?>
-		</section>
-<?php
-} ?>
+<section class="awaiting-approval"></section>
+<? } ?>
 		<section class="bans">
 			<h2><?=$sameUser? Users::PROFILE_SECTION_PRIVACY_LEVEL['public']:''?>Banishment history</h2>
 			<ul><?php

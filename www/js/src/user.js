@@ -49,7 +49,7 @@ DocReady.push(function(){
 
 	let $signoutBtn = $('#signout'),
 		$sessionList = $('.session-list'),
-		name = $content.find('.title .username').text().trim(),
+		name = $content.children('.briefing').find('.username').text().trim(),
 		sameUser = name === $sidebar.children('.welcome').find('.un').text().trim();
 	$sessionList.find('button.remove').off('click').on('click', function(e){
 		e.preventDefault();
@@ -156,26 +156,34 @@ DocReady.push(function(){
 			}));
 		});
 	});
-	$('#awaiting-deviations').children('li').children(':last-child').children('button.check').on('click', function(e){
-		e.preventDefault();
 
-		let $li = $(this).parents('li'),
-			IDArray = $li.attr('id').split('-'),
-			thing = IDArray[0],
-			id = IDArray[1];
+	let $awaiting = $('.awaiting-approval');
+	if ($awaiting.length){
+		$.post(`/user/awaiting-approval/${name}`,$.mkAjaxHandler(function(){
+			if (!this.status) return $awaiting.html("<div class='notice fail'>This section failed to load</div>");
 
-		$.Dialog.wait('Deviation acceptance status','Checking');
+			$awaiting.hide().html(this.html).slideDown(300).on('click','button.check',function(e){
+				e.preventDefault();
 
-		$.post(`/post/lock/${thing}/${id}`,$.mkAjaxHandler(function(){
-			if (!this.status) return $.Dialog.fail(false, this.message);
+				let $li = $(this).parents('li'),
+					IDArray = $li.attr('id').split('-'),
+					thing = IDArray[0],
+					id = IDArray[1];
 
-			let message = this.message;
-			$.Dialog.wait(false, "Reloading page");
-			$.Navigation.reload(function(){
-				$.Dialog.success(false, message, true);
+				$.Dialog.wait('Deviation acceptance status','Checking');
+
+				$.post(`/post/lock/${thing}/${id}`,$.mkAjaxHandler(function(){
+					if (!this.status) return $.Dialog.fail(false, this.message);
+
+					let message = this.message;
+					$.Dialog.wait(false, "Reloading page");
+					$.Navigation.reload(function(){
+						$.Dialog.success(false, message, true);
+					});
+				}));
 			});
 		}));
-	});
+	}
 
 	function settingChanged(which,from,to_what){
 		switch (which){

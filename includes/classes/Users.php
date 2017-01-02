@@ -289,10 +289,15 @@ HTML;
 		'private' => "<span class='typcn typcn-lock-closed color-green' title='Visible to: you'></span>",
 	);
 
-	static function getPendingReservationsHTML($UserID, $sameUser, &$YouHave = null){
+	const YOU_HAVE = [
+		true => 'You have',
+		false => 'This user has',
+	];
+
+	static function getPendingReservationsHTML($UserID, $sameUser){
 		global $Database, $currentUser;
 
-		$YouHave = $sameUser?'You have':'This user has';
+		$YouHave = self::YOU_HAVE[$sameUser];
 		$PrivateSection = $sameUser? Users::PROFILE_SECTION_PRIVACY_LEVEL['staff']:'';
 
 		$cols = "id, season, episode, preview, label, posted, reserved_by";
@@ -427,5 +432,79 @@ HTML;
 				Input::ERROR_INVALID => 'Username (@value) is invalid',
 			)
 		)))->out();
+	}
+
+	static function getAwaitingApprovalHTML(User $User, $sameUser):string {
+		if (Permission::insufficient('member', $User->role))
+			HTTP::statusCode(404, AND_DIE);
+
+		global $Database;
+		$cols = "id, season, episode, deviation_id";
+		/** @var $AwaitingApproval \App\Models\Post[] */
+		$AwaitingApproval = array_merge(
+			$Database
+				->where('reserved_by', $User->id)
+				->where('deviation_id IS NOT NULL')
+				->where('"lock" IS NOT TRUE')
+				->get('reservations',null,$cols),
+			$Database
+				->where('reserved_by', $User->id)
+				->where('deviation_id IS NOT NULL')
+				->where('"lock" IS NOT TRUE')
+				->get('requests',null,$cols)
+		);
+		$AwaitCount = count($AwaitingApproval);
+		$them = $AwaitCount!==1?'them':'it';
+		$YouHave = self::YOU_HAVE[$sameUser];
+		$privacy = $sameUser? Users::PROFILE_SECTION_PRIVACY_LEVEL['public']:'';
+		$HTML = "<h2>{$privacy}Vectors waiting for approval</h2>";
+		if ($sameUser)
+			$HTML .= "<p>After you finish an image and submit it to the group gallery, an admin will check your vector and may ask you to fix some issues on your image, if any. After an image is accepted to the gallery, it can be marked as \"approved\", which gives it a green check mark, indicating that it's most likely free of any errors.</p>";
+		$youHaveAwaitCount = "$YouHave ".(!$AwaitCount?'no':"<strong>$AwaitCount</strong>");
+		$images = CoreUtils::makePlural('image', $AwaitCount);
+		$append = !$AwaitCount
+			? '.'
+			: ", listed below.".(
+				$sameUser
+				? "Please submit $them to the group gallery as soon as possible to have $them spot-checked for any issues. As stated in the rules, the goal is to add finished images to the group gallery, making $them easier to find for everyone.".(
+					$AwaitCount>10
+					? " You seem to have a large number of images that have not been approved yet, please submit them to the group soon if you haven't already."
+					: ''
+				)
+				:''
+			).'</p><p>You can click the <strong class="color-green"><span class="typcn typcn-tick"></span> Check</strong> button below the '.CoreUtils::makePlural('image',$AwaitCount).' in case we forgot to click it ourselves after accepting it.';
+		$HTML .= <<<HTML
+			<p>{$youHaveAwaitCount} $images waiting to be submited to and/or approved by the group$append</p>
+HTML;
+		if ($AwaitCount){
+			$HTML .= '<ul id="awaiting-deviations">';
+			foreach ($AwaitingApproval as $Post){
+				$deviation = DeviantArt::getCachedDeviation($Post->deviation_id);
+				$url = "http://{$deviation['provider']}/{$deviation['id']}";
+				unset($_);
+				$postLink = $Post->toLink($_);
+				$postAnchor = $Post->toAnchor(null, $_);
+				$checkBtn = Permission::sufficient('member') ? "<button class='green typcn typcn-tick check'>Check</button>" : '';
+
+				$HTML .= <<<HTML
+<li id="{$Post->getID()}">
+	<div class="image deviation">
+		<a href="$url" target="_blank">
+			<img src="{$deviation['preview']}" alt="{$deviation['title']}">
+		</a>
+	</div>
+	<span class="label"><a href="$url" target="_blank">{$deviation['title']}</a></span>
+	<em>Posted under $postAnchor</em>
+	<div>
+		<a href='$postLink' class='btn blue typcn typcn-arrow-forward'>View</a>
+		$checkBtn
+	</div>
+</li>
+HTML;
+			}
+			$HTML .= '</ul>';
+		}
+
+		return $HTML;
 	}
 }

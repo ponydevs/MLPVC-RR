@@ -99,6 +99,24 @@ class UserController extends Controller {
 		CoreUtils::loadPage($settings, $this);
 	}
 
+	function awaitingApproval($params){
+		global $signedIn, $currentUser;
+
+		if (!$signedIn)
+			Response::fail();
+		CSRFProtection::protect();
+
+		if (!isset($params['name']))
+			Response::fail('Missing username');
+
+		$targetUser = Users::get($params['name'], 'name');
+		if (empty($targetUser))
+			Response::fail('User not found');
+
+		$sameUser = $currentUser->id === $targetUser->id;
+		Response::done(['html' => Users::getAwaitingApprovalHTML($targetUser, $sameUser)]);
+	}
+
 	function suggestion(){
 		global $Database;
 

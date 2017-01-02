@@ -1,9 +1,9 @@
-/* globals DocReady,HandleNav */
+/* globals DocReady,HandleNav,$content */
 DocReady.push(function(){
 	'use strict';
 
 	if (typeof window.ROLES === 'undefined') return;
-	let $briefing = $('#content').children('.briefing'),
+	let $briefing = $content.children('.briefing'),
 		name = $briefing.find('.username').text().trim(),
 		$currRole = $briefing.find('.rolelabel'),
 		currRole = $currRole.text().trim(),

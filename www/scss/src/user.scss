@@ -158,6 +158,15 @@
 		.pending-reservations, .awaiting-approval {
 			ul { @extend %post-ul }
 		}
+		.awaiting-approval:empty:before {
+			content:"";
+			display: block;
+			width: 80px;
+			height: 80px;
+			margin: 0 auto;
+			background: url('/img/loading-ring.svg') no-repeat center;
+			background-size: contain;
+		}
 	}
 	#settings {
 		margin-top: 15px;
