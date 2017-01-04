@@ -1125,6 +1125,36 @@ ALTER SEQUENCE notifications_id_seq OWNED BY notifications.id;
 
 
 --
+-- Name: users; Type: TABLE; Schema: public; Owner: mlpvc-rr
+--
+
+CREATE TABLE users (
+    id uuid NOT NULL,
+    name citext NOT NULL,
+    role character varying(10) DEFAULT 'user'::character varying NOT NULL,
+    avatar_url character varying(255) NOT NULL,
+    signup_date timestamp with time zone DEFAULT now() NOT NULL
+);
+
+
+ALTER TABLE users OWNER TO "mlpvc-rr";
+
+--
+-- Name: personal_cg_appearances; Type: VIEW; Schema: public; Owner: seinopsys
+--
+
+CREATE VIEW personal_cg_appearances AS
+ SELECT u.name AS owner,
+    p.label,
+    ((('https://mlpvc-rr.ml/@'::text || (u.name)::text) || '/cg/v/'::text) || p.id) AS link
+   FROM (appearances p
+     LEFT JOIN users u ON ((p.owner = u.id)))
+  WHERE (p.owner IS NOT NULL);
+
+
+ALTER TABLE personal_cg_appearances OWNER TO seinopsys;
+
+--
 -- Name: requests; Type: TABLE; Schema: public; Owner: mlpvc-rr
 --
 
@@ -1303,21 +1333,6 @@ ALTER TABLE tags_tid_seq OWNER TO "mlpvc-rr";
 
 ALTER SEQUENCE tags_tid_seq OWNED BY tags.tid;
 
-
---
--- Name: users; Type: TABLE; Schema: public; Owner: mlpvc-rr
---
-
-CREATE TABLE users (
-    id uuid NOT NULL,
-    name citext NOT NULL,
-    role character varying(10) DEFAULT 'user'::character varying NOT NULL,
-    avatar_url character varying(255) NOT NULL,
-    signup_date timestamp with time zone DEFAULT now() NOT NULL
-);
-
-
-ALTER TABLE users OWNER TO "mlpvc-rr";
 
 --
 -- Name: unread_notifications; Type: VIEW; Schema: public; Owner: mlpvc-rr
@@ -2513,6 +2528,13 @@ GRANT ALL ON SEQUENCE log_entryid_seq TO postgres;
 
 
 --
+-- Name: users; Type: ACL; Schema: public; Owner: mlpvc-rr
+--
+
+GRANT ALL ON TABLE users TO postgres;
+
+
+--
 -- Name: requests; Type: ACL; Schema: public; Owner: mlpvc-rr
 --
 
@@ -2566,13 +2588,6 @@ GRANT ALL ON TABLE tagged TO postgres;
 --
 
 GRANT ALL ON TABLE tags TO postgres;
-
-
---
--- Name: users; Type: ACL; Schema: public; Owner: mlpvc-rr
---
-
-GRANT ALL ON TABLE users TO postgres;
 
 
 --
