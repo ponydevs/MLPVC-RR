@@ -102,8 +102,6 @@ class UserController extends Controller {
 	function awaitingApproval($params){
 		global $signedIn, $currentUser;
 
-		if (!$signedIn)
-			Response::fail();
 		CSRFProtection::protect();
 
 		if (!isset($params['name']))
@@ -113,7 +111,7 @@ class UserController extends Controller {
 		if (empty($targetUser))
 			Response::fail('User not found');
 
-		$sameUser = $currentUser->id === $targetUser->id;
+		$sameUser = $signedIn && $currentUser->id === $targetUser->id;
 		Response::done(['html' => Users::getAwaitingApprovalHTML($targetUser, $sameUser)]);
 	}
 

@@ -5,11 +5,8 @@
 			"order": 0,
 			"label": "Universal colors",
 			"notes": "These colors apply to most characters in the show. Use these unless a different color is specified.\n<strong>Eye Shines:</strong> Use for eye reflections, sclera and teeth.\n<strong>Eye Pupil:</strong> Use for eye pupil, eyelashes, eye outlines and on eyelids (for emotional turmoil at ~5-15% opacity)\n<strong>Tears:</strong> Always apply the opacity to the entire shape/group to prevent the fill's edges showing under the outline.",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2015-12-03 16:57:59.671+01",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"354": {
@@ -92,12 +89,15 @@
 			"order": 1,
 			"label": "Twilight Sparkle",
 			"notes": "Far legs use darker colors.",
-			"cm_favme": "d64bqyo",
 			"ishuman": false,
 			"added": "2015-08-24 21:04:32+02",
-			"cm_preview": "https://t13.deviantart.net/8twEAhylviCkDzLHlRSYTwHK--w=/fit-in/300x900/filters:no_upscale():origin()/pre01/05dd/th/pre/i/2016/057/8/c/twi_cm_01_by_yanoda-d9t73dw.png",
-			"cm_dir": false,
 			"private": false,
+			"CutieMark": [
+				{
+					"link": "http://fav.me/d64bqyo",
+					"facing": "right"
+				}
+			],
 			"ColorGroups": {
 				"17": {
 					"groupid": 17,
@@ -233,11 +233,8 @@
 			"order": 1,
 			"label": "Sunset Shimmer (EQG, RR)",
 			"notes": "Sunset's colors from Equestria Girls and Rainbow Rocks.",
-			"cm_favme": null,
 			"ishuman": true,
 			"added": "2015-12-05 19:17:59.882699+01",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"355": {
@@ -468,11 +465,8 @@
 			"order": 1,
 			"label": "Sunset Shimmer (FG, LoE)",
 			"notes": "Sunset Shimmer's appearance from Friendship Games, onward. Note the lighter hair colors.",
-			"cm_favme": null,
 			"ishuman": true,
 			"added": "2016-11-07 03:10:05.472298+01",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"1160": {
@@ -668,11 +662,8 @@
 			"order": 1,
 			"label": "Twilight Sparkle (Pony)",
 			"notes": "The version of Twilight that passed through the mirror.",
-			"cm_favme": null,
 			"ishuman": true,
 			"added": "2016-11-10 06:26:41.632611+01",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"1166": {
@@ -884,11 +875,8 @@
 			"order": 1,
 			"label": "Twilight Sparkle (Human)",
 			"notes": "Twilight Sparkle from the human world",
-			"cm_favme": null,
 			"ishuman": true,
 			"added": "2016-11-11 04:27:57.107617+01",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"1172": {
@@ -1202,11 +1190,8 @@
 			"order": 1,
 			"label": "Applejack",
 			"notes": "",
-			"cm_favme": null,
 			"ishuman": true,
 			"added": "2016-11-12 14:18:11.550993+01",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"1179": {
@@ -1422,11 +1407,8 @@
 			"order": 1,
 			"label": "Fluttershy",
 			"notes": "",
-			"cm_favme": null,
 			"ishuman": true,
 			"added": "2016-11-17 05:07:45.28054+01",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"1185": {
@@ -1636,12 +1618,15 @@
 			"order": 2,
 			"label": "Applejack",
 			"notes": "",
-			"cm_favme": "d64bqyo",
 			"ishuman": false,
 			"added": "2015-09-21 20:46:54+02",
-			"cm_preview": "https://t00.deviantart.net/8If9-kBD7ov_ynkptkglfKzMN8Q=/fit-in/300x900/filters:no_upscale():origin()/pre09/0137/th/pre/i/2016/057/3/1/aj_cm_01_by_yanoda-d9t73dl.png",
-			"cm_dir": true,
 			"private": false,
+			"CutieMark": [
+				{
+					"link": "http://fav.me/d64bqyo",
+					"facing": "left"
+				}
+			],
 			"ColorGroups": {
 				"54": {
 					"groupid": 54,
@@ -1773,12 +1758,15 @@
 			"order": 3,
 			"label": "Fluttershy",
 			"notes": "",
-			"cm_favme": "d64bqyo",
 			"ishuman": false,
 			"added": "2015-09-21 20:54:47+02",
-			"cm_preview": "https://t08.deviantart.net/1iZycwET2sN-PJlza0A2LAYrNoE=/fit-in/300x900/filters:no_upscale():origin()/pre00/871e/th/pre/i/2016/057/2/f/fs_cm_01_by_yanoda-d9t73fr.png",
-			"cm_dir": true,
 			"private": false,
+			"CutieMark": [
+				{
+					"link": "http://fav.me/d64bqyo",
+					"facing": "left"
+				}
+			],
 			"ColorGroups": {
 				"63": {
 					"groupid": 63,
@@ -1882,12 +1870,15 @@
 			"order": 4,
 			"label": "Pinkie Pie",
 			"notes": "Far legs use darker colors.",
-			"cm_favme": "d64bqyo",
 			"ishuman": false,
 			"added": "2015-09-21 20:52:26+02",
-			"cm_preview": "https://t09.deviantart.net/GnocLI7ZiKlshvMhY6HfvA6jzAg=/fit-in/300x900/filters:no_upscale():origin()/pre08/b7e1/th/pre/i/2016/057/8/c/pp_cm_01_by_yanoda-d9t73fg.png",
-			"cm_dir": false,
 			"private": false,
+			"CutieMark": [
+				{
+					"link": "http://fav.me/d64bqyo",
+					"facing": "right"
+				}
+			],
 			"ColorGroups": {
 				"59": {
 					"groupid": 59,
@@ -1998,12 +1989,15 @@
 			"order": 5,
 			"label": "Rainbow Dash",
 			"notes": "",
-			"cm_favme": "d64bqyo",
 			"ishuman": false,
 			"added": "2015-09-21 21:01:33+02",
-			"cm_preview": "https://t13.deviantart.net/m2KYnWjhbnJXtkCpkDZpCZ9BcZ8=/fit-in/300x900/filters:no_upscale():origin()/pre07/a75b/th/pre/i/2016/057/9/9/rd_cm_01_by_yanoda-d9t73ee.png",
-			"cm_dir": false,
 			"private": false,
+			"CutieMark": [
+				{
+					"link": "http://fav.me/d64bqyo",
+					"facing": "right"
+				}
+			],
 			"ColorGroups": {
 				"67": {
 					"groupid": 67,
@@ -2142,12 +2136,15 @@
 			"order": 6,
 			"label": "Rarity",
 			"notes": "",
-			"cm_favme": "d64bqyo",
 			"ishuman": false,
 			"added": "2015-09-21 21:18:24+02",
-			"cm_preview": "https://t01.deviantart.net/fZRfRW57fKrGw-eZ2--1lO8f4f0=/fit-in/300x900/filters:no_upscale():origin()/pre00/b9a8/th/pre/i/2016/057/4/5/rar_cm_01_by_yanoda-d9t73ex.png",
-			"cm_dir": false,
 			"private": false,
+			"CutieMark": [
+				{
+					"link": "http://fav.me/d64bqyo",
+					"facing": "right"
+				}
+			],
 			"ColorGroups": {
 				"71": {
 					"groupid": 71,
@@ -2277,11 +2274,8 @@
 			"order": 7,
 			"label": "Spike",
 			"notes": "",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2015-09-21 21:43:59+02",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"75": {
@@ -2417,12 +2411,15 @@
 			"order": 8,
 			"label": "Apple Bloom",
 			"notes": "Far legs use darker colors.\nCutie Mark colors subject to change on further episodes.",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2015-09-24 14:01:03+02",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
+			"CutieMark": [
+				{
+					"link": "http://fav.me/daskmec",
+					"facing": "right"
+				}
+			],
 			"ColorGroups": {
 				"122": {
 					"groupid": 122,
@@ -2577,12 +2574,15 @@
 			"order": 9,
 			"label": "Scootaloo",
 			"notes": "Far legs use darker colors.\nCutie Mark colors subject to change on further episodes.",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2015-09-24 14:06:23+02",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
+			"CutieMark": [
+				{
+					"link": "http://fav.me/dasn4gm",
+					"facing": "right"
+				}
+			],
 			"ColorGroups": {
 				"126": {
 					"groupid": 126,
@@ -2713,13 +2713,16 @@
 			"id": 25,
 			"order": 10,
 			"label": "Sweetie Belle",
-			"notes": "Cutie Mark colors subject to change on further episodes.",
-			"cm_favme": null,
+			"notes": "Cutie Mark colors subject to change on further episodes. Sweetie's cutie mark is different on either side - the note staff will always be going up and to the right, but the shield colors will be different. (The pink color on the shield is always towards her head). The version here is for the tail-head; use this version for the head-tail version: http://bit.ly/2iKXZcW",
 			"ishuman": false,
 			"added": "2015-09-24 14:09:41+02",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
+			"CutieMark": [
+				{
+					"link": "http://fav.me/dasmvhc",
+					"facing": "right"
+				}
+			],
 			"ColorGroups": {
 				"131": {
 					"groupid": 131,
@@ -2862,12 +2865,15 @@
 			"order": 11,
 			"label": "Babs Seed",
 			"notes": "",
-			"cm_favme": "d8rnkgc",
 			"ishuman": false,
 			"added": "2016-03-12 07:47:50.907346+01",
-			"cm_preview": null,
-			"cm_dir": true,
 			"private": false,
+			"CutieMark": [
+				{
+					"link": "http://fav.me/d8rnkgc",
+					"facing": "left"
+				}
+			],
 			"ColorGroups": {
 				"438": {
 					"groupid": 438,
@@ -3013,11 +3019,8 @@
 			"order": 12,
 			"label": "Cutie Mark Crusader Cape",
 			"notes": "Based on S3E4.",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-04-16 11:06:58.316031+02",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"606": {
@@ -3074,12 +3077,15 @@
 			"order": 13,
 			"label": "Princess Celestia",
 			"notes": "Make sure to use appropriate references when picking gradient angles and stops. They'll differ based on the hair shape and angle.",
-			"cm_favme": "dadnimc",
 			"ishuman": false,
 			"added": "2015-10-03 21:26:50+02",
-			"cm_preview": null,
-			"cm_dir": true,
 			"private": false,
+			"CutieMark": [
+				{
+					"link": "http://fav.me/dadnimc",
+					"facing": "left"
+				}
+			],
 			"ColorGroups": {
 				"204": {
 					"groupid": 204,
@@ -3323,11 +3329,8 @@
 			"order": 14,
 			"label": "Princess Luna",
 			"notes": "Luna's ears should have pointed tips.",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2015-09-29 20:55:38+02",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"175": {
@@ -3512,12 +3515,15 @@
 			"order": 15,
 			"label": "Shining Armor",
 			"notes": "Far legs and hooves use darker colors.\nSpecial eyeball color.",
-			"cm_favme": "d9svi8d",
 			"ishuman": false,
 			"added": "2015-10-23 16:27:32+02",
-			"cm_preview": "https://t02.deviantart.net/UqqzgkZv2R5C9zCyPh3v3UnyXLU=/fit-in/300x900/filters:no_upscale():origin()/pre04/0c2b/th/pre/f/2016/181/0/6/shining_armor_cm_preview_by_djdavid98-da87ggr.png",
-			"cm_dir": true,
 			"private": false,
+			"CutieMark": [
+				{
+					"link": "http://fav.me/d9svi8d",
+					"facing": "left"
+				}
+			],
 			"ColorGroups": {
 				"257": {
 					"groupid": 257,
@@ -3693,12 +3699,15 @@
 			"order": 16,
 			"label": "Princess Cadance",
 			"notes": "Far legs use darker colors.\nForelock has an outline with a unique color (Short Forelock Outline).",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-03-06 16:21:47.689961+01",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
+			"CutieMark": [
+				{
+					"link": "http://fav.me/dato77s",
+					"facing": "right"
+				}
+			],
 			"ColorGroups": {
 				"421": {
 					"groupid": 421,
@@ -3838,6 +3847,11 @@
 						},
 						{
 							"order": 4,
+							"label": "Gem Fill 5",
+							"hex": "#08BECC"
+						},
+						{
+							"order": 5,
 							"label": "Adornments",
 							"hex": "#E4C137"
 						}
@@ -3935,11 +3949,8 @@
 			"order": 17,
 			"label": "Princess Flurry Heart",
 			"notes": "",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-03-28 04:08:29.923679+02",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"488": {
@@ -4067,11 +4078,8 @@
 			"order": 18,
 			"label": "Dragon Lord Torch",
 			"notes": "Bottom stroke on wings should use the lower stroke gradient color. \nCrystals on helmet are numbered 1 starting from the right.",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-04-23 16:26:48.818417+02",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"659": {
@@ -4585,11 +4593,8 @@
 			"order": 19,
 			"label": "Princess Ember",
 			"notes": "For bottom stroke on wings use Outline Bottom Gradient (only apply gradient to wing \"spokes\").\nDiamond-like scale coloring is inconsistent between some shots but there are up to four different colors in use, darkening towards the end of the tail.",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-04-17 16:11:54.678374+02",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"628": {
@@ -4792,11 +4797,8 @@
 			"order": 20,
 			"label": "King Thorax",
 			"notes": "",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-10-08 18:29:56.051636+02",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": true,
 			"ColorGroups": {
 				"_hidden": true
@@ -4819,11 +4821,8 @@
 			"order": 21,
 			"label": "Discord",
 			"notes": "",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2015-11-14 04:28:38.262247+01",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"314": {
@@ -5115,12 +5114,15 @@
 			"order": 22,
 			"label": "Trixie Lulamoon",
 			"notes": "Eyes don't have iris highlights.",
-			"cm_favme": "d9bxest",
 			"ishuman": false,
 			"added": "2015-10-03 17:35:08+02",
-			"cm_preview": null,
-			"cm_dir": true,
 			"private": false,
+			"CutieMark": [
+				{
+					"link": "http://fav.me/d9bxest",
+					"facing": "left"
+				}
+			],
 			"ColorGroups": {
 				"191": {
 					"groupid": 191,
@@ -5338,12 +5340,15 @@
 			"order": 23,
 			"label": "Lightning Dust",
 			"notes": "Far legs use LIGHTER outlines and darker fills.\nEyes don't have iris highlights.",
-			"cm_favme": "d9fl30m",
 			"ishuman": false,
 			"added": "2015-11-05 00:10:40.321984+01",
-			"cm_preview": null,
-			"cm_dir": true,
 			"private": false,
+			"CutieMark": [
+				{
+					"link": "http://fav.me/d9fl30m",
+					"facing": "left"
+				}
+			],
 			"ColorGroups": {
 				"310": {
 					"groupid": 310,
@@ -5455,11 +5460,8 @@
 			"order": 24,
 			"label": "Suri Polomare",
 			"notes": "Far legs use darker colors.",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2015-09-30 07:35:59+02",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"182": {
@@ -5650,11 +5652,8 @@
 			"order": 25,
 			"label": "Lord Tirek (1st Form)",
 			"notes": "The nose ring uses the accessory highlight color as the fill.",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-03-20 12:16:44.670192+01",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"465": {
@@ -5836,11 +5835,8 @@
 			"order": 26,
 			"label": "Lord Tirek (2nd Form)",
 			"notes": "The nose ring uses the accessory highlight color as the fill.",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-03-20 13:26:53.906391+01",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"471": {
@@ -6025,11 +6021,8 @@
 			"order": 27,
 			"label": "Lord Tirek (3rd Form)",
 			"notes": "The nose ring uses the accessory highlight color as the fill.\nThe difference between the second and third forms are the body colors.",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-03-20 14:35:46.946257+01",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"475": {
@@ -6214,11 +6207,8 @@
 			"order": 28,
 			"label": "Lord Tirek (4th Form)",
 			"notes": "The nose ring uses the accessory highlight color as the fill.\nThe difference between the third and final forms are the body and shadow colors.",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-03-20 15:15:11.582008+01",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"477": {
@@ -6403,11 +6393,8 @@
 			"order": 29,
 			"label": "Garble",
 			"notes": "",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-04-21 07:40:41.421703+02",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"657": {
@@ -6531,11 +6518,8 @@
 			"order": 30,
 			"label": "King Sombra",
 			"notes": "Far legs use darker colors.\nSombra has a lot of gradients with repeating colors. You can simplify this by using the same gradients in different parts with some tweaking of the size and stop placement.\nThe magic \"bubbles\" are fading gradients that vary according to the animation frame which makes colour picking them nigh impossible, especially amid the compression.\nThe eye smoke is a fading gradient whose color differs in different scenes. This is just a best guess for it.\nThe armor sections are numbered going down the neck i.e. Section 1 is the uppermost one.",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-04-29 21:44:59.560676+02",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"697": {
@@ -7008,11 +6992,8 @@
 			"order": 31,
 			"label": "Doctor Caballeron",
 			"notes": "",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-06-19 19:18:51.379162+02",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"873": {
@@ -7204,11 +7185,8 @@
 			"order": 32,
 			"label": "Flim / Flam",
 			"notes": "",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-06-22 07:13:46.475022+02",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"887": {
@@ -7447,11 +7425,8 @@
 			"order": 33,
 			"label": "Queen Chrysalis",
 			"notes": "Her magic aura (if not blurred) has 7 paths, all based on the horn shape, growing or shrinking with a width equivalent to the body stroke. Most of these paths are based on the standard aura color; the path just outside the horn is 80%, the next 60%, 40%, and then 20%; the path just inside the horn is 60% and then 20%. One path may be colored with a more-yellow highlight aura color. Note that there is a throbbing effect based on these colors too.",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-10-08 18:29:05.702941+02",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"1101": {
@@ -7690,11 +7665,8 @@
 			"order": 34,
 			"label": "Twist",
 			"notes": "Far legs use darker colors.",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-03-07 03:53:42.051112+01",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"433": {
@@ -7834,11 +7806,8 @@
 			"order": 35,
 			"label": "Silver Spoon",
 			"notes": "Far legs use darker colors.\nNecklace highlights are not pure white.",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-01-25 03:40:31.20103+01",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"376": {
@@ -8020,11 +7989,8 @@
 			"order": 36,
 			"label": "Diamond Tiara",
 			"notes": "",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-03-06 06:03:33.719822+01",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"416": {
@@ -8153,12 +8119,15 @@
 			"order": 37,
 			"label": "Snips",
 			"notes": "Teeth use the body outline color as opposed to the universal teeth outline color.",
-			"cm_favme": "dapc722",
 			"ishuman": false,
 			"added": "2016-04-26 07:54:08.238033+02",
-			"cm_preview": null,
-			"cm_dir": false,
 			"private": false,
+			"CutieMark": [
+				{
+					"link": "http://fav.me/dapc722",
+					"facing": "right"
+				}
+			],
 			"ColorGroups": {
 				"687": {
 					"groupid": 687,
@@ -8250,12 +8219,15 @@
 			"order": 38,
 			"label": "Snails",
 			"notes": "Far legs use darker colors.",
-			"cm_favme": "dahejg0",
 			"ishuman": false,
 			"added": "2016-04-26 07:57:55.52504+02",
-			"cm_preview": null,
-			"cm_dir": true,
 			"private": false,
+			"CutieMark": [
+				{
+					"link": "http://fav.me/dahejg0",
+					"facing": "left"
+				}
+			],
 			"ColorGroups": {
 				"692": {
 					"groupid": 692,
@@ -8373,11 +8345,8 @@
 			"order": 39,
 			"label": "Pipsqueak",
 			"notes": "",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-01-25 01:43:42.292322+01",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"372": {
@@ -8458,11 +8427,8 @@
 			"order": 40,
 			"label": "Button Mash",
 			"notes": "From S5E18.\nFar legs use LIGHTER outlines and fills.",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2015-10-15 05:32:38+02",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"234": {
@@ -8611,11 +8577,8 @@
 			"order": 41,
 			"label": "Featherweight",
 			"notes": "Eyes don't have iris highlights.",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-03-13 15:23:00.43058+01",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"451": {
@@ -8717,11 +8680,8 @@
 			"order": 42,
 			"label": "Dinky Doo",
 			"notes": "From S5E17.\nMagic color is unknown.",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2015-10-06 05:39:35+02",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"225": {
@@ -8815,11 +8775,8 @@
 			"order": 43,
 			"label": "Ruby Pinch",
 			"notes": "From S5E17.\nMagic color is unknown.",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2015-10-06 05:48:24+02",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"229": {
@@ -8912,12 +8869,15 @@
 			"order": 44,
 			"label": "Lily Longsocks",
 			"notes": "From S5E18.",
-			"cm_favme": "d9ct35v",
 			"ishuman": false,
 			"added": "2015-10-16 07:37:56+02",
-			"cm_preview": null,
-			"cm_dir": false,
 			"private": false,
+			"CutieMark": [
+				{
+					"link": "http://fav.me/d9ct35v",
+					"facing": "right"
+				}
+			],
 			"ColorGroups": {
 				"240": {
 					"groupid": 240,
@@ -9055,11 +9015,8 @@
 			"order": 45,
 			"label": "Zipporwhill",
 			"notes": "Based on S4E14.\nFar legs use darker colors. \nOnly has one iris highlight.\nGlasses don't seem to have lenses.",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-03-28 12:19:48.604527+02",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"511": {
@@ -9195,12 +9152,15 @@
 			"order": 46,
 			"label": "Tender Taps",
 			"notes": "Far legs use darker colors.\nOn the Cutie Mark, the spotlight's base is layered on top of the spotlight.",
-			"cm_favme": "da1icah",
 			"ishuman": false,
 			"added": "2016-04-10 15:03:53.212811+02",
-			"cm_preview": null,
-			"cm_dir": true,
 			"private": false,
+			"CutieMark": [
+				{
+					"link": "http://fav.me/da1icah",
+					"facing": "left"
+				}
+			],
 			"ColorGroups": {
 				"542": {
 					"groupid": 542,
@@ -9333,11 +9293,8 @@
 			"order": 47,
 			"label": "Pumpkin Cake",
 			"notes": "",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-06-27 01:58:32.068598+02",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"926": {
@@ -9437,11 +9394,8 @@
 			"order": 48,
 			"label": "Pound Cake",
 			"notes": "",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-06-27 02:05:11.054245+02",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"932": {
@@ -9518,11 +9472,8 @@
 			"order": 49,
 			"label": "Crackle Pop",
 			"notes": "Eye gradient is reversed compared to most ponies - darker color at bottom",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-08-07 13:24:18.786575+02",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"980": {
@@ -9620,11 +9571,8 @@
 			"order": 50,
 			"label": "Petunia Paleo",
 			"notes": "",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-09-11 20:30:58.514576+02",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"1038": {
@@ -9761,12 +9709,15 @@
 			"order": 51,
 			"label": "Penny Curve",
 			"notes": "Vector Club Mascot",
-			"cm_favme": "d9e7zgj",
 			"ishuman": false,
 			"added": "2015-10-25 21:10:21+01",
-			"cm_preview": null,
-			"cm_dir": true,
 			"private": false,
+			"CutieMark": [
+				{
+					"link": "http://fav.me/d9e7zgj",
+					"facing": "left"
+				}
+			],
 			"ColorGroups": {
 				"262": {
 					"groupid": 262,
@@ -9898,12 +9849,15 @@
 			"order": 52,
 			"label": "Minuette",
 			"notes": "For convenience, the color of the glass on her cutie mark is solid rather than transparent, thus the sand should be above.",
-			"cm_favme": "da9hno4",
 			"ishuman": false,
 			"added": "2015-07-25 16:49:44+02",
-			"cm_preview": null,
-			"cm_dir": false,
 			"private": false,
+			"CutieMark": [
+				{
+					"link": "http://fav.me/da9hno4",
+					"facing": "right"
+				}
+			],
 			"ColorGroups": {
 				"81": {
 					"groupid": 81,
@@ -10043,12 +9997,15 @@
 			"order": 53,
 			"label": "Twinkleshine",
 			"notes": "",
-			"cm_favme": "d6t4847",
 			"ishuman": false,
 			"added": "2015-09-21 22:25:31+02",
-			"cm_preview": "https://t04.deviantart.net/L7nV-nZeMYTG1jrGAAFlZv37ZZo=/fit-in/300x900/filters:no_upscale():origin()/pre08/92fa/th/pre/f/2016/181/a/6/twinkleshine_cm_preview_by_djdavid98-da87h7c.png",
-			"cm_dir": true,
 			"private": false,
+			"CutieMark": [
+				{
+					"link": "http://fav.me/d6t4847",
+					"facing": "left"
+				}
+			],
 			"ColorGroups": {
 				"85": {
 					"groupid": 85,
@@ -10157,11 +10114,8 @@
 			"order": 54,
 			"label": "Lemon Hearts",
 			"notes": "",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2015-09-21 22:30:06+02",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"89": {
@@ -10292,12 +10246,15 @@
 			"order": 55,
 			"label": "Lyra Heartstrings",
 			"notes": "",
-			"cm_favme": "da97br3",
 			"ishuman": false,
 			"added": "2015-08-26 06:08:33+02",
-			"cm_preview": null,
-			"cm_dir": false,
 			"private": false,
+			"CutieMark": [
+				{
+					"link": "http://fav.me/da97br3",
+					"facing": "right"
+				}
+			],
 			"ColorGroups": {
 				"26": {
 					"groupid": 26,
@@ -10432,12 +10389,15 @@
 			"order": 56,
 			"label": "Vinyl Scratch / DJ Pon-3",
 			"notes": "Based on S5E9.",
-			"cm_favme": "d9zhh0l",
 			"ishuman": false,
 			"added": "2016-02-28 00:56:35.641502+01",
-			"cm_preview": null,
-			"cm_dir": true,
 			"private": false,
+			"CutieMark": [
+				{
+					"link": "http://fav.me/d9zhh0l",
+					"facing": "left"
+				}
+			],
 			"ColorGroups": {
 				"389": {
 					"groupid": 389,
@@ -10662,12 +10622,15 @@
 			"order": 57,
 			"label": "Raven",
 			"notes": "Glasses don't seem to have lenses.\nThe iris gradient has a sharper transition than usual.\nAppears as both Unicorn and Earth Pony in different episodes.",
-			"cm_favme": "dahve54",
 			"ishuman": false,
 			"added": "2016-05-03 12:12:33.570228+02",
-			"cm_preview": null,
-			"cm_dir": false,
 			"private": false,
+			"CutieMark": [
+				{
+					"link": "http://fav.me/dahve54",
+					"facing": "right"
+				}
+			],
 			"ColorGroups": {
 				"715": {
 					"groupid": 715,
@@ -10887,11 +10850,8 @@
 			"order": 58,
 			"label": "Twilight Velvet",
 			"notes": "Magic Aura color is unknown.",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-03-28 05:04:19.54759+02",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"496": {
@@ -10995,11 +10955,8 @@
 			"order": 59,
 			"label": "Night Light",
 			"notes": "",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-03-28 05:10:24.723284+02",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"500": {
@@ -11093,11 +11050,8 @@
 			"order": 60,
 			"label": "Fleur Dis Lee",
 			"notes": "",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-04-25 04:22:23.885302+02",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"675": {
@@ -11238,11 +11192,8 @@
 			"order": 61,
 			"label": "Fancy Pants",
 			"notes": "The monocle lens has a couple different fill approaches depending on angle and tightness of the shot. If closeup, both fills are transparent, but if far out, second fill is fully opaque.",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-04-26 07:01:23.677929+02",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"680": {
@@ -11506,11 +11457,8 @@
 			"order": 62,
 			"label": "Trenderhoof",
 			"notes": "Based on S4E13.\nFar legs use darker colors. \nOnly has one iris highlight.",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-03-28 11:13:12.736184+02",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"504": {
@@ -11714,12 +11662,15 @@
 			"order": 63,
 			"label": "Moon Dancer",
 			"notes": "Far legs use darker colors.",
-			"cm_favme": "d9vcpeu",
 			"ishuman": false,
 			"added": "2015-10-05 07:17:36+02",
-			"cm_preview": null,
-			"cm_dir": true,
 			"private": false,
+			"CutieMark": [
+				{
+					"link": "http://fav.me/d9vcpeu",
+					"facing": "left"
+				}
+			],
 			"ColorGroups": {
 				"217": {
 					"groupid": 217,
@@ -11945,12 +11896,15 @@
 			"order": 64,
 			"label": "Starlight Glimmer",
 			"notes": "Her cutie mark does not use pure white for the star fill.\nHer S6 mane style includes an additional shadow fill color",
-			"cm_favme": "d8old4s",
 			"ishuman": false,
 			"added": "2015-09-26 20:01:51+02",
-			"cm_preview": null,
-			"cm_dir": true,
 			"private": false,
+			"CutieMark": [
+				{
+					"link": "http://fav.me/d8old4s",
+					"facing": "left"
+				}
+			],
 			"ColorGroups": {
 				"164": {
 					"groupid": 164,
@@ -12123,11 +12077,8 @@
 			"order": 65,
 			"label": "Sugar Belle",
 			"notes": "Far legs use darker colors.",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2015-09-24 12:44:18+02",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"116": {
@@ -12325,11 +12276,8 @@
 			"order": 66,
 			"label": "Party Favor",
 			"notes": "",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2015-09-26 19:34:42+02",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"144": {
@@ -12476,11 +12424,8 @@
 			"order": 67,
 			"label": "Sassy Saddles",
 			"notes": "",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2015-09-17 06:22:20+02",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"47": {
@@ -12701,12 +12646,15 @@
 			"order": 68,
 			"label": "Sunburst",
 			"notes": "Far legs use darker colors. \nHas no iris highlights.\nGlasses don't seem to have lenses.",
-			"cm_favme": "d9iyv1r",
 			"ishuman": false,
 			"added": "2015-12-01 16:18:10.631048+01",
-			"cm_preview": null,
-			"cm_dir": true,
 			"private": false,
+			"CutieMark": [
+				{
+					"link": "http://fav.me/d9iyv1r",
+					"facing": "left"
+				}
+			],
 			"ColorGroups": {
 				"350": {
 					"groupid": 350,
@@ -12941,11 +12889,8 @@
 			"order": 69,
 			"label": "Fashion Plate",
 			"notes": "Far legs use darker colors.",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2015-09-17 06:02:26+02",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"40": {
@@ -13109,11 +13054,8 @@
 			"order": 70,
 			"label": "Whoa Nelly",
 			"notes": "Special eyeball color.\nCutie Mark head colors are different from normal ones.",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2015-09-17 05:43:22+02",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"35": {
@@ -13269,12 +13211,15 @@
 			"order": 71,
 			"label": "Sweet Biscuit",
 			"notes": "",
-			"cm_favme": "d9tl3qw",
 			"ishuman": false,
 			"added": "2016-03-02 19:41:10.393913+01",
-			"cm_preview": null,
-			"cm_dir": true,
 			"private": false,
+			"CutieMark": [
+				{
+					"link": "http://fav.me/d9tl3qw",
+					"facing": "left"
+				}
+			],
 			"ColorGroups": {
 				"407": {
 					"groupid": 407,
@@ -13386,12 +13331,15 @@
 			"order": 72,
 			"label": "Say Cheese",
 			"notes": "",
-			"cm_favme": "d9ts8lk",
 			"ishuman": false,
 			"added": "2016-03-02 19:45:22.316553+01",
-			"cm_preview": null,
-			"cm_dir": true,
 			"private": false,
+			"CutieMark": [
+				{
+					"link": "http://fav.me/d9ts8lk",
+					"facing": "left"
+				}
+			],
 			"ColorGroups": {
 				"411": {
 					"groupid": 411,
@@ -13508,12 +13456,15 @@
 			"order": 73,
 			"label": "Minty Bubblegum",
 			"notes": "Shadow fill is a guess based on Lyra's colors, as well as bottom eye gradient color.\nMagic aura color is unknown.\nOn the Cutie Mark, the gumballs are layered above the glass.",
-			"cm_favme": "d9yydnz",
 			"ishuman": false,
 			"added": "2016-04-14 04:09:51.571119+02",
-			"cm_preview": null,
-			"cm_dir": false,
 			"private": false,
+			"CutieMark": [
+				{
+					"link": "http://fav.me/d9yydnz",
+					"facing": "right"
+				}
+			],
 			"ColorGroups": {
 				"582": {
 					"groupid": 582,
@@ -13692,11 +13643,8 @@
 			"order": 74,
 			"label": "Birch Bucket",
 			"notes": "",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-05-31 04:50:46.621016+02",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"803": {
@@ -13863,12 +13811,15 @@
 			"order": 75,
 			"label": "Coriander Cumin",
 			"notes": "",
-			"cm_favme": "da62hka",
 			"ishuman": false,
 			"added": "2016-06-12 13:57:43.238691+02",
-			"cm_preview": null,
-			"cm_dir": true,
 			"private": false,
+			"CutieMark": [
+				{
+					"link": "http://fav.me/da62hka",
+					"facing": "left"
+				}
+			],
 			"ColorGroups": {
 				"848": {
 					"groupid": 848,
@@ -14039,12 +13990,15 @@
 			"order": 76,
 			"label": "Saffron Masala",
 			"notes": "",
-			"cm_favme": "da62xsm",
 			"ishuman": false,
 			"added": "2016-06-12 14:55:25.850879+02",
-			"cm_preview": null,
-			"cm_dir": true,
 			"private": false,
+			"CutieMark": [
+				{
+					"link": "http://fav.me/da62xsm",
+					"facing": "left"
+				}
+			],
 			"ColorGroups": {
 				"854": {
 					"groupid": 854,
@@ -14341,11 +14295,8 @@
 			"order": 77,
 			"label": "Zesty Gourmand",
 			"notes": "No cutie mark shown in episode",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-06-25 18:43:15.646658+02",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"895": {
@@ -14530,11 +14481,8 @@
 			"order": 78,
 			"label": "Gordon Ramsay",
 			"notes": "",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-06-25 19:03:31.299688+02",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"902": {
@@ -14677,12 +14625,15 @@
 			"order": 79,
 			"label": "Amethyst Star",
 			"notes": "Does not have a Coat Shadow Fill color.",
-			"cm_favme": "daaeeju",
 			"ishuman": false,
 			"added": "2016-07-11 20:35:52.781735+02",
-			"cm_preview": null,
-			"cm_dir": false,
 			"private": false,
+			"CutieMark": [
+				{
+					"link": "http://fav.me/daaeeju",
+					"facing": "right"
+				}
+			],
 			"ColorGroups": {
 				"952": {
 					"groupid": 952,
@@ -14834,12 +14785,15 @@
 			"order": 80,
 			"label": "Comet Trail",
 			"notes": "Based on S5E9\nMagic aura color is unknown.",
-			"cm_favme": "dabxlg3",
 			"ishuman": false,
 			"added": "2016-07-29 15:58:59.843318+02",
-			"cm_preview": null,
-			"cm_dir": true,
 			"private": false,
+			"CutieMark": [
+				{
+					"link": "http://fav.me/dabxlg3",
+					"facing": "left"
+				}
+			],
 			"ColorGroups": {
 				"965": {
 					"groupid": 965,
@@ -14937,12 +14891,15 @@
 			"order": 81,
 			"label": "Blue Note",
 			"notes": "",
-			"cm_favme": "dahn9dl",
 			"ishuman": false,
 			"added": "2016-09-12 03:56:55.806349+02",
-			"cm_preview": null,
-			"cm_dir": true,
 			"private": false,
+			"CutieMark": [
+				{
+					"link": "http://fav.me/dahn9dl",
+					"facing": "left"
+				}
+			],
 			"ColorGroups": {
 				"1056": {
 					"groupid": 1056,
@@ -15145,12 +15102,15 @@
 			"order": 82,
 			"label": "Spitfire",
 			"notes": "Far legs use darker colors.\nEyelid highlight is only visible while Spitfire is wearing her #70 and appears to have been completely removed in Season 6.",
-			"cm_favme": "d5nzngs",
 			"ishuman": false,
 			"added": "2015-11-04 23:58:36.915265+01",
-			"cm_preview": null,
-			"cm_dir": false,
 			"private": false,
+			"CutieMark": [
+				{
+					"link": "http://fav.me/d5nzngs",
+					"facing": "right"
+				}
+			],
 			"ColorGroups": {
 				"306": {
 					"groupid": 306,
@@ -15273,12 +15233,15 @@
 			"order": 83,
 			"label": "Soarin'",
 			"notes": "",
-			"cm_favme": "d72vipj",
 			"ishuman": false,
 			"added": "2016-04-24 16:40:44.192917+02",
-			"cm_preview": null,
-			"cm_dir": true,
 			"private": false,
+			"CutieMark": [
+				{
+					"link": "http://fav.me/d72vipj",
+					"facing": "left"
+				}
+			],
 			"ColorGroups": {
 				"670": {
 					"groupid": 670,
@@ -15378,12 +15341,15 @@
 			"order": 84,
 			"label": "Derpy Hooves / Muffins",
 			"notes": "Far legs use darker colors.\nHer top iris highlight is the same color as the bottom stop on the iris gradient.",
-			"cm_favme": "da27cuh",
 			"ishuman": false,
 			"added": "2015-08-26 05:53:49+02",
-			"cm_preview": null,
-			"cm_dir": true,
 			"private": false,
+			"CutieMark": [
+				{
+					"link": "http://fav.me/da27cuh",
+					"facing": "left"
+				}
+			],
 			"ColorGroups": {
 				"22": {
 					"groupid": 22,
@@ -15501,12 +15467,15 @@
 			"order": 85,
 			"label": "Fleetfoot",
 			"notes": "",
-			"cm_favme": "d97x7vd",
 			"ishuman": false,
 			"added": "2015-09-21 22:58:56+02",
-			"cm_preview": null,
-			"cm_dir": true,
 			"private": false,
+			"CutieMark": [
+				{
+					"link": "http://fav.me/d97x7vd",
+					"facing": "left"
+				}
+			],
 			"ColorGroups": {
 				"98": {
 					"groupid": 98,
@@ -15620,11 +15589,8 @@
 			"order": 86,
 			"label": "Misty Fly",
 			"notes": "Cutie mark is unknown",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-05-12 21:08:37.046182+02",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"740": {
@@ -15722,12 +15688,15 @@
 			"order": 87,
 			"label": "Cloud Chaser",
 			"notes": "Her eye outline is thicker and goes down further than usual.\nShe has a special eye gradient with four stops and no iris highlights.",
-			"cm_favme": "da7y90w",
 			"ishuman": false,
 			"added": "2016-04-12 11:08:07.863358+02",
-			"cm_preview": null,
-			"cm_dir": true,
 			"private": false,
+			"CutieMark": [
+				{
+					"link": "http://fav.me/da7y90w",
+					"facing": "left"
+				}
+			],
 			"ColorGroups": {
 				"551": {
 					"groupid": 551,
@@ -15851,11 +15820,8 @@
 			"order": 88,
 			"label": "Flitter",
 			"notes": "She has no iris highlights.",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-04-12 11:21:48.892267+02",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"564": {
@@ -15985,12 +15951,15 @@
 			"order": 89,
 			"label": "Thunderlane",
 			"notes": "",
-			"cm_favme": "da82bww",
 			"ishuman": false,
 			"added": "2016-04-12 11:13:23.928986+02",
-			"cm_preview": null,
-			"cm_dir": true,
 			"private": false,
+			"CutieMark": [
+				{
+					"link": "http://fav.me/da82bww",
+					"facing": "left"
+				}
+			],
 			"ColorGroups": {
 				"555": {
 					"groupid": 555,
@@ -16108,12 +16077,15 @@
 			"order": 90,
 			"label": "Blossomforth",
 			"notes": "Based on Hurricane Fluttershy",
-			"cm_favme": "d8geiw1",
 			"ishuman": false,
 			"added": "2016-02-11 19:02:12.030258+01",
-			"cm_preview": null,
-			"cm_dir": true,
 			"private": false,
+			"CutieMark": [
+				{
+					"link": "http://fav.me/d8geiw1",
+					"facing": "left"
+				}
+			],
 			"ColorGroups": {
 				"382": {
 					"groupid": 382,
@@ -16231,12 +16203,15 @@
 			"order": 91,
 			"label": "Twilight Sky",
 			"notes": "Based on S2E22 <em>(mane, iris)</em> &amp; S1E20 <em>(coat)</em>.\nFar legs use darker colors.\nDoes not have iris highlights.\nAppears as both Pegasus and Earth Pony in different episodes.",
-			"cm_favme": "d6t4847",
 			"ishuman": false,
 			"added": "2016-04-12 12:09:35.98652+02",
-			"cm_preview": "https://t03.deviantart.net/82ldiwgyGkLwwcanyuu6hVDEvQ8=/fit-in/300x900/filters:no_upscale():origin()/pre14/7a8f/th/pre/f/2016/181/6/a/twilight_sky_cm_preview_by_djdavid98-da87gwz.png",
-			"cm_dir": true,
 			"private": false,
+			"CutieMark": [
+				{
+					"link": "http://fav.me/d6t4847",
+					"facing": "left"
+				}
+			],
 			"ColorGroups": {
 				"569": {
 					"groupid": 569,
@@ -16330,12 +16305,15 @@
 			"order": 92,
 			"label": "Bulk Biceps",
 			"notes": "",
-			"cm_favme": "da7oq90",
 			"ishuman": false,
 			"added": "2016-04-08 05:33:44.359968+02",
-			"cm_preview": null,
-			"cm_dir": false,
 			"private": false,
+			"CutieMark": [
+				{
+					"link": "http://fav.me/da7oq90",
+					"facing": "right"
+				}
+			],
 			"ColorGroups": {
 				"536": {
 					"groupid": 536,
@@ -16511,12 +16489,15 @@
 			"order": 93,
 			"label": "Meadow Flower",
 			"notes": "",
-			"cm_favme": "d9ko8le",
 			"ishuman": false,
 			"added": "2015-12-19 18:55:09.130305+01",
-			"cm_preview": null,
-			"cm_dir": false,
 			"private": false,
+			"CutieMark": [
+				{
+					"link": "http://fav.me/d9ko8le",
+					"facing": "right"
+				}
+			],
 			"ColorGroups": {
 				"368": {
 					"groupid": 368,
@@ -16644,11 +16625,8 @@
 			"order": 94,
 			"label": "Thunderclap",
 			"notes": "",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-04-12 11:16:34.823028+02",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"559": {
@@ -16793,12 +16771,15 @@
 			"order": 95,
 			"label": "Night Glider",
 			"notes": "",
-			"cm_favme": "d8oovxh",
 			"ishuman": false,
 			"added": "2015-09-26 17:03:43+02",
-			"cm_preview": null,
-			"cm_dir": true,
 			"private": false,
+			"CutieMark": [
+				{
+					"link": "http://fav.me/d8oovxh",
+					"facing": "left"
+				}
+			],
 			"ColorGroups": {
 				"135": {
 					"groupid": 135,
@@ -16937,12 +16918,15 @@
 			"order": 96,
 			"label": "Stormy Flare",
 			"notes": "Only has one eye shine.\nFar legs use darker colors.",
-			"cm_favme": "d9acleq",
 			"ishuman": false,
 			"added": "2015-09-22 07:20:14+02",
-			"cm_preview": null,
-			"cm_dir": false,
 			"private": false,
+			"CutieMark": [
+				{
+					"link": "http://fav.me/d9acleq",
+					"facing": "right"
+				}
+			],
 			"ColorGroups": {
 				"102": {
 					"groupid": 102,
@@ -17110,12 +17094,15 @@
 			"order": 97,
 			"label": "Wind Rider",
 			"notes": "Teeth use a different color than normal.",
-			"cm_favme": "d9ao1qp",
 			"ishuman": false,
 			"added": "2015-09-24 06:35:32+02",
-			"cm_preview": null,
-			"cm_dir": true,
 			"private": false,
+			"CutieMark": [
+				{
+					"link": "http://fav.me/d9ao1qp",
+					"facing": "left"
+				}
+			],
 			"ColorGroups": {
 				"108": {
 					"groupid": 108,
@@ -17377,12 +17364,15 @@
 			"order": 98,
 			"label": "Sunshower Raindrops",
 			"notes": "",
-			"cm_favme": "da5vt5m",
 			"ishuman": false,
 			"added": "2016-05-18 12:56:57.19941+02",
-			"cm_preview": null,
-			"cm_dir": true,
 			"private": false,
+			"CutieMark": [
+				{
+					"link": "http://fav.me/da5vt5m",
+					"facing": "left"
+				}
+			],
 			"ColorGroups": {
 				"745": {
 					"groupid": 745,
@@ -17491,12 +17481,15 @@
 			"order": 99,
 			"label": "Zephyr Breeze",
 			"notes": "Has pointed ear tips",
-			"cm_favme": "da570dh",
 			"ishuman": false,
 			"added": "2016-06-05 14:47:27.675071+02",
-			"cm_preview": null,
-			"cm_dir": false,
 			"private": false,
+			"CutieMark": [
+				{
+					"link": "http://fav.me/da570dh",
+					"facing": "right"
+				}
+			],
 			"ColorGroups": {
 				"822": {
 					"groupid": 822,
@@ -17604,11 +17597,8 @@
 			"order": 100,
 			"label": "Mr. Shy",
 			"notes": "Far legs use darker colors.\nThe Cutie Mark Fill is NOT pure white.",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-06-05 16:48:12.164299+02",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"827": {
@@ -17760,11 +17750,8 @@
 			"order": 101,
 			"label": "Mrs. Shy",
 			"notes": "Glasses don't seem to have lenses.",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-06-05 17:04:47.155208+02",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"833": {
@@ -17966,11 +17953,8 @@
 			"order": 102,
 			"label": "Daring Do / A.K. Yearling",
 			"notes": "",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-06-19 18:32:33.735875+02",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"863": {
@@ -18330,12 +18314,15 @@
 			"order": 103,
 			"label": "Orange Swirl",
 			"notes": "",
-			"cm_favme": "da7y1xt",
 			"ishuman": false,
 			"added": "2016-06-27 15:15:27.804257+02",
-			"cm_preview": null,
-			"cm_dir": true,
 			"private": false,
+			"CutieMark": [
+				{
+					"link": "http://fav.me/da7y1xt",
+					"facing": "left"
+				}
+			],
 			"ColorGroups": {
 				"937": {
 					"groupid": 937,
@@ -18441,12 +18428,15 @@
 			"order": 104,
 			"label": "Sky Stinger",
 			"notes": "",
-			"cm_favme": "dam4jo3",
 			"ishuman": false,
 			"added": "2016-10-10 09:34:27.424468+02",
-			"cm_preview": null,
-			"cm_dir": false,
 			"private": false,
+			"CutieMark": [
+				{
+					"link": "http://fav.me/dam4jo3",
+					"facing": "right"
+				}
+			],
 			"ColorGroups": {
 				"1119": {
 					"groupid": 1119,
@@ -18562,12 +18552,15 @@
 			"order": 105,
 			"label": "Vapor Trail",
 			"notes": "Far legs use darker colors.\nPay close attention to her hair fills when vectoring her. The colors can be hard to distinguish.",
-			"cm_favme": "dalflvq",
 			"ishuman": false,
 			"added": "2016-10-10 09:35:07.574368+02",
-			"cm_preview": null,
-			"cm_dir": true,
 			"private": false,
+			"CutieMark": [
+				{
+					"link": "http://fav.me/dalflvq",
+					"facing": "left"
+				}
+			],
 			"ColorGroups": {
 				"1124": {
 					"groupid": 1124,
@@ -18710,11 +18703,8 @@
 			"order": 106,
 			"label": "Angel Wings",
 			"notes": "",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-10-10 09:38:59.135126+02",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"1129": {
@@ -18865,12 +18855,15 @@
 			"order": 107,
 			"label": "Sprinkle Medley",
 			"notes": "Based on S4E12",
-			"cm_favme": "dasiket",
 			"ishuman": false,
 			"added": "2016-12-22 00:47:46.859629+01",
-			"cm_preview": null,
-			"cm_dir": true,
 			"private": false,
+			"CutieMark": [
+				{
+					"link": "http://fav.me/dasiket",
+					"facing": "left"
+				}
+			],
 			"ColorGroups": {
 				"1214": {
 					"groupid": 1214,
@@ -18974,12 +18967,15 @@
 			"order": 108,
 			"label": "Big McIntosh",
 			"notes": "Far legs use darker colors.",
-			"cm_favme": "d9zhgk0",
 			"ishuman": false,
 			"added": "2015-10-04 21:11:42+02",
-			"cm_preview": null,
-			"cm_dir": true,
 			"private": false,
+			"CutieMark": [
+				{
+					"link": "http://fav.me/d9zhgk0",
+					"facing": "left"
+				}
+			],
 			"ColorGroups": {
 				"211": {
 					"groupid": 211,
@@ -19182,11 +19178,8 @@
 			"order": 109,
 			"label": "Granny Smith",
 			"notes": "Far legs use darker colors.",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2015-09-21 22:37:57+02",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"93": {
@@ -19347,12 +19340,15 @@
 			"order": 110,
 			"label": "Braeburn",
 			"notes": "Far legs use darker colors.",
-			"cm_favme": "d9zls6n",
 			"ishuman": false,
 			"added": "2016-04-19 16:48:33.321315+02",
-			"cm_preview": null,
-			"cm_dir": true,
 			"private": false,
+			"CutieMark": [
+				{
+					"link": "http://fav.me/d9zls6n",
+					"facing": "left"
+				}
+			],
 			"ColorGroups": {
 				"638": {
 					"groupid": 638,
@@ -19508,11 +19504,8 @@
 			"order": 111,
 			"label": "Cheerilee",
 			"notes": "Far legs use darker colors.",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-03-12 08:12:21.28273+01",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"442": {
@@ -19628,12 +19621,15 @@
 			"order": 112,
 			"label": "Dr. Hooves / Time Turner",
 			"notes": "For convenience, the color of the glass on his cutie mark is solid rather than transparent, thus the sand should be above.",
-			"cm_favme": "da9gbnl",
 			"ishuman": false,
 			"added": "2016-03-12 16:38:44.973718+01",
-			"cm_preview": null,
-			"cm_dir": false,
 			"private": false,
+			"CutieMark": [
+				{
+					"link": "http://fav.me/da9gbnl",
+					"facing": "right"
+				}
+			],
 			"ColorGroups": {
 				"446": {
 					"groupid": 446,
@@ -19777,12 +19773,15 @@
 			"order": 113,
 			"label": "Sweetie Drops / Bon Bon",
 			"notes": "",
-			"cm_favme": "d6xmkv9",
 			"ishuman": false,
 			"added": "2016-04-15 00:28:54.267643+02",
-			"cm_preview": null,
-			"cm_dir": true,
 			"private": false,
+			"CutieMark": [
+				{
+					"link": "http://fav.me/d6xmkv9",
+					"facing": "left"
+				}
+			],
 			"ColorGroups": {
 				"595": {
 					"groupid": 595,
@@ -19906,11 +19905,8 @@
 			"order": 114,
 			"label": "Octavia Melody",
 			"notes": "",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-04-14 23:29:54.839394+02",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"590": {
@@ -20042,11 +20038,8 @@
 			"order": 115,
 			"label": "Mayor Mare",
 			"notes": "",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-03-07 01:23:19.786499+01",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"426": {
@@ -20237,12 +20230,15 @@
 			"order": 116,
 			"label": "Miss Pommel",
 			"notes": "Far legs use darker colors.",
-			"cm_favme": "dafcpik",
 			"ishuman": false,
 			"added": "2015-09-26 23:18:32+02",
-			"cm_preview": null,
-			"cm_dir": false,
 			"private": false,
+			"CutieMark": [
+				{
+					"link": "http://fav.me/dafcpik",
+					"facing": "right"
+				}
+			],
 			"ColorGroups": {
 				"169": {
 					"groupid": 169,
@@ -20453,12 +20449,15 @@
 			"order": 117,
 			"label": "Cheese Sandwich",
 			"notes": "",
-			"cm_favme": "d74od89",
 			"ishuman": false,
 			"added": "2015-10-26 15:27:27+01",
-			"cm_preview": null,
-			"cm_dir": false,
 			"private": false,
+			"CutieMark": [
+				{
+					"link": "http://fav.me/d74od89",
+					"facing": "right"
+				}
+			],
 			"ColorGroups": {
 				"267": {
 					"groupid": 267,
@@ -20609,12 +20608,15 @@
 			"order": 118,
 			"label": "Maud Pie",
 			"notes": "Far legs use darker colors.",
-			"cm_favme": "d7apvq4",
 			"ishuman": false,
 			"added": "2015-10-31 23:30:14+01",
-			"cm_preview": null,
-			"cm_dir": true,
 			"private": false,
+			"CutieMark": [
+				{
+					"link": "http://fav.me/d7apvq4",
+					"facing": "left"
+				}
+			],
 			"ColorGroups": {
 				"289": {
 					"groupid": 289,
@@ -20824,12 +20826,15 @@
 			"order": 119,
 			"label": "Limestone Pie",
 			"notes": "",
-			"cm_favme": "d9eecqj",
 			"ishuman": false,
 			"added": "2015-10-31 23:30:14+01",
-			"cm_preview": null,
-			"cm_dir": true,
 			"private": false,
+			"CutieMark": [
+				{
+					"link": "http://fav.me/d9eecqj",
+					"facing": "left"
+				}
+			],
 			"ColorGroups": {
 				"285": {
 					"groupid": 285,
@@ -20947,12 +20952,15 @@
 			"order": 120,
 			"label": "Marble Pie",
 			"notes": "Two different hair outline colors.\nEye gradient should be adjusted (lower on eye) to make sure top highlight is easily distinguished from gradient.",
-			"cm_favme": "d9eeci7",
 			"ishuman": false,
 			"added": "2015-10-31 23:30:14+01",
-			"cm_preview": null,
-			"cm_dir": true,
 			"private": false,
+			"CutieMark": [
+				{
+					"link": "http://fav.me/d9eeci7",
+					"facing": "left"
+				}
+			],
 			"ColorGroups": {
 				"281": {
 					"groupid": 281,
@@ -21065,11 +21073,8 @@
 			"order": 121,
 			"label": "Igneous Rock",
 			"notes": "Far legs use darker colors.",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2015-10-31 23:30:14+01",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"293": {
@@ -21211,11 +21216,8 @@
 			"order": 122,
 			"label": "Cloudy Quartz",
 			"notes": "",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2015-10-31 23:43:48.197299+01",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"298": {
@@ -21404,12 +21406,15 @@
 			"order": 123,
 			"label": "Double Diamond",
 			"notes": "Far legs use darker colors.",
-			"cm_favme": "da8pwr4",
 			"ishuman": false,
 			"added": "2015-09-26 19:22:19+02",
-			"cm_preview": null,
-			"cm_dir": false,
 			"private": false,
+			"CutieMark": [
+				{
+					"link": "http://fav.me/da8pwr4",
+					"facing": "right"
+				}
+			],
 			"ColorGroups": {
 				"139": {
 					"groupid": 139,
@@ -21534,12 +21539,15 @@
 			"order": 124,
 			"label": "Tree Hugger",
 			"notes": "Darker highlight color matches the bottom iris gradient color.",
-			"cm_favme": "d8u7pz5",
 			"ishuman": false,
 			"added": "2015-11-14 05:07:04.439467+01",
-			"cm_preview": null,
-			"cm_dir": false,
 			"private": false,
+			"CutieMark": [
+				{
+					"link": "http://fav.me/d8u7pz5",
+					"facing": "right"
+				}
+			],
 			"ColorGroups": {
 				"323": {
 					"groupid": 323,
@@ -21684,12 +21692,15 @@
 			"order": 125,
 			"label": "Coloratura",
 			"notes": "",
-			"cm_favme": "d9hm2yd",
 			"ishuman": false,
 			"added": "2015-11-24 05:28:54.164681+01",
-			"cm_preview": null,
-			"cm_dir": true,
 			"private": false,
+			"CutieMark": [
+				{
+					"link": "http://fav.me/d9hm2yd",
+					"facing": "left"
+				}
+			],
 			"ColorGroups": {
 				"328": {
 					"groupid": 328,
@@ -21824,11 +21835,8 @@
 			"order": 126,
 			"label": "Rara (Countess Outfit)",
 			"notes": "",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2015-11-24 05:42:00.076945+01",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"332": {
@@ -22126,11 +22134,8 @@
 			"order": 127,
 			"label": "Svengallop",
 			"notes": "Has no shadow colors.\nFor the glasses, group together the Fill and the Highlight (100% Normal blending) and set the group to 50% opacity.",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2015-11-24 07:28:47.770494+01",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"340": {
@@ -22336,11 +22341,8 @@
 			"order": 128,
 			"label": "Street Rat",
 			"notes": "",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-04-04 00:47:18.446764+02",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"520": {
@@ -22588,11 +22590,8 @@
 			"order": 129,
 			"label": "Copper Top",
 			"notes": "",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-04-04 01:58:03.047005+02",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"529": {
@@ -22811,11 +22810,8 @@
 			"order": 130,
 			"label": "Hoofer Steps",
 			"notes": "",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-04-11 03:44:22.791443+02",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"546": {
@@ -23005,11 +23001,8 @@
 			"order": 131,
 			"label": "Toe Tapper",
 			"notes": "Far legs use darker colors.\nOnly has one eye shine and one iris highlight located in the top part of the iris.",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-04-14 00:34:43.797733+02",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"574": {
@@ -23111,11 +23104,8 @@
 			"order": 132,
 			"label": "Torch Song",
 			"notes": "Far legs use darker colors.",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-04-14 01:19:10.125737+02",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"578": {
@@ -23262,11 +23252,8 @@
 			"order": 133,
 			"label": "Ms. Peachbottom",
 			"notes": "Far legs use darker colors. On the luggage:\n<b>Side Flower 1</b> represents the two flowers perpendicular to the tear\n<b>Side Flower 2</b> is the top flower in line with the tear\n<b>Side Flower 3</b> is the bottom one in line with the tear.",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-05-10 14:59:53.741872+02",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"723": {
@@ -23624,11 +23611,8 @@
 			"order": 134,
 			"label": "Ms. Harshwhinny",
 			"notes": "Far legs use darker colors.\nShe has no iris highlights.",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-05-11 00:25:06.834527+02",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"731": {
@@ -23930,12 +23914,15 @@
 			"order": 135,
 			"label": "Plaid Stripes",
 			"notes": "Has pointed ear tips",
-			"cm_favme": "da3hzwf",
 			"ishuman": false,
 			"added": "2016-05-22 16:24:54.522725+02",
-			"cm_preview": null,
-			"cm_dir": true,
 			"private": false,
+			"CutieMark": [
+				{
+					"link": "http://fav.me/da3hzwf",
+					"facing": "left"
+				}
+			],
 			"ColorGroups": {
 				"762": {
 					"groupid": 762,
@@ -24069,6 +24056,36 @@
 							"order": 5,
 							"label": "Thin Stripe 3",
 							"hex": "#BEE95A"
+						},
+						{
+							"order": 6,
+							"label": "Shadow Outline",
+							"hex": "#157CB8"
+						},
+						{
+							"order": 7,
+							"label": "Shadow Broad Stripe 1",
+							"hex": "#5CB5E4"
+						},
+						{
+							"order": 8,
+							"label": "Shadow Broad Stripe 2",
+							"hex": "#83D0E2"
+						},
+						{
+							"order": 9,
+							"label": "Shadow Thin Stripe 1",
+							"hex": "#BFE1E9"
+						},
+						{
+							"order": 10,
+							"label": "Shadow Thin Stripe 2",
+							"hex": "#BB1886"
+						},
+						{
+							"order": 11,
+							"label": "Shadow Thin Stripe 3",
+							"hex": "#A2C64D"
 						}
 					]
 				},
@@ -24130,11 +24147,8 @@
 			"order": 136,
 			"label": "Mr. Stripes",
 			"notes": "",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-05-22 18:38:17.026312+02",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"770": {
@@ -24333,11 +24347,8 @@
 			"order": 137,
 			"label": "Buried Lede",
 			"notes": "",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-05-24 04:36:04.129849+02",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"777": {
@@ -24599,12 +24610,15 @@
 			"order": 138,
 			"label": "Aloe",
 			"notes": "",
-			"cm_favme": "da4gv05",
 			"ishuman": false,
 			"added": "2016-05-30 16:24:59.255874+02",
-			"cm_preview": null,
-			"cm_dir": false,
 			"private": false,
+			"CutieMark": [
+				{
+					"link": "http://fav.me/da4gv05",
+					"facing": "right"
+				}
+			],
 			"ColorGroups": {
 				"786": {
 					"groupid": 786,
@@ -24744,12 +24758,15 @@
 			"order": 139,
 			"label": "Lotus Blossom",
 			"notes": "",
-			"cm_favme": "da4gvw5",
 			"ishuman": false,
 			"added": "2016-05-30 17:35:38.963071+02",
-			"cm_preview": null,
-			"cm_dir": false,
 			"private": false,
+			"CutieMark": [
+				{
+					"link": "http://fav.me/da4gvw5",
+					"facing": "right"
+				}
+			],
 			"ColorGroups": {
 				"792": {
 					"groupid": 792,
@@ -24890,12 +24907,15 @@
 			"order": 140,
 			"label": "Caramel",
 			"notes": "",
-			"cm_favme": "da4h4c6",
 			"ishuman": false,
 			"added": "2016-05-30 18:09:32.614791+02",
-			"cm_preview": null,
-			"cm_dir": true,
 			"private": false,
+			"CutieMark": [
+				{
+					"link": "http://fav.me/da4h4c6",
+					"facing": "left"
+				}
+			],
 			"ColorGroups": {
 				"798": {
 					"groupid": 798,
@@ -24992,12 +25012,15 @@
 			"order": 141,
 			"label": "Spoiled Rich",
 			"notes": "",
-			"cm_favme": "d9ctnr7",
 			"ishuman": false,
 			"added": "2016-05-31 05:19:44.182679+02",
-			"cm_preview": null,
-			"cm_dir": false,
 			"private": false,
+			"CutieMark": [
+				{
+					"link": "http://fav.me/d9ctnr7",
+					"facing": "right"
+				}
+			],
 			"ColorGroups": {
 				"809": {
 					"groupid": 809,
@@ -25255,11 +25278,8 @@
 			"order": 142,
 			"label": "Filthy Rich",
 			"notes": "",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-05-31 05:48:54.084244+02",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"816": {
@@ -25429,11 +25449,8 @@
 			"order": 143,
 			"label": "Quarter Hearts",
 			"notes": "aka \"Link\" pony",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-06-05 23:38:41.547672+02",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"841": {
@@ -25542,11 +25559,8 @@
 			"order": 144,
 			"label": "S05E06 Unnamed Earth Mare #1",
 			"notes": "The frilly underpants have a lighter shadow outline color compared to the normal outline.\nName is based on the MLP Wiki name for this character.",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-06-19 21:49:37.82636+02",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"879": {
@@ -25775,11 +25789,8 @@
 			"order": 145,
 			"label": "Cup Cake",
 			"notes": "Ears are pointed.",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-06-27 01:15:41.511647+02",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"913": {
@@ -25944,11 +25955,8 @@
 			"order": 146,
 			"label": "Carrot Cake",
 			"notes": "",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-06-27 01:36:55.416825+02",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"919": {
@@ -26120,12 +26128,15 @@
 			"order": 147,
 			"label": "Lucky Clover",
 			"notes": "",
-			"cm_favme": "d68lo5f",
 			"ishuman": false,
 			"added": "2016-06-26 11:24:48.986357+02",
-			"cm_preview": null,
-			"cm_dir": true,
 			"private": false,
+			"CutieMark": [
+				{
+					"link": "http://fav.me/d68lo5f",
+					"facing": "left"
+				}
+			],
 			"ColorGroups": {
 				"908": {
 					"groupid": 908,
@@ -26221,12 +26232,15 @@
 			"order": 148,
 			"label": "Daisy",
 			"notes": "",
-			"cm_favme": "da8l1xp",
 			"ishuman": false,
 			"added": "2016-07-02 17:17:58.045788+02",
-			"cm_preview": null,
-			"cm_dir": false,
 			"private": false,
+			"CutieMark": [
+				{
+					"link": "http://fav.me/da8l1xp",
+					"facing": "right"
+				}
+			],
 			"ColorGroups": {
 				"942": {
 					"groupid": 942,
@@ -26335,12 +26349,15 @@
 			"order": 149,
 			"label": "Lily Valley",
 			"notes": "",
-			"cm_favme": "dab62ik",
 			"ishuman": false,
 			"added": "2016-07-03 20:39:33.753746+02",
-			"cm_preview": null,
-			"cm_dir": false,
 			"private": false,
+			"CutieMark": [
+				{
+					"link": "http://fav.me/dab62ik",
+					"facing": "right"
+				}
+			],
 			"ColorGroups": {
 				"947": {
 					"groupid": 947,
@@ -26459,12 +26476,15 @@
 			"order": 150,
 			"label": "Rose",
 			"notes": "Far legs use darker colors.",
-			"cm_favme": "d9zhguu",
 			"ishuman": false,
 			"added": "2016-03-25 23:41:37.557224+01",
-			"cm_preview": null,
-			"cm_dir": true,
 			"private": false,
+			"CutieMark": [
+				{
+					"link": "http://fav.me/d9zhguu",
+					"facing": "left"
+				}
+			],
 			"ColorGroups": {
 				"484": {
 					"groupid": 484,
@@ -26603,11 +26623,8 @@
 			"order": 151,
 			"label": "Cherry Berry",
 			"notes": "",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-07-26 14:36:33.944509+02",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"960": {
@@ -26724,12 +26741,15 @@
 			"order": 152,
 			"label": "Quibble Pants",
 			"notes": "Shirt colors are same as for #159",
-			"cm_favme": "dac5ypu",
 			"ishuman": false,
 			"added": "2016-07-31 14:25:29.382017+02",
-			"cm_preview": null,
-			"cm_dir": false,
 			"private": false,
+			"CutieMark": [
+				{
+					"link": "http://fav.me/dac5ypu",
+					"facing": "right"
+				}
+			],
 			"ColorGroups": {
 				"970": {
 					"groupid": 970,
@@ -26851,11 +26871,8 @@
 			"order": 153,
 			"label": "Crystal Hoof / Thorax",
 			"notes": "",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-08-21 15:14:51.553613+02",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"1002": {
@@ -26996,11 +27013,8 @@
 			"order": 154,
 			"label": "Mrs. Paleo",
 			"notes": "",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-09-12 02:57:42.944404+02",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"1043": {
@@ -27193,11 +27207,8 @@
 			"order": 155,
 			"label": "Mr. Paleo",
 			"notes": "",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-09-12 03:20:30.857887+02",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"1049": {
@@ -27417,12 +27428,15 @@
 			"order": 156,
 			"label": "Gladmane",
 			"notes": "Ears are pointed.\nOnly fill on cloak is transparent; sparkles are 100% opaque atop except for one color.",
-			"cm_favme": "daiiefe",
 			"ishuman": false,
 			"added": "2016-09-18 15:52:04.162692+02",
-			"cm_preview": null,
-			"cm_dir": true,
 			"private": false,
+			"CutieMark": [
+				{
+					"link": "http://fav.me/daiiefe",
+					"facing": "left"
+				}
+			],
 			"ColorGroups": {
 				"1064": {
 					"groupid": 1064,
@@ -27732,11 +27746,8 @@
 			"order": 157,
 			"label": "Sheriff Silverstar",
 			"notes": "Note that both \"Over the Barrel\" and S5E6 have overly-bright reference colors, but these are the only refs we have for Silverstar",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-11-24 16:16:30.243944+01",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"1191": {
@@ -27902,11 +27913,8 @@
 			"order": 158,
 			"label": "Troubleshoes Clyde",
 			"notes": "Colors from S5E6 are overly bright, but this is the only episode reference for Troubleshoes.",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-11-24 16:35:36.654407+01",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"1198": {
@@ -28071,11 +28079,8 @@
 			"order": 159,
 			"label": "Trapeze Star",
 			"notes": "Cutie mark is not fully visible in any shot",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-12-02 06:14:18.964948+01",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"1204": {
@@ -28300,11 +28305,8 @@
 			"order": 160,
 			"label": "Leadwing",
 			"notes": "Based on S5E10. Does not have shadow Coat colors. Cutie Mark colors may be inaccurate due to lack of suitable close-ups.\n<b>Lenses</b> are a gradient, starting at 80% opacity on the top and ending at 35% on the bottom.",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-12-27 13:14:39.655841+01",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"1219": {
@@ -28457,11 +28459,8 @@
 			"order": 161,
 			"label": "Angel Bunny",
 			"notes": "",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2015-12-18 07:39:19.313917+01",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"365": {
@@ -28576,11 +28575,8 @@
 			"order": 162,
 			"label": "Gummy",
 			"notes": "In 3/4 view, the top line on his far eye uses the \"Far Eye Top Line\" color instead of the normal gradient.",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-04-16 01:36:38.459294+02",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"600": {
@@ -28718,11 +28714,8 @@
 			"order": 163,
 			"label": "Winona",
 			"notes": "",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-04-17 00:21:19.215671+02",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"613": {
@@ -28856,11 +28849,8 @@
 			"order": 164,
 			"label": "Owlowiscious",
 			"notes": "",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-04-17 01:18:42.416125+02",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"617": {
@@ -28948,11 +28938,8 @@
 			"order": 165,
 			"label": "Tank",
 			"notes": "Far Legs use darker colors.\nIn some scenes, Tank uses an alternate set of colors for the tongue.\nFor the goggle lenses, group together the Fill and the Highlights (100% Normal blending) and set the group to 50% opacity.",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-04-17 16:21:24.581344+02",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"622": {
@@ -29220,11 +29207,8 @@
 			"order": 166,
 			"label": "Opalescence",
 			"notes": "",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-04-19 01:38:33.592805+02",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"633": {
@@ -29422,11 +29406,8 @@
 			"order": 167,
 			"label": "Zecora",
 			"notes": "Based on S4E14.",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-04-14 13:36:00.618867+02",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"586": {
@@ -29590,11 +29571,8 @@
 			"order": 168,
 			"label": "Orange Frog",
 			"notes": "",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-04-16 10:47:17.651278+02",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"604": {
@@ -29689,11 +29667,8 @@
 			"order": 169,
 			"label": "Pig (Peach Skin)",
 			"notes": "",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-04-20 15:38:25.304409+02",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"645": {
@@ -29814,11 +29789,8 @@
 			"order": 170,
 			"label": "Pig (Pink Skin)",
 			"notes": "Muddy Nostril color unknown",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-04-20 16:21:01.680143+02",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"648": {
@@ -29934,11 +29906,8 @@
 			"order": 171,
 			"label": "Pig (Dark Skin)",
 			"notes": "Muddy Nostril color unknown",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-04-20 17:29:20.143035+02",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"653": {
@@ -30054,11 +30023,8 @@
 			"order": 172,
 			"label": "Cranky Doodle Donkey",
 			"notes": "<strong>Toupee \\#1</strong> is up through half-way of \"A Friend in Deed\"\n<strong>Toupee \\#2</strong> is from \"A Friend in Deed\" through most of \"Slice of Life\"\n<strong>Toupee \\#3</strong> is from end of \"Slice of Life\" onward.",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-05-21 16:58:06.40502+02",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"750": {
@@ -30210,11 +30176,8 @@
 			"order": 173,
 			"label": "Matilda",
 			"notes": "",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-05-22 05:05:58.944541+02",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"755": {
@@ -30384,11 +30347,8 @@
 			"order": 174,
 			"label": "Cipactli",
 			"notes": "Eyes use radial gradient; inner color should be set about 50% position and then outer color at 100% position",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-08-01 00:33:04.898926+02",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"975": {
@@ -30603,11 +30563,8 @@
 			"order": 175,
 			"label": "Thorax / Changeling",
 			"notes": "",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-08-21 14:52:09.065305+02",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"995": {
@@ -30793,11 +30750,8 @@
 			"order": 176,
 			"label": "Gabby",
 			"notes": "Eyes have three glimmer ovals like pony fillies.",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-09-11 16:14:59.41918+02",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"1033": {
@@ -31050,11 +31004,8 @@
 			"order": 177,
 			"label": "Tri-horned Bunyip",
 			"notes": "",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-10-02 00:19:36.338675+02",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"1093": {
@@ -31277,11 +31228,8 @@
 			"order": 178,
 			"label": "Changeling",
 			"notes": "",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-10-08 18:30:41.325285+02",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": true,
 			"ColorGroups": {
 				"_hidden": true
@@ -31298,12 +31246,15 @@
 			"order": 179,
 			"label": "Wonderbolt Uniform",
 			"notes": "",
-			"cm_favme": "da7pd3q",
 			"ishuman": false,
 			"added": "2016-02-29 14:00:08.939447+01",
-			"cm_preview": "https://t01.deviantart.net/KcgLhJh7aDbu3oh1bwJfNG6UI48=/fit-in/300x900/filters:no_upscale():origin()/pre09/4530/th/pre/f/2016/177/0/2/export_by_djdavid98-da7pygz.png",
-			"cm_dir": true,
 			"private": false,
+			"CutieMark": [
+				{
+					"link": "http://fav.me/da7pd3q",
+					"facing": "left"
+				}
+			],
 			"ColorGroups": {
 				"398": {
 					"groupid": 398,
@@ -31430,11 +31381,8 @@
 			"order": 180,
 			"label": "Spitfire's Academy Outfit",
 			"notes": "",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-05-01 21:45:08.857979+02",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"711": {
@@ -31629,11 +31577,8 @@
 			"order": 181,
 			"label": "Wonderbolt Trainee Uniform",
 			"notes": "The uppermost highlight on the Lead pony and Wingpony badges uses a different color and opacity than the rest.\nThe lenses of the goggles are comprised of two objects that do not overlap. The fill uses 67% normal blending and the highlight uses 50% overlay blending as far as we can tell.",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-02-29 14:12:07.849625+01",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"402": {
@@ -31773,11 +31718,8 @@
 			"order": 182,
 			"label": "Pony Tones Outfit",
 			"notes": "",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-04-12 13:16:04.154183+02",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"573": {
@@ -31882,11 +31824,8 @@
 			"order": 183,
 			"label": "Rainbow Dash's Robe",
 			"notes": "",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-05-30 02:34:36.545123+02",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"784": {
@@ -32004,11 +31943,8 @@
 			"order": 184,
 			"label": "Cheerilee's Cheerleader Outfit",
 			"notes": "Worn by #79 in S6E14",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-08-07 13:34:13.886075+02",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"985": {
@@ -32160,11 +32096,8 @@
 			"order": 185,
 			"label": "Filly Scout Uniform",
 			"notes": "",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-08-14 15:01:51.282362+02",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"991": {
@@ -32338,11 +32271,8 @@
 			"order": 186,
 			"label": "Crystal Empire Guard Armor",
 			"notes": "",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-08-24 04:33:35.761717+02",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"1007": {
@@ -32415,11 +32345,8 @@
 			"order": 187,
 			"label": "Rainbow Rogue's Outfit",
 			"notes": "Use standard cutie mark vector for broach and belt decoration",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-08-28 16:03:12.541741+02",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"1008": {
@@ -32584,11 +32511,8 @@
 			"order": 188,
 			"label": "Bard Pie's Outfit",
 			"notes": "",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-08-28 18:46:45.218965+02",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"1011": {
@@ -32803,11 +32727,8 @@
 			"order": 189,
 			"label": "Garbunkle's Outfit",
 			"notes": "",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-08-28 20:10:18.724558+02",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"1016": {
@@ -32979,11 +32900,8 @@
 			"order": 190,
 			"label": "Sir McBiggen's Outfit",
 			"notes": "",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-08-28 21:13:58.627955+02",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"1020": {
@@ -33291,11 +33209,8 @@
 			"order": 191,
 			"label": "Captain Wuzz's Outfit",
 			"notes": "",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-08-29 00:32:59.43181+02",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"1026": {
@@ -33629,11 +33544,8 @@
 			"order": 192,
 			"label": "Ponyville Buckball Uniform",
 			"notes": "",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-09-04 18:51:17.047778+02",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"1032": {
@@ -33696,11 +33608,8 @@
 			"order": 193,
 			"label": "Impossibly Rich",
 			"notes": "",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-09-26 02:02:26.436446+02",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"1079": {
@@ -33962,11 +33871,8 @@
 			"order": 194,
 			"label": "Captain Jackbeard",
 			"notes": "",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-10-02 00:18:24.884029+02",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"1089": {
@@ -34098,11 +34004,8 @@
 			"order": 195,
 			"label": "Captain Rarity",
 			"notes": "",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-10-02 00:19:10.88123+02",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"1156": {
@@ -34403,11 +34306,8 @@
 			"order": 196,
 			"label": "Lifejacket",
 			"notes": "",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-10-04 03:47:22.688623+02",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"1100": {
@@ -34454,11 +34354,8 @@
 			"order": 197,
 			"label": "Derpy's Mail Uniform",
 			"notes": "",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-10-07 04:48:56.941256+02",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"1141": {
@@ -34636,11 +34533,8 @@
 			"order": 198,
 			"label": "80s Cheerilee Outfit",
 			"notes": "",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-10-08 18:26:49.928814+02",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"1116": {
@@ -34764,11 +34658,8 @@
 			"order": 199,
 			"label": "Changeling Armor",
 			"notes": "",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-10-08 18:31:05.604404+02",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": true,
 			"ColorGroups": {
 				"_hidden": true
@@ -34785,11 +34676,8 @@
 			"order": 200,
 			"label": "Rainbow Dash's Bomber Jacket",
 			"notes": "",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-10-15 17:38:59.596738+02",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"1136": {
@@ -34990,11 +34878,8 @@
 			"order": 201,
 			"label": "Princess Ember's Disguise",
 			"notes": "",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-10-23 20:10:17.020952+02",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": true,
 			"ColorGroups": {
 				"_hidden": true
@@ -35011,11 +34896,8 @@
 			"order": 202,
 			"label": "Rainbow Dash's Mechanics Outfit",
 			"notes": "",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-10-26 15:42:35.268784+02",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"1149": {
@@ -35132,11 +35014,8 @@
 			"order": 203,
 			"label": "Applejack's Mechanics Outfit",
 			"notes": "",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-10-26 16:00:09.021007+02",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"1151": {
@@ -35237,11 +35116,8 @@
 			"order": 204,
 			"label": "Rarity's Mechanics Outfit",
 			"notes": "",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-10-26 16:09:27.776513+02",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"1153": {
@@ -35343,11 +35219,8 @@
 			"order": 205,
 			"label": "Rarity's Titanic Outfit",
 			"notes": "",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-10-02 00:17:25.771874+02",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"1084": {
@@ -35610,11 +35483,8 @@
 			"order": 206,
 			"label": "Rarity's Detective Outfit",
 			"notes": "From \"Rarity Investigates\"",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-12-03 07:47:29.233869+01",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"1209": {
@@ -35726,11 +35596,8 @@
 			"order": 207,
 			"label": "Rarity's Seductive Dress",
 			"notes": "From S5E15\n\nThe outfit is not shown where there would be a shadow color for one of the forelegs.",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-12-03 15:49:27.463194+01",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"1211": {
@@ -35864,16 +35731,153 @@
 				6
 			]
 		},
+		"234": {
+			"id": 234,
+			"order": 208,
+			"label": "Snowfall Frost",
+			"notes": "Glasses do not have any lens",
+			"ishuman": false,
+			"added": "2017-01-03 05:31:36.388656+01",
+			"private": false,
+			"ColorGroups": {
+				"1239": {
+					"groupid": 1239,
+					"label": "Glasses",
+					"order": 1,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#B96841"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#E5AE84"
+						}
+					]
+				},
+				"1240": {
+					"groupid": 1240,
+					"label": "Shirt and Coat",
+					"order": 2,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Shirt Outline",
+							"hex": "#BFAED9"
+						},
+						{
+							"order": 1,
+							"label": "Shirt Fill",
+							"hex": "#FFFFFF"
+						},
+						{
+							"order": 2,
+							"label": "Cravat Band",
+							"hex": "#432260"
+						},
+						{
+							"order": 3,
+							"label": "Cravat Fill 1",
+							"hex": "#E9E3EF"
+						},
+						{
+							"order": 4,
+							"label": "Cravat Fill 2",
+							"hex": "#DED5EC"
+						},
+						{
+							"order": 5,
+							"label": "Cravat Shadow Fill",
+							"hex": "#CABAE0"
+						},
+						{
+							"order": 6,
+							"label": "Shirt Shadow Outline",
+							"hex": "#A493B6"
+						},
+						{
+							"order": 7,
+							"label": "Shirt Shadow Fill",
+							"hex": "#D8D8D8"
+						},
+						{
+							"order": 8,
+							"label": "Coat Outline",
+							"hex": "#773976"
+						},
+						{
+							"order": 9,
+							"label": "Coat Fill",
+							"hex": "#AB4696"
+						},
+						{
+							"order": 10,
+							"label": "Coat Collar Fill",
+							"hex": "#893C80"
+						},
+						{
+							"order": 11,
+							"label": "Coat Shadow Outline",
+							"hex": "#652E62"
+						},
+						{
+							"order": 12,
+							"label": "Coat Shadow Fill",
+							"hex": "#913C7F"
+						},
+						{
+							"order": 13,
+							"label": "Button Outline",
+							"hex": "#1E0F31"
+						},
+						{
+							"order": 14,
+							"label": "Button Fill",
+							"hex": "#432260"
+						}
+					]
+				},
+				"1241": {
+					"groupid": 1241,
+					"label": "Hat",
+					"order": 3,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#773976"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#AB4696"
+						},
+						{
+							"order": 2,
+							"label": "Band",
+							"hex": "#432260"
+						}
+					]
+				}
+			},
+			"TagIDs": [
+				54,
+				96,
+				161,
+				216,
+				452
+			],
+			"RelatedAppearances": []
+		},
 		"33": {
 			"id": 33,
-			"order": 208,
+			"order": 209,
 			"label": "Alicorn Amulet",
 			"notes": "",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2015-10-03 18:22:13+02",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"198": {
@@ -36059,14 +36063,11 @@
 		},
 		"86": {
 			"id": 86,
-			"order": 209,
+			"order": 210,
 			"label": "Scorpan's Medallion",
 			"notes": "",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-03-20 16:08:58.951886+01",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"482": {
@@ -36138,14 +36139,11 @@
 		},
 		"94": {
 			"id": 94,
-			"order": 210,
+			"order": 211,
 			"label": "Party Cannon",
 			"notes": "",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-04-04 00:24:37.699874+02",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"517": {
@@ -36270,14 +36268,11 @@
 		},
 		"115": {
 			"id": 115,
-			"order": 211,
+			"order": 212,
 			"label": "Fake Timberwolf",
 			"notes": "",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-04-16 12:17:28.841557+02",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"608": {
@@ -36480,14 +36475,11 @@
 		},
 		"154": {
 			"id": 154,
-			"order": 212,
+			"order": 213,
 			"label": "Twilight's Crown",
 			"notes": "From S4 onward",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-06-05 18:51:20.155674+02",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"840": {
@@ -36535,14 +36527,11 @@
 		},
 		"156": {
 			"id": 156,
-			"order": 213,
+			"order": 214,
 			"label": "Rainbow Dash's Bandaids (Newbie Dash)",
 			"notes": "Sampled from S6E7",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-06-10 20:41:21.723608+02",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"846": {
@@ -36605,14 +36594,11 @@
 		},
 		"182": {
 			"id": 182,
-			"order": 214,
+			"order": 215,
 			"label": "Rainbow Cookie Zombie Effects",
 			"notes": "Colors of this effect are not muted even if the pony's coat ends up muted. This effect is dimmed with any night filters.\nTo get the muted coat/mane/other colors for any character, take the RGB value of the color, average the R, G, B values, and adjust each RGB value 50% of the way to that average. For example, if RGB is 120, 60, 120, the average is 100. The R value of 120 would then move 50%*(120-100) or 10 (ending up at 110), the G value of 60 would move 50%*(100-60) or 20 (ending up at 80).",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-08-14 14:35:38.812358+02",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"990": {
@@ -36668,14 +36654,11 @@
 		},
 		"199": {
 			"id": 199,
-			"order": 215,
+			"order": 216,
 			"label": "Hypnotized Mane 6 Eyes",
 			"notes": "Eye colors for the Mane 6 (except Twilight) due to Starlight Glimmer's spell from S6E21.\nAll other body and mane/tail colors remain the same.",
-			"cm_favme": null,
 			"ishuman": false,
 			"added": "2016-09-24 21:16:19.303343+02",
-			"cm_preview": null,
-			"cm_dir": null,
 			"private": false,
 			"ColorGroups": {
 				"1074": {
@@ -37211,7 +37194,7 @@
 			"name": "starlight glimmer",
 			"title": null,
 			"type": "char",
-			"uses": 1,
+			"uses": 2,
 			"synonym_of": null
 		},
 		"55": {
@@ -37507,7 +37490,7 @@
 			"name": "outfit",
 			"title": "Alternative character outfits",
 			"type": null,
-			"uses": 31,
+			"uses": 32,
 			"synonym_of": null
 		},
 		"97": {
@@ -38451,7 +38434,7 @@
 			"name": "s06e08",
 			"title": null,
 			"type": "ep",
-			"uses": 3,
+			"uses": 8,
 			"synonym_of": null
 		},
 		"217": {
@@ -38459,7 +38442,7 @@
 			"name": "s06e09",
 			"title": null,
 			"type": "ep",
-			"uses": 3,
+			"uses": 4,
 			"synonym_of": null
 		},
 		"218": {
@@ -40161,6 +40144,14 @@
 		"451": {
 			"tid": 451,
 			"name": "leadwing",
+			"title": null,
+			"type": "char",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"452": {
+			"tid": 452,
+			"name": "snowfall frost",
 			"title": null,
 			"type": "char",
 			"uses": 1,

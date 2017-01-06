@@ -519,6 +519,7 @@ class ColorGuideController extends Controller {
 		CoreUtils::loadPage($settings, $this);
 	}
 
+	const CM_BASIC_COLS = 'cmid,favme,favme_rotation,preview_src,facing';
 	function export(){
 		global $Database;
 
@@ -542,6 +543,11 @@ class ColorGuideController extends Controller {
 			$AppendAppearance['notes'] = isset($AppendAppearance['notes'])
 				? CoreUtils::trim($AppendAppearance['notes'],true)
 				: '';
+
+			$Database->disableAutoClass();
+			$CM = Cutiemarks::get($p['id'], '\'http://fav.me/\'||favme as link, facing');
+			if (!empty($CM))
+				$AppendAppearance['CutieMark'] = $CM;
 
 			$AppendAppearance['ColorGroups'] = array();
 			if (empty($AppendAppearance['private'])){
