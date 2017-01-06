@@ -38,6 +38,5 @@
 			"density": 4
 		}
 	],
-	"display": "standalone",
-	"orientation": "portrait"
+	"display": "standalone"
 }
