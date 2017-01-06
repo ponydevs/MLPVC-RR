@@ -1140,7 +1140,7 @@ CREATE TABLE users (
 ALTER TABLE users OWNER TO "mlpvc-rr";
 
 --
--- Name: personal_cg_appearances; Type: VIEW; Schema: public; Owner: seinopsys
+-- Name: personal_cg_appearances; Type: VIEW; Schema: public; Owner: mlpvc-rr
 --
 
 CREATE VIEW personal_cg_appearances AS
@@ -1152,7 +1152,7 @@ CREATE VIEW personal_cg_appearances AS
   WHERE (p.owner IS NOT NULL);
 
 
-ALTER TABLE personal_cg_appearances OWNER TO seinopsys;
+ALTER TABLE personal_cg_appearances OWNER TO "mlpvc-rr";
 
 --
 -- Name: requests; Type: TABLE; Schema: public; Owner: mlpvc-rr
