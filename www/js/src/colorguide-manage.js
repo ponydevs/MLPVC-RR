@@ -1455,7 +1455,8 @@ DocReady.push(function(){
 								$.Dialog.wait(title, 'Downloading external image to the server');
 
 								$.post(`${PGRq}/cg/appearance/setsprite/${ponyID}${EQGRq}`,{image_url: image_url}, $.mkAjaxHandler(function(){
-									if (this.status) $uploadInput.trigger('set-image', [this.path]);
+									if (this.status)
+										$uploadInput.trigger('set-image', [this.path]);
 									else $.Dialog.fail(title,this.message);
 								}));
 							});

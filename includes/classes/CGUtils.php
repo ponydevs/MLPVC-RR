@@ -119,7 +119,7 @@ class CGUtils {
 		$max = [$maxwidth,$maxheight];
 
 		if (!isset($_FILES[$key]))
-			return self::grabImage($path,$allowedMimeTypes,$minwidth,$minheight);
+			return self::grabImage($path,$allowedMimeTypes,$min,$max);
 		$file = $_FILES[$key];
 		$tmp = $file['tmp_name'];
 		if (CoreUtils::length($tmp) < 1) Response::fail('File upload failed; Reason unknown');
@@ -142,10 +142,8 @@ class CGUtils {
 	 * @param array|null $allowedMimeTypes
 	 * @param array      $min
 	 * @param array      $max
-	 *
-	 * @return null
 	 */
-	static function grabImage($path, $allowedMimeTypes, $min, $max){
+	static function grabImage(string $path, $allowedMimeTypes, array $min, array $max){
 		try {
 			$Image = new ImageProvider(Posts::validateImageURL());
 		}
