@@ -10,13 +10,28 @@ class Cutiemarks {
 	/**
 	 * @param int    $AppearanceID
 	 * @param string $cols
+	 * @param bool   $procSym
 	 *
 	 * @return Cutiemark[]|null
 	 */
-	static function get($AppearanceID, $cols = '*'){
+	static function get(int $AppearanceID, string $cols = '*', bool $procSym = true){
 		global $Database;
 
-		return $Database->where('ponyid', $AppearanceID)->get('cutiemarks', null, $cols);
+		/** @var $CMs Cutiemark[] */
+		$CMs = $Database->where('ponyid', $AppearanceID)->get('cutiemarks', null, $cols);
+		if ($procSym)
+			self::processSymmetrical($CMs);
+		return $CMs;
+	}
+
+	/** @param Cutiemark[] $CMs */
+	static function processSymmetrical(&$CMs){
+		if (count($CMs) === 1 && is_null($CMs[0]->facing)){
+			$CMs[1] = new Cutiemark((array) $CMs[0]);
+			$CMs[0]->facing = 'left';
+			$CMs[1]->facing = 'right';
+			$CMs[1]->favme_rotation = $CMs[0]->favme_rotation*-1;
+		}
 	}
 
 	const VALID_FACING_VALUES = ['left','right'];

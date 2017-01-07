@@ -1002,9 +1002,10 @@ class ColorGuideController extends Controller {
 				Response::done($out);
 			break;
 			case "getcms":
-				$CMs = Cutiemarks::get($this->_appearance['id'],'cmid,favme,favme_rotation,preview_src,facing');
+				$CMs = Cutiemarks::get($this->_appearance['id'],'cmid,favme,favme_rotation,preview_src,facing',false);
+				$ProcessedCMs = Cutiemarks::get($this->_appearance['id'],'ponyid,favme,preview_src,facing');
 
-				Response::done(['cms' => $CMs]);
+				Response::done(['cms' => $CMs, 'preview' => Cutiemarks::getListForAppearancePage($ProcessedCMs, NOWRAP)]);
 			break;
 			case "getcmpreview":
 				// TODO Handle the rest of the facing options
@@ -1013,8 +1014,9 @@ class ColorGuideController extends Controller {
 				];
 				Cutiemarks::postProcess($data, 0);
 
-				$cm = new Cutiemark($data);
-				Response::done(['html' => Cutiemarks::getListItemForAppearancePage($cm, NOWRAP)]);
+				$CMs = [new Cutiemark($data)];
+				Cutiemarks::processSymmetrical($CMs);
+				Response::done(['html' => Cutiemarks::getListForAppearancePage($CMs, NOWRAP)]);
 			break;
 			case "setcms":
 				// TODO Handle the rest of the facing options

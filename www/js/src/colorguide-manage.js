@@ -85,7 +85,7 @@ DocReady.push(function(){
 						}).val(el.favme?`http://fav.me/${el.favme}`:undefined)
 					),
 					$facingSelector,
-					`<div class="notice info">If the CM is symmetrical the left facing image will be shown, but with a "Symmetrical" label.</div>`,
+					`<div class="notice info">If the CM is symmetrical then both the left-facing and right-facing display will show the same image.</div>`,
 					$.mk('div').attr('class','label').append(
 						"<span>Preview rotation (<span class='rotation-display'></span>°)</span>",
 						$.mk('input').attr({
@@ -323,11 +323,15 @@ DocReady.push(function(){
 										if (!this.status) return $.Dialog.fail(false, this.message);
 
 										let data = this,
-											$CMPreviewImage = $.mk('img'),
-											$CMPreview = $.mk('div').attr('class','dialog-preview'),
+											$CMPreviewImages,
+											$CMPreview = $.mk('ul').attr('class','dialog-preview'),
 											$CMList = $.mk('ul').attr('class','cm-list'),
 											updateRQ = false,
 											updateText = 'Update preview',
+											previewUpdated = () => {
+												$CMPreviewImages = $CMPreview.find('.img');
+												$CMList.find('.rotation-range').trigger('change');
+											},
 											$UpdatePreviewButton = $.mk('button').attr('class','darkblue typcn typcn-arrow-sync').text(updateText).on('click',function(e){
 												e.preventDefault();
 
@@ -349,8 +353,7 @@ DocReady.push(function(){
 
 													$.Dialog.clearNotice(/preview/);
 													$CMPreview.html(this.html);
-													$CMPreviewImage = $CMPreview.find('.img');
-													$CMList.find('.rotation-range').trigger('change');
+													previewUpdated();
 												}));
 											}),
 											$DeleteButton = $.mk('button').attr('class','red typcn typcn-trash').text('Delete Cutie Marks').on('click',function(e){
@@ -385,7 +388,11 @@ DocReady.push(function(){
 												let $this = $(this),
 													val = $this.val();
 												$this.prev().children('.rotation-display').text(val);
-												$CMPreviewImage.css('transform',`rotateZ(${val}deg)`);
+												if (typeof $CMPreviewImages !== 'undefined'){
+													$CMPreviewImages.eq(0).css('transform',`rotateZ(${val}deg)`);
+													if ($CMPreviewImages.eq(1).length)
+														$CMPreviewImages.eq(1).css('transform',`rotateZ(${-val}deg)`);
+												}
 											}).on('change click keydown','input[name="facing[]"]',function(){
 												let $this = $(this),
 													$rangeSelector = $this.parents('form').find('.rotation-range'),
@@ -405,6 +412,8 @@ DocReady.push(function(){
 													mkCMDataLi(el)
 												);
 											});
+											$CMPreview.html(data.preview);
+											previewUpdated();
 											$CMDataEditorForm.append($DeleteButton);
 										}
 										else {
@@ -413,8 +422,6 @@ DocReady.push(function(){
 										$CMList.find('.rotation-range').trigger('change');
 
 										$.Dialog.request(false,$CMDataEditorForm,'Save',function($form){
-											if (!$form[0].checkValidity || $form[0].checkValidity())
-												$UpdatePreviewButton.triggerHandler('click');
 											$form.on('submit',function(e){
 												e.preventDefault();
 
