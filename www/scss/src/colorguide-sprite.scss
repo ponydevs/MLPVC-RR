@@ -45,7 +45,7 @@
 			display: block;
 			margin: calc(300px - 40px) auto;
 
-			@include loading-indicator(80px, 'gears');
+			@include loading-indicator(125px, 'gears');
 		}
 
 		svg {
