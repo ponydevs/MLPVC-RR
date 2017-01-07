@@ -102,7 +102,10 @@
 		left: 0;
 	}
 
-	header { background: $HeaderFooterBG }
+	header {
+		background: $HeaderFooterBG;
+		top: 0 !important;
+	}
 
 	#main {
 		position: relative;
