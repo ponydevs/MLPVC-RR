@@ -41,7 +41,7 @@ class AuthController extends Controller {
 				$errdesc = $_GET['error_description'];
 
 			if ($err === 'user_banned')
-				$errdesc .= "\n\nIf you'd like to appeal your ban, please <a href='http://mlp-vectorclub.deviantart.com/notes/'>send the group a note</a>.";
+				$errdesc .= "\n\nIf you’d like to appeal your ban, please <a href='http://mlp-vectorclub.deviantart.com/notes/'>send the group a note</a>.";
 			Episodes::loadPage();
 		}
 
@@ -68,7 +68,7 @@ class AuthController extends Controller {
 				DeviantArt::request('https://www.deviantart.com/oauth2/revoke', null, array('token' => $currentUser->Session['access']));
 			}
 			catch (CURLRequestException $e){
-				Response::fail("Could not revoke the site's access: {$e->getMessage()} (HTTP {$e->getCode()})");
+				Response::fail("Could not revoke the site’s access: {$e->getMessage()} (HTTP {$e->getCode()})");
 			}
 		}
 
@@ -82,7 +82,7 @@ class AuthController extends Controller {
 				/** @var $TargetUser User */
 				$TargetUser = $Database->where('name', $username)->getOne('users','id,name');
 				if (empty($TargetUser))
-					Response::fail("Target user doesn't exist");
+					Response::fail("Target user doesn’t exist");
 				if ($TargetUser->id !== $currentUser->id)
 					$val = $TargetUser->id;
 				else unset($TargetUser);

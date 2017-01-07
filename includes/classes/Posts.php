@@ -89,12 +89,13 @@ class Posts {
 		if (isset($label)){
 			if (!$editing || $label !== $Post->label){
 				CoreUtils::checkStringValidity($label,'The description',INVERSE_PRINTABLE_ASCII_PATTERN);
+				$label = preg_replace(new RegExp("''"),'"',CoreUtils::escapeHTML($label));
 				CoreUtils::set($array, 'label', $label);
 			}
 		}
 		else if (!$editing && $thing !== 'reservation')
 			Response::fail('Description cannot be empty');
-		else CoreUtils::set($array,'label',null);
+		else CoreUtils::set($array, 'label', null);
 
 		if ($thing === 'request'){
 			$type = (new Input('type',function($value){
@@ -478,7 +479,7 @@ HTML;
 		}
 	}
 
-	const CONTESTABLE = "<strong class='color-blue contest-note' title=\"Because this request was reserved more than 3 weeks ago it's now available for other members to reserve\"><span class='typcn typcn-info-large'></span> Can be contested</strong>";
+	const CONTESTABLE = "<strong class='color-blue contest-note' title=\"Because this request was reserved more than 3 weeks ago it’s now available for other members to reserve\"><span class='typcn typcn-info-large'></span> Can be contested</strong>";
 
 	/**
 	 * List ltem generator function for request & reservation generators
@@ -542,26 +543,25 @@ HTML;
 						$Image .= "<span class='typcn typcn-tick' title='This submission has been accepted into the group gallery'></span>";
 					$Image .= "</a></div>";
 				}
-				if ($isStaff){
-					$finished_at = !empty($Post->finished_at) ? "<em class='finish-date'>Finished <strong>".Time::tag($Post->finished_at)."</strong></em>" : '';
-					$locked_at = '';
-					if ($approved){
-						global $Database;
+				$finished_at = !empty($Post->finished_at) ? "<em class='finish-date'>Finished <strong>".Time::tag($Post->finished_at)."</strong></em>" : '';
+				$locked_at = '';
+				if ($approved){
+					global $Database;
 
-						$LogEntry = $Database->rawQuerySingle(
-							"SELECT l.timestamp
-							FROM log__post_lock pl
-							LEFT JOIN log l ON l.reftype = 'post_lock' && l.refid = pl.entryid
-							WHERE type = ? && id = ?
-							ORDER BY pl.entryid ASC
-							LIMIT 1", array($type, $Post->id)
-						);
-						$locked_at = $approved ? "<em class='approve-date'>Approved <strong>".Time::tag(strtotime($LogEntry['timestamp']))."</strong></em>" : '';
-					}
-					$Image .= $post_label.$posted_at.$reserved_at.$finished_at.$locked_at;
-					if (!empty($Post->fullsize))
-						$Image .= "<a href='{$Post->fullsize}' class='original color-green' target='_blank'><span class='typcn typcn-link'></span> Original image</a>";
+					$LogEntry = $Database->rawQuerySingle(
+						"SELECT l.timestamp".($isStaff?', l.initiator':'')."
+						FROM log__post_lock pl
+						LEFT JOIN log l ON l.reftype = 'post_lock' && l.refid = pl.entryid
+						WHERE type = ? && id = ?
+						ORDER BY pl.entryid ASC
+						LIMIT 1", array($type, $Post->id)
+					);
+					$approvedby = $isStaff && isset($LogEntry['initiator']) ? 'by '.(Users::get($LogEntry['initiator'])->getProfileLink()) : '';
+					$locked_at = $approved ? "<em class='approve-date'>Approved <strong>".Time::tag(strtotime($LogEntry['timestamp']))."</strong>$approvedby</em>" : '';
 				}
+				$Image .= $post_label.$posted_at.$reserved_at.$finished_at.$locked_at;
+				if (!empty($Post->fullsize))
+					$Image .= "<a href='{$Post->fullsize}' class='original color-green' target='_blank'><span class='typcn typcn-link'></span> Original image</a>";
 			}
 			else $Image .= $post_label.$posted_at.$reserved_at;
 		}

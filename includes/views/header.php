@@ -25,7 +25,7 @@ switch ($do ?? null){
 			if ($sprite)
 				$ThumbImage = $sprite;
 
-			$Description = 'Show accurate colors for "'.$Appearance['label'].'" from the MLP-VectorClub\'s Official Color Guide';
+			$Description = 'Show accurate colors for "'.Appearances::processLabel($Appearance['label']).'" from the MLP-VectorClub’s Official Color Guide';
 		}
 	break;
 	case "u":
@@ -35,12 +35,12 @@ switch ($do ?? null){
 				$ThumbImage = $sprite;
 			else $ThumbImage = $Owner->avatar_url;
 
-			$Description = 'Colors for "'.$Appearance['label'].'" from '.CoreUtils::posess($Owner->name).' Personal Color Guide on the the MLP-VectorClub\'s website';
+			$Description = 'Colors for "'.Appearances::processLabel($Appearance['label']).'" from '.CoreUtils::posess($Owner->name).' Personal Color Guide on the the MLP-VectorClub’s website';
 		}
 		else if (!empty($User)){
 			$ThumbImage = $User->avatar_url;
 
-			$Description = CoreUtils::posess($User->name).' profile on the MLP-VectorClub\'s website';
+			$Description = CoreUtils::posess($User->name).' profile on the MLP-VectorClub’s website';
 		}
 	break;
 	case "s":
@@ -60,7 +60,7 @@ switch ($do ?? null){
 				$_user = Users::get($LinkedPost->reserved_by,'id','name');
 				$Description = 'A reservation'.(!empty($_user->name) ? " by {$_user->name}" : '');
 			}
-			$Description .= ' on the MLP-VectorClub\'s website';
+			$Description .= ' on the MLP-VectorClub’s website';
 		}
 	break;
 }

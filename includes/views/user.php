@@ -148,7 +148,7 @@ if (!empty($Banishes)){
 			<form action="/preference/set/p_disable_ga">
 				<label>
 					<input type="checkbox" name="value" value="1"<?=UserPrefs::get('p_disable_ga', $User->id)?' checked':''?> <?=!$sameUser?' disabled':''?>>
-					<span>Don't associate my user ID with my on-site activity</span>
+					<span>Don’t associate my user ID with my on-site activity</span>
 <?php       if ($sameUser){ ?>
 					<button class="save typcn typcn-tick green" disabled>Save</button>
 <?php       } ?>
@@ -204,7 +204,7 @@ if (!empty($Banishes)){
 			<p><button class="typcn typcn-arrow-back yellow" id="signout-everywhere">Sign out everywhere</button></p>
 <?php   }
 		else { ?>
-			<p><?=$sameUser?'You are':'This user is'?>n't logged in anywhere.</p>
+			<p><?=$sameUser?'You are':'This user is'?>n’t logged in anywhere.</p>
 <?php   } ?>
 		</section>
 <?php
@@ -219,7 +219,7 @@ if (!empty($Banishes)){
 <?php   } ?>
 		<section>
 			<h2><?=$sameUser? Users::PROFILE_SECTION_PRIVACY_LEVEL['private']:''?>Unlink account</h2>
-			<p>By unlinking your account you revoke this site's access to your account information. This will also log you out on every device where you're currently logged in. The next time you want to log in, you'll have to link your account again. This will not remove any of your <strong>public</strong> data from our site, it's still kept locally.</p>
+			<p>By unlinking your account you revoke this site’s access to your account information. This will also log you out on every device where you're currently logged in. The next time you want to log in, you'll have to link your account again. This will not remove any of your <strong>public</strong> data from our site, it’s still kept locally.</p>
 	        <button id="unlink" class="orange typcn typcn-times">Unlink Account</button>
 	    </section>
 <?  } ?></div>

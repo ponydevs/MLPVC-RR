@@ -376,7 +376,7 @@ class PostController extends Controller {
 		$thing = $params['thing'];
 
 		$this->_post = $Database->where('id', $params['id'])->getOne("{$thing}s");
-		if (empty($this->_post)) Response::fail("There's no $thing with the ID {$params['id']}");
+		if (empty($this->_post)) Response::fail("There’s no $thing with the ID {$params['id']}");
 
 		if (!empty($this->_post->lock) && Permission::insufficient('developer') && $action !== 'unlock')
 			Response::fail('This post has been approved and cannot be edited or removed.');
@@ -437,21 +437,21 @@ class PostController extends Controller {
 				$data = array('canreserve' => true);
 			}
 			else {
-				$message .= "<br>However, you have 4 reservations already which means you can't reserve any more posts. Please review your pending reservations on your <a href='/user'>Account page</a> and cancel/finish at least one before trying to take on another.";
+				$message .= "<br>However, you have 4 reservations already which means you can’t reserve any more posts. Please review your pending reservations on your <a href='/user'>Account page</a> and cancel/finish at least one before trying to take on another.";
 				$data = array();
 			}
 		};
 
 		$data = null;
 		if (empty($reserved_by)){
-			$message = 'This post is not reserved by anyone so there no need to ask for anyone\'s confirmation.';
+			$message = 'This post is not reserved by anyone so there no need to ask for anyone’s confirmation.';
 			$checkIfUserCanReserve($message, $data, 'overdue');
 			Response::fail($message, $data);
 		}
 		if ($reserved_by === $currentUser->id)
 			Response::fail("You've already reserved this {$params['thing']}");
 		if ($this->_post->isOverdue()){
-			$message = "This post was reserved ".Time::tag($this->_post->reserved_at)." so anyone's free to reserve it now.";
+			$message = "This post was reserved ".Time::tag($this->_post->reserved_at)." so anyone’s free to reserve it now.";
 			$checkIfUserCanReserve($message, $data, 'overdue');
 			Response::fail($message, $data);
 		}
@@ -474,7 +474,7 @@ class PostController extends Controller {
 			'user' => $currentUser->id,
 		));
 
-		Response::success("A notification has been sent to $ReserverLink, please wait for them to react.<br>If they don't visit the site often, it'd be a good idea to send them a note asking them to consider your inquiry.");
+		Response::success("A notification has been sent to $ReserverLink, please wait for them to react.<br>If they don’t visit the site often, it’d be a good idea to send them a note asking them to consider your inquiry.");
 	}
 
 	function setImage($params){
@@ -508,7 +508,7 @@ class PostController extends Controller {
 
 		// Check image availability
 		if (!DeviantArt::isImageAvailable($Image->preview))
-			Response::fail("<p class='align-center'>The specified image doesn't seem to exist. Please verify that you can reach the URL below and try again.<br><a href='{$Image->preview}' target='_blank'>{$Image->preview}</a></p>");
+			Response::fail("<p class='align-center'>The specified image doesn’t seem to exist. Please verify that you can reach the URL below and try again.<br><a href='{$Image->preview}' target='_blank'>{$Image->preview}</a></p>");
 
 		if (!$Database->where('id', $this->_post->id)->update("{$thing}s",array(
 			'preview' => $Image->preview,
@@ -573,7 +573,7 @@ class PostController extends Controller {
 		}
 		// Check image availability
 		if (!!DeviantArt::isImageAvailable($fullsize))
-			Response::fail("The specified image doesn't seem to exist. Please verify that you can reach the URL below and try again.<br><a href='$fullsize' target='_blank'>$fullsize</a>");
+			Response::fail("The specified image doesn’t seem to exist. Please verify that you can reach the URL below and try again.<br><a href='$fullsize' target='_blank'>$fullsize</a>");
 
 		if (!$Database->where('id', $this->_post->id)->update("{$thing}s",array(
 			'fullsize' => $fullsize,

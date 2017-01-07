@@ -20,11 +20,11 @@
 		.image {
 			&:not(.loaded){
 				// Image + Margin + Borders
-				$height: 200px + 10px + 2px;
-				width: $height*(1.77);
-				height: $height;
-				background: url(/img/loading-ring.svg) no-repeat center;
-				background-size: 50%;
+				width: 200px;
+				height: 200px;
+				background: url(/img/loading-gears.svg) no-repeat center;
+				background-size: 75%;
+				margin: 0 auto;
 
 				> a { opacity: 0 }
 			}

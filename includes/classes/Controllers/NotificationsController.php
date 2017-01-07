@@ -60,7 +60,7 @@ class NotificationsController extends Controller {
 					$Post = $Database->where('id', $data['id'])->getOne("{$data['type']}s");
 					if (empty($Post)){
 						Posts::clearTransferAttempts($Post, $data['type'], 'del');
-						Response::fail("The {$data['type']} doesn't exist or has been deleted");
+						Response::fail("The {$data['type']} doesn’t exist or has been deleted");
 					}
 					if ($read_action === 'true'){
 						if ($Post['reserved_by'] !== $currentUser->id){

@@ -163,7 +163,7 @@ class UserController extends Controller {
 
 		$token = UserPrefs::get('discord_token');
 		if ($token === 'true')
-			Response::fail("You have already been verified using this automated method. If - for yome reason - you still don't have the Club Members role please ask for assistance in the <strong>#support</strong> channel.");
+			Response::fail("You have already been verified using this automated method. If - for yome reason - you still don’t have the Club Members role please ask for assistance in the <strong>#support</strong> channel.");
 
 		if (empty($token)){
 			$token = preg_replace(new RegExp('[^a-z\d]','i'),'',base64_encode(random_bytes(12)));

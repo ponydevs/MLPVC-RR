@@ -81,7 +81,7 @@ class ImageProvider {
 				}
 
 				if (!$Data['is_rendered'])
-					throw new \Exception('The image was found but it hasn\'t been rendered yet. Please wait for it to render and try again shortly.');
+					throw new \Exception('The image was found but it hasn’t been rendered yet. Please wait for it to render and try again shortly.');
 
 				$this->fullsize = $Data['representations']['full'];
 				$this->preview = $Data['representations']['small'];

@@ -308,7 +308,7 @@ class Logs {
 				$details[] = array('Link',"<a href='$url'>$url</a>");
 			break;
 			default:
-				$details[] = array('<span class="typcn typcn-warning"></span> Couldn\'t process details','No data processor defined for this entry type',self::KEYCOLOR_ERROR);
+				$details[] = array('<span class="typcn typcn-warning"></span> Couldn’t process details','No data processor defined for this entry type',self::KEYCOLOR_ERROR);
 				$details[] = array('Raw details', '<pre>'.var_export($data, true).'</pre>');
 			break;
 		}

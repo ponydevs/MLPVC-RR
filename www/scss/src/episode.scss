@@ -310,7 +310,7 @@
 	div.loading ul:empty:before {
 		content: "";
 		display: block;
-		@include loading-indicator(64px);
+		@include loading-indicator(64px, 'gears');
 		margin: 0 auto;
 	}
 }

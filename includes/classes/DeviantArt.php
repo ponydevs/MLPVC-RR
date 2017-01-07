@@ -17,8 +17,8 @@ class DeviantArt {
 		'unsupported_response_type' => 'The authorization server does not support obtaining an authorization code using this method.',
 		'unauthorized_client' => 'The authorization process did not complete. Please try again.',
 		'invalid_scope' => 'The requested scope is invalid, unknown, or malformed.',
-		'server_error' => "There's an issue on DeviantArt's end. Try again later.",
-		'temporarily_unavailable' => "There's an issue on DeviantArt's end. Try again later.",
+		'server_error' => "There’s an issue on DeviantArt’s end. Try again later.",
+		'temporarily_unavailable' => "There’s an issue on DeviantArt’s end. Try again later.",
 		'user_banned' => 'You were banned on our website by a staff member.',
 	);
 

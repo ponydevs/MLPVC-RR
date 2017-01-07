@@ -5,6 +5,8 @@ use App\Appearances;
 use App\Tags;
 /** @var $heading string */
 /** @var $Owner \App\Models\User */
+/** @var $isOwner bool */
+/** @var $Pagination \App\Pagination */
 /** @var $Ponies array */ ?>
 <div id="content">
 	<h1><?=$heading?></h1>
@@ -12,7 +14,7 @@ use App\Tags;
 <?  if (Permission::sufficient('staff') || $isOwner){ ?>
 	<div class="notice warn tagediting">
 		<label>Limited editing</label>
-		<p>Editing tags or colors from the guide page does not work on mobile devices. If you want to edit those, please go the appearance's page.</p>
+		<p>Editing tags or colors from the guide page does not work on mobile devices. If you want to edit those, please go the appearance’s page.</p>
 	</div>
 <?  } ?>
 <?  if (Permission::sufficient('staff') || $isOwner){ ?>

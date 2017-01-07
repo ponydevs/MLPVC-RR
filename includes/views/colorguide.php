@@ -4,17 +4,20 @@ use App\Permission;
 use App\Appearances;
 use App\Tags;
 /** @var $heading string */
+/** @var $EQG bool */
+/** @var $elasticAvail bool */
+/** @var $Pagination \App\Pagination */
 /** @var $Ponies array */ ?>
 <div id="content">
 	<h1><?=$heading?></h1>
 	<p>A searchable list of character <?=$color?>s from the <?=$EQG?'movies':'show'?></p>
 	<p class="align-center">
-		If you can't find a character here, check the old guides: <a href="https://sta.sh/0kic0ngp3fy">Pony</a> / <a href="http://fav.me/d7120l1">EQG</a><br>
+		If you can’t find a character here, check the old guides: <a href="https://sta.sh/0kic0ngp3fy">Pony</a> / <a href="http://fav.me/d7120l1">EQG</a><br>
 		Looking for this information in a machine-readable format? <a href="/dist/mlpvc-colorguide.json" target="_blank" download="mlpvc-colorguide.json">JSON</a></p>
 <?  if (Permission::sufficient('staff')){ ?>
 	<div class="notice warn tagediting">
 		<label>Limited editing</label>
-		<p>Editing tags or colors from the guide page does not work on mobile devices. If you want to edit those, please go the appearance's page.</p>
+		<p>Editing tags or colors from the guide page does not work on mobile devices. If you want to edit those, please go the appearance’s page.</p>
 	</div>
 <?  }
 	$Universal = $Database->where('id',0)->getOne('appearances');

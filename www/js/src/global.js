@@ -362,7 +362,7 @@
 				$.Dialog.fail(false, 'The request failed due to an internal server error. If this persists, please <a class="send-feedback">let us know</a>!');
 			},
 			503: function(){
-				$.Dialog.fail(false, 'The request failed because the server is temporarily unavailable. This shouldn\'t take too long, please try again in a few seconds.<br>If the problem still persist after a few minutes, please let us know by clicking the "Send feedback" link in the footer.');
+				$.Dialog.fail(false, 'The request failed because the server is temporarily unavailable. This shouldn’t take too long, please try again in a few seconds.<br>If the problem still persist after a few minutes, please let us know by clicking the "Send feedback" link in the footer.');
 			}
 		};
 	$.ajaxSetup({
@@ -637,6 +637,8 @@
 		return this[0] ? $.isInViewport(this[0]) : false;
 	};
 
+	$.isRunningStandalone = () => window.matchMedia('(display-mode: standalone)').matches;
+
 	window.URL = url => {
 		let a = document.createElement('a'),
 			parsed = {};
@@ -649,6 +651,7 @@
 	};
 
 	window.OpenSidebarByDefault = () => Math.max(document.documentElement.clientWidth, window.innerWidth || 0) >= 1200;
+	window.WithinMobileBreakpoint = () => Math.max(document.documentElement.clientWidth, window.innerWidth || 0) <= 600;
 
 	let fluidboxThisAction = (jQueryObject) => {
 		jQueryObject.fluidbox({
@@ -840,7 +843,7 @@
 					$.Dialog.wait(false, "Waiting for you to sign in");
 				};
 
-			if (!consent) $.Dialog.confirm('Privacy Notice',`<p>Dear User,</p><p>We must inform you that our website will store cookies on your device to remember your logged in status between browser sessions.</p><p>If you would like to avoid these completly harmless pieces of text which are required to use this website, click "Decline" and continue browsing as a guest.</p><p>In addition to persistent cookies, we use Google Analytics to track website traffic.</p><p>By default, browsing data will be tied to your user ID. If you do not want that, you can to turn this off by clicking the "Account" menu item and un-ticking the approperiate check box in the "Settings" section after you've logged in.</p><p>I'd like to take this opportunity to mention <a href="https://www.ublock.org/" target="_blank">uBlock</a>, a great extension that'll prevent not just us but many other sites from tracking your activity. This is not sponsored or anything, I just thought I'd let you know.</p><p>Sincerely,<br>The developer</p><p><em>This warning will not appear again if you accept our use of persistent cookies & Google Analytics.</em></p>`,['Accept','Decline'],opener);
+			if (!consent) $.Dialog.confirm('Privacy Notice',`<p>Dear User,</p><p>We must inform you that our website will store cookies on your device to remember your logged in status between browser sessions.</p><p>If you would like to avoid these completly harmless pieces of text which are required to use this website, click "Decline" and continue browsing as a guest.</p><p>In addition to persistent cookies, we use Google Analytics to track website traffic.</p><p>By default, browsing data will be tied to your user ID. If you do not want that, you can to turn this off by clicking the "Account" menu item and un-ticking the approperiate check box in the "Settings" section after you've logged in.</p><p>I’d like to take this opportunity to mention <a href="https://www.ublock.org/" target="_blank">uBlock</a>, a great extension that'll prevent not just us but many other sites from tracking your activity. This is not sponsored or anything, I just thought I’d let you know.</p><p>Sincerely,<br>The developer</p><p><em>This warning will not appear again if you accept our use of persistent cookies & Google Analytics.</em></p>`,['Accept','Decline'],opener);
 			else opener(true);
 		});
 
@@ -1122,7 +1125,7 @@
 						let pos = js.indexOf(src);
 
 						// TODO Come up with a proper way to handle persistent files rather than re-requesting them
-						if (pos !== -1 && !/min\/(colorguide[.\-]|episodes-manage|moment-timezone|episode|Chart|user\.)/.test(src)){
+						if (pos !== -1 && !/min\/(colorguide[.-]|episodes-manage|moment-timezone|episode|Chart|user[.-])/.test(src)){
 							js.splice(pos, 1);
 							console.log('%cSkipped %s','color:saddlebrown',src);
 						}
@@ -1356,12 +1359,12 @@ $(function(){
 
 		$.Dialog.info($.Dialog.isOpen() ? undefined : 'Send feedback',
 			`<h3>How to send feedback</h3>
-			<p>If you're having an issue with the site and would like to let us know or have an idea/feature request you'd like to share, here's how:</p>
+			<p>If you're having an issue with the site and would like to let us know or have an idea/feature request you’d like to share, here’s how:</p>
 			<ul>
 				<li><a href='https://discord.gg/0vv70fepSILbdJOD'>Join our Discord server</a> and describe your issue in the <strong>#support</strong> channel</li>
 				<li><a href='http://mlp-vectorclub.deviantart.com/notes/'>Send a note </a>to the group on DeviantArt</li>
 				<li><a href='mailto:seinopsys@gmail.com'>Send an e-mail</a> to seinopsys@gmail.com</li>
-				<li>If you have a GitHub account, you can also  <a href="${$footer.find('a.issues').attr('href')}">create an issue</a> on the project's GitHub page.
+				<li>If you have a GitHub account, you can also  <a href="${$footer.find('a.issues').attr('href')}">create an issue</a> on the project’s GitHub page.
 			</ul>`
 		);
 	});
@@ -1397,6 +1400,7 @@ $(function(){
 		else callme();
 	});
 
+	// Navigation handling
 	$d.on('click','a[href]', function(e){
 		if (e.which > 2) return true;
 
@@ -1425,7 +1429,6 @@ $(function(){
 		e.preventDefault();
 		$.Navigation.visit(this.href);
 	});
-
 	$w.on('popstate', function(e){
 		if (typeof window._trighashchange !== 'undefined')
 			return;
@@ -1437,6 +1440,31 @@ $(function(){
 		goto(location.href);
 	});
 
+	// Disappearing header when in standalone mode
+	// Replace condition with "true" when needed for development
+	if ($.isRunningStandalone()){
+		let lastScrollTop = $body.scrollTop(),
+			disappearingHeaderHandler = function(){
+				if (!window.WithinMobileBreakpoint())
+					return;
+
+				let scrollTop = $body.scrollTop(),
+					headerHeight = $header.outerHeight(),
+					headerTop = parseInt($header.css('top'),10);
+
+				$header.css('top',
+					scrollTop > lastScrollTop
+					 ? Math.max(-headerHeight,headerTop-(scrollTop-lastScrollTop))
+					 : Math.min(0,headerTop+(lastScrollTop-scrollTop))
+				);
+
+				lastScrollTop = scrollTop;
+			};
+		$w.on('scroll',disappearingHeaderHandler);
+		disappearingHeaderHandler();
+	}
+
+	// Notifications
 	(function(){
 		let conn,
 			connpath = `https://ws.${location.hostname}:8667/`,

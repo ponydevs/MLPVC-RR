@@ -110,7 +110,7 @@
 				display: block;
 
 				&:empty:before {
-					content: "You haven't added any appearances to your Personal Color Guide yet. If you had, they would be visible here.";
+					content: "You haven\2019t added any appearances to your Personal Color Guide yet. If you had, they would be visible here.";
 					font-style: italic;
 					opacity: .7;
 					font-size: 1em;
@@ -164,7 +164,7 @@
 			width: 80px;
 			height: 80px;
 			margin: 0 auto;
-			background: url('/img/loading-ring.svg') no-repeat center;
+			background: url('/img/loading-gears.svg') no-repeat center;
 			background-size: contain;
 		}
 	}

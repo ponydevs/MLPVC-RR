@@ -346,7 +346,7 @@ HTML;
 			}
 			$Episode->addAiringData();
 			if (!$Episode->aired)
-				$star .= '<span class="typcn typcn-media-play-outline" title="'.($Episode->isMovie?'Movie':'Episode').' didn\'t air yet, voting disabled"></span>&nbsp;';
+				$star .= '<span class="typcn typcn-media-play-outline" title="'.($Episode->isMovie?'Movie':'Episode').' didn’t air yet, voting disabled"></span>&nbsp;';
 
 			$airs = Time::tag($Episode->airs, Time::TAG_EXTENDED, Time::TAG_NO_DYNTIME);
 
@@ -511,7 +511,8 @@ HTML;
 							$preview = "<img src='$preview' class='preview'>";
 						}
 					}
-					$LINKS .= "<li><a href='/cg/v/{$p['id']}-$safeLabel'>$preview{$p['label']}</a></li>";
+					$label = Appearances::processLabel($p['label']);
+					$LINKS .= "<li><a href='/cg/v/{$p['id']}-$safeLabel'>$preview$label</a></li>";
 				}
 				$HTML .= "$LINKS</ul></section>";
 			}

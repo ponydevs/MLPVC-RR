@@ -9,7 +9,7 @@ use App\Users; ?>
 	<p><?=!empty($browser['platform'])?"on {$browser['platform']}":'Unknown platform'?></p>
 
     <?=!empty($Session)?CoreUtils::notice('warn',"You're debugging session #{$Session['id']} (belongs to ".Users::get($Session['user'])->getProfileLink().")"):''?>
-	<?=CoreUtils::notice('info','Browser recognition testing page',"The following page is used to make sure that the site's browser detection script works as it should. If you're seeing a browser and/or operating system that's different from what you're currently using, please <a class='send-feedback'>let us know.</a>")?>
+	<?=CoreUtils::notice('info','Browser recognition testing page',"The following page is used to make sure that the site’s browser detection script works as it should. If you're seeing a browser and/or operating system that’s different from what you're currently using, please <a class='send-feedback'>let us know.</a>")?>
 
 	<section>
 		<h2>Your User Agent string</h2>

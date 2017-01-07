@@ -10,8 +10,8 @@ DocReady.push(function(){
 
 		$.Dialog.info(
 			'Suggest a reservation',
-			`<p>Feeel like making a vector but don't have any screencap in mind? Why not fulfill a request?</p>
-			<p>With this tool you can get a random request from the site, and you can choose to reserve it or get a different suggestion. It's all up to you.</p>
+			`<p>Feeel like making a vector but don’t have any screencap in mind? Why not fulfill a request?</p>
+			<p>With this tool you can get a random request from the site, and you can choose to reserve it or get a different suggestion. It’s all up to you.</p>
 			<div class="align-center"><button id="suggestion-press" class="btn large orange typcn typcn-lightbulb">Give me a suggestion</button></button>`,
 			function(){
 				let $btn = $('#dialogContent').find('#suggestion-press'),

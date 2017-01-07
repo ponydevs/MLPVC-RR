@@ -180,7 +180,7 @@ class CoreUtils {
 			$customCSS = array_merge($customCSS, $DEFAULT_CSS);
 
 		# JavaScript
-		$DEFAULT_JS = array('moment','global','dialog');
+		$DEFAULT_JS = array('moment','jquery.ba-throttle-debounce','global','dialog');
 		$customJS = array();
 		// Only add defaults when needed
 		if (array_search('no-default-js', $options) === false)
@@ -204,7 +204,7 @@ class CoreUtils {
 
 		# Putting it together
 		if (empty($options['view']) && !isset($controller->do))
-			throw new \Exception('View cannot be resolved. Specify the \'view\' option or provide the controller as a parameter');
+			throw new \Exception('View cannot be resolved. Specify the <code>view</code> option or provide the controller as a parameter');
 		$view = empty($options['view']) ? $controller->do : $options['view'];
 		$viewPath = INCPATH."views/{$view}.php";
 
@@ -529,7 +529,7 @@ class CoreUtils {
 		$out[] = "<a class='issues' href='".GITHUB_URL."/issues' target='_blank'>Known issues</a>";
 		$out[] = '<a class="send-feedback">Send feedback</a>';
 		global $Database, $Database;
-		$out[] = 'Performance: <abbr title="Time spent rendering the page (ms)">R</abbr>'.round((microtime(true)-EXEC_START_MICRO)*1000).'<abbr title="Number of SQL queries used to fetch this page">S</abbr>'.(($Database->queryCount??0)+($Database->queryCount??0)).'<abbr title="Requests sent to DeviantArt\'s servers (significantly increases render time)">D</abbr>'.DeviantArt::$requestCount;
+		$out[] = 'Performance: <abbr title="Time spent rendering the page (ms)">R</abbr>'.round((microtime(true)-EXEC_START_MICRO)*1000).'<abbr title="Number of SQL queries used to fetch this page">S</abbr>'.(($Database->queryCount??0)+($Database->queryCount??0)).'<abbr title="Requests sent to DeviantArt\’s servers (significantly increases render time)">D</abbr>'.DeviantArt::$requestCount;
 		return implode(' | ',$out);
 	}
 
@@ -588,7 +588,7 @@ class CoreUtils {
 			$NavItems['colorguide'] = array("/cg".(!empty($scope['EQG'])?'/eqg':''), (!empty($scope['EQG'])?'EQG ':'')."$Color Guide");
 			if ($do === 'cg'){
 				if (!empty($scope['Appearance']))
-					$NavItems['colorguide']['subitem'] = (isset($scope['Map'])?"Sprite {$Color}s - ":'').CoreUtils::escapeHTML($scope['Appearance']['label']);
+					$NavItems['colorguide']['subitem'] = (isset($scope['Map'])?"Sprite {$Color}s - ":'').Appearances::processLabel(CoreUtils::escapeHTML($scope['Appearance']['label']));
 				else if (isset($scope['Ponies']))
 					$NavItems['colorguide'][1] .= " - Page {$scope['Pagination']->page}";
 				else {
@@ -737,7 +737,7 @@ class CoreUtils {
 	 * @return string
 	 */
 	static function posess($w, bool $sOnly = false){
-		$s = "'".(CoreUtils::substring($w, -1) !== 's'?'s':'');
+		$s = "’".(CoreUtils::substring($w, -1) !== 's'?'s':'');
 		if ($sOnly)
 			return $s;
 		return $w.$s;
@@ -1022,7 +1022,7 @@ class CoreUtils {
 	}
 
 	static $VECTOR_APPS = array(
-		'' => "(don't show)",
+		'' => "(don’t show)",
 		'illustrator' => 'Adobe Illustrator',
 		'inkscape' => 'Inkscape',
 		'ponyscape' => 'Ponyscape',

@@ -21,7 +21,7 @@ if (!empty($about)){
 </section>
 HTML;
 }
-else echo CoreUtils::notice('warn','This section went missing due to a bug, and will be restored ASAP. Until then the section\'s contents are available at <a href="'.GITHUB_URL.'#attributions">'.GITHUB_URL.'#attributions</a>'); ?>
+else echo CoreUtils::notice('warn','This section went missing due to a bug, and will be restored ASAP. Until then the section’s contents are available at <a href="'.GITHUB_URL.'#attributions">'.GITHUB_URL.'#attributions</a>'); ?>
 	<section>
 		<h2>Statistics</h2>
 		<p>Here you can see various graphs about the site. The information below is cached to reduce server load, you can see when each graph was last updated below their title.</p>
@@ -45,7 +45,7 @@ else echo CoreUtils::notice('warn','This section went missing due to a bug, and 
 	<section>
 		<h2>What are those characters and numbers in the footer?</h2>
 		<div>
-			<p>This website's complete codebase is available for anyone to see on GitHub at <a href="<?=GITHUB_URL?>"><?=GITHUB_URL?></a>. What you're seeing is the version number, which consists of the first few characters of the latest commit's ID. In this case, a commit is simply an update to the site. Whenever a new update is applied, the version number changes automatically.</p>
+			<p>This website’s complete codebase is available for anyone to see on GitHub at <a href="<?=GITHUB_URL?>"><?=GITHUB_URL?></a>. What you're seeing is the version number, which consists of the first few characters of the latest commit’s ID. In this case, a commit is simply an update to the site. Whenever a new update is applied, the version number changes automatically.</p>
 		</div>
 	</section>
 </div>

@@ -76,7 +76,8 @@ class Appearances {
 				$Actions .= "<button class='edit typcn typcn-pencil darkblue' title='Edit'></button>".
 				            ($Appearance['id']!==0?"<button class='delete typcn typcn-trash red' title='Delete'></button>":'');
 			$safelabel = self::getSafeLabel($Appearance);
-			$HTML .= "<li id='p{$Appearance['id']}'>$img<div><strong><a href='$personalp/cg/{$eqgp}v/{$Appearance['id']}-$safelabel'>{$Appearance['label']}</a>$Actions</strong>$updates$notes$tags$colors</div></li>";
+			$processedLabel = self::processLabel($Appearance['label']);
+			$HTML .= "<li id='p{$Appearance['id']}'>$img<div><strong><a href='$personalp/cg/{$eqgp}v/{$Appearance['id']}-$safelabel'>$processedLabel</a>$Actions</strong>$updates$notes$tags$colors</div></li>";
 		}
 		else {
 			if (empty($_MSG))
@@ -94,6 +95,11 @@ class Appearances {
 		if (!$ignoreStaff && (Permission::sufficient('staff') || ($signedIn ? $Appearance['owner'] === $currentUser->id : false)))
 			$isPrivate = false;
 		return $isPrivate;
+	}
+
+	static function processLabel(string $label):string {
+		$label = preg_replace(new RegExp("'"),'’', $label);
+		return $label;
 	}
 
 	/**
@@ -557,7 +563,8 @@ HTML;
 		$safeLabel = self::getSafeLabel($p);
 		$preview = self::getPreviewURL($p);
 		$preview = "<img src='$preview' class='preview'>";
-		return "<a href='/cg/v/{$p['id']}-$safeLabel'>$preview{$p['label']}</a>";
+		$label = self::processLabel($p['label']);
+		return "<a href='/cg/v/{$p['id']}-$safeLabel'>$preview$label</a>";
 	}
 
 	static function getRelatedHTML(array $Related):string {

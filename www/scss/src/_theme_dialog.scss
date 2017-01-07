@@ -17,6 +17,14 @@ $ZIndexBase: 21000;
 		width: 100%;
 		height: auto;
 	}
+	#dialogHeader {
+		position: absolute;
+		top: 0;
+		display: block;
+    width: 100% !important;
+		height: auto;
+		box-sizing: border-box;
+	}
 	#dialogContent form { width: 100% }
 }
 // Desktop-only Styles
@@ -49,6 +57,7 @@ $ZIndexBase: 21000;
 		border-top-width: 0;
 		background-color: white;
 		overflow: auto;
+		margin-top: 0 !important;
 
 		form { min-width: 350px }
 	}

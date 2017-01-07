@@ -119,5 +119,40 @@ class PostTest extends TestCase {
 		$Request->label = 'Fluttershy (face-only)';
 		$result = $Request->processLabel();
 		self::assertEquals('Fluttershy (<strong class="color-darkblue">face only</strong>)', $result, 'Transformation of "face-only" fails');
+
+		$Request = new App\Models\Request([
+			'label' => 'Fluttershy\'s cottage',
+		]);
+		$result = $Request->processLabel();
+		self::assertEquals('Fluttershy&rsquo;s cottage', $result, 'Transformation of single apostrophe fails');
+
+		$Request = new App\Models\Request([
+			'label' => 'Rainbow Dash: \'\'I want to be a Wonderbolt',
+		]);
+		$result = $Request->processLabel();
+		self::assertEquals('Rainbow Dash: "I want to be a Wonderbolt', $result, 'Transformation of double apostrophe fails');
+
+		$Request = new App\Models\Request([
+			'label' => 'Rainbow Dash: "I want to be a Wonderbolt"',
+		]);
+		$result = $Request->processLabel();
+		self::assertEquals('Rainbow Dash: &ldquo;I want to be a Wonderbolt&rdquo;', $result, 'Transformation of pairs of quotation marks fails');
+		$Request = new App\Models\Request([
+			'label' => 'Rainbow Dash: "I want to be a Wonderbolt',
+		]);
+		$result = $Request->processLabel();
+		self::assertEquals('Rainbow Dash: "I want to be a Wonderbolt', $result, 'Transformation of a single quotation mark fails');
+
+		$Request = new App\Models\Request([
+			'label' => 'So... whaddaya say?',
+		]);
+		$result = $Request->processLabel();
+		self::assertEquals('So&hellip; whaddaya say?', $result, 'Transformation of three periods fails');
+
+		$Request = new App\Models\Request([
+			'label' => '[cuteness intensifies]',
+		]);
+		$result = $Request->processLabel();
+		self::assertEquals('<span class="intensify">cuteness intensifies</span>', $result, 'Transformation of [... instensifies] fails');
 	}
 }

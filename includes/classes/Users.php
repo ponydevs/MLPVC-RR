@@ -184,7 +184,7 @@ class Users {
 		if ($return_as_bool)
 			return $overTheLimit;
 		if ($overTheLimit)
-			Response::fail("You've already reserved {$reservations['count']} images, and you can't have more than 4 pending reservations at a time. You can review your reservations on your <a href='/user'>Account page</a>, finish at least one of them before trying to reserve another image.");
+			Response::fail("You've already reserved {$reservations['count']} images, and you can’t have more than 4 pending reservations at a time. You can review your reservations on your <a href='/user'>Account page</a>, finish at least one of them before trying to reserve another image.");
 	}
 
 	/**
@@ -316,10 +316,10 @@ HTML;
 				<span>$YouHave $pendingCountReadable pending $posts
 HTML;
 			if ($hasPending)
-				$HTML .= " which ha".($TotalPending!==1?'ve':'s')."n't been marked as finished yet";
+				$HTML .= " which ha".($TotalPending!==1?'ve':'s')."n’t been marked as finished yet";
 			$HTML .= ".";
 			if ($sameUser)
-				$HTML .= " Please keep in mind that the global limit is 4 at any given time. If you reach the limit, you can't reserve any more images until you finish or cancel some of your pending reservations.";
+				$HTML .= " Please keep in mind that the global limit is 4 at any given time. If you reach the limit, you can’t reserve any more images until you finish or cancel some of your pending reservations.";
 			$HTML .= "</span>";
 
 			if ($hasPending){
@@ -459,7 +459,7 @@ HTML;
 		$privacy = $sameUser? Users::PROFILE_SECTION_PRIVACY_LEVEL['public']:'';
 		$HTML = "<h2>{$privacy}Vectors waiting for approval</h2>";
 		if ($sameUser)
-			$HTML .= "<p>After you finish an image and submit it to the group gallery, an admin will check your vector and may ask you to fix some issues on your image, if any. After an image is accepted to the gallery, it can be marked as \"approved\", which gives it a green check mark, indicating that it's most likely free of any errors.</p>";
+			$HTML .= "<p>After you finish an image and submit it to the group gallery, an admin will check your vector and may ask you to fix some issues on your image, if any. After an image is accepted to the gallery, it can be marked as \"approved\", which gives it a green check mark, indicating that it’s most likely free of any errors.</p>";
 		$youHaveAwaitCount = "$YouHave ".(!$AwaitCount?'no':"<strong>$AwaitCount</strong>");
 		$images = CoreUtils::makePlural('image', $AwaitCount);
 		$append = !$AwaitCount
@@ -468,7 +468,7 @@ HTML;
 				$sameUser
 				? "Please submit $them to the group gallery as soon as possible to have $them spot-checked for any issues. As stated in the rules, the goal is to add finished images to the group gallery, making $them easier to find for everyone.".(
 					$AwaitCount>10
-					? " You seem to have a large number of images that have not been approved yet, please submit them to the group soon if you haven't already."
+					? " You seem to have a large number of images that have not been approved yet, please submit them to the group soon if you haven’t already."
 					: ''
 				)
 				:''

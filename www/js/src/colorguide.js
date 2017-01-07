@@ -240,8 +240,8 @@ DocReady.push(function(){
 				</div>
 				<div class='hidden section inkscape'>
 					<h4>How to import swatches to Inkscape</h4>
-					<p>Download <a href='/cg/v/${ponyID}s.gpl' class='btn blue typcn typcn-download'>this file</a> and place it in the <code>&hellip;\\Inkscape<wbr>\\<wbr>share<wbr>\\<wbr>palettes</code> folder. If you don't plan on using the other swatches, deleting them should make your newly imported swatch easier to find.</p>
-					<p>You will most likely have to restart Inkscape for the swatch to show up in the <em>Swatches</em> (<kbd>F6</kbd>) tool window's menu.</p>
+					<p>Download <a href='/cg/v/${ponyID}s.gpl' class='btn blue typcn typcn-download'>this file</a> and place it in the <code>&hellip;\\Inkscape<wbr>\\<wbr>share<wbr>\\<wbr>palettes</code> folder. If you don’t plan on using the other swatches, deleting them should make your newly imported swatch easier to find.</p>
+					<p>You will most likely have to restart Inkscape for the swatch to show up in the <em>Swatches</em> (<kbd>F6</kbd>) tool window’s menu.</p>
 					<div class="responsive-embed">
 						<iframe src="https://www.youtube.com/embed/zmaJhbIKQqM" allowfullscreen async defer></iframe>
 					</div>

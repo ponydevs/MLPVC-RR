@@ -160,6 +160,6 @@ class HTTP {
 	public static function redirect($url = '/', $http = 301){
 		header("Location: $url", true, $http);
 		$urlenc = CoreUtils::aposEncode($url);
-		die("Click <a href='$urlenc'>here</a> if you aren't redirected.<script>location.replace(".JSON::encode($url).")</script>");
+		die("Click <a href='$urlenc'>here</a> if you aren’t redirected.<script>location.replace(".JSON::encode($url).")</script>");
 	}
 }

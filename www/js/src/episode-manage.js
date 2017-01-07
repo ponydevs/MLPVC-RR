@@ -185,7 +185,7 @@ DocReady.push(function(){
 		$h2c.children().remove();
 		let text = $h2c.text().trim();
 
-		$.Dialog.wait(`Editing "${text}"`,"Retrieving setting's value");
+		$.Dialog.wait(`Editing "${text}"`,"Retrieving setting’s value");
 		$.post(`/setting/get/${endpoint}`,$.mkAjaxHandler(function(){
 			if (!this.status) return $.Dialog.fail(false, this.message);
 
@@ -468,7 +468,7 @@ DocReady.push(function(){
 					if (!this.status) return $.Dialog.fail(false, this.message);
 
 					$.Dialog.close();
-					$this.closest('li').fadeOut(1000,function(){
+					$this.closest('li').fadeOut(500,function(){
 						$(this).remove();
 					});
 				}));
@@ -729,7 +729,7 @@ DocReady.push(function(){
 			$.Dialog.confirm(`Take on reservation of ${type} #${id}`,
 				`<p>Using this option, you can express your interest in finishing the ${type} which ${reservedBy} already reserved.</p>
 				<p>They will be sent a notification letting them know you're interested and they'll be able to allow/deny the transfer of the reserver status as they see fit.</p>
-				<p>Once ${reservedBy} responds to your inquiry you'll receive a notification informing you about their decision. If they agreed, the post's reservation will be transferred to you immediately.</p>
+				<p>Once ${reservedBy} responds to your inquiry you'll receive a notification informing you about their decision. If they agreed, the post’s reservation will be transferred to you immediately.</p>
 				<p><strong>Are you sure you can handle this ${type}?</strong></p>`, sure => {
 					if (!sure) return;
 

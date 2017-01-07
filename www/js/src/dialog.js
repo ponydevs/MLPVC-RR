@@ -199,7 +199,8 @@
 				});
 				this.$dialogButtons.append($button);
 			});
-			this._setFocus();
+			if (!window.WithinMobileBreakpoint())
+				this._setFocus();
 			$w.trigger('dialog-opened');
 			Time.Update();
 
@@ -436,4 +437,14 @@
 			}
 		}
 	});
+
+	let mobileDialogContentMarginCalculator = function(){
+			if (!$.Dialog.isOpen())
+				return;
+			if (!window.WithinMobileBreakpoint())
+				return;
+
+			$.Dialog.$dialogContent.css('margin-top', $.Dialog.$dialogHeader.outerHeight());
+		};
+	$w.on('resize', $.throttle(200, mobileDialogContentMarginCalculator)).on('dialog-opened', mobileDialogContentMarginCalculator);
 })(jQuery);

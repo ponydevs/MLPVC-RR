@@ -216,7 +216,7 @@ DocReady.push(function(){
 					ctx = $chart.get(0).getContext("2d"),
 					$tooltip = $.mk('p').attr('class','tooltip');
 				$.Dialog.info(false, [
-					$.mk('p').text("Here's a chart showing how the votes are distributed. Mouse over the different segments to see the exact number of votes."),
+					$.mk('p').text("Here’s a chart showing how the votes are distributed. Mouse over the different segments to see the exact number of votes."),
 					$.mk('div').attr('id','vote-distrib').append($chart, $tooltip)
 				]);
 				                   //-- 0 ---,--- 1 ---,--- 2 ---,--- 3 ---,--- 4 ---,--- 5 ---
@@ -455,7 +455,7 @@ DocReady.push(function(){
 							$.Dialog.confirm(
 								'Confirm '+type+' title',
 								'The image you just checked had the following title:<br><br><p class="align-center"><strong>'+data.title+'</strong></p>'+
-								'<br>Would you like to use this as the '+type+'\'s description?<br>Keep in mind that it should describe the thing(s) '+
+								'<br>Would you like to use this as the '+type+'’s description?<br>Keep in mind that it should describe the thing(s) '+
 								(type==='request'?'being requested':'you plan to vector')+'.'+
 								'<p>This dialog will not appear if you give your '+type+' a description before clicking the '+CHECK_BTN+' button.</p>',
 								function(sure){
@@ -469,7 +469,7 @@ DocReady.push(function(){
 						});
 					}).on('error',function(){
 						if (attempts < 1){
-							$.Dialog.wait("Can't load image",'Image could not be loaded, retrying in 2 seconds');
+							$.Dialog.wait("Can’t load image",'Image could not be loaded, retrying in 2 seconds');
 							setTimeout(function(){
 								load(data, attempts+1);
 							}, 2000);
@@ -510,7 +510,7 @@ DocReady.push(function(){
 					$type = $form.find('select');
 
 				if (label.indexOf('character') > -1 && $type.val() !== 'chr')
-					return $.Dialog.confirm(title, 'Your request label contains the word "character", but the request type isn\'t set to Character.<br>Are you sure you\'re not requesting one (or more) character(s)?',['Let me change the type', 'Carray on'], function(sure){
+					return $.Dialog.confirm(title, 'Your request label contains the word "character", but the request type isn’t set to Character.<br>Are you sure you\'re not requesting one (or more) character(s)?',['Let me change the type', 'Carray on'], function(sure){
 						if (!sure) return $form.triggerHandler('submit',[screwchanges, true]);
 
 						$.Dialog.close(function(){
@@ -653,7 +653,7 @@ DocReady.push(function(){
 			.always(function(){
 				let found = window._HighlightHash({type:'load'});
 				if (found === false && showdialog)
-					$.Dialog.info('Scroll post into view',"The "+(location.hash.replace(postHashRegex,'$1'))+" you were linked to has either been deleted or didn't exist in the first place. Sorry.<div class='align-center'><span class='sideways-smiley-face'>:\\</div>");
+					$.Dialog.info('Scroll post into view',"The "+(location.hash.replace(postHashRegex,'$1'))+" you were linked to has either been deleted or didn’t exist in the first place. Sorry.<div class='align-center'><span class='sideways-smiley-face'>:\\</div>");
 			});
 	}
 

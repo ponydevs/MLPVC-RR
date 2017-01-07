@@ -89,7 +89,8 @@ class CGUtils {
 			if (!empty($class))
 				$url .= "' class='$class";
 		}
-		$HTML .= "<li><a href='$url'>$sprite{$p['label']}</a></li>";
+		$label = Appearances::processLabel($p['label']);
+		$HTML .= "<li><a href='$url'>$sprite$label</a></li>";
 	}
 
 	/**

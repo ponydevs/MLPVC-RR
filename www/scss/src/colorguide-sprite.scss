@@ -37,7 +37,7 @@
 
 	#svg-cont {
 		border: 1px dashed rgba(black,.5);
-		background: url('../../img/transparency.svg');
+		background: url('/img/transparency.svg');
 		background-size: 16px;
 
 		&:empty:before {
@@ -45,7 +45,7 @@
 			display: block;
 			margin: calc(300px - 40px) auto;
 
-			@include loading-indicator(80px);
+			@include loading-indicator(80px, 'gears');
 		}
 
 		svg {
@@ -81,7 +81,7 @@
 			font-family: "Celestia", sans-serif;
 			font-weight: normal;
 			color: #fff;
-			background: $HeaderBlue url('../../img/grid-w-.1.svg') repeat;
+			background: $HeaderBlue url('/img/grid-w-.1.svg') repeat;
 			background-size: 4px;
 			border: 1px solid black;
 			border-bottom: 0;

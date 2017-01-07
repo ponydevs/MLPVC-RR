@@ -26,7 +26,7 @@ DocReady.push(function(){
 		(PersonalGuide?`<div class="notice info"><label>About sprites</label><p>Sprites are small, pixelated images showcasing all of the colors a given character has. They are most useful if they contain a full body image of your character with any difficult details highlighted. You can use it together with the notes, adding explanations about anything that might be confusing.</p><p>Sprites have a height limit of 300px, a width limit between 300 and 700 pixels, and are expected to be PNG files with a transparent background.</p><p class="color-red">The staff reserves the right to remove any sprites that do not follow these guidelines.</p></div>`:'')+
 		`<p class="align-center"><a href="#upload">Click here to upload a file</a> (max. ${window.MAX_SIZE}) or enter a URL below.</p>
 		<label><input type="text" name="image_url" placeholder="External image URL" required></label>
-		<p class="align-center">The URL will be checked against the supported provider list, and if an image is found, it\'ll be downloaded to the server and set as this appearance's sprite image.</p>`
+		<p class="align-center">The URL will be checked against the supported provider list, and if an image is found, it\'ll be downloaded to the server and set as this appearance’s sprite image.</p>`
 	);
 
 	let $EpAppearances;
@@ -1118,7 +1118,7 @@ DocReady.push(function(){
 					tagID = $tag.attr('class').match(/id-(\d+)(?:\s|$)/)[1],
 					title = 'Detele tag: '+tagName;
 
-				$.Dialog.confirm(title,"Deleting this tag will also remove it from every appearance where it's been used.<br>Are you sure?",['Delete it','Nope'], function(sure){
+				$.Dialog.confirm(title,"Deleting this tag will also remove it from every appearance where it’s been used.<br>Are you sure?",['Delete it','Nope'], function(sure){
 					if (!sure) return;
 
 					let data = {};

@@ -112,7 +112,26 @@
 			margin-bottom: 5px;
 
 			&:not(.noquotes){
-				&:before, &:after { content: '"' }
+				&:before  { content: '\201c' }
+				&:after { content: '\201d' }
+			}
+
+			.intensify {
+				display: inline-block;
+				animation: intensify .2s linear infinite;
+
+				&:before { content: '[' }
+				&:after { content: ']' }
+
+				@keyframes intensify {
+					$translateAmount: 0.5px;
+					0%   { transform: translateX( #{$translateAmount}) translateY(                   0) }
+					20%  { transform: translateX(-#{$translateAmount}) translateY( #{$translateAmount}) }
+					40%  { transform: translateX( #{$translateAmount}) translateY( #{$translateAmount}) }
+					60%  { transform: translateX(                   0) translateY(-#{$translateAmount}) }
+					80%  { transform: translateX(-#{$translateAmount}) translateY( #{$translateAmount}) }
+					100% { transform: translateX(-#{$translateAmount}) translateY(-#{$translateAmount}) }
+				}
 			}
 		}
 		.reserver, .reserve-request {

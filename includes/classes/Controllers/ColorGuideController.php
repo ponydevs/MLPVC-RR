@@ -229,7 +229,7 @@ class ColorGuideController extends Controller {
 
 		$SafeLabel = Appearances::getSafeLabel($this->_appearance);
 		CoreUtils::fixPath("$this->_cgPath/v/{$this->_appearance['id']}-$SafeLabel");
-		$title = $heading = $this->_appearance['label'];
+		$title = $heading = Appearances::processLabel($this->_appearance['label']);
 		if ($this->_appearance['id'] === 0 && $color !== 'color')
 			$title = str_replace('color',$color,$title);
 
@@ -664,18 +664,18 @@ class ColorGuideController extends Controller {
 
 		if ($creating){
 			if (Permission::insufficient('staff') && !$this->_personalGuide)
-				Response::fail("You don't have permission to add appearances to the official Color Guide");
+				Response::fail("You don’t have permission to add appearances to the official Color Guide");
 
 			if ($this->_personalGuide){
 				try {
 					$availSlots = $currentUser->getPCGAvailableSlots();
 				}
 				catch (NoPCGSlotsException $e){
-					Response::fail("You don't have any slots. If you'd like to know how to get some, click the blue <strong class='color-darkblue'>What?</strong> button on your <a href='/u'>Account page</a> to learn more about this feature.");
+					Response::fail("You don’t have any slots. If you’d like to know how to get some, click the blue <strong class='color-darkblue'>What?</strong> button on your <a href='/u'>Account page</a> to learn more about this feature.");
 				}
 				if ($availSlots === 0){
 					$remain = Users::calculatePersonalCGNextSlot($currentUser->getPCGAppearances(null, true));
-					Response::fail("You don't have enough slots to create another appearance. Delete other ones or finish $remain more ".CoreUtils::makePlural('request',$remain).'.');
+					Response::fail("You don’t have enough slots to create another appearance. Delete other ones or finish $remain more ".CoreUtils::makePlural('request',$remain).'.');
 				}
 			}
 		}
@@ -878,7 +878,7 @@ class ColorGuideController extends Controller {
 					$possibleIDs[$cg['groupid']] = true;
 				foreach ($order as $i => $GroupID){
 					if (empty($possibleIDs[$GroupID]))
-						Response::fail("There's no group with the ID of $GroupID on this appearance");
+						Response::fail("There’s no group with the ID of $GroupID on this appearance");
 
 					$Database->where('groupid', $GroupID)->update('colorgroups',array('order' => $i));
 				}
@@ -1355,11 +1355,11 @@ HTML;
 					$AppearanceID = (new Input('addto','int',array(Input::IS_OPTIONAL => true)))->out();
 					if (isset($AppearanceID)){
 						if ($AppearanceID === 0)
-							Response::success("The tag was created, <strong>but</strong> it could not be added to the appearance because it can't be tagged.");
+							Response::success("The tag was created, <strong>but</strong> it could not be added to the appearance because it can’t be tagged.");
 
 						$Appearance = $Database->where('id', $AppearanceID)->getOne('appearances');
 						if (empty($Appearance))
-							Response::success("The tag was created, <strong>but</strong> it could not be added to the appearance (<a href='/cg/v/$AppearanceID'>#$AppearanceID</a>) because it doesn't seem to exist. Please try adding the tag manually.");
+							Response::success("The tag was created, <strong>but</strong> it could not be added to the appearance (<a href='/cg/v/$AppearanceID'>#$AppearanceID</a>) because it doesn’t seem to exist. Please try adding the tag manually.");
 
 						if (!$Database->insert('tagged',array(
 							'tid' => $data['tid'],
@@ -1458,7 +1458,7 @@ HTML;
 			$GroupID = intval($params['id'], 10);
 			$Group = $Database->where('groupid', $GroupID)->getOne('colorgroups');
 			if (empty($GroupID))
-				Response::fail("There's no $color group with the ID of $GroupID");
+				Response::fail("There’s no $color group with the ID of $GroupID");
 
 			if ($action === 'get'){
 				$Group['Colors'] = ColorGroups::getColors($Group['groupid']);

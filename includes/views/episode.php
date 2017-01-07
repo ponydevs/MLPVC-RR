@@ -83,7 +83,7 @@ if ($do === 'da-auth' && isset($err)){
 			$export['FULLSIZE_MATCH_REGEX'] = $FULLSIZE_MATCH_REGEX;
 		echo CoreUtils::exportVars($export);
 	} else { ?>
-	<h1>There's nothing here yet&hellip;</h1>
+	<h1>There’s nothing here yet&hellip;</h1>
 	<p>&hellip;but there will be!</p>
 
 <?php   if (Permission::sufficient('staff'))

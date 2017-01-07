@@ -37,7 +37,7 @@ class Image {
 		$tooBig = $width > $max[0] || $height > $max[1];
 		if ($tooSmall || $tooBig){
 			unlink($path);
-			Response::fail('The image\'s '.(
+			Response::fail('The image’s '.(
 				($tooBig ? $width > $max[0] : $width < $min[0])
 				?(
 					($tooBig ? $height > $max[1] : $height < $min[1])
@@ -49,7 +49,7 @@ class Image {
 					?'height is'
 					:'dimensions are'
 				)
-			).' too '.($tooBig?'big':'small').', please upload a '.($tooBig?'smaller':'larger')." image.<br>The ".($tooBig?'maximum':'minimum')." size is ".($tooBig?$max[0]:$min[0])."px wide by ".($tooBig?$max[1]:$min[1])."px tall, and you uploaded an image that's {$width}px wide and {$height}px tall.</p>");
+			).' too '.($tooBig?'big':'small').', please upload a '.($tooBig?'smaller':'larger')." image.<br>The ".($tooBig?'maximum':'minimum')." size is ".($tooBig?$max[0]:$min[0])."px wide by ".($tooBig?$max[1]:$min[1])."px tall, and you uploaded an image that’s {$width}px wide and {$height}px tall.</p>");
 		}
 	}
 

@@ -113,7 +113,7 @@
 	};
 	$.ctxmenu.triggerItem = ($el, nth) => {
 		let $ch = $el.data('ctxmenu-items').filter(':not(.sep)');
-		if (nth < 1 || $ch.length-1 < nth) throw new Error(`There's no such menu option: ${nth}`);
+		if (nth < 1 || $ch.length-1 < nth) throw new Error(`There’s no such menu option: ${nth}`);
 		$ch.eq(nth).children('a').triggerHandler('click');
 	};
 	$.ctxmenu.setDefault = ($el, nth) => {

@@ -51,10 +51,10 @@ DocReady.push(function(){
 			$.mk('form',`${action}-form`).html(
 				`<p>${Action}ing ${name} will ${
 					action === 'banish'
-					? "immediately sign them out of every session and won't allow them to log in again. Please, only do this if it's absolutely necessary."
+					? "immediately sign them out of every session and won’t allow them to log in again. Please, only do this if it’s absolutely necessary."
 					: "allow them to sign in to the site again."
 				}</p>
-				<p>You must provide a reason (5-255 chars.) for the ${action.replace(/ish$/,'')} which will be added to the log entry and appear in the user's banishment history.</p>
+				<p>You must provide a reason (5-255 chars.) for the ${action.replace(/ish$/,'')} which will be added to the log entry and appear in the user’s banishment history.</p>
 				<input type="text" name="reason" placeholder="Enter a reason" required pattern="^.{5,255}$" value="${Action}ing because ">
 				${action === 'banish'?'<img src="/img/pre-ban.svg" alt="Sad twilight">':''}`
 			),

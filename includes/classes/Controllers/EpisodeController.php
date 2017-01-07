@@ -37,7 +37,7 @@ class EpisodeController extends Controller {
 		if (!empty($EpData)){
 			$this->_episode = Episodes::getActual($EpData['season'], $EpData['episode'], Episodes::ALLOW_MOVIES);
 			if (empty($this->_episode))
-				Response::fail("There's no episode with this season & episode number");
+				Response::fail("There’s no episode with this season & episode number");
 		}
 		else if ($required)
 			CoreUtils::notFound();
@@ -110,10 +110,10 @@ class EpisodeController extends Controller {
 					Episodes::ALLOW_MOVIES
 				);
 				if (!empty($Target))
-					Response::fail("There's already an episode with the same season & episode number");
+					Response::fail("There’s already an episode with the same season & episode number");
 
 				if ((new Episode($insert))->getPostCount() > 0)
-					Response::fail('This epsiode\'s ID cannot be changed because it already has posts and this action could break existing links');
+					Response::fail('This epsiode’s ID cannot be changed because it already has posts and this action could break existing links');
 			}
 		}
 		else if ($canEditID){
