@@ -606,7 +606,7 @@ class CoreUtils {
 			}
 			if ($GLOBALS['signedIn']){
 				$NavItems['u'] = array("/@{$GLOBALS['currentUser']->name}",'Account');
-				if (isset($scope['Owner']))
+				if (isset($scope['Owner']) && $scope['Owner']->id === $GLOBALS['currentUser']->id)
 					$NavItems['u']['subitem'] = 'Personal Color Guide';
 			}
 			if ($do === 'user' || Permission::sufficient('staff')){
