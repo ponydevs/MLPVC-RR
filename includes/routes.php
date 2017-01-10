@@ -37,7 +37,9 @@ $router->map('GET',      '/[cg]/[eqg:eqg]?/[i]?',                               
 $router->map('GET',      '/[cg]/[eqg:eqg]?/full',                               'ColorGuideController#fullList');
 $router->map('GET',      '/[cg]/[eqg:eqg]?/tags/[i]?',                          'ColorGuideController#tagList');
 $router->map('GET',      '/[cg]/[eqg:eqg]?/changes/[i]?',                       'ColorGuideController#changeList');
-$router->map('GET',      '/[cg]/[eqg:eqg]?/[v]/[i:id][adi]?',                   'ColorGuideController#appearancePage');
+$router->map('GET',      '/[cg]/[eqg:eqg]?/[v]/[i:id]',                         'ColorGuideController#appearancePage');
+$router->map('GET',      '/[cg]/[eqg:eqg]?/[v]/[i:id]-[adi]',                   'ColorGuideController#appearancePage');
+$router->map('GET',      '/[cg]/[eqg:eqg]?/[v]/[adi]-[i:id]',                   'ColorGuideController#appearancePage');
 $router->map('GET',      '/[cg]/[eqg:eqg]?/[v]/[i:id][cgimg:type].[cgext:ext]', 'ColorGuideController#appearanceAsFile');
 $router->map('GET',      '/[cg]/[eqg:eqg]?/sprite(-colors)?/[i:id][adi]?',      'ColorGuideController#spriteColors');
 $router->map('GET|POST', '/[cg]/get-tags',                                      'ColorGuideController#getTags');
@@ -56,7 +58,9 @@ $router->map('GET', '/s/[rr:thing]/[i:id]',            'PostController#share');
 $router->map('GET', '/users',                          'UsersController#list');
 $router->map('GET', '/[user]/[un:name]?',              'UserController#profile');
 $router->map('GET', '/[user]/[un:name]/[cg]/[i]?',     'ColorGuideController#personalGuide');
-$router->map('GET', '/[user]/[un:name]/[cg]/[v]/[i:id][adi]?', 'ColorGuideController#personalAppearancePage');
+$router->map('GET', '/[user]/[un:name]/[cg]/[v]/[i:id]',       'ColorGuideController#personalAppearancePage');
+$router->map('GET', '/[user]/[un:name]/[cg]/[v]/[i:id]-[adi]', 'ColorGuideController#personalAppearancePage');
+$router->map('GET', '/[user]/[un:name]/[cg]/[v]/[adi]-[i:id]', 'ColorGuideController#personalAppearancePage');
 $router->map('GET', '/[user]/[un:name]/[cg]/[v]/[i:id][cgimg:type].[cgext:ext]', 'ColorGuideController#personalAppearanceAsFile');
 $router->map('GET', '/[user]/[un:name]/[cg]/[eqg:eqg]?/sprite(-colors)?/[i:id][adi]?', 'ColorGuideController#spriteColors');
 
