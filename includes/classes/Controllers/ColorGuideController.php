@@ -545,7 +545,7 @@ class ColorGuideController extends Controller {
 				: '';
 
 			$Database->disableAutoClass();
-			$CM = Cutiemarks::get($p['id'], '\'http://fav.me/\'||favme as link, facing');
+			$CM = Cutiemarks::get($p['id'], '\'http://fav.me/\'||favme as link, facing', false);
 			if (!empty($CM))
 				$AppendAppearance['CutieMark'] = $CM;
 

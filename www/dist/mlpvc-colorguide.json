@@ -7511,16 +7511,16 @@
 						{
 							"order": 5,
 							"label": "Inner Pupil",
-							"hex": "#FFFFFF"
+							"hex": "#000000"
 						},
 						{
 							"order": 6,
-							"label": "Eyelid Fill 1",
+							"label": "Eyelid Fill",
 							"hex": "#093434"
 						},
 						{
 							"order": 7,
-							"label": "Eyelid Fill 2",
+							"label": "Eyelid Highlight",
 							"hex": "#0F5351"
 						}
 					]
@@ -7586,28 +7586,33 @@
 						},
 						{
 							"order": 2,
+							"label": "Upper Carapace Gradient Middle",
+							"hex": "#1E837F"
+						},
+						{
+							"order": 3,
 							"label": "Upper Carapace Gradient Back",
 							"hex": "#52B648"
 						},
 						{
-							"order": 3,
+							"order": 4,
 							"label": "Upper Carapace Shine",
 							"hex": "#B8FFFA"
 						},
 						{
-							"order": 4,
+							"order": 5,
 							"label": "Lower Carapace Outline",
 							"hex": "#248697"
-						},
-						{
-							"order": 5,
-							"label": "Lower Carapace Gradient Bottom",
-							"hex": "#00485F"
 						},
 						{
 							"order": 6,
 							"label": "Lower Carapace Gradient Top",
 							"hex": "#459D72"
+						},
+						{
+							"order": 7,
+							"label": "Lower Carapace Gradient Bottom",
+							"hex": "#00485F"
 						}
 					]
 				},
@@ -7654,9 +7659,9 @@
 				12,
 				353,
 				399,
-				422,
 				430,
-				438
+				438,
+				453
 			],
 			"RelatedAppearances": []
 		},
@@ -7992,6 +7997,12 @@
 			"ishuman": false,
 			"added": "2016-03-06 06:03:33.719822+01",
 			"private": false,
+			"CutieMark": [
+				{
+					"link": "http://fav.me/dauj5bo",
+					"facing": null
+				}
+			],
 			"ColorGroups": {
 				"416": {
 					"groupid": 416,
@@ -19904,10 +19915,16 @@
 			"id": 110,
 			"order": 114,
 			"label": "Octavia Melody",
-			"notes": "",
+			"notes": "Cutie mark orientation is inconsistent between episodes and within episodes. In general, using Best Night Ever and Slice of Life, the staff mark reads towards her head (the tail of the mark facing front).",
 			"ishuman": false,
 			"added": "2016-04-14 23:29:54.839394+02",
 			"private": false,
+			"CutieMark": [
+				{
+					"link": "http://fav.me/daumpuo",
+					"facing": "right"
+				}
+			],
 			"ColorGroups": {
 				"590": {
 					"groupid": 590,
@@ -39922,7 +39939,7 @@
 			"name": "s06e25",
 			"title": null,
 			"type": "ep",
-			"uses": 5,
+			"uses": 4,
 			"synonym_of": null
 		},
 		"423": {
@@ -40154,6 +40171,14 @@
 			"name": "snowfall frost",
 			"title": null,
 			"type": "char",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"453": {
+			"tid": 453,
+			"name": "s06e25-26",
+			"title": null,
+			"type": "ep",
 			"uses": 1,
 			"synonym_of": null
 		}
