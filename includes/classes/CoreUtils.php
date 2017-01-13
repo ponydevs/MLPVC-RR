@@ -1001,20 +1001,13 @@ class CoreUtils {
 	}
 
 	static function socketEvent($event, array $data){
-		$options = array(
+		$elephant = new \ElephantIO\Client(new SocketIOEngineVersion1X('https://ws.'.WS_SERVER_DOMAIN.':8667', array(
 			'context' => array(
 				'http' => array(
 					'header' => 'Cookie: access='.urlencode(WS_SERVER_KEY)
 				)
 			)
-		);
-		if (preg_match(new RegExp('\.lc$'), WS_SERVER_DOMAIN))
-			$options['context']['ssl'] = array(
-		        "verify_peer" => false,
-		        "verify_peer_name" => false,
-			);
-
-		$elephant = new \ElephantIO\Client(new SocketIOEngineVersion1X('https://ws.'.WS_SERVER_DOMAIN.':8667', $options));
+		)));
 
 		$elephant->initialize();
 		$elephant->emit($event, $data);
