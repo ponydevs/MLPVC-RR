@@ -1,5 +1,8 @@
 <?php
-use App\Logs; ?>
+use App\Logs;
+/** @var $heading string */
+/** @var $Pagination App\Pagination */
+/** @var $LogItems array */ ?>
 <div id="content">
 	<h1><?=$heading?></h1>
 <?php
@@ -17,7 +20,7 @@ use App\Logs; ?>
 			<option value=''<?=!isset($type)?' selected':''?>>all</option>
 			<optgroup label="Specific entry type"><?php
 		foreach (Logs::$LOG_DESCRIPTION as $value => $label)
-			echo "<option value='$value'".($type===$value?' selected':'').">$label</option>";
+			echo "<option value='$value'".(($type??null)===$value?' selected':'').">$label</option>";
 		?></optgroup>
 		</select>
 		<strong>entries from</strong>

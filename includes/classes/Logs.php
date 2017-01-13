@@ -381,11 +381,11 @@ class Logs {
 	/**
 	 * Render log page <tbody> content
 	 *
-	 * @param $LogItems
+	 * @param array $LogItems
 	 *
 	 * @return string
 	 */
-	static function getTbody($LogItems){
+	static function getTbody($LogItems):string {
 		global $Database;
 
 		$HTML = '';
