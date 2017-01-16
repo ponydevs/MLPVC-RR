@@ -134,13 +134,9 @@ class Episodes {
 		if ($serverSideRedirect)
 			CoreUtils::fixPath($url);
 
-		$js = array('imagesloaded.pkgd','jquery.ba-throttle-debounce','jquery.fluidbox','Chart','episode');
-		if (Permission::sufficient('member'))
-			$js[] = 'episode-manage';
-		if (Permission::sufficient('staff')){
+		$js = array('imagesloaded.pkgd','jquery.ba-throttle-debounce','jquery.fluidbox','Chart','episode','episode-manage');
+		if (Permission::sufficient('staff'))
 			$js[] = 'moment-timezone';
-			$js[] = 'episodes-manage';
-		}
 
 		if (!$CurrentEpisode->isMovie){
 			$PrevEpisode = $Database
