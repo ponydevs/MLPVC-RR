@@ -466,7 +466,7 @@ HTML;
 			? '.'
 			: ", listed below.".(
 				$sameUser
-				? "Please submit $them to the group gallery as soon as possible to have $them spot-checked for any issues. As stated in the rules, the goal is to add finished images to the group gallery, making $them easier to find for everyone.".(
+				? " Please submit $them to the group gallery as soon as possible to have $them spot-checked for any issues. As stated in the rules, the goal is to add finished images to the group gallery, making $them easier to find for everyone.".(
 					$AwaitCount>10
 					? " You seem to have a large number of images that have not been approved yet, please submit them to the group soon if you haven’t already."
 					: ''
