@@ -511,7 +511,7 @@ HTML;
 	 * @return string
 	 */
 	static function getCMPreviewSVGURL($cm){
-		$path = str_replace('#',$cm->ponyid,CGUtils::CMDIR_SVG_PATH);
+		$path = str_replace('@',$cm->facing,str_replace('#',$cm->ponyid,CGUtils::CMDIR_SVG_PATH));
 		return "/cg/v/{$cm->ponyid}d.svg?facing={$cm->facing}&t=".(file_exists($path) ? filemtime($path) : time());
 	}
 
