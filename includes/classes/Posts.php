@@ -556,7 +556,7 @@ HTML;
 						ORDER BY pl.entryid ASC
 						LIMIT 1", array($type, $Post->id)
 					);
-					$approvedby = $isStaff && isset($LogEntry['initiator']) ? 'by '.(Users::get($LogEntry['initiator'])->getProfileLink()) : '';
+					$approvedby = $isStaff && isset($LogEntry['initiator']) ? ' by '.(Users::get($LogEntry['initiator'])->getProfileLink()) : '';
 					$locked_at = $approved ? "<em class='approve-date'>Approved <strong>".Time::tag(strtotime($LogEntry['timestamp']))."</strong>$approvedby</em>" : '';
 				}
 				$Image .= $post_label.$posted_at.$reserved_at.$finished_at.$locked_at;
