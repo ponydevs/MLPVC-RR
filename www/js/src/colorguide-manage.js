@@ -60,50 +60,57 @@ DocReady.push(function(){
 				</div>
 				<label><input type='checkbox' name='private'> Make private (only ${PersonalGuide?'you':'admins'} can see added colors)</label>`
 			),
-		mkCMDataLi = function(el = {}){
-			let $facingSelector = $.mk('div').html(
-				`<p>Body orientation</p>
-				<div class="radio-group">
+		mkCMDataLi = function(i, el = {}){
+			if (typeof el.facing === 'undefined')
+				el.facing = 'right';
+			let $facingSelector = $.mk('div').attr('class','disabled-show').html(
+				`<p>Body orientation${i===0?'':`: <strong class="orient">${$.capitalize(el.facing)}</strong><input type="hidden" name="facing[]" value="${el.facing}">`}</p>`+
+				(i===0?`<div class="radio-group">
 					<label><input type="radio" name="facing[]" value="left" required><span>Left</span></label>
 					<label><input type="radio" name="facing[]" value="right" required><span>Right</span></label>
 					<label><input type="radio" name="facing[]" value="" required><span>Symmetrical</span></label>
-				</div>`
+				</div>`:'')
 			);
 			$facingSelector.find(`input[value='${el.facing?el.facing:''}']`).prop('checked', true);
 			return $.mk('li').append(
-					el.cmid ? $.mk('input').attr({
-						type: 'hidden',
-						value: el.cmid,
-						name: 'cmid[]',
-					}) : undefined,
-					$.mk('label').append(
-						"<span>Deviation link</span>",
-						$.mk('input').attr({
-							type: 'url',
-							name: 'favme[]',
-							required: true,
-						}).val(el.favme?`http://fav.me/${el.favme}`:undefined)
-					),
-					$facingSelector,
-					`<div class="notice info">If the CM is symmetrical then both the left-facing and right-facing display will show the same image.</div>`,
-					$.mk('div').attr('class','label').append(
-						"<span>Preview rotation (<span class='rotation-display'></span>°)</span>",
-						$.mk('input').attr({
-							type: 'range',
-							name: 'favme_rotation[]',
-							min: -180,
-							max: 180,
-							step: 2,
-							'class': 'rotation-range',
-							required: true,
-						}).val(el.favme_rotation)
-					),
-					$.mk('label').append(
-						"<span>Custom preview (optional)</span>",
-						$.mk('input').attr({
-							type: 'url',
-							name: 'preview_src[]',
-						}).val(el.preview_src)
+					$.mk('fieldset').append(
+						$.mk('legend').append(
+							`<span>Cutie Mark #${i+1}</span>`,
+							(i>0?`<button class="section-toggle btn blue typcn"></button>`:'')
+						),
+						el.cmid ? $.mk('input').attr({
+							type: 'hidden',
+							value: el.cmid,
+							name: 'cmid[]',
+						}) : undefined,
+						$facingSelector,
+						$.mk('label').append(
+							"<span>Deviation link</span>",
+							$.mk('input').attr({
+								type: 'url',
+								name: 'favme[]',
+								required: true,
+							}).val(el.favme?`http://fav.me/${el.favme}`:undefined)
+						),
+						$.mk('div').attr('class','label disabled-show').append(
+							"<span>Preview rotation (<span class='rotation-display'></span>°)</span>",
+							$.mk('input').attr({
+								type: 'range',
+								name: 'favme_rotation[]',
+								min: -180,
+								max: 180,
+								step: 2,
+								'class': 'rotation-range',
+								required: true,
+							}).val(el.favme_rotation)
+						),
+						$.mk('label').append(
+							"<span>Custom preview (optional)</span>",
+							$.mk('input').attr({
+								type: 'url',
+								name: 'preview_src[]',
+							}).val(el.preview_src)
+						)
 					)
 				);
 		},
@@ -326,11 +333,36 @@ DocReady.push(function(){
 											$CMPreviewImages,
 											$CMPreview = $.mk('ul').attr('class','dialog-preview'),
 											$CMList = $.mk('ul').attr('class','cm-list'),
+											$SectionToggle,
 											updateRQ = false,
 											updateText = 'Update preview',
+											$CMDataEditorForm,
+											updateRange = (range) => {
+												let event = $.Event('change');
+												event.target = range;
+												$CMDataEditorForm.trigger(event);
+											},
+											toggleSecondCMSection = (disable, $secondCM) => {
+												if (typeof $secondCM === 'undefined')
+													$secondCM = $CMList.children().eq(1);
+												$SectionToggle[disable?'hide':'show']();
+												if (disable)
+													$secondCM.addClass('readonly').find('input:not(:disabled)').disable().addClass('force-disabled');
+												else $secondCM.removeClass('readonly').find('.force-disabled').enable();
+												let $fieldset = $secondCM.children('fieldset'),
+													ignored = $fieldset.hasClass('ignore'),
+													favmeValid = Boolean($fieldset.find('input[name="favme[]"]').val() || $fieldset.find('input[name="preview_src[]"]').val());
+												if ((disable && ignored) || (!disable && !ignored && !favmeValid))
+													$SectionToggle.triggerHandler('click');
+											},
+											updateRanges = () => {
+												$CMList.find('.rotation-range').each(function(){
+													updateRange(this);
+												});
+											},
 											previewUpdated = () => {
 												$CMPreviewImages = $CMPreview.find('.img');
-												$CMList.find('.rotation-range').trigger('change');
+												updateRanges();
 											},
 											$UpdatePreviewButton = $.mk('button').attr('class','darkblue typcn typcn-arrow-sync').text(updateText).on('click',function(e){
 												e.preventDefault();
@@ -342,7 +374,7 @@ DocReady.push(function(){
 
 												let $this = $(this),
 													data = $this.closest('form').mkData();
-												$this.disable().html('Upading preview&hellip;');
+												$this.disable().html('Updating preview&hellip;');
 												$CMPreview.addClass('loading');
 												updateRQ = $.post(`${PGRq}/cg/appearance/getcmpreview/${ponyID}${EQGRq}`,data,$.mkAjaxHandler(function(){
 													$this.text(updateText).enable();
@@ -379,47 +411,105 @@ DocReady.push(function(){
 														}));
 													});
 												});
-											}),
-											$CMDataEditorForm = $.mk('form').attr('id','cm-data-editor').append(
-												$CMPreview,
-												$CMList,
-												$UpdatePreviewButton
-											).on('change mousemove keydown','.rotation-range',function(){
-												let $this = $(this),
-													val = $this.val();
-												$this.prev().children('.rotation-display').text(val);
-												if (typeof $CMPreviewImages !== 'undefined'){
-													$CMPreviewImages.eq(0).css('transform',`rotateZ(${val}deg)`);
-													if ($CMPreviewImages.eq(1).length)
-														$CMPreviewImages.eq(1).css('transform',`rotateZ(${-val}deg)`);
-												}
-											}).on('change click keydown','input[name="facing[]"]',function(){
-												let $this = $(this),
-													$rangeSelector = $this.parents('form').find('.rotation-range'),
-													$group = $this.parents('.radio-group'),
-													$checked = $group.find('input:checked'),
-													isFacingRight = $checked.val() === 'right',
-													val = $rangeSelector.val();
-												if ((val < 0 && isFacingRight) || (val > 0 && !isFacingRight)){
-													$rangeSelector.val(val*-1).trigger('change');
-													$UpdatePreviewButton.triggerHandler('click');
-												}
 											});
 
+										$CMDataEditorForm = $.mk('form').attr('id','cm-data-editor').append(
+											$CMPreview,
+											$CMList,
+											$UpdatePreviewButton
+										).on('change mousemove keydown','.rotation-range',function(e){
+											let $this = $(e.target),
+												val = $this.val();
+											$this.prev().children('.rotation-display').text(val);
+											if (typeof $CMPreviewImages !== 'undefined'){
+												let $li = $this.closest('li'),
+													index = $li.index();
+												$CMPreviewImages.eq(index).css('transform',`rotateZ(${val}deg)`);
+												if (index === 0 && $li.find('input[name="facing[]"]:checked').val() === ''){
+													if ($CMPreviewImages.eq(1).length){
+														let $range = $li.next().find('.rotation-range');
+														$range.val(-val);
+														updateRange($range.get(0));
+														$CMPreviewImages.eq(1).css('transform',`rotateZ(${-val}deg)`);
+													}
+												}
+											}
+										}).on('change click keydown','input[name="facing[]"]',function(e){
+											let $this = $(this),
+												$group = $this.parents('.radio-group'),
+												facing = $group.find('input:checked').val(),
+												$secondCM = $CMList.children().eq(1);
+
+											let orient = ({
+												'': 'right',
+												'left': 'right',
+												'right': 'left',
+											})[facing];
+											$secondCM.find('.orient').text($.capitalize(orient)).next().val(orient);
+											if (e.type === 'change'){
+												if (facing !== ''){
+													let $rangeSelectors = $this.parents('form').find('.rotation-range');
+													$rangeSelectors.each(function(i){
+														let $rangeSelector = $(this),
+															// Invert condition on second element
+															facingThatWay = facing === (i===0 ? 'right' : 'left'),
+															val = $rangeSelector.val();
+														if ((val < 0 && facingThatWay) || (val > 0 && !facingThatWay)){
+															$rangeSelector.val(val*-1);
+															updateRange(this);
+														}
+													});
+													$UpdatePreviewButton.triggerHandler('click');
+													$SectionToggle.show();
+												}
+												else $SectionToggle.hide();
+
+												toggleSecondCMSection(facing === '', $secondCM);
+											}
+										});
+
 										if (data.cms.length){
-											$.each(data.cms,(_,el)=>{
-												$CMList.append(
-													mkCMDataLi(el)
-												);
+											$.each(data.cms,(i,el)=>{
+												$CMList.append( mkCMDataLi(i, el) );
 											});
+											if (data.cms.length === 1)
+												$CMList.append( mkCMDataLi(1) );
 											$CMPreview.html(data.preview);
 											previewUpdated();
+											updateRanges();
 											$CMDataEditorForm.append($DeleteButton);
 										}
 										else {
-											$CMList.append(mkCMDataLi());
+											$CMList.append(mkCMDataLi(0),mkCMDataLi(1));
 										}
-										$CMList.find('.rotation-range').trigger('change');
+
+										$SectionToggle = $CMDataEditorForm.find('.section-toggle').on('click',function(e){
+											e.preventDefault();
+
+											let $this = $(this),
+												$fieldset = $this.closest('fieldset');
+											if ($fieldset.hasClass('ignore')){
+												$fieldset.removeClass('ignore');
+												$fieldset.find('.force-disabled').enable().parent().removeClass('hidden');
+											}
+											else {
+												$fieldset.addClass('ignore');
+												$fieldset.find('input:not(:disabled)').disable().addClass('force-disabled').parent().addClass('hidden');
+											}
+											$this.toggleClass('typcn-plus typcn-minus').toggleHtml(['Add','Remove']);
+										});
+
+										if (data.cms.length === 1)
+											$SectionToggle.addClass('typcn-minus').text('Remove');
+										else $SectionToggle.addClass('typcn-plus').text('Add');
+
+										if (!data.cms.facing){
+											$SectionToggle.hide();
+											toggleSecondCMSection(true);
+										}
+										else {
+											$SectionToggle.triggerHandler('click');
+										}
 
 										$.Dialog.request(false,$CMDataEditorForm,'Save',function($form){
 											$form.on('submit',function(e){
@@ -445,6 +535,8 @@ DocReady.push(function(){
 												}));
 											});
 										});
+
+										window.updateRanges = updateRanges;
 									}));
 								})
 						)

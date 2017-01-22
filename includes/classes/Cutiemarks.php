@@ -18,7 +18,7 @@ class Cutiemarks {
 		global $Database;
 
 		/** @var $CMs Cutiemark[] */
-		$CMs = $Database->where('ponyid', $AppearanceID)->get('cutiemarks', null, $cols);
+		$CMs = $Database->where('ponyid', $AppearanceID)->orderBy('facing','ASC')->get('cutiemarks', null, $cols);
 		if ($procSym)
 			self::processSymmetrical($CMs);
 		return $CMs;
@@ -75,11 +75,15 @@ HTML;
 	}
 
 	// null (=symmetric) is stringified to '' by implode
-	const VALID_FACING_COMBOS = ['left','right',''];
-	// TODO Implement the remaining facing options
-	//const VALID_FACING_COMBOS = ['left,right','right,left','left','right',''];
+	const VALID_FACING_COMBOS = ['left,right','right,left','left','right',''];
 
-	static function postProcess(&$data, int $index){
+	/**
+	 * @param array $data
+	 * @param int   $index
+	 *
+	 * @return bool
+	 */
+	static function postProcess(&$data, int $index):bool {
 		$favme = isset($_POST['favme'][$index]) ? trim($_POST['favme'][$index]) : null;
 		if (empty($favme)){
 			if ($index > 0)
@@ -131,6 +135,7 @@ HTML;
 				$data['preview_src'] = $preview_src;
 			}
 		}
+		return true;
 	}
 
 	/**

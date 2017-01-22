@@ -320,9 +320,14 @@
 
 	// Convert .serializeArray() result to object
 	$.fn.mkData = function(obj){
-		let tempdata = $(this).serializeArray(), data = {};
+		let tempdata = this.find(':input:valid').serializeArray(), data = {};
 		$.each(tempdata,function(i,el){
-			data[el.name] = el.value;
+			if (/\[]$/.test(el.name)){
+				if (typeof data[el.name] === 'undefined')
+					data[el.name] = [];
+				data[el.name].push(el.value);
+			}
+			else data[el.name] = el.value;
 		});
 		if (typeof obj === 'object')
 			$.extend(data, obj);

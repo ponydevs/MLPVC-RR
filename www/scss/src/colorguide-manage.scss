@@ -202,22 +202,58 @@
 		> li {
 			display: block;
 
-			> * {
-				display: block;
+			&.readonly > fieldset {
+				opacity: .8;
+				cursor: not-allowed;
 
-				&:not(:last-child){
-					margin-bottom: 10px;
+				> * {
+					pointer-events: none;
 				}
 
-				> span {
+				> :not(legend):not(.disabled-show) {
+					display: none;
+				}
+			}
+
+			> fieldset {
+				&.ignore:after {
 					display: block;
-					margin-bottom: 5px;
+					content: "NONE";
+					font-size: 1.4em;
+					opacity: .5;
+					letter-spacing: .1em;
 				}
-				> input {
-					&[type="text"], &[type="url"] {
+				> :not(legend) {
+					display: block;
+
+					&:not(:last-child):not(legend) {
+						margin-bottom: 10px;
+					}
+
+					> span {
 						display: block;
-						width: 100%;
-						box-sizing: border-box;
+						margin-bottom: 5px;
+					}
+					> input {
+						&[type="text"], &[type="url"] {
+							display: block;
+							width: 100%;
+							box-sizing: border-box;
+						}
+					}
+				}
+				> legend {
+					text-align: left;
+					padding: 0 10px;
+
+					> * {
+						vertical-align: middle;
+					}
+
+					button {
+						displaY: inline;
+						margin: 0 0 0 .5em;
+						padding: 1px 2px;
 					}
 				}
 			}

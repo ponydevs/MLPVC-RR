@@ -146,7 +146,7 @@
 	}
 }
 // Global Stuff
-.hidden { display: none }
+.hidden { display: none !important }
 .unreadable { font-size: 0 }
 :focus { outline: 0 }
 a > img { border: 0 }

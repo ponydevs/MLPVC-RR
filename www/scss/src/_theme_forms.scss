@@ -94,6 +94,8 @@ input[type=checkbox] {
 			}
 
 			.radio-group {
+				user-select: none;
+
 				label {
 					display: inline-block;
 					flex: 1 1 auto;

@@ -1008,22 +1008,23 @@ class ColorGuideController extends Controller {
 				Response::done(['cms' => $CMs, 'preview' => Cutiemarks::getListForAppearancePage($ProcessedCMs, NOWRAP)]);
 			break;
 			case "getcmpreview":
-				// TODO Handle the rest of the facing options
-				$data = [
-					'ponyid' => $this->_appearance['id'],
-				];
-				Cutiemarks::postProcess($data, 0);
+				$CMs = [];
 
-				$CMs = [new Cutiemark($data)];
+				$CM1 = [ 'ponyid' => $this->_appearance['id'] ];
+				Cutiemarks::postProcess($CM1, 0);
+				$CMs[] = new Cutiemark($CM1);
+
+				$CM2 = [ 'ponyid' => $this->_appearance['id'] ];
+				if (Cutiemarks::postProcess($CM2, 1))
+					$CMs[] = new Cutiemark($CM2);
+
 				Cutiemarks::processSymmetrical($CMs);
 				Response::done(['html' => Cutiemarks::getListForAppearancePage($CMs, NOWRAP)]);
 			break;
 			case "setcms":
-				// TODO Handle the rest of the facing options
 				$data = [];
 				$newFacingValues = [];
-				//for ($i = 0; $i < 2; $i++){
-				$i = 0;
+				for ($i = 0; $i < 2; $i++){
 					$data[$i] = [
 						'ponyid' => $this->_appearance['id'],
 					];
@@ -1036,8 +1037,8 @@ class ColorGuideController extends Controller {
 						if (!$Database->where('cmid', $data[$i]['cmid'])->has('cutiemarks'))
 							Response::fail('The cutie mark you\'re trying to update does not exist');
 					}
-					$newFacingValues[$data[$i]['facing']] = $data[$i]['cmid'] ?? null;
-				//}
+					$newFacingValues[] = $data[$i]['facing'];
+				}
 
 				$CurrentCMs = Cutiemarks::get($this->_appearance['id']);
 				$usedFacingValues = [];
@@ -1045,7 +1046,7 @@ class ColorGuideController extends Controller {
 					foreach ($CurrentCMs as $cm)
 						$usedFacingValues[$cm->facing] = $cm->cmid;
 				}
-				$newfacing = implode(',',array_keys($newFacingValues));
+				$newfacing = implode(',',$newFacingValues);
 				if (!in_array($newfacing,Cutiemarks::VALID_FACING_COMBOS))
 					Response::fail("The used combination of facing values ($newfacing) is not allowed");
 
