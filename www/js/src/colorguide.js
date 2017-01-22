@@ -253,9 +253,10 @@ DocReady.push(function(){
 				.on('change',function(){
 					let $sel = $(this),
 						val = $sel.val(),
-						$els = $sel.parent().next().children().hide();
+						$els = $sel.parent().next().children().addClass('hidden');
+					console.log(val);
 					if (val)
-						$els.filter('.'+val).show();
+						$els.filter('.'+val).removeClass('hidden');
 				}),
 			$SwatchDlForm = $.mk('form').attr('id','swatch-save').append(
 				$.mk('label').attr('class','align-center').append(
