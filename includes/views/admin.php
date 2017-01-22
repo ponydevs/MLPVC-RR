@@ -37,7 +37,7 @@ use App\Posts;
 		<pre><code><strong>Nodes</strong><br><?=$client->cat()->nodes(['v' => true])?></code></pre>
 <?php   }
 		catch (\Elasticsearch\Common\Exceptions\NoNodesAvailableException $e){
-			echo "<pre><code><strong>Server is down.</strong></code></pre>";
+			echo "<strong>Server is down.</strong></code></pre>";
 		} ?>
 	</section>
 <?  } ?>
