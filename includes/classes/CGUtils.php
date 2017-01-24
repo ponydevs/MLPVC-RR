@@ -194,7 +194,7 @@ class CGUtils {
 			$movie = intval($_match[1], 10);
 			if ($movie <= 0)
 				return false;
-			return "movie#$movie";
+			return "movie$movie";
 		}
 		else return false;
 	}

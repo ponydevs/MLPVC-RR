@@ -453,7 +453,7 @@ HTML;
 
 		if ($Episode->isMovie){
 			$MovieTagIDs = [];
-			$MovieTag = $Database->where('name',"movie#$Episode->episode")->where('type','ep')->getOne('tags','tid');
+			$MovieTag = $Database->where('name',"movie{$Episode->episode}")->where('type','ep')->getOne('tags','tid');
 			if (!empty($MovieTag['tid']))
 				$MovieTagIDs[] = $MovieTag['tid'];
 			return $MovieTagIDs;

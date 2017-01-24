@@ -65,7 +65,7 @@ DocReady.push(function(){
 				$SearchForm.find('input[name="q"]').val(query);
 				$SearchForm.triggerHandler('submit');
 			}
-			else $.Navigation.visit('/cg'+(EQG?'/eqg':'')+`/1?q=${query.replace(/ /g,'+')}`);
+			else $.Navigation.visit('/cg'+(EQG?'/eqg':'')+`/1?q=${encodeURIComponent(query)}`);
 		});
 		$('ul.colors').children('li').find('.valid-color').each(function(){
 			let $this = $(this);

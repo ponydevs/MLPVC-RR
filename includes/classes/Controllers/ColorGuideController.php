@@ -1323,7 +1323,7 @@ Episode tags must be in one of the following formats:
 	</ul>
 </li>
 <li>
-	<code>movie#<var>M</var></code> where <var>M</var> ∈ <var>&#x2124;<sup>+</sup></var>
+	<code>movie<var>M</var></code> where <var>M</var> ∈ <var>&#x2124;<sup>+</sup></var>
 </li>
 </ol>
 HTML;
