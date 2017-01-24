@@ -144,17 +144,6 @@ if (!empty($Banishes)){
 		</section>
 		<section class="personal-settings">
 			<h2><?=$sameUser? Users::PROFILE_SECTION_PRIVACY_LEVEL['staff']:''?>Personal</h2>
-<?php   if (Permission::insufficient('developer', $User->role)){ ?>
-			<form action="/preference/set/p_disable_ga">
-				<label>
-					<input type="checkbox" name="value" value="1"<?=UserPrefs::get('p_disable_ga', $User->id)?' checked':''?> <?=!$sameUser?' disabled':''?>>
-					<span>Don’t associate my user ID with my on-site activity</span>
-<?php       if ($sameUser){ ?>
-					<button class="save typcn typcn-tick green" disabled>Save</button>
-<?php       } ?>
-				</label>
-			</form>
-<?php   } ?>
 			<form action="/preference/set/p_vectorapp">
 				<label>
 					<span>Publicly show my vector progam of choice: </span>

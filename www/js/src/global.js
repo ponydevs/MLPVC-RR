@@ -848,7 +848,7 @@
 					$.Dialog.wait(false, "Waiting for you to sign in");
 				};
 
-			if (!consent) $.Dialog.confirm('Privacy Notice',`<p>Dear User,</p><p>We must inform you that our website will store cookies on your device to remember your logged in status between browser sessions.</p><p>If you would like to avoid these completly harmless pieces of text which are required to use this website, click "Decline" and continue browsing as a guest.</p><p>In addition to persistent cookies, we use Google Analytics to track website traffic.</p><p>By default, browsing data will be tied to your user ID. If you do not want that, you can to turn this off by clicking the "Account" menu item and un-ticking the approperiate check box in the "Settings" section after you've logged in.</p><p>I’d like to take this opportunity to mention <a href="https://www.ublock.org/" target="_blank">uBlock</a>, a great extension that'll prevent not just us but many other sites from tracking your activity. This is not sponsored or anything, I just thought I’d let you know.</p><p>Sincerely,<br>The developer</p><p><em>This warning will not appear again if you accept our use of persistent cookies & Google Analytics.</em></p>`,['Accept','Decline'],opener);
+			if (!consent) $.Dialog.confirm('Privacy Notice',`<p>We must inform you that our website will store cookies on your device to remember your logged in status between browser sessions.</p><p>If you would like to avoid these completly harmless pieces of text which are required to log in to this website, click "Decline" and continue browsing as a guest.</p><p><em>This warning will not appear again if you accept our use of persistent cookies.</em></p>`,['Accept','Decline'],opener);
 			else opener(true);
 		});
 

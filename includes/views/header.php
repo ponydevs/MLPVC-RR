@@ -124,9 +124,6 @@ m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
 })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
 
 ga('create','<?=GA_TRACKING_CODE?>','auto');
-<?php   if ($signedIn && !UserPrefs::get('p_disable_ga')){ ?>
-ga('set', 'userId', '<?=$currentUser->id?>');
-<?php   } ?>
 ga('require','displayfeatures');
 ga('send','pageview');
 </script>
