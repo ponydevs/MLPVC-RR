@@ -440,7 +440,7 @@ HTML;
 	static function charDiff(string $old, string $new, $type = 'inline', FineDiff\Granularity\Granularity $gran = null):string {
 		if (!isset($gran))
 			$gran = new FineDiff\Granularity\Character;
-		$diff = (new FineDiff\Diff($gran))->render($old, $new);
+		$diff = str_replace('\n',"\n",(new FineDiff\Diff($gran))->render($old, $new));
 
 		return "<span class='btn darkblue view-switch' title='Left/Right click to change view mode'>diff</span><div class='log-diff $type'>$diff</div>";
 	}
