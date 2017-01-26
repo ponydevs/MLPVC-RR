@@ -7,7 +7,8 @@ use App\Tags;
 /** @var $EQG bool */
 /** @var $elasticAvail bool */
 /** @var $Pagination \App\Pagination */
-/** @var $Ponies array */ ?>
+/** @var $Ponies array */
+/** @var $Owner App\Models\User|array */ ?>
 <div id="content">
 	<h1><?=$heading?></h1>
 	<p>A searchable list of character <?=$color?>s from the <?=$EQG?'movies':'show'?></p>
@@ -54,6 +55,7 @@ use App\Tags;
 		'color' => $color,
 		'EQG' => $EQG,
 		'AppearancePage' => false,
+		'PersonalGuide' => $Owner->name ?? false,
 	);
 	if (Permission::sufficient('staff'))
 		$export = array_merge($export, array(
