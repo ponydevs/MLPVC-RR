@@ -1337,8 +1337,9 @@ HTML;
 					$data['type'] = $type;
 				}
 
-				if (!$adding) $Database->where('tid', $Tag['tid'],'!=');
-				if ($Database->where('name', $data['name'])->where('type', $data['type'])->has('tags') || $data['name'] === 'wrong cutie mark')
+				if (!$adding)
+					$Database->where('tid', $Tag['tid'],'!=');
+				if ($Database->where('name', $data['name'])->where('type', $data['type'])->has('tags'))
 					Response::fail("A tag with the same name and type already exists");
 
 				$data['title'] = (new Input('title','string',array(
@@ -1381,13 +1382,15 @@ HTML;
 				else {
 					$Database->where('tid', $Tag['tid'])->update('tags', $data);
 					$data = array_merge($Tag, $data);
-					if ($this->_appearancePage){
-						$ponyid = intval($_POST['APPEARANCE_PAGE'],10);
-						if ($Database->where('ponyid', $ponyid)->where('tid', $Tag['tid'])->has('tagged')){
+					$ponyid = !empty($this->_appearancePage) ? intval($_POST['APPEARANCE_PAGE'],10) : null;
+					$tagrelations = $Database->where('tid', $Tag['tid'])->get('tagged');
+					foreach ($tagrelations as $tagged){
+						Appearances::updateIndex($tagged['ponyid']);
+
+						if ($tagged['ponyid'] === $ponyid){
 							$data['needupdate'] = true;
 							$Appearance = $Database->where('id', $ponyid)->getOne('appearances');
 							$data['eps'] = Appearances::getRelatedEpisodesHTML($Appearance, $this->_EQG);
-							Appearances::updateIndex($Appearance['id']);
 						}
 					}
 				}

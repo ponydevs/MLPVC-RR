@@ -5,7 +5,7 @@
 	$color = 'color';
 	$signedIn = false;
 	/** @var $currentUser \App\Models\User */
-	$currentUser = null;
+	global $currentUser;
 	$do = !empty($_GET['do']) ? $_GET['do'] : 'index';
 	$data = !empty($_GET['data']) ? $_GET['data'] : '';
 	unset($_REQUEST['do']);
