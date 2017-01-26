@@ -51,7 +51,7 @@ class Appearances {
 	 * @return string
 	 */
 	static function getHTML($Appearances, $wrap = WRAP, $permission = null){
-		global $Database, $_MSG, $Search;
+		global $Database, $_MSG;
 
 		if (!isset($permission))
 			$permission = Permission::sufficient('staff');
@@ -63,7 +63,7 @@ class Appearances {
 			$img = self::getSpriteHTML($Appearance, $permission);
 			$updates = isset($Appearance['owner']) ? '' : self::getUpdatesHTML($Appearance['id']);
 			$notes = self::getNotesHTML($Appearance);
-			$tags = isset($Appearance['owner']) ? '' : $Appearance['id'] ? self::getTagsHTML($Appearance['id'], true, $Search) : '';
+			$tags = isset($Appearance['owner']) ? '' : $Appearance['id'] ? self::getTagsHTML($Appearance['id'], true) : '';
 			$colors = self::getColorsHTML($Appearance);
 			$eqgp = $Appearance['ishuman'] ? 'eqg/' : '';
 			$personalp = isset($Appearance['owner']) ? '/@'.Users::get($Appearance['owner'],'id','name')->name : '';
@@ -142,11 +142,10 @@ class Appearances {
 	 *
 	 * @param int         $PonyID
 	 * @param bool        $wrap
-	 * @param string|null $Search
 	 *
 	 * @return string
 	 */
-	static function getTagsHTML($PonyID, $wrap = WRAP, $Search = null){
+	static function getTagsHTML($PonyID, $wrap = WRAP){
 		global $Database;
 
 		$Tags = Tags::getFor($PonyID, null, Permission::sufficient('staff'));
@@ -157,13 +156,10 @@ class Appearances {
 		$HideSynon = Permission::sufficient('staff') && UserPrefs::get('cg_hidesynon');
 		if (!empty($Tags)) foreach ($Tags as $i => $t){
 			$isSynon = !empty($t['synonym_of']);
-			$searchedFor = !empty($Search) && in_array($t['tid'],$Search['orig_tid']);
-			if ($isSynon && $HideSynon && !$searchedFor)
+			if ($isSynon && $HideSynon)
 				continue;
 			$class = " class='tag id-{$t['tid']}".($isSynon?' synonym':'').(!empty($t['type'])?' typ-'.$t['type']:'')."'";
 			$title = !empty($t['title']) ? " title='".CoreUtils::aposEncode($t['title'])."'" : '';
-			if ($searchedFor || (Permission::insufficient('staff') && !empty($Search['tid_assoc'][$t['tid']])))
-				$t['name'] = "<mark>{$t['name']}</mark>";
 			$syn_of = $isSynon ? " data-syn-of='{$t['synonym_of']}'" : '';
 			$HTML .= "<span$class$title$syn_of>{$t['name']}</span>";
 		}

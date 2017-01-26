@@ -43,18 +43,13 @@ class Tags {
 		}
 		else {
 			$showSynonymTags = true;
-			if (isset($PonyID))
-				$ODER_BY = ' ORDER BY tags.tid ASC';
-			else $Database->orderBy('tags.tid','ASC');
+			$Database->orderBy('tags.tid','ASC');
 		}
-		return isset($PonyID)
-			? $Database->rawQuery(
-				'SELECT tags.* FROM tagged
-				LEFT JOIN tags ON (tagged.tid = tags.tid'.($showSynonymTags?' OR tagged.tid = tags.synonym_of':'').')'.
-				"WHERE tagged.ponyid = ?".($ODER_BY ?? '').
-				(isset($limit)?"LIMIT $limit[1] OFFSET $limit[0]":''), array($PonyID)
-			)
-			: $Database->get('tags',$limit);
+		if (isset($PonyID)){
+			$Database->join('tagged','(tagged.tid = tags.tid'.($showSynonymTags?' OR tagged.tid = tags.synonym_of':'').')','right',true);
+			$Database->where('tagged.ponyid',$PonyID);
+		}
+		return $Database->get('tags',$limit,'tags.*');
 	}
 
 	/**
