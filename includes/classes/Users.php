@@ -381,26 +381,34 @@ HTML;
 <section class="personal-cg">
 	<h2>{$privacy}Personal Color Guide{$whatBtn}</h2>
 HTML;
-		if ($sameUser || Permission::sufficient('staff')){
-			$pcgLimits = $User->getPCGAvailableSlots(false, true);
+
+		$UsedSlotCount = $User->getPCGAppearances(null,true);
+		$ThisUser = $sameUser?'You':'This user';
+		$showPrivate = $sameUser || Permission::sufficient('staff');
+		$pcgLimits = $User->getPCGAvailableSlots(false, true);
+		$nSlots = CoreUtils::makePlural('slot',$pcgLimits['totalslots'],PREPEND_NUMBER);
+		if ($showPrivate){
 			$ApprovedFinishedRequests = $pcgLimits['postcount'];
 			$SlotCount = $pcgLimits['totalslots'];
 			$ToNextSlot = Users::calculatePersonalCGNextSlot($ApprovedFinishedRequests);
 
-			$ThisUser = $sameUser?'You':'This user';
 			$has = $sameUser?'have':'has';
 			$nApprovedRequests = CoreUtils::makePlural('approved request',$ApprovedFinishedRequests,PREPEND_NUMBER);
 			$grants = 'grant'.($ApprovedFinishedRequests!=1?'':'s');
 			$them = $sameUser?'you':'them';
-			$nSlots = CoreUtils::makePlural('slot',$pcgLimits['totalslots'],PREPEND_NUMBER);
-			$goal = $sameUser?' You are '.CoreUtils::makePlural('request',$ToNextSlot,PREPEND_NUMBER).' away from getting another slot.':'';
 			$forStaff = Permission::sufficient('staff', $User->role) ? ' (staff members get a free slot)' : '';
+			$privateStatus = "$ThisUser currently $has $nApprovedRequests on the site, which $grants $them $nSlots$forStaff. ";
+		}
+		else $privateStatus = '';
+		$unused = $UsedSlotCount === 0;
+		$is = ($sameUser?'are':'is').($unused&&!$showPrivate?'n\'t':'');
+		$goal = $sameUser?" and $is ".CoreUtils::makePlural('request',$ToNextSlot,PREPEND_NUMBER).' away from getting another':'';
+		$publicStatus = "$ThisUser $is using ".($showPrivate ? CoreUtils::makePlural('slot',$UsedSlotCount,PREPEND_NUMBER) : ($UsedSlotCount===0?'any of their slots':"$UsedSlotCount out of their $nSlots"))."$goal.";
 		$HTML .= <<<HTML
 	<div class="personal-cg-progress">
-		<p>$ThisUser currently $has $nApprovedRequests on the site, which $grants $them $nSlots$forStaff.$goal</p>
+		<p>$privateStatus$publicStatus</p>
 	</div>
 HTML;
-		}
 		$PersonalColorGuides = $Database->where('owner',$UserID)->orderBy('order')->get('appearances');
 		if (count($PersonalColorGuides) > 0 || $sameUser){
 			$HTML .= "<ul class='personal-cg-appearances'>";

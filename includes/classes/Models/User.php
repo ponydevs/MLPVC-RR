@@ -185,8 +185,8 @@ class User extends AbstractFillable {
 		$limit = isset($Pagination) ? $Pagination->getLimit() : null;
 		if (!$countOnly)
 			$Database->orderBy('order','ASC');
-		$return = Appearances::get(null, $limit, $this->id,$countOnly ? 'COUNT(*) as cnt' : '*');
-		return $countOnly ? ($return['cnt'] ?? 0) : $return;
+		$return = Appearances::get(null, $limit, $this->id, $countOnly ? 'COUNT(*) as cnt' : '*');
+		return $countOnly ? intval($return[0]['cnt'] ?? 0) : $return;
 	}
 
 	/**
