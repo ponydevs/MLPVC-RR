@@ -59,14 +59,14 @@ class AdminController extends Controller {
 				}
 		};
 
-		$Pagination = new Pagination('admin/logs', 20, $Database->count('log'));
 
 		$title = '';
+		$whereArgs = [];
 		$q = array();
 		if (isset($_GET['js']))
 			$q[] = 'js='.$_GET['js'];
 		if (isset($type)){
-			$Database->where('reftype', $type);
+			$whereArgs[] = array('reftype', $type);
 			if (isset($q)){
 				$q[] = "type=$type";
 				$title .= Logs::$LOG_DESCRIPTION[$type].' entries ';
@@ -76,7 +76,7 @@ class AdminController extends Controller {
 			$q[] = 'type='.CoreUtils::FIXPATH_EMPTY;
 		if (isset($initiator)){
 			$_params = $initiator === 0 ? array('"initiator" IS NULL') : array('initiator',$initiator);
-			$Database->where(...$_params);
+			$whereArgs[] = $_params;
 			if (isset($q) && isset($by)){
 				$q[] = "by=$by";
 				$title .= (!isset($type)?'Entries ':'')."by $by ";
@@ -85,13 +85,17 @@ class AdminController extends Controller {
 		else if (isset($q))
 			$q[] = 'by='.CoreUtils::FIXPATH_EMPTY;
 
-
+		foreach ($whereArgs as $arg)
+			$Database->where(...$arg);
+		$Pagination = new Pagination('admin/logs', 20, $Database->count('log'));
 		$heading = 'Global logs';
 		if (!empty($title))
 			$title .= '- ';
 		$title .= "Page {$Pagination->page} - $heading";
 		CoreUtils::fixPath("/admin/logs/{$Pagination->page}".(!empty($q)?'?'.implode('&',$q):''));
 
+		foreach ($whereArgs as $arg)
+			$Database->where(...$arg);
 		$LogItems = $Database
 			->orderBy('timestamp')
 			->orderBy('entryid')
