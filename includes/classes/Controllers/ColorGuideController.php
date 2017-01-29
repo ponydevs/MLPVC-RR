@@ -1068,11 +1068,14 @@ class ColorGuideController extends Controller {
 				}
 
 				$CutieMarks = Cutiemarks::get($this->_appearance['id']);
-				Logs::logAction('cm_modify',[
-					'ponyid' => $this->_appearance['id'],
-					'olddata' => Cutiemarks::convertDataForLogs($CurrentCMs),
-					'newdata' =>  Cutiemarks::convertDataForLogs($CutieMarks),
-				]);
+				$olddata = Cutiemarks::convertDataForLogs($CurrentCMs);
+				$newdata = Cutiemarks::convertDataForLogs($CutieMarks);
+				if ($olddata !== $$newdata)
+					Logs::logAction('cm_modify',[
+						'ponyid' => $this->_appearance['id'],
+						'olddata' => $olddata,
+						'newdata' => $newdata,
+					]);
 
 				$data = [];
 				if ($this->_appearancePage && !empty($CutieMarks))

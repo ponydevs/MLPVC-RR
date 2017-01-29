@@ -29,6 +29,7 @@ class Logs {
 		'appearance_modify' => 'Appearance modified',
 		'da_namechange' => 'Username change detected',
 		'video_broken' => 'Broken video removed',
+		'cm_modify' => 'Appearance CM edited',
 	);
 
 	const FORCE_INITIATOR_WEBSERVER = true;
@@ -129,7 +130,7 @@ class Logs {
 					$newOld['airs']['new'] =  Time::tag($newOld['airs']['new'], Time::TAG_EXTENDED, Time::TAG_STATIC_DYNTIME);
 				}
 				if (isset($newOld['title']['old']) && isset($newOld['title']['new'])){
-					$details[] = array('Title', self::charDiff($newOld['title']['old'], $newOld['title']['new']));
+					$details[] = array('Title', self::diff($newOld['title']['old'], $newOld['title']['new']));
 					unset($newOld['title']);
 				}
 
@@ -239,9 +240,9 @@ class Logs {
 				}
 				else $details[] = array('Group', "{$CG['label']} (#{$data['groupid']})");
 				if (isset($data['newlabel']))
-					$details[] = array('Label', self::charDiff($data['oldlabel'] ?? '', $data['newlabel']));
+					$details[] = array('Label', self::diff($data['oldlabel'] ?? '', $data['newlabel']));
 				if (isset($data['newcolors']))
-					$details[] = array('Colors', self::charDiff($data['oldcolors'] ?? '', $data['newcolors'], 'block'));
+					$details[] = array('Colors', self::diff($data['oldcolors'] ?? '', $data['newcolors'], 'block'));
 			break;
 			case "cgs":
 				$details[] = array('Action', self::$ACTIONS[$data['action']]);
@@ -253,7 +254,7 @@ class Logs {
 			break;
 			case "cg_order":
 				$details[] = array('Appearance',self::_getAppearanceLink($data['ponyid']));
-				$details[] = array('Order',self::charDiff($data['oldgroups'], $data['newgroups'], 'block'));
+				$details[] = array('Order',self::diff($data['oldgroups'], $data['newgroups'], 'block', new FineDiff\Granularity\Paragraph()));
 			break;
 			case "appearance_modify":
 				$details[] = array('Appearance',self::_getAppearanceLink($data['ponyid']));
@@ -261,10 +262,10 @@ class Logs {
 				$newOld = self::_arrangeNewOld($changes);
 
 				if (isset($newOld['label']['new']))
-					$details[] = array('Label', self::charDiff($newOld['label']['old'], $newOld['label']['new'], 'block'));
+					$details[] = array('Label', self::diff($newOld['label']['old'], $newOld['label']['new'], 'block'));
 
 				if (isset($newOld['notes']['new']) || isset($newOld['notes']['old']))
-					$details[] = array('Notes', self::charDiff($newOld['notes']['old'] ?? '', $newOld['notes']['new'] ?? '', 'block smaller'));
+					$details[] = array('Notes', self::diff($newOld['notes']['old'] ?? '', $newOld['notes']['new'] ?? '', 'block smaller', new FineDiff\Granularity\Word()));
 
 				if (isset($newOld['cm_favme']['old']))
 					$details[] = array('Old CM Submission', self::_link('http://fav.me/'.$newOld['cm_favme']['old']));
@@ -278,7 +279,7 @@ class Logs {
 				$olddir = isset($newOld['cm_dir']['old']) ? CGUtils::$CM_DIR[$newOld['cm_dir']['old']] : '';
 				$newdir = isset($newOld['cm_dir']['new']) ? CGUtils::$CM_DIR[$newOld['cm_dir']['new']] : '';
 				if ($olddir || $newdir)
-					$details[] = array('CM Orientation', self::charDiff($olddir, $newdir, 'inline', new FineDiff\Granularity\Paragraph));
+					$details[] = array('CM Orientation', self::diff($olddir, $newdir, 'inline', new FineDiff\Granularity\Paragraph()));
 
 				if (isset($newOld['private']['new']))
 					$details[] = array('<span class="typcn typcn-lock-'.($newOld['private']['new']?'closed':'open').'"></span> '.($newOld['private']['new'] ? 'Marked private' : 'No longer private'),self::SKIP_VALUE,self::KEYCOLOR_INFO);
@@ -295,7 +296,7 @@ class Logs {
 				if ($newIsCurrent)
 					$details[] = array('Old name', $data['old']);
 				else {
-					$details[] = array('Name', Logs::charDiff($data['old'], $data['new']));
+					$details[] = array('Name', Logs::diff($data['old'], $data['new']));
 				}
 			break;
 			case "video_broken":
@@ -306,6 +307,39 @@ class Logs {
 					'id' => $data['id'],
 				)), VideoProvider::URL_ONLY);
 				$details[] = array('Link',"<a href='$url'>$url</a>");
+			break;
+			case "cm_modify":
+				$details[] = array('Appearance', self::_getAppearanceLink($data['ponyid']));
+
+				$keys = [];
+				if (isset($data['olddata'])){
+					$data['olddata'] = JSON::decode($data['olddata']);
+					$keys[] = 'olddata';
+				}
+				if (isset($data['newdata'])){
+					$data['newdata'] = JSON::decode($data['newdata']);
+					$keys[] = 'newdata';
+				}
+
+				foreach($keys as $key){
+					foreach ($data[$key] as $k => $_){
+						foreach ($data[$key][$k] as $i => $v){
+							if (!isset($v) || $i === 'cmid'){
+								unset($data[$key][$k][$i]);
+								continue;
+							}
+						}
+					}
+				}
+
+
+				$olddata = !empty($data['olddata']) ? JSON::encode($data['olddata'], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) : '';
+				$newdata = !empty($data['newdata']) ? JSON::encode($data['newdata'], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) : '';
+				if ($olddata || $newdata){
+					$diff = self::diff($olddata, $newdata, 'block', new FineDiff\Granularity\Sentence());
+					$diff = preg_replace(new RegExp('(\S)(d[a-z\d]{6,})'),'$1<a href="http://fav.me/$2">$2</a>',$diff);
+					$details[] = array('Metadata changes', $diff);
+				}
 			break;
 			default:
 				$details[] = array('<span class="typcn typcn-warning"></span> Couldn’t process details','No data processor defined for this entry type',self::KEYCOLOR_ERROR);
@@ -353,7 +387,13 @@ class Logs {
 		$Appearance = $Database->where('id', $id)->getOne('appearances');
 		if (!empty($Appearance)){
 			$EQGUrl = $Appearance['ishuman'] ? '/eqg' : '';
-			$ID = "<a href='/cg/{$EQGUrl}v/$id'>".htmlspecialchars($Appearance['label'])."</a> ($ID)";
+			$PCG = '';
+			if ($Appearance['owner']){
+				$Owner = Users::get($Appearance['owner']);
+				if ($Owner)
+					$PCG = "/@{$Owner->name}";
+			}
+			$ID = "<a href='$PCG/cg/{$EQGUrl}v/$id'>".htmlspecialchars($Appearance['label'])."</a> ($ID)";
 		}
 
 		return $ID;
@@ -437,9 +477,11 @@ HTML;
 		)))->out();
 	}
 
-	static function charDiff(string $old, string $new, $type = 'inline', FineDiff\Granularity\Granularity $gran = null):string {
+	static function diff(string $old, string $new, $type = 'inline', FineDiff\Granularity\Granularity $gran = null):string {
 		if (!isset($gran))
 			$gran = new FineDiff\Granularity\Character;
+		else if ($gran instanceof FineDiff\Granularity\Paragraph)
+			$old .= "\n";
 		$diff = str_replace('\n',"\n",(new FineDiff\Diff($gran))->render($old, $new));
 
 		return "<span class='btn darkblue view-switch' title='Left/Right click to change view mode'>diff</span><div class='log-diff $type'>$diff</div>";
