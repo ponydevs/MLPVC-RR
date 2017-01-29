@@ -19,7 +19,9 @@ use App\Logs;
 		<select name="type" class="entrytype">
 			<option value=''<?=!isset($type)?' selected':''?>>all</option>
 			<optgroup label="Specific entry type"><?php
-		foreach (Logs::$LOG_DESCRIPTION as $value => $label)
+		$descs = Logs::$LOG_DESCRIPTION;
+		asort($descs);
+		foreach ($descs as $value => $label)
 			echo "<option value='$value'".(($type??null)===$value?' selected':'').">$label</option>";
 		?></optgroup>
 		</select>
