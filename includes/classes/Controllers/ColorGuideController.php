@@ -1067,7 +1067,7 @@ class ColorGuideController extends Controller {
 					else $Database->insert('cutiemarks', $cmdata);
 				}
 
-				$CutieMarks = Cutiemarks::get($this->_appearance['id']);
+				$CutieMarks = Cutiemarks::get($this->_appearance['id'], '*', false);
 				$olddata = Cutiemarks::convertDataForLogs($CurrentCMs);
 				$newdata = Cutiemarks::convertDataForLogs($CutieMarks);
 				if ($olddata !== $$newdata)
