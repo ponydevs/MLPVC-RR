@@ -337,7 +337,7 @@ class Logs {
 				$newdata = !empty($data['newdata']) ? JSON::encode($data['newdata'], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) : '';
 				if ($olddata || $newdata){
 					$diff = self::diff($olddata, $newdata, 'block', new FineDiff\Granularity\Sentence());
-					$diff = preg_replace(new RegExp('(\S)(d[a-z\d]{6,})'),'$1<a href="http://fav.me/$2">$2</a>',$diff);
+					$diff = preg_replace(new RegExp('(\S)(d[a-z\d]{6,})'),'$1<a href="http://fav.me/$2">$2</a>',$diff,1);
 					$details[] = array('Metadata changes', $diff);
 				}
 			break;
