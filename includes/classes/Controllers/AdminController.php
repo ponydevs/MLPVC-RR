@@ -113,6 +113,8 @@ class AdminController extends Controller {
 			'import' => [
 				'Pagination' => $Pagination,
 				'LogItems' => $LogItems,
+				'type' => $type,
+				'by' => $by,
 			],
 		));
 	}
