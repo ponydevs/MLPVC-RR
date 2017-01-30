@@ -163,10 +163,7 @@ DocReady.push(function(){
 	window.tooltips = function(){tooltips()};
 
 	function navigation(){
-		$list = $('.appearance-list');
-		if (!AppearancePage)
-			$list.off('click','.getswatch',getswatch).on('click','.getswatch',getswatch);
-		else $('.getswatch').off('click',getswatch).on('click',getswatch);
+		$('.getswatch').off('click').on('click',getswatch);
 		tooltips();
 		copyHashToggler();
 	}
