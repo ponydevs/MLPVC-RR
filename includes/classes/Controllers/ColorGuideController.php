@@ -25,10 +25,11 @@ use App\ColorGroups;
 use App\Users;
 use Elasticsearch\Common\Exceptions\ClientErrorResponseException;
 use Elasticsearch\Common\Exceptions\NoNodesAvailableException;
+use Elasticsearch\Common\Exceptions\ServerErrorResponseException;
 use GuzzleHttp\Ring\Core;
 use ONGR\ElasticsearchDSL;
-use ONGR\ElasticsearchDSL\Query\BoolQuery;
-use ONGR\ElasticsearchDSL\Query\TermQuery;
+use ONGR\ElasticsearchDSL\Query\Compound\BoolQuery;
+use ONGR\ElasticsearchDSL\Query\TermLevel\TermQuery;
 use Elasticsearch\Common\Exceptions\Missing404Exception as ElasticMissing404Exception;
 use Elasticsearch\Common\Exceptions\NoNodesAvailableException as ElasticNoNodesAvailableException;
 
@@ -383,6 +384,9 @@ class ColorGuideController extends Controller {
 		catch (NoNodesAvailableException $e){
 			$elasticAvail = false;
 		}
+		catch (ServerErrorResponseException $e){
+			$elasticAvail = false;
+		}
 		if ($elasticAvail){
 			$search = new ElasticsearchDSL\Search();
 			$orderByID = true;
@@ -393,7 +397,7 @@ class ColorGuideController extends Controller {
 				$SearchQuery = preg_replace(new RegExp('[^\w\d\s\*\?]'),'',trim($_GET['q']));
 				$title .= "$SearchQuery - ";
 				if (preg_match(new RegExp('[\*\?]'), $SearchQuery)){
-					$queryString = new ElasticsearchDSL\Query\QueryStringQuery(
+					$queryString = new ElasticsearchDSL\Query\FullText\QueryStringQuery(
 						$SearchQuery,
 						[
 							'fields' => ['label^20','tags'],
@@ -405,7 +409,7 @@ class ColorGuideController extends Controller {
 					$orderByID = false;
 				}
 				else {
-					$multiMatch = new ElasticsearchDSL\Query\MultiMatchQuery(
+					$multiMatch = new ElasticsearchDSL\Query\FullText\MultiMatchQuery(
 						['label^20','tags'],
 						$SearchQuery,
 						[
