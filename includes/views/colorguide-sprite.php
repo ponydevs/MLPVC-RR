@@ -9,7 +9,7 @@ use App\CoreUtils;
 /** @var $ColorGroups array */ ?>
 <div id="content">
 	<h1>Sprite Color Checker</h1>
-	<p><a href="/cg/v/<?=$Appearance['id']?>"><span class="typcn typcn-arrow-back"></span> Back to appearrance page</a></p>
+	<p><a href="/cg/v/<?=$Appearance['id']?>"><span class="typcn typcn-arrow-back"></span> Back to appearance page</a></p>
 
 	<section class="checker">
 		<div id="svg-cont"></div>
