@@ -1746,6 +1746,14 @@ ALTER TABLE ONLY log__cgs
 
 
 --
+-- Name: log__cm_modify log__cm_modify_entryid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER TABLE ONLY log__cm_modify
+    ADD CONSTRAINT log__cm_modify_entryid PRIMARY KEY (entryid);
+
+
+--
 -- Name: log__color_modify log__color_modify_entryid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
