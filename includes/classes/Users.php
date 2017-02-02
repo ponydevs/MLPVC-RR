@@ -428,8 +428,7 @@ HTML;
 	}
 
 	static function calculatePersonalCGNextSlot(int $postcount):int {
-		$cnt = 10-($postcount % 10);
-		return $cnt === 0 ? 10 : $cnt;
+		return 10-($postcount % 10);
 	}
 
 	static function validateName($key, $errors, $method_get = false){
