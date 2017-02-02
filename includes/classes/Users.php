@@ -403,7 +403,7 @@ HTML;
 		$unused = $UsedSlotCount === 0;
 		$is = ($sameUser?'are':'is').($unused&&!$showPrivate?'n\'t':'');
 		$goal = $sameUser?" and $is ".CoreUtils::makePlural('request',$ToNextSlot,PREPEND_NUMBER).' away from getting another':'';
-		$publicStatus = "$ThisUser $is using ".($showPrivate ? CoreUtils::makePlural('slot',$UsedSlotCount,PREPEND_NUMBER) : ($UsedSlotCount===0?'any of their slots':"$UsedSlotCount out of their $nSlots"))."$goal.";
+		$publicStatus = "$ThisUser $is currently using ".($showPrivate ? CoreUtils::makePlural('slot',$UsedSlotCount,PREPEND_NUMBER) : ($UsedSlotCount===0?'any of their slots':"$UsedSlotCount out of their $nSlots"))."$goal.";
 		$HTML .= <<<HTML
 	<div class="personal-cg-progress">
 		<p>$privateStatus$publicStatus</p>
@@ -428,7 +428,8 @@ HTML;
 	}
 
 	static function calculatePersonalCGNextSlot(int $postcount):int {
-		return 10+intval(10*floor(log(($postcount-10)*10, 10)))-$postcount;
+		$cnt = 10-($postcount % 10);
+		return $cnt === 0 ? 10 : $cnt;
 	}
 
 	static function validateName($key, $errors, $method_get = false){
