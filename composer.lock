@@ -115,22 +115,22 @@
         },
         {
             "name": "elasticsearch/elasticsearch",
-            "version": "v5.1.0",
+            "version": "v5.1.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/elastic/elasticsearch-php.git",
-                "reference": "a05b8bbe91353a453685cee91a23a5fe7624cd3f"
+                "reference": "c7af42443400438fe923d89e9621cb4235f82d98"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/elastic/elasticsearch-php/zipball/a05b8bbe91353a453685cee91a23a5fe7624cd3f",
-                "reference": "a05b8bbe91353a453685cee91a23a5fe7624cd3f",
+                "url": "https://api.github.com/repos/elastic/elasticsearch-php/zipball/c7af42443400438fe923d89e9621cb4235f82d98",
+                "reference": "c7af42443400438fe923d89e9621cb4235f82d98",
                 "shasum": ""
             },
             "require": {
                 "ext-json": ">=1.3.7",
                 "guzzlehttp/ringphp": "~1.0",
-                "php": "^5.6.6|^7.0",
+                "php": "^7.0",
                 "psr/log": "~1.0"
             },
             "require-dev": {
@@ -167,7 +167,7 @@
                 "elasticsearch",
                 "search"
             ],
-            "time": "2017-01-06 22:32:21"
+            "time": "2017-02-03 13:24:28"
         },
         {
             "name": "ezyang/htmlpurifier",
@@ -382,16 +382,16 @@
         },
         {
             "name": "ongr/elasticsearch-dsl",
-            "version": "5.0.0",
+            "version": "v5.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ongr-io/ElasticsearchDSL.git",
-                "reference": "96b5d1bec23eeee2126b07782a71119f7820d0f6"
+                "reference": "a9e4bfe361d1a365f151ecf919df47df970b3423"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ongr-io/ElasticsearchDSL/zipball/96b5d1bec23eeee2126b07782a71119f7820d0f6",
-                "reference": "96b5d1bec23eeee2126b07782a71119f7820d0f6",
+                "url": "https://api.github.com/repos/ongr-io/ElasticsearchDSL/zipball/a9e4bfe361d1a365f151ecf919df47df970b3423",
+                "reference": "a9e4bfe361d1a365f151ecf919df47df970b3423",
                 "shasum": ""
             },
             "require": {
@@ -428,7 +428,7 @@
             ],
             "description": "Elasticsearch DSL library",
             "homepage": "http://ongr.io",
-            "time": "2017-01-30 14:51:34"
+            "time": "2017-02-03 06:55:42"
         },
         {
             "name": "paragonie/random_compat",
