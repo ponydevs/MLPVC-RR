@@ -375,7 +375,7 @@ DocReady.push(function(){
 		$(`#${type}-btn`).on('click',function(){
 			disableLiveUpdate();
 			if (!$form.is(':visible')){
-				$form.show();
+				$form.removeClass('hidden');
 				$formDescInput.focus();
 				$.scrollTo($form.offset().top - $navbar.outerHeight() - 10, 500);
 			}
