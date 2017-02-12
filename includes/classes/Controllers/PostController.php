@@ -52,7 +52,7 @@ class PostController extends Controller {
 		$section .= ' > ul';
 
 		Response::done(array(
-			'li' => Posts::getLi($this->_post, isset($_POST['FROM_PROFILE']), true),
+			'li' => Posts::getLi($this->_post, isset($_POST['FROM_PROFILE']), !isset($_POST['cache'])),
 			'section' => $section,
 		));
 	}
@@ -381,8 +381,11 @@ class PostController extends Controller {
 			$fromProfile = isset($_POST['FROM_PROFILE']);
 			if ($suggested)
 				$response['button'] = Posts::getPostReserveButton($this->_post, Users::get($this->_post->reserved_by), false);
-			else if (!$fromProfile && !$socketServerAvailable && $action !== 'unreserve')
-				$response['li'] = Posts::getLi($this->_post);
+			else if (!$fromProfile && !$socketServerAvailable){
+				if ($action !== 'unreserve')
+					$response['li'] = Posts::getLi($this->_post);
+				else $response['reload'] = true;
+			}
 			if ($fromProfile || $suggested)
 				$response['pendingReservations'] = Users::getPendingReservationsHTML($suggested ? $this->_post->reserved_by : $oldReserver, $suggested ? true : $isUserReserver);
 			Response::done($response);

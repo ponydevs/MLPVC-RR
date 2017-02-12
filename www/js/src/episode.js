@@ -525,7 +525,7 @@ DocReady.push(function(){
 
 		if (log !== false)
 			console.log(`[POST-FIX] Attemting to reload ${type} #${id}`);
-		$.post(`/post/reload/${type}/${id}`,$.mkAjaxHandler(function(){
+		$.post(`/post/reload/${type}/${id}`,{cache:log},$.mkAjaxHandler(function(){
 			reloading[_idAttr] = false;
 			if (!this.status) return;
 

@@ -312,7 +312,8 @@ DocReady.push(function(){
 						});
 					}
 
-					$li.reloadLi();
+					if (this.reload)
+						$li.reloadLi(false);
 					$.Dialog.close();
 				}));
 			});
