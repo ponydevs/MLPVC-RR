@@ -388,8 +388,8 @@ HTML;
 					<option value="" style="display:none" selected>Choose one</option>
 					<optgroup label="$Type types">
 						<option value="chr">Character</option>
-						<option value="bg">Background</option>
 						<option value="obj">Object</option>
+						<option value="bg">Background</option>
 					</optgroup>
 				</select>
 			</label>
@@ -496,7 +496,8 @@ HTML;
 		$type = $isRequest ? 'request' : 'reservation';
 		$ID = "$type-{$Post->id}";
 		$alt = !empty($Post->label) ? CoreUtils::aposEncode($Post->label) : '';
-		$postlink = (new Episode($Post))->formatURL()."#$ID";
+		$postedUnder = Episodes::getActual($Post->season, $Post->episode, true, true);
+		$postlink = $postedUnder->formatURL()."#$ID";
 		$ImageLink = $view_only ? $postlink : $Post->fullsize;
 		$cachebust = $cachebust_url ? '?t='.time() : '';
 		$Image = "<div class='image screencap'><a href='$ImageLink'><img src='{$Post->preview}$cachebust' alt='$alt'></a></div>";
@@ -556,7 +557,7 @@ HTML;
 						ORDER BY pl.entryid ASC
 						LIMIT 1", array($type, $Post->id)
 					);
-					$approverIsNotReserver = $LogEntry['initiator'] && $LogEntry['initiator'] !==  $Post->reserved_by;
+					$approverIsNotReserver = isset($LogEntry['initiator']) && $LogEntry['initiator'] !==  $Post->reserved_by;
 					$approvedby = $isStaff && isset($LogEntry['initiator']) && $approverIsNotReserver ? ' by '.(Users::get($LogEntry['initiator'])->getProfileLink()) : '';
 					$locked_at = $approved ? "<em class='approve-date'>Approved <strong>".Time::tag(strtotime($LogEntry['timestamp']))."</strong>$approvedby</em>" : '';
 				}

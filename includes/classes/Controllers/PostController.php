@@ -5,6 +5,7 @@ use App\CoreUtils;
 use App\CSRFProtection;
 use App\DeviantArt;
 use App\Episodes;
+use App\ImageProvider;
 use App\Input;
 use App\Logs;
 use App\Notifications;
@@ -17,6 +18,8 @@ use App\Users;
 use App\Models\Post;
 use App\Models\Request;
 use App\Models\Reservation;
+use ElephantIO\Exception\ServerConnectionFailureException;
+use ElephantIO\Exception\SocketException;
 
 class PostController extends Controller {
 	function _authorize(){
@@ -39,7 +42,19 @@ class PostController extends Controller {
 		$thing = $params['thing'];
 		$this->_initPost(null, $params);
 
-		Response::done(array('li' => Posts::getLi($this->_post, isset($_POST['FROM_PROFILE']), true)));
+		if ($this->_post->isRequest && !$this->_post->isFinished){
+			$section = "#group-{$this->_post->type}";
+		}
+		else {
+			$un = $this->_post->isFinished?'':'un';
+			$section = "#{$thing}s .{$un}finished";
+		}
+		$section .= ' > ul';
+
+		Response::done(array(
+			'li' => Posts::getLi($this->_post, isset($_POST['FROM_PROFILE']), true),
+			'section' => $section,
+		));
 	}
 
 	function _checkPostEditPermission($thing){
@@ -89,9 +104,24 @@ class PostController extends Controller {
 
 				if (!$Database->where('id', $this->_post->id)->update("{$thing}s", $update))
 					Response::dbError();
-				foreach ($update as $k => $v)
-					$this->_post->{$k} = $v;
-				Response::done(array('li' => Posts::getLi($this->_post)));
+
+				$response = [];
+				try {
+					CoreUtils::socketEvent('post-update',[
+						'id' => $this->_post->id,
+						'type' => $thing,
+					]);
+				}
+				catch(ServerConnectionFailureException $e){
+					foreach ($update as $k => $v)
+						$this->_post->{$k} = $v;
+					$response['li'] = Posts::getLi($this->_post);
+				}
+				catch (\Exception $e){
+					error_log("SocketEvent Error\n".$e->getMessage()."\n".$e->getTraceAsString());
+				}
+
+				Response::done($response);
 			break;
 		}
 
@@ -145,8 +175,19 @@ class PostController extends Controller {
 				$this->_post->lock = true;
 				$response = array(
 					'message' => "The image appears to be in the group gallery and as such it is now marked as approved.",
-					'li' => Posts::getLi($this->_post),
 				);
+				try {
+					CoreUtils::socketEvent('post-update',[
+						'id' => $this->_post->id,
+						'type' => $thing,
+					]);
+				}
+				catch (ServerConnectionFailureException $e){
+					$response['li'] = Posts::getLi($this->_post);
+				}
+				catch (\Exception $e){
+					error_log("SocketEvent Error\n".$e->getMessage()."\n".$e->getTraceAsString());
+				}
 				if ($isUserReserver)
 					$response['message'] .= " Thank you for your contribution!<div class='align-center'><span class='sideways-smiley-face'>;)</span></div>";
 				Response::done($response);
@@ -162,6 +203,16 @@ class PostController extends Controller {
 
 				$Database->where('id', $this->_post->id)->update("{$thing}s", array('lock' => false));
 				$this->_post->lock = false;
+
+				try {
+					CoreUtils::socketEvent('post-update',[
+						'id' => $this->_post->id,
+						'type' => $thing,
+					]);
+				}
+				catch (\Exception $e){
+					error_log("SocketEvent Error\n".$e->getMessage()."\n".$e->getTraceAsString());
+				}
 
 				Response::done();
 			break;
@@ -189,6 +240,16 @@ class PostController extends Controller {
 						if (!$Database->where('id', $this->_post->id)->delete('reservations'))
 							Response::dbError();
 
+						try {
+							CoreUtils::socketEvent('post-delete',[
+								'id' => $this->_post->id,
+								'type' => 'reservation',
+							]);
+						}
+						catch (\Exception $e){
+							error_log("SocketEvent Error\n".$e->getMessage()."\n".$e->getTraceAsString());
+						}
+
 						Response::success('Reservation deleted');
 					}
 					else if ($thing === 'request' && Permission::insufficient('staff') && !$isUserReserver)
@@ -207,6 +268,16 @@ class PostController extends Controller {
 
 				if (!$Database->where('id', $this->_post->id)->update("{$thing}s",$update))
 					Response::dbError();
+
+				try {
+					CoreUtils::socketEvent('post-update',[
+						'id' => $this->_post->id,
+						'type' => $thing,
+					]);
+				}
+				catch (\Exception $e){
+					error_log("SocketEvent Error\n".$e->getMessage()."\n".$e->getTraceAsString());
+				}
 
 				Response::done();
 			break;
@@ -241,6 +312,17 @@ class PostController extends Controller {
 						$message .= "<p><strong>{$u->name}</strong> ".($notifSent === 0?'has been notified':'will receive a notification shortly').'.'.(is_string($notifSent)?"</p><div class='notice fail'><strong>Error:</strong> $notifSent":'')."</div>";
 					}
 				}
+
+				try {
+					CoreUtils::socketEvent('post-update',[
+						'id' => $this->_post->id,
+						'type' => $thing,
+					]);
+				}
+				catch (\Exception $e){
+					error_log("SocketEvent Error\n".$e->getMessage()."\n".$e->getTraceAsString());
+				}
+
 				if (!empty($message))
 					Response::success($message);
 				Response::done();
@@ -275,6 +357,21 @@ class PostController extends Controller {
 		else if (!empty($this->_post->reserved_by))
 			Posts::clearTransferAttempts($this->_post, $thing, 'free');
 
+		$socketServerAvailable = true;
+		try {
+			CoreUtils::socketEvent('post-update',[
+				'id' => $this->_post->id,
+				'type' => $thing,
+			]);
+		}
+		catch (ServerConnectionFailureException $e){
+			$socketServerAvailable = false;
+			error_log("SocketEvent Error\n".$e->getMessage()."\n".$e->getTraceAsString());
+		}
+		catch (\Exception $e){
+			error_log("SocketEvent Error\n".$e->getMessage()."\n".$e->getTraceAsString());
+		}
+
 		if ($thing === 'request'){
 			$oldReserver = $this->_post->reserved_by;
 			foreach ($update as $k => $v)
@@ -284,7 +381,7 @@ class PostController extends Controller {
 			$fromProfile = isset($_POST['FROM_PROFILE']);
 			if ($suggested)
 				$response['button'] = Posts::getPostReserveButton($this->_post, Users::get($this->_post->reserved_by), false);
-			else if (!$fromProfile)
+			else if (!$fromProfile && !$socketServerAvailable && $action !== 'unreserve')
 				$response['li'] = Posts::getLi($this->_post);
 			if ($fromProfile || $suggested)
 				$response['pendingReservations'] = Users::getPendingReservationsHTML($suggested ? $this->_post->reserved_by : $oldReserver, $suggested ? true : $isUserReserver);
@@ -293,6 +390,9 @@ class PostController extends Controller {
 		else Response::done();
 	}
 
+	/**
+	 * @return ImageProvider
+	 */
 	private function _checkImage(){
 		return Posts::checkImage(Posts::validateImageURL());
 	}
@@ -328,7 +428,11 @@ class PostController extends Controller {
 			Users::reservationLimitExceeded();
 		}
 
-		$Image =  $this->_checkImage();
+		$Image = $this->_checkImage();
+		if (!is_object($Image)){
+			error_log("Getting post image failed\n".var_export($Image, true));
+			Response::fail('Getting post image failed. If this persists, please <a class="send-feedback">let us know</a>.');
+		}
 
 		$insert = array(
 			'preview' => $Image->preview,
@@ -365,7 +469,18 @@ class PostController extends Controller {
 		$PostID = $Database->insert("{$thing}s",$insert,'id');
 		if (!$PostID)
 			Response::dbError();
-		Response::done(array('id' => $PostID));
+
+		try {
+			CoreUtils::socketEvent('post-add',[
+				'id' => $PostID,
+				'type' => $thing,
+			]);
+		}
+		catch (\Exception $e){
+			error_log("SocketEvent Error\n".$e->getMessage()."\n".$e->getTraceAsString());
+		}
+
+		Response::done(array('id' => "$thing-$PostID"));
 	}
 
 	/** @var \App\Models\Post */
@@ -416,6 +531,15 @@ class PostController extends Controller {
 			'deviation_id' => $this->_post->deviation_id,
 			'lock' =>         $this->_post->lock,
 		));
+		try {
+			CoreUtils::socketEvent('post-delete',[
+				'id' => $this->_post->id,
+				'type' => 'request',
+			]);
+		}
+		catch (\Exception $e){
+			error_log("SocketEvent Error\n".$e->getMessage()."\n".$e->getTraceAsString());
+		}
 
 		Response::done();
 	}
@@ -608,15 +732,26 @@ class PostController extends Controller {
 
 		$insert['finished_at'] = date('c');
 
-		$postid = $Database->insert('reservations', $insert, 'id');
-		if (!is_int($postid))
+		$PostID = $Database->insert('reservations', $insert, 'id');
+		if (!is_int($PostID))
 			Response::dbError();
 
 		if (!empty($insert['lock']))
 			Logs::logAction('post_lock',array(
 				'type' => 'reservation',
-				'id' => $postid,
+				'id' => $PostID,
 			));
+
+
+		try {
+			CoreUtils::socketEvent('post-add',[
+				'id' => $PostID,
+				'type' => 'reservation',
+			]);
+		}
+		catch (\Exception $e){
+			error_log("SocketEvent Error\n".$e->getMessage()."\n".$e->getTraceAsString());
+		}
 
 		Response::success('Reservation added');
 	}

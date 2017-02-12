@@ -254,6 +254,35 @@
 			ul {
 				@extend %post-ul;
 				@extend %post-ul-fluidbox;
+
+				> .deleted {
+					position: relative;
+					border-color: $NRed !important;
+					color: $NRed !important;
+					background: $NRedBG !important;
+
+					&, * {
+						cursor: pointer !important;
+					}
+
+					> * {
+						visibility: hidden !important;
+						transition: none !important;
+					}
+
+					&:before {
+						position: absolute;
+						top: calc(50% - .5em);
+						left: 0;
+						width: 100%;
+						content: "\e123";
+						white-space: pre-wrap;
+						color: $NRed;
+						font-size: 100px;
+						line-height: 1em;
+						font-family: Typicons;
+					}
+				}
 			}
 			.unfinished ul li {
 				.image > a.fluidbox--initialized { cursor: zoom-in }

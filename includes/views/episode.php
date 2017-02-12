@@ -91,5 +91,7 @@ if ($do === 'da-auth' && isset($err)){
 	} ?>
 </div>
 
-<?  if (Permission::sufficient('staff'))
-		echo CoreUtils::exportVars(array('EP_TITLE_REGEX' => $EP_TITLE_REGEX));
+<?  $exp = ['EpisodePage'=>true];
+	if (Permission::sufficient('staff'))
+		$eqp['EP_TITLE_REGEX'] = $EP_TITLE_REGEX;
+	echo CoreUtils::exportVars($exp);

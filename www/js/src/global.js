@@ -863,7 +863,6 @@
 				$.post('/da-auth/signout',$.mkAjaxHandler(function(){
 					if (!this.status) return $.Dialog.fail(title,this.message);
 
-					WSNotifications.disconnect('signout');
 					$.Navigation.reload(function(){
 						$.Dialog.close();
 					});
@@ -973,17 +972,19 @@
 			this._DocReadyHandlers = [];
 			this._xhr = false;
 			this._lastLoadedPathname = window.location.pathname;
+			this._lastLoadedHref = window.location.href;
 			this.firstLoadDone = false;
 		}
 		_docReady(){
-			console.log('> _docReady()');
-
+			console.groupCollapsed('> _docReady()');
 			docReadyAlwaysRun();
+			console.groupEnd();
 
 			for (let i = 0, l = this._DocReadyHandlers.length; i<l; i++){
 				try {
+					console.group('DocReadyHandlers[%d]()',i);
 					this._DocReadyHandlers[i].call(window);
-					console.log('> DocReadyHandlers[%d]()',i);
+					console.groupEnd();
 				}
 				catch(e){
 					console.error(`Error while executing DocReadyHandlers[${i}]\n${e.stack}`);
@@ -1006,7 +1007,7 @@
 			if (!css.length)
 				return $.callCallback(callback);
 
-			console.group('Loading CSS');
+			console.groupCollapsed('Loading CSS');
 			let classScope = this;
 			(function _recursivelyLoadCSS(item){
 				if (item >= css.length){
@@ -1034,7 +1035,7 @@
 			if (!js.length)
 				return $.callCallback(callback);
 
-			console.group('Loading JS');
+			console.groupCollapsed('Loading JS');
 			let classScope = this;
 			(function _recursivelyLoadJS(item){
 				if (item >= js.length){
@@ -1145,7 +1146,9 @@
 					if (doreload !== false){
 						console.log('%cFull page reload forced by changes in global.js', 'font-weight:bold;color:orange');
 						console.groupEnd();
-						return (location.href = url);
+						classScope._xhr.abort();
+						location.href = url;
+						return;
 					}
 
 					console.groupCollapsed('Checking CSS files to skip...');
@@ -1190,6 +1193,7 @@
 							history[ParsedLocation.pathString === url?'replaceState':'pushState']({'via-js':true},'',url);
 						document.title = pagetitle;
 						classScope._lastLoadedPathname = window.location.pathname;
+						classScope._lastLoadedHref = window.location.href;
 
 						classScope._loadJS(js, function(){
 							loaded++;
@@ -1201,7 +1205,9 @@
 							console.groupEnd();
 							$main.removeClass('pls-wait');
 
-							window.WSNotifications(signedIn);
+							if (signedIn)
+								$.WS.authme();
+							else $.WS.unauth();
 
 							$.callCallback(callback);
 							$.Loader.finish();
@@ -1435,13 +1441,16 @@ $(function(){
 		$.Navigation.visit(this.href);
 	});
 	$w.on('popstate', function(e){
-		if (typeof window._trighashchange !== 'undefined')
-			return;
 		let state = e.originalEvent.state,
 			goto = (url, callback) => $.Navigation.visit(url, callback, true);
 
 		if (state !== null && !state['via-js'] && state.paginate === true)
 			return $w.trigger('nav-popstate', [state, goto]);
+
+		if ($.Navigation._lastLoadedHref.replace(/#.*$/,'') === location.href.replace(/#.*$/,'')){
+			console.log('[AJAX-Nav] Hashchange detected, navigation blocked');
+			return;
+		}
 		goto(location.href);
 	});
 
@@ -1469,7 +1478,7 @@ $(function(){
 		disappearingHeaderHandler();
 	}
 
-	// Notifications
+	// WebSocket server connection
 	(function(){
 		let conn,
 			connpath = `https://ws.${location.hostname}:8667/`,
@@ -1487,6 +1496,7 @@ $(function(){
 			$notifCnt,
 			$notifSb,
 			$notifSbList,
+			auth = false,
 			essentialElements = function(){
 				$notifCnt = $sbToggle.children('.notif-cnt');
 				if ($notifCnt.length === 0)
@@ -1494,10 +1504,7 @@ $(function(){
 				$notifSb = $sidebar.children('.notifications');
 				$notifSbList = $notifSb.children('.notif-list');
 			};
-		function wsNotifs(signedIn){
-			if (!signedIn)
-				return;
-
+		function wsNotifs(){
 			let success = function(){
 				essentialElements();
 
@@ -1537,14 +1544,20 @@ $(function(){
 
 				conn = io(connpath, { reconnectionDelay: 10000 });
 				conn.on('connect', function(){
-					console.log('[WS] Connected');
+					console.log('[WS] %cConnected','color:green');
+
+					$.WS.recvPostUpdates(typeof window.EpisodePage !== 'undefined');
 				});
 				conn.on('auth', wsdecoder(function(data){
-					console.log(`[WS] Authenticated as ${data.name}`);
+					auth = true;
+					console.log(`[WS] %cAuthenticated as ${data.name}`,'color:teal');
+				}));
+				conn.on('auth-guest', wsdecoder(function(){
+					console.log(`[WS] %cReceiving events as a guest`,'color:teal');
 				}));
 				conn.on('notif-cnt', wsdecoder(function(data){
 					let cnt = data.cnt ? parseInt(data.cnt, 10) : 0;
-					console.log('[WS] Got notification count (data.cnt=%d, cnt=%d)', data.cnt, cnt);
+					console.log('[WS] Unread notification count: %d', cnt);
 
 					essentialElements();
 
@@ -1561,12 +1574,54 @@ $(function(){
 						$notifSb.stop().slideDown();
 					}));
 				}));
-				conn.on('rip',function(){
-					console.log('[WS] Authentication failed');
-					conn.disconnect(0);
-				});
+				conn.on('post-delete', wsdecoder(function(data){
+					if (!data.type || !data.id)
+						return;
+
+					let postid = `${data.type}-${data.id}`,
+						$post = $('#'+postid+':not(.deleting)');
+					console.log('[WS] Post deleted (postid=%s)', postid);
+					if ($post.length){
+						$post.find('.fluidbox--opened').fluidbox('close');
+						$post.find('.fluidbox--initialized').fluidbox('destroy');
+						$post.attr({
+							'class': 'deleted',
+							title: "This post has been deleted; click here to hide",
+						}).on('click',function(){
+							let $this = $(this);
+							$this[window.WithinMobileBreakpoint()?'slideUp':'fadeOut'](500,function(){
+								$this.remove();
+							});
+						});
+					}
+				}));
+				conn.on('post-add', wsdecoder(function(data){
+					if (!data.type || !data.id)
+						return;
+
+					$.post(`/post/reload/${data.type}/${data.id}`,$.mkAjaxHandler(function(){
+						if (!this.status) return;
+
+						let $newli = $(this.li);
+						$(this.section).append($newli);
+						$newli.rebindFluidbox();
+						Time.Update();
+						$newli.rebindHandlers(true).parent().reorderPosts();
+						console.log(`[WS] Post added (postid=${data.type}-#${data.id}) to container ${this.section}`);
+					}));
+				}));
+				conn.on('post-update', wsdecoder(function(data){
+					if (!data.type || !data.id)
+						return;
+
+					let postid = `${data.type}-${data.id}`,
+						$post = $('#'+postid+':not(.deleting)');
+					console.log('[WS] Post updated (postid=%s)', postid);
+					$post.reloadLi(false);
+				}));
 				conn.on('disconnect',function(){
-					console.log('[WS] Disconnected');
+					auth = false;
+					console.log('[WS] %cDisconnected','color:red');
 				});
 			};
 			if (!window.io)
@@ -1583,15 +1638,56 @@ $(function(){
 				});
 			else success();
 		}
-		wsNotifs(window.signedIn);
-		window.WSNotifications = (function(){
-			let dis = (signedIn) => wsNotifs(signedIn);
+		wsNotifs();
+		$.WS = (function(){
+			let dis = () => wsNotifs(),
+				substatus = false;
+			dis.recvPostUpdates = function(subscribe){
+				if (typeof conn === 'undefined')
+					return;
+
+				if (typeof subscribe !== 'boolean' || substatus === subscribe)
+					return;
+				conn.emit('post-updates',String(subscribe),wsdecoder(function(data){
+					if (!data.status)
+						return console.log('[WS] %cpost-updates subscription status change failed (subscribe=%s)', 'color:red', subscribe);
+
+					substatus = subscribe;
+					console.log('[WS] %c%s','color:green', data.message);
+				}));
+			};
+			dis.authme = function(){
+				if (typeof conn === 'undefined' || auth === true)
+					return;
+
+				console.log(`[WS] %cReconnection needed for identity change`,'color:teal');
+				conn.disconnect(0);
+				setTimeout(function(){
+					conn.connect();
+				},100);
+			};
+			dis.unauth = function(){
+				if (typeof conn === 'undefined')
+					return;
+
+				conn.emit('unauth',null,function(data){
+					if (!data.status) return console.log('[WS] %cUnauth failed','color:red');
+
+					auth = false;
+					console.log(`[WS] %cAuthentication dropped`,'color:brown');
+				});
+			};
 			dis.disconnect = function(reason){
 				if (typeof conn === 'undefined')
 					return;
 
 				console.log(`[WS] Forced disconnect (reason=${reason})`);
 				conn.disconnect(0);
+			};
+			dis.status = function(){
+				conn.emit('status',null,wsdecoder(function(data){
+					console.log('[WS] Status: ID=%s; Name=%s; Rooms=%s',data.User.id,data.User.name,data.rooms.join(','));
+				}));
 			};
 			return dis;
 		})();

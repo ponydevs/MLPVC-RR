@@ -286,7 +286,8 @@ DocReady.push(function(){
 		let $li = $(this),
 			ident = $._getLiTypeId($li),
 			id = ident.id,
-			type = ident.type.replace(/s$/,'');
+			type = ident.type.replace(/s$/,''),
+			Type = $.capitalize(type);
 
 		$li.children('button.reserve-request').off('click').on('click', function(e){
 			e.preventDefault();
@@ -306,15 +307,12 @@ DocReady.push(function(){
 
 					if (this.remove === true){
 						$.Dialog.close();
-						return $li.remove();
+						return $li[window.WithinMobileBreakpoint()?'slideUp':'fadeOut'](500,function(){
+							$li.remove();
+						});
 					}
 
-					let $newli = $(this.li);
-					if ($li.hasClass('highlight'))
-						$newli.addClass('highlight');
-					$li.replaceWith($newli);
-					Time.Update();
-					$newli.trigger('bind-more-handlers', [id, type]);
+					$li.reloadLi();
 					$.Dialog.close();
 				}));
 			});
@@ -345,7 +343,7 @@ DocReady.push(function(){
 						})
 					)
 				);
-			$.Dialog.request('Finish reservation',$FinishResForm,'Finish', function($form){
+			$.Dialog.request('Complete reservation',$FinishResForm,'Finish', function($form){
 				$form.on('submit', function(e){
 					e.preventDefault();
 
@@ -356,12 +354,12 @@ DocReady.push(function(){
 
 					let request_url = '/post/finish/'+type+'/'+id,
 						sent_data = $form.mkData();
-					$.Dialog.wait(false, 'Marking reservation as finished');
+					$.Dialog.wait(false, 'Marking '+type+' as finished');
 
 					$.post(request_url,sent_data,$.mkAjaxHandler(function(){
 						let data = this,
 							success = function(){
-								$.Dialog.success(false, 'Reservation has been marked as finished');
+								$.Dialog.success(false, Type+' has been marked as finished');
 
 								$(`#${type}s`).trigger('pls-update', [function(){
 									if (typeof data.message === 'string' && data.message)
@@ -436,9 +434,8 @@ DocReady.push(function(){
 				if (!this.status) return $.Dialog.fail(false, this.message);
 
 				let message = this.message;
-				$(`#${type}s`).trigger('pls-update', [function(){
-					$.Dialog.success(false, message, true);
-				}]);
+				$li.reloadLi();
+				$.Dialog.success(false, message, true);
 			}));
 		});
 		$actions.filter('.unlock').off('click').on('click', function(e){
@@ -463,12 +460,16 @@ DocReady.push(function(){
 				if (!sure) return;
 
 				$.Dialog.wait(false);
+				$li.addClass('deleting');
 
 				$.post(`/post/delete-request/${id}`,$.mkAjaxHandler(function(){
-					if (!this.status) return $.Dialog.fail(false, this.message);
+					if (!this.status){
+						$li.removeClass('deleting');
+						return $.Dialog.fail(false, this.message);
+					}
 
 					$.Dialog.close();
-					$this.closest('li').fadeOut(500,function(){
+					$this.closest('li')[window.WithinMobileBreakpoint()?'slideUp':'fadeOut'](500,function(){
 						$(this).remove();
 					});
 				}));
@@ -602,7 +603,7 @@ DocReady.push(function(){
 
 												$.Dialog.success(false, 'Image has been updated');
 
-												$(`#${type}s`).trigger('pls-update');
+												$li.reloadLi();
 											}));
 										});
 									});

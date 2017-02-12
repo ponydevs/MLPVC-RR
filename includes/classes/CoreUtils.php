@@ -1000,7 +1000,7 @@ class CoreUtils {
 		return $strlen > $len ? self::trim(self::substring($str, 0, $len-1)).'…' : $str;
 	}
 
-	static function socketEvent($event, array $data){
+	static function socketEvent(string $event, array $data){
 		$elephant = new \ElephantIO\Client(new SocketIOEngineVersion1X('https://ws.'.WS_SERVER_DOMAIN.':8667', array(
 			'context' => array(
 				'http' => array(

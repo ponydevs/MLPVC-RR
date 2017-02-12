@@ -43,6 +43,8 @@ class Episodes {
 
 	const ALLOW_MOVIES = true;
 
+	private static $EP_CACHE = [];
+
 	/**
 	 * If an episode is a two-parter's second part, then returns the first part
 	 * Otherwise returns the episode itself
@@ -50,16 +52,21 @@ class Episodes {
 	 * @param int  $episode
 	 * @param int  $season
 	 * @param bool $allowMovies
+	 * @param bool $cache
 	 *
 	 * @throws \Exception
 	 *
 	 * @return Episode|null
 	 */
-	static function getActual(int $season, int $episode, bool $allowMovies = false){
+	static function getActual(int $season, int $episode, bool $allowMovies = false, $cache = false){
 		global $Database;
 
 		if (!$allowMovies && $season == 0)
 			throw new \Exception('This action cannot be performed on movies');
+
+
+		if ($cache && isset(self::$EP_CACHE["$season-$episode"]))
+			return self::$EP_CACHE["$season-$episode"];
 
 		/**
 		 * @var $Ep Episode
@@ -70,9 +77,12 @@ class Episodes {
 			return $Ep->addAiringData();
 
 		$Part1 = $Database->whereEp($season,$episode-1)->getOne('episodes');
-		return !empty($Part1) && !empty($Part1->twoparter)
+		$output = !empty($Part1) && !empty($Part1->twoparter)
 			? $Part1->addAiringData()
 			: null;
+		if ($cache)
+			self::$EP_CACHE["$season-$episode"] = $output;
+		return $output;
 	}
 
 	/**
