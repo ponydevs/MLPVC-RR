@@ -301,6 +301,7 @@ DocReady.push(function(){
 				if (!sure) return;
 
 				$.Dialog.wait(false, 'Cancelling reservation');
+				$li.addClass('deleting');
 
 				$.post(`/post/unreserve/${type}/${id}`,$.mkAjaxHandler(function(){
 					if (!this.status) return $.Dialog.fail(false, this.message);
@@ -315,6 +316,7 @@ DocReady.push(function(){
 					if (this.reload)
 						$li.reloadLi(false);
 					$.Dialog.close();
+					$li.removeClass('deleting');
 				}));
 			});
 		});

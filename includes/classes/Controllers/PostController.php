@@ -250,7 +250,7 @@ class PostController extends Controller {
 							error_log("SocketEvent Error\n".$e->getMessage()."\n".$e->getTraceAsString());
 						}
 
-						Response::success('Reservation deleted');
+						Response::success('Reservation deleted',['remove' => true]);
 					}
 					else if ($thing === 'request' && Permission::insufficient('staff') && !$isUserReserver)
 						Response::fail('You cannot remove the reservation from this post');
@@ -477,6 +477,8 @@ class PostController extends Controller {
 			CoreUtils::socketEvent('post-add',[
 				'id' => $PostID,
 				'type' => $thing,
+				'season' => (int)$insert['season'],
+				'episode' => (int)$insert['episode'],
 			]);
 		}
 		catch (\Exception $e){
@@ -750,6 +752,8 @@ class PostController extends Controller {
 			CoreUtils::socketEvent('post-add',[
 				'id' => $PostID,
 				'type' => 'reservation',
+				'season' => (int)$insert['season'],
+				'episode' => (int)$insert['episode'],
 			]);
 		}
 		catch (\Exception $e){

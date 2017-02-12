@@ -1596,7 +1596,7 @@ $(function(){
 					}
 				}));
 				conn.on('post-add', wsdecoder(function(data){
-					if (!data.type || !data.id)
+					if (!data.type || !data.id || window.EPISODE !== data.episode || window.SEASON !== data.season)
 						return;
 
 					$.post(`/post/reload/${data.type}/${data.id}`,$.mkAjaxHandler(function(){
@@ -1617,7 +1617,8 @@ $(function(){
 					let postid = `${data.type}-${data.id}`,
 						$post = $('#'+postid+':not(.deleting)');
 					console.log('[WS] Post updated (postid=%s)', postid);
-					$post.reloadLi(false);
+					if ($post.length)
+						$post.reloadLi(false);
 				}));
 				conn.on('disconnect',function(){
 					auth = false;
