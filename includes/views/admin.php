@@ -32,9 +32,29 @@ use App\Posts;
 		<h2>Elastic status</h2>
 <?php   try {
 			$client = CoreUtils::elasticClient();
-			$client->ping(); ?>
-		<pre><code><strong>Indices</strong><br><?=$client->cat()->indices(['v' => true])?></code></pre>
-		<pre><code><strong>Nodes</strong><br><?=$client->cat()->nodes(['v' => true])?></code></pre>
+			$client->ping();
+			$indices = $client->cat()->indices(['v' => true]);
+			$nodes = $client->cat()->nodes(['v' => true]); ?>
+		<pre><code><strong>Indices</strong><br><?php
+			foreach ($indices as $no => $index){
+				echo "#$no ";
+				foreach ($index as $key => $value){
+					if (empty($value))
+						continue;
+					echo "$key:$value ";
+				}
+			}
+		?></code></pre>
+		<pre><code><strong>Nodes</strong><br><?php
+			foreach ($nodes as $no => $node){
+				echo "#$no ";
+				foreach ($node as $key => $value){
+					if (empty($value))
+						continue;
+					echo "$key:$value ";
+				}
+			}
+		?></code></pre>
 <?php   }
 		catch (\Elasticsearch\Common\Exceptions\NoNodesAvailableException $e){
 			echo "<strong>Server is down.</strong></code></pre>";
