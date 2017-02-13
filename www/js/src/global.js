@@ -1654,6 +1654,7 @@ $(function(){
 						return console.log('[WS] %cpost-updates subscription status change failed (subscribe=%s)', 'color:red', subscribe);
 
 					substatus = subscribe;
+					$('#episode-live-update')[substatus?'removeClass':'addClass']('hidden');
 					console.log('[WS] %c%s','color:green', data.message);
 				}));
 			};
@@ -1668,7 +1669,7 @@ $(function(){
 				},100);
 			};
 			dis.unauth = function(){
-				if (typeof conn === 'undefined')
+				if (typeof conn === 'undefined' || auth !== true)
 					return;
 
 				conn.emit('unauth',null,function(data){

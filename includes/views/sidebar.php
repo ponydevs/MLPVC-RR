@@ -46,23 +46,18 @@ use App\Users;
 <?php   } ?>
 		</div>
 	</section>
+	<section id="episode-live-update" class="hidden">
+		<h2><span class="live-circle"></span> Live updates enabled</h2>
+		<p>Changes to the posts on this page are visible in real time to everyone who sees this message.<br>
+			<small>If you'd like to have the option to disable this feature please <a class="send-feedback">let us know</a>.</small>
+		</p>
+	</section>
 <?php   if ($view === 'episode' && !empty($CurrentEpisode)){ ?>
 	<section id="voting">
 		<h2><?=$CurrentEpisode->isMovie?'Movie':'Episode'?> rating</h2>
 		<?=Episodes::getSidebarVoting($CurrentEpisode)?>
 	</section>
-<?php       if ($CurrentEpisode->isLatest() && time() > $CurrentEpisode->willairts && $CurrentEpisode->willairts + (Time::IN_SECONDS['hour']*4) > time()){ ?>
-	<section id="live-update">
-		<h2>Live reload</h2>
-		<p>The episode has just aired, and posts are likely changing faster than usual.</p>
-		<div>
-			<p>The posts will reload in <strong class="timer">&hellip;</strong> to reflect the changes.</p>
-			<p class="hidden">Live reloading is disabled.</p>
-			<button class="blue reload typcn typcn-refresh">Reload now</button> <button class="red disable typcn typcn-times">Disable</button>
-		</div>
-	</section>
-<?php       }
-		}
+<?php	}
 		if ($do === 'colorguide' && (!empty($Appearance) || !empty($Ponies)) && empty($Map)){ ?>
 	<section id="hash-copy">
 		<h2>Color Guide</h2>

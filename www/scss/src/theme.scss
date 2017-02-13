@@ -878,6 +878,27 @@ kbd {
 	@include vapp(#f00, 'ponyscape');
 }
 
+#sidebar .live-circle {
+	display: inline-block;
+  width: .5em;
+  height: .5em;
+  border-radius: 50%;
+  animation: blink-live 1.6s ease-out infinite;
+}
+@keyframes blink-live {
+	from {
+		background: #800;
+	}
+	50% {
+		background: #d00;
+		box-shadow: 0 0 15px #f00;
+	}
+	to {
+		background: #800;
+		box-shadow: 0 0 30px #800;
+	}
+}
+
 #copy-notify {
 	position: fixed;
 	right: 10px;
