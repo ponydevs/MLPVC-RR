@@ -293,8 +293,9 @@ class UserController extends Controller {
 		if (empty($targetUser))
 			Response::fail('User not found');
 
-		if ($targetUser->getPCGAvailableSlots(false))
-			Response::done();
-		Response::fail();
+		$avail = $targetUser->getPCGAvailableSlots(false);
+		if ($avail === 0)
+			Response::fail('You do not have any available slots left. You can always fulfill additional requests to get more.');
+		Response::done();
 	}
 }
