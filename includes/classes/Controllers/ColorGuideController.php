@@ -73,7 +73,7 @@ class ColorGuideController extends Controller {
 		$this->_isOwner = $nameSet ? ($signedIn && $currentUser->id === $this->_owner->id) : false;
 
 		if ($nameSet)
-			$this->_cgPath = "/@{$this->_owner->name}{$this->_cgPath}";
+			$this->_cgPath = "/@{$this->_owner->name}/cg";
 	}
 
 	/** @var array */
