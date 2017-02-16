@@ -46,10 +46,13 @@ class ColorGuideController extends Controller {
 	private $_EQG, $_appearancePage, $_personalGuide;
 	/** @var string */
 	private $_cgPath;
+	private function _initCGPath(){
+		$this->_cgPath = "/cg".($this->_EQG?'/eqg':'');
+	}
 	private function _initialize($params, bool $setPath = true){
 		$this->_EQG = !empty($params['eqg']) ? 1 : 0;
 		if ($setPath)
-			$this->_cgPath = "/cg".($this->_EQG?'/eqg':'');
+			$this->_initCGPath();
 		$this->_appearancePage = isset($_POST['APPEARANCE_PAGE']);
 		$this->_personalGuide = isset($_POST['PERSONAL_GUIDE']);
 	}
@@ -70,7 +73,7 @@ class ColorGuideController extends Controller {
 		$this->_isOwner = $nameSet ? ($signedIn && $currentUser->id === $this->_owner->id) : false;
 
 		if ($nameSet)
-			$this->_cgPath = "/@{$this->_owner->name}/cg";
+			$this->_cgPath = "/@{$this->_owner->name}{$this->_cgPath}";
 	}
 
 	/** @var array */
@@ -225,6 +228,11 @@ class ColorGuideController extends Controller {
 		if (!isset($this->_owner))
 			$this->_initialize($params);
 		$this->_getAppearance($params);
+		if (isset($this->_owner) && $this->_appearance['owner'] !== $this->_owner->id){
+			$this->_owner = null;
+			$this->_isOwner = false;
+			$this->_initCGPath();
+		}
 
 		global $Color, $color, $signedIn, $currentUser;
 
