@@ -18,8 +18,7 @@ if (defined('MAINTENANCE_START')){
 
 // Database connection & Required Functionality Checking \\
 try {
-	if (PHP_OS === 'WINNT')
-		$inipath = 'in/to '.php_ini_loaded_file().' then restart '.About::getServerSoftware();
+	$inipath = 'in/to '.php_ini_loaded_file().' then restart '.About::getServerSoftware();
 	if (About::iniGet('short_open_tag') !== true)
 		throw new Exception("Short open tags (&lt;?) are disabled\nUncomment/add the line <strong>short_open_tag=On</strong> $inipath to fix");
 	if (!function_exists('curl_init'))
