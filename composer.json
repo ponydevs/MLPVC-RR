@@ -9,7 +9,7 @@
 		}
 	],
 	"require": {
-		"fightbulc/moment": "*",
+		"fightbulc/moment": "^1.25.1",
 		"wisembly/elephant.io": "*",
 		"ezyang/htmlpurifier": "^4.8",
 		"seinopsys/postgresql-database-class": "dev-master",
