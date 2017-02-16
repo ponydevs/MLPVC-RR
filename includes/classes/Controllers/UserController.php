@@ -79,7 +79,7 @@ class UserController extends Controller {
 				'User' => $User,
 				'canEdit' => $canEdit,
 				'sameUser' => $sameUser,
-				'Sessions' => $Sessions,
+				'Sessions' => $Sessions ?? null,
 			],
 		);
 		if (isset($CurrentSession))

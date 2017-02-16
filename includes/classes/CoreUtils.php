@@ -592,8 +592,8 @@ class CoreUtils {
 				else if (isset($scope['Ponies']))
 					$NavItems['colorguide'][1] .= " - Page {$scope['Pagination']->page}";
 				else {
-					if ($GLOBALS['data'] === 'full'){
-						$NavItems['colorguide']['subitem'] = 'Full List';
+					if (preg_match(new RegExp('full$'),$GLOBALS['data'])){
+						$NavItems['colorguide']['subitem'] = 'Full '.($scope['EQG']?'Character':'Pony').' List';
 					}
 					else {
 						if (isset($scope['Tags'])) $pagePrefix = 'Tags';
