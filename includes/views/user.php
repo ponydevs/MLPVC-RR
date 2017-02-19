@@ -59,7 +59,7 @@ if ($isUserMember)
 	echo Users::getPersonalColorGuideHTML($User, $sameUser);
 
 if ($signedIn)
-	echo Users::getPendingReservationsHTML($User->id, $sameUser); ?>
+	echo Users::getPendingReservationsHTML($User->id, $sameUser, $isUserMember); ?>
 <? if ($isUserMember){ ?>
 <section class="awaiting-approval"></section>
 <? } ?>

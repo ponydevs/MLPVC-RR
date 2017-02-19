@@ -369,7 +369,7 @@ HTML;
 				}
 			}
 			else {
-				$HTML .= "<p>Reservations are a way to allow Club Members to claim requests on the site as well as claim screenshots of their own, in order to reduce duplicates. If you don't plan on becoming a member you can still use the button above to get random requests from the site that you can draw as practice, or potentially to submit along with your application.</p>";
+				$HTML .= "<p>Reservations are a way to allow Club Members to claim requests on the site as well as claim screenshots of their own, in order to reduce duplicate submissions to the group. You can use the button above to get random requests from the site that you can draw as practice, or to potentially submit along with your application to the club.</p>";
 			}
 
 			$HTML .= "</section>";
