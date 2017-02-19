@@ -13,8 +13,10 @@ DocReady.push(function(){
 			let result = [];
 			for (let i = 0,l = AppearanceColors.length; i<l; i++){
 				let el = AppearanceColors[i];
-				if (el[key] === val)
+				if (el[key] === val){
 					result.push(el);
+					AppearanceColors[i].detected = true;
+				}
 			}
 			if (!result.length)
 				result.push({
@@ -66,4 +68,19 @@ DocReady.push(function(){
 
 		return at === bt ? 0 : (at < bt ? -1 : 1);
 	}).prependTo($Table);
+	$.each(AppearanceColors, function(_, color){
+		if (color.detected || /^(Mannequin|Teeth & Mouth|Tears)\s\|/.test(color.label))
+			return;
+		let matchingColors = mapColor('hex', color.hex), labels = [];
+		$.each(matchingColors, (_, color) => {
+			labels.push(`<li>${color.label}</li>`);
+		});
+		$Table.prepend(
+			$.mk('tr').html(
+				`<td class="color-preview" style="background-color:${color.hex}"></td>
+				<td class="label missing"><ul>${labels.join('')}</ul></td>
+				<td class="color">${color.hex}</td>`
+			)
+		);
+	});
 });

@@ -384,7 +384,6 @@ ul.colors {
 	.qtip-titlebar {
 		padding: 5px;
 		text-align: center;
-		border-bottom: 1px solid;
 		background: inherit;
 
 		+ .qtip-content { font-size: .75em }
@@ -392,7 +391,11 @@ ul.colors {
 	.qtip-content {
 		padding: 5px;
 		text-align: center;
+		border-top: 1px solid;
 	}
+}
+.qtip-content:empty {
+	display: none;
 }
 
 .qtip-see-thru {

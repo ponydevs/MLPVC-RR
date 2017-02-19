@@ -27,7 +27,8 @@ DocReady.push(function(){
 	window.copyHashToggler = function(){copyHashToggler()};
 	window.copyHashEnabled = function(){ return copyHash };
 
-	let $SearchForm = $('#search-form');
+	let $SearchForm = $('#search-form'),
+		hasSearchForm = $SearchForm.length;
 
 	function tooltips(){
 		let $tags = $('.tags').children('span.tag');
@@ -35,7 +36,7 @@ DocReady.push(function(){
 			let $this = $(this),
 				text = 'Click to quick search',
 				title = $this.attr('title'),
-				tagstyle = $this.attr('class').match(/typ\-([a-z]+)(?:\s|$)/);
+				tagstyle = $this.attr('class').match(/typ-([a-z]+)(?:\s|$)/);
 
 			tagstyle = !tagstyle ? '' : ` qtip-tag-${tagstyle[1]}`;
 
@@ -48,10 +49,11 @@ DocReady.push(function(){
 
 			if (title){
 				$this.qtip({
-					content: {
-						text: text,
-						title: title
-					},
+					content: (
+						hasSearchForm
+						? { text, title }
+						: { text: '', title }
+					),
 					position: {my: 'bottom center', at: 'top center', viewport: true},
 					style: {classes: `qtip-tag${tagstyle}`}
 				});

@@ -125,6 +125,21 @@
 					margin: 0;
 					list-style: inside;
 				}
+				.label.missing:before {
+					content: "MISSING";
+					color:red;
+					display: block;
+					font-weight: bold;
+					font-size: 18px;
+					animation: blink-mild 1s linear infinite;
+
+					@keyframes blink-mild {
+						from, to {
+							opacity: .4;
+						}
+						50% { opacity: 1 }
+					}
+				}
 				.color {
 					font-family: $monospace;
 				}
