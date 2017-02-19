@@ -476,7 +476,7 @@ HTML;
 		$ColorMapping = array();
 		foreach ($Colors as $row){
 			$cglabel = preg_replace(new RegExp('^(Costume|Dress)$'),'Coat',$row['cglabel']);
-			$colorlabel = preg_replace(new RegExp('^(?:(?:Main|First|Normal|Gradient(?:\s(?:Light|Dark))?)\s)?(.+?)(?:\s\d+)?(?:/.*)?$'),'$1', $row['label']);
+			$colorlabel = preg_replace(new RegExp('^(?:(?:(?:Purple|Yellow|Red)\s)?(?:Main|First|Normal|Gradient(?:\s(?:Light))?)\s)?(.+?)(?:\s\d+)?(?:/.*)?$'),'$1', $row['label']);
 			$label = "$cglabel $colorlabel";
 			if (isset($DefaultColorMapping[$label]) && !isset($ColorMapping[$label]))
 				$ColorMapping[$label] = $row['hex'];
@@ -612,8 +612,6 @@ HTML;
 
 		$IMGWidth = $Map['width'];
 		$IMGHeight = $Map['height'];
-		$MatrixRegular =   '1 0 0 0 0 0  1 0 0 0 0 0  1 0 0 0 0 0 1 0';
-		$MatrixInverted = '-1 0 0 0 1 0 -1 0 0 1 0 0 -1 0 1 0 0 0 1 0';
 		$strokes = array();
 		foreach ($Map['linedata'] as $line){
 			$hex = $Map['colors'][$line['colorid']];
