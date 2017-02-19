@@ -590,7 +590,7 @@ HTML;
 		$escapedLabel = CoreUtils::aposEncode($Request->label);
 		$label = self::_getPostLabel($Request);
 		$time_ago = Time::tag($Request->posted);
-		$reserve = self::getPostReserveButton($Request, null, false);
+		$reserve = Permission::sufficient('member') ? self::getPostReserveButton($Request, null, false) : "<div><a href='{$Request->toLink()}' class='btn blue typcn typcn-arrow-forward'>Go to episode page</a></div>";
 		return <<<HTML
 <li id="request-{$Request->id}">
 	<div class="image screencap">

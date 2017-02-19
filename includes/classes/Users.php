@@ -294,74 +294,84 @@ HTML;
 		false => 'This user has',
 	];
 
-	static function getPendingReservationsHTML($UserID, $sameUser){
+	static function getPendingReservationsHTML($UserID, $sameUser, $isMember = true){
 		global $Database, $currentUser;
 
 		$YouHave = self::YOU_HAVE[$sameUser];
 		$PrivateSection = $sameUser? Users::PROFILE_SECTION_PRIVACY_LEVEL['staff']:'';
 
-		$cols = "id, season, episode, preview, label, posted, reserved_by";
-		$PendingReservations = $Database->where('reserved_by', $UserID)->where('deviation_id IS NULL')->get('reservations',null,$cols);
-		$PendingRequestReservations = $Database->where('reserved_by', $UserID)->where('deviation_id IS NULL')->get('requests',null,"$cols, reserved_at, true as requested_by");
-		$TotalPending = count($PendingReservations)+count($PendingRequestReservations);
-		$hasPending = $TotalPending > 0;
+		if ($isMember){
+			$cols = "id, season, episode, preview, label, posted, reserved_by";
+			$PendingReservations = $Database->where('reserved_by', $UserID)->where('deviation_id IS NULL')->get('reservations',null,$cols);
+			$PendingRequestReservations = $Database->where('reserved_by', $UserID)->where('deviation_id IS NULL')->get('requests',null,"$cols, reserved_at, true as requested_by");
+			$TotalPending = count($PendingReservations)+count($PendingRequestReservations);
+			$hasPending = $TotalPending > 0;
+		}
+		else $TotalPending = 0;
 		$HTML = '';
 		if (Permission::sufficient('staff') || $sameUser){
-			$pendingCountReadable = ($hasPending>0?"<strong>$TotalPending</strong>":'no');
-			$posts = CoreUtils::makePlural('reservation', $TotalPending);
 			$gamble = $TotalPending < 4 && $sameUser ? ' <button id="suggestion" class="btn orange typcn typcn-lightbulb">Suggestion</button>' : '';
 			$HTML .= <<<HTML
 <section class='pending-reservations'>
 <h2>{$PrivateSection}Pending reservations$gamble</h2>
-				<span>$YouHave $pendingCountReadable pending $posts
 HTML;
-			if ($hasPending)
-				$HTML .= " which ha".($TotalPending!==1?'ve':'s')."n’t been marked as finished yet";
-			$HTML .= ".";
-			if ($sameUser)
-				$HTML .= " Please keep in mind that the global limit is 4 at any given time. If you reach the limit, you can’t reserve any more images until you finish or cancel some of your pending reservations.";
-			$HTML .= "</span>";
 
-			if ($hasPending){
-				/** @var $Posts Post[] */
-				$Posts = array_merge(
-					Posts::getReservationsSection($PendingReservations, RETURN_ARRANGED)['unfinished'],
-					array_filter(array_values(Posts::getRequestsSection($PendingRequestReservations, RETURN_ARRANGED)['unfinished']))
-				);
-				usort($Posts, function(Post $a, Post $b){
-					$a = strtotime($a->posted);
-					$b = strtotime($b->posted);
+			if ($isMember){
+				$pendingCountReadable = ($hasPending>0?"<strong>$TotalPending</strong>":'no');
+				$posts = CoreUtils::makePlural('reservation', $TotalPending);
+				$HTML .= "<span>$YouHave $pendingCountReadable pending $posts";
+				if ($hasPending)
+					$HTML .= " which ha".($TotalPending!==1?'ve':'s')."n’t been marked as finished yet";
+				$HTML .= ".";
+				if ($sameUser)
+					$HTML .= " Please keep in mind that the global limit is 4 at any given time. If you reach the limit, you can’t reserve any more images until you finish or cancel some of your pending reservations.";
+				$HTML .= "</span>";
 
-					return -($a < $b ? -1 : ($a === $b ? 0 : 1));
-				});
-				$LIST = '';
-				foreach ($Posts as $Post){
-					$postLink = $Post->toLink($_);
-					$postAnchor = $Post->toAnchor(null, $_);
-					$label = !empty($Post->label) ? "<span class='label'>{$Post->label}</span>" : '';
-					$actionCond = $Post->isRequest && !empty($Post->reserved_at);
-					$posted = Time::tag($actionCond ? $Post->reserved_at : $Post->posted);
-					$PostedAction = $actionCond ? 'Reserved' : 'Posted';
-					$contestable = $Post->isOverdue() ? Posts::CONTESTABLE : '';
+				if ($hasPending){
+					/** @var $Posts Post[] */
+					$Posts = array_merge(
+						Posts::getReservationsSection($PendingReservations, RETURN_ARRANGED)['unfinished'],
+						array_filter(array_values(Posts::getRequestsSection($PendingRequestReservations, RETURN_ARRANGED)['unfinished']))
+					);
+					usort($Posts, function(Post $a, Post $b){
+						$a = strtotime($a->posted);
+						$b = strtotime($b->posted);
 
-					$LIST .= <<<HTML
-<li>
-<div class='image screencap'>
-	<a href='$postLink'><img src='{$Post->preview}'></a>
-</div>
-$label
-<em>$PostedAction under $postAnchor $posted</em>$contestable
-<div>
-	<a href='$postLink' class='btn blue typcn typcn-arrow-forward'>View</a>
-	<button class='red typcn typcn-user-delete cancel'>Cancel</button>
-</div>
-</li>
+						return -($a < $b ? -1 : ($a === $b ? 0 : 1));
+					});
+					$LIST = '';
+					foreach ($Posts as $Post){
+						$postLink = $Post->toLink($_);
+						$postAnchor = $Post->toAnchor(null, $_);
+						$label = !empty($Post->label) ? "<span class='label'>{$Post->label}</span>" : '';
+						$actionCond = $Post->isRequest && !empty($Post->reserved_at);
+						$posted = Time::tag($actionCond ? $Post->reserved_at : $Post->posted);
+						$PostedAction = $actionCond ? 'Reserved' : 'Posted';
+						$contestable = $Post->isOverdue() ? Posts::CONTESTABLE : '';
+
+						$LIST .= <<<HTML
+	<li>
+	<div class='image screencap'>
+		<a href='$postLink'><img src='{$Post->preview}'></a>
+	</div>
+	$label
+	<em>$PostedAction under $postAnchor $posted</em>$contestable
+	<div>
+		<a href='$postLink' class='btn blue typcn typcn-arrow-forward'>View</a>
+		<button class='red typcn typcn-user-delete cancel'>Cancel</button>
+	</div>
+	</li>
 HTML;
-					// Clearing variable set via reference by the toLink method call
-					unset($_);
+						// Clearing variable set via reference by the toLink method call
+						unset($_);
+					}
+					$HTML .= "<ul>$LIST</ul>";
 				}
-				$HTML .= "<ul>$LIST</ul>";
 			}
+			else {
+				$HTML .= "<p>Reservations are a way to allow Club Members to claim requests on the site as well as claim screenshots of their own, in order to reduce duplicates. If you don't plan on becoming a member you can still use the button above to get random requests from the site that you can draw as practice, or potentially to submit along with your application.</p>";
+			}
+
 			$HTML .= "</section>";
 		}
 		return $HTML;

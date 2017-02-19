@@ -54,11 +54,13 @@ if ($sameUser || Permission::sufficient('staff')){
 <?php
 	}
 }
-if (Permission::sufficient('member', $User->role)){
+$isUserMember = Permission::sufficient('member', $User->role);
+if ($isUserMember)
 	echo Users::getPersonalColorGuideHTML($User, $sameUser);
 
+if ($signedIn)
 	echo Users::getPendingReservationsHTML($User->id, $sameUser); ?>
-
+<? if ($isUserMember){ ?>
 <section class="awaiting-approval"></section>
 <? } ?>
 		<section class="bans">

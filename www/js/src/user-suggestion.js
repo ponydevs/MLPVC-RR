@@ -9,9 +9,9 @@ DocReady.push(function(){
 		let pluginsLoaded = false;
 
 		$.Dialog.info(
-			'Suggest a reservation',
-			`<p>If you feel like making a vector but don’t have any screencap in mind, then you could fulfill an open request.</p>
-			<p>With this tool you can get a random request from the site, and you can choose to reserve it, get a different suggestion, or you can simply close this dialog. It’s all up to you!</p>
+			'Request Roulette™',
+			`<p>If you feel like making a vector but don’t have any screencap in mind, then you are in the right place.</p>
+			<p>With this tool you can get a random request from the site instantly delivered straight to your screen. Club Members can choose to reserve the requests immediately, and everyone can ask for consequent suggestions. You are not forced to commit to a suggestion, whether you take it or leave it is all up to you.</p>
 			<div class="align-center"><button id="suggestion-press" class="btn large orange typcn typcn-lightbulb">Give me a suggestion</button></button>`,
 			function(){
 				let $btn = $('#dialogContent').find('#suggestion-press'),
@@ -21,12 +21,7 @@ DocReady.push(function(){
 					suggest = function(){
 						$.post('/user/suggestion',$.mkAjaxHandler(function(){
 							if (!this.status){
-								if (this.limithit){
-									$btn.disable();
-									console.log($output);
-									$output.remove();
-								}
-								else $btn.enable();
+								$btn.enable();
 								return $.Dialog.fail(false, this.message);
 							}
 

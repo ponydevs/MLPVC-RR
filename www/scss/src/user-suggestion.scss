@@ -20,8 +20,8 @@
 		.image {
 			&:not(.loaded){
 				// Image + Margin + Borders
-				width: 200px;
-				height: 200px;
+				width: 212px;
+				height: 212px;
 				background: url(/img/loading-gears.svg) no-repeat center;
 				background-size: 75%;
 				margin: 0 auto;
@@ -47,9 +47,15 @@
 			max-width: 400px;
 			font-size: 1.4em;
 		}
+		.post-date {
+			font-size: 1.2em;
+		}
 
 		> .reserver {
 			@extend %reserver;
+		}
+		> div:last-child {
+			margin-top: 10px;
 		}
 	}
 }

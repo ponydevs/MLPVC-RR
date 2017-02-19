@@ -120,11 +120,8 @@ class UserController extends Controller {
 
 		CSRFProtection::protect();
 
-		if (Permission::insufficient('member'))
-			Response::fail('You must be a club member to use this feature.');
-
-		if (Users::reservationLimitExceeded(RETURN_AS_BOOL))
-			Response::fail('You already have the maximum  4 reservations. Close this dialog to view or cancel them.',['limithit' => true]);
+		if (Permission::insufficient('user'))
+			Response::fail('You must be signed in to use this feature.');
 
 		$postIDs = $Database->rawQuery(
 			'SELECT id FROM requests
