@@ -37,8 +37,18 @@ DocReady.push(function(){
 			$SVG = $(data);
 			$('#svg-cont').html($SVG);
 			$SVG.children().each(function(){
-				let $el = $(this);
-				$el.addClass($.yiq($el.attr('stroke')) > (0xFF/2) ? 'bright' : 'dark');
+				let $el = $(this),
+					stroke = $el.attr('stroke');
+				$el.addClass($.yiq(stroke) > (0xFF/2) ? 'bright' : 'dark');
+				$el.on('mouseenter',function(){
+					$el.addClass('highlight');
+					$Table.find('td.color').filter(function(){
+						return this.innerHTML.trim() === stroke;
+					}).parent().addClass('force-hover');
+				}).on('mouseleave',function(){
+					$el.removeClass('highlight');
+					$Table.find('.force-hover').removeClass('force-hover');
+				});
 			});
 		}
 	});

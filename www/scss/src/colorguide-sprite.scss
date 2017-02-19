@@ -99,7 +99,7 @@
 					transition: color .2s linear, border-color .2s linear, background-color .2s linear;
 				}
 
-				&:hover {
+				&:hover, &.force-hover {
 					td {
 						color: $NOrange;
 						border-color: $NOrange;

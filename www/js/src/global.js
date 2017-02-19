@@ -522,6 +522,8 @@
 
 	// http://stackoverflow.com/questions/11867545#comment52204960_11868398
 	$.yiq = hex => {
+		if (typeof hex !== 'string')
+			throw new Error(`Invalid hex value (${hex})`);
 		const rgb = $.hex2rgb(hex);
 	    return ((rgb.r*299)+(rgb.g*587)+(rgb.b*114))/1000;
 	};
