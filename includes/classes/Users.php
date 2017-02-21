@@ -297,10 +297,12 @@ HTML;
 	static function getPendingReservationsHTML($UserID, $sameUser, $isMember = true){
 		global $Database, $currentUser;
 
+		$visitorStaff = Permission::sufficient('staff');
+		$staffVisitingMember = $visitorStaff && $isMember;
 		$YouHave = self::YOU_HAVE[$sameUser];
 		$PrivateSection = $sameUser? Users::PROFILE_SECTION_PRIVACY_LEVEL['staff']:'';
 
-		if ($isMember){
+		if ($staffVisitingMember){
 			$cols = "id, season, episode, preview, label, posted, reserved_by";
 			$PendingReservations = $Database->where('reserved_by', $UserID)->where('deviation_id IS NULL')->get('reservations',null,$cols);
 			$PendingRequestReservations = $Database->where('reserved_by', $UserID)->where('deviation_id IS NULL')->get('requests',null,"$cols, reserved_at, true as requested_by");
@@ -309,7 +311,7 @@ HTML;
 		}
 		else $TotalPending = 0;
 		$HTML = '';
-		if (Permission::sufficient('staff') || $sameUser){
+		if ($staffVisitingMember || $sameUser){
 			$gamble = $TotalPending < 4 && $sameUser ? ' <button id="suggestion" class="btn orange typcn typcn-lightbulb">Suggestion</button>' : '';
 			$HTML .= <<<HTML
 <section class='pending-reservations'>
