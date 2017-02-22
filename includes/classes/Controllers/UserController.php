@@ -90,7 +90,7 @@ class UserController extends Controller {
 			$settings['import']['SubMSG'] = $SubMSG;
 		if ($canEdit)
 			$settings['js'][] = 'user-manage';
-		$showSuggestions = !empty($User) && $User->getPendingReservationCount() < 4;
+		$showSuggestions = $sameUser;
 		if ($showSuggestions){
 			$settings['js'][] = 'user-suggestion';
 			$settings['css'][] = 'user-suggestion';
