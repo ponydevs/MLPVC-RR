@@ -302,7 +302,7 @@ HTML;
 		$YouHave = self::YOU_HAVE[$sameUser];
 		$PrivateSection = $sameUser? Users::PROFILE_SECTION_PRIVACY_LEVEL['staff']:'';
 
-		if ($staffVisitingMember){
+		if ($staffVisitingMember || ($isMember && $sameUser)){
 			$cols = "id, season, episode, preview, label, posted, reserved_by";
 			$PendingReservations = $Database->where('reserved_by', $UserID)->where('deviation_id IS NULL')->get('reservations',null,$cols);
 			$PendingRequestReservations = $Database->where('reserved_by', $UserID)->where('deviation_id IS NULL')->get('requests',null,"$cols, reserved_at, true as requested_by");
