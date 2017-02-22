@@ -126,13 +126,13 @@ class User extends AbstractFillable {
 		return CoreUtils::$VECTOR_APPS[$pref] ?? 'unrecognized application';
 	}
 
-	function getPendingReservationCount(){
+	function getPendingReservationCount():int {
 		global $Database;
 		$PendingReservations = $Database->rawQuery(
 			'SELECT (SELECT COUNT(*) FROM requests WHERE reserved_by = :uid && deviation_id IS NULL)+(SELECT COUNT(*) FROM reservations WHERE reserved_by = :uid && deviation_id IS NULL) as amount',
 			array('uid' => $this->id)
 		);
-		$TotalPending = $PendingReservations['amount'] ?? 0;
+		return $PendingReservations['amount'] ?? 0;
 	}
 
 	/**
