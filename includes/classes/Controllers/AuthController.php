@@ -52,9 +52,9 @@ class AuthController extends Controller {
 			die($confirm);
 		}
 		else if (preg_match($REWRITE_REGEX, $_GET['state']))
-			HTTP::redirect($_GET['state']);
+			HTTP::redirect($_GET['state'], 302);
 
-		HTTP::redirect('/');
+		HTTP::redirect('/', 302);
 	}
 
 	function signout(){

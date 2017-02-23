@@ -762,7 +762,7 @@
 			else $.Dialog.close();
 			popup.close();
 		};
-		try{
+		try {
 			popup = window.open(OAUTH_URL+'&state='+rndk);
 		}
 		catch(_){ return $.Dialog.fail(false, 'Could not open login pop-up. Please open another page') }

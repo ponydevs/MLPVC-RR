@@ -208,4 +208,10 @@ class CoreUtilsTest extends TestCase {
 		self::assertObjectHasAttribute('key', $object);
 		self::assertEquals('value', $object->key);
 	}
+
+	function sha256(){
+		$data = "a3d5f3e5a67f38cd6e7ad8cfe41245acf";
+		$hash = CoreUtils::sha256($data);
+		self::assertEquals('fcb0c71edf2df18c7d39accbbb46083d511ea091d7ec56727a6a9931d40f46d8',$hash);
+	}
 }

@@ -1252,7 +1252,7 @@ CREATE TABLE sessions (
     browser_name character varying(50),
     browser_ver character varying(50),
     user_agent character varying(300),
-    token character varying(40) NOT NULL,
+    token character varying(64) NOT NULL,
     access character varying(50) NOT NULL,
     refresh character varying(40) NOT NULL,
     expires timestamp with time zone,

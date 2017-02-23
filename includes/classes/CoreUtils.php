@@ -1066,6 +1066,10 @@ class CoreUtils {
 		usleep($ms*1000);
 	}
 
+	static function sha256(string $data):string {
+		return hash('sha256', $data);
+	}
+
 	/** @var Client */
 	private static $_elastiClient;
 

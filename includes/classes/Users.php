@@ -230,15 +230,8 @@ HTML;
 		if (!Cookie::exists('access'))
 			return;
 		$authKey = Cookie::get('access');
-		if (!empty($authKey)){
-			if (!preg_match(new RegExp('^[a-f\d]+$','iu'), $authKey)){
-				$oldAuthKey = $authKey;
-				$authKey = bin2hex($authKey);
-				$Database->where('token', sha1($oldAuthKey))->update('sessions',array( 'token' => sha1($authKey) ));
-				Cookie::set('access', $authKey, time() + Time::IN_SECONDS['year'], Cookie::HTTPONLY);
-			}
-			$currentUser = Users::get(sha1($authKey),'token');
-		}
+		if (!empty($authKey))
+			$currentUser = Users::get(CoreUtils::sha256($authKey),'token');
 
 		if (!empty($currentUser)){
 			if ($currentUser->role === 'ban')

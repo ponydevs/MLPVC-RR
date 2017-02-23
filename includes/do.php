@@ -38,7 +38,7 @@
 			if ($_SERVER['HTTP_X_HUB_SIGNATURE'] !== "sha1=$payloadHash")
 				CoreUtils::notFound();
 
-			switch (strtolower($_SERVER['HTTP_X_GITHUB_EVENT'])) {
+			switch (strtolower($_SERVER['HTTP_X_GITHUB_EVENT'])){
 				case 'push':
 					$output = array();
 					chdir(PROJPATH);

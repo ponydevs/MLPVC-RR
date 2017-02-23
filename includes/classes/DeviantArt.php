@@ -255,7 +255,7 @@ class DeviantArt {
 		);
 
 		$cookie = bin2hex(random_bytes(64));
-		$AuthData['token'] = sha1($cookie);
+		$AuthData['token'] = CoreUtils::sha256($cookie);
 
 		$browser = CoreUtils::detectBrowser();
 		foreach ($browser as $k => $v)
