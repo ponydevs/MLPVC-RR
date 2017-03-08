@@ -2,6 +2,7 @@
 
 namespace App\Models;
 use App\DeviantArt;
+use App\Exceptions\CURLRequestException;
 
 class Cutiemark extends AbstractFillable {
 	/** @var int */
@@ -20,6 +21,12 @@ class Cutiemark extends AbstractFillable {
 	 * @return string|null
 	 */
 	function getPreviewURL(){
-		return $this->preview ?? DeviantArt::getCachedDeviation($this->favme)['preview'] ?? null;
+		try {
+			return $this->preview ?? DeviantArt::getCachedDeviation($this->favme)['preview'] ?? null;
+		}
+		catch (CURLRequestException $e){
+			error_log('Failed to get preview URL: '.$e->getMessage()."\nStack trace:\n".$e->getTraceAsString());
+			return null;
+		}
 	}
 }
