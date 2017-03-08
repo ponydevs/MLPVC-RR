@@ -54,6 +54,7 @@ if ($sameUser || Permission::sufficient('staff')){
 <?php
 	}
 }
+echo Users::getContributionsHTML($User, $sameUser);
 $isUserMember = Permission::sufficient('member', $User->role);
 if ($isUserMember)
 	echo Users::getPersonalColorGuideHTML($User, $sameUser);

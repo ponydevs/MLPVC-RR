@@ -7,10 +7,13 @@ use App\Exceptions\NoPCGSlotsException;
 use App\HTTP;
 use App\Models\AbstractFillable;
 use App\CoreUtils;
+use App\JSON;
 use App\Logs;
 use App\Pagination;
 use App\Permission;
 use App\RegExp;
+use App\Response;
+use App\Time;
 use App\UserPrefs;
 use App\Users;
 
@@ -171,7 +174,7 @@ class User extends AbstractFillable {
 	}
 
 	/**
-	 * Get the number of posts finished by the user that have been accepted to the gallery
+	 * Get the number of requests finished by the user that have been accepted to the gallery
 	 *
 	 * @param bool $exclude_own Exclude requests made by the user
 	 *
@@ -184,6 +187,22 @@ class User extends AbstractFillable {
 			$Database->where('requested_by', $this->id, '!=');
 
 		return $Database->where('deviation_id IS NOT NULL')->where('reserved_by',$this->id)->where('lock',1)->count('requests');
+	}
+
+	/**
+	 * Get the number of posts finished by the user
+	 *
+	 * @return int
+	 */
+	function getFinishedPostCount():int {
+		global $Database;
+
+		return $Database->rawQuerySingle(
+			'SELECT
+				(SELECT COUNT(*) FROM requests WHERE reserved_by = :userid && deviation_id IS NOT NULL)
+				+
+				(SELECT COUNT(*) FROM reservations WHERE reserved_by = :userid && deviation_id IS NOT NULL)
+			as cnt', array('userid' => $this->id))['cnt'];
 	}
 
 	function getPCGAppearances(Pagination $Pagination = null, bool $countOnly = false){
@@ -226,5 +245,73 @@ class User extends AbstractFillable {
 			'totalslots' => $totalslots,
 			'available' => $available,
 		];
+	}
+
+	const CONTRIB_CHACHE_DURATION = 12*Time::IN_SECONDS['hour'];
+
+	function getCachedContributions():array {
+		$CachePath = APPATH."../fs/contribs/{$this->id}.json";
+		if (file_exists($CachePath) && filemtime($CachePath) > time() - self::CONTRIB_CHACHE_DURATION)
+			return JSON::decode(file_get_contents($CachePath));
+
+		$data = $this->_getContributions();
+		CoreUtils::createUploadFolder($CachePath);
+		file_put_contents($CachePath, JSON::encode($data));
+		return $data;
+	}
+
+	private function _getContributions():array {
+		global $Database;
+
+		$contribs = [];
+
+		// Cutie mark vectors submitted
+		$cmContrib = $Database->rawQuerySingle(
+			'SELECT COUNT(*) as cnt
+			FROM cutiemarks c
+			LEFT JOIN deviation_cache d ON d.id = c.favme
+			WHERE d.author = ?', array($this->name))['cnt'];
+		if ($cmContrib > 0)
+			$contribs[] = [$cmContrib, 'cutie mark vector', 'provided'];
+
+		// Requests posted
+		$reqPost = $Database->where('requested_by', $this->id)->count('requests');
+		if ($reqPost > 0)
+			$contribs[] = [$reqPost, 'request', 'posted'];
+
+		// Reservations posted
+		$resPost = $Database->where('reserved_by', $this->id)->count('reservations');
+		if ($resPost > 0)
+			$contribs[] = [$resPost, 'reservation', 'posted'];
+
+		// Finished post count
+		$finPost = $this->getFinishedPostCount();
+		if ($finPost > 0)
+			$contribs[] = [$finPost, 'post', 'finished'];
+
+		// Finished requests
+		$reqFin = $this->getApprovedFinishedRequestCount();
+		if ($reqFin > 0)
+			$contribs[] = [$reqFin, 'request', 'fulfilled'];
+
+		// Broken video reports
+		$brokenVid = $Database->rawQuerySingle(
+			'SELECT COUNT(v.entryid) as cnt
+			FROM log l
+			LEFT JOIN log__video_broken v ON l.refid = v.entryid
+			WHERE l.initiator = ?',array($this->id))['cnt'];
+		if ($brokenVid > 0)
+			$contribs[] = [$brokenVid, 'broken video', 'reported'];
+
+		// Broken video reports
+		$approvedPosts = $Database->rawQuerySingle(
+			'SELECT COUNT(p.entryid) as cnt
+			FROM log l
+			LEFT JOIN log__post_lock p ON l.refid = p.entryid
+			WHERE l.initiator = ?',array($this->id))['cnt'];
+		if ($approvedPosts > 0)
+			$contribs[] = [$approvedPosts, 'post', 'marked approved'];
+
+		return $contribs;
 	}
 }

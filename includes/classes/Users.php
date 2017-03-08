@@ -452,7 +452,7 @@ HTML;
 		)))->out();
 	}
 
-	static function getAwaitingApprovalHTML(User $User, $sameUser):string {
+	static function getAwaitingApprovalHTML(User $User, bool $sameUser):string {
 		if (Permission::insufficient('member', $User->role))
 			HTTP::statusCode(404, AND_DIE);
 
@@ -524,5 +524,23 @@ HTML;
 		}
 
 		return $HTML;
+	}
+
+	static function getContributionsHTML(User $user, bool $sameUser):string {
+		$contribs = $user->getCachedContributions();
+		if (empty($contribs))
+			return '';
+
+		$privacy = $sameUser? Users::PROFILE_SECTION_PRIVACY_LEVEL['public']:'';
+		$cachedur = User::CONTRIB_CHACHE_DURATION/Time::IN_SECONDS['hour'];
+		$cachedur = CoreUtils::makePlural('hour', $cachedur, PREPEND_NUMBER);
+		$HTML = "<section class='contributions'><h2>{$privacy}Contributions <span class='typcn typcn-info-large' title='This data is updated every {$cachedur}'></h2>\n<ul>";
+		foreach ($contribs as $contrib)
+			$HTML .= self::_processContrib(...$contrib);
+		return "$HTML</ul></section>";
+	}
+	private static function _processContrib(int $amount, string $what_singular, ?string $append = null):string {
+		$what = CoreUtils::makePlural($what_singular, $amount).(!empty($append)?" $append":'');
+		return "<li><span class='amt'>$amount</span> <span class='expl'>$what</span>";
 	}
 }

@@ -100,6 +100,22 @@
 	}
 	.details {
 		> section:not(:last-child) { margin-bottom: 15px }
+		.contributions {
+			ul {
+				padding: 0;
+				margin: 0;
+				list-style: none;
+
+				li {
+					display: block;
+
+					.amt {
+						font-weight: bold;
+						margin: 0 4px;
+					}
+				}
+			}
+		}
 		.personal-cg {
 			.personal-cg-appearances {
 				@extend %appearance-ul;
