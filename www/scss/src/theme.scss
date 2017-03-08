@@ -24,6 +24,7 @@
 		background: $HeaderFooterBG;
 		
 		nav {
+			height: 100%;
 			position: relative;
 			transition: box-shadow .5s ease-in-out;
 
@@ -105,6 +106,17 @@
 	header {
 		background: $HeaderFooterBG;
 		top: 0 !important;
+		overflow: hidden;
+
+		nav {
+			height: $HeaderHeight + 20px;
+			width: 100%;
+
+			ul {
+				overflow-x: scroll;
+				overflow-y: hidden;
+			}
+		}
 	}
 
 	#main {
@@ -181,7 +193,6 @@ header {
 	// Page layout - Header - Navigation
 	nav {
 		display: block;
-		height: 100%;
 		line-height: 0;
 		font-size: 0;
 		white-space: nowrap;
