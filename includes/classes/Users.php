@@ -398,11 +398,13 @@ HTML;
 			$ToNextSlot = Users::calculatePersonalCGNextSlot($ApprovedFinishedRequests);
 
 			$has = $sameUser?'have':'has';
-			$nApprovedRequests = CoreUtils::makePlural('approved request',$ApprovedFinishedRequests,PREPEND_NUMBER);
+			$nRequests = CoreUtils::makePlural('request',$ApprovedFinishedRequests,PREPEND_NUMBER);
 			$grants = 'grant'.($ApprovedFinishedRequests!=1?'':'s');
 			$them = $sameUser?'you':'them';
 			$forStaff = Permission::sufficient('staff', $User->role) ? ' (staff members get a free slot)' : '';
-			$privateStatus = "$ThisUser currently $has $nApprovedRequests on the site, which $grants $them $nSlots$forStaff. ";
+			$isnt = $ApprovedFinishedRequests !== 1 ? "aren't" : "isn't";
+			$their = $sameUser ? 'your' : 'their';
+			$privateStatus = "$ThisUser $has finished $nRequests (that $isnt $their own) on the site, which $grants $them $nSlots$forStaff. ";
 		}
 		else $privateStatus = '';
 		$unused = $UsedSlotCount === 0;

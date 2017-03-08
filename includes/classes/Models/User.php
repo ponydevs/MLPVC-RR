@@ -172,9 +172,16 @@ class User extends AbstractFillable {
 
 	/**
 	 * Get the number of posts finished by the user that have been accepted to the gallery
+	 *
+	 * @param bool $exclude_own Exclude requests made by the user
+	 *
+	 * @return int
 	 */
-	function getApprovedFinishedRequestCount(){
+	function getApprovedFinishedRequestCount(bool $exclude_own = false):int {
 		global $Database;
+
+		if ($exclude_own)
+			$Database->where('requested_by', $this->id, '!=');
 
 		return $Database->where('deviation_id IS NOT NULL')->where('reserved_by',$this->id)->where('lock',1)->count('requests');
 	}
@@ -196,7 +203,7 @@ class User extends AbstractFillable {
 	 * @return int|array
 	 */
 	function getPCGAvailableSlots(bool $throw = true, bool $returnArray = false){
-		$postcount = $this->getApprovedFinishedRequestCount();
+		$postcount = $this->getApprovedFinishedRequestCount(true);
 		$totalslots = floor($postcount/10);
 		if (Permission::sufficient('staff', $this->role))
 			$totalslots++;
