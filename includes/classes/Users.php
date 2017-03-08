@@ -302,7 +302,10 @@ HTML;
 			$TotalPending = count($PendingReservations)+count($PendingRequestReservations);
 			$hasPending = $TotalPending > 0;
 		}
-		else $TotalPending = 0;
+		else {
+			$TotalPending = 0;
+			$hasPending = false;
+		}
 		$HTML = '';
 		if ($staffVisitingMember || $sameUser){
 			$gamble = $TotalPending < 4 && $sameUser ? ' <button id="suggestion" class="btn orange typcn typcn-lightbulb">Suggestion</button>' : '';
