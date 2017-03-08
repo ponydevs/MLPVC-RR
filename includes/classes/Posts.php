@@ -725,6 +725,21 @@ HTML;
 		return $postdata;
 	}
 
+	static function checkReserveAs(&$update){
+		if (Permission::sufficient('developer')){
+			$reserve_as = Posts::validatePostAs();
+			if (isset($reserve_as)){
+				$User = Users::get($reserve_as, 'name');
+				if (empty($User))
+					Response::fail('User to reserve as does not exist');
+				if (!Permission::sufficient('member', $User->role) && !isset($_POST['screwit']))
+					Response::fail('The specified user does not have permission to reserve posts, continue anyway?', array('retry' => true));
+
+				$update['reserved_by'] = $User->id;
+			}
+		}
+	}
+
 	static function validateImageURL(){
 		return (new Input('image_url','string',array(
 			Input::CUSTOM_ERROR_MESSAGES => array(

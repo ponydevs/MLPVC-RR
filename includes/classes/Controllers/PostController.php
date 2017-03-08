@@ -139,18 +139,7 @@ class PostController extends Controller {
 					Users::reservationLimitExceeded();
 
 					$update['reserved_by'] = $currentUser->id;
-					if (Permission::sufficient('developer')){
-						$reserve_as = Posts::validatePostAs();
-						if (isset($reserve_as)){
-							$User = Users::get($reserve_as, 'name');
-							if (empty($User))
-								Response::fail('User does not exist');
-							if (!Permission::sufficient('member', $User->role) && !isset($_POST['screwit']))
-								Response::fail('User does not have permission to reserve posts, continue anyway?', array('retry' => true));
-
-							$update['reserved_by'] = $User->id;
-						}
-					}
+					Posts::checkReserveAs($update);
 					$update['reserved_at'] = date('c');
 					if (Permission::sufficient('developer')){
 						$reserved_at = Posts::validateReservedAt();
@@ -336,7 +325,11 @@ class PostController extends Controller {
 					'reserved_by' => $this->_post->reserved_by,
 					'reserved_at' => $this->_post->reserved_at,
 				);
-				$this->_post->reserved_by = null;
+				$update['reserved_by'] = $currentUser->id;
+				Posts::checkReserveAs($update);
+				$update['reserved_at'] = date('c');
+				$this->_post->reserved_by = $update['reserved_by'];
+				$this->_post->reserved_at = $update['reserved_at'];
 			break;
 		}
 

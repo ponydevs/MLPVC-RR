@@ -29,6 +29,7 @@ $router->map('GET', '/',                               'EpisodeController#index'
 $router->map('GET', '/footer-git',                     'FooterController#git');
 $router->map('GET', '/about',                          'AboutController#index');
 $router->map('GET', '/admin',                          'AdminController#index');
+$router->map('GET', '/logs/[i]?',                      'AdminController#logs');
 $router->map('GET', '/admin/logs/[i]?',                'AdminController#logs');
 $router->map('GET', '/blending',                       'BlendingController#index');
 $router->map('GET', '/browser/[i:session]?',           'BrowserController#index');
