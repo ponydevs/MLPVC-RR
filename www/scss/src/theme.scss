@@ -289,7 +289,10 @@ header {
 
 					body.loading & {
 						cursor: wait;
-
+						> .notif-cnt {
+							opacity: 0;
+							transition: none;
+						}
 						> .loader {
 							display: block;
 							opacity: 1;
@@ -335,10 +338,10 @@ header {
 					}
 					> .notif-cnt {
 						position: absolute;
-						z-index: 4;
-						bottom: -2.5px;
-						right: -2.5px;
-						padding: 1px 4px;
+						z-index: 6;
+						bottom: -0.5px;
+						right: -0.5px;
+						padding: 0 4px;
 						cursor: pointer;
 						color: $NRed;
 						text-shadow: 0 1px 0 rgba($NRed, .3);
@@ -352,6 +355,7 @@ header {
 						height: #{$toggleSize / 2};
 						overflow: hidden;
 						text-align: center;
+						transition: opacity .5s linear;
 
 						&:empty { display: none }
 					}
