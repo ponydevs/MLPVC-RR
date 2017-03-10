@@ -9,8 +9,8 @@ The site is known to work with the following set of software, assuming correct c
 | Operating System | Windows 10/8.1/7<br>Debian 8   |
 | Web Server       | nginx 1.10+<br>Apache 2.4+     |
 | RDBMS            | PostgreSQL 9.5+                |
-| Asset Pipeline   | Node.js 4.5+                   |
-| Runtime          | PHP 7.0+ with the following modules installed:<ul><li>mbsting</li><li>gd</li><li>xml</li><li>curl</li><li>pdo (pg)</li></ul> |
+| Asset Pipeline   | Node.js 6.0+                   |
+| Runtime          | PHP 7.1+ with the following modules installed:<ul><li>mbsting</li><li>gd</li><li>xml</li><li>curl</li><li>pdo (pg)</li></ul> |
 | Source Control   | Git<br><small>(as obvious as it may seem, the site shows the commit data in the footer, so the binary is required to be accessible by the application) |
 | SSL Certificate  | Self-signed ([get a pair here](http://checktls.com/perl/GenCert.pl))<br><small>(optional, required to use the site through HTTPS while developing)</small> |
 
@@ -22,7 +22,7 @@ This is the way my development enviromnemt is set up, so if you follow these ste
 
 ### PostrgeSQL
 
-The user must be named `mlpvc-rr` otherwise the permissions in the DB exports will not be set correctly and you'll likely get smapped with issues related to a missing role/user.
+The user must be named `mlpvc-rr` otherwise the permissions in the DB exports will not be set correctly and you'll likely get swamped with issues related to a missing role/user.
 
 ```
 $ su - postgres
@@ -41,15 +41,15 @@ I recommend [Adminer](https://www.adminer.org/) for schema importing/editing, un
 
 Make sure `short_open_tag` is set to `On` or another truth-y value in `php.ini`. File uploading should be enabled and a reasonable maximum POST-able/uploadable file size must be set to be able to uplod sprite images in the Color Guide. You'll need to copy the `setup/conf.php` file into the `includes` directory and change the empty values to whatever your environment uses.
 
-Optionally, use the `xdebug` extension or [Kint](http://raveren.github.io/kint/) to ease debugging with stack traces/cleaner var_dump outputs. Setting `max_execution_time` to `10` *(seconds)* or below is also recommended for development in case an infinite loop breaks loose. You never know.
+Optionally, use the `xdebug` extension or [Kint](http://raveren.github.io/kint/) to ease debugging with stack traces/cleaner var_dump outputs. Setting `max_execution_time` to `30` *(seconds)* or below is also recommended for development in case an infinite loop breaks loose. You never know. It has to be a reasonably big though because making many requests to DeviantArt's API can cause script execution to take a while.
 
 ### Node.js
 
-On Linux systems, make sure the `build-essential` package is installed, otherwise some required asset compilation tools might fail to build. Run `npm install` in the project directory to get the dependencies, then run `npm install -g gulp` so you can use the `gulp` command to kick the file watchers into action.
+On Linux systems, make sure the `build-essential` package is installed, otherwise some required asset compilation tools might fail to build. Run `npm install -g yarn && yarn install` in the project directory to get the dependencies, then run `npm install -g gulp` so you can use the `gulp` command to kick the file watchers into action.
 
 ### Web Server
 
-When using `nginx` the `php7.0-fpm` package is used used by the provided configuration file. The provided Apache configuration is assumes the initial setup provided by XAMPP.
+When using `nginx` the `php7.1-fpm` package is used used by the provided configuration file. The provided Apache configuration is assumes the initial setup provided by XAMPP.
 
 Replace `domain.tld` with the domain of your choice, and set `/path/to/*` placeholders approperiately in the configuration file. `/path/to/www` is the `www` directory of this repository, and `/path/to/error.log` should be in the same level as `www` to prevent accessing the logs through the server. 
 
@@ -87,11 +87,9 @@ root#/etc/ssl/certs$ openssl dhparam -out dhparam.pem 4096
 
 Part of the `nginx` cofiguration is responsible to handling the communication between a WebSocket server called [MLPVC-WS](https://github.com/ponydevs/MLPVC-WS). If you do not want to use said server during development, the part of the nginx configuration that's above the main server block can safely be removed/commented out. 
 
-### Importing the `*.pg.sql` files
+### Importing the `*.pg.sql` file
 
-Inside the `setup` folder you can find a set of files with the extension `.pg.sql` (meaning they are exports from PostgreSQL) as well as some bash/batch files to re-create these files in case of a database schema change. Import these to databases named after the file (e.g. `mlpvc-colorguide.pg.sql` goes into a database named `mlpvc-colorguide`).
-
-The `mlpvc-colorguide.pg.sql` file contains the contents of the database as well instead of just the schema because that database does not store any "confidental" information, and as such is published for anyone to use in their own setups to run any queries they wish on it.
+Inside the `setup` folder you'll find `mlpvc-rr.pg.sql` as well as some bash/batch files to re-create it in case of a database schema change. Import this to a database named `mlpvc-rr`.
 
 ## Code style
 
@@ -197,11 +195,11 @@ $SidebarWidth: 300px;
 
 First and foremost, I want to say that for the longest time this project has been maintained by me, and me alone, and as such, I have not been expecting code contributions. The site's codebase was originally made publicly available in order to make independent inspection possible, thus allowing the adimn of [MLP-VectorClub](http://mlp-vectorclub.deviantart.com/) take a look inside of the software I offered to make for them. When a random person just walks up to the people in charge and says "Hey, here's this thing I made, you should use it" I imagine they'd proceed with caution, and have lots of questions.
 
-<small>Technically I was already a member of the group before, so I wasn't a complete stranger, so let's imagine one person from a group of 150 classmates (who barely knew each other) handing something to one of 6 teachers.</small>
+<small>Technically I was already a member of the group before, so I wasn't a complete stranger, so let's imagine one person from a group of 400 classmates (who barely knew each other) handing something to one of 6 teachers.</small>
 
 I wanted to give these people the ability to look into exactly what's happening behind the scenes, and more importantly, that I'm not doing this to steal their password/wipe the group from the space-time continuum/etc. but to help ease the montonous task the group admins were facing, due to both time constraints and the limitations of DeviantArt's platform. 
 
-While this initiative proved to be effective in gaining and solidifying the trust of the group's staff, there was one unintended side-effect. Bach when this project started the repository was under my name. Not so long after, I was told that I could move the repository the GitHub organization [PonyDevs](https://github.com/ponydevs) which marked the time when I decided to discourage contributions.
+While this initiative proved to be effective in gaining and solidifying the trust of the group's staff, there was one unintended side-effect. Back when this project started the repository was under my name. Not so long after, I was told that I could move the repository the GitHub organization [PonyDevs](https://github.com/ponydevs) which marked the time when I decided to discourage contributions.
 
 Joining the team gave the rest of the members the ability to commit straight into my project, and due to the trust I have already built, I did not want people unknown to the admins making changes to the code without prior consultation, and thus, the notice about not expecting contributions was born, along with a permission change in the organization that made me the only one who could directly commit to the repository. (This change has since been overridden by GitHub's introduction of organization-wide default permissions, which makes this change irrelevant, and in theory, this is still an issue, however it has not been abused by any organization member so far.)
 
