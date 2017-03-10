@@ -618,7 +618,7 @@ DocReady.push(function(){
 						if (this.parts === 2){
 							$partSwitch = $.mk('button').attr('class','blue typcn typcn-media-fast-forward').text('Part 2').on('click',function(){
 								$(this).toggleHtml(['Part 1', 'Part 2']);
-								$embedWrap.children().toggle();
+								$embedWrap.children().toggleClass('hidden');
 							});
 							$playerActions.append($partSwitch);
 						}
