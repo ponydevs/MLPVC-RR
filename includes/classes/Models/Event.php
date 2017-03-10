@@ -12,11 +12,24 @@ class Event extends AbstractFillable {
 		$starts_at,
 		$ends_at,
 		$added_by,
-		$added_at;
+		$added_at,
+		$description;
+	/** @var int */
+	public
+		$max_entries;
 
 	const EVENT_TYPES = [
 		'collab' => 'Collaboration',
 		//'contest' => 'Contest',
+	];
+
+	const REGULAR_ENTRY_ROLES = ['user', 'member', 'staff'];
+
+	const SPECIAL_ENTRY_ROLES = [
+		//'spec_discord' => 'Discord Server Members',
+		//'spec_ai' => 'Illustrator Users',
+		//'spec_inkscape' => 'Inkscape Users',
+		//'spec_ponyscape' => 'Ponyscape Users',
 	];
 
 	/** @param array|object */
@@ -33,10 +46,10 @@ class Event extends AbstractFillable {
 		global $Database;
 
 		/** @noinspection PhpIncompatibleReturnTypeInspection */
-		return $Database->where('id', $id)->getOne('event');
+		return $Database->where('id', $id)->getOne('events');
 	}
 
-	public function toLink():string {
+	public function toURL():string {
 		return "/event/{$this->id}";
 	}
 }

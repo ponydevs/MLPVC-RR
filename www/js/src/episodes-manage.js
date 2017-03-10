@@ -17,13 +17,8 @@ DocReady.push(function(){
 		day: 'Saturday',
 		h: 8, m: 30, s: 0,
 	}).local();
-	function mkDate(datestr, timestr, utc){
-		return moment(datestr+'T'+timestr+(utc?'Z':''));
-	}
-	const dateToAirDate = date => date.format('YYYY-MM-DD');
-	const dateToAirTime = date => date.format('HH:mm');
-	const sat_date = dateToAirDate(saturday);
-	const sat_time = dateToAirTime(saturday);
+	const sat_date = $.momentToYMD(saturday);
+	const sat_time = $.momentToHM(saturday);
 	const sat_day = saturday.format('dddd');
 
 	let EP_TITLE_REGEX = window.EP_TITLE_REGEX;
@@ -95,7 +90,7 @@ DocReady.push(function(){
 				e.preventDefault();
 				let airdate = $form.find('input[name=airdate]').attr('disabled',true).val(),
 					airtime = $form.find('input[name=airtime]').attr('disabled',true).val(),
-					airs = mkDate(airdate, airtime).toISOString(),
+					airs = $.mkMoment(airdate, airtime).toISOString(),
 					data = $(this).mkData({airs:airs});
 
 				$.Dialog.wait(false, `Adding ${movie?'movie':'episode'} to database`);
@@ -139,8 +134,8 @@ DocReady.push(function(){
 				$EditEpForm.find('input').filter('[name="season"],[name="episode"]').disable();
 
 			let d = moment(this.ep.airs);
-			this.ep.airdate = dateToAirDate(d);
-			this.ep.airtime = dateToAirTime(d);
+			this.ep.airdate = $.momentToYMD(d);
+			this.ep.airtime = $.momentToHM(d);
 
 			let epid = this.epid;
 			delete this.epid;
@@ -154,7 +149,7 @@ DocReady.push(function(){
 					e.preventDefault();
 
 					let data = $(this).mkData(),
-						d = mkDate(data.airdate, data.airtime);
+						d = $.mkMoment(data.airdate, data.airtime);
 					delete data.airdate;
 					delete data.airtime;
 					data.airs = d.toISOString();

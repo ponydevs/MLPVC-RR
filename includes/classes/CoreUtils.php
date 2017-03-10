@@ -415,16 +415,17 @@ class CoreUtils {
 	/**
 	 * Sanitizes HTML that comes from user input
 	 *
-	 * @param string   $dirty_html HTML coming from the user
-	 * @param string[] $allowed    Additional allowed tags
+	 * @param string   $dirty_html        HTML coming from the user
+	 * @param string[] $allowedTags       Additional allowed tags
+	 * @param string[] $allowedAttributes Allowed tag attributes
 	 *
 	 * @return string Sanitized HTML code
 	 */
-	static function sanitizeHtml($dirty_html, $allowed = null){
+	static function sanitizeHtml(string $dirty_html, ?array $allowedTags = null, ?array $allowedAttributes = null){
 		$config = \HTMLPurifier_Config::createDefault();
 		$whitelist = array('strong','b','em','i');
-		if (!empty($allowed))
-			$whitelist = array_merge($whitelist, $allowed);
+		if (!empty($allowedTags))
+			$whitelist = array_merge($whitelist, $allowedTags);
 		/** @noinspection PhpUndefinedMethodInspection */
 		$config->set('HTML.AllowedElements', $whitelist);
 		/** @noinspection PhpUndefinedMethodInspection */
@@ -508,7 +509,7 @@ class CoreUtils {
 			$count = count($invalid);
 			$s = $count!==1?'s':'';
 			$the_following = $count!==1?'the following':'an';
-			$Error = "$Thing (".self::escapeHTML($string).") contains $the_following invalid character$s: ".CoreUtils::arrayToNaturalString($invalid);
+			$Error = "$Thing (".self::escapeHTML($string).") contains $the_following invalid character$s: ".self::escapeHTML(CoreUtils::arrayToNaturalString($invalid));
 			if ($returnError)
 				return $Error;
 			Response::fail($Error);
@@ -605,6 +606,16 @@ class CoreUtils {
 
 			}
 			if ($GLOBALS['signedIn']){
+				if (Permission::sufficient('staff')){
+				$NavItems['events'] = array('/events','Events');
+				if ($do === 'events'){
+					if (isset($scope['Events']))
+						$NavItems['events'][1] .= " - Page {$scope['Pagination']->page}";
+				}
+				if ($do === 'event' && isset($scope['Event']))
+					$NavItems['events']['subitem'] = CoreUtils::cutoff($scope['Event']->name, 20);
+				}
+
 				$NavItems['u'] = array("/@{$GLOBALS['currentUser']->name}",'Account');
 				if (isset($scope['Owner']) && $scope['Owner']->id === $GLOBALS['currentUser']->id)
 					$NavItems['u']['subitem'] = 'Personal Color Guide';

@@ -50,7 +50,7 @@ $router->map('GET', '/episodes/[i]?',                  'EpisodesController#index
 $router->map('GET', '/eqg/[i:id]',                     'EQGController#redirectInt');
 $router->map('GET', '/eqg/[adi:id]',                   'EQGController#redirectStr');
 $router->map('GET', '/events/[i]?',                    'EventsController#list');
-#$router->map('GET', '/event/[i:id][adi]?',             'EventController#index');
+$router->map('GET', '/event/[i:id][adi]?',             'EventController#index');
 $router->map('GET', '/movie/[i:id][adi]?',             'MovieController#pageID');
 $router->map('GET', '/movie/[adi:title]',              'MovieController#pageTitle');
 $router->map('GET', '/logs/[i]',                       'AdminController#logs');
@@ -97,8 +97,9 @@ $router->map('POST', '/episode/video-embeds/[epid:id]',      'EpisodeController#
 $router->map('POST', '/episode/video-data/[epid:id]',        'EpisodeController#videoData');
 $router->map('POST', '/episode/guide-relations/[epid:id]',   'EpisodeController#guideRelations');
 $router->map('POST', '/episode/broken-videos/[epid:id]',     'EpisodeController#brokenVideos');
-#$router->map('POST', '/event/get/[epid:id]',                 'EventController#get');
-#$router->map('POST', '/event/delete/[epid:id]',              'EventController#delete');
+#$router->map('POST', '/event/get/[i:id]',                    'EventController#get');
+#$router->map('POST', '/event/delete/[i:id]',                 'EventController#delete');
+#$router->map('POST', '/event/end/[i:id]',                    'EventController#delete');
 $router->map('POST', '/event/set/[epid:id]',                 'EventController#set');
 $router->map('POST', '/event/add',                           'EventController#add');
 $router->map('POST', '/notifications/get',                   'NotificationsController#get');

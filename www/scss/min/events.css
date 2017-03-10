@@ -1,2 +1,2 @@
-#event-list{padding:0;margin:10px 0 0;list-style:none}#event-list:empty:before{display:block;content:"There are no events to display.";font-size:1.3em;font-style:italic;text-align:center}
+#event-list{padding:0;margin:10px 0 0;list-style:none}#event-list:empty:before{display:block;content:"There are no events to display.";font-size:1.3em;font-style:italic;text-align:center}#event-list>li{display:block;padding:10px;color:#434343;background-color:rgba(0,0,0,.03);border:1px solid rgba(0,0,0,.3)}#event-list>li .event-name{font-size:1.3em}
 /*# sourceMappingURL=events.css.map */

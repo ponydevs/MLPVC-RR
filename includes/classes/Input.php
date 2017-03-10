@@ -22,8 +22,6 @@ class Input {
 		'epid' => true,
 	);
 
-	static
-		$ERROR_RANGE = 3;
 	const
 		IS_OPTIONAL = 'optional',
 		SILENT_FAILURE = 'silent',
@@ -58,9 +56,9 @@ class Input {
 	 *     )
 	 * )
 	 *
-	 * @param string $key
-	 * @param string $type
-	 * @param array $o
+	 * @param string                 $key
+	 * @param string|RegExp|callable $type
+	 * @param array                  $o
 	 *
 	 * @return Input
 	 */

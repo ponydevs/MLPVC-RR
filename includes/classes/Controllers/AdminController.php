@@ -313,7 +313,7 @@ class AdminController extends Controller {
 		}
 
 		if ($approved === 0)
-			Response::success('There were no posts in need of marking as approved');
+			Response::success('All identified posts have already been approved');
 
 		Response::success('Marked '.CoreUtils::makePlural('post', $approved, PREPEND_NUMBER).' as approved. To see which ones, check the <a href="/admin/logs/1?type=post_lock&by=you">list of posts you\'ve approved</a>.',array('reload' => true));
 	}

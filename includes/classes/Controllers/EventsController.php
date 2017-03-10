@@ -14,7 +14,7 @@ class EventsController extends Controller {
 		global $Database, $Color;
 
 		// TODO Remove this restriction
-		if (Permission::insufficient('developer'))
+		if (Permission::insufficient('staff'))
 			CoreUtils::notFound();
 
 		$Pagination = new Pagination("events", 20, $Database->count('events'));

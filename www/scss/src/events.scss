@@ -10,4 +10,16 @@
 		font-style: italic;
 		text-align: center;
 	}
+
+	> li {
+		display: block;
+		padding: 10px;
+		color: #434343;
+		background-color: rgba(0,0,0,.03);
+		border: 1px solid rgba(0,0,0,.3);
+
+		.event-name {
+			font-size: 1.3em;
+		}
+	}
 }

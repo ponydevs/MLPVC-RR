@@ -528,6 +528,10 @@
 	    return ((rgb.r*299)+(rgb.g*587)+(rgb.b*114))/1000;
 	};
 
+	$.momentToYMD = momentInstance => momentInstance.format('YYYY-MM-DD');
+	$.momentToHM = momentInstance => momentInstance.format('HH:mm');
+	$.mkMoment = (datestr, timestr, utc) => moment(datestr+'T'+timestr+(utc?'Z':''));
+
 	$.fn.toggleHtml = function(contentArray){
 		return this.html(contentArray[$.rangeLimit(contentArray.indexOf(this.html())+1, true, contentArray.length-1)]);
 	};

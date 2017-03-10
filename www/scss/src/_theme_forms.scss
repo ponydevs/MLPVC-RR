@@ -201,5 +201,15 @@ input[type=checkbox] {
 				}
 			}
 		}
+		select {
+			&:valid { border-color: $ValidDark }
+			&:invalid {
+				border-color: $InvalidLight;
+				color: $InvalidDark;
+			}
+			option, optgroup {
+				color: black;
+			}
+		}
 	}
 }

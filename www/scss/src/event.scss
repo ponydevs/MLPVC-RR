@@ -1,0 +1,16 @@
+@import "_theme_section";
+
+#content {
+	> section {
+		@extend %section;
+	}
+
+	#description {
+		font-size: 1.1em;
+		background: papayawhip;
+		color: saddlebrown;
+		padding: 10px;
+		border: 1px solid burlywood;
+		display: inline-block;
+	}
+}

@@ -221,6 +221,20 @@ CREATE TABLE deviation_cache (
 ALTER TABLE deviation_cache OWNER TO "mlpvc-rr";
 
 --
+-- Name: discord_members; Type: TABLE; Schema: public; Owner: mlpvc-rr
+--
+
+CREATE TABLE discord_members (
+    userid uuid NOT NULL,
+    disc_id bigint NOT NULL,
+    disc_tag character varying(100) NOT NULL,
+    disc_avatar character varying(255) NOT NULL
+);
+
+
+ALTER TABLE discord_members OWNER TO "mlpvc-rr";
+
+--
 -- Name: episodes; Type: TABLE; Schema: public; Owner: mlpvc-rr
 --
 
@@ -284,7 +298,9 @@ CREATE TABLE events (
     starts_at timestamp with time zone NOT NULL,
     ends_at timestamp with time zone NOT NULL,
     added_by uuid NOT NULL,
-    added_at timestamp with time zone NOT NULL
+    added_at timestamp with time zone NOT NULL,
+    description text NOT NULL,
+    max_entries integer
 );
 
 
@@ -1720,6 +1736,22 @@ ALTER TABLE ONLY deviation_cache
 
 
 --
+-- Name: discord_members discord_members_userid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER TABLE ONLY discord_members
+    ADD CONSTRAINT discord_members_userid PRIMARY KEY (userid);
+
+
+--
+-- Name: discord_members discord_members_userid_disc_id; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER TABLE ONLY discord_members
+    ADD CONSTRAINT discord_members_userid_disc_id UNIQUE (userid, disc_id);
+
+
+--
 -- Name: episodes__videos episodes__videos_season_episode_provider_part; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
@@ -1741,6 +1773,14 @@ ALTER TABLE ONLY episodes__votes
 
 ALTER TABLE ONLY episodes
     ADD CONSTRAINT episodes_season_episode PRIMARY KEY (season, episode);
+
+
+--
+-- Name: events events_id; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER TABLE ONLY events
+    ADD CONSTRAINT events_id PRIMARY KEY (id);
 
 
 --
@@ -2041,6 +2081,13 @@ CREATE INDEX episodes_posted_by ON episodes USING btree (posted_by);
 
 
 --
+-- Name: events_added_by; Type: INDEX; Schema: public; Owner: mlpvc-rr
+--
+
+CREATE INDEX events_added_by ON events USING btree (added_by);
+
+
+--
 -- Name: log__banish_target; Type: INDEX; Schema: public; Owner: mlpvc-rr
 --
 
@@ -2187,6 +2234,14 @@ ALTER TABLE ONLY cutiemarks
 
 
 --
+-- Name: discord_members discord_members_userid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER TABLE ONLY discord_members
+    ADD CONSTRAINT discord_members_userid_fkey FOREIGN KEY (userid) REFERENCES users(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
 -- Name: episodes__videos episodes__videos_season_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
@@ -2216,6 +2271,14 @@ ALTER TABLE ONLY episodes__votes
 
 ALTER TABLE ONLY episodes
     ADD CONSTRAINT episodes_posted_by_fkey FOREIGN KEY (posted_by) REFERENCES users(id) ON UPDATE CASCADE ON DELETE SET NULL;
+
+
+--
+-- Name: events events_added_by_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER TABLE ONLY events
+    ADD CONSTRAINT events_added_by_fkey FOREIGN KEY (added_by) REFERENCES users(id) ON UPDATE CASCADE;
 
 
 --
