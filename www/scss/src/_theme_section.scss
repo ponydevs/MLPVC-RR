@@ -7,6 +7,12 @@
 		font-family: "Celestia", sans-serif;
 
 		.typcn { margin-right: 7px }
+
+		.btn, button {
+			vertical-align: baseline;
+			padding: 2px;
+			margin: 0;
+		}
 	}
 	p {
 		margin: 0;

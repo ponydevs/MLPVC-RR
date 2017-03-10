@@ -2,135 +2,24 @@
 DocReady.push(function(){
 	'use strict';
 
-	// Manage useful links
-	let $uflol = $('.useful-links').find('ol'),
-		$sbUflContainer = $('#sidebar').find('.welcome .links'),
-		$LinkEditFormTemplate, PRINTABLE_ASCII_PATTERN = $.attributifyRegex(window.PRINTABLE_ASCII_PATTERN),
-		ROLES_ASSOC = window.ROLES_ASSOC;
-
-	$uflol.on('click','.edit-link',function(){
-		let linkid = $(this).closest('[id^=ufl-]').attr('id').substring(4);
-
-		$.Dialog.wait(`Editing link #${linkid}`, 'Retrieving link information from server');
-		
-		$.post(`/admin/usefullinks?action=get&linkid=${linkid}`,$.mkAjaxHandler(function(){
-			if (!this.status) return $.Dialog.fail(false, this.message);
-
-			let data = this;
-			$.Dialog.request(false, getLinkEditForm(linkid), 'Save changes', function($form){
-				$form.find('input[name=label]').val(data.label);
-				$form.find('input[name=url]').val(data.url);
-				$form.find('input[name=title]').val(data.title);
-				$form.find('select[name=minrole]').val(data.minrole);
-			});
-		}));
-	});
-	$uflol.on('click','.delete-link',function(){
-		let $li = $(this).closest('[id^=ufl-]'),
-			linkid = $li.attr('id').substring(4);
-
-		$.Dialog.confirm(`Delete link #${linkid}`, 'Are you sure you want to delete this link?', function(sure){
-			if (!sure) return;
-
-			$.Dialog.wait(false, 'Removing link');
-
-			$.post(`/admin/usefullinks?action=del&linkid=${linkid}`,$.mkAjaxHandler(function(){
-				if (!this.status) return $.Dialog.fail(false, this.message);
-
-				$li.remove();
-				$('#s-ufl-'+linkid).remove();
-				if ($sbUflContainer.is(':empty'))
-					$sbUflContainer.hide();
-				$.Dialog.close();
-			}));
-		});
-	});
-	$('#add-link').on('click',function(){
-		$.Dialog.request('Add a link', getLinkEditForm(), 'Add');
-	});
-	function getLinkEditForm(linkid){
-		if (typeof $LinkEditFormTemplate === 'undefined'){
-			let roleSelect =
-				`<select name='minrole' required>
-					<option value='' selected style='display:none'>Select one</option>
-					<optgroup label="Available roles">`;
-			$.each(ROLES_ASSOC, (name, label) => {
-				if (name === 'guest' || name === 'ban')
-					return;
-				roleSelect += `<option value="${name}">${label}</option>`;
-			});
-			roleSelect += "</optgroup></select>";
-
-			$LinkEditFormTemplate = $.mk('form','link-editor').html(
-				`<label>
-					<span>Label (3-35 chars.)</span>
-					<input type="text" name="label" maxlength="35" pattern="${PRINTABLE_ASCII_PATTERN.replace('+','{3,35}')}" required>
-				</label>
-				<label>
-					<span>URL (3-255 chars.)</span>
-					<input type="text" name="url" maxlength="255" pattern="${PRINTABLE_ASCII_PATTERN.replace('+','{3,255}')}" required>
-				</label>
-				<label>
-					<span>Title (optional, 3-70 chars.)</span>
-					<input type="text" name="title" maxlength="70" pattern="${PRINTABLE_ASCII_PATTERN.replace('+','{3,70}')}">
-				</label>
-				<label>
-					<span>Role required to view</span>
-					${roleSelect}
-				</label>`
-			).on('submit', function(e){
-				e.preventDefault();
-
-				let data = $(this).serialize();
-				$.Dialog.wait(false);
-
-				$.post(`/admin/usefullinks?action=${linkid?`set&linkid=${linkid}`:'make'}`,data, $.mkAjaxHandler(function(){
-					if (!this.status) return $.Dialog.fail(false, this.message);
-
-					$.Dialog.wait(false, 'Reloading page', true);
-					$.Navigation.reload(function(){
-						$.Dialog.close();
-					});
-				}));
-			});
-		}
-
-		return $LinkEditFormTemplate.clone(true,true);
-	}
-
-	let $ReorderBtn = $('#reorder-links');
-	$ReorderBtn.on('click',function(){
-		if (!$ReorderBtn.hasClass('typcn-tick')){
-			$ReorderBtn.removeClass('typcn-arrow-unsorted darkblue').addClass('typcn-tick green').html('Save');
-			$uflol.addClass('sorting').children().find('.buttons').append('<span class="btn darkblue typcn typcn-arrow-move"></span>');
-			new Sortable($uflol.get(0), {
-			    ghostClass: "moving",
-			    scroll: true,
-			    animation: 150,
-			    handle: '.typcn-arrow-move',
-			});
-		}
-		else {
-			$.Dialog.wait('Re-ordering links');
-
-			let list = [];
-			$uflol.children().each(function(){
-				list.push($(this).find('.typcn-arrow-move').remove().end().attr('id').split('-').pop());
-			});
-
-			$.post('/admin/usefullinks/reorder', {list:list.join(',')}, $.mkAjaxHandler(function(){
-				if (!this.status) return $.Dialog.fail(false, this.message);
-
-				$.Dialog.wait(false, 'Reloading page', true);
-				$.Navigation.reload(function(){
-					$.Dialog.close();
-				});
-			}));
-		}
-	});
-
 	// Mass-aprove posts
 	(function(){
+		$('#bulk-how').on('click',function(){
+			$.Dialog.info('How to approve posts in bulk',
+				`<p>This tool is easier to use than you would think. Here's how it works:</p>
+				<ol>
+					<li>
+						If you have the group watched, visit <a href="http://www.deviantart.com/notifications/#view=groupdeviations%3A17450764" target="_blank">this link</a><br>
+						If not, go to the <a href="http://mlp-vectorclub.deviantart.com/messages/?log_type=1&instigator_module_type=0&instigator_roleid=1276365&instigator_username=&bpp_status=4&display_order=desc" target="_blank">Processed Deviations queue</a>
+					</li>
+					<li>Once there, press <kbd>Ctrl</kbd><kbd>A</kbd> (which will select the entire page)</li>
+					<li>Now press <kbd>Ctrl</kbd><kbd>C</kbd> (copying the selected content)</li>
+					<li>Return to this page and click into the box below (you should see a blinking cursor afterwards)</li>
+					<li>Hit <kbd>Ctrl</kbd><kbd>V</kbd></li> (to paste what yo ujust copied)
+					<li>Repeat these steps if there are multiple pages of results.</li>
+				</ol>
+				<p>The script will look for any deviation links in the HTML code of the page, which it then sends over to the server to mark them as approved if they were used to finish posts on the site.</p>`);
+		});
 		// Paste Handling Code based on http://stackoverflow.com/a/6804718/1344955
 		$('.mass-approve').children('.textarea').on('paste', function(e){
 			let types, pastedData, savedContent, editableDiv = this;

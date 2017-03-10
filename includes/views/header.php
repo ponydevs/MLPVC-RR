@@ -68,10 +68,18 @@ if ($ThumbImage[0] === '/')
 	$ThumbImage = ABSPATH.ltrim($ThumbImage, '/');
 $Title = CoreUtils::escapeHTML($Title); ?>
 <!DOCTYPE html>
+<!--  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  >
+<   __ _       _      _                          _                    >
+<  / _(_) __ _| | ___| |_  __      ___   _ ____ | |__   ___ _ __ ___  >
+< | |_| |/ _` | |/ _ \ __| \ \ /\ / / | | |_  / | '_ \ / _ \ '__/ _ \ >
+< |  _| | (_| | |  __/ |_   \ V  V /| |_| |/ /  | | | |  __/ | |  __/ >
+< |_| |_|\__, |_|\___|\__|   \_/\_/  \__,_/___| |_| |_|\___|_|  \___| >
+<        |___/                                                        >
+<!  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  -->
 <html lang="en">
 <head>
-	<title><?=$Title?></title>
 	<meta charset="utf-8">
+	<title><?=$Title?></title>
 	<meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, maximum-scale=1, user-scalable=no">
 	<meta property="og:type" content="website">
 	<meta property="og:image" content="<?=$ThumbImage?>">

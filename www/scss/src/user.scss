@@ -89,14 +89,6 @@
 	}
 	section {
 		@extend %section;
-
-		> h2 {
-			.btn, button {
-				vertical-align: baseline;
-				padding: 2px;
-				margin: 0;
-			}
-		}
 	}
 	.details {
 		> section:not(:last-child) { margin-bottom: 15px }

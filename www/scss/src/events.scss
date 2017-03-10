@@ -1,0 +1,13 @@
+#event-list {
+	padding: 0;
+	margin: 10px 0 0;
+	list-style: none;
+
+	&:empty:before {
+		display: block;
+		content: "There are no events to display.";
+		font-size: 1.3em;
+		font-style: italic;
+		text-align: center;
+	}
+}

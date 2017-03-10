@@ -6,23 +6,6 @@
 	> section {
 		@extend %section;
 
-		.countdown {
-			font-size: 22px;
-
-			span {
-				font-size: 2em;
-			}
-
-			// Desktop
-			@media all and (min-width: $Breakpoint){
-				br { display: none }
-			}
-			// Mobile
-			@media all and (max-width: $Breakpoint){
-				text-align: center;
-			}
-		}
-
 		&.overdue-submissions table {
 			font-size: 1.7em;
 
@@ -32,6 +15,10 @@
 			.da-userlink {
 				border: 0;
 				background: none;
+
+				> * {
+					vertical-align: middle;
+				}
 
 				img { border: 0 }
 
@@ -72,8 +59,8 @@
 				display: none;
 			}
 			.textarea {
-				width: 100px;
-				height: 1em;
+				width: 200px;
+				height: 2em;
 				line-height: 1em;
 				border: 1px solid black;
 				background: white;
@@ -99,7 +86,7 @@
 				height: 100px;
 				width: 100%;
 				margin: 10px 0 0;
-				background: url('/img/loading-ring.svg') no-repeat center;
+				background: url('/img/loading-gears.svg') no-repeat center;
 				background-size: contain;
 			}
 			ul {

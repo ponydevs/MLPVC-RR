@@ -12,6 +12,7 @@ use App\Posts;
 use App\RegExp;
 use App\Response;
 use App\Users;
+use RestCord\DiscordClient;
 
 class AdminController extends Controller {
 	public $do = 'admin';
@@ -27,7 +28,7 @@ class AdminController extends Controller {
 		CoreUtils::loadPage(array(
 			'title' => 'Admin Area',
 			'do-css',
-			'js' => array('Sortable',$this->do),
+			'do-js',
 		), $this);
 	}
 
@@ -88,7 +89,7 @@ class AdminController extends Controller {
 		foreach ($whereArgs as $arg)
 			$Database->where(...$arg);
 		$Pagination = new Pagination('admin/logs', 20, $Database->count('log'));
-		$heading = 'Global logs';
+		$heading = 'Global logs - Admin Area';
 		if (!empty($title))
 			$title .= '- ';
 		$title .= "Page {$Pagination->page} - $heading";
@@ -145,6 +146,17 @@ class AdminController extends Controller {
 	}
 
 	function usefulLinks(){
+		if (!POST_REQUEST){
+			$heading = 'Manage useful links';
+			CoreUtils::loadPage([
+				'heading' => $heading,
+				'title' => "$heading - Admin Area",
+				'view' => "{$this->do}-usefullinks",
+				'js' => ['Sortable',"{$this->do}-usefullinks"],
+				'css' => $this->do,
+			]);
+		}
+
 		$action = $_GET['action'];
 		$creating = $action === 'make';
 
@@ -254,6 +266,17 @@ class AdminController extends Controller {
 		}
 
 		Response::done();
+	}
+
+	function discord(){
+		CoreUtils::notFound();
+		// TODO Later
+		//$discord = new DiscordClient(['token' => DISCORD_BOT_TOKEN]);
+		//sd($discord->guild->listGuildMembers(['guild.id' => DISCORD_BOT_TOKEN]));
+
+		// TODO Make a DB table for Local user - Discord member relations
+		// TODO And don't forget to add a badge to the users' profiles
+		// TODO And hide the join discord thing in the sidebar by default
 	}
 
 	function massApprove(){

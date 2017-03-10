@@ -273,6 +273,45 @@ CREATE TABLE episodes__votes (
 ALTER TABLE episodes__votes OWNER TO "mlpvc-rr";
 
 --
+-- Name: events; Type: TABLE; Schema: public; Owner: mlpvc-rr
+--
+
+CREATE TABLE events (
+    id integer NOT NULL,
+    name character varying(64) NOT NULL,
+    type character varying(10) NOT NULL,
+    entry_role character varying(10) NOT NULL,
+    starts_at timestamp with time zone NOT NULL,
+    ends_at timestamp with time zone NOT NULL,
+    added_by uuid NOT NULL,
+    added_at timestamp with time zone NOT NULL
+);
+
+
+ALTER TABLE events OWNER TO "mlpvc-rr";
+
+--
+-- Name: events_id_seq; Type: SEQUENCE; Schema: public; Owner: mlpvc-rr
+--
+
+CREATE SEQUENCE events_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE events_id_seq OWNER TO "mlpvc-rr";
+
+--
+-- Name: events_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER SEQUENCE events_id_seq OWNED BY events.id;
+
+
+--
 -- Name: global_settings; Type: TABLE; Schema: public; Owner: mlpvc-rr
 --
 
@@ -1419,6 +1458,13 @@ ALTER TABLE ONLY colorgroups ALTER COLUMN groupid SET DEFAULT nextval('colorgrou
 --
 
 ALTER TABLE ONLY cutiemarks ALTER COLUMN cmid SET DEFAULT nextval('cutiemarks_cmid_seq'::regclass);
+
+
+--
+-- Name: events id; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER TABLE ONLY events ALTER COLUMN id SET DEFAULT nextval('events_id_seq'::regclass);
 
 
 --

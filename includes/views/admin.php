@@ -8,13 +8,9 @@ use App\Posts;
 	<p>Various tools related to managing the site</p>
 	<p class='align-center links'>
 		<a class='btn darkblue typcn typcn-document-text' href="/admin/logs">Global Logs</a>
+		<a class='btn darkblue typcn typcn-link' href="/admin/usefullinks">Useful Links</a>
+		<a class='btn darkblue' href="/admin/discord">Discord Server Members</a>
 	</p>
-
-	<section class="useful-links">
-		<h2><span class="typcn typcn-link"></span>Manage useful links</h2>
-		<p><button class="green typcn typcn-plus" id="add-link">Add link</button><button class='darkblue typcn typcn-arrow-unsorted' id="reorder-links">Re-order links</button></p>
-		<div><?=CoreUtils::getSidebarUsefulLinksListHTML()?></div>
-	</section>
 
 	<section class="overdue-submissions">
 		<h2><span class="typcn typcn-time"></span>Overdue submissions</h2>
@@ -22,14 +18,13 @@ use App\Posts;
 	</section>
 
 	<section class="mass-approve">
-		<h2><span class="typcn typcn-tick"></span>Bulk approve posts</h2>
-		<p>If you've approved a bunch of submissions and want to mark all of them as approved on the site, then, if you have the group watched you can visit <a href="http://www.deviantart.com/notifications/#view=groupdeviations%3A17450764" target="_blank">this link</a> to go directly to the stack containing the new items. Once you're there, press <kbd>Ctrl</kbd><kbd>A</kbd> (which will select the entire page) followed by <kbd>Ctrl</kbd><kbd>C</kbd> (copying the selected content), then click into the box below (you should see a blinking cursor afterwards) and finally hit <kbd>Ctrl</kbd><kbd>V</kbd>. The script will look through the page, collecting any deviation links it finds, then sends the IDs over to the server to mark them as approved if they were used to finish posts on the site.</p>
+		<h2><span class="typcn typcn-tick"></span>Bulk approve posts <button id="bulk-how" class="darkblue typcn typcn-info-large">How it works</button></h2>
 		<div class="textarea" contenteditable="true"></div>
 	</section>
 
 <?  if (Permission::sufficient('developer')){ ?>
 	<section class="elastic-status">
-		<h2>Elastic status</h2>
+		<h2><span class="typcn typcn-zoom"></span>Elastic status</h2>
 <?php   try {
 			$client = CoreUtils::elasticClient();
 			$client->ping();
@@ -67,9 +62,3 @@ use App\Posts;
 		<div></div>
 	</section>
 </div>
-
-<?php
-	echo CoreUtils::exportVars(array(
-		'ROLES_ASSOC' => Permission::ROLES_ASSOC,
-		'PRINTABLE_ASCII_PATTERN' => PRINTABLE_ASCII_PATTERN
-	));

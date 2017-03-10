@@ -20,4 +20,8 @@
 	define('WS_SERVER_DOMAIN', '');
 	define('WS_SERVER_KEY', '');
 
+	// Discord API \\
+	define('DISCORD_BOT_TOKEN','');
+	define('DISCORD_SERVER_ID',0);
+
 	//define('MAINTENANCE_START', strtotime(''));

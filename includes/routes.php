@@ -1,7 +1,5 @@
 <?php
 
-// TODO Add all missing routes
-
 namespace App;
 
 $router = new \AltoRouter();
@@ -31,6 +29,8 @@ $router->map('GET', '/about',                          'AboutController#index');
 $router->map('GET', '/admin',                          'AdminController#index');
 $router->map('GET', '/logs/[i]?',                      'AdminController#logs');
 $router->map('GET', '/admin/logs/[i]?',                'AdminController#logs');
+$router->map('GET', '/admin/discord',                  'AdminController#discord');
+$router->map('GET', '/admin/usefullinks',              'AdminController#usefulLinks');
 $router->map('GET', '/blending',                       'BlendingController#index');
 $router->map('GET', '/browser/[i:session]?',           'BrowserController#index');
 $router->map('GET', '/components',                     'ComponentsController#index');
@@ -44,12 +44,13 @@ $router->map('GET',      '/[cg]/[eqg:eqg]?/[v]/[adi]-[i:id]',                   
 $router->map('GET',      '/[cg]/[eqg:eqg]?/[v]/[i:id][cgimg:type].[cgext:ext]', 'ColorGuideController#appearanceAsFile');
 $router->map('GET',      '/[cg]/[eqg:eqg]?/sprite(-colors)?/[i:id][adi]?',      'ColorGuideController#spriteColors');
 $router->map('GET|POST', '/[cg]/get-tags',                                      'ColorGuideController#getTags');
-$router->map('GET', '/errorlog',                       'ErrorLogController#index');
 $router->map('GET', '/da-auth',                        'AuthController#auth');
 $router->map('GET', '/episode/[epid:id]',              'EpisodeController#page');
 $router->map('GET', '/episodes/[i]?',                  'EpisodesController#index');
 $router->map('GET', '/eqg/[i:id]',                     'EQGController#redirectInt');
 $router->map('GET', '/eqg/[adi:id]',                   'EQGController#redirectStr');
+$router->map('GET', '/events/[i]?',                    'EventsController#list');
+#$router->map('GET', '/event/[i:id][adi]?',             'EventController#index');
 $router->map('GET', '/movie/[i:id][adi]?',             'MovieController#pageID');
 $router->map('GET', '/movie/[adi:title]',              'MovieController#pageTitle');
 $router->map('GET', '/logs/[i]',                       'AdminController#logs');
@@ -96,6 +97,10 @@ $router->map('POST', '/episode/video-embeds/[epid:id]',      'EpisodeController#
 $router->map('POST', '/episode/video-data/[epid:id]',        'EpisodeController#videoData');
 $router->map('POST', '/episode/guide-relations/[epid:id]',   'EpisodeController#guideRelations');
 $router->map('POST', '/episode/broken-videos/[epid:id]',     'EpisodeController#brokenVideos');
+#$router->map('POST', '/event/get/[epid:id]',                 'EventController#get');
+#$router->map('POST', '/event/delete/[epid:id]',              'EventController#delete');
+$router->map('POST', '/event/set/[epid:id]',                 'EventController#set');
+$router->map('POST', '/event/add',                           'EventController#add');
 $router->map('POST', '/notifications/get',                   'NotificationsController#get');
 $router->map('POST', '/notifications/mark-read/[i:id]',      'NotificationsController#markRead');
 $router->map('POST', '/ping',                                'PingController#ping');
