@@ -45,25 +45,6 @@ class User extends AbstractFillable {
 		LINKFORMAT_TEXT = 1,
 		LINKFORMAT_URL  = 2;
 
-	static $FAKE_USER = array(
-		'name' => 'null',
-		'avatar_url' => '/img/blank-pixel.png',
-		'fake' => true,
-	);
-
-	/**
-	 * Checks if $User is empty and fills it with fake data if it is
-	 *
-	 * @param string $method
-	 */
-	private function _checkEmptyUser(string $method){
-		if (empty($this->name) && empty($this->avatar_url)){
-			error_log("\$User is empty, fake user data used in $method.\nValue: ".var_export($this, true)."\nBacktrace:\n".((new \Exception)->getTraceAsString()));
-			foreach (self::$FAKE_USER as $k => $v)
-				$this->$k = $v;
-		}
-	}
-
 	/**
 	 * Local profile link generator
 	 *
@@ -74,8 +55,6 @@ class User extends AbstractFillable {
 	 * @return string
 	 */
 	function getProfileLink(int $format = self::LINKFORMAT_TEXT):string {
-		$this->_checkEmptyUser(__METHOD__);
-
 		$Username = $this->name;
 		$avatar = $format == self::LINKFORMAT_FULL ? "<img src='{$this->avatar_url}' class='avatar' alt='avatar'> " : '';
 		$href = empty($this->fake) ? " href='/@$Username'" : '';
@@ -91,8 +70,6 @@ class User extends AbstractFillable {
 	 * @return string
 	 */
 	function getDALink(int $format = self::LINKFORMAT_FULL):string {
-		$this->_checkEmptyUser(__METHOD__);
-
 		$Username = $this->name;
 		$username = strtolower($Username);
 		$link = "http://$username.deviantart.com/";

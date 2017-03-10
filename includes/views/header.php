@@ -146,7 +146,6 @@ ga('send','pageview');
 					<circle r="20" cx="22.5" cy="22.5" class="loading-circle" transform="rotate(-90 22.5 22.5)"></circle>
 				</svg>
 				<div class="loader"></div>
-	            <img class="avatar" src="<?=$signedIn?$currentUser->avatar_url:GUEST_AVATAR?>" alt='<?=($signedIn?CoreUtils::aposEncode(CoreUtils::posess($currentUser->name)):'Guest').' avatar'?>'>
 			</li><?=CoreUtils::getNavigationHTML(isset($view) && $view === 'fatalerr', $scope)?></ul></nav>
 	</header>
 

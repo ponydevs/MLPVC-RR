@@ -30,6 +30,8 @@ $AvatarSize: 60px;
 // Links (don't forget to update extlink-link-color.svg)
 $Link: #337287;
 $LinkHover: desaturate(lighten($Link, 13), 7);
+$LinkLight: lighten($Link, 30);
+$LinkHoverLight: lighten($LinkHover, 30);
 
 // Notices & buttons
 $NBlue: #07f;

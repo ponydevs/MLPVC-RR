@@ -125,36 +125,6 @@ class Users {
 	}
 
 	/**
-	 * Renders the user card
-	 *
-	 * @param bool $showAvatar
-	 */
-	static function renderCard($showAvatar = false){
-		global $signedIn, $currentUser;
-		if ($signedIn){
-			$avatar = $currentUser->avatar_url;
-			$username = $currentUser->getProfileLink();
-			$rolelabel = $currentUser->rolelabel;
-			$Avatar = $showAvatar ? $currentUser->getAvatarWrap() : '';
-		}
-		else {
-			$avatar = GUEST_AVATAR;
-			$username = 'Curious Pony';
-			$rolelabel = 'Guest';
-			$Avatar = $showAvatar
-				? (new User(array(
-					'avatar_url' => $avatar,
-					'name' => $username,
-					'rolelabel' => $rolelabel,
-					'guest' => true,
-				)))->getAvatarWrap()
-				: '';
-		}
-
-		echo "<div class='usercard'>$Avatar<span class='un'>$username</span><span class='role'>$rolelabel</span></div>";
-	}
-
-	/**
 	 * Check maximum simultaneous reservation count
 	 *
 	 * @param bool $return_as_bool

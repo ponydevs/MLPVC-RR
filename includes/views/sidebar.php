@@ -6,9 +6,25 @@ use App\Time;
 use App\UserPrefs;
 use App\Users;
 /** @var $signedIn bool */
-/** @var $do string */ ?>
+/** @var $do string */
+/** @var $scope array */ ?>
 	<div class='mobile-nav'>
 		<nav><ul><?=CoreUtils::getNavigationHTML(isset($view) && $view === 'fatalerr', $scope)?></ul></nav>
+	</div>
+	<div class='logged-in'>
+		<?php
+	if ($signedIn)
+		echo $currentUser->getAvatarWrap();
+	else echo (new \App\Models\User([
+		'name' => 'Guest',
+		'role' => 'guest',
+		'rolelabel' => 'Curious Pony',
+		'avatar_url' => GUEST_AVATAR
+	]))->getAvatarWrap()?>
+		<div class="user-data">
+			<span class="user-name"><?=$signedIn?$currentUser->getProfileLink(App\Models\User::LINKFORMAT_TEXT):'Curious Pony'?></span>
+			<span class="user-role"><?=$signedIn?$currentUser->rolelabel:'Guest'?></span>
+		</div>
 	</div>
 <?php
 	if (!empty($Database)){
@@ -27,10 +43,7 @@ use App\Users;
 	</section>
 <?php   } ?>
 	<section class="<?=$signedIn?'welcome':'login'?>">
-		<h2><?=$signedIn?'Signed in as':'Welcome!'?></h2>
-<?php
-		Users::renderCard();
-		CoreUtils::renderSidebarUsefulLinks(); ?>
+<?php	CoreUtils::renderSidebarUsefulLinks(); ?>
 		<div class="buttons">
 <?php
 		if ($signedIn){ ?>
