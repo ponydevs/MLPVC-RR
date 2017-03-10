@@ -8,7 +8,7 @@ use App\Exceptions\CURLRequestException;
 class DeviantArt {
 	private static
 		$_CACHE_BAILOUT = false,
-		$_MASS_CACHE_LIMIT = 30,
+		$_MASS_CACHE_LIMIT = 15,
 		$_MASS_CACHE_USED = 0;
 
 	// oAuth Error Response Messages \\

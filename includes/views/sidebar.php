@@ -7,7 +7,8 @@ use App\UserPrefs;
 use App\Users;
 /** @var $signedIn bool */
 /** @var $do string */
-/** @var $scope array */ ?>
+/** @var $scope array */
+/** @var $currentUser \App\Models\User */ ?>
 	<div class='mobile-nav'>
 		<nav><ul><?=CoreUtils::getNavigationHTML(isset($view) && $view === 'fatalerr', $scope)?></ul></nav>
 	</div>
