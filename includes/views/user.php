@@ -20,13 +20,12 @@ if (isset($MSG)){
 }
 else {
 	$vectorapp = UserPrefs::get('p_vectorapp', $User->id);
-	//$discordmember = $Database->where('userid', $User->id)->has('discord_members');
-	$discordmember = false;
+	$discordmember = $Database->where('userid', $User->id)->getOne('discord-members','discid');
 ?>
 	<div class="briefing">
 		<?=$User->getAvatarWrap()?>
 		<div class="title">
-			<h1><span class="username"><?=$User->name?></span><a class="da" title="Visit DeviantArt profile" href="<?=$User->getDALink(User::LINKFORMAT_URL)?>"><?=str_replace(' fill="#FFF"','',file_get_contents(APPATH.'img/da-logo.svg'))?></a><?=!empty($vectorapp)?"<img class='vectorapp-logo' src='/img/vapps/$vectorapp.svg' alt='$vectorapp logo' title='".CoreUtils::$VECTOR_APPS[$vectorapp]." user'>":''?><?=$discordmember?"<img class='discord-logo' src='/img/discord-logo.svg' alt='Discord logo' title='This user is a member of our Discord server'>":''?></h1>
+			<h1><span class="username"><?=$User->name?></span><a class="da" title="Visit DeviantArt profile" href="<?=$User->getDALink(User::LINKFORMAT_URL)?>"><?=str_replace(' fill="#FFF"','',file_get_contents(APPATH.'img/da-logo.svg'))?></a><?=!empty($vectorapp)?"<img class='vectorapp-logo' src='/img/vapps/$vectorapp.svg' alt='$vectorapp logo' title='".CoreUtils::$VECTOR_APPS[$vectorapp]." user'>":''?><?=!empty($discordmember)?"<img class='discord-logo' src='/img/discord-logo.svg' alt='Discord logo' title='This user is a member of our Discord server'>":''?></h1>
 			<p><?php
 echo "<span class='rolelabel'>{$User->rolelabel}</span>";
 if ($canEdit){
@@ -38,7 +37,7 @@ if ($canEdit){
 	echo ' <button id="ban-toggle" class="darkblue typcn typcn-'.$Icon.' '.strtolower($BanLabel).'" title="'."$BanLabel user".'"></button>';
 }
 if (Permission::sufficient('developer'))
-	echo " &bullet; <span class='userid'>{$User->id}</span>";
+	echo " &bullet; <span class='userid'>{$User->id}</span>", !empty($discordmember->discid) ? " &bullet; <span class='discid'>{$discordmember->discid}</span>" : '';
 			?></p>
 		</div>
 	</div>
@@ -167,15 +166,17 @@ if (!empty($Banishes)){
 <?php   } ?>
 				</label>
 			</form>
+<?php   if (!$User->isDiscordMember()){ ?>
 			<form action="/preference/set/p_hidediscord">
 				<label>
 					<input type="checkbox" name="value" value="1"<?=UserPrefs::get('p_hidediscord', $User->id)?' checked':''?> <?=!$sameUser?' disabled':''?>>
 					<span>Hide Discord server link from the sidebar</span>
-<?php   if ($sameUser){ ?>
+<?php       if ($sameUser){ ?>
 					<button class="save typcn typcn-tick green" disabled>Save</button>
-<?php   } ?>
+<?php       } ?>
 				</label>
 			</form>
+<?php   } ?>
 			<form action="/preference/set/p_hidepcg">
 				<label>
 					<input type="checkbox" name="value" value="1"<?=UserPrefs::get('p_hidepcg', $User->id)?' checked':''?> <?=!$sameUser?' disabled':''?>>

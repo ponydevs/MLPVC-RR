@@ -394,8 +394,9 @@ header, #sidebar .mobile-nav {
 }
 // Page layout - Sidebar
 #turbo-sign-in:before { vertical-align: top }
-button.da-login, .btn.discord-join {
+.btn-da, .btn-discord {
 	margin: 0;
+	color: white;
 
 	//noinspection CssOptimizeSimilarProperties
 	&:before {
@@ -406,10 +407,12 @@ button.da-login, .btn.discord-join {
 		vertical-align: text-top;
 	}
 }
-button.da-login:before { background-image: url('../../img/da-logo.svg') }
-.btn.discord-join {
-	color: white;
-	background: #7289DA;
+.btn-da {
+	background-color: $DeviantArtGreen !important;
+	&:before { background-image: url('../../img/da-logo.svg') }
+}
+.btn-discord {
+	background-color: #7289DA !important;
 
 	&:before { background-image: url('../../img/discord-logo-white.svg') }
 }

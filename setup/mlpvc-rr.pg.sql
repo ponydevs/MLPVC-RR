@@ -221,18 +221,21 @@ CREATE TABLE deviation_cache (
 ALTER TABLE deviation_cache OWNER TO "mlpvc-rr";
 
 --
--- Name: discord_members; Type: TABLE; Schema: public; Owner: mlpvc-rr
+-- Name: discord-members; Type: TABLE; Schema: public; Owner: mlpvc-rr
 --
 
-CREATE TABLE discord_members (
-    userid uuid NOT NULL,
-    disc_id bigint NOT NULL,
-    disc_tag character varying(100) NOT NULL,
-    disc_avatar character varying(255) NOT NULL
+CREATE TABLE "discord-members" (
+    discid character varying(20) NOT NULL,
+    userid uuid,
+    username character varying(255) NOT NULL,
+    discriminator integer NOT NULL,
+    nick character varying(255),
+    avatar character varying(255),
+    joined_at timestamp with time zone NOT NULL
 );
 
 
-ALTER TABLE discord_members OWNER TO "mlpvc-rr";
+ALTER TABLE "discord-members" OWNER TO "mlpvc-rr";
 
 --
 -- Name: episodes; Type: TABLE; Schema: public; Owner: mlpvc-rr
@@ -1736,19 +1739,19 @@ ALTER TABLE ONLY deviation_cache
 
 
 --
--- Name: discord_members discord_members_userid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
+-- Name: discord-members discord_members_discid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
-ALTER TABLE ONLY discord_members
-    ADD CONSTRAINT discord_members_userid PRIMARY KEY (userid);
+ALTER TABLE ONLY "discord-members"
+    ADD CONSTRAINT discord_members_discid PRIMARY KEY (discid);
 
 
 --
--- Name: discord_members discord_members_userid_disc_id; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
+-- Name: discord-members discord_members_userid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
-ALTER TABLE ONLY discord_members
-    ADD CONSTRAINT discord_members_userid_disc_id UNIQUE (userid, disc_id);
+ALTER TABLE ONLY "discord-members"
+    ADD CONSTRAINT discord_members_userid UNIQUE (userid);
 
 
 --
@@ -2234,11 +2237,11 @@ ALTER TABLE ONLY cutiemarks
 
 
 --
--- Name: discord_members discord_members_userid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
+-- Name: discord-members discord_members_userid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
-ALTER TABLE ONLY discord_members
-    ADD CONSTRAINT discord_members_userid_fkey FOREIGN KEY (userid) REFERENCES users(id) ON UPDATE CASCADE ON DELETE CASCADE;
+ALTER TABLE ONLY "discord-members"
+    ADD CONSTRAINT discord_members_userid_fkey FOREIGN KEY (userid) REFERENCES users(id) ON UPDATE CASCADE ON DELETE SET NULL;
 
 
 --

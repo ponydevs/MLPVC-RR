@@ -149,8 +149,8 @@ ga('send','pageview');
 			</li><?=CoreUtils::getNavigationHTML(isset($view) && $view === 'fatalerr', $scope)?></ul></nav>
 	</header>
 
-	<div id="sidebar">
+	<aside id="sidebar">
 <?php include INCPATH."views/sidebar.php"; ?>
-	</div>
+	</aside>
 
 	<div id="main">

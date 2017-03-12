@@ -26,8 +26,6 @@ class User extends AbstractFillable {
 		$avatar_url,
 		$signup_date,
 		$rolelabel;
-	/** @var bool */
-	public $fake = false;
 	// TODO Update when Session class is made
 	/** @var array */
 	public $Session;
@@ -57,9 +55,8 @@ class User extends AbstractFillable {
 	function getProfileLink(int $format = self::LINKFORMAT_TEXT):string {
 		$Username = $this->name;
 		$avatar = $format == self::LINKFORMAT_FULL ? "<img src='{$this->avatar_url}' class='avatar' alt='avatar'> " : '';
-		$href = empty($this->fake) ? " href='/@$Username'" : '';
 
-		return "<a$href class='da-userlink".($format == self::LINKFORMAT_FULL ? ' with-avatar':'')."'>$avatar<span class='name'>$Username</span></a>";
+		return "<a href='/@$Username' class='da-userlink".($format == self::LINKFORMAT_FULL ? ' with-avatar':'')."'>$avatar<span class='name'>$Username</span></a>";
 	}
 
 	/**
@@ -77,8 +74,7 @@ class User extends AbstractFillable {
 
 		$avatar = $format == self::LINKFORMAT_FULL ? "<img src='{$this->avatar_url}' class='avatar' alt='avatar'> " : '';
 		$withav = $format == self::LINKFORMAT_FULL ? ' with-avatar' : '';
-		$href = empty($this->fake) ? "href='$link'" : '';
-		return "<a $href class='da-userlink$withav'>$avatar<span class='name'>$Username</span></a>";
+		return "<a href='$link' class='da-userlink$withav'>$avatar<span class='name'>$Username</span></a>";
 	}
 
 	/**
@@ -290,5 +286,11 @@ class User extends AbstractFillable {
 			$contribs[] = [$approvedPosts, 'post', 'marked approved'];
 
 		return $contribs;
+	}
+
+	public function isDiscordMember(){
+		global $Database;
+
+		return $Database->where('userid', $this->id)->has('discord-members');
 	}
 }

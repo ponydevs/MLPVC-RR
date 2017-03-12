@@ -6,6 +6,8 @@ use App\CSRFProtection;
 use App\HTTP;
 use App\Input;
 use App\Logs;
+use App\Models\DiscordMember;
+use App\Models\User;
 use App\Pagination;
 use App\Permission;
 use App\Posts;
@@ -157,6 +159,8 @@ class AdminController extends Controller {
 			]);
 		}
 
+		CSRFProtection::protect();
+
 		$action = $_GET['action'];
 		$creating = $action === 'make';
 
@@ -254,6 +258,8 @@ class AdminController extends Controller {
 	function reorderUsefulLinks(){
 		global $Database;
 
+		CSRFProtection::protect();
+
 		$list = (new Input('list','int[]',array(
 			Input::CUSTOM_ERROR_MESSAGES => array(
 				Input::ERROR_MISSING => 'Missing ordering information',
@@ -269,18 +275,152 @@ class AdminController extends Controller {
 	}
 
 	function discord(){
-		CoreUtils::notFound();
-		// TODO Later
-		//$discord = new DiscordClient(['token' => DISCORD_BOT_TOKEN]);
-		//sd($discord->guild->listGuildMembers(['guild.id' => DISCORD_BOT_TOKEN]));
+		global $Database;
+		if (!$Database->has('discord-members'))
+			$this->_getDiscordMemberList();
 
-		// TODO Make a DB table for Local user - Discord member relations
-		// TODO And don't forget to add a badge to the users' profiles
-		// TODO And hide the join discord thing in the sidebar by default
+		$heading = 'Discord Server Connections';
+		CoreUtils::loadPage([
+			'heading' => $heading,
+			'title' => "$heading - Admin Area",
+			'view' => "{$this->do}-discord",
+			'css' => "{$this->do}-discord",
+			'js' => "{$this->do}-discord",
+			'import' => ['nav_dsc' => true],
+		], $this);
+	}
+
+	function discordMemberList(){
+		CSRFProtection::protect();
+
+		global $Database;
+
+		if (isset($_POST['update']))
+			$this->_getDiscordMemberList(true);
+
+		$members = $Database->get('discord-members');
+		usort($members, function(DiscordMember $a, DiscordMember $b){
+			$comp1 = $a->displayedName() <=> $b->displayedName();
+			if ($comp1 !== 0)
+				return $comp1;
+			return $a->discriminator <=> $b->discriminator;
+		});
+		$HTML = '';
+		/** @var \App\Models\DiscordMember[] $members */
+		foreach ($members as $member){
+			$avatar = $member->getAvatar();
+			$avatar = isset($avatar) ? "<img src='{$avatar}' alt='user avatar' class='user-avatar'>" : '';
+			$un = CoreUtils::escapeHTML($member->username);
+			$bound = isset($member->userid) ? " class='bound'" : '';
+			$udata = '<span>'.(isset($member->nick) ? $member->nick : $member->username)."</span><span>{$member->username}#{$member->discriminator}</span>";
+			$HTML .= <<<HTML
+<li id="member-{$member->discid}"$bound>
+	$avatar
+	<div class='user-data'>
+		$udata
+	</div>
+</li>
+HTML;
+		}
+
+		Response::done(['list' => $HTML]);
+	}
+
+	/** @var DiscordMember */
+	private $_member;
+	private function _discordSetMember($params){
+		global $Database;
+
+		CSRFProtection::protect();
+
+		$this->_member = $Database->where('discid', $params['id'])->getOne('discord-members');
+		if (empty($this->_member))
+			Response::fail('There\'s no member with this ID on record.');
+	}
+
+	function discordMemberLinkGet($params){
+		$this->_discordSetMember($params);
+
+		$resp = [];
+		if (isset($this->_member->userid))
+			$resp['boundto'] = Users::get($this->_member->userid,'id','id,name,avatar_url')->getProfileLink(User::LINKFORMAT_FULL);
+
+		Response::done($resp);
+	}
+
+	function discordMemberLinkSet($params){
+		$this->_discordSetMember($params);
+
+		global $Database;
+
+		$to = (new Input('to','username',[
+			Input::CUSTOM_ERROR_MESSAGES => [
+				Input::ERROR_MISSING => 'Username is missing',
+				Input::ERROR_INVALID => 'Username (@value) is invalid',
+			]
+		]))->out();
+		$user = Users::get($to, 'name');
+		if (empty($user))
+			Response::fail('The specified user does not exist');
+
+		if (!$Database->where('discid', $this->_member->discid)->update('discord-members',[
+			'userid' => $user->id
+		])) Response::fail('Nothing has been changed');
+
+		Response::done();
+	}
+
+	function discordMemberLinkDel($params){
+		$this->_discordSetMember($params);
+
+		global $Database;
+
+		if (!isset($this->_member->userid))
+			Response::fail('Member is not bound to any user');
+
+		if (!$Database->where('discid', $this->_member->discid)->update('discord-members',[
+			'userid' => null
+		])) Response::fail('Nothing has been changed');
+
+		Response::done();
+	}
+
+	private function _getDiscordMemberList(bool $skip_binding = false){
+		global $Database;
+
+		// TODO If we ever surpass 1000 Discord server members this will bite me in the backside
+		$discord = new DiscordClient(['token' => DISCORD_BOT_TOKEN]);
+		$members = $discord->guild->listGuildMembers(['guild.id' => DISCORD_SERVER_ID,'limit' => 1000]);
+
+		foreach ($members as $member){
+			$ins = new DiscordMember([
+				'discid' => $member['user']['id'],
+				'username' => $member['user']['username'],
+				'discriminator' => $member['user']['discriminator'],
+				'nick' => $member['nick'] ?? null,
+				'avatar' => $member['user']['avatar'] ?? null,
+				'joined_at' => $member['joined_at'],
+			]);
+
+			if (!empty($member['roles']) || !empty($ins->nick))
+				$ins->guessDAUser();
+			$ins = (array)$ins;
+
+			if ($Database->where('discid', $ins['discid'])->has('discord-members')){
+				$insid = $ins['discid'];
+				unset($ins['discid']);
+				if ($skip_binding)
+					unset($ins['userid']);
+				$Database->where('discid', $insid)->update('discord-members', $ins);
+			}
+			else $Database->insert('discord-members', $ins, null);
+		}
 	}
 
 	function massApprove(){
 		global $Database;
+
+		CSRFProtection::protect();
 
 		$ids = (new Input('ids','int[]',array(
 			Input::CUSTOM_ERROR_MESSAGES => array(

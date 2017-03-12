@@ -73,6 +73,10 @@ $router->map('POST', '/admin/usefullinks',                   'AdminController#us
 $router->map('POST', '/admin/usefullinks/reorder',           'AdminController#reorderUsefulLinks');
 $router->map('POST', '/admin/mass-approve',                  'AdminController#massApprove');
 $router->map('POST', '/admin/recent-posts',                  'AdminController#recentPosts');
+$router->map('POST', '/admin/discord/member-list',           'AdminController#discordMemberList');
+$router->map('POST', '/admin/discord/member-link/get/[i:id]', 'AdminController#discordMemberLinkGet');
+$router->map('POST', '/admin/discord/member-link/set/[i:id]', 'AdminController#discordMemberLinkSet');
+$router->map('POST', '/admin/discord/member-link/del/[i:id]', 'AdminController#discordMemberLinkDel');
 $router->map('POST', '/cg/full/reorder',                     'ColorGuideController#reorderFullList');
 $router->map('POST', '/cg/export',                           'ColorGuideController#export');
 $router->map('POST', '/cg/appearance/[ad:action]/[i:id]',    'ColorGuideController#appearanceAction');

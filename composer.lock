@@ -1039,12 +1039,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/SeinopSys/PHP-PostgreSQL-Database-Class.git",
-                "reference": "75065645a6bea74748f2de4279a27b978f51747a"
+                "reference": "4492ba67015d76f089c165efdc552d0c8f3ad598"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/SeinopSys/PHP-PostgreSQL-Database-Class/zipball/75065645a6bea74748f2de4279a27b978f51747a",
-                "reference": "75065645a6bea74748f2de4279a27b978f51747a",
+                "url": "https://api.github.com/repos/SeinopSys/PHP-PostgreSQL-Database-Class/zipball/4492ba67015d76f089c165efdc552d0c8f3ad598",
+                "reference": "4492ba67015d76f089c165efdc552d0c8f3ad598",
                 "shasum": ""
             },
             "require": {
@@ -1069,11 +1069,11 @@
                 }
             ],
             "description": "PHP wrapper class for PDO-based interaction with PostgreSQL databases, heavily based on joshcam/mysqli-database-class",
-            "time": "2017-01-26 17:56:32"
+            "time": "2017-03-11 21:38:53"
         },
         {
             "name": "symfony/options-resolver",
-            "version": "v3.2.5",
+            "version": "v3.2.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/options-resolver.git",
@@ -1186,7 +1186,7 @@
         },
         {
             "name": "symfony/serializer",
-            "version": "v3.2.5",
+            "version": "v3.2.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/serializer.git",

@@ -17,4 +17,18 @@ abstract class AbstractFillable {
 					$this->$k = $v;
 		}
 	}
+
+	/**
+	 * Converts the object to an array, optionally removing empty (=== null) fields
+	 *
+	 * @param bool $remove_empty If true, removes keys with null as their value from the array
+	 *
+	 * @return array
+	 */
+	public function toArray(bool $remove_empty = false):array {
+		$arr = (array)$this;
+		if ($remove_empty)
+			$arr = array_filter($arr, function($value) { return !is_null($value); });
+		return $arr;
+	}
 }

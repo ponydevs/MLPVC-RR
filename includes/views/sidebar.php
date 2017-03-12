@@ -51,12 +51,12 @@ use App\Users;
 			<button id="signout" class="typcn typcn-arrow-back">Sign out</button>
 <?php   }
 		else { ?>
-			<button class="typcn green da-login" id="signin">Sign in</button>
+			<button class="typcn btn-da da-login" id="signin">Sign in</button>
 			<!--suppress ES6ConvertVarToLetConst, JSUnusedLocalSymbols -->
 			<script>var OAUTH_URL = "<?=OAUTH_AUTHORIZATION_URL?>";</script>
 <?php   }
-		if (!UserPrefs::get('p_hidediscord')){ ?>
-			<a class="btn typcn discord-join" href="http://fav.me/d9zt1wv" target="_blank">Join Discord</a>
+		if (!UserPrefs::get('p_hidediscord') && ($signedIn ? $currentUser->isDiscordMember() : true)){ ?>
+			<a class="btn typcn btn-discord discord-join" href="http://fav.me/d9zt1wv" target="_blank">Join Discord</a>
 <?php   } ?>
 		</div>
 	</section>

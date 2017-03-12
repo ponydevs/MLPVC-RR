@@ -6,11 +6,11 @@ use App\Posts;
 <div id="content">
 	<h1><?=$title?></h1>
 	<p>Various tools related to managing the site</p>
-	<p class='align-center links'>
+	<div class='align-center links'>
 		<a class='btn darkblue typcn typcn-document-text' href="/admin/logs">Global Logs</a>
 		<a class='btn darkblue typcn typcn-link' href="/admin/usefullinks">Useful Links</a>
-		<a class='btn darkblue' href="/admin/discord">Discord Server Members</a>
-	</p>
+		<a class='btn typcn btn-discord' href="/admin/discord">Discord Server Connections</a>
+	</div>
 
 	<section class="overdue-submissions">
 		<h2><span class="typcn typcn-time"></span>Overdue submissions</h2>

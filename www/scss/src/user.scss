@@ -59,29 +59,25 @@
 		h1 {
 			.da {
 				line-height: 1em;
-				height: 1em;
 				width: .6em;
-				margin-left: .3em;
 
-				$dalogo: #05cc47;
 				svg {
 					height: 100%;
 				}
 				path {
-					fill: darken($dalogo, 10);
+					fill: darken($DeviantArtGreen, 10);
 					transition: fill .2s linear;
 				}
-				&:hover path { fill: $dalogo }
+				&:hover path { fill: $DeviantArtGreen }
 			}
 
-			.vectorapp-logo {
+			.da, .vectorapp-logo, .discord-logo {
 				height: 1em;
-				width: 1em;
 				margin-left: .3em;
 			}
 		}
 		p {
-			.userid {
+			.userid, .discid {
 				letter-spacing: -1px;
 				font-size: .8em;
 			}

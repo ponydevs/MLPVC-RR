@@ -535,6 +535,8 @@
 	$.momentToHM = momentInstance => momentInstance.format('HH:mm');
 	$.mkMoment = (datestr, timestr, utc) => moment(datestr+'T'+timestr+(utc?'Z':''));
 
+	$.escapeRegex = pattern => pattern.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+
 	$.fn.toggleHtml = function(contentArray){
 		return this.html(contentArray[$.rangeLimit(contentArray.indexOf(this.html())+1, true, contentArray.length-1)]);
 	};

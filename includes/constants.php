@@ -81,6 +81,8 @@ $PREFIX_REGEX = new RegExp('^\s*(^|.*?[^\\\\]):\s*');
 $HEX_COLOR_REGEX = new RegExp('^#?([\dA-Fa-f]{6})$','u');
 # DeviantArt
 $FULLSIZE_MATCH_REGEX = new RegExp('^https?:\/\/orig\d+\.');
+# Dsicord
+$DISCORD_NICK_REGEX = new RegExp('^(?:.*\(([a-zA-Z\d-]{1,20})\)|([a-zA-Z\d-]{1,20})\s\|.*)$');
 # General
 define('PRINTABLE_ASCII_PATTERN','^[ -~\n]+$');
 define('INVERSE_PRINTABLE_ASCII_PATTERN','[^ -~\n]');
