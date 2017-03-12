@@ -47,7 +47,7 @@ DocReady.push(function(){
 					let $form = $(this),
 						to = $form.find('input').val();
 
-					$.Dialog.confirm('Change binding', `Are you sure you want to bind this member to <strong>${to}</strong>`, function(sure){
+					$.Dialog.confirm('Change binding', `Are you sure you want to bind this member to <strong>${to}</strong>?`, function(sure){
 						if (!sure) return;
 
 						let discid = $list.find('.selected').attr('id').split('-')[1];
