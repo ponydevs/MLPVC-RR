@@ -402,7 +402,7 @@ HTML;
 				'joined_at' => $member['joined_at'],
 			]);
 
-			if (!empty($member['roles']) || !empty($ins->nick))
+			if ((isset($member['roles']) && count($member['roles']) > 1) || !empty($ins->nick))
 				$ins->guessDAUser();
 			$ins = (array)$ins;
 
