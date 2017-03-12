@@ -23,7 +23,7 @@ class DiscordMember extends AbstractFillable {
 	}
 
 	public function getAvatar(){
-		return isset($this->avatar) ? "https://discordapp.com/api/users/{$this->discid}/avatars/{$this->avatar}.jpg" : null;
+		return isset($this->avatar) ? "https://images.discordapp.net/avatars/{$this->discid}/{$this->avatar}" : null;
 	}
 
 	public function displayedName(){
