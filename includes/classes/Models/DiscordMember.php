@@ -61,6 +61,7 @@ class DiscordMember extends AbstractFillable {
 		'd401c282-16bc-525b-c689-86c657fdcc14',
 		'f15237dd-547b-4dac-09ff-7a44b7cd6f9f',
 		'6d2b4808-1792-6342-7087-aa0fb261907d',
+		'f73c6d54-49d2-a88b-ceb5-aba86dbb9b5b',
 	];
 
 	public function guessDAUser():?string {
