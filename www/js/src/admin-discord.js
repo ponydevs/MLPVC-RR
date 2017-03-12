@@ -114,10 +114,10 @@ DocReady.push(function(){
 
 		let $li = $(this),
 			discid = $li.attr('id').split('-')[1],
-			displayname = $li.find('.user-data').children().first().html();
+			displayname = $li.find('.user-data').children().first().text();
 		$li.addClass('selected').siblings().removeClass('selected');
 
-		$linkOf.html(` of <span class="color-blue">${displayname}</span>`);
+		$linkOf.empty().append(' of ',$.mk('span').attr('class','color-blue').text(displayname));
 		updateManager(discid);
 	});
 	$('#rerequest-members').on('click',function(e){
