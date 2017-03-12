@@ -55,7 +55,7 @@ use App\Users;
 			<!--suppress ES6ConvertVarToLetConst, JSUnusedLocalSymbols -->
 			<script>var OAUTH_URL = "<?=OAUTH_AUTHORIZATION_URL?>";</script>
 <?php   }
-		if (!UserPrefs::get('p_hidediscord') && ($signedIn ? $currentUser->isDiscordMember() : true)){ ?>
+		if (!UserPrefs::get('p_hidediscord') && ($signedIn ? !$currentUser->isDiscordMember() : true)){ ?>
 			<a class="btn typcn btn-discord discord-join" href="http://fav.me/d9zt1wv" target="_blank">Join Discord</a>
 <?php   } ?>
 		</div>
