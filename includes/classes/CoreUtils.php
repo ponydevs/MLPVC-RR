@@ -504,7 +504,7 @@ class CoreUtils {
 						case "\t":
 							$invalid[] = '\t';
 						default:
-							$invalid[] = urlencode($f);
+							$invalid[] = $f;
 					}
 				}
 
