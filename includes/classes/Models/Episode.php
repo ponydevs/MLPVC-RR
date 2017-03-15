@@ -152,7 +152,7 @@ class Episode extends AbstractFillable {
 		return $this->getID(array('pad' => true)).': '.$this->title;
 	}
 
-	public function formatURL(){
+	public function toURL(){
 		if (!$this->isMovie)
 			return '/episode/'.$this->formatTitle(AS_ARRAY,'id');
 		return "/movie/{$this->episode}".(!empty($this->title)?'-'.$this->movieSafeTitle():'');

@@ -144,7 +144,7 @@ class EpisodeTest extends TestCase {
 			'season' => 1,
 			'episode' => 1,
 		]);
-		$result = $Episode->formatURL();
+		$result = $Episode->toURL();
 		self::assertEquals("/episode/S1E1", $result);
 
 		$Episode = new \App\Models\Episode([
@@ -152,17 +152,17 @@ class EpisodeTest extends TestCase {
 			'episode' => 1,
 			'twoparter' => true,
 		]);
-		$result = $Episode->formatURL();
+		$result = $Episode->toURL();
 		self::assertEquals("/episode/S1E1-2", $result);
 
 		$Movie = new \App\Models\Episode([
 			'season' => 0,
 			'episode' => 1,
 		]);
-		$result = $Movie->formatURL();
+		$result = $Movie->toURL();
 		self::assertEquals("/movie/1", $result);
 		$Movie->title = 'Yarr  @@@ harr';
-		$result = $Movie->formatURL();
+		$result = $Movie->toURL();
 		self::assertEquals("/movie/1-Yarr-harr", $result);
 	}
 

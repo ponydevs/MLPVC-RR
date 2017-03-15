@@ -4,7 +4,8 @@ DocReady.push(function(){
 
 	const PRINTABLE_ASCII_PATTERN = window.PRINTABLE_ASCII_PATTERN, EVENT_TYPES = window.EVENT_TYPES;
 
-	let $addbtn = $('#add-event'),
+	let $eventList = $('#event-list'),
+		$addbtn = $('#add-event'),
 		$eventTypeSelect = $.mk('select').attr({
 			name: 'type',
 			required: true,
@@ -117,6 +118,28 @@ DocReady.push(function(){
 					window.location.href = this.url;
 				}));
 			});
+		});
+	});
+	$eventList.on('click','.delete-event',function(e){
+		e.preventDefault();
+
+		let $li = $(this).closest('li[id]'),
+			eventid = $li.attr('id').split('-')[1],
+			eventname = $li.find('.event-name').html();
+
+		$.Dialog.confirm('Delete event #'+eventid,`Are you sure yo uwant to delete ${eventname} along with all submissions?`,function(sure){
+			if (!sure) return;
+
+			$.Dialog.wait(false);
+
+			$.post(`/event/del/${eventid}`,$.mkAjaxHandler(function(){
+				if (!this.status) return $.Dialog.fail(false, this.message);
+
+				$.Dialog.wait(false, 'Reloading page', true);
+				$.Navigation.reload(function(){
+					$.Dialog.close();
+				});
+			}));
 		});
 	});
 });

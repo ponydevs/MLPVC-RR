@@ -102,7 +102,7 @@ $router->map('POST', '/episode/video-data/[epid:id]',        'EpisodeController#
 $router->map('POST', '/episode/guide-relations/[epid:id]',   'EpisodeController#guideRelations');
 $router->map('POST', '/episode/broken-videos/[epid:id]',     'EpisodeController#brokenVideos');
 #$router->map('POST', '/event/get/[i:id]',                    'EventController#get');
-#$router->map('POST', '/event/delete/[i:id]',                 'EventController#delete');
+$router->map('POST', '/event/del/[i:id]',                    'EventController#delete');
 #$router->map('POST', '/event/end/[i:id]',                    'EventController#delete');
 $router->map('POST', '/event/set/[epid:id]',                 'EventController#set');
 $router->map('POST', '/event/add',                           'EventController#add');

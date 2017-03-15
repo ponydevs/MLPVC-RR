@@ -116,7 +116,7 @@ class Logs {
 				if (!empty($EpData)){
 					$Episode = Episodes::getActual($EpData['season'], $EpData['episode'], Episodes::ALLOW_MOVIES);
 					if (!empty($Episode))
-						$link = "<a href='".$Episode->formatURL()."'>".$Episode->formatTitle(AS_ARRAY, 'id')."</a>";
+						$link = "<a href='".$Episode->toURL()."'>".$Episode->formatTitle(AS_ARRAY, 'id')."</a>";
 				}
 				$details[] = array('Episode', $link);
 				if (empty($Episode))
@@ -193,14 +193,9 @@ class Logs {
 				$details[] = array('Previous reserver', Users::get($data['reserved_by'])->getProfileLink());
 				$details[] = array('Previously reserved at', Time::tag($data['reserved_at'], Time::TAG_EXTENDED, Time::TAG_STATIC_DYNTIME));
 
-				$diff_text = '';
 				$diff = Time::difference(strtotime($MainEntry['timestamp']), strtotime($data['reserved_at']));
-				foreach (array_keys(Time::IN_SECONDS) as $unit){
-					if (empty($diff[$unit]))
-						continue;
-					$diff_text .= CoreUtils::makePlural($unit, $diff[$unit], PREPEND_NUMBER).' ';
-				}
-				$details[] = array('In progress for', rtrim($diff_text));
+				$diff_text = Time::differenceToString($diff);
+				$details[] = array('In progress for', $diff_text);
 			break;
 			case "appearances":
 				$details[] = array('Action', self::$ACTIONS[$data['action']]);
@@ -362,7 +357,7 @@ class Logs {
 		$EpData = Episode::parseID($EpID);
 		$Episode = Episodes::getActual($EpData['season'], $EpData['episode'], Episodes::ALLOW_MOVIES);
 
-		$details[] = array('Posted under', !empty($Episode) ? "<a href='".$Episode->formatURL()."'>$EpID</a>" : $EpID.' (now deleted/moved)');
+		$details[] = array('Posted under', !empty($Episode) ? "<a href='".$Episode->toURL()."'>$EpID</a>" : $EpID.' (now deleted/moved)');
 		if (!empty($Post)){
 			$details[] = array(
 				($data['type'] === 'request'?'Requested':'Reserved').' by',
@@ -456,7 +451,7 @@ class Logs {
 			$HTML .= <<<HTML
 		<tr>
 			<td class='entryid'>{$item['entryid']}</td>
-			<td class='timestamp'>$ts</td>
+			<td class='timestamp'>$ts<span class="dynt-el"></span></td>
 			<td class='ip'>$ip</td>
 			<td class='reftype'>$event</td>
 		</tr>

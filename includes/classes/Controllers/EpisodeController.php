@@ -265,7 +265,7 @@ class EpisodeController extends Controller {
 		));
 		if ($editing)
 			Response::done();
-		Response::done(array('url' => (new Episode($insert))->formatURL()));
+		Response::done(array('url' => (new Episode($insert))->toURL()));
 	}
 
 	function set($params){

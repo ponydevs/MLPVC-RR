@@ -1193,7 +1193,7 @@
 						$sidebar.html(sidebar);
 						$footer.html(footer);
 						Time.Update();
-						window.setUpcomingEpisodeCountdown();
+						window.setUpcomingCountdown();
 						let $headerNav = $header.find('nav').children();
 						$headerNav.children().first().children('img').attr('src', avatar);
 						$headerNav.children(':not(:first-child)').remove();
@@ -1293,7 +1293,7 @@ $(function(){
 		}
 	})();
 
-	// Upcoming Episode Countdown
+	// Upcoming Countdowns
 	(function(){
 		let $cd, cdtimer,
 			clearCD = function(){
@@ -1316,7 +1316,7 @@ $(function(){
 						$cd.parents('li').remove();
 					}
 					clearCD();
-					return window.setUpcomingEpisodeCountdown();
+					return window.setUpcomingCountdown();
 				}
 				let text;
 				if (diff.time < Time.InSeconds.month){
@@ -1332,7 +1332,7 @@ $(function(){
 				else text = moment(airs).from(now);
 				$cd.text(text);
 			};
-		window.setUpcomingEpisodeCountdown = function(){
+		window.setUpcomingCountdown = function(){
 			let $uc = $('#upcoming');
 			if (!$uc.length)
 				return;
@@ -1355,22 +1355,25 @@ $(function(){
 			});
 			Time.Update();
 
-			$.ajax({
-				url: '/js/min/jquery.simplemarquee.js',
-				dataType: "script",
-				cache: true,
-				success: function(){
-					$lis.find('.title').simplemarquee({
-					    speed: 25,
-					    cycles: Infinity,
-					    space: 25,
-					    handleHover: false,
-					    delayBetweenCycles: 0,
-					}).addClass('marquee');
-				}
-			});
+			let succ = function(){
+				$lis.find('.title').simplemarquee({
+				    speed: 25,
+				    cycles: Infinity,
+				    space: 25,
+				    handleHover: false,
+				    delayBetweenCycles: 0,
+				}).addClass('marquee');
+			};
+			if (typeof jQuery.fn.simplemarquee !== 'function')
+				$.ajax({
+					url: '/js/min/jquery.simplemarquee.js',
+					dataType: "script",
+					cache: true,
+					success: succ
+				});
+			else succ();
 		};
-		window.setUpcomingEpisodeCountdown();
+		window.setUpcomingCountdown();
 	})();
 
 	// Feedback form

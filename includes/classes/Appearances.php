@@ -186,13 +186,13 @@ class Appearances {
 				$Appearance['notes'] = preg_replace_callback('/'.EPISODE_ID_PATTERN.'/',function($a){
 					$Ep = Episodes::getActual((int) $a[1], (int) $a[2]);
 					return !empty($Ep)
-						? "<a href='{$Ep->formatURL()}'>".CoreUtils::aposEncode($Ep->formatTitle(AS_ARRAY,'title'))."</a>"
+						? "<a href='{$Ep->toURL()}'>".CoreUtils::aposEncode($Ep->formatTitle(AS_ARRAY,'title'))."</a>"
 						: "<strong>{$a[0]}</strong>";
 				},$Appearance['notes']);
 				$Appearance['notes'] = preg_replace_callback('/'.MOVIE_ID_PATTERN.'/',function($a){
 					$Ep = Episodes::getActual(0, (int) $a[1], true);
 					return !empty($Ep)
-						? "<a href='{$Ep->formatURL()}'>".CoreUtils::aposEncode($Ep->formatTitle(AS_ARRAY,'title'))."</a>"
+						? "<a href='{$Ep->toURL()}'>".CoreUtils::aposEncode($Ep->formatTitle(AS_ARRAY,'title'))."</a>"
 						: "<strong>{$a[0]}</strong>";
 				},$Appearance['notes']);
 				$Appearance['notes'] = preg_replace_callback('/(?:^|[^\\\\])\K(?:#(\d+))\b/',function($a){
@@ -462,7 +462,7 @@ class Appearances {
 				$List .= (
 					empty($Ep)
 					? self::expandEpisodeTagName($name)
-					: "<a href='{$Ep->formatURL()}'>".$Ep->formatTitle().'</a>'
+					: "<a href='{$Ep->toURL()}'>".$Ep->formatTitle().'</a>'
 				).', ';
 			}
 			$List = rtrim($List, ', ');

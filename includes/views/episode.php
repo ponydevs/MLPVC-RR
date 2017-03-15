@@ -29,7 +29,7 @@ if ($do === 'da-auth' && isset($err)){
 		if (!empty($PrevEpisode)){
 			$PrevEpisodeTitle = $PrevEpisode->formatTitle(AS_ARRAY, null, false); ?>
 			<div>
-				<a href="<?=$PrevEpisode->formatURL()?>" class="ep-button btn typcn typcn-media-rewind"><span class="typcn typcn-media-rewind"></span><span class="id"><?=$PrevEpisodeTitle['id']?>: </span><?=CoreUtils::cutoff(Episodes::removeTitlePrefix($PrevEpisodeTitle['title']),Episodes::TITLE_CUTOFF)?></a>
+				<a href="<?=$PrevEpisode->toURL()?>" class="ep-button btn typcn typcn-media-rewind"><span class="typcn typcn-media-rewind"></span><span class="id"><?= $PrevEpisodeTitle['id']?>: </span><?=CoreUtils::cutoff(Episodes::removeTitlePrefix($PrevEpisodeTitle['title']),Episodes::TITLE_CUTOFF)?></a>
 			</div>
 <?php   }
 		else echo "&nbsp;"; ?></div>
@@ -46,7 +46,7 @@ if ($do === 'da-auth' && isset($err)){
 		if (!empty($NextEpisode)){
 			$NextEpisodeTitle = $NextEpisode->formatTitle(AS_ARRAY, null, false); ?>
 			<div>
-				<a href="<?=$NextEpisode->formatURL()?>" class="ep-button btn typcn typcn-media-fast-forward"><span class="id"><?=$NextEpisodeTitle['id']?>: </span><?=CoreUtils::cutoff(Episodes::removeTitlePrefix($NextEpisodeTitle['title']),Episodes::TITLE_CUTOFF)?><span class="typcn typcn-media-fast-forward"></span></a>
+				<a href="<?=$NextEpisode->toURL()?>" class="ep-button btn typcn typcn-media-fast-forward"><span class="id"><?= $NextEpisodeTitle['id']?>: </span><?=CoreUtils::cutoff(Episodes::removeTitlePrefix($NextEpisodeTitle['title']),Episodes::TITLE_CUTOFF)?><span class="typcn typcn-media-fast-forward"></span></a>
 			</div>
 <?php   }
 		else echo "&nbsp;"; ?></div>

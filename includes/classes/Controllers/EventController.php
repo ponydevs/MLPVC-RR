@@ -41,14 +41,9 @@ class EventController extends Controller {
 	}
 
 	function _addEdit($params, $action){
-		// TODO Remove this restriction
-		if (Permission::insufficient('staff'))
-			CoreUtils::notFound();
-
-		CSRFProtection::protect();
-
 		if (!Permission::sufficient('staff'))
 			Response::fail();
+		CSRFProtection::protect();
 
 		global $currentUser, $Database, $Database;
 
@@ -145,10 +140,24 @@ class EventController extends Controller {
 		$this->_addEdit($params, 'add');
 	}
 
+	function delete($params){
+		if (!Permission::sufficient('staff'))
+			Response::fail();
+		CSRFProtection::protect();
+
+		$this->_getEvent($params);
+
+		global $Database;
+
+		if (!$Database->where('id',$this->_event->id)->delete('events'))
+			Response::dbError('Deleting event failed');
+
+		Response::done();
+	}
+
 	// TODO Implement
 	/*
 	function get($params){ }
-	function delete($params){ }
 	function end($params){ }
 	*/
 }

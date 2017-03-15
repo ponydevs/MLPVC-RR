@@ -15,6 +15,16 @@ class Time {
 		'second' => 1,
 	);
 
+	const SHORT_UINTS = array(
+		'year' =>   'y',
+		'month' =>  'mo',
+		'week' =>   'w',
+		'day' =>    'd',
+		'hour' =>   'h',
+		'minute' => 'm',
+		'second' => 's',
+	);
+
 	/**
 	 * Gets the difference between 2 timestamps
 	 *
@@ -42,6 +52,18 @@ class Time {
 			'time' => abs($subtract),
 			'target' => $target
 		);
+	}
+
+	static function differenceToString(array $diff, bool $short = false):string {
+		$diff_text = '';
+		foreach (array_keys(Time::IN_SECONDS) as $unit){
+			if (empty($diff[$unit]))
+				continue;
+			if (!$short)
+				$diff_text .= CoreUtils::makePlural($unit, $diff[$unit], PREPEND_NUMBER).' ';
+			else $diff_text .= $diff[$unit].self::SHORT_UINTS[$unit].' ';
+		}
+		return rtrim($diff_text);
 	}
 
 	/**
@@ -102,7 +124,7 @@ class Time {
 	 *
 	 * @return string
 	 */
-	static function tag($timestamp, $extended = false, $allowDyntime = self::TAG_ALLOW_DYNTIME, $now = null){
+	static function tag($timestamp, bool $extended = false, string $allowDyntime = self::TAG_ALLOW_DYNTIME, ?int $now = null){
 		if (is_string($timestamp))
 			$timestamp = strtotime($timestamp);
 		if ($timestamp === false) return null;
@@ -123,10 +145,6 @@ class Time {
 		return
 			!$extended
 			? "<time datetime='$datetime' title='$full'>$text</time>"
-			:"<time datetime='$datetime'>$full</time>".(
-				$allowDyntime === self::TAG_ALLOW_DYNTIME
-				?"<span class='dynt-el'>$text</span>"
-				:''
-			);
+			:"<time datetime='$datetime'>$full</time>";
 	}
 }

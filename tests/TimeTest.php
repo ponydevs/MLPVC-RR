@@ -34,7 +34,7 @@ class TimeTest extends TestCase {
 		$result = Time::tag($now, false, Time::TAG_ALLOW_DYNTIME, $now);
 		self::assertEquals("<time datetime='2016-12-03T12:03:56Z' title='3rd Dec 2016, 12:03:56 pm GMT'>a few seconds ago</time>", $result);
 		$result = Time::tag($now, Time::TAG_EXTENDED, Time::TAG_ALLOW_DYNTIME, $now);
-		self::assertEquals("<time datetime='2016-12-03T12:03:56Z'>3rd Dec 2016, 12:03:56 pm GMT</time><span class='dynt-el'>a few seconds ago</span>", $result);
+		self::assertEquals("<time datetime='2016-12-03T12:03:56Z'>3rd Dec 2016, 12:03:56 pm GMT</time>", $result);
 		$result = Time::tag($now, Time::TAG_EXTENDED, Time::TAG_NO_DYNTIME, $now);
 		self::assertEquals("<time datetime='2016-12-03T12:03:56Z' class='nodt'>3rd Dec 2016, 12:03:56 pm GMT</time>", $result);
 		$result = Time::tag($now, Time::TAG_EXTENDED, Time::TAG_STATIC_DYNTIME, $now);

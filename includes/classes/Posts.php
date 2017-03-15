@@ -497,7 +497,7 @@ HTML;
 		$ID = "$type-{$Post->id}";
 		$alt = !empty($Post->label) ? CoreUtils::aposEncode($Post->label) : '';
 		$postedUnder = Episodes::getActual($Post->season, $Post->episode, true, true);
-		$postlink = $postedUnder->formatURL()."#$ID";
+		$postlink = $postedUnder->toURL()."#$ID";
 		$ImageLink = $view_only ? $postlink : $Post->fullsize;
 		$cachebust = $cachebust_url ? '?t='.time() : '';
 		$Image = "<div class='image screencap'><a href='$ImageLink'><img src='{$Post->preview}$cachebust' alt='$alt'></a></div>";

@@ -127,6 +127,8 @@ class CoreUtilsTest extends TestCase {
 		self::assertEquals('1 apple', $result);
 		$result = CoreUtils::makePlural('staff member',2,true);
 		self::assertEquals('2 staff members', $result);
+		$result = CoreUtils::makePlural('entry',10,true);
+		self::assertEquals('10 entries', $result);
 	}
 
 	function testBrowserNameToClass(){

@@ -765,8 +765,11 @@ class CoreUtils {
 	 *
 	 * @return string
 	 */
-	static function makePlural($w, $in, $prep = false){
-		return ($prep?"$in ":'').$w.($in != 1 && !in_array(strtolower($w),self::$_uncountableWords) ?'s':'');
+	static function makePlural($w, int $in, $prep = false){
+		$ret = ($prep?"$in ":'');
+		if ($w[-1] === 'y' && $in != 1)
+			return $ret.self::substring($w,0,-1).'ies';
+		return $ret.$w.($in != 1 && !in_array(strtolower($w),self::$_uncountableWords) ?'s':'');
 	}
 
 	private static $_uncountableWords = array('staff');

@@ -54,7 +54,7 @@ abstract class Post extends AbstractFillable {
 	public function toLink(Episode &$Episode = null):string {
 		if (empty($Episode))
 			$Episode = new Episode($this);
-		return $Episode->formatURL().'#'.$this->getID();
+		return $Episode->toURL().'#'.$this->getID();
 	}
 
 	public function toAnchor(string $label = null, Episode $Episode = null, $newtab = false):string {

@@ -5,6 +5,7 @@ namespace App;
 use App\Appearances;
 use App\Models\Episode;
 use App\Models\EpisodeVideo;
+use App\Models\Event;
 use App\Models\Post;
 
 class Episodes {
@@ -137,7 +138,7 @@ class Episodes {
 		if (empty($CurrentEpisode))
 			CoreUtils::notFound();
 
-		$url = $CurrentEpisode->formatURL();
+		$url = $CurrentEpisode->toURL();
 		if (isset($LinkedPost)){
 			$url .= '#'.$LinkedPost->getID();
 		}
@@ -340,7 +341,7 @@ HTML;
 
 			}
 			else {
-				$href = $Episode->formatURL();
+				$href = $Episode->toURL();
 				$SeasonEpisode = "<td class='episode' rowspan='2'>{$title['episode']}</td>";
 			}
 			$DataID = " data-epid='{$title['id']}'";
@@ -376,43 +377,75 @@ HTML;
 	 */
 	static function getSidebarUpcoming($wrap = WRAP){
 		global $Database, $PREFIX_REGEX;
-		/** @var $Upcoming Episode[] */
-		$Upcoming = $Database->where('airs > NOW()')->orderBy('airs', 'ASC')->get('episodes');
-		if (empty($Upcoming)) return;
 
-		$HTML = '';
-		foreach ($Upcoming as $Episode){
-			$airtime = strtotime($Episode->airs);
-			$airs = date('c', $airtime);
-			$month = date('M', $airtime);
-			$day = date('j', $airtime);
-			$diff = Time::difference(time(), $airtime);
+		$HTML = [];
+		/** @var $UpcomingEpisodes Episode[] */
+		$UpcomingEpisodes = $Database->where('airs > NOW()')->orderBy('airs', 'ASC')->get('episodes');
+		if (!empty($UpcomingEpisodes)){
+			foreach ($UpcomingEpisodes as $Episode){
+				$airtime = strtotime($Episode->airs);
+				$airs = date('c', $airtime);
+				$month = date('M', $airtime);
+				$day = date('j', $airtime);
+				$time = self::_eventTimeTag($airtime);
 
-			$time = 'in ';
-			if ($diff['time'] < Time::IN_SECONDS['month']){
-				$tz = "(".date('T', $airtime).")";
-				if (!empty($diff['day']))
-					$time .=  "{$diff['day']} day".($diff['day']!==1?'s':'').' & ';
-				if (!empty($diff['hour']))
-					$time .= "{$diff['hour']}:";
-				foreach (array('minute','second') as $k)
-					$diff[$k] = CoreUtils::pad($diff[$k]);
-				$time = "<time datetime='$airs'>$time{$diff['minute']}:{$diff['second']} $tz</time>";
+				$title = !$Episode->isMovie
+					? $Episode->title
+					: (
+						$PREFIX_REGEX->match($Episode->title)
+						? Episodes::shortenTitlePrefix($Episode->title)
+						: "Movie: {$Episode->title}"
+					);
+
+				$HTML[] = [$airtime, "<li><div class='calendar'><span class='top'>$month</span><span class='bottom'>$day</span></div>".
+					"<div class='meta'><span class='title'><a href='{$Episode->toURL()}'>$title</a></span><span class='time'>Airs $time</span></div></li>"];
 			}
-			else $time = Time::tag($Episode->airs);
-
-			$title = !$Episode->isMovie
-				? $Episode->title
-				: (
-					$PREFIX_REGEX->match($Episode->title)
-					? Episodes::shortenTitlePrefix($Episode->title)
-					: "Movie: {$Episode->title}"
-				);
-
-			$HTML .= "<li><div class='calendar'><span class='top'>$month</span><span class='bottom'>$day</span></div>".
-				"<div class='meta'><span class='title'>$title</span><span class='time'>Airs $time</span></div></li>";
 		}
-		return $wrap ? "<section id='upcoming'><h2>Upcoming episodes</h2><ul>$HTML</ul></section>" : $HTML;
+		/** @var $UpcomingEvents Event[] */
+		$UpcomingEvents = $Database->where('starts_at > NOW()')->orWhere('ends_at > NOW()')->orderBy('starts_at', 'ASC')->get('events');
+		if (!empty($UpcomingEvents)){
+			foreach ($UpcomingEvents as $Event){
+				$time = strtotime($Event->starts_at);
+				$beforestartdate = $time > time();
+				if (!$beforestartdate)
+					$time = strtotime($Event->ends_at);
+				$airs = date('c', $time);
+				$month = date('M', $time);
+				$day = date('j', $time);
+				$diff = Time::difference(time(), $time);
+				$Verbs = $beforestartdate ? 'Stars' : 'Ends';
+				$time = self::_eventTimeTag($time);
+
+				$HTML[] = [$time, "<li><div class='calendar'><span class='top event'>$month</span><span class='bottom'>$day</span></div>".
+					"<div class='meta'><span class='title'><a href='{$Event->toURL()}'>$Event->name</a></span><span class='time'>$Verbs $time</span></div></li>"];
+			}
+		}
+		if (empty($HTML))
+			return '';
+		usort($HTML,function($a, $b){
+			return $a[0] <=> $b[0];
+		});
+		foreach ($HTML as $i => $v)
+			$HTML[$i] = $v[1];
+		$HTML = implode('',$HTML);
+		return $wrap ? "<section id='upcoming'><h2>Happening soon</h2><ul>$HTML</ul></section>" : $HTML;
+	}
+
+	private static function _eventTimeTag(int $timestamp):string {
+		$diff = Time::difference(time(), $timestamp);
+		if ($diff['time'] < Time::IN_SECONDS['month']){
+			$ret = 'in ';
+			$tz = "(".date('T', $timestamp).")";
+			if (!empty($diff['day']))
+				$ret .=  "{$diff['day']} day".($diff['day']!==1?'s':'').' & ';
+			if (!empty($diff['hour']))
+				$ret .= "{$diff['hour']}:";
+			foreach (array('minute','second') as $k)
+				$diff[$k] = CoreUtils::pad($diff[$k]);
+			$timec = date('c',$timestamp);
+			return "<time datetime='$timec'>$ret{$diff['minute']}:{$diff['second']} $tz</time>";
+		}
+		else return Time::tag($timestamp);
 	}
 
 	/**
