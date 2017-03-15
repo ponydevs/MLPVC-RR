@@ -1,5 +1,5 @@
 /* global ace */
-ace.define("ace/mode/colorguide",["require","exports","ace/mode/colorguide_highlight_rules","ace/mode/folding/coffee","ace/range","ace/mode/text","ace/lib/oop"], (require, exports) => {
+ace.define("ace/mode/colorguide",["require","exports","ace/mode/colorguide_highlight_rules","ace/mode/text","ace/lib/oop"], (require, exports) => {
 	"use strict";
 	let oop = require("../lib/oop");
 
@@ -61,23 +61,6 @@ ace.define("ace/mode/colorguide",["require","exports","ace/mode/colorguide_highl
 			};
 		};
 		oop.inherits(this.HighlightRules, require("./text_highlight_rules").TextHighlightRules);
-
-		// TODO Figure this out
-		/* var WorkerClient = require("ace/worker/worker_client").WorkerClient;
-		this.createWorker = function(session) {
-		    var worker = new WorkerClient(["ace"], "ace/worker/colorguide_worker", "WorkerModule");
-		    worker.attachToDocument(session.getDocument());
-
-		    worker.on("lint", function(results) {
-		        session.setAnnotations(results.data);
-		    });
-
-		    worker.on("terminate", function() {
-		        session.clearAnnotations();
-		    });
-
-		    return worker;
-		}; */
 	}
 	oop.inherits(Mode, require("./text").Mode);
 

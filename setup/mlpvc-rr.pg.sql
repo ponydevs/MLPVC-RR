@@ -115,6 +115,23 @@ ALTER SEQUENCE appearances_id_seq OWNED BY appearances.id;
 
 
 --
+-- Name: cached-deviations; Type: TABLE; Schema: public; Owner: mlpvc-rr
+--
+
+CREATE TABLE "cached-deviations" (
+    provider character(6) NOT NULL,
+    id character varying(20) NOT NULL,
+    title character varying(255) NOT NULL,
+    author character varying(20),
+    preview character varying(255),
+    fullsize character varying(255),
+    updated_on timestamp with time zone DEFAULT now()
+);
+
+
+ALTER TABLE "cached-deviations" OWNER TO "mlpvc-rr";
+
+--
 -- Name: colorgroups; Type: TABLE; Schema: public; Owner: mlpvc-rr
 --
 
@@ -204,33 +221,16 @@ ALTER SEQUENCE cutiemarks_cmid_seq OWNED BY cutiemarks.cmid;
 
 
 --
--- Name: deviation_cache; Type: TABLE; Schema: public; Owner: mlpvc-rr
---
-
-CREATE TABLE deviation_cache (
-    provider character(6) NOT NULL,
-    id character varying(20) NOT NULL,
-    title character varying(255) NOT NULL,
-    author character varying(20),
-    preview character varying(255) NOT NULL,
-    fullsize character varying(255) NOT NULL,
-    updated_on timestamp with time zone DEFAULT now()
-);
-
-
-ALTER TABLE deviation_cache OWNER TO "mlpvc-rr";
-
---
 -- Name: discord-members; Type: TABLE; Schema: public; Owner: mlpvc-rr
 --
 
 CREATE TABLE "discord-members" (
-    discid character varying(20) NOT NULL,
+    id character varying(20) NOT NULL,
     userid uuid,
     username character varying(255) NOT NULL,
     discriminator integer NOT NULL,
     nick character varying(255),
-    avatar character varying(255),
+    avatar_hash character varying(255),
     joined_at timestamp with time zone NOT NULL
 );
 
@@ -297,17 +297,59 @@ CREATE TABLE events (
     id integer NOT NULL,
     name character varying(64) NOT NULL,
     type character varying(10) NOT NULL,
-    entry_role character varying(10) NOT NULL,
+    entry_role character varying(15) NOT NULL,
     starts_at timestamp with time zone NOT NULL,
     ends_at timestamp with time zone NOT NULL,
     added_by uuid NOT NULL,
     added_at timestamp with time zone NOT NULL,
-    description text NOT NULL,
+    desc_src text NOT NULL,
+    desc_rend text NOT NULL,
     max_entries integer
 );
 
 
 ALTER TABLE events OWNER TO "mlpvc-rr";
+
+--
+-- Name: events__entries; Type: TABLE; Schema: public; Owner: mlpvc-rr
+--
+
+CREATE TABLE events__entries (
+    entryid integer NOT NULL,
+    eventid smallint NOT NULL,
+    prev_full character varying(255),
+    prev_thumb character varying(255),
+    sub_prov character varying(20) NOT NULL,
+    sub_id character varying(20) NOT NULL,
+    submitted_by uuid NOT NULL,
+    submitted_at timestamp with time zone DEFAULT now() NOT NULL,
+    title character varying(64) NOT NULL,
+    prev_src character varying(255)
+);
+
+
+ALTER TABLE events__entries OWNER TO "mlpvc-rr";
+
+--
+-- Name: events__entries_entryid_seq; Type: SEQUENCE; Schema: public; Owner: mlpvc-rr
+--
+
+CREATE SEQUENCE events__entries_entryid_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE events__entries_entryid_seq OWNER TO "mlpvc-rr";
+
+--
+-- Name: events__entries_entryid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER SEQUENCE events__entries_entryid_seq OWNED BY events__entries.entryid;
+
 
 --
 -- Name: events_id_seq; Type: SEQUENCE; Schema: public; Owner: mlpvc-rr
@@ -1487,6 +1529,13 @@ ALTER TABLE ONLY events ALTER COLUMN id SET DEFAULT nextval('events_id_seq'::reg
 
 
 --
+-- Name: events__entries entryid; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER TABLE ONLY events__entries ALTER COLUMN entryid SET DEFAULT nextval('events__entries_entryid_seq'::regclass);
+
+
+--
 -- Name: log entryid; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
 --
 
@@ -1731,10 +1780,10 @@ ALTER TABLE ONLY cutiemarks
 
 
 --
--- Name: deviation_cache deviation_cache_provider_id; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
+-- Name: cached-deviations deviation_cache_provider_id; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
-ALTER TABLE ONLY deviation_cache
+ALTER TABLE ONLY "cached-deviations"
     ADD CONSTRAINT deviation_cache_provider_id PRIMARY KEY (provider, id);
 
 
@@ -1743,7 +1792,7 @@ ALTER TABLE ONLY deviation_cache
 --
 
 ALTER TABLE ONLY "discord-members"
-    ADD CONSTRAINT discord_members_discid PRIMARY KEY (discid);
+    ADD CONSTRAINT discord_members_discid PRIMARY KEY (id);
 
 
 --
@@ -1776,6 +1825,14 @@ ALTER TABLE ONLY episodes__votes
 
 ALTER TABLE ONLY episodes
     ADD CONSTRAINT episodes_season_episode PRIMARY KEY (season, episode);
+
+
+--
+-- Name: events__entries events__entries_entryid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER TABLE ONLY events__entries
+    ADD CONSTRAINT events__entries_entryid PRIMARY KEY (entryid);
 
 
 --
@@ -2084,6 +2141,20 @@ CREATE INDEX episodes_posted_by ON episodes USING btree (posted_by);
 
 
 --
+-- Name: events__entries_eventid; Type: INDEX; Schema: public; Owner: mlpvc-rr
+--
+
+CREATE INDEX events__entries_eventid ON events__entries USING btree (eventid);
+
+
+--
+-- Name: events__entries_submitted_by; Type: INDEX; Schema: public; Owner: mlpvc-rr
+--
+
+CREATE INDEX events__entries_submitted_by ON events__entries USING btree (submitted_by);
+
+
+--
 -- Name: events_added_by; Type: INDEX; Schema: public; Owner: mlpvc-rr
 --
 
@@ -2277,6 +2348,22 @@ ALTER TABLE ONLY episodes
 
 
 --
+-- Name: events__entries events__entries_eventid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER TABLE ONLY events__entries
+    ADD CONSTRAINT events__entries_eventid_fkey FOREIGN KEY (eventid) REFERENCES events(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: events__entries events__entries_submitted_by_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER TABLE ONLY events__entries
+    ADD CONSTRAINT events__entries_submitted_by_fkey FOREIGN KEY (submitted_by) REFERENCES users(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
 -- Name: events events_added_by_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
@@ -2459,6 +2546,13 @@ GRANT ALL ON TABLE appearances TO postgres;
 
 
 --
+-- Name: cached-deviations; Type: ACL; Schema: public; Owner: mlpvc-rr
+--
+
+GRANT ALL ON TABLE "cached-deviations" TO postgres;
+
+
+--
 -- Name: colorgroups; Type: ACL; Schema: public; Owner: mlpvc-rr
 --
 
@@ -2470,13 +2564,6 @@ GRANT ALL ON TABLE colorgroups TO postgres;
 --
 
 GRANT ALL ON TABLE colors TO postgres;
-
-
---
--- Name: deviation_cache; Type: ACL; Schema: public; Owner: mlpvc-rr
---
-
-GRANT ALL ON TABLE deviation_cache TO postgres;
 
 
 --

@@ -13,10 +13,6 @@ class EventsController extends Controller {
 	function list(){
 		global $Database, $Color;
 
-		// TODO Remove this restriction
-		if (Permission::insufficient('staff'))
-			CoreUtils::notFound();
-
 		$Pagination = new Pagination("events", 20, $Database->count('events'));
 
 		CoreUtils::fixPath("/events/{$Pagination->page}");

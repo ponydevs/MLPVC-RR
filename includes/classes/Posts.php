@@ -203,8 +203,8 @@ class Posts {
 
 			$return = array('deviation_id' => $Image->id);
 			$Deviation = DeviantArt::getCachedDeviation($Image->id);
-			if (!empty($Deviation['author'])){
-				$Author = Users::get($Deviation['author'], 'name');
+			if (!empty($Deviation->author)){
+				$Author = Users::get($Deviation->author, 'name');
 
 				if (!empty($Author)){
 					if (!isset($_POST['allow_overwrite_reserver']) && !empty($ReserverID) && $Author->id !== $ReserverID){
@@ -376,7 +376,7 @@ HTML;
 				<div class="notice info">
 					<p>Please click the <strong>Check image</strong> button after providing an URL to get a preview & verify if the link is correct.</p>
 					<hr>
-					<p class="keep">You can use a link from any of the following providers: <a href="http://sta.sh/" target="_blank">Sta.sh</a>, <a href="http://deviantart.com/" target="_blank">DeviantArt</a>, <a href="http://imgur.com/" target="_blank">Imgur</a>, <a href="http://derpibooru.org/" target="_blank">Derpibooru</a>, <a href="http://puush.me/" target="_blank">Puush</a>, <a href="http://app.prntscr.com/" target="_blank">LightShot</a></p>
+					<p class="keep">You can use a link from any of the <a href="/about#supported-providers" target="_blank">suppported image providers</a>.</p>
 				</div>
 			</div>
 HTML;
@@ -537,9 +537,9 @@ HTML;
 					$Image = "<div class='image deviation error'><a href='$ImageLink'>Preview unavailable<br><small>Click to view</small></a></div>";
 				}
 				else {
-					$alt = CoreUtils::aposEncode($Deviation['title']);
-					$ImageLink = $view_only ? $postlink : "http://fav.me/{$Deviation['id']}";
-					$Image = "<div class='image deviation'><a href='$ImageLink'><img src='{$Deviation['preview']}$cachebust' alt='$alt'>";
+					$alt = CoreUtils::aposEncode($Deviation->title);
+					$ImageLink = $view_only ? $postlink : "http://fav.me/{$Deviation->id}";
+					$Image = "<div class='image deviation'><a href='$ImageLink'><img src='{$Deviation->preview}$cachebust' alt='$alt'>";
 					if ($approved)
 						$Image .= "<span class='typcn typcn-tick' title='This submission has been accepted into the group gallery'></span>";
 					$Image .= "</a></div>";

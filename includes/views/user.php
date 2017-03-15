@@ -12,6 +12,7 @@ use App\Users;
 /** @var $User User */
 /** @var $sameUser bool */
 /** @var $canEdit bool */
+/** @var $discordmember \App\Models\DiscordMember */
 
 if (isset($MSG)){
 	echo "<h1>$MSG</h1>";
@@ -20,7 +21,7 @@ if (isset($MSG)){
 }
 else {
 	$vectorapp = UserPrefs::get('p_vectorapp', $User->id);
-	$discordmember = $Database->where('userid', $User->id)->getOne('discord-members','discid');
+	$discordmember = $Database->where('userid', $User->id)->getOne('discord-members','id');
 ?>
 	<div class="briefing">
 		<?=$User->getAvatarWrap()?>
@@ -37,7 +38,7 @@ if ($canEdit){
 	echo ' <button id="ban-toggle" class="darkblue typcn typcn-'.$Icon.' '.strtolower($BanLabel).'" title="'."$BanLabel user".'"></button>';
 }
 if (Permission::sufficient('developer'))
-	echo " &bullet; <span class='userid'>{$User->id}</span>", !empty($discordmember->discid) ? " &bullet; <span class='discid'>{$discordmember->discid}</span>" : '';
+	echo " &bullet; <span class='userid'>{$User->id}</span>", !empty($discordmember->id) ? " &bullet; <span class='discid'>{$discordmember->id}</span>" : '';
 			?></p>
 		</div>
 	</div>

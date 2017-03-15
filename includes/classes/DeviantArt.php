@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Models\CachedDeviation;
 use App\Models\User;
 use App\Exceptions\CURLRequestException;
 
@@ -80,14 +81,14 @@ class DeviantArt {
 	}
 
 	/**
-	 * Caches information about a deviation in the 'deviation_cache' table
+	 * Caches information about a deviation in the 'cached-deviations' table
 	 * Returns null on failure
 	 *
 	 * @param string      $ID
 	 * @param null|string $type
 	 * @param bool        $mass
 	 *
-	 * @return array|null
+	 * @return CachedDeviation
 	 */
 	static function getCachedDeviation($ID, $type = 'fav.me', $mass = false){
 		global $Database, $FULLSIZE_MATCH_REGEX;
@@ -95,10 +96,11 @@ class DeviantArt {
 		if ($type === 'sta.sh')
 			$ID = CoreUtils::nomralizeStashID($ID);
 
-		$Deviation = $Database->where('id', $ID)->where('provider', $type)->getOne('deviation_cache');
+		/** @var $Deviation CachedDeviation */
+		$Deviation = $Database->where('id', $ID)->where('provider', $type)->getOne('cached-deviations');
 
 		$cacheExhausted = self::$_MASS_CACHE_USED > self::$_MASS_CACHE_LIMIT;
-		$cacheExpired = empty($Deviation['updated_on']) ? true : strtotime($Deviation['updated_on'])+(Time::IN_SECONDS['hour']*12) < time();
+		$cacheExpired = empty($Deviation->updated_on) ? true : strtotime($Deviation->updated_on)+(Time::IN_SECONDS['hour']*12) < time();
 
 		$lastRequestSuccessful = !self::$_CACHE_BAILOUT;
 		$localDataMissing = empty($Deviation);
@@ -113,7 +115,7 @@ class DeviantArt {
 			}
 			catch (\Exception $e){
 				if (!empty($Deviation))
-					$Database->where('id',$Deviation['id'])->update('deviation_cache', array('updated_on' => date('c', time()+Time::IN_SECONDS['minute'] )));
+					$Database->where('id',$Deviation->id)->update('cached-deviations', array('updated_on' => date('c', time()+Time::IN_SECONDS['minute'] )));
 
 				$ErrorMSG = "Saving local data for $ID@$type failed: ".$e->getMessage();
 				if (!Permission::sufficient('developer'))
@@ -129,8 +131,8 @@ class DeviantArt {
 
 			$insert = array(
 				'title' => preg_replace(new RegExp('\\\\\''),"'",$json['title']),
-				'preview' => URL::makeHttps($json['thumbnail_url']),
-				'fullsize' => URL::makeHttps(isset($json['fullsize_url']) ? $json['fullsize_url'] : $json['url']),
+				'preview' => isset($json['thumbnail_url']) ? URL::makeHttps($json['thumbnail_url']) : null,
+				'fullsize' => isset($json['fullsize_url']) ? URL::makeHttps($json['fullsize_url']) : null,
 				'provider' => $type,
 				'author' => $json['author_name'],
 				'updated_on' => date('c'),
@@ -143,24 +145,24 @@ class DeviantArt {
 			}
 
 			if (empty($Deviation))
-				$Deviation = $Database->where('id', $ID)->where('provider', $type)->getOne('deviation_cache');
+				$Deviation = $Database->where('id', $ID)->where('provider', $type)->getOne('cached-deviations');
 			if (empty($Deviation)){
 				$insert['id'] = $ID;
-				$Database->insert('deviation_cache', $insert);
+				$Database->insert('cached-deviations', $insert);
 			}
 			else {
-				$Database->where('id',$Deviation['id'])->update('deviation_cache', $insert);
+				$Database->where('id',$Deviation->id)->update('cached-deviations', $insert);
 				$insert['id'] = $ID;
 			}
 
 			self::$_MASS_CACHE_USED++;
-			$Deviation = $insert;
+			$Deviation = new CachedDeviation($insert);
 		}
-		else if (!empty($Deviation['updated_on'])){
-			$Deviation['updated_on'] = date('c', strtotime($Deviation['updated_on']));
+		else if (!empty($Deviation->updated_on)){
+			$Deviation->updated_on = date('c', strtotime($Deviation->updated_on));
 			if (self::$_CACHE_BAILOUT)
-				$Database->where('id',$Deviation['id'])->update('deviation_cache', array(
-					'updated_on' => $Deviation['updated_on'],
+				$Database->where('id',$Deviation->id)->update('cached-deviations', array(
+					'updated_on' => $Deviation->updated_on,
 				));
 		}
 

@@ -7,16 +7,18 @@ use App\Exceptions\MismatchedProviderException;
 
 class ImageProvider {
 	public $preview = false, $fullsize = false, $title = '', $provider, $id, $author = null;
-	public function __construct($url, $reqProv = null){
-		$provider = self::getProvider(CoreUtils::trim($url));
-		if (!empty($reqProv)){
-			if (!is_array($reqProv))
-				$reqProv = array($reqProv);
-			if (!in_array($provider['name'], $reqProv))
-				throw new MismatchedProviderException($provider['name']);
+	public function __construct($url = null, $reqProv = null){
+		if (!empty($url)){
+			$provider = self::getProvider(CoreUtils::trim($url));
+			if (!empty($reqProv)){
+				if (!is_array($reqProv))
+					$reqProv = array($reqProv);
+				if (!in_array($provider['name'], $reqProv))
+					throw new MismatchedProviderException($provider['name']);
+			}
+			$this->provider = $provider['name'];
+			$this->setUrls($provider['itemid']);
 		}
-		$this->provider = $provider['name'];
-		$this->_getDirectUrl($provider['itemid']);
 	}
 	private static $_providerRegexes = array(
 		'(?:[A-Za-z\-\d]+\.)?deviantart\.com/art/(?:[A-Za-z\-\d]+-)?(\d+)' => 'dA',
@@ -58,7 +60,12 @@ class ImageProvider {
 			throw new \Exception((!empty(self::$_blockedMimeTypes[$ctype])?self::$_blockedMimeTypes[$ctype].' are':"Content type \"$ctype\" is")." not allowed, please use a different image.");
 	}
 
-	private function _getDirectUrl($id){
+	/**
+	 * Sets $this->fullsize and $this->preview on success
+	 * @param int|string $id
+	 * @return void
+	 */
+	function setUrls($id):void {
 		switch ($this->provider){
 			case 'imgur':
 				$this->fullsize = "https://i.imgur.com/$id.png";
@@ -72,8 +79,10 @@ class ImageProvider {
 					throw new \Exception('The requested image could not be found on Derpibooru');
 				$Data = JSON::decode($Data);
 
-				if (isset($Data['duplicate_of']))
-					return $this->_getDirectUrl($Data['duplicate_of']);
+				if (isset($Data['duplicate_of'])){
+					$this->setUrls($Data['duplicate_of']);
+					return;
+				}
 
 				if (!isset($Data['is_rendered'])){
 					error_log("Invalid Derpibooru response for ID $id\n".var_export($Data,true));
@@ -111,12 +120,12 @@ class ImageProvider {
 				try {
 					$CachedDeviation = DeviantArt::getCachedDeviation($id,$this->provider);
 
-					if (!DeviantArt::isImageAvailable($CachedDeviation['preview'])){
-						$preview = CoreUtils::aposEncode($CachedDeviation['preview']);
+					if (isset($CachedDeviation->preview) && !DeviantArt::isImageAvailable($CachedDeviation->preview)){
+						$preview = CoreUtils::aposEncode($CachedDeviation->preview);
 						throw new \Exception("The preview image appears to be unavailable. Please make sure <a href='$preview'>this link</a> works and try again, or re-submit the deviation if this persists.");
 					}
-					if (!DeviantArt::isImageAvailable($CachedDeviation['fullsize'])){
-						$fullsize = CoreUtils::aposEncode($CachedDeviation['fullsize']);
+					if (isset($CachedDeviation->fullsize) && !DeviantArt::isImageAvailable($CachedDeviation->fullsize)){
+						$fullsize = CoreUtils::aposEncode($CachedDeviation->fullsize);
 						throw new \Exception("The submission appears to be unavailable. Please make sure <a href='$fullsize'>this link</a> works and try again, or re-submit the deviation if this persists.");
 					}
 				}
@@ -129,13 +138,15 @@ class ImageProvider {
 				if (empty($CachedDeviation))
 					throw new \Exception("{$this->provider} submission information could not be fetched for $id");
 
-				$this->preview = $CachedDeviation['preview'];
-				$this->fullsize = $CachedDeviation['fullsize'];
-				$this->title = $CachedDeviation['title'];
-				$this->author = $CachedDeviation['author'];
+				$this->preview = $CachedDeviation->preview;
+				$this->fullsize = $CachedDeviation->fullsize;
+				$this->title = $CachedDeviation->title;
+				$this->author = $CachedDeviation->author;
 
-				self::_checkImageAllowed($this->preview);
-				self::_checkImageAllowed($this->fullsize);
+				if (isset($this->preview))
+					self::_checkImageAllowed($this->preview);
+				if (isset($this->fullsize))
+					self::_checkImageAllowed($this->fullsize);
 			break;
 			case 'lightshot':
 				$page = @file_get_contents("http://prntscr.com/$id");
@@ -145,14 +156,16 @@ class ImageProvider {
 					throw new \Exception('The requested image could not be found');
 
 				$this->provider = 'imgur';
-				$this->_getDirectUrl($_match[1]);
+				$this->setUrls($_match[1]);
 			break;
 			default:
 				throw new \Exception("The image could not be retrieved due to a missing handler for the provider \"{$this->provider}\"");
 		}
 
-		$this->preview = URL::makeHttps($this->preview);
-		$this->fullsize = URL::makeHttps($this->fullsize);
+		if (isset($this->preview))
+			$this->preview = URL::makeHttps($this->preview);
+		if (isset($this->fullsize))
+			$this->fullsize = URL::makeHttps($this->fullsize);
 
 		$this->id = $id;
 	}

@@ -531,7 +531,7 @@ HTML;
 	 * @return string
 	 */
 	static function getSafeLabel($Appearance){
-		return CoreUtils::trim(preg_replace(new RegExp('-+'),'-',preg_replace(new RegExp('[^A-Za-z\d\-]'),'-', $Appearance['label'])),false,'-');
+		return CoreUtils::makeUrlSafe($Appearance['label']);
 	}
 
 	static function getRelated(int $AppearanceID){

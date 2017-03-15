@@ -1,12 +1,10 @@
-/* global DocReady,ace */
+/* global DocReady,ace,$content,moment */
 DocReady.push(function(){
 	'use strict';
 
-	const PRINTABLE_ASCII_PATTERN = window.PRINTABLE_ASCII_PATTERN, EVENT_TYPES = window.EVENT_TYPES;
+	const PRINTABLE_ASCII_PATTERN = window.PRINTABLE_ASCII_PATTERN, EVENT_TYPES = window.EVENT_TYPES, EventPage = Boolean(window.EventPage);
 
-	let $eventList = $('#event-list'),
-		$addbtn = $('#add-event'),
-		$eventTypeSelect = $.mk('select').attr({
+	let $eventTypeSelect = $.mk('select').attr({
 			name: 'type',
 			required: true,
 		}).append(`<option value="" style="display:none">(choose event type)</option>`),
@@ -14,7 +12,7 @@ DocReady.push(function(){
 	$.each(EVENT_TYPES, (value, text)=>{
 		$etsOptgroup.append(`<option value="${value}">${text}</option>`);
 	});
-	let $AddForm = $.mk('form','add-event-form').append(
+	let $EventEditorFormTemplate = $.mk('form','event-editor').append(
 			$.mk('label').append(
 				`<span>Event name (2-64 chars.)</span>`,
 				$.mk('input').attr({
@@ -26,7 +24,7 @@ DocReady.push(function(){
 				}).patternAttr(PRINTABLE_ASCII_PATTERN)
 			),
 			`<div class="label">
-				<span>Description (3000 chars. max, optional)</span>
+				<span>Description (1-3000 chars.)<br><a href="https://help.github.com/articles/basic-writing-and-formatting-syntax/">Uses Markdown formatting</a></span>
 				<div class="ace_editor"></div>
 			</div>`,
 			$.mk('label').append(
@@ -58,76 +56,155 @@ DocReady.push(function(){
 							<option value="staff">Staff Members</option>
 						</optgroup>
 						<optgroup label="Special">
-							<option disabled value="spec_discord">Discord Server Members</option>
-							<option disabled value="spec_ai">Illustrator Users</option>
-							<option disabled value="spec_inkscape">Inkscape Users</option>
-							<option disabled value="spec_ponyscape">Ponyscape Users</option>
+							<option value="spec_discord">Discord Server Members</option>
+							<option value="spec_illustrator">Illustrator Users</option>
+							<option value="spec_inkscape">Inkscape Users</option>
+							<option value="spec_ponyscape">Ponyscape Users</option>
 						</optgroup>
 					</select>`,
 					`<input type="text" name="max_entries" pattern="^(0*[1-9]\\d*|[Uu]nlimited|0)$" list="max_entries-list" value="1">
 					<datalist id="max_entries-list" required>
 						<option value="Unlimited">
 						<option value="1">
-						<option value="2">
-						<option value="5">
-						<option value="10">
 					</datalist>`
 				)
 			),
 			$.mk('div').attr('class','notice info align-center').html('Enter <q>0</q> or <q>Unlimited</q> to remove the number of entries cap.')
-		);
-	$addbtn.on('click',function(e){
+		),
+		mkEventEditor = function($this, title, data){
+			let editing = !!data,
+				$eventName;
+			if (EventPage){
+				if (!editing)
+					return;
+				$eventName = $content.children('h1');
+			}
+			else $eventName = $this.siblings().first();
+
+			$.Dialog.request(title,$EventEditorFormTemplate.clone(true,true),'Save', function($form){
+				let eventID, session;
+
+				$.getAceEditor(false, 'markdown', function(mode){
+					try {
+						let div = $form.find('.ace_editor').get(0),
+							editor = ace.edit(div);
+						session = $.aceInit(editor, mode);
+						session.setMode(mode);
+						session.setUseWrapMode(true);
+
+						if (editing && data.desc_src)
+							session.setValue(data.desc_src);
+					}
+					catch(e){ console.error(e) }
+				});
+
+				if (editing){
+					eventID = data.eventID;
+
+					$form.find('input[name=name]').val(data.name);
+					$form.find('[name=type]').val(data.type);
+					$form.find('[name=entry_role]').val(data.entry_role);
+					$form.find('[name=max_entries]').val(data.max_entries ? data.max_entries : 'Unlimited');
+
+					if (data.starts_at){
+						let starts = moment(data.starts_at);
+						$form.find('input[name="start_date"]').val($.momentToYMD(starts));
+						$form.find('input[name="start_time"]').val($.momentToHM(starts));
+					}
+					if (data.ends_at){
+						let ends = moment(data.ends_at);
+						$form.find('input[name="end_date"]').val($.momentToYMD(ends));
+						$form.find('input[name="end_time"]').val($.momentToHM(ends));
+					}
+
+				}
+
+				$form.on('submit',function(e){
+					e.preventDefault();
+
+					let data = $form.mkData();
+					data.description = session.getValue();
+					if (data.start_date && data.start_time){
+						let start = $.mkMoment(data.start_date, data.start_time);
+						data.starts_at = start.toISOString();
+					}
+					let end = $.mkMoment(data.end_date, data.end_time);
+					data.ends_at = end.toISOString();
+					delete data.start_date;
+					delete data.start_time;
+					delete data.end_date;
+					delete data.end_time;
+					$.Dialog.wait(false, 'Saving changes');
+					if (EventPage)
+						data.EVENT_PAGE = true;
+
+					$.post(`/event/${editing?'set/'+eventID:'/add'}`,data,$.mkAjaxHandler(function(){
+						if (!this.status) return $.Dialog.fail(false, this.message);
+
+						data = this;
+						if (editing){
+							if (!EventPage){
+								$eventName.text(data.name);
+								if (data.newurl)
+									$eventName.attr('href',(_, oldhref) => {
+										return oldhref.replace(/\/[^\/]+$/, '/'+data.newurl);
+									});
+								$.Dialog.close();
+							}
+							else {
+								$.Dialog.wait(false, 'Reloading page', true);
+								$.Navigation.reload(function(){
+									$.Dialog.close();
+								});
+							}
+						}
+						else {
+							$.Dialog.success(title, 'Event added');
+							$.Dialog.wait(title, 'Loading event page');
+							$.Navigation.visit(data.goto, function(){
+								if (data.info)
+									$.Dialog.info(title, data.info);
+								else $.Dialog.close();
+							});
+						}
+					}));
+				});
+			});
+		};
+	$('#add-event').on('click',function(e){
 		e.preventDefault();
 
-		$.Dialog.request('Add new event',$AddForm.clone(),'Add',function($form){
-			let session;
-
-			$.getAceEditor(false, 'html', function(mode){
-				try {
-					let div = $form.find('.ace_editor').get(0),
-						editor = ace.edit(div);
-					session = $.aceInit(editor, mode);
-					session.setMode(mode);
-					session.setUseWrapMode(true);
-				}
-				catch(e){ console.error(e) }
-			});
-
-			$form.on('submit',function(e){
-				e.preventDefault();
-
-				let data = $form.mkData();
-				data.description = session.getValue();
-				if (data.start_date && data.start_time){
-					let start = $.mkMoment(data.start_date, data.start_time);
-					data.starts_at = start.toISOString();
-				}
-				let end = $.mkMoment(data.end_date, data.end_time);
-				data.ends_at = end.toISOString();
-				delete data.start_date;
-				delete data.start_time;
-				delete data.end_date;
-				delete data.end_time;
-				$.Dialog.wait(false);
-
-				$.post('/event/add',data,$.mkAjaxHandler(function(){
-					if (!this.status) return $.Dialog.fail(false, this.message);
-
-					$.Dialog.success(false, 'Event added');
-					$.Dialog.wait(false, 'Loading event page');
-					window.location.href = this.url;
-				}));
-			});
-		});
+		mkEventEditor($(this),'Add new event');
 	});
-	$eventList.on('click','.delete-event',function(e){
+
+	$content.on('click','[id^=event-] .edit-event',function(e){
 		e.preventDefault();
 
-		let $li = $(this).closest('li[id]'),
-			eventid = $li.attr('id').split('-')[1],
-			eventname = $li.find('.event-name').html();
+		let $this = $(this),
+			$li = $this.closest('[id^=event-]'),
+			eventID = $li.attr('id').split('-')[1],
+			title = 'Editing event #'+eventID;
 
-		$.Dialog.confirm('Delete event #'+eventid,`Are you sure yo uwant to delete ${eventname} along with all submissions?`,function(sure){
+		$.Dialog.wait(title, 'Retrieving event details from server');
+
+		$.post(`/event/get/${eventID}`,$.mkAjaxHandler(function(){
+			if (!this.status) return $.Dialog.fail(false, this.message);
+
+			let data = this;
+			data.eventID = eventID;
+			mkEventEditor($this, title, data);
+		}));
+	});
+	$content.on('click','[id^=event-] .delete-event',function(e){
+		e.preventDefault();
+
+		let $li = $(this).closest('[id^=event-]'),
+			eventid = $li.attr('id').split('-')[1],
+			eventname = !EventPage
+				? $li.find('.event-name').html()
+				: $content.children('h1').text();
+
+		$.Dialog.confirm('Delete event #'+eventid,`Are you <strong class="color-red"><em>ABSOLUTELY</em></strong> sure you want to delete &ldquo;${eventname}&rdquo; along with all submissions?`,function(sure){
 			if (!sure) return;
 
 			$.Dialog.wait(false);

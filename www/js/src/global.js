@@ -552,7 +552,7 @@
 
 	$.fn.backgroundImageUrl = function(url){ return this.css('background-image', 'url("'+url.replace(/"/g,'%22')+'")') };
 
-	$.attributifyRegex = regex => regex.toString().replace(/(^\/|\/[img]*$)/g,'');
+	$.attributifyRegex = regex => typeof regex === 'string' ? regex : regex.toString().replace(/(^\/|\/[img]*$)/g,'');
 	$.fn.patternAttr = function(regex){
 		if (typeof regex === 'undefined')
 			throw new Error('$.fn.patternAttr: regex is undefined');
@@ -1142,7 +1142,7 @@
 						let pos = js.indexOf(src);
 
 						// TODO Come up with a proper way to handle persistent files rather than re-requesting them
-						if (pos !== -1 && !/min\/(colorguide[.-]|episodes-manage|moment-timezone|episode|Chart|user[.-])/.test(src)){
+						if (pos !== -1 && !/min\/(colorguide[.-]|events-manage|episodes-manage|moment-timezone|episode|Chart|user[.-])/.test(src)){
 							js.splice(pos, 1);
 							console.log('%cSkipped %s','color:saddlebrown',src);
 						}

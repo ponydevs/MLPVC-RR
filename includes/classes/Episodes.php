@@ -5,6 +5,7 @@ namespace App;
 use App\Appearances;
 use App\Models\Episode;
 use App\Models\EpisodeVideo;
+use App\Models\EpisodeVote;
 use App\Models\Event;
 use App\Models\Post;
 
@@ -199,11 +200,12 @@ class Episodes {
 	 * Return's the user's vote entry from the DB
 	 *
 	 * @param Episode $Ep
-	 * @return array
+	 * @return EpisodeVote|null
 	 */
 	static function getUserVote($Ep){
 		global $Database, $signedIn, $currentUser;
 		if (!$signedIn) return null;
+		/** @noinspection PhpIncompatibleReturnTypeInspection */
 		return $Database
 			->whereEp($Ep)
 			->where('user', $currentUser->id)
@@ -355,7 +357,7 @@ HTML;
 			if (!$Episode->aired)
 				$star .= '<span class="typcn typcn-media-play-outline" title="'.($Episode->isMovie?'Movie':'Episode').' didn’t air yet, voting disabled"></span>&nbsp;';
 
-			$airs = Time::tag($Episode->airs, Time::TAG_EXTENDED, Time::TAG_NO_DYNTIME);
+			$airs = Time::tag($Episode->airs, Time::TAG_EXTENDED, Time::TAG_STATIC_DYNTIME);
 
 			$Body .= <<<HTML
 	<tr$DataID>

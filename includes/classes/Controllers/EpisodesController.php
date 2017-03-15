@@ -12,7 +12,7 @@ class EpisodesController extends Controller {
 	function index(){
 		global $Database;
 
-		$Pagination = new Pagination('episodes', 10, $Database->where('season != 0')->count('episodes'));
+		$Pagination = new Pagination('episodes', 8, $Database->where('season != 0')->count('episodes'));
 
 		CoreUtils::fixPath("/episodes/{$Pagination->page}");
 		$heading = "Episodes";

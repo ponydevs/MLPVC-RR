@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "7fab3498ecd8587a9b132c0b51d82600",
-    "content-hash": "cbf57718607751cd4eb8c881ef20de94",
+    "hash": "0fa59b316b2cd9cf85c1014bc305d028",
+    "content-hash": "28adaad6f778046628845842e9150aea",
     "packages": [
         {
             "name": "altorouter/altorouter",
@@ -167,6 +167,48 @@
                 "search"
             ],
             "time": "2017-02-06 13:20:44"
+        },
+        {
+            "name": "erusev/parsedown",
+            "version": "1.6.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/erusev/parsedown.git",
+                "reference": "20ff8bbb57205368b4b42d094642a3e52dac85fb"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/erusev/parsedown/zipball/20ff8bbb57205368b4b42d094642a3e52dac85fb",
+                "reference": "20ff8bbb57205368b4b42d094642a3e52dac85fb",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Parsedown": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Emanuil Rusev",
+                    "email": "hello@erusev.com",
+                    "homepage": "http://erusev.com"
+                }
+            ],
+            "description": "Parser for Markdown.",
+            "homepage": "http://parsedown.org",
+            "keywords": [
+                "markdown",
+                "parser"
+            ],
+            "time": "2016-11-02 15:56:58"
         },
         {
             "name": "ezyang/htmlpurifier",
@@ -1039,12 +1081,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/SeinopSys/PHP-PostgreSQL-Database-Class.git",
-                "reference": "31b8c6e866f6a3696d79bceebb4f1105629a331e"
+                "reference": "c08a19825ee38ef7c05c9e7fd19034ebc68a8e15"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/SeinopSys/PHP-PostgreSQL-Database-Class/zipball/31b8c6e866f6a3696d79bceebb4f1105629a331e",
-                "reference": "31b8c6e866f6a3696d79bceebb4f1105629a331e",
+                "url": "https://api.github.com/repos/SeinopSys/PHP-PostgreSQL-Database-Class/zipball/c08a19825ee38ef7c05c9e7fd19034ebc68a8e15",
+                "reference": "c08a19825ee38ef7c05c9e7fd19034ebc68a8e15",
                 "shasum": ""
             },
             "require": {
@@ -1069,7 +1111,7 @@
                 }
             ],
             "description": "PHP wrapper class for PDO-based interaction with PostgreSQL databases, heavily based on joshcam/mysqli-database-class",
-            "time": "2017-03-15 00:13:17"
+            "time": "2017-03-15 13:33:14"
         },
         {
             "name": "symfony/options-resolver",
@@ -1946,16 +1988,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "6.0.8",
+            "version": "6.0.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "47ee3fa1bca5c50f1d25105201eb20df777bd7b6"
+                "reference": "9bd36d990884d8fb3313232e0002ed4cdf79f428"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/47ee3fa1bca5c50f1d25105201eb20df777bd7b6",
-                "reference": "47ee3fa1bca5c50f1d25105201eb20df777bd7b6",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/9bd36d990884d8fb3313232e0002ed4cdf79f428",
+                "reference": "9bd36d990884d8fb3313232e0002ed4cdf79f428",
                 "shasum": ""
             },
             "require": {
@@ -1966,18 +2008,18 @@
                 "ext-xml": "*",
                 "myclabs/deep-copy": "^1.3",
                 "php": "^7.0",
-                "phpspec/prophecy": "^1.6.2",
+                "phpspec/prophecy": "^1.7",
                 "phpunit/php-code-coverage": "^5.0",
                 "phpunit/php-file-iterator": "^1.4",
                 "phpunit/php-text-template": "^1.2",
                 "phpunit/php-timer": "^1.0.6",
                 "phpunit/phpunit-mock-objects": "^4.0",
-                "sebastian/comparator": "^1.2.4 || ^2.0",
+                "sebastian/comparator": "^2.0",
                 "sebastian/diff": "^1.2",
                 "sebastian/environment": "^2.0",
-                "sebastian/exporter": "^2.0 || ^3.0",
+                "sebastian/exporter": "^3.0",
                 "sebastian/global-state": "^1.1 || ^2.0",
-                "sebastian/object-enumerator": "^2.0 || ^3.0",
+                "sebastian/object-enumerator": "^3.0.2",
                 "sebastian/resource-operations": "^1.0",
                 "sebastian/version": "^2.0"
             },
@@ -2024,7 +2066,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2017-03-02 15:24:03"
+            "time": "2017-03-15 13:04:13"
         },
         {
             "name": "phpunit/phpunit-mock-objects",

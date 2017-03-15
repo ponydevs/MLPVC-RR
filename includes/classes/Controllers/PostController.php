@@ -668,7 +668,7 @@ class PostController extends Controller {
 		$StashItem = $Database
 			->where('fullsize', $this->_post->fullsize)
 			->orWhere('preview', $this->_post->preview)
-			->getOne('deviation_cache','id,fullsize,preview');
+			->getOne('cached-deviations','id,fullsize,preview');
 		if (empty($StashItem['id']))
 			Response::fail('Stash URL lookup failed');
 
@@ -676,7 +676,7 @@ class PostController extends Controller {
 			$fullsize = CoreUtils::getFullsizeURL($StashItem['id'], 'sta.sh');
 			if (!is_string($fullsize)){
 				if ($fullsize === 404){
-					$Database->where('provider', 'sta.sh')->where('id', $StashItem['id'])->delete('deviation_cache');
+					$Database->where('provider', 'sta.sh')->where('id', $StashItem['id'])->delete('cached-deviations');
 					$Database->where('preview', $StashItem['preview'])->orWhere('fullsize', $StashItem['fullsize'])->update('requests',array(
 						'fullsize' => null,
 						'preview' => null,

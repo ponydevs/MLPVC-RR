@@ -17,7 +17,7 @@ use App\Time;
 use App\UserPrefs;
 use App\Users;
 
-class User extends AbstractFillable {
+class User extends AbstractUser {
 	/** @var string */
 	public
 		$id,
@@ -242,7 +242,7 @@ class User extends AbstractFillable {
 		$cmContrib = $Database->rawQuerySingle(
 			'SELECT COUNT(*) as cnt
 			FROM cutiemarks c
-			LEFT JOIN deviation_cache d ON d.id = c.favme
+			LEFT JOIN "cached-deviations" d ON d.id = c.favme
 			WHERE d.author = ?', array($this->name))['cnt'];
 		if ($cmContrib > 0)
 			$contribs[] = [$cmContrib, 'cutie mark vector', 'provided'];
@@ -292,5 +292,23 @@ class User extends AbstractFillable {
 		global $Database;
 
 		return $Database->where('userid', $this->id)->has('discord-members');
+	}
+
+	public function getDiscordIdentity():?AbstractUser {
+		global $Database;
+
+		return DiscordMember::of($this);
+	}
+
+	/**
+	 * @param Event $event
+	 * @param string $cols
+	 *
+	 * @return EventEntry[]
+	 */
+	public function getEntriesFor(Event $event, string $cols = '*'):?array {
+		global $Database;
+
+		return $Database->where('submitted_by', $this->id)->where('eventid', $event->id)->get('events__entries',null,$cols);
 	}
 }

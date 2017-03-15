@@ -85,7 +85,7 @@ $FULLSIZE_MATCH_REGEX = new RegExp('^https?:\/\/orig\d+\.');
 $DISCORD_NICK_REGEX = new RegExp('^(?:.*\(([a-zA-Z\d-]{1,20})\)|([a-zA-Z\d-]{1,20})\s\|.*)$');
 # General
 define('PRINTABLE_ASCII_PATTERN','^[ -~\n]+$');
-define('INVERSE_PRINTABLE_ASCII_PATTERN','[^ -~\n]');
+define('INVERSE_PRINTABLE_ASCII_PATTERN','[^ -~\n\t]');
 define('NEWEST_FIRST', 'DESC');
 define('OLDEST_FIRST', 'ASC');
 $REWRITE_REGEX = new RegExp('^/([\w\-]+)(?:/([\w\.\-]+(?:/[\w\.\-]+)*)?)?/?[^\w\.\-]*(?:\.php)?$');

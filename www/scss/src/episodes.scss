@@ -1,6 +1,14 @@
 @import "vars";
 
 #content {
+	display: flex;
+	flex-flow: row wrap;
+	justify-content: space-around;
+
+	.sidebyside {
+		display: block;
+		flex: 1 1 50%;
+	}
 	h1 + .actions {
 		text-align: center;
 
@@ -10,7 +18,7 @@
 			}
 		}
 	}
-	> table {
+	table {
 		padding: 0;
 		margin: 0 auto;
 		border-collapse: collapse;
@@ -42,6 +50,7 @@
 			.season, .episode {
 				text-align: center;
 				font-size: 1.7em;
+				padding: 7px;
 				border-bottom: 2px solid black;
 			}
 			.airs { padding-top: 0 }
@@ -56,6 +65,14 @@
 					text-decoration: none;
 					line-height: 1em;
 					border-radius: 3px;
+
+					@media all and (max-width: $Breakpoint){
+						display: block;
+
+						+ .admincontrols button {
+							padding: 2px;
+						}
+					}
 				}
 				.admincontrols { margin-left: 5px }
 			}

@@ -300,7 +300,7 @@ class AdminController extends Controller {
 
 		$members = $Database->get('discord-members');
 		usort($members, function(DiscordMember $a, DiscordMember $b){
-			$comp1 = $a->displayedName() <=> $b->displayedName();
+			$comp1 = $a->name <=> $b->name;
 			if ($comp1 !== 0)
 				return $comp1;
 			return $a->discriminator <=> $b->discriminator;
@@ -308,13 +308,13 @@ class AdminController extends Controller {
 		$HTML = '';
 		/** @var \App\Models\DiscordMember[] $members */
 		foreach ($members as $member){
-			$avatar = $member->getAvatar();
+			$avatar = $member->getAvatarURL();
 			$avatar = isset($avatar) ? "<img src='{$avatar}' alt='user avatar' class='user-avatar'>" : '';
 			$un = CoreUtils::escapeHTML($member->username);
 			$bound = isset($member->userid) ? " class='bound'" : '';
 			$udata = '<span>'.(isset($member->nick) ? $member->nick : $member->username)."</span><span>{$member->username}#{$member->discriminator}</span>";
 			$HTML .= <<<HTML
-<li id="member-{$member->discid}"$bound>
+<li id="member-{$member->id}"$bound>
 	$avatar
 	<div class='user-data'>
 		$udata
@@ -333,7 +333,7 @@ HTML;
 
 		CSRFProtection::protect();
 
-		$this->_member = $Database->where('discid', $params['id'])->getOne('discord-members');
+		$this->_member = $Database->where('id', $params['id'])->getOne('discord-members');
 		if (empty($this->_member))
 			Response::fail('There\'s no member with this ID on record.');
 	}
@@ -363,7 +363,7 @@ HTML;
 		if (empty($user))
 			Response::fail('The specified user does not exist');
 
-		if (!$Database->where('discid', $this->_member->discid)->update('discord-members',[
+		if (!$Database->where('id', $this->_member->id)->update('discord-members',[
 			'userid' => $user->id
 		])) Response::fail('Nothing has been changed');
 
@@ -378,7 +378,7 @@ HTML;
 		if (!isset($this->_member->userid))
 			Response::fail('Member is not bound to any user');
 
-		if (!$Database->where('discid', $this->_member->discid)->update('discord-members',[
+		if (!$Database->where('id', $this->_member->id)->update('discord-members',[
 			'userid' => null
 		])) Response::fail('Nothing has been changed');
 
@@ -394,7 +394,7 @@ HTML;
 
 		foreach ($members as $member){
 			$ins = new DiscordMember([
-				'discid' => $member['user']['id'],
+				'id' => $member['user']['id'],
 				'username' => $member['user']['username'],
 				'discriminator' => $member['user']['discriminator'],
 				'nick' => $member['nick'] ?? null,
@@ -406,12 +406,12 @@ HTML;
 				$ins->guessDAUser();
 			$ins = (array)$ins;
 
-			if ($Database->where('discid', $ins['discid'])->has('discord-members')){
-				$insid = $ins['discid'];
-				unset($ins['discid']);
+			if ($Database->where('id', $ins['discid'])->has('discord-members')){
+				$insid = $ins['id'];
+				unset($ins['id']);
 				if ($skip_binding)
 					unset($ins['userid']);
-				$Database->where('discid', $insid)->update('discord-members', $ins);
+				$Database->where('id', $insid)->update('discord-members', $ins);
 			}
 			else $Database->insert('discord-members', $ins, null);
 		}

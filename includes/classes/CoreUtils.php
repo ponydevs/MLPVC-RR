@@ -69,11 +69,11 @@ class CoreUtils {
 	 *
 	 * @return string Encoded string
 	 */
-	static function aposEncode(string $str):string {
+	static function aposEncode(?string $str):string {
 		return self::escapeHTML($str, ENT_QUOTES);
 	}
 
-	static function escapeHTML($html, $mask = null){
+	static function escapeHTML(?string $html, $mask = null){
 		$mask = isset($mask) ? $mask | ENT_HTML5 : ENT_HTML5;
 		return htmlspecialchars($html, $mask, 'UTF-8');
 	}
@@ -501,8 +501,10 @@ class CoreUtils {
 							$invalid[] = '\n';
 						case "\r":
 							$invalid[] = '\r';
+						case "\t":
+							$invalid[] = '\t';
 						default:
-							$invalid[] = $f;
+							$invalid[] = urlencode($f);
 					}
 				}
 
@@ -605,17 +607,14 @@ class CoreUtils {
 				}
 
 			}
+			$NavItems['events'] = array('/events','Events');
+			if ($do === 'events'){
+				if (isset($scope['Events']))
+					$NavItems['events'][1] .= " - Page {$scope['Pagination']->page}";
+			}
+			if ($do === 'event' && isset($scope['Event']))
+				$NavItems['events']['subitem'] = CoreUtils::cutoff($scope['Event']->name, 20);
 			if ($GLOBALS['signedIn']){
-				if (Permission::sufficient('staff')){
-				$NavItems['events'] = array('/events','Events');
-				if ($do === 'events'){
-					if (isset($scope['Events']))
-						$NavItems['events'][1] .= " - Page {$scope['Pagination']->page}";
-				}
-				if ($do === 'event' && isset($scope['Event']))
-					$NavItems['events']['subitem'] = CoreUtils::cutoff($scope['Event']->name, 20);
-				}
-
 				$NavItems['u'] = array("/@{$GLOBALS['currentUser']->name}",'Account');
 				if (isset($scope['Owner']) && $scope['Owner']->id === $GLOBALS['currentUser']->id)
 					$NavItems['u']['subitem'] = 'Personal Color Guide';
@@ -765,7 +764,7 @@ class CoreUtils {
 	 *
 	 * @return string
 	 */
-	static function makePlural($w, int $in, $prep = false){
+	static function makePlural($w, int $in = 0, $prep = false){
 		$ret = ($prep?"$in ":'');
 		if ($w[-1] === 'y' && $in != 1)
 			return $ret.self::substring($w,0,-1).'ies';
@@ -952,8 +951,8 @@ class CoreUtils {
 			return 5;
 
 		global $Database;
-		if ($Database->where('id', $id)->where('provider', $prov)->has('deviation_cache'))
-			$Database->where('id', $id)->where('provider', $prov)->update('deviation_cache', array(
+		if ($Database->where('id', $id)->where('provider', $prov)->has('cached-deviations'))
+			$Database->where('id', $id)->where('provider', $prov)->update('cached-deviations', array(
 				'fullsize' => $fullsize_url
 			));
 
@@ -1084,6 +1083,10 @@ class CoreUtils {
 
 	static function sha256(string $data):string {
 		return hash('sha256', $data);
+	}
+
+	static function makeUrlSafe(string $string):string{
+		return CoreUtils::trim(preg_replace(new RegExp('-+'),'-',preg_replace(new RegExp('[^A-Za-z\d\-]'),'-', $string)),false,'-');
 	}
 
 	/** @var Client */

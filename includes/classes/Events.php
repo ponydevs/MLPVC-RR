@@ -31,7 +31,7 @@ class Events {
 				$dur = Time::differenceToString($diff, true);
 				$added_at = Time::tag(strtotime($event->added_at));
 				$added_by = $isStaff ? ' by '.Users::get($event->added_by)->getProfileLink(User::LINKFORMAT_TEXT) : '';
-				$admin = $isStaff ? '<button class="blue typcn typcn-pencil" disabled title="Edit"></button><button class="orange typcn typcn-media-stop" disabled title="End"></button><button class="red typcn typcn-trash delete-event" title="Delete"></button>' : '';
+				$admin = $isStaff ? '<button class="blue typcn typcn-pencil edit-event" title="Edit"></button><button class="red typcn typcn-trash delete-event" title="Delete"></button>' : '';
 				$type = Event::EVENT_TYPES[$event->type];
 				$HTML .= <<<HTML
 <li id="event-{$event->id}">

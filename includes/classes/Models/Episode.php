@@ -166,7 +166,7 @@ class Episode extends AbstractFillable {
 	public function updateScore(){
 		global $Database;
 
-		$Score = $Database->whereEp($this)->getOne('episodes__votes','AVG(vote) as score');
+		$Score = $Database->whereEp($this)->disableAutoClass()->getOne('episodes__votes','AVG(vote) as score');
 		$this->score = !empty($Score['score']) ? $Score['score'] : 0;
 		$this->formatScore();
 

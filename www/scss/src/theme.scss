@@ -96,6 +96,17 @@
 		overflow-x: auto;
 		overflow-y: scroll;
 		@include white-grid;
+
+		&.fluidbox-open {
+			overflow: hidden;
+			padding-right: 18px;
+
+			header, footer {
+				opacity: 0;
+				pointer-events: none;
+			}
+			#sidebar { display: none }
+		}
 	}
 
 	header, footer {

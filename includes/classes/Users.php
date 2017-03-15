@@ -468,7 +468,7 @@ HTML;
 			$HTML .= '<ul id="awaiting-deviations">';
 			foreach ($AwaitingApproval as $Post){
 				$deviation = DeviantArt::getCachedDeviation($Post->deviation_id);
-				$url = "http://{$deviation['provider']}/{$deviation['id']}";
+				$url = "http://{$deviation->provider}/{$deviation->id}";
 				unset($_);
 				$postLink = $Post->toLink($_);
 				$postAnchor = $Post->toAnchor(null, $_);
@@ -478,10 +478,10 @@ HTML;
 <li id="{$Post->getID()}">
 	<div class="image deviation">
 		<a href="$url" target="_blank">
-			<img src="{$deviation['preview']}" alt="{$deviation['title']}">
+			<img src="{$deviation->preview}" alt="{$deviation->title}">
 		</a>
 	</div>
-	<span class="label"><a href="$url" target="_blank">{$deviation['title']}</a></span>
+	<span class="label"><a href="$url" target="_blank">{$deviation->title}</a></span>
 	<em>Posted under $postAnchor</em>
 	<div>
 		<a href='$postLink' class='btn blue typcn typcn-arrow-forward'>View</a>

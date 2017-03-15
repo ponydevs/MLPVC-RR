@@ -59,16 +59,6 @@
 }
 /* Desktop-only Styles */
 @media all and (min-width: $Breakpoint){
-	body.fluidbox-open {
-		overflow: hidden;
-		padding-right: 18px;
-
-		header, footer {
-			opacity: 0;
-			pointer-events: none;
-		}
-		#sidebar { display: none }
-	}
 	#content {
 		// http://stackoverflow.com/a/37891978/1344955
 		> .heading-wrap {
@@ -285,7 +275,6 @@
 				}
 			}
 			.unfinished ul li {
-				.image > a.fluidbox--initialized { cursor: zoom-in }
 				> .reserver {
 					@extend %reserver;
 				}

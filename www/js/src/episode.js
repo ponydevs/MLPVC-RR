@@ -680,6 +680,7 @@ DocReady.push(function(){
 	$w.off('hashchange', window._HighlightHash);
 	delete window.bindVideoButtons;
 	delete window._HighlightHash;
+	delete $.fn.rebindFluidbox;
 	window.EpisodePage = void 0;
 	$.WS.recvPostUpdates(false);
 	delete $.fn.reloadLi;

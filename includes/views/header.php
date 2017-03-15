@@ -50,8 +50,8 @@ switch ($do ?? null){
 				$ThumbImage = $LinkedPost->preview;
 			else {
 				$finishdeviation = DeviantArt::getCachedDeviation($LinkedPost->deviation_id);
-				if (!empty($finishdeviation['preview']))
-					$ThumbImage  = $finishdeviation['preview'];
+				if (!empty($finishdeviation->preview))
+					$ThumbImage  = $finishdeviation->preview;
 			}
 			$Title = $LinkedPost->label;
 			if ($LinkedPost->isRequest)

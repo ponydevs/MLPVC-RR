@@ -5,14 +5,14 @@ namespace App\Models;
 use App\Users;
 use App\RegExp;
 
-class DiscordMember extends AbstractFillable {
+class DiscordMember extends AbstractUser {
 	/** @var string */
 	public
-		$discid,
+		$id,
 		$userid,
 		$username,
 		$nick,
-		$avatar,
+		$avatar_hash,
 		$joined_at;
 	/** @var int */
 	public $discriminator;
@@ -20,10 +20,19 @@ class DiscordMember extends AbstractFillable {
 	/** @param array|object */
 	public function __construct($iter = null){
 		parent::__construct($this, $iter);
+
+		$this->name = $this->displayedName();
+		$this->avatar_url = $this->getAvatarURL();
 	}
 
-	public function getAvatar(){
-		return isset($this->avatar) ? "https://images.discordapp.net/avatars/{$this->discid}/{$this->avatar}" : null;
+	static function of(User $user):DiscordMember {
+		global $Database;
+		/** @noinspection PhpIncompatibleReturnTypeInspection */
+		return $Database->where('userid', $user->id)->getOne('discord-members');
+	}
+
+	public function getAvatarURL(){
+		return isset($this->avatar_hash) ? "https://images.discordapp.net/avatars/{$this->id}/{$this->avatar_hash}" : null;
 	}
 
 	public function displayedName(){
@@ -68,8 +77,8 @@ class DiscordMember extends AbstractFillable {
 		if (isset($this->userid))
 			return true;
 
-		if (!empty(self::STAFF_BINDINGS["id-{$this->discid}"]))
-			return $this->_checkDAUserBlacklist(self::STAFF_BINDINGS["id-{$this->discid}"]);
+		if (!empty(self::STAFF_BINDINGS["id-{$this->id}"]))
+			return $this->_checkDAUserBlacklist(self::STAFF_BINDINGS["id-{$this->id}"]);
 
 		if (isset($this->nick)){
 			$daname = $this->nameToDAName($this->nick);

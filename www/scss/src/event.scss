@@ -1,4 +1,5 @@
-@import "_theme_section";
+@import "theme_section";
+@import "fluidbox";
 
 #content {
 	> section {
@@ -12,5 +13,60 @@
 		padding: 10px;
 		border: 1px solid burlywood;
 		display: inline-block;
+	}
+
+	#event-entries {
+		padding: 0;
+		margin: 0;
+		list-style: none;
+		display: flex;
+		flex-flow: row wrap;
+
+		&:empty:before {
+			display: block;
+			content: "No entries have been submitted yet.";
+			font-size: 1.3em;
+			font-style: italic;
+		}
+
+		> li {
+			border: 1px solid rgba(black,.2);
+			background: rgba(black,.05);
+			padding: 7px;
+			margin: 2.5px;
+			display: flex;
+			flex-flow: row nowrap;
+
+			> * {
+				flex: 1 1 auto;
+			}
+
+			.preview {
+				margin-right: 8px;
+
+				img {
+					max-height: 80px;
+					max-width: 80px;
+					border: 2px solid grey;
+					background: url('/img/transparency.svg');
+					background-size: 16px;
+				}
+			}
+
+			.details {
+				display: flex;
+				flex-flow: column nowrap;
+				justify-content: space-around;
+
+				> * {
+					display: block;
+				}
+				.label {
+					font-size: 1.3em;
+					font-weight: bold;
+					margin-bottom: 10px;
+				}
+			}
+		}
 	}
 }

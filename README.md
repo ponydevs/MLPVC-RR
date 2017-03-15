@@ -38,6 +38,7 @@ After some time, the idea of moving the old PNG color guide into an easier to us
    - [elasticsearch-php](https://github.com/elastic/elasticsearch-php)
    - [ElasticsearchDSL](https://github.com/ongr-io/ElasticsearchDSL)
    - [AltoRouter](https://github.com/dannyvankooten/AltoRouter)
+   - [Parsedown](https://github.com/erusev/parsedown)
  - Development tools:
    - [Gulp](http://gulpjs.com/)
    - [Uglify-js](https://www.npmjs.com/package/uglify-js)
