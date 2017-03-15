@@ -24,7 +24,7 @@ DocReady.push(function(){
 				}).patternAttr(PRINTABLE_ASCII_PATTERN)
 			),
 			`<div class="label">
-				<span>Description (1-3000 chars.)<br><a href="https://help.github.com/articles/basic-writing-and-formatting-syntax/">Uses Markdown formatting</a></span>
+				<span>Description (1-3000 chars.)<br>Uses <a href="https://help.github.com/articles/basic-writing-and-formatting-syntax/" target="_blank">Markdown</a> formatting</span>
 				<div class="ace_editor"></div>
 			</div>`,
 			$.mk('label').append(
