@@ -481,7 +481,7 @@ HTML;
 				$HTML .= "<button class='blue rate typcn typcn-star'>Cast your vote</button>";
 			else $HTML .= "<p><em>Sign in above to cast your vote!</em></p>";
 		}
-		else $HTML .= "<p>Your rating: ".CoreUtils::makePlural('muffin', $UserVote['vote'], PREPEND_NUMBER).'</p>';
+		else $HTML .= "<p>Your rating: ".CoreUtils::makePlural('muffin', $UserVote->vote, PREPEND_NUMBER).'</p>';
 
 		return $HTML;
 	}
