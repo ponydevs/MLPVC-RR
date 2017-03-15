@@ -4,7 +4,12 @@
 	height: 180px;
 	border: 1px solid $DefaultUIColor;
 	text-align: left !important;
-	min-width: 450px;
+	@media all and (max-width: $Breakpoint){
+		width: 100%;
+	}
+	@media all and (min-width: $Breakpoint){
+		min-width: 450px;
+	}
 
 	&, * {
 		font-family: $monospace !important;
