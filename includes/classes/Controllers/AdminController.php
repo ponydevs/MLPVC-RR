@@ -406,7 +406,7 @@ HTML;
 				$ins->guessDAUser();
 			$ins = (array)$ins;
 
-			if ($Database->where('id', $ins['discid'])->has('discord-members')){
+			if ($Database->where('id', $ins['id'])->has('discord-members')){
 				$insid = $ins['id'];
 				unset($ins['id']);
 				if ($skip_binding)
