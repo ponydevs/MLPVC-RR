@@ -5,6 +5,7 @@ namespace App\Models;
 use App\CoreUtils;
 use App\DeviantArt;
 use App\ImageProvider;
+use App\Permission;
 use App\Time;
 use App\Users;
 
@@ -51,7 +52,7 @@ class EventEntry extends AbstractFillable {
 			}
 		}
 
-		$actions = $signedIn && $currentUser->id === $this->submitted_by && time() < strtotime($event->ends_at)
+		$actions = $signedIn && ($currentUser->id === $this->submitted_by || Permission::sufficient('staff')) && time() < strtotime($event->ends_at)
 			? '<div class="actions"><button class="blue typcn typcn-pencil edit-entry">Edit</button><button class="red typcn typcn-times delete-entry">Withdraw</button></div>'
 			: '';
 
