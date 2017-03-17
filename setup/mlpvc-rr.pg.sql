@@ -125,7 +125,8 @@ CREATE TABLE "cached-deviations" (
     author character varying(20),
     preview character varying(255),
     fullsize character varying(255),
-    updated_on timestamp with time zone DEFAULT now()
+    updated_on timestamp with time zone DEFAULT now(),
+    type character varying(12)
 );
 
 

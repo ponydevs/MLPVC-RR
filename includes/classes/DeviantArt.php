@@ -138,6 +138,23 @@ class DeviantArt {
 				'updated_on' => date('c'),
 			);
 
+			switch ($json['type']){
+				case "photo":
+					$insert['type'] = $json['imagetype'];
+				break;
+				case "rich":
+					if (isset($json['html'])){
+						$DATA_EXTENSION_REGEX = new RegExp('^[\s\S]*\sdata-extension="([a-z\d]+?)"[\s\S]*$');
+						if ($DATA_EXTENSION_REGEX->match($json['html']))
+							$insert['type'] = $DATA_EXTENSION_REGEX->replace('$1',$json['html']);
+
+						$H2_EXTENSION_REGEX = new RegExp('^[\s\S]*<h2>([A-Z\d]+?)</h2>[\s\S]*$');
+						if ($H2_EXTENSION_REGEX->match($json['html']))
+							$insert['type'] = strtolower($H2_EXTENSION_REGEX->replace('$1',$json['html']));
+					}
+				break;
+			}
+
 			if (!preg_match($FULLSIZE_MATCH_REGEX, $insert['fullsize'])){
 				$fullsize_attempt = CoreUtils::getFullsizeURL($ID, $type);
 				if (is_string($fullsize_attempt))

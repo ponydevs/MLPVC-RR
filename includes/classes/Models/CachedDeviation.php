@@ -11,7 +11,8 @@ class CachedDeviation extends AbstractFillable {
 		$author,
 		$preview,
 		$fullsize,
-		$updated_on;
+		$updated_on,
+		$type;
 
 	/** @param array|object */
 	public function __construct($iter = null){

@@ -29,27 +29,30 @@ class EventEntry extends AbstractFillable {
 		parent::__construct($this, $iter);
 	}
 
-	private static function _getPreviewDiv(string $fullsize, string $preview):string {
-		return "<div class='preview'><a href='{$fullsize}' target='_blank'><img src='{$preview}' alt='event entry preview'></a></div>";
+	private static function _getPreviewDiv(string $fullsize, string $preview, ?string $filetype = null):string {
+		$type = isset($filetype) ? "<span class='filetype'>$filetype</span>" : '';
+		return "<div class='preview'><a href='{$fullsize}' target='_blank'><img src='{$preview}' alt='event entry preview'></a>$type</div>";
 	}
 
 	public function toListItemHTML(Event $event, bool $wrap = true):string {
 		global $signedIn, $currentUser;
 
+		$submission = DeviantArt::getCachedDeviation($this->sub_id, $this->sub_prov);
+		$filetype = $submission->type;
 		$preview = isset($this->prev_thumb) && isset($this->prev_full)
-			? self::_getPreviewDiv($this->prev_full, $this->prev_thumb)
+			? self::_getPreviewDiv($this->prev_full, $this->prev_thumb, $filetype)
 			: '';
 		$title = CoreUtils::escapeHTML($this->title);
 		$submitter = Users::get($this->submitted_by)->getProfileLink(User::LINKFORMAT_TEXT);
 		$submit_tag = Time::tag(strtotime($this->submitted_at));
 
-		if ($this->sub_prov === 'fav.me'){
-			$title = "<a href='http://fav.me/{$this->sub_id}'>$title</a>";
-			if (empty($preview)){
-				$submission = DeviantArt::getCachedDeviation($this->sub_id, $this->sub_prov);
-				if (isset($submission->preview) && isset($submission->fullsize))
-					$preview = self::_getPreviewDiv($submission->fullsize, $submission->preview);
-			}
+		$sub_prov_favme = $this->sub_prov === 'fav.me';
+		if ($sub_prov_favme || Permission::sufficient('staff')){
+			$title = "<a href='http://{$this->sub_prov}/{$this->sub_id}'>$title</a>";
+		}
+		if ($sub_prov_favme && empty($preview)){
+			if (isset($submission->preview) && isset($submission->fullsize))
+				$preview = self::_getPreviewDiv($submission->fullsize, $submission->preview, $filetype);
 		}
 
 		$actions = $signedIn && ($currentUser->id === $this->submitted_by || Permission::sufficient('staff')) && time() < strtotime($event->ends_at)
