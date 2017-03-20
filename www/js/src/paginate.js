@@ -42,8 +42,8 @@
 			$.toPage(this.pathname);
 		});
 		$w.off('nav-popstate').on('nav-popstate',function(e, state, goto){
-			let obj = {state:state},
-				params = [location.pathname+location.search+location.hash, true, undefined, true];
+			let obj = state,
+				params = [false, true, undefined, true];
 			if (typeof state.baseurl !== 'undefined' && $.Navigation._lastLoadedPathname.replace(/\/\d+($|\?)/,'$1') !== state.baseurl)
 				goto(location.pathname+location.search+location.hash,function(){
 					$.toPage.apply(obj, params);
@@ -51,7 +51,7 @@
 			else $.toPage.apply(obj, params);
 		});
 		$.toPage = function(target, silentfail, bypass, overwriteState, titleProcessor){
-			if (!target) target = location.pathname+location.search+location.hash;
+			if (!target) target = location.pathname;
 			let newPageNumber = parseInt(target.replace(/^.*\/(\d+)(?:\?.*)?$/,'$1'), 10),
 				state = this.state || {};
 
@@ -63,28 +63,33 @@
 
 			let data = { js: true },
 				params = [],
-				extraQuery = this.query;
-			if (typeof extraQuery !== 'undefined'){
-				if (typeof extraQuery === 'string')
-					params = params.concat(extraQuery.split('&'));
-				extraQuery = true;
+				extraQuery = this.query,
+				haveExtraQuery = typeof extraQuery === 'string';
+			if (haveExtraQuery){
+				params = params.concat(extraQuery.split('&'));
 			}
-			else {
-				extraQuery = false;
-				if (location.search.length > 1)
-					params = params.concat(location.search.substring(1).split('&'));
-			}
+			else if (location.search.length > 1)
+				params = params.concat(location.search.substring(1).split('&'));
 
-			if (params.length) $.each(params, (_, el) => {
-				el = el.replace(/\+/g,' ').split('=');
-				data[decodeURIComponent(el[0])] = decodeURIComponent(el[1]);
-			});
+			if (params.length){
+				$.each(params, (_, el) => {
+					el = el.replace(/\+/g,' ').split('=');
+					if (el[1].length === 0)
+						return;
+					data[decodeURIComponent(el[0])] = decodeURIComponent(el[1]);
+				});
+				//noinspection JSUnusedAssignment
+				params = undefined;
+				// USE data FROM THIS POINT FORWARD
+			}
 
 			if (this.gofast){
 				$.Dialog.wait(title, `Loading appearance page`);
 				data.GOFAST = true;
 			}
 			else $.Dialog.wait(title, `Loading page ${newPageNumber}`);
+
+			target += location.hash;
 
 			$.get(target, data, $.mkAjaxHandler(function(){
 				if (!this.status) return $.Dialog.fail(title, this.message);
@@ -119,11 +124,13 @@
 						{
 							paginate: true,
 							page: newPageNumber,
-							baseurl: this.request_uri.replace(/\/\d+($|\?)/,'$1')
+							baseurl: this.request_uri.replace(/\/\d+($|\?)/,'$1'),
 						},
 						'',
 						newURI
 					];
+				if (haveExtraQuery)
+					stateParams[0].query = extraQuery;
 
 				if (typeof window.ga === 'function')
 					window.ga('send', {
@@ -133,7 +140,7 @@
 					});
 
 
-				if (overwriteState === true || (state.page !== newPageNumber && !isNaN(newPageNumber)) || extraQuery)
+				if (overwriteState === true || (state.page !== newPageNumber && !isNaN(newPageNumber)) || haveExtraQuery)
 					history.replaceState.apply(history, stateParams);
 
 				$pagination.html(this.pagination);

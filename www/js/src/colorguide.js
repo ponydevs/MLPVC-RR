@@ -179,11 +179,12 @@ DocReady.push(function(){
 		let $this = $(this),
 			$query = $this.find('input[name=q]'),
 			orig_query = $query.val(),
-			query = orig_query.trim().length === 0 ? false : $this.serialize();
-		$this.find('button[type=reset]').attr('disabled', query === false);
+			searching = orig_query.trim().length > 0,
+			query = $this.serialize();
+		$this.find('button[type=reset]').attr('disabled', !searching);
 
 		if (!gofast){
-			if (query !== false)
+			if (searching)
 				$.Dialog.wait('Navigation', `Searching for <code>${orig_query.replace(/</g,'&lt;')}</code>`);
 			else $.Dialog.success('Navigation', 'Search terms cleared');
 		}
@@ -195,7 +196,7 @@ DocReady.push(function(){
 				$this.remove();
 			});
 
-			if (query !== false)
+			if (searching)
 				return /^Page \d+/.test(document.title)
 					? `${orig_query} - ${document.title}`
 					: document.title.replace(/^.*( - Page \d+)/, orig_query+'$1');
