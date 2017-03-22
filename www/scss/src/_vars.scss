@@ -321,11 +321,11 @@ $NoScrollbar: false;
 
 %navbar-li {
 	&.active {
-		background-color: rgba(255, 255, 255, .3);
+		background-color: rgba(255, 255, 255, .25);
 		border-radius: 3px;
 
 		a:not(:link) {
-			background-color: rgba(255, 255, 255, .2);
+			background-color: rgba(255, 255, 255, .15);
 			transition: none;
 			cursor: default;
 
