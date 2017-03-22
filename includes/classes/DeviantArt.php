@@ -41,7 +41,7 @@ class DeviantArt {
 
 		$requestHeaders = array("Accept-Encoding: gzip","User-Agent: MLPVC-RR @ ".GITHUB_URL);
 		if (!isset($token) && $signedIn)
-			$token = $currentUser->Session['access'];
+			$token = $currentUser->Session->access;
 		if (!empty($token)) $requestHeaders[] = "Authorization: Bearer $token";
 		else if ($token !== false) return null;
 

@@ -3,6 +3,7 @@
 namespace App;
 
 use App\Models\Post;
+use App\Models\Session;
 use App\Models\User;
 use App\Exceptions\CURLRequestException;
 
@@ -37,7 +38,7 @@ class Users {
 			if (empty($Auth))
 				return null;
 			$coloumn = 'id';
-			$value = $Auth['user'];
+			$value = $Auth->user;
 		}
 
 		if ($coloumn === 'id' && !empty(self::$_USER_CACHE[$value]))
@@ -160,25 +161,25 @@ class Users {
 	/**
 	 * Parse session array for user page
 	 *
-	 * @param array $Session
+	 * @param Session $Session
 	 * @param bool $current
 	 */
-	static function renderSessionLi($Session, $current = false){
-		$browserClass = CoreUtils::browserNameToClass($Session['browser_name']);
-		$browserTitle = !empty($Session['browser_name']) ? "{$Session['browser_name']} {$Session['browser_ver']}" : 'Unrecognized browser';
-		$platform = !empty($Session['platform']) ? "<span class='platform'>on <strong>{$Session['platform']}</strong></span>" : '';
+	static function renderSessionLi(Session $Session, bool $current = false){
+		$browserClass = CoreUtils::browserNameToClass($Session->browser_name);
+		$browserTitle = !empty($Session->browser_name) ? "{$Session->browser_name} {$Session->browser_ver}" : 'Unrecognized browser';
+		$platform = !empty($Session->platform) ? "<span class='platform'>on <strong>{$Session->platform}</strong></span>" : '';
 
 		$signoutText = !$current ? 'Delete' : 'Sign out';
-		$buttons = "<button class='typcn remove ".(!$current?'typcn-trash red':'typcn-arrow-back')."' data-sid='{$Session['id']}'>$signoutText</button>";
-		if (Permission::sufficient('developer') && !empty($Session['user_agent'])){
-			$buttons .= "<br><button class='darkblue typcn typcn-eye useragent' data-agent='".CoreUtils::aposEncode($Session['user_agent'])."'>UA</button>".
-				"<a class='btn orange typcn typcn-chevron-right' href='/browser/{$Session['id']}'>Debug</a>";
+		$buttons = "<button class='typcn remove ".(!$current?'typcn-trash red':'typcn-arrow-back')."' data-sid='{$Session->id}'>$signoutText</button>";
+		if (Permission::sufficient('developer') && !empty($Session->user_agent)){
+			$buttons .= "<br><button class='darkblue typcn typcn-eye useragent' data-agent='".CoreUtils::aposEncode($Session->user_agent)."'>UA</button>".
+				"<a class='btn orange typcn typcn-chevron-right' href='/browser/{$Session->id}'>Debug</a>";
 		}
 
-		$firstuse = Time::tag($Session['created']);
-		$lastuse = !$current ? 'Last used: '.Time::tag($Session['lastvisit']) : '<em>Current session</em>';
+		$firstuse = Time::tag($Session->created);
+		$lastuse = !$current ? 'Last used: '.Time::tag($Session->lastvisit) : '<em>Current session</em>';
 		echo <<<HTML
-<li class="browser-$browserClass" id="session-{$Session['id']}">
+<li class="browser-$browserClass" id="session-{$Session->id}">
 <span class="browser">$browserTitle</span>
 $platform$buttons
 <span class="created">Created: $firstuse</span>
@@ -207,15 +208,15 @@ HTML;
 			if ($currentUser->role === 'ban')
 				$Database->where('id', $currentUser->id)->delete('sessions');
 			else {
-				if (isset($currentUser->Session['expires'])){
-					if (strtotime($currentUser->Session['expires']) < time()){
+				if (isset($currentUser->Session->expires)){
+					if (strtotime($currentUser->Session->expires) < time()){
 						$tokenvalid = false;
 						try {
-							DeviantArt::getToken($currentUser->Session['refresh'], 'refresh_token');
+							DeviantArt::getToken($currentUser->Session->refresh, 'refresh_token');
 							$tokenvalid = true;
 						}
 						catch (CURLRequestException $e){
-							$Database->where('id', $currentUser->Session['id'])->delete('sessions');
+							$Database->where('id', $currentUser->Session->id)->delete('sessions');
 							trigger_error("Session refresh failed for {$currentUser->name} ({$currentUser->id}) | {$e->getMessage()} (HTTP {$e->getCode()})", E_USER_WARNING);
 						}
 					}
@@ -225,10 +226,10 @@ HTML;
 
 				if ($tokenvalid){
 					$signedIn = true;
-					if (time() - strtotime($currentUser->Session['lastvisit']) > Time::IN_SECONDS['minute']){
+					if (time() - strtotime($currentUser->Session->lastvisit) > Time::IN_SECONDS['minute']){
 						$lastVisitTS = date('c');
-						if ($Database->where('id', $currentUser->Session['id'])->update('sessions', array('lastvisit' => $lastVisitTS)))
-							$currentUser->Session['lastvisit'] = $lastVisitTS;
+						if ($Database->where('id', $currentUser->Session->id)->update('sessions', array('lastvisit' => $lastVisitTS)))
+							$currentUser->Session->lastvisit = $lastVisitTS;
 					}
 
 					$_PrefersColour = array(

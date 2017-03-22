@@ -5,7 +5,6 @@ namespace App\Models;
 use App\Appearances;
 use App\Exceptions\NoPCGSlotsException;
 use App\HTTP;
-use App\Models\AbstractFillable;
 use App\CoreUtils;
 use App\JSON;
 use App\Logs;
@@ -26,8 +25,7 @@ class User extends AbstractUser {
 		$avatar_url,
 		$signup_date,
 		$rolelabel;
-	// TODO Update when Session class is made
-	/** @var array */
+	/** @var Session */
 	public $Session;
 
 	/** @param array|object */

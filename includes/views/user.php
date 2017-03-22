@@ -13,6 +13,8 @@ use App\Users;
 /** @var $sameUser bool */
 /** @var $canEdit bool */
 /** @var $discordmember \App\Models\DiscordMember */
+/** @var $Sessions \App\Models\Session[] */
+/** @var $CurrentSession \App\Models\Session|null */
 
 if (isset($MSG)){
 	echo "<h1>$MSG</h1>";

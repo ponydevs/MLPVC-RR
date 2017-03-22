@@ -62,7 +62,7 @@ class UserController extends Controller {
 		else {
 			if ($sameUser){
 				$CurrentSession = $currentUser->Session;
-				$Database->where('id != ?',array($CurrentSession['id']));
+				$Database->where('id != ?',array($CurrentSession->id));
 			}
 			$Sessions = $Database
 				->where('user',$User->id)
@@ -181,10 +181,10 @@ class UserController extends Controller {
 		$Session = $Database->where('id', $params['id'])->getOne('sessions');
 		if (empty($Session))
 			Response::fail('This session does not exist');
-		if ($Session['user'] !== $currentUser->id && !Permission::sufficient('staff'))
+		if ($Session->user !== $currentUser->id && !Permission::sufficient('staff'))
 			Response::fail('You are not allowed to delete this session');
 
-		if (!$Database->where('id', $Session['id'])->delete('sessions'))
+		if (!$Database->where('id', $Session->id)->delete('sessions'))
 			Response::fail('Session could not be deleted');
 		Response::success('Session successfully removed');
 	}

@@ -75,7 +75,7 @@ class AuthController extends Controller {
 
 		if (isset($_REQUEST['unlink'])){
 			try {
-				DeviantArt::request('https://www.deviantart.com/oauth2/revoke', null, array('token' => $currentUser->Session['access']));
+				DeviantArt::request('https://www.deviantart.com/oauth2/revoke', null, array('token' => $currentUser->Session->access));
 			}
 			catch (CURLRequestException $e){
 				Response::fail("Could not revoke the site’s access: {$e->getMessage()} (HTTP {$e->getCode()})");
@@ -100,7 +100,7 @@ class AuthController extends Controller {
 		}
 		else {
 			$col = 'id';
-			$val = $currentUser->Session['id'];
+			$val = $currentUser->Session->id;
 		}
 
 		if (!$Database->where($col,$val)->delete('sessions'))
