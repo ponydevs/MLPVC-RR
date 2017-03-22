@@ -16,12 +16,7 @@ use App\Models\Episode;
  * @var $do string
  * @var $heading string
  * @var $signedIn bool
- */
-
-if ($do === 'da-auth' && isset($err)){
-		echo CoreUtils::notice('fail',"There was a(n) <strong>$err</strong> error while trying to authenticate with DeviantArt".(isset(DeviantArt::$OAUTH_RESPONSE[$err])?'; '.DeviantArt::$OAUTH_RESPONSE[$err]:'.').(!empty($errdesc)?"\n\nAdditional details: $errdesc":''),true) ?>
-<script>try{history.replaceState('',{},'/')}catch(e){}</script>
-<?  } ?>
+ */ ?>
 <div id="content">
 <?  if (!empty($CurrentEpisode)){ ?>
 	<div class="heading-wrap">

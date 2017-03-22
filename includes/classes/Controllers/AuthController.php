@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use App\CoreUtils;
 use App\CSRFProtection;
 use App\Cookie;
 use App\DeviantArt;
@@ -16,7 +17,11 @@ use App\Models\User;
 use App\Exceptions\CURLRequestException;
 
 class AuthController extends Controller {
-	public $do = 'da-auth';
+	public $do = 'daauth';
+
+	private static function _isStateRndkey(&$_match){
+		return isset($_GET['state']) && preg_match(new RegExp('^[a-z\d]+$','i'), $_GET['state'], $_match);
+	}
 
 	function auth(){
 		CSRFProtection::detect();
@@ -25,14 +30,20 @@ class AuthController extends Controller {
 			$_GET['error'] = 'unauthorized_client';
 		if (isset($_GET['error'])){
 			$err = $_GET['error'];
-			if (isset($_GET['error_description']))
-				$errdesc = $_GET['error_description'];
+			$errdesc = $_GET['error_description'] ?? null;
 			global $signedIn;
 			if ($signedIn)
 				HTTP::redirect($_GET['state']);
-			Episodes::loadPage();
+			$this->_error($err, $errdesc);
 		}
-		$currentUser = DeviantArt::getToken($_GET['code']);
+		try {
+			$currentUser = DeviantArt::getToken($_GET['code']);
+		}
+		catch (CURLRequestException $e){
+			if (in_array($e->getCode(),[500,503])){
+				$this->_error('server_error');
+			}
+		}
 		$signedIn = !empty($currentUser);
 
 		if (isset($_GET['error'])){
@@ -41,12 +52,12 @@ class AuthController extends Controller {
 				$errdesc = $_GET['error_description'];
 
 			if ($err === 'user_banned')
-				$errdesc .= "\n\nIf you’d like to appeal your ban, please <a href='http://mlp-vectorclub.deviantart.com/notes/'>send the group a note</a>.";
-			Episodes::loadPage();
+				$errdesc .= "\n\nIf you’d like to appeal your ban, please <a class='send-feedback'>contact us</a>.";
+			$this->_error($err, $errdesc);
 		}
 
 		global $REWRITE_REGEX;
-		if (preg_match(new RegExp('^[a-z\d]+$','i'), $_GET['state'], $_match)){
+		if (self::_isStateRndkey($_match)){
 			$confirm = str_replace('{{CODE}}', $_match[0], file_get_contents(INCPATH.'views/loginConfrim.html'));
 			$confirm = str_replace('{{USERID}}', Permission::sufficient('developer') || UserPrefs::get('p_disable_ga') ? '' : $currentUser->id, $confirm);
 			die($confirm);
@@ -99,5 +110,20 @@ class AuthController extends Controller {
 		if (empty($TargetUser))
 			Cookie::delete('access', Cookie::HTTPONLY);
 		Response::done();
+	}
+
+	private function _error(?string $err, ?string $errdesc = null){
+		$rndkey = self::_isStateRndkey($match) ? $match[0] : null;
+
+		HTTP::statusCode(500);
+		CoreUtils::loadPage([
+			'title' => 'DeviantArt authentication error',
+			'js' => "{$this->do}-error",
+			'import' => [
+				'err' => $err,
+				'errdesc' => $errdesc,
+				'rndkey' => $rndkey,
+			]
+		], $this);
 	}
 }

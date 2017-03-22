@@ -818,15 +818,27 @@
 					$.Dialog.wait('Sign-in process', "Opening popup window");
 
 					let rndk = signingGenRndKey(), success = false, closeCheck, popup;
-					window[' '+rndk] = function(userid){
-						success = true;
+					window[' '+rndk] = function(fail, openedWindow){
 						clearInterval(closeCheck);
+						if (fail === true){
+							if (!openedWindow.jQuery)
+								$.Dialog.fail(false, 'Sign in failed, check popup for details.');
+							else {
+								const
+									pageTitle = openedWindow.$('#content').children('h1').text(),
+									noticeText = openedWindow.$('#content').children('.notice').html();
+								$.Dialog.fail(false, `<p class="align-center"><strong>${pageTitle}</strong></p><p>${noticeText}</p>`);
+								popup.close();
+							}
+							$this.enable();
+							return;
+						}
+
+						success = true;
 						popup.close();
-						$.Dialog.success(false, 'Singed in successfully');
+						$.Dialog.success(false, 'Signed in successfully');
 						$.Dialog.wait(false, 'Reloading page');
 						$.Navigation.reload(function(){
-							if (userid && typeof window.ga === 'function')
-								window.ga('set', 'userId', userid);
 							$.Dialog.close();
 						});
 					};

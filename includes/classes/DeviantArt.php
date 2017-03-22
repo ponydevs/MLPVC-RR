@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Controllers\AuthController;
 use App\Models\CachedDeviation;
 use App\Models\User;
 use App\Exceptions\CURLRequestException;
@@ -13,12 +14,12 @@ class DeviantArt {
 		$_MASS_CACHE_USED = 0;
 
 	// oAuth Error Response Messages \\
-	static $OAUTH_RESPONSE = array(
+	const OAUTH_RESPONSE = array(
 		'invalid_request' => 'The authorization recest was not properly formatted.',
 		'unsupported_response_type' => 'The authorization server does not support obtaining an authorization code using this method.',
 		'unauthorized_client' => 'The authorization process did not complete. Please try again.',
 		'invalid_scope' => 'The requested scope is invalid, unknown, or malformed.',
-		'server_error' => "There’s an issue on DeviantArt’s end. Try again later.",
+		'server_error' => "There seems to be an issue on DeviantArt’s end. Try again later.",
 		'temporarily_unavailable' => "There’s an issue on DeviantArt’s end. Try again later.",
 		'user_banned' => 'You were banned on our website by a staff member.',
 	);

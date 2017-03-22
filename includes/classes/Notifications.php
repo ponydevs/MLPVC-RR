@@ -10,12 +10,12 @@ class Notifications {
 		'post-finished' => true,
 		'post-approved' => true,
 		'post-passon' => true,
-			'post-passdeny' => true,
-			'post-passallow' => true,
-			'post-passfree' => true,
-			'post-passdel' => true,
-			'post-passsnatch' => true,
-			'post-passperm' => true,
+		'post-passdeny' => true,
+		'post-passallow' => true,
+		'post-passfree' => true,
+		'post-passdel' => true,
+		'post-passsnatch' => true,
+		'post-passperm' => true,
 	);
 	public static $ACTIONABLE_NOTIF_OPTIONS = array(
 		'post-passon' => array(
