@@ -449,15 +449,11 @@ header, #sidebar .mobile-nav {
 		display: none;
 	}
 	&::-webkit-scrollbar-thumb {
-		background-color: #dedede;
+		background-color: #aaa;
 		border-radius: 6px;
 		width: 6px;
 		border: 2px solid transparent;
 		background-clip: padding-box;
-
-		&:window-inactive {
-			background-color: #efefef;
-		}
 	}
 	&::-webkit-scrollbar-track {
 		background: transparent;
