@@ -442,6 +442,27 @@ header, #sidebar .mobile-nav {
 	transition: left .5s ease-in-out, right .5s ease-in-out;
 	overflow: auto;
 
+	&::-webkit-scrollbar {
+		width: 10px;
+	}
+	&::-webkit-scrollbar-button {
+		display: none;
+	}
+	&::-webkit-scrollbar-thumb {
+		background-color: #dedede;
+		border-radius: 6px;
+		width: 6px;
+		border: 2px solid transparent;
+		background-clip: padding-box;
+
+		&:window-inactive {
+			background-color: #efefef;
+		}
+	}
+	&::-webkit-scrollbar-track {
+		background: transparent;
+	}
+
 	body.sidebar-open & { left: 0 }
 
 	> .mobile-nav ul li {
