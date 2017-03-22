@@ -82,7 +82,8 @@
 			.details {
 				display: flex;
 				flex-flow: column nowrap;
-				justify-content: space-around;
+				justify-content: space-between;
+				height: 90%;
 
 				> * {
 					display: block;
@@ -91,6 +92,14 @@
 					font-size: 1.3em;
 					font-weight: bold;
 					margin-bottom: 10px;
+				}
+
+				.actions {
+					margin-top: 10px;
+
+					button {
+						margin: 0 8px 0 0;
+					}
 				}
 			}
 		}

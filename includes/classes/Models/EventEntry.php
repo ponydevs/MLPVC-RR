@@ -48,7 +48,7 @@ class EventEntry extends AbstractFillable {
 
 		$sub_prov_favme = $this->sub_prov === 'fav.me';
 		if ($sub_prov_favme || Permission::sufficient('staff')){
-			$title = "<a href='http://{$this->sub_prov}/{$this->sub_id}'>$title</a>";
+			$title = "<a href='http://{$this->sub_prov}/{$this->sub_id}' target='_blank'>$title</a>";
 		}
 		if ($sub_prov_favme && empty($preview)){
 			if (isset($submission->preview) && isset($submission->fullsize))
