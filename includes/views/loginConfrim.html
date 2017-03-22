@@ -25,7 +25,7 @@ body {
 	box-sizing: border-box;
 	opacity: 0;
 
-	transition: opacity 1s;
+	transition: opacity .5s;
 }
 body.fadein {
 	opacity: 1;
@@ -65,6 +65,6 @@ body > span > :last-child {
 			} catch(e){}</script>!</span>
 	</span>
 	
-<script>setTimeout(function(){document.getElementsByTagName('body')[0].className += 'fadein'},1);window.opener[' {{CODE}}']('{{USERID}}')</script>
+<script>setTimeout(function(){document.getElementsByTagName('body')[0].className += 'fadein'},1);window.opener[' {{CODE}}']()</script>
 </body>
 </html>

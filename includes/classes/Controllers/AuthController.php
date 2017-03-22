@@ -59,7 +59,6 @@ class AuthController extends Controller {
 		global $REWRITE_REGEX;
 		if (self::_isStateRndkey($_match)){
 			$confirm = str_replace('{{CODE}}', $_match[0], file_get_contents(INCPATH.'views/loginConfrim.html'));
-			$confirm = str_replace('{{USERID}}', Permission::sufficient('developer') || UserPrefs::get('p_disable_ga') ? '' : $currentUser->id, $confirm);
 			die($confirm);
 		}
 		else if (preg_match($REWRITE_REGEX, $_GET['state']))

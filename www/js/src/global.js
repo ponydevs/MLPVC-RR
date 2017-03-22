@@ -817,7 +817,7 @@
 
 					$.Dialog.wait('Sign-in process', "Opening popup window");
 
-					let rndk = signingGenRndKey(), success = false, closeCheck, popup;
+					let rndk = signingGenRndKey(), success = false, closeCheck, popup, waitforit = false;
 					window[' '+rndk] = function(fail, openedWindow){
 						clearInterval(closeCheck);
 						if (fail === true){
@@ -835,10 +835,14 @@
 						}
 
 						success = true;
-						popup.close();
 						$.Dialog.success(false, 'Signed in successfully');
 						$.Dialog.wait(false, 'Reloading page');
+						waitforit = true;
+						setTimeout(function(){
+							popup.close();
+						},750);
 						$.Navigation.reload(function(){
+							waitforit = false;
 							$.Dialog.close();
 						});
 					};
@@ -866,7 +870,8 @@
 					}, 500);
 					$w.on('beforeunload', function(){
 						success = true;
-						popup.close();
+						if (!waitforit)
+							popup.close();
 					});
 					$.Dialog.wait(false, "Waiting for you to sign in");
 				};
