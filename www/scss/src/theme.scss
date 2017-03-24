@@ -441,6 +441,7 @@ header, #sidebar .mobile-nav {
 	text-align: center;
 	transition: left .5s ease-in-out, right .5s ease-in-out;
 	overflow: auto;
+	will-change: left, width;
 
 	&::-webkit-scrollbar {
 		width: 10px;

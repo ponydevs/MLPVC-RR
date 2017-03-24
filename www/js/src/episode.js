@@ -512,7 +512,7 @@ DocReady.push(function(){
 	$.fn.reloadLi = function(log){
 		let $li = this,
 			_idAttr = $li.attr('id');
-		if (typeof _idAttr !== 'string')
+		if (typeof _idAttr !== 'string' || $li.hasClass('admin-break'))
 			return this;
 
 		let _idAttrArr = _idAttr.split('-'),
@@ -528,6 +528,11 @@ DocReady.push(function(){
 		$.post(`/post/reload/${type}/${id}`,{cache:log},$.mkAjaxHandler(function(){
 			reloading[_idAttr] = false;
 			if (!this.status) return;
+			if (this.broken === true){
+				$li.remove();
+				console.log(`[POST-FIX] Hid (broken) ${type} #${id}`);
+				return;
+			}
 
 			let $newli = $(this.li);
 			if ($li.hasClass('highlight') || $newli.is(location.hash))

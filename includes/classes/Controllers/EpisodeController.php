@@ -48,7 +48,7 @@ class EpisodeController extends Controller {
 
 		$section = $_GET['section'];
 		$only = $section === 'requests' ? ONLY_REQUESTS : ONLY_RESERVATIONS;
-		$posts = Posts::get($this->_episode, $only);
+		$posts = Posts::get($this->_episode, $only, Permission::sufficient('staff'));
 
 		switch ($only){
 			case ONLY_REQUESTS: $rendered = Posts::getRequestsSection($posts); break;

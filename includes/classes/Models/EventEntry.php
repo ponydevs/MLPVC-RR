@@ -43,7 +43,7 @@ class EventEntry extends AbstractFillable {
 			? self::_getPreviewDiv($this->prev_full, $this->prev_thumb, $filetype)
 			: '';
 		$title = CoreUtils::escapeHTML($this->title);
-		$submitter = Users::get($this->submitted_by)->getProfileLink(User::LINKFORMAT_TEXT);
+		$submitter = Users::get($this->submitted_by)->getProfileLink();
 		$submit_tag = Time::tag(strtotime($this->submitted_at));
 
 		$sub_prov_favme = $this->sub_prov === 'fav.me';

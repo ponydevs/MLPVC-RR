@@ -267,7 +267,7 @@ HTML;
 		$PrivateSection = $sameUser? Users::PROFILE_SECTION_PRIVACY_LEVEL['staff']:'';
 
 		if ($staffVisitingMember || ($isMember && $sameUser)){
-			$cols = "id, season, episode, preview, label, posted, reserved_by";
+			$cols = "id, season, episode, preview, label, posted, reserved_by, broken";
 			$PendingReservations = $Database->where('reserved_by', $UserID)->where('deviation_id IS NULL')->get('reservations',null,$cols);
 			$PendingRequestReservations = $Database->where('reserved_by', $UserID)->where('deviation_id IS NULL')->get('requests',null,"$cols, reserved_at, true as requested_by");
 			$TotalPending = count($PendingReservations)+count($PendingRequestReservations);
@@ -317,19 +317,24 @@ HTML;
 						$posted = Time::tag($actionCond ? $Post->reserved_at : $Post->posted);
 						$PostedAction = $actionCond ? 'Reserved' : 'Posted';
 						$contestable = $Post->isOverdue() ? Posts::CONTESTABLE : '';
+						$broken = $Post->broken ? Posts::BROKEN : '';
+						$fixbtn = $Post->broken ? "<button class='darkblue typcn typcn-spanner fix'>Fix</button>" : '';
 
 						$LIST .= <<<HTML
-	<li>
+<li>
 	<div class='image screencap'>
 		<a href='$postLink'><img src='{$Post->preview}'></a>
 	</div>
 	$label
-	<em>$PostedAction under $postAnchor $posted</em>$contestable
+	<em>$PostedAction under $postAnchor $posted</em>
+	$contestable
+	$broken
 	<div>
+		$fixbtn
 		<a href='$postLink' class='btn blue typcn typcn-arrow-forward'>View</a>
 		<button class='red typcn typcn-user-delete cancel'>Cancel</button>
 	</div>
-	</li>
+</li>
 HTML;
 						// Clearing variable set via reference by the toLink method call
 						unset($_);

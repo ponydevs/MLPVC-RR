@@ -5,6 +5,8 @@ namespace App;
 use App\Models\Episode;
 use App\Models\EpisodeVideo;
 use App\Models\Post;
+use App\Models\Request;
+use App\Models\Reservation;
 use App\Models\User;
 use cogpowered\FineDiff;
 
@@ -30,6 +32,7 @@ class Logs {
 		'da_namechange' => 'Username change detected',
 		'video_broken' => 'Broken video removed',
 		'cm_modify' => 'Appearance CM edited',
+		'post_break' => 'Post image broken',
 	);
 
 	const FORCE_INITIATOR_WEBSERVER = true;
@@ -148,7 +151,7 @@ class Logs {
 				$details[] = array('Reason', CoreUtils::escapeHTML($data['reason']));
 			break;
 			case "post_lock":
-				/** @var $Post Post */
+				/** @var $Post Request|Reservation */
 				$Post = $Database->where('id', $data['id'])->getOne("{$data['type']}s");
 				self::_genericPostInfo($Post, $data, $details);
 			break;
@@ -179,7 +182,7 @@ class Logs {
 				}
 			break;
 			case "img_update":
-				/** @var $Post Post */
+				/** @var $Post Request|Reservation */
 				$Post = $Database->where('id', $data['id'])->getOne("{$data['thing']}s");
 				$data['type'] = $data['thing'];
 				self::_genericPostInfo($Post, $data, $details);
@@ -187,7 +190,7 @@ class Logs {
 				$details[] = array('New image',"<a href='{$data['newfullsize']}' target='_blank'>Full size</a><div><img src='{$data['newpreview']}'></div>");
 			break;
 			case "res_overtake":
-				/** @var $Post Post */
+				/** @var $Post Request|Reservation */
 				$Post = $Database->where('id', $data['id'])->getOne("{$data['type']}s");
 				self::_genericPostInfo($Post, $data, $details);
 				$details[] = array('Previous reserver', Users::get($data['reserved_by'])->getProfileLink());
@@ -221,7 +224,7 @@ class Logs {
 					$details[] = array('Added', Time::tag($data['added'], Time::TAG_EXTENDED, Time::TAG_STATIC_DYNTIME));
 			break;
 			case "res_transfer":
-				/** @var $Post Post */
+				/** @var $Post Request|Reservation */
 				$Post = $Database->where('id', $data['id'])->getOne("{$data['type']}s");
 				self::_genericPostInfo($Post, $data, $details);
 				$details[] = array('New reserver', Users::get($data['to'])->getProfileLink());
@@ -327,7 +330,6 @@ class Logs {
 					}
 				}
 
-
 				$olddata = !empty($data['olddata']) ? JSON::encode($data['olddata'], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) : '';
 				$newdata = !empty($data['newdata']) ? JSON::encode($data['newdata'], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) : '';
 				if ($olddata || $newdata){
@@ -335,6 +337,11 @@ class Logs {
 					$diff = preg_replace(new RegExp('(\S)(d[a-z\d]{6,})'),'$1<a href="http://fav.me/$2">$2</a>',$diff,1);
 					$details[] = array('Metadata changes', $diff);
 				}
+			break;
+			case "post_break":
+				/** @var $Post Request|Reservation */
+				$Post = $Database->where('id', $data['id'])->getOne("{$data['type']}s");
+				self::_genericPostInfo($Post, $data, $details);
 			break;
 			default:
 				$details[] = array('<span class="typcn typcn-warning"></span> Couldn’t process details','No data processor defined for this entry type',self::KEYCOLOR_ERROR);
@@ -345,20 +352,24 @@ class Logs {
 		return array('details' => $details);
 	}
 
-	private static function _genericPostInfo(Post $Post, array $data, array &$details){
+	/**
+	 * @param Request|Reservation $Post
+	 * @param array               $data
+	 * @param array               $details
+	 */
+	private static function _genericPostInfo($Post, array $data, array &$details){
 		$label = CoreUtils::capitalize($data['type'])." #{$data['id']}";
 		if (!empty($Post))
 			$label = $Post->toAnchor($label);
 
 		$details[] = array('Post',$label);
 		if (empty($Post))
-			$details[] = array('Still exists', false);
-		$EpID = (new Episode($Post))->formatTitle(AS_ARRAY,'id');
-		$EpData = Episode::parseID($EpID);
-		$Episode = Episodes::getActual($EpData['season'], $EpData['episode'], Episodes::ALLOW_MOVIES);
-
-		$details[] = array('Posted under', !empty($Episode) ? "<a href='".$Episode->toURL()."'>$EpID</a>" : $EpID.' (now deleted/moved)');
-		if (!empty($Post)){
+			$details[] = array('<span class="typcn typcn-info-large"></span> No longer exists',self::SKIP_VALUE,self::KEYCOLOR_INFO);
+		else {
+			$EpID = (new Episode($Post))->formatTitle(AS_ARRAY,'id');
+			$EpData = Episode::parseID($EpID);
+			$Episode = Episodes::getActual($EpData['season'], $EpData['episode'], Episodes::ALLOW_MOVIES);
+			$details[] = array('Posted under', "<a href='".$Episode->toURL()."'>$EpID</a>");
 			$details[] = array(
 				($data['type'] === 'request'?'Requested':'Reserved').' by',
 				Users::get(

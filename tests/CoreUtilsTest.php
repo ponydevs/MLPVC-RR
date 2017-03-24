@@ -211,9 +211,24 @@ class CoreUtilsTest extends TestCase {
 		self::assertEquals('value', $object->key);
 	}
 
-	function sha256(){
+	function testSha256(){
 		$data = "a3d5f3e5a67f38cd6e7ad8cfe41245acf";
 		$hash = CoreUtils::sha256($data);
 		self::assertEquals('fcb0c71edf2df18c7d39accbbb46083d511ea091d7ec56727a6a9931d40f46d8',$hash);
+	}
+
+	// If httpstat.us ever goes down these tests may fail
+	function testIsURLAvailable(){
+		$url = 'http://httpstat.us/200';
+		$resp = CoreUtils::isURLAvailable($url);
+		self::assertEquals(true,$resp);
+		$resp = CoreUtils::isURLAvailable($url, [200]);
+		self::assertEquals(true,$resp);
+
+		$url = 'http://httpstat.us/503';
+		$resp = CoreUtils::isURLAvailable($url);
+		self::assertEquals(false,$resp);
+		$resp = CoreUtils::isURLAvailable($url, [404]);
+		self::assertEquals(true,$resp);
 	}
 }

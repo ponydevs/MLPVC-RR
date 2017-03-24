@@ -1610,7 +1610,7 @@ $(function(){
 						return;
 
 					let postid = `${data.type}-${data.id}`,
-						$post = $('#'+postid+':not(.deleting)');
+						$post = $(`#${postid}:not(.deleting)`);
 					console.log('[WS] Post deleted (postid=%s)', postid);
 					if ($post.length){
 						$post.find('.fluidbox--opened').fluidbox('close');
@@ -1624,6 +1624,19 @@ $(function(){
 								$this.remove();
 							});
 						});
+					}
+				}));
+				conn.on('post-break', wsdecoder(function(data){
+					if (!data.type || !data.id)
+						return;
+
+					let postid = `${data.type}-${data.id}`,
+						$post = $(`#${postid}:not(.admin-break)`);
+					console.log('[WS] Post broken (postid=%s)', postid);
+					if ($post.length){
+						$post.find('.fluidbox--opened').fluidbox('close');
+						$post.find('.fluidbox--initialized').fluidbox('destroy');
+						$post.reloadLi();
 					}
 				}));
 				conn.on('post-add', wsdecoder(function(data){
@@ -1646,7 +1659,7 @@ $(function(){
 						return;
 
 					let postid = `${data.type}-${data.id}`,
-						$post = $('#'+postid+':not(.deleting)');
+						$post = $(`#${postid}:not(.deleting)`);
 					console.log('[WS] Post updated (postid=%s)', postid);
 					if ($post.length)
 						$post.reloadLi(false);

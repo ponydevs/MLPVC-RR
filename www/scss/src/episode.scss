@@ -245,11 +245,8 @@
 				@extend %post-ul;
 				@extend %post-ul-fluidbox;
 
-				> .deleted {
+				> .deleted, > .broken {
 					position: relative;
-					border-color: $NRed !important;
-					color: $NRed !important;
-					background: $NRedBG !important;
 
 					&, * {
 						cursor: pointer !important;
@@ -265,13 +262,31 @@
 						top: calc(50% - .5em);
 						left: 0;
 						width: 100%;
-						content: "\e123";
-						white-space: pre-wrap;
-						color: $NRed;
+						color: inherit;
 						font-size: 100px;
 						line-height: 1em;
 						font-family: Typicons;
 					}
+				}
+				> .deleted {
+					border-color: $NRed !important;
+					color: $NRed !important;
+					background: $NRedBG !important;
+
+					&:before { content: "\e123" }
+				}
+				> .broken {
+					border-color: $NOrange !important;
+					color: $NOrange !important;
+					background: $NOrangeBG !important;
+
+					&:before { content: "\e0cd" }
+				}
+				> .admin-break {
+					position: relative;
+					color: rgb(67, 33, 0);
+					background-color: rgba(127,65,0,.1);
+					border-color: rgba(127,65,0,.3);
 				}
 			}
 			.unfinished ul li {

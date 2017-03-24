@@ -24,12 +24,11 @@ abstract class Post extends AbstractFillable {
 		$reserved_by,
 		$deviation_id,
 		$reserved_at,
-		$finished_at,
-		$type,
-		$requested_by;
+		$finished_at;
 	/** @var bool */
 	public
 		$lock,
+		$broken,
 		$isFinished,
 		$isRequest,
 		$isReservation;

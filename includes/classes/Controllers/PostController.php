@@ -42,6 +42,30 @@ class PostController extends Controller {
 		$thing = $params['thing'];
 		$this->_initPost(null, $params);
 
+		if (!isset($this->_post->deviation_id) && !DeviantArt::isImageAvailable($this->_post->fullsize, [404])){
+			$what = $this->_post->isRequest ? 'request' : 'reservation';
+			$update = ['broken' => 1 ];
+			if ($this->_post->isRequest && isset($this->_post->reserved_by))
+				$update['reserved_by'] = null;
+			$Database->where('id', $this->_post->id)->update("{$what}s", $update);
+			$this->_post->__construct($update);
+			$log = [
+				'type' => $what,
+				'id' => $this->_post->id,
+			];
+			try {
+				CoreUtils::socketEvent('post-break',$log);
+			}
+			catch (\Exception $e){
+				error_log("SocketEvent Error\n".$e->getMessage()."\n".$e->getTraceAsString());
+			}
+			$log['reserved_by'] = $this->_post->reserved_by;
+			Logs::logAction('post_break',$log);
+
+			if (Permission::insufficient('staff'))
+				Response::done(['broken' => true]);
+		}
+
 		if ($this->_post->isRequest && !$this->_post->isFinished){
 			$section = "#group-{$this->_post->type}";
 		}
@@ -123,6 +147,15 @@ class PostController extends Controller {
 
 				Response::done($response);
 			break;
+			case "unbreak":
+				if (Permission::insufficient('staff'))
+					Response::fail();
+
+				$LogEntry = $Database->where('id', $this->_post->id)->where('type', $thing)->orderBy('entryid','DESC')->getOne('log__post_break');
+				$update = ['broken' => 0];
+				if (isset($LogEntry['reserved_by']))
+					$update['reserved_by'] = $LogEntry['reserved_by'];
+				$Database->where('id', $this->_post->id)->update("{$thing}s", $update);
 		}
 
 		$isUserReserver = $this->_post->reserved_by === $currentUser->id;
@@ -481,7 +514,7 @@ class PostController extends Controller {
 		Response::done(array('id' => "$thing-$PostID"));
 	}
 
-	/** @var \App\Models\Post */
+	/** @var \App\Models\Request|\App\Models\Reservation */
 	private $_post;
 	function _initPost($action, $params){
 		global $Database;
@@ -567,14 +600,14 @@ class PostController extends Controller {
 		$data = null;
 		if (empty($reserved_by)){
 			$message = 'This post is not reserved by anyone so there no need to ask for anyone’s confirmation.';
-			$checkIfUserCanReserve($message, $data, 'overdue');
+			$checkIfUserCanReserve($message, $data);
 			Response::fail($message, $data);
 		}
 		if ($reserved_by === $currentUser->id)
 			Response::fail("You've already reserved this {$params['thing']}");
 		if ($this->_post->isOverdue()){
 			$message = "This post was reserved ".Time::tag($this->_post->reserved_at)." so anyone’s free to reserve it now.";
-			$checkIfUserCanReserve($message, $data, 'overdue');
+			$checkIfUserCanReserve($message, $data);
 			Response::fail($message, $data);
 		}
 
@@ -635,6 +668,7 @@ class PostController extends Controller {
 		if (!$Database->where('id', $this->_post->id)->update("{$thing}s",array(
 			'preview' => $Image->preview,
 			'fullsize' => $Image->fullsize,
+			'broken' => 0,
 		))) Response::dbError();
 
 		Logs::logAction('img_update',array(

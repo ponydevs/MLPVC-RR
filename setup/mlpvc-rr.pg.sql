@@ -861,6 +861,41 @@ ALTER SEQUENCE log__img_update_entryid_seq OWNED BY log__img_update.entryid;
 
 
 --
+-- Name: log__post_break; Type: TABLE; Schema: public; Owner: mlpvc-rr
+--
+
+CREATE TABLE log__post_break (
+    entryid integer NOT NULL,
+    type character varying(11) NOT NULL,
+    id integer NOT NULL,
+    reserved_by uuid
+);
+
+
+ALTER TABLE log__post_break OWNER TO "mlpvc-rr";
+
+--
+-- Name: log__post_break_entryid_seq; Type: SEQUENCE; Schema: public; Owner: mlpvc-rr
+--
+
+CREATE SEQUENCE log__post_break_entryid_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE log__post_break_entryid_seq OWNER TO "mlpvc-rr";
+
+--
+-- Name: log__post_break_entryid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER SEQUENCE log__post_break_entryid_seq OWNED BY log__post_break.entryid;
+
+
+--
 -- Name: log__post_lock; Type: TABLE; Schema: public; Owner: mlpvc-rr
 --
 
@@ -1273,7 +1308,8 @@ CREATE TABLE requests (
     deviation_id character varying(7),
     lock boolean DEFAULT false NOT NULL,
     reserved_at timestamp with time zone,
-    finished_at timestamp with time zone
+    finished_at timestamp with time zone,
+    broken boolean DEFAULT false NOT NULL
 );
 
 
@@ -1315,7 +1351,8 @@ CREATE TABLE reservations (
     reserved_by uuid,
     deviation_id character varying(7),
     lock boolean DEFAULT false NOT NULL,
-    finished_at timestamp with time zone
+    finished_at timestamp with time zone,
+    broken boolean DEFAULT false NOT NULL
 );
 
 
@@ -1635,6 +1672,13 @@ ALTER TABLE ONLY log__img_update ALTER COLUMN entryid SET DEFAULT nextval('log__
 
 
 --
+-- Name: log__post_break entryid; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER TABLE ONLY log__post_break ALTER COLUMN entryid SET DEFAULT nextval('log__post_break_entryid_seq'::regclass);
+
+
+--
 -- Name: log__post_lock entryid; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
 --
 
@@ -1941,6 +1985,14 @@ ALTER TABLE ONLY log__img_update
 
 
 --
+-- Name: log__post_break log__post_break_entryid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER TABLE ONLY log__post_break
+    ADD CONSTRAINT log__post_break_entryid PRIMARY KEY (entryid);
+
+
+--
 -- Name: log__post_lock log__post_lock_entryid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
@@ -2177,6 +2229,13 @@ CREATE INDEX log__da_namechange_id ON log__da_namechange USING btree (id);
 
 
 --
+-- Name: log__post_lock_type_id; Type: INDEX; Schema: public; Owner: mlpvc-rr
+--
+
+CREATE INDEX log__post_lock_type_id ON log__post_lock USING btree (type, id);
+
+
+--
 -- Name: log__rolechange_target; Type: INDEX; Schema: public; Owner: mlpvc-rr
 --
 
@@ -2386,6 +2445,14 @@ ALTER TABLE ONLY log__banish
 
 ALTER TABLE ONLY log__da_namechange
     ADD CONSTRAINT log__da_namechange_id_fkey FOREIGN KEY (id) REFERENCES users(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: log__post_break log__post_break_reserved_by_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER TABLE ONLY log__post_break
+    ADD CONSTRAINT log__post_break_reserved_by_fkey FOREIGN KEY (reserved_by) REFERENCES users(id) ON UPDATE CASCADE;
 
 
 --

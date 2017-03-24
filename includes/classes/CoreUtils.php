@@ -980,7 +980,8 @@ class CoreUtils {
 		$HTML = "<table>";
 		foreach ($Query as $row){
 			$link = Users::get($row['reserved_by'])->getProfileLink(User::LINKFORMAT_FULL);
-			$count = "<strong style='color:rgb(".min(round($row['cnt']/10*255),255).",0,0)'>{$row['cnt']}</strong>";
+			$r = min(round($row['cnt']/10*255),255);
+			$count = "<strong style='color:rgb($r,0,0)'>{$row['cnt']}</strong>";
 
 			$HTML .= "<tr><td>$link</td><td>$count</td></tr>";
 		}
@@ -1057,12 +1058,14 @@ class CoreUtils {
 
 	/**
 	 * Checks if an image exists on the web
+	 * Specify raw HTTP codes as integers to $onlyFail to only report failure on those codes
 	 *
 	 * @param string $url
+	 * @param array  $onlyFails
 	 *
 	 * @return bool
 	 */
-	static function isURLAvailable(string $url):bool{
+	static function isURLAvailable(string $url, array $onlyFails = []):bool{
 		$ch = curl_init();
 		curl_setopt_array($ch, array(
 			CURLOPT_URL => $url,
@@ -1071,10 +1074,13 @@ class CoreUtils {
 			CURLOPT_RETURNTRANSFER => 1,
 			CURLOPT_FOLLOWLOCATION => true,
 		));
-		$return = curl_exec($ch) !== false;
+		$available = curl_exec($ch) !== false;
+		$responseCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+		if ($available === false && !empty($onlyFails))
+			$available = !in_array($responseCode, $onlyFails);
 		curl_close($ch);
 
-		return $return;
+		return $available;
 	}
 
 	static function msleep(int $ms){

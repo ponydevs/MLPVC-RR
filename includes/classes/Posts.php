@@ -20,20 +20,28 @@ class Posts {
 
 	/**
 	 * Retrieves requests & reservations for the episode specified
+	 * Optionally lists broken posts
 	 *
 	 * @param Episode $Episode
 	 * @param int     $only
+	 * @param bool    $showBroken
 	 *
 	 * @return Post|Post[]
 	 */
-	static function get(Episode $Episode, int $only = null){
+	static function get(Episode $Episode, int $only = null, bool $showBroken = false){
 		global $Database;
 
 		$return = array();
-		if ($only !== ONLY_RESERVATIONS)
+		if ($only !== ONLY_RESERVATIONS){
+			if ($showBroken === false)
+				$Database->where('broken != true');
 			$return[] = $Database->whereEp($Episode)->orderBy('posted','ASC')->get('requests');
-		if ($only !== ONLY_REQUESTS)
+		}
+		if ($only !== ONLY_REQUESTS){
+			if ($showBroken === false)
+				$Database->where('broken != true');
 			$return[] = $Database->whereEp($Episode)->orderBy('posted','ASC')->get('reservations');
+		}
 
 		return $only ? $return[0] : $return;
 	}
@@ -72,11 +80,11 @@ class Posts {
 	/**
 	 * POST data validator function used when creating/editing posts
 	 *
-	 * @param string    $thing "request"/"reservation"
-	 * @param array     $array Array to output the checked data into
-	 * @param Post|null $Post  Optional, exsting post to compare new data against
+	 * @param string                   $thing "request"/"reservation"
+	 * @param array                    $array Array to output the checked data into
+	 * @param Request|Reservation|null $Post  Optional, exsting post to compare new data against
 	 */
-	static function checkPostDetails($thing, &$array, $Post = null){
+	static function checkPostDetails($thing, array &$array, $Post = null){
 		$editing = !empty($Post);
 
 		$label = (new Input('label','string',array(
@@ -480,17 +488,18 @@ HTML;
 	}
 
 	const CONTESTABLE = "<strong class='color-blue contest-note' title=\"Because this request was reserved more than 3 weeks ago it’s now available for other members to reserve\"><span class='typcn typcn-info-large'></span> Can be contested</strong>";
+	const BROKEN = "<strong class='color-orange broken-note' title=\"The full size preview of this post was deemed unavailable and it is now marked as broken\"><span class='typcn typcn-plug'></span> Deemed broken</strong>";
 
 	/**
 	 * List ltem generator function for request & reservation generators
 	 *
-	 * @param Post $Post
-	 * @param bool $view_only     Only show the "View" button
-	 * @param bool $cachebust_url Append a random string to the image URL to force a re-fetch
+	 * @param Request|Reservation $Post
+	 * @param bool                $view_only     Only show the "View" button
+	 * @param bool                $cachebust_url Append a random string to the image URL to force a re-fetch
 	 *
 	 * @return string
 	 */
-	static function getLi(Post $Post, bool $view_only = false, bool $cachebust_url = false):string {
+	static function getLi($Post, bool $view_only = false, bool $cachebust_url = false):string {
 		$finished = !empty($Post->deviation_id);
 		$isRequest = $Post->isRequest;
 		$type = $isRequest ? 'request' : 'reservation';
@@ -558,7 +567,17 @@ HTML;
 						LIMIT 1", array($type, $Post->id)
 					);
 					$approverIsNotReserver = isset($LogEntry['initiator']) && $LogEntry['initiator'] !==  $Post->reserved_by;
-					$approvedby = $isStaff && isset($LogEntry['initiator']) && $approverIsNotReserver ? ' by '.(Users::get($LogEntry['initiator'])->getProfileLink()) : '';
+					$approvedby = $isStaff && isset($LogEntry['initiator'])
+						? ' by '.(
+							$approverIsNotReserver
+							? (
+								isset($Post->requested_by) && $LogEntry['initiator'] === $Post->requested_by
+								? 'the requester'
+								: Users::get($LogEntry['initiator'])->getProfileLink()
+							)
+							: 'the reserver'
+						)
+						: '';
 					$locked_at = $approved ? "<em class='approve-date'>Approved <strong>".Time::tag(strtotime($LogEntry['timestamp']))."</strong>$approvedby</em>" : '';
 				}
 				$Image .= $post_label.$posted_at.$reserved_at.$finished_at.$locked_at;
@@ -572,10 +591,14 @@ HTML;
 		if ($overdue && ($isStaff || $isReserver))
 			$Image .= self::CONTESTABLE;
 
+		if ($Post->broken)
+			$Image .= self::BROKEN;
+
 		if ($hide_reserved_status)
 			$Post->Reserver = false;
 
-		return "<li id='$ID'>$Image".self::_getPostActions($Post, $isRequest, $view_only ? $postlink : false).'</li>';
+		$break = $Post->broken ? ' class="admin-break"' : '';
+		return "<li id='$ID'$break>$Image".self::_getPostActions($Post, $isRequest, $view_only ? $postlink : false).'</li>';
 	}
 
 	/**
@@ -637,14 +660,14 @@ HTML;
 	/**
 	 * Generate HTML for post action buttons
 	 *
-	 * @param Post         $Post
-	 * @param bool         $isRequest
-	 * @param false|string $view_only Only show the "View" button
-	 *                                Contains HREF attribute of button if string
+	 * @param Request|Reservation $Post
+	 * @param bool                $isRequest
+	 * @param false|string        $view_only Only show the "View" button
+	 *                                       Contains HREF attribute of button if string
 	 *
 	 * @return string
 	 */
-	private static function _getPostActions(Post $Post, bool $isRequest, $view_only):string {
+	private static function _getPostActions($Post, bool $isRequest, $view_only):string {
 		global $signedIn, $currentUser;
 
 		$By = $Post->Reserver;

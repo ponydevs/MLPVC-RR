@@ -315,17 +315,17 @@ class DeviantArt {
 		return $User ?? null;
 	}
 
-	static function isImageAvailable(string $url):bool {
-		if (CoreUtils::isURLAvailable($url))
+	static function isImageAvailable(string $url, array $onlyFails = []):bool {
+		if (CoreUtils::isURLAvailable($url, $onlyFails))
 			return true;
 		CoreUtils::msleep(300);
-		if (CoreUtils::isURLAvailable($url))
+		if (CoreUtils::isURLAvailable($url, $onlyFails))
 			return true;
 		CoreUtils::msleep(300);
-		if (CoreUtils::isURLAvailable("$url?"))
+		if (CoreUtils::isURLAvailable("$url?", $onlyFails))
 			return true;
 		CoreUtils::msleep(300);
-		if (CoreUtils::isURLAvailable("$url?"))
+		if (CoreUtils::isURLAvailable("$url?", $onlyFails))
 			return true;
 		return false;
 	}
