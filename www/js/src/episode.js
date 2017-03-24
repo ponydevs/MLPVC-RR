@@ -509,21 +509,21 @@ DocReady.push(function(){
 	}
 
 	let reloading = {};
-	$.fn.reloadLi = function(log){
+	$.fn.reloadLi = function(log = true){
 		let $li = this,
 			_idAttr = $li.attr('id');
 		if (typeof _idAttr !== 'string' || $li.hasClass('admin-break'))
 			return this;
+		if (reloading[_idAttr] === true)
+			return this;
+		reloading[_idAttr] = true;
 
 		let _idAttrArr = _idAttr.split('-'),
 			type =_idAttrArr[0],
 			id = _idAttrArr[1];
 
-		if (reloading[_idAttr])
-			return this;
-		reloading[_idAttr] = true;
 
-		if (log !== false)
+		if (log)
 			console.log(`[POST-FIX] Attemting to reload ${type} #${id}`);
 		$.post(`/post/reload/${type}/${id}`,{cache:log},$.mkAjaxHandler(function(){
 			reloading[_idAttr] = false;
@@ -545,7 +545,7 @@ DocReady.push(function(){
 				$newli.appendTo(this.section);
 			$newli.parent().reorderPosts();
 
-			if (log !== false)
+			if (log)
 				console.log(`[POST-FIX] Reloaded ${type} #${id}`);
 		}));
 
