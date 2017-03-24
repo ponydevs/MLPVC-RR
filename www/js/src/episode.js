@@ -534,6 +534,12 @@ DocReady.push(function(){
 				return;
 			}
 
+			if ($li.parent().length === 0){
+				if (log)
+					console.log(`[POST-FIX] Failed attempt at updating detached ${type} #${id}`);
+				return;
+			}
+
 			let $newli = $(this.li);
 			if ($li.hasClass('highlight') || $newli.is(location.hash))
 				$newli.addClass('highlight');
