@@ -42,6 +42,7 @@ class EventController extends Controller {
 		$this->_getEvent($params['id']);
 
 		$heading = $this->_event->name;
+		$EventType = Event::EVENT_TYPES[$this->_event->type];
 
 		CoreUtils::fixPath($this->_event->toURL());
 		$js = ['jquery.fluidbox',$this->do];
@@ -50,11 +51,12 @@ class EventController extends Controller {
 
 		CoreUtils::loadPage([
 			'heading' => $heading,
-			'title' => "$heading - Event",
+			'title' => "$heading - $EventType Event",
 			'do-css',
 			'js' => $js,
 			'import' => [
 				'Event' => $this->_event,
+				'EventType' => $EventType,
 			],
 		], $this);
 	}
@@ -96,18 +98,18 @@ class EventController extends Controller {
 		/** @noinspection PhpUndefinedMethodInspection */
 		$update['desc_rend'] = \Parsedown::instance()->setUrlsLinked(false)->setBreaksEnabled(true)->setMarkupEscaped(true)->text($description);
 
-		$type = (new Input('type',function($value){
-			if (empty(Event::EVENT_TYPES[$value]))
-				return Input::ERROR_INVALID;
-		},[
-			Input::CUSTOM_ERROR_MESSAGES => [
-				Input::ERROR_MISSING => 'Event type is missing',
-				Input::ERROR_INVALID => 'Event type (@value) is invalid',
-			],
-		]))->out();
-		if ($type === 'contest')
-			Response::fail('The selected event type is not supported yet.');
-		$update['type'] = $type;
+		if (!$editing){
+			$type = (new Input('type',function($value){
+				if (empty(Event::EVENT_TYPES[$value]))
+					return Input::ERROR_INVALID;
+			},[
+				Input::IS_OPTIONAL => true,
+				Input::CUSTOM_ERROR_MESSAGES => [
+					Input::ERROR_INVALID => 'Event type (@value) is invalid',
+				],
+			]))->out();
+			$update['type'] = $type;
+		}
 
 		$entry_role = (new Input('entry_role',function($value){
 			if (!in_array($value, Event::REGULAR_ENTRY_ROLES) && empty(Event::SPECIAL_ENTRY_ROLES[$value]))
@@ -119,6 +121,17 @@ class EventController extends Controller {
 			],
 		]))->out();
 		$update['entry_role'] = $entry_role;
+
+		$vote_role = (new Input('vote_role',function($value){
+			if (!in_array($value, Event::REGULAR_ENTRY_ROLES))
+				return Input::ERROR_INVALID;
+		},[
+			Input::CUSTOM_ERROR_MESSAGES => [
+				Input::ERROR_MISSING => 'Event vote role is missing',
+				Input::ERROR_INVALID => 'Event vote role (@value) is invalid',
+			],
+		]))->out();
+		$update['vote_role'] = $vote_role;
 
 		$max_entries = (new Input('max_entries',function(&$value, $range){
 			if (preg_match(new RegExp('^unlimited$','i'),$value) || $value == 0){
@@ -310,6 +323,7 @@ class EventController extends Controller {
 		$insert = $this->_addSetEntry();
 		$insert['submitted_by'] = $currentUser->id;
 		$insert['eventid'] = $this->_event->id;
+		$insert['score'] = $this->_event->type === 'contest' ? 0 : null;
 		if (!$Database->insert('events__entries', $insert))
 			Response::dbError('Saving entry failed');
 
@@ -318,7 +332,7 @@ class EventController extends Controller {
 
 	/** @var EventEntry */
 	private $_entry;
-	private function _entryPermCheck($params){
+	private function _entryPermCheck($params, string $action = 'manage'){
 		global $currentUser, $signedIn, $Database;
 
 		if (!$signedIn)
@@ -328,10 +342,17 @@ class EventController extends Controller {
 			Response::fail('Entry ID is missing or invalid');
 
 		$this->_entry = $Database->where('entryid', intval($params['entryid'], 10))->getOne('events__entries');
-		if (empty($this->_entry) || (!Permission::sufficient('staff') && $this->_entry->submitted_by !== $currentUser->id))
+		if (empty($this->_entry) || ($action === 'manage' && !Permission::sufficient('staff') && $this->_entry->submitted_by !== $currentUser->id))
 			Response::fail('The requested entry could not be found or you are not allowed to edit it');
 
 		$this->_getEvent($this->_entry->eventid);
+
+		if ($action === 'vote'){
+			if (!$this->_event->checkCanVote($currentUser))
+				Response::fail('You are not allowed to vote on entries to this event');
+			if ($this->_event->type !== 'contest')
+				Response::fail('You can only vote on entries to contest events');
+		}
 
 		$endts = strtotime($this->_event->ends_at);
 		if ($endts < time())
@@ -371,5 +392,34 @@ class EventController extends Controller {
 			Response::dbError('Failed to delete entry');
 
 		Response::done();
+	}
+
+	public function voteEntry($params){
+		global $currentUser, $Database;
+
+		$this->_entryPermCheck($params, 'vote');
+
+		$userVote = $this->_entry->getUserVote($currentUser);
+		if (!empty($userVote))
+			Response::fail('You already voted for this entry');
+
+		$value = (new Input('value','vote',[
+			Input::IN_RANGE => [-1, 1],
+			Input::CUSTOM_ERROR_MESSAGES => [
+				Input::ERROR_MISSING => 'Vote value is missing',
+				Input::ERROR_INVALID => 'Vote value (@value) is invalid',
+				Input::ERROR_RANGE => 'Vote value must be @min or @max',
+			]
+		]))->out();
+
+		if (!$Database->insert('events__entries__votes',[
+			'entryid' => $this->_entry->entryid,
+			'userid' => $currentUser->id,
+			'value' => $value,
+		]))
+			Response::dbError('Vote could not be recorded');
+
+		$this->_entry->updateScore();
+		Response::done([ 'score' => $this->_entry->getFormattedScore() ]);
 	}
 }

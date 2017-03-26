@@ -1,5 +1,6 @@
 <?php
 /** @var string $heading */
+/** @var string $EventType */
 /** @var \App\Models\Event $Event */
 /** @var \App\Models\EventEntry[] $UserEntries */
 
@@ -8,7 +9,7 @@ $endts = strtotime($Event->ends_at);
 ?>
 <div id="content">
 	<h1><?=$heading?></h1>
-	<p>For <?=$Event->getEntryRoleName()?> &bull; <?=$startts > time() ? 'Starts '.\App\Time::tag($startts) : ($endts > time() ? 'Ends' : 'Ended').' '.\App\Time::tag($endts)?></p>
+	<p><?=$EventType?> for <?=$Event->getEntryRoleName()?> &bull; <?=$startts > time() ? 'Starts '.\App\Time::tag($startts) : ($endts > time() ? 'Ends' : 'Ended').' '.\App\Time::tag($endts)?></p>
 
 <?php   $canEnter = $signedIn && $Event->checkCanEnter($currentUser);
 		if ($signedIn){ ?>

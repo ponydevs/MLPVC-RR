@@ -127,6 +127,31 @@ DocReady.push(function(){
 			}));
 		});
 	});
+
+	$eventEntries.on('click','.voting > button', function(e){
+		e.preventDefault();
+
+		let $btn = $(this),
+			$li = $btn.closest('[id^=entry-]'),
+			entryID = $li.attr('id').split('-')[1],
+			value = $btn.hasClass('upvote') ? 1 : -1;
+
+		$btn.siblings('button').addBack().disable();
+		$.post(`/event/entry/vote/${entryID}`,{value},$.mkAjaxHandler(function(){
+			if (!this.status) return $.Dialog.fail('Voting on entry #'+entryID, this.message);
+
+			$btn.addClass('clicked');
+			$btn.siblings('.score').text(this.score);
+			const $ul = $btn.closest('ul');
+			$ul.children().sort(function(a,b){
+				const
+					aScore = parseInt($(a).find('.score').text().replace(/^\D/,'-'),10),
+					bScore = parseInt($(b).find('.score').text().replace(/^\D/,'-'),10);
+
+				return aScore < bScore ? 1 : (aScore > bScore ? -1 : 0);
+			}).appendTo($ul);
+		}));
+	});
 },function(){
 	'use strict';
 

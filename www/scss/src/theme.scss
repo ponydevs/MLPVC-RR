@@ -295,9 +295,7 @@ header {
 							opacity: 1;
 
 							> .loading-circle {
-								stroke: #afa !important;
 								stroke-width: $toggleBorderWidth*2;
-								opacity: 1;
 								transition: stroke .2s linear, stroke-width .5s linear, stroke-dashoffset .2s ease-out;
 							}
 						}
@@ -314,7 +312,7 @@ header {
 
 						> .loading-circle {
 							fill: transparent;
-							stroke: #fff;
+							stroke: #afa;
 							stroke-width: $toggleBorderWidth;
 							transition: stroke .2s linear, stroke-width .5s linear, stroke-dashoffset .35s linear;
 						}

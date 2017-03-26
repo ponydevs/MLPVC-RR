@@ -141,6 +141,7 @@ class DeviantArt {
 
 			switch ($json['type']){
 				case "photo":
+				case "link":
 					$insert['type'] = $json['imagetype'];
 				break;
 				case "rich":

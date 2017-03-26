@@ -305,7 +305,8 @@ CREATE TABLE events (
     added_at timestamp with time zone NOT NULL,
     desc_src text NOT NULL,
     desc_rend text NOT NULL,
-    max_entries integer
+    max_entries integer,
+    vote_role character varying(15)
 );
 
 
@@ -325,11 +326,25 @@ CREATE TABLE events__entries (
     submitted_by uuid NOT NULL,
     submitted_at timestamp with time zone DEFAULT now() NOT NULL,
     title character varying(64) NOT NULL,
-    prev_src character varying(255)
+    prev_src character varying(255),
+    score integer
 );
 
 
 ALTER TABLE events__entries OWNER TO "mlpvc-rr";
+
+--
+-- Name: events__entries__votes; Type: TABLE; Schema: public; Owner: mlpvc-rr
+--
+
+CREATE TABLE events__entries__votes (
+    entryid integer NOT NULL,
+    userid uuid NOT NULL,
+    value smallint NOT NULL
+);
+
+
+ALTER TABLE events__entries__votes OWNER TO "mlpvc-rr";
 
 --
 -- Name: events__entries_entryid_seq; Type: SEQUENCE; Schema: public; Owner: mlpvc-rr
@@ -1881,6 +1896,22 @@ ALTER TABLE ONLY events__entries
 
 
 --
+-- Name: events__entries__votes events__votes_entryid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER TABLE ONLY events__entries__votes
+    ADD CONSTRAINT events__votes_entryid PRIMARY KEY (entryid);
+
+
+--
+-- Name: events__entries__votes events__votes_entryid_userid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER TABLE ONLY events__entries__votes
+    ADD CONSTRAINT events__votes_entryid_userid UNIQUE (entryid, userid);
+
+
+--
 -- Name: events events_id; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
@@ -2201,6 +2232,13 @@ CREATE INDEX events__entries_eventid ON events__entries USING btree (eventid);
 
 
 --
+-- Name: events__entries_score; Type: INDEX; Schema: public; Owner: mlpvc-rr
+--
+
+CREATE INDEX events__entries_score ON events__entries USING btree (score);
+
+
+--
 -- Name: events__entries_submitted_by; Type: INDEX; Schema: public; Owner: mlpvc-rr
 --
 
@@ -2405,6 +2443,14 @@ ALTER TABLE ONLY episodes__votes
 
 ALTER TABLE ONLY episodes
     ADD CONSTRAINT episodes_posted_by_fkey FOREIGN KEY (posted_by) REFERENCES users(id) ON UPDATE CASCADE ON DELETE SET NULL;
+
+
+--
+-- Name: events__entries__votes events__entries__votes_entryid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER TABLE ONLY events__entries__votes
+    ADD CONSTRAINT events__entries__votes_entryid_fkey FOREIGN KEY (entryid) REFERENCES events__entries(entryid) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --

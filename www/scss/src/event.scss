@@ -43,6 +43,41 @@
 				flex: 1 1 auto;
 			}
 
+			.voting {
+				display: flex;
+				flex-flow: column nowrap;
+				justify-content: space-around;
+				align-items: center;
+				margin-right: 10px;
+				text-align: center;
+				font-size: 22px;
+				user-select: none;
+
+				button {
+					padding: 0;
+					margin: 0;
+					color: grey;
+					background: transparent !important;
+					border: 0 !important;
+					font-size: 2em !important;
+					line-height: .8em !important;
+					height: .8em;
+					overflow: hidden;
+
+					&.clicked {
+						&.upvote { color: $NGreen }
+						&.downvote { color: $NRed }
+					}
+				}
+				.score {
+					display: block;
+					text-align: center;
+					height: 1em;
+					margin: .2em 0;
+					cursor: default;
+				}
+			}
+
 			.preview {
 				color: gray;
 				border: 1px solid;
@@ -50,6 +85,7 @@
 				padding: 5px;
 				margin-right: 10px;
 				box-shadow: 1px 1px 2px rgba(black, .4);
+				user-select: none;
 
 				> a {
 					display: block;
@@ -83,7 +119,6 @@
 				display: flex;
 				flex-flow: column nowrap;
 				justify-content: space-between;
-				height: 90%;
 
 				> * {
 					display: block;

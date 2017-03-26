@@ -17,6 +17,7 @@ class Event extends AbstractFillable {
 		$name,
 		$type,
 		$entry_role,
+		$vote_role,
 		$starts_at,
 		$ends_at,
 		$added_by,
@@ -26,7 +27,7 @@ class Event extends AbstractFillable {
 
 	const EVENT_TYPES = [
 		'collab' => 'Collaboration',
-		//'contest' => 'Contest',
+		'contest' => 'Contest',
 	];
 
 	const REGULAR_ENTRY_ROLES = ['user', 'member', 'staff'];
@@ -68,7 +69,7 @@ class Event extends AbstractFillable {
 			case "user":
 			case "member":
 			case "staff":
-				return Permission::sufficient($user->role, $this->entry_role);
+				return Permission::sufficient($this->entry_role, $user->role);
 			break;
 			case "spec_discord":
 				return $user->isDiscordMember();
@@ -83,19 +84,21 @@ class Event extends AbstractFillable {
 		}
 	}
 
+	public function checkCanVote(User $user):bool {
+		return Permission::sufficient($this->vote_role, $user->role);
+	}
+
 	public function getEntryRoleName():string {
-		return array_key_exists($this->entry_role, self::REGULAR_ENTRY_ROLES) ? CoreUtils::makePlural(Permission::ROLES_ASSOC) : self::SPECIAL_ENTRY_ROLES[$this->entry_role];
+		return in_array($this->entry_role, self::REGULAR_ENTRY_ROLES) ? CoreUtils::makePlural(Permission::ROLES_ASSOC[$this->entry_role]) : self::SPECIAL_ENTRY_ROLES[$this->entry_role];
 	}
 
 	/**
-	 * @param array $orderby
-	 *
 	 * @return \App\Models\EventEntry[]
 	 */
-	public function getEntries(array $orderby = ['submitted_at','ASC']){
+	public function getEntries(){
 		global $Database;
 
-		return $Database->where('eventid', $this->id)->orderBy(...$orderby)->get('events__entries');
+		return $Database->where('eventid', $this->id)->orderBy('score','ASC')->orderBy('submitted_at','ASC')->get('events__entries');
 	}
 
 	public function getEntriesHTML(bool $wrap = WRAP):string {

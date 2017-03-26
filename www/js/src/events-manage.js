@@ -7,7 +7,12 @@ DocReady.push(function(){
 	let $eventTypeSelect = $.mk('select').attr({
 			name: 'type',
 			required: true,
-		}).append(`<option value="" style="display:none">(choose event type)</option>`),
+		}).append(`<option value="" style="display:none">(choose event type)</option>`).on('change',function(){
+			const
+				$this = $(this),
+				show = $this.val() === 'contest';
+			$this.parent().siblings('.who-vote')[show?'removeClass':'addClass']('hidden').find('select')[show?'enable':'disable']('hidden');
+		}),
 		$etsOptgroup = $.mk('optgroup').attr('label','Available types').appendTo($eventTypeSelect);
 	$.each(EVENT_TYPES, (value, text)=>{
 		$etsOptgroup.append(`<option value="${value}">${text}</option>`);
@@ -28,8 +33,18 @@ DocReady.push(function(){
 				<div class="ace_editor"></div>
 			</div>`,
 			$.mk('label').append(
-				`<span>Event type</span>`,
+				`<span>Event type (cannot ba changed later)</span>`,
 				$eventTypeSelect
+			),
+			$.mk('label').attr('class','who-vote hidden').append(
+				`<span>Who can vote on the entries?</span>`,
+				`<select name="vote_role" required>
+					<optgroup label="Roles">
+						<option value="user" selected>Any DeviantArt User</option>
+						<option value="member">Club Members</option>
+						<option value="staff">Staff Members</option>
+					</optgroup>
+				</select>`
 			),
 			$.mk('div').attr('class','label').append(
 				`<span>Start date & time</span>`,
@@ -102,7 +117,7 @@ DocReady.push(function(){
 					eventID = data.eventID;
 
 					$form.find('input[name=name]').val(data.name);
-					$form.find('[name=type]').val(data.type);
+					$form.find('[name=type]').parent().remove();
 					$form.find('[name=entry_role]').val(data.entry_role);
 					$form.find('[name=max_entries]').val(data.max_entries ? data.max_entries : 'Unlimited');
 
@@ -211,6 +226,14 @@ DocReady.push(function(){
 
 			$.post(`/event/del/${eventid}`,$.mkAjaxHandler(function(){
 				if (!this.status) return $.Dialog.fail(false, this.message);
+
+				if (EventPage){
+					$.Dialog.wait('Navigation', 'Loading page 1');
+					$.Navigation.visit(`/events/1`,function(){
+						$.Dialog.close();
+					});
+					return;
+				}
 
 				$.Dialog.wait(false, 'Reloading page', true);
 				$.Navigation.reload(function(){

@@ -10,6 +10,7 @@ class Input {
 		'exists' => true,
 		'bool' => true,
 		'int' => true,
+		'vote' => true,
 		'float' => true,
 		'text' => true,
 		'string' => true,
@@ -72,7 +73,7 @@ class Input {
 		else if (is_callable($type))
 			$this->_validator = $type;
 		else if (empty(self::$SUPPORTED_TYPES[$type]))
-			$this->_outputError('Input type is invalid');
+			$this->_outputError('Validation failed: Input type is invalid');
 		$this->_type = $type;
 
 		if (!is_string($key))
@@ -118,12 +119,15 @@ class Input {
 				$this->_value = $this->_value == '1' || $this->_value == 'true';
 			break;
 			case "int":
+			case "vote":
 			case "float":
 				if (!is_numeric($this->_value))
 					return self::ERROR_INVALID;
-				$this->_value = $this->_type === 'int'
-					? intval($this->_value, 10)
-					: floatval($this->_value, 10);
+				$this->_value = $this->_type === 'float'
+					? floatval($this->_value, 10)
+					: intval($this->_value, 10);
+				if ($this->_type === 'vote' && $this->_value === 0)
+					return self::ERROR_INVALID;
 				if (self::checkNumberRange($this->_value, $this->_range, $code))
 					return $code;
 			break;
