@@ -47,12 +47,12 @@ else echo CoreUtils::notice('warn','This section went missing due to a bug, and 
 		<div>
 			<p>As you can probably tell we do not host a large majority of images you can see on episode pages, we just <del>steal the bandwidth</del> use the help of already established sites. Here's a full list of all providers we can recognize and that you can use to submit images:</p>
 			<ul>
-				<li><a href="http://sta.sh/" target="_blank">Sta.sh</a></li>
-				<li><a href="http://deviantart.com/" target="_blank">DeviantArt</a></li>
-				<li><a href="http://imgur.com/" target="_blank">Imgur</a></li>
-				<li><a href="http://derpibooru.org/" target="_blank">Derpibooru</a></li>
-				<li><a href="http://puush.me/" target="_blank">Puush</a></li>
-				<li><a href="http://app.prntscr.com/" target="_blank">LightShot</a></li>
+				<li><a href="http://sta.sh/">Sta.sh</a></li>
+				<li><a href="http://deviantart.com/">DeviantArt</a></li>
+				<li><a href="http://imgur.com/">Imgur</a></li>
+				<li><a href="http://derpibooru.org/">Derpibooru</a></li>
+				<li><a href="http://puush.me/">Puush</a></li>
+				<li><a href="http://app.prntscr.com/">LightShot</a></li>
 			</ul>
 		</div>
 	</section>

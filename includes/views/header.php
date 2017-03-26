@@ -104,13 +104,13 @@ $Title = CoreUtils::escapeHTML($Title); ?>
 	<link rel="icon" type="image/png" href="/img/favicons-v1/android-chrome-192x192.png" sizes="192x192">
 	<link rel="icon" type="image/png" href="/img/favicons-v1/favicon-96x96.png" sizes="96x96">
 	<link rel="icon" type="image/png" href="/img/favicons-v1/favicon-16x16.png" sizes="16x16">
-	<link rel="manifest" href="/img/favicons-v1/manifest-201701061614.json">
+	<link rel="manifest" href="/manifest">
 	<link rel="mask-icon" href="/img/favicons-v1/safari-pinned-tab.svg" color="#2c73b1">
 	<meta name="apple-mobile-web-app-title" content="MLP-VectorClub">
 	<meta name="application-name" content="MLP-VectorClub">
 	<meta name="msapplication-TileColor" content="#2c73b1">
 	<meta name="msapplication-TileImage" content="/img/favicons-v1/mstile-144x144.png">
-	<meta name="msapplication-config" content="/img/favicons-v1/browserconfig.xml">
+	<meta name="msapplication-config" content="/browserconfig.xml">
 
 	<link rel="shortcut icon" href="/favicon.ico">
 <?php

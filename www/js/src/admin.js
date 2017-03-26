@@ -9,8 +9,8 @@ DocReady.push(function(){
 				`<p>This tool is easier to use than you would think. Here's how it works:</p>
 				<ol>
 					<li>
-						If you have the group watched, visit <a href="http://www.deviantart.com/notifications/#view=groupdeviations%3A17450764" target="_blank">this link</a><br>
-						If not, go to the <a href="http://mlp-vectorclub.deviantart.com/messages/?log_type=1&instigator_module_type=0&instigator_roleid=1276365&instigator_username=&bpp_status=4&display_order=desc" target="_blank">Processed Deviations queue</a>
+						If you have the group watched, visit <a href="http://www.deviantart.com/notifications/#view=groupdeviations%3A17450764" target="_blank" rel='noopener'>this link</a><br>
+						If not, go to the <a href="http://mlp-vectorclub.deviantart.com/messages/?log_type=1&instigator_module_type=0&instigator_roleid=1276365&instigator_username=&bpp_status=4&display_order=desc" target="_blank" rel='noopener'>Processed Deviations queue</a>
 					</li>
 					<li>Once there, press <kbd>Ctrl</kbd><kbd>A</kbd> (which will select the entire page)</li>
 					<li>Now press <kbd>Ctrl</kbd><kbd>C</kbd> (copying the selected content)</li>

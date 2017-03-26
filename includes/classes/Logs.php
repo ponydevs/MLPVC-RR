@@ -186,8 +186,8 @@ class Logs {
 				$Post = $Database->where('id', $data['id'])->getOne("{$data['thing']}s");
 				$data['type'] = $data['thing'];
 				self::_genericPostInfo($Post, $data, $details);
-				$details[] = array('Old image',"<a href='{$data['oldfullsize']}' target='_blank'>Full size</a><div><img src='{$data['oldpreview']}'></div>");
-				$details[] = array('New image',"<a href='{$data['newfullsize']}' target='_blank'>Full size</a><div><img src='{$data['newpreview']}'></div>");
+				$details[] = array('Old image',"<a href='{$data['oldfullsize']}' target='_blank' rel='noopener'>Full size</a><div><img src='{$data['oldpreview']}'></div>");
+				$details[] = array('New image',"<a href='{$data['newfullsize']}' target='_blank' rel='noopener'>Full size</a><div><img src='{$data['newpreview']}'></div>");
 			break;
 			case "res_overtake":
 				/** @var $Post Request|Reservation */
@@ -421,7 +421,7 @@ class Logs {
 	}
 
 	private static function _link($url, $blank = false){
-		return "<a href='".CoreUtils::aposEncode($url)."'".($blank?' target="_blank"':'').">$url</a>";
+		return "<a href='".CoreUtils::aposEncode($url)."'".($blank?' target="_blank" rel="noopener"':'').">$url</a>";
 	}
 
 	/**

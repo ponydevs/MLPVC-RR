@@ -582,7 +582,7 @@ HTML;
 				}
 				$Image .= $post_label.$posted_at.$reserved_at.$finished_at.$locked_at;
 				if (!empty($Post->fullsize))
-					$Image .= "<a href='{$Post->fullsize}' class='original color-green' target='_blank'><span class='typcn typcn-link'></span> Original image</a>";
+					$Image .= "<a href='{$Post->fullsize}' class='original color-green' target='_blank' rel='noopener'><span class='typcn typcn-link'></span> Original image</a>";
 			}
 			else $Image .= $post_label.$posted_at.$reserved_at;
 		}
@@ -617,7 +617,7 @@ HTML;
 		return <<<HTML
 <li id="request-{$Request->id}">
 	<div class="image screencap">
-		<a href="{$Request->fullsize}" target="_blank">
+		<a href="{$Request->fullsize}" target="_blank" rel="noopener">
 			<img src="{$Request->fullsize}" alt="{$escapedLabel}">
 		</a>
 	</div>

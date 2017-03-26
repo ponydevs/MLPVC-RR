@@ -31,7 +31,7 @@ class EventEntry extends AbstractFillable {
 
 	private static function _getPreviewDiv(string $fullsize, string $preview, ?string $filetype = null):string {
 		$type = isset($filetype) ? "<span class='filetype'>$filetype</span>" : '';
-		return "<div class='preview'><a href='{$fullsize}' target='_blank'><img src='{$preview}' alt='event entry preview'></a>$type</div>";
+		return "<div class='preview'><a href='{$fullsize}' target='_blank' rel='noopener'><img src='{$preview}' alt='event entry preview'></a>$type</div>";
 	}
 
 	public function toListItemHTML(Event $event, bool $wrap = true):string {
@@ -48,7 +48,7 @@ class EventEntry extends AbstractFillable {
 
 		$sub_prov_favme = $this->sub_prov === 'fav.me';
 		if ($sub_prov_favme || Permission::sufficient('staff')){
-			$title = "<a href='http://{$this->sub_prov}/{$this->sub_id}' target='_blank'>$title</a>";
+			$title = "<a href='http://{$this->sub_prov}/{$this->sub_id}' target='_blank' rel='noopener'>$title</a>";
 		}
 		if ($sub_prov_favme && empty($preview)){
 			if (isset($submission->preview) && isset($submission->fullsize))

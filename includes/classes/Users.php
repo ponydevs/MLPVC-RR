@@ -483,11 +483,11 @@ HTML;
 				$HTML .= <<<HTML
 <li id="{$Post->getID()}">
 	<div class="image deviation">
-		<a href="$url" target="_blank">
+		<a href="$url" target="_blank" rel="noopener">
 			<img src="{$deviation->preview}" alt="{$deviation->title}">
 		</a>
 	</div>
-	<span class="label"><a href="$url" target="_blank">{$deviation->title}</a></span>
+	<span class="label"><a href="$url" target="_blank" rel="noopener">{$deviation->title}</a></span>
 	<em>Posted under $postAnchor</em>
 	<div>
 		<a href='$postLink' class='btn blue typcn typcn-arrow-forward'>View</a>

@@ -1,29 +1,29 @@
 // jshint ignore: start
-var cl = console.log,
+let cl = console.log,
 	stripAnsi = require('strip-ansi'),
 	chalk = require('chalk');
 console.log = console.writeLine = function () {
-	var args = [].slice.call(arguments);
+	let args = [].slice.call(arguments);
 	if (args.length){
 		if (/^(\[\d{2}:\d{2}:\d{2}]|Using|Finished)/.test(args[0]))
 			return;
-		else if (args[0] == 'Starting'){
+		else if (args[0] === 'Starting'){
 			args = ['[' + chalk.green('gulp') + '] ' + stripAnsi(args[1]).replace(/^'(.*)'.*$/,'$1') + ': ' + chalk.magenta('start')];
 		}
 	}
 	return cl.apply(console, args);
 };
-var stdoutw = process.stdout.write;
+let stdoutw = process.stdout.write;
 process.stdout.write = console.write = function(str){
-	var out = [].slice.call(arguments).join(' ');
+	let out = [].slice.call(arguments).join(' ');
 	if (/\[.*?\d{2}.*?:.*?]/.test(out))
 		return;
 	stdoutw.call(process.stdout, out);
 };
 
-var toRun = process.argv.slice(2).slice(-1)[0] || 'default'; // Works only if task name is the last param
+let toRun = process.argv.slice(2).slice(-1)[0] || 'default'; // Works only if task name is the last param
 console.writeLine('Starting Gulp task "'+toRun+'"');
-var require_list = ['gulp'];
+let require_list = ['gulp'];
 if (['js','dist-js','scss','md','default'].indexOf(toRun) !== -1){
 	require_list.push.apply(require_list, [
 		'gulp-plumber',
@@ -57,8 +57,8 @@ if (['js','dist-js','scss','md','default'].indexOf(toRun) !== -1){
 else if (toRun === 'pgsort')
 	require_list.push('fs');
 console.write('(');
-for (var i= 0,l=require_list.length; i<l; i++){
-	var v = require_list[i],
+for (let i= 0,l=require_list.length; i<l; i++){
+	let v = require_list[i],
 		key = v.replace(/^gulp-([a-z-]+)$/, '$1').replace(/-(\w)/,function(_, a){
 			return a.toUpperCase();
 		});
@@ -67,10 +67,10 @@ for (var i= 0,l=require_list.length; i<l; i++){
 }
 console.writeLine(" )\n");
 
-var workingDir = __dirname;
+let workingDir = __dirname;
 
 function Logger(prompt){
-	var $p = '['+chalk.blue(prompt)+'] ';
+	let $p = '['+chalk.blue(prompt)+'] ';
 	this.log = function(message){
 		console.writeLine($p+message);
 	};
@@ -85,7 +85,7 @@ function Logger(prompt){
 	return this;
 }
 
-var SASSL = new Logger('scss');
+let SASSL = new Logger('scss');
 gulp.task('scss', function() {
 	gulp.src('www/scss/src/*.scss')
 		.pipe(plumber(function(err){
@@ -97,7 +97,9 @@ gulp.task('scss', function() {
 				outputStyle: 'expanded',
 				errLogToConsole: true,
 			}))
-			.pipe(autoprefixer('last 2 version'))
+			.pipe(autoprefixer({
+	            browsers: ['last 2 versions','not ie <= 11'],
+	        }))
 			.pipe(cleanCss({
 				processImport: false,
 				compatibility: '-units.pc,-units.pt'
@@ -110,10 +112,10 @@ gulp.task('scss', function() {
 		.pipe(gulp.dest('www/scss/min'));
 });
 
-var JSL = new Logger('js'),
+let JSL = new Logger('js'),
 	DJSL = new Logger('dist-js'),
 	jspipe = function(pipe, taskName){
-		var noSourcemaps = taskName === 'dist-js';
+		let noSourcemaps = taskName === 'dist-js';
 		pipe =  pipe
 			.pipe(duration(taskName))
 			.pipe(cached(taskName, { optimizeMemory: true }))
@@ -170,7 +172,7 @@ gulp.task('dist-js', function(){
 	).pipe(gulp.dest('www/dist'));
 });
 
-var MDL = new Logger('md');
+let MDL = new Logger('md');
 gulp.task('md', function(){
 	gulp.src('README.md')
 		.pipe(duration('md'))
@@ -180,13 +182,13 @@ gulp.task('md', function(){
 		}))
 		.pipe(markdown())
 		.pipe(dom(function(){
-			var document = this,
+			let document = this,
 				el = document.getElementById('what-s-this-site-'),
 				newElements = '<section class="'+el.id+'">'+el.outerHTML;
 
 			while (el.nextElementSibling !== null && el.nextElementSibling.id !== 'contributing'){
-				var next = el.nextElementSibling;
-				if (next.nodeName.toLowerCase() == 'h2')
+				let next = el.nextElementSibling;
+				if (next.nodeName.toLowerCase() === 'h2')
 					newElements += '</section><section class="'+next.id+'">';
 				newElements += next.outerHTML;
 				el = next;
@@ -198,9 +200,9 @@ gulp.task('md', function(){
 		.pipe(gulp.dest('includes/views'));
 });
 
-var PGL = new Logger('pgsort'),
+let PGL = new Logger('pgsort'),
 	parseRow = function(r){
-		var match = r.match(/VALUES \((\d+)(?:, (\d+|NULL))?[, )]/);
+		let match = r.match(/VALUES \((\d+)(?:, (\d+|NULL))?[, )]/);
 		if (!match)
 			return [];
 		return [match[1], match[2]];
@@ -210,7 +212,7 @@ gulp.task('pgsort', function(){
 		fs.readdir('./setup', function(err, dir){
 			if (err) throw err;
 
-			var i = 0;
+			let i = 0;
 			while (i < dir.length){
 				if (!/\.pg\.sql$/.test(dir[i])){
 					dir.splice(i, 1);
@@ -223,10 +225,10 @@ gulp.task('pgsort', function(){
 				(function(fpath){
 					fs.readFile(fpath, 'utf8', function(err, data){
 						if (err) throw err;
-						var test = /INSERT INTO "?([a-z_\-]+)"?\s*VALUES\s*\((\d+),[\s\S]+?;(?:\r|\r\n|\n)/g;
+						let test = /INSERT INTO "?([a-z_\-]+)"?\s*VALUES\s*\((\d+),[\s\S]+?;(?:\r|\r\n|\n)/g;
 						if (!test.test(data))
 							return;
-						var Tables = {},
+						let Tables = {},
 							TableCounters = {};
 						data.replace(test,function(row,table){
 							if (typeof Tables[table] !== 'object')
@@ -236,13 +238,13 @@ gulp.task('pgsort', function(){
 							return row;
 						});
 
-						for (var j = 0, k = Object.keys(Tables), l = k.length; j<l; j++){
-							var table = k[j];
+						for (let j = 0, k = Object.keys(Tables), l = k.length; j<l; j++){
+							let table = k[j];
 							Tables[table].sort(function(a,b){
 								a = parseRow(a);
 								b = parseRow(b);
 
-								var ix = 0;
+								let ix = 0;
 								if (a[0] === b[0] && !isNaN(a[1]) && !isNaN(b[1]))
 									ix++;
 

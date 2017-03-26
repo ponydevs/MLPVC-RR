@@ -298,7 +298,7 @@ class Episodes {
 					? " (Part {$v->part})"
 					: " ($fullep)"
 				) : $fullep;
-				$HTML .= "<a class='btn typcn ".self::$PROVIDER_BTN_CLASSES[$v->provider]."' href='$url' target='_blank'>".self::$VIDEO_PROVIDER_NAMES[$v->provider]."$partText</a>";
+				$HTML .= "<a class='btn typcn ".self::$PROVIDER_BTN_CLASSES[$v->provider]."' href='$url' target='_blank' rel='noopener'>".self::$VIDEO_PROVIDER_NAMES[$v->provider]."$partText</a>";
 			}
 			$HTML .= "<button class='green typcn typcn-eye showplayers'>Show on-site player</button><button class='orange typcn typcn-flag reportbroken'>Report broken video</button></p>";
 			if ($wrap)
@@ -549,7 +549,7 @@ HTML;
 							$preview = '';
 						else {
 							$preview = Appearances::getPreviewURL($p);
-							$preview = "<img src='$preview' class='preview'>";
+							$preview = "<img src='$preview' class='preview' alt=''>";
 						}
 					}
 					$label = Appearances::processLabel($p['label']);

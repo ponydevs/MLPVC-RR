@@ -1272,6 +1272,18 @@ $(function(){
 	console.log('[HTTP-Nav] > $(document).ready()');
 	console.group('[HTTP-Nav] GET '+window.location.pathname+window.location.search+window.location.hash);
 
+	if ('serviceWorker' in navigator){
+		window.addEventListener('load', function(){
+			navigator.serviceWorker.register('/sw.js').then(function(registration){
+				// Registration was successful
+				console.log('ServiceWorker registration successful with scope: ', registration.scope);
+			}).catch(function(err){
+				// registration failed :(
+				console.log('ServiceWorker registration failed: ', err);
+			});
+		});
+	}
+
 	// Load footer
 	if (window.ServiceUnavailableError !== true)
 		$.get('/footer-git',$.mkAjaxHandler(function(){

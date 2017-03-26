@@ -1,5 +1,9 @@
 {
-	"name": "MLPVC-RR",
+	"name": "MLP-VectorClub Website",
+	"short_name": "MLP-VC-RR",
+	"start_url": "{{ABSPATH}}",
+	"background_color": "#FFFFFF",
+	"theme_color": "#2C73B1",
 	"icons": [
 		{
 			"src": "/img/favicons-v1/android-chrome-36x36.png?v=M44vqwLKzQ",

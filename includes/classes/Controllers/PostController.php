@@ -221,7 +221,7 @@ class PostController extends Controller {
 					Response::fail("This $thing has not been approved yet");
 
 				if (Permission::insufficient('developer') && CoreUtils::isDeviationInClub($this->_post->deviation_id) === true)
-					Response::fail("<a href='http://fav.me/{$this->_post->deviation_id}' target='_blank'>This deviation</a> is part of the group gallery, which prevents the post from being unlocked.");
+					Response::fail("<a href='http://fav.me/{$this->_post->deviation_id}' target='_blank' rel='noopener'>This deviation</a> is part of the group gallery, which prevents the post from being unlocked.");
 
 				$Database->where('id', $this->_post->id)->update("{$thing}s", array('lock' => false));
 				$this->_post->lock = false;
@@ -663,7 +663,7 @@ class PostController extends Controller {
 
 		// Check image availability
 		if (!DeviantArt::isImageAvailable($Image->preview))
-			Response::fail("<p class='align-center'>The specified image doesn’t seem to exist. Please verify that you can reach the URL below and try again.<br><a href='{$Image->preview}' target='_blank'>{$Image->preview}</a></p>");
+			Response::fail("<p class='align-center'>The specified image doesn’t seem to exist. Please verify that you can reach the URL below and try again.<br><a href='{$Image->preview}' target='_blank' rel='noopener'>{$Image->preview}</a></p>");
 
 		if (!$Database->where('id', $this->_post->id)->update("{$thing}s",array(
 			'preview' => $Image->preview,
@@ -729,7 +729,7 @@ class PostController extends Controller {
 		}
 		// Check image availability
 		if (!!DeviantArt::isImageAvailable($fullsize))
-			Response::fail("The specified image doesn’t seem to exist. Please verify that you can reach the URL below and try again.<br><a href='$fullsize' target='_blank'>$fullsize</a>");
+			Response::fail("The specified image doesn’t seem to exist. Please verify that you can reach the URL below and try again.<br><a href='$fullsize' target='_blank' rel='noopener'>$fullsize</a>");
 
 		if (!$Database->where('id', $this->_post->id)->update("{$thing}s",array(
 			'fullsize' => $fullsize,

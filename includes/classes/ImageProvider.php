@@ -47,7 +47,7 @@ class ImageProvider {
 			if ($test !== false)
 				return $test;
 		}
-		throw new \Exception("Unsupported provider. Try uploading your image to <a href='http://sta.sh' target='_blank'>Sta.sh</a>");
+		throw new \Exception("Unsupported provider. Try uploading your image to <a href='http://sta.sh' target='_blank' rel='noopener'>Sta.sh</a>");
 	}
 
 	private static function _checkImageAllowed($url, $ctype = null){

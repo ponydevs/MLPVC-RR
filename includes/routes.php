@@ -65,6 +65,7 @@ $router->map('GET', '/[user]/[un:name]/[cg]/[v]/[i:id]-[adi]', 'ColorGuideContro
 $router->map('GET', '/[user]/[un:name]/[cg]/[v]/[adi]-[i:id]', 'ColorGuideController#personalAppearancePage');
 $router->map('GET', '/[user]/[un:name]/[cg]/[v]/[i:id][cgimg:type].[cgext:ext]', 'ColorGuideController#personalAppearanceAsFile');
 $router->map('GET', '/[user]/[un:name]/[cg]/[eqg:eqg]?/sprite(-colors)?/[i:id][adi]?', 'ColorGuideController#spriteColors');
+$router->map('GET', '/manifest',                       'ManifestController#json');
 
 // "API" Endpoints
 $router->map('POST', '/about/stats',                         'AboutController#stats');
