@@ -26,9 +26,9 @@ class EventEntryVote extends AbstractFillable {
 	 *
 	 * @return bool
 	 */
-	public function isLockedIn(EventEntry $entry, $now = null):bool {
+	public function isLockedIn(EventEntry $entry, ?int $now = null):bool {
 		$entryEditTS = strtotime($entry->last_edited);
 		$voteCastTS = strtotime($this->cast_at);
-		return ($now??time()) - $voteCastTS > Time::IN_SECONDS['hour'] && $entryEditTS < $voteCastTS;
+		return ($now??time()) - $voteCastTS >= Time::IN_SECONDS['hour'] && $entryEditTS < $voteCastTS;
 	}
 }
