@@ -216,6 +216,10 @@ header {
 			margin: 0;
 			display: block;
 
+			&.dragscroll {
+				cursor: grab;
+			}
+
 			li {
 				display: inline-block;
 				color: #fff;

@@ -140,13 +140,14 @@ ga('send','pageview');
 <body class="loading">
 
 	<header>
-		<nav><ul>
+		<nav><ul class="dragscroll">
 			<li class="sidebar-toggle">
 				<svg class="loading-indicator" viewBox="0 0 45 45" version="1.1" xmlns="http://www.w3.org/2000/svg">
 					<circle r="20" cx="22.5" cy="22.5" class="loading-circle" transform="rotate(-90 22.5 22.5)"></circle>
 				</svg>
 				<div class="loader"></div>
-			</li><?=CoreUtils::getNavigationHTML(isset($view) && $view === 'fatalerr', $scope)?></ul></nav>
+			</li><?=CoreUtils::getNavigationHTML(isset($view) && $view === 'fatalerr', $scope)?>
+		</ul></nav>
 	</header>
 
 	<aside id="sidebar">

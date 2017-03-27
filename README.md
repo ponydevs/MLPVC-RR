@@ -26,6 +26,7 @@ After some time, the idea of moving the old PNG color guide into an easier to us
    - [imagesLoaded](http://imagesloaded.desandro.com/)
    - [moment.js](http://momentjs.com/)
    - [simplemarquee](https://github.com/IndigoUnited/jquery.simplemarquee)
+   - [dragscroll](https://github.com/asvd/dragscroll)
  - Back-end:
    - [moment.php](https://github.com/fightbulc/moment.php)
    - [PostgresDb](https://github.com/SeinopSys/PHP-PostgreSQL-Database-Class)
