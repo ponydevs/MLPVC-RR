@@ -148,18 +148,43 @@ DocReady.push(function(){
 			$btn[un?'removeClass':'addClass']('clicked');
 			$otherBtn.removeClass('clicked');
 			$btn.siblings('.score').text(this.score);
-			const $ul = $btn.closest('ul');
-			$ul.children().sort(function(a,b){
-				const
-					aScore = parseInt($(a).find('.score').text().replace(/^\D/,'-'),10),
-					bScore = parseInt($(b).find('.score').text().replace(/^\D/,'-'),10);
 
-				return aScore < bScore ? 1 : (aScore > bScore ? -1 : 0);
-			}).appendTo($ul);
+			$eventEntries.triggerHandler('reorder-items');
 		}));
+	}).on('reorder-items',function(){
+		if ($eventEntries.find('.voting').length === 0)
+			return;
+
+		$eventEntries.children().sort(function(a,b){
+			const
+				aScore = parseInt($(a).find('.score').text().replace(/^\D/,'-'),10),
+				bScore = parseInt($(b).find('.score').text().replace(/^\D/,'-'),10);
+
+			return aScore < bScore ? 1 : (aScore > bScore ? -1 : 0);
+		}).appendTo($eventEntries);
 	});
+
+	$.fn.refreshVoting = function(){
+		const
+			$entry = this,
+			entryID = $entry.attr('id').split('-')[1];
+
+		$.post(`/event/entry/getvote/${entryID}`,$.mkAjaxHandler(function(){
+			if (!this.status)
+				return $.Dialog.fail('Refresh voting buttons of entry #'+entryID, this.message);
+
+			$entry.find('.voting').replaceWith(this.voting);
+			$eventEntries.triggerHandler('reorder-items');
+		}));
+	};
+
+	if (window.EventType === 'contest')
+		$.WS.recvEntryUpdates(true);
 },function(){
 	'use strict';
 
+	delete $.fn.refreshVoting;
 	delete $.fn.rebindFluidbox;
+	if (window.EventType === 'contest')
+		$.WS.recvEntryUpdates(false);
 });

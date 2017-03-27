@@ -1276,10 +1276,10 @@ $(function(){
 		window.addEventListener('load', function(){
 			navigator.serviceWorker.register('/sw.js').then(function(registration){
 				// Registration was successful
-				console.log('ServiceWorker registration successful with scope: ', registration.scope);
+				//console.log('ServiceWorker registration successful with scope: ', registration.scope);
 			}).catch(function(err){
 				// registration failed :(
-				console.log('ServiceWorker registration failed: ', err);
+				//console.log('ServiceWorker registration failed: ', err);
 			});
 		});
 	}
@@ -1676,6 +1676,15 @@ $(function(){
 					if ($post.length)
 						$post.reloadLi(false);
 				}));
+				conn.on('entry-score', wsdecoder(function(data){
+					if (typeof data.entryid === 'undefined')
+						return;
+
+					let $entry = $(`#entry-${data.entryid}`);
+					console.log('[WS] Entry score updated (entryid=%s, score=%s)', data.entryid, data.score);
+					if ($entry.length)
+						$entry.refreshVoting();
+				}));
 				conn.on('disconnect',function(){
 					auth = false;
 					console.log('[WS] %cDisconnected','color:red');
@@ -1698,19 +1707,41 @@ $(function(){
 		wsNotifs();
 		$.WS = (function(){
 			let dis = () => wsNotifs(),
-				substatus = false;
+				substatus = {
+					postUpdates: false,
+					entryUpdates: false,
+				};
 			dis.recvPostUpdates = function(subscribe){
 				if (typeof conn === 'undefined')
-					return;
+					return setTimeout(function(){
+						dis.recvPostUpdates(subscribe);
+					},2000);
 
-				if (typeof subscribe !== 'boolean' || substatus === subscribe)
+				if (typeof subscribe !== 'boolean' || substatus.postUpdates === subscribe)
 					return;
 				conn.emit('post-updates',String(subscribe),wsdecoder(function(data){
 					if (!data.status)
 						return console.log('[WS] %cpost-updates subscription status change failed (subscribe=%s)', 'color:red', subscribe);
 
-					substatus = subscribe;
-					$('#episode-live-update')[substatus?'removeClass':'addClass']('hidden');
+					substatus.postUpdates = subscribe;
+					$('#episode-live-update')[substatus.postUpdates?'removeClass':'addClass']('hidden');
+					console.log('[WS] %c%s','color:green', data.message);
+				}));
+			};
+			dis.recvEntryUpdates = function(subscribe){
+				if (typeof conn === 'undefined')
+					return setTimeout(function(){
+						dis.recvEntryUpdates(subscribe);
+					},2000);
+
+				if (typeof subscribe !== 'boolean' || substatus.entryUpdates === subscribe)
+					return;
+				conn.emit('entry-updates',String(subscribe),wsdecoder(function(data){
+					if (!data.status)
+						return console.log('[WS] %centry-updates subscription status change failed (subscribe=%s)', 'color:red', subscribe);
+
+					substatus.entryUpdates = subscribe;
+					$('#entry-live-update')[substatus.entryUpdates && window.EventType === 'contest'?'removeClass':'addClass']('hidden');
 					console.log('[WS] %c%s','color:green', data.message);
 				}));
 			};

@@ -98,7 +98,7 @@ class Event extends AbstractFillable {
 	public function getEntries(){
 		global $Database;
 
-		return $Database->where('eventid', $this->id)->orderBy('score','ASC')->orderBy('submitted_at','ASC')->get('events__entries');
+		return $Database->where('eventid', $this->id)->orderBy('score','DESC')->orderBy('submitted_at','ASC')->get('events__entries');
 	}
 
 	public function getEntriesHTML(bool $wrap = WRAP):string {

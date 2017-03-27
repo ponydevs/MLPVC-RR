@@ -39,6 +39,15 @@ class EventEntry extends AbstractFillable {
 		$score = $Database->disableAutoClass()->where('entryid', $this->entryid)->getOne('events__entries__votes', 'COALESCE(SUM(value),0) as score');
 		$Database->where('entryid', $this->entryid)->update('events__entries',$score);
 		$this->score = $score['score'];
+
+		try {
+			CoreUtils::socketEvent('entry-score',[
+				'entryid' => $this->entryid,
+			]);
+		}
+		catch (\Exception $e){
+			error_log("SocketEvent Error\n".$e->getMessage()."\n".$e->getTraceAsString());
+		}
 	}
 
 	public function getUserVote(User $user):?EventEntryVote {
@@ -55,6 +64,31 @@ class EventEntry extends AbstractFillable {
 	private static function _getPreviewDiv(string $fullsize, string $preview, ?string $filetype = null):string {
 		$type = isset($filetype) ? "<span class='filetype'>$filetype</span>" : '';
 		return "<div class='preview'><a href='{$fullsize}' target='_blank' rel='noopener'><img src='{$preview}' alt='event entry preview'></a>$type</div>";
+	}
+
+	public function getListItemVoting(Event $event):string {
+		global $signedIn, $currentUser;
+
+		if ($event->type === 'contest' && $signedIn && $event->checkCanVote($currentUser)){
+			$userVote = $this->getUserVote($currentUser);
+			$userVoted = !empty($userVote) && $userVote->isLockedIn($this);
+			$vd = $userVoted || $this->submitted_by === $currentUser->id ? ' disabled' : '';
+			if (!empty($userVote)){
+				$uvc = $userVote->value === 1 ? ' clicked' : '';
+				$dvc = $userVote->value === -1 ? ' clicked' : '';
+			}
+			else $uvc = $dvc = '';
+
+			return <<<HTML
+<div class='voting'>
+	<button class='typcn typcn-arrow-sorted-up upvote$uvc'$vd title='Upvote'></button>
+	<span class='score' title="Score">{$this->getFormattedScore()}</span>
+	<button class='typcn typcn-arrow-sorted-down downvote$dvc'$vd title='Downvote'></button>
+</div>
+HTML;
+		}
+
+		return '';
 	}
 
 	public function toListItemHTML(Event $event, bool $wrap = true):string {
@@ -78,25 +112,7 @@ class EventEntry extends AbstractFillable {
 				$preview = self::_getPreviewDiv($submission->fullsize, $submission->preview, $filetype);
 		}
 
-		if ($event->type === 'contest' && $signedIn && $event->checkCanVote($currentUser)){
-			$userVote = $this->getUserVote($currentUser);
-			$userVoted = !empty($userVote) && $userVote->isLockedIn($this);
-			$vd = $userVoted || $this->submitted_by === $currentUser->id ? ' disabled' : '';
-			if (!empty($userVote)){
-				$uvc = $userVote->value === 1 ? ' clicked' : '';
-				$dvc = $userVote->value === -1 ? ' clicked' : '';
-			}
-			else $uvc = $dvc = '';
-
-			$voting = <<<HTML
-<div class='voting'>
-	<button class='typcn typcn-arrow-sorted-up upvote$uvc'$vd title='Upvote'></button>
-	<span class='score' title="Score">{$this->getFormattedScore()}</span>
-	<button class='typcn typcn-arrow-sorted-down downvote$dvc'$vd title='Downvote'></button>
-</div>
-HTML;
-		}
-		else $voting = '';
+		$voting = $this->getListItemVoting($event);
 
 		$actions = $signedIn && ($currentUser->id === $this->submitted_by || Permission::sufficient('staff')) && time() < strtotime($event->ends_at)
 			? '<button class="blue typcn typcn-pencil edit-entry">Edit</button><button class="red typcn typcn-times delete-entry">Withdraw</button>'

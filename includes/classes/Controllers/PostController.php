@@ -774,7 +774,6 @@ class PostController extends Controller {
 				'id' => $PostID,
 			));
 
-
 		try {
 			CoreUtils::socketEvent('post-add',[
 				'id' => $PostID,

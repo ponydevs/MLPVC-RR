@@ -66,6 +66,10 @@ use App\Users;
 			<small>If you'd like to have the option to disable this feature please <a class="send-feedback">let us know</a>.</small>
 		</p>
 	</section>
+	<section id="entry-live-update" class="hidden">
+		<h2><span class="live-circle"></span> Live updates enabled</h2>
+		<p>Changes to post scores are visible in real time to everyone who sees this message.</p>
+	</section>
 <?php   if ($view === 'episode' && !empty($CurrentEpisode)){ ?>
 	<section id="voting">
 		<h2><?=$CurrentEpisode->isMovie?'Movie':'Episode'?> rating</h2>

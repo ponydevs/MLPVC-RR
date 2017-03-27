@@ -339,6 +339,7 @@ class EventController extends Controller {
 
 		if (!$signedIn)
 			Response::fail();
+		CSRFProtection::protect();
 
 		if (!isset($params['entryid']))
 			Response::fail('Entry ID is missing or invalid');
@@ -358,9 +359,11 @@ class EventController extends Controller {
 				Response::fail('You cannot vote on your own entries', ['disable' => true]);
 		}
 
-		$endts = strtotime($this->_event->ends_at);
-		if ($endts < time())
-			Response::fail('This event has ended, entries can no longer be submitted or modified.');
+		if ($action !== 'view'){
+			$endts = strtotime($this->_event->ends_at);
+			if ($endts < time())
+				Response::fail('This event has ended, entries can no longer be submitted or modified.');
+		}
 	}
 
 	public function getEntry($params){
@@ -441,6 +444,14 @@ class EventController extends Controller {
 
 		$this->_entry->updateScore();
 		Response::done([ 'score' => $this->_entry->getFormattedScore() ]);
+	}
+
+	public function getvoteEntry($params){
+		global $currentUser, $Database;
+
+		$this->_entryPermCheck($params, 'view');
+
+		Response::done([ 'voting' => $this->_entry->getListItemVoting($this->_event) ]);
 	}
 
 	private function _checkWipeLockedInVote(EventEntryVote $userVote){

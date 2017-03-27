@@ -47,4 +47,5 @@ $endts = strtotime($Event->ends_at);
 	echo \App\CoreUtils::exportVars([
 		'EVENT_TYPES' => \App\Models\Event::EVENT_TYPES,
 		'EventPage' => true,
+		'EventType' => $Event->type,
 	]);
