@@ -112,6 +112,7 @@ $router->map('POST', '/event/entry/get/[i:entryid]',         'EventController#ge
 $router->map('POST', '/event/entry/set/[i:entryid]',         'EventController#setEntry');
 $router->map('POST', '/event/entry/del/[i:entryid]',         'EventController#delEntry');
 $router->map('POST', '/event/entry/vote/[i:entryid]',        'EventController#voteEntry');
+$router->map('POST', '/event/entry/unvote/[i:entryid]',      'EventController#unvoteEntry');
 $router->map('POST', '/notifications/get',                   'NotificationsController#get');
 $router->map('POST', '/notifications/mark-read/[i:id]',      'NotificationsController#markRead');
 $router->map('POST', '/ping',                                'PingController#ping');

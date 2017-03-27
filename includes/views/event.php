@@ -26,7 +26,13 @@ $endts = strtotime($Event->ends_at);
 		<h2><span class='typcn typcn-info-large'></span>Description</h2>
 		<div id="description"><?=$Event->desc_rend?>
 			<p>Entries will be accepted until <?=\App\Time::tag(strtotime($Event->ends_at), \App\Time::TAG_EXTENDED, \App\Time::TAG_STATIC_DYNTIME)?>. Entrants can submit <?=isset($Event->max_entries) ? 'a maximum of '.\App\CoreUtils::makePlural('entry', $Event->max_entries, PREPEND_NUMBER):'an unlimited number of entries'?> each.</p>
-<?php   if (!$canEnter) { ?>
+<?php   if ($Event->type==='contest'){ ?>
+			<p>
+				The entry that receives the highest overall score will be the winner. <?=\App\CoreUtils::makePlural(\App\Permission::ROLES_ASSOC[$Event->vote_role])?> may vote only once per entry, and mustn't vote on their own.<br>
+				Votes can only be changed 1 hour after being cast, they are locked in afterwards. Editing the entry removes this lock from cast votes.
+			</p>
+<?php   }
+		if (!$canEnter) { ?>
 			<p class="color-red"><?=$signedIn?'You cannot participate in this event.':'You must be signed in to participate in events.'?></p>
 <?php   } ?>
 		</div>

@@ -327,7 +327,8 @@ CREATE TABLE events__entries (
     submitted_at timestamp with time zone DEFAULT now() NOT NULL,
     title character varying(64) NOT NULL,
     prev_src character varying(255),
-    score integer
+    score integer,
+    last_edited timestamp with time zone DEFAULT now() NOT NULL
 );
 
 
@@ -340,7 +341,8 @@ ALTER TABLE events__entries OWNER TO "mlpvc-rr";
 CREATE TABLE events__entries__votes (
     entryid integer NOT NULL,
     userid uuid NOT NULL,
-    value smallint NOT NULL
+    value smallint NOT NULL,
+    cast_at timestamp with time zone DEFAULT now() NOT NULL
 );
 
 

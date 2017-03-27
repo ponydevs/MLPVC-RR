@@ -24,7 +24,8 @@ class EventEntry extends AbstractFillable {
 		$sub_id,
 		$submitted_by,
 		$submitted_at,
-		$title;
+		$title,
+		$last_edited;
 	/** @param array|object */
 	public function __construct($iter = null){
 		parent::__construct($this, $iter);
@@ -35,7 +36,7 @@ class EventEntry extends AbstractFillable {
 		if (is_null($this->score))
 			return;
 
-		$score = $Database->disableAutoClass()->where('entryid', $this->entryid)->getOne('events__entries__votes', 'SUM(value) as score');
+		$score = $Database->disableAutoClass()->where('entryid', $this->entryid)->getOne('events__entries__votes', 'COALESCE(SUM(value),0) as score');
 		$Database->where('entryid', $this->entryid)->update('events__entries',$score);
 		$this->score = $score['score'];
 	}
@@ -79,17 +80,18 @@ class EventEntry extends AbstractFillable {
 
 		if ($event->type === 'contest' && $signedIn && $event->checkCanVote($currentUser)){
 			$userVote = $this->getUserVote($currentUser);
+			$userVoted = !empty($userVote) && $userVote->isLockedIn($this);
+			$vd = $userVoted || $this->submitted_by === $currentUser->id ? ' disabled' : '';
 			if (!empty($userVote)){
-				$vd = ' disabled';
 				$uvc = $userVote->value === 1 ? ' clicked' : '';
 				$dvc = $userVote->value === -1 ? ' clicked' : '';
 			}
-			else $vd = $uvc = $dvc = '';
+			else $uvc = $dvc = '';
 
 			$voting = <<<HTML
 <div class='voting'>
 	<button class='typcn typcn-arrow-sorted-up upvote$uvc'$vd title='Upvote'></button>
-	<span class='score'>{$this->getFormattedScore()}</span>
+	<span class='score' title="Score">{$this->getFormattedScore()}</span>
 	<button class='typcn typcn-arrow-sorted-down downvote$dvc'$vd title='Downvote'></button>
 </div>
 HTML;

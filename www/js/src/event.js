@@ -134,13 +134,19 @@ DocReady.push(function(){
 		let $btn = $(this),
 			$li = $btn.closest('[id^=entry-]'),
 			entryID = $li.attr('id').split('-')[1],
-			value = $btn.hasClass('upvote') ? 1 : -1;
+			value = $btn.hasClass('upvote') ? 1 : -1,
+			un = $btn.hasClass('clicked');
 
 		$btn.siblings('button').addBack().disable();
-		$.post(`/event/entry/vote/${entryID}`,{value},$.mkAjaxHandler(function(){
-			if (!this.status) return $.Dialog.fail('Voting on entry #'+entryID, this.message);
+		$.post(`/event/entry/${un?'un':''}vote/${entryID}`,{value},$.mkAjaxHandler(function(){
+			let $otherBtn = $btn.siblings('button');
+			if (!this.disable)
+				$otherBtn.addBack().enable();
+			if (!this.status)
+				return $.Dialog.fail('Voting on entry #'+entryID, this.message);
 
-			$btn.addClass('clicked');
+			$btn[un?'removeClass':'addClass']('clicked');
+			$otherBtn.removeClass('clicked');
 			$btn.siblings('.score').text(this.score);
 			const $ul = $btn.closest('ul');
 			$ul.children().sort(function(a,b){

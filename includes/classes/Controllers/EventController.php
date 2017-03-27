@@ -9,6 +9,8 @@ use App\ImageProvider;
 use App\Input;
 use App\Models\Event;
 use App\Models\EventEntry;
+use App\Models\EventEntryVote;
+use App\Models\User;
 use App\Permission;
 use App\Response;
 use App\RegExp;
@@ -352,6 +354,8 @@ class EventController extends Controller {
 				Response::fail('You are not allowed to vote on entries to this event');
 			if ($this->_event->type !== 'contest')
 				Response::fail('You can only vote on entries to contest events');
+			if ($this->_entry->submitted_by === $currentUser->id)
+				Response::fail('You cannot vote on your own entries', ['disable' => true]);
 		}
 
 		$endts = strtotime($this->_event->ends_at);
@@ -375,8 +379,20 @@ class EventController extends Controller {
 		$this->_entryPermCheck($params);
 
 		$update = $this->_addSetEntry();
-		if (!$Database->where('entryid', $this->_entry->entryid)->update('events__entries', $update))
-			Response::fail('Nothing has been changed');
+
+		$changes = [];
+		foreach ($update as $k => $v){
+			if ($update[$k] !== $this->_entry->{$k})
+				$changes[$k] = $v;
+		}
+
+		if (!empty($changes)){
+			// Do not change edit time if only entry title is changed
+			if (!(count($changes) === 1 && array_key_exists('title', $changes)))
+				$changes['last_edited'] = date('c');
+			if (!$Database->where('entryid', $this->_entry->entryid)->update('events__entries', $changes))
+				Response::fail('Nothing has been changed');
+		}
 
 		/** @var $entry EventEntry */
 		$entry = $Database->where('entryid', $this->_entry->entryid)->getOne('events__entries');
@@ -400,8 +416,6 @@ class EventController extends Controller {
 		$this->_entryPermCheck($params, 'vote');
 
 		$userVote = $this->_entry->getUserVote($currentUser);
-		if (!empty($userVote))
-			Response::fail('You already voted for this entry');
 
 		$value = (new Input('value','vote',[
 			Input::IN_RANGE => [-1, 1],
@@ -411,6 +425,12 @@ class EventController extends Controller {
 				Input::ERROR_RANGE => 'Vote value must be @min or @max',
 			]
 		]))->out();
+		if (!empty($userVote)){
+			if ($userVote->value === $value)
+				Response::fail('You already voted for this entry', ['disable' => true]);
+
+			$this->_checkWipeLockedInVote($userVote);
+		}
 
 		if (!$Database->insert('events__entries__votes',[
 			'entryid' => $this->_entry->entryid,
@@ -418,6 +438,30 @@ class EventController extends Controller {
 			'value' => $value,
 		]))
 			Response::dbError('Vote could not be recorded');
+
+		$this->_entry->updateScore();
+		Response::done([ 'score' => $this->_entry->getFormattedScore() ]);
+	}
+
+	private function _checkWipeLockedInVote(EventEntryVote $userVote){
+		global $Database, $currentUser;
+
+		if ($userVote->isLockedIn($this->_entry))
+			Response::fail('You already voted on this post '.Time::tag($userVote->cast_at).'. Your vote is now locked in until the post is edited.');
+
+		if (!$Database->where('userid', $currentUser->id)->where('entryid', $this->_entry->entryid)->delete('events__entries__votes'))
+			Response::dbError('Vote could not be removed');
+	}
+
+	public function unvoteEntry($params){
+		global $currentUser, $Database;
+
+		$this->_entryPermCheck($params, 'vote');
+
+		$userVote = $this->_entry->getUserVote($currentUser);
+		if (empty($userVote))
+			Response::fail('You haven\'t voted for this entry yet');
+		$this->_checkWipeLockedInVote($userVote);
 
 		$this->_entry->updateScore();
 		Response::done([ 'score' => $this->_entry->getFormattedScore() ]);
