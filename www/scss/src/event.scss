@@ -2,6 +2,45 @@
 @import "fluidbox";
 @import "vars";
 
+// Mobile
+@media all and (max-width: $Breakpoint){
+	#content #event-entries {
+		> li {
+			width: 100%;
+			box-sizing: border-box;
+			margin: 0 0 10px 0;
+
+			&:last-child {
+				margin-bottom: 0;
+			}
+			.shorten {
+				display: none;
+
+				+ .typcn {
+					margin-right: 3px;
+					position: relative;
+					top: -2px;
+				}
+			}
+		}
+	}
+}
+// Desktop
+@media all and (min-width: $Breakpoint){
+	#content #event-entries {
+		display: flex;
+		flex-flow: row wrap;
+
+		> li {
+			margin: 2.5px;
+
+			.shorten + .typcn {
+				display: none;
+			}
+		}
+	}
+}
+
 #content {
 	> section {
 		@extend %section;
@@ -20,8 +59,6 @@
 		padding: 0;
 		margin: 0;
 		list-style: none;
-		display: flex;
-		flex-flow: row wrap;
 
 		&:empty:before {
 			display: block;
@@ -34,7 +71,6 @@
 			border: 1px solid rgba(black,.2);
 			background: rgba(black,.05);
 			padding: 7px;
-			margin: 2.5px;
 			display: flex;
 			flex-flow: row nowrap;
 			align-items: center;
@@ -86,6 +122,7 @@
 				margin-right: 10px;
 				box-shadow: 1px 1px 2px rgba(black, .4);
 				user-select: none;
+				flex: 0 0 auto;
 
 				> a {
 					display: block;

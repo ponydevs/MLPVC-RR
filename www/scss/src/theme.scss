@@ -11,6 +11,7 @@
 }
 // Mobile-only Styles
 @media all and (max-width: $Breakpoint) {
+	.desktop-only { display: none !important }
 	body {
 		overflow: initial;
 		background: $StyledBackground;
@@ -92,6 +93,7 @@
 }
 // Desktop-only Styles
 @media all and (min-width: $Breakpoint) {
+	.mobile-only { display: none !important }
 	body {
 		overflow-x: auto;
 		overflow-y: scroll;

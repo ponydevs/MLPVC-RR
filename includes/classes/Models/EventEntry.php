@@ -115,7 +115,7 @@ HTML;
 		$voting = $this->getListItemVoting($event);
 
 		$actions = $signedIn && ($currentUser->id === $this->submitted_by || Permission::sufficient('staff')) && time() < strtotime($event->ends_at)
-			? '<button class="blue typcn typcn-pencil edit-entry">Edit</button><button class="red typcn typcn-times delete-entry">Withdraw</button>'
+			? '<button class="blue typcn typcn-pencil edit-entry" title="Edit"></button><button class="red typcn typcn-times delete-entry" title="Withdraw"></button>'
 			: '';
 
 		if (!empty($actions))
@@ -126,7 +126,7 @@ $voting
 $preview
 <div class="details">
 	<span class="label">{$title}</span>
-	<span class="submitter">Made by {$submitter}<br>Submitted {$submit_tag}</span>
+	<span class="submitter"><span class="shorten submitter">By </span><span class="typcn typcn-user" title="By"></span>{$submitter}<br><span class="shorten time">Submitted </span><span class="typcn typcn-time"></span>{$submit_tag}</span>
 	$actions
 </div>
 HTML;
