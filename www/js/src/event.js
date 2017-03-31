@@ -10,7 +10,7 @@ DocReady.push(function(){
 			<span>Entry link</span>
 			<input type="url" name="link" required>
 		</label>
-		<div class="notice info">This must point to a deviation on DeviantArt or a Sta.sh upload. A Sta.sh link will not be visible to the public, so use that if you do not want to share the source file with anyone other than the staff. You only need to submit the source file, we'll take care of the rest. For collaboration events, this should always point to a vector source file.</div>`,
+		<div class="notice info">This must point to a deviation on DeviantArt or a Sta.sh upload. A Sta.sh link will not be visible to the public, so use that if you do not want to share the source file with anyone other than the staff. For collaboration events, you only need to submit the source file, we'll take care of the rest.</div>`,
 		$.mk('label').append(
 			`<span>Entry title</span>`,
 			$.mk('input').attr({
