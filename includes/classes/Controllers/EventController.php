@@ -243,6 +243,8 @@ class EventController extends Controller {
 
 		if (!$this->_event->checkCanEnter($currentUser))
 			Response::fail('You cannot participate in this event.');
+		if (!$this->_event->hasStarted())
+			Response::fail('This event hasn\'t started yet, so entries cannot be submitted.');
 
 		if (!empty($this->_event->max_entries)){
 			$entrycnt = count($currentUser->getEntriesFor($this->_event, 'entryid'));
@@ -321,6 +323,8 @@ class EventController extends Controller {
 
 		if (!$this->_event->checkCanEnter($currentUser))
 			Response::fail('You cannot participate in this event.');
+		if (!$this->_event->hasStarted())
+			Response::fail('This event hasn\'t started yet, so entries cannot be submitted.');
 
 		$insert = $this->_addSetEntry();
 		$insert['submitted_by'] = $currentUser->id;
