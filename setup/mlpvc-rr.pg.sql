@@ -1898,19 +1898,11 @@ ALTER TABLE ONLY events__entries
 
 
 --
--- Name: events__entries__votes events__votes_entryid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
---
-
-ALTER TABLE ONLY events__entries__votes
-    ADD CONSTRAINT events__votes_entryid PRIMARY KEY (entryid);
-
-
---
 -- Name: events__entries__votes events__votes_entryid_userid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY events__entries__votes
-    ADD CONSTRAINT events__votes_entryid_userid UNIQUE (entryid, userid);
+    ADD CONSTRAINT events__votes_entryid_userid PRIMARY KEY (entryid, userid);
 
 
 --
