@@ -80,6 +80,7 @@ class DiscordMember extends AbstractUser {
 		'f15237dd-547b-4dac-09ff-7a44b7cd6f9f',
 		'6d2b4808-1792-6342-7087-aa0fb261907d',
 		'f73c6d54-49d2-a88b-ceb5-aba86dbb9b5b',
+		'62b26e62-090d-db3f-019a-6eeaaf1ffddc',
 	];
 
 	public function guessDAUser():?string {
