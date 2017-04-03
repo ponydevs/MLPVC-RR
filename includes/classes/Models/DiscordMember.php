@@ -25,6 +25,15 @@ class DiscordMember extends AbstractUser {
 		$this->avatar_url = $this->getAvatarURL();
 	}
 
+	function toArray(bool $remove_empty = false): array{
+		$arr = parent::toArray($remove_empty);
+		if (array_key_exists('name', $arr))
+			unset($arr['name']);
+		if (array_key_exists('avatar_url', $arr))
+			unset($arr['avatar_url']);
+		return $arr;
+	}
+
 	static function of(User $user):DiscordMember {
 		global $Database;
 		/** @noinspection PhpIncompatibleReturnTypeInspection */

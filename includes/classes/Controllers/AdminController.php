@@ -398,13 +398,15 @@ HTML;
 				'username' => $member['user']['username'],
 				'discriminator' => $member['user']['discriminator'],
 				'nick' => $member['nick'] ?? null,
-				'avatar' => $member['user']['avatar'] ?? null,
+				'avatar_hash' => $member['user']['avatar'] ?? null,
 				'joined_at' => $member['joined_at'],
 			]);
 
+			//sd($member);
+
 			if ((isset($member['roles']) && count($member['roles']) > 1) || !empty($ins->nick))
 				$ins->guessDAUser();
-			$ins = (array)$ins;
+			$ins = $ins->toArray();
 
 			if ($Database->where('id', $ins['id'])->has('discord-members')){
 				$insid = $ins['id'];
