@@ -391,6 +391,7 @@ HTML;
 		// TODO If we ever surpass 1000 Discord server members this will bite me in the backside
 		$discord = new DiscordClient(['token' => DISCORD_BOT_TOKEN]);
 		$members = $discord->guild->listGuildMembers(['guild.id' => DISCORD_SERVER_ID,'limit' => 1000]);
+		$usrids = [];
 
 		foreach ($members as $member){
 			$ins = new DiscordMember([
@@ -402,7 +403,7 @@ HTML;
 				'joined_at' => $member['joined_at'],
 			]);
 
-			//sd($member);
+			$usrids[] = $ins->id;
 
 			if ((isset($member['roles']) && count($member['roles']) > 1) || !empty($ins->nick))
 				$ins->guessDAUser();
@@ -415,8 +416,12 @@ HTML;
 					unset($ins['userid']);
 				$Database->where('id', $insid)->update('discord-members', $ins);
 			}
-			else $Database->insert('discord-members', $ins, null);
+			else $Database->insert('discord-members', $ins);
 		}
+
+		if (count($usrids) > 0)
+			$Database->where("id NOT IN ('".implode("','",$usrids)."')");
+		$Database->delete('discord-members');
 	}
 
 	function massApprove(){
