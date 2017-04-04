@@ -1456,7 +1456,7 @@ $(function(){
 
 	// Navigation handling
 	$d.on('click','a[href]', function(e){
-		if (e.which > 2) return true;
+		if (e.which > 2 || e.ctrlKey || e.shiftKey) return true;
 
 		let link = this;
 		if (link.host !== location.host) return true;
