@@ -325,6 +325,8 @@ class EventController extends Controller {
 			Response::fail('You cannot participate in this event.');
 		if (!$this->_event->hasStarted())
 			Response::fail('This event hasn\'t started yet, so entries cannot be submitted.');
+		if ($this->_event->hasEnded())
+			Response::fail('This event has concluded, so no new entries can be submitted.');
 
 		$insert = $this->_addSetEntry();
 		$insert['submitted_by'] = $currentUser->id;

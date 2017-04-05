@@ -92,6 +92,10 @@ class Event extends AbstractFillable {
 		return ($now??time()) >= strtotime($this->starts_at);
 	}
 
+	public function hasEnded(?int $now = null){
+		return ($now??time()) >= strtotime($this->ends_at);
+	}
+
 	public function getEntryRoleName():string {
 		return in_array($this->entry_role, self::REGULAR_ENTRY_ROLES) ? CoreUtils::makePlural(Permission::ROLES_ASSOC[$this->entry_role]) : self::SPECIAL_ENTRY_ROLES[$this->entry_role];
 	}
