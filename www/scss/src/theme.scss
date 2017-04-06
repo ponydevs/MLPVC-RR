@@ -675,6 +675,10 @@ header, #sidebar .mobile-nav {
 						&.event {
 							background-color: $NBlue;
 						}
+
+						&.movie {
+							background-color: $NOrange;
+						}
 					}
 					.bottom {
 						bottom: 0;

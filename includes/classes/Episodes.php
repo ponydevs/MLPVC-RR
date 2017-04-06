@@ -400,7 +400,8 @@ HTML;
 						: "Movie: {$Episode->title}"
 					);
 
-				$HTML[] = [$airtime, "<li><div class='calendar'><span class='top'>$month</span><span class='bottom'>$day</span></div>".
+				$type = $Episode->isMovie ? 'movie' : 'episode';
+				$HTML[] = [$airtime, "<li><div class='calendar'><span class='top $type'>$month</span><span class='bottom'>$day</span></div>".
 					"<div class='meta'><span class='title'><a href='{$Episode->toURL()}'>$title</a></span><span class='time'>Airs $time</span></div></li>"];
 			}
 		}
