@@ -13,6 +13,7 @@ class Episodes {
 	const TITLE_CUTOFF = 26;
 	static $ALLOWED_PREFIXES = array(
 		'Equestria Girls' => 'EQG',
+		'My Little Pony' => 'MLP',
 	);
 
 	/**

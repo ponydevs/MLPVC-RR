@@ -63,7 +63,7 @@ class EpisodeController extends Controller {
 
 		Response::done(array(
 			'ep' => $this->_episode,
-			'epid' => $this->_episode->formatTitle(AS_ARRAY, 'id'),
+			'epid' => "S{$this->_episode->season}E{$this->_episode->episode}",
 			'caneditid' => $this->_episode->getPostCount() === 0,
 		));
 	}
@@ -163,7 +163,7 @@ class EpisodeController extends Controller {
 							}
 						}
 					}
-					Response::fail("Unsupported prefix: {$match[1]}. ".(isset($mostSimilar) ? "<em>Did you mean <span class='color-ui'>$mostSimilar</span></em>?" : 'Use a backslash if the colon is part of the title (e.g. <code>\:</code>)'));
+					Response::fail("Unsupported prefix: {$match[1]}. ".(isset($mostSimilar) ? "<em>Did you mean <span class='color-ui'>$mostSimilar</span></em>?" : ''));
 				}
 
 				$title = Episodes::removeTitlePrefix($value);

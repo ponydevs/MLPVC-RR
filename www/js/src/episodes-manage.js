@@ -120,6 +120,9 @@ DocReady.push(function(){
 
 		$.Dialog.wait(`Editing ${epid}`, `Getting ${movie?'movie':'episode'} details from server`);
 
+		if (movie)
+			epid = `S0E${epid.split('#')[1]}`;
+
 		$.post(`/episode/get/${epid}`, $.mkAjaxHandler(function(){
 			if (!this.status) return $.Dialog.fail(false,this.message);
 
