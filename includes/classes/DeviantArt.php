@@ -118,13 +118,10 @@ class DeviantArt {
 				if (!empty($Deviation))
 					$Database->where('id',$Deviation->id)->update('cached-deviations', array('updated_on' => date('c', time()+Time::IN_SECONDS['minute'] )));
 
-				$ErrorMSG = "Saving local data for $ID@$type failed: ".$e->getMessage();
-				if (!Permission::sufficient('developer'))
+				$ErrorMSG = "Saving local data for $ID@$type failed: ".$e->getMessage()."\n".$e->getTraceAsString();
+				if (Permission::insufficient('developer'))
 					trigger_error($ErrorMSG);
-
-				if (POST_REQUEST)
-					Response::fail($ErrorMSG);
-				else echo "<div class='notice fail'><label>da_cache_deviation($ID, $type)</label><p>$ErrorMSG</p></div>";
+				else Response::fail($ErrorMSG);
 
 				self::$_CACHE_BAILOUT = true;
 				return $Deviation;
