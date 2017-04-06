@@ -118,10 +118,11 @@ class DeviantArt {
 				if (!empty($Deviation))
 					$Database->where('id',$Deviation->id)->update('cached-deviations', array('updated_on' => date('c', time()+Time::IN_SECONDS['minute'] )));
 
-				$ErrorMSG = "Saving local data for $ID@$type failed: ".$e->getMessage()."\n".$e->getTraceAsString();
-				if (Permission::insufficient('developer'))
-					trigger_error($ErrorMSG);
-				else Response::fail($ErrorMSG);
+				error_log("Saving local data for $ID@$type failed: ".$e->getMessage()."\n".$e->getTraceAsString());
+
+				if ($e->getCode() === 404){
+					$Deviation = null;
+				}
 
 				self::$_CACHE_BAILOUT = true;
 				return $Deviation;
@@ -204,8 +205,8 @@ class DeviantArt {
 		}
 		catch (CURLRequestException $e){
 			if ($e->getCode() == 404)
-				throw new \Exception("Image not found. The URL may be incorrect or the image has been deleted.");
-			else throw new \Exception("Image could not be retrieved (HTTP {$e->getCode()})");
+				throw new \Exception("Image not found. The URL may be incorrect or the image has been deleted.", 404);
+			else throw new \Exception("Image could not be retrieved (HTTP {$e->getCode()})", $e->getCode());
 		}
 
 		return $data;
