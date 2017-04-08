@@ -1656,6 +1656,8 @@ $(function(){
 					if (!data.type || !data.id || window.EPISODE !== data.episode || window.SEASON !== data.season)
 						return;
 
+					if ($(`.posts #${data.type}-${data.id}`).length > 0)
+						return;
 					$.post(`/post/reload/${data.type}/${data.id}`,$.mkAjaxHandler(function(){
 						if (!this.status) return;
 
