@@ -799,7 +799,7 @@ class PostController extends Controller {
 		if (empty($LinkedPost))
 			CoreUtils::notFound();
 
-		$Episode = Episodes::getActual($LinkedPost->season, $LinkedPost->episode);
+		$Episode = Episodes::getActual($LinkedPost->season, $LinkedPost->episode, Episodes::ALLOW_MOVIES);
 		if (empty($Episode))
 			CoreUtils::notFound();
 
