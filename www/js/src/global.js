@@ -1659,6 +1659,8 @@ $(function(){
 					$.post(`/post/reload/${data.type}/${data.id}`,$.mkAjaxHandler(function(){
 						if (!this.status) return;
 
+						if ($(`.posts #${data.type}-${data.id}`).length > 0)
+							return;
 						let $newli = $(this.li);
 						$(this.section).append($newli);
 						$newli.rebindFluidbox();
