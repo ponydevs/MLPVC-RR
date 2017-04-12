@@ -24,9 +24,6 @@ class DeviantArt {
 		'user_banned' => 'You were banned on our website by a staff member.',
 	);
 
-	/** @var int */
-	static $requestCount = 0;
-
 	/**
 	 * Makes authenticated requests to the DeviantArt API
 	 *
@@ -71,7 +68,6 @@ class DeviantArt {
 		$http_response_header = array_map("rtrim",explode("\n",$responseHeaders));
 		$curlError = curl_error($r);
 		curl_close($r);
-		self::$requestCount++;
 
 		if ($responseCode < 200 || $responseCode >= 300)
 			throw new CURLRequestException(rtrim("cURL fail for URL \"$requestURI\" (HTTP $responseCode); $curlError",' ;'), $responseCode);
