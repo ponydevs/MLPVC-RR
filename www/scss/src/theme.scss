@@ -261,6 +261,7 @@ header {
 						opacity: .9;
 
 						transition: opacity .2s linear, font-size .2s linear;
+						will-change: opacity, font-size;
 					}
 
 					> * {
@@ -270,9 +271,16 @@ header {
 						&:before {
 							content: '\e047';
 						}
-						> * {
+						> *:not(.notif-cnt) {
 							opacity: 0;
 							transition: opacity .35s linear;
+						}
+						> .notif-cnt {
+							font-size: 12px;
+							padding: 0 2px;
+							height: 1.2em;
+							line-height: 1.2em;
+							box-shadow: 0 0 5px $HeaderFooterBG;
 						}
 					}
 					body:not(.sidebar-open) &:before {
@@ -302,7 +310,7 @@ header {
 
 							> .loading-circle {
 								stroke-width: $toggleBorderWidth*2;
-								transition: stroke .2s linear, stroke-width .5s linear, stroke-dashoffset .2s ease-out;
+								transition: stroke-width .5s linear, stroke-dashoffset .2s ease-out;
 							}
 						}
 					}
@@ -315,34 +323,40 @@ header {
 						width: $toggleSize;
 						height: $toggleSize;
 						opacity: 0;
+						will-change: opacity;
 
 						> .loading-circle {
 							fill: transparent;
 							stroke: #afa;
 							stroke-width: $toggleBorderWidth;
-							transition: stroke .2s linear, stroke-width .5s linear, stroke-dashoffset .35s linear;
+							transition: stroke-width .5s linear, stroke-dashoffset .35s linear;
+							will-change: stroke-width, stroke-dashoffset;
 						}
 					}
 					> .notif-cnt {
 						position: absolute;
 						z-index: 6;
-						bottom: -0.5px;
-						right: -0.5px;
+						bottom: 0;
+						right: 0;
 						padding: 0 4px;
 						cursor: pointer;
 						color: $NRed;
 						text-shadow: 0 1px 0 rgba($NRed, .3);
 						background: #fff;
-						border-top-left-radius: 10px;
-						border-bottom-right-radius: 10px;
+						border-radius: 4px;
 						font-size: 16px;
 						font-weight: bold;
 						display: inline-block;
-						width: #{$toggleSize / 3};
+						max-width: 100%;
 						height: #{$toggleSize / 2};
+						line-height: 1.5em;
 						overflow: hidden;
 						text-align: center;
-						transition: opacity .5s linear;
+						will-change: opacity, font-size, padding, height, line-height, box-shadow;
+						transition-property: opacity, font-size, padding, height, line-height, box-shadow;
+						transition-duration: .35s;
+						transition-timing-function: linear;
+						box-shadow: 0 0 5px 2px $HeaderFooterBG;
 
 						&:empty { display: none }
 					}
