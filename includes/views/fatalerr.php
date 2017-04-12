@@ -1,4 +1,4 @@
-<?php
+<?php // DO NOT USE SHORT OPEN TAGS IN THIS FILE - THIS DISPLAYS THE WARNING ABOUT THE OPTION BEING DISABLED
 use App\CoreUtils;
 use App\HTTP;
 use App\Time;
@@ -31,10 +31,10 @@ switch($errcause){
 	break;
 	case "maintenance": ?>
 	<h1>Website Maintenance</h1>
-<? if (defined('MAINTENANCE_START')){ ?>
+<?php if (defined('MAINTENANCE_START')){ ?>
 	<p>Started <?=Time::tag(MAINTENANCE_START)?>
-<? } ?>
-<?	    echo CoreUtils::notice('info','<span class="typcn typcn-info-large"></span> The developer is currently performing some actions that requre the site to be temporarily offline. We\'ll be back up and running as soon as possible, thank you for your understanding.',true);
+<?php }
+	echo CoreUtils::notice('info','<span class="typcn typcn-info-large"></span> The developer is currently performing some actions that requre the site to be temporarily offline. We\'ll be back up and running as soon as possible, thank you for your understanding.',true);
 	break;
 	} ?>
 </div>
@@ -43,4 +43,4 @@ echo CoreUtils::exportVars(array('ServiceUnavailableError' => true));
 $customJS = array("/js/min/moment.js","/js/min/global.js","/js/min/dialog.js");
 foreach ($customJS as $k => $el)
 	$customJS[$k] .= '?'.filemtime(APPATH.CoreUtils::substring($el,1));
-require "footer.php"; ?>
+require "footer.php";
