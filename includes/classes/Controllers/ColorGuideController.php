@@ -24,6 +24,7 @@ use App\Tags;
 use App\ColorGroups;
 use App\Users;
 use Elasticsearch\Common\Exceptions\ClientErrorResponseException;
+use Elasticsearch\Common\Exceptions\Missing404Exception;
 use Elasticsearch\Common\Exceptions\NoNodesAvailableException;
 use Elasticsearch\Common\Exceptions\ServerErrorResponseException;
 use GuzzleHttp\Ring\Core;
@@ -441,10 +442,16 @@ class ColorGuideController extends Controller {
 
 			$search->setSource(false);
 			$search = $search->toArray();
-			$search = CGUtils::searchElastic($search, $Pagination);
-			$Pagination->calcMaxPages($search['hits']['total']);
+			try {
+				$search = CGUtils::searchElastic($search, $Pagination);
+			}
+			catch (Missing404Exception $e){
+				$elasticAvail = false;
+				$search = [];
+			}
 
 			if (!empty($search['hits']['hits'])){
+				$Pagination->calcMaxPages($search['hits']['total']);
 				$ids = [];
 				foreach($search['hits']['hits'] as $hit)
 					$ids[] = $hit['_id'];

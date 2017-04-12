@@ -2,6 +2,9 @@
 
 use App\RegExp;
 
+// Expected PHP vesrion constant for fatal error page output
+define('PHPVER', '7.1');
+
 // Configuration \\
 define('HTTPS', !empty($_SERVER['HTTPS']));
 define('ABSPATH',(HTTPS?'https':'http').'://'.$_SERVER['SERVER_NAME'].'/');
