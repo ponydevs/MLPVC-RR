@@ -11,7 +11,8 @@ $endts = strtotime($Event->ends_at);
 	<h1><?=$heading?></h1>
 	<p><?=$EventType?> for <?=$Event->getEntryRoleName()?> &bull; <?=$startts > time() ? 'Starts '.\App\Time::tag($startts) : ($endts > time() ? 'Ends' : 'Ended').' '.\App\Time::tag($endts)?></p>
 
-<?php   $canEnter = $signedIn && $Event->checkCanEnter($currentUser) && $Event->hasStarted() && !$Event->hasEnded();
+<?php   $couldEnter = $signedIn && $Event->checkCanEnter($currentUser);
+		$canEnter = $couldEnter && $Event->hasStarted() && !$Event->hasEnded();
 		if ($signedIn){ ?>
 	<div class="align-center" id="event-<?=$Event->id?>">
 		<button class="green typcn typcn-user-add" <?=$canEnter?'':'disabled'?> id="enter-event">Enter</button>
@@ -33,7 +34,7 @@ $endts = strtotime($Event->ends_at);
 			</p>
 <?php   }
 		if (!$canEnter) { ?>
-			<p class="color-red"><?=$signedIn?'You cannot participate in this event.':'You must be signed in to participate in events.'?></p>
+			<p class="color-red"><?=$signedIn?'You '.($couldEnter?($Event->hasEnded()?'can no longer':''):'cannot').' participate in this event'.($couldEnter && !$Event->hasStarted()?' yet':'').'.':'You must be signed in to participate in events.'?></p>
 <?php   } ?>
 		</div>
 	</section>
