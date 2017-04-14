@@ -12,7 +12,7 @@
 		"fightbulc/moment": "^1.25.1",
 		"wisembly/elephant.io": "*",
 		"ezyang/htmlpurifier": "^4.8",
-		"seinopsys/postgresql-database-class": "dev-master",
+		"seinopsys/postgresql-database-class": "^1.0",
 		"cogpowered/finediff": "0.3.*",
 		"elasticsearch/elasticsearch": "~5.0",
 		"ongr/elasticsearch-dsl": ">=2.2",

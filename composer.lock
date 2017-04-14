@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "0fa59b316b2cd9cf85c1014bc305d028",
-    "content-hash": "28adaad6f778046628845842e9150aea",
+    "hash": "a8cf4b9ed0baf64c4d1fad3aa6dac77e",
+    "content-hash": "5c31058d1c8bedb011d8866b50e02482",
     "packages": [
         {
             "name": "altorouter/altorouter",
@@ -1080,16 +1080,16 @@
         },
         {
             "name": "seinopsys/postgresql-database-class",
-            "version": "dev-master",
+            "version": "v1.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/SeinopSys/PHP-PostgreSQL-Database-Class.git",
-                "reference": "1b58b693149332235bf9ff8bf540bcf39754d950"
+                "reference": "ee89a41fff51e376f26960aca359848593808431"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/SeinopSys/PHP-PostgreSQL-Database-Class/zipball/1b58b693149332235bf9ff8bf540bcf39754d950",
-                "reference": "1b58b693149332235bf9ff8bf540bcf39754d950",
+                "url": "https://api.github.com/repos/SeinopSys/PHP-PostgreSQL-Database-Class/zipball/ee89a41fff51e376f26960aca359848593808431",
+                "reference": "ee89a41fff51e376f26960aca359848593808431",
                 "shasum": ""
             },
             "require": {
@@ -1114,7 +1114,7 @@
                 }
             ],
             "description": "PHP wrapper class for PDO-based interaction with PostgreSQL databases, heavily based on joshcam/mysqli-database-class",
-            "time": "2017-03-26 22:36:30"
+            "time": "2017-04-14 14:13:44"
         },
         {
             "name": "symfony/options-resolver",
@@ -2846,9 +2846,7 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "seinopsys/postgresql-database-class": 20
-    },
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": [],

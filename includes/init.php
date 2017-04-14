@@ -41,6 +41,7 @@ catch (Exception $e){
 	die(require INCPATH."views/fatalerr.php");
 }
 $Database = new PostgresDbWrapper('mlpvc-rr');
+$Database->setPDOErrmode(PDO::ERRMODE_EXCEPTION);
 try {
 	$Database->pdo();
 }
