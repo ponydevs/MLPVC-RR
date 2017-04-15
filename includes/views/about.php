@@ -51,8 +51,8 @@ else echo CoreUtils::notice('warn','This section went missing due to a bug, and 
 				<li><a href="http://deviantart.com/">DeviantArt</a></li>
 				<li><a href="http://imgur.com/">Imgur</a></li>
 				<li><a href="http://derpibooru.org/">Derpibooru</a></li>
-				<li><a href="http://puush.me/">Puush</a></li>
 				<li><a href="http://app.prntscr.com/">LightShot</a></li>
+				<li><del>Puush</del> (no longer supported)</li>
 			</ul>
 		</div>
 	</section>

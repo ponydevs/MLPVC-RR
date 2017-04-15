@@ -27,7 +27,6 @@ class ImageProvider {
 		'(?:i\.)?imgur\.com/([A-Za-z\d]{1,7})' => 'imgur',
 		'derpiboo(?:\.ru|ru\.org)/(\d+)' => 'derpibooru',
 		'derpicdn\.net/img/(?:view|download)/\d{4}/\d{1,2}/\d{1,2}/(\d+)' => 'derpibooru',
-		'puu\.sh/([A-Za-z\d]+(?:/[A-Fa-f\d]+)?)' => 'puush',
 		'prntscr\.com/([\da-z]+)' => 'lightshot',
 	);
 	private static $_allowedMimeTypes = array('image/png' => true,'image/jpeg' => true,'image/jpg' => true);
