@@ -46,7 +46,6 @@ $router->map('GET',      '/[cg]/[eqg:eqg]?/sprite(-colors)?/[i:id][adi]?',      
 $router->map('GET|POST', '/[cg]/get-tags',                                      'ColorGuideController#getTags');
 $router->map('GET', '/da-auth',                        'AuthController#auth');
 $router->map('GET', '/episode/[epid:id]',              'EpisodeController#page');
-$router->map('GET|POST', '/episode/nextup',            'EpisodeController#nextup');
 $router->map('GET', '/episodes/[i]?',                  'EpisodesController#index');
 $router->map('GET', '/eqg/[i:id]',                     'EQGController#redirectInt');
 $router->map('GET', '/eqg/[adi:id]',                   'EQGController#redirectStr');
@@ -94,6 +93,7 @@ $router->map('POST', '/[user]/[un:name]/cg/colorgroup/[gsd:action]/[i:id]', 'Col
 $router->map('POST', '/[user]/[un:name]/cg/colorgroup/[make:action]',       'ColorGuideController#colorGroupAction');
 $router->map('POST', '/da-auth/signout',                     'AuthController#signout');
 $router->map('POST', '/episode/postlist/[epid:id]',          'EpisodeController#postList');
+$router->map('POST', '/episode/nextup',                      'EpisodeController#nextup');
 $router->map('POST', '/episode/get/[epid:id]',               'EpisodeController#get');
 $router->map('POST', '/episode/delete/[epid:id]',            'EpisodeController#delete');
 $router->map('POST', '/episode/set/[epid:id]',               'EpisodeController#set');

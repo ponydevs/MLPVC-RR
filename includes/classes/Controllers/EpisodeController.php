@@ -38,6 +38,9 @@ class EpisodeController extends Controller {
 		/** @var $UpcomingEpisode Episode */
 		$UpcomingEpisode = $Database->where('airs > NOW()')->orderBy('airs', 'ASC')->where('season != 0')->getOne('episodes','season,episode,title,airs,twoparter');
 
+		if (empty($UpcomingEpisode))
+			Response::fail('No upcoming episode found');
+
 		$out = $UpcomingEpisode->toArray(true);
 		unset($out['isMovie']);
 		Response::done($out, JSON::PRETTY_PRINT);
