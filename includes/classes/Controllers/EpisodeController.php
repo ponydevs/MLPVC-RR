@@ -6,6 +6,7 @@ use App\CoreUtils;
 use App\CSRFProtection;
 use App\Episodes;
 use App\Input;
+use App\JSON;
 use App\Logs;
 use App\Permission;
 use App\Posts;
@@ -25,6 +26,21 @@ class EpisodeController extends Controller {
 			));
 
 		Episodes::loadPage($CurrentEpisode);
+	}
+
+	function nextup(){
+		// Only accessible from localhost
+		if (!in_array($_SERVER['REMOTE_ADDR'],['::1','127.0.0.1']) && Permission::insufficient('developer'))
+			Response::fail();
+
+		global $Database;
+
+		/** @var $UpcomingEpisode Episode */
+		$UpcomingEpisode = $Database->where('airs > NOW()')->orderBy('airs', 'ASC')->where('season != 0')->getOne('episodes','season,episode,title,airs,twoparter');
+
+		$out = $UpcomingEpisode->toArray(true);
+		unset($out['isMovie']);
+		Response::done($out, JSON::PRETTY_PRINT);
 	}
 
 	function page($params){

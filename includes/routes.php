@@ -46,6 +46,7 @@ $router->map('GET',      '/[cg]/[eqg:eqg]?/sprite(-colors)?/[i:id][adi]?',      
 $router->map('GET|POST', '/[cg]/get-tags',                                      'ColorGuideController#getTags');
 $router->map('GET', '/da-auth',                        'AuthController#auth');
 $router->map('GET', '/episode/[epid:id]',              'EpisodeController#page');
+$router->map('GET|POST', '/episode/nextup',            'EpisodeController#nextup');
 $router->map('GET', '/episodes/[i]?',                  'EpisodesController#index');
 $router->map('GET', '/eqg/[i:id]',                     'EQGController#redirectInt');
 $router->map('GET', '/eqg/[adi:id]',                   'EQGController#redirectStr');

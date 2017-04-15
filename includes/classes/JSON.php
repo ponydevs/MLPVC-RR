@@ -8,7 +8,9 @@ use App\Exceptions\JSONParseException;
  * with defaults that make sense
  */
 class JSON {
-	const AS_OBJECT = false;
+	const
+		AS_OBJECT = false,
+		PRETTY_PRINT = true;
 	/**
 	 * @param string $json
 	 * @param bool   $assoc
