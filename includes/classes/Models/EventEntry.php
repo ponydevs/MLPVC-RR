@@ -102,6 +102,7 @@ HTML;
 		$title = CoreUtils::escapeHTML($this->title);
 		$submitter = Users::get($this->submitted_by)->getProfileLink();
 		$submit_tag = Time::tag(strtotime($this->submitted_at));
+		$edited_tag = $this->last_edited !== $this->submitted_at ? '<br><span class="shorten edited">Last edited </span><span class="typcn typcn-pencil" title="Last edited"></span>'.Time::tag(strtotime($this->last_edited)) :'';
 
 		$sub_prov_favme = $this->sub_prov === 'fav.me';
 		if ($sub_prov_favme || Permission::sufficient('staff')){
@@ -126,7 +127,7 @@ $voting
 $preview
 <div class="details">
 	<span class="label">{$title}</span>
-	<span class="submitter"><span class="shorten submitter">By </span><span class="typcn typcn-user" title="By"></span>{$submitter}<br><span class="shorten time">Submitted </span><span class="typcn typcn-time"></span>{$submit_tag}</span>
+	<span class="submitter"><span class="shorten submitter">By </span><span class="typcn typcn-user" title="By"></span>{$submitter}<br><span class="shorten time">Submitted </span><span class="typcn typcn-time" title="Submitted"></span>{$submit_tag}{$edited_tag}</span>
 	$actions
 </div>
 HTML;
