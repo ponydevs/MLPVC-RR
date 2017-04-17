@@ -7,7 +7,9 @@ use App\Permission;
 use App\UserPrefs;
 use App\Users;
 use App\CoreUtils;
+use App\View;
 
+/** @var $view App\View */
 /** @var $signedIn bool */
 /** @var $Owner User */
 /** @var $User User */
@@ -90,7 +92,7 @@ $Title = CoreUtils::escapeHTML($Title); ?>
 	<meta name="format-detection" content="telephone=no">
 	<meta name="theme-color" content="#2C73B1">
 	<link rel="image_src" href="<?=$ThumbImage?>">
-	
+
 	<link rel="apple-touch-icon" sizes="57x57" href="/img/favicons-v1/apple-touch-icon-57x57.png">
 	<link rel="apple-touch-icon" sizes="60x60" href="/img/favicons-v1/apple-touch-icon-60x60.png">
 	<link rel="apple-touch-icon" sizes="72x72" href="/img/favicons-v1/apple-touch-icon-72x72.png">
@@ -155,3 +157,25 @@ ga('send','pageview');
 	</aside>
 
 	<div id="main">
+<?php
+	if (isset($view) && $view instanceof View)
+		require $view;
+	else echo $mainContent;
+?>
+	</div>
+
+	<footer><?=CoreUtils::getFooter(isset($view) && $view === 'fatalerr')?></footer>
+
+<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s=" crossorigin="anonymous"></script>
+<script>if(!window.jQuery)document.write('\x3Cscript src="/js/min/jquery-3.2.1.js">\x3C/script>');</script>
+<?php
+	echo CoreUtils::exportVars(array(
+		'PRINTABLE_ASCII_PATTERN' => PRINTABLE_ASCII_PATTERN,
+		'DocReady' => array(),
+		'signedIn' => $signedIn,
+	));
+	if (isset($customJS)) foreach ($customJS as $js){
+		echo "<script src='$js'></script>\n";
+	} ?>
+</body>
+</html>

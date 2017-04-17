@@ -4,6 +4,7 @@ namespace App;
 
 use App\Controllers\Controller;
 use App\Models\User;
+use App\View;
 use Elasticsearch\Client;
 use Elasticsearch\ClientBuilder;
 use ElephantIO\Engine\SocketIO\Version1X as SocketIOEngineVersion1X;
@@ -205,16 +206,13 @@ class CoreUtils {
 		# Putting it together
 		if (empty($options['view']) && !isset($controller->do))
 			throw new \Exception('View cannot be resolved. Specify the <code>view</code> option or provide the controller as a parameter');
-		$view = empty($options['view']) ? $controller->do : $options['view'];
-		$viewPath = INCPATH."views/{$view}.php";
+		$view = new View(empty($options['view']) ? $controller->do : $options['view']);
 
 		header('Content-Type: text/html; charset=utf-8;');
 
 		if (empty($_GET['via-js'])){
 			ob_start();
-			require INCPATH.'views/header.php';
-			require $viewPath;
-			require INCPATH.'views/footer.php';
+			require INCPATH.'views/_layout.php';
 			$content = ob_get_clean();
 			echo self::_clearIndentation($content);
 			die();
@@ -225,7 +223,7 @@ class CoreUtils {
 			require INCPATH.'views/sidebar.php';
 			$sidebar = ob_get_clean();
 			ob_start();
-			require $viewPath;
+			require $view;
 			$content = ob_get_clean();
 			Response::done(array(
 				'css' => $customCSS,
