@@ -82,6 +82,7 @@ $router->map('POST', '/cg/full/reorder',                     'ColorGuideControll
 $router->map('POST', '/cg/export',                           'ColorGuideController#export');
 $router->map('POST', '/cg/appearance/[ad:action]/[i:id]',    'ColorGuideController#appearanceAction');
 $router->map('POST', '/cg/appearance/[make:action]',         'ColorGuideController#appearanceAction');
+$router->map('POST', '/cg/reindex',                          'ColorGuideController#reindex');
 $router->map('POST', '/cg/tag/[ad:action]/[i:id]',           'ColorGuideController#tagAction');
 $router->map('POST', '/cg/tag/[make:action]',                'ColorGuideController#tagAction');
 $router->map('POST', '/cg/tags/recount-uses',                'ColorGuideController#recountTagUses');
@@ -129,7 +130,6 @@ $router->map('POST', '/post/delete-request/[i:id]',          'PostController#del
 $router->map('POST', '/post/transfer/[rrl:thing]/[i:id]',    'PostController#queryTransfer');
 $router->map('POST', '/preference/set/[au:key]',             'PreferenceController#set');
 $router->map('POST', '/preference/get/[au:key]',             'PreferenceController#get');
-$router->map('POST', '/cg/reindex',                          'ColorGuideController#reindex');
 $router->map('POST', '/setting/set/[au:key]',                'SettingController#set');
 $router->map('POST', '/setting/get/[au:key]',                'SettingController#get');
 $router->map('POST', '/user/suggestion',                     'UserController#suggestion');

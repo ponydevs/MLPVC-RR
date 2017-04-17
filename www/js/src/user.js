@@ -141,7 +141,7 @@ DocReady.push(function(){
 
 			$.Dialog.wait(false, 'Signing out');
 
-			$.post('/signout?everywhere',{username:name},$.mkAjaxHandler(function(){
+			$.post('/da-auth/signout?everywhere',{username:name},$.mkAjaxHandler(function(){
 				if (!this.status) return $.Dialog.fail(false, this.message);
 
 				$.Dialog.wait(false, 'Reloading page', true);
@@ -185,7 +185,7 @@ DocReady.push(function(){
 
 			$.Dialog.wait(title,'Removing account link');
 
-			$.post('/signout?unlink', $.mkAjaxHandler(function(){
+			$.post('/da-auth/signout?unlink', $.mkAjaxHandler(function(){
 				if (!this.status) return $.Dialog.fail(false, this.message);
 
 				$.Dialog.wait(false, 'Reloading page', true);
