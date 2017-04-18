@@ -919,7 +919,9 @@ DocReady.push(function(){
 		$.mk('div').attr('class', 'btn-group').append(
 			$addBtn, $editorToggle
 		),
-		"<div class='clrs'/>"
+		$.mk('div').attr('class', 'clrs').append(
+			mkClrDiv()
+		)
 	).on('render-color-inputs',function(){
 		let $form = $(this),
 			data = $form.data('color_values'),
