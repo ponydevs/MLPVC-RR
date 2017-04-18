@@ -522,7 +522,6 @@ DocReady.push(function(){
 			type =_idAttrArr[0],
 			id = _idAttrArr[1];
 
-
 		if (log)
 			console.log(`[POST-FIX] Attemting to reload ${type} #${id}`);
 		$.post(`/post/reload/${type}/${id}`,{cache:log},$.mkAjaxHandler(function(){
@@ -534,13 +533,10 @@ DocReady.push(function(){
 				return;
 			}
 
-			if ($li.parent().length === 0){
-				if (log)
-					console.log(`[POST-FIX] Failed attempt at updating detached ${type} #${id}`);
-				return;
-			}
 
-			let $newli = $(this.li);
+			const $newli = $(this.li);
+			$li = $('#'+$newli.attr('id'));
+
 			if ($li.hasClass('highlight') || $newli.is(location.hash))
 				$newli.addClass('highlight');
 			$li.replaceWith($newli);
