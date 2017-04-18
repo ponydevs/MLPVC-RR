@@ -166,7 +166,7 @@ ga('send','pageview');
 
 	<footer><?=CoreUtils::getFooter(isset($view) && $view === 'fatalerr')?></footer>
 
-<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s=" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
 <script>if(!window.jQuery)document.write('\x3Cscript src="/js/min/jquery-3.2.1.js">\x3C/script>');</script>
 <?php
 	echo CoreUtils::exportVars(array(
