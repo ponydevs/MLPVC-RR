@@ -866,6 +866,10 @@ DocReady.push(function(){
 					colors.push({ hex: matches[1] ?  $.hexpand(matches[1]) : undefined, label: matches[2] });
 					continue;
 				}
+				if (line.trim() === '#'){
+					colors.push({ hex: undefined, label: '' });
+					continue;
+				}
 
 				// Invalid line
 				throw new ColorTextParseError(line, lineIndex+1, matches);
@@ -894,7 +898,7 @@ DocReady.push(function(){
 				$btn.enable();
 				return;
 			}
-			$btn.toggleClass('typcn-document-text typcn-pencil').toggleHtml(['Plain text editor','Interactive editor']).enable();
+			$btn.toggleClass('typcn-document-text typcn-edit').toggleHtml(['Plain text editor','Interactive editor']).enable();
 			$.Dialog.clearNotice(/Parse error on line \d+ \(shown below\)/);
 		});
 	$CGEditorFormTemplate.append(
