@@ -68,12 +68,14 @@ use App\Tags;
 		echo Cutiemarks::getListForAppearancePage($CutieMarks); ?>
 		</section>
 		<section class="color-list">
+<?  if (Permission::sufficient('staff') || $isOwner){ ?>
 			<h2 class="admin">Color groups</h2>
 			<div class="admin">
 				<button class="darkblue typcn typcn-arrow-unsorted reorder-cgs">Re-order groups</button>
 				<button class="green typcn typcn-plus create-cg">Create group</button>
 			</div>
-<?  if ($placehold = Appearances::getPendingPlaceholderFor($Appearance))
+<?  }
+	if ($placehold = Appearances::getPendingPlaceholderFor($Appearance))
 		echo $placehold;
 	else { ?>
 			<ul id="colors" class="colors"><?php
