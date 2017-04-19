@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "c3212502683f5cb55e0e6b36092740da",
-    "content-hash": "c7e083960e31f988926957d5175a6acd",
+    "hash": "361f0a0a54c7d5744fdbe75d975b992e",
+    "content-hash": "f8232fdd55883431ac7251223f49643f",
     "packages": [
         {
             "name": "altorouter/altorouter",
@@ -1080,16 +1080,16 @@
         },
         {
             "name": "seinopsys/postgresql-database-class",
-            "version": "v1.0.0",
+            "version": "v1.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/SeinopSys/PHP-PostgreSQL-Database-Class.git",
-                "reference": "ee89a41fff51e376f26960aca359848593808431"
+                "reference": "09a52bd91f4cf7e5ec98ebc50a0b5bcca6c7f651"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/SeinopSys/PHP-PostgreSQL-Database-Class/zipball/ee89a41fff51e376f26960aca359848593808431",
-                "reference": "ee89a41fff51e376f26960aca359848593808431",
+                "url": "https://api.github.com/repos/SeinopSys/PHP-PostgreSQL-Database-Class/zipball/09a52bd91f4cf7e5ec98ebc50a0b5bcca6c7f651",
+                "reference": "09a52bd91f4cf7e5ec98ebc50a0b5bcca6c7f651",
                 "shasum": ""
             },
             "require": {
@@ -1114,7 +1114,7 @@
                 }
             ],
             "description": "PHP wrapper class for PDO-based interaction with PostgreSQL databases, heavily based on joshcam/mysqli-database-class",
-            "time": "2017-04-14 14:13:44"
+            "time": "2017-04-14 16:14:24"
         },
         {
             "name": "symfony/options-resolver",
@@ -1306,16 +1306,16 @@
         },
         {
             "name": "twig/twig",
-            "version": "v2.3.0",
+            "version": "v2.3.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/twigphp/Twig.git",
-                "reference": "9718186a5df85a4f7917e78d3ffcabc204c75d25"
+                "reference": "437efc435619c8e67acacda37b3984344854142c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/twigphp/Twig/zipball/9718186a5df85a4f7917e78d3ffcabc204c75d25",
-                "reference": "9718186a5df85a4f7917e78d3ffcabc204c75d25",
+                "url": "https://api.github.com/repos/twigphp/Twig/zipball/437efc435619c8e67acacda37b3984344854142c",
+                "reference": "437efc435619c8e67acacda37b3984344854142c",
                 "shasum": ""
             },
             "require": {
@@ -1365,7 +1365,7 @@
             "keywords": [
                 "templating"
             ],
-            "time": "2017-03-22 15:41:51"
+            "time": "2017-04-18 21:50:11"
         },
         {
             "name": "wisembly/elephant.io",
