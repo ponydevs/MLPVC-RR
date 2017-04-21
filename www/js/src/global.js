@@ -1332,7 +1332,7 @@ $(function(){
 				}
 			},
 			cdupdate = function(){
-				let cdExists = typeof $cd.parent === "function" && $cd.parent().length > 0,
+				let cdExists = typeof $cd.parent === "function" && $cd.parent().length !== 0,
 					diff = {}, now, airs;
 				if (cdExists){
 					now = new Date();
@@ -1348,7 +1348,7 @@ $(function(){
 					return window.setUpcomingCountdown();
 				}
 				let text;
-				if (diff.time < Time.InSeconds.month){
+				if (diff.time < Time.InSeconds.month && diff.month === 0){
 					if (diff.week > 0)
 						diff.day += diff.week * 7;
 					text = 'in ';
@@ -1358,7 +1358,11 @@ $(function(){
 						text += diff.hour+':';
 					text += $.pad(diff.minute)+':'+$.pad(diff.second);
 				}
-				else text = moment(airs).from(now);
+				else {
+					clearCD();
+					setTimeout(cdupdate, 10000);
+					text = moment(airs).from(now);
+				}
 				$cd.text(text);
 			};
 		window.setUpcomingCountdown = function(){
