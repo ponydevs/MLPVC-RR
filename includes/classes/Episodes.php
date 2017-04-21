@@ -410,7 +410,7 @@ HTML;
 		if (!empty($UpcomingEvents)){
 			foreach ($UpcomingEvents as $Event){
 				$time = strtotime($Event->starts_at);
-				$beforestartdate = $time > time();
+				$beforestartdate = time() < $time;
 				if (!$beforestartdate)
 					$time = strtotime($Event->ends_at);
 				$airs = date('c', $time);
@@ -418,10 +418,10 @@ HTML;
 				$day = date('j', $time);
 				$diff = Time::difference(time(), $time);
 				$Verbs = $beforestartdate ? 'Stars' : 'Ends';
-				$time = self::_eventTimeTag($time);
+				$timetag = self::_eventTimeTag($time);
 
 				$HTML[] = [$time, "<li><div class='calendar'><span class='top event'>$month</span><span class='bottom'>$day</span></div>".
-					"<div class='meta'><span class='title'><a href='{$Event->toURL()}'>$Event->name</a></span><span class='time'>$Verbs $time</span></div></li>"];
+					"<div class='meta'><span class='title'><a href='{$Event->toURL()}'>$Event->name</a></span><span class='time'>$Verbs $timetag</span></div></li>"];
 			}
 		}
 		if (empty($HTML))
