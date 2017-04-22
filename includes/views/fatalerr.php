@@ -9,7 +9,7 @@ HTTP::statusCode(503);
 $customCSS = array("/scss/min/theme.css");
 foreach ($customCSS as $k => $el)
 	$customCSS[$k] .= '?'.filemtime(APPATH.CoreUtils::substring($el,1));
-$view = 'fatalerr';
+$view = new App\View('fatalerr');
 $scope = []; ?>
 <div id="content">
 <?php

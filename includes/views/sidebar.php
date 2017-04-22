@@ -8,9 +8,10 @@ use App\Users;
 /** @var $signedIn bool */
 /** @var $do string */
 /** @var $scope array */
+/** @var $view \App\View */
 /** @var $currentUser \App\Models\User */ ?>
 	<div class='mobile-nav'>
-		<nav><ul><?=CoreUtils::getNavigationHTML(isset($view) && $view === 'fatalerr', $scope)?></ul></nav>
+		<nav><ul><?=CoreUtils::getNavigationHTML(isset($view) && $view->name === 'fatalerr', $scope)?></ul></nav>
 	</div>
 	<div class='logged-in'>
 		<?php
@@ -70,7 +71,7 @@ use App\Users;
 		<h2><span class="live-circle"></span> Live updates enabled</h2>
 		<p>Changes to post scores are visible in real time to everyone who sees this message.</p>
 	</section>
-<?php   if ($view === 'episode' && !empty($CurrentEpisode)){ ?>
+<?php   if ($view->name === "episode" && !empty($CurrentEpisode)){ ?>
 	<section id="voting">
 		<h2><?=$CurrentEpisode->isMovie?'Movie':'Episode'?> rating</h2>
 		<?=Episodes::getSidebarVoting($CurrentEpisode)?>
