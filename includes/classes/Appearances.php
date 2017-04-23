@@ -3,6 +3,7 @@
 namespace App;
 
 use App\Models\Episode;
+use App\Models\User;
 use Elasticsearch\Common\Exceptions\Missing404Exception as ElasticMissing404Exception;
 use Elasticsearch\Common\Exceptions\NoNodesAvailableException as ElasticNoNodesAvailableException;
 
@@ -560,7 +561,8 @@ HTML;
 		$preview = self::getPreviewURL($p);
 		$preview = "<img src='$preview' class='preview'>";
 		$label = self::processLabel($p['label']);
-		return "<a href='/cg/v/{$p['id']}-$safeLabel'>$preview$label</a>";
+		$owner = isset($p['owner']) ? '/@'.(Users::get($p['owner'],'id','name')->name) : '';
+		return "<a href='$owner/cg/v/{$p['id']}-$safeLabel'>$preview$label</a>";
 	}
 
 	static function getRelatedHTML(array $Related):string {
