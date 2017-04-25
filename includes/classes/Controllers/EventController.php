@@ -301,7 +301,7 @@ class EventController extends Controller {
 				$prov = new ImageProvider($prev_src);
 			}
 			catch (\Exception $e){
-				Response::fail($e->getMessage());
+				Response::fail('Preview image error: '.$e->getMessage());
 			}
 			$update['prev_src'] = $prev_src;
 			$update['prev_full'] = $prov->fullsize;

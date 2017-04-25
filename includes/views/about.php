@@ -42,18 +42,19 @@ else echo CoreUtils::notice('warn','This section went missing due to a bug, and 
 			</div>
 		</div>
 	</section>
-	<section>
-		<h2 id="supported-providers">What image hosting providers do you support?</h2>
+	<section id="supported-providers">
+		<h2>What image hosting providers do you support?</h2>
 		<div>
 			<p>As you can probably tell we do not host a large majority of images you can see on episode pages, we just <del>steal the bandwidth</del> use the help of already established sites. Here's a full list of all providers we can recognize and that you can use to submit images:</p>
 			<ul>
-				<li><a href="http://sta.sh/">Sta.sh</a></li>
-				<li><a href="http://deviantart.com/">DeviantArt</a></li>
+				<li><a href="http://sta.sh/">Sta.sh</a>*</li>
+				<li><a href="http://deviantart.com/">DeviantArt</a>*</li>
 				<li><a href="http://imgur.com/">Imgur</a></li>
 				<li><a href="http://derpibooru.org/">Derpibooru</a></li>
 				<li><a href="http://app.prntscr.com/">LightShot</a></li>
 				<li><del>Puush</del> (no longer supported)</li>
 			</ul>
+			<p>* Using direct links from these providers is not supported due to the ambugious URL schema shared by both Sta.sh and DeviantArt (both links end with an ID in the same format). Example: the link <q>fav.me/dzc2af9</q> could have a download link that points to <q>http://orig11.deviantart.net/27f5/f/2017/107/3/b/image_by_user-dzc2af9.png</q>. If you use the second link, the site won't accept it. <a id="butwhy" href="#show-boring-details">But why?</a><span class="hidden" id="thisiswhy"><br>To understand why I, as a developer cannot provide support for this, let's look at an example with a normal link and its corresponding direct link from Sta.sh: <q>https://sta.sh/0z5gg4as67m</q> &rarr; <q>http://orig00.deviantart.net/9935/f/2016/089/8/e/another_image_by_user-dxc2f9v.jpg</q> Notice anything different? It's the lack of distinct difference between the two, there's nothing to tell which site the image came from. Hopefully this gives you an idea of why things are the way they are.</span></p>
 		</div>
 	</section>
 	<section>
