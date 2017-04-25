@@ -4,6 +4,7 @@ namespace App;
 
 use App\Exceptions\CURLRequestException;
 use App\Exceptions\MismatchedProviderException;
+use App\Exceptions\UnsupportedProviderException;
 
 class ImageProvider {
 	public $preview = false, $fullsize = false, $title = '', $provider, $id, $author = null;
@@ -46,7 +47,7 @@ class ImageProvider {
 			if ($test !== false)
 				return $test;
 		}
-		throw new \Exception("Unsupported provider. Try uploading your image to <a href='http://sta.sh' target='_blank' rel='noopener'>Sta.sh</a>");
+		throw new UnsupportedProviderException();
 	}
 
 	private static function _checkImageAllowed($url, $ctype = null){

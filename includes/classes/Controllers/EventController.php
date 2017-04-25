@@ -5,6 +5,7 @@ use App\CoreUtils;
 use App\CSRFProtection;
 use App\Events;
 use App\Exceptions\MismatchedProviderException;
+use App\Exceptions\UnsupportedProviderException;
 use App\ImageProvider;
 use App\Input;
 use App\Models\Event;
@@ -270,8 +271,11 @@ class EventController extends Controller {
 		try {
 			$submission = new ImageProvider($link, ['sta.sh','fav.me','dA']);
 		}
-		catch (MismatchedProviderException $e){
+		catch (MismatchedProviderException|UnsupportedProviderException $e){
 			Response::fail('Entry link must point to a deviation or Sta.sh submission');
+		}
+		catch (\Exception $e){
+			Response::fail($e->getMessage());
 		}
 		$update['sub_id'] = $submission->id;
 		$update['sub_prov'] = $submission->provider;
