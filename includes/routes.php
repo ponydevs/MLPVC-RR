@@ -5,7 +5,6 @@ namespace App;
 $router = new \AltoRouter();
 $router->addMatchTypes([
 	'un' => USERNAME_PATTERN,
-	'atun' => '@'.USERNAME_PATTERN,
 	'au' => '[A-Za-z_]+',
 	'ad' => '[A-Za-z\-]+',
 	'adi' => '[A-Za-z\d\-]+',
