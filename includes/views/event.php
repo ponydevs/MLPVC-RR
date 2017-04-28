@@ -1,4 +1,6 @@
 <?php
+use App\Auth;
+
 /** @var string $heading */
 /** @var string $EventType */
 /** @var \App\Models\Event $Event */
@@ -11,9 +13,9 @@ $endts = strtotime($Event->ends_at);
 	<h1><?=$heading?></h1>
 	<p><?=$EventType?> for <?=$Event->getEntryRoleName()?> &bull; <?=$startts > time() ? 'Starts '.\App\Time::tag($startts) : ($endts > time() ? 'Ends' : 'Ended').' '.\App\Time::tag($endts)?></p>
 
-<?php   $couldEnter = $signedIn && $Event->checkCanEnter($currentUser);
+<?php   $couldEnter = Auth::$signed_in && $Event->checkCanEnter(Auth::$user);
 		$canEnter = $couldEnter && $Event->hasStarted() && !$Event->hasEnded();
-		if ($signedIn){ ?>
+		if (Auth::$signed_in){ ?>
 	<div class="align-center" id="event-<?=$Event->id?>">
 		<button class="green typcn typcn-user-add" <?=$canEnter?'':'disabled'?> id="enter-event">Enter</button>
 <?php       if (\App\Permission::sufficient('staff')){ ?>
@@ -34,7 +36,7 @@ $endts = strtotime($Event->ends_at);
 			</p>
 <?php   }
 		if (!$canEnter) { ?>
-			<p class="color-red"><?=$signedIn?'You '.($couldEnter?($Event->hasEnded()?'can no longer':''):'cannot').' participate in this event'.($couldEnter && !$Event->hasStarted()?' yet':'').'.':'You must be signed in to participate in events.'?></p>
+			<p class="color-red"><?=Auth::$signed_in?'You '.($couldEnter?($Event->hasEnded()?'can no longer':''):'cannot').' participate in this event'.($couldEnter && !$Event->hasStarted()?' yet':'').'.':'You must be signed in to participate in events.'?></p>
 <?php   } ?>
 		</div>
 	</section>

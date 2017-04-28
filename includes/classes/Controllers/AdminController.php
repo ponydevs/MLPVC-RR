@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Controllers;
+use App\Auth;
 use App\CoreUtils;
 use App\CSRFProtection;
 use App\HTTP;
@@ -35,7 +36,7 @@ class AdminController extends Controller {
 	}
 
 	function logs(){
-		global $currentUser, $Database, $LogItems, $Pagination;
+		global $Database, $LogItems, $Pagination;
 
 		$type = Logs::validateRefType('type', true, true);
 		if (isset($_GET['type']) && preg_match(new RegExp('/^[a-z_]+$/'), $_GET['type']) && isset(Logs::$LOG_DESCRIPTION[$_GET['type']]))
@@ -46,7 +47,7 @@ class AdminController extends Controller {
 		else switch(strtolower(CoreUtils::trim($_GET['by']))){
 			case 'me':
 			case 'you':
-				$initiator = $currentUser->id;
+				$initiator = Auth::$user->id;
 				$by = 'you';
 			break;
 			case 'web server':
@@ -58,7 +59,7 @@ class AdminController extends Controller {
 				if (isset($by)){
 					$by = Users::get($by, 'name', 'id,name');
 					$initiator = $by->id;
-					$by = $initiator === $currentUser->id ? 'me' : $by->name;
+					$by = $initiator === Auth::$user->id ? 'me' : $by->name;
 				}
 		};
 

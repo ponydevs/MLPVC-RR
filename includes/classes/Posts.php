@@ -216,8 +216,7 @@ class Posts {
 
 				if (!empty($Author)){
 					if (!isset($_POST['allow_overwrite_reserver']) && !empty($ReserverID) && $Author->id !== $ReserverID){
-						global $currentUser;
-						$sameUser = $currentUser->id === $ReserverID;
+						$sameUser = Auth::$user->id === $ReserverID;
 						$person = $sameUser ? 'you' : 'the user who reserved this post';
 						Response::fail("You've linked to an image which was not submitted by $person. If this was intentional, press Continue to proceed with marking the post finished <b>but</b> note that it will make {$Author->name} the new reserver.".($sameUser
 								? "<br><br>This means that you'll no longer be able to interact with this post until {$Author->name} or an administrator cancels the reservation on it."
@@ -361,8 +360,6 @@ HTML;
 	 * @return string
 	 */
 	private static function _getForm($type){
-		global $currentUser;
-
 		$Type = strtoupper($type[0]).CoreUtils::substring($type,1);
 		$optional = $type === 'reservation' ? 'optional, ' : '';
 		$optreq = $type === 'reservation' ? '' : 'required';
@@ -432,7 +429,7 @@ HTML;
 	 * @return array|null
 	 */
 	static function getTransferAttempts(Post $Post, $type, $sent_by = null, $reserved_by = null, $cols = 'read_at,sent_at'){
-		global $Database, $currentUser;
+		global $Database;
 		if (!empty($reserved_by))
 			$Database->where("user", $reserved_by);
 		if (!empty($sent_by))
@@ -461,7 +458,7 @@ HTML;
 	 * @param string|null $reserved_by
 	 */
 	static function clearTransferAttempts(Post $Post, string $type, string $reason, string $sent_by = null, $reserved_by = null){
-		global $currentUser, $Database;
+		global $Database;
 
 		if (empty(self::TRANSFER_ATTEMPT_CLEAR_REASONS[$reason]))
 			throw new \Exception("Invalid clear reason $reason");
@@ -480,7 +477,7 @@ HTML;
 				Notifications::send($data['user'], "post-pass$reason", array(
 					'id' => $data['id'],
 					'type' => $data['type'],
-					'by' => $currentUser->id,
+					'by' => Auth::$user->id,
 				));
 				$SentFor[$data['user']][$reason]["{$data['type']}-{$data['id']}"] = true;
 			}
@@ -516,14 +513,13 @@ HTML;
 
 		$posted_at = '<em class="post-date">';
 		if ($isRequest){
-			global $signedIn, $currentUser;
-			$isRequester = $signedIn && $Post->requested_by === $currentUser->id;
-			$isReserver = $signedIn && $Post->reserved_by === $currentUser->id;
+			$isRequester = Auth::$signed_in && $Post->requested_by === Auth::$user->id;
+			$isReserver = Auth::$signed_in && $Post->reserved_by === Auth::$user->id;
 			$overdue = Permission::sufficient('member') && $Post->isOverdue();
 
 			$posted_at .= "Requested $permalink";
-			if ($signedIn && ($isStaff || $isRequester || $isReserver))
-				$posted_at .= ' by '.($isRequester ? "<a href='/@{$currentUser->name}'>You</a>" : Users::get($Post->requested_by)->getProfileLink());
+			if (Auth::$signed_in && ($isStaff || $isRequester || $isReserver))
+				$posted_at .= ' by '.($isRequester ? "<a href='/@".Auth::$user->name."'>You</a>" : Users::get($Post->requested_by)->getProfileLink());
 		}
 		else {
 			$overdue = false;
@@ -668,12 +664,10 @@ HTML;
 	 * @return string
 	 */
 	private static function _getPostActions($Post, bool $isRequest, $view_only):string {
-		global $signedIn, $currentUser;
-
 		$By = $Post->Reserver;
-		$requestedByUser = $isRequest && $signedIn && $Post->requested_by === $currentUser->id;
+		$requestedByUser = $isRequest && Auth::$signed_in && $Post->requested_by === Auth::$user->id;
 		$isNotReserved = empty($By);
-		$sameUser = $signedIn && $Post->reserved_by === $currentUser->id;
+		$sameUser = Auth::$signed_in && $Post->reserved_by === Auth::$user->id;
 		$CanEdit = (empty($Post->lock) && Permission::sufficient('staff')) || Permission::sufficient('developer') || ($requestedByUser && $isNotReserved);
 		$Buttons = array();
 

@@ -12,16 +12,14 @@ use App\Exceptions\CURLRequestException;
 
 class CoreUtils {
 	const
-		FIXPATH_EMPTY = '#',
-		FIXPATH_PERM = 301,
-		FIXPATH_TEMP = 302;
+		FIXPATH_EMPTY = '#';
 	/**
 	 * Forces an URL rewrite to the specified path
 	 *
-	 * @param string $fix_uri  URL to forcibly redirect to
-	 * @param int    $http HTPP status code for the redirect
+	 * @param string $fix_uri URL to forcibly redirect to
+	 * @param int    $http    HTTP status code for the redirect
 	 */
-	static function fixPath(string $fix_uri, int $http = self::FIXPATH_TEMP){
+	static function fixPath(string $fix_uri, int $http = HTTP::REDIRECT_TEMP){
 		$_split = explode('?', $_SERVER['REQUEST_URI'], 2);
 		$path = $_split[0];
 		$query = empty($_split[1]) ? '' : "?{$_split[1]}";
@@ -232,9 +230,9 @@ class CoreUtils {
 				'content' => self::_clearIndentation($content),
 				'sidebar' => self::_clearIndentation($sidebar),
 				'footer' => CoreUtils::getFooter(WITH_GIT_INFO),
-				'avatar' => $GLOBALS['signedIn'] ? $GLOBALS['currentUser']->avatar_url : GUEST_AVATAR,
+				'avatar' => Auth::$signed_in ? Auth::$user->avatar_url : GUEST_AVATAR,
 				'responseURL' => $_SERVER['REQUEST_URI'],
-				'signedIn' => $GLOBALS['signedIn'],
+				'signedIn' => Auth::$signed_in,
 			));
 		}
 	}
@@ -612,9 +610,9 @@ class CoreUtils {
 			}
 			if ($do === 'event' && isset($scope['Event']))
 				$NavItems['events']['subitem'] = CoreUtils::cutoff($scope['Event']->name, 20);
-			if ($GLOBALS['signedIn']){
-				$NavItems['u'] = array("/@{$GLOBALS['currentUser']->name}",'Account');
-				if (isset($scope['Owner']) && $scope['Owner']->id === $GLOBALS['currentUser']->id)
+			if (Auth::$signed_in){
+				$NavItems['u'] = array("/@".Auth::$user->name,'Account');
+				if (isset($scope['Owner']) && $scope['Owner']->id === Auth::$user->id)
 					$NavItems['u']['subitem'] = 'Personal Color Guide';
 			}
 			if ($do === 'user' || Permission::sufficient('staff')){
@@ -688,8 +686,8 @@ class CoreUtils {
 	 * Renders the "Useful links" section of the sidebar
 	 */
 	static function renderSidebarUsefulLinks(){
-		global $Database, $signedIn;
-		if (!$signedIn) return;
+		global $Database;
+		if (!Auth::$signed_in) return;
 		$Links = $Database->orderBy('"order"','ASC')->get('usefullinks');
 
 		$Render = array();

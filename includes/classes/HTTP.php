@@ -151,13 +151,17 @@ class HTTP {
 			die();
 	}
 
+	const
+		REDIRECT_PERM = 301,
+		REDIRECT_TEMP = 302;
+
 	/**
 	 * Redirection
 	 *
 	 * @param string $url  Redirection target URL
 	 * @param int    $http HTTP status code
 	 */
-	public static function redirect($url = '/', $http = 301){
+	public static function redirect($url = '/', $http = self::REDIRECT_PERM){
 		header("Location: $url", true, $http);
 		$urlenc = CoreUtils::aposEncode($url);
 		die("Click <a href='$urlenc'>here</a> if you aren’t redirected.<script>location.replace(".JSON::encode($url).")</script>");

@@ -1,4 +1,5 @@
 <?php
+use App\Auth;
 use App\CoreUtils;
 use App\DeviantArt;
 use App\Episodes;
@@ -9,14 +10,11 @@ use App\Time;
 use App\Users;
 use App\Models\Episode;
 
-/**
- * @var $CurrentEpisode Episode
- * @var $NextEpisode    Episode
- * @var $PrevEpisode    Episode
- * @var $do string
- * @var $heading string
- * @var $signedIn bool
- */ ?>
+/** @var $CurrentEpisode Episode */
+/** @var $NextEpisode    Episode */
+/** @var $PrevEpisode    Episode */
+/** @var $do string */
+/** @var $heading string */ ?>
 <div id="content">
 <?  if (!empty($CurrentEpisode)){ ?>
 	<div class="heading-wrap">
@@ -74,7 +72,7 @@ use App\Models\Episode;
 		);
 		if (Permission::sufficient('developer'))
 			$export['USERNAME_REGEX'] = $USERNAME_REGEX;
-		if ($signedIn)
+		if (Auth::$signed_in)
 			$export['FULLSIZE_MATCH_REGEX'] = $FULLSIZE_MATCH_REGEX;
 		echo CoreUtils::exportVars($export);
 	} else { ?>

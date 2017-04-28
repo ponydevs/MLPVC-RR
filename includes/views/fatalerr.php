@@ -2,14 +2,12 @@
 use App\CoreUtils;
 use App\HTTP;
 use App\Time;
-$signedIn = false;
 ob_start();
 HTTP::statusCode(503);
 
 $customCSS = array("/scss/min/theme.css");
 foreach ($customCSS as $k => $el)
 	$customCSS[$k] .= '?'.filemtime(APPATH.CoreUtils::substring($el,1));
-$view = new App\View('fatalerr');
 $scope = []; ?>
 <div id="content">
 <?php
@@ -42,4 +40,6 @@ $customJS = array("/js/min/moment.js","/js/min/global.js","/js/min/dialog.js");
 foreach ($customJS as $k => $el)
 	$customJS[$k] .= '?'.filemtime(APPATH.CoreUtils::substring($el,1));
 $mainContent = ob_get_clean();
+// Since we're setting the content explicitly we don't want any views to load
+unset($view);
 require INCPATH."views/_layout.php";

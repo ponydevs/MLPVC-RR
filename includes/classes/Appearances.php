@@ -90,10 +90,8 @@ class Appearances {
 	}
 
 	static function isPrivate($Appearance, bool $ignoreStaff = false):bool {
-		global $signedIn, $currentUser;
-
 		$isPrivate = !empty($Appearance['private']);
-		if (!$ignoreStaff && (Permission::sufficient('staff') || ($signedIn ? $Appearance['owner'] === $currentUser->id : false)))
+		if (!$ignoreStaff && (Permission::sufficient('staff') || (Auth::$signed_in ? $Appearance['owner'] === Auth::$user->id : false)))
 			$isPrivate = false;
 		return $isPrivate;
 	}

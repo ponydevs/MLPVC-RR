@@ -40,10 +40,9 @@ class Notifications {
 		global $Database;
 
 		if (empty($UserID)){
-			global $signedIn, $currentUser;
-			if (!$signedIn)
+			if (!Auth::$signed_in)
 				return null;
-			$UserID = $currentUser->id;
+			$UserID = Auth::$user->id;
 		}
 
 		switch($only){

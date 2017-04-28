@@ -1,5 +1,6 @@
 <div id="content">
 <?php
+use App\Auth;
 use App\CoreUtils;
 use App\Models\User;
 use App\DeviantArt;
@@ -64,7 +65,7 @@ $isUserMember = Permission::sufficient('member', $User->role);
 if ($isUserMember)
 	echo Users::getPersonalColorGuideHTML($User, $sameUser);
 
-if ($signedIn)
+if (Auth::$signed_in)
 	echo Users::getPendingReservationsHTML($User->id, $sameUser, $isUserMember); ?>
 <? if ($isUserMember){ ?>
 <section class="awaiting-approval"></section>
@@ -234,7 +235,7 @@ if ($canEdit){
 		unset($_Roles['guest']);
 		unset($_Roles['ban']);
 		foreach ($_Roles as $name => $label){
-			if (Permission::insufficient($name, $currentUser->role))
+			if (Permission::insufficient($name, Auth::$user->role))
 				continue;
 			$ROLES[$name] = $label;
 		}

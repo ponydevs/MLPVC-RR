@@ -1,6 +1,8 @@
 <?php
 
 namespace App\Controllers;
+
+use App\Auth;
 use App\CSRFProtection;
 use App\Input;
 use App\JSON;
@@ -16,8 +18,7 @@ class NotificationsController extends Controller {
 	function __construct(){
 		parent::__construct();
 
-		global $signedIn;
-		if (!$signedIn)
+		if (!Auth::$signed_in)
 			Response::fail();
 		CSRFProtection::protect();
 	}
@@ -34,10 +35,10 @@ class NotificationsController extends Controller {
 	}
 
 	function markRead($params){
-		global $Database, $currentUser;
+		global $Database;
 
 		$nid = intval($params['id'], 10);
-		$Notif = $Database->where('id', $nid)->where('user', $currentUser->id)->getOne('notifications');
+		$Notif = $Database->where('id', $nid)->where('user', Auth::$user->id)->getOne('notifications');
 		if (empty($Notif))
 			Response::fail("The notification (#$nid) does not exist");
 
@@ -63,8 +64,8 @@ class NotificationsController extends Controller {
 						Response::fail("The {$data['type']} doesn’t exist or has been deleted");
 					}
 					if ($read_action === 'true'){
-						if ($Post['reserved_by'] !== $currentUser->id){
-							Posts::clearTransferAttempts($Post, $data['type'], 'perm', null, $currentUser->id);
+						if ($Post['reserved_by'] !== Auth::$user->id){
+							Posts::clearTransferAttempts($Post, $data['type'], 'perm', null, Auth::$user->id);
 							Response::fail('You are not allowed to transfer this reservation');
 						}
 
@@ -72,7 +73,7 @@ class NotificationsController extends Controller {
 						Notifications::send($data['user'], "post-passallow", array(
 							'id' => $data['id'],
 							'type' => $data['type'],
-							'by' => $currentUser->id,
+							'by' => Auth::$user->id,
 						));
 						$Database->where('id', $data['id'])->update("{$data['type']}s",array(
 							'reserved_by' => $data['user'],
@@ -92,7 +93,7 @@ class NotificationsController extends Controller {
 						Notifications::send($data['user'], "post-passdeny", array(
 							'id' => $data['id'],
 							'type' => $data['type'],
-							'by' => $currentUser->id,
+							'by' => Auth::$user->id,
 						));
 					}
 

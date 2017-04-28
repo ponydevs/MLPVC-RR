@@ -5,6 +5,7 @@ namespace App;
 $router = new \AltoRouter();
 $router->addMatchTypes([
 	'un' => USERNAME_PATTERN,
+	'atun' => '@'.USERNAME_PATTERN,
 	'au' => '[A-Za-z_]+',
 	'ad' => '[A-Za-z\-]+',
 	'adi' => '[A-Za-z\d\-]+',
@@ -58,13 +59,14 @@ $router->map('GET', '/muffin-rating',                  'MuffinRatingController#i
 $router->map('GEP', '/poly',                           'PolyController#index');
 $router->map('GET', '/s/[rr:thing]/[i:id]',            'PostController#share');
 $router->map('GET', '/users',                          'UsersController#list');
-$router->map('GET', '/[user]/[un:name]?',              'UserController#profile');
-$router->map('GET', '/[user]/[un:name]/[cg]/[i]?',     'ColorGuideController#personalGuide');
-$router->map('GET', '/[user]/[un:name]/[cg]/[v]/[i:id]',       'ColorGuideController#personalAppearancePage');
-$router->map('GET', '/[user]/[un:name]/[cg]/[v]/[i:id]-[adi]', 'ColorGuideController#personalAppearancePage');
-$router->map('GET', '/[user]/[un:name]/[cg]/[v]/[adi]-[i:id]', 'ColorGuideController#personalAppearancePage');
-$router->map('GET', '/[user]/[un:name]/[cg]/[v]/[i:id][cgimg:type].[cgext:ext]', 'ColorGuideController#personalAppearanceAsFile');
-$router->map('GET', '/[user]/[un:name]/[cg]/[eqg:eqg]?/sprite(-colors)?/[i:id][adi]?', 'ColorGuideController#spriteColors');
+$router->map('GET', '/@[un:name]?',                   'UserController#profile');
+$router->map('GET', '/@[un:name]?',                   'UserController#profile');
+$router->map('GET', '/@[un:name]/[cg]/[i]?',                               'ColorGuideController#personalGuide');
+$router->map('GET', '/@[un:name]/[cg]/[v]/[i:id]',                         'ColorGuideController#personalAppearancePage');
+$router->map('GET', '/@[un:name]/[cg]/[v]/[i:id]-[adi]',                   'ColorGuideController#personalAppearancePage');
+$router->map('GET', '/@[un:name]/[cg]/[v]/[adi]-[i:id]',                   'ColorGuideController#personalAppearancePage');
+$router->map('GET', '/@[un:name]/[cg]/[v]/[i:id][cgimg:type].[cgext:ext]', 'ColorGuideController#personalAppearanceAsFile');
+$router->map('GET', '/@[un:name]/[cg]/[eqg:eqg]?/sprite(-colors)?/[i:id][adi]?', 'ColorGuideController#spriteColors');
 $router->map('GET', '/manifest',                       'ManifestController#json');
 
 // "API" Endpoints
@@ -88,10 +90,11 @@ $router->map('POST', '/cg/tag/[make:action]',                'ColorGuideControll
 $router->map('POST', '/cg/tags/recount-uses',                'ColorGuideController#recountTagUses');
 $router->map('POST', '/cg/colorgroup/[gsd:action]/[i:id]',   'ColorGuideController#colorGroupAction');
 $router->map('POST', '/cg/colorgroup/[make:action]',         'ColorGuideController#colorGroupAction');
-$router->map('POST', '/[user]/[un:name]/cg/appearance/[ad:action]/[i:id]',  'ColorGuideController#appearanceAction');
-$router->map('POST', '/[user]/[un:name]/cg/appearance/[make:action]',       'ColorGuideController#appearanceAction');
-$router->map('POST', '/[user]/[un:name]/cg/colorgroup/[gsd:action]/[i:id]', 'ColorGuideController#colorGroupAction');
-$router->map('POST', '/[user]/[un:name]/cg/colorgroup/[make:action]',       'ColorGuideController#colorGroupAction');
+$router->map('POST', '/@[un:name]/cg/slot-check',           'UserController#checkCGSlots');
+$router->map('POST', '/@[un:name]/cg/appearance/[ad:action]/[i:id]',  'ColorGuideController#appearanceAction');
+$router->map('POST', '/@[un:name]/cg/appearance/[make:action]',       'ColorGuideController#appearanceAction');
+$router->map('POST', '/@[un:name]/cg/colorgroup/[gsd:action]/[i:id]', 'ColorGuideController#colorGroupAction');
+$router->map('POST', '/@[un:name]/cg/colorgroup/[make:action]',       'ColorGuideController#colorGroupAction');
 $router->map('POST', '/da-auth/signout',                     'AuthController#signout');
 $router->map('POST', '/episode/postlist/[epid:id]',          'EpisodeController#postList');
 $router->map('POST', '/episode/nextup',                      'EpisodeController#nextup');
@@ -139,4 +142,3 @@ $router->map('POST', '/user/setgroup/[un:name]',             'UserController#set
 $router->map('POST', '/user/banish/[un:name]',               'UserController#banish');
 $router->map('POST', '/user/un-banish/[un:name]',            'UserController#unbanish');
 $router->map('POST', '/user/awaiting-approval/[un:name]',    'UserController#awaitingApproval');
-$router->map('POST', '/[user]/[un:name]/cg/slot-check',        'UserController#checkCGSlots');

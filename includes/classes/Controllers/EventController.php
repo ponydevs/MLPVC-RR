@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Controllers;
+use App\Auth;
 use App\CoreUtils;
 use App\CSRFProtection;
 use App\Events;
@@ -69,7 +70,7 @@ class EventController extends Controller {
 			Response::fail();
 		CSRFProtection::protect();
 
-		global $currentUser, $Database, $Database;
+		global $Database, $Database;
 
 		$editing = $action === 'set';
 		if ($editing)
@@ -156,7 +157,7 @@ class EventController extends Controller {
 		$update['max_entries'] = $max_entries;
 
 		if (!$editing){
-			$update['added_by'] = $currentUser->id;
+			$update['added_by'] = Auth::$user->id;
 			$update['added_at'] = date('c');
 		}
 
@@ -234,21 +235,21 @@ class EventController extends Controller {
 	}
 
 	function checkEntries($params){
-		global $signedIn, $currentUser, $Database;
+		global $Database;
 
-		if (!$signedIn)
+		if (!Auth::$signed_in)
 			Response::fail();
 		CSRFProtection::protect();
 
 		$this->_getEvent($params['id']);
 
-		if (!$this->_event->checkCanEnter($currentUser))
+		if (!$this->_event->checkCanEnter(Auth::$user))
 			Response::fail('You cannot participate in this event.');
 		if (!$this->_event->hasStarted())
 			Response::fail('This event hasn\'t started yet, so entries cannot be submitted.');
 
 		if (!empty($this->_event->max_entries)){
-			$entrycnt = count($currentUser->getEntriesFor($this->_event, 'entryid'));
+			$entrycnt = count(Auth::$user->getEntriesFor($this->_event, 'entryid'));
 			if ($entrycnt >= $this->_event->max_entries)
 				Response::fail("You've used all of your entries for this event. If you want to change your entry, edit it instead.");
 			$remain = $this->_event->max_entries - $entrycnt;
@@ -258,8 +259,6 @@ class EventController extends Controller {
 	}
 
 	private function _addSetEntry(){
-		global $currentUser;
-
 		$update = [];
 
 		$link = (new Input('link','url',[
@@ -317,15 +316,15 @@ class EventController extends Controller {
 	}
 
 	public function addEntry($params){
-		global $signedIn, $currentUser, $Database;
+		global $Database;
 
-		if (!$signedIn)
+		if (!Auth::$signed_in)
 			Response::fail();
 		CSRFProtection::protect();
 
 		$this->_getEvent($params['id']);
 
-		if (!$this->_event->checkCanEnter($currentUser))
+		if (!$this->_event->checkCanEnter(Auth::$user))
 			Response::fail('You cannot participate in this event.');
 		if (!$this->_event->hasStarted())
 			Response::fail('This event hasn\'t started yet, so entries cannot be submitted.');
@@ -333,7 +332,7 @@ class EventController extends Controller {
 			Response::fail('This event has concluded, so no new entries can be submitted.');
 
 		$insert = $this->_addSetEntry();
-		$insert['submitted_by'] = $currentUser->id;
+		$insert['submitted_by'] = Auth::$user->id;
 		$insert['eventid'] = $this->_event->id;
 		$insert['score'] = $this->_event->type === 'contest' ? 0 : null;
 		if (!$Database->insert('events__entries', $insert))
@@ -345,9 +344,9 @@ class EventController extends Controller {
 	/** @var EventEntry */
 	private $_entry;
 	private function _entryPermCheck($params, string $action = 'manage'){
-		global $currentUser, $signedIn, $Database;
+		global $Database;
 
-		if (!$signedIn)
+		if (!Auth::$signed_in)
 			Response::fail();
 		CSRFProtection::protect();
 
@@ -355,17 +354,17 @@ class EventController extends Controller {
 			Response::fail('Entry ID is missing or invalid');
 
 		$this->_entry = $Database->where('entryid', intval($params['entryid'], 10))->getOne('events__entries');
-		if (empty($this->_entry) || ($action === 'manage' && !Permission::sufficient('staff') && $this->_entry->submitted_by !== $currentUser->id))
+		if (empty($this->_entry) || ($action === 'manage' && !Permission::sufficient('staff') && $this->_entry->submitted_by !== Auth::$user->id))
 			Response::fail('The requested entry could not be found or you are not allowed to edit it');
 
 		$this->_getEvent($this->_entry->eventid);
 
 		if ($action === 'vote'){
-			if (!$this->_event->checkCanVote($currentUser))
+			if (!$this->_event->checkCanVote(Auth::$user))
 				Response::fail('You are not allowed to vote on entries to this event');
 			if ($this->_event->type !== 'contest')
 				Response::fail('You can only vote on entries to contest events');
-			if ($this->_entry->submitted_by === $currentUser->id)
+			if ($this->_entry->submitted_by === Auth::$user->id)
 				Response::fail('You cannot vote on your own entries', ['disable' => true]);
 		}
 
@@ -424,11 +423,11 @@ class EventController extends Controller {
 	}
 
 	public function voteEntry($params){
-		global $currentUser, $Database;
+		global $Database;
 
 		$this->_entryPermCheck($params, 'vote');
 
-		$userVote = $this->_entry->getUserVote($currentUser);
+		$userVote = $this->_entry->getUserVote(Auth::$user);
 
 		$value = (new Input('value','vote',[
 			Input::IN_RANGE => [-1, 1],
@@ -447,7 +446,7 @@ class EventController extends Controller {
 
 		if (!$Database->insert('events__entries__votes',[
 			'entryid' => $this->_entry->entryid,
-			'userid' => $currentUser->id,
+			'userid' => Auth::$user->id,
 			'value' => $value,
 		]))
 			Response::dbError('Vote could not be recorded');
@@ -457,7 +456,7 @@ class EventController extends Controller {
 	}
 
 	public function getvoteEntry($params){
-		global $currentUser, $Database;
+		global $Database;
 
 		$this->_entryPermCheck($params, 'view');
 
@@ -465,21 +464,21 @@ class EventController extends Controller {
 	}
 
 	private function _checkWipeLockedInVote(EventEntryVote $userVote){
-		global $Database, $currentUser;
+		global $Database;
 
 		if ($userVote->isLockedIn($this->_entry))
 			Response::fail('You already voted on this post '.Time::tag($userVote->cast_at).'. Your vote is now locked in until the post is edited.');
 
-		if (!$Database->where('userid', $currentUser->id)->where('entryid', $this->_entry->entryid)->delete('events__entries__votes'))
+		if (!$Database->where('userid', Auth::$user->id)->where('entryid', $this->_entry->entryid)->delete('events__entries__votes'))
 			Response::dbError('Vote could not be removed');
 	}
 
 	public function unvoteEntry($params){
-		global $currentUser, $Database;
+		global $Database;
 
 		$this->_entryPermCheck($params, 'vote');
 
-		$userVote = $this->_entry->getUserVote($currentUser);
+		$userVote = $this->_entry->getUserVote(Auth::$user);
 		if (empty($userVote))
 			Response::fail('You haven\'t voted for this entry yet');
 		$this->_checkWipeLockedInVote($userVote);

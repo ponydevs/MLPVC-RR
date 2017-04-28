@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Controllers;
+use App\Auth;
 use App\CoreUtils;
 use App\CSRFProtection;
 use App\DeviantArt;
@@ -23,8 +24,7 @@ use ElephantIO\Exception\SocketException;
 
 class PostController extends Controller {
 	function _authorize(){
-		global $signedIn;
-		if (!$signedIn)
+		if (!Auth::$signed_in)
 			Response::fail();
 		CSRFProtection::protect();
 	}
@@ -82,14 +82,12 @@ class PostController extends Controller {
 	}
 
 	function _checkPostEditPermission($thing){
-		global $currentUser;
-
-		if (!(Permission::sufficient('staff') || ($thing === 'request' && empty($this->_post->reserved_by) && $this->_post->requested_by === $currentUser->id)))
+		if (!(Permission::sufficient('staff') || ($thing === 'request' && empty($this->_post->reserved_by) && $this->_post->requested_by === Auth::$user->id)))
 			Response::fail();
 	}
 
 	function action($params){
-		global $Database, $currentUser;
+		global $Database;
 
 		$this->_authorizeMember();
 
@@ -158,7 +156,7 @@ class PostController extends Controller {
 				$Database->where('id', $this->_post->id)->update("{$thing}s", $update);
 		}
 
-		$isUserReserver = $this->_post->reserved_by === $currentUser->id;
+		$isUserReserver = $this->_post->reserved_by === Auth::$user->id;
 		if (empty($this->_post->reserved_by)){
 			switch ($action){
 				case 'unreserve':
@@ -171,7 +169,7 @@ class PostController extends Controller {
 
 					Users::reservationLimitExceeded();
 
-					$update['reserved_by'] = $currentUser->id;
+					$update['reserved_by'] = Auth::$user->id;
 					Posts::checkReserveAs($update);
 					$update['reserved_at'] = date('c');
 					if (Permission::sufficient('developer')){
@@ -324,12 +322,12 @@ class PostController extends Controller {
 					$message .= "<p>The image appears to be in the group gallery already, so we marked it as approved.</p>";
 
 					Logs::logAction('post_lock',$postdata);
-					if ($this->_post->reserved_by !== $currentUser->id)
+					if ($this->_post->reserved_by !== Auth::$user->id)
 						Notifications::send($this->_post->reserved_by, 'post-approved', $postdata);
 				}
 				if ($thing === 'request'){
 					$u = Users::get($this->_post->requested_by,'id','name,id');
-					if (!empty($u) && $this->_post->requested_by !== $currentUser->id){
+					if (!empty($u) && $this->_post->requested_by !== Auth::$user->id){
 						$notifSent = Notifications::send($u->id, 'post-finished', $postdata);
 						$message .= "<p><strong>{$u->name}</strong> ".($notifSent === 0?'has been notified':'will receive a notification shortly').'.'.(is_string($notifSent)?"</p><div class='notice fail'><strong>Error:</strong> $notifSent":'')."</div>";
 					}
@@ -358,7 +356,7 @@ class PostController extends Controller {
 					'reserved_by' => $this->_post->reserved_by,
 					'reserved_at' => $this->_post->reserved_at,
 				);
-				$update['reserved_by'] = $currentUser->id;
+				$update['reserved_by'] = Auth::$user->id;
 				Posts::checkReserveAs($update);
 				$update['reserved_at'] = date('c');
 				$this->_post->reserved_by = $update['reserved_by'];
@@ -438,7 +436,7 @@ class PostController extends Controller {
 	}
 
 	function add(){
-		global $currentUser, $Database;
+		global $Database;
 
 		$this->_authorize();
 
@@ -476,7 +474,7 @@ class PostController extends Controller {
 		$insert['season'] = $epdata->season;
 		$insert['episode'] = $epdata->episode;
 
-		$ByID = $currentUser->id;
+		$ByID = Auth::$user->id;
 		if (Permission::sufficient('developer')){
 			$username = Posts::validatePostAs();
 			if (isset($username)){
@@ -529,7 +527,7 @@ class PostController extends Controller {
 	}
 
 	function deleteRequest($params){
-		global $currentUser, $Database,$signedIn;
+		global $Database;
 
 		$this->_authorize();
 
@@ -537,7 +535,7 @@ class PostController extends Controller {
 		$this->_initPost('delete', $params);
 
 		if (!Permission::sufficient('staff')){
-			if (!$signedIn || $this->_post->requested_by !== $currentUser->id)
+			if (!Auth::$signed_in || $this->_post->requested_by !== Auth::$user->id)
 				Response::fail();
 
 			if (!empty($this->_post->reserved_by))
@@ -576,8 +574,6 @@ class PostController extends Controller {
 	}
 
 	function queryTransfer($params){
-		global $currentUser;
-
 		if (Permission::insufficient('member'))
 			Response::fail();
 
@@ -585,8 +581,8 @@ class PostController extends Controller {
 		$this->_initPost(null, $params);
 
 		$reserved_by = $this->_post->reserved_by ?? null;
-		$checkIfUserCanReserve = function(&$message, &$data) use ($reserved_by, $params, $currentUser){
-			Posts::clearTransferAttempts($this->_post, $params['thing'], 'free', $currentUser->id, $reserved_by);
+		$checkIfUserCanReserve = function(&$message, &$data) use ($reserved_by, $params){
+			Posts::clearTransferAttempts($this->_post, $params['thing'], 'free', Auth::$user->id, $reserved_by);
 			if (!Users::reservationLimitExceeded(RETURN_AS_BOOL)){
 				$message .= '<br>Would you like to reserve it now?';
 				$data = array('canreserve' => true);
@@ -603,7 +599,7 @@ class PostController extends Controller {
 			$checkIfUserCanReserve($message, $data);
 			Response::fail($message, $data);
 		}
-		if ($reserved_by === $currentUser->id)
+		if ($reserved_by === Auth::$user->id)
 			Response::fail("You've already reserved this {$params['thing']}");
 		if ($this->_post->isOverdue()){
 			$message = "This post was reserved ".Time::tag($this->_post->reserved_at)." so anyone’s free to reserve it now.";
@@ -618,7 +614,7 @@ class PostController extends Controller {
 
 		$ReserverLink = Users::get($reserved_by, 'id', 'name')->getProfileLink();
 
-		$PreviousAttempts = Posts::getTransferAttempts($this->_post, $params['thing'], $currentUser->id, $reserved_by);
+		$PreviousAttempts = Posts::getTransferAttempts($this->_post, $params['thing'], Auth::$user->id, $reserved_by);
 
 		if (!empty($PreviousAttempts[0]) && empty($PreviousAttempts[0]['read_at']))
 			Response::fail("You already expressed your interest in this post to $ReserverLink ".Time::tag($PreviousAttempts[0]['sent_at']).', please wait for them to respond.');
@@ -626,14 +622,14 @@ class PostController extends Controller {
 		$notifSent = Notifications::send($this->_post->reserved_by,'post-passon',array(
 			'type' => $params['thing'],
 			'id' => $this->_post->id,
-			'user' => $currentUser->id,
+			'user' => Auth::$user->id,
 		));
 
 		Response::success("A notification has been sent to $ReserverLink, please wait for them to react.<br>If they don’t visit the site often, it’d be a good idea to send them a note asking them to consider your inquiry.");
 	}
 
 	function setImage($params){
-		global $currentUser, $Database;
+		global $Database;
 
 		$this->_authorize();
 
@@ -645,11 +641,11 @@ class PostController extends Controller {
 		if (Permission::insufficient('staff'))
 			switch ($thing){
 				case 'request':
-					if ($this->_post->requested_by !== $currentUser->id || !empty($this->_post->reserved_by))
+					if ($this->_post->requested_by !== Auth::$user->id || !empty($this->_post->reserved_by))
 						Response::fail();
 				break;
 				case 'reservation':
-					if ($this->_post->reserved_by !== $currentUser->id)
+					if ($this->_post->reserved_by !== Auth::$user->id)
 						Response::fail();
 				break;
 			};
@@ -739,7 +735,7 @@ class PostController extends Controller {
 	}
 
 	function addReservation(){
-		global $currentUser, $Database;
+		global $Database;
 
 		$this->_authorize();
 
@@ -748,7 +744,7 @@ class PostController extends Controller {
 		$_POST['allow_overwrite_reserver'] = true;
 		$insert = Posts::checkRequestFinishingImage();
 		if (empty($insert['reserved_by']))
-			$insert['reserved_by'] = $currentUser->id;
+			$insert['reserved_by'] = Auth::$user->id;
 
 		$epdata = (new Input('epid','epid',array(
 			Input::CUSTOM_ERROR_MESSAGES => array(

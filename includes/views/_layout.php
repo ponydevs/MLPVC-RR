@@ -1,5 +1,6 @@
 <?php
 use App\Appearances;
+use App\Auth;
 use App\DeviantArt;
 use App\JSON;
 use App\Models\User;
@@ -10,10 +11,8 @@ use App\CoreUtils;
 use App\View;
 
 /** @var $view App\View */
-/** @var $signedIn bool */
 /** @var $Owner User */
 /** @var $User User */
-/** @var $currentUser User|null */
 /** @var $scope array */
 
 $Title = (isset($title)?$title.' - ':'').SITE_TITLE;
@@ -172,7 +171,7 @@ ga('send','pageview');
 	echo CoreUtils::exportVars(array(
 		'PRINTABLE_ASCII_PATTERN' => PRINTABLE_ASCII_PATTERN,
 		'DocReady' => array(),
-		'signedIn' => $signedIn,
+		'signedIn' => Auth::$signed_in,
 	));
 	if (isset($customJS)) foreach ($customJS as $js){
 		echo "<script src='$js'></script>\n";

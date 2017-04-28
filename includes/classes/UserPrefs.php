@@ -2,6 +2,8 @@
 
 namespace App;
 
+use PHPUnit\Runner\Exception;
+
 class UserPrefs extends GlobalSettings {
 	protected static
 		$_db = 'user_prefs',
@@ -25,10 +27,10 @@ class UserPrefs extends GlobalSettings {
 	 *
 	 * @return mixed
 	 */
-	static function get($key, $for = null){
-		global $Database, $signedIn, $currentUser;
-		if (empty($for) && $signedIn)
-			$for = $currentUser->id;
+	static function get(string $key, $for = null){
+		global $Database;
+		if (empty($for) && Auth::$signed_in)
+			$for = Auth::$user->id;
 
 		if (isset(Users::$_PREF_CACHE[$for][$key]))
 			return Users::$_PREF_CACHE[$for][$key];
@@ -36,7 +38,7 @@ class UserPrefs extends GlobalSettings {
 		$default = null;
 		if (isset(static::$_defaults[$key]))
 			$default = static::$_defaults[$key];
-		if (empty($for) && !$signedIn)
+		if (empty($for) && !Auth::$signed_in)
 			return $default;
 
 		$Database->where('user', $for);
@@ -52,10 +54,13 @@ class UserPrefs extends GlobalSettings {
 	 *
 	 * @return bool
 	 */
-	static function set($key, $value, $for = null){
-		global $Database, $signedIn, $currentUser;
-		if (empty($for))
-			$for = $currentUser->id;
+	static function set(string $key, $value, $for = null):bool {
+		global $Database;
+		if (empty($for)){
+			if (!Auth::$signed_in)
+				throw new Exception("Empty \$for when setting user preference $key to ");
+			$for = Auth::$user->id;
+		}
 
 		if (!isset(static::$_defaults[$key]))
 			Response::fail("Key $key is not allowed");
@@ -68,7 +73,7 @@ class UserPrefs extends GlobalSettings {
 			else return $Database->update(static::$_db, array('value' => $value));
 		}
 		else if ($value != $default)
-			return $Database->insert(static::$_db, array('user' => $currentUser->id, 'key' => $key, 'value' => $value));
+			return $Database->insert(static::$_db, array('user' => Auth::$user->id, 'key' => $key, 'value' => $value));
 		else return true;
 	}
 
@@ -79,7 +84,7 @@ class UserPrefs extends GlobalSettings {
 	 *
 	 * @return mixed
 	 */
-	static function process($key){
+	static function process(string $key){
 		$value = isset($_POST['value']) ? CoreUtils::trim($_POST['value']) : null;
 
 		switch ($key){

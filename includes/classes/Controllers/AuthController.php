@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use App\Auth;
 use App\CoreUtils;
 use App\CSRFProtection;
 use App\Cookie;
@@ -31,20 +32,19 @@ class AuthController extends Controller {
 		if (isset($_GET['error'])){
 			$err = $_GET['error'];
 			$errdesc = $_GET['error_description'] ?? null;
-			global $signedIn;
-			if ($signedIn)
+			if (Auth::$signed_in)
 				HTTP::redirect($_GET['state']);
 			$this->_error($err, $errdesc);
 		}
 		try {
-			$currentUser = DeviantArt::getToken($_GET['code']);
+			Auth::$user = DeviantArt::getToken($_GET['code']);
 		}
 		catch (CURLRequestException $e){
 			if (in_array($e->getCode(),[500,503])){
 				$this->_error('server_error');
 			}
 		}
-		$signedIn = !empty($currentUser);
+		Auth::$signed_in = !empty(Auth::$user);
 
 		if (isset($_GET['error'])){
 			$err = $_GET['error'];
@@ -68,14 +68,14 @@ class AuthController extends Controller {
 	}
 
 	function signout(){
-		global $signedIn, $currentUser, $Database;
+		global $Database;
 
-		if (!$signedIn) Response::success("You've already signed out");
+		if (!Auth::$signed_in) Response::success("You've already signed out");
 		CSRFProtection::protect();
 
 		if (isset($_REQUEST['unlink'])){
 			try {
-				DeviantArt::request('https://www.deviantart.com/oauth2/revoke', null, array('token' => $currentUser->Session->access));
+				DeviantArt::request('https://www.deviantart.com/oauth2/revoke', null, array('token' => Auth::$session->access));
 			}
 			catch (CURLRequestException $e){
 				Response::fail("Could not revoke the site’s access: {$e->getMessage()} (HTTP {$e->getCode()})");
@@ -84,7 +84,7 @@ class AuthController extends Controller {
 
 		if (isset($_REQUEST['unlink']) || isset($_REQUEST['everywhere'])){
 			$col = 'user';
-			$val = $currentUser->id;
+			$val = Auth::$user->id;
 			$username = Users::validateName('username', null, true);
 			if (isset($username)){
 				if (!Permission::sufficient('staff') || isset($_REQUEST['unlink']))
@@ -93,14 +93,14 @@ class AuthController extends Controller {
 				$TargetUser = $Database->where('name', $username)->getOne('users','id,name');
 				if (empty($TargetUser))
 					Response::fail("Target user doesn’t exist");
-				if ($TargetUser->id !== $currentUser->id)
+				if ($TargetUser->id !== Auth::$user->id)
 					$val = $TargetUser->id;
 				else unset($TargetUser);
 			}
 		}
 		else {
 			$col = 'id';
-			$val = $currentUser->Session->id;
+			$val = Auth::$session->id;
 		}
 
 		if (!$Database->where($col,$val)->delete('sessions'))

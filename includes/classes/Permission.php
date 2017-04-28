@@ -41,10 +41,9 @@ class Permission {
 		if (!is_string($role)) return false;
 
 		if (empty($compareAgainst)){
-			global $signedIn, $currentUser;
-			if (!$signedIn)
+			if (!Auth::$signed_in)
 				return false;
-			$checkRole = $currentUser->role;
+			$checkRole = Auth::$user->role;
 		}
 		else $checkRole = $compareAgainst;
 

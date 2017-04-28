@@ -25,8 +25,6 @@ class User extends AbstractUser {
 		$avatar_url,
 		$signup_date,
 		$rolelabel;
-	/** @var Session */
-	public $Session;
 
 	/** @param array|object */
 	public function __construct($iter = null){

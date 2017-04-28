@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Auth;
 use App\CoreUtils;
 use App\DeviantArt;
 use App\ImageProvider;
@@ -67,12 +68,10 @@ class EventEntry extends AbstractFillable {
 	}
 
 	public function getListItemVoting(Event $event):string {
-		global $signedIn, $currentUser;
-
-		if ($event->type === 'contest' && $signedIn && $event->checkCanVote($currentUser)){
-			$userVote = $this->getUserVote($currentUser);
+		if ($event->type === 'contest' && Auth::$signed_in && $event->checkCanVote(Auth::$user)){
+			$userVote = $this->getUserVote(Auth::$user);
 			$userVoted = !empty($userVote) && $userVote->isLockedIn($this);
-			$vd = $userVoted || $this->submitted_by === $currentUser->id ? ' disabled' : '';
+			$vd = $userVoted || $this->submitted_by === Auth::$user->id ? ' disabled' : '';
 			if (!empty($userVote)){
 				$uvc = $userVote->value === 1 ? ' clicked' : '';
 				$dvc = $userVote->value === -1 ? ' clicked' : '';
@@ -92,8 +91,6 @@ HTML;
 	}
 
 	public function toListItemHTML(Event $event, bool $wrap = true):string {
-		global $signedIn, $currentUser;
-
 		$submission = DeviantArt::getCachedDeviation($this->sub_id, $this->sub_prov);
 		$filetype = $submission->type;
 		$preview = isset($this->prev_thumb) && isset($this->prev_full)
@@ -115,7 +112,7 @@ HTML;
 
 		$voting = $this->getListItemVoting($event);
 
-		$actions = $signedIn && ($currentUser->id === $this->submitted_by || Permission::sufficient('staff')) && time() < strtotime($event->ends_at)
+		$actions = Auth::$signed_in && (Auth::$user->id === $this->submitted_by || Permission::sufficient('staff')) && time() < strtotime($event->ends_at)
 			? '<button class="blue typcn typcn-pencil edit-entry" title="Edit"></button><button class="red typcn typcn-times delete-entry" title="Withdraw"></button>'
 			: '';
 

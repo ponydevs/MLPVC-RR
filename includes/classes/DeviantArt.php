@@ -34,11 +34,11 @@ class DeviantArt {
 	 * @return array
 	 */
 	static function request($endpoint, $token = null, $postdata = null){
-		global $signedIn, $currentUser, $http_response_header;
+		global $http_response_header;
 
 		$requestHeaders = array("Accept-Encoding: gzip","User-Agent: MLPVC-RR @ ".GITHUB_URL);
-		if (!isset($token) && $signedIn)
-			$token = $currentUser->Session->access;
+		if (!isset($token) && Auth::$signed_in)
+			$token = Auth::$session->access;
 		if (!empty($token)) $requestHeaders[] = "Authorization: Bearer $token";
 		else if ($token !== false) return null;
 
@@ -189,7 +189,7 @@ class DeviantArt {
 	 * @param string      $ID
 	 * @param null|string $type
 	 *
-	 * @return string
+	 * @return array
 	 */
 	static function  oEmbed($ID, $type){
 		if (empty($type) || !in_array($type,array('fav.me','sta.sh'))) $type = 'fav.me';

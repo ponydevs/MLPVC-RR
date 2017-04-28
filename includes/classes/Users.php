@@ -33,12 +33,13 @@ class Users {
 		global $Database;
 
 		if ($coloumn === "token"){
-			$Auth = $Database->where('token', $value)->getOne('sessions');
+			/** @var $Session Session */
+			$Session = $Database->where('token', $value)->getOne('sessions');
 
-			if (empty($Auth))
+			if (empty($Session))
 				return null;
 			$coloumn = 'id';
-			$value = $Auth->user;
+			$value = $Session->user;
 		}
 
 		if ($coloumn === 'id' && !empty(self::$_USER_CACHE[$value]))
@@ -49,10 +50,10 @@ class Users {
 		if (empty($User) && $coloumn === 'name')
 			$User = self::fetch($value, $dbcols);
 
-		if (empty($dbcols) && !empty($User) && isset($Auth))
-			$User->Session = $Auth;
+		if (empty($dbcols) && !empty($User) && isset($Session))
+			Auth::$session = $Session;
 
-		if (isset($User->id))
+		if (isset($User->id) && !isset($dbcols))
 			self::$_USER_CACHE[$User->id] = $User;
 
 		return $User;
@@ -133,7 +134,7 @@ class Users {
 	 * @return bool|null
 	 */
 	static function reservationLimitExceeded(bool $return_as_bool = false){
-		global $Database, $currentUser;
+		global $Database;
 
 		$reservations = $Database->rawQuerySingle(
 			'SELECT
@@ -148,7 +149,7 @@ class Users {
 				  WHERE req.reserved_by = u.id && req.deviation_id IS NULL)
 			) as "count"
 			FROM users u WHERE u.id = ?',
-			array($currentUser->id)
+			array(Auth::$user->id)
 		);
 
 		$overTheLimit = isset($reservations['count']) && $reservations['count'] >= 4;
@@ -192,7 +193,7 @@ HTML;
 	 * Check authentication cookie and set global
 	 */
 	static function authenticate(){
-		global $Database, $signedIn, $currentUser, $Color, $color;
+		global $Database, $Color, $color;
 		CSRFProtection::detect();
 
 		if (!POST_REQUEST && isset($_GET['CSRF_TOKEN']))
@@ -202,22 +203,22 @@ HTML;
 			return;
 		$authKey = Cookie::get('access');
 		if (!empty($authKey))
-			$currentUser = Users::get(CoreUtils::sha256($authKey),'token');
+			Auth::$user = Users::get(CoreUtils::sha256($authKey),'token');
 
-		if (!empty($currentUser)){
-			if ($currentUser->role === 'ban')
-				$Database->where('id', $currentUser->id)->delete('sessions');
+		if (!empty(Auth::$user)){
+			if (Auth::$user->role === 'ban')
+				$Database->where('id', Auth::$user->id)->delete('sessions');
 			else {
-				if (isset($currentUser->Session->expires)){
-					if (strtotime($currentUser->Session->expires) < time()){
+				if (isset(Auth::$session->expires)){
+					if (strtotime(Auth::$session->expires) < time()){
 						$tokenvalid = false;
 						try {
-							DeviantArt::getToken($currentUser->Session->refresh, 'refresh_token');
+							DeviantArt::getToken(Auth::$session->refresh, 'refresh_token');
 							$tokenvalid = true;
 						}
 						catch (CURLRequestException $e){
-							$Database->where('id', $currentUser->Session->id)->delete('sessions');
-							trigger_error("Session refresh failed for {$currentUser->name} ({$currentUser->id}) | {$e->getMessage()} (HTTP {$e->getCode()})", E_USER_WARNING);
+							$Database->where('id', Auth::$session->id)->delete('sessions');
+							trigger_error("Session refresh failed for ".Auth::$user->name." (".Auth::$user->id.") | {$e->getMessage()} (HTTP {$e->getCode()})", E_USER_WARNING);
 						}
 					}
 					else $tokenvalid = true;
@@ -225,18 +226,18 @@ HTML;
 				else $tokenvalid = false;
 
 				if ($tokenvalid){
-					$signedIn = true;
-					if (time() - strtotime($currentUser->Session->lastvisit) > Time::IN_SECONDS['minute']){
+					Auth::$signed_in = true;
+					if (time() - strtotime(Auth::$session->lastvisit) > Time::IN_SECONDS['minute']){
 						$lastVisitTS = date('c');
-						if ($Database->where('id', $currentUser->Session->id)->update('sessions', array('lastvisit' => $lastVisitTS)))
-							$currentUser->Session->lastvisit = $lastVisitTS;
+						if ($Database->where('id', Auth::$session->id)->update('sessions', array('lastvisit' => $lastVisitTS)))
+							Auth::$session->lastvisit = $lastVisitTS;
 					}
 
 					$_PrefersColour = array(
 						'Pirill-Poveniy' => true,
 						'itv-canterlot' => true,
 					);
-					if (isset($_PrefersColour[$currentUser->name])){
+					if (isset($_PrefersColour[Auth::$user->name])){
 						$Color = 'Colour';
 						$color = 'colour';
 					}
@@ -259,7 +260,7 @@ HTML;
 	];
 
 	static function getPendingReservationsHTML($UserID, $sameUser, $isMember = true){
-		global $Database, $currentUser;
+		global $Database;
 
 		$visitorStaff = Permission::sufficient('staff');
 		$staffVisitingMember = $visitorStaff && $isMember;

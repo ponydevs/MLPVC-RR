@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Controllers;
+use App\Auth;
 use App\CoreUtils;
 use App\CSRFProtection;
 use App\HTTP;
@@ -17,12 +18,12 @@ class UserController extends Controller {
 	public $do = 'user';
 
 	function profile($params){
-		global $signedIn, $currentUser, $USERNAME_REGEX, $Database, $User, $sameUser;
+		global $USERNAME_REGEX, $Database, $User, $sameUser;
 
 		$data = $params['name'] ?? null;
 
 		if (empty($data)){
-			if ($signedIn) $un = $currentUser->name;
+			if (Auth::$signed_in) $un = Auth::$user->name;
 			else $MSG = 'Sign in to view your settings';
 		}
 		else if (preg_match($USERNAME_REGEX, $data, $_match))
@@ -41,7 +42,7 @@ class UserController extends Controller {
 			}
 			else if (!isset($MSG)){
 				$MSG = 'Local user data missing';
-				if (!$signedIn){
+				if (!Auth::$signed_in){
 					$exists = 'exists on DeviantArt';
 					if (isset($un))
 						$exists = "<a href='http://$un.deviantart.com/'>$exists</a>";
@@ -51,7 +52,7 @@ class UserController extends Controller {
 			$canEdit = $sameUser = false;
 		}
 		else {
-			$sameUser = $signedIn && $User->id === $currentUser->id;
+			$sameUser = Auth::$signed_in && $User->id === Auth::$user->id;
 			$canEdit = !$sameUser && Permission::sufficient('staff') && Permission::sufficient($User->role);
 			$pagePath = "/@{$User->name}";
 			CoreUtils::fixPath($pagePath);
@@ -61,7 +62,7 @@ class UserController extends Controller {
 			HTTP::statusCode(404);
 		else {
 			if ($sameUser){
-				$CurrentSession = $currentUser->Session;
+				$CurrentSession = Auth::$session;
 				$Database->where('id != ?',array($CurrentSession->id));
 			}
 			$Sessions = $Database
@@ -100,8 +101,6 @@ class UserController extends Controller {
 	}
 
 	function awaitingApproval($params){
-		global $signedIn, $currentUser;
-
 		CSRFProtection::protect();
 
 		if (!isset($params['name']))
@@ -111,7 +110,7 @@ class UserController extends Controller {
 		if (empty($targetUser))
 			Response::fail('User not found');
 
-		$sameUser = $signedIn && $currentUser->id === $targetUser->id;
+		$sameUser = Auth::$signed_in && Auth::$user->id === $targetUser->id;
 		Response::done(['html' => Users::getAwaitingApprovalHTML($targetUser, $sameUser)]);
 	}
 
@@ -136,7 +135,7 @@ class UserController extends Controller {
 	}
 
 	function discordVerify(){
-		global $Database, $currentUser;
+		global $Database;
 
 		if (!empty($_GET['token'])){
 			$targetUser = $Database->where('key','discord_token')->where('value',$_GET['token'])->getOne('user_prefs','user');
@@ -151,8 +150,8 @@ class UserController extends Controller {
 			));
 		}
 
-		$ismember = Permission::sufficient('member', $currentUser->role);
-		$isstaff = Permission::sufficient('staff', $currentUser->role);
+		$ismember = Permission::sufficient('member', Auth::$user->role);
+		$isstaff = Permission::sufficient('staff', Auth::$user->role);
 		if (!$ismember || $isstaff){
 			UserPrefs::set('discord_token','');
 			Response::fail(!$ismember ? 'You are not a club member' : 'Staff members cannot use this feature');
@@ -171,7 +170,7 @@ class UserController extends Controller {
 	}
 
 	function sessionDel($params){
-		global $Database, $currentUser;
+		global $Database;
 
 		CSRFProtection::protect();
 
@@ -181,7 +180,7 @@ class UserController extends Controller {
 		$Session = $Database->where('id', $params['id'])->getOne('sessions');
 		if (empty($Session))
 			Response::fail('This session does not exist');
-		if ($Session->user !== $currentUser->id && !Permission::sufficient('staff'))
+		if ($Session->user !== Auth::$user->id && !Permission::sufficient('staff'))
 			Response::fail('You are not allowed to delete this session');
 
 		if (!$Database->where('id', $Session->id)->delete('sessions'))
@@ -190,8 +189,6 @@ class UserController extends Controller {
 	}
 
 	function setGroup($params){
-		global $currentUser;
-
 		CSRFProtection::protect();
 		if (Permission::insufficient('staff'))
 			Response::fail();
@@ -203,7 +200,7 @@ class UserController extends Controller {
 		if (empty($targetUser))
 			Response::fail('User not found');
 
-		if ($targetUser->id === $currentUser->id)
+		if ($targetUser->id === Auth::$user->id)
 			Response::fail("You cannot modify your own group");
 		if (!Permission::sufficient($targetUser->role))
 			Response::fail('You can only modify the group of users who are in the same or a lower-level group than you');
@@ -228,7 +225,7 @@ class UserController extends Controller {
 	}
 
 	private function _banishAction($params, bool $banish){
-		global $Database, $currentUser;
+		global $Database;
 
 		CSRFProtection::protect();
 		if (Permission::insufficient('staff'))
@@ -243,7 +240,7 @@ class UserController extends Controller {
 		$targetUser = Users::get($params['name'], 'name');
 		if (empty($targetUser)) Response::fail('User not found');
 
-		if ($targetUser->id === $currentUser->id)
+		if ($targetUser->id === Auth::$user->id)
 			Response::fail("You cannot $action yourself");
 		if (Permission::sufficient('staff', $targetUser->role))
 			Response::fail("You cannot $action people within the assistant or any higher group");

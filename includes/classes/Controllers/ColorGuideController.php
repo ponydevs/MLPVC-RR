@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Controllers;
+use App\Auth;
 use App\CGUtils;
 use App\CoreUtils;
 use App\CSRFProtection;
@@ -63,15 +64,13 @@ class ColorGuideController extends Controller {
 	/** @var bool */
 	private $_isOwner;
 	private function _initPersonal($params, $force = true){
-		global $currentUser, $signedIn;
-
 		$this->_initialize($params, !$force);
 
 		$nameSet = isset($params['name']);
 		if (!$nameSet && $force)
 			CoreUtils::notFound();
 		$this->_owner = $nameSet ? Users::get($params['name'], 'name') : null;
-		$this->_isOwner = $nameSet ? ($signedIn && $currentUser->id === $this->_owner->id) : false;
+		$this->_isOwner = $nameSet ? (Auth::$signed_in && Auth::$user->id === $this->_owner->id) : false;
 
 		if ($nameSet)
 			$this->_cgPath = "/@{$this->_owner->name}/cg";
@@ -110,10 +109,10 @@ class ColorGuideController extends Controller {
 		if (Permission::insufficient('member'))
 			CoreUtils::notFound();
 
-		global $Database, $currentUser;
+		global $Database;
 
 		$this->_getAppearance($params);
-		if (Permission::insufficient('staff') && ($this->_appearance['owner'] ?? null) != $currentUser->id)
+		if (Permission::insufficient('staff') && ($this->_appearance['owner'] ?? null) != Auth::$user->id)
 			CoreUtils::notFound();
 
 		$Map = CGUtils::getSpriteImageMap($this->_appearance['id']);
@@ -235,14 +234,13 @@ class ColorGuideController extends Controller {
 			$this->_initCGPath();
 		}
 
-		global $Color, $color, $signedIn, $currentUser;
+		global $Color, $color;
 
 		$SafeLabel = Appearances::getSafeLabel($this->_appearance);
 		CoreUtils::fixPath("$this->_cgPath/v/{$this->_appearance['id']}-$SafeLabel");
 		$title = $heading = Appearances::processLabel($this->_appearance['label']);
 		if ($this->_appearance['id'] === 0 && $color !== 'color')
 			$title = str_replace('color',$color,$title);
-
 
 		$settings = array(
 			'title' => "$title - $Color Guide",
@@ -671,7 +669,7 @@ class ColorGuideController extends Controller {
 	}
 
 	function appearanceAction($params){
-		global $Database, $Color, $currentUser;
+		global $Database, $Color;
 
 		$this->_initPersonal($params, false);
 
@@ -687,13 +685,13 @@ class ColorGuideController extends Controller {
 
 			if ($this->_personalGuide){
 				try {
-					$availSlots = $currentUser->getPCGAvailableSlots();
+					$availSlots = Auth::$user->getPCGAvailableSlots();
 				}
 				catch (NoPCGSlotsException $e){
 					Response::fail("You don’t have any slots. If you’d like to know how to get some, click the blue <strong class='color-darkblue'>What?</strong> button on your <a href='/u'>Account page</a> to learn more about this feature.");
 				}
 				if ($availSlots === 0){
-					$remain = Users::calculatePersonalCGNextSlot($currentUser->getPCGAppearances(null, true));
+					$remain = Users::calculatePersonalCGNextSlot(Auth::$user->getPCGAppearances(null, true));
 					Response::fail("You don’t have enough slots to create another appearance. Delete other ones or finish $remain more ".CoreUtils::makePlural('request',$remain).'.');
 				}
 			}
@@ -731,7 +729,7 @@ class ColorGuideController extends Controller {
 				if (!$creating)
 					$Database->where('id', $this->_appearance['id'], '!=');
 				if ($this->_personalGuide)
-					$dupe = $Database->where('owner', $currentUser->id)->where('label', $label)->getOne('appearances');
+					$dupe = $Database->where('owner', Auth::$user->id)->where('label', $label)->getOne('appearances');
 				else $dupe = $Database->where('ishuman', $data['ishuman'])->where('label', $label)->getOne('appearances');
 				if (!empty($dupe)){
 					if ($this->_personalGuide)
@@ -762,8 +760,8 @@ class ColorGuideController extends Controller {
 				if ($creating){
 					$data['order'] = $Database->getOne('appearances','MAX("order") as "order"')['order']+1;
 					if (Permission::insufficient('staff') || $this->_personalGuide){
-						$data['owner'] = $currentUser->id;
-						$ownerName = $currentUser->name;
+						$data['owner'] = Auth::$user->id;
+						$ownerName = Auth::$user->name;
 					}
 				}
 
@@ -1471,7 +1469,7 @@ HTML;
 	}
 
 	function colorGroupAction($params){
-		global $Database, $color, $Color, $HEX_COLOR_REGEX, $currentUser;
+		global $Database, $color, $Color, $HEX_COLOR_REGEX;
 
 		$this->_initPersonal($params, false);
 		if (Permission::insufficient('staff') && !$this->_isOwner)
@@ -1590,7 +1588,7 @@ HTML;
 			$c['groupid'] = $Group['groupid'];
 			if (!$Database->insert('colors', $c)){
 				$colorError = true;
-				error_log("Database error triggered by user {$currentUser->id} ({$currentUser->name}) while saving colors: ".$Database->getLastError());
+				error_log("Database error triggered by user ".Auth::$user->name." (".Auth::$user->id.") while saving colors: ".$Database->getLastError());
 			}
 		}
 		if ($colorError)

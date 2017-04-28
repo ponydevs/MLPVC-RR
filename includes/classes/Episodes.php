@@ -204,12 +204,12 @@ class Episodes {
 	 * @return EpisodeVote|null
 	 */
 	static function getUserVote($Ep){
-		global $Database, $signedIn, $currentUser;
-		if (!$signedIn) return null;
+		global $Database;
+		if (!Auth::$signed_in) return null;
 		/** @noinspection PhpIncompatibleReturnTypeInspection */
 		return $Database
 			->whereEp($Ep)
-			->where('user', $currentUser->id)
+			->where('user', Auth::$user->id)
 			->getOne('episodes__votes');
 	}
 
@@ -463,7 +463,7 @@ HTML;
 		$thing = $Episode->isMovie ? 'movie' : 'episode';
 		if (!$Episode->aired)
 			return "<p>Voting will start ".Time::tag($Episode->willair).", after the $thing had aired.</p>";
-		global $Database, $signedIn, $currentUser;
+		global $Database;
 		$HTML = '';
 
 		if (empty($Episode->score))
@@ -479,7 +479,7 @@ HTML;
 		$UserVote = Episodes::getUserVote($Episode);
 		if (empty($UserVote)){
 			$HTML .= "<br><p>What did <em>you</em> think about the $thing?</p>";
-			if ($signedIn)
+			if (Auth::$signed_in)
 				$HTML .= "<button class='blue rate typcn typcn-star'>Cast your vote</button>";
 			else $HTML .= "<p><em>Sign in above to cast your vote!</em></p>";
 		}

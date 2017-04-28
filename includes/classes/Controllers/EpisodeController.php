@@ -93,7 +93,7 @@ class EpisodeController extends Controller {
 		if (!Permission::sufficient('staff'))
 			Response::fail();
 
-		global $currentUser, $Database, $Database;
+		global $Database, $Database;
 
 		$editing = $action === 'set';
 		if ($editing)
@@ -102,7 +102,7 @@ class EpisodeController extends Controller {
 
 		$insert = array();
 		if (!$editing)
-			$insert['posted_by'] = $currentUser->id;
+			$insert['posted_by'] = Auth::$user->id;
 
 		if (!$editing || $canEditID){
 			$insert['season'] = Episodes::validateSeason(Episodes::ALLOW_MOVIES);
@@ -323,7 +323,7 @@ class EpisodeController extends Controller {
 		CSRFProtection::protect();
 		$this->_getEpisode($params);
 
-		global $Database, $currentUser;
+		global $Database;
 
 		if (isset($_REQUEST['detail'])){
 			$VoteCountQuery = $Database->rawQuery(
@@ -371,7 +371,7 @@ class EpisodeController extends Controller {
 		if (!$Database->insert('episodes__votes',array(
 			'season' => $this->_episode->season,
 			'episode' => $this->_episode->episode,
-			'user' => $currentUser->id,
+			'user' => Auth::$user->id,
 			'vote' => $vote,
 		))) Response::dbError();
 		$this->_episode->updateScore();

@@ -1,22 +1,21 @@
 <?php
+use App\Auth;
 use App\CoreUtils;
 use App\Episodes;
 use App\Notifications;
 use App\Time;
 use App\UserPrefs;
 use App\Users;
-/** @var $signedIn bool */
 /** @var $do string */
 /** @var $scope array */
-/** @var $view \App\View */
-/** @var $currentUser \App\Models\User */ ?>
+/** @var $view \App\View */ ?>
 	<div class='mobile-nav'>
 		<nav><ul><?=CoreUtils::getNavigationHTML(isset($view) && $view->name === 'fatalerr', $scope)?></ul></nav>
 	</div>
 	<div class='logged-in'>
 		<?php
-	if ($signedIn)
-		echo $currentUser->getAvatarWrap();
+	if (Auth::$signed_in)
+		echo Auth::$user->getAvatarWrap();
 	else echo (new \App\Models\User([
 		'name' => 'Guest',
 		'role' => 'guest',
@@ -24,13 +23,13 @@ use App\Users;
 		'avatar_url' => GUEST_AVATAR
 	]))->getAvatarWrap()?>
 		<div class="user-data">
-			<span class="user-name"><?=$signedIn?$currentUser->getProfileLink(App\Models\User::LINKFORMAT_TEXT):'Curious Pony'?></span>
-			<span class="user-role"><?=$signedIn?$currentUser->rolelabel:'Guest'?></span>
+			<span class="user-name"><?=Auth::$signed_in?Auth::$user->getProfileLink(App\Models\User::LINKFORMAT_TEXT):'Curious Pony'?></span>
+			<span class="user-role"><?=Auth::$signed_in?Auth::$user->rolelabel:'Guest'?></span>
 		</div>
 	</div>
 <?php
 	if (!empty($Database)){
-		if ($signedIn){
+		if (Auth::$signed_in){
 			$Notifications = Notifications::get(null, Notifications::UNREAD_ONLY); ?>
 	<section class="notifications"<?=empty($Notifications)?' style="display:none"':''?>>
 		<h2>Unread notifications</h2>
@@ -44,11 +43,11 @@ use App\Users;
 		} ?>
 	</section>
 <?php   } ?>
-	<section class="<?=$signedIn?'welcome':'login'?>">
+	<section class="<?=Auth::$signed_in?'welcome':'login'?>">
 <?php	CoreUtils::renderSidebarUsefulLinks(); ?>
 		<div class="buttons">
 <?php
-		if ($signedIn){ ?>
+		if (Auth::$signed_in){ ?>
 			<button id="signout" class="typcn typcn-arrow-back">Sign out</button>
 <?php   }
 		else { ?>
@@ -56,7 +55,7 @@ use App\Users;
 			<!--suppress ES6ConvertVarToLetConst, JSUnusedLocalSymbols -->
 			<script>var OAUTH_URL = "<?=OAUTH_AUTHORIZATION_URL?>";</script>
 <?php   }
-		if (!UserPrefs::get('p_hidediscord') && ($signedIn ? !$currentUser->isDiscordMember() : true)){ ?>
+		if (!UserPrefs::get('p_hidediscord') && (Auth::$signed_in ? !Auth::$user->isDiscordMember() : true)){ ?>
 			<a class="btn typcn btn-discord discord-join" href="http://fav.me/d9zt1wv">Join Discord</a>
 <?php   } ?>
 		</div>

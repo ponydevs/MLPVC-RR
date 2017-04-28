@@ -47,7 +47,7 @@ class Logs {
 	 * @return bool
 	 */
 	static function logAction($reftype, $data = null, $forcews = false){
-		global $Database, $signedIn, $currentUser;
+		global $Database;
 		$central = array('ip' => $_SERVER['REMOTE_ADDR']);
 
 		if (isset($data)){
@@ -65,8 +65,8 @@ class Logs {
 			$central['refid'] = $refid;
 		else if (!empty($data)) return false;
 
-		if ($signedIn && !$forcews)
-			$central['initiator'] = $currentUser->id;
+		if (Auth::$signed_in && !$forcews)
+			$central['initiator'] = Auth::$user->id;
 		return (bool) $Database->insert("log",$central);
 	}
 

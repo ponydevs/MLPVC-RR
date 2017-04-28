@@ -18,7 +18,7 @@ class GlobalSettings {
 	 *
 	 * @return mixed
 	 */
-	static function get($key, $default = false){
+	static function get(string $key, $default = false){
 		global $Database;
 
 		if (isset(static::$_defaults[$key]))
@@ -35,7 +35,7 @@ class GlobalSettings {
 	 *
 	 * @return bool
 	 */
-	static function set($key, $value){
+	static function set(string $key, $value):bool {
 		global $Database;
 
 		if (!isset(static::$_defaults[$key]))
@@ -60,7 +60,7 @@ class GlobalSettings {
 	 *
 	 * @return mixed
 	 */
-	static function process($key){
+	static function process(string $key){
 		$value = CoreUtils::trim($_POST['value']);
 
 		if ($value === '')
