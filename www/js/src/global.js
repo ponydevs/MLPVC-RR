@@ -1544,17 +1544,7 @@ $(function(){
 			$notifSb,
 			$notifSbList,
 			auth = false,
-			essentialElements = function(){
-				$notifCnt = $sbToggle.children('.notif-cnt');
-				if ($notifCnt.length === 0)
-					$notifCnt = $.mk('span').attr({'class':'notif-cnt',title:'New notifications'}).prependTo($sbToggle);
-				$notifSb = $sidebar.children('.notifications');
-				$notifSbList = $notifSb.children('.notif-list');
-			};
-		function wsNotifs(){
-			let success = function(){
-				essentialElements();
-
+			bindMarkRead = function(){
 				$notifSbList.off('click','.mark-read').on('click','.mark-read', function(e){
 					e.preventDefault();
 					e.stopPropagation();
@@ -1586,6 +1576,19 @@ $(function(){
 						});
 					else send();
 				});
+			},
+			essentialElements = function(){
+				$notifCnt = $sbToggle.children('.notif-cnt');
+				if ($notifCnt.length === 0)
+					$notifCnt = $.mk('span').attr({'class':'notif-cnt',title:'New notifications'}).prependTo($sbToggle);
+				$notifSb = $sidebar.children('.notifications');
+				$notifSbList = $notifSb.children('.notif-list');
+
+				bindMarkRead();
+			};
+		function wsNotifs(){
+			let success = function(){
+				essentialElements();
 
 				if (conn)
 					return;
@@ -1619,6 +1622,7 @@ $(function(){
 						$notifCnt.text(cnt);
 						$notifSbList.html(this.list);
 						Time.Update();
+						bindMarkRead();
 						$notifSb.stop().slideDown();
 					}));
 				}));
