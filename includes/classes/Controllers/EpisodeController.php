@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Controllers;
+use App\Auth;
 use App\CGUtils;
 use App\CoreUtils;
 use App\CSRFProtection;
