@@ -294,8 +294,14 @@ class DeviantArt {
 		}
 		else $Database->where('id',$UserID)->update('users', $UserData);
 
-		if (empty($makeDev) && !empty($User) && Permission::insufficient('member', $User->role) && $User->isClubMember())
-			$User->updateRole('member');
+		if (empty($makeDev) && !empty($User)){
+			$clubmember = $User->isClubMember();
+			$permmember = Permission::sufficient('member', $User->role);
+			if ($clubmember && !$permmember)
+				$User->updateRole(DeviantArt::getClubRole($User));
+			else if (!$clubmember && $permmember)
+				$User->updateRole('user');
+		}
 
 		if ($type === 'refresh_token')
 			$Database->where('refresh', $code)->update('sessions',$AuthData);
@@ -323,5 +329,72 @@ class DeviantArt {
 		if (CoreUtils::isURLAvailable("$url?", $onlyFails))
 			return true;
 		return false;
+	}
+
+	/**
+	 * Parses various DeviantArt pages and returns the usernames of members along with their role
+	 * Results are cached for 10 minutes
+	 *
+	 * @return array [ 'username' => 'role', ... ]
+	 */
+	static function getMemberList():array {
+		$cache = CachedFile::init(FSPATH.'members.json', Time::IN_SECONDS['minute']*10);
+		if (!$cache->expired())
+			return $cache->read();
+
+		$usernames = [];
+		$off = 0;
+		// Get regular members
+		while ($off < 200){
+			$memberlist = HTTP::legitimateRequest("http://mlp-vectorclub.deviantart.com/modals/memberlist/?offset=$off");
+			$dom = new \DOMDocument();
+			$internalErrors = libxml_use_internal_errors(true);
+			$dom->loadHTML($memberlist['response']);
+			libxml_use_internal_errors($internalErrors);
+			$members = $dom->getElementById('userlist')->childNodes->item(0)->childNodes;
+			foreach ($members as $node){
+				$username = $node->lastChild->firstChild->textContent;
+				$usernames[$username] = 'member';
+			}
+			$xp = new \DOMXPath($dom);
+			$more =  $xp->query('//ul[@class="pages"]/li[@class="next"]');
+			if ($more->length === 0 || $more->item(0)->firstChild->getAttribute('class') === 'disabled')
+				break;
+			$off += 100;
+		}
+		unset($dom);
+		unset($xp);
+
+		// Get staff
+		$requri = 'http://mlp-vectorclub.deviantart.com/global/difi/?c%5B%5D=%22GrusersModules%22%2C%22displayModule%22%2C%5B%2217450764%22%2C%22374037863%22%2C%22generic%22%2C%7B%7D%5D&iid=576m8f040364c99a7d9373611b4a9414d434-j2asw8mn-1.1&mp=2&t=json';
+		$stafflist = JSON::decode(HTTP::legitimateRequest($requri)['response'], false);
+		$stafflist = $stafflist->DiFi->response->calls[0]->response->content->html;
+		$stafflist = str_replace('id="gmi-GAboutUsModule_Item"','',$stafflist);
+		$dom = new \DOMDocument();
+		$dom->loadHTML($stafflist);
+		$xp = new \DOMXPath($dom);
+		$admins =  $xp->query('//div[@id="aboutus"]//div[@class="user-name"]');
+		$revroles = array_flip(Permission::ROLES_ASSOC);
+		foreach ($admins as $admin){
+			$username = $admin->childNodes->item(1)->firstChild->textContent;
+			$role = CoreUtils::makeSingular($admin->childNodes->item(3)->textContent);
+			if (!isset($revroles[$role]))
+				throw new \Exception("Role $role not reversible");
+			$usernames[$username] = $revroles[$role];
+		}
+
+		$cache->update($usernames);
+
+		return $usernames;
+	}
+
+	/**
+	 * @param User $user
+	 *
+	 * @return null|string
+	 */
+	static function getClubRole(User $user):?string {
+		$usernames = self::getMemberList();
+		return $usernames[$user->name] ?? null;
 	}
 }

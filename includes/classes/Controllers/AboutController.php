@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Controllers;
+use App\CachedFile;
 use App\CoreUtils;
 use App\CSRFProtection;
 use App\HTTP;
@@ -20,7 +21,9 @@ class AboutController extends Controller {
 		), $this);
 	}
 
-	const STAT_CHACHE_DURATION = 5*Time::IN_SECONDS['hour'];
+	const
+		STAT_TYPES = ['posts','approvals'],
+		STAT_CHACHE_DURATION = 5*Time::IN_SECONDS['hour'];
 
 	function stats(){
 		global $Database;
@@ -28,9 +31,12 @@ class AboutController extends Controller {
 		CSRFProtection::protect();
 
 		$stat = strtolower(CoreUtils::trim($_GET['stat']));
-		$CachePath = APPATH."../fs/stats/$stat.json";
-		if (file_exists($CachePath) && filemtime($CachePath) > time() - self::STAT_CHACHE_DURATION)
-			Response::done(array('data' => JSON::decode(file_get_contents($CachePath))));
+		if (!in_array($stat, self::STAT_TYPES))
+			HTTP::statusCode(404, AND_DIE);
+
+		$cache = CachedFile::init(FSPATH."stats/$stat.json", self::STAT_CHACHE_DURATION);
+		if (!$cache->expired())
+			Response::done([ 'data' => $cache->read() ]);
 
 		$Data = array('datasets' => array(), 'timestamp' => date('c'));
 		$LabelFormat = 'YYYY-MM-DD';
@@ -101,8 +107,7 @@ class AboutController extends Controller {
 
 		Statistics::postprocessTimedData($Data);
 
-		CoreUtils::createUploadFolder($CachePath);
-		file_put_contents($CachePath, JSON::encode($Data));
+		$cache->update($Data);
 
 		Response::done(array('data' => $Data));
 	}

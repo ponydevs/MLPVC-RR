@@ -760,11 +760,23 @@ class CoreUtils {
 	 *
 	 * @return string
 	 */
-	static function makePlural($w, int $in = 0, $prep = false){
+	static function makePlural($w, int $in = 0, $prep = false):string {
 		$ret = ($prep?"$in ":'');
 		if ($w[-1] === 'y' && $in != 1)
 			return $ret.self::substring($w,0,-1).'ies';
 		return $ret.$w.($in != 1 && !in_array(strtolower($w),self::$_uncountableWords) ?'s':'');
+	}
+
+	/**
+	 * Tries to convert the specified word to a singular - currently by removing the S
+	 * A more robust solution should be added for this if need be
+	 *
+	 * @param string $w
+	 *
+	 * @return string
+	 */
+	static function makeSingular(string $w):string {
+		return preg_replace(new RegExp('s$'),'',$w);
 	}
 
 	private static $_uncountableWords = array('staff');

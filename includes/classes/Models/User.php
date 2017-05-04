@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use App\Appearances;
+use App\CachedFile;
+use App\DeviantArt;
 use App\Exceptions\NoPCGSlotsException;
 use App\HTTP;
 use App\CoreUtils;
@@ -131,15 +133,11 @@ class User extends AbstractUser {
 
 	/**
 	 * Checks if a user is a club member
-	 * (currently only works for recently added members, does not deal with old members or admins)
 	 *
 	 * @return bool
 	 */
 	function isClubMember(){
-		$RecentlyJoined = HTTP::legitimateRequest('http://mlp-vectorclub.deviantart.com/modals/memberlist/');
-
-		return !empty($RecentlyJoined['response'])
-			&& preg_match(new RegExp('<a class="[a-z ]*username" href="http://'.strtolower($this->name).'.deviantart.com/">'.USERNAME_PATTERN.'</a>'), $RecentlyJoined['response']);
+		return DeviantArt::getClubRole($this) !== null;
 	}
 
 	/**
@@ -216,16 +214,15 @@ class User extends AbstractUser {
 		];
 	}
 
-	const CONTRIB_CHACHE_DURATION = 12*Time::IN_SECONDS['hour'];
+	const CONTRIB_CACHE_DURATION = 12* Time::IN_SECONDS['hour'];
 
 	function getCachedContributions():array {
-		$CachePath = APPATH."../fs/contribs/{$this->id}.json";
-		if (file_exists($CachePath) && filemtime($CachePath) > time() - self::CONTRIB_CHACHE_DURATION)
-			return JSON::decode(file_get_contents($CachePath));
+		$cache = CachedFile::init(FSPATH."contribs/{$this->id}.json", self::CONTRIB_CACHE_DURATION);
+		if (!$cache->expired())
+			return $cache->read();
 
 		$data = $this->_getContributions();
-		CoreUtils::createUploadFolder($CachePath);
-		file_put_contents($CachePath, JSON::encode($data));
+		$cache->update($data);
 		return $data;
 	}
 
