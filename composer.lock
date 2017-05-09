@@ -1373,7 +1373,7 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/SeinopSys/elephant.io.git",
-                "reference": "1108e757478b6aade7c31a0ad9ed22c87940977d"
+                "reference": "f3b71e6b2feb73e21f4cbd719eb0cbb5139d97ce"
             },
             "require": {
                 "php": ">=5.4.0",
@@ -1424,7 +1424,7 @@
                 "Real Time",
                 "WebSocket"
             ],
-            "time": "2017-05-09 18:24:29"
+            "time": "2017-05-09 22:04:18"
         }
     ],
     "packages-dev": [
