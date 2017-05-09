@@ -8,9 +8,15 @@
 			"email": "seinopsys@gmail.com"
 		}
 	],
-	"require": {
+    "repositories": [
+        {
+            "url": "https://github.com/SeinopSys/elephant.io.git",
+            "type": "git"
+        }
+    ],
+    "require": {
 		"fightbulc/moment": "^1.25.1",
-		"wisembly/elephant.io": "*",
+		"wisembly/elephant.io": "dev-master",
 		"ezyang/htmlpurifier": "^4.8",
 		"cogpowered/finediff": "0.3.*",
 		"elasticsearch/elasticsearch": "~5.0",

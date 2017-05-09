@@ -7,7 +7,7 @@ use App\Models\User;
 use App\View;
 use Elasticsearch\Client;
 use Elasticsearch\ClientBuilder;
-use ElephantIO\Engine\SocketIO\Version1X as SocketIOEngineVersion1X;
+use ElephantIO\Engine\SocketIO\Version2X as SocketIOEngine;
 use App\Exceptions\CURLRequestException;
 
 class CoreUtils {
@@ -1025,7 +1025,7 @@ class CoreUtils {
 	}
 
 	static function socketEvent(string $event, array $data){
-		$elephant = new \ElephantIO\Client(new SocketIOEngineVersion1X('https://ws.'.WS_SERVER_DOMAIN.':8667', array(
+		$elephant = new \ElephantIO\Client(new SocketIOEngine('https://ws.'.WS_SERVER_DOMAIN.':8667', array(
 			'context' => array(
 				'http' => array(
 					'header' => 'Cookie: access='.urlencode(WS_SERVER_KEY)
