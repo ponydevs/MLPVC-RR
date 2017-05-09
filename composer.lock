@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "36da00926b74068d5df1b0edba8de321",
-    "content-hash": "2d8da176339d124b1b1600a738fa6596",
+    "hash": "9df3d6706531c16c4a33190acb27038d",
+    "content-hash": "f9544f27bdc4453e508c5c6071557ac9",
     "packages": [
         {
             "name": "altorouter/altorouter",
@@ -1369,11 +1369,17 @@
         },
         {
             "name": "wisembly/elephant.io",
-            "version": "dev-master",
+            "version": "v3.3.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/SeinopSys/elephant.io.git",
-                "reference": "f3b71e6b2feb73e21f4cbd719eb0cbb5139d97ce"
+                "url": "https://github.com/Wisembly/elephant.io.git",
+                "reference": "4dfc847eea695d115087a5cba8689bc223c8c0ba"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Wisembly/elephant.io/zipball/4dfc847eea695d115087a5cba8689bc223c8c0ba",
+                "reference": "4dfc847eea695d115087a5cba8689bc223c8c0ba",
+                "shasum": ""
             },
             "require": {
                 "php": ">=5.4.0",
@@ -1391,6 +1397,7 @@
                     ]
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -1419,12 +1426,12 @@
             "description": "Send events to a websocket real time engine though PHP",
             "homepage": "http://elephant.io",
             "keywords": [
-                "Dialog",
-                "Nodejs",
-                "Real Time",
-                "WebSocket"
+                "dialog",
+                "nodejs",
+                "real time",
+                "websocket"
             ],
-            "time": "2017-05-09 22:04:18"
+            "time": "2017-05-09 22:28:25"
         }
     ],
     "packages-dev": [
@@ -2880,9 +2887,7 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "wisembly/elephant.io": 20
-    },
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": [],
