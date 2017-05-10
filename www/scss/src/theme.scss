@@ -719,6 +719,7 @@ header, #sidebar .mobile-nav {
 					height: 21px;
 
 					a {
+						display: inline-block;
 						@include link($LinkLight, $LinkHoverLight);
 					}
 				}
