@@ -43,6 +43,10 @@
 	> section {
 		@extend %section;
 
+		&.what-s-this-site- {
+			text-align: justify;
+		}
+
 		&.attributions {
 			p { line-height: 1.4 }
 

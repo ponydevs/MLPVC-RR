@@ -230,8 +230,10 @@
 		if (typeof dir !== 'boolean')
 			dir = true;
 
-		while (str.length < len)
-			str = dir === $.pad.left ? char+str : str+char;
+		if (len <= str.length)
+			return str;
+		const padstr = new Array(len-str.length+1).join(char);
+		str = dir === $.pad.left ? padstr+str : str+padstr;
 
 		return str;
 	};
