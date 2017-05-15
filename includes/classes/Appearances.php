@@ -429,7 +429,7 @@ class Appearances {
 	}
 
 	/**
-	 * Returns the HTML of the "Appears in # episodes" section of appearance pages
+	 * Returns the HTML of the "Linked to from # episodes" section of appearance pages
 	 *
 	 * @param array $Appearance
 	 * @param bool  $allowMovies
@@ -476,7 +476,7 @@ class Appearances {
 
 		return <<<HTML
 	<section id="ep-appearances" $hide>
-		<h2><span class='typcn typcn-video'></span>Appears in $N_episodes</h2>
+		<h2><span class='typcn typcn-video'></span>Linked to from $N_episodes</h2>
 		<p>$List</p>
 	</section>
 HTML;
