@@ -107,7 +107,7 @@ class Appearances {
 	 * @return string
 	 */
 	static function getPendingPlaceholderFor($Appearance):string {
-		return self::isPrivate($Appearance) ? "<div class='colors-pending'><span class='typcn typcn-time'></span> This appearance will be finished soon, please check back later &mdash; ".Time::tag($Appearance['added']).'</div>' : false;
+		return self::isPrivate($Appearance) ? "<div class='colors-pending'><span class='typcn typcn-time'></span> ".(isset($Appearance['last_cleared']) ? "This appearance is currently undergoing maintenance and will be available again shortly &mdash; ".Time::tag($Appearance['last_cleared']) :  "This appearance will be finished soon, please check back later &mdash; ".Time::tag($Appearance['added'])).'</div>' : false;
 	}
 
 	/**

@@ -768,6 +768,9 @@ class ColorGuideController extends Controller {
 						$ownerName = Auth::$user->name;
 					}
 				}
+				else if ($data['private']){
+					$data['last_cleared'] = date('c');
+				}
 
 				$query = $creating
 					? $Database->insert('appearances', $data, 'id')
@@ -1261,7 +1264,7 @@ class ColorGuideController extends Controller {
 					}
 				}
 
-				$update = [];
+				$update = ['last_cleared' => date('c')];
 
 				$wipe_notes = (new Input('wipe_notes','bool',[
 					Input::IS_OPTIONAL => true,
