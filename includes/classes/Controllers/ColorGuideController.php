@@ -669,8 +669,6 @@ class ColorGuideController extends Controller {
 	}
 
 	function appearanceAction($params){
-		global $Database, $Color;
-
 		$this->_initPersonal($params, false);
 
 		if (Permission::insufficient('member'))
@@ -702,6 +700,12 @@ class ColorGuideController extends Controller {
 			if (Permission::insufficient('staff') && !$this->_isOwner)
 				Response::fail();
 		}
+
+		$this->_execAppearanceAction($action, $creating);
+	}
+
+	function _execAppearanceAction($action, $creating = null, $noResponse = false){
+		global $Database, $Color;
 
 		switch ($action){
 			case "get":
@@ -925,12 +929,18 @@ class ColorGuideController extends Controller {
 						CGUtils::clearRenderedImages($this->_appearance['id']);
 					break;
 					case "delsprite":
-						if (empty(Appearances::getSpriteURL($this->_appearance['id'])))
+						if (empty(Appearances::getSpriteURL($this->_appearance['id']))){
+							if ($noResponse)
+								return;
 							Response::fail('No sprite file found');
+						}
 
 						if (!unlink($finalpath))
 							Response::fail('File could not be deleted');
 						CGUtils::clearRenderedImages($this->_appearance['id']);
+
+						if ($noResponse)
+							return;
 
 						Response::done(array('sprite' => DEFAULT_SPRITE));
 					break;
@@ -1117,6 +1127,9 @@ class ColorGuideController extends Controller {
 				if (!CGUtils::clearRenderedImages($this->_appearance['id']))
 					Response::fail('Cache could not be purged');
 
+				if ($noResponse)
+					return;
+
 				Response::success('Cached images have been removed, they will be re-generated on the next request');
 			break;
 			case "tag":
@@ -1195,6 +1208,77 @@ class ColorGuideController extends Controller {
 				}
 
 				Response::done(array('cgs' => Appearances::getColorsHTML($this->_appearance, NOWRAP, !$this->_appearancePage, $this->_appearancePage)));
+			break;
+			case "selectiveclear":
+				$wipe_cache = (new Input('wipe_cache','bool',[
+					Input::IS_OPTIONAL => true,
+				]))->out();
+				if ($wipe_cache)
+					$this->_execAppearanceAction('clear-cache',null,true);
+
+				$wipe_sprite = (new Input('wipe_sprite','bool',[
+					Input::IS_OPTIONAL => true,
+				]))->out();
+				if ($wipe_sprite)
+					$this->_execAppearanceAction('delsprite',null,true);
+
+				$wipe_colors = (new Input('wipe_colors','string',[
+					Input::IS_OPTIONAL => true,
+				]))->out();
+				switch ($wipe_colors){
+					case "color_hex":
+						if (Appearances::hasColors($this->_appearance['id'], true)){
+							if (!$Database->rawQuery('UPDATE colors SET hex = null WHERE groupid IN (SELECT groupid FROM colorgroups WHERE ponyid = ?)', [$this->_appearance['id']]))
+								Response::dbError();
+						}
+					break;
+					case "color_all":
+						if (Appearances::hasColors($this->_appearance['id'])){
+							if (!$Database->rawQuery('DELETE FROM colors WHERE groupid IN (SELECT groupid FROM colorgroups WHERE ponyid = ?)', [$this->_appearance['id']]))
+								Response::dbError();
+						}
+					break;
+					case "all":
+						if ($Database->where('ponyid', $this->_appearance['id'])->has('colorgroups')){
+							if (!$Database->rawQuery('DELETE FROM colorgroups WHERE ponyid = ?', [$this->_appearance['id']]))
+								Response::dbError();
+						}
+					break;
+				}
+
+				if (empty($this->_appearance['owner'])){
+					$wipe_tags = (new Input('wipe_tags','bool',[
+						Input::IS_OPTIONAL => true,
+					]))->out();
+					if ($wipe_tags){
+						$tagged = $Database->where('ponyid', $this->_appearance['id'])->get('tagged',null,'tid');
+						if (!empty($tagged)){
+							if (!$Database->where('ponyid', $this->_appearance['id'])->delete('tagged'))
+								Response::dbError('Failed to wipe tags');
+							foreach ($tagged as $tag)
+								Tags::updateUses($tag['tid']);
+						}
+					}
+				}
+
+				$update = [];
+
+				$wipe_notes = (new Input('wipe_notes','bool',[
+					Input::IS_OPTIONAL => true,
+				]))->out();
+				if ($wipe_notes)
+					$update['notes'] = null;
+
+				$mkpriv = (new Input('mkpriv','bool',[
+					Input::IS_OPTIONAL => true,
+				]))->out();
+				if ($mkpriv)
+					$update['private'] = 1;
+
+				if (!empty($update))
+					$Database->where('id', $this->_appearance['id'])->update('appearances',$update);
+
+				Response::done();
 			break;
 			default: CoreUtils::notFound();
 		}

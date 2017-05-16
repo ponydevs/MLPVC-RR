@@ -156,19 +156,56 @@ DocReady.push(function(){
 					$form.append(
 						$.mk('div').attr('class','align-center').append(
 							$.mk('button')
-								.attr('class', 'orange typcn typcn-refresh')
-								.text('Wipe cache')
-								.on('click', function(e){
+								.attr('class', 'orange typcn typcn-media-eject')
+								.text('Selective wipe')
+								.on('click',function(e){
 									e.preventDefault();
-									
+
+									const
+										ponyLabel = data.label,
+										$form = $.mk('form','selective-wipe').html(
+											`<p>Select which of the following items to clear below.</p>
+											<label><input type="checkbox" name="wipe_cache"> Clear cached images</label>
+											<label><input type="checkbox" name="wipe_sprite"> Clear sprite image</label>
+											<fieldset>
+												<legend>Color Groups</legend>
+												<div class="radio-group">
+													<label><input type="radio" name="wipe_colors" value="" checked><span>Nothing</span></label>
+													<label><input type="radio" name="wipe_colors" value="color_hex"><span>HEX values</span></label>
+													<label><input type="radio" name="wipe_colors" value="color_all"><span>Colors</span></label>
+													<label><input type="radio" name="wipe_colors" value="all"><span>Color groups</span></label>
+												</div>
+											</fieldset>
+											<label><input type="checkbox" name="wipe_notes"> Clear notes</label>`+
+											(PersonalGuide?'':`<label><input type="checkbox" name="wipe_tags"> Remove all tags</label>`)+
+											`<label><input type="checkbox" name="mkpriv"> Make private</label>`
+										);
 									$.Dialog.close();
-									$.Dialog.wait('Clear appearance image cache','Clearing cache');
+									$.Dialog.request('Selectively wipe data from '+ponyLabel, $form, 'Clear data', function(){
+										$form.on('submit',function(e){
+											e.preventDefault();
 
-									$.post(`${PGRq}/cg/appearance/clear-cache/${ponyID}`,$.mkAjaxHandler(function(){
-										if (!this.status) return $.Dialog.fail(false, this.message);
+											let data = $form.mkData();
+											if (!data.wipe_colors)
+												delete data.wipe_colors;
+											if (Object.keys(data).length === 0)
+												return $.Dialog.fail(false, "You didn't select any data to clear");
+											$.Dialog.clearNotice(/select any data/);
+											$.Dialog.confirm(false, 'The action you are about to perform is irreversible. Are you sure you want to proceed?', ['Wipe selected data','Changed my mind'],sure => {
+												if (!sure) return;
 
-										$.Dialog.success(false, this.message, true);
-									}));
+												$.Dialog.wait(false);
+												$.post(`/cg/appearance/selectiveclear/${ponyID}`,data,$.mkAjaxHandler(function(){
+													if (!this.status) return $.Dialog.fail(false, this.message);
+
+													$.Dialog.wait(false, 'Reloading page', true);
+													$.Navigation.reload(function(){
+														$.Dialog.close();
+													});
+												}));
+											});
+										});
+									});
 								}),
 							PersonalGuide ? undefined : $.mk('button')
 								.attr('class', 'darkblue typcn typcn-pencil')

@@ -114,9 +114,9 @@ class Input {
 		}
 		switch ($this->_type){
 			case "bool":
-				if (!in_array($this->_value,array('1','0','true','false')))
+				if (!in_array($this->_value,array('1','0','true','false', 'on', 'off')))
 					return self::ERROR_INVALID;
-				$this->_value = $this->_value == '1' || $this->_value == 'true';
+				$this->_value = in_array($this->_value, ['1', 'true', 'on']);
 			break;
 			case "int":
 			case "vote":

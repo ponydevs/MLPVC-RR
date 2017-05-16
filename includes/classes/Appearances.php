@@ -586,6 +586,18 @@ HTML;
 		)))->out();
 	}
 
+	/**
+	 * @param int  $ponyid
+	 * @param bool $treatHexNullAsEmpty
+	 *
+	 * @return bool
+	 */
+	static function hasColors(int $ponyid, bool $treatHexNullAsEmpty = false):bool {
+		global $Database;
+		$hexnull = $treatHexNullAsEmpty?'AND hex IS NOT NULL':'';
+		return ($Database->rawQuerySingle("SELECT count(*) as cnt FROM colors WHERE groupid IN (SELECT groupid FROM colorgroups WHERE ponyid = ?) $hexnull", [$ponyid])['cnt'] ?? 0) > 0;
+	}
+
 	const ELASTIC_COLUMNS = 'id,label,order,ishuman,private';
 
 	static function reindex(){
