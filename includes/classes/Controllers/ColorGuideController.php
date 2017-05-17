@@ -762,11 +762,12 @@ class ColorGuideController extends Controller {
 				$data['private'] = isset($_POST['private']);
 
 				if ($creating){
-					$data['order'] = $Database->getOne('appearances','MAX("order") as "order"')['order']+1;
 					if (Permission::insufficient('staff') || $this->_personalGuide){
 						$data['owner'] = Auth::$user->id;
 						$ownerName = Auth::$user->name;
 					}
+					if (!isset($data['owner']))
+						$data['order'] = $Database->getOne('appearances','MAX("order") as "order"')['order']+1;
 				}
 				else if ($data['private']){
 					$data['last_cleared'] = date('c');

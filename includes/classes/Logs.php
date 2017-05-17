@@ -204,7 +204,8 @@ class Logs {
 				$details[] = array('Action', self::$ACTIONS[$data['action']]);
 
 				$PonyGuide = empty($data['ishuman']);
-				$details[] = array('Guide', $PonyGuide ? 'Pony' : 'EQG');
+				if (!is_null($data['ishuman']))
+					$details[] = array('Guide', $PonyGuide ? 'Pony' : 'EQG');
 				$details[] = array('ID', self::_getAppearanceLink($data['id']));
 				$details[] = array('Label', $data['label']);
 				if (!empty($data['order']))
