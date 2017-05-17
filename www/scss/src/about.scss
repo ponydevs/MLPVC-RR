@@ -16,13 +16,16 @@
 @media all and (min-width: $Breakpoint){
 	#stats {
 		display: flex;
+		flex-flow: row wrap;
+		width: 100%;
+
 		$SectionMargin: 10px;
 		> div {
 			display: block;
-			flex: 0 0 calc(50% - #{$SectionMargin/2});
-			margin-bottom: 0 !important;
+			flex: 1 1 calc(50% - #{$SectionMargin/2});
+			margin-bottom: $SectionMargin !important;
 
-			&:nth-child(odd) {
+			&:nth-child(odd):not(:last-child) {
 				margin-right: $SectionMargin !important;
 			}
 		}

@@ -22,7 +22,7 @@ class AboutController extends Controller {
 	}
 
 	const
-		STAT_TYPES = ['posts','approvals'],
+		STAT_TYPES = ['posts','approvals','alltimeposts'],
 		STAT_CHACHE_DURATION = 5*Time::IN_SECONDS['hour'];
 
 	function stats(){
@@ -103,9 +103,95 @@ class AboutController extends Controller {
 					$Data['datasets'][] = $Dataset;
 				}
 			break;
+			case 'alltimeposts':
+				$site_launch = '2015-06-27T17:24:00Z';
+				$ts = strtotime($site_launch);
+				$Labels = [];
+				do {
+					$Labels[] = [ 'key' => date('Y-m', $ts) ];
+					$ts = strtotime('+1 month', $ts);
+				}
+				while ($ts < strtotime('next month'));
+
+				Statistics::processLabels($Labels, $Data);
+
+				$BroadLabelFormat = 'YYYY-MM';
+
+				$Approvals = $Database->rawQuery(
+					"SELECT
+						to_char(MIN(timestamp),'$BroadLabelFormat') AS key,
+						COUNT(*)::INT AS cnt
+					FROM log
+					WHERE reftype = 'post_lock' AND timestamp >= '$site_launch'
+					GROUP BY to_char(timestamp,'$BroadLabelFormat')
+					ORDER BY MIN(timestamp)"
+				);
+				if (!empty($Approvals)){
+					$Dataset = array('label' => 'Approved posts', 'clrkey' => 0);
+					foreach ($Approvals as $i => $_){
+						if ($i < 1)
+							continue;
+
+						$Approvals[$i]['cnt'] += $Approvals[$i-1]['cnt'];
+					}
+					Statistics::processUsageData($Approvals, $Dataset, $Labels);
+					$Data['datasets'][] = $Dataset;
+				}
+				$Requests = $Database->rawQuery(
+					"SELECT
+						to_char(MIN(posted),'$BroadLabelFormat') AS key,
+						COUNT(*)::INT AS cnt
+					FROM requests
+					WHERE posted >= '$site_launch'
+					GROUP BY to_char(posted,'$BroadLabelFormat')
+					ORDER BY MIN(posted)"
+				);
+				if (!empty($Requests)){
+					$Dataset = array('label' => 'Requests', 'clrkey' => 1);
+					foreach ($Requests as $i => $_){
+						if ($i < 1)
+							continue;
+
+						$Requests[$i]['cnt'] += $Requests[$i-1]['cnt'];
+					}
+					Statistics::processUsageData($Requests, $Dataset, $Labels);
+					$dsl = count($Dataset['data']);
+					for ($i=1; $i<$dsl; $i++){
+						if ($Dataset['data'][$i] === 0 && $Dataset['data'][$i-1] > 0)
+							$Dataset['data'][$i] = $Dataset['data'][$i-1];
+					}
+					$Data['datasets'][] = $Dataset;
+				}
+				$Reservations = $Database->rawQuery(
+					"SELECT
+						to_char(MIN(posted),'$BroadLabelFormat') AS key,
+						COUNT(*)::INT AS cnt
+					FROM reservations
+					WHERE posted >= '$site_launch'
+					GROUP BY to_char(posted,'$BroadLabelFormat')
+					ORDER BY MIN(posted)"
+				);
+				if (!empty($Reservations)){
+					$Dataset = array('label' => 'Reservations', 'clrkey' => 2);
+					foreach ($Reservations as $i => $_){
+						if ($i < 1)
+							continue;
+
+						$Reservations[$i]['cnt'] += $Reservations[$i-1]['cnt'];
+					}
+					Statistics::processUsageData($Reservations, $Dataset, $Labels);
+					$dsl = count($Dataset['data']);
+					for ($i=1; $i<$dsl; $i++){
+						if ($Dataset['data'][$i] === 0 && $Dataset['data'][$i-1] > 0)
+							$Dataset['data'][$i] = $Dataset['data'][$i-1];
+					}
+					$Data['datasets'][] = $Dataset;
+				}
+			break;
 		}
 
-		Statistics::postprocessTimedData($Data);
+		if ($stat !== 'alltimeposts')
+			Statistics::postprocessTimedData($Data);
 
 		$cache->update($Data);
 

@@ -28,7 +28,7 @@ class Statistics {
 	 * @param array $Labels  Array of labels
 	 */
 	static function processUsageData($Rows, &$Dataset, $Labels){
-		$Dataset['labels'] =
+		$Dataset['labels'] = array();
 		$Dataset['data'] = array();
 
 		foreach ($Rows as $row){
@@ -49,7 +49,7 @@ class Statistics {
 	/**
 	 * Post-process time-based statistics data
 	 *
-	 * @param array $Data
+	 * @param array  $Data
 	 */
 	static function postprocessTimedData(&$Data){
 		foreach ($Data['labels'] as $k => $l)

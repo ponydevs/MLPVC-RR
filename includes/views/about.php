@@ -40,6 +40,13 @@ else echo CoreUtils::notice('warn','This section went missing due to a bug, and 
 				</div>
 				<div class="legend"></div>
 			</div>
+			<div class="stats-alltimeposts">
+				<h3>Total posts since launch</h3>
+				<div class="stats-wrapper">
+					<canvas></canvas>
+				</div>
+				<div class="legend"></div>
+			</div>
 		</div>
 	</section>
 	<section id="supported-providers">
