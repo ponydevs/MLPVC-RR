@@ -159,7 +159,7 @@ DocReady.push(function(){
 		$AlltimeStatsLegend = $AlltimeStats.children('.legend'),
 		AlltimeCTX = $AlltimeStats.find('canvas').get(0).getContext("2d"),
 		AlltimeChart,
-		AlltimeLegendColor = ["#4DC742","#46ACD3","#5240C3"];
+		AlltimeLegendColor = ["#E64C8D","#46ACD3","#5240C3"];
 	$.post('/about/stats?stat=alltimeposts',$.mkAjaxHandler(function(){
 		if (!this.status) return $AlltimeStats.remove();
 
