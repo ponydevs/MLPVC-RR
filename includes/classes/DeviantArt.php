@@ -345,8 +345,10 @@ class DeviantArt {
 		$usernames = [];
 		$off = 0;
 		// Get regular members
-		while ($off < 200){
+		while (true){
 			$memberlist = HTTP::legitimateRequest("http://mlp-vectorclub.deviantart.com/modals/memberlist/?offset=$off");
+			if (empty($memberlist['response']))
+				break;
 			$dom = new \DOMDocument();
 			$internalErrors = libxml_use_internal_errors(true);
 			$dom->loadHTML($memberlist['response']);
