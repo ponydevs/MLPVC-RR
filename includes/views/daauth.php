@@ -10,7 +10,7 @@ use \App\CoreUtils;
 <div id="content">
 	<h1><?=$title?></h1>
 
-	<?=CoreUtils::notice('fail',"There was a(n) <strong>$err</strong> error while trying to authenticate with DeviantArt".(!empty(DeviantArt::OAUTH_RESPONSE[$err])?'; '.DeviantArt::OAUTH_RESPONSE[$err]:'.').(!empty($errdesc)?"\n\nAdditional details: $errdesc":''),true) ?>
+	<?=CoreUtils::notice('fail',"There was a(n) <strong>".CoreUtils::escapeHTML($err)."</strong> error while trying to authenticate with DeviantArt".(!empty(DeviantArt::OAUTH_RESPONSE[$err])?'; '.DeviantArt::OAUTH_RESPONSE[$err]:'.').(!empty($errdesc)?"\n\nAdditional details: ".CoreUtils::escapeHTML($errdesc):''),true) ?>
 </div>
 <?php
 	echo CoreUtils::exportVars([

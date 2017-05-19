@@ -33,7 +33,7 @@ class AuthController extends Controller {
 			$err = $_GET['error'];
 			$errdesc = $_GET['error_description'] ?? null;
 			if (Auth::$signed_in)
-				HTTP::redirect($_GET['state']);
+				HTTP::redirect($_GET['state'] ?? '/', HTTP::REDIRECT_TEMP);
 			$this->_error($err, $errdesc);
 		}
 		try {
@@ -62,9 +62,9 @@ class AuthController extends Controller {
 			die($confirm);
 		}
 		else if (preg_match($REWRITE_REGEX, $_GET['state']))
-			HTTP::redirect($_GET['state'], 302);
+			HTTP::redirect($_GET['state'], HTTP::REDIRECT_TEMP);
 
-		HTTP::redirect('/', 302);
+		HTTP::redirect('/', HTTP::REDIRECT_TEMP);
 	}
 
 	function signout(){
