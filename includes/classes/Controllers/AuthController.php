@@ -33,7 +33,7 @@ class AuthController extends Controller {
 			$err = $_GET['error'];
 			$errdesc = $_GET['error_description'] ?? null;
 			if (Auth::$signed_in)
-				HTTP::redirect($_GET['state'] ?? '/', HTTP::REDIRECT_TEMP);
+				$this->_moveToState($_GET['state'] ?? null);
 			$this->_error($err, $errdesc);
 		}
 		try {
@@ -56,15 +56,11 @@ class AuthController extends Controller {
 			$this->_error($err, $errdesc);
 		}
 
-		global $REWRITE_REGEX;
 		if (self::_isStateRndkey($_match)){
 			$confirm = str_replace('{{CODE}}', $_match[0], file_get_contents(INCPATH.'views/loginConfrim.html'));
 			die($confirm);
 		}
-		else if (preg_match($REWRITE_REGEX, $_GET['state']))
-			HTTP::redirect($_GET['state'], HTTP::REDIRECT_TEMP);
-
-		HTTP::redirect('/', HTTP::REDIRECT_TEMP);
+		else $this->_moveToState($_GET['state']);
 	}
 
 	function signout(){
@@ -124,5 +120,20 @@ class AuthController extends Controller {
 				'rndkey' => $rndkey,
 			]
 		], $this);
+	}
+
+	/**
+	 * Move to a different state or fall back to the home page if it's invalid
+	 * Disclaimer: relocation not covered by the application
+	 *
+	 * @param string $state Path to move to
+	 */
+	private function _moveToState(?string $state){
+		global $REWRITE_REGEX;
+
+		if (!isset($state) || !$REWRITE_REGEX->match($state))
+			$state = '/';
+
+		HTTP::redirect($state, HTTP::REDIRECT_TEMP);
 	}
 }
