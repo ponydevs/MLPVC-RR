@@ -72,7 +72,7 @@ class DiscordMember extends AbstractUser {
 		'id-140360880079503362' => '46947ae2-62ae-28d1-2e49-6daee2048f59',
 	];
 
-	// List of DA user IDs we do not want to bind to for whatever reason (e.g. ambigous name)
+	// List of DA user IDs we do not want to automatically bind to for whatever reason (e.g. ambigous name)
 	const BIND_BLACKLIST = [
 		'de07c6f1-cdbe-d154-47d4-1d7315688c95',
 		'ae90a347-25b4-a850-f7be-8399d16810ce',
@@ -81,6 +81,7 @@ class DiscordMember extends AbstractUser {
 		'6d2b4808-1792-6342-7087-aa0fb261907d',
 		'f73c6d54-49d2-a88b-ceb5-aba86dbb9b5b',
 		'62b26e62-090d-db3f-019a-6eeaaf1ffddc',
+		'e1cbcdef-5445-0556-aa55-78e045286554',
 	];
 
 	public function guessDAUser():?string {
