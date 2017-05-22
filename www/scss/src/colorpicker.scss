@@ -1,8 +1,20 @@
+@import url('https://fonts.googleapis.com/css?family=PT+Sans');
+@import "typicons";
+
+html,body {
+	width: 100%;
+	height: 100%;
+	margin: 0;
+}
+body {
+	font-family: 'PT Sans', sans-serif;
+}
 $UIColor: silver;
 $UIBackground: #333;
 $DebugImgTopLeft: #99f;
 $DebugImgCenter: #f77;
 $DebugWrapCenter: #7f7;
+$MenubarHeight: 28px;
 %debug-point {
 	content: "";
 	display:block;
@@ -13,11 +25,53 @@ $DebugWrapCenter: #7f7;
 	border-radius:100%;
 	border: 2px solid white;
 }
+.hidden{display:none!important}
+#menubar {
+	position: absolute;
+	height: $MenubarHeight;
+	background: $UIBackground;
+	color: $UIColor;
+	padding: 0 5px;
+	margin: 0;
+	display: flex;
+	flex-flow: row nowrap;
+	font-size: 0;
+	width: 100%;
+	user-select: none;
+	box-sizing: border-box;
+
+	> li {
+		font-size: 18px;
+		display: flex;
+		flex-flow: row nowrap;
+		align-items: center;
+
+		> a {
+			flex: 0 0 auto;
+			padding: 1px 7px;
+			cursor: default;
+
+			&.disabled {
+				opacity: .7;
+				pointer-events: none;
+			}
+
+			&:not(.disabled):hover {
+				color: $UIBackground;
+				background-color: $UIColor;
+			}
+		}
+	}
+}
 .poly-wrap {
-	position: relative;
+	position: absolute;
 	overflow: hidden;
 	box-sizing: border-box;
 	user-select: none;
+	top: $MenubarHeight;
+	left: 0;
+	width: 100%;
+	height: calc(100% - #{$MenubarHeight});
 
 	&:before {
 		@extend %debug-point;

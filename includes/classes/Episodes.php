@@ -147,7 +147,7 @@ class Episodes {
 		if ($serverSideRedirect)
 			CoreUtils::fixPath($url);
 
-		$js = array('imagesloaded.pkgd','jquery.ba-throttle-debounce','jquery.fluidbox','Chart','episode','episode-manage');
+		$js = array('imagesloaded.pkgd','jquery.fluidbox','Chart','episode','episode-manage');
 		if (Permission::sufficient('staff'))
 			$js[] = 'moment-timezone';
 

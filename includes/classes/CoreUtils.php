@@ -179,7 +179,7 @@ class CoreUtils {
 			$customCSS = array_merge($customCSS, $DEFAULT_CSS);
 
 		# JavaScript
-		$DEFAULT_JS = array('moment','jquery.ba-throttle-debounce','global','dialog','dragscroll');
+		$DEFAULT_JS = array('moment','jquery.ba-throttle-debounce','shared-utils','global','dialog','dragscroll');
 		$customJS = array();
 		// Only add defaults when needed
 		if (array_search('no-default-js', $options) === false)
@@ -276,6 +276,11 @@ class CoreUtils {
 
 		foreach ($customType as $i => &$item)
 			self::_formatFilePath($item, $relpath, $ext);
+	}
+
+	static function asset(string $fname, string $relpath, string $type):string {
+		self::_formatFilePath($fname, $relpath, $type);
+		return $fname;
 	}
 
 	/**
@@ -590,6 +595,8 @@ class CoreUtils {
 					$NavItems['colorguide']['subitem'] = (isset($scope['Map'])?"Sprite {$Color}s - ":'').Appearances::processLabel(CoreUtils::escapeHTML($scope['Appearance']['label']));
 				else if (isset($scope['Ponies']))
 					$NavItems['colorguide'][1] .= " - Page {$scope['Pagination']->page}";
+				else if (isset($scope['nav_picker']))
+					$NavItems['colorguide']['subitem'] = $GLOBALS['title'];
 				else {
 					if (preg_match(new RegExp('full$'),$GLOBALS['data'])){
 						$NavItems['colorguide']['subitem'] = 'Full '.($scope['EQG']?'Character':'Pony').' List';

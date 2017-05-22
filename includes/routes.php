@@ -46,6 +46,8 @@ $router->map('GET',      '/[cg]/[eqg:eqg]?/[v]/[adi]-[i:id]',                   
 $router->map('GET',      '/[cg]/[eqg:eqg]?/[v]/[i:id][cgimg:type].[cgext:ext]', 'ColorGuideController#appearanceAsFile');
 $router->map('GET',      '/[cg]/[eqg:eqg]?/sprite(-colors)?/[i:id][adi]?',      'ColorGuideController#spriteColors');
 $router->map('GET|POST', '/[cg]/get-tags',                                      'ColorGuideController#getTags');
+$router->map('GET', '/[cg]/picker',                                             'ColorGuideController#picker');
+$router->map('GET', '/[cg]/picker/frame',                                       'ColorGuideController#pickerFrame');
 $router->map('GET', '/da-auth',                        'AuthController#auth');
 $router->map('GET', '/episode/[epid:id]',              'EpisodeController#page');
 $router->map('GET', '/episodes/[i]?',                  'EpisodesController#index');
@@ -57,7 +59,6 @@ $router->map('GET', '/movie/[i:id][adi]?',             'MovieController#pageID')
 $router->map('GET', '/movie/[adi:title]',              'MovieController#pageTitle');
 $router->map('GET', '/logs/[i]',                       'AdminController#logs');
 $router->map('GET', '/muffin-rating',                  'MuffinRatingController#image');
-$router->map('GEP', '/poly',                           'PolyController#index');
 $router->map('GET', '/s/[rr:thing]/[i:id]',            'PostController#share');
 $router->map('GET', '/users',                          'UsersController#list');
 $router->map('GET', '/@[un:name]',                     'UserController#profile');

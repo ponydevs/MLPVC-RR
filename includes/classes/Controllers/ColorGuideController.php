@@ -1740,4 +1740,24 @@ HTML;
 
 		Response::done($response);
 	}
+
+	function picker(){
+		if (Permission::insufficient('staff'))
+			CoreUtils::notFound();
+
+		CoreUtils::loadPage([
+			'title' => 'Color Picker',
+			'view' => "{$this->do}-picker",
+			'css' => "{$this->do}-picker",
+			'import' => ['nav_picker' => true],
+		]);
+	}
+
+	function pickerFrame(){
+		if (Permission::insufficient('staff'))
+			CoreUtils::notFound();
+
+		header('Content-Type: text/html; charset=utf-8;');
+		include INCPATH.'views/colorpicker.php';
+	}
 }

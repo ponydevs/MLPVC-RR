@@ -135,7 +135,7 @@
 	#main {
 		position: relative;
 		z-index: 1;
-		padding: 8px 8px #{8px + 38px} 8px;
+		padding: 8px 8px #{8px + $FooterHeight} 8px;
 	}
 	#content h1 {
 		font-size: 2em;
@@ -143,14 +143,14 @@
 		+ p { font-size: 1.6em }
 	}
 	#sidebar {
-		height: calc(100% - #{$HeaderHeight} - 38px);
+		height: calc(100% - #{$HeaderHeight} - #{$FooterHeight});
 
 		.mobile-nav { display: none }
 	}
 	footer {
 		position: fixed;
 		bottom: 0;
-		height: 38px;
+		height: $FooterHeight;
 		white-space: nowrap;
 		overflow: hidden;
 		text-overflow: ellipsis;

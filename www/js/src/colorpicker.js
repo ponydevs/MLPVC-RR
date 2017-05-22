@@ -1,9 +1,11 @@
-/* Basic Polygon editor | by @SeinopSys + Trildar & Masem | for gh:ponydevs/MLPVC-RR */
-/* global Key,$w,console */
+/* Color Picker | by @SeinopSys + Trildar & Masem | for gh:ponydevs/MLPVC-RR */
 (function($){
 	'use strict';
 	let classStart = 'poly-',
 		$doc = $(document);
+
+	const Key = window.parent.Key;
+	const $w = $(window);
 
 	$.fn.polyEditor = function(options){
 		if (!options.image)
@@ -180,7 +182,7 @@
 			$zoomout = $.mk('button').attr('class',classStart+'zoom-out typcn typcn-zoom-out').on('click', function(e){
 				e.preventDefault();
 
-				zoomto((Math.floor(zoomlevel*10)-1)/10);
+				zoomto((Math.ceil(zoomlevel*10)-1)/10);
 			}),
 			$actionTopLeft = $.mk('div').attr('class',classStart+'actions '+classStart+'actions-tl').append(
 					$zoomin,
@@ -277,6 +279,15 @@
 			let wrapoffset = wrappos();
 			$mousepos.text((e.pageX-wrapoffset.left)+','+(e.pageY-wrapoffset.top));
 		}));
+
+		$w.on('mousewheel',function(e){
+			if (e.ctrlKey && !e.altKey)
+				e.preventDefault();
+
+			if (e.originalEvent.deltaY > 0)
+				$zoomout.trigger('click');
+			else $zoomin.trigger('click');
+		});
 
 		return {
 			destroy: function(){

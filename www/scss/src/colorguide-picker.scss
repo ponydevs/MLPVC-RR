@@ -1,0 +1,28 @@
+@import "vars";
+html, body {
+	height: 100%;
+	overflow: hidden;
+}
+#main {
+	height: calc(100% - #{$HeaderHeight} - #{$FooterHeight});
+	padding-bottom: 10px;
+}
+#content {
+	border: 0;
+	background: transparent;
+	border-radius: 0;
+	position: relative;
+	height: 100%;
+	width: 100%;
+	padding: 0;
+}
+#picker-frame {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 100%;
+	width: 100%;
+	border: 1px solid #000;
+	background: url('../../img/transparency.svg') repeat top left;
+	background-size: 16px 16px;
+}
