@@ -10,7 +10,8 @@
 #wss-status {
 	padding: 8px;
 	overflow: auto;
-	max-height: 75vh;
+	max-height: 70vh;
+	margin-bottom: 0;
 	@include l33th4x();
 
 	&:empty:before {
