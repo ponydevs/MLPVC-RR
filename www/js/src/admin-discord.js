@@ -31,6 +31,8 @@ DocReady.push(function(){
 						$.Dialog.confirm(title, 'Are you sure you want to remove this binding?', function(sure){
 							if (!sure) return;
 
+							$.Dialog.wait(false);
+
 							$.post(`/admin/discord/member-link/del/${discid}`,$.mkAjaxHandler(function(){
 								if (!this.status) return $.Dialog.fail(false, this.message);
 
