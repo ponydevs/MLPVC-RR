@@ -13,7 +13,6 @@ use App\Users;
 /** @var $User User */
 /** @var $sameUser bool */
 /** @var $canEdit bool */
-/** @var $discordmember \App\Models\DiscordMember */
 /** @var $Sessions \App\Models\Session[] */
 /** @var $CurrentSession \App\Models\Session|null */
 
@@ -24,12 +23,12 @@ if (isset($MSG)){
 }
 else {
 	$vectorapp = UserPrefs::get('p_vectorapp', $User->id);
-	$discordmember = $Database->where('userid', $User->id)->getOne('discord-members','id');
+	$discordmember = $Database->disableAutoClass()->where('userid', $User->id)->getOne('discord-members',"id, coalesce(nick,username) as displayname");
 ?>
 	<div class="briefing">
 		<?=$User->getAvatarWrap()?>
 		<div class="title">
-			<h1><span class="username"><?=$User->name?></span><a class="da" title="Visit DeviantArt profile" href="<?=$User->getDALink(User::LINKFORMAT_URL)?>"><?=str_replace(' fill="#FFF"','',file_get_contents(APPATH.'img/da-logo.svg'))?></a><?=!empty($vectorapp)?"<img class='vectorapp-logo' src='/img/vapps/$vectorapp.svg' alt='$vectorapp logo' title='".CoreUtils::$VECTOR_APPS[$vectorapp]." user'>":''?><?=!empty($discordmember)?"<img class='discord-logo' src='/img/discord-logo.svg' alt='Discord logo' title='This user is a member of our Discord server'>":''?></h1>
+			<h1><span class="username"><?=$User->name?></span><a class="da" title="Visit DeviantArt profile" href="<?=$User->getDALink(User::LINKFORMAT_URL)?>"><?=str_replace(' fill="#FFF"','',file_get_contents(APPATH.'img/da-logo.svg'))?></a><?=!empty($vectorapp)?"<img class='vectorapp-logo' src='/img/vapps/$vectorapp.svg' alt='$vectorapp logo' title='".CoreUtils::$VECTOR_APPS[$vectorapp]." user'>":''?><?=!empty($discordmember)?"<img class='discord-logo' src='/img/discord-logo.svg' alt='Discord logo' title='This user is a member of our Discord server as @".CoreUtils::escapeHTML($discordmember['displayname'])."'>":''?></h1>
 			<p><?php
 echo "<span class='rolelabel'>{$User->rolelabel}</span>";
 if ($canEdit){
