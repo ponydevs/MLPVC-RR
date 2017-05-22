@@ -41,7 +41,7 @@ class DiscordMember extends AbstractUser {
 	}
 
 	public function getAvatarURL(){
-		return isset($this->avatar_hash) ? "https://images.discordapp.net/avatars/{$this->id}/{$this->avatar_hash}" : null;
+		return isset($this->avatar_hash) ? "https://images.discordapp.net/avatars/{$this->id}/{$this->avatar_hash}.png" : null;
 	}
 
 	public function displayedName(){
