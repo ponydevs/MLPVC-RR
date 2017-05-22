@@ -627,7 +627,7 @@ class CoreUtils {
 					global $Pagination;
 					$NavItems['admin']['subitem'] = "Logs - Page {$Pagination->page}";
 				}
-				if (isset($scope['nav_dsc']))
+				else if (isset($scope['nav_dsc']) || isset($scope['nav_wsdiag']))
 					$NavItems['admin']['subitem'] = $GLOBALS['heading'];
 			}
 			$NavItems[] = array('/about', 'About');

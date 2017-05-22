@@ -92,10 +92,10 @@ class AdminController extends Controller {
 		foreach ($whereArgs as $arg)
 			$Database->where(...$arg);
 		$Pagination = new Pagination('admin/logs', 20, $Database->count('log'));
-		$heading = 'Global logs - Admin Area';
+		$heading = 'Global logs';
 		if (!empty($title))
 			$title .= '- ';
-		$title .= "Page {$Pagination->page} - $heading";
+		$title .= "Page {$Pagination->page} - $heading - Admin Area";
 		CoreUtils::fixPath("/admin/logs/{$Pagination->page}".(!empty($q)?'?'.implode('&',$q):''));
 
 		foreach ($whereArgs as $arg)
@@ -476,10 +476,14 @@ HTML;
 		if (Permission::insufficient('developer'))
 			CoreUtils::notFound();
 
+		$heading = 'WebSocket Server Diagnostics';
 		CoreUtils::loadPage([
+			'heading' => $heading,
+			'title' => "$heading - Admin Area",
 			'view' => "{$this->do}-wsdiag",
 			'js' => "{$this->do}-wsdiag",
 			'css' => "{$this->do}-wsdiag",
+			'import' => ['nav_wsdiag' => true],
 		]);
 	}
 }
