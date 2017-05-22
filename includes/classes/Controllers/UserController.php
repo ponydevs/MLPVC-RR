@@ -7,6 +7,7 @@ use App\CSRFProtection;
 use App\HTTP;
 use App\Input;
 use App\Logs;
+use App\Models\User;
 use App\Permission;
 use App\Posts;
 use App\RegExp;
@@ -98,6 +99,20 @@ class UserController extends Controller {
 		}
 		$settings['import']['showSuggestions'] = $showSuggestions;
 		CoreUtils::loadPage($settings, $this);
+	}
+
+	function profileByUuid($params){
+		if (Permission::insufficient('developer') || !isset($params['uuid']))
+			CoreUtils::notFound();
+
+		global $Database;
+
+		/** @var $User User */
+		$User = $Database->where('id', $params['uuid'])->getOne('users','name');
+		if (empty($User))
+			CoreUtils::notFound();
+
+		HTTP::redirect('/@'.$User->name);
 	}
 
 	function awaitingApproval($params){

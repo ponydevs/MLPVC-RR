@@ -20,6 +20,7 @@ $router->addMatchTypes([
 	'cg' => '(c(olou?r)?g(uide)?)',
 	'user' => 'u(ser)?',
 	'v' => '(v|appearance)',
+	'uuid' => '([0-9a-fA-F]{32}|[0-9a-fA-F-]{36})',
 ]);
 
 // Pages
@@ -59,8 +60,9 @@ $router->map('GET', '/muffin-rating',                  'MuffinRatingController#i
 $router->map('GEP', '/poly',                           'PolyController#index');
 $router->map('GET', '/s/[rr:thing]/[i:id]',            'PostController#share');
 $router->map('GET', '/users',                          'UsersController#list');
-$router->map('GET', '/@[un:name]?',                   'UserController#profile');
-$router->map('GET', '/@[un:name]?',                   'UserController#profile');
+$router->map('GET', '/@[un:name]',                     'UserController#profile');
+$router->map('GET', '/u/[uuid:uuid]',                  'UserController#profileByUuid');
+$router->map('GET', '/u/[un:name]?',                   'UserController#profile');
 $router->map('GET', '/@[un:name]/[cg]/[i]?',                               'ColorGuideController#personalGuide');
 $router->map('GET', '/@[un:name]/[cg]/[v]/[i:id]',                         'ColorGuideController#personalAppearancePage');
 $router->map('GET', '/@[un:name]/[cg]/[v]/[i:id]-[adi]',                   'ColorGuideController#personalAppearancePage');
