@@ -441,7 +441,7 @@ class PostController extends Controller {
 		$this->_authorize();
 
 		$thing = (new Input('what',function($value){
-			if (!in_array($value,Posts::$TYPES))
+			if (!in_array($value,Posts::TYPES))
 				return Input::ERROR_INVALID;
 		},array(
 			Input::CUSTOM_ERROR_MESSAGES => array(

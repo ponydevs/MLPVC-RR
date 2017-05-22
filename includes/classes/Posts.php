@@ -10,9 +10,9 @@ use App\Models\User;
 use App\Exceptions\MismatchedProviderException;
 
 class Posts {
-	static
-		$TYPES = array('request','reservation'),
-		$REQUEST_TYPES = array(
+	const
+		TYPES = array('request','reservation'),
+		REQUEST_TYPES = array(
 			'chr' => 'Characters',
 			'obj' => 'Objects',
 			'bg' => 'Backgrounds',
@@ -165,7 +165,7 @@ class Posts {
 		catch (\Exception $e){ Response::fail($e->getMessage()); }
 
 		global $Database;
-		foreach (Posts::$TYPES as $type){
+		foreach (Posts::TYPES as $type){
 			if (!empty($Post->id))
 				$Database->where('r.id',$Post->id,'!=');
 			/** @var $UsedUnder Post */
@@ -204,7 +204,7 @@ class Posts {
 		try {
 			$Image = new ImageProvider($deviation, array('fav.me', 'dA'));
 
-			foreach (Posts::$TYPES as $what){
+			foreach (Posts::TYPES as $what){
 				if ($Database->where('deviation_id', $Image->id)->has("{$what}s"))
 					Response::fail("This exact deviation has already been marked as the finished version of a different $what");
 			}
@@ -277,7 +277,7 @@ class Posts {
 
 		$Groups = '';
 		foreach ($Arranged['unfinished'] as $g => $c)
-			$Groups .= "<div class='group' id='group-$g'><h3>".self::$REQUEST_TYPES[$g].":</h3><ul>$c</ul></div>";
+			$Groups .= "<div class='group' id='group-$g'><h3>".self::REQUEST_TYPES[$g].":</h3><ul>$c</ul></div>";
 
 		if (Permission::sufficient('user')){
 			$makeRq = '<button id="request-btn" class="green" disabled>Make a request</button>';
@@ -609,6 +609,7 @@ HTML;
 		$escapedLabel = CoreUtils::aposEncode($Request->label);
 		$label = self::_getPostLabel($Request);
 		$time_ago = Time::tag($Request->posted);
+		$cat = Posts::REQUEST_TYPES[$Request->type];
 		$reserve = Permission::sufficient('member') ? self::getPostReserveButton($Request, null, false) : "<div><a href='{$Request->toLink()}' class='btn blue typcn typcn-arrow-forward'>View on episode page</a></div>";
 		return <<<HTML
 <li id="request-{$Request->id}">
@@ -619,6 +620,7 @@ HTML;
 	</div>
 	$label
 	<em class="post-date">Requested <a href="{$Request->toLink()}">$time_ago</a> under {$Request->toAnchor()}</em>
+	<em class="category">Category: {$cat}</em>
 	$reserve
 </li>
 HTML;
