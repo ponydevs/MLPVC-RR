@@ -22,6 +22,7 @@
 	display: inline-block;
 	margin-left: 8px;
 	will-change: transform, color;
+	transition: opacity .5s linear;
 
 	&.beat {
 		animation: beat 1s linear;
@@ -40,5 +41,11 @@
 
 	&.dead {
 		display: none;
+	}
+
+	&.paused {
+		opacity: .6;
+		color: green;
+		animation: none !important;
 	}
 }

@@ -6,6 +6,13 @@ DocReady.push(function(){
 		$wssStatus = $('#wss-status').children(),
 		$wssHeartbeat = $('#wss-heartbeat'),
 		updateStatus = function(){
+			// Skip the update if the data is being hovered over
+			if ($wssStatus.parent().is(':hover')){
+				$wssHeartbeat.addClass('paused');
+				return;
+			}
+			$wssHeartbeat.removeClass('paused');
+
 			if ($.WS.down){
 				clearInterval(window._WSStatusCheckInterval);
 				$wssStatus.text('Socket.IO server is down and/or client library failed to load');
@@ -16,7 +23,7 @@ DocReady.push(function(){
 				$wssHeartbeat.removeClass('beat');
 				setTimeout(function(){
 					$wssHeartbeat.addClass('beat');
-				},10);
+				},20);
 				delete data.status;
 				$wssStatus.text(JSON.stringify(data,null,4));
 			});
