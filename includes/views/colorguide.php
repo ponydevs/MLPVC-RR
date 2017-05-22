@@ -46,7 +46,7 @@ use App\Tags;
 		<button type='reset' class='red typcn typcn-times' title='Clear'<?=empty($_GET['q'])?' disabled':''?>></button>
 	</form>
 <?  }
-	else echo CoreUtils::notice('warn','<span class="typcn typcn-warning"></span> <strong>ElasticSearch server is down!</strong> Please <a class="send-feedback">let us know</a>, and in the meantime, use the <a class="btn darkblue typcn typcn-th-menu" href="/cg'.($EQG?'/eqg':'').'/full">Full List</a> to find appearances faster. Sorry for the inconvenience.',true); ?>
+	else echo \App\CGUtils::getElasticUnavailableNotice($EQG); ?>
 	<?=$Pagination->HTML . Appearances::getHTML($Ponies) . $Pagination->HTML?>
 </div>
 

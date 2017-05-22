@@ -1238,6 +1238,7 @@
 							if (signedIn)
 								$.WS.authme();
 							else $.WS.unauth();
+							$.WS.navigate();
 
 							$.callCallback(callback);
 							$.Loader.finish();
@@ -1600,6 +1601,7 @@ $(function(){
 					console.log('[WS] %cConnected','color:green');
 
 					$.WS.recvPostUpdates(typeof window.EpisodePage !== 'undefined');
+					$.WS.navigate();
 				});
 				conn.on('auth', wsdecoder(function(data){
 					auth = true;
@@ -1714,6 +1716,7 @@ $(function(){
 					statusCode: {
 						404: function(){
 							console.log('%c[WS] Server down!','color:red');
+							$.WS.down = true;
 							$sidebar.find('.notif-list').on('click','.mark-read', function(e){
 								e.preventDefault();
 
@@ -1731,6 +1734,16 @@ $(function(){
 					postUpdates: false,
 					entryUpdates: false,
 				};
+			dis.down = false;
+			dis.navigate = function(){
+				if (typeof conn === 'undefined')
+					return;
+
+				const page = location.pathname+location.search+location.hash;
+				console.log(`[WS] Sent navigation data (${page})`);
+
+				conn.emit('navigate',{page});
+			};
 			dis.recvPostUpdates = function(subscribe){
 				if (typeof conn === 'undefined')
 					return setTimeout(function(){
@@ -1794,8 +1807,26 @@ $(function(){
 				conn.disconnect(0);
 			};
 			dis.status = function(){
+				if (typeof conn === 'undefined')
+					return setTimeout(function(){
+						dis.status();
+					},2000);
+
 				conn.emit('status',null,wsdecoder(function(data){
 					console.log('[WS] Status: ID=%s; Name=%s; Rooms=%s',data.User.id,data.User.name,data.rooms.join(','));
+				}));
+			};
+			dis.devquery = function(what, data = {}, cb = undefined){
+				if (typeof conn === 'undefined')
+					return setTimeout(function(){
+						dis.devquery(what, data, cb);
+					},2000);
+
+				conn.emit('devquery',{what,data},wsdecoder(function(data){
+					if (typeof cb === 'function')
+						return cb(data);
+
+					console.log('[WS] DevQuery '+(data.status?'Success':'Fail'), data);
 				}));
 			};
 			return dis;

@@ -1,0 +1,44 @@
+@import "vars";
+@import "theme_section";
+
+#content {
+	> section {
+		@extend %section;
+	}
+}
+
+#wss-status {
+	padding: 8px;
+	overflow: auto;
+	max-height: 75vh;
+	@include l33th4x();
+
+	&:empty:before {
+		content: "Updating...";
+	}
+}
+
+#wss-heartbeat {
+	display: inline-block;
+	margin-left: 8px;
+	will-change: transform, color;
+
+	&.beat {
+		animation: beat 1s linear;
+
+		@keyframes beat {
+			from, to {
+				transform: scale(1);
+				color: black;
+			}
+			50% {
+				transform: scale(1.5);
+				color: red;
+			}
+		}
+	}
+
+	&.dead {
+		display: none;
+	}
+}

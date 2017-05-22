@@ -15,7 +15,7 @@ DocReady.push(function(){
 					<li>Once there, press <kbd>Ctrl</kbd><kbd>A</kbd> (which will select the entire page)</li>
 					<li>Now press <kbd>Ctrl</kbd><kbd>C</kbd> (copying the selected content)</li>
 					<li>Return to this page and click into the box below (you should see a blinking cursor afterwards)</li>
-					<li>Hit <kbd>Ctrl</kbd><kbd>V</kbd></li> (to paste what yo ujust copied)
+					<li>Hit <kbd>Ctrl</kbd><kbd>V</kbd></li> (to paste what you just copied)
 					<li>Repeat these steps if there are multiple pages of results.</li>
 				</ol>
 				<p>The script will look for any deviation links in the HTML code of the page, which it then sends over to the server to mark them as approved if they were used to finish posts on the site.</p>`);

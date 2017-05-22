@@ -394,13 +394,15 @@ class ColorGuideController extends Controller {
 		catch (ServerErrorResponseException $e){
 			$elasticAvail = false;
 		}
+		$searching = !empty($_GET['q']) && CoreUtils::length(trim($_GET['q'])) > 0;
+		$jsResponse = isset($_GET['js']);
 		if ($elasticAvail){
 			$search = new ElasticsearchDSL\Search();
 			$orderByID = true;
 		    $Pagination = new Pagination('cg', $AppearancesPerPage);
 
 			// Search query exists
-			if (!empty($_GET['q']) && mb_strlen(trim($_GET['q'])) > 0){
+			if ($searching){
 				$SearchQuery = preg_replace(new RegExp('[^\w\d\s\*\?]'),'',trim($_GET['q']));
 				$title .= "$SearchQuery - ";
 				if (preg_match(new RegExp('[\*\?]'), $SearchQuery)){
@@ -458,6 +460,8 @@ class ColorGuideController extends Controller {
 			}
 		}
 		if (!$elasticAvail) {
+			if ($searching && $jsResponse)
+				Response::fail('The ElasticSearch server is currently down and search is not available, sorry for the inconvenience.<br>Please <a class="send-feedback">let us know</a> about this issue.');
 		    $_EntryCount = $Database->where('ishuman',$this->_EQG)->where('id != 0')->count('appearances');
 
 		    $Pagination = new Pagination('cg', $AppearancesPerPage, $_EntryCount);
@@ -474,7 +478,7 @@ class ColorGuideController extends Controller {
 		$heading = ($this->_EQG?'EQG ':'')."$Color Guide";
 		$title .= "Page {$Pagination->page} - $heading";
 
-		if (isset($_GET['js']))
+		if ($jsResponse)
 			$Pagination->respond(Appearances::getHTML($Ponies, NOWRAP), '#list');
 
 		$settings = array(

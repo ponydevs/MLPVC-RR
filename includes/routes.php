@@ -31,6 +31,7 @@ $router->map('GET', '/logs/[i]?',                      'AdminController#logs');
 $router->map('GET', '/admin/logs/[i]?',                'AdminController#logs');
 $router->map('GET', '/admin/discord',                  'AdminController#discord');
 $router->map('GET', '/admin/usefullinks',              'AdminController#usefulLinks');
+$router->map('GET', '/admin/wsdiag',                   'AdminController#wsdiag');
 $router->map('GET', '/blending',                       'BlendingController#index');
 $router->map('GET', '/browser/[i:session]?',           'BrowserController#index');
 $router->map('GET', '/components',                     'ComponentsController#index');

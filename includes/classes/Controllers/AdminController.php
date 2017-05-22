@@ -471,4 +471,15 @@ HTML;
 
 		Response::done(['html' => Posts::getMostRecentList(WRAP)]);
 	}
+
+	function wsdiag(){
+		if (Permission::insufficient('developer'))
+			CoreUtils::notFound();
+
+		CoreUtils::loadPage([
+			'view' => "{$this->do}-wsdiag",
+			'js' => "{$this->do}-wsdiag",
+			'css' => "{$this->do}-wsdiag",
+		]);
+	}
 }

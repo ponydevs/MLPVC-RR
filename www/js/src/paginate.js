@@ -140,8 +140,10 @@
 					});
 
 
-				if (overwriteState === true || (state.page !== newPageNumber && !isNaN(newPageNumber)) || haveExtraQuery)
+				if (overwriteState === true || (state.page !== newPageNumber && !isNaN(newPageNumber)) || haveExtraQuery){
 					history.replaceState.apply(history, stateParams);
+					$.WS.navigate();
+				}
 
 				$pagination.html(this.pagination);
 				maxPages = parseInt($pagination.first().children(':not(.spec)').last().text(), 10);

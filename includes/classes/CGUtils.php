@@ -769,6 +769,10 @@ GPL;
 		CM_FACING_RIGHT => 'Tail-head',
 	);
 
+	static function getElasticUnavailableNotice(bool $EQG):string {
+		return CoreUtils::notice('warn','<span class="typcn typcn-warning"></span> <strong>ElasticSearch server is down!</strong> Please <a class="send-feedback">let us know</a>, and in the meantime, use the <a class="btn darkblue typcn typcn-th-menu" href="/cg'.($EQG?'/eqg':'').'/full">Full List</a> to find appearances faster. Sorry for the inconvenience.',true);
+	}
+
 	const ELASTIC_BASE = array(
 		'index' => 'appearances',
 	);
