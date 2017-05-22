@@ -1740,7 +1740,6 @@ $(function(){
 					return;
 
 				const page = location.pathname+location.search+location.hash;
-				console.log(`[WS] Sent navigation data (${page})`);
 
 				conn.emit('navigate',{page});
 			};
