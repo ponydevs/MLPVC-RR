@@ -37,11 +37,21 @@
 				this._$menubar.find('a.active').removeClass('active');
 				$(e.target).addClass('active').next().removeClass('hidden');
 			});
-			this._$filein = $.mk('input','screenshotin').attr({type:'file',accept:'image/png',tabindex:-1,'class':'fileinput'}).appendTo($body);
+			this._$filein = $.mk('input','screenshotin').attr({type:'file',accept:'image/png,image/jpeg',tabindex:-1,'class':'fileinput'}).appendTo($body);
 			this._$openImage = $('#open-image').on('click',e => {
 				e.preventDefault();
 
 				this._$filein.trigger('click');
+			});
+			this._$clearImage = $('#clear-image').on('click',e => {
+				e.preventDefault();
+
+				$.Dialog.confirm('Clear image','Are you sure you want to clear the current image?',sure => {
+					if (!sure) return;
+
+					ColorPicker.getInstance().clearImage();
+					this._$clearImage.addClass('disabled');
+				});
 			});
 			this._$filein.on('change',() => {
 				const val = this._$filein.val();
@@ -52,18 +62,8 @@
 				this._$openImage.addClass('disabled');
 				this.setFile(this._$filein[0].files[0],success => {
 					this._$openImage.removeClass('disabled');
-					if (success)
+					if (success === true)
 						this._$clearImage.removeClass('disabled');
-				});
-			});
-			this._$clearImage = $('#clear-image').on('click',e => {
-				e.preventDefault();
-
-				$.Dialog.confirm('Clear image','Are you sure you want to clear the current image?',sure => {
-					if (!sure) return;
-
-					ColorPicker.getInstance().clearImage();
-					this._$clearImage.addClass('disabled');
 				});
 			});
 
@@ -80,8 +80,8 @@
 			return pluginScope.menubar;
 		}
 		setFile(file, callback){
-			if (file.type !== 'image/png'){
-				$.Dialog.fail('Invalid file', 'You may only use PNG images with this tool');
+			if (!/^image\/(png|jpeg)$/.test(file.type)){
+				$.Dialog.fail('Invalid file', 'You may only use PNG or JPG images with this tool');
 				callback(false);
 				return;
 			}
@@ -418,7 +418,30 @@
 			this.updatePositions(zoomed.top,zoomed.left,newsize);
 		}
 		setZoomFit(){
-			this._fitImageHandler((size, wide) => $.scaleResize(size.width, size.height, wide ? {height:this._wrapheight} : {width:this._wrapwidth}));
+			this._fitImageHandler(size => {
+				const
+					wrapwide = this._wrapwidth > this._wrapheight,
+					square = size.width === size.height,
+					wide = square ? wrapwide : size.width > size.height;
+				let ret = $.scaleResize(size.width, size.height, wide ? {height:this._wrapheight} : {width:this._wrapwidth});
+				if (wrapwide){
+					if (ret.width > this._wrapwidth){
+						ret = $.scaleResize(ret.width, ret.height, {width:this._wrapwidth});
+					}
+					if (ret.height > this._wrapheight){
+						ret = $.scaleResize(ret.width, ret.height, {height:this._wrapheight});
+					}
+				}
+				if (!wrapwide){
+					if (ret.height > this._wrapheight){
+						ret = $.scaleResize(ret.width, ret.height, {height:this._wrapheight});
+					}
+					if (ret.width > this._wrapwidth){
+						ret = $.scaleResize(ret.width, ret.height, {width:this._wrapwidth});
+					}
+				}
+				return ret;
+			});
 		}
 		setZoomOriginal(){
 			this._fitImageHandler((size, wide) => ({
@@ -432,12 +455,9 @@
 			if (typeof size !== 'object')
 				return;
 
-			let wrapwide = this._wrapwidth > this._wrapheight,
-				square = size.width === size.height,
-				wide = square ? wrapwide : size.width > size.height,
-				newsize = nscalc(size, wide),
-				top = wide && !square ? 0 : (this._wrapheight-newsize.height)/2,
-				left = wide || square ? (this._wrapwidth-newsize.width)/2 : 0;
+			let newsize = nscalc(size),
+				top = (this._wrapheight-newsize.height)/2,
+				left = (this._wrapwidth-newsize.width)/2;
 			this._$imageOverlay.add(this._$imageCanvas).add(this._$svgWrap).css({
 				top: top,
 				left: left,
@@ -468,12 +488,12 @@
 			const image = new Image();
 			$(image).attr('src', src).on('load',() => {
 				this._$picker.removeClass('loading');
+
 				this._$imageCanvas.css('opacity',0);
 				this._$imageCanvas.appendTo(this._$picker).data('size',{
 					width: image.width,
 					height: image.height,
 				});
-				this._$loader.detach();
 
 				this._$imageCanvas[0].width = image.width;
 				this._$imageCanvas[0].height = image.height;
@@ -517,7 +537,11 @@
 				});
 
 				this._hasImage = true;
-				$.callCallback(callback);
+				callback(true);
+			}).on('error',() => {
+				this._$picker.removeClass('loading');
+				$.Dialog.fail('Oh no','The provided image could not be loaded. This is usually caused by attempting to open a file that is, in fact, not an image.');
+				callback(false);
 			});
 		}
 		clearImage(){
