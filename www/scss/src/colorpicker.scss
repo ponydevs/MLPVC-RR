@@ -1,33 +1,48 @@
 @import url('https://fonts.googleapis.com/css?family=PT+Sans');
 @import "typicons";
+@import "vars";
+@import "theme_dialog";
 
 html,body {
 	width: 100%;
 	height: 100%;
 	margin: 0;
 }
+$UIColor: silver;
+$UIBackground: #333;
+$EditorBG: #191919;
+$DebugImgTopLeft: #99f;
+$DebugImgCenter: #f77;
+$DebugWrapCenter: #5f5;
+$MenubarHeight: 28px + 1px;
+$StatusbarHeight: 24px + 1px;
+$DebugPointSize: 10px;
 body {
 	font-family: 'PT Sans', sans-serif;
 }
-$UIColor: silver;
-$UIBackground: #333;
-$DebugImgTopLeft: #99f;
-$DebugImgCenter: #f77;
-$DebugWrapCenter: #7f7;
-$MenubarHeight: 28px;
+:focus{outline:0}
+.fileinput {
+	width: 0;
+	height: 0;
+	overflow: hidden;
+	pointer-events: none;
+}
 %debug-point {
 	content: "";
 	display:block;
 	position:absolute;
 	z-index:5;
-	width: 6px;
-	height: 6px;
+	width: $DebugPointSize;
+	height: $DebugPointSize;
 	border-radius:100%;
 	border: 2px solid white;
+	box-sizing: border-box;
 }
 .hidden{display:none!important}
 #menubar {
 	position: absolute;
+	z-index: 3;
+	top: 0;
 	height: $MenubarHeight;
 	background: $UIBackground;
 	color: $UIColor;
@@ -38,54 +53,204 @@ $MenubarHeight: 28px;
 	font-size: 0;
 	width: 100%;
 	user-select: none;
+	cursor: default;
 	box-sizing: border-box;
+	border-bottom: 1px solid black;
 
 	> li {
-		font-size: 18px;
+		position: relative;
+		font-size: 16px;
 		display: flex;
 		flex-flow: row nowrap;
 		align-items: center;
 
 		> a {
 			flex: 0 0 auto;
-			padding: 1px 7px;
+			padding: 1px 10px;
 			cursor: default;
+			border-radius: 3px;
+			border: 1px solid transparent;
 
 			&.disabled {
 				opacity: .7;
 				pointer-events: none;
 			}
 
-			&:not(.disabled):hover {
-				color: $UIBackground;
-				background-color: $UIColor;
+			&:not(.disabled):not(.active):hover {
+				border-color: rgba(gray, .5);
+				background: rgba(black, .2);
+			}
+
+			&.active {
+				background: rgba(black, .5);
+				box-shadow: inset 0 0 2px black;
+			}
+		}
+		> ul {
+			position: absolute;
+			top: $MenubarHeight;
+			background: #f2f2f2;
+			border: 1px solid #ccc;
+			padding: 2px;
+			margin: 0;
+			white-space: nowrap;
+
+			li > a {
+				display: block;
+				color: #000;
+				padding: 2px 8px 2px 32px;
+
+				&:not(.disabled):hover {
+					background-color: #91c9f7;
+				}
+				&.disabled {
+					opacity: .4;
+					pointer-events: none;
+				}
 			}
 		}
 	}
 }
-.poly-wrap {
+#statusbar {
 	position: absolute;
+	z-index: 2;
+	bottom: 0;
+	height: $StatusbarHeight;
+	background: $UIBackground;
+	color: $UIColor;
+	padding: 0 5px;
+	margin: 0;
+	display: flex;
+	flex-flow: row nowrap;
+	font-size: 18px;
+	width: 100%;
+	user-select: none;
+	cursor: default;
+	box-sizing: border-box;
+	border-top: 1px solid black;
+
+	> *:not(:last-child) {
+		border-right: 1px solid gray;
+		padding-right: 6px !important;
+		margin-right: 6px !important;
+	}
+
+	.info {
+		flex: 1 1 90%;
+		text-align: left;
+	}
+	.pos {
+		flex: 1 1 5%;
+		text-align: center;
+		padding: 0;
+		margin: 0;
+		display: flex;
+		flex-flow: row nowrap;
+		align-items: center;
+
+		&:not(.debug){
+			.debug { display: none }
+		}
+
+		> * {
+			flex: 1 1 25%;
+		}
+
+		li {
+			cursor: default;
+			display: inline-block;
+			font-size: .8em;
+		}
+		.image-top-left { color: $DebugImgTopLeft }
+		.image-center { color: $DebugImgCenter }
+		.editor-center { color: $DebugWrapCenter }
+		.image-top-left, .image-center, .editor-center {
+			font-weight: bold;
+			$size: .5px;
+			$color: black;
+			text-shadow:
+				0 0 $size $color,
+				0 0 $size $color,
+				0 0 $size $color,
+				0 0 $size $color,
+				0 0 $size $color,
+				0 0 $size $color;
+		}
+	}
+	.colorat {
+		flex: 1 1 5%;
+		text-align: center;
+		font-weight: bold;
+		font-family: $monospace;
+		display: flex;
+		flex-flow: row nowrap;
+		align-items: center;
+
+		span {
+			font-size: .9em;
+			padding: 0 3px;
+			line-height: 1em;
+			text-transform: uppercase;
+			border-radius: 2px;
+		}
+	}
+}
+#picker {
+	position: absolute;
+	z-index: 1;
 	overflow: hidden;
 	box-sizing: border-box;
 	user-select: none;
 	top: $MenubarHeight;
 	left: 0;
 	width: 100%;
-	height: calc(100% - #{$MenubarHeight});
+	height: calc(100% - #{$MenubarHeight} - #{$StatusbarHeight});
+	cursor: url('/img/colorpicker/normal.png'), default;
+	background: $EditorBG;
 
-	&:before {
-		@extend %debug-point;
-		top: calc(50% - 5px);
-		left: calc(50% - 5px);
-		background-color: $DebugWrapCenter;
+	&.debug {
+		&:before {
+			@extend %debug-point;
+			top: calc(50% - #{$DebugPointSize/2});
+			left: calc(50% - #{$DebugPointSize/2});
+			background-color: $DebugWrapCenter;
+		}
+
+		.image-overlay {
+			border: 1px solid rgba(blue, .5);
+			background: rgba(blue, .2);
+
+			&:before {
+				@extend %debug-point;
+				top: -($DebugPointSize/2);
+				left: -($DebugPointSize/2);
+				background-color: $DebugImgTopLeft;
+			}
+			&:after {
+				@extend %debug-point;
+				top: calc(50% - #{$DebugPointSize/2});
+				left: calc(50% - #{$DebugPointSize/2});
+				background-color: black;
+			}
+		}
+
+		.imgc-expected {
+			@extend %debug-point;
+			top: calc(50% - #{$DebugPointSize/2});
+			left: calc(50% - #{$DebugPointSize/2});
+			background-color: $DebugImgCenter;
+		}
 	}
 
-	.poly-image-element {
+	.image-element {
 		position: absolute;
 		z-index: 1;
+		image-rendering: pixelated;
+		background: url('/img/transparency.svg') repeat top left;
+		background-size: 16px 16px;
 	}
 
-	.poly-svg-wrap {
+	.svg-wrap {
 		position: absolute;
 		display: block;
 		pointer-events: none;
@@ -95,46 +260,27 @@ $MenubarHeight: 28px;
 		top: 0;
 		left: 0;
 
-		.poly-svg-element {
-	    display:block;
-	    height: inherit;
-	    width: inherit;
+		.svg-element {
+			display:block;
+			height: inherit;
+			width: inherit;
 		}
 	}
 
-	.poly-image-overlay {
+	.image-overlay {
 		position: absolute;
 		z-index: 3;
-		cursor: move;
-		border: 1px solid rgba(black, .9);
-		background: rgba(black, .5);
-		box-sizing: border-box;
-
-		&:before {
-			@extend %debug-point;
-			top: -5px;
-			left: -5px;
-			background-color: $DebugImgTopLeft;
-		}
-		&:after {
-			@extend %debug-point;
-			top: calc(50% - 5px);
-			left: calc(50% - 5px);
-			background-color: black;
-		}
+		cursor: grab;
 	}
 
-	.poly-imgc-expected {
-		@extend %debug-point;
-		top: calc(50% - 5px);
-		left: calc(50% - 5px);
-		background-color: $DebugImgCenter;
+	.imgc-expected {
+		display: none;
 	}
 
 	$margin: 10px;
 	$btnsize: 24px;
 	$btnpadding: 4px;
-	.poly-actions {
+	.actions {
 		position: absolute;
 		z-index: 4;
 		border-radius: 5px;
@@ -143,34 +289,67 @@ $MenubarHeight: 28px;
 		border: 3px solid $UIColor;
 		padding: 5px;
 		text-align: center;
+		cursor: default;
+
+		&:empty {
+			display: none;
+		}
 
 		> * {
-			padding: $btnpadding;
 			margin: 0;
 			color: inherit;
 			background-color: transparent;
 			box-sizing: border-box;
+			border-radius: 2px;
+			border: 1px solid transparent;
+
+			&:not(:disabled) {
+				&:hover, &:active {
+					border-color: gray;
+				}
+				&:not(:active):hover {
+					background-color: rgba(black, .1);
+				}
+			}
 		}
 
 		button {
-			cursor: pointer;
-			border: 0;
+			padding: 0;
 			font-size: $btnsize;
 			line-height: $btnsize;
 			height: $btnsize + ($btnpadding*2);
 			width: $btnsize + ($btnpadding*2);
 
-			&:active { background: rgba(white, .1) }
+			&:active {
+				background: rgba(black, .5);
+				box-shadow: inset 0 0 2px black;
+			}
+
+			&:disabled {
+				opacity: .6;
+			}
 		}
 	}
-	.poly-actions-tl {
+	.actions-tl {
 		top: $margin/2;
 		left: $margin/2;
+		width: 75px;
+		display: flex;
+		flex-flow: row wrap;
+		justify-content: space-around;
 
-		button { display: inline-block }
-		.poly-zoom-perc {
+		button {
+			flex: 0 0 45%;
+			display: inline-block;
+		}
+		.zoom-perc {
+			flex: 0 0 100%;
 			display: block;
 			cursor: text;
+			max-width: 100%;
+			overflow: hidden;
+			white-space: nowrap;
+			margin-top: 5px;
 
 			&:focus {
 				background-color: $UIColor;
@@ -178,7 +357,7 @@ $MenubarHeight: 28px;
 			}
 		}
 	}
-	.poly-actions-bl {
+	.actions-bl {
 		bottom: $margin/2;
 		left: $margin/2;
 
@@ -187,10 +366,10 @@ $MenubarHeight: 28px;
 			display: block;
 			font-size: .8em;
 		}
-		.poly-imgtl { color: $DebugImgTopLeft }
-		.poly-imgc { color: $DebugImgCenter }
-		.poly-wrapc { color: $DebugWrapCenter }
-		.poly-imgtl, .poly-imgc, .poly-wrapc {
+		.imgtl { color: $DebugImgTopLeft }
+		.imgc { color: $DebugImgCenter }
+		.wrapc { color: $DebugWrapCenter }
+		.imgtl, .imgc, .wrapc {
 			font-weight: bold;
 			$size: .5px;
 			$color: black;
@@ -204,13 +383,16 @@ $MenubarHeight: 28px;
 		}
 	}
 
-	.poly-loader {
-    position: absolute;
-    font-size: 32px;
-    text-align: center;
-    top: calc(50% - 32px);
-    line-height: 32px;
-    height: 32px;
-    width: 100%;
+	&:not(.loading) .loader {
+		display: none;
+	}
+
+	.loader {
+		position: absolute;
+		$size: 128px;
+		top: calc(50% - #{$size/2});
+		left: calc(50% - #{$size/2});
+
+		@include loading-indicator($size);
 	}
 }

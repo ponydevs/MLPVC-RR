@@ -3,9 +3,6 @@
 (function($){
 	"use strict";
 
-	window.OpenSidebarByDefault = () => Math.max(document.documentElement.clientWidth, window.innerWidth || 0) >= 1200;
-	window.WithinMobileBreakpoint = () => Math.max(document.documentElement.clientWidth, window.innerWidth || 0) <= 600;
-
 	let fluidboxThisAction = (jQueryObject) => {
 		jQueryObject.fluidbox({
 			immediateOpen: true,

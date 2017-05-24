@@ -101,6 +101,16 @@
 
 	// Common key codes for easy reference
 	window.Key = {
+		'0': 48,
+		'1': 49,
+		'2': 50,
+		'3': 51,
+		'4': 52,
+		'5': 53,
+		'6': 54,
+		'7': 55,
+		'8': 56,
+		'9': 57,
 		Enter: 13,
 		Space: 32,
 		LeftArrow: 37,
@@ -239,28 +249,40 @@
 	};
 	$.pad.right = !($.pad.left = true);
 
-	$.scaleResize = function(w, h, p){
-		let div, d = {
-			scale: p.scale,
-			width: p.width,
-			height: p.height
+	$.scaleResize = function(origWidth, origHeight, param, allowUpscale = true){
+		let div, dest = {
+			scale: param.scale,
+			width: param.width,
+			height: param.height
 		};
-		if (!isNaN(d.scale)){
-			d.height = Math.round(h * d.scale);
-			d.width = Math.round(w * d.scale);
+		// We have a scale factor
+		if (!isNaN(dest.scale)){
+			if (allowUpscale || dest.scale <= 1){
+				dest.height = Math.round(origHeight * dest.scale);
+				dest.width = Math.round(origWidth * dest.scale);
+			}
 		}
-		else if (isNaN(d.width)){
-			div = d.height / h;
-			d.width = Math.round(w * div);
-			d.scale = div;
+		else if (!isNaN(dest.width)){
+			if (!allowUpscale)
+				dest.width = Math.min(dest.width, origWidth);
+			div = dest.width / origWidth;
+			if (!allowUpscale && div > 1)
+				div = 1;
+			dest.height = Math.round(origHeight * div);
+			dest.scale = div;
 		}
-		else if (isNaN(d.height)){
-			div = d.width / w;
-			d.height = Math.round(h * div);
-			d.scale = div;
+		else if (!isNaN(dest.height)){
+			if (!allowUpscale)
+				dest.height = Math.min(dest.height, origHeight);
+			div = dest.height / origHeight;
+			if (!allowUpscale && div > 1){
+				div = 1;
+			}
+			dest.width = Math.round(origWidth * div);
+			dest.scale = div;
 		}
 		else throw new Error('[scalaresize] Invalid arguments');
-		return d;
+		return dest;
 	};
 
 	// http://stackoverflow.com/a/3169849/1344955
@@ -525,6 +547,7 @@
 		return '#'+match[0]+match[0]+match[1]+match[1]+match[2]+match[2];
 	};
 
+	// Return values range from 0 to 255 (inclusive)
 	// http://stackoverflow.com/questions/11867545#comment52204960_11868398
 	$.yiq = hex => {
 		if (typeof hex !== 'string')
@@ -667,4 +690,7 @@
 		parsed.pathString = parsed.pathname.replace(/^([^\/].*)$/,'/$1')+parsed.search+parsed.hash;
 		return parsed;
 	};
+
+	window.OpenSidebarByDefault = () => Math.max(document.documentElement.clientWidth, window.innerWidth || 0) >= 1200;
+	window.WithinMobileBreakpoint = () => Math.max(document.documentElement.clientWidth, window.innerWidth || 0) <= 600;
 })(jQuery);
