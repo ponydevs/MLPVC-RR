@@ -140,8 +140,10 @@ let JSL = new Logger('js'),
 					presets: ['es2015']
 				}))
 				.pipe(uglify({
-					preserveComments: function(_, comment){ return /^!/m.test(comment.value) },
-					output: { ascii_only: noSourcemaps },
+					output: {
+						ascii_only: noSourcemaps,
+						comments: function(_, comment){ return /^!/m.test(comment.value) },
+					},
 				}));
 		if (noSourcemaps)
 			pipe = pipe.pipe(rename(function(path){
