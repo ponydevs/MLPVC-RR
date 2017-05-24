@@ -50,9 +50,10 @@
 					return;
 
 				this._$openImage.addClass('disabled');
-				this.setFile(this._$filein[0].files[0],() => {
+				this.setFile(this._$filein[0].files[0],success => {
 					this._$openImage.removeClass('disabled');
-					this._$clearImage.removeClass('disabled');
+					if (success)
+						this._$clearImage.removeClass('disabled');
 				});
 			});
 			this._$clearImage = $('#clear-image').on('click',e => {
@@ -81,6 +82,7 @@
 		setFile(file, callback){
 			if (file.type !== 'image/png'){
 				$.Dialog.fail('Invalid file', 'You may only use PNG images with this tool');
+				callback(false);
 				return;
 			}
 	        const reader = new FileReader();
