@@ -153,7 +153,12 @@
 				this._$menubar.find('a.active').removeClass('active');
 				$(e.target).addClass('active').next().removeClass('hidden');
 			});
-			this._$filein = $.mk('input','screenshotin').attr({type:'file',accept:'image/png,image/jpeg',tabindex:-1,'class':'fileinput'}).appendTo($body);
+			this._$filein = $.mk('input','screenshotin').attr({
+				type: 'file',
+				accept: 'image/png,image/jpeg',
+				tabindex: -1,
+				'class': 'fileinput',
+			}).prop('multiple',true).appendTo($body);
 			this._$openImage = $('#open-image').on('click',e => {
 				e.preventDefault();
 
@@ -163,26 +168,40 @@
 				e.preventDefault();
 
 				const activeTab = Tabbar.getInstance().getActiveTab();
-				if (!activeTab){
-					this.canCloseActiveTab(false);
+				if (!activeTab)
 					return;
-				}
 
 				activeTab.getElement().find('.close').trigger('click');
 			});
 			this._$filein.on('change',() => {
-				const val = this._$filein.val();
-
-				if (!val)
+				const files = this._$filein[0].files;
+				if (files.length === 0)
 					return;
 
-				this._$openImage.addClass('disabled');
-				this.handleFileOpen(this._$filein[0].files[0], success => {
-					this._$openImage.removeClass('disabled');
-					this._$filein.val('');
-					if (success === true)
-						this.canCloseActiveTab(true);
-				});
+				const s = files.length !== 1 ? 's' : '';
+				$.Dialog.wait('Opening file'+s,'Reading opened file'+s+', please wait');
+
+				let ptr = 0;
+				const next = () => {
+					if (typeof files[ptr] === 'undefined'){
+						// All files read, we're done
+						this._$openImage.removeClass('disabled');
+						this._$filein.val('');
+						this.updateCloseActiveTab();
+						$.Dialog.close();
+						return;
+					}
+					this.handleFileOpen(files[ptr],success => {
+						if (success){
+							ptr++;
+							return next();
+						}
+
+						this._$openImage.removeClass('disabled');
+						$.Dialog.fail('Drag and drop',`Failed to read file #${ptr}, aborting`);
+					});
+				};
+				next();
 			});
 
 			$body.on('click',() => {
@@ -191,8 +210,8 @@
 				this._$menubar.children('li').children('ul').addClass('hidden');
 			});
 		}
-		canCloseActiveTab(bool){
-			this._$closeActiveTab[bool?'removeClass':'addClass']('disabled');
+		updateCloseActiveTab(){
+			this._$closeActiveTab[Tabbar.getInstance().hasTabs()?'removeClass':'addClass']('disabled');
 		}
 		/** @return {Menubar} */
 		static getInstance(){
@@ -518,6 +537,9 @@
 		getTabs(){
 			return this._tabStorage;
 		}
+		hasTabs(){
+			return this._tabStorage.length > 0;
+		}
 		closeTab(whichTab){
 			const
 				tabIndex = this.indexOf(whichTab),
@@ -525,7 +547,7 @@
 				tabsLeft = tabCount > 1;
 			if (!tabsLeft){
 				ColorPicker.getInstance().clearImage();
-				Menubar.getInstance().canCloseActiveTab(false);
+				Menubar.getInstance().updateCloseActiveTab();
 			}
 
 			this._tabStorage.splice(tabIndex,1);
@@ -1141,7 +1163,8 @@
 		if (files.length === 0)
 			return;
 
-		$.Dialog.wait('Drag and drop','Reading dropped files, please wait');
+		const s = files.length !== 1 ? 's' : '';
+		$.Dialog.wait('Drag and drop','Reading dropped file'+s+', please wait');
 
 		let ptr = 0;
 		(function next(){

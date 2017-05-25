@@ -12,7 +12,7 @@
 	<li>
 		<a>File</a>
 		<ul class="hidden">
-			<li><a id="open-image">Open local file&hellip;</a></li>
+			<li><a id="open-image">Open&hellip;</a></li>
 			<li><a id="close-active-tab" class="disabled">Close current tab</a></li>
 		</ul>
 	</li>
