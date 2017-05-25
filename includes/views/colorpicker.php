@@ -20,7 +20,7 @@
 <ul id="tabbar" class="dragscroll" data-info="If you open a lot of tabs you can drag on them to move around"></ul>
 <div id="picker"></div>
 <div id="statusbar">
-	<div class="info"><span class="typcn typcn-info-large"></span> Use the File menu to open an image in the color picker</div>
+	<div class="info"><span class="typcn typcn-info-large"></span> Use the File menu or drag &amp; drop images to open them for color picking</div>
 	<ul class="pos">
 		<li class="mouse" data-info="Image coordinates under the pointer"></li>
 	</ul>
