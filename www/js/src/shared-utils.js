@@ -101,6 +101,12 @@
 
 	// Common key codes for easy reference
 	window.Key = {
+		Tab: 9,
+		Enter: 13,
+		Alt: 18,
+		Space: 32,
+		LeftArrow: 37,
+		RightArrow: 39,
 		'0': 48,
 		'1': 49,
 		'2': 50,
@@ -111,11 +117,6 @@
 		'7': 55,
 		'8': 56,
 		'9': 57,
-		Enter: 13,
-		Space: 32,
-		LeftArrow: 37,
-		RightArrow: 39,
-		Tab: 9,
 		Comma: 188,
 	};
 	$.isKey = function(Key, e){

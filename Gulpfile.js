@@ -41,7 +41,6 @@ if (['js','dist-js','scss','md','default'].indexOf(toRun) !== -1){
 		]);
 	if (toRun === 'js' || toRun === 'dist-js' || toRun === 'default')
 		require_list.push.apply(require_list, [
-			'gulp-uglify',
 			'gulp-babel',
 			'gulp-cached'
 		]);
@@ -134,17 +133,11 @@ let JSL = new Logger('js'),
 				this.emit('end');
 			}));
 		if (!noSourcemaps)
-			pipe = pipe.pipe(sourcemaps.init());
+			pipe = pipe.pipe(sourcemaps.init({loadMaps: true}));
 		pipe = pipe
-				.pipe(babel({
-					presets: ['es2015']
-				}))
-				.pipe(uglify({
-					output: {
-						ascii_only: noSourcemaps,
-						comments: function(_, comment){ return /^!/m.test(comment.value) },
-					},
-				}));
+			.pipe(babel({
+				presets: ['es2015','babili']
+			}));
 		if (noSourcemaps)
 			pipe = pipe.pipe(rename(function(path){
 				path.basename = path.basename.replace(/\.[^.]+$/i,'');

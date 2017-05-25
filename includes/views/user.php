@@ -208,14 +208,7 @@ if (!empty($Banishes)){
 		</section>
 <?php
 	}
-	if ($sameUser){
-		if (Permission::sufficient('member') && Permission::insufficient('staff')){ ?>
-		<section id="verify-discord-identity">
-			<h2><?=$sameUser? Users::PROFILE_SECTION_PRIVACY_LEVEL['private']:''?>Verify identity on Discord server</h2>
-			<p>If you're not yet part of the Club Members role on our Discord server you can use an automated mechanism to verify your identity. Press the button below, and a command will be displayed which you just need to send to any text channel on the server to have your identity verified.</p>
-			<button id="discord-verify" class="green typcn typcn-chevron-right">Show me the command</button>
-		</section>
-<?php   } ?>
+	if ($sameUser){ ?>
 		<section>
 			<h2><?=$sameUser? Users::PROFILE_SECTION_PRIVACY_LEVEL['private']:''?>Unlink account</h2>
 			<p>By unlinking your account you revoke this site’s access to your account information. This will also log you out on every device where you're currently logged in. The next time you want to log in, you'll have to link your account again. This will not remove any of your <strong>public</strong> data from our site, it’s still kept locally.</p>

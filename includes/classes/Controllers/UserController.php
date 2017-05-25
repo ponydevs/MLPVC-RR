@@ -149,41 +149,6 @@ class UserController extends Controller {
 		Response::done(array('suggestion' => Posts::getSuggestionLi($Request)));
 	}
 
-	function discordVerify(){
-		global $Database;
-
-		if (!empty($_GET['token'])){
-			$targetUser = $Database->where('key','discord_token')->where('value',$_GET['token'])->getOne('user_prefs','user');
-			if (empty($targetUser))
-				Response::fail('Invalid token');
-
-			$user = Users::get($targetUser['user']);
-			UserPrefs::set('discord_token','true',$user->id);
-			Response::done(array(
-				'name' => $user->name,
-				'role' => $user->role,
-			));
-		}
-
-		$ismember = Permission::sufficient('member', Auth::$user->role);
-		$isstaff = Permission::sufficient('staff', Auth::$user->role);
-		if (!$ismember || $isstaff){
-			UserPrefs::set('discord_token','');
-			Response::fail(!$ismember ? 'You are not a club member' : 'Staff members cannot use this feature');
-		}
-
-		$token = UserPrefs::get('discord_token');
-		if ($token === 'true')
-			Response::fail("You have already been verified using this automated method. If - for yome reason - you still don’t have the Club Members role please ask for assistance in the <strong>#support</strong> channel.");
-
-		if (empty($token)){
-			$token = preg_replace(new RegExp('[^a-z\d]','i'),'',base64_encode(random_bytes(12)));
-			UserPrefs::set('discord_token', $token);
-		}
-
-		Response::done(array('token' => $token));
-	}
-
 	function sessionDel($params){
 		global $Database;
 

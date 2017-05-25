@@ -151,31 +151,6 @@ DocReady.push(function(){
 			}));
 		});
 	});
-	$('#discord-verify').on('click',function(e){
-		e.preventDefault();
-
-		$.Dialog.wait('Verify identity on Discord','Getting your token');
-
-		$.post('/user/discord-verify',$.mkAjaxHandler(function(){
-			if (!this.status) return $.Dialog.fail(false, this.message);
-
-			let command = `/verify ${this.token}`,
-				$out = $.mk('div').attr('class','align-center').append(
-					'Run the following command in any of the channels:',
-					$.mk('div').attr('class', 'disc-verify-code').html(`<code>${command}</code>`).on('mousedown',function(e){
-						e.preventDefault();
-
-						$(this).select();
-					}),
-					$.mk('button').attr('class','darkblue typcn typcn-clipboard').text('Copy command to clipboard').on('click',function(e){
-						e.preventDefault();
-
-						$.copy(command, e);
-					})
-				);
-			$.Dialog.info(false, $out);
-		}));
-	});
 	$('#unlink').on('click',function(e){
 		e.preventDefault();
 

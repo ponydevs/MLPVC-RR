@@ -122,12 +122,11 @@
 		overflow: hidden;
 
 		nav {
-			height: $HeaderHeight + 20px;
+			height: $HeaderHeight;
 			width: 100%;
 
 			ul {
-				overflow-x: scroll;
-				overflow-y: hidden;
+				overflow: hidden;
 			}
 		}
 	}

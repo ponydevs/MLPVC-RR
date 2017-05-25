@@ -139,7 +139,6 @@ $router->map('POST', '/preference/get/[au:key]',             'PreferenceControll
 $router->map('POST', '/setting/set/[au:key]',                'SettingController#set');
 $router->map('POST', '/setting/get/[au:key]',                'SettingController#get');
 $router->map('POST', '/user/suggestion',                     'UserController#suggestion');
-$router->map('POST', '/user/discord-verify',                 'UserController#discordVerify');
 $router->map('POST', '/user/sessiondel/[i:id]',              'UserController#sessionDel');
 $router->map('POST', '/user/setgroup/[un:name]',             'UserController#setGroup');
 $router->map('POST', '/user/banish/[un:name]',               'UserController#banish');

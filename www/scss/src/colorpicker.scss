@@ -1,7 +1,9 @@
 @import url('https://fonts.googleapis.com/css?family=PT+Sans');
 @import "typicons";
 @import "vars";
+@import "theme_notices";
 @import "theme_dialog";
+@import "theme_forms";
 
 html,body {
 	width: 100%;
@@ -9,16 +11,36 @@ html,body {
 	margin: 0;
 }
 $UIColor: silver;
+$UIBorders: rgba(gray, .5);
 $UIBackground: #333;
 $EditorBG: #191919;
 $DebugImgTopLeft: #99f;
 $DebugImgCenter: #f77;
 $DebugWrapCenter: #5f5;
 $MenubarHeight: 28px + 1px;
+$TabbarHeight: 28px + 1px;
+$TabTopMargin: 2px;
+$TabBorder: 1px;
+$TabInactiveTopOffset: 2px;
 $StatusbarHeight: 24px + 1px;
 $DebugPointSize: 10px;
 body {
 	font-family: 'PT Sans', sans-serif;
+
+	&.dialog-open {
+		#menubar, #tabbar, #statusbar, #picker {
+			opacity: .4;
+		}
+	}
+}
+#menubar, #tabbar, #statusbar, #picker {
+	transition: opacity .2s linear;
+}
+#dialogOverlay {
+	background: transparent;
+}
+#dialogBox {
+	box-shadow: 0 0 10px rgba(black, .5), 0 0 70px black;
 }
 :focus{outline:0}
 .fileinput {
@@ -41,7 +63,7 @@ body {
 .hidden{display:none!important}
 #menubar {
 	position: absolute;
-	z-index: 3;
+	z-index: 4;
 	top: 0;
 	height: $MenubarHeight;
 	background: $UIBackground;
@@ -55,7 +77,7 @@ body {
 	user-select: none;
 	cursor: default;
 	box-sizing: border-box;
-	border-bottom: 1px solid black;
+	border-bottom: 1px solid $UIBorders;
 
 	> li {
 		position: relative;
@@ -77,7 +99,7 @@ body {
 			}
 
 			&:not(.disabled):not(.active):hover {
-				border-color: rgba(gray, .5);
+				border-color: $UIBorders;
 				background: rgba(black, .2);
 			}
 
@@ -111,6 +133,111 @@ body {
 		}
 	}
 }
+#tabbar {
+	position: absolute;
+	z-index: 3;
+	top: $MenubarHeight;
+	height: $TabbarHeight;
+	background: darken($UIBackground,3);
+	color: $UIColor;
+	padding: 0 1px;
+	margin: 0;
+	display: flex;
+	flex-flow: row nowrap;
+	overflow: hidden;
+	font-size: 0;
+	width: 100%;
+	user-select: none;
+	cursor: default;
+	box-sizing: border-box;
+	border-bottom: 1px solid $UIBorders;
+
+	> .tab {
+		display: flex;
+		flex-flow: row nowrap;
+		flex: 1 1 auto;
+		color: $UIColor;
+		background: $UIBackground;
+		border: $TabBorder solid $UIBorders;
+		border-bottom: 0;
+		border-top-left-radius: 4px;
+		border-top-right-radius: 4px;
+		justify-content: space-between;
+		align-items: center;
+		height: $TabbarHeight - $TabTopMargin - ($TabBorder*2);
+		margin-top: $TabTopMargin;
+		max-width: 20%;
+		font-size: 16px;
+		padding: 0 4px;
+		min-width: 90px;
+
+		&:not(:last-child){
+			margin-right: 1px;
+		}
+		&:not(.active){
+			opacity: .6;
+			background: darken($UIBackground,10);
+			height: $TabbarHeight - $TabTopMargin - ($TabBorder*2) - $TabInactiveTopOffset;
+			margin-top: $TabTopMargin + $TabInactiveTopOffset;
+		}
+
+		> * {
+			display: inline-block;
+			white-space: nowrap;
+		}
+
+		//noinspection CssOptimizeSimilarProperties
+		.pickcolor {
+			$size: 12px;
+			flex: 0 0 $size;
+			width: $size;
+			height: $size;
+			border: 1px solid black;
+			margin-right: 5px;
+			background-image: url('/img/transparency.svg');
+			background-position:  center;
+			background-size: cover;
+			box-sizing: border-box;
+
+			span {
+				display: block;
+				width: 100%;
+				height: 100%;
+				pointer-events: none;
+			}
+		}
+		.filename {
+			flex: 1 1 90%;
+			overflow: hidden;
+			text-overflow: ellipsis;
+		}
+		.fileext {
+			flex: 1 1 10%;
+
+			&:before {
+				content: ".";
+			}
+		}
+		.close {
+			font-weight: bold;
+			flex: 0 0 auto;
+			border: 1px solid transparent;
+			padding: 1px 2px;
+			margin-left: 4px;
+			border-radius: 2px;
+			$size: .6em;
+			height: $size;
+			line-height: $size;
+			width: $size;
+			text-align: center;
+
+			&:hover {
+				border-color: $UIBorders;
+				background-color: rgba(black, .3);
+			}
+		}
+	}
+}
 #statusbar {
 	position: absolute;
 	z-index: 2;
@@ -127,16 +254,16 @@ body {
 	user-select: none;
 	cursor: default;
 	box-sizing: border-box;
-	border-top: 1px solid black;
+	border-top: 1px solid $UIBorders;
 
 	> *:not(:last-child) {
-		border-right: 1px solid gray;
+		border-right: 1px solid $UIBorders;
 		padding-right: 6px !important;
 		margin-right: 6px !important;
 	}
 
 	.info {
-		flex: 1 1 90%;
+		flex: 1 1 85%;
 		text-align: left;
 	}
 	.pos {
@@ -147,6 +274,7 @@ body {
 		display: flex;
 		flex-flow: row nowrap;
 		align-items: center;
+		font-family: $monospace;
 
 		&:not(.debug){
 			.debug { display: none }
@@ -178,20 +306,30 @@ body {
 		}
 	}
 	.colorat {
-		flex: 1 1 5%;
+		flex: 1 1 10%;
 		text-align: center;
-		font-weight: bold;
+		//font-weight: bold;
 		font-family: $monospace;
 		display: flex;
 		flex-flow: row nowrap;
 		align-items: center;
+		justify-content: center;
+		font-size: .9em;
+		line-height: 1em;
+		white-space: nowrap;
 
-		span {
-			font-size: .9em;
-			padding: 0 3px;
-			line-height: 1em;
+		.color {
 			text-transform: uppercase;
 			border-radius: 2px;
+			padding: 1px 2px;
+		}
+		.opacity {
+			white-space: pre;
+
+			&:empty { display:none }
+			&:not(:empty):before {
+				content: " @ ";
+			}
 		}
 	}
 }
@@ -201,10 +339,10 @@ body {
 	overflow: hidden;
 	box-sizing: border-box;
 	user-select: none;
-	top: $MenubarHeight;
+	top: $MenubarHeight + $TabbarHeight;
 	left: 0;
 	width: 100%;
-	height: calc(100% - #{$MenubarHeight} - #{$StatusbarHeight});
+	height: calc(100% - #{$MenubarHeight} - #{$TabbarHeight} - #{$StatusbarHeight});
 	cursor: url('/img/colorpicker/normal.png'), default;
 	background: $EditorBG;
 
@@ -250,7 +388,7 @@ body {
 		background-size: 16px 16px;
 	}
 
-	.svg-wrap {
+	.mouse-overlay {
 		position: absolute;
 		display: block;
 		pointer-events: none;
@@ -259,34 +397,36 @@ body {
 		height: 100%;
 		top: 0;
 		left: 0;
-
-		.svg-element {
-			display:block;
-			height: inherit;
-			width: inherit;
-		}
 	}
 
 	.image-overlay {
 		position: absolute;
 		z-index: 3;
-		cursor: grab;
+		image-rendering: pixelated;
+
+		&:not(.draggable){
+			pointer-events: none;
+		}
+		&.draggable {
+			cursor: grab;
+		}
+		&.draggable.dragging {
+			cursor: grabbing;
+		}
 	}
 
 	.imgc-expected {
 		display: none;
 	}
 
-	$margin: 10px;
 	$btnsize: 24px;
 	$btnpadding: 4px;
 	.actions {
 		position: absolute;
 		z-index: 4;
-		border-radius: 5px;
-		background-color: $UIBackground;
+		background-color: rgba($UIBackground, .9);
 		color: $UIColor;
-		border: 3px solid $UIColor;
+		border: 1px solid $UIBorders;
 		padding: 5px;
 		text-align: center;
 		cursor: default;
@@ -295,7 +435,7 @@ body {
 			display: none;
 		}
 
-		> * {
+		> div > * {
 			margin: 0;
 			color: inherit;
 			background-color: transparent;
@@ -331,12 +471,26 @@ body {
 		}
 	}
 	.actions-tl {
-		top: $margin/2;
-		left: $margin/2;
+		top: 0;
+		left: 0;
 		width: 75px;
+		border-top: 0;
+		border-left: 0;
 		display: flex;
-		flex-flow: row wrap;
-		justify-content: space-around;
+		flex-flow: column nowrap;
+
+		> div {
+			display: flex;
+			flex-flow: row wrap;
+			justify-content: space-around;
+
+			&:not(:last-child){
+				$spacing: 4px;
+				mArgin-bottom: $spacing;
+				border-bottom: 1px solid $UIBorders;
+				padding-bottom: $spacing;
+			}
+		}
 
 		button {
 			flex: 0 0 45%;
@@ -358,8 +512,10 @@ body {
 		}
 	}
 	.actions-bl {
-		bottom: $margin/2;
-		left: $margin/2;
+		bottom: 0;
+		left: 0;
+		border-bottom: 0;
+		border-left: 0;
 
 		span {
 			cursor: default;
@@ -394,5 +550,34 @@ body {
 		left: calc(50% - #{$size/2});
 
 		@include loading-indicator($size);
+	}
+}
+
+#set-area-color {
+	.input-red {
+		color: red;
+	}
+	.input-green {
+		color: green;
+	}
+	.input-blue {
+		color: blue;
+	}
+
+	//noinspection CssOptimizeSimilarProperties
+	.color-preview {
+		display: block;
+		width: 175px;
+		height: 175px;
+		margin: 10px auto;
+		border: 2px solid black;
+		background-image: url('/img/transparency.svg');
+		background-position: center;
+		background-size: 16px;
+
+		> div {
+			width: 100%;
+			height: 100%;
+		}
 	}
 }
