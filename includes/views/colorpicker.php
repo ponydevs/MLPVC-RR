@@ -10,11 +10,14 @@
 
 <ul id="menubar">
 	<li>
-		<a>File</a>
+		<a class="dropdown">File</a>
 		<ul class="hidden">
 			<li><a id="open-image">Open&hellip;</a></li>
 			<li><a id="close-active-tab" class="disabled">Close current tab</a></li>
 		</ul>
+	</li>
+	<li>
+		<a id="about-dialog">About</a>
 	</li>
 </ul>
 <ul id="tabbar" class="dragscroll" data-info="If you open a lot of tabs you can drag on them to move around"></ul>
@@ -27,6 +30,11 @@
 	<div class="colorat">
 		<span class="color"></span><span class="opacity"></span>
 	</div>
+</div>
+
+<div class="hidden" id="about-dialog-template">
+	<p>This color picker is meant to serve as an easy way to get accurate color readings from screencaps taken from the show. The interface attempts to mimic the controls and look of Adobe Photoshop, while giving you the ability to use multiple picking points with variable sizes across as many images as your browser can handle.</p>
+	<p>Huge thanks to <strong>Masem</strong>, <strong>Pirill</strong> and <strong>Trildar</strong> for helping with the creation of this tool via code, feedback and ideas.</p>
 </div>
 
 <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>

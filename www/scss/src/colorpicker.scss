@@ -1,6 +1,7 @@
 @import url('https://fonts.googleapis.com/css?family=PT+Sans');
 @import "typicons";
 @import "vars";
+@import "theme_buttons";
 @import "theme_notices";
 @import "theme_dialog";
 @import "theme_forms";
@@ -22,18 +23,9 @@ $TabInactiveTopOffset: 2px;
 $StatusbarHeight: 24px + 1px;
 body {
 	font-family: 'PT Sans', sans-serif;
-
-	&.dialog-open {
-		#menubar, #tabbar, #statusbar, #picker {
-			opacity: .4;
-		}
-	}
-}
-#menubar, #tabbar, #statusbar, #picker {
-	transition: opacity .2s linear;
 }
 #dialogOverlay {
-	background: transparent;
+	background: rgba(black, .6);
 }
 #dialogBox {
 	box-shadow: 0 0 10px rgba(black, .5), 0 0 70px black;
@@ -70,6 +62,10 @@ body {
 		display: flex;
 		flex-flow: row nowrap;
 		align-items: center;
+
+		&:not(:last-child){
+			margin-right: 5px;
+		}
 
 		> a {
 			flex: 0 0 auto;

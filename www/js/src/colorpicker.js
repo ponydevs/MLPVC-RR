@@ -140,7 +140,7 @@
 	class Menubar {
 		constructor(){
 			this._$menubar = $('#menubar');
-			this._$menubar.children().children('a').on('click',e => {
+			this._$menubar.children().children('a.dropdown').on('click',e => {
 				e.preventDefault();
 				e.stopPropagation();
 
@@ -149,9 +149,12 @@
 			}).on('mouseenter',e => {
 				if (!this._$menubar.hasClass('open'))
 					return;
+				const $this = $(e.target);
+				if (!$this.hasClass('dropdown'))
+					return;
 
 				this._$menubar.find('a.active').removeClass('active');
-				$(e.target).addClass('active').next().removeClass('hidden');
+				$this.addClass('active').next().removeClass('hidden');
 			});
 			this._$filein = $.mk('input','screenshotin').attr({
 				type: 'file',
@@ -202,6 +205,10 @@
 					});
 				};
 				next();
+			});
+			const $aboutTemplate = $('#about-dialog-template').children();
+			this._$aboutDialog = $('#about-dialog').on('click',function(){
+				$.Dialog.info('About',$aboutTemplate.clone());
 			});
 
 			$body.on('click',() => {
