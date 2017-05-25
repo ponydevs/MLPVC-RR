@@ -14,16 +14,12 @@ $UIColor: silver;
 $UIBorders: rgba(gray, .5);
 $UIBackground: #333;
 $EditorBG: #191919;
-$DebugImgTopLeft: #99f;
-$DebugImgCenter: #f77;
-$DebugWrapCenter: #5f5;
 $MenubarHeight: 28px + 1px;
 $TabbarHeight: 28px + 1px;
 $TabTopMargin: 2px;
 $TabBorder: 1px;
 $TabInactiveTopOffset: 2px;
 $StatusbarHeight: 24px + 1px;
-$DebugPointSize: 10px;
 body {
 	font-family: 'PT Sans', sans-serif;
 
@@ -48,17 +44,6 @@ body {
 	height: 0;
 	overflow: hidden;
 	pointer-events: none;
-}
-%debug-point {
-	content: "";
-	display:block;
-	position:absolute;
-	z-index:5;
-	width: $DebugPointSize;
-	height: $DebugPointSize;
-	border-radius:100%;
-	border: 2px solid white;
-	box-sizing: border-box;
 }
 .hidden{display:none!important}
 #menubar {
@@ -155,7 +140,7 @@ body {
 	> .tab {
 		display: flex;
 		flex-flow: row nowrap;
-		flex: 1 1 auto;
+		flex: 0 1 auto;
 		color: $UIColor;
 		background: $UIBackground;
 		border: $TabBorder solid $UIBorders;
@@ -207,25 +192,25 @@ body {
 			}
 		}
 		.filename {
-			flex: 1 1 90%;
+			flex: 0 1 auto;
 			overflow: hidden;
 			text-overflow: ellipsis;
 		}
 		.fileext {
-			flex: 1 1 10%;
+			flex: 1 1 auto;
 
 			&:before {
 				content: ".";
 			}
 		}
 		.close {
+			$size: .6em;
 			font-weight: bold;
-			flex: 0 0 auto;
+			flex: 0 0 $size;
 			border: 1px solid transparent;
 			padding: 1px 2px;
 			margin-left: 4px;
 			border-radius: 2px;
-			$size: .6em;
 			height: $size;
 			line-height: $size;
 			width: $size;
@@ -276,10 +261,6 @@ body {
 		align-items: center;
 		font-family: $monospace;
 
-		&:not(.debug){
-			.debug { display: none }
-		}
-
 		> * {
 			flex: 1 1 25%;
 		}
@@ -288,21 +269,6 @@ body {
 			cursor: default;
 			display: inline-block;
 			font-size: .8em;
-		}
-		.image-top-left { color: $DebugImgTopLeft }
-		.image-center { color: $DebugImgCenter }
-		.editor-center { color: $DebugWrapCenter }
-		.image-top-left, .image-center, .editor-center {
-			font-weight: bold;
-			$size: .5px;
-			$color: black;
-			text-shadow:
-				0 0 $size $color,
-				0 0 $size $color,
-				0 0 $size $color,
-				0 0 $size $color,
-				0 0 $size $color,
-				0 0 $size $color;
 		}
 	}
 	.colorat {
@@ -345,40 +311,6 @@ body {
 	height: calc(100% - #{$MenubarHeight} - #{$TabbarHeight} - #{$StatusbarHeight});
 	cursor: url('/img/colorpicker/normal.png'), default;
 	background: $EditorBG;
-
-	&.debug {
-		&:before {
-			@extend %debug-point;
-			top: calc(50% - #{$DebugPointSize/2});
-			left: calc(50% - #{$DebugPointSize/2});
-			background-color: $DebugWrapCenter;
-		}
-
-		.image-overlay {
-			border: 1px solid rgba(blue, .5);
-			background: rgba(blue, .2);
-
-			&:before {
-				@extend %debug-point;
-				top: -($DebugPointSize/2);
-				left: -($DebugPointSize/2);
-				background-color: $DebugImgTopLeft;
-			}
-			&:after {
-				@extend %debug-point;
-				top: calc(50% - #{$DebugPointSize/2});
-				left: calc(50% - #{$DebugPointSize/2});
-				background-color: black;
-			}
-		}
-
-		.imgc-expected {
-			@extend %debug-point;
-			top: calc(50% - #{$DebugPointSize/2});
-			left: calc(50% - #{$DebugPointSize/2});
-			background-color: $DebugImgCenter;
-		}
-	}
 
 	.image-element {
 		position: absolute;
@@ -516,27 +448,6 @@ body {
 		left: 0;
 		border-bottom: 0;
 		border-left: 0;
-
-		span {
-			cursor: default;
-			display: block;
-			font-size: .8em;
-		}
-		.imgtl { color: $DebugImgTopLeft }
-		.imgc { color: $DebugImgCenter }
-		.wrapc { color: $DebugWrapCenter }
-		.imgtl, .imgc, .wrapc {
-			font-weight: bold;
-			$size: .5px;
-			$color: black;
-			text-shadow:
-				0 0 $size $color,
-				0 0 $size $color,
-				0 0 $size $color,
-				0 0 $size $color,
-				0 0 $size $color,
-				0 0 $size $color;
-		}
 	}
 
 	&:not(.loading) .loader {

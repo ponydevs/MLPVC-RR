@@ -225,15 +225,9 @@
 			this.infoLocked = false;
 			this.Pos = {
 				mouse: 'mousepos',
-				imageTopLeft: 'imagetl',
-				imageCenter: 'imagec',
-				pickerCenter: 'pickerc',
 			};
 
-			this[`_$${this.Pos.mouse}`]        = this._$pos.children('.mouse');
-			this[`_$${this.Pos.imageTopLeft}`] = this._$pos.children('.image-top-left');
-			this[`_$${this.Pos.imageCenter}`]  = this._$pos.children('.image-center');
-			this[`_$${this.Pos.pickerCenter}`] = this._$pos.children('.picker-center');
+			this[`_$${this.Pos.mouse}`] = this._$pos.children('.mouse');
 			$.each(this.Pos, k => {
 				this.setPosition(k);
 			});
@@ -256,7 +250,7 @@
 
 			this._$info.text(text);
 		}
-		setPosition(which, tl = {top:'?',left:'?'}, zoomlevel = 1){
+		setPosition(which, tl = { top: NaN, left: NaN }, zoomlevel = 1){
 			const elkey = this.Pos[which];
 			if (typeof elkey !== 'string')
 				throw new Error('[Statusbar.setPosition] Invalid position display key: '+which);
@@ -266,7 +260,7 @@
 				tl.top *= zoomlevel;
 			}
 
-			this[`_$${elkey}`].text(`${isNaN(tl.left)?'?':$.roundTo(tl.left,2)},${isNaN(tl.top)?'?':$.roundTo(tl.top,2)}`);
+			this[`_$${elkey}`].text(isNaN(tl.left) || isNaN(tl.top) ? '' : `${$.roundTo(tl.left,2)},${$.roundTo(tl.top,2)}`);
 		}
 		setColorAt(hex = '', opacity = ''){
 			if (hex.length){
@@ -280,11 +274,8 @@
 				color: '',
 			});
 
-			this._$color.text(hex||'UNKNOWN');
+			this._$color.text(hex||'');
 			this._$opacity.text(opacity||'');
-		}
-		debug(enable){
-			this._$pos[enable?'addClass':'removeClass']('debug');
 		}
 	}
 
@@ -557,7 +548,6 @@
 			this.updateWrapSize();
 			this._$imageOverlay = $.mk('canvas').attr('class','image-overlay');
 			this._$imageCanvas = $.mk('canvas').attr('class','image-element');
-			this._$imgcExpected = $.mk('span').attr('class', 'imgc-expected');
 			this._$mouseOverlay = $.mk('canvas').attr('class','mouse-overlay');
 			this._$placeArea = $.mk('button').attr({'class':'place-area typcn typcn-starburst','data-info':'Randomly place a new square picking area on the image (hold Alt to place rounded)'}).on('click',e => {
 				e.preventDefault();
@@ -608,7 +598,7 @@
 				if (!isNaN(perc))
 					this.setZoomLevel(perc/100);
 
-				this.updatePositions();
+				this.updateZoomLevelInputs();
 			}).on('mousedown',() => {
 				this._$zoomperc.data('mousedown', true);
 			}).on('mouseup',() => {
@@ -656,10 +646,9 @@
 			this._$picker.append(
 				this._$actionTopLeft,
 				this._$actionsBottomLeft,
+				this._$mouseOverlay,
 				this._$imageOverlay,
-				this._$loader,
-				this._$imgcExpected,
-				this._$mouseOverlay
+				this._$loader
 			);
 
 			let initial,
@@ -677,9 +666,9 @@
 				this._mousepos.left = e.pageX-wrapoffset.left;
 				if (
 					this._mousepos.top < imgpos.top ||
-					this._mousepos.top > imgpos.top+imgsize.height ||
+					this._mousepos.top > imgpos.top+imgsize.height-1 ||
 					this._mousepos.left < imgpos.left ||
-					this._mousepos.left > imgpos.left+imgsize.width
+					this._mousepos.left > imgpos.left+imgsize.width-1
 				){
 					this._mousepos.top = NaN;
 					this._mousepos.left = NaN;
@@ -703,7 +692,7 @@
 						left = Geometry.snapPointToPixelGrid((initial.left+(mouse.left-initialmouse.left))-wrapoffset.left, this._zoomlevel);
 					this._$imageOverlay.add(this._$imageCanvas).add(this._$mouseOverlay).css({ top, left });
 
-					this.updatePositions(top, left, this.getImageCanvasSize());
+					this.updateZoomLevelInputs();
 				}
 			}));
 			$w.on('mousewheel',e => {
@@ -848,21 +837,6 @@
 			this._$zoomout.attr('disabled', this._zoomlevel <= Zoom.min);
 			this._$zoomin.attr('disabled', this._zoomlevel >= Zoom.max);
 		}
-		updatePositions(top,left,resized){
-			this.updateZoomLevelInputs();
-
-			if (typeof top !== 'number')
-				return;
-
-			Statusbar.getInstance().setPosition('imageTopLeft', { top, left });
-			let imgcenter = this.getImageCenterPosition(this._$imageCanvas.offset(), resized);
-			Statusbar.getInstance().setPosition('imageCenter', imgcenter);
-			this._$imgcExpected.css({
-				top: imgcenter.top-5,
-				left: imgcenter.left-5,
-			});
-			Statusbar.getInstance().setPosition('pickerCenter', this.getWrapCenterPosition());
-		}
 		setZoomLevel(perc, center){
 			const activeTab = Tabbar.getInstance().getActiveTab();
 			if (!activeTab)
@@ -893,7 +867,7 @@
 				height: newsize.height,
 			});
 
-			this.updatePositions(zoomed.top,zoomed.left,newsize);
+			this.updateZoomLevelInputs();
 		}
 		setZoomFit(){
 			this._fitImageHandler(size => {

@@ -22,10 +22,7 @@
 <div id="statusbar">
 	<div class="info"><span class="typcn typcn-info-large"></span> Use the File menu to open an image in the color picker</div>
 	<ul class="pos">
-		<li class="mouse"                 data-info="Image coordinates under the pointer"></li>
-		<li class="debug image-top-left"  data-info="Image top left corner"></li>
-		<li class="debug image-center"    data-info="Image center"></li>
-		<li class="debug picker-center"   data-info="Picker center"></li>
+		<li class="mouse" data-info="Image coordinates under the pointer"></li>
 	</ul>
 	<div class="colorat">
 		<span class="color"></span><span class="opacity"></span>
