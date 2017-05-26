@@ -9,6 +9,10 @@
 		picker: undefined,
 	};
 
+	// TODO Move/hand tool
+	// TODO Contrast slider using CSS3 filter
+	// TODO The actual color picking part, duh
+
 	const
 		Key = window.parent.Key,
 /*		Tools = {
@@ -73,11 +77,11 @@
 		static distance(x, y, x0 = 0, y0 = 0){
 			return Math.sqrt((Math.pow(y0-y, 2)) + Math.pow(x0-x, 2));
 		}
-		static calcCircleSlices(diamataer){
-			const radius = diamataer/2;
-			let slices = new Array(diamataer);
+		static calcCircleSlices(diameter){
+			const radius = diameter/2;
+			let slices = new Array(diameter);
 			$.each(slices,i => {
-				slices[i] = new Array(diamataer);
+				slices[i] = new Array(diameter);
 			});
 			for (let x = 0; x < slices.length; x++){
 				for (let y = 0; y < slices[x].length; y++)
@@ -442,7 +446,7 @@
 				this.addPickingArea(new SquarePickingArea(boundingRect));
 			}
 			else {
-				const slices = Geometry.calcCircleSlices(pos.left, pos.top, size);
+				const slices = Geometry.calcCircleSlices(size);
 				this.addPickingArea(new CirclePickingArea(boundingRect,slices));
 			}
 		}
