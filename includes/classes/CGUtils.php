@@ -52,7 +52,7 @@ class CGUtils {
 					$FirstLetter = strtoupper($p['label'][0]);
 					if (!is_numeric($FirstLetter) ? ($FirstLetter !== $PrevFirstLetter) : !is_numeric($PrevFirstLetter)){
 						if ($PrevFirstLetter !== ''){
-							$HTML = rtrim($HTML, ', ')."</ul></section>";
+							$HTML = "</ul></section>";
 						}
 						$PrevFirstLetter = $FirstLetter;
 						$HTML .= "<section><h2>$PrevFirstLetter</h2><ul>";
@@ -73,7 +73,7 @@ class CGUtils {
 				}
 			}
 		}
-		return $HTML.($wrap?"</ul>":'');
+		return $HTML.($wrap?"</div>":'');
 	}
 
 	static private function _processFullListLink($p, &$HTML, $previews){
