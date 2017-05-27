@@ -3,13 +3,14 @@ use App\Tags;
 use App\CoreUtils;
 use App\Permission;
 /** @var $heading string */
-/** @var $Tags array */ ?>
+/** @var $Tags array */
+/** @var $Pagination \App\Pagination */ ?>
 <div id="content">
 	<h1><?=$heading?></h1>
 	<p>Displaying <?=$Pagination->itemsPerPage?> items/page</p>
 	<p class='align-center links'>
-		<a class='btn darkblue typcn typcn-arrow-back' href="/cg">Back to <?=$Color?> Guide</a>
-		<a class='btn darkblue typcn typcn-warning' href="/cg/changes">Major Changes</a>
+		<a class='btn link typcn typcn-arrow-back' href="/cg">Back to Color Guide</a>
+		<a class='btn link typcn typcn-warning' href="/cg/changes">Major Changes</a>
 	</p>
 	<?=$Pagination->HTML?>
 	<table id="tags">
@@ -33,7 +34,5 @@ HTML;
 </div>
 
 <?  echo CoreUtils::exportVars(array(
-		'Color' => $Color,
-		'color' => $color,
 		'TAG_TYPES_ASSOC' => Tags::$TAG_TYPES_ASSOC,
 	));

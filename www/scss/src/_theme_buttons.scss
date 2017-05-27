@@ -60,6 +60,10 @@ button, .btn, input[type=button] {
 		color: $NYellowBG !important;
 		background-color: $NYellow !important;
 	}
+	&.link {
+		color: lighten($LinkHoverLight,5) !important;
+		background-color: $Link !important;
+	}
 	&:hover, &:focus { opacity: 1 }
 	&:focus { border-color: rgba(black, .2) }
 	&:active { transform: scale(.98) }

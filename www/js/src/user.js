@@ -243,7 +243,11 @@ DocReady.push(function(){
 		}
 	}
 
-	let $slbl = $('#settings').find('form').on('submit', function(e){
+	const
+		$settings = $('#settings'),
+		$slbl = $settings.find('form > label');
+
+	$settings.on('submit','form', function(e){
 		e.preventDefault();
 
 		let $form = $(this),
@@ -256,7 +260,7 @@ DocReady.push(function(){
 
 		$.post(endpoint,data,$.mkAjaxHandler(function(){
 			if (!this.status) return $.Dialog.fail(false, this.message);
-			
+
 			if ($input.is('[type=number]'))
 				$input.val(this.value);
 			else if ($input.is('[type=checkbox]')){
@@ -267,7 +271,7 @@ DocReady.push(function(){
 
 			settingChanged(endpoint.split('/').pop(), orig, this.value);
 		}));
-	}).children('label');
+	});
 	$slbl.children('input[type=number], select').each(function(){
 		let $el = $(this);
 		$el.data('orig', $el.val().trim()).on('keydown keyup change',function(){

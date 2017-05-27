@@ -153,6 +153,11 @@ class PostTest extends TestCase {
 			'label' => '[cuteness intensifies]',
 		]);
 		$result = $Request->processLabel();
-		self::assertEquals('<span class="intensify">cuteness intensifies</span>', $result, 'Transformation of [... instensifies] fails');
+		self::assertEquals('<span class="intensify">cuteness intensifies</span>', $result, 'Transformation of [{s} instensifies] fails');
+		$Request = new App\Models\Request([
+			'label' => '[two words intensifies]',
+		]);
+		$result = $Request->processLabel();
+		self::assertEquals('<span class="intensify">two words intensifies</span>', $result, 'Transformation of [{s1} {sN} instensifies] fails');
 	}
 }

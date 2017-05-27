@@ -26,8 +26,6 @@ use App\Tags;
 </div>
 
 <?  $export = array(
-		'Color' => $Color,
-		'color' => $color,
 		'EQG' => false,
 		'AppearancePage' => false,
 		'PersonalGuide' => $Owner->name,

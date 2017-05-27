@@ -5,7 +5,7 @@
 	<div class='align-center links'>
 		<button class="green typcn typcn-plus" id="add-link">Add link</button>
 		<button class='blue typcn typcn-arrow-unsorted' id="reorder-links">Re-order links</button>
-		<a class='btn darkblue typcn typcn-arrow-back' href="/admin">Back to Admin Area</a>
+		<a class='btn link typcn typcn-arrow-back' href="/admin">Back to Admin Area</a>
 	</div>
 
 	<section class="useful-links">

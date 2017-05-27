@@ -186,7 +186,7 @@ class ColorGuideController extends Controller {
 		switch ($params['ext']){
 			case 'png':
 				if (!empty($params['type'])) switch ($params['type']){
-					case "s": CGUtils::renderSpritePNG($this->_cgPath, $this->_appearance['id']);
+					case "s": CGUtils::renderSpritePNG($this->_cgPath, $this->_appearance['id'], $_GET['s'] ?? null);
 					case "p": CGUtils::renderAppearancePNG($this->_cgPath, $this->_appearance);
 					default: CoreUtils::notFound();
 				}
@@ -234,16 +234,12 @@ class ColorGuideController extends Controller {
 			$this->_initCGPath();
 		}
 
-		global $Color, $color;
-
 		$SafeLabel = Appearances::getSafeLabel($this->_appearance);
 		CoreUtils::fixPath("$this->_cgPath/v/{$this->_appearance['id']}-$SafeLabel");
 		$title = $heading = Appearances::processLabel($this->_appearance['label']);
-		if ($this->_appearance['id'] === 0 && $color !== 'color')
-			$title = str_replace('color',$color,$title);
 
 		$settings = array(
-			'title' => "$title - $Color Guide",
+			'title' => "$title - Color Guide",
 			'heading' => $heading,
 			'view' => "{$this->do}-appearance",
 			'css' => array($this->do, "{$this->do}-appearance"),
@@ -273,7 +269,7 @@ class ColorGuideController extends Controller {
 	}
 
 	function fullList($params){
-		global $Database, $Color;
+		global $Database;
 
 		$this->_initialize($params);
 
@@ -291,7 +287,7 @@ class ColorGuideController extends Controller {
 		$js[] = "{$this->do}-full";
 
 		CoreUtils::loadPage(array(
-			'title' => "Full List - $Color Guide",
+			'title' => "Full List - Color Guide",
 			'view' => "{$this->do}-full",
 			'css' => "{$this->do}-full",
 			'js' => $js,
@@ -320,13 +316,13 @@ class ColorGuideController extends Controller {
 	}
 
 	function changeList(){
-		global $Database, $Color;
+		global $Database;
 
 		$Pagination = new Pagination("cg/changes", 50, $Database->count('log__color_modify'));
 
 		CoreUtils::fixPath("/cg/changes/{$Pagination->page}");
-		$heading = "Major $Color Changes";
-		$title = "Page $Pagination->page - $heading - $Color Guide";
+		$heading = "Major Color Changes";
+		$title = "Page $Pagination->page - $heading - Color Guide";
 
 		$Changes = Updates::get(null, $Pagination->getLimitString());
 
@@ -347,13 +343,13 @@ class ColorGuideController extends Controller {
 	}
 
 	function tagList(){
-		global $Database, $Color;
+		global $Database;
 
 		$Pagination = new Pagination("cg/tags", 20, $Database->count('tags'));
 
 		CoreUtils::fixPath("/cg/tags/{$Pagination->page}");
 		$heading = "Tags";
-		$title = "Page $Pagination->page - $heading - $Color Guide";
+		$title = "Page $Pagination->page - $heading - Color Guide";
 
 		$Tags = Tags::getFor(null,$Pagination->getLimit(), true);
 
@@ -380,7 +376,7 @@ class ColorGuideController extends Controller {
 	function guide($params){
 		$this->_initialize($params);
 
-		global $Database, $Color;
+		global $Database;
 
 		$title = '';
 		$AppearancesPerPage = UserPrefs::get('cg_itemsperpage');
@@ -388,10 +384,7 @@ class ColorGuideController extends Controller {
 		try {
 			$elasticAvail = CoreUtils::elasticClient()->ping();
 		}
-		catch (NoNodesAvailableException $e){
-			$elasticAvail = false;
-		}
-		catch (ServerErrorResponseException $e){
+		catch (NoNodesAvailableException|ServerErrorResponseException $e){
 			$elasticAvail = false;
 		}
 		$searching = !empty($_GET['q']) && CoreUtils::length(trim($_GET['q'])) > 0;
@@ -475,7 +468,7 @@ class ColorGuideController extends Controller {
 		}
 
 		CoreUtils::fixPath("$this->_cgPath/{$Pagination->page}".(!empty($Restrictions)?"?q=$SearchQuery":''));
-		$heading = ($this->_EQG?'EQG ':'')."$Color Guide";
+		$heading = ($this->_EQG?'EQG ':'')."Color Guide";
 		$title .= "Page {$Pagination->page} - $heading";
 
 		if ($jsResponse)
@@ -501,7 +494,7 @@ class ColorGuideController extends Controller {
 	}
 
 	function personalGuide($params){
-		global $Database, $Color;
+		global $Database;
 
 		$this->_initPersonal($params);
 
@@ -514,7 +507,7 @@ class ColorGuideController extends Controller {
 	    $Ponies = $this->_owner->getPCGAppearances($Pagination);
 
 		CoreUtils::fixPath("$this->_cgPath/{$Pagination->page}");
-		$heading = CoreUtils::posess($this->_owner->name)." Personal $Color Guide";
+		$heading = CoreUtils::posess($this->_owner->name)." Personal Color Guide";
 		$title .= "Page {$Pagination->page} - $heading";
 
 		if (isset($_GET['js']))
@@ -709,7 +702,7 @@ class ColorGuideController extends Controller {
 	}
 
 	function _execAppearanceAction($action, $creating = null, $noResponse = false){
-		global $Database, $Color;
+		global $Database;
 
 		switch ($action){
 			case "get":
@@ -898,7 +891,7 @@ class ColorGuideController extends Controller {
 			case "setcgs":
 				$order = (new Input('cgs','int[]',array(
 					Input::CUSTOM_ERROR_MESSAGES => array(
-						Input::ERROR_MISSING => "$Color group order data missing"
+						Input::ERROR_MISSING => "Color group order data missing"
 					)
 				)))->out();
 				$oldCGs = ColorGroups::get($this->_appearance['id']);
@@ -1561,7 +1554,7 @@ HTML;
 	}
 
 	function colorGroupAction($params){
-		global $Database, $color, $Color, $HEX_COLOR_REGEX;
+		global $Database, $HEX_COLOR_REGEX;
 
 		$this->_initPersonal($params, false);
 		if (Permission::insufficient('staff') && !$this->_isOwner)
@@ -1576,7 +1569,7 @@ HTML;
 			$GroupID = intval($params['id'], 10);
 			$Group = $Database->where('groupid', $GroupID)->getOne('colorgroups');
 			if (empty($GroupID))
-				Response::fail("There’s no $color group with the ID of $GroupID");
+				Response::fail("There’s no color group with the ID of $GroupID");
 
 			if ($action === 'get'){
 				$Group['Colors'] = ColorGroups::getColors($Group['groupid']);
@@ -1595,7 +1588,7 @@ HTML;
 					'order' => $Group['order'] ?? null,
 				));
 
-				Response::success("$Color group deleted successfully");
+				Response::success("Color group deleted successfully");
 			}
 		}
 		/** @var $data array */
@@ -1608,7 +1601,7 @@ HTML;
 				Input::ERROR_RANGE => 'The group name must be between @min and @max characters in length',
 			)
 		)))->out();
-		CoreUtils::checkStringValidity($data['label'], "$Color group name", INVERSE_PRINTABLE_ASCII_PATTERN, true);
+		CoreUtils::checkStringValidity($data['label'], "Color group name", INVERSE_PRINTABLE_ASCII_PATTERN, true);
 
 		$major = isset($_POST['major']);
 		if ($major){
@@ -1646,8 +1639,8 @@ HTML;
 
 		$recvColors = (new Input('Colors','json',array(
 			Input::CUSTOM_ERROR_MESSAGES => array(
-				Input::ERROR_MISSING => "Missing list of {$color}s",
-				Input::ERROR_INVALID => "List of {$color}s is invalid",
+				Input::ERROR_MISSING => "Missing list of colors",
+				Input::ERROR_INVALID => "List of colors is invalid",
 			)
 		)))->out();
 		$colors = array();
@@ -1656,19 +1649,19 @@ HTML;
 			$index = "(index: $part)";
 
 			if (empty($c['label']))
-				Response::fail("You must specify a $color name $index");
+				Response::fail("You must specify a color name $index");
 			$label = CoreUtils::trim($c['label']);
-			CoreUtils::checkStringValidity($label, "$Color $index name", INVERSE_PRINTABLE_ASCII_PATTERN);
+			CoreUtils::checkStringValidity($label, "Color $index name", INVERSE_PRINTABLE_ASCII_PATTERN);
 			$ll = CoreUtils::length($label);
 			if ($ll < 3 || $ll > 30)
-				Response::fail("The $color name must be between 3 and 30 characters in length $index");
+				Response::fail("The color name must be between 3 and 30 characters in length $index");
 			$append['label'] = $label;
 
 			if (empty($c['hex']))
-				Response::fail("You must specify a $color code $index");
+				Response::fail("You must specify a color code $index");
 			$hex = CoreUtils::trim($c['hex']);
 			if (!$HEX_COLOR_REGEX->match($hex, $_match))
-				Response::fail("HEX $color is in an invalid format $index");
+				Response::fail("HEX color is in an invalid format $index");
 			$append['hex'] = '#'.strtoupper($_match[1]);
 
 			$colors[] = $append;
@@ -1739,6 +1732,24 @@ HTML;
 		}
 
 		Response::done($response);
+	}
+
+	function blending(){
+		global $HEX_COLOR_REGEX;
+
+		CoreUtils::fixPath('/cg/blending');
+
+		$HexPattern = preg_replace(new RegExp('^/(.*)/.*$'),'$1',$HEX_COLOR_REGEX->jsExport());
+		CoreUtils::loadPage(array(
+			'title' => "Color Blending Calculator",
+			'view' => "{$this->do}-blending",
+			'css' => "{$this->do}-blending",
+			'js' => "{$this->do}-blending",
+			'import' => [
+				'HexPattern' => $HexPattern,
+				'nav_blending' => true,
+			],
+		));
 	}
 
 	function picker(){

@@ -46,26 +46,54 @@
 		}
 
 		ul {
+			$spacing: 6px;
 			font-size: $fontsize;
 			list-style: none;
 			padding: 0;
-			margin: 0;
+			margin: 0 0 0 #{-$spacing};
+			display: flex;
+			flex-flow: row wrap;
+			justify-content: flex-start;
 
 			li {
+				flex: 0 1 auto;
+				margin: $spacing/2 0 $spacing/2 $spacing;
 				position: relative;
-				display: inline-block;
+				box-sizing: border-box;
+				display: flex;
+				flex-flow: row nowrap;
+				justify-content: flex-start;
 
-				&:not(:last-child) a { margin-right: .8em }
+				> a {
+					padding: 5px;
+					border: 1px solid;
+					display: flex;
+					flex-flow: column nowrap;
+					align-items: center;
+					justify-content: space-around;
 
-				a {
-					display: inline-block;
-					padding: 1px 3px;
-					border: 2px solid transparent;
-					margin-bottom: 1px;
+					&:not(:last-child) a { margin-right: .8em }
 
-					.typcn, .typcn:before {
-						display: inline !important;
-						font-size: 1em !important;
+					img {
+						height: 100px;
+						display: block;
+						margin: 0 auto 10px;
+					}
+
+					.name {
+						display: inline-block;
+						padding: 1px 3px;
+						border: 2px solid transparent;
+						margin-bottom: 1px;
+
+						.typcn, .typcn:before {
+							display: inline !important;
+							font-size: 1em !important;
+						}
+					}
+					.aka {
+						font-size: .5em;
+						color: black;
 					}
 				}
 			}

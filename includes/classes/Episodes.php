@@ -523,7 +523,7 @@ HTML;
 	}
 
 	static function getAppearancesSectionHTML(Episode $Episode):string {
-		global $Database, $Color;
+		global $Database;
 
 		$HTML = '';
 		$EpTagIDs = Episodes::getTagIDs($Episode);
@@ -538,7 +538,7 @@ HTML;
 			if (!empty($TaggedAppearances)){
 				$hidePreviews = UserPrefs::get('ep_noappprev');
 				$pages = CoreUtils::makePlural('page', count($TaggedAppearances));
-				$HTML .= "<section class='appearances'><h2>Related <a href='/cg'>$Color Guide</a> $pages</h2>";
+				$HTML .= "<section class='appearances'><h2>Related <a href='/cg'>Color Guide</a> $pages</h2>";
 				$LINKS = '<ul>';
 				$isStaff = Permission::sufficient('staff');
 				foreach ($TaggedAppearances as $p){
@@ -550,7 +550,7 @@ HTML;
 						if ($hidePreviews)
 							$preview = '';
 						else {
-							$preview = Appearances::getPreviewURL($p);
+							$preview = Appearances::getPreviewURL($p['id']);
 							$preview = "<img src='$preview' class='preview' alt=''>";
 						}
 					}

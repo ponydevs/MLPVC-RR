@@ -45,6 +45,7 @@ class CGUtils {
 	static function getFullListHTML($Appearances, $GuideOrder, $wrap = WRAP){
 		$HTML = $wrap ? "<div id='full-list'>" : '';
 		if (!empty($Appearances)){
+			$previews = !empty(UserPrefs::get('cg_fulllstprev'));
 			if (!$GuideOrder){
 				$PrevFirstLetter = '';
 				foreach ($Appearances as $p){
@@ -56,7 +57,7 @@ class CGUtils {
 						$PrevFirstLetter = $FirstLetter;
 						$HTML .= "<section><h2>$PrevFirstLetter</h2><ul>";
 					}
-					self::_processFullListLink($p, $HTML);
+					self::_processFullListLink($p, $HTML, $previews);
 				}
 			}
 			else {
@@ -67,7 +68,7 @@ class CGUtils {
 
 					$HTML .= "<section><h2>$CategoryName<button class='sort-alpha blue typcn typcn-sort-alphabetically' style='display:none' title='Sort this section alphabetically'></button></h2><ul>";
 					foreach ($Sorted[$Category] as $p)
-						self::_processFullListLink($p, $HTML);
+						self::_processFullListLink($p, $HTML, $previews);
 					$HTML .= "</ul></section>";
 				}
 			}
@@ -75,7 +76,7 @@ class CGUtils {
 		return $HTML.($wrap?"</ul>":'');
 	}
 
-	static private function _processFullListLink($p, &$HTML){
+	static private function _processFullListLink($p, &$HTML, $previews){
 		$sprite = '';
 		$url = "/cg/v/{$p['id']}-".Appearances::getSafeLabel($p);
 		if (Permission::sufficient('staff')){
@@ -90,7 +91,32 @@ class CGUtils {
 				$url .= "' class='$class";
 		}
 		$label = Appearances::processLabel($p['label']);
-		$HTML .= "<li><a href='$url'>$sprite$label</a></li>";
+
+		if ($previews){
+			global $Database;
+			$preview = Appearances::getSpriteURL($p['id'], Appearances::SPRITE_SIZES['SOURCE'], Appearances::getPreviewURL($p['id']));
+			$preview = "<img data-src='$preview' src='/img/blank-pixel.png' alt=''>";
+			$charTags = $Database->rawQuery(
+				"SELECT t.name FROM tags t
+				LEFT JOIN tagged tg ON tg.tid = t.tid OR tg.tid = t.synonym_of
+				WHERE tg.ponyid = ? && t.type = 'char'", [$p['id']]);
+			if (!empty($charTags)){
+				$aka = [];
+				foreach ($charTags as $t){
+					if (stripos($p['label'], $t['name']) !== false)
+						continue;
+
+					$aka[] = $t['name'];
+				}
+				if (!empty($aka))
+					$aka = '<span class="aka"><abbr title="Also known as">AKA</abbr> '.implode(', ', $aka).'</span>';
+			}
+		}
+		else $preview = '';
+		if (empty($aka))
+			$aka = '';
+
+		$HTML .= "<li><a href='$url'>$preview<span class='name'>$sprite$label</span>$aka</a></li>";
 	}
 
 	/**
@@ -581,15 +607,24 @@ HTML;
 		return $Map;
 	}
 
-	static function renderSpritePNG($CGPath, $AppearanceID){
-		$OutputPath = FSPATH."cg_render/{$AppearanceID}-sprite.png";
+	/**
+	 * @param string   $CGPath
+	 * @param int      $AppearanceID
+	 * @param int|null $size
+	 */
+	static function renderSpritePNG($CGPath, $AppearanceID, ?int $size = null){
+		if (!in_array($size, Appearances::SPRITE_SIZES, true))
+			$size = 600;
+		$outsize = $size === Appearances::SPRITE_SIZES['REGULAR'] ? '' : "-$size";
+
+		$OutputPath = FSPATH."cg_render/{$AppearanceID}-sprite$outsize.png";
 		$FileRelPath = "$CGPath/v/{$AppearanceID}s.png";
 		if (file_exists($OutputPath))
 			Image::outputPNG(null,$OutputPath,$FileRelPath);
 
 		$Map = self::getSpriteImageMap($AppearanceID);
 
-		$SizeFactor = 2;
+		$SizeFactor = round($size/300);
 		$PNG = Image::createTransparent($Map['width']*$SizeFactor, $Map['height']*$SizeFactor);
 		foreach ($Map['linedata'] as $line){
 			$rgb = CoreUtils::hex2Rgb($Map['colors'][$line['colorid']]);
@@ -770,7 +805,7 @@ GPL;
 	);
 
 	static function getElasticUnavailableNotice(bool $EQG):string {
-		return CoreUtils::notice('warn','<span class="typcn typcn-warning"></span> <strong>ElasticSearch server is down!</strong> Please <a class="send-feedback">let us know</a>, and in the meantime, use the <a class="btn darkblue typcn typcn-th-menu" href="/cg'.($EQG?'/eqg':'').'/full">Full List</a> to find appearances faster. Sorry for the inconvenience.',true);
+		return CoreUtils::notice('warn','<span class="typcn typcn-warning"></span> <strong>ElasticSearch server is down!</strong> Please <a class="send-feedback">let us know</a>, and in the meantime, use the <a class="btn link typcn typcn-th-menu" href="/cg'.($EQG?'/eqg':'').'/full">Full List</a> to find appearances faster. Sorry for the inconvenience.',true);
 	}
 
 	const ELASTIC_BASE = array(

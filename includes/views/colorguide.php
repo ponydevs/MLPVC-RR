@@ -11,7 +11,7 @@ use App\Tags;
 /** @var $Owner App\Models\User|array */ ?>
 <div id="content">
 	<h1><?=$heading?></h1>
-	<p>A searchable list of character <?=$color?>s from the <?=$EQG?'movies':'show'?></p>
+	<p>A searchable list of character colors from the <?=$EQG?'movies':'show'?></p>
 	<p class="align-center">
 		If you can’t find a character here, check the old guides: <a href="https://sta.sh/0kic0ngp3fy">Pony</a> / <a href="http://fav.me/d7120l1">EQG</a><br>
 		Looking for this information in a machine-readable format? <a href="/dist/mlpvc-colorguide.json" target="_blank" download="mlpvc-colorguide.json">JSON</a></p>
@@ -28,17 +28,17 @@ use App\Tags;
 <?  if (Permission::sufficient('staff')){ ?>
 		<button class='green typcn typcn-plus' id="new-appearance-btn">Add new <?=$EQG?'Character':'Pony'?></button>
 <?  } ?>
-		<a class='btn darkblue typcn typcn-world' href="/cg<?=$EQG?'':'/eqg'?>/1">View <?=$EQG?'Ponies':'Equestria Girls'?></a>
-		<a class='btn darkblue typcn typcn-th-menu' href="/cg<?=$EQG?'/eqg':''?>/full">Full List of <?=$EQG?'Equestria Girls':'Ponies'?></a>
-		<a class='btn darkblue typcn typcn-arrow-forward' href="/blending">Blending Calculator</a>
+		<a class='btn link typcn typcn-world' href="/cg<?=$EQG?'':'/eqg'?>/1">View <?=$EQG?'Ponies':'Equestria Girls'?></a>
+		<a class='btn link typcn typcn-th-menu' href="/cg<?=$EQG?'/eqg':''?>/full">Full List of <?=$EQG?'Equestria Girls':'Ponies'?></a>
+		<a class='btn link typcn typcn-arrow-forward' href="/cg/blending">Blending Calculator</a>
 <?  if (Permission::sufficient('staff')){ ?>
-		<a class='btn darkblue typcn typcn-pipette' href="/cg/picker">Color Picker (INCOMPLETE)</a>
+		<a class='btn link typcn typcn-pipette' href="/cg/picker">Color Picker (INCOMPLETE)</a>
 <?  } ?>
-		<a class='btn darkblue typcn typcn-tags' href="/cg/tags">Tags</a>
-		<a class='btn darkblue typcn typcn-warning' href="/cg/changes">Major Changes</a>
+		<a class='btn link typcn typcn-tags' href="/cg/tags">Tags</a>
+		<a class='btn link typcn typcn-warning' href="/cg/changes">Major Changes</a>
 <?  if (Permission::sufficient('developer')){ ?>
-		<button class='darkblue typcn typcn-download cg-export'>Export</button>
-		<button class='darkblue typcn typcn-document cg-reindex'>Re-index</button>
+		<button class='blue typcn typcn-download cg-export'>Export</button>
+		<button class='blue typcn typcn-document cg-reindex'>Re-index</button>
 <?  } ?>
 	</p>
 <? if ($elasticAvail){ ?>
@@ -54,8 +54,6 @@ use App\Tags;
 </div>
 
 <?  $export = array(
-		'Color' => $Color,
-		'color' => $color,
 		'EQG' => $EQG,
 		'AppearancePage' => false,
 		'PersonalGuide' => $Owner->name ?? false,

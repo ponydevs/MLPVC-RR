@@ -13,6 +13,7 @@ class UserPrefs extends GlobalSettings {
 			'cg_itemsperpage' => 7,
 			'cg_hidesynon' => 0,
 			'cg_hideclrinfo' => 0,
+			'cg_fulllstprev' => 1,
 			'p_vectorapp' => '',
 			'p_hidediscord' => 0,
 			'p_hidepcg' => 0,
@@ -103,6 +104,7 @@ class UserPrefs extends GlobalSettings {
 			case "p_hidediscord":
 			case "cg_hidesynon":
 			case "cg_hideclrinfo":
+			case "cg_fulllstprev":
 				$value = $value ? 1 : 0;
 			break;
 

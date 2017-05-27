@@ -1,9 +1,5 @@
 <?php
 
-	// Global variables \\
-	$Color = 'Color';
-	$color = 'color';
-
 	require "../includes/init.php";
 
 	use App\RegExp;

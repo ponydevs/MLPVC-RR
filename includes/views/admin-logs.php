@@ -12,7 +12,7 @@ use App\Logs;
 	else { ?>
 	<p>Displaying <?=$Pagination->itemsPerPage?> items/page</p>
 	<p class='align-center links'>
-		<a class='btn darkblue typcn typcn-arrow-back' href="/admin">Back to Admin Area</a>
+		<a class='btn link typcn typcn-arrow-back' href="/admin">Back to Admin Area</a>
 	</p>
 	<form id="filter-form">
 		<strong>Show</strong>

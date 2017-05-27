@@ -5,7 +5,7 @@ use App\Models\DiscordMember; ?>
 	<p>Manage Discord server membership of users</p>
 	<div class='align-center links'>
 		<button class="blue typcn typcn-refresh" id="rerequest-members">Re-request user list</button>
-		<a class='btn darkblue typcn typcn-arrow-back' href="/admin">Back to Admin Area</a>
+		<a class='btn link typcn typcn-arrow-back' href="/admin">Back to Admin Area</a>
 	</div>
 
 	<div class="twoside-manager">

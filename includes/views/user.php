@@ -137,6 +137,15 @@ if (!empty($Banishes)){
 <?php   } ?>
 				</label>
 			</form>
+			<form action="/preference/set/cg_fulllstprev">
+				<label>
+					<input type="checkbox" name="value" value="1"<?=UserPrefs::get('cg_fulllstprev', $User->id)?' checked':''?> <?=!$sameUser?' disabled':''?>>
+					<span>Display previews and alternate names on the full list</span>
+<?php   if ($sameUser){ ?>
+					<button class="save typcn typcn-tick green" disabled>Save</button>
+<?php   } ?>
+				</label>
+			</form>
 		</section>
 		<section class="eppage-settings">
 			<h2><?=$sameUser? Users::PROFILE_SECTION_PRIVACY_LEVEL['staff']:''?>Episode pages</h2>

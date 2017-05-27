@@ -110,7 +110,7 @@
 		.hex, .hexa, .rgba, .opacity {
 			&:empty:before {
 				opacity: .9;
-				content: "(no " attr(class) " " attr(data-color) ")";
+				content: "(no " attr(class) " " attr(data-suffix) ")";
 				font-style: italic;
 			}
 

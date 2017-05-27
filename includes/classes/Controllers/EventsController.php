@@ -11,7 +11,7 @@ class EventsController extends Controller {
 	public $do = 'events';
 
 	function list(){
-		global $Database, $Color;
+		global $Database;
 
 		$Pagination = new Pagination("events", 20, $Database->count('events'));
 

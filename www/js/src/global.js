@@ -3,6 +3,9 @@
 (function($){
 	"use strict";
 
+	if (typeof $.Navigation !== 'undefined' && $.Navigation.firstLoadDone === true)
+		return;
+
 	let fluidboxThisAction = (jQueryObject) => {
 		jQueryObject.fluidbox({
 			immediateOpen: true,

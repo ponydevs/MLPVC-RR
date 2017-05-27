@@ -10,6 +10,7 @@
 		<button class="yellow">Yellow button</button>
 		<button class="orange">Orange button</button>
 		<button class="red">Red button</button>
+		<button class="link">Link button</button>
 	</div>
 
 	<div class="align-center">
@@ -20,6 +21,7 @@
 		<button class="typcn typcn-brush yellow">With icon</button>
 		<button class="typcn typcn-brush orange">With icon</button>
 		<button class="typcn typcn-brush red">With icon</button>
+		<button class="typcn typcn-brush link">With icon</button>
 	</div>
 
 	<div>

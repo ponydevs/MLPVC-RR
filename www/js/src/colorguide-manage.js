@@ -2,9 +2,9 @@
 DocReady.push(function(){
 	'use strict';
 
-	let Color = window.Color, color = window.color, TAG_TYPES_ASSOC = window.TAG_TYPES_ASSOC, $colorGroups,
-		HEX_COLOR_PATTERN = window.HEX_COLOR_PATTERN, isWebkit = 'WebkitAppearance' in document.documentElement.style,
-		EQG = window.EQG, EQGRq = EQG?'?eqg':'', AppearancePage = !!window.AppearancePage, PersonalGuide = window.PersonalGuide,
+	let TAG_TYPES_ASSOC = window.TAG_TYPES_ASSOC, $colorGroups, HEX_COLOR_PATTERN = window.HEX_COLOR_PATTERN,
+	isWebkit = 'WebkitAppearance' in document.documentElement.style, EQG = window.EQG, EQGRq = EQG?'?eqg':'',
+		AppearancePage = !!window.AppearancePage, PersonalGuide = window.PersonalGuide,
 		PGRq = PersonalGuide?`/@${PersonalGuide}`:'',
 		ColorTextParseError = function(line, lineNumber, matches){
 			let missing = [];
@@ -956,7 +956,7 @@ DocReady.push(function(){
 			<span>Change reason (1-255 chars.)</span>
 			<input type='text' name='reason' pattern="${PRINTABLE_ASCII_PATTERN.replace('+','{1,255}')}" required disabled>
 		</label>
-		<p class="align-center">The # symbol is optional, rows with invalid ${color}s will be ignored. Each color must have a short (3-30 chars.) description of its intended use.</p>`,
+		<p class="align-center">The # symbol is optional, rows with invalid colors will be ignored. Each color must have a short (3-30 chars.) description of its intended use.</p>`,
 		$.mk('div').attr('class', 'btn-group').append(
 			$addBtn, $editorToggle
 		),
@@ -1381,17 +1381,17 @@ DocReady.push(function(){
 			});
 		});
 
-		$colorGroups = $('ul.colors').attr('data-color', color);
+		$colorGroups = $('ul.colors');
 		$colorGroups.filter(':not(.ctxmenu-bound)').ctxmenu(
 			[
-				{text: `Re-order ${color} groups`, icon: 'arrow-unsorted', click: function(){
+				{text: `Re-order color groups`, icon: 'arrow-unsorted', click: function(){
 					let $colors = $(this),
 						$li = $colors.closest('[id^=p]'),
 						ponyID = $li.attr('id').substring(1),
 						ponyName = !AppearancePage
 							? $li.children().last().children('strong').text().trim()
 							: $content.children('h1').text(),
-						title = `Re-order ${color} groups on appearance: ${ponyName}`;
+						title = `Re-order color groups on appearance: ${ponyName}`;
 
 					$.Dialog.wait(title, 'Retrieving color group list from server');
 
@@ -1446,7 +1446,7 @@ DocReady.push(function(){
 					}));
 				}},
 				{text: "Create new group", icon: 'folder-add', click: function(){
-					cgEditorMaker(`Create ${color} group`, $(this).closest('[id^=p]').attr('id').substring(1));
+					cgEditorMaker(`Create color group`, $(this).closest('[id^=p]').attr('id').substring(1));
 				}},
 				{text: "Apply template (if empty)", icon: 'document-add', click: function(){
 					let ponyID = $(this).closest('[id^=p]').attr('id').substring(1);
@@ -1471,18 +1471,18 @@ DocReady.push(function(){
 					});
 				}},
 			],
-			Color+' groups'
+			'Color groups'
 		);
 		$colorGroups.children('li').filter(':not(.ctxmenu-bound)').ctxmenu(
 			[
-				{text: `Edit ${color} group`, icon: 'pencil', click: function(){
+				{text: `Edit color group`, icon: 'pencil', click: function(){
 					let $this = $(this),
 						$group = $this.closest('li'),
 						groupID = $group.attr('id').substring(2),
 						groupName = $this.children().first().text().replace(/:\s?$/,''),
-						title = `Editing ${color} group: `+groupName;
+						title = `Editing color group: `+groupName;
 
-					$.Dialog.wait(title, `Retrieving ${color} group details from server`);
+					$.Dialog.wait(title, `Retrieving color group details from server`);
 
 					$.post(`${PGRq}/cg/colorgroup/get/${groupID}${EQGRq}`,$.mkAjaxHandler(function(){
 						if (!this.status) return $.Dialog.fail(title, this.message);
@@ -1490,12 +1490,12 @@ DocReady.push(function(){
 						cgEditorMaker(title, $group, this);
 					}));
 				}},
-				{text: `Delete ${color} group`, icon: 'trash', click: function(){
+				{text: `Delete color group`, icon: 'trash', click: function(){
 					let $group = $(this).closest('li'),
 						groupID = $group.attr('id').substring(2),
 						groupName = $group.children().first().text().replace(/:\s?$/,''),
-						title = `Delete ${color} group: `+groupName;
-					$.Dialog.confirm(title, `By deleting this ${color} group, all `+color+'s within will be removed too.<br>Are you sure?', function(sure){
+						title = `Delete color group: `+groupName;
+					$.Dialog.confirm(title, `By deleting this color group, all colors within will be removed too.<br>Are you sure?`, function(sure){
 						if (!sure) return;
 
 						$.Dialog.wait(title, 'Sending removal request');
@@ -1511,27 +1511,27 @@ DocReady.push(function(){
 					});
 				}},
 				$.ctxmenu.separator,
-				{text: `Re-order ${color} groups`, icon: 'arrow-unsorted', click: function(){
+				{text: `Re-order color groups`, icon: 'arrow-unsorted', click: function(){
 					$.ctxmenu.triggerItem($(this).parent(), 1);
 				}},
 				{text: "Create new group", icon: 'folder-add', click: function(){
 					$.ctxmenu.triggerItem($(this).parent(), 2);
 				}},
 			],
-			function($el){ return Color+' group: '+$el.children().first().text().trim().replace(':','') }
+			function($el){ return 'Color group: '+$el.children().first().text().trim().replace(':','') }
 		);
 		let $colors = $colorGroups.children('li').find('.valid-color');
 		$.ctxmenu.addItems(
 			$colors.filter('.ctxmenu-bound'),
 			$.ctxmenu.separator,
-			{text: `Edit ${color} group`, icon: 'pencil', click: function(){
+			{text: `Edit color group`, icon: 'pencil', click: function(){
 				$.ctxmenu.triggerItem($(this).parent().closest('.ctxmenu-bound'), 1);
 			}},
-			{text: `Delete ${color} group`, icon: 'trash', click: function(){
+			{text: `Delete color group`, icon: 'trash', click: function(){
 				$.ctxmenu.triggerItem($(this).parent().closest('.ctxmenu-bound'), 2);
 			}},
 			$.ctxmenu.separator,
-			{text: `Re-order ${color} groups`, icon: 'arrow-unsorted', click: function(){
+			{text: `Re-order color groups`, icon: 'arrow-unsorted', click: function(){
 				$.ctxmenu.triggerItem($(this).parent().closest('.ctxmenu-bound'), 3);
 			}},
 			{text: "Create new group", icon: 'folder-add', click: function(){
@@ -1709,7 +1709,7 @@ DocReady.push(function(){
 			target: '_blank',
 		}).html(
 			$.mk('input').attr('name','CSRF_TOKEN').val($.getCSRFToken())
-		).submit();
+		).appendTo($body).submit().remove();
 	});
 
 	$('.cg-reindex').on('click',function(){

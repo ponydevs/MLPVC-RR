@@ -6,6 +6,7 @@ use App\Models\Episode;
 use App\Models\User;
 use Elasticsearch\Common\Exceptions\Missing404Exception as ElasticMissing404Exception;
 use Elasticsearch\Common\Exceptions\NoNodesAvailableException as ElasticNoNodesAvailableException;
+use Elasticsearch\Common\Exceptions\ServerErrorResponseException as ElasticServerErrorResponseException;
 
 class Appearances {
 	/**
@@ -71,7 +72,7 @@ class Appearances {
 
 			$RenderPath = FSPATH."cg_render/{$Appearance['id']}.png";
 			$FileModTime = '?t='.(file_exists($RenderPath) ? filemtime($RenderPath) : time());
-			$Actions = "<a class='btn typcn typcn-image blue' title='View as PNG' href='$personalp/cg/{$eqgp}v/{$Appearance['id']}p.png$FileModTime' target='_blank'></a>".
+			$Actions = "<a class='btn link typcn typcn-image' title='View as PNG' href='$personalp/cg/{$eqgp}v/{$Appearance['id']}p.png$FileModTime' target='_blank'></a>".
 			           "<button class='getswatch typcn typcn-brush teal' title='Download swatch file'></button>";
 			if ($permission)
 				$Actions .= "<button class='edit typcn typcn-pencil darkblue' title='Edit'></button>".
@@ -214,18 +215,25 @@ class Appearances {
 		return $wrap ? "<div class='notes'>$notes</div>" : $notes;
 	}
 
+	/** @var int[] */
+	const SPRITE_SIZES = [
+		'REGULAR' => 600,
+		'SOURCE' => 300,
+	];
+
 	/**
 	 * Get sprite URL for an appearance
 	 *
 	 * @param int    $AppearanceID
+	 * @param int    $size
 	 * @param string $fallback
 	 *
 	 * @return string
 	 */
-	static function getSpriteURL(int $AppearanceID, string $fallback = ''):string {
+	static function getSpriteURL(int $AppearanceID, int $size = self::SPRITE_SIZES['REGULAR'], string $fallback = ''):string {
 		$fpath = SPRITE_PATH."$AppearanceID.png";
 		if (file_exists($fpath))
-			return "/cg/v/{$AppearanceID}s.png?t=".filemtime($fpath);
+			return "/cg/v/{$AppearanceID}s.png?s=$size&t=".filemtime($fpath);
 		return $fallback;
 	}
 
@@ -321,15 +329,22 @@ class Appearances {
 			return;
 
 		$elastiClient = CoreUtils::elasticClient();
+		try {
+			$elasticAvail = CoreUtils::elasticClient()->ping();
+		}
+		catch (ElasticNoNodesAvailableException|ElasticServerErrorResponseException $e){
+			$elasticAvail = false;
+		}
 		$list = is_string($ids) ? explode(',', $ids) : $ids;
 		foreach ($list as $i => $id){
 			$order = $i+1;
 			if (!$Database->where('id', $id)->update('appearances', array('order' => $order)))
 				Response::fail("Updating appearance #$id failed, process halted");
 
-			$elastiClient->update(array_merge(self::getElasticMeta(['id' => $id]), [
-				'body' => [ 'doc' => ['order' => $order] ],
-			]));
+			if ($elasticAvail)
+				$elastiClient->update(array_merge(self::getElasticMeta(['id' => $id]), [
+					'body' => [ 'doc' => ['order' => $order] ],
+				]));
 		}
 	}
 
@@ -353,7 +368,7 @@ class Appearances {
 	 * @throws \Exception
 	 */
 	static function applyTemplate($AppearanceID, $EQG){
-		global $Database, $Color;
+		global $Database;
 
 		if (empty($AppearanceID) || !is_numeric($AppearanceID))
 			throw new \Exception('Incorrect value for $PonyID while applying template');
@@ -513,13 +528,13 @@ HTML;
 	/**
 	 * Retruns preview image link
 	 *
-	 * @param array $Appearance
+	 * @param int $AppearanceID
 	 *
 	 * @return string
 	 */
-	static function getPreviewURL($Appearance){
-		$path = str_replace('#',$Appearance['id'],CGUtils::PREVIEW_SVG_PATH);
-		return "/cg/v/{$Appearance['id']}p.svg?t=".(file_exists($path) ? filemtime($path) : time());
+	static function getPreviewURL($AppearanceID):string {
+		$path = str_replace('#', $AppearanceID,CGUtils::PREVIEW_SVG_PATH);
+		return "/cg/v/{$AppearanceID}p.svg?t=".(file_exists($path) ? filemtime($path) : time());
 	}
 
 	/**
@@ -556,7 +571,7 @@ HTML;
 
 	static function getLinkWithPreviewHTML($p){
 		$safeLabel = self::getSafeLabel($p);
-		$preview = self::getPreviewURL($p);
+		$preview = self::getPreviewURL($p['id']);
 		$preview = "<img src='$preview' class='preview'>";
 		$label = self::processLabel($p['label']);
 		$owner = isset($p['owner']) ? '/@'.(Users::get($p['owner'],'id','name')->name) : '';
@@ -567,9 +582,8 @@ HTML;
 		if (empty($Related))
 			return '';
 		$LINKS = '';
-		foreach ($Related as $p){
+		foreach ($Related as $p)
 			$LINKS .= '<li>'.self::getLinkWithPreviewHTML($p).'</li>';
-		}
 		return "<section class='related'><h2>Related appearances</h2><ul>$LINKS</ul></section>";
 	}
 

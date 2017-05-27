@@ -174,7 +174,7 @@ class Users {
 		$buttons = "<button class='typcn remove ".(!$current?'typcn-trash red':'typcn-arrow-back')."' data-sid='{$Session->id}'>$signoutText</button>";
 		if (Permission::sufficient('developer') && !empty($Session->user_agent)){
 			$buttons .= "<br><button class='darkblue typcn typcn-eye useragent' data-agent='".CoreUtils::aposEncode($Session->user_agent)."'>UA</button>".
-				"<a class='btn orange typcn typcn-chevron-right' href='/browser/{$Session->id}'>Debug</a>";
+				"<a class='btn link typcn typcn-chevron-right' href='/browser/{$Session->id}'>Debug</a>";
 		}
 
 		$firstuse = Time::tag($Session->created);
@@ -193,7 +193,7 @@ HTML;
 	 * Check authentication cookie and set global
 	 */
 	static function authenticate(){
-		global $Database, $Color, $color;
+		global $Database;
 		CSRFProtection::detect();
 
 		if (!POST_REQUEST && isset($_GET['CSRF_TOKEN']))
@@ -231,15 +231,6 @@ HTML;
 						$lastVisitTS = date('c');
 						if ($Database->where('id', Auth::$session->id)->update('sessions', array('lastvisit' => $lastVisitTS)))
 							Auth::$session->lastvisit = $lastVisitTS;
-					}
-
-					$_PrefersColour = array(
-						'Pirill-Poveniy' => true,
-						'itv-canterlot' => true,
-					);
-					if (isset($_PrefersColour[Auth::$user->name])){
-						$Color = 'Colour';
-						$color = 'colour';
 					}
 				}
 			}
@@ -404,7 +395,7 @@ HTML;
 			$HTML .= "</ul>";
 		}
 		$Action = $sameUser ? 'Manage' : 'View';
-		$HTML .= "<p><a href='/@{$User->name}/cg' class='btn darkblue typcn typcn-arrow-forward'>$Action Personal Color Guide</a></p>";
+		$HTML .= "<p><a href='/@{$User->name}/cg' class='btn link typcn typcn-arrow-forward'>$Action Personal Color Guide</a></p>";
 		$HTML .= '</section>';
 
 		return $HTML;

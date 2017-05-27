@@ -2,11 +2,12 @@
 use App\CoreUtils;
 use App\Models\User;
 use App\Users;
-/** @var $title string */ ?>
+/** @var $title string */
+/** @var $HexPattern string */ ?>
 <div id="content">
 	<h1><?=$title?></h1>
 	<p>Originally made by <?=Users::get('dasprid','name','name, avatar_url')->getProfileLink(User::LINKFORMAT_FULL)?></p>
-	<?=CoreUtils::notice('info',"<p><span class='typcn typcn-info-large'></span> This is a tool which helps you to find an original $color, given two different background {$color}s and the resulting blended $color, when the original $color is blended over it.</p><p><strong>Shift+Click</strong> an input to open a dialog where you can enter RGB values</p><a class='btn typcn typcn-arrow-back' href='/cg'>Back to $Color Guide</a>", true)?>
+	<?=CoreUtils::notice('info',"<p><span class='typcn typcn-info-large'></span> This is a tool which helps you to find an original color, given two different background colors and the resulting blended color, when the original color is blended over it.</p><p><strong>Shift+Click</strong> an input to open a dialog where you can enter RGB values</p><a class='btn link typcn typcn-arrow-back' href='/cg'>Back to Color Guide</a>", true)?>
 
 	<div id="blend-wrap">
 		<form autocomplete="off">
@@ -14,7 +15,7 @@ use App\Users;
 				<thead>
 					<tr>
 						<th>Background</th>
-						<th>Blended <?=$color?></th>
+						<th>Blended color</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -49,14 +50,14 @@ use App\Users;
 		<span></span>
 		<div class="result">
 			<div class="preview"></div>
-			<span class="hex" data-color="<?=$color?>"></span>
-			<span class="hexa" data-color="<?=$color?>"></span>
-			<span class="rgba" data-color="<?=$color?>"></span>
-			<span class="opacity" data-color="value"></span>
+			<span class="hex" data-suffix="color"></span>
+			<span class="hexa" data-suffix="color"></span>
+			<span class="rgba" data-suffix="color"></span>
+			<span class="opacity" data-suffix="value"></span>
 		</div>
 	</div>
 	<div class="hidden delta-warn">
-		<?=CoreUtils::notice('warn',"<span class='typcn typcn-warning'></span> The result may not be accurate as the difference between the optimal $color and the closest match is too large", true)?>
+		<?=CoreUtils::notice('warn',"<span class='typcn typcn-warning'></span> The result may not be accurate as the difference between the optimal color and the closest match is too large", true)?>
 	</div>
 </div>
 <?  echo CoreUtils::exportVars(array('HEX_COLOR_PATTERN' => $HEX_COLOR_REGEX));

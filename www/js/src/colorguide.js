@@ -3,7 +3,7 @@ DocReady.push(function(){
 	'use strict';
 
 	//noinspection JSUnusedLocalSymbols
-	let Color = window.Color, color = window.color, $list = $('.appearance-list'), EQG = window.EQG, AppearancePage = !!window.AppearancePage;
+	let $list = $('.appearance-list'), EQG = window.EQG, AppearancePage = !!window.AppearancePage;
 
 	let copyHash = !$.LocalStorage.get('leavehash'), $toggler;
 	function copyHashToggler(){
@@ -14,7 +14,7 @@ DocReady.push(function(){
 			copyHash = !$.LocalStorage.get('leavehash');
 			$toggler
 				.attr('class','blue typcn typcn-'+(copyHash ? 'tick' : 'times'))
-				.text(`Copy # with ${color} codes: `+(copyHash ? 'En':'Dis')+'abled');
+				.text(`Copy # with color codes: `+(copyHash ? 'En':'Dis')+'abled');
 		}).trigger('display-update').off('click').on('click', function(e){
 			e.preventDefault();
 
@@ -74,7 +74,7 @@ DocReady.push(function(){
 			if ($this.hasAttr('data-hasqtip'))
 				$this.data('qtip').destroy();
 
-			let text = `Click to copy HEX ${color} code to clipboard<br>Shift+Click to view RGB values`,
+			let text = `Click to copy HEX color code to clipboard<br>Shift+Click to view RGB values`,
 				title = $this.attr('title');
 
 			if ($this.is(':empty'))
@@ -112,7 +112,7 @@ DocReady.push(function(){
 			$.copy(copy);
 		}).filter(':not(.ctxmenu-bound)').ctxmenu(
 			[
-				{text: `Copy HEX ${color} code`, icon: 'clipboard', 'default': true, click: function(){
+				{text: `Copy HEX color code`, icon: 'clipboard', 'default': true, click: function(){
 					$(this).triggerHandler('click');
 				}},
 				{text: "View RGB values", icon: 'brush', click: function(){

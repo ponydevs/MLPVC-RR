@@ -126,6 +126,7 @@ $Title = CoreUtils::escapeHTML($Title); ?>
 			echo "<link rel='stylesheet' href='$css'>\n";
 	}
 	if (!empty(GA_TRACKING_CODE) && Permission::insufficient('developer')){ ?>
+<!--suppress CommaExpressionJS -->
 <script>
 (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
 (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
@@ -152,7 +153,7 @@ ga('send','pageview');
 	</header>
 
 	<aside id="sidebar">
-<?php include INCPATH."views/sidebar.php"; ?>
+<?php include INCPATH."views/_sidebar.php"; ?>
 	</aside>
 
 	<div id="main">

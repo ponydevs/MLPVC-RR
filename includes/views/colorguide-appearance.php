@@ -17,7 +17,7 @@ use App\Tags;
 <div id="content">
 	<div class="sprite-wrap"><?=Appearances::getSpriteHTML($Appearance, Permission::sufficient('staff') || $isOwner)?></div>
 	<h1><?=CoreUtils::escapeHTML($heading)?></h1>
-	<p>from <?=isset($Owner)?"<a href='/@{$Owner->name}'>{$Owner->name}</a>".CoreUtils::posess($Owner->name, true)." <a href='/@{$Owner->name}/cg'>Personal Color Guide</a>":"the MLP-VectorClub <a href='/cg'>$Color Guide</a>"?></p>
+	<p>from <?=isset($Owner)?"<a href='/@{$Owner->name}'>{$Owner->name}</a>".CoreUtils::posess($Owner->name, true)." <a href='/@{$Owner->name}/cg'>Personal Color Guide</a>":"the MLP-VectorClub <a href='/cg'>Color Guide</a>"?></p>
 
 <?  if (Permission::sufficient('staff') || $isOwner){ ?>
 	<div class="notice warn align-center appearance-private-notice"<?=!empty($Appearance['private'])?'':' style="display:none"'?>><p><span class="typcn typcn-lock-closed"></span> <strong>This appearance is currently private (its colors are only visible to <?=isset($Owner)?(($isOwner?'you':$Owner->name).' and '):''?>staff members)</strong></p></div>
@@ -28,7 +28,7 @@ use App\Tags;
 	$FileModTime = '?t='.(file_exists($RenderPath) ? filemtime($RenderPath) : time()); ?>
 	<div id="p<?=$Appearance['id']?>">
 		<div class='align-center'>
-			<a class='blue btn typcn typcn-image' href='/cg/v/<?="{$Appearance['id']}p.png$FileModTime"?>' target='_blank'>View as PNG</a>
+			<a class='btn link typcn typcn-image' href='/cg/v/<?="{$Appearance['id']}p.png$FileModTime"?>' target='_blank'>View as PNG</a>
 			<button class='getswatch typcn typcn-brush teal'>Download swatch file</button>
 <?  if (Permission::sufficient('staff') || $isOwner){ ?>
 			<button class='darkblue edit typcn typcn-pencil'>Edit metadata</button>
@@ -87,13 +87,11 @@ use App\Tags;
 		</section>
 <?  }
 	if (!isset($Appearance['owner']))
-		Appearances::getRelatedHTML(Appearances::getRelated($Appearance['id'])); ?>
+		echo Appearances::getRelatedHTML(Appearances::getRelated($Appearance['id'])); ?>
 	</div>
 </div>
 
 <?  $export = array(
-		'Color' => $Color,
-		'color' => $color,
 		'EQG' => $EQG,
 		'AppearancePage' => true,
 		'PersonalGuide' => $Owner->name ?? false,

@@ -218,7 +218,7 @@ class CoreUtils {
 		else {
 			$_SERVER['REQUEST_URI'] = rtrim(str_replace('via-js=true','',CSRFProtection::removeParamFromURL($_SERVER['REQUEST_URI'])), '?&');
 			ob_start();
-			require INCPATH.'views/sidebar.php';
+			require INCPATH.'views/_sidebar.php';
 			$sidebar = ob_get_clean();
 			ob_start();
 			require $view;
@@ -588,14 +588,15 @@ class CoreUtils {
 					$NavItems['latest'][0] = $_SERVER['REQUEST_URI'];
 				else $NavItems['eps']['subitem'] = CoreUtils::cutoff($GLOBALS['heading'],Episodes::TITLE_CUTOFF);
 			}
-			global $Color;
-			$NavItems['colorguide'] = array("/cg".(!empty($scope['EQG'])?'/eqg':''), (!empty($scope['EQG'])?'EQG ':'')."$Color Guide");
+			$NavItems['colorguide'] = array("/cg".(!empty($scope['EQG'])?'/eqg':''), (!empty($scope['EQG'])?'EQG ':'')."Color Guide");
 			if ($do === 'cg'){
 				if (!empty($scope['Appearance']))
-					$NavItems['colorguide']['subitem'] = (isset($scope['Map'])?"Sprite {$Color}s - ":'').Appearances::processLabel(CoreUtils::escapeHTML($scope['Appearance']['label']));
+					$NavItems['colorguide']['subitem'] = (isset($scope['Map'])?"Sprite Colors - ":'').Appearances::processLabel(CoreUtils::escapeHTML($scope['Appearance']['label']));
 				else if (isset($scope['Ponies']))
 					$NavItems['colorguide'][1] .= " - Page {$scope['Pagination']->page}";
 				else if (isset($scope['nav_picker']))
+					$NavItems['colorguide']['subitem'] = $GLOBALS['title'];
+				else if (isset($scope['nav_blending']))
 					$NavItems['colorguide']['subitem'] = $GLOBALS['title'];
 				else {
 					if (preg_match(new RegExp('full$'),$GLOBALS['data'])){
@@ -603,7 +604,7 @@ class CoreUtils {
 					}
 					else {
 						if (isset($scope['Tags'])) $pagePrefix = 'Tags';
-						else if (isset($scope['Changes'])) $pagePrefix = "Major $Color Changes";
+						else if (isset($scope['Changes'])) $pagePrefix = "Major Color Changes";
 
 						$NavItems['colorguide']['subitem'] = (isset($pagePrefix) ? "$pagePrefix - " : '')."Page {$scope['Pagination']->page}";
 					}
