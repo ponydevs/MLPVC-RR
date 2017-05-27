@@ -44,6 +44,7 @@ use App\Users;
 	</section>
 <?php   } ?>
 	<section class="<?=Auth::$signed_in?'welcome':'login'?>">
+		<h2 class="hidden">Welcome!</h2>
 <?php	CoreUtils::renderSidebarUsefulLinks(); ?>
 		<div class="buttons">
 <?php
