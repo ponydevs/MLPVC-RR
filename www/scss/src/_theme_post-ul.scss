@@ -178,16 +178,21 @@
 				min-width: 125px;
 				overflow: hidden;
 				box-sizing: border-box;
+				display: flex;
+				flex-flow: row nowrap;
 
 				> * {
 					margin-right: 5px;
-					display: inline-block;
+					display: block;
 				}
 				.avatar {
 					height: 40px;
 					width: 40px;
+					flex: 0 0 40px;
 				}
 				.name {
+					flex: 1 1 auto;
+					text-align: center;
 					font-size: 16px;
 					vertical-align: bottom;
 					line-height: 40px;
