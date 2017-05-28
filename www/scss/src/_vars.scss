@@ -304,6 +304,7 @@ $NoScrollbar: false;
 		&:before {
 			content: "Reserved by:";
 			position: absolute;
+			top: 0;
 			left: 46px;
 			font-size: 11px;
 			font-style: italic;

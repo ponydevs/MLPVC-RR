@@ -180,6 +180,7 @@
 				box-sizing: border-box;
 				display: flex;
 				flex-flow: row nowrap;
+				align-items: flex-end;
 
 				> * {
 					margin-right: 5px;
