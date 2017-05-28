@@ -1,5 +1,5 @@
 /* Color Picker | by @SeinopSys + Trildar & Masem | for gh:ponydevs/MLPVC-RR */
-/* global $w,$body,CryptoJS */
+/* global $w,$body,CryptoJS,Key */
 (function($, undefined){
 	'use strict';
 	const pluginScope = {
@@ -9,57 +9,170 @@
 		picker: undefined,
 	};
 
-	// TODO Move/hand tool
-	// TODO Contrast slider using CSS3 filter
-	// TODO The actual color picking part, duh
-
+	let filterPrefix = '';
 	const
-		Key = window.parent.Key,
-/*		Tools = {
-			cursor: 0,
-			pipette: 1,
-			move: 2,
-		},*/
+		Tools = {
+			pointer: 0,
+			picker: 1,
+			hand: 2,
+		},
 		Zoom = {
 			min: 0.004,
 			max: 32,
 			step: 1.1,
 		},
-		clearCanvas = canvas => { canvas.getContext('2d').clearRect(0,0,canvas.width,canvas.height) };
+		clearCanvas = ctx => { ctx.clearRect(0,0,ctx.canvas.width,ctx.canvas.height) },
+		filterSupport = (function(){
+			// https://stackoverflow.com/a/11047247/1344955
+			function test(checkPrefix = false){
+				if (checkPrefix === undefined)
+					checkPrefix = false;
+				const el = document.createElement('div');
+				el.style.cssText = (checkPrefix ? '-webkit-' : '') + 'filter: blur(2px)';
+				const test1 = (el.style.length !== 0);
+				const test2 = (
+					document.documentMode === undefined
+					|| document.documentMode > 9
+				);
+				return test1 && test2;
+			}
+
+			if (test() === true){
+				return true;
+			}
+			else if (test(true) === true){
+				filterPrefix = '-webkit-';
+				return true;
+			}
+			return false;
+		})();
+
+
+	class Pixel {
+		constructor(r,g,b,a){
+			this.red = r;
+			this.green = g;
+			this.blue = b;
+			this.alpha = a;
+		}
+	}
+
+	class ImageDataHelper {
+		/**
+		 * Extracts the pixel data from an ImageData object into a more easy-to-use format
+		 * A filter function can be specified which is passed the x and y coordinates
+		 * of the looped color and if a boolean false value is returned the color is skipped.
+		 *
+		 * @param {ImageData} imgd
+		 * @param {Function} filter
+		 */
+		static getPixels(imgd, filter = undefined){
+			const
+				pixels = [],
+				useFilter = typeof filter === 'function';
+
+			for (let ptr = 0; ptr < imgd.data.length; ptr += 4){
+				if (useFilter){
+					const pxix = ptr/4;
+					const
+						x = pxix % imgd.width,
+						y = Math.floor(pxix / imgd.width);
+					if (filter(x,y) === false)
+						continue;
+				}
+
+				pixels.push(new Pixel(...imgd.data.slice(ptr,ptr+4)));
+			}
+
+			return pixels;
+		}
+	}
 
 	class PickingArea {
-		constructor(){
-
+		constructor(boundingRect){
+			this.boundingRect =  boundingRect;
 		}
-		getAverageOf(pixelArray){
+		/**
+		 * @param {Pixel[]} pixelArray
+		 * @return {Pixel}
+		 */
+		static averageColor(pixelArray){
+			const l = pixelArray.length;
+			let r = 0, g = 0, b = 0, a = 0;
+			$.each(pixelArray,(_,pixel) => {
+				r += pixel.red;
+				g += pixel.green;
+				b += pixel.blue;
+				a += pixel.alpha;
+			});
+			return new Pixel(Math.round(r/l), Math.round(g/l), Math.round(b/l), Math.round(a/l));
+		}
+		_getImageData(){
+			const ctx = ColorPicker.getInstance().getImageCanvasCtx();
 
+			return ctx.getImageData(
+				this.boundingRect.topLeft.x,
+				this.boundingRect.topLeft.y,
+				this.boundingRect.sideLength,
+				this.boundingRect.sideLength
+			);
+		}
+		_getPixels(filter = undefined){
+			return ImageDataHelper.getPixels(this._getImageData(), filter);
+		}
+		static draw(area, ctx){
+			if (area instanceof SquarePickingArea){
+				ctx.fillRect(area.boundingRect.topLeft.x, area.boundingRect.topLeft.y, area.boundingRect.sideLength, area.boundingRect.sideLength);
+			}
+			else if (area instanceof CirclePickingArea){
+				$.each(area.slices,(i,el) => {
+					const
+						x = area.boundingRect.topLeft.x+el.skip,
+						y = area.boundingRect.topLeft.y+i;
+					ctx.fillRect(x, y, el.length, 1);
+				});
+			}
+		}
+		/**
+		 * @param {object} pos
+		 * @param {int}    size
+		 * @param {bool}   square
+		 * @return {PickingArea}
+		 */
+		static getArea(pos, size, square){
+			const boundingRect = Geometry.calcRectanglePoints(pos.left, pos.top, size);
+			if (square){
+				return new SquarePickingArea(boundingRect);
+			}
+			else {
+				const slices = Geometry.calcCircleSlices(size);
+				return new CirclePickingArea(boundingRect,slices);
+			}
 		}
 	}
 
 	class SquarePickingArea extends PickingArea {
 		constructor(boundingRect){
-			super();
-			this.boundingRect =  boundingRect;
+			super(boundingRect);
 		}
-		getPixels(){
-
-		}
-		getAverageOf(){
-
+		/**
+		 * @return {Pixel}
+		 */
+		getAverageColor(){
+			return PickingArea.averageColor(this._getPixels());
 		}
 	}
 
 	class CirclePickingArea extends PickingArea {
 		constructor(boundingRect, slices){
-			super();
-			this.boundingRect =  boundingRect;
+			super(boundingRect);
 			this.slices = slices;
 		}
-		getPixels(){
-
-		}
-		getAverageOf(){
-
+		/**
+		 * @return {Pixel}
+		 */
+		getAverageColor(){
+			return PickingArea.averageColor(this._getPixels( (x, y) => this.slices[y].skip < x && x < this.slices[y].skip+this.slices[y].length ));
 		}
 	}
 
@@ -97,9 +210,9 @@
 
 			return slices;
 		}
-		static snapPointToPixelGrid(value, grid){
+		/*static snapPointToPixelGrid(value, grid){
 			return Math.round(Math.round(value/grid)*grid);
-		}
+		}*/
 	}
 
 	class ColorFormatter {
@@ -107,39 +220,46 @@
 			const
 				rgbaTest = /^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([01]|(?:0?\.\d+)))?\)$/i,
 				hexTest = /^#([a-f0-9]{3}|[a-f0-9]{6})$/i;
-			value = value.trim();
-			let rgba = value.match(rgbaTest);
-			if (rgba && rgba[1] <= 255 && rgba[2] <= 255 && rgba[3] <= 255 && (!rgba[4] || rgba[4] <= 1)){
-				this.red = parseInt(rgba[1], 10);
-				this.green = parseInt(rgba[2], 10);
-				this.blue = parseInt(rgba[3], 10);
-				this.alpha = rgba[4] ? parseFloat(rgba[4]) : 1;
-			}
-			else {
-				let hexmatch = value.match(hexTest);
-				if (hexmatch){
-					let hex = hexmatch[1];
-					if (hex.length === 3)
-						hex = hex[0]+hex[0]+hex[1]+hex[1]+hex[2]+hex[2];
-					const rgb = $.hex2rgb('#'+hex);
-					this.red = rgb.r;
-					this.green = rgb.g;
-					this.blue = rgb.b;
-					this.alpha = 1;
+			if (typeof value === 'string'){
+				value = value.trim();
+				let rgba = value.match(rgbaTest);
+				if (rgba && rgba[1] <= 255 && rgba[2] <= 255 && rgba[3] <= 255 && (!rgba[4] || rgba[4] <= 1)){
+					this.red = parseInt(rgba[1], 10);
+					this.green = parseInt(rgba[2], 10);
+					this.blue = parseInt(rgba[3], 10);
+					this.alpha = rgba[4] ? parseFloat(rgba[4]) : 1;
 				}
-				else throw new Error('Unrecognized color format: '+value);
+				else {
+					let hexmatch = value.match(hexTest);
+					if (hexmatch){
+						let hex = hexmatch[1];
+						if (hex.length === 3)
+							hex = hex[0]+hex[0]+hex[1]+hex[1]+hex[2]+hex[2];
+						const rgb = $.hex2rgb('#'+hex);
+						this.red = rgb.r;
+						this.green = rgb.g;
+						this.blue = rgb.b;
+						this.alpha = 1;
+					}
+					else throw new Error('Unrecognized color format: '+value);
+				}
 			}
+			else if (!isNaN(value.red) && !isNaN(value.green) && !isNaN(value.blue)){
+				this.red = value.red;
+				this.green = value.green;
+				this.blue = value.blue;
+				this.alpha = isNaN(value.alpha) ? 1 : value.alpha;
+			}
+			else throw new Error('Unrecognized color format: '+JSON.stringify(value));
 			this.opacity = Math.round(this.alpha*100);
 		}
-		toString(){
-			if (this.alpha === 1)
+		toString(forceHex = false){
+			if (this.alpha === 1 || forceHex)
 				return $.rgb2hex({ r: this.red, g: this.green, b: this.blue });
 
 			return `rgba(${this.red},${this.green},${this.blue},${this.alpha})`;
 		}
 	}
-
-	window.ColorFormatter = ColorFormatter;
 
 	class Menubar {
 		constructor(){
@@ -169,7 +289,7 @@
 			this._$openImage = $('#open-image').on('click',e => {
 				e.preventDefault();
 
-				this._$filein.trigger('click');
+				this.requestFileOpen();
 			});
 			this._$closeActiveTab = $('#close-active-tab').on('click', e => {
 				e.preventDefault();
@@ -220,6 +340,9 @@
 				this._$menubar.find('a.active').removeClass('active');
 				this._$menubar.children('li').children('ul').addClass('hidden');
 			});
+		}
+		requestFileOpen(){
+			this._$filein.trigger('click');
 		}
 		updateCloseActiveTab(){
 			this._$closeActiveTab[Tabbar.getInstance().hasTabs()?'removeClass':'addClass']('disabled');
@@ -331,6 +454,7 @@
 					<input type="number" min="0" max="255" step="1" name="blue"  class="change input-blue">
 				</div>
 			</div>
+			<div class="notice info">The contrast setting does not affect the returned average color values in any way.</div>
 			<div class="label">
 				<span>Opacity (%)</span>
 				<input type="number" min="0" max="100" step="1" name="opacity" class="change">
@@ -345,12 +469,17 @@
 			});
 			areaColorFormUpdatePreview($form, color);
 		});
+
 	class Tab {
 		constructor(imageName, hash){
 			this._fileHash = hash;
 			this._imgel = new Image();
 			this._imgdata = {};
 			this._pickingAreas = [];
+			this._zoomlevel = undefined;
+			this._contrast = undefined;
+			this._pickingSize = undefined;
+
 			this.file = {
 				extension: undefined,
 				name: undefined,
@@ -431,24 +560,35 @@
 		getImageSize(){
 			return this._imgdata.size;
 		}
+		getImagePosition(){
+			return this._imgdata.position;
+		}
 		setImagePosition(pos){
 			this._imgdata.position = pos;
 		}
-		getImagePosition(){
-			return this._imgdata.position;
+		getZoomLevel(){
+			return this._zoomlevel;
+		}
+		setZoomLevel(level){
+			this._zoomlevel = level;
+		}
+		getContrast(){
+			return this._contrast;
+		}
+		setContrast(level){
+			this._contrast = level;
+		}
+		getPickingSize(){
+			return this._pickingSize;
+		}
+		setPickingSize(size){
+			this._pickingSize = size;
 		}
 		getElement(){
 			return this._$el;
 		}
 		placeArea(pos, size, square = true){
-			const boundingRect = Geometry.calcRectanglePoints(pos.left, pos.top, size);
-			if (square){
-				this.addPickingArea(new SquarePickingArea(boundingRect));
-			}
-			else {
-				const slices = Geometry.calcCircleSlices(size);
-				this.addPickingArea(new CirclePickingArea(boundingRect,slices));
-			}
+			this.addPickingArea(PickingArea.getArea(pos, size, square));
 		}
 		/** @param {PickingArea} area */
 		addPickingArea(area){
@@ -562,11 +702,54 @@
 			}
 
 			this._tabStorage.splice(tabIndex,1);
-			if (tabsLeft)
-				this.activateTab(Math.min(tabCount-1,tabIndex));
+			if (tabsLeft){
+				this.activateTab(Math.min(tabCount-2,tabIndex));
+			}
 			this.updateTabs();
 		}
+		closeActiveTabConfirm(){
+			if (!(this._activeTab instanceof Tab))
+				return;
+
+			this._activeTab.getElement().find('.close').trigger('click');
+		}
 	}
+
+	const $ContrastChangeForm = $.mk('form','contrast-changer').append(
+		$.mk('label').append(
+			`<span>Contrast value (<span id='disp'>&hellip;</span>%)</span>`,
+			$.mk('input').attr({
+				type: 'range',
+				min: 0,
+				max: 5,
+				step: 0.01,
+				name: 'contrast',
+			}).on('change mousemove',$.throttle(50,function(){
+				$(this).closest('form').trigger('update-disp');
+			}))
+		),
+		`<fieldset>
+			<legend>Preview</legend>
+			<div id="contrast-preview"><canvas></canvas></div>
+		</fieldset>`,
+		$.mk('button').attr('class','darkblue').text('Set to 100%').on('click',function(e){
+			e.preventDefault();
+
+			const $form = $(this).closest('form');
+
+			$form.find('input').val(1);
+			$form.trigger('submit');
+		})
+	).on('update-disp',function(){
+		const
+			$this = $(this),
+			$disp = $this.find('#disp'),
+			$preview = $this.find('#contrast-preview'),
+			$input = $this.find('input[name="contrast"]'),
+			val = $.roundTo(parseFloat($input.val()),2);
+		$disp.text(Math.round(val*100));
+		$preview.css(filterPrefix+'filter',`contrast(${val})`);
+	});
 
 	class ColorPicker {
 		constructor(){
@@ -575,6 +758,7 @@
 				left: NaN,
 			};
 			this._zoomlevel = 1;
+			this._contrast = 1;
 			this._moveMode = false;
 
 			this._$picker = $('#picker');
@@ -582,13 +766,55 @@
 			this._$imageOverlay = $.mk('canvas').attr('class','image-overlay');
 			this._$imageCanvas = $.mk('canvas').attr('class','image-element');
 			this._$mouseOverlay = $.mk('canvas').attr('class','mouse-overlay');
-			this._$placeArea = $.mk('button').attr({'class':'place-area typcn typcn-starburst','data-info':'Randomly place a new square picking area on the image (hold Alt to place rounded)'}).on('click',e => {
+			this._$pointerTool = $.mk('button').attr({'class':'fa fa-mouse-pointer','data-info':'Pointer Tool (A)'}).on('click',e => {
 				e.preventDefault();
 
-				const imgsize = this.getImageCanvasSize();
-				this.placeArea({ left: Math.floor(Math.random()*imgsize.width), top: Math.floor(Math.random()*imgsize.height) }, 45, !e.altKey);
+				this.switchTool('pointer');
 			});
-			this._$clearAreas = $.mk('button').attr({'class':'place-area typcn typcn-delete','data-info':'Clear all picking areas'}).on('click',e => {
+			this._$handTool = $.mk('button').attr({'class':'fa fa-hand-paper-o','data-info':'Hand Tool (H) - Move around without having to hold Space'}).on('click',e => {
+				e.preventDefault();
+
+				this.switchTool('hand');
+			});
+			this._$pickerTool = $.mk('button').attr({'class':'fa fa-eyedropper','data-info':'Eyedropper Tool (I) - Click to place picking areas on the image'}).on('click',e => {
+				e.preventDefault();
+
+				this.switchTool('picker');
+			});
+			this.switchTool('pointer');
+			this._$contrastChanger = $.mk('button').attr({'class':'fa fa-adjust','data-info':'Change contrast'+(!filterSupport?' (not supported by your browser)':''),readonly:!filterSupport}).on('click',e => {
+				e.preventDefault();
+
+				const activeTab = Tabbar.getInstance().getActiveTab();
+
+				if (!activeTab || !filterSupport)
+					return;
+
+				const imgsize = activeTab.getImageSize();
+
+				$.Dialog.request('Chnage contrast',$ContrastChangeForm.clone(true,true),'Set',$form => {
+					$form.find('input[name="contrast"]').val(this._contrast);
+					$form.triggerHandler('update-disp');
+
+					const
+						$previewCanvas = $form.find('#contrast-preview').children(),
+						fitsize = $.scaleResize(imgsize.width, imgsize.height, { height: 150 }, false);
+
+					$previewCanvas[0].width = fitsize.width;
+					$previewCanvas[0].height = fitsize.height;
+					$previewCanvas[0].getContext('2d').drawImage(this._$imageCanvas[0], 0, 0, imgsize.width, imgsize.height, 0, 0, fitsize.width, fitsize.height);
+
+					$form.on('submit',e => {
+						e.preventDefault();
+
+						const data = $form.mkData();
+						$.Dialog.wait(false, 'Setting contrast');
+						this.setContrast(data.contrast);
+						$.Dialog.close();
+					});
+				});
+			});
+			this._$clearAreas = $.mk('button').attr({'class':'place-area fa fa-eraser','data-info':'Clear picking areas from the current tab'}).on('click',e => {
 				e.preventDefault();
 
 				const activeTab = Tabbar.getInstance().getActiveTab();
@@ -597,30 +823,34 @@
 
 				activeTab.clearPickingAreas();
 			});
-			this._$zoomin = $.mk('button').attr({'class':'zoom-in typcn typcn-zoom-in','data-info':'Zoom in (Alt+Scroll Up)'}).on('click',(e, mousepos) => {
+			this._$zoomin = $.mk('button').attr({'class':'zoom-in fa fa-search-plus','data-info':'Zoom in (Alt+Scroll Up)'}).on('click',(e, mousepos) => {
 				e.preventDefault();
 
 				this.setZoomLevel(this._zoomlevel*Zoom.step, mousepos);
+				this.drawPickerCursor(!e.altKey);
 			});
-			this._$zoomout = $.mk('button').attr({'class':'zoom-out typcn typcn-zoom-out','data-info':'Zoom out (Alt+Scroll Down)'}).on('click',(e, mousepos) => {
+			this._$zoomout = $.mk('button').attr({'class':'zoom-out fa fa-search-minus','data-info':'Zoom out (Alt+Scroll Down)'}).on('click',(e, mousepos) => {
 				e.preventDefault();
 
 				this.setZoomLevel(this._zoomlevel/Zoom.step, mousepos);
+				this.drawPickerCursor(!e.altKey);
 			});
-			this._$zoomfit = $.mk('button').attr({'class':'zoom-fit typcn typcn typcn-arrow-minimise','data-info':'Fit in view (Ctrl+0)'}).on('click',e => {
+			this._$zoomfit = $.mk('button').attr({'class':'zoom-fit fa fa-window-maximize','data-info':'Fit in view (Ctrl+0)'}).on('click',e => {
 				e.preventDefault();
 
 				this.setZoomFit();
 			});
-			this._$zoomorig = $.mk('button').attr({'class':'zoom-orig typcn typcn typcn-zoom','data-info':'Original size (Ctrl+1)'}).on('click',e => {
+			this._$zoomorig = $.mk('button').attr({'class':'zoom-orig fa fa-search','data-info':'Original size (Ctrl+1)'}).on('click',e => {
 				e.preventDefault();
 
 				this.setZoomOriginal();
 			});
 			this._$zoomperc = $.mk('span').attr({
 				'class': 'zoom-perc',
-				'data-info': 'Current zoom level (Click to enter a custom value)',
+				'data-info': 'Current zoom level (Click to enter a custom value between 0.4% and 3200%)',
 				contenteditable: true,
+				spellcheck: 'false',
+				autocomplete: 'off',
 			}).text('100%').on('keydown',e => {
 				if (!$.isKey(Key.Enter, e))
 					return;
@@ -631,6 +861,7 @@
 				if (!isNaN(perc))
 					this.setZoomLevel(perc/100);
 
+				$.clearFocus();
 				this.updateZoomLevelInputs();
 			}).on('mousedown',() => {
 				this._$zoomperc.data('mousedown', true);
@@ -652,11 +883,19 @@
 				$.clearSelection();
 			});
 			this._$actionTopLeft = $.mk('div').attr('class','actions actions-tl').append(
-				$.mk('div').attr('class','editing-tools').append(
-					this._$placeArea,
+				$.mk('div').attr('class','picking-tools').append(
+					"<span class='label'>Picking</span>",
+					this._$pointerTool,
+					this._$pickerTool,
+					this._$handTool,
+					this._$contrastChanger
+				),
+				$.mk('div').attr('class','debug-tools').append(
+					"<span class='label'>Debugging</span>",
 					this._$clearAreas
 				),
 				$.mk('div').attr('class','zoom-controls').append(
+					"<span class='label'>Zooming</span>",
 					this._$zoomin,
 					this._$zoomout,
 					this._$zoomfit,
@@ -667,8 +906,108 @@
 				e.stopPropagation();
 				this._$zoomperc.triggerHandler('blur');
 			});
+			this._$pickingSize = $.mk('span').attr({
+				'class': 'picking-size',
+				'data-info': 'Size of newly placed picking areas (Click to enter a custom value between 1px and 400px)',
+				contenteditable: true,
+				spellcheck: 'false',
+				autocomplete: 'off',
+			}).on('keydown',e => {
+				if (!$.isKey(Key.Enter, e))
+					return;
+
+				e.preventDefault();
+
+				const px = parseInt(this._$pickingSize.text().trim());
+				this.setPickingSize(!isNaN(px) ? px : undefined);
+				$.clearFocus();
+			}).on('mousedown',() => {
+				this._$pickingSize.data('mousedown', true);
+			}).on('mouseup',() => {
+				this._$pickingSize.data('mousedown', false);
+			}).on('click',() => {
+				if (this._$pickingSize.data('focused') !== true){
+					this._$pickingSize.data('focused', true);
+					this._$pickingSize.select();
+				}
+			}).on('dblclick',e => {
+				e.preventDefault();
+				this._$pickingSize.select();
+			}).on('blur', () => {
+				if (!this._$pickingSize.data('mousedown'))
+					this._$pickingSize.data('focused', false);
+				if (this._$pickingSize.text().trim().length === 0)
+					this.setPickingSize();
+				$.clearSelection();
+			});
+			this._pickingSizeDecreaseInterval = undefined;
+			this._pickingSizeIncreaseInterval = undefined;
+			this._$decreasePickingSize = $.mk('button').attr({'class':'fa fa-minus-circle','data-info':'Decrease picking area size (Down Arrow)'}).on('mousedown',e => {
+				e.preventDefault();
+
+				if (typeof this._pickingSizeIncreaseInterval !== 'undefined'){
+					clearInterval(this._pickingSizeIncreaseInterval);
+					this._pickingSizeIncreaseInterval = undefined;
+				}
+				const square = !e.altKey;
+				this.decreasePickingSize(square, false);
+				this._pickingSizeDecreaseInterval = setInterval(() => {
+					this.decreasePickingSize(square, false);
+				},150);
+			}).on('mouseup mouseleave',() => {
+				if (typeof this._pickingSizeDecreaseInterval === 'undefined')
+					return;
+
+				clearInterval(this._pickingSizeDecreaseInterval);
+				this._pickingSizeDecreaseInterval = undefined;
+			});
+			this._$increasePickingSize = $.mk('button').attr({'class':'fa fa-plus-circle','data-info':'Increase picking area size (Up Arrow)'}).on('mousedown',e => {
+				e.preventDefault();
+
+				if (typeof this._pickingSizeDecreaseInterval !== 'undefined'){
+					clearInterval(this._pickingSizeDecreaseInterval);
+					this._pickingSizeDecreaseInterval = undefined;
+				}
+				const square = !e.altKey;
+				this.increasePickingSize(square, false);
+				this._pickingSizeIncreaseInterval = setInterval(() => {
+					this.increasePickingSize(square, false);
+				},150);
+			}).on('mouseup mouseleave',() => {
+				if (typeof this._pickingSizeIncreaseInterval === 'undefined')
+					return;
+
+				clearInterval(this._pickingSizeIncreaseInterval);
+				this._pickingSizeIncreaseInterval = undefined;
+			});
+			this.setPickingSize(25);
+			this._$areaCounter = $.mk('span');
+			this._$areaImageCounter = $.mk('span');
+			this._$averageColor = $.mk('span').attr('class','average text');
+			this._$copyColorBtn = $.mk('button').attr({'class':'fa fa-clipboard','data-info':'Copy average color to clipboard'}).on('click',e => {
+				const color = this._$averageColor.children().eq(0).text();
+
+				$.copy(color, e);
+			});
+			this.updatePickingState();
 			this._$actionsBottomLeft = $.mk('div').attr('class','actions actions-bl').append(
-				'Unused panel'
+				$.mk('div').append(
+					'<span class="label">Picking tool settings</span>',
+					$.mk('div').attr('class','picking-controls text').append(
+						this._$decreasePickingSize,
+						this._$pickingSize,
+						this._$increasePickingSize
+					)
+				),
+				$.mk('div').append(
+					'<span class="label">Picking status</span>',
+					$.mk('span').attr('class','counters text').append(
+						this._$areaCounter,
+						' & ',
+						this._$areaImageCounter
+					),
+					this._$averageColor
+				)
 			).on('mousedown',e => {
 				e.stopPropagation();
 				this._$zoomperc.triggerHandler('blur');
@@ -687,47 +1026,42 @@
 			let initial,
 				initialmouse;
 			$body.on('mousemove', $.throttle(50,e => {
-				if (!Tabbar.getInstance().getActiveTab())
+				if (!Tabbar.getInstance().getActiveTab() || $.Dialog.isOpen())
 					return;
 
-				const
-					wrapoffset = this.getWrapPosition(),
-					imgpos = this.getImagePosition(),
-					imgsize = this.getImageCanvasSize();
+				// Mouse position indicator
+				this.updateMousePosition(e, 'body');
 
-				this._mousepos.top = e.pageY-wrapoffset.top;
-				this._mousepos.left = e.pageX-wrapoffset.left;
-				if (
-					this._mousepos.top < imgpos.top ||
-					this._mousepos.top > imgpos.top+imgsize.height-1 ||
-					this._mousepos.left < imgpos.left ||
-					this._mousepos.left > imgpos.left+imgsize.width-1
-				){
-					this._mousepos.top = NaN;
-					this._mousepos.left = NaN;
-					Statusbar.getInstance().setColorAt();
-				}
-				else {
-					this._mousepos.top = Math.floor((this._mousepos.top-Math.floor(imgpos.top))/this._zoomlevel);
-					this._mousepos.left = Math.floor((this._mousepos.left-Math.floor(imgpos.left))/this._zoomlevel);
-					const p = this.getImageCanvasCtx().getImageData(this._mousepos.left, this._mousepos.top, 1, 1).data;
-					Statusbar.getInstance().setColorAt($.rgb2hex({r:p[0], g:p[1], b:p[2]}), $.roundTo((p[3]/255)*100, 2)+'%');
-				}
-				Statusbar.getInstance().setPosition('mouse', this._mousepos);
-
+				// Canvas movement if these are defined
 				if (initial && initialmouse){
 					let mouse = {
 							top: e.pageY,
 							left: e.pageX,
 						},
 						wrapoffset = this.getWrapPosition(),
-						top = Geometry.snapPointToPixelGrid((initial.top+(mouse.top-initialmouse.top))-wrapoffset.top, this._zoomlevel),
-						left = Geometry.snapPointToPixelGrid((initial.left+(mouse.left-initialmouse.left))-wrapoffset.left, this._zoomlevel);
-					this._$imageOverlay.add(this._$imageCanvas).add(this._$mouseOverlay).css({ top, left });
+						top = (initial.top+(mouse.top-initialmouse.top))-wrapoffset.top,
+						left = (initial.left+(mouse.left-initialmouse.left))-wrapoffset.left;
+					this.move({ top, left });
 
 					this.updateZoomLevelInputs();
 				}
 			}));
+			this._$mouseOverlay.on('mousemove',e => {
+				this.updateMousePosition(e, 'mouseoverlay');
+				this.drawPickerCursor(!e.altKey);
+			}).on('mousedown',e => {
+				if (!Tabbar.getInstance().getActiveTab() || $.Dialog.isOpen())
+					return;
+
+				e.preventDefault();
+
+				if (this._activeTool !== Tools.picker)
+					return;
+
+				this.placeArea(this._mousepos, this._pickingAreaSize, !e.altKey);
+			}).on('mouseleave',() => {
+				this.clearMouseOverlay();
+			});
 			$w.on('mousewheel',e => {
 				if (!e.altKey)
 					return;
@@ -754,6 +1088,7 @@
 				if (e.ctrlKey)
 					this.move({ left: `+=${step}px` });
 				else this.move({ top: `+=${step}px` });
+				this.updateMousePosition(e);
 			});
 
 			$body.on('mousedown',e => {
@@ -829,6 +1164,40 @@
 			wrapoffset.left -= (this._wrapwidth - this._$picker.outerWidth())/2;
 			return wrapoffset;
 		}
+		setPickingSize(size = undefined){
+			if (!isNaN(size))
+				this._pickingAreaSize = $.rangeLimit(size,false,1,400);
+			this._$pickingSize.text(this._pickingAreaSize+'px');
+			this._$decreasePickingSize.attr('disabled', this._pickingAreaSize === 1);
+			this._$increasePickingSize.attr('disabled', this._pickingAreaSize === 400);
+
+			const activeTab = Tabbar.getInstance().getActiveTab();
+			if (!activeTab)
+				return;
+
+			activeTab.setPickingSize(this._pickingAreaSize);
+		}
+		decreasePickingSize(square, drawCursor = true){
+			this.setPickingSize(this._pickingAreaSize-5);
+			if (drawCursor)
+				this.drawPickerCursor(square);
+		}
+		increasePickingSize(square, drawCursor = true){
+			this.setPickingSize(this._pickingAreaSize+5);
+			if (drawCursor)
+				this.drawPickerCursor(square);
+		}
+		drawPickerCursor(square){
+			const activeTab = Tabbar.getInstance().getActiveTab();
+			if (!activeTab || $.Dialog.isOpen() || this._activeTool !== Tools.picker)
+				return;
+
+			const area = PickingArea.getArea(this._mousepos, this._pickingAreaSize, square);
+			this.clearMouseOverlay();
+			const ctx = this.getMouseOverlayCtx();
+			ctx.fillStyle = activeTab.getPickingAreaColor().toString();
+			PickingArea.draw(area, ctx);
+		}
 		//noinspection JSMethodCanBeStatic
 		placeArea(pos, size, square = true){
 			const activeTab = Tabbar.getInstance().getActiveTab();
@@ -847,21 +1216,50 @@
 			const ctx = this.getImageOverlayCtx();
 			ctx.fillStyle = activeTab.getPickingAreaColor().toString();
 			$.each(activeTab.getPickingAreas(),(i, area) => {
-				if (area instanceof SquarePickingArea){
-					ctx.fillRect(area.boundingRect.topLeft.x, area.boundingRect.topLeft.y, area.boundingRect.sideLength, area.boundingRect.sideLength);
-				}
-				else if (area instanceof CirclePickingArea){
-					$.each(area.slices,(i,el) => {
-						const
-							x = area.boundingRect.topLeft.x+el.skip,
-							y = area.boundingRect.topLeft.y+i;
-						ctx.fillRect(x, y, el.length, 1);
-					});
-				}
+				PickingArea.draw(area, ctx);
 			});
+			this.updatePickingState();
+		}
+		updatePickingState(){
+			let areaCount = 0,
+				imgCount = 0,
+				pixels = [];
+
+			$.each(Tabbar.getInstance().getTabs(),(_,tab) => {
+				const areas = tab.getPickingAreas();
+				if (areas.length === 0)
+					return;
+
+				imgCount++;
+				areaCount += areas.length;
+
+				$.each(areas,(_,area) => {
+					pixels.push(area.getAverageColor());
+				});
+			});
+
+			this._$areaCounter.text(areaCount+' area'+(areaCount!==1?'s':''));
+			this._$areaImageCounter.text(imgCount+' image'+(imgCount!==1?'s':''));
+
+			this._$averageColor.empty();
+			if (pixels.length){
+				const
+					averageColor = new ColorFormatter(PickingArea.averageColor(pixels)),
+					averageHex = averageColor.toString(true);
+				this._$averageColor.append(
+					$.mk('span').attr('class','color').css({
+						backgroundColor:averageColor.toString(),
+						color: $.yiq(averageHex) > 127 ? 'black' : 'white',
+					}).text(averageHex),
+					this._$copyColorBtn.clone(true,true)
+				);
+			}
 		}
 		clearImageOverlay(){
-			clearCanvas(this._$imageOverlay[0]);
+			clearCanvas(this.getImageOverlayCtx());
+		}
+		clearMouseOverlay(){
+			clearCanvas(this.getMouseOverlayCtx());
 		}
 		updateZoomLevelInputs(){
 			this._$zoomperc.text($.roundTo(this._zoomlevel*100,2)+'%');
@@ -869,6 +1267,44 @@
 
 			this._$zoomout.attr('disabled', this._zoomlevel <= Zoom.min);
 			this._$zoomin.attr('disabled', this._zoomlevel >= Zoom.max);
+		}
+		updateMousePosition(e){
+			const
+				wrapoffset = this.getWrapPosition(),
+				imgpos = this.getImagePosition(),
+				imgsize = this.getImageCanvasSize();
+
+			this._mousepos.top = e.pageY-wrapoffset.top;
+			this._mousepos.left = e.pageX-wrapoffset.left;
+			const isOffImage = (
+				this._mousepos.top < imgpos.top ||
+				this._mousepos.top > imgpos.top+imgsize.height-1 ||
+				this._mousepos.left < imgpos.left ||
+				this._mousepos.left > imgpos.left+imgsize.width-1
+			);
+
+			this._mousepos.top = Math.floor((this._mousepos.top-Math.floor(imgpos.top))/this._zoomlevel);
+			this._mousepos.left = Math.floor((this._mousepos.left-Math.floor(imgpos.left))/this._zoomlevel);
+			if (isOffImage)
+				Statusbar.getInstance().setColorAt();
+			else {
+				const p = this.getImageCanvasCtx().getImageData(this._mousepos.left, this._mousepos.top, 1, 1).data;
+				Statusbar.getInstance().setColorAt($.rgb2hex({r:p[0], g:p[1], b:p[2]}), $.roundTo((p[3]/255)*100, 2)+'%');
+			}
+
+			Statusbar.getInstance().setPosition('mouse', this._mousepos);
+		}
+		setContrast(level){
+			const activeTab = Tabbar.getInstance().getActiveTab();
+			if (!activeTab)
+				return;
+
+			if (this._contrast === level)
+				return;
+
+			this._contrast = level;
+			this._$imageCanvas.css(filterPrefix+'filter',this._contrast === 1 ? '' : `contrast(${this._contrast})`);
+			activeTab.setContrast(this._contrast);
 		}
 		setZoomLevel(perc, center){
 			const activeTab = Tabbar.getInstance().getActiveTab();
@@ -879,27 +1315,21 @@
 			let newzoomlevel = $.rangeLimit(perc, false, Zoom.min, Zoom.max),
 				newsize,
 				oldzoomlevel;
-			if (newzoomlevel !== this._zoomlevel){
+			if (this._zoomlevel !== newzoomlevel){
 				newsize = $.scaleResize(size.width, size.height, {scale: newzoomlevel});
 				oldzoomlevel = this._zoomlevel;
 				this._zoomlevel = newsize.scale;
-			}
-			else {
-				newsize = {
-					width: this._$imageCanvas.width(),
-					height: this._$imageCanvas.height(),
-				};
-				oldzoomlevel = this._zoomlevel;
+
+				let zoomed = this.getTopLeft(this.getImagePosition(), newzoomlevel/oldzoomlevel, center);
+				this.move({
+					top: zoomed.top,
+					left: zoomed.left,
+					width: newsize.width,
+					height: newsize.height,
+				});
 			}
 
-			let zoomed = this.getTopLeft(this.getImagePosition(), newzoomlevel/oldzoomlevel, center);
-			this.move({
-				top: zoomed.top,
-				left: zoomed.left,
-				width: newsize.width,
-				height: newsize.height,
-			});
-
+			activeTab.setZoomLevel(this._zoomlevel);
 			this.updateZoomLevelInputs();
 		}
 		setZoomFit(){
@@ -965,7 +1395,7 @@
 					left: this._$imageOverlay.css('left'),
 					width: this._$imageOverlay.css('width'),
 					height: this._$imageOverlay.css('height'),
-				});
+				}, activeTab);
 		}
 		updateWrapSize(){
 			this._wrapwidth = this._$picker.innerWidth();
@@ -976,12 +1406,13 @@
 
 			if (typeof this._zoomlevel === 'number')
 				this.setZoomLevel(this._zoomlevel);
-
-			Statusbar.getInstance().setPosition('pickerCenter', this.getWrapCenterPosition());
 		}
 		_setCanvasSize(w,h){
+			this._$mouseOverlay[0].width =
 			this._$imageOverlay[0].width =
 			this._$imageCanvas[0].width = w;
+
+			this._$mouseOverlay[0].height =
 			this._$imageOverlay[0].height =
 			this._$imageCanvas[0].height = h;
 		}
@@ -1037,8 +1468,20 @@
 			const storedimgpos = tab.getImagePosition();
 			if (!storedimgpos)
 				this.setZoomFit();
-			else this.move(storedimgpos, true);
+			else {
+				this.move(storedimgpos, true);
+				const storedzoomlevel = tab.getZoomLevel();
+				if (typeof storedzoomlevel !== 'undefined'){
+					this._zoomlevel = storedzoomlevel;
+					this.setZoomLevel(storedzoomlevel);
+				}
+			}
+			if (filterSupport){
+				this.setContrast(tab.getContrast() || this._contrast, true);
+			}
+			this.setPickingSize(tab.getPickingSize());
 
+			this.updateWrapSize();
 			this.redrawPickingAreas();
 		}
 		clearImage(){
@@ -1046,20 +1489,21 @@
 				return;
 
 			this._$imageCanvas.detach();
-			clearCanvas(this._$imageCanvas[0]);
-			clearCanvas(this._$imageOverlay[0]);
+			clearCanvas(this.getImageCanvasCtx());
+			clearCanvas(this.getImageOverlayCtx());
 			Statusbar.getInstance().setColorAt();
 			Statusbar.getInstance().setPosition('mouse');
 			this._zoomlevel = 1;
 			this.updateZoomLevelInputs();
 			$.Dialog.close();
 		}
-		moveMode(enable){
-			if (enable && !this._moveMode){
+		moveMode(enable, force = false){
+			const handToolActive = this._activeTool === Tools.hand;
+			if (enable && !this._moveMode && (force || !handToolActive)){
 				this._moveMode = true;
 				this._$imageOverlay.addClass('draggable');
 			}
-			else if (!enable && this._moveMode){
+			else if (!enable && this._moveMode && (force || !handToolActive)){
 				this._moveMode = false;
 				this._$imageOverlay.removeClass('draggable dragging');
 			}
@@ -1072,6 +1516,39 @@
 		}
 		getMouseOverlayCtx(){
 			return this._$mouseOverlay[0].getContext('2d');
+		}
+		switchTool(tool){
+			if (this._activeTool === tool)
+				return;
+
+			// Cleanup after old tool
+			switch (this._activeTool){
+				case Tools.hand:
+					this.moveMode(false, true);
+				break;
+				case Tools.picker:
+					this._$mouseOverlay.removeClass('picking');
+					this.clearMouseOverlay();
+				break;
+			}
+
+			// Activate new tool
+			switch (Tools[tool]){
+				case Tools.hand:
+					this.moveMode(true, true);
+				break;
+				case Tools.picker:
+					this._$mouseOverlay.addClass('picking');
+				break;
+			}
+			if (tool !== 'pointer')
+				this._$pointerTool.removeClass('selected');
+			if (tool !== 'picker')
+				this._$pickerTool.removeClass('selected');
+			if (tool !== 'hand')
+				this._$handTool.removeClass('selected');
+			this[`_$${tool}Tool`].addClass('selected');
+			this._activeTool = Tools[tool];
 		}
 	}
 
@@ -1087,13 +1564,13 @@
 			return;
 
 		switch (e.keyCode){
-			case Key['0']:
+			case Key[0]:
 				if (!e.ctrlKey || e.altKey)
 					return;
 
 				ColorPicker.getInstance().setZoomFit();
 			break;
-			case Key['1']:
+			case Key[1]:
 				if (!e.ctrlKey || e.altKey)
 					return;
 
@@ -1104,6 +1581,33 @@
 					return;
 
 				ColorPicker.getInstance().moveMode(true);
+			break;
+			case Key.A:
+				ColorPicker.getInstance().switchTool(Tools.pointer);
+			break;
+			case Key.H:
+				ColorPicker.getInstance().switchTool(Tools.hand);
+			break;
+			case Key.I:
+				ColorPicker.getInstance().switchTool(Tools.picker);
+			break;
+			case Key.O:
+				if (!e.ctrlKey || e.altKey)
+					return;
+
+				Menubar.getInstance().requestFileOpen();
+			break;
+			case Key.UpArrrow:
+				if (e.ctrlKey || e.altKey)
+					return;
+
+				ColorPicker.getInstance().increasePickingSize(!e.altKey);
+			break;
+			case Key.DownArrrow:
+				if (e.ctrlKey || e.altKey)
+					return;
+
+				ColorPicker.getInstance().decreasePickingSize(!e.altKey);
 			break;
 			default:
 				return;

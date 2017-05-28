@@ -1,6 +1,7 @@
 @import url('https://fonts.googleapis.com/css?family=PT+Sans');
-@import "typicons";
+@import "font-awesome";
 @import "vars";
+@import "shared-utils";
 @import "theme_buttons";
 @import "theme_notices";
 @import "theme_dialog";
@@ -38,6 +39,23 @@ body {
 	pointer-events: none;
 }
 .hidden{display:none!important}
+%colorat {
+	text-align: center;
+	font-family: $monospace;
+	display: flex;
+	flex-flow: row nowrap;
+	align-items: center;
+	justify-content: center;
+	font-size: .9em;
+	line-height: 1em;
+	white-space: nowrap;
+
+	.color {
+		text-transform: uppercase;
+		border-radius: 2px;
+		padding: 1px 2px;
+	}
+}
 #menubar {
 	position: absolute;
 	z-index: 4;
@@ -87,6 +105,10 @@ body {
 			&.active {
 				background: rgba(black, .5);
 				box-shadow: inset 0 0 2px black;
+			}
+
+			.kbd {
+				float: right;
 			}
 		}
 		> ul {
@@ -269,22 +291,8 @@ body {
 	}
 	.colorat {
 		flex: 1 1 10%;
-		text-align: center;
-		//font-weight: bold;
-		font-family: $monospace;
-		display: flex;
-		flex-flow: row nowrap;
-		align-items: center;
-		justify-content: center;
-		font-size: .9em;
-		line-height: 1em;
-		white-space: nowrap;
+		@extend %colorat;
 
-		.color {
-			text-transform: uppercase;
-			border-radius: 2px;
-			padding: 1px 2px;
-		}
 		.opacity {
 			white-space: pre;
 
@@ -305,7 +313,7 @@ body {
 	left: 0;
 	width: 100%;
 	height: calc(100% - #{$MenubarHeight} - #{$TabbarHeight} - #{$StatusbarHeight});
-	cursor: url('/img/colorpicker/normal.png'), default;
+	cursor: url('/img/colorpicker/normal.cur'), default;
 	background: $EditorBG;
 
 	.image-element {
@@ -318,13 +326,15 @@ body {
 
 	.mouse-overlay {
 		position: absolute;
-		display: block;
-		pointer-events: none;
 		z-index: 2;
-		width: 100%;
-		height: 100%;
-		top: 0;
-		left: 0;
+		image-rendering: pixelated;
+
+		&:not(.picking){
+			pointer-events: none;
+		}
+		&.picking {
+			cursor: url('/img/colorpicker/picker.cur'), crosshair;
+		}
 	}
 
 	.image-overlay {
@@ -359,38 +369,75 @@ body {
 			display: none;
 		}
 
-		> div > * {
-			margin: 0;
-			color: inherit;
-			background-color: transparent;
-			box-sizing: border-box;
-			border-radius: 2px;
-			border: 1px solid transparent;
+		> div {
+			$spacing: 4px;
+			$label-size: 9px;
+			position: relative;
+			padding-top: $label-size;
+			margin-left: -$spacing;
+			width: 100%;
+			display: flex;
+			justify-content: space-around;
 
-			&:not(:disabled) {
-				&:hover, &:active {
-					border-color: gray;
+			&:not(:last-child){
+				$spacing: 4px;
+				margin-bottom: $spacing;
+				border-bottom: 1px solid $UIBorders;
+				padding-bottom: $spacing;
+			}
+
+			> .label {
+				position: absolute;
+				top: $label-size/4;
+				left: 0;
+				width: 100%;
+				font-size: $label-size;
+				line-height: 1em;
+				text-transform: uppercase;
+				pointer-events: none;
+				margin-left: $spacing;
+			}
+			> :not(.label) {
+				margin: $spacing 0 0 $spacing;
+				color: inherit;
+				background-color: transparent;
+				box-sizing: border-box;
+				border-radius: 2px;
+				border: 1px solid transparent;
+
+				&:not(:disabled):not(.text) {
+					&:hover, &:active {
+						border-color: gray;
+					}
+					&:not(:active):not(:focus):hover {
+						background-color: rgba(black, .1);
+					}
 				}
-				&:not(:active):hover {
-					background-color: rgba(black, .1);
+			}
+			[contenteditable] {
+				flex: 0 0 100%;
+				display: block;
+				cursor: text;
+				max-width: 100%;
+				overflow: hidden;
+				white-space: nowrap;
+				margin-top: 5px;
+
+				&:focus {
+					background-color: $UIColor;
+					color: $UIBackground;
 				}
 			}
 		}
 
-		button {
-			padding: 0;
-			font-size: $btnsize;
-			line-height: $btnsize;
-			height: $btnsize + ($btnpadding*2);
-			width: $btnsize + ($btnpadding*2);
+		button[readonly] {
+			opacity: .4;
+			cursor: not-allowed;
 
-			&:active {
-				background: rgba(black, .5);
-				box-shadow: inset 0 0 2px black;
-			}
-
-			&:disabled {
-				opacity: .6;
+			&:hover, &:active, &:focus {
+				border-color: transparent !important;
+				background-color: transparent !important;
+				box-shadow: none !important;
 			}
 		}
 	}
@@ -402,36 +449,32 @@ body {
 		border-left: 0;
 		display: flex;
 		flex-flow: column nowrap;
+		justify-content: space-around;
 
 		> div {
-			display: flex;
 			flex-flow: row wrap;
-			justify-content: space-around;
-
-			&:not(:last-child){
-				$spacing: 4px;
-				mArgin-bottom: $spacing;
-				border-bottom: 1px solid $UIBorders;
-				padding-bottom: $spacing;
-			}
 		}
 
 		button {
-			flex: 0 0 45%;
 			display: inline-block;
-		}
-		.zoom-perc {
-			flex: 0 0 100%;
-			display: block;
-			cursor: text;
-			max-width: 100%;
-			overflow: hidden;
-			white-space: nowrap;
-			margin-top: 5px;
+			padding: 0;
+			font-size: $btnsize*0.8;
+			line-height: $btnsize;
+			$size: $btnsize + ($btnpadding*2);
+			height: $size;
+			width: $size;
+			flex: 0 0 $size;
 
-			&:focus {
-				background-color: $UIColor;
-				color: $UIBackground;
+			&:active, &.selected {
+				background: rgba(black, .5) !important;
+				box-shadow: inset 0 0 2px black !important;
+			}
+			&.selected {
+				border-color: $UIBorders;
+			}
+
+			&:disabled {
+				opacity: .6;
 			}
 		}
 	}
@@ -440,6 +483,63 @@ body {
 		left: 0;
 		border-bottom: 0;
 		border-left: 0;
+		display: flex;
+		flex-flow: column nowrap;
+		align-items: center;
+
+		> * {
+			flex: 0 0 100%;
+			white-space: nowrap;
+		}
+
+		> div {
+			flex-flow: column nowrap;
+		}
+
+		button {
+			background-color: transparent;
+			border: 1px solid transparent;
+			padding: 4px 6px;
+			border-radius: 2px;
+
+			&:hover {
+				border-color: $UIBorders;
+			}
+
+			&:active {
+				background-color: rgba(black,.5);
+				box-shadow: inset 0 0 2px black;
+			}
+		}
+
+		.picking-controls {
+			display: flex;
+			flex-flow: row nowrap;
+			justify-content: space-between;
+			align-items: center;
+			width: 100%;
+
+			button {
+				flex: 1 1 15%;
+			}
+			.picking-size {
+				flex: 1 1 60%;
+				margin: 0 8px;
+			}
+		}
+		.average {
+			@extend %colorat;
+			padding: 3px 5px;
+			font-size: 1.2em;
+
+			&:empty {
+				display: none;
+			}
+
+			button {
+				margin: 0 0 0 5px !important;
+			}
+		}
 	}
 
 	&:not(.loading) .loader {
@@ -458,13 +558,16 @@ body {
 
 #set-area-color {
 	.input-red {
-		color: red;
+		color: red !important;
+		background-color: rgba(red, .1);
 	}
 	.input-green {
-		color: green;
+		color: green !important;
+		background-color: rgba(green, .1);
 	}
 	.input-blue {
-		color: blue;
+		color: blue !important;
+		background-color: rgba(blue, .1);
 	}
 
 	//noinspection CssOptimizeSimilarProperties
@@ -482,5 +585,13 @@ body {
 			width: 100%;
 			height: 100%;
 		}
+	}
+}
+
+#contrast-changer {
+	#contrast-preview canvas {
+		display: block;
+		margin: 0 auto;
+		max-width: 100%;
 	}
 }

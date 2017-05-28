@@ -1,5 +1,6 @@
 @import url('https://fonts.googleapis.com/css?family=Arimo:400,700,400italic');
 @import "vars";
+@import "shared-utils";
 @import "theme_dialog";
 @import "theme_forms";
 @import "theme_ace-editor";
@@ -961,27 +962,6 @@ kbd {
 	to {
 		background: #800;
 		box-shadow: 0 0 30px #800;
-	}
-}
-
-#copy-notify {
-	position: fixed;
-	right: 10px;
-	bottom: 10px;
-	display: block;
-	padding: 10px;
-	border: 1px solid;
-	color: $NGreen;
-	background-color: $NGreenBG;
-	opacity: 0;
-	z-index: 22000;
-	font-size: 28px;
-	border-radius: 10px;
-	pointer-events:none;
-
-	&.fail {
-		color: $NRed;
-		background-color: $NRedBG;
 	}
 }
 

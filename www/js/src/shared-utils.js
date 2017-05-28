@@ -106,17 +106,15 @@
 		Alt: 18,
 		Space: 32,
 		LeftArrow: 37,
+		UpArrrow: 38,
 		RightArrow: 39,
-		'0': 48,
-		'1': 49,
-		'2': 50,
-		'3': 51,
-		'4': 52,
-		'5': 53,
-		'6': 54,
-		'7': 55,
-		'8': 56,
-		'9': 57,
+		DownArrrow: 40,
+		0: 48,
+		1: 49,
+		A: 65,
+		H: 72,
+		I: 73,
+		O: 79,
 		Comma: 188,
 	};
 	$.isKey = function(Key, e){
@@ -301,6 +299,11 @@
 
 	$.toArray = (args, n = 0) =>  [].slice.call(args, n);
 
+	$.clearFocus = () => {
+		if (document.activeElement !== $body[0])
+			document.activeElement.blur();
+	};
+
 	// Create AJAX response handling function
 	$w.on('ajaxerror',function(){
 		let details = '';
@@ -450,7 +453,7 @@
 							id: 'copy-notify',
 							'class': ! success ? 'fail' : undefined,
 						})
-						.html('<span class="typcn typcn-clipboard"></span> <span class="typcn typcn-'+(success?'tick':'cancel')+'"></span>')
+						.html(`<span class="typcn typcn-clipboard fa fa-clipboard"></span> <span class="typcn typcn-${success?'tick':'cancel'} fa fa-${success?'check':'times'}"></span>`)
 						.appendTo($body);
 				if (e){
 					let w = $notif.outerWidth(),

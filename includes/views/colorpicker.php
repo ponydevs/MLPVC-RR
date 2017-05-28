@@ -12,7 +12,7 @@
 	<li>
 		<a class="dropdown">File</a>
 		<ul class="hidden">
-			<li><a id="open-image">Open&hellip;</a></li>
+			<li><a id="open-image">Open&hellip; <span class="kbd">(Ctrl+K)</span></a></li>
 			<li><a id="close-active-tab" class="disabled">Close current tab</a></li>
 		</ul>
 	</li>
@@ -23,11 +23,11 @@
 <ul id="tabbar" class="dragscroll" data-info="If you open a lot of tabs you can drag on them to move around"></ul>
 <div id="picker"></div>
 <div id="statusbar">
-	<div class="info"><span class="typcn typcn-info-large"></span> Use the File menu or drag &amp; drop images to open them for color picking</div>
+	<div class="info"><span class="fa fa-info"></span> Use the File menu or drag &amp; drop images to open them for color picking</div>
 	<ul class="pos">
 		<li class="mouse" data-info="Image coordinates under the pointer"></li>
 	</ul>
-	<div class="colorat">
+	<div class="colorat" data-info="Color and opacity of the pixel under the pointer">
 		<span class="color"></span><span class="opacity"></span>
 	</div>
 </div>

@@ -1,0 +1,20 @@
+#copy-notify {
+	position: fixed;
+	right: 10px;
+	bottom: 10px;
+	display: block;
+	padding: 10px;
+	border: 1px solid;
+	color: $NGreen;
+	background-color: $NGreenBG;
+	opacity: 0;
+	z-index: 22000;
+	font-size: 28px;
+	border-radius: 10px;
+	pointer-events:none;
+
+	&.fail {
+		color: $NRed;
+		background-color: $NRedBG;
+	}
+}
