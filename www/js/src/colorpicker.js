@@ -9,6 +9,8 @@
 		picker: undefined,
 	};
 
+	// TODO List with all areas and their individual averages
+
 	let filterPrefix = '';
 	const
 		Tools = {

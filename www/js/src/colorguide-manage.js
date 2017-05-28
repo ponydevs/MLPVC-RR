@@ -72,6 +72,7 @@ DocReady.push(function(){
 				</div>`:'')
 			);
 			$facingSelector.find(`input[value='${el.facing?el.facing:''}']`).prop('checked', true);
+			const rotation = typeof el.favme_rotation !== 'undefined' ? el.favme_rotation : (el.facing==='left'?-18:18);
 			return $.mk('li').append(
 					$.mk('fieldset').append(
 						$.mk('legend').append(
@@ -93,7 +94,7 @@ DocReady.push(function(){
 							}).val(el.favme?`http://fav.me/${el.favme}`:undefined)
 						),
 						$.mk('div').attr('class','label disabled-show').append(
-							"<span>Preview rotation (<span class='rotation-display'></span>°)</span>",
+							`<span>Preview rotation (<span class='rotation-display'>${rotation}</span>°)</span>`,
 							$.mk('input').attr({
 								type: 'range',
 								name: 'favme_rotation[]',
@@ -102,7 +103,7 @@ DocReady.push(function(){
 								step: 2,
 								'class': 'rotation-range',
 								required: true,
-							}).val(el.favme_rotation)
+							}).val(rotation)
 						),
 						$.mk('label').append(
 							"<span>Custom preview (optional)</span>",
