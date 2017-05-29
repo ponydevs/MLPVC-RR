@@ -86,9 +86,13 @@ class CoreUtilsTest extends TestCase {
 
 	function testSanitizeHtml(){
 		$result = CoreUtils::sanitizeHtml('<script>alert("XSS")</script><a href="/#hax">Click me</a>');
-		self::assertEquals('&lt;script&gt;alert("XSS")&lt;/script&gt;&lt;a href="/#hax"&gt;Click me&lt;/a&gt;',$result);
-		$result = CoreUtils::sanitizeHtml('Text<b>Bold</b><i>Italic</i><strong>Strong</strong><em>Emphasis</em>Text');
-		self::assertEquals('Text<b>Bold</b><i>Italic</i><strong>Strong</strong><em>Emphasis</em>Text',$result);
+		self::assertEquals('&lt;script&gt;alert("XSS")&lt;/script&gt;&lt;a href="/#hax"&gt;Click me&lt;/a&gt;',$result,'Attack attempt check');
+		$result = CoreUtils::sanitizeHtml('Text<strong>Strong</strong><em>Emphasis</em>Text');
+		self::assertEquals('Text<strong>Strong</strong><em>Emphasis</em>Text',$result,'Basic whitelist check');
+		$result = CoreUtils::sanitizeHtml('Text<b>Old Bold</b><i>Old Italic</i>Text');
+		self::assertEquals('Text<strong>Old Bold</strong><em>Old Italic</em>Text',$result,'Old tag to new tag transform check');
+		$result = CoreUtils::sanitizeHtml('I like <code>while(true)window.open()</code> a lot<sup>*</sup>',['code']);
+		self::assertEquals('I like <code>while(true)window.open()</code> a lot&lt;sup&gt;*&lt;/sup&gt;',$result,'Tag whitelist check');
 	}
 
 	function testArrayToNaturalString(){
