@@ -120,7 +120,6 @@ window.$TemplateGenFormTemplate = (function($){
 				delete data.features;
 
 				// Eyes
-				console.log(data.eyes);
 				drawImage(ctx, `eyes_${data.body}${maleBody&&data.eyes<3?'12':data.eyes}`);
 				drawImage(ctx, `eyes_${data.body}${data.eyes<3?'12':'3'}_grad${data.eye_grad}`);
 				delete data.eyes;
