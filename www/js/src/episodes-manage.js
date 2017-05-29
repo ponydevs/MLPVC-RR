@@ -1,4 +1,4 @@
-/* global DocReady,moment,HandleNav,$content */
+/* global DocReady,moment,HandleNav,$content,$body,ace */
 DocReady.push(function(){
 	'use strict';
 
@@ -65,6 +65,10 @@ DocReady.push(function(){
 			<label class="episode-only"><input type="checkbox" name="twoparter"> Has two parts</label>
 			<div class="notice info align-center episode-only">
 				<p>If this is checked, only specify the episode number of the first part</p>
+			</div>
+			<div class="label">
+				<span>Notes (otional, 1000 chars. max)</span>
+				<div class="ace_editor"></div>
 			</div>`
 		);
 
@@ -86,12 +90,25 @@ DocReady.push(function(){
 		$AddEpForm.find(movie ? '.episode-only' : '.movie-only').remove();
 
 		$.Dialog.request(`Add ${movie?'Movie':'Episode'}`, $AddEpForm,'Add', function($form){
+				let session;
+				$.getAceEditor(false, 'html', function(mode){
+					try {
+						let div = $form.find('.ace_editor').get(0),
+							editor = ace.edit(div);
+						session = $.aceInit(editor, mode);
+						session.setMode(mode);
+						session.setUseWrapMode(true);
+					}
+					catch(e){ console.error(e) }
+				});
+
 			$form.on('submit', function(e){
 				e.preventDefault();
 				let airdate = $form.find('input[name=airdate]').attr('disabled',true).val(),
 					airtime = $form.find('input[name=airtime]').attr('disabled',true).val(),
 					airs = $.mkMoment(airdate, airtime).toISOString(),
 					data = $(this).mkData({airs:airs});
+				data.notes = session.getValue();
 
 				$.Dialog.wait(false, `Adding ${movie?'movie':'episode'} to database`);
 
@@ -143,11 +160,29 @@ DocReady.push(function(){
 			let epid = this.epid;
 			delete this.epid;
 
+			const notes = this.ep.notes;
+			delete this.ep.notes;
+
 			$.each(this.ep,function(k,v){
 				$EditEpForm.find('input[name='+k+']').val(v);
 			});
 
 			$.Dialog.request(false, $EditEpForm,'Save', function($form){
+				let session;
+				$.getAceEditor(false, 'html', function(mode){
+					try {
+						let div = $form.find('.ace_editor').get(0),
+							editor = ace.edit(div);
+						session = $.aceInit(editor, mode);
+						session.setMode(mode);
+						session.setUseWrapMode(true);
+
+						if (notes)
+							session.setValue(notes);
+					}
+					catch(e){ console.error(e) }
+				});
+
 				$form.on('submit', function(e){
 					e.preventDefault();
 
@@ -156,6 +191,7 @@ DocReady.push(function(){
 					delete data.airdate;
 					delete data.airtime;
 					data.airs = d.toISOString();
+					data.notes = session.getValue();
 
 					$.Dialog.wait(false, 'Saving changes');
 
@@ -171,7 +207,7 @@ DocReady.push(function(){
 			});
 		}));
 	}
-	$('#edit-ep').on('click', EditEp);
+	$content.on('click','#edit-ep',EditEp);
 	$tables.on('click', '.edit-episode', EditEp).on('click', '.delete-episode', function(e){
 		e.preventDefault();
 

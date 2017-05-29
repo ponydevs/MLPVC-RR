@@ -10,6 +10,7 @@
 	};
 
 	// TODO List with all areas and their individual averages
+	// TODO Zoom tool that utilizes LMB/RMB/Scroll
 
 	let filterPrefix = '';
 	const

@@ -53,7 +53,13 @@ use App\Models\Episode;
 		<h2>Reservation Rules<?=Permission::sufficient('staff')?'<button class="orange typcn typcn-pencil" id="edit-reservation_rules">Edit</button>':''?></h2>
 		<?=GlobalSettings::get('reservation_rules')?>
 	</section>
-<?php   echo Episodes::getAppearancesSectionHTML($CurrentEpisode);
+<?php   if (!empty($CurrentEpisode->notes)){ ?>
+	<section class="notes">
+		<h2>Notes from the staff</h2>
+		<pre><?=$CurrentEpisode->notes?></pre>
+	</section>
+<?php   }
+		echo Episodes::getAppearancesSectionHTML($CurrentEpisode);
 		if (Permission::sufficient('staff')){ ?>
 	<section class="admin">
 		<h2>Administration area</h2>
@@ -86,5 +92,5 @@ use App\Models\Episode;
 
 <?  $exp = ['EpisodePage'=>true];
 	if (Permission::sufficient('staff'))
-		$eqp['EP_TITLE_REGEX'] = $EP_TITLE_REGEX;
+		$exp['EP_TITLE_REGEX'] = $EP_TITLE_REGEX;
 	echo CoreUtils::exportVars($exp);

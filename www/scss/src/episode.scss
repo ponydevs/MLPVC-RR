@@ -226,6 +226,24 @@
 
 			ul { @extend %appearance-ul }
 		}
+		&.notes {
+			color: $DefaultUIColor;
+
+			h2 {
+				color: lighten($DefaultUIColor,50);
+				background-color: $DefaultUIColor;
+
+				&:after { border-left-color: $DefaultUIColor }
+			}
+
+			pre {
+				margin: 0;
+				font-size: 1.1em;
+				font-family: $RegularFont;
+				white-space: pre-wrap;
+				word-break: break-all;
+			}
+		}
 		&.admin {
 			color: $NDarkBlue;
 

@@ -214,6 +214,21 @@ class EpisodeController extends Controller {
 			Response::fail('Please specify an air date & time');
 		$insert['airs'] = date('c',strtotime('this minute', $airs));
 
+		$notes = (new Input('notes','text',array(
+			Input::IS_OPTIONAL => true,
+			Input::IN_RANGE => [null,1000],
+			Input::CUSTOM_ERROR_MESSAGES => array(
+				Input::ERROR_RANGE => "$What notes cannot be longer than @max characters",
+			)
+		)))->out();
+		if (isset($notes)){
+			CoreUtils::checkStringValidity($notes, "$What notes", INVERSE_PRINTABLE_ASCII_PATTERN);
+			$notes = CoreUtils::sanitizeHtml($notes);
+			if (!$editing || $notes !== $this->_episode->notes)
+				$insert['notes'] = $notes;
+		}
+		else $insert['notes'] = null;
+
 		if ($editing){
 			if (!$Database->whereEp($this->_episode)->update('episodes', $insert))
 				Response::dbError('Updating episode failed');

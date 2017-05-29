@@ -23,7 +23,8 @@ class Episode extends AbstractFillable {
 		$posted,
 		$posted_by,
 		$airs,
-		$willair;
+		$willair,
+		$notes;
 	/** @var bool */
 	public
 		$twoparter,
