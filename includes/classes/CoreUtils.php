@@ -427,12 +427,15 @@ class CoreUtils {
 		$whitelist = array('strong','b','em','i');
 		if (!empty($allowedTags))
 			$whitelist = array_merge($whitelist, $allowedTags);
-		/** @noinspection PhpUndefinedMethodInspection */
 		$config->set('HTML.AllowedElements', $whitelist);
-		/** @noinspection PhpUndefinedMethodInspection */
 		$config->set('Core.EscapeInvalidTags', true);
+
+		// Mapping old to new
+		$def = $config->getHTMLDefinition();
+		$def->info_tag_transform['b'] = new \HTMLPurifier_TagTransform_Simple('strong');
+		$def->info_tag_transform['i'] = new \HTMLPurifier_TagTransform_Simple('em');
+
 		$purifier = new \HTMLPurifier($config);
-		/** @noinspection PhpUndefinedMethodInspection */
 		return self::trim($purifier->purify($dirty_html), true);
 	}
 
