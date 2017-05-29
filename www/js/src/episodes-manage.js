@@ -67,7 +67,7 @@ DocReady.push(function(){
 				<p>If this is checked, only specify the episode number of the first part</p>
 			</div>
 			<div class="label">
-				<span>Notes (otional, 1000 chars. max)</span>
+				<span>Notes (optional, 1000 chars. max)</span>
 				<div class="ace_editor"></div>
 			</div>`
 		);
