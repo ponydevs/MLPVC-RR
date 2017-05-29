@@ -467,6 +467,40 @@ HTML;
 
 	const CMDIR_SVG_PATH = FSPATH."cg_render/#-cmdir-@.svg";
 
+	const DEFAULT_COLOR_MAPPING = array(
+		'Coat Outline' => '#0D0D0D',
+		'Coat Shadow Outline' => '#000000',
+		'Coat Fill' => '#2B2B2B',
+		'Coat Shadow Fill' => '#171717',
+		'Mane & Tail Outline' => '#333333',
+		'Mane & Tail Fill' => '#5E5E5E',
+	);
+
+	static function getColorMapping($AppearanceID, $DefaultColorMapping){
+		global $Database;
+
+		$Colors = $Database->rawQuery(
+			"SELECT cg.label as cglabel, c.label as clabel, c.hex FROM colorgroups cg
+			LEFT JOIN colors c on c.groupid = cg.groupid
+			WHERE cg.ponyid = ?
+			ORDER BY cg.label ASC, c.label ASC", array($AppearanceID));
+
+		$ColorMapping = array();
+		foreach ($Colors as $row){
+			$cglabel = preg_replace(new RegExp('^(Costume|Dress)$'),'Coat',$row['cglabel']);
+			$colorlabel = preg_replace(new RegExp('^(?:(?:(?:Purple|Yellow|Red)\s)?(?:Main|First|Normal|Gradient(?:\s(?:Light))?)\s)?(.+?)(?:\s\d+)?(?:/.*)?$'),'$1', $row['clabel']);
+			$label = "$cglabel $colorlabel";
+			if (isset($DefaultColorMapping[$label]) && !isset($ColorMapping[$label]))
+				$ColorMapping[$label] = $row['hex'];
+		}
+		if (!isset($ColorMapping['Coat Shadow Outline']) && isset($ColorMapping['Coat Outline']))
+			$ColorMapping['Coat Shadow Outline'] = $ColorMapping['Coat Outline'];
+		if (!isset($ColorMapping['Coat Shadow Fill']) && isset($ColorMapping['Coat Fill']))
+			$ColorMapping['Coat Shadow Fill'] = $ColorMapping['Coat Fill'];
+
+		return $ColorMapping;
+	}
+
 	// Generate CM preview image
 	static function renderCMDirectionSVG($CGPath, $AppearanceID){
 		global $Database;
@@ -484,36 +518,10 @@ HTML;
 		if (file_exists($OutputPath))
 			Image::outputSVG(null,$OutputPath,$FileRelPath);
 
-		$DefaultColorMapping = array(
-			'Coat Outline' => '#0D0D0D',
-			'Coat Shadow Outline' => '#000000',
-			'Coat Fill' => '#2B2B2B',
-			'Coat Shadow Fill' => '#171717',
-			'Mane & Tail Outline' => '#333333',
-			'Mane & Tail Fill' => '#5E5E5E',
-		);
-		$Colors = $Database->rawQuery(
-			"SELECT cg.label as cglabel, c.label as label, c.hex
-			FROM colorgroups cg
-			LEFT JOIN colors c on c.groupid = cg.groupid
-			WHERE cg.ponyid = ?
-			ORDER BY cg.label ASC, c.label ASC", array($AppearanceID));
-
-		$ColorMapping = array();
-		foreach ($Colors as $row){
-			$cglabel = preg_replace(new RegExp('^(Costume|Dress)$'),'Coat',$row['cglabel']);
-			$colorlabel = preg_replace(new RegExp('^(?:(?:(?:Purple|Yellow|Red)\s)?(?:Main|First|Normal|Gradient(?:\s(?:Light))?)\s)?(.+?)(?:\s\d+)?(?:/.*)?$'),'$1', $row['label']);
-			$label = "$cglabel $colorlabel";
-			if (isset($DefaultColorMapping[$label]) && !isset($ColorMapping[$label]))
-				$ColorMapping[$label] = $row['hex'];
-		}
-		if (!isset($ColorMapping['Coat Shadow Outline']) && isset($ColorMapping['Coat Outline']))
-			$ColorMapping['Coat Shadow Outline'] = $ColorMapping['Coat Outline'];
-		if (!isset($ColorMapping['Coat Shadow Fill']) && isset($ColorMapping['Coat Fill']))
-			$ColorMapping['Coat Shadow Fill'] = $ColorMapping['Coat Fill'];
+		$ColorMapping = self::getColorMapping($AppearanceID, self::DEFAULT_COLOR_MAPPING);
 
 		$img = file_get_contents(APPATH.'img/cm_facing/'.($Facing===CM_FACING_RIGHT?'right':'left').'.svg');
-		foreach ($DefaultColorMapping as $label => $defhex)
+		foreach (self::DEFAULT_COLOR_MAPPING as $label => $defhex)
 			$img = str_replace($label, $ColorMapping[$label] ?? $defhex, $img);
 
 		Image::outputSVG($img,$OutputPath,$FileRelPath);

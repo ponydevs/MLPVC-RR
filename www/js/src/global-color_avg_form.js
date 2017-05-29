@@ -3,7 +3,7 @@
 window.$ColorAvgFormTemplate = (function($){
 	'use strict';
 
-	return $.mk('form').attr('id','color-avg-form').on('added',function(){
+	return $.mk('form','color-avg-form').on('added',function(){
 		let $form = $(this).on('submit', function(e){
 				e.preventDefault();
 

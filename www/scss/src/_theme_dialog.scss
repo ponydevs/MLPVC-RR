@@ -226,7 +226,7 @@ body.dialog-open {
 
 	&:empty { display: none }
 
-	button, input {
+	button, input, .btn {
 		font-weight: 400;
 		line-height: 20px;
 		height: 32px;

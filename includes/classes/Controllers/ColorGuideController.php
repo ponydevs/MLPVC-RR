@@ -1772,4 +1772,35 @@ HTML;
 		header('Content-Type: text/html; charset=utf-8;');
 		include INCPATH.'views/colorpicker.php';
 	}
+
+	function getSpriteColors($params){
+		$this->_getAppearance($params);
+
+		if (empty($this->_appearance))
+			Response::fail('Could not find appearance');
+
+		$DefaultMapping = array(
+			'Coat Outline' => '#443633',
+			'Coat Shadow Outline' => '#404433',
+			'Coat Fill' => '#70605D',
+			'Coat Shadow Fill' => '#6C7260',
+			'Eyes Top' => '#3B3B3B',
+			'Eyes Middle' => '#606060',
+			'Eyes Bottom' => '#BEBEBE',
+			'Eyes Highlight Top' => '#542727',
+			'Eyes Highlight Bottom' => '#7E3A3A',
+		);
+
+		$ColorMappings = CGUtils::getColorMapping($this->_appearance['id'], $DefaultMapping);
+
+		$colors = [];
+		foreach ($DefaultMapping as $k => $v){
+			if (!isset($ColorMappings[$k]))
+				continue;
+
+			$colors[$v] = $ColorMappings[$k];
+		}
+
+		Response::done(['colors' => $colors]);
+	}
 }

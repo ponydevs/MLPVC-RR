@@ -23,8 +23,8 @@ DocReady.push(function(){
 		};
 
 	let $SpriteUploadFormTemplate = $.mk('form','sprite-upload').html(
-		(PersonalGuide?`<div class="notice info"><label>About sprites</label><p>Sprites are small, pixelated images showcasing all of the colors a given character has. They are most useful if they contain a full body image of your character with any difficult details highlighted. You can use it together with the notes, adding explanations about anything that might be confusing.</p><p>Sprites have a height limit of 300px, a width limit between 300 and 700 pixels, and are expected to be PNG files with a transparent background.</p><p class="color-red">The staff reserves the right to remove any sprites that do not follow these guidelines.</p></div>`:'')+
-		`<p class="align-center"><a href="#upload">Click here to upload a file</a> (max. ${window.MAX_SIZE}) or enter a URL below.</p>
+		(PersonalGuide?`<div class="notice info"><label>About sprites</label><p>Sprites are small, pixelated images showcasing all of the colors a given character has. They are most useful if they contain a full body image of your character with any difficult details highlighted. You can use it together with the notes, adding explanations about anything that might be confusing.</p><p>Sprites have a height limit of 300px, a width limit between 300 and 700 pixels, and are expected to be PNG files with a transparent background.</p><p>We provide templates that fit these guidelines for anyone to use through the <a class="sprite-template-gen">Template Generator</a>. If you decide to use this generator, you must add at least the mane and tail before uploading the sprite to the site.</p><p class="color-red">The staff reserves the right to remove any sprites that do not follow these guidelines.</p></div>`:'')+
+		`<p class="align-center"><a class="upload-link">Click here to upload a file</a> (max. ${window.MAX_SIZE}) or enter a URL below.</p>
 		<label><input type="text" name="image_url" placeholder="External image URL" required></label>
 		<p class="align-center">The URL will be checked against the supported provider list, and if an image is found, it\'ll be downloaded to the server and set as this appearance’s sprite image.</p>`
 	);
@@ -1584,12 +1584,50 @@ DocReady.push(function(){
 							$uploadInput = $this.find('input[type="file"]');
 						$.Dialog.request(title,$SpriteUploadFormTemplate.clone(),'Download image', function($form){
 							let $image_url = $form.find('input[name=image_url]');
-							$form.find('a').on('click', function(e){
+							$form.find('.upload-link').on('click', function(e){
 								e.preventDefault();
 								e.stopPropagation();
 
 								$uploadInput.trigger('click', [true]);
 							});
+							if (PersonalGuide)
+								$form.find('.sprite-template-gen').on('click',function(e){
+									e.preventDefault();
+									e.stopPropagation();
+
+									const
+										title = 'Sprite Template Generator',
+										callme = (colors) => {
+											let $clone = window.$TemplateGenFormTemplate.clone(true,true);
+											$.Dialog.request(title,$clone,false, function(){
+												$clone.triggerHandler('added');
+												if (colors)
+													$clone.triggerHandler('got-colors', [colors]);
+											});
+										},
+										getColors = () => {
+											if (isNaN(ponyID))
+												return callme(false);
+
+											$.Dialog.wait(title,'Getting relevant appearance colors');
+
+											$.post(`/cg/get-sprite-colors/${ponyID}`,$.mkAjaxHandler(function(){
+												if (!this.status) return callme(false);
+
+												callme(this.colors);
+											}));
+										};
+
+									$.Dialog.close();
+									if (typeof window.$TemplateGenFormTemplate === 'undefined'){
+										$.Dialog.wait(title,'Loading form, please wait');
+										let scriptUrl = '/js/min/global-template_gen_form.js';
+										$.getScript(scriptUrl,getColors).fail(function(){
+											$.Dialog.fail(title, 'Form could not be loaded');
+										});
+									}
+									else getColors();
+								});
 							$form.on('submit', function(e){
 								e.preventDefault();
 

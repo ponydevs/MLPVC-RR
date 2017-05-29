@@ -504,3 +504,16 @@ ul.colors {
 		margin-top: 15px;
 	}
 }
+
+#template-gen-form {
+	canvas {
+		display: block;
+		width: 300px;
+		height: 300px;
+		margin: 0 auto;
+		border: 1px solid black;
+		background: url('/img/transparency.svg') repeat center;
+		background-size: 16px;
+		pointer-events: none;
+	}
+}

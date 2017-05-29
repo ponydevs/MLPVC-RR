@@ -769,7 +769,7 @@ $(function(){
 		e.preventDefault();
 		e.stopPropagation();
 
-		let title = 'Colour Average Calculator',
+		let title = 'Color Average Calculator',
 			callme = function(){
 				$.Dialog.close();
 				let $clone = window.$ColorAvgFormTemplate.clone(true,true);
