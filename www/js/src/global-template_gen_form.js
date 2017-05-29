@@ -2,7 +2,7 @@
 window.$TemplateGenFormTemplate = (function($){
 	'use strict';
 
-	const IMAGES_VERSION = 1;
+	const IMAGES_VERSION = '1.1';
 
 	return $.mk('form','template-gen-form').html(
 		`<div class="label">
@@ -111,7 +111,6 @@ window.$TemplateGenFormTemplate = (function($){
 				}
 				$maleHide.attr('disabled',maleBody);
 
-
 				// Horn / Wings
 				if (data.features){
 					$.each(data.features.split(','),(_, feature) => {
@@ -178,6 +177,8 @@ window.$TemplateGenFormTemplate = (function($){
 			});
 			if (typeof incolors['#606060'] !== 'undefined')
 				$form.find('input[name="eye_grad"][value="3"]').prop('checked', true);
+			if (typeof incolors['#B7B7B7'] !== 'undefined')
+				$form.find('input[name="features"][value="horn"]').prop('checked', true);
 		}).on('change click mousedown','input',$.throttle(100,generate));
 		$('#dialogButtons').prepend($downloadButton);
 

@@ -1789,6 +1789,7 @@ HTML;
 			'Eyes Bottom' => '#BEBEBE',
 			'Eyes Highlight Top' => '#542727',
 			'Eyes Highlight Bottom' => '#7E3A3A',
+			'Magic Aura' => '#B7B7B7',
 		);
 
 		$ColorMappings = CGUtils::getColorMapping($this->_appearance['id'], $DefaultMapping);
