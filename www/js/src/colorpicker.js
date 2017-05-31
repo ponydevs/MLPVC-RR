@@ -685,12 +685,13 @@
 		getPickingAreas(){
 			return this._pickingAreas;
 		}
-		clearPickingAreas(){
+		clearPickingAreas(bulk = false){
 			this._pickingAreas = {};
 			if (!this.isActive())
 				return;
 
-			ColorPicker.getInstance().redrawPickingAreas();
+			if (!bulk)
+				ColorPicker.getInstance().redrawPickingAreas();
 		}
 		removePickingArea(ix, bulk = false){
 			if (typeof this._pickingAreas[ix] === 'undefined')
@@ -1149,10 +1150,57 @@
 
 					$li.toggleClass('selected').find('.selected').removeClass('selected');
 				}
+				else if (e.shiftKey && !e.altKey && !e.ctrlKey){
+					const
+						$lastClicked = this._$areasSidebar.find('.lastclicked'),
+						lClen = $lastClicked.length;
+
+					if (lClen > 0){
+						const isTabItem = $li.children('ul').length > 0;
+						let startIndex, endIndex, $sameLevelEntries;
+						if (!isTabItem){
+							startIndex = $lastClicked.index();
+							endIndex = $li.index();
+							$sameLevelEntries = $li.parent().find('.entry');
+
+							if (!$li.parent().is($lastClicked.parent()))
+								startIndex = Math.min(endIndex,$li.siblings().first().index());
+
+						}
+						else {
+							const isLastClickedTabItem = $lastClicked.children('ul').length > 0;
+							if (isLastClickedTabItem){
+								startIndex = $lastClicked.index();
+								endIndex = $li.index();
+								$sameLevelEntries = $li.parent().children();
+							}
+							else {
+								$li.addClass('selected');
+							}
+						}
+
+						this._$areasSidebar.find('li.selected').removeClass('selected');
+
+						if (typeof startIndex !== 'undefined'){
+							// Swap start & end
+							if (startIndex > endIndex){
+								const tmp = startIndex;
+								startIndex = endIndex;
+								endIndex = tmp;
+							}
+
+							for (let i = startIndex; i <= endIndex || i < lClen; i++){
+								$sameLevelEntries.eq(i).addClass('selected');
+							}
+						}
+					}
+				}
 				else {
 					this._$areasSidebar.find('li.selected').removeClass('selected');
 					$li.addClass('selected');
 				}
+				this._$areasSidebar.find('li.lastclicked').removeClass('lastclicked');
+				$li.addClass('lastclicked');
 			}).on('dblclick','.entry',e => {
 				e.preventDefault();
 
@@ -1457,7 +1505,7 @@
 
 				if (isEntireTab){
 					const tabIndex = $this.index();
-					tabs[tabIndex].clearPickingAreas();
+					tabs[tabIndex].clearPickingAreas(true);
 				}
 				else {
 					const tabIndex = $this.parents('li').index();
@@ -1470,7 +1518,7 @@
 
 			$.each(guids,(tabIndex,guids) => {
 				$.each(guids,(_,guid) =>{
-					tabs[tabIndex].removePickingArea(guid);
+					tabs[tabIndex].removePickingArea(guid, true);
 				});
 			});
 
