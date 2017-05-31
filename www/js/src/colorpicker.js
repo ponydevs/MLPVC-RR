@@ -915,15 +915,6 @@
 					});
 				});
 			});
-			this._$clearAreas = $.mk('button').attr({'class':'place-area fa fa-eraser','data-info':'Clear picking areas from the current tab'}).on('click',e => {
-				e.preventDefault();
-
-				const activeTab = Tabbar.getInstance().getActiveTab();
-				if (!activeTab)
-					return;
-
-				activeTab.clearPickingAreas();
-			});
 			this._$zoomin = $.mk('button').attr({'class':'zoom-in fa fa-search-plus','data-info':'Zoom in (Alt+Scroll Up)'}).on('click',(e, trigger) => {
 				e.preventDefault();
 
@@ -995,10 +986,10 @@
 					this._$zoomTool,
 					this._$contrastChanger
 				),
-				$.mk('div').attr('class','debug-tools').append(
+				/*$.mk('div').attr('class','debug-tools').append(
 					"<span class='label'>Debugging</span>",
-					this._$clearAreas
-				),
+
+				),*/
 				$.mk('div').attr('class','zoom-controls').append(
 					"<span class='label'>Zooming</span>",
 					this._$zoomin,
