@@ -1466,7 +1466,7 @@
 					let avgcbg, avgcsout;
 					if (hexOut){
 						avgcbg = new ColorFormatter(avgc).toString();
-						avgcsout = avgchex+(avgc.alpha !== 255 ? ` @ ${$.roundTo(avgc.alpha/255,2)}%`:'');
+						avgcsout = avgchex+(avgc.alpha !== 255 ? ` @ ${$.roundTo((avgc.alpha/255)*100,2)}%`:'');
 					}
 					else {
 						avgcbg = new ColorFormatter(avgc).toRGBString();
