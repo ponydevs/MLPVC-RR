@@ -16,6 +16,12 @@
 		</ul>
 	</li>
 	<li>
+		<a class="dropdown">Tools</a>
+		<ul class="hidden">
+			<li><a id="clear-settings">Clear settings</a></li>
+		</ul>
+	</li>
+	<li>
 		<a id="about-dialog">About</a>
 	</li>
 </ul>

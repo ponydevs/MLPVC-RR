@@ -507,7 +507,9 @@
 			else return true;
 		})(el);
 
-	$.roundTo = (number, precision) => {
+	$.roundTo = (number, precision = 0) => {
+		if (precision === 0)
+			console.warn('$.roundTo called with precision 0; you might as well use Math.round');
 		let pow = Math.pow(10, precision);
 		return Math.round(number*pow)/pow;
 	};

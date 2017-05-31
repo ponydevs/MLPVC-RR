@@ -32,6 +32,7 @@
 			return (((1+Math.random())*0x10000)|0).toString(16).substring(1);
 	    },
 		guid = () => (S4()+S4()+"-"+S4()+"-"+S4()+"-"+S4()+"-"+S4()+S4()+S4()),
+		isMac = typeof navigator.userAgent === 'string' && /(macos|iphone|os ?x|ip[ao]d)/i.test(navigator.userAgent),
 		filterSupport = (function(){
 			// https://stackoverflow.com/a/11047247/1344955
 			function test(checkPrefix = false){
@@ -193,9 +194,7 @@
 			super(boundingRect);
 			this.slices = slices;
 		}
-		/**
-		 * @return {Pixel}
-		 */
+		/** @return {Pixel} */
 		getAverageColor(){
 			return PickingArea.averageColor(this._getPixels( (x, y) => this.slices[y].skip < x && x < this.slices[y].skip+this.slices[y].length ));
 		}
@@ -286,6 +285,9 @@
 		save(){
 			$.LocalStorage.set(settingsLSKey,JSON.stringify(this._settings));
 		}
+		static clear(){
+			$.LocalStorage.remove(settingsLSKey);
+		}
 	}
 
 	class ColorFormatter {
@@ -359,7 +361,7 @@
 				if (!$this.hasClass('dropdown'))
 					return;
 
-				this._$menubar.find('a.active').removeClass('active');
+				this._$menubar.find('a.active').removeClass('active').next().addClass('hidden');
 				$this.addClass('active').next().removeClass('hidden');
 			});
 			this._$filein = $.mk('input','screenshotin').attr({
@@ -401,6 +403,18 @@
 					});
 				};
 				next();
+			});
+			this._$clearSettings = $('#clear-settings').on('click',e => {
+				e.preventDefault();
+
+				$.Dialog.confirm('Clear settings','<p>The editor remembers your picking area size, sidebar color format and sidebar width settings.</p><p>If you want to reset these to their defaults, click the "Clear settings" button below.</p><p><strong>This will reload the picker, and any progress will be lost.</strong></p>',['Clear settings','Nevermind'],sure => {
+					if (!sure) return;
+
+					$.Dialog.wait(false, 'Clearing settings');
+
+					PersistentSettings.clear();
+					window.location.reload();
+				});
 			});
 			const $aboutTemplate = $('#about-dialog-template').children();
 			this._$aboutDialog = $('#about-dialog').on('click',function(){
@@ -469,6 +483,9 @@
 		setInfo(text = ''){
 			if (this.infoLocked)
 				return;
+
+			if (isMac)
+				text.replace(/Shift/g,'Option').replace(/Ctrl/g,'Command');
 
 			this._$info.text(text);
 		}
@@ -553,7 +570,7 @@
 				name: undefined,
 			};
 			this.setName(imageName);
-			this._$pickAreaColorDisplay = $.mk('span').attr({'class':'pickcolor','data-info':'Color of the picking areas on this specific tab'});
+			this._$pickAreaColorDisplay = $.mk('span').attr({'class':'pickcolor','data-info':'Change the color of the picking areas on this tab'});
 			this._$el = $.mk('li').attr('class','tab').append(
 				this._$pickAreaColorDisplay,
 				$.mk('span').attr({'class':'filename','data-info':this.file.name+'.'+this.file.extension}).text(this.file.name),
@@ -872,7 +889,7 @@
 
 				this.switchTool('hand');
 			});
-			this._$pickerTool = $.mk('button').attr({'class':'fa fa-eyedropper','data-info':'Eyedropper Tool (I) - Click to place picking areas on the image'}).on('click',e => {
+			this._$pickerTool = $.mk('button').attr({'class':'fa fa-eyedropper','data-info':'Eyedropper Tool (I) - Click to place picking areas on the image (Hold Alt for rounded area)'}).on('click',e => {
 				e.preventDefault();
 
 				this.switchTool('picker');
@@ -1119,10 +1136,16 @@
 				this.deleteSelectedAreas();
 			});
 			this._$displayFormatSwitch = $.mk('button').attr('class','fa');
+			this._$selectAllAreas = $.mk('button').attr({'class':'fa fa-check-circle','data-info':'Selects all areas (Ctrl+A). Shift+Click to deselect (Ctrl+Shift+A).'}).on('click',e => {
+				e.preventDefault();
+
+				this.selectAllAreas(e.shiftKey);
+			});
 			this.setSidebarDisplayFormat(PersistentSettings.getInstance().get('sidebarColorFormat'), false);
 			this._$areasListButtons = $.mk('div').attr('class','action-buttons').append(
 				this._$areasDeleteSelected,
-				this._$displayFormatSwitch
+				this._$displayFormatSwitch,
+				this._$selectAllAreas
 			);
 			this._$areasSidebar = $('#areas-sidebar').append(
 				this._$listResizeHandle,
@@ -1441,8 +1464,10 @@
 						hexOut = this._sidebarDisplayFormat === 'hex',
 						avgchex = new ColorFormatter(avgc).toHexString();
 					let avgcbg, avgcsout;
-					if (hexOut)
-						avgcbg = avgcsout = avgchex;
+					if (hexOut){
+						avgcbg = new ColorFormatter(avgc).toString();
+						avgcsout = avgchex+(avgc.alpha !== 255 ? ` @ ${$.roundTo(avgc.alpha/255,2)}%`:'');
+					}
 					else {
 						avgcbg = new ColorFormatter(avgc).toRGBString();
 						avgcsout = avgcbg.replace(/^rgba?\((.+)\)$/,'$1').split(',');
@@ -1484,9 +1509,15 @@
 				);
 			}
 		}
+		selectAllAreas(unselect = false){
+			this._$areasList.children()[unselect?'removeClass':'addClass']('selected');
+		}
 		deleteSelectedAreas(){
+			const $selected = this._$areasList.find('.selected');
+			if (!$selected.length)
+				return;
+
 			const
-				$selected = this._$areasList.find('.selected'),
 				guids = {},
 				tabs = Tabbar.getInstance().getTabs();
 			$selected.each((_,el) => {
@@ -1907,6 +1938,12 @@
 					return;
 
 				ColorPicker.getInstance().deleteSelectedAreas();
+			break;
+			case Key.A:
+				if (!e.ctrlKey || e.altKey)
+					return;
+
+				ColorPicker.getInstance().selectAllAreas(e.shiftKey);
 			break;
 			default:
 				return;
