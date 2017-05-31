@@ -109,12 +109,14 @@
 		UpArrrow: 38,
 		RightArrow: 39,
 		DownArrrow: 40,
+		Delete: 46,
 		0: 48,
 		1: 49,
 		A: 65,
 		H: 72,
 		I: 73,
 		O: 79,
+		Z: 90,
 		Comma: 188,
 	};
 	$.isKey = function(Key, e){

@@ -13,7 +13,6 @@
 		<a class="dropdown">File</a>
 		<ul class="hidden">
 			<li><a id="open-image">Open&hellip; <span class="kbd">(Ctrl+K)</span></a></li>
-			<li><a id="close-active-tab" class="disabled">Close current tab</a></li>
 		</ul>
 	</li>
 	<li>
@@ -22,6 +21,9 @@
 </ul>
 <ul id="tabbar" class="dragscroll" data-info="If you open a lot of tabs you can drag on them to move around"></ul>
 <div id="picker"></div>
+<div id="areas-sidebar">
+	<span class="label">Picking area list</span>
+</div>
 <div id="statusbar">
 	<div class="info"><span class="fa fa-info"></span> Use the File menu or drag &amp; drop images to open them for color picking</div>
 	<ul class="pos">

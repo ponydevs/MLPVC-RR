@@ -135,7 +135,7 @@
 	#main {
 		position: relative;
 		z-index: 1;
-		padding: 8px 8px #{8px + $FooterHeight} 8px;
+		padding: $MainMargin $MainMargin #{$MainMargin + $FooterHeight} $MainMargin;
 	}
 	#content h1 {
 		font-size: 2em;
@@ -163,7 +163,7 @@
 @media all and (min-width: $SidebarBreakpoint){
 	body.sidebar-open {
 		#sidebar { left: 0 !important }
-		#main { padding-left: calc(#{$SidebarWidth} + 8px) }
+		#main { padding-left: $SidebarWidth + $MainMargin }
 	}
 	body.loading {
 		#sidebar { transition: none !important }

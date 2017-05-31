@@ -24,7 +24,32 @@ $TabInactiveTopOffset: 2px;
 $StatusbarHeight: 24px + 1px;
 body {
 	font-family: 'PT Sans', sans-serif;
+	overflow: hidden;
+
+	&.area-list-resizing {
+		&, * {
+			cursor: w-resize !important;
+		}
+	}
 }
+::-webkit-scrollbar {
+	width: 10px;
+	height: 10px;
+	background-color: $UIBackground;
+}
+::-webkit-scrollbar {
+	width: 10px;
+	height: 10px;
+	background-color: $UIBackground;
+}
+::-webkit-scrollbar-thumb:vertical,
+::-webkit-scrollbar-thumb:horizontal {
+	background-color: $UIColor;
+	border: 2px solid $UIBackground;
+	border-radius: 5px;
+}
+::-webkit-scrollbar-thumb:vertical { width: 6px }
+::-webkit-scrollbar-thumb:horizontal { height: 6px }
 #dialogOverlay {
 	background: rgba(black, .6);
 }
@@ -303,6 +328,246 @@ body {
 		}
 	}
 }
+%panel {
+	position: absolute;
+	z-index: 4;
+	background-color: rgba(darken($UIBackground,6), .9);
+	color: $UIColor;
+	border: 1px solid $UIBorders;
+	cursor: default;
+}
+#areas-sidebar {
+	@extend %panel;
+	top: $MenubarHeight+$TabbarHeight;
+	right: 0;
+	width: 0;
+	height: calc(100% - #{$MenubarHeight+$TabbarHeight+$StatusbarHeight});
+	border-width: 0 0 0 1px;
+	box-sizing: border-box;
+	user-select: none;
+	text-align: left;
+	background-color: $UIBackground;
+
+	$handleSize: 4px;
+
+	body.area-list-resizing & .resize-handle, .resize-handle:hover {
+		$color: darken(deepskyblue,7);
+		background-color: $color;
+		box-shadow: 0 0 10px black;
+	}
+
+	> .resize-handle {
+		position: absolute;
+		z-index: 3;
+		top: 0;
+		left: -$handleSize/2;
+		height: 100%;
+		width: $handleSize;
+		background-color: transparent;
+		cursor: w-resize;
+		border-left: 0 solid transparent;
+		transition-property: background-color, box-shadow;
+		transition-duration: .2s;
+		transition-timing-function: linear;
+	}
+
+	$sbHeadingHeight: 16px;
+	$sbHeadingMargin: 14px;
+	> .label {
+		display: block;
+		font-size: 14px;
+		margin: 4px 0 10px;
+		line-height: 1em;
+		text-transform: uppercase;
+		pointer-events: none;
+		text-align: center;
+		height: $sbHeadingHeight;
+		box-sizing: border-box;
+	}
+
+	$selectCircleColor: #b7b7b7;
+
+	li {
+    &.selected {
+      > span, & {
+        > .select-handle {
+          border-color: $selectCircleColor;
+        }
+      }
+    }
+		.select-handle {
+			$size: 8px;
+			display: block;
+			flex: 0 0 auto;
+			width: $size;
+			height: $size;
+			border-radius: 50%;
+			padding: 1px;
+			border: 1px solid transparent;
+			margin-left: $size;
+			cursor: pointer;
+
+			&:before {
+				content:"";
+				display: block;
+				width: $size;
+				height: $size;
+				border: 1px solid $selectCircleColor;
+				border-radius: 50%;
+				box-sizing: border-box;
+			}
+		}
+	}
+
+	ul {
+		margin: 0;
+		display: flex;
+		flex-flow: column nowrap;
+		align-items: flex-start;
+		list-style: none;
+
+		li {
+			&.selected {
+				&.entry, > .entry {
+		      background-color: #374E63;
+				}
+			}
+			&.entry, > .entry {
+				height: 1.5em;
+			}
+		}
+
+		> li {
+			flex: 0 0 auto;
+			width: 100%;
+			display: block;
+      overflow: hidden;
+		}
+	}
+
+	$buttonsHeight: 28px;
+	$buttonMargin: 1px;
+
+	> ul {
+		position: absolute;
+		top: $sbHeadingHeight + $sbHeadingMargin;
+		left: 0;
+		height: calc(100% - #{$sbHeadingHeight + $sbHeadingMargin + $buttonsHeight});
+		padding: 0 0 6px;
+		width: 100%;
+		overflow-y: auto;
+		box-sizing: border-box;
+
+		&:not(:last-child) {
+			border-bottom: 1px solid $UIBorders;
+		}
+
+		> li {
+			> span {
+				display: flex;
+				flex-flow: row nowrap;
+				white-space: nowrap;
+				align-items: center;
+				justify-content: space-between;
+				padding: 0 8px;
+				box-sizing: border-box;
+
+				> .name {
+					flex: 0 1 auto;
+					display: block;
+			    overflow: hidden;
+          text-overflow: ellipsis;
+				}
+			}
+			> ul {
+				padding: 0;
+				display: block;
+				list-style: none;
+
+				> li {
+					display: flex;
+					flex-flow: row nowrap;
+					white-space: nowrap;
+					align-items: center;
+					justify-content: space-between;
+					padding: 0 8px 0 16px;
+					box-sizing: border-box;
+
+					> .index {
+						flex: 0 0 20px;
+						font-family: $monospace;
+						margin-right: 10px;
+						text-align:center;
+					}
+					> .color {
+						flex: 0 1 auto;
+						display: block;
+				    overflow: hidden;
+	          text-overflow: ellipsis;
+            padding: 0 3px;
+            border-radius: 2px;
+            font-family: $monospace;
+					}
+					> .size {
+						flex: 1 0 auto;
+						display: block;
+						text-align: right;
+						font-size: .9em;
+						color: white;
+
+						&.rounded span {
+							border-radius: 50%;
+						}
+						span {
+							background-color: rgba(gray, .8);
+							text-shadow: 0 0 5px black;
+							line-height: 1em;
+							display: inline-block;
+							padding: 3px;
+							border: 1px solid silver;
+						}
+					}
+				}
+			}
+		}
+	}
+
+	.action-buttons {
+		position: absolute;
+		z-index: 2;
+		bottom: 0;
+		left: 0;
+		width: 100%;
+		height: $buttonsHeight;
+		border-top: 1px solid $UIBorders;
+		background-color: $UIBackground;
+		box-sizing: border-box;
+		display: flex;
+
+		button {
+			display: inline-block;
+			height: $buttonsHeight - ($buttonMargin*2);
+			box-sizing: border-box;
+			margin: 1px;
+			border: 1px solid transparent;
+			background-color: transparent;
+			flex: 1 1 auto;
+
+			&:not(:last-child) {
+			 margin-right: $buttonMargin;
+			}
+
+			&:hover {
+				border-color: $UIBorders;
+				background-color: rgba(black, .3);
+			}
+
+			&:active {
+				box-shadow: inset 0 0 3px black;
+			}
+		}
+	}
+}
 #picker {
 	position: absolute;
 	z-index: 1;
@@ -312,7 +577,7 @@ body {
 	top: $MenubarHeight + $TabbarHeight;
 	left: 0;
 	width: 100%;
-	height: calc(100% - #{$MenubarHeight} - #{$TabbarHeight} - #{$StatusbarHeight});
+	height: calc(100% - #{$MenubarHeight+$TabbarHeight+$StatusbarHeight});
 	cursor: url('/img/colorpicker/normal.cur'), default;
 	background: $EditorBG;
 
@@ -355,15 +620,11 @@ body {
 
 	$btnsize: 24px;
 	$btnpadding: 4px;
+
 	.actions {
-		position: absolute;
-		z-index: 4;
-		background-color: rgba($UIBackground, .9);
-		color: $UIColor;
-		border: 1px solid $UIBorders;
 		padding: 5px;
 		text-align: center;
-		cursor: default;
+		@extend %panel;
 
 		&:empty {
 			display: none;
@@ -382,8 +643,19 @@ body {
 			&:not(:last-child){
 				$spacing: 4px;
 				margin-bottom: $spacing;
-				border-bottom: 1px solid $UIBorders;
+				border-bottom: 1px solid transparent;
 				padding-bottom: $spacing;
+
+				&:after {
+					content: "";
+					position: absolute;
+					display: block;
+					bottom: -$spacing - 1px;
+					left: $spacing;
+					width: 100%;
+					height: 0;
+					border-bottom: 1px solid $UIBorders;
+				}
 			}
 
 			> .label {
@@ -534,6 +806,10 @@ body {
 
 			&:empty {
 				display: none;
+			}
+
+			.color {
+				user-select: all;
 			}
 
 			button {

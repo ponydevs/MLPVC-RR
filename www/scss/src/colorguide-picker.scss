@@ -4,8 +4,8 @@ html, body {
 	overflow: hidden;
 }
 #main {
-	height: calc(100% - #{$HeaderHeight} - #{$FooterHeight});
-	padding-bottom: 10px;
+	height: calc(100% - #{$HeaderHeight + $FooterHeight});
+	padding-bottom: $MainMargin;
 }
 #content {
 	border: 0;
