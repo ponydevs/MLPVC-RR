@@ -278,7 +278,7 @@ class CoreUtils {
 			self::_formatFilePath($item, $relpath, $ext);
 	}
 
-	static function asset(string $fname, string $relpath, string $type):string {
+	static function cachedAsset(string $fname, string $relpath, string $type):string {
 		self::_formatFilePath($fname, $relpath, $type);
 		return $fname;
 	}

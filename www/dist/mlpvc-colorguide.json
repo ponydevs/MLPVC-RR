@@ -5397,8 +5397,13 @@
 						},
 						{
 							"order": 2,
+							"label": "Shadow Outline",
+							"hex": "#2D7FB4"
+						},
+						{
+							"order": 3,
 							"label": "Shadow Fill",
-							"hex": "#5DAAE3"
+							"hex": "#5F9FD0"
 						}
 					]
 				},
@@ -12497,22 +12502,17 @@
 						{
 							"order": 0,
 							"label": "Outline",
-							"hex": "#FF80C6"
+							"hex": "#F070B6"
 						},
 						{
 							"order": 1,
 							"label": "Fill",
-							"hex": "#FFC3E5"
+							"hex": "#FFBCDD"
 						},
 						{
 							"order": 2,
-							"label": "Shadow Outline",
-							"hex": "#F673B8"
-						},
-						{
-							"order": 3,
 							"label": "Shadow Fill",
-							"hex": "#FFB0D8"
+							"hex": "#F8A4D1"
 						}
 					]
 				},
@@ -12524,12 +12524,12 @@
 						{
 							"order": 0,
 							"label": "Outline",
-							"hex": "#533251"
+							"hex": "#432142"
 						},
 						{
 							"order": 1,
 							"label": "Fill",
-							"hex": "#955495"
+							"hex": "#814081"
 						}
 					]
 				},
@@ -12541,22 +12541,22 @@
 						{
 							"order": 0,
 							"label": "Gradient Top",
-							"hex": "#681D46"
+							"hex": "#550D36"
 						},
 						{
 							"order": 1,
 							"label": "Gradient Bottom",
-							"hex": "#CD2F89"
+							"hex": "#BE1D76"
 						},
 						{
 							"order": 2,
 							"label": "Highlight Top",
-							"hex": "#EB64B1"
+							"hex": "#DC52A3"
 						},
 						{
 							"order": 3,
 							"label": "Highlight Bottom",
-							"hex": "#FFBFE7"
+							"hex": "#FFB7E1"
 						}
 					]
 				},
@@ -12568,17 +12568,17 @@
 						{
 							"order": 0,
 							"label": "Candy 1",
-							"hex": "#FF81BA"
+							"hex": "#F36FAB"
 						},
 						{
 							"order": 1,
 							"label": "Candy 2",
-							"hex": "#FFAD89"
+							"hex": "#F5A072"
 						},
 						{
 							"order": 2,
 							"label": "Candy 3",
-							"hex": "#FFD77C"
+							"hex": "#F8CF71"
 						},
 						{
 							"order": 3,
@@ -12588,42 +12588,42 @@
 						{
 							"order": 4,
 							"label": "Cup Top",
-							"hex": "#7FC9C7"
+							"hex": "#72BDBA"
 						},
 						{
 							"order": 5,
 							"label": "Cup Fill 1",
-							"hex": "#A2E3BE"
+							"hex": "#98DAB2"
 						},
 						{
 							"order": 6,
 							"label": "Cup Fill 2",
-							"hex": "#BFF7C6"
+							"hex": "#BBF2BC"
 						},
 						{
 							"order": 7,
 							"label": "Cupcake Fill 1",
-							"hex": "#C477C6"
+							"hex": "#B467B1"
 						},
 						{
 							"order": 8,
 							"label": "Cupcake Fill 2",
-							"hex": "#E0A5E0"
+							"hex": "#D497D4"
 						},
 						{
 							"order": 9,
 							"label": "Cherry Fill",
-							"hex": "#FF696D"
+							"hex": "#EC5859"
 						},
 						{
 							"order": 10,
 							"label": "Cherry Stroke",
-							"hex": "#C8454F"
+							"hex": "#AA333A"
 						},
 						{
 							"order": 11,
 							"label": "Cherry Stem",
-							"hex": "#57334E"
+							"hex": "#371F34"
 						}
 					]
 				},
@@ -12635,7 +12635,7 @@
 						{
 							"order": 0,
 							"label": "Magic",
-							"hex": "#47C0CC"
+							"hex": "#21C4C2"
 						}
 					]
 				},
@@ -12647,22 +12647,22 @@
 						{
 							"order": 0,
 							"label": "Outline 1",
-							"hex": "#13A9A9"
+							"hex": "#009796"
 						},
 						{
 							"order": 1,
 							"label": "Fill 1",
-							"hex": "#0FDAD9"
+							"hex": "#00CBCA"
 						},
 						{
 							"order": 2,
 							"label": "Outline 2",
-							"hex": "#89CBC8"
+							"hex": "#7BBEBC"
 						},
 						{
 							"order": 3,
 							"label": "Fill 2",
-							"hex": "#D1FFEC"
+							"hex": "#CCFBE7"
 						}
 					]
 				}
@@ -12675,7 +12675,9 @@
 				41,
 				65,
 				99,
-				353
+				353,
+				453,
+				469
 			],
 			"RelatedAppearances": []
 		},
@@ -12696,17 +12698,17 @@
 						{
 							"order": 0,
 							"label": "Outline",
-							"hex": "#75C3D3"
+							"hex": "#64B4C4"
 						},
 						{
 							"order": 1,
 							"label": "Fill",
-							"hex": "#C7F0F2"
+							"hex": "#C2EAEC"
 						},
 						{
 							"order": 2,
 							"label": "Shadow Fill",
-							"hex": "#A7DEE6"
+							"hex": "#9ED6DB"
 						}
 					]
 				},
@@ -12718,17 +12720,17 @@
 						{
 							"order": 0,
 							"label": "Outline",
-							"hex": "#366395"
+							"hex": "#214E7F"
 						},
 						{
 							"order": 1,
 							"label": "Fill 1",
-							"hex": "#4886CE"
+							"hex": "#3273BA"
 						},
 						{
 							"order": 2,
 							"label": "Fill 2",
-							"hex": "#62A8E1"
+							"hex": "#5098CE"
 						}
 					]
 				},
@@ -12740,17 +12742,17 @@
 						{
 							"order": 0,
 							"label": "Gradient Top",
-							"hex": "#2B4E99"
+							"hex": "#173C85"
 						},
 						{
 							"order": 1,
 							"label": "Gradient Middle",
-							"hex": "#6E9FFF"
+							"hex": "#4C7AD6"
 						},
 						{
 							"order": 2,
 							"label": "Gradient Bottom",
-							"hex": "#B0EBFF"
+							"hex": "#A8E5FF"
 						}
 					]
 				},
@@ -12762,37 +12764,37 @@
 						{
 							"order": 0,
 							"label": "Balloon Fill 1",
-							"hex": "#EB5095"
+							"hex": "#CF407D"
 						},
 						{
 							"order": 1,
 							"label": "Balloon Fill 2",
-							"hex": "#F36AAB"
+							"hex": "#DE5898"
 						},
 						{
 							"order": 2,
 							"label": "Balloon Fill 3",
-							"hex": "#F88FC2"
+							"hex": "#E780B3"
 						},
 						{
 							"order": 3,
 							"label": "Balloon Highlight",
-							"hex": "#FFD3E9"
+							"hex": "#F6CAE2"
 						},
 						{
 							"order": 4,
 							"label": "Confetti 1",
-							"hex": "#7F6DAF"
+							"hex": "#6B5B9C"
 						},
 						{
 							"order": 5,
 							"label": "Confetti 2",
-							"hex": "#FFAE75"
+							"hex": "#EDA467"
 						},
 						{
 							"order": 6,
 							"label": "Confetti 3",
-							"hex": "#FFD269"
+							"hex": "#F6CA5F"
 						},
 						{
 							"order": 7,
@@ -12809,7 +12811,7 @@
 						{
 							"order": 0,
 							"label": "Aura",
-							"hex": "#DE9CC1"
+							"hex": "#E79AC3"
 						}
 					]
 				}
@@ -12823,7 +12825,8 @@
 				65,
 				99,
 				163,
-				351
+				351,
+				453
 			],
 			"RelatedAppearances": []
 		},
@@ -17818,17 +17821,17 @@
 						{
 							"order": 0,
 							"label": "Outline",
-							"hex": "#2F5173"
+							"hex": "#1E3F5E"
 						},
 						{
 							"order": 1,
 							"label": "Fill",
-							"hex": "#4C7DAF"
+							"hex": "#366B9A"
 						},
 						{
 							"order": 2,
 							"label": "Shadow Fill",
-							"hex": "#406C93"
+							"hex": "#2C587F"
 						}
 					]
 				},
@@ -17840,17 +17843,17 @@
 						{
 							"order": 0,
 							"label": "Outline",
-							"hex": "#9BAAE8"
+							"hex": "#8B9CDB"
 						},
 						{
 							"order": 1,
 							"label": "Fill 1",
-							"hex": "#E1E6FA"
+							"hex": "#DCE2F3"
 						},
 						{
 							"order": 2,
 							"label": "Fill 2",
-							"hex": "#C4CFF4"
+							"hex": "#BBC5EA"
 						},
 						{
 							"order": 3,
@@ -17867,27 +17870,27 @@
 						{
 							"order": 0,
 							"label": "Gradient Top",
-							"hex": "#1378AB"
+							"hex": "#006597"
 						},
 						{
 							"order": 1,
 							"label": "Gradient Middle",
-							"hex": "#47CFFF"
+							"hex": "#2AB1EA"
 						},
 						{
 							"order": 2,
 							"label": "Gradient Bottom",
-							"hex": "#6EDCFF"
+							"hex": "#65CFFF"
 						},
 						{
 							"order": 3,
 							"label": "Highlight Top",
-							"hex": "#90E2FF"
+							"hex": "#88DBFA"
 						},
 						{
 							"order": 4,
 							"label": "Highlight Bottom",
-							"hex": "#D5F3FF"
+							"hex": "#D5F2FF"
 						}
 					]
 				},
@@ -17899,32 +17902,32 @@
 						{
 							"order": 0,
 							"label": "Moon Base",
-							"hex": "#385E83"
+							"hex": "#274B6C"
 						},
 						{
 							"order": 1,
 							"label": "Crescent",
-							"hex": "#FFFFCB"
+							"hex": "#FFFFC4"
 						},
 						{
 							"order": 2,
 							"label": "Feather Center",
-							"hex": "#D6E4FF"
+							"hex": "#D1DFFF"
 						},
 						{
 							"order": 3,
 							"label": "Feather Fill 1",
-							"hex": "#97ABEB"
+							"hex": "#8A9DDE"
 						},
 						{
 							"order": 4,
 							"label": "Feather Fill 2",
-							"hex": "#6A8AD2"
+							"hex": "#5B79CA"
 						},
 						{
 							"order": 5,
 							"label": "Feather Fill 3",
-							"hex": "#44608D"
+							"hex": "#2A4A74"
 						}
 					]
 				}
@@ -17938,7 +17941,8 @@
 				65,
 				99,
 				307,
-				353
+				353,
+				453
 			],
 			"RelatedAppearances": []
 		},
@@ -23148,7 +23152,7 @@
 						{
 							"order": 0,
 							"label": "Outline",
-							"hex": "#BFD1E1"
+							"hex": "#B5C8D6"
 						},
 						{
 							"order": 1,
@@ -23158,12 +23162,12 @@
 						{
 							"order": 2,
 							"label": "Shadow Outline",
-							"hex": "#B2C7D2"
+							"hex": "#A4BBC8"
 						},
 						{
 							"order": 3,
 							"label": "Shadow Fill",
-							"hex": "#D6E3E5"
+							"hex": "#CEDEDE"
 						}
 					]
 				},
@@ -23175,12 +23179,12 @@
 						{
 							"order": 0,
 							"label": "Outline",
-							"hex": "#A6BFD8"
+							"hex": "#99B2CA"
 						},
 						{
 							"order": 1,
 							"label": "Fill 1",
-							"hex": "#F2FBFF"
+							"hex": "#F1FAFA"
 						},
 						{
 							"order": 2,
@@ -23197,17 +23201,17 @@
 						{
 							"order": 0,
 							"label": "Gradient Top",
-							"hex": "#2B4E99"
+							"hex": "#173B85"
 						},
 						{
 							"order": 1,
 							"label": "Gradient Middle",
-							"hex": "#6E9FFF"
+							"hex": "#4B7BD8"
 						},
 						{
 							"order": 2,
 							"label": "Gradient Bottom",
-							"hex": "#B0EBFF"
+							"hex": "#A8E5FF"
 						}
 					]
 				},
@@ -23219,12 +23223,12 @@
 						{
 							"order": 0,
 							"label": "Fill",
-							"hex": "#87B1E6"
+							"hex": "#77A3D7"
 						},
 						{
 							"order": 1,
 							"label": "Inner Strokes",
-							"hex": "#BEDBFA"
+							"hex": "#B3D4F0"
 						}
 					]
 				},
@@ -23236,12 +23240,12 @@
 						{
 							"order": 0,
 							"label": "Outline",
-							"hex": "#603860"
+							"hex": "#4D284D"
 						},
 						{
 							"order": 1,
 							"label": "Fill",
-							"hex": "#9B579B"
+							"hex": "#874387"
 						}
 					]
 				}
@@ -23254,7 +23258,8 @@
 				52,
 				65,
 				99,
-				351
+				351,
+				453
 			],
 			"RelatedAppearances": []
 		},
@@ -24975,7 +24980,7 @@
 			"id": 135,
 			"order": 143,
 			"label": "Ms. Peachbottom",
-			"notes": "Far legs use darker colors. On the luggage:\n<b>Side Flower 1</b> represents the two flowers perpendicular to the tear\n<b>Side Flower 2</b> is the top flower in line with the tear\n<b>Side Flower 3</b> is the bottom one in line with the tear.",
+			"notes": "Far legs use darker colors. On the luggage:\n<strong>Side Flower 1</strong> represents the two flowers perpendicular to the tear\n<strong>Side Flower 2</strong> is the top flower in line with the tear\n<strong>Side Flower 3</strong> is the bottom one in line with the tear.",
 			"ishuman": false,
 			"added": "2016-05-10 14:59:53.741872+02",
 			"private": false,
@@ -30028,7 +30033,7 @@
 			"id": 231,
 			"order": 170,
 			"label": "Leadwing",
-			"notes": "Based on S5E10. Does not have shadow Coat colors. Cutie Mark colors may be inaccurate due to lack of suitable close-ups.\n<b>Lenses</b> are a gradient, starting at 80% opacity on the top and ending at 35% on the bottom.",
+			"notes": "Based on S5E10. Does not have shadow Coat colors. Cutie Mark colors may be inaccurate due to lack of suitable close-ups.\n<strong>Lenses</strong> are a gradient, starting at 80% opacity on the top and ending at 35% on the bottom.",
 			"ishuman": false,
 			"added": "2016-12-27 13:14:39.655841+01",
 			"private": false,
@@ -32270,7 +32275,7 @@
 			"id": 119,
 			"order": 187,
 			"label": "Tank",
-			"notes": "Far Legs use darker colors.\nIn some scenes, Tank uses an alternate set of colors for the tongue.\nFor the goggle lenses, group together the Fill and the Highlights (100% Normal blending) and set the group to 50% opacity.",
+			"notes": "Far legs use darker colors.\nIn some scenes, Tank uses an alternate set of colors for the tongue.\nFor the goggle lenses, group together the Fill and the Highlights (100% Normal blending) and set the group to 50% opacity.",
 			"ishuman": false,
 			"added": "2016-04-17 16:21:24.581344+02",
 			"private": false,
@@ -43774,7 +43779,7 @@
 			"name": "s06e25-26",
 			"title": null,
 			"type": "ep",
-			"uses": 1,
+			"uses": 5,
 			"synonym_of": null
 		},
 		"454": {
@@ -43902,7 +43907,7 @@
 			"name": "s07e08",
 			"title": null,
 			"type": "ep",
-			"uses": 4,
+			"uses": 5,
 			"synonym_of": null
 		},
 		"470": {

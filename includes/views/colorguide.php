@@ -14,7 +14,7 @@ use App\Tags;
 	<p>A searchable list of character colors from the <?=$EQG?'movies':'show'?></p>
 	<p class="align-center">
 		If you can’t find a character here, check the old guides: <a href="https://sta.sh/0kic0ngp3fy">Pony</a> / <a href="http://fav.me/d7120l1">EQG</a><br>
-		Looking for this information in a machine-readable format? <a href="/dist/mlpvc-colorguide.json" target="_blank" download="mlpvc-colorguide.json">JSON</a></p>
+		Looking for this information in a machine-readable format? <a href="<?=CoreUtils::cachedAsset('mlpvc-colorguide','dist','json')?>" target="_blank" download="mlpvc-colorguide.json">JSON</a></p>
 <?  if (Permission::sufficient('staff')){ ?>
 	<div class="notice warn tagediting">
 		<label>Limited editing</label>
