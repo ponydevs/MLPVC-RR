@@ -545,6 +545,7 @@
 						$head.children(CSSSelector.replace(/href/g,'data-remove=true')).remove();
 						$main.addClass('pls-wait').html(content);
 						$sidebar.html(sidebar);
+						$.WS.essentialElements();
 						$footer.html(footer);
 						Time.Update();
 						window.setUpcomingCountdown();
@@ -1161,6 +1162,9 @@ $(function(){
 
 					console.log('[WS] DevQuery '+(data.status?'Success':'Fail'), data);
 				}));
+			};
+			dis.essentialElements = () => {
+				essentialElements();
 			};
 			return dis;
 		})();
