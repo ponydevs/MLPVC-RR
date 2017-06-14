@@ -112,7 +112,7 @@ HTML;
 
 		$voting = $this->getListItemVoting($event);
 
-		$actions = Auth::$signed_in && (Auth::$user->id === $this->submitted_by || Permission::sufficient('staff')) && time() < strtotime($event->ends_at)
+		$actions = Auth::$signed_in && (Auth::$user->id === $this->submitted_by || Permission::sufficient('staff'))
 			? '<button class="blue typcn typcn-pencil edit-entry" title="Edit"></button><button class="red typcn typcn-times delete-entry" title="Withdraw"></button>'
 			: '';
 

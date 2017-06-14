@@ -370,8 +370,8 @@ class EventController extends Controller {
 
 		if ($action !== 'view'){
 			$endts = strtotime($this->_event->ends_at);
-			if ($endts < time())
-				Response::fail('This event has ended, entries can no longer be submitted or modified.');
+			if ($endts < time() && Permission::insufficient('staff'))
+				Response::fail('This event has ended, entries can no longer be submitted or modified. Please ask a staff member if you need to make any changes.');
 		}
 	}
 
