@@ -4,15 +4,16 @@
 
 The site is known to work with the following set of software, assuming correct configurations:
 
-| Category         | Name and version               |
-| ---------------- | ------------------------------ |
-| Operating System | Windows 10/8.1/7<br>Debian 8   |
-| Web Server       | nginx 1.10+<br>Apache 2.4+     |
-| RDBMS            | PostgreSQL 9.5+                |
-| Asset Pipeline   | Node.js 6.0+                   |
-| Runtime          | PHP 7.1+ with the following modules installed:<ul><li>mbsting</li><li>gd</li><li>xml</li><li>curl</li><li>pdo (pg)</li></ul> |
-| Source Control   | Git<br><small>(as obvious as it may seem, the site shows the commit data in the footer, so the binary is required to be accessible by the application) |
-| SSL Certificate  | Self-signed ([get a pair here](http://checktls.com/perl/GenCert.pl))<br><small>(optional, required to use the site through HTTPS while developing)</small> |
+| Category          | Name and version                              |
+| ----------------- | --------------------------------------------- |
+| Operating System  | Windows 10/8.1/7<br>Debian 8<br>Linux Mint 18 |
+| Web Server        | nginx 1.10+<br>Apache 2.4+                    |
+| RDBMS             | PostgreSQL 9.5+                               |
+| Asset Compliation | Node.js 6.0+                                  |
+| Search Server     | ElasticSearch 5.4+                            |
+| Runtime           | PHP 7.1+ with the following modules installed:<ul><li>mbsting</li><li>gd</li><li>xml</li><li>curl</li><li>pdo (pg)</li></ul> |
+| Source Control    | Git<br><small>(as obvious as it may seem, the site shows the commit data in the footer, so the binary is required to be accessible by the application)</small> |
+| SSL Certificate   | Self-signed ([get a pair here](https://djdavid98.hu/selfsigned))<br><small>(required to use the site through HTTPS while developing)</small> |
 
 If you can get it to work on some other setup then congratulations, but I cannot guarantee that everything will function as intended. 
 
@@ -22,7 +23,7 @@ This is the way my development enviromnemt is set up, so if you follow these ste
 
 ### PostrgeSQL
 
-The user must be named `mlpvc-rr` otherwise the permissions in the DB exports will not be set correctly and you'll likely get swamped with issues related to a missing role/user.
+The user must be named `mlpvc-rr` otherwise the permissions in the DB exports will not be set correctly and you'll likely get swamped with issues related to a missing role/user. WHile you're at it you might as well create the required database and extension.
 
 ```
 $ su - postgres
@@ -30,18 +31,22 @@ $ psql
 psql (9.5.4)
 Type "help" for help.
 
-postgres=# CREATE USER "mlpvc-rr" WITH PASSWORD '12345678';
+postgres=# CREATE USER "mlpvc-rr" WITH LOGIN PASSWORD '<password>';
+postgres=# CREATE DATABASE "mlpvc-rr" WITH OWNER "mlpvc-rr";
+postgres=# CREATE EXTENSION citext;
 postgres=# \q
 $ exit
 ```
 
-I recommend [Adminer](https://www.adminer.org/) for schema importing/editing, unless you know the command line well enough. I don't.
+I recommend [Adminer](https://www.adminer.org/) for schema importing/editing, unless you know the command line well enough.
 
 ### PHP
 
 Make sure `short_open_tag` is set to `On` or another truth-y value in `php.ini`. File uploading should be enabled and a reasonable maximum POST-able/uploadable file size must be set to be able to uplod sprite images in the Color Guide. You'll need to copy the `setup/conf.php` file into the `includes` directory and change the empty values to whatever your environment uses.
 
-Optionally, use the `xdebug` extension or [Kint](http://raveren.github.io/kint/) to ease debugging with stack traces/cleaner var_dump outputs. Setting `max_execution_time` to `30` *(seconds)* or below is also recommended for development in case an infinite loop breaks loose. You never know. It has to be a reasonably big though because making many requests to DeviantArt's API can cause script execution to take a while.
+Optionally, use the `xdebug` extension or [Kint](http://raveren.github.io/kint/) to ease debugging with stack traces/cleaner var_dump outputs. Setting `max_execution_time` to `30` *(seconds)* or below is also recommended for development in case an infinite loop breaks loose. You never know. It has to be a reasonably big though because requests to DeviantArt's API can cause script execution to take longer than usual.
+
+The `fs` and the `vendor/ezyang/htmlpurifier/library/HTMLPurifier/DefinitionCache/`folders must be writeable by PHP for the site to function.
 
 ### Node.js
 
@@ -66,30 +71,47 @@ This kind of setup will allow you to easily run other websites from Apache later
 #### nginx
 
 ```
-root#/var/www/MLPVC-RR$ dir
+$ cd /var/www/MLPVC-RR
+$ dir
 graphics     LICENSE    package.json  setup
 Gulpfile.js  error.log  README.md     www
-root#/var/www/MLPVC-RR$ chown -R www-data:www-data ./
-root#/var/www/MLPVC-RR$ chmod g+rw ./
-root#/var/www/MLPVC-RR$ cp setup/nginx.conf /etc/nginx/sites-available/mlpvc-rr.conf
-root#/var/www/MLPVC-RR$ ln -s /etc/nginx/sites-available/mlpvc-rr.conf /etc/nginx/sites-enabled/mlpvc-rr.conf
-root#/var/www/MLPVC-RR$ echo "127.0.0.1 domain.tld" > /etc/hosts
-root#/var/www/MLPVC-RR$ nano /etc/nginx/sites-available/mlpvc-rr.conf # Make your changes
-root#/var/www/MLPVC-RR$ service nginx reload
+$ chown -R www-data:www-data ./
+$ chmod g+rw ./
+$ cp setup/nginx.conf /etc/nginx/sites-available/mlpvc-rr.conf
+$ ln -s /etc/nginx/sites-available/mlpvc-rr.conf /etc/nginx/sites-enabled/
+$ echo "127.0.0.1 domain.tld" > /etc/hosts
+$ nano /etc/nginx/sites-available/mlpvc-rr.conf # Make your changes
+$ service nginx reload
 ```
 
 Optionally add this for better security:
 
 ```
-root#/var/www/MLPVC-RR$ cd /etc/ssl/certs
-root#/etc/ssl/certs$ openssl dhparam -out dhparam.pem 4096
+$ cd /etc/ssl/certs
+$ openssl dhparam -out dhparam.pem 4096
 ```
 
 Part of the `nginx` cofiguration is responsible to handling the communication between a WebSocket server called [MLPVC-WS](https://github.com/ponydevs/MLPVC-WS). If you do not want to use said server during development, the part of the nginx configuration that's above the main server block can safely be removed/commented out. 
 
 ### Importing the `*.pg.sql` file
 
-Inside the `setup` folder you'll find `mlpvc-rr.pg.sql` as well as some bash/batch files to re-create it in case of a database schema change. Import this to a database named `mlpvc-rr`.
+Inside the `setup` folder you'll find `mlpvc-rr.pg.sql` as well as some bash/batch files to re-create it in case of a database schema change. Import this file to the previously created database.
+
+On a Linux machine this can be done like so:
+
+```
+$ su - postgres
+$ psql
+psql (9.6.n)
+Type "help" for help.
+postgres=# \c "mlpvc-rr"
+postgres=# \i /var/www/MLPVC-RR/setup/mlpvc-rr.pg.sql
+postgres=# \q
+```
+
+### ElasticSearch
+
+Set the server port in `conf.php` if it's different from the default. Once the application is fully configured, visit the Color Guide page and use the "Re-index" button to set up the index used by the application.
 
 ## Code style
 

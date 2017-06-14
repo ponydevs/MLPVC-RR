@@ -131,7 +131,7 @@ ga('send','pageview');
 </script>
 <?php } ?>
 </head>
-<body class="loading">
+<body>
 
 	<header>
 		<nav><ul class="dragscroll">

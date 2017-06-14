@@ -5,6 +5,9 @@
 	define('DB_USER','');
 	define('DB_PASS','');
 
+	// ELasticSearch Server Port \\
+	define('ELASTIC_PORT','9200');
+
 	// dA API Codes \\
 	define('DA_CLIENT','');
 	define('DA_SECRET','');

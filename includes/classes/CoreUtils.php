@@ -1119,7 +1119,7 @@ class CoreUtils {
 
 	static function elasticClient():Client {
 		if (!isset(self::$_elastiClient))
-			self::$_elastiClient = ClientBuilder::create()->setHosts(['127.0.0.1:9200'])->build();
+			self::$_elastiClient = ClientBuilder::create()->setHosts(['127.0.0.1:'.ELASTIC_PORT])->build();
 
 		return self::$_elastiClient;
 	}

@@ -430,7 +430,7 @@ class ColorGuideController extends Controller {
 			$boolquery = new BoolQuery();
 			if (Permission::insufficient('staff'))
 				$boolquery->add(new TermQuery('private', true), BoolQuery::MUST_NOT);
-			$boolquery->add(new TermQuery('ishuman', $this->_EQG), BoolQuery::MUST);
+			$boolquery->add(new TermQuery('ishuman', (bool)$this->_EQG), BoolQuery::MUST);
 			$search->addQuery($boolquery);
 
 			$search->setSource(false);
