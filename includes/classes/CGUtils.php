@@ -777,6 +777,8 @@ GPL;
 		$Colors = ColorGroups::getColorsForEach($CGs);
 		foreach ($CGs as $cg){
 			foreach ($Colors[$cg['groupid']] as $c){
+				if (empty($c['hex']))
+					continue;
 				$rgb = CoreUtils::hex2Rgb($c['hex']);
 				$File .= CoreUtils::pad($rgb[0],3,' ').' '.CoreUtils::pad($rgb[1],3,' ').' '.CoreUtils::pad($rgb[2],3,' ').' '.$cg['label'].' | '.$c['label'].PHP_EOL;
 			}
