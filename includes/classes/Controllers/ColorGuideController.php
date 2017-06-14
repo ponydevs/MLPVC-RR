@@ -1754,9 +1754,6 @@ HTML;
 	}
 
 	function picker(){
-		if (Permission::insufficient('staff'))
-			CoreUtils::notFound();
-
 		CoreUtils::loadPage([
 			'title' => 'Color Picker',
 			'view' => "{$this->do}-picker",

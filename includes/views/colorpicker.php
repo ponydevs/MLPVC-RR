@@ -42,6 +42,7 @@
 
 <div class="hidden" id="about-dialog-template">
 	<p>This color picker is meant to serve as an easy way to get accurate color readings from screencaps taken from the show. The interface attempts to mimic the controls and look of Adobe Photoshop, while giving you the ability to use multiple picking points with variable sizes across as many images as your browser can handle.</p>
+	<p>While hovering over certain parts of the interface some additional information may be displayed in the bottom left telling you what it does to make familiarizing yourself with the controls easier.</p>
 	<p>Huge thanks to <strong>Discorded</strong>, <strong>Masem</strong>, <strong>Pirill</strong> and <strong>Trildar</strong> for helping with the creation of this tool via code, feedback and ideas.</p>
 </div>
 
@@ -52,6 +53,8 @@
 <script src="<?=\App\CoreUtils::cachedAsset('dialog','js/min','js')?>"></script>
 <script src="<?=\App\CoreUtils::cachedAsset('md5','js/min','js')?>"></script>
 <script src="<?=\App\CoreUtils::cachedAsset('dragscroll','js/min','js')?>"></script>
+<script src="<?=\App\CoreUtils::cachedAsset('canvas.hdr','js/min','js')?>"></script>
+<script src="<?=\App\CoreUtils::cachedAsset('nouislider','js/min','js')?>"></script>
 <script src="<?=\App\CoreUtils::cachedAsset('colorpicker','js/min','js')?>"></script>
 </body>
 </html>

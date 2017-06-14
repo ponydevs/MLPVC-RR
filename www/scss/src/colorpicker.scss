@@ -6,6 +6,7 @@
 @import "theme_notices";
 @import "theme_dialog";
 @import "theme_forms";
+@import "../min/nouislider.css";
 
 html,body {
 	width: 100%;
@@ -431,7 +432,8 @@ body {
 		li {
 			&.selected {
 				&.entry, > .entry {
-		      background-color: #374E63;
+		      background-color: #374E63 !important;
+		      border-color: transparent !important;
 				}
 			}
 			&.entry, > .entry {
@@ -503,6 +505,12 @@ body {
 					justify-content: space-between;
 					padding: 0 8px 0 16px;
 					box-sizing: border-box;
+					border: 1px solid transparent;
+
+					&:hover {
+						border-color: rgba(white,.2);
+						background: rgba(white,.05);
+					}
 
 					> .index {
 						flex: 0 0 20px;
@@ -605,11 +613,14 @@ body {
 		z-index: 2;
 		image-rendering: pixelated;
 
-		&:not(.picking){
+		&:not(.picking):not(.zooming) {
 			pointer-events: none;
 		}
 		&.picking {
 			cursor: url('/img/colorpicker/picker.cur'), crosshair;
+		}
+		&.zooming {
+			cursor: url('/img/colorpicker/zoom.cur'), zoom-in;
 		}
 	}
 
@@ -876,8 +887,43 @@ body {
 	}
 }
 
-#contrast-changer {
-	#contrast-preview canvas {
+#levels-changer {
+	.slider-holder {
+		.slider {
+			width: calc(100% - 40px);
+			margin: 10px auto;
+
+			.noUi-handle {
+				border-color: grey;
+				&:before, &:after {
+					background: grey;
+				}
+			}
+			.noUi-connect {
+				background: $DefaultUIColor;
+			}
+		}
+		.inputs {
+			display: flex;
+			width: 100%;
+			flex-flow: row nowrap;
+
+			> * {
+				flex: 1 1 50%;
+
+				input {
+					text-align: center;
+				}
+			}
+			.low {
+				text-align: left;
+			}
+			.high {
+				text-align: right;
+			}
+		}
+	}
+	#levels-preview canvas {
 		display: block;
 		margin: 0 auto;
 		max-width: 100%;

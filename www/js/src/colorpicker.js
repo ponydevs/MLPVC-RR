@@ -1,5 +1,5 @@
 /* Color Picker | by @SeinopSys + Trildar & Masem | for gh:ponydevs/MLPVC-RR */
-/* global $w,$body,CryptoJS,Key,mk */
+/* global $w,$body,CryptoJS,Key,mk,noUiSlider,HDR2D_BLEND_SRC */
 (function($, undefined){
 	'use strict';
 	const pluginScope = {
@@ -9,10 +9,10 @@
 		picker: undefined,
 		settings: undefined,
 	};
+	const LEVEL_FULL_RANGE = () => ({ low: 0, high: 255 });
 
 	// TODO Zoom tool that utilizes LMB/RMB/Scroll
 
-	let filterPrefix = '';
 	const
 		Tools = {
 			hand: 0,
@@ -32,31 +32,7 @@
 			return (((1+Math.random())*0x10000)|0).toString(16).substring(1);
 	    },
 		guid = () => (S4()+S4()+"-"+S4()+"-"+S4()+"-"+S4()+"-"+S4()+S4()+S4()),
-		isMac = typeof navigator.userAgent === 'string' && /(macos|iphone|os ?x|ip[ao]d)/i.test(navigator.userAgent),
-		filterSupport = (function(){
-			// https://stackoverflow.com/a/11047247/1344955
-			function test(checkPrefix = false){
-				if (checkPrefix === undefined)
-					checkPrefix = false;
-				const el = document.createElement('div');
-				el.style.cssText = (checkPrefix ? '-webkit-' : '') + 'filter: blur(2px)';
-				const test1 = (el.style.length !== 0);
-				const test2 = (
-					document.documentMode === undefined
-					|| document.documentMode > 9
-				);
-				return test1 && test2;
-			}
-
-			if (test() === true){
-				return true;
-			}
-			else if (test(true) === true){
-				filterPrefix = '-webkit-';
-				return true;
-			}
-			return false;
-		})();
+		isMac = typeof navigator.userAgent === 'string' && /(macos|iphone|os ?x|ip[ao]d)/i.test(navigator.userAgent);
 
 
 	class Pixel {
@@ -181,12 +157,21 @@
 		constructor(boundingRect){
 			super(boundingRect);
 		}
-		/**
-		 * @return {Pixel}
-		 */
+		resize(size){
+			this.boundingRect = Geometry.calcRectanglePoints(this.boundingRect.center.x, this.boundingRect.center.y, size);
+		}
+		/** @return {Pixel} */
 		getAverageColor(){
 			return PickingArea.averageColor(this._getPixels());
 		}
+		/** @return {RoundedPickingArea} */
+		toRound(){
+			const slices = Geometry.calcCircleSlices(this.boundingRect.sideLength);
+			return new RoundedPickingArea(this.boundingRect, slices);
+		}
+		//noinspection JSMethodCanBeStatic
+		/** @return {bool} */
+		toSquare(){ return false }
 	}
 
 	class RoundedPickingArea extends PickingArea {
@@ -194,10 +179,19 @@
 			super(boundingRect);
 			this.slices = slices;
 		}
+		resize(diameter){
+			this.boundingRect = Geometry.calcRectanglePoints(this.boundingRect.center.x, this.boundingRect.center.y, diameter);
+			this.slices = Geometry.calcCircleSlices(diameter);
+		}
 		/** @return {Pixel} */
 		getAverageColor(){
 			return PickingArea.averageColor(this._getPixels( (x, y) => this.slices[y].skip < x && x < this.slices[y].skip+this.slices[y].length ));
 		}
+		//noinspection JSMethodCanBeStatic
+		/** @return {bool} */
+		toRound(){ return false }
+		/** @return {SquarePickingArea} */
+		toSquare(){ return new SquarePickingArea(this.boundingRect) }
 	}
 
 	class Geometry {
@@ -209,6 +203,10 @@
 					x: cx-halfside,
 					y: cy-halfside,
 				},
+				center: {
+					x: cx,
+					y: cy,
+				}
 			};
 		}
 		static distance(x, y, x0 = 0, y0 = 0){
@@ -562,7 +560,7 @@
 			this._imgdata = {};
 			this._pickingAreas = {};
 			this._zoomlevel = undefined;
-			this._contrast = undefined;
+			this._levels = { low: 0, high: 255 };
 			this._pickingSize = undefined;
 
 			this.file = {
@@ -590,7 +588,7 @@
 						});
 					case 'pickcolor':
 						return $.Dialog.request('Select a picking area color',$AreaColorForm.clone(true,true),'Set',$form => {
-							$form.triggerHandler('set-color', [this.getPickingAreaColor()]);
+							$form.triggerHandler('set-color', [this.loadPickingAreaColor()]);
 							$form.on('submit',e => {
 								e.preventDefault();
 
@@ -598,7 +596,7 @@
 								$.Dialog.wait(false, 'Setting picking area color');
 
 								try {
-									this.setPickingAreaColor(`rgba(${data.red},${data.green},${data.blue},${Math.round(data.opacity)/100})`);
+									this.savePickingAreaColor(`rgba(${data.red},${data.green},${data.blue},${Math.round(data.opacity)/100})`);
 								}
 								catch(err){
 									return $.Dialog.fail(false, e.message);
@@ -642,7 +640,7 @@
 					const tmpctx = tmpc.getContext('2d');
 					tmpctx.drawImage(imgel,0,0,1,1);
 					const px = new Pixel(...tmpctx.getImageData(0,0,1,1).data, 127).invert();
-					this.setPickingAreaColor(new ColorFormatter(px));
+					this.savePickingAreaColor(new ColorFormatter(px));
 				}
 
 				callback(true);
@@ -661,28 +659,28 @@
 		getImageSize(){
 			return this._imgdata.size;
 		}
-		getImagePosition(){
+		loadImagePosition(){
 			return this._imgdata.position;
 		}
-		setImagePosition(pos){
+		saveImagePosition(pos){
 			this._imgdata.position = pos;
 		}
-		getZoomLevel(){
+		loadZoomLevel(){
 			return this._zoomlevel;
 		}
-		setZoomLevel(level){
+		saveZoomLevel(level){
 			this._zoomlevel = level;
 		}
-		getContrast(){
-			return this._contrast;
+		loadLevels(){
+			return this._levels;
 		}
-		setContrast(level){
-			this._contrast = level;
+		saveLevels(range){
+			this._levels = range;
 		}
-		getPickingSize(){
+		loadPickingSize(){
 			return this._pickingSize;
 		}
-		setPickingSize(size){
+		savePickingSize(size){
 			this._pickingSize = size;
 		}
 		getElement(){
@@ -699,7 +697,7 @@
 			area.belongsToTab(this);
 			this._pickingAreas[area.id] = area;
 		}
-		getPickingAreas(){
+		loadPickingAreas(){
 			return this._pickingAreas;
 		}
 		clearPickingAreas(bulk = false){
@@ -721,11 +719,20 @@
 			if (!bulk)
 				ColorPicker.getInstance().redrawPickingAreas();
 		}
+		/**
+		 * @param {string}      ix
+		 * @param {PickingArea} area
+		 */
+		replacePickingArea(ix, area){
+			area.id = ix;
+			area.belongsToTab(this);
+			this._pickingAreas[ix] = area;
+		}
 		/** @return {ColorFormatter|string} */
-		getPickingAreaColor(){
+		loadPickingAreaColor(){
 			return this._pickingAreaColor || 'rgba(255,0,255,.5)';
 		}
-		setPickingAreaColor(color){
+		savePickingAreaColor(color){
 			this._pickingAreaColor = new ColorFormatter(color);
 			this._$pickAreaColorDisplay.html($.mk('span').css('background-color',this._pickingAreaColor.toString()));
 			if (!this.isActive())
@@ -832,41 +839,58 @@
 		}
 	}
 
-	const $ContrastChangeForm = $.mk('form','contrast-changer').append(
-		$.mk('label').append(
-			`<span>Contrast value (<span id='disp'>&hellip;</span>%)</span>`,
-			$.mk('input').attr({
-				type: 'range',
-				min: 0,
-				max: 5,
-				step: 0.01,
-				name: 'contrast',
-			}).on('change mousemove',$.throttle(50,function(){
-				$(this).closest('form').trigger('update-disp');
-			}))
-		),
-		`<div class="notice info">The contrast setting does not affect the returned average color values in any way.</div>
+	const $LevelsChangeForm = $.mk('form','levels-changer').append(
+		`<div class="label">
+			<span>Range</span>
+			<div class="slider-holder">
+				<div class="slider"></div>
+				<div class="inputs">
+					<div class="low">
+						<input type="number" min="0" max="255" step="1" name="low">
+					</div>
+					<div class="high">
+						<input type="number" min="0" max="255" step="1" name="high">
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="notice info">These settings do not affect the returned average color values in any way.</div>
 		<fieldset>
 			<legend>Preview</legend>
-			<div id="contrast-preview"><canvas></canvas></div>
+			<div id="levels-preview"><canvas></canvas></div>
 		</fieldset>`,
-		$.mk('button').attr('class','darkblue').text('Set to 100%').on('click',function(e){
+		$.mk('button').attr('class','darkblue').text('Reset to defaults').on('click',function(e){
 			e.preventDefault();
 
 			const $form = $(this).closest('form');
-
-			$form.find('input').val(1);
+			$form.find('input[name="low"]').val(0);
+			$form.find('input[name="high"]').val(255);
 			$form.trigger('submit');
 		})
 	).on('update-disp',function(){
 		const
 			$this = $(this),
-			$disp = $this.find('#disp'),
-			$preview = $this.find('#contrast-preview'),
-			$input = $this.find('input[name="contrast"]'),
-			val = $.roundTo(parseFloat($input.val()),2);
-		$disp.text(Math.round(val*100));
-		$preview.css(filterPrefix+'filter',`contrast(${val})`);
+			$preview = $this.find('#levels-preview'),
+			$low = $this.find('input[name="low"]'),
+			low = parseInt($low.val(),10),
+			$high = $this.find('input[name="high"]'),
+			high = parseInt($high.val(),10);
+
+		let hdrctx = $preview.data('hdrcontext');
+		if (typeof hdrctx === 'undefined'){
+			hdrctx = $preview.children()[0].getContext('hdr2d');
+			$preview.data('hdrcontext', hdrctx);
+		}
+
+		const range = { low, high };
+
+		hdrctx.range = {
+			r: range,
+			g: range,
+			b: range,
+			a: LEVEL_FULL_RANGE(),
+		};
+		hdrctx.invalidate();
 	});
 
 	class ColorPicker {
@@ -876,7 +900,7 @@
 				left: NaN,
 			};
 			this._zoomlevel = 1;
-			this._contrast = 1;
+			this._levels = LEVEL_FULL_RANGE();
 			this._moveMode = false;
 
 			this._$picker = $('#picker');
@@ -894,40 +918,82 @@
 
 				this.switchTool('picker');
 			});
-			this._$zoomTool = $.mk('button').attr({'class':'fa fa-search','data-info':'Zoom Tool (Z)',disabled:true}).on('click',e => {
+			this._$zoomTool = $.mk('button').attr({'class':'fa fa-search','data-info':'Zoom Tool (Z) - Left click to zoom in, right click to zoom out'}).on('click',e => {
 				e.preventDefault();
 
 				this.switchTool('zoom');
 			});
 			this.switchTool('hand');
-			this._$contrastChanger = $.mk('button').attr({'class':'fa fa-adjust','data-info':'Change contrast'+(!filterSupport?' (not supported by your browser)':''),readonly:!filterSupport}).on('click',e => {
+			this._$levelsChanger = $.mk('button').attr({'class':'fa fa-sliders','data-info':'Adjust levels\u2026'}).on('click', e => {
 				e.preventDefault();
 
 				const activeTab = Tabbar.getInstance().getActiveTab();
-
-				if (!activeTab || !filterSupport)
+				if (!activeTab)
 					return;
 
 				const imgsize = activeTab.getImageSize();
 
-				$.Dialog.request('Chnage contrast',$ContrastChangeForm.clone(true,true),'Set',$form => {
-					$form.find('input[name="contrast"]').val(this._contrast);
+				$.Dialog.request('Adjust levels',$LevelsChangeForm.clone(true,true),'Set',$form => {
+					const sliderCont = $form.find('.slider')[0];
+					const slider = noUiSlider.create(sliderCont, {
+						start: [ this._levels.low || 0, this._levels.high || 255 ],
+						margin: 1,
+						limit: 255,
+						connect: true,
+						direction: 'ltr',
+						orientation: 'horizontal',
+						behaviour: 'tap-drag',
+						step: 1,
+						tooltips: false,
+						range: {
+							'min': 0,
+							'max': 255,
+						},
+						format: {
+							to: n => parseInt(n,10),
+							from: n => n,
+						},
+					});
+					const $inputs = $form.find('.slider-holder input');
+					let skipUpdate = false;
+					slider.on('update', function(values, handle){
+						if (skipUpdate)
+							return;
+
+						$inputs.eq(handle).val(values[handle]);
+						$form.triggerHandler('update-disp');
+					});
+					$inputs.on('change input',function(){
+						//noinspection JSUnusedAssignment
+						skipUpdate = true;
+						slider.set([ $inputs.eq(0).val(), $inputs.eq(1).val() ]);
+						skipUpdate = false;
+						$form.triggerHandler('update-disp');
+					});
+					const atm = slider.get();
+					$inputs.eq(0).val(atm[0]);
+					$inputs.eq(1).val(atm[1]);
 					$form.triggerHandler('update-disp');
 
 					const
-						$previewCanvas = $form.find('#contrast-preview').children(),
+						$preview = $form.find('#levels-preview'),
+						$previewCanvas = $preview.children()[0],
 						fitsize = $.scaleResize(imgsize.width, imgsize.height, { height: 150 }, false);
 
-					$previewCanvas[0].width = fitsize.width;
-					$previewCanvas[0].height = fitsize.height;
-					$previewCanvas[0].getContext('2d').drawImage(this._$imageCanvas[0], 0, 0, imgsize.width, imgsize.height, 0, 0, fitsize.width, fitsize.height);
+					$previewCanvas.width = fitsize.width;
+					$previewCanvas.height = fitsize.height;
+					$preview.data('hdrcontext').drawImage(this._$imageCanvas[0], 0, 0, imgsize.width, imgsize.height, 0, 0, fitsize.width, fitsize.height);
 
 					$form.on('submit',e => {
 						e.preventDefault();
-
-						const data = $form.mkData();
-						$.Dialog.wait(false, 'Setting contrast');
-						this.setContrast(data.contrast);
+						const
+							data = $form.mkData(),
+							range = {
+								low: data.low,
+								high: data.high
+							};
+						$.Dialog.wait(false, 'CHanging levels');
+						this.setLevels(range);
 						$.Dialog.close();
 					});
 				});
@@ -1001,7 +1067,7 @@
 					this._$handTool,
 					this._$pickerTool,
 					this._$zoomTool,
-					this._$contrastChanger
+					this._$levelsChanger
 				),
 				/*$.mk('div').attr('class','debug-tools').append(
 					"<span class='label'>Debugging</span>",
@@ -1218,8 +1284,61 @@
 			}).on('dblclick','.entry',e => {
 				e.preventDefault();
 
-				// TODO Implement
-				console.log(e.target);
+				const
+					$li = $(e.target).closest('li'),
+					isEntireTab = $li.children('ul').length > 0;
+
+				if (isEntireTab)
+					return;
+
+				const
+					tabIndex = $li.parents('li').index(),
+					areaGuid = $li.attr('id').replace(/^picking-area-/,''),
+					tab = Tabbar.getInstance().getTabs()[tabIndex],
+					area = tab.loadPickingAreas()[areaGuid],
+					roundedArea = area instanceof RoundedPickingArea;
+
+				const $AreaUpdateForm = $.mk('form','area-update-form').append(
+					`<div class="label">
+						<span>Area type</span>
+						<div class="radio-group">
+							<label><input type="radio" name="type" value="round" ${roundedArea?'checked':''}><span>Rounded</span></label>
+							<label><input type="radio" name="type" value="square" ${roundedArea?'':'checked'}><span>Square</span></label>
+						</div>
+					</div>`,
+					$.mk('label').append(
+						`<span>Area size (1-400px)</span>`,
+						$.mk('input').attr({
+							type: 'number',
+							min: 1,
+							max: 400,
+							step: 1,
+							name: 'size',
+						}).val(area.boundingRect.sideLength)
+					)
+				);
+
+				$.Dialog.request('Edit picking area',$AreaUpdateForm,'Update',() => {
+					$AreaUpdateForm.on('submit',e => {
+						e.preventDefault();
+
+						const data = $AreaUpdateForm.mkData();
+						$.Dialog.wait(false, 'Updating area');
+
+						const newsize = $.rangeLimit(parseInt(data.size,10), false, 1, 400);
+						if (newsize !== area.boundingRect.sideLength)
+							area.resize(newsize);
+
+						const replacement = area['to'+$.capitalize(data.type)]();
+						if (replacement !== false)
+							tab.replacePickingArea(areaGuid, replacement);
+
+						this.updatePickingState();
+						if (tab.isActive())
+							this.redrawPickingAreas();
+						$.Dialog.close();
+					});
+				});
 			});
 			this.setPickerWidth(PersistentSettings.getInstance().get('pickerWidth'));
 			this.updatePickingState();
@@ -1276,6 +1395,20 @@
 					return;
 
 				this.placeArea(this._mouseImagePos, this._pickingAreaSize, !e.altKey);
+			}).on('click',e => {
+				if (this._activeTool !== Tools.zoom || e.which !== 1)
+					return;
+
+				e.preventDefault();
+
+				this._$zoomin.trigger('click', [e]);
+			}).on('contextmenu',e => {
+				if (this._activeTool !== Tools.zoom)
+					return;
+
+				e.preventDefault();
+
+				this._$zoomout.trigger('click', [e]);
 			}).on('mouseleave',() => {
 				this.clearMouseOverlay();
 			});
@@ -1386,7 +1519,7 @@
 			if (!activeTab)
 				return;
 
-			activeTab.setPickingSize(this._pickingAreaSize);
+			activeTab.savePickingSize(this._pickingAreaSize);
 		}
 		decreasePickingSize(square, drawCursor = true){
 			this.setPickingSize(this._pickingAreaSize-5);
@@ -1406,7 +1539,7 @@
 			const area = PickingArea.getArea(this._mouseImagePos, this._pickingAreaSize, square);
 			this.clearMouseOverlay();
 			const ctx = this.getMouseOverlayCtx();
-			ctx.fillStyle = activeTab.getPickingAreaColor().toString();
+			ctx.fillStyle = activeTab.loadPickingAreaColor().toString();
 			PickingArea.draw(area, ctx);
 		}
 		//noinspection JSMethodCanBeStatic
@@ -1425,8 +1558,8 @@
 
 			this.clearImageOverlay();
 			const ctx = this.getImageOverlayCtx();
-			ctx.fillStyle = activeTab.getPickingAreaColor().toString();
-			$.each(activeTab.getPickingAreas(),(_,area) => {
+			ctx.fillStyle = activeTab.loadPickingAreaColor().toString();
+			$.each(activeTab.loadPickingAreas(),(_, area) => {
 				PickingArea.draw(area, ctx);
 			});
 			this.updatePickingState();
@@ -1439,13 +1572,13 @@
 			this._$areasList.empty();
 			$.each(Tabbar.getInstance().getTabs(),(_,tab) => {
 				const
-					areas = tab.getPickingAreas(),
+					areas = tab.loadPickingAreas(),
 					areaGuids = Object.keys(areas),
 					$areaList = $.mk('ul'),
 					$tabLi = $.mk('li').append(
 						$.mk('span').attr('class','entry').append(
 							$.mk('span').attr('class','name').text(tab.getName()),
-							$.mk('span').attr('class','select-handle')
+							$.mk('span').attr({'class':'select-handle','data-info':'Picking area tab selection handle (Click to select, Ctrl/Shift+Click to select multiple)'})
 						),
 						$areaList
 					);
@@ -1478,14 +1611,14 @@
 						else avgcsout = avgcsout.join(', ');
 					}
 					$areaList.append(
-						$.mk('li','picking-area-'+area.id).attr('class','entry').append(
+						$.mk('li','picking-area-'+area.id).attr({'class':'entry','data-info':'Picking area (Double click to change shape and size)'}).append(
 							$.mk('span').attr('class','index').text(++ix),
 							$.mk('span').attr('class','color').css({
 								backgroundColor: avgcbg,
 								color: $.yiq(avgchex) > 127 ? 'black' : 'white',
 							}).html(avgcsout),
 							$.mk('span').attr('class','size '+(area instanceof RoundedPickingArea?'rounded':'square')).html($.mk('span').text(area.boundingRect.sideLength)),
-							$.mk('span').attr('class','select-handle')
+							$.mk('span').attr({'class':'select-handle','data-info':'Picking area selection handle (Click to select, Ctrl/Shift+Click to select multiple)'})
 						)
 					);
 					pixels.push(avgc);
@@ -1531,7 +1664,6 @@
 				}
 				else {
 					const tabIndex = $this.parents('li').index();
-					console.log($this,tabIndex);
 					if (typeof guids[tabIndex] === 'undefined')
 						guids[tabIndex] = [];
 					guids[tabIndex].push($this.attr('id').replace(/^picking-area-/,''));
@@ -1606,17 +1738,20 @@
 				}
 			}
 		}
-		setContrast(level){
+		setLevels(range = LEVEL_FULL_RANGE()){
 			const activeTab = Tabbar.getInstance().getActiveTab();
 			if (!activeTab)
 				return;
 
-			if (this._contrast === level)
-				return;
+			const hdrctx = this.getImageCanvasCtx();
 
-			this._contrast = level;
-			this._$imageCanvas.css(filterPrefix+'filter',this._contrast === 1 ? '' : `contrast(${this._contrast})`);
-			activeTab.setContrast(this._contrast);
+			hdrctx.range.r = range;
+			hdrctx.range.g = range;
+			hdrctx.range.b = range;
+			hdrctx.invalidate();
+
+			this._levels = range;
+			activeTab.saveLevels(range);
 		}
 		setZoomLevel(perc, center){
 			const activeTab = Tabbar.getInstance().getActiveTab();
@@ -1644,7 +1779,7 @@
 				});
 			}
 
-			activeTab.setZoomLevel(this._zoomlevel);
+			activeTab.saveZoomLevel(this._zoomlevel);
 			this.updateZoomLevelInputs();
 		}
 		setZoomFit(){
@@ -1714,7 +1849,7 @@
 
 			this._$imageOverlay.add(this._$imageCanvas).add(this._$mouseOverlay).css(pos);
 			if (!restoring)
-				activeTab.setImagePosition({
+				activeTab.saveImagePosition({
 					top: this._$imageOverlay.css('top'),
 					left: this._$imageOverlay.css('left'),
 					width: this._$imageOverlay.css('width'),
@@ -1789,21 +1924,19 @@
 			this._setCanvasSize(imgsize.width, imgsize.height);
 			tab.drawImage();
 
-			const storedimgpos = tab.getImagePosition();
+			const storedimgpos = tab.loadImagePosition();
 			if (!storedimgpos)
 				this.setZoomFit();
 			else {
 				this.move(storedimgpos, true);
-				const storedzoomlevel = tab.getZoomLevel();
+				const storedzoomlevel = tab.loadZoomLevel();
 				if (typeof storedzoomlevel !== 'undefined'){
 					this._zoomlevel = storedzoomlevel;
 					this.setZoomLevel(storedzoomlevel);
 				}
 			}
-			if (filterSupport){
-				this.setContrast(tab.getContrast() || this._contrast, true);
-			}
-			this.setPickingSize(tab.getPickingSize());
+			this.setLevels(tab.loadLevels() || this._levels);
+			this.setPickingSize(tab.loadPickingSize());
 
 			this.updatePickerSize();
 			this.redrawPickingAreas();
@@ -1813,6 +1946,7 @@
 				return;
 
 			this._$imageCanvas.detach();
+			this._$mouseOverlay.removeClass('picking zooming');
 			clearCanvas(this.getImageCanvasCtx());
 			clearCanvas(this.getImageOverlayCtx());
 			Statusbar.getInstance().setColorAt();
@@ -1832,8 +1966,9 @@
 				this._$imageOverlay.removeClass('draggable dragging');
 			}
 		}
+		/** @return {CanvasRenderingContextHDR2D} */
 		getImageCanvasCtx(){
-			return this._$imageCanvas[0].getContext('2d');
+			return this.__imageCanvasCtx || (this.__imageCanvasCtx = this._$imageCanvas[0].getContext('hdr2d'));
 		}
 		getImageOverlayCtx(){
 			return this._$imageOverlay[0].getContext('2d');
@@ -1854,6 +1989,9 @@
 					this._$mouseOverlay.removeClass('picking');
 					this.clearMouseOverlay();
 				break;
+				case Tools.zoom:
+					this._$mouseOverlay.removeClass('zooming');
+				break;
 			}
 
 			// Activate new tool
@@ -1863,6 +2001,9 @@
 				break;
 				case Tools.picker:
 					this._$mouseOverlay.addClass('picking');
+				break;
+				case Tools.zoom:
+					this._$mouseOverlay.addClass('zooming');
 				break;
 			}
 			if (tool !== 'zoom')

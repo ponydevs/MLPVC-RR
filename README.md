@@ -28,6 +28,8 @@ After some time, the idea of moving the old PNG color guide into an easier to us
    - [moment.js](http://momentjs.com/)
    - [simplemarquee](https://github.com/IndigoUnited/jquery.simplemarquee)
    - [dragscroll](https://github.com/asvd/dragscroll)
+   - [canvas.hdr.js](https://github.com/brianreavis/canvas.hdr.js)
+   - [noUiSlider](https://github.com/leongersen/noUiSlider)
  - Back-end:
    - [moment.php](https://github.com/fightbulc/moment.php)
    - [PostgresDb](https://github.com/SeinopSys/PHP-PostgreSQL-Database-Class)

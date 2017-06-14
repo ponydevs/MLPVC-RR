@@ -153,7 +153,7 @@
 			if (!appendingToRequest && params.buttons) $.each(params.buttons, (_, obj) => {
 				let $button = $.mk('input').attr({
 						'type': 'button',
-						'class': params.color+'-bg'
+						'class': params.color ? params.color+'-bg' : undefined
 					});
 				if (obj.form){
 					$requestContentDiv = $(`#${obj.form}`);

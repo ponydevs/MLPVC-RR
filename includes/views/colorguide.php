@@ -31,9 +31,7 @@ use App\Tags;
 		<a class='btn link typcn typcn-world' href="/cg<?=$EQG?'':'/eqg'?>/1">View <?=$EQG?'Ponies':'Equestria Girls'?></a>
 		<a class='btn link typcn typcn-th-menu' href="/cg<?=$EQG?'/eqg':''?>/full">Full List of <?=$EQG?'Equestria Girls':'Ponies'?></a>
 		<a class='btn link typcn typcn-arrow-forward' href="/cg/blending">Blending Calculator</a>
-<?  if (Permission::sufficient('staff')){ ?>
-		<a class='btn link typcn typcn-pipette' href="/cg/picker">Color Picker (INCOMPLETE)</a>
-<?  } ?>
+		<a class='btn link typcn typcn-pipette' href="/cg/picker">Color Picker</a>
 		<a class='btn link typcn typcn-tags' href="/cg/tags">Tags</a>
 		<a class='btn link typcn typcn-warning' href="/cg/changes">Major Changes</a>
 <?  if (Permission::sufficient('developer')){ ?>
