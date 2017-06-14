@@ -94,10 +94,18 @@ class User extends AbstractUser {
 		return !empty($pref) ? " app-$pref" : '';
 	}
 
-	function getVectorAppName():string {
+	function getVectorAppReadableName():string {
 		$pref = UserPrefs::get('p_vectorapp', $this->id);
 
 		return CoreUtils::$VECTOR_APPS[$pref] ?? 'unrecognized application';
+	}
+
+	function getVectorAppIcon():string {
+		$vectorapp = UserPrefs::get('p_vectorapp', $this->id);
+		if (empty($vectorapp))
+			return '';
+
+		return "<img class='vectorapp-logo' src='/img/vapps/$vectorapp.svg' alt='$vectorapp logo' title='".$this->getVectorAppReadableName()." user'>";
 	}
 
 	function getPendingReservationCount():int {

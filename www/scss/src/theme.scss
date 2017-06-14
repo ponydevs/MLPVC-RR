@@ -747,27 +747,35 @@ header, #sidebar .mobile-nav {
 
 	.avatar { border-radius: 100% }
 }
-.da-userlink.with-avatar {
-	@extend %reserve-button;
-	display: inline-block;
-	white-space: nowrap;
-	overflow: hidden;
-	font-style: normal;
-	font-size: 1.1em;
-  vertical-align: middle;
+.da-userlink {
+	&.with-avatar {
+		@extend %reserve-button;
+		display: inline-block;
+		white-space: nowrap;
+		overflow: hidden;
+		font-style: normal;
+		font-size: 1.1em;
+	  vertical-align: middle;
 
-	> * {
-		display: inline-block;
-    vertical-align: bottom;
+		> * {
+			display: inline-block;
+	    vertical-align: bottom;
+		}
+		.avatar {
+			height: 1.4em;
+			width: 1.4em;
+		}
+		.name {
+			display: inline-block;
+			margin-right: 5px;
+			line-height: 1.4em;
+		}
 	}
-	.avatar {
-		height: 1.4em;
-		width: 1.4em;
-	}
-	.name {
+
+	.vectorapp-logo {
+		height: 1em;
 		display: inline-block;
-		margin-right: 5px;
-		line-height: 1.4em;
+		margin-left: 5px;
 	}
 }
 // Page layout - Footer

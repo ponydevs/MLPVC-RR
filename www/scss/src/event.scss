@@ -166,6 +166,13 @@
 					margin-bottom: 10px;
 				}
 
+				.submitter {
+					a, a > * {
+						display: inline-block;
+						vertical-align: middle;
+					}
+				}
+
 				.actions {
 					margin-top: 10px;
 

@@ -593,8 +593,8 @@ HTML;
 		if ($hide_reserved_status)
 			$Post->Reserver = false;
 
-		$break = $Post->broken ? ' class="admin-break"' : '';
-		return "<li id='$ID'$break>$Image".self::_getPostActions($Post, $isRequest, $view_only ? $postlink : false).'</li>';
+		$break = $Post->broken ? 'class="admin-break"' : '';
+		return "<li id='$ID' $break>$Image".self::_getPostActions($Post, $isRequest, $view_only ? $postlink : false).'</li>';
 	}
 
 	/**
@@ -641,7 +641,7 @@ HTML;
 			$dAlink = $reservedBy->getProfileLink(User::LINKFORMAT_FULL);
 			$vectorapp = $reservedBy->getVectorAppClassName();
 			if (!empty($vectorapp))
-				$vectorapp .= "' title='Uses ".$reservedBy->getVectorAppName()." to make vectors";
+				$vectorapp .= "' title='Uses ".$reservedBy->getVectorAppReadableName()." to make vectors";
 			return "<div class='reserver$vectorapp'>$dAlink</div>";
 		}
 	}

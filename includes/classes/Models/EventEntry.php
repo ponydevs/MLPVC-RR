@@ -7,6 +7,7 @@ use App\CoreUtils;
 use App\DeviantArt;
 use App\ImageProvider;
 use App\Permission;
+use App\RegExp;
 use App\Time;
 use App\Users;
 
@@ -71,7 +72,7 @@ class EventEntry extends AbstractFillable {
 		if ($event->type === 'contest' && Auth::$signed_in && $event->checkCanVote(Auth::$user)){
 			$userVote = $this->getUserVote(Auth::$user);
 			$userVoted = !empty($userVote) && $userVote->isLockedIn($this);
-			$vd = $userVoted || $this->submitted_by === Auth::$user->id ? ' disabled' : '';
+			$vd = $userVoted || $this->submitted_by === Auth::$user->id ? 'disabled' : '';
 			if (!empty($userVote)){
 				$uvc = $userVote->value === 1 ? ' clicked' : '';
 				$dvc = $userVote->value === -1 ? ' clicked' : '';
@@ -80,9 +81,9 @@ class EventEntry extends AbstractFillable {
 
 			return <<<HTML
 <div class='voting'>
-	<button class='typcn typcn-arrow-sorted-up upvote$uvc'$vd title='Upvote'></button>
+	<button class='typcn typcn-arrow-sorted-up upvote$uvc' $vd title='Upvote'></button>
 	<span class='score' title="Score">{$this->getFormattedScore()}</span>
-	<button class='typcn typcn-arrow-sorted-down downvote$dvc'$vd title='Downvote'></button>
+	<button class='typcn typcn-arrow-sorted-down downvote$dvc' $vd title='Downvote'></button>
 </div>
 HTML;
 		}
@@ -97,9 +98,14 @@ HTML;
 			? self::_getPreviewDiv($this->prev_full, $this->prev_thumb, $filetype)
 			: '';
 		$title = CoreUtils::escapeHTML($this->title);
-		$submitter = Users::get($this->submitted_by)->getProfileLink();
+		$submitter = Users::get($this->submitted_by);
+		$submitter_link = $submitter->getProfileLink();
+		$submitter_vapp = $submitter->getVectorAppIcon();
+		if (!empty($submitter_vapp))
+			$submitter_link = preg_replace(new RegExp('(</a>)$'),"$submitter_vapp$1", $submitter_link);
+
 		$submit_tag = Time::tag(strtotime($this->submitted_at));
-		$edited_tag = $this->last_edited !== $this->submitted_at ? '<br><span class="shorten edited">Last edited </span><span class="typcn typcn-pencil" title="Last edited"></span>'.Time::tag(strtotime($this->last_edited)) :'';
+		$edited_tag = $this->last_edited !== $this->submitted_at ? '<div><span class="shorten edited">Last edited </span><span class="typcn typcn-pencil" title="Last edited"></span>'.Time::tag(strtotime($this->last_edited)).'</div>' :'';
 
 		$sub_prov_favme = $this->sub_prov === 'fav.me';
 		if ($sub_prov_favme || Permission::sufficient('staff')){
@@ -113,18 +119,22 @@ HTML;
 		$voting = $this->getListItemVoting($event);
 
 		$actions = Auth::$signed_in && (Auth::$user->id === $this->submitted_by || Permission::sufficient('staff'))
-			? '<button class="blue typcn typcn-pencil edit-entry" title="Edit"></button><button class="red typcn typcn-times delete-entry" title="Withdraw"></button>'
+			? "<div class='actions'>
+				<button class='blue typcn typcn-pencil edit-entry' title='Edit'></button>
+				<button class='red typcn typcn-times delete-entry' title='Withdraw'></button>
+			</div>"
 			: '';
-
-		if (!empty($actions))
-			$actions = "<div class='actions'>$actions</div>";
 
 		$HTML = <<<HTML
 $voting
 $preview
 <div class="details">
 	<span class="label">{$title}</span>
-	<span class="submitter"><span class="shorten submitter">By </span><span class="typcn typcn-user" title="By"></span>{$submitter}<br><span class="shorten time">Submitted </span><span class="typcn typcn-time" title="Submitted"></span>{$submit_tag}{$edited_tag}</span>
+	<div class="submitter">
+		<div><span class="shorten submitter">By </span><span class="typcn typcn-user" title="By"></span>{$submitter_link}</div>
+		<div><span class="shorten time">Submitted </span><span class="typcn typcn-time" title="Submitted"></span>$submit_tag</div>
+		$edited_tag
+	</div>
 	$actions
 </div>
 HTML;
