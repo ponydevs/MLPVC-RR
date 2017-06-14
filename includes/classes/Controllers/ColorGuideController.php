@@ -1763,9 +1763,6 @@ HTML;
 	}
 
 	function pickerFrame(){
-		if (Permission::insufficient('staff'))
-			CoreUtils::notFound();
-
 		header('Content-Type: text/html; charset=utf-8;');
 		include INCPATH.'views/colorpicker.php';
 	}
