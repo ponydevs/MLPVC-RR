@@ -920,7 +920,7 @@
 				this.switchTool('zoom');
 			});
 			this.switchTool('hand');
-			this._$levelsChanger = $.mk('button').attr({'class':'fa fa-sliders','data-info':'Adjust levels\u2026'}).on('click', e => {
+			this._$levelsChanger = $.mk('button').attr({'class':'fa fa-sliders','data-info':'(WIP) Adjust levels\u2026',readonly:true}).on('click', e => {
 				e.preventDefault();
 
 				const activeTab = Tabbar.getInstance().getActiveTab();
