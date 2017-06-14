@@ -876,11 +876,7 @@
 			$high = $this.find('input[name="high"]'),
 			high = parseInt($high.val(),10);
 
-		let hdrctx = $preview.data('hdrcontext');
-		if (typeof hdrctx === 'undefined'){
-			hdrctx = $preview.children()[0].getContext('hdr2d');
-			$preview.data('hdrcontext', hdrctx);
-		}
+		let hdrctx = $preview.children()[0].getContext('hdr2d');
 
 		const range = { low, high };
 
@@ -982,7 +978,7 @@
 
 					$previewCanvas.width = fitsize.width;
 					$previewCanvas.height = fitsize.height;
-					$preview.data('hdrcontext').drawImage(this._$imageCanvas[0], 0, 0, imgsize.width, imgsize.height, 0, 0, fitsize.width, fitsize.height);
+					$previewCanvas.getContext('hdr2d').drawImage(this._$imageCanvas[0], 0, 0, imgsize.width, imgsize.height, 0, 0, fitsize.width, fitsize.height);
 
 					$form.on('submit',e => {
 						e.preventDefault();
@@ -1874,6 +1870,8 @@
 			this._$mouseOverlay[0].height =
 			this._$imageOverlay[0].height =
 			this._$imageCanvas[0].height = h;
+
+			this.getImageCanvasCtx().initialize();
 		}
 		openImage(src, fname, callback){
 			if (this._$picker.hasClass('loading'))
@@ -1968,7 +1966,7 @@
 		}
 		/** @return {CanvasRenderingContextHDR2D} */
 		getImageCanvasCtx(){
-			return this.__imageCanvasCtx || (this.__imageCanvasCtx = this._$imageCanvas[0].getContext('hdr2d'));
+			return this._$imageCanvas[0].getContext('hdr2d');
 		}
 		getImageOverlayCtx(){
 			return this._$imageOverlay[0].getContext('2d');

@@ -325,10 +325,9 @@
 	 * @param {HTMLCanvasElement} canvas
 	 */
 	const CanvasRenderingContextHDR2D = function(canvas){
-		this._context = canvas.getContext.apply(canvas, ['2d']);
-		this._imageData = this._context.getImageData(0, 0, canvas.width, canvas.height);
-		this.imageData = new ImageDataHDR(canvas.width, canvas.height);
+		console.log('new instance');
 		this.canvas = canvas;
+		this.initialize();
 	};
 
 	CanvasRenderingContextHDR2D.prototype.fillStyle = '#000000';
@@ -501,6 +500,12 @@
 			return modes[mode];
 		};
 	})();
+
+	CanvasRenderingContextHDR2D.prototype.initialize = function(){
+		this._context = this.canvas.getContext('2d');
+		this._imageData = this._context.getImageData(0, 0, this.canvas.width, this.canvas.height);
+		this.imageData = new ImageDataHDR(this.canvas.width, this.canvas.height);
+	};
 
 	/**
 	 * Resets all pixels in the given region to (0,0,0,0).
@@ -781,7 +786,9 @@
 		const base = HTMLCanvasElement.prototype.getContext;
 		return function(){
 			if (arguments[0] === 'hdr2d'){
-				return new CanvasRenderingContextHDR2D(this);
+				if (typeof this.__hdr2ctx === 'undefined')
+					this.__hdr2ctx = new CanvasRenderingContextHDR2D(this);
+				return this.__hdr2ctx;
 			}
 			return base.apply(this, arguments);
 		};
