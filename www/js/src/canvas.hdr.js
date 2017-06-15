@@ -503,8 +503,14 @@
 
 	CanvasRenderingContextHDR2D.prototype.initialize = function(){
 		this._context = this.canvas.getContext('2d');
-		this._imageData = this._context.getImageData(0, 0, this.canvas.width, this.canvas.height);
+		try {
+			this.getThatImageData();
+		}
+		catch(_){}
 		this.imageData = new ImageDataHDR(this.canvas.width, this.canvas.height);
+	};
+	CanvasRenderingContextHDR2D.prototype.getThatImageData = function(){
+		this._imageData = this._context.getImageData(0, 0, this.canvas.width, this.canvas.height);
 	};
 
 	/**
@@ -659,6 +665,30 @@
 		}
 	};
 
+	CanvasRenderingContextHDR2D.prototype.setRange = function(newRange){
+		let rangeChange = false;
+
+		if (typeof newRange.r === 'object' &&!$.compareFaL(this.range.r,newRange.r)){
+			this.range.r = newRange.r;
+			rangeChange = true;
+		}
+		if (typeof newRange.g === 'object' &&!$.compareFaL(this.range.g,newRange.g)){
+			this.range.g = newRange.g;
+			rangeChange = true;
+		}
+		if (typeof newRange.b === 'object' &&!$.compareFaL(this.range.b,newRange.b)){
+			this.range.b = newRange.b;
+			rangeChange = true;
+		}
+		if (typeof newRange.a === 'object' && !$.compareFaL(this.range.a,newRange.a)){
+			this.range.a = newRange.a;
+			rangeChange = true;
+		}
+
+		if (rangeChange)
+			this.invalidate();
+	};
+
 	/**
 	 * Draws the given image onto the canvas.
 	 *
@@ -737,35 +767,21 @@
 	 * @param {Number} width - (optional) Width of region (px).
 	 * @param {Number} height - (optional) Height of region (px).
 	 */
-	CanvasRenderingContextHDR2D.prototype.invalidate = function(x, y, width, height){
-		let sx, sy, x_bound, y_bound, range;
+	CanvasRenderingContextHDR2D.prototype.invalidate = function(x = 0, y = 0, width = this.imageData.width, height = this.imageData.height){
 		const ranges = [this.range.r, this.range.g, this.range.b, this.range.a];
-
-		if (typeof x === 'undefined'){
-			x = 0;
-		}
-		if (typeof y === 'undefined'){
-			y = 0;
-		}
-		if (typeof width === 'undefined'){
-			width = this.imageData.width;
-		}
-		if (typeof height === 'undefined'){
-			height = this.imageData.height;
-		}
 
 		if (x === 0 && y === 0 && width === this.imageData.width && height === this.imageData.height){
 			for (let i = 0, n = this.imageData.data.length; i < n; i++){
-				range = ranges[i % 4];
+				let range = ranges[i % 4];
 				this._imageData.data[i] = (this.imageData.data[i] - range.low) / (range.high - range.low) * 255;
 			}
 		}
 		else {
-			x_bound = Math.min(x + width, this.imageData.width);
-			y_bound = Math.min(y + height, this.imageData.height);
-			for (sy = y; sy < y_bound; sy++){
-				for (sx = x; sx < x_bound; sx++){
-					i = (sy * this.imageData.width + sx) * 4;
+			const x_bound = Math.min(x + width, this.imageData.width);
+			const y_bound = Math.min(y + height, this.imageData.height);
+			for (let sy = y; sy < y_bound; sy++){
+				for (let sx = x; sx < x_bound; sx++){
+					let i = (sy * this.imageData.width + sx) * 4;
 					this._imageData.data[i] = (this.imageData.data[i] - ranges[0].low) / (ranges[0].high - ranges[0].low) * 255;
 					this._imageData.data[i + 1] = (this.imageData.data[i + 1] - ranges[1].low) / (ranges[1].high - ranges[1].low) * 255;
 					this._imageData.data[i + 2] = (this.imageData.data[i + 2] - ranges[2].low) / (ranges[2].high - ranges[2].low) * 255;

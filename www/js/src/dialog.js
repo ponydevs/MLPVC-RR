@@ -258,13 +258,15 @@
 		 * @param {string}        title
 		 * @param {string|jQuery} content
 		 * @param {bool}          forceNew
+		 * @param {function}      callback
 		 */
-		wait(title = defaultTitles.wait, content = defaultContent.wait, forceNew = false){
+		wait(title = defaultTitles.wait, content = defaultContent.wait, forceNew = false, callback = undefined){
 			this._display({
 				type: 'wait',
 				title,
 				content: $.capitalize(content)+'&hellip;',
 				forceNew,
+				callback,
 			});
 		}
 		/**

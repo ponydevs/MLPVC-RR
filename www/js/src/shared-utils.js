@@ -482,6 +482,8 @@
 		}, 1);
 	};
 
+	$.compareFaL =  (a,b) => JSON.stringify(a) === JSON.stringify(b);
+
 	// Convert HEX to RGB
 	$.hex2rgb = hexstr =>
 		({

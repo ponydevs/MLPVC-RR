@@ -854,39 +854,33 @@
 				</div>
 			</div>
 		</div>
-		<div class="notice info">These settings do not affect the returned average color values in any way.</div>
-		<fieldset>
-			<legend>Preview</legend>
-			<div id="levels-preview"><canvas></canvas></div>
-		</fieldset>`,
+		<div class="notice info">These settings do not affect the returned average color values in any way.</div>`,
 		$.mk('button').attr('class','darkblue').text('Reset to defaults').on('click',function(e){
 			e.preventDefault();
 
 			const $form = $(this).closest('form');
 			$form.find('input[name="low"]').val(0);
 			$form.find('input[name="high"]').val(255);
-			$form.trigger('submit');
+			$form.trigger('submit', [true]);
 		})
 	).on('update-disp',function(){
+		const $this = $(this);
+
 		const
-			$this = $(this),
-			$preview = $this.find('#levels-preview'),
 			$low = $this.find('input[name="low"]'),
 			low = parseInt($low.val(),10),
 			$high = $this.find('input[name="high"]'),
 			high = parseInt($high.val(),10);
 
-		let hdrctx = $preview.children()[0].getContext('hdr2d');
+		let hdrctx = ColorPicker.getInstance().getImageCanvasCtx();
 
 		const range = { low, high };
 
-		hdrctx.range = {
+		hdrctx.setRange({
 			r: range,
 			g: range,
 			b: range,
-			a: LEVEL_FULL_RANGE(),
-		};
-		hdrctx.invalidate();
+		});
 	});
 
 	class ColorPicker {
@@ -904,6 +898,8 @@
 			this._$imageOverlay = $.mk('canvas').attr('class','image-overlay');
 			this._$imageCanvas = $.mk('canvas').attr('class','image-element');
 			this._$mouseOverlay = $.mk('canvas').attr('class','mouse-overlay');
+			this.setCanvasSize(0, 0);
+
 			this._$handTool = $.mk('button').attr({'class':'fa fa-hand-paper-o','data-info':'Hand Tool (H) - Move around without having to hold Space'}).on('click',e => {
 				e.preventDefault();
 
@@ -920,14 +916,12 @@
 				this.switchTool('zoom');
 			});
 			this.switchTool('hand');
-			this._$levelsChanger = $.mk('button').attr({'class':'fa fa-sliders','data-info':'(WIP) Adjust levels\u2026',readonly:true}).on('click', e => {
+			this._$levelsChanger = $.mk('button').attr({'class':'fa fa-sliders','data-info':'Adjust levels\u2026 (Warning: Lag-inducing)'}).on('click',e => {
 				e.preventDefault();
 
 				const activeTab = Tabbar.getInstance().getActiveTab();
 				if (!activeTab)
 					return;
-
-				const imgsize = activeTab.getImageSize();
 
 				$.Dialog.request('Adjust levels',$LevelsChangeForm.clone(true,true),'Set',$form => {
 					const sliderCont = $form.find('.slider')[0];
@@ -938,7 +932,7 @@
 						connect: true,
 						direction: 'ltr',
 						orientation: 'horizontal',
-						behaviour: 'tap-drag',
+						behaviour: 'tap-snap',
 						step: 1,
 						tooltips: false,
 						range: {
@@ -951,14 +945,14 @@
 						},
 					});
 					const $inputs = $form.find('.slider-holder input');
-					let skipUpdate = false;
-					slider.on('update', function(values, handle){
+					let skipUpdate = true;
+					slider.on('update', $.throttle(100,function(values, handle){
 						if (skipUpdate)
 							return;
 
 						$inputs.eq(handle).val(values[handle]);
 						$form.triggerHandler('update-disp');
-					});
+					}));
 					$inputs.on('change input',function(){
 						//noinspection JSUnusedAssignment
 						skipUpdate = true;
@@ -969,18 +963,11 @@
 					const atm = slider.get();
 					$inputs.eq(0).val(atm[0]);
 					$inputs.eq(1).val(atm[1]);
-					$form.triggerHandler('update-disp');
+					setTimeout(function(){
+						skipUpdate = false;
+					},200);
 
-					const
-						$preview = $form.find('#levels-preview'),
-						$previewCanvas = $preview.children()[0],
-						fitsize = $.scaleResize(imgsize.width, imgsize.height, { height: 150 }, false);
-
-					$previewCanvas.width = fitsize.width;
-					$previewCanvas.height = fitsize.height;
-					$previewCanvas.getContext('hdr2d').drawImage(this._$imageCanvas[0], 0, 0, imgsize.width, imgsize.height, 0, 0, fitsize.width, fitsize.height);
-
-					$form.on('submit',e => {
+					$form.on('submit',(e, redraw) => {
 						e.preventDefault();
 						const
 							data = $form.mkData(),
@@ -988,9 +975,10 @@
 								low: data.low,
 								high: data.high
 							};
-						$.Dialog.wait(false, 'CHanging levels');
-						this.setLevels(range);
-						$.Dialog.close();
+						$.Dialog.wait(false, 'Changing levels', false,() => {
+							this.setLevels(range, redraw);
+							$.Dialog.close();
+						});
 					});
 				});
 			});
@@ -1734,17 +1722,19 @@
 				}
 			}
 		}
-		setLevels(range = LEVEL_FULL_RANGE()){
+		setLevels(range = LEVEL_FULL_RANGE(), updateCanvas = true){
 			const activeTab = Tabbar.getInstance().getActiveTab();
 			if (!activeTab)
 				return;
 
-			const hdrctx = this.getImageCanvasCtx();
-
-			hdrctx.range.r = range;
-			hdrctx.range.g = range;
-			hdrctx.range.b = range;
-			hdrctx.invalidate();
+			if (updateCanvas){
+				const hdrctx = this.getImageCanvasCtx();
+				hdrctx.setRange({
+					r: range,
+					g: range,
+					b: range,
+				});
+			}
 
 			this._levels = range;
 			activeTab.saveLevels(range);
@@ -1862,7 +1852,7 @@
 			if (typeof this._zoomlevel === 'number')
 				this.setZoomLevel(this._zoomlevel);
 		}
-		_setCanvasSize(w,h){
+		setCanvasSize(w, h){
 			this._$mouseOverlay[0].width =
 			this._$imageOverlay[0].width =
 			this._$imageCanvas[0].width = w;
@@ -1919,7 +1909,7 @@
 
 			this._$imageCanvas.appendTo(this._$picker);
 
-			this._setCanvasSize(imgsize.width, imgsize.height);
+			this.setCanvasSize(imgsize.width, imgsize.height);
 			tab.drawImage();
 
 			const storedimgpos = tab.loadImagePosition();

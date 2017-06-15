@@ -52,7 +52,8 @@ body {
 ::-webkit-scrollbar-thumb:vertical { width: 6px }
 ::-webkit-scrollbar-thumb:horizontal { height: 6px }
 #dialogOverlay {
-	background: rgba(black, .6);
+	background: rgba(black, .3);
+	backdrop-filter: blur(3px);
 }
 #dialogBox {
 	box-shadow: 0 0 10px rgba(black, .5), 0 0 70px black;
@@ -922,10 +923,5 @@ body {
 				text-align: right;
 			}
 		}
-	}
-	#levels-preview canvas {
-		display: block;
-		margin: 0 auto;
-		max-width: 100%;
 	}
 }
