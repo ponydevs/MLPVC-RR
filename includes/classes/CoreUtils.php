@@ -179,7 +179,7 @@ class CoreUtils {
 			$customCSS = array_merge($customCSS, $DEFAULT_CSS);
 
 		# JavaScript
-		$DEFAULT_JS = array('moment','jquery.ba-throttle-debounce','shared-utils','global','dialog','dragscroll');
+		$DEFAULT_JS = array('moment','jquery.ba-throttle-debounce','shared-utils','global','inert','dialog','dragscroll');
 		$customJS = array();
 		// Only add defaults when needed
 		if (array_search('no-default-js', $options) === false)

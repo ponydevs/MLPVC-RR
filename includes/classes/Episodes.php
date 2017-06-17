@@ -280,18 +280,6 @@ class Episodes {
 
 		if (!empty($Videos)){
 			$fullep = $Episode->twoparter ? 'Full episode' : '';
-			if (count($Videos) === 1 && $Videos[0]->provider === 'yt'){
-				$airtime = strtotime($Episode->airs);
-				$modified = $Videos[0]->modified;
-				if (!empty($modified) && $airtime > strtotime($modified)){
-					$fullep = 'Livestream';
-					$Episode = $Episode->addAiringData();
-					if ($Episode->aired)
-						$fullep .= ' recording';
-					if (!$Episode->twoparter)
-						$fullep = " ($fullep)";
-				}
-			}
 
 			$HTML = ($wrap ? "<section class='episode'>" : '')."<h2>Watch the ".($Episode->isMovie?'Movie':'Episode')."</h2><p class='align-center actions'>";
 			foreach ($Videos as $v){

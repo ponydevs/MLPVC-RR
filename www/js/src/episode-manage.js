@@ -62,19 +62,6 @@ DocReady.push(function(){
 				});
 			}
 			$.Dialog.request(false,$VidLinksForm,'Save', function($form){
-				if (data.airs && new Date(data.airs).getTime() > new Date().getTime()){
-					let $lsnotice = $.mk('div').addClass('notice warn').text('If you add this video now, it will be shown as a livestream link!');
-					$form.append($lsnotice);
-
-					$form.on('change keydown','input',function(){
-						setTimeout(function(){
-							let state = $form.mkData(),
-								shownotice = state.yt_1 && state.yt_1_full && !(state.dm_1 || state.dm_2);
-
-							$lsnotice[shownotice ? 'show' : 'hide']();
-						},1);
-					}).triggerHandler('change');
-				}
 				$form.on('submit', function(e){
 					e.preventDefault();
 

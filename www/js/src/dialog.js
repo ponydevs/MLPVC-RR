@@ -129,7 +129,7 @@
 				if (typeof params.title === 'string')
 					this.$dialogHeader.text(params.title);
 				this.$dialogContent = $.mk('div','dialogContent');
-				this.$dialogBox = $.mk('div','dialogBox');
+				this.$dialogBox = $.mk('div','dialogBox').attr({role:'dialog','aria-labelledby':'dialogHeader'});
 				this.$dialogScroll = $.mk('div','dialogScroll');
 				this.$dialogWrap = $.mk('div','dialogWrap');
 
@@ -143,6 +143,7 @@
 				).appendTo($body);
 
 				$body.addClass('dialog-open');
+				this.$dialogOverlay.siblings().prop('inert', true);
 			}
 
 			if (!appendingToRequest){
@@ -161,38 +162,14 @@
 						$button.on('click', function(){
 							$requestContentDiv.find('input[type=submit]').first().trigger('click');
 						});
-						$requestContentDiv.prepend($.mk('input').attr('type','submit').hide());
+						$requestContentDiv.prepend($.mk('input').attr('type','submit').hide().on('focus',e => {
+							e.preventDefault();
+
+							this.$dialogButtons.children().first().focus();
+						}));
 					}
 				}
-				$button.val(obj.label).on('keydown', (e) => {
-					if ([Key.Enter, Key.Space].includes(e.keyCode)){
-						e.preventDefault();
-
-						$button.trigger('click');
-					}
-					else if ([Key.Tab, Key.LeftArrow, Key.RightArrow].includes(e.keyCode)){
-						e.preventDefault();
-
-						let $dBc = this.$dialogButtons.children(),
-							$focused = $dBc.filter(':focus'),
-							$inputs = this.$dialogContent.find(':input');
-
-						if ($.isKey(Key.LeftArrow, e))
-							e.shiftKey = true;
-
-						if ($focused.length){
-							if (!e.shiftKey){
-								if ($focused.next().length) $focused.next().focus();
-								else if ($.isKey(Key.Tab, e)) $inputs.add($dBc).filter(':visible').first().focus();
-							}
-							else {
-								if ($focused.prev().length) $focused.prev().focus();
-								else if ($.isKey(Key.Tab, e)) ($inputs.length > 0 ? $inputs : $dBc).filter(':visible').last().focus();
-							}
-						}
-						else $inputs.add($dBc)[!e.shiftKey ? 'first' : 'last']().focus();
-					}
-				}).on('click', function (e) {
+				$button.val(obj.label).on('click', function (e) {
 					e.preventDefault();
 
 					$.callCallback(obj.action, [e]);
@@ -387,6 +364,7 @@
 			if (!this.isOpen())
 				return $.callCallback(callback, false);
 
+			this.$dialogOverlay.siblings().prop('inert', false);
 			this.$dialogOverlay.remove();
 			this._open = undefined;
 			this._restoreFocus();
@@ -410,35 +388,6 @@
 	}
 
 	$.Dialog = new Dialog();
-
-	$body.on('keydown', function(e){
-		if (!$.Dialog.isOpen() || e.keyCode !== Key.Tab)
-			return true;
-
-		let $inputs = $.Dialog.$dialogContent.find(':input'),
-			$focused = $inputs.filter(e.target),
-			idx = $inputs.index($focused);
-
-		if ($focused.length === 0){
-			e.preventDefault();
-			$inputs.first().focus();
-		}
-		else if (e.shiftKey){
-			if (idx === 0){
-				e.preventDefault();
-				$.Dialog.$dialogButtons.find(':last').focus();
-			}
-			else {
-				let $parent = $focused.parent();
-				if (!$parent.is($.Dialog.$dialogButtons))
-					return true;
-				if ($parent.children().first().is($focused)){
-					e.preventDefault();
-					$inputs.eq($inputs.index($focused)-1).focus();
-				}
-			}
-		}
-	});
 
 	let mobileDialogContentMarginCalculator = function(){
 			if (!$.Dialog.isOpen())
