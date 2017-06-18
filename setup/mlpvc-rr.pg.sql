@@ -81,7 +81,7 @@ ALTER TABLE appearance_relations OWNER TO "mlpvc-rr";
 
 CREATE TABLE appearances (
     id integer NOT NULL,
-    "order" integer NOT NULL,
+    "order" integer,
     label character varying(70) NOT NULL,
     notes text,
     ishuman boolean,
