@@ -9,6 +9,7 @@
 		}
 	],
     "require": {
+		"php": ">=7.1",
 		"fightbulc/moment": "^1.25.1",
 		"wisembly/elephant.io": "^3.3.0",
 		"ezyang/htmlpurifier": "^4.8",
