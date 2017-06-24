@@ -4,7 +4,6 @@ namespace App;
 
 use App\Controllers\Controller;
 use App\Models\User;
-use App\View;
 use Elasticsearch\Client;
 use Elasticsearch\ClientBuilder;
 use ElephantIO\Engine\SocketIO\Version2X as SocketIOEngine;
@@ -209,10 +208,7 @@ class CoreUtils {
 		header('Content-Type: text/html; charset=utf-8;');
 
 		if (empty($_GET['via-js'])){
-			ob_start();
 			require INCPATH.'views/_layout.php';
-			$content = ob_get_clean();
-			echo self::_clearIndentation($content);
 			die();
 		}
 		else {
@@ -227,8 +223,8 @@ class CoreUtils {
 				'css' => $customCSS,
 				'js' => $customJS,
 				'title' => (isset($GLOBALS['title'])?$GLOBALS['title'].' - ':'').SITE_TITLE,
-				'content' => self::_clearIndentation($content),
-				'sidebar' => self::_clearIndentation($sidebar),
+				'content' => $content,
+				'sidebar' => $sidebar,
 				'footer' => CoreUtils::getFooter(WITH_GIT_INFO),
 				'avatar' => Auth::$signed_in ? Auth::$user->avatar_url : GUEST_AVATAR,
 				'responseURL' => $_SERVER['REQUEST_URI'],
@@ -561,6 +557,12 @@ class CoreUtils {
 	}
 
 	/**
+	 * Contains the HTML of the navigation element
+	 * @var string
+	 */
+	static $NavHTML;
+
+	/**
 	 * Returns the HTML code of the navigation in the header
 	 *
 	 * @param bool  $disabled
@@ -569,8 +571,8 @@ class CoreUtils {
 	 * @return string
 	 */
 	static function getNavigationHTML($disabled = false, $scope = []){
-		if (!empty($GLOBALS['NavHTML']))
-			return $GLOBALS['NavHTML'];
+		if (!empty(self::$NavHTML))
+			return self::$NavHTML;
 
 		global $do;
 
@@ -623,7 +625,9 @@ class CoreUtils {
 				$NavItems['events']['subitem'] = CoreUtils::cutoff($scope['Event']->name, 20);
 			if (Auth::$signed_in){
 				$NavItems['u'] = array("/@".Auth::$user->name,'Account');
-				if (isset($scope['Owner']) && $scope['Owner']->id === Auth::$user->id)
+				if (isset($scope['nav_contrib']))
+					$NavItems['u']['subitem'] = 'Your Contributions';
+				else if (isset($scope['Owner']) && $scope['Owner']->id === Auth::$user->id)
 					$NavItems['u']['subitem'] = 'Personal Color Guide';
 			}
 			if ($do === 'user' || Permission::sufficient('staff')){
@@ -645,7 +649,7 @@ class CoreUtils {
 		}
 		else $NavItems = array(array(true, 'HTTP 503', false, 'subitem' => 'Service Temporarily Unavailable'));
 
-		$GLOBALS['NavHTML'] = '';
+		self::$NavHTML = '';
 		foreach ($NavItems as $item){
 			$sublink = '';
 			if (isset($item['subitem'])){
@@ -656,10 +660,10 @@ class CoreUtils {
 			else if (isset($item[2]) && !$item[2])
 				continue;
 			else list($class, $link) = self::_processHeaderLink($item);
-			$GLOBALS['NavHTML'] .= "<li$class>$link$sublink</li>";
+			self::$NavHTML .= "<li$class>$link$sublink</li>";
 		}
-		$GLOBALS['NavHTML'] .= '<li><a href="http://mlp-vectorclub.deviantart.com/" target="_blank" rel="noopener">MLP-VectorClub</a></li>';
-		return $GLOBALS['NavHTML'];
+		self::$NavHTML .= '<li><a href="http://mlp-vectorclub.deviantart.com/" target="_blank" rel="noopener">MLP-VectorClub</a></li>';
+		return self::$NavHTML;
 	}
 
 	/**

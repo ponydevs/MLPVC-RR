@@ -173,6 +173,15 @@
 // Global Stuff
 .hidden { display: none !important }
 .unreadable { font-size: 0 }
+.star-info {
+	cursor: help;
+	color: black;
+	transform: rotate(5deg);
+	font-weight: bold;
+}
+.responsive-table {
+	overflow-x: auto;
+}
 :focus { outline: 0 }
 a > img { border: 0 }
 .cursor-help, time[datetime][title] { cursor: help }

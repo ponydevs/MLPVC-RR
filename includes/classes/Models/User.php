@@ -6,17 +6,12 @@ use App\Appearances;
 use App\CachedFile;
 use App\DeviantArt;
 use App\Exceptions\NoPCGSlotsException;
-use App\HTTP;
 use App\CoreUtils;
-use App\JSON;
 use App\Logs;
 use App\Pagination;
 use App\Permission;
-use App\RegExp;
-use App\Response;
 use App\Time;
 use App\UserPrefs;
-use App\Users;
 
 class User extends AbstractUser {
 	/** @var string */
@@ -52,9 +47,12 @@ class User extends AbstractUser {
 	 */
 	function getProfileLink(int $format = self::LINKFORMAT_TEXT):string {
 		$Username = $this->name;
+		$url = "/@$Username";
+		if ($format === self::LINKFORMAT_URL)
+			return $url;
 		$avatar = $format == self::LINKFORMAT_FULL ? "<img src='{$this->avatar_url}' class='avatar' alt='avatar'> " : '';
 
-		return "<a href='/@$Username' class='da-userlink".($format == self::LINKFORMAT_FULL ? ' with-avatar':'')."'>$avatar<span class='name'>$Username</span></a>";
+		return "<a href='$url' class='da-userlink".($format == self::LINKFORMAT_FULL ? ' with-avatar':'')."'>$avatar<span class='name'>$Username</span></a>";
 	}
 
 	/**
@@ -161,23 +159,7 @@ class User extends AbstractUser {
 		if ($exclude_own)
 			$Database->where('requested_by', $this->id, '!=');
 
-		return $Database->where('deviation_id IS NOT NULL')->where('reserved_by',$this->id)->where('lock',1)->count('requests');
-	}
-
-	/**
-	 * Get the number of posts finished by the user
-	 *
-	 * @return int
-	 */
-	function getFinishedPostCount():int {
-		global $Database;
-
-		return $Database->rawQuerySingle(
-			'SELECT
-				(SELECT COUNT(*) FROM requests WHERE reserved_by = :userid && deviation_id IS NOT NULL)
-				+
-				(SELECT COUNT(*) FROM reservations WHERE reserved_by = :userid && deviation_id IS NOT NULL)
-			as cnt', array('userid' => $this->id))['cnt'];
+		return $this->getApprovedFinishedRequestContributions();
 	}
 
 	function getPCGAppearances(Pagination $Pagination = null, bool $countOnly = false){
@@ -234,39 +216,144 @@ class User extends AbstractUser {
 		return $data;
 	}
 
+	/**
+	 * @param bool       $count      Returns the count if true
+	 * @param Pagination $pagination Pagination object used for getting the LIMIT part of the query
+	 * @return int|array
+	 */
+	public function getCMContributions(bool $count = true, Pagination $pagination = null){
+		global $Database;
+
+		$cols = $count ? 'COUNT(*) as cnt' : 'c.ponyid, c.favme';
+		$query =
+			"SELECT $cols
+			FROM cutiemarks c
+			LEFT JOIN \"cached-deviations\" d ON d.id = c.favme
+			LEFT JOIN appearances p ON p.id = c.ponyid
+			WHERE d.author = ? && p.owner IS NULL";
+
+		if ($count)
+			return $Database->rawQuerySingle($query, array($this->name))['cnt'];
+
+		if ($pagination)
+			$query .= ' ORDER BY p.order ASC '.$pagination->getLimitString();
+		return $Database->setClass(Cutiemark::class)->rawQuery($query, array($this->name));
+
+	}
+
+	/**
+	 * @param string     $table      Specifies which post table to use for fetching
+	 * @param bool       $count      Returns the count if true
+	 * @param Pagination $pagination Pagination object used for getting the LIMIT part of the query
+	 * @return int|array
+	 */
+	private function _getPostContributions(string $table, bool $count = true, Pagination $pagination = null){
+		global $Database;
+
+		if ($table === 'requests')
+			$Database->where('requested_by', $this->id);
+		else $Database->where('reserved_by', $this->id);
+
+		if ($count)
+			return $Database->count($table);
+
+		$limit = isset($pagination) ? $pagination->getLimit() : null;
+		return $Database->orderBy('posted','DESC')->get($table,$limit);
+	}
+
+	/**
+	 * @param bool       $count      Returns the count if true
+	 * @param Pagination $pagination Pagination object used for getting the LIMIT part of the query
+	 * @return int|array
+	 */
+	public function getRequestContributions(bool $count = true, Pagination $pagination = null){
+		return $this->_getPostContributions('requests', $count, $pagination);
+	}
+
+	/**
+	 * @param bool       $count      Returns the count if true
+	 * @param Pagination $pagination Pagination object used for getting the LIMIT part of the query
+	 * @return int|array
+	 */
+	public function getReservationContributions(bool $count = true, Pagination $pagination = null){
+		return $this->_getPostContributions('reservations', $count, $pagination);
+	}
+
+	/**
+	 * @param bool       $count      Returns the count if true
+	 * @param Pagination $pagination Pagination object used for getting the LIMIT part of the query
+	 * @return int|array
+	 */
+	public function getFinishedPostContributions(bool $count = true, Pagination $pagination = null){
+		global $Database;
+
+		if ($count)
+			return $Database->rawQuerySingle(
+				'SELECT
+					(SELECT COUNT(*) FROM requests WHERE reserved_by = :userid && deviation_id IS NOT NULL)
+					+
+					(SELECT COUNT(*) FROM reservations WHERE reserved_by = :userid && deviation_id IS NOT NULL)
+				as cnt', array('userid' => $this->id))['cnt'];
+
+		$cols = "id, label, posted, reserved_by, preview, lock, season, episode, deviation_id";
+		/** @noinspection SqlInsertValues */
+		$query =
+			"SELECT * FROM (
+				SELECT $cols, requested_by, reserved_at FROM requests WHERE reserved_by = :userid && deviation_id IS NOT NULL
+				UNION ALL
+				SELECT $cols, null as requested_by, posted as reserved_at FROM reservations WHERE reserved_by = :userid && deviation_id IS NOT NULL
+			) t";
+		if ($pagination)
+			$query .= ' ORDER BY posted DESC '.$pagination->getLimitString();
+		return $Database->rawQuery($query, array('userid' => $this->id));
+	}
+
+	/**
+	 * @param bool       $count      Returns the count if true
+	 * @param Pagination $pagination Pagination object used for getting the LIMIT part of the query
+	 * @return int|array
+	 */
+	public function getApprovedFinishedRequestContributions(bool $count = true, Pagination $pagination = null){
+		global $Database;
+
+		$Database->where('deviation_id IS NOT NULL')->where('reserved_by',$this->id)->where('lock',1);
+
+		if ($count)
+			return $Database->count('requests');
+
+		$limit = isset($pagination) ? $pagination->getLimit() : null;
+		return $Database->orderBy('finished_at','DESC')->get('requests',$limit);
+	}
+
 	private function _getContributions():array {
 		global $Database;
 
 		$contribs = [];
 
 		// Cutie mark vectors submitted
-		$cmContrib = $Database->rawQuerySingle(
-			'SELECT COUNT(*) as cnt
-			FROM cutiemarks c
-			LEFT JOIN "cached-deviations" d ON d.id = c.favme
-			WHERE d.author = ?', array($this->name))['cnt'];
+		$cmContrib = $this->getCMContributions();
 		if ($cmContrib > 0)
-			$contribs[] = [$cmContrib, 'cutie mark vector', 'provided'];
+			$contribs['cms-provided'] = [$cmContrib, 'cutie mark vector', 'provided'];
 
 		// Requests posted
-		$reqPost = $Database->where('requested_by', $this->id)->count('requests');
+		$reqPost = $this->getRequestContributions();
 		if ($reqPost > 0)
-			$contribs[] = [$reqPost, 'request', 'posted'];
+			$contribs['requests'] = [$reqPost, 'request', 'posted'];
 
 		// Reservations posted
-		$resPost = $Database->where('reserved_by', $this->id)->count('reservations');
+		$resPost = $this->getReservationContributions();
 		if ($resPost > 0)
-			$contribs[] = [$resPost, 'reservation', 'posted'];
+			$contribs['reservations'] = [$resPost, 'reservation', 'posted'];
 
 		// Finished post count
-		$finPost = $this->getFinishedPostCount();
+		$finPost = $this->getFinishedPostContributions();
 		if ($finPost > 0)
-			$contribs[] = [$finPost, 'post', 'finished'];
+			$contribs['finished-posts'] = [$finPost, 'post', 'finished'];
 
 		// Finished requests
-		$reqFin = $this->getApprovedFinishedRequestCount();
+		$reqFin = $this->getApprovedFinishedRequestContributions();
 		if ($reqFin > 0)
-			$contribs[] = [$reqFin, 'request', 'fulfilled'];
+			$contribs['fulfilled-requests'] = [$reqFin, 'request', 'fulfilled'];
 
 		// Broken video reports
 		$brokenVid = $Database->rawQuerySingle(

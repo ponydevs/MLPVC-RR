@@ -65,6 +65,7 @@ $router->map('GET', '/users',                          'UsersController#list');
 $router->map('GET', '/@[un:name]',                     'UserController#profile');
 $router->map('GET', '/u/[uuid:uuid]',                  'UserController#profileByUuid');
 $router->map('GET', '/u/[un:name]?',                   'UserController#profile');
+$router->map('GET', '/@[un:name]/contrib/[ad:type]/[i]?', 'UserController#contrib');
 $router->map('GET', '/@[un:name]/[cg]/[i]?',                               'ColorGuideController#personalGuide');
 $router->map('GET', '/@[un:name]/[cg]/[v]/[i:id]',                         'ColorGuideController#personalAppearancePage');
 $router->map('GET', '/@[un:name]/[cg]/[v]/[i:id]-[adi]',                   'ColorGuideController#personalAppearancePage');

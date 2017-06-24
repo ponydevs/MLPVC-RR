@@ -3,7 +3,6 @@
 namespace App;
 
 use App\Models\Episode;
-use App\Models\User;
 use Elasticsearch\Common\Exceptions\Missing404Exception as ElasticMissing404Exception;
 use Elasticsearch\Common\Exceptions\NoNodesAvailableException as ElasticNoNodesAvailableException;
 use Elasticsearch\Common\Exceptions\ServerErrorResponseException as ElasticServerErrorResponseException;
@@ -533,7 +532,7 @@ HTML;
 	 * @return string
 	 */
 	static function getPreviewURL($AppearanceID):string {
-		$path = str_replace('#', $AppearanceID,CGUtils::PREVIEW_SVG_PATH);
+		$path = str_replace('#',$AppearanceID,CGUtils::PREVIEW_SVG_PATH);
 		return "/cg/v/{$AppearanceID}p.svg?t=".(file_exists($path) ? filemtime($path) : time());
 	}
 
@@ -575,7 +574,7 @@ HTML;
 		$preview = "<img src='$preview' class='preview'>";
 		$label = self::processLabel($p['label']);
 		$owner = isset($p['owner']) ? '/@'.(Users::get($p['owner'],'id','name')->name) : '';
-		return "<a href='$owner/cg/v/{$p['id']}-$safeLabel'>$preview$label</a>";
+		return "<a href='$owner/cg/v/{$p['id']}-$safeLabel'>$preview<span>$label</span></a>";
 	}
 
 	static function getRelatedHTML(array $Related):string {

@@ -2,7 +2,6 @@
 
 namespace App;
 
-use App\Controllers\AuthController;
 use App\Models\CachedDeviation;
 use App\Models\User;
 use App\Exceptions\CURLRequestException;
@@ -135,7 +134,6 @@ class DeviantArt {
 
 			switch ($json['type']){
 				case "photo":
-				case "link":
 					$insert['type'] = $json['imagetype'];
 				break;
 				case "rich":
@@ -148,6 +146,16 @@ class DeviantArt {
 						if ($H2_EXTENSION_REGEX->match($json['html']))
 							$insert['type'] = strtolower($H2_EXTENSION_REGEX->replace('$1',$json['html']));
 					}
+				break;
+				case "link":
+					$stashpage = HTTP::legitimateRequest("http://$type/$ID");
+					if (!empty($stashpage['response'])){
+						preg_match(new RegExp('<span class="text">([A-Za-z\d]+) download,'), $stashpage['response'], $matches);
+						if (!empty($matches[1]))
+							$insert['type'] = strtolower($matches[1]);
+					}
+					if (empty($insert['type']))
+						$insert['type'] = $json['imagetype'];
 				break;
 			}
 

@@ -544,7 +544,7 @@ DocReady.push(function(){
 						)
 					);
 
-				let show_img_update_btn = $li.children('.image').find('.typcn-tick').length === 0,
+				let show_img_update_btn = $li.children('.image').hasClass('screencap'),
 					finished = $li.closest('div').attr('class') === 'finished',
 					$fullsize_link = finished ? $li.children('.original') : $li.children('.image').children('a'),
 					fullsize_url = $fullsize_link.attr('href'),
@@ -591,7 +591,7 @@ DocReady.push(function(){
 											$.post(`/post/set-image/${type}/${id}`,data,$.mkAjaxHandler(function(){
 												if (!this.status) return $.Dialog.fail(false, this.message);
 
-												$.Dialog.success(false, 'Image has been updated');
+												$.Dialog.success(false, 'Image has been updated', true);
 
 												$li.reloadLi();
 											}));

@@ -5,7 +5,6 @@ namespace App\Models;
 use App\Auth;
 use App\CoreUtils;
 use App\DeviantArt;
-use App\ImageProvider;
 use App\Permission;
 use App\RegExp;
 use App\Time;
@@ -64,7 +63,12 @@ class EventEntry extends AbstractFillable {
 	}
 
 	private static function _getPreviewDiv(string $fullsize, string $preview, ?string $filetype = null):string {
-		$type = isset($filetype) ? "<span class='filetype'>$filetype</span>" : '';
+		$type = '';
+		if (isset($filetype)){
+			if ($filetype === 'zip')
+				$filetype = 'svg<span class="star-info" title="ZIP archives are assumed to be SVG files">*</span>';
+			$type = "<span class='filetype'>$filetype</span>";
+		}
 		return "<div class='preview'><a href='{$fullsize}' target='_blank' rel='noopener'><img src='{$preview}' alt='event entry preview'></a>$type</div>";
 	}
 

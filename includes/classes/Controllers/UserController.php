@@ -7,12 +7,13 @@ use App\CSRFProtection;
 use App\HTTP;
 use App\Input;
 use App\Logs;
+use App\Models\Request;
+use App\Models\Reservation;
 use App\Models\User;
+use App\Pagination;
 use App\Permission;
 use App\Posts;
-use App\RegExp;
 use App\Response;
-use App\UserPrefs;
 use App\Users;
 
 class UserController extends Controller {
@@ -271,5 +272,87 @@ class UserController extends Controller {
 		if ($avail === 0)
 			Response::fail('You do not have any available slots left. You can always fulfill additional requests to get more.');
 		Response::done();
+	}
+
+	const CONTRIB_NAMES = [
+		'cms-provided' => 'Cute Mark vectors provided',
+		'requests' => 'Requests posted',
+		'reservations' => 'Reservations posted',
+		'finished-posts' => 'Posts finished',
+		'fulfilled-requests' => 'Requests fulfilled',
+	];
+
+	function contrib($params){
+		if (!isset(self::CONTRIB_NAMES[$params['type']]))
+			CoreUtils::notFound();
+
+		$targetUser = Users::get($params['name'], 'name');
+		if (empty($targetUser))
+			CoreUtils::notFound();
+		if ($params['type'] === 'requests' && $targetUser->id !== (Auth::$user->id ?? null) && Permission::insufficient('staff'))
+			CoreUtils::notFound();
+
+		global $Database;
+
+		$paginationPath = "@{$targetUser->name}/contrib/{$params['type']}";
+
+		$itemsPerPage = 10;
+		$jsResponse = isset($_GET['js']);
+		$Pagination = new Pagination($paginationPath, $itemsPerPage);
+
+		switch ($params['type']){
+			case "cms-provided":
+				$cnt = $targetUser->getCMContributions();
+				$Pagination->calcMaxPages($cnt);
+				$data = $targetUser->getCMContributions(false, $Pagination);
+			break;
+			case "requests":
+				$cnt = $targetUser->getRequestContributions();
+				$Pagination->calcMaxPages($cnt);
+				$data = $targetUser->getRequestContributions(false, $Pagination);
+			break;
+			case "reservations":
+				$cnt = $targetUser->getReservationContributions();
+				$Pagination->calcMaxPages($cnt);
+				$data = $targetUser->getReservationContributions(false, $Pagination);
+			break;
+			case "finished-posts":
+				$cnt = $targetUser->getFinishedPostContributions();
+				$Pagination->calcMaxPages($cnt);
+				$data = $targetUser->getFinishedPostContributions(false, $Pagination);
+				foreach ($data as &$item)
+					$item = isset($item['requested_by']) ? new Request($item) : new Reservation($item);
+			break;
+			case "fulfilled-requests":
+				$cnt = $targetUser->getApprovedFinishedRequestContributions();
+				$Pagination->calcMaxPages($cnt);
+				$data = $targetUser->getApprovedFinishedRequestContributions(false, $Pagination);
+			break;
+			default:
+				throw new \Exception(__METHOD__.": Mising data retriever for type {$params['type']}");
+		}
+
+
+		CoreUtils::fixPath("/$paginationPath/{$Pagination->page}");
+
+		if ($jsResponse)
+			$Pagination->respond(Users::getContributionListHTML($params['type'], $data, NOWRAP), '#contribs');
+
+		$title = self::CONTRIB_NAMES[$params['type']].' - '.CoreUtils::posess($targetUser->name).' Contributions';
+		$heading = self::CONTRIB_NAMES[$params['type']].' by '.$targetUser->getProfileLink();
+		CoreUtils::loadPage([
+			'title' => $title,
+			'heading' => $heading,
+			'css' => ['user-contrib'],
+			'js' => ['paginate'],
+			'view' => 'user-contrib',
+			'import' => [
+				'data' => $data,
+				'params' => $params,
+				'Pagination' => $Pagination,
+				'itemsPerPage' => $itemsPerPage,
+				'nav_contrib' => true,
+			],
+		]);
 	}
 }

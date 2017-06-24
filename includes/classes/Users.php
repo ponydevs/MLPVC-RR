@@ -3,6 +3,8 @@
 namespace App;
 
 use App\Models\Post;
+use App\Models\Request;
+use App\Models\Reservation;
 use App\Models\Session;
 use App\Models\User;
 use App\Exceptions\CURLRequestException;
@@ -503,12 +505,176 @@ HTML;
 		$cachedur = User::CONTRIB_CACHE_DURATION/ Time::IN_SECONDS['hour'];
 		$cachedur = CoreUtils::makePlural('hour', $cachedur, PREPEND_NUMBER);
 		$HTML = "<section class='contributions'><h2>{$privacy}Contributions <span class='typcn typcn-info-large' title='This data is updated every {$cachedur}'></h2>\n<ul>";
-		foreach ($contribs as $contrib)
-			$HTML .= self::_processContrib(...$contrib);
+		foreach ($contribs as $key => $contrib)
+			$HTML .= self::_processContrib($key, $user, ...$contrib);
 		return "$HTML</ul></section>";
 	}
-	private static function _processContrib(int $amount, string $what_singular, ?string $append = null):string {
+	private static function _processContrib($key, User $user, int $amount, string $what_singular, ?string $append = null):string {
 		$what = CoreUtils::makePlural($what_singular, $amount).(!empty($append)?" $append":'');
-		return "<li><span class='amt'>$amount</span> <span class='expl'>$what</span>";
+		$item = "<span class='amt'>$amount</span> <span class='expl'>$what</span>";
+		$canSee = $key !== 'requests' || $user->id === (Auth::$user->id ?? null) || Permission::sufficient('staff');
+		if (!is_numeric($key) && $canSee){
+			$userlink = $user->getProfileLink(User::LINKFORMAT_URL);
+			$item = "<a href='{$userlink}/contrib/$key'>$item</a>";
+		}
+		return "<li>$item</li>";
+	}
+
+	public static function getContributionListHTML(string $type, ?array $data, bool $wrap = WRAP):string {
+		global $Database;
+
+		switch ($type){
+			case "cms-provided":
+				$THEAD = <<<HTML
+<tr>
+	<th>Appearance</th>
+	<th>Deviation</th>
+</tr>
+HTML;
+			break;
+			case "requests":
+				$THEAD = <<<HTML
+<tr>
+	<th>Post</th>
+	<th>Posted <span class="typcn typcn-arrow-sorted-down" title="Newest first"></span></th>
+	<th>Reserved?</th>
+	<th>Finished?</th>
+	<th>Approved?</th>
+</tr>
+HTML;
+			break;
+			case "reservations":
+				$THEAD = <<<HTML
+<tr>
+	<th>Post</th>
+	<th>Posted <span class="typcn typcn-arrow-sorted-down" title="Newest first"></span></th>
+	<th>Finished?</th>
+	<th>Approved?</th>
+</tr>
+HTML;
+			break;
+			case "finished-posts":
+				$THEAD = <<<HTML
+<tr>
+	<th>Post</th>
+	<th>Posted <span class="typcn typcn-arrow-sorted-down" title="Newest first"></span></th>
+	<th>Reserved</th>
+	<th>Deviation</th>
+	<th>Approved?</th>
+</tr>
+HTML;
+			break;
+			case "fulfilled-requests":
+				$THEAD = <<<HTML
+<tr>
+	<th>Post</th>
+	<th>Posted</th>
+	<th>Finished <span class="typcn typcn-arrow-sorted-down" title="Newest first"></span></th>
+	<th>Deviation</th>
+</tr>
+HTML;
+			break;
+			default:
+				throw new \Exception(__METHOD__.": Missing table heading definitions for type $type");
+		}
+		$THEAD = "<thead>$THEAD</thead>";
+
+		$TBODY = '';
+		foreach ($data as $item){
+			switch ($type){
+				case "cms-provided":
+					/** @var $item \App\Models\Cutiemark */
+					$appearance = $Database->where('id', $item->ponyid)->getOne('appearances');
+					$preview = Appearances::getLinkWithPreviewHTML($appearance);
+					$deviation = DeviantArt::getCachedDeviation($item->favme)->toLinkWithPreview();
+
+					$TR = <<<HTML
+<td class="pony-link">$preview</td>
+<td>$deviation</td>
+HTML;
+
+				break;
+				case "requests":
+					/** @var $item Request */
+					$preview = $item->toLinkWithPreview();
+					$posted = Time::tag($item->posted);
+					$isreserved = isset($item->reserved_by);
+					if ($isreserved){
+						$reserved_by = Users::get($item->reserved_by)->getProfileLink();
+						$reserved_at = Time::tag($item->reserved_at);
+						$reserved = "<span class='typcn typcn-user' title='By'></span> $reserved_by<br><span class='typcn typcn-time'></span> $reserved_at";
+					}
+					else $reserved = '<em>Nope</em>';
+					$isfinished = isset($item->deviation_id);
+					$finished = $isfinished ? DeviantArt::getCachedDeviation($item->deviation_id)->toLinkWithPreview() : '<em>Nope</em>';
+					$approved = $isfinished ? '<span class="color-green typcn typcn-tick"></span>' : '<em>Nope</em>';
+					$TR = <<<HTML
+<td>$preview</td>
+<td>$posted</td>
+<td class="by-at">$reserved</td>
+<td>$finished</td>
+<td class="approved">$approved</td>
+HTML;
+				break;
+				case "reservations":
+					/** @var $item Request */
+					$preview = $item->toLinkWithPreview();
+					$posted = Time::tag($item->posted);
+					$isfinished = isset($item->deviation_id);
+					$finished = $isfinished ? DeviantArt::getCachedDeviation($item->deviation_id)->toLinkWithPreview() : '<em>Nope</em>';
+					$approved = $isfinished ? '<span class="color-green typcn typcn-tick"></span>' : '<em>Nope</em>';
+					$TR = <<<HTML
+<td>$preview</td>
+<td>$posted</td>
+<td>$finished</td>
+<td class="approved">$approved</td>
+HTML;
+				break;
+				case "finished-posts":
+					/** @var $item Request|Reservation */
+					$preview = $item->toLinkWithPreview();
+					$posted_by = Users::get($item->isRequest ? $item->requested_by : $item->reserved_by)->getProfileLink();
+					$posted_at = Time::tag($item->posted);
+					$posted = "<span class='typcn typcn-user' title='By'></span> $posted_by<br><span class='typcn typcn-time'></span> $posted_at";
+					if ($item->isRequest){
+						$posted = "<td class='by-at'>$posted</td>";
+						$reserved = '<td>'.Time::tag($item->reserved_at).'</td>';
+					}
+					else {
+						$posted = "<td colspan='2'>$posted</td>";
+						$reserved = '';
+					}
+					$isfinished = isset($item->deviation_id);
+					$finished = $isfinished ? DeviantArt::getCachedDeviation($item->deviation_id)->toLinkWithPreview() : '<em>Nope</em>';
+					$approved = $isfinished ? '<span class="color-green typcn typcn-tick"></span>' : '<em>Nope</em>';
+					$TR = <<<HTML
+<td>$preview</td>
+$posted
+$reserved
+<td>$finished</td>
+<td class="approved">$approved</td>
+HTML;
+				break;
+				case "fulfilled-requests":
+					/** @var $item Request */
+					$preview = $item->toLinkWithPreview();
+					$posted_by = Users::get($item->requested_by)->getProfileLink();
+					$posted_at = Time::tag($item->posted);
+					$posted = "<span class='typcn typcn-user' title='By'></span> $posted_by<br><span class='typcn typcn-time'></span> $posted_at";
+					$finished = Time::tag($item->finished_at);
+					$deviation = DeviantArt::getCachedDeviation($item->deviation_id)->toLinkWithPreview();
+					$TR = <<<HTML
+<td>$preview</td>
+<td class='by-at'>$posted</td>
+<td>$finished</td>
+<td>$deviation</td>
+HTML;
+				break;
+			}
+
+			$TBODY .= "<tr>$TR</tr>";
+		}
+
+		return $wrap ? "<table id='contribs'>$THEAD$TBODY</table>" : $THEAD.$TBODY;
 	}
 }

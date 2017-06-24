@@ -2,12 +2,9 @@
 
 namespace App\Models;
 
-use App\Models\AbstractFillable;
-use App\Models\Episode;
 use App\Time;
 use App\RegExp;
 use App\CoreUtils;
-use App\Models\User;
 
 abstract class Post extends AbstractFillable {
 	/** @var int */
@@ -56,14 +53,21 @@ abstract class Post extends AbstractFillable {
 		return $Episode->toURL().'#'.$this->getID();
 	}
 
+	public function toLinkWithPreview(){
+		$haslabel = !empty($this->label);
+		$alt = $haslabel ? $this->processLabel() : 'No label';
+		$slabel = $haslabel ? $alt : "<em>$alt</em>";
+		return "<a class='post-link with-preview' href='{$this->toLink()}'><img src='{$this->preview}' alt='$alt'><span>$slabel</span></a>";
+	}
+
 	public function toAnchor(string $label = null, Episode $Episode = null, $newtab = false):string {
 		/** @var $Episode Episode */
 		$link = $this->toLink($Episode);
 		if (empty($label))
 			$label = $Episode->formatTitle(AS_ARRAY, 'id');
 		else $label = htmlspecialchars($label);
-		$target = $newtab ? ' target=\'_blank\'' : '';
-		return "<a href='$link'{$target}>$label</a>";
+		$target = $newtab ? 'target="_blank"' : '';
+		return "<a href='$link' {$target}>$label</a>";
 	}
 
 	public function isTransferable($now = null):bool {
@@ -87,10 +91,10 @@ abstract class Post extends AbstractFillable {
 		$label = preg_replace(new RegExp("''"), '"', $label);
 		$label = preg_replace(new RegExp('"([^"]+)"'), '&ldquo;$1&rdquo;', $label);
 		$label = preg_replace(new RegExp('\.\.\.'), '&hellip;', $label);
-		$label = preg_replace(new RegExp('(?:(f)ull[-\s](b)od(?:y|ied)(\sversion)?)','i'),'<strong class="color-darkblue">$1ull $2ody</strong>$3', $label);
-		$label = preg_replace(new RegExp('(?:(f)ace[-\s](o)nly(\sversion)?)','i'),'<strong class="color-darkblue">$1ace $2nly</strong>$3', $label);
-		$label = preg_replace(new RegExp('(?:(f)ull\s(s)cene?)','i'),'<strong class="color-darkblue">$1ull $2cene</strong>$3', $label);
-		$label = preg_replace(new RegExp('(?:(e)ntire\s(s)cene?)','i'),'<strong class="color-darkblue">$1ntire $2cene</strong>$3', $label);
+		$label = preg_replace(new RegExp('(?:(f)ull[- ](b)od(?:y|ied)( version)?)','i'),'<strong class="color-darkblue">$1ull $2ody</strong>$3', $label);
+		$label = preg_replace(new RegExp('(?:(f)ace[- ](o)nly( version)?)','i'),'<strong class="color-darkblue">$1ace $2nly</strong>$3', $label);
+		$label = preg_replace(new RegExp('(?:(f)ull (s)cene?)','i'),'<strong class="color-darkblue">$1ull $2cene</strong>$3', $label);
+		$label = preg_replace(new RegExp('(?:(e)ntire (s)cene?)','i'),'<strong class="color-darkblue">$1ntire $2cene</strong>$3', $label);
 		$label = preg_replace(new RegExp('\[([\w\s]+ intensifies)\]','i'),'<span class="intensify">$1</span>', $label);
 		return $label;
 	}
