@@ -42,11 +42,11 @@ class PostTest extends TestCase {
 			'episode' => 1,
 		]);
 		$result = $Request->toAnchor();
-		self::assertEquals("<a href='/episode/S1E1#request-1'>S1E1</a>", $result);
+		self::assertEquals("<a href='/episode/S1E1#request-1' >S1E1</a>", $result);
 		$result = $Request->toAnchor('Custom Text<');
-		self::assertEquals("<a href='/episode/S1E1#request-1'>Custom Text&lt;</a>", $result);
+		self::assertEquals("<a href='/episode/S1E1#request-1' >Custom Text&lt;</a>", $result);
 		$result = $Request->toAnchor('Custom Text<',null,true);
-		self::assertEquals("<a href='/episode/S1E1#request-1' target='_blank'>Custom Text&lt;</a>", $result);
+		self::assertEquals("<a href='/episode/S1E1#request-1' target=\"_blank\">Custom Text&lt;</a>", $result);
 	}
 
 	function testIsTransferable(){
