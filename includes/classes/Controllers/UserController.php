@@ -352,6 +352,7 @@ class UserController extends Controller {
 				'Pagination' => $Pagination,
 				'itemsPerPage' => $itemsPerPage,
 				'nav_contrib' => true,
+				'targetUser' => $targetUser,
 			],
 		]);
 	}

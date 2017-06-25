@@ -625,7 +625,7 @@ class CoreUtils {
 				$NavItems['events']['subitem'] = CoreUtils::cutoff($scope['Event']->name, 20);
 			if (Auth::$signed_in){
 				$NavItems['u'] = array("/@".Auth::$user->name,'Account');
-				if (isset($scope['nav_contrib']))
+				if (isset($scope['nav_contrib']) && $scope['targetUser']->id === Auth::$user->id)
 					$NavItems['u']['subitem'] = 'Your Contributions';
 				else if (isset($scope['Owner']) && $scope['Owner']->id === Auth::$user->id)
 					$NavItems['u']['subitem'] = 'Personal Color Guide';
