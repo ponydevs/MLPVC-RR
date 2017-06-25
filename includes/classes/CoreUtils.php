@@ -626,7 +626,7 @@ class CoreUtils {
 			if (Auth::$signed_in){
 				$NavItems['u'] = array("/@".Auth::$user->name,'Account');
 				if (isset($scope['nav_contrib']) && $scope['targetUser']->id === Auth::$user->id)
-					$NavItems['u']['subitem'] = 'Your Contributions';
+					$NavItems['u']['subitem'] = "Your Contributions - Page {$scope['Pagination']->page}";
 				else if (isset($scope['Owner']) && $scope['Owner']->id === Auth::$user->id)
 					$NavItems['u']['subitem'] = 'Personal Color Guide';
 			}

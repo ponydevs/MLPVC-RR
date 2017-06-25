@@ -338,7 +338,7 @@ class UserController extends Controller {
 		if ($jsResponse)
 			$Pagination->respond(Users::getContributionListHTML($params['type'], $data, NOWRAP), '#contribs');
 
-		$title = self::CONTRIB_NAMES[$params['type']].' - '.CoreUtils::posess($targetUser->name).' Contributions';
+		$title = "Page {$Pagination->page} - ".self::CONTRIB_NAMES[$params['type']].' - '.CoreUtils::posess($targetUser->name).' Contributions';
 		$heading = self::CONTRIB_NAMES[$params['type']].' by '.$targetUser->getProfileLink();
 		CoreUtils::loadPage([
 			'title' => $title,
