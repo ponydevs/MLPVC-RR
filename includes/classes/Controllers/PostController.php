@@ -9,18 +9,16 @@ use App\Episodes;
 use App\ImageProvider;
 use App\Input;
 use App\Logs;
-use App\Notifications;
-use App\Permission;
-use App\Posts;
-use App\RegExp;
-use App\Response;
-use App\Time;
-use App\Users;
 use App\Models\Post;
 use App\Models\Request;
 use App\Models\Reservation;
+use App\Notifications;
+use App\Permission;
+use App\Posts;
+use App\Response;
+use App\Time;
+use App\Users;
 use ElephantIO\Exception\ServerConnectionFailureException;
-use ElephantIO\Exception\SocketException;
 
 class PostController extends Controller {
 	function _authorize(){
@@ -149,11 +147,31 @@ class PostController extends Controller {
 				if (Permission::insufficient('staff'))
 					Response::fail();
 
+				foreach (['preview', 'fullsize'] as $key){
+					$link = $this->_post->{$key};
+
+					if (!DeviantArt::isImageAvailable($link))
+						Response::fail("The $key image appears to be unavailable. Please make sure <a href='$link'>this link</a> works and try again. If it doesn't, you will need to replace the image.");
+				}
+
+
+				// We fetch the last log entry and restore the reserver from when the post was still up (if applicable)
 				$LogEntry = $Database->where('id', $this->_post->id)->where('type', $thing)->orderBy('entryid','DESC')->getOne('log__post_break');
 				$update = ['broken' => 0];
 				if (isset($LogEntry['reserved_by']))
 					$update['reserved_by'] = $LogEntry['reserved_by'];
 				$Database->where('id', $this->_post->id)->update("{$thing}s", $update);
+
+				Logs::logAction('post_fix',[
+					'id' => $this->_post->id,
+					'type' => $thing,
+					'reserved_by' => $update['reserved_by'] ?? null,
+				]);
+
+				$this->_post->__construct($update);
+
+				Response::done(['li' => Posts::getLi($this->_post)]);
+			break;
 		}
 
 		$isUserReserver = $this->_post->reserved_by === Auth::$user->id;
@@ -166,6 +184,8 @@ class PostController extends Controller {
 				case 'reserve':
 					if ($thing !== 'request')
 						break;
+					if ($this->_post->broken)
+						Response::fail('Broken posts cannot be reserved.'.(Permission::sufficient('staff')?' Update the image or clear the broken status through the edit menu to make the post reservable.':''));
 
 					Users::reservationLimitExceeded();
 
@@ -512,7 +532,7 @@ class PostController extends Controller {
 		Response::done(array('id' => "$thing-$PostID"));
 	}
 
-	/** @var \App\Models\Request|\App\Models\Reservation */
+	/** @var Request|Reservation */
 	private $_post;
 	function _initPost($action, $params){
 		global $Database;
@@ -661,11 +681,13 @@ class PostController extends Controller {
 		if (!DeviantArt::isImageAvailable($Image->preview))
 			Response::fail("<p class='align-center'>The specified image doesn’t seem to exist. Please verify that you can reach the URL below and try again.<br><a href='{$Image->preview}' target='_blank' rel='noopener'>{$Image->preview}</a></p>");
 
-		if (!$Database->where('id', $this->_post->id)->update("{$thing}s",array(
+		$update = array(
 			'preview' => $Image->preview,
 			'fullsize' => $Image->fullsize,
 			'broken' => 0,
-		))) Response::dbError();
+		);
+		if (!$Database->where('id', $this->_post->id)->update("{$thing}s",$update))
+			Response::dbError();
 
 		Logs::logAction('img_update',array(
 			'id' => $this->_post->id,
@@ -676,7 +698,10 @@ class PostController extends Controller {
 			'newfullsize' => $Image->fullsize,
 		));
 
-		Response::done(array('preview' => $Image->preview));
+		$wasBroken = $this->_post->broken;
+		$this->_post->__construct($update);
+
+		Response::done($wasBroken ? ['li' => Posts::getLi($this->_post)] : ['preview' => $Image->preview]);
 	}
 
 	function fixStash($params){
@@ -724,7 +749,7 @@ class PostController extends Controller {
 			Response::fail('Error while finding URL: '.$e->getMessage());
 		}
 		// Check image availability
-		if (!!DeviantArt::isImageAvailable($fullsize))
+		if (!DeviantArt::isImageAvailable($fullsize))
 			Response::fail("The specified image doesn’t seem to exist. Please verify that you can reach the URL below and try again.<br><a href='$fullsize' target='_blank' rel='noopener'>$fullsize</a>");
 
 		if (!$Database->where('id', $this->_post->id)->update("{$thing}s",array(
@@ -790,7 +815,7 @@ class PostController extends Controller {
 
 		$params['thing'] .= (array('req' => 'uest', 'res' => 'ervation'))[$params['thing']];
 
-		/** @var $LinkedPost \App\Models\Post */
+		/** @var $LinkedPost Post */
 		$LinkedPost = $Database->where('id', $params['id'])->getOne("{$params['thing']}s");
 		if (empty($LinkedPost))
 			CoreUtils::notFound();

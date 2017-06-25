@@ -56,7 +56,7 @@ class Posts {
 	static function getMostRecentList($wrap = true){
 		global $Database;
 
-		$cols = 'id,season,episode,label,posted,preview,lock,deviation_id,reserved_by,finished_at';
+		$cols = 'id,season,episode,label,posted,preview,lock,deviation_id,reserved_by,finished_at,broken';
 		$RecentPosts = $Database->rawQuery(
 			"SELECT * FROM
 			(

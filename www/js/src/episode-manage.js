@@ -548,9 +548,10 @@ DocReady.push(function(){
 					finished = $li.closest('div').attr('class') === 'finished',
 					$fullsize_link = finished ? $li.children('.original') : $li.children('.image').children('a'),
 					fullsize_url = $fullsize_link.attr('href'),
-					show_stash_fix_btn = !finished && !FULLSIZE_MATCH_REGEX.test(fullsize_url) && /deviantart\.net\//.test(fullsize_url);
+					show_stash_fix_btn = !finished && !FULLSIZE_MATCH_REGEX.test(fullsize_url) && /deviantart\.net\//.test(fullsize_url),
+					deemed_broken = $li.children('.broken-note').length ;
 
-				if (show_img_update_btn || show_stash_fix_btn){
+				if (show_img_update_btn || show_stash_fix_btn || deemed_broken){
 					$PostEditForm.append(
 						$.mk('label').append(
 							(
@@ -593,7 +594,15 @@ DocReady.push(function(){
 
 												$.Dialog.success(false, 'Image has been updated', true);
 
-												$li.reloadLi();
+												if (this.li){
+													let $newli = $(this.li);
+													if ($li.hasClass('highlight'))
+														$newli.addClass('highlight');
+													$li.replaceWith($newli);
+													Time.Update();
+													$newli.trigger('bind-more-handlers', [id, type]);
+												}
+												else $li.reloadLi();
 											}));
 										});
 									});
@@ -624,6 +633,33 @@ DocReady.push(function(){
 
 										$fullsize_link.attr('href', this.fullsize);
 										$.Dialog.success(false, 'Fix successful', true);
+									}));
+								})
+								: undefined
+							),
+							(
+								deemed_broken
+								? $.mk('a').text('Clear broken status').attr({
+									'href':'#clear-broken-status',
+									'class':'btn orange typcn typcn-spanner',
+								}).on('click', function(e){
+									e.preventDefault();
+									$.Dialog.close();
+									$.Dialog.wait('Clear post broken status','Checking image availability');
+
+									$.post(`/post/unbreak/${type}/${id}`,$.mkAjaxHandler(function(){
+										if (!this.status) return $.Dialog.fail(false, this.message);
+
+										if (this.li){
+											let $newli = $(this.li);
+											if ($li.hasClass('highlight'))
+												$newli.addClass('highlight');
+											$li.replaceWith($newli);
+											Time.Update();
+											$newli.trigger('bind-more-handlers', [id, type]);
+										}
+
+										$.Dialog.close();
 									}));
 								})
 								: undefined

@@ -58,6 +58,13 @@
 			border: 1px solid rgba($HeaderBlue,.3) !important;
 		}
 
+		&.admin-break {
+			position: relative;
+			color: rgb(67, 33, 0);
+			background-color: rgba(127,65,0,.1);
+			border-color: rgba(127,65,0,.3);
+		}
+
 		> * {
 			display: block;
 			vertical-align: bottom;

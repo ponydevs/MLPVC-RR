@@ -509,7 +509,7 @@ DocReady.push(function(){
 	}
 
 	let reloading = {};
-	$.fn.reloadLi = function(log = true){
+	$.fn.reloadLi = function(log = true, callback = undefined){
 		let $li = this,
 			_idAttr = $li.attr('id');
 		if (typeof _idAttr !== 'string' || $li.hasClass('admin-break'))
@@ -549,6 +549,7 @@ DocReady.push(function(){
 
 			if (log)
 				console.log(`[POST-FIX] Reloaded ${type} #${id}`);
+			$.callCallback(callback);
 		}));
 
 		return this;

@@ -3,8 +3,6 @@
 use App\Auth;
 use App\CoreUtils;
 use App\Models\User;
-use App\DeviantArt;
-use App\JSON;
 use App\Permission;
 use App\Time;
 use App\UserPrefs;

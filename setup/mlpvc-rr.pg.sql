@@ -915,6 +915,41 @@ ALTER SEQUENCE log__post_break_entryid_seq OWNED BY log__post_break.entryid;
 
 
 --
+-- Name: log__post_fix; Type: TABLE; Schema: public; Owner: mlpvc-rr
+--
+
+CREATE TABLE log__post_fix (
+    entryid integer NOT NULL,
+    type character varying(11) NOT NULL,
+    id integer NOT NULL,
+    reserved_by uuid
+);
+
+
+ALTER TABLE log__post_fix OWNER TO "mlpvc-rr";
+
+--
+-- Name: log__post_fix_entryid_seq; Type: SEQUENCE; Schema: public; Owner: mlpvc-rr
+--
+
+CREATE SEQUENCE log__post_fix_entryid_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE log__post_fix_entryid_seq OWNER TO "mlpvc-rr";
+
+--
+-- Name: log__post_fix_entryid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER SEQUENCE log__post_fix_entryid_seq OWNED BY log__post_fix.entryid;
+
+
+--
 -- Name: log__post_lock; Type: TABLE; Schema: public; Owner: mlpvc-rr
 --
 
@@ -1698,6 +1733,13 @@ ALTER TABLE ONLY log__post_break ALTER COLUMN entryid SET DEFAULT nextval('log__
 
 
 --
+-- Name: log__post_fix entryid; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER TABLE ONLY log__post_fix ALTER COLUMN entryid SET DEFAULT nextval('log__post_fix_entryid_seq'::regclass);
+
+
+--
 -- Name: log__post_lock entryid; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
 --
 
@@ -2017,6 +2059,14 @@ ALTER TABLE ONLY log__img_update
 
 ALTER TABLE ONLY log__post_break
     ADD CONSTRAINT log__post_break_entryid PRIMARY KEY (entryid);
+
+
+--
+-- Name: log__post_fix log__post_fix_entryid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER TABLE ONLY log__post_fix
+    ADD CONSTRAINT log__post_fix_entryid PRIMARY KEY (entryid);
 
 
 --
@@ -2495,6 +2545,14 @@ ALTER TABLE ONLY log__da_namechange
 
 ALTER TABLE ONLY log__post_break
     ADD CONSTRAINT log__post_break_reserved_by_fkey FOREIGN KEY (reserved_by) REFERENCES users(id) ON UPDATE CASCADE;
+
+
+--
+-- Name: log__post_fix log__post_fix_reserved_by_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER TABLE ONLY log__post_fix
+    ADD CONSTRAINT log__post_fix_reserved_by_fkey FOREIGN KEY (reserved_by) REFERENCES users(id) ON UPDATE CASCADE;
 
 
 --

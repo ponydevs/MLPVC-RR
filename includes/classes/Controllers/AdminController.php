@@ -4,7 +4,6 @@ namespace App\Controllers;
 use App\Auth;
 use App\CoreUtils;
 use App\CSRFProtection;
-use App\HTTP;
 use App\Input;
 use App\Logs;
 use App\Models\DiscordMember;
@@ -312,10 +311,10 @@ class AdminController extends Controller {
 			$avatar = $member->getAvatarURL();
 			$avatar = isset($avatar) ? "<img src='{$avatar}' alt='user avatar' class='user-avatar'>" : '';
 			$un = CoreUtils::escapeHTML($member->username);
-			$bound = isset($member->userid) ? " class='bound'" : '';
+			$bound = isset($member->userid) ? 'class="bound"' : '';
 			$udata = '<span>'.(isset($member->nick) ? $member->nick : $member->username)."</span><span>{$member->username}#{$member->discriminator}</span>";
 			$HTML .= <<<HTML
-<li id="member-{$member->id}"$bound>
+<li id="member-{$member->id}" $bound>
 	$avatar
 	<div class='user-data'>
 		$udata
@@ -469,7 +468,7 @@ HTML;
 	function recentPosts(){
 		CSRFProtection::protect();
 
-		Response::done(['html' => Posts::getMostRecentList(WRAP)]);
+		Response::done(['html' => Posts::getMostRecentList()]);
 	}
 
 	function wsdiag(){

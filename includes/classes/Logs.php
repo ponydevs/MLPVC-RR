@@ -4,7 +4,6 @@ namespace App;
 
 use App\Models\Episode;
 use App\Models\EpisodeVideo;
-use App\Models\Post;
 use App\Models\Request;
 use App\Models\Reservation;
 use App\Models\User;
@@ -33,6 +32,7 @@ class Logs {
 		'video_broken' => 'Broken video removed',
 		'cm_modify' => 'Appearance CM edited',
 		'post_break' => 'Post image broken',
+		'post_fix' => 'Broken post restored',
 	);
 
 	const FORCE_INITIATOR_WEBSERVER = true;
@@ -340,6 +340,7 @@ class Logs {
 				}
 			break;
 			case "post_break":
+			case "post_fix":
 				/** @var $Post Request|Reservation */
 				$Post = $Database->where('id', $data['id'])->getOne("{$data['type']}s");
 				self::_genericPostInfo($Post, $data, $details);
@@ -422,7 +423,7 @@ class Logs {
 	}
 
 	private static function _link($url, $blank = false){
-		return "<a href='".CoreUtils::aposEncode($url)."'".($blank?' target="_blank" rel="noopener"':'').">$url</a>";
+		return "<a href='".CoreUtils::aposEncode($url)."' ".($blank?'target="_blank" rel="noopener"':'').">$url</a>";
 	}
 
 	/**
