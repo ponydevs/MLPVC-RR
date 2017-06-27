@@ -147,17 +147,28 @@ body {
 			margin: 0;
 			white-space: nowrap;
 
-			li > a {
-				display: block;
-				color: #000;
-				padding: 2px 8px 2px 12px;
-
-				&:not(.disabled):hover {
-					background-color: rgba(deepskyblue,.3);
+			li {
+				&.toggle {
+					&.checked > a:before {
+						content: "Disable ";
+					}
+					&:not(.checked) > a:before {
+						content: "Enable ";
+					}
 				}
-				&.disabled {
-					opacity: .4;
-					pointer-events: none;
+
+				> a {
+					display: block;
+					color: #000;
+					padding: 2px 8px;
+
+					&:not(.disabled):hover {
+						background-color: rgba(deepskyblue,.3);
+					}
+					&.disabled {
+						opacity: .4;
+						pointer-events: none;
+					}
 				}
 			}
 		}

@@ -242,6 +242,7 @@
 			'pickingAreaSize': 25,
 			'pickerWidth': '85%',
 			'sidebarColorFormat': 'hex',
+			'levelsDialogEnabled': false,
 		},
 		settingsLSKey = 'picker_settings';
 	class PersistentSettings {
@@ -414,6 +415,13 @@
 					window.location.reload();
 				});
 			});
+			this._$levelsDIalogToggle = $('#levels-dialog-toggle').on('click',e => {
+				e.preventDefault();
+
+				this.askLevelsToggle();
+			});
+			if (PersistentSettings.getInstance().get('levelsDialogEnabled'))
+				this._$levelsDIalogToggle.parent().addClass('checked');
 			const $aboutTemplate = $('#about-dialog-template').children();
 			this._$aboutDialog = $('#about-dialog').on('click',function(){
 				$.Dialog.info('About',$aboutTemplate.clone());
@@ -445,6 +453,27 @@
 				ColorPicker.getInstance().openImage(reader.result, file.name, callback);
 	        };
 	        reader.readAsDataURL(file);
+		}
+		askLevelsToggle(levelsEnabled = PersistentSettings.getInstance().get('levelsDialogEnabled')){
+			const theend = 'will <strong>reload</strong> the picker causing you to <strong>lose</strong> any opened images and picking areas.';
+			if (levelsEnabled)
+				$.Dialog.confirm('Disable levels dialog','Are you sure you want to disable the levels dialog? This '+theend,['Disable & reload','Keep enabled'],sure => {
+					if (!sure) return;
+
+					$.Dialog.wait(false, 'Disabling levels dialog');
+
+					PersistentSettings.getInstance().set('levelsDialogEnabled', false);
+					window.location.reload();
+				});
+			else
+				$.Dialog.confirm('Enable levels dialog','<p>The levels tool can be used to adjust the visible colors of images on a per-tab basis without affecting the colors reported by the picking areas, which in some cases can be useful to weed out ambigous areas that have a lot of artifacts.</p><p>This feature is disabled by default due to the drastic <strong>performance decrease</strong> it causes. Would you like to enable this feature anyway? If you change your mind, you will be able to disable the dialog from the Tools menu.</p><p><strong>Note:</strong> Clicking <q>Enable & reload</q> '+theend,['Enable & reload','Keep disabled'],sure => {
+					if (!sure) return;
+
+					$.Dialog.wait(false, 'Enabling levels dialog');
+
+					PersistentSettings.getInstance().set('levelsDialogEnabled', true);
+					window.location.reload();
+				});
 		}
 	}
 
@@ -918,6 +947,10 @@
 			this.switchTool('hand');
 			this._$levelsChanger = $.mk('button').attr({'class':'fa fa-sliders','data-info':'Adjust levels\u2026 (Warning: Lag-inducing)'}).on('click',e => {
 				e.preventDefault();
+
+				const levelsEnabled = PersistentSettings.getInstance().get('levelsDialogEnabled');
+				if (!levelsEnabled)
+					return Menubar.getInstance().askLevelsToggle(levelsEnabled);
 
 				const activeTab = Tabbar.getInstance().getActiveTab();
 				if (!activeTab)
@@ -1727,6 +1760,10 @@
 			if (!activeTab)
 				return;
 
+			const levelsEnabled = PersistentSettings.getInstance().get('levelsDialogEnabled');
+			if (!levelsEnabled)
+				return;
+
 			if (updateCanvas){
 				const hdrctx = this.getImageCanvasCtx();
 				hdrctx.setRange({
@@ -1861,7 +1898,9 @@
 			this._$imageOverlay[0].height =
 			this._$imageCanvas[0].height = h;
 
-			this.getImageCanvasCtx().initialize();
+			const levelsEnabled = PersistentSettings.getInstance().get('levelsDialogEnabled');
+			if (levelsEnabled)
+				this.getImageCanvasCtx().initialize();
 		}
 		openImage(src, fname, callback){
 			if (this._$picker.hasClass('loading'))
@@ -1956,7 +1995,8 @@
 		}
 		/** @return {CanvasRenderingContextHDR2D} */
 		getImageCanvasCtx(){
-			return this._$imageCanvas[0].getContext('hdr2d');
+			const levelsEnabled = PersistentSettings.getInstance().get('levelsDialogEnabled');
+			return this._$imageCanvas[0].getContext(levelsEnabled ? 'hdr2d' : '2d');
 		}
 		getImageOverlayCtx(){
 			return this._$imageOverlay[0].getContext('2d');

@@ -325,7 +325,6 @@
 	 * @param {HTMLCanvasElement} canvas
 	 */
 	const CanvasRenderingContextHDR2D = function(canvas){
-		console.log('new instance');
 		this.canvas = canvas;
 		this.initialize();
 	};

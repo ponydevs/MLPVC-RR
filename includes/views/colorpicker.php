@@ -19,6 +19,7 @@
 		<a class="dropdown">Tools</a>
 		<ul class="hidden">
 			<li><a id="clear-settings">Clear settings</a></li>
+			<li class="toggle"><a id="levels-dialog-toggle">levels dialog</a></li>
 		</ul>
 	</li>
 	<li>
