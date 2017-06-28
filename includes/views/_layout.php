@@ -5,7 +5,6 @@ use App\DeviantArt;
 use App\JSON;
 use App\Models\User;
 use App\Permission;
-use App\UserPrefs;
 use App\Users;
 use App\CoreUtils;
 use App\View;
@@ -149,12 +148,7 @@ ga('send','pageview');
 	</aside>
 
 	<div id="main">
-<?  if (($view->name ?? null) !== 'colorguide-picker'){
-		$maintenance = '2017-06-28T16:00:00+02:00'; ?>
-		<div class="notice info align-center"><span class="typcn typcn-info-large"></span> The website (and associated services) will be going down for scheduled maintenance (server OS upgrade) on <?=\App\Time::tag($maintenance, \App\Time::TAG_EXTENDED)?> (<span class="dynt-el"></span>). Please <a href="http://fav.me/d9zt1wv">join our Discord server</a> for updates.</div>
-<?php
-	}
-	if (isset($view) && $view instanceof View)
+<?  if (isset($view) && $view instanceof View)
 		require $view;
 	else echo $mainContent;
 ?>
