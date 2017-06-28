@@ -1,3 +1,2 @@
 #!/bin/bash
-my_dir=`dirname $0`
-pg_dump -U mlpvc-rr -d mlpvc-rr --inserts > ${my_dir}/mlpvc-rr_full.pg.sql
+pg_dump -U postgres -d mlpvc-rr --inserts > mlpvc-rr_full.pg.sql

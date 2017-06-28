@@ -117,6 +117,7 @@ $router->map('POST', '/event/get/[i:id]',                    'EventController#ge
 $router->map('POST', '/event/del/[i:id]',                    'EventController#delete');
 $router->map('POST', '/event/set/[i:id]',                    'EventController#set');
 $router->map('POST', '/event/add',                           'EventController#add');
+$router->map('POST', '/event/finalize/[i:id]',               'EventController#finalize');
 $router->map('POST', '/event/check-entries/[i:id]',          'EventController#checkEntries');
 $router->map('POST', '/event/entry/add/[i:id]',              'EventController#addEntry');
 $router->map('POST', '/event/entry/get/[i:entryid]',         'EventController#getEntry');

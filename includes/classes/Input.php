@@ -124,7 +124,7 @@ class Input {
 				if (!is_numeric($this->_value))
 					return self::ERROR_INVALID;
 				$this->_value = $this->_type === 'float'
-					? floatval($this->_value, 10)
+					? floatval($this->_value)
 					: intval($this->_value, 10);
 				if ($this->_type === 'vote' && $this->_value === 0)
 					return self::ERROR_INVALID;
@@ -227,6 +227,10 @@ class Input {
 		if ($this->_respond)
 			Response::fail($message);
 		throw new \Exception($message);
+	}
+
+	public function __toString(){
+		return $this->out();
 	}
 
 	public function out(){

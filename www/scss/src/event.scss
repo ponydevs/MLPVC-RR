@@ -30,8 +30,10 @@
 	#content #event-entries {
 		display: flex;
 		flex-flow: row wrap;
+		justify-content: flex-start;
 
 		> li {
+			flex: 1 0 auto;
 			margin: 2.5px;
 
 			.shorten + .typcn {
@@ -44,6 +46,73 @@
 #content {
 	> section {
 		@extend %section;
+	}
+
+	#results {
+		display: flex;
+		width: 100%;
+		flex-flow: row wrap;
+		justify-content: flex-start;
+		align-items: center;
+
+		img {
+			border: 2px solid $DeviationBorder;
+			background: url('/img/transparency.svg') repeat;
+			background-size: 16px;
+			margin-bottom: 10px;
+		}
+		> p, > .notice {
+			flex: 0 0 100%;
+		}
+		> .winning-entry {
+			text-align: center;
+			flex: 0 1 auto;
+			padding: 6px;
+			margin: 0;
+
+			> :not(:last-child) {
+				margin-bottom: 10px;
+			}
+
+			> a {
+				display: block;
+
+				> * {
+					display: block;
+				}
+
+				img {
+					max-height: 200px;
+					max-width: 200px;
+					margin-left: auto;
+					margin-right: auto;
+				}
+			}
+		}
+		> #final-image {
+			flex: 0 0 auto;
+			width: 100%;
+			display: flex;
+			justify-content: space-around;
+
+			a {
+				flex: 1 1 auto;
+				display: flex;
+				flex-flow: column nowrap;
+				align-items: center;
+				justify-content: space-between;
+
+				img {
+					max-height: 350px;
+					max-width: 500px;
+					margin-bottom: 10px;
+				}
+
+				span {
+					font-size: 1.3em;
+				}
+			}
+		}
 	}
 
 	#description {
@@ -74,9 +143,10 @@
 			display: flex;
 			flex-flow: row nowrap;
 			align-items: center;
+			justify-content: flex-start;
 
 			> * {
-				flex: 1 1 auto;
+				flex: 0 1 auto;
 			}
 
 			.voting {

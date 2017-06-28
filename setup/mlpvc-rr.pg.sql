@@ -308,7 +308,10 @@ CREATE TABLE events (
     desc_src text NOT NULL,
     desc_rend text NOT NULL,
     max_entries integer,
-    vote_role character varying(15)
+    vote_role character varying(15),
+    result_favme character varying(7),
+    finalized_at timestamp with time zone,
+    finalized_by uuid
 );
 
 

@@ -4,7 +4,6 @@ namespace App\Controllers;
 use App\Auth;
 use App\CoreUtils;
 use App\CSRFProtection;
-use App\Events;
 use App\Exceptions\MismatchedProviderException;
 use App\Exceptions\UnsupportedProviderException;
 use App\ImageProvider;
@@ -12,7 +11,6 @@ use App\Input;
 use App\Models\Event;
 use App\Models\EventEntry;
 use App\Models\EventEntryVote;
-use App\Models\User;
 use App\Permission;
 use App\Response;
 use App\RegExp;
@@ -73,8 +71,12 @@ class EventController extends Controller {
 		global $Database, $Database;
 
 		$editing = $action === 'set';
-		if ($editing)
+		if ($editing){
 			$this->_getEvent($params['id']);
+
+			if ($this->_event->isFinalized())
+				Response::fail('Finalized events cannot be deleted');
+		}
 
 		$update = [];
 
@@ -226,10 +228,59 @@ class EventController extends Controller {
 
 		$this->_getEvent($params['id']);
 
+		if ($this->_event->isFinalized())
+			Response::fail('Finalized events cannot be deleted');
+
 		global $Database;
 
 		if (!$Database->where('id',$this->_event->id)->delete('events'))
 			Response::dbError('Deleting event failed');
+
+		Response::done();
+	}
+
+	function finalize($params){
+		if (!Permission::sufficient('staff'))
+			Response::fail();
+		CSRFProtection::protect();
+
+		$this->_getEvent($params['id']);
+
+		if ($this->_event->type !== 'collab')
+			Response::fail('Only collaboration events can be finalized');
+
+		if ($this->_event->isFinalized())
+			Response::fail('This event has already been finalized');
+
+		if (!$this->_event->hasEnded())
+			Response::fail('The event can only be finalized after it ends');
+
+		$update = [
+			'finalized_at' => date('c'),
+			'finalized_by' => Auth::$user->id,
+		];
+
+		$favme = (new Input('favme','url',[
+			Input::CUSTOM_ERROR_MESSAGES => [
+			    Input::ERROR_MISSING => 'The deviation link is missing',
+			    Input::ERROR_INVALID => 'The deviation link (@value) is invalid',
+			]
+		]))->out();
+		try {
+			$Image = new ImageProvider($favme, array('fav.me', 'dA'));
+			$favme = $Image->id;
+		}
+		catch (MismatchedProviderException $e){
+			Response::fail('The deviation must be on DeviantArt, '.$e->getActualProvider().' links are not allowed');
+		}
+		catch (\Exception $e){ Response::fail("Deviation link issue: ".$e->getMessage()); }
+		if (!CoreUtils::isDeviationInClub($favme))
+			Response::fail('The deviation must be in the group gallery');
+		$data['result_favme'] = $favme;
+
+		global $Database;
+		if (!$Database->where('id', $this->_event->id)->update('events', $data))
+			Response::dbError('Finalizing event failed');
 
 		Response::done();
 	}
@@ -360,6 +411,8 @@ class EventController extends Controller {
 		$this->_getEvent($this->_entry->eventid);
 
 		if ($action === 'vote'){
+			if (!$this->_event->hasEnded())
+				Response::fail('This event has ended; entries can no longerbe voted on');
 			if (!$this->_event->checkCanVote(Auth::$user))
 				Response::fail('You are not allowed to vote on entries to this event');
 			if ($this->_event->type !== 'contest')

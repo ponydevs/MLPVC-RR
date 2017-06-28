@@ -8,7 +8,7 @@ use App\Exceptions\UnsupportedProviderException;
 
 class ImageProvider {
 	public $preview = false, $fullsize = false, $title = '', $provider, $id, $author = null;
-	public function __construct($url = null, $reqProv = null){
+	public function __construct(string $url = null, $reqProv = null){
 		if (!empty($url)){
 			$provider = self::getProvider(CoreUtils::trim($url));
 			if (!empty($reqProv)){

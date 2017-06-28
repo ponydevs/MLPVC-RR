@@ -3,9 +3,10 @@
 namespace App\Models;
 
 use App\CoreUtils;
+use App\DeviantArt;
 use App\Permission;
-use App\Response;
 use App\UserPrefs;
+use App\Users;
 
 class Event extends AbstractFillable {
 	/** @var int */
@@ -23,7 +24,10 @@ class Event extends AbstractFillable {
 		$added_by,
 		$added_at,
 		$desc_src,
-		$desc_rend;
+		$desc_rend,
+		$result_favme,
+		$finalized_at,
+		$finalized_by;
 
 	const EVENT_TYPES = [
 		'collab' => 'Collaboration',
@@ -85,7 +89,7 @@ class Event extends AbstractFillable {
 	}
 
 	public function checkCanVote(User $user):bool {
-		return Permission::sufficient($this->vote_role, $user->role);
+		return !$this->hasEnded() && Permission::sufficient($this->vote_role, $user->role);
 	}
 
 	public function hasStarted(?int $now = null){
@@ -98,6 +102,10 @@ class Event extends AbstractFillable {
 
 	public function getEntryRoleName():string {
 		return in_array($this->entry_role, self::REGULAR_ENTRY_ROLES) ? CoreUtils::makePlural(Permission::ROLES_ASSOC[$this->entry_role]) : self::SPECIAL_ENTRY_ROLES[$this->entry_role];
+	}
+
+	public function isFinalized(){
+		return $this->type === 'collab' ? !empty($this->result_favme) : $this->hasEnded();
 	}
 
 	/**
@@ -115,5 +123,34 @@ class Event extends AbstractFillable {
 		foreach ($Entries as $entry)
 			$HTML .= $entry->toListItemHTML($this);
 		return $wrap ? "<ul id='event-entries'>$HTML</ul>" : $HTML;
+	}
+
+	public function getWinnerHTML(bool $wrap = WRAP):string {
+		$HTML = '';
+
+		if ($this->type === 'collab')
+			$HTML = '<div id="final-image">'.DeviantArt::getCachedDeviation($this->result_favme)->toLinkWithPreview().'</div>';
+		else {
+			global $Database;
+			/** @var $HighestScoringEntries EventEntry[] */
+			$HighestScoringEntries = $Database->setClass(EventEntry::class)->rawQuery(
+				'SELECT * FROM events__entries
+				WHERE eventid = ? && score > 0 && score = (SELECT MAX(score) FROM events__entries)
+				ORDER BY submitted_at ASC',[$this->id]);
+
+			if (empty($HighestScoringEntries))
+				$HTML .= CoreUtils::notice('info','<span class="typcn typcn-times"></span> No entries match the win criteria, thus the event ended without a winner');
+			else {
+				$HTML .= "<p>The event has concluded with ".CoreUtils::makePlural('winner',count($HighestScoringEntries),PREPEND_NUMBER).'.</p>';
+				foreach ($HighestScoringEntries as $entry){
+					$title = CoreUtils::escapeHTML($entry->title);
+					$preview = isset($entry->prev_full) ? "<a href='{$entry->prev_src}'><img src='{$entry->prev_thumb}' alt=''><span class='title'>$title</span></a>" : "<span class='title'>$title</span>";
+					$by = '<div>'.Users::get($entry->submitted_by)->getProfileLink(User::LINKFORMAT_FULL).'</div>';
+					$HTML .= "<div class='winning-entry'>$preview$by</div>";
+				}
+			}
+		}
+
+		return $wrap ? "<div id='results'>$HTML</div>" : $HTML;
 	}
 }

@@ -73,10 +73,11 @@ class EventEntry extends AbstractFillable {
 	}
 
 	public function getListItemVoting(Event $event):string {
-		if ($event->type === 'contest' && Auth::$signed_in && $event->checkCanVote(Auth::$user)){
+		if ($event->type === 'contest' && Auth::$signed_in){
 			$userVote = $this->getUserVote(Auth::$user);
 			$userVoted = !empty($userVote) && $userVote->isLockedIn($this);
-			$vd = $userVoted || $this->submitted_by === Auth::$user->id ? 'disabled' : '';
+			$canvote = $event->checkCanVote(Auth::$user);
+			$vd = !$canvote || $userVoted || $this->submitted_by === Auth::$user->id ? 'disabled' : '';
 			if (!empty($userVote)){
 				$uvc = $userVote->value === 1 ? ' clicked' : '';
 				$dvc = $userVote->value === -1 ? ' clicked' : '';

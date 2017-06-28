@@ -78,7 +78,7 @@ DocReady.push(function(){
 						</optgroup>
 					</select>`,
 					`<input type="text" name="max_entries" pattern="^(0*[1-9]\\d*|[Uu]nlimited|0)$" list="max_entries-list" value="1">
-					<datalist id="max_entries-list" required>
+					<datalist id="max_entries-list">
 						<option value="Unlimited">
 						<option value="1">
 					</datalist>`
@@ -209,6 +209,39 @@ DocReady.push(function(){
 			data.eventID = eventID;
 			mkEventEditor($this, title, data);
 		}));
+	});
+	$content.on('click','[id^=event-] .finalize-event',function(e){
+		e.preventDefault();
+
+		let $this = $(this),
+			$li = $this.closest('[id^=event-]'),
+			eventID = $li.attr('id').split('-')[1],
+			title = 'FInalize event #'+eventID,
+			$form = $.mk('form','finalize-event-form').append(
+				`<label>
+					<span>Deviation link</span>
+					<input type="url" name="favme" required>
+				</label>`
+			);
+
+		$.Dialog.request(title, $form, 'Finalize event',function(){
+			$form.on('submit',function(e){
+				e.preventDefault();
+
+				const data = $form.mkData();
+				$.Dialog.wait(false,'Finalizing event');
+
+				$.post(`/event/finalize/${eventID}`,data,$.mkAjaxHandler(function(){
+					if (!this.status) return $.Dialog.fail(false, this.message);
+
+					$.Dialog.success(false, 'Event finalized successfully');
+					$.Dialog.wait(false, 'Reloading page');
+					$.Navigation.reload(function(){
+						$.Dialog.close();
+					});
+				}));
+			});
+		});
 	});
 	$content.on('click','[id^=event-] .delete-event',function(e){
 		e.preventDefault();
