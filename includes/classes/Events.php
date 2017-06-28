@@ -30,7 +30,7 @@ class Events {
 				$dur = Time::differenceToString($diff, true);
 				$added_at = Time::tag(strtotime($event->added_at));
 				$added_by = $isStaff ? ' by '.Users::get($event->added_by)->getProfileLink() : '';
-				$admin = $isStaff && !$event->hasEnded() ? '<button class="blue typcn typcn-pencil edit-event" title="Edit"></button><button class="darkblue typcn typcn-image finalize-event" title="Finalize"></button><button class="red typcn typcn-trash delete-event" title="Delete"></button>' : '';
+				$admin = $isStaff && !$event->isFinalized() ? '<button class="blue typcn typcn-pencil edit-event" title="Edit"></button><button class="darkblue typcn typcn-image finalize-event" title="Finalize"></button><button class="red typcn typcn-trash delete-event" title="Delete"></button>' : '';
 				$type = Event::EVENT_TYPES[$event->type];
 				$name = CoreUtils::escapeHTML($event->name);
 				$HTML .= <<<HTML
