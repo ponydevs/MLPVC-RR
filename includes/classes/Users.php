@@ -520,66 +520,62 @@ HTML;
 		return "<li>$item</li>";
 	}
 
+	private static function _contribItemFinished(Post $item):string {
+		return isset($item->deviation_id) ? DeviantArt::getCachedDeviation($item->deviation_id)->toLinkWithPreview() : '<em>Nope</em>';
+	}
+	private static function _contribItemApproved(Post $item):string {
+		return !empty($item->lock) ? '<span class="color-green typcn typcn-tick"></span>' : '<em>Nope</em>';
+	}
+
 	public static function getContributionListHTML(string $type, ?array $data, bool $wrap = WRAP):string {
 		global $Database;
 
 		switch ($type){
 			case "cms-provided":
-				$THEAD = <<<HTML
-<tr>
-	<th>Appearance</th>
-	<th>Deviation</th>
-</tr>
+				$TABLE = <<<HTML
+<th>Appearance</th>
+<th>Deviation</th>
 HTML;
 			break;
 			case "requests":
-				$THEAD = <<<HTML
-<tr>
-	<th>Post</th>
-	<th>Posted <span class="typcn typcn-arrow-sorted-down" title="Newest first"></span></th>
-	<th>Reserved?</th>
-	<th>Finished?</th>
-	<th>Approved?</th>
-</tr>
+				$TABLE = <<<HTML
+<th>Post</th>
+<th>Posted <span class="typcn typcn-arrow-sorted-down" title="Newest first"></span></th>
+<th>Reserved?</th>
+<th>Finished?</th>
+<th>Approved?</th>
 HTML;
 			break;
 			case "reservations":
-				$THEAD = <<<HTML
-<tr>
-	<th>Post</th>
-	<th>Posted <span class="typcn typcn-arrow-sorted-down" title="Newest first"></span></th>
-	<th>Finished?</th>
-	<th>Approved?</th>
-</tr>
+				$TABLE = <<<HTML
+<th>Post</th>
+<th>Posted <span class="typcn typcn-arrow-sorted-down" title="Newest first"></span></th>
+<th>Finished?</th>
+<th>Approved?</th>
 HTML;
 			break;
 			case "finished-posts":
-				$THEAD = <<<HTML
-<tr>
-	<th>Post</th>
-	<th>Posted <span class="typcn typcn-arrow-sorted-down" title="Newest first"></span></th>
-	<th>Reserved</th>
-	<th>Deviation</th>
-	<th>Approved?</th>
-</tr>
+				$TABLE = <<<HTML
+<th>Post</th>
+<th>Posted <span class="typcn typcn-arrow-sorted-down" title="Newest first"></span></th>
+<th>Reserved</th>
+<th>Deviation</th>
+<th>Approved?</th>
 HTML;
 			break;
 			case "fulfilled-requests":
-				$THEAD = <<<HTML
-<tr>
-	<th>Post</th>
-	<th>Posted</th>
-	<th>Finished <span class="typcn typcn-arrow-sorted-down" title="Newest first"></span></th>
-	<th>Deviation</th>
-</tr>
+				$TABLE = <<<HTML
+<th>Post</th>
+<th>Posted</th>
+<th>Finished <span class="typcn typcn-arrow-sorted-down" title="Newest first"></span></th>
+<th>Deviation</th>
 HTML;
 			break;
 			default:
 				throw new \Exception(__METHOD__.": Missing table heading definitions for type $type");
 		}
-		$THEAD = "<thead>$THEAD</thead>";
+		$TABLE = "<thead><tr>$TABLE</tr></thead>";
 
-		$TBODY = '';
 		foreach ($data as $item){
 			switch ($type){
 				case "cms-provided":
@@ -605,8 +601,8 @@ HTML;
 						$reserved = "<span class='typcn typcn-user' title='By'></span> $reserved_by<br><span class='typcn typcn-time'></span> $reserved_at";
 					}
 					else $reserved = '<em>Nope</em>';
-					$finished = isset($item->deviation_id) ? DeviantArt::getCachedDeviation($item->deviation_id)->toLinkWithPreview() : '<em>Nope</em>';
-					$approved = !empty($item->lock) ? '<span class="color-green typcn typcn-tick"></span>' : '<em>Nope</em>';
+					$finished = self::_contribItemFinished($item);
+					$approved = self::_contribItemApproved($item);
 					$TR = <<<HTML
 <td>$preview</td>
 <td>$posted</td>
@@ -619,8 +615,8 @@ HTML;
 					/** @var $item Request */
 					$preview = $item->toLinkWithPreview();
 					$posted = Time::tag($item->posted);
-					$finished = isset($item->deviation_id) ? DeviantArt::getCachedDeviation($item->deviation_id)->toLinkWithPreview() : '<em>Nope</em>';
-					$approved = !empty($item->lock) ? '<span class="color-green typcn typcn-tick"></span>' : '<em>Nope</em>';
+					$finished = self::_contribItemFinished($item);
+					$approved = self::_contribItemApproved($item);
 					$TR = <<<HTML
 <td>$preview</td>
 <td>$posted</td>
@@ -642,8 +638,8 @@ HTML;
 						$posted = "<td colspan='2'>$posted</td>";
 						$reserved = '';
 					}
-					$finished = isset($item->deviation_id) ? DeviantArt::getCachedDeviation($item->deviation_id)->toLinkWithPreview() : '<em>Nope</em>';
-					$approved = !empty($item->lock) ? '<span class="color-green typcn typcn-tick"></span>' : '<em>Nope</em>';
+					$finished = self::_contribItemFinished($item);
+					$approved = self::_contribItemApproved($item);
 					$TR = <<<HTML
 <td>$preview</td>
 $posted
@@ -669,9 +665,9 @@ HTML;
 				break;
 			}
 
-			$TBODY .= "<tr>$TR</tr>";
+			$TABLE .= "<tr>$TR</tr>";
 		}
 
-		return $wrap ? "<table id='contribs'>$THEAD$TBODY</table>" : $THEAD.$TBODY;
+		return $wrap ? "<table id='contribs'>$TABLE</table>" : $TABLE;
 	}
 }
