@@ -605,9 +605,8 @@ HTML;
 						$reserved = "<span class='typcn typcn-user' title='By'></span> $reserved_by<br><span class='typcn typcn-time'></span> $reserved_at";
 					}
 					else $reserved = '<em>Nope</em>';
-					$isfinished = isset($item->deviation_id);
-					$finished = $isfinished ? DeviantArt::getCachedDeviation($item->deviation_id)->toLinkWithPreview() : '<em>Nope</em>';
-					$approved = $isfinished ? '<span class="color-green typcn typcn-tick"></span>' : '<em>Nope</em>';
+					$finished = isset($item->deviation_id) ? DeviantArt::getCachedDeviation($item->deviation_id)->toLinkWithPreview() : '<em>Nope</em>';
+					$approved = !empty($item->lock) ? '<span class="color-green typcn typcn-tick"></span>' : '<em>Nope</em>';
 					$TR = <<<HTML
 <td>$preview</td>
 <td>$posted</td>
@@ -620,9 +619,8 @@ HTML;
 					/** @var $item Request */
 					$preview = $item->toLinkWithPreview();
 					$posted = Time::tag($item->posted);
-					$isfinished = isset($item->deviation_id);
-					$finished = $isfinished ? DeviantArt::getCachedDeviation($item->deviation_id)->toLinkWithPreview() : '<em>Nope</em>';
-					$approved = $isfinished ? '<span class="color-green typcn typcn-tick"></span>' : '<em>Nope</em>';
+					$finished = isset($item->deviation_id) ? DeviantArt::getCachedDeviation($item->deviation_id)->toLinkWithPreview() : '<em>Nope</em>';
+					$approved = !empty($item->lock) ? '<span class="color-green typcn typcn-tick"></span>' : '<em>Nope</em>';
 					$TR = <<<HTML
 <td>$preview</td>
 <td>$posted</td>
@@ -644,9 +642,8 @@ HTML;
 						$posted = "<td colspan='2'>$posted</td>";
 						$reserved = '';
 					}
-					$isfinished = isset($item->deviation_id);
-					$finished = $isfinished ? DeviantArt::getCachedDeviation($item->deviation_id)->toLinkWithPreview() : '<em>Nope</em>';
-					$approved = $isfinished ? '<span class="color-green typcn typcn-tick"></span>' : '<em>Nope</em>';
+					$finished = isset($item->deviation_id) ? DeviantArt::getCachedDeviation($item->deviation_id)->toLinkWithPreview() : '<em>Nope</em>';
+					$approved = !empty($item->lock) ? '<span class="color-green typcn typcn-tick"></span>' : '<em>Nope</em>';
 					$TR = <<<HTML
 <td>$preview</td>
 $posted

@@ -55,8 +55,8 @@ abstract class Post extends AbstractFillable {
 
 	public function toLinkWithPreview(){
 		$haslabel = !empty($this->label);
-		$alt = $haslabel ? $this->processLabel() : 'No label';
-		$slabel = $haslabel ? $alt : "<em>$alt</em>";
+		$alt = $haslabel ? CoreUtils::escapeHTML($this->label) : 'No label';
+		$slabel = $haslabel ? $this->processLabel() : "<em>$alt</em>";
 		return "<a class='post-link with-preview' href='{$this->toLink()}'><img src='{$this->preview}' alt='$alt'><span>$slabel</span></a>";
 	}
 

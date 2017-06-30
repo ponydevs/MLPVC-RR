@@ -43,6 +43,8 @@ td.by-at .typcn {
 	> img {
 		flex: 0 0 100%;
 		margin-bottom: 10px;
+		max-height: 64px;
+		max-width: 64px * 16 / 9;
 	}
 	> span {
 		flex: 1 1 auto;
@@ -66,7 +68,6 @@ td.by-at .typcn {
 	@extend %flexible-link;
 
 	> img {
-		height: 64px;
 		border: 2px solid $DeviationBorder;
 		background: url("/img/transparency.svg") repeat center;
 		background-size: 16px;
@@ -77,8 +78,6 @@ td.by-at .typcn {
 	@extend %flexible-link;
 
 	> img {
-		max-height: 64px;
-		max-width: 64px * 16 / 9;
 		border: 1px solid black;
 		background: url("/img/transparency.svg") repeat center;
 		background-size: 16px;
