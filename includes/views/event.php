@@ -5,6 +5,7 @@ use App\Time;
 
 /** @var string $heading */
 /** @var string $EventType */
+/** @var string $startts */
 /** @var \App\Models\Event $Event */
 /** @var \App\Models\EventEntry[] $UserEntries */ ?>
 <div id="content">

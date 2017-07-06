@@ -2,46 +2,42 @@
 
 namespace App\Models;
 
+use ActiveRecord\Model;
 use App\Time;
 use App\RegExp;
 use App\CoreUtils;
 
-abstract class Post extends AbstractFillable {
-	/** @var int */
-	public
-		$id,
-		$season,
-		$episode;
-	/** @var string */
-	public
-		$preview,
-		$fullsize,
-		$label,
-		$posted,
-		$reserved_by,
-		$deviation_id,
-		$reserved_at,
-		$finished_at;
-	/** @var bool */
-	public
-		$lock,
-		$broken,
-		$isFinished,
-		$isRequest,
-		$isReservation;
-	/** @var User */
-	public $Reserver;
+/**
+ * @property int $id
+ * @property int $season
+ * @property int $episode
+ * @property string $preview
+ * @property string $fullsize
+ * @property string $label
+ * @property string $posted
+ * @property string $reserved_by
+ * @property string $deviation_id
+ * @property string $reserved_at
+ * @property string $finished_at
+ * @property bool $lock
+ * @property bool $broken
+ * @property bool $isFinished
+ * @property bool $isRequest
+ * @property bool $isReservation
+ */
+abstract class Post extends Model {
+	static $belongs_to;
 
-	/**
-	 * @param object       $obj
-	 * @param array|object $iter
-	 */
-	public function __construct($obj, $iter = null){
-		parent::__construct($obj, $iter);
-
-		$this->lock = !empty($this->lock);
-		$this->isFinished = !empty($this->deviation_id) && !empty($this->reserved_by);
+	function get_lock(){
+		return $this->read_attribute('lock') !== 'false';
 	}
+
+	function get_isFinished(){
+		return !empty($this->deviation_id) && !empty($this->reserved_by);
+	}
+
+	abstract function get_isRequest():bool;
+	abstract function get_isReservation():bool;
 
 	public function getID():string {
 		return ($this->isRequest ? 'request' : 'reservation').'-'.$this->id;
@@ -49,7 +45,10 @@ abstract class Post extends AbstractFillable {
 
 	public function toLink(Episode &$Episode = null):string {
 		if (empty($Episode))
-			$Episode = new Episode($this);
+			$Episode = new Episode([
+				'season' => $this->season,
+				'episode' => $this->episode,
+			]);
 		return $Episode->toURL().'#'.$this->getID();
 	}
 

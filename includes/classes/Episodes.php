@@ -2,7 +2,7 @@
 
 namespace App;
 
-use App\Appearances;
+use App\Models\Appearance;
 use App\Models\Episode;
 use App\Models\EpisodeVideo;
 use App\Models\EpisodeVote;
@@ -11,37 +11,32 @@ use App\Models\Post;
 
 class Episodes {
 	const TITLE_CUTOFF = 26;
-	static $ALLOWED_PREFIXES = array(
+	static $ALLOWED_PREFIXES = [
 		'Equestria Girls' => 'EQG',
 		'My Little Pony' => 'MLP',
-	);
+	];
 
 	/**
 	 * Returns all episodes from the database, properly sorted
 	 *
-	 * @param int|int[]   $count
+	 * @param Pagination  $pagination
 	 * @param string|null $where
 	 *
 	 * @return Episode|Episode[]
 	 */
-	static function get($count = null, $where = null){
+	static function get(?Pagination $pagination = null, $where = null){
 		/** @var $ep Episode */
 		global $Database;
 
+		$opts = isset($pagination) ? $pagination->getAssocLimit() : ['limit' => 1];
+		$opts['conditions'] = 'season != 0';
+		$opts['order'] = 'season desc, episode desc';
 		if (!empty($where))
-			$Database->where($where);
+			$opts['conditions'] .= " AND $where";
 
-		$Database->orderBy('season')->orderBy('episode')->where('season != 0');
-		if ($count !== 1){
-			$eps =  $Database->get('episodes',$count);
-			foreach ($eps as &$ep)
-				$ep = $ep->addAiringData();
-			return $eps;
-		}
-		else {
-			$ep = $Database->getOne('episodes');
-			return $ep->addAiringData();
-		}
+		if (isset($opts['offset']))
+			return Episode::find('all', $opts);
+		else return Episode::find('first', $opts);
 	}
 
 	const ALLOW_MOVIES = true;
@@ -71,17 +66,13 @@ class Episodes {
 		if ($cache && isset(self::$EP_CACHE["$season-$episode"]))
 			return self::$EP_CACHE["$season-$episode"];
 
-		/**
-		 * @var $Ep Episode
-		 * @var $Part1 Episode
-		 */
-		$Ep = $Database->whereEp($season,$episode)->getOne('episodes');
+		$Ep = Episode::find_by_season_and_episode($season, $episode);
 		if (!empty($Ep))
-			return $Ep->addAiringData();
+			return $Ep;
 
-		$Part1 = $Database->whereEp($season,$episode-1)->getOne('episodes');
+		$Part1 = Episode::find_by_season_and_episode($season, $episode-1);
 		$output = !empty($Part1) && !empty($Part1->twoparter)
-			? $Part1->addAiringData()
+			? $Part1
 			: null;
 		if ($cache)
 			self::$EP_CACHE["$season-$episode"] = $output;
@@ -94,7 +85,7 @@ class Episodes {
 	 * @return Episode
 	 */
 	static function getLatest(){
-		return self::get(1,"airs < NOW() + INTERVAL '24 HOUR' && season != 0");
+		return self::get(null, "airs < NOW() + INTERVAL '24 HOUR' AND season != 0");
 	}
 
 	static function removeTitlePrefix($title){
@@ -147,39 +138,17 @@ class Episodes {
 		if ($serverSideRedirect)
 			CoreUtils::fixPath($url);
 
-		$js = array('imagesloaded.pkgd','jquery.fluidbox','Chart','episode','episode-manage');
+		$js = ['imagesloaded.pkgd', 'jquery.fluidbox', 'Chart', 'episode', 'episode-manage'];
 		if (Permission::sufficient('staff')){
 			$js[] = 'moment-timezone';
 			$js[] = 'episodes-manage';
 		}
 
-		if (!$CurrentEpisode->isMovie){
-			$PrevEpisode = $Database
-				->where('no',$CurrentEpisode->no, '<')
-				->where('season', 0, '!=')
-				->orderBy('no','DESC')
-				->getOne('episodes','season,episode,title,twoparter');
-			$NextEpisode = $Database
-				->where('no',$CurrentEpisode->no, '>')
-				->where('season', 0, '!=')
-				->orderBy('no','ASC')
-				->getOne('episodes','season,episode,title,twoparter');
-		}
-		else {
-			$PrevEpisode = $Database
-				->where('season', 0)
-				->where('episode',$CurrentEpisode->episode, '<')
-				->orderBy('episode','DESC')
-				->getOne('episodes','season,episode,title');
-			$NextEpisode = $Database
-				->where('season', 0)
-				->where('episode',$CurrentEpisode->episode, '>')
-				->orderBy('episode','ASC')
-				->getOne('episodes','season,episode,title');
-		}
+		$PrevEpisode = $CurrentEpisode->getPrevious();
+		$NextEpisode = $CurrentEpisode->getNext();
 
 		$heading = $CurrentEpisode->formatTitle();
-		CoreUtils::loadPage(array(
+		CoreUtils::loadPage([
 			'title' => "$heading - Vector Requests & Reservations",
 			'heading' => $heading,
 			'view' => 'episode',
@@ -192,7 +161,7 @@ class Episodes {
 				'NextEpisode' => $NextEpisode,
 				'LinkedPost' => $LinkedPost,
 			],
-		));
+		]);
 	}
 
 	/**
@@ -209,10 +178,7 @@ class Episodes {
 		global $Database;
 		if (!Auth::$signed_in) return null;
 		/** @noinspection PhpIncompatibleReturnTypeInspection */
-		return $Database
-			->whereEp($Ep)
-			->where('user', Auth::$user->id)
-			->getOne('episodes__votes');
+		return EpisodeVote::find_for($Ep, Auth::$user);
 	}
 
 	/**
@@ -234,7 +200,7 @@ class Episodes {
 		$Parts = 0;
 		$embed = '';
 		if (!empty($EpVideos)){
-			$Videos = array();
+			$Videos = [];
 			foreach ($EpVideos as $v)
 				$Videos[$v->provider][$v->part] = $v;
 			// YouTube embed preferred
@@ -251,14 +217,14 @@ class Episodes {
 	}
 
 	static
-		$VIDEO_PROVIDER_NAMES = array(
+		$VIDEO_PROVIDER_NAMES = [
 			'yt' => 'YouTube',
 			'dm' => 'Dailymotion',
-		),
-		$PROVIDER_BTN_CLASSES = array(
+	],
+		$PROVIDER_BTN_CLASSES = [
 			'yt' => 'red typcn-social-youtube',
 			'dm' => 'darkblue typcn-video',
-		);
+	];
 	/**
 	 * Renders the HTML of the "Watch the Episode" section along with the buttons/links
 	 *
@@ -272,11 +238,7 @@ class Episodes {
 
 		$HTML = '';
 		/** @var $Videos EpisodeVideo[] */
-		$Videos = $Database
-			->whereEp($Episode)
-			->orderBy('provider', 'ASC')
-			->orderBy('part', 'ASC')
-			->get('episodes__videos');
+		$Videos = $Episode->videos;
 
 		if (!empty($Videos)){
 			$fullep = $Episode->twoparter ? 'Full episode' : '';
@@ -344,7 +306,6 @@ HTML;
 				$displayed = true;
 				$star = '<span class="typcn typcn-home" title="Curently visible on the homepage"></span> ';
 			}
-			$Episode->addAiringData();
 			if (!$Episode->aired)
 				$star .= '<span class="typcn typcn-media-play-outline" title="'.($Episode->isMovie?'Movie':'Episode').' didn’t air yet, voting disabled"></span>&nbsp;';
 
@@ -373,7 +334,7 @@ HTML;
 
 		$HTML = [];
 		/** @var $UpcomingEpisodes Episode[] */
-		$UpcomingEpisodes = $Database->where('airs > NOW()')->orderBy('airs', 'ASC')->get('episodes');
+		$UpcomingEpisodes = Episode::find('all', ['conditions' => 'airs > NOW()', 'order' => 'airs asc']);;
 		if (!empty($UpcomingEpisodes)){
 			foreach ($UpcomingEpisodes as $Episode){
 				$airtime = strtotime($Episode->airs);
@@ -434,7 +395,7 @@ HTML;
 				$ret .=  "{$diff['day']} day".($diff['day']!==1?'s':'').' & ';
 			if (!empty($diff['hour']))
 				$ret .= "{$diff['hour']}:";
-			foreach (array('minute','second') as $k)
+			foreach (['minute', 'second'] as $k)
 				$diff[$k] = CoreUtils::pad($diff[$k]);
 			$timec = date('c',$timestamp);
 			return "<time datetime='$timec'>$ret{$diff['minute']}:{$diff['second']} $tz</time>";
@@ -466,7 +427,7 @@ HTML;
 		if ($Score > 0)
 			$HTML .= "<img src='/muffin-rating?w=$ScorePercent' id='muffins' alt='muffin rating svg'>";
 
-		$UserVote = Episodes::getUserVote($Episode);
+		$UserVote = $Episode->getUserVote();
 		if (empty($UserVote)){
 			$HTML .= "<br><p>What did <em>you</em> think about the $thing?</p>";
 			if (Auth::$signed_in)
@@ -498,13 +459,13 @@ HTML;
 		else {
 			$sn = CoreUtils::pad($Episode->season);
 			$en = CoreUtils::pad($Episode->episode);
-			$EpTagIDs = array();
+			$EpTagIDs = [];
 			$EpTagPt1 = $Database->where('name',"s{$sn}e{$en}")->where('type','ep')->getOne('tags','tid');
 			if (!empty($EpTagPt1))
 				$EpTagIDs[] = $EpTagPt1['tid'];
 			if ($Episode->twoparter){
 				$next_en = CoreUtils::pad($Episode->episode+1);
-				$EpTagPt2 = $Database->rawQuery("SELECT tid FROM tags WHERE name IN ('s{$sn}e{$next_en}', 's{$sn}e{$en}-{$next_en}') && type = 'ep'");
+				$EpTagPt2 = $Database->rawQuery("SELECT tid FROM tags WHERE name IN ('s{$sn}e{$next_en}', 's{$sn}e{$en}-{$next_en}') AND type = 'ep'");
 				foreach ($EpTagPt2 as $t)
 					$EpTagIDs[] = $t['tid'];
 			}
@@ -518,12 +479,12 @@ HTML;
 		$HTML = '';
 		$EpTagIDs = Episodes::getTagIDs($Episode);
 		if (!empty($EpTagIDs)){
-			$TaggedAppearances = $Database->rawQuery(
+			$TaggedAppearances = Appearance::find_by_sql(
 				"SELECT p.id, p.label, p.private
 				FROM tagged t
 				LEFT JOIN appearances p ON t.ponyid = p.id
-				WHERE t.tid IN (".implode(',',$EpTagIDs).") && p.ishuman = ?
-				ORDER BY p.label",array($Episode->isMovie));
+				WHERE t.tid IN (".implode(',',$EpTagIDs).") AND p.ishuman = ?
+				ORDER BY p.label", [$Episode->isMovie]);
 
 			if (!empty($TaggedAppearances)){
 				$hidePreviews = UserPrefs::get('ep_noappprev');
@@ -532,20 +493,20 @@ HTML;
 				$LINKS = '<ul>';
 				$isStaff = Permission::sufficient('staff');
 				foreach ($TaggedAppearances as $p){
-					$safeLabel = Appearances::getSafeLabel($p);
-					if (Appearances::isPrivate($p, true)){
+					$safeLabel = $p->getSafeLabel();
+					if ($p->isPrivate(true)){
 						$preview = "<span class='typcn typcn-".($isStaff?'lock-closed':'time')." color-".(($isStaff?'orange':'darkblue'))."'></span> ";
 					}
 					else {
 						if ($hidePreviews)
 							$preview = '';
 						else {
-							$preview = Appearances::getPreviewURL($p['id']);
+							$preview = $p->getPreviewURL();
 							$preview = "<img src='$preview' class='preview' alt=''>";
 						}
 					}
-					$label = Appearances::processLabel($p['label']);
-					$LINKS .= "<li><a href='/cg/v/{$p['id']}-$safeLabel'>$preview$label</a></li>";
+					$label = $p->processLabel();
+					$LINKS .= "<li><a href='/cg/v/{$p->id}-$safeLabel'>$preview$label</a></li>";
 				}
 				$HTML .= "$LINKS</ul></section>";
 			}
@@ -569,25 +530,25 @@ HTML;
 	}
 
 	static function validateSeason($allowMovies = false){
-		return (new Input('season','int',array(
+		return (new Input('season','int', [
 			Input::IN_RANGE => [$allowMovies ? 0 : 1, 8],
-			Input::CUSTOM_ERROR_MESSAGES => array(
+			Input::CUSTOM_ERROR_MESSAGES => [
 				Input::ERROR_MISSING => 'Season number is missing',
 				Input::ERROR_INVALID => 'Season number (@value) is invalid',
 				Input::ERROR_RANGE => 'Season number must be between @min and @max',
-			)
-		)))->out();
+			]
+		]))->out();
 	}
 	static function validateEpisode($optional = false, $EQG = false){
 		$FieldName = $EQG ? 'Overall movie number' : 'Episode number';
-		return (new Input('episode','int',array(
+		return (new Input('episode','int', [
 			Input::IS_OPTIONAL => $optional,
 			Input::IN_RANGE => [1,26],
-			Input::CUSTOM_ERROR_MESSAGES => array(
+			Input::CUSTOM_ERROR_MESSAGES => [
 				Input::ERROR_MISSING => "$FieldName is missing",
 				Input::ERROR_INVALID => "$FieldName (@value) is invalid",
 				Input::ERROR_RANGE => "$FieldName must be between @min and @max",
-			)
-		)))->out();
+			]
+		]))->out();
 	}
 }

@@ -17,20 +17,20 @@ class HTTP {
 	 */
 	static function legitimateRequest($url, $cookies = null, $referrer = null, bool $skipBody = false){
 		$r = curl_init();
-		$curl_opt = array(
-			CURLOPT_HTTPHEADER => array(
+		$curl_opt = [
+			CURLOPT_HTTPHEADER => [
 				"Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
 				"Accept-Encoding: gzip, deflate, sdch",
 				"Accept-Language: hu,en-GB;q=0.8,en;q=0.6",
 				"Connection: keep-alive",
-			),
+			],
 			CURLOPT_HEADER => true,
 			CURLOPT_URL => $url,
 			CURLOPT_BINARYTRANSFER => true,
 			CURLOPT_FOLLOWLOCATION => true,
 			CURLOPT_RETURNTRANSFER => true,
 			CURLOPT_USERAGENT => "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/45.0.5678.91 Safari/537.36"
-		);
+		];
 		if (isset($referrer))
 			$curl_opt[CURLOPT_REFERER] = $referrer;
 		if (is_array($cookies))
@@ -56,10 +56,10 @@ class HTTP {
 
 		if (preg_match(new RegExp('Content-Encoding:\s?gzip'), $responseHeaders))
 			$response = gzdecode($response);
-		return array(
+		return [
 			'responseHeaders' => $responseHeaders,
 			'response' => $response,
-		);
+		];
 	}
 
 	/**
@@ -73,7 +73,7 @@ class HTTP {
 	static function findRedirectTarget($url, $referrer = null){
 		global $http_response_header;
 
-		$cookies = array();
+		$cookies = [];
 		if (!empty($http_response_header))
 			foreach ($http_response_header as $header){
 				if (!preg_match(new RegExp('^([^:]+): (.*)$'), $header, $parts) || $parts[1] !== 'Set-Cookie')
@@ -88,7 +88,7 @@ class HTTP {
 	}
 
 
-	private static $PUSHED_ASSETS = array();
+	private static $PUSHED_ASSETS = [];
 	/**
 	 * Suggest files to client via HTTP/2 Server Push
 	 *
@@ -96,13 +96,13 @@ class HTTP {
 	 */
 	static function pushResource($url){
 		self::$PUSHED_ASSETS[] = $url;
-		$headerContent = array();
+		$headerContent = [];
 		foreach(self::$PUSHED_ASSETS as $asset)
 			$headerContent[] = "<$url>; rel=preload";
 		header('Link: '.implode(',', $headerContent));
 	}
 
-	public static $STATUS_CODES = array(
+	public static $STATUS_CODES = [
 		300 => 'Multiple Choices',
 		301 => 'Moved Permanently',
 		302 => 'Moved Temporarily',
@@ -131,7 +131,7 @@ class HTTP {
 		503 => 'Service Unavailable',
 		504 => 'Gateway Time-out',
 		505 => 'HTTP Version not supported',
-	);
+	];
 
 	/**
 	 * Sends an HTTP status code header with the response

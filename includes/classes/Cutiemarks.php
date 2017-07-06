@@ -3,22 +3,22 @@
 namespace App;
 
 use App\Exceptions\MismatchedProviderException;
+use App\Models\Appearance;
 use App\Models\Cutiemark;
 use App\Models\User;
 
 class Cutiemarks {
 	/**
-	 * @param int    $AppearanceID
-	 * @param string $cols
-	 * @param bool   $procSym
+	 * @param Appearance $Appearance
+	 * @param bool       $procSym
 	 *
 	 * @return Cutiemark[]|null
 	 */
-	static function get(int $AppearanceID, string $cols = '*', bool $procSym = true){
+	static function get(Appearance $Appearance, bool $procSym = true){
 		global $Database;
 
 		/** @var $CMs Cutiemark[] */
-		$CMs = $Database->where('ponyid', $AppearanceID)->orderBy('facing','ASC')->get('cutiemarks', null, $cols);
+		$CMs = $Appearance->cutiemarks;
 		if ($procSym)
 			self::processSymmetrical($CMs);
 		return $CMs;
@@ -27,7 +27,7 @@ class Cutiemarks {
 	/** @param Cutiemark[] $CMs */
 	static function processSymmetrical(&$CMs){
 		if (count($CMs) === 1 && is_null($CMs[0]->facing)){
-			$CMs[1] = new Cutiemark((array) $CMs[0]);
+			$CMs[1] = new Cutiemark($CMs[0]->to_array());
 			$CMs[0]->facing = 'left';
 			$CMs[1]->facing = 'right';
 			$CMs[1]->favme_rotation = $CMs[0]->favme_rotation*-1;
@@ -63,7 +63,7 @@ class Cutiemarks {
 		$preview = CoreUtils::aposEncode($cm->getPreviewURL());
 
 		$Vector = DeviantArt::getCachedDeviation($cm->favme);
-		$userlink = Users::get($Vector->author,'name','name, avatar_url')->getProfileLink(User::LINKFORMAT_FULL);
+		$userlink = Users::get($Vector->author, 'name')->getProfileLink(User::LINKFORMAT_FULL);
 		$content = <<<HTML
 <span class="title">$facing</span>
 <a  class="preview" href="http://fav.me/{$cm->favme}" style="background-image:url('{$previewSVG}')">
@@ -102,7 +102,7 @@ HTML;
 		$data['facing'] = $facing;
 
 		try {
-			$Image = new ImageProvider($favme, array('fav.me', 'dA'));
+			$Image = new ImageProvider($favme, ['fav.me', 'dA']);
 			$favme = $Image->id;
 		}
 		catch (MismatchedProviderException $e){

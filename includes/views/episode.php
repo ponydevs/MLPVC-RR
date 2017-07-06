@@ -1,14 +1,13 @@
 <?php
 use App\Auth;
 use App\CoreUtils;
-use App\DeviantArt;
 use App\Episodes;
 use App\GlobalSettings;
 use App\Permission;
 use App\Posts;
 use App\Time;
-use App\Users;
 use App\Models\Episode;
+use App\Models\User;
 
 /** @var $CurrentEpisode Episode */
 /** @var $NextEpisode    Episode */
@@ -31,7 +30,7 @@ use App\Models\Episode;
 				<h1><?=CoreUtils::escapeHTML($heading)?></h1>
 				<p>Vector Requests & Reservations</p>
 <?php   if (Permission::sufficient('staff')){ ?>
-				<p class="addedby"><em><?=$CurrentEpisode->isMovie?'Movie':'Episode'?> added by <?=Users::get($CurrentEpisode->posted_by)->getProfileLink().' '.Time::tag($CurrentEpisode->posted)?></em></p>
+				<p class="addedby"><em><?=$CurrentEpisode->isMovie?'Movie':'Episode'?> added by <?=User::find($CurrentEpisode->posted_by)->getProfileLink().' '.Time::tag($CurrentEpisode->posted)?></em></p>
 <?php   } ?>
 			</div>
 		</div>
@@ -72,10 +71,10 @@ use App\Models\Episode;
 <?php   }
 		echo Posts::getReservationsSection(null,false,true);
 		echo Posts::getRequestsSection(null,false,true);
-		$export = array(
+		$export = [
 			'SEASON' => $CurrentEpisode->season,
 			'EPISODE' => $CurrentEpisode->episode,
-		);
+		];
 		if (Permission::sufficient('developer'))
 			$export['USERNAME_REGEX'] = $USERNAME_REGEX;
 		if (Auth::$signed_in)

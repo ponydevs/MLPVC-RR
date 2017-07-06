@@ -2,32 +2,36 @@
 
 namespace App\Models;
 
+use ActiveRecord\Model;
 use App\CoreUtils;
 use App\DeviantArt;
 use App\Permission;
 use App\UserPrefs;
-use App\Users;
 
-class Event extends AbstractFillable {
-	/** @var int */
-	public
-		$id,
-		$max_entries;
-	/** @var string */
-	public
-		$name,
-		$type,
-		$entry_role,
-		$vote_role,
-		$starts_at,
-		$ends_at,
-		$added_by,
-		$added_at,
-		$desc_src,
-		$desc_rend,
-		$result_favme,
-		$finalized_at,
-		$finalized_by;
+/**
+ * @property int    $id
+ * @property int    $max_entries
+ * @property string $name
+ * @property string $type
+ * @property string $entry_role
+ * @property string $vote_role
+ * @property string $starts_at
+ * @property string $ends_at
+ * @property string $added_by
+ * @property string $added_at
+ * @property string $desc_src
+ * @property string $desc_rend
+ * @property string $result_favme
+ * @property string $finalized_at
+ * @property EventEntry[] $entries
+ */
+class Event extends Model {
+	static $has_many = [
+		['entries', 'class_name' => 'EventEntry', 'order' => 'score desc, submitted_at asc'],
+	];
+	static $belongs_to = [
+		['user', 'foreign_key' => 'submitted_by'],
+	];
 
 	const EVENT_TYPES = [
 		'collab' => 'Collaboration',
@@ -42,23 +46,6 @@ class Event extends AbstractFillable {
 		'spec_inkscape' => 'Inkscape Users',
 		'spec_ponyscape' => 'Ponyscape Users',
 	];
-
-	/** @param array|object */
-	public function __construct($iter = null){
-		parent::__construct($this, $iter);
-	}
-
-	/**
-	 * @param int $id
-	 *
-	 * @return Event|null
-	 */
-	static function get(int $id):?Event {
-		global $Database;
-
-		/** @noinspection PhpIncompatibleReturnTypeInspection */
-		return $Database->where('id', $id)->getOne('events');
-	}
 
 	public function toURL():string {
 		return "/event/{$this->id}-".$this->getSafeName();
@@ -108,18 +95,9 @@ class Event extends AbstractFillable {
 		return $this->type === 'collab' ? !empty($this->result_favme) : $this->hasEnded();
 	}
 
-	/**
-	 * @return \App\Models\EventEntry[]
-	 */
-	public function getEntries(){
-		global $Database;
-
-		return $Database->where('eventid', $this->id)->orderBy('score','DESC')->orderBy('submitted_at','ASC')->get('events__entries');
-	}
-
 	public function getEntriesHTML(bool $wrap = WRAP):string {
 		$HTML = '';
-		$Entries = $this->getEntries();
+		$Entries = $this->entries;
 		foreach ($Entries as $entry)
 			$HTML .= $entry->toListItemHTML($this);
 		return $wrap ? "<ul id='event-entries'>$HTML</ul>" : $HTML;
@@ -135,7 +113,7 @@ class Event extends AbstractFillable {
 			/** @var $HighestScoringEntries EventEntry[] */
 			$HighestScoringEntries = $Database->setClass(EventEntry::class)->rawQuery(
 				'SELECT * FROM events__entries
-				WHERE eventid = ? && score > 0 && score = (SELECT MAX(score) FROM events__entries)
+				WHERE eventid = ? AND score > 0 AND score = (SELECT MAX(score) FROM events__entries)
 				ORDER BY submitted_at ASC',[$this->id]);
 
 			if (empty($HighestScoringEntries))
@@ -145,7 +123,7 @@ class Event extends AbstractFillable {
 				foreach ($HighestScoringEntries as $entry){
 					$title = CoreUtils::escapeHTML($entry->title);
 					$preview = isset($entry->prev_full) ? "<a href='{$entry->prev_src}'><img src='{$entry->prev_thumb}' alt=''><span class='title'>$title</span></a>" : "<span class='title'>$title</span>";
-					$by = '<div>'.Users::get($entry->submitted_by)->getProfileLink(User::LINKFORMAT_FULL).'</div>';
+					$by = '<div>'.User::find($entry->submitted_by)->getProfileLink(User::LINKFORMAT_FULL).'</div>';
 					$HTML .= "<div class='winning-entry'>$preview$by</div>";
 				}
 			}

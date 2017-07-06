@@ -2,48 +2,45 @@
 
 namespace App;
 
-use PHPUnit\Runner\Exception;
+use App\Models\UserPref;
 
 class UserPrefs extends GlobalSettings {
-	protected static
-		$_db = 'user_prefs',
-		$_defaults = array(
-			'discord_token' => '',
-
-			'cg_itemsperpage' => 7,
-			'cg_hidesynon' => 0,
-			'cg_hideclrinfo' => 0,
-			'cg_fulllstprev' => 1,
-			'p_vectorapp' => '',
-			'p_hidediscord' => 0,
-			'p_hidepcg' => 0,
-			'ep_noappprev' => 0,
-		);
+	const DEFAULTS = [
+		'cg_itemsperpage' => 7,
+		'cg_hidesynon' => 0,
+		'cg_hideclrinfo' => 0,
+		'cg_fulllstprev' => 1,
+		'p_vectorapp' => '',
+		'p_hidediscord' => 0,
+		'p_hidepcg' => 0,
+		'ep_noappprev' => 0,
+	];
 
 	/**
 	 * Gets a user preference item's value
 	 *
 	 * @param string $key
-	 * @param string $for
+	 * @param User   $for
 	 *
 	 * @return mixed
 	 */
 	static function get(string $key, $for = null){
 		global $Database;
 		if (empty($for) && Auth::$signed_in)
-			$for = Auth::$user->id;
+			$for = Auth::$user;
 
-		if (isset(Users::$_PREF_CACHE[$for][$key]))
-			return Users::$_PREF_CACHE[$for][$key];
+		if (isset(Users::$_PREF_CACHE[$for->id][$key]))
+			return Users::$_PREF_CACHE[$for->id][$key];
 
 		$default = null;
-		if (isset(static::$_defaults[$key]))
-			$default = static::$_defaults[$key];
-		if (empty($for) && !Auth::$signed_in)
+		if (isset(static::DEFAULTS[$key]))
+			$default = static::DEFAULTS[$key];
+		if (empty($for->id) && !Auth::$signed_in)
 			return $default;
 
-		$Database->where('user', $for);
-		return Users::$_PREF_CACHE[$for][$key] = parent::get($key, $default);
+		$q = UserPref::find_for($key, $for);
+		Users::$_PREF_CACHE[$for->id][$key] = isset($q->value) ? $q->value : $default;
+		return Users::$_PREF_CACHE[$for->id][$key];
 	}
 
 	/**
@@ -56,25 +53,29 @@ class UserPrefs extends GlobalSettings {
 	 * @return bool
 	 */
 	static function set(string $key, $value, $for = null):bool {
-		global $Database;
 		if (empty($for)){
 			if (!Auth::$signed_in)
-				throw new Exception("Empty \$for when setting user preference $key to ");
+				throw new \Exception("Empty \$for when setting user preference $key to ");
 			$for = Auth::$user->id;
 		}
 
-		if (!isset(static::$_defaults[$key]))
+		if (!isset(static::DEFAULTS[$key]))
 			Response::fail("Key $key is not allowed");
-		$default = static::$_defaults[$key];
+		$default = static::DEFAULTS[$key];
 
-		if ($Database->where('key', $key)->where('user', $for)->has(static::$_db)){
-			$Database->where('key', $key)->where('user', $for);
+		if (UserPref::exists($for, $key)){
+			$pref = UserPref::find($for, $key);
 			if ($value == $default)
-				return $Database->delete(static::$_db);
-			else return $Database->update(static::$_db, array('value' => $value));
+				return $pref->delete();
+			else return $pref->update_attributes(['value' => $value]);
 		}
-		else if ($value != $default)
-			return $Database->insert(static::$_db, array('user' => Auth::$user->id, 'key' => $key, 'value' => $value));
+		else if ($value != $default){
+			return (new UserPref([
+				'user' => Auth::$user->id,
+				'key' => $key,
+				'value' => $value,
+			]))->save();
+		}
 		else return true;
 	}
 

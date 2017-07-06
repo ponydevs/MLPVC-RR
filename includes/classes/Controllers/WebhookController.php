@@ -2,6 +2,8 @@
 
 namespace App\Controllers;
 
+use App\CoreUtils;
+
 class WebhookController extends Controller {
 	function index(){
 		if (empty($_SERVER['HTTP_USER_AGENT']) && strpos($_SERVER['HTTP_USER_AGENT'], 'GitHub-Hookshot/') === 0)
@@ -15,7 +17,7 @@ class WebhookController extends Controller {
 
 		switch (strtolower($_SERVER['HTTP_X_GITHUB_EVENT'])){
 			case 'push':
-				$output = array();
+				$output = [];
 				chdir(PROJPATH);
 				exec("git reset HEAD --hard",$output);
 				exec("git pull",$output);

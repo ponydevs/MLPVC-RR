@@ -2,54 +2,55 @@
 
 namespace App;
 
-use App\Permission;
-use App\CoreUtils;
-
 class Tags {
 	// List of available tag types
-	static $TAG_TYPES_ASSOC = array(
+	const TAG_TYPES = [
 		'app' => 'Clothing',
 		'cat' => 'Category',
 		'ep' => 'Episode',
 		'gen' => 'Gender',
 		'spec' => 'Species',
 		'char' => 'Character',
-	);
+	];
 
 	/**
 	 * Retrieve set of tags for a given appearance
 	 *
-	 * @param int       $PonyID
-	 * @param array|int $limit
-	 * @param bool      $showEpTags
-	 * @param bool      $exporting
+	 * @param int        $PonyID
+	 * @param Pagination $pagination
+	 * @param bool       $showEpTags
+	 * @param bool       $exporting
 	 *
 	 * @return array|null
 	 */
-	static function getFor($PonyID = null, $limit = null, $showEpTags = false, $exporting = false){
+	static function getFor($PonyID = null, ?Pagination $pagination = null, $showEpTags = false, $exporting = false){
 		global $Database;
+
+		$query = CoreUtils::sqlBuilder('tags');
+		$query->select('tags.*');
 
 		if (!$exporting){
 			$showSynonymTags = $showEpTags || Permission::sufficient('staff');
 			if (!$showSynonymTags)
-				$Database->where('"synonym_of" IS NULL');
+				$query->where('synonym_of IS NULL');
 
-			$Database
-				->orderByLiteral('CASE WHEN tags.type IS NULL THEN 1 ELSE 0 END')
-				->orderBy('tags.type', 'ASC')
-				->orderBy('tags.name', 'ASC');
+			$query->order('CASE WHEN tags.type IS NULL THEN 1 ELSE 0 END desc, tags.type asc, tags.name asc');
 			if (!$showEpTags)
-				$Database->where("tags.type != 'ep'");
+				$query->where("tags.type != 'ep'");
 		}
 		else {
 			$showSynonymTags = true;
-			$Database->orderBy('tags.tid','ASC');
+			$query->order('tags.tid asc');
 		}
 		if (isset($PonyID)){
-			$Database->join('tagged','(tagged.tid = tags.tid'.($showSynonymTags?' OR tagged.tid = tags.synonym_of':'').')','right',true);
-			$Database->where('tagged.ponyid',$PonyID);
+			$query->joins('RIGHT JOIN tagged ON (tagged.tid = tags.tid'.($showSynonymTags?' OR tagged.tid = tags.synonym_of':'').')');
+			$query->where('tagged.ponyid = ?',$PonyID);
 		}
-		return $Database->get('tags',$limit,'tags.*');
+
+		if (isset($pagination))
+			$pagination->applyAssocLimit($query);
+
+		return Tag::find_by_sql(CoreUtils::execSqlBuilderArgs($query));
 	}
 
 	/**
@@ -64,7 +65,7 @@ class Tags {
 	static function getActual($value, $column = 'tid', $as_bool = false){
 		global $Database;
 
-		$arg1 = array('tags', $as_bool === RETURN_AS_BOOL ? 'synonym_of,tid' : '*');
+		$arg1 = ['tags', $as_bool === RETURN_AS_BOOL ? 'synonym_of,tid' : '*'];
 
 		$Tag = $Database->where($column, $value)->getOne(...$arg1);
 
@@ -107,7 +108,7 @@ class Tags {
 		global $Database;
 
 		$Tagged = $Database->where('tid', $TagID)->count('tagged');
-		$return = array('status' => $Database->where('tid', $TagID)->update('tags',array('uses' => $Tagged)));
+		$return = ['status' => $Database->where('tid', $TagID)->update('tags', ['uses' => $Tagged])];
 		if ($returnCount)
 			$return['count'] = $Tagged;
 		return $return;
@@ -136,7 +137,7 @@ class Tags {
 
 		if (!empty($Tags)) foreach ($Tags as $t){
 			$trClass = $t['type'] ? " class='typ-{$t['type']}'" : '';
-			$type = $t['type'] ? self::$TAG_TYPES_ASSOC[$t['type']] : '';
+			$type = $t['type'] ? self::TAG_TYPES[$t['type']] : '';
 			$search = CoreUtils::aposEncode(urlencode($t['name']));
 			$titleName = CoreUtils::aposEncode($t['name']);
 

@@ -2,8 +2,6 @@
 
 namespace App\Controllers;
 
-use App\CoreUtils;
-use App\RegExp;
 use App\Users;
 
 abstract class Controller {

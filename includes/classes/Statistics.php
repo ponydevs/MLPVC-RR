@@ -11,7 +11,7 @@ class Statistics {
 	 */
 	static function processLabels(&$Labels, &$Data){
 		if (empty($Labels))
-			$Labels = array();
+			$Labels = [];
 		else {
 			foreach ($Labels as $k => $v)
 				$Labels[$k] = $v['key'];
@@ -28,8 +28,8 @@ class Statistics {
 	 * @param array $Labels  Array of labels
 	 */
 	static function processUsageData($Rows, &$Dataset, $Labels){
-		$Dataset['labels'] = array();
-		$Dataset['data'] = array();
+		$Dataset['labels'] = [];
+		$Dataset['data'] = [];
 
 		foreach ($Rows as $row){
 			$Dataset['labels'][] = $row['key'];
@@ -38,8 +38,8 @@ class Statistics {
 
 		foreach ($Labels as $ix => $label){
 			if (empty($Dataset['labels'][$ix]) || $Dataset['labels'][$ix] !== $label){
-				array_splice($Dataset['labels'], $ix, 0, array($label));
-				array_splice($Dataset['data'], $ix, 0, array(0));
+				array_splice($Dataset['labels'], $ix, 0, [$label]);
+				array_splice($Dataset['data'], $ix, 0, [0]);
 			}
 		}
 
@@ -68,9 +68,9 @@ class Statistics {
 			if ($break)
 				break;
 
-			array_splice($Data['labels'], $lix, 0, array($Data['labels'][$lix-1] + Time::IN_SECONDS['day']));
+			array_splice($Data['labels'], $lix, 0, [$Data['labels'][$lix-1] + Time::IN_SECONDS['day']]);
 			foreach ($Data['datasets'] as &$set){
-				array_splice($set['data'], $lix, 0, array(0));
+				array_splice($set['data'], $lix, 0, [0]);
 			}
 		}
 

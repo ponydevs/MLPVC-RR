@@ -17,25 +17,25 @@ class EpisodesController extends Controller {
 		CoreUtils::fixPath("/episodes/{$Pagination->page}");
 		$heading = "Episodes";
 		$title = "Page {$Pagination->page} - $heading";
-		$Episodes = Episodes::get($Pagination->getLimit());
+		$Episodes = Episodes::get($Pagination);
 
 		if (isset($_GET['js']))
 			$Pagination->respond(Episodes::getTableTbody($Episodes), '#episodes tbody');
 
-		$settings = array(
+		$settings = [
 			'heading' => $heading,
 			'title' => $title,
 			'do-css',
-			'js' => array('paginate',$this->do),
+			'js' => ['paginate', $this->do],
 			'import' => [
 				'Pagination' => $Pagination,
 				'Episodes' => $Episodes,
 			],
-		);
+		];
 		if (Permission::sufficient('staff'))
 			$settings['js'] = array_merge(
 				$settings['js'],
-				array('moment-timezone',"{$this->do}-manage")
+				['moment-timezone', "{$this->do}-manage"]
 			);
 		CoreUtils::loadPage($settings, $this);
 	}

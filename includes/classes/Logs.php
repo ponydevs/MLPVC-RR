@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Models\Appearance;
 use App\Models\Episode;
 use App\Models\EpisodeVideo;
 use App\Models\Request;
@@ -10,7 +11,7 @@ use App\Models\User;
 use cogpowered\FineDiff;
 
 class Logs {
-	static $LOG_DESCRIPTION = array(
+	static $LOG_DESCRIPTION = [
 		'episodes' => 'Episode management',
 		'episode_modify' => 'Episode modified',
 		'rolechange' => 'User group change',
@@ -33,7 +34,7 @@ class Logs {
 		'cm_modify' => 'Appearance CM edited',
 		'post_break' => 'Post image broken',
 		'post_fix' => 'Broken post restored',
-	);
+	];
 
 	const FORCE_INITIATOR_WEBSERVER = true;
 
@@ -48,7 +49,7 @@ class Logs {
 	 */
 	static function logAction($reftype, $data = null, $forcews = false){
 		global $Database;
-		$central = array('ip' => $_SERVER['REMOTE_ADDR']);
+		$central = ['ip' => $_SERVER['REMOTE_ADDR']];
 
 		if (isset($data)){
 			foreach ($data as $k => $v)
@@ -70,15 +71,15 @@ class Logs {
 		return (bool) $Database->insert("log",$central);
 	}
 
-	static $ACTIONS = array(
+	static $ACTIONS = [
 		'add' => '<span class="color-green"><span class="typcn typcn-plus"></span> Create</span>',
 		'del' => '<span class="color-red"><span class="typcn typcn-trash"></span> Delete</span>'
-	);
+	];
 
 	const
 		KEYCOLOR_INFO = 'blue',
 		KEYCOLOR_ERROR = 'red',
-		SKIP_VALUE = array();
+		SKIP_VALUE = [];
 
 	/**
 	 * Format log entry details
@@ -90,7 +91,7 @@ class Logs {
 	 */
 	static function formatEntryDetails($MainEntry, $data){
 		global $Database, $Database;
-		$details = array();
+		$details = [];
 
 		$reftype = $MainEntry['reftype'];
 		switch ($reftype){
@@ -98,20 +99,20 @@ class Logs {
 				/** @var $target User */
 				$target =  $Database->where('id',$data['target'])->getOne('users');
 
-				$details = array(
-					array('Target user', $target->getProfileLink()),
-					array('Old group', Permission::ROLES_ASSOC[$data['oldrole']]),
-					array('New group', Permission::ROLES_ASSOC[$data['newrole']])
-				);
+				$details = [
+					['Target user', $target->getProfileLink()],
+					['Old group', Permission::ROLES_ASSOC[$data['oldrole']]],
+					['New group', Permission::ROLES_ASSOC[$data['newrole']]]
+				];
 			break;
 			case "episodes":
-				$details[] = array('Action', self::$ACTIONS[$data['action']]);
-				$details[] = array('Name', (new Episode($data))->formatTitle());
+				$details[] = ['Action', self::$ACTIONS[$data['action']]];
+				$details[] = ['Name', (new Episode($data))->formatTitle()];
 				if ($data['season'] === 0)
-					$details[] = array('Overall', "#{$data['episode']}");
+					$details[] = ['Overall', "#{$data['episode']}"];
 				if (!empty($data['airs']))
-					$details[] = array('Air date', Time::tag($data['airs'], Time::TAG_EXTENDED, Time::TAG_STATIC_DYNTIME));
-				$details[] = array('Two parts', !empty($data['twoparter']));
+					$details[] = ['Air date', Time::tag($data['airs'], Time::TAG_EXTENDED, Time::TAG_STATIC_DYNTIME)];
+				$details[] = ['Two parts', !empty($data['twoparter'])];
 			break;
 			case "episode_modify":
 				$link = $data['target'];
@@ -121,9 +122,9 @@ class Logs {
 					if (!empty($Episode))
 						$link = "<a href='".$Episode->toURL()."'>".$Episode->formatTitle(AS_ARRAY, 'id')."</a>";
 				}
-				$details[] = array('Episode', $link);
+				$details[] = ['Episode', $link];
 				if (empty($Episode))
-					$details[] = array('Still exists', false);
+					$details[] = ['Still exists', false];
 
 				unset($data['entryid'], $data['target']);
 				$newOld = self::_arrangeNewOld($data);
@@ -133,22 +134,22 @@ class Logs {
 					$newOld['airs']['new'] =  Time::tag($newOld['airs']['new'], Time::TAG_EXTENDED, Time::TAG_STATIC_DYNTIME);
 				}
 				if (isset($newOld['title']['old']) && isset($newOld['title']['new'])){
-					$details[] = array('Title', self::diff($newOld['title']['old'], $newOld['title']['new']));
+					$details[] = ['Title', self::diff($newOld['title']['old'], $newOld['title']['new'])];
 					unset($newOld['title']);
 				}
 
 				foreach ($newOld as $thing => $ver){
-					$details[] = array("Old $thing",$ver['old']);
-					$details[] = array("New $thing",$ver['new']);
+					$details[] = ["Old $thing", $ver['old']];
+					$details[] = ["New $thing", $ver['new']];
 				}
 			break;
 			case "userfetch":
-				$details[] = array('User', Users::get($data['userid'])->getProfileLink());
+				$details[] = ['User', User::find($data['userid'])->getProfileLink()];
 			break;
 			case "banish":
 			case "un-banish":
-				$details[] = array('User', Users::get($data['target'])->getProfileLink());
-				$details[] = array('Reason', CoreUtils::escapeHTML($data['reason']));
+				$details[] = ['User', User::find($data['target'])->getProfileLink()];
+				$details[] = ['Reason', CoreUtils::escapeHTML($data['reason'])];
 			break;
 			case "post_lock":
 				/** @var $Post Request|Reservation */
@@ -156,29 +157,29 @@ class Logs {
 				self::_genericPostInfo($Post, $data, $details);
 			break;
 			case "color_modify":
-				$details[] = array('Appearance',self::_getAppearanceLink($data['ponyid']));
-				$details[] = array('Reason',CoreUtils::escapeHTML($data['reason']));
+				$details[] = ['Appearance', self::_getAppearanceLink($data['ponyid'])];
+				$details[] = ['Reason', CoreUtils::escapeHTML($data['reason'])];
 			break;
 			case "req_delete":
-				$details[] = array('Request ID', $data['id']);
-				$typeNames = array(
+				$details[] = ['Request ID', $data['id']];
+				$typeNames = [
 					'chr' => 'Character',
 					'obj' => 'Object',
 					'bg' => 'Background',
-				);
-				$details[] = array('Description',CoreUtils::escapeHTML($data['label']));
-				$details[] = array('Type',$typeNames[$data['type']]);
+				];
+				$details[] = ['Description', CoreUtils::escapeHTML($data['label'])];
+				$details[] = ['Type', $typeNames[$data['type']]];
 				$IDstr = "S{$data['season']}E{$data['episode']}";
-				$details[] = array('Episode', "<a href='/episode/$IDstr'>$IDstr</a>");
-				$details[] = array('Posted', Time::tag($data['posted'], Time::TAG_EXTENDED, Time::TAG_STATIC_DYNTIME));
+				$details[] = ['Episode', "<a href='/episode/$IDstr'>$IDstr</a>"];
+				$details[] = ['Posted', Time::tag($data['posted'], Time::TAG_EXTENDED, Time::TAG_STATIC_DYNTIME)];
 				if (!empty($data['requested_by']))
-					$details[] = array('Requested by', Users::get($data['requested_by'])->getProfileLink());
+					$details[] = ['Requested by', User::find($data['requested_by'])->getProfileLink()];
 				if (!empty($data['reserved_by']))
-					$details[] = array('Reserved by', Users::get($data['reserved_by'])->getProfileLink());
-				$details[] = array('Finished', !empty($data['deviation_id']));
+					$details[] = ['Reserved by', User::find($data['reserved_by'])->getProfileLink()];
+				$details[] = ['Finished', !empty($data['deviation_id'])];
 				if (!empty($data['deviation_id'])){
-					$details[] = array('Deviation', self::_link("http://fav.me/{$data['deviation_id']}"));
-					$details[] = array('Approved', $data['lock']);
+					$details[] = ['Deviation', self::_link("http://fav.me/{$data['deviation_id']}")];
+					$details[] = ['Approved', $data['lock']];
 				}
 			break;
 			case "img_update":
@@ -186,129 +187,129 @@ class Logs {
 				$Post = $Database->where('id', $data['id'])->getOne("{$data['thing']}s");
 				$data['type'] = $data['thing'];
 				self::_genericPostInfo($Post, $data, $details);
-				$details[] = array('Old image',"<a href='{$data['oldfullsize']}' target='_blank' rel='noopener'>Full size</a><div><img src='{$data['oldpreview']}'></div>");
-				$details[] = array('New image',"<a href='{$data['newfullsize']}' target='_blank' rel='noopener'>Full size</a><div><img src='{$data['newpreview']}'></div>");
+				$details[] = ['Old image', "<a href='{$data['oldfullsize']}' target='_blank' rel='noopener'>Full size</a><div><img src='{$data['oldpreview']}'></div>"];
+				$details[] = ['New image', "<a href='{$data['newfullsize']}' target='_blank' rel='noopener'>Full size</a><div><img src='{$data['newpreview']}'></div>"];
 			break;
 			case "res_overtake":
 				/** @var $Post Request|Reservation */
 				$Post = $Database->where('id', $data['id'])->getOne("{$data['type']}s");
 				self::_genericPostInfo($Post, $data, $details);
-				$details[] = array('Previous reserver', Users::get($data['reserved_by'])->getProfileLink());
-				$details[] = array('Previously reserved at', Time::tag($data['reserved_at'], Time::TAG_EXTENDED, Time::TAG_STATIC_DYNTIME));
+				$details[] = ['Previous reserver', User::find($data['reserved_by'])->getProfileLink()];
+				$details[] = ['Previously reserved at', Time::tag($data['reserved_at'], Time::TAG_EXTENDED, Time::TAG_STATIC_DYNTIME)];
 
 				$diff = Time::difference(strtotime($MainEntry['timestamp']), strtotime($data['reserved_at']));
 				$diff_text = Time::differenceToString($diff);
-				$details[] = array('In progress for', $diff_text);
+				$details[] = ['In progress for', $diff_text];
 			break;
 			case "appearances":
-				$details[] = array('Action', self::$ACTIONS[$data['action']]);
+				$details[] = ['Action', self::$ACTIONS[$data['action']]];
 
 				$PonyGuide = empty($data['ishuman']);
 				if (!is_null($data['ishuman']))
-					$details[] = array('Guide', $PonyGuide ? 'Pony' : 'EQG');
-				$details[] = array('ID', self::_getAppearanceLink($data['id']));
-				$details[] = array('Label', $data['label']);
+					$details[] = ['Guide', $PonyGuide ? 'Pony' : 'EQG'];
+				$details[] = ['ID', self::_getAppearanceLink($data['id'])];
+				$details[] = ['Label', $data['label']];
 				if (!empty($data['order']))
-					$details[] = array('Ordering index', $data['order']);
+					$details[] = ['Ordering index', $data['order']];
 				if (!empty($data['notes']))
-					$details[] = array('Notes', '<div>'.nl2br($data['notes']).'</div>');
+					$details[] = ['Notes', '<div>'.nl2br($data['notes']).'</div>'];
 				if (!empty($data['cm_favme'])){
-					$details[] = array('CM Submission', self::_link("http://fav.me/{$data['cm_favme']}"));
-					$details[] = array('CM Orientation', CGUtils::$CM_DIR[$data['cm_dir']]);
+					$details[] = ['CM Submission', self::_link("http://fav.me/{$data['cm_favme']}")];
+					$details[] = ['CM Orientation', CGUtils::$CM_DIR[$data['cm_dir']]];
 					if (!empty($data['cm_preview']))
-						$details[] = array('Custom CM Preview', "<img src='".CoreUtils::aposEncode($data['cm_preview'])."'>");
+						$details[] = ['Custom CM Preview', "<img src='".CoreUtils::aposEncode($data['cm_preview'])."'>"];
 				}
 				if (!empty($data['usetemplate']))
-					$details[] = array('Template applied', true);
-				$details[] = array('Private', !empty($data['private']));
+					$details[] = ['Template applied', true];
+				$details[] = ['Private', !empty($data['private'])];
 				if (!empty($data['added']))
-					$details[] = array('Added', Time::tag($data['added'], Time::TAG_EXTENDED, Time::TAG_STATIC_DYNTIME));
+					$details[] = ['Added', Time::tag($data['added'], Time::TAG_EXTENDED, Time::TAG_STATIC_DYNTIME)];
 			break;
 			case "res_transfer":
 				/** @var $Post Request|Reservation */
 				$Post = $Database->where('id', $data['id'])->getOne("{$data['type']}s");
 				self::_genericPostInfo($Post, $data, $details);
-				$details[] = array('New reserver', Users::get($data['to'])->getProfileLink());
+				$details[] = ['New reserver', User::find($data['to'])->getProfileLink()];
 			break;
 			case "cg_modify":
-				$details[] = array('Appearance',self::_getAppearanceLink($data['ponyid']));
+				$details[] = ['Appearance', self::_getAppearanceLink($data['ponyid'])];
 				$CG = $Database->where('groupid', $data['groupid'])->getOne('colorgroups');
 				if (empty($CG)){
-					$details[] = array('Color group ID', '#'.$data['groupid']);
-					$details[] = array('Still exists', false);
+					$details[] = ['Color group ID', '#'.$data['groupid']];
+					$details[] = ['Still exists', false];
 				}
-				else $details[] = array('Group', "{$CG['label']} (#{$data['groupid']})");
+				else $details[] = ['Group', "{$CG['label']} (#{$data['groupid']})"];
 				if (isset($data['newlabel']))
-					$details[] = array('Label', self::diff($data['oldlabel'] ?? '', $data['newlabel']));
+					$details[] = ['Label', self::diff($data['oldlabel'] ?? '', $data['newlabel'])];
 				if (isset($data['newcolors']))
-					$details[] = array('Colors', self::diff($data['oldcolors'] ?? '', $data['newcolors'], 'block'));
+					$details[] = ['Colors', self::diff($data['oldcolors'] ?? '', $data['newcolors'], 'block')];
 			break;
 			case "cgs":
-				$details[] = array('Action', self::$ACTIONS[$data['action']]);
-				$details[] = array('Color group ID', '#'.$data['groupid']);
-				$details[] = array('Label', $data['label']);
-				$details[] = array('Appearance',self::_getAppearanceLink($data['ponyid']));
+				$details[] = ['Action', self::$ACTIONS[$data['action']]];
+				$details[] = ['Color group ID', '#'.$data['groupid']];
+				$details[] = ['Label', $data['label']];
+				$details[] = ['Appearance', self::_getAppearanceLink($data['ponyid'])];
 				if (isset($data['order']))
-					$details[] = array('Ordering index', $data['order']);
+					$details[] = ['Ordering index', $data['order']];
 			break;
 			case "cg_order":
-				$details[] = array('Appearance',self::_getAppearanceLink($data['ponyid']));
-				$details[] = array('Order',self::diff($data['oldgroups'], $data['newgroups'], 'block', new FineDiff\Granularity\Paragraph()));
+				$details[] = ['Appearance', self::_getAppearanceLink($data['ponyid'])];
+				$details[] = ['Order', self::diff($data['oldgroups'], $data['newgroups'], 'block', new FineDiff\Granularity\Paragraph())];
 			break;
 			case "appearance_modify":
-				$details[] = array('Appearance',self::_getAppearanceLink($data['ponyid']));
+				$details[] = ['Appearance', self::_getAppearanceLink($data['ponyid'])];
 				$changes = JSON::decode($data['changes']);
 				$newOld = self::_arrangeNewOld($changes);
 
 				if (isset($newOld['label']['new']))
-					$details[] = array('Label', self::diff($newOld['label']['old'], $newOld['label']['new'], 'block'));
+					$details[] = ['Label', self::diff($newOld['label']['old'], $newOld['label']['new'], 'block')];
 
 				if (isset($newOld['notes']['new']) || isset($newOld['notes']['old']))
-					$details[] = array('Notes', self::diff($newOld['notes']['old'] ?? '', $newOld['notes']['new'] ?? '', 'block smaller', new FineDiff\Granularity\Word()));
+					$details[] = ['Notes', self::diff($newOld['notes']['old'] ?? '', $newOld['notes']['new'] ?? '', 'block smaller', new FineDiff\Granularity\Word())];
 
 				if (isset($newOld['cm_favme']['old']))
-					$details[] = array('Old CM Submission', self::_link('http://fav.me/'.$newOld['cm_favme']['old']));
+					$details[] = ['Old CM Submission', self::_link('http://fav.me/'.$newOld['cm_favme']['old'])];
 				else if (isset($newOld['cm_favme']['new']))
-					$details[] = array('Old CM Submission', null);
+					$details[] = ['Old CM Submission', null];
 				if (isset($newOld['cm_favme']['new']))
-					$details[] = array('New CM Submission', self::_link('http://fav.me/'.$newOld['cm_favme']['new']));
+					$details[] = ['New CM Submission', self::_link('http://fav.me/'.$newOld['cm_favme']['new'])];
 				else if (isset($newOld['cm_favme']['old']))
-					$details[] = array('New CM Submission', null);
+					$details[] = ['New CM Submission', null];
 
 				$olddir = isset($newOld['cm_dir']['old']) ? CGUtils::$CM_DIR[$newOld['cm_dir']['old']] : '';
 				$newdir = isset($newOld['cm_dir']['new']) ? CGUtils::$CM_DIR[$newOld['cm_dir']['new']] : '';
 				if ($olddir || $newdir)
-					$details[] = array('CM Orientation', self::diff($olddir, $newdir, 'inline', new FineDiff\Granularity\Paragraph()));
+					$details[] = ['CM Orientation', self::diff($olddir, $newdir, 'inline', new FineDiff\Granularity\Paragraph())];
 
 				if (isset($newOld['private']['new']))
-					$details[] = array('<span class="typcn typcn-lock-'.($newOld['private']['new']?'closed':'open').'"></span> '.($newOld['private']['new'] ? 'Marked private' : 'No longer private'),self::SKIP_VALUE,self::KEYCOLOR_INFO);
+					$details[] = ['<span class="typcn typcn-lock-'.($newOld['private']['new']?'closed':'open').'"></span> '.($newOld['private']['new'] ? 'Marked private' : 'No longer private'), self::SKIP_VALUE, self::KEYCOLOR_INFO];
 
 				if (isset($newOld['cm_preview']['new']))
-					$details[] = array('New Custom CM Preview', "<img src='".CoreUtils::aposEncode($newOld['cm_preview']['new'])."'>");
+					$details[] = ['New Custom CM Preview', "<img src='".CoreUtils::aposEncode($newOld['cm_preview']['new'])."'>"];
 				else if (isset($newOld['cm_preview']['old']))
-					$details[] = array('New Custom CM Preview', null);
+					$details[] = ['New Custom CM Preview', null];
 			break;
 			case "da_namechange":
-				$User = Users::get($data['id'], 'id', 'name');
+				$User = User::find($data['id']);
 				$newIsCurrent = $User->name === $data['new'];
-				$details[] = array('User', $User->getProfileLink());
+				$details[] = ['User', $User->getProfileLink()];
 				if ($newIsCurrent)
-					$details[] = array('Old name', $data['old']);
+					$details[] = ['Old name', $data['old']];
 				else {
-					$details[] = array('Name', Logs::diff($data['old'], $data['new']));
+					$details[] = ['Name', Logs::diff($data['old'], $data['new'])];
 				}
 			break;
 			case "video_broken":
 				$IDstr = "S{$data['season']}E{$data['episode']}";
-				$details[] = array('Episode', "<a href='/episode/$IDstr'>$IDstr</a>");
-				$url = VideoProvider::getEmbed(new EpisodeVideo(array(
+				$details[] = ['Episode', "<a href='/episode/$IDstr'>$IDstr</a>"];
+				$url = VideoProvider::getEmbed(new EpisodeVideo([
 					'provider' => $data['provider'],
 					'id' => $data['id'],
-				)), VideoProvider::URL_ONLY);
-				$details[] = array('Link',"<a href='$url'>$url</a>");
+				]), VideoProvider::URL_ONLY);
+				$details[] = ['Link', "<a href='$url'>$url</a>"];
 			break;
 			case "cm_modify":
-				$details[] = array('Appearance', self::_getAppearanceLink($data['ponyid']));
+				$details[] = ['Appearance', self::_getAppearanceLink($data['ponyid'])];
 
 				$keys = [];
 				if (isset($data['olddata'])){
@@ -336,7 +337,7 @@ class Logs {
 				if ($olddata || $newdata){
 					$diff = self::diff($olddata, $newdata, 'block', new FineDiff\Granularity\Sentence());
 					$diff = preg_replace(new RegExp('(\S)(d[a-z\d]{6,})'),'$1<a href="http://fav.me/$2">$2</a>',$diff,1);
-					$details[] = array('Metadata changes', $diff);
+					$details[] = ['Metadata changes', $diff];
 				}
 			break;
 			case "post_break":
@@ -346,12 +347,12 @@ class Logs {
 				self::_genericPostInfo($Post, $data, $details);
 			break;
 			default:
-				$details[] = array('<span class="typcn typcn-warning"></span> Couldn’t process details','No data processor defined for this entry type',self::KEYCOLOR_ERROR);
-				$details[] = array('Raw details', '<pre>'.var_export($data, true).'</pre>');
+				$details[] = ['<span class="typcn typcn-warning"></span> Couldn’t process details', 'No data processor defined for this entry type', self::KEYCOLOR_ERROR];
+				$details[] = ['Raw details', '<pre>'.var_export($data, true).'</pre>'];
 			break;
 		}
 
-		return array('details' => $details);
+		return ['details' => $details];
 	}
 
 	/**
@@ -364,51 +365,48 @@ class Logs {
 		if (!empty($Post))
 			$label = $Post->toAnchor($label);
 
-		$details[] = array('Post',$label);
+		$details[] = ['Post', $label];
 		if (empty($Post))
-			$details[] = array('<span class="typcn typcn-info-large"></span> No longer exists',self::SKIP_VALUE,self::KEYCOLOR_INFO);
+			$details[] = ['<span class="typcn typcn-info-large"></span> No longer exists', self::SKIP_VALUE, self::KEYCOLOR_INFO];
 		else {
 			$EpID = (new Episode($Post))->formatTitle(AS_ARRAY,'id');
 			$EpData = Episode::parseID($EpID);
 			$Episode = Episodes::getActual($EpData['season'], $EpData['episode'], Episodes::ALLOW_MOVIES);
-			$details[] = array('Posted under', "<a href='".$Episode->toURL()."'>$EpID</a>");
-			$details[] = array(
+			$details[] = ['Posted under', "<a href='".$Episode->toURL()."'>$EpID</a>"];
+			$details[] = [
 				($data['type'] === 'request'?'Requested':'Reserved').' by',
-				Users::get(
+				User::find(
 					$data['type'] === 'request'
 					? $Post->requested_by
 					: $Post->reserved_by
 				)->getProfileLink()
-			);
+			];
 			if ($data['type'] === 'request'){
 				if (!empty($Post->reserved_by))
-					$details[] = array('Reserved by', Users::get($Post->reserved_by)->getProfileLink());
-				else $details[] = array('Reserved', false);
+					$details[] = ['Reserved by', User::find($Post->reserved_by)->getProfileLink()];
+				else $details[] = ['Reserved', false];
 			}
 		}
 	}
 
-	private static function _getAppearanceLink($id){
+	/**
+	 * @param int $id
+	 *
+	 * @return string
+	 */
+	private static function _getAppearanceLink(int $id):string {
 		global $Database;
 
 		$ID = "#$id";
-		$Appearance = $Database->where('id', $id)->getOne('appearances');
-		if (!empty($Appearance)){
-			$EQGUrl = $Appearance['ishuman'] ? '/eqg' : '';
-			$PCG = '';
-			if ($Appearance['owner']){
-				$Owner = Users::get($Appearance['owner']);
-				if ($Owner)
-					$PCG = "/@{$Owner->name}";
-			}
-			$ID = "<a href='$PCG/cg/{$EQGUrl}v/$id'>".htmlspecialchars($Appearance['label'])."</a> ($ID)";
-		}
+		$Appearance = Appearance::find($id);
+		if (!empty($Appearance))
+			$ID = "<a href='{$Appearance->getLink()}'>".CoreUtils::escapeHTML($Appearance->label)."</a> ($ID)";
 
 		return $ID;
 	}
 
 	private static function _arrangeNewOld($data){
-		$newOld = array();
+		$newOld = [];
 		unset($data['entryid'], $data['target']);
 		foreach ($data as $k => $v){
 			if (is_null($v)) continue;
@@ -416,7 +414,7 @@ class Logs {
 			$thing = CoreUtils::substring($k, 3);
 			$type = CoreUtils::substring($k, 0, 3);
 			if (!isset($newOld[$thing]))
-				$newOld[$thing] = array();
+				$newOld[$thing] = [];
 			$newOld[$thing][$type] = $thing === 'twoparter' ? !!$v : $v;
 		}
 		return $newOld;
@@ -439,12 +437,12 @@ class Logs {
 		$HTML = '';
 		if (count($LogItems) > 0) foreach ($LogItems as $item){
 			if (!empty($item['initiator'])){
-				$inituser = Users::get($item['initiator'],'id');
+				$inituser = User::find($item['initiator']);
 				if (empty($inituser))
 					$inituser = 'Deleted user';
 				else $inituser = $inituser->getProfileLink();
 
-				$ip = in_array($item['ip'], array('::1', '127.0.0.1')) ? "localhost" : $item['ip'];
+				$ip = in_array($item['ip'], ['::1', '127.0.0.1']) ? "localhost" : $item['ip'];
 
 				if ($item['ip'] === $_SERVER['REMOTE_ADDR'])
 					$ip .= ' <span class="self">(from your IP)</span>';
@@ -479,10 +477,10 @@ HTML;
 		return (new Input($key,function($value){
 			if (!isset(self::$LOG_DESCRIPTION[$value]))
 				return Input::ERROR_INVALID;
-		},array(
+		}, [
 			Input::IS_OPTIONAL => $optional,
 			Input::METHOD_GET => $method_get,
-		)))->out();
+		]))->out();
 	}
 
 	static function diff(string $old, string $new, $type = 'inline', FineDiff\Granularity\Granularity $gran = null):string {

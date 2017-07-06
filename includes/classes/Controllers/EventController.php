@@ -30,7 +30,7 @@ class EventController extends Controller {
 	/** @var Event */
 	private $_event;
 	private function _getEvent($id){
-		$Event = Event::get($id);
+		$Event = Event::find($id);
 		if (empty($Event)){
 			if (POST_REQUEST)
 				Response::fail("Event not found");
@@ -267,7 +267,7 @@ class EventController extends Controller {
 			]
 		]))->out();
 		try {
-			$Image = new ImageProvider($favme, array('fav.me', 'dA'));
+			$Image = new ImageProvider($favme, ['fav.me', 'dA']);
 			$favme = $Image->id;
 		}
 		catch (MismatchedProviderException $e){
@@ -309,6 +309,9 @@ class EventController extends Controller {
 		Response::done();
 	}
 
+	/**
+	 * @return EventEntry
+	 */
 	private function _addSetEntry(){
 		$update = [];
 
@@ -363,7 +366,7 @@ class EventController extends Controller {
 			$update['prev_thumb'] = null;
 		}
 
-		return $update;
+		return new EventEntry($update);
 	}
 
 	public function addEntry($params){
@@ -443,11 +446,11 @@ class EventController extends Controller {
 
 		$this->_entryPermCheck($params);
 
-		$update = $this->_addSetEntry();
+		$entry = $this->_addSetEntry();
 
 		$changes = [];
-		foreach ($update as $k => $v){
-			if ($update[$k] !== $this->_entry->{$k})
+		foreach ($entry->attributes() as $k => $v){
+			if ($v !== $this->_entry->{$k})
 				$changes[$k] = $v;
 		}
 
@@ -455,12 +458,9 @@ class EventController extends Controller {
 			// Do not change edit time if only entry title is changed
 			if (!(count($changes) === 1 && array_key_exists('title', $changes)))
 				$changes['last_edited'] = date('c');
-			if (!$Database->where('entryid', $this->_entry->entryid)->update('events__entries', $changes))
-				Response::fail('Nothing has been changed');
+			$entry->update_attributes($changes);
 		}
 
-		/** @var $entry EventEntry */
-		$entry = $Database->where('entryid', $this->_entry->entryid)->getOne('events__entries');
 		Response::done(['entryhtml' => $entry->toListItemHTML($this->_event, NOWRAP)]);
 	}
 

@@ -32,13 +32,13 @@ use App\Tags;
 	<?=CGUtils::getFullListHTML($Appearances, $GuideOrder)?>
 </div>
 
-<?  $export = array(
+<?  $export = [
 		'EQG' => $EQG,
-	);
+];
 	if (Permission::sufficient('staff'))
-		$export = array_merge($export,array(
-			'TAG_TYPES_ASSOC' => Tags::$TAG_TYPES_ASSOC,
+		$export = array_merge($export, [
+			'TAG_TYPES_ASSOC' => Tags::TAG_TYPES,
 			'MAX_SIZE' => CoreUtils::getMaxUploadSize(),
 			'HEX_COLOR_PATTERN' => $HEX_COLOR_REGEX,
-		));
+		]);
 	echo CoreUtils::exportVars($export);

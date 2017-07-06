@@ -605,7 +605,7 @@ class Browser {
 				$aresult = explode(' ', stristr(str_replace(';', '; ', $this->_agent), 'MSN'));
 				if (isset($aresult[1])){
 					$this->setBrowser(self::BROWSER_MSN);
-					$this->setVersion(str_replace(array('(', ')', ';'), '', $aresult[1]));
+					$this->setVersion(str_replace(['(', ')', ';'], '', $aresult[1]));
 
 					return true;
 				}
@@ -613,7 +613,7 @@ class Browser {
 			$aresult = explode(' ', stristr(str_replace(';', '; ', $this->_agent), 'msie'));
 			if (isset($aresult[1])){
 				$this->setBrowser(self::BROWSER_IE);
-				$this->setVersion(str_replace(array('(', ')', ';'), '', $aresult[1]));
+				$this->setVersion(str_replace(['(', ')', ';'], '', $aresult[1]));
 				if (stripos($this->_agent, 'IEMobile') !== false){
 					$this->setBrowser(self::BROWSER_IEMOBILE);
 					$this->setMobile(true);
@@ -627,7 +627,7 @@ class Browser {
 			$result = explode('rv:', $this->_agent);
 			if (isset($result[1])){
 				$this->setVersion(preg_replace('/[^0-9.]+/', '', $result[1]));
-				$this->_agent = str_replace(array("Mozilla", "Gecko"), "MSIE", $this->_agent);
+				$this->_agent = str_replace(["Mozilla", "Gecko"], "MSIE", $this->_agent);
 			}
 		} // Test for Pocket IE
 		else if (stripos($this->_agent, 'mspie') !== false || stripos($this->_agent, 'pocket') !== false){
@@ -778,7 +778,7 @@ class Browser {
 			$aresult = explode('/', stristr($this->_agent, 'NetPositive'));
 			if (isset($aresult[1])){
 				$aversion = explode(' ', $aresult[1]);
-				$this->setVersion(str_replace(array('(', ')', ';'), '', $aversion[0]));
+				$this->setVersion(str_replace(['(', ')', ';'], '', $aversion[0]));
 				$this->setBrowser(self::BROWSER_NETPOSITIVE);
 
 				return true;
@@ -1180,7 +1180,7 @@ class Browser {
 	 * @return boolean True if the browser is iPhone otherwise false
 	 */
 	protected function checkBrowserAppleMobile(){
-		$version = array();
+		$version = [];
 		if (preg_match('~CriOS/([\d\.]+)~', $this->_agent, $version)){
 			$this->setVersion($version[1]);
 			$this->setBrowser(self::BROWSER_CHROME);
@@ -1260,7 +1260,7 @@ class Browser {
 	 */
 	protected function checkBrowserVivaldi(){
 		if (stripos($this->_agent, 'Vivaldi') !== false){
-			$_match = array();
+			$_match = [];
 			if (preg_match('/Vivaldi\/([\d.]+)/', $this->_agent, $_match)){
 				$this->setVersion($_match[1]);
 			}

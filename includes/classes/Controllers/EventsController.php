@@ -13,18 +13,18 @@ class EventsController extends Controller {
 	function list(){
 		global $Database;
 
-		$Pagination = new Pagination("events", 20, $Database->count('events'));
+		$Pagination = new Pagination("events", 20, Event::count());
 
 		CoreUtils::fixPath("/events/{$Pagination->page}");
 		$heading = "Events";
 		$title = "Page $Pagination->page - $heading";
 
-		$Events = Events::get($Pagination->getLimit());
+		$Events = Event::find('all', $Pagination->getAssocLimit());
 
 		if (isset($_GET['js']))
 			$Pagination->respond(Events::getListHTML($Events, NOWRAP), '#event-list');
 
-		$js = array('paginate'/*, $this->do*/);
+		$js = ['paginate'/*, $this->do*/];
 		if (Permission::sufficient('staff'))
 			$js[] = "{$this->do}-manage";
 

@@ -2,29 +2,26 @@
 
 namespace App;
 
+use App\Models\GlobalSetting;
+
 class GlobalSettings {
-	protected static
-		$_db = 'global_settings',
-		$_defaults = array(
-			'reservation_rules' => '',
-			'about_reservations' => '',
-		);
+	const DEFAULTS = [
+		'reservation_rules' => '',
+		'about_reservations' => '',
+	];
 
 	/**
 	 * Gets a global cofiguration item's value
 	 *
 	 * @param string $key
-	 * @param mixed  $default
 	 *
 	 * @return mixed
 	 */
-	static function get(string $key, $default = false){
+	static function get(string $key){
 		global $Database;
 
-		if (isset(static::$_defaults[$key]))
-			$default = static::$_defaults[$key];
-		$q = $Database->where('key', $key)->getOne(static::$_db,'value');
-		return isset($q['value']) ? $q['value'] : $default;
+		$q = GlobalSetting::find($key);
+		return isset($q->value) ? $q->value : static::DEFAULTS[$key];
 	}
 
 	/**
@@ -38,18 +35,21 @@ class GlobalSettings {
 	static function set(string $key, $value):bool {
 		global $Database;
 
-		if (!isset(static::$_defaults[$key]))
+		if (!isset(static::DEFAULTS[$key]))
 			Response::fail("Key $key is not allowed");
-		$default = static::$_defaults[$key];
+		$default = static::DEFAULTS[$key];
 
-		if ($Database->where('key', $key)->has(static::$_db)){
-			$Database->where('key', $key);
+		if (GlobalSetting::exists($key)){
+			$setting = GlobalSetting::find($key);
 			if ($value == $default)
-				$Database->delete(static::$_db);
-			else return $Database->update(static::$_db, array('value' => $value));
+				return $setting->delete();
+			else return $setting->update_attributes(['value' => $value]);
 		}
 		else if ($value != $default)
-			return $Database->insert(static::$_db, array('key' => $key, 'value' => $value));
+			return (new GlobalSetting([
+				'key' => $key,
+				'value' => $value,
+			]))->save();
 		else return true;
 	}
 
@@ -69,7 +69,7 @@ class GlobalSettings {
 		switch ($key){
 			case "reservation_rules":
 			case "about_reservations":
-				$value = CoreUtils::sanitizeHtml($value, $key === 'reservation_rules'? array('li', 'ol') : array('p'));
+				$value = CoreUtils::sanitizeHtml($value, $key === 'reservation_rules'? ['li', 'ol'] : ['p']);
 			break;
 		}
 

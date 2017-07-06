@@ -1,12 +1,15 @@
 <div id="content">
 <?php
-use App\Auth;
-use App\CoreUtils;
-use App\Models\User;
-use App\Permission;
-use App\Time;
-use App\UserPrefs;
-use App\Users;
+use App\{
+	Auth,
+	CoreUtils,
+	Models\Logs\Banish,
+	Models\User,
+	Permission,
+	Time,
+	UserPrefs,
+	Users
+};
 
 /** @var $User User */
 /** @var $sameUser bool */
@@ -20,13 +23,13 @@ if (isset($MSG)){
 		echo "<p>$SubMSG</p>";
 }
 else {
-	$vectorapp = UserPrefs::get('p_vectorapp', $User->id);
-	$discordmember = $Database->disableAutoClass()->where('userid', $User->id)->getOne('discord-members',"id, coalesce(nick,username) as displayname");
+	$vectorapp = UserPrefs::get('p_vectorapp', $User);
+	$discordmember = $User->discord_member;
 ?>
 	<div class="briefing">
 		<?=$User->getAvatarWrap()?>
 		<div class="title">
-			<h1><span class="username"><?=$User->name?></span><a class="da" title="Visit DeviantArt profile" href="<?=$User->getDALink(User::LINKFORMAT_URL)?>"><?=str_replace(' fill="#FFF"','',file_get_contents(APPATH.'img/da-logo.svg'))?></a><?=$User->getVectorAppIcon()?><?=!empty($discordmember)?"<img class='discord-logo' src='/img/discord-logo.svg' alt='Discord logo' title='This user is a member of our Discord server as @".CoreUtils::escapeHTML($discordmember['displayname'])."'>":''?></h1>
+			<h1><span class="username"><?=$User->name?></span><a class="da" title="Visit DeviantArt profile" href="<?=$User->getDALink(User::LINKFORMAT_URL)?>"><?=str_replace(' fill="#FFF"','',file_get_contents(APPATH.'img/da-logo.svg'))?></a><?=$User->getVectorAppIcon()?><?=!empty($discordmember)?"<img class='discord-logo' src='/img/discord-logo.svg' alt='Discord logo' title='This user is a member of our Discord server as @".CoreUtils::escapeHTML($discordmember->name)."'>":''?></h1>
 			<p><?php
 echo "<span class='rolelabel'>{$User->rolelabel}</span>";
 if ($canEdit){
@@ -45,11 +48,11 @@ if (Permission::sufficient('developer'))
 	<div class="details">
 <?php
 if ($sameUser || Permission::sufficient('staff')){
-	$OldNames = $Database->where('id', $User->id)->orderBy('entryid',OLDEST_FIRST)->get('log__da_namechange',null,'old');
+	$OldNames = $User->name_changes;
 	if (!empty($OldNames)){
-		$PrevNames = array();
-		foreach ($OldNames as $Post)
-			$PrevNames[] = $Post['old']; ?>
+		$PrevNames = [];
+		foreach ($OldNames as $entry)
+			$PrevNames[] = $entry->old; ?>
 		<section class="old-names">
 			<h2><?=$sameUser? Users::PROFILE_SECTION_PRIVACY_LEVEL['staff']:''?>Previous names <span class="typcn typcn-info color-blue cursor-help" title="Upper/lower-case letters may not match"></span></h2>
 			<div><?=implode(', ',$PrevNames)?></div>
@@ -63,29 +66,21 @@ if ($isUserMember)
 	echo Users::getPersonalColorGuideHTML($User, $sameUser);
 
 if (Auth::$signed_in)
-	echo Users::getPendingReservationsHTML($User->id, $sameUser, $isUserMember); ?>
-<? if ($isUserMember){ ?>
-<section class="awaiting-approval"></section>
-<? } ?>
+	echo $User->getPendingReservationsHTML($sameUser, $isUserMember);
+if ($isUserMember)
+	echo '<section class="awaiting-approval"></section>'; ?>
 		<section class="bans">
 			<h2><?=$sameUser? Users::PROFILE_SECTION_PRIVACY_LEVEL['public']:''?>Banishment history</h2>
 			<ul><?php
-$Actions = array('Banish','Un-banish');
-$Banishes = $Database
-	->where('target', $User->id)
-	->join('log l',"l.reftype = 'banish' AND l.refid = b.entryid")
-	->orderBy('l.timestamp')
-	->get('log__banish b',null,"b.reason, l.initiator, l.timestamp, 0 as action");
+$Actions = ['Banish', 'Un-banish'];
+$Banishes = $User->banishments;
 if (!empty($Banishes)){
-	$Unbanishes = $Database
-		->where('target', $User->id)
-		->join('log l',"l.reftype = 'un-banish' AND l.refid = b.entryid")
-		->get('log__un-banish b',null,"b.reason, l.initiator, l.timestamp, 1 as action");
+	$Unbanishes = $User->unbanishments;
 	if (!empty($Unbanishes)){
 		$Banishes = array_merge($Banishes,$Unbanishes);
-		usort($Banishes, function($a, $b){
-			$a = strtotime($a['timestamp']);
-			$b = strtotime($b['timestamp']);
+		usort($Banishes, function(Banish $a, Banish $b){
+			$a = strtotime($a->log['timestamp']);
+			$b = strtotime($b->log['timestamp']);
 			return $a > $b ? -1 : ($a < $b ? 1 : 0);
 		});
 		unset($Unbanishes);
@@ -94,7 +89,7 @@ if (!empty($Banishes)){
 	$displayInitiator = Permission::sufficient('staff');
 
 	foreach ($Banishes as $b){
-		$initiator = $displayInitiator ? Users::get($b['initiator']) : null;
+		$initiator = $displayInitiator ? User::find($b['initiator']) : null;
 		$b['reason'] = htmlspecialchars($b['reason']);
 		echo "<li class=".strtolower($Actions[$b['action']])."><blockquote>{$b['reason']}</blockquote> - ".(isset($initiator)?$initiator->getProfileLink().' ':'').Time::tag($b['timestamp'])."</li>";
 	}
@@ -109,7 +104,7 @@ if (!empty($Banishes)){
 			<form action="/preference/set/cg_itemsperpage">
 				<label>
 					<span>Appearances per page</span>
-					<input type="number" min="7" max="20" name="value" value="<?=UserPrefs::get('cg_itemsperpage', $User->id)?>" step="1"<?=!$sameUser?' disabled':''?>>
+					<input type="number" min="7" max="20" name="value" value="<?=UserPrefs::get('cg_itemsperpage', $User)?>" step="1"<?=!$sameUser?' disabled':''?>>
 <?php   if ($sameUser){ ?>
 					<button class="save typcn typcn-tick green" disabled>Save</button>
 <?php   } ?>
@@ -118,7 +113,7 @@ if (!empty($Banishes)){
 <?php   if (Permission::sufficient('staff', $User->role)){ ?>
 			<form action="/preference/set/cg_hidesynon">
 				<label>
-					<input type="checkbox" name="value" value="1"<?=UserPrefs::get('cg_hidesynon', $User->id)?' checked':''?> <?=!$sameUser?' disabled':''?>>
+					<input type="checkbox" name="value" value="1"<?=UserPrefs::get('cg_hidesynon', $User)?' checked':''?> <?=!$sameUser?' disabled':''?>>
 					<span>Hide synonym relations</span>
 <?php       if ($sameUser){ ?>
 					<button class="save typcn typcn-tick green" disabled>Save</button>
@@ -128,7 +123,7 @@ if (!empty($Banishes)){
 <?php   } ?>
 			<form action="/preference/set/cg_hideclrinfo">
 				<label>
-					<input type="checkbox" name="value" value="1"<?=UserPrefs::get('cg_hideclrinfo', $User->id)?' checked':''?> <?=!$sameUser?' disabled':''?>>
+					<input type="checkbox" name="value" value="1"<?=UserPrefs::get('cg_hideclrinfo', $User)?' checked':''?> <?=!$sameUser?' disabled':''?>>
 					<span>Hide color details on appearance pages</span>
 <?php   if ($sameUser){ ?>
 					<button class="save typcn typcn-tick green" disabled>Save</button>
@@ -137,7 +132,7 @@ if (!empty($Banishes)){
 			</form>
 			<form action="/preference/set/cg_fulllstprev">
 				<label>
-					<input type="checkbox" name="value" value="1"<?=UserPrefs::get('cg_fulllstprev', $User->id)?' checked':''?> <?=!$sameUser?' disabled':''?>>
+					<input type="checkbox" name="value" value="1"<?=UserPrefs::get('cg_fulllstprev', $User)?' checked':''?> <?=!$sameUser?' disabled':''?>>
 					<span>Display previews and alternate names on the full list</span>
 <?php   if ($sameUser){ ?>
 					<button class="save typcn typcn-tick green" disabled>Save</button>
@@ -149,7 +144,7 @@ if (!empty($Banishes)){
 			<h2><?=$sameUser? Users::PROFILE_SECTION_PRIVACY_LEVEL['staff']:''?>Episode pages</h2>
 			<form action="/preference/set/ep_noappprev">
 				<label>
-					<input type="checkbox" name="value" value="1"<?=UserPrefs::get('ep_noappprev', $User->id)?' checked':''?> <?=!$sameUser?' disabled':''?>>
+					<input type="checkbox" name="value" value="1"<?=UserPrefs::get('ep_noappprev', $User)?' checked':''?> <?=!$sameUser?' disabled':''?>>
 					<span>Hide preview squares in front of related appearance names</span>
 <?php   if ($sameUser){ ?>
 					<button class="save typcn typcn-tick green" disabled>Save</button>
@@ -179,7 +174,7 @@ if (!empty($Banishes)){
 <?php   if (!$User->isDiscordMember()){ ?>
 			<form action="/preference/set/p_hidediscord">
 				<label>
-					<input type="checkbox" name="value" value="1"<?=UserPrefs::get('p_hidediscord', $User->id)?' checked':''?> <?=!$sameUser?' disabled':''?>>
+					<input type="checkbox" name="value" value="1"<?=UserPrefs::get('p_hidediscord', $User)?' checked':''?> <?=!$sameUser?' disabled':''?>>
 					<span>Hide Discord server link from the sidebar</span>
 <?php       if ($sameUser){ ?>
 					<button class="save typcn typcn-tick green" disabled>Save</button>
@@ -189,7 +184,7 @@ if (!empty($Banishes)){
 <?php   } ?>
 			<form action="/preference/set/p_hidepcg">
 				<label>
-					<input type="checkbox" name="value" value="1"<?=UserPrefs::get('p_hidepcg', $User->id)?' checked':''?> <?=!$sameUser?' disabled':''?>>
+					<input type="checkbox" name="value" value="1"<?=UserPrefs::get('p_hidepcg', $User)?' checked':''?> <?=!$sameUser?' disabled':''?>>
 					<span>Hide my Personal Color Guide from the public</span>
 <?php   if ($sameUser){ ?>
 					<button class="save typcn typcn-tick green" disabled>Save</button>
@@ -199,12 +194,12 @@ if (!empty($Banishes)){
 		</section>
 		<section class="sessions">
 			<h2><?=$sameUser? Users::PROFILE_SECTION_PRIVACY_LEVEL['staff']:''?>Sessions</h2>
-<?php   if (isset($CurrentSession) || !empty($Sessions)){ ?>
+<?php   if (!empty($Sessions)){ ?>
 			<p>Below is a list of all the browsers <?=$sameUser?"you've":'this user has'?> logged in from.</p>
 			<ul class="session-list"><?php
-				if (isset($CurrentSession)) Users::renderSessionLi($CurrentSession,CURRENT);
 				if (!empty($Sessions)){
-					foreach ($Sessions as $s) Users::renderSessionLi($s);
+					foreach ($Sessions as $s)
+						Users::renderSessionLi($s, $s->id === ($CurrentSessionID ?? null));
 				}
 			?></ul>
 			<p><button class="typcn typcn-arrow-back yellow" id="signout-everywhere">Sign out everywhere</button></p>
@@ -228,7 +223,7 @@ if (!empty($Banishes)){
 
 <?php
 if ($canEdit){
-	$ROLES = array();
+	$ROLES = [];
 	if ($canEdit){
 		$_Roles = Permission::ROLES_ASSOC;
 		unset($_Roles['guest']);
@@ -239,7 +234,7 @@ if ($canEdit){
 			$ROLES[$name] = $label;
 		}
 	}
-	echo CoreUtils::exportVars(array(
+	echo CoreUtils::exportVars([
 		'ROLES' => $ROLES,
-	));
+	]);
 } ?>

@@ -5,7 +5,7 @@ use App\CachedFile;
 use App\CoreUtils;
 use App\CSRFProtection;
 use App\HTTP;
-use App\JSON;
+
 use App\Response;
 use App\Statistics;
 use App\Time;
@@ -14,11 +14,11 @@ class AboutController extends Controller {
 	public $do = 'about';
 
 	function index(){
-		CoreUtils::loadPage(array(
+		CoreUtils::loadPage([
 			'title' => 'About',
 			'do-css',
-			'js' => array('Chart', $this->do),
-		), $this);
+			'js' => ['Chart', $this->do],
+		], $this);
 	}
 
 	const
@@ -38,7 +38,7 @@ class AboutController extends Controller {
 		if (!$cache->expired())
 			Response::done([ 'data' => $cache->read() ]);
 
-		$Data = array('datasets' => array(), 'timestamp' => date('c'));
+		$Data = ['datasets' => [], 'timestamp' => date('c')];
 		$LabelFormat = 'YYYY-MM-DD';
 
 		switch ($stat){
@@ -67,13 +67,13 @@ class AboutController extends Controller {
 					ORDER BY MIN(posted)";
 				$RequestData = $Database->rawQuery(str_replace('table_name', 'requests', $query));
 				if (!empty($RequestData)){
-					$Dataset = array('label' => 'Requests', 'clrkey' => 0);
+					$Dataset = ['label' => 'Requests', 'clrkey' => 0];
 					Statistics::processUsageData($RequestData, $Dataset, $Labels);
 					$Data['datasets'][] = $Dataset;
 				}
 				$ReservationData = $Database->rawQuery(str_replace('table_name', 'reservations', $query));
 				if (!empty($ReservationData)){
-					$Dataset = array('label' => 'Reservations', 'clrkey' => 1);
+					$Dataset = ['label' => 'Reservations', 'clrkey' => 1];
 					Statistics::processUsageData($ReservationData, $Dataset, $Labels);
 					$Data['datasets'][] = $Dataset;
 				}
@@ -98,7 +98,7 @@ class AboutController extends Controller {
 					ORDER BY MIN(timestamp)"
 				);
 				if (!empty($Approvals)){
-					$Dataset = array('label' => 'Approved posts');
+					$Dataset = ['label' => 'Approved posts'];
 					Statistics::processUsageData($Approvals, $Dataset, $Labels);
 					$Data['datasets'][] = $Dataset;
 				}
@@ -127,7 +127,7 @@ class AboutController extends Controller {
 					ORDER BY MIN(timestamp)"
 				);
 				if (!empty($Approvals)){
-					$Dataset = array('label' => 'Approved posts', 'clrkey' => 0);
+					$Dataset = ['label' => 'Approved posts', 'clrkey' => 0];
 					foreach ($Approvals as $i => $_){
 						if ($i < 1)
 							continue;
@@ -147,7 +147,7 @@ class AboutController extends Controller {
 					ORDER BY MIN(posted)"
 				);
 				if (!empty($Requests)){
-					$Dataset = array('label' => 'Requests', 'clrkey' => 1);
+					$Dataset = ['label' => 'Requests', 'clrkey' => 1];
 					foreach ($Requests as $i => $_){
 						if ($i < 1)
 							continue;
@@ -172,7 +172,7 @@ class AboutController extends Controller {
 					ORDER BY MIN(posted)"
 				);
 				if (!empty($Reservations)){
-					$Dataset = array('label' => 'Reservations', 'clrkey' => 2);
+					$Dataset = ['label' => 'Reservations', 'clrkey' => 2];
 					foreach ($Reservations as $i => $_){
 						if ($i < 1)
 							continue;
@@ -195,6 +195,6 @@ class AboutController extends Controller {
 
 		$cache->update($Data);
 
-		Response::done(array('data' => $Data));
+		Response::done(['data' => $Data]);
 	}
 }

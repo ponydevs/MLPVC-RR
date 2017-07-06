@@ -2,35 +2,41 @@
 
 namespace App\Models;
 
+use ActiveRecord\Model;
 use App\Auth;
 use App\CoreUtils;
 use App\DeviantArt;
 use App\Permission;
 use App\RegExp;
 use App\Time;
-use App\Users;
 
-class EventEntry extends AbstractFillable {
-	/** @var int */
-	public
-		$entryid,
-		$eventid,
-		$score;
-	/** @var string */
-	public
-		$prev_src,
-		$prev_full,
-		$prev_thumb,
-		$sub_prov,
-		$sub_id,
-		$submitted_by,
-		$submitted_at,
-		$title,
-		$last_edited;
-	/** @param array|object */
-	public function __construct($iter = null){
-		parent::__construct($this, $iter);
-	}
+/**
+ * @property int    $entryid
+ * @property int    $eventid
+ * @property int    $score
+ * @property string $prev_src
+ * @property string $prev_full
+ * @property string $prev_thumb
+ * @property string $sub_prov
+ * @property string $sub_id
+ * @property string $submitted_by
+ * @property string $submitted_at
+ * @property string $title
+ * @property string $last_edited
+ * @property User   $submitter
+ */
+class EventEntry extends Model {
+	static $table_name = 'events__entries';
+
+	static $primary_key = 'entry_id';
+
+	static $belongs_to = [
+		['submitter', 'class' => 'User', 'foreign_key' => 'submitted_by'],
+		['event', 'foreign_key' => 'eventid'],
+	];
+	static $has_many = [
+		['votes', 'class' => 'EventEntryVote', 'foreign_key' => 'entryid'],
+	];
 
 	public function updateScore(){
 		global $Database;
@@ -52,10 +58,7 @@ class EventEntry extends AbstractFillable {
 	}
 
 	public function getUserVote(User $user):?EventEntryVote {
-		global $Database;
-
-		/** @noinspection PhpIncompatibleReturnTypeInspection */
-		return $Database->where('entryid', $this->entryid)->where('userid', $user->id)->getOne('events__entries__votes');
+		return EventEntryVote::find_by_entry_id_and_user_id($this->entryid, $user->id);
 	}
 
 	public function getFormattedScore(){
@@ -103,7 +106,7 @@ HTML;
 			? self::_getPreviewDiv($this->prev_full, $this->prev_thumb, $filetype)
 			: '';
 		$title = CoreUtils::escapeHTML($this->title);
-		$submitter = Users::get($this->submitted_by);
+		$submitter = $this->submitter;
 		$submitter_link = $submitter->getProfileLink();
 		$submitter_vapp = $submitter->getVectorAppIcon();
 		if (!empty($submitter_vapp))

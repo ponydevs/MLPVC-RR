@@ -1,6 +1,7 @@
 <?php
 
 namespace App;
+use ActiveRecord\SQLBuilder;
 
 /**
  * Class for writing out complex pagination HTML
@@ -24,7 +25,7 @@ class Pagination {
 	function __construct($basePath, $ItemsPerPage, $EntryCount = null, $wrap = true, $context = 2){
 		global $data;
 
-		foreach (array('basePath','ItemsPerPage') as $var)
+		foreach (['basePath', 'ItemsPerPage'] as $var)
 			if (!isset($$var))
 				trigger_error("Missing variable \$$var", E_USER_ERROR);
 
@@ -87,7 +88,7 @@ class Pagination {
 			throw new \Exception('$this->maxPages must be defined');
 
 		if (!($this->page === 1 && $this->maxPages === 1)){
-			$Items = array();
+			$Items = [];
 			$previousPage = 0;
 			$nr = 0;
 			$currentIndex = 0;
@@ -131,13 +132,13 @@ class Pagination {
 	 */
 	function respond($output, $update){
 		$RQURI = rtrim(preg_replace(new RegExp('js=true(?:&|$)'),'',$_SERVER['REQUEST_URI']),'?');
-		Response::done(array(
+		Response::done([
 			'output' => $output,
 			'update' => $update,
 			'pagination' => $this->HTML,
 			'page' => $this->page,
 			'request_uri' => $RQURI,
-		));
+		]);
 	}
 
 	/**
@@ -147,7 +148,28 @@ class Pagination {
 	 */
 	function getLimit(){
 		$arr = $this->toElastic();
-		return array($arr['from'], $arr['size']);
+		return [$arr['from'], $arr['size']];
+	}
+
+	/**
+	 * Creates the associative array that can be used ActiveRecord's find() method
+	 *
+	 * @return array
+	 */
+	function getAssocLimit(){
+		$arr = $this->toElastic();
+		return [ 'offset' => $arr['from'], 'limit' => $arr['size'] ];
+	}
+
+	/**
+	 * Apply the limit and offset attributes on an SQLBuilder
+	 *
+	 * @param SQLBuilder $query
+	 */
+	function applyAssocLimit(SQLBuilder &$query){
+		$assoc = $this->getAssocLimit();
+		foreach ($assoc as $k => $v)
+			$query->{$k} = $v;
 	}
 
 	/**

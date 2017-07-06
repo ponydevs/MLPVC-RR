@@ -4,7 +4,6 @@ namespace App\Controllers;
 use App\CoreUtils;
 use App\Models\Episode;
 use App\Episodes;
-use App\RegExp;
 
 class MovieController extends Controller {
 	function pageID($params){
@@ -30,7 +29,6 @@ class MovieController extends Controller {
 		if (empty($CurrtentEpisode))
 			CoreUtils::notFound();
 
-		$CurrtentEpisode = $CurrtentEpisode->addAiringData();
 		Episodes::loadPage($CurrtentEpisode);
 	}
 }

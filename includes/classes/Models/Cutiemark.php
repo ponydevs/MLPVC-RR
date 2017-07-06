@@ -1,22 +1,21 @@
 <?php
 
 namespace App\Models;
+
+use ActiveRecord\Model;
 use App\DeviantArt;
 use App\Exceptions\CURLRequestException;
 
-class Cutiemark extends AbstractFillable {
-	/** @var int */
-	public $cmid, $ponyid;
-	/** @var string */
-	public $facing, $favme, $preview, $preview_src;
-	/** @var int */
-	public $favme_rotation;
-
-	/** @param array|object */
-	public function __construct($iter = null){
-		parent::__construct($this, $iter);
-	}
-
+/**
+ * @property int $cmid
+ * @property int $ponyid
+ * @property int $favme_rotation
+ * @property string $facing
+ * @property string $favme
+ * @property string $preview
+ * @property string $preview_src
+ */
+class Cutiemark extends Model {
 	/** @return string|null */
 	function getPreviewURL():?string {
 		try {

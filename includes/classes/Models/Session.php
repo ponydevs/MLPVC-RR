@@ -2,27 +2,29 @@
 
 namespace App\Models;
 
-class Session extends AbstractFillable {
-	/** @var int */
-	public
-		$id;
-	/** @var string */
-	public
-		$user,
-		$platform,
-		$browser_name,
-		$browser_ver,
-		$user_agent,
-		$token,
-		$access,
-		$refresh,
-		$expires,
-		$created,
-		$lastvisit,
-		$scope;
+use ActiveRecord\Model;
 
-	/** @param array|object */
-	public function __construct($iter = null){
-		parent::__construct($this, $iter);
-	}
+/**
+ * @property int    $id
+ * @property string $user_id
+ * @property string $platform
+ * @property string $browser_name
+ * @property string $browser_ver
+ * @property string $user_agent
+ * @property string $token
+ * @property string $access
+ * @property string $refresh
+ * @property string $expires
+ * @property string $created
+ * @property string $lastvisit
+ * @property string $scope
+ * @property User   $user
+ * @method static Session find_by_token(string $token)
+ * @method static Session find_by_refresh(string $code)
+ */
+class Session extends Model {
+	static $belongs_to = [
+		['user', 'readonly' => true],
+	];
 }
+

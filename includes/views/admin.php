@@ -1,7 +1,6 @@
 <?php
 use App\CoreUtils;
 use App\Permission;
-use App\Posts;
 /** @var $title string */ ?>
 <div id="content">
 	<h1><?=$title?></h1>

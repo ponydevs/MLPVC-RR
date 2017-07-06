@@ -20,7 +20,7 @@ class Image {
 
 		if ($width + $height === 0) Response::fail('The uploaded file is not an image');
 
-		return array($width, $height);
+		return [$width, $height];
 	}
 
 	/**
@@ -208,7 +208,7 @@ class Image {
 
 		imagettftext($image, $fontsize, 0, $x, $y + $yOffset, $fontcolor, $FontFile, $text);
 
-		return array($x, $y);
+		return [$x, $y];
 	}
 
 
@@ -231,12 +231,12 @@ class Image {
 		*/
 		$box = imagettfbbox($fontsize, 0, $fontfile, $text);
 
-		$return =  array(
-			'bottom left' => array('x' => $box[0], 'y' => $box[1]),
-			'bottom right' => array('x' => $box[2], 'y' => $box[3]),
-			'top right' => array('x' => $box[4], 'y' => $box[5]),
-			'top left' => array('x' => $box[6], 'y' => $box[7]),
-		);
+		$return =  [
+			'bottom left' => ['x' => $box[0], 'y' => $box[1]],
+			'bottom right' => ['x' => $box[2], 'y' => $box[3]],
+			'top right' => ['x' => $box[4], 'y' => $box[5]],
+			'top left' => ['x' => $box[6], 'y' => $box[7]],
+		];
 		$return['width'] = abs($return['bottom right']['x'] - $return['top left']['x']);
 		$return['height'] = abs($return['bottom right']['y'] - $return['top left']['y']);
 

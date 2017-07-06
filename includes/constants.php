@@ -40,7 +40,6 @@ define('NOWRAP', false);
 define('WRAP', !NOWRAP);
 define('ONLY_REQUESTS', 1); // Posts::Get
 define('ONLY_RESERVATIONS', 2); // Posts::Get
-define('CURRENT',true); // User::RenderSessionLi
 define('RETURN_ARRANGED', true); // Posts::GetRequestsSection & Posts::GetReservationsSection
 define('IS_REQUEST', true); // Posts::GetRequestsSection
 define('WITH_GIT_INFO', true); // CoreUtils::GetFooter

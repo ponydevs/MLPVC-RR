@@ -87,7 +87,7 @@ CREATE TABLE appearances (
     ishuman boolean,
     added timestamp with time zone DEFAULT now(),
     private boolean DEFAULT false NOT NULL,
-    owner uuid,
+    owned_by uuid,
     last_cleared timestamp with time zone DEFAULT now()
 );
 
@@ -344,8 +344,8 @@ ALTER TABLE events__entries OWNER TO "mlpvc-rr";
 --
 
 CREATE TABLE events__entries__votes (
-    entryid integer NOT NULL,
-    userid uuid NOT NULL,
+    entry_id integer NOT NULL,
+    user_id uuid NOT NULL,
     value smallint NOT NULL,
     cast_at timestamp with time zone DEFAULT now() NOT NULL
 );
@@ -487,7 +487,7 @@ ALTER SEQUENCE log__appearances_entryid_seq OWNED BY log__appearances.entryid;
 
 CREATE TABLE log__banish (
     entryid integer NOT NULL,
-    target uuid NOT NULL,
+    target_id uuid NOT NULL,
     reason character varying(255) NOT NULL
 );
 
@@ -1140,7 +1140,7 @@ ALTER SEQUENCE log__rolechange_entryid_seq OWNED BY log__rolechange.entryid;
 
 CREATE TABLE "log__un-banish" (
     entryid integer NOT NULL,
-    target uuid NOT NULL,
+    target_id uuid NOT NULL,
     reason character varying(255) NOT NULL
 );
 
@@ -1318,36 +1318,6 @@ ALTER SEQUENCE notifications_id_seq OWNED BY notifications.id;
 
 
 --
--- Name: users; Type: TABLE; Schema: public; Owner: mlpvc-rr
---
-
-CREATE TABLE users (
-    id uuid NOT NULL,
-    name citext NOT NULL,
-    role character varying(10) DEFAULT 'user'::character varying NOT NULL,
-    avatar_url character varying(255) NOT NULL,
-    signup_date timestamp with time zone DEFAULT now() NOT NULL
-);
-
-
-ALTER TABLE users OWNER TO "mlpvc-rr";
-
---
--- Name: personal_cg_appearances; Type: VIEW; Schema: public; Owner: mlpvc-rr
---
-
-CREATE VIEW personal_cg_appearances AS
- SELECT u.name AS owner,
-    p.label,
-    ((('https://mlpvc-rr.ml/@'::text || (u.name)::text) || '/cg/v/'::text) || p.id) AS link
-   FROM (appearances p
-     LEFT JOIN users u ON ((p.owner = u.id)))
-  WHERE (p.owner IS NOT NULL);
-
-
-ALTER TABLE personal_cg_appearances OWNER TO "mlpvc-rr";
-
---
 -- Name: requests; Type: TABLE; Schema: public; Owner: mlpvc-rr
 --
 
@@ -1442,7 +1412,7 @@ ALTER SEQUENCE reservations_id_seq OWNED BY reservations.id;
 
 CREATE TABLE sessions (
     id integer NOT NULL,
-    "user" uuid NOT NULL,
+    user_id uuid NOT NULL,
     platform character varying(50) NOT NULL,
     browser_name character varying(50),
     browser_ver character varying(50),
@@ -1530,6 +1500,21 @@ ALTER SEQUENCE tags_tid_seq OWNED BY tags.tid;
 
 
 --
+-- Name: users; Type: TABLE; Schema: public; Owner: mlpvc-rr
+--
+
+CREATE TABLE users (
+    id uuid NOT NULL,
+    name citext NOT NULL,
+    role character varying(10) DEFAULT 'user'::character varying NOT NULL,
+    avatar_url character varying(255) NOT NULL,
+    signup_date timestamp with time zone DEFAULT now() NOT NULL
+);
+
+
+ALTER TABLE users OWNER TO "mlpvc-rr";
+
+--
 -- Name: unread_notifications; Type: VIEW; Schema: public; Owner: mlpvc-rr
 --
 
@@ -1587,7 +1572,7 @@ ALTER SEQUENCE usefullinks_id_seq OWNED BY usefullinks.id;
 --
 
 CREATE TABLE user_prefs (
-    "user" uuid NOT NULL,
+    user_id uuid NOT NULL,
     key character varying(50) NOT NULL,
     value text
 );
@@ -1949,7 +1934,7 @@ ALTER TABLE ONLY events__entries
 --
 
 ALTER TABLE ONLY events__entries__votes
-    ADD CONSTRAINT events__votes_entryid_userid PRIMARY KEY (entryid, userid);
+    ADD CONSTRAINT events__votes_entryid_userid PRIMARY KEY (entry_id, user_id);
 
 
 --
@@ -2213,7 +2198,7 @@ ALTER TABLE ONLY usefullinks
 --
 
 ALTER TABLE ONLY user_prefs
-    ADD CONSTRAINT user_prefs_user_key PRIMARY KEY ("user", key);
+    ADD CONSTRAINT user_prefs_user_key PRIMARY KEY (user_id, key);
 
 
 --
@@ -2305,7 +2290,7 @@ CREATE INDEX events_added_by ON events USING btree (added_by);
 -- Name: log__banish_target; Type: INDEX; Schema: public; Owner: mlpvc-rr
 --
 
-CREATE INDEX log__banish_target ON log__banish USING btree (target);
+CREATE INDEX log__banish_target ON log__banish USING btree (target_id);
 
 
 --
@@ -2333,7 +2318,7 @@ CREATE INDEX log__rolechange_target ON log__rolechange USING btree (target);
 -- Name: log__un-banish_target; Type: INDEX; Schema: public; Owner: mlpvc-rr
 --
 
-CREATE INDEX "log__un-banish_target" ON "log__un-banish" USING btree (target);
+CREATE INDEX "log__un-banish_target" ON "log__un-banish" USING btree (target_id);
 
 
 --
@@ -2389,7 +2374,7 @@ CREATE INDEX reservations_season_episode ON reservations USING btree (season, ep
 -- Name: sessions_user; Type: INDEX; Schema: public; Owner: mlpvc-rr
 --
 
-CREATE INDEX sessions_user ON sessions USING btree ("user");
+CREATE INDEX sessions_user ON sessions USING btree (user_id);
 
 
 --
@@ -2427,7 +2412,7 @@ ALTER TABLE ONLY appearance_relations
 --
 
 ALTER TABLE ONLY appearances
-    ADD CONSTRAINT appearances_owner_fkey FOREIGN KEY (owner) REFERENCES users(id) ON UPDATE CASCADE ON DELETE CASCADE;
+    ADD CONSTRAINT appearances_owner_fkey FOREIGN KEY (owned_by) REFERENCES users(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
@@ -2499,7 +2484,7 @@ ALTER TABLE ONLY episodes
 --
 
 ALTER TABLE ONLY events__entries__votes
-    ADD CONSTRAINT events__entries__votes_entryid_fkey FOREIGN KEY (entryid) REFERENCES events__entries(entryid) ON UPDATE CASCADE ON DELETE CASCADE;
+    ADD CONSTRAINT events__entries__votes_entryid_fkey FOREIGN KEY (entry_id) REFERENCES events__entries(entryid) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
@@ -2531,7 +2516,7 @@ ALTER TABLE ONLY events
 --
 
 ALTER TABLE ONLY log__banish
-    ADD CONSTRAINT log__banish_target_fkey FOREIGN KEY (target) REFERENCES users(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+    ADD CONSTRAINT log__banish_target_fkey FOREIGN KEY (target_id) REFERENCES users(id) ON UPDATE CASCADE ON DELETE RESTRICT;
 
 
 --
@@ -2587,7 +2572,7 @@ ALTER TABLE ONLY log__rolechange
 --
 
 ALTER TABLE ONLY "log__un-banish"
-    ADD CONSTRAINT "log__un-banish_target_fkey" FOREIGN KEY (target) REFERENCES users(id) ON UPDATE CASCADE;
+    ADD CONSTRAINT "log__un-banish_target_fkey" FOREIGN KEY (target_id) REFERENCES users(id) ON UPDATE CASCADE;
 
 
 --
@@ -2667,7 +2652,7 @@ ALTER TABLE ONLY reservations
 --
 
 ALTER TABLE ONLY sessions
-    ADD CONSTRAINT sessions_user_fkey FOREIGN KEY ("user") REFERENCES users(id) ON UPDATE CASCADE ON DELETE CASCADE;
+    ADD CONSTRAINT sessions_user_fkey FOREIGN KEY (user_id) REFERENCES users(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
@@ -2699,7 +2684,7 @@ ALTER TABLE ONLY tags
 --
 
 ALTER TABLE ONLY user_prefs
-    ADD CONSTRAINT user_prefs_user_fkey FOREIGN KEY ("user") REFERENCES users(id) ON UPDATE CASCADE ON DELETE CASCADE;
+    ADD CONSTRAINT user_prefs_user_fkey FOREIGN KEY (user_id) REFERENCES users(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
@@ -2906,13 +2891,6 @@ GRANT ALL ON SEQUENCE log_entryid_seq TO postgres;
 
 
 --
--- Name: users; Type: ACL; Schema: public; Owner: mlpvc-rr
---
-
-GRANT ALL ON TABLE users TO postgres;
-
-
---
 -- Name: requests; Type: ACL; Schema: public; Owner: mlpvc-rr
 --
 
@@ -2966,6 +2944,13 @@ GRANT ALL ON TABLE tagged TO postgres;
 --
 
 GRANT ALL ON TABLE tags TO postgres;
+
+
+--
+-- Name: users; Type: ACL; Schema: public; Owner: mlpvc-rr
+--
+
+GRANT ALL ON TABLE users TO postgres;
 
 
 --

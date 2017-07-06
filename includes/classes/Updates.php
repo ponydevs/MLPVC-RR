@@ -21,7 +21,7 @@ class Updates {
 		$query = $Database->rawQuery(
 			"SELECT cm.*, l.initiator, l.timestamp
 			FROM log__color_modify cm
-			LEFT JOIN log l ON cm.entryid = l.refid && l.reftype = 'color_modify'
+			LEFT JOIN log l ON cm.entryid = l.refid AND l.reftype = 'color_modify'
 			{$WHERE}
 			ORDER BY l.timestamp DESC
 			{$LIMIT}");

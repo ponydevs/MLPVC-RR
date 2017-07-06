@@ -1,11 +1,11 @@
 <?php
-use App\Appearances;
+
 use App\Auth;
 use App\DeviantArt;
 use App\JSON;
+use App\Models\Appearance;
 use App\Models\User;
 use App\Permission;
-use App\Users;
 use App\CoreUtils;
 use App\View;
 
@@ -13,6 +13,7 @@ use App\View;
 /** @var $Owner User */
 /** @var $User User */
 /** @var $scope array */
+/** @var $Appearance Appearance */
 
 $Title = (isset($title)?$title.' - ':'').SITE_TITLE;
 $Description = "Handling requests, reservations & the Color Guide since 2015";
@@ -21,21 +22,21 @@ $ThumbImage = "/img/logo.png";
 switch ($do ?? null){
 	case "cg":
 		if (!empty($Appearance)){
-			$sprite = Appearances::getSpriteURL($Appearance['id']);
+			$sprite = $Appearance->getSpriteURL();
 			if ($sprite)
 				$ThumbImage = $sprite;
 
-			$Description = 'Show accurate colors for "'.Appearances::processLabel($Appearance['label']).'" from the MLP-VectorClub’s Official Color Guide';
+			$Description = 'Show accurate colors for "'.$Appearance->processLabel().'" from the MLP-VectorClub’s Official Color Guide';
 		}
 	break;
 	case "u":
 		if (!empty($Appearance)){
-			$sprite = Appearances::getSpriteURL($Appearance['id']);
+			$sprite = $Appearance->getSpriteURL();
 			if ($sprite)
 				$ThumbImage = $sprite;
 			else $ThumbImage = $Owner->avatar_url;
 
-			$Description = 'Colors for "'.Appearances::processLabel($Appearance['label']).'" from '.CoreUtils::posess($Owner->name).' Personal Color Guide on the the MLP-VectorClub’s website';
+			$Description = 'Colors for "'.$Appearance->processLabel().'" from '.CoreUtils::posess($Owner->name).' Personal Color Guide on the the MLP-VectorClub’s website';
 		}
 		else if (!empty($User)){
 			$ThumbImage = $User->avatar_url;
@@ -57,7 +58,7 @@ switch ($do ?? null){
 			if ($LinkedPost->isRequest)
 				$Description = 'A request';
 			else {
-				$_user = Users::get($LinkedPost->reserved_by,'id','name');
+				$_user = User::find($LinkedPost->reserved_by);
 				$Description = 'A reservation'.(!empty($_user->name) ? " by {$_user->name}" : '');
 			}
 			$Description .= ' on the MLP-VectorClub’s website';
@@ -159,11 +160,11 @@ ga('send','pageview');
 <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
 <script>if(!window.jQuery)document.write('\x3Cscript src="/js/min/jquery-3.2.1.js">\x3C/script>');</script>
 <?php
-	echo CoreUtils::exportVars(array(
+	echo CoreUtils::exportVars([
 		'PRINTABLE_ASCII_PATTERN' => PRINTABLE_ASCII_PATTERN,
-		'DocReady' => array(),
+		'DocReady' => [],
 		'signedIn' => Auth::$signed_in,
-	));
+	]);
 	if (isset($customJS)) foreach ($customJS as $js){
 		echo "<script src='$js'></script>\n";
 	} ?>

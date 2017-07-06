@@ -4,7 +4,7 @@ namespace App\Controllers;
 use App\CoreUtils;
 use App\CSRFProtection;
 use App\Permission;
-use App\RegExp;
+
 use App\Response;
 use App\UserPrefs;
 
@@ -26,7 +26,7 @@ class PreferenceController extends Controller {
 	function get($params){
 		$this->_getPreference($params);
 
-		Response::done(array('value' => $this->_value));
+		Response::done(['value' => $this->_value]);
 	}
 
 	function set($params){
@@ -38,10 +38,10 @@ class PreferenceController extends Controller {
 		catch (\Exception $e){ Response::fail('Preference value error: '.$e->getMessage()); }
 
 		if ($newvalue === $this->_value)
-			Response::done(array('value' => $newvalue));
+			Response::done(['value' => $newvalue]);
 		if (!UserPrefs::set($this->_setting, $newvalue))
 			Response::dbError();
 
-		Response::done(array('value' => $newvalue));
+		Response::done(['value' => $newvalue]);
 	}
 }

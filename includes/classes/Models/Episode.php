@@ -2,42 +2,66 @@
 
 namespace App\Models;
 
-use App\Models\AbstractFillable;
+use ActiveRecord\Model;
+use App\Auth;
 use App\RegExp;
 use App\Episodes;
 use App\CoreUtils;
-use GuzzleHttp\Tests\Ring\CoreTest;
 
-class Episode extends AbstractFillable {
-	/** @var int */
-	public
-		$season,
-		$episode,
-		$no,
-		$score,
-		$willairts,
-		$isMovie;
-	/** @var string */
-	public
-		$title,
-		$posted,
-		$posted_by,
-		$airs,
-		$willair,
-		$notes;
-	/** @var bool */
-	public
-		$twoparter,
-		$displayed,
-		$aired;
+/**
+ * @property int            $season
+ * @property int            $episode
+ * @property int            $no
+ * @property int            $willairts
+ * @property int            $isMovie
+ * @property string         $title
+ * @property string         $posted
+ * @property string         $posted_by
+ * @property string         $airs
+ * @property string         $willair
+ * @property string         $notes
+ * @property string         $score
+ * @property bool           $twoparter
+ * @property bool           $displayed
+ * @property bool           $aired
+ * @property EpisodeVideo[] $videos
+ * @method static Episode find_by_season_and_episode(int $season, int $episode)
+ */
+class Episode extends Model {
+	static $has_many = [
+		['videos', 'class' => 'EpisodeVideo', 'foreign_key' => ['season','episode'], 'order' => 'provider asc, part asc']
+	];
 
-	/** @param array|object */
-	public function __construct($iter = null){
-		parent::__construct($this, $iter);
+	function get_isMovie():int {
+		return $this->season === 0 ? 1 : 0;
+	}
 
-		$this->isMovie = $this->season === 0 ? 1 : 0;
-		$this->twoparter = !empty($this->twoparter);
-		$this->formatScore();
+	function get_twoparter():bool {
+		return $this->read_attribute('twoparter') !== 'false';
+	}
+
+	function get_score():string {
+		return number_format($this->read_attribute('score'),1);
+	}
+
+	function set_score(float $score){
+		$this->assign_attribute('score', number_format($score,1));
+	}
+
+	function get_displayed(){
+		return $this->isDisplayed();
+	}
+
+	function get_willairts(){
+		return $this->willHaveAiredBy();
+	}
+
+	function get_aired(){
+		return $this->hasAired();
+	}
+
+	function get_willair(){
+		return gmdate('c', $this->willairts);
 	}
 
 	/**
@@ -45,7 +69,7 @@ class Episode extends AbstractFillable {
 	 *
 	 * @return string
 	 */
-	public function getID($o = array()):string {
+	public function getID($o = []):string {
 		if ($this->isMovie)
 			return 'Movie'.(!empty($o['append_num'])?'#'.$this->episode:'');
 
@@ -74,11 +98,11 @@ class Episode extends AbstractFillable {
 
 		return (int) $Database->rawQuerySingle(
 			'SELECT SUM(cnt) as postcount FROM (
-				SELECT count(*) as cnt FROM requests WHERE season = :season && episode = :episode
+				SELECT count(*) as cnt FROM requests WHERE season = :season AND episode = :episode
 				UNION ALL
-				SELECT count(*) as cnt FROM reservations WHERE season = :season && episode = :episode
+				SELECT count(*) as cnt FROM reservations WHERE season = :season AND episode = :episode
 			) t',
-			array(':season' => $this->season, ':episode' => $this->episode)
+			[':season' => $this->season, ':episode' => $this->episode]
 		)['postcount'];
 	}
 
@@ -94,7 +118,7 @@ class Episode extends AbstractFillable {
 	 *
 	 * @return bool
 	 */
-	public function is($ep):bool {
+	public function is(Episode $ep):bool {
 		return $this->season === $ep->season
 			&& $this->episode === $ep->episode;
 	}
@@ -107,21 +131,28 @@ class Episode extends AbstractFillable {
 	/**
 	 * @param int $now Current time (for testing purposes)
 	 *
-	 * @return self
+	 * @return bool Indicates whether the episode is close enough to airing to be the home page
 	 */
-	public function addAiringData($now = null){
-		if (!empty($this->airs)){
-			if (!isset($now))
-				$now = time();
+	public function isDisplayed($now = null):bool {
+		$airtime = strtotime($this->airs);
+		return strtotime('-24 hours', $airtime) < ($now ?? time());
+	}
 
-			$airtime = strtotime($this->airs);
-			$this->displayed = strtotime('-24 hours', $airtime) < $now;
-			$this->willairts = strtotime('+'.($this->isMovie?'2 hours':((!$this->twoparter?30:60).' minutes')), $airtime);
-			$this->aired = $this->willairts < $now;
-			$this->willair = gmdate('c', $this->willairts);
-		}
+	/**
+	 * @return int The timestamp after which the episode is considered to have aired & voting can be enabled
+	 */
+	public function willHaveAiredBy():int {
+		$airtime = strtotime($this->airs);
+		return strtotime('+'.($this->isMovie?'2 hours':((!$this->twoparter?30:60).' minutes')), $airtime);
+	}
 
-		return $this;
+	/**
+	 * @param int $now Current time (for testing purposes)
+	 *
+	 * @return bool True if willHaveAiredBy() is in the past
+	 */
+	public function hasAired($now = null):bool {
+		return $this->willairts < ($now ?? time());
 	}
 
 	/**
@@ -135,12 +166,12 @@ class Episode extends AbstractFillable {
 	 */
 	public function formatTitle($returnArray = false, $arrayKey = null, $append_num = true){
 		if ($returnArray === AS_ARRAY) {
-			$arr = array(
-				'id' => $this->getID(array('append_num' => $append_num)),
+			$arr = [
+				'id' => $this->getID(['append_num' => $append_num]),
 				'season' => $this->season ?? null,
 				'episode' => $this->episode ?? null,
 				'title' => isset($this->title) ? CoreUtils::escapeHTML($this->title) : null,
-			);
+			];
 
 			if (!empty($arrayKey))
 				return isset($arr[$arrayKey]) ? $arr[$arrayKey] : null;
@@ -150,7 +181,7 @@ class Episode extends AbstractFillable {
 		if ($this->isMovie)
 			return $this->title;
 
-		return $this->getID(array('pad' => true)).': '.$this->title;
+		return $this->getID(['pad' => true]).': '.$this->title;
 	}
 
 	public function toURL(){
@@ -159,19 +190,13 @@ class Episode extends AbstractFillable {
 		return "/movie/{$this->episode}".(!empty($this->title)?'-'.$this->movieSafeTitle():'');
 	}
 
-	public function formatScore(){
-		if (isset($this->score))
-			$this->score = number_format($this->score,1);
-	}
-
 	public function updateScore(){
 		global $Database;
 
 		$Score = $Database->whereEp($this)->disableAutoClass()->getOne('episodes__votes','AVG(vote) as score');
 		$this->score = !empty($Score['score']) ? $Score['score'] : 0;
-		$this->formatScore();
 
-		$Database->whereEp($this)->update('episodes', array('score' => $this->score));
+		$Database->whereEp($this)->update('episodes', ['score' => $this->score]);
 	}
 
 	/**
@@ -191,17 +216,66 @@ class Episode extends AbstractFillable {
 
 		global $EPISODE_ID_REGEX, $MOVIE_ID_REGEX;
 		if (preg_match($EPISODE_ID_REGEX, $id, $match))
-			return array(
+			return [
 				'season' => intval($match[1], 10),
 				'episode' => intval($match[2], 10),
 				'twoparter' => !empty($match[3]),
-			);
+			];
 		else if (preg_match($MOVIE_ID_REGEX, $id, $match))
-			return array(
+			return [
 				'season' => 0,
 				'episode' => intval($match[1], 10),
 				'twoparter' => false,
-			);
+			];
 		else return null;
+	}
+
+	/**
+	 * Gets the rating given to the episode by the user, or null if not voted
+	 *
+	 * @param User $user
+	 *
+	 * @return EpisodeVote|null
+	 */
+	function getUserVote(User $user = null):?EpisodeVote {
+		if (!isset($user) && Auth::$signed_in)
+			$user = Auth::$user;
+		return EpisodeVote::find_for($this, $user);
+	}
+
+	const
+		PREVIOUS = '<',
+		NEXT = '>';
+	/**
+	 * @param string $dir Expects self::PREVIOUS or self::NEXT
+	 *
+	 * @return Episode|null
+	 */
+	private function _getAdjacent($dir):?Episode {
+		$is = $this->isMovie ? '=' : '!=';
+		return Episode::find('first', [
+			'conditions' => [
+				"season $is 0 AND no $dir ?",
+				$this->no
+			],
+			'order' => 'no desc',
+			'limit' => 1,
+		]);
+	}
+
+	/**
+	 * Get the previous episode based on overall episode number
+	 * @return Episode|null
+	 */
+	function getPrevious():?Episode {
+		return $this->_getAdjacent(self::PREVIOUS);
+	}
+
+	/**
+	 * Get the previous episode based on overall episode number
+	 * @return Episode|null
+	 */
+	function getNext():?Episode {
+		return $this->_getAdjacent(self::NEXT);
 	}
 }

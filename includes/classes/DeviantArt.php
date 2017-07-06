@@ -3,6 +3,7 @@
 namespace App;
 
 use App\Models\CachedDeviation;
+use App\Models\Session;
 use App\Models\User;
 use App\Exceptions\CURLRequestException;
 
@@ -13,7 +14,7 @@ class DeviantArt {
 		$_MASS_CACHE_USED = 0;
 
 	// oAuth Error Response Messages \\
-	const OAUTH_RESPONSE = array(
+	const OAUTH_RESPONSE = [
 		'invalid_request' => 'The authorization recest was not properly formatted.',
 		'unsupported_response_type' => 'The authorization server does not support obtaining an authorization code using this method.',
 		'unauthorized_client' => 'The authorization process did not complete. Please try again.',
@@ -21,7 +22,7 @@ class DeviantArt {
 		'server_error' => "There seems to be an issue on DeviantArt’s end. Try again later.",
 		'temporarily_unavailable' => "There’s an issue on DeviantArt’s end. Try again later.",
 		'user_banned' => 'You were banned on our website by a staff member.',
-	);
+	];
 
 	/**
 	 * Makes authenticated requests to the DeviantArt API
@@ -35,7 +36,7 @@ class DeviantArt {
 	static function request($endpoint, $token = null, $postdata = null){
 		global $http_response_header;
 
-		$requestHeaders = array("Accept-Encoding: gzip","User-Agent: MLPVC-RR @ ".GITHUB_URL);
+		$requestHeaders = ["Accept-Encoding: gzip", "User-Agent: MLPVC-RR @ ".GITHUB_URL];
 		if (!isset($token) && Auth::$signed_in)
 			$token = Auth::$session->access;
 		if (!empty($token)) $requestHeaders[] = "Authorization: Bearer $token";
@@ -44,14 +45,14 @@ class DeviantArt {
 		$requestURI  = preg_match(new RegExp('^https?://'), $endpoint) ? $endpoint : "https://www.deviantart.com/api/v1/oauth2/$endpoint";
 
 		$r = curl_init($requestURI);
-		$curl_opt = array(
+		$curl_opt = [
 			CURLOPT_RETURNTRANSFER => 1,
 			CURLOPT_HTTPHEADER => $requestHeaders,
 			CURLOPT_HEADER => 1,
 			CURLOPT_BINARYTRANSFER => 1,
-		);
+		];
 		if (!empty($postdata)){
-			$query = array();
+			$query = [];
 			foreach($postdata as $k => $v) $query[] = urlencode($k).'='.urlencode($v);
 			$curl_opt[CURLOPT_POST] = count($postdata);
 			$curl_opt[CURLOPT_POSTFIELDS] = implode('&', $query);
@@ -93,7 +94,7 @@ class DeviantArt {
 			$ID = CoreUtils::nomralizeStashID($ID);
 
 		/** @var $Deviation CachedDeviation */
-		$Deviation = $Database->where('id', $ID)->where('provider', $type)->getOne('cached-deviations');
+		$Deviation = CachedDeviation::find_by_id_and_provider($ID, $type);
 
 		$cacheExhausted = self::$_MASS_CACHE_USED > self::$_MASS_CACHE_LIMIT;
 		$cacheExpired = empty($Deviation->updated_on) ? true : strtotime($Deviation->updated_on)+(Time::IN_SECONDS['hour']*12) < time();
@@ -111,26 +112,26 @@ class DeviantArt {
 			}
 			catch (\Exception $e){
 				if (!empty($Deviation))
-					$Database->where('id',$Deviation->id)->update('cached-deviations', array('updated_on' => date('c', time()+Time::IN_SECONDS['minute'] )));
+					$Deviation->update_attributes(['updated_on' => date('c', time()+ Time::IN_SECONDS['minute'] )]);
 
 				error_log("Saving local data for $ID@$type failed: ".$e->getMessage()."\n".$e->getTraceAsString());
 
-				if ($e->getCode() === 404){
+				if ($e->getCode() === 404)
 					$Deviation = null;
-				}
 
 				self::$_CACHE_BAILOUT = true;
 				return $Deviation;
 			}
 
-			$insert = array(
+			$insert = [
+				'id' => $ID,
+				'provider' => $type,
 				'title' => preg_replace(new RegExp('\\\\\''),"'",$json['title']),
 				'preview' => isset($json['thumbnail_url']) ? URL::makeHttps($json['thumbnail_url']) : null,
 				'fullsize' => isset($json['fullsize_url']) ? URL::makeHttps($json['fullsize_url']) : null,
-				'provider' => $type,
 				'author' => $json['author_name'],
 				'updated_on' => date('c'),
-			);
+			];
 
 			switch ($json['type']){
 				case "photo":
@@ -166,25 +167,20 @@ class DeviantArt {
 			}
 
 			if (empty($Deviation))
-				$Deviation = $Database->where('id', $ID)->where('provider', $type)->getOne('cached-deviations');
-			if (empty($Deviation)){
-				$insert['id'] = $ID;
-				$Database->insert('cached-deviations', $insert);
-			}
-			else {
-				$Database->where('id',$Deviation->id)->update('cached-deviations', $insert);
-				$insert['id'] = $ID;
-			}
+				$Deviation = CachedDeviation::find_by_id_and_provider($ID, $type);
+
+			if (empty($Deviation))
+				CachedDeviation::create($insert);
+			else  $Deviation->update_attributes($insert);
 
 			self::$_MASS_CACHE_USED++;
-			$Deviation = new CachedDeviation($insert);
 		}
 		else if (!empty($Deviation->updated_on)){
 			$Deviation->updated_on = date('c', strtotime($Deviation->updated_on));
 			if (self::$_CACHE_BAILOUT)
-				$Database->where('id',$Deviation->id)->update('cached-deviations', array(
+				$Database->where('id',$Deviation->id)->update('cached-deviations', [
 					'updated_on' => $Deviation->updated_on,
-				));
+				]);
 		}
 
 		return $Deviation;
@@ -199,8 +195,8 @@ class DeviantArt {
 	 *
 	 * @return array
 	 */
-	static function  oEmbed($ID, $type){
-		if (empty($type) || !in_array($type,array('fav.me','sta.sh'))) $type = 'fav.me';
+	static function oEmbed($ID, $type){
+		if (empty($type) || !in_array($type, ['fav.me', 'sta.sh'])) $type = 'fav.me';
 
 		if ($type === 'sta.sh')
 			$ID = CoreUtils::nomralizeStashID($ID);
@@ -228,7 +224,7 @@ class DeviantArt {
 	static function getToken(string $code, string $type = null){
 		global $Database, $http_response_header;
 
-		if (empty($type) || !in_array($type,array('authorization_code','refresh_token'))) $type = 'authorization_code';
+		if (empty($type) || !in_array($type, ['authorization_code', 'refresh_token'])) $type = 'authorization_code';
 		$URL_Start = 'https://www.deviantart.com/oauth2/token?client_id='.DA_CLIENT.'&client_secret='.DA_SECRET."&grant_type=$type";
 
 		switch ($type){
@@ -252,7 +248,7 @@ class DeviantArt {
 		$userdata = DeviantArt::request('user/whoami', $json['access_token']);
 
 		/** @var $User Models\User */
-		$User = $Database->where('id',$userdata['userid'])->getOne('users');
+		$User = User::find($userdata['userid']);
 		if (isset($User->role) && $User->role === 'ban'){
 			$_GET['error'] = 'user_banned';
 			$BanReason = $Database
@@ -266,16 +262,16 @@ class DeviantArt {
 		}
 
 		$UserID = strtolower($userdata['userid']);
-		$UserData = array(
+		$UserData = [
 			'name' => $userdata['username'],
 			'avatar_url' => URL::makeHttps($userdata['usericon']),
-		);
-		$AuthData = array(
+		];
+		$AuthData = [
 			'access' => $json['access_token'],
 			'refresh' => $json['refresh_token'],
 			'expires' => date('c',time()+intval($json['expires_in'])),
 			'scope' => $json['scope'],
-		);
+		];
 
 		$cookie = bin2hex(random_bytes(64));
 		$AuthData['token'] = CoreUtils::sha256($cookie);
@@ -286,21 +282,21 @@ class DeviantArt {
 				$AuthData[$k] = $v;
 
 		if (empty($User)){
-			$MoreInfo = array(
+			$MoreInfo = [
 				'id' => $UserID,
 				'role' => 'user',
-			);
+			];
 			$makeDev = !$Database->has('users');
 			if ($makeDev)
 				$MoreInfo['id'] = strtoupper($MoreInfo['id']);
 			$Insert = array_merge($UserData, $MoreInfo);
 			$Database->insert('users', $Insert);
 
-			$User = new User($Insert);
+			$User = User::create($Insert);
 			if ($makeDev)
 				$User->updateRole('developer');
 		}
-		else $Database->where('id',$UserID)->update('users', $UserData);
+		else $User->update_attributes($UserData);
 
 		if (empty($makeDev) && !empty($User)){
 			$clubmember = $User->isClubMember();
@@ -312,13 +308,14 @@ class DeviantArt {
 		}
 
 		if ($type === 'refresh_token')
-			$Database->where('refresh', $code)->update('sessions',$AuthData);
+			Session::find_by_refresh($code)->update_attributes($AuthData);
 		else {
-			$Database->where('user', $User->id)->where('scope', $AuthData['scope'], '!=')->delete('sessions');
-			$Database->insert('sessions', array_merge($AuthData, array('user' => $UserID)));
+			Session::delete_all(['conditions' => ['user_id = ? AND scope != ?', $User->id, $AuthData['scope']]]);
+			Session::create(array_merge($AuthData, ['user_id' => $User->id]));
 		}
 
-		$Database->rawQuery("DELETE FROM sessions WHERE \"user\" = ? && lastvisit <= NOW() - INTERVAL '1 MONTH'", array($UserID));
+
+		Session::delete_all(['conditions' => ["user_id = ? AND lastvisit <= NOW() - INTERVAL '1 MONTH'", $User->id]]);
 
 		Cookie::set('access', $cookie, time()+ Time::IN_SECONDS['year'], Cookie::HTTPONLY);
 		return $User ?? null;

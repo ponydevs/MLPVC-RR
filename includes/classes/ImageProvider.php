@@ -13,7 +13,7 @@ class ImageProvider {
 			$provider = self::getProvider(CoreUtils::trim($url));
 			if (!empty($reqProv)){
 				if (!is_array($reqProv))
-					$reqProv = array($reqProv);
+					$reqProv = [$reqProv];
 				if (!in_array($provider['name'], $reqProv))
 					throw new MismatchedProviderException($provider['name']);
 			}
@@ -21,7 +21,7 @@ class ImageProvider {
 			$this->setUrls($provider['itemid']);
 		}
 	}
-	private static $_providerRegexes = array(
+	private static $_providerRegexes = [
 		'(?:[A-Za-z\-\d]+\.)?deviantart\.com/art/(?:[A-Za-z\-\d]+-)?(\d+)' => 'dA',
 		'fav\.me/(d[a-z\d]{6,})' => 'fav.me',
 		'sta\.sh/([a-z\d]{10,})' => 'sta.sh',
@@ -29,16 +29,16 @@ class ImageProvider {
 		'derpiboo(?:\.ru|ru\.org)/(\d+)' => 'derpibooru',
 		'derpicdn\.net/img/(?:view|download)/\d{4}/\d{1,2}/\d{1,2}/(\d+)' => 'derpibooru',
 		'prntscr\.com/([\da-z]+)' => 'lightshot',
-	);
-	private static $_allowedMimeTypes = array('image/png' => true,'image/jpeg' => true,'image/jpg' => true);
-	private static $_blockedMimeTypes = array('image/gif' => 'Animated GIFs');
+	];
+	private static $_allowedMimeTypes = ['image/png' => true, 'image/jpeg' => true, 'image/jpg' => true];
+	private static $_blockedMimeTypes = ['image/gif' => 'Animated GIFs'];
 	private static function _testProvider($url, $pattern, $name){
-		$match = array();
+		$match = [];
 		if (preg_match(new RegExp("^(?:https?://(?:www\\.)?)?$pattern"), $url, $match))
-			return array(
+			return [
 				'name' => $name,
 				'itemid' => $match[1]
-			);
+			];
 		return false;
 	}
 	public static function getProvider($url){

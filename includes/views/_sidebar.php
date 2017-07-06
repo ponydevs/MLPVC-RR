@@ -3,9 +3,7 @@ use App\Auth;
 use App\CoreUtils;
 use App\Episodes;
 use App\Notifications;
-use App\Time;
 use App\UserPrefs;
-use App\Users;
 /** @var $do string */
 /** @var $scope array */
 /** @var $view \App\View */ ?>
@@ -19,7 +17,6 @@ use App\Users;
 	else echo (new \App\Models\User([
 		'name' => 'Guest',
 		'role' => 'guest',
-		'rolelabel' => 'Curious Pony',
 		'avatar_url' => GUEST_AVATAR
 	]))->getAvatarWrap()?>
 		<div class="user-data">

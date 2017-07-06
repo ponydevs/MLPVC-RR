@@ -3,41 +3,23 @@
 namespace App\Models;
 
 use App\Users;
-use App\RegExp;
 
+/**
+ * @inheritdoc
+ * @property string $userid
+ * @property string $username
+ * @property string $nick
+ * @property string $avatar_hash
+ * @property string $joined_at
+ * @property int    $discriminator
+ */
 class DiscordMember extends AbstractUser {
-	/** @var string */
-	public
-		$id,
-		$userid,
-		$username,
-		$nick,
-		$avatar_hash,
-		$joined_at;
-	/** @var int */
-	public $discriminator;
-
-	/** @param array|object */
-	public function __construct($iter = null){
-		parent::__construct($this, $iter);
-
-		$this->name = $this->displayedName();
-		$this->avatar_url = $this->getAvatarURL();
+	public function get_name(){
+		return $this->displayedName();
 	}
 
-	function toArray(bool $remove_empty = false): array{
-		$arr = parent::toArray($remove_empty);
-		if (array_key_exists('name', $arr))
-			unset($arr['name']);
-		if (array_key_exists('avatar_url', $arr))
-			unset($arr['avatar_url']);
-		return $arr;
-	}
-
-	static function of(User $user):DiscordMember {
-		global $Database;
-		/** @noinspection PhpIncompatibleReturnTypeInspection */
-		return $Database->where('userid', $user->id)->getOne('discord-members');
+	public function get_avatar_url(){
+		return $this->getAvatarURL();
 	}
 
 	public function getAvatarURL(){
@@ -93,19 +75,19 @@ class DiscordMember extends AbstractUser {
 
 		if (isset($this->nick)){
 			$daname = $this->nameToDAName($this->nick);
-			$firstGuess = Users::get($daname ?? $this->nick, 'name', 'id');
+			$firstGuess = Users::get($daname ?? $this->nick, 'name');
 			if (!empty($firstGuess))
 				return $this->_checkDAUserBlacklist($firstGuess->id);
 		}
 
 		$daname = $this->nameToDAName($this->username);
 		if (!empty($daname)){
-			$secondGuess = Users::get($daname, 'name', 'id');
+			$secondGuess = Users::get($daname, 'name');
 			if (!empty($secondGuess))
 				return $this->_checkDAUserBlacklist($secondGuess->id);
 		}
 
-		$thirdGuess = Users::get($this->username, 'name', 'id');
+		$thirdGuess = Users::get($this->username, 'name');
 		if (!empty($thirdGuess))
 			return $this->_checkDAUserBlacklist($thirdGuess->id);
 
