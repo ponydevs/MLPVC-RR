@@ -2,10 +2,6 @@
 
 namespace App;
 
-use App\CoreUtils;
-use App\Permission;
-use App\UserPrefs;
-
 class ColorGroups {
 	/**
 	 * Get color groups
@@ -48,7 +44,7 @@ class ColorGroups {
 	static function getColorsForEach($Groups){
 		global $Database;
 
-		$GroupIDs = array();
+		$GroupIDs = [];
 		foreach ($Groups as $g)
 			$GroupIDs[] = $g['groupid'];
 		if (empty($GroupIDs))
@@ -58,7 +54,7 @@ class ColorGroups {
 		if (empty($data))
 			return null;
 
-		$sorted = array();
+		$sorted = [];
 		foreach ($data as $row)
 			$sorted[$row['groupid']][] = $row;
 		return $sorted;
@@ -135,7 +131,7 @@ class ColorGroups {
 		if (empty($colors))
 			return null;
 
-		$return = array();
+		$return = [];
 		foreach ($colors as $c)
 			$return[] = "{$c['hex']} {$c['label']}";
 
@@ -146,7 +142,7 @@ class ColorGroups {
 		if (empty($cgs))
 			return null;
 
-		$return = array();
+		$return = [];
 		foreach ($cgs as $i => $c)
 			$return[] = $c['label'];
 

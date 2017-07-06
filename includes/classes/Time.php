@@ -5,7 +5,7 @@ namespace App;
 use Moment\Moment;
 
 class Time {
-	const IN_SECONDS = array(
+	const IN_SECONDS = [
 		'year' =>   31557600,
 		'month' =>  2592000,
 		'week' =>   604800,
@@ -13,9 +13,9 @@ class Time {
 		'hour' =>   3600,
 		'minute' => 60,
 		'second' => 1,
-	);
+	];
 
-	const SHORT_UINTS = array(
+	const SHORT_UINTS = [
 		'year' =>   'y',
 		'month' =>  'mo',
 		'week' =>   'w',
@@ -23,7 +23,7 @@ class Time {
 		'hour' =>   'h',
 		'minute' => 'm',
 		'second' => 's',
-	);
+	];
 
 	/**
 	 * Gets the difference between 2 timestamps
@@ -41,7 +41,7 @@ class Time {
 		$diff = date_diff($nowdt, $targetdt, true);
 		$subtract = $now - $target;
 
-		return array(
+		return [
 			'year' => $diff->y,
 			'month' => $diff->m,
 			'day' => $diff->d,
@@ -51,7 +51,7 @@ class Time {
 			'past' => $subtract > 0,
 			'time' => abs($subtract),
 			'target' => $target
-		);
+		];
 	}
 
 	static function differenceToString(array $diff, bool $short = false):string {

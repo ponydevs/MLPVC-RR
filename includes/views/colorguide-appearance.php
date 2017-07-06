@@ -3,9 +3,7 @@ use App\CGUtils;
 use App\CoreUtils;
 use App\Cutiemarks;
 use App\Models\User;
-use App\DeviantArt;
 use App\Permission;
-use App\Users;
 use App\Appearances;
 use App\ColorGroups;
 use App\Tags;
@@ -17,7 +15,7 @@ use App\Tags;
 <div id="content">
 	<div class="sprite-wrap"><?=Appearances::getSpriteHTML($Appearance, Permission::sufficient('staff') || $isOwner)?></div>
 	<h1><?=CoreUtils::escapeHTML($heading)?></h1>
-	<p>from <?=isset($Owner)?"<a href='/@{$Owner->name}'>{$Owner->name}</a>".CoreUtils::posess($Owner->name, true)." <a href='/@{$Owner->name}/cg'>Personal Color Guide</a>":"the MLP-VectorClub <a href='/cg'>Color Guide</a>"?></p>
+	<p>from <?=isset($Owner)?"<a href='/@{$Owner->name}'>{$Owner->name}</a>".CoreUtils::posess($Owner->name, true)." <a href='/@{$Owner->name}/cg'>Personal Color Guide</a>":"the MLP-VectorClub's <a href='/cg".($EQG?'/eqg':'')."'>".($EQG?'EQG ':'')."Color Guide</a>"?></p>
 
 <?  if (Permission::sufficient('staff') || $isOwner){ ?>
 	<div class="notice warn align-center appearance-private-notice"<?=!empty($Appearance['private'])?'':' style="display:none"'?>><p><span class="typcn typcn-lock-closed"></span> <strong>This appearance is currently private (its colors are only visible to <?=isset($Owner)?(($isOwner?'you':$Owner->name).' and '):''?>staff members)</strong></p></div>
@@ -91,15 +89,15 @@ use App\Tags;
 	</div>
 </div>
 
-<?  $export = array(
+<?  $export = [
 		'EQG' => $EQG,
 		'AppearancePage' => true,
 		'PersonalGuide' => $Owner->name ?? false,
-	);
+];
 	if (Permission::sufficient('staff') || $isOwner)
-		$export = array_merge($export, array(
+		$export = array_merge($export, [
 			'TAG_TYPES_ASSOC' => Tags::$TAG_TYPES_ASSOC,
 			'MAX_SIZE' => CoreUtils::getMaxUploadSize(),
 			'HEX_COLOR_PATTERN' => $HEX_COLOR_REGEX,
-		));
+		]);
 	echo CoreUtils::exportVars($export); ?>

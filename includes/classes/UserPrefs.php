@@ -7,7 +7,7 @@ use PHPUnit\Runner\Exception;
 class UserPrefs extends GlobalSettings {
 	protected static
 		$_db = 'user_prefs',
-		$_defaults = array(
+		$_defaults = [
 			'discord_token' => '',
 
 			'cg_itemsperpage' => 7,
@@ -18,7 +18,7 @@ class UserPrefs extends GlobalSettings {
 			'p_hidediscord' => 0,
 			'p_hidepcg' => 0,
 			'ep_noappprev' => 0,
-		);
+	];
 
 	/**
 	 * Gets a user preference item's value
@@ -71,10 +71,10 @@ class UserPrefs extends GlobalSettings {
 			$Database->where('key', $key)->where('user', $for);
 			if ($value == $default)
 				return $Database->delete(static::$_db);
-			else return $Database->update(static::$_db, array('value' => $value));
+			else return $Database->update(static::$_db, ['value' => $value]);
 		}
 		else if ($value != $default)
-			return $Database->insert(static::$_db, array('user' => Auth::$user->id, 'key' => $key, 'value' => $value));
+			return $Database->insert(static::$_db, ['user' => Auth::$user->id, 'key' => $key, 'value' => $value]);
 		else return true;
 	}
 

@@ -11,8 +11,8 @@ use App\Exceptions\CURLRequestException;
 
 class Users {
 	// Global cache for storing user details
-	static $_USER_CACHE = array();
-	static $_PREF_CACHE = array();
+	static $_USER_CACHE = [];
+	static $_PREF_CACHE = [];
 
 	/**
 	 * User Information Retriever
@@ -82,7 +82,7 @@ class Users {
 			return self::get($oldName['id'], 'id', $dbcols);
 
 		try {
-			$userdata = DeviantArt::request('user/whois', null, array('usernames[0]' => $username));
+			$userdata = DeviantArt::request('user/whois', null, ['usernames[0]' => $username]);
 		}
 		catch (CURLRequestException $e){
 			return false;
@@ -98,10 +98,10 @@ class Users {
 		$DBUser = $Database->where('id', $ID)->getOne('users','name');
 		$userExists = !empty($DBUser);
 
-		$insert = array(
+		$insert = [
 			'name' => $userdata['username'],
 			'avatar_url' => URL::makeHttps($userdata['usericon']),
-		);
+		];
 		if (!$userExists)
 			$insert['id'] = $ID;
 
@@ -109,19 +109,19 @@ class Users {
 			throw new \Exception('Saving user data failed'.(Permission::sufficient('developer')?': '.$Database->getLastError():''));
 
 		if (!$userExists)
-			Logs::logAction('userfetch',array('userid' => $insert['id']));
-		$names = array($username);
+			Logs::logAction('userfetch', ['userid' => $insert['id']]);
+		$names = [$username];
 		if ($userExists && $DBUser->name !== $username)
 			$names[] = $DBUser->name;
 		foreach ($names as $name){
 			if (strcasecmp($name,$insert['name']) !== 0){
 				if (UserPrefs::get('discord_token',$ID) === 'true')
 					UserPrefs::set('discord_token','',$ID);
-				Logs::logAction('da_namechange',array(
+				Logs::logAction('da_namechange', [
 					'old' => $name,
 					'new' => $insert['name'],
 					'id' => $ID,
-				), Logs::FORCE_INITIATOR_WEBSERVER);
+				], Logs::FORCE_INITIATOR_WEBSERVER);
 			}
 		}
 
@@ -151,7 +151,7 @@ class Users {
 				  WHERE req.reserved_by = u.id && req.deviation_id IS NULL)
 			) as "count"
 			FROM users u WHERE u.id = ?',
-			array(Auth::$user->id)
+			[Auth::$user->id]
 		);
 
 		$overTheLimit = isset($reservations['count']) && $reservations['count'] >= 4;
@@ -231,7 +231,7 @@ HTML;
 					Auth::$signed_in = true;
 					if (time() - strtotime(Auth::$session->lastvisit) > Time::IN_SECONDS['minute']){
 						$lastVisitTS = date('c');
-						if ($Database->where('id', Auth::$session->id)->update('sessions', array('lastvisit' => $lastVisitTS)))
+						if ($Database->where('id', Auth::$session->id)->update('sessions', ['lastvisit' => $lastVisitTS]))
 							Auth::$session->lastvisit = $lastVisitTS;
 					}
 				}
@@ -240,12 +240,12 @@ HTML;
 		else Cookie::delete('access', Cookie::HTTPONLY);
 	}
 
-	const PROFILE_SECTION_PRIVACY_LEVEL = array(
+	const PROFILE_SECTION_PRIVACY_LEVEL = [
 		'developer' => "<span class='typcn typcn-cog color-red' title='Visible to: developer'></span>",
 		'public' => "<span class='typcn typcn-world color-blue' title='Visible to: public'></span>",
 		'staff' => "<span class='typcn typcn-lock-closed' title='Visible to: you & group administrators'></span>",
 		'private' => "<span class='typcn typcn-lock-closed color-green' title='Visible to: you'></span>",
-	);
+	];
 
 	const YOU_HAVE = [
 		true => 'You have',
@@ -412,14 +412,14 @@ HTML;
 	}
 
 	static function validateName($key, $errors, $method_get = false){
-		return (new Input($key,'username',array(
+		return (new Input($key,'username', [
 			Input::IS_OPTIONAL => true,
 			Input::METHOD_GET => $method_get,
-			Input::CUSTOM_ERROR_MESSAGES => $errors ?? array(
+			Input::CUSTOM_ERROR_MESSAGES => $errors ?? [
 				Input::ERROR_MISSING => 'Username (@value) is missing',
 				Input::ERROR_INVALID => 'Username (@value) is invalid',
-			)
-		)))->out();
+				]
+		]))->out();
 	}
 
 	static function getAwaitingApprovalHTML(User $User, bool $sameUser):string {

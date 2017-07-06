@@ -2,11 +2,9 @@
 
 namespace App\Models;
 
-use App\Models\AbstractFillable;
 use App\RegExp;
 use App\Episodes;
 use App\CoreUtils;
-use GuzzleHttp\Tests\Ring\CoreTest;
 
 class Episode extends AbstractFillable {
 	/** @var int */
@@ -45,7 +43,7 @@ class Episode extends AbstractFillable {
 	 *
 	 * @return string
 	 */
-	public function getID($o = array()):string {
+	public function getID($o = []):string {
 		if ($this->isMovie)
 			return 'Movie'.(!empty($o['append_num'])?'#'.$this->episode:'');
 
@@ -78,7 +76,7 @@ class Episode extends AbstractFillable {
 				UNION ALL
 				SELECT count(*) as cnt FROM reservations WHERE season = :season && episode = :episode
 			) t',
-			array(':season' => $this->season, ':episode' => $this->episode)
+			[':season' => $this->season, ':episode' => $this->episode]
 		)['postcount'];
 	}
 
@@ -135,12 +133,12 @@ class Episode extends AbstractFillable {
 	 */
 	public function formatTitle($returnArray = false, $arrayKey = null, $append_num = true){
 		if ($returnArray === AS_ARRAY) {
-			$arr = array(
-				'id' => $this->getID(array('append_num' => $append_num)),
+			$arr = [
+				'id' => $this->getID(['append_num' => $append_num]),
 				'season' => $this->season ?? null,
 				'episode' => $this->episode ?? null,
 				'title' => isset($this->title) ? CoreUtils::escapeHTML($this->title) : null,
-			);
+			];
 
 			if (!empty($arrayKey))
 				return isset($arr[$arrayKey]) ? $arr[$arrayKey] : null;
@@ -150,7 +148,7 @@ class Episode extends AbstractFillable {
 		if ($this->isMovie)
 			return $this->title;
 
-		return $this->getID(array('pad' => true)).': '.$this->title;
+		return $this->getID(['pad' => true]).': '.$this->title;
 	}
 
 	public function toURL(){
@@ -171,7 +169,7 @@ class Episode extends AbstractFillable {
 		$this->score = !empty($Score['score']) ? $Score['score'] : 0;
 		$this->formatScore();
 
-		$Database->whereEp($this)->update('episodes', array('score' => $this->score));
+		$Database->whereEp($this)->update('episodes', ['score' => $this->score]);
 	}
 
 	/**
@@ -191,17 +189,17 @@ class Episode extends AbstractFillable {
 
 		global $EPISODE_ID_REGEX, $MOVIE_ID_REGEX;
 		if (preg_match($EPISODE_ID_REGEX, $id, $match))
-			return array(
+			return [
 				'season' => intval($match[1], 10),
 				'episode' => intval($match[2], 10),
 				'twoparter' => !empty($match[3]),
-			);
+			];
 		else if (preg_match($MOVIE_ID_REGEX, $id, $match))
-			return array(
+			return [
 				'season' => 0,
 				'episode' => intval($match[1], 10),
 				'twoparter' => false,
-			);
+			];
 		else return null;
 	}
 }

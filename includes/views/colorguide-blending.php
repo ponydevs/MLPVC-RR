@@ -60,4 +60,4 @@ use App\Users;
 		<?=CoreUtils::notice('warn',"<span class='typcn typcn-warning'></span> The result may not be accurate as the difference between the optimal color and the closest match is too large", true)?>
 	</div>
 </div>
-<?  echo CoreUtils::exportVars(array('HEX_COLOR_PATTERN' => $HEX_COLOR_REGEX));
+<?  echo CoreUtils::exportVars(['HEX_COLOR_PATTERN' => $HEX_COLOR_REGEX]);

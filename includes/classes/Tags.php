@@ -2,19 +2,16 @@
 
 namespace App;
 
-use App\Permission;
-use App\CoreUtils;
-
 class Tags {
 	// List of available tag types
-	static $TAG_TYPES_ASSOC = array(
+	static $TAG_TYPES_ASSOC = [
 		'app' => 'Clothing',
 		'cat' => 'Category',
 		'ep' => 'Episode',
 		'gen' => 'Gender',
 		'spec' => 'Species',
 		'char' => 'Character',
-	);
+	];
 
 	/**
 	 * Retrieve set of tags for a given appearance
@@ -64,7 +61,7 @@ class Tags {
 	static function getActual($value, $column = 'tid', $as_bool = false){
 		global $Database;
 
-		$arg1 = array('tags', $as_bool === RETURN_AS_BOOL ? 'synonym_of,tid' : '*');
+		$arg1 = ['tags', $as_bool === RETURN_AS_BOOL ? 'synonym_of,tid' : '*'];
 
 		$Tag = $Database->where($column, $value)->getOne(...$arg1);
 
@@ -107,7 +104,7 @@ class Tags {
 		global $Database;
 
 		$Tagged = $Database->where('tid', $TagID)->count('tagged');
-		$return = array('status' => $Database->where('tid', $TagID)->update('tags',array('uses' => $Tagged)));
+		$return = ['status' => $Database->where('tid', $TagID)->update('tags', ['uses' => $Tagged])];
 		if ($returnCount)
 			$return['count'] = $Tagged;
 		return $return;

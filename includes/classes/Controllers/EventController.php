@@ -267,7 +267,7 @@ class EventController extends Controller {
 			]
 		]))->out();
 		try {
-			$Image = new ImageProvider($favme, array('fav.me', 'dA'));
+			$Image = new ImageProvider($favme, ['fav.me', 'dA']);
 			$favme = $Image->id;
 		}
 		catch (MismatchedProviderException $e){

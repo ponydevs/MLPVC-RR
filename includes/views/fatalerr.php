@@ -5,7 +5,7 @@ use App\Time;
 ob_start();
 HTTP::statusCode(503);
 
-$customCSS = array("/scss/min/theme.css");
+$customCSS = ["/scss/min/theme.css"];
 foreach ($customCSS as $k => $el)
 	$customCSS[$k] .= '?'.filemtime(APPATH.CoreUtils::substring($el,1));
 $scope = []; ?>
@@ -35,8 +35,8 @@ switch($errcause){
 	} ?>
 </div>
 <?php
-echo CoreUtils::exportVars(array('ServiceUnavailableError' => true));
-$customJS = array("/js/min/moment.js","/js/min/global.js","/js/min/dialog.js");
+echo CoreUtils::exportVars(['ServiceUnavailableError' => true]);
+$customJS = ["/js/min/moment.js", "/js/min/global.js", "/js/min/dialog.js"];
 foreach ($customJS as $k => $el)
 	$customJS[$k] .= '?'.filemtime(APPATH.CoreUtils::substring($el,1));
 $mainContent = ob_get_clean();

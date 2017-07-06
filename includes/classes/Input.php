@@ -6,7 +6,7 @@ use App\Models\Episode;
 
 class Input {
 	private $_type, $_source, $_key, $_origValue = null, $_value = null, $_respond = true, $_validator, $_range, $_silentFail;
-	private static $SUPPORTED_TYPES = array(
+	private static $SUPPORTED_TYPES = [
 		'exists' => true,
 		'bool' => true,
 		'int' => true,
@@ -21,7 +21,7 @@ class Input {
 		'json' => true,
 		'timestamp' => true,
 		'epid' => true,
-	);
+	];
 
 	const
 		IS_OPTIONAL = 'optional',
@@ -109,12 +109,12 @@ class Input {
 	 */
 	private function _validate(){
 		if (isset($this->_validator)){
-			$call_params = array( &$this->_value, $this->_range );
+			$call_params = [&$this->_value, $this->_range];
 			return call_user_func_array($this->_validator, $call_params) ?? self::ERROR_NONE;
 		}
 		switch ($this->_type){
 			case "bool":
-				if (!in_array($this->_value,array('1','0','true','false', 'on', 'off')))
+				if (!in_array($this->_value, ['1', '0', 'true', 'false', 'on', 'off']))
 					return self::ERROR_INVALID;
 				$this->_value = in_array($this->_value, ['1', 'true', 'on']);
 			break;

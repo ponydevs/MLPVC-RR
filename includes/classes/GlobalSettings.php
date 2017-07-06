@@ -5,10 +5,10 @@ namespace App;
 class GlobalSettings {
 	protected static
 		$_db = 'global_settings',
-		$_defaults = array(
+		$_defaults = [
 			'reservation_rules' => '',
 			'about_reservations' => '',
-		);
+	];
 
 	/**
 	 * Gets a global cofiguration item's value
@@ -46,10 +46,10 @@ class GlobalSettings {
 			$Database->where('key', $key);
 			if ($value == $default)
 				$Database->delete(static::$_db);
-			else return $Database->update(static::$_db, array('value' => $value));
+			else return $Database->update(static::$_db, ['value' => $value]);
 		}
 		else if ($value != $default)
-			return $Database->insert(static::$_db, array('key' => $key, 'value' => $value));
+			return $Database->insert(static::$_db, ['key' => $key, 'value' => $value]);
 		else return true;
 	}
 
@@ -69,7 +69,7 @@ class GlobalSettings {
 		switch ($key){
 			case "reservation_rules":
 			case "about_reservations":
-				$value = CoreUtils::sanitizeHtml($value, $key === 'reservation_rules'? array('li', 'ol') : array('p'));
+				$value = CoreUtils::sanitizeHtml($value, $key === 'reservation_rules'? ['li', 'ol'] : ['p']);
 			break;
 		}
 

@@ -47,7 +47,7 @@ if (Permission::sufficient('developer'))
 if ($sameUser || Permission::sufficient('staff')){
 	$OldNames = $Database->where('id', $User->id)->orderBy('entryid',OLDEST_FIRST)->get('log__da_namechange',null,'old');
 	if (!empty($OldNames)){
-		$PrevNames = array();
+		$PrevNames = [];
 		foreach ($OldNames as $Post)
 			$PrevNames[] = $Post['old']; ?>
 		<section class="old-names">
@@ -70,7 +70,7 @@ if (Auth::$signed_in)
 		<section class="bans">
 			<h2><?=$sameUser? Users::PROFILE_SECTION_PRIVACY_LEVEL['public']:''?>Banishment history</h2>
 			<ul><?php
-$Actions = array('Banish','Un-banish');
+$Actions = ['Banish', 'Un-banish'];
 $Banishes = $Database
 	->where('target', $User->id)
 	->join('log l',"l.reftype = 'banish' AND l.refid = b.entryid")
@@ -228,7 +228,7 @@ if (!empty($Banishes)){
 
 <?php
 if ($canEdit){
-	$ROLES = array();
+	$ROLES = [];
 	if ($canEdit){
 		$_Roles = Permission::ROLES_ASSOC;
 		unset($_Roles['guest']);
@@ -239,7 +239,7 @@ if ($canEdit){
 			$ROLES[$name] = $label;
 		}
 	}
-	echo CoreUtils::exportVars(array(
+	echo CoreUtils::exportVars([
 		'ROLES' => $ROLES,
-	));
+	]);
 } ?>

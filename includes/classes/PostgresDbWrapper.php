@@ -27,7 +27,7 @@ class PostgresDbWrapper extends \PostgresDb {
 
 	public $queryCount = 0;
 
-	private $_nonexistantClassCache = array();
+	private $_nonexistantClassCache = [];
 
 	/**
 	 * @param \PDOStatement $stmt Statement to execute

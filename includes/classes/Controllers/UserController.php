@@ -65,7 +65,7 @@ class UserController extends Controller {
 		else {
 			if ($sameUser){
 				$CurrentSession = Auth::$session;
-				$Database->where('id != ?',array($CurrentSession->id));
+				$Database->where('id != ?', [$CurrentSession->id]);
 			}
 			$Sessions = $Database
 				->where('user',$User->id)
@@ -73,18 +73,18 @@ class UserController extends Controller {
 				->get('sessions',null,'id,created,lastvisit,platform,browser_name,browser_ver,user_agent,scope');
 		}
 
-		$settings = array(
+		$settings = [
 			'title' => !isset($MSG) ? ($sameUser?'Your':CoreUtils::posess($User->name)).' '.($sameUser || $canEdit?'account':'profile') : 'Account',
 			'no-robots',
 			'do-css',
-			'js' => array('user'),
+			'js' => ['user'],
 			'import' => [
 				'User' => $User,
 				'canEdit' => $canEdit,
 				'sameUser' => $sameUser,
 				'Sessions' => $Sessions ?? null,
 			],
-		);
+		];
 		if (isset($CurrentSession))
 			$settings['import']['CurrentSession'] = $CurrentSession;
 		if (isset($MSG))
@@ -147,7 +147,7 @@ class UserController extends Controller {
 		$chosen = $drawArray[array_rand($drawArray)];
 		/** @var $Request \App\Models\Request */
 		$Request = $Database->where('id', $chosen)->getOne('requests');
-		Response::done(array('suggestion' => Posts::getSuggestionLi($Request)));
+		Response::done(['suggestion' => Posts::getSuggestionLi($Request)]);
 	}
 
 	function sessionDel($params){
@@ -191,14 +191,14 @@ class UserController extends Controller {
 		$newgroup = (new Input('newrole',function($value){
 			if (empty(Permission::ROLES_ASSOC[$value]))
 				return Input::ERROR_INVALID;
-		},array(
-			Input::CUSTOM_ERROR_MESSAGES => array(
+		}, [
+			Input::CUSTOM_ERROR_MESSAGES => [
 				Input::ERROR_MISSING => 'The new group is not specified',
 				Input::ERROR_INVALID => 'The specified group (@value) does not exist',
-			)
-		)))->out();
+			]
+		]))->out();
 		if ($targetUser->role === $newgroup)
-			Response::done(array('already_in' => true));
+			Response::done(['already_in' => true]);
 
 		$targetUser->updateRole($newgroup);
 
@@ -228,20 +228,20 @@ class UserController extends Controller {
 		if ($action == 'banish' && $targetUser->role === 'ban' || $action == 'un-banish' && $targetUser->role !== 'ban')
 			Response::fail("This user has already been {$action}ed");
 
-		$reason = (new Input('reason','string',array(
+		$reason = (new Input('reason','string', [
 			Input::IN_RANGE => [5,255],
-			Input::CUSTOM_ERROR_MESSAGES => array(
+			Input::CUSTOM_ERROR_MESSAGES => [
 				Input::ERROR_MISSING => 'Please specify a reason',
 				Input::ERROR_RANGE => 'Reason length must be between @min and @max characters'
-			)
-		)))->out();
+			]
+		]))->out();
 
-		$changes = array('role' => $action == 'banish' ? 'ban' : 'user');
+		$changes = ['role' => $action == 'banish' ? 'ban' : 'user'];
 		$Database->where('id', $targetUser->id)->update('users', $changes);
-		Logs::logAction($action,array(
+		Logs::logAction($action, [
 			'target' => $targetUser->id,
 			'reason' => $reason
-		));
+		]);
 		$changes['role'] = Permission::ROLES_ASSOC[$changes['role']];
 
 		if ($action == 'banish')

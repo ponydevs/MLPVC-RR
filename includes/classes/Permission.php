@@ -3,7 +3,7 @@
 namespace App;
 
 class Permission {
-	const ROLES_ASSOC = array(
+	const ROLES_ASSOC = [
 		'ban'       => 'Banished User',
 		'guest'     => 'Guest',
 		'user'      => 'DeviantArt User',
@@ -12,8 +12,8 @@ class Permission {
 		'staff'     => 'Staff',
 		'admin'     => 'Administrator',
 		'developer' => 'Site Developer',
-	);
-	const ROLES = array(
+	];
+	const ROLES = [
 		'ban'       => 0,
 		'guest'     => 1,
 		'user'      => 2,
@@ -22,7 +22,7 @@ class Permission {
 		'staff'     => 4,
 		'admin'     => 4,
 		'developer' => 255,
-	);
+	];
 
 	/**
 	 * Permission checking function

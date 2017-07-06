@@ -15,7 +15,7 @@ class WebhookController extends Controller {
 
 		switch (strtolower($_SERVER['HTTP_X_GITHUB_EVENT'])){
 			case 'push':
-				$output = array();
+				$output = [];
 				chdir(PROJPATH);
 				exec("git reset HEAD --hard",$output);
 				exec("git pull",$output);

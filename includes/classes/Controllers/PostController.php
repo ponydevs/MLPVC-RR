@@ -73,10 +73,10 @@ class PostController extends Controller {
 		}
 		$section .= ' > ul';
 
-		Response::done(array(
+		Response::done([
 			'li' => Posts::getLi($this->_post, isset($_POST['FROM_PROFILE']), !isset($_POST['cache'])),
 			'section' => $section,
-		));
+		]);
 	}
 
 	function _checkPostEditPermission($thing){
@@ -97,9 +97,9 @@ class PostController extends Controller {
 			case "get":
 				$this->_checkPostEditPermission($thing);
 
-				$response = array(
+				$response = [
 					'label' => $this->_post->label,
-				);
+				];
 				if ($thing === 'request'){
 					$response['type'] = $this->_post->type;
 
@@ -116,7 +116,7 @@ class PostController extends Controller {
 			case "set":
 				$this->_checkPostEditPermission($thing);
 
-				$update = array();
+				$update = [];
 				Posts::checkPostDetails($thing, $update, $this->_post);
 
 				if (empty($update))
@@ -178,7 +178,7 @@ class PostController extends Controller {
 		if (empty($this->_post->reserved_by)){
 			switch ($action){
 				case 'unreserve':
-					Response::done(array('li' => Posts::getLi($this->_post)));
+					Response::done(['li' => Posts::getLi($this->_post)]);
 				case 'finish':
 					Response::fail("This $thing has not been reserved by anypony yet");
 				case 'reserve':
@@ -207,15 +207,15 @@ class PostController extends Controller {
 
 				CoreUtils::checkDeviationInClub($this->_post->deviation_id);
 
-				if (!$Database->where('id', $this->_post->id)->update("{$thing}s", array('lock' => true)))
+				if (!$Database->where('id', $this->_post->id)->update("{$thing}s", ['lock' => true]))
 					Response::dbError();
 
 				$postdata = Posts::approve($thing, $this->_post->id, !$isUserReserver ? $this->_post->reserved_by : null);
 
 				$this->_post->lock = true;
-				$response = array(
+				$response = [
 					'message' => "The image appears to be in the group gallery and as such it is now marked as approved.",
-				);
+				];
 				try {
 					CoreUtils::socketEvent('post-update',[
 						'id' => $this->_post->id,
@@ -241,7 +241,7 @@ class PostController extends Controller {
 				if (Permission::insufficient('developer') && CoreUtils::isDeviationInClub($this->_post->deviation_id) === true)
 					Response::fail("<a href='http://fav.me/{$this->_post->deviation_id}' target='_blank' rel='noopener'>This deviation</a> is part of the group gallery, which prevents the post from being unlocked.");
 
-				$Database->where('id', $this->_post->id)->update("{$thing}s", array('lock' => false));
+				$Database->where('id', $this->_post->id)->update("{$thing}s", ['lock' => false]);
 				$this->_post->lock = false;
 
 				try {
@@ -264,10 +264,10 @@ class PostController extends Controller {
 					Response::fail("You must unfinish this $thing before unreserving it.");
 
 				if ($thing === 'request'){
-					$update = array(
+					$update = [
 						'reserved_by' => null,
 						'reserved_at' => null,
-					);
+					];
 					break;
 				}
 				else $_REQUEST['unbind'] = true;
@@ -295,10 +295,10 @@ class PostController extends Controller {
 					else if ($thing === 'request' && Permission::insufficient('staff') && !$isUserReserver)
 						Response::fail('You cannot remove the reservation from this post');
 
-					$update = array(
+					$update = [
 						'reserved_by' => null,
 						'reserved_at' => null,
-					);
+					];
 				}
 				else if ($thing === 'reservation' && empty($this->_post->preview))
 					Response::fail('This reservation was added directly and cannot be marked unfinished. To remove it, check the unbind from user checkbox.');
@@ -333,10 +333,10 @@ class PostController extends Controller {
 				if (!$Database->where('id', $this->_post->id)->update("{$thing}s",$update))
 					Response::dbError();
 
-				$postdata = array(
+				$postdata = [
 					'type' => $thing,
 					'id' => $this->_post->id
-				);
+				];
 				$message = '';
 				if (isset($update['lock'])){
 					$message .= "<p>The image appears to be in the group gallery already, so we marked it as approved.</p>";
@@ -369,13 +369,13 @@ class PostController extends Controller {
 			break;
 			case 'reserve':
 				if ($isUserReserver)
-					Response::fail("You've already reserved this $thing", array('li' => Posts::getLi($this->_post)));
+					Response::fail("You've already reserved this $thing", ['li' => Posts::getLi($this->_post)]);
 				if (!$this->_post->isOverdue())
-					Response::fail("This $thing has already been reserved by ".Users::get($this->_post->reserved_by)->getProfileLink(), array('li' => Posts::getLi($this->_post)));
-				$overdue = array(
+					Response::fail("This $thing has already been reserved by ".Users::get($this->_post->reserved_by)->getProfileLink(), ['li' => Posts::getLi($this->_post)]);
+				$overdue = [
 					'reserved_by' => $this->_post->reserved_by,
 					'reserved_at' => $this->_post->reserved_at,
-				);
+				];
 				$update['reserved_by'] = Auth::$user->id;
 				Posts::checkReserveAs($update);
 				$update['reserved_at'] = date('c');
@@ -389,10 +389,10 @@ class PostController extends Controller {
 
 		if (!empty($overdue))
 			Logs::logAction('res_overtake',array_merge(
-				array(
+				[
 					'id' => $this->_post->id,
 					'type' => $thing
-				),
+				],
 				$overdue
 			));
 
@@ -449,10 +449,10 @@ class PostController extends Controller {
 
 		$Image = $this->_checkImage();
 
-		Response::done(array(
+		Response::done([
 			'preview' => $Image->preview,
 			'title' => $Image->title,
-		));
+		]);
 	}
 
 	function add(){
@@ -463,11 +463,11 @@ class PostController extends Controller {
 		$thing = (new Input('what',function($value){
 			if (!in_array($value,Posts::TYPES))
 				return Input::ERROR_INVALID;
-		},array(
-			Input::CUSTOM_ERROR_MESSAGES => array(
+		}, [
+			Input::CUSTOM_ERROR_MESSAGES => [
 				Input::ERROR_INVALID => 'Post type (@value) is invalid',
-			)
-		)))->out();
+			]
+		]))->out();
 
 		if ($thing === 'reservation'){
 			if (Permission::insufficient('member'))
@@ -481,10 +481,10 @@ class PostController extends Controller {
 			Response::fail('Getting post image failed. If this persists, please <a class="send-feedback">let us know</a>.');
 		}
 
-		$insert = array(
+		$insert = [
 			'preview' => $Image->preview,
 			'fullsize' => $Image->fullsize,
-		);
+		];
 
 		$season = Episodes::validateSeason(Episodes::ALLOW_MOVIES);
 		$episode = Episodes::validateEpisode();
@@ -504,7 +504,7 @@ class PostController extends Controller {
 					Response::fail('The user you wanted to post as does not exist');
 
 				if ($thing === 'reservation' && !Permission::sufficient('member', $PostAs->role) && !isset($_POST['allow_nonmember']))
-					Response::fail('The user you wanted to post as is not a club member, do you want to post as them anyway?',array('canforce' => true));
+					Response::fail('The user you wanted to post as is not a club member, do you want to post as them anyway?', ['canforce' => true]);
 
 				$ByID = $PostAs->id;
 			}
@@ -529,7 +529,7 @@ class PostController extends Controller {
 			error_log("SocketEvent Error\n".$e->getMessage()."\n".$e->getTraceAsString());
 		}
 
-		Response::done(array('id' => "$thing-$PostID"));
+		Response::done(['id' => "$thing-$PostID"]);
 	}
 
 	/** @var Request|Reservation */
@@ -568,7 +568,7 @@ class PostController extends Controller {
 		if (!empty($this->_post->reserved_by))
 			Posts::clearTransferAttempts($this->_post, $params['thing'], 'del');
 
-		Logs::logAction('req_delete',array(
+		Logs::logAction('req_delete', [
 			'season' =>       $this->_post->season,
 			'episode' =>      $this->_post->episode,
 			'id' =>           $this->_post->id,
@@ -579,7 +579,7 @@ class PostController extends Controller {
 			'reserved_by' =>  $this->_post->reserved_by,
 			'deviation_id' => $this->_post->deviation_id,
 			'lock' =>         $this->_post->lock,
-		));
+		]);
 		try {
 			CoreUtils::socketEvent('post-delete',[
 				'id' => $this->_post->id,
@@ -605,11 +605,11 @@ class PostController extends Controller {
 			Posts::clearTransferAttempts($this->_post, $params['thing'], 'free', Auth::$user->id, $reserved_by);
 			if (!Users::reservationLimitExceeded(RETURN_AS_BOOL)){
 				$message .= '<br>Would you like to reserve it now?';
-				$data = array('canreserve' => true);
+				$data = ['canreserve' => true];
 			}
 			else {
 				$message .= "<br>However, you have 4 reservations already which means you can’t reserve any more posts. Please review your pending reservations on your <a href='/user'>Account page</a> and cancel/finish at least one before trying to take on another.";
-				$data = array();
+				$data = [];
 			}
 		};
 
@@ -639,11 +639,11 @@ class PostController extends Controller {
 		if (!empty($PreviousAttempts[0]) && empty($PreviousAttempts[0]['read_at']))
 			Response::fail("You already expressed your interest in this post to $ReserverLink ".Time::tag($PreviousAttempts[0]['sent_at']).', please wait for them to respond.');
 
-		$notifSent = Notifications::send($this->_post->reserved_by,'post-passon',array(
+		$notifSent = Notifications::send($this->_post->reserved_by,'post-passon', [
 			'type' => $params['thing'],
 			'id' => $this->_post->id,
 			'user' => Auth::$user->id,
-		));
+		]);
 
 		Response::success("A notification has been sent to $ReserverLink, please wait for them to react.<br>If they don’t visit the site often, it’d be a good idea to send them a note asking them to consider your inquiry.");
 	}
@@ -670,33 +670,33 @@ class PostController extends Controller {
 				break;
 			};
 
-		$image_url = (new Input('image_url','string',array(
-			Input::CUSTOM_ERROR_MESSAGES => array(
+		$image_url = (new Input('image_url','string', [
+			Input::CUSTOM_ERROR_MESSAGES => [
 				Input::ERROR_MISSING => 'Image URL is missing',
-			)
-		)))->out();
+			]
+		]))->out();
 		$Image = Posts::checkImage($image_url, $this->_post);
 
 		// Check image availability
 		if (!DeviantArt::isImageAvailable($Image->preview))
 			Response::fail("<p class='align-center'>The specified image doesn’t seem to exist. Please verify that you can reach the URL below and try again.<br><a href='{$Image->preview}' target='_blank' rel='noopener'>{$Image->preview}</a></p>");
 
-		$update = array(
+		$update = [
 			'preview' => $Image->preview,
 			'fullsize' => $Image->fullsize,
 			'broken' => 0,
-		);
+		];
 		if (!$Database->where('id', $this->_post->id)->update("{$thing}s",$update))
 			Response::dbError();
 
-		Logs::logAction('img_update',array(
+		Logs::logAction('img_update', [
 			'id' => $this->_post->id,
 			'thing' => $thing,
 			'oldpreview' => $this->_post->preview,
 			'oldfullsize' => $this->_post->fullsize,
 			'newpreview' => $Image->preview,
 			'newfullsize' => $Image->fullsize,
-		));
+		]);
 
 		$wasBroken = $this->_post->broken;
 		$this->_post->__construct($update);
@@ -717,7 +717,7 @@ class PostController extends Controller {
 
 		// Link is already full size, we're done
 		if (preg_match($FULLSIZE_MATCH_REGEX, $this->_post->fullsize))
-			Response::done(array('fullsize' => $this->_post->fullsize));
+			Response::done(['fullsize' => $this->_post->fullsize]);
 
 		// Reverse submission lookup
 		$StashItem = $Database
@@ -732,15 +732,15 @@ class PostController extends Controller {
 			if (!is_string($fullsize)){
 				if ($fullsize === 404){
 					$Database->where('provider', 'sta.sh')->where('id', $StashItem['id'])->delete('cached-deviations');
-					$Database->where('preview', $StashItem['preview'])->orWhere('fullsize', $StashItem['fullsize'])->update('requests',array(
+					$Database->where('preview', $StashItem['preview'])->orWhere('fullsize', $StashItem['fullsize'])->update('requests', [
 						'fullsize' => null,
 						'preview' => null,
-					));
-					$Database->where('preview', $StashItem['preview'])->orWhere('fullsize', $StashItem['fullsize'])->update('reservations',array(
+					]);
+					$Database->where('preview', $StashItem['preview'])->orWhere('fullsize', $StashItem['fullsize'])->update('reservations', [
 						'fullsize' => null,
 						'preview' => null,
-					));
-					Response::fail('The original image has been deleted from Sta.sh',array('rmdirect' => true));
+					]);
+					Response::fail('The original image has been deleted from Sta.sh', ['rmdirect' => true]);
 				}
 				else throw new \Exception("Code $fullsize; Could not find the URL");
 			}
@@ -752,11 +752,11 @@ class PostController extends Controller {
 		if (!DeviantArt::isImageAvailable($fullsize))
 			Response::fail("The specified image doesn’t seem to exist. Please verify that you can reach the URL below and try again.<br><a href='$fullsize' target='_blank' rel='noopener'>$fullsize</a>");
 
-		if (!$Database->where('id', $this->_post->id)->update("{$thing}s",array(
+		if (!$Database->where('id', $this->_post->id)->update("{$thing}s", [
 			'fullsize' => $fullsize,
-		))) Response::dbError();
+		])) Response::dbError();
 
-		Response::done(array('fullsize' => $fullsize));
+		Response::done(['fullsize' => $fullsize]);
 	}
 
 	function addReservation(){
@@ -771,12 +771,12 @@ class PostController extends Controller {
 		if (empty($insert['reserved_by']))
 			$insert['reserved_by'] = Auth::$user->id;
 
-		$epdata = (new Input('epid','epid',array(
-			Input::CUSTOM_ERROR_MESSAGES => array(
+		$epdata = (new Input('epid','epid', [
+			Input::CUSTOM_ERROR_MESSAGES => [
 				Input::ERROR_MISSING => 'Episode identifier is missing',
 				Input::ERROR_INVALID => 'Episode identifier (@value) is invalid',
-			)
-		)))->out();
+			]
+		]))->out();
 		$epdata = Episodes::getActual($epdata['season'], $epdata['episode']);
 		if (empty($epdata))
 			Response::fail('The specified episode does not exist');
@@ -790,10 +790,10 @@ class PostController extends Controller {
 			Response::dbError();
 
 		if (!empty($insert['lock']))
-			Logs::logAction('post_lock',array(
+			Logs::logAction('post_lock', [
 				'type' => 'reservation',
 				'id' => $PostID,
-			));
+			]);
 
 		try {
 			CoreUtils::socketEvent('post-add',[
@@ -813,7 +813,7 @@ class PostController extends Controller {
 	function share($params){
 		global $Database;
 
-		$params['thing'] .= (array('req' => 'uest', 'res' => 'ervation'))[$params['thing']];
+		$params['thing'] .= (['req' => 'uest', 'res' => 'ervation'])[$params['thing']];
 
 		/** @var $LinkedPost Post */
 		$LinkedPost = $Database->where('id', $params['id'])->getOne("{$params['thing']}s");

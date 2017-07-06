@@ -2,7 +2,6 @@
 
 namespace App;
 
-use App\Appearances;
 use App\Models\Episode;
 use App\Models\EpisodeVideo;
 use App\Models\EpisodeVote;
@@ -11,10 +10,10 @@ use App\Models\Post;
 
 class Episodes {
 	const TITLE_CUTOFF = 26;
-	static $ALLOWED_PREFIXES = array(
+	static $ALLOWED_PREFIXES = [
 		'Equestria Girls' => 'EQG',
 		'My Little Pony' => 'MLP',
-	);
+	];
 
 	/**
 	 * Returns all episodes from the database, properly sorted
@@ -147,7 +146,7 @@ class Episodes {
 		if ($serverSideRedirect)
 			CoreUtils::fixPath($url);
 
-		$js = array('imagesloaded.pkgd','jquery.fluidbox','Chart','episode','episode-manage');
+		$js = ['imagesloaded.pkgd', 'jquery.fluidbox', 'Chart', 'episode', 'episode-manage'];
 		if (Permission::sufficient('staff')){
 			$js[] = 'moment-timezone';
 			$js[] = 'episodes-manage';
@@ -179,7 +178,7 @@ class Episodes {
 		}
 
 		$heading = $CurrentEpisode->formatTitle();
-		CoreUtils::loadPage(array(
+		CoreUtils::loadPage([
 			'title' => "$heading - Vector Requests & Reservations",
 			'heading' => $heading,
 			'view' => 'episode',
@@ -192,7 +191,7 @@ class Episodes {
 				'NextEpisode' => $NextEpisode,
 				'LinkedPost' => $LinkedPost,
 			],
-		));
+		]);
 	}
 
 	/**
@@ -234,7 +233,7 @@ class Episodes {
 		$Parts = 0;
 		$embed = '';
 		if (!empty($EpVideos)){
-			$Videos = array();
+			$Videos = [];
 			foreach ($EpVideos as $v)
 				$Videos[$v->provider][$v->part] = $v;
 			// YouTube embed preferred
@@ -251,14 +250,14 @@ class Episodes {
 	}
 
 	static
-		$VIDEO_PROVIDER_NAMES = array(
+		$VIDEO_PROVIDER_NAMES = [
 			'yt' => 'YouTube',
 			'dm' => 'Dailymotion',
-		),
-		$PROVIDER_BTN_CLASSES = array(
+	],
+		$PROVIDER_BTN_CLASSES = [
 			'yt' => 'red typcn-social-youtube',
 			'dm' => 'darkblue typcn-video',
-		);
+	];
 	/**
 	 * Renders the HTML of the "Watch the Episode" section along with the buttons/links
 	 *
@@ -434,7 +433,7 @@ HTML;
 				$ret .=  "{$diff['day']} day".($diff['day']!==1?'s':'').' & ';
 			if (!empty($diff['hour']))
 				$ret .= "{$diff['hour']}:";
-			foreach (array('minute','second') as $k)
+			foreach (['minute', 'second'] as $k)
 				$diff[$k] = CoreUtils::pad($diff[$k]);
 			$timec = date('c',$timestamp);
 			return "<time datetime='$timec'>$ret{$diff['minute']}:{$diff['second']} $tz</time>";
@@ -498,7 +497,7 @@ HTML;
 		else {
 			$sn = CoreUtils::pad($Episode->season);
 			$en = CoreUtils::pad($Episode->episode);
-			$EpTagIDs = array();
+			$EpTagIDs = [];
 			$EpTagPt1 = $Database->where('name',"s{$sn}e{$en}")->where('type','ep')->getOne('tags','tid');
 			if (!empty($EpTagPt1))
 				$EpTagIDs[] = $EpTagPt1['tid'];
@@ -523,7 +522,7 @@ HTML;
 				FROM tagged t
 				LEFT JOIN appearances p ON t.ponyid = p.id
 				WHERE t.tid IN (".implode(',',$EpTagIDs).") && p.ishuman = ?
-				ORDER BY p.label",array($Episode->isMovie));
+				ORDER BY p.label", [$Episode->isMovie]);
 
 			if (!empty($TaggedAppearances)){
 				$hidePreviews = UserPrefs::get('ep_noappprev');
@@ -569,25 +568,25 @@ HTML;
 	}
 
 	static function validateSeason($allowMovies = false){
-		return (new Input('season','int',array(
+		return (new Input('season','int', [
 			Input::IN_RANGE => [$allowMovies ? 0 : 1, 8],
-			Input::CUSTOM_ERROR_MESSAGES => array(
+			Input::CUSTOM_ERROR_MESSAGES => [
 				Input::ERROR_MISSING => 'Season number is missing',
 				Input::ERROR_INVALID => 'Season number (@value) is invalid',
 				Input::ERROR_RANGE => 'Season number must be between @min and @max',
-			)
-		)))->out();
+			]
+		]))->out();
 	}
 	static function validateEpisode($optional = false, $EQG = false){
 		$FieldName = $EQG ? 'Overall movie number' : 'Episode number';
-		return (new Input('episode','int',array(
+		return (new Input('episode','int', [
 			Input::IS_OPTIONAL => $optional,
 			Input::IN_RANGE => [1,26],
-			Input::CUSTOM_ERROR_MESSAGES => array(
+			Input::CUSTOM_ERROR_MESSAGES => [
 				Input::ERROR_MISSING => "$FieldName is missing",
 				Input::ERROR_INVALID => "$FieldName (@value) is invalid",
 				Input::ERROR_RANGE => "$FieldName must be between @min and @max",
-			)
-		)))->out();
+			]
+		]))->out();
 	}
 }

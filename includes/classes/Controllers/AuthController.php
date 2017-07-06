@@ -7,12 +7,10 @@ use App\CoreUtils;
 use App\CSRFProtection;
 use App\Cookie;
 use App\DeviantArt;
-use App\Episodes;
 use App\HTTP;
 use App\Permission;
 use App\RegExp;
 use App\Response;
-use App\UserPrefs;
 use App\Users;
 use App\Models\User;
 use App\Exceptions\CURLRequestException;
@@ -71,7 +69,7 @@ class AuthController extends Controller {
 
 		if (isset($_REQUEST['unlink'])){
 			try {
-				DeviantArt::request('https://www.deviantart.com/oauth2/revoke', null, array('token' => Auth::$session->access));
+				DeviantArt::request('https://www.deviantart.com/oauth2/revoke', null, ['token' => Auth::$session->access]);
 			}
 			catch (CURLRequestException $e){
 				Response::fail("Could not revoke the site’s access: {$e->getMessage()} (HTTP {$e->getCode()})");

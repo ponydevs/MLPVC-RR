@@ -25,15 +25,15 @@ use App\Tags;
 	<?=$Pagination->HTML . Appearances::getHTML($Ponies, WRAP, Permission::sufficient('staff') || $isOwner) . $Pagination->HTML?>
 </div>
 
-<?  $export = array(
+<?  $export = [
 		'EQG' => false,
 		'AppearancePage' => false,
 		'PersonalGuide' => $Owner->name,
-	);
+];
 	if (Permission::sufficient('staff') || $isOwner)
-		$export = array_merge($export, array(
+		$export = array_merge($export, [
 			'TAG_TYPES_ASSOC' => Tags::$TAG_TYPES_ASSOC,
 			'MAX_SIZE' => CoreUtils::getMaxUploadSize(),
 			'HEX_COLOR_PATTERN' => $HEX_COLOR_REGEX,
-		));
+		]);
 	echo CoreUtils::exportVars($export); ?>

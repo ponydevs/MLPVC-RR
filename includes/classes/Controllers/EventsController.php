@@ -3,7 +3,6 @@
 namespace App\Controllers;
 use App\CoreUtils;
 use App\Events;
-use App\Models\Event;
 use App\Pagination;
 use App\Permission;
 
@@ -24,7 +23,7 @@ class EventsController extends Controller {
 		if (isset($_GET['js']))
 			$Pagination->respond(Events::getListHTML($Events, NOWRAP), '#event-list');
 
-		$js = array('paginate'/*, $this->do*/);
+		$js = ['paginate'/*, $this->do*/];
 		if (Permission::sufficient('staff'))
 			$js[] = "{$this->do}-manage";
 

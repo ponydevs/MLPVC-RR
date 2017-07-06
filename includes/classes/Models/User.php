@@ -110,7 +110,7 @@ class User extends AbstractUser {
 		global $Database;
 		$PendingReservations = $Database->rawQuery(
 			'SELECT (SELECT COUNT(*) FROM requests WHERE reserved_by = :uid && deviation_id IS NULL)+(SELECT COUNT(*) FROM reservations WHERE reserved_by = :uid && deviation_id IS NULL) as amount',
-			array('uid' => $this->id)
+			['uid' => $this->id]
 		);
 		return $PendingReservations['amount'] ?? 0;
 	}
@@ -124,14 +124,14 @@ class User extends AbstractUser {
 	 */
 	 function updateRole(string $newgroup):bool {
 		global $Database;
-		$response = $Database->where('id', $this->id)->update('users', array('role' => $newgroup));
+		$response = $Database->where('id', $this->id)->update('users', ['role' => $newgroup]);
 
 		if ($response){
-			Logs::logAction('rolechange', array(
+			Logs::logAction('rolechange', [
 				'target' => $this->id,
 				'oldrole' => $this->role,
 				'newrole' => $newgroup
-			));
+			]);
 		}
 
 		return (bool)$response;
@@ -233,11 +233,11 @@ class User extends AbstractUser {
 			WHERE d.author = ? && p.owner IS NULL";
 
 		if ($count)
-			return $Database->rawQuerySingle($query, array($this->name))['cnt'];
+			return $Database->rawQuerySingle($query, [$this->name])['cnt'];
 
 		if ($pagination)
 			$query .= ' ORDER BY p.order ASC '.$pagination->getLimitString();
-		return $Database->setClass(Cutiemark::class)->rawQuery($query, array($this->name));
+		return $Database->setClass(Cutiemark::class)->rawQuery($query, [$this->name]);
 
 	}
 
@@ -293,7 +293,7 @@ class User extends AbstractUser {
 					(SELECT COUNT(*) FROM requests WHERE reserved_by = :userid && deviation_id IS NOT NULL)
 					+
 					(SELECT COUNT(*) FROM reservations WHERE reserved_by = :userid && deviation_id IS NOT NULL)
-				as cnt', array('userid' => $this->id))['cnt'];
+				as cnt', ['userid' => $this->id])['cnt'];
 
 		$cols = "id, label, posted, reserved_by, preview, lock, season, episode, deviation_id";
 		/** @noinspection SqlInsertValues */
@@ -305,7 +305,7 @@ class User extends AbstractUser {
 			) t";
 		if ($pagination)
 			$query .= ' ORDER BY posted DESC '.$pagination->getLimitString();
-		return $Database->rawQuery($query, array('userid' => $this->id));
+		return $Database->rawQuery($query, ['userid' => $this->id]);
 	}
 
 	/**
@@ -360,7 +360,7 @@ class User extends AbstractUser {
 			'SELECT COUNT(v.entryid) as cnt
 			FROM log l
 			LEFT JOIN log__video_broken v ON l.refid = v.entryid
-			WHERE l.initiator = ?',array($this->id))['cnt'];
+			WHERE l.initiator = ?', [$this->id])['cnt'];
 		if ($brokenVid > 0)
 			$contribs[] = [$brokenVid, 'broken video', 'reported'];
 
@@ -369,7 +369,7 @@ class User extends AbstractUser {
 			'SELECT COUNT(p.entryid) as cnt
 			FROM log l
 			LEFT JOIN log__post_lock p ON l.refid = p.entryid
-			WHERE l.initiator = ?',array($this->id))['cnt'];
+			WHERE l.initiator = ?', [$this->id])['cnt'];
 		if ($approvedPosts > 0)
 			$contribs[] = [$approvedPosts, 'post', 'marked approved'];
 

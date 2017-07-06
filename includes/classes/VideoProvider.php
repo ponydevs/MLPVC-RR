@@ -15,10 +15,10 @@ class VideoProvider {
 		self::$id = $this->episodeVideo->id;
 		self::getEmbed($this->episodeVideo);
 	}
-	private static $providerRegexes = array(
+	private static $providerRegexes = [
 		'youtu(?:\.be/|be.com/watch.*[&?]v=)([^&?=]+)(?:&|$)' => 'yt',
 		'dai(?:\.ly/|lymotion.com/video/(?:embed/)?)([a-z\d]+)(?:_|$)' => 'dm'
-	);
+	];
 
 	/**
 	 * @param string $url
@@ -28,12 +28,12 @@ class VideoProvider {
 	 * @return EpisodeVideo|null
 	 */
 	private static function testProvider(string $url, string $pattern, string $name) {
-		$match = array();
+		$match = [];
 		if (preg_match(new RegExp("^(?:https?://(?:www\\.)?)?$pattern"), $url, $match))
-			return new EpisodeVideo(array(
+			return new EpisodeVideo([
 				'provider' => $name,
 				'id' => $match[1]
-			));
+			]);
 		return null;
 	}
 	public static function getEpisodeVideo(string $url): EpisodeVideo {

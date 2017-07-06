@@ -33,6 +33,6 @@ HTML;
 	<?=$Pagination->HTML?>
 </div>
 
-<?  echo CoreUtils::exportVars(array(
+<?  echo CoreUtils::exportVars([
 		'TAG_TYPES_ASSOC' => Tags::$TAG_TYPES_ASSOC,
-	));
+]);

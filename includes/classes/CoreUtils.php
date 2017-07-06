@@ -35,7 +35,7 @@ class CoreUtils {
 			$merged = $query_assoc;
 			foreach ($fix_query_assoc as $key => $item)
 				$merged[$key] = $item;
-			$fix_query_arr = array();
+			$fix_query_arr = [];
 			foreach ($merged as $key => $item){
 				if (!isset($item) || $item !== self::FIXPATH_EMPTY)
 					$fix_query_arr[] = $key.(!empty($item)?'='.urlencode($item):'');
@@ -54,7 +54,7 @@ class CoreUtils {
 	 * @return array
 	 */
 	static function queryStringAssoc($query){
-		$assoc = array();
+		$assoc = [];
 		if (!empty($query))
 			parse_str(ltrim($query, '?'), $assoc);
 		return $assoc;
@@ -77,7 +77,7 @@ class CoreUtils {
 	}
 
 	// Possible notice types
-	static $NOTICE_TYPES = array('info','success','fail','warn','caution');
+	static $NOTICE_TYPES = ['info', 'success', 'fail', 'warn', 'caution'];
 	/**
 	 * Renders the markup of an HTML notice
 	 *
@@ -128,10 +128,10 @@ class CoreUtils {
 		HTTP::statusCode(404);
 		global $do;
 		$do = '404';
-		self::loadPage(array(
+		self::loadPage([
 			'title' => '404',
 			'view' => '404',
-		));
+		]);
 	}
 
 	/**
@@ -171,15 +171,15 @@ class CoreUtils {
 			$redirectto = $options['url'];
 
 		# CSS
-		$DEFAULT_CSS = array('theme');
-		$customCSS = array();
+		$DEFAULT_CSS = ['theme'];
+		$customCSS = [];
 		// Only add defaults when needed
 		if (array_search('no-default-css', $options) === false)
 			$customCSS = array_merge($customCSS, $DEFAULT_CSS);
 
 		# JavaScript
-		$DEFAULT_JS = array('moment','jquery.ba-throttle-debounce','shared-utils','global','inert','dialog','dragscroll');
-		$customJS = array();
+		$DEFAULT_JS = ['moment', 'jquery.ba-throttle-debounce', 'shared-utils', 'global', 'inert', 'dialog', 'dragscroll'];
+		$customJS = [];
 		// Only add defaults when needed
 		if (array_search('no-default-js', $options) === false)
 			$customJS = array_merge($customJS, $DEFAULT_JS);
@@ -219,7 +219,7 @@ class CoreUtils {
 			ob_start();
 			require $view;
 			$content = ob_get_clean();
-			Response::done(array(
+			Response::done([
 				'css' => $customCSS,
 				'js' => $customJS,
 				'title' => (isset($GLOBALS['title'])?$GLOBALS['title'].' - ':'').SITE_TITLE,
@@ -229,7 +229,7 @@ class CoreUtils {
 				'avatar' => Auth::$signed_in ? Auth::$user->avatar_url : GUEST_AVATAR,
 				'responseURL' => $_SERVER['REQUEST_URI'],
 				'signedIn' => Auth::$signed_in,
-			));
+			]);
 		}
 	}
 
@@ -350,7 +350,7 @@ class CoreUtils {
 	 */
 	static function getMaxUploadSize($sizes = null){
 		if (!isset($sizes))
-			$sizes = array(ini_get('post_max_size'), ini_get('upload_max_filesize'));
+			$sizes = [ini_get('post_max_size'), ini_get('upload_max_filesize')];
 
 		$workWith = $sizes[0];
 		if ($sizes[1] !== $sizes[0]){
@@ -420,7 +420,7 @@ class CoreUtils {
 	 */
 	static function sanitizeHtml(string $dirty_html, ?array $allowedTags = null, ?array $allowedAttributes = null){
 		$config = \HTMLPurifier_Config::createDefault();
-		$whitelist = array('strong','b','em','i');
+		$whitelist = ['strong', 'b', 'em', 'i'];
 		if (!empty($allowedTags))
 			$whitelist = array_merge($whitelist, $allowedTags);
 		$config->set('HTML.AllowedElements', $whitelist);
@@ -493,7 +493,7 @@ class CoreUtils {
 	 */
 	static function checkStringValidity($string, $Thing, $pattern, $returnError = false){
 		if (preg_match_all(new RegExp($pattern,'u'), $string, $fails)){
-			$invalid = array();
+			$invalid = [];
 			foreach ($fails[0] as $f)
 				if (!in_array($f, $invalid)){
 					switch ($f){
@@ -578,10 +578,10 @@ class CoreUtils {
 
 		// Navigation items
 		if (!$disabled){
-			$NavItems = array(
-				'latest' => array('/','Latest episode'),
-				'eps' => array('/episodes','Episodes'),
-			);
+			$NavItems = [
+				'latest' => ['/', 'Latest episode'],
+				'eps' => ['/episodes', 'Episodes'],
+			];
 			if ($do === 'episodes'){
 				if (isset($scope['Episodes']))
 					$NavItems['eps'][1] .= " - Page {$scope['Pagination']->page}";
@@ -593,7 +593,7 @@ class CoreUtils {
 					$NavItems['latest'][0] = $_SERVER['REQUEST_URI'];
 				else $NavItems['eps']['subitem'] = CoreUtils::cutoff($GLOBALS['heading'],Episodes::TITLE_CUTOFF);
 			}
-			$NavItems['colorguide'] = array("/cg".(!empty($scope['EQG'])?'/eqg':''), (!empty($scope['EQG'])?'EQG ':'')."Color Guide");
+			$NavItems['colorguide'] = ["/cg".(!empty($scope['EQG'])?'/eqg':''), (!empty($scope['EQG'])?'EQG ':'')."Color Guide"];
 			if ($do === 'cg'){
 				if (!empty($scope['Appearance']))
 					$NavItems['colorguide']['subitem'] = (isset($scope['Map'])?"Sprite Colors - ":'').Appearances::processLabel(CoreUtils::escapeHTML($scope['Appearance']['label']));
@@ -616,7 +616,7 @@ class CoreUtils {
 				}
 
 			}
-			$NavItems['events'] = array('/events','Events');
+			$NavItems['events'] = ['/events', 'Events'];
 			if ($do === 'events'){
 				if (isset($scope['Events']))
 					$NavItems['events'][1] .= " - Page {$scope['Pagination']->page}";
@@ -624,19 +624,19 @@ class CoreUtils {
 			if ($do === 'event' && isset($scope['Event']))
 				$NavItems['events']['subitem'] = CoreUtils::cutoff($scope['Event']->name, 20);
 			if (Auth::$signed_in){
-				$NavItems['u'] = array("/@".Auth::$user->name,'Account');
+				$NavItems['u'] = ["/@".Auth::$user->name, 'Account'];
 				if (isset($scope['nav_contrib']) && $scope['targetUser']->id === Auth::$user->id)
 					$NavItems['u']['subitem'] = "Your Contributions - Page {$scope['Pagination']->page}";
 				else if (isset($scope['Owner']) && $scope['Owner']->id === Auth::$user->id)
 					$NavItems['u']['subitem'] = 'Personal Color Guide';
 			}
 			if ($do === 'user' || Permission::sufficient('staff')){
-				$NavItems['users'] = array('/users', 'Users', Permission::sufficient('staff'));
+				$NavItems['users'] = ['/users', 'Users', Permission::sufficient('staff')];
 				if (!empty($scope['User']) && empty($scope['sameUser']))
 					$NavItems['users']['subitem'] = $scope['User']->name;
 			}
 			if (Permission::sufficient('staff')){
-				$NavItems['admin'] = array('/admin', 'Admin');
+				$NavItems['admin'] = ['/admin', 'Admin'];
 				global $LogItems;
 				if (isset($LogItems)){
 					global $Pagination;
@@ -645,15 +645,15 @@ class CoreUtils {
 				else if (isset($scope['nav_dsc']) || isset($scope['nav_wsdiag']))
 					$NavItems['admin']['subitem'] = $GLOBALS['heading'];
 			}
-			$NavItems[] = array('/about', 'About');
+			$NavItems[] = ['/about', 'About'];
 		}
-		else $NavItems = array(array(true, 'HTTP 503', false, 'subitem' => 'Service Temporarily Unavailable'));
+		else $NavItems = [[true, 'HTTP 503', false, 'subitem' => 'Service Temporarily Unavailable']];
 
 		self::$NavHTML = '';
 		foreach ($NavItems as $item){
 			$sublink = '';
 			if (isset($item['subitem'])){
-				list($class, $sublink) = self::_processHeaderLink(array(true, $item['subitem']));
+				list($class, $sublink) = self::_processHeaderLink([true, $item['subitem']]);
 				$sublink = " &rsaquo; $sublink";
 				$link = self::_processHeaderLink($item, HTML_ONLY);
 			}
@@ -694,7 +694,7 @@ class CoreUtils {
 		}
 		else $html = "<span>$label</span>";
 
-		return $htmlOnly === HTML_ONLY ? $html : array($class, $html);
+		return $htmlOnly === HTML_ONLY ? $html : [$class, $html];
 	}
 
 	/**
@@ -705,7 +705,7 @@ class CoreUtils {
 		if (!Auth::$signed_in) return;
 		$Links = $Database->orderBy('"order"','ASC')->get('usefullinks');
 
-		$Render = array();
+		$Render = [];
 		foreach ($Links as $l){
 			if (Permission::insufficient($l['minrole']))
 				continue;
@@ -794,7 +794,7 @@ class CoreUtils {
 		return preg_replace(new RegExp('s$'),'',$w);
 	}
 
-	private static $_uncountableWords = array('staff');
+	private static $_uncountableWords = ['staff'];
 
 	/**
 	 * Detect user's web browser based on user agent
@@ -804,7 +804,7 @@ class CoreUtils {
 	 * @return array
 	 */
 	static function detectBrowser($user_agent = null){
-		$Return = array('user_agent' => !empty($user_agent) ? $user_agent : $_SERVER['HTTP_USER_AGENT']);
+		$Return = ['user_agent' => !empty($user_agent) ? $user_agent : $_SERVER['HTTP_USER_AGENT']];
 		$browser = new Browser($Return['user_agent']);
 		$name = $browser->getBrowser();
 		if ($name !== Browser::BROWSER_UNKNOWN){
@@ -975,9 +975,9 @@ class CoreUtils {
 
 		global $Database;
 		if ($Database->where('id', $id)->where('provider', $prov)->has('cached-deviations'))
-			$Database->where('id', $id)->where('provider', $prov)->update('cached-deviations', array(
+			$Database->where('id', $id)->where('provider', $prov)->update('cached-deviations', [
 				'fullsize' => $fullsize_url
-			));
+			]);
 
 		return URL::makeHttps($fullsize_url);
 	}
@@ -1040,25 +1040,25 @@ class CoreUtils {
 	}
 
 	static function socketEvent(string $event, array $data){
-		$elephant = new \ElephantIO\Client(new SocketIOEngine('https://ws.'.WS_SERVER_DOMAIN.':8667', array(
-			'context' => array(
-				'http' => array(
+		$elephant = new \ElephantIO\Client(new SocketIOEngine('https://ws.'.WS_SERVER_DOMAIN.':8667', [
+			'context' => [
+				'http' => [
 					'header' => 'Cookie: access='.urlencode(WS_SERVER_KEY)
-				)
-			)
-		)));
+				]
+			]
+		]));
 
 		$elephant->initialize();
 		$elephant->emit($event, $data);
 		$elephant->close();
 	}
 
-	static $VECTOR_APPS = array(
+	static $VECTOR_APPS = [
 		'' => "(don’t show)",
 		'illustrator' => 'Adobe Illustrator',
 		'inkscape' => 'Inkscape',
 		'ponyscape' => 'Ponyscape',
-	);
+	];
 
 	static function yiq($hex){
 		$rgb = self::hex2Rgb($hex);
@@ -1090,13 +1090,13 @@ class CoreUtils {
 	 */
 	static function isURLAvailable(string $url, array $onlyFails = []):bool{
 		$ch = curl_init();
-		curl_setopt_array($ch, array(
+		curl_setopt_array($ch, [
 			CURLOPT_URL => $url,
 			CURLOPT_NOBODY => 1,
 			CURLOPT_FAILONERROR => 1,
 			CURLOPT_RETURNTRANSFER => 1,
 			CURLOPT_FOLLOWLOCATION => true,
-		));
+		]);
 		$available = curl_exec($ch) !== false;
 		$responseCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 		if ($available === false && !empty($onlyFails))

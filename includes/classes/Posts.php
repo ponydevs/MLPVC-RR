@@ -11,12 +11,12 @@ use App\Exceptions\MismatchedProviderException;
 
 class Posts {
 	const
-		TYPES = array('request','reservation'),
-		REQUEST_TYPES = array(
+		TYPES = ['request', 'reservation'],
+		REQUEST_TYPES = [
 			'chr' => 'Characters',
 			'obj' => 'Objects',
 			'bg' => 'Backgrounds',
-		);
+	];
 
 	/**
 	 * Retrieves requests & reservations for the episode specified
@@ -31,7 +31,7 @@ class Posts {
 	static function get(Episode $Episode, int $only = null, bool $showBroken = false){
 		global $Database;
 
-		$return = array();
+		$return = [];
 		if ($only !== ONLY_RESERVATIONS){
 			if ($showBroken === false)
 				$Database->where('broken != true');
@@ -87,13 +87,13 @@ class Posts {
 	static function checkPostDetails($thing, array &$array, $Post = null){
 		$editing = !empty($Post);
 
-		$label = (new Input('label','string',array(
+		$label = (new Input('label','string', [
 			Input::IS_OPTIONAL => true,
 			Input::IN_RANGE => [3,255],
-			Input::CUSTOM_ERROR_MESSAGES => array(
+			Input::CUSTOM_ERROR_MESSAGES => [
 				Input::ERROR_RANGE => 'The description must be between @min and @max characters'
-			)
-		)))->out();
+			]
+		]))->out();
 		if (isset($label)){
 			if (!$editing || $label !== $Post->label){
 				CoreUtils::checkStringValidity($label,'The description',INVERSE_PRINTABLE_ASCII_PATTERN);
@@ -107,14 +107,14 @@ class Posts {
 
 		if ($thing === 'request'){
 			$type = (new Input('type',function($value){
-				if (!in_array($value,array('chr','obj','bg')))
+				if (!in_array($value, ['chr', 'obj', 'bg']))
 					return Input::ERROR_INVALID;
-			},array(
+			}, [
 				Input::IS_OPTIONAL => true,
-				Input::CUSTOM_ERROR_MESSAGES => array(
+				Input::CUSTOM_ERROR_MESSAGES => [
 					Input::ERROR_INVALID => "Request type (@value) is invalid"
-				)
-			)))->out();
+				]
+			]))->out();
 			if (!isset($type) && !$editing)
 				respnd("Missing request type");
 
@@ -132,12 +132,12 @@ class Posts {
 		}
 
 		if (Permission::sufficient('developer')){
-			$posted = (new Input('posted','timestamp',array(
+			$posted = (new Input('posted','timestamp', [
 				Input::IS_OPTIONAL => true,
-				Input::CUSTOM_ERROR_MESSAGES => array(
+				Input::CUSTOM_ERROR_MESSAGES => [
 					Input::ERROR_INVALID => '"Posted" timestamp (@value) is invalid',
-				)
-			)))->out();
+				]
+			]))->out();
 			if (isset($posted) && $posted !== strtotime($Post->posted))
 				CoreUtils::set($array,'posted',date('c', $posted));
 
@@ -196,20 +196,20 @@ class Posts {
 	 */
 	static function checkRequestFinishingImage($ReserverID = null){
 		global $Database;
-		$deviation = (new Input('deviation','string',array(
-			Input::CUSTOM_ERROR_MESSAGES => array(
+		$deviation = (new Input('deviation','string', [
+			Input::CUSTOM_ERROR_MESSAGES => [
 				Input::ERROR_MISSING => 'Please specify a deviation URL',
-			)
-		)))->out();
+			]
+		]))->out();
 		try {
-			$Image = new ImageProvider($deviation, array('fav.me', 'dA'));
+			$Image = new ImageProvider($deviation, ['fav.me', 'dA']);
 
 			foreach (Posts::TYPES as $what){
 				if ($Database->where('deviation_id', $Image->id)->has("{$what}s"))
 					Response::fail("This exact deviation has already been marked as the finished version of a different $what");
 			}
 
-			$return = array('deviation_id' => $Image->id);
+			$return = ['deviation_id' => $Image->id];
 			$Deviation = DeviantArt::getCachedDeviation($Image->id);
 			if (!empty($Deviation->author)){
 				$Author = Users::get($Deviation->author, 'name');
@@ -220,7 +220,7 @@ class Posts {
 						$person = $sameUser ? 'you' : 'the user who reserved this post';
 						Response::fail("You've linked to an image which was not submitted by $person. If this was intentional, press Continue to proceed with marking the post finished <b>but</b> note that it will make {$Author->name} the new reserver.".($sameUser
 								? "<br><br>This means that you'll no longer be able to interact with this post until {$Author->name} or an administrator cancels the reservation on it."
-								: ''), array('retry' => true));
+								: ''), ['retry' => true]);
 					}
 
 					$return['reserved_by'] = $Author->id;
@@ -248,9 +248,9 @@ class Posts {
 	 * @return string|array
 	 */
 	static function getRequestsSection($Requests, bool $returnArranged = false, bool $loaders = false){
-		$Arranged = array('finished' => !$returnArranged ? '' : array());
+		$Arranged = ['finished' => !$returnArranged ? '' : []];
 		if (!$returnArranged){
-			$Arranged['unfinished'] = array();
+			$Arranged['unfinished'] = [];
 			$Arranged['unfinished']['bg'] =
 			$Arranged['unfinished']['obj'] =
 			$Arranged['unfinished']['chr'] = $Arranged['finished'];
@@ -312,9 +312,9 @@ HTML;
 	 * @return string|array
 	 */
 	static function getReservationsSection($Reservations, bool $returnArranged = false, bool $loaders = false){
-		$Arranged = array();
+		$Arranged = [];
 		$Arranged['unfinished'] =
-		$Arranged['finished'] = !$returnArranged ? '' : array();
+		$Arranged['finished'] = !$returnArranged ? '' : [];
 
 		if (!empty($Reservations) && is_array($Reservations)){
 			foreach ($Reservations as $Reservation){
@@ -442,13 +442,13 @@ HTML;
 			->get('notifications',null,$cols);
 	}
 
-	const TRANSFER_ATTEMPT_CLEAR_REASONS = array(
+	const TRANSFER_ATTEMPT_CLEAR_REASONS = [
 		'del' => 'the post was deleted',
 		'snatch' => 'the post was reserved by someone else',
 		'deny' => 'the post was transferred to someone else',
 		'perm' => 'the previous reserver could no longer act on the post',
 		'free' => 'the post became free for anyone to reserve',
-	);
+	];
 
 	/**
 	 * @param Post        $Post
@@ -466,7 +466,7 @@ HTML;
 		$Database->where('read_at IS NULL');
 		$TransferAttempts = Posts::getTransferAttempts($Post, $type, $sent_by, $reserved_by, 'id,data');
 		if (!empty($TransferAttempts)){
-			$SentFor = array();
+			$SentFor = [];
 			foreach ($TransferAttempts as $n){
 				Notifications::safeMarkRead($n['id']);
 
@@ -474,11 +474,11 @@ HTML;
 				if (!empty($SentFor[$data['user']][$reason]["{$data['type']}-{$data['id']}"]))
 					continue;
 
-				Notifications::send($data['user'], "post-pass$reason", array(
+				Notifications::send($data['user'], "post-pass$reason", [
 					'id' => $data['id'],
 					'type' => $data['type'],
 					'by' => Auth::$user->id,
-				));
+				]);
 				$SentFor[$data['user']][$reason]["{$data['type']}-{$data['id']}"] = true;
 			}
 		}
@@ -560,7 +560,7 @@ HTML;
 						LEFT JOIN log l ON l.reftype = 'post_lock' && l.refid = pl.entryid
 						WHERE type = ? && id = ?
 						ORDER BY pl.entryid ASC
-						LIMIT 1", array($type, $Post->id)
+						LIMIT 1", [$type, $Post->id]
 					);
 					$approverIsNotReserver = isset($LogEntry['initiator']) && $LogEntry['initiator'] !==  $Post->reserved_by;
 					$approvedby = $isStaff && isset($LogEntry['initiator'])
@@ -671,7 +671,7 @@ HTML;
 		$isNotReserved = empty($By);
 		$sameUser = Auth::$signed_in && $Post->reserved_by === Auth::$user->id;
 		$CanEdit = (empty($Post->lock) && Permission::sufficient('staff')) || Permission::sufficient('developer') || ($requestedByUser && $isNotReserved);
-		$Buttons = array();
+		$Buttons = [];
 
 		$HTML = self::getPostReserveButton($Post, $By, $view_only);
 		if (!empty($Post->reserved_by)){
@@ -679,30 +679,30 @@ HTML;
 			$staffOrSameUser = ($sameUser && Permission::sufficient('member')) || Permission::sufficient('staff');
 			if (!$finished){
 				if (!$sameUser && Permission::sufficient('member') && $Post->isTransferable() && !$Post->isOverdue())
-					$Buttons[] = array('user-add darkblue pls-transfer', 'Take on');
+					$Buttons[] = ['user-add darkblue pls-transfer', 'Take on'];
 				if ($staffOrSameUser){
-					$Buttons[] = array('user-delete red cancel', 'Cancel Reservation');
-					$Buttons[] = array('attachment green finish', ($sameUser ? "I'm" : 'Mark as').' finished');
+					$Buttons[] = ['user-delete red cancel', 'Cancel Reservation'];
+					$Buttons[] = ['attachment green finish', ($sameUser ? "I'm" : 'Mark as').' finished'];
 				}
 			}
 			if ($finished && empty($Post->lock)){
 				if (Permission::sufficient('staff'))
-					$Buttons[] = array((empty($Post->preview)?'trash delete-only red':'media-eject orange').' unfinish', empty($Post->preview)?'Delete':'Unfinish');
+					$Buttons[] = [(empty($Post->preview)?'trash delete-only red':'media-eject orange').' unfinish', empty($Post->preview)?'Delete':'Unfinish'];
 				if ($staffOrSameUser)
-					$Buttons[] = array('tick green check','Check');
+					$Buttons[] = ['tick green check', 'Check'];
 			}
 		}
 
 		if (empty($Post->lock) && empty($Buttons) && (Permission::sufficient('staff') || ($requestedByUser && $isNotReserved)))
-			$Buttons[] = array('trash red delete','Delete');
+			$Buttons[] = ['trash red delete', 'Delete'];
 		if ($CanEdit)
-			array_splice($Buttons,0,0,array(array('pencil darkblue edit','Edit')));
+			array_splice($Buttons,0,0, [['pencil darkblue edit', 'Edit']]);
 		if ($Post->lock && Permission::sufficient('staff'))
-			$Buttons[] = array('lock-open orange unlock','Unlock');
+			$Buttons[] = ['lock-open orange unlock', 'Unlock'];
 
 		$HTML .= "<div class='actions'>";
 		if (!$view_only)
-			$Buttons[] = array('export blue share', 'Share');
+			$Buttons[] = ['export blue share', 'Share'];
 		if (!empty($Buttons)){
 			if ($view_only)
 				$HTML .="<div><a href='$view_only' class='btn blue typcn typcn-arrow-forward'>View</a></div>";
@@ -730,13 +730,13 @@ HTML;
 	 */
 	static function approve($type, $id, $notifyUserID = null){
 		global $Database;
-		if (!$Database->where('id', $id)->update("{$type}s", array('lock' => true)))
+		if (!$Database->where('id', $id)->update("{$type}s", ['lock' => true]))
 			Response::dbError();
 
-		$postdata = array(
+		$postdata = [
 			'type' => $type,
 			'id' => $id
-		);
+		];
 		Logs::logAction('post_lock',$postdata);
 		if (!empty($notifyUserID))
 			Notifications::send($notifyUserID, 'post-approved', $postdata);
@@ -752,7 +752,7 @@ HTML;
 				if (empty($User))
 					Response::fail('User to reserve as does not exist');
 				if (!Permission::sufficient('member', $User->role) && !isset($_POST['screwit']))
-					Response::fail('The specified user does not have permission to reserve posts, continue anyway?', array('retry' => true));
+					Response::fail('The specified user does not have permission to reserve posts, continue anyway?', ['retry' => true]);
 
 				$update['reserved_by'] = $User->id;
 			}
@@ -760,34 +760,34 @@ HTML;
 	}
 
 	static function validateImageURL(){
-		return (new Input('image_url','string',array(
-			Input::CUSTOM_ERROR_MESSAGES => array(
+		return (new Input('image_url','string', [
+			Input::CUSTOM_ERROR_MESSAGES => [
 				Input::ERROR_MISSING => 'Please provide an image URL.',
-			)
-		)))->out();
+			]
+		]))->out();
 	}
 
 	static function validatePostAs(){
-		return Users::validateName('post_as', array(
+		return Users::validateName('post_as', [
 			Input::ERROR_INVALID => '"Post as" username (@value) is invalid',
-		));
+		]);
 	}
 
 	static function validateReservedAt(){
-		return (new Input('reserved_at','timestamp',array(
+		return (new Input('reserved_at','timestamp', [
 			Input::IS_OPTIONAL => true,
-			Input::CUSTOM_ERROR_MESSAGES => array(
+			Input::CUSTOM_ERROR_MESSAGES => [
 				Input::ERROR_INVALID => '"Reserved at" timestamp (@value) is invalid',
-			)
-		)))->out();
+			]
+		]))->out();
 	}
 
 	static function validateFinishedAt(){
-		return (new Input('finished_at','timestamp',array(
+		return (new Input('finished_at','timestamp', [
 			Input::IS_OPTIONAL => true,
-			Input::CUSTOM_ERROR_MESSAGES => array(
+			Input::CUSTOM_ERROR_MESSAGES => [
 				Input::ERROR_INVALID => '"Finished at" timestamp (@value) is invalid',
-			)
-		)))->out();
+			]
+		]))->out();
 	}
 }

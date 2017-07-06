@@ -1,7 +1,6 @@
 <?php
 use App\Auth;
 use App\CoreUtils;
-use App\DeviantArt;
 use App\Episodes;
 use App\GlobalSettings;
 use App\Permission;
@@ -72,10 +71,10 @@ use App\Models\Episode;
 <?php   }
 		echo Posts::getReservationsSection(null,false,true);
 		echo Posts::getRequestsSection(null,false,true);
-		$export = array(
+		$export = [
 			'SEASON' => $CurrentEpisode->season,
 			'EPISODE' => $CurrentEpisode->episode,
-		);
+		];
 		if (Permission::sufficient('developer'))
 			$export['USERNAME_REGEX'] = $USERNAME_REGEX;
 		if (Auth::$signed_in)

@@ -291,8 +291,8 @@ class Appearances {
 	static function sort($Appearances, $simpleArray = false){
 		global $Database;
 		$GroupTagIDs = array_keys(CGUtils::GROUP_TAG_IDS_ASSOC);
-		$Sorted = array();
-		$Tagged = array();
+		$Sorted = [];
+		$Tagged = [];
 		foreach ($Database->where('tid IN ('.implode(',',$GroupTagIDs).')')->orderBy('ponyid','ASC')->get('tagged') as $row)
 			$Tagged[$row['ponyid']][] = $row['tid'];
 		foreach ($Appearances as $p){
@@ -307,7 +307,7 @@ class Appearances {
 			$Sorted[$tid][] = $p;
 		}
 		if ($simpleArray){
-			$idArray = array();
+			$idArray = [];
 			foreach (CGUtils::GROUP_TAG_IDS_ASSOC as $Category => $CategoryName){
 				if (empty($Sorted[$Category]))
 					continue;
@@ -337,7 +337,7 @@ class Appearances {
 		$list = is_string($ids) ? explode(',', $ids) : $ids;
 		foreach ($list as $i => $id){
 			$order = $i+1;
-			if (!$Database->where('id', $id)->update('appearances', array('order' => $order)))
+			if (!$Database->where('id', $id)->update('appearances', ['order' => $order]))
 				Response::fail("Updating appearance #$id failed, process halted");
 
 			if ($elasticAvail)
@@ -376,68 +376,68 @@ class Appearances {
 			throw new \Exception('Template can only be applied to empty appearances');
 
 		$Scheme = $EQG
-			? array(
-				'Skin' => array(
+			? [
+				'Skin' => [
 					'Outline',
 					'Fill',
-				),
-				'Hair' => array(
+				],
+				'Hair' => [
 					'Outline',
 					'Fill',
-				),
-				'Eyes' => array(
+				],
+				'Eyes' => [
 					'Gradient Top',
 					'Gradient Middle',
 					'Gradient Bottom',
 					'Highlight Top',
 					'Highlight Bottom',
 					'Eyebrows',
-				),
-			)
-			: array(
-				'Coat' => array(
+				],
+			]
+			: [
+				'Coat' => [
 					'Outline',
 					'Fill',
 					'Shadow Outline',
 					'Shadow Fill',
-				),
-				'Mane & Tail' => array(
+				],
+				'Mane & Tail' => [
 					'Outline',
 					'Fill',
-				),
-				'Iris' => array(
+				],
+				'Iris' => [
 					'Gradient Top',
 					'Gradient Middle',
 					'Gradient Bottom',
 					'Highlight Top',
 					'Highlight Bottom',
-				),
-				'Cutie Mark' => array(
+				],
+				'Cutie Mark' => [
 					'Fill 1',
 					'Fill 2',
-				),
-				'Magic' => array(
+				],
+				'Magic' => [
 					'Aura',
-				),
-			);
+				],
+			];
 
 		$cgi = 0;
 		$ci = 0;
 		foreach ($Scheme as $GroupName => $ColorNames){
-			$GroupID = $Database->insert('colorgroups',array(
+			$GroupID = $Database->insert('colorgroups', [
 				'ponyid' => $AppearanceID,
 				'label' => $GroupName,
 				'order' => $cgi++,
-			), 'groupid');
+			], 'groupid');
 			if (!$GroupID)
 				throw new \Exception(rtrim("Color group \"$GroupName\" could not be created: ".$Database->getLastError()), ': ');
 
 			foreach ($ColorNames as $label){
-				if (!$Database->insert('colors',array(
+				if (!$Database->insert('colors', [
 					'groupid' => $GroupID,
 					'label' => $label,
 					'order' => $ci++,
-				))) throw new \Exception(rtrim("Color \"$label\" could not be added: ".$Database->getLastError()), ': ');
+				])) throw new \Exception(rtrim("Color \"$label\" could not be added: ".$Database->getLastError()), ': ');
 			}
 		}
 	}
@@ -457,7 +457,7 @@ class Appearances {
 			"SELECT t.tid
 			FROM tagged tt
 			LEFT JOIN tags t ON tt.tid = t.tid
-			WHERE tt.ponyid = ? &&  t.type = 'ep'",array($Appearance['id']));
+			WHERE tt.ponyid = ? &&  t.type = 'ep'", [$Appearance['id']]);
 
 		if (!empty($EpTagsOnAppearance)){
 			foreach ($EpTagsOnAppearance as $k => $row)
@@ -565,7 +565,7 @@ HTML;
 				LEFT JOIN appearances p ON p.id = r.source
 				WHERE r.target = :id && mutual = true
 			)
-			ORDER BY \"order\"", array(':id' => $AppearanceID));
+			ORDER BY \"order\"", [':id' => $AppearanceID]);
 	}
 
 	static function getLinkWithPreviewHTML($p){
@@ -590,13 +590,13 @@ HTML;
 	 * @return int
 	 */
 	static function validateAppearancePageID(){
-		return (new Input('APPEARANCE_PAGE','int',array(
+		return (new Input('APPEARANCE_PAGE','int', [
 			Input::IS_OPTIONAL => true,
 			Input::IN_RANGE => [0,null],
-			Input::CUSTOM_ERROR_MESSAGES => array(
+			Input::CUSTOM_ERROR_MESSAGES => [
 				Input::ERROR_RANGE => 'Appearance ID must be greater than or equal to @min'
-			)
-		)))->out();
+			]
+		]))->out();
 	}
 
 	/**
@@ -679,7 +679,7 @@ HTML;
 		$elasticClient->indices()->create(array_merge($params));
 		$Appearances = $Database->where('id != 0')->where('owner IS NULL')->get('appearances',null,self::ELASTIC_COLUMNS);
 
-		$params = array('body' => []);
+		$params = ['body' => []];
 		foreach ($Appearances as $i => $a){
 			$meta = self::getElasticMeta($a);
 		    $params['body'][] = [

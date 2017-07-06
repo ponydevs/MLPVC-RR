@@ -14,7 +14,7 @@
 </div>
 
 <?php
-	echo \App\CoreUtils::exportVars(array(
+	echo \App\CoreUtils::exportVars([
 		'ROLES_ASSOC' => \App\Permission::ROLES_ASSOC,
 		'PRINTABLE_ASCII_PATTERN' => PRINTABLE_ASCII_PATTERN
-	));
+	]);

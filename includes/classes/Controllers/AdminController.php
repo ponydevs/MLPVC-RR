@@ -27,11 +27,11 @@ class AdminController extends Controller {
 	}
 
 	function index(){
-		CoreUtils::loadPage(array(
+		CoreUtils::loadPage([
 			'title' => 'Admin Area',
 			'do-css',
 			'do-js',
-		), $this);
+		], $this);
 	}
 
 	function logs(){
@@ -65,11 +65,11 @@ class AdminController extends Controller {
 
 		$title = '';
 		$whereArgs = [];
-		$q = array();
+		$q = [];
 		if (isset($_GET['js']))
 			$q[] = 'js='.$_GET['js'];
 		if (isset($type)){
-			$whereArgs[] = array('reftype', $type);
+			$whereArgs[] = ['reftype', $type];
 			if (isset($q)){
 				$q[] = "type=$type";
 				$title .= Logs::$LOG_DESCRIPTION[$type].' entries ';
@@ -78,7 +78,7 @@ class AdminController extends Controller {
 		else if (isset($q))
 			$q[] = 'type='.CoreUtils::FIXPATH_EMPTY;
 		if (isset($initiator)){
-			$_params = $initiator === 0 ? array('"initiator" IS NULL') : array('initiator',$initiator);
+			$_params = $initiator === 0 ? ['"initiator" IS NULL'] : ['initiator', $initiator];
 			$whereArgs[] = $_params;
 			if (isset($q) && isset($by)){
 				$q[] = "by=$by";
@@ -107,19 +107,19 @@ class AdminController extends Controller {
 		if (isset($_GET['js']))
 			$Pagination->respond(Logs::getTbody($LogItems), '#logs tbody');
 
-		CoreUtils::loadPage(array(
+		CoreUtils::loadPage([
 			'heading' => $heading,
 			'title' => $title,
 			'view' => "{$this->do}-logs",
 			'css' => "{$this->do}-logs",
-			'js' => array("{$this->do}-logs", 'paginate'),
+			'js' => ["{$this->do}-logs", 'paginate'],
 			'import' => [
 				'Pagination' => $Pagination,
 				'LogItems' => $LogItems,
 				'type' => $type,
 				'by' => $by,
 			],
-		));
+		]);
 	}
 
 	function logDetail($params){
@@ -135,13 +135,13 @@ class AdminController extends Controller {
 		if (empty($MainEntry))
 			Response::fail('Log entry does not exist');
 		if (empty($MainEntry['refid']))
-			Response::fail('There are no details to show', array('unlickable' => true));
+			Response::fail('There are no details to show', ['unlickable' => true]);
 
 		$Details = $Database->where('entryid', $MainEntry['refid'])->getOne("log__{$MainEntry['reftype']}");
 		if (empty($Details)){
 			error_log("Could not find details for entry {$MainEntry['reftype']}#{$MainEntry['refid']}, NULL-ing refid of Main#{$MainEntry['entryid']}");
-			$Database->where('entryid', $MainEntry['entryid'])->update('log', array('refid' => null));
-			Response::fail('Failed to retrieve details', array('unlickable' => true));
+			$Database->where('entryid', $MainEntry['entryid'])->update('log', ['refid' => null]);
+			Response::fail('Failed to retrieve details', ['unlickable' => true]);
 		}
 
 		Response::done(Logs::formatEntryDetails($MainEntry,$Details));
@@ -177,12 +177,12 @@ class AdminController extends Controller {
 
 		switch ($action){
 			case 'get':
-				Response::done(array(
+				Response::done([
 					'label' => $Link['label'],
 					'url' => $Link['url'],
 					'title' => $Link['title'],
 					'minrole' => $Link['minrole'],
-				));
+				]);
 			case 'del':
 				if (!$Database->where('id', $Link['id'])->delete('usefullinks'))
 					Response::dbError();
@@ -191,37 +191,37 @@ class AdminController extends Controller {
 			break;
 			case 'make':
 			case 'set':
-				$data = array();
+				$data = [];
 
-				$label = (new Input('label','string',array(
+				$label = (new Input('label','string', [
 					Input::IN_RANGE => [3,35],
-					Input::CUSTOM_ERROR_MESSAGES => array(
+					Input::CUSTOM_ERROR_MESSAGES => [
 						Input::ERROR_MISSING => 'Link label is missing',
 						Input::ERROR_RANGE => 'Link label must be between @min and @max characters long',
-					)
-				)))->out();
+					]
+				]))->out();
 				if ($creating || $Link['label'] !== $label){
 					CoreUtils::checkStringValidity($label, 'Link label', INVERSE_PRINTABLE_ASCII_PATTERN);
 					$data['label'] = $label;
 				}
 
-				$url = (new Input('url','url',array(
+				$url = (new Input('url','url', [
 					Input::IN_RANGE => [3,255],
-					Input::CUSTOM_ERROR_MESSAGES => array(
+					Input::CUSTOM_ERROR_MESSAGES => [
 						Input::ERROR_MISSING => 'Link URL is missing',
 						Input::ERROR_RANGE => 'Link URL must be between @min and @max characters long',
-					)
-				)))->out();
+					]
+				]))->out();
 				if ($creating || $Link['url'] !== $url)
 					$data['url'] = $url;
 
-				$title = (new Input('title','string',array(
+				$title = (new Input('title','string', [
 					Input::IS_OPTIONAL => true,
 					Input::IN_RANGE => [3,255],
-					Input::CUSTOM_ERROR_MESSAGES => array(
+					Input::CUSTOM_ERROR_MESSAGES => [
 						Input::ERROR_RANGE => 'Link title must be between @min and @max characters long',
-					)
-				)))->out();
+					]
+				]))->out();
 				if (!isset($title))
 					$data['title'] = '';
 				else if ($creating || $Link['title'] !== $title){
@@ -232,12 +232,12 @@ class AdminController extends Controller {
 				$minrole = (new Input('minrole',function($value){
 					if (empty(Permission::ROLES_ASSOC[$value]) || !Permission::sufficient('user', $value))
 						Response::fail();
-				},array(
-					Input::CUSTOM_ERROR_MESSAGES => array(
+				}, [
+					Input::CUSTOM_ERROR_MESSAGES => [
 						Input::ERROR_MISSING => 'Minumum role is missing',
 						Input::ERROR_INVALID => 'Minumum role (@value) is invalid',
-					)
-				)))->out();
+					]
+				]))->out();
 				if ($creating || $Link['minrole'] !== $minrole)
 					$data['minrole'] = $minrole;
 
@@ -260,14 +260,14 @@ class AdminController extends Controller {
 
 		CSRFProtection::protect();
 
-		$list = (new Input('list','int[]',array(
-			Input::CUSTOM_ERROR_MESSAGES => array(
+		$list = (new Input('list','int[]', [
+			Input::CUSTOM_ERROR_MESSAGES => [
 				Input::ERROR_MISSING => 'Missing ordering information',
-			)
-		)))->out();
+			]
+		]))->out();
 		$order = 1;
 		foreach ($list as $id){
-			if (!$Database->where('id', $id)->update('usefullinks', array('order' => $order++)))
+			if (!$Database->where('id', $id)->update('usefullinks', ['order' => $order++]))
 				Response::fail("Updating link #$id failed, process halted");
 		}
 
@@ -429,12 +429,12 @@ HTML;
 
 		CSRFProtection::protect();
 
-		$ids = (new Input('ids','int[]',array(
-			Input::CUSTOM_ERROR_MESSAGES => array(
+		$ids = (new Input('ids','int[]', [
+			Input::CUSTOM_ERROR_MESSAGES => [
 			    Input::ERROR_MISSING => 'List of deviation IDs is missing',
 			    Input::ERROR_INVALID => 'List of deviation IDs (@value) is invalid',
-			)
-		)))->out();
+			]
+		]))->out();
 
 		$list = "";
 		foreach ($ids as $id)
@@ -462,7 +462,7 @@ HTML;
 		if ($approved === 0)
 			Response::success('All identified posts have already been approved');
 
-		Response::success('Marked '.CoreUtils::makePlural('post', $approved, PREPEND_NUMBER).' as approved. To see which ones, check the <a href="/admin/logs/1?type=post_lock&by=you">list of posts you\'ve approved</a>.',array('reload' => true));
+		Response::success('Marked '.CoreUtils::makePlural('post', $approved, PREPEND_NUMBER).' as approved. To see which ones, check the <a href="/admin/logs/1?type=post_lock&by=you">list of posts you\'ve approved</a>.', ['reload' => true]);
 	}
 
 	function recentPosts(){

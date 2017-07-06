@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use App\CoreUtils;
-use App\Models\AbstractFillable;
 use App\Time;
 use App\VideoProvider;
 
@@ -39,9 +38,9 @@ class EpisodeVideo extends AbstractFillable  {
 
 		if (!$broken){
 			$this->not_broken_at = date('c');
-			$Database->whereEp($this->season, $this->episode)->where('provider', $this->provider)->where('id', $this->id)->update('episodes__videos',array(
+			$Database->whereEp($this->season, $this->episode)->where('provider', $this->provider)->where('id', $this->id)->update('episodes__videos', [
 				'not_broken_at' => $this->not_broken_at,
-			));
+			]);
 		}
 
 		return $broken;

@@ -5,7 +5,6 @@ use App\CoreUtils;
 use App\CSRFProtection;
 use App\GlobalSettings;
 use App\Permission;
-use App\RegExp;
 use App\Response;
 
 /** @property $_setting array */
@@ -28,7 +27,7 @@ class SettingController extends Controller {
 	function get($params){
 		$this->_getSetting($params);
 
-		Response::done(array('value' => $this->_value));
+		Response::done(['value' => $this->_value]);
 	}
 
 	function set($params){
@@ -43,10 +42,10 @@ class SettingController extends Controller {
 		catch (\Exception $e){ Response::fail('Preference value error: '.$e->getMessage()); }
 
 		if ($newvalue === $this->_value)
-			Response::done(array('value' => $newvalue));
+			Response::done(['value' => $newvalue]);
 		if (!GlobalSettings::set($this->_setting, $newvalue))
 			Response::dbError();
 
-		Response::done(array('value' => $newvalue));
+		Response::done(['value' => $newvalue]);
 	}
 }

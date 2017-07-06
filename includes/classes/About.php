@@ -30,14 +30,14 @@ class About {
 		return $info['version']['number'];
 	}
 
-    const INI_BOOL_MAP = array(
+    const INI_BOOL_MAP = [
         1 => true,
 		'on' => true,
 		'true' => true,
 		0 => false,
 		'off' => false,
 		'false' => false,
-	);
+    ];
 	static function iniGet($key){
 		$val = ini_get($key);
 	    return self::INI_BOOL_MAP[strtolower($val)] ?? $val;

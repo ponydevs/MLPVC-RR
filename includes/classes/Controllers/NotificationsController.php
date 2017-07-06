@@ -26,7 +26,7 @@ class NotificationsController extends Controller {
 	function get(){
 		try {
 			$Notifications = Notifications::getHTML(Notifications::get(null,Notifications::UNREAD_ONLY),NOWRAP);
-			Response::done(array('list' => $Notifications));
+			Response::done(['list' => $Notifications]);
 		}
 		catch (\Throwable $e){
 			error_log('Exception caught when fetching notifications: '.$e->getMessage()."\n".$e->getTraceAsString());
@@ -42,14 +42,14 @@ class NotificationsController extends Controller {
 		if (empty($Notif))
 			Response::fail("The notification (#$nid) does not exist");
 
-		$read_action = (new Input('read_action','string',array(
+		$read_action = (new Input('read_action','string', [
 			Input::IS_OPTIONAL => true,
 			Input::IN_RANGE => [null,10],
-			Input::CUSTOM_ERROR_MESSAGES => array(
+			Input::CUSTOM_ERROR_MESSAGES => [
 				Input::ERROR_INVALID => 'Action (@value) is invalid',
 				Input::ERROR_RANGE => 'Action cannot be longer than @max characters',
-			)
-		)))->out();
+			]
+		]))->out();
 		if (!empty($read_action)){
 			if (empty(Notifications::$ACTIONABLE_NOTIF_OPTIONS[$Notif['type']][$read_action]))
 				Response::fail("Invalid read action ($read_action) specified for notification type {$Notif['type']}");
@@ -70,31 +70,31 @@ class NotificationsController extends Controller {
 						}
 
 						Notifications::safeMarkRead($Notif['id'], $read_action);
-						Notifications::send($data['user'], "post-passallow", array(
+						Notifications::send($data['user'], "post-passallow", [
 							'id' => $data['id'],
 							'type' => $data['type'],
 							'by' => Auth::$user->id,
-						));
-						$Database->where('id', $data['id'])->update("{$data['type']}s",array(
+						]);
+						$Database->where('id', $data['id'])->update("{$data['type']}s", [
 							'reserved_by' => $data['user'],
 							'reserved_at' => date('c'),
-						));
+						]);
 
 						Posts::clearTransferAttempts($Post, $data['type'], 'deny');
 
-						Logs::logAction('res_transfer',array(
+						Logs::logAction('res_transfer', [
 							'id' => $data['id'],
 							'type' => $data['type'],
 							'to' => $data['user'],
-						));
+						]);
 					}
 					else {
 						Notifications::safeMarkRead($Notif['id'], $read_action);
-						Notifications::send($data['user'], "post-passdeny", array(
+						Notifications::send($data['user'], "post-passdeny", [
 							'id' => $data['id'],
 							'type' => $data['type'],
 							'by' => Auth::$user->id,
-						));
+						]);
 					}
 
 					Response::done();

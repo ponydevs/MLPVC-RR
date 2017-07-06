@@ -6,7 +6,7 @@ use App\Models\Post;
 use ElephantIO\Exception\ServerConnectionFailureException;
 
 class Notifications {
-	private static $_notifTypes = array(
+	private static $_notifTypes = [
 		'post-finished' => true,
 		'post-approved' => true,
 		'post-passon' => true,
@@ -16,21 +16,21 @@ class Notifications {
 		'post-passdel' => true,
 		'post-passsnatch' => true,
 		'post-passperm' => true,
-	);
-	public static $ACTIONABLE_NOTIF_OPTIONS = array(
-		'post-passon' => array(
-			'true'  => array(
+	];
+	public static $ACTIONABLE_NOTIF_OPTIONS = [
+		'post-passon' => [
+			'true'  => [
 				'label' => 'Allow',
 				'icon' => 'tick',
 				'color' => 'green',
-			),
-			'false' => array(
+			],
+			'false' => [
 				'label' => 'Deny',
 				'icon' => 'times',
 				'color' => 'red',
-			),
-		)
-	);
+			],
+		]
+	];
 
 	const
 		UNREAD_ONLY = 0,
@@ -145,18 +145,18 @@ class Notifications {
 			case 'post-approved':
 				$Database->rawQuery(
 					"UPDATE notifications SET read_at = NOW() WHERE \"user\" = ? && type = ? && data->>'id' = ? && data->>'type' = ?",
-					array($to,$type,$data['id'],$data['type'])
+					[$to, $type, $data['id'], $data['type']]
 				);
 		}
 
-		$Database->insert('notifications',array(
+		$Database->insert('notifications', [
 			'user' => $to,
 			'type' => $type,
 			'data' => JSON::encode($data),
-		));
+		]);
 
 		try {
-			CoreUtils::socketEvent('notify-pls',array('user' => $to));
+			CoreUtils::socketEvent('notify-pls', ['user' => $to]);
 		}
 		catch (ServerConnectionFailureException $e){
 			error_log("Error while notifying $to with type $type (data:".JSON::encode($data).")\nError message: {$e->getMessage()}");
@@ -167,7 +167,7 @@ class Notifications {
 	}
 
 	static function markRead($nid, $action = null){
-		CoreUtils::socketEvent('mark-read',array('nid' => $nid, 'action' => $action));
+		CoreUtils::socketEvent('mark-read', ['nid' => $nid, 'action' => $action]);
 	}
 
 	static function safeMarkRead($NotifID, $action = null){

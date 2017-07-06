@@ -13,7 +13,7 @@ class DeviantArt {
 		$_MASS_CACHE_USED = 0;
 
 	// oAuth Error Response Messages \\
-	const OAUTH_RESPONSE = array(
+	const OAUTH_RESPONSE = [
 		'invalid_request' => 'The authorization recest was not properly formatted.',
 		'unsupported_response_type' => 'The authorization server does not support obtaining an authorization code using this method.',
 		'unauthorized_client' => 'The authorization process did not complete. Please try again.',
@@ -21,7 +21,7 @@ class DeviantArt {
 		'server_error' => "There seems to be an issue on DeviantArt’s end. Try again later.",
 		'temporarily_unavailable' => "There’s an issue on DeviantArt’s end. Try again later.",
 		'user_banned' => 'You were banned on our website by a staff member.',
-	);
+	];
 
 	/**
 	 * Makes authenticated requests to the DeviantArt API
@@ -35,7 +35,7 @@ class DeviantArt {
 	static function request($endpoint, $token = null, $postdata = null){
 		global $http_response_header;
 
-		$requestHeaders = array("Accept-Encoding: gzip","User-Agent: MLPVC-RR @ ".GITHUB_URL);
+		$requestHeaders = ["Accept-Encoding: gzip", "User-Agent: MLPVC-RR @ ".GITHUB_URL];
 		if (!isset($token) && Auth::$signed_in)
 			$token = Auth::$session->access;
 		if (!empty($token)) $requestHeaders[] = "Authorization: Bearer $token";
@@ -44,14 +44,14 @@ class DeviantArt {
 		$requestURI  = preg_match(new RegExp('^https?://'), $endpoint) ? $endpoint : "https://www.deviantart.com/api/v1/oauth2/$endpoint";
 
 		$r = curl_init($requestURI);
-		$curl_opt = array(
+		$curl_opt = [
 			CURLOPT_RETURNTRANSFER => 1,
 			CURLOPT_HTTPHEADER => $requestHeaders,
 			CURLOPT_HEADER => 1,
 			CURLOPT_BINARYTRANSFER => 1,
-		);
+		];
 		if (!empty($postdata)){
-			$query = array();
+			$query = [];
 			foreach($postdata as $k => $v) $query[] = urlencode($k).'='.urlencode($v);
 			$curl_opt[CURLOPT_POST] = count($postdata);
 			$curl_opt[CURLOPT_POSTFIELDS] = implode('&', $query);
@@ -111,7 +111,7 @@ class DeviantArt {
 			}
 			catch (\Exception $e){
 				if (!empty($Deviation))
-					$Database->where('id',$Deviation->id)->update('cached-deviations', array('updated_on' => date('c', time()+Time::IN_SECONDS['minute'] )));
+					$Database->where('id',$Deviation->id)->update('cached-deviations', ['updated_on' => date('c', time()+ Time::IN_SECONDS['minute'] )]);
 
 				error_log("Saving local data for $ID@$type failed: ".$e->getMessage()."\n".$e->getTraceAsString());
 
@@ -123,14 +123,14 @@ class DeviantArt {
 				return $Deviation;
 			}
 
-			$insert = array(
+			$insert = [
 				'title' => preg_replace(new RegExp('\\\\\''),"'",$json['title']),
 				'preview' => isset($json['thumbnail_url']) ? URL::makeHttps($json['thumbnail_url']) : null,
 				'fullsize' => isset($json['fullsize_url']) ? URL::makeHttps($json['fullsize_url']) : null,
 				'provider' => $type,
 				'author' => $json['author_name'],
 				'updated_on' => date('c'),
-			);
+			];
 
 			switch ($json['type']){
 				case "photo":
@@ -182,9 +182,9 @@ class DeviantArt {
 		else if (!empty($Deviation->updated_on)){
 			$Deviation->updated_on = date('c', strtotime($Deviation->updated_on));
 			if (self::$_CACHE_BAILOUT)
-				$Database->where('id',$Deviation->id)->update('cached-deviations', array(
+				$Database->where('id',$Deviation->id)->update('cached-deviations', [
 					'updated_on' => $Deviation->updated_on,
-				));
+				]);
 		}
 
 		return $Deviation;
@@ -200,7 +200,7 @@ class DeviantArt {
 	 * @return array
 	 */
 	static function  oEmbed($ID, $type){
-		if (empty($type) || !in_array($type,array('fav.me','sta.sh'))) $type = 'fav.me';
+		if (empty($type) || !in_array($type, ['fav.me', 'sta.sh'])) $type = 'fav.me';
 
 		if ($type === 'sta.sh')
 			$ID = CoreUtils::nomralizeStashID($ID);
@@ -228,7 +228,7 @@ class DeviantArt {
 	static function getToken(string $code, string $type = null){
 		global $Database, $http_response_header;
 
-		if (empty($type) || !in_array($type,array('authorization_code','refresh_token'))) $type = 'authorization_code';
+		if (empty($type) || !in_array($type, ['authorization_code', 'refresh_token'])) $type = 'authorization_code';
 		$URL_Start = 'https://www.deviantart.com/oauth2/token?client_id='.DA_CLIENT.'&client_secret='.DA_SECRET."&grant_type=$type";
 
 		switch ($type){
@@ -266,16 +266,16 @@ class DeviantArt {
 		}
 
 		$UserID = strtolower($userdata['userid']);
-		$UserData = array(
+		$UserData = [
 			'name' => $userdata['username'],
 			'avatar_url' => URL::makeHttps($userdata['usericon']),
-		);
-		$AuthData = array(
+		];
+		$AuthData = [
 			'access' => $json['access_token'],
 			'refresh' => $json['refresh_token'],
 			'expires' => date('c',time()+intval($json['expires_in'])),
 			'scope' => $json['scope'],
-		);
+		];
 
 		$cookie = bin2hex(random_bytes(64));
 		$AuthData['token'] = CoreUtils::sha256($cookie);
@@ -286,10 +286,10 @@ class DeviantArt {
 				$AuthData[$k] = $v;
 
 		if (empty($User)){
-			$MoreInfo = array(
+			$MoreInfo = [
 				'id' => $UserID,
 				'role' => 'user',
-			);
+			];
 			$makeDev = !$Database->has('users');
 			if ($makeDev)
 				$MoreInfo['id'] = strtoupper($MoreInfo['id']);
@@ -315,10 +315,10 @@ class DeviantArt {
 			$Database->where('refresh', $code)->update('sessions',$AuthData);
 		else {
 			$Database->where('user', $User->id)->where('scope', $AuthData['scope'], '!=')->delete('sessions');
-			$Database->insert('sessions', array_merge($AuthData, array('user' => $UserID)));
+			$Database->insert('sessions', array_merge($AuthData, ['user' => $UserID]));
 		}
 
-		$Database->rawQuery("DELETE FROM sessions WHERE \"user\" = ? && lastvisit <= NOW() - INTERVAL '1 MONTH'", array($UserID));
+		$Database->rawQuery("DELETE FROM sessions WHERE \"user\" = ? && lastvisit <= NOW() - INTERVAL '1 MONTH'", [$UserID]);
 
 		Cookie::set('access', $cookie, time()+ Time::IN_SECONDS['year'], Cookie::HTTPONLY);
 		return $User ?? null;

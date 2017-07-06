@@ -2,9 +2,7 @@
 
 namespace App\Controllers;
 use App\CoreUtils;
-use App\HTTP;
 use App\Permission;
-use App\Users;
 
 class UsersController extends Controller {
 	public $do = 'users';
@@ -13,9 +11,9 @@ class UsersController extends Controller {
 		if (!Permission::sufficient('staff'))
 			CoreUtils::notFound();
 
-		CoreUtils::loadPage(array(
+		CoreUtils::loadPage([
 			'title' => 'Users',
 			'do-css'
-		), $this);
+		], $this);
 	}
 }

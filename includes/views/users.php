@@ -11,9 +11,9 @@ use App\Permission;
 /** @var $Users \App\Models\User[] */
 $Users = $Database->orderBy('name','asc')->get('users');
 if (!empty($Users)){
-	$Arranged = array();
+	$Arranged = [];
 	foreach ($Users as $u){
-		if (!isset($Arranged[$u->role])) $Arranged[$u->role] = array();
+		if (!isset($Arranged[$u->role])) $Arranged[$u->role] = [];
 
 		$Arranged[$u->role][] = $u;
 	}
@@ -23,7 +23,7 @@ if (!empty($Users)){
 		$users = $Arranged[$r];
 		$group = CoreUtils::makePlural(Permission::ROLES_ASSOC[$r], count($users), true);
 		if (count($users) > 50){
-			$usersOut = array();
+			$usersOut = [];
 			foreach ($users as $u){
 				$firstletter = strtoupper($u->name[0]);
 				if (preg_match(new \App\RegExp('^[^a-z]$','i'), $firstletter))
@@ -39,7 +39,7 @@ if (!empty($Users)){
 			}
 		}
 		else {
-			$usersOut = array();
+			$usersOut = [];
 			foreach ($users as $u)
 				$usersOut[] = $u->getProfileLink();
 			$usersStr = implode(', ',$usersOut);
