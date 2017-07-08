@@ -388,7 +388,7 @@ class ColorGuideController extends Controller {
 		if ($elasticAvail){
 			$search = new ElasticsearchDSL\Search();
 			$orderByID = true;
-		    $Pagination = new Pagination('cg', $AppearancesPerPage);
+		    $Pagination = new Pagination(ltrim($this->_cgPath, '/'), $AppearancesPerPage);
 
 			// Search query exists
 			if ($searching){
@@ -463,7 +463,7 @@ class ColorGuideController extends Controller {
 			Response::done(['goto' => "$this->_cgPath/v/{$Ponies[0]['id']}-".Appearances::getSafeLabel($Ponies[0])]);
 		}
 
-		CoreUtils::fixPath("$this->_cgPath/{$Pagination->page}".(!empty($Restrictions)?"?q=$SearchQuery":''));
+		CoreUtils::fixPath("$this->_cgPath/{$Pagination->page}?q=".(!empty($SearchQuery) ? $SearchQuery : CoreUtils::FIXPATH_EMPTY));
 		$heading = ($this->_EQG?'EQG ':'')."Color Guide";
 		$title .= "Page {$Pagination->page} - $heading";
 
