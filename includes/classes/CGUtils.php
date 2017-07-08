@@ -52,7 +52,7 @@ class CGUtils {
 					$FirstLetter = strtoupper($p['label'][0]);
 					if (!is_numeric($FirstLetter) ? ($FirstLetter !== $PrevFirstLetter) : !is_numeric($PrevFirstLetter)){
 						if ($PrevFirstLetter !== ''){
-							$HTML = "</ul></section>";
+							$HTML .= "</ul></section>";
 						}
 						$PrevFirstLetter = $FirstLetter;
 						$HTML .= "<section><h2>$PrevFirstLetter</h2><ul>";
