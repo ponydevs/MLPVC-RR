@@ -2,21 +2,21 @@
 
 namespace App\Models;
 
-/**
- * @inheritdoc
- * @property string $type
- * @property string $requested_by
- * @property User   $reserver
- */
+/** @inheritdoc */
 class Reservation extends Post {
-	static $belongs_to = [
-		['reserver', 'class' => 'User', 'foreign_hey' => 'reserved_by'],
+	public static $belongs_to = [
+		['ep', 'class' => 'Episode', 'foreign_key' => ['season','episode']],
+		['reserver', 'class' => 'User', 'foreign_key' => 'reserved_by'],
 	];
 
-	function get_isRequest():bool {
+	public static $alias_attribute = [
+		'posted' => 'reserved_at',
+	];
+
+	public function get_is_request():bool {
 		return false;
 	}
-	function get_isReservation():bool {
+	public function get_is_reservation():bool {
 		return true;
 	}
 }

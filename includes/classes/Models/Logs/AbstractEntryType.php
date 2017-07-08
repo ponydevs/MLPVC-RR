@@ -6,16 +6,20 @@ use ActiveRecord\Model;
 use App\RegExp;
 
 /**
- * @property int $entryid
- * @property Log $log
+ * @property int    $entryid
+ * @property Log    $log     (Via magic method)
+ * @property string $type    (Via magic method)
  */
 abstract class AbstractEntryType extends Model {
-	static $table_name;
+	public static $table_name;
 
-	static $primary_key = 'entryid';
+	public static $primary_key = 'entryid';
 
-	function get_log():?Log {
-		$reftype = preg_replace(new RegExp('^log__'),'',static::$table_name);
-		return Log::find_by_reftype_and_refid($reftype, $this->entryid);
+	public function get_log():?Log {
+		return Log::find_by_reftype_and_refid($this->type, $this->entryid);
+	}
+
+	public function get_type():string {
+		return preg_replace(new RegExp('^log__'),'',static::$table_name);
 	}
 }

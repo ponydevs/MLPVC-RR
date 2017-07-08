@@ -4,7 +4,7 @@ use App\URL;
 use PHPUnit\Framework\TestCase;
 
 class URLTest extends TestCase {
-	function testMakeHttps(){
+	public function testMakeHttps(){
 		$result = URL::makeHttps('http://example.com/');
 		self::assertEquals('https://example.com/', $result, 'Transform http protocol to https');
 		$result = URL::makeHttps('https://example.com/');

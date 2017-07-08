@@ -1,25 +1,30 @@
 <?php
 
 namespace App\Controllers;
+use ActiveRecord\Table;
 use App\Auth;
 use App\CGUtils;
 use App\CoreUtils;
 use App\CSRFProtection;
 use App\Cutiemarks;
-
+use App\DB;
 use App\Exceptions\NoPCGSlotsException;
-
 use App\Input;
 use App\JSON;
 use App\Logs;
 use App\Models\Appearance;
+use App\Models\Color;
+use App\Models\ColorGroup;
 use App\Models\Cutiemark;
+use App\Models\Logs\MajorChange;
+use App\Models\Tag;
+use App\Models\Tagged;
 use App\Models\User;
 use App\Pagination;
 use App\Permission;
 use App\RegExp;
+use App\Reponse;
 use App\Response;
-use App\Updates;
 use App\UserPrefs;
 use App\Appearances;
 use App\Tags;
@@ -36,7 +41,7 @@ use Elasticsearch\Common\Exceptions\NoNodesAvailableException as ElasticNoNodesA
 
 class ColorGuideController extends Controller {
 	public $do = 'colorguide';
-	function __construct(){
+	public function __construct(){
 		parent::__construct();
 
 		if (POST_REQUEST)
@@ -48,7 +53,7 @@ class ColorGuideController extends Controller {
 	/** @var string */
 	private $_cgPath;
 	private function _initCGPath(){
-		$this->_cgPath = "/cg".($this->_EQG?'/eqg':'');
+		$this->_cgPath = '/cg'.($this->_EQG?'/eqg':'');
 	}
 	private function _initialize($params, bool $setPath = true){
 		$this->_EQG = !empty($params['eqg']) ? 1 : 0;
@@ -77,8 +82,8 @@ class ColorGuideController extends Controller {
 
 	/** @var \App\Models\Appearance */
 	private $_appearance;
-	function _getAppearance($params){
-		global $Database;
+	public function _getAppearance($params){
+
 
 		$asFile = isset($params['ext']);
 		if (!isset($params['id']))
@@ -87,7 +92,7 @@ class ColorGuideController extends Controller {
 		if (empty($this->_appearance))
 			CoreUtils::notFound();
 
-		if (empty($this->_appearance->owned_by)){
+		if (empty($this->_appearance->owner_id)){
 			if ($this->_appearance->ishuman && !$this->_EQG){
 				$this->_EQG = 1;
 				$this->_cgPath = '/cg/eqg';
@@ -96,8 +101,8 @@ class ColorGuideController extends Controller {
 				$this->_EQG = 0;
 				$this->_cgPath = '/cg';
 			}
-			else if (isset($this->_ownedBy) && empty($this->_appearance->owned_by)){
-				unset($this->_ownedBy);
+			else if ($this->_ownedBy !== null){
+				$this->_ownedBy = null;
 				$this->_isOwnedByUser = false;
 				$this->_cgPath = '/cg';
 			}
@@ -109,14 +114,14 @@ class ColorGuideController extends Controller {
 		}
 	}
 
-	function spriteColors($params){
+	public function spriteColors($params){
 		if (Permission::insufficient('member'))
 			CoreUtils::notFound();
 
-		global $Database;
+
 
 		$this->_getAppearance($params);
-		if (Permission::insufficient('staff') && ($this->_appearance->owned_by ?? null) != Auth::$user->id)
+		if (Permission::insufficient('staff') && ($this->_appearance->owner_id ?? null) != Auth::$user->id)
 			CoreUtils::notFound();
 
 		$Map = CGUtils::getSpriteImageMap($this->_appearance->id);
@@ -124,23 +129,24 @@ class ColorGuideController extends Controller {
 			CoreUtils::notFound();
 
 		$Colors = [];
-		$loop = isset($this->_appearance->owned_by) ? [$this->_appearance->id] : [0, $this->_appearance->id];
+		$loop = isset($this->_appearance->owner_id) ? [$this->_appearance->id] : [0, $this->_appearance->id];
 		foreach ($loop as $AppearanceID){
-			$ColorGroups = ColorGroups::get($AppearanceID);
+			$ColorGroups = ColorGroup::find_all_by_appearance_id($AppearanceID);
 			$SortedColorGroups = [];
 			foreach ($ColorGroups as $cg)
-				$SortedColorGroups[$cg['groupid']] = $cg;
+				$SortedColorGroups[$cg->id] = $cg;
 
-			$AllColors = ColorGroups::getColorsForEach($ColorGroups);
+			$AllColors = CGUtils::getColorsForEach($ColorGroups);
 			foreach ($AllColors as $cg){
+				/** @var $cg Color[] */
 				foreach ($cg as $c)
 					$Colors[] = [
-						'hex' => $c['hex'],
+						'hex' => $c->hex,
 						'label' => $SortedColorGroups[$c['groupid']]['label'].' | '.$c['label'],
 					];
 			}
 		}
-		if (!isset($this->_appearance->owned_by))
+		if (!isset($this->_appearance->owner_id))
 			$Colors = array_merge($Colors,
 				[
 					[
@@ -182,7 +188,7 @@ class ColorGuideController extends Controller {
 		]);
 	}
 
-	function appearanceAsFile($params, User $Owner = null){
+	public function appearanceAsFile($params, User $Owner = null){
 		if (!isset($Owner))
 			$this->_initialize($params);
 		$this->_getAppearance($params);
@@ -190,16 +196,16 @@ class ColorGuideController extends Controller {
 		switch ($params['ext']){
 			case 'png':
 				if (!empty($params['type'])) switch ($params['type']){
-					case "s": CGUtils::renderSpritePNG($this->_cgPath, $this->_appearance->id, $_GET['s'] ?? null);
-					case "p": CGUtils::renderAppearancePNG($this->_cgPath, $this->_appearance);
+					case 's': CGUtils::renderSpritePNG($this->_cgPath, $this->_appearance->id, $_GET['s'] ?? null);
+					case 'p': CGUtils::renderAppearancePNG($this->_cgPath, $this->_appearance);
 					default: CoreUtils::notFound();
 				}
 
 			case 'svg':
 				if (!empty($params['type'])) switch ($params['type']){
-					case "s": CGUtils::renderSpriteSVG($this->_cgPath, $this->_appearance->id);
-					case "p": CGUtils::renderPreviewSVG($this->_cgPath, $this->_appearance->id);
-					case "d": CGUtils::renderCMDirectionSVG($this->_cgPath, $this->_appearance->id);
+					case 's': CGUtils::renderSpriteSVG($this->_cgPath, $this->_appearance->id);
+					case 'p': CGUtils::renderPreviewSVG($this->_cgPath, $this->_appearance);
+					case 'd': CGUtils::renderCMDirectionSVG($this->_cgPath, $this->_appearance->id);
 					default: CoreUtils::notFound();
 				}
 			case 'json': CGUtils::getSwatchesAI($this->_appearance);
@@ -210,7 +216,7 @@ class ColorGuideController extends Controller {
 		CoreUtils::notFound();
 	}
 
-	function personalAppearanceAsFile($params){
+	public function personalAppearanceAsFile($params){
 		$this->_initPersonal($params);
 
 		self::appearanceAsFile($params, $this->_ownedBy);
@@ -221,18 +227,18 @@ class ColorGuideController extends Controller {
 		'jquery.autocomplete',
 		'handlebars-v3.0.3',
 		'Sortable',
-		"colorguide-tags",
-		"colorguide-manage",
+		'colorguide-tags',
+		'colorguide-manage',
 	];
 	private $_GUIDE_MANAGE_CSS = [
-		"colorguide-manage",
+		'colorguide-manage',
 	];
 
-	function appearancePage($params){
+	public function appearancePage($params){
 		if (!isset($this->_ownedBy))
 			$this->_initialize($params);
 		$this->_getAppearance($params);
-		if (isset($this->_ownedBy) && $this->_appearance->owned_by !== $this->_ownedBy->id){
+		if (isset($this->_ownedBy) && $this->_appearance->owner_id !== $this->_ownedBy->id){
 			$this->_ownedBy = null;
 			$this->_isOwnedByUser = false;
 			$this->_initCGPath();
@@ -254,11 +260,11 @@ class ColorGuideController extends Controller {
 				'isOwner' => false,
 			],
 		];
-		if (!empty($this->_appearance->owned_by)){
+		if (!empty($this->_appearance->owner_id)){
 			$settings['import']['Owner'] = $this->_ownedBy;
 			$settings['import']['isOwner'] = $this->_isOwnedByUser;
 		}
-		else $settings['import']['Changes'] = Updates::get($this->_appearance->id);
+		else $settings['import']['Changes'] = MajorChange::get($this->_appearance->id);
 		if (Permission::sufficient('staff') || $this->_isOwnedByUser){
 			$settings['css'] = array_merge($settings['css'], $this->_GUIDE_MANAGE_CSS);
 			$settings['js'] = array_merge($settings['js'], $this->_GUIDE_MANAGE_JS);
@@ -266,20 +272,20 @@ class ColorGuideController extends Controller {
 		CoreUtils::loadPage($settings);
 	}
 
-	function personalAppearancePage($params){
+	public function personalAppearancePage($params){
 		$this->_initPersonal($params);
 
 		self::appearancePage($params);
 	}
 
-	function fullList($params){
-		global $Database;
+	public function fullList($params){
+
 
 		$this->_initialize($params);
 
 		$GuideOrder = !isset($_REQUEST['alphabetically']) && !$this->_EQG;
 		if (!$GuideOrder)
-			$Database->orderBy('label','ASC');
+			DB::orderBy('label','ASC');
 		$Appearances = Appearances::get($this->_EQG,null,null,'id,label,private');
 
 		if (isset($_REQUEST['ajax']))
@@ -291,7 +297,7 @@ class ColorGuideController extends Controller {
 		$js[] = "{$this->do}-full";
 
 		CoreUtils::loadPage([
-			'title' => "Full List - Color Guide",
+			'title' => 'Full List - Color Guide',
 			'view' => "{$this->do}-full",
 			'css' => "{$this->do}-full",
 			'js' => $js,
@@ -303,7 +309,7 @@ class ColorGuideController extends Controller {
 		]);
 	}
 
-	function reorderFullList($params){
+	public function reorderFullList($params){
 		$this->_initialize($params);
 
 		if (!Permission::sufficient('staff'))
@@ -319,16 +325,16 @@ class ColorGuideController extends Controller {
 		Response::done(['html' => CGUtils::getFullListHTML(Appearances::get($this->_EQG,null,null,'id,label'), true, NOWRAP)]);
 	}
 
-	function changeList(){
-		global $Database;
+	public function changeList(){
 
-		$Pagination = new Pagination("cg/changes", 50, $Database->count('log__color_modify'));
+
+		$Pagination = new Pagination('cg/changes', 50, DB::count('log__color_modify'));
 
 		CoreUtils::fixPath("/cg/changes/{$Pagination->page}");
-		$heading = "Major Color Changes";
+		$heading = 'Major Color Changes';
 		$title = "Page $Pagination->page - $heading - Color Guide";
 
-		$Changes = Updates::get(null, $Pagination->getLimitString());
+		$Changes = MajorChange::get(null, $Pagination->getLimitString());
 
 		if (isset($_GET['js']))
 			$Pagination->respond(CGUtils::getChangesHTML($Changes, NOWRAP, SHOW_APPEARANCE_NAMES), '#changes');
@@ -346,13 +352,13 @@ class ColorGuideController extends Controller {
 		]);
 	}
 
-	function tagList(){
-		global $Database;
+	public function tagList(){
 
-		$Pagination = new Pagination("cg/tags", 20, $Database->count('tags'));
+
+		$Pagination = new Pagination('cg/tags', 20, DB::count('tags'));
 
 		CoreUtils::fixPath("/cg/tags/{$Pagination->page}");
-		$heading = "Tags";
+		$heading = 'Tags';
 		$title = "Page $Pagination->page - $heading - Color Guide";
 
 		$Tags = Tags::getFor(null,$Pagination, true);
@@ -377,10 +383,8 @@ class ColorGuideController extends Controller {
 		]);
 	}
 
-	function guide($params){
+	public function guide($params){
 		$this->_initialize($params);
-
-		global $Database;
 
 		$title = '';
 		$AppearancesPerPage = UserPrefs::get('cg_itemsperpage');
@@ -450,19 +454,32 @@ class ColorGuideController extends Controller {
 			if (!empty($search['hits']['hits'])){
 				$Pagination->calcMaxPages($search['hits']['total']);
 				$ids = [];
+				/** @noinspection ForeachSourceInspection */
 				foreach($search['hits']['hits'] as $hit)
 					$ids[] = $hit['_id'];
 
-				$Ponies = $Database->where('id IN ('.implode(',', $ids).')')->orderBy('order','ASC')->get('appearances');
+				$Ponies = Appearance::find('all', [
+					'conditions' => [ 'id IN (?)', $ids	],
+					'order' => '"order" asc',
+				]);
 			}
 		}
 		if (!$elasticAvail) {
 			if ($searching && $jsResponse)
 				Response::fail('The ElasticSearch server is currently down and search is not available, sorry for the inconvenience.<br>Please <a class="send-feedback">let us know</a> about this issue.');
-		    $_EntryCount = $Database->where('ishuman',$this->_EQG)->where('id != 0')->count('appearances');
+
+			$searching = false;
+			$SearchQuery = null;
+
+			$_EntryCount = Appearance::count([
+				'conditions' => [
+					'ishuman = ? AND id != 0',
+					$this->_EQG
+				]
+			]);
 
 		    $Pagination = new Pagination('cg', $AppearancesPerPage, $_EntryCount);
-		    $Ponies = Appearances::get($this->_EQG, $Pagination);
+		    $Ponies = Appearances::get($this->_EQG, $Pagination->getLimit());
 		}
 
 		if (isset($_REQUEST['GOFAST'])){
@@ -471,8 +488,8 @@ class ColorGuideController extends Controller {
 			Response::done(['goto' => "$this->_cgPath/v/{$Ponies[0]->id}-".$Ponies[0]->getSafeLabel()]);
 		}
 
-		CoreUtils::fixPath("$this->_cgPath/{$Pagination->page}".(!empty($Restrictions)?"?q=$SearchQuery":''));
-		$heading = ($this->_EQG?'EQG ':'')."Color Guide";
+		CoreUtils::fixPath("$this->_cgPath/{$Pagination->page}?q=".(!empty($SearchQuery) ? $SearchQuery : CoreUtils::FIXPATH_EMPTY));
+		$heading = ($this->_EQG?'EQG ':'').'Color Guide';
 		$title .= "Page {$Pagination->page} - $heading";
 
 		if ($jsResponse)
@@ -497,8 +514,8 @@ class ColorGuideController extends Controller {
 		CoreUtils::loadPage($settings, $this);
 	}
 
-	function personalGuide($params){
-		global $Database;
+	public function personalGuide($params){
+
 
 		$this->_initPersonal($params);
 
@@ -512,7 +529,7 @@ class ColorGuideController extends Controller {
 	    $Ponies = $this->_ownedBy->getPCGAppearances($Pagination);
 
 		CoreUtils::fixPath("$this->_cgPath/{$Pagination->page}");
-		$heading = CoreUtils::posess($this->_ownedBy->name)." Personal Color Guide";
+		$heading = CoreUtils::posess($this->_ownedBy->name).' Personal Color Guide';
 		$title .= "Page {$Pagination->page} - $heading";
 
 		if (isset($_GET['js']))
@@ -539,9 +556,7 @@ class ColorGuideController extends Controller {
 	}
 
 	const CM_BASIC_COLS = 'cmid,favme,favme_rotation,preview_src,facing';
-	function export(){
-		global $Database;
-
+	public function export(){
 		if (!Permission::sufficient('developer'))
 			CoreUtils::notFound();
 		$JSON = [
@@ -549,27 +564,28 @@ class ColorGuideController extends Controller {
 			'Tags' => [],
 		];
 
-		$Tags = $Database->orderBy('tid','ASC')->get('tags');
+		/** @var $Tags Tag[] */
+		$Tags = DB::orderBy('id','ASC')->get('tags');
 		if (!empty($Tags)) foreach ($Tags as $t){
-			$JSON['Tags'][$t['tid']] = $t;
+			$JSON['Tags'][$t->id] = $t->to_array();
 		}
 
 		$Appearances = Appearances::get(null);
 		if (!empty($Appearances)) foreach ($Appearances as $p){
-			$AppendAppearance = $p;
-			unset($AppendAppearance['owned_by']);
-			unset($AppendAppearance['last_cleared']);
+			$AppendAppearance = $p->to_array([
+				'except' => ['owner_id','last_cleared'],
+			]);
 
 			$AppendAppearance['notes'] = isset($AppendAppearance['notes'])
 				? CoreUtils::trim($AppendAppearance['notes'],true)
 				: '';
 
-			$Database->disableAutoClass();
+			DB::disableAutoClass();
 			$CMs = Cutiemarks::get($p, false);
 			if (!empty($CMs)){
 				foreach ($CMs as $i => $CM){
 					$CMs[$i] = [
-						'link' => "http://fav.me/{CM->favme}",
+						'link' => 'http://fav.me/{CM->favme}',
 						'facing' => $CM->facing,
 					];
 				}
@@ -578,40 +594,44 @@ class ColorGuideController extends Controller {
 
 			$AppendAppearance['ColorGroups'] = [];
 			if (empty($AppendAppearance['private'])){
-				$ColorGroups = ColorGroups::get($p['id']);
+				$ColorGroups = $p->color_groups;
 				if (!empty($ColorGroups)){
-					$AllColors = ColorGroups::getColorsForEach($ColorGroups);
+					$AllColors = CGUtils::getColorsForEach($ColorGroups);
 					foreach ($ColorGroups as $cg){
-						$AppendColorGroup = $cg;
-						unset($AppendColorGroup['ponyid']);
+						$AppendColorGroup = $cg->to_array([
+							'except' => 'appearance_id',
+						]);
 
 						$AppendColorGroup['Colors'] = [];
-						if (!empty($AllColors[$cg['groupid']]))
-							foreach ($AllColors[$cg['groupid']] as $c){
-								unset($c['groupid']);
-								$AppendColorGroup['Colors'][] = $c;
-							};
+						if (!empty($AllColors[$cg->id])){
+							/** @var $colors Color[] */
+							$colors = $AllColors[$cg->id];
+							foreach ($colors as $c)
+								$AppendColorGroup['Colors'][] = $c->to_array([
+									'except' => 'group_id',
+								]);
+						}
 
-						$AppendAppearance['ColorGroups'][$cg['groupid']] = $AppendColorGroup;
+						$AppendAppearance['ColorGroups'][$cg->id] = $AppendColorGroup;
 					}
 				}
 			}
 			else $AppendAppearance['ColorGroups']['_hidden'] = true;
 
 			$AppendAppearance['TagIDs'] = [];
-			$TagIDs = Tags::getFor($p['id'],null,null,true);
+			$TagIDs = Tags::getFor($p->id,null,null,true);
 			if (!empty($TagIDs)){
 				foreach ($TagIDs as $t)
-					$AppendAppearance['TagIDs'][] = $t['tid'];
+					$AppendAppearance['TagIDs'][] = $t->id;
 			}
 
 			$AppendAppearance['RelatedAppearances'] = [];
-			$RelatedIDs = Appearances::getRelated($p['id']);
+			$RelatedIDs = $p->related_appearances;
 			if (!empty($RelatedIDs))
 				foreach ($RelatedIDs as $rel)
 					$AppendAppearance['RelatedAppearances'][] = $rel['id'];
 
-			$JSON['Appearances'][$p['id']] = $AppendAppearance;
+			$JSON['Appearances'][$p->id] = $AppendAppearance;
 		}
 
 		$data = JSON::encode($JSON, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
@@ -622,8 +642,8 @@ class ColorGuideController extends Controller {
 		CoreUtils::downloadFile($data, 'mlpvc-colorguide.json');
 	}
 
-	function getTags(){
-		global $Database, $TAG_NAME_REGEX;
+	public function getTags(){
+		global $TAG_NAME_REGEX;
 
 		if (!Permission::sufficient('staff'))
 			Response::fail();
@@ -631,17 +651,18 @@ class ColorGuideController extends Controller {
 		$except = (new Input('not','int', [Input::IS_OPTIONAL => true]))->out();
 		if ((new Input('action','string', [Input::IS_OPTIONAL => true]))->out() === 'synon'){
 			if (isset($except))
-				$Database->where('tid',$except);
-			$Tag = $Database->where('"synonym_of" IS NOT NULL')->getOne('tags');
+				DB::where('id',$except);
+			/** @var $Tag Tag */
+			$Tag = DB::where('"synonym_of" IS NOT NULL')->getOne('tags');
 			if (!empty($Tag)){
-				$Syn = Tags::getSynonymOf($Tag,'name');
-				Response::fail("This tag is already a synonym of <strong>{$Syn['name']}</strong>.<br>Would you like to remove the synonym?", ['undo' => true]);
+				$Syn = $Tag->synonym;
+				Response::fail("This tag is already a synonym of <strong>{$Tag->synonym->name}</strong>.<br>Would you like to remove the synonym?", ['undo' => true]);
 			}
 		}
 
 		$viaAutocomplete = !empty($_GET['s']);
 		$limit = null;
-		$cols = "tid, name, type";
+		$cols = 'id, name, type';
 		if ($viaAutocomplete){
 			if (!preg_match($TAG_NAME_REGEX, $_GET['s']))
 				CGUtils::autocompleteRespond('[]');
@@ -650,35 +671,38 @@ class ColorGuideController extends Controller {
 			$TagCheck = CGUtils::checkEpisodeTagName($query);
 			if ($TagCheck !== false)
 				$query = $TagCheck;
-			$Database->where('name',"%$query%",'LIKE');
+			DB::where('name',"%$query%",'LIKE');
 			$limit = 5;
-			$cols = "tid, name, 'typ-'||type as type";
-			$Database->orderBy('uses','DESC');
+			$cols = "id, name, 'typ-'||type as type";
+			DB::orderBy('uses','DESC');
 		}
-		else $Database->orderBy('type','ASC')->where('"synonym_of" IS NULL');
+		else DB::orderBy('type','ASC')->where('"synonym_of" IS NULL');
 
 		if (isset($except))
-			$Database->where('tid',$except,'!=');
-		$Tags = $Database->orderBy('name','ASC')->get('tags',$limit,"$cols, uses, synonym_of");
-		if ($viaAutocomplete)
+			DB::where('id',$except,'!=');
+
+		$Tags = DB::disableAutoClass()->orderBy('name','ASC')->get('tags',$limit,"$cols, uses, synonym_of");
+		if ($viaAutocomplete){
 			foreach ($Tags as &$t){
 				if (empty($t['synonym_of']))
 					continue;
-				$Syn = $Database->where('tid', $t['synonym_of'])->getOne('tags','name');
+				$Syn = Tag::find($t['synonym_of']);
 				if (!empty($Syn))
-					$t['synonym_target'] = $Syn['name'];
-			};
+					$t['synonym_target'] = $Syn->name;
+			}
+			unset($t);
+		}
 
 		CGUtils::autocompleteRespond(empty($Tags) ? '[]' : $Tags);
 	}
 
-	function reindex(){
+	public function reindex(){
 		if (Permission::insufficient('developer'))
 			Response::fail();
 		Appearances::reindex();
 	}
 
-	function appearanceAction($params){
+	public function appearanceAction($params){
 		$this->_initPersonal($params, false);
 
 		if (Permission::insufficient('member'))
@@ -688,8 +712,8 @@ class ColorGuideController extends Controller {
 		$creating = $action === 'make';
 
 		if ($creating){
-			if (Permission::insufficient('staff') && !$this->_personalGuide)
-				Response::fail("You don’t have permission to add appearances to the official Color Guide");
+			if (!$this->_personalGuide && Permission::insufficient('staff'))
+				Response::fail('You don’t have permission to add appearances to the official Color Guide');
 
 			if ($this->_personalGuide){
 				try {
@@ -707,26 +731,26 @@ class ColorGuideController extends Controller {
 		else {
 			$this->_getAppearance($params);
 
-			if (Permission::insufficient('staff') && !$this->_isOwnedByUser)
+			if (!$this->_isOwnedByUser && Permission::insufficient('staff'))
 				Response::fail();
 		}
 
 		$this->_execAppearanceAction($action, $creating);
 	}
 
-	function _execAppearanceAction($action, $creating = null, $noResponse = false){
-		global $Database;
+	public function _execAppearanceAction($action, $creating = null, $noResponse = false){
+
 
 		switch ($action){
-			case "get":
+			case 'get':
 				Response::done([
 					'label' => $this->_appearance->label,
 					'notes' => $this->_appearance->notes,
 					'private' => $this->_appearance->private,
 				]);
 			break;
-			case "set":
-			case "make":
+			case 'set':
+			case 'make':
 				/** @var $data array */
 				$data = [
 					'ishuman' => $this->_personalGuide ? null : $this->_EQG,
@@ -739,9 +763,9 @@ class ColorGuideController extends Controller {
 						Input::ERROR_RANGE => 'Appearance name must be beetween @min and @max characters long',
 					]
 				]))->out();
-				CoreUtils::checkStringValidity($label, "Appearance name", INVERSE_PRINTABLE_ASCII_PATTERN);
+				CoreUtils::checkStringValidity($label, 'Appearance name', INVERSE_PRINTABLE_ASCII_PATTERN);
 				$dupe = Appearance::find_dupe($creating, $this->_personalGuide, [
-					'owned_by' => Auth::$user->id,
+					'owner_id' => Auth::$user->id,
 					'ishuman' => $data['ishuman'],
 					'label' => $label,
 					'id' => $creating ? null : $this->_appearance->id,
@@ -763,7 +787,7 @@ class ColorGuideController extends Controller {
 					]
 				]))->out();
 				if (isset($notes)){
-					CoreUtils::checkStringValidity($notes, "Appearance notes", INVERSE_PRINTABLE_ASCII_PATTERN);
+					CoreUtils::checkStringValidity($notes, 'Appearance notes', INVERSE_PRINTABLE_ASCII_PATTERN);
 					$notes = CoreUtils::sanitizeHtml($notes);
 					if ($creating || $notes !== $this->_appearance->notes)
 						$data['notes'] = $notes;
@@ -773,12 +797,12 @@ class ColorGuideController extends Controller {
 				$data['private'] = isset($_POST['private']);
 
 				if ($creating){
-					if (Permission::insufficient('staff') || $this->_personalGuide){
-						$data['owned_by'] = Auth::$user->id;
+					if ($this->_personalGuide || Permission::insufficient('staff')){
+						$data['owner_id'] = Auth::$user->id;
 						$ownerName = Auth::$user->name;
 					}
-					if (empty($data['owned_by']))
-						$data['order'] = $Database->getOne('appearances','MAX("order") as "order"')['order']+1;
+					if (empty($data['owner_id']))
+						$data['order'] = DB::getOne('appearances','MAX("order") as "order"')['order']+1;
 				}
 				else if ($data['private']){
 					$data['last_cleared'] = date('c');
@@ -802,8 +826,8 @@ class ColorGuideController extends Controller {
 							Appearances::applyTemplate($query, $this->_EQG);
 						}
 						catch (\Exception $e){
-							$response['message'] .= ", but applying the template failed";
-							$response['info'] = "The common color groups could not be added.<br>Reason: ".$e->getMessage();
+							$response['message'] .= ', but applying the template failed';
+							$response['info'] = 'The common color groups could not be added.<br>Reason: '.$e->getMessage();
 							$usetemplate = false;
 						}
 					}
@@ -817,7 +841,7 @@ class ColorGuideController extends Controller {
 					    'ishuman' => $data['ishuman'],
 						'usetemplate' => $usetemplate ? 1 : 0,
 						'private' => $data['private'] ? 1 : 0,
-						'owned_by' => $data['owned_by'] ?? null,
+						'owner_id' => $data['owner_id'] ?? null,
 					]);
 					Response::done($response);
 				}
@@ -833,7 +857,7 @@ class ColorGuideController extends Controller {
 					}
 				}
 				if (!empty($diff)) Logs::logAction('appearance_modify', [
-					'ponyid' => $this->_appearance->id,
+					'appearance_id' => $this->_appearance->id,
 					'changes' => JSON::encode($diff),
 				]);
 
@@ -846,13 +870,13 @@ class ColorGuideController extends Controller {
 
 				Response::done($response);
 			break;
-			case "delete":
+			case 'delete':
 				if ($this->_appearance->id === 0)
 					Response::fail('This appearance cannot be deleted');
 
 				$Tagged = Tags::getFor($this->_appearance->id, null, true, false);
 
-				if (!$Database->where('id', $this->_appearance->id)->delete('appearances'))
+				if (!DB::where('id', $this->_appearance->id)->delete('appearances'))
 					Response::dbError();
 
 				try {
@@ -889,24 +913,28 @@ class ColorGuideController extends Controller {
 				    'ishuman' => $this->_appearance->ishuman,
 				    'added' => $this->_appearance->added,
 				    'private' => $this->_appearance->private,
-				    'owned_by' => $this->_appearance->owned_by,
+				    'owner_id' => $this->_appearance->owner_id,
 				]);
 
 				Response::success('Appearance removed');
 			break;
-			case "getcgs":
-				$cgs = ColorGroups::get($this->_appearance->id,'groupid, label');
+			case 'getcgs':
+				$cgs = $this->_appearance->color_groups;
 				if (empty($cgs))
 					Response::fail('This appearance does not have any color groups');
+				foreach ($cgs as $i => $cg)
+					$cgs[$i] = $cg->to_array([
+						'only' => ['id','label'],
+					]);
 				Response::done(['cgs' => $cgs]);
 			break;
-			case "setcgs":
+			case 'setcgs':
 				$order = (new Input('cgs','int[]', [
 					Input::CUSTOM_ERROR_MESSAGES => [
-						Input::ERROR_MISSING => "Color group order data missing"
+						Input::ERROR_MISSING => 'Color group order data missing'
 					]
 				]))->out();
-				$oldCGs = ColorGroups::get($this->_appearance->id);
+				$oldCGs = $this->_appearance->color_groups;
 				$possibleIDs = [];
 				foreach ($oldCGs as $cg)
 					$possibleIDs[$cg['groupid']] = true;
@@ -914,34 +942,35 @@ class ColorGuideController extends Controller {
 					if (empty($possibleIDs[$GroupID]))
 						Response::fail("There’s no group with the ID of $GroupID on this appearance");
 
-					$Database->where('groupid', $GroupID)->update('colorgroups', ['order' => $i]);
+					DB::where('id', $GroupID)->update('color_groups', ['order' => $i]);
 				}
-				$newCGs = ColorGroups::get($this->_appearance->id);
+				Table::clear_cache();
+				$newCGs = $this->_appearance->color_groups;
 
 				CGUtils::clearRenderedImages($this->_appearance->id, [CGUtils::CLEAR_PALETTE, CGUtils::CLEAR_PREVIEW]);
 
-				$oldCGs = ColorGroups::stringify($oldCGs);
-				$newCGs = ColorGroups::stringify($newCGs);
+				$oldCGs = CGUtils::stringifyColorGroups($oldCGs);
+				$newCGs = CGUtils::stringifyColorGroups($newCGs);
 				if ($oldCGs !== $newCGs) Logs::logAction('cg_order', [
-					'ponyid' => $this->_appearance->id,
+					'appearance_id' => $this->_appearance->id,
 					'oldgroups' => $oldCGs,
 					'newgroups' => $newCGs,
 				]);
 
 				Response::done(['cgs' => Appearances::getColorsHTML($this->_appearance, NOWRAP, !$this->_appearancePage, $this->_appearancePage)]);
 			break;
-			case "delsprite":
-			case "getsprite":
-			case "setsprite":
+			case 'delsprite':
+			case 'getsprite':
+			case 'setsprite':
 				$fname = $this->_appearance->id.'.png';
 				$finalpath = SPRITE_PATH.$fname;
 
 				switch ($action){
-					case "setsprite":
+					case 'setsprite':
 						CGUtils::processUploadedImage('sprite', $finalpath, ['image/png'], [300], [700, 300]);
 						CGUtils::clearRenderedImages($this->_appearance->id);
 					break;
-					case "delsprite":
+					case 'delsprite':
 						if (empty($this->_appearance->getSpriteURL())){
 							if ($noResponse)
 								return;
@@ -959,20 +988,20 @@ class ColorGuideController extends Controller {
 					break;
 				}
 
-				Response::done(["path" => "/cg/v/{$this->_appearance->id}s.png?t=".filemtime($finalpath)]);
+				Response::done(['path' => "/cg/v/{$this->_appearance->id}s.png?t=".filemtime($finalpath)]);
 			break;
-			case "getrelations":
-				if (!empty($this->_appearance->owned_by))
+			case 'getrelations':
+				if (!empty($this->_appearance->owner_id))
 					Response::fail('Relations are unavailable for appearances in personal guides');
 
 				$CheckTag = [];
 
-				$RelatedAppearances = Appearances::getRelated($this->_appearance->id);
+				$RelatedAppearances = $this->_appearance->related_appearances;
 				$RelatedAppearanceIDs = [];
 				foreach ($RelatedAppearances as $p)
 					$RelatedAppearanceIDs[$p['id']] = $p['mutual'];
 
-				$Appearances = $Database->where('ishuman', $this->_EQG)->where('"id" NOT IN (0,'.$this->_appearance->id.')')->orderBy('label','ASC')->get('appearances',null,'id,label');
+				$Appearances = DB::where('ishuman', $this->_EQG)->where('"id" NOT IN (0,'.$this->_appearance->id.')')->orderBy('label','ASC')->get('appearances',null,'id,label');
 
 				$Sorted = [
 					'unlinked' => [],
@@ -987,8 +1016,8 @@ class ColorGuideController extends Controller {
 
 				Response::done($Sorted);
 			break;
-			case "setrelations":
-				if (!empty($this->_appearance->owned_by))
+			case 'setrelations':
+				if (!empty($this->_appearance->owner_id))
 					Response::fail('Relations are unavailable for appearances in personal guides');
 
 				$AppearanceIDs = (new Input('ids','int[]', [
@@ -1017,19 +1046,21 @@ class ColorGuideController extends Controller {
 						unset($appearances[$id]);
 					};
 
-				$Database->where('source', $this->_appearance->id)->delete('appearance_relations');
+				// TODO ActiveRecord-ify
+
+				DB::where('source', $this->_appearance->id)->delete('appearance_relations');
 				if (!empty($appearances))
 					foreach ($appearances as $id => $_){
-						@$Database->insert('appearance_relations', [
+						@DB::insert('appearance_relations', [
 							'source' => $this->_appearance->id,
 							'target' => $id,
 							'mutual' => isset($mutuals[$id]),
 						]);
 					};
-				$Database->where('target', $this->_appearance->id)->where('mutual', true)->delete('appearance_relations');
+				DB::where('target', $this->_appearance->id)->where('mutual', true)->delete('appearance_relations');
 				if (!empty($mutuals))
 					foreach ($MutualIDs as $id){
-						@$Database->insert('appearance_relations', [
+						@DB::insert('appearance_relations', [
 							'source' => $id,
 							'target' => $this->_appearance->id,
 							'mutual' => true,
@@ -1038,46 +1069,48 @@ class ColorGuideController extends Controller {
 
 				$out = [];
 				if ($this->_appearancePage)
-					$out['section'] = Appearances::getRelatedHTML(Appearances::getRelated($this->_appearance->id));
+					$out['section'] = Appearances::getRelatedHTML($this->_appearance->related_appearances);
 				Response::done($out);
 			break;
-			case "getcms":
+			case 'getcms':
 				$CMs = Cutiemarks::get($this->_appearance,false);
 				$ProcessedCMs = Cutiemarks::get($this->_appearance);
 
 				Response::done(['cms' => $CMs, 'preview' => Cutiemarks::getListForAppearancePage($ProcessedCMs, NOWRAP)]);
 			break;
-			case "getcmpreview":
+			case 'getcmpreview':
 				$CMs = [];
 
-				$CM1 = [ 'ponyid' => $this->_appearance->id ];
+				$CM1 = new Cutiemark([ 'appearance_id' => $this->_appearance->id ]);
 				Cutiemarks::postProcess($CM1, 0);
-				$CMs[] = new Cutiemark($CM1);
+				$CMs[] = $CM1;
 
-				$CM2 = [ 'ponyid' => $this->_appearance->id ];
+				$CM2 = new Cutiemark([ 'appearance_id' => $this->_appearance->id ]);
 				if (Cutiemarks::postProcess($CM2, 1))
-					$CMs[] = new Cutiemark($CM2);
+					$CMs[] = $CM2;
 
 				Cutiemarks::processSymmetrical($CMs);
 				Response::done(['html' => Cutiemarks::getListForAppearancePage($CMs, NOWRAP)]);
 			break;
-			case "setcms":
+			case 'setcms':
+				/** @var $data Cutiemark[] */
 				$data = [];
 				$newFacingValues = [];
 				for ($i = 0; $i < 2; $i++){
-					$data[$i] = [
-						'ponyid' => $this->_appearance->id,
-					];
-					if (Cutiemarks::postProcess($data[$i], $i) === false){
-						unset($data[$i]);
-						break;
-					}
 					if (isset($_POST['cmid'][$i])){
-						$data[$i]['cmid'] = intval($_POST['cmid'][$i]);
-						if (!$Database->where('cmid', $data[$i]['cmid'])->has('cutiemarks'))
+						if (!Cutiemark::exists($_POST['cmid'][$i]))
 							Response::fail('The cutie mark you\'re trying to update does not exist');
+
+						$cm = Cutiemark::find($_POST['cmid'][$i]);
 					}
-					$newFacingValues[] = $data[$i]['facing'];
+					else $cm = new Cutiemark([
+						'appearance_id' => $this->_appearance->id,
+					]);
+					if (Cutiemarks::postProcess($cm, $i) === false)
+						break;
+
+					$newFacingValues[] = $cm->facing;
+					$data[$i] = $cm;
 				}
 
 				$CurrentCMs = Cutiemarks::get($this->_appearance);
@@ -1098,21 +1131,15 @@ class ColorGuideController extends Controller {
 				if (!empty($cleanRendered))
 					CGUtils::clearRenderedImages($this->_appearance->id, $cleanRendered);
 
-				foreach ($data as $cmdata){
-					if (isset($cmdata['cmid'])){
-						$Database->where('cmid', $cmdata['cmid']);
-						unset($cmdata['cmid']);
-						$Database->update('cutiemarks', $cmdata);
-					}
-					else $Database->insert('cutiemarks', $cmdata);
-				}
+				foreach ($data as $cmdata)
+					$cmdata->save();
 
 				$CutieMarks = Cutiemarks::get($this->_appearance, false);
 				$olddata = Cutiemarks::convertDataForLogs($CurrentCMs);
 				$newdata = Cutiemarks::convertDataForLogs($CutieMarks);
 				if ($olddata !== $newdata)
 					Logs::logAction('cm_modify',[
-						'ponyid' => $this->_appearance->id,
+						'appearance_id' => $this->_appearance->id,
 						'olddata' => $olddata,
 						'newdata' => $newdata,
 					]);
@@ -1122,21 +1149,21 @@ class ColorGuideController extends Controller {
 					$data['html'] = Cutiemarks::getListForAppearancePage($CutieMarks);
 				Response::done($data);
 			break;
-			case "delcms":
+			case 'delcms':
 				$CMs = Cutiemarks::get($this->_appearance);
 				if (empty($CMs))
 					Response::done();
-				if (!$Database->where('ponyid', $this->_appearance->id)->delete('cutiemarks'))
+				if (!Cutiemark::delete_all(['conditions' => ['appearance_id = ?', $this->_appearance->id]]))
 					Response::dbError('Removing Cutie Marka failed');
 
 				Logs::logAction('cm_delete',[
-					'ponyid' => $this->_appearance->id,
+					'appearance_id' => $this->_appearance->id,
 					'data' => Cutiemarks::convertDataForLogs($CMs),
 				]);
 
 				Response::done();
 			break;
-			case "clear-cache":
+			case 'clear-cache':
 				if (!CGUtils::clearRenderedImages($this->_appearance->id))
 					Response::fail('Cache could not be purged');
 
@@ -1145,16 +1172,16 @@ class ColorGuideController extends Controller {
 
 				Response::success('Cached images have been removed, they will be re-generated on the next request');
 			break;
-			case "tag":
-			case "untag":
-				if (isset($this->_appearance->owned_by))
+			case 'tag':
+			case 'untag':
+				if (isset($this->_appearance->owner_id))
 					Response::fail('Tagging is unavailable for appearances in personal guides');
 
 				if ($this->_appearance->id === 0)
-					Response::fail("This appearance cannot be tagged");
+					Response::fail('This appearance cannot be tagged');
 
 				switch ($action){
-					case "tag":
+					case 'tag':
 						$tag_name = CGUtils::validateTagName('tag_name');
 
 						$TagCheck = CGUtils::checkEpisodeTagName($tag_name);
@@ -1168,61 +1195,57 @@ class ColorGuideController extends Controller {
 								'typehint' => $TagCheck !== false ? 'ep' : null,
 							]);
 
-						if ($Database->where('ponyid', $this->_appearance->id)->where('tid', $Tag['tid'])->has('tagged'))
+						if (Tagged::is($Tag, $this->_appearance))
 							Response::fail('This appearance already has this tag');
 
-						if (!$Database->insert('tagged', [
-							'ponyid' => $this->_appearance->id,
-							'tid' => $Tag['tid'],
-						])) Response::dbError();
+						if (!Tagged::make($Tag->id, $this->_appearance->id)->save())
+							Response::dbError();
 					break;
-					case "untag":
+					case 'untag':
 						$tag_id = (new Input('tag','int', [
 							Input::CUSTOM_ERROR_MESSAGES => [
 								Input::ERROR_MISSING => 'Tag ID is missing',
 								Input::ERROR_INVALID => 'Tag ID (@value) is invalid',
 							]
 						]))->out();
-						$Tag = $Database->where('tid',$tag_id)->getOne('tags');
+						$Tag = Tag::find($tag_id);
 						if (empty($Tag))
 							Response::fail('This tag does not exist');
-						if (!empty($Tag['synonym_of'])){
-							$Syn = Tags::getSynonymOf($Tag,'name');
+						if ($Tag->synonym_of !== null)
 							Response::fail('Synonym tags cannot be removed from appearances directly. '.
-							        "If you want to remove this tag you must remove <strong>{$Syn['name']}</strong> or the synonymization.");
-						}
+							        "If you want to remove this tag you must remove <strong>{$Tag->synonym->name}</strong> or the synonymization.");
 
-						if ($Database->where('ponyid', $this->_appearance->id)->where('tid', $Tag['tid'])->has('tagged')){
-							if (!$Database->where('ponyid', $this->_appearance->id)->where('tid', $Tag['tid'])->delete('tagged'))
-								Response::dbError();
-						}
+						if (
+							DB::where('appearance_id', $this->_appearance->id)->where('tag_id', $Tag->id)->has('tagged')
+							&& !DB::where('appearance_id', $this->_appearance->id)->where('tag_id', $Tag->id)->delete('tagged')
+						) Response::dbError();
 					break;
 				}
 
 				Appearances::updateIndex($this->_appearance->id);
 
-				Tags::updateUses($Tag['tid']);
-				if (!empty(CGUtils::GROUP_TAG_IDS_ASSOC[$Tag['tid']]))
+				Tags::updateUses($Tag->id);
+				if (!empty(CGUtils::GROUP_TAG_IDS_ASSOC[$Tag->id]))
 					Appearances::getSortReorder($this->_EQG);
 
 				$response = ['tags' => Appearances::getTagsHTML($this->_appearance->id, NOWRAP)];
-				if ($this->_appearancePage && $Tag['type'] === 'ep'){
+				if ($this->_appearancePage && $Tag->type === 'ep'){
 					$response['needupdate'] = true;
 					$response['eps'] = Appearances::getRelatedEpisodesHTML($this->_appearance, $this->_EQG);
 				}
 				Response::done($response);
 			break;
-			case "applytemplate":
+			case 'applytemplate':
 				try {
 					Appearances::applyTemplate($this->_appearance->id, $this->_EQG);
 				}
 				catch (\Exception $e){
-					Response::fail("Applying the template failed. Reason: ".$e->getMessage());
+					Response::fail('Applying the template failed. Reason: '.$e->getMessage());
 				}
 
 				Response::done(['cgs' => Appearances::getColorsHTML($this->_appearance, NOWRAP, !$this->_appearancePage, $this->_appearancePage)]);
 			break;
-			case "selectiveclear":
+			case 'selectiveclear':
 				$wipe_cache = (new Input('wipe_cache','bool',[
 					Input::IS_OPTIONAL => true,
 				]))->out();
@@ -1239,38 +1262,35 @@ class ColorGuideController extends Controller {
 					Input::IS_OPTIONAL => true,
 				]))->out();
 				switch ($wipe_colors){
-					case "color_hex":
-						if (Appearances::hasColors($this->_appearance->id, true)){
-							if (!$Database->rawQuery('UPDATE colors SET hex = null WHERE groupid IN (SELECT groupid FROM colorgroups WHERE ponyid = ?)', [$this->_appearance->id]))
+					case 'color_hex':
+						if (Appearances::hasColors($this->_appearance, true)){
+							if (!DB::rawQuery('UPDATE colors SET hex = null WHERE group_id IN (SELECT id FROM color_groups WHERE appearance_id = ?)', [$this->_appearance->id]))
 								Response::dbError();
 						}
 					break;
-					case "color_all":
-						if (Appearances::hasColors($this->_appearance->id)){
-							if (!$Database->rawQuery('DELETE FROM colors WHERE groupid IN (SELECT groupid FROM colorgroups WHERE ponyid = ?)', [$this->_appearance->id]))
+					case 'color_all':
+						if (Appearances::hasColors($this->_appearance)){
+							if (!DB::rawQuery('DELETE FROM colors WHERE group_id IN (SELECT id FROM color_groups WHERE appearance_id = ?)', [$this->_appearance->id]))
 								Response::dbError();
 						}
 					break;
-					case "all":
-						if ($Database->where('ponyid', $this->_appearance->id)->has('colorgroups')){
-							if (!$Database->rawQuery('DELETE FROM colorgroups WHERE ponyid = ?', [$this->_appearance->id]))
+					case 'all':
+						if (ColorGroup::exists(['conditions' => ['appearance_id = ?', $this->_appearance->id]])){
+							if (!DB::rawQuery('DELETE FROM color_groups WHERE appearance_id = ?', [$this->_appearance->id]))
 								Response::dbError();
 						}
 					break;
 				}
 
-				if (empty($this->_appearance->owned_by)){
+				if (empty($this->_appearance->owner_id)){
 					$wipe_tags = (new Input('wipe_tags','bool',[
 						Input::IS_OPTIONAL => true,
 					]))->out();
-					if ($wipe_tags){
-						$tagged = $Database->where('ponyid', $this->_appearance->id)->get('tagged',null,'tid');
-						if (!empty($tagged)){
-							if (!$Database->where('ponyid', $this->_appearance->id)->delete('tagged'))
-								Response::dbError('Failed to wipe tags');
-							foreach ($tagged as $tag)
-								Tags::updateUses($tag['tid']);
-						}
+					if ($wipe_tags && !empty($this->_appearance->tagged)){
+						if (!DB::where('appearance_id', $this->_appearance->id)->delete('tagged'))
+							Response::dbError('Failed to wipe tags');
+						foreach ($this->_appearance->tagged as $tag)
+							Tags::updateUses($tag->tag_id);
 					}
 				}
 
@@ -1289,7 +1309,7 @@ class ColorGuideController extends Controller {
 					$update['private'] = 1;
 
 				if (!empty($update))
-					$Database->where('id', $this->_appearance->id)->update('appearances',$update);
+					DB::where('id', $this->_appearance->id)->update('appearances',$update);
 
 				Response::done();
 			break;
@@ -1297,7 +1317,7 @@ class ColorGuideController extends Controller {
 		}
 	}
 
-	function recountTagUses(){
+	public function recountTagUses(){
 		if (Permission::insufficient('staff'))
 			Response::fail();
 
@@ -1310,7 +1330,7 @@ class ColorGuideController extends Controller {
 		$counts = [];
 		$updates = 0;
 		foreach ($tagIDs as $tid){
-			if (Tags::getActual($tid,'tid',RETURN_AS_BOOL)){
+			if (Tags::getActual($tid,'id',RETURN_AS_BOOL)){
 				$result = Tags::updateUses($tid, true);
 				if ($result['status'])
 					$updates++;
@@ -1328,9 +1348,7 @@ class ColorGuideController extends Controller {
 		);
 	}
 
-	function tagAction($params){
-		global $Database;
-
+	public function tagAction($params){
 		$this->_initialize($params);
 		if (Permission::insufficient('staff'))
 			CoreUtils::notFound();
@@ -1342,9 +1360,9 @@ class ColorGuideController extends Controller {
 			if (!isset($params['id']))
 				Response::fail('Missing tag ID');
 			$TagID = intval($params['id'], 10);
-			$Tag = $Database->where('tid', $TagID)->getOne('tags',isset($query) ? 'tid, name, type':'*');
+			$Tag = Tag::find($TagID);
 			if (empty($Tag))
-				Response::fail("This tag does not exist");
+				Response::fail('This tag does not exist');
 		}
 
 		$data = [];
@@ -1355,52 +1373,54 @@ class ColorGuideController extends Controller {
 			case 'del':
 				$AppearanceID = Appearances::validateAppearancePageID();
 
-				$tid = !empty($Tag['synonym_of']) ? $Tag['synonym_of'] : $Tag['tid'];
-				$Uses = $Database->where('tid',$tid)->get('tagged',null,'ponyid');
+				$tid = $Tag->synonym_of ?? $Tag->id;
+				$Uses = Tagged::by_tag($tid);
 				$UseCount = count($Uses);
-				if (!isset($_POST['sanitycheck'])){
-					if ($UseCount > 0)
-						Response::fail('<p>This tag is currently used on '.CoreUtils::makePlural('appearance',$UseCount,PREPEND_NUMBER).'</p><p>Deleting will <strong class="color-red">permanently remove</strong> the tag from those appearances!</p><p>Are you <em class="color-red">REALLY</em> sure about this?</p>', ['confirm' => true]);
-				}
+				if (!isset($_POST['sanitycheck']) && $UseCount > 0)
+					Response::fail('<p>This tag is currently used on '.CoreUtils::makePlural('appearance',$UseCount,PREPEND_NUMBER).'</p><p>Deleting will <strong class="color-red">permanently remove</strong> the tag from those appearances!</p><p>Are you <em class="color-red">REALLY</em> sure about this?</p>', ['confirm' => true]);
 
-				if (!$Database->where('tid', $Tag['tid'])->delete('tags'))
+				if (!DB::where('tid', $Tag['tid'])->delete('tags'))
 					Response::dbError();
 
 				if (!empty(CGUtils::GROUP_TAG_IDS_ASSOC[$Tag['tid']]))
 					Appearances::getSortReorder($this->_EQG);
 				foreach ($Uses as $use)
-					Appearances::updateIndex($use['ponyid']);
+					Appearances::updateIndex($use->appearance_id);
 
-				$Appearance = $Database->where('id',$AppearanceID)->getOne('appearances','id,ishuman');
-				Response::success('Tag deleted successfully', isset($AppearanceID) && $Tag['type'] === 'ep' ? [
-					'needupdate' => true,
-					'eps' => Appearances::getRelatedEpisodesHTML($Appearance, $this->_EQG),
-				] : null);
+
+				if ($AppearanceID !== null && $Tag->type === 'ep'){
+					$Appearance = Appearance::find($AppearanceID);
+					$resp = [
+						'needupdate' => true,
+						'eps' => Appearances::getRelatedEpisodesHTML($Appearance, $this->_EQG),
+					];
+				}
+				else $resp = null;
+				Response::success('Tag deleted successfully', $resp);
 			break;
 			case 'unsynon':
-				if (empty($Tag['synonym_of']))
+				if ($Tag->synonym_of === null)
 					Response::done();
 
 				$keep_tagged = isset($_POST['keep_tagged']);
 				$uses = 0;
-				$Target = $Database->where('tid', $Tag['synonym_of'])->getOne('tags','tid');
-				if (!empty($Target)){
-					$TargetTagged = $Database->where('tid', $Target['tid'])->get('tagged', null, 'ponyid');
+				if (!empty($Tag->synonym)){
+					$TargetTagged = Tagged::by_tag($Tag->synonym->id);
 					if ($keep_tagged){
 						foreach ($TargetTagged as $tg){
-							if (!$Database->insert('tagged', ['tid' => $Tag['tid'], 'ponyid' => $tg['ponyid']]))
-								Response::fail("Tag synonym removal process failed, please re-try.<br>Technical details: ponyid={$tg['ponyid']} tid={$Tag['tid']}");
+							if (!Tagged::make($Tag->id, $tg->appearance_id)->save())
+								Response::fail('Tag synonym removal process failed, please re-try.<br>Technical details: '.$tg->to_json());
 							$uses++;
 						}
 					}
 					else {
 						foreach ($TargetTagged as $tg)
-							Appearances::updateIndex($tg['ponyid']);
+							Appearances::updateIndex($tg->appearance_id);
 					}
 				}
 				else $keep_tagged = false;
 
-				if (!$Database->where('tid', $Tag['tid'])->update('tags', ['synonym_of' => null, 'uses' => $uses]))
+				if (!DB::where('tid', $Tag['tid'])->update('tags', ['synonym_of' => null, 'uses' => $uses]))
 					Response::dbError();
 
 				Response::done(['keep_tagged' => $keep_tagged]);
@@ -1426,7 +1446,7 @@ class ColorGuideController extends Controller {
 					$data['type'] = $epTagName === false ? null : 'ep';
 				}
 				else {
-					if ($type == 'ep'){
+					if ($type === 'ep'){
 						if (!$surelyAnEpisodeTag){
 							$errmsg = <<<HTML
 Episode tags must be in one of the following formats:
@@ -1455,9 +1475,9 @@ HTML;
 				}
 
 				if (!$adding)
-					$Database->where('tid', $Tag['tid'],'!=');
-				if ($Database->where('name', $data['name'])->where('type', $data['type'])->has('tags'))
-					Response::fail("A tag with the same name and type already exists");
+					DB::where('tid', $Tag['tid'],'!=');
+				if (DB::where('name', $data['name'])->where('type', $data['type'])->has('tags'))
+					Response::fail('A tag with the same name and type already exists');
 
 				$data['title'] = (new Input('title','string', [
 					Input::IS_OPTIONAL => true,
@@ -1468,27 +1488,27 @@ HTML;
 				]))->out();
 
 				if ($adding){
-					$TagID = $Database->insert('tags', $data, 'tid');
-					if (!$TagID)
+					$Tag = Tag::create($data);
+					if (empty($Tag))
 						Response::dbError();
-					$data['tid'] = $TagID;
+
+					$TagID = $Tag->id;
+
+					$data['id'] = $TagID;
 
 					$AppearanceID = (new Input('addto','int', [Input::IS_OPTIONAL => true]))->out();
 					if (isset($AppearanceID)){
 						if ($AppearanceID === 0)
-							Response::success("The tag was created, <strong>but</strong> it could not be added to the appearance because it can’t be tagged.");
+							Response::success('The tag was created, <strong>but</strong> it could not be added to the appearance because it can’t be tagged.');
 
-						$Appearance = $Database->where('id', $AppearanceID)->getOne('appearances');
+						$Appearance = Appearance::find($AppearanceID);
 						if (empty($Appearance))
 							Response::success("The tag was created, <strong>but</strong> it could not be added to the appearance (<a href='/cg/v/$AppearanceID'>#$AppearanceID</a>) because it doesn’t seem to exist. Please try adding the tag manually.");
 
-						if (!$Database->insert('tagged', [
-							'tid' => $data['tid'],
-							'ponyid' => $Appearance['id']
-						])) Response::dbError();
-						Appearances::updateIndex($Appearance['id']);
+						if (!Tagged::make($data['tid'], $Appearance->id)->save()) Response::dbError();
+						Appearances::updateIndex($Appearance->id);
 						Tags::updateUses($data['tid']);
-						$r = ['tags' => Appearances::getTagsHTML($Appearance['id'], NOWRAP)];
+						$r = ['tags' => Appearances::getTagsHTML($Appearance->id, NOWRAP)];
 						if ($this->_appearancePage){
 							$r['needupdate'] = true;
 							$r['eps'] = Appearances::getRelatedEpisodesHTML($Appearance, $this->_EQG);
@@ -1497,16 +1517,16 @@ HTML;
 					}
 				}
 				else {
-					$Database->where('tid', $Tag['tid'])->update('tags', $data);
-					$data = array_merge($Tag, $data);
-					$ponyid = !empty($this->_appearancePage) ? intval($_POST['APPEARANCE_PAGE'],10) : null;
-					$tagrelations = $Database->where('tid', $Tag['tid'])->get('tagged');
+					$Tag->update_attributes($data);
+					$data = $Tag->to_array();
+					$AppearanceID = !empty($this->_appearancePage) ? (int) $_POST['APPEARANCE_PAGE'] : null;
+					$tagrelations = Tagged::by_tag($Tag->id);
 					foreach ($tagrelations as $tagged){
-						Appearances::updateIndex($tagged['ponyid']);
+						Appearances::updateIndex($tagged->appearance_id);
 
-						if ($tagged['ponyid'] === $ponyid){
+						if ($tagged->appearance_id === $AppearanceID){
 							$data['needupdate'] = true;
-							$Appearance = $Database->where('id', $ponyid)->getOne('appearances');
+							$Appearance = Appearance::find($AppearanceID);
 							$data['eps'] = Appearances::getRelatedEpisodesHTML($Appearance, $this->_EQG);
 						}
 					}
@@ -1528,34 +1548,33 @@ HTML;
 					Input::ERROR_MISSING => 'Missing target tag ID',
 				]
 			]))->out();
-			$Target = $Database->where('tid', $targetid)->getOne('tags');
+			$Target = Tag::find($targetid);
 			if (empty($Target))
 				Response::fail('Target tag does not exist');
-			if (!empty($Target['synonym_of']))
-				Response::fail('Synonym tags cannot be synonymization targets');
+			if ($Target->synonym_of !== null)
+				Response::fail('The selected tag is already a synonym of another tag');
 
-			$_TargetTagged = $Database->where('tid', $Target['tid'])->get('tagged',null,'ponyid');
-			$TargetTagged = [];
-			foreach ($_TargetTagged as $tg)
-				$TargetTagged[] = $tg['ponyid'];
+			$TargetTagged = Tagged::by_tag($Target['tid']);
+			$TaggedAppearanceIDs = [];
+			foreach ($TargetTagged as $tg)
+				$TaggedAppearanceIDs[] = $tg->appearance_id;
 
-			$Tagged = $Database->where('tid', $Tag['tid'])->get('tagged',null,'ponyid');
+			$Tagged = Tagged::by_tag($Tag->tid);
 			foreach ($Tagged as $tg){
-				if (in_array($tg['ponyid'], $TargetTagged)) continue;
+				if (in_array($tg->appearance_id, $TaggedAppearanceIDs, true))
+					continue;
 
-				if (!$Database->insert('tagged', [
-					'tid' => $Target['tid'],
-					'ponyid' => $tg['ponyid'],
-				])) Response::fail('Tag '.($merging?'merging':'synonimizing')." failed, please re-try.<br>Technical details: ponyid={$tg['ponyid']} tid={$Target['tid']}");
+				if (!Tagged::make($Target->id, $tg->appearance_id)->save()) Response::fail('Tag '.($merging?'merging':'synonimizing').' failed, please re-try.<br>Technical details: '.$tg->to_json());
 			}
 			if ($merging)
 				// No need to delete "tagged" table entries, constraints do it for us
-				$Database->where('tid', $Tag['tid'])->delete('tags');
+				Tag::delete_all(['conditions' => ['id = ?', $Tag->id]]);
 			else {
-				$Database->where('tid', $Tag['tid'])->delete('tagged');
-				$Database->where('tid', $Tag['tid'])->update('tags', ['synonym_of' => $Target['tid'], 'uses' => 0]);
+				DB::where('tid', $Tag['tid'])->delete('tagged');
+				Tagged::delete_all(['conditions' => ['id = ?', $Tag->id]]);
+				DB::where('tid', $Tag['tid'])->update('tags', ['synonym_of' => $Target['tid'], 'uses' => 0]);
 			}
-			foreach ($TargetTagged as $id)
+			foreach ($TaggedAppearanceIDs as $id)
 				Appearances::updateIndex($id);
 
 			Tags::updateUses($Target['tid']);
@@ -1565,11 +1584,11 @@ HTML;
 		CoreUtils::notFound();
 	}
 
-	function colorGroupAction($params){
-		global $Database, $HEX_COLOR_REGEX;
+	public function colorGroupAction($params){
+		global $HEX_COLOR_REGEX;
 
 		$this->_initPersonal($params, false);
-		if (Permission::insufficient('staff') && !$this->_isOwnedByUser)
+		if (!$this->_isOwnedByUser && Permission::insufficient('staff'))
 			Response::fail();
 
 		$action = $params['action'];
@@ -1579,41 +1598,42 @@ HTML;
 			if (empty($params['id']))
 				Response::fail('Missing color group ID');
 			$GroupID = intval($params['id'], 10);
-			$Group = $Database->where('groupid', $GroupID)->getOne('colorgroups');
-			if (empty($GroupID))
+			$Group = ColorGroup::find($GroupID);
+			if (empty($Group))
 				Response::fail("There’s no color group with the ID of $GroupID");
 
-			if ($action === 'get'){
-				$Group['Colors'] = ColorGroups::getColors($Group['groupid']);
-				Response::done($Group);
-			}
+			if ($action === 'get')
+				Response::done($Group->to_array([
+					'with' => [ 'Colors' => $Group->colors ],
+				]));
 
 			if ($action === 'del'){
-				if (!$Database->where('groupid', $Group['groupid'])->delete('colorgroups'))
-					Response::dbError();
+				$Group->delete();
 
 				Logs::logAction('cgs', [
 					'action' => 'del',
-					'groupid' => $Group['groupid'],
-					'ponyid' => $Group['ponyid'],
-					'label' => $Group['label'],
-					'order' => $Group['order'] ?? null,
+					'group_id' => $Group->id,
+					'appearance_id' => $Group->appearance_id,
+					'label' => $Group->label,
+					'order' => $Group->order,
 				]);
 
-				Response::success("Color group deleted successfully");
+				Response::success('Color group deleted successfully');
 			}
 		}
-		/** @var $data array */
-		$data = [];
+		else $Group = new ColorGroup();
 
-		$data['label'] = (new Input('label','string', [
+		if (!$adding)
+			$oldlabel = $Group->label;
+		$label = (new Input('label','string', [
 			Input::IN_RANGE => [2,30],
 			Input::CUSTOM_ERROR_MESSAGES => [
-				Input::ERROR_MISSING => 'Please specify a group name',
-				Input::ERROR_RANGE => 'The group name must be between @min and @max characters in length',
+				Input::ERROR_MISSING => 'Color group label is missing',
+				Input::ERROR_RANGE => 'Color group label must be between @min and @max characters long',
 			]
 		]))->out();
-		CoreUtils::checkStringValidity($data['label'], "Color group name", INVERSE_PRINTABLE_ASCII_PATTERN, true);
+		CoreUtils::checkStringValidity($label, 'Color group label', INVERSE_PRINTABLE_ASCII_PATTERN, true);
+		$Group->label = $label;
 
 		$major = isset($_POST['major']);
 		if ($major){
@@ -1624,40 +1644,36 @@ HTML;
 					Input::ERROR_RANGE => 'The reason cannot be longer than @max characters',
 				],
 			]))->out();
-			CoreUtils::checkStringValidity($reason, "Change reason", INVERSE_PRINTABLE_ASCII_PATTERN);
+			CoreUtils::checkStringValidity($reason, 'Change reason', INVERSE_PRINTABLE_ASCII_PATTERN);
 		}
 
 		if ($adding){
-			$params['id'] = (new Input('ponyid','int', [
+			$ponyid = (new Input('ponyid','int', [
 				Input::CUSTOM_ERROR_MESSAGES => [
 					Input::ERROR_MISSING => 'Missing appearance ID',
 				]
 			]))->out();
 			$this->_getAppearance($params);
-			$data['ponyid'] = $params['id'];
-
-			// Attempt to get order number of last color group for the appearance
-			$LastGroup = ColorGroups::get($params['id'], '"order"', 'DESC', 1);
-			$data['order'] =  !empty($LastGroup['order']) ? $LastGroup['order']+1 : 1;
-
-			$GroupID = $Database->insert('colorgroups', $data, 'groupid');
-			if (!$GroupID)
-				Response::dbError();
-			$Group = ['groupid' => $GroupID];
+			$Group->appearance_id = $ponyid;
 		}
-		else $Database->where('groupid', $Group['groupid'])->update('colorgroups', $data);
 
-		$origColors = $adding ? null : ColorGroups::getColors($Group['groupid']);
+		$Group->save();
+
+		$oldcolors = $adding ? null : $Group->colors;
 
 		$recvColors = (new Input('Colors','json', [
 			Input::CUSTOM_ERROR_MESSAGES => [
-				Input::ERROR_MISSING => "Missing list of colors",
-				Input::ERROR_INVALID => "List of colors is invalid",
+				Input::ERROR_MISSING => 'Missing list of colors',
+				Input::ERROR_INVALID => 'List of colors is invalid',
 			]
 		]))->out();
-		$colors = [];
+		/** @var $newcolors Color[] */
+		$newcolors = [];
 		foreach ($recvColors as $part => $c){
-			$append = ['order' => $part];
+			$append = new Color([
+				'group_id' => $Group->id,
+				'order' => $part,
+			]);
 			$index = "(index: $part)";
 
 			if (empty($c['label']))
@@ -1667,26 +1683,27 @@ HTML;
 			$ll = CoreUtils::length($label);
 			if ($ll < 3 || $ll > 30)
 				Response::fail("The color name must be between 3 and 30 characters in length $index");
-			$append['label'] = $label;
+			$append->label = $label;
 
 			if (empty($c['hex']))
 				Response::fail("You must specify a color code $index");
 			$hex = CoreUtils::trim($c['hex']);
 			if (!$HEX_COLOR_REGEX->match($hex, $_match))
 				Response::fail("HEX color is in an invalid format $index");
-			$append['hex'] = '#'.strtoupper($_match[1]);
+			$append->hex = '#'.strtoupper($_match[1]);
 
-			$colors[] = $append;
+			$newcolors[] = $append;
 		}
+		// Don't wipe colors until the ones provided pass validation
 		if (!$adding)
-			$Database->where('groupid', $Group['groupid'])->delete('colors');
+			$Group->wipeColors();
 		$colorError = false;
-		foreach ($colors as $c){
-			$c['groupid'] = $Group['groupid'];
-			if (!$Database->insert('colors', $c)){
-				$colorError = true;
-				error_log("Database error triggered by user ".Auth::$user->name." (".Auth::$user->id.") while saving colors: ".$Database->getLastError());
-			}
+		foreach ($newcolors as $c){
+			if ($c->save())
+				continue;
+
+			$colorError = true;
+			error_log('Database error triggered by user '.Auth::$user->name.' ('.Auth::$user->id.') while saving colors: '.DB::getLastError());
 		}
 		if ($colorError)
 			Response::fail("There were some issues while saving some of the colors. Please let the developer know about this error, so he can look into why this might've happened.");
@@ -1695,65 +1712,64 @@ HTML;
 		$outputNames = $this->_appearancePage;
 
 		if ($adding) $response = ['cgs' => Appearances::getColorsHTML($this->_appearance, NOWRAP, $colon, $outputNames)];
-		else $response = ['cg' => ColorGroups::getHTML($Group['groupid'], null, NOWRAP, $colon, $outputNames)];
+		else $response = ['cg' => $Group->getHTML(null, NOWRAP, $colon, $outputNames)];
 
-		$AppearanceID = $adding ? $this->_appearance->id : $Group['ponyid'];
 		if ($major){
-			Logs::logAction('color_modify', [
-				'ponyid' => $AppearanceID,
+			Logs::logAction('major_changes', [
+				'appearance_id' => $Group->appearance_id,
 				'reason' => $reason,
 			]);
 			if ($this->_appearancePage){
 				$FullChangesSection = isset($_POST['FULL_CHANGES_SECTION']);
-				$response['changes'] = CGUtils::getChangesHTML(Updates::get($AppearanceID), $FullChangesSection);
+				$response['changes'] = CGUtils::getChangesHTML(MajorChange::get($Group->appearance_id), $FullChangesSection);
 				if ($FullChangesSection)
 					$response['changes'] = str_replace('@',$response['changes'],CGUtils::CHANGES_SECTION);
 			}
-			else $response['update'] = Appearances::getUpdatesHTML($AppearanceID);
+			else $response['update'] = Appearances::getUpdatesHTML($Group->appearance_id);
 		}
-		CGUtils::clearRenderedImages($AppearanceID, [CGUtils::CLEAR_PALETTE, CGUtils::CLEAR_PREVIEW]);
+		CGUtils::clearRenderedImages($Group->appearance_id, [CGUtils::CLEAR_PALETTE, CGUtils::CLEAR_PREVIEW]);
 
 		if (isset($_POST['APPEARANCE_PAGE']))
-			$response['cm_img'] = "/cg/v/$AppearanceID.svg?t=".time();
-		else $response['notes'] = Appearance::find($AppearanceID)->getNotesHTML(NOWRAP);
+			$response['cm_img'] = "/cg/v/{$Group->appearance_id}.svg?t=".time();
+		else $response['notes'] = Appearance::find($Group->appearance_id)->getNotesHTML(NOWRAP);
 
 		$logdata = [];
 		if ($adding) Logs::logAction('cgs', [
 			'action' => 'add',
-			'groupid' => $Group['groupid'],
-			'ponyid' => $AppearanceID,
-			'label' => $data['label'],
-			'order' => $data['order'] ?? null,
+			'group_id' => $Group->id,
+			'appearance_id' => $Group->appearance_id,
+			'label' => $Group->label,
+			'order' => $Group->order,
 		]);
-		else if ($data['label'] !== $Group['label']){
-			$logdata['oldlabel'] = $Group['label'];
-			$logdata['newlabel'] = $data['label'];
+		else if ($Group->label !== $oldlabel){
+			$logdata['oldlabel'] = $oldlabel;
+			$logdata['newlabel'] = $Group->label;
 		}
 
-		$origColors = ColorGroups::stringifyColors($origColors);
-		$recvColors = ColorGroups::stringifyColors($recvColors);
-		$colorsChanged = $origColors !== $recvColors;
+		$oldcolorstr = CGUtils::stringifyColors($oldcolors);
+		$newcolorstr = CGUtils::stringifyColors($newcolors);
+		$colorsChanged = $oldcolorstr !== $newcolorstr;
 		if ($colorsChanged){
-			$logdata['oldcolors'] = $origColors;
-			$logdata['newcolors'] = $recvColors;
+			$logdata['oldcolors'] = $oldcolorstr;
+			$logdata['newcolors'] = $newcolorstr;
 		}
 		if (!empty($logdata)){
-			$logdata['groupid'] = $Group['groupid'];
-			$logdata['ponyid'] = $AppearanceID;
+			$logdata['group_id'] = $Group->id;
+			$logdata['appearance_id'] = $Group->appearance_id;
 			Logs::logAction('cg_modify', $logdata);
 		}
 
 		Response::done($response);
 	}
 
-	function blending(){
+	public function blending(){
 		global $HEX_COLOR_REGEX;
 
 		CoreUtils::fixPath('/cg/blending');
 
 		$HexPattern = preg_replace(new RegExp('^/(.*)/.*$'),'$1',$HEX_COLOR_REGEX->jsExport());
 		CoreUtils::loadPage([
-			'title' => "Color Blending Calculator",
+			'title' => 'Color Blending Calculator',
 			'view' => "{$this->do}-blending",
 			'css' => "{$this->do}-blending",
 			'js' => "{$this->do}-blending",
@@ -1764,7 +1780,7 @@ HTML;
 		]);
 	}
 
-	function picker(){
+	public function picker(){
 		CoreUtils::loadPage([
 			'title' => 'Color Picker',
 			'view' => "{$this->do}-picker",
@@ -1773,12 +1789,12 @@ HTML;
 		]);
 	}
 
-	function pickerFrame(){
+	public function pickerFrame(){
 		header('Content-Type: text/html; charset=utf-8;');
 		include INCPATH.'views/colorpicker.php';
 	}
 
-	function getSpriteColors($params){
+	public function getSpriteColors($params){
 		$this->_getAppearance($params);
 
 		if (empty($this->_appearance))

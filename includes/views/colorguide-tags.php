@@ -2,8 +2,9 @@
 use App\Tags;
 use App\CoreUtils;
 use App\Permission;
+use App\Models\Tag;
 /** @var $heading string */
-/** @var $Tags array */
+/** @var $Tags Tag[] */
 /** @var $Pagination \App\Pagination */ ?>
 <div id="content">
 	<h1><?=$heading?></h1>

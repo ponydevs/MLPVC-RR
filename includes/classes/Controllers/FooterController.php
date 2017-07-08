@@ -5,7 +5,7 @@ use App\CoreUtils;
 use App\Response;
 
 class FooterController extends Controller {
-	function git(){
+	public function git(){
 		Response::done(['footer' => CoreUtils::getFooterGitInfo()]);
 	}
 }

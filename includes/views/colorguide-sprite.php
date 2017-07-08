@@ -18,7 +18,7 @@ use App\CoreUtils;
 	<section class="color-list">
 		<ul id="colors" class="colors"><?php
 	foreach ($ColorGroups as $cg)
-		echo ColorGroups::getHTML($cg, $AllColors, WRAP, NO_COLON, OUTPUT_COLOR_NAMES, FORCE_EXTRA_INFO);
+		echo $cg->getHTML($AllColors, WRAP, NO_COLON, OUTPUT_COLOR_NAMES, FORCE_EXTRA_INFO);
 		?></ul>
 	</section>
 </div>

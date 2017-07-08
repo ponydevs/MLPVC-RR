@@ -7,6 +7,7 @@ use App\CSRFProtection;
 use App\Input;
 use App\JSON;
 use App\Logs;
+use App\Models\Notification;
 use App\Notifications;
 use App\Posts;
 use App\Response;
@@ -15,7 +16,7 @@ use App\Models\Post;
 class NotificationsController extends Controller {
 	public $do = 'notifications';
 
-	function __construct(){
+	public function __construct(){
 		parent::__construct();
 
 		if (!Auth::$signed_in)
@@ -23,9 +24,9 @@ class NotificationsController extends Controller {
 		CSRFProtection::protect();
 	}
 
-	function get(){
+	public function get(){
 		try {
-			$Notifications = Notifications::getHTML(Notifications::get(null,Notifications::UNREAD_ONLY),NOWRAP);
+			$Notifications = Notifications::getHTML(Notifications::get(Notifications::UNREAD_ONLY),NOWRAP);
 			Response::done(['list' => $Notifications]);
 		}
 		catch (\Throwable $e){
@@ -34,11 +35,11 @@ class NotificationsController extends Controller {
 		}
 	}
 
-	function markRead($params){
-		global $Database;
+	public function markRead($params){
+
 
 		$nid = intval($params['id'], 10);
-		$Notif = $Database->where('id', $nid)->where('user', Auth::$user->id)->getOne('notifications');
+		$Notif = \App\DB::where('id', $nid)->where('user', Auth::$user->id)->getOne('notifications');
 		if (empty($Notif))
 			Response::fail("The notification (#$nid) does not exist");
 
@@ -51,14 +52,14 @@ class NotificationsController extends Controller {
 			]
 		]))->out();
 		if (!empty($read_action)){
-			if (empty(Notifications::$ACTIONABLE_NOTIF_OPTIONS[$Notif['type']][$read_action]))
+			if (empty(Notification::$ACTIONABLE_NOTIF_OPTIONS[$Notif['type']][$read_action]))
 				Response::fail("Invalid read action ($read_action) specified for notification type {$Notif['type']}");
 			/** @var $data array */
 			$data = !empty($Notif['data']) ? JSON::decode($Notif['data']) : null;
 			switch ($Notif['type']){
-				case "post-passon":
+				case 'post-passon':
 					/** @var $Post Post */
-					$Post = $Database->where('id', $data['id'])->getOne("{$data['type']}s");
+					$Post = \App\DB::where('id', $data['id'])->getOne("{$data['type']}s");
 					if (empty($Post)){
 						Posts::clearTransferAttempts($Post, $data['type'], 'del');
 						Response::fail("The {$data['type']} doesn’t exist or has been deleted");
@@ -70,12 +71,12 @@ class NotificationsController extends Controller {
 						}
 
 						Notifications::safeMarkRead($Notif['id'], $read_action);
-						Notifications::send($data['user'], "post-passallow", [
+						Notification::send($data['user'], 'post-passallow', [
 							'id' => $data['id'],
 							'type' => $data['type'],
 							'by' => Auth::$user->id,
 						]);
-						$Database->where('id', $data['id'])->update("{$data['type']}s", [
+						\App\DB::where('id', $data['id'])->update("{$data['type']}s", [
 							'reserved_by' => $data['user'],
 							'reserved_at' => date('c'),
 						]);
@@ -90,7 +91,7 @@ class NotificationsController extends Controller {
 					}
 					else {
 						Notifications::safeMarkRead($Notif['id'], $read_action);
-						Notifications::send($data['user'], "post-passdeny", [
+						Notification::send($data['user'], 'post-passdeny', [
 							'id' => $data['id'],
 							'type' => $data['type'],
 							'by' => Auth::$user->id,

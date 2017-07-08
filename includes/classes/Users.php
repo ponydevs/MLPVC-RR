@@ -2,7 +2,7 @@
 
 namespace App;
 
-use App\Models\Appearance;
+use App\Models\Logs\DANameChange;
 use App\Models\Post;
 use App\Models\Request;
 use App\Models\Reservation;
@@ -12,8 +12,8 @@ use App\Exceptions\CURLRequestException;
 
 class Users {
 	// Global cache for storing user details
-	static $_USER_CACHE = [];
-	static $_PREF_CACHE = [];
+	public static $_USER_CACHE = [];
+	public static $_PREF_CACHE = [];
 
 	/**
 	 * User Information Retriever
@@ -31,8 +31,8 @@ class Users {
 	 * @throws \Exception
 	 * @return User|null|false
 	 */
-	static function get($value, $coloumn = 'id'){
-		global $Database;
+	public static function get($value, $coloumn = 'id'){
+
 
 		if ($coloumn === 'id')
 			return User::find($value);
@@ -60,15 +60,15 @@ class Users {
 	 *
 	 * @return User|null|false
 	 */
-	function fetch($username){
-		global $Database, $USERNAME_REGEX;
+	public static function fetch($username){
+		global $USERNAME_REGEX;
 
 		if (!$USERNAME_REGEX->match($username))
 			return null;
 
-		$oldName = $Database->where('old', $username)->getOne('log__da_namechange','id');
+		$oldName = DANameChange::find_by_old($username);
 		if (!empty($oldName))
-			return User::find($oldName['id']);
+			return User::find($oldName->id);
 
 		try {
 			$userdata = DeviantArt::request('user/whois', null, ['usernames[0]' => $username]);
@@ -84,7 +84,7 @@ class Users {
 		$ID = strtolower($userdata['userid']);
 
 		/** @var $DBUser User */
-		$DBUser = $Database->where('id', $ID)->getOne('users','name');
+		$DBUser = DB::where('id', $ID)->getOne('users','name');
 		$userExists = !empty($DBUser);
 
 		$insert = [
@@ -94,8 +94,8 @@ class Users {
 		if (!$userExists)
 			$insert['id'] = $ID;
 
-		if (!($userExists ? $Database->where('id', $ID)->update('users', $insert) : $Database->insert('users',$insert)))
-			throw new \Exception('Saving user data failed'.(Permission::sufficient('developer')?': '.$Database->getLastError():''));
+		if (!($userExists ? DB::where('id', $ID)->update('users', $insert) : DB::insert('users',$insert)))
+			throw new \Exception('Saving user data failed'.(Permission::sufficient('developer')?': '.DB::getLastError():''));
 
 		if (!$userExists)
 			Logs::logAction('userfetch', ['userid' => $insert['id']]);
@@ -122,10 +122,10 @@ class Users {
 	 *
 	 * @return bool|null
 	 */
-	static function reservationLimitExceeded(bool $return_as_bool = false){
-		global $Database;
+	public static function reservationLimitExceeded(bool $return_as_bool = false){
 
-		$reservations = $Database->rawQuerySingle(
+
+		$reservations = DB::rawQuerySingle(
 			'SELECT
 			(
 				(SELECT
@@ -154,7 +154,7 @@ class Users {
 	 * @param Session $Session
 	 * @param bool $current
 	 */
-	static function renderSessionLi(Session $Session, bool $current = false){
+	public static function renderSessionLi(Session $Session, bool $current = false){
 		$browserClass = CoreUtils::browserNameToClass($Session->browser_name);
 		$browserTitle = !empty($Session->browser_name) ? "{$Session->browser_name} {$Session->browser_ver}" : 'Unrecognized browser';
 		$platform = !empty($Session->platform) ? "<span class='platform'>on <strong>{$Session->platform}</strong></span>" : '';
@@ -180,9 +180,11 @@ HTML;
 
 	/**
 	 * Check authentication cookie and set global
+	 *
+	 * @throws \InvalidArgumentException
 	 */
-	static function authenticate(){
-		global $Database;
+	public static function authenticate(){
+
 		CSRFProtection::detect();
 
 		if (!POST_REQUEST && isset($_GET['CSRF_TOKEN']))
@@ -201,21 +203,19 @@ HTML;
 			if (Auth::$user->role === 'ban')
 				Session::table()->delete(['user' => Auth::$user->id]);
 			else {
-				if (isset(Auth::$session->expires)){
-					if (strtotime(Auth::$session->expires) < time()){
-						$tokenvalid = false;
-						try {
-							DeviantArt::getToken(Auth::$session->refresh, 'refresh_token');
-							$tokenvalid = true;
-						}
-						catch (CURLRequestException $e){
-							Auth::$session->delete();
-							trigger_error("Session refresh failed for ".Auth::$user->name." (".Auth::$user->id.") | {$e->getMessage()} (HTTP {$e->getCode()})", E_USER_WARNING);
-						}
+				if (!Auth::$session->expired)
+					$tokenvalid = true;
+				else {
+					$tokenvalid = false;
+					try {
+						DeviantArt::refreshAccessToken();
+						$tokenvalid = true;
 					}
-					else $tokenvalid = true;
+					catch (CURLRequestException $e){
+						Auth::$session->delete();
+						trigger_error('Session refresh failed for '.Auth::$user->name.' ('.Auth::$user->id.") | {$e->getMessage()} (HTTP {$e->getCode()})", E_USER_WARNING);
+					}
 				}
-				else $tokenvalid = false;
 
 				if ($tokenvalid){
 					Auth::$signed_in = true;
@@ -248,12 +248,12 @@ HTML;
 	 *
 	 * @return string
 	 */
-	static function getPendingReservationsHTML($User, $sameUser, $isMember = true):string {
+	public static function getPendingReservationsHTML($User, $sameUser, $isMember = true):string {
 		return $User->getPendingReservationsHTML($sameUser, $isMember);
 	}
 
-	static function getPersonalColorGuideHTML(User $User, bool $sameUser):string {
-		global $Database;
+	public static function getPersonalColorGuideHTML(User $User, bool $sameUser):string {
+
 		$sectionIsPrivate = UserPrefs::get('p_hidepcg', $User);
 		if ($sectionIsPrivate && (!$sameUser && Permission::insufficient('staff')))
 			return '';
@@ -269,6 +269,7 @@ HTML;
 		$UsedSlotCount = $User->getPCGAppearances(null,true);
 		$ThisUser = $sameUser?'You':'This user';
 		$showPrivate = $sameUser || Permission::sufficient('staff');
+		/** @var $pcgLimits array */
 		$pcgLimits = $User->getPCGAvailableSlots(false, true);
 		$nSlots = CoreUtils::makePlural('slot',$pcgLimits['totalslots'],PREPEND_NUMBER);
 		if ($showPrivate){
@@ -299,8 +300,8 @@ HTML;
 		if (count($PersonalColorGuides) > 0 || $sameUser){
 			$HTML .= "<ul class='personal-cg-appearances'>";
 			foreach ($PersonalColorGuides as $p)
-				$HTML .= "<li>".$p->getLinkWithPreviewHTML().'</li>';
-			$HTML .= "</ul>";
+				$HTML .= '<li>'.$p->getLinkWithPreviewHTML().'</li>';
+			$HTML .= '</ul>';
 		}
 		$Action = $sameUser ? 'Manage' : 'View';
 		$HTML .= "<p><a href='/@{$User->name}/cg' class='btn link typcn typcn-arrow-forward'>$Action Personal Color Guide</a></p>";
@@ -309,15 +310,15 @@ HTML;
 		return $HTML;
 	}
 
-	static function calculatePersonalCGSlots(int $postcount):int {
+	public static function calculatePersonalCGSlots(int $postcount):int {
 		return floor($postcount/10);
 	}
 
-	static function calculatePersonalCGNextSlot(int $postcount):int {
+	public static function calculatePersonalCGNextSlot(int $postcount):int {
 		return 10-($postcount % 10);
 	}
 
-	static function validateName($key, $errors, $method_get = false){
+	public static function validateName($key, $errors, $method_get = false){
 		return (new Input($key,'username', [
 			Input::IS_OPTIONAL => true,
 			Input::METHOD_GET => $method_get,
@@ -328,11 +329,11 @@ HTML;
 		]))->out();
 	}
 
-	static function getAwaitingApprovalHTML(User $User, bool $sameUser):string {
+	public static function getAwaitingApprovalHTML(User $User, bool $sameUser):string {
 		return $User->getAwaitingApprovalHTML($sameUser);
 	}
 
-	static function getContributionsHTML(User $user, bool $sameUser):string {
+	public static function getContributionsHTML(User $user, bool $sameUser):string {
 		$contribs = $user->getCachedContributions();
 		if (empty($contribs))
 			return '';
@@ -364,16 +365,16 @@ HTML;
 	}
 
 	public static function getContributionListHTML(string $type, ?array $data, bool $wrap = WRAP):string {
-		global $Database;
+
 
 		switch ($type){
-			case "cms-provided":
+			case 'cms-provided':
 				$TABLE = <<<HTML
 <th>Appearance</th>
 <th>Deviation</th>
 HTML;
 			break;
-			case "requests":
+			case 'requests':
 				$TABLE = <<<HTML
 <th>Post</th>
 <th>Posted <span class="typcn typcn-arrow-sorted-down" title="Newest first"></span></th>
@@ -382,7 +383,7 @@ HTML;
 <th>Approved?</th>
 HTML;
 			break;
-			case "reservations":
+			case 'reservations':
 				$TABLE = <<<HTML
 <th>Post</th>
 <th>Posted <span class="typcn typcn-arrow-sorted-down" title="Newest first"></span></th>
@@ -390,7 +391,7 @@ HTML;
 <th>Approved?</th>
 HTML;
 			break;
-			case "finished-posts":
+			case 'finished-posts':
 				$TABLE = <<<HTML
 <th>Post</th>
 <th>Posted <span class="typcn typcn-arrow-sorted-down" title="Newest first"></span></th>
@@ -399,7 +400,7 @@ HTML;
 <th>Approved?</th>
 HTML;
 			break;
-			case "fulfilled-requests":
+			case 'fulfilled-requests':
 				$TABLE = <<<HTML
 <th>Post</th>
 <th>Posted</th>
@@ -414,9 +415,9 @@ HTML;
 
 		foreach ($data as $item){
 			switch ($type){
-				case "cms-provided":
+				case 'cms-provided':
 					/** @var $item \App\Models\Cutiemark */
-					$appearance = Appearance::find($item->ponyid);
+					$appearance = $item->appearance;
 					$preview = $appearance->getLinkWithPreviewHTML();
 					$deviation = DeviantArt::getCachedDeviation($item->favme)->toLinkWithPreview();
 
@@ -426,10 +427,10 @@ HTML;
 HTML;
 
 				break;
-				case "requests":
+				case 'requests':
 					/** @var $item Request */
 					$preview = $item->toLinkWithPreview();
-					$posted = Time::tag($item->posted);
+					$posted = Time::tag($item->requested_at);
 					$isreserved = isset($item->reserved_by);
 					if ($isreserved){
 						$reserved_by = User::find($item->reserved_by)->getProfileLink();
@@ -447,10 +448,10 @@ HTML;
 <td class="approved">$approved</td>
 HTML;
 				break;
-				case "reservations":
+				case 'reservations':
 					/** @var $item Request */
 					$preview = $item->toLinkWithPreview();
-					$posted = Time::tag($item->posted);
+					$posted = Time::tag($item->reserved_at);
 					$finished = self::_contribItemFinished($item);
 					$approved = self::_contribItemApproved($item);
 					$TR = <<<HTML
@@ -460,13 +461,13 @@ HTML;
 <td class="approved">$approved</td>
 HTML;
 				break;
-				case "finished-posts":
+				case 'finished-posts':
 					/** @var $item Request|Reservation */
 					$preview = $item->toLinkWithPreview();
-					$posted_by = User::find($item->isRequest ? $item->requested_by : $item->reserved_by)->getProfileLink();
+					$posted_by = User::find($item->is_request ? $item->requested_by : $item->reserved_by)->getProfileLink();
 					$posted_at = Time::tag($item->posted);
 					$posted = "<span class='typcn typcn-user' title='By'></span> $posted_by<br><span class='typcn typcn-time'></span> $posted_at";
-					if ($item->isRequest){
+					if ($item->is_request){
 						$posted = "<td class='by-at'>$posted</td>";
 						$reserved = '<td>'.Time::tag($item->reserved_at).'</td>';
 					}
@@ -484,12 +485,12 @@ $reserved
 <td class="approved">$approved</td>
 HTML;
 				break;
-				case "fulfilled-requests":
+				case 'fulfilled-requests':
 					/** @var $item Request */
 					$preview = $item->toLinkWithPreview();
 					$posted_by = User::find($item->requested_by)->getProfileLink();
-					$posted_at = Time::tag($item->posted);
-					$posted = "<span class='typcn typcn-user' title='By'></span> $posted_by<br><span class='typcn typcn-time'></span> $posted_at";
+					$requested_at = Time::tag($item->requested_at);
+					$posted = "<span class='typcn typcn-user' title='By'></span> $posted_by<br><span class='typcn typcn-time'></span> $requested_at";
 					$finished = Time::tag($item->finished_at);
 					$deviation = DeviantArt::getCachedDeviation($item->deviation_id)->toLinkWithPreview();
 					$TR = <<<HTML

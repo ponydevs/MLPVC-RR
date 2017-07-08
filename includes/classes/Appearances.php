@@ -3,39 +3,51 @@
 namespace App;
 
 use App\Models\Appearance;
+use App\Models\Color;
+use App\Models\ColorGroup;
 use App\Models\Episode;
 
+use App\Models\Logs\MajorChange;
+use App\Models\Tag;
 use Elasticsearch\Common\Exceptions\Missing404Exception as ElasticMissing404Exception;
 use Elasticsearch\Common\Exceptions\NoNodesAvailableException as ElasticNoNodesAvailableException;
 use Elasticsearch\Common\Exceptions\ServerErrorResponseException as ElasticServerErrorResponseException;
 
 class Appearances {
+	const COUNT_COL = 'COUNT(*) as cnt';
 	/**
-	 * @param int        $EQG
-	 * @param Pagination $pagination
-	 * @param string     $userid
-	 * @param string     $cols
+	 * @param bool      $EQG
+	 * @param int|int[] $limit
+	 * @param string    $userid
+	 * @param string    $cols
 	 *
 	 * @return Appearance[]
 	 */
-	static function get(?int $EQG, ?Pagination $pagination = null, $userid = null, $cols = null){
-		global $Database;
-
-		$options = isset($pagination) ? $pagination->getAssocLimit() : [];
-		if (isset($cols))
-			$options['select'] = $cols;
-
-		if (isset($userid))
-			return Appearance::find('all', array_merge($options, ['conditions' => ['owned_by = ?', $userid]]));
-
-
-		$options['conditions'] = ['owned_by IS NULL'];
-		$options['order'] = 'CASE WHEN "order" IS NULL THEN 1 ELSE 0 END asc, "order" asc, id asc';
-		if (!is_null($EQG)){
-			$options['conditions'][0] .= ' AND ishuman = ? AND id != 0';
-			$options['conditions'][] = $EQG;
+	public static function get($EQG, $limit = null, $userid = null, $cols = null){
+		if ($userid !== null)
+			DB::where('owner_id', $userid);
+		else {
+			DB::where('owner_id IS NULL');
+			self::_order();
+			if ($EQG !== null)
+				DB::where('ishuman', $EQG)->where('id',0,'!=');
 		}
-		return Appearance::find('all', $options);
+		if ($cols === self::COUNT_COL)
+			DB::disableAutoClass();
+
+		return DB::get('appearances', $limit, $cols);
+	}
+
+	/**
+	 * Order appearances
+	 *
+	 * @param string $dir
+	 */
+	private static function _order($dir = 'ASC'){
+		DB
+			::orderByLiteral('CASE WHEN "order" IS NULL THEN 1 ELSE 0 END', $dir)
+			->orderBy('"order"', $dir)
+			->orderBy('id', $dir);
 	}
 
 	/**
@@ -45,10 +57,10 @@ class Appearances {
 	 *
 	 * @return string
 	 */
-	static function getHTML($Appearances, $wrap = WRAP, $permission = null){
-		global $Database, $_MSG;
+	public static function getHTML($Appearances, $wrap = WRAP, $permission = null){
+		global $_MSG;
 
-		if (!isset($permission))
+		if ($permission === null)
 			$permission = Permission::sufficient('staff');
 
 		$HTML = '';
@@ -56,12 +68,12 @@ class Appearances {
 			$Appearance->label = CoreUtils::escapeHTML($Appearance->label);
 
 			$img = $Appearance->getSpriteHTML($permission);
-			$updates = isset($Appearance->owned_by) ? '' : self::getUpdatesHTML($Appearance->id);
+			$updates = $Appearance->owner_id === null ? self::getUpdatesHTML($Appearance->id) : '';
 			$notes = $Appearance->getNotesHTML();
-			$tags = isset($Appearance->owned_by) ? '' : $Appearance->id ? self::getTagsHTML($Appearance->id, true) : '';
+			$tags = $Appearance->owner_id === null ? ($Appearance->id ? self::getTagsHTML($Appearance->id, true) : '') : '';
 			$colors = self::getColorsHTML($Appearance);
 			$eqgp = $Appearance->ishuman ? 'eqg/' : '';
-			$personalp = !empty($Appearance->owned_by) ? '/@'.$Appearance->owner->name : '';
+			$personalp = $Appearance->owner_id !== null ? '/@'.$Appearance->owner->name : '';
 
 			$RenderPath = FSPATH."cg_render/{$Appearance->id}.png";
 			$FileModTime = '?t='.(file_exists($RenderPath) ? filemtime($RenderPath) : time());
@@ -76,45 +88,11 @@ class Appearances {
 		}
 		else {
 			if (empty($_MSG))
-				$_MSG = "No appearances to show";
+				$_MSG = 'No appearances to show';
 			$HTML .= "<div class='notice info align-center'><label>$_MSG</label></div>";
 		}
 
 		return $wrap ? "<ul id='list' class='appearance-list'>$HTML</ul>" : $HTML;
-	}
-
-	/**
-	 * @deprecated Use $Appearance->isPrivate()
-	 *
-	 * @param Appearance $Appearance
-	 * @param bool $ignoreStaff
-	 *
-	 * @return bool
-	 */
-	static function isPrivate(Appearance $Appearance, bool $ignoreStaff = false):bool {
-		return $Appearance->isPrivate($ignoreStaff);
-	}
-
-	/**
-	 * @deprecated Use $Appearance->processLabel()
-	 *
-	 * @param Appearance $Appearance
-	 *
-	 * @return string
-	 */
-	static function processLabel(Appearance $Appearance):string {
-		return $Appearance->processLabel();
-	}
-
-	/**
-	 * @param Appearance $Appearance
-	 *
-	 * @deprecated Use $Appearance->getPendingPlaceholder()
-	 *
-	 * @return string
-	 */
-	static function getPendingPlaceholderFor(Appearance $Appearance):string {
-		return $Appearance->getPendingPlaceholder();
 	}
 
 	/**
@@ -127,18 +105,16 @@ class Appearances {
 	 *
 	 * @return string
 	 */
-	static function getColorsHTML(Appearance $Appearance, bool $wrap = WRAP, $colon = true, $colorNames = false){
-		global $Database;
-
+	public static function getColorsHTML(Appearance $Appearance, bool $wrap = WRAP, $colon = true, $colorNames = false){
 		if ($placehold = $Appearance->getPendingPlaceholder())
 			return $placehold;
 
-		$ColorGroups = ColorGroups::get($Appearance->id);
-		$AllColors = ColorGroups::getColorsForEach($ColorGroups);
+		$ColorGroups = $Appearance->color_groups;
+		$AllColors = CGUtils::getColorsForEach($ColorGroups);
 
 		$HTML = '';
 		if (!empty($ColorGroups)) foreach ($ColorGroups as $cg)
-			$HTML .= ColorGroups::getHTML($cg, $AllColors, WRAP, $colon, $colorNames);
+			$HTML .= $cg->getHTML($AllColors, WRAP, $colon, $colorNames);
 
 		return $wrap ? "<ul class='colors'>$HTML</ul>" : $HTML;
 	}
@@ -151,76 +127,24 @@ class Appearances {
 	 *
 	 * @return string
 	 */
-	static function getTagsHTML($PonyID, $wrap = WRAP){
-		global $Database;
-
+	public static function getTagsHTML($PonyID, $wrap = WRAP){
 		$Tags = Tags::getFor($PonyID, null, Permission::sufficient('staff'));
 
 		$HTML = '';
-		if (Permission::sufficient('staff') && $PonyID !== 0)
+		if ($PonyID !== 0 && Permission::sufficient('staff'))
 			$HTML .= "<input type='text' class='addtag tag' placeholder='Enter tag' pattern='".TAG_NAME_PATTERN."' maxlength='30' required>";
 		$HideSynon = Permission::sufficient('staff') && UserPrefs::get('cg_hidesynon');
-		if (!empty($Tags)) foreach ($Tags as $i => $t){
-			$isSynon = !empty($t['synonym_of']);
+		if (!empty($Tags)) foreach ($Tags as $t){
+			$isSynon = !empty($t->synonym_of);
 			if ($isSynon && $HideSynon)
 				continue;
-			$class = " class='tag id-{$t['tid']}".($isSynon?' synonym':'').(!empty($t['type'])?' typ-'.$t['type']:'')."'";
-			$title = !empty($t['title']) ? " title='".CoreUtils::aposEncode($t['title'])."'" : '';
-			$syn_of = $isSynon ? " data-syn-of='{$t['synonym_of']}'" : '';
-			$HTML .= "<span$class$title$syn_of>{$t['name']}</span>";
+			$class = " class='tag id-{$t->id}".($isSynon?' synonym':'').(!empty($t->type)?' typ-'.$t->type:'')."'";
+			$title = !empty($t->title) ? " title='".CoreUtils::aposEncode($t->title)."'" : '';
+			$syn_of = $isSynon ? " data-syn-of='{$t->synonym_of}'" : '';
+			$HTML .= "<span$class$title$syn_of>{$t->name}</span>";
 		}
 
 		return $wrap ? "<div class='tags'>$HTML</div>" : $HTML;
-	}
-
-	/**
-	 * Get the notes for a specific appearance
-	 *
-	 * @deprecated Use $Appearance->getNotesHTML()
-	 *
-	 * @param Appearance $Appearance
-	 * @param bool       $wrap
-	 * @param bool       $cmLink
-	 *
-	 * @return string
-	 */
-	static function getNotesHTML(Appearance $Appearance, $wrap = WRAP, $cmLink = true){
-		return $Appearance->getNotesHTML($wrap, $cmLink);
-	}
-
-	/** @var int[] */
-	const SPRITE_SIZES = [
-		'REGULAR' => 600,
-		'SOURCE' => 300,
-	];
-
-	/**
-	 * Get sprite URL for an appearance
-	 *
-	 * @deprecated Use $Appearance->getSpriteURL()
-	 *
-	 * @param Appearance $Appearance
-	 * @param int        $size
-	 * @param string     $fallback
-	 *
-	 * @return string
-	 */
-	static function getSpriteURL(Appearance $Appearance, int $size = self::SPRITE_SIZES['REGULAR'], string $fallback = ''):string {
-		return $Appearance->getSpriteURL($size, $fallback);
-	}
-
-	/**
-	 * Returns the HTML for sprite images
-	 *
-	 * @deprecated Use $Appearance->getSpriteHTML()
-	 *
-	 * @param Appearance $Appearance
-	 * @param bool  $permission
-	 *
-	 * @return string
-	 */
-	static function getSpriteHTML(Appearance $Appearance, bool $permission){
-		return $Appearance->getSpriteHTML($permission);
 	}
 
 	/**
@@ -231,15 +155,14 @@ class Appearances {
 	 *
 	 * @return string
 	 */
-	static function getUpdatesHTML($PonyID, $wrap = WRAP){
-		global $Database;
-
-		$update = Updates::get($PonyID, MOST_RECENT);
+	public static function getUpdatesHTML($PonyID, $wrap = WRAP){
+		$update = MajorChange::get($PonyID, MOST_RECENT);
 		if (!empty($update)){
-			$update = "Last updated ".Time::tag($update['timestamp']);
+			$update = 'Last updated '.Time::tag($update->log->timestamp);
 		}
 		else {
-			if (!Permission::sufficient('staff')) return '';
+			if (!Permission::sufficient('staff'))
+				return '';
 			$update = '';
 		}
 		return $wrap ? "<div class='update'>$update</div>" : $update;
@@ -248,25 +171,24 @@ class Appearances {
 	/**
 	 * Sort appearances based on tags
 	 *
-	 * @param array $Appearances
-	 * @param bool  $simpleArray
+	 * @param Appearance[] $Appearances
+	 * @param bool         $simpleArray
 	 *
 	 * @return array
 	 */
-	static function sort($Appearances, $simpleArray = false){
-		global $Database;
+	public static function sort($Appearances, $simpleArray = false){
 		$GroupTagIDs = array_keys(CGUtils::GROUP_TAG_IDS_ASSOC);
 		$Sorted = [];
 		$Tagged = [];
-		foreach ($Database->where('tid IN ('.implode(',',$GroupTagIDs).')')->orderBy('ponyid','ASC')->get('tagged') as $row)
-			$Tagged[$row['ponyid']][] = $row['tid'];
+		foreach (DB::where('tag_id IN ('.implode(',',$GroupTagIDs).')')->orderBy('appearance_id','ASC')->get('tagged') as $row)
+			$Tagged[$row['appearance_id']][] = $row['tag_id'];
 		foreach ($Appearances as $p){
-			if (!empty($Tagged[$p['id']])){
-				if (count($Tagged[$p['id']]) > 1)
-					usort($Tagged[$p['id']],function($a,$b) use ($GroupTagIDs){
-						return array_search($a, $GroupTagIDs) - array_search($b, $GroupTagIDs);
+			if (!empty($Tagged[$p->id])){
+				if (count($Tagged[$p->id]) > 1)
+					usort($Tagged[$p->id],function($a,$b) use ($GroupTagIDs){
+						return array_search($a, $GroupTagIDs, true) - array_search($b, $GroupTagIDs, true);
 					});
-				$tid = $Tagged[$p['id']][0];
+				$tid = $Tagged[$p->id][0];
 			}
 			else $tid = -1;
 			$Sorted[$tid][] = $p;
@@ -276,8 +198,9 @@ class Appearances {
 			foreach (CGUtils::GROUP_TAG_IDS_ASSOC as $Category => $CategoryName){
 				if (empty($Sorted[$Category]))
 					continue;
+				/** @var $Sorted Appearance[][] */
 				foreach ($Sorted[$Category] as $p)
-					$idArray[] = $p['id'];
+					$idArray[] = $p->id;
 			}
 			return $idArray;
 		}
@@ -287,8 +210,7 @@ class Appearances {
 	/**
 	 * @param string|int[] $ids
 	 */
-	static function reorder($ids){
-		global $Database;
+	public static function reorder($ids){
 		if (empty($ids))
 			return;
 
@@ -302,11 +224,11 @@ class Appearances {
 		$list = is_string($ids) ? explode(',', $ids) : $ids;
 		foreach ($list as $i => $id){
 			$order = $i+1;
-			if (!$Database->where('id', $id)->update('appearances', ['order' => $order]))
+			if (!DB::where('id', $id)->update('appearances', ['order' => $order]))
 				Response::fail("Updating appearance #$id failed, process halted");
 
 			if ($elasticAvail)
-				$elastiClient->update(array_merge(self::getElasticMeta(['id' => $id]), [
+				$elastiClient->update(array_merge(self::getElasticMeta(new Appearance(['id' => $id])), [
 					'body' => [ 'doc' => ['order' => $order] ],
 				]));
 		}
@@ -316,7 +238,7 @@ class Appearances {
 	/**
 	 * @param bool $EQG
 	 */
-	static function getSortReorder($EQG){
+	public static function getSortReorder($EQG){
 		if ($EQG)
 			return;
 		self::reorder(self::sort(self::get($EQG,null,null,'id'), SIMPLE_ARRAY));
@@ -331,15 +253,14 @@ class Appearances {
 	 *
 	 * @throws \Exception
 	 */
-	static function applyTemplate($AppearanceID, $EQG){
-		global $Database;
-
+	public static function applyTemplate($AppearanceID, $EQG){
 		if (empty($AppearanceID) || !is_numeric($AppearanceID))
-			throw new \Exception('Incorrect value for $PonyID while applying template');
+			throw new \InvalidArgumentException('Incorrect value for $AppearanceID while applying template');
 
-		if ($Database->where('ponyid', $AppearanceID)->has('colorgroups'))
-			throw new \Exception('Template can only be applied to empty appearances');
+		if (ColorGroup::exists([ 'conditions' => ['appearance_id = ?', $AppearanceID] ]))
+			throw new \RuntimeException('Template can only be applied to empty appearances');
 
+		/** @var $Scheme string[][] */
 		$Scheme = $EQG
 			? [
 				'Skin' => [
@@ -389,20 +310,22 @@ class Appearances {
 		$cgi = 0;
 		$ci = 0;
 		foreach ($Scheme as $GroupName => $ColorNames){
-			$GroupID = $Database->insert('colorgroups', [
-				'ponyid' => $AppearanceID,
+			/** @var $Group ColorGroup */
+			$Group = ColorGroup::create([
+				'appearance_id' => $AppearanceID,
 				'label' => $GroupName,
 				'order' => $cgi++,
-			], 'groupid');
+			]);
+			$GroupID = $Group->id;
 			if (!$GroupID)
-				throw new \Exception(rtrim("Color group \"$GroupName\" could not be created: ".$Database->getLastError()), ': ');
+				throw new \RuntimeException(rtrim("Color group \"$GroupName\" could not be created: ".DB::getLastError()), ': ');
 
 			foreach ($ColorNames as $label){
-				if (!$Database->insert('colors', [
-					'groupid' => $GroupID,
+				if (!(new Color([
+					'group_id' => $GroupID,
 					'label' => $label,
 					'order' => $ci++,
-				])) throw new \Exception(rtrim("Color \"$label\" could not be added: ".$Database->getLastError()), ': ');
+				]))->save()) throw new \RuntimeException(rtrim("Color \"$label\" could not be added: ".DB::getLastError()), ': ');
 			}
 		}
 	}
@@ -414,44 +337,33 @@ class Appearances {
 	 * @param bool       $allowMovies
 	 *
 	 * @return string
+	 * @throws \Exception
 	 */
-	static function getRelatedEpisodesHTML(Appearance $Appearance, $allowMovies = false){
-		global $Database;
+	public static function getRelatedEpisodesHTML(Appearance $Appearance, $allowMovies = false){
+		/** @var $EpTagsOnAppearance Tag[] */
+		$EpTagsOnAppearance = DB::setModel('Tag')->rawQuery(
+			"SELECT t.name
+			FROM tagged tg
+			LEFT JOIN tags t ON tg.tag_id = t.id
+			WHERE tg.appearance_id = ? AND  t.type = 'ep'", [$Appearance->id]);
 
-		$EpTagsOnAppearance = $Database->rawQuery(
-			"SELECT t.tid
-			FROM tagged tt
-			LEFT JOIN tags t ON tt.tid = t.tid
-			WHERE tt.ponyid = ? AND  t.type = 'ep'", [$Appearance->id]);
+		if (empty($EpTagsOnAppearance))
+			return '';
 
-		if (!empty($EpTagsOnAppearance)){
-			foreach ($EpTagsOnAppearance as $k => $row)
-				$EpTagsOnAppearance[$k] = $row['tid'];
-
-			$EpAppearances = $Database->rawQuery("SELECT DISTINCT name FROM tags WHERE tid IN (".implode(',',$EpTagsOnAppearance).") ORDER BY name");
-			if (empty($EpAppearances))
-				return '';
-
-			$List = '';
-			foreach ($EpAppearances as $tag){
-				$name = strtoupper($tag['name']);
-				$EpData = Episode::parseID($name);
-				$Ep = Episodes::getActual($EpData['season'], $EpData['episode'], $allowMovies);
-				$List .= (
-					empty($Ep)
-					? self::expandEpisodeTagName($name)
-					: "<a href='{$Ep->toURL()}'>".$Ep->formatTitle().'</a>'
-				).', ';
-			}
-			$List = rtrim($List, ', ');
-			$N_episodes = CoreUtils::makePlural($Appearance->ishuman ? 'movie' : 'episode',count($EpAppearances),PREPEND_NUMBER);
-			$hide = '';
+		$List = [];
+		foreach ($EpTagsOnAppearance as $tag){
+			$name = strtoupper($tag->name);
+			$EpData = Episode::parseID($name);
+			$Ep = Episodes::getActual($EpData['season'], $EpData['episode'], $allowMovies);
+			$List[] = (
+				empty($Ep)
+				? self::expandEpisodeTagName($name)
+				: "<a href='{$Ep->toURL()}'>".$Ep->formatTitle().'</a>'
+			);
 		}
-		else {
-			$N_episodes = 'no episodes';
-			$List = '';
-			$hide = 'style="display:none"';
-		}
+		$List = implode(', ',$List);
+		$N_episodes = CoreUtils::makePlural($Appearance->ishuman ? 'movie' : 'episode',count($EpTagsOnAppearance),PREPEND_NUMBER);
+		$hide = '';
 
 		return <<<HTML
 	<section id="ep-appearances" $hide>
@@ -467,7 +379,7 @@ HTML;
 	 *
 	 * @return string
 	 */
-	static function expandEpisodeTagName(string $tagname):string {
+	public static function expandEpisodeTagName(string $tagname):string {
 		global $EPISODE_ID_REGEX, $MOVIE_ID_REGEX;
 
 		if (preg_match($EPISODE_ID_REGEX, $tagname, $_match))
@@ -484,62 +396,21 @@ HTML;
 	 *
 	 * @return string
 	 */
-	static function getCMPreviewSVGURL($cm){
-		$path = str_replace('@',$cm->facing,str_replace('#',$cm->ponyid,CGUtils::CMDIR_SVG_PATH));
-		return "/cg/v/{$cm->ponyid}d.svg?facing={$cm->facing}&t=".(file_exists($path) ? filemtime($path) : time());
+	public static function getCMPreviewSVGURL($cm){
+		$path = str_replace(['@','#'],[$cm->facing,$cm->appearance_id],CGUtils::CMDIR_SVG_PATH);
+		return "/cg/v/{$cm->appearance_id}d.svg?facing={$cm->facing}&t=".(file_exists($path) ? filemtime($path) : time());
 	}
 
 	/**
-	 * Replaces non-alphanumeric characters in the appearance label with dashes
+	 * TODO Replace with a method on the Appearance model that sets $Related to $this->related_appearances automatically
 	 *
-	 * @deprecated Use $Appearance->getSafeLabel()
+	 * @deprecated
 	 *
-	 * @param Appearance $Appearance
-	 *
-	 * @return string
-	 */
-	static function getSafeLabel(Appearance $Appearance){
-		return $Appearance->getSafeLabel();
-	}
-
-	static function getRelated(int $AppearanceID){
-		global $Database;
-
-		return $Database->rawQuery(
-			/** @lang PostgreSQL */
-			"(
-				SELECT p.id, p.order, p.label, r.mutual
-				FROM appearance_relations r
-				LEFT JOIN appearances p ON p.id = r.target
-				WHERE r.source = :id
-			)
-			UNION ALL
-			(
-				SELECT p.id, p.order, p.label, r.mutual
-				FROM appearance_relations r
-				LEFT JOIN appearances p ON p.id = r.source
-				WHERE r.target = :id AND mutual = true
-			)
-			ORDER BY \"order\"", [':id' => $AppearanceID]);
-	}
-
-	/**
-	 * @deprecated Use $appearance->getLinkWithPreviewHTML()
-	 *
-	 * @param Appearance $appearance
-	 *
-	 * @return string
-	 */
-	static function getLinkWithPreviewHTML(Appearance $appearance){
-		return $appearance->getLinkWithPreviewHTML();
-	}
-
-	/**
 	 * @param Appearance[] $Related
 	 *
 	 * @return string
 	 */
-	static function getRelatedHTML($Related):string {
+	public static function getRelatedHTML($Related):string {
 		if (empty($Related))
 			return '';
 		$LINKS = '';
@@ -551,7 +422,7 @@ HTML;
 	/**
 	 * @return int
 	 */
-	static function validateAppearancePageID(){
+	public static function validateAppearancePageID(){
 		return (new Input('APPEARANCE_PAGE','int', [
 			Input::IS_OPTIONAL => true,
 			Input::IN_RANGE => [0,null],
@@ -562,22 +433,22 @@ HTML;
 	}
 
 	/**
-	 * @param int  $ponyid
-	 * @param bool $treatHexNullAsEmpty
+	 * @param Appearance $appearance
+	 * @param bool       $treatHexNullAsEmpty
 	 *
 	 * @return bool
 	 */
-	static function hasColors(int $ponyid, bool $treatHexNullAsEmpty = false):bool {
-		global $Database;
+	public static function hasColors(Appearance $appearance, bool $treatHexNullAsEmpty = false):bool {
 		$hexnull = $treatHexNullAsEmpty?'AND hex IS NOT NULL':'';
-		return ($Database->rawQuerySingle("SELECT count(*) as cnt FROM colors WHERE groupid IN (SELECT groupid FROM colorgroups WHERE ponyid = ?) $hexnull", [$ponyid])['cnt'] ?? 0) > 0;
+		return (DB::rawQuerySingle(
+			"SELECT count(*) as cnt
+			FROM colors
+			WHERE group_id IN (SELECT group_id FROM color_groups WHERE appearance_id = ?) $hexnull", [$appearance->id])['cnt'] ?? 0) > 0;
 	}
 
 	const ELASTIC_COLUMNS = 'id,label,order,ishuman,private';
 
-	static function reindex(){
-		global $Database;
-
+	public static function reindex(){
 		$elasticClient = CoreUtils::elasticClient();
 		try {
 			$elasticClient->indices()->delete(CGUtils::ELASTIC_BASE);
@@ -593,44 +464,44 @@ HTML;
 			Response::fail('Re-index failed, ElasticSearch server is down!');
 		}
 		$params = array_merge(CGUtils::ELASTIC_BASE, [
-			"body" => [
-				"mappings" => [
-					"entry" => [
-						"_all" => [ "enabled" => false  ],
-						"properties" => [
-							"label" => [
-								"type" => "text",
-								"analyzer" => "overkill",
+			'body' => [
+				'mappings' => [
+					'entry' => [
+						'_all' => ['enabled' => false  ],
+						'properties' => [
+							'label' => [
+								'type' => 'text',
+								'analyzer' => 'overkill',
 							],
-							"order" => [ "type" => "integer" ],
-							"ishuman" => [ "type" => "boolean" ],
-							"private" => [ "type" => "boolean" ],
-							"tags" => [
-								"type" => "text",
-								"analyzer" => "overkill",
+							'order' => ['type' => 'integer'],
+							'ishuman' => ['type' => 'boolean'],
+							'private' => ['type' => 'boolean'],
+							'tags' => [
+								'type' => 'text',
+								'analyzer' => 'overkill',
 							],
 						],
 					],
 				],
-				"settings" => [
-					"analysis" => [
-						"analyzer" => [
-							"overkill" => [
-								"type" => "custom",
-								"tokenizer" => "overkill",
-								"filter" => [
-									"lowercase"
+				'settings' => [
+					'analysis' => [
+						'analyzer' => [
+							'overkill' => [
+								'type' => 'custom',
+								'tokenizer' => 'overkill',
+								'filter' => [
+									'lowercase'
 								]
 							],
 						],
-						"tokenizer" => [
-							"overkill" => [
-								"type" => "edge_ngram",
-								"min_gram" => 2,
-								"max_gram" => 6,
-								"token_chars" => [
-									"letter",
-									"digit",
+						'tokenizer' => [
+							'overkill' => [
+								'type' => 'edge_ngram',
+								'min_gram' => 2,
+								'max_gram' => 6,
+								'token_chars' => [
+									'letter',
+									'digit',
 								],
 							],
 						],
@@ -639,7 +510,7 @@ HTML;
 			]
 		]);
 		$elasticClient->indices()->create(array_merge($params));
-		$Appearances = $Database->where('id != 0')->where('owner IS NULL')->get('appearances',null,self::ELASTIC_COLUMNS);
+		$Appearances = DB::where('id != 0')->where('owner IS NULL')->get('appearances',null,self::ELASTIC_COLUMNS);
 
 		$params = ['body' => []];
 		foreach ($Appearances as $i => $a){
@@ -654,7 +525,7 @@ HTML;
 
 		    $params['body'][] = self::getElasticBody($a);
 
-		    if ($i % 100 == 0) {
+		    if ($i % 100 === 0) {
 		        $elasticClient->bulk($params);
 		        $params = ['body' => []];
 		    }
@@ -672,10 +543,8 @@ HTML;
 	 *
 	 * @return Appearance
 	 */
-	static function updateIndex(int $AppearanceID, string $fields = self::ELASTIC_COLUMNS):Appearance {
-		global $Database;
-
-		$Appearance = $Appearance::find('first', ['conditions' => ['id = ?', $AppearanceID], 'select' => $fields]);
+	public static function updateIndex(int $AppearanceID, string $fields = self::ELASTIC_COLUMNS):Appearance {
+		$Appearance = Appearance::find('first', ['conditions' => ['id = ?', $AppearanceID], 'select' => $fields]);
 		try {
 			CoreUtils::elasticClient()->update(self::toElasticArray($Appearance, false, true));
 		}
@@ -686,14 +555,14 @@ HTML;
 		return $Appearance;
 	}
 
-	static function getElasticMeta(Appearance $Appearance){
+	public static function getElasticMeta(Appearance $Appearance){
 		return array_merge(CGUtils::ELASTIC_BASE,[
 			'type' => 'entry',
 			'id' => $Appearance->id,
 		]);
 	}
 
-	static function getElasticBody(Appearance $Appearance){
+	public static function getElasticBody(Appearance $Appearance){
 		$tags = Tags::getFor($Appearance->id, null, true, true);
 		foreach ($tags as $k => $tag)
 			$tags[$k] = $tag['name'];
@@ -706,7 +575,7 @@ HTML;
 		];
 	}
 
-	static function toElasticArray(Appearance $Appearance, bool $no_body = false, bool $update = false):array {
+	public static function toElasticArray(Appearance $Appearance, bool $no_body = false, bool $update = false):array {
 		$params = self::getElasticMeta($Appearance);
 		if ($no_body)
 			return $params;

@@ -5,7 +5,6 @@ use App\CachedFile;
 use App\CoreUtils;
 use App\CSRFProtection;
 use App\HTTP;
-
 use App\Response;
 use App\Statistics;
 use App\Time;
@@ -13,7 +12,7 @@ use App\Time;
 class AboutController extends Controller {
 	public $do = 'about';
 
-	function index(){
+	public function index(){
 		CoreUtils::loadPage([
 			'title' => 'About',
 			'do-css',
@@ -25,8 +24,8 @@ class AboutController extends Controller {
 		STAT_TYPES = ['posts','approvals','alltimeposts'],
 		STAT_CHACHE_DURATION = 5*Time::IN_SECONDS['hour'];
 
-	function stats(){
-		global $Database;
+	public function stats(){
+
 
 		CSRFProtection::protect();
 
@@ -43,7 +42,7 @@ class AboutController extends Controller {
 
 		switch ($stat){
 			case 'posts':
-				$Labels = $Database->rawQuery(
+				$Labels = \App\DB::rawQuery(
 					"SELECT key FROM
 					(
 						SELECT posted, to_char(posted,'$LabelFormat') AS key FROM requests
@@ -65,13 +64,13 @@ class AboutController extends Controller {
 					WHERE posted > NOW() - INTERVAL '2 MONTHS'
 					GROUP BY to_char(posted,'$LabelFormat')
 					ORDER BY MIN(posted)";
-				$RequestData = $Database->rawQuery(str_replace('table_name', 'requests', $query));
+				$RequestData = \App\DB::rawQuery(str_replace('table_name', 'requests', $query));
 				if (!empty($RequestData)){
 					$Dataset = ['label' => 'Requests', 'clrkey' => 0];
 					Statistics::processUsageData($RequestData, $Dataset, $Labels);
 					$Data['datasets'][] = $Dataset;
 				}
-				$ReservationData = $Database->rawQuery(str_replace('table_name', 'reservations', $query));
+				$ReservationData = \App\DB::rawQuery(str_replace('table_name', 'reservations', $query));
 				if (!empty($ReservationData)){
 					$Dataset = ['label' => 'Reservations', 'clrkey' => 1];
 					Statistics::processUsageData($ReservationData, $Dataset, $Labels);
@@ -79,7 +78,7 @@ class AboutController extends Controller {
 				}
 			break;
 			case 'approvals':
-				$Labels = $Database->rawQuery(
+				$Labels = \App\DB::rawQuery(
 					"SELECT to_char(timestamp,'$LabelFormat') AS key
 					FROM log
 					WHERE timestamp > NOW() - INTERVAL '2 MONTHS' AND reftype = 'post_lock'
@@ -88,7 +87,7 @@ class AboutController extends Controller {
 
 				Statistics::processLabels($Labels, $Data);
 
-				$Approvals = $Database->rawQuery(
+				$Approvals = \App\DB::rawQuery(
 					"SELECT
 						to_char(MIN(timestamp),'$LabelFormat') AS key,
 						COUNT(*)::INT AS cnt
@@ -117,7 +116,7 @@ class AboutController extends Controller {
 
 				$BroadLabelFormat = 'YYYY-MM';
 
-				$Approvals = $Database->rawQuery(
+				$Approvals = \App\DB::rawQuery(
 					"SELECT
 						to_char(MIN(timestamp),'$BroadLabelFormat') AS key,
 						COUNT(*)::INT AS cnt
@@ -137,7 +136,7 @@ class AboutController extends Controller {
 					Statistics::processUsageData($Approvals, $Dataset, $Labels);
 					$Data['datasets'][] = $Dataset;
 				}
-				$Requests = $Database->rawQuery(
+				$Requests = \App\DB::rawQuery(
 					"SELECT
 						to_char(MIN(posted),'$BroadLabelFormat') AS key,
 						COUNT(*)::INT AS cnt
@@ -162,7 +161,7 @@ class AboutController extends Controller {
 					}
 					$Data['datasets'][] = $Dataset;
 				}
-				$Reservations = $Database->rawQuery(
+				$Reservations = \App\DB::rawQuery(
 					"SELECT
 						to_char(MIN(posted),'$BroadLabelFormat') AS key,
 						COUNT(*)::INT AS cnt

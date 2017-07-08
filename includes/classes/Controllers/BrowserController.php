@@ -7,13 +7,13 @@ use App\RegExp;
 
 class BrowserController extends Controller {
 	public $do = 'browser';
-	function index($params){
-		global $Database;
+	public function index($params){
+
 
 		$AgentString = null;
 		if (isset($params['session']) && Permission::sufficient('developer')){
 			$SessionID = intval($params['session'], 10);
-			$Session = $Database->where('id', $SessionID)->getOne('sessions');
+			$Session = \App\DB::where('id', $SessionID)->getOne('sessions');
 			if (!empty($Session))
 				$AgentString = $Session->user_agent;
 		}

@@ -9,7 +9,7 @@ use App\Response;
 use App\UserPrefs;
 
 class PreferenceController extends Controller {
-	function __construct(){
+	public function __construct(){
 		parent::__construct();
 
 		if (!Permission::sufficient('user') || !POST_REQUEST)
@@ -18,18 +18,18 @@ class PreferenceController extends Controller {
 	}
 
 	private $_setting, $_value;
-	function _getPreference($params){
+	public function _getPreference($params){
 		$this->_setting = $params['key'];
 		$this->_value = UserPrefs::get($this->_setting);
 	}
 
-	function get($params){
+	public function get($params){
 		$this->_getPreference($params);
 
 		Response::done(['value' => $this->_value]);
 	}
 
-	function set($params){
+	public function set($params){
 		$this->_getPreference($params);
 
 		try {

@@ -24,13 +24,13 @@ use App\Models\User;
 				<a href="<?=$PrevEpisode->toURL()?>" class="btn link ep-button typcn typcn-media-rewind"><span class="typcn typcn-media-rewind"></span><span class="id"><?= $PrevEpisodeTitle['id']?>: </span><?=CoreUtils::cutoff(Episodes::removeTitlePrefix($PrevEpisodeTitle['title']),Episodes::TITLE_CUTOFF)?></a>
 			</div>
 <?php   }
-		else echo "&nbsp;"; ?></div>
+		else echo '&nbsp;'; ?></div>
 		<div class="main">
 			<div>
 				<h1><?=CoreUtils::escapeHTML($heading)?></h1>
 				<p>Vector Requests & Reservations</p>
 <?php   if (Permission::sufficient('staff')){ ?>
-				<p class="addedby"><em><?=$CurrentEpisode->isMovie?'Movie':'Episode'?> added by <?=User::find($CurrentEpisode->posted_by)->getProfileLink().' '.Time::tag($CurrentEpisode->posted)?></em></p>
+				<p class="addedby"><em><?=$CurrentEpisode->is_movie?'Movie':'Episode'?> added by <?=User::find($CurrentEpisode->posted_by)->getProfileLink().' '.Time::tag($CurrentEpisode->posted)?></em></p>
 <?php   } ?>
 			</div>
 		</div>
@@ -41,7 +41,7 @@ use App\Models\User;
 				<a href="<?=$NextEpisode->toURL()?>" class="btn link ep-button typcn typcn-media-fast-forward"><span class="id"><?= $NextEpisodeTitle['id']?>: </span><?=CoreUtils::cutoff(Episodes::removeTitlePrefix($NextEpisodeTitle['title']),Episodes::TITLE_CUTOFF)?><span class="typcn typcn-media-fast-forward"></span></a>
 			</div>
 <?php   }
-		else echo "&nbsp;"; ?></div>
+		else echo '&nbsp;'; ?></div>
 	</div>
 	<?=Episodes::getVideosHTML($CurrentEpisode)?>
 	<section class="about-res">
@@ -69,8 +69,8 @@ use App\Models\User;
 		</p>
 	</section>
 <?php   }
-		echo Posts::getReservationsSection(null,false,true);
-		echo Posts::getRequestsSection(null,false,true);
+		echo Posts::getReservationsSection();
+		echo Posts::getRequestsSection();
 		$export = [
 			'SEASON' => $CurrentEpisode->season,
 			'EPISODE' => $CurrentEpisode->episode,

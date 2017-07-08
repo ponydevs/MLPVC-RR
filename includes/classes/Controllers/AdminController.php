@@ -4,9 +4,11 @@ namespace App\Controllers;
 use App\Auth;
 use App\CoreUtils;
 use App\CSRFProtection;
+use App\DB;
 use App\Input;
 use App\Logs;
 use App\Models\DiscordMember;
+use App\Models\UsefulLink;
 use App\Models\User;
 use App\Pagination;
 use App\Permission;
@@ -19,14 +21,14 @@ use RestCord\DiscordClient;
 class AdminController extends Controller {
 	public $do = 'admin';
 
-	function __construct(){
+	public function __construct(){
 		parent::__construct();
 
 		if (!Permission::sufficient('staff'))
 			CoreUtils::notFound();
 	}
 
-	function index(){
+	public function index(){
 		CoreUtils::loadPage([
 			'title' => 'Admin Area',
 			'do-css',
@@ -34,10 +36,11 @@ class AdminController extends Controller {
 		], $this);
 	}
 
-	function logs(){
-		global $Database, $LogItems, $Pagination;
+	public function logs(){
+		global $LogItems, $Pagination;
 
 		$type = Logs::validateRefType('type', true, true);
+		/** @noinspection NotOptimalIfConditionsInspection */
 		if (isset($_GET['type']) && preg_match(new RegExp('/^[a-z_]+$/'), $_GET['type']) && isset(Logs::$LOG_DESCRIPTION[$_GET['type']]))
 			$type = $_GET['type'];
 
@@ -80,17 +83,17 @@ class AdminController extends Controller {
 		if (isset($initiator)){
 			$_params = $initiator === 0 ? ['"initiator" IS NULL'] : ['initiator', $initiator];
 			$whereArgs[] = $_params;
-			if (isset($q) && isset($by)){
+			if (isset($q, $by)){
 				$q[] = "by=$by";
-				$title .= (!isset($type)?'Entries ':'')."by $by ";
+				$title .= ($type === null?'Entries ':'')."by $by ";
 			}
 		}
 		else if (isset($q))
 			$q[] = 'by='.CoreUtils::FIXPATH_EMPTY;
 
 		foreach ($whereArgs as $arg)
-			$Database->where(...$arg);
-		$Pagination = new Pagination('admin/logs', 20, $Database->count('log'));
+			DB::where(...$arg);
+		$Pagination = new Pagination('admin/logs', 20, DB::count('log'));
 		$heading = 'Global logs';
 		if (!empty($title))
 			$title .= '- ';
@@ -98,9 +101,9 @@ class AdminController extends Controller {
 		CoreUtils::fixPath("/admin/logs/{$Pagination->page}".(!empty($q)?'?'.implode('&',$q):''));
 
 		foreach ($whereArgs as $arg)
-			$Database->where(...$arg);
-		$LogItems = $Database
-			->orderBy('timestamp')
+			DB::where(...$arg);
+		$LogItems = DB
+			::orderBy('timestamp')
 			->orderBy('entryid')
 			->get('log', $Pagination->getLimit());
 
@@ -122,7 +125,7 @@ class AdminController extends Controller {
 		]);
 	}
 
-	function logDetail($params){
+	public function logDetail($params){
 		CSRFProtection::protect();
 
 		if (!isset($params['id']) || !is_numeric($params['id']))
@@ -130,24 +133,24 @@ class AdminController extends Controller {
 
 		$entry = intval($params['id'], 10);
 
-		global $Database;
-		$MainEntry = $Database->where('entryid', $entry)->getOne('log');
+
+		$MainEntry = DB::where('entryid', $entry)->getOne('log');
 		if (empty($MainEntry))
 			Response::fail('Log entry does not exist');
 		if (empty($MainEntry['refid']))
 			Response::fail('There are no details to show', ['unlickable' => true]);
 
-		$Details = $Database->where('entryid', $MainEntry['refid'])->getOne("log__{$MainEntry['reftype']}");
+		$Details = DB::where('entryid', $MainEntry['refid'])->getOne("log__{$MainEntry['reftype']}");
 		if (empty($Details)){
 			error_log("Could not find details for entry {$MainEntry['reftype']}#{$MainEntry['refid']}, NULL-ing refid of Main#{$MainEntry['entryid']}");
-			$Database->where('entryid', $MainEntry['entryid'])->update('log', ['refid' => null]);
+			DB::where('entryid', $MainEntry['entryid'])->update('log', ['refid' => null]);
 			Response::fail('Failed to retrieve details', ['unlickable' => true]);
 		}
 
 		Response::done(Logs::formatEntryDetails($MainEntry,$Details));
 	}
 
-	function usefulLinks(){
+	public function usefulLinks(){
 		if (!POST_REQUEST){
 			$heading = 'Manage useful links';
 			CoreUtils::loadPage([
@@ -164,13 +167,13 @@ class AdminController extends Controller {
 		$action = $_GET['action'];
 		$creating = $action === 'make';
 
-		global $Database;
+
 
 		if (!$creating){
 			if (!isset($_GET['linkid']) || !is_numeric($_GET['linkid']))
 				CoreUtils::notFound();
 			$linkid = intval($_GET['linkid'],10);
-			$Link = $Database->where('id', $linkid)->getOne('usefullinks');
+			$Link = UsefulLink::find($linkid);
 			if (empty($Link))
 				Response::fail('The specified link does not exist');
 		}
@@ -178,13 +181,13 @@ class AdminController extends Controller {
 		switch ($action){
 			case 'get':
 				Response::done([
-					'label' => $Link['label'],
-					'url' => $Link['url'],
-					'title' => $Link['title'],
-					'minrole' => $Link['minrole'],
+					'label' => $Link->label,
+					'url' => $Link->url,
+					'title' => $Link->title,
+					'minrole' => $Link->minrole,
 				]);
 			case 'del':
-				if (!$Database->where('id', $Link['id'])->delete('usefullinks'))
+				if (!DB::where('id', $Link->id)->delete('useful_links'))
 					Response::dbError();
 
 				Response::done();
@@ -200,7 +203,7 @@ class AdminController extends Controller {
 						Input::ERROR_RANGE => 'Link label must be between @min and @max characters long',
 					]
 				]))->out();
-				if ($creating || $Link['label'] !== $label){
+				if ($creating || $Link->label !== $label){
 					CoreUtils::checkStringValidity($label, 'Link label', INVERSE_PRINTABLE_ASCII_PATTERN);
 					$data['label'] = $label;
 				}
@@ -212,7 +215,7 @@ class AdminController extends Controller {
 						Input::ERROR_RANGE => 'Link URL must be between @min and @max characters long',
 					]
 				]))->out();
-				if ($creating || $Link['url'] !== $url)
+				if ($creating || $Link->url !== $url)
 					$data['url'] = $url;
 
 				$title = (new Input('title','string', [
@@ -224,7 +227,7 @@ class AdminController extends Controller {
 				]))->out();
 				if (!isset($title))
 					$data['title'] = '';
-				else if ($creating || $Link['title'] !== $title){
+				else if ($creating || $Link->title !== $title){
 					CoreUtils::checkStringValidity($title, 'Link title', INVERSE_PRINTABLE_ASCII_PATTERN);
 					$data['title'] = $title;
 				}
@@ -238,14 +241,14 @@ class AdminController extends Controller {
 						Input::ERROR_INVALID => 'Minumum role (@value) is invalid',
 					]
 				]))->out();
-				if ($creating || $Link['minrole'] !== $minrole)
+				if ($creating || $Link->minrole !== $minrole)
 					$data['minrole'] = $minrole;
 
 				if (empty($data))
 					Response::fail('Nothing was changed');
 				$query = $creating
-					? $Database->insert('usefullinks', $data)
-					: $Database->where('id', $Link['id'])->update('usefullinks', $data);
+					? UsefulLink::create($data)
+					: $Link->update_attributes($data);
 				if (!$query)
 					Response::dbError();
 
@@ -255,9 +258,7 @@ class AdminController extends Controller {
 		}
 	}
 
-	function reorderUsefulLinks(){
-		global $Database;
-
+	public function reorderUsefulLinks(){
 		CSRFProtection::protect();
 
 		$list = (new Input('list','int[]', [
@@ -267,16 +268,15 @@ class AdminController extends Controller {
 		]))->out();
 		$order = 1;
 		foreach ($list as $id){
-			if (!$Database->where('id', $id)->update('usefullinks', ['order' => $order++]))
+			if (!UsefulLink::find($id)->update_attributes(['order' => $order++]))
 				Response::fail("Updating link #$id failed, process halted");
 		}
 
 		Response::done();
 	}
 
-	function discord(){
-		global $Database;
-		if (!$Database->has('discord-members'))
+	public function discord(){
+		if (!DB::has('discord_members'))
 			$this->_getDiscordMemberList();
 
 		$heading = 'Discord Server Connections';
@@ -290,15 +290,13 @@ class AdminController extends Controller {
 		], $this);
 	}
 
-	function discordMemberList(){
+	public function discordMemberList(){
 		CSRFProtection::protect();
-
-		global $Database;
 
 		if (isset($_POST['update']))
 			$this->_getDiscordMemberList(true);
 
-		$members = $Database->get('discord-members');
+		$members = DiscordMember::all();
 		usort($members, function(DiscordMember $a, DiscordMember $b){
 			$comp1 = $a->name <=> $b->name;
 			if ($comp1 !== 0)
@@ -311,8 +309,8 @@ class AdminController extends Controller {
 			$avatar = $member->avatar_url;
 			$avatar = isset($avatar) ? "<img src='{$avatar}' alt='user avatar' class='user-avatar'>" : '';
 			$un = CoreUtils::escapeHTML($member->username);
-			$bound = isset($member->userid) ? 'class="bound"' : '';
-			$udata = '<span>'.(isset($member->nick) ? $member->nick : $member->username)."</span><span>{$member->username}#{$member->discriminator}</span>";
+			$bound = !empty($member->user_id) ? 'class="bound"' : '';
+			$udata = "<span>{$member->name}</span><span>{$member->username}#{$member->discriminator}</span>";
 			$HTML .= <<<HTML
 <li id="member-{$member->id}" $bound>
 	$avatar
@@ -329,29 +327,25 @@ HTML;
 	/** @var DiscordMember */
 	private $_member;
 	private function _discordSetMember($params){
-		global $Database;
-
 		CSRFProtection::protect();
 
-		$this->_member = $Database->where('id', $params['id'])->getOne('discord-members');
+		$this->_member = DiscordMember::find($params['id']);
 		if (empty($this->_member))
 			Response::fail('There\'s no member with this ID on record.');
 	}
 
-	function discordMemberLinkGet($params){
+	public function discordMemberLinkGet($params){
 		$this->_discordSetMember($params);
 
 		$resp = [];
-		if (isset($this->_member->userid))
-			$resp['boundto'] = User::find($this->_member->userid)->getProfileLink(User::LINKFORMAT_FULL);
+		if (isset($this->_member->user_id))
+			$resp['boundto'] = User::find($this->_member->user_id)->getProfileLink(User::LINKFORMAT_FULL);
 
 		Response::done($resp);
 	}
 
-	function discordMemberLinkSet($params){
+	public function discordMemberLinkSet($params){
 		$this->_discordSetMember($params);
-
-		global $Database;
 
 		$to = (new Input('to','username',[
 			Input::CUSTOM_ERROR_MESSAGES => [
@@ -363,22 +357,20 @@ HTML;
 		if (empty($user))
 			Response::fail('The specified user does not exist');
 
-		if (!$Database->where('id', $this->_member->id)->update('discord-members',[
+		if (!$this->_member->update_attributes([
 			'userid' => $user->id
 		])) Response::fail('Nothing has been changed');
 
 		Response::done();
 	}
 
-	function discordMemberLinkDel($params){
+	public function discordMemberLinkDel($params){
 		$this->_discordSetMember($params);
 
-		global $Database;
-
-		if (!isset($this->_member->userid))
+		if (!isset($this->_member->user_id))
 			Response::fail('Member is not bound to any user');
 
-		if (!$Database->where('id', $this->_member->id)->update('discord-members',[
+		if (!$this->_member->update_attributes([
 			'userid' => null
 		])) Response::fail('Nothing has been changed');
 
@@ -386,8 +378,6 @@ HTML;
 	}
 
 	private function _getDiscordMemberList(bool $skip_binding = false){
-		global $Database;
-
 		// TODO If we ever surpass 1000 Discord server members this will bite me in the backside
 		$discord = new DiscordClient(['token' => DISCORD_BOT_TOKEN]);
 		$members = $discord->guild->listGuildMembers(['guild.id' => DISCORD_SERVER_ID,'limit' => 1000]);
@@ -411,24 +401,22 @@ HTML;
 				'except' => ['name','avatar_url'],
 			]);
 
-			if ($Database->where('id', $ins['id'])->has('discord-members')){
+			if (DiscordMember::exists($ins['id'])){
 				$insid = $ins['id'];
 				unset($ins['id']);
 				if ($skip_binding)
-					unset($ins['userid']);
-				$Database->where('id', $insid)->update('discord-members', $ins);
+					unset($ins['use_rid']);
+				DiscordMember::find($insid)->update_attributes($ins);
 			}
-			else $Database->insert('discord-members', $ins);
+			else DiscordMember::create($ins);
 		}
 
 		if (count($usrids) > 0)
-			$Database->where("id NOT IN ('".implode("','",$usrids)."')");
-		$Database->delete('discord-members');
+			DB::where("id NOT IN ('".implode("','",$usrids)."')");
+		DB::delete('discord_members');
 	}
 
-	function massApprove(){
-		global $Database;
-
+	public function massApprove(){
 		CSRFProtection::protect();
 
 		$ids = (new Input('ids','int[]', [
@@ -438,12 +426,12 @@ HTML;
 			]
 		]))->out();
 
-		$list = "";
+		$list = '';
 		foreach ($ids as $id)
 			$list .= "'d".base_convert($id, 10, 36)."',";
 		$list = rtrim($list, ',');
 
-		$Posts = $Database->rawQuery(
+		$Posts = DB::rawQuery(
 			"SELECT 'request' as type, id, deviation_id FROM requests WHERE deviation_id IN ($list) AND lock = false
 			UNION ALL
 			SELECT 'reservation' as type, id, deviation_id FROM reservations WHERE deviation_id IN ($list) AND lock = false"
@@ -467,13 +455,13 @@ HTML;
 		Response::success('Marked '.CoreUtils::makePlural('post', $approved, PREPEND_NUMBER).' as approved. To see which ones, check the <a href="/admin/logs/1?type=post_lock&by=you">list of posts you\'ve approved</a>.', ['reload' => true]);
 	}
 
-	function recentPosts(){
+	public function recentPosts(){
 		CSRFProtection::protect();
 
 		Response::done(['html' => Posts::getMostRecentList()]);
 	}
 
-	function wsdiag(){
+	public function wsdiag(){
 		if (Permission::insufficient('developer'))
 			CoreUtils::notFound();
 

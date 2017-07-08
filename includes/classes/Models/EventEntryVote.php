@@ -13,11 +13,11 @@ use App\Time;
  * @method static EventEntryVote find_by_entry_id_and_user_id(int $entr_yid, string $user_id)
  */
 class EventEntryVote extends Model {
-	static $table_name = 'events__entries__votes';
+	public static $table_name = 'events__entries__votes';
 
-	static $primary_key = ['entry_id','user_id'];
+	public static $primary_key = ['entry_id', 'user_id'];
 
-	static $belongs_to = [
+	public static $belongs_to = [
 		['user'],
 		['entry', 'class' => 'EventEntry'],
 	];

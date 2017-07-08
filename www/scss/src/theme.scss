@@ -196,6 +196,11 @@ img.avatar {
 }
 .resp-embed-wrap { @extend %resp-embed-wrap }
 .responsive-embed { @extend %responsive-embed }
+.xdebug-error {
+ &, & * {
+  font-size: 18px !important;
+ }
+}
 // Page layout
 body {
 	margin: 0;

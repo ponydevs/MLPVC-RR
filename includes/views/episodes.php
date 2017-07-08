@@ -33,10 +33,10 @@ use App\Permission;
 	echo $Pagination; ?>
 	</div>
 	<div class="sidebyside">
-<?  $Movies = $Database->where('season', 0)->orderBy('episode','DESC')->get('episodes'); ?>
+<?  $Movies = \App\DB::where('season', 0)->orderBy('episode','DESC')->get('episodes'); ?>
 		<h1>Movies</h1>
 <?  if (empty($Movies))
-		echo "<p>There are no movies stored in the database</p>";
+		echo '<p>There are no movies stored in the database</p>';
 	if (Permission::sufficient('staff')) { ?>
 		<div class="actions">
 			<button id="add-movie" class="green typcn typcn-plus">Add Movie</button>

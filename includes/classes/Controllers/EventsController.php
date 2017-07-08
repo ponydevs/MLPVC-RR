@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Controllers;
+
 use App\CoreUtils;
 use App\Events;
 use App\Models\Event;
@@ -10,13 +11,11 @@ use App\Permission;
 class EventsController extends Controller {
 	public $do = 'events';
 
-	function list(){
-		global $Database;
-
-		$Pagination = new Pagination("events", 20, Event::count());
+	public function list(){
+		$Pagination = new Pagination('events', 20, Event::count());
 
 		CoreUtils::fixPath("/events/{$Pagination->page}");
-		$heading = "Events";
+		$heading = 'Events';
 		$title = "Page $Pagination->page - $heading";
 
 		$Events = Event::find('all', $Pagination->getAssocLimit());

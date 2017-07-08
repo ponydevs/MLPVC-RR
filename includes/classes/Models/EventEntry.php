@@ -2,54 +2,53 @@
 
 namespace App\Models;
 
+use ActiveRecord\DateTime;
 use ActiveRecord\Model;
 use App\Auth;
 use App\CoreUtils;
+use App\DB;
 use App\DeviantArt;
 use App\Permission;
 use App\RegExp;
 use App\Time;
 
 /**
- * @property int    $entryid
- * @property int    $eventid
- * @property int    $score
- * @property string $prev_src
- * @property string $prev_full
- * @property string $prev_thumb
- * @property string $sub_prov
- * @property string $sub_id
- * @property string $submitted_by
- * @property string $submitted_at
- * @property string $title
- * @property string $last_edited
- * @property User   $submitter
+ * @property int      $id
+ * @property int      $event_id
+ * @property int      $score
+ * @property string   $prev_src
+ * @property string   $prev_full
+ * @property string   $prev_thumb
+ * @property string   $sub_prov
+ * @property string   $sub_id
+ * @property string   $submitted_by
+ * @property string   $title
+ * @property DateTime $submitted_at
+ * @property DateTime $last_edited
+ * @property User     $submitter
  */
 class EventEntry extends Model {
-	static $table_name = 'events__entries';
+	public static $table_name = 'events__entries';
 
-	static $primary_key = 'entry_id';
-
-	static $belongs_to = [
+	public static $belongs_to = [
 		['submitter', 'class' => 'User', 'foreign_key' => 'submitted_by'],
-		['event', 'foreign_key' => 'eventid'],
+		['event'],
 	];
-	static $has_many = [
-		['votes', 'class' => 'EventEntryVote', 'foreign_key' => 'entryid'],
+	public static $has_many = [
+		['votes', 'class' => 'EventEntryVote', 'foreign_key' => 'entry_id'],
 	];
 
 	public function updateScore(){
-		global $Database;
-		if (is_null($this->score))
+		if ($this->score === null)
 			return;
 
-		$score = $Database->disableAutoClass()->where('entryid', $this->entryid)->getOne('events__entries__votes', 'COALESCE(SUM(value),0) as score');
-		$Database->where('entryid', $this->entryid)->update('events__entries',$score);
+		$score = DB::disableAutoClass()->where('entryid', $this->id)->getOne('events__entries__votes', 'COALESCE(SUM(value),0) as score');
+		DB::where('entryid', $this->id)->update('events__entries',$score);
 		$this->score = $score['score'];
 
 		try {
 			CoreUtils::socketEvent('entry-score',[
-				'entryid' => $this->entryid,
+				'entryid' => $this->id,
 			]);
 		}
 		catch (\Exception $e){
@@ -58,7 +57,7 @@ class EventEntry extends Model {
 	}
 
 	public function getUserVote(User $user):?EventEntryVote {
-		return EventEntryVote::find_by_entry_id_and_user_id($this->entryid, $user->id);
+		return EventEntryVote::find_by_entry_id_and_user_id($this->id, $user->id);
 	}
 
 	public function getFormattedScore(){
@@ -67,7 +66,7 @@ class EventEntry extends Model {
 
 	private static function _getPreviewDiv(string $fullsize, string $preview, ?string $filetype = null):string {
 		$type = '';
-		if (isset($filetype)){
+		if ($filetype !== null){
 			if ($filetype === 'zip')
 				$filetype = 'svg<span class="star-info" title="ZIP archives are assumed to be SVG files">*</span>';
 			$type = "<span class='filetype'>$filetype</span>";
@@ -119,10 +118,8 @@ HTML;
 		if ($sub_prov_favme || Permission::sufficient('staff')){
 			$title = "<a href='http://{$this->sub_prov}/{$this->sub_id}' target='_blank' rel='noopener'>$title</a>";
 		}
-		if ($sub_prov_favme && empty($preview)){
-			if (isset($submission->preview) && isset($submission->fullsize))
-				$preview = self::_getPreviewDiv($submission->fullsize, $submission->preview, $filetype);
-		}
+		if ($sub_prov_favme && empty($preview) && $submission->preview !== null && $submission->fullsize !== null)
+			$preview = self::_getPreviewDiv($submission->fullsize, $submission->preview, $filetype);
 
 		$voting = $this->getListItemVoting($event);
 
@@ -146,6 +143,6 @@ $preview
 	$actions
 </div>
 HTML;
-		return $wrap ? "<li id='entry-{$this->entryid}'>$HTML</li>" : $HTML;
+		return $wrap ? "<li id='entry-{$this->id}'>$HTML</li>" : $HTML;
 	}
 }

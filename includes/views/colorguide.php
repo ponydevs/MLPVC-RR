@@ -23,7 +23,7 @@ use App\Tags;
 <?  }
 	$Universal = \App\Models\Appearance::find(0);
 	if (!empty($Universal))
-		echo "<ul id='universal' class='appearance-list'>".Appearances::getHTML([$Universal], NOWRAP)."</ul>"; ?>
+		echo "<ul id='universal' class='appearance-list'>".Appearances::getHTML([$Universal], NOWRAP).'</ul>'; ?>
 	<p class='align-center links'>
 <?  if (Permission::sufficient('staff')){ ?>
 		<button class='green typcn typcn-plus' id="new-appearance-btn">Add new <?=$EQG?'Character':'Pony'?></button>

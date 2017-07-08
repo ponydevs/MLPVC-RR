@@ -3,19 +3,18 @@
 namespace App\Controllers;
 use App\CoreUtils;
 use App\Episodes;
+use App\Models\Episode;
 use App\Pagination;
 use App\Permission;
 
 class EpisodesController extends Controller {
 	public $do = 'episodes';
 
-	function index(){
-		global $Database;
-
-		$Pagination = new Pagination('episodes', 8, $Database->where('season != 0')->count('episodes'));
+	public function index(){
+		$Pagination = new Pagination('episodes', 8, Episode::count(['conditions' => 'season != 0']));
 
 		CoreUtils::fixPath("/episodes/{$Pagination->page}");
-		$heading = "Episodes";
+		$heading = 'Episodes';
 		$title = "Page {$Pagination->page} - $heading";
 		$Episodes = Episodes::get($Pagination);
 

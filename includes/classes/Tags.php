@@ -2,6 +2,8 @@
 
 namespace App;
 
+use App\Models\Tag;
+
 class Tags {
 	// List of available tag types
 	const TAG_TYPES = [
@@ -13,68 +15,59 @@ class Tags {
 		'char' => 'Character',
 	];
 
+
 	/**
 	 * Retrieve set of tags for a given appearance
 	 *
-	 * @param int        $PonyID
-	 * @param Pagination $pagination
-	 * @param bool       $showEpTags
-	 * @param bool       $exporting
+	 * @param int       $PonyID
+	 * @param array|int $limit
+	 * @param bool      $showEpTags
+	 * @param bool      $exporting
 	 *
-	 * @return array|null
+	 * @return Tag[]
 	 */
-	static function getFor($PonyID = null, ?Pagination $pagination = null, $showEpTags = false, $exporting = false){
-		global $Database;
-
-		$query = CoreUtils::sqlBuilder('tags');
-		$query->select('tags.*');
-
+	public static function getFor($PonyID = null, $limit = null, $showEpTags = false, $exporting = false){
 		if (!$exporting){
 			$showSynonymTags = $showEpTags || Permission::sufficient('staff');
 			if (!$showSynonymTags)
-				$query->where('synonym_of IS NULL');
-
-			$query->order('CASE WHEN tags.type IS NULL THEN 1 ELSE 0 END desc, tags.type asc, tags.name asc');
+				DB::where('"synonym_of" IS NULL');
+			DB
+				::orderByLiteral('CASE WHEN tags.type IS NULL THEN 1 ELSE 0 END')
+				->orderBy('tags.type', 'ASC')
+				->orderBy('tags.name', 'ASC');
 			if (!$showEpTags)
-				$query->where("tags.type != 'ep'");
+				DB::where("tags.type != 'ep'");
 		}
 		else {
 			$showSynonymTags = true;
-			$query->order('tags.tid asc');
+			DB::orderBy('tags.id','ASC');
 		}
-		if (isset($PonyID)){
-			$query->joins('RIGHT JOIN tagged ON (tagged.tid = tags.tid'.($showSynonymTags?' OR tagged.tid = tags.synonym_of':'').')');
-			$query->where('tagged.ponyid = ?',$PonyID);
+		if ($PonyID !== null){
+			DB::join('tagged','(tagged.tag_id = tags.id'.($showSynonymTags?' OR tagged.tag_id = tags.synonym_of':'').')','right',false);
+			DB::where('tagged.appearance_id',$PonyID);
 		}
-
-		if (isset($pagination))
-			$pagination->applyAssocLimit($query);
-
-		return Tag::find_by_sql(CoreUtils::execSqlBuilderArgs($query));
+		return DB::get('tags',$limit,'tags.*');
 	}
 
 	/**
 	 * Gets a specifig tag while resolving synonym relations
 	 *
+	 * TODO Redo to use ActiveRecord
+	 *
 	 * @param mixed  $value
 	 * @param string $column
 	 * @param bool   $as_bool Return a boolean reflecting existence
 	 *
-	 * @return array|bool
+	 * @return Tag|bool
 	 */
-	static function getActual($value, $column = 'tid', $as_bool = false){
-		global $Database;
+	public static function getActual($value, $column = 'id', $as_bool = false){
+		$arg1 = $as_bool === RETURN_AS_BOOL ? 'synonym_of,id' : '*';
 
-		$arg1 = ['tags', $as_bool === RETURN_AS_BOOL ? 'synonym_of,tid' : '*'];
+		/** @var $Tag Tag */
+		$Tag = DB::where($column, $value)->getOne('tags', $arg1);
 
-		$Tag = $Database->where($column, $value)->getOne(...$arg1);
-
-		if (!empty($Tag['synonym_of'])){
-			$arg2 = $as_bool === RETURN_AS_BOOL ? 'tid' : $arg1[1];
-			$OrigTag = $Tag;
-			$Tag = self::getSynonymOf($Tag, $arg2);
-			$Tag['Original'] = $OrigTag;
-		}
+		if ($Tag->synonym_of !== null)
+			$Tag = $Tag->synonym;
 
 		return $as_bool === RETURN_AS_BOOL ? !empty($Tag) : $Tag;
 	}
@@ -82,18 +75,14 @@ class Tags {
 	/**
 	 * Gets the tag which the specified tag is a synonym of
 	 *
-	 * @param array       $Tag
-	 * @param string|null $returnCols
+	 * @deprecated
 	 *
-	 * @return array
+	 * @param Tag $Tag
+	 *
+	 * @return Tag
 	 */
-	static function getSynonymOf($Tag, $returnCols = null){
-		global $Database;
-
-		if (empty($Tag['synonym_of']))
-			return null;
-
-		return $Database->where('tid', $Tag['synonym_of'])->getOne('tags',$returnCols);
+	public static function getSynonymOf(Tag $Tag){
+		return $Tag->synonym;
 	}
 
 	/**
@@ -104,11 +93,9 @@ class Tags {
 	 *
 	 * @return array
 	 */
-	static function updateUses(int $TagID, bool $returnCount = false):array {
-		global $Database;
-
-		$Tagged = $Database->where('tid', $TagID)->count('tagged');
-		$return = ['status' => $Database->where('tid', $TagID)->update('tags', ['uses' => $Tagged])];
+	public static function updateUses(int $TagID, bool $returnCount = false):array {
+		$Tagged = DB::where('tag_id', $TagID)->count('tagged');
+		$return = ['status' => DB::where('id', $TagID)->update('tags', ['uses' => $Tagged])];
 		if ($returnCount)
 			$return['count'] = $Tagged;
 		return $return;
@@ -117,13 +104,13 @@ class Tags {
 	/**
 	 * Generates the markup for the tags sub-page
 	 *
-	 * @param array $Tags
+	 * @param Tag[] $Tags
 	 * @param bool  $wrap
 	 *
 	 * @return string
 	 */
-	static function getTagListHTML($Tags, $wrap = WRAP){
-		global $Database;
+	public static function getTagListHTML(array $Tags, $wrap = WRAP){
+
 		$HTML =
 		$utils =
 		$refresh = '';
@@ -136,23 +123,26 @@ class Tags {
 		}
 
 		if (!empty($Tags)) foreach ($Tags as $t){
-			$trClass = $t['type'] ? " class='typ-{$t['type']}'" : '';
-			$type = $t['type'] ? self::TAG_TYPES[$t['type']] : '';
-			$search = CoreUtils::aposEncode(urlencode($t['name']));
-			$titleName = CoreUtils::aposEncode($t['name']);
+			$trClass = $t->type ? " class='typ-{$t->type}'" : '';
+			$type = $t->type ? self::TAG_TYPES[$t->type] : '';
+			$search = CoreUtils::aposEncode(urlencode($t->name));
+			$titleName = CoreUtils::aposEncode($t->name);
 
-			if (!empty($t['synonym_of'])){
-				$Syn = self::getSynonymOf($t,'name');
-				$t['title'] .= (empty($t['title'])?'':'<br>')."<em>Synonym of <strong>{$Syn['name']}</strong></em>";
-			}
+			$title = $t->synonym_of !== null
+				? (
+					empty($t->title)
+					? ''
+					: $t->title.'<br>'
+				)."<em>Synonym of <strong>{$t->synonym->name}</strong></em>"
+				: $t->title;
 
 			$HTML .= <<<HTML
 			<tr $trClass>
-				<td class="tid">{$t['tid']}</td>
-				<td class="name"><a href='/cg?q=$search' title='Search for $titleName'><span class="typcn typcn-zoom"></span>{$t['name']}</a></td>$utils
-				<td class="title">{$t['title']}</td>
+				<td class="tid">{$t->id}</td>
+				<td class="name"><a href='/cg?q=$search' title='Search for $titleName'><span class="typcn typcn-zoom"></span>{$t->name}</a></td>$utils
+				<td class="title">$title</td>
 				<td class="type">$type</td>
-				<td class="uses"><span>{$t['uses']}</span>$refresh</td>
+				<td class="uses"><span>{$t->uses}</span>$refresh</td>
 			</tr>
 HTML;
 		}

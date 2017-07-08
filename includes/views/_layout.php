@@ -16,11 +16,11 @@ use App\View;
 /** @var $Appearance Appearance */
 
 $Title = (isset($title)?$title.' - ':'').SITE_TITLE;
-$Description = "Handling requests, reservations & the Color Guide since 2015";
+$Description = 'Handling requests, reservations & the Color Guide since 2015';
 
-$ThumbImage = "/img/logo.png";
+$ThumbImage = '/img/logo.png';
 switch ($do ?? null){
-	case "cg":
+	case 'cg':
 		if (!empty($Appearance)){
 			$sprite = $Appearance->getSpriteURL();
 			if ($sprite)
@@ -29,7 +29,7 @@ switch ($do ?? null){
 			$Description = 'Show accurate colors for "'.$Appearance->processLabel().'" from the MLP-VectorClub’s Official Color Guide';
 		}
 	break;
-	case "u":
+	case 'u':
 		if (!empty($Appearance)){
 			$sprite = $Appearance->getSpriteURL();
 			if ($sprite)
@@ -44,7 +44,7 @@ switch ($do ?? null){
 			$Description = CoreUtils::posess($User->name).' profile on the MLP-VectorClub’s website';
 		}
 	break;
-	case "s":
+	case 's':
 		if (!empty($LinkedPost)){
 			$_oldTitle = $Title;
 			if (!$LinkedPost->isFinished)
@@ -145,7 +145,7 @@ ga('send','pageview');
 	</header>
 
 	<aside id="sidebar">
-<?php include INCPATH."views/_sidebar.php"; ?>
+<?php include INCPATH.'views/_sidebar.php'; ?>
 	</aside>
 
 	<div id="main">

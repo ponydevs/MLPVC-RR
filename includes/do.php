@@ -1,6 +1,6 @@
 <?php
 
-	require "../includes/init.php";
+	require __DIR__.'/../includes/init.php';
 
 	use App\RegExp;
 	use App\HTTP;
@@ -22,6 +22,7 @@
 		(new \App\Controllers\WebhookController())->index();
 
 	require INCPATH.'routes.php';
+	/** @var $match array */
 	$match = $router->match($_SERVER['REQUEST_URI']);
 	if (!isset($match['target']))
 		CoreUtils::notFound();

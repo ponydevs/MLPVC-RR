@@ -2,65 +2,73 @@
 
 namespace App\Models;
 
+use ActiveRecord\DateTime;
 use ActiveRecord\Model;
 use App\Auth;
-use App\RegExp;
-use App\Episodes;
 use App\CoreUtils;
+use App\DB;
+use App\Episodes;
+use App\RegExp;
 
 /**
  * @property int            $season
  * @property int            $episode
  * @property int            $no
  * @property int            $willairts
- * @property int            $isMovie
  * @property string         $title
- * @property string         $posted
+ * @property DateTime       $posted
  * @property string         $posted_by
  * @property string         $airs
  * @property string         $willair
  * @property string         $notes
- * @property string         $score
- * @property bool           $twoparter
- * @property bool           $displayed
- * @property bool           $aired
- * @property EpisodeVideo[] $videos
+ * @property int            $is_movie   (Via magic method)
+ * @property string|null    $score      (Via magic method)
+ * @property bool           $twoparter  (Via magic method)
+ * @property bool           $displayed  (Via magic method)
+ * @property bool           $aired      (Via magic method)
+ * @property EpisodeVideo[] $videos     (Via relations)
+ * @property User           $poster     (Via relations)
  * @method static Episode find_by_season_and_episode(int $season, int $episode)
  */
 class Episode extends Model {
-	static $has_many = [
+	public static $has_many = [
 		['videos', 'class' => 'EpisodeVideo', 'foreign_key' => ['season','episode'], 'order' => 'provider asc, part asc']
 	];
+	public static $belongs_to = [
+		['poster', 'class' => 'User', 'foreign_key' => 'posted_by'],
+	];
 
-	function get_isMovie():int {
+	public function get_is_movie():int {
 		return $this->season === 0 ? 1 : 0;
 	}
 
-	function get_twoparter():bool {
-		return $this->read_attribute('twoparter') !== 'false';
+	public function get_twoparter():bool {
+		$attr = $this->read_attribute('twoparter');
+		return $attr !== 'false' && !empty($attr);
 	}
 
-	function get_score():string {
-		return number_format($this->read_attribute('score'),1);
+	public function get_score():string {
+		$attr = $this->read_attribute('score');
+		return is_numeric($attr) ? number_format($attr,1) : null;
 	}
 
-	function set_score(float $score){
-		$this->assign_attribute('score', number_format($score,1));
+	public function set_score($score){
+		$this->assign_attribute('score', is_numeric($score) ? number_format($score,1) : null);
 	}
 
-	function get_displayed(){
+	public function get_displayed(){
 		return $this->isDisplayed();
 	}
 
-	function get_willairts(){
+	public function get_willairts(){
 		return $this->willHaveAiredBy();
 	}
 
-	function get_aired(){
+	public function get_aired(){
 		return $this->hasAired();
 	}
 
-	function get_willair(){
+	public function get_willair(){
 		return gmdate('c', $this->willairts);
 	}
 
@@ -70,7 +78,7 @@ class Episode extends Model {
 	 * @return string
 	 */
 	public function getID($o = []):string {
-		if ($this->isMovie)
+		if ($this->is_movie)
 			return 'Movie'.(!empty($o['append_num'])?'#'.$this->episode:'');
 
 		$episode = $this->episode;
@@ -94,9 +102,7 @@ class Episode extends Model {
 	 * @return int
 	 */
 	public function getPostCount():int {
-		global $Database;
-
-		return (int) $Database->rawQuerySingle(
+		return (int) DB::rawQuerySingle(
 			'SELECT SUM(cnt) as postcount FROM (
 				SELECT count(*) as cnt FROM requests WHERE season = :season AND episode = :episode
 				UNION ALL
@@ -143,7 +149,7 @@ class Episode extends Model {
 	 */
 	public function willHaveAiredBy():int {
 		$airtime = strtotime($this->airs);
-		return strtotime('+'.($this->isMovie?'2 hours':((!$this->twoparter?30:60).' minutes')), $airtime);
+		return strtotime('+'.($this->is_movie?'2 hours':((!$this->twoparter?30:60).' minutes')), $airtime);
 	}
 
 	/**
@@ -174,29 +180,29 @@ class Episode extends Model {
 			];
 
 			if (!empty($arrayKey))
-				return isset($arr[$arrayKey]) ? $arr[$arrayKey] : null;
+				return $arr[$arrayKey] ?? null;
 			else return $arr;
 		}
 
-		if ($this->isMovie)
+		if ($this->is_movie)
 			return $this->title;
 
 		return $this->getID(['pad' => true]).': '.$this->title;
 	}
 
 	public function toURL(){
-		if (!$this->isMovie)
+		if (!$this->is_movie)
 			return '/episode/'.$this->formatTitle(AS_ARRAY,'id');
 		return "/movie/{$this->episode}".(!empty($this->title)?'-'.$this->movieSafeTitle():'');
 	}
 
 	public function updateScore(){
-		global $Database;
 
-		$Score = $Database->whereEp($this)->disableAutoClass()->getOne('episodes__votes','AVG(vote) as score');
+
+		$Score = DB::whereEp($this)->disableAutoClass()->getOne('episodes__votes','AVG(vote) as score');
 		$this->score = !empty($Score['score']) ? $Score['score'] : 0;
 
-		$Database->whereEp($this)->update('episodes', ['score' => $this->score]);
+		DB::whereEp($this)->update('episodes', ['score' => $this->score]);
 	}
 
 	/**
@@ -210,7 +216,7 @@ class Episode extends Model {
 	 * @param string $id
 	 * @return null|array
 	 */
-	static function parseID($id){
+	public static function parseID($id){
 		if (empty($id))
 			return null;
 
@@ -237,8 +243,8 @@ class Episode extends Model {
 	 *
 	 * @return EpisodeVote|null
 	 */
-	function getUserVote(User $user = null):?EpisodeVote {
-		if (!isset($user) && Auth::$signed_in)
+	public function getUserVote(?User $user = null):?EpisodeVote {
+		if ($user === null && Auth::$signed_in)
 			$user = Auth::$user;
 		return EpisodeVote::find_for($this, $user);
 	}
@@ -252,7 +258,7 @@ class Episode extends Model {
 	 * @return Episode|null
 	 */
 	private function _getAdjacent($dir):?Episode {
-		$is = $this->isMovie ? '=' : '!=';
+		$is = $this->is_movie ? '=' : '!=';
 		return Episode::find('first', [
 			'conditions' => [
 				"season $is 0 AND no $dir ?",
@@ -267,7 +273,7 @@ class Episode extends Model {
 	 * Get the previous episode based on overall episode number
 	 * @return Episode|null
 	 */
-	function getPrevious():?Episode {
+	public function getPrevious():?Episode {
 		return $this->_getAdjacent(self::PREVIOUS);
 	}
 
@@ -275,7 +281,39 @@ class Episode extends Model {
 	 * Get the previous episode based on overall episode number
 	 * @return Episode|null
 	 */
-	function getNext():?Episode {
+	public function getNext():?Episode {
 		return $this->_getAdjacent(self::NEXT);
+	}
+
+	/**
+	 * Get a list of IDs for tags related to the episode
+	 *
+	 * @return int[]
+	 */
+	public function getTagIDs():array {
+		if ($this->is_movie){
+			$MovieTagIDs = [];
+			/** @var $MovieTag Tag */
+			$MovieTag = DB::where('name',"movie{$this->episode}")->where('type','ep')->getOne('tags','id');
+			if (!empty($MovieTag->id))
+				$MovieTagIDs[] = $MovieTag->id;
+			return $MovieTagIDs;
+		}
+
+		$sn = CoreUtils::pad($this->season);
+		$en = CoreUtils::pad($this->episode);
+		$EpTagIDs = [];
+		/** @var $EpTagPt1 Tag */
+		$EpTagPt1 = DB::where('name',"s{$sn}e{$en}")->where('type','ep')->getOne('tags','id');
+		if (!empty($EpTagPt1))
+			$EpTagIDs[] = $EpTagPt1->id;
+		if ($this->twoparter){
+			$next_en = CoreUtils::pad($this->episode+1);
+			/** @var $EpTagPt2 Tag[] */
+			$EpTagPt2 = DB::rawQuery("SELECT id FROM tags WHERE name IN ('s{$sn}e{$next_en}', 's{$sn}e{$en}-{$next_en}') AND type = 'ep'");
+			foreach ($EpTagPt2 as $t)
+				$EpTagIDs[] = $t['id'];
+		}
+		return $EpTagIDs;
 	}
 }

@@ -11,7 +11,7 @@ class CachedFile {
 	/** @var int */
 	private $_max_age, $_type;
 
-	function __construct(string $path, int $max_age){
+	public function __construct(string $path, int $max_age){
 		$this->_path = $path;
 		$this->_max_age = $max_age;
 		$this->_guessType();
@@ -20,7 +20,7 @@ class CachedFile {
 	private function _guessType(){
 		$ext = strtolower(array_slice(explode('.',$this->_path), -1)[0]);
 		switch ($ext){
-			case "json":
+			case 'json':
 				$this->_type = self::TYPE_JSON;
 			break;
 			default:
@@ -39,14 +39,14 @@ class CachedFile {
 	 *
 	 * @return self
 	 */
-	static function init(string $path, int $max_age):self {
+	public static function init(string $path, int $max_age):self {
 		if (isset(self::$_CACHES[$path]))
 			return self::$_CACHES[$path];
 
 		return self::$_CACHES[$path] = new self($path, $max_age);
 	}
 
-	function expired():bool {
+	public function expired():bool {
 		return !file_exists($this->_path) || time()-filemtime($this->_path) > $this->_max_age;
 	}
 
@@ -57,7 +57,7 @@ class CachedFile {
 	 *
 	 * @return int|false Bytes written (false on failure)
 	 */
-	function update($data){
+	public function update($data){
 		switch ($this->_type){
 			case self::TYPE_JSON:
 				$data = JSON::encode($data);
@@ -74,7 +74,7 @@ class CachedFile {
 	 *
 	 * @return mixed
 	 */
-	function read(){
+	public function read(){
 		$data = file_get_contents($this->_path);
 
 		switch ($this->_type){

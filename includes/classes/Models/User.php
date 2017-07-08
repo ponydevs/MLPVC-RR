@@ -2,32 +2,33 @@
 
 namespace App\Models;
 
-use App\{
-	Appearances,
-	CachedFile,
-	CoreUtils,
-	DeviantArt,
-	Exceptions\NoPCGSlotsException,
-	Logs,
-	Models\Logs\Banish,
-	Models\Logs\Unbanish,
-	Models\Logs\DANameChange,
-	Pagination,
-	Permission,
-	Posts,
-	Time,
-	UserPrefs,
-	Users
-};
+use ActiveRecord\DateTime;
+use App\Appearances;
+use App\CachedFile;
+use App\CoreUtils;
+use App\DB;
+use App\DeviantArt;
+use App\Exceptions\NoPCGSlotsException;
+use App\Logs;
+use App\Models\Logs\Banish;
+use App\Models\Logs\Unbanish;
+use App\Models\Logs\DANameChange;
+use App\Pagination;
+use App\Permission;
+use App\Posts;
+use App\Time;
+use App\UserPrefs;
+use App\Users;
 
 /**
  * @inheritdoc
  * @property string         $role
- * @property string         $signup_date
- * @property string         $rolelabel
+ * @property string         $rolelabel        (Via magic method)
+ * @property DateTime       $signup_date
  * @property Session[]      $sessions
  * @property Notification[] $notifications
- * @property Event[]        $events
+ * @property Event[]        $submitted_events
+ * @property Event[]        $finalized_events
  * @property Appearance[]   $pcg_appearances
  * @property DiscordMember  $discord_member
  * @property Log[]          $logs
@@ -37,25 +38,26 @@ use App\{
  * @method static User find(...$args)
  */
 class User extends AbstractUser {
-	static $has_many = [
+	public static $has_many = [
 		['sessions', 'order' => 'lastvisit desc'],
 		['notifications', 'foreign_key' => 'user'],
-		['events', 'foreign_key' => 'submitted_by'],
-		['pcg_appearances', 'class' => 'Appearance', 'foreign_key' => 'owned_by'],
+		['submitted_events', 'class' => 'Event', 'foreign_key' => 'submitted_by'],
+		['finalized_events', 'class' => 'Event', 'foreign_key' => 'finalized_by'],
+		['pcg_appearances', 'class' => 'Appearance', 'foreign_key' => 'owner_id'],
 		['logs', 'class' => 'Logs\Log', 'foreign_key' => 'initiator'],
-		['name_changes', 'class' => 'Logs\DANameChange', 'foreign_key' => 'id', 'order' => 'entryid asc'],
+		['name_changes', 'class' => 'Logs\DANameChange', 'order' => 'entryid asc'],
 		['banishments', 'class' => 'Logs\Banish', 'foreign_key' => 'target_id', 'order' => 'entryid desc'],
 		['unbanishments', 'class' => 'Logs\Unbanish', 'foreign_key' => 'target_id', 'order' => 'entryid desc'],
 	];
-	static $has_one = [
+	public static $has_one = [
 		['discord_member', 'class' => 'DiscordMember', 'foreign_key' => 'id', 'primary_key' => 'userid'],
 	];
-	static $validates_size_of = [
+	public static $validates_size_of = [
 		['name', 'within' => [1, 20]],
 		['role', 'maximum' => 10],
 		['avatar_url', 'maximum' => 255],
 	];
-	static $validates_format_of = [
+	public static $validates_format_of = [
 		['name', 'with' => '/^'.USERNAME_PATTERN.'$/'],
 	];
 
@@ -77,7 +79,7 @@ class User extends AbstractUser {
 	 *
 	 * @return string
 	 */
-	function getProfileLink(int $format = self::LINKFORMAT_TEXT):string {
+	public function getProfileLink(int $format = self::LINKFORMAT_TEXT):string {
 		$Username = $this->name;
 		$url = "/@$Username";
 		if ($format === self::LINKFORMAT_URL)
@@ -94,14 +96,14 @@ class User extends AbstractUser {
 	 *
 	 * @return string
 	 */
-	function getDALink(int $format = self::LINKFORMAT_FULL):string {
+	public function getDALink(int $format = self::LINKFORMAT_FULL):string {
 		$Username = $this->name;
 		$username = strtolower($Username);
 		$link = "http://$username.deviantart.com/";
 		if ($format === self::LINKFORMAT_URL) return $link;
 
-		$avatar = $format == self::LINKFORMAT_FULL ? "<img src='{$this->avatar_url}' class='avatar' alt='avatar'> " : '';
-		$withav = $format == self::LINKFORMAT_FULL ? ' with-avatar' : '';
+		$avatar = $format === self::LINKFORMAT_FULL ? "<img src='{$this->avatar_url}' class='avatar' alt='avatar'> " : '';
+		$withav = $format === self::LINKFORMAT_FULL ? ' with-avatar' : '';
 		return "<a href='$link' class='da-userlink$withav'>$avatar<span class='name'>$Username</span></a>";
 	}
 
@@ -112,25 +114,25 @@ class User extends AbstractUser {
 	 *
 	 * @return string
 	 */
-	function getAvatarWrap(string $vectorapp = ''):string {
+	public function getAvatarWrap(string $vectorapp = ''):string {
 		if (empty($vectorapp))
 			$vectorapp = $this->getVectorAppClassName();
 		return "<div class='avatar-wrap$vectorapp'><img src='{$this->avatar_url}' class='avatar' alt='avatar'></div>";
 	}
 
-	function getVectorAppClassName():string {
+	public function getVectorAppClassName():string {
 		$pref = UserPrefs::get('p_vectorapp', $this);
 
 		return !empty($pref) ? " app-$pref" : '';
 	}
 
-	function getVectorAppReadableName():string {
+	public function getVectorAppReadableName():string {
 		$pref = UserPrefs::get('p_vectorapp', $this);
 
 		return CoreUtils::$VECTOR_APPS[$pref] ?? 'unrecognized application';
 	}
 
-	function getVectorAppIcon():string {
+	public function getVectorAppIcon():string {
 		$vectorapp = UserPrefs::get('p_vectorapp', $this);
 		if (empty($vectorapp))
 			return '';
@@ -138,9 +140,9 @@ class User extends AbstractUser {
 		return "<img class='vectorapp-logo' src='/img/vapps/$vectorapp.svg' alt='$vectorapp logo' title='".$this->getVectorAppReadableName()." user'>";
 	}
 
-	function getPendingReservationCount():int {
-		global $Database;
-		$PendingReservations = $Database->rawQuery(
+	public function getPendingReservationCount():int {
+
+		$PendingReservations = DB::rawQuery(
 			'SELECT (SELECT COUNT(*) FROM requests WHERE reserved_by = :uid AND deviation_id IS NULL)+(SELECT COUNT(*) FROM reservations WHERE reserved_by = :uid AND deviation_id IS NULL) as amount',
 			['uid' => $this->id]
 		);
@@ -153,10 +155,10 @@ class User extends AbstractUser {
 	 * @param string $newgroup
 	 *
 	 * @return bool
+	 * @throws \RuntimeException
 	 */
-	 function updateRole(string $newgroup):bool {
-		global $Database;
-		$response = $Database->where('id', $this->id)->update('users', ['role' => $newgroup]);
+	 public function updateRole(string $newgroup):bool {
+		$response = DB::where('id', $this->id)->update('users', ['role' => $newgroup]);
 
 		if ($response){
 			Logs::logAction('rolechange', [
@@ -174,7 +176,7 @@ class User extends AbstractUser {
 	 *
 	 * @return bool
 	 */
-	function isClubMember(){
+	public function isClubMember(){
 		return DeviantArt::getClubRole($this) !== null;
 	}
 
@@ -185,15 +187,19 @@ class User extends AbstractUser {
 	 *
 	 * @return int
 	 */
-	function getApprovedFinishedRequestCount(bool $exclude_own = false):int {
-		return $this->getApprovedFinishedRequestContributions(true, null, $exclude_own);
+	public function getApprovedFinishedRequestCount(bool $exclude_own = false):int {
+		if ($exclude_own)
+			DB::where('requested_by', $this->id, '!=');
+
+		return $this->getApprovedFinishedRequestContributions();
 	}
 
-	function getPCGAppearances(?Pagination $Pagination = null, bool $countOnly = false){
-		global $Database;
-
-		$return = Appearances::get(null, $Pagination, $this->id, $countOnly ? 'COUNT(*) as cnt' : '*');
-		return $countOnly ? intval($return[0]->cnt ?? 0) : $return;
+	public function getPCGAppearances(Pagination $Pagination = null, bool $countOnly = false){
+		$limit = isset($Pagination) ? $Pagination->getLimit() : null;
+		if (!$countOnly)
+			DB::orderBy('order','ASC');
+		$return = Appearances::get(null, $limit, $this->id, $countOnly ? Appearances::COUNT_COL : '*');
+		return $countOnly ? (int)($return[0]['cnt'] ?? 0) : $return;
 	}
 
 	/**
@@ -202,7 +208,7 @@ class User extends AbstractUser {
 	 *
 	 * @return int|array
 	 */
-	function getPCGAvailableSlots(bool $throw = true, bool $returnArray = false){
+	public function getPCGAvailableSlots(bool $throw = true, bool $returnArray = false){
 		$postcount = $this->getApprovedFinishedRequestCount(true);
 		$totalslots = floor($postcount/10);
 		if (Permission::sufficient('staff', $this->role))
@@ -230,7 +236,7 @@ class User extends AbstractUser {
 
 	const CONTRIB_CACHE_DURATION = 12* Time::IN_SECONDS['hour'];
 
-	function getCachedContributions():array {
+	public function getCachedContributions():array {
 		$cache = CachedFile::init(FSPATH."contribs/{$this->id}.json", self::CONTRIB_CACHE_DURATION);
 		if (!$cache->expired())
 			return $cache->read();
@@ -246,22 +252,24 @@ class User extends AbstractUser {
 	 * @return int|array
 	 */
 	public function getCMContributions(bool $count = true, Pagination $pagination = null){
-		global $Database;
-
-		$cols = $count ? 'COUNT(*) as cnt' : 'c.ponyid, c.favme';
+		$cols = $count ? 'COUNT(*) as cnt' : 'c.appearance_id, c.favme';
 		$query =
 			"SELECT $cols
 			FROM cutiemarks c
 			LEFT JOIN \"cached-deviations\" d ON d.id = c.favme
-			LEFT JOIN appearances p ON p.id = c.ponyid
-			WHERE d.author = ? AND p.owned_by IS NULL";
+			LEFT JOIN appearances p ON p.id = c.appearance_id
+			WHERE d.author = ? AND p.owner_id IS NULL";
 
-		if ($count)
-			return $Database->rawQuerySingle($query, [$this->name])['cnt'];
+		if ($count){
+			$stmt = Cutiemark::query($query, [$this->name]);
+			$stmt->execute();
+			$data = $stmt->fetch(\PDO::FETCH_ASSOC);
+			return $data['cnt'];
+		}
 
 		if ($pagination)
 			$query .= ' ORDER BY p.order ASC '.$pagination->getLimitString();
-		return $Database->setClass(Cutiemark::class)->rawQuery($query, [$this->name]);
+		return Cutiemark::find_by_sql($query, [$this->name]);
 
 	}
 
@@ -272,17 +280,15 @@ class User extends AbstractUser {
 	 * @return int|array
 	 */
 	private function _getPostContributions(string $table, bool $count = true, Pagination $pagination = null){
-		global $Database;
-
 		if ($table === 'requests')
-			$Database->where('requested_by', $this->id);
-		else $Database->where('reserved_by', $this->id);
+			DB::where('requested_by', $this->id);
+		else DB::where('reserved_by', $this->id);
 
 		if ($count)
-			return $Database->count($table);
+			return DB::count($table);
 
 		$limit = isset($pagination) ? $pagination->getLimit() : null;
-		return $Database->orderBy('posted','DESC')->get($table,$limit);
+		return DB::orderBy('posted','DESC')->get($table,$limit);
 	}
 
 	/**
@@ -309,63 +315,45 @@ class User extends AbstractUser {
 	 * @return int|array
 	 */
 	public function getFinishedPostContributions(bool $count = true, Pagination $pagination = null){
-		global $Database;
-
 		if ($count)
-			return $Database->rawQuerySingle(
+			return DB::rawQuerySingle(
 				'SELECT
 					(SELECT COUNT(*) FROM requests WHERE reserved_by = :userid AND deviation_id IS NOT NULL)
 					+
 					(SELECT COUNT(*) FROM reservations WHERE reserved_by = :userid AND deviation_id IS NOT NULL)
 				as cnt', ['userid' => $this->id])['cnt'];
 
-		$cols = "id, label, posted, reserved_by, preview, lock, season, episode, deviation_id";
+		$cols = 'id, label, reserved_by, reserved_at, preview, lock, season, episode, deviation_id';
 		/** @noinspection SqlInsertValues */
 		$query =
 			"SELECT * FROM (
-				SELECT $cols, requested_by, reserved_at FROM requests WHERE reserved_by = :userid AND deviation_id IS NOT NULL
+				SELECT $cols, requested_by, requested_at as posted FROM requests WHERE reserved_by = :userid AND deviation_id IS NOT NULL
 				UNION ALL
-				SELECT $cols, null as requested_by, posted as reserved_at FROM reservations WHERE reserved_by = :userid AND deviation_id IS NOT NULL
+				SELECT $cols, null as requested_by, reserved_at as posted FROM reservations WHERE reserved_by = :userid AND deviation_id IS NOT NULL
 			) t";
 		if ($pagination)
 			$query .= ' ORDER BY posted DESC '.$pagination->getLimitString();
-		return $Database->rawQuery($query, ['userid' => $this->id]);
+		return DB::rawQuery($query, ['userid' => $this->id]);
 	}
 
 	/**
 	 * @param bool       $count       Returns the count if true
 	 * @param Pagination $pagination  Pagination object used for getting the LIMIT part of the query
-	 * @param bool       $exclude_own Exclude own requests from the calculation
 	 *
 	 * @return int|array
 	 */
-	public function getApprovedFinishedRequestContributions(bool $count = true, Pagination $pagination = null, bool $exclude_own = false){
-		global $Database;
+	public function getApprovedFinishedRequestContributions(bool $count = true, Pagination $pagination = null){
 
-		$query = CoreUtils::sqlBuilder('requests');
+		DB::where('deviation_id IS NOT NULL')->where('reserved_by',$this->id)->where('lock',1);
 
-		if ($exclude_own)
-			$query->where('requested_by != ?', $this->id);
+		if ($count)
+			return DB::count('requests');
 
-		$query->where('deviation_id IS NOT NULL')->where('reserved_by = ?',$this->id)->where('lock IS true');
-
-		if ($count){
-			$query->select('id');
-			$result = Request::find_by_sql(...CoreUtils::execSqlBuilderArgs($query));
-			return count($result);
-		}
-
-		$query->order('finished_at desc');
-
-		if (isset($pagination))
-			$pagination->applyAssocLimit($query);
-
-		return Request::find_by_sql(...CoreUtils::execSqlBuilderArgs($query));
+		$limit = isset($pagination) ? $pagination->getLimit() : null;
+		return DB::orderBy('finished_at','DESC')->get('requests',$limit);
 	}
 
 	private function _getContributions():array {
-		global $Database;
-
 		$contribs = [];
 
 		// Cutie mark vectors submitted
@@ -394,7 +382,7 @@ class User extends AbstractUser {
 			$contribs['fulfilled-requests'] = [$reqFin, 'request', 'fulfilled'];
 
 		// Broken video reports
-		$brokenVid = $Database->rawQuerySingle(
+		$brokenVid = DB::rawQuerySingle(
 			'SELECT COUNT(v.entryid) as cnt
 			FROM log l
 			LEFT JOIN log__video_broken v ON l.refid = v.entryid
@@ -403,7 +391,7 @@ class User extends AbstractUser {
 			$contribs[] = [$brokenVid, 'broken video', 'reported'];
 
 		// Broken video reports
-		$approvedPosts = $Database->rawQuerySingle(
+		$approvedPosts = DB::rawQuerySingle(
 			'SELECT COUNT(p.entryid) as cnt
 			FROM log l
 			LEFT JOIN log__post_lock p ON l.refid = p.entryid
@@ -429,17 +417,15 @@ class User extends AbstractUser {
 	 * @return EventEntry[]
 	 */
 	public function getEntriesFor(Event $event, string $cols = '*'):?array {
-		global $Database;
 
-		return $Database->where('submitted_by', $this->id)->where('eventid', $event->id)->get('events__entries',null,$cols);
+
+		return DB::where('submitted_by', $this->id)->where('eventid', $event->id)->get('events__entries',null,$cols);
 	}
 
 	const YOU_HAVE = [
-		true => 'You have',
-		false => 'This user has',
+		1 => 'You have',
+		0 => 'This user has',
 	];
-
-	const PENDING_POST_COLS = 'id, season, episode, preview, label, posted, reserved_by, broken';
 
 	/**
 	 * @param bool $requests
@@ -453,7 +439,6 @@ class User extends AbstractUser {
 					'reserved_by = ? AND deviation_id IS NULL',
 					$this->id,
 				],
-				'select' => self::PENDING_POST_COLS.($requests ? ', reserved_at, true as requested_by' : ''),
 			],
 		];
 	}
@@ -478,16 +463,14 @@ class User extends AbstractUser {
 	 *
 	 * @return string
 	 */
-	function getPendingReservationsHTML($sameUser, $isMember = true):string {
-		global $Database;
-
+	public function getPendingReservationsHTML($sameUser, $isMember = true):string {
 		$visitorStaff = Permission::sufficient('staff');
 		$staffVisitingMember = $visitorStaff && $isMember;
-		$YouHave = self::YOU_HAVE[$sameUser];
+		$YouHave = self::YOU_HAVE[(int)$sameUser];
 		$PrivateSection = $sameUser? Users::PROFILE_SECTION_PRIVACY_LEVEL['staff']:'';
 
 		if ($staffVisitingMember || ($isMember && $sameUser)){
-			$cols = "";
+			$cols = '';
 			$PendingReservations = $this->_getPendingReservations();
 			$PendingRequestReservations = $this->_getPendingRequestReservations();
 			$TotalPending = count($PendingReservations)+count($PendingRequestReservations);
@@ -510,11 +493,11 @@ HTML;
 				$posts = CoreUtils::makePlural('reservation', $TotalPending);
 				$HTML .= "<span>$YouHave $pendingCountReadable pending $posts";
 				if ($hasPending)
-					$HTML .= " which ha".($TotalPending!==1?'ve':'s')."n’t been marked as finished yet";
-				$HTML .= ".";
+					$HTML .= ' which ha'.($TotalPending!==1?'ve':'s').'n’t been marked as finished yet';
+				$HTML .= '.';
 				if ($sameUser)
-					$HTML .= " Please keep in mind that the global limit is 4 at any given time. If you reach the limit, you can’t reserve any more images until you finish or cancel some of your pending reservations.";
-				$HTML .= "</span>";
+					$HTML .= ' Please keep in mind that the global limit is 4 at any given time. If you reach the limit, you can’t reserve any more images until you finish or cancel some of your pending reservations.';
+				$HTML .= '</span>';
 
 				if ($hasPending){
 					/** @var $Posts Post[] */
@@ -526,14 +509,14 @@ HTML;
 						$a = strtotime($a->posted);
 						$b = strtotime($b->posted);
 
-						return -($a < $b ? -1 : ($a === $b ? 0 : 1));
+						return $b <=> $a;
 					});
 					$LIST = '';
 					foreach ($Posts as $Post){
 						$postLink = $Post->toLink($_);
 						$postAnchor = $Post->toAnchor(null, $_);
 						$label = !empty($Post->label) ? "<span class='label'>{$Post->label}</span>" : '';
-						$actionCond = $Post->isRequest && !empty($Post->reserved_at);
+						$actionCond = $Post->is_request && !empty($Post->reserved_at);
 						$posted = Time::tag($actionCond ? $Post->reserved_at : $Post->posted);
 						$PostedAction = $actionCond ? 'Reserved' : 'Posted';
 						$contestable = $Post->isOverdue() ? Posts::CONTESTABLE : '';
@@ -563,10 +546,10 @@ HTML;
 				}
 			}
 			else {
-				$HTML .= "<p>Reservations are a way to allow Club Members to claim requests on the site as well as claim screenshots of their own, in order to reduce duplicate submissions to the group. You can use the button above to get random requests from the site that you can draw as practice, or to potentially submit along with your application to the club.</p>";
+				$HTML .= '<p>Reservations are a way to allow Club Members to claim requests on the site as well as claim screenshots of their own, in order to reduce duplicate submissions to the group. You can use the button above to get random requests from the site that you can draw as practice, or to potentially submit along with your application to the club.</p>';
 			}
 
-			$HTML .= "</section>";
+			$HTML .= '</section>';
 		}
 		return $HTML;
 	}
@@ -598,12 +581,12 @@ HTML;
 		return Reservation::find(...$this->_getNotApprovedPostArgs());
 	}
 
-	function getAwaitingApprovalHTML(bool $sameUser):string {
+	public function getAwaitingApprovalHTML(bool $sameUser):string {
 		if (Permission::insufficient('member', $this->role))
 			HTTP::statusCode(404, AND_DIE);
 
-		global $Database;
-		$cols = "id, season, episode, deviation_id";
+
+		$cols = 'id, season, episode, deviation_id';
 		/** @var $AwaitingApproval \App\Models\Post[] */
 		$AwaitingApproval = array_merge(
 			$this->_getNotApprovedRequests(),
@@ -611,20 +594,20 @@ HTML;
 		);
 		$AwaitCount = count($AwaitingApproval);
 		$them = $AwaitCount!==1?'them':'it';
-		$YouHave = self::YOU_HAVE[$sameUser];
+		$YouHave = self::YOU_HAVE[(int)$sameUser];
 		$privacy = $sameUser? Users::PROFILE_SECTION_PRIVACY_LEVEL['public']:'';
 		$HTML = "<h2>{$privacy}Vectors waiting for approval</h2>";
 		if ($sameUser)
-			$HTML .= "<p>After you finish an image and submit it to the group gallery, an admin will check your vector and may ask you to fix some issues on your image, if any. After an image is accepted to the gallery, it can be marked as \"approved\", which gives it a green check mark, indicating that it’s most likely free of any errors.</p>";
+			$HTML .= '<p>After you finish an image and submit it to the group gallery, an admin will check your vector and may ask you to fix some issues on your image, if any. After an image is accepted to the gallery, it can be marked as "approved", which gives it a green check mark, indicating that it’s most likely free of any errors.</p>';
 		$youHaveAwaitCount = "$YouHave ".(!$AwaitCount?'no':"<strong>$AwaitCount</strong>");
 		$images = CoreUtils::makePlural('image', $AwaitCount);
 		$append = !$AwaitCount
 			? '.'
-			: ", listed below.".(
+			: ', listed below.'.(
 				$sameUser
 				? " Please submit $them to the group gallery as soon as possible to have $them spot-checked for any issues. As stated in the rules, the goal is to add finished images to the group gallery, making $them easier to find for everyone.".(
 					$AwaitCount>10
-					? " You seem to have a large number of images that have not been approved yet, please submit them to the group soon if you haven’t already."
+					? ' You seem to have a large number of images that have not been approved yet, please submit them to the group soon if you haven’t already.'
 					: ''
 				)
 				:''

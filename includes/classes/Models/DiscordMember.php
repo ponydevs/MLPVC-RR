@@ -6,31 +6,29 @@ use App\Users;
 
 /**
  * @inheritdoc
- * @property string $userid
+ * @property string $user_id
  * @property string $username
  * @property string $nick
  * @property string $avatar_hash
  * @property string $joined_at
  * @property int    $discriminator
+ * @property User   $user
+ * @method static DiscordMember|DiscordMember[] find(...$args)
  */
 class DiscordMember extends AbstractUser {
+	public static $belongs_to = [
+		['user']
+	];
+
 	public function get_name(){
-		return $this->displayedName();
+		return !empty($this->nick) ? $this->nick : $this->username;
 	}
 
 	public function get_avatar_url(){
-		return $this->getAvatarURL();
+		return !empty($this->avatar_hash) ? "https://images.discordapp.net/avatars/{$this->id}/{$this->avatar_hash}.png" : null;
 	}
 
-	public function getAvatarURL(){
-		return isset($this->avatar_hash) ? "https://images.discordapp.net/avatars/{$this->id}/{$this->avatar_hash}.png" : null;
-	}
-
-	public function displayedName(){
-		return $this->nick ?? $this->username;
-	}
-
-	function nameToDAName(string $name):?string{
+	public function nameToDAName(string $name):?string{
 		global $DISCORD_NICK_REGEX;
 
 		if (!preg_match($DISCORD_NICK_REGEX, $name))
@@ -67,19 +65,20 @@ class DiscordMember extends AbstractUser {
 	];
 
 	public function guessDAUser():?string {
-		if (isset($this->userid))
+		if (isset($this->user_id))
 			return true;
 
 		if (!empty(self::STAFF_BINDINGS["id-{$this->id}"]))
 			return $this->_checkDAUserBlacklist(self::STAFF_BINDINGS["id-{$this->id}"]);
 
-		if (isset($this->nick)){
+		if (!empty($this->nick)){
 			$daname = $this->nameToDAName($this->nick);
 			$firstGuess = Users::get($daname ?? $this->nick, 'name');
 			if (!empty($firstGuess))
 				return $this->_checkDAUserBlacklist($firstGuess->id);
 		}
 
+		/** @noinspection SuspiciousAssignmentsInspection */
 		$daname = $this->nameToDAName($this->username);
 		if (!empty($daname)){
 			$secondGuess = Users::get($daname, 'name');
@@ -95,6 +94,6 @@ class DiscordMember extends AbstractUser {
 	}
 
 	private function _checkDAUserBlacklist($id){
-		return $this->userid = (in_array($id, self::BIND_BLACKLIST) ? null : $id);
+		return $this->user_id = (in_array($id, self::BIND_BLACKLIST) ? null : $id);
 	}
 }

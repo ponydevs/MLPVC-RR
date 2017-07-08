@@ -18,7 +18,7 @@ use App\Tags;
 	<h1><?=CoreUtils::escapeHTML($heading)?></h1>
 	<p>from <?=isset($Owner)?$Owner->getProfileLink().CoreUtils::posess($Owner->name, true)." <a href='/@{$Owner->name}/cg'>Personal Color Guide</a>":"the MLP-VectorClub <a href='/cg'>Color Guide</a>"?></p>
 
-<?  if (Permission::sufficient('staff') || $isOwner){ ?>
+<?  if ($isOwner || Permission::sufficient('staff')){ ?>
 	<div class="notice warn align-center appearance-private-notice"<?=!empty($Appearance->private)?'':' style="display:none"'?>><p><span class="typcn typcn-lock-closed"></span> <strong>This appearance is currently private (its colors are only visible to <?=isset($Owner)?(($isOwner?'you':$Owner->name).' and '):''?>staff members)</strong></p></div>
 <?php
 	}
@@ -29,7 +29,7 @@ use App\Tags;
 		<div class='align-center'>
 			<a class='btn link typcn typcn-image' href='/cg/v/<?="{$Appearance->id}p.png$FileModTime"?>' target='_blank'>View as PNG</a>
 			<button class='getswatch typcn typcn-brush teal'>Download swatch file</button>
-<?  if (Permission::sufficient('staff') || $isOwner){ ?>
+<?  if ($isOwner || Permission::sufficient('staff')){ ?>
 			<button class='darkblue edit typcn typcn-pencil'>Edit metadata</button>
 <?php   if ($Appearance->id){ ?>
 			<button class='red delete typcn typcn-trash'>Delete apperance</button>
@@ -37,10 +37,10 @@ use App\Tags;
 	} ?>
 		</div>
 
-<?  if (!isset($Appearance->owned_by)){
+<?  if ($Appearance->owner_id === null){
 		if (!empty($Changes))
 			echo str_replace('@',CGUtils::getChangesHTML($Changes),CGUtils::CHANGES_SECTION);
-		if ($Appearance->id !== 0 && ($Database->where('ponyid', $Appearance->id)->has('tagged') || Permission::sufficient('staff'))){ ?>
+		if ($Appearance->id !== 0 && (\App\DB::where('appearance_id', $Appearance->id)->has('tagged') || Permission::sufficient('staff'))){ ?>
 		<section id="tags">
 			<h2><span class='typcn typcn-tags'></span>Tags</h2>
 			<div class='tags'><?=Appearances::getTagsHTML($Appearance->id,NOWRAP)?></div>
@@ -78,15 +78,15 @@ use App\Tags;
 		echo $placehold;
 	else { ?>
 			<ul id="colors" class="colors"><?php
-		$CGs = ColorGroups::get($Appearance->id);
-		$AllColors = ColorGroups::getColorsForEach($CGs);
+		$CGs = $Appearance->color_groups;
+		$AllColors = CGUtils::getColorsForEach($CGs);
 		foreach ($CGs as $cg)
-			echo ColorGroups::getHTML($cg, $AllColors, WRAP, NO_COLON, OUTPUT_COLOR_NAMES);
+			echo $cg->getHTML($AllColors, WRAP, NO_COLON, OUTPUT_COLOR_NAMES);
 			?></ul>
 		</section>
 <?  }
-	if (!isset($Appearance->owned_by))
-		echo Appearances::getRelatedHTML(Appearances::getRelated($Appearance->id)); ?>
+	if (!isset($Appearance->owner_id))
+		echo Appearances::getRelatedHTML($Appearance->related_appearances); ?>
 	</div>
 </div>
 

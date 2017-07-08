@@ -19,14 +19,14 @@ use App\VideoProvider;
  * @property Episode $ep
  */
 class EpisodeVideo extends Model {
-	static $table_name = 'episodes__videos';
+	public static $table_name = 'episodes__videos';
 
-	static $belongs_to = [
+	public static $belongs_to = [
 		['ep', 'class' => 'Episode', 'foreign_key' => ['season','episode']],
 	];
 
 	public function isBroken():bool {
-		global $Database;
+
 
 		if (isset($this->not_broken_at)){
 			$nb = strtotime($this->not_broken_at);

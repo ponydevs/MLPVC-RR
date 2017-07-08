@@ -3,34 +3,40 @@
 namespace App\Models;
 
 use ActiveRecord\Model;
+use ActiveRecord\DateTime;
 use App\CoreUtils;
+use App\DB;
 use App\DeviantArt;
 use App\Permission;
 use App\UserPrefs;
 
 /**
- * @property int    $id
- * @property int    $max_entries
- * @property string $name
- * @property string $type
- * @property string $entry_role
- * @property string $vote_role
- * @property string $starts_at
- * @property string $ends_at
- * @property string $added_by
- * @property string $added_at
- * @property string $desc_src
- * @property string $desc_rend
- * @property string $result_favme
- * @property string $finalized_at
+ * @property int          $id
+ * @property int          $max_entries
+ * @property string       $name
+ * @property string       $type
+ * @property string       $entry_role
+ * @property string       $vote_role
+ * @property DateTime     $starts_at
+ * @property DateTime     $ends_at
+ * @property string       $added_by
+ * @property DateTime     $added_at
+ * @property string       $desc_src
+ * @property string       $desc_rend
+ * @property string       $result_favme
+ * @property string       $finalized_by
+ * @property DateTime     $finalized_at
  * @property EventEntry[] $entries
+ * @property User         $submitter
+ * @property User         $finalizer
  */
 class Event extends Model {
-	static $has_many = [
+	public static $has_many = [
 		['entries', 'class_name' => 'EventEntry', 'order' => 'score desc, submitted_at asc'],
 	];
-	static $belongs_to = [
-		['user', 'foreign_key' => 'submitted_by'],
+	public static $belongs_to = [
+		['submitter', 'class' => 'User', 'foreign_key' => 'submitted_by'],
+		['finalizer', 'class' => 'User', 'foreign_key' => 'finalized_by'],
 	];
 
 	const EVENT_TYPES = [
@@ -47,6 +53,16 @@ class Event extends Model {
 		'spec_ponyscape' => 'Ponyscape Users',
 	];
 
+	/**
+	 * @return Event[]
+	 */
+	public static function upcoming(){
+		return DB::where('starts_at > NOW()')
+			->orWhere('ends_at > NOW()')
+			->orderBy('starts_at', 'ASC')
+			->get('events');
+	}
+
 	public function toURL():string {
 		return "/event/{$this->id}-".$this->getSafeName();
 	}
@@ -57,17 +73,17 @@ class Event extends Model {
 
 	public function checkCanEnter(User $user):bool {
 		switch ($this->entry_role){
-			case "user":
-			case "member":
-			case "staff":
+			case 'user':
+			case 'member':
+			case 'staff':
 				return Permission::sufficient($this->entry_role, $user->role);
 			break;
-			case "spec_discord":
+			case 'spec_discord':
 				return $user->isDiscordMember();
 			break;
-			case "spec_illustrator":
-			case "spec_inkscape":
-			case "spec_ponyscape":
+			case 'spec_illustrator':
+			case 'spec_inkscape':
+			case 'spec_ponyscape':
 				$reqapp = explode('_',$this->entry_role)[1];
 				$vapp = UserPrefs::get('p_vectorapp');
 				return  !empty($vapp) && $vapp === $reqapp;
@@ -109,9 +125,9 @@ class Event extends Model {
 		if ($this->type === 'collab')
 			$HTML = '<div id="final-image">'.DeviantArt::getCachedDeviation($this->result_favme)->toLinkWithPreview().'</div>';
 		else {
-			global $Database;
+
 			/** @var $HighestScoringEntries EventEntry[] */
-			$HighestScoringEntries = $Database->setClass(EventEntry::class)->rawQuery(
+			$HighestScoringEntries = DB::setClass(EventEntry::class)->rawQuery(
 				'SELECT * FROM events__entries
 				WHERE eventid = ? AND score > 0 AND score = (SELECT MAX(score) FROM events__entries)
 				ORDER BY submitted_at ASC',[$this->id]);
@@ -119,7 +135,7 @@ class Event extends Model {
 			if (empty($HighestScoringEntries))
 				$HTML .= CoreUtils::notice('info','<span class="typcn typcn-times"></span> No entries match the win criteria, thus the event ended without a winner');
 			else {
-				$HTML .= "<p>The event has concluded with ".CoreUtils::makePlural('winner',count($HighestScoringEntries),PREPEND_NUMBER).'.</p>';
+				$HTML .= '<p>The event has concluded with '.CoreUtils::makePlural('winner',count($HighestScoringEntries),PREPEND_NUMBER).'.</p>';
 				foreach ($HighestScoringEntries as $entry){
 					$title = CoreUtils::escapeHTML($entry->title);
 					$preview = isset($entry->prev_full) ? "<a href='{$entry->prev_src}'><img src='{$entry->prev_thumb}' alt=''><span class='title'>$title</span></a>" : "<span class='title'>$title</span>";

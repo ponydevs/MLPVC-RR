@@ -4,5 +4,5 @@ namespace App\Models\Logs;
 
 /** @inheritdoc */
 class Unbanish extends Banish {
-	static $table_name = 'log__un-banish';
+	public static $table_name = 'log__unbanish';
 }

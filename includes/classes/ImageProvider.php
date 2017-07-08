@@ -14,7 +14,7 @@ class ImageProvider {
 			if (!empty($reqProv)){
 				if (!is_array($reqProv))
 					$reqProv = [$reqProv];
-				if (!in_array($provider['name'], $reqProv))
+				if (!in_array($provider['name'], $reqProv, true))
 					throw new MismatchedProviderException($provider['name']);
 			}
 			$this->provider = $provider['name'];
@@ -41,6 +41,13 @@ class ImageProvider {
 			];
 		return false;
 	}
+
+	/**
+	 * @param string $url
+	 *
+	 * @return string[]
+	 * @throws UnsupportedProviderException
+	 */
 	public static function getProvider($url){
 		foreach (self::$_providerRegexes as $pattern => $name){
 			$test = self::_testProvider($url, $pattern, $name);
@@ -57,7 +64,7 @@ class ImageProvider {
 			$ctype = get_headers($url, 1)['Content-Type'];
 		}
 		if (empty(self::$_allowedMimeTypes[$ctype]))
-			throw new \Exception((!empty(self::$_blockedMimeTypes[$ctype])?self::$_blockedMimeTypes[$ctype].' are':"Content type \"$ctype\" is")." not allowed, please use a different image.");
+			throw new \Exception((!empty(self::$_blockedMimeTypes[$ctype])?self::$_blockedMimeTypes[$ctype].' are':"Content type \"$ctype\" is").' not allowed, please use a different image.');
 	}
 
 	/**
@@ -65,7 +72,7 @@ class ImageProvider {
 	 * @param int|string $id
 	 * @return void
 	 */
-	function setUrls($id):void {
+	public function setUrls($id):void {
 		switch ($this->provider){
 			case 'imgur':
 				$this->fullsize = "https://i.imgur.com/$id.png";

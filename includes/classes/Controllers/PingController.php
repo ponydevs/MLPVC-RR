@@ -6,7 +6,7 @@ use App\Response;
 class PingController extends Controller {
 	public $do = 'ping';
 
-	function ping(){
+	public function ping(){
 		Response::done();
 	}
 }

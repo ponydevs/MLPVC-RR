@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "bcb0cf6c531d56967b2490d7378e3e80",
+    "content-hash": "c739cd1b5e6b315df84169b75bce4508",
     "packages": [
         {
             "name": "altorouter/altorouter",
@@ -258,16 +258,16 @@
         },
         {
             "name": "fightbulc/moment",
-            "version": "1.26.5",
+            "version": "1.26.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/fightbulc/moment.php.git",
-                "reference": "cdd7e35a03d2fe13e8d050c9526eaeea241f9b0e"
+                "reference": "51613ebf5d77c55c943842d67c363db1833c31f9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/fightbulc/moment.php/zipball/cdd7e35a03d2fe13e8d050c9526eaeea241f9b0e",
-                "reference": "cdd7e35a03d2fe13e8d050c9526eaeea241f9b0e",
+                "url": "https://api.github.com/repos/fightbulc/moment.php/zipball/51613ebf5d77c55c943842d67c363db1833c31f9",
+                "reference": "51613ebf5d77c55c943842d67c363db1833c31f9",
                 "shasum": ""
             },
             "require": {
@@ -317,7 +317,7 @@
                 "translation",
                 "validate"
             ],
-            "time": "2017-05-15T09:09:18+00:00"
+            "time": "2017-07-06T18:45:03+00:00"
         },
         {
             "name": "guzzlehttp/command",
@@ -892,16 +892,16 @@
         },
         {
             "name": "php-activerecord/php-activerecord",
-            "version": "v1.2.0",
+            "version": "dev-master",
             "source": {
                 "type": "git",
-                "url": "https://github.com/jpfuentes2/php-activerecord.git",
-                "reference": "e6d2dad090617336dee730190be0294c5f132c69"
+                "url": "https://github.com/SeinopSys/php-activerecord.git",
+                "reference": "acd6715cfe5525a3378f3b7f63b180ba4fc14dd0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jpfuentes2/php-activerecord/zipball/e6d2dad090617336dee730190be0294c5f132c69",
-                "reference": "e6d2dad090617336dee730190be0294c5f132c69",
+                "url": "https://api.github.com/repos/SeinopSys/php-activerecord/zipball/acd6715cfe5525a3378f3b7f63b180ba4fc14dd0",
+                "reference": "acd6715cfe5525a3378f3b7f63b180ba4fc14dd0",
                 "shasum": ""
             },
             "require": {
@@ -918,7 +918,6 @@
                     "ActiveRecord.php"
                 ]
             },
-            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -928,7 +927,10 @@
                 "activerecord",
                 "orm"
             ],
-            "time": "2017-06-11T22:05:37+00:00"
+            "support": {
+                "source": "https://github.com/SeinopSys/php-activerecord/tree/master"
+            },
+            "time": "2017-07-08 08:04:37"
         },
         {
             "name": "psr/http-message",
@@ -1119,6 +1121,44 @@
             ],
             "description": "REST Library for the Discord API",
             "time": "2017-02-17T21:33:10+00:00"
+        },
+        {
+            "name": "seinopsys/postgresql-database-class",
+            "version": "v1.1.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/SeinopSys/PHP-PostgreSQL-Database-Class.git",
+                "reference": "ecb1384da893275686acfe52a1b0a09ba849b348"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/SeinopSys/PHP-PostgreSQL-Database-Class/zipball/ecb1384da893275686acfe52a1b0a09ba849b348",
+                "reference": "ecb1384da893275686acfe52a1b0a09ba849b348",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.6.0"
+            },
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "PostgresDb.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-3.0"
+            ],
+            "authors": [
+                {
+                    "name": "SeinopSys",
+                    "email": "seinopsys@gmail.com",
+                    "homepage": "https://github.com/SeinopSys",
+                    "role": "Developer"
+                }
+            ],
+            "description": "PHP wrapper class for PDO-based interaction with PostgreSQL databases, heavily based on joshcam/mysqli-database-class",
+            "time": "2017-07-06T21:57:09+00:00"
         },
         {
             "name": "symfony/options-resolver",
@@ -2896,7 +2936,9 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "php-activerecord/php-activerecord": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {

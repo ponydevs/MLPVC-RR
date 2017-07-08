@@ -11,15 +11,13 @@ use \ActiveRecord\Model;
  * @method static UserPref|UserPref[] find(...$args)
  */
 class UserPref extends Model {
-	static $table_name = 'user_prefs';
+	public static $primary_key = ['user_id', 'key'];
 
-	static $primary_key = ['user_id','key'];
-
-	static $belongs_to = [
+	public static $belongs_to = [
 		['user'],
 	];
 
-	static function find_for(string $key, User $user){
+	public static function find_for(string $key, User $user){
 		return self::find_by_user_id_and_key($user->id, $key);
 	}
 }

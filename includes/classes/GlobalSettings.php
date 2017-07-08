@@ -17,8 +17,8 @@ class GlobalSettings {
 	 *
 	 * @return mixed
 	 */
-	static function get(string $key){
-		global $Database;
+	public static function get(string $key){
+
 
 		$q = GlobalSetting::find($key);
 		return isset($q->value) ? $q->value : static::DEFAULTS[$key];
@@ -32,8 +32,8 @@ class GlobalSettings {
 	 *
 	 * @return bool
 	 */
-	static function set(string $key, $value):bool {
-		global $Database;
+	public static function set(string $key, $value):bool {
+
 
 		if (!isset(static::DEFAULTS[$key]))
 			Response::fail("Key $key is not allowed");
@@ -60,15 +60,15 @@ class GlobalSettings {
 	 *
 	 * @return mixed
 	 */
-	static function process(string $key){
+	public static function process(string $key){
 		$value = CoreUtils::trim($_POST['value']);
 
 		if ($value === '')
 			return null;
 
 		switch ($key){
-			case "reservation_rules":
-			case "about_reservations":
+			case 'reservation_rules':
+			case 'about_reservations':
 				$value = CoreUtils::sanitizeHtml($value, $key === 'reservation_rules'? ['li', 'ol'] : ['p']);
 			break;
 		}

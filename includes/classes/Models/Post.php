@@ -3,52 +3,62 @@
 namespace App\Models;
 
 use ActiveRecord\Model;
+use ActiveRecord\DateTime;
 use App\Time;
 use App\RegExp;
 use App\CoreUtils;
 
 /**
- * @property int $id
- * @property int $season
- * @property int $episode
- * @property string $preview
- * @property string $fullsize
- * @property string $label
- * @property string $posted
- * @property string $reserved_by
- * @property string $deviation_id
- * @property string $reserved_at
- * @property string $finished_at
- * @property bool $lock
- * @property bool $broken
- * @property bool $isFinished
- * @property bool $isRequest
- * @property bool $isReservation
+ * @property int      $id
+ * @property int      $season
+ * @property int      $episode
+ * @property string   $preview
+ * @property string   $fullsize
+ * @property string   $label
+ * @property string   $reserved_by
+ * @property string   $deviation_id
+ * @property DateTime $reserved_at
+ * @property DateTime $finished_at
+ * @property bool     $broken
+ * @property DateTime $posted         (Via alias)
+ * @property User     $reserver       (Via child relations)
+ * @property Episode  $ep             (Via child relations)
+ * @property bool     $lock           (Via magic method)
+ * @property string   $kind           (Via magic method)
+ * @property bool     $finished       (Via magic method)
+ * @property bool     $is_request     (Via magic method)
+ * @property bool     $is_reservation (Via magic method)
  */
 abstract class Post extends Model {
-	static $belongs_to;
+	public static $belongs_to;
 
-	function get_lock(){
+	/**
+	 * Must link $posted to the timestamp associated with the creation of the post
+	 */
+	public static $alias_attribute;
+
+	public function get_lock(){
 		return $this->read_attribute('lock') !== 'false';
 	}
 
-	function get_isFinished(){
-		return !empty($this->deviation_id) && !empty($this->reserved_by);
+	public function get_finished(){
+		return $this->deviation_id !== null && $this->reserved_by !== null;
 	}
 
-	abstract function get_isRequest():bool;
-	abstract function get_isReservation():bool;
+	abstract public function get_is_request():bool;
+	abstract public function get_is_reservation():bool;
+
+	public function get_kind(){
+		return $this->is_request ? 'request' : 'reservation';
+	}
 
 	public function getID():string {
-		return ($this->isRequest ? 'request' : 'reservation').'-'.$this->id;
+		return $this->kind.'-'.$this->id;
 	}
 
-	public function toLink(Episode &$Episode = null):string {
+	public function toLink(Episode $Episode = null):string {
 		if (empty($Episode))
-			$Episode = new Episode([
-				'season' => $this->season,
-				'episode' => $this->episode,
-			]);
+			$Episode = $this->ep;
 		return $Episode->toURL().'#'.$this->getID();
 	}
 
@@ -60,6 +70,8 @@ abstract class Post extends Model {
 	}
 
 	public function toAnchor(string $label = null, Episode $Episode = null, $newtab = false):string {
+		if ($Episode === null)
+			$Episode = Episode::find_by_season_and_episode($this->season, $this->episode);
 		/** @var $Episode Episode */
 		$link = $this->toLink($Episode);
 		if (empty($label))
@@ -74,14 +86,20 @@ abstract class Post extends Model {
 			return true;
 		if (!isset($now))
 			$now = time();
-		$ts = $this->isRequest ? $this->reserved_at : $this->posted;
-		return $now - strtotime($ts) >= Time::IN_SECONDS['day']*5;
+		return $now - strtotime($this->posted) >= Time::IN_SECONDS['day']*5;
 	}
 
+	/**
+	 * A post is overdue when it has been reserved and left unfinished for over 3 weeks
+	 *
+	 * @param int|null $now
+	 *
+	 * @return bool
+	 */
 	public function isOverdue($now = null):bool {
-		if (!isset($now))
+		if ($now === null)
 			$now = time();
-		return $this->isRequest && empty($this->deviation_id) && isset($this->reserved_by) && $now - strtotime($this->reserved_at) >= Time::IN_SECONDS['week']*3;
+		return $this->is_request && $this->deviation_id !== null && $this->reserved_by !== null && $now - $this->reserved_at->getTimestamp() > Time::IN_SECONDS['week']*3;
 	}
 
 	public function processLabel():string {

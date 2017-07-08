@@ -54,7 +54,7 @@ use App\Permission;
 		?></code></pre>
 <?php   }
 		catch (\Elasticsearch\Common\Exceptions\NoNodesAvailableException $e){
-			echo "<strong>Server is down.</strong></code></pre>";
+			echo '<strong>Server is down.</strong></code></pre>';
 		} ?>
 	</section>
 <?  } ?>

@@ -10,7 +10,5 @@ use ActiveRecord\Model;
  * @method static GlobalSetting|GlobalSetting[] find(...$args)
  */
 class GlobalSetting extends Model {
-	static $table_name = 'global_settings';
-
-	static $primary_key = 'key';
+	public static $primary_key = 'key';
 }

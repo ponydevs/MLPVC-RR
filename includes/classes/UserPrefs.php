@@ -3,6 +3,7 @@
 namespace App;
 
 use App\Models\UserPref;
+use App\Models\User;
 
 class UserPrefs extends GlobalSettings {
 	const DEFAULTS = [
@@ -24,23 +25,27 @@ class UserPrefs extends GlobalSettings {
 	 *
 	 * @return mixed
 	 */
-	static function get(string $key, $for = null){
-		global $Database;
+	public static function get(string $key, ?User $for = null){
+
 		if (empty($for) && Auth::$signed_in)
 			$for = Auth::$user;
 
-		if (isset(Users::$_PREF_CACHE[$for->id][$key]))
+		$for_set = !empty($for->id);
+
+		if ($for_set && isset(Users::$_PREF_CACHE[$for->id][$key]))
 			return Users::$_PREF_CACHE[$for->id][$key];
 
 		$default = null;
 		if (isset(static::DEFAULTS[$key]))
 			$default = static::DEFAULTS[$key];
-		if (empty($for->id) && !Auth::$signed_in)
+		if (!$for_set && !Auth::$signed_in)
 			return $default;
 
 		$q = UserPref::find_for($key, $for);
-		Users::$_PREF_CACHE[$for->id][$key] = isset($q->value) ? $q->value : $default;
-		return Users::$_PREF_CACHE[$for->id][$key];
+		$value = isset($q->value) ? $q->value : $default;
+		if ($for_set)
+			Users::$_PREF_CACHE[$for->id][$key] = $value;
+		return $value;
 	}
 
 	/**
@@ -52,7 +57,7 @@ class UserPrefs extends GlobalSettings {
 	 *
 	 * @return bool
 	 */
-	static function set(string $key, $value, $for = null):bool {
+	public static function set(string $key, $value, $for = null):bool {
 		if (empty($for)){
 			if (!Auth::$signed_in)
 				throw new \Exception("Empty \$for when setting user preference $key to ");
@@ -86,11 +91,11 @@ class UserPrefs extends GlobalSettings {
 	 *
 	 * @return mixed
 	 */
-	static function process(string $key){
+	public static function process(string $key){
 		$value = isset($_POST['value']) ? CoreUtils::trim($_POST['value']) : null;
 
 		switch ($key){
-			case "cg_itemsperpage":
+			case 'cg_itemsperpage':
 				$thing = 'Color Guide items per page';
 				if (!is_numeric($value))
 					throw new \Exception("$thing must be a number");
@@ -98,18 +103,18 @@ class UserPrefs extends GlobalSettings {
 				if ($value < 7 || $value > 20)
 					throw new \Exception("$thing must be between 7 and 20");
 			break;
-			case "p_vectorapp":
+			case 'p_vectorapp':
 				if (!empty($value) && !isset(CoreUtils::$VECTOR_APPS[$value]))
-					throw new \Exception("The specified app is invalid");
+					throw new \Exception('The specified app is invalid');
 			break;
-			case "p_hidediscord":
-			case "cg_hidesynon":
-			case "cg_hideclrinfo":
-			case "cg_fulllstprev":
+			case 'p_hidediscord':
+			case 'cg_hidesynon':
+			case 'cg_hideclrinfo':
+			case 'cg_fulllstprev':
 				$value = $value ? 1 : 0;
 			break;
 
-			case "discord_token":
+			case 'discord_token':
 				Response::fail("You cannot change the $key setting");
 		}
 

@@ -9,7 +9,7 @@ use ActiveRecord\SQLBuilder;
  */
 class Pagination {
 	public $maxPages, $page, $HTML, $itemsPerPage;
-	var $_context, $_wrap, $_basePath;
+	public $_context, $_wrap, $_basePath;
 
 	/**
 	 * Creates an instance of the class and return the generated HTML
@@ -22,12 +22,8 @@ class Pagination {
 	 *
 	 * @return Pagination
 	 */
-	function __construct($basePath, $ItemsPerPage, $EntryCount = null, $wrap = true, $context = 2){
+	public function __construct(string $basePath, int $ItemsPerPage, ?int $EntryCount = null, bool $wrap = true, $context = 2){
 		global $data;
-
-		foreach (['basePath', 'ItemsPerPage'] as $var)
-			if (!isset($$var))
-				trigger_error("Missing variable \$$var", E_USER_ERROR);
 
 		$this->itemsPerPage = (int) $ItemsPerPage;
 		$this->page = (int) max(intval(preg_replace(new RegExp('^.*\/(\d+)$'),'$1',$data), 10), 1);
@@ -35,7 +31,7 @@ class Pagination {
 		$this->_wrap = (bool) $wrap;
 		$this->_basePath = $basePath;
 
-		if (isset($EntryCount))
+		if ($EntryCount !== null)
 			$this->calcMaxPages($EntryCount);
 	}
 
@@ -84,8 +80,10 @@ class Pagination {
 	 * @return string
 	 */
 	public function __toString(){
-		if (!isset($this->maxPages))
-			throw new \Exception('$this->maxPages must be defined');
+		if ($this->maxPages === null){
+			error_log(__METHOD__.': $this->maxPages must be defined\nData: '.var_export($this, true));
+			return '';
+		}
 
 		if (!($this->page === 1 && $this->maxPages === 1)){
 			$Items = [];
@@ -130,7 +128,7 @@ class Pagination {
 	 * @param string $output The HTML of the paginated content
 	 * @param string $update The CSS selector specifying which element to place $output in
 	 */
-	function respond($output, $update){
+	public function respond($output, $update){
 		$RQURI = rtrim(preg_replace(new RegExp('js=true(?:&|$)'),'',$_SERVER['REQUEST_URI']),'?');
 		Response::done([
 			'output' => $output,
@@ -146,7 +144,7 @@ class Pagination {
 	 *
 	 * @return int[]
 	 */
-	function getLimit(){
+	public function getLimit(){
 		$arr = $this->toElastic();
 		return [$arr['from'], $arr['size']];
 	}
@@ -156,7 +154,7 @@ class Pagination {
 	 *
 	 * @return array
 	 */
-	function getAssocLimit(){
+	public function getAssocLimit(){
 		$arr = $this->toElastic();
 		return [ 'offset' => $arr['from'], 'limit' => $arr['size'] ];
 	}
@@ -166,7 +164,7 @@ class Pagination {
 	 *
 	 * @param SQLBuilder $query
 	 */
-	function applyAssocLimit(SQLBuilder &$query){
+	public function applyAssocLimit(SQLBuilder &$query){
 		$assoc = $this->getAssocLimit();
 		foreach ($assoc as $k => $v)
 			$query->{$k} = $v;
@@ -177,7 +175,7 @@ class Pagination {
 	 *
 	 * @return string
 	 */
-	function getLimitString(){
+	public function getLimitString(){
 		$limit = $this->getLimit();
 		return "LIMIT $limit[1] OFFSET $limit[0]";
 	}

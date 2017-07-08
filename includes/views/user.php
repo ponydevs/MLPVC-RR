@@ -1,15 +1,13 @@
 <div id="content">
 <?php
-use App\{
-	Auth,
-	CoreUtils,
-	Models\Logs\Banish,
-	Models\User,
-	Permission,
-	Time,
-	UserPrefs,
-	Users
-};
+use App\Auth;
+use App\CoreUtils;
+use App\Models\Logs\Banish;
+use App\Models\User;
+use App\Permission;
+use App\Time;
+use App\UserPrefs;
+use App\Users;
 
 /** @var $User User */
 /** @var $sameUser bool */
@@ -91,7 +89,7 @@ if (!empty($Banishes)){
 	foreach ($Banishes as $b){
 		$initiator = $displayInitiator ? User::find($b['initiator']) : null;
 		$b['reason'] = htmlspecialchars($b['reason']);
-		echo "<li class=".strtolower($Actions[$b['action']])."><blockquote>{$b['reason']}</blockquote> - ".(isset($initiator)?$initiator->getProfileLink().' ':'').Time::tag($b['timestamp'])."</li>";
+		echo '<li class='.strtolower($Actions[$b['action']])."><blockquote>{$b['reason']}</blockquote> - ".(isset($initiator)?$initiator->getProfileLink().' ':'').Time::tag($b['timestamp']).'</li>';
 	}
 }
 			?></ul>
@@ -164,7 +162,7 @@ if (!empty($Banishes)){
 				echo "<optgroup label='Vectoring applications'>";
 				foreach ($apps as $id => $label)
 					echo "<option value='$id' ".($vectorapp===$id?'selected':'').">$label</option>";
-				echo "</optgroup>";
+				echo '</optgroup>';
 					?></select>
 <?php   if ($sameUser){ ?>
 					<button class="save typcn typcn-tick green" disabled>Save</button>
@@ -197,10 +195,8 @@ if (!empty($Banishes)){
 <?php   if (!empty($Sessions)){ ?>
 			<p>Below is a list of all the browsers <?=$sameUser?"you've":'this user has'?> logged in from.</p>
 			<ul class="session-list"><?php
-				if (!empty($Sessions)){
-					foreach ($Sessions as $s)
-						Users::renderSessionLi($s, $s->id === ($CurrentSessionID ?? null));
-				}
+			foreach ($Sessions as $s)
+				Users::renderSessionLi($s, $s->id === ($CurrentSessionID ?? null));
 			?></ul>
 			<p><button class="typcn typcn-arrow-back yellow" id="signout-everywhere">Sign out everywhere</button></p>
 <?php   }

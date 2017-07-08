@@ -3,27 +3,27 @@
 namespace App;
 
 class Response {
-	static function fail(string $message = '', $data = [], bool $prettyPrint = false){
+	public static function fail(string $message = '', $data = [], bool $prettyPrint = false){
 		if (empty($message)){
 			$message = Auth::$signed_in ? 'Insufficient permissions.' : '<p>You are not signed in (or your session expired).</p><p class="align-center"><button class="typcn green da-login" id="turbo-sign-in" data-url="'.OAUTH_AUTHORIZATION_URL.'">Sign back in</button></p>';
 		}
 
 		self::_respond(false, $message, $data, $prettyPrint);
 	}
-	static function dbError(string $message = '', bool $prettyPrint = false){
-		global $Database;
 
+	// TODO Create an arError equivalent
+	public static function dbError(string $message = '', bool $prettyPrint = false){
 		if (!empty($message))
 			$message .= ': ';
-		$message .= rtrim('Error while saving to database: '.$Database->getLastError(), ': ');
+		$message .= rtrim('Error while saving to database: '.DB::getLastError(), ': ');
 
 		self::_respond(false, $message, [], $prettyPrint);
 	}
 
-	static function success(string $message, $data = [], bool $prettyPrint = false){
+	public static function success(string $message, $data = [], bool $prettyPrint = false){
 		self::_respond(true, $message, $data, $prettyPrint);
 	}
-	static function done(array $data = [], bool $prettyPrint = false){
+	public static function done(array $data = [], bool $prettyPrint = false){
 		self::_respond(true, '', $data, $prettyPrint);
 	}
 

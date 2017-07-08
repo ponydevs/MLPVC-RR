@@ -6,12 +6,11 @@ use App\Models\Appearance;
 use App\Models\Episode;
 use App\Models\EpisodeVideo;
 use App\Models\EpisodeVote;
-use App\Models\Event;
 use App\Models\Post;
 
 class Episodes {
 	const TITLE_CUTOFF = 26;
-	static $ALLOWED_PREFIXES = [
+	public static $ALLOWED_PREFIXES = [
 		'Equestria Girls' => 'EQG',
 		'My Little Pony' => 'MLP',
 	];
@@ -24,9 +23,9 @@ class Episodes {
 	 *
 	 * @return Episode|Episode[]
 	 */
-	static function get(?Pagination $pagination = null, $where = null){
+	public static function get(?Pagination $pagination = null, $where = null){
 		/** @var $ep Episode */
-		global $Database;
+
 
 		$opts = isset($pagination) ? $pagination->getAssocLimit() : ['limit' => 1];
 		$opts['conditions'] = 'season != 0';
@@ -52,15 +51,13 @@ class Episodes {
 	 * @param bool $allowMovies
 	 * @param bool $cache
 	 *
-	 * @throws \Exception
+	 * @throws \InvalidArgumentException
 	 *
 	 * @return Episode|null
 	 */
-	static function getActual(int $season, int $episode, bool $allowMovies = false, $cache = false){
-		global $Database;
-
-		if (!$allowMovies && $season == 0)
-			throw new \Exception('This action cannot be performed on movies');
+	public static function getActual(int $season, int $episode, bool $allowMovies = false, $cache = false){
+		if (!$allowMovies && $season === 0)
+			throw new \InvalidArgumentException('This action cannot be performed on movies');
 
 
 		if ($cache && isset(self::$EP_CACHE["$season-$episode"]))
@@ -84,17 +81,17 @@ class Episodes {
 	 *
 	 * @return Episode
 	 */
-	static function getLatest(){
+	public static function getLatest(){
 		return self::get(null, "airs < NOW() + INTERVAL '24 HOUR' AND season != 0");
 	}
 
-	static function removeTitlePrefix($title){
+	public static function removeTitlePrefix($title){
 		global $PREFIX_REGEX;
 
 		return $PREFIX_REGEX->replace('', $title);
 	}
 
-	static function shortenTitlePrefix($title){
+	public static function shortenTitlePrefix($title){
 		global $PREFIX_REGEX;
 
 		if (!$PREFIX_REGEX->match($title, $match) || !isset(self::$ALLOWED_PREFIXES[$match[1]]))
@@ -106,13 +103,13 @@ class Episodes {
 	/**
 	 * Loads the episode page
 	 *
-	 * @param null|int|Episode $force              If null: Parses $data and loads approperiate epaisode
+	 * @param null|string|Episode $force              If null: Parses $data and loads approperiate epaisode
 	 *                                             If array: Uses specified arra as Episode data
-	 * @param bool             $serverSideRedirect Handle redirection to the correct page on the server/client side
-	 * @param Post             $LinkedPost         Linked post (when sharing)
+	 * @param bool                $serverSideRedirect Handle redirection to the correct page on the server/client side
+	 * @param Post                $LinkedPost         Linked post (when sharing)
 	 */
-	static function loadPage($force = null, $serverSideRedirect = true, Post $LinkedPost = null){
-		global $Database, $CurrentEpisode;
+	public static function loadPage($force = null, $serverSideRedirect = true, Post $LinkedPost = null){
+		global $CurrentEpisode;
 
 		if ($force instanceof Episode)
 			$CurrentEpisode = $force;
@@ -174,8 +171,8 @@ class Episodes {
 	 * @param Episode $Ep
 	 * @return EpisodeVote|null
 	 */
-	static function getUserVote($Ep){
-		global $Database;
+	public static function getUserVote($Ep){
+
 		if (!Auth::$signed_in) return null;
 		/** @noinspection PhpIncompatibleReturnTypeInspection */
 		return EpisodeVote::find_for($Ep, Auth::$user);
@@ -188,15 +185,8 @@ class Episodes {
 	 *
 	 * @return array
 	 */
-	static function getVideoEmbeds($Episode):array {
-		global $Database;
-
-		/** @var $EpVideos EpisodeVideo[] */
-		$EpVideos = $Database
-			->whereEp($Episode)
-			->orderBy('provider', 'ASC')
-			->orderBy('part', 'ASC')
-			->get('episodes__videos');
+	public static function getVideoEmbeds($Episode):array {
+		$EpVideos = $Episode->videos;
 		$Parts = 0;
 		$embed = '';
 		if (!empty($EpVideos)){
@@ -205,10 +195,11 @@ class Episodes {
 				$Videos[$v->provider][$v->part] = $v;
 			// YouTube embed preferred
 			$Videos = !empty($Videos['yt']) ? $Videos['yt'] : $Videos['dm'];
+			/** @var $Videos EpisodeVideo[] */
 
 			$Parts = count($Videos);
 			foreach ($Videos as $v)
-				$embed .= "<div class='responsive-embed".($Episode->twoparter && $v->part!==1?' hidden':'')."'>".VideoProvider::getEmbed($v)."</div>";
+				$embed .= "<div class='responsive-embed".($Episode->twoparter && $v->part!==1?' hidden':'')."'>".VideoProvider::getEmbed($v).'</div>';
 		}
 		return [
 			'parts' => $Parts,
@@ -216,15 +207,16 @@ class Episodes {
 		];
 	}
 
-	static
-		$VIDEO_PROVIDER_NAMES = [
+	const
+		VIDEO_PROVIDER_NAMES = [
 			'yt' => 'YouTube',
 			'dm' => 'Dailymotion',
-	],
-		$PROVIDER_BTN_CLASSES = [
+		],
+		PROVIDER_BTN_CLASSES = [
 			'yt' => 'red typcn-social-youtube',
 			'dm' => 'darkblue typcn-video',
-	];
+		];
+
 	/**
 	 * Renders the HTML of the "Watch the Episode" section along with the buttons/links
 	 *
@@ -233,9 +225,7 @@ class Episodes {
 	 *
 	 * @return string
 	 */
-	static function getVideosHTML($Episode, bool $wrap = WRAP):string {
-		global $Database;
-
+	public static function getVideosHTML($Episode, bool $wrap = WRAP):string {
 		$HTML = '';
 		/** @var $Videos EpisodeVideo[] */
 		$Videos = $Episode->videos;
@@ -243,7 +233,7 @@ class Episodes {
 		if (!empty($Videos)){
 			$fullep = $Episode->twoparter ? 'Full episode' : '';
 
-			$HTML = ($wrap ? "<section class='episode'>" : '')."<h2>Watch the ".($Episode->isMovie?'Movie':'Episode')."</h2><p class='align-center actions'>";
+			$HTML = ($wrap ? "<section class='episode'>" : '').'<h2>Watch the '.($Episode->is_movie?'Movie':'Episode')."</h2><p class='align-center actions'>";
 			foreach ($Videos as $v){
 				$url = VideoProvider::getEmbed($v, VideoProvider::URL_ONLY);
 				$partText = $Episode->twoparter ? (
@@ -251,7 +241,7 @@ class Episodes {
 					? " (Part {$v->part})"
 					: " ($fullep)"
 				) : $fullep;
-				$HTML .= "<a class='btn typcn ".self::$PROVIDER_BTN_CLASSES[$v->provider]."' href='$url' target='_blank' rel='noopener'>".self::$VIDEO_PROVIDER_NAMES[$v->provider]."$partText</a>";
+				$HTML .= "<a class='btn typcn ".self::PROVIDER_BTN_CLASSES[$v->provider]."' href='$url' target='_blank' rel='noopener'>".self::VIDEO_PROVIDER_NAMES[$v->provider]."$partText</a>";
 			}
 			$HTML .= "<button class='green typcn typcn-eye showplayers'>Show on-site player</button><button class='orange typcn typcn-flag reportbroken'>Report broken video</button></p>";
 			if ($wrap)
@@ -269,9 +259,9 @@ class Episodes {
 	 *
 	 * @return string
 	 */
-	static function getTableTbody($Episodes = null, bool $areMovies = false):string {
+	public static function getTableTbody($Episodes = null, bool $areMovies = false):string {
 		if (empty($Episodes))
-			return "<tr class='empty align-center'><td colspan='3'><em>There are no ".($areMovies?'movies':'episodes')." to display</em></td></tr>";
+			return "<tr class='empty align-center'><td colspan='3'><em>There are no ".($areMovies?'movies':'episodes').' to display</em></td></tr>';
 
 		$Body = '';
 		$PathStart = '/episode/';
@@ -285,7 +275,7 @@ class Episodes {
 HTML;
 			$SeasonEpisode = $DataID = '';
 			$title = $Episode->formatTitle(AS_ARRAY);
-			if (!$Episode->isMovie){
+			if (!$Episode->is_movie){
 				$href = $PathStart.$title['id'];
 				if ($Episode->twoparter)
 					$title['episode'] .= '-'.(intval($title['episode'],10)+1);
@@ -307,7 +297,7 @@ HTML;
 				$star = '<span class="typcn typcn-home" title="Curently visible on the homepage"></span> ';
 			}
 			if (!$Episode->aired)
-				$star .= '<span class="typcn typcn-media-play-outline" title="'.($Episode->isMovie?'Movie':'Episode').' didn’t air yet, voting disabled"></span>&nbsp;';
+				$star .= '<span class="typcn typcn-media-play-outline" title="'.($Episode->is_movie?'Movie':'Episode').' didn’t air yet, voting disabled"></span>&nbsp;';
 
 			$airs = Time::tag($Episode->airs, Time::TAG_EXTENDED, Time::TAG_STATIC_DYNTIME);
 
@@ -323,98 +313,17 @@ HTML;
 	}
 
 	/**
-	 * Render upcoming episode HTML
-	 *
-	 * @param bool $wrap Whether to output the wrapper elements
-	 *
-	 * @return string
-	 */
-	static function getSidebarUpcoming($wrap = WRAP){
-		global $Database, $PREFIX_REGEX;
-
-		$HTML = [];
-		/** @var $UpcomingEpisodes Episode[] */
-		$UpcomingEpisodes = Episode::find('all', ['conditions' => 'airs > NOW()', 'order' => 'airs asc']);;
-		if (!empty($UpcomingEpisodes)){
-			foreach ($UpcomingEpisodes as $Episode){
-				$airtime = strtotime($Episode->airs);
-				$airs = date('c', $airtime);
-				$month = date('M', $airtime);
-				$day = date('j', $airtime);
-				$time = self::_eventTimeTag($airtime);
-
-				$title = !$Episode->isMovie
-					? $Episode->title
-					: (
-						$PREFIX_REGEX->match($Episode->title)
-						? Episodes::shortenTitlePrefix($Episode->title)
-						: "Movie: {$Episode->title}"
-					);
-
-				$type = $Episode->isMovie ? 'movie' : 'episode';
-				$HTML[] = [$airtime, "<li><div class='calendar'><span class='top $type'>$month</span><span class='bottom'>$day</span></div>".
-					"<div class='meta'><span class='title'><a href='{$Episode->toURL()}'>$title</a></span><span class='time'>Airs $time</span></div></li>"];
-			}
-		}
-		/** @var $UpcomingEvents Event[] */
-		$UpcomingEvents = $Database->where('starts_at > NOW()')->orWhere('ends_at > NOW()')->orderBy('starts_at', 'ASC')->get('events');
-		if (!empty($UpcomingEvents)){
-			foreach ($UpcomingEvents as $Event){
-				$time = strtotime($Event->starts_at);
-				$beforestartdate = time() < $time;
-				if (!$beforestartdate)
-					$time = strtotime($Event->ends_at);
-				$airs = date('c', $time);
-				$month = date('M', $time);
-				$day = date('j', $time);
-				$diff = Time::difference(time(), $time);
-				$Verbs = $beforestartdate ? 'Stars' : 'Ends';
-				$timetag = self::_eventTimeTag($time);
-
-				$HTML[] = [$time, "<li><div class='calendar'><span class='top event'>$month</span><span class='bottom'>$day</span></div>".
-					"<div class='meta'><span class='title'><a href='{$Event->toURL()}'>$Event->name</a></span><span class='time'>$Verbs $timetag</span></div></li>"];
-			}
-		}
-		if (empty($HTML))
-			return '';
-		usort($HTML,function($a, $b){
-			return $a[0] <=> $b[0];
-		});
-		foreach ($HTML as $i => $v)
-			$HTML[$i] = $v[1];
-		$HTML = implode('',$HTML);
-		return $wrap ? "<section id='upcoming'><h2>Happening soon</h2><ul>$HTML</ul></section>" : $HTML;
-	}
-
-	private static function _eventTimeTag(int $timestamp):string {
-		$diff = Time::difference(time(), $timestamp);
-		if ($diff['time'] < Time::IN_SECONDS['month']){
-			$ret = 'in ';
-			$tz = "(".date('T', $timestamp).")";
-			if (!empty($diff['day']))
-				$ret .=  "{$diff['day']} day".($diff['day']!==1?'s':'').' & ';
-			if (!empty($diff['hour']))
-				$ret .= "{$diff['hour']}:";
-			foreach (['minute', 'second'] as $k)
-				$diff[$k] = CoreUtils::pad($diff[$k]);
-			$timec = date('c',$timestamp);
-			return "<time datetime='$timec'>$ret{$diff['minute']}:{$diff['second']} $tz</time>";
-		}
-		else return Time::tag($timestamp);
-	}
-
-	/**
 	 * Render episode voting HTML
 	 *
 	 * @param Episode $Episode
 	 *
 	 * @return string
 	 */
-	static function getSidebarVoting(Episode $Episode):string {
-		$thing = $Episode->isMovie ? 'movie' : 'episode';
+	public static function getSidebarVoting(Episode $Episode):string {
+		$thing = $Episode->is_movie ? 'movie' : 'episode';
 		if (!$Episode->aired)
-			return "<p>Voting will start ".Time::tag($Episode->willair).", after the $thing had aired.</p>";
-		global $Database;
+			return '<p>Voting will start '.Time::tag($Episode->willair).", after the $thing had aired.</p>";
+
 		$HTML = '';
 
 		if (empty($Episode->score))
@@ -432,59 +341,24 @@ HTML;
 			$HTML .= "<br><p>What did <em>you</em> think about the $thing?</p>";
 			if (Auth::$signed_in)
 				$HTML .= "<button class='blue rate typcn typcn-star'>Cast your vote</button>";
-			else $HTML .= "<p><em>Sign in above to cast your vote!</em></p>";
+			else $HTML .= '<p><em>Sign in above to cast your vote!</em></p>';
 		}
-		else $HTML .= "<p>Your rating: ".CoreUtils::makePlural('muffin', $UserVote->vote, PREPEND_NUMBER).'</p>';
+		else $HTML .= '<p>Your rating: '.CoreUtils::makePlural('muffin', $UserVote->vote, PREPEND_NUMBER).'</p>';
 
 		return $HTML;
 	}
 
-	/**
-	 * Get a list of IDs for tags related to the episode
-	 *
-	 * @param Episode $Episode
-	 *
-	 * @return int[]
-	 */
-	static function getTagIDs(Episode $Episode):array {
-		global $Database;
-
-		if ($Episode->isMovie){
-			$MovieTagIDs = [];
-			$MovieTag = $Database->where('name',"movie{$Episode->episode}")->where('type','ep')->getOne('tags','tid');
-			if (!empty($MovieTag['tid']))
-				$MovieTagIDs[] = $MovieTag['tid'];
-			return $MovieTagIDs;
-		}
-		else {
-			$sn = CoreUtils::pad($Episode->season);
-			$en = CoreUtils::pad($Episode->episode);
-			$EpTagIDs = [];
-			$EpTagPt1 = $Database->where('name',"s{$sn}e{$en}")->where('type','ep')->getOne('tags','tid');
-			if (!empty($EpTagPt1))
-				$EpTagIDs[] = $EpTagPt1['tid'];
-			if ($Episode->twoparter){
-				$next_en = CoreUtils::pad($Episode->episode+1);
-				$EpTagPt2 = $Database->rawQuery("SELECT tid FROM tags WHERE name IN ('s{$sn}e{$next_en}', 's{$sn}e{$en}-{$next_en}') AND type = 'ep'");
-				foreach ($EpTagPt2 as $t)
-					$EpTagIDs[] = $t['tid'];
-			}
-			return $EpTagIDs;
-		}
-	}
-
-	static function getAppearancesSectionHTML(Episode $Episode):string {
-		global $Database;
-
+	public static function getAppearancesSectionHTML(Episode $Episode):string {
 		$HTML = '';
-		$EpTagIDs = Episodes::getTagIDs($Episode);
+		$EpTagIDs = $Episode->getTagIDs();
 		if (!empty($EpTagIDs)){
-			$TaggedAppearances = Appearance::find_by_sql(
-				"SELECT p.id, p.label, p.private
+			/** @var $TaggedAppearances Appearance[] */
+			$TaggedAppearances = DB::setModel('Appearance')->rawQuery(
+				'SELECT p.*
 				FROM tagged t
-				LEFT JOIN appearances p ON t.ponyid = p.id
-				WHERE t.tid IN (".implode(',',$EpTagIDs).") AND p.ishuman = ?
-				ORDER BY p.label", [$Episode->isMovie]);
+				LEFT JOIN appearances p ON t.appearance_id = p.id
+				WHERE t.tag_id IN ('.implode(',',$EpTagIDs).') AND p.ishuman = ?
+				ORDER BY p.label', [$Episode->is_movie]);
 
 			if (!empty($TaggedAppearances)){
 				$hidePreviews = UserPrefs::get('ep_noappprev');
@@ -495,7 +369,7 @@ HTML;
 				foreach ($TaggedAppearances as $p){
 					$safeLabel = $p->getSafeLabel();
 					if ($p->isPrivate(true)){
-						$preview = "<span class='typcn typcn-".($isStaff?'lock-closed':'time')." color-".(($isStaff?'orange':'darkblue'))."'></span> ";
+						$preview = "<span class='typcn typcn-".($isStaff?'lock-closed':'time').' color-'.($isStaff?'orange':'darkblue')."'></span> ";
 					}
 					else {
 						if ($hidePreviews)
@@ -514,22 +388,7 @@ HTML;
 		return $HTML;
 	}
 
-	/**
-	 * Gets the number of posts bound to an episode
-	 *
-	 * @param Episode $Episode
-	 *
-	 * @deprecated
-	 *
-	 * @return int
-	 */
-	static function getPostCount($Episode){
-		global $Database;
-
-		return $Episode->getPostCount();
-	}
-
-	static function validateSeason($allowMovies = false){
+	public static function validateSeason($allowMovies = false){
 		return (new Input('season','int', [
 			Input::IN_RANGE => [$allowMovies ? 0 : 1, 8],
 			Input::CUSTOM_ERROR_MESSAGES => [
@@ -539,7 +398,7 @@ HTML;
 			]
 		]))->out();
 	}
-	static function validateEpisode($optional = false, $EQG = false){
+	public static function validateEpisode($optional = false, $EQG = false){
 		$FieldName = $EQG ? 'Overall movie number' : 'Episode number';
 		return (new Input('episode','int', [
 			Input::IS_OPTIONAL => $optional,

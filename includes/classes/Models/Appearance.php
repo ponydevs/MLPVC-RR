@@ -3,49 +3,96 @@
 namespace App\Models;
 
 use ActiveRecord\Model;
+use App\Auth;
 use App\CGUtils;
 use App\CoreUtils;
+use App\DB;
 use App\Episodes;
 use App\Permission;
 use App\RegExp;
 
 /**
- * @property int         $id
- * @property int         $order
- * @property string      $label
- * @property string      $notes
- * @property string      $added
- * @property string      $owned_by
- * @property string      $last_cleared
- * @property bool        $ishuman
- * @property bool        $private
- * @property Cutiemark[] $cutiemarks
- * @property User|null   $owner
+ * @property int          $id
+ * @property int          $order
+ * @property string       $label
+ * @property string       $notes
+ * @property string       $added
+ * @property string       $owner_id
+ * @property string       $last_cleared
+ * @property bool         $ishuman
+ * @property bool         $private
+ * @property Cutiemark[]  $cutiemarks
+ * @property ColorGroup[] $color_groups
+ * @property User|null    $owner
+ * @property Appearance[] $related_appearances (Via magic method)
+ * @property Color[]      $preview_colors      (Via magic method)
+ * @property Tag[]        $tags
+ * @property Tagged[]     $tagged
  * @method static Appearance[] find_by_sql($sql, $values = null)
- * @method static Appearance find_by_owned_by_and_label(string $uuid, string $label)
+ * @method static Appearance find_by_owner_id_and_label(string $uuid, string $label)
  * @method static Appearance find_by_ishuman_and_label($ishuman, string $label)
  * @method static Appearance|Appearance[] find(...$args)
  */
 class Appearance extends Model {
-	static $has_many = [
-		['cutiemarks', 'foreign_key' => 'ponyid', 'order' => 'facing asc'],
-		['tags', 'through' => 'tagged', 'foreign_key' => 'ponyid', 'primary_key' => 'tid'],
+	/** @var int[] */
+
+	public static $has_many = [
+		['cutiemarks', 'foreign_key' => 'appearance_id', 'order' => 'facing asc'],
+		['tags', 'through' => 'tagged'],
+		['tagged', 'class' => 'Tagged'],
+		['color_groups', 'order' => '"order" asc, id asc'],
 	];
-	static $belongs_to = [
-		['owner', 'class' => 'User', 'foreign_key' => 'owned_by'],
+	public static $belongs_to = [
+		['owner', 'class' => 'User', 'foreign_key' => 'owner_id'],
 	];
+
+	public function get_related_appearances(){
+		return DB::rawQuery(
+			/** @lang PostgreSQL */
+			'(
+				SELECT p.id, p.order, p.label, r.mutual
+				FROM appearance_relations r
+				LEFT JOIN appearances p ON p.id = r.target
+				WHERE r.source = :id
+			)
+			UNION ALL
+			(
+				SELECT p.id, p.order, p.label, r.mutual
+				FROM appearance_relations r
+				LEFT JOIN appearances p ON p.id = r.source
+				WHERE r.target = :id AND mutual = true
+			)
+			ORDER BY "order"', [':id' => $AppearanceID]);
+	}
+
+	public function get_preview_colors(){
+		/** @var $arr Color[] */
+		$arr = DB::setModel('Color')->rawQuery(
+			'SELECT c.hex FROM colors c
+			LEFT JOIN color_groups cg ON c.group_id = cg.id
+			WHERE cg.appearance_id = ? AND c.hex IS NOT NULL
+			ORDER BY cg."order" ASC, c."order" ASC
+			LIMIT 4', [$this->id]);
+
+		if (!empty($arr))
+			usort($arr, function(Color $a, Color $b){
+				return CoreUtils::yiq($b->hex) <=> CoreUtils::yiq($a->hex);
+			});
+
+		return $arr;
+	}
 
 	/**
 	 * Replaces non-alphanumeric characters in the appearance label with dashes
 	 *
 	 * @return string
 	 */
-	function getSafeLabel():string {
+	public function getSafeLabel():string {
 		return CoreUtils::makeUrlSafe($this->label);
 	}
 
-	static function find_dupe(bool $creating, bool $personalGuide, array $data){
-		$firstcol = $personalGuide?'owned_by':'ishuman';
+	public static function find_dupe(bool $creating, bool $personalGuide, array $data){
+		$firstcol = $personalGuide?'owner_id':'ishuman';
 		$conds = [
 			"$firstcol = ? AND label = ?",
 			$data[$firstcol],
@@ -58,7 +105,6 @@ class Appearance extends Model {
 		return Appearance::find('first', [ 'conditions' => $conds ]);
 	}
 
-	/** @var int[] */
 	const SPRITE_SIZES = [
 		'REGULAR' => 600,
 		'SOURCE' => 300,
@@ -72,7 +118,7 @@ class Appearance extends Model {
 	 *
 	 * @return string
 	 */
-	function getSpriteURL(int $size = self::SPRITE_SIZES['REGULAR'], string $fallback = ''):string {
+	public function getSpriteURL(int $size = self::SPRITE_SIZES['REGULAR'], string $fallback = ''):string {
 		$fpath = SPRITE_PATH."{$this->id}.png";
 		if (file_exists($fpath))
 			return "/cg/v/{$this->id}s.png?s=$size&t=".filemtime($fpath);
@@ -86,7 +132,7 @@ class Appearance extends Model {
 	 *
 	 * @return string
 	 */
-	function getSpriteHTML(bool $canUpload):string {
+	public function getSpriteHTML(bool $canUpload):string {
 		$imgPth = self::getSpriteURL($this->id);
 		if (!empty($imgPth)){
 			$img = "<a href='$imgPth' target='_blank' title='Open image in new tab'><img src='$imgPth' alt='".CoreUtils::aposEncode($this->label)."'></a>";
@@ -108,7 +154,7 @@ class Appearance extends Model {
 	 *
 	 * @return string
 	 */
-	function getNotesHTML(bool $wrap = WRAP, bool $cmLink = true):string {
+	public function getNotesHTML(bool $wrap = WRAP, bool $cmLink = true):string {
 		global $EPISODE_ID_REGEX;
 
 		$hasNotes = !empty($this->notes);
@@ -118,18 +164,18 @@ class Appearance extends Model {
 				$this->notes = preg_replace_callback('/'.EPISODE_ID_PATTERN.'/',function($a){
 					$Ep = Episodes::getActual((int) $a[1], (int) $a[2]);
 					return !empty($Ep)
-						? "<a href='{$Ep->toURL()}'>".CoreUtils::aposEncode($Ep->formatTitle(AS_ARRAY,'title'))."</a>"
+						? "<a href='{$Ep->toURL()}'>".CoreUtils::aposEncode($Ep->formatTitle(AS_ARRAY,'title')).'</a>'
 						: "<strong>{$a[0]}</strong>";
 				},$this->notes);
 				$this->notes = preg_replace_callback('/'.MOVIE_ID_PATTERN.'/',function($a){
 					$Ep = Episodes::getActual(0, (int) $a[1], true);
 					return !empty($Ep)
-						? "<a href='{$Ep->toURL()}'>".CoreUtils::aposEncode($Ep->formatTitle(AS_ARRAY,'title'))."</a>"
+						? "<a href='{$Ep->toURL()}'>".CoreUtils::aposEncode($Ep->formatTitle(AS_ARRAY,'title')).'</a>'
 						: "<strong>{$a[0]}</strong>";
 				},$this->notes);
 				$this->notes = preg_replace_callback('/(?:^|[^\\\\])\K(?:#(\d+))\b/',function($a){
-					global $Database;
-					$Appearance = $Database->where('id', $a[1])->getOne('appearances');
+
+					$Appearance = \App\DB::where('id', $a[1])->getOne('appearances');
 					return (
 						!empty($Appearance)
 						? "<a href='/cg/v/{$Appearance->id}'>{$Appearance->label}</a>"
@@ -147,9 +193,9 @@ class Appearance extends Model {
 		return $wrap ? "<div class='notes'>$notes</div>" : $notes;
 	}
 
-	function isPrivate(bool $ignoreStaff = false):bool {
+	public function isPrivate(bool $ignoreStaff = false):bool {
 		$isPrivate = !empty($this->private);
-		if (!$ignoreStaff && (Permission::sufficient('staff') || (Auth::$signed_in ? $this->owned_by === Auth::$user->id : false)))
+		if (!$ignoreStaff && (Permission::sufficient('staff') || (Auth::$signed_in ? $this->owner_id === Auth::$user->id : false)))
 			$isPrivate = false;
 		return $isPrivate;
 	}
@@ -159,7 +205,7 @@ class Appearance extends Model {
 	 *
 	 * @return string
 	 */
-	function processLabel():string {
+	public function processLabel():string {
 		return preg_replace(new RegExp("'"),'’', $this->label);
 	}
 
@@ -169,8 +215,8 @@ class Appearance extends Model {
 	 *
 	 * @return string
 	 */
-	function getPendingPlaceholder():string {
-		return $this->isPrivate() ? "<div class='colors-pending'><span class='typcn typcn-time'></span> ".(isset($this->last_cleared) ? "This appearance is currently undergoing maintenance and will be available again shortly &mdash; ".Time::tag($this->last_cleared) :  "This appearance will be finished soon, please check back later &mdash; ".Time::tag($this->added)).'</div>' : false;
+	public function getPendingPlaceholder():string {
+		return $this->isPrivate() ? "<div class='colors-pending'><span class='typcn typcn-time'></span> ".(isset($this->last_cleared) ? 'This appearance is currently undergoing maintenance and will be available again shortly &mdash; '.Time::tag($this->last_cleared) :  'This appearance will be finished soon, please check back later &mdash; '.Time::tag($this->added)).'</div>' : false;
 	}
 
 	/**
@@ -178,25 +224,43 @@ class Appearance extends Model {
 	 *
 	 * @return string
 	 */
-	function getPreviewURL():string {
+	public function getPreviewURL():string {
 		$path = str_replace('#',$this->id,CGUtils::PREVIEW_SVG_PATH);
 		return "/cg/v/{$this->id}p.svg?t=".(file_exists($path) ? filemtime($path) : time());
 	}
 
-	function getLink():string {
+	public function getLink():string {
 		$safeLabel = $this->getSafeLabel();
-		$owner = isset($this->owned_by) ? '/@'.(User::find($this->owned_by)->name) : '';
+		$owner = isset($this->owner_id) ? '/@'.(User::find($this->owner_id)->name) : '';
 		return "$owner/cg/v/{$this->id}-$safeLabel";
 	}
 
 	/**
 	 * @return string
 	 */
-	function getLinkWithPreviewHTML():string {
+	public function getLinkWithLabelHTML():string {
+		$label = $this->processLabel();
+		$link = $this->getLink();
+		return "<a href='$link'>$label</a>";
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getLinkWithPreviewHTML():string {
 		$preview = $this->getPreviewURL();
 		$preview = "<img src='$preview' class='preview'>";
 		$label = $this->processLabel();
 		$link = $this->getLink();
 		return "<a href='$link'>$preview<span>$label</span></a>";
+	}
+
+	/**
+	 * @param Tag $tag
+	 *
+	 * @return bool Indicates whether the passed tag is used on the appearance
+	 */
+	public function is_tagged(Tag $tag):bool {
+		return Tagged::is($tag, $this);
 	}
 }

@@ -22,7 +22,7 @@ class AuthController extends Controller {
 		return isset($_GET['state']) && preg_match(new RegExp('^[a-z\d]+$','i'), $_GET['state'], $_match);
 	}
 
-	function auth(){
+	public function auth(){
 		CSRFProtection::detect();
 
 		if (!isset($_GET['error']) && (empty($_GET['code']) || empty($_GET['state'])))
@@ -35,10 +35,10 @@ class AuthController extends Controller {
 			$this->_error($err, $errdesc);
 		}
 		try {
-			Auth::$user = DeviantArt::getToken($_GET['code']);
+			Auth::$user = DeviantArt::getAccessToken($_GET['code']);
 		}
 		catch (CURLRequestException $e){
-			if (in_array($e->getCode(),[500,503])){
+			if (in_array($e->getCode(),[500,503],true)){
 				$this->_error('server_error');
 			}
 		}
@@ -61,9 +61,7 @@ class AuthController extends Controller {
 		else $this->_moveToState($_GET['state']);
 	}
 
-	function signout(){
-		global $Database;
-
+	public function signout(){
 		if (!Auth::$signed_in) Response::success("You've already signed out");
 		CSRFProtection::protect();
 
@@ -76,17 +74,18 @@ class AuthController extends Controller {
 			}
 		}
 
-		if (isset($_REQUEST['unlink']) || isset($_REQUEST['everywhere'])){
+		$unlink = isset($_REQUEST['unlink']);
+		if ($unlink || isset($_REQUEST['everywhere'])){
 			$col = 'user';
 			$val = Auth::$user->id;
 			$username = Users::validateName('username', null, true);
-			if (isset($username)){
-				if (!Permission::sufficient('staff') || isset($_REQUEST['unlink']))
+			if ($username !== null){
+				if ($unlink || !Permission::sufficient('staff'))
 					Response::fail();
 				/** @var $TargetUser User */
 				$TargetUser = Users::get($username, 'name');
 				if (empty($TargetUser))
-					Response::fail("Target user doesn’t exist");
+					Response::fail('Target user doesn’t exist');
 				if ($TargetUser->id !== Auth::$user->id)
 					$val = $TargetUser->id;
 				else unset($TargetUser);
@@ -97,7 +96,7 @@ class AuthController extends Controller {
 			$val = Auth::$session->id;
 		}
 
-		if (!$Database->where($col,$val)->delete('sessions'))
+		if (!\App\DB::where($col,$val)->delete('sessions'))
 			Response::fail('Could not remove information from database');
 
 		if (empty($TargetUser))

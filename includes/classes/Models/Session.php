@@ -3,28 +3,34 @@
 namespace App\Models;
 
 use ActiveRecord\Model;
+use ActiveRecord\DateTime;
 
 /**
- * @property int    $id
- * @property string $user_id
- * @property string $platform
- * @property string $browser_name
- * @property string $browser_ver
- * @property string $user_agent
- * @property string $token
- * @property string $access
- * @property string $refresh
- * @property string $expires
- * @property string $created
- * @property string $lastvisit
- * @property string $scope
- * @property User   $user
+ * @property int      $id
+ * @property string   $user_id
+ * @property string   $platform
+ * @property string   $browser_name
+ * @property string   $browser_ver
+ * @property string   $user_agent
+ * @property string   $token   (Cookie Auth)
+ * @property string   $access  (oAuth)
+ * @property string   $refresh (oAuth)
+ * @property string   $scope   (oAuth)
+ * @property DateTime $expires (oAuth)
+ * @property DateTime $created
+ * @property DateTime $lastvisit
+ * @property User     $user
  * @method static Session find_by_token(string $token)
+ * @method static Session find_by_access(string $access)
  * @method static Session find_by_refresh(string $code)
  */
 class Session extends Model {
-	static $belongs_to = [
-		['user', 'readonly' => true],
+	public static $belongs_to = [
+		['user'],
 	];
+
+	public function get_expired(){
+		return $this->expires->getTimestamp() < time();
+	}
 }
 

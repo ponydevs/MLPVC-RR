@@ -34,7 +34,7 @@ class Time {
 	 *
 	 * @return array
 	 */
-	static function difference(int $now, int $target):array {
+	public static function difference(int $now, int $target):array {
 		$nowdt = new \DateTime();
 		$nowdt->setTimestamp($now);
 		$targetdt = new \DateTime();
@@ -55,7 +55,7 @@ class Time {
 		];
 	}
 
-	static function differenceToString(array $diff, bool $short = false):string {
+	public static function differenceToString(array $diff, bool $short = false):string {
 		$diff_text = '';
 		foreach (array_keys(Time::IN_SECONDS) as $unit){
 			if (empty($diff[$unit]))
@@ -97,7 +97,7 @@ class Time {
 	 *
 	 * @return string
 	 */
-	static function format(int $time, string $format = 'c', $now = null):string {
+	public static function format(int $time, string $format = 'c', $now = null):string {
 		if ($format === self::FORMAT_READABLE)
 			return self::_from($time, $now);
 
@@ -118,19 +118,22 @@ class Time {
 	/**
 	 * Create <time datetime></time> tag
 	 *
-	 * @param string|int $timestamp
-	 * @param bool       $extended
-	 * @param string     $allowDyntime
-	 * @param int        $now           For use in tests
+	 * @param string|int|DateTime $timestamp
+	 * @param bool                $extended
+	 * @param string              $allowDyntime
+	 * @param int                 $now           For use in tests
 	 *
 	 * @return string
 	 */
-	static function tag($timestamp, bool $extended = false, string $allowDyntime = self::TAG_ALLOW_DYNTIME, ?int $now = null){
+	public static function tag($timestamp, bool $extended = false, string $allowDyntime = self::TAG_ALLOW_DYNTIME, ?int $now = null):string {
 		if ($timestamp instanceof DateTime)
-			$timestamp = (string)$timestamp;
-		if (is_string($timestamp))
-			$timestamp = strtotime($timestamp);
-		if ($timestamp === false) return null;
+			$timestamp = $timestamp->getTimestamp();
+		else if (is_string($timestamp)){
+			$ts = strtotime($timestamp);
+			if ($ts === false)
+				return '';
+			$timestamp = $ts;
+		}
 
 		$datetime = self::format($timestamp);
 		$full = self::format($timestamp, self::FORMAT_FULL);
@@ -148,6 +151,6 @@ class Time {
 		return
 			!$extended
 			? "<time datetime='$datetime' title='$full'>$text</time>"
-			:"<time datetime='$datetime'>$full</time>";
+			: "<time datetime='$datetime'>$full</time>";
 	}
 }

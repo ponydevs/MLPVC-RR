@@ -8,9 +8,9 @@ namespace App\Models\Logs;
  * @property User   $target
  */
 class Banish extends AbstractEntryType {
-	static $table_name = 'log__banish';
+	public static $table_name = 'log__banish';
 
-	static $belongs_to = [
+	public static $belongs_to = [
 		['target', 'class' => '\App\Models\User'],
 	];
 }

@@ -72,8 +72,11 @@ class Input {
 			};
 		else if (is_callable($type))
 			$this->_validator = $type;
-		else if (empty(self::$SUPPORTED_TYPES[$type]))
-			$this->_outputError('Validation failed: Input type is invalid');
+		else {
+			/** @var $type string */
+			if (empty(self::$SUPPORTED_TYPES[$type]))
+				$this->_outputError('Validation failed: Input type is invalid');
+		}
 		$this->_type = $type;
 
 		if (!is_string($key))
@@ -113,43 +116,43 @@ class Input {
 			return call_user_func_array($this->_validator, $call_params) ?? self::ERROR_NONE;
 		}
 		switch ($this->_type){
-			case "bool":
+			case 'bool':
 				if (!in_array($this->_value, ['1', '0', 'true', 'false', 'on', 'off']))
 					return self::ERROR_INVALID;
 				$this->_value = in_array($this->_value, ['1', 'true', 'on']);
 			break;
-			case "int":
-			case "vote":
-			case "float":
+			case 'int':
+			case 'vote':
+			case 'float':
 				if (!is_numeric($this->_value))
 					return self::ERROR_INVALID;
 				$this->_value = $this->_type === 'float'
-					? floatval($this->_value)
-					: intval($this->_value, 10);
+					? (float) $this->_value
+					: (int) $this->_value;
 				if ($this->_type === 'vote' && $this->_value === 0)
 					return self::ERROR_INVALID;
 				if (self::checkNumberRange($this->_value, $this->_range, $code))
 					return $code;
 			break;
-			case "text":
-			case "string":
+			case 'text':
+			case 'string':
 				if (!is_string($this->_value))
 					return self::ERROR_INVALID;
 				if (self::checkStringLength($this->_value, $this->_range, $code))
 					return $code;
 			break;
-			case "uuid":
+			case 'uuid':
 				if (!is_string($this->_value) || !preg_match(new RegExp('^[a-f0-9]{8}\-[a-f0-9]{4}\-4[a-f0-9]{3}\-[89ab][a-f0-9]{3}\-[a-f0-9]{12}$','i'), $this->_value))
 					return self::ERROR_INVALID;
 
 				$this->_value = strtolower($this->_value);
 			break;
-			case "username":
+			case 'username':
 				global $USERNAME_REGEX;
 				if (!is_string($this->_value) || !$USERNAME_REGEX->match($this->_value))
 					return self::ERROR_INVALID;
 			break;
-			case "url":
+			case 'url':
 				if (!is_string($this->_value))
 					return self::ERROR_INVALID;
 				global $REWRITE_REGEX;
@@ -162,13 +165,13 @@ class Input {
 						Response::fail('Link URL does not appear to be a valid link');
 				}
 			break;
-			case "int[]":
+			case 'int[]':
 				if (!is_string($this->_value) || !preg_match(new RegExp('^\d{1,12}(?:,\d{1,12})*$'), $this->_value))
 					return self::ERROR_INVALID;
 
 				$this->_value = explode(',',$this->_value);
 			break;
-			case "json":
+			case 'json':
 				try {
 					$this->_value = JSON::decode($this->_value);
 					if (empty($this->_value))
@@ -179,14 +182,14 @@ class Input {
 					return self::ERROR_INVALID;
 				}
 			break;
-			case "timestamp":
+			case 'timestamp':
 				$this->_value = strtotime($this->_value);
 				if ($this->_value === false)
 					return self::ERROR_INVALID;
 				if (self::checkNumberRange($this->_value, $this->_range, $code))
 					return $code;
 			break;
-			case "epid":
+			case 'epid':
 				$this->_value = Episode::parseID($this->_value);
 				if (empty($this->_value))
 					return self::ERROR_INVALID;
@@ -196,19 +199,21 @@ class Input {
 		return self::ERROR_NONE;
 	}
 
-	static function checkStringLength($value, $range, &$code){
+	public static function checkStringLength($value, $range, &$code){
 		return $code = self::_numberInRange(CoreUtils::length($value), $range);
 	}
-	static function checkNumberRange($value, $range, &$code = false){
+	public static function checkNumberRange($value, $range, &$code = false){
 		$result = self::_numberInRange($value, $range);
 		return $code === false ? $result === self::ERROR_RANGE : $result;
 	}
 
 	private static function _numberInRange($n, $range){
-		if (isset($range[0]) || isset($range[1])){
-			if (isset($range[0]) ? $n < $range[0] : $n < 1)
+		$has_min = isset($range[0]);
+		$has_max = isset($range[1]);
+		if ($has_min || $has_max){
+			if ($has_min ? $n < $range[0] : $n < 1)
 				return self::ERROR_RANGE;
-			if (isset($range[1]) && $n > $range[1])
+			if ($has_max && $n > $range[1])
 				return self::ERROR_RANGE;
 		}
 		return self::ERROR_NONE;
@@ -230,7 +235,7 @@ class Input {
 	}
 
 	public function __toString(){
-		return $this->out();
+		return (string) $this->out();
 	}
 
 	public function out(){

@@ -2,23 +2,30 @@
 
 namespace App\Models;
 
+use ActiveRecord\DateTime;
+
 /**
  * @inheritdoc
- * @property string $type
- * @property string $requested_by
- * @property User   $reserver
- * @property User   $requester
+ * @property string   $type
+ * @property string   $requested_by
+ * @property DateTime $requested_at
+ * @property User     $requester
  */
 class Request extends Post {
-	static $belongs_to = [
-		['reserver', 'class' => 'User', 'foreign_hey' => 'reserved_by'],
-		['requester', 'class' => 'User', 'foreign_hey' => 'requested_by'],
+	public static $belongs_to = [
+		['ep', 'class' => 'Episode', 'foreign_key' => ['season','episode']],
+		['reserver', 'class' => 'User', 'foreign_key' => 'reserved_by'],
+		['requester', 'class' => 'User', 'foreign_key' => 'requested_by'],
 	];
 
-	function get_isRequest():bool {
+	public static $alias_attribute = [
+		'posted' => 'requested_at',
+	];
+
+	public function get_is_request():bool {
 		return true;
 	}
-	function get_isReservation():bool {
+	public function get_is_reservation():bool {
 		return false;
 	}
 }

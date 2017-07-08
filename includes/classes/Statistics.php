@@ -9,7 +9,7 @@ class Statistics {
 	 * @param array $Labels Labels to append to data
 	 * @param array $Data   Data array reference
 	 */
-	static function processLabels(&$Labels, &$Data){
+	public static function processLabels(&$Labels, &$Data){
 		if (empty($Labels))
 			$Labels = [];
 		else {
@@ -27,7 +27,7 @@ class Statistics {
 	 * @param array $Dataset Array to process data into
 	 * @param array $Labels  Array of labels
 	 */
-	static function processUsageData($Rows, &$Dataset, $Labels){
+	public static function processUsageData($Rows, &$Dataset, $Labels){
 		$Dataset['labels'] = [];
 		$Dataset['data'] = [];
 
@@ -51,7 +51,8 @@ class Statistics {
 	 *
 	 * @param array  $Data
 	 */
-	static function postprocessTimedData(&$Data){
+	public static function postprocessTimedData(&$Data){
+		/** @noinspection ForeachSourceInspection */
 		foreach ($Data['labels'] as $k => $l)
 			$Data['labels'][$k] = strtotime($l);
 
@@ -69,11 +70,13 @@ class Statistics {
 				break;
 
 			array_splice($Data['labels'], $lix, 0, [$Data['labels'][$lix-1] + Time::IN_SECONDS['day']]);
-			foreach ($Data['datasets'] as &$set){
+		/** @noinspection ForeachSourceInspection */
+			foreach ($Data['datasets'] as &$set)
 				array_splice($set['data'], $lix, 0, [0]);
-			}
+			unset($set);
 		}
 
+		/** @noinspection ForeachSourceInspection */
 		foreach ($Data['labels'] as $k => $ts)
 			$Data['labels'][$k] = date('c',$ts);
 	}
