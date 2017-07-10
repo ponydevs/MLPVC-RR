@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "eb3a4b763b52b4bf7d1b4af747659fe7",
+    "content-hash": "30a887aab2d86f69bd52442efc7548f2",
     "packages": [
         {
             "name": "altorouter/altorouter",
@@ -1149,16 +1149,16 @@
         },
         {
             "name": "seinopsys/oauth2-deviantart",
-            "version": "v1.0.0",
+            "version": "v1.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/SeinopSys/oauth2-deviantart.git",
-                "reference": "d012873eb4fe145d9efd2e3c07ee1ad96626c6a6"
+                "reference": "ded30edf4c19a3d1a5e74226c3fbe9b34efd106d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/SeinopSys/oauth2-deviantart/zipball/d012873eb4fe145d9efd2e3c07ee1ad96626c6a6",
-                "reference": "d012873eb4fe145d9efd2e3c07ee1ad96626c6a6",
+                "url": "https://api.github.com/repos/SeinopSys/oauth2-deviantart/zipball/ded30edf4c19a3d1a5e74226c3fbe9b34efd106d",
+                "reference": "ded30edf4c19a3d1a5e74226c3fbe9b34efd106d",
                 "shasum": ""
             },
             "require": {
@@ -1187,7 +1187,7 @@
                 }
             ],
             "description": "DeviantArt OAuth 2.0 Client Provider for The PHP League OAuth2-Client",
-            "time": "2017-07-10T02:21:25+00:00"
+            "time": "2017-07-10T14:45:17+00:00"
         },
         {
             "name": "seinopsys/postgresql-database-class",
@@ -3007,7 +3007,14 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "php": ">=7.1"
+        "php": ">=7.1",
+        "ext-curl": "*",
+        "ext-dom": "*",
+        "ext-gd": "*",
+        "ext-json": "*",
+        "ext-mbstring": "*",
+        "ext-pdo_pgsql": "*",
+        "ext-xml": "*"
     },
     "platform-dev": []
 }
