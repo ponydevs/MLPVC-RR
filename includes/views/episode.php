@@ -24,7 +24,7 @@ use App\Models\Episode;
 				<a href="<?=$PrevEpisode->toURL()?>" class="btn link ep-button typcn typcn-media-rewind"><span class="typcn typcn-media-rewind"></span><span class="id"><?= $PrevEpisodeTitle['id']?>: </span><?=CoreUtils::cutoff(Episodes::removeTitlePrefix($PrevEpisodeTitle['title']),Episodes::TITLE_CUTOFF)?></a>
 			</div>
 <?php   }
-		else echo "&nbsp;"; ?></div>
+		else echo '&nbsp;'; ?></div>
 		<div class="main">
 			<div>
 				<h1><?=CoreUtils::escapeHTML($heading)?></h1>
@@ -41,7 +41,7 @@ use App\Models\Episode;
 				<a href="<?=$NextEpisode->toURL()?>" class="btn link ep-button typcn typcn-media-fast-forward"><span class="id"><?= $NextEpisodeTitle['id']?>: </span><?=CoreUtils::cutoff(Episodes::removeTitlePrefix($NextEpisodeTitle['title']),Episodes::TITLE_CUTOFF)?><span class="typcn typcn-media-fast-forward"></span></a>
 			</div>
 <?php   }
-		else echo "&nbsp;"; ?></div>
+		else echo '&nbsp;'; ?></div>
 	</div>
 	<?=Episodes::getVideosHTML($CurrentEpisode)?>
 	<section class="about-res">

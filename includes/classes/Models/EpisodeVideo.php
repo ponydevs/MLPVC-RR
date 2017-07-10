@@ -8,11 +8,11 @@ use App\VideoProvider;
 
 class EpisodeVideo extends AbstractFillable  {
 	/** @var int */
-	var $season, $episode, $part;
+	public $season, $episode, $part;
 	/** @var bool */
-	var $fullep;
+	public $fullep;
 	/** @var string */
-	var $provider,
+	public $provider,
 		$id,
 		$modified,
 		$not_broken_at;

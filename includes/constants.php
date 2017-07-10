@@ -8,7 +8,8 @@ define('PHPVER', '7.1');
 // Configuration \\
 define('HTTPS', !empty($_SERVER['HTTPS']));
 define('ABSPATH',(HTTPS?'https':'http').'://'.$_SERVER['SERVER_NAME'].'/');
-define('PROJPATH',realpath(dirname(__FILE__).'/../').DIRECTORY_SEPARATOR);
+/** @noinspection RealpathInSteamContextInspection */
+define('PROJPATH',realpath(__DIR__.'/../').DIRECTORY_SEPARATOR);
 define('APPATH',  PROJPATH.'www'.DIRECTORY_SEPARATOR);
 define('FSPATH',  PROJPATH.'fs'.DIRECTORY_SEPARATOR);
 define('INCPATH', PROJPATH.'includes'.DIRECTORY_SEPARATOR);
@@ -26,8 +27,7 @@ require INCPATH.'conf.php';
 // Some constants \\
 # integer - none
 # string
-define('OAUTH_REDIRECT_URI', '&redirect_uri='.urlencode(ABSPATH.'da-auth'));
-define('OAUTH_AUTHORIZATION_URL', "https://www.deviantart.com/oauth2/authorize?response_type=code&scope=user+browse&client_id=".DA_CLIENT.OAUTH_REDIRECT_URI);
+define('OAUTH_REDIRECT_URI', ABSPATH.'da-auth');
 define('SPRITE_PATH', FSPATH.'sprites/');
 # boolean
 define('AND_DIE', true); // CoreUtils::StatusCode

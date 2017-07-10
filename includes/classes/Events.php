@@ -5,7 +5,7 @@ namespace App;
 use App\Models\Event;
 
 class Events {
-	static function get($limit = null, string $columns = '*'){
+	public static function get($limit = null, string $columns = '*'){
 		global $Database;
 
 		return $Database->get('events',$limit,$columns);
@@ -13,11 +13,12 @@ class Events {
 
 	/**
 	 * @param \App\Models\Event[] $Events
-	 * @param bool $wrap
+	 * @param bool                $wrap
 	 *
 	 * @return string
+	 * @throws \Exception
 	 */
-	static function getListHTML(array $Events, bool $wrap = true):string {
+	public static function getListHTML(array $Events, bool $wrap = true):string {
 		$HTML = '';
 		if (!empty($Events)){
 			$isStaff = Permission::sufficient('staff');

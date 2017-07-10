@@ -28,7 +28,7 @@ class Posts {
 	 *
 	 * @return Post|Post[]
 	 */
-	static function get(Episode $Episode, int $only = null, bool $showBroken = false){
+	public static function get(Episode $Episode, int $only = null, bool $showBroken = false){
 		global $Database;
 
 		$return = [];
@@ -53,7 +53,7 @@ class Posts {
 	 *
 	 * @return string
 	 */
-	static function getMostRecentList($wrap = true){
+	public static function getMostRecentList($wrap = true){
 		global $Database;
 
 		$cols = 'id,season,episode,label,posted,preview,lock,deviation_id,reserved_by,finished_at,broken';
@@ -84,7 +84,7 @@ class Posts {
 	 * @param array                    $array Array to output the checked data into
 	 * @param Request|Reservation|null $Post  Optional, exsting post to compare new data against
 	 */
-	static function checkPostDetails($thing, array &$array, $Post = null){
+	public static function checkPostDetails($thing, array &$array, $Post = null){
 		$editing = !empty($Post);
 
 		$label = (new Input('label','string', [
@@ -112,11 +112,11 @@ class Posts {
 			}, [
 				Input::IS_OPTIONAL => true,
 				Input::CUSTOM_ERROR_MESSAGES => [
-					Input::ERROR_INVALID => "Request type (@value) is invalid"
+					Input::ERROR_INVALID => 'Request type (@value) is invalid'
 				]
 			]))->out();
 			if (!isset($type) && !$editing)
-				respnd("Missing request type");
+				Response::fail('Missing request type');
 
 			if (!$editing || (isset($type) && $type !== $Post->type))
 				CoreUtils::set($array,'type',$type);
@@ -158,7 +158,7 @@ class Posts {
 	 *
 	 * @return ImageProvider
 	 */
-	static function checkImage($image_url, $Post = null){
+	public static function checkImage($image_url, $Post = null){
 		try {
 			$Image = new ImageProvider($image_url);
 		}
@@ -194,7 +194,7 @@ class Posts {
 	 *
 	 * @return array
 	 */
-	static function checkRequestFinishingImage($ReserverID = null){
+	public static function checkRequestFinishingImage($ReserverID = null){
 		global $Database;
 		$deviation = (new Input('deviation','string', [
 			Input::CUSTOM_ERROR_MESSAGES => [
@@ -247,7 +247,7 @@ class Posts {
 	 *
 	 * @return string|array
 	 */
-	static function getRequestsSection($Requests, bool $returnArranged = false, bool $loaders = false){
+	public static function getRequestsSection($Requests, bool $returnArranged = false, bool $loaders = false){
 		$Arranged = ['finished' => !$returnArranged ? '' : []];
 		if (!$returnArranged){
 			$Arranged['unfinished'] = [];
@@ -311,7 +311,7 @@ HTML;
 	 *
 	 * @return string|array
 	 */
-	static function getReservationsSection($Reservations, bool $returnArranged = false, bool $loaders = false){
+	public static function getReservationsSection($Reservations, bool $returnArranged = false, bool $loaders = false){
 		$Arranged = [];
 		$Arranged['unfinished'] =
 		$Arranged['finished'] = !$returnArranged ? '' : [];
@@ -428,10 +428,10 @@ HTML;
 	 *
 	 * @return array|null
 	 */
-	static function getTransferAttempts(Post $Post, $type, $sent_by = null, $reserved_by = null, $cols = 'read_at,sent_at'){
+	public static function getTransferAttempts(Post $Post, $type, $sent_by = null, $reserved_by = null, $cols = 'read_at,sent_at'){
 		global $Database;
 		if (!empty($reserved_by))
-			$Database->where("user", $reserved_by);
+			$Database->where('user', $reserved_by);
 		if (!empty($sent_by))
 			$Database->where("data->>'user'", $sent_by);
 		return $Database
@@ -457,7 +457,7 @@ HTML;
 	 * @param string|null $sent_by
 	 * @param string|null $reserved_by
 	 */
-	static function clearTransferAttempts(Post $Post, string $type, string $reason, string $sent_by = null, $reserved_by = null){
+	public static function clearTransferAttempts(Post $Post, string $type, string $reason, string $sent_by = null, $reserved_by = null){
 		global $Database;
 
 		if (empty(self::TRANSFER_ATTEMPT_CLEAR_REASONS[$reason]))
@@ -495,8 +495,9 @@ HTML;
 	 * @param bool                $cachebust_url Append a random string to the image URL to force a re-fetch
 	 *
 	 * @return string
+	 * @throws \Exception
 	 */
-	static function getLi($Post, bool $view_only = false, bool $cachebust_url = false):string {
+	public static function getLi($Post, bool $view_only = false, bool $cachebust_url = false):string {
 		$finished = !empty($Post->deviation_id);
 		$isRequest = $Post->isRequest;
 		$type = $isRequest ? 'request' : 'reservation';
@@ -525,7 +526,7 @@ HTML;
 			$overdue = false;
 			$posted_at .= "Reserved $permalink";
 		}
-		$posted_at .= "</em>";
+		$posted_at .= '</em>';
 
 		$hide_reserved_status = !isset($Post->reserved_by) || ($overdue && !$isReserver && !$isStaff);
 		if (!empty($Post->reserved_by)){
@@ -547,15 +548,16 @@ HTML;
 					$Image = "<div class='image deviation'><a href='$ImageLink'><img src='{$Deviation->preview}$cachebust' alt='$alt'>";
 					if ($approved)
 						$Image .= "<span class='typcn typcn-tick' title='This submission has been accepted into the group gallery'></span>";
-					$Image .= "</a></div>";
+					$Image .= '</a></div>';
 				}
-				$finished_at = !empty($Post->finished_at) ? "<em class='finish-date'>Finished <strong>".Time::tag($Post->finished_at)."</strong></em>" : '';
+				$finished_at = !empty($Post->finished_at) ? "<em class='finish-date'>Finished <strong>".Time::tag($Post->finished_at).'</strong></em>'
+					: '';
 				$locked_at = '';
 				if ($approved){
 					global $Database;
 
 					$LogEntry = $Database->rawQuerySingle(
-						"SELECT l.timestamp".($isStaff?', l.initiator':'')."
+						'SELECT l.timestamp'.($isStaff?', l.initiator':'')."
 						FROM log__post_lock pl
 						LEFT JOIN log l ON l.reftype = 'post_lock' && l.refid = pl.entryid
 						WHERE type = ? && id = ?
@@ -567,7 +569,7 @@ HTML;
 						? ' by '.(
 							$approverIsNotReserver
 							? (
-								isset($Post->requested_by) && $LogEntry['initiator'] === $Post->requested_by
+								$Post->requested_by !== null && $LogEntry['initiator'] === $Post->requested_by
 								? 'the requester'
 								: Users::get($LogEntry['initiator'])->getProfileLink()
 							)
@@ -605,7 +607,7 @@ HTML;
 	 *
 	 * @return string
 	 */
-	static function getSuggestionLi(Request $Request):string {
+	public static function getSuggestionLi(Request $Request):string {
 		$escapedLabel = CoreUtils::aposEncode($Request->label);
 		$label = self::_getPostLabel($Request);
 		$time_ago = Time::tag($Request->posted);
@@ -634,14 +636,14 @@ HTML;
 	 *
 	 * @return string
 	 */
-	static function getPostReserveButton(Post $Post, $reservedBy, $view_only):string {
+	public static function getPostReserveButton(Post $Post, $reservedBy, $view_only):string {
 		if (empty($reservedBy))
 			return Permission::sufficient('member') && !$view_only ? "<button class='reserve-request typcn typcn-user-add'>Reserve</button>" : '';
 		else {
 			$dAlink = $reservedBy->getProfileLink(User::LINKFORMAT_FULL);
 			$vectorapp = $reservedBy->getVectorAppClassName();
 			if (!empty($vectorapp))
-				$vectorapp .= "' title='Uses ".$reservedBy->getVectorAppReadableName()." to make vectors";
+				$vectorapp .= "' title='Uses ".$reservedBy->getVectorAppReadableName().' to make vectors';
 			return "<div class='reserver$vectorapp'>$dAlink</div>";
 		}
 	}
@@ -728,7 +730,7 @@ HTML;
 	 *
 	 * @return array
 	 */
-	static function approve($type, $id, $notifyUserID = null){
+	public static function approve($type, $id, $notifyUserID = null){
 		global $Database;
 		if (!$Database->where('id', $id)->update("{$type}s", ['lock' => true]))
 			Response::dbError();
@@ -744,7 +746,7 @@ HTML;
 		return $postdata;
 	}
 
-	static function checkReserveAs(&$update){
+	public static function checkReserveAs(&$update){
 		if (Permission::sufficient('developer')){
 			$reserve_as = Posts::validatePostAs();
 			if (isset($reserve_as)){
@@ -759,7 +761,7 @@ HTML;
 		}
 	}
 
-	static function validateImageURL(){
+	public static function validateImageURL(){
 		return (new Input('image_url','string', [
 			Input::CUSTOM_ERROR_MESSAGES => [
 				Input::ERROR_MISSING => 'Please provide an image URL.',
@@ -767,13 +769,13 @@ HTML;
 		]))->out();
 	}
 
-	static function validatePostAs(){
+	public static function validatePostAs(){
 		return Users::validateName('post_as', [
 			Input::ERROR_INVALID => '"Post as" username (@value) is invalid',
 		]);
 	}
 
-	static function validateReservedAt(){
+	public static function validateReservedAt(){
 		return (new Input('reserved_at','timestamp', [
 			Input::IS_OPTIONAL => true,
 			Input::CUSTOM_ERROR_MESSAGES => [
@@ -782,7 +784,7 @@ HTML;
 		]))->out();
 	}
 
-	static function validateFinishedAt(){
+	public static function validateFinishedAt(){
 		return (new Input('finished_at','timestamp', [
 			Input::IS_OPTIONAL => true,
 			Input::CUSTOM_ERROR_MESSAGES => [

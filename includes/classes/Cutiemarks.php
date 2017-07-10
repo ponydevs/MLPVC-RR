@@ -14,7 +14,7 @@ class Cutiemarks {
 	 *
 	 * @return Cutiemark[]|null
 	 */
-	static function get(int $AppearanceID, string $cols = '*', bool $procSym = true){
+	public static function get(int $AppearanceID, string $cols = '*', bool $procSym = true){
 		global $Database;
 
 		/** @var $CMs Cutiemark[] */
@@ -25,7 +25,7 @@ class Cutiemarks {
 	}
 
 	/** @param Cutiemark[] $CMs */
-	static function processSymmetrical(&$CMs){
+	public static function processSymmetrical(&$CMs){
 		if (count($CMs) === 1 && is_null($CMs[0]->facing)){
 			$CMs[1] = new Cutiemark((array) $CMs[0]);
 			$CMs[0]->facing = 'left';
@@ -42,7 +42,7 @@ class Cutiemarks {
 	 *
 	 * @return string
 	 */
-	static function getListForAppearancePage($CutieMarks, $wrap = WRAP){
+	public static function getListForAppearancePage($CutieMarks, $wrap = WRAP){
 		$HTML = '';
 		foreach ($CutieMarks as $cm){
 			$HTML .= self::getListItemForAppearancePage($cm);
@@ -56,9 +56,10 @@ class Cutiemarks {
 	 * @param bool      $wrap
 	 *
 	 * @return string
+	 * @throws \Exception
 	 */
-	static function getListItemForAppearancePage(Cutiemark $cm, $wrap = WRAP){
-		$facing = isset($cm->facing) ? 'Facing '.CoreUtils::capitalize($cm->facing) : 'Symmetrical';
+	public static function getListItemForAppearancePage(Cutiemark $cm, $wrap = WRAP){
+		$facing = $cm->facing !== null ? 'Facing '.CoreUtils::capitalize($cm->facing) : 'Symmetrical';
 		$previewSVG = Appearances::getCMPreviewSVGURL($cm);
 		$preview = CoreUtils::aposEncode($cm->getPreviewURL());
 
@@ -83,7 +84,7 @@ HTML;
 	 *
 	 * @return bool
 	 */
-	static function postProcess(&$data, int $index):bool {
+	public static function postProcess(&$data, int $index):bool {
 		$favme = isset($_POST['favme'][$index]) ? trim($_POST['favme'][$index]) : null;
 		if (empty($favme)){
 			if ($index > 0)
@@ -108,14 +109,14 @@ HTML;
 		catch (MismatchedProviderException $e){
 			Response::fail('The cutie mark vector must be on DeviantArt, '.$e->getActualProvider().' links are not allowed');
 		}
-		catch (\Exception $e){ Response::fail("Cutie Mark link issue: ".$e->getMessage()); }
+		catch (\Exception $e){ Response::fail('Cutie Mark link issue: '.$e->getMessage()); }
 		if (!CoreUtils::isDeviationInClub($favme))
 			Response::fail('The cutie mark vector must be in the group gallery');
 		$data['favme'] = $favme;
 
 		if (!isset($_POST['favme_rotation'][$index]))
 			Response::fail('Preview rotation amount is missing');
-		$favme_rotation = intval($_POST['favme_rotation'][$index]);
+		$favme_rotation = (int) $_POST['favme_rotation'][$index];
 		if (!is_numeric($favme_rotation))
 			Response::fail('Preview rotation must be a number');
 		if ($favme_rotation < -180 || $favme_rotation > 180)
@@ -142,10 +143,11 @@ HTML;
 	 * @param Cutiemark[] $CMs
 	 * @return string
 	 */
-	static function convertDataForLogs($CMs):string {
+	public static function convertDataForLogs($CMs):string {
 		foreach ($CMs as $k => $v){
 			$CMs[$k] = (array)$v;
-			if (isset($v->ponyid))
+			if ($v->ponyid !== null)
+				/** @noinspection OffsetOperationsInspection */
 				unset($CMs[$k]['ponyid']);
 		}
 		return JSON::encode($CMs);

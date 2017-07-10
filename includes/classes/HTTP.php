@@ -15,21 +15,21 @@ class HTTP {
 	 *
 	 * @return array
 	 */
-	static function legitimateRequest($url, $cookies = null, $referrer = null, bool $skipBody = false){
+	public static function legitimateRequest($url, $cookies = null, $referrer = null, bool $skipBody = false){
 		$r = curl_init();
 		$curl_opt = [
 			CURLOPT_HTTPHEADER => [
-				"Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
-				"Accept-Encoding: gzip, deflate, sdch",
-				"Accept-Language: hu,en-GB;q=0.8,en;q=0.6",
-				"Connection: keep-alive",
+				'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+				'Accept-Encoding: gzip, deflate, sdch',
+				'Accept-Language: hu,en-GB;q=0.8,en;q=0.6',
+				'Connection: keep-alive',
 			],
 			CURLOPT_HEADER => true,
 			CURLOPT_URL => $url,
 			CURLOPT_BINARYTRANSFER => true,
 			CURLOPT_FOLLOWLOCATION => true,
 			CURLOPT_RETURNTRANSFER => true,
-			CURLOPT_USERAGENT => "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/45.0.5678.91 Safari/537.36"
+			CURLOPT_USERAGENT => 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/45.0.5678.91 Safari/537.36'
 		];
 		if (isset($referrer))
 			$curl_opt[CURLOPT_REFERER] = $referrer;
@@ -52,7 +52,7 @@ class HTTP {
 			throw new CURLRequestException(rtrim("cURL fail for URL \"$url\" (HTTP $responseCode); $curlError",' ;'), $responseCode);
 
 		global $http_response_header;
-		$http_response_header = array_map("rtrim",explode("\n",$responseHeaders));
+		$http_response_header = array_map('rtrim',explode("\n",$responseHeaders));
 
 		if (preg_match(new RegExp('Content-Encoding:\s?gzip'), $responseHeaders))
 			$response = gzdecode($response);
@@ -70,7 +70,7 @@ class HTTP {
 	 *
 	 * @return string|null
 	 */
-	static function findRedirectTarget($url, $referrer = null){
+	public static function findRedirectTarget($url, $referrer = null){
 		global $http_response_header;
 
 		$cookies = [];
@@ -94,7 +94,7 @@ class HTTP {
 	 *
 	 * @param string $url
 	 */
-	static function pushResource($url){
+	public static function pushResource($url){
 		self::$PUSHED_ASSETS[] = $url;
 		$headerContent = [];
 		foreach(self::$PUSHED_ASSETS as $asset)
@@ -164,6 +164,6 @@ class HTTP {
 	public static function redirect($url = '/', $http = self::REDIRECT_PERM){
 		header("Location: $url", true, $http);
 		$urlenc = CoreUtils::aposEncode($url);
-		die("Click <a href='$urlenc'>here</a> if you aren’t redirected.<script>location.replace(".JSON::encode($url).")</script>");
+		die("Click <a href='$urlenc'>here</a> if you aren’t redirected.<script>location.replace(".JSON::encode($url).')</script>');
 	}
 }

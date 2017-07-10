@@ -9,13 +9,13 @@ use App\Permission;
 class EventsController extends Controller {
 	public $do = 'events';
 
-	function list(){
+	public function list(){
 		global $Database;
 
-		$Pagination = new Pagination("events", 20, $Database->count('events'));
+		$Pagination = new Pagination('events', 20, $Database->count('events'));
 
 		CoreUtils::fixPath("/events/{$Pagination->page}");
-		$heading = "Events";
+		$heading = 'Events';
 		$title = "Page $Pagination->page - $heading";
 
 		$Events = Events::get($Pagination->getLimit());

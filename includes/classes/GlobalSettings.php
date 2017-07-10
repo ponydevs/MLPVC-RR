@@ -18,13 +18,13 @@ class GlobalSettings {
 	 *
 	 * @return mixed
 	 */
-	static function get(string $key, $default = false){
+	public static function get(string $key, $default = false){
 		global $Database;
 
 		if (isset(static::$_defaults[$key]))
 			$default = static::$_defaults[$key];
 		$q = $Database->where('key', $key)->getOne(static::$_db,'value');
-		return isset($q['value']) ? $q['value'] : $default;
+		return $q['value'] ?? $default;
 	}
 
 	/**
@@ -35,7 +35,7 @@ class GlobalSettings {
 	 *
 	 * @return bool
 	 */
-	static function set(string $key, $value):bool {
+	public static function set(string $key, $value):bool {
 		global $Database;
 
 		if (!isset(static::$_defaults[$key]))
@@ -48,8 +48,9 @@ class GlobalSettings {
 				$Database->delete(static::$_db);
 			else return $Database->update(static::$_db, ['value' => $value]);
 		}
-		else if ($value != $default)
+		else if ($value != $default){
 			return $Database->insert(static::$_db, ['key' => $key, 'value' => $value]);
+		}
 		else return true;
 	}
 
@@ -60,15 +61,15 @@ class GlobalSettings {
 	 *
 	 * @return mixed
 	 */
-	static function process(string $key){
+	public static function process(string $key){
 		$value = CoreUtils::trim($_POST['value']);
 
 		if ($value === '')
 			return null;
 
 		switch ($key){
-			case "reservation_rules":
-			case "about_reservations":
+			case 'reservation_rules':
+			case 'about_reservations':
 				$value = CoreUtils::sanitizeHtml($value, $key === 'reservation_rules'? ['li', 'ol'] : ['p']);
 			break;
 		}

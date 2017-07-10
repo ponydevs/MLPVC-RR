@@ -11,11 +11,15 @@ class Image {
 	 * @param string[] $allowedMimeTypes
 	 *
 	 * @return int[]
+	 * @throws \RuntimeException
 	 */
-	static function checkType($tmp, $allowedMimeTypes){
+	public static function checkType($tmp, $allowedMimeTypes){
 		$imageSize = getimagesize($tmp);
-		if (is_array($allowedMimeTypes) && !in_array($imageSize['mime'], $allowedMimeTypes))
-			Response::fail("This type of image is now allowed: ".$imageSize['mime']);
+		if (empty($imageSize))
+			throw new \RuntimeException("The size of image $tmp could not be retrieved");
+		/** @var $imageSize array */
+		if (is_array($allowedMimeTypes) && !in_array($imageSize['mime'], $allowedMimeTypes, true))
+			Response::fail('This type of image is now allowed: '.$imageSize['mime']);
 		list($width,$height) = $imageSize;
 
 		if ($width + $height === 0) Response::fail('The uploaded file is not an image');
@@ -32,7 +36,7 @@ class Image {
 	 * @param array $min
 	 * @param array $max
 	 */
-	static function checkSize($path, $width, $height, $min, $max){
+	public static function checkSize($path, $width, $height, $min, $max){
 		$tooSmall = $width < $min[0] || $height < $min[1];
 		$tooBig = $width > $max[0] || $height > $max[1];
 		if ($tooSmall || $tooBig){
@@ -49,7 +53,7 @@ class Image {
 					?'height is'
 					:'dimensions are'
 				)
-			).' too '.($tooBig?'big':'small').', please upload a '.($tooBig?'smaller':'larger')." image.<br>The ".($tooBig?'maximum':'minimum')." size is ".($tooBig?$max[0]:$min[0])."px wide by ".($tooBig?$max[1]:$min[1])."px tall, and you uploaded an image that’s {$width}px wide and {$height}px tall.</p>");
+			).' too '.($tooBig?'big':'small').', please upload a '.($tooBig?'smaller':'larger').' image.<br>The '.($tooBig?'maximum':'minimum').' size is '.($tooBig? $max[0]: $min[0]).'px wide by '.($tooBig? $max[1]: $min[1])."px tall, and you uploaded an image that’s {$width}px wide and {$height}px tall.</p>");
 		}
 	}
 
@@ -61,7 +65,7 @@ class Image {
 	 *
 	 * @return resource
 	 */
-	static function preserveAlpha($img, &$background = null) {
+	public static function preserveAlpha($img, &$background = null) {
 		$background = imagecolorallocatealpha($img, 0, 0, 0, 127);
 		imagecolortransparent($img, $background);
 		imagealphablending($img, false);
@@ -77,7 +81,7 @@ class Image {
 	 *
 	 * @return resource
 	 */
-	static function createTransparent($width, $height = null) {
+	public static function createTransparent($width, $height = null) {
 		if (!isset($height))
 			$height = $width;
 
@@ -94,7 +98,7 @@ class Image {
 	 *
 	 * @return resource
 	 */
-	static function createWhiteBG($width, $height = null) {
+	public static function createWhiteBG($width, $height = null) {
 		if (!isset($height))
 			$height = $width;
 		$png = imagecreatetruecolor($width, $height);
@@ -110,11 +114,11 @@ class Image {
 	 * @param resource   $image
 	 * @param int        $x
 	 * @param int        $y
-	 * @param int|array  $size
+	 * @param mixed      $size
 	 * @param string     $fill
 	 * @param string|int $outline
 	 */
-	static function drawSquare($image, $x, $y, $size, $fill, $outline){
+	public static function drawSquare($image, $x, $y, $size, $fill, $outline){
 		if (!empty($fill) && is_string($fill)){
 			$fill = CoreUtils::hex2Rgb($fill);
 			$fill = imagecolorallocate($image, $fill[0], $fill[1], $fill[2]);
@@ -125,10 +129,12 @@ class Image {
 		}
 
 		if (is_array($size)){
+			/** @var $size int[] */
 			$x2 = $x + $size[0];
 			$y2 = $y + $size[1];
 		}
 		else {
+			/** @var $size int */
 			$x2 = $x + $size;
 			$y2 = $y + $size;
 		}
@@ -147,11 +153,11 @@ class Image {
 	 * @param resource   $image
 	 * @param int        $x
 	 * @param int        $y
-	 * @param int|array  $size
+	 * @param mixed      $size
 	 * @param string     $fill
 	 * @param string|int $outline
 	 */
-	static function drawCircle($image, $x, $y, $size, $fill, $outline){
+	public static function drawCircle($image, $x, $y, $size, $fill, $outline){
 		if (!empty($fill)){
 			$fill = CoreUtils::hex2Rgb($fill);
 			$fill = imagecolorallocate($image, $fill[0], $fill[1], $fill[2]);
@@ -162,12 +168,13 @@ class Image {
 		}
 
 		if (is_array($size)){
-			$width = $size[0];
-			$height = $size[1];
+			/** @var $size int[] */
+			[$width,$height] = $size;
 			$x2 = $x + $width;
 			$y2 = $y + $height;
 		}
 		else {
+			/** @var $size int */
 			$x2 = $x + $size;
 			$y2 = $y + $size;
 			$width = $height = $size;
@@ -195,7 +202,7 @@ class Image {
 	 *
 	 * @return array
 	 */
-	static function writeOn($image, $text, $x, $fontsize, $fontcolor, &$origin, $FontFile, $box = null, $yOffset = 0){
+	public static function writeOn($image, $text, $x, $fontsize, $fontcolor, &$origin, $FontFile, $box = null, $yOffset = 0){
 		if (is_string($fontcolor))
 			$fontcolor = imagecolorallocate($image, 0, 0, 0);
 
@@ -221,7 +228,7 @@ class Image {
 	 *
 	 * @return array
 	 */
-	static function saneGetTTFBox($fontsize, $fontfile, $text){
+	public static function saneGetTTFBox($fontsize, $fontfile, $text){
 		/*
 		    imagettfbbox returns (x,y):
 		    6,7--4,5
@@ -253,7 +260,7 @@ class Image {
 	 * @param int      $w
 	 * @param int      $h
 	 */
-	static function copyExact($dest, $source, $x, $y, $w, $h){
+	public static function copyExact($dest, $source, $x, $y, $w, $h){
 		imagecopyresampled($dest, $source, $x, $y, $x, $y, $w, $h, $w, $h);
 	}
 
@@ -265,7 +272,7 @@ class Image {
 	 * @param string   $path
 	 * @param string   $FileRelPath
 	 */
-	static function outputPNG($resource, $path, $FileRelPath){
+	public static function outputPNG($resource, $path, $FileRelPath){
 		self::_output($resource, $path, $FileRelPath, function($fp,$fd){ imagepng($fd, $fp, 9, PNG_NO_FILTER); }, 'png');
 	}
 
@@ -276,7 +283,7 @@ class Image {
 	 * @param string $path
 	 * @param string $FileRelPath
 	 */
-	static function outputSVG($svgdata, $path, $FileRelPath){
+	public static function outputSVG($svgdata, $path, $FileRelPath){
 		self::_output($svgdata, $path, $FileRelPath, function($fp,$fd){ file_put_contents($fp, $fd); }, 'svg+xml');
 	}
 
@@ -312,7 +319,7 @@ class Image {
 	 * @param resource $BaseImage
 	 * @param array    $origin
 	 */
-	static function calcRedraw(&$OutWidth, &$OutHeight, $WidthIncrease, $HeightIncrease, &$BaseImage, $origin){
+	public static function calcRedraw(&$OutWidth, &$OutHeight, $WidthIncrease, $HeightIncrease, &$BaseImage, $origin){
 		$Redraw = false;
 		if ($origin['x']+$WidthIncrease > $OutWidth){
 			$Redraw = true;

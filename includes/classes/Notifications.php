@@ -36,7 +36,7 @@ class Notifications {
 		UNREAD_ONLY = 0,
 		READ_ONLY = 1;
 
-	static function get($UserID = null, $only = false){
+	public static function get($UserID = null, $only = false){
 		global $Database;
 
 		if (empty($UserID)){
@@ -57,7 +57,7 @@ class Notifications {
 		return $Database->where('user', $UserID)->get('notifications');
 	}
 
-	static function getHTML($Notifications, $wrap = true){
+	public static function getHTML($Notifications, $wrap = true){
 		global $Database;
 		$HTML = $wrap ? '<ul class="notif-list">' : '';
 
@@ -71,30 +71,30 @@ class Notifications {
 				$url = $Post->toLink($Episode);
 			}
 			switch ($n['type']){
-				case "post-finished":
+				case 'post-finished':
 					$HTML .= self::_getNotifElem("Your <a href='$url'>request</a> under $EpID has been fulfilled", $n);
 				break;
-				case "post-approved":
+				case 'post-approved':
 					$HTML .= self::_getNotifElem("A <a href='$url'>post</a> you reserved under $EpID has been added to the club gallery", $n);
 				break;
-				case "post-passon":
+				case 'post-passon':
 					$userlink = Users::get($data['user'])->getProfileLink();
 					$HTML .= self::_getNotifElem("$userlink is interested in finishing a <a href='$url'>post</a> you reserved under $EpID. Would you like to pass the reservation to them?", $n);
 				break;
-				case "post-passdeny":
-				case "post-passallow":
-				case "post-passfree":
-				case "post-passdel":
-				case "post-passsnatch":
-				case "post-passperm":
-					$userlink =Users::get($data['by'])->getProfileLink();
+				case 'post-passdeny':
+				case 'post-passallow':
+				case 'post-passfree':
+				case 'post-passdel':
+				case 'post-passsnatch':
+				case 'post-passperm':
+					$userlink = Users::get($data['by'])->getProfileLink();
 
 					$passaction = str_replace('post-pass','',$n['type']);
 					switch($passaction){
-						case "allow":
+						case 'allow':
 							$HTML .= self::_getNotifElem("Reservation transfer status: $userlink <strong class='color-lightgreen'>transferred</strong> the reservation of <a href='$url'>this post</a> under $EpID to you!", $n);
 						break;
-						case "deny":
+						case 'deny':
 							$HTML .= self::_getNotifElem("Reservation transfer status: $userlink <strong class='color-lightred'>denied</strong> transferring the reservation of <a href='$url'>this post</a> under $EpID to you.", $n);
 						break;
 						case 'free':
@@ -107,7 +107,7 @@ class Notifications {
 								case 'del':
 									$message .= " by $userlink";
 								break;
-								case "perm":
+								case 'perm':
 									$message = str_replace('the previous reserver', $userlink, $message);
 								break;
 							}
@@ -134,7 +134,7 @@ class Notifications {
 		return "<li>$html <span class='nobr'>&ndash; ".Time::tag(strtotime($n['sent_at']))."$actions</span></li>";
 	}
 
-	static function send($to, $type, $data){
+	public static function send($to, $type, $data){
 		global $Database;
 
 		if (empty(self::$_notifTypes[$type]))
@@ -166,11 +166,11 @@ class Notifications {
 		return 0;
 	}
 
-	static function markRead($nid, $action = null){
+	public static function markRead($nid, $action = null){
 		CoreUtils::socketEvent('mark-read', ['nid' => $nid, 'action' => $action]);
 	}
 
-	static function safeMarkRead($NotifID, $action = null){
+	public static function safeMarkRead($NotifID, $action = null){
 		try {
 			Notifications::markRead($NotifID, $action);
 		}

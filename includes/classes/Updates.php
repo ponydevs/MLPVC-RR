@@ -11,7 +11,7 @@ class Updates {
 	 *
 	 * @return array
 	 */
-	static function get($PonyID, $count = null){
+	public static function get($PonyID, $count = null){
 		global $Database;
 
 		$LIMIT = '';

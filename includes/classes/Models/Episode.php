@@ -183,7 +183,7 @@ class Episode extends AbstractFillable {
 	 * @param string $id
 	 * @return null|array
 	 */
-	static function parseID($id){
+	public static function parseID($id){
 		if (empty($id))
 			return null;
 

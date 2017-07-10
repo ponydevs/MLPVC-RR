@@ -21,7 +21,7 @@ class EventController extends Controller {
 
 	/** @var bool */
 	private $_eventPage;
-	function __construct(){
+	public function __construct(){
 		parent::__construct();
 
 		$this->_eventPage = isset($_POST['EVENT_PAGE']);
@@ -33,14 +33,14 @@ class EventController extends Controller {
 		$Event = Event::get($id);
 		if (empty($Event)){
 			if (POST_REQUEST)
-				Response::fail("Event not found");
+				Response::fail('Event not found');
 			CoreUtils::notFound();
 		}
 
 		$this->_event = $Event;
 	}
 
-	function index($params){
+	public function index($params){
 		$this->_getEvent($params['id']);
 
 		$heading = $this->_event->name;
@@ -63,7 +63,7 @@ class EventController extends Controller {
 		], $this);
 	}
 
-	function _addEdit($params, $action){
+	public function _addEdit($params, $action){
 		if (!Permission::sufficient('staff'))
 			Response::fail();
 		CSRFProtection::protect();
@@ -140,7 +140,8 @@ class EventController extends Controller {
 		$update['vote_role'] = $vote_role;
 
 		$max_entries = (new Input('max_entries',function(&$value, $range){
-			if (preg_match(new RegExp('^unlimited$','i'),$value) || $value == 0){
+			/** @noinspection TypeUnsafeComparisonInspection */
+			if ($value == 0 || preg_match(new RegExp('^unlimited$','i'),$value)){
 				$value = null;
 				return Input::ERROR_NONE;
 			}
@@ -200,7 +201,7 @@ class EventController extends Controller {
 		}
 	}
 
-	function get($params){
+	public function get($params){
 		if (!Permission::sufficient('staff'))
 			Response::fail();
 		CSRFProtection::protect();
@@ -213,15 +214,15 @@ class EventController extends Controller {
 		Response::done($resp);
 	}
 
-	function set($params){
+	public function set($params){
 		$this->_addEdit($params, 'set');
 	}
 
-	function add($params){
+	public function add($params){
 		$this->_addEdit($params, 'add');
 	}
 
-	function delete($params){
+	public function delete($params){
 		if (!Permission::sufficient('staff'))
 			Response::fail();
 		CSRFProtection::protect();
@@ -239,7 +240,7 @@ class EventController extends Controller {
 		Response::done();
 	}
 
-	function finalize($params){
+	public function finalize($params){
 		if (!Permission::sufficient('staff'))
 			Response::fail();
 		CSRFProtection::protect();
@@ -273,7 +274,7 @@ class EventController extends Controller {
 		catch (MismatchedProviderException $e){
 			Response::fail('The deviation must be on DeviantArt, '.$e->getActualProvider().' links are not allowed');
 		}
-		catch (\Exception $e){ Response::fail("Deviation link issue: ".$e->getMessage()); }
+		catch (\Exception $e){ Response::fail('Deviation link issue: '.$e->getMessage()); }
 		if (!CoreUtils::isDeviationInClub($favme))
 			Response::fail('The deviation must be in the group gallery');
 		$data['result_favme'] = $favme;
@@ -285,7 +286,7 @@ class EventController extends Controller {
 		Response::done();
 	}
 
-	function checkEntries($params){
+	public function checkEntries($params){
 		global $Database;
 
 		if (!Auth::$signed_in)

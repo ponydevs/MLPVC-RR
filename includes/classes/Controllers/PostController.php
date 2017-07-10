@@ -21,20 +21,20 @@ use App\Users;
 use ElephantIO\Exception\ServerConnectionFailureException;
 
 class PostController extends Controller {
-	function _authorize(){
+	public function _authorize(){
 		if (!Auth::$signed_in)
 			Response::fail();
 		CSRFProtection::protect();
 	}
 
-	function _authorizeMember(){
+	public function _authorizeMember(){
 		$this->_authorize();
 
 		if (Permission::insufficient('member'))
 			Response::fail();
 	}
 
-	function reload($params){
+	public function reload($params){
 		global $Database;
 
 		$thing = $params['thing'];
@@ -79,12 +79,12 @@ class PostController extends Controller {
 		]);
 	}
 
-	function _checkPostEditPermission($thing){
+	public function _checkPostEditPermission($thing){
 		if (!(Permission::sufficient('staff') || ($thing === 'request' && empty($this->_post->reserved_by) && $this->_post->requested_by === Auth::$user->id)))
 			Response::fail();
 	}
 
-	function action($params){
+	public function action($params){
 		global $Database;
 
 		$this->_authorizeMember();
@@ -94,7 +94,7 @@ class PostController extends Controller {
 		$this->_initPost($action, $params);
 
 		switch ($action){
-			case "get":
+			case 'get':
 				$this->_checkPostEditPermission($thing);
 
 				$response = [
@@ -113,7 +113,7 @@ class PostController extends Controller {
 				}
 				Response::done($response);
 			break;
-			case "set":
+			case 'set':
 				$this->_checkPostEditPermission($thing);
 
 				$update = [];
@@ -143,7 +143,7 @@ class PostController extends Controller {
 
 				Response::done($response);
 			break;
-			case "unbreak":
+			case 'unbreak':
 				if (Permission::insufficient('staff'))
 					Response::fail();
 
@@ -214,7 +214,7 @@ class PostController extends Controller {
 
 				$this->_post->lock = true;
 				$response = [
-					'message' => "The image appears to be in the group gallery and as such it is now marked as approved.",
+					'message' => 'The image appears to be in the group gallery and as such it is now marked as approved.',
 				];
 				try {
 					CoreUtils::socketEvent('post-update',[
@@ -339,7 +339,7 @@ class PostController extends Controller {
 				];
 				$message = '';
 				if (isset($update['lock'])){
-					$message .= "<p>The image appears to be in the group gallery already, so we marked it as approved.</p>";
+					$message .= '<p>The image appears to be in the group gallery already, so we marked it as approved.</p>';
 
 					Logs::logAction('post_lock',$postdata);
 					if ($this->_post->reserved_by !== Auth::$user->id)
@@ -349,7 +349,7 @@ class PostController extends Controller {
 					$u = Users::get($this->_post->requested_by,'id','name,id');
 					if (!empty($u) && $this->_post->requested_by !== Auth::$user->id){
 						$notifSent = Notifications::send($u->id, 'post-finished', $postdata);
-						$message .= "<p><strong>{$u->name}</strong> ".($notifSent === 0?'has been notified':'will receive a notification shortly').'.'.(is_string($notifSent)?"</p><div class='notice fail'><strong>Error:</strong> $notifSent":'')."</div>";
+						$message .= "<p><strong>{$u->name}</strong> ".($notifSent === 0?'has been notified':'will receive a notification shortly').'.'.(is_string($notifSent)?"</p><div class='notice fail'><strong>Error:</strong> $notifSent":'').'</div>';
 					}
 				}
 
@@ -444,7 +444,7 @@ class PostController extends Controller {
 		return Posts::checkImage(Posts::validateImageURL());
 	}
 
-	function checkImage(){
+	public function checkImage(){
 		$this->_authorize();
 
 		$Image = $this->_checkImage();
@@ -455,7 +455,7 @@ class PostController extends Controller {
 		]);
 	}
 
-	function add(){
+	public function add(){
 		global $Database;
 
 		$this->_authorize();
@@ -534,7 +534,7 @@ class PostController extends Controller {
 
 	/** @var Request|Reservation */
 	private $_post;
-	function _initPost($action, $params){
+	public function _initPost($action, $params){
 		global $Database;
 
 		$thing = $params['thing'];
@@ -546,7 +546,7 @@ class PostController extends Controller {
 			Response::fail('This post has been approved and cannot be edited or removed.');
 	}
 
-	function deleteRequest($params){
+	public function deleteRequest($params){
 		global $Database;
 
 		$this->_authorize();
@@ -593,7 +593,7 @@ class PostController extends Controller {
 		Response::done();
 	}
 
-	function queryTransfer($params){
+	public function queryTransfer($params){
 		if (Permission::insufficient('member'))
 			Response::fail();
 
@@ -622,7 +622,7 @@ class PostController extends Controller {
 		if ($reserved_by === Auth::$user->id)
 			Response::fail("You've already reserved this {$params['thing']}");
 		if ($this->_post->isOverdue()){
-			$message = "This post was reserved ".Time::tag($this->_post->reserved_at)." so anyone’s free to reserve it now.";
+			$message = 'This post was reserved '.Time::tag($this->_post->reserved_at).' so anyone’s free to reserve it now.';
 			$checkIfUserCanReserve($message, $data);
 			Response::fail($message, $data);
 		}
@@ -648,7 +648,7 @@ class PostController extends Controller {
 		Response::success("A notification has been sent to $ReserverLink, please wait for them to react.<br>If they don’t visit the site often, it’d be a good idea to send them a note asking them to consider your inquiry.");
 	}
 
-	function setImage($params){
+	public function setImage($params){
 		global $Database;
 
 		$this->_authorize();
@@ -704,7 +704,7 @@ class PostController extends Controller {
 		Response::done($wasBroken ? ['li' => Posts::getLi($this->_post)] : ['preview' => $Image->preview]);
 	}
 
-	function fixStash($params){
+	public function fixStash($params){
 		global $FULLSIZE_MATCH_REGEX, $Database;
 
 		$this->_authorize();
@@ -759,7 +759,7 @@ class PostController extends Controller {
 		Response::done(['fullsize' => $fullsize]);
 	}
 
-	function addReservation(){
+	public function addReservation(){
 		global $Database;
 
 		$this->_authorize();
@@ -810,7 +810,7 @@ class PostController extends Controller {
 		Response::success('Reservation added');
 	}
 
-	function share($params){
+	public function share($params){
 		global $Database;
 
 		$params['thing'] .= (['req' => 'uest', 'res' => 'ervation'])[$params['thing']];

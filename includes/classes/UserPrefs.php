@@ -28,7 +28,7 @@ class UserPrefs extends GlobalSettings {
 	 *
 	 * @return mixed
 	 */
-	static function get(string $key, $for = null){
+	public static function get(string $key, $for = null){
 		global $Database;
 		if (empty($for) && Auth::$signed_in)
 			$for = Auth::$user->id;
@@ -55,7 +55,7 @@ class UserPrefs extends GlobalSettings {
 	 *
 	 * @return bool
 	 */
-	static function set(string $key, $value, $for = null):bool {
+	public static function set(string $key, $value, $for = null):bool {
 		global $Database;
 		if (empty($for)){
 			if (!Auth::$signed_in)
@@ -69,11 +69,11 @@ class UserPrefs extends GlobalSettings {
 
 		if ($Database->where('key', $key)->where('user', $for)->has(static::$_db)){
 			$Database->where('key', $key)->where('user', $for);
-			if ($value == $default)
+			if ($value === $default)
 				return $Database->delete(static::$_db);
 			else return $Database->update(static::$_db, ['value' => $value]);
 		}
-		else if ($value != $default)
+		else if ($value !== $default)
 			return $Database->insert(static::$_db, ['user' => Auth::$user->id, 'key' => $key, 'value' => $value]);
 		else return true;
 	}
@@ -85,11 +85,11 @@ class UserPrefs extends GlobalSettings {
 	 *
 	 * @return mixed
 	 */
-	static function process(string $key){
+	public static function process(string $key){
 		$value = isset($_POST['value']) ? CoreUtils::trim($_POST['value']) : null;
 
 		switch ($key){
-			case "cg_itemsperpage":
+			case 'cg_itemsperpage':
 				$thing = 'Color Guide items per page';
 				if (!is_numeric($value))
 					throw new \Exception("$thing must be a number");
@@ -97,18 +97,18 @@ class UserPrefs extends GlobalSettings {
 				if ($value < 7 || $value > 20)
 					throw new \Exception("$thing must be between 7 and 20");
 			break;
-			case "p_vectorapp":
+			case 'p_vectorapp':
 				if (!empty($value) && !isset(CoreUtils::$VECTOR_APPS[$value]))
-					throw new \Exception("The specified app is invalid");
+					throw new \Exception('The specified app is invalid');
 			break;
-			case "p_hidediscord":
-			case "cg_hidesynon":
-			case "cg_hideclrinfo":
-			case "cg_fulllstprev":
+			case 'p_hidediscord':
+			case 'cg_hidesynon':
+			case 'cg_hideclrinfo':
+			case 'cg_fulllstprev':
 				$value = $value ? 1 : 0;
 			break;
 
-			case "discord_token":
+			case 'discord_token':
 				Response::fail("You cannot change the $key setting");
 		}
 

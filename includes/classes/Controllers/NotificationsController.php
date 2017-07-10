@@ -15,7 +15,7 @@ use App\Models\Post;
 class NotificationsController extends Controller {
 	public $do = 'notifications';
 
-	function __construct(){
+	public function __construct(){
 		parent::__construct();
 
 		if (!Auth::$signed_in)
@@ -23,7 +23,7 @@ class NotificationsController extends Controller {
 		CSRFProtection::protect();
 	}
 
-	function get(){
+	public function get(){
 		try {
 			$Notifications = Notifications::getHTML(Notifications::get(null,Notifications::UNREAD_ONLY),NOWRAP);
 			Response::done(['list' => $Notifications]);
@@ -34,7 +34,7 @@ class NotificationsController extends Controller {
 		}
 	}
 
-	function markRead($params){
+	public function markRead($params){
 		global $Database;
 
 		$nid = intval($params['id'], 10);
@@ -56,7 +56,7 @@ class NotificationsController extends Controller {
 			/** @var $data array */
 			$data = !empty($Notif['data']) ? JSON::decode($Notif['data']) : null;
 			switch ($Notif['type']){
-				case "post-passon":
+				case 'post-passon':
 					/** @var $Post Post */
 					$Post = $Database->where('id', $data['id'])->getOne("{$data['type']}s");
 					if (empty($Post)){
@@ -64,13 +64,13 @@ class NotificationsController extends Controller {
 						Response::fail("The {$data['type']} doesn’t exist or has been deleted");
 					}
 					if ($read_action === 'true'){
-						if ($Post['reserved_by'] !== Auth::$user->id){
+						if ($Post->reserved_by !== Auth::$user->id){
 							Posts::clearTransferAttempts($Post, $data['type'], 'perm', null, Auth::$user->id);
 							Response::fail('You are not allowed to transfer this reservation');
 						}
 
 						Notifications::safeMarkRead($Notif['id'], $read_action);
-						Notifications::send($data['user'], "post-passallow", [
+						Notifications::send($data['user'], 'post-passallow', [
 							'id' => $data['id'],
 							'type' => $data['type'],
 							'by' => Auth::$user->id,
@@ -90,7 +90,7 @@ class NotificationsController extends Controller {
 					}
 					else {
 						Notifications::safeMarkRead($Notif['id'], $read_action);
-						Notifications::send($data['user'], "post-passdeny", [
+						Notifications::send($data['user'], 'post-passdeny', [
 							'id' => $data['id'],
 							'type' => $data['type'],
 							'by' => Auth::$user->id,

@@ -8,7 +8,7 @@ namespace App;
  */
 class Pagination {
 	public $maxPages, $page, $HTML, $itemsPerPage;
-	var $_context, $_wrap, $_basePath;
+	public $_context, $_wrap, $_basePath;
 
 	/**
 	 * Creates an instance of the class and return the generated HTML
@@ -21,11 +21,12 @@ class Pagination {
 	 *
 	 * @return Pagination
 	 */
-	function __construct($basePath, $ItemsPerPage, $EntryCount = null, $wrap = true, $context = 2){
+	public function __construct($basePath, $ItemsPerPage, $EntryCount = null, $wrap = true, $context = 2){
 		global $data;
 
 		foreach (['basePath', 'ItemsPerPage'] as $var)
-			if (!isset($$var))
+			/** @noinspection IssetArgumentExistenceInspection */
+			if ($$var === null)
 				trigger_error("Missing variable \$$var", E_USER_ERROR);
 
 		$this->itemsPerPage = (int) $ItemsPerPage;
@@ -49,10 +50,11 @@ class Pagination {
 	 * Collect page numbers for pagination
 	 *
 	 * @return array
+	 * @throws \RuntimeException
 	 */
 	private function _getLinks(){
-		if (!isset($this->maxPages))
-			throw new \Exception('$this->maxPages must be defined');
+		if ($this->maxPages === null)
+			throw new \RuntimeException('$this->maxPages must be defined');
 
 		return array_unique(
 			array_merge(
@@ -66,9 +68,9 @@ class Pagination {
 		);
 	}
 
-	private function _toLink($i, &$currentIndex = null, $nr = null){
-		$current = $i == $this->page;
-		if (isset($currentIndex) && $current)
+	private function _toLink(int $i, &$currentIndex = null, $nr = null){
+		$current = $i === (int) $this->page;
+		if ($currentIndex !== null && $current)
 			$currentIndex = $nr;
 		return '<li>'.(
 			!$current
@@ -83,8 +85,8 @@ class Pagination {
 	 * @return string
 	 */
 	public function __toString(){
-		if (!isset($this->maxPages))
-			throw new \Exception('$this->maxPages must be defined');
+		if ($this->maxPages === null)
+			error_log(__METHOD__.": maxPages peroperty must be defined\nData:\n".JSON::encode((array)$this, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
 
 		if (!($this->page === 1 && $this->maxPages === 1)){
 			$Items = [];
@@ -98,15 +100,18 @@ class Pagination {
 					$nr++;
 				}
 			}
-			else foreach ($this->_getLinks() as $i) {
-				if ($i != min($previousPage + 1, $this->maxPages)){
-					$diff = $i - ($previousPage + 1);
-					$Items[$nr++] = $diff > 1 ? "<li class='spec'><a>&hellip;</a></li>" : $this->_toLink($previousPage+1);
-				}
-				$previousPage = $i;
+			else {
+				/** @noinspection MagicMethodsValidityInspection */
+				foreach ($this->_getLinks() as $i) {
+					if ($i !== min($previousPage + 1, $this->maxPages)){
+						$diff = $i - ($previousPage + 1);
+						$Items[$nr++] = $diff > 1 ? "<li class='spec'><a>&hellip;</a></li>" : $this->_toLink($previousPage+1);
+					}
+					$previousPage = $i;
 
-				$Items[$nr] = $this->_toLink($i, $currentIndex, $nr);
-				$nr++;
+					$Items[$nr] = $this->_toLink($i, $currentIndex, $nr);
+					$nr++;
+				}
 			}
 
 			$Items = implode('',$Items);
@@ -129,7 +134,7 @@ class Pagination {
 	 * @param string $output The HTML of the paginated content
 	 * @param string $update The CSS selector specifying which element to place $output in
 	 */
-	function respond($output, $update){
+	public function respond($output, $update){
 		$RQURI = rtrim(preg_replace(new RegExp('js=true(?:&|$)'),'',$_SERVER['REQUEST_URI']),'?');
 		Response::done([
 			'output' => $output,
@@ -145,7 +150,7 @@ class Pagination {
 	 *
 	 * @return int[]
 	 */
-	function getLimit(){
+	public function getLimit(){
 		$arr = $this->toElastic();
 		return [$arr['from'], $arr['size']];
 	}
@@ -155,7 +160,7 @@ class Pagination {
 	 *
 	 * @return string
 	 */
-	function getLimitString(){
+	public function getLimitString(){
 		$limit = $this->getLimit();
 		return "LIMIT $limit[1] OFFSET $limit[0]";
 	}

@@ -6,7 +6,7 @@ use App\Permission;
 use App\Models\User;
 
 class PermissionTest extends TestCase {
-	function testSufficient(){
+	public function testSufficient(){
 		self::assertEquals(false, Permission::sufficient('member','user'));
 		self::assertEquals(true, Permission::sufficient('member','member'));
 		self::assertEquals(true, Permission::sufficient('member','developer'));

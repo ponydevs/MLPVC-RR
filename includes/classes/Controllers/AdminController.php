@@ -19,14 +19,14 @@ use RestCord\DiscordClient;
 class AdminController extends Controller {
 	public $do = 'admin';
 
-	function __construct(){
+	public function __construct(){
 		parent::__construct();
 
 		if (!Permission::sufficient('staff'))
 			CoreUtils::notFound();
 	}
 
-	function index(){
+	public function index(){
 		CoreUtils::loadPage([
 			'title' => 'Admin Area',
 			'do-css',
@@ -34,11 +34,11 @@ class AdminController extends Controller {
 		], $this);
 	}
 
-	function logs(){
+	public function logs(){
 		global $Database, $LogItems, $Pagination;
 
 		$type = Logs::validateRefType('type', true, true);
-		if (isset($_GET['type']) && preg_match(new RegExp('/^[a-z_]+$/'), $_GET['type']) && isset(Logs::$LOG_DESCRIPTION[$_GET['type']]))
+		if (isset($_GET['type'], Logs::$LOG_DESCRIPTION[$_GET['type']]) && preg_match(new RegExp('/^[a-z_]+$/'), $_GET['type']))
 			$type = $_GET['type'];
 
 		if (!isset($_GET['by']))
@@ -80,7 +80,7 @@ class AdminController extends Controller {
 		if (isset($initiator)){
 			$_params = $initiator === 0 ? ['"initiator" IS NULL'] : ['initiator', $initiator];
 			$whereArgs[] = $_params;
-			if (isset($q) && isset($by)){
+			if (isset($q, $by)){
 				$q[] = "by=$by";
 				$title .= (!isset($type)?'Entries ':'')."by $by ";
 			}
@@ -122,7 +122,7 @@ class AdminController extends Controller {
 		]);
 	}
 
-	function logDetail($params){
+	public function logDetail($params){
 		CSRFProtection::protect();
 
 		if (!isset($params['id']) || !is_numeric($params['id']))
@@ -147,7 +147,7 @@ class AdminController extends Controller {
 		Response::done(Logs::formatEntryDetails($MainEntry,$Details));
 	}
 
-	function usefulLinks(){
+	public function usefulLinks(){
 		if (!POST_REQUEST){
 			$heading = 'Manage useful links';
 			CoreUtils::loadPage([
@@ -255,7 +255,7 @@ class AdminController extends Controller {
 		}
 	}
 
-	function reorderUsefulLinks(){
+	public function reorderUsefulLinks(){
 		global $Database;
 
 		CSRFProtection::protect();
@@ -274,7 +274,7 @@ class AdminController extends Controller {
 		Response::done();
 	}
 
-	function discord(){
+	public function discord(){
 		global $Database;
 		if (!$Database->has('discord-members'))
 			$this->_getDiscordMemberList();
@@ -290,7 +290,7 @@ class AdminController extends Controller {
 		], $this);
 	}
 
-	function discordMemberList(){
+	public function discordMemberList(){
 		CSRFProtection::protect();
 
 		global $Database;
@@ -338,17 +338,17 @@ HTML;
 			Response::fail('There\'s no member with this ID on record.');
 	}
 
-	function discordMemberLinkGet($params){
+	public function discordMemberLinkGet($params){
 		$this->_discordSetMember($params);
 
 		$resp = [];
-		if (isset($this->_member->userid))
+		if ($this->_member->userid !== null)
 			$resp['boundto'] = Users::get($this->_member->userid,'id','id,name,avatar_url')->getProfileLink(User::LINKFORMAT_FULL);
 
 		Response::done($resp);
 	}
 
-	function discordMemberLinkSet($params){
+	public function discordMemberLinkSet($params){
 		$this->_discordSetMember($params);
 
 		global $Database;
@@ -370,7 +370,7 @@ HTML;
 		Response::done();
 	}
 
-	function discordMemberLinkDel($params){
+	public function discordMemberLinkDel($params){
 		$this->_discordSetMember($params);
 
 		global $Database;
@@ -424,7 +424,7 @@ HTML;
 		$Database->delete('discord-members');
 	}
 
-	function massApprove(){
+	public function massApprove(){
 		global $Database;
 
 		CSRFProtection::protect();
@@ -436,7 +436,7 @@ HTML;
 			]
 		]))->out();
 
-		$list = "";
+		$list = '';
 		foreach ($ids as $id)
 			$list .= "'d".base_convert($id, 10, 36)."',";
 		$list = rtrim($list, ',');
@@ -465,13 +465,13 @@ HTML;
 		Response::success('Marked '.CoreUtils::makePlural('post', $approved, PREPEND_NUMBER).' as approved. To see which ones, check the <a href="/admin/logs/1?type=post_lock&by=you">list of posts you\'ve approved</a>.', ['reload' => true]);
 	}
 
-	function recentPosts(){
+	public function recentPosts(){
 		CSRFProtection::protect();
 
 		Response::done(['html' => Posts::getMostRecentList()]);
 	}
 
-	function wsdiag(){
+	public function wsdiag(){
 		if (Permission::insufficient('developer'))
 			CoreUtils::notFound();
 

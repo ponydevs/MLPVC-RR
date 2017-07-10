@@ -4,7 +4,7 @@ namespace App;
 
 class Tags {
 	// List of available tag types
-	static $TAG_TYPES_ASSOC = [
+	public static $TAG_TYPES_ASSOC = [
 		'app' => 'Clothing',
 		'cat' => 'Category',
 		'ep' => 'Episode',
@@ -23,7 +23,7 @@ class Tags {
 	 *
 	 * @return array|null
 	 */
-	static function getFor($PonyID = null, $limit = null, $showEpTags = false, $exporting = false){
+	public static function getFor($PonyID = null, $limit = null, $showEpTags = false, $exporting = false){
 		global $Database;
 
 		if (!$exporting){
@@ -58,7 +58,7 @@ class Tags {
 	 *
 	 * @return array|bool
 	 */
-	static function getActual($value, $column = 'tid', $as_bool = false){
+	public static function getActual($value, $column = 'tid', $as_bool = false){
 		global $Database;
 
 		$arg1 = ['tags', $as_bool === RETURN_AS_BOOL ? 'synonym_of,tid' : '*'];
@@ -83,7 +83,7 @@ class Tags {
 	 *
 	 * @return array
 	 */
-	static function getSynonymOf($Tag, $returnCols = null){
+	public static function getSynonymOf($Tag, $returnCols = null){
 		global $Database;
 
 		if (empty($Tag['synonym_of']))
@@ -100,7 +100,7 @@ class Tags {
 	 *
 	 * @return array
 	 */
-	static function updateUses(int $TagID, bool $returnCount = false):array {
+	public static function updateUses(int $TagID, bool $returnCount = false):array {
 		global $Database;
 
 		$Tagged = $Database->where('tid', $TagID)->count('tagged');
@@ -118,7 +118,7 @@ class Tags {
 	 *
 	 * @return string
 	 */
-	static function getTagListHTML($Tags, $wrap = WRAP){
+	public static function getTagListHTML($Tags, $wrap = WRAP){
 		global $Database;
 		$HTML =
 		$utils =

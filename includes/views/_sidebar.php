@@ -3,9 +3,7 @@ use App\Auth;
 use App\CoreUtils;
 use App\Episodes;
 use App\Notifications;
-use App\Time;
 use App\UserPrefs;
-use App\Users;
 /** @var $do string */
 /** @var $scope array */
 /** @var $view \App\View */ ?>
@@ -54,7 +52,7 @@ use App\Users;
 		else { ?>
 			<button class="typcn btn-da da-login" id="signin">Sign in</button>
 			<!--suppress ES6ConvertVarToLetConst, JSUnusedLocalSymbols -->
-			<script>var OAUTH_URL = "<?=OAUTH_AUTHORIZATION_URL?>";</script>
+			<script>var OAUTH_URL = "<?=\App\DeviantArt::OAuthProviderInstance()->getAuthorizationUrl()?>";</script>
 <?php   }
 		if (!UserPrefs::get('p_hidediscord') && (Auth::$signed_in ? !Auth::$user->isDiscordMember() : true)){ ?>
 			<a class="btn typcn btn-discord discord-join" href="http://fav.me/d9zt1wv">Join Discord</a>
@@ -71,7 +69,7 @@ use App\Users;
 		<h2><span class="live-circle"></span> Live updates enabled</h2>
 		<p>Changes to post scores are visible in real time to everyone who sees this message.</p>
 	</section>
-<?php   if ($view->name === "episode" && !empty($CurrentEpisode)){ ?>
+<?php   if ($view->name === 'episode' && !empty($CurrentEpisode)){ ?>
 	<section id="voting">
 		<h2><?=$CurrentEpisode->isMovie?'Movie':'Episode'?> rating</h2>
 		<?=Episodes::getSidebarVoting($CurrentEpisode)?>

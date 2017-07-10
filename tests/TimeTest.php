@@ -4,7 +4,7 @@ use App\Time;
 use PHPUnit\Framework\TestCase;
 
 class TimeTest extends TestCase {
-	function testDifference(){
+	public function testDifference(){
 		$now = strtotime('2016-12-03T12:03:56Z');
 		$target = strtotime('2015-11-01T11:00:00Z');
 		$result = Time::difference($now, $target);
@@ -17,7 +17,7 @@ class TimeTest extends TestCase {
 		self::assertEquals(56, $result['second'], 'Seoond diff calculation fails');
 	}
 
-	function testFormat(){
+	public function testFormat(){
 		$now = strtotime('2016-12-03T12:03:56Z');
 		$result = Time::format($now);
 		self::assertEquals('2016-12-03T12:03:56Z', $result, 'ISO format fails');
@@ -29,7 +29,7 @@ class TimeTest extends TestCase {
 		self::assertEquals('5 months ago', $result, 'Readable format fails (1 day 5 months)');
 	}
 
-	function testTag(){
+	public function testTag(){
 		$now = strtotime('2016-12-03T12:03:56Z');
 		$result = Time::tag($now, false, Time::TAG_ALLOW_DYNTIME, $now);
 		self::assertEquals("<time datetime='2016-12-03T12:03:56Z' title='3rd Dec 2016, 12:03:56 pm GMT'>a few seconds ago</time>", $result);

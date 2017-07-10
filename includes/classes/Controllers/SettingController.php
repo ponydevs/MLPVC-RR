@@ -10,7 +10,7 @@ use App\Response;
 /** @property $_setting array */
 class SettingController extends Controller {
 
-	function __construct(){
+	public function __construct(){
 		parent::__construct();
 
 		if (!Permission::sufficient('staff'))
@@ -19,18 +19,18 @@ class SettingController extends Controller {
 	}
 
 	private $_setting, $_value;
-	function _getSetting($params){
+	public function _getSetting($params){
 		$this->_setting = $params['key'];
 		$this->_value = GlobalSettings::get($this->_setting);
 	}
 
-	function get($params){
+	public function get($params){
 		$this->_getSetting($params);
 
 		Response::done(['value' => $this->_value]);
 	}
 
-	function set($params){
+	public function set($params){
 		$this->_getSetting($params);
 
 		if (!isset($_POST['value']))

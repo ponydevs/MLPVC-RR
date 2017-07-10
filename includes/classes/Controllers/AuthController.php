@@ -22,7 +22,7 @@ class AuthController extends Controller {
 		return isset($_GET['state']) && preg_match(new RegExp('^[a-z\d]+$','i'), $_GET['state'], $_match);
 	}
 
-	function auth(){
+	public function auth(){
 		CSRFProtection::detect();
 
 		if (!isset($_GET['error']) && (empty($_GET['code']) || empty($_GET['state'])))
@@ -35,10 +35,10 @@ class AuthController extends Controller {
 			$this->_error($err, $errdesc);
 		}
 		try {
-			Auth::$user = DeviantArt::getToken($_GET['code']);
+			Auth::$user = DeviantArt::getToken($_GET['code'],false,$_GET['state']);
 		}
 		catch (CURLRequestException $e){
-			if (in_array($e->getCode(),[500,503])){
+			if (in_array($e->getCode(),[500,503],true)){
 				$this->_error('server_error');
 			}
 		}
@@ -61,7 +61,7 @@ class AuthController extends Controller {
 		else $this->_moveToState($_GET['state']);
 	}
 
-	function signout(){
+	public function signout(){
 		global $Database;
 
 		if (!Auth::$signed_in) Response::success("You've already signed out");
@@ -76,17 +76,18 @@ class AuthController extends Controller {
 			}
 		}
 
-		if (isset($_REQUEST['unlink']) || isset($_REQUEST['everywhere'])){
+		$unlinking = isset($_REQUEST['unlink']);
+		if ($unlinking || isset($_REQUEST['everywhere'])){
 			$col = 'user';
 			$val = Auth::$user->id;
 			$username = Users::validateName('username', null, true);
 			if (isset($username)){
-				if (!Permission::sufficient('staff') || isset($_REQUEST['unlink']))
+				if (!Permission::sufficient('staff') || $unlinking)
 					Response::fail();
 				/** @var $TargetUser User */
 				$TargetUser = $Database->where('name', $username)->getOne('users','id,name');
 				if (empty($TargetUser))
-					Response::fail("Target user doesn’t exist");
+					Response::fail('Target user doesn’t exist');
 				if ($TargetUser->id !== Auth::$user->id)
 					$val = $TargetUser->id;
 				else unset($TargetUser);

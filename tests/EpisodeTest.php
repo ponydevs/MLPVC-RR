@@ -3,16 +3,16 @@
 use PHPUnit\Framework\TestCase;
 
 class EpisodeTest extends TestCase {
-	function testGetID(){
+	public function testGetID(){
 		// Single-part test
 		$Episode = new \App\Models\Episode([
 			'season' => 1,
 			'episode' => 1,
 		]);
 		$result = $Episode->getID();
-		self::assertEquals("S1E1", $result);
+		self::assertEquals('S1E1', $result);
 		$result = $Episode->getID(['pad' => true]);
-		self::assertEquals("S01 E01", $result);
+		self::assertEquals('S01 E01', $result);
 
 		// Two-parter test
 		$Episode = new \App\Models\Episode([
@@ -21,9 +21,9 @@ class EpisodeTest extends TestCase {
 			'twoparter' => true,
 		]);
 		$result = $Episode->getID();
-		self::assertEquals("S1E1-2", $result);
+		self::assertEquals('S1E1-2', $result);
 		$result = $Episode->getID(['pad' => true]);
-		self::assertEquals("S01 E01-02", $result);
+		self::assertEquals('S01 E01-02', $result);
 
 		// Movie test
 		$Movie = new \App\Models\Episode([
@@ -32,23 +32,23 @@ class EpisodeTest extends TestCase {
 			'twoparter' => true,
 		]);
 		$result = $Movie->getID();
-		self::assertEquals("Movie", $result);
+		self::assertEquals('Movie', $result);
 		$result = $Movie->getID(['append_num' => true]);
-		self::assertEquals("Movie#1", $result);
-		self::assertNotEquals("Movie#1-2", $result);
+		self::assertEquals('Movie#1', $result);
+		self::assertNotEquals('Movie#1-2', $result);
 	}
 
-	function testMovieSafeTitle(){
+	public function testMovieSafeTitle(){
 		$Movie = new \App\Models\Episode([
 			'season' => 0,
 			'episode' => 1,
 			'title' => "A#bc-d'?e",
 		]);
 		$result = $Movie->movieSafeTitle();
-		self::assertEquals("A-bc-d-e", $result);
+		self::assertEquals('A-bc-d-e', $result);
 	}
 
-	function testIs(){
+	public function testIs(){
 		$EpisodeOne = new \App\Models\Episode([
 			'season' => 1,
 			'episode' => 1,
@@ -75,7 +75,7 @@ class EpisodeTest extends TestCase {
 		self::assertFalse($result);
 	}
 
-	function testAddAiringData(){
+	public function testAddAiringData(){
 		$airs = '2016-01-10T00:00:00Z';
 		$Episode = new \App\Models\Episode([
 			'airs' => $airs,
@@ -125,8 +125,8 @@ class EpisodeTest extends TestCase {
 		self::assertTrue($Movie->aired, "Movie should be 'aired' 2 hours after 'airs'");
 	}
 
-	function testFormatTitle(){
-		require_once "includes/constants.php";
+	public function testFormatTitle(){
+		require_once __DIR__.'/../includes/constants.php';
 
 		$Episode = new \App\Models\Episode([
 			'season' => 1,
@@ -139,13 +139,13 @@ class EpisodeTest extends TestCase {
 		self::assertEquals('Yarr harr&lt;', $result);
 	}
 
-	function testFormatURL(){
+	public function testFormatURL(){
 		$Episode = new \App\Models\Episode([
 			'season' => 1,
 			'episode' => 1,
 		]);
 		$result = $Episode->toURL();
-		self::assertEquals("/episode/S1E1", $result);
+		self::assertEquals('/episode/S1E1', $result);
 
 		$Episode = new \App\Models\Episode([
 			'season' => 1,
@@ -153,20 +153,20 @@ class EpisodeTest extends TestCase {
 			'twoparter' => true,
 		]);
 		$result = $Episode->toURL();
-		self::assertEquals("/episode/S1E1-2", $result);
+		self::assertEquals('/episode/S1E1-2', $result);
 
 		$Movie = new \App\Models\Episode([
 			'season' => 0,
 			'episode' => 1,
 		]);
 		$result = $Movie->toURL();
-		self::assertEquals("/movie/1", $result);
+		self::assertEquals('/movie/1', $result);
 		$Movie->title = 'Yarr  @@@ harr';
 		$result = $Movie->toURL();
-		self::assertEquals("/movie/1-Yarr-harr", $result);
+		self::assertEquals('/movie/1-Yarr-harr', $result);
 	}
 
-	function testFormatScore(){
+	public function testFormatScore(){
 		$Episode = new \App\Models\Episode();
 		$Episode->score = 3.2;
 		$Episode->formatScore();

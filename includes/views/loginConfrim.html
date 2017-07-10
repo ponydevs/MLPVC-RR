@@ -59,12 +59,12 @@ body > span > :last-child {
 		<span>&#x2713;</span>
 		<span>Welcome<script>
 			try {
-				if (localStorage.getItem('cookie_consent_v2') == '1')
+				if (localStorage.getItem('cookie_consent_v2') === '1')
 					//noinspection DocumentWriteJS
 					document.write(' back')
 			} catch(e){}</script>!</span>
 	</span>
 	
-<script>setTimeout(function(){document.getElementsByTagName('body')[0].className += 'fadein'},1);window.opener[' {{CODE}}']()</script>
+<script>setTimeout(function(){document.getElementsByTagName('body')[0].className += 'fadein'},1);if(!document.querySelector('.xdebug-error'))window.opener[' {{CODE}}']();else console.log('xdebug error detected- Random key for reference: {{CODE}}')</script>
 </body>
 </html>

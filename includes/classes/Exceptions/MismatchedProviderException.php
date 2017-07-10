@@ -2,10 +2,11 @@
 
 namespace App\Exceptions;
 
-class MismatchedProviderException extends \Exception {
+class MismatchedProviderException extends \Error {
 	private $actualProvider;
-	function __construct($actualProvider){
+	public function __construct($actualProvider){
+		parent::__construct();
 		$this->actualProvider = $actualProvider;
 	}
-	function getActualProvider(){ return $this->actualProvider; }
+	public function getActualProvider(){ return $this->actualProvider; }
 }

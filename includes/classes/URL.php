@@ -10,7 +10,7 @@ class URL {
 	 *
 	 * @return string
 	 */
-	static function makeHttps($url){
+	public static function makeHttps($url){
 		return (new RegExp('^(https?:)?//'))->replace('https://',$url);
 	}
 }

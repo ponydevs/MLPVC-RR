@@ -19,7 +19,7 @@ use App\Users;
 class UserController extends Controller {
 	public $do = 'user';
 
-	function profile($params){
+	public function profile($params){
 		global $USERNAME_REGEX, $Database, $User, $sameUser;
 
 		$data = $params['name'] ?? null;
@@ -39,8 +39,8 @@ class UserController extends Controller {
 
 		if (empty($User)){
 			if (isset($User) && $User === false){
-				$MSG = "User does not exist";
-				$SubMSG = "Check the name for typos and try again";
+				$MSG = 'User does not exist';
+				$SubMSG = 'Check the name for typos and try again';
 			}
 			else if (!isset($MSG)){
 				$MSG = 'Local user data missing';
@@ -102,7 +102,7 @@ class UserController extends Controller {
 		CoreUtils::loadPage($settings, $this);
 	}
 
-	function profileByUuid($params){
+	public function profileByUuid($params){
 		if (Permission::insufficient('developer') || !isset($params['uuid']))
 			CoreUtils::notFound();
 
@@ -116,7 +116,7 @@ class UserController extends Controller {
 		HTTP::redirect('/@'.$User->name);
 	}
 
-	function awaitingApproval($params){
+	public function awaitingApproval($params){
 		CSRFProtection::protect();
 
 		if (!isset($params['name']))
@@ -130,7 +130,7 @@ class UserController extends Controller {
 		Response::done(['html' => Users::getAwaitingApprovalHTML($targetUser, $sameUser)]);
 	}
 
-	function suggestion(){
+	public function suggestion(){
 		global $Database;
 
 		CSRFProtection::protect();
@@ -150,7 +150,7 @@ class UserController extends Controller {
 		Response::done(['suggestion' => Posts::getSuggestionLi($Request)]);
 	}
 
-	function sessionDel($params){
+	public function sessionDel($params){
 		global $Database;
 
 		CSRFProtection::protect();
@@ -169,7 +169,7 @@ class UserController extends Controller {
 		Response::success('Session successfully removed');
 	}
 
-	function setGroup($params){
+	public function setGroup($params){
 		CSRFProtection::protect();
 		if (Permission::insufficient('staff'))
 			Response::fail();
@@ -182,7 +182,7 @@ class UserController extends Controller {
 			Response::fail('User not found');
 
 		if ($targetUser->id === Auth::$user->id)
-			Response::fail("You cannot modify your own group");
+			Response::fail('You cannot modify your own group');
 		if (!Permission::sufficient($targetUser->role))
 			Response::fail('You can only modify the group of users who are in the same or a lower-level group than you');
 		if ($targetUser->role === 'ban')
@@ -225,7 +225,7 @@ class UserController extends Controller {
 			Response::fail("You cannot $action yourself");
 		if (Permission::sufficient('staff', $targetUser->role))
 			Response::fail("You cannot $action people within the assistant or any higher group");
-		if ($action == 'banish' && $targetUser->role === 'ban' || $action == 'un-banish' && $targetUser->role !== 'ban')
+		if ($action === 'banish' ? $targetUser->role === 'ban' : $targetUser->role !== 'ban')
 			Response::fail("This user has already been {$action}ed");
 
 		$reason = (new Input('reason','string', [
@@ -236,7 +236,7 @@ class UserController extends Controller {
 			]
 		]))->out();
 
-		$changes = ['role' => $action == 'banish' ? 'ban' : 'user'];
+		$changes = ['role' => $action === 'banish' ? 'ban' : 'user'];
 		$Database->where('id', $targetUser->id)->update('users', $changes);
 		Logs::logAction($action, [
 			'target' => $targetUser->id,
@@ -244,21 +244,21 @@ class UserController extends Controller {
 		]);
 		$changes['role'] = Permission::ROLES_ASSOC[$changes['role']];
 
-		if ($action == 'banish')
+		if ($action === 'banish')
 			Response::done();
 
 		Response::success("We welcome {$targetUser->name} back with open hooves!");
 	}
 
-	function banish($params){
+	public function banish($params){
 		$this->_banishAction($params, true);
 	}
 
-	function unbanish($params){
+	public function unbanish($params){
 		$this->_banishAction($params, false);
 	}
 
-	function checkCGSlots($params){
+	public function checkCGSlots($params){
 		CSRFProtection::protect();
 
 		if (!isset($params['name']))
@@ -282,7 +282,7 @@ class UserController extends Controller {
 		'fulfilled-requests' => 'Requests fulfilled',
 	];
 
-	function contrib($params){
+	public function contrib($params){
 		if (!isset(self::CONTRIB_NAMES[$params['type']]))
 			CoreUtils::notFound();
 
@@ -301,29 +301,30 @@ class UserController extends Controller {
 		$Pagination = new Pagination($paginationPath, $itemsPerPage);
 
 		switch ($params['type']){
-			case "cms-provided":
+			case 'cms-provided':
 				$cnt = $targetUser->getCMContributions();
 				$Pagination->calcMaxPages($cnt);
 				$data = $targetUser->getCMContributions(false, $Pagination);
 			break;
-			case "requests":
+			case 'requests':
 				$cnt = $targetUser->getRequestContributions();
 				$Pagination->calcMaxPages($cnt);
 				$data = $targetUser->getRequestContributions(false, $Pagination);
 			break;
-			case "reservations":
+			case 'reservations':
 				$cnt = $targetUser->getReservationContributions();
 				$Pagination->calcMaxPages($cnt);
 				$data = $targetUser->getReservationContributions(false, $Pagination);
 			break;
-			case "finished-posts":
+			case 'finished-posts':
 				$cnt = $targetUser->getFinishedPostContributions();
 				$Pagination->calcMaxPages($cnt);
 				$data = $targetUser->getFinishedPostContributions(false, $Pagination);
 				foreach ($data as &$item)
 					$item = isset($item['requested_by']) ? new Request($item) : new Reservation($item);
+				unset($item);
 			break;
-			case "fulfilled-requests":
+			case 'fulfilled-requests':
 				$cnt = $targetUser->getApprovedFinishedRequestContributions();
 				$Pagination->calcMaxPages($cnt);
 				$data = $targetUser->getApprovedFinishedRequestContributions(false, $Pagination);

@@ -13,7 +13,7 @@ class ColorGroups {
 	 *
 	 * @return array
 	 */
-	static function get($PonyID, $cols = '*', $sort_dir = 'ASC', $cnt = null){
+	public static function get($PonyID, $cols = '*', $sort_dir = 'ASC', $cnt = null){
 		global $Database;
 
 		self::_order($sort_dir);
@@ -28,7 +28,7 @@ class ColorGroups {
 	 *
 	 * @return array
 	 */
-	static function getColors($GroupID){
+	public static function getColors($GroupID){
 		global $Database;
 
 		return $Database->where('groupid', $GroupID)->orderBy('"order"', 'ASC')->get('colors');
@@ -41,7 +41,7 @@ class ColorGroups {
 	 *
 	 * @return array
 	 */
-	static function getColorsForEach($Groups){
+	public static function getColorsForEach($Groups){
 		global $Database;
 
 		$GroupIDs = [];
@@ -63,7 +63,7 @@ class ColorGroups {
 	/**
 	 * Get HTML for a color group
 	 *
-	 * @param int|array  $GroupID
+	 * @param array      $Group
 	 * @param array|null $AllColors
 	 * @param bool       $wrap
 	 * @param bool       $colon
@@ -72,17 +72,14 @@ class ColorGroups {
 	 *
 	 * @return string
 	 */
-	static function getHTML($GroupID, $AllColors = null, bool $wrap = true, bool $colon = true, bool $colorNames = false, bool $force_extra_info = false):string {
+	public static function getHTML($Group, $AllColors = null, bool $wrap = true, bool $colon = true, bool $colorNames = false, bool $force_extra_info = false):string {
 		global $Database;
-
-		if (is_array($GroupID)) $Group = $GroupID;
-		else $Group = $Database->where('groupid',$GroupID)->getOne('colorgroups');
 
 		$label = CoreUtils::escapeHTML($Group['label']).($colon?': ':'');
 		$HTML =
 			"<span class='cat'>$label".
 				($colorNames && Permission::sufficient('staff')?'<span class="admin"><button class="blue typcn typcn-pencil edit-cg"></button><button class="red typcn typcn-trash delete-cg"></button></span>':'').
-			"</span>";
+			'</span>';
 		if (!isset($AllColors))
 			$Colors = self::getColors($Group['groupid']);
 		else $Colors = $AllColors[$Group['groupid']] ?? null;
@@ -127,7 +124,7 @@ class ColorGroups {
 			->orderBy('groupid', $dir);
 	}
 
-	static function stringifyColors($colors){
+	public static function stringifyColors($colors){
 		if (empty($colors))
 			return null;
 
@@ -138,7 +135,7 @@ class ColorGroups {
 		return implode("\n", $return);
 	}
 
-	static function stringify($cgs){
+	public static function stringify($cgs){
 		if (empty($cgs))
 			return null;
 

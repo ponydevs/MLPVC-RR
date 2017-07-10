@@ -12,7 +12,7 @@ use App\Time;
 class AboutController extends Controller {
 	public $do = 'about';
 
-	function index(){
+	public function index(){
 		CoreUtils::loadPage([
 			'title' => 'About',
 			'do-css',
@@ -24,7 +24,7 @@ class AboutController extends Controller {
 		STAT_TYPES = ['posts','approvals','alltimeposts'],
 		STAT_CHACHE_DURATION = 5*Time::IN_SECONDS['hour'];
 
-	function stats(){
+	public function stats(){
 		global $Database;
 
 		CSRFProtection::protect();

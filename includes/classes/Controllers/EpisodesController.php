@@ -9,13 +9,13 @@ use App\Permission;
 class EpisodesController extends Controller {
 	public $do = 'episodes';
 
-	function index(){
+	public function index(){
 		global $Database;
 
 		$Pagination = new Pagination('episodes', 8, $Database->where('season != 0')->count('episodes'));
 
 		CoreUtils::fixPath("/episodes/{$Pagination->page}");
-		$heading = "Episodes";
+		$heading = 'Episodes';
 		$title = "Page {$Pagination->page} - $heading";
 		$Episodes = Episodes::get($Pagination->getLimit());
 

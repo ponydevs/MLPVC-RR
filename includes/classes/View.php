@@ -5,7 +5,7 @@ namespace App;
 class View {
 	/** @var string */
 	public $name;
-	function __construct(string $name){
+	public function __construct(string $name){
 		$this->name = $name;
 	}
 
@@ -13,7 +13,7 @@ class View {
 		return INCPATH."views/{$this->name}.php";
 	}
 
-	function __toString():string {
+	public function __toString():string {
 		return $this->_requirePath();
 	}
 }

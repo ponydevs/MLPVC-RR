@@ -11,8 +11,8 @@ use App\Exceptions\CURLRequestException;
 
 class Users {
 	// Global cache for storing user details
-	static $_USER_CACHE = [];
-	static $_PREF_CACHE = [];
+	public static $_USER_CACHE = [];
+	public static $_PREF_CACHE = [];
 
 	/**
 	 * User Information Retriever
@@ -31,10 +31,10 @@ class Users {
 	 * @throws \Exception
 	 * @return User|null|false
 	 */
-	static function get($value, $coloumn = 'id', $dbcols = null){
+	public static function get($value, $coloumn = 'id', $dbcols = null){
 		global $Database;
 
-		if ($coloumn === "token"){
+		if ($coloumn === 'token'){
 			/** @var $Session Session */
 			$Session = $Database->where('token', $value)->getOne('sessions');
 
@@ -70,8 +70,9 @@ class Users {
 	 * @param string $dbcols
 	 *
 	 * @return User|null|false
+	 * @throws \Exception
 	 */
-	function fetch($username, $dbcols = null){
+	public static function fetch($username, $dbcols = null){
 		global $Database, $USERNAME_REGEX;
 
 		if (!$USERNAME_REGEX->match($username))
@@ -135,7 +136,7 @@ class Users {
 	 *
 	 * @return bool|null
 	 */
-	static function reservationLimitExceeded(bool $return_as_bool = false){
+	public static function reservationLimitExceeded(bool $return_as_bool = false){
 		global $Database;
 
 		$reservations = $Database->rawQuerySingle(
@@ -167,7 +168,7 @@ class Users {
 	 * @param Session $Session
 	 * @param bool $current
 	 */
-	static function renderSessionLi(Session $Session, bool $current = false){
+	public static function renderSessionLi(Session $Session, bool $current = false){
 		$browserClass = CoreUtils::browserNameToClass($Session->browser_name);
 		$browserTitle = !empty($Session->browser_name) ? "{$Session->browser_name} {$Session->browser_ver}" : 'Unrecognized browser';
 		$platform = !empty($Session->platform) ? "<span class='platform'>on <strong>{$Session->platform}</strong></span>" : '';
@@ -194,7 +195,7 @@ HTML;
 	/**
 	 * Check authentication cookie and set global
 	 */
-	static function authenticate(){
+	public static function authenticate(){
 		global $Database;
 		CSRFProtection::detect();
 
@@ -220,7 +221,7 @@ HTML;
 						}
 						catch (CURLRequestException $e){
 							$Database->where('id', Auth::$session->id)->delete('sessions');
-							trigger_error("Session refresh failed for ".Auth::$user->name." (".Auth::$user->id.") | {$e->getMessage()} (HTTP {$e->getCode()})", E_USER_WARNING);
+							trigger_error('Session refresh failed for '.Auth::$user->name.' ('.Auth::$user->id.") | {$e->getMessage()} (HTTP {$e->getCode()})", E_USER_WARNING);
 						}
 					}
 					else $tokenvalid = true;
@@ -248,11 +249,11 @@ HTML;
 	];
 
 	const YOU_HAVE = [
-		true => 'You have',
-		false => 'This user has',
+		1 => 'You have',
+		0 => 'This user has',
 	];
 
-	static function getPendingReservationsHTML($UserID, $sameUser, $isMember = true){
+	public static function getPendingReservationsHTML($UserID, $sameUser, $isMember = true){
 		global $Database;
 
 		$visitorStaff = Permission::sufficient('staff');
@@ -261,7 +262,7 @@ HTML;
 		$PrivateSection = $sameUser? Users::PROFILE_SECTION_PRIVACY_LEVEL['staff']:'';
 
 		if ($staffVisitingMember || ($isMember && $sameUser)){
-			$cols = "id, season, episode, preview, label, posted, reserved_by, broken";
+			$cols = 'id, season, episode, preview, label, posted, reserved_by, broken';
 			$PendingReservations = $Database->where('reserved_by', $UserID)->where('deviation_id IS NULL')->get('reservations',null,$cols);
 			$PendingRequestReservations = $Database->where('reserved_by', $UserID)->where('deviation_id IS NULL')->get('requests',null,"$cols, reserved_at, true as requested_by");
 			$TotalPending = count($PendingReservations)+count($PendingRequestReservations);
@@ -284,11 +285,11 @@ HTML;
 				$posts = CoreUtils::makePlural('reservation', $TotalPending);
 				$HTML .= "<span>$YouHave $pendingCountReadable pending $posts";
 				if ($hasPending)
-					$HTML .= " which ha".($TotalPending!==1?'ve':'s')."n’t been marked as finished yet";
-				$HTML .= ".";
+					$HTML .= ' which ha'.($TotalPending!==1?'ve':'s').'n’t been marked as finished yet';
+				$HTML .= '.';
 				if ($sameUser)
-					$HTML .= " Please keep in mind that the global limit is 4 at any given time. If you reach the limit, you can’t reserve any more images until you finish or cancel some of your pending reservations.";
-				$HTML .= "</span>";
+					$HTML .= ' Please keep in mind that the global limit is 4 at any given time. If you reach the limit, you can’t reserve any more images until you finish or cancel some of your pending reservations.';
+				$HTML .= '</span>';
 
 				if ($hasPending){
 					/** @var $Posts Post[] */
@@ -337,15 +338,15 @@ HTML;
 				}
 			}
 			else {
-				$HTML .= "<p>Reservations are a way to allow Club Members to claim requests on the site as well as claim screenshots of their own, in order to reduce duplicate submissions to the group. You can use the button above to get random requests from the site that you can draw as practice, or to potentially submit along with your application to the club.</p>";
+				$HTML .= '<p>Reservations are a way to allow Club Members to claim requests on the site as well as claim screenshots of their own, in order to reduce duplicate submissions to the group. You can use the button above to get random requests from the site that you can draw as practice, or to potentially submit along with your application to the club.</p>';
 			}
 
-			$HTML .= "</section>";
+			$HTML .= '</section>';
 		}
 		return $HTML;
 	}
 
-	static function getPersonalColorGuideHTML(User $User, bool $sameUser):string {
+	public static function getPersonalColorGuideHTML(User $User, bool $sameUser):string {
 		global $Database;
 		$UserID = $User->id;
 		$sectionIsPrivate = UserPrefs::get('p_hidepcg', $UserID);
@@ -363,6 +364,7 @@ HTML;
 		$UsedSlotCount = $User->getPCGAppearances(null,true);
 		$ThisUser = $sameUser?'You':'This user';
 		$showPrivate = $sameUser || Permission::sufficient('staff');
+		/** @var $pcgLimits array */
 		$pcgLimits = $User->getPCGAvailableSlots(false, true);
 		$nSlots = CoreUtils::makePlural('slot',$pcgLimits['totalslots'],PREPEND_NUMBER);
 		if ($showPrivate){
@@ -372,7 +374,7 @@ HTML;
 
 			$has = $sameUser?'have':'has';
 			$nRequests = CoreUtils::makePlural('request',$ApprovedFinishedRequests,PREPEND_NUMBER);
-			$grants = 'grant'.($ApprovedFinishedRequests!=1?'':'s');
+			$grants = 'grant'.($ApprovedFinishedRequests!==1?'':'s');
 			$them = $sameUser?'you':'them';
 			$forStaff = Permission::sufficient('staff', $User->role) ? ' (staff members get a free slot)' : '';
 			$isnt = $ApprovedFinishedRequests !== 1 ? "aren't" : "isn't";
@@ -393,8 +395,8 @@ HTML;
 		if (count($PersonalColorGuides) > 0 || $sameUser){
 			$HTML .= "<ul class='personal-cg-appearances'>";
 			foreach ($PersonalColorGuides as $p)
-				$HTML .= "<li>".Appearances::getLinkWithPreviewHTML($p).'</li>';
-			$HTML .= "</ul>";
+				$HTML .= '<li>'.Appearances::getLinkWithPreviewHTML($p).'</li>';
+			$HTML .= '</ul>';
 		}
 		$Action = $sameUser ? 'Manage' : 'View';
 		$HTML .= "<p><a href='/@{$User->name}/cg' class='btn link typcn typcn-arrow-forward'>$Action Personal Color Guide</a></p>";
@@ -403,15 +405,15 @@ HTML;
 		return $HTML;
 	}
 
-	static function calculatePersonalCGSlots(int $postcount):int {
+	public static function calculatePersonalCGSlots(int $postcount):int {
 		return floor($postcount/10);
 	}
 
-	static function calculatePersonalCGNextSlot(int $postcount):int {
+	public static function calculatePersonalCGNextSlot(int $postcount):int {
 		return 10-($postcount % 10);
 	}
 
-	static function validateName($key, $errors, $method_get = false){
+	public static function validateName($key, $errors, $method_get = false){
 		return (new Input($key,'username', [
 			Input::IS_OPTIONAL => true,
 			Input::METHOD_GET => $method_get,
@@ -422,12 +424,12 @@ HTML;
 		]))->out();
 	}
 
-	static function getAwaitingApprovalHTML(User $User, bool $sameUser):string {
+	public static function getAwaitingApprovalHTML(User $User, bool $sameUser):string {
 		if (Permission::insufficient('member', $User->role))
 			HTTP::statusCode(404, AND_DIE);
 
 		global $Database;
-		$cols = "id, season, episode, deviation_id";
+		$cols = 'id, season, episode, deviation_id';
 		/** @var $AwaitingApproval \App\Models\Post[] */
 		$AwaitingApproval = array_merge(
 			$Database
@@ -443,20 +445,20 @@ HTML;
 		);
 		$AwaitCount = count($AwaitingApproval);
 		$them = $AwaitCount!==1?'them':'it';
-		$YouHave = self::YOU_HAVE[$sameUser];
+		$YouHave = self::YOU_HAVE[(int)$sameUser];
 		$privacy = $sameUser? Users::PROFILE_SECTION_PRIVACY_LEVEL['public']:'';
 		$HTML = "<h2>{$privacy}Vectors waiting for approval</h2>";
 		if ($sameUser)
-			$HTML .= "<p>After you finish an image and submit it to the group gallery, an admin will check your vector and may ask you to fix some issues on your image, if any. After an image is accepted to the gallery, it can be marked as \"approved\", which gives it a green check mark, indicating that it’s most likely free of any errors.</p>";
+			$HTML .= '<p>After you finish an image and submit it to the group gallery, an admin will check your vector and may ask you to fix some issues on your image, if any. After an image is accepted to the gallery, it can be marked as "approved", which gives it a green check mark, indicating that it’s most likely free of any errors.</p>';
 		$youHaveAwaitCount = "$YouHave ".(!$AwaitCount?'no':"<strong>$AwaitCount</strong>");
 		$images = CoreUtils::makePlural('image', $AwaitCount);
 		$append = !$AwaitCount
 			? '.'
-			: ", listed below.".(
+			: ', listed below.'.(
 				$sameUser
 				? " Please submit $them to the group gallery as soon as possible to have $them spot-checked for any issues. As stated in the rules, the goal is to add finished images to the group gallery, making $them easier to find for everyone.".(
 					$AwaitCount>10
-					? " You seem to have a large number of images that have not been approved yet, please submit them to the group soon if you haven’t already."
+					? ' You seem to have a large number of images that have not been approved yet, please submit them to the group soon if you haven’t already.'
 					: ''
 				)
 				:''
@@ -496,7 +498,7 @@ HTML;
 		return $HTML;
 	}
 
-	static function getContributionsHTML(User $user, bool $sameUser):string {
+	public static function getContributionsHTML(User $user, bool $sameUser):string {
 		$contribs = $user->getCachedContributions();
 		if (empty($contribs))
 			return '';
@@ -531,13 +533,13 @@ HTML;
 		global $Database;
 
 		switch ($type){
-			case "cms-provided":
+			case 'cms-provided':
 				$TABLE = <<<HTML
 <th>Appearance</th>
 <th>Deviation</th>
 HTML;
 			break;
-			case "requests":
+			case 'requests':
 				$TABLE = <<<HTML
 <th>Post</th>
 <th>Posted <span class="typcn typcn-arrow-sorted-down" title="Newest first"></span></th>
@@ -546,7 +548,7 @@ HTML;
 <th>Approved?</th>
 HTML;
 			break;
-			case "reservations":
+			case 'reservations':
 				$TABLE = <<<HTML
 <th>Post</th>
 <th>Posted <span class="typcn typcn-arrow-sorted-down" title="Newest first"></span></th>
@@ -554,7 +556,7 @@ HTML;
 <th>Approved?</th>
 HTML;
 			break;
-			case "finished-posts":
+			case 'finished-posts':
 				$TABLE = <<<HTML
 <th>Post</th>
 <th>Posted <span class="typcn typcn-arrow-sorted-down" title="Newest first"></span></th>
@@ -563,7 +565,7 @@ HTML;
 <th>Approved?</th>
 HTML;
 			break;
-			case "fulfilled-requests":
+			case 'fulfilled-requests':
 				$TABLE = <<<HTML
 <th>Post</th>
 <th>Posted</th>
@@ -578,7 +580,7 @@ HTML;
 
 		foreach ($data as $item){
 			switch ($type){
-				case "cms-provided":
+				case 'cms-provided':
 					/** @var $item \App\Models\Cutiemark */
 					$appearance = $Database->where('id', $item->ponyid)->getOne('appearances');
 					$preview = Appearances::getLinkWithPreviewHTML($appearance);
@@ -590,7 +592,7 @@ HTML;
 HTML;
 
 				break;
-				case "requests":
+				case 'requests':
 					/** @var $item Request */
 					$preview = $item->toLinkWithPreview();
 					$posted = Time::tag($item->posted);
@@ -611,7 +613,7 @@ HTML;
 <td class="approved">$approved</td>
 HTML;
 				break;
-				case "reservations":
+				case 'reservations':
 					/** @var $item Request */
 					$preview = $item->toLinkWithPreview();
 					$posted = Time::tag($item->posted);
@@ -624,7 +626,7 @@ HTML;
 <td class="approved">$approved</td>
 HTML;
 				break;
-				case "finished-posts":
+				case 'finished-posts':
 					/** @var $item Request|Reservation */
 					$preview = $item->toLinkWithPreview();
 					$posted_by = Users::get($item->isRequest ? $item->requested_by : $item->reserved_by)->getProfileLink();
@@ -648,7 +650,7 @@ $reserved
 <td class="approved">$approved</td>
 HTML;
 				break;
-				case "fulfilled-requests":
+				case 'fulfilled-requests':
 					/** @var $item Request */
 					$preview = $item->toLinkWithPreview();
 					$posted_by = Users::get($item->requested_by)->getProfileLink();

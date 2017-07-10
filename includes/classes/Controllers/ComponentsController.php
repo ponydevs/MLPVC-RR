@@ -6,7 +6,7 @@ use App\CoreUtils;
 class ComponentsController extends Controller {
 	public $do = 'components';
 
-	function index(){
+	public function index(){
 		CoreUtils::loadPage([
 			'title' => 'Components',
 			'no-robots',

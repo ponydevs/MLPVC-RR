@@ -16,7 +16,7 @@ class Appearances {
 	 *
 	 * @return array
 	 */
-	static function get($EQG, $limit = null, $userid = null, $cols = null){
+	public static function get($EQG, $limit = null, $userid = null, $cols = null){
 		global $Database;
 
 		if (isset($userid)){
@@ -51,7 +51,7 @@ class Appearances {
 	 *
 	 * @return string
 	 */
-	static function getHTML($Appearances, $wrap = WRAP, $permission = null){
+	public static function getHTML($Appearances, $wrap = WRAP, $permission = null){
 		global $Database, $_MSG;
 
 		if (!isset($permission))
@@ -82,21 +82,21 @@ class Appearances {
 		}
 		else {
 			if (empty($_MSG))
-				$_MSG = "No appearances to show";
+				$_MSG = 'No appearances to show';
 			$HTML .= "<div class='notice info align-center'><label>$_MSG</label></div>";
 		}
 
 		return $wrap ? "<ul id='list' class='appearance-list'>$HTML</ul>" : $HTML;
 	}
 
-	static function isPrivate($Appearance, bool $ignoreStaff = false):bool {
+	public static function isPrivate($Appearance, bool $ignoreStaff = false):bool {
 		$isPrivate = !empty($Appearance['private']);
 		if (!$ignoreStaff && (Permission::sufficient('staff') || (Auth::$signed_in ? $Appearance['owner'] === Auth::$user->id : false)))
 			$isPrivate = false;
 		return $isPrivate;
 	}
 
-	static function processLabel(string $label):string {
+	public static function processLabel(string $label):string {
 		$label = preg_replace(new RegExp("'"),'’', $label);
 		return $label;
 	}
@@ -106,8 +106,8 @@ class Appearances {
 	 *
 	 * @return string
 	 */
-	static function getPendingPlaceholderFor($Appearance):string {
-		return self::isPrivate($Appearance) ? "<div class='colors-pending'><span class='typcn typcn-time'></span> ".(isset($Appearance['last_cleared']) ? "This appearance is currently undergoing maintenance and will be available again shortly &mdash; ".Time::tag($Appearance['last_cleared']) :  "This appearance will be finished soon, please check back later &mdash; ".Time::tag($Appearance['added'])).'</div>' : false;
+	public static function getPendingPlaceholderFor($Appearance):string {
+		return self::isPrivate($Appearance) ? "<div class='colors-pending'><span class='typcn typcn-time'></span> ".(isset($Appearance['last_cleared']) ? 'This appearance is currently undergoing maintenance and will be available again shortly &mdash; '.Time::tag($Appearance['last_cleared']) :  'This appearance will be finished soon, please check back later &mdash; '.Time::tag($Appearance['added'])).'</div>' : false;
 	}
 
 	/**
@@ -120,7 +120,7 @@ class Appearances {
 	 *
 	 * @return string
 	 */
-	static function getColorsHTML($Appearance, bool $wrap = WRAP, $colon = true, $colorNames = false){
+	public static function getColorsHTML($Appearance, bool $wrap = WRAP, $colon = true, $colorNames = false){
 		global $Database;
 
 		if ($placehold = self::getPendingPlaceholderFor($Appearance))
@@ -144,7 +144,7 @@ class Appearances {
 	 *
 	 * @return string
 	 */
-	static function getTagsHTML($PonyID, $wrap = WRAP){
+	public static function getTagsHTML($PonyID, $wrap = WRAP){
 		global $Database;
 
 		$Tags = Tags::getFor($PonyID, null, Permission::sufficient('staff'));
@@ -175,7 +175,7 @@ class Appearances {
 	 *
 	 * @return string
 	 */
-	static function getNotesHTML($Appearance, $wrap = WRAP, $cmLink = true){
+	public static function getNotesHTML($Appearance, $wrap = WRAP, $cmLink = true){
 		global $EPISODE_ID_REGEX;
 
 		$hasNotes = !empty($Appearance['notes']);
@@ -185,13 +185,13 @@ class Appearances {
 				$Appearance['notes'] = preg_replace_callback('/'.EPISODE_ID_PATTERN.'/',function($a){
 					$Ep = Episodes::getActual((int) $a[1], (int) $a[2]);
 					return !empty($Ep)
-						? "<a href='{$Ep->toURL()}'>".CoreUtils::aposEncode($Ep->formatTitle(AS_ARRAY,'title'))."</a>"
+						? "<a href='{$Ep->toURL()}'>".CoreUtils::aposEncode($Ep->formatTitle(AS_ARRAY,'title')).'</a>'
 						: "<strong>{$a[0]}</strong>";
 				},$Appearance['notes']);
 				$Appearance['notes'] = preg_replace_callback('/'.MOVIE_ID_PATTERN.'/',function($a){
 					$Ep = Episodes::getActual(0, (int) $a[1], true);
 					return !empty($Ep)
-						? "<a href='{$Ep->toURL()}'>".CoreUtils::aposEncode($Ep->formatTitle(AS_ARRAY,'title'))."</a>"
+						? "<a href='{$Ep->toURL()}'>".CoreUtils::aposEncode($Ep->formatTitle(AS_ARRAY,'title')).'</a>'
 						: "<strong>{$a[0]}</strong>";
 				},$Appearance['notes']);
 				$Appearance['notes'] = preg_replace_callback('/(?:^|[^\\\\])\K(?:#(\d+))\b/',function($a){
@@ -229,7 +229,7 @@ class Appearances {
 	 *
 	 * @return string
 	 */
-	static function getSpriteURL(int $AppearanceID, int $size = self::SPRITE_SIZES['REGULAR'], string $fallback = ''):string {
+	public static function getSpriteURL(int $AppearanceID, int $size = self::SPRITE_SIZES['REGULAR'], string $fallback = ''):string {
 		$fpath = SPRITE_PATH."$AppearanceID.png";
 		if (file_exists($fpath))
 			return "/cg/v/{$AppearanceID}s.png?s=$size&t=".filemtime($fpath);
@@ -244,7 +244,7 @@ class Appearances {
 	 *
 	 * @return string
 	 */
-	static function getSpriteHTML($Appearance, bool $permission){
+	public static function getSpriteHTML($Appearance, bool $permission){
 		$imgPth = self::getSpriteURL($Appearance['id']);
 		if (!empty($imgPth)){
 			$img = "<a href='$imgPth' target='_blank' title='Open image in new tab'><img src='$imgPth' alt='".CoreUtils::aposEncode($Appearance['label'])."'></a>";
@@ -266,12 +266,12 @@ class Appearances {
 	 *
 	 * @return string
 	 */
-	static function getUpdatesHTML($PonyID, $wrap = WRAP){
+	public static function getUpdatesHTML($PonyID, $wrap = WRAP){
 		global $Database;
 
 		$update = Updates::get($PonyID, MOST_RECENT);
 		if (!empty($update)){
-			$update = "Last updated ".Time::tag($update['timestamp']);
+			$update = 'Last updated '.Time::tag($update['timestamp']);
 		}
 		else {
 			if (!Permission::sufficient('staff')) return '';
@@ -288,7 +288,7 @@ class Appearances {
 	 *
 	 * @return array
 	 */
-	static function sort($Appearances, $simpleArray = false){
+	public static function sort($Appearances, $simpleArray = false){
 		global $Database;
 		$GroupTagIDs = array_keys(CGUtils::GROUP_TAG_IDS_ASSOC);
 		$Sorted = [];
@@ -322,7 +322,7 @@ class Appearances {
 	/**
 	 * @param string|int[] $ids
 	 */
-	static function reorder($ids){
+	public static function reorder($ids){
 		global $Database;
 		if (empty($ids))
 			return;
@@ -351,7 +351,7 @@ class Appearances {
 	/**
 	 * @param bool $EQG
 	 */
-	static function getSortReorder($EQG){
+	public static function getSortReorder($EQG){
 		if ($EQG)
 			return;
 		self::reorder(self::sort(self::get($EQG,null,null,'id'), SIMPLE_ARRAY));
@@ -366,7 +366,7 @@ class Appearances {
 	 *
 	 * @throws \Exception
 	 */
-	static function applyTemplate($AppearanceID, $EQG){
+	public static function applyTemplate($AppearanceID, $EQG){
 		global $Database;
 
 		if (empty($AppearanceID) || !is_numeric($AppearanceID))
@@ -450,7 +450,7 @@ class Appearances {
 	 *
 	 * @return string
 	 */
-	static function getRelatedEpisodesHTML($Appearance, $allowMovies = false){
+	public static function getRelatedEpisodesHTML($Appearance, $allowMovies = false){
 		global $Database;
 
 		$EpTagsOnAppearance = $Database->rawQuery(
@@ -463,7 +463,7 @@ class Appearances {
 			foreach ($EpTagsOnAppearance as $k => $row)
 				$EpTagsOnAppearance[$k] = $row['tid'];
 
-			$EpAppearances = $Database->rawQuery("SELECT DISTINCT name FROM tags WHERE tid IN (".implode(',',$EpTagsOnAppearance).") ORDER BY name");
+			$EpAppearances = $Database->rawQuery('SELECT DISTINCT name FROM tags WHERE tid IN ('.implode(',',$EpTagsOnAppearance).') ORDER BY name');
 			if (empty($EpAppearances))
 				return '';
 
@@ -502,7 +502,7 @@ HTML;
 	 *
 	 * @return string
 	 */
-	static function expandEpisodeTagName(string $tagname):string {
+	public static function expandEpisodeTagName(string $tagname):string {
 		global $EPISODE_ID_REGEX, $MOVIE_ID_REGEX;
 
 		if (preg_match($EPISODE_ID_REGEX, $tagname, $_match))
@@ -519,8 +519,8 @@ HTML;
 	 *
 	 * @return string
 	 */
-	static function getCMPreviewSVGURL($cm){
-		$path = str_replace('@',$cm->facing,str_replace('#',$cm->ponyid,CGUtils::CMDIR_SVG_PATH));
+	public static function getCMPreviewSVGURL($cm){
+		$path = str_replace(['@','#'],[$cm->facing,$cm->ponyid],CGUtils::CMDIR_SVG_PATH);
 		return "/cg/v/{$cm->ponyid}d.svg?facing={$cm->facing}&t=".(file_exists($path) ? filemtime($path) : time());
 	}
 
@@ -531,7 +531,7 @@ HTML;
 	 *
 	 * @return string
 	 */
-	static function getPreviewURL($AppearanceID):string {
+	public static function getPreviewURL($AppearanceID):string {
 		$path = str_replace('#',$AppearanceID,CGUtils::PREVIEW_SVG_PATH);
 		return "/cg/v/{$AppearanceID}p.svg?t=".(file_exists($path) ? filemtime($path) : time());
 	}
@@ -543,16 +543,16 @@ HTML;
 	 *
 	 * @return string
 	 */
-	static function getSafeLabel($Appearance){
+	public static function getSafeLabel($Appearance){
 		return CoreUtils::makeUrlSafe($Appearance['label']);
 	}
 
-	static function getRelated(int $AppearanceID){
+	public static function getRelated(int $AppearanceID){
 		global $Database;
 
 		return $Database->rawQuery(
 			/** @lang PostgreSQL */
-			"(
+			'(
 				SELECT p.id, p.order, p.label, r.mutual
 				FROM appearance_relations r
 				LEFT JOIN appearances p ON p.id = r.target
@@ -565,10 +565,10 @@ HTML;
 				LEFT JOIN appearances p ON p.id = r.source
 				WHERE r.target = :id && mutual = true
 			)
-			ORDER BY \"order\"", [':id' => $AppearanceID]);
+			ORDER BY "order"', [':id' => $AppearanceID]);
 	}
 
-	static function getLinkWithPreviewHTML($p){
+	public static function getLinkWithPreviewHTML($p){
 		$safeLabel = self::getSafeLabel($p);
 		$preview = self::getPreviewURL($p['id']);
 		$preview = "<img src='$preview' class='preview'>";
@@ -577,7 +577,7 @@ HTML;
 		return "<a href='$owner/cg/v/{$p['id']}-$safeLabel'>$preview<span>$label</span></a>";
 	}
 
-	static function getRelatedHTML(array $Related):string {
+	public static function getRelatedHTML(array $Related):string {
 		if (empty($Related))
 			return '';
 		$LINKS = '';
@@ -589,7 +589,7 @@ HTML;
 	/**
 	 * @return int
 	 */
-	static function validateAppearancePageID(){
+	public static function validateAppearancePageID(){
 		return (new Input('APPEARANCE_PAGE','int', [
 			Input::IS_OPTIONAL => true,
 			Input::IN_RANGE => [0,null],
@@ -605,7 +605,7 @@ HTML;
 	 *
 	 * @return bool
 	 */
-	static function hasColors(int $ponyid, bool $treatHexNullAsEmpty = false):bool {
+	public static function hasColors(int $ponyid, bool $treatHexNullAsEmpty = false):bool {
 		global $Database;
 		$hexnull = $treatHexNullAsEmpty?'AND hex IS NOT NULL':'';
 		return ($Database->rawQuerySingle("SELECT count(*) as cnt FROM colors WHERE groupid IN (SELECT groupid FROM colorgroups WHERE ponyid = ?) $hexnull", [$ponyid])['cnt'] ?? 0) > 0;
@@ -613,7 +613,7 @@ HTML;
 
 	const ELASTIC_COLUMNS = 'id,label,order,ishuman,private';
 
-	static function reindex(){
+	public static function reindex(){
 		global $Database;
 
 		$elasticClient = CoreUtils::elasticClient();
@@ -631,44 +631,44 @@ HTML;
 			Response::fail('Re-index failed, ElasticSearch server is down!');
 		}
 		$params = array_merge(CGUtils::ELASTIC_BASE, [
-			"body" => [
-				"mappings" => [
-					"entry" => [
-						"_all" => [ "enabled" => false  ],
-						"properties" => [
-							"label" => [
-								"type" => "text",
-								"analyzer" => "overkill",
+			'body' => [
+				'mappings' => [
+					'entry' => [
+						'_all' => ['enabled' => false  ],
+						'properties' => [
+							'label' => [
+								'type' => 'text',
+								'analyzer' => 'overkill',
 							],
-							"order" => [ "type" => "integer" ],
-							"ishuman" => [ "type" => "boolean" ],
-							"private" => [ "type" => "boolean" ],
-							"tags" => [
-								"type" => "text",
-								"analyzer" => "overkill",
+							'order' => ['type' => 'integer'],
+							'ishuman' => ['type' => 'boolean'],
+							'private' => ['type' => 'boolean'],
+							'tags' => [
+								'type' => 'text',
+								'analyzer' => 'overkill',
 							],
 						],
 					],
 				],
-				"settings" => [
-					"analysis" => [
-						"analyzer" => [
-							"overkill" => [
-								"type" => "custom",
-								"tokenizer" => "overkill",
-								"filter" => [
-									"lowercase"
+				'settings' => [
+					'analysis' => [
+						'analyzer' => [
+							'overkill' => [
+								'type' => 'custom',
+								'tokenizer' => 'overkill',
+								'filter' => [
+									'lowercase'
 								]
 							],
 						],
-						"tokenizer" => [
-							"overkill" => [
-								"type" => "edge_ngram",
-								"min_gram" => 2,
-								"max_gram" => 6,
-								"token_chars" => [
-									"letter",
-									"digit",
+						'tokenizer' => [
+							'overkill' => [
+								'type' => 'edge_ngram',
+								'min_gram' => 2,
+								'max_gram' => 6,
+								'token_chars' => [
+									'letter',
+									'digit',
 								],
 							],
 						],
@@ -692,7 +692,7 @@ HTML;
 
 		    $params['body'][] = self::getElasticBody($a);
 
-		    if ($i % 100 == 0) {
+		    if ($i % 100 === 0) {
 		        $elasticClient->bulk($params);
 		        $params = ['body' => []];
 		    }
@@ -704,7 +704,7 @@ HTML;
 		Response::success('Re-index completed');
 	}
 
-	static function updateIndex(int $AppearanceID, string $fields = self::ELASTIC_COLUMNS):array {
+	public static function updateIndex(int $AppearanceID, string $fields = self::ELASTIC_COLUMNS):array {
 		global $Database;
 
 		$Appearance = $Database->where('id', $AppearanceID)->getOne('appearances', $fields);
@@ -718,14 +718,14 @@ HTML;
 		return $Appearance;
 	}
 
-	static function getElasticMeta($Appearance){
+	public static function getElasticMeta($Appearance){
 		return array_merge(CGUtils::ELASTIC_BASE,[
 			'type' => 'entry',
 			'id' => $Appearance['id'],
 		]);
 	}
 
-	static function getElasticBody($Appearance){
+	public static function getElasticBody($Appearance){
 		$tags = Tags::getFor($Appearance['id'], null, true, true);
 		foreach ($tags as $k => $tag)
 			$tags[$k] = $tag['name'];
@@ -738,7 +738,7 @@ HTML;
 		];
 	}
 
-	static function toElasticArray(array $Appearance, bool $no_body = false, bool $update = false):array {
+	public static function toElasticArray(array $Appearance, bool $no_body = false, bool $update = false):array {
 		$params = self::getElasticMeta($Appearance);
 		if ($no_body)
 			return $params;

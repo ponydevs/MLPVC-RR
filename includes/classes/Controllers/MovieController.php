@@ -4,17 +4,16 @@ namespace App\Controllers;
 use App\CoreUtils;
 use App\Models\Episode;
 use App\Episodes;
-use App\RegExp;
 
 class MovieController extends Controller {
-	function pageID($params){
+	public function pageID($params){
 		global $Database;
 
 		$Database->where('season', 0)->where('episode', $params['id']);
 
 		$this->_page();
 	}
-	function pageTitle($params){
+	public function pageTitle($params){
 		global $Database;
 
 		$data = trim(strtolower($params['title']),' -');

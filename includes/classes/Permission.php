@@ -37,7 +37,7 @@ class Permission {
 	 *
 	 * @return bool
 	 */
-	static function sufficient($role, $compareAgainst = null){
+	public static function sufficient($role, $compareAgainst = null){
 		if (!is_string($role)) return false;
 
 		if (empty($compareAgainst)){
@@ -64,7 +64,7 @@ class Permission {
 	 *
 	 * @return bool
 	 */
-	static function insufficient($role, $compareAgainst = null){
+	public static function insufficient($role, $compareAgainst = null){
 		return !self::sufficient($role, $compareAgainst);
 	}
 }

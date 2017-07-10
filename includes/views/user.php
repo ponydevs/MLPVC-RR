@@ -21,7 +21,7 @@ if (isset($MSG)){
 }
 else {
 	$vectorapp = UserPrefs::get('p_vectorapp', $User->id);
-	$discordmember = $Database->disableAutoClass()->where('userid', $User->id)->getOne('discord-members',"id, coalesce(nick,username) as displayname");
+	$discordmember = $Database->disableAutoClass()->where('userid', $User->id)->getOne('discord-members', 'id, coalesce(nick,username) as displayname');
 ?>
 	<div class="briefing">
 		<?=$User->getAvatarWrap()?>
@@ -75,12 +75,12 @@ $Banishes = $Database
 	->where('target', $User->id)
 	->join('log l',"l.reftype = 'banish' AND l.refid = b.entryid")
 	->orderBy('l.timestamp')
-	->get('log__banish b',null,"b.reason, l.initiator, l.timestamp, 0 as action");
+	->get('log__banish b',null, 'b.reason, l.initiator, l.timestamp, 0 as action');
 if (!empty($Banishes)){
 	$Unbanishes = $Database
 		->where('target', $User->id)
 		->join('log l',"l.reftype = 'un-banish' AND l.refid = b.entryid")
-		->get('log__un-banish b',null,"b.reason, l.initiator, l.timestamp, 1 as action");
+		->get('log__un-banish b',null, 'b.reason, l.initiator, l.timestamp, 1 as action');
 	if (!empty($Unbanishes)){
 		$Banishes = array_merge($Banishes,$Unbanishes);
 		usort($Banishes, function($a, $b){
@@ -96,7 +96,7 @@ if (!empty($Banishes)){
 	foreach ($Banishes as $b){
 		$initiator = $displayInitiator ? Users::get($b['initiator']) : null;
 		$b['reason'] = htmlspecialchars($b['reason']);
-		echo "<li class=".strtolower($Actions[$b['action']])."><blockquote>{$b['reason']}</blockquote> - ".(isset($initiator)?$initiator->getProfileLink().' ':'').Time::tag($b['timestamp'])."</li>";
+		echo '<li class='.strtolower($Actions[$b['action']])."><blockquote>{$b['reason']}</blockquote> - ".(isset($initiator)?$initiator->getProfileLink().' ':'').Time::tag($b['timestamp']).'</li>';
 	}
 }
 			?></ul>
@@ -169,7 +169,7 @@ if (!empty($Banishes)){
 				echo "<optgroup label='Vectoring applications'>";
 				foreach ($apps as $id => $label)
 					echo "<option value='$id' ".($vectorapp===$id?'selected':'').">$label</option>";
-				echo "</optgroup>";
+				echo '</optgroup>';
 					?></select>
 <?php   if ($sameUser){ ?>
 					<button class="save typcn typcn-tick green" disabled>Save</button>
@@ -199,11 +199,14 @@ if (!empty($Banishes)){
 		</section>
 		<section class="sessions">
 			<h2><?=$sameUser? Users::PROFILE_SECTION_PRIVACY_LEVEL['staff']:''?>Sessions</h2>
-<?php   if (isset($CurrentSession) || !empty($Sessions)){ ?>
+<?php   $hasCurrentSession = $CurrentSession;
+		$hasSessions = !empty($Sessions);
+		if ($hasCurrentSession || $hasSessions){ ?>
 			<p>Below is a list of all the browsers <?=$sameUser?"you've":'this user has'?> logged in from.</p>
 			<ul class="session-list"><?php
-				if (isset($CurrentSession)) Users::renderSessionLi($CurrentSession,CURRENT);
-				if (!empty($Sessions)){
+				if ($hasCurrentSession)
+					Users::renderSessionLi($CurrentSession,CURRENT);
+				if ($hasSessions){
 					foreach ($Sessions as $s) Users::renderSessionLi($s);
 				}
 			?></ul>

@@ -7,7 +7,7 @@ use App\Permission;
 class UsersController extends Controller {
 	public $do = 'users';
 
-	function list(){
+	public function list(){
 		if (!Permission::sufficient('staff'))
 			CoreUtils::notFound();
 

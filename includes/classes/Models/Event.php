@@ -53,7 +53,7 @@ class Event extends AbstractFillable {
 	 *
 	 * @return Event|null
 	 */
-	static function get(int $id):?Event {
+	public static function get(int $id):?Event {
 		global $Database;
 
 		/** @noinspection PhpIncompatibleReturnTypeInspection */
@@ -70,17 +70,17 @@ class Event extends AbstractFillable {
 
 	public function checkCanEnter(User $user):bool {
 		switch ($this->entry_role){
-			case "user":
-			case "member":
-			case "staff":
+			case 'user':
+			case 'member':
+			case 'staff':
 				return Permission::sufficient($this->entry_role, $user->role);
 			break;
-			case "spec_discord":
+			case 'spec_discord':
 				return $user->isDiscordMember();
 			break;
-			case "spec_illustrator":
-			case "spec_inkscape":
-			case "spec_ponyscape":
+			case 'spec_illustrator':
+			case 'spec_inkscape':
+			case 'spec_ponyscape':
 				$reqapp = explode('_',$this->entry_role)[1];
 				$vapp = UserPrefs::get('p_vectorapp');
 				return  !empty($vapp) && $vapp === $reqapp;
@@ -141,10 +141,10 @@ class Event extends AbstractFillable {
 			if (empty($HighestScoringEntries))
 				$HTML .= CoreUtils::notice('info','<span class="typcn typcn-times"></span> No entries match the win criteria, thus the event ended without a winner');
 			else {
-				$HTML .= "<p>The event has concluded with ".CoreUtils::makePlural('winner',count($HighestScoringEntries),PREPEND_NUMBER).'.</p>';
+				$HTML .= '<p>The event has concluded with '.CoreUtils::makePlural('winner',count($HighestScoringEntries),PREPEND_NUMBER).'.</p>';
 				foreach ($HighestScoringEntries as $entry){
 					$title = CoreUtils::escapeHTML($entry->title);
-					$preview = isset($entry->prev_full) ? "<a href='{$entry->prev_src}'><img src='{$entry->prev_thumb}' alt=''><span class='title'>$title</span></a>" : "<span class='title'>$title</span>";
+					$preview = $entry->prev_full !== null ? "<a href='{$entry->prev_src}'><img src='{$entry->prev_thumb}' alt=''><span class='title'>$title</span></a>" : "<span class='title'>$title</span>";
 					$by = '<div>'.Users::get($entry->submitted_by)->getProfileLink(User::LINKFORMAT_FULL).'</div>';
 					$HTML .= "<div class='winning-entry'>$preview$by</div>";
 				}

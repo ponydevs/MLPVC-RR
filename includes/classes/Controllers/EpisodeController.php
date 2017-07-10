@@ -18,7 +18,7 @@ use \App\Models\EpisodeVideo;
 
 /** @property Episode $_episode */
 class EpisodeController extends Controller {
-	function index(){
+	public function index(){
 		$CurrentEpisode = Episodes::getLatest();
 		if (empty($CurrentEpisode))
 			CoreUtils::loadPage([
@@ -29,7 +29,7 @@ class EpisodeController extends Controller {
 		Episodes::loadPage($CurrentEpisode);
 	}
 
-	function nextup(){
+	public function nextup(){
 		// Only accessible from localhost
 		if (!in_array($_SERVER['REMOTE_ADDR'],['::1','127.0.0.1']) && Permission::insufficient('developer'))
 			Response::fail();
@@ -47,7 +47,7 @@ class EpisodeController extends Controller {
 		Response::done($out, JSON::PRETTY_PRINT);
 	}
 
-	function page($params){
+	public function page($params){
 		Episodes::loadPage($params['id'] ?? null);
 	}
 
@@ -57,13 +57,13 @@ class EpisodeController extends Controller {
 		if (!empty($EpData)){
 			$this->_episode = Episodes::getActual($EpData['season'], $EpData['episode'], Episodes::ALLOW_MOVIES);
 			if (empty($this->_episode))
-				Response::fail("There’s no episode with this season & episode number");
+				Response::fail('There’s no episode with this season & episode number');
 		}
 		else if ($required)
 			CoreUtils::notFound();
 	}
 
-	function postList($params){
+	public function postList($params){
 		$this->_getEpisode($params);
 
 		$section = $_GET['section'];
@@ -77,7 +77,7 @@ class EpisodeController extends Controller {
 		Response::done(['render' => $rendered]);
 	}
 
-	function get($params){
+	public function get($params){
 		CSRFProtection::protect();
 		$this->_getEpisode($params);
 
@@ -88,7 +88,7 @@ class EpisodeController extends Controller {
 		]);
 	}
 
-	function _addEdit($params, $action){
+	public function _addEdit($params, $action){
 		CSRFProtection::protect();
 
 		if (!Permission::sufficient('staff'))
@@ -121,8 +121,8 @@ class EpisodeController extends Controller {
 		$EpisodeChanged = true;
 		$SeasonChanged = true;
 		if ($editing){
-			$SeasonChanged = $isMovie ? false : $insert['season'] != $this->_episode->season;
-			$EpisodeChanged = $insert['episode'] != $this->_episode->episode;
+			$SeasonChanged = $isMovie ? false : (int)$insert['season'] !== $this->_episode->season;
+			$EpisodeChanged = (int)$insert['episode'] !== $this->_episode->episode;
 			if ($SeasonChanged || $EpisodeChanged){
 				$Target = Episodes::getActual(
 					$insert['season'] ?? $this->_episode->season,
@@ -130,7 +130,7 @@ class EpisodeController extends Controller {
 					Episodes::ALLOW_MOVIES
 				);
 				if (!empty($Target))
-					Response::fail("There’s already an episode with the same season & episode number");
+					Response::fail('There’s already an episode with the same season & episode number');
 
 				if ((new Episode($insert))->getPostCount() > 0)
 					Response::fail('This epsiode’s ID cannot be changed because it already has posts and this action could break existing links');
@@ -199,7 +199,7 @@ class EpisodeController extends Controller {
 			Input::CUSTOM_ERROR_MESSAGES => [
 				Input::ERROR_MISSING => "$What title is missing",
 				Input::ERROR_RANGE => "$What title must be between @min and @max characters",
-				'prefix-movieonly' => "Prefixes can only be used for movies",
+				'prefix-movieonly' => 'Prefixes can only be used for movies',
 			]
 		]))->out();
 		CoreUtils::checkStringValidity($insert['title'], "$What title", INVERSE_EP_TITLE_PATTERN);
@@ -281,6 +281,7 @@ class EpisodeController extends Controller {
 			if (!empty($this->_episode->airs))
 				$this->_episode->airs = date('c',strtotime($this->_episode->airs));
 			foreach (['season', 'episode', 'twoparter', 'title', 'airs'] as $k){
+				/** @noinspection TypeUnsafeComparisonInspection */
 				if (isset($insert[$k]) && $insert[$k] != $this->_episode->{$k}){
 					$logentry["old$k"] = $this->_episode->{$k};
 					$logentry["new$k"] = $insert[$k];
@@ -303,15 +304,15 @@ class EpisodeController extends Controller {
 		Response::done(['url' => (new Episode($insert))->toURL()]);
 	}
 
-	function set($params){
+	public function set($params){
 		$this->_addEdit($params, 'set');
 	}
 
-	function add($params){
+	public function add($params){
 		$this->_addEdit($params, 'add');
 	}
 
-	function delete($params){
+	public function delete($params){
 		$this->_getEpisode($params);
 
 		global $Database, $Database;
@@ -335,7 +336,7 @@ class EpisodeController extends Controller {
 		]);
 	}
 
-	function vote($params){
+	public function vote($params){
 		CSRFProtection::protect();
 		$this->_getEpisode($params);
 
@@ -343,11 +344,11 @@ class EpisodeController extends Controller {
 
 		if (isset($_REQUEST['detail'])){
 			$VoteCountQuery = $Database->rawQuery(
-				"SELECT count(*) as value, vote as label
+				'SELECT count(*) as value, vote as label
 				FROM episodes__votes v
 				WHERE season = ? && episode = ?
 				GROUP BY v.vote
-				ORDER BY v.vote ASC", [$this->_episode->season, $this->_episode->episode]);
+				ORDER BY v.vote ASC', [$this->_episode->season, $this->_episode->episode]);
 			$VoteCounts = [
 				'labels' => [],
 				'datasets' => [
@@ -394,7 +395,7 @@ class EpisodeController extends Controller {
 		Response::done(['newhtml' => Episodes::getSidebarVoting($this->_episode)]);
 	}
 
-	function getVideoEmbeds($params){
+	public function getVideoEmbeds($params){
 		$this->_getEpisode($params);
 
 		Response::done(Episodes::getVideoEmbeds($this->_episode));
@@ -488,18 +489,18 @@ class EpisodeController extends Controller {
 		Response::success('Links updated', ['epsection' => Episodes::getVideosHTML($this->_episode)]);
 	}
 
-	function videoData($params){
+	public function videoData($params){
 		if (!isset($_GET['action']))
 			Response::fail('Missing action');
 
 		switch ($_GET['action']){
-			case "get": $this->_getVideoData($params); break;
-			case "set": $this->_setVideoData($params); break;
+			case 'get': $this->_getVideoData($params); break;
+			case 'set': $this->_setVideoData($params); break;
 			default: CoreUtils::notFound();
 		}
 	}
 
-	function brokenVideos($params){
+	public function brokenVideos($params){
 		$this->_getEpisode($params);
 
 		global $Database;
@@ -527,7 +528,7 @@ class EpisodeController extends Controller {
 		if ($removed === 0)
 			return Response::success('No broken videos found under this '.($this->_episode->isMovie?'movie':'episode').'.');
 
-		Response::success("$removed video link".($removed===1?' has':'s have')." been removed from the site. Thank you for letting us know.", [
+		Response::success("$removed video link".($removed===1?' has':'s have').' been removed from the site. Thank you for letting us know.', [
 			'epsection' => Episodes::getVideosHTML($this->_episode, NOWRAP),
 		]);
 	}
@@ -595,12 +596,12 @@ class EpisodeController extends Controller {
 		Response::done(['section' => Episodes::getAppearancesSectionHTML($this->_episode)]);
 	}
 
-	function guideRelations($params){
+	public function guideRelations($params){
 		$action = $_GET['action'];
 
 		switch ($action){
-			case "get": $this->_getGuideRelations($params); break;
-			case "set": $this->_setGuideRelations($params); break;
+			case 'get': $this->_getGuideRelations($params); break;
+			case 'set': $this->_setGuideRelations($params); break;
 			default: CoreUtils::notFound();
 		}
 	}

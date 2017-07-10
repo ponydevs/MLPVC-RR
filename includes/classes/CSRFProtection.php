@@ -8,10 +8,10 @@ class CSRFProtection {
 	/**
 	 * Checks POSTed data for CSRF token validity
 	 */
-	static function detect(){
+	public static function detect(){
 		$CSRF = !isset($_POST[self::$_cookieKey]) || !Cookie::exists(self::$_cookieKey) || $_POST[self::$_cookieKey] !== Cookie::get(self::$_cookieKey);
 		if (!POST_REQUEST && $CSRF)
-			Cookie::set(self::$_cookieKey,md5(time()+rand()), Cookie::SESSION);
+			Cookie::set(self::$_cookieKey,md5(time()+mt_rand()), Cookie::SESSION);
 	}
 
 	/**
@@ -21,7 +21,7 @@ class CSRFProtection {
 	 *
 	 * @return null|bool
 	 */
-	static function protect($return_as_bool = false){
+	public static function protect($return_as_bool = false){
 		global $CSRF;
 		$is_forged = isset($CSRF) && $CSRF;
 
@@ -38,7 +38,7 @@ class CSRFProtection {
 	 *
 	 * @return string
 	 */
-	static function removeParamFromURL($url){
-		return rtrim(preg_replace(new RegExp(preg_quote(self::$_cookieKey).'=[^&]+(&|$)'),'',$url),'?&');
+	public static function removeParamFromURL($url){
+		return rtrim(preg_replace(new RegExp(preg_quote(self::$_cookieKey, '~').'=[^&]+(&|$)'),'',$url),'?&');
 	}
 }

@@ -7,7 +7,7 @@ use App\RegExp;
 
 class BrowserController extends Controller {
 	public $do = 'browser';
-	function index($params){
+	public function index($params){
 		global $Database;
 
 		$AgentString = null;

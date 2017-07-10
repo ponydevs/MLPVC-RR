@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use App\Users;
-use App\RegExp;
 
 class DiscordMember extends AbstractUser {
 	/** @var string */
@@ -25,7 +24,7 @@ class DiscordMember extends AbstractUser {
 		$this->avatar_url = $this->getAvatarURL();
 	}
 
-	function toArray(bool $remove_empty = false): array{
+	public function toArray(bool $remove_empty = false): array{
 		$arr = parent::toArray($remove_empty);
 		if (array_key_exists('name', $arr))
 			unset($arr['name']);
@@ -34,7 +33,7 @@ class DiscordMember extends AbstractUser {
 		return $arr;
 	}
 
-	static function of(User $user):DiscordMember {
+	public static function of(User $user):DiscordMember {
 		global $Database;
 		/** @noinspection PhpIncompatibleReturnTypeInspection */
 		return $Database->where('userid', $user->id)->getOne('discord-members');
@@ -48,7 +47,7 @@ class DiscordMember extends AbstractUser {
 		return $this->nick ?? $this->username;
 	}
 
-	function nameToDAName(string $name):?string{
+	public function nameToDAName(string $name):?string{
 		global $DISCORD_NICK_REGEX;
 
 		if (!preg_match($DISCORD_NICK_REGEX, $name))
@@ -98,6 +97,7 @@ class DiscordMember extends AbstractUser {
 				return $this->_checkDAUserBlacklist($firstGuess->id);
 		}
 
+		/** @noinspection SuspiciousAssignmentsInspection */
 		$daname = $this->nameToDAName($this->username);
 		if (!empty($daname)){
 			$secondGuess = Users::get($daname, 'name', 'id');

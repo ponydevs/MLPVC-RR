@@ -2,8 +2,6 @@
 
 namespace App\Controllers;
 
-use App\CoreUtils;
-use App\RegExp;
 use App\Users;
 
 abstract class Controller {
@@ -11,7 +9,7 @@ abstract class Controller {
 	protected $url;
 	/** @var string */
 	public $do;
-	function __construct(){
+	public function __construct(){
 		Users::authenticate();
 	}
 }

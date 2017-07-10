@@ -1,7 +1,6 @@
 <?php
 use App\CoreUtils;
 use App\Permission;
-use App\Posts;
 /** @var $title string */ ?>
 <div id="content">
 	<h1><?=$title?></h1>
@@ -55,7 +54,7 @@ use App\Posts;
 		?></code></pre>
 <?php   }
 		catch (\Elasticsearch\Common\Exceptions\NoNodesAvailableException $e){
-			echo "<strong>Server is down.</strong></code></pre>";
+			echo '<strong>Server is down.</strong></code></pre>';
 		} ?>
 	</section>
 <?  } ?>

@@ -14,11 +14,11 @@ class ImageProvider {
 			if (!empty($reqProv)){
 				if (!is_array($reqProv))
 					$reqProv = [$reqProv];
-				if (!in_array($provider['name'], $reqProv))
-					throw new MismatchedProviderException($provider['name']);
+				if (!in_array($provider->name, $reqProv, true))
+					throw new MismatchedProviderException($provider->name);
 			}
-			$this->provider = $provider['name'];
-			$this->setUrls($provider['itemid']);
+			$this->provider = $provider->name;
+			$this->setUrls($provider->itemid);
 		}
 	}
 	private static $_providerRegexes = [
@@ -32,15 +32,26 @@ class ImageProvider {
 	];
 	private static $_allowedMimeTypes = ['image/png' => true, 'image/jpeg' => true, 'image/jpg' => true];
 	private static $_blockedMimeTypes = ['image/gif' => 'Animated GIFs'];
+	/**
+	 * @param string $url
+	 * @param string $pattern
+	 * @param string $name
+	 *
+	 * @return ImageProviderItem|bool
+	 */
 	private static function _testProvider($url, $pattern, $name){
 		$match = [];
 		if (preg_match(new RegExp("^(?:https?://(?:www\\.)?)?$pattern"), $url, $match))
-			return [
-				'name' => $name,
-				'itemid' => $match[1]
-			];
+			return new ImageProviderItem($name,$match[1]);
 		return false;
 	}
+
+	/**
+	 * @param string $url
+	 *
+	 * @return ImageProviderItem
+	 * @throws UnsupportedProviderException
+	 */
 	public static function getProvider($url){
 		foreach (self::$_providerRegexes as $pattern => $name){
 			$test = self::_testProvider($url, $pattern, $name);
@@ -57,7 +68,7 @@ class ImageProvider {
 			$ctype = get_headers($url, 1)['Content-Type'];
 		}
 		if (empty(self::$_allowedMimeTypes[$ctype]))
-			throw new \Exception((!empty(self::$_blockedMimeTypes[$ctype])?self::$_blockedMimeTypes[$ctype].' are':"Content type \"$ctype\" is")." not allowed, please use a different image.");
+			throw new \Exception((!empty(self::$_blockedMimeTypes[$ctype])?self::$_blockedMimeTypes[$ctype].' are':"Content type \"$ctype\" is").' not allowed, please use a different image.');
 	}
 
 	/**
@@ -65,7 +76,7 @@ class ImageProvider {
 	 * @param int|string $id
 	 * @return void
 	 */
-	function setUrls($id):void {
+	public function setUrls($id):void {
 		switch ($this->provider){
 			case 'imgur':
 				$this->fullsize = "https://i.imgur.com/$id.png";

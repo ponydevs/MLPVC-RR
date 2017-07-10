@@ -18,7 +18,7 @@ class Cutiemark extends AbstractFillable {
 	}
 
 	/** @return string|null */
-	function getPreviewURL():?string {
+	public function getPreviewURL():?string {
 		try {
 			return $this->preview ?? DeviantArt::getCachedDeviation($this->favme)->preview ?? null;
 		}

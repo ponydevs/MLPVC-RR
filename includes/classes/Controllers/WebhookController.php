@@ -3,7 +3,7 @@
 namespace App\Controllers;
 
 class WebhookController extends Controller {
-	function index(){
+	public function index(){
 		if (empty($_SERVER['HTTP_USER_AGENT']) && strpos($_SERVER['HTTP_USER_AGENT'], 'GitHub-Hookshot/') === 0)
 			CoreUtils::notFound();
 		if (empty($_SERVER['HTTP_X_GITHUB_EVENT']) || empty($_SERVER['HTTP_X_HUB_SIGNATURE']))
@@ -17,18 +17,18 @@ class WebhookController extends Controller {
 			case 'push':
 				$output = [];
 				chdir(PROJPATH);
-				exec("git reset HEAD --hard",$output);
-				exec("git pull",$output);
+				exec('git reset HEAD --hard',$output);
+				exec('git pull',$output);
 				$output = implode("\n", $output);
 				if (empty($output))
 					HTTP::statusCode(500, AND_DIE);
 				$arr[] = "\n";
-				exec("composer update --no-dev 2>&1",$arr);
+				exec('composer update --no-dev 2>&1',$arr);
 				$output .= implode("\n", $arr);
 				echo $output;
 			break;
 			case 'ping':
-				echo "pong";
+				echo 'pong';
 			break;
 			default: CoreUtils::notFound();
 		}

@@ -15,7 +15,7 @@ use App\Tags;
 <div id="content">
 	<div class="sprite-wrap"><?=Appearances::getSpriteHTML($Appearance, Permission::sufficient('staff') || $isOwner)?></div>
 	<h1><?=CoreUtils::escapeHTML($heading)?></h1>
-	<p>from <?=isset($Owner)?"<a href='/@{$Owner->name}'>{$Owner->name}</a>".CoreUtils::posess($Owner->name, true)." <a href='/@{$Owner->name}/cg'>Personal Color Guide</a>":"the MLP-VectorClub's <a href='/cg".($EQG?'/eqg':'')."'>".($EQG?'EQG ':'')."Color Guide</a>"?></p>
+	<p>from <?=isset($Owner)?"<a href='/@{$Owner->name}'>{$Owner->name}</a>".CoreUtils::posess($Owner->name, true)." <a href='/@{$Owner->name}/cg'>Personal Color Guide</a>":"the MLP-VectorClub's <a href='/cg".($EQG?'/eqg':'')."'>".($EQG?'EQG ':'').'Color Guide</a>' ?></p>
 
 <?  if (Permission::sufficient('staff') || $isOwner){ ?>
 	<div class="notice warn align-center appearance-private-notice"<?=!empty($Appearance['private'])?'':' style="display:none"'?>><p><span class="typcn typcn-lock-closed"></span> <strong>This appearance is currently private (its colors are only visible to <?=isset($Owner)?(($isOwner?'you':$Owner->name).' and '):''?>staff members)</strong></p></div>

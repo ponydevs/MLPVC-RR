@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "5dc4a573dd1d82247bdb19265e1b15e0",
+    "content-hash": "eb3a4b763b52b4bf7d1b4af747659fe7",
     "packages": [
         {
             "name": "altorouter/altorouter",
@@ -258,16 +258,16 @@
         },
         {
             "name": "fightbulc/moment",
-            "version": "1.26.5",
+            "version": "1.26.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/fightbulc/moment.php.git",
-                "reference": "cdd7e35a03d2fe13e8d050c9526eaeea241f9b0e"
+                "reference": "51613ebf5d77c55c943842d67c363db1833c31f9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/fightbulc/moment.php/zipball/cdd7e35a03d2fe13e8d050c9526eaeea241f9b0e",
-                "reference": "cdd7e35a03d2fe13e8d050c9526eaeea241f9b0e",
+                "url": "https://api.github.com/repos/fightbulc/moment.php/zipball/51613ebf5d77c55c943842d67c363db1833c31f9",
+                "reference": "51613ebf5d77c55c943842d67c363db1833c31f9",
                 "shasum": ""
             },
             "require": {
@@ -317,7 +317,7 @@
                 "translation",
                 "validate"
             ],
-            "time": "2017-05-15T09:09:18+00:00"
+            "time": "2017-07-06T18:45:03+00:00"
         },
         {
             "name": "guzzlehttp/command",
@@ -715,6 +715,73 @@
             "time": "2014-10-12T19:18:40+00:00"
         },
         {
+            "name": "league/oauth2-client",
+            "version": "2.2.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/thephpleague/oauth2-client.git",
+                "reference": "313250eab923e673a5c0c8f463f443ee79f4383f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/thephpleague/oauth2-client/zipball/313250eab923e673a5c0c8f463f443ee79f4383f",
+                "reference": "313250eab923e673a5c0c8f463f443ee79f4383f",
+                "shasum": ""
+            },
+            "require": {
+                "guzzlehttp/guzzle": "^6.0",
+                "paragonie/random_compat": "^1|^2",
+                "php": ">=5.6.0"
+            },
+            "require-dev": {
+                "eloquent/liberator": "^2.0",
+                "eloquent/phony": "^0.14.1",
+                "jakub-onderka/php-parallel-lint": "~0.9",
+                "phpunit/phpunit": "^5.0",
+                "squizlabs/php_codesniffer": "^2.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-2.x": "2.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "League\\OAuth2\\Client\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Alex Bilbie",
+                    "email": "hello@alexbilbie.com",
+                    "homepage": "http://www.alexbilbie.com",
+                    "role": "Developer"
+                },
+                {
+                    "name": "Woody Gilk",
+                    "homepage": "https://github.com/shadowhand",
+                    "role": "Contributor"
+                }
+            ],
+            "description": "OAuth 2.0 Client Library",
+            "keywords": [
+                "Authentication",
+                "SSO",
+                "authorization",
+                "identity",
+                "idp",
+                "oauth",
+                "oauth2",
+                "single sign on"
+            ],
+            "time": "2017-04-25T14:43:14+00:00"
+        },
+        {
             "name": "monolog/monolog",
             "version": "1.23.0",
             "source": {
@@ -1081,17 +1148,59 @@
             "time": "2017-02-17T21:33:10+00:00"
         },
         {
-            "name": "seinopsys/postgresql-database-class",
-            "version": "v1.1.0",
+            "name": "seinopsys/oauth2-deviantart",
+            "version": "v1.0.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/SeinopSys/PHP-PostgreSQL-Database-Class.git",
-                "reference": "09a52bd91f4cf7e5ec98ebc50a0b5bcca6c7f651"
+                "url": "https://github.com/SeinopSys/oauth2-deviantart.git",
+                "reference": "d012873eb4fe145d9efd2e3c07ee1ad96626c6a6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/SeinopSys/PHP-PostgreSQL-Database-Class/zipball/09a52bd91f4cf7e5ec98ebc50a0b5bcca6c7f651",
-                "reference": "09a52bd91f4cf7e5ec98ebc50a0b5bcca6c7f651",
+                "url": "https://api.github.com/repos/SeinopSys/oauth2-deviantart/zipball/d012873eb4fe145d9efd2e3c07ee1ad96626c6a6",
+                "reference": "d012873eb4fe145d9efd2e3c07ee1ad96626c6a6",
+                "shasum": ""
+            },
+            "require": {
+                "league/oauth2-client": "^2.2",
+                "php": ">=5.6.0"
+            },
+            "require-dev": {
+                "mockery/mockery": "^0.9.9",
+                "phpunit/phpunit": "^5.7",
+                "ramsey/uuid": "^3.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "SeinopSys\\OAuth2\\Client\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "SeinopSys",
+                    "email": "seinopsys@gmail.com"
+                }
+            ],
+            "description": "DeviantArt OAuth 2.0 Client Provider for The PHP League OAuth2-Client",
+            "time": "2017-07-10T02:21:25+00:00"
+        },
+        {
+            "name": "seinopsys/postgresql-database-class",
+            "version": "v1.1.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/SeinopSys/PHP-PostgreSQL-Database-Class.git",
+                "reference": "ecb1384da893275686acfe52a1b0a09ba849b348"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/SeinopSys/PHP-PostgreSQL-Database-Class/zipball/ecb1384da893275686acfe52a1b0a09ba849b348",
+                "reference": "ecb1384da893275686acfe52a1b0a09ba849b348",
                 "shasum": ""
             },
             "require": {
@@ -1116,7 +1225,7 @@
                 }
             ],
             "description": "PHP wrapper class for PDO-based interaction with PostgreSQL databases, heavily based on joshcam/mysqli-database-class",
-            "time": "2017-04-14T16:14:24+00:00"
+            "time": "2017-07-06T21:57:09+00:00"
         },
         {
             "name": "symfony/options-resolver",

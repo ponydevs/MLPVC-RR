@@ -4,7 +4,7 @@ use App\CoreUtils;
 use PHPUnit\Framework\TestCase;
 
 class CoreUtilsTest extends TestCase {
-	function testQueryStringAssoc(){
+	public function testQueryStringAssoc(){
 		$result = CoreUtils::queryStringAssoc('?a=b&c=1');
 		self::assertEquals([
 			'a' => 'b',
@@ -12,23 +12,23 @@ class CoreUtilsTest extends TestCase {
 		], $result);
 	}
 
-	function testAposEncode(){
+	public function testAposEncode(){
 		$result = CoreUtils::aposEncode("No Man's Lie");
-		self::assertEquals("No Man&apos;s Lie", $result);
+		self::assertEquals('No Man&apos;s Lie', $result);
 		$result = CoreUtils::aposEncode('"implying"');
-		self::assertEquals("&quot;implying&quot;", $result);
+		self::assertEquals('&quot;implying&quot;', $result);
 	}
 
-	function testEscapeHTML(){
+	public function testEscapeHTML(){
 		$result = CoreUtils::escapeHTML("<script>alert('XSS')</script>");
 		self::assertEquals("&lt;script&gt;alert('XSS')&lt;/script&gt;", $result);
 		$result = CoreUtils::escapeHTML('<');
-		self::assertEquals("&lt;", $result);
+		self::assertEquals('&lt;', $result);
 		$result = CoreUtils::escapeHTML('>');
-		self::assertEquals("&gt;", $result);
+		self::assertEquals('&gt;', $result);
 	}
 
-	function testNotice(){
+	public function testNotice(){
 		$exception = false;
 		try {
 			CoreUtils::notice('invalid type','asd');
@@ -46,14 +46,14 @@ class CoreUtilsTest extends TestCase {
 		self::assertEquals("<div class='notice info'><label>title</label><p>mutliline</p><p>notice</p></div>", $result);
 	}
 
-	function testPad(){
+	public function testPad(){
 		$result = CoreUtils::pad(1);
 		self::assertEquals('01',$result);
 		$result = CoreUtils::pad(10);
 		self::assertEquals('10',$result);
 	}
 
-	function testCapitalize(){
+	public function testCapitalize(){
 		$result = CoreUtils::capitalize('apple pie');
 		self::assertEquals('Apple pie', $result);
 		$result = CoreUtils::capitalize('apple pie', true);
@@ -64,7 +64,7 @@ class CoreUtilsTest extends TestCase {
 		self::assertEquals('Apple Pie', $result);
 	}
 
-	function testGetMaxUploadSize(){
+	public function testGetMaxUploadSize(){
 		$result = CoreUtils::getMaxUploadSize(['4M','10M']);
 		self::assertEquals('4 MB', $result);
 		$result = CoreUtils::getMaxUploadSize(['4k','4k']);
@@ -73,7 +73,7 @@ class CoreUtilsTest extends TestCase {
 		self::assertEquals('5 MB', $result);
 	}
 
-	function testExportVars(){
+	public function testExportVars(){
 		$result = CoreUtils::exportVars([
 			'a' => 1,
 			'reg' => new \App\RegExp('^ab?c$','gui'),
@@ -84,7 +84,7 @@ class CoreUtilsTest extends TestCase {
 		self::assertEquals('<script>var a=1,reg=/^ab?c$/gi,b=true,s="string"</script>', $result);
 	}
 
-	function testSanitizeHtml(){
+	public function testSanitizeHtml(){
 		$result = CoreUtils::sanitizeHtml('<script>alert("XSS")</script><a href="/#hax">Click me</a>');
 		self::assertEquals('&lt;script&gt;alert("XSS")&lt;/script&gt;&lt;a href="/#hax"&gt;Click me&lt;/a&gt;',$result,'Attack attempt check');
 		$result = CoreUtils::sanitizeHtml('Text<strong>Strong</strong><em>Emphasis</em>Text');
@@ -95,7 +95,7 @@ class CoreUtilsTest extends TestCase {
 		self::assertEquals('I like <code>while(true)window.open()</code> a lot&lt;sup&gt;*&lt;/sup&gt;',$result,'Tag whitelist check');
 	}
 
-	function testArrayToNaturalString(){
+	public function testArrayToNaturalString(){
 		$result = CoreUtils::arrayToNaturalString([1]);
 		self::assertEquals('1', $result);
 		$result = CoreUtils::arrayToNaturalString([1,2]);
@@ -106,21 +106,21 @@ class CoreUtilsTest extends TestCase {
 		self::assertEquals('1, 2, 3 and 4', $result);
 	}
 
-	function testCheckStringValidity(){
+	public function testCheckStringValidity(){
 		$result = CoreUtils::checkStringValidity('Oh my~!', 'Exclamation', '[^A-Za-z!\s]', true);
-		self::assertEquals("Exclamation (Oh my~!) contains an invalid character: ~", $result);
+		self::assertEquals('Exclamation (Oh my~!) contains an invalid character: ~', $result);
 		$result = CoreUtils::checkStringValidity('A_*cbe>#', 'String', '[^A-Za-z]', true);
-		self::assertEquals("String (A_*cbe&gt;#) contains the following invalid characters: _, *, &gt; and #", $result);
+		self::assertEquals('String (A_*cbe&gt;#) contains the following invalid characters: _, *, &gt; and #', $result);
 	}
 
-	function testPosess(){
+	public function testPosess(){
 		$result = CoreUtils::posess('David');
-		self::assertEquals("David’s", $result);
+		self::assertEquals('David’s', $result);
 		$result = CoreUtils::posess('applications');
-		self::assertEquals("applications’", $result);
+		self::assertEquals('applications’', $result);
 	}
 
-	function testMakePlural(){
+	public function testMakePlural(){
 		$result = CoreUtils::makePlural('apple',2);
 		self::assertEquals('apples', $result);
 		$result = CoreUtils::makePlural('apple',1);
@@ -135,7 +135,7 @@ class CoreUtilsTest extends TestCase {
 		self::assertEquals('10 entries', $result);
 	}
 
-	function testBrowserNameToClass(){
+	public function testBrowserNameToClass(){
 		$result = CoreUtils::browserNameToClass('Chrome');
 		self::assertEquals('chrome', $result);
 		$result = CoreUtils::browserNameToClass('Edge');
@@ -156,12 +156,12 @@ class CoreUtilsTest extends TestCase {
 		self::assertEquals('vivaldi', $result);
 	}
 
-	function testTrim(){
+	public function testTrim(){
 		$result = CoreUtils::trim('I    like    spaces');
 		self::assertEquals('I like spaces', $result);
 	}
 
-	function testAverage(){
+	public function testAverage(){
 		$result = CoreUtils::average(1);
 		self::assertEquals(1, $result);
 		$result = CoreUtils::average(1,2);
@@ -170,16 +170,16 @@ class CoreUtilsTest extends TestCase {
 		self::assertEquals(2, $result);
 	}
 
-	function testHex2Rgb(){
-		$result = CoreUtils::hex2Rgb("#AFDC34");
+	public function testHex2Rgb(){
+		$result = CoreUtils::hex2Rgb('#AFDC34');
 		self::assertEquals([175,220,52],$result);
-		$result = CoreUtils::hex2Rgb("#000000");
+		$result = CoreUtils::hex2Rgb('#000000');
 		self::assertEquals([0,0,0],$result);
-		$result = CoreUtils::hex2Rgb("#ffffff");
+		$result = CoreUtils::hex2Rgb('#ffffff');
 		self::assertEquals([255,255,255],$result);
 	}
 
-	function testNormalizeStashID(){
+	public function testNormalizeStashID(){
 		$result = CoreUtils::nomralizeStashID('76dfg312kla');
 		self::assertEquals('076dfg312kla', $result);
 		$result = CoreUtils::nomralizeStashID('76dfg312kla4');
@@ -188,22 +188,22 @@ class CoreUtilsTest extends TestCase {
 		self::assertEquals('0adfg312kla4', $result);
 	}
 
-	function testCutoff(){
+	public function testCutoff(){
 		$result = CoreUtils::cutoff('This is a long string', 10);
 		self::assertEquals(10, CoreUtils::length($result));
 		self::assertEquals('This is a…', $result);
 	}
 
-	function testYiq(){
-		$result = CoreUtils::yiq("#ffffff");
+	public function testYiq(){
+		$result = CoreUtils::yiq('#ffffff');
 		self::assertEquals(255, $result);
-		$result = CoreUtils::yiq("#808080");
+		$result = CoreUtils::yiq('#808080');
 		self::assertEquals(128, $result);
-		$result = CoreUtils::yiq("#000000");
+		$result = CoreUtils::yiq('#000000');
 		self::assertEquals(0, $result);
 	}
 
-	function testSet(){
+	public function testSet(){
 		$array = [];
 		CoreUtils::set($array, 'key', 'value');
 		self::assertArrayHasKey('key', $array);
@@ -215,14 +215,14 @@ class CoreUtilsTest extends TestCase {
 		self::assertEquals('value', $object->key);
 	}
 
-	function testSha256(){
-		$data = "a3d5f3e5a67f38cd6e7ad8cfe41245acf";
+	public function testSha256(){
+		$data = 'a3d5f3e5a67f38cd6e7ad8cfe41245acf';
 		$hash = CoreUtils::sha256($data);
 		self::assertEquals('fcb0c71edf2df18c7d39accbbb46083d511ea091d7ec56727a6a9931d40f46d8',$hash);
 	}
 
 	// If httpstat.us ever goes down these tests may fail
-	function testIsURLAvailable(){
+	public function testIsURLAvailable(){
 		$url = 'http://httpstat.us/200';
 		$resp = CoreUtils::isURLAvailable($url);
 		self::assertEquals(true,$resp);

@@ -7,7 +7,7 @@ use App\Models\EventEntryVote;
 use PHPUnit\Framework\TestCase;
 
 class EventEntryVoteTest extends TestCase {
-	function testIsLockedIn(){
+	public function testIsLockedIn(){
 		$entry = new EventEntry([ 'last_edited' => '2017-01-20T10:00:00Z' ]);
 		$entryVote = new EventEntryVote([ 'cast_at' => '2017-01-20T12:00:00Z' ]);
 		$lockedIn = $entryVote->isLockedIn($entry, strtotime('+59 minutes',strtotime($entryVote->cast_at)));

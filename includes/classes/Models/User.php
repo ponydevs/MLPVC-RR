@@ -45,14 +45,14 @@ class User extends AbstractUser {
 	 *
 	 * @return string
 	 */
-	function getProfileLink(int $format = self::LINKFORMAT_TEXT):string {
+	public function getProfileLink(int $format = self::LINKFORMAT_TEXT):string {
 		$Username = $this->name;
 		$url = "/@$Username";
 		if ($format === self::LINKFORMAT_URL)
 			return $url;
-		$avatar = $format == self::LINKFORMAT_FULL ? "<img src='{$this->avatar_url}' class='avatar' alt='avatar'> " : '';
+		$avatar = $format === self::LINKFORMAT_FULL ? "<img src='{$this->avatar_url}' class='avatar' alt='avatar'> " : '';
 
-		return "<a href='$url' class='da-userlink".($format == self::LINKFORMAT_FULL ? ' with-avatar':'')."'>$avatar<span class='name'>$Username</span></a>";
+		return "<a href='$url' class='da-userlink".($format === self::LINKFORMAT_FULL ? ' with-avatar':'')."'>$avatar<span class='name'>$Username</span></a>";
 	}
 
 	/**
@@ -62,14 +62,14 @@ class User extends AbstractUser {
 	 *
 	 * @return string
 	 */
-	function getDALink(int $format = self::LINKFORMAT_FULL):string {
+	public function getDALink(int $format = self::LINKFORMAT_FULL):string {
 		$Username = $this->name;
 		$username = strtolower($Username);
 		$link = "http://$username.deviantart.com/";
 		if ($format === self::LINKFORMAT_URL) return $link;
 
-		$avatar = $format == self::LINKFORMAT_FULL ? "<img src='{$this->avatar_url}' class='avatar' alt='avatar'> " : '';
-		$withav = $format == self::LINKFORMAT_FULL ? ' with-avatar' : '';
+		$avatar = $format === self::LINKFORMAT_FULL ? "<img src='{$this->avatar_url}' class='avatar' alt='avatar'> " : '';
+		$withav = $format === self::LINKFORMAT_FULL ? ' with-avatar' : '';
 		return "<a href='$link' class='da-userlink$withav'>$avatar<span class='name'>$Username</span></a>";
 	}
 
@@ -80,25 +80,25 @@ class User extends AbstractUser {
 	 *
 	 * @return string
 	 */
-	function getAvatarWrap(string $vectorapp = ''):string {
+	public function getAvatarWrap(string $vectorapp = ''):string {
 		if (empty($vectorapp))
 			$vectorapp = $this->getVectorAppClassName();
 		return "<div class='avatar-wrap$vectorapp'><img src='{$this->avatar_url}' class='avatar' alt='avatar'></div>";
 	}
 
-	function getVectorAppClassName():string {
+	public function getVectorAppClassName():string {
 		$pref = UserPrefs::get('p_vectorapp', $this->id);
 
 		return !empty($pref) ? " app-$pref" : '';
 	}
 
-	function getVectorAppReadableName():string {
+	public function getVectorAppReadableName():string {
 		$pref = UserPrefs::get('p_vectorapp', $this->id);
 
 		return CoreUtils::$VECTOR_APPS[$pref] ?? 'unrecognized application';
 	}
 
-	function getVectorAppIcon():string {
+	public function getVectorAppIcon():string {
 		$vectorapp = UserPrefs::get('p_vectorapp', $this->id);
 		if (empty($vectorapp))
 			return '';
@@ -106,7 +106,7 @@ class User extends AbstractUser {
 		return "<img class='vectorapp-logo' src='/img/vapps/$vectorapp.svg' alt='$vectorapp logo' title='".$this->getVectorAppReadableName()." user'>";
 	}
 
-	function getPendingReservationCount():int {
+	public function getPendingReservationCount():int {
 		global $Database;
 		$PendingReservations = $Database->rawQuery(
 			'SELECT (SELECT COUNT(*) FROM requests WHERE reserved_by = :uid && deviation_id IS NULL)+(SELECT COUNT(*) FROM reservations WHERE reserved_by = :uid && deviation_id IS NULL) as amount',
@@ -122,7 +122,7 @@ class User extends AbstractUser {
 	 *
 	 * @return bool
 	 */
-	 function updateRole(string $newgroup):bool {
+	 public function updateRole(string $newgroup):bool {
 		global $Database;
 		$response = $Database->where('id', $this->id)->update('users', ['role' => $newgroup]);
 
@@ -142,7 +142,7 @@ class User extends AbstractUser {
 	 *
 	 * @return bool
 	 */
-	function isClubMember(){
+	public function isClubMember(){
 		return DeviantArt::getClubRole($this) !== null;
 	}
 
@@ -153,7 +153,7 @@ class User extends AbstractUser {
 	 *
 	 * @return int
 	 */
-	function getApprovedFinishedRequestCount(bool $exclude_own = false):int {
+	public function getApprovedFinishedRequestCount(bool $exclude_own = false):int {
 		global $Database;
 
 		if ($exclude_own)
@@ -162,14 +162,14 @@ class User extends AbstractUser {
 		return $this->getApprovedFinishedRequestContributions();
 	}
 
-	function getPCGAppearances(Pagination $Pagination = null, bool $countOnly = false){
+	public function getPCGAppearances(Pagination $Pagination = null, bool $countOnly = false){
 		global $Database;
 
 		$limit = isset($Pagination) ? $Pagination->getLimit() : null;
 		if (!$countOnly)
 			$Database->orderBy('order','ASC');
 		$return = Appearances::get(null, $limit, $this->id, $countOnly ? 'COUNT(*) as cnt' : '*');
-		return $countOnly ? intval($return[0]['cnt'] ?? 0) : $return;
+		return $countOnly ? (int)($return[0]['cnt'] ?? 0) : $return;
 	}
 
 	/**
@@ -178,7 +178,7 @@ class User extends AbstractUser {
 	 *
 	 * @return int|array
 	 */
-	function getPCGAvailableSlots(bool $throw = true, bool $returnArray = false){
+	public function getPCGAvailableSlots(bool $throw = true, bool $returnArray = false){
 		$postcount = $this->getApprovedFinishedRequestCount(true);
 		$totalslots = floor($postcount/10);
 		if (Permission::sufficient('staff', $this->role))
@@ -206,7 +206,7 @@ class User extends AbstractUser {
 
 	const CONTRIB_CACHE_DURATION = 12* Time::IN_SECONDS['hour'];
 
-	function getCachedContributions():array {
+	public function getCachedContributions():array {
 		$cache = CachedFile::init(FSPATH."contribs/{$this->id}.json", self::CONTRIB_CACHE_DURATION);
 		if (!$cache->expired())
 			return $cache->read();
@@ -295,7 +295,7 @@ class User extends AbstractUser {
 					(SELECT COUNT(*) FROM reservations WHERE reserved_by = :userid && deviation_id IS NOT NULL)
 				as cnt', ['userid' => $this->id])['cnt'];
 
-		$cols = "id, label, posted, reserved_by, preview, lock, season, episode, deviation_id";
+		$cols = 'id, label, posted, reserved_by, preview, lock, season, episode, deviation_id';
 		/** @noinspection SqlInsertValues */
 		$query =
 			"SELECT * FROM (
