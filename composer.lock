@@ -258,16 +258,16 @@
         },
         {
             "name": "fightbulc/moment",
-            "version": "1.26.6",
+            "version": "1.26.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/fightbulc/moment.php.git",
-                "reference": "51613ebf5d77c55c943842d67c363db1833c31f9"
+                "reference": "4f7d21fb3e35222def4f26599b2ea3af382c0a14"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/fightbulc/moment.php/zipball/51613ebf5d77c55c943842d67c363db1833c31f9",
-                "reference": "51613ebf5d77c55c943842d67c363db1833c31f9",
+                "url": "https://api.github.com/repos/fightbulc/moment.php/zipball/4f7d21fb3e35222def4f26599b2ea3af382c0a14",
+                "reference": "4f7d21fb3e35222def4f26599b2ea3af382c0a14",
                 "shasum": ""
             },
             "require": {
@@ -317,7 +317,7 @@
                 "translation",
                 "validate"
             ],
-            "time": "2017-07-06T18:45:03+00:00"
+            "time": "2017-07-11T17:51:37+00:00"
         },
         {
             "name": "guzzlehttp/command",
