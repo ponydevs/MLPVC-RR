@@ -450,7 +450,7 @@ class ColorGuideController extends Controller {
 		}
 		if (!$elasticAvail) {
 			if ($searching && $jsResponse)
-				Response::fail('The ElasticSearch server is currently down and search is not available, sorry for the inconvenience.<br>Please <a class="send-feedback">let us know</a> about this issue.');
+				Response::fail('The ElasticSearch server is currently down and search is not available, sorry for the inconvenience.<br>Please <a class="send-feedback">let us know</a> about this issue.', ['unavail' => true]);
 		    $_EntryCount = $Database->where('ishuman',$this->_EQG)->where('id != 0')->count('appearances');
 
 		    $Pagination = new Pagination(ltrim($this->_cgPath, '/'), $AppearancesPerPage, $_EntryCount);
