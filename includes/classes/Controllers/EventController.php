@@ -139,7 +139,8 @@ class EventController extends Controller {
 		$update['vote_role'] = $vote_role;
 
 		$max_entries = (new Input('max_entries',function(&$value, $range){
-			if (preg_match(new RegExp('^unlimited$','i'),$value) || $value == 0){
+			/** @noinspection TypeUnsafeComparisonInspection */
+			if ($value == 0 || preg_match(new RegExp('^unlimited$','i'),$value)){
 				$value = null;
 				return Input::ERROR_NONE;
 			}
@@ -285,8 +286,6 @@ class EventController extends Controller {
 	}
 
 	public function checkEntries($params){
-
-
 		if (!Auth::$signed_in)
 			Response::fail();
 		CSRFProtection::protect();
@@ -369,8 +368,6 @@ class EventController extends Controller {
 	}
 
 	public function addEntry($params){
-
-
 		if (!Auth::$signed_in)
 			Response::fail();
 		CSRFProtection::protect();
@@ -397,8 +394,6 @@ class EventController extends Controller {
 	/** @var EventEntry */
 	private $_entry;
 	private function _entryPermCheck($params, string $action = 'manage'){
-
-
 		if (!Auth::$signed_in)
 			Response::fail();
 		CSRFProtection::protect();
@@ -441,8 +436,6 @@ class EventController extends Controller {
 	}
 
 	public function setEntry($params){
-
-
 		$this->_entryPermCheck($params);
 
 		$entry = $this->_addSetEntry();
@@ -464,8 +457,6 @@ class EventController extends Controller {
 	}
 
 	public function delEntry($params){
-
-
 		$this->_entryPermCheck($params);
 
 		if (!DB::where('entryid', $this->_entry->id)->delete('events__entries'))
@@ -475,8 +466,6 @@ class EventController extends Controller {
 	}
 
 	public function voteEntry($params){
-
-
 		$this->_entryPermCheck($params, 'vote');
 
 		$userVote = $this->_entry->getUserVote(Auth::$user);
@@ -508,16 +497,12 @@ class EventController extends Controller {
 	}
 
 	public function getvoteEntry($params){
-
-
 		$this->_entryPermCheck($params, 'view');
 
 		Response::done([ 'voting' => $this->_entry->getListItemVoting($this->_event) ]);
 	}
 
 	private function _checkWipeLockedInVote(EventEntryVote $userVote){
-
-
 		if ($userVote->isLockedIn($this->_entry))
 			Response::fail('You already voted on this post '.Time::tag($userVote->cast_at).'. Your vote is now locked in until the post is edited.');
 
@@ -526,8 +511,6 @@ class EventController extends Controller {
 	}
 
 	public function unvoteEntry($params){
-
-
 		$this->_entryPermCheck($params, 'vote');
 
 		$userVote = $this->_entry->getUserVote(Auth::$user);

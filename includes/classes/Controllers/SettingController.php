@@ -5,7 +5,6 @@ use App\CoreUtils;
 use App\CSRFProtection;
 use App\GlobalSettings;
 use App\Permission;
-
 use App\Response;
 
 /** @property $_setting array */

@@ -84,9 +84,9 @@ class User extends AbstractUser {
 		$url = "/@$Username";
 		if ($format === self::LINKFORMAT_URL)
 			return $url;
-		$avatar = $format == self::LINKFORMAT_FULL ? "<img src='{$this->avatar_url}' class='avatar' alt='avatar'> " : '';
+		$avatar = $format === self::LINKFORMAT_FULL ? "<img src='{$this->avatar_url}' class='avatar' alt='avatar'> " : '';
 
-		return "<a href='$url' class='da-userlink".($format == self::LINKFORMAT_FULL ? ' with-avatar':'')."'>$avatar<span class='name'>$Username</span></a>";
+		return "<a href='$url' class='da-userlink".($format === self::LINKFORMAT_FULL ? ' with-avatar':'')."'>$avatar<span class='name'>$Username</span></a>";
 	}
 
 	/**
@@ -141,7 +141,6 @@ class User extends AbstractUser {
 	}
 
 	public function getPendingReservationCount():int {
-
 		$PendingReservations = DB::rawQuery(
 			'SELECT (SELECT COUNT(*) FROM requests WHERE reserved_by = :uid AND deviation_id IS NULL)+(SELECT COUNT(*) FROM reservations WHERE reserved_by = :uid AND deviation_id IS NULL) as amount',
 			['uid' => $this->id]
@@ -158,7 +157,8 @@ class User extends AbstractUser {
 	 * @throws \RuntimeException
 	 */
 	 public function updateRole(string $newgroup):bool {
-		$response = DB::where('id', $this->id)->update('users', ['role' => $newgroup]);
+	    $this->role = $newgroup;
+	    $this->save();
 
 		if ($response){
 			Logs::logAction('rolechange', [
@@ -253,24 +253,21 @@ class User extends AbstractUser {
 	 */
 	public function getCMContributions(bool $count = true, Pagination $pagination = null){
 		$cols = $count ? 'COUNT(*) as cnt' : 'c.appearance_id, c.favme';
+		// TODO Replace usages of "cached-deviations" with underscored version
 		$query =
 			"SELECT $cols
 			FROM cutiemarks c
-			LEFT JOIN \"cached-deviations\" d ON d.id = c.favme
+			LEFT JOIN cached_deviations d ON d.id = c.favme
 			LEFT JOIN appearances p ON p.id = c.appearance_id
 			WHERE d.author = ? AND p.owner_id IS NULL";
 
-		if ($count){
-			$stmt = Cutiemark::query($query, [$this->name]);
-			$stmt->execute();
-			$data = $stmt->fetch(\PDO::FETCH_ASSOC);
-			return $data['cnt'];
-		}
+		if ($count)
+			return $Database->rawQuerySingle($query, [$this->name])['cnt'];
 
 		if ($pagination)
 			$query .= ' ORDER BY p.order ASC '.$pagination->getLimitString();
-		return Cutiemark::find_by_sql($query, [$this->name]);
 
+		return Cutiemark::find_all_by_sql($query, [$this->name]);
 	}
 
 	/**
@@ -320,10 +317,10 @@ class User extends AbstractUser {
 				'SELECT
 					(SELECT COUNT(*) FROM requests WHERE reserved_by = :userid AND deviation_id IS NOT NULL)
 					+
-					(SELECT COUNT(*) FROM reservations WHERE reserved_by = :userid AND deviation_id IS NOT NULL)
+					(SELECT COUNT(*) FROM reservations WHERE reserved_by = :userid && deviation_id IS NOT NULL)
 				as cnt', ['userid' => $this->id])['cnt'];
 
-		$cols = 'id, label, reserved_by, reserved_at, preview, lock, season, episode, deviation_id';
+		$cols = 'id, label, reserved_by, reserved_by, preview, lock, season, episode, deviation_id';
 		/** @noinspection SqlInsertValues */
 		$query =
 			"SELECT * FROM (

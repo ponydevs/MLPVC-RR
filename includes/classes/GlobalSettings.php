@@ -18,8 +18,6 @@ class GlobalSettings {
 	 * @return mixed
 	 */
 	public static function get(string $key){
-
-
 		$q = GlobalSetting::find($key);
 		return isset($q->value) ? $q->value : static::DEFAULTS[$key];
 	}
@@ -33,8 +31,6 @@ class GlobalSettings {
 	 * @return bool
 	 */
 	public static function set(string $key, $value):bool {
-
-
 		if (!isset(static::DEFAULTS[$key]))
 			Response::fail("Key $key is not allowed");
 		$default = static::DEFAULTS[$key];

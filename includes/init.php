@@ -7,6 +7,7 @@ require $_dir.'test_init.php';
 ini_set('error_log',PROJPATH.'mlpvc-rr-error.log');
 
 use App\About;
+use App\DB;
 use App\PostgresDbWrapper;
 
 // Maintenance mode \\
@@ -26,11 +27,11 @@ catch (Exception $e){
 	die(require INCPATH.'views/fatalerr.php');
 }
 
-\App\DB::$instance = new PostgresDbWrapper('mlpvc-rr');
+DB::$instance = new PostgresDbWrapper('mlpvc-rr');
 
 try {
 	$conn = \Activerecord\Connection::instance();
-	\App\DB::setConnection($conn->connection);
+	DB::setConnection($conn->connection);
 }
 catch (Exception $e){
 	$errcause = 'db';

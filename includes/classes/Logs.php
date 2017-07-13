@@ -51,7 +51,6 @@ class Logs {
 	 * @throws \RuntimeException
 	 */
 	public static function logAction($reftype, $data = null, $forcews = false){
-
 		$central = ['ip' => $_SERVER['REMOTE_ADDR']];
 
 		if (isset($data)){
@@ -110,7 +109,6 @@ class Logs {
 			break;
 			case 'episodes':
 				$details[] = ['Action', self::$ACTIONS[$data['action']]];
-				unset($data['entryid'], $data['action']);
 				$details[] = ['Name', (new Episode($data))->formatTitle()];
 				if ($data['season'] === 0)
 					$details[] = ['Overall', "#{$data['episode']}"];
@@ -363,6 +361,8 @@ class Logs {
 	 * @param Request|Reservation $Post
 	 * @param array               $data
 	 * @param array               $details
+	 *
+	 * @throws \Exception
 	 */
 	private static function _genericPostInfo($Post, array $data, array &$details){
 		$label = CoreUtils::capitalize($data['type'])." #{$data['id']}";
@@ -434,8 +434,6 @@ class Logs {
 	 * @return string
 	 */
 	public static function getTbody($LogItems):string {
-
-
 		$HTML = '';
 		if (count($LogItems) > 0) foreach ($LogItems as $item){
 			if (!empty($item['initiator'])){

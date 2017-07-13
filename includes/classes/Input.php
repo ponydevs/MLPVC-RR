@@ -117,9 +117,9 @@ class Input {
 		}
 		switch ($this->_type){
 			case 'bool':
-				if (!in_array($this->_value, ['1', '0', 'true', 'false', 'on', 'off']))
+				if (!in_array($this->_value, ['1', '0', 'true', 'false', 'on', 'off'], false))
 					return self::ERROR_INVALID;
-				$this->_value = in_array($this->_value, ['1', 'true', 'on']);
+				$this->_value = in_array($this->_value, ['1', 'true', 'on'], false);
 			break;
 			case 'int':
 			case 'vote':
@@ -200,7 +200,8 @@ class Input {
 	}
 
 	public static function checkStringLength($value, $range, &$code){
-		return $code = self::_numberInRange(CoreUtils::length($value), $range);
+		$code = self::_numberInRange(CoreUtils::length($value), $range);
+		return $code;
 	}
 	public static function checkNumberRange($value, $range, &$code = false){
 		$result = self::_numberInRange($value, $range);
@@ -232,10 +233,6 @@ class Input {
 		if ($this->_respond)
 			Response::fail($message);
 		throw new \Exception($message);
-	}
-
-	public function __toString(){
-		return (string) $this->out();
 	}
 
 	public function out(){

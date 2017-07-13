@@ -4,7 +4,6 @@ namespace App\Controllers;
 
 use App\CoreUtils;
 use App\Events;
-use App\Models\Event;
 use App\Pagination;
 use App\Permission;
 

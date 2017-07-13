@@ -8,8 +8,6 @@ use App\RegExp;
 class BrowserController extends Controller {
 	public $do = 'browser';
 	public function index($params){
-
-
 		$AgentString = null;
 		if (isset($params['session']) && Permission::sufficient('developer')){
 			$SessionID = intval($params['session'], 10);

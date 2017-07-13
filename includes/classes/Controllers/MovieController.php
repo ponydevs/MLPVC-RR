@@ -13,7 +13,7 @@ class MovieController extends Controller {
 		$this->_page();
 	}
 	public function pageTitle($params){
-		$data = trim(strtolower($params['title']),' -');
+		$data = strtolower(trim($params['title'], ' -'));
 		DB::where("regexp_replace(regexp_replace(lower(\"title\"), '[^a-z]', '-', 'g'), '-{2,}', '-', 'g') = '$data'");
 
 		$this->_page();

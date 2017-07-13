@@ -15,7 +15,6 @@ class Tags {
 		'char' => 'Character',
 	];
 
-
 	/**
 	 * Retrieve set of tags for a given appearance
 	 *
@@ -51,8 +50,6 @@ class Tags {
 
 	/**
 	 * Gets a specifig tag while resolving synonym relations
-	 *
-	 * TODO Redo to use ActiveRecord
 	 *
 	 * @param mixed  $value
 	 * @param string $column
@@ -94,8 +91,10 @@ class Tags {
 	 * @return array
 	 */
 	public static function updateUses(int $TagID, bool $returnCount = false):array {
+		// TODO Rewrite using ActiveRecord
 		$Tagged = DB::where('tag_id', $TagID)->count('tagged');
 		$return = ['status' => DB::where('id', $TagID)->update('tags', ['uses' => $Tagged])];
+
 		if ($returnCount)
 			$return['count'] = $Tagged;
 		return $return;
@@ -110,7 +109,6 @@ class Tags {
 	 * @return string
 	 */
 	public static function getTagListHTML(array $Tags, $wrap = WRAP){
-
 		$HTML =
 		$utils =
 		$refresh = '';

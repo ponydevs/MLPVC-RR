@@ -14,11 +14,11 @@ class ImageProvider {
 			if (!empty($reqProv)){
 				if (!is_array($reqProv))
 					$reqProv = [$reqProv];
-				if (!in_array($provider['name'], $reqProv, true))
-					throw new MismatchedProviderException($provider['name']);
+				if (!in_array($provider->name, $reqProv, true))
+					throw new MismatchedProviderException($provider->name);
 			}
-			$this->provider = $provider['name'];
-			$this->setUrls($provider['itemid']);
+			$this->provider = $provider->name;
+			$this->setUrls($provider->itemid);
 		}
 	}
 	private static $_providerRegexes = [
@@ -32,20 +32,24 @@ class ImageProvider {
 	];
 	private static $_allowedMimeTypes = ['image/png' => true, 'image/jpeg' => true, 'image/jpg' => true];
 	private static $_blockedMimeTypes = ['image/gif' => 'Animated GIFs'];
+	/**
+	 * @param string $url
+	 * @param string $pattern
+	 * @param string $name
+	 *
+	 * @return ImageProviderItem|bool
+	 */
 	private static function _testProvider($url, $pattern, $name){
 		$match = [];
 		if (preg_match(new RegExp("^(?:https?://(?:www\\.)?)?$pattern"), $url, $match))
-			return [
-				'name' => $name,
-				'itemid' => $match[1]
-			];
+			return new ImageProviderItem($name,$match[1]);
 		return false;
 	}
 
 	/**
 	 * @param string $url
 	 *
-	 * @return string[]
+	 * @return ImageProviderItem
 	 * @throws UnsupportedProviderException
 	 */
 	public static function getProvider($url){
@@ -150,9 +154,9 @@ class ImageProvider {
 				$this->title = $CachedDeviation->title;
 				$this->author = $CachedDeviation->author;
 
-				if (isset($this->preview))
+				if ($this->preview !== null)
 					self::_checkImageAllowed($this->preview);
-				if (isset($this->fullsize))
+				if ($this->fullsize !== null)
 					self::_checkImageAllowed($this->fullsize);
 			break;
 			case 'lightshot':

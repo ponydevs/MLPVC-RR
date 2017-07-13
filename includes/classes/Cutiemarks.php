@@ -15,8 +15,6 @@ class Cutiemarks {
 	 * @return Cutiemark[]|null
 	 */
 	public static function get(Appearance $Appearance, bool $procSym = true){
-
-
 		/** @var $CMs Cutiemark[] */
 		$CMs = $Appearance->cutiemarks;
 		if ($procSym)
@@ -59,7 +57,7 @@ class Cutiemarks {
 	 * @throws \Exception
 	 */
 	public static function getListItemForAppearancePage(Cutiemark $cm, $wrap = WRAP){
-		$facing = isset($cm->facing) ? 'Facing '.CoreUtils::capitalize($cm->facing) : 'Symmetrical';
+		$facing = $cm->facing !== null ? 'Facing '.CoreUtils::capitalize($cm->facing) : 'Symmetrical';
 		$previewSVG = Appearances::getCMPreviewSVGURL($cm);
 		$preview = CoreUtils::aposEncode($cm->getPreviewURL());
 

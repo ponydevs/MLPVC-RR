@@ -32,8 +32,6 @@ class Users {
 	 * @return User|null|false
 	 */
 	public static function get($value, $coloumn = 'id'){
-
-
 		if ($coloumn === 'id')
 			return User::find($value);
 
@@ -59,6 +57,7 @@ class Users {
 	 * @param string $username
 	 *
 	 * @return User|null|false
+	 * @throws \Exception
 	 */
 	public static function fetch($username){
 		global $USERNAME_REGEX;
@@ -123,8 +122,6 @@ class Users {
 	 * @return bool|null
 	 */
 	public static function reservationLimitExceeded(bool $return_as_bool = false){
-
-
 		$reservations = DB::rawQuerySingle(
 			'SELECT
 			(
@@ -184,7 +181,6 @@ HTML;
 	 * @throws \InvalidArgumentException
 	 */
 	public static function authenticate(){
-
 		CSRFProtection::detect();
 
 		if (!POST_REQUEST && isset($_GET['CSRF_TOKEN']))
@@ -237,8 +233,8 @@ HTML;
 	];
 
 	const YOU_HAVE = [
-		true => 'You have',
-		false => 'This user has',
+		1 => 'You have',
+		0 => 'This user has',
 	];
 
 	/**
@@ -279,7 +275,7 @@ HTML;
 
 			$has = $sameUser?'have':'has';
 			$nRequests = CoreUtils::makePlural('request',$ApprovedFinishedRequests,PREPEND_NUMBER);
-			$grants = 'grant'.($ApprovedFinishedRequests!=1?'':'s');
+			$grants = 'grant'.($ApprovedFinishedRequests!==1?'':'s');
 			$them = $sameUser?'you':'them';
 			$forStaff = Permission::sufficient('staff', $User->role) ? ' (staff members get a free slot)' : '';
 			$isnt = $ApprovedFinishedRequests !== 1 ? "aren't" : "isn't";

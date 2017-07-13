@@ -67,9 +67,8 @@ class UserController extends Controller {
 		if (isset($MSG))
 			HTTP::statusCode(404);
 		else {
-			if ($sameUser){
+			if ($sameUser)
 				$CurrentSessionID = Auth::$session->id;
-			}
 			$Sessions = $User->sessions;
 		}
 
@@ -131,8 +130,6 @@ class UserController extends Controller {
 	}
 
 	public function suggestion(){
-
-
 		CSRFProtection::protect();
 
 		if (Permission::insufficient('user'))
@@ -151,8 +148,6 @@ class UserController extends Controller {
 	}
 
 	public function sessionDel($params){
-
-
 		CSRFProtection::protect();
 
 		if (!isset($params['id']) || !is_numeric($params['id']))
@@ -205,8 +200,6 @@ class UserController extends Controller {
 	}
 
 	private function _banishAction($params, bool $banish){
-
-
 		CSRFProtection::protect();
 		if (Permission::insufficient('staff'))
 			Response::fail();
@@ -218,13 +211,14 @@ class UserController extends Controller {
 		$action = strtolower($Action);
 
 		$targetUser = Users::get($params['name'], 'name');
-		if (empty($targetUser)) Response::fail('User not found');
+		if (empty($targetUser))
+			Response::fail('User not found');
 
 		if ($targetUser->id === Auth::$user->id)
 			Response::fail("You cannot $action yourself");
 		if (Permission::sufficient('staff', $targetUser->role))
 			Response::fail("You cannot $action people within the assistant or any higher group");
-		if (($action === 'banish' && $targetUser->role === 'ban') || ($action === 'un-banish' && $targetUser->role !== 'ban'))
+		if ($action === 'banish' ? $targetUser->role === 'ban' : $targetUser->role !== 'ban')
 			Response::fail("This user has already been {$action}ed");
 
 		$reason = (new Input('reason','string', [
@@ -236,7 +230,9 @@ class UserController extends Controller {
 		]))->out();
 
 		$changes = ['role' => $action === 'banish' ? 'ban' : 'user'];
-		DB::where('id', $targetUser->id)->update('users', $changes);
+		// TODO Check if club member and restore that role instead
+		$targetUser->update_attributes($changes);
+
 		Logs::logAction($action, [
 			'target' => $targetUser->id,
 			'reason' => $reason

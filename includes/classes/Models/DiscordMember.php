@@ -94,6 +94,6 @@ class DiscordMember extends AbstractUser {
 	}
 
 	private function _checkDAUserBlacklist($id){
-		return $this->user_id = (in_array($id, self::BIND_BLACKLIST) ? null : $id);
+		return $this->user_id = (in_array($id, self::BIND_BLACKLIST, true) ? null : $id);
 	}
 }

@@ -57,7 +57,7 @@ class CGUtils {
 					$FirstLetter = strtoupper($p['label'][0]);
 					if (!is_numeric($FirstLetter) ? ($FirstLetter !== $PrevFirstLetter) : !is_numeric($PrevFirstLetter)){
 						if ($PrevFirstLetter !== ''){
-							$HTML = '</ul></section>';
+							$HTML .= '</ul></section>';
 						}
 						$PrevFirstLetter = $FirstLetter;
 						$HTML .= "<section><h2>$PrevFirstLetter</h2><ul>";
@@ -211,7 +211,7 @@ class CGUtils {
 		$_match = [];
 		if (preg_match($EPISODE_ID_REGEX,$tag,$_match)){
 			$season = intval($_match[1], 10);
-			if ($season == 0)
+			if ($season === 0)
 				return false;
 			$episode = intval($_match[2], 10);
 			$name = 's'.CoreUtils::pad($season).'e'.CoreUtils::pad($episode);
@@ -370,6 +370,7 @@ HTML;
 				throw new \RuntimeException("The sprite image located at $SpritePath could not be loaded by getimagesize");
 
 			$Sprite = imagecreatefrompng($SpritePath);
+			/** @var $SpriteSize array */
 			$SpriteHeight = $SpriteSize[HEIGHT];
 			$SpriteWidth = $SpriteSize[WIDTH];
 			$SpriteRealWidth = $SpriteWidth + $SpriteRightMargin;
@@ -496,8 +497,6 @@ HTML;
 	];
 
 	public static function getColorMapping($AppearanceID, $DefaultColorMapping){
-
-
 		$Colors = DB::rawQuery(
 			'SELECT cg.label as cglabel, c.label as clabel, c.hex
 			FROM color_groups cg
@@ -523,8 +522,6 @@ HTML;
 
 	// Generate CM preview image
 	public static function renderCMDirectionSVG($CGPath, $AppearanceID){
-
-
 		if (empty($_GET['facing']))
 			$Facing = 'left';
 		else {
@@ -599,8 +596,8 @@ HTML;
 					foreach ($coords as $pos){
 						list($x, $y) = $pos;
 
-						if ($x-1 != $lastx || $y != $lasty){
-							if (isset($currLine))
+						if ($x-1 !== $lastx || $y !== $lasty){
+							if ($currLine !== null)
 								$lines[] = $currLine;
 							$currLine = [
 								'x' => $x,

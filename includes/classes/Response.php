@@ -5,13 +5,13 @@ namespace App;
 class Response {
 	public static function fail(string $message = '', $data = [], bool $prettyPrint = false){
 		if (empty($message)){
-			$message = Auth::$signed_in ? 'Insufficient permissions.' : '<p>You are not signed in (or your session expired).</p><p class="align-center"><button class="typcn green da-login" id="turbo-sign-in" data-url="'.OAUTH_AUTHORIZATION_URL.'">Sign back in</button></p>';
+			$message = Auth::$signed_in ? 'Insufficient permissions.' : '<p>You are not signed in (or your session expired).</p><p class="align-center"><button class="typcn green da-login" id="turbo-sign-in" data-url="'.DeviantArt::OAuthProviderInstance()->getAuthorizationUrl().'">Sign back in</button></p>';
 		}
 
 		self::_respond(false, $message, $data, $prettyPrint);
 	}
 
-	// TODO Create an arError equivalent
+	// TODO Create an arError equivalent for ActiveRecord
 	public static function dbError(string $message = '', bool $prettyPrint = false){
 		if (!empty($message))
 			$message .= ': ';
@@ -27,7 +27,7 @@ class Response {
 		self::_respond(true, '', $data, $prettyPrint);
 	}
 
-	static private function _respond(bool $status, string $message, $data, bool $prettyPrint){
+	private static function _respond(bool $status, string $message, $data, bool $prettyPrint){
 		header('Content-Type: application/json');
 		$response = ['status' => $status];
 		if (!empty($message))

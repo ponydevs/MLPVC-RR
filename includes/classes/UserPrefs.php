@@ -26,7 +26,6 @@ class UserPrefs extends GlobalSettings {
 	 * @return mixed
 	 */
 	public static function get(string $key, ?User $for = null){
-
 		if (empty($for) && Auth::$signed_in)
 			$for = Auth::$user;
 

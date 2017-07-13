@@ -3,7 +3,6 @@
 namespace App;
 
 class Image {
-
 	/**
 	 * Checks image type and returns an array containing the image width and height
 	 *
@@ -11,6 +10,7 @@ class Image {
 	 * @param string[] $allowedMimeTypes
 	 *
 	 * @return int[]
+	 * @throws \RuntimeException
 	 */
 	public static function checkType($tmp, $allowedMimeTypes){
 		$imageSize = getimagesize($tmp);
@@ -113,7 +113,7 @@ class Image {
 	 * @param resource   $image
 	 * @param int        $x
 	 * @param int        $y
-	 * @param int[]      $size
+	 * @param mixed      $size
 	 * @param string     $fill
 	 * @param string|int $outline
 	 */
@@ -127,8 +127,16 @@ class Image {
 			$outline = imagecolorallocate($image, $outline[0], $outline[1], $outline[2]);
 		}
 
-		$x2 = $x + $size[0];
-		$y2 = $y + $size[1];
+		if (is_array($size)){
+			/** @var $size int[] */
+			$x2 = $x + $size[0];
+			$y2 = $y + $size[1];
+		}
+		else {
+			/** @var $size int */
+			$x2 = $x + $size;
+			$y2 = $y + $size;
+		}
 
 		$x2--; $y2--;
 
@@ -144,7 +152,7 @@ class Image {
 	 * @param resource   $image
 	 * @param int        $x
 	 * @param int        $y
-	 * @param int[]      $size
+	 * @param mixed      $size
 	 * @param string     $fill
 	 * @param string|int $outline
 	 */
@@ -158,10 +166,18 @@ class Image {
 			$outline = imagecolorallocate($image, $outline[0], $outline[1], $outline[2]);
 		}
 
-		[$width,$height] = $size;
-		$x2 = $x + $width;
-		$y2 = $y + $height;
-
+		if (is_array($size)){
+			/** @var $size int[] */
+			[$width,$height] = $size;
+			$x2 = $x + $width;
+			$y2 = $y + $height;
+		}
+		else {
+			/** @var $size int */
+			$x2 = $x + $size;
+			$y2 = $y + $size;
+			$width = $height = $size;
+		}
 		$cx = CoreUtils::average($x,$x2);
 		$cy = CoreUtils::average($y,$y2);
 

@@ -18,24 +18,20 @@ class Episodes {
 	/**
 	 * Returns all episodes from the database, properly sorted
 	 *
-	 * @param Pagination  $pagination
+	 * @param int|int[]   $count
 	 * @param string|null $where
 	 *
 	 * @return Episode|Episode[]
 	 */
-	public static function get(?Pagination $pagination = null, $where = null){
+	public static function get($count = null, $where = null){
 		/** @var $ep Episode */
-
-
-		$opts = isset($pagination) ? $pagination->getAssocLimit() : ['limit' => 1];
-		$opts['conditions'] = 'season != 0';
-		$opts['order'] = 'season desc, episode desc';
+		global $Database;
 		if (!empty($where))
-			$opts['conditions'] .= " AND $where";
-
-		if (isset($opts['offset']))
-			return Episode::find('all', $opts);
-		else return Episode::find('first', $opts);
+			$Database->where($where);
+		$Database->orderBy('season')->orderBy('episode')->where('season != 0');
+		if ($count !== 1)
+			return $Database->get('episodes',$count);
+		return $Database->getOne('episodes');
 	}
 
 	const ALLOW_MOVIES = true;
@@ -59,7 +55,6 @@ class Episodes {
 		if (!$allowMovies && $season === 0)
 			throw new \InvalidArgumentException('This action cannot be performed on movies');
 
-
 		if ($cache && isset(self::$EP_CACHE["$season-$episode"]))
 			return self::$EP_CACHE["$season-$episode"];
 
@@ -82,7 +77,7 @@ class Episodes {
 	 * @return Episode
 	 */
 	public static function getLatest(){
-		return self::get(null, "airs < NOW() + INTERVAL '24 HOUR' AND season != 0");
+		return self::get(1,"airs < NOW() + INTERVAL '24 HOUR'");
 	}
 
 	public static function removeTitlePrefix($title){
@@ -172,7 +167,6 @@ class Episodes {
 	 * @return EpisodeVote|null
 	 */
 	public static function getUserVote($Ep){
-
 		if (!Auth::$signed_in) return null;
 		/** @noinspection PhpIncompatibleReturnTypeInspection */
 		return EpisodeVote::find_for($Ep, Auth::$user);
@@ -322,7 +316,7 @@ HTML;
 	public static function getSidebarVoting(Episode $Episode):string {
 		$thing = $Episode->is_movie ? 'movie' : 'episode';
 		if (!$Episode->aired)
-			return '<p>Voting will start '.Time::tag($Episode->willair).", after the $thing had aired.</p>";
+			return '<p>Voting will start '.Time::tag($Episode->willair).", after the $thing aired.</p>";
 
 		$HTML = '';
 
@@ -368,9 +362,8 @@ HTML;
 				$isStaff = Permission::sufficient('staff');
 				foreach ($TaggedAppearances as $p){
 					$safeLabel = $p->getSafeLabel();
-					if ($p->isPrivate(true)){
+					if ($p->isPrivate(true))
 						$preview = "<span class='typcn typcn-".($isStaff?'lock-closed':'time').' color-'.($isStaff?'orange':'darkblue')."'></span> ";
-					}
 					else {
 						if ($hidePreviews)
 							$preview = '';

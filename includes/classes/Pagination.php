@@ -46,10 +46,11 @@ class Pagination {
 	 * Collect page numbers for pagination
 	 *
 	 * @return array
+	 * @throws \RuntimeException
 	 */
 	private function _getLinks(){
-		if (!isset($this->maxPages))
-			throw new \Exception('$this->maxPages must be defined');
+		if ($this->maxPages === null)
+			throw new \RuntimeException('$this->maxPages must be defined');
 
 		return array_unique(
 			array_merge(
@@ -63,9 +64,9 @@ class Pagination {
 		);
 	}
 
-	private function _toLink($i, &$currentIndex = null, $nr = null){
-		$current = $i == $this->page;
-		if (isset($currentIndex) && $current)
+	private function _toLink(int $i, &$currentIndex = null, $nr = null){
+		$current = $i === (int) $this->page;
+		if ($currentIndex !== null && $current)
 			$currentIndex = $nr;
 		return '<li>'.(
 			!$current
@@ -81,7 +82,7 @@ class Pagination {
 	 */
 	public function __toString(){
 		if ($this->maxPages === null){
-			error_log(__METHOD__.': $this->maxPages must be defined\nData: '.var_export($this, true));
+			error_log(__METHOD__.': maxPages peroperty must be defined\nData: '.var_export($this, true));
 			return '';
 		}
 
@@ -97,15 +98,18 @@ class Pagination {
 					$nr++;
 				}
 			}
-			else foreach ($this->_getLinks() as $i) {
-				if ($i != min($previousPage + 1, $this->maxPages)){
-					$diff = $i - ($previousPage + 1);
-					$Items[$nr++] = $diff > 1 ? "<li class='spec'><a>&hellip;</a></li>" : $this->_toLink($previousPage+1);
-				}
-				$previousPage = $i;
+			else {
+				/** @noinspection MagicMethodsValidityInspection */
+				foreach ($this->_getLinks() as $i) {
+					if ($i !== min($previousPage + 1, $this->maxPages)){
+						$diff = $i - ($previousPage + 1);
+						$Items[$nr++] = $diff > 1 ? "<li class='spec'><a>&hellip;</a></li>" : $this->_toLink($previousPage+1);
+					}
+					$previousPage = $i;
 
-				$Items[$nr] = $this->_toLink($i, $currentIndex, $nr);
-				$nr++;
+					$Items[$nr] = $this->_toLink($i, $currentIndex, $nr);
+					$nr++;
+				}
 			}
 
 			$Items = implode('',$Items);
@@ -164,7 +168,7 @@ class Pagination {
 	 *
 	 * @param SQLBuilder $query
 	 */
-	public function applyAssocLimit(SQLBuilder &$query){
+	public function applyAssocLimit(SQLBuilder $query){
 		$assoc = $this->getAssocLimit();
 		foreach ($assoc as $k => $v)
 			$query->{$k} = $v;

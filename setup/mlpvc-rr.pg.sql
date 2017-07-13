@@ -1874,6 +1874,14 @@ ALTER TABLE ONLY colors
 
 
 --
+-- Name: colorgroups colorgroups_ponyid_order; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER TABLE ONLY colorgroups
+    ADD CONSTRAINT colorgroups_ponyid_order UNIQUE (ponyid, "order");
+
+
+--
 -- Name: cutiemarks cutiemarks_cmid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
@@ -2007,6 +2015,14 @@ ALTER TABLE ONLY log__cg_order
 
 ALTER TABLE ONLY log__cgs
     ADD CONSTRAINT log__cgs_entryid PRIMARY KEY (entryid);
+
+
+--
+-- Name: log__cm_delete log__cm_delete_entryid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER TABLE ONLY log__cm_delete
+    ADD CONSTRAINT log__cm_delete_entryid PRIMARY KEY (entryid);
 
 
 --

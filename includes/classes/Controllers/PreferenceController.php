@@ -4,7 +4,6 @@ namespace App\Controllers;
 use App\CoreUtils;
 use App\CSRFProtection;
 use App\Permission;
-
 use App\Response;
 use App\UserPrefs;
 

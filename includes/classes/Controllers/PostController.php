@@ -10,6 +10,7 @@ use App\Episodes;
 use App\ImageProvider;
 use App\Input;
 use App\Logs;
+use App\Models\CachedDeviation;
 use App\Models\Notification;
 use App\Models\Post;
 use App\Models\Request;
@@ -36,8 +37,6 @@ class PostController extends Controller {
 	}
 
 	public function reload($params){
-
-
 		$thing = $params['thing'];
 		$this->_initPost(null, $params);
 
@@ -86,8 +85,6 @@ class PostController extends Controller {
 	}
 
 	public function action($params){
-
-
 		$this->_authorizeMember();
 
 		$thing = $params['thing'];
@@ -240,8 +237,8 @@ class PostController extends Controller {
 				if (Permission::insufficient('developer') && CoreUtils::isDeviationInClub($this->_post->deviation_id) === true)
 					Response::fail("<a href='http://fav.me/{$this->_post->deviation_id}' target='_blank' rel='noopener'>This deviation</a> is part of the group gallery, which prevents the post from being unlocked.");
 
-				DB::where('id', $this->_post->id)->update("{$thing}s", ['lock' => false]);
 				$this->_post->lock = false;
+				$this->_post->save();
 
 				try {
 					CoreUtils::socketEvent('post-update',[
@@ -396,9 +393,9 @@ class PostController extends Controller {
 			));
 
 		if (!empty($update['reserved_by']))
-			Posts::clearTransferAttempts($this->_post, $thing, 'snatch');
+			Posts::clearTransferAttempts($this->_post, 'snatch');
 		else if (!empty($this->_post->reserved_by))
-			Posts::clearTransferAttempts($this->_post, $thing, 'free');
+			Posts::clearTransferAttempts($this->_post, 'free');
 
 		$socketServerAvailable = true;
 		try {
@@ -455,8 +452,6 @@ class PostController extends Controller {
 	}
 
 	public function add(){
-
-
 		$this->_authorize();
 
 		$thing = (new Input('what',function($value){
@@ -534,8 +529,6 @@ class PostController extends Controller {
 	/** @var Request|Reservation */
 	private $_post;
 	public function _initPost($action, $params){
-
-
 		$thing = $params['thing'];
 
 		$this->_post = DB::where('id', $params['id'])->getOne("{$thing}s");
@@ -546,8 +539,6 @@ class PostController extends Controller {
 	}
 
 	public function deleteRequest($params){
-
-
 		$this->_authorize();
 
 		$params['thing'] = 'request';
@@ -565,7 +556,7 @@ class PostController extends Controller {
 			Response::dbError();
 
 		if (!empty($this->_post->reserved_by))
-			Posts::clearTransferAttempts($this->_post, $params['thing'], 'del');
+			Posts::clearTransferAttempts($this->_post, 'del');
 
 		Logs::logAction('req_delete', [
 			'season' =>       $this->_post->season,
@@ -599,9 +590,9 @@ class PostController extends Controller {
 		$this->_authorizeMember();
 		$this->_initPost(null, $params);
 
-		$reserved_by = $this->_post->reserved_by ?? null;
-		$checkIfUserCanReserve = function(&$message, &$data) use ($reserved_by, $params){
-			Posts::clearTransferAttempts($this->_post, $params['thing'], 'free', Auth::$user->id, $reserved_by);
+		$reserved_by = $this->_post->reserver;
+		$checkIfUserCanReserve = function(&$message, &$data){
+			Posts::clearTransferAttempts($this->_post, 'free', Auth::$user);
 			if (!Users::reservationLimitExceeded(RETURN_AS_BOOL)){
 				$message .= '<br>Would you like to reserve it now?';
 				$data = ['canreserve' => true];
@@ -618,7 +609,7 @@ class PostController extends Controller {
 			$checkIfUserCanReserve($message, $data);
 			Response::fail($message, $data);
 		}
-		if ($reserved_by === Auth::$user->id)
+		if ($reserved_by->id === Auth::$user->id)
 			Response::fail("You've already reserved this {$params['thing']}");
 		if ($this->_post->isOverdue()){
 			$message = 'This post was reserved '.Time::tag($this->_post->reserved_at).' so anyone’s free to reserve it now.';
@@ -631,15 +622,15 @@ class PostController extends Controller {
 		if (!$this->_post->isTransferable())
 			Response::fail("This {$params['thing']} was reserved recently, please allow up to 5 days before asking for a transfer");
 
-		$ReserverLink = User::find($reserved_by)->getProfileLink();
+		$ReserverLink = $reserved_by->getProfileLink();
 
-		$PreviousAttempts = Posts::getTransferAttempts($this->_post, $params['thing'], Auth::$user->id, $reserved_by);
+		$PreviousAttempts = Posts::getTransferAttempts($this->_post, Auth::$user->id);
 
 		if (!empty($PreviousAttempts[0]) && empty($PreviousAttempts[0]['read_at']))
 			Response::fail("You already expressed your interest in this post to $ReserverLink ".Time::tag($PreviousAttempts[0]['sent_at']).', please wait for them to respond.');
 
 		$notifSent = Notification::send($this->_post->reserved_by, 'post-passon', [
-			'type' => $params['thing'],
+			'type' => $this->_post->kind,
 			'id' => $this->_post->id,
 			'user' => Auth::$user->id,
 		]);
@@ -648,8 +639,6 @@ class PostController extends Controller {
 	}
 
 	public function setImage($params){
-
-
 		$this->_authorize();
 
 		$thing = $params['thing'];
@@ -717,23 +706,24 @@ class PostController extends Controller {
 			Response::done(['fullsize' => $this->_post->fullsize]);
 
 		// Reverse submission lookup
+		/** @var $StashItem CachedDeviation */
 		$StashItem = DB
 			::where('fullsize', $this->_post->fullsize)
 			->orWhere('preview', $this->_post->preview)
 			->getOne('cached-deviations','id,fullsize,preview');
-		if (empty($StashItem['id']))
+		if (empty($StashItem))
 			Response::fail('Stash URL lookup failed');
 
 		try {
-			$fullsize = CoreUtils::getFullsizeURL($StashItem['id'], 'sta.sh');
+			$fullsize = CoreUtils::getFullsizeURL($StashItem->id, 'sta.sh');
 			if (!is_string($fullsize)){
 				if ($fullsize === 404){
-					DB::where('provider', 'sta.sh')->where('id', $StashItem['id'])->delete('cached-deviations');
-					DB::where('preview', $StashItem['preview'])->orWhere('fullsize', $StashItem['fullsize'])->update('requests', [
+					$StashItem->delete();
+					DB::where('preview', $StashItem->preview)->orWhere('fullsize', $StashItem->fullsize)->update('requests', [
 						'fullsize' => null,
 						'preview' => null,
 					]);
-					DB::where('preview', $StashItem['preview'])->orWhere('fullsize', $StashItem['fullsize'])->update('reservations', [
+					DB::where('preview', $StashItem->preview)->orWhere('fullsize', $StashItem->fullsize)->update('reservations', [
 						'fullsize' => null,
 						'preview' => null,
 					]);
@@ -749,16 +739,13 @@ class PostController extends Controller {
 		if (!DeviantArt::isImageAvailable($fullsize))
 			Response::fail("The specified image doesn’t seem to exist. Please verify that you can reach the URL below and try again.<br><a href='$fullsize' target='_blank' rel='noopener'>$fullsize</a>");
 
-		if (!DB::where('id', $this->_post->id)->update("{$thing}s", [
-			'fullsize' => $fullsize,
-		])) Response::dbError();
+		$this->_post->fullsize = $fullsize;
+		$this->_post->save();
 
 		Response::done(['fullsize' => $fullsize]);
 	}
 
 	public function addReservation(){
-
-
 		$this->_authorize();
 
 		if (!Permission::sufficient('staff'))
@@ -788,7 +775,7 @@ class PostController extends Controller {
 
 		if (!empty($insert['lock']))
 			Logs::logAction('post_lock', [
-				'type' => 'reservation',
+				'type' => $Post->kind,
 				'id' => $Post->id,
 			]);
 
@@ -807,13 +794,19 @@ class PostController extends Controller {
 		Response::success('Reservation added');
 	}
 
+	const SHARE_LONG_TYPE = [
+		'req' => 'request',
+		'res' => 'reservation',
+	];
+
 	public function share($params){
+		if (!isset(self::SHARE_LONG_TYPE[$params['thing']]))
+			CoreUtils::notFound();
 
-
-		$params['thing'] .= (['req' => 'uest', 'res' => 'ervation'])[$params['thing']];
+		$thing = self::SHARE_LONG_TYPE[$params['thing']];
 
 		/** @var $LinkedPost Post */
-		$LinkedPost = DB::where('id', $params['id'])->getOne("{$params['thing']}s");
+		$LinkedPost = DB::where('id', $params['id'])->getOne("{$thing}s");
 		if (empty($LinkedPost))
 			CoreUtils::notFound();
 

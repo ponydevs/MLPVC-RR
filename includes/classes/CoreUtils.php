@@ -5,6 +5,7 @@ namespace App;
 use ActiveRecord\ConnectionManager;
 use ActiveRecord\SQLBuilder;
 use App\Controllers\Controller;
+use App\Models\CachedDeviation;
 use App\Models\Episode;
 use App\Models\Event;
 use App\Models\UsefulLink;
@@ -157,6 +158,8 @@ class CoreUtils {
 	 *
 	 * @param array                  $options
 	 * @param Controllers\Controller $controller
+	 *
+	 * @throws \RuntimeException
 	 */
 	public static function loadPage($options, Controllers\Controller $controller = null){
 		// Page <title>
@@ -567,9 +570,9 @@ class CoreUtils {
 			$i = 0;
 			$maxDest = count($list_str)-3;
 			while ($i < $maxDest){
-				if ($i == count($list_str)-1)
+				if ($i === count($list_str)-1)
 					continue;
-				$list_str[$i] = $list_str[$i].',';
+				$list_str[$i] .= ',';
 				$i++;
 			}
 			$list_str = implode(' ',$list_str);
@@ -695,7 +698,7 @@ class CoreUtils {
 			$NavItems['colorguide'] = ['/cg'.(!empty($scope['EQG'])?'/eqg':''), (!empty($scope['EQG'])?'EQG ':'').'Color Guide'];
 			if ($do === 'cg'){
 				if (!empty($scope['Appearance']))
-					$NavItems['colorguide']['subitem'] = (isset($scope['Map'])? 'Sprite Colors - ' :'').CoreUtils::escapeHTML($scope['Appearance']->processLabel());
+					$NavItems['colorguide']['subitem'] = (isset($scope['Map'])? 'Sprite Colors - ' :'').CoreUtils::escapeHTML($scope['Appearance']->label);
 				else if (isset($scope['Ponies']))
 					$NavItems['colorguide'][1] .= " - Page {$scope['Pagination']->page}";
 				else if (isset($scope['nav_picker']))
@@ -800,7 +803,6 @@ class CoreUtils {
 	 * Renders the "Useful links" section of the sidebar
 	 */
 	public static function renderSidebarUsefulLinks(){
-
 		if (!Auth::$signed_in) return;
 		$Links = UsefulLink::in_order();
 		if (empty($Links))
@@ -874,9 +876,9 @@ HTML;
 	 */
 	public static function makePlural($w, int $in = 0, $prep = false):string {
 		$ret = ($prep?"$in ":'');
-		if ($w[-1] === 'y' && $in != 1)
+		if ($in !== 1 && $w[-1] === 'y')
 			return $ret.self::substring($w,0,-1).'ies';
-		return $ret.$w.($in != 1 && !in_array(strtolower($w),self::$_uncountableWords) ?'s':'');
+		return $ret.$w.($in !== 1 && !in_array(strtolower($w),self::$_uncountableWords,true) ?'s':'');
 	}
 
 	/**
@@ -1071,18 +1073,16 @@ HTML;
 		if (empty($fullsize_url))
 			return 5;
 
-
-		if (DB::where('id', $id)->where('provider', $prov)->has('cached-deviations'))
-			DB::where('id', $id)->where('provider', $prov)->update('cached-deviations', [
-				'fullsize' => $fullsize_url
-			]);
+		$CachedDeviation = CachedDeviation::find_by_id_and_provider($id, $prov);
+		if (!empty($CachedDeviation)){
+			$CachedDeviation->fullsize = $fullsize_url;
+			$CachedDeviation->store();
+		}
 
 		return URL::makeHttps($fullsize_url);
 	}
 
 	public static function getOverdueSubmissionList(){
-
-
 		$Query = DB::rawQuery(
 			'SELECT reserved_by, COUNT(*) as cnt FROM (
 				SELECT reserved_by FROM reservations
@@ -1205,7 +1205,7 @@ HTML;
 		$available = curl_exec($ch) !== false;
 		$responseCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 		if ($available === false && !empty($onlyFails))
-			$available = !in_array($responseCode, $onlyFails);
+			$available = !in_array($responseCode, $onlyFails, false);
 		curl_close($ch);
 
 		return $available;
@@ -1241,7 +1241,7 @@ HTML;
 	private static $_elastiClient;
 
 	public static function elasticClient():Client {
-		if (!isset(self::$_elastiClient))
+		if (self::$_elastiClient === null)
 			self::$_elastiClient = ClientBuilder::create()->setHosts(['127.0.0.1:'.ELASTIC_PORT])->build();
 
 		return self::$_elastiClient;

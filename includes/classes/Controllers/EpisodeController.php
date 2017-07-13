@@ -11,6 +11,8 @@ use App\Input;
 use App\JSON;
 use App\Logs;
 use App\Models\Appearance;
+use App\Models\EpisodeVote;
+use App\Models\Tag;
 use App\Models\Tagged;
 use App\Permission;
 use App\Posts;
@@ -121,8 +123,8 @@ class EpisodeController extends Controller {
 		$EpisodeChanged = true;
 		$SeasonChanged = true;
 		if ($editing){
-			$SeasonChanged = $isMovie ? false : $insert['season'] != $this->_episode->season;
-			$EpisodeChanged = $insert['episode'] != $this->_episode->episode;
+			$SeasonChanged = $isMovie ? false : (int)$insert['season'] !== $this->_episode->season;
+			$EpisodeChanged = (int)$insert['episode'] !== $this->_episode->episode;
 			if ($SeasonChanged || $EpisodeChanged){
 				$Target = Episodes::getActual(
 					$insert['season'] ?? $this->_episode->season,
@@ -230,47 +232,48 @@ class EpisodeController extends Controller {
 		else $insert['notes'] = null;
 
 		if ($editing){
-			if (!DB::whereEp($this->_episode)->update('episodes', $insert))
+			if (!$this->_episode->update_attributes($insert))
 				Response::dbError('Updating episode failed');
 		}
-		else if (!DB::insert('episodes', $insert))
+		else if (!(new Episode($insert))->store())
 			Response::dbError('Episode creation failed');
 
 		if (!$editing || $SeasonChanged || $EpisodeChanged){
 			if ($isMovie){
 				if ($EpisodeChanged){
 					$TagName = CGUtils::checkEpisodeTagName("movie#{$insert['episode']}");
-					$MovieTag = DB::where('name', $editing ? "movie#{$this->_episode->episode}" : $TagName)->getOne('tags', 'tid');
+					/** @var $MovieTag Tag */
+					$MovieTag = DB::where('name', $editing ? "movie#{$this->_episode->episode}" : $TagName)->getOne('tags');
 
 					if (!empty($MovieTag)){
-						if ($editing)
-							DB::where('tid', $MovieTag['tid'])->update('tags', [
-								'name' => $TagName,
-							]);
+						if ($editing){
+							$MovieTag->name = $TagName;
+							$MovieTag->store();
+						}
 					}
 					else {
-						if (!DB::insert('tags', [
+						if (!(new Tag([
 							'name' => $TagName,
 							'type' => 'ep',
-						])) Response::dbError('Episode tag creation failed');
+						]))->store()) Response::dbError('Episode tag creation failed');
 					}
 				}
 			}
 			else if ($SeasonChanged || $EpisodeChanged){
 				$TagName = CGUtils::checkEpisodeTagName("s{$insert['season']}e{$insert['episode']}");
-				$EpTag = DB::where('name', $editing ? "s{$this->_episode->season}e{$this->_episode->episode}" : $TagName)->getOne('tags', 'tid');
+				$EpTag = DB::where('name', $editing ? "s{$this->_episode->season}e{$this->_episode->episode}" : $TagName)->getOne('tags');
 
 				if (!empty($EpTag)){
-					if ($editing)
-						DB::where('tid', $EpTag['tid'])->update('tags', [
-							'name' => $TagName,
-						]);
+					if ($editing){
+						$EpTag->name = $TagName;
+						$EpTag->store();
+					}
 				}
 				else {
-					if (!DB::insert('tags', [
+					if (!(new Tag([
 						'name' => $TagName,
 						'type' => 'ep',
-					])) Response::dbError('Episode tag creation failed');
+					]))->store()) Response::dbError('Episode tag creation failed');
 				}
 			}
 		}
@@ -337,8 +340,6 @@ class EpisodeController extends Controller {
 		CSRFProtection::protect();
 		$this->_getEpisode($params);
 
-
-
 		if (isset($_REQUEST['detail'])){
 			$VoteCountQuery = DB::rawQuery(
 				'SELECT count(*) as value, vote as label
@@ -382,12 +383,12 @@ class EpisodeController extends Controller {
 			]
 		]))->out();
 
-		if (!DB::insert('episodes__votes', [
+		if (!(new EpisodeVote([
 			'season' => $this->_episode->season,
 			'episode' => $this->_episode->episode,
 			'user' => Auth::$user->id,
 			'vote' => $vote,
-		])) Response::dbError();
+		]))->store()) Response::dbError();
 		$this->_episode->updateScore();
 		Response::done(['newhtml' => Episodes::getSidebarVoting($this->_episode)]);
 	}
@@ -400,8 +401,6 @@ class EpisodeController extends Controller {
 
 	private function _getVideoData($params){
 		$this->_getEpisode($params);
-
-
 
 		$return = [
 			'twoparter' => $this->_episode->twoparter,
@@ -423,8 +422,6 @@ class EpisodeController extends Controller {
 	private function _setVideoData($params){
 		CSRFProtection::protect();
 		$this->_getEpisode($params);
-
-
 
 		foreach (['yt', 'dm'] as $provider){
 			for ($part = 1; $part <= ($this->_episode->twoparter?2:1); $part++){
@@ -458,7 +455,7 @@ class EpisodeController extends Controller {
 					->count('episodes__videos');
 				if ($videocount === 0){
 					if (!empty($set))
-						DB::insert('episodes__videos', [
+						EpisodeVideo::create([
 							'season' => $this->_episode->season,
 							'episode' => $this->_episode->episode,
 							'provider' => $provider,
@@ -532,8 +529,6 @@ class EpisodeController extends Controller {
 
 	private function _getGuideRelations($params){
 		$this->_getEpisode($params);
-
-
 
 		$CheckTag = [];
 

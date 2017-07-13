@@ -27,8 +27,7 @@ require INCPATH.'conf.php';
 // Some constants \\
 # integer - none
 # string
-define('OAUTH_REDIRECT_URI', '&redirect_uri='.urlencode(ABSPATH.'da-auth'));
-define('OAUTH_AUTHORIZATION_URL', 'https://www.deviantart.com/oauth2/authorize?response_type=code&scope=user+browse&client_id='.DA_CLIENT.OAUTH_REDIRECT_URI);
+define('OAUTH_REDIRECT_URI', ABSPATH.'da-auth');
 define('SPRITE_PATH', FSPATH.'sprites/');
 # boolean
 define('AND_DIE', true); // CoreUtils::StatusCode

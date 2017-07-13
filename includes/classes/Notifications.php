@@ -21,8 +21,6 @@ class Notifications {
 	 * @return Notification[]
 	 */
 	public static function get($only = self::ALL){
-
-
 		if (!Auth::$signed_in)
 			return null;
 		$UserID = Auth::$user->id;

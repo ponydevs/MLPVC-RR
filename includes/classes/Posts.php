@@ -207,7 +207,6 @@ class Posts {
 	 * @return array
 	 */
 	public static function checkRequestFinishingImage($ReserverID = null){
-
 		$deviation = (new Input('deviation','string', [
 			Input::CUSTOM_ERROR_MESSAGES => [
 				Input::ERROR_MISSING => 'Please specify a deviation URL',
@@ -445,7 +444,6 @@ HTML;
 	 * @return array|null
 	 */
 	public static function getTransferAttempts(Post $Post, $type, $sent_by = null, $reserved_by = null, $cols = 'read_at,sent_at'){
-
 		if (!empty($reserved_by))
 			DB::where('user', $reserved_by);
 		if (!empty($sent_by))
@@ -565,6 +563,7 @@ HTML;
 					: '';
 				$locked_at = '';
 				if ($approved){
+					/** @var $LogEntry array */
 					$LogEntry = DB::rawQuerySingle(
 						"SELECT l.timestamp, l.initiator
 						FROM log__post_lock pl
@@ -736,7 +735,6 @@ HTML;
 	 * @return array
 	 */
 	public static function approve($type, $id, $notifyUserID = null){
-
 		if (!DB::where('id', $id)->update("{$type}s", ['lock' => true]))
 			Response::dbError();
 
@@ -754,11 +752,11 @@ HTML;
 	public static function checkReserveAs(&$update){
 		if (Permission::sufficient('developer')){
 			$reserve_as = Posts::validatePostAs();
-			if (isset($reserve_as)){
+			if ($reserve_as !== null){
 				$User = Users::get($reserve_as, 'name');
 				if (empty($User))
 					Response::fail('User to reserve as does not exist');
-				if (!Permission::sufficient('member', $User->role) && !isset($_POST['screwit']))
+				if (!isset($_POST['screwit']) && !Permission::sufficient('member', $User->role))
 					Response::fail('The specified user does not have permission to reserve posts, continue anyway?', ['retry' => true]);
 
 				$update['reserved_by'] = $User->id;

@@ -7,6 +7,9 @@ use App\Models\Session;
 use App\Models\User;
 use App\Exceptions\CURLRequestException;
 use RuntimeException;
+use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
+use App\Exceptions\JSONParseException;
+use SeinopSys\OAuth2\Client\Provider\DeviantArtProvider;
 
 class DeviantArt {
 	private static
@@ -16,32 +19,49 @@ class DeviantArt {
 
 	// oAuth Error Response Messages \\
 	const OAUTH_RESPONSE = [
-		'invalid_request' => 'The authorization recest was not properly formatted.',
+		'invalid_request' => 'The authorization request was not properly formatted.',
 		'unsupported_response_type' => 'The authorization server does not support obtaining an authorization code using this method.',
 		'unauthorized_client' => 'The authorization process did not complete. Please try again.',
 		'invalid_scope' => 'The requested scope is invalid, unknown, or malformed.',
 		'server_error' => 'There seems to be an issue on DeviantArt’s end. Try again later.',
 		'temporarily_unavailable' => 'There’s an issue on DeviantArt’s end. Try again later.',
 		'user_banned' => 'You were banned on our website by a staff member.',
+		'access_denied' => 'You decided not to allow the site to verify your identity',
 	];
+
+	/** @var DeviantArtProvider */
+	private static $_OAuthProviderInstance;
+	/** @return DeviantArtProvider */
+	public static function OAuthProviderInstance(){
+		if (self::$_OAuthProviderInstance !== null)
+			return self::$_OAuthProviderInstance;
+
+		return self::$_OAuthProviderInstance = new DeviantArtProvider([
+			'clientId' => DA_CLIENT,
+			'clientSecret' => DA_SECRET,
+			'redirectUri' => OAUTH_REDIRECT_URI,
+		]);
+	}
 
 	/**
 	 * Makes authenticated requests to the DeviantArt API
 	 *
-	 * @param string      $endpoint
-	 * @param null|array  $postdata
-	 * @param null|string $token
+	 * @param string            $endpoint
+	 * @param null|array        $postdata
+	 * @param null|string|false $token    Set to false if no token is required
 	 *
 	 * @return array
 	 */
 	public static function request($endpoint, $token = null, $postdata = null){
 		global $http_response_header;
 
-		$requestHeaders = ['Accept-Encoding: gzip', 'User-Agent: MLPVC-RR @ '.GITHUB_URL];
-		if (!isset($token) && Auth::$signed_in)
+
+		if ($token === null && Auth::$signed_in)
 			$token = Auth::$session->access;
-		if (!empty($token)) $requestHeaders[] = "Authorization: Bearer $token";
-		else if ($token !== false) return null;
+		if (!empty($token))
+			$requestHeaders[] = "Authorization: Bearer $token";
+		else if ($token !== false)
+			return null;
 
 		$requestURI  = preg_match(new RegExp('^https?://'), $endpoint) ? $endpoint : "https://www.deviantart.com/api/v1/oauth2/$endpoint";
 
@@ -205,7 +225,7 @@ class DeviantArt {
 			$data = DeviantArt::request('http://backend.deviantart.com/oembed?url='.urlencode("http://$type/$ID"),false);
 		}
 		catch (CURLRequestException $e){
-			if ($e->getCode() == 404)
+			if ($e->getCode() === 404)
 				throw new \Exception('Image not found. The URL may be incorrect or the image has been deleted.', 404);
 			else throw new \Exception("Image could not be retrieved (HTTP {$e->getCode()})", $e->getCode());
 		}
@@ -216,21 +236,32 @@ class DeviantArt {
 	private static function _authRequest(bool $refresh, string $code):?User {
 		global $http_response_header;
 
-		$type = $refresh ? 'refresh_token' : 'authorization_code';
-		$url_start = 'https://www.deviantart.com/oauth2/token?client_id='.DA_CLIENT.'&client_secret='.DA_SECRET."&grant_type=$type";
-		$url_end = ($refresh ? 'refresh_token' : 'code').'='.$code;
-		$json = DeviantArt::request("$url_start&$url_end".OAUTH_REDIRECT_URI,false);
-
-		if (empty($json)){
+		$provider = self::OAuthProviderInstance();
+		try {
+			if ($refresh)
+				$accessToken = $provider->getAccessToken('refresh_token', ['refresh_token' => $code]);
+			else $accessToken = $provider->getAccessToken('authorization_code', ['code' => $code, 'scope' => ['user','browse']]);
+		}
+		catch (IdentityProviderException $e){
 			if (Cookie::exists('access')){
-				Session::delete_all(['conditions' => ['access 7 ?', Cookie::get('access')]]);
+				$Database->where('token', CoreUtils::sha256(Cookie::get('access')))->delete('sessions');
 				Cookie::delete('access', Cookie::HTTPONLY);
 			}
-			HTTP::redirect("/da-auth?error=server_error&error_description={$http_response_header[0]}");
+			$response_body = $e->getResponseBody();
+			error_log(__METHOD__.' threw IdentityProviderException: '.$e->getMessage()."\nResponse body:\n$response_body\nTrace:\n".$e->getTraceAsString());
+			try {
+				$data = JSON::decode($response_body);
+				$_GET['error'] = rawurlencode($data['error']);
+				$_GET['error_description'] = !empty($data['error_description']) ? $data['error_description'] : (self::OAUTH_RESPONSE[$data['error']] ?? '');
+			}
+			catch(JSONParseException $_){
+				$_GET['error'] = 'server_error';
+				$_GET['error_description'] = $e->getMessage();
+			}
+			return;
 		}
-		if (empty($json['status'])) HTTP::redirect("/da-auth?error={$json['error']}&error_description={$json['error_description']}");
 
-		$userdata = DeviantArt::request('user/whoami', $json['access_token']);
+		$userdata = $provider->getResourceOwner($accessToken)->toArray();
 
 		/** @var $User Models\User */
 		$User = User::find($userdata['userid']);
@@ -252,10 +283,10 @@ class DeviantArt {
 			'avatar_url' => URL::makeHttps($userdata['usericon']),
 		];
 		$AuthData = [
-			'access' => $json['access_token'],
-			'refresh' => $json['refresh_token'],
-			'expires' => date('c',time() + (int)$json['expires_in']),
-			'scope' => $json['scope'],
+			'access' => $accessToken->getToken(),
+			'refresh' => $accessToken->getRefreshToken(),
+			'expires' => date('c',time()+$accessToken->getExpires()),
+			'scope' => $accessToken->getValues()['scope'],
 		];
 
 		$cookie = bin2hex(random_bytes(64));
@@ -317,8 +348,7 @@ class DeviantArt {
 	}
 
 	/**
-	 * Requests or refreshes an Access Token
-	 * $type defaults to 'authorization_code'
+	 * Requests an Access Token
 	 *
 	 * @param string $code
 	 *
@@ -389,7 +419,7 @@ class DeviantArt {
 		$dom->loadHTML($stafflist);
 		$xp = new \DOMXPath($dom);
 		$admins =  $xp->query('//div[@id="aboutus"]//div[@class="user-name"]');
-		/** @var $revroles string[] */
+		/** @var $revroles array */
 		$revroles = array_flip(Permission::ROLES_ASSOC);
 		foreach ($admins as $admin){
 			$username = $admin->childNodes->item(1)->firstChild->textContent;

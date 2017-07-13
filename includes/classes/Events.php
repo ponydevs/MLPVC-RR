@@ -7,16 +7,15 @@ use App\Models\User;
 
 class Events {
 	public static function get($limit = null, string $columns = '*'){
-
-
-		return \App\DB::get('events',$limit,$columns);
+		return DB::get('events',$limit,$columns);
 	}
 
 	/**
 	 * @param \App\Models\Event[] $Events
-	 * @param bool $wrap
+	 * @param bool                $wrap
 	 *
 	 * @return string
+	 * @throws \Exception
 	 */
 	public static function getListHTML(array $Events, bool $wrap = true):string {
 		$HTML = '';

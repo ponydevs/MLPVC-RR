@@ -21,7 +21,7 @@
 		"erusev/parsedown": "^1.6",
 		"seinopsys/postgresql-database-class": "^1.1.1",
 		"php-activerecord/php-activerecord": "dev-master",
-		"roave/security-advisories": "dev-master",
+		"seinopsys/oauth2-deviantart": "^1.0",
 		"ext-curl": "*",
 		"ext-dom": "*",
 		"ext-gd": "*",
