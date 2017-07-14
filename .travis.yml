@@ -10,5 +10,6 @@ before_script:
   - psql -c 'CREATE DATABASE "mlpvc-rr";' -U postgres
   - psql -c "CREATE USER \"mlpvc-rr\" WITH LOGIN PASSWORD 'example-password'" -U postgres
   - psql "mlpvc-rr" < ./setup/mlpvc-rr.pg.sql
+dist: trusty
 addons:
   postgresql: "9.6"
