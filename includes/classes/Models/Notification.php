@@ -8,7 +8,7 @@ use App\JSON;
 use ElephantIO\Exception\ServerConnectionFailureException;
 
 /**
- * @property int $id
+ * @property int    $id
  * @property string $recipient_id
  * @property string $type
  * @property string $data

@@ -37,6 +37,7 @@ class NotificationsController extends Controller {
 
 	public function markRead($params){
 		$nid = intval($params['id'], 10);
+		/** @var $Notif Notification */
 		$Notif = Notification::find($nid);
 		if (empty($Notif) || $Notif->recipient_id !== Auth::$user->id)
 			Response::fail("The notification (#$nid) does not exist");
@@ -64,7 +65,7 @@ class NotificationsController extends Controller {
 					}
 					if ($read_action === 'true'){
 						if ($Post->reserved_by !== Auth::$user->id){
-							Posts::clearTransferAttempts($Post, $data['type'], 'perm', null, Auth::$user->id);
+							Posts::clearTransferAttempts($Post, 'perm', Auth::$user->id);
 							Response::fail('You are not allowed to transfer this reservation');
 						}
 

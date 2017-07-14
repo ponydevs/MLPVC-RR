@@ -16,7 +16,7 @@ class EpisodesController extends Controller {
 		CoreUtils::fixPath("/episodes/{$Pagination->page}");
 		$heading = 'Episodes';
 		$title = "Page {$Pagination->page} - $heading";
-		$Episodes = Episodes::get($Pagination);
+		$Episodes = Episodes::get($Pagination->getLimit());
 
 		if (isset($_GET['js']))
 			$Pagination->respond(Episodes::getTableTbody($Episodes), '#episodes tbody');

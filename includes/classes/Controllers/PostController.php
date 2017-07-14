@@ -710,7 +710,7 @@ class PostController extends Controller {
 		$StashItem = DB
 			::where('fullsize', $this->_post->fullsize)
 			->orWhere('preview', $this->_post->preview)
-			->getOne('cached-deviations','id,fullsize,preview');
+			->getOne('cached_deviations');
 		if (empty($StashItem))
 			Response::fail('Stash URL lookup failed');
 

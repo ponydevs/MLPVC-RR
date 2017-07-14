@@ -263,4 +263,11 @@ class Appearance extends Model {
 	public function is_tagged(Tag $tag):bool {
 		return Tagged::is($tag, $this);
 	}
+
+	public function getRelatedHTML():string {
+		$LINKS = '';
+		foreach ($this->related_appearances as $p)
+			$LINKS .= '<li>'.$p->getLinkWithPreviewHTML().'</li>';
+		return "<section class='related'><h2>Related appearances</h2><ul>$LINKS</ul></section>";
+	}
 }

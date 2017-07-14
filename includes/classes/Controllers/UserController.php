@@ -229,9 +229,14 @@ class UserController extends Controller {
 			]
 		]))->out();
 
-		$changes = ['role' => $action === 'banish' ? 'ban' : 'user'];
-		// TODO Check if club member and restore that role instead
-		$targetUser->update_attributes($changes);
+		if ($action === 'banish')
+			$targetUser->updateRole('ban', true);
+		else {
+			$clubRole = $targetUser->getClubRole();
+			if ($clubRole !== null)
+				$targetUser->updateRole($clubRole, true);
+			else $targetUser->updateRole('user', true);
+		}
 
 		Logs::logAction($action, [
 			'target' => $targetUser->id,

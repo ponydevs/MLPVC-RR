@@ -1076,7 +1076,7 @@ HTML;
 		$CachedDeviation = CachedDeviation::find_by_id_and_provider($id, $prov);
 		if (!empty($CachedDeviation)){
 			$CachedDeviation->fullsize = $fullsize_url;
-			$CachedDeviation->store();
+			$CachedDeviation->save();
 		}
 
 		return URL::makeHttps($fullsize_url);

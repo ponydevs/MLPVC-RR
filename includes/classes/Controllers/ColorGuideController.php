@@ -1049,7 +1049,7 @@ class ColorGuideController extends Controller {
 
 				$out = [];
 				if ($this->_appearancePage)
-					$out['section'] = Appearances::getRelatedHTML($this->_appearance->related_appearances);
+					$out['section'] = $this->_appearance->getRelatedHTML();
 				Response::done($out);
 			break;
 			case 'getcms':
@@ -1361,7 +1361,7 @@ class ColorGuideController extends Controller {
 
 				$Tag->delete();
 
-				if (!empty(CGUtils::GROUP_TAG_IDS_ASSOC[$Tag['tid']]))
+				if (!empty(CGUtils::GROUP_TAG_IDS_ASSOC[$Tag->id]))
 					Appearances::getSortReorder($this->_EQG);
 				foreach ($Uses as $use)
 					Appearances::updateIndex($use->appearance_id);
@@ -1453,7 +1453,7 @@ HTML;
 				}
 
 				if (!$adding)
-					DB::where('tid', $Tag['tid'],'!=');
+					DB::where('id', $Tag->id,'!=');
 				if (DB::where('name', $data['name'])->where('type', $data['type'])->has('tags'))
 					Response::fail('A tag with the same name and type already exists');
 
@@ -1467,7 +1467,7 @@ HTML;
 
 				if ($adding){
 					$Tag = new Tag($data);
-					if ($Tag->store())
+					if ($Tag->save())
 						Response::dbError();
 
 					$AppearanceID = (new Input('addto','int', [Input::IS_OPTIONAL => true]))->out();
@@ -1528,12 +1528,12 @@ HTML;
 			if ($Target->synonym_of !== null)
 				Response::fail('The selected tag is already a synonym of another tag');
 
-			$TargetTagged = Tagged::by_tag($Target['tid']);
+			$TargetTagged = Tagged::by_tag($Target->id);
 			$TaggedAppearanceIDs = [];
 			foreach ($TargetTagged as $tg)
 				$TaggedAppearanceIDs[] = $tg->appearance_id;
 
-			$Tagged = Tagged::by_tag($Tag->tid);
+			$Tagged = Tagged::by_tag($Tag->id);
 			foreach ($Tagged as $tg){
 				if (in_array($tg->appearance_id, $TaggedAppearanceIDs, true))
 					continue;

@@ -99,7 +99,7 @@ class DeviantArt {
 	}
 
 	/**
-	 * Caches information about a deviation in the 'cached-deviations' table
+	 * Caches information about a deviation in the 'cached_deviations' table
 	 * Returns null on failure
 	 *
 	 * @param string      $ID
@@ -199,9 +199,7 @@ class DeviantArt {
 		else if (!empty($Deviation->updated_on)){
 			$Deviation->updated_on = date('c', strtotime($Deviation->updated_on));
 			if (self::$_CACHE_BAILOUT)
-				DB::where('id',$Deviation->id)->update('cached-deviations', [
-					'updated_on' => $Deviation->updated_on,
-				]);
+				$Deviation->save();
 		}
 
 		return $Deviation;
@@ -258,7 +256,7 @@ class DeviantArt {
 				$_GET['error'] = 'server_error';
 				$_GET['error_description'] = $e->getMessage();
 			}
-			return;
+			return null;
 		}
 
 		$userdata = $provider->getResourceOwner($accessToken)->toArray();

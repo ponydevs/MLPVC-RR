@@ -86,7 +86,7 @@ use App\Tags;
 		</section>
 <?  }
 	if (!isset($Appearance->owner_id))
-		echo Appearances::getRelatedHTML($Appearance->related_appearances); ?>
+		echo $Appearance->getRelatedHTML(); ?>
 	</div>
 </div>
 

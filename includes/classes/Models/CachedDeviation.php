@@ -17,8 +17,6 @@ use App\CoreUtils;
  * @method static CachedDeviation find_by_id_and_provider(string $id, string $provider)
  */
 class CachedDeviation extends Model {
-	public static $table_name = 'cached-deviations';
-
 	public static $primary_key = ['provider', 'id'];
 
 	public function toLinkWithPreview(){

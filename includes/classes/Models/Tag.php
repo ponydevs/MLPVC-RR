@@ -16,8 +16,6 @@ use ActiveRecord\Model;
  * @method static Tag find(...$args)
  */
 class Tag extends Model {
-	public static $primary_key = 'tid';
-
 	public static $has_many = [
 		['appearances', 'through' => 'tagged'],
 		['tagged', 'class' => 'Tagged'],
@@ -34,5 +32,9 @@ class Tag extends Model {
 	 */
 	public function is_used_on(Appearance $appearance):bool {
 		return Tagged::is($this, $appearance);
+	}
+
+	public function add_to(int $appearance_id):bool {
+		return Tagged::make($this->id, $appearance_id)->save();
 	}
 }

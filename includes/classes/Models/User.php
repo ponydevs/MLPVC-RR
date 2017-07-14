@@ -152,15 +152,16 @@ class User extends AbstractUser {
 	 * Update a user's role
 	 *
 	 * @param string $newgroup
+	 * @param bool   $skip_log
 	 *
 	 * @return bool
 	 * @throws \RuntimeException
 	 */
-	 public function updateRole(string $newgroup):bool {
+	 public function updateRole(string $newgroup, bool $skip_log = false):bool {
 	    $this->role = $newgroup;
-	    $this->save();
+	    $response = $this->save();
 
-		if ($response){
+		if ($response && !$skip_log){
 			Logs::logAction('rolechange', [
 				'target' => $this->id,
 				'oldrole' => $this->role,
@@ -177,7 +178,14 @@ class User extends AbstractUser {
 	 * @return bool
 	 */
 	public function isClubMember(){
-		return DeviantArt::getClubRole($this) !== null;
+		return $this->getClubRole() !== null;
+	}
+
+	/**
+	 * @return null|string
+	 */
+	public function getClubRole():?string {
+		return DeviantArt::getClubRole($this);
 	}
 
 	/**
@@ -253,7 +261,6 @@ class User extends AbstractUser {
 	 */
 	public function getCMContributions(bool $count = true, Pagination $pagination = null){
 		$cols = $count ? 'COUNT(*) as cnt' : 'c.appearance_id, c.favme';
-		// TODO Replace usages of "cached-deviations" with underscored version
 		$query =
 			"SELECT $cols
 			FROM cutiemarks c

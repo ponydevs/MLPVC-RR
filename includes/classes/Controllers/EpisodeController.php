@@ -235,7 +235,7 @@ class EpisodeController extends Controller {
 			if (!$this->_episode->update_attributes($insert))
 				Response::dbError('Updating episode failed');
 		}
-		else if (!(new Episode($insert))->store())
+		else if (!(new Episode($insert))->save())
 			Response::dbError('Episode creation failed');
 
 		if (!$editing || $SeasonChanged || $EpisodeChanged){
@@ -248,14 +248,14 @@ class EpisodeController extends Controller {
 					if (!empty($MovieTag)){
 						if ($editing){
 							$MovieTag->name = $TagName;
-							$MovieTag->store();
+							$MovieTag->save();
 						}
 					}
 					else {
 						if (!(new Tag([
 							'name' => $TagName,
 							'type' => 'ep',
-						]))->store()) Response::dbError('Episode tag creation failed');
+						]))->save()) Response::dbError('Episode tag creation failed');
 					}
 				}
 			}
@@ -266,14 +266,14 @@ class EpisodeController extends Controller {
 				if (!empty($EpTag)){
 					if ($editing){
 						$EpTag->name = $TagName;
-						$EpTag->store();
+						$EpTag->save();
 					}
 				}
 				else {
 					if (!(new Tag([
 						'name' => $TagName,
 						'type' => 'ep',
-					]))->store()) Response::dbError('Episode tag creation failed');
+					]))->save()) Response::dbError('Episode tag creation failed');
 				}
 			}
 		}
@@ -388,7 +388,7 @@ class EpisodeController extends Controller {
 			'episode' => $this->_episode->episode,
 			'user' => Auth::$user->id,
 			'vote' => $vote,
-		]))->store()) Response::dbError();
+		]))->save()) Response::dbError();
 		$this->_episode->updateScore();
 		Response::done(['newhtml' => Episodes::getSidebarVoting($this->_episode)]);
 	}
@@ -572,17 +572,18 @@ class EpisodeController extends Controller {
 		if (empty($EpTagIDs))
 			Response::fail('The episode has no associated tag(s)!');
 		$EpTagIDstr = implode(',',$EpTagIDs);
-		$Tags = DB::where("tid IN ($EpTagIDs)")->orderByLiteral('char_length(name)','DESC')->getOne('tags','tid');
-		$UseID = $Tags['tid'];
+		/** @var $Tag Tag */
+		$Tag = DB::where("id IN ($EpTagIDs)")->orderByLiteral('char_length(name)','DESC')->getOne('tags');
+		$UseID = $Tag->id;
 
 		if (!empty($AppearanceIDs)){
 			foreach ($AppearanceIDs as $appearance_id){
 				if (!Tagged::multi_is($EpTagIDs, $appearance_id))
-					Tagged::make($UseID, $appearance_id)->save();
+					$Tag->add_to($appearance_id);
 			}
 			DB::where('appearance_id NOT IN ('.implode(',',$AppearanceIDs).')');
 		}
-		DB::where("tid IN ($EpTagIDstr)")->delete('tagged');
+		DB::where("id IN ($EpTagIDstr)")->delete('tagged');
 
 		Response::done(['section' => Episodes::getAppearancesSectionHTML($this->_episode)]);
 	}

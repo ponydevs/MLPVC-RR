@@ -402,24 +402,6 @@ HTML;
 	}
 
 	/**
-	 * TODO Replace with a method on the Appearance model that sets $Related to $this->related_appearances automatically
-	 *
-	 * @deprecated
-	 *
-	 * @param Appearance[] $Related
-	 *
-	 * @return string
-	 */
-	public static function getRelatedHTML($Related):string {
-		if (empty($Related))
-			return '';
-		$LINKS = '';
-		foreach ($Related as $p)
-			$LINKS .= '<li>'.$p->getLinkWithPreviewHTML().'</li>';
-		return "<section class='related'><h2>Related appearances</h2><ul>$LINKS</ul></section>";
-	}
-
-	/**
 	 * @return int
 	 */
 	public static function validateAppearancePageID(){

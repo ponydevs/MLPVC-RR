@@ -436,21 +436,19 @@ HTML;
 
 	/**
 	 * @param Post        $Post
-	 * @param string      $type
 	 * @param string|null $sent_by
-	 * @param string|null $reserved_by
 	 * @param string      $cols
 	 *
 	 * @return array|null
 	 */
-	public static function getTransferAttempts(Post $Post, $type, $sent_by = null, $reserved_by = null, $cols = 'read_at,sent_at'){
-		if (!empty($reserved_by))
-			DB::where('user', $reserved_by);
+	public static function getTransferAttempts(Post $Post, $sent_by = null, $cols = 'read_at,sent_at'){
+		if ($Post->reserved_by !== null)
+			DB::where('user', $Post->reserved_by);
 		if (!empty($sent_by))
 			DB::where("data->>'user'", $sent_by);
 		return DB
 			::where('type', 'post-passon')
-			->where("data->>'type'", $type)
+			->where("data->>'type'", $Post->kind)
 			->where("data->>'id'", $Post->id)
 			->orderBy('sent_at', NEWEST_FIRST)
 			->get('notifications',null,$cols);
@@ -466,19 +464,17 @@ HTML;
 
 	/**
 	 * @param Post        $Post
-	 * @param string      $type
 	 * @param string      $reason
-	 * @param string|null $sent_by
-	 * @param string|null $reserved_by
+	 * @param User        $sent_by
 	 *
 	 * @throws \InvalidArgumentException
 	 */
-	public static function clearTransferAttempts(Post $Post, string $type, string $reason, string $sent_by = null, $reserved_by = null){
+	public static function clearTransferAttempts(Post $Post, string $reason, ?User $sent_by = null){
 		if (empty(self::TRANSFER_ATTEMPT_CLEAR_REASONS[$reason]))
 			throw new \InvalidArgumentException("Invalid clear reason $reason");
 
 		DB::where('read_at IS NULL');
-		$TransferAttempts = Posts::getTransferAttempts($Post, $type, $sent_by, $reserved_by, 'id,data');
+		$TransferAttempts = Posts::getTransferAttempts($Post, $sent_by, 'id,data');
 		if (!empty($TransferAttempts)){
 			$SentFor = [];
 			foreach ($TransferAttempts as $n){

@@ -97,7 +97,7 @@ DROP VIEW "unread_notifications";
 
 ALTER TABLE "notifications" RENAME "user" TO "recipient_id";
 ALTER TABLE "notifications" DROP CONSTRAINT "notifications_user_fkey";
-ALTER TABLE "notifications" ADD FOREIGN KEY ("recipient_id") REFERENCES "users" ("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "notifications" ADD FOREIGN KEY ("recipient_id") REFERENCES "users" ("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 CREATE VIEW "unread_notifications" AS
   SELECT
@@ -140,6 +140,21 @@ ALTER TABLE "discord-members" RENAME TO "discord_members";
 ALTER TABLE "discord_members"
 ADD CONSTRAINT "discord_members_id" PRIMARY KEY ("id"), ADD CONSTRAINT "discord_members_user_id" UNIQUE ("user_id"), DROP CONSTRAINT "discord_members_discid", DROP CONSTRAINT "discord_members_userid";
 ALTER TABLE "discord_members" DROP CONSTRAINT "discord_members_userid_fkey";
-ALTER TABLE "discord_members" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "discord_members" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 ALTER TABLE "log__video_broken" DROP CONSTRAINT "log__video_broken_season_fkey";
+
+ALTER TABLE "cached-deviations" RENAME TO "cached_deviations";
+ALTER TABLE "cached_deviations" ADD CONSTRAINT "cached_deviations_provider_id" PRIMARY KEY ("provider", "id"), DROP CONSTRAINT "deviation_cache_provider_id";
+CREATE INDEX "cached_deviations_author" ON "cached_deviations" ("author");
+
+ALTER TABLE "episodes__votes" RENAME "user" TO "user_id";
+ALTER TABLE "episodes__votes" RENAME TO "episode_votes";
+DROP INDEX "episodes__votes_user";
+ALTER TABLE "episode_votes" ADD CONSTRAINT "episode_votes_season_episode_user" PRIMARY KEY ("season", "episode", "user_id"),
+DROP CONSTRAINT "episodes__votes_season_episode_user";
+CREATE INDEX "episode_votes_user_id" ON "episode_votes" ("user_id");
+ALTER TABLE "episode_votes" DROP CONSTRAINT "episodes__votes_season_fkey";
+ALTER TABLE "episode_votes" DROP CONSTRAINT "episodes__votes_user_fkey";
+ALTER TABLE "episode_votes" ADD FOREIGN KEY ("season", "episode") REFERENCES "episodes" ("season", "episode") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "episode_votes" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id") ON DELETE RESTRICT ON UPDATE CASCADE;
