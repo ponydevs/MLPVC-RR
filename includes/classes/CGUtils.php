@@ -41,20 +41,20 @@ class CGUtils {
 	/**
 	 * Returns HTML for the full list
 	 *
-	 * @param array $Appearances
-	 * @param bool  $GuideOrder
-	 * @param bool  $wrap
+	 * @param Appearance[] $Appearances
+	 * @param bool         $GuideOrder
+	 * @param bool         $wrap
 	 *
 	 * @return string
 	 */
-	public static function getFullListHTML($Appearances, $GuideOrder, $wrap = WRAP){
-		$HTML = $wrap ? "<div id='full-list'>" : '';
+	public static function getFullListHTML(array $Appearances, $GuideOrder, $wrap = WRAP){
+		$HTML = '';
 		if (!empty($Appearances)){
 			$previews = !empty(UserPrefs::get('cg_fulllstprev'));
 			if (!$GuideOrder){
 				$PrevFirstLetter = '';
 				foreach ($Appearances as $p){
-					$FirstLetter = strtoupper($p['label'][0]);
+					$FirstLetter = strtoupper($p->label[0]);
 					if (!is_numeric($FirstLetter) ? ($FirstLetter !== $PrevFirstLetter) : !is_numeric($PrevFirstLetter)){
 						if ($PrevFirstLetter !== ''){
 							$HTML .= '</ul></section>';
@@ -72,13 +72,14 @@ class CGUtils {
 						continue;
 
 					$HTML .= "<section><h2>$CategoryName<button class='sort-alpha blue typcn typcn-sort-alphabetically' style='display:none' title='Sort this section alphabetically'></button></h2><ul>";
+					/** @var $Sorted Appearance[][] */
 					foreach ($Sorted[$Category] as $p)
 						self::_processFullListLink($p, $HTML, $previews);
 					$HTML .= '</ul></section>';
 				}
 			}
 		}
-		return $HTML.($wrap? '</div>' :'');
+		return $wrap ? "<div id='full-list'>$HTML</div>" : $HTML;
 	}
 
 	/**
@@ -86,13 +87,14 @@ class CGUtils {
 	 * @param string     $HTML
 	 * @param bool       $previews
 	 */
-	static private function _processFullListLink(Appearance $appearance, &$HTML, bool $previews){
+	private static function _processFullListLink(Appearance $appearance, &$HTML, bool $previews){
 		$sprite = '';
 		$url = "/cg/v/{$appearance->id}-".$appearance->getSafeLabel();
 		if (Permission::sufficient('staff')){
 			$SpriteURL = $appearance->getSpriteURL();
 			if (!empty($SpriteURL)){
-				$sprite = "<span class='typcn typcn-image' title='Has a sprite'></span>&nbsp;";
+				if (!$previews)
+					$sprite = "<span class='typcn typcn-image' title='Has a sprite'></span>&nbsp;";
 				$class = 'color-green';
 			}
 			if (!empty($appearance->private))
@@ -103,7 +105,6 @@ class CGUtils {
 		$label = $appearance->processLabel();
 
 		if ($previews){
-
 			$preview = $appearance->getSpriteURL(Appearance::SPRITE_SIZES['SOURCE'], $appearance->getPreviewURL());
 			$preview = "<img data-src='$preview' src='/img/blank-pixel.png' alt=''>";
 			$charTags = DB::rawQuery(
@@ -282,7 +283,7 @@ HTML;
 				}
 				if ($showAppearance)
 					$appearance = $c->appearance->getLinkWithLabelHTML().': ';
-				$HTML .= "<li>$appearance{$c['reason']} - ".Time::tag($c['timestamp'])."$initiator</li>";
+				$HTML .= "<li>$appearance{$c->reason} - ".Time::tag($c->log->timestamp)."$initiator</li>";
 			};
 		return $wrap ? "<ul id='changes'>$HTML</ul>" : $HTML;
 	}
@@ -762,9 +763,9 @@ XML;
 		$CGs = $Appearance->color_groups;
 		$Colors = self::getColorsForEach($CGs);
 		foreach ($CGs as $cg){
-			$JSON[$label][$cg['label']] = [];
-			foreach ($Colors[$cg['groupid']] as $c)
-				$JSON[$label][$cg['label']][$c['label']] = $c['hex'];
+			$JSON[$label][$cg->label] = [];
+			foreach ($Colors[$cg->id] as $c)
+				$JSON[$label][$cg->label][$c->label] = $c->hex;
 		}
 
 		CoreUtils::downloadFile(JSON::encode($JSON), "$label.json");
@@ -788,11 +789,11 @@ GPL;
 		$CGs = $Appearance->color_groups;
 		$Colors = self::getColorsForEach($CGs);
 		foreach ($CGs as $cg){
-			foreach ($Colors[$cg['groupid']] as $c){
-				if (empty($c['hex']))
+			foreach ($Colors[$cg->id] as $c){
+				if (empty($c->hex))
 					continue;
-				$rgb = CoreUtils::hex2Rgb($c['hex']);
-				$File .= CoreUtils::pad($rgb[0],3,' ').' '.CoreUtils::pad($rgb[1],3,' ').' '.CoreUtils::pad($rgb[2],3,' ').' '.$cg['label'].' | '.$c['label'].PHP_EOL;
+				$rgb = CoreUtils::hex2Rgb($c->hex);
+				$File .= CoreUtils::pad($rgb[0],3,' ').' '.CoreUtils::pad($rgb[1],3,' ').' '.CoreUtils::pad($rgb[2],3,' ').' '.$cg->label.' | '.$c->label.PHP_EOL;
 			}
 		}
 
@@ -897,7 +898,7 @@ GPL;
 
 		$return = [];
 		foreach ($colors as $c)
-			$return[] = "{$c['hex']} {$c['label']}";
+			$return[] = "{$c->hex} {$c->labelg}";
 
 		return implode("\n", $return);
 	}

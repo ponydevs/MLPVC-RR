@@ -69,8 +69,8 @@ use App\Models\User;
 		</p>
 	</section>
 <?php   }
-		echo Posts::getReservationsSection();
-		echo Posts::getRequestsSection();
+		echo Posts::getReservationsSection(Posts::get($CurrentEpisode, ONLY_RESERVATIONS, Permission::sufficient('staff')),false,true);
+		echo Posts::getRequestsSection(Posts::get($CurrentEpisode, ONLY_REQUESTS, Permission::sufficient('staff')),false,true);
 		$export = [
 			'SEASON' => $CurrentEpisode->season,
 			'EPISODE' => $CurrentEpisode->episode,

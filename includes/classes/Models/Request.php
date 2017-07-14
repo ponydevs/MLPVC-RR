@@ -13,7 +13,6 @@ use ActiveRecord\DateTime;
  */
 class Request extends Post {
 	public static $belongs_to = [
-		['ep', 'class' => 'Episode', 'foreign_key' => ['season','episode']],
 		['reserver', 'class' => 'User', 'foreign_key' => 'reserved_by'],
 		['requester', 'class' => 'User', 'foreign_key' => 'requested_by'],
 	];

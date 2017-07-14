@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
-use APp\CoreUtils;
-use APp\Permission;
-use APp\UserPrefs;
+use App\CoreUtils;
+use App\Permission;
+use App\UserPrefs;
 
 /**
  * @inheritdoc
@@ -51,10 +51,9 @@ class ColorGroup extends OrderedModel {
 	 * Remove the colors in this group without removing the group itself
 	 */
 	public function wipeColors(){
-        $colors = Color::find([
+        $colors = Color::delete_all([
             'conditions' => [ 'group_id' => $this->id ],
         ]);
-		$colors->delete();
 	}
 
 	/**

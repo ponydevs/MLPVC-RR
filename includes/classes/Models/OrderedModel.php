@@ -29,5 +29,5 @@ abstract class OrderedModel extends Model {
 	 *
 	 * @param array $opts
 	 */
-	public abstract static function in_order(array $opts = []);
+	abstract public static function in_order(array $opts = []);
 }

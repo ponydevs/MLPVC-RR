@@ -111,11 +111,11 @@ class Event extends Model {
 		return $this->type === 'collab' ? !empty($this->result_favme) : $this->hasEnded();
 	}
 
-	public function getEntriesHTML(bool $wrap = WRAP):string {
+	public function getEntriesHTML(bool $lazyload = false, bool $wrap = WRAP):string {
 		$HTML = '';
 		$Entries = $this->entries;
 		foreach ($Entries as $entry)
-			$HTML .= $entry->toListItemHTML($this);
+			$HTML .= $entry->toListItemHTML($this, $lazyload);
 		return $wrap ? "<ul id='event-entries'>$HTML</ul>" : $HTML;
 	}
 

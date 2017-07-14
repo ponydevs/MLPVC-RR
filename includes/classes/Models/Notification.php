@@ -4,6 +4,7 @@ namespace App\Models;
 
 use ActiveRecord\Model;
 use App\CoreUtils;
+use App\DB;
 use App\JSON;
 use ElephantIO\Exception\ServerConnectionFailureException;
 
@@ -48,23 +49,21 @@ class Notification extends Model {
 	];
 
 	public static function send($to, $type, $data){
-
-
 		if (empty(self::$_notifTypes[$type]))
 			throw new \Exception("Invalid notification type: $type");
 
 		switch ($type) {
 			case 'post-finished':
 			case 'post-approved':
-				$bind = [$to, $type, $data['id'], $data['type']];
-				\ActiveRecord\Connection::instance()->query(
-					"UPDATE notifications SET read_at = NOW() WHERE recipient_id = ? AND type = ? AND data->>'id' = ? AND data->>'type' = ?",
-					$bind
+				DB::rawQuery(
+					"UPDATE notifications SET read_at = NOW() WHERE recipient_id = ? && type = ? && data->>'id' = ? && data->>'type' = ?",
+					[$to, $type, $data['id'], $data['type']]
 				);
+			break;
 		}
 
-		\App\DB::insert('notifications', [
-			'user' => $to,
+		self::create([
+			'recipient_id' => $to,
 			'type' => $type,
 			'data' => JSON::encode($data),
 		]);

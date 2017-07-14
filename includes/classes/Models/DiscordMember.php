@@ -62,10 +62,11 @@ class DiscordMember extends AbstractUser {
 		'f73c6d54-49d2-a88b-ceb5-aba86dbb9b5b',
 		'62b26e62-090d-db3f-019a-6eeaaf1ffddc',
 		'e1cbcdef-5445-0556-aa55-78e045286554',
+		'18b06f8f-2826-0f31-1961-2441c48edf84',
 	];
 
 	public function guessDAUser():?string {
-		if (isset($this->user_id))
+		if ($this->user_id !== null)
 			return true;
 
 		if (!empty(self::STAFF_BINDINGS["id-{$this->id}"]))

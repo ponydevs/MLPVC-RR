@@ -2,7 +2,9 @@
 
 namespace App\Models;
 
+use ActiveRecord\DateTime;
 use ActiveRecord\Model;
+use App\Appearances;
 use App\Auth;
 use App\CGUtils;
 use App\CoreUtils;
@@ -12,22 +14,22 @@ use App\Permission;
 use App\RegExp;
 
 /**
- * @property int          $id
- * @property int          $order
- * @property string       $label
- * @property string       $notes
- * @property string       $added
- * @property string       $owner_id
- * @property string       $last_cleared
- * @property bool         $ishuman
- * @property bool         $private
- * @property Cutiemark[]  $cutiemarks
- * @property ColorGroup[] $color_groups
- * @property User|null    $owner
- * @property Appearance[] $related_appearances (Via magic method)
- * @property Color[]      $preview_colors      (Via magic method)
- * @property Tag[]        $tags
- * @property Tagged[]     $tagged
+ * @property int                 $id
+ * @property int                 $order
+ * @property string              $label
+ * @property string              $notes
+ * @property string              $owner_id
+ * @property DateTime            $added
+ * @property DateTime            $last_cleared
+ * @property bool                $ishuman
+ * @property bool                $private
+ * @property Cutiemark[]         $cutiemarks
+ * @property ColorGroup[]        $color_groups
+ * @property User|null           $owner
+ * @property RelatedAppearance[] $related_appearances (Via magic method)
+ * @property Color[]             $preview_colors      (Via magic method)
+ * @property Tag[]               $tags
+ * @property Tagged[]            $tagged
  * @method static Appearance[] find_by_sql($sql, $values = null)
  * @method static Appearance find_by_owner_id_and_label(string $uuid, string $label)
  * @method static Appearance find_by_ishuman_and_label($ishuman, string $label)
@@ -41,29 +43,11 @@ class Appearance extends Model {
 		['tags', 'through' => 'tagged'],
 		['tagged', 'class' => 'Tagged'],
 		['color_groups', 'order' => '"order" asc, id asc'],
+		['related_appearances', 'class' => 'RelatedAppearance', 'foreign_key' => 'source_id', 'order' => 'target_id asc'],
 	];
 	public static $belongs_to = [
 		['owner', 'class' => 'User', 'foreign_key' => 'owner_id'],
 	];
-
-	public function get_related_appearances(){
-		return DB::rawQuery(
-			/** @lang PostgreSQL */
-			'(
-				SELECT p.id, p.order, p.label, r.mutual
-				FROM appearance_relations r
-				LEFT JOIN appearances p ON p.id = r.target
-				WHERE r.source = :id
-			)
-			UNION ALL
-			(
-				SELECT p.id, p.order, p.label, r.mutual
-				FROM appearance_relations r
-				LEFT JOIN appearances p ON p.id = r.source
-				WHERE r.target = :id AND mutual = true
-			)
-			ORDER BY "order"', [':id' => $AppearanceID]);
-	}
 
 	public function get_preview_colors(){
 		/** @var $arr Color[] */
@@ -170,7 +154,7 @@ class Appearance extends Model {
 				$this->notes = preg_replace_callback('/'.MOVIE_ID_PATTERN.'/',function($a){
 					$Ep = Episodes::getActual(0, (int) $a[1], true);
 					return !empty($Ep)
-						? "<a href='{$Ep->toURL()}'>".CoreUtils::aposEncode($Ep->formatTitle(AS_ARRAY,'title')).'</a>'
+						? "<a href='{$Ep->toURL()}'>".CoreUtils::aposEncode(Episodes::shortenTitlePrefix($Ep->formatTitle(AS_ARRAY,'title'))).'</a>'
 						: "<strong>{$a[0]}</strong>";
 				},$this->notes);
 				$this->notes = preg_replace_callback('/(?:^|[^\\\\])\K(?:#(\d+))\b/',function($a){
@@ -231,7 +215,7 @@ class Appearance extends Model {
 
 	public function getLink():string {
 		$safeLabel = $this->getSafeLabel();
-		$owner = isset($this->owner_id) ? '/@'.(User::find($this->owner_id)->name) : '';
+		$owner = $this->owner_id !== null ? '/@'.User::find($this->owner_id)->name : '';
 		return "$owner/cg/v/{$this->id}-$safeLabel";
 	}
 
@@ -266,8 +250,28 @@ class Appearance extends Model {
 
 	public function getRelatedHTML():string {
 		$LINKS = '';
-		foreach ($this->related_appearances as $p)
-			$LINKS .= '<li>'.$p->getLinkWithPreviewHTML().'</li>';
+		if ($this->related_appearances === null)
+			return $LINKS;
+		foreach ($this->related_appearances as $r)
+			$LINKS .= '<li>'.$r->target->getLinkWithPreviewHTML().'</li>';
 		return "<section class='related'><h2>Related appearances</h2><ul>$LINKS</ul></section>";
+	}
+
+	/**
+	 * Re-index the appearance in ElasticSearch
+	 */
+	public function reindex(){
+		// We don't want to index private appearances
+		if ($this->owner_id !== null)
+			return;
+
+		Appearances::updateIndex($this->id);
+	}
+
+	public function clearRelations(){
+		RelatedAppearance::delete_all(['conditions' => [
+			'source_id = :id OR target_id = :id',
+			['id' => $this->id],
+		]]);
 	}
 }

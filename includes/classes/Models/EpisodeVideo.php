@@ -19,6 +19,8 @@ use App\VideoProvider;
  * @property Episode $ep
  */
 class EpisodeVideo extends Model {
+	static $primary_key = ['season', 'episode', 'provider', 'part'];
+
 	public static $belongs_to = [
 		['ep', 'class' => 'Episode', 'foreign_key' => ['season','episode']],
 	];

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use ActiveRecord\Model;
 use ActiveRecord\DateTime;
+use App\DeviantArt;
 use App\Time;
 use App\RegExp;
 use App\CoreUtils;
@@ -20,10 +21,10 @@ use App\CoreUtils;
  * @property DateTime $reserved_at
  * @property DateTime $finished_at
  * @property bool     $broken
+ * @property bool     $lock
  * @property DateTime $posted         (Via alias)
  * @property User     $reserver       (Via child relations)
- * @property Episode  $ep             (Via child relations)
- * @property bool     $lock           (Via magic method)
+ * @property Episode  $ep             (Via magic method)
  * @property string   $kind           (Via magic method)
  * @property bool     $finished       (Via magic method)
  * @property bool     $is_request     (Via magic method)
@@ -37,10 +38,6 @@ abstract class Post extends Model {
 	 */
 	public static $alias_attribute;
 
-	public function get_lock(){
-		return $this->read_attribute('lock') !== 'false';
-	}
-
 	public function get_finished(){
 		return $this->deviation_id !== null && $this->reserved_by !== null;
 	}
@@ -50,6 +47,10 @@ abstract class Post extends Model {
 
 	public function get_kind(){
 		return $this->is_request ? 'request' : 'reservation';
+	}
+
+	public function get_ep(){
+		return Episode::find_by_season_and_episode($this->season, $this->episode);
 	}
 
 	public function getID():string {
@@ -111,5 +112,22 @@ abstract class Post extends Model {
 		$label = preg_replace(new RegExp('(?:(e)ntire (s)cene?)','i'),'<strong class="color-darkblue">$1ntire $2cene</strong>$3', $label);
 		$label = preg_replace(new RegExp('\[([\w\s]+ intensifies)\]','i'),'<span class="intensify">$1</span>', $label);
 		return $label;
+	}
+
+	public function getFinishedImage(bool $view_only, string $cachebust = ''):string {
+		$Deviation = DeviantArt::getCachedDeviation($this->deviation_id,'fav.me',true);
+		if (empty($Deviation)){
+			$ImageLink = $view_only ? $this->toLink() : "http://fav.me/{$this->deviation_id}";
+			$Image = "<div class='image deviation error'><a href='$ImageLink'>Preview unavailable<br><small>Click to view</small></a></div>";
+		}
+		else {
+			$alt = CoreUtils::aposEncode($Deviation->title);
+			$ImageLink = $view_only ? $this->toLink() : "http://fav.me/{$Deviation->id}";
+			$Image = "<div class='image deviation'><a href='$ImageLink'><img src='{$Deviation->preview}$cachebust' alt='$alt'>";
+			if ($this->lock)
+				$Image .= "<span class='typcn typcn-tick' title='This submission has been accepted into the group gallery'></span>";
+			$Image .= '</a></div>';
+		}
+		return $Image;
 	}
 }

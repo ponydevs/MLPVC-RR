@@ -736,14 +736,7 @@ DocReady.push(function(){
 						$.post(`/post/set/${type}/${id}`,data, $.mkAjaxHandler(function(){
 							if (!this.status) return $.Dialog.fail(false, this.message);
 
-							if (this.li){
-								let $newli = $(this.li);
-								if ($li.hasClass('highlight'))
-									$newli.addClass('highlight');
-								$li.replaceWith($newli);
-								Time.Update();
-								$newli.trigger('bind-more-handlers', [id, type]);
-							}
+							$li.reloadLi();
 
 							$.Dialog.close();
 						}));

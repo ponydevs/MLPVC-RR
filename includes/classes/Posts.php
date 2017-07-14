@@ -34,7 +34,7 @@ class Posts {
 		if ($only !== ONLY_RESERVATIONS){
 			$return[] = Request::find('all', [
 				'conditions'=> [
-					'season = ? AND episode = ?'.($showBroken === false?' broken != true':''),
+					'season = ? AND episode = ?'.($showBroken === false?' AND broken IS NOT true':''),
 					$Episode->season,
 					$Episode->episode
 				],
@@ -46,7 +46,7 @@ class Posts {
 				DB::where('broken != true');
 			$return[] = Reservation::find('all', [
 				'conditions'=> [
-					'season = ? AND episode = ?'.($showBroken === false?' AND broken != true':''),
+					'season = ? AND episode = ?'.($showBroken === false?' AND broken IS NOT true':''),
 					$Episode->season,
 					$Episode->episode
 				],
@@ -64,7 +64,7 @@ class Posts {
 	 *
 	 * @return string
 	 */
-	public static function getMostRecentList($wrap = true){
+	public static function getMostRecentList($wrap = WRAP){
 		$cols = 'id,season,episode,label,preview,lock,deviation_id,reserved_by,finished_at,broken,reserved_at';
 		$RecentPosts = DB::disableAutoClass()->rawQuery(
 			"SELECT * FROM
@@ -78,15 +78,15 @@ class Posts {
 			ORDER BY posted DESC
 			LIMIT 20");
 
-		$HTML = $wrap ? '<ul>' : '';
+		$HTML = '';
 		foreach ($RecentPosts as $Post){
 			$is_request = !empty($Post['requested_by']);
 			$className = '\\App\\Models\\'.($is_request ? 'Request' : 'Reservation');
 			if (!$is_request)
 				unset($Post['requested_by']);
-			$HTML .= self::getLi(new $className($Post), true);
+			$HTML .= self::getLi(new $className($Post), true, false, true);
 		}
-		return $HTML.($wrap?'</ul>':'');
+		return $wrap ? "<ul>$HTML</ul>" : $HTML;
 	}
 
 	/**
@@ -106,7 +106,7 @@ class Posts {
 				Input::ERROR_RANGE => 'The description must be between @min and @max characters'
 			]
 		]))->out();
-		if (isset($label)){
+		if ($label !== null){
 			if (!$editing || $label !== $Post->label){
 				CoreUtils::checkStringValidity($label,'The description',INVERSE_PRINTABLE_ASCII_PATTERN);
 				$label = preg_replace(new RegExp("''"),'"',$label);
@@ -252,13 +252,14 @@ class Posts {
 	/**
 	 * Generate HTML of requests for episode pages
 	 *
-	 * @param Post[] $Requests
-	 * @param bool   $returnArranged Return an arranged array of posts instead of raw HTML
+	 * @param Post[]|null $Requests
+	 * @param bool        $returnArranged Return an arranged array of posts instead of raw HTML
+	 * @param bool        $lazyload       Output promise elements in place of deviation data
 	 *
 	 * @return string|array
 	 * @throws \Exception
 	 */
-	public static function getRequestsSection(?array $Requests = null, bool $returnArranged = false){
+	public static function getRequestsSection(?array $Requests = null, bool $returnArranged = false, bool $lazyload = false){
 		$Arranged = ['finished' => !$returnArranged ? '' : []];
 		if (!$returnArranged){
 			$Arranged['unfinished'] = [];
@@ -272,7 +273,7 @@ class Posts {
 
 		if (!empty($Requests) && is_array($Requests)){
 			foreach ($Requests as $Request){
-				$HTML = !$returnArranged ? self::getLi($Request) : $Request;
+				$HTML = !$returnArranged ? self::getLi($Request,false,false,$lazyload) : $Request;
 
 				if (!$returnArranged){
 					if ($Request->finished)
@@ -294,7 +295,7 @@ class Posts {
 			$Groups .= "<div class='group' id='group-$g'><h3>".self::REQUEST_TYPES[$g].":</h3><ul>$c</ul></div>";
 
 		if (Permission::sufficient('user')){
-			$makeRq = '<button id="request-btn" class="green" disabled>Make a request</button>';
+			$makeRq = '<button id="request-btn" class="green">Make a request</button>';
 			$reqForm = self::_getForm('request');
 		}
 		else $reqForm = $makeRq = '';
@@ -321,10 +322,11 @@ HTML;
 	 *
 	 * @param Post[]|null $Reservations
 	 * @param bool        $returnArranged Return an arranged array of posts instead of raw HTML
+	 * @param bool        $lazyload       Output promise elements in place of deviation data
 	 *
 	 * @return string|array
 	 */
-	public static function getReservationsSection(?array $Reservations = null, bool $returnArranged = false){
+	public static function getReservationsSection(?array $Reservations = null, bool $returnArranged = false, bool $lazyload = false){
 		$Arranged = [];
 		$Arranged['unfinished'] =
 		$Arranged['finished'] = !$returnArranged ? '' : [];
@@ -335,7 +337,7 @@ HTML;
 			foreach ($Reservations as $Reservation){
 				$k = ($Reservation->finished?'':'un').'finished';
 				if (!$returnArranged)
-					$Arranged[$k] .= self::getLi($Reservation);
+					$Arranged[$k] .= self::getLi($Reservation,false,false,$lazyload);
 				else $Arranged[$k][] = $Reservation;
 			}
 		}
@@ -344,11 +346,11 @@ HTML;
 			return $Arranged;
 
 		if (Permission::sufficient('member')){
-			$makeRes = '<button id="reservation-btn" class="green" disabled>Make a reservation</button>';
+			$makeRes = '<button id="reservation-btn" class="green">Make a reservation</button>';
 			$resForm = self::_getForm('reservation');
 		}
 		else $resForm = $makeRes = '';
-		$addRes = Permission::sufficient('staff') ? '<button id="add-reservation-btn" class="darkblue" disabled>Add a reservation</button>' :'';
+		$addRes = Permission::sufficient('staff') ? '<button id="add-reservation-btn" class="darkblue">Add a reservation</button>' :'';
 
 		$loading = $loaders ? ' loading' : '';
 
@@ -443,7 +445,7 @@ HTML;
 	 */
 	public static function getTransferAttempts(Post $Post, $sent_by = null, $cols = 'read_at,sent_at'){
 		if ($Post->reserved_by !== null)
-			DB::where('user', $Post->reserved_by);
+			DB::where('recipient_id', $Post->reserved_by);
 		if (!empty($sent_by))
 			DB::where("data->>'user'", $sent_by);
 		return DB
@@ -501,13 +503,14 @@ HTML;
 	 * List ltem generator function for request & reservation generators
 	 *
 	 * @param Request|Reservation $Post
-	 * @param bool                $view_only     Only show the "View" button
-	 * @param bool                $cachebust_url Append a random string to the image URL to force a re-fetch
+	 * @param bool                $view_only          Only show the "View" button
+	 * @param bool                $cachebust_url      Append a random string to the image URL to force a re-fetch
+	 * @param bool                $deviation_promises Output promise elements in place of cached deviation data
 	 *
 	 * @return string
 	 * @throws \Exception
 	 */
-	public static function getLi($Post, bool $view_only = false, bool $cachebust_url = false):string {
+	public static function getLi($Post, bool $view_only = false, bool $cachebust_url = false, bool $deviation_promises = false):string {
 		$ID = $Post->getID();
 		$alt = !empty($Post->label) ? CoreUtils::aposEncode($Post->label) : '';
 		$postlink = $Post->toLink();
@@ -537,25 +540,16 @@ HTML;
 		$hide_reserved_status = $Post->reserved_by === null || ($overdue && !$isReserver && !$isStaff);
 		if ($Post->reserved_by !== null){
 			$reserved_by = $overdue && !$isReserver ? ' by '.$Post->reserver->getProfileLink() : '';
-			$reserved_at = $Post->is_request && !empty($Post->reserved_at) && !($hide_reserved_status && Permission::insufficient('staff'))
+			$reserved_at = $Post->is_request && $Post->reserved_at !== null && !($hide_reserved_status && Permission::insufficient('staff'))
 				? "<em class='reserve-date'>Reserved <strong>".Time::tag($Post->reserved_at)."</strong>$reserved_by</em>"
 				: '';
 			if ($Post->finished){
-				$approved = !empty($Post->lock);
-				$Deviation = DeviantArt::getCachedDeviation($Post->deviation_id,'fav.me',true);
-				if (empty($Deviation)){
-					$ImageLink = $view_only ? $postlink : "http://fav.me/{$Post->deviation_id}";
-					$Image = "<div class='image deviation error'><a href='$ImageLink'>Preview unavailable<br><small>Click to view</small></a></div>";
-				}
-				else {
-					$alt = CoreUtils::aposEncode($Deviation->title);
-					$ImageLink = $view_only ? $postlink : "http://fav.me/{$Deviation->id}";
-					$Image = "<div class='image deviation'><a href='$ImageLink'><img src='{$Deviation->preview}$cachebust' alt='$alt'>";
-					if ($approved)
-						$Image .= "<span class='typcn typcn-tick' title='This submission has been accepted into the group gallery'></span>";
-					$Image .= '</a></div>';
-				}
-				$finished_at = !empty($Post->finished_at) ? "<em class='finish-date'>Finished <strong>".Time::tag($Post->finished_at).'</strong></em>'
+				$approved = $Post->lock;
+				if ($deviation_promises)
+					$Image = "<div class='image deviation'><div class='post-deviation-promise' data-post='{$Post->getID()}' data-viewonly='$view_only'></div></div>";
+				else $Image = $Post->getFinishedImage($view_only, $cachebust);
+				$finished_at = !empty($Post->finished_at)
+					? "<em class='finish-date'>Finished <strong>".Time::tag($Post->finished_at).'</strong></em>'
 					: '';
 				$locked_at = '';
 				if ($approved){

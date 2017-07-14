@@ -21,7 +21,7 @@ class Tag extends Model {
 		['tagged', 'class' => 'Tagged'],
 	];
 
-	public static $has_one = [
+	public static $belongs_to = [
 		['synonym', 'class' => 'Tag', 'foreign_key' => 'synonym_of'],
 	];
 

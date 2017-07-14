@@ -17,6 +17,7 @@ use App\Models\Color;
 use App\Models\ColorGroup;
 use App\Models\Cutiemark;
 use App\Models\Logs\MajorChange;
+use App\Models\RelatedAppearance;
 use App\Models\Tag;
 use App\Models\Tagged;
 use App\Models\User;
@@ -46,6 +47,12 @@ class ColorGuideController extends Controller {
 
 		if (POST_REQUEST)
 			CSRFProtection::protect();
+
+		if (RelatedAppearance::count() === 0){
+			$rel = DB::get('appearance_relations');
+			foreach ($rel as $r)
+				RelatedAppearance::make($r['source'],$r['target'],$r['mutual']);
+		}
 	}
 
 	/** @var bool */
@@ -115,8 +122,6 @@ class ColorGuideController extends Controller {
 	public function spriteColors($params){
 		if (Permission::insufficient('member'))
 			CoreUtils::notFound();
-
-
 
 		$this->_getAppearance($params);
 		if (Permission::insufficient('staff') && ($this->_appearance->owner_id ?? null) != Auth::$user->id)
@@ -322,7 +327,7 @@ class ColorGuideController extends Controller {
 	}
 
 	public function changeList(){
-		$Pagination = new Pagination('cg/changes', 50, DB::count('log__color_modify'));
+		$Pagination = new Pagination('cg/changes', 50, MajorChange::count());
 
 		CoreUtils::fixPath("/cg/changes/{$Pagination->page}");
 		$heading = 'Major Color Changes';
@@ -353,7 +358,7 @@ class ColorGuideController extends Controller {
 		$heading = 'Tags';
 		$title = "Page $Pagination->page - $heading - Color Guide";
 
-		$Tags = Tags::getFor(null,$Pagination, true);
+		$Tags = Tags::getFor(null,$Pagination->getLimit(), true);
 
 		if (isset($_GET['js']))
 			$Pagination->respond(Tags::getTagListHTML($Tags, NOWRAP), '#tags tbody');
@@ -560,20 +565,22 @@ class ColorGuideController extends Controller {
 				'except' => ['owner_id','last_cleared'],
 			]);
 
+			$AppendAppearance['added'] = gmdate('Y-m-d\TH:i:s\Z',$p->added->getTimestamp());
+
 			$AppendAppearance['notes'] = isset($AppendAppearance['notes'])
 				? CoreUtils::trim($AppendAppearance['notes'],true)
 				: '';
 
-			DB::disableAutoClass();
 			$CMs = Cutiemarks::get($p, false);
 			if (!empty($CMs)){
-				foreach ($CMs as $i => $CM){
-					$CMs[$i] = [
-						'link' => 'http://fav.me/{CM->favme}',
+				$AppendCMs = [];
+				foreach ($CMs as $CM){
+					$AppendCMs[] = [
+						'link' => "http://fav.me/{$CM->favme}",
 						'facing' => $CM->facing,
 					];
 				}
-				$AppendAppearance['CutieMark'] = $CM;
+				$AppendAppearance['CutieMark'] = $AppendCMs;
 			}
 
 			$AppendAppearance['ColorGroups'] = [];
@@ -613,9 +620,9 @@ class ColorGuideController extends Controller {
 			$RelatedIDs = $p->related_appearances;
 			if (!empty($RelatedIDs))
 				foreach ($RelatedIDs as $rel)
-					$AppendAppearance['RelatedAppearances'][] = $rel['id'];
+					$AppendAppearance['RelatedAppearances'][] = $rel->target_id;
 
-			$JSON['Appearances'][$p->id] = $AppendAppearance;
+			$JSON['Appearances'][$AppendAppearance['id']] = $AppendAppearance;
 		}
 
 		$data = JSON::encode($JSON, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
@@ -733,7 +740,7 @@ class ColorGuideController extends Controller {
 			case 'make':
 				/** @var $data array */
 				$data = [
-					'ishuman' => $this->_personalGuide ? null : $this->_EQG,
+					'ishuman' => $this->_personalGuide ? null : (bool)$this->_EQG,
 				];
 
 				$label = (new Input('label','string', [
@@ -757,7 +764,8 @@ class ColorGuideController extends Controller {
 					$eqg_url = $this->_EQG ? '/eqg':'';
 					Response::fail("An appearance <a href='{$dupe->getLink()}' target='_blank'>already esists</a> in the ".($this->_EQG?'EQG':'Pony').' guide with this exact name. Consider adding an identifier in backets or choosing a different name.');
 				}
-				$data['label'] = $label;
+				if ($creating || $label !== $this->_appearance->label)
+					$data['label'] = $label;
 
 				$notes = (new Input('notes','text', [
 					Input::IS_OPTIONAL => true,
@@ -788,17 +796,24 @@ class ColorGuideController extends Controller {
 					$data['last_cleared'] = date('c');
 				}
 
-				if ($creating)
-					Appearance::create($data);
-				else $this->_appearance->update_attributes($data);
+				/** @var $newAppearance Appearance */
+				if ($creating){
+					$newAppearance = Appearance::create($data);
+					$newAppearance->reindex();
+				}
+				else {
+					$olddata = $this->_appearance->to_array();
+					$this->_appearance->update_attributes($data);
+					$this->_appearance->reindex();
+				}
 
-				$EditedAppearance = Appearances::updateIndex($creating ? $query : $this->_appearance->id, '*');
+				$EditedAppearance = $creating ? $newAppearance : $this->_appearance;
 
 				if ($creating){
-					$data['id'] = $query;
+					$data['id'] = $newAppearance->id;
 					$response = [
 						'message' => 'Appearance added successfully',
-						'goto' => (isset($ownerName) ? "/@$ownerName" : '')."/cg/v/$query",
+						'goto' => $newAppearance->getLink(),
 					];
 					$usetemplate = isset($_POST['template']);
 					if ($usetemplate){
@@ -814,33 +829,35 @@ class ColorGuideController extends Controller {
 
 					Logs::logAction('appearances', [
 						'action' => 'add',
-					    'id' => $data['id'],
-					    'order' => $data['order'],
-					    'label' => $data['label'],
-					    'notes' => $data['notes'],
-					    'ishuman' => $data['ishuman'],
-						'usetemplate' => $usetemplate ? 1 : 0,
-						'private' => $data['private'] ? 1 : 0,
-						'owner_id' => $data['owner_id'] ?? null,
+					    'id' => $newAppearance->id,
+					    'order' => $newAppearance->order,
+					    'label' => $newAppearance->label,
+					    'notes' => $newAppearance->notes,
+					    'ishuman' => $newAppearance->ishuman,
+						'usetemplate' => $usetemplate,
+						'private' => $newAppearance->private,
+						'owner_id' => $newAppearance->owner_id,
 					]);
 					Response::done($response);
 				}
 
 				CGUtils::clearRenderedImages($this->_appearance->id, [CGUtils::CLEAR_PALETTE, CGUtils::CLEAR_PREVIEW]);
 
-				$response = [];
-				$diff = [];
-				foreach (['label', 'notes', 'private', 'owner'] as $key){
-					if ($EditedAppearance[$key] !== $this->_appearance[$key]){
-						$diff["old$key"] = $this->_appearance[$key];
-						$diff["new$key"] = $EditedAppearance[$key];
+				if (!$creating){
+					$diff = [];
+					foreach (['label', 'notes', 'private', 'owner_id'] as $key){
+						if ($EditedAppearance->{$key} !== $olddata[$key]){
+							$diff["old$key"] = $olddata[$key];
+							$diff["new$key"] = $EditedAppearance->{$key};
+						}
 					}
+					if (!empty($diff)) Logs::logAction('appearance_modify', [
+						'appearance_id' => $this->_appearance->id,
+						'changes' => JSON::encode($diff),
+					]);
 				}
-				if (!empty($diff)) Logs::logAction('appearance_modify', [
-					'appearance_id' => $this->_appearance->id,
-					'changes' => JSON::encode($diff),
-				]);
 
+				$response = [];
 				if (!$this->_appearancePage){
 					$response['label'] = $EditedAppearance['label'];
 					if ($data['label'] !== $this->_appearance->label)
@@ -979,9 +996,9 @@ class ColorGuideController extends Controller {
 				$RelatedAppearances = $this->_appearance->related_appearances;
 				$RelatedAppearanceIDs = [];
 				foreach ($RelatedAppearances as $p)
-					$RelatedAppearanceIDs[$p['id']] = $p['mutual'];
+					$RelatedAppearanceIDs[$p->target_id] = $p->is_mutual;
 
-				$Appearances = DB::where('ishuman', $this->_EQG)->where('"id" NOT IN (0,'.$this->_appearance->id.')')->orderBy('label','ASC')->get('appearances',null,'id,label');
+				$Appearances = DB::disableAutoClass()->where('ishuman', $this->_EQG)->where('"id" NOT IN (0,'.$this->_appearance->id.')')->orderBy('label','ASC')->get('appearances',null,'id,label');
 
 				$Sorted = [
 					'unlinked' => [],
@@ -1023,29 +1040,12 @@ class ColorGuideController extends Controller {
 				if (!empty($MutualIDs))
 					foreach ($MutualIDs as $id){
 						$mutuals[$id] = true;
-						unset($appearances[$id]);
 					};
 
-				// TODO ActiveRecord-ify
-
-				DB::where('source', $this->_appearance->id)->delete('appearance_relations');
+				$this->_appearance->clearRelations();
 				if (!empty($appearances))
-					foreach ($appearances as $id => $_){
-						@DB::insert('appearance_relations', [
-							'source' => $this->_appearance->id,
-							'target' => $id,
-							'mutual' => isset($mutuals[$id]),
-						]);
-					};
-				DB::where('target', $this->_appearance->id)->where('mutual', true)->delete('appearance_relations');
-				if (!empty($mutuals))
-					foreach ($MutualIDs as $id){
-						@DB::insert('appearance_relations', [
-							'source' => $id,
-							'target' => $this->_appearance->id,
-							'mutual' => true,
-						]);
-					};
+					foreach ($appearances as $id => $_)
+						RelatedAppearance::make($this->_appearance->id, $id, isset($mutuals[$id]));
 
 				$out = [];
 				if ($this->_appearancePage)
@@ -1579,10 +1579,15 @@ HTML;
 			if (empty($Group))
 				Response::fail("There’s no color group with the ID of $GroupID");
 
-			if ($action === 'get')
-				Response::done($Group->to_array([
-					'with' => [ 'Colors' => $Group->colors ],
-				]));
+			if ($action === 'get'){
+				$out = $Group->to_array();
+				$out['Colors'] = [];
+				foreach ($Group->colors as $c)
+					$out['Colors'][] = $c->to_array([
+						'except' => 'group_id',
+					]);
+				Response::done($out);
+			}
 
 			if ($action === 'del'){
 				$Group->delete();
@@ -1643,7 +1648,6 @@ HTML;
 				Input::ERROR_INVALID => 'List of colors is invalid',
 			]
 		]))->out();
-		/** @var $newcolors Color[] */
 		$newcolors = [];
 		foreach ($recvColors as $part => $c){
 			$append = new Color([
@@ -1681,6 +1685,8 @@ HTML;
 			$colorError = true;
 			error_log('Database error triggered by user '.Auth::$user->name.' ('.Auth::$user->id.") while saving colors:\n".JSON::encode($c->errors, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
 		}
+		unset($c);
+		/** @var $newcolors Color[] */
 		if ($colorError)
 			Response::fail("There were some issues while saving the colors. Please <a class='send-feedback'>let us know</a> about this error, so we can look into why it might've happened.");
 

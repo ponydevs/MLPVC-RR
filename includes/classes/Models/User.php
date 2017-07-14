@@ -50,7 +50,7 @@ class User extends AbstractUser {
 		['unbanishments', 'class' => 'Logs\Unbanish', 'foreign_key' => 'target_id', 'order' => 'entryid desc'],
 	];
 	public static $has_one = [
-		['discord_member', 'class' => 'DiscordMember', 'foreign_key' => 'id', 'primary_key' => 'userid'],
+		['discord_member'],
 	];
 	public static $validates_size_of = [
 		['name', 'within' => [1, 20]],
@@ -269,12 +269,12 @@ class User extends AbstractUser {
 			WHERE d.author = ? AND p.owner_id IS NULL";
 
 		if ($count)
-			return $Database->rawQuerySingle($query, [$this->name])['cnt'];
+			return DB::rawQuerySingle($query, [$this->name])['cnt'];
 
 		if ($pagination)
 			$query .= ' ORDER BY p.order ASC '.$pagination->getLimitString();
 
-		return Cutiemark::find_all_by_sql($query, [$this->name]);
+		return Cutiemark::find_by_sql($query, [$this->name]);
 	}
 
 	/**
@@ -292,7 +292,7 @@ class User extends AbstractUser {
 			return DB::count($table);
 
 		$limit = isset($pagination) ? $pagination->getLimit() : null;
-		return DB::orderBy('posted','DESC')->get($table,$limit);
+		return DB::orderBy(($table === 'requests' ? 'requested_at' : 'reserved_at'),'DESC')->get($table,$limit);
 	}
 
 	/**
@@ -322,18 +322,18 @@ class User extends AbstractUser {
 		if ($count)
 			return DB::rawQuerySingle(
 				'SELECT
-					(SELECT COUNT(*) FROM requests WHERE reserved_by = :userid AND deviation_id IS NOT NULL)
+					(SELECT COUNT(*) FROM requests WHERE reserved_by = :userid && deviation_id IS NOT NULL)
 					+
 					(SELECT COUNT(*) FROM reservations WHERE reserved_by = :userid && deviation_id IS NOT NULL)
 				as cnt', ['userid' => $this->id])['cnt'];
 
-		$cols = 'id, label, reserved_by, reserved_by, preview, lock, season, episode, deviation_id';
+		$cols = 'id, label, reserved_by, reserved_by, reserved_at, finished_at, preview, lock, season, episode, deviation_id';
 		/** @noinspection SqlInsertValues */
 		$query =
 			"SELECT * FROM (
-				SELECT $cols, requested_by, requested_at as posted FROM requests WHERE reserved_by = :userid AND deviation_id IS NOT NULL
+				SELECT $cols, requested_by, requested_at, requested_at as posted FROM requests WHERE reserved_by = :userid AND deviation_id IS NOT NULL
 				UNION ALL
-				SELECT $cols, null as requested_by, reserved_at as posted FROM reservations WHERE reserved_by = :userid AND deviation_id IS NOT NULL
+				SELECT $cols, null as requested_by, null as requested_at, reserved_at as posted FROM reservations WHERE reserved_by = :userid AND deviation_id IS NOT NULL
 			) t";
 		if ($pagination)
 			$query .= ' ORDER BY posted DESC '.$pagination->getLimitString();
@@ -407,7 +407,7 @@ class User extends AbstractUser {
 	}
 
 	public function isDiscordMember():bool {
-		return !empty($this->getDiscordIdentity());
+		return $this->getDiscordIdentity() instanceof DiscordMember;
 	}
 
 	public function getDiscordIdentity():?DiscordMember {

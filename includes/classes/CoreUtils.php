@@ -876,7 +876,7 @@ HTML;
 	 */
 	public static function makePlural($w, int $in = 0, $prep = false):string {
 		$ret = ($prep?"$in ":'');
-		if ($in !== 1 && $w[-1] === 'y')
+		if ($in !== 1 && $w[-1] === 'y' && !in_array(strtolower($w),self::$_endsWithYButStillPlural,true))
 			return $ret.self::substring($w,0,-1).'ies';
 		return $ret.$w.($in !== 1 && !in_array(strtolower($w),self::$_uncountableWords,true) ?'s':'');
 	}
@@ -894,6 +894,7 @@ HTML;
 	}
 
 	private static $_uncountableWords = ['staff'];
+	private static $_endsWithYButStillPlural = ['day'];
 
 	/**
 	 * Detect user's web browser based on user agent

@@ -2,6 +2,7 @@
 
 namespace App;
 
+use ActiveRecord\RecordNotFound;
 use App\Models\Appearance;
 use App\Models\ColorGroup;
 use App\Models\Episode;
@@ -109,7 +110,13 @@ class Logs {
 			break;
 			case 'episodes':
 				$details[] = ['Action', self::$ACTIONS[$data['action']]];
-				$details[] = ['Name', (new Episode($data))->formatTitle()];
+				$details[] = ['Name', (new Episode([
+					'season' => $data['season'],
+					'episode' => $data['episode'],
+					'title' => $data['title'],
+					'twoparter' => $data['twoparter'],
+					'airs' => $data['airs'],
+				]))->formatTitle()];
 				if ($data['season'] === 0)
 					$details[] = ['Overall', "#{$data['episode']}"];
 				if (!empty($data['airs']))
@@ -150,7 +157,7 @@ class Logs {
 			break;
 			case 'banish':
 			case 'unbanish':
-				$details[] = ['User', User::find($data['target'])->getProfileLink()];
+				$details[] = ['User', User::find($data['target_id'])->getProfileLink()];
 				$details[] = ['Reason', CoreUtils::escapeHTML($data['reason'])];
 			break;
 			case 'post_lock':
@@ -173,7 +180,7 @@ class Logs {
 				$details[] = ['Type', $typeNames[$data['type']]];
 				$IDstr = "S{$data['season']}E{$data['episode']}";
 				$details[] = ['Episode', "<a href='/episode/$IDstr'>$IDstr</a>"];
-				$details[] = ['Posted', Time::tag($data['posted'], Time::TAG_EXTENDED, Time::TAG_STATIC_DYNTIME)];
+				$details[] = ['Requested on', Time::tag($data['requested_at'], Time::TAG_EXTENDED, Time::TAG_STATIC_DYNTIME)];
 				if (!empty($data['requested_by']))
 					$details[] = ['Requested by', User::find($data['requested_by'])->getProfileLink()];
 				if (!empty($data['reserved_by']))
@@ -235,12 +242,12 @@ class Logs {
 			break;
 			case 'cg_modify':
 				$details[] = ['Appearance', self::_getAppearanceLink($data['appearance_id'])];
-				$CG = ColorGroup::find($data['groupid']);;
+				$CG = ColorGroup::find($data['group_id']);
 				if (empty($CG)){
-					$details[] = ['Color group ID', '#'.$data['groupid']];
+					$details[] = ['Color group ID', '#'.$data['group_id']];
 					$details[] = ['Still exists', false];
 				}
-				else $details[] = ['Group', "{$CG['label']} (#{$data['groupid']})"];
+				else $details[] = ['Group', "{$CG->label} (#{$data['group_id']})"];
 				if (isset($data['newlabel']))
 					$details[] = ['Label', self::diff($data['oldlabel'] ?? '', $data['newlabel'])];
 				if (isset($data['newcolors']))
@@ -248,7 +255,7 @@ class Logs {
 			break;
 			case 'cgs':
 				$details[] = ['Action', self::$ACTIONS[$data['action']]];
-				$details[] = ['Color group ID', '#'.$data['groupid']];
+				$details[] = ['Color group ID', '#'.$data['group_id']];
 				$details[] = ['Label', $data['label']];
 				$details[] = ['Appearance', self::_getAppearanceLink($data['appearance_id'])];
 				if (isset($data['order']))
@@ -292,7 +299,7 @@ class Logs {
 					$details[] = ['New Custom CM Preview', null];
 			break;
 			case 'da_namechange':
-				$User = User::find($data['id']);
+				$User = User::find($data['user_id']);
 				$newIsCurrent = $User->name === $data['new'];
 				$details[] = ['User', $User->getProfileLink()];
 				if ($newIsCurrent)
@@ -373,7 +380,7 @@ class Logs {
 		if (empty($Post))
 			$details[] = ['<span class="typcn typcn-info-large"></span> No longer exists', self::SKIP_VALUE, self::KEYCOLOR_INFO];
 		else {
-			$EpID = (new Episode($Post))->formatTitle(AS_ARRAY,'id');
+			$EpID = $Post->ep->formatTitle(AS_ARRAY,'id');
 			$EpData = Episode::parseID($EpID);
 			$Episode = Episodes::getActual($EpData['season'], $EpData['episode'], Episodes::ALLOW_MOVIES);
 			$details[] = ['Posted under', "<a href='".$Episode->toURL()."'>$EpID</a>"];
@@ -400,7 +407,13 @@ class Logs {
 	 */
 	private static function _getAppearanceLink(int $id):string {
 		$ID = "#$id";
-		$Appearance = Appearance::find($id);
+		try {
+			$Appearance = Appearance::find($id);
+		}
+		catch(RecordNotFound $e){
+			return $ID;
+		}
+
 		if (!empty($Appearance))
 			$ID = "<a href='{$Appearance->getLink()}'>".CoreUtils::escapeHTML($Appearance->label)."</a> ($ID)";
 

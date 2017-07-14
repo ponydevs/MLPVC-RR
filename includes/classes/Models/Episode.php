@@ -31,6 +31,8 @@ use App\RegExp;
  * @method static Episode find_by_season_and_episode(int $season, int $episode)
  */
 class Episode extends Model {
+	static $primary_key = ['season','episode'];
+
 	public static $has_many = [
 		['videos', 'class' => 'EpisodeVideo', 'foreign_key' => ['season','episode'], 'order' => 'provider asc, part asc']
 	];
@@ -47,13 +49,17 @@ class Episode extends Model {
 		return $attr !== 'false' && !empty($attr);
 	}
 
+	private function _normalizeScore($value):string {
+		return is_numeric($value) ? number_format($value,1) : '0.0';
+	}
+
 	public function get_score():string {
 		$attr = $this->read_attribute('score');
-		return is_numeric($attr) ? number_format($attr,1) : null;
+		return $this->_normalizeScore($attr);
 	}
 
 	public function set_score($score){
-		$this->assign_attribute('score', is_numeric($score) ? number_format($score,1) : null);
+		$this->assign_attribute('score', $this->_normalizeScore($score));
 	}
 
 	public function get_displayed(){
@@ -261,7 +267,7 @@ class Episode extends Model {
 				"season $is 0 AND no $dir ?",
 				$this->no
 			],
-			'order' => 'no desc',
+			'order' => 'no '.($dir === self::NEXT ? 'asc' : 'desc'),
 			'limit' => 1,
 		]);
 	}

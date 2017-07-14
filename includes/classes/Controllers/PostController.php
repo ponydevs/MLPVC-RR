@@ -120,26 +120,20 @@ class PostController extends Controller {
 				if (empty($update))
 					Response::success('Nothing was changed');
 
-				if (!DB::where('id', $this->_post->id)->update("{$thing}s", $update))
+				if (!$this->_post->update_attributes($update))
 					Response::dbError();
 
-				$response = [];
 				try {
 					CoreUtils::socketEvent('post-update',[
 						'id' => $this->_post->id,
 						'type' => $thing,
 					]);
 				}
-				catch(ServerConnectionFailureException $e){
-					foreach ($update as $k => $v)
-						$this->_post->{$k} = $v;
-					$response['li'] = Posts::getLi($this->_post);
-				}
 				catch (\Exception $e){
 					error_log("SocketEvent Error\n".$e->getMessage()."\n".$e->getTraceAsString());
 				}
 
-				Response::done($response);
+				Response::done();
 			break;
 			case 'unbreak':
 				if (Permission::insufficient('staff'))
@@ -171,7 +165,7 @@ class PostController extends Controller {
 		}
 
 		$isUserReserver = $this->_post->reserved_by === Auth::$user->id;
-		if (empty($this->_post->reserved_by)){
+		if ($this->_post->reserved_by === null){
 			switch ($action){
 				case 'unreserve':
 					Response::done(['li' => Posts::getLi($this->_post)]);
@@ -231,7 +225,7 @@ class PostController extends Controller {
 			case 'unlock':
 				if (Permission::insufficient('staff'))
 					Response::fail();
-				if (empty($this->_post->lock))
+				if (!$this->_post->lock)
 					Response::fail("This $thing has not been approved yet");
 
 				if (Permission::insufficient('developer') && CoreUtils::isDeviationInClub($this->_post->deviation_id) === true)
@@ -531,10 +525,10 @@ class PostController extends Controller {
 	public function _initPost($action, $params){
 		$thing = $params['thing'];
 
-		$this->_post = DB::where('id', $params['id'])->getOne("{$thing}s");
+		$this->_post = $thing === 'request' ? Request::find($params['id']) : Reservation::find($params['id']);
 		if (empty($this->_post)) Response::fail("There’s no $thing with the ID {$params['id']}");
 
-		if (!empty($this->_post->lock) && Permission::insufficient('developer') && $action !== 'unlock')
+		if (!empty($this->_post->lock) && Permission::insufficient('developer') && !in_array($action,['unlock','lazyload'],true))
 			Response::fail('This post has been approved and cannot be edited or removed.');
 	}
 
@@ -598,7 +592,7 @@ class PostController extends Controller {
 				$data = ['canreserve' => true];
 			}
 			else {
-				$message .= "<br>However, you have 4 reservations already which means you can’t reserve any more posts. Please review your pending reservations on your <a href='/user'>Account page</a> and cancel/finish at least one before trying to take on another.";
+				$message .= "<br>However, you have 4 reservations already which means you can’t reserve any more posts. Please review your pending reservations on your <a href='/u'>Account page</a> and cancel/finish at least one before trying to take on another.";
 				$data = [];
 			}
 		};
@@ -688,6 +682,13 @@ class PostController extends Controller {
 		]);
 
 		Response::done($wasBroken ? ['li' => Posts::getLi($this->_post)] : ['preview' => $Image->preview]);
+	}
+
+	public function lazyload($params){
+		$thing = $params['thing'];
+		$this->_initPost('lazyload', $params);
+
+		Response::done(['html' => $this->_post->getFinishedImage(isset($_GET['viewonly']))]);
 	}
 
 	public function fixStash($params){

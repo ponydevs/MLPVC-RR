@@ -45,7 +45,7 @@ class Tags {
 			DB::join('tagged','(tagged.tag_id = tags.id'.($showSynonymTags?' OR tagged.tag_id = tags.synonym_of':'').')','right',false);
 			DB::where('tagged.appearance_id',$PonyID);
 		}
-		return DB::get('tags',$limit,'tags.*');
+		return DB::setModel('Tag')->get('tags',$limit,'tags.*');
 	}
 
 	/**

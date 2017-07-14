@@ -5,7 +5,6 @@ namespace App\Models;
 /** @inheritdoc */
 class Reservation extends Post {
 	public static $belongs_to = [
-		['ep', 'class' => 'Episode', 'foreign_key' => ['season','episode']],
 		['reserver', 'class' => 'User', 'foreign_key' => 'reserved_by'],
 	];
 

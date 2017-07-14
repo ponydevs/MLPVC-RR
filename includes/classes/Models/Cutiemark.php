@@ -15,6 +15,7 @@ use App\Exceptions\CURLRequestException;
  * @property string     $preview
  * @property string     $preview_src
  * @property Appearance $appearance
+ * @method static Cutiemark[] find_by_sql($sql, $data = null)
  */
 class Cutiemark extends Model {
 	public static $belongs_to = [

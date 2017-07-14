@@ -354,15 +354,13 @@ HTML;
 	}
 
 	private static function _contribItemFinished(Post $item):string {
-		return isset($item->deviation_id) ? DeviantArt::getCachedDeviation($item->deviation_id)->toLinkWithPreview() : '<em>Nope</em>';
+		return $item->deviation_id !== null ? "<div class='deviation-promise' data-favme='{$item->deviation_id}'></div>" : '<em>Nope</em>';
 	}
 	private static function _contribItemApproved(Post $item):string {
 		return !empty($item->lock) ? '<span class="color-green typcn typcn-tick"></span>' : '<em>Nope</em>';
 	}
 
 	public static function getContributionListHTML(string $type, ?array $data, bool $wrap = WRAP):string {
-
-
 		switch ($type){
 			case 'cms-provided':
 				$TABLE = <<<HTML
@@ -415,7 +413,7 @@ HTML;
 					/** @var $item \App\Models\Cutiemark */
 					$appearance = $item->appearance;
 					$preview = $appearance->getLinkWithPreviewHTML();
-					$deviation = DeviantArt::getCachedDeviation($item->favme)->toLinkWithPreview();
+					$deviation = "<div class='deviation-promise' data-favme='{$item->favme}'></div>";
 
 					$TR = <<<HTML
 <td class="pony-link">$preview</td>
@@ -427,7 +425,7 @@ HTML;
 					/** @var $item Request */
 					$preview = $item->toLinkWithPreview();
 					$posted = Time::tag($item->requested_at);
-					$isreserved = isset($item->reserved_by);
+					$isreserved = $item->reserved_by !== null;
 					if ($isreserved){
 						$reserved_by = User::find($item->reserved_by)->getProfileLink();
 						$reserved_at = Time::tag($item->reserved_at);
@@ -488,7 +486,7 @@ HTML;
 					$requested_at = Time::tag($item->requested_at);
 					$posted = "<span class='typcn typcn-user' title='By'></span> $posted_by<br><span class='typcn typcn-time'></span> $requested_at";
 					$finished = Time::tag($item->finished_at);
-					$deviation = DeviantArt::getCachedDeviation($item->deviation_id)->toLinkWithPreview();
+					$deviation = "<div class='deviation-promise' data-favme='{$item->deviation_id}'></div>";
 					$TR = <<<HTML
 <td>$preview</td>
 <td class='by-at'>$posted</td>

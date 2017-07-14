@@ -6,6 +6,7 @@ use App\CoreUtils;
 use App\Events;
 use App\Pagination;
 use App\Permission;
+use App\Models\Event;
 
 class EventsController extends Controller {
 	public $do = 'events';

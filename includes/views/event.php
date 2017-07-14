@@ -55,7 +55,7 @@ use App\Time;
 
 	<section>
 		<h2><span class='typcn typcn-group'></span>Entries</h2>
-		<?=$Event->getEntriesHTML()?>
+		<?=$Event->getEntriesHTML(true)?>
 	</section>
 </div>
 <?php

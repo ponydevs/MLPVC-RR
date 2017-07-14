@@ -180,8 +180,9 @@ class Appearances {
 		$GroupTagIDs = array_keys(CGUtils::GROUP_TAG_IDS_ASSOC);
 		$Sorted = [];
 		$Tagged = [];
-		foreach (DB::where('tag_id IN ('.implode(',',$GroupTagIDs).')')->orderBy('appearance_id','ASC')->get('tagged') as $row)
-			$Tagged[$row['appearance_id']][] = $row['tag_id'];
+		$_tagged = DB::where('tag_id IN ('.implode(',',$GroupTagIDs).')')->orderBy('appearance_id','ASC')->get('tagged');
+		foreach ($_tagged as $row)
+			$Tagged[$row->appearance_id][] = $row->tag_id;
 		foreach ($Appearances as $p){
 			if (!empty($Tagged[$p->id])){
 				if (count($Tagged[$p->id]) > 1)
@@ -345,7 +346,8 @@ class Appearances {
 			"SELECT t.name
 			FROM tagged tg
 			LEFT JOIN tags t ON tg.tag_id = t.id
-			WHERE tg.appearance_id = ? AND  t.type = 'ep'", [$Appearance->id]);
+			WHERE tg.appearance_id = ? AND  t.type = 'ep'
+			ORDER BY t.name", [$Appearance->id]);
 
 		if (empty($EpTagsOnAppearance))
 			return '';
@@ -428,8 +430,6 @@ HTML;
 			WHERE group_id IN (SELECT group_id FROM color_groups WHERE appearance_id = ?) $hexnull", [$appearance->id])['cnt'] ?? 0) > 0;
 	}
 
-	const ELASTIC_COLUMNS = 'id,label,order,ishuman,private';
-
 	public static function reindex(){
 		$elasticClient = CoreUtils::elasticClient();
 		try {
@@ -492,7 +492,7 @@ HTML;
 			]
 		]);
 		$elasticClient->indices()->create(array_merge($params));
-		$Appearances = DB::where('id != 0')->where('owner IS NULL')->get('appearances',null,self::ELASTIC_COLUMNS);
+		$Appearances = DB::where('id != 0')->where('owner IS NULL')->get('appearances');
 
 		$params = ['body' => []];
 		foreach ($Appearances as $i => $a){
@@ -520,21 +520,17 @@ HTML;
 	}
 
 	/**
-	 * @param int $AppearanceID
-	 * @param string $fields
-	 *
-	 * @return Appearance
+	 * @param Appearance|int $Appearance
 	 */
-	public static function updateIndex(int $AppearanceID, string $fields = self::ELASTIC_COLUMNS):Appearance {
-		$Appearance = Appearance::find('first', ['conditions' => ['id = ?', $AppearanceID], 'select' => $fields]);
+	public static function updateIndex($Appearance){
+		if (is_int($Appearance))
+			$Appearance = Appearance::find('first', ['conditions' => ['id = ?', $Appearance]]);
 		try {
 			CoreUtils::elasticClient()->update(self::toElasticArray($Appearance, false, true));
 		}
 		catch (ElasticNoNodesAvailableException $e){
-			error_log('ElasticSearch server was down when server attempted to index appearance '.$AppearanceID);
+			error_log('ElasticSearch server was down when server attempted to index appearance '.$Appearance->id);
 		}
-
-		return $Appearance;
 	}
 
 	public static function getElasticMeta(Appearance $Appearance){
@@ -547,7 +543,7 @@ HTML;
 	public static function getElasticBody(Appearance $Appearance){
 		$tags = Tags::getFor($Appearance->id, null, true, true);
 		foreach ($tags as $k => $tag)
-			$tags[$k] = $tag['name'];
+			$tags[$k] = $tag->name;
 		return [
 			'label' => $Appearance->label,
 			'order' => $Appearance->order,

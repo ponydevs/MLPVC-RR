@@ -105,8 +105,6 @@ class UserController extends Controller {
 		if (Permission::insufficient('developer') || !isset($params['uuid']))
 			CoreUtils::notFound();
 
-
-
 		/** @var $User User */
 		$User = DB::where('id', $params['uuid'])->getOne('users','name');
 		if (empty($User))
@@ -321,7 +319,7 @@ class UserController extends Controller {
 				foreach ($data as &$item){
 					$isRequest = !empty($item['requested_by']);
 					if (!$isRequest)
-						unset($item['requested_by']);
+						unset($item['requested_by'], $item['requested_at']);
 					$item = $isRequest ? new Request($item) : new Reservation($item);
 				}
 				unset($item);
@@ -346,7 +344,7 @@ class UserController extends Controller {
 			'title' => $title,
 			'heading' => $heading,
 			'css' => ['user-contrib'],
-			'js' => ['paginate'],
+			'js' => ['paginate','user-contrib'],
 			'view' => 'user-contrib',
 			'import' => [
 				'data' => $data,

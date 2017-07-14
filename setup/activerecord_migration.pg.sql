@@ -3,7 +3,9 @@ ALTER SEQUENCE log_appearance_modify_entryid_seq RENAME TO log__appearance_modif
 
 ALTER TABLE "appearances" RENAME "owner" TO "owner_id";
 ALTER TABLE "appearances" DROP CONSTRAINT "appearances_owner_fkey";
+CREATE INDEX "appearances_owner_id" ON "appearances" ("owner_id");
 ALTER TABLE "appearances" ADD FOREIGN KEY ("owner_id") REFERENCES "users" ("id") ON DELETE NO ACTION ON UPDATE CASCADE;
+
 
 ALTER TABLE "events__entries__votes" RENAME "entryid" TO "entry_id";
 ALTER TABLE "events__entries__votes" RENAME "userid" TO "user_id";
@@ -163,3 +165,12 @@ ALTER TABLE "episodes__videos" RENAME TO "episode_videos";
 ALTER TABLE "episode_videos" ADD CONSTRAINT "episode_videos_season_episode_provider_part" PRIMARY KEY ("season", "episode", "provider", "part"), DROP CONSTRAINT "episodes__videos_season_episode_provider_part";
 ALTER TABLE "episode_videos" DROP CONSTRAINT "episodes__videos_season_fkey";
 ALTER TABLE "episode_videos" ADD FOREIGN KEY ("season", "episode") REFERENCES "episodes" ("season", "episode") ON DELETE CASCADE ON UPDATE CASCADE;
+
+CREATE TABLE "related_appearances" (
+  "source_id" integer NOT NULL,
+  "target_id" integer NOT NULL
+);
+ALTER TABLE "related_appearances" OWNER TO "mlpvc-rr";
+ALTER TABLE "related_appearances" ADD CONSTRAINT "related_appearances_source_id_target_id" PRIMARY KEY ("source_id", "target_id");
+ALTER TABLE "related_appearances" ADD FOREIGN KEY ("source_id") REFERENCES "appearances" ("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "related_appearances" ADD FOREIGN KEY ("target_id") REFERENCES "appearances" ("id") ON DELETE CASCADE ON UPDATE CASCADE;

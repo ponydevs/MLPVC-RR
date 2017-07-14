@@ -39,7 +39,7 @@ if ($canEdit){
 	echo ' <button id="ban-toggle" class="darkblue typcn typcn-'.$Icon.' '.strtolower($BanLabel).'" title="'."$BanLabel user".'"></button>';
 }
 if (Permission::sufficient('developer'))
-	echo " &bullet; <span class='userid'>{$User->id}</span>", !empty($discordmember['id']) ? " &bullet; <span class='discid'>{$discordmember['id']}</span>" : '';
+	echo " &bullet; <span class='userid'>{$User->id}</span>", !empty($discordmember->id) ? " &bullet; <span class='discid'>{$discordmember->id}</span>" : '';
 			?></p>
 		</div>
 	</div>

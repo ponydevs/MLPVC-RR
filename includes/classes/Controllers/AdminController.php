@@ -93,7 +93,7 @@ class AdminController extends Controller {
 
 		foreach ($whereArgs as $arg)
 			DB::where(...$arg);
-		$Pagination = new Pagination('admin/logs', 20, DB::count('log'));
+		$Pagination = new Pagination('admin/logs', 25, DB::count('log'));
 		$heading = 'Global logs';
 		if (!empty($title))
 			$title .= '- ';
@@ -166,8 +166,6 @@ class AdminController extends Controller {
 
 		$action = $_GET['action'];
 		$creating = $action === 'make';
-
-
 
 		if (!$creating){
 			if (!isset($_GET['linkid']) || !is_numeric($_GET['linkid']))
@@ -338,8 +336,8 @@ HTML;
 		$this->_discordSetMember($params);
 
 		$resp = [];
-		if (isset($this->_member->user_id))
-			$resp['boundto'] = User::find($this->_member->user_id)->getProfileLink(User::LINKFORMAT_FULL);
+		if ($this->_member->user_id !== null)
+			$resp['boundto'] = $this->_member->user->getProfileLink(User::LINKFORMAT_FULL);
 
 		Response::done($resp);
 	}
@@ -367,11 +365,11 @@ HTML;
 	public function discordMemberLinkDel($params){
 		$this->_discordSetMember($params);
 
-		if (!isset($this->_member->user_id))
+		if ($this->_member->user_id === null)
 			Response::fail('Member is not bound to any user');
 
 		if (!$this->_member->update_attributes([
-			'userid' => null
+			'user_id' => null
 		])) Response::fail('Nothing has been changed');
 
 		Response::done();
@@ -395,7 +393,7 @@ HTML;
 
 			$usrids[] = $ins->id;
 
-			if ((isset($member['roles']) && count($member['roles']) > 1) || !empty($ins->nick))
+			if (!empty($ins->nick) || (isset($member['roles']) && count($member['roles']) > 1))
 				$ins->guessDAUser();
 			$ins = $ins->to_array([
 				'except' => ['name','avatar_url'],
@@ -405,7 +403,7 @@ HTML;
 				$insid = $ins['id'];
 				unset($ins['id']);
 				if ($skip_binding)
-					unset($ins['use_rid']);
+					unset($ins['user_id']);
 				DiscordMember::find($insid)->update_attributes($ins);
 			}
 			else DiscordMember::create($ins);
@@ -453,12 +451,6 @@ HTML;
 			Response::success('All identified posts have already been approved');
 
 		Response::success('Marked '.CoreUtils::makePlural('post', $approved, PREPEND_NUMBER).' as approved. To see which ones, check the <a href="/admin/logs/1?type=post_lock&by=you">list of posts you\'ve approved</a>.', ['reload' => true]);
-	}
-
-	public function recentPosts(){
-		CSRFProtection::protect();
-
-		Response::done(['html' => Posts::getMostRecentList()]);
 	}
 
 	public function wsdiag(){

@@ -25,7 +25,8 @@ use App\Time;
  * @property string   $title
  * @property DateTime $submitted_at
  * @property DateTime $last_edited
- * @property User     $submitter
+ * @property User     $submitter    (Via relations)
+ * @property Event    $event        (Via relations)
  */
 class EventEntry extends Model {
 	public static $table_name = 'events__entries';
@@ -98,12 +99,21 @@ HTML;
 		return '';
 	}
 
-	public function toListItemHTML(Event $event, bool $wrap = true):string {
-		$submission = DeviantArt::getCachedDeviation($this->sub_id, $this->sub_prov);
-		$filetype = $submission->type;
-		$preview = isset($this->prev_thumb) && isset($this->prev_full)
-			? self::_getPreviewDiv($this->prev_full, $this->prev_thumb, $filetype)
-			: '';
+	public function getListItemPreview($submission = null):?string {
+		if ($submission === null)
+			$submission = DeviantArt::getCachedDeviation($this->sub_id, $this->sub_prov);
+		if ($this->sub_prov === 'fav.me'){
+			if ($submission->preview !== null && $submission->fullsize !== null)
+				return self::_getPreviewDiv($submission->fullsize, $submission->preview, $submission->type);
+		}
+		if ($this->prev_thumb !== null && $this->prev_full !== null)
+			 return self::_getPreviewDiv($this->prev_full, $this->prev_thumb, $submission->type);
+		return '';
+	}
+
+	public function toListItemHTML(Event $event = null, bool $lazyload = false, bool $wrap = true):string {
+		if ($event === null)
+			$event = $this->event;
 		$title = CoreUtils::escapeHTML($this->title);
 		$submitter = $this->submitter;
 		$submitter_link = $submitter->getProfileLink();
@@ -118,8 +128,9 @@ HTML;
 		if ($sub_prov_favme || Permission::sufficient('staff')){
 			$title = "<a href='http://{$this->sub_prov}/{$this->sub_id}' target='_blank' rel='noopener'>$title</a>";
 		}
-		if ($sub_prov_favme && empty($preview) && $submission->preview !== null && $submission->fullsize !== null)
-			$preview = self::_getPreviewDiv($submission->fullsize, $submission->preview, $filetype);
+		if ($lazyload)
+			$preview = "<div class='entry-deviation-promise' data-entryid='{$this->id}'></div>";
+		else $preview = $this->getListItemPreview();
 
 		$voting = $this->getListItemVoting($event);
 

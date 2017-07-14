@@ -210,7 +210,7 @@ $NoScrollbar: false;
 	height: $size;
 	background: url('/img/loading-#{$type}.svg') no-repeat center center;
 	$bgsize: $size - ($size*$spacing*2);
-	background-size: $size $size;
+	background-size: $bgsize $bgsize;
 	box-sizing: border-box;
 }
 

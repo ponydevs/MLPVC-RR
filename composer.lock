@@ -963,12 +963,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/SeinopSys/php-activerecord.git",
-                "reference": "acd6715cfe5525a3378f3b7f63b180ba4fc14dd0"
+                "reference": "59aca7169f64065a95185a014d9fd47130289493"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/SeinopSys/php-activerecord/zipball/acd6715cfe5525a3378f3b7f63b180ba4fc14dd0",
-                "reference": "acd6715cfe5525a3378f3b7f63b180ba4fc14dd0",
+                "url": "https://api.github.com/repos/SeinopSys/php-activerecord/zipball/59aca7169f64065a95185a014d9fd47130289493",
+                "reference": "59aca7169f64065a95185a014d9fd47130289493",
                 "shasum": ""
             },
             "require": {
@@ -997,7 +997,7 @@
             "support": {
                 "source": "https://github.com/SeinopSys/php-activerecord/tree/master"
             },
-            "time": "2017-07-08 08:04:37"
+            "time": "2017-07-14 04:36:55"
         },
         {
             "name": "psr/http-message",

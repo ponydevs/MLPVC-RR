@@ -7,6 +7,7 @@ use App\CSRFProtection;
 use App\DB;
 use App\Exceptions\MismatchedProviderException;
 use App\Exceptions\UnsupportedProviderException;
+use App\HTTP;
 use App\ImageProvider;
 use App\Input;
 use App\Models\Event;
@@ -388,7 +389,7 @@ class EventController extends Controller {
 		if (!$insert->save())
 			Response::dbError('Saving entry failed');
 
-		Response::done(['entrylist' => $this->_event->getEntriesHTML(NOWRAP)]);
+		Response::done(['entrylist' => $this->_event->getEntriesHTML(false, NOWRAP)]);
 	}
 
 	/** @var EventEntry */
@@ -406,6 +407,9 @@ class EventController extends Controller {
 			Response::fail('The requested entry could not be found or you are not allowed to edit it');
 
 		$this->_getEvent($this->_entry->event_id);
+
+		if ($action === 'lazyload')
+			return;
 
 		if ($action === 'vote'){
 			if (!$this->_event->hasEnded())
@@ -453,7 +457,7 @@ class EventController extends Controller {
 			$entry->update_attributes($changes);
 		}
 
-		Response::done(['entryhtml' => $entry->toListItemHTML($this->_event, NOWRAP)]);
+		Response::done(['entryhtml' => $entry->toListItemHTML($this->_event, false, NOWRAP)]);
 	}
 
 	public function delEntry($params){
@@ -520,5 +524,14 @@ class EventController extends Controller {
 
 		$this->_entry->updateScore();
 		Response::done([ 'score' => $this->_entry->getFormattedScore() ]);
+	}
+
+	public function lazyloadEntry($params){
+		/** @var $entry EventEntry */
+		$entry = EventEntry::find($params['id']);
+		if (empty($entry))
+			HTTP::statusCode(404, AND_DIE);
+
+		Response::done(['html' => $entry->getListItemPreview()]);
 	}
 }

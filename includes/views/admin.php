@@ -61,6 +61,6 @@ use App\Permission;
 
 	<section class="recent-posts">
 		<h2><span class="typcn typcn-bell"></span>Most recent posts</h2>
-		<div></div>
+		<div><?=\App\Posts::getMostRecentList()?></div>
 	</section>
 </div>

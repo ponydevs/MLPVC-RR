@@ -8,7 +8,6 @@ use App\CSRFProtection;
 use App\DB;
 use App\Episodes;
 use App\Input;
-use App\JSON;
 use App\Logs;
 use App\Models\Appearance;
 use App\Models\EpisodeVote;
@@ -32,23 +31,6 @@ class EpisodeController extends Controller {
 			]);
 
 		Episodes::loadPage($CurrentEpisode);
-	}
-
-	public function nextup(){
-		// Only accessible from localhost
-		if (!in_array($_SERVER['REMOTE_ADDR'],['::1','127.0.0.1']) && Permission::insufficient('developer'))
-			Response::fail();
-
-		/** @var $UpcomingEpisode Episode */
-		$UpcomingEpisode = DB::where('airs > NOW()')->orderBy('airs', 'ASC')->where('season != 0')->getOne('episodes','season,episode,title,airs,twoparter');
-
-		if (empty($UpcomingEpisode))
-			Response::fail('No upcoming episode found');
-
-		$out = $UpcomingEpisode->to_array([
-			'esxcept' => 'is_movie',
-		]);
-		Response::done($out, JSON::PRETTY_PRINT);
 	}
 
 	public function page($params){
@@ -386,7 +368,7 @@ class EpisodeController extends Controller {
 		if (!(new EpisodeVote([
 			'season' => $this->_episode->season,
 			'episode' => $this->_episode->episode,
-			'user' => Auth::$user->id,
+			'user_id' => Auth::$user->id,
 			'vote' => $vote,
 		]))->save()) Response::dbError();
 		$this->_episode->updateScore();
