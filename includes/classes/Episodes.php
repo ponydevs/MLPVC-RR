@@ -25,13 +25,12 @@ class Episodes {
 	 */
 	public static function get($count = null, $where = null){
 		/** @var $ep Episode */
-		global $Database;
 		if (!empty($where))
-			$Database->where($where);
-		$Database->orderBy('season')->orderBy('episode')->where('season != 0');
+			DB::where($where);
+		DB::orderBy('season')->orderBy('episode')->where('season != 0');
 		if ($count !== 1)
 			return $Database->get('episodes',$count);
-		return $Database->getOne('episodes');
+		return DB::getOne('episodes');
 	}
 
 	const ALLOW_MOVIES = true;

@@ -81,25 +81,22 @@ abstract class Post extends Model {
 		return "<a href='$link' {$target}>$label</a>";
 	}
 
-	public function isTransferable($now = null):bool {
-		if (!isset($this->reserved_by))
+	public function isTransferable(?int $ts = null):bool {
+		if ($this->reserved_by === null)
 			return true;
-		if (!isset($now))
-			$now = time();
-		return $now - strtotime($this->posted) >= Time::IN_SECONDS['day']*5;
+		return ($ts ?? time()) - $this->reserved_at->getTimestamp() >= Time::IN_SECONDS['day']*5;
 	}
 
 	/**
 	 * A post is overdue when it has been reserved and left unfinished for over 3 weeks
 	 *
-	 * @param int|null $now
+	 * @param int|null $ts
 	 *
 	 * @return bool
 	 */
-	public function isOverdue($now = null):bool {
-		if ($now === null)
-			$now = time();
-		return $this->is_request && $this->deviation_id !== null && $this->reserved_by !== null && $now - $this->reserved_at->getTimestamp() > Time::IN_SECONDS['week']*3;
+	public function isOverdue(?int $ts = null):bool {
+		$now = $ts ?? time();
+		return $this->is_request && $this->deviation_id === null && $this->reserved_by !== null && $now - $this->reserved_at->getTimestamp() >= Time::IN_SECONDS['week']*3;
 	}
 
 	public function processLabel():string {
