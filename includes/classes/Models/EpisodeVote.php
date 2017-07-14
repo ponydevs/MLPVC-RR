@@ -13,8 +13,6 @@ use ActiveRecord\Model;
  * @property Episode $ep
  */
 class EpisodeVote extends Model {
-	public static $table_name = 'episodes__votes';
-
 	public static $belongs_to = [
 		['ep', 'class' => 'Episode', 'foreign_key' => ['season','episode']],
 		['user'],
@@ -29,6 +27,6 @@ class EpisodeVote extends Model {
 	public static function find_for(Episode $Episode, ?User $user):?EpisodeVote {
 		if ($user === null)
 			return null;
-		return self::find_by_season_and_episode_and_user($Episode->season, $Episode->episode, $user->id);
+		return self::find_by_season_and_episode_and_user_id($Episode->season, $Episode->episode, $user->id);
 	}
 }

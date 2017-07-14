@@ -29,7 +29,7 @@ class Episodes {
 			DB::where($where);
 		DB::orderBy('season')->orderBy('episode')->where('season != 0');
 		if ($count !== 1)
-			return $Database->get('episodes',$count);
+			return DB::get('episodes',$count);
 		return DB::getOne('episodes');
 	}
 

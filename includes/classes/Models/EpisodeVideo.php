@@ -19,15 +19,11 @@ use App\VideoProvider;
  * @property Episode $ep
  */
 class EpisodeVideo extends Model {
-	public static $table_name = 'episodes__videos';
-
 	public static $belongs_to = [
 		['ep', 'class' => 'Episode', 'foreign_key' => ['season','episode']],
 	];
 
 	public function isBroken():bool {
-
-
 		if (isset($this->not_broken_at)){
 			$nb = strtotime($this->not_broken_at);
 			if ($nb+(Time::IN_SECONDS['hour']*2) > time())

@@ -158,3 +158,8 @@ ALTER TABLE "episode_votes" DROP CONSTRAINT "episodes__votes_season_fkey";
 ALTER TABLE "episode_votes" DROP CONSTRAINT "episodes__votes_user_fkey";
 ALTER TABLE "episode_votes" ADD FOREIGN KEY ("season", "episode") REFERENCES "episodes" ("season", "episode") ON DELETE CASCADE ON UPDATE CASCADE;
 ALTER TABLE "episode_votes" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+ALTER TABLE "episodes__videos" RENAME TO "episode_videos";
+ALTER TABLE "episode_videos" ADD CONSTRAINT "episode_videos_season_episode_provider_part" PRIMARY KEY ("season", "episode", "provider", "part"), DROP CONSTRAINT "episodes__videos_season_episode_provider_part";
+ALTER TABLE "episode_videos" DROP CONSTRAINT "episodes__videos_season_fkey";
+ALTER TABLE "episode_videos" ADD FOREIGN KEY ("season", "episode") REFERENCES "episodes" ("season", "episode") ON DELETE CASCADE ON UPDATE CASCADE;

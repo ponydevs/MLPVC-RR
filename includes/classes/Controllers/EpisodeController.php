@@ -343,7 +343,7 @@ class EpisodeController extends Controller {
 		if (isset($_REQUEST['detail'])){
 			$VoteCountQuery = DB::rawQuery(
 				'SELECT count(*) as value, vote as label
-				FROM episodes__votes v
+				FROM episode_votes v
 				WHERE season = ? AND episode = ?
 				GROUP BY v.vote
 				ORDER BY v.vote ASC', [$this->_episode->season, $this->_episode->episode]);
@@ -409,7 +409,7 @@ class EpisodeController extends Controller {
 			'airs' => date('c',strtotime($this->_episode->airs)),
 		];
 		/** @var $Vids EpisodeVideo[] */
-		$Vids = DB::whereEp($this->_episode)->get('episodes__videos');
+		$Vids = DB::whereEp($this->_episode)->get('episode_videos');
 		foreach ($Vids as $part => $vid){
 			if (!empty($vid->id))
 				$return['vidlinks']["{$vid->provider}_{$vid->part}"] = VideoProvider::getEmbed($vid, VideoProvider::URL_ONLY);
@@ -452,7 +452,7 @@ class EpisodeController extends Controller {
 					::whereEp($this->_episode)
 					->where('provider', $provider)
 					->where('part', $part)
-					->count('episodes__videos');
+					->count('episode_videos');
 				if ($videocount === 0){
 					if (!empty($set))
 						EpisodeVideo::create([
@@ -470,8 +470,8 @@ class EpisodeController extends Controller {
 						->where('provider', $provider)
 						->where('part', $part);
 					if (empty($set))
-						DB::delete('episodes__videos');
-					else DB::update('episodes__videos', [
+						DB::delete('episode_videos');
+					else DB::update('episode_videos', [
 						'id' => $set,
 						'fullep' => $fullep,
 						'modified' => date('c'),
@@ -497,20 +497,13 @@ class EpisodeController extends Controller {
 	public function brokenVideos($params){
 		$this->_getEpisode($params);
 
-
-
-		/** @var $videos EpisodeVideo[] */
-		$videos = DB
-			::whereEp($this->_episode)
-			->get('episodes__videos');
-
 		$removed = 0;
-		foreach ($videos as $video){
+		foreach ($this->_episode->videos as $video){
 			if (!$video->isBroken())
 				continue;
 
 			$removed++;
-			DB::whereEp($this->_episode)->where('provider', $video->provider)->where('id', $video->id)->delete('episodes__videos');
+			$video->delete();
 			Logs::logAction('video_broken', [
 				'season' => $this->_episode->season,
 				'episode' => $this->_episode->episode,

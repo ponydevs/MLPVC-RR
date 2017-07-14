@@ -197,7 +197,7 @@ class Episode extends Model {
 	}
 
 	public function updateScore(){
-		$Score = DB::whereEp($this)->disableAutoClass()->getOne('episodes__votes','AVG(vote) as score');
+		$Score = DB::whereEp($this)->disableAutoClass()->getOne('episode_votes','AVG(vote) as score');
 		$this->score = !empty($Score['score']) ? $Score['score'] : 0;
 		$this->save();
 	}

@@ -13,6 +13,7 @@ namespace App;
  * @method static string getLastError()
  * @method static PostgresDbWrapper join(string $tableName, string $on, string $type = '', bool $disableAutoClass = true)
  * @method static array get(string $tableName, int|int[] $numRows = null, string|string[] $columns = null)
+ * @method static array getOne(string $tableName, string|string[] $columns = null)
  * @method static array rawQuerySingle(string $query, ?array $bindParams = null)
  * @method static int count(string $tableName)
  */
