@@ -4,3 +4,8 @@ php:
 install:
   - cp ./setup/conf.php ./includes/conf.php
   - composer install
+services:
+  - postgresql
+before_script:
+  - psql -c 'CREATE USER "mlpvc-rr" WITH LOGIN PASSWORD 'example-password'; CREATE DATABASE "mlpvc-rr";' -U postgres
+  - psql "mlpvc-rr" < `./setup/mlpvc-rr.pg.sql`

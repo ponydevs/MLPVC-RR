@@ -46,7 +46,7 @@ class Posts {
 				DB::where('broken != true');
 			$return[] = Reservation::find('all', [
 				'conditions'=> [
-					'season = ? AND episode = ?'.($showBroken === false?' broken != true':''),
+					'season = ? AND episode = ?'.($showBroken === false?' AND broken != true':''),
 					$Episode->season,
 					$Episode->episode
 				],
