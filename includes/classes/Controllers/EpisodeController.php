@@ -390,8 +390,7 @@ class EpisodeController extends Controller {
 			'fullep' => [],
 			'airs' => date('c',strtotime($this->_episode->airs)),
 		];
-		/** @var $Vids EpisodeVideo[] */
-		$Vids = DB::$instance->whereEp($this->_episode)->get('episode_videos');
+		$Vids = $this->_episode->videos;
 		foreach ($Vids as $part => $vid){
 			if (!empty($vid->id))
 				$return['vidlinks']["{$vid->provider}_{$vid->part}"] = VideoProvider::getEmbed($vid, VideoProvider::URL_ONLY);
