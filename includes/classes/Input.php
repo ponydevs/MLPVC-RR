@@ -169,7 +169,7 @@ class Input {
 				if (!is_string($this->_value) || !preg_match(new RegExp('^\d{1,12}(?:,\d{1,12})*$'), $this->_value))
 					return self::ERROR_INVALID;
 
-				$this->_value = explode(',',$this->_value);
+				$this->_value = array_map('intval',explode(',',$this->_value));
 			break;
 			case 'json':
 				try {

@@ -59,7 +59,7 @@ class Event extends Model {
 	public static function upcoming(){
 		return DB::$instance->where('starts_at > NOW()')
 			->orWhere('ends_at > NOW()')
-			->orderBy('starts_at', 'ASC')
+			->orderBy('starts_at')
 			->get('events');
 	}
 

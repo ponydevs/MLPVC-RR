@@ -286,7 +286,7 @@ class ColorGuideController extends Controller {
 
 		$GuideOrder = !isset($_REQUEST['alphabetically']) && !$this->_EQG;
 		if (!$GuideOrder)
-			DB::$instance->orderBy('label','ASC');
+			DB::$instance->orderBy('label');
 		$Appearances = Appearances::get($this->_EQG,null,null,'id,label,private');
 
 		if (isset($_REQUEST['ajax']))
@@ -554,7 +554,7 @@ class ColorGuideController extends Controller {
 		];
 
 		/** @var $Tags Tag[] */
-		$Tags = DB::$instance->orderBy('id','ASC')->get('tags');
+		$Tags = DB::$instance->orderBy('id')->get('tags');
 		if (!empty($Tags)) foreach ($Tags as $t){
 			$JSON['Tags'][$t->id] = $t->to_array();
 		}
@@ -665,12 +665,12 @@ class ColorGuideController extends Controller {
 			$cols = "id, name, 'typ-'||type as type";
 			DB::$instance->orderBy('uses','DESC');
 		}
-		else DB::$instance->orderBy('type','ASC')->where('"synonym_of" IS NULL');
+		else DB::$instance->orderBy('type')->where('"synonym_of" IS NULL');
 
 		if (isset($except))
 			DB::$instance->where('id',$except,'!=');
 
-		$Tags = DB::$instance->disableAutoClass()->orderBy('name','ASC')->get('tags',$limit,"$cols, uses, synonym_of");
+		$Tags = DB::$instance->disableAutoClass()->orderBy('name')->get('tags',$limit,"$cols, uses, synonym_of");
 		if ($viaAutocomplete){
 			foreach ($Tags as &$t){
 				if (empty($t['synonym_of']))
@@ -998,7 +998,7 @@ class ColorGuideController extends Controller {
 				foreach ($RelatedAppearances as $p)
 					$RelatedAppearanceIDs[$p->target_id] = $p->is_mutual;
 
-				$Appearances = DB::$instance->disableAutoClass()->where('ishuman', $this->_EQG)->where('"id" NOT IN (0,'.$this->_appearance->id.')')->orderBy('label','ASC')->get('appearances',null,'id,label');
+				$Appearances = DB::$instance->disableAutoClass()->where('ishuman', $this->_EQG)->where('"id" NOT IN (0,'.$this->_appearance->id.')')->orderBy('label')->get('appearances',null,'id,label');
 
 				$Sorted = [
 					'unlinked' => [],

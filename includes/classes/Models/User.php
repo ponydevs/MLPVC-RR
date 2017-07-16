@@ -205,7 +205,7 @@ class User extends AbstractUser {
 	public function getPCGAppearances(Pagination $Pagination = null, bool $countOnly = false){
 		$limit = isset($Pagination) ? $Pagination->getLimit() : null;
 		if (!$countOnly)
-			DB::$instance->orderBy('order','ASC');
+			DB::$instance->orderBy('order');
 		$return = Appearances::get(null, $limit, $this->id, $countOnly ? Appearances::COUNT_COL : '*');
 		return $countOnly ? (int)($return[0]['cnt'] ?? 0) : $return;
 	}

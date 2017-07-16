@@ -78,7 +78,7 @@ class Tagged extends Model {
 			throw new \InvalidArgumentException("Both parameters must be arrays of integers with at least 1 element. Got:\n\$tag_ids = ".var_export($tag_ids, true)."\n\$appearance_ids = ".var_export($appearance_ids, false));
 		return self::exists([
 			'conditions' => [
-				'appearance_id IN (?) AND tag_id IN (?)',
+				'tag_id IN (?) AND appearance_id IN (?)',
 				(array) $tag_ids,
 				(array) $appearance_ids,
 			],

@@ -424,7 +424,7 @@ class Browser {
 				$aversion = explode(' ', $aresult[1]);
 				$this->setVersion($aversion[0]);
 				$this->_browserName = self::BROWSER_BLACKBERRY;
-				$this->setMobile(true);
+				$this->setMobile();
 
 				return true;
 			}
@@ -465,7 +465,7 @@ class Browser {
 				$aversion = explode(' ', $aresult[1]);
 				$this->setVersion(str_replace(';', '', $aversion[0]));
 				$this->_browserName = self::BROWSER_GOOGLEBOT;
-				$this->setRobot(true);
+				$this->setRobot();
 
 				return true;
 			}
@@ -485,7 +485,7 @@ class Browser {
 				$aversion = explode(' ', $aresult[1]);
 				$this->setVersion(str_replace(';', '', $aversion[0]));
 				$this->_browserName = self::BROWSER_MSNBOT;
-				$this->setRobot(true);
+				$this->setRobot();
 
 				return true;
 			}
@@ -505,7 +505,7 @@ class Browser {
 				$aversion = explode(' ', $aresult[1]);
 				$this->setVersion(str_replace(';', '', $aversion[0]));
 				$this->_browserName = self::BROWSER_BINGBOT;
-				$this->setRobot(true);
+				$this->setRobot();
 
 				return true;
 			}
@@ -543,7 +543,7 @@ class Browser {
 		}
 		else if (stripos($this->_agent, 'W3C-mobileOK') !== false){
 			$this->_browserName = self::BROWSER_W3CVALIDATOR;
-			$this->setMobile(true);
+			$this->setMobile();
 
 			return true;
 		}
@@ -562,7 +562,7 @@ class Browser {
 				$aversion = explode(' ', $aresult[1]);
 				$this->setVersion($aversion[0]);
 				$this->_browserName = self::BROWSER_SLURP;
-				$this->setRobot(true);
+				$this->setRobot();
 				$this->setMobile(false);
 
 				return true;
@@ -582,7 +582,7 @@ class Browser {
 			if (stripos($this->_agent, 'IEMobile') !== false){
 				$this->setPlatform(self::PLATFORM_WINPHONE);
 				$this->setBrowser(self::BROWSER_IEMOBILE);
-				$this->setMobile(true);
+				$this->setMobile();
 			}
 			else $this->setBrowser(self::BROWSER_IE);
 			$this->setVersion('11.0');
@@ -619,7 +619,7 @@ class Browser {
 				$this->setVersion(str_replace(['(', ')', ';'], '', $aresult[1]));
 				if (stripos($this->_agent, 'IEMobile') !== false){
 					$this->setBrowser(self::BROWSER_IEMOBILE);
-					$this->setMobile(true);
+					$this->setMobile();
 				}
 
 				return true;
@@ -638,7 +638,7 @@ class Browser {
 			if (isset($aresult[1])){
 				$this->setPlatform(self::PLATFORM_WINDOWS_CE);
 				$this->setBrowser(self::BROWSER_IEMOBILE);
-				$this->setMobile(true);
+				$this->setMobile();
 
 				if ($mspie){
 					$this->setVersion($aresult[1]);
@@ -678,7 +678,7 @@ class Browser {
 				}
 			}
 			$this->_browserName = self::BROWSER_OPERA_MINI;
-			$this->setMobile(true);
+			$this->setMobile();
 
 			return true;
 		}
@@ -699,7 +699,7 @@ class Browser {
 				$this->setVersion(isset($aversion[1]) ? $aversion[1] : '');
 			}
 			if (stripos($this->_agent, 'Opera Mobi') !== false){
-				$this->setMobile(true);
+				$this->setMobile();
 			}
 			$this->_browserName = self::BROWSER_OPERA;
 
@@ -715,7 +715,7 @@ class Browser {
 				}
 			}
 			if (stripos($this->_agent, 'Mobile') !== false){
-				$this->setMobile(true);
+				$this->setMobile();
 			}
 			$this->_browserName = self::BROWSER_OPERA;
 
@@ -739,10 +739,10 @@ class Browser {
 				//Chrome on Android
 				if (stripos($this->_agent, 'Android') !== false){
 					if (stripos($this->_agent, 'Mobile') !== false){
-						$this->setMobile(true);
+						$this->setMobile();
 					}
 					else {
-						$this->setTablet(true);
+						$this->setTablet();
 					}
 				}
 
@@ -965,7 +965,7 @@ class Browser {
 			else {
 				$this->setBrowser(self::BROWSER_NOKIA);
 			}
-			$this->setMobile(true);
+			$this->setMobile();
 
 			return true;
 		}
@@ -985,10 +985,10 @@ class Browser {
 				//Firefox on Android
 				if (stripos($this->_agent, 'Android') !== false){
 					if (stripos($this->_agent, 'Mobile') !== false){
-						$this->setMobile(true);
+						$this->setMobile();
 					}
 					else {
-						$this->setTablet(true);
+						$this->setTablet();
 					}
 				}
 
@@ -1124,8 +1124,8 @@ class Browser {
 	 */
 	protected function checkFacebookExternalHit(){
 		if (false !== stripos($this->_agent, 'FacebookExternalHit')){
-			$this->setRobot(true);
-			$this->setFacebook(true);
+			$this->setRobot();
+			$this->setFacebook();
 
 			return true;
 		}
@@ -1139,7 +1139,7 @@ class Browser {
 	 */
 	protected function checkForFacebookIos(){
 		if (false !== stripos($this->_agent, 'FBIOS')){
-			$this->setFacebook(true);
+			$this->setFacebook();
 
 			return true;
 		}
@@ -1217,10 +1217,10 @@ class Browser {
 				$this->setVersion(self::VERSION_UNKNOWN);
 			}
 			if (stripos($this->_agent, 'Mobile') !== false){
-				$this->setMobile(true);
+				$this->setMobile();
 			}
 			else {
-				$this->setTablet(true);
+				$this->setTablet();
 			}
 			$this->setBrowser(self::BROWSER_ANDROID);
 
@@ -1245,10 +1245,10 @@ class Browser {
 				$this->setBrowser(self::BROWSER_EDGE);
 				if (stripos($this->_agent, 'Android') !== false){
 					if (stripos($this->_agent, 'Mobile') !== false){
-						$this->setMobile(true);
+						$this->setMobile();
 					}
 					else {
-						$this->setTablet(true);
+						$this->setTablet();
 					}
 				}
 

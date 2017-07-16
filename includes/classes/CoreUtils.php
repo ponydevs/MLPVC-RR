@@ -79,7 +79,7 @@ class CoreUtils {
 
 	public static function escapeHTML(?string $html, $mask = null){
 		$mask = isset($mask) ? $mask | ENT_HTML5 : ENT_HTML5;
-		return htmlspecialchars($html, $mask, 'UTF-8');
+		return htmlspecialchars($html, $mask);
 	}
 
 	// Possible notice types
@@ -841,7 +841,7 @@ class CoreUtils {
 			$label = htmlspecialchars_decode($l->label);
 			$cansee = Permission::ROLES_ASSOC[$l->minrole];
 			if ($l->minrole !== 'developer')
-				$cansee = self::makePlural($cansee, 0).' and above';
+				$cansee = self::makePlural($cansee).' and above';
 			$HTML .= <<<HTML
 <li id='ufl-{$l->id}'>
 	<div><a $href title='$title'>{$label}</a></div>
@@ -1054,7 +1054,7 @@ HTML;
 	public static function getFullsizeURL($id, $prov){
 		$stash_url = $prov === 'sta.sh' ? "http://sta.sh/$id" : "http://fav.me/$id";
 		try {
-			$stashpage = HTTP::legitimateRequest($stash_url,null,null);
+			$stashpage = HTTP::legitimateRequest($stash_url);
 		}
 		catch (CURLRequestException $e){
 			if ($e->getCode() === 404)

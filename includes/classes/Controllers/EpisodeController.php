@@ -518,14 +518,18 @@ class EpisodeController extends Controller {
 		}
 
 		/** @var $Appearances Appearance[] */
-		$Appearances = DB::$instance->where('ishuman', $this->_episode->is_movie)->where('"id" != 0')->orderBy('label','ASC')->get('appearances',null,'id,label');
+		$Appearances = DB::$instance->disableAutoClass()
+			->where('ishuman', $this->_episode->is_movie)
+			->where('id',0,'!=')
+			->orderBy('label')
+			->get('appearances',null,'id,label');
 
 		$Sorted = [
 			'unlinked' => [],
 			'linked' => [],
 		];
 		foreach ($Appearances as $a)
-			$Sorted[isset($TaggedAppearanceIDs[$a->id]) ? 'linked' : 'unlinked'][] = $a;
+			$Sorted[isset($TaggedAppearanceIDs[$a['id']]) ? 'linked' : 'unlinked'][] = $a;
 
 		Response::done($Sorted);
 	}
@@ -545,9 +549,8 @@ class EpisodeController extends Controller {
 		$EpTagIDs = $this->_episode->getTagIDs();
 		if (empty($EpTagIDs))
 			Response::fail('The episode has no associated tag(s)!');
-		$EpTagIDstr = implode(',',$EpTagIDs);
 		/** @var $Tag Tag */
-		$Tag = DB::$instance->where("id IN ($EpTagIDs)")->orderByLiteral('char_length(name)','DESC')->getOne('tags');
+		$Tag = DB::$instance->where('id', $EpTagIDs)->orderByLiteral('char_length(name)','DESC')->getOne('tags');
 		$UseID = $Tag->id;
 
 		if (!empty($AppearanceIDs)){
@@ -555,9 +558,9 @@ class EpisodeController extends Controller {
 				if (!Tagged::multi_is($EpTagIDs, $appearance_id))
 					$Tag->add_to($appearance_id);
 			}
-			DB::$instance->where('appearance_id NOT IN ('.implode(',',$AppearanceIDs).')');
+			DB::$instance->where('appearance_id',$AppearanceIDs,'!=');
 		}
-		DB::$instance->where("id IN ($EpTagIDstr)")->delete('tagged');
+		DB::$instance->where('tag_id',$EpTagIDs)->delete('tagged');
 
 		Response::done(['section' => Episodes::getAppearancesSectionHTML($this->_episode)]);
 	}

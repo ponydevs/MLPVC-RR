@@ -179,7 +179,7 @@ class Appearances {
 		$GroupTagIDs = array_keys(CGUtils::GROUP_TAG_IDS_ASSOC);
 		$Sorted = [];
 		$Tagged = [];
-		$_tagged = DB::$instance->where('tag_id IN ('.implode(',',$GroupTagIDs).')')->orderBy('appearance_id','ASC')->get('tagged');
+		$_tagged = DB::$instance->where('tag_id IN ('.implode(',',$GroupTagIDs).')')->orderBy('appearance_id')->get('tagged');
 		foreach ($_tagged as $row)
 			$Tagged[$row->appearance_id][] = $row->tag_id;
 		foreach ($Appearances as $p){

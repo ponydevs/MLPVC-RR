@@ -1233,20 +1233,20 @@
         },
         {
             "name": "seinopsys/postgresql-database-class",
-            "version": "v2.0.0",
+            "version": "v2.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/SeinopSys/PHP-PostgreSQL-Database-Class.git",
-                "reference": "46f229a40433d03d877756c58b9a3cba3c84d62a"
+                "reference": "5fed012275b441460adcee296385b482dcfdb986"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/SeinopSys/PHP-PostgreSQL-Database-Class/zipball/46f229a40433d03d877756c58b9a3cba3c84d62a",
-                "reference": "46f229a40433d03d877756c58b9a3cba3c84d62a",
+                "url": "https://api.github.com/repos/SeinopSys/PHP-PostgreSQL-Database-Class/zipball/5fed012275b441460adcee296385b482dcfdb986",
+                "reference": "5fed012275b441460adcee296385b482dcfdb986",
                 "shasum": ""
             },
             "require": {
-                "php": ">=7.0"
+                "php": ">=5.6"
             },
             "type": "library",
             "autoload": {
@@ -1267,7 +1267,7 @@
                 }
             ],
             "description": "PHP wrapper class for PDO-based interaction with PostgreSQL databases, heavily based on joshcam/mysqli-database-class",
-            "time": "2017-07-16T10:20:10+00:00"
+            "time": "2017-07-16T11:30:42+00:00"
         },
         {
             "name": "symfony/options-resolver",

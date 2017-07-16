@@ -19,7 +19,7 @@ use App\UserPrefs;
 		'name' => 'Guest',
 		'role' => 'guest',
 		'avatar_url' => GUEST_AVATAR
-	]))->getAvatarWrap(''); ?>
+	]))->getAvatarWrap(); ?>
 		<div class="user-data">
 			<span class="user-name"><?=Auth::$signed_in?Auth::$user->getProfileLink(App\Models\User::LINKFORMAT_TEXT):'Curious Pony'?></span>
 			<span class="user-role"><?=Auth::$signed_in?Auth::$user->rolelabel:'Guest'?></span>

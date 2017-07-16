@@ -263,7 +263,7 @@ class DeviantArt {
 			$_GET['error'] = 'user_banned';
 			$BanReason = DB::$instance
 				->where('target', $User->id)
-				->orderBy('entryid', 'ASC')
+				->orderBy('entryid')
 				->getOne('log__banish');
 			if (!empty($BanReason))
 				$_GET['error_description'] = $BanReason['reason'];

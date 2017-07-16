@@ -32,14 +32,14 @@ class Tags {
 				DB::$instance->where('"synonym_of" IS NULL');
 			DB::$instance
 				->orderByLiteral('CASE WHEN tags.type IS NULL THEN 1 ELSE 0 END')
-				->orderBy('tags.type', 'ASC')
-				->orderBy('tags.name', 'ASC');
+				->orderBy('tags.type')
+				->orderBy('tags.name');
 			if (!$showEpTags)
 				DB::$instance->where("tags.type != 'ep'");
 		}
 		else {
 			$showSynonymTags = true;
-			DB::$instance->orderBy('tags.id','ASC');
+			DB::$instance->orderBy('tags.id');
 		}
 		if ($PonyID !== null){
 			DB::$instance->join('tagged','(tagged.tag_id = tags.id'.($showSynonymTags?' OR tagged.tag_id = tags.synonym_of':'').')','right',false);
