@@ -86,6 +86,9 @@ class Browser {
 	const BROWSER_MSN = 'MSN Browser'; // http://explorer.msn.com/
 	const BROWSER_MSNBOT = 'MSN Bot'; // http://search.msn.com/msnbot.htm
 	const BROWSER_BINGBOT = 'Bing Bot'; // http://en.wikipedia.org/wiki/Bingbot
+	const BROWSER_PALEMOON = 'Pale Moon'; // https://www.palemoon.org/
+	const BROWSER_MAXTHON = 'Maxthon'; // http://maxthon.com/
+	const BROWSER_FFFOCUS = 'Firefox Focus'; // https://www.mozilla.org/en-US/firefox/focus/
 
 	const BROWSER_NETSCAPE_NAVIGATOR = 'Netscape Navigator'; // http://browser.netscape.com/ (DEPRECATED)
 	const BROWSER_GALEON = 'Galeon'; // http://galeon.sourceforge.net/ (DEPRECATED)
@@ -375,7 +378,10 @@ class Browser {
 			$this->checkBrowserOpera() ||
 			$this->checkBrowserGaleon() ||
 			$this->checkBrowserNetscapeNavigator9Plus() ||
+			$this->checkBrowserPaleMoon() ||
+			$this->checkBrowserFirefoxFocus() ||
 			$this->checkBrowserFirefox() ||
+			$this->checkBrowserMaxthon() ||
 			$this->checkBrowserChrome() ||
 			$this->checkBrowserOmniWeb() ||
 
@@ -754,6 +760,22 @@ class Browser {
 	}
 
 	/**
+	 * Determine if the browser is Chrome or not (last updated 1.7)
+	 * @return boolean True if the browser is Chrome otherwise false
+	 */
+	protected function checkBrowserMaxthon(){
+		if (preg_match('~\bMaxthon\/([\d.]+)~',$this->_agent,$match)){
+			$this->setVersion($match[1]);
+			$this->setBrowser(self::BROWSER_MAXTHON);
+
+
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
 	 * Determine if the browser is WebTv or not (last updated 1.7)
 	 * @return boolean True if the browser is WebTv otherwise false
 	 */
@@ -1000,6 +1022,36 @@ class Browser {
 
 				return true;
 			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Determine if the browser is Firefox Focus or not
+	 * @return boolean True if the browser is Firefox Focus otherwise false
+	 */
+	protected function checkBrowserFirefoxFocus(){
+		if (preg_match("~\bFocus\/([\d.]+)~", $this->_agent, $matches)){
+			$this->setVersion($matches[1]);
+			$this->setBrowser(self::BROWSER_FFFOCUS);
+
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Determine if the browser is Pale Moon
+	 * @return boolean True if the browser is Pale Moon otherwise false
+	 */
+	protected function checkBrowserPaleMoon(){
+		if (preg_match("~PaleMoon/([\d.]+)~", $this->_agent, $matches)){
+			$this->setVersion($matches[1]);
+			$this->setBrowser(self::BROWSER_PALEMOON);
+
+			return true;
 		}
 
 		return false;

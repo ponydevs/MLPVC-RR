@@ -32,6 +32,15 @@
 	&.browser-vivaldi#{$before} {
 		background-image: url(../../img/browser/vivaldi.png);
 	}
+	&.browser-palemoon#{$before} {
+		background-image: url(../../img/browser/palemoon.png);
+	}
+	&.browser-maxthon#{$before} {
+		background-image: url(../../img/browser/maxthon.png);
+	}
+	&.browser-firefoxfocus#{$before} {
+		background-image: url(../../img/browser/firefoxfocus.png);
+	}
 }
 @mixin if-browser-has-icon {
 	&.browser-chrome,
@@ -40,7 +49,10 @@
 	&.browser-internetexplorer, &.browser-iemobile,
 	&.browser-opera, &.browser-operamini,
 	&.browser-safari,
-	&.browser-vivaldi {
+	&.browser-vivaldi,
+	&.browser-palemoon,
+	&.browser-maxthon,
+	&.browser-firefoxfocus {
 		@content;
 	}
 }

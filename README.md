@@ -47,6 +47,7 @@ After some time, the idea of moving the old PNG color guide into an easier to us
    - [Uglify-js](https://www.npmjs.com/package/uglify-js)
    - [SASS](http://sass-lang.com/)
    - [Babel](https://babeljs.io/)
+   - [Autoprefixer](https://github.com/postcss/autoprefixer)
 
 **[Color Belending Calculator](https://mlpvc-rr.ml/blending)** originally made by [DASPRiD](https://github.com/dasprid)<br>
 **Headings' font:** [Celestia Medium Redux](http://www.mattyhex.net/CMR/)<br>
@@ -59,8 +60,8 @@ After some time, the idea of moving the old PNG color guide into an easier to us
 **Pre-ban dialog illustration ([direct link](https://github.com/ponydevs/MLPVC-RR/blob/master/www/img/pre-ban.svg)):** [Twilight - What Have I Done?](http://synthrid.deviantart.com/art/Twilight-What-Have-I-Done-355177596) by [Synthrid](http://synthrid.deviantart.com/) *(edited to use daylight colors)*<br>
 **Post-ban dialog illustration ([direct link](https://github.com/ponydevs/MLPVC-RR/blob/master/www/img/post-ban.svg)):** [Sad Twilight Sparkle](http://sairoch.deviantart.com/art/Sad-Twilight-Sparkle-354710611) by [Sairoch](http://sairoch.deviantart.com/) *(edited to use daylight colors)*<br>
 **Extrenal link icon** (licensed GPL) taken from [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Icon_External_Link.svg)<br>
+**Vector-based loading icons** were generated using [Loading.io](https://loading.io/) (some are no longer available)<br>
 **Browser logos** (used in session list & the [Browser recognition testing page](https://mlpvc-rr.ml/browser)):
-**Vector-based Loading icons** were generated using [Loading.io](https://loading.io/) ([](),[],[],[magnify](https://loading.io/spinner/magnify/-searching-for-loading-icon)) 
 
  - [Edge](http://fav.me/d9rtlbv) by [masemj](http://masemj.deviantart.com/) ([designed](http://fav.me/d8uhefy) by [furrgroup](http://furrgroup.deviantart.com/))
  - [Firefox](http://fav.me/d4b6f4v) by [NoReasonToHope](http://noreasontohope.deviantart.com/)
@@ -69,9 +70,10 @@ After some time, the idea of moving the old PNG color guide into an easier to us
  - [Opera](http://fav.me/dacngnh) by [masemj](http://masemj.deviantart.com/) ([designed](http://fav.me/d52qnaw) by [ParallaxMLP](http://parallaxmlp.deviantart.com/))
  - [Safari](http://fav.me/dadu3l9) by [masemj](http://masemj.deviantart.com/) ([designed](http://fav.me/d530knp) by [ParallaxMLP](http://parallaxmlp.deviantart.com/))
  - Vivaldi from [Vivaldi Press Kit](https://vivaldi.com/press/)
+ - Maxthon, Pale Moon & FIrefox Focus from [alrra/browser-logos](https://github.com/alrra/browser-logos/)
  
 **Coding, design & hosting:** [SeinopSys](https://github.com/SeinopSys)
 
 ## Contributing
 
-See [CONTRIBUTING.md](https://github.com/ponydevs/MLPVC-RR/blob/master/CONTRIBUTING.md).
+See [CONTRIBUTING.md](CONTRIBUTING.md).
