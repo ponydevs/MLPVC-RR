@@ -96,7 +96,7 @@ class AuthController extends Controller {
 			$val = Auth::$session->id;
 		}
 
-		if (!\App\DB::where($col,$val)->delete('sessions'))
+		if (!\App\DB::$instance->where($col,$val)->delete('sessions'))
 			Response::fail('Could not remove information from database');
 
 		if (empty($TargetUser))

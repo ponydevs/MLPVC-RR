@@ -43,7 +43,7 @@ class Posts {
 		}
 		if ($only !== ONLY_REQUESTS){
 			if ($showBroken === false)
-				DB::where('broken != true');
+				DB::$instance->where('broken != true');
 			$return[] = Reservation::find('all', [
 				'conditions'=> [
 					'season = ? AND episode = ?'.($showBroken === false?' AND broken IS NOT true':''),
@@ -66,7 +66,7 @@ class Posts {
 	 */
 	public static function getMostRecentList($wrap = WRAP){
 		$cols = 'id,season,episode,label,preview,lock,deviation_id,reserved_by,finished_at,broken,reserved_at';
-		$RecentPosts = DB::disableAutoClass()->rawQuery(
+		$RecentPosts = DB::$instance->disableAutoClass()->query(
 			"SELECT * FROM
 			(
 				SELECT $cols, requested_by, requested_at AS posted FROM requests
@@ -179,10 +179,10 @@ class Posts {
 
 		foreach (Posts::TYPES as $type){
 			if (!empty($Post->id))
-				DB::where('r.id',$Post->id,'!=');
+				DB::$instance->where('r.id',$Post->id,'!=');
 			/** @var $UsedUnder Post */
-			$UsedUnder = DB
-				::disableAutoClass()
+			$UsedUnder = DB::$instance
+				->disableAutoClass()
 				->join('episodes ep','r.season = ep.season AND r.episode = ep.episode','LEFT')
 				->where('r.preview',$Image->preview)
 				->getOne("{$type}s r",'r.id, ep.season, ep.episode, ep.twoparter');
@@ -216,7 +216,7 @@ class Posts {
 			$Image = new ImageProvider($deviation, ['fav.me', 'dA']);
 
 			foreach (Posts::TYPES as $what){
-				if (DB::where('deviation_id', $Image->id)->has("{$what}s"))
+				if (DB::$instance->where('deviation_id', $Image->id)->has("{$what}s"))
 					Response::fail("This exact deviation has already been marked as the finished version of a different $what");
 			}
 
@@ -445,11 +445,11 @@ HTML;
 	 */
 	public static function getTransferAttempts(Post $Post, $sent_by = null, $cols = 'read_at,sent_at'){
 		if ($Post->reserved_by !== null)
-			DB::where('recipient_id', $Post->reserved_by);
+			DB::$instance->where('recipient_id', $Post->reserved_by);
 		if (!empty($sent_by))
-			DB::where("data->>'user'", $sent_by);
-		return DB
-			::where('type', 'post-passon')
+			DB::$instance->where("data->>'user'", $sent_by);
+		return DB::$instance
+			->where('type', 'post-passon')
 			->where("data->>'type'", $Post->kind)
 			->where("data->>'id'", $Post->id)
 			->orderBy('sent_at', NEWEST_FIRST)
@@ -475,7 +475,7 @@ HTML;
 		if (empty(self::TRANSFER_ATTEMPT_CLEAR_REASONS[$reason]))
 			throw new \InvalidArgumentException("Invalid clear reason $reason");
 
-		DB::where('read_at IS NULL');
+		DB::$instance->where('read_at IS NULL');
 		$TransferAttempts = Posts::getTransferAttempts($Post, $sent_by, 'id,data');
 		if (!empty($TransferAttempts)){
 			$SentFor = [];
@@ -554,7 +554,7 @@ HTML;
 				$locked_at = '';
 				if ($approved){
 					/** @var $LogEntry array */
-					$LogEntry = DB::rawQuerySingle(
+					$LogEntry = DB::$instance->querySingle(
 						"SELECT l.timestamp, l.initiator
 						FROM log__post_lock pl
 						LEFT JOIN log l ON l.reftype = 'post_lock' AND l.refid = pl.entryid
@@ -725,7 +725,7 @@ HTML;
 	 * @return array
 	 */
 	public static function approve($type, $id, $notifyUserID = null){
-		if (!DB::where('id', $id)->update("{$type}s", ['lock' => true]))
+		if (!DB::$instance->where('id', $id)->update("{$type}s", ['lock' => true]))
 			Response::dbError();
 
 		$postdata = [

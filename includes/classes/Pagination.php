@@ -8,7 +8,7 @@ use ActiveRecord\SQLBuilder;
  *  derived from http://codereview.stackexchange.com/a/10292/21877
  */
 class Pagination {
-	public $maxPages, $page, $HTML, $itemsPerPage;
+	public $maxPages, $page, $itemsPerPage;
 	public $_context, $_wrap, $_basePath;
 
 	/**
@@ -17,29 +17,58 @@ class Pagination {
 	 * @param string $basePath     The starting path of ech paginated page without the page number
 	 * @param int    $ItemsPerPage Number of items to display on a single page
 	 * @param int    $EntryCount   Number of available entries
-	 * @param bool   $wrap         Whether to return the wrapper element
-	 * @param int    $context      How many items to show oneither side of current page
+	 * @param int    $context      How many items to show on either side of current page
 	 *
 	 * @return Pagination
 	 */
-	public function __construct(string $basePath, int $ItemsPerPage, ?int $EntryCount = null, bool $wrap = true, $context = 2){
-		global $data;
-
-		$this->itemsPerPage = (int) $ItemsPerPage;
-		$this->page = (int) max(intval(preg_replace(new RegExp('^.*\/(\d+)$'),'$1',$data), 10), 1);
+	public function __construct(string $basePath, int $ItemsPerPage, ?int $EntryCount = null, $context = 2){
+		$this->itemsPerPage = $ItemsPerPage;
 		$this->_context = $context;
-		$this->_wrap = (bool) $wrap;
 		$this->_basePath = $basePath;
+		$this->page = 1;
+		$this->guessPage();
 
 		if ($EntryCount !== null)
 			$this->calcMaxPages($EntryCount);
 	}
 
+	private function guessPage(){
+		$path = explode('/',substr(strtok($_SERVER['REQUEST_URI'],'?'), 1));
+		// We need at least 2 elements to paginate
+		if (empty($path) || count($path) < 2)
+			return;
+
+		$lastPart = array_slice($path, -1)[0];
+		if (is_numeric($lastPart))
+			$this->page = max((int) $lastPart, 1);
+	}
+
+	/**
+	 * Set a specific page as the currrent
+	 *
+	 * @param int $page
+	 *
+	 * @return self
+	 */
+	public function forcePage(int $page){
+		$this->page = max((int) $page, 1);
+
+		return $this;
+	}
+
+	/**
+	 * Calculate the number of maximum possible pages
+	 *
+	 * @param int $EntryCount
+	 *
+	 * @return self
+	 */
 	public function calcMaxPages(int $EntryCount){
 		$this->maxPages = (int) max(1, ceil($EntryCount/$this->itemsPerPage));
 		if ($this->page > $this->maxPages)
 			$this->page = $this->maxPages;
-		$this->HTML = $this->__toString();
+
+		return $this;
 	}
 
 	/**
@@ -54,12 +83,12 @@ class Pagination {
 
 		return array_unique(
 			array_merge(
-				range(1, 1 + $this->_context),
+				[1],
 				range(
 					max($this->page - $this->_context, 1),
 					min($this->page + $this->_context, $this->maxPages)
 				),
-				range($this->maxPages - $this->_context, $this->maxPages)
+				[$this->maxPages]
 			)
 		);
 	}
@@ -75,12 +104,7 @@ class Pagination {
 		).'</li>';
 	}
 
-	/**
-	 * Write the pagination links
-	 *
-	 * @return string
-	 */
-	public function __toString(){
+	public function toHTML(bool $wrap = WRAP):string {
 		if ($this->maxPages === null){
 			error_log(__METHOD__.': maxPages peroperty must be defined\nData: '.var_export($this, true));
 			return '';
@@ -116,7 +140,18 @@ class Pagination {
 		}
 		else $Items = '';
 
-		return $this->_wrap ? "<ul class='pagination'>$Items</ul>" : $Items;
+		$path = CoreUtils::aposEncode($this->_basePath);
+
+		return $wrap ? "<ul class='pagination' data-for='$path'>$Items</ul>" : $Items;
+	}
+
+	/**
+	 * Write the pagination links
+	 *
+	 * @return string
+	 */
+	public function __toString(){
+		return $this->toHTML();
 	}
 
 	public function toElastic(){
@@ -137,7 +172,8 @@ class Pagination {
 		Response::done([
 			'output' => $output,
 			'update' => $update,
-			'pagination' => $this->HTML,
+			'for' => $this->_basePath,
+			'pagination' => $this->toHTML(NOWRAP),
 			'page' => $this->page,
 			'request_uri' => $RQURI,
 		]);

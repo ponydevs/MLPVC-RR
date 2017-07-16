@@ -22,7 +22,7 @@ use App\Tags;
 		<button class='green typcn typcn-plus' id="new-appearance-btn">Add new appearance</button>
 	</p>
 <?  } ?>
-	<?=$Pagination->HTML . Appearances::getHTML($Ponies, WRAP, Permission::sufficient('staff') || $isOwner) . $Pagination->HTML?>
+	<?=$Pagination . Appearances::getHTML($Ponies, WRAP, Permission::sufficient('staff') || $isOwner) . $Pagination?>
 </div>
 
 <?  $export = [

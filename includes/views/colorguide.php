@@ -48,7 +48,7 @@ use App\Tags;
 	</form>
 <?  }
 	else echo \App\CGUtils::getElasticUnavailableNotice($EQG); ?>
-	<?=$Pagination->HTML . Appearances::getHTML($Ponies) . $Pagination->HTML?>
+	<?=$Pagination . Appearances::getHTML($Ponies) . $Pagination?>
 </div>
 
 <?  $export = [

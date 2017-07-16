@@ -13,7 +13,6 @@ use SeinopSys\OAuth2\Client\Provider\DeviantArtProvider;
 
 class DeviantArt {
 	private static
-		$_CACHE_BAILOUT = false,
 		$_MASS_CACHE_LIMIT = 15,
 		$_MASS_CACHE_USED = 0;
 
@@ -104,11 +103,10 @@ class DeviantArt {
 	 *
 	 * @param string      $ID
 	 * @param null|string $type
-	 * @param bool        $mass
 	 *
-	 * @return CachedDeviation
+	 * @return CachedDeviation|null
 	 */
-	public static function getCachedDeviation($ID, $type = 'fav.me', $mass = false){
+	public static function getCachedDeviation($ID, $type = 'fav.me'){
 		global $FULLSIZE_MATCH_REGEX;
 
 		if ($type === 'sta.sh')
@@ -116,31 +114,30 @@ class DeviantArt {
 
 		/** @var $Deviation CachedDeviation */
 		$Deviation = CachedDeviation::find_by_id_and_provider($ID, $type);
+		$localDataMissing = $Deviation == null;
 
-		$cacheExhausted = self::$_MASS_CACHE_USED > self::$_MASS_CACHE_LIMIT;
-		$cacheExpired = empty($Deviation->updated_on) ? true : strtotime($Deviation->updated_on)+(Time::IN_SECONDS['hour']*12) < time();
+		$cacheExpired = true;
+		if (!$localDataMissing && $Deviation->updated_on !== null)
+			$cacheExpired = $Deviation->updated_on->getTimestamp()+(Time::IN_SECONDS['hour']*12) < time();
 
-		$lastRequestSuccessful = !self::$_CACHE_BAILOUT;
-		$localDataMissing = empty($Deviation);
-		$massCachingWithinLimit = $mass && !$cacheExhausted;
-		$notMassCachingAndCacheExpired = !$mass && $cacheExpired;
-
-		if ($lastRequestSuccessful && ($localDataMissing || (($massCachingWithinLimit && $cacheExpired) || $notMassCachingAndCacheExpired))){
+		if ($cacheExpired){
 			try {
 				$json = self::oEmbed($ID, $type);
 				if (empty($json))
-					throw new \Exception();
+					throw new \RuntimeException('oEmbed JSON data is empty');
 			}
 			catch (\Exception $e){
-				if (!empty($Deviation))
-					$Deviation->update_attributes(['updated_on' => date('c', time()+ Time::IN_SECONDS['minute'] )]);
+				if ($Deviation !== null)
+					$Deviation->update_attributes(['updated_on' => date('c', time()+Time::IN_SECONDS['minute'] )]);
 
 				error_log("Saving local data for $ID@$type failed: ".$e->getMessage()."\n".$e->getTraceAsString());
 
-				if ($e->getCode() === 404)
+				if ($e->getCode() === 404){
+					if ($Deviation !== null)
+						$Deviation->delete();
 					$Deviation = null;
+				}
 
-				self::$_CACHE_BAILOUT = true;
 				return $Deviation;
 			}
 
@@ -191,15 +188,14 @@ class DeviantArt {
 				$Deviation = CachedDeviation::find_by_id_and_provider($ID, $type);
 
 			if (empty($Deviation))
-				CachedDeviation::create($insert);
-			else  $Deviation->update_attributes($insert);
+				$Deviation = CachedDeviation::create($insert);
+			else $Deviation->update_attributes($insert);
 
 			self::$_MASS_CACHE_USED++;
 		}
 		else if (!empty($Deviation->updated_on)){
 			$Deviation->updated_on = date('c', strtotime($Deviation->updated_on));
-			if (self::$_CACHE_BAILOUT)
-				$Deviation->save();
+			$Deviation->save();
 		}
 
 		return $Deviation;
@@ -265,8 +261,8 @@ class DeviantArt {
 		$User = User::find($userdata['userid']);
 		if (isset($User->role) && $User->role === 'ban'){
 			$_GET['error'] = 'user_banned';
-			$BanReason = DB
-				::where('target', $User->id)
+			$BanReason = DB::$instance
+				->where('target', $User->id)
 				->orderBy('entryid', 'ASC')
 				->getOne('log__banish');
 			if (!empty($BanReason))
@@ -300,7 +296,7 @@ class DeviantArt {
 				'id' => $UserID,
 				'role' => 'user',
 			];
-			$makeDev = !DB::has('users');
+			$makeDev = !DB::$instance->has('users');
 			if ($makeDev)
 				$MoreInfo['id'] = strtoupper($MoreInfo['id']);
 			$Insert = array_merge($UserData, $MoreInfo);

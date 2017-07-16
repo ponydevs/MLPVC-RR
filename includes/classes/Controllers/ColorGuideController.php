@@ -49,7 +49,7 @@ class ColorGuideController extends Controller {
 			CSRFProtection::protect();
 
 		if (RelatedAppearance::count() === 0){
-			$rel = DB::get('appearance_relations');
+			$rel = DB::$instance->get('appearance_relations');
 			foreach ($rel as $r)
 				RelatedAppearance::make($r['source'],$r['target'],$r['mutual']);
 		}
@@ -286,7 +286,7 @@ class ColorGuideController extends Controller {
 
 		$GuideOrder = !isset($_REQUEST['alphabetically']) && !$this->_EQG;
 		if (!$GuideOrder)
-			DB::orderBy('label','ASC');
+			DB::$instance->orderBy('label','ASC');
 		$Appearances = Appearances::get($this->_EQG,null,null,'id,label,private');
 
 		if (isset($_REQUEST['ajax']))
@@ -352,7 +352,7 @@ class ColorGuideController extends Controller {
 	}
 
 	public function tagList(){
-		$Pagination = new Pagination('cg/tags', 20, DB::count('tags'));
+		$Pagination = new Pagination('cg/tags', 20, DB::$instance->count('tags'));
 
 		CoreUtils::fixPath("/cg/tags/{$Pagination->page}");
 		$heading = 'Tags';
@@ -467,7 +467,7 @@ class ColorGuideController extends Controller {
 
 			$searching = false;
 			$SearchQuery = null;
-		    $_EntryCount = DB::where('ishuman',$this->_EQG)->where('id != 0')->count('appearances');
+		    $_EntryCount = DB::$instance->where('ishuman',$this->_EQG)->where('id != 0')->count('appearances');
 
 		    $Pagination = new Pagination(ltrim($this->_cgPath, '/'), $AppearancesPerPage, $_EntryCount);
 		    $Ponies = Appearances::get($this->_EQG, $Pagination->getLimit());
@@ -554,7 +554,7 @@ class ColorGuideController extends Controller {
 		];
 
 		/** @var $Tags Tag[] */
-		$Tags = DB::orderBy('id','ASC')->get('tags');
+		$Tags = DB::$instance->orderBy('id','ASC')->get('tags');
 		if (!empty($Tags)) foreach ($Tags as $t){
 			$JSON['Tags'][$t->id] = $t->to_array();
 		}
@@ -642,9 +642,9 @@ class ColorGuideController extends Controller {
 		$except = (new Input('not','int', [Input::IS_OPTIONAL => true]))->out();
 		if ((new Input('action','string', [Input::IS_OPTIONAL => true]))->out() === 'synon'){
 			if (isset($except))
-				DB::where('id',$except);
+				DB::$instance->where('id',$except);
 			/** @var $Tag Tag */
-			$Tag = DB::where('"synonym_of" IS NOT NULL')->getOne('tags');
+			$Tag = DB::$instance->where('"synonym_of" IS NOT NULL')->getOne('tags');
 			if (!empty($Tag))
 				Response::fail("This tag is already a synonym of <strong>{$Tag->synonym->name}</strong>.<br>Would you like to remove the synonym?", ['undo' => true]);
 		}
@@ -660,17 +660,17 @@ class ColorGuideController extends Controller {
 			$TagCheck = CGUtils::checkEpisodeTagName($query);
 			if ($TagCheck !== false)
 				$query = $TagCheck;
-			DB::where('name',"%$query%",'LIKE');
+			DB::$instance->where('name',"%$query%",'LIKE');
 			$limit = 5;
 			$cols = "id, name, 'typ-'||type as type";
-			DB::orderBy('uses','DESC');
+			DB::$instance->orderBy('uses','DESC');
 		}
-		else DB::orderBy('type','ASC')->where('"synonym_of" IS NULL');
+		else DB::$instance->orderBy('type','ASC')->where('"synonym_of" IS NULL');
 
 		if (isset($except))
-			DB::where('id',$except,'!=');
+			DB::$instance->where('id',$except,'!=');
 
-		$Tags = DB::disableAutoClass()->orderBy('name','ASC')->get('tags',$limit,"$cols, uses, synonym_of");
+		$Tags = DB::$instance->disableAutoClass()->orderBy('name','ASC')->get('tags',$limit,"$cols, uses, synonym_of");
 		if ($viaAutocomplete){
 			foreach ($Tags as &$t){
 				if (empty($t['synonym_of']))
@@ -790,7 +790,7 @@ class ColorGuideController extends Controller {
 						$ownerName = Auth::$user->name;
 					}
 					if (empty($data['owner_id']))
-						$data['order'] = DB::getOne('appearances','MAX("order") as "order"')['order']+1;
+						$data['order'] = DB::$instance->getOne('appearances','MAX("order") as "order"')['order']+1;
 				}
 				else if ($data['private']){
 					$data['last_cleared'] = date('c');
@@ -859,9 +859,9 @@ class ColorGuideController extends Controller {
 
 				$response = [];
 				if (!$this->_appearancePage){
-					$response['label'] = $EditedAppearance['label'];
-					if ($data['label'] !== $this->_appearance->label)
-						$response['newurl'] = $this->_appearance->id.'-'.$EditedAppearance->getSafeLabel();
+					$response['label'] = $EditedAppearance->label;
+					if (isset($olddata['label']) && $olddata['label'] !== $this->_appearance->label)
+						$response['newurl'] = $EditedAppearance->getLink();
 					$response['notes'] = $EditedAppearance->getNotesHTML(NOWRAP);
 				}
 
@@ -873,7 +873,7 @@ class ColorGuideController extends Controller {
 
 				$Tagged = Tags::getFor($this->_appearance->id, null, true);
 
-				if (!DB::where('id', $this->_appearance->id)->delete('appearances'))
+				if (!DB::$instance->where('id', $this->_appearance->id)->delete('appearances'))
 					Response::dbError();
 
 				try {
@@ -939,7 +939,7 @@ class ColorGuideController extends Controller {
 					if (empty($possibleIDs[$GroupID]))
 						Response::fail("There’s no group with the ID of $GroupID on this appearance");
 
-					DB::where('id', $GroupID)->update('color_groups', ['order' => $i]);
+					DB::$instance->where('id', $GroupID)->update('color_groups', ['order' => $i]);
 				}
 				Table::clear_cache();
 				$newCGs = $this->_appearance->color_groups;
@@ -998,7 +998,7 @@ class ColorGuideController extends Controller {
 				foreach ($RelatedAppearances as $p)
 					$RelatedAppearanceIDs[$p->target_id] = $p->is_mutual;
 
-				$Appearances = DB::disableAutoClass()->where('ishuman', $this->_EQG)->where('"id" NOT IN (0,'.$this->_appearance->id.')')->orderBy('label','ASC')->get('appearances',null,'id,label');
+				$Appearances = DB::$instance->disableAutoClass()->where('ishuman', $this->_EQG)->where('"id" NOT IN (0,'.$this->_appearance->id.')')->orderBy('label','ASC')->get('appearances',null,'id,label');
 
 				$Sorted = [
 					'unlinked' => [],
@@ -1196,8 +1196,8 @@ class ColorGuideController extends Controller {
 							        "If you want to remove this tag you must remove <strong>{$Tag->synonym->name}</strong> or the synonymization.");
 
 						if (
-							DB::where('appearance_id', $this->_appearance->id)->where('tag_id', $Tag->id)->has('tagged')
-							&& !DB::where('appearance_id', $this->_appearance->id)->where('tag_id', $Tag->id)->delete('tagged')
+							DB::$instance->where('appearance_id', $this->_appearance->id)->where('tag_id', $Tag->id)->has('tagged')
+							&& !DB::$instance->where('appearance_id', $this->_appearance->id)->where('tag_id', $Tag->id)->delete('tagged')
 						) Response::dbError();
 					break;
 				}
@@ -1244,19 +1244,19 @@ class ColorGuideController extends Controller {
 				switch ($wipe_colors){
 					case 'color_hex':
 						if (Appearances::hasColors($this->_appearance, true)){
-							if (!DB::rawQuery('UPDATE colors SET hex = null WHERE group_id IN (SELECT id FROM color_groups WHERE appearance_id = ?)', [$this->_appearance->id]))
+							if (!DB::$instance->query('UPDATE colors SET hex = null WHERE group_id IN (SELECT id FROM color_groups WHERE appearance_id = ?)', [$this->_appearance->id]))
 								Response::dbError();
 						}
 					break;
 					case 'color_all':
 						if (Appearances::hasColors($this->_appearance)){
-							if (!DB::rawQuery('DELETE FROM colors WHERE group_id IN (SELECT id FROM color_groups WHERE appearance_id = ?)', [$this->_appearance->id]))
+							if (!DB::$instance->query('DELETE FROM colors WHERE group_id IN (SELECT id FROM color_groups WHERE appearance_id = ?)', [$this->_appearance->id]))
 								Response::dbError();
 						}
 					break;
 					case 'all':
 						if (ColorGroup::exists(['conditions' => ['appearance_id = ?', $this->_appearance->id]])){
-							if (!DB::rawQuery('DELETE FROM color_groups WHERE appearance_id = ?', [$this->_appearance->id]))
+							if (!DB::$instance->query('DELETE FROM color_groups WHERE appearance_id = ?', [$this->_appearance->id]))
 								Response::dbError();
 						}
 					break;
@@ -1267,7 +1267,7 @@ class ColorGuideController extends Controller {
 						Input::IS_OPTIONAL => true,
 					]))->out();
 					if ($wipe_tags && !empty($this->_appearance->tagged)){
-						if (!DB::where('appearance_id', $this->_appearance->id)->delete('tagged'))
+						if (!DB::$instance->where('appearance_id', $this->_appearance->id)->delete('tagged'))
 							Response::dbError('Failed to wipe tags');
 						foreach ($this->_appearance->tagged as $tag)
 							Tags::updateUses($tag->tag_id);
@@ -1289,7 +1289,7 @@ class ColorGuideController extends Controller {
 					$update['private'] = 1;
 
 				if (!empty($update))
-					DB::where('id', $this->_appearance->id)->update('appearances',$update);
+					DB::$instance->where('id', $this->_appearance->id)->update('appearances',$update);
 
 				Response::done();
 			break;
@@ -1453,8 +1453,8 @@ HTML;
 				}
 
 				if (!$adding)
-					DB::where('id', $Tag->id,'!=');
-				if (DB::where('name', $data['name'])->where('type', $data['type'])->has('tags'))
+					DB::$instance->where('id', $Tag->id,'!=');
+				if (DB::$instance->where('name', $data['name'])->where('type', $data['type'])->has('tags'))
 					Response::fail('A tag with the same name and type already exists');
 
 				$data['title'] = (new Input('title','string', [

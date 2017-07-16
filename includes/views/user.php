@@ -66,7 +66,7 @@ if ($isUserMember)
 if (Auth::$signed_in)
 	echo $User->getPendingReservationsHTML($sameUser, $isUserMember);
 if ($isUserMember)
-	echo '<section class="awaiting-approval"></section>'; ?>
+	echo $User->getAwaitingApprovalHTML($sameUser); ?>
 		<section class="bans">
 			<h2><?=$sameUser? Users::PROFILE_SECTION_PRIVACY_LEVEL['public']:''?>Banishment history</h2>
 			<ul><?php

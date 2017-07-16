@@ -51,7 +51,7 @@ class Appearance extends Model {
 
 	public function get_preview_colors(){
 		/** @var $arr Color[] */
-		$arr = DB::setModel('Color')->rawQuery(
+		$arr = DB::$instance->setModel('Color')->query(
 			'SELECT c.hex FROM colors c
 			LEFT JOIN color_groups cg ON c.group_id = cg.id
 			WHERE cg.appearance_id = ? AND c.hex IS NOT NULL
@@ -159,7 +159,7 @@ class Appearance extends Model {
 				},$this->notes);
 				$this->notes = preg_replace_callback('/(?:^|[^\\\\])\K(?:#(\d+))\b/',function($a){
 
-					$Appearance = \App\DB::where('id', $a[1])->getOne('appearances');
+					$Appearance = \App\DB::$instance->where('id', $a[1])->getOne('appearances');
 					return (
 						!empty($Appearance)
 						? "<a href='/cg/v/{$Appearance->id}'>{$Appearance->label}</a>"

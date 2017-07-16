@@ -46,8 +46,9 @@ switch ($do ?? null){
 	break;
 	case 's':
 		if (!empty($LinkedPost)){
+			/** @var $LinkedPost \App\Models\Post */
 			$_oldTitle = $Title;
-			if (!$LinkedPost->isFinished)
+			if (!$LinkedPost->finished)
 				$ThumbImage = $LinkedPost->preview;
 			else {
 				$finishdeviation = DeviantArt::getCachedDeviation($LinkedPost->deviation_id);
@@ -55,12 +56,9 @@ switch ($do ?? null){
 					$ThumbImage  = $finishdeviation->preview;
 			}
 			$Title = $LinkedPost->label;
-			if ($LinkedPost->isRequest)
+			if ($LinkedPost->is_request)
 				$Description = 'A request';
-			else {
-				$_user = User::find($LinkedPost->reserved_by);
-				$Description = 'A reservation'.(!empty($_user->name) ? " by {$_user->name}" : '');
-			}
+			else $Description = "A reservation by {$LinkedPost->reserver->name}";
 			$Description .= ' on the MLP-VectorClub’s website';
 		}
 	break;

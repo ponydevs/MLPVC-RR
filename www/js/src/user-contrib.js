@@ -12,10 +12,12 @@ DocReady.push(function(){
 
 			$this.addClass('loading');
 
-			$.get('/deviation/'+favme,$.mkAjaxHandler(function(){
+			$.get('/user/contrib/lazyload/'+favme,$.mkAjaxHandler(function(){
 				if (!this.status) return $.Dialog.fail('Cannot load deviation '+favme, this.message);
 
-				$this.replaceWith(this.html);
+				$.loadImages(this.html).then(function($el){
+					$this.replaceWith($el);
+				});
 			}));
 		});
 	}

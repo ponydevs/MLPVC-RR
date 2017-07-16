@@ -31,7 +31,7 @@ DB::$instance = new PostgresDbWrapper('mlpvc-rr');
 
 try {
 	$conn = \Activerecord\Connection::instance();
-	DB::setConnection($conn->connection);
+	DB::$instance->setConnection($conn->connection);
 }
 catch (Exception $e){
 	$errcause = 'db';

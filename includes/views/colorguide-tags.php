@@ -13,7 +13,7 @@ use App\Models\Tag;
 		<a class='btn link typcn typcn-arrow-back' href="/cg">Back to Color Guide</a>
 		<a class='btn link typcn typcn-warning' href="/cg/changes">Major Changes</a>
 	</p>
-	<?=$Pagination->HTML?>
+	<?=$Pagination?>
 	<table id="tags">
 		<thead><?php
 	$cspan = Permission::sufficient('staff') ? '" colspan="2' : '';
@@ -31,7 +31,7 @@ HTML;
 		<?=Tags::getTagListHTML($Tags)?>
 		<tfoot><?=$thead?></tfoot>
 	</table>
-	<?=$Pagination->HTML?>
+	<?=$Pagination?>
 </div>
 
 <?  echo CoreUtils::exportVars([

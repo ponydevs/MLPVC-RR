@@ -43,8 +43,8 @@ class EventEntry extends Model {
 		if ($this->score === null)
 			return;
 
-		$score = DB::disableAutoClass()->where('entryid', $this->id)->getOne('events__entries__votes', 'COALESCE(SUM(value),0) as score');
-		DB::where('entryid', $this->id)->update('events__entries',$score);
+		$score = DB::$instance->disableAutoClass()->where('entryid', $this->id)->getOne('events__entries__votes', 'COALESCE(SUM(value),0) as score');
+		DB::$instance->where('entryid', $this->id)->update('events__entries',$score);
 		$this->score = $score['score'];
 
 		try {

@@ -153,7 +153,7 @@ DocReady.push(function(){
 					if (EventPage)
 						data.EVENT_PAGE = true;
 
-					$.post(`/event/${editing?'set/'+eventID:'/add'}`,data,$.mkAjaxHandler(function(){
+					$.post(`/event/${editing?'set/'+eventID:'add'}`,data,$.mkAjaxHandler(function(){
 						if (!this.status) return $.Dialog.fail(false, this.message);
 
 						data = this;

@@ -9,6 +9,7 @@ class EpisodeTest extends TestCase {
 			'season' => 1,
 			'episode' => 1,
 		]);
+		self::assertFalse($Episode->twoparter);
 		$result = $Episode->getID();
 		self::assertEquals('S1E1', $result);
 		$result = $Episode->getID(['pad' => true]);
@@ -20,6 +21,7 @@ class EpisodeTest extends TestCase {
 			'episode' => 1,
 			'twoparter' => true,
 		]);
+		self::assertTrue($Episode->twoparter);
 		$result = $Episode->getID();
 		self::assertEquals('S1E1-2', $result);
 		$result = $Episode->getID(['pad' => true]);

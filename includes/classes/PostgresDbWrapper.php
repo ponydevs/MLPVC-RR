@@ -11,10 +11,6 @@ class PostgresDbWrapper extends \PostgresDb {
 		return $instance;
 	}
 
-	public function setConnection(\PDO $PDO){
-		$this->_conn = $PDO;
-	}
-
 	/**
 	 * Execute where method with the specified episode and season numbers
 	 *
@@ -24,7 +20,9 @@ class PostgresDbWrapper extends \PostgresDb {
 	 * @return self
 	 */
 	public function whereEp($s, $e = null){
-		if (!isset($e)){
+		if ($e === null){
+			if (!$s instanceof Episode)
+				throw new \InvalidArgumentException(__METHOD__.' expects parameter 1 to be an instance of '.Episode::class.' (because parameter 2 is null), '.gettype($s).' given');
 			parent::where('season', $s->season);
 			parent::where('episode', $s->episode);
 		}
@@ -36,10 +34,11 @@ class PostgresDbWrapper extends \PostgresDb {
 	}
 
 	public function setModel(string $name){
-		if (!class_exists("\\App\\Models\\$name"))
-			throw new \Exception();
+		$className = "\\App\\Models\\$name";
+		if (!class_exists($className))
+			throw new \RuntimeException("The model $className does not exist");
 
-		return $this->setClass("\\App\\Models\\$name", \PDO::FETCH_CLASS | \PDO::FETCH_PROPS_LATE);
+		return $this->setClass($className, \PDO::FETCH_CLASS | \PDO::FETCH_PROPS_LATE);
 	}
 
 	private $_nonexistantClassCache = [];
@@ -47,15 +46,15 @@ class PostgresDbWrapper extends \PostgresDb {
 	/**
 	 * @param \PDOStatement $stmt Statement to execute
 	 *
-	 * @return bool|array|object[]
+	 * @return bool|array|mixed
 	 */
 	protected function _execStatement($stmt){
 		$className = $this->tableNameToClassName();
-		if (isset($className) && empty($this->_nonexistantClassCache[$className])){
+		if ($className !== null && empty($this->_nonexistantClassCache[$className])){
 			try {
 				$this->setModel($className);
 			}
-			catch (\Exception $e){ $this->_nonexistantClassCache[$className] = true; }
+			catch (\RuntimeException $e){ $this->_nonexistantClassCache[$className] = true; }
 		}
 
 		return parent::_execStatement($stmt);

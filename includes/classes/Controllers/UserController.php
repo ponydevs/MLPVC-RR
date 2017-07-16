@@ -5,6 +5,7 @@ use App\Auth;
 use App\CoreUtils;
 use App\CSRFProtection;
 use App\DB;
+use App\DeviantArt;
 use App\HTTP;
 use App\Input;
 use App\Logs;
@@ -106,25 +107,11 @@ class UserController extends Controller {
 			CoreUtils::notFound();
 
 		/** @var $User User */
-		$User = DB::where('id', $params['uuid'])->getOne('users','name');
+		$User = DB::$instance->where('id', $params['uuid'])->getOne('users','name');
 		if (empty($User))
 			CoreUtils::notFound();
 
 		HTTP::redirect('/@'.$User->name);
-	}
-
-	public function awaitingApproval($params){
-		CSRFProtection::protect();
-
-		if (!isset($params['name']))
-			Response::fail('Missing username');
-
-		$targetUser = Users::get($params['name'], 'name');
-		if (empty($targetUser))
-			Response::fail('User not found');
-
-		$sameUser = Auth::$signed_in && Auth::$user->id === $targetUser->id;
-		Response::done(['html' => Users::getAwaitingApprovalHTML($targetUser, $sameUser)]);
 	}
 
 	public function suggestion(){
@@ -133,7 +120,7 @@ class UserController extends Controller {
 		if (Permission::insufficient('user'))
 			Response::fail('You must be signed in to use this feature.');
 
-		$postIDs = DB::rawQuery(
+		$postIDs = DB::$instance->query(
 			'SELECT id FROM requests
 			WHERE deviation_id IS NULL AND (reserved_by IS NULL OR reserved_at < NOW() - INTERVAL \'3 WEEK\')');
 		$drawArray = [];
@@ -355,5 +342,19 @@ class UserController extends Controller {
 				'targetUser' => $targetUser,
 			],
 		]);
+	}
+
+	public function contribLazyload($params){
+		$CachedDeviation = DeviantArt::getCachedDeviation($params['favme']);
+		if (empty($CachedDeviation))
+			HTTP::statusCode(404, AND_DIE);
+
+		if (empty($_GET['format']))
+			Response::done(['html' => $CachedDeviation->toLinkWithPreview()]);
+		else switch ($_GET['format']){
+			case 'raw':
+				Response::done($CachedDeviation->to_array());
+			break;
+		}
 	}
 }

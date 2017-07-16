@@ -15,7 +15,7 @@ class Response {
 	public static function dbError(string $message = '', bool $prettyPrint = false){
 		if (!empty($message))
 			$message .= ': ';
-		$message .= rtrim('Error while saving to database: '.DB::getLastError(), ': ');
+		$message .= rtrim('Error while saving to database: '.DB::$instance->getLastError(), ': ');
 
 		self::_respond(false, $message, [], $prettyPrint);
 	}

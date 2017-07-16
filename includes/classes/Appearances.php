@@ -25,17 +25,17 @@ class Appearances {
 	 */
 	public static function get($EQG, $limit = null, $userid = null, $cols = null){
 		if ($userid !== null)
-			DB::where('owner_id', $userid);
+			DB::$instance->where('owner_id', $userid);
 		else {
-			DB::where('owner_id IS NULL');
+			DB::$instance->where('owner_id IS NULL');
 			self::_order();
 			if ($EQG !== null)
-				DB::where('ishuman', $EQG)->where('id',0,'!=');
+				DB::$instance->where('ishuman', $EQG)->where('id',0,'!=');
 		}
 		if ($cols === self::COUNT_COL)
-			DB::disableAutoClass();
+			DB::$instance->disableAutoClass();
 
-		return DB::get('appearances', $limit, $cols);
+		return DB::$instance->get('appearances', $limit, $cols);
 	}
 
 	/**
@@ -44,8 +44,7 @@ class Appearances {
 	 * @param string $dir
 	 */
 	private static function _order($dir = 'ASC'){
-		DB
-			::orderByLiteral('CASE WHEN "order" IS NULL THEN 1 ELSE 0 END', $dir)
+		DB::$instance->orderByLiteral('CASE WHEN "order" IS NULL THEN 1 ELSE 0 END', $dir)
 			->orderBy('"order"', $dir)
 			->orderBy('id', $dir);
 	}
@@ -180,7 +179,7 @@ class Appearances {
 		$GroupTagIDs = array_keys(CGUtils::GROUP_TAG_IDS_ASSOC);
 		$Sorted = [];
 		$Tagged = [];
-		$_tagged = DB::where('tag_id IN ('.implode(',',$GroupTagIDs).')')->orderBy('appearance_id','ASC')->get('tagged');
+		$_tagged = DB::$instance->where('tag_id IN ('.implode(',',$GroupTagIDs).')')->orderBy('appearance_id','ASC')->get('tagged');
 		foreach ($_tagged as $row)
 			$Tagged[$row->appearance_id][] = $row->tag_id;
 		foreach ($Appearances as $p){
@@ -225,7 +224,7 @@ class Appearances {
 		$list = is_string($ids) ? explode(',', $ids) : $ids;
 		foreach ($list as $i => $id){
 			$order = $i+1;
-			if (!DB::where('id', $id)->update('appearances', ['order' => $order]))
+			if (!DB::$instance->where('id', $id)->update('appearances', ['order' => $order]))
 				Response::fail("Updating appearance #$id failed, process halted");
 
 			if ($elasticAvail)
@@ -319,14 +318,14 @@ class Appearances {
 			]);
 			$GroupID = $Group->id;
 			if (!$GroupID)
-				throw new \RuntimeException(rtrim("Color group \"$GroupName\" could not be created: ".DB::getLastError()), ': ');
+				throw new \RuntimeException(rtrim("Color group \"$GroupName\" could not be created: ".DB::$instance->getLastError()), ': ');
 
 			foreach ($ColorNames as $label){
 				if (!(new Color([
 					'group_id' => $GroupID,
 					'label' => $label,
 					'order' => $ci++,
-				]))->save()) throw new \RuntimeException(rtrim("Color \"$label\" could not be added: ".DB::getLastError()), ': ');
+				]))->save()) throw new \RuntimeException(rtrim("Color \"$label\" could not be added: ".DB::$instance->getLastError()), ': ');
 			}
 		}
 	}
@@ -342,7 +341,7 @@ class Appearances {
 	 */
 	public static function getRelatedEpisodesHTML(Appearance $Appearance, $allowMovies = false){
 		/** @var $EpTagsOnAppearance Tag[] */
-		$EpTagsOnAppearance = DB::setModel('Tag')->rawQuery(
+		$EpTagsOnAppearance = DB::$instance->setModel('Tag')->query(
 			"SELECT t.name
 			FROM tagged tg
 			LEFT JOIN tags t ON tg.tag_id = t.id
@@ -424,7 +423,7 @@ HTML;
 	 */
 	public static function hasColors(Appearance $appearance, bool $treatHexNullAsEmpty = false):bool {
 		$hexnull = $treatHexNullAsEmpty?'AND hex IS NOT NULL':'';
-		return (DB::rawQuerySingle(
+		return (DB::$instance->querySingle(
 			"SELECT count(*) as cnt
 			FROM colors
 			WHERE group_id IN (SELECT group_id FROM color_groups WHERE appearance_id = ?) $hexnull", [$appearance->id])['cnt'] ?? 0) > 0;
@@ -492,7 +491,7 @@ HTML;
 			]
 		]);
 		$elasticClient->indices()->create(array_merge($params));
-		$Appearances = DB::where('id != 0')->where('owner IS NULL')->get('appearances');
+		$Appearances = DB::$instance->where('id != 0')->where('owner IS NULL')->get('appearances');
 
 		$params = ['body' => []];
 		foreach ($Appearances as $i => $a){

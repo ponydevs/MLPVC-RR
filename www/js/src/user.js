@@ -1,4 +1,4 @@
-/* globals DocReady,$sidebar,$content,HandleNav,Time */
+/* globals DocReady,$sidebar,$content,HandleNav,Time,$w */
 DocReady.push(function(){
 	'use strict';
 
@@ -172,33 +172,35 @@ DocReady.push(function(){
 		});
 	});
 
-	let $awaiting = $('.awaiting-approval');
-	if ($awaiting.length){
-		$.post(`/user/awaiting-approval/${name}`,$.mkAjaxHandler(function(){
-			if (!this.status) return $awaiting.html("<div class='notice fail'>This section failed to load</div>");
+	const fulfillPromises = function(){
+		$('.post-deviation-promise:not(.loading)').each(function(){
+			const $this = $(this);
+			if (!$this.isInViewport())
+				return;
 
-			$awaiting.hide().html(this.html).slideDown(300).on('click','button.check',function(e){
-				e.preventDefault();
+			const
+				postid = $this.attr('data-post').replace('-','/'),
+				viewonly = $this.attr('data-viewonly');
+			$this.addClass('loading');
 
-				let $li = $(this).parents('li'),
-					IDArray = $li.attr('id').split('-'),
-					thing = IDArray[0],
-					id = IDArray[1];
+			$.get(`/post/lazyload/${postid}`,{viewonly},$.mkAjaxHandler(function(){
+				if (!this.status) return $.Dialog.fail('Cannot load '+postid.replace('/',' #'), this.message);
 
-				$.Dialog.wait('Deviation acceptance status','Checking');
-
-				$.post(`/post/lock/${thing}/${id}`,$.mkAjaxHandler(function(){
-					if (!this.status) return $.Dialog.fail(false, this.message);
-
-					let message = this.message;
-					$.Dialog.wait(false, "Reloading page");
-					$.Navigation.reload(function(){
-						$.Dialog.success(false, message, true);
-					});
-				}));
-			});
-		}));
-	}
+				$.loadImages(this.html).then(function($el){
+					const $li = $this.closest('li[id]');
+					$li.children('.image').replaceWith($el);
+					const title = $li.children('.image').find('img').attr('alt');
+					if (title)
+						$li.children('.label').removeClass('hidden').find('a').text(title);
+				});
+			}));
+		});
+	};
+	window._UserScroll = $.throttle(400, function(){
+		fulfillPromises();
+	});
+	$w.on('scroll mousewheel',window._UserScroll);
+	window._UserScroll();
 
 	function settingChanged(which,from,to_what){
 		switch (which){
@@ -296,4 +298,9 @@ DocReady.push(function(){
 			$el.siblings('.save').attr('disabled', $val.val() === $el.data('orig'));
 		});
 	});*/
+},function(){
+	'use strict';
+
+	$w.off('scroll mousewheel',window._UserScroll);
+	delete window._UserScroll;
 });

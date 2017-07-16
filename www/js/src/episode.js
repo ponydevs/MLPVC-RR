@@ -489,7 +489,9 @@ DocReady.push(function(){
 			$.get(`/post/lazyload/${postid}`,{viewonly},$.mkAjaxHandler(function(){
 				if (!this.status) return $.Dialog.fail('Cannot load '+postid.replace('/',' #'), this.message);
 
-				$this.closest('.image').replaceWith(this.html);
+				$.loadImages(this.html).then(function($el){
+					$this.closest('.image').replaceWith($el);
+				});
 			}));
 		});
 	};

@@ -21,7 +21,7 @@ use App\RegExp;
  * @property string         $airs
  * @property string         $willair
  * @property string         $notes
- * @property int            $is_movie   (Via magic method)
+ * @property bool           $is_movie   (Via magic method)
  * @property string|null    $score      (Via magic method)
  * @property bool           $twoparter  (Via magic method)
  * @property bool           $displayed  (Via magic method)
@@ -40,13 +40,8 @@ class Episode extends Model {
 		['poster', 'class' => 'User', 'foreign_key' => 'posted_by'],
 	];
 
-	public function get_is_movie():int {
-		return $this->season === 0 ? 1 : 0;
-	}
-
-	public function get_twoparter():bool {
-		$attr = $this->read_attribute('twoparter');
-		return $attr !== 'false' && !empty($attr);
+	public function get_is_movie():bool {
+		return $this->season === 0;
 	}
 
 	private function _normalizeScore($value):string {
@@ -83,7 +78,7 @@ class Episode extends Model {
 	 *
 	 * @return string
 	 */
-	public function getID($o = []):string {
+	public function getID(array $o = []):string {
 		if ($this->is_movie)
 			return 'Movie'.(!empty($o['append_num'])?'#'.$this->episode:'');
 
@@ -108,7 +103,7 @@ class Episode extends Model {
 	 * @return int
 	 */
 	public function getPostCount():int {
-		return (int) DB::rawQuerySingle(
+		return (int) DB::$instance->querySingle(
 			'SELECT SUM(cnt) as postcount FROM (
 				SELECT count(*) as cnt FROM requests WHERE season = :season AND episode = :episode
 				UNION ALL
@@ -203,7 +198,7 @@ class Episode extends Model {
 	}
 
 	public function updateScore(){
-		$Score = DB::whereEp($this)->disableAutoClass()->getOne('episode_votes','AVG(vote) as score');
+		$Score = DB::$instance->whereEp($this)->disableAutoClass()->getOne('episode_votes','AVG(vote) as score');
 		$this->score = !empty($Score['score']) ? $Score['score'] : 0;
 		$this->save();
 	}
@@ -297,7 +292,7 @@ class Episode extends Model {
 		if ($this->is_movie){
 			$MovieTagIDs = [];
 			/** @var $MovieTag Tag */
-			$MovieTag = DB::where('name',"movie{$this->episode}")->where('type','ep')->getOne('tags','id');
+			$MovieTag = DB::$instance->where('name',"movie{$this->episode}")->where('type','ep')->getOne('tags','id');
 			if (!empty($MovieTag->id))
 				$MovieTagIDs[] = $MovieTag->id;
 			return $MovieTagIDs;
@@ -306,14 +301,14 @@ class Episode extends Model {
 		$sn = CoreUtils::pad($this->season);
 		$en = CoreUtils::pad($this->episode);
 		$EpTagIDs = [];
-		/** @var $EpTagPt1 Tag */
-		$EpTagPt1 = DB::where('name',"s{$sn}e{$en}")->where('type','ep')->getOne('tags','id');
+		/** @var $EpTagPt1 array */
+		$EpTagPt1 = DB::$instance->disableAutoClass()->where('name',"s{$sn}e{$en}")->where('type','ep')->getOne('tags','id');
 		if (!empty($EpTagPt1))
-			$EpTagIDs[] = $EpTagPt1->id;
+			$EpTagIDs[] = $EpTagPt1['id'];
 		if ($this->twoparter){
 			$next_en = CoreUtils::pad($this->episode+1);
-			/** @var $EpTagPt2 Tag[] */
-			$EpTagPt2 = DB::rawQuery("SELECT id FROM tags WHERE name IN ('s{$sn}e{$next_en}', 's{$sn}e{$en}-{$next_en}') AND type = 'ep'");
+			/** @var $EpTagPt2 array */
+			$EpTagPt2 = DB::$instance->query("SELECT id FROM tags WHERE name IN (?, ?) AND type = 'ep'",["s{$sn}e{$next_en}", "s{$sn}e{$en}-{$next_en}"]);
 			foreach ($EpTagPt2 as $t)
 				$EpTagIDs[] = $t['id'];
 		}

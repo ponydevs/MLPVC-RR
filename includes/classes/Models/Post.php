@@ -72,11 +72,11 @@ abstract class Post extends Model {
 
 	public function toAnchor(string $label = null, Episode $Episode = null, $newtab = false):string {
 		if ($Episode === null)
-			$Episode = Episode::find_by_season_and_episode($this->season, $this->episode);
+			$Episode = $this->ep;
 		/** @var $Episode Episode */
 		$link = $this->toLink($Episode);
 		if (empty($label))
-			$label = $Episode->formatTitle(AS_ARRAY, 'id');
+			$label = $Episode->getID();
 		else $label = htmlspecialchars($label);
 		$target = $newtab ? 'target="_blank"' : '';
 		return "<a href='$link' {$target}>$label</a>";
@@ -115,7 +115,7 @@ abstract class Post extends Model {
 	}
 
 	public function getFinishedImage(bool $view_only, string $cachebust = ''):string {
-		$Deviation = DeviantArt::getCachedDeviation($this->deviation_id,'fav.me',true);
+		$Deviation = DeviantArt::getCachedDeviation($this->deviation_id);
 		if (empty($Deviation)){
 			$ImageLink = $view_only ? $this->toLink() : "http://fav.me/{$this->deviation_id}";
 			$Image = "<div class='image deviation error'><a href='$ImageLink'>Preview unavailable<br><small>Click to view</small></a></div>";

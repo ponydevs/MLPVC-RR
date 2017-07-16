@@ -24,7 +24,6 @@ After some time, the idea of moving the old PNG color guide into an easier to us
    - [Chart.js](http://www.chartjs.org/)
    - [Sortable](https://github.com/RubaXa/Sortable)
    - [Ace Editor](https://ace.c9.io/)
-   - [imagesLoaded](http://imagesloaded.desandro.com/)
    - [moment.js](http://momentjs.com/)
    - [simplemarquee](https://github.com/IndigoUnited/jquery.simplemarquee)
    - [dragscroll](https://github.com/asvd/dragscroll)
@@ -61,6 +60,7 @@ After some time, the idea of moving the old PNG color guide into an easier to us
 **Post-ban dialog illustration ([direct link](https://github.com/ponydevs/MLPVC-RR/blob/master/www/img/post-ban.svg)):** [Sad Twilight Sparkle](http://sairoch.deviantart.com/art/Sad-Twilight-Sparkle-354710611) by [Sairoch](http://sairoch.deviantart.com/) *(edited to use daylight colors)*<br>
 **Extrenal link icon** (licensed GPL) taken from [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Icon_External_Link.svg)<br>
 **Browser logos** (used in session list & the [Browser recognition testing page](https://mlpvc-rr.ml/browser)):
+**Vector-based Loading icons** were generated using [Loading.io](https://loading.io/) ([](),[],[],[magnify](https://loading.io/spinner/magnify/-searching-for-loading-icon)) 
 
  - [Edge](http://fav.me/d9rtlbv) by [masemj](http://masemj.deviantart.com/) ([designed](http://fav.me/d8uhefy) by [furrgroup](http://furrgroup.deviantart.com/))
  - [Firefox](http://fav.me/d4b6f4v) by [NoReasonToHope](http://noreasontohope.deviantart.com/)

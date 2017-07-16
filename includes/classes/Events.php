@@ -7,7 +7,7 @@ use App\Models\User;
 
 class Events {
 	public static function get($limit = null, string $columns = '*'){
-		return DB::get('events',$limit,$columns);
+		return DB::$instance->get('events',$limit,$columns);
 	}
 
 	/**

@@ -59,9 +59,9 @@ class Logs {
 				if (is_bool($v))
 					$data[$k] = $v ? 1 : 0;
 
-			$refid = DB::insert("log__$reftype",$data,'entryid');
+			$refid = DB::$instance->insert("log__$reftype",$data,'entryid');
 			if (!$refid)
-				throw new \RuntimeException('Logging failed: '.DB::getLastError());
+				throw new \RuntimeException('Logging failed: '.DB::$instance->getLastError());
 		}
 
 		$central['reftype'] = $reftype;
@@ -71,7 +71,7 @@ class Logs {
 
 		if (Auth::$signed_in && !$forcews)
 			$central['initiator'] = Auth::$user->id;
-		return (bool) DB::insert('log',$central);
+		return (bool) DB::$instance->insert('log',$central);
 	}
 
 	public static $ACTIONS = [
@@ -100,7 +100,7 @@ class Logs {
 		switch ($reftype){
 			case 'rolechange':
 				/** @var $target User */
-				$target =  DB::where('id',$data['target'])->getOne('users');
+				$target =  DB::$instance->where('id',$data['target'])->getOne('users');
 
 				$details = [
 					['Target user', $target->getProfileLink()],
@@ -129,7 +129,7 @@ class Logs {
 				if (!empty($EpData)){
 					$Episode = Episodes::getActual($EpData['season'], $EpData['episode'], Episodes::ALLOW_MOVIES);
 					if (!empty($Episode))
-						$link = "<a href='".$Episode->toURL()."'>".$Episode->formatTitle(AS_ARRAY, 'id').'</a>';
+						$link = "<a href='".$Episode->toURL()."'>".$Episode->getID().'</a>';
 				}
 				$details[] = ['Episode', $link];
 				if (empty($Episode))
@@ -162,7 +162,7 @@ class Logs {
 			break;
 			case 'post_lock':
 				/** @var $Post Request|Reservation */
-				$Post = DB::where('id', $data['id'])->getOne("{$data['type']}s");
+				$Post = DB::$instance->where('id', $data['id'])->getOne("{$data['type']}s");
 				self::_genericPostInfo($Post, $data, $details);
 			break;
 			case 'major_changes':
@@ -193,7 +193,7 @@ class Logs {
 			break;
 			case 'img_update':
 				/** @var $Post Request|Reservation */
-				$Post = DB::where('id', $data['id'])->getOne("{$data['thing']}s");
+				$Post = DB::$instance->where('id', $data['id'])->getOne("{$data['thing']}s");
 				$data['type'] = $data['thing'];
 				self::_genericPostInfo($Post, $data, $details);
 				$details[] = ['Old image', "<a href='{$data['oldfullsize']}' target='_blank' rel='noopener'>Full size</a><div><img src='{$data['oldpreview']}'></div>"];
@@ -201,7 +201,7 @@ class Logs {
 			break;
 			case 'res_overtake':
 				/** @var $Post Request|Reservation */
-				$Post = DB::where('id', $data['id'])->getOne("{$data['type']}s");
+				$Post = DB::$instance->where('id', $data['id'])->getOne("{$data['type']}s");
 				self::_genericPostInfo($Post, $data, $details);
 				$details[] = ['Previous reserver', User::find($data['reserved_by'])->getProfileLink()];
 				$details[] = ['Previously reserved at', Time::tag($data['reserved_at'], Time::TAG_EXTENDED, Time::TAG_STATIC_DYNTIME)];
@@ -236,7 +236,7 @@ class Logs {
 			break;
 			case 'res_transfer':
 				/** @var $Post Request|Reservation */
-				$Post = DB::where('id', $data['id'])->getOne("{$data['type']}s");
+				$Post = DB::$instance->where('id', $data['id'])->getOne("{$data['type']}s");
 				self::_genericPostInfo($Post, $data, $details);
 				$details[] = ['New reserver', User::find($data['to'])->getProfileLink()];
 			break;
@@ -352,7 +352,7 @@ class Logs {
 			case 'post_break':
 			case 'post_fix':
 				/** @var $Post Request|Reservation */
-				$Post = DB::where('id', $data['id'])->getOne("{$data['type']}s");
+				$Post = DB::$instance->where('id', $data['id'])->getOne("{$data['type']}s");
 				self::_genericPostInfo($Post, $data, $details);
 			break;
 			default:
@@ -380,7 +380,7 @@ class Logs {
 		if (empty($Post))
 			$details[] = ['<span class="typcn typcn-info-large"></span> No longer exists', self::SKIP_VALUE, self::KEYCOLOR_INFO];
 		else {
-			$EpID = $Post->ep->formatTitle(AS_ARRAY,'id');
+			$EpID = $Post->ep->getID();
 			$EpData = Episode::parseID($EpID);
 			$Episode = Episodes::getActual($EpData['season'], $EpData['episode'], Episodes::ALLOW_MOVIES);
 			$details[] = ['Posted under', "<a href='".$Episode->toURL()."'>$EpID</a>"];

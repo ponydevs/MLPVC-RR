@@ -182,10 +182,10 @@ class EventController extends Controller {
 		$update['ends_at'] = date('c', $ends_at);
 
 		if ($editing){
-			if (!DB::where('id', $this->_event->id)->update('events', $update))
+			if (!DB::$instance->where('id', $this->_event->id)->update('events', $update))
 				Response::dbError('Updating event failed');
 		}
-		else $update['id'] = DB::insert('events', $update, 'id');
+		else $update['id'] = DB::$instance->insert('events', $update, 'id');
 
 		$NewEvent = new Event($update);
 		if ($editing){
@@ -234,7 +234,7 @@ class EventController extends Controller {
 
 
 
-		if (!DB::where('id',$this->_event->id)->delete('events'))
+		if (!DB::$instance->where('id',$this->_event->id)->delete('events'))
 			Response::dbError('Deleting event failed');
 
 		Response::done();
@@ -280,7 +280,7 @@ class EventController extends Controller {
 		$data['result_favme'] = $favme;
 
 
-		if (!DB::where('id', $this->_event->id)->update('events', $data))
+		if (!DB::$instance->where('id', $this->_event->id)->update('events', $data))
 			Response::dbError('Finalizing event failed');
 
 		Response::done();
@@ -402,7 +402,7 @@ class EventController extends Controller {
 		if (!isset($params['entryid']))
 			Response::fail('Entry ID is missing or invalid');
 
-		$this->_entry = DB::where('entryid', intval($params['entryid'], 10))->getOne('events__entries');
+		$this->_entry = DB::$instance->where('entryid', intval($params['entryid'], 10))->getOne('events__entries');
 		if (empty($this->_entry) || ($action === 'manage' && !Permission::sufficient('staff') && $this->_entry->submitted_by !== Auth::$user->id))
 			Response::fail('The requested entry could not be found or you are not allowed to edit it');
 
@@ -463,7 +463,7 @@ class EventController extends Controller {
 	public function delEntry($params){
 		$this->_entryPermCheck($params);
 
-		if (!DB::where('entryid', $this->_entry->id)->delete('events__entries'))
+		if (!DB::$instance->where('entryid', $this->_entry->id)->delete('events__entries'))
 			Response::dbError('Failed to delete entry');
 
 		Response::done();
@@ -489,7 +489,7 @@ class EventController extends Controller {
 			$this->_checkWipeLockedInVote($userVote);
 		}
 
-		if (!DB::insert('events__entries__votes',[
+		if (!DB::$instance->insert('events__entries__votes',[
 			'entryid' => $this->_entry->id,
 			'userid' => Auth::$user->id,
 			'value' => $value,
@@ -510,7 +510,7 @@ class EventController extends Controller {
 		if ($userVote->isLockedIn($this->_entry))
 			Response::fail('You already voted on this post '.Time::tag($userVote->cast_at).'. Your vote is now locked in until the post is edited.');
 
-		if (!DB::where('userid', Auth::$user->id)->where('entryid', $this->_entry->id)->delete('events__entries__votes'))
+		if (!DB::$instance->where('userid', Auth::$user->id)->where('entryid', $this->_entry->id)->delete('events__entries__votes'))
 			Response::dbError('Vote could not be removed');
 	}
 

@@ -53,6 +53,7 @@ $router->map('GET|POST', '/[cg]/get-tags',                                      
 $router->map('GET', '/da-auth',                        'AuthController#auth');
 $router->map('GET', '/episode/[epid:id]',              'EpisodeController#page');
 $router->map('GET', '/episodes/[i]?',                  'EpisodesController#index');
+$router->map('GET', '/episodes/[i]?',                  'EpisodesController#index');
 $router->map('GET', '/eqg/[i:id]',                     'EQGController#redirectInt');
 $router->map('GET', '/eqg/[adi:id]',                   'EQGController#redirectStr');
 $router->map('GET', '/events/[i]?',                    'EventsController#list');
@@ -74,7 +75,7 @@ $router->map('GET', '/@[un:name]/[cg]/[v]/[adi]-[i:id]',                   'Colo
 $router->map('GET', '/@[un:name]/[cg]/[v]/[i:id][cgimg:type].[cgext:ext]', 'ColorGuideController#personalAppearanceAsFile');
 $router->map('GET', '/@[un:name]/[cg]/[eqg:eqg]?/sprite(-colors)?/[i:id][adi]?', 'ColorGuideController#spriteColors');
 $router->map('GET', '/manifest',                       'ManifestController#json');
-$router->map('GET', '/deviation/[favme:favme]',        'DeviationController#lazyload');
+$router->map('GET', '/user/contrib/lazyload/[favme:favme]',     'UserController#contribLazyload');
 $router->map('GET', '/post/lazyload/[rrl:thing]/[i:id]', 'PostController#lazyload');
 $router->map('GET', '/event/entry/lazyload/[i:id]',    'EventController#lazyloadEntry');
 

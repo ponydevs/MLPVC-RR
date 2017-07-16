@@ -11,7 +11,7 @@ class BrowserController extends Controller {
 		$AgentString = null;
 		if (isset($params['session']) && Permission::sufficient('developer')){
 			$SessionID = intval($params['session'], 10);
-			$Session = \App\DB::where('id', $SessionID)->getOne('sessions');
+			$Session = \App\DB::$instance->where('id', $SessionID)->getOne('sessions');
 			if (!empty($Session))
 				$AgentString = $Session->user_agent;
 		}

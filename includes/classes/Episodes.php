@@ -18,19 +18,22 @@ class Episodes {
 	/**
 	 * Returns all episodes from the database, properly sorted
 	 *
-	 * @param int|int[]   $count
+	 * @param int|int[]   $limit
 	 * @param string|null $where
+	 * @param bool        $allowMovies
 	 *
 	 * @return Episode|Episode[]
 	 */
-	public static function get($count = null, $where = null){
+	public static function get($limit = null, $where = null, bool $allowMovies = false){
 		/** @var $ep Episode */
 		if (!empty($where))
-			DB::where($where);
-		DB::orderBy('season')->orderBy('episode')->where('season != 0');
-		if ($count !== 1)
-			return DB::get('episodes',$count);
-		return DB::getOne('episodes');
+			DB::$instance->where($where);
+		DB::$instance->orderBy('season','DESC')->orderBy('episode','DESC');
+		if (!$allowMovies)
+			DB::$instance->where('season != 0');
+		if ($limit !== 1)
+			return DB::$instance->get('episodes',$limit);
+		return DB::$instance->getOne('episodes');
 	}
 
 	const ALLOW_MOVIES = true;
@@ -346,7 +349,7 @@ HTML;
 		$EpTagIDs = $Episode->getTagIDs();
 		if (!empty($EpTagIDs)){
 			/** @var $TaggedAppearances Appearance[] */
-			$TaggedAppearances = DB::setModel('Appearance')->rawQuery(
+			$TaggedAppearances = DB::$instance->setModel('Appearance')->query(
 				'SELECT p.*
 				FROM tagged t
 				LEFT JOIN appearances p ON t.appearance_id = p.id

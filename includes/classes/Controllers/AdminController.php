@@ -92,8 +92,8 @@ class AdminController extends Controller {
 			$q[] = 'by='.CoreUtils::FIXPATH_EMPTY;
 
 		foreach ($whereArgs as $arg)
-			DB::where(...$arg);
-		$Pagination = new Pagination('admin/logs', 25, DB::count('log'));
+			DB::$instance->where(...$arg);
+		$Pagination = new Pagination('admin/logs', 25, DB::$instance->count('log'));
 		$heading = 'Global logs';
 		if (!empty($title))
 			$title .= '- ';
@@ -101,10 +101,9 @@ class AdminController extends Controller {
 		CoreUtils::fixPath("/admin/logs/{$Pagination->page}".(!empty($q)?'?'.implode('&',$q):''));
 
 		foreach ($whereArgs as $arg)
-			DB::where(...$arg);
-		$LogItems = DB
-			::orderBy('timestamp')
-			->orderBy('entryid')
+			DB::$instance->where(...$arg);
+		$LogItems = DB::$instance->orderBy('timestamp')
+			->orderBy('entryid','DESC')
 			->get('log', $Pagination->getLimit());
 
 		if (isset($_GET['js']))
@@ -134,16 +133,16 @@ class AdminController extends Controller {
 		$entry = intval($params['id'], 10);
 
 
-		$MainEntry = DB::where('entryid', $entry)->getOne('log');
+		$MainEntry = DB::$instance->where('entryid', $entry)->getOne('log');
 		if (empty($MainEntry))
 			Response::fail('Log entry does not exist');
 		if (empty($MainEntry['refid']))
 			Response::fail('There are no details to show', ['unlickable' => true]);
 
-		$Details = DB::where('entryid', $MainEntry['refid'])->getOne("log__{$MainEntry['reftype']}");
+		$Details = DB::$instance->where('entryid', $MainEntry['refid'])->getOne("log__{$MainEntry['reftype']}");
 		if (empty($Details)){
 			error_log("Could not find details for entry {$MainEntry['reftype']}#{$MainEntry['refid']}, NULL-ing refid of Main#{$MainEntry['entryid']}");
-			DB::where('entryid', $MainEntry['entryid'])->update('log', ['refid' => null]);
+			DB::$instance->where('entryid', $MainEntry['entryid'])->update('log', ['refid' => null]);
 			Response::fail('Failed to retrieve details', ['unlickable' => true]);
 		}
 
@@ -185,7 +184,7 @@ class AdminController extends Controller {
 					'minrole' => $Link->minrole,
 				]);
 			case 'del':
-				if (!DB::where('id', $Link->id)->delete('useful_links'))
+				if (!DB::$instance->where('id', $Link->id)->delete('useful_links'))
 					Response::dbError();
 
 				Response::done();
@@ -274,7 +273,7 @@ class AdminController extends Controller {
 	}
 
 	public function discord(){
-		if (!DB::has('discord_members'))
+		if (!DB::$instance->has('discord_members'))
 			$this->_getDiscordMemberList();
 
 		$heading = 'Discord Server Connections';
@@ -410,8 +409,8 @@ HTML;
 		}
 
 		if (count($usrids) > 0)
-			DB::where("id NOT IN ('".implode("','",$usrids)."')");
-		DB::delete('discord_members');
+			DB::$instance->where("id NOT IN ('".implode("','",$usrids)."')");
+		DB::$instance->delete('discord_members');
 	}
 
 	public function massApprove(){
@@ -429,7 +428,7 @@ HTML;
 			$list .= "'d".base_convert($id, 10, 36)."',";
 		$list = rtrim($list, ',');
 
-		$Posts = DB::rawQuery(
+		$Posts = DB::$instance->query(
 			"SELECT 'request' as type, id, deviation_id FROM requests WHERE deviation_id IN ($list) AND lock = false
 			UNION ALL
 			SELECT 'reservation' as type, id, deviation_id FROM reservations WHERE deviation_id IN ($list) AND lock = false"

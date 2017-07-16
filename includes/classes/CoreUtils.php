@@ -255,7 +255,7 @@ class CoreUtils {
 
 		$HTML = [];
 		/** @var $UpcomingEpisodes Episode[] */
-		$UpcomingEpisodes = Episode::find('all', ['conditions' => 'airs > NOW()', 'order' => 'airs asc']);;
+		$UpcomingEpisodes = Episode::find('all', ['conditions' => "airs > NOW() AND airs < NOW() + INTERVAL '6 MONTH'", 'order' => 'airs asc']);;
 		if (!empty($UpcomingEpisodes)){
 			foreach ($UpcomingEpisodes as $Episode){
 				$airtime = strtotime($Episode->airs);
@@ -688,6 +688,11 @@ class CoreUtils {
 				if (isset($scope['Episodes']))
 					$NavItems['eps'][1] .= " - Page {$scope['Pagination']->page}";
 			}
+			if ($do === 'movies'){
+				if (isset($scope['Movies'])){
+					$NavItems['eps'][1] = "Movies - Page {$scope['Pagination']->page}";
+				}
+			}
 			if (($do === 'episode' || $do === 's' || $do === 'movie') && !empty($scope['CurrentEpisode'])){
 				if ($scope['CurrentEpisode']->is_movie)
 					$NavItems['eps'][1] = 'Movies';
@@ -1084,7 +1089,7 @@ HTML;
 	}
 
 	public static function getOverdueSubmissionList(){
-		$Query = DB::rawQuery(
+		$Query = DB::$instance->query(
 			'SELECT reserved_by, COUNT(*) as cnt FROM (
 				SELECT reserved_by FROM reservations
 				WHERE deviation_id IS NOT NULL AND lock = false

@@ -5,28 +5,49 @@
 	let pageRegex = /Page \d+/g,
 		basePath = location.pathname.replace(/\/\d+$/,'')+'/',
 		$pagination = $('.pagination'),
-		pageNumber = parseInt($pagination.first().children('li').children('strong').text(), 10),
-		maxPages = parseInt($pagination.first().children(':not(.spec)').last().text(), 10),
 		title = 'Navigation',
 		$GoToPageFormTemplate = $.mk('form').attr('id','goto-page').html(
 			`<label>
 				<span>Enter page number</span>
-				<input type="number" min="1" max="${maxPages}" step="1">
+				<input type="number" min="1" step="1">
 			</label>`
 		).on('submit', function(e){
 			e.preventDefault();
 
 			let page = parseInt($(this).find('input:visible').val(), 10);
-			if (isNaN(page))
-				page = 1;
+			page = isNaN(page) ? 1 : Math.max(1, page);
 
-			$.toPage(basePath+Math.max(1, page));
+			$.Dialog.wait('Navigation','Loading page '+page);
+			$.toPage(basePath+page).then(function(){
+				$.Dialog.close();
+			});
 		});
+
+	function getLimits($el){
+		if (typeof $el === 'undefined'){
+			const path = window.location.pathname.split('/');
+			let pageNumber = 1;
+			if (path.length > 1){
+				const lastItem = path[path.length-1];
+				if (!isNaN(lastItem))
+					pageNumber = parseInt(lastItem, 10);
+			}
+			return { pageNumber, maxPages: null };
+		}
+
+		return {
+			pageNumber: parseInt($el.children('li').children('strong').text(), 10),
+			maxPages: parseInt($el.children(':not(.spec)').last().text(), 10),
+		};
+	}
+
+	function clearLoading(){
+		$pagination.removeClass('loading').find('.loading').removeClass('loading');
+	}
 
 	$d.off('paginate-refresh').on('paginate-refresh',function(){
 		basePath = location.pathname.replace(/\/\d+$/,'')+'/';
 		$pagination = $('.pagination');
-		pageNumber = parseInt($pagination.first().children('li').children('strong').text(), 10);
 		title = 'Navigation';
 
 		$pagination.off('click').on('click','a', function(e){
@@ -34,10 +55,17 @@
 			e.stopPropagation();
 			$('#ctxmenu').hide();
 
-			if (typeof $(this).attr('href') === 'undefined')
+			const $this = $(this);
+
+			if (typeof $this.attr('href') === 'undefined'){
+				const limits = getLimits($this.closest('.pagination'));
+				console.log(limits);
 				return $.Dialog.request('Navigation',$GoToPageFormTemplate.clone(true,true),'Go to page', function($form){
-					$form.find('input:visible').val(pageNumber).get(0).select();
+					$form.find('input:visible').attr('max', limits.maxPages).val(limits.pageNumber).get(0).select();
 				});
+			}
+
+			$this.closest('li').addClass('loading');
 
 			$.toPage(this.pathname);
 		});
@@ -58,8 +86,9 @@
 			if (isNaN(newPageNumber))
 				return $.Dialog.fail(title, 'Could not get page number to go to');
 
-			if (!bypass && (pageNumber === newPageNumber || pageNumber === state.page))
-				return silentfail ? false : $.Dialog.info(title, 'You are already on page '+pageNumber);
+			const limits = getLimits();
+			if (!bypass && (limits.pageNumber === newPageNumber || limits.pageNumber === state.page) && location.pathname === target)
+				return silentfail ? false : $.Dialog.fail(title, 'You are already on page '+limits.pageNumber);
 
 			let data = { js: true },
 				params = [],
@@ -87,75 +116,83 @@
 				$.Dialog.wait(title, `Loading appearance page`);
 				data.GOFAST = true;
 			}
-			else $.Dialog.wait(title, `Loading page ${newPageNumber}`);
+			else $pagination.addClass('loading');
 
 			target += location.hash;
 
-			$.get(target, data, $.mkAjaxHandler(function(){
-				if (!this.status) return $.Dialog.fail(title, this.message);
+			return new Promise((fulfill, desert) => {
+				$.get(target, data, $.mkAjaxHandler(function(){
+					if (!this.status){
+						clearLoading();
+						return $.Dialog.fail(title, this.message);
+					}
 
-				if (data.GOFAST && this.goto)
-					return $.Navigation.visit(this.goto,function(){
-						$.Dialog.close();
+					if (data.GOFAST && this.goto){
+						clearLoading();
+						return $.Navigation.visit(this.goto,function(){
+							$.Dialog.close();
+						});
+					}
+
+					newPageNumber = parseInt(this.page, 10);
+
+					let $active = $navbar.find('li.active').children().last();
+					if (pageRegex.test($active.text()))
+						$active.html(function(){ this.innerHTML.replace(pageRegex,`Page ${newPageNumber}`) });
+
+					// Preserve static page title component at the end
+					if (typeof titleProcessor === 'function')
+						document.title = titleProcessor(newPageNumber);
+					document.title = document.title.replace(pageRegex, `Page ${newPageNumber}`);
+					$navbar.find('li.active').children().last().html(function(){
+						return this.innerHTML.replace(pageRegex, `Page ${newPageNumber}`);
 					});
 
-				newPageNumber = parseInt(this.page, 10);
+					let newURI = this.request_uri || (basePath+newPageNumber+
+							(
+								location.search.length > 1
+								? location.search
+								: ''
+							)
+						),
+						stateParams = [
+							{
+								paginate: true,
+								page: newPageNumber,
+								baseurl: this.request_uri.replace(/\/\d+($|\?)/,'$1'),
+							},
+							'',
+							newURI
+						];
+					if (haveExtraQuery)
+						stateParams[0].query = extraQuery;
 
-				let $active = $navbar.find('li.active').children().last();
-				if (pageRegex.test($active.text()))
-					$active.html(function(){ this.innerHTML.replace(pageRegex,`Page ${newPageNumber}`) });
+					if (typeof window.ga === 'function')
+						window.ga('send', {
+							hitType: 'pageview',
+							page: newURI,
+							title: document.title,
+						});
 
-				// Preserve static page title component at the end
-				if (typeof titleProcessor === 'function')
-					document.title = titleProcessor(newPageNumber);
-				document.title = document.title.replace(pageRegex, `Page ${newPageNumber}`);
-				$navbar.find('li.active').children().last().html(function(){
-					return this.innerHTML.replace(pageRegex, `Page ${newPageNumber}`);
+
+					if (overwriteState === true || (state.page !== newPageNumber && !isNaN(newPageNumber)) || haveExtraQuery){
+						history.replaceState.apply(history, stateParams);
+						$.WS.navigate();
+					}
+
+					$pagination.filter('[data-for="'+this.for+'"]').html(this.pagination);
+
+					let event = jQuery.Event('page-switch');
+					$(this.update).html(this.output).trigger(event);
+					Time.Update();
+					clearLoading();
+					fulfill();
+				})).fail(function(){
+					clearLoading();
+					desert();
 				});
 
-				let newURI = this.request_uri || (basePath+newPageNumber+
-						(
-							location.search.length > 1
-							? location.search
-							: ''
-						)
-					),
-					stateParams = [
-						{
-							paginate: true,
-							page: newPageNumber,
-							baseurl: this.request_uri.replace(/\/\d+($|\?)/,'$1'),
-						},
-						'',
-						newURI
-					];
-				if (haveExtraQuery)
-					stateParams[0].query = extraQuery;
-
-				if (typeof window.ga === 'function')
-					window.ga('send', {
-						hitType: 'pageview',
-						page: newURI,
-						title: document.title,
-					});
-
-
-				if (overwriteState === true || (state.page !== newPageNumber && !isNaN(newPageNumber)) || haveExtraQuery){
-					history.replaceState.apply(history, stateParams);
-					$.WS.navigate();
-				}
-
-				$pagination.html(this.pagination);
-				maxPages = parseInt($pagination.first().children(':not(.spec)').last().text(), 10);
-
-				let event = jQuery.Event('page-switch');
-				$(this.update).html(this.output).trigger(event);
-				Time.Update();
-				pageNumber = newPageNumber;
-
-				if (!event.isDefaultPrevented())
-					$.Dialog.close();
-			}));
+			});
 		};
 	});
 })();

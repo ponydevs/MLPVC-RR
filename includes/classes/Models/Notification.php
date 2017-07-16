@@ -55,7 +55,7 @@ class Notification extends Model {
 		switch ($type) {
 			case 'post-finished':
 			case 'post-approved':
-				DB::rawQuery(
+				DB::$instance->query(
 					"UPDATE notifications SET read_at = NOW() WHERE recipient_id = ? && type = ? && data->>'id' = ? && data->>'type' = ?",
 					[$to, $type, $data['id'], $data['type']]
 				);

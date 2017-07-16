@@ -57,7 +57,7 @@ class Event extends Model {
 	 * @return Event[]
 	 */
 	public static function upcoming(){
-		return DB::where('starts_at > NOW()')
+		return DB::$instance->where('starts_at > NOW()')
 			->orWhere('ends_at > NOW()')
 			->orderBy('starts_at', 'ASC')
 			->get('events');
@@ -127,9 +127,9 @@ class Event extends Model {
 		else {
 
 			/** @var $HighestScoringEntries EventEntry[] */
-			$HighestScoringEntries = DB::setClass(EventEntry::class)->rawQuery(
+			$HighestScoringEntries = DB::$instance->setModel('EventEntry')->query(
 				'SELECT * FROM events__entries
-				WHERE eventid = ? AND score > 0 AND score = (SELECT MAX(score) FROM events__entries)
+				WHERE event_id = ? AND score > 0 AND score = (SELECT MAX(score) FROM events__entries)
 				ORDER BY submitted_at ASC',[$this->id]);
 
 			if (empty($HighestScoringEntries))

@@ -107,7 +107,7 @@ class CGUtils {
 		if ($previews){
 			$preview = $appearance->getSpriteURL(Appearance::SPRITE_SIZES['SOURCE'], $appearance->getPreviewURL());
 			$preview = "<img data-src='$preview' src='/img/blank-pixel.png' alt=''>";
-			$charTags = DB::rawQuery(
+			$charTags = DB::$instance->query(
 				"SELECT t.name FROM tags t
 				LEFT JOIN tagged tg ON tg.tag_id = t.id OR tg.tag_id = t.synonym_of
 				WHERE tg.appearance_id = ? AND t.type = 'char'", [$appearance->id]);
@@ -498,7 +498,7 @@ HTML;
 	];
 
 	public static function getColorMapping($AppearanceID, $DefaultColorMapping){
-		$Colors = DB::rawQuery(
+		$Colors = DB::$instance->query(
 			'SELECT cg.label as cglabel, c.label as clabel, c.hex
 			FROM color_groups cg
 			LEFT JOIN colors c on c.group_id = cg.id

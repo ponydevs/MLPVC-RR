@@ -40,7 +40,7 @@ use App\Tags;
 <?  if ($Appearance->owner_id === null){
 		if (!empty($Changes))
 			echo str_replace('@',CGUtils::getChangesHTML($Changes),CGUtils::CHANGES_SECTION);
-		if ($Appearance->id !== 0 && (\App\DB::where('appearance_id', $Appearance->id)->has('tagged') || Permission::sufficient('staff'))){ ?>
+		if ($Appearance->id !== 0 && (\App\DB::$instance->where('appearance_id', $Appearance->id)->has('tagged') || Permission::sufficient('staff'))){ ?>
 		<section id="tags">
 			<h2><span class='typcn typcn-tags'></span>Tags</h2>
 			<div class='tags'><?=Appearances::getTagsHTML($Appearance->id,NOWRAP)?></div>

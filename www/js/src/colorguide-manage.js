@@ -601,9 +601,7 @@ DocReady.push(function(){
 							if (!AppearancePage){
 								$ponyLabel.text(data.label);
 								if (data.newurl)
-									$ponyLabel.attr('href',(_, oldhref) => {
-										return oldhref.replace(/\/[^\/]+$/, '/'+data.newurl);
-									});
+									$ponyLabel.attr('href',data.newurl);
 								$ponyNotes.html(this.notes);
 								window.tooltips();
 								$.Dialog.close();

@@ -12,7 +12,7 @@ use App\Tags;
 		<a class='btn link typcn typcn-arrow-back' href="/cg">Back to Color Guide</a>
 		<a class='btn link typcn typcn-tags' href="/cg/tags">List of tags</a>
 	</p>
-	<?=$Pagination->HTML . CGUtils::getChangesHTML($Changes, WRAP, SHOW_APPEARANCE_NAMES) . $Pagination->HTML?>
+	<?=$Pagination . CGUtils::getChangesHTML($Changes, WRAP, SHOW_APPEARANCE_NAMES) . $Pagination?>
 </div>
 
 <?  echo CoreUtils::exportVars([

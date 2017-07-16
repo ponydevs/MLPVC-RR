@@ -27,14 +27,14 @@ class Notifications {
 
 		switch ($only){
 			case self::UNREAD_ONLY:
-				\App\DB::where('read_at IS NULL');
+				\App\DB::$instance->where('read_at IS NULL');
 			break;
 			case self::READ_ONLY:
-				\App\DB::where('read_at IS NOT NULL');
+				\App\DB::$instance->where('read_at IS NOT NULL');
 			break;
 		}
 
-		return \App\DB::where('recipient_id', $UserID)->get('notifications');
+		return \App\DB::$instance->where('recipient_id', $UserID)->get('notifications');
 	}
 
 	/**
@@ -56,7 +56,7 @@ class Notifications {
 					/** @noinspection PhpUndefinedMethodInspection */
 					$Post = $_postClass::find($data['id']);
 					$Episode = $Post->ep;
-					$EpID = $Episode->formatTitle(AS_ARRAY, 'id');
+					$EpID = $Episode->getID();
 					$url = $Post->toLink($Episode);
 				}
 				catch (RecordNotFound $e){

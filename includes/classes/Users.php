@@ -83,7 +83,7 @@ class Users {
 		$ID = strtolower($userdata['userid']);
 
 		/** @var $DBUser User */
-		$DBUser = DB::where('id', $ID)->getOne('users','name');
+		$DBUser = DB::$instance->where('id', $ID)->getOne('users','name');
 		$userExists = !empty($DBUser);
 
 		$insert = [
@@ -93,8 +93,8 @@ class Users {
 		if (!$userExists)
 			$insert['id'] = $ID;
 
-		if (!($userExists ? DB::where('id', $ID)->update('users', $insert) : DB::insert('users',$insert)))
-			throw new \Exception('Saving user data failed'.(Permission::sufficient('developer')?': '.DB::getLastError():''));
+		if (!($userExists ? DB::$instance->where('id', $ID)->update('users', $insert) : DB::$instance->insert('users',$insert)))
+			throw new \Exception('Saving user data failed'.(Permission::sufficient('developer')?': '.DB::$instance->getLastError():''));
 
 		if (!$userExists)
 			Logs::logAction('userfetch', ['userid' => $insert['id']]);
@@ -122,7 +122,7 @@ class Users {
 	 * @return bool|null
 	 */
 	public static function reservationLimitExceeded(bool $return_as_bool = false){
-		$reservations = DB::rawQuerySingle(
+		$reservations = DB::$instance->querySingle(
 			'SELECT
 			(
 				(SELECT
@@ -306,10 +306,6 @@ HTML;
 		return $HTML;
 	}
 
-	public static function calculatePersonalCGSlots(int $postcount):int {
-		return floor($postcount/10);
-	}
-
 	public static function calculatePersonalCGNextSlot(int $postcount):int {
 		return 10-($postcount % 10);
 	}
@@ -323,10 +319,6 @@ HTML;
 				Input::ERROR_INVALID => 'Username (@value) is invalid',
 				]
 		]))->out();
-	}
-
-	public static function getAwaitingApprovalHTML(User $User, bool $sameUser):string {
-		return $User->getAwaitingApprovalHTML($sameUser);
 	}
 
 	public static function getContributionsHTML(User $user, bool $sameUser):string {

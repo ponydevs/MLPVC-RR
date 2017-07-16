@@ -29,23 +29,23 @@ class Tags {
 		if (!$exporting){
 			$showSynonymTags = $showEpTags || Permission::sufficient('staff');
 			if (!$showSynonymTags)
-				DB::where('"synonym_of" IS NULL');
-			DB
-				::orderByLiteral('CASE WHEN tags.type IS NULL THEN 1 ELSE 0 END')
+				DB::$instance->where('"synonym_of" IS NULL');
+			DB::$instance
+				->orderByLiteral('CASE WHEN tags.type IS NULL THEN 1 ELSE 0 END')
 				->orderBy('tags.type', 'ASC')
 				->orderBy('tags.name', 'ASC');
 			if (!$showEpTags)
-				DB::where("tags.type != 'ep'");
+				DB::$instance->where("tags.type != 'ep'");
 		}
 		else {
 			$showSynonymTags = true;
-			DB::orderBy('tags.id','ASC');
+			DB::$instance->orderBy('tags.id','ASC');
 		}
 		if ($PonyID !== null){
-			DB::join('tagged','(tagged.tag_id = tags.id'.($showSynonymTags?' OR tagged.tag_id = tags.synonym_of':'').')','right',false);
-			DB::where('tagged.appearance_id',$PonyID);
+			DB::$instance->join('tagged','(tagged.tag_id = tags.id'.($showSynonymTags?' OR tagged.tag_id = tags.synonym_of':'').')','right',false);
+			DB::$instance->where('tagged.appearance_id',$PonyID);
 		}
-		return DB::setModel('Tag')->get('tags',$limit,'tags.*');
+		return DB::$instance->setModel('Tag')->get('tags',$limit,'tags.*');
 	}
 
 	/**
@@ -61,7 +61,7 @@ class Tags {
 		$arg1 = $as_bool === RETURN_AS_BOOL ? 'synonym_of,id' : '*';
 
 		/** @var $Tag Tag */
-		$Tag = DB::where($column, $value)->getOne('tags', $arg1);
+		$Tag = DB::$instance->where($column, $value)->getOne('tags', $arg1);
 
 		if ($Tag->synonym_of !== null)
 			$Tag = $Tag->synonym;
@@ -92,8 +92,8 @@ class Tags {
 	 */
 	public static function updateUses(int $TagID, bool $returnCount = false):array {
 		// TODO Rewrite using ActiveRecord
-		$Tagged = DB::where('tag_id', $TagID)->count('tagged');
-		$return = ['status' => DB::where('id', $TagID)->update('tags', ['uses' => $Tagged])];
+		$Tagged = DB::$instance->where('tag_id', $TagID)->count('tagged');
+		$return = ['status' => DB::$instance->where('id', $TagID)->update('tags', ['uses' => $Tagged])];
 
 		if ($returnCount)
 			$return['count'] = $Tagged;

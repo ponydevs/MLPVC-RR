@@ -141,7 +141,7 @@ class User extends AbstractUser {
 	}
 
 	public function getPendingReservationCount():int {
-		$PendingReservations = DB::rawQuery(
+		$PendingReservations = DB::$instance->query(
 			'SELECT (SELECT COUNT(*) FROM requests WHERE reserved_by = :uid AND deviation_id IS NULL)+(SELECT COUNT(*) FROM reservations WHERE reserved_by = :uid AND deviation_id IS NULL) as amount',
 			['uid' => $this->id]
 		);
@@ -197,7 +197,7 @@ class User extends AbstractUser {
 	 */
 	public function getApprovedFinishedRequestCount(bool $exclude_own = false):int {
 		if ($exclude_own)
-			DB::where('requested_by', $this->id, '!=');
+			DB::$instance->where('requested_by', $this->id, '!=');
 
 		return $this->getApprovedFinishedRequestContributions();
 	}
@@ -205,12 +205,14 @@ class User extends AbstractUser {
 	public function getPCGAppearances(Pagination $Pagination = null, bool $countOnly = false){
 		$limit = isset($Pagination) ? $Pagination->getLimit() : null;
 		if (!$countOnly)
-			DB::orderBy('order','ASC');
+			DB::$instance->orderBy('order','ASC');
 		$return = Appearances::get(null, $limit, $this->id, $countOnly ? Appearances::COUNT_COL : '*');
 		return $countOnly ? (int)($return[0]['cnt'] ?? 0) : $return;
 	}
 
 	/**
+	 * TODO Introduce a table and allow manually adding/removing slots + locking slot gains
+	 *
 	 * @param bool $throw
 	 * @param bool $returnArray
 	 *
@@ -269,7 +271,7 @@ class User extends AbstractUser {
 			WHERE d.author = ? AND p.owner_id IS NULL";
 
 		if ($count)
-			return DB::rawQuerySingle($query, [$this->name])['cnt'];
+			return DB::$instance->querySingle($query, [$this->name])['cnt'];
 
 		if ($pagination)
 			$query .= ' ORDER BY p.order ASC '.$pagination->getLimitString();
@@ -285,14 +287,14 @@ class User extends AbstractUser {
 	 */
 	private function _getPostContributions(string $table, bool $count = true, Pagination $pagination = null){
 		if ($table === 'requests')
-			DB::where('requested_by', $this->id);
-		else DB::where('reserved_by', $this->id);
+			DB::$instance->where('requested_by', $this->id);
+		else DB::$instance->where('reserved_by', $this->id);
 
 		if ($count)
-			return DB::count($table);
+			return DB::$instance->count($table);
 
 		$limit = isset($pagination) ? $pagination->getLimit() : null;
-		return DB::orderBy(($table === 'requests' ? 'requested_at' : 'reserved_at'),'DESC')->get($table,$limit);
+		return DB::$instance->orderBy(($table === 'requests' ? 'requested_at' : 'reserved_at'),'DESC')->get($table,$limit);
 	}
 
 	/**
@@ -320,7 +322,7 @@ class User extends AbstractUser {
 	 */
 	public function getFinishedPostContributions(bool $count = true, Pagination $pagination = null){
 		if ($count)
-			return DB::rawQuerySingle(
+			return DB::$instance->querySingle(
 				'SELECT
 					(SELECT COUNT(*) FROM requests WHERE reserved_by = :userid && deviation_id IS NOT NULL)
 					+
@@ -337,7 +339,7 @@ class User extends AbstractUser {
 			) t";
 		if ($pagination)
 			$query .= ' ORDER BY posted DESC '.$pagination->getLimitString();
-		return DB::rawQuery($query, ['userid' => $this->id]);
+		return DB::$instance->query($query, ['userid' => $this->id]);
 	}
 
 	/**
@@ -348,13 +350,13 @@ class User extends AbstractUser {
 	 */
 	public function getApprovedFinishedRequestContributions(bool $count = true, Pagination $pagination = null){
 
-		DB::where('deviation_id IS NOT NULL')->where('reserved_by',$this->id)->where('lock',1);
+		DB::$instance->where('deviation_id IS NOT NULL')->where('reserved_by',$this->id)->where('lock',1);
 
 		if ($count)
-			return DB::count('requests');
+			return DB::$instance->count('requests');
 
 		$limit = isset($pagination) ? $pagination->getLimit() : null;
-		return DB::orderBy('finished_at','DESC')->get('requests',$limit);
+		return DB::$instance->orderBy('finished_at','DESC')->get('requests',$limit);
 	}
 
 	private function _getContributions():array {
@@ -386,7 +388,7 @@ class User extends AbstractUser {
 			$contribs['fulfilled-requests'] = [$reqFin, 'request', 'fulfilled'];
 
 		// Broken video reports
-		$brokenVid = DB::rawQuerySingle(
+		$brokenVid = DB::$instance->querySingle(
 			'SELECT COUNT(v.entryid) as cnt
 			FROM log l
 			LEFT JOIN log__video_broken v ON l.refid = v.entryid
@@ -395,7 +397,7 @@ class User extends AbstractUser {
 			$contribs[] = [$brokenVid, 'broken video', 'reported'];
 
 		// Broken video reports
-		$approvedPosts = DB::rawQuerySingle(
+		$approvedPosts = DB::$instance->querySingle(
 			'SELECT COUNT(p.entryid) as cnt
 			FROM log l
 			LEFT JOIN log__post_lock p ON l.refid = p.entryid
@@ -423,7 +425,7 @@ class User extends AbstractUser {
 	public function getEntriesFor(Event $event, string $cols = '*'):?array {
 
 
-		return DB::where('submitted_by', $this->id)->where('eventid', $event->id)->get('events__entries',null,$cols);
+		return DB::$instance->where('submitted_by', $this->id)->where('eventid', $event->id)->get('events__entries',null,$cols);
 	}
 
 	const YOU_HAVE = [
@@ -517,8 +519,8 @@ HTML;
 					});
 					$LIST = '';
 					foreach ($Posts as $Post){
-						$postLink = $Post->toLink($_);
-						$postAnchor = $Post->toAnchor(null, $_);
+						$postLink = $Post->toLink();
+						$postAnchor = $Post->toAnchor();
 						$label = !empty($Post->label) ? "<span class='label'>{$Post->label}</span>" : '';
 						$actionCond = $Post->is_request && !empty($Post->reserved_at);
 						$posted = Time::tag($actionCond ? $Post->reserved_at : $Post->posted);
@@ -585,11 +587,7 @@ HTML;
 		return Reservation::find(...$this->_getNotApprovedPostArgs());
 	}
 
-	public function getAwaitingApprovalHTML(bool $sameUser):string {
-		if (Permission::insufficient('member', $this->role))
-			HTTP::statusCode(404, AND_DIE);
-
-
+	public function getAwaitingApprovalHTML(bool $sameUser, bool $wrap = WRAP):string {
 		$cols = 'id, season, episode, deviation_id';
 		/** @var $AwaitingApproval \App\Models\Post[] */
 		$AwaitingApproval = array_merge(
@@ -622,21 +620,17 @@ HTML;
 		if ($AwaitCount){
 			$HTML .= '<ul id="awaiting-deviations">';
 			foreach ($AwaitingApproval as $Post){
-				$deviation = DeviantArt::getCachedDeviation($Post->deviation_id);
-				$url = "http://{$deviation->provider}/{$deviation->id}";
-				unset($_);
-				$postLink = $Post->toLink($_);
-				$postAnchor = $Post->toAnchor(null, $_);
+				$url = "http://fav.me/{$Post->deviation_id}";
+				$postLink = $Post->toLink();
+				$postAnchor = $Post->toAnchor();
 				$checkBtn = Permission::sufficient('member') ? "<button class='green typcn typcn-tick check'>Check</button>" : '';
 
 				$HTML .= <<<HTML
 <li id="{$Post->getID()}">
 	<div class="image deviation">
-		<a href="$url" target="_blank" rel="noopener">
-			<img src="{$deviation->preview}" alt="{$deviation->title}">
-		</a>
+		<div class="post-deviation-promise" data-post="{$Post->getID()}"></div>
 	</div>
-	<span class="label"><a href="$url" target="_blank" rel="noopener">{$deviation->title}</a></span>
+	<span class="label hidden"><a href="$url" target="_blank" rel="noopener"></a></span>
 	<em>Posted under $postAnchor</em>
 	<div>
 		<a href='$postLink' class='btn blue typcn typcn-arrow-forward'>View</a>
@@ -648,6 +642,6 @@ HTML;
 			$HTML .= '</ul>';
 		}
 
-		return $HTML;
+		return $wrap ? "<section class='awaiting-approval'>$HTML</section>" : $HTML;
 	}
 }

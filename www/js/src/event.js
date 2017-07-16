@@ -192,9 +192,11 @@ DocReady.push(function(){
 			$.get('/event/entry/lazyload/'+entryid,$.mkAjaxHandler(function(){
 				if (!this.status) return $.Dialog.fail('Failed to load preview for entry #'+entryid, this.message);
 
-				const $parent = $this.closest('li[id]');
-				$this.replaceWith(this.html);
-				$parent.rebindFluidbox();
+				$.loadImages(this.html).then(function($el){
+					const $parent = $this.closest('li[id]');
+					$this.replaceWith($el);
+					$parent.rebindFluidbox();
+				});
 			}));
 		});
 	}

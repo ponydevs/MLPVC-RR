@@ -58,7 +58,7 @@ class NotificationsController extends Controller {
 			switch ($Notif->type){
 				case 'post-passon':
 					/** @var $Post Post */
-					$Post = \App\DB::where('id', $data['id'])->getOne("{$data['type']}s");
+					$Post = \App\DB::$instance->where('id', $data['id'])->getOne("{$data['type']}s");
 					if (empty($Post)){
 						Posts::clearTransferAttempts($Post, $data['type'], 'del');
 						Response::fail("The {$data['type']} doesn’t exist or has been deleted");
@@ -75,7 +75,7 @@ class NotificationsController extends Controller {
 							'type' => $data['type'],
 							'by' => Auth::$user->id,
 						]);
-						\App\DB::where('id', $data['id'])->update("{$data['type']}s", [
+						\App\DB::$instance->where('id', $data['id'])->update("{$data['type']}s", [
 							'reserved_by' => $data['user'],
 							'reserved_at' => date('c'),
 						]);

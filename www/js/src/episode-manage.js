@@ -312,7 +312,7 @@ DocReady.push(function(){
 				$.mk('label').append(
 					$.mk('span').text('Deviation URL'),
 					$.mk('input').attr({
-						type: 'text',
+						type: 'url',
 						name: 'deviation',
 						spellcheck: false,
 						autocomplete: 'off',

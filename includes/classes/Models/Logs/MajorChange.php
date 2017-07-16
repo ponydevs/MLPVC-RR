@@ -32,7 +32,7 @@ class MajorChange extends AbstractEntryType {
 			$LIMIT = is_string($count) ? $count : "LIMIT $count";
 		}
 		$WHERE = isset($PonyID) ? "WHERE cm.appearance_id = $PonyID" : '';
-		$query = DB::setModel('Logs\MajorChange')->rawQuery(
+		$query = DB::$instance->setModel('Logs\MajorChange')->query(
 			"SELECT cm.*
 			FROM log__major_changes cm
 			LEFT JOIN log l ON cm.entryid = l.refid AND l.reftype = 'major_changes'
