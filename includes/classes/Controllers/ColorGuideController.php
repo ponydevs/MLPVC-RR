@@ -403,38 +403,20 @@ class ColorGuideController extends Controller {
 			if ($searching){
 				$SearchQuery = preg_replace(new RegExp('[^\w\d\s\*\?]'),'',trim($_GET['q']));
 				$title .= "$SearchQuery - ";
-				if (preg_match(new RegExp('[\*\?]'), $SearchQuery)){
-					$queryString = new ElasticsearchDSL\Query\FullText\QueryStringQuery(
-						$SearchQuery,
-						[
-							'fields' => ['label^20','tags'],
-							'default_operator' => 'and',
-							'phrase_slop' => 3,
-						]
-					);
-					$search->addQuery($queryString);
-					$orderByID = false;
-				}
-				else {
-					$multiMatch = new ElasticsearchDSL\Query\FullText\MultiMatchQuery(
-						['label^20','tags'],
-						$SearchQuery,
-						[
-							'type' => 'cross_fields',
-							'minimum_should_match' => '100%',
-						]
-					);
-					$search->addQuery($multiMatch);
-				}
-			}
-			else {
-				$sort = new ElasticsearchDSL\Sort\FieldSort('order','asc');
-		        $search->addSort($sort);
+				$multiMatch = new ElasticsearchDSL\Query\FullText\MultiMatchQuery(
+					['label','tags'],
+					$SearchQuery,
+					[
+						'type' => 'cross_fields',
+						'minimum_should_match' => '80%',
+					]
+				);
+				$search->addQuery($multiMatch);
 			}
 
 			$boolquery = new BoolQuery();
 			if (Permission::insufficient('staff'))
-				$boolquery->add(new TermQuery('private', true), BoolQuery::MUST_NOT);
+				$boolquery->add(new TermQuery('private', false), BoolQuery::MUST);
 			$boolquery->add(new TermQuery('ishuman', (bool)$this->_EQG), BoolQuery::MUST);
 			$search->addQuery($boolquery);
 
@@ -459,6 +441,10 @@ class ColorGuideController extends Controller {
 					'conditions' => [ 'id IN (?)', $ids	],
 					'order' => '"order" asc',
 				]);
+			}
+			else {
+				error_log("No hits from Elastic.\nSearch quesry: ".($searching?$SearchQuery:'<N/A>')."\nData:\n".var_export($search));
+				$Pagination->calcMaxPages(0);
 			}
 		}
 		if (!$elasticAvail) {
