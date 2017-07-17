@@ -450,17 +450,19 @@ class ColorGuideController extends Controller {
 				foreach($search['hits']['hits'] as $i => $hit)
 					$ids[$hit['_id']] = $i;
 
+				$find = [
+					'conditions' => [ 'id IN (?)', array_keys($ids)	],
+				];
 				if ($orderByID){
-					$Ponies = Appearance::find('all', [
-						'conditions' => [ 'id IN (?)', array_keys($ids)	],
-						'order' => '"order" asc',
-					]);
+					$find['order'] = '"order" asc';
+					$Ponies = Appearance::find('all', $find);
 				}
 				else {
-					$Ponies = Appearance::find(array_keys($ids));
-					uasort($Ponies, function(Appearance $a, Appearance $b) use ($ids){
-						return $ids[$a->id] <=> $ids[$b->id];
-					});
+					$Ponies = Appearance::find('all', $find);
+					if (!empty($Ponies))
+						uasort($Ponies, function(Appearance $a, Appearance $b) use ($ids){
+							return $ids[$a->id] <=> $ids[$b->id];
+						});
 				}
 			}
 			else {
