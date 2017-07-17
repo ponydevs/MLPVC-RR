@@ -52,6 +52,7 @@ class Statistics {
 	 * @param array  $Data
 	 */
 	public static function postprocessTimedData(&$Data){
+		/** @noinspection ForeachSourceInspection */
 		foreach ($Data['labels'] as $k => $l)
 			$Data['labels'][$k] = strtotime($l);
 
@@ -69,11 +70,13 @@ class Statistics {
 				break;
 
 			array_splice($Data['labels'], $lix, 0, [$Data['labels'][$lix-1] + Time::IN_SECONDS['day']]);
+		/** @noinspection ForeachSourceInspection */
 			foreach ($Data['datasets'] as &$set)
 				array_splice($set['data'], $lix, 0, [0]);
 			unset($set);
 		}
 
+		/** @noinspection ForeachSourceInspection */
 		foreach ($Data['labels'] as $k => $ts)
 			$Data['labels'][$k] = date('c',$ts);
 	}

@@ -688,6 +688,19 @@
 		return this[0] ? $.isInViewport(this[0]) : false;
 	};
 
+	$.loadImages = html => {
+		const $el = $(html);
+
+		return new Promise((fulfill) => {
+			const $imgs = $el.find('img');
+			if ($imgs.length)
+				$el.find('img').on('load error',function(e){
+					fulfill($el, e);
+				});
+			else fulfill($el);
+		});
+	};
+
 	$.isRunningStandalone = () => window.matchMedia('(display-mode: standalone)').matches;
 
 	window.URL = url => {

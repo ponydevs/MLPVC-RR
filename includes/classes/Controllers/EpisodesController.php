@@ -3,6 +3,7 @@
 namespace App\Controllers;
 use App\CoreUtils;
 use App\Episodes;
+use App\Models\Episode;
 use App\Pagination;
 use App\Permission;
 
@@ -10,33 +11,43 @@ class EpisodesController extends Controller {
 	public $do = 'episodes';
 
 	public function index(){
-		global $Database;
+		$areMovies = $this->do !== 'episodes';
 
-		$Pagination = new Pagination('episodes', 8, $Database->where('season != 0')->count('episodes'));
+		$EpisodesPagination = new Pagination('episodes', 8, Episode::count(['conditions' => 'season != 0']));
+		$MoviesPagination = new Pagination('movies', 8, Episode::count(['conditions' => 'season = 0']));
 
-		CoreUtils::fixPath("/episodes/{$Pagination->page}");
-		$heading = 'Episodes';
+		$Pagination = $areMovies ? $MoviesPagination : $EpisodesPagination;
+		($areMovies ? $EpisodesPagination : $MoviesPagination)->forcePage(1);
+
+		$Episodes = Episodes::get($EpisodesPagination->getLimit());
+		$Movies = Episodes::get($MoviesPagination->getLimit(), 'season = 0', true);
+
+		CoreUtils::fixPath("/{$this->do}/{$Pagination->page}");
+		$heading = CoreUtils::capitalize($this->do);
 		$title = "Page {$Pagination->page} - $heading";
-		$Episodes = Episodes::get($Pagination->getLimit());
 
 		if (isset($_GET['js']))
-			$Pagination->respond(Episodes::getTableTbody($Episodes), '#episodes tbody');
+			$Pagination->respond(Episodes::getTableTbody($areMovies ? $Movies : $Episodes, $areMovies), "#{$this->do} tbody");
 
 		$settings = [
 			'heading' => $heading,
 			'title' => $title,
-			'do-css',
-			'js' => ['paginate', $this->do],
+			'view' => 'episodes',
+			'css' => 'episodes',
+			'js' => ['paginate', 'episodes'],
 			'import' => [
 				'Pagination' => $Pagination,
+				'EpisodesPagination' => $EpisodesPagination,
+				'MoviesPagination' => $MoviesPagination,
+				'Movies' => $Movies,
 				'Episodes' => $Episodes,
 			],
 		];
 		if (Permission::sufficient('staff'))
 			$settings['js'] = array_merge(
 				$settings['js'],
-				['moment-timezone', "{$this->do}-manage"]
+				['moment-timezone', 'episodes-manage']
 			);
-		CoreUtils::loadPage($settings, $this);
+		CoreUtils::loadPage($settings);
 	}
 }

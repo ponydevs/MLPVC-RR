@@ -84,3 +84,9 @@ td.by-at .typcn {
 		overflow: hidden;
 	}
 }
+
+.deviation-promise {
+	@include loading-indicator(96px, 'wedges');
+
+	margin: 0 auto;
+}

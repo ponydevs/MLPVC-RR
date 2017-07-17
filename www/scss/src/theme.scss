@@ -196,6 +196,11 @@ img.avatar {
 }
 .resp-embed-wrap { @extend %resp-embed-wrap }
 .responsive-embed { @extend %responsive-embed }
+.xdebug-error {
+ &, & * {
+  font-size: 18px !important;
+ }
+}
 // Page layout
 body {
 	margin: 0;
@@ -836,9 +841,18 @@ ul.pagination {
 	text-align: center;
 	user-select: none;
 	cursor: default;
+	transition: opacity .2s linear;
+	will-change: opacity;
 
 	&:last-child { margin-bottom: 0 }
 	&:empty { display: none }
+
+	&.loading {
+		cursor: not-allowed;
+		a {
+			pointer-events: none;
+		}
+	}
 
 	li {
 		display: inline-block;
@@ -854,6 +868,25 @@ ul.pagination {
 		&:last-child  {
 			border-top-right-radius: 5px;
 			border-bottom-right-radius: 5px;
+		}
+
+		&.loading {
+			overflow: hidden;
+			position: relative;
+			&, * {
+				color: transparent !important;
+			}
+			a {
+				background-color: rgba(0,0,0,.1);
+			}
+
+			&:before {
+				content: '';
+				position: absolute;
+				top: 0;
+				left: 0;
+				@include loading-indicator(100%, 'gear');
+			}
 		}
 
 		* {
@@ -873,6 +906,11 @@ ul.pagination {
 			color: #000 !important;
 			transition: none !important;
 			cursor: pointer;
+
+			&:active {
+				box-shadow: inset 0 2px 5px rgba(0,0,0,.2);
+				background-color: rgba(0,0,0,.1);
+			}
 		}
 		&.spec a {
 			color: $Link !important;

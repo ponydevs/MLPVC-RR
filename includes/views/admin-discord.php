@@ -1,5 +1,5 @@
 <?php /** @var string $heading */
-use App\Models\DiscordMember; ?>
+?>
 <div id="content">
 	<h1><?=$heading?></h1>
 	<p>Manage Discord server membership of users</p>

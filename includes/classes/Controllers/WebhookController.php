@@ -2,6 +2,8 @@
 
 namespace App\Controllers;
 
+use App\CoreUtils;
+
 class WebhookController extends Controller {
 	public function index(){
 		if (empty($_SERVER['HTTP_USER_AGENT']) && strpos($_SERVER['HTTP_USER_AGENT'], 'GitHub-Hookshot/') === 0)

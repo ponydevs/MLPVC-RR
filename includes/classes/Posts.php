@@ -3,6 +3,7 @@
 namespace App;
 
 use App\Models\Episode;
+use App\Models\Notification;
 use App\Models\Post;
 use App\Models\Request;
 use App\Models\Reservation;
@@ -26,21 +27,31 @@ class Posts {
 	 * @param int     $only
 	 * @param bool    $showBroken
 	 *
-	 * @return Post|Post[]
+	 * @return Post[]|Post[][]
 	 */
 	public static function get(Episode $Episode, int $only = null, bool $showBroken = false){
-		global $Database;
-
 		$return = [];
 		if ($only !== ONLY_RESERVATIONS){
-			if ($showBroken === false)
-				$Database->where('broken != true');
-			$return[] = $Database->whereEp($Episode)->orderBy('posted','ASC')->get('requests');
+			$return[] = Request::find('all', [
+				'conditions'=> [
+					'season = ? AND episode = ?'.($showBroken === false?' AND broken IS NOT true':''),
+					$Episode->season,
+					$Episode->episode
+				],
+				'order' => 'requested_at asc',
+			]);
 		}
 		if ($only !== ONLY_REQUESTS){
 			if ($showBroken === false)
-				$Database->where('broken != true');
-			$return[] = $Database->whereEp($Episode)->orderBy('posted','ASC')->get('reservations');
+				DB::$instance->where('broken != true');
+			$return[] = Reservation::find('all', [
+				'conditions'=> [
+					'season = ? AND episode = ?'.($showBroken === false?' AND broken IS NOT true':''),
+					$Episode->season,
+					$Episode->episode
+				],
+				'order' => 'reserved_at asc',
+			]);;
 		}
 
 		return $only ? $return[0] : $return;
@@ -53,28 +64,29 @@ class Posts {
 	 *
 	 * @return string
 	 */
-	public static function getMostRecentList($wrap = true){
-		global $Database;
-
-		$cols = 'id,season,episode,label,posted,preview,lock,deviation_id,reserved_by,finished_at,broken';
-		$RecentPosts = $Database->rawQuery(
+	public static function getMostRecentList($wrap = WRAP){
+		$cols = 'id,season,episode,label,preview,lock,deviation_id,reserved_by,finished_at,broken,reserved_at';
+		$RecentPosts = DB::$instance->disableAutoClass()->query(
 			"SELECT * FROM
 			(
-				SELECT $cols, requested_by, true AS rq, reserved_at FROM requests
-				WHERE posted > NOW() - INTERVAL '20 DAYS'
+				SELECT $cols, requested_by, requested_at AS posted FROM requests
+				WHERE requested_at > NOW() - INTERVAL '20 DAYS'
 				UNION ALL
-				SELECT $cols, null AS requested_by, false AS rq, null AS reserved_at FROM reservations
-				WHERE posted > NOW() - INTERVAL '20 DAYS'
+				SELECT $cols, null AS requested_by, reserved_at AS posted FROM reservations
+				WHERE reserved_at > NOW() - INTERVAL '20 DAYS'
 			) t
 			ORDER BY posted DESC
 			LIMIT 20");
 
-		$HTML = $wrap ? '<ul>' : '';
+		$HTML = '';
 		foreach ($RecentPosts as $Post){
-			$className = '\\App\\Models\\'.($Post['rq'] ? 'Request' : 'Reservation');
-			$HTML .= self::getLi(new $className($Post), true);
+			$is_request = !empty($Post['requested_by']);
+			$className = '\\App\\Models\\'.($is_request ? 'Request' : 'Reservation');
+			if (!$is_request)
+				unset($Post['requested_by']);
+			$HTML .= self::getLi(new $className($Post), true, false, true);
 		}
-		return $HTML.($wrap?'</ul>':'');
+		return $wrap ? "<ul>$HTML</ul>" : $HTML;
 	}
 
 	/**
@@ -94,7 +106,7 @@ class Posts {
 				Input::ERROR_RANGE => 'The description must be between @min and @max characters'
 			]
 		]))->out();
-		if (isset($label)){
+		if ($label !== null){
 			if (!$editing || $label !== $Post->label){
 				CoreUtils::checkStringValidity($label,'The description',INVERSE_PRINTABLE_ASCII_PATTERN);
 				$label = preg_replace(new RegExp("''"),'"',$label);
@@ -115,7 +127,7 @@ class Posts {
 					Input::ERROR_INVALID => 'Request type (@value) is invalid'
 				]
 			]))->out();
-			if (!isset($type) && !$editing)
+			if ($type === null && !$editing)
 				Response::fail('Missing request type');
 
 			if (!$editing || (isset($type) && $type !== $Post->type))
@@ -164,14 +176,14 @@ class Posts {
 		}
 		catch (\Exception $e){ Response::fail($e->getMessage()); }
 
-		global $Database;
+
 		foreach (Posts::TYPES as $type){
 			if (!empty($Post->id))
-				$Database->where('r.id',$Post->id,'!=');
+				DB::$instance->where('r.id',$Post->id,'!=');
 			/** @var $UsedUnder Post */
-			$UsedUnder = $Database
+			$UsedUnder = DB::$instance
 				->disableAutoClass()
-				->join('episodes ep','r.season = ep.season && r.episode = ep.episode','LEFT')
+				->join('episodes ep','r.season = ep.season AND r.episode = ep.episode','LEFT')
 				->where('r.preview',$Image->preview)
 				->getOne("{$type}s r",'r.id, ep.season, ep.episode, ep.twoparter');
 			if (!empty($UsedUnder)){
@@ -195,7 +207,6 @@ class Posts {
 	 * @return array
 	 */
 	public static function checkRequestFinishingImage($ReserverID = null){
-		global $Database;
 		$deviation = (new Input('deviation','string', [
 			Input::CUSTOM_ERROR_MESSAGES => [
 				Input::ERROR_MISSING => 'Please specify a deviation URL',
@@ -205,7 +216,7 @@ class Posts {
 			$Image = new ImageProvider($deviation, ['fav.me', 'dA']);
 
 			foreach (Posts::TYPES as $what){
-				if ($Database->where('deviation_id', $Image->id)->has("{$what}s"))
+				if (DB::$instance->where('deviation_id', $Image->id)->has("{$what}s"))
 					Response::fail("This exact deviation has already been marked as the finished version of a different $what");
 			}
 
@@ -241,13 +252,14 @@ class Posts {
 	/**
 	 * Generate HTML of requests for episode pages
 	 *
-	 * @param Post[] $Requests
-	 * @param bool   $returnArranged Return an arranged array of posts instead of raw HTML
-	 * @param bool   $loaders        Display loaders insead of empty sections
+	 * @param Post[]|null $Requests
+	 * @param bool        $returnArranged Return an arranged array of posts instead of raw HTML
+	 * @param bool        $lazyload       Output promise elements in place of deviation data
 	 *
 	 * @return string|array
+	 * @throws \Exception
 	 */
-	public static function getRequestsSection($Requests, bool $returnArranged = false, bool $loaders = false){
+	public static function getRequestsSection(?array $Requests = null, bool $returnArranged = false, bool $lazyload = false){
 		$Arranged = ['finished' => !$returnArranged ? '' : []];
 		if (!$returnArranged){
 			$Arranged['unfinished'] = [];
@@ -256,17 +268,20 @@ class Posts {
 			$Arranged['unfinished']['chr'] = $Arranged['finished'];
 		}
 		else $Arranged['unfinished'] = $Arranged['finished'];
+
+		$loaders = $Requests === null;
+
 		if (!empty($Requests) && is_array($Requests)){
 			foreach ($Requests as $Request){
-				$HTML = !$returnArranged ? self::getLi($Request) : $Request;
+				$HTML = !$returnArranged ? self::getLi($Request,false,false,$lazyload) : $Request;
 
 				if (!$returnArranged){
-					if (!empty($Request->isFinished))
+					if ($Request->finished)
 						$Arranged['finished'] .= $HTML;
 					else $Arranged['unfinished'][$Request->type] .= $HTML;
 				}
 				else {
-					$k = (empty($Request->isFinished)?'un':'').'finished';
+					$k = ($Request->finished?'':'un').'finished';
 					$Arranged[$k][] = $HTML;
 				}
 			}
@@ -280,7 +295,7 @@ class Posts {
 			$Groups .= "<div class='group' id='group-$g'><h3>".self::REQUEST_TYPES[$g].":</h3><ul>$c</ul></div>";
 
 		if (Permission::sufficient('user')){
-			$makeRq = '<button id="request-btn" class="green" disabled>Make a request</button>';
+			$makeRq = '<button id="request-btn" class="green">Make a request</button>';
 			$reqForm = self::_getForm('request');
 		}
 		else $reqForm = $makeRq = '';
@@ -305,22 +320,24 @@ HTML;
 	/**
 	 * Generate HTML of reservations for episode pages
 	 *
-	 * @param Post[] $Reservations
-	 * @param bool   $returnArranged Return an arranged array of posts instead of raw HTML
-	 * @param bool   $loaders        Display loaders insead of empty sections
+	 * @param Post[]|null $Reservations
+	 * @param bool        $returnArranged Return an arranged array of posts instead of raw HTML
+	 * @param bool        $lazyload       Output promise elements in place of deviation data
 	 *
 	 * @return string|array
 	 */
-	public static function getReservationsSection($Reservations, bool $returnArranged = false, bool $loaders = false){
+	public static function getReservationsSection(?array $Reservations = null, bool $returnArranged = false, bool $lazyload = false){
 		$Arranged = [];
 		$Arranged['unfinished'] =
 		$Arranged['finished'] = !$returnArranged ? '' : [];
 
-		if (!empty($Reservations) && is_array($Reservations)){
+		$loaders = $Reservations === null;
+
+		if (is_array($Reservations)){
 			foreach ($Reservations as $Reservation){
-				$k = (empty($Reservation->isFinished)?'un':'').'finished';
+				$k = ($Reservation->finished?'':'un').'finished';
 				if (!$returnArranged)
-					$Arranged[$k] .= self::getLi($Reservation);
+					$Arranged[$k] .= self::getLi($Reservation,false,false,$lazyload);
 				else $Arranged[$k][] = $Reservation;
 			}
 		}
@@ -329,11 +346,11 @@ HTML;
 			return $Arranged;
 
 		if (Permission::sufficient('member')){
-			$makeRes = '<button id="reservation-btn" class="green" disabled>Make a reservation</button>';
+			$makeRes = '<button id="reservation-btn" class="green">Make a reservation</button>';
 			$resForm = self::_getForm('reservation');
 		}
 		else $resForm = $makeRes = '';
-		$addRes = Permission::sufficient('staff') ? '<button id="add-reservation-btn" class="darkblue" disabled>Add a reservation</button>' :'';
+		$addRes = Permission::sufficient('staff') ? '<button id="add-reservation-btn" class="darkblue">Add a reservation</button>' :'';
 
 		$loading = $loaders ? ' loading' : '';
 
@@ -421,22 +438,19 @@ HTML;
 
 	/**
 	 * @param Post        $Post
-	 * @param string      $type
 	 * @param string|null $sent_by
-	 * @param string|null $reserved_by
 	 * @param string      $cols
 	 *
 	 * @return array|null
 	 */
-	public static function getTransferAttempts(Post $Post, $type, $sent_by = null, $reserved_by = null, $cols = 'read_at,sent_at'){
-		global $Database;
-		if (!empty($reserved_by))
-			$Database->where('user', $reserved_by);
+	public static function getTransferAttempts(Post $Post, $sent_by = null, $cols = 'read_at,sent_at'){
+		if ($Post->reserved_by !== null)
+			DB::$instance->where('recipient_id', $Post->reserved_by);
 		if (!empty($sent_by))
-			$Database->where("data->>'user'", $sent_by);
-		return $Database
+			DB::$instance->where("data->>'user'", $sent_by);
+		return DB::$instance
 			->where('type', 'post-passon')
-			->where("data->>'type'", $type)
+			->where("data->>'type'", $Post->kind)
 			->where("data->>'id'", $Post->id)
 			->orderBy('sent_at', NEWEST_FIRST)
 			->get('notifications',null,$cols);
@@ -452,19 +466,17 @@ HTML;
 
 	/**
 	 * @param Post        $Post
-	 * @param string      $type
 	 * @param string      $reason
-	 * @param string|null $sent_by
-	 * @param string|null $reserved_by
+	 * @param User        $sent_by
+	 *
+	 * @throws \InvalidArgumentException
 	 */
-	public static function clearTransferAttempts(Post $Post, string $type, string $reason, string $sent_by = null, $reserved_by = null){
-		global $Database;
-
+	public static function clearTransferAttempts(Post $Post, string $reason, ?User $sent_by = null){
 		if (empty(self::TRANSFER_ATTEMPT_CLEAR_REASONS[$reason]))
-			throw new \Exception("Invalid clear reason $reason");
+			throw new \InvalidArgumentException("Invalid clear reason $reason");
 
-		$Database->where('read_at IS NULL');
-		$TransferAttempts = Posts::getTransferAttempts($Post, $type, $sent_by, $reserved_by, 'id,data');
+		DB::$instance->where('read_at IS NULL');
+		$TransferAttempts = Posts::getTransferAttempts($Post, $sent_by, 'id,data');
 		if (!empty($TransferAttempts)){
 			$SentFor = [];
 			foreach ($TransferAttempts as $n){
@@ -474,7 +486,7 @@ HTML;
 				if (!empty($SentFor[$data['user']][$reason]["{$data['type']}-{$data['id']}"]))
 					continue;
 
-				Notifications::send($data['user'], "post-pass$reason", [
+				Notification::send($data['user'], "post-pass$reason", [
 					'id' => $data['id'],
 					'type' => $data['type'],
 					'by' => Auth::$user->id,
@@ -491,20 +503,17 @@ HTML;
 	 * List ltem generator function for request & reservation generators
 	 *
 	 * @param Request|Reservation $Post
-	 * @param bool                $view_only     Only show the "View" button
-	 * @param bool                $cachebust_url Append a random string to the image URL to force a re-fetch
+	 * @param bool                $view_only          Only show the "View" button
+	 * @param bool                $cachebust_url      Append a random string to the image URL to force a re-fetch
+	 * @param bool                $deviation_promises Output promise elements in place of cached deviation data
 	 *
 	 * @return string
 	 * @throws \Exception
 	 */
-	public static function getLi($Post, bool $view_only = false, bool $cachebust_url = false):string {
-		$finished = !empty($Post->deviation_id);
-		$isRequest = $Post->isRequest;
-		$type = $isRequest ? 'request' : 'reservation';
-		$ID = "$type-{$Post->id}";
+	public static function getLi($Post, bool $view_only = false, bool $cachebust_url = false, bool $deviation_promises = false):string {
+		$ID = $Post->getID();
 		$alt = !empty($Post->label) ? CoreUtils::aposEncode($Post->label) : '';
-		$postedUnder = Episodes::getActual($Post->season, $Post->episode, true, true);
-		$postlink = $postedUnder->toURL()."#$ID";
+		$postlink = $Post->toLink();
 		$ImageLink = $view_only ? $postlink : $Post->fullsize;
 		$cachebust = $cachebust_url ? '?t='.time() : '';
 		$Image = "<div class='image screencap'><a href='$ImageLink'><img src='{$Post->preview}$cachebust' alt='$alt'></a></div>";
@@ -513,14 +522,14 @@ HTML;
 		$isStaff = Permission::sufficient('staff');
 
 		$posted_at = '<em class="post-date">';
-		if ($isRequest){
+		if ($Post->is_request){
 			$isRequester = Auth::$signed_in && $Post->requested_by === Auth::$user->id;
 			$isReserver = Auth::$signed_in && $Post->reserved_by === Auth::$user->id;
 			$overdue = Permission::sufficient('member') && $Post->isOverdue();
 
 			$posted_at .= "Requested $permalink";
 			if (Auth::$signed_in && ($isStaff || $isRequester || $isReserver))
-				$posted_at .= ' by '.($isRequester ? "<a href='/@".Auth::$user->name."'>You</a>" : Users::get($Post->requested_by)->getProfileLink());
+				$posted_at .= ' by '.($isRequester ? "<a href='/@".Auth::$user->name."'>You</a>" : User::find($Post->requested_by)->getProfileLink());
 		}
 		else {
 			$overdue = false;
@@ -528,50 +537,39 @@ HTML;
 		}
 		$posted_at .= '</em>';
 
-		$hide_reserved_status = !isset($Post->reserved_by) || ($overdue && !$isReserver && !$isStaff);
-		if (!empty($Post->reserved_by)){
-			$Post->Reserver = Users::get($Post->reserved_by);
-			$reserved_by = $overdue && !$isReserver ? ' by '.$Post->Reserver->getProfileLink() : '';
-			$reserved_at = $isRequest && !empty($Post->reserved_at) && !($hide_reserved_status && Permission::insufficient('staff'))
+		$hide_reserved_status = $Post->reserved_by === null || ($overdue && !$isReserver && !$isStaff);
+		if ($Post->reserved_by !== null){
+			$reserved_by = $overdue && !$isReserver ? ' by '.$Post->reserver->getProfileLink() : '';
+			$reserved_at = $Post->is_request && $Post->reserved_at !== null && !($hide_reserved_status && Permission::insufficient('staff'))
 				? "<em class='reserve-date'>Reserved <strong>".Time::tag($Post->reserved_at)."</strong>$reserved_by</em>"
 				: '';
-			if ($finished){
-				$approved = !empty($Post->lock);
-				$Deviation = DeviantArt::getCachedDeviation($Post->deviation_id,'fav.me',true);
-				if (empty($Deviation)){
-					$ImageLink = $view_only ? $postlink : "http://fav.me/{$Post->deviation_id}";
-					$Image = "<div class='image deviation error'><a href='$ImageLink'>Preview unavailable<br><small>Click to view</small></a></div>";
-				}
-				else {
-					$alt = CoreUtils::aposEncode($Deviation->title);
-					$ImageLink = $view_only ? $postlink : "http://fav.me/{$Deviation->id}";
-					$Image = "<div class='image deviation'><a href='$ImageLink'><img src='{$Deviation->preview}$cachebust' alt='$alt'>";
-					if ($approved)
-						$Image .= "<span class='typcn typcn-tick' title='This submission has been accepted into the group gallery'></span>";
-					$Image .= '</a></div>';
-				}
-				$finished_at = !empty($Post->finished_at) ? "<em class='finish-date'>Finished <strong>".Time::tag($Post->finished_at).'</strong></em>'
+			if ($Post->finished){
+				$approved = $Post->lock;
+				if ($deviation_promises)
+					$Image = "<div class='image deviation'><div class='post-deviation-promise' data-post='{$Post->getID()}' data-viewonly='$view_only'></div></div>";
+				else $Image = $Post->getFinishedImage($view_only, $cachebust);
+				$finished_at = !empty($Post->finished_at)
+					? "<em class='finish-date'>Finished <strong>".Time::tag($Post->finished_at).'</strong></em>'
 					: '';
 				$locked_at = '';
 				if ($approved){
-					global $Database;
-
-					$LogEntry = $Database->rawQuerySingle(
-						'SELECT l.timestamp'.($isStaff?', l.initiator':'')."
+					/** @var $LogEntry array */
+					$LogEntry = DB::$instance->querySingle(
+						"SELECT l.timestamp, l.initiator
 						FROM log__post_lock pl
-						LEFT JOIN log l ON l.reftype = 'post_lock' && l.refid = pl.entryid
-						WHERE type = ? && id = ?
+						LEFT JOIN log l ON l.reftype = 'post_lock' AND l.refid = pl.entryid
+						WHERE type = ? AND id = ?
 						ORDER BY pl.entryid ASC
-						LIMIT 1", [$type, $Post->id]
+						LIMIT 1", [$Post->kind, $Post->id]
 					);
-					$approverIsNotReserver = isset($LogEntry['initiator']) && $LogEntry['initiator'] !==  $Post->reserved_by;
+					$approverIsNotReserver = isset($LogEntry['initiator']) && $LogEntry['initiator'] !== $Post->reserved_by;
 					$approvedby = $isStaff && isset($LogEntry['initiator'])
 						? ' by '.(
 							$approverIsNotReserver
 							? (
-								$Post->requested_by !== null && $LogEntry['initiator'] === $Post->requested_by
+								$Post->is_request && $LogEntry['initiator'] === $Post->requested_by
 								? 'the requester'
-								: Users::get($LogEntry['initiator'])->getProfileLink()
+								: User::find($LogEntry['initiator'])->getProfileLink()
 							)
 							: 'the reserver'
 						)
@@ -592,11 +590,8 @@ HTML;
 		if ($Post->broken)
 			$Image .= self::BROKEN;
 
-		if ($hide_reserved_status)
-			$Post->Reserver = false;
-
 		$break = $Post->broken ? 'class="admin-break"' : '';
-		return "<li id='$ID' $break>$Image".self::_getPostActions($Post, $isRequest, $view_only ? $postlink : false).'</li>';
+		return "<li id='$ID' $break>$Image".self::_getPostActions($Post, $view_only ? $postlink : false, $hide_reserved_status).'</li>';
 	}
 
 	/**
@@ -661,15 +656,15 @@ HTML;
 	 * Generate HTML for post action buttons
 	 *
 	 * @param Request|Reservation $Post
-	 * @param bool                $isRequest
-	 * @param false|string        $view_only Only show the "View" button
-	 *                                       Contains HREF attribute of button if string
+	 * @param false|string        $view_only            Only show the "View" button
+     *                                                  Contains HREF attribute of button if string
+	 * @param bool                $hide_reserver_status
 	 *
 	 * @return string
 	 */
-	private static function _getPostActions($Post, bool $isRequest, $view_only):string {
-		$By = $Post->Reserver;
-		$requestedByUser = $isRequest && Auth::$signed_in && $Post->requested_by === Auth::$user->id;
+	private static function _getPostActions($Post, $view_only, bool $hide_reserver_status = true):string {
+		$By = $hide_reserver_status ? false : $Post->reserver;
+		$requestedByUser = $Post->is_request && Auth::$signed_in && $Post->requested_by === Auth::$user->id;
 		$isNotReserved = empty($By);
 		$sameUser = Auth::$signed_in && $Post->reserved_by === Auth::$user->id;
 		$CanEdit = (empty($Post->lock) && Permission::sufficient('staff')) || Permission::sufficient('developer') || ($requestedByUser && $isNotReserved);
@@ -677,9 +672,8 @@ HTML;
 
 		$HTML = self::getPostReserveButton($Post, $By, $view_only);
 		if (!empty($Post->reserved_by)){
-			$finished = !empty($Post->deviation_id);
 			$staffOrSameUser = ($sameUser && Permission::sufficient('member')) || Permission::sufficient('staff');
-			if (!$finished){
+			if (!$Post->finished){
 				if (!$sameUser && Permission::sufficient('member') && $Post->isTransferable() && !$Post->isOverdue())
 					$Buttons[] = ['user-add darkblue pls-transfer', 'Take on'];
 				if ($staffOrSameUser){
@@ -687,7 +681,7 @@ HTML;
 					$Buttons[] = ['attachment green finish', ($sameUser ? "I'm" : 'Mark as').' finished'];
 				}
 			}
-			if ($finished && empty($Post->lock)){
+			if ($Post->finished && !$Post->lock){
 				if (Permission::sufficient('staff'))
 					$Buttons[] = [(empty($Post->preview)?'trash delete-only red':'media-eject orange').' unfinish', empty($Post->preview)?'Delete':'Unfinish'];
 				if ($staffOrSameUser)
@@ -731,8 +725,7 @@ HTML;
 	 * @return array
 	 */
 	public static function approve($type, $id, $notifyUserID = null){
-		global $Database;
-		if (!$Database->where('id', $id)->update("{$type}s", ['lock' => true]))
+		if (!DB::$instance->where('id', $id)->update("{$type}s", ['lock' => true]))
 			Response::dbError();
 
 		$postdata = [
@@ -741,7 +734,7 @@ HTML;
 		];
 		Logs::logAction('post_lock',$postdata);
 		if (!empty($notifyUserID))
-			Notifications::send($notifyUserID, 'post-approved', $postdata);
+			Notification::send($notifyUserID, 'post-approved', $postdata);
 
 		return $postdata;
 	}
@@ -749,11 +742,11 @@ HTML;
 	public static function checkReserveAs(&$update){
 		if (Permission::sufficient('developer')){
 			$reserve_as = Posts::validatePostAs();
-			if (isset($reserve_as)){
+			if ($reserve_as !== null){
 				$User = Users::get($reserve_as, 'name');
 				if (empty($User))
 					Response::fail('User to reserve as does not exist');
-				if (!Permission::sufficient('member', $User->role) && !isset($_POST['screwit']))
+				if (!isset($_POST['screwit']) && !Permission::sufficient('member', $User->role))
 					Response::fail('The specified user does not have permission to reserve posts, continue anyway?', ['retry' => true]);
 
 				$update['reserved_by'] = $User->id;

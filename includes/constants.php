@@ -40,7 +40,6 @@ define('NOWRAP', false);
 define('WRAP', !NOWRAP);
 define('ONLY_REQUESTS', 1); // Posts::Get
 define('ONLY_RESERVATIONS', 2); // Posts::Get
-define('CURRENT',true); // User::RenderSessionLi
 define('RETURN_ARRANGED', true); // Posts::GetRequestsSection & Posts::GetReservationsSection
 define('IS_REQUEST', true); // Posts::GetRequestsSection
 define('WITH_GIT_INFO', true); // CoreUtils::GetFooter
@@ -89,8 +88,8 @@ $DISCORD_NICK_REGEX = new RegExp('^(?:.*\(([a-zA-Z\d-]{1,20})\)|([a-zA-Z\d-]{1,2
 # General
 define('PRINTABLE_ASCII_PATTERN','^[ -~\n]+$');
 define('INVERSE_PRINTABLE_ASCII_PATTERN','[^ -~\n\t]');
-define('NEWEST_FIRST', 'DESC');
-define('OLDEST_FIRST', 'ASC');
+define('NEWEST_FIRST', 'desc');
+define('OLDEST_FIRST', 'asc');
 $REWRITE_REGEX = new RegExp('^/(?:\s*?)@?([\w\-]*)(?:/([\w\.\-]+(?:/[\w\.\-]+)*)?)?/?[^\w\.\-]*(?:\.php)?$');
 
 // Color Guide regular expression \\

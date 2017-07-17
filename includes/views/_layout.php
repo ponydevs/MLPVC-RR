@@ -1,11 +1,11 @@
 <?php
-use App\Appearances;
+
 use App\Auth;
 use App\DeviantArt;
 use App\JSON;
+use App\Models\Appearance;
 use App\Models\User;
 use App\Permission;
-use App\Users;
 use App\CoreUtils;
 use App\View;
 
@@ -13,6 +13,7 @@ use App\View;
 /** @var $Owner User */
 /** @var $User User */
 /** @var $scope array */
+/** @var $Appearance Appearance */
 
 $Title = (isset($title)?$title.' - ':'').SITE_TITLE;
 $Description = 'Handling requests, reservations & the Color Guide since 2015';
@@ -21,21 +22,21 @@ $ThumbImage = '/img/logo.png';
 switch ($do ?? null){
 	case 'cg':
 		if (!empty($Appearance)){
-			$sprite = Appearances::getSpriteURL($Appearance['id']);
+			$sprite = $Appearance->getSpriteURL();
 			if ($sprite)
 				$ThumbImage = $sprite;
 
-			$Description = 'Show accurate colors for "'.Appearances::processLabel($Appearance['label']).'" from the MLP-VectorClub’s Official Color Guide';
+			$Description = 'Show accurate colors for "'.$Appearance->processLabel().'" from the MLP-VectorClub’s Official Color Guide';
 		}
 	break;
 	case 'u':
 		if (!empty($Appearance)){
-			$sprite = Appearances::getSpriteURL($Appearance['id']);
+			$sprite = $Appearance->getSpriteURL();
 			if ($sprite)
 				$ThumbImage = $sprite;
 			else $ThumbImage = $Owner->avatar_url;
 
-			$Description = 'Colors for "'.Appearances::processLabel($Appearance['label']).'" from '.CoreUtils::posess($Owner->name).' Personal Color Guide on the the MLP-VectorClub’s website';
+			$Description = 'Colors for "'.$Appearance->processLabel().'" from '.CoreUtils::posess($Owner->name).' Personal Color Guide on the the MLP-VectorClub’s website';
 		}
 		else if (!empty($User)){
 			$ThumbImage = $User->avatar_url;
@@ -45,8 +46,9 @@ switch ($do ?? null){
 	break;
 	case 's':
 		if (!empty($LinkedPost)){
+			/** @var $LinkedPost \App\Models\Post */
 			$_oldTitle = $Title;
-			if (!$LinkedPost->isFinished)
+			if (!$LinkedPost->finished)
 				$ThumbImage = $LinkedPost->preview;
 			else {
 				$finishdeviation = DeviantArt::getCachedDeviation($LinkedPost->deviation_id);
@@ -54,12 +56,9 @@ switch ($do ?? null){
 					$ThumbImage  = $finishdeviation->preview;
 			}
 			$Title = $LinkedPost->label;
-			if ($LinkedPost->isRequest)
+			if ($LinkedPost->is_request)
 				$Description = 'A request';
-			else {
-				$_user = Users::get($LinkedPost->reserved_by,'id','name');
-				$Description = 'A reservation'.(!empty($_user->name) ? " by {$_user->name}" : '');
-			}
+			else $Description = "A reservation by {$LinkedPost->reserver->name}";
 			$Description .= ' on the MLP-VectorClub’s website';
 		}
 	break;

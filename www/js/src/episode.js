@@ -205,12 +205,7 @@ DocReady.push(function(){
 	};
 	$.fn.rebindHandlers = function(isLi){
 		let $collection = isLi ? this : this.find('li[id]');
-		$collection.each(function(){
-			let $li = $(this),
-				ident = $._getLiTypeId($li);
-
-			$li.trigger('bind-more-handlers', [ident.id, ident.type]);
-		});
+		$collection.trigger('bind-more-handlers');
 		this.closest('section').rebindFluidbox();
 		return this;
 	};
@@ -473,40 +468,44 @@ DocReady.push(function(){
 		});
 	};
 
-	let load = ['requests','reservations'],
-		done = 0,
-		loading = {},
-		loadSections = function(_, force){
-			$.each(load, function(_, el){
-				(function(el){
-					let $section = $('#'+el);
-					if (loading[el] === true || (!$.isInViewport($section.get(0)) && !force))
-						return;
+	$.each(['requests','reservations'], function(_, el){
+		$('#'+el)
+			.trigger('bind-more-handlers')
+			.find('.post-form').attr('data-type',el).formBind();
+	});
+	directLinkHandler(true);
 
-					loading[el] = true;
-					console.log('[DYN-POSTS] Loading %s section (force=%s)',el,force);
+	const fulfillPromises = function(){
+		$('.post-deviation-promise:not(.loading)').each(function(){
+			const $this = $(this);
+			if (!$this.isInViewport())
+				return;
 
-					$section.trigger('pls-update', [function(){
-						load.splice(load.indexOf(el), 1);
-						console.log('[DYN-POSTS] Loaded %s section',el);
-						if (++done === 2){
-							$w.off('scroll', loadSections);
-							directLinkHandler(true);
-						}
-					}, true, true]);
-				})(el);
-			});
-		};
-	$w.on('scroll touchmove', $.throttle(250, loadSections));
-	loadSections();
+			const
+				postid = $this.attr('data-post').replace('-','/'),
+				viewonly = $this.attr('data-viewonly');
+			$this.addClass('loading');
+
+			$.get(`/post/lazyload/${postid}`,{viewonly},$.mkAjaxHandler(function(){
+				if (!this.status) return $.Dialog.fail('Cannot load '+postid.replace('/',' #'), this.message);
+
+				$.loadImages(this.html).then(function($el){
+					$this.closest('.image').replaceWith($el);
+				});
+			}));
+		});
+	};
+	window._EpisodeScroll = $.throttle(400, function(){
+		fulfillPromises();
+	});
+	$w.on('scroll mousewheel',window._EpisodeScroll);
+	window._EpisodeScroll();
 
 	let postHashRegex = /^#(request|reservation)-\d+$/,
 		showdialog = location.hash.length > 1 && postHashRegex.test(location.hash);
 
-	if (showdialog){
+	if (showdialog)
 		$.Dialog.wait('Scroll post into view', 'Preloading all posts, please wait');
-		loadSections(null, true);
-	}
 
 	let reloading = {};
 	$.fn.reloadLi = function(log = true, callback = undefined){
@@ -532,7 +531,6 @@ DocReady.push(function(){
 				console.log(`[POST-FIX] Hid (broken) ${type} #${id}`);
 				return;
 			}
-
 
 			const $newli = $(this.li);
 			$li = $('#'+$newli.attr('id'));
@@ -692,4 +690,6 @@ DocReady.push(function(){
 	window.EpisodePage = void 0;
 	$.WS.recvPostUpdates(false);
 	delete $.fn.reloadLi;
+	$w.off('scroll mousewheel',window._EpisodeScroll);
+	delete window._EpisodeScroll;
 });

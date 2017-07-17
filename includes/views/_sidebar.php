@@ -1,4 +1,4 @@
-<?php
+<?php // DO NOT USE SHORT OPEN TAGS IN THIS FILE - THIS IS PART OF THE PAGE THAT DISPLAYS THE WARNING ABOUT THE OPTION BEING DISABLED
 use App\Auth;
 use App\CoreUtils;
 use App\Episodes;
@@ -6,7 +6,8 @@ use App\Notifications;
 use App\UserPrefs;
 /** @var $do string */
 /** @var $scope array */
-/** @var $view \App\View */ ?>
+/** @var $view \App\View */
+/** @var $CurrentEpisode \App\Models\Episode */ ?>
 	<div class='mobile-nav'>
 		<nav><ul><?=CoreUtils::getNavigationHTML(isset($view) && $view->name === 'fatalerr', $scope)?></ul></nav>
 	</div>
@@ -14,31 +15,23 @@ use App\UserPrefs;
 		<?php
 	if (Auth::$signed_in)
 		echo Auth::$user->getAvatarWrap();
-	else echo (new \App\Models\User([
+	else echo (new \App\Models\FailsafeUser([
 		'name' => 'Guest',
 		'role' => 'guest',
-		'rolelabel' => 'Curious Pony',
 		'avatar_url' => GUEST_AVATAR
-	]))->getAvatarWrap()?>
+	]))->getAvatarWrap(); ?>
 		<div class="user-data">
 			<span class="user-name"><?=Auth::$signed_in?Auth::$user->getProfileLink(App\Models\User::LINKFORMAT_TEXT):'Curious Pony'?></span>
 			<span class="user-role"><?=Auth::$signed_in?Auth::$user->rolelabel:'Guest'?></span>
 		</div>
 	</div>
 <?php
-	if (!empty($Database)){
+	if (!defined('FATAL_ERROR')){
 		if (Auth::$signed_in){
-			$Notifications = Notifications::get(null, Notifications::UNREAD_ONLY); ?>
+			$Notifications = Notifications::get(Notifications::UNREAD_ONLY); ?>
 	<section class="notifications"<?=empty($Notifications)?' style="display:none"':''?>>
 		<h2>Unread notifications</h2>
-<?php
-		try {
-			echo Notifications::getHTML($Notifications);
-		}
-		catch(Throwable $e){
-			error_log('Exception caught when rendering notifications: '.$e->getMessage()."\n".$e->getTraceAsString());
-			echo '<ul class="notif-list"><li>An error prevented the notifications from appearing. If this persists, <a class="send-feedback">let us know</a>.</li></ul>';
-		} ?>
+		<?= Notifications::getHTML($Notifications) ?>
 	</section>
 <?php   } ?>
 	<section class="<?=Auth::$signed_in?'welcome':'login'?>">
@@ -71,7 +64,7 @@ use App\UserPrefs;
 	</section>
 <?php   if ($view->name === 'episode' && !empty($CurrentEpisode)){ ?>
 	<section id="voting">
-		<h2><?=$CurrentEpisode->isMovie?'Movie':'Episode'?> rating</h2>
+		<h2><?=$CurrentEpisode->is_movie?'Movie':'Episode'?> rating</h2>
 		<?=Episodes::getSidebarVoting($CurrentEpisode)?>
 	</section>
 <?php	}
@@ -83,7 +76,7 @@ use App\UserPrefs;
 	</section>
 <?php
 		}
-		echo Episodes::getSidebarUpcoming();
+		echo CoreUtils::getSidebarUpcoming();
 	}
 	else { ?>
 

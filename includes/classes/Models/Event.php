@@ -2,32 +2,42 @@
 
 namespace App\Models;
 
+use ActiveRecord\Model;
+use ActiveRecord\DateTime;
 use App\CoreUtils;
+use App\DB;
 use App\DeviantArt;
 use App\Permission;
 use App\UserPrefs;
-use App\Users;
 
-class Event extends AbstractFillable {
-	/** @var int */
-	public
-		$id,
-		$max_entries;
-	/** @var string */
-	public
-		$name,
-		$type,
-		$entry_role,
-		$vote_role,
-		$starts_at,
-		$ends_at,
-		$added_by,
-		$added_at,
-		$desc_src,
-		$desc_rend,
-		$result_favme,
-		$finalized_at,
-		$finalized_by;
+/**
+ * @property int          $id
+ * @property int          $max_entries
+ * @property string       $name
+ * @property string       $type
+ * @property string       $entry_role
+ * @property string       $vote_role
+ * @property DateTime     $starts_at
+ * @property DateTime     $ends_at
+ * @property string       $added_by
+ * @property DateTime     $added_at
+ * @property string       $desc_src
+ * @property string       $desc_rend
+ * @property string       $result_favme
+ * @property string       $finalized_by
+ * @property DateTime     $finalized_at
+ * @property EventEntry[] $entries
+ * @property User         $submitter
+ * @property User         $finalizer
+ */
+class Event extends Model {
+	public static $has_many = [
+		['entries', 'class_name' => 'EventEntry', 'order' => 'score desc, submitted_at asc'],
+	];
+	public static $belongs_to = [
+		['submitter', 'class' => 'User', 'foreign_key' => 'submitted_by'],
+		['finalizer', 'class' => 'User', 'foreign_key' => 'finalized_by'],
+	];
 
 	const EVENT_TYPES = [
 		'collab' => 'Collaboration',
@@ -43,21 +53,14 @@ class Event extends AbstractFillable {
 		'spec_ponyscape' => 'Ponyscape Users',
 	];
 
-	/** @param array|object */
-	public function __construct($iter = null){
-		parent::__construct($this, $iter);
-	}
-
 	/**
-	 * @param int $id
-	 *
-	 * @return Event|null
+	 * @return Event[]
 	 */
-	public static function get(int $id):?Event {
-		global $Database;
-
-		/** @noinspection PhpIncompatibleReturnTypeInspection */
-		return $Database->where('id', $id)->getOne('events');
+	public static function upcoming(){
+		return DB::$instance->where('starts_at > NOW()')
+			->orWhere('ends_at > NOW()')
+			->orderBy('starts_at')
+			->get('events');
 	}
 
 	public function toURL():string {
@@ -108,20 +111,11 @@ class Event extends AbstractFillable {
 		return $this->type === 'collab' ? !empty($this->result_favme) : $this->hasEnded();
 	}
 
-	/**
-	 * @return \App\Models\EventEntry[]
-	 */
-	public function getEntries(){
-		global $Database;
-
-		return $Database->where('eventid', $this->id)->orderBy('score','DESC')->orderBy('submitted_at','ASC')->get('events__entries');
-	}
-
-	public function getEntriesHTML(bool $wrap = WRAP):string {
+	public function getEntriesHTML(bool $lazyload = false, bool $wrap = WRAP):string {
 		$HTML = '';
-		$Entries = $this->getEntries();
+		$Entries = $this->entries;
 		foreach ($Entries as $entry)
-			$HTML .= $entry->toListItemHTML($this);
+			$HTML .= $entry->toListItemHTML($this, $lazyload);
 		return $wrap ? "<ul id='event-entries'>$HTML</ul>" : $HTML;
 	}
 
@@ -131,11 +125,11 @@ class Event extends AbstractFillable {
 		if ($this->type === 'collab')
 			$HTML = '<div id="final-image">'.DeviantArt::getCachedDeviation($this->result_favme)->toLinkWithPreview().'</div>';
 		else {
-			global $Database;
+
 			/** @var $HighestScoringEntries EventEntry[] */
-			$HighestScoringEntries = $Database->setClass(EventEntry::class)->rawQuery(
+			$HighestScoringEntries = DB::$instance->setModel('EventEntry')->query(
 				'SELECT * FROM events__entries
-				WHERE eventid = ? && score > 0 && score = (SELECT MAX(score) FROM events__entries)
+				WHERE event_id = ? AND score > 0 AND score = (SELECT MAX(score) FROM events__entries)
 				ORDER BY submitted_at ASC',[$this->id]);
 
 			if (empty($HighestScoringEntries))
@@ -144,8 +138,8 @@ class Event extends AbstractFillable {
 				$HTML .= '<p>The event has concluded with '.CoreUtils::makePlural('winner',count($HighestScoringEntries),PREPEND_NUMBER).'.</p>';
 				foreach ($HighestScoringEntries as $entry){
 					$title = CoreUtils::escapeHTML($entry->title);
-					$preview = $entry->prev_full !== null ? "<a href='{$entry->prev_src}'><img src='{$entry->prev_thumb}' alt=''><span class='title'>$title</span></a>" : "<span class='title'>$title</span>";
-					$by = '<div>'.Users::get($entry->submitted_by)->getProfileLink(User::LINKFORMAT_FULL).'</div>';
+					$preview = isset($entry->prev_full) ? "<a href='{$entry->prev_src}'><img src='{$entry->prev_thumb}' alt=''><span class='title'>$title</span></a>" : "<span class='title'>$title</span>";
+					$by = '<div>'.User::find($entry->submitted_by)->getProfileLink(User::LINKFORMAT_FULL).'</div>';
 					$HTML .= "<div class='winning-entry'>$preview$by</div>";
 				}
 			}

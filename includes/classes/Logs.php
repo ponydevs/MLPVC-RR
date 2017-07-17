@@ -2,6 +2,9 @@
 
 namespace App;
 
+use ActiveRecord\RecordNotFound;
+use App\Models\Appearance;
+use App\Models\ColorGroup;
 use App\Models\Episode;
 use App\Models\EpisodeVideo;
 use App\Models\Request;
@@ -16,9 +19,9 @@ class Logs {
 		'rolechange' => 'User group change',
 		'userfetch' => 'Fetch user details',
 		'banish' => 'User banished',
-		'un-banish' => 'User un-banished',
+		'unbanish' => 'User unbanished',
 		'post_lock' => 'Post approved',
-		'color_modify' => 'Major appearance update',
+		'major_changes' => 'Major appearance update',
 		'req_delete' => 'Request deleted',
 		'img_update' => 'Post image updated',
 		'res_overtake' => 'Overtook post reservation',
@@ -39,15 +42,16 @@ class Logs {
 
 	/**
 	 * Logs a specific set of data (action) in the table belonging to the specified type
+	 * TODO Redo to use ActiveRecord in part or exclusively
 	 *
 	 * @param string $reftype Log entry type
 	 * @param array  $data    Data to be inserted
 	 * @param bool   $forcews Force initiator to be null
 	 *
 	 * @return bool
+	 * @throws \RuntimeException
 	 */
 	public static function logAction($reftype, $data = null, $forcews = false){
-		global $Database;
 		$central = ['ip' => $_SERVER['REMOTE_ADDR']];
 
 		if (isset($data)){
@@ -55,9 +59,9 @@ class Logs {
 				if (is_bool($v))
 					$data[$k] = $v ? 1 : 0;
 
-			$refid = $Database->insert("log__$reftype",$data,'entryid');
+			$refid = DB::$instance->insert("log__$reftype",$data,'entryid');
 			if (!$refid)
-				throw new \Exception('Logging failed: '.$Database->getLastError());
+				throw new \RuntimeException('Logging failed: '.DB::$instance->getLastError());
 		}
 
 		$central['reftype'] = $reftype;
@@ -67,7 +71,7 @@ class Logs {
 
 		if (Auth::$signed_in && !$forcews)
 			$central['initiator'] = Auth::$user->id;
-		return (bool) $Database->insert('log',$central);
+		return (bool) DB::$instance->insert('log',$central);
 	}
 
 	public static $ACTIONS = [
@@ -87,16 +91,16 @@ class Logs {
 	 * @param array $data      Data to process (sub-log entry)
 	 *
 	 * @return array
+	 * @throws \App\Exceptions\JSONParseException
 	 */
 	public static function formatEntryDetails($MainEntry, $data){
-		global $Database, $Database;
 		$details = [];
 
 		$reftype = $MainEntry['reftype'];
 		switch ($reftype){
 			case 'rolechange':
 				/** @var $target User */
-				$target =  $Database->where('id',$data['target'])->getOne('users');
+				$target =  DB::$instance->where('id',$data['target'])->getOne('users');
 
 				$details = [
 					['Target user', $target->getProfileLink()],
@@ -106,7 +110,13 @@ class Logs {
 			break;
 			case 'episodes':
 				$details[] = ['Action', self::$ACTIONS[$data['action']]];
-				$details[] = ['Name', (new Episode($data))->formatTitle()];
+				$details[] = ['Name', (new Episode([
+					'season' => $data['season'],
+					'episode' => $data['episode'],
+					'title' => $data['title'],
+					'twoparter' => $data['twoparter'],
+					'airs' => $data['airs'],
+				]))->formatTitle()];
 				if ($data['season'] === 0)
 					$details[] = ['Overall', "#{$data['episode']}"];
 				if (!empty($data['airs']))
@@ -119,7 +129,7 @@ class Logs {
 				if (!empty($EpData)){
 					$Episode = Episodes::getActual($EpData['season'], $EpData['episode'], Episodes::ALLOW_MOVIES);
 					if (!empty($Episode))
-						$link = "<a href='".$Episode->toURL()."'>".$Episode->formatTitle(AS_ARRAY, 'id').'</a>';
+						$link = "<a href='".$Episode->toURL()."'>".$Episode->getID().'</a>';
 				}
 				$details[] = ['Episode', $link];
 				if (empty($Episode))
@@ -143,20 +153,20 @@ class Logs {
 				}
 			break;
 			case 'userfetch':
-				$details[] = ['User', Users::get($data['userid'])->getProfileLink()];
+				$details[] = ['User', User::find($data['userid'])->getProfileLink()];
 			break;
 			case 'banish':
-			case 'un-banish':
-				$details[] = ['User', Users::get($data['target'])->getProfileLink()];
+			case 'unbanish':
+				$details[] = ['User', User::find($data['target_id'])->getProfileLink()];
 				$details[] = ['Reason', CoreUtils::escapeHTML($data['reason'])];
 			break;
 			case 'post_lock':
 				/** @var $Post Request|Reservation */
-				$Post = $Database->where('id', $data['id'])->getOne("{$data['type']}s");
+				$Post = DB::$instance->where('id', $data['id'])->getOne("{$data['type']}s");
 				self::_genericPostInfo($Post, $data, $details);
 			break;
-			case 'color_modify':
-				$details[] = ['Appearance', self::_getAppearanceLink($data['ponyid'])];
+			case 'major_changes':
+				$details[] = ['Appearance', self::_getAppearanceLink($data['appearance_id'])];
 				$details[] = ['Reason', CoreUtils::escapeHTML($data['reason'])];
 			break;
 			case 'req_delete':
@@ -170,11 +180,11 @@ class Logs {
 				$details[] = ['Type', $typeNames[$data['type']]];
 				$IDstr = "S{$data['season']}E{$data['episode']}";
 				$details[] = ['Episode', "<a href='/episode/$IDstr'>$IDstr</a>"];
-				$details[] = ['Posted', Time::tag($data['posted'], Time::TAG_EXTENDED, Time::TAG_STATIC_DYNTIME)];
+				$details[] = ['Requested on', Time::tag($data['requested_at'], Time::TAG_EXTENDED, Time::TAG_STATIC_DYNTIME)];
 				if (!empty($data['requested_by']))
-					$details[] = ['Requested by', Users::get($data['requested_by'])->getProfileLink()];
+					$details[] = ['Requested by', User::find($data['requested_by'])->getProfileLink()];
 				if (!empty($data['reserved_by']))
-					$details[] = ['Reserved by', Users::get($data['reserved_by'])->getProfileLink()];
+					$details[] = ['Reserved by', User::find($data['reserved_by'])->getProfileLink()];
 				$details[] = ['Finished', !empty($data['deviation_id'])];
 				if (!empty($data['deviation_id'])){
 					$details[] = ['Deviation', self::_link("http://fav.me/{$data['deviation_id']}")];
@@ -183,7 +193,7 @@ class Logs {
 			break;
 			case 'img_update':
 				/** @var $Post Request|Reservation */
-				$Post = $Database->where('id', $data['id'])->getOne("{$data['thing']}s");
+				$Post = DB::$instance->where('id', $data['id'])->getOne("{$data['thing']}s");
 				$data['type'] = $data['thing'];
 				self::_genericPostInfo($Post, $data, $details);
 				$details[] = ['Old image', "<a href='{$data['oldfullsize']}' target='_blank' rel='noopener'>Full size</a><div><img src='{$data['oldpreview']}'></div>"];
@@ -191,9 +201,9 @@ class Logs {
 			break;
 			case 'res_overtake':
 				/** @var $Post Request|Reservation */
-				$Post = $Database->where('id', $data['id'])->getOne("{$data['type']}s");
+				$Post = DB::$instance->where('id', $data['id'])->getOne("{$data['type']}s");
 				self::_genericPostInfo($Post, $data, $details);
-				$details[] = ['Previous reserver', Users::get($data['reserved_by'])->getProfileLink()];
+				$details[] = ['Previous reserver', User::find($data['reserved_by'])->getProfileLink()];
 				$details[] = ['Previously reserved at', Time::tag($data['reserved_at'], Time::TAG_EXTENDED, Time::TAG_STATIC_DYNTIME)];
 
 				$diff = Time::difference(strtotime($MainEntry['timestamp']), strtotime($data['reserved_at']));
@@ -226,18 +236,18 @@ class Logs {
 			break;
 			case 'res_transfer':
 				/** @var $Post Request|Reservation */
-				$Post = $Database->where('id', $data['id'])->getOne("{$data['type']}s");
+				$Post = DB::$instance->where('id', $data['id'])->getOne("{$data['type']}s");
 				self::_genericPostInfo($Post, $data, $details);
-				$details[] = ['New reserver', Users::get($data['to'])->getProfileLink()];
+				$details[] = ['New reserver', User::find($data['to'])->getProfileLink()];
 			break;
 			case 'cg_modify':
-				$details[] = ['Appearance', self::_getAppearanceLink($data['ponyid'])];
-				$CG = $Database->where('groupid', $data['groupid'])->getOne('colorgroups');
+				$details[] = ['Appearance', self::_getAppearanceLink($data['appearance_id'])];
+				$CG = ColorGroup::find($data['group_id']);
 				if (empty($CG)){
-					$details[] = ['Color group ID', '#'.$data['groupid']];
+					$details[] = ['Color group ID', '#'.$data['group_id']];
 					$details[] = ['Still exists', false];
 				}
-				else $details[] = ['Group', "{$CG['label']} (#{$data['groupid']})"];
+				else $details[] = ['Group', "{$CG->label} (#{$data['group_id']})"];
 				if (isset($data['newlabel']))
 					$details[] = ['Label', self::diff($data['oldlabel'] ?? '', $data['newlabel'])];
 				if (isset($data['newcolors']))
@@ -245,18 +255,18 @@ class Logs {
 			break;
 			case 'cgs':
 				$details[] = ['Action', self::$ACTIONS[$data['action']]];
-				$details[] = ['Color group ID', '#'.$data['groupid']];
+				$details[] = ['Color group ID', '#'.$data['group_id']];
 				$details[] = ['Label', $data['label']];
-				$details[] = ['Appearance', self::_getAppearanceLink($data['ponyid'])];
+				$details[] = ['Appearance', self::_getAppearanceLink($data['appearance_id'])];
 				if (isset($data['order']))
 					$details[] = ['Ordering index', $data['order']];
 			break;
 			case 'cg_order':
-				$details[] = ['Appearance', self::_getAppearanceLink($data['ponyid'])];
+				$details[] = ['Appearance', self::_getAppearanceLink($data['appearance_id'])];
 				$details[] = ['Order', self::diff($data['oldgroups'], $data['newgroups'], 'block', new FineDiff\Granularity\Paragraph())];
 			break;
 			case 'appearance_modify':
-				$details[] = ['Appearance', self::_getAppearanceLink($data['ponyid'])];
+				$details[] = ['Appearance', self::_getAppearanceLink($data['appearance_id'])];
 				$changes = JSON::decode($data['changes']);
 				$newOld = self::_arrangeNewOld($changes);
 
@@ -289,7 +299,7 @@ class Logs {
 					$details[] = ['New Custom CM Preview', null];
 			break;
 			case 'da_namechange':
-				$User = Users::get($data['id'], 'id', 'name');
+				$User = User::find($data['user_id']);
 				$newIsCurrent = $User->name === $data['new'];
 				$details[] = ['User', $User->getProfileLink()];
 				if ($newIsCurrent)
@@ -308,7 +318,7 @@ class Logs {
 				$details[] = ['Link', "<a href='$url'>$url</a>"];
 			break;
 			case 'cm_modify':
-				$details[] = ['Appearance', self::_getAppearanceLink($data['ponyid'])];
+				$details[] = ['Appearance', self::_getAppearanceLink($data['appearance_id'])];
 
 				$keys = [];
 				if (isset($data['olddata'])){
@@ -342,7 +352,7 @@ class Logs {
 			case 'post_break':
 			case 'post_fix':
 				/** @var $Post Request|Reservation */
-				$Post = $Database->where('id', $data['id'])->getOne("{$data['type']}s");
+				$Post = DB::$instance->where('id', $data['id'])->getOne("{$data['type']}s");
 				self::_genericPostInfo($Post, $data, $details);
 			break;
 			default:
@@ -370,13 +380,13 @@ class Logs {
 		if (empty($Post))
 			$details[] = ['<span class="typcn typcn-info-large"></span> No longer exists', self::SKIP_VALUE, self::KEYCOLOR_INFO];
 		else {
-			$EpID = (new Episode($Post))->formatTitle(AS_ARRAY,'id');
+			$EpID = $Post->ep->getID();
 			$EpData = Episode::parseID($EpID);
 			$Episode = Episodes::getActual($EpData['season'], $EpData['episode'], Episodes::ALLOW_MOVIES);
 			$details[] = ['Posted under', "<a href='".$Episode->toURL()."'>$EpID</a>"];
 			$details[] = [
 				($data['type'] === 'request'?'Requested':'Reserved').' by',
-				Users::get(
+				User::find(
 					$data['type'] === 'request'
 					? $Post->requested_by
 					: $Post->reserved_by
@@ -384,27 +394,28 @@ class Logs {
 			];
 			if ($data['type'] === 'request'){
 				if (!empty($Post->reserved_by))
-					$details[] = ['Reserved by', Users::get($Post->reserved_by)->getProfileLink()];
+					$details[] = ['Reserved by', User::find($Post->reserved_by)->getProfileLink()];
 				else $details[] = ['Reserved', false];
 			}
 		}
 	}
 
-	private static function _getAppearanceLink($id){
-		global $Database;
-
+	/**
+	 * @param int $id
+	 *
+	 * @return string
+	 */
+	private static function _getAppearanceLink(int $id):string {
 		$ID = "#$id";
-		$Appearance = $Database->where('id', $id)->getOne('appearances');
-		if (!empty($Appearance)){
-			$EQGUrl = $Appearance['ishuman'] ? '/eqg' : '';
-			$PCG = '';
-			if ($Appearance['owner']){
-				$Owner = Users::get($Appearance['owner']);
-				if ($Owner)
-					$PCG = "/@{$Owner->name}";
-			}
-			$ID = "<a href='$PCG/cg/{$EQGUrl}v/$id'>".htmlspecialchars($Appearance['label'])."</a> ($ID)";
+		try {
+			$Appearance = Appearance::find($id);
 		}
+		catch(RecordNotFound $e){
+			return $ID;
+		}
+
+		if (!empty($Appearance))
+			$ID = "<a href='{$Appearance->getLink()}'>".CoreUtils::escapeHTML($Appearance->label)."</a> ($ID)";
 
 		return $ID;
 	}
@@ -436,12 +447,10 @@ class Logs {
 	 * @return string
 	 */
 	public static function getTbody($LogItems):string {
-		global $Database;
-
 		$HTML = '';
 		if (count($LogItems) > 0) foreach ($LogItems as $item){
 			if (!empty($item['initiator'])){
-				$inituser = Users::get($item['initiator'],'id');
+				$inituser = User::find($item['initiator']);
 				if (empty($inituser))
 					$inituser = 'Deleted user';
 				else $inituser = $inituser->getProfileLink();

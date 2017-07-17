@@ -1,4 +1,4 @@
-/* global DocReady */
+/* global DocReady,$w */
 DocReady.push(function(){
 	'use strict';
 
@@ -180,6 +180,31 @@ DocReady.push(function(){
 
 	if (window.EventType === 'contest')
 		$.WS.recvEntryUpdates(true);
+
+	function fulfill_promise(){
+		$('.entry-deviation-promise').each(function(){
+			const $this = $(this);
+			if (!$this.isInViewport())
+				return;
+
+			const entryid = $this.attr('data-entryid');
+
+			$.get('/event/entry/lazyload/'+entryid,$.mkAjaxHandler(function(){
+				if (!this.status) return $.Dialog.fail('Failed to load preview for entry #'+entryid, this.message);
+
+				$.loadImages(this.html).then(function($el){
+					const $parent = $this.closest('li[id]');
+					$this.replaceWith($el);
+					$parent.rebindFluidbox();
+				});
+			}));
+		});
+	}
+	window._EventScroll = $.throttle(400,function(){
+		fulfill_promise();
+	});
+	$w.on('scroll mousewheel', window._EventScroll);
+	fulfill_promise();
 },function(){
 	'use strict';
 
@@ -187,4 +212,5 @@ DocReady.push(function(){
 	delete $.fn.rebindFluidbox;
 	if (window.EventType === 'contest')
 		$.WS.recvEntryUpdates(false);
+	$w.off('scroll mousewheel', window._EventScroll);
 });

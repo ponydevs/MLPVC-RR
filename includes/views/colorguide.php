@@ -21,7 +21,7 @@ use App\Tags;
 		<p>Editing tags or colors from the guide page does not work on mobile devices. If you want to edit those, please go the appearance’s page.</p>
 	</div>
 <?  }
-	$Universal = $Database->where('id',0)->getOne('appearances');
+	$Universal = \App\Models\Appearance::find(0);
 	if (!empty($Universal))
 		echo "<ul id='universal' class='appearance-list'>".Appearances::getHTML([$Universal], NOWRAP).'</ul>'; ?>
 	<p class='align-center links'>
@@ -48,7 +48,7 @@ use App\Tags;
 	</form>
 <?  }
 	else echo \App\CGUtils::getElasticUnavailableNotice($EQG); ?>
-	<?=$Pagination->HTML . Appearances::getHTML($Ponies) . $Pagination->HTML?>
+	<?=$Pagination . Appearances::getHTML($Ponies) . $Pagination?>
 </div>
 
 <?  $export = [
@@ -58,7 +58,7 @@ use App\Tags;
 ];
 	if (Permission::sufficient('staff'))
 		$export = array_merge($export, [
-			'TAG_TYPES_ASSOC' => Tags::$TAG_TYPES_ASSOC,
+			'TAG_TYPES_ASSOC' => Tags::TAG_TYPES,
 			'MAX_SIZE' => CoreUtils::getMaxUploadSize(),
 			'HEX_COLOR_PATTERN' => $HEX_COLOR_REGEX,
 		]);

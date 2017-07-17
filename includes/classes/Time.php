@@ -2,6 +2,7 @@
 
 namespace App;
 
+use ActiveRecord\DateTime;
 use Moment\Moment;
 
 class Time {
@@ -117,17 +118,22 @@ class Time {
 	/**
 	 * Create <time datetime></time> tag
 	 *
-	 * @param string|int $timestamp
-	 * @param bool       $extended
-	 * @param string     $allowDyntime
-	 * @param int        $now           For use in tests
+	 * @param string|int|DateTime $timestamp
+	 * @param bool                $extended
+	 * @param string              $allowDyntime
+	 * @param int                 $now           For use in tests
 	 *
 	 * @return string
 	 */
-	public static function tag($timestamp, bool $extended = false, string $allowDyntime = self::TAG_ALLOW_DYNTIME, ?int $now = null){
-		if (is_string($timestamp))
-			$timestamp = strtotime($timestamp);
-		if ($timestamp === false) return null;
+	public static function tag($timestamp, bool $extended = false, string $allowDyntime = self::TAG_ALLOW_DYNTIME, ?int $now = null):string {
+		if ($timestamp instanceof DateTime)
+			$timestamp = $timestamp->getTimestamp();
+		else if (is_string($timestamp)){
+			$ts = strtotime($timestamp);
+			if ($ts === false)
+				return '';
+			$timestamp = $ts;
+		}
 
 		$datetime = self::format($timestamp);
 		$full = self::format($timestamp, self::FORMAT_FULL);
@@ -145,6 +151,6 @@ class Time {
 		return
 			!$extended
 			? "<time datetime='$datetime' title='$full'>$text</time>"
-			:"<time datetime='$datetime'>$full</time>";
+			: "<time datetime='$datetime'>$full</time>";
 	}
 }

@@ -2,48 +2,54 @@
 
 namespace App\Models;
 
+use ActiveRecord\DateTime;
+use ActiveRecord\Model;
 use App\Auth;
 use App\CoreUtils;
+use App\DB;
 use App\DeviantArt;
 use App\Permission;
 use App\RegExp;
 use App\Time;
-use App\Users;
 
-class EventEntry extends AbstractFillable {
-	/** @var int */
-	public
-		$entryid,
-		$eventid,
-		$score;
-	/** @var string */
-	public
-		$prev_src,
-		$prev_full,
-		$prev_thumb,
-		$sub_prov,
-		$sub_id,
-		$submitted_by,
-		$submitted_at,
-		$title,
-		$last_edited;
-	/** @param array|object */
-	public function __construct($iter = null){
-		parent::__construct($this, $iter);
-	}
+/**
+ * @property int      $id
+ * @property int      $event_id
+ * @property int      $score
+ * @property string   $prev_src
+ * @property string   $prev_full
+ * @property string   $prev_thumb
+ * @property string   $sub_prov
+ * @property string   $sub_id
+ * @property string   $submitted_by
+ * @property string   $title
+ * @property DateTime $submitted_at
+ * @property DateTime $last_edited
+ * @property User     $submitter    (Via relations)
+ * @property Event    $event        (Via relations)
+ */
+class EventEntry extends Model {
+	public static $table_name = 'events__entries';
+
+	public static $belongs_to = [
+		['submitter', 'class' => 'User', 'foreign_key' => 'submitted_by'],
+		['event'],
+	];
+	public static $has_many = [
+		['votes', 'class' => 'EventEntryVote', 'foreign_key' => 'entry_id'],
+	];
 
 	public function updateScore(){
-		global $Database;
-		if (is_null($this->score))
+		if ($this->score === null)
 			return;
 
-		$score = $Database->disableAutoClass()->where('entryid', $this->entryid)->getOne('events__entries__votes', 'COALESCE(SUM(value),0) as score');
-		$Database->where('entryid', $this->entryid)->update('events__entries',$score);
+		$score = DB::$instance->disableAutoClass()->where('entryid', $this->id)->getOne('events__entries__votes', 'COALESCE(SUM(value),0) as score');
+		DB::$instance->where('entryid', $this->id)->update('events__entries',$score);
 		$this->score = $score['score'];
 
 		try {
 			CoreUtils::socketEvent('entry-score',[
-				'entryid' => $this->entryid,
+				'entryid' => $this->id,
 			]);
 		}
 		catch (\Exception $e){
@@ -52,10 +58,7 @@ class EventEntry extends AbstractFillable {
 	}
 
 	public function getUserVote(User $user):?EventEntryVote {
-		global $Database;
-
-		/** @noinspection PhpIncompatibleReturnTypeInspection */
-		return $Database->where('entryid', $this->entryid)->where('userid', $user->id)->getOne('events__entries__votes');
+		return EventEntryVote::find_by_entry_id_and_user_id($this->id, $user->id);
 	}
 
 	public function getFormattedScore(){
@@ -64,7 +67,7 @@ class EventEntry extends AbstractFillable {
 
 	private static function _getPreviewDiv(string $fullsize, string $preview, ?string $filetype = null):string {
 		$type = '';
-		if (isset($filetype)){
+		if ($filetype !== null){
 			if ($filetype === 'zip')
 				$filetype = 'svg<span class="star-info" title="ZIP archives are assumed to be SVG files">*</span>';
 			$type = "<span class='filetype'>$filetype</span>";
@@ -96,14 +99,23 @@ HTML;
 		return '';
 	}
 
-	public function toListItemHTML(Event $event, bool $wrap = true):string {
-		$submission = DeviantArt::getCachedDeviation($this->sub_id, $this->sub_prov);
-		$filetype = $submission->type;
-		$preview = isset($this->prev_thumb) && isset($this->prev_full)
-			? self::_getPreviewDiv($this->prev_full, $this->prev_thumb, $filetype)
-			: '';
+	public function getListItemPreview($submission = null):?string {
+		if ($submission === null)
+			$submission = DeviantArt::getCachedDeviation($this->sub_id, $this->sub_prov);
+		if ($this->sub_prov === 'fav.me'){
+			if ($submission->preview !== null && $submission->fullsize !== null)
+				return self::_getPreviewDiv($submission->fullsize, $submission->preview, $submission->type);
+		}
+		if ($this->prev_thumb !== null && $this->prev_full !== null)
+			 return self::_getPreviewDiv($this->prev_full, $this->prev_thumb, $submission->type);
+		return '';
+	}
+
+	public function toListItemHTML(Event $event = null, bool $lazyload = false, bool $wrap = true):string {
+		if ($event === null)
+			$event = $this->event;
 		$title = CoreUtils::escapeHTML($this->title);
-		$submitter = Users::get($this->submitted_by);
+		$submitter = $this->submitter;
 		$submitter_link = $submitter->getProfileLink();
 		$submitter_vapp = $submitter->getVectorAppIcon();
 		if (!empty($submitter_vapp))
@@ -116,10 +128,9 @@ HTML;
 		if ($sub_prov_favme || Permission::sufficient('staff')){
 			$title = "<a href='http://{$this->sub_prov}/{$this->sub_id}' target='_blank' rel='noopener'>$title</a>";
 		}
-		if ($sub_prov_favme && empty($preview)){
-			if (isset($submission->preview) && isset($submission->fullsize))
-				$preview = self::_getPreviewDiv($submission->fullsize, $submission->preview, $filetype);
-		}
+		if ($lazyload)
+			$preview = "<div class='entry-deviation-promise' data-entryid='{$this->id}'></div>";
+		else $preview = $this->getListItemPreview();
 
 		$voting = $this->getListItemVoting($event);
 
@@ -143,6 +154,6 @@ $preview
 	$actions
 </div>
 HTML;
-		return $wrap ? "<li id='entry-{$this->entryid}'>$HTML</li>" : $HTML;
+		return $wrap ? "<li id='entry-{$this->id}'>$HTML</li>" : $HTML;
 	}
 }

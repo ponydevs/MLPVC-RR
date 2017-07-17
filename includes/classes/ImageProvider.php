@@ -154,9 +154,9 @@ class ImageProvider {
 				$this->title = $CachedDeviation->title;
 				$this->author = $CachedDeviation->author;
 
-				if (isset($this->preview))
+				if ($this->preview !== null)
 					self::_checkImageAllowed($this->preview);
-				if (isset($this->fullsize))
+				if ($this->fullsize !== null)
 					self::_checkImageAllowed($this->fullsize);
 			break;
 			case 'lightshot':

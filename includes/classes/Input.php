@@ -72,9 +72,11 @@ class Input {
 			};
 		else if (is_callable($type))
 			$this->_validator = $type;
-		else /** @var $type string */
-		  if (empty(self::$SUPPORTED_TYPES[$type]))
-			$this->_outputError('Validation failed: Input type is invalid');
+		else {
+			/** @var $type string */
+			if (empty(self::$SUPPORTED_TYPES[$type]))
+				$this->_outputError('Validation failed: Input type is invalid');
+		}
 		$this->_type = $type;
 
 		if (!is_string($key))
@@ -167,7 +169,7 @@ class Input {
 				if (!is_string($this->_value) || !preg_match(new RegExp('^\d{1,12}(?:,\d{1,12})*$'), $this->_value))
 					return self::ERROR_INVALID;
 
-				$this->_value = explode(',',$this->_value);
+				$this->_value = array_map('intval',explode(',',$this->_value));
 			break;
 			case 'json':
 				try {
@@ -207,12 +209,12 @@ class Input {
 	}
 
 	private static function _numberInRange($n, $range){
-		$hasmin = isset($range[0]);
-		$hasmax = isset($range[1]);
-		if ($hasmin || $hasmax){
-			if ($hasmin ? $n < $range[0] : $n < 1)
+		$has_min = isset($range[0]);
+		$has_max = isset($range[1]);
+		if ($has_min || $has_max){
+			if ($has_min ? $n < $range[0] : $n < 1)
 				return self::ERROR_RANGE;
-			if ($hasmax && $n > $range[1])
+			if ($has_max && $n > $range[1])
 				return self::ERROR_RANGE;
 		}
 		return self::ERROR_NONE;

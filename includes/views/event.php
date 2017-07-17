@@ -5,6 +5,7 @@ use App\Time;
 
 /** @var string $heading */
 /** @var string $EventType */
+/** @var string $startts */
 /** @var \App\Models\Event $Event */
 /** @var \App\Models\EventEntry[] $UserEntries */ ?>
 <div id="content">
@@ -54,7 +55,7 @@ use App\Time;
 
 	<section>
 		<h2><span class='typcn typcn-group'></span>Entries</h2>
-		<?=$Event->getEntriesHTML()?>
+		<?=$Event->getEntriesHTML(true)?>
 	</section>
 </div>
 <?php

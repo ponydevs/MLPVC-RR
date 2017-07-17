@@ -2,12 +2,13 @@
 
 // Autoload classes \\
 $_dir = rtrim(__DIR__, '\/').DIRECTORY_SEPARATOR;
-require $_dir.'../vendor/autoload.php';
+require $_dir.'test_init.php';
 
-require $_dir.'constants.php';
+ini_set('error_log',PROJPATH.'mlpvc-rr-error.log');
 
-use \App\About;
-use \App\PostgresDbWrapper;
+use App\About;
+use App\DB;
+use App\PostgresDbWrapper;
 
 // Maintenance mode \\
 if (defined('MAINTENANCE_START')){
@@ -19,18 +20,20 @@ if (defined('MAINTENANCE_START')){
 try {
 	$inipath = 'in/to '.php_ini_loaded_file().' then restart '.About::getServerSoftware();
 	if (About::iniGet('short_open_tag') !== true)
-		throw new Exception("Short open tags (&lt;?) are disabled\nUncomment/add the line <strong>short_open_tag=On</strong> $inipath to fix");
+		throw new RuntimeException("Short open tags (&lt;?) are disabled\nUncomment/add the line <strong>short_open_tag=On</strong> $inipath to fix");
 }
 catch (Exception $e){
 	$errcause = 'libmiss';
 	die(require INCPATH.'views/fatalerr.php');
 }
-$Database = new PostgresDbWrapper('mlpvc-rr');
+
+DB::$instance = new PostgresDbWrapper('mlpvc-rr');
+
 try {
-	$Database->pdo();
+	$conn = \Activerecord\Connection::instance();
+	DB::$instance->setConnection($conn->connection);
 }
 catch (Exception $e){
-	unset($Database);
 	$errcause = 'db';
 	die(require INCPATH.'views/fatalerr.php');
 }

@@ -2,21 +2,25 @@
 
 namespace App\Models;
 
+use ActiveRecord\Model;
 use App\Time;
 
-class EventEntryVote extends AbstractFillable {
-	/** @var int */
-	public
-		$entryid,
-		$value;
-	/** @var string */
-	public
-		$userid,
-		$cast_at;
-	/** @param array|object */
-	public function __construct($iter = null){
-		parent::__construct($this, $iter);
-	}
+/**
+ * @property int $entryid
+ * @property int $value
+ * @property string $userid
+ * @property string $cast_at
+ * @method static EventEntryVote find_by_entry_id_and_user_id(int $entr_yid, string $user_id)
+ */
+class EventEntryVote extends Model {
+	public static $table_name = 'events__entries__votes';
+
+	public static $primary_key = ['entry_id', 'user_id'];
+
+	public static $belongs_to = [
+		['user'],
+		['entry', 'class' => 'EventEntry'],
+	];
 
 	/**
 	 * Checks if the vote is locked in, requires the event's last edit timestamp

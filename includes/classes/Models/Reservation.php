@@ -2,14 +2,20 @@
 
 namespace App\Models;
 
-use App\Models\Post;
-
+/** @inheritdoc */
 class Reservation extends Post {
-	/** @param array|object */
-	public function __construct($iter = null){
-		parent::__construct($this, $iter);
+	public static $belongs_to = [
+		['reserver', 'class' => 'User', 'foreign_key' => 'reserved_by'],
+	];
 
-		$this->isRequest = false;
-		$this->isReservation = !$this->isRequest;
+	public static $alias_attribute = [
+		'posted' => 'reserved_at',
+	];
+
+	public function get_is_request():bool {
+		return false;
+	}
+	public function get_is_reservation():bool {
+		return true;
 	}
 }

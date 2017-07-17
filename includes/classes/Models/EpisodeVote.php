@@ -2,17 +2,31 @@
 
 namespace App\Models;
 
-class EpisodeVote extends AbstractFillable {
-	/** @var int */
-	public
-		$season,
-		$episode,
-		$vote;
-	/** @var string */
-	public $user;
+use ActiveRecord\Model;
 
-	/** @param array|object */
-	public function __construct($iter = null){
-		parent::__construct($this, $iter);
+/**
+ * @property int     $season
+ * @property int     $episode
+ * @property int     $vote
+ * @property string  $user_id
+ * @property User    $user
+ * @property Episode $ep
+ */
+class EpisodeVote extends Model {
+	public static $belongs_to = [
+		['ep', 'class' => 'Episode', 'foreign_key' => ['season','episode']],
+		['user'],
+	];
+
+	/**
+	 * @param Episode $Episode
+	 * @param User    $user
+	 *
+	 * @return EpisodeVote|null
+	 */
+	public static function find_for(Episode $Episode, ?User $user):?EpisodeVote {
+		if ($user === null)
+			return null;
+		return self::find_by_season_and_episode_and_user_id($Episode->season, $Episode->episode, $user->id);
 	}
 }

@@ -9,7 +9,6 @@ use App\CoreUtils;
 use App\Permission;
 
 /** @var $Users \App\Models\User[] */
-$Users = $Database->orderBy('name','asc')->get('users');
 if (!empty($Users)){
 	$Arranged = [];
 	foreach ($Users as $u){

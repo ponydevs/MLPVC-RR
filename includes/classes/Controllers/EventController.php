@@ -4,8 +4,10 @@ namespace App\Controllers;
 use App\Auth;
 use App\CoreUtils;
 use App\CSRFProtection;
+use App\DB;
 use App\Exceptions\MismatchedProviderException;
 use App\Exceptions\UnsupportedProviderException;
+use App\HTTP;
 use App\ImageProvider;
 use App\Input;
 use App\Models\Event;
@@ -30,7 +32,7 @@ class EventController extends Controller {
 	/** @var Event */
 	private $_event;
 	private function _getEvent($id){
-		$Event = Event::get($id);
+		$Event = Event::find($id);
 		if (empty($Event)){
 			if (POST_REQUEST)
 				Response::fail('Event not found');
@@ -67,8 +69,6 @@ class EventController extends Controller {
 		if (!Permission::sufficient('staff'))
 			Response::fail();
 		CSRFProtection::protect();
-
-		global $Database, $Database;
 
 		$editing = $action === 'set';
 		if ($editing){
@@ -182,10 +182,10 @@ class EventController extends Controller {
 		$update['ends_at'] = date('c', $ends_at);
 
 		if ($editing){
-			if (!$Database->where('id', $this->_event->id)->update('events', $update))
+			if (!DB::$instance->where('id', $this->_event->id)->update('events', $update))
 				Response::dbError('Updating event failed');
 		}
-		else $update['id'] = $Database->insert('events', $update, 'id');
+		else $update['id'] = DB::$instance->insert('events', $update, 'id');
 
 		$NewEvent = new Event($update);
 		if ($editing){
@@ -232,9 +232,9 @@ class EventController extends Controller {
 		if ($this->_event->isFinalized())
 			Response::fail('Finalized events cannot be deleted');
 
-		global $Database;
 
-		if (!$Database->where('id',$this->_event->id)->delete('events'))
+
+		if (!DB::$instance->where('id',$this->_event->id)->delete('events'))
 			Response::dbError('Deleting event failed');
 
 		Response::done();
@@ -279,16 +279,14 @@ class EventController extends Controller {
 			Response::fail('The deviation must be in the group gallery');
 		$data['result_favme'] = $favme;
 
-		global $Database;
-		if (!$Database->where('id', $this->_event->id)->update('events', $data))
+
+		if (!DB::$instance->where('id', $this->_event->id)->update('events', $data))
 			Response::dbError('Finalizing event failed');
 
 		Response::done();
 	}
 
 	public function checkEntries($params){
-		global $Database;
-
 		if (!Auth::$signed_in)
 			Response::fail();
 		CSRFProtection::protect();
@@ -310,6 +308,9 @@ class EventController extends Controller {
 		Response::done();
 	}
 
+	/**
+	 * @return EventEntry
+	 */
 	private function _addSetEntry(){
 		$update = [];
 
@@ -364,12 +365,10 @@ class EventController extends Controller {
 			$update['prev_thumb'] = null;
 		}
 
-		return $update;
+		return new EventEntry($update);
 	}
 
 	public function addEntry($params){
-		global $Database;
-
 		if (!Auth::$signed_in)
 			Response::fail();
 		CSRFProtection::protect();
@@ -384,20 +383,18 @@ class EventController extends Controller {
 			Response::fail('This event has concluded, so no new entries can be submitted.');
 
 		$insert = $this->_addSetEntry();
-		$insert['submitted_by'] = Auth::$user->id;
-		$insert['eventid'] = $this->_event->id;
-		$insert['score'] = $this->_event->type === 'contest' ? 0 : null;
-		if (!$Database->insert('events__entries', $insert))
+		$insert->submitted_by = Auth::$user->id;
+		$insert->event_id = $this->_event->id;
+		$insert->score = $this->_event->type === 'contest' ? 0 : null;
+		if (!$insert->save())
 			Response::dbError('Saving entry failed');
 
-		Response::done(['entrylist' => $this->_event->getEntriesHTML(NOWRAP)]);
+		Response::done(['entrylist' => $this->_event->getEntriesHTML(false, NOWRAP)]);
 	}
 
 	/** @var EventEntry */
 	private $_entry;
 	private function _entryPermCheck($params, string $action = 'manage'){
-		global $Database;
-
 		if (!Auth::$signed_in)
 			Response::fail();
 		CSRFProtection::protect();
@@ -405,11 +402,14 @@ class EventController extends Controller {
 		if (!isset($params['entryid']))
 			Response::fail('Entry ID is missing or invalid');
 
-		$this->_entry = $Database->where('entryid', intval($params['entryid'], 10))->getOne('events__entries');
+		$this->_entry = DB::$instance->where('entryid', intval($params['entryid'], 10))->getOne('events__entries');
 		if (empty($this->_entry) || ($action === 'manage' && !Permission::sufficient('staff') && $this->_entry->submitted_by !== Auth::$user->id))
 			Response::fail('The requested entry could not be found or you are not allowed to edit it');
 
-		$this->_getEvent($this->_entry->eventid);
+		$this->_getEvent($this->_entry->event_id);
+
+		if ($action === 'lazyload')
+			return;
 
 		if ($action === 'vote'){
 			if (!$this->_event->hasEnded())
@@ -440,15 +440,13 @@ class EventController extends Controller {
 	}
 
 	public function setEntry($params){
-		global $Database;
-
 		$this->_entryPermCheck($params);
 
-		$update = $this->_addSetEntry();
+		$entry = $this->_addSetEntry();
 
 		$changes = [];
-		foreach ($update as $k => $v){
-			if ($update[$k] !== $this->_entry->{$k})
+		foreach ($entry->attributes() as $k => $v){
+			if ($v !== $this->_entry->{$k})
 				$changes[$k] = $v;
 		}
 
@@ -456,29 +454,22 @@ class EventController extends Controller {
 			// Do not change edit time if only entry title is changed
 			if (!(count($changes) === 1 && array_key_exists('title', $changes)))
 				$changes['last_edited'] = date('c');
-			if (!$Database->where('entryid', $this->_entry->entryid)->update('events__entries', $changes))
-				Response::fail('Nothing has been changed');
+			$entry->update_attributes($changes);
 		}
 
-		/** @var $entry EventEntry */
-		$entry = $Database->where('entryid', $this->_entry->entryid)->getOne('events__entries');
-		Response::done(['entryhtml' => $entry->toListItemHTML($this->_event, NOWRAP)]);
+		Response::done(['entryhtml' => $entry->toListItemHTML($this->_event, false, NOWRAP)]);
 	}
 
 	public function delEntry($params){
-		global $Database;
-
 		$this->_entryPermCheck($params);
 
-		if (!$Database->where('entryid', $this->_entry->entryid)->delete('events__entries'))
+		if (!DB::$instance->where('entryid', $this->_entry->id)->delete('events__entries'))
 			Response::dbError('Failed to delete entry');
 
 		Response::done();
 	}
 
 	public function voteEntry($params){
-		global $Database;
-
 		$this->_entryPermCheck($params, 'vote');
 
 		$userVote = $this->_entry->getUserVote(Auth::$user);
@@ -498,8 +489,8 @@ class EventController extends Controller {
 			$this->_checkWipeLockedInVote($userVote);
 		}
 
-		if (!$Database->insert('events__entries__votes',[
-			'entryid' => $this->_entry->entryid,
+		if (!DB::$instance->insert('events__entries__votes',[
+			'entryid' => $this->_entry->id,
 			'userid' => Auth::$user->id,
 			'value' => $value,
 		]))
@@ -510,26 +501,20 @@ class EventController extends Controller {
 	}
 
 	public function getvoteEntry($params){
-		global $Database;
-
 		$this->_entryPermCheck($params, 'view');
 
 		Response::done([ 'voting' => $this->_entry->getListItemVoting($this->_event) ]);
 	}
 
 	private function _checkWipeLockedInVote(EventEntryVote $userVote){
-		global $Database;
-
 		if ($userVote->isLockedIn($this->_entry))
 			Response::fail('You already voted on this post '.Time::tag($userVote->cast_at).'. Your vote is now locked in until the post is edited.');
 
-		if (!$Database->where('userid', Auth::$user->id)->where('entryid', $this->_entry->entryid)->delete('events__entries__votes'))
+		if (!DB::$instance->where('userid', Auth::$user->id)->where('entryid', $this->_entry->id)->delete('events__entries__votes'))
 			Response::dbError('Vote could not be removed');
 	}
 
 	public function unvoteEntry($params){
-		global $Database;
-
 		$this->_entryPermCheck($params, 'vote');
 
 		$userVote = $this->_entry->getUserVote(Auth::$user);
@@ -539,5 +524,14 @@ class EventController extends Controller {
 
 		$this->_entry->updateScore();
 		Response::done([ 'score' => $this->_entry->getFormattedScore() ]);
+	}
+
+	public function lazyloadEntry($params){
+		/** @var $entry EventEntry */
+		$entry = EventEntry::find($params['id']);
+		if (empty($entry))
+			HTTP::statusCode(404, AND_DIE);
+
+		Response::done(['html' => $entry->getListItemPreview()]);
 	}
 }

@@ -5,16 +5,24 @@ namespace App;
 use App\Models\Episode;
 
 class PostgresDbWrapper extends \PostgresDb {
+	public static function withConnection(string $db, \PDO $PDO):PostgresDbWrapper {
+		$instance = new PostgresDbWrapper($db);
+		$instance->setConnection($PDO);
+		return $instance;
+	}
+
 	/**
 	 * Execute where method with the specified episode and season numbers
 	 *
-	 * @param string|int|Episode $s Season, or array with keys season & episode
-	 * @param string|int|null    $e Episode, optional if $s is an array
+	 * @param int|Episode $s Season, or array with keys season & episode
+	 * @param int|null    $e Episode, optional if $s is and instance of Episode
 	 *
 	 * @return self
 	 */
 	public function whereEp($s, $e = null){
-		if (!isset($e)){
+		if ($e === null){
+			if (!$s instanceof Episode)
+				throw new \InvalidArgumentException(__METHOD__.' expects parameter 1 to be an instance of '.Episode::class.' (because parameter 2 is null), '.gettype($s).' given');
 			parent::where('season', $s->season);
 			parent::where('episode', $s->episode);
 		}
@@ -25,28 +33,30 @@ class PostgresDbWrapper extends \PostgresDb {
 		return $this;
 	}
 
-	public $queryCount = 0;
+	public function setModel(string $name){
+		$className = "\\App\\Models\\$name";
+		if (!class_exists($className))
+			throw new \RuntimeException("The model $className does not exist");
+
+		return $this->setClass($className, \PDO::FETCH_CLASS | \PDO::FETCH_PROPS_LATE);
+	}
 
 	private $_nonexistantClassCache = [];
 
 	/**
 	 * @param \PDOStatement $stmt Statement to execute
 	 *
-	 * @return bool|array|object[]
+	 * @return bool|array|mixed
 	 */
 	protected function _execStatement($stmt){
 		$className = $this->tableNameToClassName();
-		if (isset($className) && empty($this->_nonexistantClassCache[$className])){
+		if ($className !== null && empty($this->_nonexistantClassCache[$className])){
 			try {
-				if (!class_exists("\\App\\Models\\$className"))
-					throw new \Exception();
-
-				$this->setClass("\\App\\Models\\$className");
+				$this->setModel($className);
 			}
-			catch (\Exception $e){ $this->_nonexistantClassCache[$className] = true; }
+			catch (\RuntimeException $e){ $this->_nonexistantClassCache[$className] = true; }
 		}
 
-		$this->queryCount++;
 		return parent::_execStatement($stmt);
 	}
 }

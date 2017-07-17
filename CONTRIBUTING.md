@@ -11,7 +11,7 @@ The site is known to work with the following set of software, assuming correct c
 | RDBMS             | PostgreSQL 9.5+                               |
 | Asset Compliation | Node.js 6.0+                                  |
 | Search Server     | ElasticSearch 5.4+                            |
-| Runtime           | PHP 7.1+ with the following modules installed:<ul><li>mbsting</li><li>gd</li><li>xml</li><li>curl</li><li>pdo (pg)</li></ul> |
+| Runtime           | Composer<br>PHP 7.1+ with the following modules installed:<ul><li>mbsting</li><li>gd</li><li>xml</li><li>curl</li><li>pdo (pg)</li></ul> |
 | Source Control    | Git<br><small>(as obvious as it may seem, the site shows the commit data in the footer, so the binary is required to be accessible by the application)</small> |
 | SSL Certificate   | Self-signed ([get a pair here](https://djdavid98.hu/selfsigned))<br><small>(required to use the site through HTTPS while developing)</small> |
 

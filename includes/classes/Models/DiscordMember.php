@@ -4,47 +4,28 @@ namespace App\Models;
 
 use App\Users;
 
+/**
+ * @inheritdoc
+ * @property string $user_id
+ * @property string $username
+ * @property string $nick
+ * @property string $avatar_hash
+ * @property string $joined_at
+ * @property int    $discriminator
+ * @property User   $user
+ * @method static DiscordMember|DiscordMember[] find(...$args)
+ */
 class DiscordMember extends AbstractUser {
-	/** @var string */
-	public
-		$id,
-		$userid,
-		$username,
-		$nick,
-		$avatar_hash,
-		$joined_at;
-	/** @var int */
-	public $discriminator;
+	public static $belongs_to = [
+		['user']
+	];
 
-	/** @param array|object */
-	public function __construct($iter = null){
-		parent::__construct($this, $iter);
-
-		$this->name = $this->displayedName();
-		$this->avatar_url = $this->getAvatarURL();
+	public function get_name(){
+		return !empty($this->nick) ? $this->nick : $this->username;
 	}
 
-	public function toArray(bool $remove_empty = false): array{
-		$arr = parent::toArray($remove_empty);
-		if (array_key_exists('name', $arr))
-			unset($arr['name']);
-		if (array_key_exists('avatar_url', $arr))
-			unset($arr['avatar_url']);
-		return $arr;
-	}
-
-	public static function of(User $user):DiscordMember {
-		global $Database;
-		/** @noinspection PhpIncompatibleReturnTypeInspection */
-		return $Database->where('userid', $user->id)->getOne('discord-members');
-	}
-
-	public function getAvatarURL(){
-		return isset($this->avatar_hash) ? "https://images.discordapp.net/avatars/{$this->id}/{$this->avatar_hash}.png" : null;
-	}
-
-	public function displayedName(){
-		return $this->nick ?? $this->username;
+	public function get_avatar_url(){
+		return !empty($this->avatar_hash) ? "https://images.discordapp.net/avatars/{$this->id}/{$this->avatar_hash}.png" : null;
 	}
 
 	public function nameToDAName(string $name):?string{
@@ -81,18 +62,19 @@ class DiscordMember extends AbstractUser {
 		'f73c6d54-49d2-a88b-ceb5-aba86dbb9b5b',
 		'62b26e62-090d-db3f-019a-6eeaaf1ffddc',
 		'e1cbcdef-5445-0556-aa55-78e045286554',
+		'18b06f8f-2826-0f31-1961-2441c48edf84',
 	];
 
 	public function guessDAUser():?string {
-		if (isset($this->userid))
+		if ($this->user_id !== null)
 			return true;
 
 		if (!empty(self::STAFF_BINDINGS["id-{$this->id}"]))
 			return $this->_checkDAUserBlacklist(self::STAFF_BINDINGS["id-{$this->id}"]);
 
-		if (isset($this->nick)){
+		if (!empty($this->nick)){
 			$daname = $this->nameToDAName($this->nick);
-			$firstGuess = Users::get($daname ?? $this->nick, 'name', 'id');
+			$firstGuess = Users::get($daname ?? $this->nick, 'name');
 			if (!empty($firstGuess))
 				return $this->_checkDAUserBlacklist($firstGuess->id);
 		}
@@ -100,12 +82,12 @@ class DiscordMember extends AbstractUser {
 		/** @noinspection SuspiciousAssignmentsInspection */
 		$daname = $this->nameToDAName($this->username);
 		if (!empty($daname)){
-			$secondGuess = Users::get($daname, 'name', 'id');
+			$secondGuess = Users::get($daname, 'name');
 			if (!empty($secondGuess))
 				return $this->_checkDAUserBlacklist($secondGuess->id);
 		}
 
-		$thirdGuess = Users::get($this->username, 'name', 'id');
+		$thirdGuess = Users::get($this->username, 'name');
 		if (!empty($thirdGuess))
 			return $this->_checkDAUserBlacklist($thirdGuess->id);
 
@@ -113,6 +95,6 @@ class DiscordMember extends AbstractUser {
 	}
 
 	private function _checkDAUserBlacklist($id){
-		return $this->userid = (in_array($id, self::BIND_BLACKLIST) ? null : $id);
+		return $this->user_id = (in_array($id, self::BIND_BLACKLIST, true) ? null : $id);
 	}
 }

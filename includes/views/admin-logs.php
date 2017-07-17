@@ -22,7 +22,7 @@ use App\Logs;
 		$descs = Logs::$LOG_DESCRIPTION;
 		asort($descs);
 		foreach ($descs as $value => $label)
-			echo "<option value='$value'".(($type??null)===$value?' selected':'').">$label</option>";
+			echo "<option value='$value' ".(($type??null)===$value?'selected':'').">$label</option>";
 		?></optgroup>
 		</select>
 		<strong>entries from</strong>
@@ -34,7 +34,7 @@ use App\Logs;
 			<option>you</option>
 		</datalist>
 	</form>
-	<?=$Pagination->HTML?>
+	<?=$Pagination?>
 	<table id="logs">
 		<thead>
 			<tr>
@@ -47,6 +47,6 @@ use App\Logs;
 		<tbody><?=Logs::getTbody($LogItems)?></tbody>
 	</table>
 <?php
-		echo $Pagination->HTML;
+		echo $Pagination;
 	} ?>
 </div>

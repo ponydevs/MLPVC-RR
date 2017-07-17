@@ -19,7 +19,8 @@
 		"altorouter/altorouter": "1.2.0",
 		"restcord/restcord": "^0.1.4",
 		"erusev/parsedown": "^1.6",
-		"seinopsys/postgresql-database-class": "^1.0",
+		"seinopsys/postgresql-database-class": "^2.0",
+		"php-activerecord/php-activerecord": "dev-master",
 		"seinopsys/oauth2-deviantart": "^1.0",
 		"ext-curl": "*",
 		"ext-dom": "*",
@@ -36,5 +37,11 @@
         "psr-4": {
             "App\\": "includes/classes/"
         }
-    }
+    },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url":  "https://github.com/SeinopSys/php-activerecord"
+        }
+    ]
 }

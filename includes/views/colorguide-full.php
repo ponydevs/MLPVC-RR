@@ -5,7 +5,7 @@ use App\CoreUtils;
 use App\Tags;
 /** @var $EQG bool */
 /** @var $GuideOrder bool */
-/** @var $Appearances array */ ?>
+/** @var $Appearances \App\Models\Appearance[] */ ?>
 <div id="content">
 	<h1>Complete <?=$EQG?'EQG Character':'Pony'?> List</h1>
 	<p>Sorted <?php
@@ -37,7 +37,7 @@ use App\Tags;
 ];
 	if (Permission::sufficient('staff'))
 		$export = array_merge($export, [
-			'TAG_TYPES_ASSOC' => Tags::$TAG_TYPES_ASSOC,
+			'TAG_TYPES_ASSOC' => Tags::TAG_TYPES,
 			'MAX_SIZE' => CoreUtils::getMaxUploadSize(),
 			'HEX_COLOR_PATTERN' => $HEX_COLOR_REGEX,
 		]);

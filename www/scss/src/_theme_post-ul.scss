@@ -87,6 +87,12 @@
 				img {
 					border: 2px solid $DeviationBorder;
 				}
+
+				.post-deviation-promise {
+					@include loading-indicator(154px, 'wedges');
+
+					margin: 0 auto 10px;
+				}
 			}
 			&.screencap > a {
 				border: 1px solid;

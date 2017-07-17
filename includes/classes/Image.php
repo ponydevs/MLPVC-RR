@@ -3,7 +3,6 @@
 namespace App;
 
 class Image {
-
 	/**
 	 * Checks image type and returns an array containing the image width and height
 	 *
@@ -15,8 +14,8 @@ class Image {
 	 */
 	public static function checkType($tmp, $allowedMimeTypes){
 		$imageSize = getimagesize($tmp);
-		if (empty($imageSize))
-			throw new \RuntimeException("The size of image $tmp could not be retrieved");
+		if ($imageSize === false)
+			throw new \RuntimeException("getimagesize could not read $tmp");
 		/** @var $imageSize array */
 		if (is_array($allowedMimeTypes) && !in_array($imageSize['mime'], $allowedMimeTypes, true))
 			Response::fail('This type of image is now allowed: '.$imageSize['mime']);
@@ -81,8 +80,8 @@ class Image {
 	 *
 	 * @return resource
 	 */
-	public static function createTransparent($width, $height = null) {
-		if (!isset($height))
+	public static function createTransparent($width, $height = null){
+		if ($height === null)
 			$height = $width;
 
 		$png = Image::preserveAlpha(imagecreatetruecolor($width, $height), $transparency);
@@ -98,11 +97,11 @@ class Image {
 	 *
 	 * @return resource
 	 */
-	public static function createWhiteBG($width, $height = null) {
-		if (!isset($height))
+	public static function createWhiteBG($width, $height = null){
+		if ($height === null)
 			$height = $width;
-		$png = imagecreatetruecolor($width, $height);
 
+		$png = imagecreatetruecolor($width, $height);
 		$white = imagecolorallocate($png, 255, 255, 255);
 		imagefill($png, 0, 0, $white);
 		return $png;
@@ -301,8 +300,8 @@ class Image {
 		}
 
 		$filePortion = strtok($relpath,'?');
-		$fpl = strlen($filePortion);
-		$params = strlen($relpath) > $fpl ? '&'.CoreUtils::substring($relpath, $fpl+1) : '';
+		$fpl = CoreUtils::length($filePortion);
+		$params = CoreUtils::length($relpath) > $fpl ? '&'.CoreUtils::substring($relpath, $fpl+1) : '';
 		CoreUtils::fixPath("$filePortion?t=".filemtime($path).$params);
 		header("Content-Type: image/$content_type");
 		readfile($path);

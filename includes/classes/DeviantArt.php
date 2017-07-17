@@ -3,15 +3,16 @@
 namespace App;
 
 use App\Models\CachedDeviation;
+use App\Models\Session;
 use App\Models\User;
 use App\Exceptions\CURLRequestException;
+use RuntimeException;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use App\Exceptions\JSONParseException;
 use SeinopSys\OAuth2\Client\Provider\DeviantArtProvider;
 
 class DeviantArt {
 	private static
-		$_CACHE_BAILOUT = false,
 		$_MASS_CACHE_LIMIT = 15,
 		$_MASS_CACHE_USED = 0;
 
@@ -97,57 +98,55 @@ class DeviantArt {
 	}
 
 	/**
-	 * Caches information about a deviation in the 'cached-deviations' table
+	 * Caches information about a deviation in the 'cached_deviations' table
 	 * Returns null on failure
 	 *
 	 * @param string      $ID
 	 * @param null|string $type
-	 * @param bool        $mass
 	 *
-	 * @return CachedDeviation
+	 * @return CachedDeviation|null
 	 */
-	public static function getCachedDeviation($ID, $type = 'fav.me', $mass = false){
-		global $Database, $FULLSIZE_MATCH_REGEX;
+	public static function getCachedDeviation($ID, $type = 'fav.me'){
+		global $FULLSIZE_MATCH_REGEX;
 
 		if ($type === 'sta.sh')
 			$ID = CoreUtils::nomralizeStashID($ID);
 
 		/** @var $Deviation CachedDeviation */
-		$Deviation = $Database->where('id', $ID)->where('provider', $type)->getOne('cached-deviations');
+		$Deviation = CachedDeviation::find_by_id_and_provider($ID, $type);
+		$localDataMissing = $Deviation == null;
 
-		$cacheExhausted = self::$_MASS_CACHE_USED > self::$_MASS_CACHE_LIMIT;
-		$cacheExpired = empty($Deviation->updated_on) ? true : strtotime($Deviation->updated_on)+(Time::IN_SECONDS['hour']*12) < time();
+		$cacheExpired = true;
+		if (!$localDataMissing && $Deviation->updated_on !== null)
+			$cacheExpired = $Deviation->updated_on->getTimestamp()+(Time::IN_SECONDS['hour']*12) < time();
 
-		$lastRequestSuccessful = !self::$_CACHE_BAILOUT;
-		$localDataMissing = empty($Deviation);
-		$massCachingWithinLimit = $mass && !$cacheExhausted;
-		$notMassCachingAndCacheExpired = !$mass && $cacheExpired;
-
-		if ($lastRequestSuccessful && ($localDataMissing || (($massCachingWithinLimit && $cacheExpired) || $notMassCachingAndCacheExpired))){
+		if ($cacheExpired){
 			try {
 				$json = self::oEmbed($ID, $type);
 				if (empty($json))
-					throw new \Exception();
+					throw new \RuntimeException('oEmbed JSON data is empty');
 			}
 			catch (\Exception $e){
-				if (!empty($Deviation))
-					$Database->where('id',$Deviation->id)->update('cached-deviations', ['updated_on' => date('c', time()+ Time::IN_SECONDS['minute'] )]);
+				if ($Deviation !== null)
+					$Deviation->update_attributes(['updated_on' => date('c', time()+Time::IN_SECONDS['minute'] )]);
 
 				error_log("Saving local data for $ID@$type failed: ".$e->getMessage()."\n".$e->getTraceAsString());
 
 				if ($e->getCode() === 404){
+					if ($Deviation !== null)
+						$Deviation->delete();
 					$Deviation = null;
 				}
 
-				self::$_CACHE_BAILOUT = true;
 				return $Deviation;
 			}
 
 			$insert = [
+				'id' => $ID,
+				'provider' => $type,
 				'title' => preg_replace(new RegExp('\\\\\''),"'",$json['title']),
 				'preview' => isset($json['thumbnail_url']) ? URL::makeHttps($json['thumbnail_url']) : null,
 				'fullsize' => isset($json['fullsize_url']) ? URL::makeHttps($json['fullsize_url']) : null,
-				'provider' => $type,
 				'author' => $json['author_name'],
 				'updated_on' => date('c'),
 			];
@@ -186,25 +185,17 @@ class DeviantArt {
 			}
 
 			if (empty($Deviation))
-				$Deviation = $Database->where('id', $ID)->where('provider', $type)->getOne('cached-deviations');
-			if (empty($Deviation)){
-				$insert['id'] = $ID;
-				$Database->insert('cached-deviations', $insert);
-			}
-			else {
-				$Database->where('id',$Deviation->id)->update('cached-deviations', $insert);
-				$insert['id'] = $ID;
-			}
+				$Deviation = CachedDeviation::find_by_id_and_provider($ID, $type);
+
+			if (empty($Deviation))
+				$Deviation = CachedDeviation::create($insert);
+			else $Deviation->update_attributes($insert);
 
 			self::$_MASS_CACHE_USED++;
-			$Deviation = new CachedDeviation($insert);
 		}
 		else if (!empty($Deviation->updated_on)){
 			$Deviation->updated_on = date('c', strtotime($Deviation->updated_on));
-			if (self::$_CACHE_BAILOUT)
-				$Database->where('id',$Deviation->id)->update('cached-deviations', [
-					'updated_on' => $Deviation->updated_on,
-				]);
+			$Deviation->save();
 		}
 
 		return $Deviation;
@@ -236,21 +227,10 @@ class DeviantArt {
 		return $data;
 	}
 
-	/**
-	 * Requests or refreshes an Access Token
-	 * $type defaults to 'authorization_code'
-	 *
-	 * @param string $code
-	 * @param bool   $refresh
-	 * @param string $state
-	 *
-	 * @return User|void
-	 */
-	public static function getToken(string $code, bool $refresh = false, string $state = '/'){
-		global $Database, $http_response_header;
+	private static function _authRequest(bool $refresh, string $code):?User {
+		global $http_response_header;
 
 		$provider = self::OAuthProviderInstance();
-
 		try {
 			if ($refresh)
 				$accessToken = $provider->getAccessToken('refresh_token', ['refresh_token' => $code]);
@@ -261,10 +241,8 @@ class DeviantArt {
 				$Database->where('token', CoreUtils::sha256(Cookie::get('access')))->delete('sessions');
 				Cookie::delete('access', Cookie::HTTPONLY);
 			}
-
 			$response_body = $e->getResponseBody();
 			error_log(__METHOD__.' threw IdentityProviderException: '.$e->getMessage()."\nResponse body:\n$response_body\nTrace:\n".$e->getTraceAsString());
-
 			try {
 				$data = JSON::decode($response_body);
 				$_GET['error'] = rawurlencode($data['error']);
@@ -274,24 +252,23 @@ class DeviantArt {
 				$_GET['error'] = 'server_error';
 				$_GET['error_description'] = $e->getMessage();
 			}
-
-			return;
+			return null;
 		}
 
 		$userdata = $provider->getResourceOwner($accessToken)->toArray();
 
 		/** @var $User Models\User */
-		$User = $Database->where('id',$userdata['userid'])->getOne('users');
-		if ($User->role === 'ban'){
+		$User = User::find($userdata['userid']);
+		if (isset($User->role) && $User->role === 'ban'){
 			$_GET['error'] = 'user_banned';
-			$BanReason = $Database
+			$BanReason = DB::$instance
 				->where('target', $User->id)
-				->orderBy('entryid', 'ASC')
+				->orderBy('entryid')
 				->getOne('log__banish');
 			if (!empty($BanReason))
 				$_GET['error_description'] = $BanReason['reason'];
 
-			return;
+			return null;
 		}
 
 		$UserID = strtolower($userdata['userid']);
@@ -319,17 +296,15 @@ class DeviantArt {
 				'id' => $UserID,
 				'role' => 'user',
 			];
-			$makeDev = !$Database->has('users');
+			$makeDev = !DB::$instance->has('users');
 			if ($makeDev)
 				$MoreInfo['id'] = strtoupper($MoreInfo['id']);
 			$Insert = array_merge($UserData, $MoreInfo);
-			$Database->insert('users', $Insert);
-
-			$User = new User($Insert);
+			$User = User::create($Insert);
 			if ($makeDev)
 				$User->updateRole('developer');
 		}
-		else $Database->where('id',$UserID)->update('users', $UserData);
+		else $User->update_attributes($UserData);
 
 		if (empty($makeDev) && !empty($User)){
 			$clubmember = $User->isClubMember();
@@ -341,16 +316,41 @@ class DeviantArt {
 		}
 
 		if ($refresh)
-			$Database->where('refresh', $code)->update('sessions',$AuthData);
+			Auth::$session->update_attributes($AuthData);
 		else {
-			$Database->where('user', $User->id)->where('scope', $AuthData['scope'], '!=')->delete('sessions');
-			$Database->insert('sessions', array_merge($AuthData, ['user' => $UserID]));
+			Session::delete_all(['conditions' => ['user_id = ? AND scope != ?', $User->id, $AuthData['scope']]]);
+			Session::create(array_merge($AuthData, ['user_id' => $User->id]));
 		}
 
-		$Database->rawQuery("DELETE FROM sessions WHERE \"user\" = ? && lastvisit <= NOW() - INTERVAL '1 MONTH'", [$UserID]);
+		Session::delete_all(['conditions' => ["user_id = ? AND lastvisit <= NOW() - INTERVAL '1 MONTH'", $User->id]]);
 
 		Cookie::set('access', $cookie, time()+ Time::IN_SECONDS['year'], Cookie::HTTPONLY);
 		return $User ?? null;
+	}
+
+	/**
+	 * Updates the (current) session for seamless browsing even if the session expires beetween requests
+	 *
+	 * @return User|void
+	 * @throws \RuntimeException
+	 * @throws \InvalidArgumentException
+	 */
+	public static function refreshAccessToken():?User {
+		if (empty(Auth::$session))
+			throw new RuntimeException('Auth::$session must be set');
+		return self::_authRequest(true, Auth::$session->refresh);
+	}
+
+	/**
+	 * Requests an Access Token
+	 *
+	 * @param string $code
+	 *
+	 * @return User|void
+	 * @throws \InvalidArgumentException
+	 */
+	public static function getAccessToken(string $code):?User {
+		return self::_authRequest(false, $code);
 	}
 
 	public static function isImageAvailable(string $url, array $onlyFails = []):bool {

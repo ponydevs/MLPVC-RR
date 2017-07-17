@@ -1,9 +1,9 @@
 <?php
 
 	// Database Access Info \\
-	define('DB_HOST','');
-	define('DB_USER','');
-	define('DB_PASS','');
+	define('DB_HOST','localhost');
+	define('DB_USER','mlpvc-rr');
+	define('DB_PASS','example-password');
 
 	// ELasticSearch Server Port \\
 	define('ELASTIC_PORT','9200');

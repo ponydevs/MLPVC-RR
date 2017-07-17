@@ -10,12 +10,12 @@ class Response {
 
 		self::_respond(false, $message, $data, $prettyPrint);
 	}
-	public static function dbError(string $message = '', bool $prettyPrint = false){
-		global $Database;
 
+	// TODO Create an arError equivalent for ActiveRecord
+	public static function dbError(string $message = '', bool $prettyPrint = false){
 		if (!empty($message))
 			$message .= ': ';
-		$message .= rtrim('Error while saving to database: '.$Database->getLastError(), ': ');
+		$message .= rtrim('Error while saving to database: '.DB::$instance->getLastError(), ': ');
 
 		self::_respond(false, $message, [], $prettyPrint);
 	}

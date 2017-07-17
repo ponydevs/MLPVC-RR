@@ -4,11 +4,14 @@ namespace App\Controllers;
 use App\Auth;
 use App\CoreUtils;
 use App\CSRFProtection;
+use App\DB;
+use App\DeviantArt;
 use App\HTTP;
 use App\Input;
 use App\Logs;
 use App\Models\Request;
 use App\Models\Reservation;
+use App\Models\Session;
 use App\Models\User;
 use App\Pagination;
 use App\Permission;
@@ -20,12 +23,13 @@ class UserController extends Controller {
 	public $do = 'user';
 
 	public function profile($params){
-		global $USERNAME_REGEX, $Database, $User, $sameUser;
+		global $USERNAME_REGEX, $User, $sameUser;
 
 		$data = $params['name'] ?? null;
 
 		if (empty($data)){
-			if (Auth::$signed_in) $un = Auth::$user->name;
+			if (Auth::$signed_in)
+				$User = Auth::$user;
 			else $MSG = 'Sign in to view your settings';
 		}
 		else if (preg_match($USERNAME_REGEX, $data, $_match))
@@ -35,7 +39,8 @@ class UserController extends Controller {
 			if (!isset($MSG))
 				$MSG = 'Invalid username';
 		}
-		else $User = Users::get($un, 'name');
+		else if (!isset($User))
+			$User = Users::get($un, 'name');
 
 		if (empty($User)){
 			if (isset($User) && $User === false){
@@ -63,14 +68,9 @@ class UserController extends Controller {
 		if (isset($MSG))
 			HTTP::statusCode(404);
 		else {
-			if ($sameUser){
-				$CurrentSession = Auth::$session;
-				$Database->where('id != ?', [$CurrentSession->id]);
-			}
-			$Sessions = $Database
-				->where('user',$User->id)
-				->orderBy('lastvisit','DESC')
-				->get('sessions',null,'id,created,lastvisit,platform,browser_name,browser_ver,user_agent,scope');
+			if ($sameUser)
+				$CurrentSessionID = Auth::$session->id;
+			$Sessions = $User->sessions;
 		}
 
 		$settings = [
@@ -85,8 +85,8 @@ class UserController extends Controller {
 				'Sessions' => $Sessions ?? null,
 			],
 		];
-		if (isset($CurrentSession))
-			$settings['import']['CurrentSession'] = $CurrentSession;
+		if (isset($CurrentSessionID))
+			$settings['import']['CurrentSessionID'] = $CurrentSessionID;
 		if (isset($MSG))
 			$settings['import']['MSG'] = $MSG;
 		if (isset($SubMSG))
@@ -106,66 +106,45 @@ class UserController extends Controller {
 		if (Permission::insufficient('developer') || !isset($params['uuid']))
 			CoreUtils::notFound();
 
-		global $Database;
-
 		/** @var $User User */
-		$User = $Database->where('id', $params['uuid'])->getOne('users','name');
+		$User = DB::$instance->where('id', $params['uuid'])->getOne('users','name');
 		if (empty($User))
 			CoreUtils::notFound();
 
 		HTTP::redirect('/@'.$User->name);
 	}
 
-	public function awaitingApproval($params){
-		CSRFProtection::protect();
-
-		if (!isset($params['name']))
-			Response::fail('Missing username');
-
-		$targetUser = Users::get($params['name'], 'name');
-		if (empty($targetUser))
-			Response::fail('User not found');
-
-		$sameUser = Auth::$signed_in && Auth::$user->id === $targetUser->id;
-		Response::done(['html' => Users::getAwaitingApprovalHTML($targetUser, $sameUser)]);
-	}
-
 	public function suggestion(){
-		global $Database;
-
 		CSRFProtection::protect();
 
 		if (Permission::insufficient('user'))
 			Response::fail('You must be signed in to use this feature.');
 
-		$postIDs = $Database->rawQuery(
+		$postIDs = DB::$instance->query(
 			'SELECT id FROM requests
-			WHERE deviation_id IS NULL && (reserved_by IS NULL OR reserved_at < NOW() - INTERVAL \'3 WEEK\')');
+			WHERE deviation_id IS NULL AND (reserved_by IS NULL OR reserved_at < NOW() - INTERVAL \'3 WEEK\')');
 		$drawArray = [];
 		foreach ($postIDs as $post)
 			$drawArray[] = $post['id'];
 		$chosen = $drawArray[array_rand($drawArray)];
 		/** @var $Request \App\Models\Request */
-		$Request = $Database->where('id', $chosen)->getOne('requests');
+		$Request = Request::find($chosen);
 		Response::done(['suggestion' => Posts::getSuggestionLi($Request)]);
 	}
 
 	public function sessionDel($params){
-		global $Database;
-
 		CSRFProtection::protect();
 
 		if (!isset($params['id']) || !is_numeric($params['id']))
 			Response::fail('Missing session ID');
 
-		$Session = $Database->where('id', $params['id'])->getOne('sessions');
+		$Session = Session::find($params['id']);
 		if (empty($Session))
 			Response::fail('This session does not exist');
 		if ($Session->user !== Auth::$user->id && !Permission::sufficient('staff'))
 			Response::fail('You are not allowed to delete this session');
 
-		if (!$Database->where('id', $Session->id)->delete('sessions'))
-			Response::fail('Session could not be deleted');
+		$Session->delete();
 		Response::success('Session successfully removed');
 	}
 
@@ -206,8 +185,6 @@ class UserController extends Controller {
 	}
 
 	private function _banishAction($params, bool $banish){
-		global $Database;
-
 		CSRFProtection::protect();
 		if (Permission::insufficient('staff'))
 			Response::fail();
@@ -219,7 +196,8 @@ class UserController extends Controller {
 		$action = strtolower($Action);
 
 		$targetUser = Users::get($params['name'], 'name');
-		if (empty($targetUser)) Response::fail('User not found');
+		if (empty($targetUser))
+			Response::fail('User not found');
 
 		if ($targetUser->id === Auth::$user->id)
 			Response::fail("You cannot $action yourself");
@@ -236,8 +214,15 @@ class UserController extends Controller {
 			]
 		]))->out();
 
-		$changes = ['role' => $action === 'banish' ? 'ban' : 'user'];
-		$Database->where('id', $targetUser->id)->update('users', $changes);
+		if ($action === 'banish')
+			$targetUser->updateRole('ban', true);
+		else {
+			$clubRole = $targetUser->getClubRole();
+			if ($clubRole !== null)
+				$targetUser->updateRole($clubRole, true);
+			else $targetUser->updateRole('user', true);
+		}
+
 		Logs::logAction($action, [
 			'target' => $targetUser->id,
 			'reason' => $reason
@@ -292,8 +277,6 @@ class UserController extends Controller {
 		if ($params['type'] === 'requests' && $targetUser->id !== (Auth::$user->id ?? null) && Permission::insufficient('staff'))
 			CoreUtils::notFound();
 
-		global $Database;
-
 		$paginationPath = "@{$targetUser->name}/contrib/{$params['type']}";
 
 		$itemsPerPage = 10;
@@ -320,8 +303,12 @@ class UserController extends Controller {
 				$cnt = $targetUser->getFinishedPostContributions();
 				$Pagination->calcMaxPages($cnt);
 				$data = $targetUser->getFinishedPostContributions(false, $Pagination);
-				foreach ($data as &$item)
-					$item = isset($item['requested_by']) ? new Request($item) : new Reservation($item);
+				foreach ($data as &$item){
+					$isRequest = !empty($item['requested_by']);
+					if (!$isRequest)
+						unset($item['requested_by'], $item['requested_at']);
+					$item = $isRequest ? new Request($item) : new Reservation($item);
+				}
 				unset($item);
 			break;
 			case 'fulfilled-requests':
@@ -332,7 +319,6 @@ class UserController extends Controller {
 			default:
 				throw new \Exception(__METHOD__.": Mising data retriever for type {$params['type']}");
 		}
-
 
 		CoreUtils::fixPath("/$paginationPath/{$Pagination->page}");
 
@@ -345,7 +331,7 @@ class UserController extends Controller {
 			'title' => $title,
 			'heading' => $heading,
 			'css' => ['user-contrib'],
-			'js' => ['paginate'],
+			'js' => ['paginate','user-contrib'],
 			'view' => 'user-contrib',
 			'import' => [
 				'data' => $data,
@@ -356,5 +342,19 @@ class UserController extends Controller {
 				'targetUser' => $targetUser,
 			],
 		]);
+	}
+
+	public function contribLazyload($params){
+		$CachedDeviation = DeviantArt::getCachedDeviation($params['favme']);
+		if (empty($CachedDeviation))
+			HTTP::statusCode(404, AND_DIE);
+
+		if (empty($_GET['format']))
+			Response::done(['html' => $CachedDeviation->toLinkWithPreview()]);
+		else switch ($_GET['format']){
+			case 'raw':
+				Response::done($CachedDeviation->to_array());
+			break;
+		}
 	}
 }

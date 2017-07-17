@@ -86,6 +86,9 @@ class Browser {
 	const BROWSER_MSN = 'MSN Browser'; // http://explorer.msn.com/
 	const BROWSER_MSNBOT = 'MSN Bot'; // http://search.msn.com/msnbot.htm
 	const BROWSER_BINGBOT = 'Bing Bot'; // http://en.wikipedia.org/wiki/Bingbot
+	const BROWSER_PALEMOON = 'Pale Moon'; // https://www.palemoon.org/
+	const BROWSER_MAXTHON = 'Maxthon'; // http://maxthon.com/
+	const BROWSER_FFFOCUS = 'Firefox Focus'; // https://www.mozilla.org/en-US/firefox/focus/
 
 	const BROWSER_NETSCAPE_NAVIGATOR = 'Netscape Navigator'; // http://browser.netscape.com/ (DEPRECATED)
 	const BROWSER_GALEON = 'Galeon'; // http://galeon.sourceforge.net/ (DEPRECATED)
@@ -123,7 +126,7 @@ class Browser {
 	 * Reset all properties
 	 */
 	public function reset(){
-		$this->_agent = $_SERVER['HTTP_USER_AGENT'] ?? '';
+		$this->_agent = isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '';
 		$this->_browserName = self::BROWSER_UNKNOWN;
 		$this->_version = self::VERSION_UNKNOWN;
 		$this->_platform = self::PLATFORM_UNKNOWN;
@@ -144,7 +147,7 @@ class Browser {
 	 * @return bool True if the browser is the specified browser
 	 */
 	public function isBrowser($browserName){
-		return (0 === strcasecmp($this->_browserName, trim($browserName)));
+		return (0 == strcasecmp($this->_browserName, trim($browserName)));
 	}
 
 	/**
@@ -375,7 +378,10 @@ class Browser {
 			$this->checkBrowserOpera() ||
 			$this->checkBrowserGaleon() ||
 			$this->checkBrowserNetscapeNavigator9Plus() ||
+			$this->checkBrowserPaleMoon() ||
+			$this->checkBrowserFirefoxFocus() ||
 			$this->checkBrowserFirefox() ||
+			$this->checkBrowserMaxthon() ||
 			$this->checkBrowserChrome() ||
 			$this->checkBrowserOmniWeb() ||
 
@@ -588,17 +594,19 @@ class Browser {
 			$this->setVersion('11.0');
 
 			return true;
-		} // Test for v1 - v1.5 IE
+		}
+		// Test for v1 - v1.5 IE
 		if (stripos($this->_agent, 'microsoft internet explorer') !== false){
 			$this->setBrowser(self::BROWSER_IE);
 			$this->setVersion('1.0');
-			$aresult = strstr($this->_agent, '/');
+			$aresult = stristr($this->_agent, '/');
 			if (preg_match('/308|425|426|474|0b1/i', $aresult)){
 				$this->setVersion('1.5');
 			}
 
 			return true;
-		} // Test for versions > 1.5
+		}
+		// Test for versions > 1.5
 		if (stripos($this->_agent, 'msie') !== false && stripos($this->_agent, 'opera') === false){
 			// See if the browser is the odd MSN Explorer
 			if (stripos($this->_agent, 'msnb') !== false){
@@ -694,7 +702,7 @@ class Browser {
 			}
 			else {
 				$aversion = explode(' ', stristr($resultant, 'opera'));
-				$this->setVersion($aversion[1] ?? '');
+				$this->setVersion(isset($aversion[1]) ? $aversion[1] : '');
 			}
 			if (stripos($this->_agent, 'Opera Mobi') !== false){
 				$this->setMobile();
@@ -746,6 +754,22 @@ class Browser {
 
 				return true;
 			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Determine if the browser is Chrome or not (last updated 1.7)
+	 * @return boolean True if the browser is Chrome otherwise false
+	 */
+	protected function checkBrowserMaxthon(){
+		if (preg_match('~\bMaxthon\/([\d.]+)~',$this->_agent,$match)){
+			$this->setVersion($match[1]);
+			$this->setBrowser(self::BROWSER_MAXTHON);
+
+
+			return true;
 		}
 
 		return false;
@@ -852,7 +876,7 @@ class Browser {
 	protected function checkBrowserOmniWeb(){
 		if (stripos($this->_agent, 'omniweb') !== false){
 			$aresult = explode('/', stristr($this->_agent, 'omniweb'));
-			$aversion = explode(' ', $aresult[1] ?? '');
+			$aversion = explode(' ', isset($aresult[1]) ? $aresult[1] : '');
 			$this->setVersion($aversion[0]);
 			$this->setBrowser(self::BROWSER_OMNIWEB);
 
@@ -1004,6 +1028,36 @@ class Browser {
 	}
 
 	/**
+	 * Determine if the browser is Firefox Focus or not
+	 * @return boolean True if the browser is Firefox Focus otherwise false
+	 */
+	protected function checkBrowserFirefoxFocus(){
+		if (preg_match("~\bFocus\/([\d.]+)~", $this->_agent, $matches)){
+			$this->setVersion($matches[1]);
+			$this->setBrowser(self::BROWSER_FFFOCUS);
+
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Determine if the browser is Pale Moon
+	 * @return boolean True if the browser is Pale Moon otherwise false
+	 */
+	protected function checkBrowserPaleMoon(){
+		if (preg_match("~PaleMoon/([\d.]+)~", $this->_agent, $matches)){
+			$this->setVersion($matches[1]);
+			$this->setBrowser(self::BROWSER_PALEMOON);
+
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
 	 * Determine if the browser is Firefox or not (last updated 1.7)
 	 * @return boolean True if the browser is Firefox otherwise false
 	 */
@@ -1061,7 +1115,7 @@ class Browser {
 	protected function checkBrowserLynx(){
 		if (stripos($this->_agent, 'lynx') !== false){
 			$aresult = explode('/', stristr($this->_agent, 'Lynx'));
-			$aversion = explode(' ', $aresult[1] ?? '');
+			$aversion = explode(' ', (isset($aresult[1]) ? $aresult[1] : ''));
 			$this->setVersion($aversion[0]);
 			$this->setBrowser(self::BROWSER_LYNX);
 

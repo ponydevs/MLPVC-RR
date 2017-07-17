@@ -3,22 +3,20 @@
 namespace App;
 
 use App\Exceptions\MismatchedProviderException;
+use App\Models\Appearance;
 use App\Models\Cutiemark;
 use App\Models\User;
 
 class Cutiemarks {
 	/**
-	 * @param int    $AppearanceID
-	 * @param string $cols
-	 * @param bool   $procSym
+	 * @param Appearance $Appearance
+	 * @param bool       $procSym
 	 *
 	 * @return Cutiemark[]|null
 	 */
-	public static function get(int $AppearanceID, string $cols = '*', bool $procSym = true){
-		global $Database;
-
+	public static function get(Appearance $Appearance, bool $procSym = true){
 		/** @var $CMs Cutiemark[] */
-		$CMs = $Database->where('ponyid', $AppearanceID)->orderBy('facing','ASC')->get('cutiemarks', null, $cols);
+		$CMs = $Appearance->cutiemarks;
 		if ($procSym)
 			self::processSymmetrical($CMs);
 		return $CMs;
@@ -27,7 +25,7 @@ class Cutiemarks {
 	/** @param Cutiemark[] $CMs */
 	public static function processSymmetrical(&$CMs){
 		if (count($CMs) === 1 && is_null($CMs[0]->facing)){
-			$CMs[1] = new Cutiemark((array) $CMs[0]);
+			$CMs[1] = new Cutiemark($CMs[0]->to_array());
 			$CMs[0]->facing = 'left';
 			$CMs[1]->facing = 'right';
 			$CMs[1]->favme_rotation = $CMs[0]->favme_rotation*-1;
@@ -64,7 +62,7 @@ class Cutiemarks {
 		$preview = CoreUtils::aposEncode($cm->getPreviewURL());
 
 		$Vector = DeviantArt::getCachedDeviation($cm->favme);
-		$userlink = Users::get($Vector->author,'name','name, avatar_url')->getProfileLink(User::LINKFORMAT_FULL);
+		$userlink = Users::get($Vector->author, 'name')->getProfileLink(User::LINKFORMAT_FULL);
 		$content = <<<HTML
 <span class="title">$facing</span>
 <a  class="preview" href="http://fav.me/{$cm->favme}" style="background-image:url('{$previewSVG}')">
@@ -79,12 +77,12 @@ HTML;
 	const VALID_FACING_COMBOS = ['left,right','right,left','left','right',''];
 
 	/**
-	 * @param array $data
-	 * @param int   $index
+	 * @param Cutiemark $data
+	 * @param int       $index
 	 *
 	 * @return bool
 	 */
-	public static function postProcess(&$data, int $index):bool {
+	public static function postProcess(Cutiemark $data, int $index):bool {
 		$favme = isset($_POST['favme'][$index]) ? trim($_POST['favme'][$index]) : null;
 		if (empty($favme)){
 			if ($index > 0)
@@ -100,7 +98,7 @@ HTML;
 				Response::fail('Body orientation is invalid');
 		}
 		else $facing = null;
-		$data['facing'] = $facing;
+		$data->facing = $facing;
 
 		try {
 			$Image = new ImageProvider($favme, ['fav.me', 'dA']);
@@ -112,7 +110,7 @@ HTML;
 		catch (\Exception $e){ Response::fail('Cutie Mark link issue: '.$e->getMessage()); }
 		if (!CoreUtils::isDeviationInClub($favme))
 			Response::fail('The cutie mark vector must be in the group gallery');
-		$data['favme'] = $favme;
+		$data->favme = $favme;
 
 		if (!isset($_POST['favme_rotation'][$index]))
 			Response::fail('Preview rotation amount is missing');
@@ -121,19 +119,19 @@ HTML;
 			Response::fail('Preview rotation must be a number');
 		if ($favme_rotation < -180 || $favme_rotation > 180)
 			Response::fail('Preview rotation must be between -180 and 180');
-		$data['favme_rotation'] = $favme_rotation;
+		$data->favme_rotation = $favme_rotation;
 
-		$data['preview'] = null;
-		$data['preview_src'] = null;
+		$data->preview = null;
+		$data->preview_src = null;
 		if (isset($_POST['preview_src'][$index])){
 			$preview_src = trim($_POST['preview_src'][$index]);
 			if (!empty($preview_src)){
 				$prov = new ImageProvider($preview_src);
-				if (!isset($prov->preview))
+				if ($prov->preview === null)
 					Response::fail('Preview image could not be found.');
 
-				$data['preview'] = $prov->preview;
-				$data['preview_src'] = $preview_src;
+				$data->preview = $prov->preview;
+				$data->preview_src = $preview_src;
 			}
 		}
 		return true;
@@ -144,12 +142,10 @@ HTML;
 	 * @return string
 	 */
 	public static function convertDataForLogs($CMs):string {
-		foreach ($CMs as $k => $v){
-			$CMs[$k] = (array)$v;
-			if ($v->ponyid !== null)
-				/** @noinspection OffsetOperationsInspection */
-				unset($CMs[$k]['ponyid']);
-		}
+		foreach ($CMs as $k => $v)
+			$CMs[$k] = $v->to_array([
+				'except' => 'appearance_id',
+			]);
 		return JSON::encode($CMs);
 	}
 }

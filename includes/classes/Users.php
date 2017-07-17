@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Models\Logs\DANameChange;
 use App\Models\Post;
 use App\Models\Request;
 use App\Models\Reservation;
@@ -26,37 +27,24 @@ class Users {
 	 *
 	 * @param string $value
 	 * @param string $coloumn
-	 * @param string $dbcols
 	 *
 	 * @throws \Exception
 	 * @return User|null|false
 	 */
-	public static function get($value, $coloumn = 'id', $dbcols = null){
-		global $Database;
+	public static function get($value, $coloumn = 'id'){
+		if ($coloumn === 'id')
+			return User::find($value);
 
-		if ($coloumn === 'token'){
-			/** @var $Session Session */
-			$Session = $Database->where('token', $value)->getOne('sessions');
-
-			if (empty($Session))
-				return null;
-			$coloumn = 'id';
-			$value = $Session->user;
-		}
-
-		if ($coloumn === 'id' && !empty(self::$_USER_CACHE[$value]))
+		if ($coloumn === 'name' && !empty(self::$_USER_CACHE[$value]))
 			return self::$_USER_CACHE[$value];
 
-		$User = $Database->where($coloumn, $value)->getOne('users',$dbcols);
+		$User = User::find('first', ['conditions' => ["\"$coloumn\" = ?", $value]]);
 
 		if (empty($User) && $coloumn === 'name')
-			$User = self::fetch($value, $dbcols);
+			$User = self::fetch($value);
 
-		if (empty($dbcols) && !empty($User) && isset($Session))
-			Auth::$session = $Session;
-
-		if (isset($User->id) && !isset($dbcols))
-			self::$_USER_CACHE[$User->id] = $User;
+		if (isset($User->name))
+			self::$_USER_CACHE[$User->name] = $User;
 
 		return $User;
 	}
@@ -67,20 +55,19 @@ class Users {
 	 * Fetch user info from dA upon request to nonexistant user
 	 *
 	 * @param string $username
-	 * @param string $dbcols
 	 *
 	 * @return User|null|false
 	 * @throws \Exception
 	 */
-	public static function fetch($username, $dbcols = null){
-		global $Database, $USERNAME_REGEX;
+	public static function fetch($username){
+		global $USERNAME_REGEX;
 
 		if (!$USERNAME_REGEX->match($username))
 			return null;
 
-		$oldName = $Database->where('old', $username)->getOne('log__da_namechange','id');
+		$oldName = DANameChange::find_by_old($username);
 		if (!empty($oldName))
-			return self::get($oldName['id'], 'id', $dbcols);
+			return User::find($oldName->id);
 
 		try {
 			$userdata = DeviantArt::request('user/whois', null, ['usernames[0]' => $username]);
@@ -96,7 +83,7 @@ class Users {
 		$ID = strtolower($userdata['userid']);
 
 		/** @var $DBUser User */
-		$DBUser = $Database->where('id', $ID)->getOne('users','name');
+		$DBUser = DB::$instance->where('id', $ID)->getOne('users','name');
 		$userExists = !empty($DBUser);
 
 		$insert = [
@@ -106,8 +93,8 @@ class Users {
 		if (!$userExists)
 			$insert['id'] = $ID;
 
-		if (!($userExists ? $Database->where('id', $ID)->update('users', $insert) : $Database->insert('users',$insert)))
-			throw new \Exception('Saving user data failed'.(Permission::sufficient('developer')?': '.$Database->getLastError():''));
+		if (!($userExists ? DB::$instance->where('id', $ID)->update('users', $insert) : DB::$instance->insert('users',$insert)))
+			throw new \Exception('Saving user data failed'.(Permission::sufficient('developer')?': '.DB::$instance->getLastError():''));
 
 		if (!$userExists)
 			Logs::logAction('userfetch', ['userid' => $insert['id']]);
@@ -116,8 +103,6 @@ class Users {
 			$names[] = $DBUser->name;
 		foreach ($names as $name){
 			if (strcasecmp($name,$insert['name']) !== 0){
-				if (UserPrefs::get('discord_token',$ID) === 'true')
-					UserPrefs::set('discord_token','',$ID);
 				Logs::logAction('da_namechange', [
 					'old' => $name,
 					'new' => $insert['name'],
@@ -126,7 +111,7 @@ class Users {
 			}
 		}
 
-		return self::get($insert['name'], 'name', $dbcols);
+		return self::get($insert['name'], 'name');
 	}
 
 	/**
@@ -137,19 +122,17 @@ class Users {
 	 * @return bool|null
 	 */
 	public static function reservationLimitExceeded(bool $return_as_bool = false){
-		global $Database;
-
-		$reservations = $Database->rawQuerySingle(
+		$reservations = DB::$instance->querySingle(
 			'SELECT
 			(
 				(SELECT
 				 COUNT(*) as "count"
 				 FROM reservations res
-				 WHERE res.reserved_by = u.id && res.deviation_id IS NULL)
+				 WHERE res.reserved_by = u.id AND res.deviation_id IS NULL)
 				+(SELECT
 				  COUNT(*) as "count"
 				  FROM requests req
-				  WHERE req.reserved_by = u.id && req.deviation_id IS NULL)
+				  WHERE req.reserved_by = u.id AND req.deviation_id IS NULL)
 			) as "count"
 			FROM users u WHERE u.id = ?',
 			[Auth::$user->id]
@@ -194,9 +177,10 @@ HTML;
 
 	/**
 	 * Check authentication cookie and set global
+	 *
+	 * @throws \InvalidArgumentException
 	 */
 	public static function authenticate(){
-		global $Database;
 		CSRFProtection::detect();
 
 		if (!POST_REQUEST && isset($_GET['CSRF_TOKEN']))
@@ -205,35 +189,35 @@ HTML;
 		if (!Cookie::exists('access'))
 			return;
 		$authKey = Cookie::get('access');
-		if (!empty($authKey))
-			Auth::$user = Users::get(CoreUtils::sha256($authKey),'token');
+		if (!empty($authKey)){
+			Auth::$session = Session::find_by_token(CoreUtils::sha256($authKey));
+			if (isset(Auth::$session))
+				Auth::$user = Auth::$session->user;
+		}
 
-		if (!empty(Auth::$user)){
+		if (!empty(Auth::$user->id)){
 			if (Auth::$user->role === 'ban')
-				$Database->where('id', Auth::$user->id)->delete('sessions');
+				Session::table()->delete(['user' => Auth::$user->id]);
 			else {
-				if (isset(Auth::$session->expires)){
-					if (strtotime(Auth::$session->expires) < time()){
-						$tokenvalid = false;
-						try {
-							DeviantArt::getToken(Auth::$session->refresh, 'refresh_token');
-							$tokenvalid = true;
-						}
-						catch (CURLRequestException $e){
-							$Database->where('id', Auth::$session->id)->delete('sessions');
-							trigger_error('Session refresh failed for '.Auth::$user->name.' ('.Auth::$user->id.") | {$e->getMessage()} (HTTP {$e->getCode()})", E_USER_WARNING);
-						}
+				if (!Auth::$session->expired)
+					$tokenvalid = true;
+				else {
+					$tokenvalid = false;
+					try {
+						DeviantArt::refreshAccessToken();
+						$tokenvalid = true;
 					}
-					else $tokenvalid = true;
+					catch (CURLRequestException $e){
+						Auth::$session->delete();
+						trigger_error('Session refresh failed for '.Auth::$user->name.' ('.Auth::$user->id.") | {$e->getMessage()} (HTTP {$e->getCode()})", E_USER_WARNING);
+					}
 				}
-				else $tokenvalid = false;
 
 				if ($tokenvalid){
 					Auth::$signed_in = true;
 					if (time() - strtotime(Auth::$session->lastvisit) > Time::IN_SECONDS['minute']){
-						$lastVisitTS = date('c');
-						if ($Database->where('id', Auth::$session->id)->update('sessions', ['lastvisit' => $lastVisitTS]))
-							Auth::$session->lastvisit = $lastVisitTS;
+						Auth::$session->lastvisit = date('c');
+						Auth::$session->save();
 					}
 				}
 			}
@@ -253,103 +237,20 @@ HTML;
 		0 => 'This user has',
 	];
 
-	public static function getPendingReservationsHTML($UserID, $sameUser, $isMember = true){
-		global $Database;
-
-		$visitorStaff = Permission::sufficient('staff');
-		$staffVisitingMember = $visitorStaff && $isMember;
-		$YouHave = self::YOU_HAVE[$sameUser];
-		$PrivateSection = $sameUser? Users::PROFILE_SECTION_PRIVACY_LEVEL['staff']:'';
-
-		if ($staffVisitingMember || ($isMember && $sameUser)){
-			$cols = 'id, season, episode, preview, label, posted, reserved_by, broken';
-			$PendingReservations = $Database->where('reserved_by', $UserID)->where('deviation_id IS NULL')->get('reservations',null,$cols);
-			$PendingRequestReservations = $Database->where('reserved_by', $UserID)->where('deviation_id IS NULL')->get('requests',null,"$cols, reserved_at, true as requested_by");
-			$TotalPending = count($PendingReservations)+count($PendingRequestReservations);
-			$hasPending = $TotalPending > 0;
-		}
-		else {
-			$TotalPending = 0;
-			$hasPending = false;
-		}
-		$HTML = '';
-		if ($staffVisitingMember || $sameUser){
-			$gamble = $TotalPending < 4 && $sameUser ? ' <button id="suggestion" class="btn orange typcn typcn-lightbulb">Suggestion</button>' : '';
-			$HTML .= <<<HTML
-<section class='pending-reservations'>
-<h2>{$PrivateSection}Pending reservations$gamble</h2>
-HTML;
-
-			if ($isMember){
-				$pendingCountReadable = ($hasPending>0?"<strong>$TotalPending</strong>":'no');
-				$posts = CoreUtils::makePlural('reservation', $TotalPending);
-				$HTML .= "<span>$YouHave $pendingCountReadable pending $posts";
-				if ($hasPending)
-					$HTML .= ' which ha'.($TotalPending!==1?'ve':'s').'n’t been marked as finished yet';
-				$HTML .= '.';
-				if ($sameUser)
-					$HTML .= ' Please keep in mind that the global limit is 4 at any given time. If you reach the limit, you can’t reserve any more images until you finish or cancel some of your pending reservations.';
-				$HTML .= '</span>';
-
-				if ($hasPending){
-					/** @var $Posts Post[] */
-					$Posts = array_merge(
-						Posts::getReservationsSection($PendingReservations, RETURN_ARRANGED)['unfinished'],
-						array_filter(array_values(Posts::getRequestsSection($PendingRequestReservations, RETURN_ARRANGED)['unfinished']))
-					);
-					usort($Posts, function(Post $a, Post $b){
-						$a = strtotime($a->posted);
-						$b = strtotime($b->posted);
-
-						return -($a < $b ? -1 : ($a === $b ? 0 : 1));
-					});
-					$LIST = '';
-					foreach ($Posts as $Post){
-						$postLink = $Post->toLink($_);
-						$postAnchor = $Post->toAnchor(null, $_);
-						$label = !empty($Post->label) ? "<span class='label'>{$Post->label}</span>" : '';
-						$actionCond = $Post->isRequest && !empty($Post->reserved_at);
-						$posted = Time::tag($actionCond ? $Post->reserved_at : $Post->posted);
-						$PostedAction = $actionCond ? 'Reserved' : 'Posted';
-						$contestable = $Post->isOverdue() ? Posts::CONTESTABLE : '';
-						$broken = $Post->broken ? Posts::BROKEN : '';
-						$fixbtn = $Post->broken ? "<button class='darkblue typcn typcn-spanner fix'>Fix</button>" : '';
-
-						$LIST .= <<<HTML
-<li>
-	<div class='image screencap'>
-		<a href='$postLink'><img src='{$Post->preview}'></a>
-	</div>
-	$label
-	<em>$PostedAction under $postAnchor $posted</em>
-	$contestable
-	$broken
-	<div>
-		$fixbtn
-		<a href='$postLink' class='btn blue typcn typcn-arrow-forward'>View</a>
-		<button class='red typcn typcn-user-delete cancel'>Cancel</button>
-	</div>
-</li>
-HTML;
-						// Clearing variable set via reference by the toLink method call
-						unset($_);
-					}
-					$HTML .= "<ul>$LIST</ul>";
-				}
-			}
-			else {
-				$HTML .= '<p>Reservations are a way to allow Club Members to claim requests on the site as well as claim screenshots of their own, in order to reduce duplicate submissions to the group. You can use the button above to get random requests from the site that you can draw as practice, or to potentially submit along with your application to the club.</p>';
-			}
-
-			$HTML .= '</section>';
-		}
-		return $HTML;
+	/**
+	 * @param User $User
+	 * @param bool $sameUser
+	 * @param bool $isMember
+	 *
+	 * @return string
+	 */
+	public static function getPendingReservationsHTML($User, $sameUser, $isMember = true):string {
+		return $User->getPendingReservationsHTML($sameUser, $isMember);
 	}
 
 	public static function getPersonalColorGuideHTML(User $User, bool $sameUser):string {
-		global $Database;
-		$UserID = $User->id;
-		$sectionIsPrivate = UserPrefs::get('p_hidepcg', $UserID);
+
+		$sectionIsPrivate = UserPrefs::get('p_hidepcg', $User);
 		if ($sectionIsPrivate && (!$sameUser && Permission::insufficient('staff')))
 			return '';
 
@@ -391,11 +292,11 @@ HTML;
 		<p>$privateStatus$publicStatus</p>
 	</div>
 HTML;
-		$PersonalColorGuides = $Database->where('owner',$UserID)->orderBy('order')->get('appearances');
+		$PersonalColorGuides = $User->pcg_appearances;
 		if (count($PersonalColorGuides) > 0 || $sameUser){
 			$HTML .= "<ul class='personal-cg-appearances'>";
 			foreach ($PersonalColorGuides as $p)
-				$HTML .= '<li>'.Appearances::getLinkWithPreviewHTML($p).'</li>';
+				$HTML .= '<li>'.$p->getLinkWithPreviewHTML().'</li>';
 			$HTML .= '</ul>';
 		}
 		$Action = $sameUser ? 'Manage' : 'View';
@@ -403,10 +304,6 @@ HTML;
 		$HTML .= '</section>';
 
 		return $HTML;
-	}
-
-	public static function calculatePersonalCGSlots(int $postcount):int {
-		return floor($postcount/10);
 	}
 
 	public static function calculatePersonalCGNextSlot(int $postcount):int {
@@ -422,80 +319,6 @@ HTML;
 				Input::ERROR_INVALID => 'Username (@value) is invalid',
 				]
 		]))->out();
-	}
-
-	public static function getAwaitingApprovalHTML(User $User, bool $sameUser):string {
-		if (Permission::insufficient('member', $User->role))
-			HTTP::statusCode(404, AND_DIE);
-
-		global $Database;
-		$cols = 'id, season, episode, deviation_id';
-		/** @var $AwaitingApproval \App\Models\Post[] */
-		$AwaitingApproval = array_merge(
-			$Database
-				->where('reserved_by', $User->id)
-				->where('deviation_id IS NOT NULL')
-				->where('"lock" IS NOT TRUE')
-				->get('reservations',null,$cols),
-			$Database
-				->where('reserved_by', $User->id)
-				->where('deviation_id IS NOT NULL')
-				->where('"lock" IS NOT TRUE')
-				->get('requests',null,$cols)
-		);
-		$AwaitCount = count($AwaitingApproval);
-		$them = $AwaitCount!==1?'them':'it';
-		$YouHave = self::YOU_HAVE[(int)$sameUser];
-		$privacy = $sameUser? Users::PROFILE_SECTION_PRIVACY_LEVEL['public']:'';
-		$HTML = "<h2>{$privacy}Vectors waiting for approval</h2>";
-		if ($sameUser)
-			$HTML .= '<p>After you finish an image and submit it to the group gallery, an admin will check your vector and may ask you to fix some issues on your image, if any. After an image is accepted to the gallery, it can be marked as "approved", which gives it a green check mark, indicating that it’s most likely free of any errors.</p>';
-		$youHaveAwaitCount = "$YouHave ".(!$AwaitCount?'no':"<strong>$AwaitCount</strong>");
-		$images = CoreUtils::makePlural('image', $AwaitCount);
-		$append = !$AwaitCount
-			? '.'
-			: ', listed below.'.(
-				$sameUser
-				? " Please submit $them to the group gallery as soon as possible to have $them spot-checked for any issues. As stated in the rules, the goal is to add finished images to the group gallery, making $them easier to find for everyone.".(
-					$AwaitCount>10
-					? ' You seem to have a large number of images that have not been approved yet, please submit them to the group soon if you haven’t already.'
-					: ''
-				)
-				:''
-			).'</p><p>You can click the <strong class="color-green"><span class="typcn typcn-tick"></span> Check</strong> button below the '.CoreUtils::makePlural('image',$AwaitCount).' in case we forgot to click it ourselves after accepting it.';
-		$HTML .= <<<HTML
-			<p>{$youHaveAwaitCount} $images waiting to be submited to and/or approved by the group$append</p>
-HTML;
-		if ($AwaitCount){
-			$HTML .= '<ul id="awaiting-deviations">';
-			foreach ($AwaitingApproval as $Post){
-				$deviation = DeviantArt::getCachedDeviation($Post->deviation_id);
-				$url = "http://{$deviation->provider}/{$deviation->id}";
-				unset($_);
-				$postLink = $Post->toLink($_);
-				$postAnchor = $Post->toAnchor(null, $_);
-				$checkBtn = Permission::sufficient('member') ? "<button class='green typcn typcn-tick check'>Check</button>" : '';
-
-				$HTML .= <<<HTML
-<li id="{$Post->getID()}">
-	<div class="image deviation">
-		<a href="$url" target="_blank" rel="noopener">
-			<img src="{$deviation->preview}" alt="{$deviation->title}">
-		</a>
-	</div>
-	<span class="label"><a href="$url" target="_blank" rel="noopener">{$deviation->title}</a></span>
-	<em>Posted under $postAnchor</em>
-	<div>
-		<a href='$postLink' class='btn blue typcn typcn-arrow-forward'>View</a>
-		$checkBtn
-	</div>
-</li>
-HTML;
-			}
-			$HTML .= '</ul>';
-		}
-
-		return $HTML;
 	}
 
 	public static function getContributionsHTML(User $user, bool $sameUser):string {
@@ -523,15 +346,13 @@ HTML;
 	}
 
 	private static function _contribItemFinished(Post $item):string {
-		return isset($item->deviation_id) ? DeviantArt::getCachedDeviation($item->deviation_id)->toLinkWithPreview() : '<em>Nope</em>';
+		return $item->deviation_id !== null ? "<div class='deviation-promise' data-favme='{$item->deviation_id}'></div>" : '<em>Nope</em>';
 	}
 	private static function _contribItemApproved(Post $item):string {
 		return !empty($item->lock) ? '<span class="color-green typcn typcn-tick"></span>' : '<em>Nope</em>';
 	}
 
 	public static function getContributionListHTML(string $type, ?array $data, bool $wrap = WRAP):string {
-		global $Database;
-
 		switch ($type){
 			case 'cms-provided':
 				$TABLE = <<<HTML
@@ -582,9 +403,9 @@ HTML;
 			switch ($type){
 				case 'cms-provided':
 					/** @var $item \App\Models\Cutiemark */
-					$appearance = $Database->where('id', $item->ponyid)->getOne('appearances');
-					$preview = Appearances::getLinkWithPreviewHTML($appearance);
-					$deviation = DeviantArt::getCachedDeviation($item->favme)->toLinkWithPreview();
+					$appearance = $item->appearance;
+					$preview = $appearance->getLinkWithPreviewHTML();
+					$deviation = "<div class='deviation-promise' data-favme='{$item->favme}'></div>";
 
 					$TR = <<<HTML
 <td class="pony-link">$preview</td>
@@ -595,10 +416,10 @@ HTML;
 				case 'requests':
 					/** @var $item Request */
 					$preview = $item->toLinkWithPreview();
-					$posted = Time::tag($item->posted);
-					$isreserved = isset($item->reserved_by);
+					$posted = Time::tag($item->requested_at);
+					$isreserved = $item->reserved_by !== null;
 					if ($isreserved){
-						$reserved_by = Users::get($item->reserved_by)->getProfileLink();
+						$reserved_by = User::find($item->reserved_by)->getProfileLink();
 						$reserved_at = Time::tag($item->reserved_at);
 						$reserved = "<span class='typcn typcn-user' title='By'></span> $reserved_by<br><span class='typcn typcn-time'></span> $reserved_at";
 					}
@@ -616,7 +437,7 @@ HTML;
 				case 'reservations':
 					/** @var $item Request */
 					$preview = $item->toLinkWithPreview();
-					$posted = Time::tag($item->posted);
+					$posted = Time::tag($item->reserved_at);
 					$finished = self::_contribItemFinished($item);
 					$approved = self::_contribItemApproved($item);
 					$TR = <<<HTML
@@ -629,10 +450,10 @@ HTML;
 				case 'finished-posts':
 					/** @var $item Request|Reservation */
 					$preview = $item->toLinkWithPreview();
-					$posted_by = Users::get($item->isRequest ? $item->requested_by : $item->reserved_by)->getProfileLink();
+					$posted_by = User::find($item->is_request ? $item->requested_by : $item->reserved_by)->getProfileLink();
 					$posted_at = Time::tag($item->posted);
 					$posted = "<span class='typcn typcn-user' title='By'></span> $posted_by<br><span class='typcn typcn-time'></span> $posted_at";
-					if ($item->isRequest){
+					if ($item->is_request){
 						$posted = "<td class='by-at'>$posted</td>";
 						$reserved = '<td>'.Time::tag($item->reserved_at).'</td>';
 					}
@@ -653,11 +474,11 @@ HTML;
 				case 'fulfilled-requests':
 					/** @var $item Request */
 					$preview = $item->toLinkWithPreview();
-					$posted_by = Users::get($item->requested_by)->getProfileLink();
-					$posted_at = Time::tag($item->posted);
-					$posted = "<span class='typcn typcn-user' title='By'></span> $posted_by<br><span class='typcn typcn-time'></span> $posted_at";
+					$posted_by = User::find($item->requested_by)->getProfileLink();
+					$requested_at = Time::tag($item->requested_at);
+					$posted = "<span class='typcn typcn-user' title='By'></span> $posted_by<br><span class='typcn typcn-time'></span> $requested_at";
 					$finished = Time::tag($item->finished_at);
-					$deviation = DeviantArt::getCachedDeviation($item->deviation_id)->toLinkWithPreview();
+					$deviation = "<div class='deviation-promise' data-favme='{$item->deviation_id}'></div>";
 					$TR = <<<HTML
 <td>$preview</td>
 <td class='by-at'>$posted</td>

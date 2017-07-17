@@ -4,6 +4,7 @@ namespace App\Controllers;
 use App\CachedFile;
 use App\CoreUtils;
 use App\CSRFProtection;
+use App\DB;
 use App\HTTP;
 use App\Response;
 use App\Statistics;
@@ -25,7 +26,7 @@ class AboutController extends Controller {
 		STAT_CHACHE_DURATION = 5*Time::IN_SECONDS['hour'];
 
 	public function stats(){
-		global $Database;
+
 
 		CSRFProtection::protect();
 
@@ -42,14 +43,14 @@ class AboutController extends Controller {
 
 		switch ($stat){
 			case 'posts':
-				$Labels = $Database->rawQuery(
+				$Labels = DB::$instance->query(
 					"SELECT key FROM
 					(
-						SELECT posted, to_char(posted,'$LabelFormat') AS key FROM requests
-						WHERE posted > NOW() - INTERVAL '2 MONTHS'
+						SELECT requested_at as posted, to_char(requested_at,'$LabelFormat') AS key FROM requests
+						WHERE requested_at > NOW() - INTERVAL '2 MONTHS'
 						UNION ALL
-						SELECT posted, to_char(posted,'$LabelFormat') AS key FROM reservations
-						WHERE posted > NOW() - INTERVAL '2 MONTHS'
+						SELECT reserved_at as posted, to_char(reserved_at,'$LabelFormat') AS key FROM reservations
+						WHERE reserved_at > NOW() - INTERVAL '2 MONTHS'
 					) t
 					GROUP BY key
 					ORDER BY MIN(t.posted)");
@@ -64,13 +65,13 @@ class AboutController extends Controller {
 					WHERE posted > NOW() - INTERVAL '2 MONTHS'
 					GROUP BY to_char(posted,'$LabelFormat')
 					ORDER BY MIN(posted)";
-				$RequestData = $Database->rawQuery(str_replace('table_name', 'requests', $query));
+				$RequestData = DB::$instance->query(str_replace(['table_name','posted'], ['requests','requested_at'], $query));
 				if (!empty($RequestData)){
 					$Dataset = ['label' => 'Requests', 'clrkey' => 0];
 					Statistics::processUsageData($RequestData, $Dataset, $Labels);
 					$Data['datasets'][] = $Dataset;
 				}
-				$ReservationData = $Database->rawQuery(str_replace('table_name', 'reservations', $query));
+				$ReservationData = DB::$instance->query(str_replace(['table_name','posted'], ['reservations','reserved_at'], $query));
 				if (!empty($ReservationData)){
 					$Dataset = ['label' => 'Reservations', 'clrkey' => 1];
 					Statistics::processUsageData($ReservationData, $Dataset, $Labels);
@@ -78,7 +79,7 @@ class AboutController extends Controller {
 				}
 			break;
 			case 'approvals':
-				$Labels = $Database->rawQuery(
+				$Labels = DB::$instance->query(
 					"SELECT to_char(timestamp,'$LabelFormat') AS key
 					FROM log
 					WHERE timestamp > NOW() - INTERVAL '2 MONTHS' AND reftype = 'post_lock'
@@ -87,7 +88,7 @@ class AboutController extends Controller {
 
 				Statistics::processLabels($Labels, $Data);
 
-				$Approvals = $Database->rawQuery(
+				$Approvals = DB::$instance->query(
 					"SELECT
 						to_char(MIN(timestamp),'$LabelFormat') AS key,
 						COUNT(*)::INT AS cnt
@@ -116,7 +117,7 @@ class AboutController extends Controller {
 
 				$BroadLabelFormat = 'YYYY-MM';
 
-				$Approvals = $Database->rawQuery(
+				$Approvals = DB::$instance->query(
 					"SELECT
 						to_char(MIN(timestamp),'$BroadLabelFormat') AS key,
 						COUNT(*)::INT AS cnt
@@ -136,14 +137,14 @@ class AboutController extends Controller {
 					Statistics::processUsageData($Approvals, $Dataset, $Labels);
 					$Data['datasets'][] = $Dataset;
 				}
-				$Requests = $Database->rawQuery(
+				$Requests = DB::$instance->query(
 					"SELECT
-						to_char(MIN(posted),'$BroadLabelFormat') AS key,
+						to_char(MIN(requested_at),'$BroadLabelFormat') AS key,
 						COUNT(*)::INT AS cnt
 					FROM requests
-					WHERE posted >= '$site_launch'
-					GROUP BY to_char(posted,'$BroadLabelFormat')
-					ORDER BY MIN(posted)"
+					WHERE requested_at >= '$site_launch'
+					GROUP BY to_char(requested_at,'$BroadLabelFormat')
+					ORDER BY MIN(requested_at)"
 				);
 				if (!empty($Requests)){
 					$Dataset = ['label' => 'Requests', 'clrkey' => 1];
@@ -161,14 +162,14 @@ class AboutController extends Controller {
 					}
 					$Data['datasets'][] = $Dataset;
 				}
-				$Reservations = $Database->rawQuery(
+				$Reservations = DB::$instance->query(
 					"SELECT
-						to_char(MIN(posted),'$BroadLabelFormat') AS key,
+						to_char(MIN(reserved_at),'$BroadLabelFormat') AS key,
 						COUNT(*)::INT AS cnt
 					FROM reservations
-					WHERE posted >= '$site_launch'
-					GROUP BY to_char(posted,'$BroadLabelFormat')
-					ORDER BY MIN(posted)"
+					WHERE reserved_at >= '$site_launch'
+					GROUP BY to_char(reserved_at,'$BroadLabelFormat')
+					ORDER BY MIN(reserved_at)"
 				);
 				if (!empty($Reservations)){
 					$Dataset = ['label' => 'Reservations', 'clrkey' => 2];

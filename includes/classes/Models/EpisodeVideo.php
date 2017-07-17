@@ -2,29 +2,30 @@
 
 namespace App\Models;
 
+use ActiveRecord\Model;
 use App\CoreUtils;
 use App\Time;
 use App\VideoProvider;
 
-class EpisodeVideo extends AbstractFillable  {
-	/** @var int */
-	public $season, $episode, $part;
-	/** @var bool */
-	public $fullep;
-	/** @var string */
-	public $provider,
-		$id,
-		$modified,
-		$not_broken_at;
+/**
+ * @property int     $season
+ * @property int     $episode
+ * @property int     $part
+ * @property bool    $fullep
+ * @property string  $provider
+ * @property string  $id
+ * @property string  $modified
+ * @property string  $not_broken_at
+ * @property Episode $ep
+ */
+class EpisodeVideo extends Model {
+	static $primary_key = ['season', 'episode', 'provider', 'part'];
 
-	/** @param array|object */
-	public function __construct($iter = null){
-		parent::__construct($this, $iter);
-	}
+	public static $belongs_to = [
+		['ep', 'class' => 'Episode', 'foreign_key' => ['season','episode']],
+	];
 
 	public function isBroken():bool {
-		global $Database;
-
 		if (isset($this->not_broken_at)){
 			$nb = strtotime($this->not_broken_at);
 			if ($nb+(Time::IN_SECONDS['hour']*2) > time())
@@ -38,9 +39,7 @@ class EpisodeVideo extends AbstractFillable  {
 
 		if (!$broken){
 			$this->not_broken_at = date('c');
-			$Database->whereEp($this->season, $this->episode)->where('provider', $this->provider)->where('id', $this->id)->update('episodes__videos', [
-				'not_broken_at' => $this->not_broken_at,
-			]);
+			$this->save();
 		}
 
 		return $broken;

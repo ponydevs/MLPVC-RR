@@ -15,6 +15,7 @@ $router->addMatchTypes([
 	'cgimg' => '[spd]',
 	'cgext' => '(png|svg|json|gpl)',
 	'eqg' => 'eqg',
+	'favme' => 'd[a-z\d]{6}',
 	'gsd' => '([gs]et|del)',
 	'make' => 'make',
 	'cg' => '(c(olou?r)?g(uide)?)',
@@ -52,6 +53,7 @@ $router->map('GET|POST', '/[cg]/get-tags',                                      
 $router->map('GET', '/da-auth',                        'AuthController#auth');
 $router->map('GET', '/episode/[epid:id]',              'EpisodeController#page');
 $router->map('GET', '/episodes/[i]?',                  'EpisodesController#index');
+$router->map('GET', '/episodes/[i]?',                  'EpisodesController#index');
 $router->map('GET', '/eqg/[i:id]',                     'EQGController#redirectInt');
 $router->map('GET', '/eqg/[adi:id]',                   'EQGController#redirectStr');
 $router->map('GET', '/events/[i]?',                    'EventsController#list');
@@ -73,6 +75,9 @@ $router->map('GET', '/@[un:name]/[cg]/[v]/[adi]-[i:id]',                   'Colo
 $router->map('GET', '/@[un:name]/[cg]/[v]/[i:id][cgimg:type].[cgext:ext]', 'ColorGuideController#personalAppearanceAsFile');
 $router->map('GET', '/@[un:name]/[cg]/[eqg:eqg]?/sprite(-colors)?/[i:id][adi]?', 'ColorGuideController#spriteColors');
 $router->map('GET', '/manifest',                       'ManifestController#json');
+$router->map('GET', '/user/contrib/lazyload/[favme:favme]',     'UserController#contribLazyload');
+$router->map('GET', '/post/lazyload/[rrl:thing]/[i:id]', 'PostController#lazyload');
+$router->map('GET', '/event/entry/lazyload/[i:id]',    'EventController#lazyloadEntry');
 
 // "API" Endpoints
 $router->map('POST', '/about/stats',                         'AboutController#stats');
@@ -80,7 +85,6 @@ $router->map('POST', '/admin/logs/details/[i:id]',           'AdminController#lo
 $router->map('POST', '/admin/usefullinks',                   'AdminController#usefulLinks');
 $router->map('POST', '/admin/usefullinks/reorder',           'AdminController#reorderUsefulLinks');
 $router->map('POST', '/admin/mass-approve',                  'AdminController#massApprove');
-$router->map('POST', '/admin/recent-posts',                  'AdminController#recentPosts');
 $router->map('POST', '/admin/discord/member-list',           'AdminController#discordMemberList');
 $router->map('POST', '/admin/discord/member-link/get/[i:id]', 'AdminController#discordMemberLinkGet');
 $router->map('POST', '/admin/discord/member-link/set/[i:id]', 'AdminController#discordMemberLinkSet');
@@ -103,7 +107,6 @@ $router->map('POST', '/@[un:name]/cg/colorgroup/[gsd:action]/[i:id]', 'ColorGuid
 $router->map('POST', '/@[un:name]/cg/colorgroup/[make:action]',       'ColorGuideController#colorGroupAction');
 $router->map('POST', '/da-auth/signout',                     'AuthController#signout');
 $router->map('POST', '/episode/postlist/[epid:id]',          'EpisodeController#postList');
-$router->map('POST', '/episode/nextup',                      'EpisodeController#nextup');
 $router->map('POST', '/episode/get/[epid:id]',               'EpisodeController#get');
 $router->map('POST', '/episode/delete/[epid:id]',            'EpisodeController#delete');
 $router->map('POST', '/episode/set/[epid:id]',               'EpisodeController#set');
@@ -130,6 +133,7 @@ $router->map('POST', '/notifications/get',                   'NotificationsContr
 $router->map('POST', '/notifications/mark-read/[i:id]',      'NotificationsController#markRead');
 $router->map('POST', '/ping',                                'PingController#ping');
 $router->map('POST', '/post/reload/[rrl:thing]/[i:id]',      'PostController#reload');
+$router->map('POST', '/post/transfer/[rrl:thing]/[i:id]',    'PostController#queryTransfer');
 $router->map('POST', '/post/[a:action]/[rrsl:thing]/[i:id]', 'PostController#action');
 $router->map('POST', '/post/add',                            'PostController#add');
 $router->map('POST', '/post/set-image/[rrl:thing]/[i:id]',   'PostController#setImage');
@@ -137,7 +141,6 @@ $router->map('POST', '/post/check-image',                    'PostController#che
 $router->map('POST', '/post/fix-stash/[rrl:thing]/[i:id]',   'PostController#fixStash');
 $router->map('POST', '/post/add-reservation',                'PostController#addReservation');
 $router->map('POST', '/post/delete-request/[i:id]',          'PostController#deleteRequest');
-$router->map('POST', '/post/transfer/[rrl:thing]/[i:id]',    'PostController#queryTransfer');
 $router->map('POST', '/preference/set/[au:key]',             'PreferenceController#set');
 $router->map('POST', '/preference/get/[au:key]',             'PreferenceController#get');
 $router->map('POST', '/setting/set/[au:key]',                'SettingController#set');

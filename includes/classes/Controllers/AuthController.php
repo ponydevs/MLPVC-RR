@@ -35,7 +35,7 @@ class AuthController extends Controller {
 			$this->_error($err, $errdesc);
 		}
 		try {
-			Auth::$user = DeviantArt::getToken($_GET['code'],false,$_GET['state']);
+			Auth::$user = DeviantArt::getAccessToken($_GET['code']);
 		}
 		catch (CURLRequestException $e){
 			if (in_array($e->getCode(),[500,503],true)){
@@ -62,8 +62,6 @@ class AuthController extends Controller {
 	}
 
 	public function signout(){
-		global $Database;
-
 		if (!Auth::$signed_in) Response::success("You've already signed out");
 		CSRFProtection::protect();
 
@@ -76,16 +74,16 @@ class AuthController extends Controller {
 			}
 		}
 
-		$unlinking = isset($_REQUEST['unlink']);
-		if ($unlinking || isset($_REQUEST['everywhere'])){
+		$unlink = isset($_REQUEST['unlink']);
+		if ($unlink || isset($_REQUEST['everywhere'])){
 			$col = 'user';
 			$val = Auth::$user->id;
 			$username = Users::validateName('username', null, true);
-			if (isset($username)){
-				if (!Permission::sufficient('staff') || $unlinking)
+			if ($username !== null){
+				if ($unlink || !Permission::sufficient('staff'))
 					Response::fail();
 				/** @var $TargetUser User */
-				$TargetUser = $Database->where('name', $username)->getOne('users','id,name');
+				$TargetUser = Users::get($username, 'name');
 				if (empty($TargetUser))
 					Response::fail('Target user doesn’t exist');
 				if ($TargetUser->id !== Auth::$user->id)
@@ -98,7 +96,7 @@ class AuthController extends Controller {
 			$val = Auth::$session->id;
 		}
 
-		if (!$Database->where($col,$val)->delete('sessions'))
+		if (!\App\DB::$instance->where($col,$val)->delete('sessions'))
 			Response::fail('Could not remove information from database');
 
 		if (empty($TargetUser))

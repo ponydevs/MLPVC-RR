@@ -2,27 +2,35 @@
 
 namespace App\Models;
 
-class Session extends AbstractFillable {
-	/** @var int */
-	public
-		$id;
-	/** @var string */
-	public
-		$user,
-		$platform,
-		$browser_name,
-		$browser_ver,
-		$user_agent,
-		$token,
-		$access,
-		$refresh,
-		$expires,
-		$created,
-		$lastvisit,
-		$scope;
+use ActiveRecord\Model;
+use ActiveRecord\DateTime;
 
-	/** @param array|object */
-	public function __construct($iter = null){
-		parent::__construct($this, $iter);
+/**
+ * @property int      $id
+ * @property string   $user_id
+ * @property string   $platform
+ * @property string   $browser_name
+ * @property string   $browser_ver
+ * @property string   $user_agent
+ * @property string   $token   (Cookie Auth)
+ * @property string   $access  (oAuth)
+ * @property string   $refresh (oAuth)
+ * @property string   $scope   (oAuth)
+ * @property DateTime $expires (oAuth)
+ * @property DateTime $created
+ * @property DateTime $lastvisit
+ * @property User     $user
+ * @method static Session find_by_token(string $token)
+ * @method static Session find_by_access(string $access)
+ * @method static Session find_by_refresh(string $code)
+ */
+class Session extends Model {
+	public static $belongs_to = [
+		['user'],
+	];
+
+	public function get_expired(){
+		return $this->expires->getTimestamp() < time();
 	}
 }
+

@@ -86,25 +86,30 @@ DocReady.push(function(){
 		}
 	})();
 
-	// Get recent posts
-	let $recents = $('.recent-posts'),
-		fetchingRecents = false;
 	window._AdminRecentScroll = function(){
-		if (fetchingRecents || !$recents.isInViewport())
-			return;
-		let $div = $recents.children('div');
-		if ($div.is(':empty')){
-			fetchingRecents = true;
-			$.post('/admin/recent-posts',$.mkAjaxHandler(function(){
-				if (!this.status) return $div.append('<div class="notice fail align-center">This section failed to load.</div>');
+		$('.post-deviation-promise:not(.loading)').each(function(){
+			const $this = $(this);
+			if (!$this.isInViewport())
+				return;
 
-				$div.html(this.html);
+			const
+				postid = $this.attr('data-post').replace('-','/'),
+				viewonly = $this.attr('data-viewonly');
+			$this.addClass('loading');
+
+			$.get(`/post/lazyload/${postid}`,{viewonly},$.mkAjaxHandler(function(){
+				if (!this.status) return $.Dialog.fail('Cannot load '+postid.replace('/',' #'), this.message);
+
+				$.loadImages(this.html).then(function($el){
+					$this.closest('.image').replaceWith($el);
+				});
 			}));
-		}
+		});
 	};
 	$w.on('scroll',window._AdminRecentScroll);
 	window._AdminRecentScroll();
 },function(){
 	'use strict';
 	$w.off('scroll',window._AdminRecentScroll);
+	delete window._AdminRecentScroll;
 });

@@ -17,8 +17,8 @@ class About {
 		return preg_replace('/^(\d+(?:\.\d+)*).*$/','$1',PHP_VERSION);
 	}
 	public static function getPostgresVersion(){
-		global $Database;
-		return $Database->rawQuerySingle('SHOW server_version')['server_version'];
+
+		return \App\DB::$instance->querySingle('SHOW server_version')['server_version'];
 	}
 	public static function getElasticSearchVersion(){
 		try {

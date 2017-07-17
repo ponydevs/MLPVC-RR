@@ -2,10 +2,11 @@
 
 namespace App\Models;
 
-abstract class AbstractUser extends AbstractFillable {
-	/** @var string */
-	public
-		$id,
-		$name,
-		$avatar_url;
-}
+use ActiveRecord\Model;
+
+/**
+ * @property string $id
+ * @property string $name
+ * @property string $avatar_url
+ */
+abstract class AbstractUser extends Model { }

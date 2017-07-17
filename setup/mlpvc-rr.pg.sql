@@ -87,7 +87,7 @@ CREATE TABLE appearances (
     ishuman boolean,
     added timestamp with time zone DEFAULT now(),
     private boolean DEFAULT false NOT NULL,
-    owner uuid,
+    owner_id uuid,
     last_cleared timestamp with time zone DEFAULT now()
 );
 
@@ -116,10 +116,10 @@ ALTER SEQUENCE appearances_id_seq OWNED BY appearances.id;
 
 
 --
--- Name: cached-deviations; Type: TABLE; Schema: public; Owner: mlpvc-rr
+-- Name: cached_deviations; Type: TABLE; Schema: public; Owner: mlpvc-rr
 --
 
-CREATE TABLE "cached-deviations" (
+CREATE TABLE cached_deviations (
     provider character(6) NOT NULL,
     id character varying(20) NOT NULL,
     title character varying(255) NOT NULL,
@@ -131,27 +131,27 @@ CREATE TABLE "cached-deviations" (
 );
 
 
-ALTER TABLE "cached-deviations" OWNER TO "mlpvc-rr";
+ALTER TABLE cached_deviations OWNER TO "mlpvc-rr";
 
 --
--- Name: colorgroups; Type: TABLE; Schema: public; Owner: mlpvc-rr
+-- Name: color_groups; Type: TABLE; Schema: public; Owner: mlpvc-rr
 --
 
-CREATE TABLE colorgroups (
-    groupid integer NOT NULL,
-    ponyid integer NOT NULL,
+CREATE TABLE color_groups (
+    id integer NOT NULL,
+    appearance_id integer NOT NULL,
     label character varying(255) NOT NULL,
-    "order" integer DEFAULT 1 NOT NULL
+    "order" integer NOT NULL
 );
 
 
-ALTER TABLE colorgroups OWNER TO "mlpvc-rr";
+ALTER TABLE color_groups OWNER TO "mlpvc-rr";
 
 --
--- Name: colorgroups_groupid_seq; Type: SEQUENCE; Schema: public; Owner: mlpvc-rr
+-- Name: color_groups_id_seq; Type: SEQUENCE; Schema: public; Owner: mlpvc-rr
 --
 
-CREATE SEQUENCE colorgroups_groupid_seq
+CREATE SEQUENCE color_groups_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -159,13 +159,13 @@ CREATE SEQUENCE colorgroups_groupid_seq
     CACHE 1;
 
 
-ALTER TABLE colorgroups_groupid_seq OWNER TO "mlpvc-rr";
+ALTER TABLE color_groups_id_seq OWNER TO "mlpvc-rr";
 
 --
--- Name: colorgroups_groupid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: mlpvc-rr
+-- Name: color_groups_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: mlpvc-rr
 --
 
-ALTER SEQUENCE colorgroups_groupid_seq OWNED BY colorgroups.groupid;
+ALTER SEQUENCE color_groups_id_seq OWNED BY color_groups.id;
 
 
 --
@@ -173,8 +173,8 @@ ALTER SEQUENCE colorgroups_groupid_seq OWNED BY colorgroups.groupid;
 --
 
 CREATE TABLE colors (
-    groupid integer NOT NULL,
-    "order" integer,
+    group_id integer NOT NULL,
+    "order" integer NOT NULL,
     label character varying(255) NOT NULL,
     hex character(7),
     CONSTRAINT colors_hex_check CHECK ((hex ~* '^#[\da-f]{6}$'::text))
@@ -188,8 +188,8 @@ ALTER TABLE colors OWNER TO "mlpvc-rr";
 --
 
 CREATE TABLE cutiemarks (
-    cmid integer NOT NULL,
-    ponyid integer NOT NULL,
+    id integer NOT NULL,
+    appearance_id integer NOT NULL,
     facing character varying(10),
     favme character varying(7) NOT NULL,
     favme_rotation smallint NOT NULL,
@@ -202,10 +202,10 @@ CREATE TABLE cutiemarks (
 ALTER TABLE cutiemarks OWNER TO "mlpvc-rr";
 
 --
--- Name: cutiemarks_cmid_seq; Type: SEQUENCE; Schema: public; Owner: mlpvc-rr
+-- Name: cutiemarks_id_seq; Type: SEQUENCE; Schema: public; Owner: mlpvc-rr
 --
 
-CREATE SEQUENCE cutiemarks_cmid_seq
+CREATE SEQUENCE cutiemarks_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -213,22 +213,22 @@ CREATE SEQUENCE cutiemarks_cmid_seq
     CACHE 1;
 
 
-ALTER TABLE cutiemarks_cmid_seq OWNER TO "mlpvc-rr";
+ALTER TABLE cutiemarks_id_seq OWNER TO "mlpvc-rr";
 
 --
--- Name: cutiemarks_cmid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: mlpvc-rr
+-- Name: cutiemarks_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: mlpvc-rr
 --
 
-ALTER SEQUENCE cutiemarks_cmid_seq OWNED BY cutiemarks.cmid;
+ALTER SEQUENCE cutiemarks_id_seq OWNED BY cutiemarks.id;
 
 
 --
--- Name: discord-members; Type: TABLE; Schema: public; Owner: mlpvc-rr
+-- Name: discord_members; Type: TABLE; Schema: public; Owner: mlpvc-rr
 --
 
-CREATE TABLE "discord-members" (
+CREATE TABLE discord_members (
     id character varying(20) NOT NULL,
-    userid uuid,
+    user_id uuid,
     username character varying(255) NOT NULL,
     discriminator integer NOT NULL,
     nick character varying(255),
@@ -237,7 +237,40 @@ CREATE TABLE "discord-members" (
 );
 
 
-ALTER TABLE "discord-members" OWNER TO "mlpvc-rr";
+ALTER TABLE discord_members OWNER TO "mlpvc-rr";
+
+--
+-- Name: episode_videos; Type: TABLE; Schema: public; Owner: mlpvc-rr
+--
+
+CREATE TABLE episode_videos (
+    season integer NOT NULL,
+    episode integer NOT NULL,
+    provider character(2) NOT NULL,
+    id character varying(15) NOT NULL,
+    part integer DEFAULT 1 NOT NULL,
+    fullep boolean DEFAULT true NOT NULL,
+    modified timestamp with time zone DEFAULT now(),
+    not_broken_at timestamp with time zone
+);
+
+
+ALTER TABLE episode_videos OWNER TO "mlpvc-rr";
+
+--
+-- Name: episode_votes; Type: TABLE; Schema: public; Owner: mlpvc-rr
+--
+
+CREATE TABLE episode_votes (
+    season integer NOT NULL,
+    episode integer NOT NULL,
+    user_id uuid NOT NULL,
+    vote smallint NOT NULL,
+    CONSTRAINT episodes__votes_vote_check CHECK (((vote >= 1) AND (vote <= 5)))
+);
+
+
+ALTER TABLE episode_votes OWNER TO "mlpvc-rr";
 
 --
 -- Name: episodes; Type: TABLE; Schema: public; Owner: mlpvc-rr
@@ -252,45 +285,12 @@ CREATE TABLE episodes (
     posted_by uuid,
     airs timestamp with time zone,
     no smallint,
-    score double precision,
+    score double precision DEFAULT '0'::double precision NOT NULL,
     notes text
 );
 
 
 ALTER TABLE episodes OWNER TO "mlpvc-rr";
-
---
--- Name: episodes__videos; Type: TABLE; Schema: public; Owner: mlpvc-rr
---
-
-CREATE TABLE episodes__videos (
-    season integer NOT NULL,
-    episode integer NOT NULL,
-    provider character(2) NOT NULL,
-    id character varying(15) NOT NULL,
-    part integer DEFAULT 1 NOT NULL,
-    fullep boolean DEFAULT true NOT NULL,
-    modified timestamp with time zone DEFAULT now(),
-    not_broken_at timestamp with time zone
-);
-
-
-ALTER TABLE episodes__videos OWNER TO "mlpvc-rr";
-
---
--- Name: episodes__votes; Type: TABLE; Schema: public; Owner: mlpvc-rr
---
-
-CREATE TABLE episodes__votes (
-    season integer NOT NULL,
-    episode integer NOT NULL,
-    "user" uuid NOT NULL,
-    vote smallint NOT NULL,
-    CONSTRAINT episodes__votes_vote_check CHECK (((vote >= 1) AND (vote <= 5)))
-);
-
-
-ALTER TABLE episodes__votes OWNER TO "mlpvc-rr";
 
 --
 -- Name: events; Type: TABLE; Schema: public; Owner: mlpvc-rr
@@ -322,8 +322,8 @@ ALTER TABLE events OWNER TO "mlpvc-rr";
 --
 
 CREATE TABLE events__entries (
-    entryid integer NOT NULL,
-    eventid smallint NOT NULL,
+    id integer NOT NULL,
+    event_id smallint NOT NULL,
     prev_full character varying(255),
     prev_thumb character varying(255),
     sub_prov character varying(20) NOT NULL,
@@ -344,8 +344,8 @@ ALTER TABLE events__entries OWNER TO "mlpvc-rr";
 --
 
 CREATE TABLE events__entries__votes (
-    entryid integer NOT NULL,
-    userid uuid NOT NULL,
+    entry_id integer NOT NULL,
+    user_id uuid NOT NULL,
     value smallint NOT NULL,
     cast_at timestamp with time zone DEFAULT now() NOT NULL
 );
@@ -354,10 +354,10 @@ CREATE TABLE events__entries__votes (
 ALTER TABLE events__entries__votes OWNER TO "mlpvc-rr";
 
 --
--- Name: events__entries_entryid_seq; Type: SEQUENCE; Schema: public; Owner: mlpvc-rr
+-- Name: events__entries_id_seq; Type: SEQUENCE; Schema: public; Owner: mlpvc-rr
 --
 
-CREATE SEQUENCE events__entries_entryid_seq
+CREATE SEQUENCE events__entries_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -365,13 +365,13 @@ CREATE SEQUENCE events__entries_entryid_seq
     CACHE 1;
 
 
-ALTER TABLE events__entries_entryid_seq OWNER TO "mlpvc-rr";
+ALTER TABLE events__entries_id_seq OWNER TO "mlpvc-rr";
 
 --
--- Name: events__entries_entryid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: mlpvc-rr
+-- Name: events__entries_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: mlpvc-rr
 --
 
-ALTER SEQUENCE events__entries_entryid_seq OWNED BY events__entries.entryid;
+ALTER SEQUENCE events__entries_id_seq OWNED BY events__entries.id;
 
 
 --
@@ -429,12 +429,33 @@ ALTER TABLE log OWNER TO "mlpvc-rr";
 
 CREATE TABLE log__appearance_modify (
     entryid integer NOT NULL,
-    ponyid integer NOT NULL,
+    appearance_id integer NOT NULL,
     changes jsonb NOT NULL
 );
 
 
 ALTER TABLE log__appearance_modify OWNER TO "mlpvc-rr";
+
+--
+-- Name: log__appearance_modify_entryid_seq; Type: SEQUENCE; Schema: public; Owner: mlpvc-rr
+--
+
+CREATE SEQUENCE log__appearance_modify_entryid_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE log__appearance_modify_entryid_seq OWNER TO "mlpvc-rr";
+
+--
+-- Name: log__appearance_modify_entryid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER SEQUENCE log__appearance_modify_entryid_seq OWNED BY log__appearance_modify.entryid;
+
 
 --
 -- Name: log__appearances; Type: TABLE; Schema: public; Owner: mlpvc-rr
@@ -487,7 +508,7 @@ ALTER SEQUENCE log__appearances_entryid_seq OWNED BY log__appearances.entryid;
 
 CREATE TABLE log__banish (
     entryid integer NOT NULL,
-    target uuid NOT NULL,
+    target_id uuid NOT NULL,
     reason character varying(255) NOT NULL
 );
 
@@ -521,12 +542,12 @@ ALTER SEQUENCE log__banish_entryid_seq OWNED BY log__banish.entryid;
 
 CREATE TABLE log__cg_modify (
     entryid integer NOT NULL,
-    groupid integer NOT NULL,
+    group_id integer NOT NULL,
     oldlabel character varying(255),
     newlabel character varying(255),
     oldcolors text,
     newcolors text,
-    ponyid integer NOT NULL
+    appearance_id integer NOT NULL
 );
 
 
@@ -559,7 +580,7 @@ ALTER SEQUENCE log__cg_modify_entryid_seq OWNED BY log__cg_modify.entryid;
 
 CREATE TABLE log__cg_order (
     entryid integer NOT NULL,
-    ponyid integer NOT NULL,
+    appearance_id integer NOT NULL,
     oldgroups text NOT NULL,
     newgroups text NOT NULL
 );
@@ -595,8 +616,8 @@ ALTER SEQUENCE log__cg_order_entryid_seq OWNED BY log__cg_order.entryid;
 CREATE TABLE log__cgs (
     entryid integer NOT NULL,
     action character(3) NOT NULL,
-    groupid integer NOT NULL,
-    ponyid integer NOT NULL,
+    group_id integer NOT NULL,
+    appearance_id integer NOT NULL,
     label character varying(255) NOT NULL,
     "order" integer
 );
@@ -631,7 +652,7 @@ ALTER SEQUENCE log__cgs_entryid_seq OWNED BY log__cgs.entryid;
 
 CREATE TABLE log__cm_delete (
     entryid integer NOT NULL,
-    ponyid integer NOT NULL,
+    appearance_id integer NOT NULL,
     data jsonb NOT NULL
 );
 
@@ -665,7 +686,7 @@ ALTER SEQUENCE log__cm_delete_entryid_seq OWNED BY log__cm_delete.entryid;
 
 CREATE TABLE log__cm_modify (
     entryid integer NOT NULL,
-    ponyid integer NOT NULL,
+    appearance_id integer NOT NULL,
     olddata jsonb NOT NULL,
     newdata jsonb NOT NULL
 );
@@ -695,17 +716,17 @@ ALTER SEQUENCE log__cm_modify_entryid_seq OWNED BY log__cm_modify.entryid;
 
 
 --
--- Name: log__color_modify; Type: TABLE; Schema: public; Owner: mlpvc-rr
+-- Name: log__major_changes; Type: TABLE; Schema: public; Owner: mlpvc-rr
 --
 
-CREATE TABLE log__color_modify (
+CREATE TABLE log__major_changes (
     entryid integer NOT NULL,
-    ponyid integer,
+    appearance_id integer,
     reason character varying(255) NOT NULL
 );
 
 
-ALTER TABLE log__color_modify OWNER TO "mlpvc-rr";
+ALTER TABLE log__major_changes OWNER TO "mlpvc-rr";
 
 --
 -- Name: log__color_modify_entryid_seq; Type: SEQUENCE; Schema: public; Owner: mlpvc-rr
@@ -725,7 +746,7 @@ ALTER TABLE log__color_modify_entryid_seq OWNER TO "mlpvc-rr";
 -- Name: log__color_modify_entryid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: mlpvc-rr
 --
 
-ALTER SEQUENCE log__color_modify_entryid_seq OWNED BY log__color_modify.entryid;
+ALTER SEQUENCE log__color_modify_entryid_seq OWNED BY log__major_changes.entryid;
 
 
 --
@@ -736,7 +757,7 @@ CREATE TABLE log__da_namechange (
     entryid integer NOT NULL,
     old citext NOT NULL,
     new citext NOT NULL,
-    id uuid NOT NULL
+    user_id uuid NOT NULL
 );
 
 
@@ -998,7 +1019,7 @@ CREATE TABLE log__req_delete (
     label character varying(255),
     type character varying(4),
     requested_by uuid,
-    posted timestamp without time zone,
+    requested_at timestamp without time zone,
     reserved_by uuid,
     deviation_id character varying(7),
     lock boolean
@@ -1135,17 +1156,17 @@ ALTER SEQUENCE log__rolechange_entryid_seq OWNED BY log__rolechange.entryid;
 
 
 --
--- Name: log__un-banish; Type: TABLE; Schema: public; Owner: mlpvc-rr
+-- Name: log__unbanish; Type: TABLE; Schema: public; Owner: mlpvc-rr
 --
 
-CREATE TABLE "log__un-banish" (
+CREATE TABLE log__unbanish (
     entryid integer NOT NULL,
-    target uuid NOT NULL,
+    target_id uuid NOT NULL,
     reason character varying(255) NOT NULL
 );
 
 
-ALTER TABLE "log__un-banish" OWNER TO "mlpvc-rr";
+ALTER TABLE log__unbanish OWNER TO "mlpvc-rr";
 
 --
 -- Name: log__un-banish_entryid_seq; Type: SEQUENCE; Schema: public; Owner: mlpvc-rr
@@ -1165,7 +1186,7 @@ ALTER TABLE "log__un-banish_entryid_seq" OWNER TO "mlpvc-rr";
 -- Name: log__un-banish_entryid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: mlpvc-rr
 --
 
-ALTER SEQUENCE "log__un-banish_entryid_seq" OWNED BY "log__un-banish".entryid;
+ALTER SEQUENCE "log__un-banish_entryid_seq" OWNED BY log__unbanish.entryid;
 
 
 --
@@ -1238,27 +1259,6 @@ ALTER SEQUENCE log__video_broken_entryid_seq OWNED BY log__video_broken.entryid;
 
 
 --
--- Name: log_appearance_modify_entryid_seq; Type: SEQUENCE; Schema: public; Owner: mlpvc-rr
---
-
-CREATE SEQUENCE log_appearance_modify_entryid_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER TABLE log_appearance_modify_entryid_seq OWNER TO "mlpvc-rr";
-
---
--- Name: log_appearance_modify_entryid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: mlpvc-rr
---
-
-ALTER SEQUENCE log_appearance_modify_entryid_seq OWNED BY log__appearance_modify.entryid;
-
-
---
 -- Name: log_entryid_seq; Type: SEQUENCE; Schema: public; Owner: mlpvc-rr
 --
 
@@ -1285,7 +1285,7 @@ ALTER SEQUENCE log_entryid_seq OWNED BY log.entryid;
 
 CREATE TABLE notifications (
     id integer NOT NULL,
-    "user" uuid NOT NULL,
+    recipient_id uuid NOT NULL,
     type character varying(15) NOT NULL,
     data jsonb NOT NULL,
     sent_at timestamp with time zone DEFAULT now() NOT NULL,
@@ -1318,34 +1318,16 @@ ALTER SEQUENCE notifications_id_seq OWNED BY notifications.id;
 
 
 --
--- Name: users; Type: TABLE; Schema: public; Owner: mlpvc-rr
+-- Name: related_appearances; Type: TABLE; Schema: public; Owner: mlpvc-rr
 --
 
-CREATE TABLE users (
-    id uuid NOT NULL,
-    name citext NOT NULL,
-    role character varying(10) DEFAULT 'user'::character varying NOT NULL,
-    avatar_url character varying(255) NOT NULL,
-    signup_date timestamp with time zone DEFAULT now() NOT NULL
+CREATE TABLE related_appearances (
+    source_id integer NOT NULL,
+    target_id integer NOT NULL
 );
 
 
-ALTER TABLE users OWNER TO "mlpvc-rr";
-
---
--- Name: personal_cg_appearances; Type: VIEW; Schema: public; Owner: mlpvc-rr
---
-
-CREATE VIEW personal_cg_appearances AS
- SELECT u.name AS owner,
-    p.label,
-    ((('https://mlpvc-rr.ml/@'::text || (u.name)::text) || '/cg/v/'::text) || p.id) AS link
-   FROM (appearances p
-     LEFT JOIN users u ON ((p.owner = u.id)))
-  WHERE (p.owner IS NOT NULL);
-
-
-ALTER TABLE personal_cg_appearances OWNER TO "mlpvc-rr";
+ALTER TABLE related_appearances OWNER TO "mlpvc-rr";
 
 --
 -- Name: requests; Type: TABLE; Schema: public; Owner: mlpvc-rr
@@ -1360,7 +1342,7 @@ CREATE TABLE requests (
     fullsize character varying(255) NOT NULL,
     label character varying(255) NOT NULL,
     requested_by uuid,
-    posted timestamp with time zone DEFAULT now() NOT NULL,
+    requested_at timestamp with time zone DEFAULT now() NOT NULL,
     reserved_by uuid,
     deviation_id character varying(7),
     lock boolean DEFAULT false NOT NULL,
@@ -1404,7 +1386,7 @@ CREATE TABLE reservations (
     preview character varying(255),
     fullsize character varying(255),
     label character varying(255),
-    posted timestamp with time zone DEFAULT now() NOT NULL,
+    reserved_at timestamp with time zone DEFAULT now() NOT NULL,
     reserved_by uuid,
     deviation_id character varying(7),
     lock boolean DEFAULT false NOT NULL,
@@ -1442,7 +1424,7 @@ ALTER SEQUENCE reservations_id_seq OWNED BY reservations.id;
 
 CREATE TABLE sessions (
     id integer NOT NULL,
-    "user" uuid NOT NULL,
+    user_id uuid NOT NULL,
     platform character varying(50) NOT NULL,
     browser_name character varying(50),
     browser_ver character varying(50),
@@ -1485,8 +1467,8 @@ ALTER SEQUENCE sessions_id_seq OWNED BY sessions.id;
 --
 
 CREATE TABLE tagged (
-    tid integer NOT NULL,
-    ponyid integer NOT NULL
+    tag_id integer NOT NULL,
+    appearance_id integer NOT NULL
 );
 
 
@@ -1497,7 +1479,7 @@ ALTER TABLE tagged OWNER TO "mlpvc-rr";
 --
 
 CREATE TABLE tags (
-    tid integer NOT NULL,
+    id integer NOT NULL,
     name character varying(30) NOT NULL,
     title character varying(255),
     type character varying(4),
@@ -1509,10 +1491,10 @@ CREATE TABLE tags (
 ALTER TABLE tags OWNER TO "mlpvc-rr";
 
 --
--- Name: tags_tid_seq; Type: SEQUENCE; Schema: public; Owner: mlpvc-rr
+-- Name: tags_id_seq; Type: SEQUENCE; Schema: public; Owner: mlpvc-rr
 --
 
-CREATE SEQUENCE tags_tid_seq
+CREATE SEQUENCE tags_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -1520,36 +1502,51 @@ CREATE SEQUENCE tags_tid_seq
     CACHE 1;
 
 
-ALTER TABLE tags_tid_seq OWNER TO "mlpvc-rr";
+ALTER TABLE tags_id_seq OWNER TO "mlpvc-rr";
 
 --
--- Name: tags_tid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: mlpvc-rr
+-- Name: tags_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: mlpvc-rr
 --
 
-ALTER SEQUENCE tags_tid_seq OWNED BY tags.tid;
+ALTER SEQUENCE tags_id_seq OWNED BY tags.id;
 
 
 --
--- Name: unread_notifications; Type: VIEW; Schema: public; Owner: mlpvc-rr
+-- Name: users; Type: TABLE; Schema: public; Owner: mlpvc-rr
+--
+
+CREATE TABLE users (
+    id uuid NOT NULL,
+    name citext NOT NULL,
+    role character varying(10) DEFAULT 'user'::character varying NOT NULL,
+    avatar_url character varying(255) NOT NULL,
+    signup_date timestamp with time zone DEFAULT now() NOT NULL
+);
+
+
+ALTER TABLE users OWNER TO "mlpvc-rr";
+
+--
+-- Name: unread_notifications; Type: VIEW; Schema: public; Owner: seinopsys
 --
 
 CREATE VIEW unread_notifications AS
  SELECT u.name AS "user",
     count(n.id) AS count
    FROM (notifications n
-     LEFT JOIN users u ON ((n."user" = u.id)))
+     LEFT JOIN users u ON ((n.recipient_id = u.id)))
   WHERE (n.read_at IS NULL)
   GROUP BY u.name
   ORDER BY (count(n.id)) DESC;
 
 
-ALTER TABLE unread_notifications OWNER TO "mlpvc-rr";
+ALTER TABLE unread_notifications OWNER TO seinopsys;
 
 --
--- Name: usefullinks; Type: TABLE; Schema: public; Owner: mlpvc-rr
+-- Name: useful_links; Type: TABLE; Schema: public; Owner: mlpvc-rr
 --
 
-CREATE TABLE usefullinks (
+CREATE TABLE useful_links (
     id integer NOT NULL,
     url character varying(255) NOT NULL,
     label character varying(40) NOT NULL,
@@ -1559,7 +1556,7 @@ CREATE TABLE usefullinks (
 );
 
 
-ALTER TABLE usefullinks OWNER TO "mlpvc-rr";
+ALTER TABLE useful_links OWNER TO "mlpvc-rr";
 
 --
 -- Name: usefullinks_id_seq; Type: SEQUENCE; Schema: public; Owner: mlpvc-rr
@@ -1579,7 +1576,7 @@ ALTER TABLE usefullinks_id_seq OWNER TO "mlpvc-rr";
 -- Name: usefullinks_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: mlpvc-rr
 --
 
-ALTER SEQUENCE usefullinks_id_seq OWNED BY usefullinks.id;
+ALTER SEQUENCE usefullinks_id_seq OWNED BY useful_links.id;
 
 
 --
@@ -1587,7 +1584,7 @@ ALTER SEQUENCE usefullinks_id_seq OWNED BY usefullinks.id;
 --
 
 CREATE TABLE user_prefs (
-    "user" uuid NOT NULL,
+    user_id uuid NOT NULL,
     key character varying(50) NOT NULL,
     value text
 );
@@ -1603,17 +1600,17 @@ ALTER TABLE ONLY appearances ALTER COLUMN id SET DEFAULT nextval('appearances_id
 
 
 --
--- Name: colorgroups groupid; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
+-- Name: color_groups id; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
 --
 
-ALTER TABLE ONLY colorgroups ALTER COLUMN groupid SET DEFAULT nextval('colorgroups_groupid_seq'::regclass);
+ALTER TABLE ONLY color_groups ALTER COLUMN id SET DEFAULT nextval('color_groups_id_seq'::regclass);
 
 
 --
--- Name: cutiemarks cmid; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
+-- Name: cutiemarks id; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
 --
 
-ALTER TABLE ONLY cutiemarks ALTER COLUMN cmid SET DEFAULT nextval('cutiemarks_cmid_seq'::regclass);
+ALTER TABLE ONLY cutiemarks ALTER COLUMN id SET DEFAULT nextval('cutiemarks_id_seq'::regclass);
 
 
 --
@@ -1624,10 +1621,10 @@ ALTER TABLE ONLY events ALTER COLUMN id SET DEFAULT nextval('events_id_seq'::reg
 
 
 --
--- Name: events__entries entryid; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
+-- Name: events__entries id; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
 --
 
-ALTER TABLE ONLY events__entries ALTER COLUMN entryid SET DEFAULT nextval('events__entries_entryid_seq'::regclass);
+ALTER TABLE ONLY events__entries ALTER COLUMN id SET DEFAULT nextval('events__entries_id_seq'::regclass);
 
 
 --
@@ -1641,7 +1638,7 @@ ALTER TABLE ONLY log ALTER COLUMN entryid SET DEFAULT nextval('log_entryid_seq':
 -- Name: log__appearance_modify entryid; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
 --
 
-ALTER TABLE ONLY log__appearance_modify ALTER COLUMN entryid SET DEFAULT nextval('log_appearance_modify_entryid_seq'::regclass);
+ALTER TABLE ONLY log__appearance_modify ALTER COLUMN entryid SET DEFAULT nextval('log__appearance_modify_entryid_seq'::regclass);
 
 
 --
@@ -1694,13 +1691,6 @@ ALTER TABLE ONLY log__cm_modify ALTER COLUMN entryid SET DEFAULT nextval('log__c
 
 
 --
--- Name: log__color_modify entryid; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
---
-
-ALTER TABLE ONLY log__color_modify ALTER COLUMN entryid SET DEFAULT nextval('log__color_modify_entryid_seq'::regclass);
-
-
---
 -- Name: log__da_namechange entryid; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
 --
 
@@ -1726,6 +1716,13 @@ ALTER TABLE ONLY log__episodes ALTER COLUMN entryid SET DEFAULT nextval('log__ep
 --
 
 ALTER TABLE ONLY log__img_update ALTER COLUMN entryid SET DEFAULT nextval('log__img_update_entryid_seq'::regclass);
+
+
+--
+-- Name: log__major_changes entryid; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER TABLE ONLY log__major_changes ALTER COLUMN entryid SET DEFAULT nextval('log__color_modify_entryid_seq'::regclass);
 
 
 --
@@ -1778,10 +1775,10 @@ ALTER TABLE ONLY log__rolechange ALTER COLUMN entryid SET DEFAULT nextval('log__
 
 
 --
--- Name: log__un-banish entryid; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
+-- Name: log__unbanish entryid; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
 --
 
-ALTER TABLE ONLY "log__un-banish" ALTER COLUMN entryid SET DEFAULT nextval('"log__un-banish_entryid_seq"'::regclass);
+ALTER TABLE ONLY log__unbanish ALTER COLUMN entryid SET DEFAULT nextval('"log__un-banish_entryid_seq"'::regclass);
 
 
 --
@@ -1827,17 +1824,17 @@ ALTER TABLE ONLY sessions ALTER COLUMN id SET DEFAULT nextval('sessions_id_seq':
 
 
 --
--- Name: tags tid; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
+-- Name: tags id; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
 --
 
-ALTER TABLE ONLY tags ALTER COLUMN tid SET DEFAULT nextval('tags_tid_seq'::regclass);
+ALTER TABLE ONLY tags ALTER COLUMN id SET DEFAULT nextval('tags_id_seq'::regclass);
 
 
 --
--- Name: usefullinks id; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
+-- Name: useful_links id; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
 --
 
-ALTER TABLE ONLY usefullinks ALTER COLUMN id SET DEFAULT nextval('usefullinks_id_seq'::regclass);
+ALTER TABLE ONLY useful_links ALTER COLUMN id SET DEFAULT nextval('usefullinks_id_seq'::regclass);
 
 
 --
@@ -1857,27 +1854,43 @@ ALTER TABLE ONLY appearances
 
 
 --
--- Name: colorgroups colorgroups_groupid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
+-- Name: cached_deviations cached_deviations_provider_id; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
-ALTER TABLE ONLY colorgroups
-    ADD CONSTRAINT colorgroups_groupid PRIMARY KEY (groupid);
-
-
---
--- Name: colorgroups colorgroups_groupid_label; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
---
-
-ALTER TABLE ONLY colorgroups
-    ADD CONSTRAINT colorgroups_groupid_label UNIQUE (groupid, label);
+ALTER TABLE ONLY cached_deviations
+    ADD CONSTRAINT cached_deviations_provider_id PRIMARY KEY (provider, id);
 
 
 --
--- Name: colorgroups colorgroups_ponyid_order; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
+-- Name: color_groups colorgroups_groupid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
-ALTER TABLE ONLY colorgroups
-    ADD CONSTRAINT colorgroups_ponyid_order UNIQUE (ponyid, "order");
+ALTER TABLE ONLY color_groups
+    ADD CONSTRAINT colorgroups_groupid PRIMARY KEY (id);
+
+
+--
+-- Name: color_groups colorgroups_groupid_label; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER TABLE ONLY color_groups
+    ADD CONSTRAINT colorgroups_groupid_label UNIQUE (id, label);
+
+
+--
+-- Name: color_groups colorgroups_ponyid_order; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER TABLE ONLY color_groups
+    ADD CONSTRAINT colorgroups_ponyid_order UNIQUE (appearance_id, "order");
+
+
+--
+-- Name: colors colors_group_id_order; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER TABLE ONLY colors
+    ADD CONSTRAINT colors_group_id_order PRIMARY KEY (group_id, "order");
 
 
 --
@@ -1885,7 +1898,7 @@ ALTER TABLE ONLY colorgroups
 --
 
 ALTER TABLE ONLY cutiemarks
-    ADD CONSTRAINT cutiemarks_cmid PRIMARY KEY (cmid);
+    ADD CONSTRAINT cutiemarks_cmid PRIMARY KEY (id);
 
 
 --
@@ -1893,47 +1906,39 @@ ALTER TABLE ONLY cutiemarks
 --
 
 ALTER TABLE ONLY cutiemarks
-    ADD CONSTRAINT cutiemarks_ponyid_facing UNIQUE (ponyid, facing);
+    ADD CONSTRAINT cutiemarks_ponyid_facing UNIQUE (appearance_id, facing);
 
 
 --
--- Name: cached-deviations deviation_cache_provider_id; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
+-- Name: discord_members discord_members_id; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
-ALTER TABLE ONLY "cached-deviations"
-    ADD CONSTRAINT deviation_cache_provider_id PRIMARY KEY (provider, id);
-
-
---
--- Name: discord-members discord_members_discid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
---
-
-ALTER TABLE ONLY "discord-members"
-    ADD CONSTRAINT discord_members_discid PRIMARY KEY (id);
+ALTER TABLE ONLY discord_members
+    ADD CONSTRAINT discord_members_id PRIMARY KEY (id);
 
 
 --
--- Name: discord-members discord_members_userid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
+-- Name: discord_members discord_members_user_id; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
-ALTER TABLE ONLY "discord-members"
-    ADD CONSTRAINT discord_members_userid UNIQUE (userid);
-
-
---
--- Name: episodes__videos episodes__videos_season_episode_provider_part; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
---
-
-ALTER TABLE ONLY episodes__videos
-    ADD CONSTRAINT episodes__videos_season_episode_provider_part PRIMARY KEY (season, episode, provider, part);
+ALTER TABLE ONLY discord_members
+    ADD CONSTRAINT discord_members_user_id UNIQUE (user_id);
 
 
 --
--- Name: episodes__votes episodes__votes_season_episode_user; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
+-- Name: episode_videos episode_videos_season_episode_provider_part; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
-ALTER TABLE ONLY episodes__votes
-    ADD CONSTRAINT episodes__votes_season_episode_user PRIMARY KEY (season, episode, "user");
+ALTER TABLE ONLY episode_videos
+    ADD CONSTRAINT episode_videos_season_episode_provider_part PRIMARY KEY (season, episode, provider, part);
+
+
+--
+-- Name: episode_votes episode_votes_season_episode_user; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER TABLE ONLY episode_votes
+    ADD CONSTRAINT episode_votes_season_episode_user PRIMARY KEY (season, episode, user_id);
 
 
 --
@@ -1945,19 +1950,19 @@ ALTER TABLE ONLY episodes
 
 
 --
--- Name: events__entries events__entries_entryid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
+-- Name: events__entries events__entries_id; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY events__entries
-    ADD CONSTRAINT events__entries_entryid PRIMARY KEY (entryid);
+    ADD CONSTRAINT events__entries_id PRIMARY KEY (id);
 
 
 --
--- Name: events__entries__votes events__votes_entryid_userid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
+-- Name: events__entries__votes events__votes_entry_id_user_id; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY events__entries__votes
-    ADD CONSTRAINT events__votes_entryid_userid PRIMARY KEY (entryid, userid);
+    ADD CONSTRAINT events__votes_entry_id_user_id PRIMARY KEY (entry_id, user_id);
 
 
 --
@@ -2033,14 +2038,6 @@ ALTER TABLE ONLY log__cm_modify
 
 
 --
--- Name: log__color_modify log__color_modify_entryid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
---
-
-ALTER TABLE ONLY log__color_modify
-    ADD CONSTRAINT log__color_modify_entryid PRIMARY KEY (entryid);
-
-
---
 -- Name: log__da_namechange log__da_namechange_entryid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
@@ -2070,6 +2067,14 @@ ALTER TABLE ONLY log__episodes
 
 ALTER TABLE ONLY log__img_update
     ADD CONSTRAINT log__img_update_entryid PRIMARY KEY (entryid);
+
+
+--
+-- Name: log__major_changes log__major_changes_entryid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER TABLE ONLY log__major_changes
+    ADD CONSTRAINT log__major_changes_entryid PRIMARY KEY (entryid);
 
 
 --
@@ -2129,11 +2134,11 @@ ALTER TABLE ONLY log__rolechange
 
 
 --
--- Name: log__un-banish log__un-banish_entryid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
+-- Name: log__unbanish log__unbanish_entryid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
-ALTER TABLE ONLY "log__un-banish"
-    ADD CONSTRAINT "log__un-banish_entryid" PRIMARY KEY (entryid);
+ALTER TABLE ONLY log__unbanish
+    ADD CONSTRAINT log__unbanish_entryid PRIMARY KEY (entryid);
 
 
 --
@@ -2177,6 +2182,14 @@ ALTER TABLE ONLY notifications
 
 
 --
+-- Name: related_appearances related_appearances_source_id_target_id; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER TABLE ONLY related_appearances
+    ADD CONSTRAINT related_appearances_source_id_target_id PRIMARY KEY (source_id, target_id);
+
+
+--
 -- Name: requests requests_id; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
@@ -2201,35 +2214,35 @@ ALTER TABLE ONLY sessions
 
 
 --
--- Name: tagged tagged_tid_ponyid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
+-- Name: tagged tagged_tag_id_appearance_id; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY tagged
-    ADD CONSTRAINT tagged_tid_ponyid PRIMARY KEY (tid, ponyid);
+    ADD CONSTRAINT tagged_tag_id_appearance_id PRIMARY KEY (tag_id, appearance_id);
 
 
 --
--- Name: tags tags_tid; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
+-- Name: tags tags_id; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY tags
-    ADD CONSTRAINT tags_tid PRIMARY KEY (tid);
+    ADD CONSTRAINT tags_id PRIMARY KEY (id);
 
 
 --
--- Name: usefullinks usefullinks_id; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
+-- Name: useful_links useful_links_id; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
-ALTER TABLE ONLY usefullinks
-    ADD CONSTRAINT usefullinks_id PRIMARY KEY (id);
+ALTER TABLE ONLY useful_links
+    ADD CONSTRAINT useful_links_id PRIMARY KEY (id);
 
 
 --
--- Name: user_prefs user_prefs_user_key; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
+-- Name: user_prefs user_prefs_user_id_key; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY user_prefs
-    ADD CONSTRAINT user_prefs_user_key PRIMARY KEY ("user", key);
+    ADD CONSTRAINT user_prefs_user_id_key PRIMARY KEY (user_id, key);
 
 
 --
@@ -2262,24 +2275,38 @@ CREATE INDEX appearances_order ON appearances USING btree ("order");
 
 
 --
+-- Name: appearances_owner_id; Type: INDEX; Schema: public; Owner: mlpvc-rr
+--
+
+CREATE INDEX appearances_owner_id ON appearances USING btree (owner_id);
+
+
+--
+-- Name: cached_deviations_author; Type: INDEX; Schema: public; Owner: mlpvc-rr
+--
+
+CREATE INDEX cached_deviations_author ON cached_deviations USING btree (author);
+
+
+--
 -- Name: colorgroups_ponyid; Type: INDEX; Schema: public; Owner: mlpvc-rr
 --
 
-CREATE INDEX colorgroups_ponyid ON colorgroups USING btree (ponyid);
+CREATE INDEX colorgroups_ponyid ON color_groups USING btree (appearance_id);
 
 
 --
--- Name: colors_groupid; Type: INDEX; Schema: public; Owner: mlpvc-rr
+-- Name: colors_group_id; Type: INDEX; Schema: public; Owner: mlpvc-rr
 --
 
-CREATE INDEX colors_groupid ON colors USING btree (groupid);
+CREATE INDEX colors_group_id ON colors USING btree (group_id);
 
 
 --
--- Name: episodes__votes_user; Type: INDEX; Schema: public; Owner: mlpvc-rr
+-- Name: episode_votes_user_id; Type: INDEX; Schema: public; Owner: mlpvc-rr
 --
 
-CREATE INDEX episodes__votes_user ON episodes__votes USING btree ("user");
+CREATE INDEX episode_votes_user_id ON episode_votes USING btree (user_id);
 
 
 --
@@ -2290,10 +2317,17 @@ CREATE INDEX episodes_posted_by ON episodes USING btree (posted_by);
 
 
 --
+-- Name: events__entries_event_id; Type: INDEX; Schema: public; Owner: mlpvc-rr
+--
+
+CREATE INDEX events__entries_event_id ON events__entries USING btree (event_id);
+
+
+--
 -- Name: events__entries_eventid; Type: INDEX; Schema: public; Owner: mlpvc-rr
 --
 
-CREATE INDEX events__entries_eventid ON events__entries USING btree (eventid);
+CREATE INDEX events__entries_eventid ON events__entries USING btree (event_id);
 
 
 --
@@ -2318,17 +2352,80 @@ CREATE INDEX events_added_by ON events USING btree (added_by);
 
 
 --
--- Name: log__banish_target; Type: INDEX; Schema: public; Owner: mlpvc-rr
+-- Name: log__appearance_modify_appearance_id; Type: INDEX; Schema: public; Owner: mlpvc-rr
 --
 
-CREATE INDEX log__banish_target ON log__banish USING btree (target);
+CREATE INDEX log__appearance_modify_appearance_id ON log__appearance_modify USING btree (appearance_id);
+
+
+--
+-- Name: log__banish_target_id; Type: INDEX; Schema: public; Owner: mlpvc-rr
+--
+
+CREATE INDEX log__banish_target_id ON log__banish USING btree (target_id);
+
+
+--
+-- Name: log__cg_modify_appearance_id; Type: INDEX; Schema: public; Owner: mlpvc-rr
+--
+
+CREATE INDEX log__cg_modify_appearance_id ON log__cg_modify USING btree (appearance_id);
+
+
+--
+-- Name: log__cg_modify_group_id; Type: INDEX; Schema: public; Owner: mlpvc-rr
+--
+
+CREATE INDEX log__cg_modify_group_id ON log__cg_modify USING btree (group_id);
+
+
+--
+-- Name: log__cg_order_appearance_id; Type: INDEX; Schema: public; Owner: mlpvc-rr
+--
+
+CREATE INDEX log__cg_order_appearance_id ON log__cg_order USING btree (appearance_id);
+
+
+--
+-- Name: log__cgs_appearance_id; Type: INDEX; Schema: public; Owner: mlpvc-rr
+--
+
+CREATE INDEX log__cgs_appearance_id ON log__cgs USING btree (appearance_id);
+
+
+--
+-- Name: log__cgs_group_id; Type: INDEX; Schema: public; Owner: mlpvc-rr
+--
+
+CREATE INDEX log__cgs_group_id ON log__cgs USING btree (group_id);
+
+
+--
+-- Name: log__cm_delete_appearance_id; Type: INDEX; Schema: public; Owner: mlpvc-rr
+--
+
+CREATE INDEX log__cm_delete_appearance_id ON log__cm_delete USING btree (appearance_id);
+
+
+--
+-- Name: log__cm_modify_appearance_id; Type: INDEX; Schema: public; Owner: mlpvc-rr
+--
+
+CREATE INDEX log__cm_modify_appearance_id ON log__cm_modify USING btree (appearance_id);
 
 
 --
 -- Name: log__da_namechange_id; Type: INDEX; Schema: public; Owner: mlpvc-rr
 --
 
-CREATE INDEX log__da_namechange_id ON log__da_namechange USING btree (id);
+CREATE INDEX log__da_namechange_id ON log__da_namechange USING btree (user_id);
+
+
+--
+-- Name: log__major_changes_appearance_id; Type: INDEX; Schema: public; Owner: mlpvc-rr
+--
+
+CREATE INDEX log__major_changes_appearance_id ON log__major_changes USING btree (appearance_id);
 
 
 --
@@ -2346,10 +2443,10 @@ CREATE INDEX log__rolechange_target ON log__rolechange USING btree (target);
 
 
 --
--- Name: log__un-banish_target; Type: INDEX; Schema: public; Owner: mlpvc-rr
+-- Name: log__unbanish_target; Type: INDEX; Schema: public; Owner: mlpvc-rr
 --
 
-CREATE INDEX "log__un-banish_target" ON "log__un-banish" USING btree (target);
+CREATE INDEX log__unbanish_target ON log__unbanish USING btree (target_id);
 
 
 --
@@ -2402,10 +2499,17 @@ CREATE INDEX reservations_season_episode ON reservations USING btree (season, ep
 
 
 --
--- Name: sessions_user; Type: INDEX; Schema: public; Owner: mlpvc-rr
+-- Name: sessions_user_id; Type: INDEX; Schema: public; Owner: mlpvc-rr
 --
 
-CREATE INDEX sessions_user ON sessions USING btree ("user");
+CREATE INDEX sessions_user_id ON sessions USING btree (user_id);
+
+
+--
+-- Name: tags_name; Type: INDEX; Schema: public; Owner: mlpvc-rr
+--
+
+CREATE INDEX tags_name ON tags USING btree (name);
 
 
 --
@@ -2413,13 +2517,6 @@ CREATE INDEX sessions_user ON sessions USING btree ("user");
 --
 
 CREATE INDEX tags_synonym_of ON tags USING btree (synonym_of);
-
-
---
--- Name: usefullinks_minrole; Type: INDEX; Schema: public; Owner: mlpvc-rr
---
-
-CREATE INDEX usefullinks_minrole ON usefullinks USING btree (minrole);
 
 
 --
@@ -2439,27 +2536,27 @@ ALTER TABLE ONLY appearance_relations
 
 
 --
--- Name: appearances appearances_owner_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
+-- Name: appearances appearances_owner_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY appearances
-    ADD CONSTRAINT appearances_owner_fkey FOREIGN KEY (owner) REFERENCES users(id) ON UPDATE CASCADE ON DELETE CASCADE;
+    ADD CONSTRAINT appearances_owner_id_fkey FOREIGN KEY (owner_id) REFERENCES users(id) ON UPDATE CASCADE;
 
 
 --
--- Name: colorgroups colorgroups_ponyid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
+-- Name: color_groups color_groups_appearance_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
-ALTER TABLE ONLY colorgroups
-    ADD CONSTRAINT colorgroups_ponyid_fkey FOREIGN KEY (ponyid) REFERENCES appearances(id) ON UPDATE CASCADE ON DELETE CASCADE;
+ALTER TABLE ONLY color_groups
+    ADD CONSTRAINT color_groups_appearance_id_fkey FOREIGN KEY (appearance_id) REFERENCES appearances(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
--- Name: colors colors_groupid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
+-- Name: colors colors_group_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY colors
-    ADD CONSTRAINT colors_groupid_fkey FOREIGN KEY (groupid) REFERENCES colorgroups(groupid) ON UPDATE CASCADE ON DELETE CASCADE;
+    ADD CONSTRAINT colors_group_id_fkey FOREIGN KEY (group_id) REFERENCES color_groups(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
@@ -2467,39 +2564,39 @@ ALTER TABLE ONLY colors
 --
 
 ALTER TABLE ONLY cutiemarks
-    ADD CONSTRAINT cutiemarks_ponyid_fkey FOREIGN KEY (ponyid) REFERENCES appearances(id) ON UPDATE CASCADE ON DELETE CASCADE;
+    ADD CONSTRAINT cutiemarks_ponyid_fkey FOREIGN KEY (appearance_id) REFERENCES appearances(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
--- Name: discord-members discord_members_userid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
+-- Name: discord_members discord_members_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
-ALTER TABLE ONLY "discord-members"
-    ADD CONSTRAINT discord_members_userid_fkey FOREIGN KEY (userid) REFERENCES users(id) ON UPDATE CASCADE ON DELETE SET NULL;
-
-
---
--- Name: episodes__videos episodes__videos_season_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
---
-
-ALTER TABLE ONLY episodes__videos
-    ADD CONSTRAINT episodes__videos_season_fkey FOREIGN KEY (season, episode) REFERENCES episodes(season, episode) ON UPDATE CASCADE ON DELETE CASCADE;
+ALTER TABLE ONLY discord_members
+    ADD CONSTRAINT discord_members_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id) ON UPDATE CASCADE ON DELETE RESTRICT;
 
 
 --
--- Name: episodes__votes episodes__votes_season_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
+-- Name: episode_videos episode_videos_season_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
-ALTER TABLE ONLY episodes__votes
-    ADD CONSTRAINT episodes__votes_season_fkey FOREIGN KEY (season, episode) REFERENCES episodes(season, episode) ON UPDATE CASCADE ON DELETE CASCADE;
+ALTER TABLE ONLY episode_videos
+    ADD CONSTRAINT episode_videos_season_fkey FOREIGN KEY (season, episode) REFERENCES episodes(season, episode) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
--- Name: episodes__votes episodes__votes_user_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
+-- Name: episode_votes episode_votes_season_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
-ALTER TABLE ONLY episodes__votes
-    ADD CONSTRAINT episodes__votes_user_fkey FOREIGN KEY ("user") REFERENCES users(id) ON UPDATE CASCADE ON DELETE CASCADE;
+ALTER TABLE ONLY episode_votes
+    ADD CONSTRAINT episode_votes_season_fkey FOREIGN KEY (season, episode) REFERENCES episodes(season, episode) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: episode_votes episode_votes_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER TABLE ONLY episode_votes
+    ADD CONSTRAINT episode_votes_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id) ON UPDATE CASCADE ON DELETE RESTRICT;
 
 
 --
@@ -2511,19 +2608,19 @@ ALTER TABLE ONLY episodes
 
 
 --
--- Name: events__entries__votes events__entries__votes_entryid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
+-- Name: events__entries__votes events__entries__votes_entry_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY events__entries__votes
-    ADD CONSTRAINT events__entries__votes_entryid_fkey FOREIGN KEY (entryid) REFERENCES events__entries(entryid) ON UPDATE CASCADE ON DELETE CASCADE;
+    ADD CONSTRAINT events__entries__votes_entry_id_fkey FOREIGN KEY (entry_id) REFERENCES events__entries(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
--- Name: events__entries events__entries_eventid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
+-- Name: events__entries events__entries_event_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY events__entries
-    ADD CONSTRAINT events__entries_eventid_fkey FOREIGN KEY (eventid) REFERENCES events(id) ON UPDATE CASCADE ON DELETE CASCADE;
+    ADD CONSTRAINT events__entries_event_id_fkey FOREIGN KEY (event_id) REFERENCES events(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
@@ -2547,7 +2644,7 @@ ALTER TABLE ONLY events
 --
 
 ALTER TABLE ONLY log__banish
-    ADD CONSTRAINT log__banish_target_fkey FOREIGN KEY (target) REFERENCES users(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+    ADD CONSTRAINT log__banish_target_fkey FOREIGN KEY (target_id) REFERENCES users(id) ON UPDATE CASCADE ON DELETE RESTRICT;
 
 
 --
@@ -2555,7 +2652,7 @@ ALTER TABLE ONLY log__banish
 --
 
 ALTER TABLE ONLY log__da_namechange
-    ADD CONSTRAINT log__da_namechange_id_fkey FOREIGN KEY (id) REFERENCES users(id) ON UPDATE CASCADE ON DELETE CASCADE;
+    ADD CONSTRAINT log__da_namechange_id_fkey FOREIGN KEY (user_id) REFERENCES users(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
@@ -2599,27 +2696,11 @@ ALTER TABLE ONLY log__rolechange
 
 
 --
--- Name: log__un-banish log__un-banish_target_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
+-- Name: log__unbanish log__unbanish_target_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
-ALTER TABLE ONLY "log__un-banish"
-    ADD CONSTRAINT "log__un-banish_target_fkey" FOREIGN KEY (target) REFERENCES users(id) ON UPDATE CASCADE;
-
-
---
--- Name: log__userfetch log__userfetch_userid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
---
-
-ALTER TABLE ONLY log__userfetch
-    ADD CONSTRAINT log__userfetch_userid_fkey FOREIGN KEY (userid) REFERENCES users(id) ON UPDATE CASCADE;
-
-
---
--- Name: log__video_broken log__video_broken_season_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
---
-
-ALTER TABLE ONLY log__video_broken
-    ADD CONSTRAINT log__video_broken_season_fkey FOREIGN KEY (season, episode) REFERENCES episodes(season, episode) ON UPDATE CASCADE;
+ALTER TABLE ONLY log__unbanish
+    ADD CONSTRAINT log__unbanish_target_id_fkey FOREIGN KEY (target_id) REFERENCES users(id) ON UPDATE CASCADE;
 
 
 --
@@ -2631,11 +2712,27 @@ ALTER TABLE ONLY log
 
 
 --
--- Name: notifications notifications_user_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
+-- Name: notifications notifications_recipient_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY notifications
-    ADD CONSTRAINT notifications_user_fkey FOREIGN KEY ("user") REFERENCES users(id) ON UPDATE CASCADE ON DELETE CASCADE;
+    ADD CONSTRAINT notifications_recipient_id_fkey FOREIGN KEY (recipient_id) REFERENCES users(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+
+
+--
+-- Name: related_appearances related_appearances_source_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER TABLE ONLY related_appearances
+    ADD CONSTRAINT related_appearances_source_id_fkey FOREIGN KEY (source_id) REFERENCES appearances(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: related_appearances related_appearances_target_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER TABLE ONLY related_appearances
+    ADD CONSTRAINT related_appearances_target_id_fkey FOREIGN KEY (target_id) REFERENCES appearances(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
@@ -2679,27 +2776,27 @@ ALTER TABLE ONLY reservations
 
 
 --
--- Name: sessions sessions_user_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
+-- Name: sessions sessions_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY sessions
-    ADD CONSTRAINT sessions_user_fkey FOREIGN KEY ("user") REFERENCES users(id) ON UPDATE CASCADE ON DELETE CASCADE;
+    ADD CONSTRAINT sessions_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
--- Name: tagged tagged_ponyid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
---
-
-ALTER TABLE ONLY tagged
-    ADD CONSTRAINT tagged_ponyid_fkey FOREIGN KEY (ponyid) REFERENCES appearances(id) ON UPDATE CASCADE ON DELETE CASCADE;
-
-
---
--- Name: tagged tagged_tid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
+-- Name: tagged tagged_appearance_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY tagged
-    ADD CONSTRAINT tagged_tid_fkey FOREIGN KEY (tid) REFERENCES tags(tid) ON UPDATE CASCADE ON DELETE CASCADE;
+    ADD CONSTRAINT tagged_appearance_id_fkey FOREIGN KEY (appearance_id) REFERENCES appearances(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: tagged tagged_tag_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER TABLE ONLY tagged
+    ADD CONSTRAINT tagged_tag_id_fkey FOREIGN KEY (tag_id) REFERENCES tags(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
@@ -2707,15 +2804,15 @@ ALTER TABLE ONLY tagged
 --
 
 ALTER TABLE ONLY tags
-    ADD CONSTRAINT tags_synonym_of_fkey FOREIGN KEY (synonym_of) REFERENCES tags(tid) ON UPDATE CASCADE ON DELETE SET NULL;
+    ADD CONSTRAINT tags_synonym_of_fkey FOREIGN KEY (synonym_of) REFERENCES tags(id) ON UPDATE CASCADE ON DELETE SET NULL;
 
 
 --
--- Name: user_prefs user_prefs_user_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
+-- Name: user_prefs user_prefs_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY user_prefs
-    ADD CONSTRAINT user_prefs_user_fkey FOREIGN KEY ("user") REFERENCES users(id) ON UPDATE CASCADE ON DELETE CASCADE;
+    ADD CONSTRAINT user_prefs_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id) ON UPDATE CASCADE;
 
 
 --
@@ -2733,17 +2830,17 @@ GRANT ALL ON TABLE appearances TO postgres;
 
 
 --
--- Name: cached-deviations; Type: ACL; Schema: public; Owner: mlpvc-rr
+-- Name: cached_deviations; Type: ACL; Schema: public; Owner: mlpvc-rr
 --
 
-GRANT ALL ON TABLE "cached-deviations" TO postgres;
+GRANT ALL ON TABLE cached_deviations TO postgres;
 
 
 --
--- Name: colorgroups; Type: ACL; Schema: public; Owner: mlpvc-rr
+-- Name: color_groups; Type: ACL; Schema: public; Owner: mlpvc-rr
 --
 
-GRANT ALL ON TABLE colorgroups TO postgres;
+GRANT ALL ON TABLE color_groups TO postgres;
 
 
 --
@@ -2754,24 +2851,24 @@ GRANT ALL ON TABLE colors TO postgres;
 
 
 --
+-- Name: episode_videos; Type: ACL; Schema: public; Owner: mlpvc-rr
+--
+
+GRANT ALL ON TABLE episode_videos TO postgres;
+
+
+--
+-- Name: episode_votes; Type: ACL; Schema: public; Owner: mlpvc-rr
+--
+
+GRANT ALL ON TABLE episode_votes TO postgres;
+
+
+--
 -- Name: episodes; Type: ACL; Schema: public; Owner: mlpvc-rr
 --
 
 GRANT ALL ON TABLE episodes TO postgres;
-
-
---
--- Name: episodes__videos; Type: ACL; Schema: public; Owner: mlpvc-rr
---
-
-GRANT ALL ON TABLE episodes__videos TO postgres;
-
-
---
--- Name: episodes__votes; Type: ACL; Schema: public; Owner: mlpvc-rr
---
-
-GRANT ALL ON TABLE episodes__votes TO postgres;
 
 
 --
@@ -2796,10 +2893,10 @@ GRANT ALL ON SEQUENCE log__banish_entryid_seq TO postgres;
 
 
 --
--- Name: log__color_modify; Type: ACL; Schema: public; Owner: mlpvc-rr
+-- Name: log__major_changes; Type: ACL; Schema: public; Owner: mlpvc-rr
 --
 
-GRANT ALL ON TABLE log__color_modify TO postgres;
+GRANT ALL ON TABLE log__major_changes TO postgres;
 
 
 --
@@ -2887,10 +2984,10 @@ GRANT ALL ON SEQUENCE log__rolechange_entryid_seq TO postgres;
 
 
 --
--- Name: log__un-banish; Type: ACL; Schema: public; Owner: mlpvc-rr
+-- Name: log__unbanish; Type: ACL; Schema: public; Owner: mlpvc-rr
 --
 
-GRANT ALL ON TABLE "log__un-banish" TO postgres;
+GRANT ALL ON TABLE log__unbanish TO postgres;
 
 
 --
@@ -2919,13 +3016,6 @@ GRANT ALL ON SEQUENCE log__userfetch_entryid_seq TO postgres;
 --
 
 GRANT ALL ON SEQUENCE log_entryid_seq TO postgres;
-
-
---
--- Name: users; Type: ACL; Schema: public; Owner: mlpvc-rr
---
-
-GRANT ALL ON TABLE users TO postgres;
 
 
 --
@@ -2985,10 +3075,17 @@ GRANT ALL ON TABLE tags TO postgres;
 
 
 --
--- Name: usefullinks; Type: ACL; Schema: public; Owner: mlpvc-rr
+-- Name: users; Type: ACL; Schema: public; Owner: mlpvc-rr
 --
 
-GRANT ALL ON TABLE usefullinks TO postgres;
+GRANT ALL ON TABLE users TO postgres;
+
+
+--
+-- Name: useful_links; Type: ACL; Schema: public; Owner: mlpvc-rr
+--
+
+GRANT ALL ON TABLE useful_links TO postgres;
 
 
 --

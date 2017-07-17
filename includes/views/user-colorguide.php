@@ -22,7 +22,7 @@ use App\Tags;
 		<button class='green typcn typcn-plus' id="new-appearance-btn">Add new appearance</button>
 	</p>
 <?  } ?>
-	<?=$Pagination->HTML . Appearances::getHTML($Ponies, WRAP, Permission::sufficient('staff') || $isOwner) . $Pagination->HTML?>
+	<?=$Pagination . Appearances::getHTML($Ponies, WRAP, Permission::sufficient('staff') || $isOwner) . $Pagination?>
 </div>
 
 <?  $export = [
@@ -32,7 +32,7 @@ use App\Tags;
 ];
 	if (Permission::sufficient('staff') || $isOwner)
 		$export = array_merge($export, [
-			'TAG_TYPES_ASSOC' => Tags::$TAG_TYPES_ASSOC,
+			'TAG_TYPES_ASSOC' => Tags::TAG_TYPES,
 			'MAX_SIZE' => CoreUtils::getMaxUploadSize(),
 			'HEX_COLOR_PATTERN' => $HEX_COLOR_REGEX,
 		]);

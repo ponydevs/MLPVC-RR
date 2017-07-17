@@ -18,58 +18,70 @@ class PostTest extends TestCase {
 	}
 
 	public function testToLink(){
-		$Request = new \App\Models\Request([
-			'id' => 1,
+		$Episode = new \App\Models\Episode([
 			'season' => 1,
 			'episode' => 1,
 		]);
-		$result = $Request->toLink();
+		$Request = new \App\Models\Request([
+			'id' => 1,
+			'season' => $Episode->season,
+			'episode' => $Episode->episode,
+		]);
+		$result = $Request->toLink($Episode);
 		self::assertEquals('/episode/S1E1#request-1', $result);
 
 		$Reservation = new \App\Models\Reservation([
 			'id' => 1,
-			'season' => 1,
-			'episode' => 1,
+			'season' => $Episode->season,
+			'episode' => $Episode->episode,
 		]);
-		$result = $Reservation->toLink();
+		$result = $Reservation->toLink($Episode);
 		self::assertEquals('/episode/S1E1#reservation-1', $result);
 	}
 
 	public function testToAnchor(){
-		$Request = new \App\Models\Request([
-			'id' => 1,
+		$Episode = new \App\Models\Episode([
 			'season' => 1,
 			'episode' => 1,
 		]);
-		$result = $Request->toAnchor();
+		$Request = new \App\Models\Request([
+			'id' => 1,
+			'season' => $Episode->season,
+			'episode' => $Episode->episode,
+		]);
+		$result = $Request->toAnchor(null,$Episode);
 		self::assertEquals("<a href='/episode/S1E1#request-1' >S1E1</a>", $result);
-		$result = $Request->toAnchor('Custom Text<');
+		$result = $Request->toAnchor('Custom Text<',$Episode);
 		self::assertEquals("<a href='/episode/S1E1#request-1' >Custom Text&lt;</a>", $result);
-		$result = $Request->toAnchor('Custom Text<',null,true);
+		$result = $Request->toAnchor('Custom Text<',$Episode,true);
 		self::assertEquals("<a href='/episode/S1E1#request-1' target=\"_blank\">Custom Text&lt;</a>", $result);
 	}
 
 	public function testIsTransferable(){
-		$now = strtotime('2016-01-15T00:00:00Z');
 		$Request = new \App\Models\Request([
-			'reserved_at' => '2016-01-14T22:00:00Z',
-			'posted' => '2016-01-01T16:00:00Z',
+			'requested_at' => '2016-01-01T16:00:00Z',
 		]);
-		$result = $Request->isTransferable($now);
+		$result = $Request->isTransferable();
 		self::assertTrue($result,"Posts that aren't reserved by anyone must be transferable");
 
 		$Request->reserved_by = 'c0592f2b-5adc-49c1-be1d-56efc4bdad88';
+		$Request->reserved_at = '2016-01-14T00:00:00Z';
+		$now = strtotime('2016-01-15T00:00:00Z');
+
 		$result = $Request->isTransferable($now);
-		self::assertFalse($result, 'The post must not be transferable yet');
+		self::assertFalse($result, 'The post must not be transferable yet (+4d)');
+
 		$Request->reserved_at = '2016-01-10T00:00:01Z';
 		$result = $Request->isTransferable($now);
-		self::assertFalse($result, 'The post must not be transferable yet');
+		self::assertFalse($result, 'The post must not be transferable yet (+1s)');
+
 		$Request->reserved_at = '2016-01-10T00:00:00Z';
 		$result = $Request->isTransferable($now);
-		self::assertTrue($result, 'The post must be transferable by now');
+		self::assertTrue($result, 'The post must be transferable by now (0s)');
+
 		$Request->reserved_at = '2016-01-09T23:59:59Z';
 		$result = $Request->isTransferable($now);
-		self::assertTrue($result, 'The post must be transferable by now');
+		self::assertTrue($result, 'The post must be transferable by now (-1s)');
 	}
 
 	public function testIsOverdue(){
@@ -78,18 +90,31 @@ class PostTest extends TestCase {
 		self::assertFalse($Reservation->isOverdue($now), 'Reservations must not become overdue');
 
 		$Request = new \App\Models\Request([
+			'requested_at' => '2015-01-01T00:00:00Z',
 			'reserved_by' => 'c0592f2b-5adc-49c1-be1d-56efc4bdad88',
 			'reserved_at' => '2016-01-25T00:00:00Z',
-			'posted' => '2015-01-01T00:00:00Z',
+			'deviation_id' => 'dXXXXXX',
 		]);
 		$result = $Request->isOverdue($now);
-		self::assertFalse($result, 'Request must not be overdue yet');
+		self::assertFalse($result, 'Finished requests must not become overdue');
+
+		$Request->deviation_id = null;
+
+		$result = $Request->isOverdue($now);
+		self::assertFalse($result, 'Request must not be overdue yet (+3w)');
+
 		$Request->reserved_at = '2016-01-04T01:00:01Z';
 		$result = $Request->isOverdue($now);
-		self::assertFalse($result, 'Request must not be overdue yet');
+		self::assertFalse($result, 'Request must not be overdue yet (+1s)');
+
 		$Request->reserved_at = '2016-01-04T01:00:00Z';
 		$result = $Request->isOverdue($now);
-		self::assertTrue($result, 'Request must be overdue by now');
+		self::assertEquals($now - \App\Time::IN_SECONDS['week']*3, $Request->reserved_at->getTimestamp(), 'reserved_at should match current time - 3 weeks');
+		self::assertTrue($result, 'Request must be overdue by now (0s)');
+
+		$Request->reserved_at = '2016-01-04T00:59:59';
+		$result = $Request->isOverdue($now);
+		self::assertTrue($result, 'Request must be overdue by now (-1s)');
 	}
 
 	public function testProcessLabel(){

@@ -6,7 +6,7 @@ use App\Users;
 /** @var $HexPattern string */ ?>
 <div id="content">
 	<h1><?=$title?></h1>
-	<p>Originally made by <?=Users::get('dasprid','name','name, avatar_url')->getProfileLink(User::LINKFORMAT_FULL)?></p>
+	<p>Originally made by <?=Users::get('dasprid', 'name')->getProfileLink(User::LINKFORMAT_FULL)?></p>
 	<?=CoreUtils::notice('info',"<p><span class='typcn typcn-info-large'></span> This is a tool which helps you to find an original color, given two different background colors and the resulting blended color, when the original color is blended over it.</p><p><strong>Shift+Click</strong> an input to open a dialog where you can enter RGB values</p><a class='btn link typcn typcn-arrow-back' href='/cg'>Back to Color Guide</a>", true)?>
 
 	<div id="blend-wrap">
