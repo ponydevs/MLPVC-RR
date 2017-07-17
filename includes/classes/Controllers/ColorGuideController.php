@@ -408,7 +408,7 @@ class ColorGuideController extends Controller {
 					$SearchQuery,
 					[
 						'type' => 'cross_fields',
-						'minimum_should_match' => '80%',
+						'minimum_should_match' => '10%',
 					]
 				);
 				$search->addQuery($multiMatch);
