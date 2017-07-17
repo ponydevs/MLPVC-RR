@@ -65,7 +65,7 @@ class ColorGuideController extends Controller {
 		$this->_cgPath = '/cg'.($this->_EQG?'/eqg':'');
 	}
 	private function _initialize($params, bool $setPath = true){
-		$this->_EQG = !empty($params['eqg']) || isset($_GET['eqg']) ? 1 : 0;
+		$this->_EQG = !empty($params['eqg']) || isset($_GET['eqg']);
 		if ($setPath)
 			$this->_initCGPath();
 		$this->_appearancePage = isset($_POST['APPEARANCE_PAGE']);
@@ -410,7 +410,7 @@ class ColorGuideController extends Controller {
 					$SearchQuery,
 					[
 						'type' => 'cross_fields',
-						'minimum_should_match' => '75%',
+						'minimum_should_match' => '85%',
 					]
 				);
 				$search->addQuery($multiMatch);
@@ -443,8 +443,8 @@ class ColorGuideController extends Controller {
 				$search = [];
 			}
 
+			$Pagination->calcMaxPages($search['hits']['total']);
 			if (!empty($search['hits']['hits'])){
-				$Pagination->calcMaxPages($search['hits']['total']);
 				$ids = [];
 				/** @noinspection ForeachSourceInspection */
 				foreach($search['hits']['hits'] as $i => $hit)
@@ -464,10 +464,6 @@ class ColorGuideController extends Controller {
 							return $ids[$a->id] <=> $ids[$b->id];
 						});
 				}
-			}
-			else {
-				error_log("No hits from Elastic.\nSearch quesry: \"".($searching?$SearchQuery:'<N/A>')."\"\nData:\n".var_export($search, true));
-				$Pagination->calcMaxPages(0);
 			}
 		}
 		if (!$elasticAvail) {
