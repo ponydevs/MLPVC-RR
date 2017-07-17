@@ -141,7 +141,7 @@ class UserController extends Controller {
 		$Session = Session::find($params['id']);
 		if (empty($Session))
 			Response::fail('This session does not exist');
-		if ($Session->user !== Auth::$user->id && !Permission::sufficient('staff'))
+		if ($Session->user_id !== Auth::$user->id && !Permission::sufficient('staff'))
 			Response::fail('You are not allowed to delete this session');
 
 		$Session->delete();

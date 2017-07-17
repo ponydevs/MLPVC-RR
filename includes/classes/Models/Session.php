@@ -23,6 +23,7 @@ use ActiveRecord\DateTime;
  * @method static Session find_by_token(string $token)
  * @method static Session find_by_access(string $access)
  * @method static Session find_by_refresh(string $code)
+ * @method static Session find(int $id)
  */
 class Session extends Model {
 	public static $belongs_to = [
