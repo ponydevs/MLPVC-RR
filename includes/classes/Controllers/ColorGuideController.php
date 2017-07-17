@@ -36,6 +36,8 @@ use Elasticsearch\Common\Exceptions\NoNodesAvailableException;
 use Elasticsearch\Common\Exceptions\ServerErrorResponseException;
 use ONGR\ElasticsearchDSL;
 use ONGR\ElasticsearchDSL\Query\Compound\BoolQuery;
+use ONGR\ElasticsearchDSL\Query\Compound\FunctionScoreQuery;
+use ONGR\ElasticsearchDSL\Query\MatchAllQuery;
 use ONGR\ElasticsearchDSL\Query\TermLevel\TermQuery;
 use Elasticsearch\Common\Exceptions\Missing404Exception as ElasticMissing404Exception;
 use Elasticsearch\Common\Exceptions\NoNodesAvailableException as ElasticNoNodesAvailableException;
@@ -408,10 +410,17 @@ class ColorGuideController extends Controller {
 					$SearchQuery,
 					[
 						'type' => 'cross_fields',
-						'minimum_should_match' => '10%',
+						'minimum_should_match' => '75%',
 					]
 				);
 				$search->addQuery($multiMatch);
+				$score = new FunctionScoreQuery(new MatchAllQuery());
+				$score->addFieldValueFactorFunction('order',1.5);
+				$score->addParameter('boost_mode','multiply');
+				$search->addQuery($score);
+				$sort = new ElasticsearchDSL\Sort\FieldSort('_score', 'asc');
+				$search->addSort($sort);
+				$orderByID = false;
 			}
 			else {
 				$sort = new ElasticsearchDSL\Sort\FieldSort('order', 'asc');
@@ -438,16 +447,24 @@ class ColorGuideController extends Controller {
 				$Pagination->calcMaxPages($search['hits']['total']);
 				$ids = [];
 				/** @noinspection ForeachSourceInspection */
-				foreach($search['hits']['hits'] as $hit)
-					$ids[] = $hit['_id'];
+				foreach($search['hits']['hits'] as $i => $hit)
+					$ids[$hit['_id']] = $i;
 
-				$Ponies = Appearance::find('all', [
-					'conditions' => [ 'id IN (?)', $ids	],
-					'order' => '"order" asc',
-				]);
+				if ($orderByID){
+					$Ponies = Appearance::find('all', [
+						'conditions' => [ 'id IN (?)', array_keys($ids)	],
+						'order' => '"order" asc',
+					]);
+				}
+				else {
+					$Ponies = Appearance::find(array_keys($ids));
+					uasort($Ponies, function(Appearance $a, Appearance $b) use ($ids){
+						return $ids[$a->id] <=> $ids[$b->id];
+					});
+				}
 			}
 			else {
-				error_log("No hits from Elastic.\nSearch quesry: ".($searching?$SearchQuery:'<N/A>')."\nData:\n".var_export($search, true));
+				error_log("No hits from Elastic.\nSearch quesry: \"".($searching?$SearchQuery:'<N/A>')."\"\nData:\n".var_export($search, true));
 				$Pagination->calcMaxPages(0);
 			}
 		}
