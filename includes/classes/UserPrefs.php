@@ -52,30 +52,30 @@ class UserPrefs extends GlobalSettings {
 	 *
 	 * @param string $key
 	 * @param mixed  $value
-	 * @param string $for
+	 * @param User $for
 	 *
 	 * @return bool
 	 */
-	public static function set(string $key, $value, $for = null):bool {
+	public static function set(string $key, $value, ?User $for = null):bool {
 		if (empty($for)){
 			if (!Auth::$signed_in)
-				throw new \Exception("Empty \$for when setting user preference $key to ");
-			$for = Auth::$user->id;
+				throw new \RuntimeException("Empty \$for when setting user preference $key to ");
+			$for = Auth::$user;
 		}
 
 		if (!isset(static::DEFAULTS[$key]))
 			Response::fail("Key $key is not allowed");
 		$default = static::DEFAULTS[$key];
 
-		if (UserPref::exists($for, $key)){
-			$pref = UserPref::find($for, $key);
+		if (UserPref::has($key, $for)){
+			$pref = UserPref::find_for($key, $for);
 			if ($value == $default)
 				return $pref->delete();
 			else return $pref->update_attributes(['value' => $value]);
 		}
 		else if ($value != $default){
 			return (new UserPref([
-				'user' => Auth::$user->id,
+				'user_id' => Auth::$user->id,
 				'key' => $key,
 				'value' => $value,
 			]))->save();
