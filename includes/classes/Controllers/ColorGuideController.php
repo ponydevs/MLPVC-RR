@@ -404,7 +404,7 @@ class ColorGuideController extends Controller {
 				$SearchQuery = preg_replace(new RegExp('[^\w\d\s\*\?]'),'',trim($_GET['q']));
 				$title .= "$SearchQuery - ";
 				$multiMatch = new ElasticsearchDSL\Query\FullText\MultiMatchQuery(
-					['label','tags'],
+					['label^5','tags'],
 					$SearchQuery,
 					[
 						'type' => 'cross_fields',
