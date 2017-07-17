@@ -12,6 +12,7 @@ use App\DB;
 use App\Episodes;
 use App\Permission;
 use App\RegExp;
+use App\Time;
 
 /**
  * @property int                 $id
@@ -117,7 +118,7 @@ class Appearance extends Model {
 	 * @return string
 	 */
 	public function getSpriteHTML(bool $canUpload):string {
-		$imgPth = self::getSpriteURL($this->id);
+		$imgPth = $this->getSpriteURL();
 		if (!empty($imgPth)){
 			$img = "<a href='$imgPth' target='_blank' title='Open image in new tab'><img src='$imgPth' alt='".CoreUtils::aposEncode($this->label)."'></a>";
 			if ($canUpload)
@@ -159,7 +160,7 @@ class Appearance extends Model {
 				},$this->notes);
 				$this->notes = preg_replace_callback('/(?:^|[^\\\\])\K(?:#(\d+))\b/',function($a){
 
-					$Appearance = \App\DB::$instance->where('id', $a[1])->getOne('appearances');
+					$Appearance = DB::$instance->where('id', $a[1])->getOne('appearances');
 					return (
 						!empty($Appearance)
 						? "<a href='/cg/v/{$Appearance->id}'>{$Appearance->label}</a>"
