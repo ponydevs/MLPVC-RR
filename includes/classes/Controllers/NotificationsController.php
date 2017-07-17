@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Auth;
 use App\CSRFProtection;
+use App\DB;
 use App\Input;
 use App\JSON;
 use App\Logs;
@@ -55,10 +56,11 @@ class NotificationsController extends Controller {
 				Response::fail("Invalid read action ($read_action) specified for notification type {$Notif->type}");
 			/** @var $data array */
 			$data = !empty($Notif->data) ? JSON::decode($Notif->data) : null;
+			/** @noinspection DegradedSwitchInspection */
 			switch ($Notif->type){
 				case 'post-passon':
 					/** @var $Post Post */
-					$Post = \App\DB::$instance->where('id', $data['id'])->getOne("{$data['type']}s");
+					$Post = DB::$instance->where('id', $data['id'])->getOne("{$data['type']}s");
 					if (empty($Post)){
 						Posts::clearTransferAttempts($Post, $data['type'], 'del');
 						Response::fail("The {$data['type']} doesn’t exist or has been deleted");
@@ -69,13 +71,13 @@ class NotificationsController extends Controller {
 							Response::fail('You are not allowed to transfer this reservation');
 						}
 
-						Notifications::safeMarkRead($Notif['id'], $read_action);
+						Notifications::safeMarkRead($Notif->id, $read_action);
 						Notification::send($data['user'], 'post-passallow', [
 							'id' => $data['id'],
 							'type' => $data['type'],
 							'by' => Auth::$user->id,
 						]);
-						\App\DB::$instance->where('id', $data['id'])->update("{$data['type']}s", [
+						DB::$instance->where('id', $data['id'])->update("{$data['type']}s", [
 							'reserved_by' => $data['user'],
 							'reserved_at' => date('c'),
 						]);
@@ -89,7 +91,7 @@ class NotificationsController extends Controller {
 						]);
 					}
 					else {
-						Notifications::safeMarkRead($Notif['id'], $read_action);
+						Notifications::safeMarkRead($Notif->id, $read_action);
 						Notification::send($data['user'], 'post-passdeny', [
 							'id' => $data['id'],
 							'type' => $data['type'],
@@ -100,10 +102,10 @@ class NotificationsController extends Controller {
 					Response::done();
 				break;
 				default:
-					Notifications::safeMarkRead($Notif['id'], $read_action);
+					Notifications::safeMarkRead($Notif->id, $read_action);
 			}
 		}
-		else Notifications::safeMarkRead($Notif['id']);
+		else Notifications::safeMarkRead($Notif->id);
 
 		Response::done();
 	}
