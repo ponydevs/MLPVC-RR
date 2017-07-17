@@ -1349,7 +1349,7 @@ class ColorGuideController extends Controller {
 
 		switch ($action){
 			case 'get':
-				Response::done($Tag);
+				Response::done($Tag->to_array());
 			case 'del':
 				$AppearanceID = Appearances::validateAppearancePageID();
 
