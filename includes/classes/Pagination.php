@@ -106,7 +106,7 @@ class Pagination {
 
 	public function toHTML(bool $wrap = WRAP):string {
 		if ($this->maxPages === null){
-			error_log(__METHOD__.': maxPages peroperty must be defined\nData: '.var_export($this, true));
+			error_log(__METHOD__.": maxPages peroperty must be defined\nData: ".var_export($this, true)."\nTrace:\n".(new \RuntimeException())->getTraceAsString());
 			return '';
 		}
 
