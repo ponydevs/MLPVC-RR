@@ -129,10 +129,10 @@ DocReady.push(function(){
 		});
 		$('.cm-direction:not(.tipped)').each(function(){
 			let $this = $(this),
-				ponyID = $this.closest('li').attr('id').substring(1),
+				appearanceID = $this.closest('li').attr('id').substring(1),
 				base = new Image(),
 				cm = new Image(),
-				base_img = `/cg/v/${ponyID}d.svg?t=`+(parseInt(new Date().getTime()/1000)),
+				base_img = `/cg/v/${appearanceID}d.svg?t=`+(parseInt(new Date().getTime()/1000)),
 				cm_img = $this.attr('data-cm-preview');
 			setTimeout(function(){
 				base.src = base_img;
@@ -204,7 +204,7 @@ DocReady.push(function(){
 
 		//jshint -W040
 		let $li = $(this).closest('[id^=p]'),
-			ponyID = $li.attr('id').substring(1),
+			appearanceID = $li.attr('id').substring(1),
 			ponyName = (
 				!AppearancePage
 				? $li.find('strong').first()
@@ -218,7 +218,7 @@ DocReady.push(function(){
 					<h4>How to import swatches to Adobe Illustrator</h4>
 					<ul>
 						<li>Because Illustator uses a proprietary format for swatch files, you must download a script <a href='/dist/Import Swatches from JSON.jsx?v=1.4' download='Import Swatches from JSON.jsx' class='btn typcn typcn-download'>by clicking here</a> to be able to import them from our site. Once you downloaded it, place it in an easy to find location, because you'll need to use it every time you want to import colors.<br><small>If you place it in <code>&hellip;\\Adobe\\Adobe Illustrator *\\Presets\\*\\Scripts</code> it'll be available as one of the options in the Scripts submenu.</small></li>
-						<li>Once you have the script, <a href="/cg/v/${ponyID}s.json" class="btn blue typcn typcn-download">click here</a> to download the <code>.json</code> file that you'll need to use for the import.</li>
+						<li>Once you have the script, <a href="/cg/v/${appearanceID}s.json" class="btn blue typcn typcn-download">click here</a> to download the <code>.json</code> file that you'll need to use for the import.</li>
 						<li>Now that you have the 2 files, open Illustrator, create/open a document, then go to <strong>File &rsaquo; Scripts &rsaquo; Other Script</strong> (or press ${pressAi}) then find the file with the <code>.jsx</code> extension (the one you first downloaded). A dialog will appear telling you what to do next.</li>
 					</ul>
 					<div class="responsive-embed">
@@ -227,7 +227,7 @@ DocReady.push(function(){
 				</div>
 				<div class='hidden section inkscape'>
 					<h4>How to import swatches to Inkscape</h4>
-					<p>Download <a href='/cg/v/${ponyID}s.gpl' class='btn blue typcn typcn-download'>this file</a> and place it in the <code>&hellip;\\Inkscape<wbr>\\<wbr>share<wbr>\\<wbr>palettes</code> folder. If you don’t plan on using the other swatches, deleting them should make your newly imported swatch easier to find.</p>
+					<p>Download <a href='/cg/v/${appearanceID}s.gpl' class='btn blue typcn typcn-download'>this file</a> and place it in the <code>&hellip;\\Inkscape<wbr>\\<wbr>share<wbr>\\<wbr>palettes</code> folder. If you don’t plan on using the other swatches, deleting them should make your newly imported swatch easier to find.</p>
 					<p>You will most likely have to restart Inkscape for the swatch to show up in the <em>Swatches</em> (<kbd>F6</kbd>) tool window’s menu.</p>
 					<div class="responsive-embed">
 						<iframe src="https://www.youtube.com/embed/zmaJhbIKQqM" allowfullscreen async defer></iframe>

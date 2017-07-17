@@ -641,7 +641,7 @@ class ColorGuideController extends Controller {
 
 		$except = (new Input('not','int', [Input::IS_OPTIONAL => true]))->out();
 		if ((new Input('action','string', [Input::IS_OPTIONAL => true]))->out() === 'synon'){
-			if (isset($except))
+			if ($except !== null)
 				DB::$instance->where('id',$except);
 			/** @var $Tag Tag */
 			$Tag = DB::$instance->where('"synonym_of" IS NOT NULL')->getOne('tags');
@@ -667,7 +667,7 @@ class ColorGuideController extends Controller {
 		}
 		else DB::$instance->orderBy('type')->where('"synonym_of" IS NULL');
 
-		if (isset($except))
+		if ($except !== null)
 			DB::$instance->where('id',$except,'!=');
 
 		$Tags = DB::$instance->disableAutoClass()->orderBy('name')->get('tags',$limit,"$cols, uses, synonym_of");
@@ -1467,7 +1467,7 @@ HTML;
 
 				if ($adding){
 					$Tag = new Tag($data);
-					if ($Tag->save())
+					if (!$Tag->save())
 						Response::dbError();
 
 					$AppearanceID = (new Input('addto','int', [Input::IS_OPTIONAL => true]))->out();
@@ -1514,8 +1514,8 @@ HTML;
 		$merging = $action === 'merge';
 		$synoning = $action === 'synon';
 		if ($merging || $synoning){
-			if ($synoning && !empty($Tag['synonym_of']))
-				Response::fail('This tag is already synonymized with a different tag');
+			if ($synoning && $Tag->synonym_of !== null)
+				Response::fail('The selected tag is already a synonym of the "'.$Tag->synonym->name.'" ('.Tags::TAG_TYPES[$Tag->synonym->type].') tag');
 
 			$targetid = (new Input('targetid','int', [
 				Input::CUSTOM_ERROR_MESSAGES => [
@@ -1526,7 +1526,7 @@ HTML;
 			if (empty($Target))
 				Response::fail('Target tag does not exist');
 			if ($Target->synonym_of !== null)
-				Response::fail('The selected tag is already a synonym of another tag');
+				Response::fail('The selected tag is already a synonym of the "'.$Target->synonym->name.'" ('.Tags::TAG_TYPES[$Target->synonym->type].') tag');
 
 			$TargetTagged = Tagged::by_tag($Target->id);
 			$TaggedAppearanceIDs = [];
@@ -1545,7 +1545,7 @@ HTML;
 				// No need to delete "tagged" table entries, constraints do it for us
 				$Tag->delete();
 			else {
-				Tagged::delete_all(['conditions' => ['id = ?', $Tag->id]]);
+				Tagged::delete_all(['conditions' => ['tag_id = ?', $Tag->id]]);
 				$Tag->update_attributes([
 					'synonym_of' => $Target->id,
 					'uses' => 0,

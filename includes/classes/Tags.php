@@ -63,7 +63,7 @@ class Tags {
 		/** @var $Tag Tag */
 		$Tag = DB::$instance->where($column, $value)->getOne('tags', $arg1);
 
-		if ($Tag->synonym_of !== null)
+		if ($Tag !== null && $Tag->synonym_of !== null)
 			$Tag = $Tag->synonym;
 
 		return $as_bool === RETURN_AS_BOOL ? !empty($Tag) : $Tag;

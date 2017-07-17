@@ -26,10 +26,10 @@ DocReady.push(function(){
 					let counts = this.counts;
 					$tbody.children().each(function(){
 						let $ch = $(this).children(),
-							tid = parseInt($ch.first().text().trim(), 10);
+							id = parseInt($ch.first().text().trim(), 10);
 
-						if (typeof counts[tid] !== 'undefined')
-							$ch.last().children('span').text(counts[tid]);
+						if (typeof counts[id] !== 'undefined')
+							$ch.last().children('span').text(counts[id]);
 					});
 				}
 
@@ -71,7 +71,7 @@ DocReady.push(function(){
 
 					$.each(this, function(_, tag){
 						let type = tag.type,
-							$option = `<option value="${tag.tid}">${tag.name}</option>`;
+							$option = `<option value="${tag.id}">${tag.name}</option>`;
 
 						if (!type) return $select.append($option);
 
