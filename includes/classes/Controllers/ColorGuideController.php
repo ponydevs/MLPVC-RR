@@ -413,6 +413,10 @@ class ColorGuideController extends Controller {
 				);
 				$search->addQuery($multiMatch);
 			}
+			else {
+				$sort = new ElasticsearchDSL\Sort\FieldSort('order', 'asc');
+				$search->addSort($sort);
+			}
 
 			$boolquery = new BoolQuery();
 			if (Permission::insufficient('staff'))
