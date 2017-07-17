@@ -672,7 +672,7 @@ class CoreUtils {
 	 *
 	 * @return string
 	 */
-	public static function getNavigationHTML($disabled = false, $scope = []){
+	public static function getNavigationHTML($disabled = false, array $scope = []){
 		if (!empty(self::$NavHTML))
 			return self::$NavHTML;
 
@@ -760,13 +760,13 @@ class CoreUtils {
 		foreach ($NavItems as $item){
 			$sublink = '';
 			if (isset($item['subitem'])){
-				list($class, $sublink) = self::_processHeaderLink([true, $item['subitem']]);
+				[$class, $sublink] = self::_processHeaderLink([true, $item['subitem']]);
 				$sublink = " &rsaquo; $sublink";
 				$link = self::_processHeaderLink($item, HTML_ONLY);
 			}
 			else if (isset($item[2]) && !$item[2])
 				continue;
-			else list($class, $link) = self::_processHeaderLink($item);
+			else [$class, $link] = self::_processHeaderLink($item);
 			self::$NavHTML .= "<li$class>$link$sublink</li>";
 		}
 		self::$NavHTML .= '<li><a href="http://mlp-vectorclub.deviantart.com/" target="_blank" rel="noopener">MLP-VectorClub</a></li>';

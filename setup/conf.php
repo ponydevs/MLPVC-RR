@@ -27,4 +27,6 @@
 	define('DISCORD_BOT_TOKEN','');
 	define('DISCORD_SERVER_ID',0);
 
+	// Development
+	define('LOGFILE_PREFIX','mlpvc-rr');
 	//define('MAINTENANCE_START', strtotime(''));

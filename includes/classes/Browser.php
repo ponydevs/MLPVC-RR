@@ -768,7 +768,6 @@ class Browser {
 			$this->setVersion($match[1]);
 			$this->setBrowser(self::BROWSER_MAXTHON);
 
-
 			return true;
 		}
 

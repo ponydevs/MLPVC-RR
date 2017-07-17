@@ -138,7 +138,7 @@ ga('send','pageview');
 					<circle r="20" cx="22.5" cy="22.5" class="loading-circle" transform="rotate(-90 22.5 22.5)"></circle>
 				</svg>
 				<div class="loader"></div>
-			</li><?=CoreUtils::getNavigationHTML(isset($view) && $view === 'fatalerr', $scope)?>
+			</li><?=CoreUtils::getNavigationHTML(defined('FATAL_ERROR'), $scope)?>
 		</ul></nav>
 	</header>
 

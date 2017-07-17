@@ -4,7 +4,7 @@
 $_dir = rtrim(__DIR__, '\/').DIRECTORY_SEPARATOR;
 require $_dir.'test_init.php';
 
-ini_set('error_log',PROJPATH.'mlpvc-rr-error.log');
+ini_set('error_log',PROJPATH.LOGFILE_PREFIX.'-error.log');
 
 use App\About;
 use App\DB;

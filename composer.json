@@ -28,6 +28,7 @@
 		"ext-json": "*",
 		"ext-mbstring": "*",
 		"ext-pdo_pgsql": "*",
+		"ext-pdo_sqlite": "*",
 		"ext-xml": "*"
 	},
 	"require-dev": {
