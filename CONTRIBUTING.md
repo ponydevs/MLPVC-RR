@@ -8,10 +8,10 @@ The site is known to work with the following set of software, assuming correct c
 | ----------------- | --------------------------------------------- |
 | Operating System  | Windows 10/8.1/7<br>Debian 8<br>Linux Mint 18 |
 | Web Server        | nginx 1.10+<br>Apache 2.4+                    |
-| RDBMS             | PostgreSQL 9.5+                               |
+| Database Server   | PostgreSQL 9.5+                               |
 | Asset Compliation | Node.js 6.0+                                  |
 | Search Server     | ElasticSearch 5.4+                            |
-| Runtime           | Composer<br>PHP 7.1+ with the following modules installed:<ul><li>mbsting</li><li>gd</li><li>xml</li><li>curl</li><li>pdo (pg)</li></ul> |
+| Runtime & Dependencies | <p>Composer (latest)</p><p>PHP 7.1+ with the following modules installed:</p><ul><li>curl</li><li>gd</li><li>json</li><li>mbsting</li><li>pdo</li><li>pdo_pgsql</li><li>pdo_sqlite</li><li>xml</li></ul> |
 | Source Control    | Git<br><small>(as obvious as it may seem, the site shows the commit data in the footer, so the binary is required to be accessible by the application)</small> |
 | SSL Certificate   | Self-signed ([get a pair here](https://djdavid98.hu/selfsigned))<br><small>(required to use the site through HTTPS while developing)</small> |
 
