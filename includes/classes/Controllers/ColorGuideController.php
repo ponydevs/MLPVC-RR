@@ -443,7 +443,7 @@ class ColorGuideController extends Controller {
 				]);
 			}
 			else {
-				error_log("No hits from Elastic.\nSearch quesry: ".($searching?$SearchQuery:'<N/A>')."\nData:\n".var_export($search));
+				error_log("No hits from Elastic.\nSearch quesry: ".($searching?$SearchQuery:'<N/A>')."\nData:\n".var_export($search, true));
 				$Pagination->calcMaxPages(0);
 			}
 		}
