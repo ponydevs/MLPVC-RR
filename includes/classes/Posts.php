@@ -545,8 +545,10 @@ HTML;
 				: '';
 			if ($Post->finished){
 				$approved = $Post->lock;
-				if ($deviation_promises)
-					$Image = "<div class='image deviation'><div class='post-deviation-promise' data-post='{$Post->getID()}' data-viewonly='$view_only'></div></div>";
+				if ($deviation_promises){
+					$view_only_prmise = $view_only ? "data-viewonly='$view_only'" : '';
+					$Image = "<div class='image deviation'><div class='post-deviation-promise' data-post='{$Post->getID()}' $view_only_prmise></div></div>";
+				}
 				else $Image = $Post->getFinishedImage($view_only, $cachebust);
 				$finished_at = !empty($Post->finished_at)
 					? "<em class='finish-date'>Finished <strong>".Time::tag($Post->finished_at).'</strong></em>'
