@@ -188,6 +188,10 @@ DocReady.push(function(){
 					? `${orig_query} - ${document.title}`
 					: document.title.replace(/^.*( - Page \d+)/, orig_query+'$1');
 			else return document.title.replace(/^.* - (Page \d+)/, '$1');
+		}).then(function(){
+			$.Dialog.close();
+		}).catch(function(){
+			$.Dialog.close();
 		});
 	}).on('reset', function(e){
 		e.preventDefault();
