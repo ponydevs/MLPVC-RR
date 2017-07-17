@@ -202,6 +202,27 @@ DocReady.push(function(){
 	$w.on('scroll mousewheel',window._UserScroll);
 	window._UserScroll();
 
+	$('.awaiting-approval').on('click', 'button.check', function(e){
+		e.preventDefault();
+
+		let $li = $(this).parents('li'),
+			IDArray = $li.attr('id').split('-'),
+			thing = IDArray[0],
+			id = IDArray[1];
+
+		$.Dialog.wait('Deviation acceptance status', 'Checking');
+
+		$.post(`/post/lock/${thing}/${id}`, $.mkAjaxHandler(function(){
+			if (!this.status) return $.Dialog.fail(false, this.message);
+
+			let message = this.message;
+			$.Dialog.wait(false, "Reloading page");
+			$.Navigation.reload(function(){
+				$.Dialog.success(false, message, true);
+			});
+		}));
+	});
+
 	function settingChanged(which,from,to_what){
 		switch (which){
 			case "p_vectorapp":
