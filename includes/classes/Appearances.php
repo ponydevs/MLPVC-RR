@@ -491,7 +491,7 @@ HTML;
 			]
 		]);
 		$elasticClient->indices()->create(array_merge($params));
-		$Appearances = DB::$instance->where('id != 0')->where('owner IS NULL')->get('appearances');
+		$Appearances = DB::$instance->where('id != 0')->where('owner_id IS NULL')->get('appearances');
 
 		$params = ['body' => []];
 		foreach ($Appearances as $i => $a){
