@@ -396,7 +396,7 @@ class ColorGuideController extends Controller {
 		$jsResponse = CoreUtils::isJSONExpected();
 		if ($elasticAvail){
 			$search = new ElasticsearchDSL\Search();
-			$orderByOrder = true;
+			$inOrder = true;
 		    $Pagination = new Pagination(ltrim($this->_cgPath, '/'), $AppearancesPerPage);
 
 			// Search query exists
@@ -418,7 +418,7 @@ class ColorGuideController extends Controller {
 				$search->addQuery($score);
 				$sort = new ElasticsearchDSL\Sort\FieldSort('_score', 'asc');
 				$search->addSort($sort);
-				$orderByOrder = false;
+				$inOrder = false;
 			}
 			else {
 				$sort = new ElasticsearchDSL\Sort\FieldSort('order', 'asc');
@@ -444,6 +444,7 @@ class ColorGuideController extends Controller {
 			$Pagination->calcMaxPages($search['hits']['total']);
 			if (!empty($search['hits']['hits'])){
 				$ids = [];
+				error_log("Debug hits:\n".var_export($search['hits']['hits'], true));
 				/** @noinspection ForeachSourceInspection */
 				foreach($search['hits']['hits'] as $i => $hit)
 					$ids[$hit['_id']] = $i;
@@ -451,7 +452,8 @@ class ColorGuideController extends Controller {
 				$find = [
 					'conditions' => [ 'id IN (?)', array_keys($ids)	],
 				];
-				if (!$orderByOrder){
+				if ($inOrder){
+					$find['order'] = '"order" asc';
 					$Ponies = Appearance::find('all', $find);
 				}
 				else {
