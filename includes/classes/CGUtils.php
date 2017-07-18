@@ -810,7 +810,7 @@ GPL;
 			if (preg_match(new RegExp('^(b+[a4]+w*d+|g+[uo0]+d+|(?:b+[ae3]+|w+[o0u]+r+)[s5]+[t7]+)(e+r+|e+s+t+)?p+[o0]+[wh]*n+[ye3]*'),$sanitized_name))
 				return 'opinionbased';
 		}, [
-			Input::IN_RANGE => [3,30],
+			Input::IN_RANGE => [2,30],
 			Input::CUSTOM_ERROR_MESSAGES => [
 				Input::ERROR_MISSING => 'Tag name cannot be empty',
 				Input::ERROR_RANGE => 'Tag name must be between @min and @max characters',
