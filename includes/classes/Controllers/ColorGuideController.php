@@ -444,11 +444,8 @@ class ColorGuideController extends Controller {
 				foreach($search['hits']['hits'] as $i => $hit)
 					$ids[$hit['_id']] = $i;
 
-				$search_ids = array_keys($ids);
-				$find = [
-					'conditions' => [ 'id IN (?)', $search_ids	],
-				];
 				if ($inOrder){
+					DB::$instance->where('id', array_keys($ids));
 					DB::$instance->orderBy('order');
 					$Ponies = Appearances::get($this->_EQG, $Pagination->getLimit());
 				}
