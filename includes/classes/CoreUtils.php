@@ -714,7 +714,9 @@ class CoreUtils {
 						if (isset($scope['Tags'])) $pagePrefix = 'Tags';
 						else if (isset($scope['Changes'])) $pagePrefix = 'Major Color Changes';
 
-						$NavItems['colorguide']['subitem'] = (isset($pagePrefix) ? "$pagePrefix - " : '')."Page {$scope['Pagination']->page}";
+						if (isset($scope['Pagination']))
+							$NavItems['colorguide']['subitem'] = (isset($pagePrefix) ? "$pagePrefix - " : '')."Page {$scope['Pagination']->page}";
+						else error_log("\$scope['Pagination'] not set\nScope:".JSON::encode($scope, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)."\nPage prefix: $pagePrefix\nRequest URI: {$_SERVER['REQUEST_URI']}");
 					}
 				}
 
