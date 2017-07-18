@@ -266,7 +266,7 @@ class Appearance extends Model {
 		if ($this->owner_id !== null)
 			return;
 
-		Appearances::updateIndex($this->id);
+		Appearances::updateIndex($this);
 	}
 
 	public function clearRelations(){

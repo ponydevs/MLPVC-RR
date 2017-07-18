@@ -522,8 +522,8 @@ HTML;
 	 * @param Appearance|int $Appearance
 	 */
 	public static function updateIndex($Appearance){
-		if (is_int($Appearance))
-			$Appearance = Appearance::find('first', ['conditions' => ['id = ?', $Appearance]]);
+		if (is_numeric($Appearance))
+			$Appearance = Appearance::find('first', ['conditions' => ['id = ?', (int)$Appearance]]);
 		try {
 			CoreUtils::elasticClient()->update(self::toElasticArray($Appearance, false, true));
 		}

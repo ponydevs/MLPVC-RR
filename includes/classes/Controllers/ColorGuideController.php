@@ -794,8 +794,10 @@ class ColorGuideController extends Controller {
 						$data['owner_id'] = Auth::$user->id;
 						$ownerName = Auth::$user->name;
 					}
-					if (empty($data['owner_id']))
-						$data['order'] = DB::$instance->getOne('appearances','MAX("order") as "order"')['order']+1;
+					if (empty($data['owner_id'])){
+						$biggestOrder = DB::$instance->disableAutoClass()->getOne('appearances','MAX("order") as "order"');
+						$data['order'] = ($biggestOrder['order'] ?? 0)+1;
+					}
 				}
 				else if ($data['private']){
 					$data['last_cleared'] = date('c');
@@ -1207,7 +1209,7 @@ class ColorGuideController extends Controller {
 					break;
 				}
 
-				Appearances::updateIndex($this->_appearance->id);
+				Appearances::updateIndex($this->_appearance);
 
 				Tags::updateUses($Tag->id);
 				if (!empty(CGUtils::GROUP_TAG_IDS_ASSOC[$Tag->id]))
@@ -1369,7 +1371,7 @@ class ColorGuideController extends Controller {
 				if (!empty(CGUtils::GROUP_TAG_IDS_ASSOC[$Tag->id]))
 					Appearances::getSortReorder($this->_EQG);
 				foreach ($Uses as $use)
-					Appearances::updateIndex($use->appearance_id);
+					Appearances::updateIndex($use->appearance);
 
 				if ($AppearanceID !== null && $Tag->type === 'ep'){
 					$Appearance = Appearance::find($AppearanceID);
@@ -1398,7 +1400,7 @@ class ColorGuideController extends Controller {
 					}
 					else {
 						foreach ($TargetTagged as $tg)
-							Appearances::updateIndex($tg->appearance_id);
+							Appearances::updateIndex($tg->appearance);
 					}
 				}
 				else $keep_tagged = false;
@@ -1485,7 +1487,7 @@ HTML;
 							Response::success("The tag was created, <strong>but</strong> it could not be added to the appearance (<a href='/cg/v/$AppearanceID'>#$AppearanceID</a>) because it doesn’t seem to exist. Please try adding the tag manually.");
 
 						if (!Tagged::make($Tag->id, $Appearance->id)->save()) Response::dbError();
-						Appearances::updateIndex($Appearance->id);
+						Appearances::updateIndex($Appearance);
 						Tags::updateUses($Tag->id);
 						$r = ['tags' => Appearances::getTagsHTML($Appearance->id, NOWRAP)];
 						if ($this->_appearancePage){
@@ -1501,7 +1503,7 @@ HTML;
 					$AppearanceID = !empty($this->_appearancePage) ? (int) $_POST['APPEARANCE_PAGE'] : null;
 					$tagrelations = Tagged::by_tag($Tag->id);
 					foreach ($tagrelations as $tagged){
-						Appearances::updateIndex($tagged->appearance_id);
+						Appearances::updateIndex($tagged->appearance);
 
 						if ($tagged->appearance_id === $AppearanceID){
 							$data['needupdate'] = true;
