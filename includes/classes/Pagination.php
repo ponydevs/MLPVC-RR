@@ -162,20 +162,40 @@ class Pagination {
 	}
 
 	/**
+	 * Calls respond if needed based on the paginate GET parameter
+	 *
+	 * @param string $output
+	 * @param string $update
+	 *
+	 * @see _respond
+	 */
+	public function respondIfShould(string $output, string $update){
+		if (isset($_GET['paginate'])){
+			$_SERVER['REQUEST_URI'] = rtrim(preg_replace(new RegExp('paginate=true(?:&|$)'),'',$_SERVER['REQUEST_URI']),'?');
+			$this->_respond($output, $update);
+		}
+	}
+
+	/**
 	 * Respond to paginated result requests
 	 *
 	 * @param string $output The HTML of the paginated content
-	 * @param string $update The CSS selector specifying which element to place $output in
+	 * @param string $update The CSS selector telling the JS which element to place $output in
 	 */
-	public function respond($output, $update){
-		$RQURI = rtrim(preg_replace(new RegExp('js=true(?:&|$)'),'',$_SERVER['REQUEST_URI']),'?');
+	private function _respond(string $output, string $update){
+		if (!CoreUtils::isJSONExpected()){
+			HTTP::statusCode(400);
+			header('Content-Type: text/plain');
+			die("This endpoint only serves JSON requests which your client isn't accepting");
+		}
+
 		Response::done([
 			'output' => $output,
 			'update' => $update,
 			'for' => $this->_basePath,
 			'pagination' => $this->toHTML(NOWRAP),
 			'page' => $this->page,
-			'request_uri' => $RQURI,
+			'request_uri' => $_SERVER['REQUEST_URI'],
 		]);
 	}
 

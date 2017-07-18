@@ -26,8 +26,7 @@ class EpisodesController extends Controller {
 		$heading = CoreUtils::capitalize($this->do);
 		$title = "Page {$Pagination->page} - $heading";
 
-		if (isset($_GET['js']))
-			$Pagination->respond(Episodes::getTableTbody($areMovies ? $Movies : $Episodes, $areMovies), "#{$this->do} tbody");
+		$Pagination->respondIfShould(Episodes::getTableTbody($areMovies ? $Movies : $Episodes, $areMovies), "#{$this->do} tbody");
 
 		$settings = [
 			'heading' => $heading,

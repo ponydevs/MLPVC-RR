@@ -442,7 +442,6 @@
 			$.Loader.enableInterval();
 			let ajaxcall = $.ajax({
 				url: url,
-				data: {'via-js': true},
 				success: $.mkAjaxHandler(function(){
 					if (classScope._xhr !== ajaxcall){
 						console.log('%cAJAX request objects do not match, bail','color:red');
@@ -493,6 +492,7 @@
 							return true;
 						}
 
+						console.log(js);
 						let pos = js.indexOf(src);
 
 						// TODO Come up with a proper way to handle persistent files rather than re-requesting them
@@ -556,7 +556,7 @@
 
 						window.CommonElements();
 						if (!block_reload)
-							history[ParsedLocation.pathString === url?'replaceState':'pushState']({'via-js':true},'',url);
+							history[ParsedLocation.pathString === url?'replaceState':'pushState']({'ajax':true},'',url);
 						document.title = pagetitle;
 						classScope._lastLoadedPathname = window.location.pathname;
 						classScope._lastLoadedHref = window.location.href;
@@ -829,7 +829,7 @@ $(function(){
 		let state = e.originalEvent.state,
 			goto = (url, callback) => $.Navigation.visit(url, callback, true);
 
-		if (state !== null && !state['via-js'] && state.paginate === true)
+		if (state !== null && !state.ajax && state.paginate === true)
 			return $w.trigger('nav-popstate', [state, goto]);
 
 		if ($.Navigation._lastLoadedHref.replace(/#.*$/,'') === location.href.replace(/#.*$/,'')){

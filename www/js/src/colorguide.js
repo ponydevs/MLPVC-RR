@@ -160,7 +160,7 @@ DocReady.push(function(){
 	$d.on('paginate-refresh', navigation);
 	navigation();
 
-	$SearchForm.on('submit', function(e, gofast){
+	$SearchForm.on('submit', function(e, btnl){
 		e.preventDefault();
 
 		let $this = $(this),
@@ -170,13 +170,13 @@ DocReady.push(function(){
 			query = $this.serialize();
 		$this.find('button[type=reset]').attr('disabled', !searching);
 
-		if (!gofast){
+		if (!btnl){
 			if (searching)
 				$.Dialog.wait('Navigation', `Searching for <code>${orig_query.replace(/</g,'&lt;')}</code>`);
 			else $.Dialog.success('Navigation', 'Search terms cleared');
 		}
-		
-		$.toPage.call({query:query,gofast:gofast}, window.location.pathname.replace(/\d+($|\?)/,'1$1'), true, true, false, function(){
+		else $.Dialog.wait('Navigation', `Loading appearance page`);
+		$.toPage.call({query:query,btnl:btnl}, window.location.pathname.replace(/\d+($|\?)/,'1$1'), true, true, false, function(){
 			$('.qtip').each(function(){
 				let $this = $(this);
 				$this.data('qtip').destroy();

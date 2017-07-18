@@ -337,8 +337,7 @@ class ColorGuideController extends Controller {
 
 		$Changes = MajorChange::get(null, $Pagination->getLimitString());
 
-		if (isset($_GET['js']))
-			$Pagination->respond(CGUtils::getChangesHTML($Changes, NOWRAP, SHOW_APPEARANCE_NAMES), '#changes');
+		$Pagination->respondIfShould(CGUtils::getChangesHTML($Changes, NOWRAP, SHOW_APPEARANCE_NAMES), '#changes');
 
 		CoreUtils::loadPage([
 			'title' => $title,
@@ -362,8 +361,7 @@ class ColorGuideController extends Controller {
 
 		$Tags = Tags::getFor(null,$Pagination->getLimit(), true);
 
-		if (isset($_GET['js']))
-			$Pagination->respond(Tags::getTagListHTML($Tags, NOWRAP), '#tags tbody');
+		$Pagination->respondIfShould(Tags::getTagListHTML($Tags, NOWRAP), '#tags tbody');
 
 		$js = ['paginate'];
 		if (Permission::sufficient('staff'))
@@ -395,7 +393,7 @@ class ColorGuideController extends Controller {
 			$elasticAvail = false;
 		}
 		$searching = !empty($_GET['q']) && CoreUtils::length(trim($_GET['q'])) > 0;
-		$jsResponse = isset($_GET['js']);
+		$jsResponse = CoreUtils::isJSONExpected();
 		if ($elasticAvail){
 			$search = new ElasticsearchDSL\Search();
 			$orderByID = true;
@@ -488,8 +486,7 @@ class ColorGuideController extends Controller {
 		$heading = ($this->_EQG?'EQG ':'').'Color Guide';
 		$title .= "Page {$Pagination->page} - $heading";
 
-		if ($jsResponse)
-			$Pagination->respond(Appearances::getHTML($Ponies, NOWRAP), '#list');
+		$Pagination->respondIfShould(Appearances::getHTML($Ponies, NOWRAP), '#list');
 
 		$settings = [
 			'title' => $title,
@@ -526,8 +523,7 @@ class ColorGuideController extends Controller {
 		$heading = CoreUtils::posess($this->_ownedBy->name).' Personal Color Guide';
 		$title .= "Page {$Pagination->page} - $heading";
 
-		if (isset($_GET['js']))
-			$Pagination->respond(Appearances::getHTML($Ponies, NOWRAP), '#list');
+		$Pagination->respondIfShould(Appearances::getHTML($Ponies, NOWRAP), '#list');
 
 		$settings = [
 			'title' => $title,

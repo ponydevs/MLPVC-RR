@@ -69,8 +69,6 @@ class AdminController extends Controller {
 		$title = '';
 		$whereArgs = [];
 		$q = [];
-		if (isset($_GET['js']))
-			$q[] = 'js='.$_GET['js'];
 		if (isset($type)){
 			$whereArgs[] = ['reftype', $type];
 			if (isset($q)){
@@ -106,8 +104,7 @@ class AdminController extends Controller {
 			->orderBy('entryid','DESC')
 			->get('log', $Pagination->getLimit());
 
-		if (isset($_GET['js']))
-			$Pagination->respond(Logs::getTbody($LogItems), '#logs tbody');
+		$Pagination->respondIfShould(Logs::getTbody($LogItems), '#logs tbody');
 
 		CoreUtils::loadPage([
 			'heading' => $heading,

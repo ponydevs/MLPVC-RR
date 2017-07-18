@@ -280,7 +280,6 @@ class UserController extends Controller {
 		$paginationPath = "@{$targetUser->name}/contrib/{$params['type']}";
 
 		$itemsPerPage = 10;
-		$jsResponse = isset($_GET['js']);
 		$Pagination = new Pagination($paginationPath, $itemsPerPage);
 
 		switch ($params['type']){
@@ -322,8 +321,7 @@ class UserController extends Controller {
 
 		CoreUtils::fixPath("/$paginationPath/{$Pagination->page}");
 
-		if ($jsResponse)
-			$Pagination->respond(Users::getContributionListHTML($params['type'], $data, NOWRAP), '#contribs');
+		$Pagination->respondIfShould(Users::getContributionListHTML($params['type'], $data, NOWRAP), '#contribs');
 
 		$title = "Page {$Pagination->page} - ".self::CONTRIB_NAMES[$params['type']].' - '.CoreUtils::posess($targetUser->name).' Contributions';
 		$heading = self::CONTRIB_NAMES[$params['type']].' by '.$targetUser->getProfileLink();

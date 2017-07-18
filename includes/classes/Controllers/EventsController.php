@@ -20,8 +20,7 @@ class EventsController extends Controller {
 
 		$Events = Event::find('all', $Pagination->getAssocLimit());
 
-		if (isset($_GET['js']))
-			$Pagination->respond(Events::getListHTML($Events, NOWRAP), '#event-list');
+		$Pagination->respondIfShould(Events::getListHTML($Events, NOWRAP), '#event-list');
 
 		$js = ['paginate'/*, $this->do*/];
 		if (Permission::sufficient('staff'))

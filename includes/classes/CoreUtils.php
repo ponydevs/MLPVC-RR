@@ -78,7 +78,7 @@ class CoreUtils {
 	}
 
 	public static function escapeHTML(?string $html, $mask = null){
-		$mask = isset($mask) ? $mask | ENT_HTML5 : ENT_HTML5;
+		$mask = $mask !== null ? $mask | ENT_HTML5 : ENT_HTML5;
 		return htmlspecialchars($html, $mask);
 	}
 
@@ -97,14 +97,14 @@ class CoreUtils {
 	 * @return string
 	 */
 	public static function notice($type, $title, $text = null, $center = false){
-		if (!in_array($type, self::$NOTICE_TYPES))
-			throw new \Exception("Invalid notice type $type");
+		if (!in_array($type, self::$NOTICE_TYPES, true))
+			throw new \RuntimeException("Invalid notice type $type");
 
 		if (!is_string($text)){
 			if (is_bool($text))
 				$center = $text;
 			$text = $title;
-			unset($title);
+			$title = null;
 		}
 
 		$HTML = '';
@@ -124,16 +124,13 @@ class CoreUtils {
 	 * Display a 404 page
 	 */
 	public static function notFound(){
-		if (POST_REQUEST || isset($_GET['via-js'])){
-			$RQURI = rtrim(str_replace('via-js=true','',$_SERVER['REQUEST_URI']),'?&');
-			Response::fail('HTTP 404: '.(POST_REQUEST?'Endpoint':'Page')." ($RQURI) does not exist");
-		}
+		HTTP::statusCode(404);
+
+		if (self::isJSONExpected())
+			Response::fail('HTTP 404: '.(POST_REQUEST?'Endpoint':'Page')." ({$_SERVER['REQUEST_URI']}) does not exist");
 
 		Users::authenticate();
 
-		HTTP::statusCode(404);
-		global $do;
-		$do = '404';
 		self::loadPage([
 			'title' => '404',
 			'view' => '404',
@@ -218,12 +215,12 @@ class CoreUtils {
 
 		header('Content-Type: text/html; charset=utf-8;');
 
-		if (empty($_GET['via-js'])){
+		if (!self::isJSONExpected()){
 			require INCPATH.'views/_layout.php';
 			die();
 		}
 
-		$_SERVER['REQUEST_URI'] = rtrim(str_replace('via-js=true','',CSRFProtection::removeParamFromURL($_SERVER['REQUEST_URI'])), '?&');
+		$_SERVER['REQUEST_URI'] = rtrim(CSRFProtection::removeParamFromURL($_SERVER['REQUEST_URI']), '?&');
 		ob_start();
 		require INCPATH.'views/_sidebar.php';
 		$sidebar = ob_get_clean();
@@ -634,7 +631,6 @@ class CoreUtils {
 			$out[] = self::getFooterGitInfo(false);
 		$out[] = "<a class='issues' href='".GITHUB_URL."/issues' target='_blank' rel='noopener'>Known issues</a>";
 		$out[] = '<a class="send-feedback">Send feedback</a>';
-		$out[] = 'Render: '.round((microtime(true)-EXEC_START_MICRO)*1000).' ms';
 		return implode(' | ',$out);
 	}
 
@@ -1251,5 +1247,18 @@ HTML;
 			self::$_elastiClient = ClientBuilder::create()->setHosts(['127.0.0.1:'.ELASTIC_PORT])->build();
 
 		return self::$_elastiClient;
+	}
+
+	public static function isJSONExpected():bool {
+		// "Cache" the result for this request
+		static $return_value;
+		if ($return_value !== null)
+			return $return_value;
+
+		$htmlpos = stripos($_SERVER['HTTP_ACCEPT'], 'text/html');
+		$jsonpos = stripos($_SERVER['HTTP_ACCEPT'], 'application/json');
+
+		$return_value = $jsonpos !== false && ($htmlpos === false ? true : $jsonpos < $htmlpos);
+		return $return_value;
 	}
 }

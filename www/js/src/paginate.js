@@ -90,7 +90,7 @@
 			if (!bypass && (limits.pageNumber === newPageNumber || limits.pageNumber === state.page) && location.pathname === target)
 				return silentfail ? false : $.Dialog.fail(title, 'You are already on page '+limits.pageNumber);
 
-			let data = { js: true },
+			let data = { paginate: true },
 				params = [],
 				extraQuery = this.query,
 				haveExtraQuery = typeof extraQuery === 'string';
@@ -112,10 +112,8 @@
 				// USE data FROM THIS POINT FORWARD
 			}
 
-			if (this.gofast){
-				$.Dialog.wait(title, `Loading appearance page`);
-				data.GOFAST = true;
-			}
+			if (this.btnl)
+				data.btnl = true;
 			else $pagination.addClass('loading');
 
 			target += location.hash;
@@ -127,7 +125,7 @@
 						return $.Dialog.fail(title, this.message);
 					}
 
-					if (data.GOFAST && this.goto){
+					if (this.goto){
 						clearLoading();
 						return $.Navigation.visit(this.goto,function(){
 							$.Dialog.close();
