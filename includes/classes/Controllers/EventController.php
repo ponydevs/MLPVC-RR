@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Controllers;
+use ActiveRecord\RecordNotFound;
 use App\Auth;
 use App\CoreUtils;
 use App\CSRFProtection;
@@ -32,8 +33,10 @@ class EventController extends Controller {
 	/** @var Event */
 	private $_event;
 	private function _getEvent($id){
-		$Event = Event::find($id);
-		if (empty($Event)){
+		try {
+			$Event = Event::find($id);
+		}
+		catch (RecordNotFound $e){
 			if (POST_REQUEST)
 				Response::fail('Event not found');
 			CoreUtils::notFound();
