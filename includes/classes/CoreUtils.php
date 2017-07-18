@@ -1267,7 +1267,7 @@ HTML;
 		return $return_value;
 	}
 
-	public static function detectUnexpectedJSON():bool {
+	public static function detectUnexpectedJSON(){
 		if (!CoreUtils::isJSONExpected()){
 			HTTP::statusCode(400);
 			header('Content-Type: text/plain');
