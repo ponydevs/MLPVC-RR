@@ -1266,4 +1266,12 @@ HTML;
 
 		return $return_value;
 	}
+
+	public static function detectUnexpectedJSON():bool {
+		if (!CoreUtils::isJSONExpected()){
+			HTTP::statusCode(400);
+			header('Content-Type: text/plain');
+			die("This endpoint only serves JSON requests which your client isn't accepting");
+		}
+	}
 }

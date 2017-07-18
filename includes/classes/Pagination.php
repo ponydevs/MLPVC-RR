@@ -183,11 +183,7 @@ class Pagination {
 	 * @param string $update The CSS selector telling the JS which element to place $output in
 	 */
 	private function _respond(string $output, string $update){
-		if (!CoreUtils::isJSONExpected()){
-			HTTP::statusCode(400);
-			header('Content-Type: text/plain');
-			die("This endpoint only serves JSON requests which your client isn't accepting");
-		}
+		CoreUtils::detectUnexpectedJSON();
 
 		Response::done([
 			'output' => $output,

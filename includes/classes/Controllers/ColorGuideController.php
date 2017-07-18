@@ -291,8 +291,11 @@ class ColorGuideController extends Controller {
 			DB::$instance->orderBy('label');
 		$Appearances = Appearances::get($this->_EQG,null,null,'id,label,private');
 
-		if (CoreUtils::isJSONExpected())
+		if (isset($_REQUEST['ajax'])){
+			CoreUtils::detectUnexpectedJSON();
+
 			Response::done(['html' => CGUtils::getFullListHTML($Appearances, $GuideOrder, $this->_EQG, NOWRAP)]);
+		}
 
 		$js = [];
 		if (Permission::sufficient('staff'))
