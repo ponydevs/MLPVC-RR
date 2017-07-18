@@ -449,8 +449,8 @@ class ColorGuideController extends Controller {
 					'conditions' => [ 'id IN (?)', $search_ids	],
 				];
 				if ($inOrder){
-					$find['order'] = '"order" asc';
-					$Ponies = Appearance::find('all', $find);
+					DB::$instance->orderBy('order');
+					$Ponies = Appearances::get($this->_EQG, $Pagination->getLimit());
 				}
 				else {
 					$Ponies = Appearance::find('all', $find);
