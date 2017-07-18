@@ -5,7 +5,10 @@ DocReady.push(function(){
 	let $sortBy = $('#sort-by'),
 		$fullList = $('#full-list'),
 		$ReorderBtn = $('#guide-reorder'),
-		$ReorderCancelBtn = $('#guide-reorder-cancel');
+		$ReorderCancelBtn = $('#guide-reorder-cancel'),
+		$unloadedSectionULs = $fullList.find('section > ul'),
+		EQG = window.EQG,
+		EQGRq = EQG?'?eqg':'';
 	$sortBy.on('change',function(){
 		let baseurl = $sortBy.data('baseurl'),
 			val = $sortBy.val(),
@@ -18,19 +21,17 @@ DocReady.push(function(){
 			if (!this.status) return $.Dialog.fail(false, this.message);
 
 			$fullList.html(this.html);
-			$w.triggerHandler('scroll');
+			$unloadedSectionULs = $fullList.find('section > ul');
+			window._cgFullListOnScroll();
 			$ReorderBtn.attr('disabled', Boolean(val.length));
 			history.replaceState(history.state,'',stateUrl);
 			$.Dialog.close();
 		}));
 	});
 
-	const $unloadedSectionULs = $fullList.find('section > ul');
 	window._cgFullListOnScroll = $.throttle(100,function(){
-		if ($unloadedSectionULs.length === 0){
-			$w.off('scroll',window._cgFullListOnScroll);
+		if ($unloadedSectionULs.length === 0)
 			return;
-		}
 
 		$unloadedSectionULs.each(function(){
 			const $this = $(this);
@@ -39,7 +40,7 @@ DocReady.push(function(){
 
 			loadImages($this.find('img[data-src]'), 0, function(){
 				$this.addClass('loaded');
-				$fullList.find('section > ul:not(.loaded)');
+				$unloadedSectionULs = $fullList.find('section > ul:not(.loaded)');
 			});
 		});
 	});
@@ -98,12 +99,14 @@ DocReady.push(function(){
 					list.push($(this).children().attr('data-href').split('/').pop().replace(/^(\d+)\D.*$/,'$1'));
 				});
 
-				$.post('/cg/full/reorder', {list:list.join(',')}, $.mkAjaxHandler(function(){
+				$.post('/cg/full/reorder'+EQGRq, {list:list.join(',')}, $.mkAjaxHandler(function(){
 					if (!this.status) return $.Dialog.fail(false, this.message);
 
 					$fullList.removeClass('sorting').html(this.html);
+					$unloadedSectionULs = $fullList.find('section > ul');
 					$w.triggerHandler('scroll');
 					$ReorderBtn.removeClass('typcn-tick green').addClass('typcn-arrow-unsorted darkblue').html('Re-order');
+					$ReorderCancelBtn.addClass('hidden');
 					$.Dialog.close();
 				}));
 			}

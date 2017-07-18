@@ -280,19 +280,19 @@ class ColorGuideController extends Controller {
 	public function personalAppearancePage($params){
 		$this->_initPersonal($params);
 
-		self::appearancePage($params);
+		$this->appearancePage($params);
 	}
 
 	public function fullList($params){
 		$this->_initialize($params);
 
-		$GuideOrder = !isset($_REQUEST['alphabetically']) && !$this->_EQG;
+		$GuideOrder = !isset($_REQUEST['alphabetically']);
 		if (!$GuideOrder)
 			DB::$instance->orderBy('label');
 		$Appearances = Appearances::get($this->_EQG,null,null,'id,label,private');
 
 		if (isset($_REQUEST['ajax']))
-			Response::done(['html' => CGUtils::getFullListHTML($Appearances, $GuideOrder, NOWRAP)]);
+			Response::done(['html' => CGUtils::getFullListHTML($Appearances, $GuideOrder, $this->_EQG, NOWRAP)]);
 
 		$js = [];
 		if (Permission::sufficient('staff'))
@@ -325,7 +325,7 @@ class ColorGuideController extends Controller {
 			]
 		]))->out());
 
-		Response::done(['html' => CGUtils::getFullListHTML(Appearances::get($this->_EQG,null,null,'id,label'), true, NOWRAP)]);
+		Response::done(['html' => CGUtils::getFullListHTML(Appearances::get($this->_EQG,null,null,'id,label'), true, $this->_EQG, NOWRAP)]);
 	}
 
 	public function changeList(){
@@ -735,7 +735,7 @@ class ColorGuideController extends Controller {
 			case 'make':
 				/** @var $data array */
 				$data = [
-					'ishuman' => $this->_personalGuide ? null : (bool)$this->_EQG,
+					'ishuman' => $this->_personalGuide ? null : $this->_EQG,
 				];
 
 				$label = (new Input('label','string', [
@@ -785,7 +785,7 @@ class ColorGuideController extends Controller {
 						$ownerName = Auth::$user->name;
 					}
 					if (empty($data['owner_id'])){
-						$biggestOrder = DB::$instance->disableAutoClass()->getOne('appearances','MAX("order") as "order"');
+						$biggestOrder = DB::$instance->disableAutoClass()->where('ishuman', $data['ishuman'])->getOne('appearances','MAX("order") as "order"');
 						$data['order'] = ($biggestOrder['order'] ?? 0)+1;
 					}
 				}
@@ -1202,7 +1202,7 @@ class ColorGuideController extends Controller {
 				Appearances::updateIndex($this->_appearance);
 
 				Tags::updateUses($Tag->id);
-				if (!empty(CGUtils::GROUP_TAG_IDS_ASSOC[$Tag->id]))
+				if (!empty(CGUtils::GROUP_TAG_IDS_ASSOC[$this->_EQG?'eqg':'pony'][$Tag->id]))
 					Appearances::getSortReorder($this->_EQG);
 
 				$response = ['tags' => Appearances::getTagsHTML($this->_appearance->id, NOWRAP)];
@@ -1358,7 +1358,7 @@ class ColorGuideController extends Controller {
 
 				$Tag->delete();
 
-				if (!empty(CGUtils::GROUP_TAG_IDS_ASSOC[$Tag->id]))
+				if (!empty(CGUtils::GROUP_TAG_IDS_ASSOC[$this->_EQG?'eqg':'pony'][$Tag->id]))
 					Appearances::getSortReorder($this->_EQG);
 				foreach ($Uses as $use)
 					Appearances::updateIndex($use->appearance);

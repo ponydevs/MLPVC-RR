@@ -9,16 +9,23 @@ use App\Appearances;
 use App\ColorGroups;
 use App\Tags;
 /** @var $Appearance Appearance */
-/** @var $Owner User */
-/** @var $EQG int */
+/** @var $Owner User|null */
+/** @var $EQG bool */
 /** @var $heading string */
 /** @var $isOwner bool */ ?>
 <div id="content">
 	<div class="sprite-wrap"><?=$Appearance->getSpriteHTML(Permission::sufficient('staff') || $isOwner)?></div>
 	<h1><?=CoreUtils::escapeHTML($heading)?></h1>
-	<p>from <?=isset($Owner)?$Owner->getProfileLink().CoreUtils::posess($Owner->name, true)." <a href='/@{$Owner->name}/cg'>Personal Color Guide</a>":"the MLP-VectorClub <a href='/cg'>Color Guide</a>"?></p>
+	<p>from <?php
+	if (isset($Owner))
+		echo $Owner->getProfileLink().CoreUtils::posess($Owner->name, true)." <a href='/@{$Owner->name}/cg'>Personal Color Guide</a>";
+	else {
+		$eqgpath = $EQG ? '/eqg' : '';
+		$guideprefix = $EQG ? 'EQG ' : '';
+		echo "the MLP-VectorClub's <a href='/cg$eqgpath'>{$guideprefix}Color Guide</a>";
+	} ?></p>
 
-<?  if ($isOwner || Permission::sufficient('staff')){ ?>
+<?	if ($isOwner || Permission::sufficient('staff')){ ?>
 	<div class="notice warn align-center appearance-private-notice"<?=!empty($Appearance->private)?'':' style="display:none"'?>><p><span class="typcn typcn-lock-closed"></span> <strong>This appearance is currently private (its colors are only visible to <?=isset($Owner)?(($isOwner?'you':$Owner->name).' and '):''?>staff members)</strong></p></div>
 <?php
 	}
@@ -95,7 +102,7 @@ use App\Tags;
 		'AppearancePage' => true,
 		'PersonalGuide' => $Owner->name ?? false,
 	];
-	if (Permission::sufficient('staff') || $isOwner)
+	if ($isOwner || Permission::sufficient('staff'))
 		$export = array_merge($export, [
 			'TAG_TYPES_ASSOC' => Tags::TAG_TYPES,
 			'MAX_SIZE' => CoreUtils::getMaxUploadSize(),

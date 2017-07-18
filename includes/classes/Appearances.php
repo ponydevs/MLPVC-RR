@@ -171,12 +171,13 @@ class Appearances {
 	 * Sort appearances based on tags
 	 *
 	 * @param Appearance[] $Appearances
+	 * @param bool         $EQG
 	 * @param bool         $simpleArray
 	 *
 	 * @return array
 	 */
-	public static function sort($Appearances, $simpleArray = false){
-		$GroupTagIDs = array_keys(CGUtils::GROUP_TAG_IDS_ASSOC);
+	public static function sort($Appearances, bool $EQG, bool $simpleArray = false){
+		$GroupTagIDs = array_keys(CGUtils::GROUP_TAG_IDS_ASSOC[$EQG?'eqg':'pony']);
 		$Sorted = [];
 		$Tagged = [];
 		$_tagged = DB::$instance->where('tag_id IN ('.implode(',',$GroupTagIDs).')')->orderBy('appearance_id')->get('tagged');
@@ -195,7 +196,7 @@ class Appearances {
 		}
 		if ($simpleArray){
 			$idArray = [];
-			foreach (CGUtils::GROUP_TAG_IDS_ASSOC as $Category => $CategoryName){
+			foreach (CGUtils::GROUP_TAG_IDS_ASSOC[$EQG?'eqg':'pony'] as $Category => $CategoryName){
 				if (empty($Sorted[$Category]))
 					continue;
 				/** @var $Sorted Appearance[][] */

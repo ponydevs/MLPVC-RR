@@ -9,21 +9,27 @@ use App\Models\Logs\MajorChange;
 
 class CGUtils {
 	const GROUP_TAG_IDS_ASSOC = [
-		6  => 'Mane Six & Spike',
-		45 => 'Cutie Mark Crusaders',
-		59 => 'Royalty',
-		9  => 'Antagonists',
-		44 => 'Foals',
-		78 => 'Original Characters',
-		1  => 'Unicorns',
-		3  => 'Pegasi',
-		2  => 'Earth Ponies',
-		10 => 'Pets',
-		437 => 'Non-pony Characters',
-		96 => 'Outfits & Clothing',
-		// add other tags here
-		64 => 'Objects',
-		-1 => 'Other',
+		'pony' => [
+			6  => 'Mane Six & Spike',
+			45 => 'Cutie Mark Crusaders',
+			59 => 'Royalty',
+			9  => 'Antagonists',
+			44 => 'Foals',
+			78 => 'Original Characters',
+			1  => 'Unicorns',
+			3  => 'Pegasi',
+			2  => 'Earth Ponies',
+			10 => 'Pets',
+			437 => 'Non-pony Characters',
+			96 => 'Outfits & Clothing',
+			// add other tags here
+			64 => 'Objects',
+			-1 => 'Other',
+		],
+		'eqg' => [
+			76 => 'Humans',
+			-1 => 'Other',
+		],
 	];
 
 	/**
@@ -43,11 +49,12 @@ class CGUtils {
 	 *
 	 * @param Appearance[] $Appearances
 	 * @param bool         $GuideOrder
+	 * @param bool         $EQG
 	 * @param bool         $wrap
 	 *
 	 * @return string
 	 */
-	public static function getFullListHTML(array $Appearances, $GuideOrder, $wrap = WRAP){
+	public static function getFullListHTML(array $Appearances, $GuideOrder, bool $EQG, $wrap = WRAP){
 		$HTML = '';
 		if (!empty($Appearances)){
 			$previews = !empty(UserPrefs::get('cg_fulllstprev'));
@@ -66,8 +73,8 @@ class CGUtils {
 				}
 			}
 			else {
-				$Sorted = Appearances::sort($Appearances);
-				foreach (CGUtils::GROUP_TAG_IDS_ASSOC as $Category => $CategoryName){
+				$Sorted = Appearances::sort($Appearances, $EQG);
+				foreach (CGUtils::GROUP_TAG_IDS_ASSOC[$EQG?'eqg':'pony'] as $Category => $CategoryName){
 					if (empty($Sorted[$Category]))
 						continue;
 

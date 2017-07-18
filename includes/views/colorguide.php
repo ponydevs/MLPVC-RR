@@ -14,7 +14,23 @@ use App\Tags;
 	<p>A searchable list of character colors from the <?=$EQG?'movies':'show'?></p>
 	<p class="align-center">
 		If you can’t find a character here, check the old guides: <a href="https://sta.sh/0kic0ngp3fy">Pony</a> / <a href="http://fav.me/d7120l1">EQG</a><br>
-		Looking for this information in a machine-readable format? <a href="<?=CoreUtils::cachedAsset('mlpvc-colorguide','dist','json')?>" target="_blank" download="mlpvc-colorguide.json">JSON</a></p>
+		Looking for this information in a machine-readable format? <a href="<?=CoreUtils::cachedAsset('mlpvc-colorguide','dist','json')?>" target="_blank" download="mlpvc-colorguide.json">JSON</a>
+	</p>
+	<p class='align-center links'>
+<?  if (Permission::sufficient('staff')){ ?>
+		<button class='green typcn typcn-plus' id="new-appearance-btn">Add new <?=$EQG?'Character':'Pony'?></button>
+<?	} ?>
+		<a class='btn link typcn typcn-world' href="/cg<?=$EQG?'':'/eqg'?>/1">View <?=$EQG?'Ponies':'Equestria Girls'?></a>
+		<a class='btn link typcn typcn-th-menu' href="/cg<?=$EQG?'/eqg':''?>/full">Full List of <?=$EQG?'Equestria Girls':'Ponies'?></a>
+		<a class='btn link typcn typcn-arrow-forward' href="/cg/blending">Blending Calculator</a>
+		<a class='btn link typcn typcn-pipette' href="/cg/picker">Color Picker</a>
+		<a class='btn link typcn typcn-tags' href="/cg/tags">Tags</a>
+		<a class='btn link typcn typcn-warning' href="/cg/changes">Major Changes</a>
+<?  if (Permission::sufficient('developer')){ ?>
+			<button class='blue typcn typcn-download cg-export'>Export</button>
+			<button class='blue typcn typcn-document cg-reindex'>Re-index</button>
+<?  } ?>
+	</p>
 <?  if (Permission::sufficient('staff')){ ?>
 	<div class="notice warn tagediting">
 		<label>Limited editing</label>
@@ -24,21 +40,6 @@ use App\Tags;
 	$Universal = \App\Models\Appearance::find(0);
 	if (!empty($Universal))
 		echo "<ul id='universal' class='appearance-list'>".Appearances::getHTML([$Universal], NOWRAP).'</ul>'; ?>
-	<p class='align-center links'>
-<?  if (Permission::sufficient('staff')){ ?>
-		<button class='green typcn typcn-plus' id="new-appearance-btn">Add new <?=$EQG?'Character':'Pony'?></button>
-<?  } ?>
-		<a class='btn link typcn typcn-world' href="/cg<?=$EQG?'':'/eqg'?>/1">View <?=$EQG?'Ponies':'Equestria Girls'?></a>
-		<a class='btn link typcn typcn-th-menu' href="/cg<?=$EQG?'/eqg':''?>/full">Full List of <?=$EQG?'Equestria Girls':'Ponies'?></a>
-		<a class='btn link typcn typcn-arrow-forward' href="/cg/blending">Blending Calculator</a>
-		<a class='btn link typcn typcn-pipette' href="/cg/picker">Color Picker</a>
-		<a class='btn link typcn typcn-tags' href="/cg/tags">Tags</a>
-		<a class='btn link typcn typcn-warning' href="/cg/changes">Major Changes</a>
-<?  if (Permission::sufficient('developer')){ ?>
-		<button class='blue typcn typcn-download cg-export'>Export</button>
-		<button class='blue typcn typcn-document cg-reindex'>Re-index</button>
-<?  } ?>
-	</p>
 <? if ($elasticAvail){ ?>
 	<form id="search-form">
 		<input name="q" <?=!empty($_GET['q'])?" value='".CoreUtils::aposEncode($_GET['q'])."'":''?> title='Search'>

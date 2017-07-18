@@ -8,19 +8,14 @@ use App\Tags;
 /** @var $Appearances \App\Models\Appearance[] */ ?>
 <div id="content">
 	<h1>Complete <?=$EQG?'EQG Character':'Pony'?> List</h1>
-	<p>Sorted <?php
-		if (!$EQG){
-	?><select id="sort-by" data-baseurl="/cg<?=($EQG?'/eqg':'')?>/full">
+	<p>Sorted <select id="sort-by" data-baseurl="/cg<?=($EQG?'/eqg':'')?>/full">
 		<option value='alphabetically'<?=$GuideOrder?'':' selected'?>>alphabetically</option>
 		<option value=''<?=$GuideOrder?' selected':''?>>by relevance</option>
-	</select><?php
-		}
-		else echo 'alphabetcially';
-	?></p>
+	</select></p>
 
 	<p class='align-center links'>
 		<a class='btn link typcn typcn-arrow-back' href="/cg<?=$EQG?'/eqg':''?>">Back to <?=($EQG?'EQG ':'')?>Color Guide</a>
-<?php if (Permission::sufficient('staff') && !$EQG){ ?>
+<?php if (Permission::sufficient('staff')){ ?>
 		<button class='darkblue typcn typcn-arrow-unsorted' id="guide-reorder"<?=!$GuideOrder?' disabled':''?>>Re-order</button>
 		<button class='red typcn typcn-times hidden' id="guide-reorder-cancel">Cancel</button>
 <?php } ?>
@@ -29,7 +24,7 @@ use App\Tags;
 		<a class='btn link typcn typcn-warning' href="/cg/changes">Major Changes</a>
 	</p>
 
-	<?=CGUtils::getFullListHTML($Appearances, $GuideOrder)?>
+	<?=CGUtils::getFullListHTML($Appearances, $GuideOrder, $EQG)?>
 </div>
 
 <?  $export = [
