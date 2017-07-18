@@ -11375,7 +11375,8 @@
 				146,
 				183,
 				216,
-				353
+				353,
+				520
 			],
 			"RelatedAppearances": []
 		},
@@ -16760,9 +16761,161 @@
 			],
 			"RelatedAppearances": []
 		},
+		"312": {
+			"id": 312,
+			"order": 90,
+			"label": "Sea Swirl",
+			"notes": "",
+			"ishuman": false,
+			"added": "2017-07-16T19:55:29Z",
+			"private": false,
+			"ColorGroups": {
+				"1524": {
+					"id": 1524,
+					"label": "Coat",
+					"order": 0,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#BC77D8"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#EFC6FB"
+						},
+						{
+							"order": 2,
+							"label": "Shadow Outline",
+							"hex": "#AC6CCE"
+						},
+						{
+							"order": 3,
+							"label": "Shadow Fill",
+							"hex": "#DCB0EC"
+						}
+					]
+				},
+				"1525": {
+					"id": 1525,
+					"label": "Mane & Tail",
+					"order": 1,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline 1",
+							"hex": "#7070FF"
+						},
+						{
+							"order": 1,
+							"label": "Fill 1",
+							"hex": "#9598FF"
+						},
+						{
+							"order": 2,
+							"label": "Outline 2",
+							"hex": "#3637A8"
+						},
+						{
+							"order": 3,
+							"label": "Fill 2",
+							"hex": "#5354C6"
+						}
+					]
+				},
+				"1526": {
+					"id": 1526,
+					"label": "Iris",
+					"order": 2,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Gradient Top",
+							"hex": "#5B0E3C"
+						},
+						{
+							"order": 1,
+							"label": "Gradient Bottom",
+							"hex": "#BD1C77"
+						},
+						{
+							"order": 2,
+							"label": "Highlight Top",
+							"hex": "#D751A0"
+						},
+						{
+							"order": 3,
+							"label": "Highlight Bottom",
+							"hex": "#FFB7DE"
+						}
+					]
+				},
+				"1527": {
+					"id": 1527,
+					"label": "Cutie Mark",
+					"order": 3,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Fill 1",
+							"hex": "#5A58C6"
+						},
+						{
+							"order": 1,
+							"label": "Fill 2",
+							"hex": "#9999FF"
+						}
+					]
+				},
+				"1528": {
+					"id": 1528,
+					"label": "Magic",
+					"order": 4,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Aura",
+							"hex": "#AE2E6D"
+						}
+					]
+				}
+			},
+			"TagIDs": [
+				1,
+				7,
+				8,
+				12,
+				353,
+				519
+			],
+			"RelatedAppearances": []
+		},
+		"313": {
+			"id": 313,
+			"order": 91,
+			"label": "Sunset Shimmer",
+			"notes": "This is a placeholder for the pony version Sunset Shimmer until we get a digital copy of \"Mirror Magic\".",
+			"ishuman": false,
+			"added": "2017-07-18T01:45:43Z",
+			"private": true,
+			"ColorGroups": {
+				"_hidden": true
+			},
+			"TagIDs": [
+				1,
+				7,
+				8,
+				12,
+				100,
+				353,
+				518
+			],
+			"RelatedAppearances": []
+		},
 		"55": {
 			"id": 55,
-			"order": 90,
+			"order": 92,
 			"label": "Spitfire",
 			"notes": "Far legs use darker colors.\nEyelid highlight is only visible while Spitfire is wearing her #70 and appears to have been completely removed in Season 6.",
 			"ishuman": false,
@@ -16895,7 +17048,7 @@
 		},
 		"127": {
 			"id": 127,
-			"order": 91,
+			"order": 93,
 			"label": "Soarin'",
 			"notes": "",
 			"ishuman": false,
@@ -17003,7 +17156,7 @@
 		},
 		"11": {
 			"id": 11,
-			"order": 92,
+			"order": 94,
 			"label": "Derpy Hooves / Muffins",
 			"notes": "Far legs use darker colors.\nHer top iris highlight is the same color as the bottom stop on the iris gradient.",
 			"ishuman": false,
@@ -17129,7 +17282,7 @@
 		},
 		"19": {
 			"id": 19,
-			"order": 93,
+			"order": 95,
 			"label": "Fleetfoot",
 			"notes": "Her eye colors changes around Season 6 to be an exact match of Rainbow Dash's",
 			"ishuman": false,
@@ -17278,7 +17431,7 @@
 		},
 		"137": {
 			"id": 137,
-			"order": 94,
+			"order": 96,
 			"label": "Misty Fly",
 			"notes": "Cutie mark is unknown",
 			"ishuman": false,
@@ -17377,7 +17530,7 @@
 		},
 		"100": {
 			"id": 100,
-			"order": 95,
+			"order": 97,
 			"label": "Cloud Chaser",
 			"notes": "Her eye outline is thicker and goes down further than usual.\nShe has a special eye gradient with four stops and no iris highlights.",
 			"ishuman": false,
@@ -17509,7 +17662,7 @@
 		},
 		"103": {
 			"id": 103,
-			"order": 96,
+			"order": 98,
 			"label": "Flitter",
 			"notes": "She has no iris highlights.",
 			"ishuman": false,
@@ -17640,7 +17793,7 @@
 		},
 		"101": {
 			"id": 101,
-			"order": 97,
+			"order": 99,
 			"label": "Thunderlane",
 			"notes": "",
 			"ishuman": false,
@@ -17766,7 +17919,7 @@
 		},
 		"68": {
 			"id": 68,
-			"order": 98,
+			"order": 100,
 			"label": "Blossomforth",
 			"notes": "Based on Hurricane Fluttershy",
 			"ishuman": false,
@@ -17892,7 +18045,7 @@
 		},
 		"104": {
 			"id": 104,
-			"order": 99,
+			"order": 101,
 			"label": "Twilight Sky",
 			"notes": "Based on S2E22 <em>(mane, iris)</em> &amp; S1E20 <em>(coat)</em>.\nFar legs use darker colors.\nDoes not have iris highlights.\nAppears as both Pegasus and Earth Pony in different episodes.",
 			"ishuman": false,
@@ -17994,7 +18147,7 @@
 		},
 		"97": {
 			"id": 97,
-			"order": 100,
+			"order": 102,
 			"label": "Bulk Biceps",
 			"notes": "",
 			"ishuman": false,
@@ -18178,7 +18331,7 @@
 		},
 		"65": {
 			"id": 65,
-			"order": 101,
+			"order": 103,
 			"label": "Meadow Flower",
 			"notes": "",
 			"ishuman": false,
@@ -18314,7 +18467,7 @@
 		},
 		"102": {
 			"id": 102,
-			"order": 102,
+			"order": 104,
 			"label": "Thunderclap",
 			"notes": "",
 			"ishuman": false,
@@ -18460,7 +18613,7 @@
 		},
 		"26": {
 			"id": 26,
-			"order": 103,
+			"order": 105,
 			"label": "Night Glider",
 			"notes": "",
 			"ishuman": false,
@@ -18608,7 +18761,7 @@
 		},
 		"20": {
 			"id": 20,
-			"order": 104,
+			"order": 106,
 			"label": "Stormy Flare",
 			"notes": "Only has one eye shine.\nFar legs use darker colors.",
 			"ishuman": false,
@@ -18784,7 +18937,7 @@
 		},
 		"21": {
 			"id": 21,
-			"order": 105,
+			"order": 107,
 			"label": "Wind Rider",
 			"notes": "Teeth use a different color than normal.",
 			"ishuman": false,
@@ -19054,7 +19207,7 @@
 		},
 		"138": {
 			"id": 138,
-			"order": 106,
+			"order": 108,
 			"label": "Sunshower Raindrops",
 			"notes": "",
 			"ishuman": false,
@@ -19171,7 +19324,7 @@
 		},
 		"151": {
 			"id": 151,
-			"order": 107,
+			"order": 109,
 			"label": "Zephyr Breeze",
 			"notes": "Has pointed ear tips",
 			"ishuman": false,
@@ -19287,7 +19440,7 @@
 		},
 		"152": {
 			"id": 152,
-			"order": 108,
+			"order": 110,
 			"label": "Mr. Shy",
 			"notes": "Far legs use darker colors.\nThe Cutie Mark Fill is NOT pure white.",
 			"ishuman": false,
@@ -19440,7 +19593,7 @@
 		},
 		"153": {
 			"id": 153,
-			"order": 109,
+			"order": 111,
 			"label": "Mrs. Shy",
 			"notes": "Glasses don't seem to have lenses.",
 			"ishuman": false,
@@ -19643,7 +19796,7 @@
 		},
 		"159": {
 			"id": 159,
-			"order": 110,
+			"order": 112,
 			"label": "Daring Do / A.K. Yearling",
 			"notes": "",
 			"ishuman": false,
@@ -20004,7 +20157,7 @@
 		},
 		"171": {
 			"id": 171,
-			"order": 111,
+			"order": 113,
 			"label": "Orange Swirl",
 			"notes": "",
 			"ishuman": false,
@@ -20118,7 +20271,7 @@
 		},
 		"212": {
 			"id": 212,
-			"order": 112,
+			"order": 114,
 			"label": "Sky Stinger",
 			"notes": "",
 			"ishuman": false,
@@ -20242,7 +20395,7 @@
 		},
 		"213": {
 			"id": 213,
-			"order": 113,
+			"order": 115,
 			"label": "Vapor Trail",
 			"notes": "Far legs use darker colors.\nPay close attention to her hair fills when vectoring her. The colors can be hard to distinguish.",
 			"ishuman": false,
@@ -20393,7 +20546,7 @@
 		},
 		"214": {
 			"id": 214,
-			"order": 114,
+			"order": 116,
 			"label": "Angel Wings",
 			"notes": "",
 			"ishuman": false,
@@ -20545,7 +20698,7 @@
 		},
 		"230": {
 			"id": 230,
-			"order": 115,
+			"order": 117,
 			"label": "Sprinkle Medley",
 			"notes": "Based on S4E12",
 			"ishuman": false,
@@ -20657,7 +20810,7 @@
 		},
 		"244": {
 			"id": 244,
-			"order": 116,
+			"order": 118,
 			"label": "Spearhead",
 			"notes": "",
 			"ishuman": false,
@@ -20794,7 +20947,7 @@
 		},
 		"253": {
 			"id": 253,
-			"order": 117,
+			"order": 119,
 			"label": "Windy Whistles",
 			"notes": "",
 			"ishuman": false,
@@ -20987,7 +21140,7 @@
 		},
 		"254": {
 			"id": 254,
-			"order": 118,
+			"order": 120,
 			"label": "Bow Hothoof",
 			"notes": "Mane colors as well as rainbow colors in cutie mark are same as Rainbow Dash's.",
 			"ishuman": false,
@@ -21222,7 +21375,7 @@
 		},
 		"261": {
 			"id": 261,
-			"order": 119,
+			"order": 121,
 			"label": "Inky Rose",
 			"notes": "",
 			"ishuman": false,
@@ -21404,7 +21557,7 @@
 		},
 		"263": {
 			"id": 263,
-			"order": 120,
+			"order": 122,
 			"label": "Fond Feather",
 			"notes": "One of the \"Gaston Girls\" from Hard to Say Anything (This is the pegasus with purple coat and bluish mane)\n\nOnly portions of her cutie mark are visible, so it is impossible to tell what it is.",
 			"ishuman": false,
@@ -21502,7 +21655,7 @@
 		},
 		"269": {
 			"id": 269,
-			"order": 121,
+			"order": 123,
 			"label": "Sassaflash",
 			"notes": "",
 			"ishuman": false,
@@ -21596,7 +21749,7 @@
 		},
 		"307": {
 			"id": 307,
-			"order": 122,
+			"order": 124,
 			"label": "Flash Sentry",
 			"notes": "Cutie mark has not been show in an episode, colors are based on EQG appearance.",
 			"ishuman": false,
@@ -21716,7 +21869,7 @@
 		},
 		"35": {
 			"id": 35,
-			"order": 123,
+			"order": 125,
 			"label": "Big McIntosh",
 			"notes": "Far legs use darker colors.",
 			"ishuman": false,
@@ -21927,7 +22080,7 @@
 		},
 		"18": {
 			"id": 18,
-			"order": 124,
+			"order": 126,
 			"label": "Granny Smith",
 			"notes": "Far legs use darker colors.",
 			"ishuman": false,
@@ -22089,7 +22242,7 @@
 		},
 		"121": {
 			"id": 121,
-			"order": 125,
+			"order": 127,
 			"label": "Braeburn",
 			"notes": "Far legs use darker colors.",
 			"ishuman": false,
@@ -22253,7 +22406,7 @@
 		},
 		"79": {
 			"id": 79,
-			"order": 126,
+			"order": 128,
 			"label": "Cheerilee",
 			"notes": "Far legs use darker colors.",
 			"ishuman": false,
@@ -22370,7 +22523,7 @@
 		},
 		"80": {
 			"id": 80,
-			"order": 127,
+			"order": 129,
 			"label": "Dr. Hooves / Time Turner",
 			"notes": "For convenience, the color of the glass on his cutie mark is solid rather than transparent, thus the sand should be above.",
 			"ishuman": false,
@@ -22522,7 +22675,7 @@
 		},
 		"111": {
 			"id": 111,
-			"order": 128,
+			"order": 130,
 			"label": "Sweetie Drops / Bon Bon",
 			"notes": "",
 			"ishuman": false,
@@ -22656,7 +22809,7 @@
 		},
 		"110": {
 			"id": 110,
-			"order": 129,
+			"order": 131,
 			"label": "Octavia Melody",
 			"notes": "Cutie mark orientation is inconsistent between episodes and within episodes. In general, using Best Night Ever and Slice of Life, the staff mark reads towards her head (the tail of the mark facing front).",
 			"ishuman": false,
@@ -22795,7 +22948,7 @@
 		},
 		"76": {
 			"id": 76,
-			"order": 130,
+			"order": 132,
 			"label": "Mayor Mare",
 			"notes": "",
 			"ishuman": false,
@@ -22987,7 +23140,7 @@
 		},
 		"30": {
 			"id": 30,
-			"order": 131,
+			"order": 133,
 			"label": "Miss Pommel",
 			"notes": "Far legs use darker colors.",
 			"ishuman": false,
@@ -23206,7 +23359,7 @@
 		},
 		"46": {
 			"id": 46,
-			"order": 132,
+			"order": 134,
 			"label": "Cheese Sandwich",
 			"notes": "",
 			"ishuman": false,
@@ -23365,7 +23518,7 @@
 		},
 		"52": {
 			"id": 52,
-			"order": 133,
+			"order": 135,
 			"label": "Maud Pie",
 			"notes": "Far legs use darker colors.",
 			"ishuman": false,
@@ -23584,7 +23737,7 @@
 		},
 		"51": {
 			"id": 51,
-			"order": 134,
+			"order": 136,
 			"label": "Limestone Pie",
 			"notes": "",
 			"ishuman": false,
@@ -23710,7 +23863,7 @@
 		},
 		"50": {
 			"id": 50,
-			"order": 135,
+			"order": 137,
 			"label": "Marble Pie",
 			"notes": "Two different hair outline colors.\nEye gradient should be adjusted (lower on eye) to make sure top highlight is easily distinguished from gradient.",
 			"ishuman": false,
@@ -23831,7 +23984,7 @@
 		},
 		"53": {
 			"id": 53,
-			"order": 136,
+			"order": 138,
 			"label": "Igneous Rock",
 			"notes": "Far legs use darker colors.",
 			"ishuman": false,
@@ -23974,7 +24127,7 @@
 		},
 		"54": {
 			"id": 54,
-			"order": 137,
+			"order": 139,
 			"label": "Cloudy Quartz",
 			"notes": "",
 			"ishuman": false,
@@ -24164,7 +24317,7 @@
 		},
 		"27": {
 			"id": 27,
-			"order": 138,
+			"order": 140,
 			"label": "Double Diamond",
 			"notes": "Far legs use darker colors.",
 			"ishuman": false,
@@ -24298,7 +24451,7 @@
 		},
 		"58": {
 			"id": 58,
-			"order": 139,
+			"order": 141,
 			"label": "Tree Hugger",
 			"notes": "Darker highlight color matches the bottom iris gradient color.",
 			"ishuman": false,
@@ -24451,7 +24604,7 @@
 		},
 		"59": {
 			"id": 59,
-			"order": 140,
+			"order": 142,
 			"label": "Coloratura",
 			"notes": "",
 			"ishuman": false,
@@ -24594,7 +24747,7 @@
 		},
 		"60": {
 			"id": 60,
-			"order": 141,
+			"order": 143,
 			"label": "Rara (Countess Outfit)",
 			"notes": "",
 			"ishuman": false,
@@ -24893,7 +25046,7 @@
 		},
 		"61": {
 			"id": 61,
-			"order": 142,
+			"order": 144,
 			"label": "Svengallop",
 			"notes": "Has no shadow colors.\nFor the glasses, group together the Fill and the Highlight (100% Normal blending) and set the group to 50% opacity.",
 			"ishuman": false,
@@ -25100,7 +25253,7 @@
 		},
 		"95": {
 			"id": 95,
-			"order": 143,
+			"order": 145,
 			"label": "Street Rat",
 			"notes": "",
 			"ishuman": false,
@@ -25349,7 +25502,7 @@
 		},
 		"96": {
 			"id": 96,
-			"order": 144,
+			"order": 146,
 			"label": "Copper Top",
 			"notes": "",
 			"ishuman": false,
@@ -25569,7 +25722,7 @@
 		},
 		"99": {
 			"id": 99,
-			"order": 145,
+			"order": 147,
 			"label": "Hoofer Steps",
 			"notes": "",
 			"ishuman": false,
@@ -25760,7 +25913,7 @@
 		},
 		"106": {
 			"id": 106,
-			"order": 146,
+			"order": 148,
 			"label": "Toe Tapper",
 			"notes": "Far legs use darker colors.\nOnly has one eye shine and one iris highlight located in the top part of the iris.",
 			"ishuman": false,
@@ -25863,7 +26016,7 @@
 		},
 		"107": {
 			"id": 107,
-			"order": 147,
+			"order": 149,
 			"label": "Torch Song",
 			"notes": "Far legs use darker colors.",
 			"ishuman": false,
@@ -26011,7 +26164,7 @@
 		},
 		"135": {
 			"id": 135,
-			"order": 148,
+			"order": 150,
 			"label": "Ms. Peachbottom",
 			"notes": "Far legs use darker colors. On the luggage:\n<strong>Side Flower 1</strong> represents the two flowers perpendicular to the tear\n<strong>Side Flower 2</strong> is the top flower in line with the tear\n<strong>Side Flower 3</strong> is the bottom one in line with the tear.",
 			"ishuman": false,
@@ -26370,7 +26523,7 @@
 		},
 		"136": {
 			"id": 136,
-			"order": 149,
+			"order": 151,
 			"label": "Ms. Harshwhinny",
 			"notes": "Far legs use darker colors.\nShe has no iris highlights.",
 			"ishuman": false,
@@ -26673,7 +26826,7 @@
 		},
 		"141": {
 			"id": 141,
-			"order": 150,
+			"order": 152,
 			"label": "Plaid Stripes",
 			"notes": "Has pointed ear tips",
 			"ishuman": false,
@@ -26906,7 +27059,7 @@
 		},
 		"142": {
 			"id": 142,
-			"order": 151,
+			"order": 153,
 			"label": "Mr. Stripes",
 			"notes": "",
 			"ishuman": false,
@@ -27106,7 +27259,7 @@
 		},
 		"143": {
 			"id": 143,
-			"order": 152,
+			"order": 154,
 			"label": "Buried Lede",
 			"notes": "",
 			"ishuman": false,
@@ -27369,7 +27522,7 @@
 		},
 		"145": {
 			"id": 145,
-			"order": 153,
+			"order": 155,
 			"label": "Aloe",
 			"notes": "",
 			"ishuman": false,
@@ -27517,7 +27670,7 @@
 		},
 		"146": {
 			"id": 146,
-			"order": 154,
+			"order": 156,
 			"label": "Lotus Blossom",
 			"notes": "",
 			"ishuman": false,
@@ -27666,7 +27819,7 @@
 		},
 		"147": {
 			"id": 147,
-			"order": 155,
+			"order": 157,
 			"label": "Caramel",
 			"notes": "",
 			"ishuman": false,
@@ -27771,7 +27924,7 @@
 		},
 		"149": {
 			"id": 149,
-			"order": 156,
+			"order": 158,
 			"label": "Spoiled Rich",
 			"notes": "",
 			"ishuman": false,
@@ -28037,7 +28190,7 @@
 		},
 		"150": {
 			"id": 150,
-			"order": 157,
+			"order": 159,
 			"label": "Filthy Rich",
 			"notes": "",
 			"ishuman": false,
@@ -28208,7 +28361,7 @@
 		},
 		"155": {
 			"id": 155,
-			"order": 158,
+			"order": 160,
 			"label": "Quarter Hearts",
 			"notes": "aka \"Link\" pony",
 			"ishuman": false,
@@ -28318,7 +28471,7 @@
 		},
 		"161": {
 			"id": 161,
-			"order": 159,
+			"order": 161,
 			"label": "S05E06 Unnamed Earth Mare #1",
 			"notes": "The frilly underpants have a lighter shadow outline color compared to the normal outline.\nName is based on the MLP Wiki name for this character.",
 			"ishuman": false,
@@ -28548,7 +28701,7 @@
 		},
 		"166": {
 			"id": 166,
-			"order": 160,
+			"order": 162,
 			"label": "Cup Cake",
 			"notes": "Ears are pointed.",
 			"ishuman": false,
@@ -28714,7 +28867,7 @@
 		},
 		"168": {
 			"id": 168,
-			"order": 161,
+			"order": 163,
 			"label": "Carrot Cake",
 			"notes": "",
 			"ishuman": false,
@@ -28887,7 +29040,7 @@
 		},
 		"165": {
 			"id": 165,
-			"order": 162,
+			"order": 164,
 			"label": "Lucky Clover",
 			"notes": "",
 			"ishuman": false,
@@ -28991,7 +29144,7 @@
 		},
 		"172": {
 			"id": 172,
-			"order": 163,
+			"order": 165,
 			"label": "Daisy",
 			"notes": "",
 			"ishuman": false,
@@ -29108,7 +29261,7 @@
 		},
 		"173": {
 			"id": 173,
-			"order": 164,
+			"order": 166,
 			"label": "Lily Valley",
 			"notes": "",
 			"ishuman": false,
@@ -29235,7 +29388,7 @@
 		},
 		"87": {
 			"id": 87,
-			"order": 165,
+			"order": 167,
 			"label": "Rose",
 			"notes": "Far legs use darker colors.",
 			"ishuman": false,
@@ -29382,7 +29535,7 @@
 		},
 		"176": {
 			"id": 176,
-			"order": 166,
+			"order": 168,
 			"label": "Cherry Berry",
 			"notes": "",
 			"ishuman": false,
@@ -29500,7 +29653,7 @@
 		},
 		"178": {
 			"id": 178,
-			"order": 167,
+			"order": 169,
 			"label": "Quibble Pants",
 			"notes": "Shirt colors are same as for #159",
 			"ishuman": false,
@@ -29630,7 +29783,7 @@
 		},
 		"185": {
 			"id": 185,
-			"order": 168,
+			"order": 170,
 			"label": "Crystal Hoof / Thorax",
 			"notes": "",
 			"ishuman": false,
@@ -29772,7 +29925,7 @@
 		},
 		"195": {
 			"id": 195,
-			"order": 169,
+			"order": 171,
 			"label": "Mrs. Paleo",
 			"notes": "",
 			"ishuman": false,
@@ -29966,7 +30119,7 @@
 		},
 		"196": {
 			"id": 196,
-			"order": 170,
+			"order": 172,
 			"label": "Mr. Paleo",
 			"notes": "",
 			"ishuman": false,
@@ -30187,7 +30340,7 @@
 		},
 		"198": {
 			"id": 198,
-			"order": 171,
+			"order": 173,
 			"label": "Gladmane",
 			"notes": "Ears are pointed.\nOnly fill on cloak is transparent; sparkles are 100% opaque atop except for one color.",
 			"ishuman": false,
@@ -30505,7 +30658,7 @@
 		},
 		"225": {
 			"id": 225,
-			"order": 172,
+			"order": 174,
 			"label": "Sheriff Silverstar",
 			"notes": "Note that both \"Over the Barrel\" and S5E6 have overly-bright reference colors, but these are the only refs we have for Silverstar",
 			"ishuman": false,
@@ -30672,7 +30825,7 @@
 		},
 		"226": {
 			"id": 226,
-			"order": 173,
+			"order": 175,
 			"label": "Troubleshoes Clyde",
 			"notes": "Colors from S5E6 are overly bright, but this is the only episode reference for Troubleshoes.",
 			"ishuman": false,
@@ -30838,7 +30991,7 @@
 		},
 		"227": {
 			"id": 227,
-			"order": 174,
+			"order": 176,
 			"label": "Trapeze Star",
 			"notes": "Cutie mark is not fully visible in any shot",
 			"ishuman": false,
@@ -31064,7 +31217,7 @@
 		},
 		"231": {
 			"id": 231,
-			"order": 175,
+			"order": 177,
 			"label": "Leadwing",
 			"notes": "Based on S5E10. Does not have shadow Coat colors. Cutie Mark colors may be inaccurate due to lack of suitable close-ups.\n<strong>Lenses</strong> are a gradient, starting at 80% opacity on the top and ending at 35% on the bottom.",
 			"ishuman": false,
@@ -31218,7 +31371,7 @@
 		},
 		"237": {
 			"id": 237,
-			"order": 176,
+			"order": 178,
 			"label": "Golden Harvest / Carrot Top",
 			"notes": "Far legs use darker colors.",
 			"ishuman": false,
@@ -31337,7 +31490,7 @@
 		},
 		"238": {
 			"id": 238,
-			"order": 177,
+			"order": 179,
 			"label": "Blue Bobbin",
 			"notes": "",
 			"ishuman": false,
@@ -31553,7 +31706,7 @@
 		},
 		"239": {
 			"id": 239,
-			"order": 178,
+			"order": 180,
 			"label": "Bleeding Heart",
 			"notes": "",
 			"ishuman": false,
@@ -31755,7 +31908,7 @@
 		},
 		"245": {
 			"id": 245,
-			"order": 179,
+			"order": 181,
 			"label": "Nurse Redheart",
 			"notes": "Note that cutie mark has changed in S7",
 			"ishuman": false,
@@ -31887,7 +32040,7 @@
 		},
 		"249": {
 			"id": 249,
-			"order": 180,
+			"order": 182,
 			"label": "Doctor Fauna",
 			"notes": "",
 			"ishuman": false,
@@ -32098,7 +32251,7 @@
 		},
 		"250": {
 			"id": 250,
-			"order": 181,
+			"order": 183,
 			"label": "Wrangler",
 			"notes": "",
 			"ishuman": false,
@@ -32282,7 +32435,7 @@
 		},
 		"252": {
 			"id": 252,
-			"order": 182,
+			"order": 184,
 			"label": "Hard Hat",
 			"notes": "",
 			"ishuman": false,
@@ -32497,7 +32650,7 @@
 		},
 		"256": {
 			"id": 256,
-			"order": 183,
+			"order": 185,
 			"label": "Feather Bangs",
 			"notes": "",
 			"ishuman": false,
@@ -32621,7 +32774,7 @@
 		},
 		"257": {
 			"id": 257,
-			"order": 184,
+			"order": 186,
 			"label": "Hoity Toity",
 			"notes": "Has pointed ear tips.",
 			"ishuman": false,
@@ -32847,7 +33000,7 @@
 		},
 		"258": {
 			"id": 258,
-			"order": 185,
+			"order": 187,
 			"label": "Photo Finish",
 			"notes": "No cutie mark has been shown yet.",
 			"ishuman": false,
@@ -33026,7 +33179,7 @@
 		},
 		"260": {
 			"id": 260,
-			"order": 186,
+			"order": 188,
 			"label": "Starstreak",
 			"notes": "",
 			"ishuman": false,
@@ -33234,7 +33387,7 @@
 		},
 		"264": {
 			"id": 264,
-			"order": 187,
+			"order": 189,
 			"label": "Swoon Song",
 			"notes": "One of the \"Gaston Girls\" from Hard to Say Anything. (This is the earth pony with red coat, lighter-red mane)",
 			"ishuman": false,
@@ -33378,7 +33531,7 @@
 		},
 		"301": {
 			"id": 301,
-			"order": 188,
+			"order": 190,
 			"label": "Grand Pear",
 			"notes": "",
 			"ishuman": false,
@@ -33400,7 +33553,7 @@
 		},
 		"303": {
 			"id": 303,
-			"order": 189,
+			"order": 191,
 			"label": "Pear Butter",
 			"notes": "",
 			"ishuman": false,
@@ -33422,7 +33575,7 @@
 		},
 		"306": {
 			"id": 306,
-			"order": 190,
+			"order": 192,
 			"label": "Bright Mac",
 			"notes": "",
 			"ishuman": false,
@@ -33444,7 +33597,7 @@
 		},
 		"64": {
 			"id": 64,
-			"order": 191,
+			"order": 193,
 			"label": "Angel Bunny",
 			"notes": "",
 			"ishuman": false,
@@ -33560,7 +33713,7 @@
 		},
 		"112": {
 			"id": 112,
-			"order": 192,
+			"order": 194,
 			"label": "Gummy",
 			"notes": "In 3/4 view, the top line on his far eye uses the \"Far Eye Top Line\" color instead of the normal gradient.",
 			"ishuman": false,
@@ -33699,7 +33852,7 @@
 		},
 		"116": {
 			"id": 116,
-			"order": 193,
+			"order": 195,
 			"label": "Winona",
 			"notes": "",
 			"ishuman": false,
@@ -33834,7 +33987,7 @@
 		},
 		"117": {
 			"id": 117,
-			"order": 194,
+			"order": 196,
 			"label": "Owlowiscious",
 			"notes": "",
 			"ishuman": false,
@@ -33923,7 +34076,7 @@
 		},
 		"119": {
 			"id": 119,
-			"order": 195,
+			"order": 197,
 			"label": "Tank",
 			"notes": "Far legs use darker colors.\nIn some scenes, Tank uses an alternate set of colors for the tongue.\nFor the goggle lenses, group together the Fill and the Highlights (100% Normal blending) and set the group to 50% opacity.",
 			"ishuman": false,
@@ -34192,7 +34345,7 @@
 		},
 		"120": {
 			"id": 120,
-			"order": 196,
+			"order": 198,
 			"label": "Opalescence",
 			"notes": "",
 			"ishuman": false,
@@ -34391,7 +34544,7 @@
 		},
 		"248": {
 			"id": 248,
-			"order": 197,
+			"order": 199,
 			"label": "Ripley",
 			"notes": "",
 			"ishuman": false,
@@ -34513,7 +34666,7 @@
 		},
 		"109": {
 			"id": 109,
-			"order": 198,
+			"order": 200,
 			"label": "Zecora",
 			"notes": "Based on S4E14.",
 			"ishuman": false,
@@ -34678,7 +34831,7 @@
 		},
 		"113": {
 			"id": 113,
-			"order": 199,
+			"order": 201,
 			"label": "Orange Frog",
 			"notes": "",
 			"ishuman": false,
@@ -34774,7 +34927,7 @@
 		},
 		"122": {
 			"id": 122,
-			"order": 200,
+			"order": 202,
 			"label": "Pig (Peach Skin)",
 			"notes": "",
 			"ishuman": false,
@@ -34896,7 +35049,7 @@
 		},
 		"123": {
 			"id": 123,
-			"order": 201,
+			"order": 203,
 			"label": "Pig (Pink Skin)",
 			"notes": "Muddy Nostril color unknown",
 			"ishuman": false,
@@ -35013,7 +35166,7 @@
 		},
 		"124": {
 			"id": 124,
-			"order": 202,
+			"order": 204,
 			"label": "Pig (Dark Skin)",
 			"notes": "Muddy Nostril color unknown",
 			"ishuman": false,
@@ -35130,7 +35283,7 @@
 		},
 		"139": {
 			"id": 139,
-			"order": 203,
+			"order": 205,
 			"label": "Cranky Doodle Donkey",
 			"notes": "<strong>Toupee \\#1</strong> is up through half-way of \"A Friend in Deed\"\n<strong>Toupee \\#2</strong> is from \"A Friend in Deed\" through most of \"Slice of Life\"\n<strong>Toupee \\#3</strong> is from end of \"Slice of Life\" onward.",
 			"ishuman": false,
@@ -35283,7 +35436,7 @@
 		},
 		"140": {
 			"id": 140,
-			"order": 204,
+			"order": 206,
 			"label": "Matilda",
 			"notes": "",
 			"ishuman": false,
@@ -35454,7 +35607,7 @@
 		},
 		"179": {
 			"id": 179,
-			"order": 205,
+			"order": 207,
 			"label": "Cipactli",
 			"notes": "Eyes use radial gradient; inner color should be set about 50% position and then outer color at 100% position",
 			"ishuman": false,
@@ -35670,7 +35823,7 @@
 		},
 		"184": {
 			"id": 184,
-			"order": 206,
+			"order": 208,
 			"label": "Thorax / Changeling",
 			"notes": "",
 			"ishuman": false,
@@ -35857,7 +36010,7 @@
 		},
 		"193": {
 			"id": 193,
-			"order": 207,
+			"order": 209,
 			"label": "Gabby",
 			"notes": "Eyes have three glimmer ovals like pony fillies.",
 			"ishuman": false,
@@ -36111,7 +36264,7 @@
 		},
 		"204": {
 			"id": 204,
-			"order": 208,
+			"order": 210,
 			"label": "Tri-horned Bunyip",
 			"notes": "",
 			"ishuman": false,
@@ -36335,7 +36488,7 @@
 		},
 		"210": {
 			"id": 210,
-			"order": 209,
+			"order": 211,
 			"label": "Changeling",
 			"notes": "",
 			"ishuman": false,
@@ -36353,7 +36506,7 @@
 		},
 		"70": {
 			"id": 70,
-			"order": 210,
+			"order": 212,
 			"label": "Wonderbolt Uniform",
 			"notes": "",
 			"ishuman": false,
@@ -36488,7 +36641,7 @@
 		},
 		"133": {
 			"id": 133,
-			"order": 211,
+			"order": 213,
 			"label": "Spitfire's Academy Outfit",
 			"notes": "",
 			"ishuman": false,
@@ -36686,7 +36839,7 @@
 		},
 		"71": {
 			"id": 71,
-			"order": 212,
+			"order": 214,
 			"label": "Wonderbolt Trainee Uniform",
 			"notes": "The uppermost highlight on the Lead pony and Wingpony badges uses a different color and opacity than the rest.\nThe lenses of the goggles are comprised of two objects that do not overlap. The fill uses 67% normal blending and the highlight uses 50% overlay blending as far as we can tell.",
 			"ishuman": false,
@@ -36829,7 +36982,7 @@
 		},
 		"105": {
 			"id": 105,
-			"order": 213,
+			"order": 215,
 			"label": "Pony Tones Outfit",
 			"notes": "",
 			"ishuman": false,
@@ -36935,7 +37088,7 @@
 		},
 		"144": {
 			"id": 144,
-			"order": 214,
+			"order": 216,
 			"label": "Rainbow Dash's Robe",
 			"notes": "",
 			"ishuman": false,
@@ -37054,7 +37207,7 @@
 		},
 		"181": {
 			"id": 181,
-			"order": 215,
+			"order": 217,
 			"label": "Cheerilee's Cheerleader Outfit",
 			"notes": "Worn by #79 in S6E14",
 			"ishuman": false,
@@ -37207,7 +37360,7 @@
 		},
 		"183": {
 			"id": 183,
-			"order": 216,
+			"order": 218,
 			"label": "Filly Scout Uniform",
 			"notes": "",
 			"ishuman": false,
@@ -37382,7 +37535,7 @@
 		},
 		"186": {
 			"id": 186,
-			"order": 217,
+			"order": 219,
 			"label": "Crystal Empire Guard Armor",
 			"notes": "",
 			"ishuman": false,
@@ -37456,7 +37609,7 @@
 		},
 		"187": {
 			"id": 187,
-			"order": 218,
+			"order": 220,
 			"label": "Rainbow Rogue's Outfit",
 			"notes": "Use standard cutie mark vector for broach and belt decoration",
 			"ishuman": false,
@@ -37622,7 +37775,7 @@
 		},
 		"188": {
 			"id": 188,
-			"order": 219,
+			"order": 221,
 			"label": "Bard Pie's Outfit",
 			"notes": "",
 			"ishuman": false,
@@ -37838,7 +37991,7 @@
 		},
 		"189": {
 			"id": 189,
-			"order": 220,
+			"order": 222,
 			"label": "Garbunkle's Outfit",
 			"notes": "",
 			"ishuman": false,
@@ -38011,7 +38164,7 @@
 		},
 		"190": {
 			"id": 190,
-			"order": 221,
+			"order": 223,
 			"label": "Sir McBiggen's Outfit",
 			"notes": "",
 			"ishuman": false,
@@ -38320,7 +38473,7 @@
 		},
 		"191": {
 			"id": 191,
-			"order": 222,
+			"order": 224,
 			"label": "Captain Wuzz's Outfit",
 			"notes": "",
 			"ishuman": false,
@@ -38655,7 +38808,7 @@
 		},
 		"192": {
 			"id": 192,
-			"order": 223,
+			"order": 225,
 			"label": "Ponyville Buckball Uniform",
 			"notes": "",
 			"ishuman": false,
@@ -38719,7 +38872,7 @@
 		},
 		"200": {
 			"id": 200,
-			"order": 224,
+			"order": 226,
 			"label": "Impossibly Rich",
 			"notes": "",
 			"ishuman": false,
@@ -38982,7 +39135,7 @@
 		},
 		"202": {
 			"id": 202,
-			"order": 225,
+			"order": 227,
 			"label": "Captain Jackbeard",
 			"notes": "",
 			"ishuman": false,
@@ -39115,7 +39268,7 @@
 		},
 		"203": {
 			"id": 203,
-			"order": 226,
+			"order": 228,
 			"label": "Captain Rarity",
 			"notes": "",
 			"ishuman": false,
@@ -39417,7 +39570,7 @@
 		},
 		"205": {
 			"id": 205,
-			"order": 227,
+			"order": 229,
 			"label": "Lifejacket",
 			"notes": "",
 			"ishuman": false,
@@ -39465,7 +39618,7 @@
 		},
 		"206": {
 			"id": 206,
-			"order": 228,
+			"order": 230,
 			"label": "Derpy's Mail Uniform",
 			"notes": "",
 			"ishuman": false,
@@ -39644,7 +39797,7 @@
 		},
 		"207": {
 			"id": 207,
-			"order": 229,
+			"order": 231,
 			"label": "80s Cheerilee Outfit",
 			"notes": "",
 			"ishuman": false,
@@ -39769,7 +39922,7 @@
 		},
 		"211": {
 			"id": 211,
-			"order": 230,
+			"order": 232,
 			"label": "Changeling Armor",
 			"notes": "",
 			"ishuman": false,
@@ -39787,7 +39940,7 @@
 		},
 		"215": {
 			"id": 215,
-			"order": 231,
+			"order": 233,
 			"label": "Rainbow Dash's Bomber Jacket",
 			"notes": "",
 			"ishuman": false,
@@ -39989,7 +40142,7 @@
 		},
 		"216": {
 			"id": 216,
-			"order": 232,
+			"order": 234,
 			"label": "Princess Ember's Disguise",
 			"notes": "",
 			"ishuman": false,
@@ -40007,7 +40160,7 @@
 		},
 		"217": {
 			"id": 217,
-			"order": 233,
+			"order": 235,
 			"label": "Rainbow Dash's Mechanics Outfit",
 			"notes": "",
 			"ishuman": false,
@@ -40125,7 +40278,7 @@
 		},
 		"218": {
 			"id": 218,
-			"order": 234,
+			"order": 236,
 			"label": "Applejack's Mechanics Outfit",
 			"notes": "",
 			"ishuman": false,
@@ -40227,7 +40380,7 @@
 		},
 		"219": {
 			"id": 219,
-			"order": 235,
+			"order": 237,
 			"label": "Rarity's Mechanics Outfit",
 			"notes": "",
 			"ishuman": false,
@@ -40330,7 +40483,7 @@
 		},
 		"201": {
 			"id": 201,
-			"order": 236,
+			"order": 238,
 			"label": "Rarity's Titanic Outfit",
 			"notes": "",
 			"ishuman": false,
@@ -40594,7 +40747,7 @@
 		},
 		"228": {
 			"id": 228,
-			"order": 237,
+			"order": 239,
 			"label": "Rarity's Detective Outfit",
 			"notes": "From \"Rarity Investigates\"",
 			"ishuman": false,
@@ -40707,7 +40860,7 @@
 		},
 		"229": {
 			"id": 229,
-			"order": 238,
+			"order": 240,
 			"label": "Rarity's Seductive Dress",
 			"notes": "From S5E15\n\nThe outfit is not shown where there would be a shadow color for one of the forelegs.",
 			"ishuman": false,
@@ -40844,146 +40997,6 @@
 			"RelatedAppearances": [
 				6
 			]
-		},
-		"234": {
-			"id": 234,
-			"order": 239,
-			"label": "Snowfall Frost",
-			"notes": "Glasses do not have any lens",
-			"ishuman": false,
-			"added": "2017-01-03T04:31:36Z",
-			"private": false,
-			"ColorGroups": {
-				"1239": {
-					"id": 1239,
-					"label": "Glasses",
-					"order": 2,
-					"Colors": [
-						{
-							"order": 0,
-							"label": "Outline",
-							"hex": "#B96841"
-						},
-						{
-							"order": 1,
-							"label": "Fill",
-							"hex": "#E5AE84"
-						}
-					]
-				},
-				"1240": {
-					"id": 1240,
-					"label": "Shirt and Coat",
-					"order": 3,
-					"Colors": [
-						{
-							"order": 0,
-							"label": "Shirt Outline",
-							"hex": "#BFAED9"
-						},
-						{
-							"order": 1,
-							"label": "Shirt Fill",
-							"hex": "#FFFFFF"
-						},
-						{
-							"order": 2,
-							"label": "Cravat Band",
-							"hex": "#432260"
-						},
-						{
-							"order": 3,
-							"label": "Cravat Fill 1",
-							"hex": "#E9E3EF"
-						},
-						{
-							"order": 4,
-							"label": "Cravat Fill 2",
-							"hex": "#DED5EC"
-						},
-						{
-							"order": 5,
-							"label": "Cravat Shadow Fill",
-							"hex": "#CABAE0"
-						},
-						{
-							"order": 6,
-							"label": "Shirt Shadow Outline",
-							"hex": "#A493B6"
-						},
-						{
-							"order": 7,
-							"label": "Shirt Shadow Fill",
-							"hex": "#D8D8D8"
-						},
-						{
-							"order": 8,
-							"label": "Coat Outline",
-							"hex": "#773976"
-						},
-						{
-							"order": 9,
-							"label": "Coat Fill",
-							"hex": "#AB4696"
-						},
-						{
-							"order": 10,
-							"label": "Coat Collar Fill",
-							"hex": "#893C80"
-						},
-						{
-							"order": 11,
-							"label": "Coat Shadow Outline",
-							"hex": "#652E62"
-						},
-						{
-							"order": 12,
-							"label": "Coat Shadow Fill",
-							"hex": "#913C7F"
-						},
-						{
-							"order": 13,
-							"label": "Button Outline",
-							"hex": "#1E0F31"
-						},
-						{
-							"order": 14,
-							"label": "Button Fill",
-							"hex": "#432260"
-						}
-					]
-				},
-				"1241": {
-					"id": 1241,
-					"label": "Hat",
-					"order": 4,
-					"Colors": [
-						{
-							"order": 0,
-							"label": "Outline",
-							"hex": "#773976"
-						},
-						{
-							"order": 1,
-							"label": "Fill",
-							"hex": "#AB4696"
-						},
-						{
-							"order": 2,
-							"label": "Band",
-							"hex": "#432260"
-						}
-					]
-				}
-			},
-			"TagIDs": [
-				54,
-				96,
-				161,
-				216,
-				452
-			],
-			"RelatedAppearances": []
 		},
 		"309": {
 			"id": 309,
@@ -41148,9 +41161,149 @@
 			],
 			"RelatedAppearances": []
 		},
+		"234": {
+			"id": 234,
+			"order": 241,
+			"label": "Snowfall Frost",
+			"notes": "Glasses do not have any lens",
+			"ishuman": false,
+			"added": "2017-01-03T04:31:36Z",
+			"private": false,
+			"ColorGroups": {
+				"1239": {
+					"id": 1239,
+					"label": "Glasses",
+					"order": 2,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#B96841"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#E5AE84"
+						}
+					]
+				},
+				"1240": {
+					"id": 1240,
+					"label": "Shirt and Coat",
+					"order": 3,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Shirt Outline",
+							"hex": "#BFAED9"
+						},
+						{
+							"order": 1,
+							"label": "Shirt Fill",
+							"hex": "#FFFFFF"
+						},
+						{
+							"order": 2,
+							"label": "Cravat Band",
+							"hex": "#432260"
+						},
+						{
+							"order": 3,
+							"label": "Cravat Fill 1",
+							"hex": "#E9E3EF"
+						},
+						{
+							"order": 4,
+							"label": "Cravat Fill 2",
+							"hex": "#DED5EC"
+						},
+						{
+							"order": 5,
+							"label": "Cravat Shadow Fill",
+							"hex": "#CABAE0"
+						},
+						{
+							"order": 6,
+							"label": "Shirt Shadow Outline",
+							"hex": "#A493B6"
+						},
+						{
+							"order": 7,
+							"label": "Shirt Shadow Fill",
+							"hex": "#D8D8D8"
+						},
+						{
+							"order": 8,
+							"label": "Coat Outline",
+							"hex": "#773976"
+						},
+						{
+							"order": 9,
+							"label": "Coat Fill",
+							"hex": "#AB4696"
+						},
+						{
+							"order": 10,
+							"label": "Coat Collar Fill",
+							"hex": "#893C80"
+						},
+						{
+							"order": 11,
+							"label": "Coat Shadow Outline",
+							"hex": "#652E62"
+						},
+						{
+							"order": 12,
+							"label": "Coat Shadow Fill",
+							"hex": "#913C7F"
+						},
+						{
+							"order": 13,
+							"label": "Button Outline",
+							"hex": "#1E0F31"
+						},
+						{
+							"order": 14,
+							"label": "Button Fill",
+							"hex": "#432260"
+						}
+					]
+				},
+				"1241": {
+					"id": 1241,
+					"label": "Hat",
+					"order": 4,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#773976"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#AB4696"
+						},
+						{
+							"order": 2,
+							"label": "Band",
+							"hex": "#432260"
+						}
+					]
+				}
+			},
+			"TagIDs": [
+				54,
+				96,
+				161,
+				216,
+				452
+			],
+			"RelatedAppearances": []
+		},
 		"33": {
 			"id": 33,
-			"order": 241,
+			"order": 242,
 			"label": "Alicorn Amulet",
 			"notes": "",
 			"ishuman": false,
@@ -41342,7 +41495,7 @@
 		},
 		"86": {
 			"id": 86,
-			"order": 242,
+			"order": 243,
 			"label": "Scorpan's Medallion",
 			"notes": "",
 			"ishuman": false,
@@ -41418,7 +41571,7 @@
 		},
 		"94": {
 			"id": 94,
-			"order": 243,
+			"order": 244,
 			"label": "Party Cannon",
 			"notes": "",
 			"ishuman": false,
@@ -41547,7 +41700,7 @@
 		},
 		"115": {
 			"id": 115,
-			"order": 244,
+			"order": 245,
 			"label": "Fake Timberwolf",
 			"notes": "",
 			"ishuman": false,
@@ -41754,7 +41907,7 @@
 		},
 		"154": {
 			"id": 154,
-			"order": 245,
+			"order": 246,
 			"label": "Twilight's Crown",
 			"notes": "From S4 onward",
 			"ishuman": false,
@@ -41806,7 +41959,7 @@
 		},
 		"299": {
 			"id": 299,
-			"order": 246,
+			"order": 247,
 			"label": "Prince Rutherford",
 			"notes": "",
 			"ishuman": false,
@@ -42100,7 +42253,7 @@
 		},
 		"156": {
 			"id": 156,
-			"order": 247,
+			"order": 248,
 			"label": "Rainbow Dash's Bandaids (Newbie Dash)",
 			"notes": "Sampled from S6E7",
 			"ishuman": false,
@@ -42167,7 +42320,7 @@
 		},
 		"182": {
 			"id": 182,
-			"order": 248,
+			"order": 249,
 			"label": "Rainbow Cookie Zombie Effects",
 			"notes": "Colors of this effect are not muted even if the pony's coat ends up muted. This effect is dimmed with any night filters.\nTo get the muted coat/mane/other colors for any character, take the RGB value of the color, average the R, G, B values, and adjust each RGB value 50% of the way to that average. For example, if RGB is 120, 60, 120, the average is 100. The R value of 120 would then move 50%*(120-100) or 10 (ending up at 110), the G value of 60 would move 50%*(100-60) or 20 (ending up at 80).",
 			"ishuman": false,
@@ -42227,7 +42380,7 @@
 		},
 		"199": {
 			"id": 199,
-			"order": 249,
+			"order": 250,
 			"label": "Hypnotized Mane 6 Eyes",
 			"notes": "Eye colors for the Mane 6 (except Twilight) due to Starlight Glimmer's spell from S6E21.\nAll other body and mane/tail colors remain the same.",
 			"ishuman": false,
@@ -42378,7 +42531,7 @@
 		},
 		"255": {
 			"id": 255,
-			"order": 250,
+			"order": 251,
 			"label": "Gina",
 			"notes": "",
 			"ishuman": false,
@@ -42514,7 +42667,7 @@
 		},
 		"304": {
 			"id": 304,
-			"order": 251,
+			"order": 252,
 			"label": "Burnt Oak",
 			"notes": "",
 			"ishuman": false,
@@ -42850,7 +43003,7 @@
 			"name": "unicorn",
 			"title": null,
 			"type": "spec",
-			"uses": 48,
+			"uses": 50,
 			"synonym_of": null
 		},
 		"2": {
@@ -42898,7 +43051,7 @@
 			"name": "minor character",
 			"title": "Ponies who had a speaking role, interacted with the mane six, or whose only purpose is to fill crowds.",
 			"type": "cat",
-			"uses": 166,
+			"uses": 168,
 			"synonym_of": null
 		},
 		"8": {
@@ -42938,7 +43091,7 @@
 			"name": "female",
 			"title": null,
 			"type": "gen",
-			"uses": 126,
+			"uses": 128,
 			"synonym_of": null
 		},
 		"14": {
@@ -43562,7 +43715,7 @@
 			"name": "sunset shimmer",
 			"title": null,
 			"type": "char",
-			"uses": 2,
+			"uses": 3,
 			"synonym_of": null
 		},
 		"101": {
@@ -46716,6 +46869,22 @@
 			"type": "char",
 			"uses": 0,
 			"synonym_of": 100
+		},
+		"519": {
+			"id": 519,
+			"name": "sea swirl",
+			"title": null,
+			"type": "char",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"520": {
+			"id": 520,
+			"name": "dj p0n3",
+			"title": null,
+			"type": "char",
+			"uses": 1,
+			"synonym_of": null
 		}
 	}
 }

@@ -475,7 +475,7 @@ CREATE TABLE log__appearances (
     cm_dir boolean,
     usetemplate boolean DEFAULT false NOT NULL,
     private boolean DEFAULT false NOT NULL,
-    owner uuid
+    owner_id uuid
 );
 
 
