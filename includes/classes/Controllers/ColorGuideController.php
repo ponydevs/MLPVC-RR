@@ -420,6 +420,10 @@ class ColorGuideController extends Controller {
 				$search->addSort($sort);
 				$inOrder = false;
 			}
+			else {
+				$sort = new ElasticsearchDSL\Sort\FieldSort('order', 'asc');
+				$search->addSort($sort);
+			}
 
 			$boolquery = new BoolQuery();
 			if (Permission::insufficient('staff'))
@@ -444,19 +448,14 @@ class ColorGuideController extends Controller {
 				foreach($search['hits']['hits'] as $i => $hit)
 					$ids[$hit['_id']] = $i;
 
-				if ($inOrder){
-					DB::$instance->where('id', array_keys($ids));
+				if ($inOrder)
 					DB::$instance->orderBy('order');
-					$Ponies = Appearances::get($this->_EQG, $Pagination->getLimit());
-				}
-				else {
-					$Ponies = Appearance::find('all', $find);
-					if (!empty($Ponies))
-						uasort($Ponies, function(Appearance $a, Appearance $b) use ($ids){
-							return $ids[$a->id] <=> $ids[$b->id];
-						});
-					error_log("Debug ponies:\n".var_export($search_ids, true));
-				}
+				DB::$instance->where('id', array_keys($ids));
+				$Ponies = Appearances::get($this->_EQG);
+				if (!empty($Ponies) && !$inOrder)
+					uasort($Ponies, function(Appearance $a, Appearance $b) use ($ids){
+						return $ids[$a->id] <=> $ids[$b->id];
+					});
 			}
 		}
 		if (!$elasticAvail) {
