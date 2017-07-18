@@ -251,7 +251,7 @@ class Appearance extends Model {
 
 	public function getRelatedHTML():string {
 		$LINKS = '';
-		if ($this->related_appearances === null)
+		if (empty($this->related_appearances))
 			return $LINKS;
 		foreach ($this->related_appearances as $r)
 			$LINKS .= '<li>'.$r->target->getLinkWithPreviewHTML().'</li>';

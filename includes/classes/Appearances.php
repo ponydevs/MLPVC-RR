@@ -253,7 +253,7 @@ class Appearances {
 	 *
 	 * @throws \Exception
 	 */
-	public static function applyTemplate($AppearanceID, $EQG){
+	public static function applyTemplate(int $AppearanceID, bool $EQG){
 		if (empty($AppearanceID) || !is_numeric($AppearanceID))
 			throw new \InvalidArgumentException('Incorrect value for $AppearanceID while applying template');
 
@@ -307,8 +307,8 @@ class Appearances {
 				],
 			];
 
-		$cgi = 0;
-		$ci = 0;
+		$cgi = 1;
+		$ci = 1;
 		foreach ($Scheme as $GroupName => $ColorNames){
 			/** @var $Group ColorGroup */
 			$Group = ColorGroup::create([

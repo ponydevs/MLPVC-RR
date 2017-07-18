@@ -27,7 +27,7 @@ class ColorGroup extends OrderedModel {
 
 	/** @inheritdoc */
 	public function assign_order(){
-		if (!empty($this->order))
+		if ($this->order !== null)
 			return;
 
 		$LastGroup = self::find('first',[

@@ -15,7 +15,7 @@ use App\CoreUtils;
  */
 class UsefulLink extends OrderedModel {
 	public function assign_order(){
-		if (!empty($this->order))
+		if ($this->order !== null)
 			return;
 
 		$LastLink = self::find('first',[

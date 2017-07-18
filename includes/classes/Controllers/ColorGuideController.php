@@ -825,7 +825,7 @@ class ColorGuideController extends Controller {
 					$usetemplate = isset($_POST['template']);
 					if ($usetemplate){
 						try {
-							Appearances::applyTemplate($query, $this->_EQG);
+							Appearances::applyTemplate($newAppearance->id, $this->_EQG);
 						}
 						catch (\Exception $e){
 							$response['message'] .= ', but applying the template failed';
