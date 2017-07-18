@@ -1641,6 +1641,7 @@ HTML;
 					Input::ERROR_MISSING => 'Missing appearance ID',
 				]
 			]))->out();
+			$params['id'] = $ponyid;
 			$this->_getAppearance($params);
 			$Group->appearance_id = $ponyid;
 		}

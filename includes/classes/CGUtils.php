@@ -892,13 +892,13 @@ GPL;
 	 *
 	 * @return string|null
 	 */
-	public static function stringifyColors(array $colors):?string {
+	public static function stringifyColors(?array $colors):?string {
 		if (empty($colors))
 			return null;
 
 		$return = [];
 		foreach ($colors as $c)
-			$return[] = "{$c->hex} {$c->labelg}";
+			$return[] = "{$c->hex} {$c->label}";
 
 		return implode("\n", $return);
 	}
