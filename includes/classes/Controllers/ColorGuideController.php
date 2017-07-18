@@ -420,10 +420,6 @@ class ColorGuideController extends Controller {
 				$search->addSort($sort);
 				$inOrder = false;
 			}
-			else {
-				$sort = new ElasticsearchDSL\Sort\FieldSort('order', 'asc');
-				$search->addSort($sort);
-			}
 
 			$boolquery = new BoolQuery();
 			if (Permission::insufficient('staff'))
@@ -444,13 +440,13 @@ class ColorGuideController extends Controller {
 			$Pagination->calcMaxPages($search['hits']['total']);
 			if (!empty($search['hits']['hits'])){
 				$ids = [];
-				error_log("Debug hits:\n".var_export($search['hits']['hits'], true));
 				/** @noinspection ForeachSourceInspection */
 				foreach($search['hits']['hits'] as $i => $hit)
 					$ids[$hit['_id']] = $i;
 
+				$search_ids = array_keys($ids);
 				$find = [
-					'conditions' => [ 'id IN (?)', array_keys($ids)	],
+					'conditions' => [ 'id IN (?)', $search_ids	],
 				];
 				if ($inOrder){
 					$find['order'] = '"order" asc';
@@ -462,6 +458,7 @@ class ColorGuideController extends Controller {
 						uasort($Ponies, function(Appearance $a, Appearance $b) use ($ids){
 							return $ids[$a->id] <=> $ids[$b->id];
 						});
+					error_log("Debug ponies:\n".var_export($search_ids, true));
 				}
 			}
 		}

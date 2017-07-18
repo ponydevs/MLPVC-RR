@@ -1255,10 +1255,15 @@ HTML;
 		if ($return_value !== null)
 			return $return_value;
 
-		$htmlpos = stripos($_SERVER['HTTP_ACCEPT'], 'text/html');
-		$jsonpos = stripos($_SERVER['HTTP_ACCEPT'], 'application/json');
+		if (empty($_SERVER['HTTP_ACCEPT']))
+		    $return_value = false;
+		else {
+			$htmlpos = stripos($_SERVER['HTTP_ACCEPT'], 'text/html');
+			$jsonpos = stripos($_SERVER['HTTP_ACCEPT'], 'application/json');
 
-		$return_value = $jsonpos !== false && ($htmlpos === false ? true : $jsonpos < $htmlpos);
+			$return_value = $jsonpos !== false && ($htmlpos === false ? true : $jsonpos < $htmlpos);
+		}
+
 		return $return_value;
 	}
 }
