@@ -12,8 +12,7 @@ DocReady.push(function(){
 	$sortBy.on('change',function(){
 		let baseurl = $sortBy.data('baseurl'),
 			val = $sortBy.val(),
-			url = `${baseurl}?ajax&${val}`.replace(/&$/,''),
-			stateUrl = `${baseurl}?${val}`.replace(/\?$/,'');
+			url = `${baseurl}?${val}`.replace(/\?$/,'');
 
 		$.Dialog.wait('Changing sort order');
 
@@ -24,7 +23,7 @@ DocReady.push(function(){
 			$unloadedSectionULs = $fullList.find('section > ul');
 			window._cgFullListOnScroll();
 			$ReorderBtn.attr('disabled', Boolean(val.length));
-			history.replaceState(history.state,'',stateUrl);
+			history.replaceState(history.state,'',url);
 			$.Dialog.close();
 		}));
 	});

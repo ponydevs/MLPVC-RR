@@ -291,7 +291,7 @@ class ColorGuideController extends Controller {
 			DB::$instance->orderBy('label');
 		$Appearances = Appearances::get($this->_EQG,null,null,'id,label,private');
 
-		if (isset($_REQUEST['ajax']))
+		if (CoreUtils::isJSONExpected())
 			Response::done(['html' => CGUtils::getFullListHTML($Appearances, $GuideOrder, $this->_EQG, NOWRAP)]);
 
 		$js = [];
@@ -300,7 +300,7 @@ class ColorGuideController extends Controller {
 		$js[] = "{$this->do}-full";
 
 		CoreUtils::loadPage([
-			'title' => 'Full List - Color Guide',
+			'title' => 'Full List - '.($this->_EQG?'EQG ':'').'Color Guide',
 			'view' => "{$this->do}-full",
 			'css' => "{$this->do}-full",
 			'js' => $js,
