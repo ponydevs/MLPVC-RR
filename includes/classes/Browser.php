@@ -308,7 +308,6 @@ class Browser {
 	protected function determine(){
 		$this->checkPlatform();
 		$this->checkBrowsers();
-		$this->checkForAol();
 	}
 
 	/**
@@ -389,27 +388,6 @@ class Browser {
 				$this->setVersion($aversion[0]);
 				$this->_browserName = self::BROWSER_BLACKBERRY;
 				$this->setMobile();
-
-				return true;
-			}
-		}
-
-		return false;
-	}
-
-	/**
-	 * Determine if the user is using an AOL User Agent (last updated 1.7)
-	 * @return boolean True if the browser is from AOL otherwise false
-	 */
-	protected function checkForAol(){
-		$this->setAol(false);
-		$this->setAolVersion(self::VERSION_UNKNOWN);
-
-		if (stripos($this->_agent, 'aol') !== false){
-			$aversion = explode(' ', stristr($this->_agent, 'AOL'));
-			if (isset($aversion[1])){
-				$this->setAol(true);
-				$this->setAolVersion(preg_replace('/[^0-9\.a-z]/i', '', $aversion[1]));
 
 				return true;
 			}
