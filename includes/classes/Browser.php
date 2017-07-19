@@ -384,6 +384,7 @@ class Browser {
 			$this->checkBrowserMaxthon() ||
 			$this->checkBrowserChrome() ||
 			$this->checkBrowserOmniWeb() ||
+			$this->checkBrowserSafari() ||
 
 			// common mobile
 			$this->checkBrowserAndroid() ||
@@ -399,9 +400,6 @@ class Browser {
 
 			// check for facebook external hit when loading URL
 			$this->checkFacebookExternalHit() ||
-
-			// WebKit base check (post mobile and others)
-			$this->checkBrowserSafari() ||
 
 			// everyone else
 			$this->checkBrowserNetPositive() ||
@@ -1152,11 +1150,8 @@ class Browser {
 			&& stripos($this->_agent, 'iPhone') === false
 			&& stripos($this->_agent, 'iPod') === false
 		){
-
-			$aresult = explode('/', stristr($this->_agent, 'Version'));
-			if (isset($aresult[1])){
-				$aversion = explode(' ', $aresult[1]);
-				$this->setVersion($aversion[0]);
+			if (preg_match('~\bVersion\/([\d.]+)~',$this->_agent,$match)){
+				$this->setVersion($match[1]);
 			}
 			else {
 				$this->setVersion(self::VERSION_UNKNOWN);
