@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use ActiveRecord\Model;
 use App\CoreUtils;
 use App\Time;
 use App\VideoProvider;
@@ -18,7 +17,7 @@ use App\VideoProvider;
  * @property string  $not_broken_at
  * @property Episode $ep
  */
-class EpisodeVideo extends Model {
+class EpisodeVideo extends NSModel {
 	static $primary_key = ['season', 'episode', 'provider', 'part'];
 
 	public static $belongs_to = [

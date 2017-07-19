@@ -2,8 +2,6 @@
 
 namespace App\Models;
 
-use \ActiveRecord\Model;
-
 /**
  * @property string $user_id
  * @property string $key
@@ -11,7 +9,7 @@ use \ActiveRecord\Model;
  * @method static UserPref|UserPref[] find(...$args)
  * @method static UserPref find_by_user_id_and_key(string $user_id, string $key)
  */
-class UserPref extends Model {
+class UserPref extends NSModel {
 	public static $primary_key = ['user_id', 'key'];
 
 	public static $belongs_to = [

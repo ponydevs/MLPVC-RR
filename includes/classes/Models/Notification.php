@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use ActiveRecord\Model;
 use App\CoreUtils;
 use App\DB;
 use App\JSON;
@@ -18,7 +17,7 @@ use ElephantIO\Exception\ServerConnectionFailureException;
  * @property string $read_action
  * @property User   $recipient
  */
-class Notification extends Model {
+class Notification extends NSModel {
 	public static $belongs_to = [
 		['recipient', 'class' => 'User'],
 	];

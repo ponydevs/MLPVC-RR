@@ -2,10 +2,8 @@
 
 namespace App\Models;
 
-use ActiveRecord\Model;
-
 /** @property int $order */
-abstract class OrderedModel extends Model {
+abstract class OrderedModel extends NSModel {
 	public static $before_create = ['assign_order'];
 
 	/** This method should attempt to get the order number of last item, or default to 1 */

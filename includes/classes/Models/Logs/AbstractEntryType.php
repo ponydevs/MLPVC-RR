@@ -2,15 +2,15 @@
 
 namespace App\Models\Logs;
 
-use ActiveRecord\Model;
 use App\RegExp;
+use APp\Models\NSModel;
 
 /**
  * @property int    $entryid
  * @property Log    $log     (Via magic method)
  * @property string $type    (Via magic method)
  */
-abstract class AbstractEntryType extends Model {
+abstract class AbstractEntryType extends NSModel {
 	public static $table_name;
 
 	public static $primary_key = 'entryid';

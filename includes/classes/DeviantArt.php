@@ -258,7 +258,7 @@ class DeviantArt {
 		$userdata = $provider->getResourceOwner($accessToken)->toArray();
 
 		/** @var $User Models\User */
-		$User = Users::get($userdata['username'],'name');
+		$User = User::find($userdata['userid']);
 		if (isset($User->role) && $User->role === 'ban'){
 			$_GET['error'] = 'user_banned';
 			$BanReason = DB::$instance

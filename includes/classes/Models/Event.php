@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use ActiveRecord\Model;
 use ActiveRecord\DateTime;
 use App\CoreUtils;
 use App\DB;
@@ -30,7 +29,7 @@ use App\UserPrefs;
  * @property User         $submitter
  * @property User         $finalizer
  */
-class Event extends Model {
+class Event extends NSModel {
 	public static $has_many = [
 		['entries', 'class_name' => 'EventEntry', 'order' => 'score desc, submitted_at asc'],
 	];

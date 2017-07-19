@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use ActiveRecord\DateTime;
-use ActiveRecord\Model;
 use App\Appearances;
 use App\Auth;
 use App\CGUtils;
@@ -36,7 +35,7 @@ use App\Time;
  * @method static Appearance find_by_ishuman_and_label($ishuman, string $label)
  * @method static Appearance|Appearance[] find(...$args)
  */
-class Appearance extends Model {
+class Appearance extends NSModel {
 	/** @var int[] */
 
 	public static $has_many = [

@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use ActiveRecord\Model;
 use App\Time;
 
 /**
@@ -12,7 +11,7 @@ use App\Time;
  * @property string $cast_at
  * @method static EventEntryVote find_by_entry_id_and_user_id(int $entr_yid, string $user_id)
  */
-class EventEntryVote extends Model {
+class EventEntryVote extends NSModel {
 	public static $table_name = 'events__entries__votes';
 
 	public static $primary_key = ['entry_id', 'user_id'];

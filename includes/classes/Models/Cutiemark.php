@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use ActiveRecord\Model;
 use App\DeviantArt;
 use App\Exceptions\CURLRequestException;
 
@@ -17,7 +16,7 @@ use App\Exceptions\CURLRequestException;
  * @property Appearance $appearance
  * @method static Cutiemark[] find_by_sql($sql, $data = null)
  */
-class Cutiemark extends Model {
+class Cutiemark extends NSModel {
 	public static $belongs_to = [
 		['appearance']
 	];

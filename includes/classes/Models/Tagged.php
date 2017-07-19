@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use ActiveRecord\Model;
-
 /**
  * @property int        $tag_id
  * @property int        $appearance_id
@@ -14,7 +12,7 @@ use ActiveRecord\Model;
  * @method static Tagged[] find_all_by_tag_id(int $tag_id)
  * @method static Tagged[] find_all_by_appearance_id(int $appearance_id)
  */
-class Tagged extends Model {
+class Tagged extends NSModel {
 	public static $table_name = 'tagged';
 
 	public static $primary_key = ['tag_id','appearance_id'];

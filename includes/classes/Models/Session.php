@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use ActiveRecord\Model;
 use ActiveRecord\DateTime;
 
 /**
@@ -25,7 +24,7 @@ use ActiveRecord\DateTime;
  * @method static Session find_by_refresh(string $code)
  * @method static Session find(int $id)
  */
-class Session extends Model {
+class Session extends NSModel {
 	public static $belongs_to = [
 		['user'],
 	];

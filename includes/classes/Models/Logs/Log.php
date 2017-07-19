@@ -2,9 +2,9 @@
 
 namespace App\Models\Logs;
 
-use ActiveRecord\Model;
 use ActiveRecord\DateTime;
 use App\Models\User;
+use App\Models\NSModel;
 
 /**
  * @property int      $entryid
@@ -16,7 +16,7 @@ use App\Models\User;
  * @property User     $actor
  * @method static Log find_by_reftype_and_refid(string $reftype, int $refid)
  */
-class Log extends Model {
+class Log extends NSModel {
 	public static $table_name = 'log';
 
 	public static $primary_key = 'entryid';

@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use ActiveRecord\DateTime;
-use ActiveRecord\Model;
 use App\Auth;
 use App\CoreUtils;
 use App\DB;
@@ -30,7 +29,7 @@ use App\RegExp;
  * @property User           $poster     (Via relations)
  * @method static Episode find_by_season_and_episode(int $season, int $episode)
  */
-class Episode extends Model {
+class Episode extends NSModel {
 	static $primary_key = ['season','episode'];
 
 	public static $has_many = [

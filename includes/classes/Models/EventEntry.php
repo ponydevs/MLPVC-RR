@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use ActiveRecord\DateTime;
-use ActiveRecord\Model;
 use App\Auth;
 use App\CoreUtils;
 use App\DB;
@@ -28,7 +27,7 @@ use App\Time;
  * @property User     $submitter    (Via relations)
  * @property Event    $event        (Via relations)
  */
-class EventEntry extends Model {
+class EventEntry extends NSModel {
 	public static $table_name = 'events__entries';
 
 	public static $belongs_to = [

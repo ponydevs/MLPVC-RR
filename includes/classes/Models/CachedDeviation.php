@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use ActiveRecord\DateTime;
-use ActiveRecord\Model;
 use App\CoreUtils;
 
 /**
@@ -17,7 +16,7 @@ use App\CoreUtils;
  * @property DateTime $updated_on
  * @method static CachedDeviation find_by_id_and_provider(string $id, string $provider)
  */
-class CachedDeviation extends Model {
+class CachedDeviation extends NSModel {
 	public static $primary_key = ['provider', 'id'];
 
 	public function toLinkWithPreview(){

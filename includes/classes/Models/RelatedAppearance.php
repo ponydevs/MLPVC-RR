@@ -2,8 +2,6 @@
 
 namespace App\Models;
 
-use ActiveRecord\Model;
-
 /**
  * @property int        $source_id
  * @property int        $target_id
@@ -11,7 +9,7 @@ use ActiveRecord\Model;
  * @property Appearance $source    (Via relations)
  * @property Appearance $target    (Via relations)
  */
-class RelatedAppearance extends Model {
+class RelatedAppearance extends NSModel {
 	static $primary_key = ['source_id','target_id'];
 
 	static $belongs_to = [

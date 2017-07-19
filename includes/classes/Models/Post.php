@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use ActiveRecord\Model;
 use ActiveRecord\DateTime;
 use App\DeviantArt;
 use App\Time;
@@ -30,7 +29,7 @@ use App\CoreUtils;
  * @property bool     $is_request     (Via magic method)
  * @property bool     $is_reservation (Via magic method)
  */
-abstract class Post extends Model {
+abstract class Post extends NSModel {
 	public static $belongs_to;
 
 	/**

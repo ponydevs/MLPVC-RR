@@ -2,8 +2,6 @@
 
 namespace App\Models;
 
-use ActiveRecord\Model;
-
 /**
  * @property int     $season
  * @property int     $episode
@@ -12,7 +10,7 @@ use ActiveRecord\Model;
  * @property User    $user
  * @property Episode $ep
  */
-class EpisodeVote extends Model {
+class EpisodeVote extends NSModel {
 	public static $belongs_to = [
 		['ep', 'class' => 'Episode', 'foreign_key' => ['season','episode']],
 		['user'],

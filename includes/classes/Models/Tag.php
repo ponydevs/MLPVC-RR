@@ -2,8 +2,6 @@
 
 namespace App\Models;
 
-use ActiveRecord\Model;
-
 /**
  * @property int          $id
  * @property int          $uses
@@ -15,7 +13,7 @@ use ActiveRecord\Model;
  * @property Appearance[] $appearances
  * @method static Tag find(...$args)
  */
-class Tag extends Model {
+class Tag extends NSModel {
 	public static $has_many = [
 		['appearances', 'through' => 'tagged'],
 		['tagged', 'class' => 'Tagged'],
