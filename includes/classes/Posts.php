@@ -166,7 +166,7 @@ class Posts {
 	 * Check image URL in POST request
 	 *
 	 * @param string $image_url
-	 * @param array|null $Post Existing post for comparison
+	 * @param Post   $Post Existing post for comparison
 	 *
 	 * @return ImageProvider
 	 */
@@ -178,7 +178,8 @@ class Posts {
 
 
 		foreach (Posts::TYPES as $type){
-			if (!empty($Post->id))
+			/** @noinspection DisconnectedForeachInstructionInspection */
+			if ($Post !== null)
 				DB::$instance->where('r.id',$Post->id,'!=');
 			/** @var $UsedUnder Post */
 			$UsedUnder = DB::$instance->where('preview',$Image->preview)->getOne("{$type}s");
