@@ -68,7 +68,7 @@ use App\UserPrefs;
 		<?=Episodes::getSidebarVoting($CurrentEpisode)?>
 	</section>
 <?php	}
-		if ($do === 'colorguide' && (!empty($Appearance) || !empty($Ponies)) && empty($Map)){ ?>
+		if ((!empty($Appearance) || !empty($Ponies))&& empty($Map) && isset($GLOBALS['do']) && $GLOBALS['do'] === 'cg' ){ ?>
 	<section id="hash-copy">
 		<h2>Color Guide</h2>
 		<p>You can click any colored square on this page to copy its HEX color code to your clipboard. Holding Shift while clicking will display a dialog with the RGB color values instead.</p>
