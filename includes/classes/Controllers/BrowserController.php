@@ -2,6 +2,8 @@
 
 namespace App\Controllers;
 use App\CoreUtils;
+use App\DB;
+use App\Models\Session;
 use App\Permission;
 use App\RegExp;
 
@@ -11,13 +13,22 @@ class BrowserController extends Controller {
 		$AgentString = null;
 		if (isset($params['session']) && Permission::sufficient('developer')){
 			$SessionID = intval($params['session'], 10);
-			$Session = \App\DB::$instance->where('id', $SessionID)->getOne('sessions');
+			/** @var $Session Session */
+			$Session = DB::$instance->where('id', $SessionID)->getOne('sessions');
 			if (!empty($Session))
 				$AgentString = $Session->user_agent;
 		}
+		else $Session = null;
 		$browser = CoreUtils::detectBrowser($AgentString);
 		if (empty($browser['platform']))
 			error_log('Could not find platform based on the following UA string: '.preg_replace(new RegExp(INVERSE_PRINTABLE_ASCII_PATTERN), '', $AgentString));
+
+		if ($Session !== null){
+			$Session->platform = $browser['browser_name'];
+			$Session->browser_name = $browser['browser_name'];
+			$Session->browser_ver = $browser['browser_ver'];
+			$Session->save();
+		}
 
 		CoreUtils::fixPath('/browser'.(!empty($Session)?"/{$Session->id}":''));
 

@@ -44,14 +44,11 @@ class Browser {
 	private $_agent = '';
 	private $_browserName = '';
 	private $_version = '';
-	private $_platform = '';
-	private $_os = '';
 	private $_isAol = false;
 	private $_isMobile = false;
 	private $_isTablet = false;
 	private $_isRobot = false;
 	private $_isFacebook = false;
-	private $_aolVersion = '';
 
 	const BROWSER_UNKNOWN = 'unknown';
 	const VERSION_UNKNOWN = 'unknown';
@@ -130,13 +127,10 @@ class Browser {
 		$this->_browserName = self::BROWSER_UNKNOWN;
 		$this->_version = self::VERSION_UNKNOWN;
 		$this->_platform = self::PLATFORM_UNKNOWN;
-		$this->_os = self::OPERATING_SYSTEM_UNKNOWN;
-		$this->_isAol = false;
 		$this->_isMobile = false;
 		$this->_isTablet = false;
 		$this->_isRobot = false;
 		$this->_isFacebook = false;
-		$this->_aolVersion = self::VERSION_UNKNOWN;
 	}
 
 	/**
@@ -202,31 +196,6 @@ class Browser {
 	}
 
 	/**
-	 * The version of AOL.
-	 * @return string Version of AOL (will only contain alpha-numeric characters and a period)
-	 */
-	public function getAolVersion(){
-		return $this->_aolVersion;
-	}
-
-	/**
-	 * Set the version of AOL
-	 *
-	 * @param string $version The version of AOL
-	 */
-	public function setAolVersion($version){
-		$this->_aolVersion = preg_replace('/[^0-9,.,a-z,A-Z]/', '', $version);
-	}
-
-	/**
-	 * Is the browser from AOL?
-	 * @return boolean True if the browser is from AOL otherwise false
-	 */
-	public function isAol(){
-		return $this->_isAol;
-	}
-
-	/**
 	 * Is the browser from a mobile device?
 	 * @return boolean True if the browser is from a mobile device otherwise false
 	 */
@@ -256,15 +225,6 @@ class Browser {
 	 */
 	public function isFacebook(){
 		return $this->_isFacebook;
-	}
-
-	/**
-	 * Set the browser to be from AOL
-	 *
-	 * @param $isAol
-	 */
-	public function setAol($isAol){
-		$this->_isAol = $isAol;
 	}
 
 	/**
