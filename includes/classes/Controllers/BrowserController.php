@@ -2,7 +2,6 @@
 
 namespace App\Controllers;
 use App\CoreUtils;
-use App\DB;
 use App\Models\Session;
 use App\Permission;
 use App\RegExp;
