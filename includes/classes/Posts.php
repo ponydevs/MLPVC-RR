@@ -529,7 +529,7 @@ HTML;
 
 			$posted_at .= "Requested $permalink";
 			if (Auth::$signed_in && ($isStaff || $isRequester || $isReserver))
-				$posted_at .= ' by '.($isRequester ? "<a href='/@".Auth::$user->name."'>You</a>" : User::find($Post->requested_by)->getProfileLink());
+				$posted_at .= ' by '.($isRequester ? "<a href='/@".Auth::$user->name."'>You</a>" : $Post->requester->getProfileLink());
 		}
 		else {
 			$overdue = false;

@@ -30,7 +30,7 @@ use App\Models\User;
 				<h1><?=CoreUtils::escapeHTML($heading)?></h1>
 				<p>Vector Requests & Reservations</p>
 <?php   if (Permission::sufficient('staff')){ ?>
-				<p class="addedby"><em><?=$CurrentEpisode->is_movie?'Movie':'Episode'?> added by <?=User::find($CurrentEpisode->posted_by)->getProfileLink().' '.Time::tag($CurrentEpisode->posted)?></em></p>
+				<p class="addedby"><em><?=$CurrentEpisode->is_movie?'Movie':'Episode'?> added by <?=$CurrentEpisode->poster->getProfileLink().' '.Time::tag($CurrentEpisode->posted)?></em></p>
 <?php   } ?>
 			</div>
 		</div>

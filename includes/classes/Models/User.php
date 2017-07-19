@@ -38,6 +38,8 @@ use App\Users;
  * @method static User find(...$args)
  */
 class User extends AbstractUser {
+	static $table_name = 'users';
+
 	public static $has_many = [
 		['sessions', 'order' => 'lastvisit desc'],
 		['notifications', 'foreign_key' => 'user'],

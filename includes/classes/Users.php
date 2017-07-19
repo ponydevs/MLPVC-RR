@@ -38,7 +38,7 @@ class Users {
 		if ($coloumn === 'name' && !empty(self::$_USER_CACHE[$value]))
 			return self::$_USER_CACHE[$value];
 
-		$User = User::find('first', ['conditions' => ["\"$coloumn\" = ?", $value]]);
+		$User = DB::$instance->where($coloumn, $value)->getOne('users');
 
 		if (empty($User) && $coloumn === 'name')
 			$User = self::fetch($value);
@@ -67,7 +67,7 @@ class Users {
 
 		$oldName = DANameChange::find_by_old($username);
 		if (!empty($oldName))
-			return User::find($oldName->id);
+			return $oldName->user;
 
 		try {
 			$userdata = DeviantArt::request('user/whois', null, ['usernames[0]' => $username]);
@@ -419,7 +419,7 @@ HTML;
 					$posted = Time::tag($item->requested_at);
 					$isreserved = $item->reserved_by !== null;
 					if ($isreserved){
-						$reserved_by = User::find($item->reserved_by)->getProfileLink();
+						$reserved_by = $item->reserver->getProfileLink();
 						$reserved_at = Time::tag($item->reserved_at);
 						$reserved = "<span class='typcn typcn-user' title='By'></span> $reserved_by<br><span class='typcn typcn-time'></span> $reserved_at";
 					}
@@ -450,7 +450,7 @@ HTML;
 				case 'finished-posts':
 					/** @var $item Request|Reservation */
 					$preview = $item->toLinkWithPreview();
-					$posted_by = User::find($item->is_request ? $item->requested_by : $item->reserved_by)->getProfileLink();
+					$posted_by = ($item->is_request ? $item->requester : $item->reserver)->getProfileLink();
 					$posted_at = Time::tag($item->posted);
 					$posted = "<span class='typcn typcn-user' title='By'></span> $posted_by<br><span class='typcn typcn-time'></span> $posted_at";
 					if ($item->is_request){
@@ -474,7 +474,7 @@ HTML;
 				case 'fulfilled-requests':
 					/** @var $item Request */
 					$preview = $item->toLinkWithPreview();
-					$posted_by = User::find($item->requested_by)->getProfileLink();
+					$posted_by = $item->requester->getProfileLink();
 					$requested_at = Time::tag($item->requested_at);
 					$posted = "<span class='typcn typcn-user' title='By'></span> $posted_by<br><span class='typcn typcn-time'></span> $requested_at";
 					$finished = Time::tag($item->finished_at);

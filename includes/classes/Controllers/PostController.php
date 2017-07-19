@@ -365,7 +365,7 @@ class PostController extends Controller {
 				if ($isUserReserver)
 					Response::fail("You've already reserved this $thing", ['li' => Posts::getLi($this->_post)]);
 				if (!$this->_post->isOverdue())
-					Response::fail("This $thing has already been reserved by ".User::find($this->_post->reserved_by)->getProfileLink(), ['li' => Posts::getLi($this->_post)]);
+					Response::fail("This $thing has already been reserved by ".$this->_post->reserver->getProfileLink(), ['li' => Posts::getLi($this->_post)]);
 				$overdue = [
 					'reserved_by' => $this->_post->reserved_by,
 					'reserved_at' => $this->_post->reserved_at,

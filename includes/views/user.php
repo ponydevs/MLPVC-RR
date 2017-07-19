@@ -87,9 +87,10 @@ if (!empty($Banishes)){
 	$displayInitiator = Permission::sufficient('staff');
 
 	foreach ($Banishes as $b){
-		$initiator = $displayInitiator ? User::find($b['initiator']) : null;
-		$b['reason'] = htmlspecialchars($b['reason']);
-		echo '<li class='.strtolower($Actions[$b['action']])."><blockquote>{$b['reason']}</blockquote> - ".(isset($initiator)?$initiator->getProfileLink().' ':'').Time::tag($b['timestamp']).'</li>';
+		$initiator = $displayInitiator ? $b->log->actor : null;
+		$reason = htmlspecialchars($b->reason);
+		$action = strtolower($Actions[$b instanceof Banish ? 0 : 1]);
+		echo "<li class='$action'><blockquote>{$reason}</blockquote> - ".(isset($initiator)?$initiator->getProfileLink().' ':'').Time::tag($b->log->timestamp).'</li>';
 	}
 }
 			?></ul>

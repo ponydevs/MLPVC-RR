@@ -394,7 +394,7 @@ class Logs {
 			];
 			if ($data['type'] === 'request'){
 				if (!empty($Post->reserved_by))
-					$details[] = ['Reserved by', User::find($Post->reserved_by)->getProfileLink()];
+					$details[] = ['Reserved by', $Post->reserver->getProfileLink()];
 				else $details[] = ['Reserved', false];
 			}
 		}

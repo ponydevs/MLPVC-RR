@@ -26,7 +26,7 @@ use App\UserPrefs;
  * @property string       $finalized_by
  * @property DateTime     $finalized_at
  * @property EventEntry[] $entries
- * @property User         $submitter
+ * @property User         $creator
  * @property User         $finalizer
  */
 class Event extends NSModel {
@@ -34,7 +34,7 @@ class Event extends NSModel {
 		['entries', 'class_name' => 'EventEntry', 'order' => 'score desc, submitted_at asc'],
 	];
 	public static $belongs_to = [
-		['submitter', 'class' => 'User', 'foreign_key' => 'submitted_by'],
+		['creator', 'class' => 'User', 'foreign_key' => 'added_by'],
 		['finalizer', 'class' => 'User', 'foreign_key' => 'finalized_by'],
 	];
 
@@ -138,7 +138,7 @@ class Event extends NSModel {
 				foreach ($HighestScoringEntries as $entry){
 					$title = CoreUtils::escapeHTML($entry->title);
 					$preview = isset($entry->prev_full) ? "<a href='{$entry->prev_src}'><img src='{$entry->prev_thumb}' alt=''><span class='title'>$title</span></a>" : "<span class='title'>$title</span>";
-					$by = '<div>'.User::find($entry->submitted_by)->getProfileLink(User::LINKFORMAT_FULL).'</div>';
+					$by = '<div>'.$entry->submitter->getProfileLink(User::LINKFORMAT_FULL).'</div>';
 					$HTML .= "<div class='winning-entry'>$preview$by</div>";
 				}
 			}

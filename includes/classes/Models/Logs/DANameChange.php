@@ -2,6 +2,8 @@
 
 namespace App\Models\Logs;
 
+use App\Models\User;
+
 /**
  * @inheritdoc
  * @property string $old
