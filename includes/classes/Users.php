@@ -327,7 +327,7 @@ HTML;
 			return '';
 
 		$privacy = $sameUser? Users::PROFILE_SECTION_PRIVACY_LEVEL['public']:'';
-		$cachedur = User::CONTRIB_CACHE_DURATION/ Time::IN_SECONDS['hour'];
+		$cachedur = User::CONTRIB_CACHE_DURATION / Time::IN_SECONDS['hour'];
 		$cachedur = CoreUtils::makePlural('hour', $cachedur, PREPEND_NUMBER);
 		$HTML = "<section class='contributions'><h2>{$privacy}Contributions <span class='typcn typcn-info-large' title='This data is updated every {$cachedur}'></h2>\n<ul>";
 		foreach ($contribs as $key => $contrib)

@@ -246,7 +246,7 @@ class User extends AbstractUser {
 		];
 	}
 
-	const CONTRIB_CACHE_DURATION = 12* Time::IN_SECONDS['hour'];
+	const CONTRIB_CACHE_DURATION = Time::IN_SECONDS['hour'];
 
 	public function getCachedContributions():array {
 		$cache = CachedFile::init(FSPATH."contribs/{$this->id}.json", self::CONTRIB_CACHE_DURATION);
