@@ -258,16 +258,16 @@
         },
         {
             "name": "fightbulc/moment",
-            "version": "1.26.7",
+            "version": "1.26.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/fightbulc/moment.php.git",
-                "reference": "4f7d21fb3e35222def4f26599b2ea3af382c0a14"
+                "reference": "f06fc6008326c36cc63d417c859e6b57bc7b50bf"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/fightbulc/moment.php/zipball/4f7d21fb3e35222def4f26599b2ea3af382c0a14",
-                "reference": "4f7d21fb3e35222def4f26599b2ea3af382c0a14",
+                "url": "https://api.github.com/repos/fightbulc/moment.php/zipball/f06fc6008326c36cc63d417c859e6b57bc7b50bf",
+                "reference": "f06fc6008326c36cc63d417c859e6b57bc7b50bf",
                 "shasum": ""
             },
             "require": {
@@ -317,7 +317,7 @@
                 "translation",
                 "validate"
             ],
-            "time": "2017-07-11T17:51:37+00:00"
+            "time": "2017-07-18T18:28:36+00:00"
         },
         {
             "name": "guzzlehttp/command",
@@ -1271,7 +1271,7 @@
         },
         {
             "name": "symfony/options-resolver",
-            "version": "v3.3.4",
+            "version": "v3.3.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/options-resolver.git",
@@ -1384,16 +1384,16 @@
         },
         {
             "name": "symfony/serializer",
-            "version": "v3.3.4",
+            "version": "v3.3.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/serializer.git",
-                "reference": "419d82243c0f9b4978d780c31f39163770e4436b"
+                "reference": "cca77dd2eb9abc0411c98ba448b3a1e92816bbe1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/serializer/zipball/419d82243c0f9b4978d780c31f39163770e4436b",
-                "reference": "419d82243c0f9b4978d780c31f39163770e4436b",
+                "url": "https://api.github.com/repos/symfony/serializer/zipball/cca77dd2eb9abc0411c98ba448b3a1e92816bbe1",
+                "reference": "cca77dd2eb9abc0411c98ba448b3a1e92816bbe1",
                 "shasum": ""
             },
             "require": {
@@ -1457,7 +1457,7 @@
             ],
             "description": "Symfony Serializer Component",
             "homepage": "https://symfony.com",
-            "time": "2017-07-04T05:29:22+00:00"
+            "time": "2017-07-11T07:17:58+00:00"
         },
         {
             "name": "twig/twig",
