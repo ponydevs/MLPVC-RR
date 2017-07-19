@@ -6,6 +6,7 @@ use App\Auth;
 use App\CoreUtils;
 use App\CSRFProtection;
 use App\Cookie;
+use App\DB;
 use App\DeviantArt;
 use App\HTTP;
 use App\Permission;
@@ -38,9 +39,14 @@ class AuthController extends Controller {
 			Auth::$user = DeviantArt::getAccessToken($_GET['code']);
 		}
 		catch (CURLRequestException $e){
-			if (in_array($e->getCode(),[500,503],true)){
+			if ($e->getCode() >= 500){
+				error_log(__METHOD__.': '.$e->getMessage()."\n".$e->getTraceAsString());
 				$this->_error('server_error');
 			}
+		}
+		catch(Exception $e){
+			error_log(__METHOD__.': '.$e->getMessage()."\n".$e->getTraceAsString());
+			$this->_error('server_error');
 		}
 		Auth::$signed_in = !empty(Auth::$user);
 
@@ -65,7 +71,8 @@ class AuthController extends Controller {
 		if (!Auth::$signed_in) Response::success("You've already signed out");
 		CSRFProtection::protect();
 
-		if (isset($_REQUEST['unlink'])){
+		$unlink = isset($_REQUEST['unlink']);
+		if ($unlink){
 			try {
 				DeviantArt::request('https://www.deviantart.com/oauth2/revoke', null, ['token' => Auth::$session->access]);
 			}
@@ -74,9 +81,8 @@ class AuthController extends Controller {
 			}
 		}
 
-		$unlink = isset($_REQUEST['unlink']);
-		if ($unlink || isset($_REQUEST['everywhere'])){
-			$col = 'user';
+		if (isset($_REQUEST['everywhere'])){
+			$col = 'user_id';
 			$val = Auth::$user->id;
 			$username = Users::validateName('username', null, true);
 			if ($username !== null){
@@ -96,7 +102,7 @@ class AuthController extends Controller {
 			$val = Auth::$session->id;
 		}
 
-		if (!\App\DB::$instance->where($col,$val)->delete('sessions'))
+		if (!DB::$instance->where($col,$val)->delete('sessions'))
 			Response::fail('Could not remove information from database');
 
 		if (empty($TargetUser))
