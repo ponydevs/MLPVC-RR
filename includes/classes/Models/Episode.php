@@ -190,10 +190,14 @@ class Episode extends NSModel {
 		return $this->getID(['pad' => true]).': '.$this->title;
 	}
 
-	public function toURL(){
+	public function toURL():string {
 		if (!$this->is_movie)
 			return '/episode/'.$this->formatTitle(AS_ARRAY,'id');
 		return "/movie/{$this->episode}".(!empty($this->title)?'-'.$this->movieSafeTitle():'');
+	}
+
+	public function toAncor():string {
+		return "<a href='{$this->toURL()}'>{$this->getID()}</a>";
 	}
 
 	public function updateScore(){

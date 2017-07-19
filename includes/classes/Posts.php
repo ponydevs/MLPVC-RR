@@ -181,19 +181,9 @@ class Posts {
 			if (!empty($Post->id))
 				DB::$instance->where('r.id',$Post->id,'!=');
 			/** @var $UsedUnder Post */
-			$UsedUnder = DB::$instance
-				->disableAutoClass()
-				->join('episodes ep','r.season = ep.season AND r.episode = ep.episode','LEFT')
-				->where('r.preview',$Image->preview)
-				->getOne("{$type}s r",'r.id, ep.season, ep.episode, ep.twoparter');
-			if (!empty($UsedUnder)){
-				/** @var $UsedUnderPost Post */
-				$className = '\App\Models\\'.CoreUtils::capitalize($type);
-				$UsedUnderPost = new $className($UsedUnder);
-				$UsedUnderEpisode = new Episode($UsedUnder);
-
-				Response::fail("This exact image has already been used for a $type under ".$UsedUnderPost->toAnchor(null,$UsedUnderEpisode,true));
-			}
+			$UsedUnder = DB::$instance->where('preview',$Image->preview)->getOne("{$type}s");
+			if (!empty($UsedUnder))
+				Response::fail('This exact image has already been used for a '.$UsedUnder->toAnchor($type,null,true).' under '.$UsedUnder->ep->toAncor());
 		}
 
 		return $Image;
