@@ -165,8 +165,8 @@ class Posts {
 	/**
 	 * Check image URL in POST request
 	 *
-	 * @param string $image_url
-	 * @param Post   $Post Existing post for comparison
+	 * @param string    $image_url
+	 * @param Post|null $Post      Existing post for comparison
 	 *
 	 * @return ImageProvider
 	 */
