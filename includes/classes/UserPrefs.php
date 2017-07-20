@@ -6,6 +6,7 @@ use App\Models\UserPref;
 use App\Models\User;
 
 class UserPrefs extends GlobalSettings {
+	/** @see process */
 	const DEFAULTS = [
 		'cg_itemsperpage' => 7,
 		'cg_hidesynon' => 0,
@@ -15,6 +16,7 @@ class UserPrefs extends GlobalSettings {
 		'p_hidediscord' => 0,
 		'p_hidepcg' => 0,
 		'ep_noappprev' => 0,
+		'ep_revstepbtn' => 0,
 	];
 
 	/**
@@ -29,7 +31,7 @@ class UserPrefs extends GlobalSettings {
 		if (empty($for) && Auth::$signed_in)
 			$for = Auth::$user;
 
-		$for_set = !empty($for->id);
+		$for_set = $for !== null && !empty($for->id);
 
 		if ($for_set && isset(Users::$_PREF_CACHE[$for->id][$key]))
 			return Users::$_PREF_CACHE[$for->id][$key];
@@ -110,6 +112,7 @@ class UserPrefs extends GlobalSettings {
 			case 'cg_hidesynon':
 			case 'cg_hideclrinfo':
 			case 'cg_fulllstprev':
+			case 'ep_revstepbtn':
 				$value = $value ? 1 : 0;
 			break;
 

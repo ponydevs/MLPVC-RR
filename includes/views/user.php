@@ -150,6 +150,15 @@ if (!empty($Banishes)){
 <?php   } ?>
 				</label>
 			</form>
+			<form action="/preference/set/ep_revstepbtn">
+				<label>
+					<input type="checkbox" name="value" value="1"<?=UserPrefs::get('ep_revstepbtn', $User)?' checked':''?> <?=!$sameUser?' disabled':''?>>
+					<span>Reverse order of next/previous episode buttons</span>
+<?php   if ($sameUser){ ?>
+					<button class="save typcn typcn-tick green" disabled>Save</button>
+<?php   } ?>
+				</label>
+			</form>
 		</section>
 		<section class="personal-settings">
 			<h2><?=$sameUser? Users::PROFILE_SECTION_PRIVACY_LEVEL['staff']:''?>Personal</h2>

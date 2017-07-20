@@ -7,7 +7,6 @@ use App\Permission;
 use App\Posts;
 use App\Time;
 use App\Models\Episode;
-use App\Models\User;
 
 /** @var $CurrentEpisode Episode */
 /** @var $NextEpisode    Episode */
@@ -15,7 +14,14 @@ use App\Models\User;
 /** @var $do string */
 /** @var $heading string */ ?>
 <div id="content">
-<?  if (!empty($CurrentEpisode)){ ?>
+<?  if (!empty($CurrentEpisode)){
+		$reverseBtns = \App\UserPrefs::get('ep_revstepbtn');
+		if ($reverseBtns){
+			$tmp = $PrevEpisode;
+			$PrevEpisode = $NextEpisode;
+			$NextEpisode = $tmp;
+			unset($tmp);
+		} ?>
 	<div class="heading-wrap">
 		<div class="prev-ep"><?php
 		if (!empty($PrevEpisode)){
