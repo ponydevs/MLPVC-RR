@@ -114,16 +114,16 @@
         },
         {
             "name": "elasticsearch/elasticsearch",
-            "version": "v5.2.0",
+            "version": "v5.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/elastic/elasticsearch-php.git",
-                "reference": "dc57bbcd4be2c9061ebe5be59058ea8bdebc904e"
+                "reference": "50e5b1c63db68839b8acc1f4766769570a27a448"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/elastic/elasticsearch-php/zipball/dc57bbcd4be2c9061ebe5be59058ea8bdebc904e",
-                "reference": "dc57bbcd4be2c9061ebe5be59058ea8bdebc904e",
+                "url": "https://api.github.com/repos/elastic/elasticsearch-php/zipball/50e5b1c63db68839b8acc1f4766769570a27a448",
+                "reference": "50e5b1c63db68839b8acc1f4766769570a27a448",
                 "shasum": ""
             },
             "require": {
@@ -165,7 +165,7 @@
                 "elasticsearch",
                 "search"
             ],
-            "time": "2017-04-12T20:40:50+00:00"
+            "time": "2017-07-19T18:44:30+00:00"
         },
         {
             "name": "erusev/parsedown",
@@ -963,12 +963,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/SeinopSys/php-activerecord.git",
-                "reference": "66baf6f6f2639a150376d5a4d09bb008fb5b9f27"
+                "reference": "b9ef5eacdc5635047f9331db64e59032abcec89a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/SeinopSys/php-activerecord/zipball/66baf6f6f2639a150376d5a4d09bb008fb5b9f27",
-                "reference": "66baf6f6f2639a150376d5a4d09bb008fb5b9f27",
+                "url": "https://api.github.com/repos/SeinopSys/php-activerecord/zipball/b9ef5eacdc5635047f9331db64e59032abcec89a",
+                "reference": "b9ef5eacdc5635047f9331db64e59032abcec89a",
                 "shasum": ""
             },
             "require": {
@@ -997,7 +997,7 @@
             "support": {
                 "source": "https://github.com/SeinopSys/php-activerecord/tree/master"
             },
-            "time": "2017-07-16 10:46:57"
+            "time": "2017-07-20 15:30:28"
         },
         {
             "name": "psr/http-message",

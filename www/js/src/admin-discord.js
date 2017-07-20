@@ -1,5 +1,5 @@
 /* global DocReady */
-DocReady.push(function(){
+$(function(){
 	'use strict';
 
 	const USERNAME_REGEX = window.USERNAME_REGEX;

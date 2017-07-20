@@ -1,5 +1,5 @@
 /* global DocReady,$w,Time */
-DocReady.push(function(){
+$(function(){
 	'use strict';
 
 	let requesting = false,

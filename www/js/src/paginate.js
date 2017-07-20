@@ -127,9 +127,7 @@
 
 					if (this.goto){
 						clearLoading();
-						return $.Navigation.visit(this.goto,function(){
-							$.Dialog.close();
-						});
+						return $.Navigation.visit(this.goto);
 					}
 
 					newPageNumber = parseInt(this.page, 10);

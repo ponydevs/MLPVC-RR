@@ -1,5 +1,5 @@
 /* global DocReady,$content,$w,$header,$footer,ace,Time,moment,bindVideoButtons */
-DocReady.push(function(){
+$(function(){
 	'use strict';
 
 	let SEASON = window.SEASON,
@@ -295,7 +295,7 @@ DocReady.push(function(){
 
 					if (this.remove === true){
 						$.Dialog.close();
-						return $li[window.WithinMobileBreakpoint()?'slideUp':'fadeOut'](500,function(){
+						return $li[window.withinMobileBreakpoint()?'slideUp':'fadeOut'](500,function(){
 							$li.remove();
 						});
 					}
@@ -459,7 +459,7 @@ DocReady.push(function(){
 					}
 
 					$.Dialog.close();
-					$this.closest('li')[window.WithinMobileBreakpoint()?'slideUp':'fadeOut'](500,function(){
+					$this.closest('li')[window.withinMobileBreakpoint()?'slideUp':'fadeOut'](500,function(){
 						$(this).remove();
 					});
 				}));

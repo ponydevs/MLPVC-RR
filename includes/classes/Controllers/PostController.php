@@ -8,6 +8,7 @@ use App\CSRFProtection;
 use App\DB;
 use App\DeviantArt;
 use App\Episodes;
+use APp\HTTP;
 use App\ImageProvider;
 use App\Input;
 use App\Logs;
@@ -166,6 +167,17 @@ class PostController extends Controller {
 
 				Response::done(['li' => Posts::getLi($this->_post)]);
 			break;
+			case 'locate':
+				if (empty($this->_post) || $this->_post->broken)
+					Response::fail("The post you were linked to has either been deleted or didn’t exist in the first place. Sorry.<div class='align-center'><span class='sideways-smiley-face'>:\</div>");
+
+				Response::done([
+					'castle' => [
+						'name' => $this->_post->ep->formatTitle(),
+						'url' => $this->_post->toLink(),
+					],
+				]);
+			break;
 		}
 
 		$isUserReserver = $this->_post->reserved_by === Auth::$user->id;
@@ -223,7 +235,7 @@ class PostController extends Controller {
 					error_log("SocketEvent Error\n".$e->getMessage()."\n".$e->getTraceAsString());
 				}
 				if ($isUserReserver)
-					$response['message'] .= " ".self::CONTRIB_THANKS;
+					$response['message'] .= ' '.self::CONTRIB_THANKS;
 				Response::done($response);
 			break;
 			case 'unlock':
@@ -536,7 +548,7 @@ class PostController extends Controller {
 		if (empty($this->_post))
 			Response::fail("There’s no $thing with the ID {$params['id']}");
 
-		if (!empty($this->_post->lock) && Permission::insufficient('developer') && !in_array($action,['unlock','lazyload'],true))
+		if (!empty($this->_post->lock) && Permission::insufficient('developer') && !in_array($action,['unlock','lazyload','locate'],true))
 			Response::fail('This post has been approved and cannot be edited or removed.');
 	}
 
@@ -693,8 +705,10 @@ class PostController extends Controller {
 	}
 
 	public function lazyload($params){
-		$thing = $params['thing'];
 		$this->_initPost('lazyload', $params);
+
+		if (empty($this->_post))
+			HTTP::statusCode(404, AND_DIE);
 
 		Response::done(['html' => $this->_post->getFinishedImage(isset($_GET['viewonly']))]);
 	}

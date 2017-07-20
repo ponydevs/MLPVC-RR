@@ -213,7 +213,7 @@ class CGUtils {
 	 *
 	 * @return string|false
 	 */
-	public static function checkEpisodeTagName(string $tag){
+	public static function normalizeEpisodeTagName(string $tag){
 		global $EPISODE_ID_REGEX, $MOVIE_ID_REGEX;
 
 		$_match = [];

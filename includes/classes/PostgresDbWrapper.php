@@ -2,6 +2,7 @@
 
 namespace App;
 
+use ActiveRecord\Model;
 use App\Models\Episode;
 
 class PostgresDbWrapper extends \PostgresDb {
@@ -57,6 +58,21 @@ class PostgresDbWrapper extends \PostgresDb {
 			catch (\RuntimeException $e){ $this->_nonexistantClassCache[$className] = true; }
 		}
 
-		return parent::_execStatement($stmt);
+		$execResult = parent::_execStatement($stmt);
+		$isarray = is_array($execResult);
+		if ($isarray && count($execResult) > 0)
+			$check = $execResult[0];
+		else $check = $execResult;
+
+		if ($check instanceof Model){
+			/** @var $execResult Model|Model[] */
+			if ($isarray){
+				foreach ($execResult as $el)
+					$el->forceExisting(true);
+			}
+			else $execResult->forceExisting(true);
+		}
+
+		return $execResult;
 	}
 }

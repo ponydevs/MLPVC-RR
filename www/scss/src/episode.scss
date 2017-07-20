@@ -1,7 +1,7 @@
 @import "vars";
 @import "fluidbox";
 @import "theme_post-ul";
-
+@import url('https://fonts.googleapis.com/css?family=Signika');
 
 /* Mobile-only Styles */
 @media all and (max-width: $Breakpoint){
@@ -455,4 +455,85 @@
 	text-align: center;
 
 	span { display: block }
+}
+#post-road-sign {
+	$radius: 8px;
+	$topmargin: 20px;
+	$bottommargin: 50px;
+	margin: $topmargin 0 $bottommargin;
+	$polewidth: 4%;
+	$halfpolewidth: $polewidth/2;
+	position: relative;
+	z-index: 1;
+	display: flex;
+	max-width: 100%;
+	align-items: center;
+	justify-content: space-around;
+
+	> .sign-wrap {
+		background-color: #060;
+		border-radius: $radius;
+		padding: $radius/2;
+		color: #fff;
+		position: relative;
+		z-index: 2;
+		animation: sway 10s ease-in-out infinite;
+		@keyframes sway {
+			from, to {
+				transform: rotate(1deg);
+			}
+			50% {
+				transform: rotate(-1deg);
+			}
+		}
+
+		> .sign-inner {
+			$RightArrowSize: 32px;
+			border: $radius/2 solid white;
+			border-radius: $radius * .75;
+			padding: $radius $radius*1.5;
+			display: flex;
+			flex-flow: row nowrap;
+			justify-content: space-between;
+			align-items: center;
+			min-height: $RightArrowSize;
+
+			.sign-text {
+				font-family: 'Signika', sans-serif;
+				font-size: 22px;
+				position: relative;
+			}
+			.sign-arrow {
+				font-size: $RightArrowSize;
+				width: $RightArrowSize;
+				height: $RightArrowSize;
+				line-height: $RightArrowSize;
+				padding-left: 15px;
+			}
+		}
+	}
+
+	> .sign-pole {
+		display: block;
+		position: absolute;
+		z-index: 1;
+		top: -$topmargin/2;
+		left: 50%-$halfpolewidth;
+		width: $polewidth;
+		height: calc(100% + #{$bottommargin+($topmargin/2)});
+		background: gray;
+		background: linear-gradient(to right, gray 0%, silver 50%, gray 100%);
+
+		&:before {
+			content: '';
+			$height: 4px;
+			position: absolute;
+			top: -$height/2;
+			left: 0;
+			width: 100%;
+			height: $height;
+			border-radius: 50%;
+			background: gray;
+		}
+	}
 }

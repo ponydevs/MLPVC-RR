@@ -1,5 +1,5 @@
 /* global DocReady,HEX_COLOR_PATTERN */
-DocReady.push(function(){
+$(function(){
 	'use strict';
 
 	function reverseComponent(backgroundC, blendedC, alpha){

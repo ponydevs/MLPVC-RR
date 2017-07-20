@@ -1,5 +1,5 @@
 /* globals DocReady */
-DocReady.push(function(){
+$(function(){
 	'use strict';
 
 	let TAG_TYPES_ASSOC = window.TAG_TYPES_ASSOC,

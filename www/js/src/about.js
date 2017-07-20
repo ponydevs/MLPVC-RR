@@ -1,5 +1,5 @@
 /* global DocReady,Chart,$w,Time,moment */
-DocReady.push(function(){
+$(function(){
 	'use strict';
 
 	const

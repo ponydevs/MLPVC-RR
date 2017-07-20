@@ -7,7 +7,8 @@
 			wait: 'blue',
 			request: '',
 			confirm: 'orange',
-			info: 'darkblue'
+			info: 'darkblue',
+			segway: 'lavander',
 		},
 		noticeClasses = {
 			fail: 'fail',
@@ -16,6 +17,7 @@
 			request: 'warn',
 			confirm: 'caution',
 			info: 'info',
+			segway: 'reload',
 		},
 		defaultTitles = {
 			fail: 'Error',
@@ -24,6 +26,7 @@
 			request: 'Input required',
 			confirm: 'Confirmation',
 			info: 'Info',
+			segway: 'Pending navigation',
 		},
 		defaultContent = {
 			fail: 'There was an issue while processing the request.',
@@ -32,7 +35,9 @@
 			request: 'The request did not require any additional info.',
 			confirm: 'Are you sure?',
 			info: 'No message provided.',
+			segway: 'A previous action requires reloading the current page. Press reload once you\'re ready.',
 		},
+		reloadAction = () => { $.Navigation.reload(true) },
 		closeAction = () => { $.Dialog.close() };
 
 	class DialogButton {
@@ -176,7 +181,7 @@
 				});
 				this.$dialogButtons.append($button);
 			});
-			if (!window.WithinMobileBreakpoint())
+			if (!window.withinMobileBreakpoint())
 				this._setFocus();
 			$w.trigger('dialog-opened');
 			Time.Update();
@@ -196,6 +201,7 @@
 			}
 
 		}
+
 		/**
 		 * Display a dialog asking for user input
 		 *
@@ -212,6 +218,7 @@
 				forceNew
 			});
 		}
+
 		/**
 		 * Display a dialog asking for user input
 		 *
@@ -229,6 +236,7 @@
 				callback,
 			});
 		}
+
 		/**
 		 * Display a dialog informing the user of an action in progress
 		 *
@@ -246,6 +254,7 @@
 				callback,
 			});
 		}
+
 		/**
 		 * Display a dialog asking for user input
 		 *
@@ -286,6 +295,7 @@
 				callback
 			});
 		}
+
 		/**
 		 * Display a dialog asking for confirmation regarding an action
 		 *
@@ -316,6 +326,14 @@
 				buttons
 			});
 		}
+
+		/**
+		 * Display a dialog with some information
+		 *
+		 * @param {string}        title
+		 * @param {string|jQuery} content
+		 * @param {function}      callback
+		 */
 		info(title = defaultTitles.info, content = defaultContent.info, callback = undefined){
 			this._display({
 				type: 'info',
@@ -323,6 +341,27 @@
 				content,
 				buttons: [this._CloseButton],
 				callback,
+			});
+		}
+
+		/**
+		 * Display a dialog that causes a page reload when dismissed
+		 *
+		 * @param {string}        title
+		 * @param {string|jQuery} content
+		 * @param {string}        btnText
+		 * @param {function}      handlerFunc
+		 */
+		segway(title = defaultTitles.reload, content = defaultContent.reload, btnText = 'Reload', handlerFunc = undefined){
+			if (typeof callback === 'undefined' && typeof btnText === 'function'){
+				handlerFunc = btnText;
+				btnText = 'Reload';
+			}
+			this._display({
+				type: 'segway',
+				title,
+				content,
+				buttons: [new DialogButton(btnText, { action: () => { $.callCallback(handlerFunc); reloadAction() } })],
 			});
 		}
 
@@ -392,7 +431,7 @@
 	let mobileDialogContentMarginCalculator = function(){
 			if (!$.Dialog.isOpen())
 				return;
-			if (!window.WithinMobileBreakpoint())
+			if (!window.withinMobileBreakpoint())
 				return;
 
 			$.Dialog.$dialogContent.css('margin-top', $.Dialog.$dialogHeader.outerHeight());

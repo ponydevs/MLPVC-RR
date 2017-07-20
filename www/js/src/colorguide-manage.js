@@ -1,5 +1,5 @@
 /* globals $body,$content,DocReady,HandleNav,mk,Sortable,Bloodhound,Handlebars,SHORT_HEX_COLOR_PATTERN,PRINTABLE_ASCII_PATTERN,Key,ace,Time */
-DocReady.push(function(){
+$(function(){
 	'use strict';
 
 	let TAG_TYPES_ASSOC = window.TAG_TYPES_ASSOC, $colorGroups, HEX_COLOR_PATTERN = window.HEX_COLOR_PATTERN,
@@ -199,10 +199,7 @@ DocReady.push(function(){
 												$.post(`/cg/appearance/selectiveclear/${appearanceID}`,data,$.mkAjaxHandler(function(){
 													if (!this.status) return $.Dialog.fail(false, this.message);
 
-													$.Dialog.wait(false, 'Reloading page', true);
-													$.Navigation.reload(function(){
-														$.Dialog.close();
-													});
+													$.Navigation.reload(true);
 												}));
 											});
 										});
@@ -598,30 +595,27 @@ DocReady.push(function(){
 
 						data = this;
 						if (editing){
-							if (!AppearancePage){
-								$ponyLabel.text(data.label);
-								if (data.newurl)
-									$ponyLabel.attr('href',data.newurl);
-								$ponyNotes.html(this.notes);
-								window.tooltips();
-								$.Dialog.close();
-							}
-							else {
-								$.Dialog.wait(false, 'Reloading page', true);
-								$.Navigation.reload(function(){
-									$.Dialog.close();
-								});
-							}
+							if (AppearancePage)
+								return $.Navigation.reload(true);
+
+							$ponyLabel.text(data.label);
+							if (data.newurl)
+								$ponyLabel.attr('href',data.newurl);
+							$ponyNotes.html(this.notes);
+							window.tooltips();
+							$.Dialog.close();
+							return;
 						}
-						else {
-							$.Dialog.success(title, 'Appearance added');
-							$.Dialog.wait(title, 'Loading appearance page');
-							$.Navigation.visit(data.goto, function(){
-								if (data.info)
-									$.Dialog.info(title, data.info);
-								else $.Dialog.close();
-							});
-						}
+
+						$.Dialog.success(false, 'Appearance added');
+
+						const carryOn = () => {
+							$.Dialog.wait(false, 'Loading appearance page');
+							$.Navigation.visit(data.goto);
+						};
+						if (!data.info)
+							return carryOn();
+						$.Dialog.segway(title, data.info,'View appearance page',carryOn);
 					}));
 				});
 			});
@@ -1717,9 +1711,7 @@ DocReady.push(function(){
 							path = path.replace(/(\d+)$/,function(n){ return n > 1 ? n-1 : n });
 						if (AppearancePage){
 							$.Dialog.wait('Navigation', 'Loading page 1');
-							$.Navigation.visit(`${PGRq}/cg/1`,function(){
-								$.Dialog.close();
-							});
+							$.Navigation.visit(`${PGRq}/cg/1`);
 						}
 						else $.toPage(path,true,true);
 					}

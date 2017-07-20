@@ -184,7 +184,7 @@ class Posts {
 			/** @var $UsedUnder Post */
 			$UsedUnder = DB::$instance->where('preview',$Image->preview)->getOne("{$type}s");
 			if (!empty($UsedUnder))
-				Response::fail('This exact image has already been used for a '.$UsedUnder->toAnchor($type,null,true).' under '.$UsedUnder->ep->toAncor());
+				Response::fail('This exact image has already been used for a '.$UsedUnder->toAnchor($type,null,true).' under '.$UsedUnder->ep->toAnchor());
 		}
 
 		return $Image;

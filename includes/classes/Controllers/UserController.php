@@ -120,9 +120,20 @@ class UserController extends Controller {
 		if (Permission::insufficient('user'))
 			Response::fail('You must be signed in to use this feature.');
 
-		$postIDs = DB::$instance->query(
-			'SELECT id FROM requests
-			WHERE deviation_id IS NULL AND (reserved_by IS NULL OR reserved_at < NOW() - INTERVAL \'3 WEEK\')');
+		$already_loaded = (new Input('already_loaded','int[]', [
+			Input::IS_OPTIONAL => true,
+			Input::CUSTOM_ERROR_MESSAGES => [
+				Input::ERROR_INVALID => 'List of already loaded image IDs is invalid',
+			],
+		]))->out();
+
+		$query = 'SELECT id FROM requests WHERE deviation_id IS NULL AND (reserved_by IS NULL OR reserved_at < NOW() - INTERVAL \'3 WEEK\')';
+		if ($already_loaded !== null)
+			$query .= ' AND id NOT IN ('.implode(',',$already_loaded).')';
+
+		$postIDs = DB::$instance->query($query);
+		if (empty($postIDs))
+			Response::fail(($already_loaded !== null ? "You've gone through all":'There are no').' available requests, check back later.');
 		$drawArray = [];
 		foreach ($postIDs as $post)
 			$drawArray[] = $post['id'];

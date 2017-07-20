@@ -1,5 +1,5 @@
 /* globals DocReady,$sidebar,$content,HandleNav,Time,$w */
-DocReady.push(function(){
+$(function(){
 	'use strict';
 
 	$('.personal-cg-say-what').on('click',function(e){
@@ -77,10 +77,7 @@ DocReady.push(function(){
 						if (!this.status) return $.Dialog.fail(false, this.message);
 
 						$.Dialog.success(false, 'Image has been updated');
-						$.Dialog.wait(false, 'Reloading page');
-						$.Navigation.reload(function(){
-							$.Dialog.close();
-						});
+						$.Navigation.reload(true);
 					}));
 				});
 			});
@@ -123,10 +120,7 @@ DocReady.push(function(){
 					return $.Dialog.close();
 				}
 
-				$.Dialog.wait(false, 'Reloading page', true);
-				$.Navigation.reload(function(){
-					$.Dialog.close();
-				});
+				$.Navigation.reload(true);
 			}));
 		});
 	});
@@ -145,10 +139,7 @@ DocReady.push(function(){
 			$.post('/da-auth/signout?everywhere',{username:name},$.mkAjaxHandler(function(){
 				if (!this.status) return $.Dialog.fail(false, this.message);
 
-				$.Dialog.wait(false, 'Reloading page', true);
-				$.Navigation.reload(function(){
-					$.Dialog.close();
-				});
+				$.Navigation.reload(true);
 			}));
 		});
 	});
@@ -164,10 +155,7 @@ DocReady.push(function(){
 			$.post('/da-auth/signout?unlink', $.mkAjaxHandler(function(){
 				if (!this.status) return $.Dialog.fail(false, this.message);
 
-				$.Dialog.wait(false, 'Reloading page', true);
-				$.Navigation.reload(function(){
-					$.Dialog.close();
-				});
+				$.Navigation.reload(true);
 			}));
 		});
 	});
@@ -215,11 +203,8 @@ DocReady.push(function(){
 		$.post(`/post/lock/${thing}/${id}`, $.mkAjaxHandler(function(){
 			if (!this.status) return $.Dialog.fail(false, this.message);
 
-			let message = this.message;
-			$.Dialog.wait(false, "Reloading page");
-			$.Navigation.reload(function(){
-				$.Dialog.success(false, message, true);
-			});
+			$li.remove();
+			$.Dialog.success(false, this.message, true);
 		}));
 	});
 
@@ -231,13 +216,10 @@ DocReady.push(function(){
 					$(`.${className}`).removeClass(className);
 					$('.title h1 .vectorapp-logo').remove();
 					$.Dialog.close();
+					return;
 				}
-				else {
-					$.Dialog.wait(false,'Reloading page');
-					$.Navigation.reload(function(){
-						$.Dialog.close();
-					});
-				}
+
+				$.Navigation.reload(true);
 			break;
 			case "p_hidediscord":
 				let $discordBtn = $sidebar.find('.welcome .discord-join');
@@ -258,9 +240,7 @@ DocReady.push(function(){
 			break;
 			case "p_hidepcg":
 				$.Dialog.wait('Navigation','Reloading page');
-				$.Navigation.reload(function(){
-					$.Dialog.close();
-				});
+				$.Navigation.reload();
 			break;
 			default:
 				$.Dialog.close();

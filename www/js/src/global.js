@@ -1,10 +1,10 @@
 /* jshint bitwise: false */
 /* global $w,$d,$head,$navbar,$body,$header,$sidebar,$sbToggle,$main,$footer,console,prompt,HandleNav,getTimeDiff,one,createTimeStr,PRINTABLE_ASCII_PATTERN,io,moment,Time,ace,mk,WSNotifications */
-(function($){
+$(function(){
 	"use strict";
 
-	if (typeof $.Navigation !== 'undefined' && $.Navigation.firstLoadDone === true)
-		return;
+	console.log('[HTTP-Nav] > $(document).ready()');
+	console.group('[HTTP-Nav] GET '+window.location.pathname+window.location.search+window.location.hash);
 
 	let fluidboxThisAction = (jQueryObject) => {
 		jQueryObject.fluidbox({
@@ -126,7 +126,27 @@
 		}, 500);
 	});
 
-	let docReadyAlwaysRun = function(){
+	class Navigation {
+		visit(url){
+			window.location.href = url;
+		}
+		reload(displayDialog = false){
+			if (displayDialog)
+				$.Dialog.wait(false, 'Reloading page', true);
+			window.location.reload();
+		}
+	}
+
+	$.Navigation = new Navigation();
+	window.DocReady = {
+		push: (handler, flusher) => {
+			if (typeof flusher === 'function')
+				handler.flush = flusher;
+			$.Navigation._DocReadyHandlers.push(handler);
+		}
+	};
+
+	function docReadyAlwaysRun(){
 		console.log('> docReadyAlwaysRun()');
 		$d.triggerHandler('paginate-refresh');
 
@@ -173,15 +193,8 @@
 
 						success = true;
 						$.Dialog.success(false, 'Signed in successfully');
-						$.Dialog.wait(false, 'Reloading page');
-						waitforit = true;
-						setTimeout(function(){
-							popup.close();
-						},750);
-						$.Navigation.reload(function(){
-							waitforit = false;
-							$.Dialog.close();
-						});
+						popup.close();
+						$.Navigation.reload(true);
 					};
 					try {
 						popup = $.PopupOpenCenter(OAUTH_URL+"&state="+rndk,'login','450','580');
@@ -228,387 +241,11 @@
 				$.post('/da-auth/signout',$.mkAjaxHandler(function(){
 					if (!this.status) return $.Dialog.fail(title,this.message);
 
-					$.Navigation.reload(function(){
-						$.Dialog.close();
-					});
+					$.Navigation.reload();
 				}));
 			});
 		});
-
-		// HTTPS button
-		try {
-			if (/^https/.test(location.protocol))
-				throw undefined;
-			let canhttps = $.SessionStorage.get('canhttps');
-			if (canhttps === 'false')
-				throw undefined;
-			$.ajax({
-				method: "POST",
-				url: 'https://'+location.host+'/ping',
-				success: $.mkAjaxHandler(function(){
-					if (this.status)
-						$sidebar.append(
-							$.mk('a').attr({
-								'class': 'btn green typcn typcn-lock-closed',
-								href: location.href.replace(/^http:/,'https:')
-							}).text('Switch to HTTPS')
-						);
-					$.SessionStorage.set('canhttps', canhttps = this.status.toString());
-				}),
-				error: function(){ $.SessionStorage.set('canhttps', canhttps = 'false') }
-			});
-		}
-		catch(e){}
-	};
-
-	class Loader {
-		constructor(o){
-			this._options = $.extend({
-				min: 0,
-				max: 0.98,
-				intervalEnabled: true,
-				intervalDelay: 800,
-				randomIncrement: 0.08,
-			},o);
-			this._$element = $header.find('.loading-indicator').children('.loading-circle');
-			if (this._$element.length !== 1)
-				throw new Error('Loader: Element not found');
-
-			this._circumference = this._$element.attr('r')*2*Math.PI;
-			this._$element.css('stroke-dasharray', this._circumference);
-			this.val(1, 1);
-		}
-		show(){
-			$body.addClass('loading');
-			this.val(0);
-			this._startInterval();
-		}
-		_startInterval(){
-			if (!this._options.intervalEnabled)
-				return;
-			if (typeof this._interval !== 'undefined')
-				return;
-			this._interval = setInterval(() => {
-				this.inc(null, 0.5);
-			}, this._options.intervalDelay);
-		}
-		_clearInterval(){
-			if (typeof this._interval === 'undefined')
-				return false;
-
-			clearInterval(this._interval);
-			this._interval = undefined;
-		}
-		enableInterval(){
-			this._options.intervalEnabled = true;
-			this._startInterval();
-		}
-		disableInterval(){
-			this._options.intervalEnabled = false;
-			this._clearInterval();
-		}
-		val(p, upto){
-			if (!isNaN(p))
-				this.at = $.rangeLimit(p, false, this._options.min, upto||this._options.max);
-			this._$element.css('stroke-dashoffset', this._circumference*(1-this.at));
-		}
-		inc(p, upto){
-			if (!isNaN(p))
-				p = Math.random() * this._options.randomIncrement;
-
-			if (this._options.max < this.at+p)
-				return false;
-			this.val(this.at+p, upto);
-		}
-		finish(){
-			this.val(1, 1);
-			this.hide();
-		}
-		hide(){
-			this._clearInterval();
-			$body.removeClass('loading');
-		}
 	}
-
-	$.Loader = new Loader();
-
-	class Navigation {
-		constructor(){
-			this._DocReadyHandlers = [];
-			this._xhr = false;
-			this._lastLoadedPathname = window.location.pathname;
-			this._lastLoadedHref = window.location.href;
-			this.firstLoadDone = false;
-		}
-		_docReady(){
-			console.groupCollapsed('> _docReady()');
-			docReadyAlwaysRun();
-			console.groupEnd();
-
-			for (let i = 0, l = this._DocReadyHandlers.length; i<l; i++){
-				try {
-					console.group('DocReadyHandlers[%d]()',i);
-					this._DocReadyHandlers[i].call(window);
-					console.groupEnd();
-				}
-				catch(e){
-					console.error(`Error while executing DocReadyHandlers[${i}]\n${e.stack}`);
-				}
-			}
-		}
-		flushDocReady(){
-			$('.marquee').trigger('destroy.simplemarquee').removeClass('marquee');
-
-			for (let i=0,l=this._DocReadyHandlers.length; i<l; i++){
-				if (typeof this._DocReadyHandlers[i].flush !== 'function')
-					continue;
-
-				this._DocReadyHandlers[i].flush();
-				console.log('Flushed DocReady handler #%d', i);
-			}
-			this._DocReadyHandlers = [];
-		}
-		_loadCSS(css, tick, callback){
-			if (!css.length)
-				return $.callCallback(callback);
-
-			console.groupCollapsed('Loading CSS');
-			let classScope = this;
-			(function _recursivelyLoadCSS(item){
-				if (item >= css.length){
-					console.groupEnd();
-					return $.callCallback(callback);
-				}
-
-				let requrl = css[item];
-				classScope = $.ajax({
-					url: requrl,
-					dataType: 'text',
-					success: function(data){
-						data = data.replace(/url\((['"])?(?:\.\.\/)+/g,'url($1/');
-						$head.append($.mk('style').attr('href',requrl).text(data));
-						console.log('%c#%d (%s)', 'color:green', item, requrl);
-					},
-					error: function(){
-						console.log('%c#%d (%s)', 'color:red', item, requrl);
-					},
-					complete: function(){ tick(); _recursivelyLoadCSS(item+1) }
-				});
-			})(0);
-		}
-		_loadJS(js, tick, callback){
-			if (!js.length)
-				return $.callCallback(callback);
-
-			console.groupCollapsed('Loading JS');
-			let classScope = this;
-			(function _recursivelyLoadJS(item){
-				if (item >= js.length){
-					console.groupEnd();
-					return $.callCallback(callback);
-				}
-
-				let requrl = js[item];
-				classScope._xhr = $.ajax({
-					url: requrl,
-					dataType: 'text',
-					success:function(data){
-						$body.append(
-							$.mk('script').attr('data-src', requrl).text(data)
-						);
-						console.log('%c#%d (%s)', 'color:green', item, requrl);
-					},
-					error: function(){
-						console.log('%c#%d (%s)', 'color:red', item, requrl);
-					},
-					complete: function(){ tick(); _recursivelyLoadJS(item+1) }
-				});
-			})(0);
-		}
-		visit(url, callback, block_reload){
-			console.clear();
-			console.group('[AJAX-Nav] PING %s (block_reload: %s)', url, block_reload);
-
-			let classScope = this;
-			if (classScope._xhr !== false){
-				try {
-					classScope._xhr.abort();
-					console.log('Previous AJAX request aborted');
-				}catch(e){}
-				classScope._xhr = false;
-			}
-
-			$.Loader.show();
-			$.Loader.enableInterval();
-			let ajaxcall = $.ajax({
-				url: url,
-				success: $.mkAjaxHandler(function(){
-					if (classScope._xhr !== ajaxcall){
-						console.log('%cAJAX request objects do not match, bail','color:red');
-						console.groupEnd();
-						return;
-					}
-					if (!this.status){
-						$body.removeClass('loading');
-						$.Loader.finish();
-
-						classScope._xhr = false;
-						console.log('%cNavigation error %s', 'color:red', this.message);
-						console.groupEnd();
-						return $.Dialog.fail('Navigation error', this.message);
-					}
-
-					$.Loader.val(0.5);
-					$.Loader.disableInterval();
-
-					url = new URL(this.responseURL).pathString+(new URL(url).hash);
-					$w.triggerHandler('unload');
-					if (!window.OpenSidebarByDefault())
-						$sbToggle.trigger('sb-close');
-
-					let css = this.css,
-						js = this.js,
-						content = this.content,
-						sidebar = this.sidebar,
-						footer = this.footer,
-						pagetitle = this.title,
-						avatar = this.avatar,
-						signedIn = this.signedIn;
-
-					$main.empty();
-					let doreload = false,
-						ParsedLocation = new URL(location.href),
-						reload = !block_reload && ParsedLocation.pathString === url;
-
-					classScope.flushDocReady();
-
-					console.groupCollapsed('Checking JS files to skip...');
-					$body.children('script[src], script[data-src]').each(function(){
-						let $this = $(this),
-							src = $this.attr('src') || $this.attr('data-src');
-						if (reload){
-							if (!/min\/dialog\.js/.test(src))
-								$this.remove();
-							return true;
-						}
-
-						console.log(js);
-						let pos = js.indexOf(src);
-
-						// TODO Come up with a proper way to handle persistent files rather than re-requesting them
-						if (pos !== -1 && !/min\/(colorguide[.-]|events-manage|episodes-manage|moment-timezone|episode|Chart|user[.-])/.test(src)){
-							js.splice(pos, 1);
-							console.log('%cSkipped %s','color:saddlebrown',src);
-						}
-						else {
-							if (src.includes('global'))
-								return !(doreload = true);
-							$this.remove();
-						}
-					});
-					console.log('%cFinished.','color:green');
-					console.groupEnd();
-					if (doreload !== false){
-						console.log('%cFull page reload forced by changes in global.js', 'font-weight:bold;color:orange');
-						console.groupEnd();
-						classScope._xhr.abort();
-						location.href = url;
-						return;
-					}
-
-					console.groupCollapsed('Checking CSS files to skip...');
-					let CSSSelector = 'link[href], style[href]';
-					$head.children(CSSSelector).each(function(){
-						let $this = $(this),
-							href = $this.attr('href'),
-							pos = css.indexOf(href);
-
-						if (pos !== -1){
-							css.splice(pos, 1);
-							console.log('%cSkipped %s','color:saddlebrown',href);
-						}
-						else $this.attr('data-remove','true');
-					});
-					console.log('%cFinished.','color:green');
-					console.groupEnd();
-
-					console.groupEnd();
-					console.group('[AJAX-Nav] GET %s', url);
-
-					let loaded = 0,
-						total = css.length+js.length;
-					$w.trigger('beforeunload');
-					classScope._loadCSS(css, function(){
-						loaded++;
-						$.Loader.val(0.5+((loaded/total)*0.5));
-					}, function(){
-						$head.children(CSSSelector.replace(/href/g,'data-remove=true')).remove();
-						$main.addClass('pls-wait').html(content);
-						$sidebar.html(sidebar);
-						$.WS.essentialElements();
-						$footer.html(footer);
-						Time.Update();
-						window.setUpcomingCountdown();
-						let $headerNav = $header.find('nav').children();
-						$headerNav.children().first().children('img').attr('src', avatar);
-						$headerNav.children(':not(:first-child)').remove();
-						$headerNav.append($sidebar.find('nav').children().children().clone());
-
-						window.CommonElements();
-						if (!block_reload)
-							history[ParsedLocation.pathString === url?'replaceState':'pushState']({'ajax':true},'',url);
-						document.title = pagetitle;
-						classScope._lastLoadedPathname = window.location.pathname;
-						classScope._lastLoadedHref = window.location.href;
-
-						classScope._loadJS(js, function(){
-							loaded++;
-							$.Loader.val(0.5+((loaded/total)*0.5));
-						}, function(){
-							console.log('> $(document).ready() [simulated]');
-							classScope._docReady();
-							console.log('%cDocument ready handlers called','color:green');
-							console.groupEnd();
-							$main.removeClass('pls-wait');
-
-							if (signedIn)
-								$.WS.authme();
-							else $.WS.unauth();
-							$.WS.navigate();
-
-							$.callCallback(callback);
-							$.Loader.finish();
-							classScope._xhr = false;
-						});
-					});
-				})
-			});
-			classScope._xhr = ajaxcall;
-		}
-		reload(callback){
-			this.visit(location.pathname+location.search+location.hash, callback);
-		}
-	}
-
-	$.Navigation = new Navigation();
-	window.DocReady = {
-		push: (handler, flusher) => {
-			if (typeof flusher === 'function')
-				handler.flush = flusher;
-			$.Navigation._DocReadyHandlers.push(handler);
-		}
-	};
-})(jQuery);
-// Runs on first load
-$(function(){
-	'use strict';
-
-	if ($.Navigation.firstLoadDone)
-		return;
-	$.Navigation.firstLoadDone = true;
-
-	console.log('[HTTP-Nav] > $(document).ready()');
-	console.group('[HTTP-Nav] GET '+window.location.pathname+window.location.search+window.location.hash);
 
 	if ('serviceWorker' in navigator){
 		window.addEventListener('load', function(){
@@ -640,6 +277,9 @@ $(function(){
 		$sbToggle.off('click sb-open sb-close').on('click', function(e){
 			e.preventDefault();
 
+			if (window.sidebarForcedVisible())
+				return;
+
 			$sbToggle.trigger('sb-'+($body.hasClass('sidebar-open')?'close':'open'));
 		}).on('sb-open sb-close', function(e){
 			let close = e.type.substring(3) === 'close';
@@ -649,15 +289,6 @@ $(function(){
 			}catch(_){}
 			triggerResize();
 		});
-
-		let sbclosed;
-		try {
-			sbclosed = $.LocalStorage.get('sidebar-closed');
-		}catch(_){}
-		if (sbclosed !== 'true' && window.OpenSidebarByDefault()){
-			$body.addClass('sidebar-open');
-			triggerResize();
-		}
 	})();
 
 	// Upcoming Countdowns
@@ -796,55 +427,12 @@ $(function(){
 		else callme();
 	});
 
-	// Navigation handling
-	$d.on('click','a[href]', function(e){
-		if (e.which > 2 || e.ctrlKey || e.shiftKey) return true;
-
-		let link = this;
-		if (link.host !== location.host) return true;
-
-		if (link.pathname === location.pathname && link.search === location.search){
-			if (link.protocol !== location.protocol)
-				return true;
-			e.preventDefault();
-			window._trighashchange = link.hash !== location.hash;
-			if (window._trighashchange === true)
-				history.replaceState(history.state,'',link.href);
-			setTimeout(function(){ delete window._trighashchange },1);
-			$w.triggerHandler('hashchange');
-			return;
-		}
-
-		// Check if link seems to have a file extension
-		if (!/^.*\/[^.]*$/.test(link.pathname))
-			return true;
-
-		if ($(this).parents('#dialogContent').length !== 0)
-			$.Dialog.close();
-
-		e.preventDefault();
-		$.Navigation.visit(this.href);
-	});
-	$w.on('popstate', function(e){
-		let state = e.originalEvent.state,
-			goto = (url, callback) => $.Navigation.visit(url, callback, true);
-
-		if (state !== null && !state.ajax && state.paginate === true)
-			return $w.trigger('nav-popstate', [state, goto]);
-
-		if ($.Navigation._lastLoadedHref.replace(/#.*$/,'') === location.href.replace(/#.*$/,'')){
-			console.log('[AJAX-Nav] Hashchange detected, navigation blocked');
-			return;
-		}
-		goto(location.href);
-	});
-
 	// Disappearing header when in standalone mode
 	// Replace condition with "true" when needed for development
 	if ($.isRunningStandalone()){
 		let lastScrollTop = $body.scrollTop(),
 			disappearingHeaderHandler = function(){
-				if (!window.WithinMobileBreakpoint())
+				if (!window.withinMobileBreakpoint())
 					return;
 
 				let scrollTop = $body.scrollTop(),
@@ -980,7 +568,7 @@ $(function(){
 							title: "This post has been deleted; click here to hide",
 						}).on('click',function(){
 							let $this = $(this);
-							$this[window.WithinMobileBreakpoint()?'slideUp':'fadeOut'](500,function(){
+							$this[window.withinMobileBreakpoint()?'slideUp':'fadeOut'](500,function(){
 								$this.remove();
 							});
 						});
@@ -1170,7 +758,8 @@ $(function(){
 		})();
 	})();
 
-	$.Navigation._docReady();
+
+	docReadyAlwaysRun();
 	console.log('%cDocument ready handlers called','color:green');
 	console.groupEnd();
 });

@@ -1,5 +1,5 @@
 /* global DocReady */
-DocReady.push(function(){
+$(function(){
 	'use strict';
 
 	const rndkey = window.rndkey;

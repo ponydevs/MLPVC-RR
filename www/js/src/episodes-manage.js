@@ -1,16 +1,15 @@
 /* global DocReady,moment,HandleNav,$content,$body,ace */
-DocReady.push(function(){
+/*!
+ * Timezone data string taken from:
+ * http://momentjs.com/downloads/moment-timezone-with-data.js
+ * version 0.4.1 by Tim Wood, licensed MIT
+ */
+$(function(){
 	'use strict';
 
 	let $tables = $('#content').find('table'),
 		SEASON = window.SEASON,
 		EPISODE = window.EPISODE;
-
-	/*!
-	 * Timezone data string taken from:
-	 * http://momentjs.com/downloads/moment-timezone-with-data.js
-	 * version 0.4.1 by Tim Wood, licensed MIT
-	 */
 	moment.tz.add("America/Los_Angeles|PST PDT PWT PPT|80 70 70 70|010102301010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010|-261q0 1nX0 11B0 1nX0 SgN0 8x10 iy0 5Wp0 1Vb0 3dB0 WL0 1qN0 11z0 1o10 11z0 1o10 11z0 1o10 11z0 1o10 11z0 1qN0 11z0 1o10 11z0 1o10 11z0 1o10 11z0 1o10 11z0 1qN0 WL0 1qN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1a10 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1cN0 1cL0 1cN0 1cL0 s10 1Vz0 LB0 1BX0 1cN0 1fz0 1a10 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1a10 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0");
 
 	let saturday = moment.tz(new Date(), "America/Los_Angeles").set({
@@ -117,9 +116,7 @@ DocReady.push(function(){
 
 					$.Dialog.wait(false, `Opening ${movie?'movie':'episode'} page`, true);
 
-					$.Navigation.visit(this.url,function(){
-						$.Dialog.close();
-					});
+					$.Navigation.visit(this.url);
 				}));
 			});
 		});
@@ -149,9 +146,6 @@ DocReady.push(function(){
 			if (!movie)
 				$EditEpForm.find('input[name=twoparter]').prop('checked',!!this.ep.twoparter);
 			delete this.ep.twoparter;
-
-			if (!this.caneditid || (EpisodePage && $('#reservations, #requests').find('li').length))
-				$EditEpForm.find('input').filter('[name="season"],[name="episode"]').disable();
 
 			let d = moment(this.ep.airs);
 			this.ep.airdate = $.momentToYMD(d);
@@ -199,9 +193,7 @@ DocReady.push(function(){
 						if (!this.status) return $.Dialog.fail(false, this.message);
 
 						$.Dialog.wait(false, 'Updating page', true);
-						$.Navigation.reload(function(){
-							$.Dialog.close();
-						});
+						$.Navigation.reload();
 					}));
 				});
 			});
@@ -223,10 +215,7 @@ DocReady.push(function(){
 			$.post(`/episode/delete/${epid}`, $.mkAjaxHandler(function(){
 				if (!this.status) return $.Dialog.fail(false, this.message);
 
-				$.Dialog.wait(false, 'Reloading page', true);
-				$.Navigation.reload(function(){
-					$.Dialog.close();
-				});
+				$.Navigation.reload(true);
 			}));
 		});
 	});

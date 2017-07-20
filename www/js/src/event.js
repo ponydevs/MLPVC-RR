@@ -1,5 +1,5 @@
 /* global DocReady,$w */
-DocReady.push(function(){
+$(function(){
 	'use strict';
 
 	const PRINTABLE_ASCII_PATTERN = window.PRINTABLE_ASCII_PATTERN;

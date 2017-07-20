@@ -131,6 +131,8 @@ class CoreUtils {
 
 		Users::authenticate();
 
+		global $do;
+		$do = '404';
 		self::loadPage([
 			'title' => '404',
 			'view' => '404',
@@ -210,34 +212,15 @@ class CoreUtils {
 		# Putting it together
 		$noview = empty($options['view']);
 		if ($controller === null && $noview)
-			throw new \Exception('View cannot be resolved. Specify the <code>view</code> option or provide the controller as a parameter');
+			throw new \RuntimeException('View cannot be resolved. Specify the <code>view</code> option or provide the controller as a parameter');
 		$view = new View($noview ? $controller->do : $options['view']);
 
+		if (self::isJSONExpected())
+			HTTP::statusCode(400, AND_DIE);
+
 		header('Content-Type: text/html; charset=utf-8;');
-
-		if (!self::isJSONExpected()){
-			require INCPATH.'views/_layout.php';
-			die();
-		}
-
-		$_SERVER['REQUEST_URI'] = rtrim(CSRFProtection::removeParamFromURL($_SERVER['REQUEST_URI']), '?&');
-		ob_start();
-		require INCPATH.'views/_sidebar.php';
-		$sidebar = ob_get_clean();
-		ob_start();
-		require $view;
-		$content = ob_get_clean();
-		Response::done([
-			'css' => $customCSS,
-			'js' => $customJS,
-			'title' => (isset($GLOBALS['title'])?$GLOBALS['title'].' - ':'').SITE_TITLE,
-			'content' => $content,
-			'sidebar' => $sidebar,
-			'footer' => CoreUtils::getFooter(WITH_GIT_INFO),
-			'avatar' => Auth::$signed_in ? Auth::$user->avatar_url : GUEST_AVATAR,
-			'responseURL' => $_SERVER['REQUEST_URI'],
-			'signedIn' => Auth::$signed_in,
-		]);
+		require INCPATH.'views/_layout.php';
+		die();
 	}
 
 	/**

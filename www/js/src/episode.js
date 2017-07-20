@@ -1,5 +1,5 @@
 /* global DocReady,$content,$body,$w,$footer,$header,$navbar,moment,Chart,Time,ace */
-DocReady.push(function(){
+$(function(){
 	'use strict';
 
 	let SEASON = window.SEASON,
@@ -473,7 +473,6 @@ DocReady.push(function(){
 			.trigger('bind-more-handlers')
 			.find('.post-form').attr('data-type',el).formBind();
 	});
-	directLinkHandler(true);
 
 	const fulfillPromises = function(){
 		$('.post-deviation-promise:not(.loading)').each(function(){
@@ -504,8 +503,10 @@ DocReady.push(function(){
 	let postHashRegex = /^#(request|reservation)-\d+$/,
 		showdialog = location.hash.length > 1 && postHashRegex.test(location.hash);
 
-	if (showdialog)
-		$.Dialog.wait('Scroll post into view', 'Preloading all posts, please wait');
+	if (showdialog){
+		$.Dialog.wait('Scroll post into view', 'Waiting for images to load');
+		directLinkHandler();
+	}
 
 	let reloading = {};
 	$.fn.reloadLi = function(log = true, callback = undefined){
@@ -573,7 +574,6 @@ DocReady.push(function(){
 
 		let $progress;
 		if (showdialog){
-			$.Dialog.wait('Scroll post into view','Waiting for page to load');
 			$progress = $.mk('progress').attr({max:total,value:0}).css({display:'block',width:'100%',marginTop:'5px'});
 			$('#dialogContent').children('div:not([id])').last().addClass('align-center').append($progress);
 		}
@@ -596,8 +596,40 @@ DocReady.push(function(){
 			})
 			.always(function(){
 				let found = window._HighlightHash({type:'load'});
-				if (found === false && showdialog)
-					$.Dialog.info('Scroll post into view',"The "+(location.hash.replace(postHashRegex,'$1'))+" you were linked to has either been deleted or didn’t exist in the first place. Sorry.<div class='align-center'><span class='sideways-smiley-face'>:\\</div>");
+				if (found === false && showdialog){
+					const title = 'Scroll post into view';
+					// Attempt to find the post as a last resort, it might be on a different episode page
+					$.post('/post/locate/'+location.hash.substring(1).replace('-','/'),$.mkAjaxHandler(function(){
+						if (!this.status) return $.Dialog.info(title, this.message);
+
+						const castle = this.castle;
+
+						const $contents =
+							$(`<p>Looks like the post you were linked to is in another castle. Want to follow the path?</p>
+							<div id="post-road-sign">
+								<div class="sign-wrap">
+									<div class="sign-inner">
+										<span class="sign-text"></span>
+										<span class="sign-arrow">\u2794</span>
+									</div>
+								</div>
+								<div class="sign-pole"></div>
+							</div>
+							<div class="notice info">If you're seeing this message after clicking a link within the site please <a class="send-feedback">let us know</a>.</div>`);
+
+						$contents.find('.sign-text').text(castle.name);
+
+						$.Dialog.close(function(){
+							$.Dialog.confirm(title, $contents, ['Take me there','Stay here'], sure => {
+								if (!sure) return;
+
+								$.Dialog.wait(false, 'Quicksaving');
+
+								$.Navigation.visit(castle.url);
+							});
+						});
+					}));
+				}
 			});
 	}
 

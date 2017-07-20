@@ -31,6 +31,7 @@ use App\RegExp;
  */
 class Episode extends NSModel {
 	static $primary_key = ['season','episode'];
+	static $table_name = 'episodes';
 
 	public static $has_many = [
 		['videos', 'class' => 'EpisodeVideo', 'foreign_key' => ['season','episode'], 'order' => 'provider asc, part asc']
@@ -192,11 +193,11 @@ class Episode extends NSModel {
 
 	public function toURL():string {
 		if (!$this->is_movie)
-			return '/episode/'.$this->formatTitle(AS_ARRAY,'id');
+			return '/episode/'.$this->getID();
 		return "/movie/{$this->episode}".(!empty($this->title)?'-'.$this->movieSafeTitle():'');
 	}
 
-	public function toAncor():string {
+	public function toAnchor():string {
 		return "<a href='{$this->toURL()}'>{$this->getID()}</a>";
 	}
 

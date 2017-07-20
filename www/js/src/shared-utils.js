@@ -714,6 +714,6 @@
 		return parsed;
 	};
 
-	window.OpenSidebarByDefault = () => Math.max(document.documentElement.clientWidth, window.innerWidth || 0) >= 1200;
-	window.WithinMobileBreakpoint = () => Math.max(document.documentElement.clientWidth, window.innerWidth || 0) <= 600;
+	window.sidebarForcedVisible = () => Math.max(document.documentElement.clientWidth, window.innerWidth || 0) >= 1200;
+	window.withinMobileBreakpoint = () => Math.max(document.documentElement.clientWidth, window.innerWidth || 0) <= 650;
 })(jQuery);

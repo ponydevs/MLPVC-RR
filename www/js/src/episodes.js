@@ -1,5 +1,5 @@
 /* global DocReady,moment */
-DocReady.push(function(){
+$(function(){
 	'use strict';
 
 	let $eptableBody = $('#content').children('table').children('tbody');

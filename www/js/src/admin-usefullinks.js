@@ -1,5 +1,5 @@
 /* global DocReady,HandleNav,Sortable,DOMStringList,$w */
-DocReady.push(function(){
+$(function(){
 	'use strict';
 
 	const PRINTABLE_ASCII_PATTERN = $.attributifyRegex(window.PRINTABLE_ASCII_PATTERN),
@@ -88,10 +88,7 @@ DocReady.push(function(){
 				$.post(`/admin/usefullinks?action=${linkid?`set&linkid=${linkid}`:'make'}`,data, $.mkAjaxHandler(function(){
 					if (!this.status) return $.Dialog.fail(false, this.message);
 
-					$.Dialog.wait(false, 'Reloading page', true);
-					$.Navigation.reload(function(){
-						$.Dialog.close();
-					});
+					$.Navigation.reload(true);
 				}));
 			});
 		}
@@ -122,10 +119,7 @@ DocReady.push(function(){
 			$.post('/admin/usefullinks/reorder', {list:list.join(',')}, $.mkAjaxHandler(function(){
 				if (!this.status) return $.Dialog.fail(false, this.message);
 
-				$.Dialog.wait(false, 'Reloading page', true);
-				$.Navigation.reload(function(){
-					$.Dialog.close();
-				});
+				$.Navigation.reload(true);
 			}));
 		}
 	});

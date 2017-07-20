@@ -4,10 +4,13 @@
 	display: flex;
 	flex-flow: row wrap;
 	justify-content: space-around;
+	padding: 5px;
 
 	.sidebyside {
 		display: block;
 		flex: 1 1 50%;
+		padding: 5px;
+		box-sizing: border-box;
 	}
 	h1 + .actions {
 		text-align: center;

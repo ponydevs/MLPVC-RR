@@ -1,5 +1,5 @@
 /* globals DocReady,HandleNav,$content */
-DocReady.push(function(){
+$(function(){
 	'use strict';
 
 	if (typeof window.ROLES === 'undefined') return;
@@ -34,10 +34,7 @@ DocReady.push(function(){
 
 					if (!this.status) return $.Dialog.fail(false, this.message);
 
-					$.Dialog.wait(false, 'Reloading page', true);
-					$.Navigation.reload(function(){
-						$.Dialog.close();
-					});
+					$.Navigation.reload(true);
 				}));
 			});
 		});
@@ -70,11 +67,9 @@ DocReady.push(function(){
 						if (!this.status) return $.Dialog.fail(title,this.message);
 
 						let message = this.message;
-						$.Dialog.wait(false, 'Reloading page', true);
-						$.Navigation.reload(function(){
-							if (action === 'banish') $.Dialog.success(title, '<p>What had to be done, has been done.</p><img src="/img/post-ban.svg">', true);
-							else $.Dialog.success(title, message, true);
-						});
+						if (action === 'banish')
+							message = '<p>What had to be done, has been done.</p><img src="/img/post-ban.svg">';
+						$.DIalog.segway(title, message);
 					}));
 				});
 			}

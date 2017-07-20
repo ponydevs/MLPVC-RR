@@ -1,5 +1,5 @@
 /* global DocReady,ace,$content,moment */
-DocReady.push(function(){
+$(function(){
 	'use strict';
 
 	const PRINTABLE_ASCII_PATTERN = window.PRINTABLE_ASCII_PATTERN, EVENT_TYPES = window.EVENT_TYPES, EventPage = Boolean(window.EventPage);
@@ -175,12 +175,14 @@ DocReady.push(function(){
 						}
 						else {
 							$.Dialog.success(title, 'Event added');
-							$.Dialog.wait(title, 'Loading event page');
-							$.Navigation.visit(data.goto, function(){
-								if (data.info)
-									$.Dialog.info(title, data.info);
-								else $.Dialog.close();
-							});
+
+							const carryOn = () => {
+								$.Dialog.wait(title, 'Loading event page');
+								$.Navigation.visit(data.goto);
+							};
+							if (!data.info)
+								return carryOn();
+							$.Dialog.segway(title, data.info, 'Continue to event', carryOn);
 						}
 					}));
 				});
@@ -235,10 +237,7 @@ DocReady.push(function(){
 					if (!this.status) return $.Dialog.fail(false, this.message);
 
 					$.Dialog.success(false, 'Event finalized successfully');
-					$.Dialog.wait(false, 'Reloading page');
-					$.Navigation.reload(function(){
-						$.Dialog.close();
-					});
+					$.Navigation.reload(true);
 				}));
 			});
 		});
@@ -262,16 +261,11 @@ DocReady.push(function(){
 
 				if (EventPage){
 					$.Dialog.wait('Navigation', 'Loading page 1');
-					$.Navigation.visit(`/events/1`,function(){
-						$.Dialog.close();
-					});
+					$.Navigation.visit(`/events/1`);
 					return;
 				}
 
-				$.Dialog.wait(false, 'Reloading page', true);
-				$.Navigation.reload(function(){
-					$.Dialog.close();
-				});
+				$.Navigation.reload(true);
 			}));
 		});
 	});

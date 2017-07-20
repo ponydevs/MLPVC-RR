@@ -1,8 +1,9 @@
 /* globals DocReady */
-DocReady.push(function(){
+$(function(){
 	'use strict';
 
-	let $pendingReservations = $('.pending-reservations');
+	let $pendingReservations = $('.pending-reservations'),
+		already_loaded = [];
 	$pendingReservations.on('click','#suggestion',function(e){
 		e.preventDefault();
 
@@ -19,7 +20,7 @@ DocReady.push(function(){
 					$loadNotice = $.mk('div').addClass('notice fail').hide().text('The image failed to load - just click the button again to get a different suggestion.').insertAfter($output),
 					$pluginNotice = $.mk('div').addClass('notice info').hide().html('Loading Fluidbox plugin&hellip;').insertAfter($output),
 					suggest = function(){
-						$.post('/user/suggestion',$.mkAjaxHandler(function(){
+						$.post('/user/suggestion',{already_loaded: already_loaded.join(',')},$.mkAjaxHandler(function(){
 							if (!this.status){
 								$btn.enable();
 								return $.Dialog.fail(false, this.message);
@@ -27,6 +28,9 @@ DocReady.push(function(){
 
 							let $result = $(this.suggestion),
 								postID = $result.attr('id');
+
+							already_loaded.push(parseInt(postID.split('-')[1]));
+
 							$result.find('img').on('load',function(){
 								let $this = $(this);
 								$this.parents('.image').addClass('loaded');

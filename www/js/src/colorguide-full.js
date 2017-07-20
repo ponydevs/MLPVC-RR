@@ -1,5 +1,5 @@
 /* global $w,DocReady,Sortable,$content */
-DocReady.push(function(){
+$(function(){
 	'use strict';
 
 	let $sortBy = $('#sort-by'),

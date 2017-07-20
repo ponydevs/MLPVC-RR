@@ -200,12 +200,12 @@ class ColorGuideController extends Controller {
 
 		switch ($params['ext']){
 			case 'png':
-				if (!empty($params['type'])) switch ($params['type']){
+				switch ($params['type']){
 					case 's': CGUtils::renderSpritePNG($this->_cgPath, $this->_appearance->id, $_GET['s'] ?? null);
-					case 'p': CGUtils::renderAppearancePNG($this->_cgPath, $this->_appearance);
-					default: CoreUtils::notFound();
+					case 'p':
+					default: CGUtils::renderAppearancePNG($this->_cgPath, $this->_appearance);
 				}
-
+			break;
 			case 'svg':
 				if (!empty($params['type'])) switch ($params['type']){
 					case 's': CGUtils::renderSpriteSVG($this->_cgPath, $this->_appearance->id);
@@ -655,7 +655,7 @@ class ColorGuideController extends Controller {
 				CGUtils::autocompleteRespond('[]');
 
 			$query = CoreUtils::trim(strtolower($_GET['s']));
-			$TagCheck = CGUtils::checkEpisodeTagName($query);
+			$TagCheck = CGUtils::normalizeEpisodeTagName($query);
 			if ($TagCheck !== false)
 				$query = $TagCheck;
 			DB::$instance->where('name',"%$query%",'LIKE');
@@ -1164,7 +1164,7 @@ class ColorGuideController extends Controller {
 					case 'tag':
 						$tag_name = CGUtils::validateTagName('tag_name');
 
-						$TagCheck = CGUtils::checkEpisodeTagName($tag_name);
+						$TagCheck = CGUtils::normalizeEpisodeTagName($tag_name);
 						if ($TagCheck !== false)
 							$tag_name = $TagCheck;
 
@@ -1407,7 +1407,7 @@ class ColorGuideController extends Controller {
 			case 'set':
 				$data['name'] = CGUtils::validateTagName('name');
 
-				$epTagName = CGUtils::checkEpisodeTagName($data['name']);
+				$epTagName = CGUtils::normalizeEpisodeTagName($data['name']);
 				$surelyAnEpisodeTag = $epTagName !== false;
 				$type = (new Input('type',function($value){
 					if (!isset(Tags::TAG_TYPES[$value]))

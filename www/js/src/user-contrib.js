@@ -1,5 +1,5 @@
 /* global DocReady,$w */
-DocReady.push(function(){
+$(function(){
 	'use strict';
 
 	function fulfuillPromises(){

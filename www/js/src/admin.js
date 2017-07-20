@@ -1,5 +1,5 @@
 /* global DocReady,HandleNav,Sortable,DOMStringList,$w */
-DocReady.push(function(){
+$(function(){
 	'use strict';
 
 	// Mass-aprove posts
@@ -70,18 +70,17 @@ DocReady.push(function(){
 			$.post('/admin/mass-approve',{ids:deviationIDArray.join(',')},$.mkAjaxHandler(function(){
 				if (!this.status) return $.Dialog.fail(false, this.message);
 
-				let message = this.message,
-					f = function(){
-						if (message)
-							$.Dialog.success(false, message, true);
-						else $.Dialog.close();
-					};
-				if (!this.reload)
-					f();
-				else {
-					$.Dialog.wait(false, "Reloading page");
-					$.Navigation.reload(f);
+				const message = this.message;
+				if (!this.reload){
+					if (message)
+						$.Dialog.success(false, message, true);
+					else $.Dialog.close();
+
+					return;
 				}
+
+				if ()
+
 			}));
 		}
 	})();

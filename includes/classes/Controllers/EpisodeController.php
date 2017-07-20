@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Controllers;
+use ActiveRecord\RecordNotFound;
 use App\Auth;
 use App\CGUtils;
 use App\CoreUtils;
@@ -70,7 +71,6 @@ class EpisodeController extends Controller {
 		Response::done([
 			'ep' => $this->_episode->to_array(),
 			'epid' => $this->_episode->getID(),
-			'caneditid' => $this->_episode->getPostCount() === 0,
 		]);
 	}
 
@@ -83,51 +83,48 @@ class EpisodeController extends Controller {
 		$editing = $action === 'set';
 		if ($editing)
 			$this->_getEpisode($params);
-		$canEditID = !empty($this->_episode) && $this->_episode->getPostCount() === 0;
+		$canEditID = !empty($this->_episode);
 
-		$insert = [];
+		$update = [];
 		if (!$editing)
-			$insert['posted_by'] = Auth::$user->id;
+			$update['posted_by'] = Auth::$user->id;
+		else $isMovie = $this->_episode->season === 0;
 
-		if (!$editing || $canEditID){
-			$insert['season'] = Episodes::validateSeason(Episodes::ALLOW_MOVIES);
-			$isMovie = $insert['season'] === 0;
-			$insert['episode'] = Episodes::validateEpisode($isMovie);
-		}
-		else if (!$canEditID){
-			$isMovie = $this->_episode->season === 0;
-			$insert['season'] = $isMovie ? 0 : $this->_episode->season;
-			$insert['episode'] = $this->_episode->episode;
-		}
+		$update['season'] = Episodes::validateSeason(Episodes::ALLOW_MOVIES);
+		if (!$editing)
+			$isMovie = $update['season'] === 0;
+		$update['episode'] = Episodes::validateEpisode($isMovie);
 		$What = $isMovie ? 'Movie' : 'Episode';
 		$what = strtolower($What);
 
 		$EpisodeChanged = true;
 		$SeasonChanged = true;
+		$OriginalEpisode = $editing ? $this->_episode->episode : $update['episode'];
+		$OriginalSeason = $editing ? $this->_episode->season : $update['season'];
 		if ($editing){
-			$SeasonChanged = $isMovie ? false : (int)$insert['season'] !== $this->_episode->season;
-			$EpisodeChanged = (int)$insert['episode'] !== $this->_episode->episode;
+			$SeasonChanged = $isMovie ? false : $update['season'] !== $this->_episode->season;
+			$EpisodeChanged = $update['episode'] !== $this->_episode->episode;
 			if ($SeasonChanged || $EpisodeChanged){
 				$Target = Episodes::getActual(
-					$insert['season'] ?? $this->_episode->season,
-					$insert['episode'] ?? $this->_episode->episode,
+					$update['season'] ?? $this->_episode->season,
+					$update['episode'] ?? $this->_episode->episode,
 					Episodes::ALLOW_MOVIES
 				);
 				if (!empty($Target))
 					Response::fail('There’s already an episode with the same season & episode number');
-
-				if ((new Episode($insert))->getPostCount() > 0)
-					Response::fail('This epsiode’s ID cannot be changed because it already has posts and this action could break existing links');
 			}
 		}
-		else if ($canEditID){
-			$MatchingID = DB::$instance->whereEp($insert['season'], $insert['episode'])->getOne('episodes');
-			if (!empty($MatchingID))
-				Response::fail(($isMovie?'A movie':'An episode').' with the same '.($isMovie?'overall':'season and episode').' number already exists');
+		else {
+			try {
+				$MatchingID = Episode::find_by_season_and_episode($update['season'], $update['episode']);
+				if (!empty($MatchingID))
+					Response::fail(($isMovie?'A movie':'An episode').' with the same '.($isMovie?'overall':'season and episode').' number already exists');
+			}
+			catch(RecordNotFound $e){ }
 		}
 
 		if (!$isMovie)
-			$insert['no'] = (new Input('no','int', [
+			$update['no'] = (new Input('no','int', [
 				Input::IS_OPTIONAL => true,
 				Input::IN_RANGE => [1,255],
 				Input::CUSTOM_ERROR_MESSAGES => [
@@ -136,19 +133,17 @@ class EpisodeController extends Controller {
 				]
 			]))->out();
 
-		$insert['twoparter'] = !$isMovie  && isset($_POST['twoparter']) ? 1 : 0;
-		if ($insert['twoparter']){
-			$tempEp = new Episode([
-				'season' => $insert['season'],
-				'episode' => $insert['episode']+1,
-			]);
-			if (DB::$instance->whereEp($tempEp)->has('episodes')){
-				$tepID = $tempEp->getID();
-				Response::fail("This episode cannot have two parts because <a href='/episode/$tepID'>$tepID</a> already exists.");
+		$update['twoparter'] = !$isMovie  && isset($_POST['twoparter']);
+		if ($update['twoparter']){
+			try {
+				$nextPart = Episode::find_by_season_and_episode($update['season'], $update['episode']+1);
+				if (!empty($nextPart))
+					Response::fail("This episode cannot have two parts because {$nextPart->toURL()} already exists.");
 			}
+			catch(RecordNotFound $e){ }
 		}
 
-		$insert['title'] = (new Input('title',function(&$value, $range) use ($isMovie){
+		$update['title'] = (new Input('title',function(&$value, $range) use ($isMovie){
 			global $PREFIX_REGEX;
 			$prefixed = $PREFIX_REGEX->match($value, $match);
 			if ($prefixed){
@@ -167,7 +162,7 @@ class EpisodeController extends Controller {
 							}
 						}
 					}
-					Response::fail("Unsupported prefix: {$match[1]}. ".(isset($mostSimilar) ? "<em>Did you mean <span class='color-ui'>$mostSimilar</span></em>?" : ''));
+					Response::fail("Unsupported prefix: {$match[1]}. ".($mostSimilar !== null ? "<em>Did you mean <span class='color-ui'>$mostSimilar</span></em>?" : ''));
 				}
 
 				$title = Episodes::removeTitlePrefix($value);
@@ -186,7 +181,7 @@ class EpisodeController extends Controller {
 				'prefix-movieonly' => 'Prefixes can only be used for movies',
 			]
 		]))->out();
-		CoreUtils::checkStringValidity($insert['title'], "$What title", INVERSE_EP_TITLE_PATTERN);
+		CoreUtils::checkStringValidity($update['title'], "$What title", INVERSE_EP_TITLE_PATTERN);
 
 		$airs = (new Input('airs','timestamp', [
 			Input::CUSTOM_ERROR_MESSAGES => [
@@ -196,7 +191,7 @@ class EpisodeController extends Controller {
 		]))->out();
 		if (empty($airs))
 			Response::fail('Please specify an air date & time');
-		$insert['airs'] = date('c',strtotime('this minute', $airs));
+		$update['airs'] = date('c',strtotime('this minute', $airs));
 
 		$notes = (new Input('notes','text', [
 			Input::IS_OPTIONAL => true,
@@ -205,27 +200,27 @@ class EpisodeController extends Controller {
 				Input::ERROR_RANGE => "$What notes cannot be longer than @max characters",
 			]
 		]))->out();
-		if (isset($notes)){
+		if ($notes !== null){
 			CoreUtils::checkStringValidity($notes, "$What notes", INVERSE_PRINTABLE_ASCII_PATTERN);
 			$notes = CoreUtils::sanitizeHtml($notes);
 			if (!$editing || $notes !== $this->_episode->notes)
-				$insert['notes'] = $notes;
+				$update['notes'] = $notes;
 		}
-		else $insert['notes'] = null;
+		else $update['notes'] = null;
 
 		if ($editing){
-			if (!$this->_episode->update_attributes($insert))
+			if (!DB::$instance->whereEp($this->_episode)->update(Episode::$table_name, $update))
 				Response::dbError('Updating episode failed');
 		}
-		else if (!(new Episode($insert))->save())
+		else if (!(new Episode($update))->save())
 			Response::dbError('Episode creation failed');
 
 		if (!$editing || $SeasonChanged || $EpisodeChanged){
 			if ($isMovie){
 				if ($EpisodeChanged){
-					$TagName = CGUtils::checkEpisodeTagName("movie#{$insert['episode']}");
+					$TagName = CGUtils::normalizeEpisodeTagName("movie{$update['episode']}");
 					/** @var $MovieTag Tag */
-					$MovieTag = DB::$instance->where('name', $editing ? "movie#{$this->_episode->episode}" : $TagName)->getOne('tags');
+					$MovieTag = DB::$instance->where('name', $editing ? "movie{$OriginalEpisode}" : $TagName)->getOne('tags');
 
 					if (!empty($MovieTag)){
 						if ($editing){
@@ -242,8 +237,8 @@ class EpisodeController extends Controller {
 				}
 			}
 			else if ($SeasonChanged || $EpisodeChanged){
-				$TagName = CGUtils::checkEpisodeTagName("s{$insert['season']}e{$insert['episode']}");
-				$EpTag = DB::$instance->where('name', $editing ? "s{$this->_episode->season}e{$this->_episode->episode}" : $TagName)->getOne('tags');
+				$TagName = CGUtils::normalizeEpisodeTagName("s{$update['season']}e{$update['episode']}");
+				$EpTag = DB::$instance->where('name', $editing ? CGUtils::normalizeEpisodeTagName("s{$OriginalSeason}e{$OriginalEpisode}") : $TagName)->getOne('tags');
 
 				if (!empty($EpTag)){
 					if ($editing){
@@ -266,9 +261,9 @@ class EpisodeController extends Controller {
 			if (!empty($this->_episode->airs))
 				$this->_episode->airs = date('c',strtotime($this->_episode->airs));
 			foreach (['season', 'episode', 'twoparter', 'title', 'airs'] as $k){
-				if (isset($insert[$k]) && $insert[$k] != $this->_episode->{$k}){
+				if (isset($update[$k]) && $update[$k] != $this->_episode->{$k}){
 					$logentry["old$k"] = $this->_episode->{$k};
-					$logentry["new$k"] = $insert[$k];
+					$logentry["new$k"] = $update[$k];
 					$changes++;
 				}
 			}
@@ -277,15 +272,15 @@ class EpisodeController extends Controller {
 		}
 		else Logs::logAction('episodes', [
 			'action' => 'add',
-			'season' => $insert['season'],
-			'episode' => $insert['episode'],
-			'twoparter' => isset($insert['twoparter']) ? $insert['twoparter'] : 0,
-			'title' => $insert['title'],
-			'airs' => $insert['airs'],
+			'season' => $update['season'],
+			'episode' => $update['episode'],
+			'twoparter' => $update['twoparter'],
+			'title' => $update['title'],
+			'airs' => $update['airs'],
 		]);
 		if ($editing)
 			Response::done();
-		Response::done(['url' => (new Episode($insert))->toURL()]);
+		Response::done(['url' => (new Episode($update))->toURL()]);
 	}
 
 	public function set($params){
@@ -416,7 +411,7 @@ class EpisodeController extends Controller {
 					catch (\Exception $e){
 						Response::fail("$Provider link issue: ".$e->getMessage());
 					};
-					if (!isset($vidProvider->episodeVideo) || $vidProvider->episodeVideo->provider !== $provider)
+					if ($vidProvider->episodeVideo == null || $vidProvider->episodeVideo->provider !== $provider)
 						Response::fail("Incorrect $Provider URL specified");
 					/** @noinspection PhpUndefinedFieldInspection */
 					$set = $vidProvider::$id;

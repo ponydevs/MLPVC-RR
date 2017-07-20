@@ -47,7 +47,7 @@ $router->map('GET',      '/[cg]/[eqg:eqg]?/changes/[i]?',                       
 $router->map('GET',      '/[cg]/[eqg:eqg]?/[v]/[i:id]',                         'ColorGuideController#appearancePage');
 $router->map('GET',      '/[cg]/[eqg:eqg]?/[v]/[i:id]-[adi]',                   'ColorGuideController#appearancePage');
 $router->map('GET',      '/[cg]/[eqg:eqg]?/[v]/[adi]-[i:id]',                   'ColorGuideController#appearancePage');
-$router->map('GET',      '/[cg]/[eqg:eqg]?/[v]/[i:id][cgimg:type].[cgext:ext]', 'ColorGuideController#appearanceAsFile');
+$router->map('GET',      '/[cg]/[eqg:eqg]?/[v]/[i:id][cgimg:type]?.[cgext:ext]', 'ColorGuideController#appearanceAsFile');
 $router->map('GET',      '/[cg]/[eqg:eqg]?/sprite(-colors)?/[i:id][adi]?',      'ColorGuideController#spriteColors');
 $router->map('GET|POST', '/[cg]/get-tags',                                      'ColorGuideController#getTags');
 $router->map('GET', '/da-auth',                        'AuthController#auth');
@@ -141,6 +141,7 @@ $router->map('POST', '/post/check-image',                    'PostController#che
 $router->map('POST', '/post/fix-stash/[rrl:thing]/[i:id]',   'PostController#fixStash');
 $router->map('POST', '/post/add-reservation',                'PostController#addReservation');
 $router->map('POST', '/post/delete-request/[i:id]',          'PostController#deleteRequest');
+$router->map('POST', '/post/locate/[rrl:thing]/[i:id]',      'PostController#locate');
 $router->map('POST', '/preference/set/[au:key]',             'PreferenceController#set');
 $router->map('POST', '/preference/get/[au:key]',             'PreferenceController#get');
 $router->map('POST', '/setting/set/[au:key]',                'SettingController#set');

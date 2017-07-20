@@ -1,5 +1,5 @@
 /* globals $w,$d,$content,DocReady,HandleNav */
-DocReady.push(function(){
+$(function(){
 	'use strict';
 
 	//noinspection JSUnusedLocalSymbols

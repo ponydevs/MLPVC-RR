@@ -18,6 +18,15 @@
 			background-color: $NBlue;
 		}
 	}
+	&.reload {
+		color: $NLavander;
+		background-color: $NLavanderBG;
+
+		button, .btn {
+			color: $NLavanderBG;
+			background-color: $NLavander;
+		}
+	}
 	&.success {
 		color: $NGreen;
 		background-color: $NGreenBG;
