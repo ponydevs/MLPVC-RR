@@ -895,7 +895,7 @@ class ColorGuideController extends Controller {
 						Tags::updateUses($tag->id);
 					};
 
-				$fpath = APPATH."img/cg/{$this->_appearance->id}.png";
+				$fpath = SPRITE_PATH."{$this->_appearance->id}.png";
 				if (file_exists($fpath))
 					unlink($fpath);
 
@@ -959,8 +959,7 @@ class ColorGuideController extends Controller {
 			case 'delsprite':
 			case 'getsprite':
 			case 'setsprite':
-				$fname = $this->_appearance->id.'.png';
-				$finalpath = SPRITE_PATH.$fname;
+				$finalpath = SPRITE_PATH.$this->_appearance->id.'.png';
 
 				switch ($action){
 					case 'setsprite':

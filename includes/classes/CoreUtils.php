@@ -699,7 +699,6 @@ class CoreUtils {
 
 						if (isset($scope['Pagination']))
 							$NavItems['colorguide']['subitem'] = (isset($pagePrefix) ? "$pagePrefix - " : '')."Page {$scope['Pagination']->page}";
-						else error_log("\$scope['Pagination'] not set\nScope:".JSON::encode($scope, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)."\nPage prefix: $pagePrefix\nRequest URI: {$_SERVER['REQUEST_URI']}");
 					}
 				}
 

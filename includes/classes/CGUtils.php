@@ -329,7 +329,7 @@ HTML;
 			if (file_exists("$RenderedPath-$suffix"))
 				$success[] = unlink("$RenderedPath-$suffix");
 		}
-		return !in_array(false, $success);
+		return !in_array(false, $success, true);
 	}
 
 
