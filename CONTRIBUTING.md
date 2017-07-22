@@ -230,3 +230,31 @@ Joining the team gave the rest of the members the ability to commit straight int
 Well... that, and the fact that setting the development environment up is quite a lengthy process. I can't expect anyone to go through all of this trouble just to be able to help out, so that's why I encourage you to [submit an issue](https://github.com/ponydevs/MLPVC-RR/issues/new) instead if you have any feature ideas or found bugs, and I'll see what I can do.
 
 If you do take your time to write up something useful and your PR makes it into the project, I'll include your GitHub username in a decidated section at the bottom of README.md as a way to thank you for your hard work (unless you explicitly ask me not to). Your name will show up in the list of contributors on GitHub anyway, but I want to make the list easier to see.
+
+## Push-to-deploy setup
+
+Git `post-receive` hooks are used for deploying to the production server. The hook script can be found in the `setup` folder and needs to be copied to a new bare repository and set to be executable.
+
+```
+$ cd /var
+$ mkdir bare && cd bare
+$ mkdir MLPVC-RR.git && cd MLPVC-RR.git
+$ git init --bare
+$ cp /var/www/MLPVC-RR/setup/post-receive.sh hooks/post-receive
+$ nano hooks/post-receive # Change PROJ_DIR to point to /var/www/MLPVC-RR
+$ chmod +x hooks/post-receive 
+```
+
+On your local machine, ensure that the SSH configuration is set properly, then add the remote and push changes.
+
+```
+$ cat /etc/hosts | grep production.vps
+192.0.2.1   production.vps
+$ cat ~/.ssh/config
+Host production.vps
+	Port <port>
+	User <user>
+	IdentityFile ~/.ssh/id_rsa
+$ git remote add production vinyl.vps:/var/bare/MLPVC-RR.git
+$ git push production
+```

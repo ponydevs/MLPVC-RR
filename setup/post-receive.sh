@@ -7,7 +7,7 @@ if [ ! -d "$PROJ_DIR" ]; then
 fi
 while read oldrev newrev refname
 do
-    branch=$(git rev-parse --symbolic --abbrev-ref ${refname})
+    branch=$(git rev-parse --symbolic --abbrev-ref ${refname} 2>/dev/null)
     if [ "master" == "$branch" ]; then
 		GIT_DIR="$PROJ_DIR/.git"
         CMD_CD="cd $PROJ_DIR"
@@ -24,7 +24,7 @@ do
 		echo "$ $CMD_COMPOSER"
 		eval ${CMD_COMPOSER}
 	else
-		echo "Push to $branch ignored"
+		echo "Push ignored (refname=$refname; branch=$branch)"
     fi
 done
 echo "##### end post-receive hook #####"
