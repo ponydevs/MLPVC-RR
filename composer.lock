@@ -258,16 +258,16 @@
         },
         {
             "name": "fightbulc/moment",
-            "version": "1.26.8",
+            "version": "1.26.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/fightbulc/moment.php.git",
-                "reference": "f06fc6008326c36cc63d417c859e6b57bc7b50bf"
+                "reference": "8d164a2101e45bf1a8208ddfb3a15313f764a0f8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/fightbulc/moment.php/zipball/f06fc6008326c36cc63d417c859e6b57bc7b50bf",
-                "reference": "f06fc6008326c36cc63d417c859e6b57bc7b50bf",
+                "url": "https://api.github.com/repos/fightbulc/moment.php/zipball/8d164a2101e45bf1a8208ddfb3a15313f764a0f8",
+                "reference": "8d164a2101e45bf1a8208ddfb3a15313f764a0f8",
                 "shasum": ""
             },
             "require": {
@@ -317,7 +317,7 @@
                 "translation",
                 "validate"
             ],
-            "time": "2017-07-18T18:28:36+00:00"
+            "time": "2017-07-22T07:37:47+00:00"
         },
         {
             "name": "guzzlehttp/command",
@@ -1595,32 +1595,32 @@
     "packages-dev": [
         {
             "name": "doctrine/instantiator",
-            "version": "1.0.5",
+            "version": "1.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/instantiator.git",
-                "reference": "8e884e78f9f0eb1329e445619e04456e64d8051d"
+                "reference": "185b8868aa9bf7159f5f953ed5afb2d7fcdc3bda"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/instantiator/zipball/8e884e78f9f0eb1329e445619e04456e64d8051d",
-                "reference": "8e884e78f9f0eb1329e445619e04456e64d8051d",
+                "url": "https://api.github.com/repos/doctrine/instantiator/zipball/185b8868aa9bf7159f5f953ed5afb2d7fcdc3bda",
+                "reference": "185b8868aa9bf7159f5f953ed5afb2d7fcdc3bda",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.3,<8.0-DEV"
+                "php": "^7.1"
             },
             "require-dev": {
                 "athletic/athletic": "~0.1.8",
                 "ext-pdo": "*",
                 "ext-phar": "*",
-                "phpunit/phpunit": "~4.0",
-                "squizlabs/php_codesniffer": "~2.0"
+                "phpunit/phpunit": "^6.2.3",
+                "squizlabs/php_codesniffer": "^3.0.2"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.0.x-dev"
+                    "dev-master": "1.2.x-dev"
                 }
             },
             "autoload": {
@@ -1645,7 +1645,7 @@
                 "constructor",
                 "instantiate"
             ],
-            "time": "2015-06-14T21:17:01+00:00"
+            "time": "2017-07-22T11:58:36+00:00"
         },
         {
             "name": "myclabs/deep-copy",
