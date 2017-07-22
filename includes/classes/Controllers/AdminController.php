@@ -435,18 +435,24 @@ HTML;
 			Response::success('There were no posts in need of marking as approved');
 
 		$approved = 0;
+		$notInCLub = 0;
 		foreach ($Posts as $p){
-			if (CoreUtils::isDeviationInClub($p['deviation_id']) !== true)
+			if (CoreUtils::isDeviationInClub($p['deviation_id']) !== true){
+				$notInCLub++;
 				continue;
+			}
 
 			Posts::approve($p['type'], $p['id']);
 			$approved++;
 		}
 
-		if ($approved === 0)
-			Response::success('All identified posts have already been approved');
+		if ($approved === 0){
+			if ($notInCLub === 0)
+				Response::success('All identified posts have already been approved');
+			else Response::fail('None of the posts have been added to the gallery yet');
+		}
 
-		Response::success('Marked '.CoreUtils::makePlural('post', $approved, PREPEND_NUMBER).' as approved. To see which ones, check the <a href="/admin/logs/1?type=post_lock&by=you">list of posts you\'ve approved</a>.', ['reload' => true]);
+		Response::success('Marked '.CoreUtils::makePlural('post', $approved, PREPEND_NUMBER).' as approved. To see which ones, check the <a href="/admin/logs/1?type=post_lock&by=you">list of posts you\'ve approved</a>.', ['html' => Posts::getMostRecentList(NOWRAP)]);
 	}
 
 	public function wsdiag(){

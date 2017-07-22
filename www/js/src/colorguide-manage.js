@@ -79,10 +79,10 @@ $(function(){
 							`<span>Cutie Mark #${i+1}</span>`,
 							(i>0?`<button class="section-toggle btn blue typcn"></button>`:'')
 						),
-						el.cmid ? $.mk('input').attr({
+						el.id ? $.mk('input').attr({
 							type: 'hidden',
-							value: el.cmid,
-							name: 'cmid[]',
+							value: el.id,
+							name: 'id[]',
 						}) : undefined,
 						$facingSelector,
 						$.mk('label').append(
@@ -381,13 +381,10 @@ $(function(){
 												if (typeof $secondCM === 'undefined')
 													$secondCM = $CMList.children().eq(1);
 												$SectionToggle[disable?'hide':'show']();
-												if (disable)
-													$secondCM.addClass('readonly').find('input:not(:disabled)').disable().addClass('force-disabled');
-												else $secondCM.removeClass('readonly').find('.force-disabled').enable();
 												let $fieldset = $secondCM.children('fieldset'),
 													ignored = $fieldset.hasClass('ignore'),
 													favmeValid = Boolean($fieldset.find('input[name="favme[]"]').val() || $fieldset.find('input[name="preview_src[]"]').val());
-												if ((disable && ignored) || (!disable && !ignored && !favmeValid))
+												if ((disable && !ignored) || (!disable && !ignored && !favmeValid))
 													$SectionToggle.triggerHandler('click');
 											},
 											updateRanges = () => {
@@ -465,7 +462,7 @@ $(function(){
 														let $range = $li.next().find('.rotation-range');
 														$range.val(-val);
 														updateRange($range.get(0));
-														$CMPreviewImages.eq(1).css('transform',`rotateZ(${-val}deg)`);
+														$CMPreviewImages.eq(1).css('transform',`rotate(${-val}deg)`);
 													}
 												}
 											}
@@ -482,7 +479,7 @@ $(function(){
 											})[facing];
 											$secondCM.find('.orient').text($.capitalize(orient)).next().val(orient);
 											if (e.type === 'change'){
-												if (facing !== ''){
+												if (facing){
 													let $rangeSelectors = $this.parents('form').find('.rotation-range');
 													$rangeSelectors.each(function(i){
 														let $rangeSelector = $(this),
@@ -494,12 +491,10 @@ $(function(){
 															updateRange(this);
 														}
 													});
-													$UpdatePreviewButton.triggerHandler('click');
-													$SectionToggle.show();
 												}
-												else $SectionToggle.hide();
+												$UpdatePreviewButton.triggerHandler('click');
 
-												toggleSecondCMSection(facing === '', $secondCM);
+												toggleSecondCMSection(!facing, $secondCM);
 											}
 										});
 
@@ -525,18 +520,22 @@ $(function(){
 												$fieldset = $this.closest('fieldset');
 											if ($fieldset.hasClass('ignore')){
 												$fieldset.removeClass('ignore');
-												$fieldset.find('.force-disabled').enable().parent().removeClass('hidden');
+												$fieldset.find('.force-disabled').removeClass('force-disabled').enable().parent().removeClass('hidden');
+												$this.removeClass('typcn-plus').addClass('typcn-minus').html('Remove');
 											}
 											else {
 												$fieldset.addClass('ignore');
 												$fieldset.find('input:not(:disabled)').disable().addClass('force-disabled').parent().addClass('hidden');
+												$this.removeClass('typcn-minus').addClass('typcn-plus').html('Add');
 											}
-											$this.toggleClass('typcn-plus typcn-minus').toggleHtml(['Add','Remove']);
 										});
 
 										if (data.cms.length === 1)
 											$SectionToggle.addClass('typcn-minus').text('Remove');
-										else $SectionToggle.addClass('typcn-plus').text('Add');
+										else {
+											$SectionToggle.closest('fieldset').addClass('ignore');
+											$SectionToggle.addClass('typcn-plus').text('Add');
+										}
 
 										if (!data.cms.facing){
 											$SectionToggle.hide();

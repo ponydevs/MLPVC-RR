@@ -333,7 +333,7 @@ class Logs {
 				foreach($keys as $key){
 					foreach ($data[$key] as $k => $_){
 						foreach ($data[$key][$k] as $i => $v){
-							if (!isset($v) || $i === 'cmid'){
+							if (!isset($v) || $i === 'id'){
 								unset($data[$key][$k][$i]);
 								continue;
 							}

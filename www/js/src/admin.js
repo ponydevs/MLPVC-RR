@@ -49,16 +49,26 @@ $(function(){
 			return true;
 		});
 
-		let deviationRegex = /(?:[A-Za-z\-\d]+\.)?deviantart\.com\/art\/(?:[A-Za-z\-\d]+-)?(\d+)/g,
-			deviationRegexLocal = /\/(?:[A-Za-z\-\d]+-)?(\d+)$/;
+		const $recentPostsUL = $('.recent-posts ul');
+		let deviationRegex = /(?:[A-Za-z\-\d]+\.)?deviantart\.com\/art\/(?:[A-Za-z\-\d]+-)?(\d+)|fav\.me\/d([a-z\d]{6,})/g,
+			deviationRegexLocal = /\/(?:[A-Za-z\-\d]+-)?(\d+)$/,
+			favmeRegexLocal = /fav\.me\/d([a-z\d]{6,})/;
 		function processPaste(pastedData){
 			pastedData = pastedData.replace(/<img[^>]+>/g,'').match(deviationRegex);
 			let deviationIDs = {};
 
 			$.each(pastedData, (_, el) => {
 				let match = el.match(deviationRegexLocal);
-				if (match && typeof deviationIDs[match[1]] === 'undefined')
+				if (match && typeof deviationIDs[match[1]] === 'undefined'){
 					deviationIDs[match[1]] = true;
+					return;
+				}
+				match = el.match(favmeRegexLocal);
+				if (match){
+					let id = parseInt(match[1], 36);
+					if (typeof deviationIDs[id] === 'undefined')
+						deviationIDs[id] = true;
+				}
 			});
 
 			let deviationIDArray = Object.keys(deviationIDs);
@@ -70,17 +80,14 @@ $(function(){
 			$.post('/admin/mass-approve',{ids:deviationIDArray.join(',')},$.mkAjaxHandler(function(){
 				if (!this.status) return $.Dialog.fail(false, this.message);
 
-				const message = this.message;
-				if (!this.reload){
-					if (message)
-						$.Dialog.success(false, message, true);
-					else $.Dialog.close();
-
-					return;
+				if (this.html){
+					$recentPostsUL.html(this.html);
+					window._AdminRecentScroll();
 				}
 
-				if ()
-
+				if (this.message)
+					$.Dialog.success(false, this.message, true);
+				else $.Dialog.close();
 			}));
 		}
 	})();
@@ -107,8 +114,4 @@ $(function(){
 	};
 	$w.on('scroll',window._AdminRecentScroll);
 	window._AdminRecentScroll();
-},function(){
-	'use strict';
-	$w.off('scroll',window._AdminRecentScroll);
-	delete window._AdminRecentScroll;
 });

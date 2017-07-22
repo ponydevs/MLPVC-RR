@@ -17,6 +17,8 @@ use App\Exceptions\CURLRequestException;
  * @method static Cutiemark[] find_by_sql($sql, $data = null)
  */
 class Cutiemark extends NSModel {
+	static $table_name = 'cutiemarks';
+
 	public static $belongs_to = [
 		['appearance']
 	];

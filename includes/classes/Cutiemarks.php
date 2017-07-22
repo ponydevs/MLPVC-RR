@@ -16,7 +16,7 @@ class Cutiemarks {
 	 */
 	public static function get(Appearance $Appearance, bool $procSym = true){
 		/** @var $CMs Cutiemark[] */
-		$CMs = $Appearance->cutiemarks;
+		$CMs = DB::$instance->where('appearance_id', $Appearance->id)->get(Cutiemark::$table_name);
 		if ($procSym)
 			self::processSymmetrical($CMs);
 		return $CMs;
@@ -24,7 +24,7 @@ class Cutiemarks {
 
 	/** @param Cutiemark[] $CMs */
 	public static function processSymmetrical(&$CMs){
-		if (count($CMs) === 1 && is_null($CMs[0]->facing)){
+		if (count($CMs) === 1 && $CMs[0]->facing === null){
 			$CMs[1] = new Cutiemark($CMs[0]->to_array());
 			$CMs[0]->facing = 'left';
 			$CMs[1]->facing = 'right';
@@ -66,7 +66,7 @@ class Cutiemarks {
 		$content = <<<HTML
 <span class="title">$facing</span>
 <a  class="preview" href="http://fav.me/{$cm->favme}" style="background-image:url('{$previewSVG}')">
-	<div class="img" style="transform: rotateZ({$cm->favme_rotation}deg); background-image:url('{$preview}')"></div>
+	<div class="img" style="transform: rotate({$cm->favme_rotation}deg); background-image:url('{$preview}')"></div>
 </a>
 <span class="madeby">$userlink</span>
 HTML;
@@ -74,7 +74,7 @@ HTML;
 	}
 
 	// null (=symmetric) is stringified to '' by implode
-	const VALID_FACING_COMBOS = ['left,right','right,left','left','right',''];
+	const VALID_FACING_COMBOS = ['left,right','left','right',''];
 
 	/**
 	 * @param Cutiemark $data
@@ -94,7 +94,7 @@ HTML;
 			$facing = trim($_POST['facing'][$index]);
 			if (empty($facing))
 				$facing = null;
-			else if (!in_array($facing,Cutiemarks::VALID_FACING_VALUES))
+			else if (!in_array($facing,Cutiemarks::VALID_FACING_VALUES,true))
 				Response::fail('Body orientation is invalid');
 		}
 		else $facing = null;

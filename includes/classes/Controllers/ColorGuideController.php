@@ -542,7 +542,7 @@ class ColorGuideController extends Controller {
 		CoreUtils::loadPage($settings, $this);
 	}
 
-	const CM_BASIC_COLS = 'cmid,favme,favme_rotation,preview_src,facing';
+	const CM_BASIC_COLS = 'id,favme,favme_rotation,preview_src,facing';
 	public function export(){
 		if (!Permission::sufficient('developer'))
 			CoreUtils::notFound();
@@ -1054,6 +1054,10 @@ class ColorGuideController extends Controller {
 			break;
 			case 'getcms':
 				$CMs = Cutiemarks::get($this->_appearance,false);
+				foreach ($CMs as &$CM)
+					$CM = $CM->to_array();
+				unset($CM);
+
 				$ProcessedCMs = Cutiemarks::get($this->_appearance);
 
 				Response::done(['cms' => $CMs, 'preview' => Cutiemarks::getListForAppearancePage($ProcessedCMs, NOWRAP)]);
@@ -1063,11 +1067,15 @@ class ColorGuideController extends Controller {
 
 				$CM1 = new Cutiemark([ 'appearance_id' => $this->_appearance->id ]);
 				Cutiemarks::postProcess($CM1, 0);
-				$CMs[] = $CM1;
+				$CMs[0] = $CM1;
 
 				$CM2 = new Cutiemark([ 'appearance_id' => $this->_appearance->id ]);
 				if (Cutiemarks::postProcess($CM2, 1))
-					$CMs[] = $CM2;
+					$CMs[1] = $CM2;
+
+				usort($CMs, function(Cutiemark $a, Cutiemark $b){
+					return $a->facing <=> $b->facing;
+				});
 
 				Cutiemarks::processSymmetrical($CMs);
 				Response::done(['html' => Cutiemarks::getListForAppearancePage($CMs, NOWRAP)]);
@@ -1077,11 +1085,11 @@ class ColorGuideController extends Controller {
 				$data = [];
 				$newFacingValues = [];
 				for ($i = 0; $i < 2; $i++){
-					if (isset($_POST['cmid'][$i])){
-						if (!Cutiemark::exists($_POST['cmid'][$i]))
+					if (isset($_POST['id'][$i])){
+						if (!Cutiemark::exists($_POST['id'][$i]))
 							Response::fail('The cutie mark you\'re trying to update does not exist');
 
-						$cm = Cutiemark::find($_POST['cmid'][$i]);
+						$cm = Cutiemark::find($_POST['id'][$i]);
 					}
 					else $cm = new Cutiemark([
 						'appearance_id' => $this->_appearance->id,
@@ -1090,23 +1098,29 @@ class ColorGuideController extends Controller {
 						break;
 
 					$newFacingValues[] = $cm->facing;
-					$data[$i] = $cm;
+					$data[$cm->facing] = $cm;
+				}
+
+				sort($newFacingValues);
+				ksort($data);
+
+				$newfacing = implode(',',$newFacingValues);
+				if (!in_array($newfacing,Cutiemarks::VALID_FACING_COMBOS,true))
+					Response::fail("The used combination of facing values ($newfacing) is not allowed");
+
+				// Check for the equivalent of using symmetrical option
+				if (count($data) === 2 && $data['left']->favme === $data['right']->favme && $data['left']->favme_rotation === -$data['right']->favme_rotation){
+					$newFacingValues = [''];
+					$data = [ $data['left']->id === null ? $data['right'] : $data['left'] ];
+					$data[0]->facing = null;
 				}
 
 				$CurrentCMs = Cutiemarks::get($this->_appearance);
-				$usedFacingValues = [];
-				if (!empty($CurrentCMs)){
-					foreach ($CurrentCMs as $cm)
-						$usedFacingValues[$cm->facing] = $cm->cmid;
-				}
-				$newfacing = implode(',',$newFacingValues);
-				if (!in_array($newfacing,Cutiemarks::VALID_FACING_COMBOS))
-					Response::fail("The used combination of facing values ($newfacing) is not allowed");
 
 				$cleanRendered = [];
-				if (!in_array('left', $newFacingValues))
+				if (!in_array('left', $newFacingValues, true))
 					$cleanRendered[] = CGUtils::CLEAR_CMDIR_LEFT;
-				if (!in_array('right', $newFacingValues))
+				if (!in_array('right', $newFacingValues, true))
 					$cleanRendered[] = CGUtils::CLEAR_CMDIR_RIGHT;
 				if (!empty($cleanRendered))
 					CGUtils::clearRenderedImages($this->_appearance->id, $cleanRendered);
@@ -1126,7 +1140,7 @@ class ColorGuideController extends Controller {
 
 				$data = [];
 				if ($this->_appearancePage && !empty($CutieMarks))
-					$data['html'] = Cutiemarks::getListForAppearancePage($CutieMarks);
+					$data['html'] = Cutiemarks::getListForAppearancePage(Cutiemarks::get($this->_appearance));
 				Response::done($data);
 			break;
 			case 'delcms':
