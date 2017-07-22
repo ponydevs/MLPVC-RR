@@ -380,10 +380,7 @@ class Logs {
 		if (empty($Post))
 			$details[] = ['<span class="typcn typcn-info-large"></span> No longer exists', self::SKIP_VALUE, self::KEYCOLOR_INFO];
 		else {
-			$EpID = $Post->ep->getID();
-			$EpData = Episode::parseID($EpID);
-			$Episode = Episodes::getActual($EpData['season'], $EpData['episode'], Episodes::ALLOW_MOVIES);
-			$details[] = ['Posted under', "<a href='".$Episode->toURL()."'>$EpID</a>"];
+			$details[] = ['Posted under', $Post->ep->toAnchor()];
 			$details[] = [
 				($data['type'] === 'request'?'Requested':'Reserved').' by',
 				User::find(
