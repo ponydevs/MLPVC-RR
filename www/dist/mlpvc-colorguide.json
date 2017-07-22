@@ -1400,7 +1400,8 @@
 				76,
 				272,
 				353,
-				439
+				439,
+				522
 			],
 			"RelatedAppearances": []
 		},
@@ -1760,7 +1761,8 @@
 				22,
 				258,
 				272,
-				353
+				353,
+				522
 			],
 			"RelatedAppearances": [
 				116,
@@ -2030,8 +2032,13 @@
 						},
 						{
 							"order": 2,
+							"label": "Shadow Outline",
+							"hex": "#5C96C9"
+						},
+						{
+							"order": 3,
 							"label": "Shadow Fill",
-							"hex": "#88C4E9"
+							"hex": "#8CC7E7"
 						}
 					]
 				},
@@ -2453,12 +2460,12 @@
 						{
 							"order": 2,
 							"label": "Shadow Outline",
-							"hex": "#D5C167"
+							"hex": "#D1B568"
 						},
 						{
 							"order": 3,
 							"label": "Shadow Fill",
-							"hex": "#E6DC7F"
+							"hex": "#EAE28B"
 						}
 					]
 				},
@@ -2616,12 +2623,12 @@
 						{
 							"order": 2,
 							"label": "Shadow Outline",
-							"hex": "#EA6B2B"
+							"hex": "#E9531B"
 						},
 						{
 							"order": 3,
 							"label": "Shadow Fill",
-							"hex": "#F0AA56"
+							"hex": "#F29E4D"
 						}
 					]
 				},
@@ -11258,7 +11265,7 @@
 				},
 				"396": {
 					"id": 396,
-					"label": "Glasses",
+					"label": "Sunglasses",
 					"order": 6,
 					"Colors": [
 						{
@@ -32879,11 +32886,16 @@
 						},
 						{
 							"order": 1,
+							"label": "Fan Outline",
+							"hex": "#D2CCAF"
+						},
+						{
+							"order": 2,
 							"label": "Fill 1",
 							"hex": "#EDE383"
 						},
 						{
-							"order": 2,
+							"order": 3,
 							"label": "Fill 2",
 							"hex": "#FFFFFF"
 						}
@@ -39260,7 +39272,8 @@
 				22,
 				96,
 				272,
-				419
+				419,
+				522
 			],
 			"RelatedAppearances": [
 				2
@@ -40374,7 +40387,8 @@
 				22,
 				96,
 				272,
-				375
+				375,
+				522
 			],
 			"RelatedAppearances": []
 		},
@@ -41301,9 +41315,68 @@
 			],
 			"RelatedAppearances": []
 		},
+		"314": {
+			"id": 314,
+			"order": 242,
+			"label": "Wonderbolts Practice Outfit",
+			"notes": "",
+			"ishuman": false,
+			"added": "2017-07-18T04:27:12Z",
+			"private": false,
+			"ColorGroups": {
+				"1529": {
+					"id": 1529,
+					"label": "Outfit",
+					"order": 1,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#61788E"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#9CB3C7"
+						},
+						{
+							"order": 2,
+							"label": "Shadow Outline",
+							"hex": "#586A7E"
+						},
+						{
+							"order": 3,
+							"label": "Shadow Fill",
+							"hex": "#8BA0B2"
+						},
+						{
+							"order": 4,
+							"label": "Stripe/Collar/Dots",
+							"hex": "#FFFFFF"
+						},
+						{
+							"order": 5,
+							"label": "Leg Shines",
+							"hex": "#D6E1E1"
+						},
+						{
+							"order": 6,
+							"label": "Shadow Stripe",
+							"hex": "#E4E4E4"
+						}
+					]
+				}
+			},
+			"TagIDs": [
+				27,
+				96,
+				521
+			],
+			"RelatedAppearances": []
+		},
 		"33": {
 			"id": 33,
-			"order": 242,
+			"order": 243,
 			"label": "Alicorn Amulet",
 			"notes": "",
 			"ishuman": false,
@@ -41495,7 +41568,7 @@
 		},
 		"86": {
 			"id": 86,
-			"order": 243,
+			"order": 244,
 			"label": "Scorpan's Medallion",
 			"notes": "",
 			"ishuman": false,
@@ -41571,7 +41644,7 @@
 		},
 		"94": {
 			"id": 94,
-			"order": 244,
+			"order": 245,
 			"label": "Party Cannon",
 			"notes": "",
 			"ishuman": false,
@@ -41700,7 +41773,7 @@
 		},
 		"115": {
 			"id": 115,
-			"order": 245,
+			"order": 246,
 			"label": "Fake Timberwolf",
 			"notes": "",
 			"ishuman": false,
@@ -41907,7 +41980,7 @@
 		},
 		"154": {
 			"id": 154,
-			"order": 246,
+			"order": 247,
 			"label": "Twilight's Crown",
 			"notes": "From S4 onward",
 			"ishuman": false,
@@ -41959,7 +42032,7 @@
 		},
 		"299": {
 			"id": 299,
-			"order": 247,
+			"order": 248,
 			"label": "Prince Rutherford",
 			"notes": "",
 			"ishuman": false,
@@ -42253,7 +42326,7 @@
 		},
 		"156": {
 			"id": 156,
-			"order": 248,
+			"order": 249,
 			"label": "Rainbow Dash's Bandaids (Newbie Dash)",
 			"notes": "Sampled from S6E7",
 			"ishuman": false,
@@ -42320,7 +42393,7 @@
 		},
 		"182": {
 			"id": 182,
-			"order": 249,
+			"order": 250,
 			"label": "Rainbow Cookie Zombie Effects",
 			"notes": "Colors of this effect are not muted even if the pony's coat ends up muted. This effect is dimmed with any night filters.\nTo get the muted coat/mane/other colors for any character, take the RGB value of the color, average the R, G, B values, and adjust each RGB value 50% of the way to that average. For example, if RGB is 120, 60, 120, the average is 100. The R value of 120 would then move 50%*(120-100) or 10 (ending up at 110), the G value of 60 would move 50%*(100-60) or 20 (ending up at 80).",
 			"ishuman": false,
@@ -42380,7 +42453,7 @@
 		},
 		"199": {
 			"id": 199,
-			"order": 250,
+			"order": 251,
 			"label": "Hypnotized Mane 6 Eyes",
 			"notes": "Eye colors for the Mane 6 (except Twilight) due to Starlight Glimmer's spell from S6E21.\nAll other body and mane/tail colors remain the same.",
 			"ishuman": false,
@@ -42531,7 +42604,7 @@
 		},
 		"255": {
 			"id": 255,
-			"order": 251,
+			"order": 252,
 			"label": "Gina",
 			"notes": "",
 			"ishuman": false,
@@ -42662,27 +42735,6 @@
 				486,
 				487,
 				488
-			],
-			"RelatedAppearances": []
-		},
-		"304": {
-			"id": 304,
-			"order": 252,
-			"label": "Burnt Oak",
-			"notes": "",
-			"ishuman": false,
-			"added": "2017-06-21T06:41:11Z",
-			"private": true,
-			"ColorGroups": {
-				"_hidden": true
-			},
-			"TagIDs": [
-				7,
-				8,
-				11,
-				351,
-				478,
-				511
 			],
 			"RelatedAppearances": []
 		},
@@ -42827,6 +42879,27 @@
 				353,
 				514,
 				515
+			],
+			"RelatedAppearances": []
+		},
+		"304": {
+			"id": 304,
+			"order": 253,
+			"label": "Burnt Oak",
+			"notes": "",
+			"ishuman": false,
+			"added": "2017-06-21T06:41:11Z",
+			"private": true,
+			"ColorGroups": {
+				"_hidden": true
+			},
+			"TagIDs": [
+				7,
+				8,
+				11,
+				351,
+				478,
+				511
 			],
 			"RelatedAppearances": []
 		},
@@ -43171,7 +43244,7 @@
 			"name": "wonderbolt",
 			"title": "Wonderbolt characters",
 			"type": "cat",
-			"uses": 9,
+			"uses": 10,
 			"synonym_of": null
 		},
 		"28": {
@@ -43683,7 +43756,7 @@
 			"name": "outfit",
 			"title": "Alternative character outfits",
 			"type": null,
-			"uses": 33,
+			"uses": 34,
 			"synonym_of": null
 		},
 		"97": {
@@ -46512,7 +46585,7 @@
 		},
 		"473": {
 			"id": 473,
-			"name": "s07e15",
+			"name": "s07e09",
 			"title": null,
 			"type": "ep",
 			"uses": 5,
@@ -46528,7 +46601,7 @@
 		},
 		"475": {
 			"id": 475,
-			"name": "s07e16",
+			"name": "s07e10",
 			"title": null,
 			"type": "ep",
 			"uses": 2,
@@ -46536,7 +46609,7 @@
 		},
 		"476": {
 			"id": 476,
-			"name": "s07e17",
+			"name": "s07e11",
 			"title": null,
 			"type": "ep",
 			"uses": 1,
@@ -46544,7 +46617,7 @@
 		},
 		"477": {
 			"id": 477,
-			"name": "s07e18",
+			"name": "s07e12",
 			"title": null,
 			"type": "ep",
 			"uses": 0,
@@ -46552,7 +46625,7 @@
 		},
 		"478": {
 			"id": 478,
-			"name": "s07e19",
+			"name": "s07e13",
 			"title": null,
 			"type": "ep",
 			"uses": 4,
@@ -46884,6 +46957,46 @@
 			"title": null,
 			"type": "char",
 			"uses": 1,
+			"synonym_of": null
+		},
+		"521": {
+			"id": 521,
+			"name": "s04e10",
+			"title": null,
+			"type": "ep",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"522": {
+			"id": 522,
+			"name": "aj",
+			"title": null,
+			"type": "char",
+			"uses": 0,
+			"synonym_of": 22
+		},
+		"523": {
+			"id": 523,
+			"name": "s07e14",
+			"title": null,
+			"type": "ep",
+			"uses": 0,
+			"synonym_of": null
+		},
+		"524": {
+			"id": 524,
+			"name": "s07e15",
+			"title": null,
+			"type": "ep",
+			"uses": 0,
+			"synonym_of": null
+		},
+		"525": {
+			"id": 525,
+			"name": "s07e16",
+			"title": null,
+			"type": "ep",
+			"uses": 0,
 			"synonym_of": null
 		}
 	}
