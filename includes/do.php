@@ -18,10 +18,6 @@
 	$do = empty($matches[1]) ? 'index' : $matches[1];
 	$data = $matches[2] ?? '';
 
-	// TODO Remove
-	if ($do === GH_WEBHOOK_DO && !empty(GH_WEBHOOK_DO))
-		(new \App\Controllers\WebhookController())->index();
-
 	require INCPATH.'routes.php';
 	/** @var $match array */
 	$match = $router->match($_SERVER['REQUEST_URI']);
