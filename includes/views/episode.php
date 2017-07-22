@@ -24,10 +24,9 @@ use App\Models\Episode;
 		} ?>
 	<div class="heading-wrap">
 		<div class="prev-ep"><?php
-		if (!empty($PrevEpisode)){
-			$PrevEpisodeTitle = $PrevEpisode->formatTitle(AS_ARRAY, null, false); ?>
+		if (!empty($PrevEpisode)){ ?>
 			<div>
-				<a href="<?=$PrevEpisode->toURL()?>" class="btn link ep-button typcn typcn-media-rewind"><span class="typcn typcn-media-rewind"></span><span class="id"><?= $PrevEpisodeTitle['id']?>: </span><?=CoreUtils::cutoff(Episodes::removeTitlePrefix($PrevEpisodeTitle['title']),Episodes::TITLE_CUTOFF)?></a>
+				<a href="<?=$PrevEpisode->toURL()?>" class="btn link ep-button typcn typcn-media-rewind"><span class="typcn typcn-media-rewind"></span><?=CoreUtils::cutoff(Episodes::shortenTitlePrefix($PrevEpisode->title),Episodes::TITLE_CUTOFF)?></a>
 			</div>
 <?php   }
 		else echo '&nbsp;'; ?></div>
@@ -36,15 +35,14 @@ use App\Models\Episode;
 				<h1><?=CoreUtils::escapeHTML($heading)?></h1>
 				<p>Vector Requests & Reservations</p>
 <?php   if (Permission::sufficient('staff')){ ?>
-				<p class="addedby"><em><?=$CurrentEpisode->is_movie?'Movie':'Episode'?> added by <?=$CurrentEpisode->poster->getProfileLink().' '.Time::tag($CurrentEpisode->posted)?></em></p>
+				<p class="addedby"><em><?=$CurrentEpisode->is_movie?'Movie':'Episode'?> added by <?=$CurrentEpisode->poster->toAnchor().' '.Time::tag($CurrentEpisode->posted)?></em></p>
 <?php   } ?>
 			</div>
 		</div>
 		<div class="next-ep"><?php
-		if (!empty($NextEpisode)){
-			$NextEpisodeTitle = $NextEpisode->formatTitle(AS_ARRAY, null, false); ?>
+		if (!empty($NextEpisode)){ ?>
 			<div>
-				<a href="<?=$NextEpisode->toURL()?>" class="btn link ep-button typcn typcn-media-fast-forward"><span class="id"><?= $NextEpisodeTitle['id']?>: </span><?=CoreUtils::cutoff(Episodes::removeTitlePrefix($NextEpisodeTitle['title']),Episodes::TITLE_CUTOFF)?><span class="typcn typcn-media-fast-forward"></span></a>
+				<a href="<?=$NextEpisode->toURL()?>" class="btn link ep-button typcn typcn-media-fast-forward"><?=CoreUtils::cutoff(Episodes::shortenTitlePrefix($NextEpisode->title),Episodes::TITLE_CUTOFF)?><span class="typcn typcn-media-fast-forward"></span></a>
 			</div>
 <?php   }
 		else echo '&nbsp;'; ?></div>

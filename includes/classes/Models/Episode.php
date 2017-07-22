@@ -29,7 +29,7 @@ use App\RegExp;
  * @property User           $poster     (Via relations)
  * @method static Episode find_by_season_and_episode(int $season, int $episode)
  */
-class Episode extends NSModel {
+class Episode extends NSModel implements LinkableInterface {
 	static $primary_key = ['season','episode'];
 	static $table_name = 'episodes';
 
@@ -80,7 +80,7 @@ class Episode extends NSModel {
 	 */
 	public function getID(array $o = []):string {
 		if ($this->is_movie)
-			return 'Movie'.(!empty($o['append_num'])?'#'.$this->episode:'');
+			return "Movie#{$this->episode}";
 
 		$episode = $this->episode;
 		$season = $this->season;
@@ -167,14 +167,13 @@ class Episode extends NSModel {
 	 *
 	 * @param bool        $returnArray Whether to return as an array instead of string
 	 * @param string      $arrayKey
-	 * @param bool        $append_num  Append overall # to ID
 	 *
 	 * @return string|array
 	 */
-	public function formatTitle($returnArray = false, $arrayKey = null, $append_num = true){
+	public function formatTitle($returnArray = false, $arrayKey = null){
 		if ($returnArray === AS_ARRAY) {
 			$arr = [
-				'id' => $this->getID(['append_num' => $append_num]),
+				'id' => $this->getID(),
 				'season' => $this->season ?? null,
 				'episode' => $this->episode ?? null,
 				'title' => isset($this->title) ? CoreUtils::escapeHTML($this->title) : null,
@@ -261,12 +260,13 @@ class Episode extends NSModel {
 	 */
 	private function _getAdjacent($dir):?Episode {
 		$is = $this->is_movie ? '=' : '!=';
+		$col = $this->is_movie ? 'episode' : 'no';
 		return Episode::find('first', [
 			'conditions' => [
-				"season $is 0 AND no $dir ?",
-				$this->no
+				"season $is 0 AND $col $dir ?",
+				$this->{$col}
 			],
-			'order' => 'no '.($dir === self::NEXT ? 'asc' : 'desc'),
+			'order' => "$col ".($dir === self::NEXT ? 'asc' : 'desc'),
 			'limit' => 1,
 		]);
 	}

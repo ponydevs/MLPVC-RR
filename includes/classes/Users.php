@@ -296,7 +296,7 @@ HTML;
 		if (count($PersonalColorGuides) > 0 || $sameUser){
 			$HTML .= "<ul class='personal-cg-appearances'>";
 			foreach ($PersonalColorGuides as $p)
-				$HTML .= '<li>'.$p->getLinkWithPreviewHTML().'</li>';
+				$HTML .= '<li>'.$p->toAnchorWithPreview().'</li>';
 			$HTML .= '</ul>';
 		}
 		$Action = $sameUser ? 'Manage' : 'View';
@@ -339,7 +339,7 @@ HTML;
 		$item = "<span class='amt'>$amount</span> <span class='expl'>$what</span>";
 		$canSee = $key !== 'requests' || $user->id === (Auth::$user->id ?? null) || Permission::sufficient('staff');
 		if (!is_numeric($key) && $canSee){
-			$userlink = $user->getProfileLink(User::LINKFORMAT_URL);
+			$userlink = $user->toURL();
 			$item = "<a href='{$userlink}/contrib/$key'>$item</a>";
 		}
 		return "<li>$item</li>";
@@ -404,7 +404,7 @@ HTML;
 				case 'cms-provided':
 					/** @var $item \App\Models\Cutiemark */
 					$appearance = $item->appearance;
-					$preview = $appearance->getLinkWithPreviewHTML();
+					$preview = $appearance->toAnchorWithPreview();
 					$deviation = "<div class='deviation-promise' data-favme='{$item->favme}'></div>";
 
 					$TR = <<<HTML
@@ -415,11 +415,11 @@ HTML;
 				break;
 				case 'requests':
 					/** @var $item Request */
-					$preview = $item->toLinkWithPreview();
+					$preview = $item->toAnchorWithPreview();
 					$posted = Time::tag($item->requested_at);
 					$isreserved = $item->reserved_by !== null;
 					if ($isreserved){
-						$reserved_by = $item->reserver->getProfileLink();
+						$reserved_by = $item->reserver->toAnchor();
 						$reserved_at = Time::tag($item->reserved_at);
 						$reserved = "<span class='typcn typcn-user' title='By'></span> $reserved_by<br><span class='typcn typcn-time'></span> $reserved_at";
 					}
@@ -436,7 +436,7 @@ HTML;
 				break;
 				case 'reservations':
 					/** @var $item Request */
-					$preview = $item->toLinkWithPreview();
+					$preview = $item->toAnchorWithPreview();
 					$posted = Time::tag($item->reserved_at);
 					$finished = self::_contribItemFinished($item);
 					$approved = self::_contribItemApproved($item);
@@ -449,8 +449,8 @@ HTML;
 				break;
 				case 'finished-posts':
 					/** @var $item Request|Reservation */
-					$preview = $item->toLinkWithPreview();
-					$posted_by = ($item->is_request ? $item->requester : $item->reserver)->getProfileLink();
+					$preview = $item->toAnchorWithPreview();
+					$posted_by = ($item->is_request ? $item->requester : $item->reserver)->toAnchor();
 					$posted_at = Time::tag($item->posted);
 					$posted = "<span class='typcn typcn-user' title='By'></span> $posted_by<br><span class='typcn typcn-time'></span> $posted_at";
 					if ($item->is_request){
@@ -473,8 +473,8 @@ HTML;
 				break;
 				case 'fulfilled-requests':
 					/** @var $item Request */
-					$preview = $item->toLinkWithPreview();
-					$posted_by = $item->requester->getProfileLink();
+					$preview = $item->toAnchorWithPreview();
+					$posted_by = $item->requester->toAnchor();
 					$requested_at = Time::tag($item->requested_at);
 					$posted = "<span class='typcn typcn-user' title='By'></span> $posted_by<br><span class='typcn typcn-time'></span> $requested_at";
 					$finished = Time::tag($item->finished_at);

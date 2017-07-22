@@ -37,7 +37,7 @@ use App\Users;
  * @property Unbanish[]     $unbanishments
  * @method static User find(...$args)
  */
-class User extends AbstractUser {
+class User extends AbstractUser implements LinkableInterface {
 	static $table_name = 'users';
 
 	public static $has_many = [
@@ -67,46 +67,42 @@ class User extends AbstractUser {
 		return Permission::ROLES_ASSOC[$this->role] ?? 'Curious Pony';
 	}
 
-	const
-		LINKFORMAT_FULL = 0,
-		LINKFORMAT_TEXT = 1,
-		LINKFORMAT_URL  = 2;
+	public function toURL():string {
+		return "/@$this->name";
+	}
+
+	const WITH_AVATAR = true;
 
 	/**
 	 * Local profile link generator
 	 *
-	 * @param int $format
-	 *
-	 * @throws \Exception
+	 * @param bool $with_avatar
 	 *
 	 * @return string
 	 */
-	public function getProfileLink(int $format = self::LINKFORMAT_TEXT):string {
-		$Username = $this->name;
-		$url = "/@$Username";
-		if ($format === self::LINKFORMAT_URL)
-			return $url;
-		$avatar = $format === self::LINKFORMAT_FULL ? "<img src='{$this->avatar_url}' class='avatar' alt='avatar'> " : '';
+	public function toAnchor(bool $with_avatar = false):string {
+		$avatar = $with_avatar ? "<img src='{$this->avatar_url}' class='avatar' alt='avatar'> " : '';
 
-		return "<a href='$url' class='da-userlink".($format === self::LINKFORMAT_FULL ? ' with-avatar':'')."'>$avatar<span class='name'>$Username</span></a>";
+		return "<a href='{$this->toURL()}' class='da-userlink local".($with_avatar ? ' with-avatar':'')."'>$avatar<span class='name'>{$this->name}</span></a>";
+	}
+
+	public function toDALink(){
+		return 'http://'.strtolower($this->name).'.deviantart.com/';
 	}
 
 	/**
 	 * DeviantArt profile link generator
 	 *
-	 * @param int $format
+	 * @param bool $with_avatar
 	 *
 	 * @return string
 	 */
-	public function getDALink(int $format = self::LINKFORMAT_FULL):string {
-		$Username = $this->name;
-		$username = strtolower($Username);
-		$link = "http://$username.deviantart.com/";
-		if ($format === self::LINKFORMAT_URL) return $link;
+	public function toDAAnchor(bool $with_avatar = false):string {
+		$link = $this->toDALink();
 
-		$avatar = $format === self::LINKFORMAT_FULL ? "<img src='{$this->avatar_url}' class='avatar' alt='avatar'> " : '';
-		$withav = $format === self::LINKFORMAT_FULL ? ' with-avatar' : '';
-		return "<a href='$link' class='da-userlink$withav'>$avatar<span class='name'>$Username</span></a>";
+		$avatar = $with_avatar ? "<img src='{$this->avatar_url}' class='avatar' alt='avatar'> " : '';
+		$withav = $with_avatar ? ' with-avatar' : '';
+		return "<a href='$link' class='da-userlink$withav'>$avatar<span class='name'>{$this->name}</span></a>";
 	}
 
 	/**
@@ -521,7 +517,7 @@ HTML;
 					});
 					$LIST = '';
 					foreach ($Posts as $Post){
-						$postLink = $Post->toLink();
+						$postLink = $Post->toURL();
 						$postAnchor = $Post->toAnchor();
 						$label = !empty($Post->label) ? "<span class='label'>{$Post->label}</span>" : '';
 						$actionCond = $Post->is_request && !empty($Post->reserved_at);
@@ -623,7 +619,7 @@ HTML;
 			$HTML .= '<ul id="awaiting-deviations">';
 			foreach ($AwaitingApproval as $Post){
 				$url = "http://fav.me/{$Post->deviation_id}";
-				$postLink = $Post->toLink();
+				$postLink = $Post->toURL();
 				$postAnchor = $Post->toAnchor();
 				$checkBtn = Permission::sufficient('member') ? "<button class='green typcn typcn-tick check'>Check</button>" : '';
 

@@ -34,8 +34,6 @@ class EpisodeTest extends TestCase {
 			'twoparter' => true,
 		]);
 		$result = $Movie->getID();
-		self::assertEquals('Movie', $result);
-		$result = $Movie->getID(['append_num' => true]);
 		self::assertEquals('Movie#1', $result);
 		self::assertNotEquals('Movie#1-2', $result);
 	}

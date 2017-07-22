@@ -125,10 +125,7 @@ class Episodes {
 		if (empty($CurrentEpisode))
 			CoreUtils::notFound();
 
-		$url = $CurrentEpisode->toURL();
-		if (isset($LinkedPost)){
-			$url .= '#'.$LinkedPost->getID();
-		}
+		$url = $LinkedPost !== null ? $LinkedPost->toURL() : $CurrentEpisode->toURL();
 		if ($serverSideRedirect)
 			CoreUtils::fixPath($url);
 

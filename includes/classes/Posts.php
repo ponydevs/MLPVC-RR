@@ -504,7 +504,7 @@ HTML;
 	public static function getLi($Post, bool $view_only = false, bool $cachebust_url = false, bool $deviation_promises = false):string {
 		$ID = $Post->getID();
 		$alt = !empty($Post->label) ? CoreUtils::aposEncode($Post->label) : '';
-		$postlink = $Post->toLink();
+		$postlink = $Post->toURL();
 		$ImageLink = $view_only ? $postlink : $Post->fullsize;
 		$cachebust = $cachebust_url ? '?t='.time() : '';
 		$Image = "<div class='image screencap'><a href='$ImageLink'><img src='{$Post->preview}$cachebust' alt='$alt'></a></div>";
@@ -520,7 +520,7 @@ HTML;
 
 			$posted_at .= "Requested $permalink";
 			if (Auth::$signed_in && ($isStaff || $isRequester || $isReserver))
-				$posted_at .= ' by '.($isRequester ? "<a href='/@".Auth::$user->name."'>You</a>" : $Post->requester->getProfileLink());
+				$posted_at .= ' by '.($isRequester ? "<a href='/@".Auth::$user->name."'>You</a>" : $Post->requester->toAnchor());
 		}
 		else {
 			$overdue = false;
@@ -530,7 +530,7 @@ HTML;
 
 		$hide_reserved_status = $Post->reserved_by === null || ($overdue && !$isReserver && !$isStaff);
 		if ($Post->reserved_by !== null){
-			$reserved_by = $overdue && !$isReserver ? ' by '.$Post->reserver->getProfileLink() : '';
+			$reserved_by = $overdue && !$isReserver ? ' by '.$Post->reserver->toAnchor() : '';
 			$reserved_at = $Post->is_request && $Post->reserved_at !== null && !($hide_reserved_status && Permission::insufficient('staff'))
 				? "<em class='reserve-date'>Reserved <strong>".Time::tag($Post->reserved_at)."</strong>$reserved_by</em>"
 				: '';
@@ -562,7 +562,7 @@ HTML;
 							? (
 								$Post->is_request && $LogEntry['initiator'] === $Post->requested_by
 								? 'the requester'
-								: User::find($LogEntry['initiator'])->getProfileLink()
+								: User::find($LogEntry['initiator'])->toAnchor()
 							)
 							: 'the reserver'
 						)
@@ -600,7 +600,7 @@ HTML;
 		$label = self::_getPostLabel($Request);
 		$time_ago = Time::tag($Request->posted);
 		$cat = Posts::REQUEST_TYPES[$Request->type];
-		$reserve = Permission::sufficient('member') ? self::getPostReserveButton($Request, null, false) : "<div><a href='{$Request->toLink()}' class='btn blue typcn typcn-arrow-forward'>View on episode page</a></div>";
+		$reserve = Permission::sufficient('member') ? self::getPostReserveButton($Request, null, false) : "<div><a href='{$Request->toURL()}' class='btn blue typcn typcn-arrow-forward'>View on episode page</a></div>";
 		return <<<HTML
 <li id="request-{$Request->id}">
 	<div class="image screencap">
@@ -609,7 +609,7 @@ HTML;
 		</a>
 	</div>
 	$label
-	<em class="post-date">Requested <a href="{$Request->toLink()}">$time_ago</a> under {$Request->toAnchor()}</em>
+	<em class="post-date">Requested <a href="{$Request->toURL()}">$time_ago</a> under {$Request->toAnchor()}</em>
 	<em class="category">Category: {$cat}</em>
 	$reserve
 </li>
@@ -628,7 +628,7 @@ HTML;
 		if (empty($reservedBy))
 			return Permission::sufficient('member') && !$view_only ? "<button class='reserve-request typcn typcn-user-add'>Reserve</button>" : '';
 		else {
-			$dAlink = $reservedBy->getProfileLink(User::LINKFORMAT_FULL);
+			$dAlink = $reservedBy->toAnchor(User::WITH_AVATAR);
 			$vectorapp = $reservedBy->getVectorAppClassName();
 			if (!empty($vectorapp))
 				$vectorapp .= "' title='Uses ".$reservedBy->getVectorAppReadableName().' to make vectors';

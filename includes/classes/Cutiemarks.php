@@ -62,7 +62,7 @@ class Cutiemarks {
 		$preview = CoreUtils::aposEncode($cm->getPreviewURL());
 
 		$Vector = DeviantArt::getCachedDeviation($cm->favme);
-		$userlink = Users::get($Vector->author, 'name')->getProfileLink(User::LINKFORMAT_FULL);
+		$userlink = Users::get($Vector->author, 'name')->toAnchor(User::WITH_AVATAR);
 		$content = <<<HTML
 <span class="title">$facing</span>
 <a  class="preview" href="http://fav.me/{$cm->favme}" style="background-image:url('{$previewSVG}')">

@@ -115,7 +115,7 @@ HTML;
 			$event = $this->event;
 		$title = CoreUtils::escapeHTML($this->title);
 		$submitter = $this->submitter;
-		$submitter_link = $submitter->getProfileLink();
+		$submitter_link = $submitter->toAnchor();
 		$submitter_vapp = $submitter->getVectorAppIcon();
 		if (!empty($submitter_vapp))
 			$submitter_link = preg_replace(new RegExp('(</a>)$'),"$submitter_vapp$1", $submitter_link);

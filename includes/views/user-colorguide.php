@@ -10,7 +10,7 @@ use App\Tags;
 /** @var $Ponies array */ ?>
 <div id="content">
 	<h1><?=$heading?></h1>
-	<p>Unofficial colors maintained by <?=$Owner->getProfileLink()?></p>
+	<p>Unofficial colors maintained by <?=$Owner->toAnchor()?></p>
 <?  if (Permission::sufficient('staff') || $isOwner){ ?>
 	<div class="notice warn tagediting">
 		<label>Limited editing</label>

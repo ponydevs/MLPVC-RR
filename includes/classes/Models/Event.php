@@ -29,7 +29,7 @@ use App\UserPrefs;
  * @property User         $creator
  * @property User         $finalizer
  */
-class Event extends NSModel {
+class Event extends NSModel implements LinkableInterface {
 	public static $has_many = [
 		['entries', 'class_name' => 'EventEntry', 'order' => 'score desc, submitted_at asc'],
 	];
@@ -64,6 +64,9 @@ class Event extends NSModel {
 
 	public function toURL():string {
 		return "/event/{$this->id}-".$this->getSafeName();
+	}
+	public function toAnchor():string{
+		return "<a href='{$this->toURL()}'>$this->name</a>";
 	}
 
 	public function getSafeName():string {
@@ -138,7 +141,7 @@ class Event extends NSModel {
 				foreach ($HighestScoringEntries as $entry){
 					$title = CoreUtils::escapeHTML($entry->title);
 					$preview = isset($entry->prev_full) ? "<a href='{$entry->prev_src}'><img src='{$entry->prev_thumb}' alt=''><span class='title'>$title</span></a>" : "<span class='title'>$title</span>";
-					$by = '<div>'.$entry->submitter->getProfileLink(User::LINKFORMAT_FULL).'</div>';
+					$by = '<div>'.$entry->submitter->toAnchor(User::WITH_AVATAR).'</div>';
 					$HTML .= "<div class='winning-entry'>$preview$by</div>";
 				}
 			}

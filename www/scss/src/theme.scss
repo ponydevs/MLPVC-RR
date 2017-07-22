@@ -734,6 +734,11 @@ header, #sidebar .mobile-nav {
 .da-userlink {
 	&.with-avatar {
 		@extend %reserve-button;
+		&.local {
+			background: lighten($HeaderFooterBG, 47);
+			border: 1px solid lighten($HeaderFooterBG, 20);
+		}
+
 		display: inline-block;
 		white-space: nowrap;
 		overflow: hidden;

@@ -27,7 +27,7 @@ else {
 	<div class="briefing">
 		<?=$User->getAvatarWrap()?>
 		<div class="title">
-			<h1><span class="username"><?=$User->name?></span><a class="da" title="Visit DeviantArt profile" href="<?=$User->getDALink(User::LINKFORMAT_URL)?>"><?=str_replace(' fill="#FFF"','',file_get_contents(APPATH.'img/da-logo.svg'))?></a><?=$User->getVectorAppIcon()?><?=!empty($discordmember)?"<img class='discord-logo' src='/img/discord-logo.svg' alt='Discord logo' title='This user is a member of our Discord server as @".CoreUtils::escapeHTML($discordmember->name)."'>":''?></h1>
+			<h1><span class="username"><?=$User->name?></span><a class="da" title="Visit DeviantArt profile" href="<?=$User->toDALink()?>"><?=str_replace(' fill="#FFF"','',file_get_contents(APPATH.'img/da-logo.svg'))?></a><?=$User->getVectorAppIcon()?><?=!empty($discordmember)?"<img class='discord-logo' src='/img/discord-logo.svg' alt='Discord logo' title='This user is a member of our Discord server as @".CoreUtils::escapeHTML($discordmember->name)."'>":''?></h1>
 			<p><?php
 echo "<span class='rolelabel'>{$User->rolelabel}</span>";
 if ($canEdit){
@@ -90,7 +90,7 @@ if (!empty($Banishes)){
 		$initiator = $displayInitiator ? $b->log->actor : null;
 		$reason = htmlspecialchars($b->reason);
 		$action = strtolower($Actions[$b instanceof Banish ? 0 : 1]);
-		echo "<li class='$action'><blockquote>{$reason}</blockquote> - ".(isset($initiator)?$initiator->getProfileLink().' ':'').Time::tag($b->log->timestamp).'</li>';
+		echo "<li class='$action'><blockquote>{$reason}</blockquote> - ".(isset($initiator)?$initiator->toAnchor().' ':'').Time::tag($b->log->timestamp).'</li>';
 	}
 }
 			?></ul>

@@ -57,7 +57,7 @@ class Notifications {
 					$Post = $_postClass::find($data['id']);
 					$Episode = $Post->ep;
 					$EpID = $Episode->getID();
-					$url = $Post->toLink($Episode);
+					$url = $Post->toURL($Episode);
 				}
 				catch (RecordNotFound $e){
 					$Post = null;

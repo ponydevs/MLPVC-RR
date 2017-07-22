@@ -103,7 +103,7 @@ class Logs {
 				$target =  DB::$instance->where('id',$data['target'])->getOne('users');
 
 				$details = [
-					['Target user', $target->getProfileLink()],
+					['Target user', $target->toAnchor()],
 					['Old group', Permission::ROLES_ASSOC[$data['oldrole']]],
 					['New group', Permission::ROLES_ASSOC[$data['newrole']]]
 				];
@@ -153,11 +153,11 @@ class Logs {
 				}
 			break;
 			case 'userfetch':
-				$details[] = ['User', User::find($data['userid'])->getProfileLink()];
+				$details[] = ['User', User::find($data['userid'])->toAnchor()];
 			break;
 			case 'banish':
 			case 'unbanish':
-				$details[] = ['User', User::find($data['target_id'])->getProfileLink()];
+				$details[] = ['User', User::find($data['target_id'])->toAnchor()];
 				$details[] = ['Reason', CoreUtils::escapeHTML($data['reason'])];
 			break;
 			case 'post_lock':
@@ -182,9 +182,9 @@ class Logs {
 				$details[] = ['Episode', "<a href='/episode/$IDstr'>$IDstr</a>"];
 				$details[] = ['Requested on', Time::tag($data['requested_at'], Time::TAG_EXTENDED, Time::TAG_STATIC_DYNTIME)];
 				if (!empty($data['requested_by']))
-					$details[] = ['Requested by', User::find($data['requested_by'])->getProfileLink()];
+					$details[] = ['Requested by', User::find($data['requested_by'])->toAnchor()];
 				if (!empty($data['reserved_by']))
-					$details[] = ['Reserved by', User::find($data['reserved_by'])->getProfileLink()];
+					$details[] = ['Reserved by', User::find($data['reserved_by'])->toAnchor()];
 				$details[] = ['Finished', !empty($data['deviation_id'])];
 				if (!empty($data['deviation_id'])){
 					$details[] = ['Deviation', self::_link("http://fav.me/{$data['deviation_id']}")];
@@ -203,7 +203,7 @@ class Logs {
 				/** @var $Post Request|Reservation */
 				$Post = DB::$instance->where('id', $data['id'])->getOne("{$data['type']}s");
 				self::_genericPostInfo($Post, $data, $details);
-				$details[] = ['Previous reserver', User::find($data['reserved_by'])->getProfileLink()];
+				$details[] = ['Previous reserver', User::find($data['reserved_by'])->toAnchor()];
 				$details[] = ['Previously reserved at', Time::tag($data['reserved_at'], Time::TAG_EXTENDED, Time::TAG_STATIC_DYNTIME)];
 
 				$diff = Time::difference(strtotime($MainEntry['timestamp']), strtotime($data['reserved_at']));
@@ -238,7 +238,7 @@ class Logs {
 				/** @var $Post Request|Reservation */
 				$Post = DB::$instance->where('id', $data['id'])->getOne("{$data['type']}s");
 				self::_genericPostInfo($Post, $data, $details);
-				$details[] = ['New reserver', User::find($data['to'])->getProfileLink()];
+				$details[] = ['New reserver', User::find($data['to'])->toAnchor()];
 			break;
 			case 'cg_modify':
 				$details[] = ['Appearance', self::_getAppearanceLink($data['appearance_id'])];
@@ -301,7 +301,7 @@ class Logs {
 			case 'da_namechange':
 				$User = User::find($data['user_id']);
 				$newIsCurrent = $User->name === $data['new'];
-				$details[] = ['User', $User->getProfileLink()];
+				$details[] = ['User', $User->toAnchor()];
 				if ($newIsCurrent)
 					$details[] = ['Old name', $data['old']];
 				else {
@@ -387,11 +387,11 @@ class Logs {
 					$data['type'] === 'request'
 					? $Post->requested_by
 					: $Post->reserved_by
-				)->getProfileLink()
+				)->toAnchor()
 			];
 			if ($data['type'] === 'request'){
 				if (!empty($Post->reserved_by))
-					$details[] = ['Reserved by', $Post->reserver->getProfileLink()];
+					$details[] = ['Reserved by', $Post->reserver->toAnchor()];
 				else $details[] = ['Reserved', false];
 			}
 		}
@@ -412,7 +412,7 @@ class Logs {
 		}
 
 		if (!empty($Appearance))
-			$ID = "<a href='{$Appearance->getLink()}'>".CoreUtils::escapeHTML($Appearance->label)."</a> ($ID)";
+			$ID = "<a href='{$Appearance->toURL()}'>".CoreUtils::escapeHTML($Appearance->label)."</a> ($ID)";
 
 		return $ID;
 	}
@@ -450,7 +450,7 @@ class Logs {
 				$inituser = User::find($item['initiator']);
 				if (empty($inituser))
 					$inituser = 'Deleted user';
-				else $inituser = $inituser->getProfileLink();
+				else $inituser = $inituser->toAnchor();
 
 				$ip = in_array($item['ip'], ['::1', '127.0.0.1']) ? 'localhost' : $item['ip'];
 

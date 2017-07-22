@@ -1086,7 +1086,7 @@ HTML;
 
 		$HTML = '<table>';
 		foreach ($Query as $row){
-			$link = User::find($row['reserved_by'])->getProfileLink(User::LINKFORMAT_FULL);
+			$link = User::find($row['reserved_by'])->toAnchor(User::WITH_AVATAR);
 			$r = min(round($row['cnt']/10*255),255);
 			$count = "<strong style='color:rgb($r,0,0)'>{$row['cnt']}</strong>";
 

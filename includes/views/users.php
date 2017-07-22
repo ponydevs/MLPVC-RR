@@ -27,7 +27,7 @@ if (!empty($Users)){
 				$firstletter = strtoupper($u->name[0]);
 				if (preg_match(new \App\RegExp('^[^a-z]$','i'), $firstletter))
 					$firstletter = '#';
-				$usersOut[$firstletter][] = $u->getProfileLink();
+				$usersOut[$firstletter][] = $u->toAnchor();
 			}
 
 			ksort($usersOut);
@@ -40,7 +40,7 @@ if (!empty($Users)){
 		else {
 			$usersOut = [];
 			foreach ($users as $u)
-				$usersOut[] = $u->getProfileLink();
+				$usersOut[] = $u->toAnchor();
 			$usersStr = implode(', ',$usersOut);
 		}
 		echo <<<HTML

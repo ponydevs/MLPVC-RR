@@ -18,7 +18,7 @@ use App\Tags;
 	<h1><?=CoreUtils::escapeHTML($heading)?></h1>
 	<p>from <?php
 	if (isset($Owner))
-		echo $Owner->getProfileLink().CoreUtils::posess($Owner->name, true)." <a href='/@{$Owner->name}/cg'>Personal Color Guide</a>";
+		echo $Owner->toAnchor().CoreUtils::posess($Owner->name, true)." <a href='/@{$Owner->name}/cg'>Personal Color Guide</a>";
 	else {
 		$eqgpath = $EQG ? '/eqg' : '';
 		$guideprefix = $EQG ? 'EQG ' : '';

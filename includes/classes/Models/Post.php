@@ -29,7 +29,7 @@ use App\CoreUtils;
  * @property bool     $is_request     (Via magic method)
  * @property bool     $is_reservation (Via magic method)
  */
-abstract class Post extends NSModel {
+abstract class Post extends NSModel implements LinkableInterface {
 	public static $belongs_to;
 
 	/**
@@ -56,24 +56,24 @@ abstract class Post extends NSModel {
 		return $this->kind.'-'.$this->id;
 	}
 
-	public function toLink(Episode $Episode = null):string {
+	public function toURL(Episode $Episode = null):string {
 		if (empty($Episode))
 			$Episode = $this->ep;
 		return $Episode->toURL().'#'.$this->getID();
 	}
 
-	public function toLinkWithPreview(){
+	public function toAnchorWithPreview(){
 		$haslabel = !empty($this->label);
 		$alt = $haslabel ? CoreUtils::escapeHTML($this->label) : 'No label';
 		$slabel = $haslabel ? $this->processLabel() : "<em>$alt</em>";
-		return "<a class='post-link with-preview' href='{$this->toLink()}'><img src='{$this->preview}' alt='$alt'><span>$slabel</span></a>";
+		return "<a class='post-link with-preview' href='{$this->toURL()}'><img src='{$this->preview}' alt='$alt'><span>$slabel</span></a>";
 	}
 
 	public function toAnchor(string $label = null, Episode $Episode = null, $newtab = false):string {
 		if ($Episode === null)
 			$Episode = $this->ep;
 		/** @var $Episode Episode */
-		$link = $this->toLink($Episode);
+		$link = $this->toURL($Episode);
 		if (empty($label))
 			$label = $Episode->getID();
 		else $label = htmlspecialchars($label);
@@ -116,12 +116,12 @@ abstract class Post extends NSModel {
 	public function getFinishedImage(bool $view_only, string $cachebust = ''):string {
 		$Deviation = DeviantArt::getCachedDeviation($this->deviation_id);
 		if (empty($Deviation)){
-			$ImageLink = $view_only ? $this->toLink() : "http://fav.me/{$this->deviation_id}";
+			$ImageLink = $view_only ? $this->toURL() : "http://fav.me/{$this->deviation_id}";
 			$Image = "<div class='image deviation error'><a href='$ImageLink'>Preview unavailable<br><small>Click to view</small></a></div>";
 		}
 		else {
 			$alt = CoreUtils::aposEncode($Deviation->title);
-			$ImageLink = $view_only ? $this->toLink() : "http://fav.me/{$Deviation->id}";
+			$ImageLink = $view_only ? $this->toURL() : "http://fav.me/{$Deviation->id}";
 			$Image = "<div class='image deviation'><a href='$ImageLink'><img src='{$Deviation->preview}$cachebust' alt='$alt'>";
 			if ($this->lock)
 				$Image .= "<span class='typcn typcn-tick' title='This submission has been accepted into the group gallery'></span>";

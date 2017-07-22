@@ -35,7 +35,7 @@ use App\Time;
  * @method static Appearance find_by_ishuman_and_label($ishuman, string $label)
  * @method static Appearance|Appearance[] find(...$args)
  */
-class Appearance extends NSModel {
+class Appearance extends NSModel implements LinkableInterface {
 	/** @var int[] */
 
 	public static $has_many = [
@@ -213,29 +213,23 @@ class Appearance extends NSModel {
 		return "/cg/v/{$this->id}p.svg?t=".(file_exists($path) ? filemtime($path) : time());
 	}
 
-	public function getLink():string {
+	public function toURL():string {
 		$safeLabel = $this->getSafeLabel();
 		$owner = $this->owner_id !== null ? '/@'.User::find($this->owner_id)->name : '';
 		return "$owner/cg/v/{$this->id}-$safeLabel";
 	}
 
-	/**
-	 * @return string
-	 */
-	public function getLinkWithLabelHTML():string {
+	public function toAnchor():string {
 		$label = $this->processLabel();
-		$link = $this->getLink();
+		$link = $this->toURL();
 		return "<a href='$link'>$label</a>";
 	}
 
-	/**
-	 * @return string
-	 */
-	public function getLinkWithPreviewHTML():string {
+	public function toAnchorWithPreview():string {
 		$preview = $this->getPreviewURL();
 		$preview = "<img src='$preview' class='preview'>";
 		$label = $this->processLabel();
-		$link = $this->getLink();
+		$link = $this->toURL();
 		return "<a href='$link'>$preview<span>$label</span></a>";
 	}
 
@@ -253,7 +247,7 @@ class Appearance extends NSModel {
 		if (empty($this->related_appearances))
 			return $LINKS;
 		foreach ($this->related_appearances as $r)
-			$LINKS .= '<li>'.$r->target->getLinkWithPreviewHTML().'</li>';
+			$LINKS .= '<li>'.$r->target->toAnchorWithPreview().'</li>';
 		return "<section class='related'><h2>Related appearances</h2><ul>$LINKS</ul></section>";
 	}
 

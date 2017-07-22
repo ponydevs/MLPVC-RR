@@ -476,7 +476,7 @@ class ColorGuideController extends Controller {
 		if (isset($_REQUEST['btnl'])){
 			if (empty($Ponies[0]->id))
 				Response::fail('The search returned no results.');
-			Response::done(['goto' => $Ponies[0]->getLink()]);
+			Response::done(['goto' => $Ponies[0]->toURL()]);
 		}
 
 		CoreUtils::fixPath("$this->_cgPath/{$Pagination->page}?q=".(!empty($SearchQuery) ? $SearchQuery : CoreUtils::FIXPATH_EMPTY));
@@ -760,7 +760,7 @@ class ColorGuideController extends Controller {
 						Response::fail('You already have an appearance with the same name in your Personal Color Guide');
 
 					$eqg_url = $this->_EQG ? '/eqg':'';
-					Response::fail("An appearance <a href='{$dupe->getLink()}' target='_blank'>already esists</a> in the ".($this->_EQG?'EQG':'Pony').' guide with this exact name. Consider adding an identifier in backets or choosing a different name.');
+					Response::fail("An appearance <a href='{$dupe->toURL()}' target='_blank'>already esists</a> in the ".($this->_EQG?'EQG':'Pony').' guide with this exact name. Consider adding an identifier in backets or choosing a different name.');
 				}
 				if ($creating || $label !== $this->_appearance->label)
 					$data['label'] = $label;
@@ -813,7 +813,7 @@ class ColorGuideController extends Controller {
 					$data['id'] = $newAppearance->id;
 					$response = [
 						'message' => 'Appearance added successfully',
-						'goto' => $newAppearance->getLink(),
+						'goto' => $newAppearance->toURL(),
 					];
 					$usetemplate = isset($_POST['template']);
 					if ($usetemplate){
@@ -861,7 +861,7 @@ class ColorGuideController extends Controller {
 				if (!$this->_appearancePage){
 					$response['label'] = $EditedAppearance->label;
 					if (isset($olddata['label']) && $olddata['label'] !== $this->_appearance->label)
-						$response['newurl'] = $EditedAppearance->getLink();
+						$response['newurl'] = $EditedAppearance->toURL();
 					$response['notes'] = $EditedAppearance->getNotesHTML(NOWRAP);
 				}
 

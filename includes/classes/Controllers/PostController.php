@@ -174,7 +174,7 @@ class PostController extends Controller {
 				Response::done([
 					'castle' => [
 						'name' => $this->_post->ep->formatTitle(),
-						'url' => $this->_post->toLink(),
+						'url' => $this->_post->toURL(),
 					],
 				]);
 			break;
@@ -377,7 +377,7 @@ class PostController extends Controller {
 				if ($isUserReserver)
 					Response::fail("You've already reserved this $thing", ['li' => Posts::getLi($this->_post)]);
 				if (!$this->_post->isOverdue())
-					Response::fail("This $thing has already been reserved by ".$this->_post->reserver->getProfileLink(), ['li' => Posts::getLi($this->_post)]);
+					Response::fail("This $thing has already been reserved by ".$this->_post->reserver->toAnchor(), ['li' => Posts::getLi($this->_post)]);
 				$overdue = [
 					'reserved_by' => $this->_post->reserved_by,
 					'reserved_at' => $this->_post->reserved_at,
@@ -636,7 +636,7 @@ class PostController extends Controller {
 		if (!$this->_post->isTransferable())
 			Response::fail("This {$params['thing']} was reserved recently, please allow up to 5 days before asking for a transfer");
 
-		$ReserverLink = $reserved_by->getProfileLink();
+		$ReserverLink = $reserved_by->toAnchor();
 
 		$PreviousAttempts = Posts::getTransferAttempts($this->_post, Auth::$user->id);
 

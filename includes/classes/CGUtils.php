@@ -286,10 +286,10 @@ HTML;
 				$initiator = $appearance = '';
 				if ($seeInitiator){
 					$main = $c->log;
-					$initiator = ' by '.$main->actor->getProfileLink();
+					$initiator = ' by '.$main->actor->toAnchor();
 				}
 				if ($showAppearance)
-					$appearance = $c->appearance->getLinkWithLabelHTML().': ';
+					$appearance = $c->appearance->toAnchor().': ';
 				$HTML .= "<li>$appearance{$c->reason} - ".Time::tag($c->log->timestamp)."$initiator</li>";
 			};
 		return $wrap ? "<ul id='changes'>$HTML</ul>" : $HTML;

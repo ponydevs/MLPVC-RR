@@ -8,10 +8,10 @@ class UserTest extends TestCase {
 			'name' => 'TestUser',
 			'avatar_url' => '/img/guest.svg',
 		]);
-		$result = $User->getProfileLink();
-		static::assertEquals("<a href='/@TestUser' class='da-userlink'><span class='name'>TestUser</span></a>", $result, 'Testing default parameter return value format');
-		$result = $User->getProfileLink(\App\Models\User::LINKFORMAT_FULL);
-		static::assertEquals("<a href='/@TestUser' class='da-userlink with-avatar'><img src='/img/guest.svg' class='avatar' alt='avatar'> <span class='name'>TestUser</span></a>", $result, 'Testing full format return value');
+		$result = $User->toAnchor();
+		static::assertEquals("<a href='/@TestUser' class='da-userlink local'><span class='name'>TestUser</span></a>", $result, 'Testing default parameter return value format');
+		$result = $User->toAnchor(\App\Models\User::WITH_AVATAR);
+		static::assertEquals("<a href='/@TestUser' class='da-userlink local with-avatar'><img src='/img/guest.svg' class='avatar' alt='avatar'> <span class='name'>TestUser</span></a>", $result, 'Testing full format return value');
 	}
 
 	public function testGetDALink(){
@@ -19,11 +19,11 @@ class UserTest extends TestCase {
 			'name' => 'TestUser',
 			'avatar_url' => '/img/guest.svg',
 		]);
-		$result = $User->getDALink(\App\Models\User::LINKFORMAT_URL);
+		$result = $User->toDALink();
 		static::assertEquals('http://testuser.deviantart.com/', $result, 'Testing URL format return value');
-		$result = $User->getDALink(\App\Models\User::LINKFORMAT_TEXT);
+		$result = $User->toDAAnchor();
 		static::assertEquals("<a href='http://testuser.deviantart.com/' class='da-userlink'><span class='name'>TestUser</span></a>", $result, 'Testing default parameter return value format');
-		$result = $User->getDALink();
+		$result = $User->toDAAnchor(\App\Models\User::WITH_AVATAR);
 		static::assertEquals("<a href='http://testuser.deviantart.com/' class='da-userlink with-avatar'><img src='/img/guest.svg' class='avatar' alt='avatar'> <span class='name'>TestUser</span></a>", $result, 'Testing default parameter return value format');
 	}
 

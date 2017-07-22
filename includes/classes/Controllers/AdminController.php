@@ -334,7 +334,7 @@ HTML;
 
 		$resp = [];
 		if ($this->_member->user_id !== null)
-			$resp['boundto'] = $this->_member->user->getProfileLink(User::LINKFORMAT_FULL);
+			$resp['boundto'] = $this->_member->user->toAnchor(User::WITH_AVATAR);
 
 		Response::done($resp);
 	}

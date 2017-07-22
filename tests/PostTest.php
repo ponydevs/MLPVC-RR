@@ -27,7 +27,7 @@ class PostTest extends TestCase {
 			'season' => $Episode->season,
 			'episode' => $Episode->episode,
 		]);
-		$result = $Request->toLink($Episode);
+		$result = $Request->toURL($Episode);
 		self::assertEquals('/episode/S1E1#request-1', $result);
 
 		$Reservation = new \App\Models\Reservation([
@@ -35,7 +35,7 @@ class PostTest extends TestCase {
 			'season' => $Episode->season,
 			'episode' => $Episode->episode,
 		]);
-		$result = $Reservation->toLink($Episode);
+		$result = $Reservation->toURL($Episode);
 		self::assertEquals('/episode/S1E1#reservation-1', $result);
 	}
 
