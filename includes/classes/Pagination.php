@@ -155,9 +155,10 @@ class Pagination {
 	}
 
 	public function toElastic(){
+		$limit = $this->getLimit();
 		return [
-			'size' => $this->itemsPerPage,
-			'from' => ($this->page-1)*$this->itemsPerPage
+			'from' => $limit[0],
+			'size' => $limit[1],
 		];
 	}
 
@@ -201,8 +202,7 @@ class Pagination {
 	 * @return int[]
 	 */
 	public function getLimit(){
-		$arr = $this->toElastic();
-		return [$arr['from'], $arr['size']];
+		return [ ($this->page-1)*$this->itemsPerPage, $this->itemsPerPage ];
 	}
 
 	/**

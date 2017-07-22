@@ -69,7 +69,7 @@ class AdminController extends Controller {
 		$title = '';
 		$whereArgs = [];
 		$q = [];
-		if (isset($type)){
+		if ($type !== null){
 			$whereArgs[] = ['reftype', $type];
 			if (isset($q)){
 				$q[] = "type=$type";
@@ -100,7 +100,8 @@ class AdminController extends Controller {
 
 		foreach ($whereArgs as $arg)
 			DB::$instance->where(...$arg);
-		$LogItems = DB::$instance->orderBy('timestamp')
+		$LogItems = DB::$instance
+			->orderBy('timestamp','DESC')
 			->orderBy('entryid','DESC')
 			->get('log', $Pagination->getLimit());
 
