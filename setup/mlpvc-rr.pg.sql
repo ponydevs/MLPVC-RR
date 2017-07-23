@@ -1878,14 +1878,6 @@ ALTER TABLE ONLY color_groups
 
 
 --
--- Name: color_groups colorgroups_ponyid_order; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
---
-
-ALTER TABLE ONLY color_groups
-    ADD CONSTRAINT colorgroups_ponyid_order UNIQUE (appearance_id, "order");
-
-
---
 -- Name: colors colors_group_id_order; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 

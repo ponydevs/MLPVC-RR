@@ -1101,7 +1101,7 @@ $(function(){
 
 				$.Dialog.wait(false, 'Saving changes');
 
-				$.post(`${PGRq}/cg/colorgroup/${editing?'set':'make'}${editing?`/${groupID}`:''}${EQGRq}`, data, $.mkAjaxHandler(function(){
+				$.post(`${PGRq}/cg/colorgroup/${editing?`set/${groupID}`:'make'}${EQGRq}`, data, $.mkAjaxHandler(function(){
 					if (!this.status) return $.Dialog.fail(false, this.message);
 
 					if (this.cg || this.cgs){
@@ -1395,11 +1395,14 @@ $(function(){
 							$cgs = $.mk('ol');
 
 						$.each(this.cgs,function(_, cg){
-							$cgs.append($.mk('li').attr('data-id', cg.groupid).text(cg.label));
+							$cgs.append($.mk('li').attr('data-id', cg.id).text(cg.label));
 						});
 
 						$CGReorderForm.append(
-							$.mk('div').attr('class','cgs').append('<p class="align-center">Drag to re-arrange</p>',$cgs)
+							$.mk('div').attr('class','cgs').append(
+								'<p class="align-center">Drag to re-arrange</p>',
+								$cgs
+							)
 						);
 
 						// jshint -W031

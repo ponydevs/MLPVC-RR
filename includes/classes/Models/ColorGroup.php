@@ -22,7 +22,7 @@ class ColorGroup extends OrderedModel {
 	];
 
 	public static $has_many = [
-		['colors', 'foreign_key' => 'group_id'],
+		['colors', 'foreign_key' => 'group_id', 'order' => '"order" asc'],
 	];
 
 	/** @inheritdoc */

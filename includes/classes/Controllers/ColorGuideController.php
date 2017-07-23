@@ -928,10 +928,11 @@ class ColorGuideController extends Controller {
 			case 'setcgs':
 				$order = (new Input('cgs','int[]', [
 					Input::CUSTOM_ERROR_MESSAGES => [
-						Input::ERROR_MISSING => 'Color group order data missing'
+						Input::ERROR_MISSING => 'Color group order data missing',
+						Input::ERROR_INVALID => 'Color group order data (@value) is invalid',
 					]
 				]))->out();
-				$oldCGs = $this->_appearance->color_groups;
+				$oldCGs = DB::$instance->where('appearance_id', $this->_appearance->id)->get('color_groups');
 				$possibleIDs = [];
 				foreach ($oldCGs as $cg)
 					$possibleIDs[$cg->id] = true;
@@ -942,7 +943,7 @@ class ColorGuideController extends Controller {
 					DB::$instance->where('id', $GroupID)->update('color_groups', ['order' => $i]);
 				}
 				Table::clear_cache();
-				$newCGs = $this->_appearance->color_groups;
+				$newCGs = DB::$instance->where('appearance_id', $this->_appearance->id)->get('color_groups');
 
 				CGUtils::clearRenderedImages($this->_appearance->id, [CGUtils::CLEAR_PALETTE, CGUtils::CLEAR_PREVIEW]);
 
@@ -1708,7 +1709,7 @@ HTML;
 		$outputNames = $this->_appearancePage;
 
 		if ($adding) $response = ['cgs' => Appearances::getColorsHTML($this->_appearance, NOWRAP, $colon, $outputNames)];
-		else $response = ['cg' => $Group->getHTML(null, NOWRAP, $colon, $outputNames)];
+		else $response = ['cg' => $Group->getHTML([ $Group->id => $newcolors ], NOWRAP, $colon, $outputNames)];
 
 		if ($major){
 			Logs::logAction('major_changes', [

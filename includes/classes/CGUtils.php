@@ -911,19 +911,17 @@ GPL;
 	}
 
 	/**
-	 * @param \App\Models\ColorGroup[] $cgs
+	 * @param ColorGroup[] $cgs
 	 *
 	 * @return string
 	 */
 	public static function stringifyColorGroups($cgs): string{
-		if (empty($cgs)){
+		if (empty($cgs))
 			return '';
-		}
 
 		$return = [];
-		foreach ($cgs as $i => $c){
-			$return[] = $c['label'];
-		}
+		foreach ($cgs as $i => $c)
+			$return[] = $c->label;
 
 		return implode("\n", $return);
 	}
