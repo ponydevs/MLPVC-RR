@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "9c06eaadbe8d2ac27cfb4a8aa0c9e5bf",
+    "content-hash": "aff7548fd21cca72597e1251b620a160",
     "packages": [
         {
             "name": "altorouter/altorouter",
@@ -1233,16 +1233,16 @@
         },
         {
             "name": "seinopsys/postgresql-database-class",
-            "version": "v2.0.3",
+            "version": "v2.0.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/SeinopSys/PHP-PostgreSQL-Database-Class.git",
-                "reference": "a8aec99b8b5085f9ebbf095ced50b2dcadac2989"
+                "reference": "1e980b02e3d4e1a385a090932658e58b1b8007a0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/SeinopSys/PHP-PostgreSQL-Database-Class/zipball/a8aec99b8b5085f9ebbf095ced50b2dcadac2989",
-                "reference": "a8aec99b8b5085f9ebbf095ced50b2dcadac2989",
+                "url": "https://api.github.com/repos/SeinopSys/PHP-PostgreSQL-Database-Class/zipball/1e980b02e3d4e1a385a090932658e58b1b8007a0",
+                "reference": "1e980b02e3d4e1a385a090932658e58b1b8007a0",
                 "shasum": ""
             },
             "require": {
@@ -1267,7 +1267,7 @@
                 }
             ],
             "description": "PHP wrapper class for PDO-based interaction with PostgreSQL databases, heavily based on joshcam/mysqli-database-class",
-            "time": "2017-07-17T02:22:28+00:00"
+            "time": "2017-07-23T18:19:15+00:00"
         },
         {
             "name": "symfony/options-resolver",
