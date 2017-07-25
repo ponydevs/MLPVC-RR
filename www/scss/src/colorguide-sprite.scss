@@ -51,6 +51,7 @@
 		svg {
 			max-height: 600px;
 			max-width: 100%;
+			shape-rendering: crispEdges;
 
 			.highlight {
 				&.bright {
@@ -72,7 +73,12 @@
 	}
 
 	#input-cont {
-		&:before {
+		&:empty {
+			display: block;
+			@include loading-indicator(125px, 'gears');
+		}
+
+		&:not(:empty):before {
 			content: "Color Bindings";
 			display: block;
 			font-size: 28px;

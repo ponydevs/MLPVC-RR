@@ -126,18 +126,16 @@ $(function(){
 		}, 500);
 	});
 
-	class Navigation {
+	$.Navigation = {
 		visit(url){
 			window.location.href = url;
-		}
+		},
 		reload(displayDialog = false){
 			if (displayDialog)
 				$.Dialog.wait(false, 'Reloading page', true);
 			window.location.reload();
 		}
-	}
-
-	$.Navigation = new Navigation();
+	};
 	window.DocReady = {
 		push: (handler, flusher) => {
 			if (typeof flusher === 'function')
@@ -481,23 +479,28 @@ $(function(){
 
 					let nid = $el.attr('data-id'),
 						data = {read_action: $el.attr('data-value')},
+						title = $el.attr('data-action') || 'Mark notification as read',
 						send = function(){
-							$el.css('opacity', '.5').disable();
+							$el.siblings().addBack().css('opacity', '.5').disable();
 
 							$.post(`/notifications/mark-read/${nid}`,data,$.mkAjaxHandler(function(){
-								if (this.status)
-									return;
+								if (!this.status) return $.Dialog.fail(title, this.message);
 
-								$el.css('opacity', '').enable();
-								return $.Dialog.fail('Mark notification as read', this.message);
-							}));
+								if (this.message)
+									return $.Dialog.success(title, this.message, true);
+
+								$.Dialog.close();
+							})).always(function(){
+								$el.siblings().addBack().css('opacity', '').enable();
+							});
 						};
 
-					if (data.read_action)
+					if (data.read_action && $el.hasAttr('data-confirm'))
 						$.Dialog.confirm('Actionable notification',`Please confirm your choice: <strong class="color-${$el.attr('class').replace(/^.*variant-(\w+)\b.*$/,'$1')}">${$el.attr('title')}</strong>`,['Confirm','Cancel'], sure => {
 							if (!sure) return;
 
-							$.Dialog.close();
+							$.Dialog.wait(title);
+
 							send();
 						});
 					else send();

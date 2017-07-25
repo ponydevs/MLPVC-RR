@@ -408,7 +408,6 @@
 		error: function(xhr){
 			if (typeof statusCodeHandlers[xhr.status] !== 'function')
 				$w.triggerHandler('ajaxerror',$.toArray(arguments));
-			$body.removeClass('loading');
 		},
 		beforeSend: function(_, settings){
 			lasturl = settings.url;

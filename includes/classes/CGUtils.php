@@ -149,8 +149,8 @@ class CGUtils {
 	 * @param string     $key
 	 * @param string     $path
 	 * @param array|null $allowedMimeTypes
-	 * @param array      $min
-	 * @param array      $max
+	 * @param int[]      $min
+	 * @param int[]      $max
 	 *
 	 * @return null
 	 */
@@ -166,7 +166,8 @@ class CGUtils {
 			return self::grabImage($path,$allowedMimeTypes,$min,$max);
 		$file = $_FILES[$key];
 		$tmp = $file['tmp_name'];
-		if (CoreUtils::length($tmp) < 1) Response::fail('File upload failed; Reason unknown');
+		if (CoreUtils::length($tmp) < 1)
+			Response::fail('File upload failed; Reason unknown');
 
 		list($width, $height) = Image::checkType($tmp, $allowedMimeTypes);
 		CoreUtils::createUploadFolder($path);
@@ -556,6 +557,13 @@ HTML;
 		return '#'.strtoupper(CoreUtils::pad(dechex($int), 6));
 	}
 
+	private static function _coordGenerator($w, $h){
+		for ($y = 0; $y < $h; $y++){
+			for ($x = 0; $x < $w; $x++)
+				yield [$x, $y];
+		}
+	}
+
 	public static function getSpriteImageMap($AppearanceID){
 		$PNGPath = SPRITE_PATH."$AppearanceID.png";
 		$MapPath = FSPATH."cg_render/$AppearanceID-linedata.json.gz";
@@ -563,21 +571,15 @@ HTML;
 			$Map = JSON::decode(gzuncompress(file_get_contents($MapPath)));
 		else {
 			if (!file_exists($PNGPath))
-				return null;
+				Response::fail("There's no sprite image for appearance #$AppearanceID");
 
 			list($PNGWidth, $PNGHeight) = getimagesize($PNGPath);
 			$PNG = imagecreatefrompng($PNGPath);
 			imagesavealpha($PNG, true);
 
 			$allcolors = [];
-			function coords($w, $h){
-				for ($y = 0; $y < $h; $y++){
-					for ($x = 0; $x < $w; $x++)
-						yield [$x, $y];
-				}
-			}
-			foreach (coords($PNGWidth,$PNGHeight) as $pos){
-				list($x, $y) = $pos;
+			foreach (self::_coordGenerator($PNGWidth,$PNGHeight) as $pos){
+				[$x, $y] = $pos;
 				$rgb = imagecolorat($PNG, $x, $y);
 				$colors = imagecolorsforindex($PNG, $rgb);
 				$hex = strtoupper('#'.CoreUtils::pad(dechex($colors['red'])).CoreUtils::pad(dechex($colors['green'])).CoreUtils::pad(dechex($colors['blue'])));
@@ -602,7 +604,7 @@ HTML;
 				}
 				foreach ($opacities as $opacity => $coords){
 					foreach ($coords as $pos){
-						list($x, $y) = $pos;
+						[$x, $y] = $pos;
 
 						if ($x-1 !== $lastx || $y !== $lasty){
 							if ($currLine !== null)
@@ -622,7 +624,7 @@ HTML;
 					}
 				}
 			}
-			if (isset($currLine))
+			if ($currLine !== null)
 				$lines[] = $currLine;
 
 			$Output = [

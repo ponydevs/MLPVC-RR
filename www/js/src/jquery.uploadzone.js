@@ -65,18 +65,17 @@
 				cache: false,
 				data: fd,
 				success: $.mkAjaxHandler(function(){
-					$helper.removeAttr('data-progress');
-					$input.val('');
 					if (this.status)
 						$input.trigger('set-image', [this.path]);
 					else {
 						$.Dialog.fail(title,this.message);
-						$this.trigger('uz-uploadfinish').removeClass('uploading');
+						$this.trigger('uz-uploadfinish');
 					}
 				}),
-				error: function(xhr){
-					if (xhr.status === 500 || xhr.status === 401) return;
-					$.Dialog.fail(title,'Upload failed (HTTP '+xhr.status+')');
+				complete: function(){
+					$this.removeClass('uploading');
+					$helper.removeAttr('data-progress');
+					$input.val('');
 				}
 			};
 			if (opt.helper) ajaxOpts.xhr = function () {

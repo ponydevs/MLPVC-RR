@@ -2456,6 +2456,20 @@ CREATE INDEX log_initiator ON log USING btree (initiator);
 
 
 --
+-- Name: notifications_recipient_id; Type: INDEX; Schema: public; Owner: mlpvc-rr
+--
+
+CREATE INDEX notifications_recipient_id ON notifications USING btree (recipient_id);
+
+
+--
+-- Name: notifications_type; Type: INDEX; Schema: public; Owner: mlpvc-rr
+--
+
+CREATE INDEX notifications_type ON notifications USING btree (type);
+
+
+--
 -- Name: requests_requested_by; Type: INDEX; Schema: public; Owner: mlpvc-rr
 --
 

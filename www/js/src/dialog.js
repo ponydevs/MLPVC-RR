@@ -133,6 +133,8 @@
 				this.$dialogHeader = $.mk('div','dialogHeader');
 				if (typeof params.title === 'string')
 					this.$dialogHeader.text(params.title);
+				else if (params.title === false)
+					this.$dialogHeader.text(defaultTitles[params.type]);
 				this.$dialogContent = $.mk('div','dialogContent');
 				this.$dialogBox = $.mk('div','dialogBox').attr({role:'dialog','aria-labelledby':'dialogHeader'});
 				this.$dialogScroll = $.mk('div','dialogScroll');

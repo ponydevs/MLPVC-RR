@@ -2,12 +2,14 @@
 
 namespace App\Controllers;
 
+use App\Appearances;
 use App\Auth;
 use App\CSRFProtection;
 use App\DB;
 use App\Input;
 use App\JSON;
 use App\Logs;
+use App\Models\Appearance;
 use App\Models\Notification;
 use App\Notifications;
 use App\Posts;
@@ -99,6 +101,21 @@ class NotificationsController extends Controller {
 						]);
 					}
 
+					Response::done();
+				break;
+				case 'sprite-colors':
+					$Appearance = Appearance::find($data['appearance_id']);
+					if (empty($Appearance)){
+						Appearances::clearSpriteColorIssueNotifications($data['appearance_id'], 'appdel', $Notif->recipient_id);
+						Response::fail("Appearance #{$data['appearance_id']} doesn’t exist or has been deleted");
+					}
+
+					if ($read_action === 'recheck' && $Appearance->spriteHasColorIssues())
+						Response::fail("The <a href='/cg/sprite/{$Appearance->id}'>sprite</a> still has color issues");
+
+					Appearances::clearSpriteColorIssueNotifications($Appearance->id, $read_action, $Notif->recipient_id);
+					if ($read_action === 'deny')
+						Response::success('The notification has been cleared, but it will reappear if the sprite image or the colors are updated.');
 					Response::done();
 				break;
 				default:

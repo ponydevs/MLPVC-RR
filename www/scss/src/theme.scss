@@ -621,6 +621,14 @@ header, #sidebar .mobile-nav {
 							color: $NRed;
 							background: $NRedBG;
 						}
+						&.variant-orange {
+							color: $NOrange;
+							background: $NOrangeBG;
+						}
+						&.variant-lavander {
+							color: $NLavander;
+							background: $NLavanderBG;
+						}
 					}
 				}
 			}

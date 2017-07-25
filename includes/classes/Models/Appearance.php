@@ -268,4 +268,74 @@ class Appearance extends NSModel implements LinkableInterface {
 			['id' => $this->id],
 		]]);
 	}
+
+	public function getSpriteRelevantColors():array {
+		$Colors = [];
+		foreach ([0, $this->id] as $AppearanceID){
+			$ColorGroups = ColorGroup::find_all_by_appearance_id($AppearanceID);
+			$SortedColorGroups = [];
+			foreach ($ColorGroups as $cg)
+				$SortedColorGroups[$cg->id] = $cg;
+
+			$AllColors = CGUtils::getColorsForEach($ColorGroups);
+			foreach ($AllColors as $cg){
+				/** @var $cg Color[] */
+				foreach ($cg as $c)
+					$Colors[] = [
+						'hex' => $c->hex,
+						'label' => $SortedColorGroups[$c->group_id]->label.' | '.$c->label,
+						'mandatory' => $AppearanceID !== 0,
+					];
+			}
+		}
+		if ($this->owner_id === null)
+			$Colors = array_merge($Colors,
+				[
+					[
+						'hex' => '#D8D8D8',
+						'label' => 'Mannequin | Outline',
+						'mandatory' => false,
+					],
+					[
+		                'hex' => '#E6E6E6',
+		                'label' => 'Mannequin | Fill',
+						'mandatory' => false,
+					],
+					[
+		                'hex' => '#BFBFBF',
+		                'label' => 'Mannequin | Shadow Outline',
+						'mandatory' => false,
+					],
+					[
+		                'hex' => '#CCCCCC',
+		                'label' => 'Mannequin | Shdow Fill',
+						'mandatory' => false,
+					]
+				]
+			);
+
+		return [ $Colors, $ColorGroups, $AllColors ];
+	}
+
+	public function spriteHasColorIssues():bool {
+		/** @var $SpriteColors int[] */
+		$SpriteColors = array_flip(CGUtils::getSpriteImageMap($this->id)['colors']);
+
+		foreach ($this->getSpriteRelevantColors()[0] as $c){
+			if ($c['mandatory'] && !isset($SpriteColors[$c['hex']]))
+				return true;
+		}
+
+		return false;
+	}
+
+	public function checkSpriteColors(){
+		$checkWho = $this->owner_id ?? Appearances::SPRITE_NAG_USERID;
+		$hasColorIssues = $this->spriteHasColorIssues();
+		$oldNotifs = Appearances::getSpriteColorIssueNotifications($this->id, $checkWho);
+		if ($hasColorIssues && empty($oldNotifs))
+			Notification::send($checkWho,'sprite-colors',['appearance_id' => $this->id]);
+		else if (!$hasColorIssues && !empty($oldNotifs))
+			Appearances::clearSpriteColorIssueNotifications($oldNotifs);
+	}
 }

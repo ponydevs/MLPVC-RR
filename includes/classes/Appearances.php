@@ -8,6 +8,7 @@ use App\Models\ColorGroup;
 use App\Models\Episode;
 
 use App\Models\Logs\MajorChange;
+use App\Models\Notification;
 use App\Models\Tag;
 use Elasticsearch\Common\Exceptions\Missing404Exception as ElasticMissing404Exception;
 use Elasticsearch\Common\Exceptions\NoNodesAvailableException as ElasticNoNodesAvailableException;
@@ -564,5 +565,40 @@ HTML;
 				'upsert' => $params['body'],
 			];
 		return $params;
+	}
+
+	const SPRITE_NAG_USERID = '06af57df-8755-a533-8711-c66f0875209a';
+
+	/**
+	 * @param int    $appearance_id
+	 * @param string $nag_id        ID of user to nag
+	 *
+	 * @return Notification[]
+	 */
+	public static function getSpriteColorIssueNotifications(int $appearance_id, ?string $nag_id = self::SPRITE_NAG_USERID){
+		if ($nag_id !== null)
+			DB::$instance->where('recipient_id', $nag_id);
+		return DB::$instance
+			->where('type','sprite-colors')
+			->where("data->>'appearance_id'",(string)$appearance_id)
+			->where('read_at',null)
+			->orderBy('sent_at','DESC')
+			->get(Notification::$table_name);
+	}
+
+	/**
+	 * @param int|Notification[] $appearance_id
+	 * @param string             $action        What to set as the notification clearing action
+	 * @param string             $nag_id        ID of user to nag
+	 */
+	public static function clearSpriteColorIssueNotifications($appearance_id, string $action = 'clear', ?string $nag_id = self::SPRITE_NAG_USERID){
+		if (is_int($appearance_id))
+			$notifs = self::getSpriteColorIssueNotifications($appearance_id, $nag_id);
+		else $notifs = $appearance_id;
+		if (empty($notifs))
+			return;
+
+		foreach ($notifs as $n)
+			Notifications::safeMarkRead($n->id, $action);
 	}
 }

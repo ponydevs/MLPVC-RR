@@ -79,7 +79,7 @@ $(function(){
 		return at === bt ? 0 : (at < bt ? -1 : 1);
 	}).prependTo($Table);
 	$.each(AppearanceColors, function(_, color){
-		if (color.detected || /^(Mannequin|Teeth & Mouth|Tears)\s\|/.test(color.label))
+		if (color.detected || /^(Mannequin|Teeth & Mouth|Tears|Eye)\s\|/.test(color.label))
 			return;
 		let matchingColors = mapColor('hex', color.hex), labels = [];
 		$.each(matchingColors, (_, color) => {

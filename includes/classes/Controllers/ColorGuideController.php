@@ -126,54 +126,18 @@ class ColorGuideController extends Controller {
 			CoreUtils::notFound();
 
 		$this->_getAppearance($params);
-		if (($this->_appearance->owner_id ?? null) != Auth::$user->id && Permission::insufficient('staff'))
+		if ($this->_appearance->owner_id != Auth::$user->id && Permission::insufficient('staff'))
 			CoreUtils::notFound();
+
+		if ($this->_appearance->owner_id !== null)
+			$params['name'] = $this->_appearance->owner->name;
+		$this->_initPersonal($params, false);
 
 		$Map = CGUtils::getSpriteImageMap($this->_appearance->id);
 		if (empty($Map))
 			CoreUtils::notFound();
 
-		$Colors = [];
-		$loop = $this->_appearance->owner_id !== null ? [$this->_appearance->id] : [0, $this->_appearance->id];
-		foreach ($loop as $AppearanceID){
-			$ColorGroups = ColorGroup::find_all_by_appearance_id($AppearanceID);
-			$SortedColorGroups = [];
-			foreach ($ColorGroups as $cg)
-				$SortedColorGroups[$cg->id] = $cg;
-
-			$AllColors = CGUtils::getColorsForEach($ColorGroups);
-			foreach ($AllColors as $cg){
-				/** @var $cg Color[] */
-				foreach ($cg as $c)
-					$Colors[] = [
-						'hex' => $c->hex,
-						'label' => $SortedColorGroups[$c->group_id]->label.' | '.$c->label,
-					];
-			}
-		}
-		if (!isset($this->_appearance->owner_id))
-			$Colors = array_merge($Colors,
-				[
-					[
-						'hex' => '#D8D8D8',
-						'label' => 'Mannequin | Outline',
-					],
-					[
-		                'hex' => '#E6E6E6',
-		                'label' => 'Mannequin | Fill',
-					],
-					[
-		                'hex' => '#BFBFBF',
-		                'label' => 'Mannequin | Shadow Outline',
-					],
-					[
-		                'hex' => '#CCCCCC',
-		                'label' => 'Mannequin | Shdow Fill',
-					]
-				]
-			);
-
-		$this->_initialize($params);
+		[$Colors,$ColorGroups,$AllColors] = $this->_appearance->getSpriteRelevantColors();
 
 		$SafeLabel = $this->_appearance->getSafeLabel();
 		CoreUtils::fixPath("{$this->_cgPath}/sprite/{$this->_appearance->id}-$SafeLabel");
@@ -189,6 +153,7 @@ class ColorGuideController extends Controller {
 				'Colors' => $Colors,
 				'AllColors' => $AllColors,
 				'Map' => $Map,
+				'Owner' => $this->_appearance->owner,
 			],
 		]);
 	}
@@ -966,6 +931,8 @@ class ColorGuideController extends Controller {
 					case 'setsprite':
 						CGUtils::processUploadedImage('sprite', $finalpath, ['image/png'], [300], [700, 300]);
 						CGUtils::clearRenderedImages($this->_appearance->id);
+
+						$this->_appearance->checkSpriteColors();
 					break;
 					case 'delsprite':
 						if (empty($this->_appearance->getSpriteURL())){
@@ -977,6 +944,7 @@ class ColorGuideController extends Controller {
 						if (!unlink($finalpath))
 							Response::fail('File could not be deleted');
 						CGUtils::clearRenderedImages($this->_appearance->id);
+						Appearances::clearSpriteColorIssueNotifications($this->_appearance->id, 'del', null);
 
 						if ($noResponse)
 							return;
@@ -1614,6 +1582,8 @@ HTML;
 					'order' => $Group->order,
 				]);
 
+				$this->_appearance->checkSpriteColors();
+
 				Response::success('Color group deleted successfully');
 			}
 		}
@@ -1705,6 +1675,9 @@ HTML;
 		if ($colorError)
 			Response::fail("There were some issues while saving the colors. Please <a class='send-feedback'>let us know</a> about this error, so we can look into why it might've happened.");
 
+		CGUtils::clearRenderedImages($Group->appearance_id, [CGUtils::CLEAR_PALETTE, CGUtils::CLEAR_PREVIEW]);
+		$Group->appearance->checkSpriteColors();
+
 		$colon = !$this->_appearancePage;
 		$outputNames = $this->_appearancePage;
 
@@ -1724,7 +1697,6 @@ HTML;
 			}
 			else $response['update'] = Appearances::getUpdatesHTML($Group->appearance_id);
 		}
-		CGUtils::clearRenderedImages($Group->appearance_id, [CGUtils::CLEAR_PALETTE, CGUtils::CLEAR_PREVIEW]);
 
 		if (isset($_POST['APPEARANCE_PAGE']))
 			$response['cm_img'] = "/cg/v/{$Group->appearance_id}.svg?t=".time();
@@ -1821,5 +1793,27 @@ HTML;
 		}
 
 		Response::done(['colors' => $colors]);
+	}
+
+	public function spriteColorCheckup(){
+		if (Permission::insufficient('staff'))
+			Response::fail();
+
+		ini_set('max_execution_time', '0');
+
+		$SpriteDir = new \DirectoryIterator(SPRITE_PATH);
+		foreach ($SpriteDir as $item){
+			if ($item->isDot())
+				continue;
+
+			$id = (int)preg_replace(new RegExp('\..+$'),'',$item->getFilename());
+			$Appearance = Appearance::find($id);
+			if (empty($Appearance))
+				continue;
+
+			$Appearance->checkSpriteColors();
+		}
+
+		Response::success('Checkup finished');
 	}
 }

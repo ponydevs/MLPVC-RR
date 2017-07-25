@@ -94,6 +94,7 @@ $router->map('POST', '/cg/export',                           'ColorGuideControll
 $router->map('POST', '/cg/appearance/[ad:action]/[i:id]',    'ColorGuideController#appearanceAction');
 $router->map('POST', '/cg/appearance/[make:action]',         'ColorGuideController#appearanceAction');
 $router->map('POST', '/cg/reindex',                          'ColorGuideController#reindex');
+$router->map('POST', '/cg/sprite-color-checkup',             'ColorGuideController#spriteColorCheckup');
 $router->map('POST', '/cg/tag/[ad:action]/[i:id]',           'ColorGuideController#tagAction');
 $router->map('POST', '/cg/tag/[make:action]',                'ColorGuideController#tagAction');
 $router->map('POST', '/cg/tags/recount-uses',                'ColorGuideController#recountTagUses');

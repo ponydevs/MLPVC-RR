@@ -1757,4 +1757,18 @@ $(function(){
 			}));
 		});
 	});
+
+	$('.cg-sprite-colors').on('click',function(){
+		$.Dialog.confirm($(this).text(),'Run a check on all sprites & look for missing colors?',function(sure){
+			if (!sure) return;
+
+			$.Dialog.wait(false,'Checking all sprite colors (this might take a while)');
+
+			$.post('/cg/sprite-color-checkup',$.mkAjaxHandler(function(){
+				if (!this.status) return $.Dialog.fail(false, this.message);
+
+				$.Dialog.success(false, this.message, true);
+			}));
+		});
+	});
 });

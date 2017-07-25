@@ -13,7 +13,7 @@ use App\CoreUtils;
 
 	<section class="checker">
 		<div id="svg-cont"></div>
-		<div id="input-cont"><h3>JavaScript is required to use the viewer</h3></div>
+		<div id="input-cont"></div>
 	</section>
 	<section class="color-list">
 		<ul id="colors" class="colors"><?php

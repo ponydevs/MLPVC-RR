@@ -26,9 +26,12 @@ use App\Tags;
 		<a class='btn link typcn typcn-pipette' href="/cg/picker">Color Picker</a>
 		<a class='btn link typcn typcn-tags' href="/cg/tags">Tags</a>
 		<a class='btn link typcn typcn-warning' href="/cg/changes">Major Changes</a>
+<?  if (Permission::sufficient('staff')){ ?>
+		<button class='blue typcn typcn-adjust-contrast cg-sprite-colors'>Sprite Color Checkup</button>
+<?  } ?>
 <?  if (Permission::sufficient('developer')){ ?>
-			<button class='blue typcn typcn-download cg-export'>Export</button>
-			<button class='blue typcn typcn-document cg-reindex'>Re-index</button>
+		<button class='blue typcn typcn-download cg-export'>Export</button>
+		<button class='blue typcn typcn-document cg-reindex'>Re-index</button>
 <?  } ?>
 	</p>
 <?  if (Permission::sufficient('staff')){ ?>

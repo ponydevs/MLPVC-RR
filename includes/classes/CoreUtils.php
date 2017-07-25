@@ -5,6 +5,7 @@ namespace App;
 use ActiveRecord\ConnectionManager;
 use ActiveRecord\SQLBuilder;
 use App\Controllers\Controller;
+use App\Models\Appearance;
 use App\Models\CachedDeviation;
 use App\Models\Episode;
 use App\Models\Event;

@@ -3,6 +3,7 @@
 namespace App;
 
 use ActiveRecord\RecordNotFound;
+use App\Models\Appearance;
 use App\Models\Notification;
 use App\Models\Post;
 use ElephantIO\Exception\ServerConnectionFailureException;
@@ -27,14 +28,14 @@ class Notifications {
 
 		switch ($only){
 			case self::UNREAD_ONLY:
-				\App\DB::$instance->where('read_at IS NULL');
+				DB::$instance->where('read_at IS NULL');
 			break;
 			case self::READ_ONLY:
-				\App\DB::$instance->where('read_at IS NOT NULL');
+				DB::$instance->where('read_at IS NOT NULL');
 			break;
 		}
 
-		return \App\DB::$instance->where('recipient_id', $UserID)->get('notifications');
+		return DB::$instance->where('recipient_id', $UserID)->get('notifications');
 	}
 
 	/**
@@ -111,6 +112,11 @@ class Notifications {
 						break;
 					}
 				break;
+				case 'sprite-colors':
+					$Appearance = Appearance::find($data['appearance_id']);
+					$suffix = CoreUtils::posess($Appearance->label, true);
+					$HTML .= self::_getNotifElem("{$Appearance->toAnchor()}$suffix <a href='/cg/sprite/{$Appearance->id}'>sprite</a> is missing some colors", $n);
+				break;
 				default:
 					$HTML .= "<li><code>Notification({$n->type})#{$n->id}</code> <span class='nobr'>&ndash; Missing handler</span></li>";
 			}
@@ -130,17 +136,20 @@ class Notifications {
 			$actions = "<span class='mark-read variant-green typcn typcn-tick' title='Mark read' data-id='{$n->id}'></span>";
 		else {
 			$actions = '';
-			foreach (Notification::$ACTIONABLE_NOTIF_OPTIONS[$n->type] as $value => $opt)
-				$actions .= "<span class='mark-read variant-{$opt['color']} typcn typcn-{$opt['icon']}' title='{$opt['label']}' data-id='{$n->id}' data-value='$value'></span>";
+			foreach (Notification::$ACTIONABLE_NOTIF_OPTIONS[$n->type] as $value => $opt){
+				$confirm = !isset($opt['confirm']) || $opt['confirm'] !== false ? 'data-confirm' :'';
+				$action = isset($opt['action']) ? 'data-action="'.CoreUtils::aposEncode($opt['action']).'"' : '';
+				$actions .= "<span class='mark-read variant-{$opt['color']} typcn typcn-{$opt['icon']}' title='{$opt['label']}' data-id='{$n->id}' data-value='$value' $confirm $action></span>";
+			}
 		}
 		return "<li>$html <span class='nobr'>&ndash; ".Time::tag(strtotime($n->sent_at))."$actions</span></li>";
 	}
 
-	public static function markRead($nid, $action = null){
+	public static function markRead(int $nid, ?string $action = null){
 		CoreUtils::socketEvent('mark-read', ['nid' => $nid, 'action' => $action]);
 	}
 
-	public static function safeMarkRead($NotifID, $action = null){
+	public static function safeMarkRead(int $NotifID, ?string $action = null){
 		try {
 			Notifications::markRead($NotifID, $action);
 		}

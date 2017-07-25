@@ -11,8 +11,6 @@
 	};
 	const LEVEL_FULL_RANGE = () => ({ low: 0, high: 255 });
 
-	// TODO Zoom tool that utilizes LMB/RMB/Scroll
-
 	const
 		Tools = {
 			hand: 0,
