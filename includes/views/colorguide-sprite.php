@@ -2,14 +2,14 @@
 use App\ColorGroups;
 use App\CoreUtils;
 /** @var $heading string */
-/** @var $Appearance array */
+/** @var $Appearance \App\Models\Appearance */
 /** @var $Colors array */
 /** @var $Map array */
 /** @var $AllColors array */
 /** @var $ColorGroups array */ ?>
 <div id="content">
 	<h1>Sprite Color Checker</h1>
-	<p><a href="/cg/v/<?=$Appearance['id']?>"><span class="typcn typcn-arrow-back"></span> Back to appearance page</a></p>
+	<p><a href="/cg/v/<?=$Appearance->id?>"><span class="typcn typcn-arrow-back"></span> Back to appearance page</a></p>
 
 	<section class="checker">
 		<div id="svg-cont"></div>
@@ -24,7 +24,7 @@ use App\CoreUtils;
 </div>
 <?php
 	echo CoreUtils::exportVars([
-		'AppearanceID' => $Appearance['id'],
+		'AppearanceID' => $Appearance->id,
 		'AppearanceColors' => $Colors,
 		'SpriteColorList' => $Map['colors'],
 	]);

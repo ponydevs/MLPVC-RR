@@ -126,7 +126,7 @@ class ColorGuideController extends Controller {
 			CoreUtils::notFound();
 
 		$this->_getAppearance($params);
-		if (Permission::insufficient('staff') && ($this->_appearance->owner_id ?? null) != Auth::$user->id)
+		if (($this->_appearance->owner_id ?? null) != Auth::$user->id && Permission::insufficient('staff'))
 			CoreUtils::notFound();
 
 		$Map = CGUtils::getSpriteImageMap($this->_appearance->id);
@@ -134,7 +134,7 @@ class ColorGuideController extends Controller {
 			CoreUtils::notFound();
 
 		$Colors = [];
-		$loop = isset($this->_appearance->owner_id) ? [$this->_appearance->id] : [0, $this->_appearance->id];
+		$loop = $this->_appearance->owner_id !== null ? [$this->_appearance->id] : [0, $this->_appearance->id];
 		foreach ($loop as $AppearanceID){
 			$ColorGroups = ColorGroup::find_all_by_appearance_id($AppearanceID);
 			$SortedColorGroups = [];
@@ -147,7 +147,7 @@ class ColorGuideController extends Controller {
 				foreach ($cg as $c)
 					$Colors[] = [
 						'hex' => $c->hex,
-						'label' => $SortedColorGroups[$c->group_id]['label'].' | '.$c->label,
+						'label' => $SortedColorGroups[$c->group_id]->label.' | '.$c->label,
 					];
 			}
 		}
