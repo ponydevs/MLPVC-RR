@@ -318,6 +318,9 @@ class Appearance extends NSModel implements LinkableInterface {
 	}
 
 	public function spriteHasColorIssues():bool {
+		if (empty($this->getSpriteURL()))
+			return false;
+
 		/** @var $SpriteColors int[] */
 		$SpriteColors = array_flip(CGUtils::getSpriteImageMap($this->id)['colors']);
 
