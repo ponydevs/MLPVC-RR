@@ -1,7 +1,6 @@
 <?php
 
 namespace App\Controllers;
-use ActiveRecord\RecordNotFound;
 use App\Auth;
 use App\CoreUtils;
 use App\CSRFProtection;
