@@ -33,11 +33,9 @@ class EventController extends Controller {
 	/** @var Event */
 	private $_event;
 	private function _getEvent($id){
-		try {
-			$Event = Event::find($id);
-		}
-		catch (RecordNotFound $e){
-			if (POST_REQUEST)
+		$Event = Event::find($id);
+		if (empty($Event)){
+			if (CoreUtils::isJSONExpected())
 				Response::fail('Event not found');
 			CoreUtils::notFound();
 		}

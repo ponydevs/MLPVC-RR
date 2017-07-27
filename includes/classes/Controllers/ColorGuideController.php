@@ -1572,6 +1572,8 @@ HTML;
 			}
 
 			if ($action === 'del'){
+				$Appearance = $Group->appearance;
+
 				$Group->delete();
 
 				Logs::logAction('cgs', [
@@ -1582,7 +1584,7 @@ HTML;
 					'order' => $Group->order,
 				]);
 
-				$this->_appearance->checkSpriteColors();
+				$Appearance->checkSpriteColors();
 
 				Response::success('Color group deleted successfully');
 			}
