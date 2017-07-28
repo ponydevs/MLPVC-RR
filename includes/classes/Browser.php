@@ -42,6 +42,7 @@ namespace App;
  */
 class Browser {
 	private $_agent = '';
+	private $_platform = '';
 	private $_browserName = '';
 	private $_version = '';
 	private $_isAol = false;
@@ -98,17 +99,14 @@ class Browser {
 	const PLATFORM_WINDOWS_CE = 'Windows CE';
 	const PLATFORM_OSX = 'Mac OSX';
 	const PLATFORM_LINUX = 'Linux';
-	const PLATFORM_OS2 = 'OS/2';
-	const PLATFORM_BEOS = 'BeOS';
 	const PLATFORM_IOS = 'iOS';
 	const PLATFORM_BLACKBERRY = 'BlackBerry';
 	const PLATFORM_NOKIA = 'Nokia';
 	const PLATFORM_FREEBSD = 'FreeBSD';
 	const PLATFORM_OPENBSD = 'OpenBSD';
 	const PLATFORM_NETBSD = 'NetBSD';
-	const PLATFORM_SUNOS = 'SunOS';
-	const PLATFORM_OPENSOLARIS = 'OpenSolaris';
 	const PLATFORM_ANDROID = 'Android';
+	const PLATFORM_CHROMEOS = 'Chrome OS';
 
 	const OPERATING_SYSTEM_UNKNOWN = 'unknown';
 
@@ -123,7 +121,7 @@ class Browser {
 	 * Reset all properties
 	 */
 	public function reset(){
-		$this->_agent = isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '';
+		$this->_agent = $_SERVER['HTTP_USER_AGENT'] ?? '';
 		$this->_browserName = self::BROWSER_UNKNOWN;
 		$this->_version = self::VERSION_UNKNOWN;
 		$this->_platform = self::PLATFORM_UNKNOWN;
@@ -535,7 +533,7 @@ class Browser {
 		if (stripos($this->_agent, 'microsoft internet explorer') !== false){
 			$this->setBrowser(self::BROWSER_IE);
 			$this->setVersion('1.0');
-			$aresult = stristr($this->_agent, '/');
+			$aresult = strstr($this->_agent, '/');
 			if (preg_match('/308|425|426|474|0b1/i', $aresult)){
 				$this->setVersion('1.5');
 			}
@@ -638,7 +636,7 @@ class Browser {
 			}
 			else {
 				$aversion = explode(' ', stristr($resultant, 'opera'));
-				$this->setVersion(isset($aversion[1]) ? $aversion[1] : '');
+				$this->setVersion($aversion[1] ?? '');
 			}
 			if (stripos($this->_agent, 'Opera Mobi') !== false){
 				$this->setMobile();
@@ -811,7 +809,7 @@ class Browser {
 	protected function checkBrowserOmniWeb(){
 		if (stripos($this->_agent, 'omniweb') !== false){
 			$aresult = explode('/', stristr($this->_agent, 'omniweb'));
-			$aversion = explode(' ', isset($aresult[1]) ? $aresult[1] : '');
+			$aversion = explode(' ', $aresult[1] ?? '');
 			$this->setVersion($aversion[0]);
 			$this->setBrowser(self::BROWSER_OMNIWEB);
 
@@ -1050,7 +1048,7 @@ class Browser {
 	protected function checkBrowserLynx(){
 		if (stripos($this->_agent, 'lynx') !== false){
 			$aresult = explode('/', stristr($this->_agent, 'Lynx'));
-			$aversion = explode(' ', (isset($aresult[1]) ? $aresult[1] : ''));
+			$aversion = explode(' ', $aresult[1] ?? '');
 			$this->setVersion($aversion[0]);
 			$this->setBrowser(self::BROWSER_LYNX);
 
@@ -1299,17 +1297,8 @@ class Browser {
 		else if (stripos($this->_agent, 'NetBSD') !== false){
 			$this->_platform = self::PLATFORM_NETBSD;
 		}
-		else if (stripos($this->_agent, 'OpenSolaris') !== false){
-			$this->_platform = self::PLATFORM_OPENSOLARIS;
-		}
-		else if (stripos($this->_agent, 'SunOS') !== false){
-			$this->_platform = self::PLATFORM_SUNOS;
-		}
-		else if (stripos($this->_agent, 'OS\/2') !== false){
-			$this->_platform = self::PLATFORM_OS2;
-		}
-		else if (stripos($this->_agent, 'BeOS') !== false){
-			$this->_platform = self::PLATFORM_BEOS;
+		else if (stripos($this->_agent, 'CrOS') !== false){
+			$this->_platform = self::PLATFORM_CHROMEOS;
 		}
 		else if (stripos($this->_agent, 'win') !== false){
 			$this->_platform = self::PLATFORM_WINDOWS;

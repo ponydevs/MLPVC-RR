@@ -122,12 +122,12 @@ class Appearances {
 	/**
 	 * Return the markup of a set of tags belonging to a specific pony
 	 *
-	 * @param int         $PonyID
-	 * @param bool        $wrap
+	 * @param int  $PonyID
+	 * @param bool $wrap
 	 *
 	 * @return string
 	 */
-	public static function getTagsHTML($PonyID, $wrap = WRAP){
+	public static function getTagsHTML(int $PonyID, bool $wrap = WRAP):string {
 		$Tags = Tags::getFor($PonyID, null, Permission::sufficient('staff'));
 
 		$HTML = '';
@@ -361,7 +361,7 @@ class Appearances {
 			$List[] = (
 				empty($Ep)
 				? self::expandEpisodeTagName($name)
-				: "<a href='{$Ep->toURL()}'>".$Ep->formatTitle().'</a>'
+				: $Ep->toAnchor($Ep->formatTitle())
 			);
 		}
 		$List = implode(', ',$List);

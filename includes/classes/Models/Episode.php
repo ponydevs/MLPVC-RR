@@ -196,8 +196,10 @@ class Episode extends NSModel implements LinkableInterface {
 		return "/movie/{$this->episode}".(!empty($this->title)?'-'.$this->movieSafeTitle():'');
 	}
 
-	public function toAnchor():string {
-		return "<a href='{$this->toURL()}'>{$this->getID()}</a>";
+	public function toAnchor(?string $text = null):string {
+		if (empty($text))
+			$text = $this->getID();
+		return "<a href='{$this->toURL()}'>$text</a>";
 	}
 
 	public function updateScore(){
