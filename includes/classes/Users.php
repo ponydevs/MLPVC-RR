@@ -106,7 +106,7 @@ class Users {
 				Logs::logAction('da_namechange', [
 					'old' => $name,
 					'new' => $insert['name'],
-					'id' => $ID,
+					'user_id' => $ID,
 				], Logs::FORCE_INITIATOR_WEBSERVER);
 			}
 		}
