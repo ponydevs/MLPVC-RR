@@ -243,7 +243,7 @@ class Appearances {
 	public static function getSortReorder($EQG){
 		if ($EQG)
 			return;
-		self::reorder(self::sort(self::get($EQG,null,null,'id'), SIMPLE_ARRAY));
+		self::reorder(self::sort(self::get($EQG,null,null,'id'), $EQG, SIMPLE_ARRAY));
 	}
 
 	/**
