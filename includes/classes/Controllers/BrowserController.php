@@ -23,7 +23,7 @@ class BrowserController extends Controller {
 			error_log('Could not find platform based on the following UA string: '.preg_replace(new RegExp(INVERSE_PRINTABLE_ASCII_PATTERN), '', $AgentString));
 
 		if ($Session !== null){
-			$Session->platform = $browser['browser_name'];
+			$Session->platform = $browser['platform'];
 			$Session->browser_name = $browser['browser_name'];
 			$Session->browser_ver = $browser['browser_ver'];
 			$Session->save();
