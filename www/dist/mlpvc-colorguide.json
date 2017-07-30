@@ -272,7 +272,7 @@
 						{
 							"order": 2,
 							"label": "Fill 2",
-							"hex": "#E3CA1B"
+							"hex": "#FFD700"
 						}
 					]
 				},
@@ -461,9 +461,162 @@
 			],
 			"RelatedAppearances": []
 		},
+		"2": {
+			"id": 2,
+			"order": 2,
+			"label": "Applejack",
+			"notes": "Far legs use darker colors.",
+			"ishuman": false,
+			"added": "2015-09-21T18:46:54Z",
+			"private": false,
+			"CutieMark": [
+				{
+					"link": "http://fav.me/d64bqyo",
+					"facing": "left"
+				}
+			],
+			"ColorGroups": {
+				"54": {
+					"id": 54,
+					"label": "Coat",
+					"order": 1,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#EF6F2F"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#FABA62"
+						},
+						{
+							"order": 2,
+							"label": "Shadow Outline",
+							"hex": "#E55221"
+						},
+						{
+							"order": 3,
+							"label": "Shadow Fill",
+							"hex": "#EF9C54"
+						},
+						{
+							"order": 4,
+							"label": "Freckles",
+							"hex": "#FFFFFF"
+						}
+					]
+				},
+				"55": {
+					"id": 55,
+					"label": "Mane & Tail",
+					"order": 2,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#E7D462"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#FAF5AB"
+						}
+					]
+				},
+				"56": {
+					"id": 56,
+					"label": "Iris",
+					"order": 3,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Gradient Top",
+							"hex": "#287916"
+						},
+						{
+							"order": 1,
+							"label": "Gradient Bottom",
+							"hex": "#61BA4E"
+						},
+						{
+							"order": 2,
+							"label": "Highlight Top",
+							"hex": "#78D863"
+						},
+						{
+							"order": 3,
+							"label": "Highlight Bottom",
+							"hex": "#CAECC4"
+						}
+					]
+				},
+				"57": {
+					"id": 57,
+					"label": "Cutie Mark",
+					"order": 4,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Apples",
+							"hex": "#EC3F41"
+						},
+						{
+							"order": 1,
+							"label": "Leaves",
+							"hex": "#6BB944"
+						}
+					]
+				},
+				"58": {
+					"id": 58,
+					"label": "Hat",
+					"order": 5,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#B2884D"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#CA9A56"
+						}
+					]
+				},
+				"1499": {
+					"id": 1499,
+					"label": "Hair Tie",
+					"order": 6,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Fill",
+							"hex": "#EC3F41"
+						}
+					]
+				}
+			},
+			"TagIDs": [
+				2,
+				6,
+				12,
+				22,
+				258,
+				272,
+				353,
+				522
+			],
+			"RelatedAppearances": [
+				116,
+				202
+			]
+		},
 		"220": {
 			"id": 220,
-			"order": 1,
+			"order": 2,
 			"label": "Sunset Shimmer (FG, LoE)",
 			"notes": "Sunset Shimmer's appearance from Friendship Games, onward. Note the lighter hair colors.",
 			"ishuman": true,
@@ -659,222 +812,121 @@
 			],
 			"RelatedAppearances": []
 		},
-		"221": {
-			"id": 221,
-			"order": 1,
-			"label": "Twilight Sparkle (Pony)",
-			"notes": "The version of Twilight that passed through the mirror.",
-			"ishuman": true,
-			"added": "2016-11-10T05:26:41Z",
+		"3": {
+			"id": 3,
+			"order": 3,
+			"label": "Fluttershy",
+			"notes": "",
+			"ishuman": false,
+			"added": "2015-09-21T18:54:47Z",
 			"private": false,
+			"CutieMark": [
+				{
+					"link": "http://fav.me/d64bqyo",
+					"facing": "right"
+				}
+			],
 			"ColorGroups": {
-				"1166": {
-					"id": 1166,
-					"label": "Skin",
+				"63": {
+					"id": 63,
+					"label": "Coat",
+					"order": 1,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#E9D461"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#FAF5AB"
+						},
+						{
+							"order": 2,
+							"label": "Shadow Fill",
+							"hex": "#F3E488"
+						}
+					]
+				},
+				"64": {
+					"id": 64,
+					"label": "Mane & Tail",
 					"order": 2,
 					"Colors": [
 						{
 							"order": 0,
 							"label": "Outline",
-							"hex": "#A76BBF"
+							"hex": "#E581B1"
 						},
 						{
 							"order": 1,
 							"label": "Fill",
-							"hex": "#EFC6FB"
+							"hex": "#F3B5CF"
 						}
 					]
 				},
-				"1167": {
-					"id": 1167,
-					"label": "Hair",
+				"65": {
+					"id": 65,
+					"label": "Iris",
 					"order": 3,
 					"Colors": [
 						{
 							"order": 0,
-							"label": "Outline",
-							"hex": "#15214A"
+							"label": "Gradient Top",
+							"hex": "#02534D"
 						},
 						{
 							"order": 1,
-							"label": "Fill",
-							"hex": "#273874"
-						},
-						{
-							"order": 2,
-							"label": "Stripe 1",
-							"hex": "#ED438C"
-						},
-						{
-							"order": 3,
-							"label": "Stripe 2",
-							"hex": "#662D8A"
-						}
-					]
-				},
-				"1168": {
-					"id": 1168,
-					"label": "Eyes",
-					"order": 4,
-					"Colors": [
-						{
-							"order": 0,
-							"label": "Iris Gradient Top",
-							"hex": "#210A3F"
-						},
-						{
-							"order": 1,
-							"label": "Iris Gradient Bottom",
-							"hex": "#672F8B"
+							"label": "Gradient Bottom",
+							"hex": "#02ACA4"
 						},
 						{
 							"order": 2,
 							"label": "Highlight Top",
-							"hex": "#8E5CA5"
+							"hex": "#3CBEB7"
 						},
 						{
 							"order": 3,
 							"label": "Highlight Bottom",
-							"hex": "#CDB3D7"
-						},
-						{
-							"order": 4,
-							"label": "Eyebrows",
-							"hex": "#662D8B"
+							"hex": "#84D2D4"
 						}
 					]
 				},
-				"1169": {
-					"id": 1169,
-					"label": "Blouse",
-					"order": 5,
+				"66": {
+					"id": 66,
+					"label": "Cutie Mark",
+					"order": 4,
 					"Colors": [
 						{
 							"order": 0,
-							"label": "Outline",
-							"hex": "#609FF0"
+							"label": "Wings",
+							"hex": "#F3B5CF"
 						},
 						{
 							"order": 1,
-							"label": "Fill",
-							"hex": "#A7D8FF"
-						},
-						{
-							"order": 2,
-							"label": "Buttons",
-							"hex": "#3A3B72"
-						},
-						{
-							"order": 3,
-							"label": "Bow Outline",
-							"hex": "#AA1D60"
-						},
-						{
-							"order": 4,
-							"label": "Bow Fill",
-							"hex": "#ED448D"
-						}
-					]
-				},
-				"1170": {
-					"id": 1170,
-					"label": "Skirt",
-					"order": 6,
-					"Colors": [
-						{
-							"order": 0,
-							"label": "Outline",
-							"hex": "#411C54"
-						},
-						{
-							"order": 1,
-							"label": "Main Fill",
-							"hex": "#662D8A"
-						},
-						{
-							"order": 2,
-							"label": "Inner Pleat Fill",
-							"hex": "#7B36A8"
-						},
-						{
-							"order": 3,
-							"label": "Cutie Mark Main Star",
-							"hex": "#ED448D"
-						},
-						{
-							"order": 4,
-							"label": "Cutie Mark BG Star",
-							"hex": "#F8C1E2"
-						},
-						{
-							"order": 5,
-							"label": "Cutie Mark Smaller Stars",
-							"hex": "#FFFFFF"
-						}
-					]
-				},
-				"1171": {
-					"id": 1171,
-					"label": "Boots",
-					"order": 7,
-					"Colors": [
-						{
-							"order": 0,
-							"label": "Sock Outline",
-							"hex": "#AA1D60"
-						},
-						{
-							"order": 1,
-							"label": "Sock Fill",
-							"hex": "#ED448D"
-						},
-						{
-							"order": 2,
-							"label": "Boot Outline",
-							"hex": "#411C55"
-						},
-						{
-							"order": 3,
-							"label": "Boot Fill",
-							"hex": "#662D8A"
-						},
-						{
-							"order": 4,
-							"label": "Argyle Stripes",
-							"hex": "#FFFFFF"
-						},
-						{
-							"order": 5,
-							"label": "Argyle Fill",
-							"hex": "#B480D5"
-						},
-						{
-							"order": 6,
-							"label": "Sole Bottom",
-							"hex": "#000000"
-						},
-						{
-							"order": 7,
-							"label": "Sole Top",
-							"hex": "#1F1F1F"
+							"label": "Body",
+							"hex": "#69C8C3"
 						}
 					]
 				}
 			},
 			"TagIDs": [
-				4,
+				3,
+				6,
 				12,
-				14,
-				140,
-				141,
-				353,
-				439
+				24,
+				307,
+				353
 			],
-			"RelatedAppearances": []
+			"RelatedAppearances": [
+				64,
+				105
+			]
 		},
 		"222": {
 			"id": 222,
-			"order": 1,
+			"order": 3,
 			"label": "Twilight Sparkle (Human)",
 			"notes": "Twilight Sparkle from the human world",
 			"ishuman": true,
@@ -1187,9 +1239,128 @@
 			],
 			"RelatedAppearances": []
 		},
+		"4": {
+			"id": 4,
+			"order": 4,
+			"label": "Pinkie Pie",
+			"notes": "Far legs use darker colors.",
+			"ishuman": false,
+			"added": "2015-09-21T18:52:26Z",
+			"private": false,
+			"CutieMark": [
+				{
+					"link": "http://fav.me/d64bqyo",
+					"facing": "right"
+				}
+			],
+			"ColorGroups": {
+				"59": {
+					"id": 59,
+					"label": "Coat",
+					"order": 1,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#E880B0"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#F5B7D0"
+						},
+						{
+							"order": 2,
+							"label": "Shadow Outline",
+							"hex": "#DD6FA4"
+						},
+						{
+							"order": 3,
+							"label": "Shadow Fill",
+							"hex": "#E89CBF"
+						}
+					]
+				},
+				"60": {
+					"id": 60,
+					"label": "Mane & Tail",
+					"order": 2,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#BB1C76"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#EB458B"
+						}
+					]
+				},
+				"61": {
+					"id": 61,
+					"label": "Iris",
+					"order": 3,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Gradient Top",
+							"hex": "#196E91"
+						},
+						{
+							"order": 1,
+							"label": "Gradient Bottom",
+							"hex": "#7DD0F1"
+						},
+						{
+							"order": 2,
+							"label": "Highlight Top",
+							"hex": "#9CDCF4"
+						},
+						{
+							"order": 3,
+							"label": "Highlight Bottom",
+							"hex": "#DCF3FD"
+						}
+					]
+				},
+				"62": {
+					"id": 62,
+					"label": "Cutie Mark",
+					"order": 4,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Fill 1",
+							"hex": "#7ED0F2"
+						},
+						{
+							"order": 1,
+							"label": "Fill 2",
+							"hex": "#FAF5AB"
+						}
+					]
+				}
+			},
+			"TagIDs": [
+				2,
+				6,
+				12,
+				23,
+				85,
+				147,
+				353
+			],
+			"RelatedAppearances": [
+				94,
+				112,
+				188
+			]
+		},
 		"223": {
 			"id": 223,
-			"order": 1,
+			"order": 4,
 			"label": "Applejack",
 			"notes": "",
 			"ishuman": true,
@@ -1405,601 +1576,6 @@
 			],
 			"RelatedAppearances": []
 		},
-		"224": {
-			"id": 224,
-			"order": 1,
-			"label": "Fluttershy",
-			"notes": "",
-			"ishuman": true,
-			"added": "2016-11-17T04:07:45Z",
-			"private": false,
-			"ColorGroups": {
-				"1185": {
-					"id": 1185,
-					"label": "Skin",
-					"order": 2,
-					"Colors": [
-						{
-							"order": 0,
-							"label": "Outline",
-							"hex": "#F0DA86"
-						},
-						{
-							"order": 1,
-							"label": "Fill",
-							"hex": "#FFF8C5"
-						}
-					]
-				},
-				"1186": {
-					"id": 1186,
-					"label": "Hair",
-					"order": 3,
-					"Colors": [
-						{
-							"order": 0,
-							"label": "Outline",
-							"hex": "#E881B4"
-						},
-						{
-							"order": 1,
-							"label": "Fill",
-							"hex": "#F3B6D1"
-						},
-						{
-							"order": 2,
-							"label": "Butterfly Clip Wings",
-							"hex": "#FFFFFF"
-						},
-						{
-							"order": 3,
-							"label": "Butterfly Clip Body",
-							"hex": "#B1DD73"
-						}
-					]
-				},
-				"1187": {
-					"id": 1187,
-					"label": "Eyes",
-					"order": 4,
-					"Colors": [
-						{
-							"order": 0,
-							"label": "Iris Gradient Top",
-							"hex": "#005252"
-						},
-						{
-							"order": 1,
-							"label": "Iris Gradient Bottom",
-							"hex": "#00ACA8"
-						},
-						{
-							"order": 2,
-							"label": "Upper Highlight",
-							"hex": "#3DBFBA"
-						},
-						{
-							"order": 3,
-							"label": "Lower Highlight",
-							"hex": "#89D1D5"
-						}
-					]
-				},
-				"1188": {
-					"id": 1188,
-					"label": "Shirt",
-					"order": 5,
-					"Colors": [
-						{
-							"order": 0,
-							"label": "Outline",
-							"hex": "#FAD1E0"
-						},
-						{
-							"order": 1,
-							"label": "Fill",
-							"hex": "#FFFFFF"
-						}
-					]
-				},
-				"1189": {
-					"id": 1189,
-					"label": "Skirt",
-					"order": 6,
-					"Colors": [
-						{
-							"order": 0,
-							"label": "Skirt Outline",
-							"hex": "#7CBD53"
-						},
-						{
-							"order": 1,
-							"label": "Skirt Fill",
-							"hex": "#B0DB72"
-						},
-						{
-							"order": 2,
-							"label": "Hem Outline (85% Opacity)",
-							"hex": "#E8A4C2"
-						},
-						{
-							"order": 3,
-							"label": "Hem Fill (85% Opacity)",
-							"hex": "#FFDAE7"
-						},
-						{
-							"order": 4,
-							"label": "Hem Spots",
-							"hex": "#FFFFFF"
-						},
-						{
-							"order": 5,
-							"label": "Butterfly Fill 1",
-							"hex": "#FFFFFF"
-						},
-						{
-							"order": 6,
-							"label": "Butterfly Fill 2",
-							"hex": "#F07EAD"
-						},
-						{
-							"order": 7,
-							"label": "Butterfly Fill 3",
-							"hex": "#F9D1E1"
-						}
-					]
-				},
-				"1190": {
-					"id": 1190,
-					"label": "Boots",
-					"order": 7,
-					"Colors": [
-						{
-							"order": 0,
-							"label": "Outline",
-							"hex": "#7CBD53"
-						},
-						{
-							"order": 1,
-							"label": "Fill",
-							"hex": "#B0DB72"
-						},
-						{
-							"order": 2,
-							"label": "Fringe Outline",
-							"hex": "#F9D1E1"
-						},
-						{
-							"order": 3,
-							"label": "Fringe Fill",
-							"hex": "#FFFFFF"
-						},
-						{
-							"order": 4,
-							"label": "Socks Outline",
-							"hex": "#EF7EAD"
-						},
-						{
-							"order": 5,
-							"label": "Socks Fill",
-							"hex": "#F5A4C5"
-						},
-						{
-							"order": 6,
-							"label": "Socks Spots",
-							"hex": "#FFFFFF"
-						},
-						{
-							"order": 7,
-							"label": "Sole Outline",
-							"hex": "#F8D1E1"
-						},
-						{
-							"order": 8,
-							"label": "Sole Fill",
-							"hex": "#FFFFFF"
-						},
-						{
-							"order": 9,
-							"label": "Sole Bottom Fill",
-							"hex": "#F7F7F7"
-						}
-					]
-				}
-			},
-			"TagIDs": [
-				12,
-				24,
-				76,
-				353,
-				439
-			],
-			"RelatedAppearances": []
-		},
-		"2": {
-			"id": 2,
-			"order": 2,
-			"label": "Applejack",
-			"notes": "Far legs use darker colors.",
-			"ishuman": false,
-			"added": "2015-09-21T18:46:54Z",
-			"private": false,
-			"CutieMark": [
-				{
-					"link": "http://fav.me/d64bqyo",
-					"facing": "left"
-				}
-			],
-			"ColorGroups": {
-				"54": {
-					"id": 54,
-					"label": "Coat",
-					"order": 1,
-					"Colors": [
-						{
-							"order": 0,
-							"label": "Outline",
-							"hex": "#EF6F2F"
-						},
-						{
-							"order": 1,
-							"label": "Fill",
-							"hex": "#FABA62"
-						},
-						{
-							"order": 2,
-							"label": "Shadow Outline",
-							"hex": "#E55221"
-						},
-						{
-							"order": 3,
-							"label": "Shadow Fill",
-							"hex": "#EF9C54"
-						},
-						{
-							"order": 4,
-							"label": "Freckles",
-							"hex": "#FFFFFF"
-						}
-					]
-				},
-				"55": {
-					"id": 55,
-					"label": "Mane & Tail",
-					"order": 2,
-					"Colors": [
-						{
-							"order": 0,
-							"label": "Outline",
-							"hex": "#E7D462"
-						},
-						{
-							"order": 1,
-							"label": "Fill",
-							"hex": "#FAF5AB"
-						}
-					]
-				},
-				"56": {
-					"id": 56,
-					"label": "Iris",
-					"order": 3,
-					"Colors": [
-						{
-							"order": 0,
-							"label": "Gradient Top",
-							"hex": "#287916"
-						},
-						{
-							"order": 1,
-							"label": "Gradient Bottom",
-							"hex": "#61BA4E"
-						},
-						{
-							"order": 2,
-							"label": "Highlight Top",
-							"hex": "#78D863"
-						},
-						{
-							"order": 3,
-							"label": "Highlight Bottom",
-							"hex": "#CAECC4"
-						}
-					]
-				},
-				"57": {
-					"id": 57,
-					"label": "Cutie Mark",
-					"order": 4,
-					"Colors": [
-						{
-							"order": 0,
-							"label": "Apples",
-							"hex": "#EC3F41"
-						},
-						{
-							"order": 1,
-							"label": "Leaves",
-							"hex": "#6BB944"
-						}
-					]
-				},
-				"58": {
-					"id": 58,
-					"label": "Hat",
-					"order": 5,
-					"Colors": [
-						{
-							"order": 0,
-							"label": "Outline",
-							"hex": "#B2884D"
-						},
-						{
-							"order": 1,
-							"label": "Fill",
-							"hex": "#CA9A56"
-						}
-					]
-				},
-				"1499": {
-					"id": 1499,
-					"label": "Hair Tie",
-					"order": 6,
-					"Colors": [
-						{
-							"order": 0,
-							"label": "Fill",
-							"hex": "#EC3F41"
-						}
-					]
-				}
-			},
-			"TagIDs": [
-				2,
-				6,
-				12,
-				22,
-				258,
-				272,
-				353,
-				522
-			],
-			"RelatedAppearances": [
-				116,
-				202
-			]
-		},
-		"3": {
-			"id": 3,
-			"order": 3,
-			"label": "Fluttershy",
-			"notes": "",
-			"ishuman": false,
-			"added": "2015-09-21T18:54:47Z",
-			"private": false,
-			"CutieMark": [
-				{
-					"link": "http://fav.me/d64bqyo",
-					"facing": "right"
-				}
-			],
-			"ColorGroups": {
-				"63": {
-					"id": 63,
-					"label": "Coat",
-					"order": 1,
-					"Colors": [
-						{
-							"order": 0,
-							"label": "Outline",
-							"hex": "#E9D461"
-						},
-						{
-							"order": 1,
-							"label": "Fill",
-							"hex": "#FAF5AB"
-						},
-						{
-							"order": 2,
-							"label": "Shadow Fill",
-							"hex": "#F3E488"
-						}
-					]
-				},
-				"64": {
-					"id": 64,
-					"label": "Mane & Tail",
-					"order": 2,
-					"Colors": [
-						{
-							"order": 0,
-							"label": "Outline",
-							"hex": "#E581B1"
-						},
-						{
-							"order": 1,
-							"label": "Fill",
-							"hex": "#F3B5CF"
-						}
-					]
-				},
-				"65": {
-					"id": 65,
-					"label": "Iris",
-					"order": 3,
-					"Colors": [
-						{
-							"order": 0,
-							"label": "Gradient Top",
-							"hex": "#02534D"
-						},
-						{
-							"order": 1,
-							"label": "Gradient Bottom",
-							"hex": "#02ACA4"
-						},
-						{
-							"order": 2,
-							"label": "Highlight Top",
-							"hex": "#3CBEB7"
-						},
-						{
-							"order": 3,
-							"label": "Highlight Bottom",
-							"hex": "#84D2D4"
-						}
-					]
-				},
-				"66": {
-					"id": 66,
-					"label": "Cutie Mark",
-					"order": 4,
-					"Colors": [
-						{
-							"order": 0,
-							"label": "Wings",
-							"hex": "#F3B5CF"
-						},
-						{
-							"order": 1,
-							"label": "Body",
-							"hex": "#69C8C3"
-						}
-					]
-				}
-			},
-			"TagIDs": [
-				3,
-				6,
-				12,
-				24,
-				307,
-				353
-			],
-			"RelatedAppearances": [
-				64,
-				105
-			]
-		},
-		"4": {
-			"id": 4,
-			"order": 4,
-			"label": "Pinkie Pie",
-			"notes": "Far legs use darker colors.",
-			"ishuman": false,
-			"added": "2015-09-21T18:52:26Z",
-			"private": false,
-			"CutieMark": [
-				{
-					"link": "http://fav.me/d64bqyo",
-					"facing": "right"
-				}
-			],
-			"ColorGroups": {
-				"59": {
-					"id": 59,
-					"label": "Coat",
-					"order": 1,
-					"Colors": [
-						{
-							"order": 0,
-							"label": "Outline",
-							"hex": "#E880B0"
-						},
-						{
-							"order": 1,
-							"label": "Fill",
-							"hex": "#F5B7D0"
-						},
-						{
-							"order": 2,
-							"label": "Shadow Outline",
-							"hex": "#DD6FA4"
-						},
-						{
-							"order": 3,
-							"label": "Shadow Fill",
-							"hex": "#E89CBF"
-						}
-					]
-				},
-				"60": {
-					"id": 60,
-					"label": "Mane & Tail",
-					"order": 2,
-					"Colors": [
-						{
-							"order": 0,
-							"label": "Outline",
-							"hex": "#BB1C76"
-						},
-						{
-							"order": 1,
-							"label": "Fill",
-							"hex": "#EB458B"
-						}
-					]
-				},
-				"61": {
-					"id": 61,
-					"label": "Iris",
-					"order": 3,
-					"Colors": [
-						{
-							"order": 0,
-							"label": "Gradient Top",
-							"hex": "#196E91"
-						},
-						{
-							"order": 1,
-							"label": "Gradient Bottom",
-							"hex": "#7DD0F1"
-						},
-						{
-							"order": 2,
-							"label": "Highlight Top",
-							"hex": "#9CDCF4"
-						},
-						{
-							"order": 3,
-							"label": "Highlight Bottom",
-							"hex": "#DCF3FD"
-						}
-					]
-				},
-				"62": {
-					"id": 62,
-					"label": "Cutie Mark",
-					"order": 4,
-					"Colors": [
-						{
-							"order": 0,
-							"label": "Fill 1",
-							"hex": "#7ED0F2"
-						},
-						{
-							"order": 1,
-							"label": "Fill 2",
-							"hex": "#FAF5AB"
-						}
-					]
-				}
-			},
-			"TagIDs": [
-				2,
-				6,
-				12,
-				23,
-				85,
-				147,
-				353
-			],
-			"RelatedAppearances": [
-				94,
-				112,
-				188
-			]
-		},
 		"5": {
 			"id": 5,
 			"order": 5,
@@ -2152,6 +1728,222 @@
 				217
 			]
 		},
+		"224": {
+			"id": 224,
+			"order": 5,
+			"label": "Fluttershy",
+			"notes": "",
+			"ishuman": true,
+			"added": "2016-11-17T04:07:45Z",
+			"private": false,
+			"ColorGroups": {
+				"1185": {
+					"id": 1185,
+					"label": "Skin",
+					"order": 2,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#F0DA86"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#FFF8C5"
+						}
+					]
+				},
+				"1186": {
+					"id": 1186,
+					"label": "Hair",
+					"order": 3,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#E881B4"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#F3B6D1"
+						},
+						{
+							"order": 2,
+							"label": "Butterfly Clip Wings",
+							"hex": "#FFFFFF"
+						},
+						{
+							"order": 3,
+							"label": "Butterfly Clip Body",
+							"hex": "#B1DD73"
+						}
+					]
+				},
+				"1187": {
+					"id": 1187,
+					"label": "Eyes",
+					"order": 4,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Iris Gradient Top",
+							"hex": "#005252"
+						},
+						{
+							"order": 1,
+							"label": "Iris Gradient Bottom",
+							"hex": "#00ACA8"
+						},
+						{
+							"order": 2,
+							"label": "Upper Highlight",
+							"hex": "#3DBFBA"
+						},
+						{
+							"order": 3,
+							"label": "Lower Highlight",
+							"hex": "#89D1D5"
+						},
+						{
+							"order": 4,
+							"label": "Eyeshadow",
+							"hex": "#DEC8DD"
+						}
+					]
+				},
+				"1188": {
+					"id": 1188,
+					"label": "Shirt",
+					"order": 5,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#FAD1E0"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#FFFFFF"
+						}
+					]
+				},
+				"1189": {
+					"id": 1189,
+					"label": "Skirt",
+					"order": 6,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Skirt Outline",
+							"hex": "#7CBD53"
+						},
+						{
+							"order": 1,
+							"label": "Skirt Fill",
+							"hex": "#B0DB72"
+						},
+						{
+							"order": 2,
+							"label": "Hem Outline (85% Opacity)",
+							"hex": "#E8A4C2"
+						},
+						{
+							"order": 3,
+							"label": "Hem Fill (85% Opacity)",
+							"hex": "#FFDAE7"
+						},
+						{
+							"order": 4,
+							"label": "Hem Spots",
+							"hex": "#FFFFFF"
+						},
+						{
+							"order": 5,
+							"label": "Butterfly Fill 1",
+							"hex": "#FFFFFF"
+						},
+						{
+							"order": 6,
+							"label": "Butterfly Fill 2",
+							"hex": "#F07EAD"
+						},
+						{
+							"order": 7,
+							"label": "Butterfly Fill 3",
+							"hex": "#F9D1E1"
+						}
+					]
+				},
+				"1190": {
+					"id": 1190,
+					"label": "Boots",
+					"order": 7,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#7CBD53"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#B0DB72"
+						},
+						{
+							"order": 2,
+							"label": "Fringe Outline",
+							"hex": "#F9D1E1"
+						},
+						{
+							"order": 3,
+							"label": "Fringe Fill",
+							"hex": "#FFFFFF"
+						},
+						{
+							"order": 4,
+							"label": "Socks Outline",
+							"hex": "#EF7EAD"
+						},
+						{
+							"order": 5,
+							"label": "Socks Fill",
+							"hex": "#F5A4C5"
+						},
+						{
+							"order": 6,
+							"label": "Socks Spots",
+							"hex": "#FFFFFF"
+						},
+						{
+							"order": 7,
+							"label": "Sole Outline",
+							"hex": "#F8D1E1"
+						},
+						{
+							"order": 8,
+							"label": "Sole Fill",
+							"hex": "#FFFFFF"
+						},
+						{
+							"order": 9,
+							"label": "Sole Bottom Fill",
+							"hex": "#F7F7F7"
+						}
+					]
+				}
+			},
+			"TagIDs": [
+				12,
+				24,
+				76,
+				353,
+				439
+			],
+			"RelatedAppearances": []
+		},
 		"6": {
 			"id": 6,
 			"order": 6,
@@ -2290,6 +2082,168 @@
 				229
 			]
 		},
+		"309": {
+			"id": 309,
+			"order": 6,
+			"label": "Crystal Prep Uniform",
+			"notes": "",
+			"ishuman": true,
+			"added": "2017-07-06T03:07:28Z",
+			"private": false,
+			"ColorGroups": {
+				"1510": {
+					"id": 1510,
+					"label": "Female Tops",
+					"order": 2,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Vest/Jacket Outline",
+							"hex": "#4E1B3C"
+						},
+						{
+							"order": 1,
+							"label": "Vest/Jacket Fill",
+							"hex": "#6E244E"
+						},
+						{
+							"order": 2,
+							"label": "Tie/Ascot Outline",
+							"hex": "#282446"
+						},
+						{
+							"order": 3,
+							"label": "Tie/Ascot Fill",
+							"hex": "#3B3468"
+						},
+						{
+							"order": 4,
+							"label": "Shirt Outline",
+							"hex": "#77C1D0"
+						},
+						{
+							"order": 5,
+							"label": "Shirt Fill",
+							"hex": "#D0EDF4"
+						}
+					]
+				},
+				"1511": {
+					"id": 1511,
+					"label": "Skirts",
+					"order": 3,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Skirt Outline",
+							"hex": "#592044"
+						},
+						{
+							"order": 1,
+							"label": "Skirt Fill",
+							"hex": "#7E3066"
+						},
+						{
+							"order": 2,
+							"label": "Skirt Slat Fill",
+							"hex": "#331B35"
+						},
+						{
+							"order": 3,
+							"label": "Broad and Thin Horiz. Stripe",
+							"hex": "#994E9F"
+						},
+						{
+							"order": 4,
+							"label": "Thin Horiz. Stripe",
+							"hex": "#ECDF84"
+						},
+						{
+							"order": 5,
+							"label": "Thin Vert. Stripe 1",
+							"hex": "#2A9ECC"
+						},
+						{
+							"order": 6,
+							"label": "Thin Vert. Stripe 2",
+							"hex": "#ADA8B6"
+						},
+						{
+							"order": 7,
+							"label": "Shadow Filter (30% opacity)",
+							"hex": "#000000"
+						}
+					]
+				},
+				"1512": {
+					"id": 1512,
+					"label": "Female Shoes",
+					"order": 4,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Shoe Outline",
+							"hex": "#060B10"
+						},
+						{
+							"order": 1,
+							"label": "Shoe Fill",
+							"hex": "#182C4A"
+						},
+						{
+							"order": 2,
+							"label": "Shoe Stripe",
+							"hex": "#3F6FB6"
+						},
+						{
+							"order": 3,
+							"label": "Strap Fill 1",
+							"hex": "#42A6DF"
+						},
+						{
+							"order": 4,
+							"label": "Strap Fill 2",
+							"hex": "#3F6FB6"
+						},
+						{
+							"order": 5,
+							"label": "Buckle Fill 1",
+							"hex": "#56C1DB"
+						},
+						{
+							"order": 6,
+							"label": "Buckle Fill 2",
+							"hex": "#ACF4FF"
+						},
+						{
+							"order": 7,
+							"label": "Stocking Outline",
+							"hex": "#312D56"
+						},
+						{
+							"order": 8,
+							"label": "Stocking Fill",
+							"hex": "#4C4488"
+						},
+						{
+							"order": 9,
+							"label": "Stocking Frill Outline",
+							"hex": "#787188"
+						},
+						{
+							"order": 10,
+							"label": "Stocking Frill Fill",
+							"hex": "#B1ABBA"
+						}
+					]
+				}
+			},
+			"TagIDs": [
+				96,
+				514
+			],
+			"RelatedAppearances": []
+		},
 		"7": {
 			"id": 7,
 			"order": 7,
@@ -2426,6 +2380,150 @@
 			"RelatedAppearances": [
 				189
 			]
+		},
+		"310": {
+			"id": 310,
+			"order": 7,
+			"label": "Lemon Zest",
+			"notes": "",
+			"ishuman": true,
+			"added": "2017-07-06T03:27:12Z",
+			"private": false,
+			"ColorGroups": {
+				"1513": {
+					"id": 1513,
+					"label": "Skin",
+					"order": 2,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#DC5980"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#FFB3B9"
+						}
+					]
+				},
+				"1514": {
+					"id": 1514,
+					"label": "Hair",
+					"order": 3,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#56A376"
+						},
+						{
+							"order": 1,
+							"label": "Fill 1",
+							"hex": "#80CA87"
+						},
+						{
+							"order": 2,
+							"label": "Fill 2",
+							"hex": "#9AE26B"
+						},
+						{
+							"order": 3,
+							"label": "Fill 3",
+							"hex": "#E9FB69"
+						}
+					]
+				},
+				"1515": {
+					"id": 1515,
+					"label": "Eyes",
+					"order": 4,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Iris Gradient Top",
+							"hex": "#DA972F"
+						},
+						{
+							"order": 1,
+							"label": "Iris Gradient Bottom",
+							"hex": "#FFF28B"
+						},
+						{
+							"order": 2,
+							"label": "Upper Highlight",
+							"hex": "#FBEF93"
+						},
+						{
+							"order": 3,
+							"label": "Lower Highlight",
+							"hex": "#FFFFFF"
+						},
+						{
+							"order": 4,
+							"label": "Eyeshadow",
+							"hex": "#7DC5D2"
+						}
+					]
+				},
+				"1516": {
+					"id": 1516,
+					"label": "Headphones",
+					"order": 5,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Main Outline",
+							"hex": "#C12770"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#E15498"
+						},
+						{
+							"order": 2,
+							"label": "Edge Fill",
+							"hex": "#CF337B"
+						},
+						{
+							"order": 3,
+							"label": "Markings",
+							"hex": "#F998B5"
+						}
+					]
+				},
+				"1517": {
+					"id": 1517,
+					"label": "School Outfit",
+					"order": 6,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Buttons",
+							"hex": "#ADF4FA"
+						},
+						{
+							"order": 1,
+							"label": "Hem Outline",
+							"hex": "#787188"
+						},
+						{
+							"order": 2,
+							"label": "Hem Fill",
+							"hex": "#B1ABBA"
+						}
+					]
+				}
+			},
+			"TagIDs": [
+				12,
+				76,
+				353,
+				514,
+				515
+			],
+			"RelatedAppearances": []
 		},
 		"23": {
 			"id": 23,
@@ -2590,6 +2688,172 @@
 			],
 			"RelatedAppearances": []
 		},
+		"311": {
+			"id": 311,
+			"order": 8,
+			"label": "Indigo Zap",
+			"notes": "",
+			"ishuman": true,
+			"added": "2017-07-12T01:51:54Z",
+			"private": false,
+			"ColorGroups": {
+				"1518": {
+					"id": 1518,
+					"label": "Skin",
+					"order": 0,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#DA7253"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#FFEACA"
+						}
+					]
+				},
+				"1519": {
+					"id": 1519,
+					"label": "Hair",
+					"order": 1,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#0C2741"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#16426C"
+						},
+						{
+							"order": 2,
+							"label": "Stripe 1",
+							"hex": "#15A0BE"
+						},
+						{
+							"order": 3,
+							"label": "Stripe 2",
+							"hex": "#16678D"
+						}
+					]
+				},
+				"1522": {
+					"id": 1522,
+					"label": "Iris",
+					"order": 2,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Gradient Top",
+							"hex": "#A55925"
+						},
+						{
+							"order": 1,
+							"label": "Gradient Bottom",
+							"hex": "#FFAC34"
+						},
+						{
+							"order": 2,
+							"label": "Upper Highlight",
+							"hex": "#FFDD5A"
+						},
+						{
+							"order": 3,
+							"label": "Lower Highlight",
+							"hex": "#FFE98D"
+						}
+					]
+				},
+				"1520": {
+					"id": 1520,
+					"label": "Googles",
+					"order": 3,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Front Fill",
+							"hex": "#FFA748"
+						},
+						{
+							"order": 1,
+							"label": "Side Fill",
+							"hex": "#E9662D"
+						},
+						{
+							"order": 2,
+							"label": "Strap",
+							"hex": "#797187"
+						},
+						{
+							"order": 3,
+							"label": "Strap Band",
+							"hex": "#B1ABB9"
+						},
+						{
+							"order": 4,
+							"label": "Lens (65% opacity)",
+							"hex": "#98BCC6"
+						},
+						{
+							"order": 5,
+							"label": "Lens Shine (50% opacity)",
+							"hex": "#98BCC6"
+						}
+					]
+				},
+				"1521": {
+					"id": 1521,
+					"label": "Earrings",
+					"order": 4,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#FFB44A"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#FFE161"
+						}
+					]
+				},
+				"1523": {
+					"id": 1523,
+					"label": "Cuffs",
+					"order": 5,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#787187"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#B1ABBA"
+						},
+						{
+							"order": 2,
+							"label": "Stripe",
+							"hex": "#413971"
+						}
+					]
+				}
+			},
+			"TagIDs": [
+				12,
+				76,
+				353,
+				514,
+				517
+			],
+			"RelatedAppearances": []
+		},
 		"24": {
 			"id": 24,
 			"order": 9,
@@ -2730,6 +2994,207 @@
 			],
 			"RelatedAppearances": []
 		},
+		"315": {
+			"id": 315,
+			"order": 9,
+			"label": "Apple Bloom",
+			"notes": "",
+			"ishuman": true,
+			"added": "2017-07-23T00:07:11Z",
+			"private": false,
+			"ColorGroups": {
+				"1530": {
+					"id": 1530,
+					"label": "Skin",
+					"order": 1,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#DBC77A"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#F7F8BA"
+						},
+						{
+							"order": 2,
+							"label": "Eyebrow",
+							"hex": "#CB3059"
+						}
+					]
+				},
+				"1531": {
+					"id": 1531,
+					"label": "Hair",
+					"order": 2,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#C52353"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#F8415F"
+						},
+						{
+							"order": 2,
+							"label": "Bow Outline",
+							"hex": "#CB2867"
+						},
+						{
+							"order": 3,
+							"label": "Bow Fill 1",
+							"hex": "#F46092"
+						},
+						{
+							"order": 4,
+							"label": "Bow Fill 2",
+							"hex": "#ED438C"
+						}
+					]
+				},
+				"1532": {
+					"id": 1532,
+					"label": "Iris",
+					"order": 3,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Gradient Top",
+							"hex": "#EE585A"
+						},
+						{
+							"order": 1,
+							"label": "Gradient Bottom",
+							"hex": "#FFA93F"
+						},
+						{
+							"order": 2,
+							"label": "Upper Highlight",
+							"hex": "#FFC756"
+						},
+						{
+							"order": 3,
+							"label": "Lower Highlight",
+							"hex": "#FFE37C"
+						}
+					]
+				},
+				"1533": {
+					"id": 1533,
+					"label": "Shirt",
+					"order": 4,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#8DBF41"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#AAE98D"
+						}
+					]
+				},
+				"1534": {
+					"id": 1534,
+					"label": "Pants",
+					"order": 5,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#163351"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#2E66A0"
+						},
+						{
+							"order": 2,
+							"label": "Cuff Outline",
+							"hex": "#4196CE"
+						},
+						{
+							"order": 3,
+							"label": "Cuff Fill",
+							"hex": "#92C4E4"
+						},
+						{
+							"order": 4,
+							"label": "Belt Outline",
+							"hex": "#523838"
+						},
+						{
+							"order": 5,
+							"label": "Belt Fill",
+							"hex": "#8D625C"
+						},
+						{
+							"order": 6,
+							"label": "Buckle Outline",
+							"hex": "#D39E4E"
+						},
+						{
+							"order": 7,
+							"label": "Buckle Fill",
+							"hex": "#EFE06D"
+						}
+					]
+				},
+				"1535": {
+					"id": 1535,
+					"label": "Shoes",
+					"order": 6,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#EC9200"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#FFC756"
+						},
+						{
+							"order": 2,
+							"label": "Sole/Strap Outline",
+							"hex": "#C21224"
+						},
+						{
+							"order": 3,
+							"label": "Sole/Strap Fill",
+							"hex": "#EE585A"
+						},
+						{
+							"order": 4,
+							"label": "Buckle Outline",
+							"hex": "#DBC77A"
+						},
+						{
+							"order": 5,
+							"label": "Buckle Fill",
+							"hex": "#FFEDAC"
+						}
+					]
+				}
+			},
+			"TagIDs": [
+				12,
+				46,
+				76,
+				160,
+				353
+			],
+			"RelatedAppearances": []
+		},
 		"25": {
 			"id": 25,
 			"order": 10,
@@ -2740,12 +3205,12 @@
 			"private": false,
 			"CutieMark": [
 				{
-					"link": "http://fav.me/dawebre",
-					"facing": "left"
-				},
-				{
 					"link": "http://fav.me/dasmvhc",
 					"facing": "right"
+				},
+				{
+					"link": "http://fav.me/dawebre",
+					"facing": "left"
 				}
 			],
 			"ColorGroups": {
@@ -2887,6 +3352,206 @@
 				306,
 				353,
 				370
+			],
+			"RelatedAppearances": []
+		},
+		"316": {
+			"id": 316,
+			"order": 10,
+			"label": "Sweetie Belle",
+			"notes": "",
+			"ishuman": true,
+			"added": "2017-07-23T00:26:36Z",
+			"private": false,
+			"ColorGroups": {
+				"1536": {
+					"id": 1536,
+					"label": "Skin",
+					"order": 0,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#D0C8D0"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#EFEDED"
+						}
+					]
+				},
+				"1537": {
+					"id": 1537,
+					"label": "Hair",
+					"order": 1,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#795C8B"
+						},
+						{
+							"order": 1,
+							"label": "Fill 1",
+							"hex": "#B28DC1"
+						},
+						{
+							"order": 2,
+							"label": "Fill 2",
+							"hex": "#F6B8D2"
+						},
+						{
+							"order": 3,
+							"label": "Hairband Outline",
+							"hex": "#A71B55"
+						},
+						{
+							"order": 4,
+							"label": "Hairband Fill",
+							"hex": "#E3558F"
+						}
+					]
+				},
+				"1541": {
+					"id": 1541,
+					"label": "Iris",
+					"order": 2,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Gradient Top",
+							"hex": "#287B16"
+						},
+						{
+							"order": 1,
+							"label": "Gradient Bottom",
+							"hex": "#60BC4D"
+						},
+						{
+							"order": 2,
+							"label": "Upper Highlight",
+							"hex": "#7AD965"
+						},
+						{
+							"order": 3,
+							"label": "Lower Highlight",
+							"hex": "#CCEDC6"
+						}
+					]
+				},
+				"1538": {
+					"id": 1538,
+					"label": "Blouse",
+					"order": 3,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Blouse Outline",
+							"hex": "#A71B55"
+						},
+						{
+							"order": 1,
+							"label": "Blouse Fill",
+							"hex": "#E3558F"
+						},
+						{
+							"order": 2,
+							"label": "Undershirt Outline",
+							"hex": "#E49AB9"
+						},
+						{
+							"order": 3,
+							"label": "Undershirt Fill 1",
+							"hex": "#FFFFFF"
+						},
+						{
+							"order": 4,
+							"label": "Undershirt Fill 2",
+							"hex": "#F1B8CE"
+						},
+						{
+							"order": 5,
+							"label": "Belt Fill",
+							"hex": "#8A176D"
+						},
+						{
+							"order": 6,
+							"label": "Buckle Outline",
+							"hex": "#CFADDA"
+						},
+						{
+							"order": 7,
+							"label": "Buckle Fill",
+							"hex": "#FFFFFF"
+						}
+					]
+				},
+				"1539": {
+					"id": 1539,
+					"label": "Skirt",
+					"order": 4,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#E5D459"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#F5F59A"
+						}
+					]
+				},
+				"1540": {
+					"id": 1540,
+					"label": "Shoes",
+					"order": 5,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#A71B55"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#E3558F"
+						},
+						{
+							"order": 2,
+							"label": "Sole Fill",
+							"hex": "#F1B8CE"
+						},
+						{
+							"order": 3,
+							"label": "Strap Outline",
+							"hex": "#E5D459"
+						},
+						{
+							"order": 4,
+							"label": "Strap Fill",
+							"hex": "#F5F59A"
+						},
+						{
+							"order": 5,
+							"label": "Buckle Outline",
+							"hex": "#795C8B"
+						},
+						{
+							"order": 6,
+							"label": "Buckle Fill",
+							"hex": "#B28DC1"
+						}
+					]
+				}
+			},
+			"TagIDs": [
+				12,
+				48,
+				76,
+				353
 			],
 			"RelatedAppearances": []
 		},
@@ -3044,6 +3709,203 @@
 			],
 			"RelatedAppearances": []
 		},
+		"317": {
+			"id": 317,
+			"order": 11,
+			"label": "Scootaloo",
+			"notes": "",
+			"ishuman": true,
+			"added": "2017-07-23T00:49:05Z",
+			"private": false,
+			"ColorGroups": {
+				"1542": {
+					"id": 1542,
+					"label": "Skin",
+					"order": 0,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#F38656"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#FBCC8C"
+						}
+					]
+				},
+				"1543": {
+					"id": 1543,
+					"label": "Hair",
+					"order": 1,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#C11F78"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#BF5C95"
+						}
+					]
+				},
+				"1544": {
+					"id": 1544,
+					"label": "Iris",
+					"order": 2,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Gradient Top",
+							"hex": "#210A40"
+						},
+						{
+							"order": 1,
+							"label": "Gradient Bottom",
+							"hex": "#672E8C"
+						},
+						{
+							"order": 2,
+							"label": "Upper Highlight",
+							"hex": "#8F5CA6"
+						},
+						{
+							"order": 3,
+							"label": "Lower Highlight",
+							"hex": "#CCB4D6"
+						}
+					]
+				},
+				"1545": {
+					"id": 1545,
+					"label": "Jacket",
+					"order": 3,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#2F2F2F"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#666666"
+						},
+						{
+							"order": 2,
+							"label": "Cuff Outline",
+							"hex": "#14B8B9"
+						},
+						{
+							"order": 3,
+							"label": "Cuff Fill",
+							"hex": "#16D8D7"
+						},
+						{
+							"order": 4,
+							"label": "Zipper Outline",
+							"hex": "#B2D7ED"
+						},
+						{
+							"order": 5,
+							"label": "Zipper Fill",
+							"hex": "#D6F5FF"
+						},
+						{
+							"order": 6,
+							"label": "Zipper Mark",
+							"hex": "#84C1E7"
+						}
+					]
+				},
+				"1549": {
+					"id": 1549,
+					"label": "Wristband",
+					"order": 4,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#0E9B97"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#14CAC9"
+						},
+						{
+							"order": 2,
+							"label": "Stripe",
+							"hex": "#FFFFFF"
+						}
+					]
+				},
+				"1546": {
+					"id": 1546,
+					"label": "Shorts",
+					"order": 5,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#4F5C2D"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#839D47"
+						},
+						{
+							"order": 2,
+							"label": "Button",
+							"hex": "#C4D88A"
+						}
+					]
+				},
+				"1548": {
+					"id": 1548,
+					"label": "Shoes",
+					"order": 6,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#2F2F2F"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#666666"
+						},
+						{
+							"order": 2,
+							"label": "Sole Fill",
+							"hex": "#989898"
+						},
+						{
+							"order": 3,
+							"label": "Cuff Outline",
+							"hex": "#14B8B9"
+						},
+						{
+							"order": 4,
+							"label": "Cuff Fill",
+							"hex": "#16D8D7"
+						}
+					]
+				}
+			},
+			"TagIDs": [
+				12,
+				47,
+				76,
+				353
+			],
+			"RelatedAppearances": []
+		},
 		"114": {
 			"id": 114,
 			"order": 12,
@@ -3099,6 +3961,220 @@
 				234,
 				237,
 				370
+			],
+			"RelatedAppearances": []
+		},
+		"221": {
+			"id": 221,
+			"order": 12,
+			"label": "Twilight Sparkle (Pony)",
+			"notes": "The version of Twilight that passed through the mirror.",
+			"ishuman": true,
+			"added": "2016-11-10T05:26:41Z",
+			"private": false,
+			"ColorGroups": {
+				"1166": {
+					"id": 1166,
+					"label": "Skin",
+					"order": 2,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#A76BBF"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#EFC6FB"
+						}
+					]
+				},
+				"1167": {
+					"id": 1167,
+					"label": "Hair",
+					"order": 3,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#15214A"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#273874"
+						},
+						{
+							"order": 2,
+							"label": "Stripe 1",
+							"hex": "#ED438C"
+						},
+						{
+							"order": 3,
+							"label": "Stripe 2",
+							"hex": "#662D8A"
+						}
+					]
+				},
+				"1168": {
+					"id": 1168,
+					"label": "Eyes",
+					"order": 4,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Iris Gradient Top",
+							"hex": "#210A3F"
+						},
+						{
+							"order": 1,
+							"label": "Iris Gradient Bottom",
+							"hex": "#672F8B"
+						},
+						{
+							"order": 2,
+							"label": "Highlight Top",
+							"hex": "#8E5CA5"
+						},
+						{
+							"order": 3,
+							"label": "Highlight Bottom",
+							"hex": "#CDB3D7"
+						},
+						{
+							"order": 4,
+							"label": "Eyebrows",
+							"hex": "#662D8B"
+						}
+					]
+				},
+				"1169": {
+					"id": 1169,
+					"label": "Blouse",
+					"order": 5,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#609FF0"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#A7D8FF"
+						},
+						{
+							"order": 2,
+							"label": "Buttons",
+							"hex": "#3A3B72"
+						},
+						{
+							"order": 3,
+							"label": "Bow Outline",
+							"hex": "#AA1D60"
+						},
+						{
+							"order": 4,
+							"label": "Bow Fill",
+							"hex": "#ED448D"
+						}
+					]
+				},
+				"1170": {
+					"id": 1170,
+					"label": "Skirt",
+					"order": 6,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#411C54"
+						},
+						{
+							"order": 1,
+							"label": "Main Fill",
+							"hex": "#662D8A"
+						},
+						{
+							"order": 2,
+							"label": "Inner Pleat Fill",
+							"hex": "#7B36A8"
+						},
+						{
+							"order": 3,
+							"label": "Cutie Mark Main Star",
+							"hex": "#ED448D"
+						},
+						{
+							"order": 4,
+							"label": "Cutie Mark BG Star",
+							"hex": "#F8C1E2"
+						},
+						{
+							"order": 5,
+							"label": "Cutie Mark Smaller Stars",
+							"hex": "#FFFFFF"
+						}
+					]
+				},
+				"1171": {
+					"id": 1171,
+					"label": "Boots",
+					"order": 7,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Sock Outline",
+							"hex": "#AA1D60"
+						},
+						{
+							"order": 1,
+							"label": "Sock Fill",
+							"hex": "#ED448D"
+						},
+						{
+							"order": 2,
+							"label": "Boot Outline",
+							"hex": "#411C55"
+						},
+						{
+							"order": 3,
+							"label": "Boot Fill",
+							"hex": "#662D8A"
+						},
+						{
+							"order": 4,
+							"label": "Argyle Stripes",
+							"hex": "#FFFFFF"
+						},
+						{
+							"order": 5,
+							"label": "Argyle Fill",
+							"hex": "#B480D5"
+						},
+						{
+							"order": 6,
+							"label": "Sole Bottom",
+							"hex": "#000000"
+						},
+						{
+							"order": 7,
+							"label": "Sole Top",
+							"hex": "#1F1F1F"
+						}
+					]
+				}
+			},
+			"TagIDs": [
+				4,
+				12,
+				14,
+				76,
+				140,
+				141,
+				353,
+				439
 			],
 			"RelatedAppearances": []
 		},
@@ -3354,6 +4430,350 @@
 			],
 			"RelatedAppearances": []
 		},
+		"318": {
+			"id": 318,
+			"order": 13,
+			"label": "Vinyl Scratch / DJ Pon-3 (Human)",
+			"notes": "",
+			"ishuman": true,
+			"added": "2017-07-23T18:33:33Z",
+			"private": false,
+			"ColorGroups": {
+				"1550": {
+					"id": 1550,
+					"label": "Skin",
+					"order": 1,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#BFA3B2"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#FDFDE6"
+						}
+					]
+				},
+				"1551": {
+					"id": 1551,
+					"label": "Hair",
+					"order": 2,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#1F3E7B"
+						},
+						{
+							"order": 1,
+							"label": "Blue Fill",
+							"hex": "#3166C8"
+						},
+						{
+							"order": 2,
+							"label": "Cyan Fill",
+							"hex": "#21D9DA"
+						}
+					]
+				},
+				"1552": {
+					"id": 1552,
+					"label": "Eyes",
+					"order": 3,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Gradient Top",
+							"hex": "#580D36"
+						},
+						{
+							"order": 1,
+							"label": "Gradient Bottom",
+							"hex": "#BC1D75"
+						},
+						{
+							"order": 2,
+							"label": "Highlight Top",
+							"hex": "#D9539D"
+						},
+						{
+							"order": 3,
+							"label": "Highlight Bottom",
+							"hex": "#FCB6DF"
+						},
+						{
+							"order": 4,
+							"label": "Eyebrows",
+							"hex": "#3166C8"
+						}
+					]
+				},
+				"1553": {
+					"id": 1553,
+					"label": "Sunglasses",
+					"order": 4,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Rim Outline",
+							"hex": "#656565"
+						},
+						{
+							"order": 1,
+							"label": "Rim Fill",
+							"hex": "#000000"
+						},
+						{
+							"order": 2,
+							"label": "Lens Gradient Top",
+							"hex": "#580C5E"
+						},
+						{
+							"order": 3,
+							"label": "Lens Gradient Middle",
+							"hex": "#9B2CA6"
+						},
+						{
+							"order": 4,
+							"label": "Lens Gradient Bottom",
+							"hex": "#E867CD"
+						},
+						{
+							"order": 5,
+							"label": "Lens Highlight Gradient Top",
+							"hex": "#A336BB"
+						},
+						{
+							"order": 6,
+							"label": "Lens Highlight Gradient Bottom",
+							"hex": "#E0A0F5"
+						}
+					]
+				},
+				"1554": {
+					"id": 1554,
+					"label": "Headphones",
+					"order": 5,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Case/Headband Outline",
+							"hex": "#09717A"
+						},
+						{
+							"order": 1,
+							"label": "Case Fill 1/Headband Fill",
+							"hex": "#01C7BA"
+						},
+						{
+							"order": 2,
+							"label": "Case Shadow Fill",
+							"hex": "#03A08E"
+						},
+						{
+							"order": 3,
+							"label": "Case/Headband Highlight",
+							"hex": "#00EAD8"
+						},
+						{
+							"order": 4,
+							"label": "Case Fill 2",
+							"hex": "#D7E7F3"
+						},
+						{
+							"order": 5,
+							"label": "Case Highlight 2",
+							"hex": "#EDF8FF"
+						},
+						{
+							"order": 6,
+							"label": "Logo Outline",
+							"hex": "#5C1C5C"
+						},
+						{
+							"order": 7,
+							"label": "Logo Fill",
+							"hex": "#993499"
+						},
+						{
+							"order": 8,
+							"label": "Ear Pad/Slider/Speaker Outline",
+							"hex": "#A1A1A1"
+						},
+						{
+							"order": 9,
+							"label": "Ear Pad/Slider Fill",
+							"hex": "#FFFFFF"
+						},
+						{
+							"order": 10,
+							"label": "Ear Pad/Slider Shadow Fill",
+							"hex": "#C3C3C3"
+						}
+					]
+				},
+				"1555": {
+					"id": 1555,
+					"label": "Gloves & Shirt",
+					"order": 6,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Gloves Outline",
+							"hex": "#B13DE3"
+						},
+						{
+							"order": 1,
+							"label": "Gloves Fill",
+							"hex": "#D067EA"
+						},
+						{
+							"order": 2,
+							"label": "Outline",
+							"hex": "#9BB0BF"
+						},
+						{
+							"order": 3,
+							"label": "Fill",
+							"hex": "#FFFFFF"
+						},
+						{
+							"order": 4,
+							"label": "Blue Outline",
+							"hex": "#214B86"
+						},
+						{
+							"order": 5,
+							"label": "Blue Fill",
+							"hex": "#3166C8"
+						},
+						{
+							"order": 6,
+							"label": "Cyan Fill",
+							"hex": "#21D9D9"
+						},
+						{
+							"order": 7,
+							"label": "Collar Outline",
+							"hex": "#15A9A9"
+						},
+						{
+							"order": 8,
+							"label": "Collar Fill",
+							"hex": "#11CFC7"
+						},
+						{
+							"order": 9,
+							"label": "Zipper Outline",
+							"hex": "#6A6A6A"
+						},
+						{
+							"order": 10,
+							"label": "Zipper Fill",
+							"hex": "#A6A6A6"
+						}
+					]
+				},
+				"1556": {
+					"id": 1556,
+					"label": "Skirt & Leggings",
+					"order": 7,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Skirt Outline",
+							"hex": "#9BB0BF"
+						},
+						{
+							"order": 1,
+							"label": "Skirt Fill / Lightning Outline",
+							"hex": "#FFFFFF"
+						},
+						{
+							"order": 2,
+							"label": "Beamed Quavers",
+							"hex": "#6A6A6A"
+						},
+						{
+							"order": 3,
+							"label": "Leggings Outline",
+							"hex": "#620C62"
+						},
+						{
+							"order": 4,
+							"label": "Leggings Fill",
+							"hex": "#8D1086"
+						},
+						{
+							"order": 5,
+							"label": "Lightning Fill",
+							"hex": "#D067EA"
+						}
+					]
+				},
+				"1557": {
+					"id": 1557,
+					"label": "Shoes",
+					"order": 8,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "White Outline",
+							"hex": "#9BB0BF"
+						},
+						{
+							"order": 1,
+							"label": "White Fill",
+							"hex": "#FFFFFF"
+						},
+						{
+							"order": 2,
+							"label": "Blue Outline",
+							"hex": "#214B86"
+						},
+						{
+							"order": 3,
+							"label": "Blue Fill",
+							"hex": "#3166C8"
+						},
+						{
+							"order": 4,
+							"label": "Cyan Outline",
+							"hex": "#15A9A9"
+						},
+						{
+							"order": 5,
+							"label": "Cyan Fill / Star",
+							"hex": "#11CFC7"
+						},
+						{
+							"order": 6,
+							"label": "Pink Outline",
+							"hex": "#B13DE3"
+						},
+						{
+							"order": 7,
+							"label": "Pink Fill",
+							"hex": "#D067EA"
+						}
+					]
+				}
+			},
+			"TagIDs": [
+				12,
+				76,
+				115,
+				142,
+				143,
+				144,
+				145,
+				146,
+				353
+			],
+			"RelatedAppearances": []
+		},
 		"9": {
 			"id": 9,
 			"order": 14,
@@ -3537,6 +4957,216 @@
 				340,
 				341,
 				353
+			],
+			"RelatedAppearances": []
+		},
+		"319": {
+			"id": 319,
+			"order": 14,
+			"label": "Flash Sentry",
+			"notes": "",
+			"ishuman": true,
+			"added": "2017-07-26T04:18:17Z",
+			"private": false,
+			"ColorGroups": {
+				"1558": {
+					"id": 1558,
+					"label": "Skin",
+					"order": 0,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#E4A25F"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#FFDF9B"
+						}
+					]
+				},
+				"1560": {
+					"id": 1560,
+					"label": "Hair",
+					"order": 1,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#1A3165"
+						},
+						{
+							"order": 1,
+							"label": "Fill 1",
+							"hex": "#3F68CA"
+						},
+						{
+							"order": 2,
+							"label": "Fill 2 / Eyebrows",
+							"hex": "#2B4EA1"
+						}
+					]
+				},
+				"1565": {
+					"id": 1565,
+					"label": "Iris",
+					"order": 2,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Gradient Top",
+							"hex": "#244387"
+						},
+						{
+							"order": 1,
+							"label": "Gradient Middle",
+							"hex": "#4E78D5"
+						},
+						{
+							"order": 2,
+							"label": "Gradient Bottom",
+							"hex": "#68C6EB"
+						}
+					]
+				},
+				"1561": {
+					"id": 1561,
+					"label": "Cutie Mark",
+					"order": 3,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Shield Outline",
+							"hex": "#182F60"
+						},
+						{
+							"order": 1,
+							"label": "Shield Fill 1",
+							"hex": "#4D76D6"
+						},
+						{
+							"order": 2,
+							"label": "Shield Fill 2",
+							"hex": "#234186"
+						},
+						{
+							"order": 3,
+							"label": "Bolt Outline",
+							"hex": "#E1C862"
+						},
+						{
+							"order": 4,
+							"label": "Bolt Fill",
+							"hex": "#FFFF98"
+						}
+					]
+				},
+				"1562": {
+					"id": 1562,
+					"label": "Jacket",
+					"order": 4,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Jacket Outline",
+							"hex": "#111111"
+						},
+						{
+							"order": 1,
+							"label": "Jacket Fill",
+							"hex": "#434343"
+						},
+						{
+							"order": 2,
+							"label": "Stripe 1",
+							"hex": "#FFFFFA"
+						},
+						{
+							"order": 3,
+							"label": "Stripe 2",
+							"hex": "#E11414"
+						},
+						{
+							"order": 4,
+							"label": "Shirt Outline",
+							"hex": "#99B1D5"
+						},
+						{
+							"order": 5,
+							"label": "Shirt Fill",
+							"hex": "#FFFFFF"
+						}
+					]
+				},
+				"1563": {
+					"id": 1563,
+					"label": "Pants",
+					"order": 5,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Pants Outline",
+							"hex": "#395A89"
+						},
+						{
+							"order": 1,
+							"label": "Pants Fill",
+							"hex": "#527AB7"
+						},
+						{
+							"order": 2,
+							"label": "Pants Markings",
+							"hex": "#93ADD2"
+						},
+						{
+							"order": 3,
+							"label": "Hem Outline",
+							"hex": "#7092C3"
+						},
+						{
+							"order": 4,
+							"label": "Hem Fill",
+							"hex": "#AFC7EB"
+						}
+					]
+				},
+				"1564": {
+					"id": 1564,
+					"label": "Shoes",
+					"order": 6,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Top Outline",
+							"hex": "#111111"
+						},
+						{
+							"order": 1,
+							"label": "Top Fill",
+							"hex": "#434343"
+						},
+						{
+							"order": 2,
+							"label": "Top Stripe",
+							"hex": "#FFFFFF"
+						},
+						{
+							"order": 3,
+							"label": "Sole Outline",
+							"hex": "#99B1D5"
+						},
+						{
+							"order": 4,
+							"label": "Sole Fill",
+							"hex": "#FFFFFF"
+						}
+					]
+				}
+			},
+			"TagIDs": [
+				76,
+				513
 			],
 			"RelatedAppearances": []
 		},
@@ -5097,7 +6727,7 @@
 			"id": 300,
 			"order": 21,
 			"label": "Nightmare Moon",
-			"notes": "Show is inconsistent if the mane should be blurred or not.",
+			"notes": "The show is inconsistent with two aspects of her mane:\n- Where it is blurred or not: some S6/S7 appearances do not blur it. We storngly recommend you blur it to be consistent with past art\n- Whether the inner dark blue fill has opacity or not. Again, S6/S7 tends to not have them (Eg 100% opacity) while older appearnaces do. We would ask if you do include some opacity for this part of the mane to remain consistent with older ones.",
 			"ishuman": false,
 			"added": "2017-06-20T02:06:24Z",
 			"private": false,
@@ -5136,7 +6766,7 @@
 						},
 						{
 							"order": 2,
-							"label": "Secondary Fill (100% opacity)",
+							"label": "Secondary Fill (~90% opacity)",
 							"hex": "#204EC3"
 						}
 					]
@@ -8213,7 +9843,7 @@
 						},
 						{
 							"order": 4,
-							"label": "Upper Carapace Shine",
+							"label": "Upper Carapace Shine (if used)",
 							"hex": "#B8FFFA"
 						},
 						{
@@ -33607,9 +35237,187 @@
 			],
 			"RelatedAppearances": []
 		},
+		"321": {
+			"id": 321,
+			"order": 193,
+			"label": "Goldie Delicious",
+			"notes": "",
+			"ishuman": false,
+			"added": "2017-07-29T06:08:34Z",
+			"private": false,
+			"ColorGroups": {
+				"1570": {
+					"id": 1570,
+					"label": "Coat",
+					"order": 1,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#D68E27"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#EFCB6A"
+						},
+						{
+							"order": 2,
+							"label": "Shadow Outline",
+							"hex": "#CB882F"
+						},
+						{
+							"order": 3,
+							"label": "Shadow Fill",
+							"hex": "#DEB561"
+						},
+						{
+							"order": 4,
+							"label": "Freckles",
+							"hex": "#F7F6C9"
+						}
+					]
+				},
+				"1571": {
+					"id": 1571,
+					"label": "Mane & Tail",
+					"order": 2,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#EBDFB4"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#FFFBF7"
+						}
+					]
+				},
+				"1572": {
+					"id": 1572,
+					"label": "Iris",
+					"order": 3,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Gradient Top",
+							"hex": "#2E933F"
+						},
+						{
+							"order": 1,
+							"label": "Gradient Bottom",
+							"hex": "#B6F678"
+						},
+						{
+							"order": 2,
+							"label": "Highlight Top",
+							"hex": "#BCF480"
+						},
+						{
+							"order": 3,
+							"label": "Highlight Bottom",
+							"hex": "#E1FAC6"
+						}
+					]
+				},
+				"1573": {
+					"id": 1573,
+					"label": "Cutie Mark",
+					"order": 4,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Tree Fill",
+							"hex": "#56BA4A"
+						},
+						{
+							"order": 1,
+							"label": "Tree Truck",
+							"hex": "#65573D"
+						},
+						{
+							"order": 2,
+							"label": "Fruit",
+							"hex": "#FFFF7E"
+						}
+					]
+				},
+				"1575": {
+					"id": 1575,
+					"label": "Scarf",
+					"order": 5,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#EB76A6"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#FAB6DA"
+						},
+						{
+							"order": 2,
+							"label": "Lace Outline",
+							"hex": "#A6BFD8"
+						},
+						{
+							"order": 3,
+							"label": "Lace Fill",
+							"hex": "#FFFFFF"
+						},
+						{
+							"order": 4,
+							"label": "Brooch Outline",
+							"hex": "#A6BFD8"
+						},
+						{
+							"order": 5,
+							"label": "Brooch Outer Fill",
+							"hex": "#FFFFFF"
+						},
+						{
+							"order": 6,
+							"label": "Brooch Inner Fill",
+							"hex": "#6F8FC0"
+						},
+						{
+							"order": 7,
+							"label": "Brooch Image Outline",
+							"hex": "#D4E1E3"
+						},
+						{
+							"order": 8,
+							"label": "Brooch Image Eyebrow",
+							"hex": "#B0BDCD"
+						},
+						{
+							"order": 9,
+							"label": "Brooch Image Fill",
+							"hex": "#FFFFFF"
+						}
+					]
+				}
+			},
+			"TagIDs": [
+				2,
+				7,
+				8,
+				12,
+				258,
+				353,
+				478,
+				528,
+				529
+			],
+			"RelatedAppearances": []
+		},
 		"64": {
 			"id": 64,
-			"order": 193,
+			"order": 194,
 			"label": "Angel Bunny",
 			"notes": "",
 			"ishuman": false,
@@ -33725,7 +35533,7 @@
 		},
 		"112": {
 			"id": 112,
-			"order": 194,
+			"order": 195,
 			"label": "Gummy",
 			"notes": "In 3/4 view, the top line on his far eye uses the \"Far Eye Top Line\" color instead of the normal gradient.",
 			"ishuman": false,
@@ -33864,7 +35672,7 @@
 		},
 		"116": {
 			"id": 116,
-			"order": 195,
+			"order": 196,
 			"label": "Winona",
 			"notes": "",
 			"ishuman": false,
@@ -33999,7 +35807,7 @@
 		},
 		"117": {
 			"id": 117,
-			"order": 196,
+			"order": 197,
 			"label": "Owlowiscious",
 			"notes": "",
 			"ishuman": false,
@@ -34088,7 +35896,7 @@
 		},
 		"119": {
 			"id": 119,
-			"order": 197,
+			"order": 198,
 			"label": "Tank",
 			"notes": "Far legs use darker colors.\nIn some scenes, Tank uses an alternate set of colors for the tongue.\nFor the goggle lenses, group together the Fill and the Highlights (100% Normal blending) and set the group to 50% opacity.",
 			"ishuman": false,
@@ -34357,7 +36165,7 @@
 		},
 		"120": {
 			"id": 120,
-			"order": 198,
+			"order": 199,
 			"label": "Opalescence",
 			"notes": "",
 			"ishuman": false,
@@ -34556,7 +36364,7 @@
 		},
 		"248": {
 			"id": 248,
-			"order": 199,
+			"order": 200,
 			"label": "Ripley",
 			"notes": "",
 			"ishuman": false,
@@ -34676,9 +36484,154 @@
 				93
 			]
 		},
+		"320": {
+			"id": 320,
+			"order": 201,
+			"label": "Harry",
+			"notes": "",
+			"ishuman": false,
+			"added": "2017-07-28T03:08:49Z",
+			"private": false,
+			"ColorGroups": {
+				"1566": {
+					"id": 1566,
+					"label": "Body",
+					"order": 1,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#232116"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#5D5840"
+						},
+						{
+							"order": 2,
+							"label": "Fur Marks",
+							"hex": "#8D8266"
+						},
+						{
+							"order": 3,
+							"label": "Muzzle/Tummy Outline",
+							"hex": "#76693A"
+						},
+						{
+							"order": 4,
+							"label": "Muzzle/Tummy/Ear Fill",
+							"hex": "#B5A768"
+						},
+						{
+							"order": 5,
+							"label": "Foot Pads",
+							"hex": "#C6BC9A"
+						}
+					]
+				},
+				"1567": {
+					"id": 1567,
+					"label": "Muzzle",
+					"order": 2,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Nose Outline",
+							"hex": "#1A1A1A"
+						},
+						{
+							"order": 1,
+							"label": "Nose Fill",
+							"hex": "#4D4D4D"
+						},
+						{
+							"order": 2,
+							"label": "Whisker Spots",
+							"hex": "#D0C7A0"
+						},
+						{
+							"order": 3,
+							"label": "Teeth Outline",
+							"hex": "#B3AC8A"
+						},
+						{
+							"order": 4,
+							"label": "Teeth Fill",
+							"hex": "#ECE9DA"
+						}
+					]
+				},
+				"1568": {
+					"id": 1568,
+					"label": "Eyes",
+					"order": 3,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Outline",
+							"hex": "#DFA434"
+						},
+						{
+							"order": 1,
+							"label": "Fill",
+							"hex": "#FBEE6E"
+						},
+						{
+							"order": 2,
+							"label": "Pupil",
+							"hex": "#C4241A"
+						}
+					]
+				},
+				"1569": {
+					"id": 1569,
+					"label": "Mouth",
+					"order": 4,
+					"Colors": [
+						{
+							"order": 0,
+							"label": "Cheek Outline",
+							"hex": "#3A0A15"
+						},
+						{
+							"order": 1,
+							"label": "Cheek Fill",
+							"hex": "#751428"
+						},
+						{
+							"order": 2,
+							"label": "Tongue Outline",
+							"hex": "#A64D2A"
+						},
+						{
+							"order": 3,
+							"label": "Tongue Fill",
+							"hex": "#CC6632"
+						},
+						{
+							"order": 4,
+							"label": "Gums Outline",
+							"hex": "#9C6762"
+						},
+						{
+							"order": 5,
+							"label": "Gums Fill",
+							"hex": "#CC9999"
+						}
+					]
+				}
+			},
+			"TagIDs": [
+				10,
+				526,
+				527
+			],
+			"RelatedAppearances": []
+		},
 		"109": {
 			"id": 109,
-			"order": 200,
+			"order": 202,
 			"label": "Zecora",
 			"notes": "Based on S4E14.",
 			"ishuman": false,
@@ -34843,7 +36796,7 @@
 		},
 		"113": {
 			"id": 113,
-			"order": 201,
+			"order": 203,
 			"label": "Orange Frog",
 			"notes": "",
 			"ishuman": false,
@@ -34939,7 +36892,7 @@
 		},
 		"122": {
 			"id": 122,
-			"order": 202,
+			"order": 204,
 			"label": "Pig (Peach Skin)",
 			"notes": "",
 			"ishuman": false,
@@ -35061,7 +37014,7 @@
 		},
 		"123": {
 			"id": 123,
-			"order": 203,
+			"order": 205,
 			"label": "Pig (Pink Skin)",
 			"notes": "Muddy Nostril color unknown",
 			"ishuman": false,
@@ -35178,7 +37131,7 @@
 		},
 		"124": {
 			"id": 124,
-			"order": 204,
+			"order": 206,
 			"label": "Pig (Dark Skin)",
 			"notes": "Muddy Nostril color unknown",
 			"ishuman": false,
@@ -35295,7 +37248,7 @@
 		},
 		"139": {
 			"id": 139,
-			"order": 205,
+			"order": 207,
 			"label": "Cranky Doodle Donkey",
 			"notes": "<strong>Toupee \\#1</strong> is up through half-way of \"A Friend in Deed\"\n<strong>Toupee \\#2</strong> is from \"A Friend in Deed\" through most of \"Slice of Life\"\n<strong>Toupee \\#3</strong> is from end of \"Slice of Life\" onward.",
 			"ishuman": false,
@@ -35448,7 +37401,7 @@
 		},
 		"140": {
 			"id": 140,
-			"order": 206,
+			"order": 208,
 			"label": "Matilda",
 			"notes": "",
 			"ishuman": false,
@@ -35619,7 +37572,7 @@
 		},
 		"179": {
 			"id": 179,
-			"order": 207,
+			"order": 209,
 			"label": "Cipactli",
 			"notes": "Eyes use radial gradient; inner color should be set about 50% position and then outer color at 100% position",
 			"ishuman": false,
@@ -35835,7 +37788,7 @@
 		},
 		"184": {
 			"id": 184,
-			"order": 208,
+			"order": 210,
 			"label": "Thorax / Changeling",
 			"notes": "",
 			"ishuman": false,
@@ -36022,7 +37975,7 @@
 		},
 		"193": {
 			"id": 193,
-			"order": 209,
+			"order": 211,
 			"label": "Gabby",
 			"notes": "Eyes have three glimmer ovals like pony fillies.",
 			"ishuman": false,
@@ -36276,7 +38229,7 @@
 		},
 		"204": {
 			"id": 204,
-			"order": 210,
+			"order": 212,
 			"label": "Tri-horned Bunyip",
 			"notes": "",
 			"ishuman": false,
@@ -36500,7 +38453,7 @@
 		},
 		"210": {
 			"id": 210,
-			"order": 211,
+			"order": 213,
 			"label": "Changeling",
 			"notes": "",
 			"ishuman": false,
@@ -36518,7 +38471,7 @@
 		},
 		"70": {
 			"id": 70,
-			"order": 212,
+			"order": 214,
 			"label": "Wonderbolt Uniform",
 			"notes": "",
 			"ishuman": false,
@@ -36653,7 +38606,7 @@
 		},
 		"133": {
 			"id": 133,
-			"order": 213,
+			"order": 215,
 			"label": "Spitfire's Academy Outfit",
 			"notes": "",
 			"ishuman": false,
@@ -36851,7 +38804,7 @@
 		},
 		"71": {
 			"id": 71,
-			"order": 214,
+			"order": 216,
 			"label": "Wonderbolt Trainee Uniform",
 			"notes": "The uppermost highlight on the Lead pony and Wingpony badges uses a different color and opacity than the rest.\nThe lenses of the goggles are comprised of two objects that do not overlap. The fill uses 67% normal blending and the highlight uses 50% overlay blending as far as we can tell.",
 			"ishuman": false,
@@ -36994,7 +38947,7 @@
 		},
 		"105": {
 			"id": 105,
-			"order": 215,
+			"order": 217,
 			"label": "Pony Tones Outfit",
 			"notes": "",
 			"ishuman": false,
@@ -37100,7 +39053,7 @@
 		},
 		"144": {
 			"id": 144,
-			"order": 216,
+			"order": 218,
 			"label": "Rainbow Dash's Robe",
 			"notes": "",
 			"ishuman": false,
@@ -37219,7 +39172,7 @@
 		},
 		"181": {
 			"id": 181,
-			"order": 217,
+			"order": 219,
 			"label": "Cheerilee's Cheerleader Outfit",
 			"notes": "Worn by #79 in S6E14",
 			"ishuman": false,
@@ -37372,7 +39325,7 @@
 		},
 		"183": {
 			"id": 183,
-			"order": 218,
+			"order": 220,
 			"label": "Filly Scout Uniform",
 			"notes": "",
 			"ishuman": false,
@@ -37547,7 +39500,7 @@
 		},
 		"186": {
 			"id": 186,
-			"order": 219,
+			"order": 221,
 			"label": "Crystal Empire Guard Armor",
 			"notes": "",
 			"ishuman": false,
@@ -37621,7 +39574,7 @@
 		},
 		"187": {
 			"id": 187,
-			"order": 220,
+			"order": 222,
 			"label": "Rainbow Rogue's Outfit",
 			"notes": "Use standard cutie mark vector for broach and belt decoration",
 			"ishuman": false,
@@ -37787,7 +39740,7 @@
 		},
 		"188": {
 			"id": 188,
-			"order": 221,
+			"order": 223,
 			"label": "Bard Pie's Outfit",
 			"notes": "",
 			"ishuman": false,
@@ -38003,7 +39956,7 @@
 		},
 		"189": {
 			"id": 189,
-			"order": 222,
+			"order": 224,
 			"label": "Garbunkle's Outfit",
 			"notes": "",
 			"ishuman": false,
@@ -38176,7 +40129,7 @@
 		},
 		"190": {
 			"id": 190,
-			"order": 223,
+			"order": 225,
 			"label": "Sir McBiggen's Outfit",
 			"notes": "",
 			"ishuman": false,
@@ -38485,7 +40438,7 @@
 		},
 		"191": {
 			"id": 191,
-			"order": 224,
+			"order": 226,
 			"label": "Captain Wuzz's Outfit",
 			"notes": "",
 			"ishuman": false,
@@ -38820,7 +40773,7 @@
 		},
 		"192": {
 			"id": 192,
-			"order": 225,
+			"order": 227,
 			"label": "Ponyville Buckball Uniform",
 			"notes": "",
 			"ishuman": false,
@@ -38884,7 +40837,7 @@
 		},
 		"200": {
 			"id": 200,
-			"order": 226,
+			"order": 228,
 			"label": "Impossibly Rich",
 			"notes": "",
 			"ishuman": false,
@@ -39147,7 +41100,7 @@
 		},
 		"202": {
 			"id": 202,
-			"order": 227,
+			"order": 229,
 			"label": "Captain Jackbeard",
 			"notes": "",
 			"ishuman": false,
@@ -39281,7 +41234,7 @@
 		},
 		"203": {
 			"id": 203,
-			"order": 228,
+			"order": 230,
 			"label": "Captain Rarity",
 			"notes": "",
 			"ishuman": false,
@@ -39583,7 +41536,7 @@
 		},
 		"205": {
 			"id": 205,
-			"order": 229,
+			"order": 231,
 			"label": "Lifejacket",
 			"notes": "",
 			"ishuman": false,
@@ -39631,7 +41584,7 @@
 		},
 		"206": {
 			"id": 206,
-			"order": 230,
+			"order": 232,
 			"label": "Derpy's Mail Uniform",
 			"notes": "",
 			"ishuman": false,
@@ -39810,7 +41763,7 @@
 		},
 		"207": {
 			"id": 207,
-			"order": 231,
+			"order": 233,
 			"label": "80s Cheerilee Outfit",
 			"notes": "",
 			"ishuman": false,
@@ -39935,7 +41888,7 @@
 		},
 		"211": {
 			"id": 211,
-			"order": 232,
+			"order": 234,
 			"label": "Changeling Armor",
 			"notes": "",
 			"ishuman": false,
@@ -39953,7 +41906,7 @@
 		},
 		"215": {
 			"id": 215,
-			"order": 233,
+			"order": 235,
 			"label": "Rainbow Dash's Bomber Jacket",
 			"notes": "",
 			"ishuman": false,
@@ -40155,7 +42108,7 @@
 		},
 		"216": {
 			"id": 216,
-			"order": 234,
+			"order": 236,
 			"label": "Princess Ember's Disguise",
 			"notes": "",
 			"ishuman": false,
@@ -40173,7 +42126,7 @@
 		},
 		"217": {
 			"id": 217,
-			"order": 235,
+			"order": 237,
 			"label": "Rainbow Dash's Mechanics Outfit",
 			"notes": "",
 			"ishuman": false,
@@ -40291,7 +42244,7 @@
 		},
 		"218": {
 			"id": 218,
-			"order": 236,
+			"order": 238,
 			"label": "Applejack's Mechanics Outfit",
 			"notes": "",
 			"ishuman": false,
@@ -40394,7 +42347,7 @@
 		},
 		"219": {
 			"id": 219,
-			"order": 237,
+			"order": 239,
 			"label": "Rarity's Mechanics Outfit",
 			"notes": "",
 			"ishuman": false,
@@ -40497,7 +42450,7 @@
 		},
 		"201": {
 			"id": 201,
-			"order": 238,
+			"order": 240,
 			"label": "Rarity's Titanic Outfit",
 			"notes": "",
 			"ishuman": false,
@@ -40761,7 +42714,7 @@
 		},
 		"228": {
 			"id": 228,
-			"order": 239,
+			"order": 241,
 			"label": "Rarity's Detective Outfit",
 			"notes": "From \"Rarity Investigates\"",
 			"ishuman": false,
@@ -40874,7 +42827,7 @@
 		},
 		"229": {
 			"id": 229,
-			"order": 240,
+			"order": 242,
 			"label": "Rarity's Seductive Dress",
 			"notes": "From S5E15\n\nThe outfit is not shown where there would be a shadow color for one of the forelegs.",
 			"ishuman": false,
@@ -41012,172 +42965,9 @@
 				6
 			]
 		},
-		"309": {
-			"id": 309,
-			"order": 240,
-			"label": "Crystal Prep Uniform",
-			"notes": "",
-			"ishuman": true,
-			"added": "2017-07-06T03:07:28Z",
-			"private": false,
-			"ColorGroups": {
-				"1510": {
-					"id": 1510,
-					"label": "Female Tops",
-					"order": 2,
-					"Colors": [
-						{
-							"order": 0,
-							"label": "Vest/Jacket Outline",
-							"hex": "#4E1B3C"
-						},
-						{
-							"order": 1,
-							"label": "Vest/Jacket Fill",
-							"hex": "#6E244E"
-						},
-						{
-							"order": 2,
-							"label": "Tie/Ascot Outline",
-							"hex": "#282446"
-						},
-						{
-							"order": 3,
-							"label": "Tie/Ascot Fill",
-							"hex": "#3B3468"
-						},
-						{
-							"order": 4,
-							"label": "Shirt Outline",
-							"hex": "#77C1D0"
-						},
-						{
-							"order": 5,
-							"label": "Shirt Fill",
-							"hex": "#D0EDF4"
-						}
-					]
-				},
-				"1511": {
-					"id": 1511,
-					"label": "Skirts",
-					"order": 3,
-					"Colors": [
-						{
-							"order": 0,
-							"label": "Skirt Outline",
-							"hex": "#592044"
-						},
-						{
-							"order": 1,
-							"label": "Skirt Fill",
-							"hex": "#7E3066"
-						},
-						{
-							"order": 2,
-							"label": "Skirt Slat Fill",
-							"hex": "#331B35"
-						},
-						{
-							"order": 3,
-							"label": "Broad and Thin Horiz. Stripe",
-							"hex": "#994E9F"
-						},
-						{
-							"order": 4,
-							"label": "Thin Horiz. Stripe",
-							"hex": "#ECDF84"
-						},
-						{
-							"order": 5,
-							"label": "Thin Vert. Stripe 1",
-							"hex": "#2A9ECC"
-						},
-						{
-							"order": 6,
-							"label": "Thin Vert. Stripe 2",
-							"hex": "#ADA8B6"
-						},
-						{
-							"order": 7,
-							"label": "Shadow Filter (30% opacity)",
-							"hex": "#000000"
-						}
-					]
-				},
-				"1512": {
-					"id": 1512,
-					"label": "Female Shoes",
-					"order": 4,
-					"Colors": [
-						{
-							"order": 0,
-							"label": "Shoe Outline",
-							"hex": "#060B10"
-						},
-						{
-							"order": 1,
-							"label": "Shoe Fill",
-							"hex": "#182C4A"
-						},
-						{
-							"order": 2,
-							"label": "Shoe Stripe",
-							"hex": "#3F6FB6"
-						},
-						{
-							"order": 3,
-							"label": "Strap Fill 1",
-							"hex": "#42A6DF"
-						},
-						{
-							"order": 4,
-							"label": "Strap Fill 2",
-							"hex": "#3F6FB6"
-						},
-						{
-							"order": 5,
-							"label": "Buckle Fill 1",
-							"hex": "#56C1DB"
-						},
-						{
-							"order": 6,
-							"label": "Buckle Fill 2",
-							"hex": "#ACF4FF"
-						},
-						{
-							"order": 7,
-							"label": "Stocking Outline",
-							"hex": "#312D56"
-						},
-						{
-							"order": 8,
-							"label": "Stocking Fill",
-							"hex": "#4C4488"
-						},
-						{
-							"order": 9,
-							"label": "Stocking Frill Outline",
-							"hex": "#787188"
-						},
-						{
-							"order": 10,
-							"label": "Stocking Frill Fill",
-							"hex": "#B1ABBA"
-						}
-					]
-				}
-			},
-			"TagIDs": [
-				76,
-				96,
-				514
-			],
-			"RelatedAppearances": []
-		},
 		"234": {
 			"id": 234,
-			"order": 241,
+			"order": 243,
 			"label": "Snowfall Frost",
 			"notes": "Glasses do not have any lens",
 			"ishuman": false,
@@ -41317,7 +43107,7 @@
 		},
 		"314": {
 			"id": 314,
-			"order": 242,
+			"order": 244,
 			"label": "Wonderbolts Practice Outfit",
 			"notes": "",
 			"ishuman": false,
@@ -41376,7 +43166,7 @@
 		},
 		"33": {
 			"id": 33,
-			"order": 243,
+			"order": 245,
 			"label": "Alicorn Amulet",
 			"notes": "",
 			"ishuman": false,
@@ -41568,7 +43358,7 @@
 		},
 		"86": {
 			"id": 86,
-			"order": 244,
+			"order": 246,
 			"label": "Scorpan's Medallion",
 			"notes": "",
 			"ishuman": false,
@@ -41644,7 +43434,7 @@
 		},
 		"94": {
 			"id": 94,
-			"order": 245,
+			"order": 247,
 			"label": "Party Cannon",
 			"notes": "",
 			"ishuman": false,
@@ -41773,7 +43563,7 @@
 		},
 		"115": {
 			"id": 115,
-			"order": 246,
+			"order": 248,
 			"label": "Fake Timberwolf",
 			"notes": "",
 			"ishuman": false,
@@ -41980,7 +43770,7 @@
 		},
 		"154": {
 			"id": 154,
-			"order": 247,
+			"order": 249,
 			"label": "Twilight's Crown",
 			"notes": "From S4 onward",
 			"ishuman": false,
@@ -42032,7 +43822,7 @@
 		},
 		"299": {
 			"id": 299,
-			"order": 248,
+			"order": 250,
 			"label": "Prince Rutherford",
 			"notes": "",
 			"ishuman": false,
@@ -42326,7 +44116,7 @@
 		},
 		"156": {
 			"id": 156,
-			"order": 249,
+			"order": 251,
 			"label": "Rainbow Dash's Bandaids (Newbie Dash)",
 			"notes": "Sampled from S6E7",
 			"ishuman": false,
@@ -42393,7 +44183,7 @@
 		},
 		"182": {
 			"id": 182,
-			"order": 250,
+			"order": 252,
 			"label": "Rainbow Cookie Zombie Effects",
 			"notes": "Colors of this effect are not muted even if the pony's coat ends up muted. This effect is dimmed with any night filters.\nTo get the muted coat/mane/other colors for any character, take the RGB value of the color, average the R, G, B values, and adjust each RGB value 50% of the way to that average. For example, if RGB is 120, 60, 120, the average is 100. The R value of 120 would then move 50%*(120-100) or 10 (ending up at 110), the G value of 60 would move 50%*(100-60) or 20 (ending up at 80).",
 			"ishuman": false,
@@ -42453,7 +44243,7 @@
 		},
 		"199": {
 			"id": 199,
-			"order": 251,
+			"order": 253,
 			"label": "Hypnotized Mane 6 Eyes",
 			"notes": "Eye colors for the Mane 6 (except Twilight) due to Starlight Glimmer's spell from S6E21.\nAll other body and mane/tail colors remain the same.",
 			"ishuman": false,
@@ -42604,7 +44394,7 @@
 		},
 		"255": {
 			"id": 255,
-			"order": 252,
+			"order": 254,
 			"label": "Gina",
 			"notes": "",
 			"ishuman": false,
@@ -42738,153 +44528,9 @@
 			],
 			"RelatedAppearances": []
 		},
-		"310": {
-			"id": 310,
-			"order": 252,
-			"label": "Lemon Zest",
-			"notes": "",
-			"ishuman": true,
-			"added": "2017-07-06T03:27:12Z",
-			"private": false,
-			"ColorGroups": {
-				"1513": {
-					"id": 1513,
-					"label": "Skin",
-					"order": 2,
-					"Colors": [
-						{
-							"order": 0,
-							"label": "Outline",
-							"hex": "#DC5980"
-						},
-						{
-							"order": 1,
-							"label": "Fill",
-							"hex": "#FFB3B9"
-						}
-					]
-				},
-				"1514": {
-					"id": 1514,
-					"label": "Hair",
-					"order": 3,
-					"Colors": [
-						{
-							"order": 0,
-							"label": "Outline",
-							"hex": "#56A376"
-						},
-						{
-							"order": 1,
-							"label": "Fill 1",
-							"hex": "#80CA87"
-						},
-						{
-							"order": 2,
-							"label": "Fill 2",
-							"hex": "#9AE26B"
-						},
-						{
-							"order": 3,
-							"label": "Fill 3",
-							"hex": "#E9FB69"
-						}
-					]
-				},
-				"1515": {
-					"id": 1515,
-					"label": "Eyes",
-					"order": 4,
-					"Colors": [
-						{
-							"order": 0,
-							"label": "Iris Gradient Top",
-							"hex": "#DA972F"
-						},
-						{
-							"order": 1,
-							"label": "Iris Gradient Bottom",
-							"hex": "#FFF28B"
-						},
-						{
-							"order": 2,
-							"label": "Upper Highlight",
-							"hex": "#FBEF93"
-						},
-						{
-							"order": 3,
-							"label": "Lower Highlight",
-							"hex": "#FFFFFF"
-						},
-						{
-							"order": 4,
-							"label": "Eyeshadow",
-							"hex": "#7DC5D2"
-						}
-					]
-				},
-				"1516": {
-					"id": 1516,
-					"label": "Headphones",
-					"order": 5,
-					"Colors": [
-						{
-							"order": 0,
-							"label": "Main Outline",
-							"hex": "#C12770"
-						},
-						{
-							"order": 1,
-							"label": "Fill",
-							"hex": "#E15498"
-						},
-						{
-							"order": 2,
-							"label": "Edge Fill",
-							"hex": "#CF337B"
-						},
-						{
-							"order": 3,
-							"label": "Markings",
-							"hex": "#F998B5"
-						}
-					]
-				},
-				"1517": {
-					"id": 1517,
-					"label": "School Outfit",
-					"order": 6,
-					"Colors": [
-						{
-							"order": 0,
-							"label": "Buttons",
-							"hex": "#ADF4FA"
-						},
-						{
-							"order": 1,
-							"label": "Hem Outline",
-							"hex": "#787188"
-						},
-						{
-							"order": 2,
-							"label": "Hem Fill",
-							"hex": "#B1ABBA"
-						}
-					]
-				}
-			},
-			"TagIDs": [
-				12,
-				76,
-				353,
-				514,
-				515
-			],
-			"RelatedAppearances": []
-		},
 		"304": {
 			"id": 304,
-			"order": 253,
+			"order": 255,
 			"label": "Burnt Oak",
 			"notes": "",
 			"ishuman": false,
@@ -42900,172 +44546,6 @@
 				351,
 				478,
 				511
-			],
-			"RelatedAppearances": []
-		},
-		"311": {
-			"id": 311,
-			"order": 253,
-			"label": "Indigo Zap",
-			"notes": "",
-			"ishuman": true,
-			"added": "2017-07-12T01:51:54Z",
-			"private": false,
-			"ColorGroups": {
-				"1518": {
-					"id": 1518,
-					"label": "Skin",
-					"order": 0,
-					"Colors": [
-						{
-							"order": 0,
-							"label": "Outline",
-							"hex": "#DA7253"
-						},
-						{
-							"order": 1,
-							"label": "Fill",
-							"hex": "#FFEACA"
-						}
-					]
-				},
-				"1519": {
-					"id": 1519,
-					"label": "Hair",
-					"order": 1,
-					"Colors": [
-						{
-							"order": 0,
-							"label": "Outline",
-							"hex": "#0C2741"
-						},
-						{
-							"order": 1,
-							"label": "Fill",
-							"hex": "#16426C"
-						},
-						{
-							"order": 2,
-							"label": "Stripe 1",
-							"hex": "#15A0BE"
-						},
-						{
-							"order": 3,
-							"label": "Stripe 2",
-							"hex": "#16678D"
-						}
-					]
-				},
-				"1522": {
-					"id": 1522,
-					"label": "Iris",
-					"order": 2,
-					"Colors": [
-						{
-							"order": 0,
-							"label": "Gradient Top",
-							"hex": "#A55925"
-						},
-						{
-							"order": 1,
-							"label": "Gradient Bottom",
-							"hex": "#FFAC34"
-						},
-						{
-							"order": 2,
-							"label": "Upper Highlight",
-							"hex": "#FFDD5A"
-						},
-						{
-							"order": 3,
-							"label": "Lower Highlight",
-							"hex": "#FFE98D"
-						}
-					]
-				},
-				"1520": {
-					"id": 1520,
-					"label": "Googles",
-					"order": 3,
-					"Colors": [
-						{
-							"order": 0,
-							"label": "Front Fill",
-							"hex": "#FFA748"
-						},
-						{
-							"order": 1,
-							"label": "Side Fill",
-							"hex": "#E9662D"
-						},
-						{
-							"order": 2,
-							"label": "Strap",
-							"hex": "#797187"
-						},
-						{
-							"order": 3,
-							"label": "Strap Band",
-							"hex": "#B1ABB9"
-						},
-						{
-							"order": 4,
-							"label": "Lens (65% opacity)",
-							"hex": "#98BCC6"
-						},
-						{
-							"order": 5,
-							"label": "Lens Shine (50% opacity)",
-							"hex": "#98BCC6"
-						}
-					]
-				},
-				"1521": {
-					"id": 1521,
-					"label": "Earrings",
-					"order": 4,
-					"Colors": [
-						{
-							"order": 0,
-							"label": "Outline",
-							"hex": "#FFB44A"
-						},
-						{
-							"order": 1,
-							"label": "Fill",
-							"hex": "#FFE161"
-						}
-					]
-				},
-				"1523": {
-					"id": 1523,
-					"label": "Cuffs",
-					"order": 5,
-					"Colors": [
-						{
-							"order": 0,
-							"label": "Outline",
-							"hex": "#787187"
-						},
-						{
-							"order": 1,
-							"label": "Fill",
-							"hex": "#B1ABBA"
-						},
-						{
-							"order": 2,
-							"label": "Stripe",
-							"hex": "#413971"
-						}
-					]
-				}
-			},
-			"TagIDs": [
-				12,
-				76,
-				353,
-				514,
-				517
 			],
 			"RelatedAppearances": []
 		}
@@ -43084,7 +44564,7 @@
 			"name": "earth pony",
 			"title": null,
 			"type": "spec",
-			"uses": 84,
+			"uses": 85,
 			"synonym_of": null
 		},
 		"3": {
@@ -43124,7 +44604,7 @@
 			"name": "minor character",
 			"title": "Ponies who had a speaking role, interacted with the mane six, or whose only purpose is to fill crowds.",
 			"type": "cat",
-			"uses": 168,
+			"uses": 169,
 			"synonym_of": null
 		},
 		"8": {
@@ -43148,7 +44628,7 @@
 			"name": "pet",
 			"title": null,
 			"type": "cat",
-			"uses": 7,
+			"uses": 8,
 			"synonym_of": null
 		},
 		"11": {
@@ -43164,7 +44644,7 @@
 			"name": "female",
 			"title": null,
 			"type": "gen",
-			"uses": 128,
+			"uses": 133,
 			"synonym_of": null
 		},
 		"14": {
@@ -43396,7 +44876,7 @@
 			"name": "apple bloom",
 			"title": null,
 			"type": "char",
-			"uses": 1,
+			"uses": 2,
 			"synonym_of": null
 		},
 		"47": {
@@ -43404,7 +44884,7 @@
 			"name": "scootaloo",
 			"title": null,
 			"type": "char",
-			"uses": 1,
+			"uses": 2,
 			"synonym_of": null
 		},
 		"48": {
@@ -43412,7 +44892,7 @@
 			"name": "sweetie belle",
 			"title": null,
 			"type": "char",
-			"uses": 1,
+			"uses": 2,
 			"synonym_of": null
 		},
 		"49": {
@@ -43596,7 +45076,7 @@
 			"name": "human",
 			"title": null,
 			"type": "spec",
-			"uses": 8,
+			"uses": 13,
 			"synonym_of": null
 		},
 		"77": {
@@ -43908,7 +45388,7 @@
 			"name": "vinyl scratch",
 			"title": null,
 			"type": "char",
-			"uses": 1,
+			"uses": 2,
 			"synonym_of": null
 		},
 		"116": {
@@ -45036,7 +46516,7 @@
 			"name": "apple family",
 			"title": null,
 			"type": "cat",
-			"uses": 5,
+			"uses": 6,
 			"synonym_of": null
 		},
 		"259": {
@@ -46628,7 +48108,7 @@
 			"name": "s07e13",
 			"title": null,
 			"type": "ep",
-			"uses": 4,
+			"uses": 5,
 			"synonym_of": null
 		},
 		"479": {
@@ -46900,7 +48380,7 @@
 			"name": "flash sentry",
 			"title": null,
 			"type": "char",
-			"uses": 1,
+			"uses": 2,
 			"synonym_of": null
 		},
 		"514": {
@@ -46997,6 +48477,38 @@
 			"title": null,
 			"type": "ep",
 			"uses": 0,
+			"synonym_of": null
+		},
+		"526": {
+			"id": 526,
+			"name": "harry",
+			"title": null,
+			"type": "char",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"527": {
+			"id": 527,
+			"name": "bear",
+			"title": null,
+			"type": "spec",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"528": {
+			"id": 528,
+			"name": "goldie delicious",
+			"title": null,
+			"type": "char",
+			"uses": 1,
+			"synonym_of": null
+		},
+		"529": {
+			"id": 529,
+			"name": "s04e09",
+			"title": null,
+			"type": "ep",
+			"uses": 1,
 			"synonym_of": null
 		}
 	}
