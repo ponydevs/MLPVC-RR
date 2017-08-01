@@ -87,6 +87,7 @@ class Browser {
 	const BROWSER_PALEMOON = 'Pale Moon'; // https://www.palemoon.org/
 	const BROWSER_MAXTHON = 'Maxthon'; // http://maxthon.com/
 	const BROWSER_FFFOCUS = 'Firefox Focus'; // https://www.mozilla.org/en-US/firefox/focus/
+	const BROWSER_YANDEX = 'Yandex Browser'; // https://browser.yandex.com/
 
 	const BROWSER_NETSCAPE_NAVIGATOR = 'Netscape Navigator'; // http://browser.netscape.com/ (DEPRECATED)
 	const BROWSER_GALEON = 'Galeon'; // http://galeon.sourceforge.net/ (DEPRECATED)
@@ -339,6 +340,7 @@ class Browser {
 			$this->checkBrowserFirefoxFocus() ||
 			$this->checkBrowserFirefox() ||
 			$this->checkBrowserMaxthon() ||
+			$this->checkBrowserYandex() ||
 			$this->checkBrowserChrome() ||
 			$this->checkBrowserOmniWeb() ||
 			$this->checkBrowserSafari() ||
@@ -694,13 +696,28 @@ class Browser {
 	}
 
 	/**
-	 * Determine if the browser is Chrome or not (last updated 1.7)
-	 * @return boolean True if the browser is Chrome otherwise false
+	 * Determine if the browser is Mathon or not (last updated 1.7)
+	 * @return boolean True if the browser is Mathon otherwise false
 	 */
 	protected function checkBrowserMaxthon(){
 		if (preg_match('~\bMaxthon\/([\d.]+)~',$this->_agent,$match)){
 			$this->setVersion($match[1]);
 			$this->setBrowser(self::BROWSER_MAXTHON);
+
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Determine if the browser is Yandex Browser or not (last updated 1.7)
+	 * @return boolean True if the browser is Yandex Browser otherwise false
+	 */
+	protected function checkBrowserYandex(){
+		if (preg_match('~\bYaBrowser\/([\d.]+)~',$this->_agent,$match)){
+			$this->setVersion($match[1]);
+			$this->setBrowser(self::BROWSER_YANDEX);
 
 			return true;
 		}

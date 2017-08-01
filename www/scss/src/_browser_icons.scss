@@ -39,6 +39,9 @@
 	&.browser-firefoxfocus#{$before} {
 		background-image: url(../../img/browser/firefoxfocus.png);
 	}
+	&.browser-yandexbrowser#{$before} {
+		background-image: url(../../img/browser/yandexbrowser.png);
+	}
 }
 @mixin if-browser-has-icon {
 	&.browser-chrome,
@@ -50,7 +53,8 @@
 	&.browser-vivaldi,
 	&.browser-palemoon,
 	&.browser-maxthon,
-	&.browser-firefoxfocus {
+	&.browser-firefoxfocus,
+	&.browser-yandexbrowser {
 		@content;
 	}
 }
