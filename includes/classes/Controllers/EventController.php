@@ -208,9 +208,8 @@ class EventController extends Controller {
 
 		$this->_getEvent($params['id']);
 
-		$resp = $this->_event->toArray();
-		unset($resp['id']);
-		unset($resp['desc_rend']);
+		$resp = $this->_event->to_array();
+		unset($resp['id'], $resp['desc_rend']);
 		Response::done($resp);
 	}
 
