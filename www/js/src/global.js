@@ -382,13 +382,16 @@ $(function(){
 		e.stopPropagation();
 		$('#ctxmenu').hide();
 
+		// Screw JS file scraping spambots
+		const email = ['seinopsys','gmail.com'].join('@');
+
 		$.Dialog.info($.Dialog.isOpen() ? undefined : 'Send feedback',
 			`<h3>How to send feedback</h3>
 			<p>If you're having an issue with the site and would like to let us know or have an idea/feature request you’d like to share, here’s how:</p>
 			<ul>
-				<li><a href='https://discord.gg/0vv70fepSILbdJOD'>Join our Discord server</a> and describe your issue in the <strong>#support</strong> channel</li>
+				<li><a href='https://discord.gg/0vv70fepSILbdJOD'>Join our Discord server</a> and describe your issue/idea in the <strong>#support</strong> channel</li>
 				<li><a href='http://mlp-vectorclub.deviantart.com/notes/'>Send a note </a>to the group on DeviantArt</li>
-				<li><a href='mailto:seinopsys@gmail.com'>Send an e-mail</a> to seinopsys@gmail.com</li>
+				<li><a href='mailto:${email}'>Send an e-mail</a> to ${email}</li>
 				<li>If you have a GitHub account, you can also  <a href="${$footer.find('a.issues').attr('href')}">create an issue</a> on the project’s GitHub page.
 			</ul>`
 		);

@@ -13,7 +13,8 @@ use App\Tags;
 	<h1><?=$heading?></h1>
 	<p>A searchable list of character colors from the <?=$EQG?'movies':'show'?></p>
 	<p class="align-center">
-		If you can’t find a character here, check the old guides: <a href="https://sta.sh/0kic0ngp3fy">Pony</a> / <a href="http://fav.me/d7120l1">EQG</a><br>
+		We add characters based on demand, please <a class="send-feedback">let us know</a> if you'd like us to make a guide for a character.<br>
+		<small>Alternatively, use the old color guides: <a href="https://sta.sh/0kic0ngp3fy">Pony</a> / <a href="http://fav.me/d7120l1">EQG</a></small><br>
 		Looking for this information in a machine-readable format? <a href="<?=CoreUtils::cachedAsset('mlpvc-colorguide','dist','json')?>" target="_blank" download="mlpvc-colorguide.json">JSON</a>
 	</p>
 	<p class='align-center links'>

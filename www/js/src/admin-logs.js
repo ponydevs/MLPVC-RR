@@ -99,6 +99,7 @@ $(function(){
 				$FilterForm.triggerHandler('submit');
 			});
 		});
+		$.Dialog.close();
 	}).trigger('page-switch').on('click','.dynt-el',function(){
 		let ww = $w.width();
 		if (ww >= 650)
