@@ -5,7 +5,7 @@ namespace App;
 use App\Models\Episode;
 
 class Input {
-	private $_type, $_source, $_key, $_origValue = null, $_value = null, $_respond = true, $_validator, $_range, $_silentFail;
+	private $_type, $_source, $_key, $_initValue, $_origValue, $_value, $_respond = true, $_validator, $_range, $_silentFail;
 	private static $SUPPORTED_TYPES = [
 		'exists' => true,
 		'bool' => true,
@@ -90,8 +90,7 @@ class Input {
 		if (!isset($_SRC[$key]) || CoreUtils::length($_SRC[$key]) === 0)
 			$result = empty($o[self::IS_OPTIONAL]) ? self::ERROR_MISSING : self::ERROR_NONE;
 		else {
-			$this->_value = $this->_type === 'text' ? CoreUtils::trim($_SRC[$key], true) : CoreUtils::trim($_SRC[$key]);
-			$this->_origValue = $this->_value;
+			$this->_origValue = $this->_type === 'text' ? CoreUtils::trim($_SRC[$key], true) : CoreUtils::trim($_SRC[$key]);
 			$this->_range = $o[self::IN_RANGE] ?? null;
 
 			$result = $this->_validate();
@@ -111,70 +110,76 @@ class Input {
 	 * @return int
 	 */
 	private function _validate(){
-		if (isset($this->_validator)){
-			$call_params = [&$this->_value, $this->_range];
-			return call_user_func_array($this->_validator, $call_params) ?? self::ERROR_NONE;
+		if ($this->_validator !== null){
+			$call_params = [&$this->_origValue, $this->_range];
+			$vaildation_result = call_user_func_array($this->_validator, $call_params);
+			if ($vaildation_result !== null)
+				return $vaildation_result;
+
+			$this->_value = $this->_origValue;
+			return self::ERROR_NONE;
 		}
 		switch ($this->_type){
 			case 'bool':
-				if (!in_array($this->_value, ['1', '0', 'true', 'false', 'on', 'off'], false))
+				if (!in_array($this->_origValue, ['1', '0', 'true', 'false', 'on', 'off'], false))
 					return self::ERROR_INVALID;
-				$this->_value = in_array($this->_value, ['1', 'true', 'on'], false);
+				$this->_origValue = in_array($this->_origValue, ['1', 'true', 'on'], false);
 			break;
 			case 'int':
 			case 'vote':
 			case 'float':
-				if (!is_numeric($this->_value))
+				if (!is_numeric($this->_origValue))
 					return self::ERROR_INVALID;
-				$this->_value = $this->_type === 'float'
-					? (float) $this->_value
-					: (int) $this->_value;
-				if ($this->_type === 'vote' && $this->_value === 0)
+				$this->_origValue = $this->_type === 'float'
+					? (float) $this->_origValue
+					: (int) $this->_origValue;
+				if ($this->_type === 'vote' && $this->_origValue === 0)
 					return self::ERROR_INVALID;
-				if (self::checkNumberRange($this->_value, $this->_range, $code))
+				if (self::checkNumberRange($this->_origValue, $this->_range, $code))
 					return $code;
+				$this->_origValue = $this->_origValue;
 			break;
 			case 'text':
 			case 'string':
-				if (!is_string($this->_value))
+				if (!is_string($this->_origValue))
 					return self::ERROR_INVALID;
-				if (self::checkStringLength($this->_value, $this->_range, $code))
+				if (self::checkStringLength($this->_origValue, $this->_range, $code))
 					return $code;
 			break;
 			case 'uuid':
-				if (!is_string($this->_value) || !preg_match(new RegExp('^[a-f0-9]{8}\-[a-f0-9]{4}\-4[a-f0-9]{3}\-[89ab][a-f0-9]{3}\-[a-f0-9]{12}$','i'), $this->_value))
+				if (!is_string($this->_origValue) || !preg_match(new RegExp('^[a-f0-9]{8}\-[a-f0-9]{4}\-4[a-f0-9]{3}\-[89ab][a-f0-9]{3}\-[a-f0-9]{12}$','i'), $this->_origValue))
 					return self::ERROR_INVALID;
 
-				$this->_value = strtolower($this->_value);
+				$this->_origValue = strtolower($this->_origValue);
 			break;
 			case 'username':
 				global $USERNAME_REGEX;
-				if (!is_string($this->_value) || !$USERNAME_REGEX->match($this->_value))
+				if (!is_string($this->_origValue) || !$USERNAME_REGEX->match($this->_origValue))
 					return self::ERROR_INVALID;
 			break;
 			case 'url':
-				if (!is_string($this->_value))
+				if (!is_string($this->_origValue))
 					return self::ERROR_INVALID;
 				global $REWRITE_REGEX;
-				if (stripos($this->_value, ABSPATH) === 0)
-					$this->_value = CoreUtils::substring($this->_value, CoreUtils::length(ABSPATH)-1);
-				if (!preg_match($REWRITE_REGEX,$this->_value) && !preg_match(new RegExp('^#[a-z\-]+$'),$this->_value)){
-					if (self::checkStringLength($this->_value, $this->_range, $code))
+				if (stripos($this->_origValue, ABSPATH) === 0)
+					$this->_origValue = CoreUtils::substring($this->_origValue, CoreUtils::length(ABSPATH)-1);
+				if (!preg_match($REWRITE_REGEX,$this->_origValue) && !preg_match(new RegExp('^#[a-z\-]+$'),$this->_origValue)){
+					if (self::checkStringLength($this->_origValue, $this->_range, $code))
 						return $code;
-					if (!preg_match(new RegExp('^https?://[a-z\d/.-]+(?:/[ -~]+)?$','i'), $this->_value))
+					if (!preg_match(new RegExp('^https?://[a-z\d/.-]+(?:/[ -~]+)?$','i'), $this->_origValue))
 						Response::fail('Link URL does not appear to be a valid link');
 				}
 			break;
 			case 'int[]':
-				if (!is_string($this->_value) || !preg_match(new RegExp('^\d{1,12}(?:,\d{1,12})*$'), $this->_value))
+				if (!is_string($this->_origValue) || !preg_match(new RegExp('^\d{1,12}(?:,\d{1,12})*$'), $this->_origValue))
 					return self::ERROR_INVALID;
 
-				$this->_value = array_map('intval',explode(',',$this->_value));
+				$this->_origValue = array_map('intval',explode(',',$this->_origValue));
 			break;
 			case 'json':
 				try {
-					$this->_value = JSON::decode($this->_value);
-					if (empty($this->_value))
+					$this->_origValue = JSON::decode($this->_origValue);
+					if (empty($this->_origValue))
 						throw new \Exception(rtrim('Could not decode JSON; '.json_last_error(),'; '));
 				}
 				catch (\Exception $e){
@@ -183,19 +188,20 @@ class Input {
 				}
 			break;
 			case 'timestamp':
-				$this->_value = strtotime($this->_value);
-				if ($this->_value === false)
+				$this->_origValue = strtotime($this->_origValue);
+				if ($this->_origValue === false)
 					return self::ERROR_INVALID;
-				if (self::checkNumberRange($this->_value, $this->_range, $code))
+				if (self::checkNumberRange($this->_origValue, $this->_range, $code))
 					return $code;
 			break;
 			case 'epid':
-				$this->_value = Episode::parseID($this->_value);
-				if (empty($this->_value))
+				$this->_origValue = Episode::parseID($this->_origValue);
+				if (empty($this->_origValue))
 					return self::ERROR_INVALID;
 			break;
 		}
 
+		$this->_value = $this->_origValue;
 		return self::ERROR_NONE;
 	}
 
@@ -204,7 +210,7 @@ class Input {
 		return $code;
 	}
 	public static function checkNumberRange($value, $range, &$code = false){
-		$result = self::_numberInRange($value, $range);
+		$result = self::_numberInRange($value, $range, $code);
 		return $code === false ? $result === self::ERROR_RANGE : $result;
 	}
 
@@ -221,7 +227,7 @@ class Input {
 	}
 
 	private function _outputError($message, $errorCode = null){
-		$message = str_replace('@value', CoreUtils::escapeHTML($this->_value), $message);
+		$message = str_replace('@value', CoreUtils::escapeHTML($this->_initValue), $message);
 		if ($errorCode === self::ERROR_RANGE){
 			if (isset($this->_range[0]))
 				$message = str_replace('@min', $this->_range[0], $message);

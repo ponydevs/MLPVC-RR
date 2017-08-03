@@ -1,0 +1,2 @@
+#content>section:not(:last-child){margin-bottom:15px}#content>section>h2{font-size:1.3em;margin:0 0 8px;font-family:Celestia,sans-serif}#content>section>h2 .typcn{margin-right:7px}#content>section>h2 .btn,#content>section>h2 button{vertical-align:baseline;padding:2px;margin:0}#content>section p{margin:0}#content>section p:not(:last-child){margin-bottom:5px}#content>section>div>*{margin:0 0 5px}#content>section>div>:last-child{margin-bottom:0}#content ol>li>ul{list-style:none;padding:0}#content .user-list{font-size:1.1em}
+/*# sourceMappingURL=admin-ip.css.map */

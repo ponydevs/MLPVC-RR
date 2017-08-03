@@ -26,12 +26,13 @@ use App\Logs;
 		?></optgroup>
 		</select>
 		<strong>entries from</strong>
-		<input type="text" name="by" class="username" size="22" placeholder="any user"<?=isset($by)?" value='$by'":''?> pattern="^(<?=USERNAME_PATTERN?>|Web server)$" maxlength="20" list="from_values">
+		<input type="text" name="by" class="username" size="22" placeholder="any user / IP"<?=isset($by)||isset($ip)?" value='".($by??$ip)."'":''?> pattern="^(<?=USERNAME_PATTERN?>|Web server|[\da-fA-F.:]+)$" maxlength="20" list="from_values">
 		<button type="submit" class="blue typcn typcn-zoom" title="Apply filter"></button>
-		<button type="reset" class="orange typcn typcn-times" title="Clear filters"<?=isset($by)||isset($type)?'':' disabled'?>></button>
+		<button type="reset" class="orange typcn typcn-times" title="Clear filters"<?=isset($by)||isset($ip)||isset($type)?'':' disabled'?>></button>
 		<datalist id="from_values">
 			<option>Web server</option>
 			<option>you</option>
+			<option>your IP</option>
 		</datalist>
 	</form>
 	<?=$Pagination?>

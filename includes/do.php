@@ -10,7 +10,8 @@
 	$permRedirectPattern = new RegExp('^\s*(.*?)\.php(\?.*)?$','i');
 	if (preg_match($permRedirectPattern, $_SERVER['REQUEST_URI']))
 		HTTP::redirect(preg_replace($permRedirectPattern, '$1$2', $_SERVER['REQUEST_URI']));
-	if (!preg_match($REWRITE_REGEX,strtok($_SERVER['REQUEST_URI'],'?'),$matches)){
+	$decoded_uri = urldecode($_SERVER['REQUEST_URI']);
+	if (!preg_match($REWRITE_REGEX,strtok($decoded_uri,'?'),$matches)){
 		Users::authenticate();
 		CoreUtils::notFound();
 	}
@@ -20,7 +21,7 @@
 
 	require INCPATH.'routes.php';
 	/** @var $match array */
-	$match = $router->match($_SERVER['REQUEST_URI']);
+	$match = $router->match($decoded_uri);
 	if (!isset($match['target']))
 		CoreUtils::notFound();
 	(\App\RouteHelper::processHandler($match['target']))($match['params']);

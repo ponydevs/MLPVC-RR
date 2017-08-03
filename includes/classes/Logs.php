@@ -7,6 +7,7 @@ use App\Models\Appearance;
 use App\Models\ColorGroup;
 use App\Models\Episode;
 use App\Models\EpisodeVideo;
+use App\Models\Logs\Log;
 use App\Models\Request;
 use App\Models\Reservation;
 use App\Models\User;
@@ -71,7 +72,7 @@ class Logs {
 
 		if (Auth::$signed_in && !$forcews)
 			$central['initiator'] = Auth::$user->id;
-		return (bool) DB::$instance->insert('log',$central);
+		return (new Log($central))->save();
 	}
 
 	public static $ACTIONS = [
@@ -421,7 +422,8 @@ class Logs {
 		$newOld = [];
 		unset($data['entryid'], $data['target']);
 		foreach ($data as $k => $v){
-			if (is_null($v)) continue;
+			if (is_null($v))
+				continue;
 
 			$thing = CoreUtils::substring($k, 3);
 			$type = CoreUtils::substring($k, 0, 3);
@@ -435,6 +437,10 @@ class Logs {
 	private static function _link($url, $blank = false){
 		return "<a href='".CoreUtils::aposEncode($url)."' ".($blank?'target="_blank" rel="noopener"':'').">$url</a>";
 	}
+
+	const LOCALHOST_IPS = ['::1', '127.0.0.1', '::ffff:127.0.0.1'];
+
+	const SEARCH_USER_LINK = '';
 
 	/**
 	 * Render log page <tbody> content
@@ -450,30 +456,31 @@ class Logs {
 				$inituser = User::find($item['initiator']);
 				if (empty($inituser))
 					$inituser = 'Deleted user';
-				else $inituser = $inituser->toAnchor();
-
-				$ip = in_array($item['ip'], ['::1', '127.0.0.1']) ? 'localhost' : $item['ip'];
-
-				if ($item['ip'] === $_SERVER['REMOTE_ADDR'])
-					$ip .= ' <span class="self">(from your IP)</span>';
+				else {
+					$sameUser = $inituser->id === Auth::$user->id;
+					$me_class = $sameUser ? ' your-name' : '';
+					$me_by = $sameUser ? ' you' : 'this user';
+					$strongName = $sameUser ? "<strong title='You'>{$inituser->name}</strong>" : $inituser->name;
+					$inituser = "<a class='search-user typcn typcn-zoom$me_class' title='Search for all entries by $me_by'></a> <a class='typcn typcn-user' href='{$inituser->toURL()}' title='Visit profile'></a> <span class='name'>$strongName</span>";
+				}
 			}
-			else {
-				$inituser = null;
-				$ip = '<a class="server-init" title="Search for all entries by Web server"><span class="typcn typcn-zoom"></span>&nbsp;Web server</a>';
-			}
+			else $inituser = '<a class="search-user typcn typcn-zoom" title="Search for all entries by this user"></a> <spac class="name">Web server</spac>';
 
-			$event = Logs::$LOG_DESCRIPTION[$item['reftype']] ?? $item['reftype'];
+			$ip = in_array(strtolower($item['ip']), self::LOCALHOST_IPS, true) ? 'localhost' : $item['ip'];
+			$ownIP = $item['ip'] === $_SERVER['REMOTE_ADDR'];
+			$strongIP = $ownIP ? "<strong title='Your current IP'>$ip</strong>" : $ip;
+			$ip = "<a class='typcn typcn-zoom search-ip".($ownIP?' your-ip':'')."' title='Search for all entries from this IP'></a> <a  class='typcn typcn-info-large' href='/admin/ip/$ip'></a> <span class='address'>$strongIP</span>";
+
+			$event = self::$LOG_DESCRIPTION[$item['reftype']] ?? $item['reftype'];
 			if (isset($item['refid']))
 				$event = '<span class="expand-section typcn typcn-plus">'.$event.'</span>';
 			$ts = Time::tag($item['timestamp'], Time::TAG_EXTENDED);
-
-			if (!empty($inituser)) $ip = "$inituser<br>$ip";
 
 			$HTML .= <<<HTML
 		<tr>
 			<td class='entryid'>{$item['entryid']}</td>
 			<td class='timestamp'>$ts<span class="dynt-el"></span></td>
-			<td class='ip'>$ip</td>
+			<td class='ip'>$inituser<br>$ip</td>
 			<td class='reftype'>$event</td>
 		</tr>
 HTML;

@@ -238,7 +238,7 @@ class DeviantArt {
 		}
 		catch (IdentityProviderException $e){
 			if (Cookie::exists('access')){
-				$Database->where('token', CoreUtils::sha256(Cookie::get('access')))->delete('sessions');
+				DB::$instance->where('token', CoreUtils::sha256(Cookie::get('access')))->delete('sessions');
 				Cookie::delete('access', Cookie::HTTPONLY);
 			}
 			$response_body = $e->getResponseBody();

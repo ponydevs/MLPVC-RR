@@ -15,6 +15,10 @@ $TableHeadingFontSize: 16px;
 			background: transparent;
 		}
 
+		.username {
+			width: 375px;
+		}
+
 		.entrytype { text-transform: lowercase }
 
 		.entrytype > * {
@@ -104,7 +108,7 @@ $TableHeadingFontSize: 16px;
 			text-align: center;
 		}
 		&.timestamp {
-			width: 35%;
+			width: 28%;
 
 			time, .dynt-el { display: block }
 			.dynt-el {
@@ -113,7 +117,7 @@ $TableHeadingFontSize: 16px;
 			}
 		}
 		&.ip {
-			width: 20%;
+			width: 27%;
 
 			.self { font-size: .8em }
 		}
@@ -129,9 +133,11 @@ $TableHeadingFontSize: 16px;
 		font-size: 1.6em;
 	}
 }
+$unexpanded: rgba(0,0,0,.1);
+$expanded: rgba(0,0,0,.05);
 .expand-section {
 	display: inline-block;
-	background-color: rgba(0,0,0,.15);
+	background-color: $unexpanded;
 	border-radius: 5px;
 	padding: 3px 5px;
 	cursor: pointer;
@@ -147,12 +153,12 @@ $TableHeadingFontSize: 16px;
 		border-bottom-left-radius: 0;
 		border-bottom-right-radius: 0;
 
-		background-color: rgba(0,0,0,.075);
+		background-color: $expanded;
 	}
 }
 .expandable-section {
 	padding: 10px;
-	background-color: rgba(0,0,0,.075);
+	background-color: $expanded;
 	border-radius: 0 8px 8px 8px;
 
 	> div {

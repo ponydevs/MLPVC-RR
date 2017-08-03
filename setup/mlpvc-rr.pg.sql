@@ -408,6 +408,42 @@ CREATE TABLE global_settings (
 ALTER TABLE global_settings OWNER TO "mlpvc-rr";
 
 --
+-- Name: known_ips; Type: TABLE; Schema: public; Owner: mlpvc-rr
+--
+
+CREATE TABLE known_ips (
+    ip character varying(255) NOT NULL,
+    user_id uuid,
+    first_seen timestamp with time zone DEFAULT now() NOT NULL,
+    last_seen timestamp with time zone DEFAULT now() NOT NULL,
+    id integer NOT NULL
+);
+
+
+ALTER TABLE known_ips OWNER TO "mlpvc-rr";
+
+--
+-- Name: known_ips_id_seq; Type: SEQUENCE; Schema: public; Owner: mlpvc-rr
+--
+
+CREATE SEQUENCE known_ips_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE known_ips_id_seq OWNER TO "mlpvc-rr";
+
+--
+-- Name: known_ips_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER SEQUENCE known_ips_id_seq OWNED BY known_ips.id;
+
+
+--
 -- Name: log; Type: TABLE; Schema: public; Owner: mlpvc-rr
 --
 
@@ -417,7 +453,7 @@ CREATE TABLE log (
     reftype character varying(20) NOT NULL,
     refid integer,
     "timestamp" timestamp with time zone DEFAULT now() NOT NULL,
-    ip character varying(255)
+    ip character varying(255) NOT NULL
 );
 
 
@@ -1628,6 +1664,13 @@ ALTER TABLE ONLY events__entries ALTER COLUMN id SET DEFAULT nextval('events__en
 
 
 --
+-- Name: known_ips id; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER TABLE ONLY known_ips ALTER COLUMN id SET DEFAULT nextval('known_ips_id_seq'::regclass);
+
+
+--
 -- Name: log entryid; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
 --
 
@@ -1971,6 +2014,22 @@ ALTER TABLE ONLY events
 
 ALTER TABLE ONLY global_settings
     ADD CONSTRAINT global_settings_key PRIMARY KEY (key);
+
+
+--
+-- Name: known_ips known_ips_id; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER TABLE ONLY known_ips
+    ADD CONSTRAINT known_ips_id PRIMARY KEY (id);
+
+
+--
+-- Name: known_ips known_ips_ip_user_id; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER TABLE ONLY known_ips
+    ADD CONSTRAINT known_ips_ip_user_id UNIQUE (ip, user_id);
 
 
 --

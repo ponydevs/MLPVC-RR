@@ -11,10 +11,10 @@ use App\Models\User;
  */
 class Auth {
 	/** @var User|null Currently authenticated user (or null if guest) */
-	public static $user = null;
+	public static $user;
 
 	/** @var Session|null Current session (or null if guest) */
-	public static $session = null;
+	public static $session;
 
 	/** @var bool True if signed in, false if guest */
 	public static $signed_in = false;

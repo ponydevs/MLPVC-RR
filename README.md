@@ -42,6 +42,7 @@ After some time, the idea of moving the old PNG color guide into an easier to us
    - [ElasticsearchDSL](https://github.com/ongr-io/ElasticsearchDSL)
    - [AltoRouter](https://github.com/dannyvankooten/AltoRouter)
    - [Parsedown](https://github.com/erusev/parsedown)
+   - [IPTools](https://github.com/S1lentium/IPTools)
  - Development tools:
    - [Gulp](http://gulpjs.com/)
    - [Uglify-js](https://www.npmjs.com/package/uglify-js)

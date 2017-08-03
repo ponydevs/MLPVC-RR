@@ -5,7 +5,8 @@ namespace App;
 class CachedFile {
 	private const
 		TYPE_ANY = 1,
-		TYPE_JSON = 2;
+		TYPE_JSON = 2,
+		TYPE_LOCK = 3;
 	/** @var string */
 	private $_path;
 	/** @var int */
@@ -23,6 +24,9 @@ class CachedFile {
 			case 'json':
 				$this->_type = self::TYPE_JSON;
 			break;
+			case 'lock':
+				$this->_type = self::TYPE_LOCK;
+			break;
 			default:
 				$this->_type = self::TYPE_ANY;
 		}
@@ -35,7 +39,7 @@ class CachedFile {
 	 * Creates an instance and stores it in an internal array which it's returned from on consequent calls to save resources
 	 *
 	 * @param string $path    Path to the cache file
-	 * @param int    $max_age How long until the file is considered expired (seconds)
+	 * @param int    $max_age How long until the file is considered expired (seconds). Set to -1 to never expire
 	 *
 	 * @return self
 	 */
@@ -47,7 +51,7 @@ class CachedFile {
 	}
 
 	public function expired():bool {
-		return !file_exists($this->_path) || time()-filemtime($this->_path) > $this->_max_age;
+		return !file_exists($this->_path) || ($this->_max_age !== -1 && time()-filemtime($this->_path) > $this->_max_age);
 	}
 
 	/**
@@ -69,6 +73,21 @@ class CachedFile {
 	}
 
 	/**
+	 * Set the file modification time to the current time
+	 *
+	 * @return bool Whether the change was successful
+	 */
+	public function bump(){
+		CoreUtils::createUploadFolder($this->_path);
+		if (!file_exists($this->_path)){
+			if ($this->_type !== self::TYPE_LOCK)
+				throw new \RuntimeException("Trying to bump non-existant non-lock file {$this->_path}, use ".__CLASS__.'->update instead!');
+			return file_put_contents($this->_path, '') !== false;
+		}
+		else return filemtime($this->_path, time()) !== false;
+	}
+
+	/**
 	 * Returns the data currently stored in the cache file
 	 * Return value type can change based on file type
 	 *
@@ -80,6 +99,9 @@ class CachedFile {
 		switch ($this->_type){
 			case self::TYPE_JSON:
 				$data = JSON::decode($data);
+			break;
+			case self::TYPE_LOCK:
+				$data = (bool)$data;
 			break;
 		}
 

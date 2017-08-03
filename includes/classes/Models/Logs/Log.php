@@ -3,6 +3,7 @@
 namespace App\Models\Logs;
 
 use ActiveRecord\DateTime;
+use App\Models\KnownIP;
 use App\Models\User;
 use App\Models\NSModel;
 
@@ -15,6 +16,7 @@ use App\Models\NSModel;
  * @property string   $ip
  * @property User     $actor
  * @method static Log find_by_reftype_and_refid(string $reftype, int $refid)
+ * @method static Log[] find_all_by_ip(string $ip)
  */
 class Log extends NSModel {
 	public static $table_name = 'log';
@@ -24,4 +26,10 @@ class Log extends NSModel {
 	public static $belongs_to = [
 		['actor', 'class' => '\App\Models\User', 'foreign_key' => 'initiator'],
 	];
+
+	static $after_create = ['make_known_ip'];
+
+	public function make_known_ip(){
+		KnownIP::record(null, $this->initiator, $this->timestamp);
+	}
 }

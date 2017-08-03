@@ -16,6 +16,7 @@ use App\Posts;
 use App\RegExp;
 use App\Response;
 use App\Users;
+use IPTools\IP;
 use RestCord\DiscordClient;
 
 class AdminController extends Controller {
@@ -44,50 +45,70 @@ class AdminController extends Controller {
 		if (isset($_GET['type']) && preg_match(new RegExp('/^[a-z_]+$/'), $_GET['type']) && isset(Logs::$LOG_DESCRIPTION[$_GET['type']]))
 			$type = $_GET['type'];
 
+		$ip = null;
 		if (!isset($_GET['by']))
 			$by = null;
-		else switch(strtolower(CoreUtils::trim($_GET['by']))){
-			case 'me':
-			case 'you':
-				$initiator = Auth::$user->id;
-				$by = 'you';
-			break;
-			case 'web server':
-				$initiator = 0;
-				$by = 'Web server';
-			break;
-			default:
-				$by = Users::validateName('by', null, true);
-				if (isset($by)){
-					$by = Users::get($by, 'name');
-					$initiator = $by->id;
-					$by = $initiator === Auth::$user->id ? 'me' : $by->name;
-				}
-		};
-
+		else {
+			$_GET['by'] = strtolower(CoreUtils::trim($_GET['by']));
+			switch($_GET['by']){
+				case 'me':
+				case 'you':
+					$initiator = Auth::$user->id;
+					$by = 'you';
+				break;
+				case 'my ip':
+				case 'your ip':
+					$ip = $_SERVER['REMOTE_ADDR'];
+				break;
+				case 'web server':
+					$initiator = 0;
+					$by = 'Web server';
+				break;
+				default:
+					$by = Users::validateName('by', null, true, true);
+					if ($by !== null){
+						$by = Users::get($by, 'name');
+						if (!empty($by)){
+							$initiator = $by->id;
+							$by = $initiator === Auth::$user->id ? 'me' : $by->name;
+						}
+						else $by = null;
+					}
+					else {
+						try {
+							$ip = IP::parse($_GET['by']);
+						}
+						catch (\Throwable $e){ }
+						if ($ip !== null)
+							$ip = (string)$ip;
+					}
+			}
+		}
 
 		$title = '';
 		$whereArgs = [];
 		$q = [];
 		if ($type !== null){
 			$whereArgs[] = ['reftype', $type];
-			if (isset($q)){
-				$q[] = "type=$type";
-				$title .= Logs::$LOG_DESCRIPTION[$type].' entries ';
-			}
+			$q[] = "type=$type";
+			$title .= Logs::$LOG_DESCRIPTION[$type].' entries ';
 		}
 		else if (isset($q))
 			$q[] = 'type='.CoreUtils::FIXPATH_EMPTY;
 		if (isset($initiator)){
 			$_params = $initiator === 0 ? ['"initiator" IS NULL'] : ['initiator', $initiator];
 			$whereArgs[] = $_params;
-			if (isset($q, $by)){
+			if (isset($by)){
 				$q[] = "by=$by";
 				$title .= ($type === null?'Entries ':'')."by $by ";
 			}
 		}
-		else if (isset($q))
-			$q[] = 'by='.CoreUtils::FIXPATH_EMPTY;
+		else if (isset($ip)){
+			$whereArgs[] = ['ip', in_array($ip, Logs::LOCALHOST_IPS, true) ? Logs::LOCALHOST_IPS : $ip];
+			$q[] = "by=$ip";
+			$title .= ($type === null?'Entries ':'')."from $ip ";
+		}
+		else $q[] = 'by='.CoreUtils::FIXPATH_EMPTY;
 
 		foreach ($whereArgs as $arg)
 			DB::$instance->where(...$arg);
@@ -118,6 +139,7 @@ class AdminController extends Controller {
 				'LogItems' => $LogItems,
 				'type' => $type,
 				'by' => $by,
+				'ip' => $ip,
 			],
 		]);
 	}
@@ -129,7 +151,6 @@ class AdminController extends Controller {
 			Response::fail('Entry ID is missing or invalid');
 
 		$entry = intval($params['id'], 10);
-
 
 		$MainEntry = DB::$instance->where('entryid', $entry)->getOne('log');
 		if (empty($MainEntry))

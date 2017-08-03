@@ -103,7 +103,7 @@
 			if (params.length){
 				$.each(params, (_, el) => {
 					el = el.replace(/\+/g,' ').split('=');
-					if (el[1].length === 0)
+					if (typeof el[1] !== 'string' || el[1].length === 0)
 						return;
 					data[decodeURIComponent(el[0])] = decodeURIComponent(el[1]);
 				});

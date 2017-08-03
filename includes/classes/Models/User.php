@@ -35,6 +35,7 @@ use App\Users;
  * @property DANameChange[] $name_changes
  * @property Banish[]       $banishments
  * @property Unbanish[]     $unbanishments
+ * @property KnownIP[]      $known_ips
  * @method static User find(...$args)
  */
 class User extends AbstractUser implements LinkableInterface {
@@ -50,6 +51,7 @@ class User extends AbstractUser implements LinkableInterface {
 		['name_changes', 'class' => 'Logs\DANameChange', 'order' => 'entryid asc'],
 		['banishments', 'class' => 'Logs\Banish', 'foreign_key' => 'target_id', 'order' => 'entryid desc'],
 		['unbanishments', 'class' => 'Logs\Unbanish', 'foreign_key' => 'target_id', 'order' => 'entryid desc'],
+		['known_ips', 'class' => 'KnownIP', 'order' => 'last_seen desc'],
 	];
 	public static $has_one = [
 		['discord_member'],

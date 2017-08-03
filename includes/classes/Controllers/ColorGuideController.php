@@ -49,12 +49,6 @@ class ColorGuideController extends Controller {
 
 		if (POST_REQUEST)
 			CSRFProtection::protect();
-
-		if (RelatedAppearance::count() === 0){
-			$rel = DB::$instance->get('appearance_relations');
-			foreach ($rel as $r)
-				RelatedAppearance::make($r['source'],$r['target'],$r['mutual']);
-		}
 	}
 
 	/** @var bool */

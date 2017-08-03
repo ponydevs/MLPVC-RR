@@ -191,7 +191,7 @@ HTML;
 		$authKey = Cookie::get('access');
 		if (!empty($authKey)){
 			Auth::$session = Session::find_by_token(CoreUtils::sha256($authKey));
-			if (isset(Auth::$session))
+			if (Auth::$session !== null)
 				Auth::$user = Auth::$session->user;
 		}
 
@@ -228,7 +228,8 @@ HTML;
 	const PROFILE_SECTION_PRIVACY_LEVEL = [
 		'developer' => "<span class='typcn typcn-cog color-red' title='Visible to: developer'></span>",
 		'public' => "<span class='typcn typcn-world color-blue' title='Visible to: public'></span>",
-		'staff' => "<span class='typcn typcn-lock-closed' title='Visible to: you & group administrators'></span>",
+		'staff' => "<span class='typcn typcn-lock-closed' title='Visible to: you & group staff'></span>",
+		'staffonly' => "<span class='typcn typcn-lock-closed color-red' title='Visible to: group staff'></span>",
 		'private' => "<span class='typcn typcn-lock-closed color-green' title='Visible to: you'></span>",
 	];
 
@@ -310,14 +311,15 @@ HTML;
 		return 10-($postcount % 10);
 	}
 
-	public static function validateName($key, $errors, $method_get = false){
+	public static function validateName($key, $errors, $method_get = false, $silent_fail = false){
 		return (new Input($key,'username', [
 			Input::IS_OPTIONAL => true,
 			Input::METHOD_GET => $method_get,
+			Input::SILENT_FAILURE => $silent_fail,
 			Input::CUSTOM_ERROR_MESSAGES => $errors ?? [
 				Input::ERROR_MISSING => 'Username (@value) is missing',
 				Input::ERROR_INVALID => 'Username (@value) is invalid',
-				]
+			]
 		]))->out();
 	}
 

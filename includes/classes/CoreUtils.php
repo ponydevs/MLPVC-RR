@@ -308,7 +308,7 @@ class CoreUtils {
 				$ret .= "{$diff['hour']}:";
 			}
 			foreach (['minute', 'second'] as $k){
-				$diff[$k] = CoreUtils::pad($diff[$k]);
+				$diff[$k] = self::pad($diff[$k]);
 			}
 			$timec = date('c', $timestamp);
 
@@ -406,13 +406,13 @@ class CoreUtils {
 		if ($all) return preg_replace_callback(new RegExp('((?:^|\s)[a-z])(\w+\b)?','i'), function($match){
 			return strtoupper($match[1]).strtolower($match[2]);
 		}, $str);
-		else return self::length($str) === 1 ? strtoupper($str) : strtoupper($str[0]).CoreUtils::substring($str,1);
+		else return self::length($str) === 1 ? strtoupper($str) : strtoupper($str[0]).self::substring($str,1);
 	}
 
 	// Turns a file size ini setting value into bytes
 	private static function _shortSizeInBytes($size){
-		$unit = CoreUtils::substring($size, -1);
-		$value = intval(CoreUtils::substring($size, 0, -1), 10);
+		$unit = self::substring($size, -1);
+		$value = intval(self::substring($size, 0, -1), 10);
 		switch(strtoupper($unit)){
 			case 'G':
 				$value *= 1024;
@@ -527,8 +527,7 @@ class CoreUtils {
 	 * @return bool Whether the folder was sucessfully created
 	 */
 	public static function createUploadFolder(string $path):bool {
-		$DS = RegExp::escapeBackslashes('\/');
-		$folder = preg_replace(new RegExp("^(.*[$DS])[^$DS]+$"),'$1',preg_replace(new RegExp('$DS'),'\\',$path));
+		$folder = dirname($path);
 		return !is_dir($folder) ? mkdir($folder,0777,true) : true;
 	}
 
@@ -595,7 +594,7 @@ class CoreUtils {
 			$count = count($invalid);
 			$s = $count!==1?'s':'';
 			$the_following = $count!==1?'the following':'an';
-			$Error = "$Thing (".self::escapeHTML($string).") contains $the_following invalid character$s: ".CoreUtils::arrayToNaturalString($invalid);
+			$Error = "$Thing (".self::escapeHTML($string).") contains $the_following invalid character$s: ".self::arrayToNaturalString($invalid);
 			if ($returnError)
 				return $Error;
 			Response::fail($Error);
@@ -678,12 +677,12 @@ class CoreUtils {
 					$NavItems['eps'][1] = 'Movies';
 				if ($scope['CurrentEpisode']->isLatest())
 					$NavItems['latest'][0] = $_SERVER['REQUEST_URI'];
-				else $NavItems['eps']['subitem'] = CoreUtils::cutoff($GLOBALS['heading'],Episodes::TITLE_CUTOFF);
+				else $NavItems['eps']['subitem'] = self::cutoff($GLOBALS['heading'],Episodes::TITLE_CUTOFF);
 			}
 			$NavItems['colorguide'] = ['/cg'.(!empty($scope['EQG'])?'/eqg':''), (!empty($scope['EQG'])?'EQG ':'').'Color Guide'];
 			if ($do === 'cg'){
 				if (!empty($scope['Appearance']))
-					$NavItems['colorguide']['subitem'] = (isset($scope['Map'])? 'Sprite Colors - ' :'').CoreUtils::escapeHTML($scope['Appearance']->label);
+					$NavItems['colorguide']['subitem'] = (isset($scope['Map'])? 'Sprite Colors - ' :'').self::escapeHTML($scope['Appearance']->label);
 				else if (isset($scope['Ponies']))
 					$NavItems['colorguide'][1] .= " - Page {$scope['Pagination']->page}";
 				else if (isset($scope['nav_picker']))
@@ -710,7 +709,7 @@ class CoreUtils {
 					$NavItems['events'][1] .= " - Page {$scope['Pagination']->page}";
 			}
 			if ($do === 'event' && isset($scope['Event']))
-				$NavItems['events']['subitem'] = CoreUtils::cutoff($scope['Event']->name, 20);
+				$NavItems['events']['subitem'] = self::cutoff($scope['Event']->name, 20);
 			if (Auth::$signed_in){
 				$NavItems['u'] = ['/@'.Auth::$user->name, 'Account'];
 				if (isset($scope['nav_contrib']) && $scope['targetUser']->id === Auth::$user->id)
@@ -730,6 +729,8 @@ class CoreUtils {
 					global $Pagination;
 					$NavItems['admin']['subitem'] = "Logs - Page {$Pagination->page}";
 				}
+				else if (isset($scope['nav_adminip']))
+					$NavItems['admin']['subitem'] = 'Details of IP '.self::cutoff($scope['ip'], 15);
 				else if (isset($scope['nav_dsc']) || isset($scope['nav_wsdiag']))
 					$NavItems['admin']['subitem'] = $GLOBALS['heading'];
 			}
@@ -815,10 +816,10 @@ class CoreUtils {
 		$HTML = '';
 		$UsefulLinks = UsefulLink::in_order();
 		foreach ($UsefulLinks as $l){
-			$href = "href='".CoreUtils::aposEncode($l->url)."'";
+			$href = "href='".self::aposEncode($l->url)."'";
 			if ($l->url[0] === '#')
-				$href .= " class='action--".CoreUtils::substring($l->url,1)."'";
-			$title = CoreUtils::aposEncode($l->title);
+				$href .= " class='action--".self::substring($l->url,1)."'";
+			$title = self::aposEncode($l->title);
 			$label = htmlspecialchars_decode($l->label);
 			$cansee = Permission::ROLES_ASSOC[$l->minrole];
 			if ($l->minrole !== 'developer')
@@ -845,7 +846,7 @@ HTML;
 	 * @return string
 	 */
 	public static function posess($w, bool $sOnly = false){
-		$s = '’'.(CoreUtils::substring($w, -1) !== 's'?'s':'');
+		$s = '’'.(self::substring($w, -1) !== 's'?'s':'');
 		if ($sOnly)
 			return $s;
 		return $w.$s;
@@ -946,7 +947,7 @@ HTML;
 	 */
 	public static function isDeviationInClub($DeviationID){
 		if (!is_int($DeviationID))
-			$DeviationID = intval(CoreUtils::substring($DeviationID, 1), 36);
+			$DeviationID = intval(self::substring($DeviationID, 1), 36);
 
 		try {
 			$DiFiRequest = HTTP::legitimateRequest("http://deviantart.com/global/difi/?c[]=\"DeviationView\",\"getAllGroups\",[\"$DeviationID\"]&t=json");
@@ -1207,7 +1208,7 @@ HTML;
 	}
 
 	public static function makeUrlSafe(string $string):string{
-		return CoreUtils::trim(preg_replace(new RegExp('-+'),'-',preg_replace(new RegExp('[^A-Za-z\d\-]'),'-', $string)),false,'-');
+		return self::trim(preg_replace(new RegExp('-+'),'-',preg_replace(new RegExp('[^A-Za-z\d\-]'),'-', $string)),false,'-');
 	}
 
 	/**
@@ -1253,7 +1254,7 @@ HTML;
 	}
 
 	public static function detectUnexpectedJSON(){
-		if (!CoreUtils::isJSONExpected()){
+		if (!self::isJSONExpected()){
 			HTTP::statusCode(400);
 			header('Content-Type: text/plain');
 			die("This endpoint only serves JSON requests which your client isn't accepting");

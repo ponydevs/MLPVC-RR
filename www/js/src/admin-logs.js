@@ -12,19 +12,21 @@ $(function(){
 			_entryTypeValue = $_entryType.val(),
 			_byUsername = $FilterForm.find('[name="by"]').val().trim(),
 			title = `${_entryTypeValue.length?`${$_entryType.text().replace('of type ','')} entries`:''}${_byUsername.length?`${_entryTypeValue.length?'':'entries'} by ${_byUsername}`:''}`,
-			query = title.length ? $FilterForm.serialize() : false;
-		$FilterForm.find('button[type=reset]').attr('disabled', query === false);
+			query = title.length ? $FilterForm.serialize() : '';
+		$FilterForm.find('button[type=reset]').attr('disabled', query === '');
 
-		if (query !== false)
+		if (query !== '')
 			$.Dialog.wait('Navigation', `Looking for ${title.replace(/</g,'&lt;')}`);
 		else $.Dialog.success('Navigation', 'Search terms cleared');
 
-		$.toPage.call({query:query}, window.location.pathname.replace(/\d+($|\?)/,'1$1'), true, true, false, function(){
+		$.toPage.call({query}, false, true, true, false, function(){
 			if (query !== false)
 				return /^Page \d+/.test(document.title)
 					? `${title} - ${document.title}`
 					: document.title.replace(/^.*( - Page \d+)/, title+'$1');
 			else return document.title.replace(/^.* - (Page \d+)/, '$1');
+		}).then(function(){
+			$.Dialog.close();
 		});
 	}).on('reset', function(e){
 		e.preventDefault();
@@ -98,8 +100,17 @@ $(function(){
 				$FilterForm.find('[name="by"]').val($(this).text().trim());
 				$FilterForm.triggerHandler('submit');
 			});
+			$row.find('.search-ip').off('click').on('click',function(){
+				const $this = $(this);
+				$FilterForm.find('[name="by"]').val($this.hasClass('your-ip') ? 'my IP' : $this.siblings('.address').text().trim());
+				$FilterForm.triggerHandler('submit');
+			});
+			$row.find('.search-user').off('click').on('click',function(){
+				const $this = $(this);
+				$FilterForm.find('[name="by"]').val($this.hasClass('your-name') ? 'me' : $this.siblings('.name').text().trim());
+				$FilterForm.triggerHandler('submit');
+			});
 		});
-		$.Dialog.close();
 	}).trigger('page-switch').on('click','.dynt-el',function(){
 		let ww = $w.width();
 		if (ww >= 650)

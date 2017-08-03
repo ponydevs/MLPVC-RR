@@ -753,7 +753,7 @@ XML;
 
 
 		$SVG = /** @lang XML */
-			"<svg version='1.1' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 2 2' enable-background='new 0 0 2 2' xml:space='preserve' preserveAspectRatio='xMidYMid slice'>$SVG</svg>";
+			"<svg version='1.1' xmlns='http://www.w3.org/2000/svg' viewBox='.5 .5 1 1' enable-background='new 0 0 2 2' xml:space='preserve' preserveAspectRatio='xMidYMid slice'><defs><filter id='b' x='0' y='0'><feGaussianBlur in='SourceGraphic' stdDeviation='0.4' /></filter></defs><g filter='url(#b)'>$SVG</g></svg>";
 
 		Image::outputSVG($SVG, $OutputPath, $FileRelPath);
 	}

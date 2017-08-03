@@ -22,6 +22,7 @@ $router->addMatchTypes([
 	'user' => 'u(ser)?',
 	'v' => '(v|appearance)',
 	'uuid' => '([0-9a-fA-F]{32}|[0-9a-fA-F-]{36})',
+	'ip' => '([\d.]{7,15}|[\da-fA-F:]{3,46})',
 ]);
 
 // Pages
@@ -34,6 +35,7 @@ $router->map('GET', '/admin/logs/[i]?',                'AdminController#logs');
 $router->map('GET', '/admin/discord',                  'AdminController#discord');
 $router->map('GET', '/admin/usefullinks',              'AdminController#usefulLinks');
 $router->map('GET', '/admin/wsdiag',                   'AdminController#wsdiag');
+$router->map('GET', '/admin/ip/[ip:ip]',               'IPController#index');
 $router->map('GET', '/blending',                       'ColorGuideController#blending');
 $router->map('GET', '/browser/[i:session]?',           'BrowserController#index');
 $router->map('GET', '/components',                     'ComponentsController#index');

@@ -45,7 +45,8 @@ if (Permission::sufficient('developer'))
 	</div>
 	<div class="details">
 <?php
-if ($sameUser || Permission::sufficient('staff')){
+$isStaff = Permission::sufficient('staff');
+if ($sameUser || $isStaff){
 	$OldNames = $User->name_changes;
 	if (!empty($OldNames)){
 		$PrevNames = [];
@@ -55,6 +56,19 @@ if ($sameUser || Permission::sufficient('staff')){
 			<h2><?=$sameUser? Users::PROFILE_SECTION_PRIVACY_LEVEL['staff']:''?>Previous names <span class="typcn typcn-info color-blue cursor-help" title="Upper/lower-case letters may not match"></span></h2>
 			<div><?=implode(', ',$PrevNames)?></div>
 		</section>
+<?php
+	}
+}
+if ($isStaff){
+	$KnownIPs = $User->known_ips;
+	if (!empty($KnownIPs)){
+		$IPs = [];
+		foreach ($KnownIPs as $ip)
+			$IPs[] = $ip->toAnchor(); ?>
+	<section class="known-ips">
+		<h2><?=$sameUser? Users::PROFILE_SECTION_PRIVACY_LEVEL['staffonly']:''?>Known IP addresses</h2>
+		<div><?=implode(', ',$IPs)?></div>
+	</section>
 <?php
 	}
 }
@@ -84,7 +98,7 @@ if (!empty($Banishes)){
 		unset($Unbanishes);
 	}
 
-	$displayInitiator = Permission::sufficient('staff');
+	$displayInitiator = $isStaff;
 
 	foreach ($Banishes as $b){
 		$initiator = $displayInitiator ? $b->log->actor : null;
@@ -97,7 +111,7 @@ if (!empty($Banishes)){
 		</section>
 	</div>
 	<div id="settings"><?php
-	if ($sameUser || Permission::sufficient('staff')){ ?>
+	if ($sameUser || $isStaff){ ?>
 		<section class="guide-settings">
 			<h2><?=$sameUser? Users::PROFILE_SECTION_PRIVACY_LEVEL['staff']:''?>Color Guide</h2>
 			<form action="/preference/set/cg_itemsperpage">
@@ -232,8 +246,7 @@ if ($canEdit){
 	$ROLES = [];
 	if ($canEdit){
 		$_Roles = Permission::ROLES_ASSOC;
-		unset($_Roles['guest']);
-		unset($_Roles['ban']);
+		unset($_Roles['guest'], $_Roles['ban']);
 		foreach ($_Roles as $name => $label){
 			if (Permission::insufficient($name, Auth::$user->role))
 				continue;

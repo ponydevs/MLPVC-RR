@@ -19,6 +19,7 @@ use ActiveRecord\DateTime;
  * @property DateTime $created
  * @property DateTime $lastvisit
  * @property User     $user
+ * @property bool     $expired (Via magic method)
  * @method static Session find_by_token(string $token)
  * @method static Session find_by_access(string $access)
  * @method static Session find_by_refresh(string $code)
@@ -29,8 +30,15 @@ class Session extends NSModel {
 		['user'],
 	];
 
+	static $after_create = ['make_known_ip'];
+	static $after_update = ['make_known_ip'];
+
 	public function get_expired(){
 		return $this->expires->getTimestamp() < time();
+	}
+
+	public function make_known_ip(){
+		KnownIP::record(null, $this->user_id, $this->lastvisit);
 	}
 }
 
