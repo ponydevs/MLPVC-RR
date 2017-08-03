@@ -3,7 +3,7 @@
 namespace App\Models\Logs;
 
 use App\RegExp;
-use APp\Models\NSModel;
+use App\Models\NSModel;
 
 /**
  * @property int    $entryid

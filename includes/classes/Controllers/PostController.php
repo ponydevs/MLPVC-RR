@@ -8,7 +8,7 @@ use App\CSRFProtection;
 use App\DB;
 use App\DeviantArt;
 use App\Episodes;
-use APp\HTTP;
+use App\HTTP;
 use App\ImageProvider;
 use App\Input;
 use App\Logs;

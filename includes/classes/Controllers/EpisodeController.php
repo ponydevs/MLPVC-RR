@@ -18,8 +18,8 @@ use App\Permission;
 use App\Posts;
 use App\Response;
 use App\VideoProvider;
-use \App\Models\Episode;
-use \App\Models\EpisodeVideo;
+use App\Models\Episode;
+use App\Models\EpisodeVideo;
 
 /** @property Episode $_episode */
 class EpisodeController extends Controller {

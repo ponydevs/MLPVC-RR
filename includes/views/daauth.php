@@ -1,6 +1,6 @@
 <?php
-use \App\DeviantArt;
-use \App\CoreUtils;
+use App\DeviantArt;
+use App\CoreUtils;
 
 /** @var string $title */
 /** @var string $err */

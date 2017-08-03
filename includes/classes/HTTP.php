@@ -2,7 +2,7 @@
 
 namespace App;
 
-use \App\Exceptions\CURLRequestException;
+use App\Exceptions\CURLRequestException;
 
 class HTTP {
 	/**
