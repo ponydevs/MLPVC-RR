@@ -26,12 +26,10 @@ class AboutController extends Controller {
 		STAT_CHACHE_DURATION = 5*Time::IN_SECONDS['hour'];
 
 	public function stats(){
-
-
 		CSRFProtection::protect();
 
 		$stat = strtolower(CoreUtils::trim($_GET['stat']));
-		if (!in_array($stat, self::STAT_TYPES))
+		if (!in_array($stat, self::STAT_TYPES, true))
 			HTTP::statusCode(404, AND_DIE);
 
 		$cache = CachedFile::init(FSPATH."stats/$stat.json", self::STAT_CHACHE_DURATION);
@@ -128,13 +126,18 @@ class AboutController extends Controller {
 				);
 				if (!empty($Approvals)){
 					$Dataset = ['label' => 'Approved posts', 'clrkey' => 0];
-					foreach ($Approvals as $i => $_){
-						if ($i < 1)
-							continue;
-
-						$Approvals[$i]['cnt'] += $Approvals[$i-1]['cnt'];
+					$AssocApprovals = [];
+					foreach ($Approvals as $a)
+						$AssocApprovals[$a['key']] = $a;
+					$i = 0;
+					$FinalApprovals = [];
+					foreach ($Labels as $key){
+						$FinalApprovals[$i] = $AssocApprovals[$key] ?? [ 'key' => $key, 'cnt' => 0];
+						if ($i > 0)
+							$FinalApprovals[$i]['cnt'] += $FinalApprovals[$i-1]['cnt'];
+						$i++;
 					}
-					Statistics::processUsageData($Approvals, $Dataset, $Labels);
+					Statistics::processUsageData($FinalApprovals, $Dataset, $Labels);
 					$Data['datasets'][] = $Dataset;
 				}
 				$Requests = DB::$instance->query(
@@ -148,13 +151,18 @@ class AboutController extends Controller {
 				);
 				if (!empty($Requests)){
 					$Dataset = ['label' => 'Requests', 'clrkey' => 1];
-					foreach ($Requests as $i => $_){
-						if ($i < 1)
-							continue;
-
-						$Requests[$i]['cnt'] += $Requests[$i-1]['cnt'];
+					$AssocRequests = [];
+					foreach ($Requests as $a)
+						$AssocRequests[$a['key']] = $a;
+					$i = 0;
+					$FinalRequests= [];
+					foreach ($Labels as $key){
+						$FinalRequests[$i] = $AssocRequests[$key] ?? [ 'key' => $key, 'cnt' => 0];
+						if ($i > 0)
+							$FinalRequests[$i]['cnt'] += $FinalRequests[$i-1]['cnt'];
+						$i++;
 					}
-					Statistics::processUsageData($Requests, $Dataset, $Labels);
+					Statistics::processUsageData($FinalRequests, $Dataset, $Labels);
 					$dsl = count($Dataset['data']);
 					for ($i=1; $i<$dsl; $i++){
 						if ($Dataset['data'][$i] === 0 && $Dataset['data'][$i-1] > 0)
@@ -173,13 +181,18 @@ class AboutController extends Controller {
 				);
 				if (!empty($Reservations)){
 					$Dataset = ['label' => 'Reservations', 'clrkey' => 2];
-					foreach ($Reservations as $i => $_){
-						if ($i < 1)
-							continue;
-
-						$Reservations[$i]['cnt'] += $Reservations[$i-1]['cnt'];
+					$AssocReservations = [];
+					foreach ($Reservations as $a)
+						$AssocReservations[$a['key']] = $a;
+					$i = 0;
+					$FinalReservations= [];
+					foreach ($Labels as $key){
+						$FinalReservations[$i] = $AssocReservations[$key] ?? [ 'key' => $key, 'cnt' => 0];
+						if ($i > 0)
+							$FinalReservations[$i]['cnt'] += $FinalReservations[$i-1]['cnt'];
+						$i++;
 					}
-					Statistics::processUsageData($Reservations, $Dataset, $Labels);
+					Statistics::processUsageData($FinalReservations, $Dataset, $Labels);
 					$dsl = count($Dataset['data']);
 					for ($i=1; $i<$dsl; $i++){
 						if ($Dataset['data'][$i] === 0 && $Dataset['data'][$i-1] > 0)
