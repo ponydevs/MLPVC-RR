@@ -719,7 +719,7 @@ XML;
 			Image::outputSVG(null,$OutputPath,$FileRelPath);
 
 		$SVG = '';
-		$PreviewColors = $Appearance->private ? [] : $Appearance->preview_colors;
+		$PreviewColors = $Appearance->preview_colors;
 		$colorCount = count($PreviewColors);
 		switch ($colorCount){
 			case 0:

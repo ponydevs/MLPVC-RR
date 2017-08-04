@@ -49,7 +49,11 @@ class Appearance extends NSModel implements LinkableInterface {
 		['owner', 'class' => 'User', 'foreign_key' => 'owner_id'],
 	];
 
+	/** @return Color[] */
 	public function get_preview_colors(){
+		if ($this->private)
+			return [];
+
 		/** @var $arr Color[] */
 		$arr = DB::$instance->setModel('Color')->query(
 			'SELECT c.hex FROM colors c
