@@ -1,37 +1,34 @@
-/* global DocReady,$w */
+/* global DocReady,$w,IntersectionObserver */
 $(function(){
 	'use strict';
 
-	function fulfuillPromises(){
-		$('.deviation-promise:not(.loading)').each(function(){
-			const $this = $(this);
-			if (!$this.isInViewport())
+	const io = new IntersectionObserver(entries => {
+		entries.forEach(entry => {
+			if (!entry.isIntersecting)
 				return;
 
-			const favme = $this.attr('data-favme');
+			const el = entry.target;
+			io.unobserve(el);
 
-			$this.addClass('loading');
+			const favme = el.dataset.favme;
 
 			$.get('/user/contrib/lazyload/'+favme,$.mkAjaxHandler(function(){
 				if (!this.status) return $.Dialog.fail('Cannot load deviation '+favme, this.message);
 
 				$.loadImages(this.html).then(function($el){
-					$this.replaceWith($el);
+					$(el).replaceWith($el.css('opacity',0));
+					$el.animate({opacity:1},300);
 				});
 			}));
 		});
+	});
+
+	function reobserve(){
+		$('.deviation-promise').each((_, el) => io.observe(el));
 	}
+	reobserve();
 
 	$('#contribs').on('page-switch',function(){
-		fulfuillPromises();
+		reobserve();
 	});
-	window._contribScroll = $.throttle(400,function(){
-		fulfuillPromises();
-	});
-	$w.on('mousewheel scroll',window._contribScroll);
-	fulfuillPromises();
-},function(){
-	'use strict';
-	$w.off('mousewheel scroll',window._contribScroll);
-	delete window._contribScroll;
 });

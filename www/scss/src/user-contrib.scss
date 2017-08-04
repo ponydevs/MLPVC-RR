@@ -86,7 +86,8 @@ td.by-at .typcn {
 }
 
 .deviation-promise {
-	@include loading-indicator(96px, 'wedges');
+	@include loading-indicator(105px, 'wedges');
+	width: 256px;
 
 	margin: 0 auto;
 }

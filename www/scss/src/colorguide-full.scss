@@ -78,6 +78,10 @@
 						height: 100px;
 						display: block;
 						margin: 0 auto 10px;
+
+						&.border {
+							border: 1px solid;
+						}
 					}
 
 					.name {

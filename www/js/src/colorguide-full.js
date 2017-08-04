@@ -1,4 +1,4 @@
-/* global $w,DocReady,Sortable,$content */
+/* global $w,DocReady,Sortable,$content,IntersectionObserver */
 $(function(){
 	'use strict';
 
@@ -6,7 +6,6 @@ $(function(){
 		$fullList = $('#full-list'),
 		$ReorderBtn = $('#guide-reorder'),
 		$ReorderCancelBtn = $('#guide-reorder-cancel'),
-		$unloadedSectionULs = $fullList.find('section > ul'),
 		EQG = window.EQG,
 		EQGRq = EQG?'?eqg':'';
 	$sortBy.on('change',function(){
@@ -21,49 +20,36 @@ $(function(){
 			if (!this.status) return $.Dialog.fail(false, this.message);
 
 			$fullList.html(this.html);
-			$unloadedSectionULs = $fullList.find('section > ul');
-			window._cgFullListOnScroll();
+			reobserve();
 			$ReorderBtn.attr('disabled', Boolean(val.length));
 			history.replaceState(history.state,'',stateUrl);
 			$.Dialog.close();
 		}));
 	});
 
-	window._cgFullListOnScroll = $.throttle(100,function(){
-		if ($unloadedSectionULs.length === 0)
-			return;
-
-		$unloadedSectionULs.each(function(){
-			const $this = $(this);
-			if (!$this.isInViewport())
+	const io = new IntersectionObserver(entries => {
+		entries.forEach(entry => {
+			if (!entry.isIntersecting)
 				return;
 
-			loadImages($this.find('img[data-src]'), 0, function(){
-				$this.addClass('loaded');
-				$unloadedSectionULs = $fullList.find('section > ul:not(.loaded)');
+			const el = entry.target;
+			io.unobserve(el);
+
+			const
+				src = el.dataset.src,
+				img = new Image();
+
+			img.src = src;
+			$(img).on('load',function(){
+				$(el).css('opacity',0).attr('src',src).removeAttr('data-src').animate({opacity:1},300);
 			});
 		});
 	});
-	$w.on('scroll',window._cgFullListOnScroll);
-	$w.triggerHandler('scroll');
 
-	function loadImages($imgs = $content.find('img[data-src]'), ix = 0, done = undefined){
-		const $this = $imgs.eq(ix);
-		if ($this.length === 0){
-			$.callCallback(done);
-			return;
-		}
-
-		const
-			src = $this.attr('data-src'),
-			img = new Image();
-
-		img.src = src;
-		$(img).on('load',function(){
-			$this.css('opacity',0).attr('src',src).removeAttr('data-src').animate({opacity:1},300);
-			loadImages($imgs, ix+1);
-		});
+	function reobserve(){
+		$fullList.find('section > ul img[data-src]').each((_, el) => io.observe(el));
 	}
+	reobserve();
 
 	if (typeof window.Sortable === 'function'){
 		$fullList.on('click','.sort-alpha',function(){
@@ -103,8 +89,7 @@ $(function(){
 					if (!this.status) return $.Dialog.fail(false, this.message);
 
 					$fullList.removeClass('sorting').html(this.html);
-					$unloadedSectionULs = $fullList.find('section > ul');
-					$w.triggerHandler('scroll');
+					reobserve();
 					$ReorderBtn.removeClass('typcn-tick green').addClass('typcn-arrow-unsorted darkblue').html('Re-order');
 					$ReorderCancelBtn.addClass('hidden');
 					$.Dialog.close();
@@ -128,8 +113,4 @@ $(function(){
 			$ReorderCancelBtn.addClass('hidden');
 		});
 	}
-},function(){
-	'use strict';
-
-	$w.off('scroll',window._cgFullListOnScroll);
 });

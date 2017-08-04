@@ -8,8 +8,4 @@ $(function(){
 			window.opener[' '+rndkey](true, window);
 	}
 	catch(e){}
-},function(){
-	'use strict';
-
-	delete window.rndkey;
 });

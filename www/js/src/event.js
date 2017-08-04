@@ -205,12 +205,4 @@ $(function(){
 	});
 	$w.on('scroll mousewheel', window._EventScroll);
 	fulfill_promise();
-},function(){
-	'use strict';
-
-	delete $.fn.refreshVoting;
-	delete $.fn.rebindFluidbox;
-	if (window.EventType === 'contest')
-		$.WS.recvEntryUpdates(false);
-	$w.off('scroll mousewheel', window._EventScroll);
 });

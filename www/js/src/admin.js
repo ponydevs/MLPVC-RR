@@ -1,4 +1,4 @@
-/* global DocReady,HandleNav,Sortable,DOMStringList,$w */
+/* global DocReady,HandleNav,Sortable,DOMStringList,$w,IntersectionObserver */
 $(function(){
 	'use strict';
 
@@ -92,26 +92,28 @@ $(function(){
 		}
 	})();
 
-	window._AdminRecentScroll = function(){
-		$('.post-deviation-promise:not(.loading)').each(function(){
-			const $this = $(this);
-			if (!$this.isInViewport())
+	const io = new IntersectionObserver(entries => {
+		entries.forEach(entry => {
+			if (!entry.isIntersecting)
 				return;
 
+			const el = entry.target;
+			io.unobserve(el);
+
 			const
-				postid = $this.attr('data-post').replace('-','/'),
-				viewonly = $this.attr('data-viewonly');
-			$this.addClass('loading');
+				postid = el.dataset.post.replace('-','/'),
+				viewonly = el.dataset.viewonly;
 
 			$.get(`/post/lazyload/${postid}`,{viewonly},$.mkAjaxHandler(function(){
 				if (!this.status) return $.Dialog.fail('Cannot load '+postid.replace('/',' #'), this.message);
 
 				$.loadImages(this.html).then(function($el){
-					$this.closest('.image').replaceWith($el);
+					$(el).closest('.image').replaceWith($el.css('opacity',0));
+					$el.animate({opacity:1},300);
 				});
 			}));
 		});
-	};
-	$w.on('scroll',window._AdminRecentScroll);
-	window._AdminRecentScroll();
+	});
+
+	$('.post-deviation-promise').each((_, el) => io.observe(el));
 });

@@ -31,9 +31,4 @@ $(function(){
 
 	updateStatus();
 	window._WSStatusCheckInterval = setInterval(updateStatus,1000);
-},function(){
-	"use strict";
-
-	clearInterval(window._WSStatusCheckInterval);
-	delete window._WSStatusCheckInterval;
 });

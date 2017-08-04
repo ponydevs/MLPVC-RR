@@ -299,9 +299,4 @@ $(function(){
 			$el.siblings('.save').attr('disabled', $val.val() === $el.data('orig'));
 		});
 	});*/
-},function(){
-	'use strict';
-
-	$w.off('scroll mousewheel',window._UserScroll);
-	delete window._UserScroll;
 });

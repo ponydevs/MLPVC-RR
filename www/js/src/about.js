@@ -215,8 +215,4 @@ $(function(){
 		});
 		$w.on('resize', function(){ AlltimeChart.resize() });
 	}));
-},function(){
-	'use strict';
-	delete window.Chart;
-	$('script').filter('[src^="/js/Chart.min.js"], [data-src^="/js/Chart.min.js"]').remove();
 });

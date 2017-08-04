@@ -773,8 +773,4 @@ $(function(){
 	$('#requests, #reservations')
 		.on('bind-more-handlers','li[id]',additionalHandlerAttacher)
 		.find('li[id]').each(additionalHandlerAttacher);
-},function(){
-	'use strict';
-
-	delete window.moment.tz;
 });

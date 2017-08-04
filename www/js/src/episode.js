@@ -1,4 +1,4 @@
-/* global DocReady,$content,$body,$w,$footer,$header,$navbar,moment,Chart,Time,ace */
+/* global DocReady,$content,$body,$w,$footer,$header,$navbar,moment,Chart,Time,ace,IntersectionObserver */
 $(function(){
 	'use strict';
 
@@ -474,31 +474,31 @@ $(function(){
 			.find('.post-form').attr('data-type',el).formBind();
 	});
 
-	const fulfillPromises = function(){
-		$('.post-deviation-promise:not(.loading)').each(function(){
-			const $this = $(this);
-			if (!$this.isInViewport())
+
+	const io = new IntersectionObserver(entries => {
+		entries.forEach(entry => {
+			if (!entry.isIntersecting)
 				return;
 
+			const el = entry.target;
+			io.unobserve(el);
+
 			const
-				postid = $this.attr('data-post').replace('-','/'),
-				viewonly = $this.attr('data-viewonly');
-			$this.addClass('loading');
+				postid = el.dataset.post.replace('-','/'),
+				viewonly = el.dataset.viewonly;
 
 			$.get(`/post/lazyload/${postid}`,{viewonly},$.mkAjaxHandler(function(){
 				if (!this.status) return $.Dialog.fail('Cannot load '+postid.replace('/',' #'), this.message);
 
 				$.loadImages(this.html).then(function($el){
-					$this.closest('.image').replaceWith($el);
+					$(el).closest('.image').replaceWith($el.css('opacity',0));
+					$el.animate({opacity:1},300);
 				});
 			}));
 		});
-	};
-	window._EpisodeScroll = $.throttle(400, function(){
-		fulfillPromises();
 	});
-	$w.on('scroll mousewheel',window._EpisodeScroll);
-	window._EpisodeScroll();
+
+	$('.post-deviation-promise').each((_, el) => io.observe(el));
 
 	let postHashRegex = /^#(request|reservation)-\d+$/,
 		showdialog = location.hash.length > 1 && postHashRegex.test(location.hash);
@@ -709,19 +709,4 @@ $(function(){
 	bindVideoButtons();
 
 	$.WS.recvPostUpdates(true);
-},function(){
-	'use strict';
-	$body.removeClass('fluidbox-open');
-	$('.fluidbox--opened').fluidbox('close');
-	if (typeof window._rlinterval === 'number')
-		clearInterval(window._rlinterval);
-	$w.off('hashchange', window._HighlightHash);
-	delete window.bindVideoButtons;
-	delete window._HighlightHash;
-	delete $.fn.rebindFluidbox;
-	window.EpisodePage = void 0;
-	$.WS.recvPostUpdates(false);
-	delete $.fn.reloadLi;
-	$w.off('scroll mousewheel',window._EpisodeScroll);
-	delete window._EpisodeScroll;
 });

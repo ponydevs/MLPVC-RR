@@ -112,8 +112,10 @@ class CGUtils {
 		$label = $appearance->processLabel();
 
 		if ($previews){
-			$preview = $appearance->getSpriteURL(Appearance::SPRITE_SIZES['SOURCE'], $appearance->getPreviewURL());
-			$preview = "<img data-src='$preview' src='/img/blank-pixel.png' alt=''>";
+			$preview_url = $appearance->getPreviewURL();
+			$preview = $appearance->getSpriteURL(Appearance::SPRITE_SIZES['SOURCE'], $preview_url);
+			$class = $preview_url === $preview ? 'class="border"' : '';
+			$preview = "<img data-src='$preview' src='/img/loading-wedges.svg' alt='' $class>";
 			$charTags = DB::$instance->query(
 				"SELECT t.name FROM tags t
 				LEFT JOIN tagged tg ON tg.tag_id = t.id OR tg.tag_id = t.synonym_of
@@ -717,9 +719,12 @@ XML;
 			Image::outputSVG(null,$OutputPath,$FileRelPath);
 
 		$SVG = '';
-		$PreviewColors = $Appearance->preview_colors;
-
-		switch (count($PreviewColors)){
+		$PreviewColors = $Appearance->private ? [] : $Appearance->preview_colors;
+		$colorCount = count($PreviewColors);
+		switch ($colorCount){
+			case 0:
+				$SVG .= '<rect fill="#FFFFFF" width="2" height="2"/><rect fill="#EFEFEF" width="1" height="1"/><rect fill="#EFEFEF" width="1" height="1" x="1" y="1"/>';
+			break;
 			case 1:
 				$SVG .= /** @lang XML */
 					"<rect x='0' y='0' width='2' height='2' fill='{$PreviewColors[0]['hex']}'/>";
@@ -730,9 +735,6 @@ XML;
 <rect x='0' y='1' width='1' height='1' fill='{$PreviewColors[1]['hex']}'/>
 <rect x='1' y='1' width='1' height='1' fill='{$PreviewColors[2]['hex']}'/>
 XML;
-			break;
-			case 0:
-				$SVG .= '<rect fill="#FFFFFF" width="2" height="2"/><rect fill="#EFEFEF" width="1" height="1"/><rect fill="#EFEFEF" width="1" height="1" x="1" y="1"/>';
 			break;
 			case 2:
 			case 4:
@@ -751,9 +753,12 @@ XML;
 			break;
 		}
 
+		// Only apply blur if we have colors
+		if ($colorCount > 0)
+			$SVG = "<defs><filter id='b' x='0' y='0'><feGaussianBlur in='SourceGraphic' stdDeviation='0.4' /></filter></defs><g filter='url(#b)'>$SVG</g>";
 
 		$SVG = /** @lang XML */
-			"<svg version='1.1' xmlns='http://www.w3.org/2000/svg' viewBox='.5 .5 1 1' enable-background='new 0 0 2 2' xml:space='preserve' preserveAspectRatio='xMidYMid slice'><defs><filter id='b' x='0' y='0'><feGaussianBlur in='SourceGraphic' stdDeviation='0.4' /></filter></defs><g filter='url(#b)'>$SVG</g></svg>";
+			"<svg version='1.1' xmlns='http://www.w3.org/2000/svg' viewBox='.5 .5 1 1' enable-background='new 0 0 2 2' xml:space='preserve' preserveAspectRatio='xMidYMid slice'>$SVG</svg>";
 
 		Image::outputSVG($SVG, $OutputPath, $FileRelPath);
 	}
