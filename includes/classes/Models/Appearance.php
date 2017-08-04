@@ -248,7 +248,7 @@ class Appearance extends NSModel implements LinkableInterface {
 
 	public function getRelatedHTML():string {
 		$LINKS = '';
-		if (empty($this->related_appearances))
+		if (count($this->related_appearances) === 0)
 			return $LINKS;
 		foreach ($this->related_appearances as $r)
 			$LINKS .= '<li>'.$r->target->toAnchorWithPreview().'</li>';
