@@ -8,7 +8,7 @@ class VideoProvider {
 	public static $id, $embed;
 	/** @var EpisodeVideo */
 	public $episodeVideo;
-	public function __construct(){
+	public function __construct(string $url){
 		$this->episodeVideo = self::getEpisodeVideo(CoreUtils::trim($url));
 		self::$id = $this->episodeVideo->id;
 		self::getEmbed($this->episodeVideo);
