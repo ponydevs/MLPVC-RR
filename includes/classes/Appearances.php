@@ -481,7 +481,7 @@ HTML;
 							'overkill' => [
 								'type' => 'edge_ngram',
 								'min_gram' => 2,
-								'max_gram' => 6,
+								'max_gram' => 30,
 								'token_chars' => [
 									'letter',
 									'digit',
