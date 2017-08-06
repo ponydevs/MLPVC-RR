@@ -82,7 +82,7 @@ $(function(){
 
 				if (this.html){
 					$recentPostsUL.html(this.html);
-					window._AdminRecentScroll();
+					reobserve();
 				}
 
 				if (this.message)
@@ -115,5 +115,8 @@ $(function(){
 		});
 	});
 
-	$('.post-deviation-promise').each((_, el) => io.observe(el));
+	function reobserve(){
+		$('.post-deviation-promise').each((_, el) => io.observe(el));
+	}
+	reobserve();
 });
