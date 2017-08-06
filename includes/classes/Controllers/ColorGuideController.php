@@ -363,20 +363,20 @@ class ColorGuideController extends Controller {
 
 			// Search query exists
 			if ($searching){
-				$SearchQuery = preg_replace(new RegExp('[^\w\d\s\*\?]'),'',trim($_GET['q']));
+				$SearchQuery = preg_replace(new RegExp('[^\w\s*?]'),'',trim($_GET['q']));
 				$title .= "$SearchQuery - ";
 				$multiMatch = new ElasticsearchDSL\Query\FullText\MultiMatchQuery(
-					['label^5','tags'],
+					['label','tags'],
 					$SearchQuery,
 					[
 						'type' => 'cross_fields',
-						'minimum_should_match' => '85%',
+						'minimum_should_match' => '100%',
 					]
 				);
 				$search->addQuery($multiMatch);
 				$score = new FunctionScoreQuery(new MatchAllQuery());
 				$score->addFieldValueFactorFunction('order',1.5);
-				$score->addParameter('boost_mode','multiply');
+				$score->addParameter('boost_mode','sum');
 				$search->addQuery($score);
 				$sort = new ElasticsearchDSL\Sort\FieldSort('_score', 'asc');
 				$search->addSort($sort);
@@ -390,7 +390,7 @@ class ColorGuideController extends Controller {
 			$boolquery = new BoolQuery();
 			if (Permission::insufficient('staff'))
 				$boolquery->add(new TermQuery('private', false), BoolQuery::MUST);
-			$boolquery->add(new TermQuery('ishuman', (bool)$this->_EQG), BoolQuery::MUST);
+			$boolquery->add(new TermQuery('ishuman', $this->_EQG), BoolQuery::MUST);
 			$search->addQuery($boolquery);
 
 			$search->setSource(false);

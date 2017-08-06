@@ -165,10 +165,11 @@ $(function(){
 
 		let $this = $(this),
 			$query = $this.find('input[name=q]'),
-			orig_query = $query.val(),
+			orig_query = $query.val().replace(/[^\w\s*?]/g,''),
 			searching = orig_query.trim().length > 0,
 			query = $this.serialize();
 		$this.find('button[type=reset]').attr('disabled', !searching);
+		$query.val(orig_query);
 
 		if (!btnl){
 			if (searching)
