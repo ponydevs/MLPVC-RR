@@ -412,11 +412,11 @@ ALTER TABLE global_settings OWNER TO "mlpvc-rr";
 --
 
 CREATE TABLE known_ips (
+    id integer NOT NULL,
     ip character varying(255) NOT NULL,
     user_id uuid,
     first_seen timestamp with time zone DEFAULT now() NOT NULL,
-    last_seen timestamp with time zone DEFAULT now() NOT NULL,
-    id integer NOT NULL
+    last_seen timestamp with time zone DEFAULT now() NOT NULL
 );
 
 
