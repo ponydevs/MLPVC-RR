@@ -22,7 +22,7 @@ class TimeTest extends TestCase {
 		$result = Time::format($now);
 		self::assertEquals('2016-12-03T12:03:56Z', $result, 'ISO format fails');
 		$result = Time::format($now, Time::FORMAT_FULL);
-		self::assertEquals('3rd Dec 2016, 12:03:56 pm GMT', $result, 'Full format fails');
+		self::assertEquals('3rd December 2016, 12:03:56 pm GMT', $result, 'Full format fails');
 		$result = Time::format($now, Time::FORMAT_READABLE, strtotime('+1 day', $now));
 		self::assertEquals('a day ago', $result, 'Readable format fails (1 day)');
 		$result = Time::format($now, Time::FORMAT_READABLE, strtotime('+1 day +5 months', $now));
@@ -34,10 +34,10 @@ class TimeTest extends TestCase {
 		$result = Time::tag($now, false, Time::TAG_ALLOW_DYNTIME, $now);
 		self::assertEquals("<time datetime='2016-12-03T12:03:56Z' title='3rd Dec 2016, 12:03:56 pm GMT'>a few seconds ago</time>", $result);
 		$result = Time::tag($now, Time::TAG_EXTENDED, Time::TAG_ALLOW_DYNTIME, $now);
-		self::assertEquals("<time datetime='2016-12-03T12:03:56Z'>3rd Dec 2016, 12:03:56 pm GMT</time>", $result);
+		self::assertEquals("<time datetime='2016-12-03T12:03:56Z'>3rd December 2016, 12:03:56 pm GMT</time>", $result);
 		$result = Time::tag($now, Time::TAG_EXTENDED, Time::TAG_NO_DYNTIME, $now);
-		self::assertEquals("<time datetime='2016-12-03T12:03:56Z' class='nodt'>3rd Dec 2016, 12:03:56 pm GMT</time>", $result);
+		self::assertEquals("<time datetime='2016-12-03T12:03:56Z' class='nodt'>3rd December 2016, 12:03:56 pm GMT</time>", $result);
 		$result = Time::tag($now, Time::TAG_EXTENDED, Time::TAG_STATIC_DYNTIME, $now);
-		self::assertEquals("<time datetime='2016-12-03T12:03:56Z' class='no-dynt-el'>3rd Dec 2016, 12:03:56 pm GMT</time>", $result);
+		self::assertEquals("<time datetime='2016-12-03T12:03:56Z' class='no-dynt-el'>3rd December 2016, 12:03:56 pm GMT</time>", $result);
 	}
 }
