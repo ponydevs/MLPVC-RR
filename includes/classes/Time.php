@@ -86,7 +86,7 @@ class Time {
 	}
 
 	const
-		FORMAT_FULL = 'jS M Y, g:i:s a T',
+		FORMAT_FULL = 'jS F Y, H:i:s T',
 		FORMAT_READABLE = 'readable';
 	/**
 	 * Create an ISO timestamp from the input string
