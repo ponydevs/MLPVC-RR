@@ -275,22 +275,6 @@ gulp.task('pgsort', function(){
 		this.emit('end');
 	}
 });
-gulp.task('one_time_transform', function(){
-	const fpath = './setup/mlpvc-rr_data.pg.sql';
-	fs.readFile(fpath, 'utf8', function(err, data){
-		if (err) throw err;
-
-		data = data.replace(/events__entries__votes/g,'event_entry_votes');
-		data = data.replace(/events__entries/g,'event_entries');
-		data = data.replace(/color_modify/g,'major_changes');
-		data = data.replace(/un-b/g,'unb');
-		data = data.replace(/usefullinks_id_seq/g,'useful_links_id_seq');
-
-		fs.writeFile(fpath, data, function(err){
-			if (err) throw err;
-		});
-	});
-});
 
 gulp.task('default', ['js', 'dist-js', 'scss', 'md'], function(){
 	gulp.watch(JSWatchArray, {debounceDelay: 2000}, ['js']);
