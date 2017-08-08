@@ -401,7 +401,7 @@ class EventController extends Controller {
 		if (!isset($params['entryid']))
 			Response::fail('Entry ID is missing or invalid');
 
-		$this->_entry = DB::$instance->where('entryid', intval($params['entryid'], 10))->getOne('events__entries');
+		$this->_entry = DB::$instance->where('entryid', intval($params['entryid'], 10))->getOne(EventEntry::$table_name);
 		if (empty($this->_entry) || ($action === 'manage' && !Permission::sufficient('staff') && $this->_entry->submitted_by !== Auth::$user->id))
 			Response::fail('The requested entry could not be found or you are not allowed to edit it');
 
@@ -462,7 +462,7 @@ class EventController extends Controller {
 	public function delEntry($params){
 		$this->_entryPermCheck($params);
 
-		if (!DB::$instance->where('entryid', $this->_entry->id)->delete('events__entries'))
+		if (!DB::$instance->where('entryid', $this->_entry->id)->delete(EventEntry::$table_name))
 			Response::dbError('Failed to delete entry');
 
 		Response::done();
@@ -488,7 +488,7 @@ class EventController extends Controller {
 			$this->_checkWipeLockedInVote($userVote);
 		}
 
-		if (!DB::$instance->insert('events__entries__votes',[
+		if (!DB::$instance->insert(EventEntryVote::$table_name,[
 			'entryid' => $this->_entry->id,
 			'userid' => Auth::$user->id,
 			'value' => $value,
@@ -509,7 +509,7 @@ class EventController extends Controller {
 		if ($userVote->isLockedIn($this->_entry))
 			Response::fail('You already voted on this post '.Time::tag($userVote->cast_at).'. Your vote is now locked in until the post is edited.');
 
-		if (!DB::$instance->where('userid', Auth::$user->id)->where('entryid', $this->_entry->id)->delete('events__entries__votes'))
+		if (!DB::$instance->where('userid', Auth::$user->id)->where('entryid', $this->_entry->id)->delete(EventEntryVote::$table_name))
 			Response::dbError('Vote could not be removed');
 	}
 

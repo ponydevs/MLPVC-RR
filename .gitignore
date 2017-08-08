@@ -11,8 +11,7 @@ www/img/cg_render
 www/css/*.scss*
 www/*.html
 fs
-setup/*.sql
 !setup/*.pg.sql
-setup/*_full.pg.sql
+setup/*_data.pg.sql
 /vendor/
 /nbproject/private/

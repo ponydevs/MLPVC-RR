@@ -215,7 +215,7 @@ class Logs {
 				$details[] = ['Action', self::$ACTIONS[$data['action']]];
 
 				$PonyGuide = empty($data['ishuman']);
-				if (!is_null($data['ishuman']))
+				if ($data['ishuman'] !== null)
 					$details[] = ['Guide', $PonyGuide ? 'Pony' : 'EQG'];
 				$details[] = ['ID', self::_getAppearanceLink($data['id'])];
 				$details[] = ['Label', $data['label']];
@@ -223,12 +223,6 @@ class Logs {
 					$details[] = ['Ordering index', $data['order']];
 				if (!empty($data['notes']))
 					$details[] = ['Notes', '<div>'.nl2br($data['notes']).'</div>'];
-				if (!empty($data['cm_favme'])){
-					$details[] = ['CM Submission', self::_link("http://fav.me/{$data['cm_favme']}")];
-					$details[] = ['CM Orientation', CGUtils::$CM_DIR[$data['cm_dir']]];
-					if (!empty($data['cm_preview']))
-						$details[] = ['Custom CM Preview', "<img src='".CoreUtils::aposEncode($data['cm_preview'])."'>"];
-				}
 				if (!empty($data['usetemplate']))
 					$details[] = ['Template applied', true];
 				$details[] = ['Private', !empty($data['private'])];

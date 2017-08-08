@@ -425,7 +425,7 @@ class User extends AbstractUser implements LinkableInterface {
 	public function getEntriesFor(Event $event, string $cols = '*'):?array {
 
 
-		return DB::$instance->where('submitted_by', $this->id)->where('eventid', $event->id)->get('events__entries',null,$cols);
+		return DB::$instance->where('submitted_by', $this->id)->where('eventid', $event->id)->get(EventEntry::$table_name,null,$cols);
 	}
 
 	const YOU_HAVE = [

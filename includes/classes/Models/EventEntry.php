@@ -28,7 +28,7 @@ use App\Time;
  * @property Event    $event        (Via relations)
  */
 class EventEntry extends NSModel {
-	public static $table_name = 'events__entries';
+	public static $table_name = 'event_entries';
 
 	public static $belongs_to = [
 		['submitter', 'class' => 'User', 'foreign_key' => 'submitted_by'],
@@ -42,8 +42,8 @@ class EventEntry extends NSModel {
 		if ($this->score === null)
 			return;
 
-		$score = DB::$instance->disableAutoClass()->where('entryid', $this->id)->getOne('events__entries__votes', 'COALESCE(SUM(value),0) as score');
-		DB::$instance->where('entryid', $this->id)->update('events__entries',$score);
+		$score = DB::$instance->disableAutoClass()->where('entryid', $this->id)->getOne(EventEntryVote::$table_name, 'COALESCE(SUM(value),0) as score');
+		DB::$instance->where('entryid', $this->id)->update(self::$table_name,$score);
 		$this->score = $score['score'];
 
 		try {

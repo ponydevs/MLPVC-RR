@@ -54,7 +54,7 @@ if (['js','dist-js','scss','md','default'].indexOf(toRun) !== -1){
 	if (toRun === 'md' || toRun === 'dist-js' || toRun === 'default')
 		require_list.push('gulp-rename');
 }
-else if (toRun === 'pgsort')
+else if (toRun === 'pgsort' || toRun == 'one_time_transform')
 	require_list.push('fs');
 console.write('(');
 for (let i= 0,l=require_list.length; i<l; i++){
@@ -227,7 +227,7 @@ gulp.task('pgsort', function(){
 				(function(fpath){
 					fs.readFile(fpath, 'utf8', function(err, data){
 						if (err) throw err;
-						let test = /INSERT INTO "?([a-z_\-]+)"?\s*VALUES\s*\((\d+),[\s\S]+?;(?:\r|\r\n|\n)/g;
+						let test = /INSERT INTO "?([a-z_\-]+)"?(?:\s+\([^)]+\))?\s+VALUES\s*\((\d+),[\s\S]+?;(?:\r|\r\n|\n)/g;
 						if (!test.test(data))
 							return;
 						let Tables = {},
@@ -259,8 +259,8 @@ gulp.task('pgsort', function(){
 						data = data.replace(test,function(row,table){
 							return Tables[table][TableCounters[table]++];
 						});
-						data = data.replace(/;(?:\r|\r\n|\n)INSERT INTO "?([a-z_\-]+)"?\s+VALUES\s+/g,',\n');
-						data = data.replace(/((?:\r|\r\n|\n)\s*(?:\r|\r\n|\n)INSERT INTO "?([a-z_\-]+)"?\s*VALUES)\s*\(/g,'$1\n(');
+						data = data.replace(/;(?:\r|\r\n|\n)INSERT INTO "?([a-z_\-]+)"?(?:\s+\([^)]+\))?\s+VALUES\s+/g,',\n');
+						data = data.replace(/((?:\r|\r\n|\n)\s*(?:\r|\r\n|\n)INSERT INTO "?([a-z_\-]+)"?(?:\s+\([^)]+\))?\s+VALUES)\s*\(/g,'$1\n(');
 						data = data.replace(/\r\n?/g,'\n');
 
 						fs.writeFile(fpath, data, function(err){
@@ -274,6 +274,22 @@ gulp.task('pgsort', function(){
 		PGL.error(err);
 		this.emit('end');
 	}
+});
+gulp.task('one_time_transform', function(){
+	const fpath = './setup/mlpvc-rr_data.pg.sql';
+	fs.readFile(fpath, 'utf8', function(err, data){
+		if (err) throw err;
+
+		data = data.replace(/events__entries__votes/g,'event_entry_votes');
+		data = data.replace(/events__entries/g,'event_entries');
+		data = data.replace(/color_modify/g,'major_changes');
+		data = data.replace(/un-b/g,'unb');
+		data = data.replace(/usefullinks_id_seq/g,'useful_links_id_seq');
+
+		fs.writeFile(fpath, data, function(err){
+			if (err) throw err;
+		});
+	});
 });
 
 gulp.task('default', ['js', 'dist-js', 'scss', 'md'], function(){

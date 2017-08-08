@@ -130,8 +130,8 @@ class Event extends NSModel implements LinkableInterface {
 
 			/** @var $HighestScoringEntries EventEntry[] */
 			$HighestScoringEntries = DB::$instance->setModel('EventEntry')->query(
-				'SELECT * FROM events__entries
-				WHERE event_id = ? AND score > 0 AND score = (SELECT MAX(score) FROM events__entries)
+				'SELECT * FROM '.EventEntry::$table_name.
+				'WHERE event_id = ? AND score > 0 AND score = (SELECT MAX(score) FROM '.EventEntry::$table_name.')
 				ORDER BY submitted_at ASC',[$this->id]);
 
 			if (empty($HighestScoringEntries))

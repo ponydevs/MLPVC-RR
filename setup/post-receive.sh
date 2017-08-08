@@ -14,6 +14,7 @@ do
 		CMD_FETCH="git fetch"
 		CMD_CHECKOUT="git -c advice.detachedHead=false checkout $newrev -f"
 		CMD_COMPOSER="sudo -u www-data composer install --no-dev 2>&1"
+		CMD_MIGRATE="sudo -u www-data vendor/bin/phinx migrate"
 
 		echo "$ $CMD_CD"
 		eval ${CMD_CD}
@@ -23,6 +24,8 @@ do
 		eval ${CMD_CHECKOUT}
 		echo "$ $CMD_COMPOSER"
 		eval ${CMD_COMPOSER}
+		echo "$ $CMD_MIGRATE"
+		eval ${CMD_MIGRATE}
 	else
 		echo "Push ignored (refname=$refname; branch=$branch)"
     fi

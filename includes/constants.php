@@ -7,13 +7,13 @@ define('PHPVER', '7.1');
 
 // Configuration \\
 define('HTTPS', !empty($_SERVER['HTTPS']));
-define('ABSPATH',(HTTPS?'https':'http').'://'.$_SERVER['SERVER_NAME'].'/');
+define('ABSPATH',(HTTPS?'https':'http').'://'.($_SERVER['SERVER_NAME']??'localhost').'/');
 /** @noinspection RealpathInSteamContextInspection */
 define('PROJPATH',realpath(__DIR__.'/../').DIRECTORY_SEPARATOR);
 define('APPATH',  PROJPATH.'www'.DIRECTORY_SEPARATOR);
 define('FSPATH',  PROJPATH.'fs'.DIRECTORY_SEPARATOR);
 define('INCPATH', PROJPATH.'includes'.DIRECTORY_SEPARATOR);
-define('POST_REQUEST', $_SERVER['REQUEST_METHOD'] === 'POST');
+define('POST_REQUEST', ($_SERVER['REQUEST_METHOD']??'GET') === 'POST');
 define('GITHUB_PROJECT_NAME','ponydevs/MLPVC-RR');
 define('GITHUB_URL','https://github.com/'.GITHUB_PROJECT_NAME);
 define('SITE_TITLE', 'MLP Vector Club');
