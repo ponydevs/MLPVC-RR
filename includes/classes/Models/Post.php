@@ -122,9 +122,10 @@ abstract class Post extends NSModel implements LinkableInterface {
 		else {
 			$alt = CoreUtils::aposEncode($Deviation->title);
 			$ImageLink = $view_only ? $this->toURL() : "http://fav.me/{$Deviation->id}";
-			$Image = "<div class='image deviation'><a href='$ImageLink'><img src='{$Deviation->preview}$cachebust' alt='$alt'>";
+			$approved = $this->lock ? ' approved' : '';
+			$Image = "<div class='image deviation$approved'><a href='$ImageLink'><img src='{$Deviation->preview}$cachebust' alt='$alt'>";
 			if ($this->lock)
-				$Image .= "<span class='typcn typcn-tick' title='This submission has been accepted into the group gallery'></span>";
+				$Image .= "<span class='approved-info' title='This submission has been accepted into the group gallery'></span>";
 			$Image .= '</a></div>';
 		}
 		return $Image;

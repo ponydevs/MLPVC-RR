@@ -85,7 +85,7 @@
 					}
 				}
 				img {
-					border: 2px solid $DeviationBorder;
+					border: 1px solid $DeviationBorder;
 				}
 
 				.post-deviation-promise {
@@ -110,24 +110,21 @@
 				display: block;
 				margin-bottom: 5px;
 			}
-			> a {
+			&.approved > a {
 				position: relative;
 
-				> span.typcn {
+				img { border-width: 2px }
+
+				$imageSize: 40px;
+				.approved-info {
 			    position: absolute;
 			    left: 0;
-			    top: calc(100% - 30px);
-			    background: rgba(0,0,0,.7);
-			    color: #5f5;
-			    border: 2px solid $DeviationBorder;
-			    border-top-right-radius: 10px;
-			    height: 22px;
-			    text-transform: uppercase;
-			    max-width: 100%;
-			    font-size: 22px;
-			    line-height: 22px;
-			    padding: 2px 3px;
+			    bottom: 0;
 			    cursor: help;
+			    width: $imageSize;
+			    height: $imageSize;
+			    background: url('/img/approved.svg') no-repeat center;
+			    background-size: $imageSize;
 				}
 			}
 		}
