@@ -56,10 +56,10 @@ use App\Tags;
 		}
 		echo Appearances::getRelatedEpisodesHTML($Appearance, $EQG);
 	}
-	if (!empty($Appearance->notes)){ ?>
+	if (!empty($Appearance->notes_src)){ ?>
 		<section>
 			<h2><span class='typcn typcn-info-large'></span>Additional notes</h2>
-			<p id="notes"><?=$Appearance->getNotesHTML(NOWRAP, NOTE_TEXT_ONLY)?></p>
+			<div id="notes"><?=$Appearance->getNotesHTML(NOWRAP, NOTE_TEXT_ONLY)?></div>
 		</section>
 <?php
 	}

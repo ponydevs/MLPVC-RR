@@ -691,7 +691,7 @@ class ColorGuideController extends Controller {
 			case 'get':
 				Response::done([
 					'label' => $this->_appearance->label,
-					'notes' => $this->_appearance->notes,
+					'notes' => $this->_appearance->notes_src,
 					'private' => $this->_appearance->private,
 				]);
 			break;
@@ -733,13 +733,12 @@ class ColorGuideController extends Controller {
 						Input::ERROR_RANGE => 'Appearance notes cannot be longer than @max characters',
 					]
 				]))->out();
-				if (isset($notes)){
+				if ($notes !== null){
 					CoreUtils::checkStringValidity($notes, 'Appearance notes', INVERSE_PRINTABLE_ASCII_PATTERN);
-					$notes = CoreUtils::sanitizeHtml($notes);
-					if ($creating || $notes !== $this->_appearance->notes)
-						$data['notes'] = $notes;
+					if ($creating || $notes !== $this->_appearance->notes_src)
+						$data['notes_src'] = $notes;
 				}
-				else $data['notes'] = null;
+				else $data['notes_src'] = null;
 
 				$data['private'] = isset($_POST['private']);
 
@@ -790,11 +789,11 @@ class ColorGuideController extends Controller {
 
 					Logs::logAction('appearances', [
 						'action' => 'add',
-					    'id' => $newAppearance->id,
-					    'order' => $newAppearance->order,
-					    'label' => $newAppearance->label,
-					    'notes' => $newAppearance->notes,
-					    'ishuman' => $newAppearance->ishuman,
+						'id' => $newAppearance->id,
+						'order' => $newAppearance->order,
+						'label' => $newAppearance->label,
+						'notes' => $newAppearance->notes_src,
+						'ishuman' => $newAppearance->ishuman,
 						'usetemplate' => $usetemplate,
 						'private' => $newAppearance->private,
 						'owner_id' => $newAppearance->owner_id,
@@ -806,10 +805,11 @@ class ColorGuideController extends Controller {
 
 				if (!$creating){
 					$diff = [];
-					foreach (['label', 'notes', 'private', 'owner_id'] as $key){
-						if ($EditedAppearance->{$key} !== $olddata[$key]){
-							$diff["old$key"] = $olddata[$key];
-							$diff["new$key"] = $EditedAppearance->{$key};
+					foreach (['label' => true, 'notes_src' => 'nptes', 'private' => true, 'owner_id' => true] as $orig => $mapped){
+						$key = $mapped === true ? $orig : $mapped;
+						if ($EditedAppearance->{$orig} !== $olddata[$orig]){
+							$diff["old$key"] = $olddata[$orig];
+							$diff["new$key"] = $EditedAppearance->{$orig};
 						}
 					}
 					if (!empty($diff)) Logs::logAction('appearance_modify', [
@@ -864,14 +864,14 @@ class ColorGuideController extends Controller {
 
 				Logs::logAction('appearances', [
 					'action' => 'del',
-				    'id' => $this->_appearance->id,
-				    'order' => $this->_appearance->order,
-				    'label' => $this->_appearance->label,
-				    'notes' => $this->_appearance->notes,
-				    'ishuman' => $this->_appearance->ishuman,
-				    'added' => $this->_appearance->added,
-				    'private' => $this->_appearance->private,
-				    'owner_id' => $this->_appearance->owner_id,
+					'id' => $this->_appearance->id,
+					'order' => $this->_appearance->order,
+					'label' => $this->_appearance->label,
+					'notes' => $this->_appearance->notes_src,
+					'ishuman' => $this->_appearance->ishuman,
+					'added' => $this->_appearance->added,
+					'private' => $this->_appearance->private,
+					'owner_id' => $this->_appearance->owner_id,
 				]);
 
 				Response::success('Appearance removed');

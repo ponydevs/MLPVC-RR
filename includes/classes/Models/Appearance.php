@@ -17,7 +17,8 @@ use App\Time;
  * @property int                 $id
  * @property int                 $order
  * @property string              $label
- * @property string              $notes
+ * @property string              $notes_src
+ * @property string              $notes_rend
  * @property string              $owner_id
  * @property DateTime            $added
  * @property DateTime            $last_cleared
@@ -48,6 +49,7 @@ class Appearance extends NSModel implements LinkableInterface {
 	public static $belongs_to = [
 		['owner', 'class' => 'User', 'foreign_key' => 'owner_id'],
 	];
+	public static $before_save = ['render_notes'];
 
 	/** @return Color[] */
 	public function get_preview_colors(){
@@ -134,6 +136,33 @@ class Appearance extends NSModel implements LinkableInterface {
 		return "<div class='sprite'>$img</div>";
 	}
 
+	private static function _processNotes(string $notes):string {
+		$notes = CoreUtils::sanitizeHtml($notes);
+		$notes = preg_replace(new RegExp('(\s)(&gt;&gt;(\d+))(\s|$)'),"$1<a href='https://derpibooru.org/$3'>$2</a>$4",$notes);
+		$notes = preg_replace_callback('/'.EPISODE_ID_PATTERN.'/',function($a){
+			$Ep = Episodes::getActual((int) $a[1], (int) $a[2]);
+			return !empty($Ep)
+				? "<a href='{$Ep->toURL()}'>".CoreUtils::aposEncode($Ep->formatTitle(AS_ARRAY,'title')).'</a>'
+				: "<strong>{$a[0]}</strong>";
+		},$notes);
+		$notes = preg_replace_callback('/'.MOVIE_ID_PATTERN.'/',function($a){
+			$Ep = Episodes::getActual(0, (int) $a[1], true);
+			return !empty($Ep)
+				? "<a href='{$Ep->toURL()}'>".CoreUtils::aposEncode(Episodes::shortenTitlePrefix($Ep->formatTitle(AS_ARRAY,'title'))).'</a>'
+				: "<strong>{$a[0]}</strong>";
+		},$notes);
+		$notes = preg_replace_callback('/(?:^|[^\\\\])\K(?:#(\d+))(\'s?)?\b/',function($a){
+
+			$Appearance = DB::$instance->where('id', $a[1])->getOne('appearances');
+			return (
+				!empty($Appearance)
+				? "<a href='/cg/v/{$Appearance->id}'>{$Appearance->label}</a>".(!empty($a[2])?CoreUtils::posess($Appearance->label, true):'')
+				: "$a[0]"
+			);
+		},$notes);
+		return nl2br(str_replace('\#', '#', $notes));
+	}
+
 	/**
 	 * Get the notes for a specific appearance
 	 *
@@ -145,37 +174,16 @@ class Appearance extends NSModel implements LinkableInterface {
 	public function getNotesHTML(bool $wrap = WRAP, bool $cmLink = true):string {
 		global $EPISODE_ID_REGEX;
 
-		$hasNotes = !empty($this->notes);
-		if ($hasNotes){
-			$notes = '';
-			if ($hasNotes){
-				$this->notes = preg_replace_callback('/'.EPISODE_ID_PATTERN.'/',function($a){
-					$Ep = Episodes::getActual((int) $a[1], (int) $a[2]);
-					return !empty($Ep)
-						? "<a href='{$Ep->toURL()}'>".CoreUtils::aposEncode($Ep->formatTitle(AS_ARRAY,'title')).'</a>'
-						: "<strong>{$a[0]}</strong>";
-				},$this->notes);
-				$this->notes = preg_replace_callback('/'.MOVIE_ID_PATTERN.'/',function($a){
-					$Ep = Episodes::getActual(0, (int) $a[1], true);
-					return !empty($Ep)
-						? "<a href='{$Ep->toURL()}'>".CoreUtils::aposEncode(Episodes::shortenTitlePrefix($Ep->formatTitle(AS_ARRAY,'title'))).'</a>'
-						: "<strong>{$a[0]}</strong>";
-				},$this->notes);
-				$this->notes = preg_replace_callback('/(?:^|[^\\\\])\K(?:#(\d+))\b/',function($a){
-
-					$Appearance = DB::$instance->where('id', $a[1])->getOne('appearances');
-					return (
-						!empty($Appearance)
-						? "<a href='/cg/v/{$Appearance->id}'>{$Appearance->label}</a>"
-						: "$a[0]"
-					);
-				},$this->notes);
-				$this->notes = str_replace('\#', '#', $this->notes);
-				$notes = '<span>'.nl2br($this->notes).'</span>';
+		if (!empty($this->notes_src)){
+			if ($this->notes_rend === null){
+				$this->notes_rend = self::_processNotes($this->notes_src);
+				$this->save();
 			}
+			$notes = "<span>{$this->notes_rend}</span>";
 		}
 		else {
-			if (!Permission::sufficient('staff')) return '';
+			if (!Permission::sufficient('staff'))
+				return '';
 			$notes = '';
 		}
 		return $wrap ? "<div class='notes'>$notes</div>" : $notes;
@@ -344,5 +352,11 @@ class Appearance extends NSModel implements LinkableInterface {
 			Notification::send($checkWho,'sprite-colors',['appearance_id' => $this->id]);
 		else if (!$hasColorIssues && !empty($oldNotifs))
 			Appearances::clearSpriteColorIssueNotifications($oldNotifs);
+	}
+
+	public function render_notes(){
+		if ($this->notes_src === null)
+			$this->notes_rend = null;
+		else $this->notes_rend = self::_processNotes($this->notes_src);
 	}
 }
