@@ -375,7 +375,7 @@ class DeviantArt {
 	 * @return array [ 'username' => 'role', ... ]
 	 */
 	public static function getMemberList():array {
-		$cache = CachedFile::init(FSPATH.'members.json', Time::IN_SECONDS['minute']*10);
+		$cache = CachedFile::init(FSPATH.'members.json.gz', Time::IN_SECONDS['minute']*10);
 		if (!$cache->expired())
 			return $cache->read();
 

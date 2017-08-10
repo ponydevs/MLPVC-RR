@@ -32,7 +32,7 @@ class AboutController extends Controller {
 		if (!in_array($stat, self::STAT_TYPES, true))
 			HTTP::statusCode(404, AND_DIE);
 
-		$cache = CachedFile::init(FSPATH."stats/$stat.json", self::STAT_CHACHE_DURATION);
+		$cache = CachedFile::init(FSPATH."stats/$stat.json.gz", self::STAT_CHACHE_DURATION);
 		if (!$cache->expired())
 			Response::done([ 'data' => $cache->read() ]);
 

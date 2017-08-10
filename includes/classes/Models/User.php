@@ -247,7 +247,7 @@ class User extends AbstractUser implements LinkableInterface {
 	const CONTRIB_CACHE_DURATION = Time::IN_SECONDS['hour'];
 
 	public function getCachedContributions():array {
-		$cache = CachedFile::init(FSPATH."contribs/{$this->id}.json", self::CONTRIB_CACHE_DURATION);
+		$cache = CachedFile::init(FSPATH."contribs/{$this->id}.json.gz", self::CONTRIB_CACHE_DURATION);
 		if (!$cache->expired())
 			return $cache->read();
 

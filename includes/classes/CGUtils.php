@@ -568,9 +568,11 @@ HTML;
 
 	public static function getSpriteImageMap($AppearanceID){
 		$PNGPath = SPRITE_PATH."$AppearanceID.png";
-		$MapPath = FSPATH."cg_render/$AppearanceID-linedata.json.gz";
-		if (file_exists($MapPath) && filemtime($MapPath) >= filemtime($PNGPath))
-			$Map = JSON::decode(gzuncompress(file_get_contents($MapPath)));
+		$MapFile = new CachedFile(FSPATH."cg_render/$AppearanceID-linedata.json.gz", function($path) use($PNGPath) {
+			return filemtime($path) >= filemtime($PNGPath);
+		});
+		if (!$MapFile->expired())
+			$Map = $MapFile->read();
 		else {
 			if (!file_exists($PNGPath))
 				Response::fail("There's no sprite image for appearance #$AppearanceID");
@@ -639,7 +641,7 @@ HTML;
 				$Output['linedata'][] = $line;
 
 			$Map = $Output;
-			file_put_contents($MapPath, gzcompress(JSON::encode($Output), 9));
+			$MapFile->update($Output);
 		}
 		return $Map;
 	}
