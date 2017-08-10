@@ -16,7 +16,7 @@ class HTTP {
 	 * @return array
 	 */
 	public static function legitimateRequest($url, $cookies = null, $referrer = null, bool $skipBody = false){
-		$r = curl_init();
+		$r = curl_init($url);
 		$curl_opt = [
 			CURLOPT_HTTPHEADER => [
 				'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
@@ -25,16 +25,19 @@ class HTTP {
 				'Connection: keep-alive',
 			],
 			CURLOPT_HEADER => true,
-			CURLOPT_URL => $url,
 			CURLOPT_BINARYTRANSFER => true,
 			CURLOPT_FOLLOWLOCATION => true,
 			CURLOPT_RETURNTRANSFER => true,
-			CURLOPT_USERAGENT => 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/45.0.5678.91 Safari/537.36'
+			CURLOPT_USERAGENT => 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.5678.91 Safari/537.36'
 		];
 		if (isset($referrer))
 			$curl_opt[CURLOPT_REFERER] = $referrer;
-		if (is_array($cookies))
-			$curl_opt[CURLOPT_COOKIE] = implode('; ', $cookies);
+		if (!empty($cookies)){
+			$curl_opt[CURLOPT_COOKIE] = '';
+			foreach ($cookies as $name => $value)
+				$curl_opt[CURLOPT_COOKIE] .= "$name=$value; ";
+			$curl_opt[CURLOPT_COOKIE] = rtrim($curl_opt[CURLOPT_COOKIE],'; ');
+		}
 		if ($skipBody === true)
 			$curl_opt[CURLOPT_NOBODY] = $skipBody;
 		curl_setopt_array($r, $curl_opt);
@@ -80,8 +83,9 @@ class HTTP {
 					continue;
 
 				preg_match(new RegExp('\s*([^=]+=[^;]+)(?:;|$)'), $parts[2], $cookie);
-				$cookies[] = $cookie[1];
-			};
+				[$name, $value] = explode('=',$cookie[1],2);
+				$cookies[$name] = $value;
+			}
 
 		$request = self::legitimateRequest($url, $cookies, $referrer, true);
 		return preg_match(new RegExp('Location:\s+([^\r\n]+)'), $request['responseHeaders'], $_match) ? CoreUtils::trim($_match[1]) : null;

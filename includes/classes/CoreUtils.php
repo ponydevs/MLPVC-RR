@@ -1049,9 +1049,8 @@ HTML;
 		if (empty($stashpage))
 			return 3;
 
-		$STASH_DL_LINK_REGEX = '(https?://(sta\.sh|www\.deviantart\.com)/download/\d+/[a-z\d_]+-d[a-z\d]{6,}\.(?:png|jpe?g|bmp)\?[^"]+)';
-		$urlmatch = preg_match(new RegExp('<a\s+class="[^"]*?dev-page-download[^"]*?"\s+href="'.
-			$STASH_DL_LINK_REGEX.'"'), $stashpage['response'], $_match);
+		$DL_LINK_REGEX = '(https?://(sta\.sh|www\.deviantart\.com)/download/\d+/[a-z\d_]+-d[a-z\d]{6,}\.(?:png|jpe?g|bmp)\?[^"]+)';
+		$urlmatch = preg_match(new RegExp('<a\s+class="[^"]*?dev-page-download[^"]*?"\s+href="'.$DL_LINK_REGEX.'"'), $stashpage['response'], $_match);
 
 		if (!$urlmatch)
 			return 4;

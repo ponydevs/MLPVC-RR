@@ -66,10 +66,11 @@ class DeviantArt {
 
 		$r = curl_init($requestURI);
 		$curl_opt = [
-			CURLOPT_RETURNTRANSFER => 1,
+			CURLOPT_RETURNTRANSFER => true,
 			CURLOPT_HTTPHEADER => $requestHeaders,
-			CURLOPT_HEADER => 1,
-			CURLOPT_BINARYTRANSFER => 1,
+			CURLOPT_HEADER => true,
+			CURLOPT_BINARYTRANSFER => true,
+			CURLOPT_FOLLOWLOCATION => true,
 		];
 		if (!empty($postdata)){
 			$query = [];
@@ -89,13 +90,8 @@ class DeviantArt {
 		$curlError = curl_error($r);
 		curl_close($r);
 
-		if ($responseCode < 200 || $responseCode >= 300){
-			if (($responseCode === 301 || $responseCode === 302) && preg_match(new RegExp('\nLocation:\s*(.+)(\n|$)','i'),$responseHeaders,$match)){
-				error_log(__METHOD__.": $responseCode redirection from DeviantArt\nFrom: $requestURI\nTo: {$match[1]}");
-				return self::request($match[1]);
-			}
+		if ($responseCode < 200 || $responseCode >= 300)
 			throw new CURLRequestException(rtrim("cURL fail for URL \"$requestURI\" (HTTP $responseCode); $curlError",' ;'), $responseCode);
-		}
 
 		if (preg_match(new RegExp('Content-Encoding:\s?gzip'), $responseHeaders))
 			$response = gzdecode($response);
