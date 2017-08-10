@@ -4,9 +4,7 @@
 	define('DB_HOST','localhost');
 	define('DB_USER','mlpvc-rr');
 	define('DB_PASS','example-password');
-
-	// ELasticSearch Server Port \\
-	define('ELASTIC_PORT','9200');
+	define('DB_NAME','mlpvc-rr');
 
 	// dA API Codes \\
 	define('DA_CLIENT','');

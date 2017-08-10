@@ -7,7 +7,7 @@ use App\Models\Episode;
 
 class PostgresDbWrapper extends \PostgresDb {
 	public static function withConnection(string $db, \PDO $PDO):PostgresDbWrapper {
-		$instance = new PostgresDbWrapper($db);
+		$instance = new self($db);
 		$instance->setConnection($PDO);
 		return $instance;
 	}

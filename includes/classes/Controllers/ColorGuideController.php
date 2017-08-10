@@ -403,21 +403,23 @@ class ColorGuideController extends Controller {
 				$search = [];
 			}
 
-			$Pagination->calcMaxPages($search['hits']['total']);
-			if (!empty($search['hits']['hits'])){
-				$ids = [];
-				/** @noinspection ForeachSourceInspection */
-				foreach($search['hits']['hits'] as $i => $hit)
-					$ids[$hit['_id']] = $i;
+			if (!empty($search)){
+				$Pagination->calcMaxPages($search['hits']['total']);
+				if (!empty($search['hits']['hits'])){
+					$ids = [];
+					/** @noinspection ForeachSourceInspection */
+					foreach($search['hits']['hits'] as $i => $hit)
+						$ids[$hit['_id']] = $i;
 
-				if ($inOrder)
-					DB::$instance->orderBy('order');
-				DB::$instance->where('id', array_keys($ids));
-				$Ponies = Appearances::get($this->_EQG);
-				if (!empty($Ponies) && !$inOrder)
-					uasort($Ponies, function(Appearance $a, Appearance $b) use ($ids){
-						return $ids[$a->id] <=> $ids[$b->id];
-					});
+					if ($inOrder)
+						DB::$instance->orderBy('order');
+					DB::$instance->where('id', array_keys($ids));
+					$Ponies = Appearances::get($this->_EQG);
+					if (!empty($Ponies) && !$inOrder)
+						uasort($Ponies, function(Appearance $a, Appearance $b) use ($ids){
+							return $ids[$a->id] <=> $ids[$b->id];
+						});
+				}
 			}
 		}
 		if (!$elasticAvail) {

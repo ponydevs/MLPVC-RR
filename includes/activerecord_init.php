@@ -4,7 +4,7 @@ namespace ActiveRecord;
 
 Config::initialize(function (Config $cfg){
 	$cfg->set_connections([
-		'pgsql' => 'pgsql://'.DB_USER.':'.DB_PASS.'@'.DB_HOST.'/mlpvc-rr?charset=utf8',
+		'pgsql' => 'pgsql://'.DB_USER.':'.DB_PASS.'@'.DB_HOST.'/'.DB_NAME.'?charset=utf8',
 		'failsafe' => 'sqlite://:memory:',
 	], 'pgsql');
 });

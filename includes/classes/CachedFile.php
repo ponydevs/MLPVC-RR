@@ -2,6 +2,8 @@
 
 namespace App;
 
+// TODO Seamless GZIP compression based on file extension
+
 class CachedFile {
 	private const
 		TYPE_ANY = 1,

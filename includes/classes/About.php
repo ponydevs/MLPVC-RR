@@ -18,7 +18,7 @@ class About {
 	}
 	public static function getPostgresVersion(){
 
-		return \App\DB::$instance->querySingle('SHOW server_version')['server_version'];
+		return DB::$instance->querySingle('SHOW server_version')['server_version'];
 	}
 	public static function getElasticSearchVersion(){
 		try {

@@ -1225,14 +1225,14 @@ HTML;
 		return [ $builder->to_s(), $builder->bind_values() ];
 	}
 
-	/** @var Client */
-	private static $_elastiClient;
-
 	public static function elasticClient():Client {
-		if (self::$_elastiClient === null)
-			self::$_elastiClient = ClientBuilder::create()->setHosts(['127.0.0.1:'.ELASTIC_PORT])->build();
+		/** @var $elastiClient Client */
+		static $elastiClient;
+		if ($elastiClient !== null)
+			return $elastiClient;
 
-		return self::$_elastiClient;
+		$elastiClient = ClientBuilder::create()->setHosts(['127.0.0.1:9200'])->build();
+		return $elastiClient;
 	}
 
 	public static function isJSONExpected():bool {

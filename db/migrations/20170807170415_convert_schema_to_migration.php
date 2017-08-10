@@ -430,7 +430,7 @@ class ConvertSchemaToMigration extends AbstractMigration {
 			->addColumn('preview',      'string',    ['length' => 255, 'null' => true])
 			->addColumn('fullsize',     'string',    ['length' => 255, 'null' => true])
 			->addColumn('label',        'string',    ['length' => 255, 'null' => true])
-			->addColumn('reserved_at',  'timestamp', ['timezone' => true])
+			->addColumn('reserved_at',  'timestamp', ['timezone' => true, 'default' => 'CURRENT_TIMESTAMP'])
 			->addColumn('reserved_by',  'uuid')
 			->addColumn('deviation_id', 'string',    ['length' => 255, 'null' => true])
 			->addColumn('lock',         'boolean',   ['default' => false])

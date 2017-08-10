@@ -33,13 +33,18 @@ use App\Permission;
 			$indices = $client->cat()->indices(['v' => true]);
 			$nodes = $client->cat()->nodes(['v' => true]); ?>
 		<pre><code><strong>Indices</strong><br><?php
+			$usedIndexes = ['appearances'];
 			foreach ($indices as $no => $index){
+				if (!in_array($index['index'], $usedIndexes, true))
+					continue;
+
 				echo "#$no ";
 				foreach ($index as $key => $value){
 					if (empty($value))
 						continue;
 					echo "$key:$value ";
 				}
+				echo "\n";
 			}
 		?></code></pre>
 		<pre><code><strong>Nodes</strong><br><?php

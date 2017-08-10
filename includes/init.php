@@ -16,7 +16,7 @@ if (defined('MAINTENANCE_START')){
 
 // Database connection & Required Functionality Checking \\
 try {
-	$inipath = 'in/to '.php_ini_loaded_file().' then restart '.About::getServerSoftware();
+	$inipath = 'in/to '.php_ini_loaded_file().' then restart '.About::getServerSoftware().' and/or FPM';
 	if (About::iniGet('short_open_tag') !== true)
 		throw new RuntimeException("Short open tags (&lt;?) are disabled\nUncomment/add the line <strong>short_open_tag=On</strong> $inipath to fix");
 }
@@ -25,7 +25,7 @@ catch (Exception $e){
 	die(require INCPATH.'views/fatalerr.php');
 }
 
-DB::$instance = new PostgresDbWrapper('mlpvc-rr');
+DB::$instance = new PostgresDbWrapper(DB_NAME);
 
 try {
 	$conn = \Activerecord\Connection::instance();

@@ -1,8 +1,6 @@
 <?php
 
-require __DIR__.'/includes/test_init.php';
-
-$pdo = \Activerecord\Connection::instance()->connection;
+require __DIR__.'/includes/conf.php';
 
 return [
 	'paths' => [
@@ -14,9 +12,9 @@ return [
 		'local' => [
 			'adapter' => 'pgsql',
 			'host' => DB_HOST,
-			'name' => 'mlpvc-rr',
 			'user' => DB_USER,
 			'pass' => DB_PASS,
+			'name' => DB_NAME,
 		],
 	],
 ];

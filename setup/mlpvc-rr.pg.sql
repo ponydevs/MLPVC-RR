@@ -1418,7 +1418,7 @@ CREATE TABLE reservations (
     preview character varying(255),
     fullsize character varying(255),
     label character varying(255),
-    reserved_at timestamp with time zone NOT NULL,
+    reserved_at timestamp with time zone DEFAULT now() NOT NULL,
     reserved_by uuid NOT NULL,
     deviation_id character varying(255),
     lock boolean DEFAULT false NOT NULL,

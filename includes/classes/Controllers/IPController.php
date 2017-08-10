@@ -10,34 +10,6 @@ use App\Permission;
 use IPTools\IP;
 
 class IPController extends Controller {
-	function __construct(){
-		parent::__construct();
-
-		if (KnownIP::count() === 0)
-			$this->_import();
-	}
-
-	private function _import(){
-		$lockfile = CachedFile::init(FSPATH.'ip_import.lock', -1);
-		if (!$lockfile->expired())
-			return;
-
-		/** @var $query KnownIP[] */
-		$query = DB::$instance->setModel('KnownIP')->query(
-			'SELECT DISTINCT
-				initiator as user_id,
-				MAX(timestamp) as last_seen,
-				MIN(timestamp) as first_seen,
-				ip
-			FROM log
-			GROUP BY user_id, ip
-			ORDER BY last_seen DESC');
-		foreach ($query as $item)
-			KnownIP::record($item->ip, $item->user_id, $item->last_seen, $item->first_seen);
-
-		$lockfile->bump();
-	}
-
 	function index($params){
 		if (Permission::insufficient('staff'))
 			CoreUtils::notFound();
@@ -56,7 +28,6 @@ class IPController extends Controller {
 
 		CoreUtils::fixPath("/admin/ip/$ip");
 
-		$this->_import();
 		$knownIPs = KnownIP::find_all_by_ip($ip);
 		$Users = [];
 		if (count($knownIPs) > 0){
