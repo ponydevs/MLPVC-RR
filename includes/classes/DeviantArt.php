@@ -89,6 +89,11 @@ class DeviantArt {
 		$curlError = curl_error($r);
 		curl_close($r);
 
+		if ($responseCode === 302 && preg_match(new RegExp('\nLocation:\s*(.+)(\n|$)'),$responseHeaders,$match)){
+			error_log("Permanent redirection from DeviantArt\nFrom: $requestURI\nTo: {$match[1]}");
+			return self::request($match[1]);
+		}
+
 		if ($responseCode < 200 || $responseCode >= 300)
 			throw new CURLRequestException(rtrim("cURL fail for URL \"$requestURI\" (HTTP $responseCode); $curlError",' ;'), $responseCode);
 
@@ -216,7 +221,7 @@ class DeviantArt {
 		if ($type === 'sta.sh')
 			$ID = CoreUtils::nomralizeStashID($ID);
 		try {
-			$data = DeviantArt::request('http://backend.deviantart.com/oembed?url='.urlencode("http://$type/$ID"),false);
+			$data = self::request('https://backend.deviantart.com/oembed?url='.urlencode("http://$type/$ID"),false);
 		}
 		catch (CURLRequestException $e){
 			if ($e->getCode() === 404)
@@ -310,7 +315,7 @@ class DeviantArt {
 			$clubmember = $User->isClubMember();
 			$permmember = Permission::sufficient('member', $User->role);
 			if ($clubmember && !$permmember)
-				$User->updateRole(DeviantArt::getClubRole($User));
+				$User->updateRole(self::getClubRole($User));
 			else if (!$clubmember && $permmember)
 				$User->updateRole('user');
 		}
