@@ -90,7 +90,7 @@ class DeviantArt {
 		curl_close($r);
 
 		if ($responseCode === 302 && preg_match(new RegExp('\nLocation:\s*(.+)(\n|$)'),$responseHeaders,$match)){
-			error_log("Permanent redirection from DeviantArt\nFrom: $requestURI\nTo: {$match[1]}");
+			error_log(__METHOD__.": $responseCode redirection from DeviantArt\nFrom: $requestURI\nTo: {$match[1]}");
 			return self::request($match[1]);
 		}
 
