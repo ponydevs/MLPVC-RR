@@ -569,7 +569,7 @@ HTML;
 	public static function getSpriteImageMap($AppearanceID){
 		$PNGPath = SPRITE_PATH."$AppearanceID.png";
 		$MapFile = new CachedFile(FSPATH."cg_render/$AppearanceID-linedata.json.gz", function($path) use($PNGPath) {
-			return filemtime($path) >= filemtime($PNGPath);
+			return !file_exists($path) || filemtime($path) < filemtime($PNGPath);
 		});
 		if (!$MapFile->expired())
 			$Map = $MapFile->read();
