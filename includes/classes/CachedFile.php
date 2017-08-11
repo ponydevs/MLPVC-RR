@@ -81,8 +81,6 @@ class CachedFile {
 	 * Overwrites the cache file with the provided data
 	 *
 	 * @param mixed $data Type depens on file type
-	 *
-	 * @return int|false Bytes written (false on failure)
 	 */
 	public function update($data){
 		switch ($this->_type){
@@ -91,11 +89,14 @@ class CachedFile {
 			break;
 		}
 
-		if ($this->_gzip)
-			$data = gzencode($data, 9);
-
 		CoreUtils::createUploadFolder($this->_path);
-		return file_put_contents($this->_path, $data);
+
+		if ($this->_gzip){
+			$handle = gzopen($this->_path, 'w9');
+			gzwrite($handle, $data);
+			gzclose($handle);
+		}
+		else file_put_contents($this->_path, $data);
 	}
 
 	/**
@@ -110,7 +111,7 @@ class CachedFile {
 				throw new \RuntimeException("Trying to bump non-existant non-lock file {$this->_path}, use ".__CLASS__.'->update instead!');
 			return file_put_contents($this->_path, '') !== false;
 		}
-		else return filemtime($this->_path, time()) !== false;
+		else return touch($this->_path) !== false;
 	}
 
 	/**
@@ -120,10 +121,15 @@ class CachedFile {
 	 * @return mixed
 	 */
 	public function read(){
-		$data = file_get_contents($this->_path);
+		if ($this->_gzip){
+			$data = '';
+			$file = gzopen($this->_path, 'rb');
+			while (!gzeof($file))
+			    $data .= gzread($file, 4096);
+			gzclose($file);
+		}
+		else $data = file_get_contents($this->_path);
 
-		if ($this->_gzip)
-			$data = gzdecode($data);
 
 		switch ($this->_type){
 			case self::TYPE_JSON:
