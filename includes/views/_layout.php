@@ -130,7 +130,7 @@ ga('send','pageview');
 </script>
 <?php } ?>
 </head>
-<body class="theme-<?=$fatalErrorPage?'light':\App\UserPrefs::get('p_theme')?>">
+<body>
 	<header>
 		<nav><ul class="dragscroll">
 			<li class="sidebar-toggle"></li>

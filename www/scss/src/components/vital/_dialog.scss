@@ -31,10 +31,6 @@ $ZIndexBase: 21000;
 @media all and (min-width: $Breakpoint){
 	#dialogOverlay {
 		background-color: rgba(white, .9);
-
-		body.theme-dark & {
-			background-color: rgba(black, .8);
-		}
 	}
 	#dialogScroll {
 		display: table;

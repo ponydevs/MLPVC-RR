@@ -104,10 +104,6 @@
 				display: inline-block;
 				background: url('/img/transparency.svg');
 				background-size: 16px;
-
-				body.theme-dark & {
-					background-image: url('/img/transparency-dark.svg');
-				}
 			}
 			&.error > a {
 				font-size: 16px;

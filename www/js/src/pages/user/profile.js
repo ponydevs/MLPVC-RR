@@ -238,10 +238,6 @@ $(function(){
 				}
 				$.Dialog.close();
 			break;
-			case "p_theme":
-				$body.removeClass('theme-'+from).addClass('theme-'+to_what);
-				$.Dialog.close();
-			break;
 			case "p_hidepcg":
 				$.Dialog.wait('Navigation','Reloading page');
 				$.Navigation.reload();

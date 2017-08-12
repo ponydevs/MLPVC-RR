@@ -177,23 +177,6 @@ if (!empty($Banishes)){
 		</section>
 		<section class="personal-settings">
 			<h2><?=$sameUser? Users::PROFILE_SECTION_PRIVACY_LEVEL['staff']:''?>Personal</h2>
-<?php   if (Permission::sufficient('developer', $User->role)){ ?>
-			<form action="/preference/set/p_theme">
-				<label>
-					<span>Select the site's color scheme: </span>
-					<select name="value"<?=!$sameUser?' disabled':''?>><?php
-				$schemes = CoreUtils::COLOR_SCHEMES;
-				echo "<optgroup label='Color schemes'>";
-				foreach ($schemes as $name => $label)
-					echo "<option value='$name' ".($colorscheme===$name?'selected':'').">$label</option>";
-				echo '</optgroup>';
-					?></select>
-<?php       if ($sameUser){ ?>
-					<button class="save typcn typcn-tick green" disabled>Save</button>
-<?php       } ?>
-				</label>
-			</form>
-<?php   } ?>
 			<form action="/preference/set/p_vectorapp">
 				<label>
 					<span>Publicly show my vector progam of choice: </span>

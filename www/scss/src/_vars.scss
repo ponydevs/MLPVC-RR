@@ -151,11 +151,6 @@ $ColorPalette:
 	background: #d2dfc5;
 	border: 1px solid #93a98f;
 	border-radius: 5px;
-
-	body.theme-dark & {
-		background: darken(#d2dfc5, 60);
-		border-color: darken(#93a98f, 20);
-	}
 }
 
 $NoScrollbar: false;
@@ -232,10 +227,6 @@ $NoScrollbar: false;
 	border: 1px solid black;
 	box-sizing: border-box;
 	margin-right: .2em;
-
-	body.theme-dark & {
-		border-color: white;
-	}
 }
 
 %appearance-ul {
@@ -245,10 +236,6 @@ $NoScrollbar: false;
 	padding: 0;
 	margin: 0;
 	list-style: none;
-
-	body.theme-dark & {
-		color: white;
-	}
 
 	li {
 		display: inline;

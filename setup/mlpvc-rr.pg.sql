@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 9.6.3
--- Dumped by pg_dump version 9.6.3
+-- Dumped from database version 9.6.4
+-- Dumped by pg_dump version 9.6.4
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -70,12 +70,13 @@ CREATE TABLE appearances (
     id integer NOT NULL,
     "order" integer,
     label character varying(70) NOT NULL,
-    notes text,
+    notes_src text,
     ishuman boolean,
     added timestamp with time zone DEFAULT now(),
     private boolean DEFAULT false NOT NULL,
     owner_id uuid,
-    last_cleared timestamp with time zone DEFAULT now()
+    last_cleared timestamp with time zone DEFAULT now(),
+    notes_rend text
 );
 
 

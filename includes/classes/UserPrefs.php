@@ -12,7 +12,6 @@ class UserPrefs extends GlobalSettings {
 		'cg_hidesynon' => 0,
 		'cg_hideclrinfo' => 0,
 		'cg_fulllstprev' => 1,
-		'p_theme' => 'light',
 		'p_vectorapp' => '',
 		'p_hidediscord' => 0,
 		'p_hidepcg' => 0,
@@ -104,12 +103,6 @@ class UserPrefs extends GlobalSettings {
 				$value = intval($value, 10);
 				if ($value < 7 || $value > 20)
 					throw new \RuntimeException("$thing must be between 7 and 20");
-			break;
-			case 'p_theme':
-				if (Permission::insufficient('developer'))
-					Response::fail('This setting is not available yet');
-				if (!empty($value) && !isset(CoreUtils::COLOR_SCHEMES[$value]))
-					throw new \RuntimeException('The specified theme is invalid');
 			break;
 			case 'p_vectorapp':
 				if (!empty($value) && !isset(CoreUtils::VECTOR_APPS[$value]))

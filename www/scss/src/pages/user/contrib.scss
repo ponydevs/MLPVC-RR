@@ -71,10 +71,6 @@ td.by-at .typcn {
 		border: 2px solid $DeviationBorder;
 		background: url("/img/transparency.svg") repeat center;
 		background-size: 16px;
-
-		body.theme-dark & {
-			background-image: url('/img/transparency-dark.svg');
-		}
 	}
 }
 
@@ -86,10 +82,6 @@ td.by-at .typcn {
 		background: url("/img/transparency.svg") repeat center;
 		background-size: 16px;
 		overflow: hidden;
-
-		body.theme-dark & {
-			background-image: url('/img/transparency-dark.svg');
-		}
 	}
 }
 

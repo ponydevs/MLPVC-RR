@@ -31,11 +31,6 @@ select, textarea {
 			&:invalid:hover {
 				border-color: $InvalidDark;
 				color: $InvalidLight;
-
-				body.theme-dark & {
-					border-color: $InvalidLight;
-					color: $InvalidDark;
-				}
 			}
 		}
 	}
@@ -44,10 +39,6 @@ form:hover textarea {
 	&[required], &[pattern] {
 		&:focus:valid {
 			border-color: $ValidDark;
-
-			body.theme-dark & {
-				border-color: $ValidLight;
-			}
 		}
 	}
 }

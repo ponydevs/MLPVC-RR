@@ -1132,11 +1132,6 @@ HTML;
 		'ponyscape' => 'Ponyscape',
 	];
 
-	const COLOR_SCHEMES = [
-		'light' => 'Light',
-		'dark' => 'Dark',
-	];
-
 	/**
 	 * Returns the brightness of the color using the YIQ weighing
 	 *

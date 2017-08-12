@@ -15,12 +15,6 @@ $TFeature:  adjust_hue($_TBase, 20);
 	@if ($icon != false){
 			&:before { content: $icon }
 	}
-
-	body.theme-dark & {
-		color: lighten($color, 40);
-		background-color: darken($color, 5);
-		border-color: lighten($color, 10);
-	}
 }
 @mixin tag-button-style($color:$TDefault){
 	button {
@@ -37,10 +31,6 @@ $TFeature:  adjust_hue($_TBase, 20);
 	font-size: 0;
 	transform: scale(1);
 
-	body.theme-dark & {
-		border-color: #ddd;
-	}
-
 	&:not(:empty) {
 		cursor: pointer;
 
@@ -49,10 +39,6 @@ $TFeature:  adjust_hue($_TBase, 20);
 	&:empty {
 		background: url('/img/transparency.svg');
 		background-size: 8px;
-
-		body.theme-dark & {
-			background-image: url('/img/transparency-dark.svg');
-		}
 	}
 	&:not(:last-child){ margin-right: 4px }
 }
@@ -175,13 +161,6 @@ $TFeature:  adjust_hue($_TBase, 20);
 		text-align: center;
 		box-sizing: border-box;
 
-		body.theme-dark & {
-			color: #bcbcbc;
-			background-color: rgba(white,.07);
-			border: 1px solid rgba(white,.2);
-		}
-
-
 		@media all and (max-width: $Breakpoint){
 			display: block;
 			max-width: 100%;
@@ -279,11 +258,6 @@ $TFeature:  adjust_hue($_TBase, 20);
 	margin: 5px;
 	text-align: center;
 	padding: 5px;
-
-	body.theme-dark & {
-		border-color: #505050;
-		background: #222;
-	}
 
 	.title {
 		font-size: 20px;
