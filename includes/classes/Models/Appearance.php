@@ -138,7 +138,7 @@ class Appearance extends NSModel implements LinkableInterface {
 
 	private static function _processNotes(string $notes):string {
 		$notes = CoreUtils::sanitizeHtml($notes);
-		$notes = preg_replace(new RegExp('(\s)(&gt;&gt;(\d+))(\s|$)'),"$1<a href='https://derpibooru.org/$3'>$2</a>$4",$notes);
+		$notes = preg_replace(new RegExp('(\s)(&gt;&gt;(\d+))(\D|$)'),"$1<a href='https://derpibooru.org/$3'>$2</a>$4",$notes);
 		$notes = preg_replace_callback('/'.EPISODE_ID_PATTERN.'/',function($a){
 			$Ep = Episodes::getActual((int) $a[1], (int) $a[2]);
 			return !empty($Ep)
