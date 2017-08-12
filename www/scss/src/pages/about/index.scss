@@ -1,0 +1,163 @@
+@import "../../vars";
+
+// Mobile
+@media all and (max-width: $Breakpoint){
+	#stats > div {
+		width: 100%;
+		margin-bottom: 0 !important;
+
+		&:not(:last-child){
+			border-bottom: 0;
+		}
+	}
+}
+// Desktop
+@media all and (min-width: $Breakpoint){
+	#stats {
+		display: flex;
+		flex-flow: row wrap;
+		width: 100%;
+
+		$SectionMargin: 10px;
+		> div {
+			display: block;
+			flex: 1 1 calc(50% - #{$SectionMargin/2});
+			margin-bottom: $SectionMargin !important;
+
+			&:nth-child(odd):not(:last-child) {
+				margin-right: $SectionMargin !important;
+			}
+		}
+	}
+}
+
+#content {
+	> img {
+		width: 100%;
+		max-width: 200px;
+		margin: 0 auto 10px;
+		display: block;
+	}
+	> h1 + p {
+			font-size: 1.4em;
+			margin: 0 0 20px;
+	}
+	> section {
+		&.what-s-this-site- {
+			text-align: justify;
+		}
+
+		&.attributions {
+			p { line-height: 1.4 }
+
+			> ul:nth-of-type(1) {
+				padding: 0;
+				list-style: none;
+				margin: 5px 0;
+				display: flex;
+				flex-flow: row wrap;
+
+				> li {
+					margin-right: 15px;
+					flex: 0 1 auto;
+				}
+
+				li:not(:last-child) { padding-bottom: 3px }
+
+				ul {
+					margin: 5px 0 0;
+					padding-left: 25px;
+					list-style: disc;
+
+					li a + em { display: block }
+				}
+			}
+			> ul:nth-of-type(2) {
+				padding: 0;
+				list-style: none;
+				margin: 5px 0;
+
+				li {
+					&:before {
+						content: "\bb";
+						font-weight: bold;
+						display: inline-block;
+						width: 25px;
+						font-size: 1.1em;
+						text-align: center;
+					}
+					&:not(:last-child) { margin-bottom: 3px }
+				}
+
+
+			}
+
+			.ramnode img {
+				border-radius: 7px;
+				max-height: 45px;
+				max-width: 100%;
+			}
+		}
+
+		&:not(:last-child){
+			margin-bottom: 10px;
+		}
+	}
+}
+
+#stats {
+	> div {
+		display: block;
+		border: 1px solid $ContentOutline;
+		background: #fff;
+		$StatPadding: 7px;
+		padding: $StatPadding;
+		box-sizing: border-box;
+
+		h3 { font-size: 1.3em }
+		h3, p {
+			text-align: center;
+			margin: 0 0 7px;
+		}
+		.stats-wrapper canvas {
+			width: 100% !important;
+			height: 230px !important;
+		}
+		.legend {
+			text-align: center;
+			padding: 5px 10px 0;
+
+			&:empty:before {
+				content: "Loading graph, please wait...";
+			}
+
+			&, > span > span {
+				line-height: 1.2em;
+				height: 1.2em;
+			}
+			> span {
+				display: inline-block;
+
+				&:not(:last-child) {
+					margin-right: 15px;
+				}
+				> span {
+					display: inline-block;
+					vertical-align: middle;
+
+					&.sq {
+						display: inline-block;
+						height: 1em;
+						width: 1em;
+						margin: .1em 5px .1em .1em;
+						border-radius: 3px;
+					}
+				}
+			}
+		}
+	}
+}
+
+#supported-providers {
+	q { font-style: italic }
+}

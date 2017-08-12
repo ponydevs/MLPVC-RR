@@ -14,6 +14,7 @@ use Elasticsearch\Client;
 use Elasticsearch\ClientBuilder;
 use ElephantIO\Engine\SocketIO\Version2X as SocketIOEngine;
 use App\Exceptions\CURLRequestException;
+use PHPUnit\Exception;
 
 class CoreUtils {
 	const
@@ -131,11 +132,8 @@ class CoreUtils {
 
 		Users::authenticate();
 
-		global $do;
-		$do = '404';
-		self::loadPage([
+		self::loadPage('ErrorController::notFound', [
 			'title' => '404',
-			'view' => '404',
 		]);
 	}
 
@@ -144,33 +142,28 @@ class CoreUtils {
 	 * ---------------------
 	 * $options = array(
 	 *     'title' => string,     - Page title
-	 *     'no-robots',           - Disable crawlers (that respect meta tags)
-	 *     'no-default-css',      - Disable loading of default CSS files
-	 *     'no-default-js'        - Disable loading of default JS files
-	 *     'css' => string|array, - Specify a single/multiple CSS files to load
-	 *     'js' => string|array,  - Specify a single/multiple JS files to load
+	 *     'no-robots' => bool,   - Disable crawlers (that respect meta tags)
+	 *     'default-css' => bool, - Disable loading of default CSS files
+	 *     'default-js' => bool,  - Disable loading of default JS files
+	 *     'css' => array,        - Specify a an array of CSS files to load (true = autodetect)
+	 *     'js' => array,         - Specify a an array of JS files to load (true = autodetect)
 	 *     'view' => string,      - Which view file to open (defaults to $do)
-	 *     'do-css',              - Load the CSS file whose name matches $do
-	 *     'do-js',               - Load the JS file whose name matches $do
 	 *     'url' => string,       - A URL which will replace the one sent to the browser
 	 * );
 	 *
-	 * @param array                  $options
-	 * @param Controllers\Controller $controller
+	 * @param string $view_name
+	 * @param array  $options
 	 *
 	 * @throws \RuntimeException
 	 */
-	public static function loadPage($options, Controllers\Controller $controller = null){
-		// Page <title>
-		if (isset($options['title']))
-			$GLOBALS['title'] = $options['title'];
-
-		// Page heading
-		if (isset($options['heading']))
-			$GLOBALS['heading'] = $options['heading'];
+	public static function loadPage(string $view_name, array $options = [], $unused = null){
+		if ($unused !== null)
+			throw new \RuntimeException(__METHOD__.': Thirparameter is unused');
+		// Resolve view
+		$view = new View($view_name);
 
 		// SE crawling disable
-		if (in_array('no-robots', $options, true))
+		if (isset($options['no-robots']) && $options['no-robots'] === true)
 			$norobots = true;
 
 		// Set new URL option
@@ -181,19 +174,19 @@ class CoreUtils {
 		$DEFAULT_CSS = ['theme'];
 		$customCSS = [];
 		// Only add defaults when needed
-		if (!in_array('no-default-css', $options, true))
+		if (!isset($options['default-css']) || $options['default-css'] === true)
 			$customCSS = array_merge($customCSS, $DEFAULT_CSS);
 
 		# JavaScript
-		$DEFAULT_JS = ['moment', 'jquery.ba-throttle-debounce', 'shared-utils', 'global', 'inert', 'dialog', 'dragscroll'];
+		$DEFAULT_JS = ['moment', 'jquery.ba-throttle-debounce', 'shared-utils', 'inert', 'dialog', 'dragscroll', 'global'];
 		$customJS = [];
 		// Only add defaults when needed
-		if (!in_array('no-default-js', $options, true))
+		if (!isset($options['default-js']) || $options['default-js'] === true)
 			$customJS = array_merge($customJS, $DEFAULT_JS);
 
 		# Check assests
-		self::_checkAssets($options, $customCSS, 'scss/min', 'css', $controller);
-		self::_checkAssets($options, $customJS, 'js/min', 'js', $controller);
+		self::_checkAssets($options, $customCSS, 'scss/min', 'css', $view);
+		self::_checkAssets($options, $customJS, 'js/min', 'js', $view);
 
 		# Import variables
 		if (isset($options['import']) && is_array($options['import'])){
@@ -206,17 +199,14 @@ class CoreUtils {
 					$$k = $v;
 		}
 		else $scope = [];
-		foreach ($GLOBALS as $k => $v)
-			/** @noinspection IssetArgumentExistenceInspection */
-			/** @noinspection UnSafeIsSetOverArrayInspection */
-			if (!isset($$k))
-				$$k = $v;
 
-		# Putting it together
-		$noview = empty($options['view']);
-		if ($controller === null && $noview)
-			throw new \RuntimeException('View cannot be resolved. Specify the <code>view</code> option or provide the controller as a parameter');
-		$view = new View($noview ? $controller->do : $options['view']);
+		// Page <title>
+		if (isset($options['title']))
+			$scope['title'] = $title = $options['title'];
+
+		// Page heading
+		if (isset($options['heading']))
+			$scope['heading'] = $heading = $options['heading'];
 
 		if (self::isJSONExpected())
 			HTTP::statusCode(400, AND_DIE);
@@ -333,31 +323,26 @@ class CoreUtils {
 	/**
 	 * Checks assets from loadPage()
 	 *
-	 * @param array                  $options    Options array
-	 * @param string[]               $customType Array of partial file names
-	 * @param string                 $relpath    File path relative to /
-	 * @param string                 $ext        The literal strings 'css' or 'js'
-	 * @param Controllers\Controller $controller
+	 * @param array    $options    Options array
+	 * @param string[] $customType Array of partial file names
+	 * @param string   $relpath    Relative file path without the leading slash
+	 * @param string   $ext        The literal strings 'css' or 'js'
+	 * @param View     $view       The view class that enables the true shortcut
 	 *
 	 * @throws \Exception
 	 */
-	private static function _checkAssets($options, &$customType, $relpath, $ext, $controller = null){
+	private static function _checkAssets(array $options, &$customType, string $relpath, string $ext, View $view){
 		if (isset($options[$ext])){
-			$$ext = $options[$ext];
-			if (!is_array($$ext))
-				$customType[] = $$ext;
-			else $customType = array_merge($customType, $$ext);
-		}
-		if (in_array("do-$ext", $options, true)){
-			if ($controller === null)
-				throw new \RuntimeException("do-$ext used without explicitly passing the controller to ".__METHOD__);
-			else if ($controller->do === null)
-				throw new \RuntimeException('Controller passed to '.__METHOD__.' lacks $do property');
-			$customType[] = $controller->do;
+			if (!is_array($options[$ext]))
+				throw new \RuntimeException("\$options[$ext] must be an array");
+			$customType = array_merge($customType, $options[$ext]);
 		}
 
-		foreach ($customType as $i => &$item)
+		foreach ($customType as $i => &$item){
+			if ($item === true)
+				$item = "pages/{$view->name}";
 			self::_formatFilePath($item, $relpath, $ext);
+		}
 	}
 
 	public static function cachedAsset(string $fname, string $relpath, string $type):string {
@@ -374,7 +359,7 @@ class CoreUtils {
 	 *
 	 * @return string
 	 */
-	private static function _formatFilePath(&$item, $relpath, $type){
+	private static function _formatFilePath(string &$item, string $relpath, string $type){
 		$pathStart = APPATH.$relpath;
 		$item .= ".$type";
 		if (!file_exists("$pathStart/$item"))
@@ -652,14 +637,15 @@ class CoreUtils {
 	 *
 	 * @param bool  $disabled
 	 * @param array $scope    Contains the variables passed to the current page
+	 * @param View  $view     Contains the view object that the current page was resolved by
 	 *
 	 * @return string
 	 */
-	public static function getNavigationHTML($disabled = false, array $scope = []){
+	public static function getNavigationHTML($disabled = false, array $scope = [], ?View $view = null){
 		if (!empty(self::$NavHTML))
 			return self::$NavHTML;
 
-		global $do;
+		$do = $view === null ? '' : $view->class;
 
 		// Navigation items
 		if (!$disabled){
@@ -667,34 +653,33 @@ class CoreUtils {
 				'latest' => ['/', 'Latest episode'],
 				'eps' => ['/episodes', 'Episodes'],
 			];
-			if ($do === 'episodes'){
-				if (isset($scope['Episodes']))
+			if ($do === 'episode' && isset($scope['areMovies'])){
+				if (isset($scope['Episodes']) && $scope['areMovies'] === false)
 					$NavItems['eps'][1] .= " - Page {$scope['Pagination']->page}";
-			}
-			if ($do === 'movies'){
-				if (isset($scope['Movies'])){
+				else if (isset($scope['Movies'])){
+					$NavItems['eps'][0] = '/movies';
 					$NavItems['eps'][1] = "Movies - Page {$scope['Pagination']->page}";
 				}
 			}
-			if (($do === 'episode' || $do === 's' || $do === 'movie') && !empty($scope['CurrentEpisode'])){
+			if (($do === 'episode' || $do === 's' || $do === 'movie' || $do === 'home') && !empty($scope['CurrentEpisode'])){
 				if ($scope['CurrentEpisode']->is_movie)
 					$NavItems['eps'][1] = 'Movies';
 				if ($scope['CurrentEpisode']->isLatest())
 					$NavItems['latest'][0] = $_SERVER['REQUEST_URI'];
-				else $NavItems['eps']['subitem'] = self::cutoff($GLOBALS['heading'],Episodes::TITLE_CUTOFF);
+				else $NavItems['eps']['subitem'] = self::cutoff($scope['heading'],Episodes::TITLE_CUTOFF);
 			}
 			$NavItems['colorguide'] = ['/cg'.(!empty($scope['EQG'])?'/eqg':''), (!empty($scope['EQG'])?'EQG ':'').'Color Guide'];
-			if ($do === 'cg'){
+			if ($do === 'colorguide'){
 				if (!empty($scope['Appearance']))
 					$NavItems['colorguide']['subitem'] = (isset($scope['Map'])? 'Sprite Colors - ' :'').self::escapeHTML($scope['Appearance']->label);
 				else if (isset($scope['Ponies']))
 					$NavItems['colorguide'][1] .= " - Page {$scope['Pagination']->page}";
 				else if (isset($scope['nav_picker']))
-					$NavItems['colorguide']['subitem'] = $GLOBALS['title'];
+					$NavItems['colorguide']['subitem'] = $scope['title'];
 				else if (isset($scope['nav_blending']))
-					$NavItems['colorguide']['subitem'] = $GLOBALS['title'];
+					$NavItems['colorguide']['subitem'] = $scope['title'];
 				else {
-					if (preg_match(new RegExp('full$'),$GLOBALS['data'])){
+					if (preg_match(new RegExp('full($|\?)'),$_SERVER['REQUEST_URI'])){
 						$NavItems['colorguide']['subitem'] = 'Full '.($scope['EQG']?'Character':'Pony').' List';
 					}
 					else {
@@ -709,12 +694,12 @@ class CoreUtils {
 
 			}
 			$NavItems['events'] = ['/events', 'Events'];
-			if ($do === 'events'){
-				if (isset($scope['Events']))
+			if ($do === 'event'){
+				if (isset($scope['Event']))
+					$NavItems['events']['subitem'] = self::cutoff($scope['Event']->name, 20);
+				else if (isset($scope['Events']))
 					$NavItems['events'][1] .= " - Page {$scope['Pagination']->page}";
 			}
-			if ($do === 'event' && isset($scope['Event']))
-				$NavItems['events']['subitem'] = self::cutoff($scope['Event']->name, 20);
 			if (Auth::$signed_in){
 				$NavItems['u'] = ['/@'.Auth::$user->name, 'Account'];
 				if (isset($scope['nav_contrib']) && $scope['targetUser']->id === Auth::$user->id)
@@ -729,15 +714,12 @@ class CoreUtils {
 			}
 			if (Permission::sufficient('staff')){
 				$NavItems['admin'] = ['/admin', 'Admin'];
-				global $LogItems;
-				if ($LogItems !== null){
-					global $Pagination;
-					$NavItems['admin']['subitem'] = "Logs - Page {$Pagination->page}";
-				}
+				if (isset($scope['LogItems']))
+					$NavItems['admin']['subitem'] = "Logs - Page {$scope['Pagination']->page}";
 				else if (isset($scope['nav_adminip']))
 					$NavItems['admin']['subitem'] = 'Details of IP '.self::cutoff($scope['ip'], 15);
 				else if (isset($scope['nav_dsc']) || isset($scope['nav_wsdiag']))
-					$NavItems['admin']['subitem'] = $GLOBALS['heading'];
+					$NavItems['admin']['subitem'] = $scope['heading'];
 			}
 			$NavItems[] = ['/about', 'About'];
 		}
@@ -769,7 +751,7 @@ class CoreUtils {
 	 * @return array|string
 	 */
 	private static function _processHeaderLink($item, $htmlOnly = false){
-		global $currentSet;
+		static $currentSet;
 
 		[$path, $label] = $item;
 		$RQURI = strtok($_SERVER['REQUEST_URI'], '?');
@@ -1143,11 +1125,16 @@ HTML;
 		$elephant->close();
 	}
 
-	public static $VECTOR_APPS = [
+	const VECTOR_APPS = [
 		'' => '(don’t show)',
 		'illustrator' => 'Adobe Illustrator',
 		'inkscape' => 'Inkscape',
 		'ponyscape' => 'Ponyscape',
+	];
+
+	const COLOR_SCHEMES = [
+		'light' => 'Light',
+		'dark' => 'Dark',
 	];
 
 	/**

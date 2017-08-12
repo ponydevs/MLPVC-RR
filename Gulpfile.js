@@ -85,9 +85,10 @@ function Logger(prompt){
 	return this;
 }
 
-let SASSL = new Logger('scss');
+let SASSL = new Logger('scss'),
+	SASSWatchArray = ['www/scss/src/*.scss','www/scss/src/**/*.scss'];
 gulp.task('scss', function() {
-	gulp.src('www/scss/src/*.scss')
+	gulp.src(SASSWatchArray)
 		.pipe(plumber(function(err){
 			SASSL.error(err.relativePath+'\n'+' line '+err.line+': '+err.messageOriginal);
 			this.emit('end');
@@ -198,8 +199,8 @@ gulp.task('md', function(){
 
 			return newElements+'\n';
 		}))
-		.pipe(rename('about.html'))
-		.pipe(gulp.dest('includes/views'));
+		.pipe(rename('readme_snippet.html'))
+		.pipe(gulp.dest('includes/views/about'));
 });
 
 let PGL = new Logger('pgsort'),
@@ -281,7 +282,7 @@ gulp.task('default', ['js', 'dist-js', 'scss', 'md'], function(){
 	JSL.log('File watcher active');
 	gulp.watch(['www/dist/*.src.jsx'], {debounceDelay: 2000}, ['dist-js']);
 	DJSL.log('File watcher active');
-	gulp.watch('www/scss/src/*.scss', {debounceDelay: 2000}, ['scss']);
+	gulp.watch(SASSWatchArray, {debounceDelay: 2000}, ['scss']);
 	SASSL.log('File watcher active');
 	gulp.watch('README.md', {debounceDelay: 2000}, ['md']);
 	MDL.log('File watcher active');

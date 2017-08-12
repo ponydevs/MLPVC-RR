@@ -1,0 +1,139 @@
+@import "../../vars";
+@import "../../colorguide_vars";
+
+// Mobile
+@media all and (max-width: $Breakpoint){
+	#blend-wrap {
+		> * {
+			display: block;
+		}
+
+		> form {
+			display: block;
+
+			&, > table {
+				width: 100%;
+			}
+		}
+
+		> span {
+			padding: 5px 0;
+			text-align: center;
+
+			&:before { content: '\e009' }
+		}
+
+		> .result {
+			.hex, .hexa, .rgba, .opacity { font-size: 16px }
+		}
+	}
+}
+// Desktop
+@media all and (min-width: $Breakpoint){
+	#blend-wrap {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+
+		> * {
+			flex: 0 0 auto;
+		}
+
+		> span {
+			padding: 0 10px;
+
+			&:before { content: '\e01b' }
+		}
+
+		> .result {
+			min-width: 150px;
+
+			.hex, .hexa, .rgba, .opacity { font-size: 12px }
+		}
+	}
+}
+
+#blend-wrap {
+	width: 100%;
+
+	> form table {
+		background: white;
+		text-align: center;
+		border-collapse: collapse;
+
+		&, th, td {
+			border: 1px solid #000;
+		}
+		th { padding: 10px }
+
+		td {
+			padding: 0;
+
+			.clr {
+				@extend %clr;
+				.clrp { border-width: 0 1px 0 0 }
+				.clri {
+					border: 0;
+					max-width: none;
+					text-transform: uppercase;
+					width: auto;
+				}
+			}
+		}
+	}
+
+	> span {
+		font-size: 32px;
+
+		&:before {
+			font-family: 'Typicons';
+		}
+	}
+
+	> .result {
+		text-align: center;
+
+		> * {
+			display: block;
+			margin: 0 auto;
+
+			&:not(:last-child) { margin-bottom: 5px }
+		}
+		.preview {
+			border: 2px solid #000;
+			font-size: 0;
+			width: 50px;
+			height: 50px;
+
+			&:not([style]) { @include clrp-invalid(50px) }
+		}
+		.hex, .hexa, .rgba, .opacity {
+			&:empty:before {
+				opacity: .9;
+				content: "(no " attr(class) " " attr(data-suffix) ")";
+				font-style: italic;
+			}
+
+			code {
+				font-size: 1em;
+			}
+		}
+	}
+}
+
+.delta-warn {
+	margin: 10px 0 0;
+}
+
+#enter-rgb {
+	.preview {
+		display: block !important;
+		width: 60px !important;
+		height: 60px !important;
+		margin: 10px auto 0 !important;
+		border: 2px solid #000;
+		box-sizing: content-box !important;
+
+		&:not([style]) { @include clrp-invalid(60px) }
+	}
+}

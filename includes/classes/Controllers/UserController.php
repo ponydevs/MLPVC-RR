@@ -23,35 +23,29 @@ class UserController extends Controller {
 	public $do = 'user';
 
 	public function profile($params){
-		global $USERNAME_REGEX, $User, $sameUser;
+		global $USERNAME_REGEX, $sameUser;
 
-		$data = $params['name'] ?? null;
+		$un = $params['name'] ?? null;
 
-		if (empty($data)){
+		$MSG = null;
+		$SubMSG = null;
+		if ($un === null){
 			if (Auth::$signed_in)
 				$User = Auth::$user;
 			else $MSG = 'Sign in to view your settings';
 		}
-		else if (preg_match($USERNAME_REGEX, $data, $_match))
-			$un = $_match[1];
-
-		if (!isset($un)){
-			if (!isset($MSG))
-				$MSG = 'Invalid username';
-		}
-		else if (!isset($User))
-			$User = Users::get($un, 'name');
+		else $User = Users::get($un, 'name');
 
 		if (empty($User)){
-			if (isset($User) && $User === false){
+			if ($User === false){
 				$MSG = 'User does not exist';
 				$SubMSG = 'Check the name for typos and try again';
 			}
-			else if (!isset($MSG)){
+			else if ($MSG === null){
 				$MSG = 'Local user data missing';
 				if (!Auth::$signed_in){
 					$exists = 'exists on DeviantArt';
-					if (isset($un))
+					if ($un !== null)
 						$exists = "<a href='http://$un.deviantart.com/'>$exists</a>";
 					$SubMSG = "If this user $exists, sign in to import their details.";
 				}
@@ -65,7 +59,8 @@ class UserController extends Controller {
 			CoreUtils::fixPath($pagePath);
 		}
 
-		if (isset($MSG))
+		$CurrentSessionID = null;
+		if ($MSG !== null)
 			HTTP::statusCode(404);
 		else {
 			if ($sameUser)
@@ -74,10 +69,10 @@ class UserController extends Controller {
 		}
 
 		$settings = [
-			'title' => !isset($MSG) ? ($sameUser?'Your':CoreUtils::posess($User->name)).' '.($sameUser || $canEdit?'account':'profile') : 'Account',
+			'title' => $MSG === null ? ($sameUser?'Your':CoreUtils::posess($User->name)).' '.($sameUser || $canEdit?'account':'profile') : 'Account',
 			'no-robots',
-			'do-css',
-			'js' => ['user'],
+			'css' => [true],
+			'js' => [true],
 			'import' => [
 				'User' => $User,
 				'canEdit' => $canEdit,
@@ -85,25 +80,25 @@ class UserController extends Controller {
 				'Sessions' => $Sessions ?? null,
 			],
 		];
-		if (isset($CurrentSessionID))
+		if ($CurrentSessionID !== null)
 			$settings['import']['CurrentSessionID'] = $CurrentSessionID;
-		if (isset($MSG))
+		if ($MSG !== null)
 			$settings['import']['MSG'] = $MSG;
-		if (isset($SubMSG))
+		if ($SubMSG !== null)
 			$settings['import']['SubMSG'] = $SubMSG;
 		if ($canEdit)
-			$settings['js'][] = 'user-manage';
+			$settings['js'][] = 'pages/user/manage';
 		$showSuggestions = $sameUser;
 		if ($showSuggestions){
-			$settings['js'][] = 'user-suggestion';
-			$settings['css'][] = 'user-suggestion';
+			$settings['js'][] = 'pages/user/suggestion';
+			$settings['css'][] = 'pages/user/suggestion';
 		}
 		$settings['import']['showSuggestions'] = $showSuggestions;
-		CoreUtils::loadPage($settings, $this);
+		CoreUtils::loadPage(__METHOD__, $settings);
 	}
 
 	public function profileByUuid($params){
-		if (Permission::insufficient('developer') || !isset($params['uuid']))
+		if (!isset($params['uuid']) || Permission::insufficient('developer'))
 			CoreUtils::notFound();
 
 		/** @var $User User */
@@ -285,7 +280,7 @@ class UserController extends Controller {
 		$targetUser = Users::get($params['name'], 'name');
 		if (empty($targetUser))
 			CoreUtils::notFound();
-		if ($params['type'] === 'requests' && $targetUser->id !== (Auth::$user->id ?? null) && Permission::insufficient('staff'))
+		if ($targetUser->id !== (Auth::$user->id ?? null) && $params['type'] === 'requests' && Permission::insufficient('staff'))
 			CoreUtils::notFound();
 
 		$paginationPath = "@{$targetUser->name}/contrib/{$params['type']}";
@@ -327,7 +322,7 @@ class UserController extends Controller {
 				$data = $targetUser->getApprovedFinishedRequestContributions(false, $Pagination);
 			break;
 			default:
-				throw new \Exception(__METHOD__.": Mising data retriever for type {$params['type']}");
+				throw new \RuntimeException(__METHOD__.": Mising data retriever for type {$params['type']}");
 		}
 
 		CoreUtils::fixPath("/$paginationPath/{$Pagination->page}");
@@ -336,12 +331,11 @@ class UserController extends Controller {
 
 		$title = "Page {$Pagination->page} - ".self::CONTRIB_NAMES[$params['type']].' - '.CoreUtils::posess($targetUser->name).' Contributions';
 		$heading = self::CONTRIB_NAMES[$params['type']].' by '.$targetUser->toAnchor();
-		CoreUtils::loadPage([
+		CoreUtils::loadPage(__METHOD__, [
 			'title' => $title,
 			'heading' => $heading,
-			'css' => ['user-contrib'],
-			'js' => ['paginate','user-contrib'],
-			'view' => 'user-contrib',
+			'css' => [true],
+			'js' => ['paginate',true],
 			'import' => [
 				'data' => $data,
 				'params' => $params,
@@ -365,5 +359,20 @@ class UserController extends Controller {
 				Response::done($CachedDeviation->to_array());
 			break;
 		}
+	}
+
+	public function list(){
+		if (!Permission::sufficient('staff'))
+			CoreUtils::notFound();
+
+		$Users = DB::$instance->orderBy('name')->get(User::$table_name);
+
+		CoreUtils::loadPage(__METHOD__, [
+			'title' => 'Users',
+			'css' => [true],
+			'import' => [
+				'Users' => $Users,
+			],
+		]);
 	}
 }

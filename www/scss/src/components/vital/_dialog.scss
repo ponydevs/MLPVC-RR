@@ -1,0 +1,258 @@
+@import url('https://fonts.googleapis.com/css?family=Open+Sans:400italic,700italic,400,700&subset=latin,latin-ext');
+$ZIndexBase: 21000;
+
+// Mobile-only Styles
+@media all and (max-width: $Breakpoint){
+	#dialogOverlay {
+		background-color: white;
+
+		> div {
+			width: 100%;
+			height: auto;
+			top: 0 !important;
+			left: 0 !important;
+		}
+	}
+	#dialogBox {
+		width: 100%;
+		height: auto;
+	}
+	#dialogHeader {
+		position: absolute;
+		top: 0;
+		display: block;
+    width: 100% !important;
+		height: auto;
+		box-sizing: border-box;
+	}
+	#dialogContent form { width: 100% }
+}
+// Desktop-only Styles
+@media all and (min-width: $Breakpoint){
+	#dialogOverlay {
+		background-color: rgba(white, .9);
+
+		body.theme-dark & {
+			background-color: rgba(black, .8);
+		}
+	}
+	#dialogScroll {
+		display: table;
+		width: 100%;
+		height: 100%;
+	}
+	#dialogWrap {
+		padding: 10px;
+		display: table-cell;
+		vertical-align: middle;
+		text-align: center;
+	}
+	#dialogBox {
+		max-width: 470px;
+		width: auto;
+		display: inline-block;
+		text-align: left;
+	}
+	#dialogHeader, #dialogBox {
+		border-top-left-radius: 5px;
+		border-top-right-radius: 5px;
+	}
+	#dialogContent {
+		border: 1px solid $DefaultUIColor;
+		border-top-width: 0;
+		background-color: white;
+		overflow: auto;
+		margin-top: 0 !important;
+
+		form { min-width: 350px }
+	}
+	body.dialog-open #main { padding-right: #{8px + 15px} }
+}
+
+body.dialog-open {
+	overflow: hidden;
+}
+#dialogOverlay {
+	width: 100%;
+	height: 100%;
+	position: fixed;
+	top: 0;
+	left: 0;
+	z-index: $ZIndexBase;
+	overflow: auto;
+	box-sizing: border-box;
+}
+#dialogWrap {
+	font-family: 'Segoe UI', 'Open Sans', sans-serif;
+	z-index: $ZIndexBase+1;
+}
+#dialogBox {
+	min-width: 150px;
+	z-index: $ZIndexBase+2;
+
+	/* Colors */
+	.blue-bg     { background-color: $NBlue }
+	.darkblue-bg { background-color: $NDarkBlue }
+	.lavander-bg { background-color: $NLavander }
+	//.teal-bg     { background-color: $NTeal }
+	.green-bg    { background-color: $NGreen }
+	.red-bg      { background-color: $NRed }
+	.orange-bg   { background-color: $NOrange }
+	//.yellow-bg   { background-color: $NYellow }
+	.blue-border     { border-color: $NBlue }
+	.darkblue-border { border-color: $NDarkBlue }
+	.lavander-border { border-color: $NLavander }
+	//.teal-border     { border-color: $NTeal }
+	.green-border    { border-color: $NGreen }
+	.red-border      { border-color: $NRed }
+	.orange-border   { border-color: $NOrange }
+	//.yellow-border   { border-color: $NYellow }
+}
+#dialogHeader {
+	font-weight: 200;
+	width: auto;
+	padding: 5px 8px;
+	font-size: 18px;
+	color: #fff;
+	background-color: $DefaultUIColor;
+}
+#dialogContent {
+	padding: 15px 10px;
+	font-size: 16px;
+	font-weight: normal;
+	color: $DefaultUIColor;
+
+	h1, h2, h3, h4, h5, h6 {
+		margin: 0 0 5px;
+	}
+
+	form {
+		> label, > .label {
+			> span {
+				~ select,
+				~ textarea,
+				~ input:not([type=radio]):not([type=checkbox]):not([type=button]),
+				~ .input-group-2,
+				~ .ace_editor {
+					margin-top: 5px !important;
+					display: block;
+				}
+			}
+			> select,
+			> textarea,
+			> input:not([type=radio]):not([type=checkbox]):not([type=button]) {
+				width: 100%;
+				box-sizing: border-box;
+			}
+			> textarea {
+				resize: vertical;
+			}
+		}
+	}
+	.notice {
+		padding: 4px 7.5px;
+		font-size: .9em;
+		border-width: 1px;
+	}
+	:not(.notice) > p {
+		margin: 0 0 5px;
+
+		pre { margin: 5px 0 }
+		code {
+			background-color: rgba($DefaultUIColor, .1);
+			color: $DefaultUIColor;
+			font-size: .9em;
+			padding: 3px;
+			border-radius: 3px;
+		}
+	}
+	> div {
+		&:not(:first-child):not(#dialogButtons) {
+			border-top: 1px solid;
+			padding-top: 10px;
+			margin-top: 9px;
+		}
+
+		&:not([class]) > .notice {
+			margin-top: 10px;
+			border-width: 2px;
+			font-size: 1em;
+			font-weight: bold;
+		}
+
+		pre {
+			max-width: 100%;
+			display: block;
+			overflow: auto;
+			font-size: 12px;
+			padding: 3px;
+			margin: 5px 0 10px;
+			box-sizing: border-box;
+			@include l33th4x;
+
+			&:last-child { margin-bottom: 0 }
+		}
+
+		.reset {
+			background-color: #fff;
+			color: #000;
+			margin-top: 5px;
+
+			> font {
+				display: block;
+				width: 100%;
+			}
+		}
+	}
+	> * {
+		&:not(p) + p {
+			margin-top: 5px;
+		}
+		&:last-child {
+			margin-bottom: 0;
+		}
+	}
+
+	/* Colors */
+	.blue     { color: $NBlue }
+	.darkblue { color: $NDarkBlue }
+	.lavander { color: $NLavander }
+	//.teal     { color: $NTeal }
+	.green    { color: $NGreen }
+	.red      { color: $NRed }
+	.orange   { color: $NOrange }
+	//.yellow   { color: $NYellow }
+}
+#dialogButtons {
+	width: auto;
+	font-size: 18px;
+	text-align: center;
+	white-space: nowrap;
+	overflow: hidden;
+	margin-top: 15px;
+
+	&:empty { display: none }
+
+	button, input, .btn {
+		font-weight: 400;
+		line-height: 20px;
+		height: 32px;
+		color: #fff;
+		margin: 0 10px 0 0 !important;
+		display: inline-block;
+		text-align: center;
+		vertical-align: middle;
+		cursor: pointer;
+		padding: 3px 10px;
+		border: 3px solid transparent;
+		border-radius: 4px;
+		background-color: $DefaultUIColor;
+
+		&:last-child { margin-right: 0 !important }
+		&:focus { border-color: rgba(black, .2) }
+	}
+}
+
+body.fluidbox-in-dialog #dialogContent {
+	overflow: visible;
+}

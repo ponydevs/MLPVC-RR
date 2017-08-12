@@ -12,6 +12,7 @@ class UserPrefs extends GlobalSettings {
 		'cg_hidesynon' => 0,
 		'cg_hideclrinfo' => 0,
 		'cg_fulllstprev' => 1,
+		'p_theme' => 'light',
 		'p_vectorapp' => '',
 		'p_hidediscord' => 0,
 		'p_hidepcg' => 0,
@@ -43,7 +44,7 @@ class UserPrefs extends GlobalSettings {
 			return $default;
 
 		$q = UserPref::find_for($key, $for);
-		$value = isset($q->value) ? $q->value : $default;
+		$value = $q->value ?? $default;
 		if ($for_set)
 			Users::$_PREF_CACHE[$for->id][$key] = $value;
 		return $value;
@@ -99,14 +100,20 @@ class UserPrefs extends GlobalSettings {
 			case 'cg_itemsperpage':
 				$thing = 'Color Guide items per page';
 				if (!is_numeric($value))
-					throw new \Exception("$thing must be a number");
+					throw new \RuntimeException("$thing must be a number");
 				$value = intval($value, 10);
 				if ($value < 7 || $value > 20)
-					throw new \Exception("$thing must be between 7 and 20");
+					throw new \RuntimeException("$thing must be between 7 and 20");
+			break;
+			case 'p_theme':
+				if (Permission::insufficient('developer'))
+					Response::fail('This setting is not available yet');
+				if (!empty($value) && !isset(CoreUtils::COLOR_SCHEMES[$value]))
+					throw new \RuntimeException('The specified theme is invalid');
 			break;
 			case 'p_vectorapp':
-				if (!empty($value) && !isset(CoreUtils::$VECTOR_APPS[$value]))
-					throw new \Exception('The specified app is invalid');
+				if (!empty($value) && !isset(CoreUtils::VECTOR_APPS[$value]))
+					throw new \RuntimeException('The specified app is invalid');
 			break;
 			case 'p_hidediscord':
 			case 'cg_hidesynon':

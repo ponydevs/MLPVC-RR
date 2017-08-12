@@ -1,0 +1,18 @@
+@import "../../components/optional/browser-icons";
+@import "../../vars";
+
+#content {
+	> div:first-child {
+		display: none;
+
+		@include if-browser-has-icon {
+			display: block;
+			width: 128px;
+			height: 128px;
+			margin: 0 auto;
+		}
+		@include browser-backgrounds();
+	}
+
+	code { font-size: 1.2em }
+}

@@ -1,0 +1,65 @@
+@import "../../vars";
+@import "../../components/optional/post-list";
+@import "../../components/optional/fluidbox";
+
+#suggestion-output {
+	@extend %post-ul;
+	@extend %post-ul-fluidbox;
+
+	&:empty {
+		display: none;
+	}
+
+	margin: 5px 0;
+
+	li {
+		max-width: 100%;
+		margin: 0;
+		box-sizing: border-box;
+
+		.image {
+			&:not(.loaded){
+				// Image + Margin + Borders
+				width: 212px;
+				height: 212px;
+				background: url(/img/loading-gears.svg) no-repeat center;
+				background-size: 75%;
+				margin: 0 auto;
+
+				> a { opacity: 0 }
+			}
+			&.loaded {
+				> a {
+					opacity: 1;
+					transition: opacity .3s linear;
+				}
+				img {
+					height: auto;
+					max-width: 100%;
+					max-height: 200px;
+				}
+			}
+			> a {
+				cursor: zoom-in;
+			}
+		}
+		.label {
+			max-width: 400px;
+			font-size: 1.4em;
+		}
+		.post-date, .category {
+			font-size: 1.2em;
+		}
+
+		.reserve-request {
+			margin-top: 10px;
+		}
+
+		> .reserver {
+			@extend %reserver;
+		}
+		> div:last-child {
+			margin-top: 10px;
+		}
+	}
+}

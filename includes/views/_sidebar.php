@@ -9,7 +9,7 @@ use App\UserPrefs;
 /** @var $view \App\View */
 /** @var $CurrentEpisode \App\Models\Episode */ ?>
 	<div class='mobile-nav'>
-		<nav><ul><?=CoreUtils::getNavigationHTML(isset($view) && $view->name === 'fatalerr', $scope)?></ul></nav>
+		<nav><ul><?=CoreUtils::getNavigationHTML(($view->name ?? null) === 'fatalerr', $scope, $view ?? null)?></ul></nav>
 	</div>
 	<div class='logged-in'>
 		<?php
@@ -62,20 +62,19 @@ use App\UserPrefs;
 		<h2><span class="live-circle"></span> Live updates enabled</h2>
 		<p>Changes to post scores are visible in real time to everyone who sees this message.</p>
 	</section>
-<?php   if ($view->name === 'episode' && !empty($CurrentEpisode)){ ?>
+<?php   if (($view->class ?? null) === 'episode' && !empty($CurrentEpisode)){ ?>
 	<section id="voting">
 		<h2><?=$CurrentEpisode->is_movie?'Movie':'Episode'?> rating</h2>
 		<?=Episodes::getSidebarVoting($CurrentEpisode)?>
 	</section>
 <?php	}
-		if ((!empty($Appearance) || !empty($Ponies))&& empty($Map) && isset($GLOBALS['do']) && $GLOBALS['do'] === 'cg' ){ ?>
+		if (($view->class ?? null) === 'colorguide' && (!empty($Appearance) || !empty($Ponies)) && empty($Map)){ ?>
 	<section id="hash-copy">
 		<h2>Color Guide</h2>
 		<p>You can click any colored square on this page to copy its HEX color code to your clipboard. Holding Shift while clicking will display a dialog with the RGB color values instead.</p>
 		<button class='blue typcn typcn-refresh' id='toggle-copy-hash'>Checking&hellip;</button>
 	</section>
-<?php
-		}
+<?php   }
 		echo CoreUtils::getSidebarUpcoming();
 	}
 	else { ?>

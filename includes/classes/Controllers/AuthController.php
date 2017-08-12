@@ -17,8 +17,6 @@ use App\Models\User;
 use App\Exceptions\CURLRequestException;
 
 class AuthController extends Controller {
-	public $do = 'daauth';
-
 	private static function _isStateRndkey(&$_match){
 		return isset($_GET['state']) && preg_match(new RegExp('^[a-z\d]+$','i'), $_GET['state'], $_match);
 	}
@@ -114,15 +112,15 @@ class AuthController extends Controller {
 		$rndkey = self::_isStateRndkey($match) ? $match[0] : null;
 
 		HTTP::statusCode(500);
-		CoreUtils::loadPage([
+		CoreUtils::loadPage('ErrorController::auth', [
 			'title' => 'DeviantArt authentication error',
-			'js' => "{$this->do}-error",
+			'js' => [true],
 			'import' => [
 				'err' => $err,
 				'errdesc' => $errdesc,
 				'rndkey' => $rndkey,
 			]
-		], $this);
+		]);
 	}
 
 	/**

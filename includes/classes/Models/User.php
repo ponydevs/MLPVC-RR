@@ -129,7 +129,7 @@ class User extends AbstractUser implements LinkableInterface {
 	public function getVectorAppReadableName():string {
 		$pref = UserPrefs::get('p_vectorapp', $this);
 
-		return CoreUtils::$VECTOR_APPS[$pref] ?? 'unrecognized application';
+		return CoreUtils::VECTOR_APPS[$pref] ?? 'unrecognized application';
 	}
 
 	public function getVectorAppIcon():string {

@@ -106,8 +106,6 @@ class Episodes {
 	 * @param Post                $LinkedPost         Linked post (when sharing)
 	 */
 	public static function loadPage($force = null, $serverSideRedirect = true, Post $LinkedPost = null){
-		global $CurrentEpisode;
-
 		if ($force instanceof Episode)
 			$CurrentEpisode = $force;
 		else if (is_string($force)){
@@ -129,21 +127,20 @@ class Episodes {
 		if ($serverSideRedirect)
 			CoreUtils::fixPath($url);
 
-		$js = ['imagesloaded.pkgd', 'jquery.fluidbox', 'Chart', 'episode', 'episode-manage'];
+		$js = ['imagesloaded.pkgd', 'jquery.fluidbox', 'Chart', true, 'pages/episode/manage'];
 		if (Permission::sufficient('staff')){
 			$js[] = 'moment-timezone';
-			$js[] = 'episodes-manage';
+			$js[] = 'pages/episode/list-manage';
 		}
 
 		$PrevEpisode = $CurrentEpisode->getPrevious();
 		$NextEpisode = $CurrentEpisode->getNext();
 
 		$heading = $CurrentEpisode->formatTitle();
-		CoreUtils::loadPage([
+		CoreUtils::loadPage('EpisodeController::view', [
 			'title' => "$heading - Vector Requests & Reservations",
 			'heading' => $heading,
-			'view' => 'episode',
-			'css' => 'episode',
+			'css' => [true],
 			'js' => $js,
 			'url' => $serverSideRedirect ? null : $url,
 			'import' => [

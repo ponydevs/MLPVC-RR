@@ -31,15 +31,15 @@ class BrowserController extends Controller {
 
 		CoreUtils::fixPath('/browser'.(!empty($Session)?"/{$Session->id}":''));
 
-		CoreUtils::loadPage([
+		CoreUtils::loadPage(__METHOD__, [
 			'title' => 'Browser recognition test page',
-			'do-css',
-			'no-robots',
+			'css' => [true],
+			'no-robots' => true,
 			'import' => [
 				'AgentString' => $AgentString,
 				'Session' => $Session ?? null,
 				'browser' => $browser,
 			],
-		], $this);
+		]);
 	}
 }

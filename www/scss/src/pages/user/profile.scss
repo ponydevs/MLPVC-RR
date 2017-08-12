@@ -1,0 +1,267 @@
+@import "../../vars";
+@import "../../components/optional/browser-icons";
+@import "../../components/optional/post-list";
+
+// Mobile styles
+@media all and (max-width: $Breakpoint){
+	h1 > * {
+		display: inline-block;
+		vertical-align: bottom;
+	}
+}
+// Desktop styles
+@media all and (min-width: $Breakpoint){
+	.briefing {
+		display: flex;
+		flex-flow: row nowrap;
+		align-items: center;
+		text-align: left;
+		margin-bottom: 10px;
+
+		.avatar-wrap {
+			flex: 0 0 auto;
+		}
+		.title {
+			flex: 1 1 100%;
+			padding: 0 10px;
+
+			> * {
+				text-align: left !important;
+			}
+
+			h1 {
+				font-size: 1.6em !important;
+				line-height: 1.2em;
+
+				> * {
+					display: inline-block;
+					vertical-align: bottom;
+				}
+			}
+			p {
+				margin-bottom: 0 !important;
+				font-size: 1.2em !important;
+
+				button {
+					vertical-align: middle;
+				}
+			}
+		}
+	}
+}
+
+#content {
+	.briefing {
+		.avatar-wrap {
+			border-width: 3px;
+		}
+		h1 {
+			.da {
+				line-height: 1em;
+				width: .6em;
+
+				svg {
+					height: 100%;
+				}
+				path {
+					fill: darken($DeviantArtGreen, 10);
+					transition: fill .2s linear;
+				}
+				&:hover path { fill: $DeviantArtGreen }
+			}
+
+			.da, .vectorapp-logo, .discord-logo {
+				height: 1em;
+				margin-left: .3em;
+			}
+		}
+		p {
+			.userid, .discid {
+				letter-spacing: -1px;
+				font-size: .8em;
+			}
+		}
+	}
+	.details {
+		> section:not(:last-child) { margin-bottom: 15px }
+		.contributions {
+			ul {
+				padding: 0;
+				margin: 0;
+				list-style: none;
+
+				li {
+					display: block;
+
+					.amt {
+						font-weight: bold;
+						margin: 0 4px;
+					}
+				}
+			}
+		}
+		.personal-cg {
+			.personal-cg-appearances {
+				@extend %appearance-ul;
+
+				margin: 10px 0;
+				padding: 0;
+				list-style: none;
+				display: block;
+
+				&:empty:before {
+					content: "You haven\2019t added any appearances to your Personal Color Guide yet. If you had, they would be visible here.";
+					font-style: italic;
+					opacity: .7;
+					font-size: 1em;
+					border: 1px dashed;
+					display: block;
+					padding: 3px;
+					font-weight: normal;
+				}
+
+				li {
+					display: inline-block;
+
+					&:not(:last-child) {
+						margin-right: 10px;
+					}
+				}
+			}
+		}
+		.bans ul {
+			margin: 0;
+			padding: 0;
+			list-style: none;
+
+			&:empty:before {
+				content: "This user has no banishments on record.";
+			}
+
+			li {
+				display: block;
+				blockquote {
+					margin: 0;
+					padding: 3px;
+					display: inline-block;
+				}
+				&.banish blockquote {
+					color: $NRed;
+					background-color: $NRedBG;
+				}
+				&.un-banish blockquote {
+					color: $NGreen;
+					background-color: $NGreenBG;
+				}
+			}
+		}
+		.pending-reservations, .awaiting-approval {
+			ul { @extend %post-ul }
+		}
+		.awaiting-approval:empty:before {
+			content:"";
+			display: block;
+			width: 80px;
+			height: 80px;
+			margin: 0 auto;
+			background: url('/img/loading-gears.svg') no-repeat center;
+			background-size: contain;
+		}
+	}
+	#settings {
+		margin-top: 15px;
+		border-top: 2px dashed $ContentOutline;
+		padding-top: 10px;
+		text-align: center;
+
+		&:empty { display: none }
+		&:not(:empty):before {
+			content: "Settings";
+			margin: 5px 0;
+			font-size: 1.6em;
+			font-weight: bold;
+			display: block;
+		}
+		form {
+			&:not(:last-child){
+				margin-bottom: 10px;
+			}
+			label {
+				display: inline-block;
+
+				input, button, select {
+					vertical-align: middle;
+				}
+				.save {
+					margin: 0 0 0 5px;
+				}
+			}
+		}
+		.sessions {
+			.session-list {
+				list-style: none;
+				padding: 0;
+				margin: 10px 0 0;
+				display: flex;
+				flex-flow: row wrap;
+				justify-content:center;
+
+				li {
+					display: inline-block;
+					padding: 8px;
+					border-radius: 5px;
+					background: rgba(0,0,0,.12);
+					margin: 0 5px 5px 0;
+					flex: 0 0 auto;
+
+					@include if-browser-has-icon {
+						//noinspection CssOptimizeSimilarProperties
+						&:before {
+							content: "";
+							display: block;
+							margin: 0 auto 8px;
+							height: 128px;
+							width: 100%;
+						}
+					}
+
+					@include browser-backgrounds(true);
+
+					span { display: block }
+					.browser {
+						font-weight: bold;
+
+						> button { vertical-align: bottom }
+						+ .platform { font-size: .9em !important }
+						~ * { font-size: .8em }
+					}
+
+					button ~ {
+						button, .btn { margin-top: 0 }
+					}
+				}
+			}
+		}
+	}
+}
+
+#dialogContent > div {
+	> img { display: none }
+	&:nth-last-child(2), &:last-child {
+		> img {
+			display: block;
+			height: 200px;
+			margin: 10px auto 0;
+
+			@media all and (max-width: $Breakpoint), all and (max-height: 620px) {
+				display: none;
+			}
+		}
+	}
+
+	.disc-verify-code {
+		font-size: 1.3em;
+		font-family: $monospace;
+		margin: 10px 0;
+	}
+}

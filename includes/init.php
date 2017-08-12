@@ -11,7 +11,7 @@ use App\PostgresDbWrapper;
 // Maintenance mode \\
 if (defined('MAINTENANCE_START')){
 	$errcause = 'maintenance';
-	die(require INCPATH.'views/fatalerr.php');
+	die(require INCPATH.'views/error/fatal.php');
 }
 
 // Database connection & Required Functionality Checking \\
@@ -22,7 +22,7 @@ try {
 }
 catch (Exception $e){
 	$errcause = 'libmiss';
-	die(require INCPATH.'views/fatalerr.php');
+	die(require INCPATH.'views/error/fatal.php');
 }
 
 DB::$instance = new PostgresDbWrapper(DB_NAME);
@@ -33,7 +33,7 @@ try {
 }
 catch (Exception $e){
 	$errcause = 'db';
-	die(require INCPATH.'views/fatalerr.php');
+	die(require INCPATH.'views/error/fatal.php');
 }
 
 header('Access-Control-Allow-Origin: '.(HTTPS?'http':'https').'://'.$_SERVER['SERVER_NAME']);

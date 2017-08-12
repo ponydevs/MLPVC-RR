@@ -1,0 +1,1 @@
+{"version":3,"sources":["pages/error/auth.js"],"names":["$","rndkey","window","opener","e"],"mappings":"aACAA,EAAE,WACD,IAAAC,EAAAC,OAAAD,OAGA,IADsBA,iBAAhBA,GAAN,mBAAAC,OAAAC,OAAA,IAAAF,IACAC,OAAIC,OAAA,IAAAF,IAAA,EAAAC,QAGH,MACDE","file":"../../../src/pages/error/auth.js","sourceRoot":"/js/src"}

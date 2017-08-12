@@ -1,0 +1,137 @@
+@import "../../colorguide_vars";
+@import "../../vars";
+
+// Mobile-only
+@media all and (max-width: $Breakpoint){
+	#pony-cm-list {
+		display: flex;
+		flex-flow: row wrap;
+
+		.pony-cm {
+			display: block;
+
+			@include pony-cm;
+
+			.preview {
+				margin-left: auto;
+				margin-right: auto;
+				@include pony-cm-image(200px);
+			}
+		}
+	}
+}
+// Desktop-only
+@media all and (min-width: $Breakpoint){
+	.pony-cm .preview { @include pony-cm-image }
+
+	#content .admin { display: none }
+
+	#pony-cm-list {
+		.pony-cm {
+			display: inline-block;
+
+			@include pony-cm;
+		}
+	}
+}
+
+#content {
+	> .sprite-wrap {
+		text-align: center;
+		line-height: 0;
+
+		.sprite {
+			display: inline-block;
+			max-width: 100%;
+
+			> .upload-wrap {
+				&.nosprite img {
+					width: 300px;
+					height: 300px;
+				}
+
+				&.loading {
+					width: 300px;
+					height: 300px;
+					background: url('/img/loading-ring.svg') no-repeat center;
+					background-size: 125px;
+				}
+
+				a, a > img {
+					display: block;
+				}
+				a > img {
+					margin: 0 auto;
+					max-width: 100%;
+					max-height: 300px;
+				}
+			}
+
+			img {
+				max-width: 100%;
+				max-height: 300px;
+			}
+		}
+	}
+	> h1 {
+		font-size: 2.2em;
+		line-height: 1.2em;
+		margin-bottom: 10px;
+	}
+
+	section {
+		> .admin button {
+			display: block;
+			margin: 0 0 10px 0;
+			width: 100%;
+
+			&:not(:last-child){ margin-bottom: 5px }
+		}
+	}
+
+	#tags .tags {
+		&:empty:before { content: "This appearance has no tags" }
+		> :not(:last-child) {
+			margin-right: 7px;
+		}
+	}
+
+	#notes {
+		font-size: 1.1em;
+		background: papayawhip;
+		color: saddlebrown;
+		padding: 10px;
+		border: 1px solid burlywood;
+		display: inline-block;
+
+		body.theme-dark & {
+			background: darken(#fa0, 20);
+			color: papayawhip;
+			border: 1px solid burlywood;
+		}
+	}
+
+	.approved-cutie-mark {
+		&:not(:last-child){
+			margin-bottom: 10px;
+		}
+
+		.aside {
+			font-size: small;
+			margin-bottom: 4px;
+		}
+	}
+
+	.related ul {
+		@extend %appearance-ul;
+	}
+
+	#colors { @extend %colors-ul }
+}
+
+#pony-cm-list {
+	display: block;
+	margin: 10px 0 0;
+	padding: 0;
+	font-size: 0;
+}

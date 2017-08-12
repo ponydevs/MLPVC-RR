@@ -1,12 +1,12 @@
 @import url('https://fonts.googleapis.com/css?family=PT+Sans');
-@import "font-awesome";
+@import "vendor/fontawesome";
 @import "vars";
 @import "shared-utils";
-@import "theme_buttons";
-@import "theme_notices";
-@import "theme_dialog";
-@import "theme_forms";
-@import "../min/nouislider.css";
+@import "components/vital/buttons";
+@import "components/vital/notices";
+@import "components/vital/dialog";
+@import "components/vital/forms";
+@import "vendor/nouislider.css";
 
 html,body {
 	width: 100%;

@@ -11,14 +11,12 @@ use App\Statistics;
 use App\Time;
 
 class AboutController extends Controller {
-	public $do = 'about';
-
 	public function index(){
-		CoreUtils::loadPage([
+		CoreUtils::loadPage(__METHOD__, [
 			'title' => 'About',
-			'do-css',
-			'js' => ['Chart', $this->do],
-		], $this);
+			'css' => [true],
+			'js' => ['Chart',true],
+		]);
 	}
 
 	const

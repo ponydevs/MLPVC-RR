@@ -115,7 +115,7 @@ class ColorGuideController extends Controller {
 		}
 	}
 
-	public function spriteColors($params){
+	public function sprite($params){
 		if (Permission::insufficient('member'))
 			CoreUtils::notFound();
 
@@ -136,11 +136,10 @@ class ColorGuideController extends Controller {
 		$SafeLabel = $this->_appearance->getSafeLabel();
 		CoreUtils::fixPath("{$this->_cgPath}/sprite/{$this->_appearance->id}-$SafeLabel");
 
-		CoreUtils::loadPage([
-			'view' => "{$this->do}-sprite",
+		CoreUtils::loadPage(__METHOD__, [
 			'title' => "Sprite of {$this->_appearance->label}",
-			'css' => "{$this->do}-sprite",
-			'js' => "{$this->do}-sprite",
+			'css' => [true],
+			'js' => [true],
 			'import' => [
 				'Appearance' => $this->_appearance,
 				'ColorGroups' => $ColorGroups,
@@ -153,7 +152,7 @@ class ColorGuideController extends Controller {
 	}
 
 	public function appearanceAsFile($params, User $Owner = null){
-		if (!isset($Owner))
+		if ($Owner === null)
 			$this->_initialize($params);
 		$this->_getAppearance($params);
 
@@ -183,22 +182,22 @@ class ColorGuideController extends Controller {
 	public function personalAppearanceAsFile($params){
 		$this->_initPersonal($params);
 
-		self::appearanceAsFile($params, $this->_ownedBy);
+		$this->appearanceAsFile($params, $this->_ownedBy);
 	}
 
-	private $_GUIDE_MANAGE_JS = [
+	private const GUIDE_MANAGE_JS = [
 		'jquery.uploadzone',
 		'jquery.autocomplete',
 		'handlebars-v3.0.3',
 		'Sortable',
-		'colorguide-tags',
-		'colorguide-manage',
+		'pages/colorguide/tag-list',
+		'pages/colorguide/manage',
 	];
-	private $_GUIDE_MANAGE_CSS = [
-		'colorguide-manage',
+	private const GUIDE_MANAGE_CSS = [
+		'pages/colorguide/manage',
 	];
 
-	public function appearancePage($params){
+	public function appearance($params){
 		if ($this->_ownedBy === null)
 			$this->_initialize($params);
 		$this->_getAppearance($params);
@@ -215,9 +214,8 @@ class ColorGuideController extends Controller {
 		$settings = [
 			'title' => "$title - Color Guide",
 			'heading' => $heading,
-			'view' => "{$this->do}-appearance",
-			'css' => [$this->do, "{$this->do}-appearance"],
-			'js' => ['jquery.qtip', 'jquery.ctxmenu', $this->do, "{$this->do}-appearance"],
+			'css' => ['pages/colorguide/guide', true],
+			'js' => ['jquery.qtip', 'jquery.ctxmenu', 'pages/colorguide/guide', true],
 			'import' => [
 				'Appearance' => $this->_appearance,
 				'EQG' => $this->_EQG,
@@ -229,17 +227,17 @@ class ColorGuideController extends Controller {
 			$settings['import']['isOwner'] = $this->_isOwnedByUser;
 		}
 		else $settings['import']['Changes'] = MajorChange::get($this->_appearance->id);
-		if (Permission::sufficient('staff') || $this->_isOwnedByUser){
-			$settings['css'] = array_merge($settings['css'], $this->_GUIDE_MANAGE_CSS);
-			$settings['js'] = array_merge($settings['js'], $this->_GUIDE_MANAGE_JS);
+		if ($this->_isOwnedByUser || Permission::sufficient('staff')){
+			$settings['css'] = array_merge($settings['css'], self::GUIDE_MANAGE_CSS);
+			$settings['js'] = array_merge($settings['js'], self::GUIDE_MANAGE_JS);
 		}
-		CoreUtils::loadPage($settings);
+		CoreUtils::loadPage(__METHOD__, $settings);
 	}
 
 	public function personalAppearancePage($params){
 		$this->_initPersonal($params);
 
-		$this->appearancePage($params);
+		$this->appearance($params);
 	}
 
 	public function fullList($params){
@@ -259,12 +257,11 @@ class ColorGuideController extends Controller {
 		$js = [];
 		if (Permission::sufficient('staff'))
 			$js[] = 'Sortable';
-		$js[] = "{$this->do}-full";
+		$js[] = true;
 
-		CoreUtils::loadPage([
+		CoreUtils::loadPage(__METHOD__, [
 			'title' => 'Full List - '.($this->_EQG?'EQG ':'').'Color Guide',
-			'view' => "{$this->do}-full",
-			'css' => "{$this->do}-full",
+			'css' => [true],
 			'js' => $js,
 			'import' => [
 				'EQG' => $this->_EQG,
@@ -301,12 +298,11 @@ class ColorGuideController extends Controller {
 
 		$Pagination->respondIfShould(CGUtils::getChangesHTML($Changes, NOWRAP, SHOW_APPEARANCE_NAMES), '#changes');
 
-		CoreUtils::loadPage([
+		CoreUtils::loadPage(__METHOD__, [
 			'title' => $title,
 			'heading' => $heading,
-			'view' => "{$this->do}-changes",
-			'css' => "{$this->do}-changes",
-			'js' => 'paginate',
+			'css' => [true],
+			'js' => ['paginate'],
 			'import' => [
 				'Changes' => $Changes,
 				'Pagination' => $Pagination,
@@ -327,13 +323,12 @@ class ColorGuideController extends Controller {
 
 		$js = ['paginate'];
 		if (Permission::sufficient('staff'))
-			$js[] = "{$this->do}-tags";
+			$js[] = true;
 
-		CoreUtils::loadPage([
+		CoreUtils::loadPage(__METHOD__, [
 			'title' => $title,
 			'heading' => $heading,
-			'view' => "{$this->do}-tags",
-			'css' => "{$this->do}-tags",
+			'css' => [true],
 			'js' => $js,
 			'import' => [
 				'Tags' => $Tags,
@@ -422,7 +417,7 @@ class ColorGuideController extends Controller {
 				}
 			}
 		}
-		if (!$elasticAvail) {
+		else {
 			if ($searching && $jsResponse)
 				Response::fail('The ElasticSearch server is currently down and search is not available, sorry for the inconvenience.<br>Please <a class="send-feedback">let us know</a> about this issue.', ['unavail' => true]);
 
@@ -449,8 +444,8 @@ class ColorGuideController extends Controller {
 		$settings = [
 			'title' => $title,
 			'heading' => $heading,
-			'css' => [$this->do],
-			'js' => ['jquery.qtip', 'jquery.ctxmenu', $this->do, 'paginate'],
+			'css' => [true],
+			'js' => ['jquery.qtip', 'jquery.ctxmenu', true, 'paginate'],
 			'import' => [
 				'EQG' => $this->_EQG,
 				'Ponies' => $Ponies,
@@ -459,10 +454,10 @@ class ColorGuideController extends Controller {
 			],
 		];
 		if (Permission::sufficient('staff')){
-			$settings['css'] = array_merge($settings['css'], $this->_GUIDE_MANAGE_CSS);
-			$settings['js'] = array_merge($settings['js'], $this->_GUIDE_MANAGE_JS);
+			$settings['css'] = array_merge($settings['css'], self::GUIDE_MANAGE_CSS);
+			$settings['js'] = array_merge($settings['js'], self::GUIDE_MANAGE_JS);
 		}
-		CoreUtils::loadPage($settings, $this);
+		CoreUtils::loadPage(__METHOD__, $settings);
 	}
 
 	public function personalGuide($params){
@@ -472,7 +467,6 @@ class ColorGuideController extends Controller {
 		$AppearancesPerPage = UserPrefs::get('cg_itemsperpage');
 		$Ponies = [];
 	    $_EntryCount = $this->_ownedBy->getPCGAppearances(null, true);
-
 
 	    $Pagination = new Pagination("@{$this->_ownedBy->name}/cg", $AppearancesPerPage, $_EntryCount);
 	    $Ponies = $this->_ownedBy->getPCGAppearances($Pagination);
@@ -486,9 +480,8 @@ class ColorGuideController extends Controller {
 		$settings = [
 			'title' => $title,
 			'heading' => $heading,
-			'css' => ['colorguide'],
-			'js' => ['jquery.qtip', 'jquery.ctxmenu', 'colorguide', 'paginate'],
-			'view' => 'user-colorguide',
+			'css' => ['pages/colorguide/guide'],
+			'js' => ['jquery.qtip', 'jquery.ctxmenu', 'pages/colorguide/guide', 'paginate'],
 			'import' => [
 				'Ponies' => $Ponies,
 				'Pagination' => $Pagination,
@@ -497,10 +490,10 @@ class ColorGuideController extends Controller {
 			],
 		];
 		if ($this->_isOwnedByUser){
-			$settings['css'] = array_merge($settings['css'], $this->_GUIDE_MANAGE_CSS);
-			$settings['js'] = array_merge($settings['js'], $this->_GUIDE_MANAGE_JS);
+			$settings['css'] = array_merge($settings['css'], self::GUIDE_MANAGE_CSS);
+			$settings['js'] = array_merge($settings['js'], self::GUIDE_MANAGE_JS);
 		}
-		CoreUtils::loadPage($settings, $this);
+		CoreUtils::loadPage('UserController::colorGuide', $settings);
 	}
 
 	const CM_BASIC_COLS = 'id,favme,favme_rotation,preview_src,facing';
@@ -805,7 +798,7 @@ class ColorGuideController extends Controller {
 
 				if (!$creating){
 					$diff = [];
-					foreach (['label' => true, 'notes_src' => 'nptes', 'private' => true, 'owner_id' => true] as $orig => $mapped){
+					foreach (['label' => true, 'notes_src' => 'notes', 'private' => true, 'owner_id' => true] as $orig => $mapped){
 						$key = $mapped === true ? $orig : $mapped;
 						if ($EditedAppearance->{$orig} !== $olddata[$orig]){
 							$diff["old$key"] = $olddata[$orig];
@@ -852,9 +845,8 @@ class ColorGuideController extends Controller {
 				}
 
 				if (!empty($Tagged))
-					foreach($Tagged as $tag){
+					foreach($Tagged as $tag)
 						Tags::updateUses($tag->id);
-					};
 
 				$fpath = SPRITE_PATH."{$this->_appearance->id}.png";
 				if (file_exists($fpath))
@@ -887,6 +879,7 @@ class ColorGuideController extends Controller {
 				Response::done(['cgs' => $cgs]);
 			break;
 			case 'setcgs':
+				/** @var $order int[] */
 				$order = (new Input('cgs','int[]', [
 					Input::CUSTOM_ERROR_MESSAGES => [
 						Input::ERROR_MISSING => 'Color group order data missing',
@@ -981,12 +974,14 @@ class ColorGuideController extends Controller {
 				if (!empty($this->_appearance->owner_id))
 					Response::fail('Relations are unavailable for appearances in personal guides');
 
+				/** @var $AppearanceIDs int[] */
 				$AppearanceIDs = (new Input('ids','int[]', [
 					Input::IS_OPTIONAL => true,
 					Input::CUSTOM_ERROR_MESSAGES => [
 						Input::ERROR_INVALID => 'Appearance ID list is invalid',
 					]
 				]))->out();
+				/** @var $MutualIDs int[] */
 				$MutualIDs = (new Input('mutuals','int[]', [
 					Input::IS_OPTIONAL => true,
 					Input::CUSTOM_ERROR_MESSAGES => [
@@ -996,15 +991,13 @@ class ColorGuideController extends Controller {
 
 				$appearances = [];
 				if (!empty($AppearanceIDs))
-					foreach ($AppearanceIDs as $id){
+					foreach ($AppearanceIDs as $id)
 						$appearances[$id] = true;
-					};
 
 				$mutuals = [];
 				if (!empty($MutualIDs))
-					foreach ($MutualIDs as $id){
+					foreach ($MutualIDs as $id)
 						$mutuals[$id] = true;
-					};
 
 				$this->_appearance->clearRelations();
 				if (!empty($appearances))
@@ -1222,18 +1215,21 @@ class ColorGuideController extends Controller {
 				switch ($wipe_colors){
 					case 'color_hex':
 						if (Appearances::hasColors($this->_appearance, true)){
+							/** @noinspection NestedPositiveIfStatementsInspection */
 							if (!DB::$instance->query('UPDATE colors SET hex = null WHERE group_id IN (SELECT id FROM color_groups WHERE appearance_id = ?)', [$this->_appearance->id]))
 								Response::dbError();
 						}
 					break;
 					case 'color_all':
 						if (Appearances::hasColors($this->_appearance)){
+							/** @noinspection NestedPositiveIfStatementsInspection */
 							if (!DB::$instance->query('DELETE FROM colors WHERE group_id IN (SELECT id FROM color_groups WHERE appearance_id = ?)', [$this->_appearance->id]))
 								Response::dbError();
 						}
 					break;
 					case 'all':
 						if (ColorGroup::exists(['conditions' => ['appearance_id = ?', $this->_appearance->id]])){
+							/** @noinspection NestedPositiveIfStatementsInspection */
 							if (!DB::$instance->query('DELETE FROM color_groups WHERE appearance_id = ?', [$this->_appearance->id]))
 								Response::dbError();
 						}
@@ -1279,6 +1275,7 @@ class ColorGuideController extends Controller {
 		if (Permission::insufficient('staff'))
 			Response::fail();
 
+		/** @var $tagIDs int[] */
 		$tagIDs = (new Input('tagids','int[]', [
 			Input::CUSTOM_ERROR_MESSAGES => [
 				Input::ERROR_MISSING => 'Missing list of tags to update',
@@ -1625,6 +1622,7 @@ HTML;
 
 		$oldcolors = $adding ? null : $Group->colors;
 
+		/** @var $recvColors array */
 		$recvColors = (new Input('Colors','json', [
 			Input::CUSTOM_ERROR_MESSAGES => [
 				Input::ERROR_MISSING => 'Missing list of colors',
@@ -1668,7 +1666,6 @@ HTML;
 			$colorError = true;
 			error_log('Database error triggered by user '.Auth::$user->name.' ('.Auth::$user->id.") while saving colors:\n".JSON::encode($c->errors, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
 		}
-		unset($c);
 		/** @var $newcolors Color[] */
 		if ($colorError)
 			Response::fail("There were some issues while saving the colors. Please <a class='send-feedback'>let us know</a> about this error, so we can look into why it might've happened.");
@@ -1735,11 +1732,10 @@ HTML;
 		CoreUtils::fixPath('/cg/blending');
 
 		$HexPattern = preg_replace(new RegExp('^/(.*)/.*$'),'$1',$HEX_COLOR_REGEX->jsExport());
-		CoreUtils::loadPage([
+		CoreUtils::loadPage(__METHOD__, [
 			'title' => 'Color Blending Calculator',
-			'view' => "{$this->do}-blending",
-			'css' => "{$this->do}-blending",
-			'js' => "{$this->do}-blending",
+			'css' => [true],
+			'js' => [true],
 			'import' => [
 				'HexPattern' => $HexPattern,
 				'nav_blending' => true,
@@ -1748,10 +1744,10 @@ HTML;
 	}
 
 	public function picker(){
-		CoreUtils::loadPage([
+		CoreUtils::loadPage(__METHOD__, [
 			'title' => 'Color Picker',
-			'view' => "{$this->do}-picker",
-			'css' => "{$this->do}-picker",
+			'view' => [true],
+			'css' => [true],
 			'import' => ['nav_picker' => true],
 		]);
 	}

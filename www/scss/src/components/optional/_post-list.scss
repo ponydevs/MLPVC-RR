@@ -1,0 +1,233 @@
+%post-ul {
+	@media all and (max-width: $Breakpoint){
+		text-align: center;
+
+		li {
+			box-sizing: border-box;
+			width: 100%;
+
+			&:not(:last-child){
+				margin-bottom: 10px;
+			}
+
+			.image > a {
+				max-width: 100%;
+				box-sizing: border-box;
+
+				img {
+					display: block;
+					max-height: 150px;
+					max-width: 100%;
+				}
+			}
+			> a .deviation {
+				margin: 0 auto 10px;
+			}
+		}
+	}
+	@media all and (min-width: $Breakpoint){
+		&:empty { margin-left: 30px }
+
+		li {
+			margin: 5px;
+
+			.image img { height: 150px }
+		}
+	}
+
+	padding: 0;
+	margin: 15px 0 20px 0;
+	list-style: none;
+	display: flex;
+	flex-flow: row wrap;
+	justify-content: flex-start;
+
+	li {
+		padding: 10px;
+		color: #434343;
+		background-color: rgba(0,0,0,.07);
+		border: 1px solid rgba(0,0,0,.2);
+		font-size: 12px;
+		font-family: 'Verdana', sans-serif;
+		flex: 1 0 auto;
+		text-align: center;
+		transition: background-color .3s, border-color .3s;
+
+		&.highlight {
+			background-color: rgba($HeaderBlue,.15) !important;
+			border: 1px solid rgba($HeaderBlue,.3) !important;
+		}
+
+		&.admin-break {
+			position: relative;
+			color: rgb(67, 33, 0);
+			background-color: rgba(127,65,0,.1);
+			border-color: rgba(127,65,0,.3);
+		}
+
+		> * {
+			display: block;
+			vertical-align: bottom;
+			margin-left: auto;
+			margin-right: auto;
+		}
+		> .image {
+			&.deviation {
+				&.error {
+					color: $NOrange;
+					border: 2px solid;
+					padding: 40px 10px;
+					background: $NOrangeBG;
+					margin-bottom: 10px;
+
+					a {
+						color: inherit;
+					}
+				}
+				img {
+					border: 1px solid $DeviationBorder;
+				}
+
+				.post-deviation-promise {
+					@include loading-indicator(154px, 'wedges');
+
+					margin: 0 auto 10px;
+				}
+			}
+			&.screencap > a {
+				border: 1px solid;
+			}
+			&:not(.error) > a {
+				font-size: 0;
+				margin-bottom: 10px;
+				color: inherit;
+				display: inline-block;
+				background: url('/img/transparency.svg');
+				background-size: 16px;
+
+				body.theme-dark & {
+					background-image: url('/img/transparency-dark.svg');
+				}
+			}
+			&.error > a {
+				font-size: 16px;
+				display: block;
+				margin-bottom: 5px;
+			}
+			&.approved > a {
+				position: relative;
+
+				img { border-width: 2px }
+
+				$imageSize: 40px;
+				.approved-info {
+			    position: absolute;
+			    left: 0;
+			    bottom: 0;
+			    cursor: help;
+			    width: $imageSize;
+			    height: $imageSize;
+			    background: url('/img/approved.svg') no-repeat center;
+			    background-size: $imageSize;
+				}
+			}
+		}
+		> .label {
+			font-size: 1.2em;
+			font-style: italic;
+			max-width: 266px;
+			margin-bottom: 5px;
+
+			&:not(.noquotes){
+				&:before  { content: '\201c' }
+				&:after { content: '\201d' }
+			}
+
+			.intensify {
+				display: inline-block;
+				animation: intensify .2s linear infinite;
+
+				&:before { content: '[' }
+				&:after { content: ']' }
+
+				@keyframes intensify {
+					$translateAmount: 0.5px;
+					0%   { transform: translateX( #{$translateAmount}) translateY(                   0) }
+					20%  { transform: translateX(-#{$translateAmount}) translateY( #{$translateAmount}) }
+					40%  { transform: translateX( #{$translateAmount}) translateY( #{$translateAmount}) }
+					60%  { transform: translateX(                   0) translateY(-#{$translateAmount}) }
+					80%  { transform: translateX(-#{$translateAmount}) translateY( #{$translateAmount}) }
+					100% { transform: translateX(-#{$translateAmount}) translateY(-#{$translateAmount}) }
+				}
+			}
+		}
+		.reserver, .reserve-request {
+			height: 40px;
+		}
+		> .reserve-request {
+			font-size: 16px;
+			line-height: 40px;
+			height: 40px;
+			margin: 5px auto 0;
+			opacity: 1 !important;
+			padding: 0 5px;
+			color: #666;
+
+			@extend %reserve-button;
+		}
+		.contest-note {
+			cursor: help;
+		}
+		.reserver {
+			display: inline-block;
+			margin-top: 5px;
+			font-size: 0;
+			position: relative;
+			text-align: left;
+
+			.da-userlink {
+				height: 100%;
+				position: relative;
+				z-index: 2;
+				min-width: 125px;
+				overflow: hidden;
+				box-sizing: border-box;
+				display: flex;
+				flex-flow: row nowrap;
+				align-items: flex-end;
+
+				> * {
+					margin-right: 5px;
+					display: block;
+				}
+				.avatar {
+					height: 40px;
+					width: 40px;
+					flex: 0 0 40px;
+				}
+				.name {
+					flex: 1 1 auto;
+					text-align: center;
+					font-size: 16px;
+					vertical-align: bottom;
+					line-height: 40px;
+				}
+			}
+		}
+		.actions {
+			white-space: nowrap;
+			margin-top: 5px;
+
+			&:empty { display: none }
+
+			button {
+				display: inline-block;
+				font-size: 1.2em;
+			}
+		}
+	}
+	&:empty:before { content: "None yet." }
+}
+%post-ul-fluidbox {
+	li .image > a .fluidbox__wrap { max-width: inherit }
+}

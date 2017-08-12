@@ -5,6 +5,7 @@ use App\Auth;
 use App\CoreUtils;
 use App\CSRFProtection;
 use App\DB;
+use App\Events;
 use App\Exceptions\MismatchedProviderException;
 use App\Exceptions\UnsupportedProviderException;
 use App\HTTP;
@@ -13,6 +14,7 @@ use App\Input;
 use App\Models\Event;
 use App\Models\EventEntry;
 use App\Models\EventEntryVote;
+use App\Pagination;
 use App\Permission;
 use App\Response;
 use App\RegExp;
@@ -49,20 +51,48 @@ class EventController extends Controller {
 		$EventType = Event::EVENT_TYPES[$this->_event->type];
 
 		CoreUtils::fixPath($this->_event->toURL());
-		$js = ['jquery.fluidbox',$this->do];
+		$js = ['jquery.fluidbox',true];
 		if (Permission::sufficient('staff'))
-			$js[] = 'events-manage';
+			$js[] = 'pages/event/list-manage';
 
-		CoreUtils::loadPage([
+		CoreUtils::loadPage(__METHOD__, [
 			'heading' => $heading,
 			'title' => "$heading - $EventType Event",
-			'do-css',
+			'css' => [true],
 			'js' => $js,
 			'import' => [
 				'Event' => $this->_event,
 				'EventType' => $EventType,
 			],
-		], $this);
+		]);
+	}
+
+	public function list(){
+		$Pagination = new Pagination('events', 20, Event::count());
+
+		CoreUtils::fixPath("/events/{$Pagination->page}");
+		$heading = 'Events';
+		$title = "Page $Pagination->page - $heading";
+
+		$Events = Event::find('all', $Pagination->getAssocLimit());
+
+		$Pagination->respondIfShould(Events::getListHTML($Events, NOWRAP), '#event-list');
+
+		$js = ['paginate'];
+		if (Permission::sufficient('staff'))
+			$js[] = 'pages/event/list-manage';
+
+		CoreUtils::loadPage(__METHOD__, [
+			'title' => $title,
+			'heading' => $heading,
+			'js' => $js,
+			'css' => [true],
+			'import' => [
+				'Events' => $Events,
+				'Pagination' => $Pagination,
+				'PRINTABLE_ASCII_PATTERN' => PRINTABLE_ASCII_PATTERN,
+			],
+		]);
 	}
 
 	public function _addEdit($params, $action){

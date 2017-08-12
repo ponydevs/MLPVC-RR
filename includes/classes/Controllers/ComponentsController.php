@@ -7,9 +7,9 @@ class ComponentsController extends Controller {
 	public $do = 'components';
 
 	public function index(){
-		CoreUtils::loadPage([
+		CoreUtils::loadPage(__METHOD__, [
 			'title' => 'Components',
-			'no-robots',
-		], $this);
+			'no-robots' => true,
+		]);
 	}
 }

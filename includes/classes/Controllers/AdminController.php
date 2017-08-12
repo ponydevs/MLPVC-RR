@@ -8,6 +8,7 @@ use App\DB;
 use App\Input;
 use App\Logs;
 use App\Models\DiscordMember;
+use App\Models\KnownIP;
 use App\Models\UsefulLink;
 use App\Models\User;
 use App\Pagination;
@@ -30,16 +31,14 @@ class AdminController extends Controller {
 	}
 
 	public function index(){
-		CoreUtils::loadPage([
+		CoreUtils::loadPage(__METHOD__, [
 			'title' => 'Admin Area',
-			'do-css',
-			'do-js',
-		], $this);
+			'css' => [true],
+			'js' => [true],
+		]);
 	}
 
-	public function logs(){
-		global $LogItems, $Pagination;
-
+	public function log(){
 		$type = Logs::validateRefType('type', true, true);
 		/** @noinspection NotOptimalIfConditionsInspection */
 		if (isset($_GET['type']) && preg_match(new RegExp('/^[a-z_]+$/'), $_GET['type']) && isset(Logs::$LOG_DESCRIPTION[$_GET['type']]))
@@ -128,12 +127,11 @@ class AdminController extends Controller {
 
 		$Pagination->respondIfShould(Logs::getTbody($LogItems), '#logs tbody');
 
-		CoreUtils::loadPage([
+		CoreUtils::loadPage(__METHOD__, [
 			'heading' => $heading,
 			'title' => $title,
-			'view' => "{$this->do}-logs",
-			'css' => "{$this->do}-logs",
-			'js' => ["{$this->do}-logs", 'paginate'],
+			'css' => [true],
+			'js' => [true, 'paginate'],
 			'import' => [
 				'Pagination' => $Pagination,
 				'LogItems' => $LogItems,
@@ -171,12 +169,12 @@ class AdminController extends Controller {
 	public function usefulLinks(){
 		if (!POST_REQUEST){
 			$heading = 'Manage useful links';
-			CoreUtils::loadPage([
+			CoreUtils::loadPage(__METHOD__, [
 				'heading' => $heading,
 				'title' => "$heading - Admin Area",
-				'view' => "{$this->do}-usefullinks",
-				'js' => ['Sortable',"{$this->do}-usefullinks"],
-				'css' => $this->do,
+				'view' => [true],
+				'js' => ['Sortable',true],
+				'css' => [true],
 			]);
 		}
 
@@ -296,14 +294,13 @@ class AdminController extends Controller {
 			$this->_getDiscordMemberList();
 
 		$heading = 'Discord Server Connections';
-		CoreUtils::loadPage([
+		CoreUtils::loadPage(__METHOD__, [
 			'heading' => $heading,
 			'title' => "$heading - Admin Area",
-			'view' => "{$this->do}-discord",
-			'css' => "{$this->do}-discord",
-			'js' => "{$this->do}-discord",
+			'css' => [true],
+			'js' => [true],
 			'import' => ['nav_dsc' => true],
-		], $this);
+		]);
 	}
 
 	public function discordMemberList(){
@@ -482,13 +479,49 @@ HTML;
 			CoreUtils::notFound();
 
 		$heading = 'WebSocket Server Diagnostics';
-		CoreUtils::loadPage([
+		CoreUtils::loadPage(__METHOD__, [
 			'heading' => $heading,
 			'title' => "$heading - Admin Area",
-			'view' => "{$this->do}-wsdiag",
-			'js' => "{$this->do}-wsdiag",
-			'css' => "{$this->do}-wsdiag",
+			'js' => [true],
+			'css' => [true],
 			'import' => ['nav_wsdiag' => true],
+		]);
+	}
+
+	function ip($params){
+		$ip = $params['ip'];
+
+		try {
+			$ip = (string) IP::parse($ip);
+		}
+		catch(\Throwable $e){
+			CoreUtils::notFound();
+		}
+
+		if (in_array($ip, Logs::LOCALHOST_IPS, true))
+			$ip = 'localhost';
+
+		CoreUtils::fixPath("/admin/ip/$ip");
+
+		$knownIPs = KnownIP::find_all_by_ip($ip);
+		$Users = [];
+		if (count($knownIPs) > 0){
+			foreach ($knownIPs as $knownIP){
+				$user = $knownIP->user;
+				if (!empty($user))
+					$Users[] = $user;
+			}
+		}
+
+		CoreUtils::loadPage(__METHOD__, [
+			'css' => [true],
+			'title' => "$ip - IP Address - Admin Area",
+			'import' => [
+				'KnownIPs' => $knownIPs,
+				'ip' => $ip,
+				'Users' => $Users,
+				'nav_adminip' => true,
+			]
 		]);
 	}
 }

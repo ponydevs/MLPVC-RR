@@ -1,0 +1,270 @@
+@import "../../vars";
+@import "../../colorguide_vars";
+
+.tag > .uses {
+	font-weight: normal;
+	font-size: .9em;
+	padding: 1px 2px;
+}
+.tag.monospace > .uses {
+	font-family: $monospace;
+}
+.algolia-autocomplete {
+	.aa-dataset-tags {
+		background: #fff;
+
+		.tag {
+			display: block;
+			margin: 0;
+			white-space: nowrap !important;
+		}
+	}
+	input { font-weight: normal !important }
+	.aa-suggestion .tag {
+		margin: 0 !important;
+		display: block !important;
+	}
+	&.loading {
+		position:relative;
+
+		&:after {
+			content: "";
+			display: block;
+			position: absolute;
+			top: 5px;
+			// padding + border + margin
+			right: 5px + 1px + 5px;
+
+			@include loading-indicator(16px);
+		}
+	}
+	.addtag { cursor: text }
+}
+.tag.addtag.aa-hint { color: rgba(black, .4) !important }
+
+// Remove excess margin on appearance pages
+#tags .addtag {
+	margin: 0;
+}
+
+#pony-editor .ace_editor {
+	height: 150px;
+
+	&, * {
+		font-size: 13px !important;
+	}
+}
+
+#edit-tag .type-selector {
+	display: flex;
+	flex-flow: row wrap;
+	align-content: center;
+	user-select: none;
+
+	> span { margin-bottom: 5px }
+
+	label {
+		flex: 1 1 auto;
+		margin: 2px;
+		position: relative;
+		overflow: hidden;
+
+		* { cursor: pointer }
+	}
+	input {
+		position: absolute;
+		top: -20px;
+		left: -20px;
+		width: 0;
+		height: 0;
+
+		~ .tag {
+			display: block;
+			height: auto;
+		}
+		&:not(:checked) ~ .tag { opacity: .5 }
+		&:focus ~ .tag { border-style: dashed }
+		&:not(:checked):focus ~ .tag { opacity: .75 }
+	}
+}
+
+#cg-editor {
+	overflow: hidden;
+
+	label.major {
+		> input[type="checkbox"]:not(:checked) {
+			+ br, + input[type="text"] {
+				display: none;
+			}
+		}
+	}
+
+	.clr { @extend %clr }
+
+	.clrs.ace_editor {
+		.ace_color {
+			color: $NDarkBlue;
+			font-weight: bold;
+		}
+		.ace_colorname { color: #006000 }
+	}
+}
+
+#cg-reorder .cgs ol {
+	list-style-position: inside;
+	margin: 0;
+	padding: 0;
+	counter-reset: list;
+
+	li {
+		display: inline-block;
+		margin: 2px;
+		padding: 2px;
+		font-size: 14px;
+		color: $NBlue;
+		border: 1px solid;
+		border-radius: 5px;
+		background: $NBlueBG;
+		cursor: move;
+
+		&.moving { box-shadow: 0 0 10px rgba(0,0,0,.5) }
+
+		&:before {
+      content: counter(list) ". ";
+      counter-increment: list;
+		}
+	}
+}
+
+#guide-relation-editor {
+	.mutual-fieldset-wrap legend {
+		&:empty:before {
+			content: attr(data-placeholder);
+		}
+	}
+}
+
+#cm-data-editor {
+	text-align: center;
+
+	.dialog-preview {
+		margin: 0;
+		padding: 0;
+		&.loading {
+			background: url('/img/loading-ring.svg') no-repeat center;
+			background-size: 50%;
+			padding: 10px;
+
+			> * {
+				display: none !important;
+			}
+		}
+		&:not(.loading):empty:before {
+			position: absolute;
+			top: 0;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			content: "Preview goes here";
+			padding: 10px;
+			font-size: 3em;
+			line-height: #{268px / 3};
+			opacity: .5;
+			background-color: #efefef;
+		}
+		&:empty, &.loading {
+			position: relative;
+			width: 210px !important;
+			height: 288px !important;
+			box-sizing: border-box;
+		}
+		&:not(:empty):not(.loading) {
+			width: auto !important;
+		}
+
+		> li {
+			@include pony-cm;
+			display: inline-block !important;
+			margin: 0 auto 10px;
+
+			&:not(:last-child){
+				margin-right: 10px;
+			}
+
+			.preview { @include pony-cm-image(200px) }
+		}
+	}
+	.cm-list {
+		list-style: none;
+		border: 0;
+		padding: 0;
+
+		> li {
+			display: block;
+
+			&.readonly > fieldset {
+				opacity: .8;
+				cursor: not-allowed;
+
+				> * {
+					pointer-events: none;
+				}
+
+				> :not(legend):not(.disabled-show) {
+					display: none;
+				}
+			}
+
+			> fieldset {
+				&.ignore:after {
+					display: block;
+					content: "NONE";
+					font-size: 1.4em;
+					opacity: .5;
+					letter-spacing: .1em;
+				}
+				> :not(legend) {
+					display: block;
+
+					&:not(:last-child):not(legend) {
+						margin-bottom: 10px;
+					}
+
+					> span {
+						display: block;
+						margin-bottom: 5px;
+					}
+					> input {
+						&[type="text"], &[type="url"] {
+							display: block;
+							width: 100%;
+							box-sizing: border-box;
+						}
+					}
+				}
+				> legend {
+					text-align: left;
+					padding: 0 10px;
+
+					> * {
+						vertical-align: middle;
+					}
+
+					button {
+						displaY: inline;
+						margin: 0 0 0 .5em;
+						padding: 1px 2px;
+					}
+				}
+			}
+		}
+	}
+	.rotation-display {
+		font-family: $monospace;
+	}
+	.rotation-range {
+		display: block;
+		width: 95%;
+		margin: 0 auto;
+	}
+}

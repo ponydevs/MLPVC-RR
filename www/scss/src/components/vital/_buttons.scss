@@ -1,0 +1,74 @@
+button, .btn, input[type=button] {
+	position: relative;
+	display: inline-block;
+	margin: 5px 2.5px;
+	$border: 2px;
+	border: $border solid transparent;
+	border-radius: 3px;
+	color: #fff;
+	background-color: #777;
+	$vpadding: 3px;
+	padding: $vpadding 5px;
+	font-family: $RegularFont;
+	$fontsize: 17px;
+	font-size: $fontsize;
+	line-height: $fontsize;
+	text-decoration: none;
+	user-select: none;
+	opacity: .85;
+	cursor: pointer;
+	box-sizing: border-box;
+	transform-origin: 50% 50%;
+	-webkit-appearance: none;
+	vertical-align: bottom;
+
+	&::-moz-focus-inner {
+		padding: 0 !important;
+		border: 0 none !important;
+	}
+
+	&.large {
+		$fontsize: 22px;
+		font-size: $fontsize;
+		line-height: $fontsize;
+	}
+	&.blue {
+		color: $NBlueBG !important;
+		background-color: $NBlue !important;
+	}
+	&.darkblue {
+		color: $NDarkBlueBG !important;
+		background-color: $NDarkBlue !important;
+	}
+	&.lavander {
+		color: $NLavanderBG !important;
+		background-color: $NLavander !important;
+	}
+	&.teal {
+		color: $NTealBG !important;
+		background-color: $NTeal !important;
+	}
+	&.green {
+		color: $NGreenBG !important;
+		background-color: $NGreen !important;
+	}
+	&.red {
+		color: $NRedBG !important;
+		background-color: $NRed !important;
+	}
+	&.orange {
+		color: $NOrangeBG !important;
+		background-color: $NOrange !important;
+	}
+	&.yellow {
+		color: $NYellowBG !important;
+		background-color: $NYellow !important;
+	}
+	&.link {
+		color: lighten($LinkHoverLight,5) !important;
+		background-color: $Link !important;
+	}
+	&:hover, &:focus { opacity: 1 }
+	&:focus { border-color: rgba(black, .2) }
+	&:active { transform: scale(.98) }
+}

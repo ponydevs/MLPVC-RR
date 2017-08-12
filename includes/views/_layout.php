@@ -65,7 +65,8 @@ switch ($do ?? null){
 }
 if ($ThumbImage[0] === '/')
 	$ThumbImage = ABSPATH.ltrim($ThumbImage, '/');
-$Title = CoreUtils::escapeHTML($Title); ?>
+$Title = CoreUtils::escapeHTML($Title);
+$fatalErrorPage = defined('FATAL_ERROR'); ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -115,7 +116,7 @@ $Title = CoreUtils::escapeHTML($Title); ?>
 		foreach ($customCSS as $css)
 			echo "<link rel='stylesheet' href='$css'>\n";
 	}
-	if (!empty(GA_TRACKING_CODE) && Permission::insufficient('developer')){ ?>
+	if (!empty(GA_TRACKING_CODE) && !$fatalErrorPage && Permission::insufficient('developer')){ ?>
 <!--suppress CommaExpressionJS -->
 <script>
 (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
@@ -129,12 +130,11 @@ ga('send','pageview');
 </script>
 <?php } ?>
 </head>
-<body>
-
+<body class="theme-<?=$fatalErrorPage?'light':\App\UserPrefs::get('p_theme')?>">
 	<header>
 		<nav><ul class="dragscroll">
 			<li class="sidebar-toggle"></li>
-			<?=CoreUtils::getNavigationHTML(defined('FATAL_ERROR'), $scope)?>
+			<?=CoreUtils::getNavigationHTML($fatalErrorPage, $scope, $view ?? null)?>
 		</ul></nav>
 	</header>
 

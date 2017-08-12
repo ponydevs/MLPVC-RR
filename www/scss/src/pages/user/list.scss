@@ -1,0 +1,12 @@
+@import "../../vars";
+
+#users > section {
+	strong {
+		text-shadow: 0 0 2px #9f9f9f;
+		margin-right: 1em;
+
+		&:not(:first-child) {
+			margin-left: 1em;
+		}
+	}
+}

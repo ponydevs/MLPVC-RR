@@ -13,7 +13,7 @@ After some time, the idea of moving the old PNG color guide into an easier to us
 
 ## Attributions
 
-**Used libraries & icons include:**
+**Used libraries, icons and tools include:**
  - Front-end:
    - [Typicons](http://www.typicons.com/)
    - [Font Awesome](http://fontawesome.io/)
