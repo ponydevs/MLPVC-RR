@@ -130,7 +130,6 @@ class CachedFile {
 		}
 		else $data = file_get_contents($this->_path);
 
-
 		switch ($this->_type){
 			case self::TYPE_JSON:
 				$data = JSON::decode($data);

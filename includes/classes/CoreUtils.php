@@ -5,7 +5,6 @@ namespace App;
 use ActiveRecord\ConnectionManager;
 use ActiveRecord\SQLBuilder;
 use App\Controllers\Controller;
-use App\Models\Appearance;
 use App\Models\CachedDeviation;
 use App\Models\Episode;
 use App\Models\Event;
@@ -44,7 +43,7 @@ class CoreUtils {
 				$merged[$key] = $item;
 			$fix_query_arr = [];
 			foreach ($merged as $key => $item){
-				if (!isset($item) || $item !== self::FIXPATH_EMPTY)
+				if ($item === null || $item !== self::FIXPATH_EMPTY)
 					$fix_query_arr[] = $key.(!empty($item)?'='.urlencode($item):'');
 			}
 			$fix_query = empty($fix_query_arr) ? '' : '?'.implode('&', $fix_query_arr);
@@ -171,7 +170,7 @@ class CoreUtils {
 			$GLOBALS['heading'] = $options['heading'];
 
 		// SE crawling disable
-		if (in_array('no-robots', $options))
+		if (in_array('no-robots', $options, true))
 			$norobots = true;
 
 		// Set new URL option
@@ -182,14 +181,14 @@ class CoreUtils {
 		$DEFAULT_CSS = ['theme'];
 		$customCSS = [];
 		// Only add defaults when needed
-		if (array_search('no-default-css', $options) === false)
+		if (!in_array('no-default-css', $options, true))
 			$customCSS = array_merge($customCSS, $DEFAULT_CSS);
 
 		# JavaScript
 		$DEFAULT_JS = ['moment', 'jquery.ba-throttle-debounce', 'shared-utils', 'global', 'inert', 'dialog', 'dragscroll'];
 		$customJS = [];
 		// Only add defaults when needed
-		if (array_search('no-default-js', $options) === false)
+		if (!in_array('no-default-js', $options, true))
 			$customJS = array_merge($customJS, $DEFAULT_JS);
 
 		# Check assests
@@ -202,11 +201,14 @@ class CoreUtils {
 			/** @noinspection ForeachSourceInspection */
 			foreach ($scope as $k => $v)
 				/** @noinspection IssetArgumentExistenceInspection */
+				/** @noinspection UnSafeIsSetOverArrayInspection */
 				if (!isset($$k))
 					$$k = $v;
 		}
 		else $scope = [];
 		foreach ($GLOBALS as $k => $v)
+			/** @noinspection IssetArgumentExistenceInspection */
+			/** @noinspection UnSafeIsSetOverArrayInspection */
 			if (!isset($$k))
 				$$k = $v;
 
@@ -236,7 +238,7 @@ class CoreUtils {
 
 		$HTML = [];
 		/** @var $UpcomingEpisodes Episode[] */
-		$UpcomingEpisodes = Episode::find('all', ['conditions' => "airs > NOW() AND airs < NOW() + INTERVAL '6 MONTH'", 'order' => 'airs asc']);;
+		$UpcomingEpisodes = Episode::find('all', ['conditions' => "airs > NOW() AND airs < NOW() + INTERVAL '6 MONTH'", 'order' => 'airs asc']);
 		if (!empty($UpcomingEpisodes)){
 			foreach ($UpcomingEpisodes as $Episode){
 				$airtime = strtotime($Episode->airs);
@@ -346,11 +348,11 @@ class CoreUtils {
 				$customType[] = $$ext;
 			else $customType = array_merge($customType, $$ext);
 		}
-		if (array_search("do-$ext", $options) !== false){
-			if (!isset($controller))
-				throw new \Exception("do-$ext used without explicitly passing the controller to ".__METHOD__);
-			else if (!isset($controller->do))
-				throw new \Exception('Controller passed to '.__METHOD__.' lacks $do property');
+		if (in_array("do-$ext", $options, true)){
+			if ($controller === null)
+				throw new \RuntimeException("do-$ext used without explicitly passing the controller to ".__METHOD__);
+			else if ($controller->do === null)
+				throw new \RuntimeException('Controller passed to '.__METHOD__.' lacks $do property');
 			$customType[] = $controller->do;
 		}
 
@@ -376,7 +378,7 @@ class CoreUtils {
 		$pathStart = APPATH.$relpath;
 		$item .= ".$type";
 		if (!file_exists("$pathStart/$item"))
-			throw new \Exception("File /$relpath/$item does not exist");
+			throw new \RuntimeException("File /$relpath/$item does not exist");
 		$item = "/$relpath/$item?".filemtime("$pathStart/$item");
 	}
 
@@ -433,7 +435,7 @@ class CoreUtils {
 	 * @return string
 	 */
 	public static function getMaxUploadSize($sizes = null){
-		if (!isset($sizes))
+		if ($sizes === null)
 			$sizes = [ini_get('post_max_size'), ini_get('upload_max_filesize')];
 
 		$workWith = $sizes[0];
@@ -457,6 +459,7 @@ class CoreUtils {
 	public static function exportVars(array $export):string {
 		if (empty($export))
 			return '';
+		/** @noinspection UnknownInspectionInspection */
 		/** @noinspection ES6ConvertVarToLetConst */
 		$HTML =  '<script>var ';
 		foreach ($export as $name => $value){
@@ -486,7 +489,7 @@ class CoreUtils {
 						$value = $value->jsExport();
 						break;
 					}
-					throw new \Exception("Exporting unsupported variable $name of type $type");
+					throw new \RuntimeException("Exporting unsupported variable $name of type $type");
 			}
 			$HTML .= "$name=$value,";
 		}
@@ -576,9 +579,10 @@ class CoreUtils {
 	 */
 	public static function checkStringValidity($string, $Thing, $pattern, $returnError = false){
 		if (preg_match_all(new RegExp($pattern,'u'), $string, $fails)){
+			/** @var $fails string[][] */
 			$invalid = [];
 			foreach ($fails[0] as $f)
-				if (!in_array($f, $invalid)){
+				if (!in_array($f, $invalid, true)){
 					switch ($f){
 						case "\n":
 							$invalid[] = '\n';
@@ -696,9 +700,10 @@ class CoreUtils {
 					else {
 						if (isset($scope['Tags'])) $pagePrefix = 'Tags';
 						else if (isset($scope['Changes'])) $pagePrefix = 'Major Color Changes';
+						else $pagePrefix = null;
 
 						if (isset($scope['Pagination']))
-							$NavItems['colorguide']['subitem'] = (isset($pagePrefix) ? "$pagePrefix - " : '')."Page {$scope['Pagination']->page}";
+							$NavItems['colorguide']['subitem'] = ($pagePrefix !== null ? "$pagePrefix - " : '')."Page {$scope['Pagination']->page}";
 					}
 				}
 
@@ -725,7 +730,7 @@ class CoreUtils {
 			if (Permission::sufficient('staff')){
 				$NavItems['admin'] = ['/admin', 'Admin'];
 				global $LogItems;
-				if (isset($LogItems)){
+				if ($LogItems !== null){
 					global $Pagination;
 					$NavItems['admin']['subitem'] = "Logs - Page {$Pagination->page}";
 				}
@@ -766,7 +771,7 @@ class CoreUtils {
 	private static function _processHeaderLink($item, $htmlOnly = false){
 		global $currentSet;
 
-		list($path, $label) = $item;
+		[$path, $label] = $item;
 		$RQURI = strtok($_SERVER['REQUEST_URI'], '?');
 		$current = (!$currentSet || $htmlOnly === HTML_ONLY) && ($path === true || preg_match(new RegExp("^$path($|/)"), $RQURI));
 		$class = '';
@@ -775,7 +780,7 @@ class CoreUtils {
 			$class = " class='active'";
 		}
 
-		$perm = isset($item[2]) ? $item[2] : true;
+		$perm = $item[2] ?? true;
 
 		if ($perm){
 			$href = $current && $htmlOnly !== HTML_ONLY ? '' : " href='$path'";
@@ -798,7 +803,7 @@ class CoreUtils {
 		$Render = [];
 		foreach ($Links as $l){
 			if (Permission::insufficient($l->minrole))
-				continue;;
+				continue;
 
 			$Render[] = $l->getLi();
 		}
@@ -995,7 +1000,7 @@ HTML;
 				: "There was an issue while checking the acceptance status (Error code: $Status)"
 			);
 			if ($throw)
-				throw new \Exception($errmsg);
+				throw new \RuntimeException($errmsg);
 			Response::fail($errmsg);
 		}
 	}
@@ -1159,16 +1164,16 @@ HTML;
 
 	/**
 	 * Universal method for setting keys/properties of arrays/objects
-	 * @param array|object $on
-	 * @param string       $key
-	 * @param mixed        $value
+	 * @param mixed  $on
+	 * @param string $key
+	 * @param mixed  $value
 	 */
 	public static function set(&$on, $key, $value){
 		if (is_object($on))
 			$on->$key = $value;
 		else if (is_array($on))
 			$on[$key] = $value;
-		else throw new \Exception('$on is of invalid type ('.gettype($on).')');
+		else throw new \RuntimeException('$on is of invalid type ('.gettype($on).')');
 	}
 
 	/**
