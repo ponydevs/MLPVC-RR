@@ -4,7 +4,6 @@ namespace App;
 
 use ActiveRecord\ConnectionManager;
 use ActiveRecord\SQLBuilder;
-use App\Controllers\Controller;
 use App\Models\CachedDeviation;
 use App\Models\Episode;
 use App\Models\Event;
@@ -14,7 +13,6 @@ use Elasticsearch\Client;
 use Elasticsearch\ClientBuilder;
 use ElephantIO\Engine\SocketIO\Version2X as SocketIOEngine;
 use App\Exceptions\CURLRequestException;
-use PHPUnit\Exception;
 
 class CoreUtils {
 	const
@@ -156,9 +154,7 @@ class CoreUtils {
 	 *
 	 * @throws \RuntimeException
 	 */
-	public static function loadPage(string $view_name, array $options = [], $unused = null){
-		if ($unused !== null)
-			throw new \RuntimeException(__METHOD__.': Thirparameter is unused');
+	public static function loadPage(string $view_name, array $options = []){
 		// Resolve view
 		$view = new View($view_name);
 
