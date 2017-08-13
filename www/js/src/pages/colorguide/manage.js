@@ -472,11 +472,7 @@ $(function(){
 												facing = $group.find('input:checked').val(),
 												$secondCM = $CMList.children().eq(1);
 
-											let orient = ({
-												'': 'right',
-												'left': 'right',
-												'right': 'left',
-											})[facing];
+											let orient = facing === 'right' ? 'left' : 'right';
 											$secondCM.find('.orient').text($.capitalize(orient)).next().val(orient);
 											if (e.type === 'change'){
 												if (facing){
@@ -492,7 +488,8 @@ $(function(){
 														}
 													});
 												}
-												$UpdatePreviewButton.triggerHandler('click');
+												if ($group.closest('fieldset').find('input:invalid').length === 0)
+													$UpdatePreviewButton.triggerHandler('click');
 
 												toggleSecondCMSection(!facing, $secondCM);
 											}
@@ -513,37 +510,29 @@ $(function(){
 											$CMList.append(mkCMDataLi(0),mkCMDataLi(1));
 										}
 
-										$SectionToggle = $CMDataEditorForm.find('.section-toggle').on('click',function(e){
-											e.preventDefault();
+										$SectionToggle = $CMDataEditorForm.find('.section-toggle');
 
-											let $this = $(this),
-												$fieldset = $this.closest('fieldset');
-											if ($fieldset.hasClass('ignore')){
+										const sectionToggler = display => {
+											const $fieldset = $SectionToggle.closest('fieldset');
+											if (display){
 												$fieldset.removeClass('ignore');
 												$fieldset.find('.force-disabled').removeClass('force-disabled').enable().parent().removeClass('hidden');
-												$this.removeClass('typcn-plus').addClass('typcn-minus').html('Remove');
+												$SectionToggle.removeClass('typcn-plus').addClass('typcn-minus').html('Remove');
 											}
 											else {
 												$fieldset.addClass('ignore');
 												$fieldset.find('input:not(:disabled)').disable().addClass('force-disabled').parent().addClass('hidden');
-												$this.removeClass('typcn-minus').addClass('typcn-plus').html('Add');
+												$SectionToggle.removeClass('typcn-minus').addClass('typcn-plus').html('Add');
 											}
+										};
+
+										$SectionToggle.on('click',function(e){
+											e.preventDefault();
+
+											sectionToggler($SectionToggle.closest('fieldset').hasClass('ignore'));
 										});
 
-										if (data.cms.length === 1)
-											$SectionToggle.addClass('typcn-minus').text('Remove');
-										else {
-											$SectionToggle.closest('fieldset').addClass('ignore');
-											$SectionToggle.addClass('typcn-plus').text('Add');
-										}
-
-										if (!data.cms.facing){
-											$SectionToggle.hide();
-											toggleSecondCMSection(true);
-										}
-										else {
-											$SectionToggle.triggerHandler('click');
-										}
+										sectionToggler(data.cms.length === 2);
 
 										$.Dialog.request(false,$CMDataEditorForm,'Save',function($form){
 											$form.on('submit',function(e){
@@ -569,8 +558,6 @@ $(function(){
 												}));
 											});
 										});
-
-										window.updateRanges = updateRanges;
 									}));
 								})
 						)
