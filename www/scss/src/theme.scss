@@ -755,16 +755,15 @@ header, #sidebar .mobile-nav {
 		@extend %reserve-button;
 
 		$image-height: 1.4em;
-		$border-width: 0.05em;
 
 		&.local {
-			$border: $border-width solid lighten($HeaderFooterBG, 20);
+			$border: 1px solid lighten($HeaderFooterBG, 20);
 			background: lighten($HeaderFooterBG, 47);
 			border: $border;
 
 			&.provider-discord {
 				&, .avatar{
-					border-radius: $image-height / 2;
+					border-radius: ($image-height + .1em) / 2;
 				}
 			}
 		}
@@ -989,6 +988,14 @@ kbd {
 				left: $spacearound/2;
 			}
 			> .avatar { opacity: .3 }
+		}
+		&.local.provider-discord:hover:after {
+			$size: 24px;
+			$spacearound: $avatarsize - $size - ($border*2);
+			width: $size;
+			height: $size;
+			top: $spacearound/2;
+			left: $spacearound/2;
 		}
 	}
 }

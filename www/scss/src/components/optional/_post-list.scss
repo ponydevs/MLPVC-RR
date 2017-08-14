@@ -157,8 +157,9 @@
 				}
 			}
 		}
+		$reserver-height: 40px;
 		.reserver, .reserve-request {
-			height: 40px;
+			height: $reserver-height;
 		}
 		> .reserve-request {
 			font-size: 16px;
@@ -191,6 +192,11 @@
 				display: flex;
 				flex-flow: row nowrap;
 				align-items: flex-end;
+
+				&.local.provider-discord {
+					padding-right: 7px;
+					border-radius: $reserver-height / 2;
+				}
 
 				> * {
 					margin-right: 5px;
