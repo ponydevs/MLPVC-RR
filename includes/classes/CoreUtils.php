@@ -1017,7 +1017,7 @@ HTML;
 	 * @return null|string
 	 */
 	public static function getFullsizeURL($id, $prov){
-		$stash_url = $prov === 'sta.sh' ? "http://sta.sh/$id" : "http://fav.me/$id";
+		$stash_url = $prov === 'sta.sh' ? "https://sta.sh/$id" : 'https://www.deviantart.com/art/REDIRECT-'.intval(self::substring($id, 1),36);
 		try {
 			$stashpage = HTTP::legitimateRequest($stash_url);
 		}
