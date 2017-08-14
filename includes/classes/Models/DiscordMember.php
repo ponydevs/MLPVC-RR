@@ -25,7 +25,9 @@ class DiscordMember extends AbstractUser {
 	}
 
 	public function get_avatar_url(){
-		return !empty($this->avatar_hash) ? "https://images.discordapp.net/avatars/{$this->id}/{$this->avatar_hash}.png" : null;
+		return !empty($this->avatar_hash)
+			? "https://images.discordapp.net/avatars/{$this->id}/{$this->avatar_hash}.png"
+			: 'https://cdn.discordapp.com/embed/avatars/'.($this->discriminator % 5).'.png';
 	}
 
 	public function nameToDAName(string $name):?string{

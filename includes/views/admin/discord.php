@@ -22,6 +22,7 @@
 	</div>
 </div>
 <?php
+	global $USERNAME_REGEX;
 	echo \App\CoreUtils::exportVars([
 		'USERNAME_REGEX' => $USERNAME_REGEX,
 	]);

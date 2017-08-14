@@ -115,105 +115,22 @@ if (!empty($Banishes)){
 	if ($sameUser || $isStaff){ ?>
 		<section class="guide-settings">
 			<h2><?=$sameUser? Users::PROFILE_SECTION_PRIVACY_LEVEL['staff']:''?>Color Guide</h2>
-			<form action="/preference/set/cg_itemsperpage">
-				<label>
-					<span>Appearances per page</span>
-					<input type="number" min="7" max="20" name="value" value="<?=UserPrefs::get('cg_itemsperpage', $User)?>" step="1"<?=!$sameUser?' disabled':''?>>
-<?php   if ($sameUser){ ?>
-					<button class="save typcn typcn-tick green" disabled>Save</button>
-<?php   } ?>
-				</label>
-			</form>
-<?php   if (Permission::sufficient('staff', $User->role)){ ?>
-			<form action="/preference/set/cg_hidesynon">
-				<label>
-					<input type="checkbox" name="value" value="1"<?=UserPrefs::get('cg_hidesynon', $User)?' checked':''?> <?=!$sameUser?' disabled':''?>>
-					<span>Hide synonym relations</span>
-<?php       if ($sameUser){ ?>
-					<button class="save typcn typcn-tick green" disabled>Save</button>
-<?php       } ?>
-				</label>
-			</form>
-<?php   } ?>
-			<form action="/preference/set/cg_hideclrinfo">
-				<label>
-					<input type="checkbox" name="value" value="1"<?=UserPrefs::get('cg_hideclrinfo', $User)?' checked':''?> <?=!$sameUser?' disabled':''?>>
-					<span>Hide color details on appearance pages</span>
-<?php   if ($sameUser){ ?>
-					<button class="save typcn typcn-tick green" disabled>Save</button>
-<?php   } ?>
-				</label>
-			</form>
-			<form action="/preference/set/cg_fulllstprev">
-				<label>
-					<input type="checkbox" name="value" value="1"<?=UserPrefs::get('cg_fulllstprev', $User)?' checked':''?> <?=!$sameUser?' disabled':''?>>
-					<span>Display previews and alternate names on the full list</span>
-<?php   if ($sameUser){ ?>
-					<button class="save typcn typcn-tick green" disabled>Save</button>
-<?php   } ?>
-				</label>
-			</form>
+<?php	(new \App\UserSettingForm('cg_itemsperpage', $User))->render();
+		(new \App\UserSettingForm('cg_hidesynon', $User))->render();
+		(new \App\UserSettingForm('cg_hideclrinfo', $User))->render();
+		(new \App\UserSettingForm('cg_fulllstprev', $User))->render(); ?>
 		</section>
 		<section class="eppage-settings">
 			<h2><?=$sameUser? Users::PROFILE_SECTION_PRIVACY_LEVEL['staff']:''?>Episode pages</h2>
-			<form action="/preference/set/ep_noappprev">
-				<label>
-					<input type="checkbox" name="value" value="1"<?=UserPrefs::get('ep_noappprev', $User)?' checked':''?> <?=!$sameUser?' disabled':''?>>
-					<span>Hide preview squares in front of related appearance names</span>
-<?php   if ($sameUser){ ?>
-					<button class="save typcn typcn-tick green" disabled>Save</button>
-<?php   } ?>
-				</label>
-			</form>
-			<form action="/preference/set/ep_revstepbtn">
-				<label>
-					<input type="checkbox" name="value" value="1"<?=UserPrefs::get('ep_revstepbtn', $User)?' checked':''?> <?=!$sameUser?' disabled':''?>>
-					<span>Reverse order of next/previous episode buttons</span>
-<?php   if ($sameUser){ ?>
-					<button class="save typcn typcn-tick green" disabled>Save</button>
-<?php   } ?>
-				</label>
-			</form>
+<?php	(new \App\UserSettingForm('ep_noappprev', $User))->render();
+		(new \App\UserSettingForm('ep_revstepbtn', $User))->render(); ?>
 		</section>
 		<section class="personal-settings">
 			<h2><?=$sameUser? Users::PROFILE_SECTION_PRIVACY_LEVEL['staff']:''?>Personal</h2>
-			<form action="/preference/set/p_vectorapp">
-				<label>
-					<span>Publicly show my vector progam of choice: </span>
-					<select name="value"<?=!$sameUser?' disabled':''?>><?php
-				$apps = CoreUtils::VECTOR_APPS;
-				echo "<option value='' ".($vectorapp===''?'selected':'').">{$apps['']}</option>";
-				unset($apps['']);
-				echo "<optgroup label='Vectoring applications'>";
-				foreach ($apps as $id => $label)
-					echo "<option value='$id' ".($vectorapp===$id?'selected':'').">$label</option>";
-				echo '</optgroup>';
-					?></select>
-<?php   if ($sameUser){ ?>
-					<button class="save typcn typcn-tick green" disabled>Save</button>
-<?php   } ?>
-				</label>
-			</form>
-<?php   if (!$User->isDiscordMember()){ ?>
-			<form action="/preference/set/p_hidediscord">
-				<label>
-					<input type="checkbox" name="value" value="1"<?=UserPrefs::get('p_hidediscord', $User)?' checked':''?> <?=!$sameUser?' disabled':''?>>
-					<span>Hide Discord server link from the sidebar</span>
-<?php       if ($sameUser){ ?>
-					<button class="save typcn typcn-tick green" disabled>Save</button>
-<?php       } ?>
-				</label>
-			</form>
-<?php   } ?>
-			<form action="/preference/set/p_hidepcg">
-				<label>
-					<input type="checkbox" name="value" value="1"<?=UserPrefs::get('p_hidepcg', $User)?' checked':''?> <?=!$sameUser?' disabled':''?>>
-					<span>Hide my Personal Color Guide from the public</span>
-<?php   if ($sameUser){ ?>
-					<button class="save typcn typcn-tick green" disabled>Save</button>
-<?php   } ?>
-				</label>
-			</form>
+<?php	(new \App\UserSettingForm('p_avatarprov', $User))->render();
+		(new \App\UserSettingForm('p_vectorapp', $User))->render();
+		(new \App\UserSettingForm('p_hidediscord', $User))->render();
+		(new \App\UserSettingForm('p_hidepcg', $User))->render(); ?>
 		</section>
 		<section class="sessions">
 			<h2><?=$sameUser? Users::PROFILE_SECTION_PRIVACY_LEVEL['staff']:''?>Sessions</h2>

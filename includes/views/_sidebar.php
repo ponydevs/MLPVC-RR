@@ -11,7 +11,7 @@ use App\UserPrefs;
 	<div class='mobile-nav'>
 		<nav><ul><?=CoreUtils::getNavigationHTML(($view->name ?? null) === 'fatalerr', $scope, $view ?? null)?></ul></nav>
 	</div>
-	<div class='logged-in'>
+	<div class='logged-in provider-<?=UserPrefs::get('p_avatarprov')?>'>
 		<?php
 	if (Auth::$signed_in)
 		echo Auth::$user->getAvatarWrap();

@@ -231,6 +231,33 @@ $(function(){
 					$sidebar.find('.welcome .buttons').append('<a class="btn typcn discord-join" href="http://fav.me/d9zt1wv" target="_blank">Join Discord</a>');
 				$.Dialog.close();
 			break;
+			case "p_avatarprov":
+				const forUser = {};
+				$('.avatar-wrap.provider-'+from).each(function(){
+					const
+						$this = $(this),
+						username = $this.attr('data-for');
+					if (typeof forUser[username] === 'undefined')
+						forUser[username] = [];
+					forUser[username].push($this);
+				});
+				$(`.provider-${from}:not(.avatar-wrap)`).removeClass('provider-'+from).addClass('provider-'+to_what);
+				let error = false;
+				$.each(forUser, (username, elements) => {
+					$.post('/user/avatar-wrap/'+username, $.mkAjaxHandler(function(){
+						if (!this.status){
+							error = true;
+							return $.Dialog.fail('Update avatar elements for '+username, false);
+						}
+
+						$.each(elements, (_, $el) => {
+							$el.replaceWith(this.html);
+						});
+					}));
+				});
+				if (!error)
+					$.Dialog.close();
+			break;
 			case "p_disable_ga":
 				if (to_what){
 					$.Dialog.wait(false, 'Performing a hard reload to remove user ID from the tracking code');
@@ -280,7 +307,7 @@ $(function(){
 		let $el = $(this);
 		$el.data('orig', $el.val().trim()).on('keydown keyup change',function(){
 			let $el = $(this);
-			$el.siblings('.save').attr('disabled', $el.val().trim() === $el.data('orig'));
+			$el.siblings('.save').attr('disabled', parseInt($el.val().trim(), 10) === $el.data('orig'));
 		});
 	});
 	$slbl.children('input[type=checkbox]').each(function(){
@@ -290,13 +317,12 @@ $(function(){
 			$el.siblings('.save').attr('disabled', $el.prop('checked') === $el.data('orig'));
 		});
 	});
-/*	$slbl.children('select').each(function(){
+	$slbl.children('select').each(function(){
 		let $el = $(this);
 		$el.data('orig', $el.find('option:selected').val()).on('keydown keyup change',function(){
 			let $el = $(this),
 				$val = $el.find('option:selected');
-			console.log($val[0], $el.data('orig'));
 			$el.siblings('.save').attr('disabled', $val.val() === $el.data('orig'));
 		});
-	});*/
+	});
 });

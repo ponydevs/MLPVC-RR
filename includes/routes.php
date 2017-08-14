@@ -155,3 +155,4 @@ $router->map('POST', '/user/setgroup/[un:name]',             'UserController#set
 $router->map('POST', '/user/banish/[un:name]',               'UserController#banish');
 $router->map('POST', '/user/un-banish/[un:name]',            'UserController#unbanish');
 $router->map('POST', '/user/awaiting-approval/[un:name]',    'UserController#awaitingApproval');
+$router->map('POST', '/user/avatar-wrap/[un:name]',          'UserController#avatarWrap');

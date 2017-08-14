@@ -319,8 +319,7 @@ class AdminController extends Controller {
 		$HTML = '';
 		/** @var \App\Models\DiscordMember[] $members */
 		foreach ($members as $member){
-			$avatar = $member->avatar_url;
-			$avatar = isset($avatar) ? "<img src='{$avatar}' alt='user avatar' class='user-avatar'>" : '';
+			$avatar = "<img src='{$member->avatar_url}' alt='user avatar' class='user-avatar'>";
 			$un = CoreUtils::escapeHTML($member->username);
 			$bound = !empty($member->user_id) ? 'class="bound"' : '';
 			$udata = "<span>{$member->name}</span><span>{$member->username}#{$member->discriminator}</span>";
@@ -371,7 +370,7 @@ HTML;
 			Response::fail('The specified user does not exist');
 
 		if (!$this->_member->update_attributes([
-			'userid' => $user->id
+			'user_id' => $user->id
 		])) Response::fail('Nothing has been changed');
 
 		Response::done();

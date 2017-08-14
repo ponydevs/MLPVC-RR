@@ -12,6 +12,7 @@ class UserPrefs extends GlobalSettings {
 		'cg_hidesynon' => 0,
 		'cg_hideclrinfo' => 0,
 		'cg_fulllstprev' => 1,
+		'p_avatarprov' => 'deviantart',
 		'p_vectorapp' => '',
 		'p_hidediscord' => 0,
 		'p_hidepcg' => 0,
@@ -89,11 +90,13 @@ class UserPrefs extends GlobalSettings {
 	 * Processes a preference item's new value
 	 *
 	 * @param string $key
+	 * @param mixed  $value
 	 *
 	 * @return mixed
 	 */
-	public static function process(string $key){
-		$value = isset($_POST['value']) ? CoreUtils::trim($_POST['value']) : null;
+	public static function process(string $key, $value = null){
+		if ($value === null)
+			$value = isset($_POST['value']) ? CoreUtils::trim($_POST['value']) : null;
 
 		switch ($key){
 			case 'cg_itemsperpage':
@@ -107,6 +110,10 @@ class UserPrefs extends GlobalSettings {
 			case 'p_vectorapp':
 				if (!empty($value) && !isset(CoreUtils::VECTOR_APPS[$value]))
 					throw new \RuntimeException('The specified app is invalid');
+			break;
+			case 'p_avatarprov':
+				if (!empty($value) && !isset(User::AVATAR_PROVIDERS[$value]))
+					throw new \RuntimeException('The specified avatar provider is invalid');
 			break;
 			case 'p_hidediscord':
 			case 'cg_hidesynon':

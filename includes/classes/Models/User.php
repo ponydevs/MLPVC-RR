@@ -23,19 +23,20 @@ use App\Users;
 /**
  * @inheritdoc
  * @property string         $role
- * @property string         $rolelabel        (Via magic method)
  * @property DateTime       $signup_date
- * @property Session[]      $sessions
- * @property Notification[] $notifications
- * @property Event[]        $submitted_events
- * @property Event[]        $finalized_events
- * @property Appearance[]   $pcg_appearances
- * @property DiscordMember  $discord_member
- * @property Log[]          $logs
- * @property DANameChange[] $name_changes
- * @property Banish[]       $banishments
- * @property Unbanish[]     $unbanishments
- * @property KnownIP[]      $known_ips
+ * @property Session[]      $sessions         (Via relations)
+ * @property Notification[] $notifications    (Via relations)
+ * @property Event[]        $submitted_events (Via relations)
+ * @property Event[]        $finalized_events (Via relations)
+ * @property Appearance[]   $pcg_appearances  (Via relations)
+ * @property DiscordMember  $discord_member   (Via relations)
+ * @property Log[]          $logs             (Via relations)
+ * @property DANameChange[] $name_changes     (Via relations)
+ * @property Banish[]       $banishments      (Via relations)
+ * @property Unbanish[]     $unbanishments    (Via relations)
+ * @property KnownIP[]      $known_ips        (Via relations)
+ * @property string         $rolelabel        (Via magic method)
+ * @property string         $avatar_provider  (Via magic method)
  * @method static User find(...$args)
  */
 class User extends AbstractUser implements LinkableInterface {
@@ -56,17 +57,34 @@ class User extends AbstractUser implements LinkableInterface {
 	public static $has_one = [
 		['discord_member'],
 	];
-	public static $validates_size_of = [
-		['name', 'within' => [1, 20]],
-		['role', 'maximum' => 10],
-		['avatar_url', 'maximum' => 255],
-	];
-	public static $validates_format_of = [
-		['name', 'with' => '/^'.USERNAME_PATTERN.'$/'],
-	];
 
 	public function get_rolelabel(){
 		return Permission::ROLES_ASSOC[$this->role] ?? 'Curious Pony';
+	}
+
+	const AVATAR_PROVIDERS = [
+		'deviantart' => 'DeviantArt',
+		'discord' => 'Discord',
+	];
+
+	public function get_avatar_provider(){
+		return UserPrefs::get('p_avatarprov', $this);
+	}
+
+	public function set_avatar_provider(string $value){
+		try {
+			$newvalue = UserPrefs::process('p_avatarprov', $value);
+		}
+		catch (\Exception $e){ Response::fail('Preference value error: '.$e->getMessage()); }
+
+		if ($newvalue === 'discord' && $this->discord_member === null)
+			Response::fail('You must be linked to a member of our discord server by the staff to use the Discord avatar provider');
+
+		return UserPrefs::set('p_avatarprov', $newvalue, $this);
+	}
+
+	public function get_avatar_url(){
+		return $this->avatar_provider === 'deviantart' ? $this->read_attribute('avatar_url') : $this->discord_member->avatar_url;
 	}
 
 	public function toURL():string {
@@ -85,7 +103,7 @@ class User extends AbstractUser implements LinkableInterface {
 	public function toAnchor(bool $with_avatar = false):string {
 		$avatar = $with_avatar ? "<img src='{$this->avatar_url}' class='avatar' alt='avatar'> " : '';
 
-		return "<a href='{$this->toURL()}' class='da-userlink local".($with_avatar ? ' with-avatar':'')."'>$avatar<span class='name'>{$this->name}</span></a>";
+		return "<a href='{$this->toURL()}' class='da-userlink local".($with_avatar ? " with-avatar provider-{$this->avatar_provider}":'')."'>$avatar<span class='name'>{$this->name}</span></a>";
 	}
 
 	public function toDALink(){
@@ -102,7 +120,7 @@ class User extends AbstractUser implements LinkableInterface {
 	public function toDAAnchor(bool $with_avatar = false):string {
 		$link = $this->toDALink();
 
-		$avatar = $with_avatar ? "<img src='{$this->avatar_url}' class='avatar' alt='avatar'> " : '';
+		$avatar = $with_avatar ? "<img src='{$this->read_attribute('avatar_url')}' class='avatar' alt='avatar'> " : '';
 		$withav = $with_avatar ? ' with-avatar' : '';
 		return "<a href='$link' class='da-userlink$withav'>$avatar<span class='name'>{$this->name}</span></a>";
 	}
@@ -117,7 +135,7 @@ class User extends AbstractUser implements LinkableInterface {
 	public function getAvatarWrap(string $vectorapp = ''):string {
 		if (empty($vectorapp))
 			$vectorapp = $this->getVectorAppClassName();
-		return "<div class='avatar-wrap$vectorapp'><img src='{$this->avatar_url}' class='avatar' alt='avatar'></div>";
+		return "<div class='avatar-wrap provider-{$this->avatar_provider}$vectorapp' data-for='{$this->name}'><img src='{$this->avatar_url}' class='avatar' alt='avatar'></div>";
 	}
 
 	public function getVectorAppClassName():string {
