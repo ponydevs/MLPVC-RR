@@ -19,32 +19,26 @@ $Title = (isset($title)?$title.' - ':'').SITE_TITLE;
 $Description = 'Handling requests, reservations & the Color Guide since 2015';
 
 $ThumbImage = '/img/logo.png';
-switch ($do ?? null){
-	case 'cg':
+switch ($view->class ?? null){
+	case 'colorguide':
 		if (!empty($Appearance)){
 			$sprite = $Appearance->getSpriteURL();
 			if ($sprite)
 				$ThumbImage = $sprite;
 
-			$Description = 'Show accurate colors for "'.$Appearance->processLabel().'" from the MLP-VectorClub’s Official Color Guide';
+			if (isset($Owner))
+				$Description = 'Colors for "'.$Appearance->processLabel().'" from '.CoreUtils::posess($Owner->name).' Personal Color Guide on the the MLP-VectorClub’s website';
+			else $Description = 'Show accurate colors for "'.$Appearance->processLabel().'" from the MLP-VectorClub’s Official Color Guide';
 		}
 	break;
-	case 'u':
-		if (!empty($Appearance)){
-			$sprite = $Appearance->getSpriteURL();
-			if ($sprite)
-				$ThumbImage = $sprite;
-			else $ThumbImage = $Owner->avatar_url;
-
-			$Description = 'Colors for "'.$Appearance->processLabel().'" from '.CoreUtils::posess($Owner->name).' Personal Color Guide on the the MLP-VectorClub’s website';
-		}
-		else if (!empty($User)){
+	case 'user':
+		if (!empty($User)){
 			$ThumbImage = $User->avatar_url;
 
 			$Description = CoreUtils::posess($User->name).' profile on the MLP-VectorClub’s website';
 		}
 	break;
-	case 's':
+	case 'episode':
 		if (!empty($LinkedPost)){
 			/** @var $LinkedPost \App\Models\Post */
 			$_oldTitle = $Title;

@@ -665,7 +665,7 @@ class CoreUtils {
 				else $NavItems['eps']['subitem'] = self::cutoff($scope['heading'],Episodes::TITLE_CUTOFF);
 			}
 			$NavItems['colorguide'] = ['/cg'.(!empty($scope['EQG'])?'/eqg':''), (!empty($scope['EQG'])?'EQG ':'').'Color Guide'];
-			if ($do === 'colorguide'){
+			if ($do === 'colorguide' && !isset($scope['Owner'])){
 				if (!empty($scope['Appearance']))
 					$NavItems['colorguide']['subitem'] = (isset($scope['Map'])? 'Sprite Colors - ' :'').self::escapeHTML($scope['Appearance']->label);
 				else if (isset($scope['Ponies']))
