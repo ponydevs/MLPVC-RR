@@ -75,7 +75,7 @@ $router->map('GET', '/@[un:name]/[cg]/[v]/[i:id]',                         'Colo
 $router->map('GET', '/@[un:name]/[cg]/[v]/[i:id]-[adi]',                   'ColorGuideController#personalAppearancePage');
 $router->map('GET', '/@[un:name]/[cg]/[v]/[adi]-[i:id]',                   'ColorGuideController#personalAppearancePage');
 $router->map('GET', '/@[un:name]/[cg]/[v]/[i:id][cgimg:type].[cgext:ext]', 'ColorGuideController#personalAppearanceAsFile');
-$router->map('GET', '/@[un:name]/[cg]/[eqg:eqg]?/sprite(-colors)?/[i:id][adi]?', 'ColorGuideController#spriteColors');
+$router->map('GET', '/@[un:name]/[cg]/[eqg:eqg]?/sprite(-colors)?/[i:id][adi]?', 'ColorGuideController#sprite');
 $router->map('GET', '/manifest',                       'ManifestController#json');
 $router->map('GET', '/user/contrib/lazyload/[favme:favme]',     'UserController#contribLazyload');
 $router->map('GET', '/post/lazyload/[rrl:thing]/[i:id]', 'PostController#lazyload');
