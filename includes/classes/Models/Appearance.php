@@ -24,21 +24,19 @@ use App\Time;
  * @property DateTime            $last_cleared
  * @property bool                $ishuman
  * @property bool                $private
- * @property Cutiemark[]         $cutiemarks
- * @property ColorGroup[]        $color_groups
- * @property User|null           $owner
- * @property RelatedAppearance[] $related_appearances (Via magic method)
- * @property Color[]             $preview_colors      (Via magic method)
- * @property Tag[]               $tags
- * @property Tagged[]            $tagged
+ * @property Cutiemark[]         $cutiemarks          (Via relations)
+ * @property ColorGroup[]        $color_groups        (Via relations)
+ * @property User|null           $owner               (Via relations)
+ * @property RelatedAppearance[] $related_appearances (Via relations)
+ * @property Color[]             $preview_colors      (Via relations)
+ * @property Tag[]               $tags                (Via relations)
+ * @property Tagged[]            $tagged              (Via relations)
  * @method static Appearance[] find_by_sql($sql, $values = null)
  * @method static Appearance find_by_owner_id_and_label(string $uuid, string $label)
  * @method static Appearance find_by_ishuman_and_label($ishuman, string $label)
  * @method static Appearance|Appearance[] find(...$args)
  */
 class Appearance extends NSModel implements LinkableInterface {
-	/** @var int[] */
-
 	public static $has_many = [
 		['cutiemarks', 'foreign_key' => 'appearance_id', 'order' => 'facing asc'],
 		['tags', 'through' => 'tagged'],

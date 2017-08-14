@@ -513,15 +513,15 @@ class ColorGuideController extends Controller {
 
 		$Appearances = Appearances::get(null);
 		if (!empty($Appearances)) foreach ($Appearances as $p){
-			$AppendAppearance = $p->to_array([
-				'except' => ['owner_id','last_cleared'],
-			]);
-
-			$AppendAppearance['added'] = gmdate('Y-m-d\TH:i:s\Z',$p->added->getTimestamp());
-
-			$AppendAppearance['notes'] = isset($AppendAppearance['notes'])
-				? CoreUtils::trim($AppendAppearance['notes'],true)
-				: '';
+			$AppendAppearance = [
+				'id'      => $p->id,
+				'order'   => $p->order,
+				'label'   => $p->label,
+				'notes'   => $p->notes_src === null ? '' : CoreUtils::trim($p->notes_src,true),
+				'ishuman' => $p->ishuman,
+				'added'   => gmdate('Y-m-d\TH:i:s\Z',$p->added->getTimestamp()),
+				'private' => $p->private,
+			];
 
 			$CMs = Cutiemarks::get($p, false);
 			if (!empty($CMs)){
