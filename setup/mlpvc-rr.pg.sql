@@ -164,11 +164,34 @@ CREATE TABLE colors (
     group_id integer NOT NULL,
     "order" integer NOT NULL,
     label character varying(255) NOT NULL,
-    hex character(7)
+    hex character(7),
+    id integer NOT NULL,
+    linked_to integer
 );
 
 
 ALTER TABLE colors OWNER TO "mlpvc-rr";
+
+--
+-- Name: colors_id_seq; Type: SEQUENCE; Schema: public; Owner: mlpvc-rr
+--
+
+CREATE SEQUENCE colors_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE colors_id_seq OWNER TO "mlpvc-rr";
+
+--
+-- Name: colors_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER SEQUENCE colors_id_seq OWNED BY colors.id;
+
 
 --
 -- Name: cutiemarks; Type: TABLE; Schema: public; Owner: mlpvc-rr
@@ -1640,6 +1663,13 @@ ALTER TABLE ONLY color_groups ALTER COLUMN id SET DEFAULT nextval('color_groups_
 
 
 --
+-- Name: colors id; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER TABLE ONLY colors ALTER COLUMN id SET DEFAULT nextval('colors_id_seq'::regclass);
+
+
+--
 -- Name: cutiemarks id; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
 --
 
@@ -1899,6 +1929,14 @@ ALTER TABLE ONLY cached_deviations
 
 ALTER TABLE ONLY color_groups
     ADD CONSTRAINT color_groups_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: colors colors_pkey; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER TABLE ONLY colors
+    ADD CONSTRAINT colors_pkey PRIMARY KEY (id);
 
 
 --
@@ -2534,6 +2572,14 @@ ALTER TABLE ONLY color_groups
 
 ALTER TABLE ONLY colors
     ADD CONSTRAINT colors_group_id FOREIGN KEY (group_id) REFERENCES color_groups(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: colors colors_linked_to; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER TABLE ONLY colors
+    ADD CONSTRAINT colors_linked_to FOREIGN KEY (linked_to) REFERENCES colors(id) ON UPDATE CASCADE ON DELETE RESTRICT;
 
 
 --

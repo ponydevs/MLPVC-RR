@@ -48,7 +48,7 @@
 				},
 				"386": {
 					"id": 386,
-					"label": "Eye",
+					"label": "Eyes",
 					"order": 3,
 					"Colors": [
 						{
@@ -5312,7 +5312,7 @@
 				},
 				"259": {
 					"id": 259,
-					"label": "Eye",
+					"label": "Eyes",
 					"order": 4,
 					"Colors": [
 						{
@@ -35475,6 +35475,12 @@
 			"ishuman": false,
 			"added": "2017-05-14T15:51:19Z",
 			"private": false,
+			"CutieMark": [
+				{
+					"link": "http://fav.me/dbh3cpx",
+					"facing": "right"
+				}
+			],
 			"ColorGroups": {
 				"1376": {
 					"id": 1376,
@@ -35606,16 +35612,26 @@
 						},
 						{
 							"order": 2,
+							"label": "Lens Middle Gradient",
+							"hex": "#933BAB"
+						},
+						{
+							"order": 3,
 							"label": "Lens Bottom Gradient",
 							"hex": "#C180D2"
 						},
 						{
-							"order": 3,
+							"order": 4,
 							"label": "Lens Shine Top Gradient",
 							"hex": "#854295"
 						},
 						{
-							"order": 4,
+							"order": 5,
+							"label": "Lens Shine Middle Gradient",
+							"hex": "#BA75CB"
+						},
+						{
+							"order": 6,
 							"label": "Lens Shine Bottom Gradient",
 							"hex": "#D0A7DE"
 						}

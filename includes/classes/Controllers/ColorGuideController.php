@@ -552,7 +552,7 @@ class ColorGuideController extends Controller {
 							$colors = $AllColors[$cg->id];
 							foreach ($colors as $c)
 								$AppendColorGroup['Colors'][] = $c->to_array([
-									'except' => 'group_id',
+									'except' => ['id', 'group_id', 'linked_to'],
 								]);
 						}
 
