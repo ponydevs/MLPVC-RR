@@ -102,6 +102,8 @@ $router->map('POST', '/cg/tag/[make:action]',                'ColorGuideControll
 $router->map('POST', '/cg/tags/recount-uses',                'ColorGuideController#recountTagUses');
 $router->map('POST', '/cg/colorgroup/[gsd:action]/[i:id]',   'ColorGuideController#colorGroupAction');
 $router->map('POST', '/cg/colorgroup/[make:action]',         'ColorGuideController#colorGroupAction');
+$router->map('POST', '/cg/colorgroup/appearance-list',       'ColorGuideController#colorGroupAppearanceList');
+$router->map('POST', '/cg/colorgroup/list/[i:id]',           'ColorGuideController#colorGroupList');
 $router->map('POST', '/cg/get-sprite-colors/[i:id]',         'ColorGuideController#getSpriteColors');
 $router->map('POST', '/@[un:name]/cg/slot-check',            'UserController#checkCGSlots');
 $router->map('POST', '/@[un:name]/cg/appearance/[ad:action]/[i:id]',  'ColorGuideController#appearanceAction');

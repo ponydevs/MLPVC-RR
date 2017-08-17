@@ -70,7 +70,7 @@ class Notification extends NSModel {
 
 	public static function send(string $recipient_id, string $type, $data){
 		if (empty(self::$_notifTypes[$type]))
-			throw new \Exception("Invalid notification type: $type");
+			throw new \RuntimeException("Invalid notification type: $type");
 
 		switch ($type) {
 			case 'post-finished':

@@ -102,11 +102,17 @@
 	.clr { @extend %clr }
 
 	.clrs.ace_editor {
-		.ace_color {
+		.ace_hex {
 			color: $NDarkBlue;
 			font-weight: bold;
 		}
+		.ace_colorlink {
+			color: $NBlue;
+			font-weight: bold;
+		}
 		.ace_colorname { color: #006000 }
+		.ace_colorid_start { color: #600090 }
+		.ace_colorid { color: red }
 	}
 }
 

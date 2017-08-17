@@ -766,340 +766,279 @@ $(function(){
 		});
 	}
 
-	let $CGEditorFormTemplate = $.mk('form','cg-editor'),
-		$colorInput =
-			$.mk('input').attr({
-				'class': 'clri',
-				autocomplete: 'off',
-				spellcheck: 'false',
-			}).patternAttr(HEX_COLOR_PATTERN).on('keyup change input',function(_, override){
-				let $this = $(this),
-					$cp = $this.prev(),
-					color = (typeof override === 'string' ? override : this.value).trim(),
-					valid = HEX_COLOR_PATTERN.test(color);
-				if (valid)
-					$cp.removeClass('invalid').css('background-color', color.replace(HEX_COLOR_PATTERN, '#$1'));
-				else $cp.addClass('invalid');
-
-				$this.next().attr('required', valid);
-			}).on('paste blur keyup', function(e){
-				let input = this,
-					f = function(){
-						let val = $.hexpand(input.value);
-						if (HEX_COLOR_PATTERN.test(val)){
-							val = val.replace(HEX_COLOR_PATTERN, '#$1').toUpperCase();
-							let $input = $(input),
-								rgb = $.hex2rgb(val);
-							$.each(rgb, function(channel, value){
-								if (value <= 3)
-									rgb[channel] = 0;
-								else if (value >= 252)
-									rgb[channel] = 255;
-							});
-							val = $.rgb2hex(rgb);
-							switch (e.type){
-								case 'paste':
-									$input.next().focus();
-								/* falls through */
-								case 'blur':
-									$input.val(val);
-							}
-							$input.trigger('change',[val]).patternAttr(
-								SHORT_HEX_COLOR_PATTERN.test(input.value)
-								? SHORT_HEX_COLOR_PATTERN
-								: HEX_COLOR_PATTERN
-							);
-						}
-					};
-				if (e.type === 'paste') setTimeout(f, 10);
-				else f();
-			}),
-		$colorLabel = $.mk('input').attr({ 'class': 'clrl', pattern: PRINTABLE_ASCII_PATTERN.replace('+', '{3,30}') }),
-		$colorActions = $.mk('div').attr('class','clra')
-			.append($.mk('span').attr('class','typcn typcn-minus remove red').on('click',function(){
-				$(this).closest('.clr').remove();
-			}))
-			.append($.mk('span').attr('class','typcn typcn-arrow-move move blue')),
-		mkClrDiv = function(color){
-			let $ci = $colorInput.clone(true, true),
-				$cl = $colorLabel.clone(),
-				$ca = $colorActions.clone(true, true),
-				$el = $.mk('div').attr('class','clr');
-
-			if (typeof color === 'object'){
-				if (color.hex) $ci.val(color.hex.toUpperCase());
-				if (color.label) $cl.val(color.label);
-			}
-
-			$el.append("<span class='clrp'></span>",$ci,$cl,$ca);
-			$ci.trigger('change');
-			return $el;
-		},
-		$addBtn = $.mk('button').attr('class','typcn typcn-plus green add-color').text('Add new color').on('click', function(e){
-			e.preventDefault();
-
-			let $form = $(this).parents('#cg-editor'),
-				$colors = $form.children('.clrs');
-			if (!$colors.length)
-				$form.append($colors = $.mk('div').attr('class', 'clrs'));
-
-			if ($colors.hasClass('ace_editor')){
-				let editor = $colors.data('editor');
-				editor.clearSelection();
-				editor.navigateLineEnd();
-				let curpos = editor.getCursorPosition(),
-					trow = curpos.row+1,
-					emptyLine = curpos.column === 0,
-					copyHashEnabled = window.copyHashEnabled();
-
-				if (!emptyLine)
-					trow++;
-
-				editor.insert((!emptyLine?'\n':'')+(copyHashEnabled?'#':'')+'\tColor Name');
-				editor.gotoLine(trow,Number(copyHashEnabled));
-				editor.focus();
-			}
-			else {
-				let $div = mkClrDiv();
-				$colors.append($div);
-				$div.find('.clri').focus();
-			}
-		}),
-		parseColorsText = function(text, strict){
-			let colors = [],
-				lines = text.split('\n');
-
-			for (let lineIndex = 0, lineCount = lines.length; lineIndex < lineCount; lineIndex++){
-				let line = lines[lineIndex];
-
-				// Comment or empty line
-				if (/^(\/\/.*)?$/.test(line))
-					continue;
-
-				let matches = line.trim().match(/^#?([a-f\d]{6}|[a-f\d]{3})?(?:\s*([a-z\d][ -~]{2,29}))?$/i);
-				// Valid line
-				if (matches && matches[2] && (strict ? matches[1] : true)){
-					colors.push({ hex: matches[1] ?  $.hexpand(matches[1]) : undefined, label: matches[2] });
-					continue;
-				}
-				if (line.trim() === '#'){
-					colors.push({ hex: undefined, label: '' });
-					continue;
-				}
-
-				// Invalid line
-				throw new ColorTextParseError(line, lineIndex+1, matches);
-			}
-
-			return colors;
-		},
-		$editorToggle = $.mk('button').attr('class','typcn typcn-document-text darkblue').text('Plain text editor').on('click', function(e){
-			e.preventDefault();
-
-			let $btn = $(this),
-				$form = $btn.parents('#cg-editor');
-
-			$btn.disable();
-			try {
-				$form.trigger('save-color-inputs');
-			}
-			catch (error){
-				if (!(error instanceof ColorTextParseError))
-					throw error;
-				let editor = $form.find('.clrs').data('editor');
-				editor.gotoLine(error.lineNumber);
-				editor.navigateLineEnd();
-				$.Dialog.fail(false, error.message);
-				editor.focus();
-				$btn.enable();
-				return;
-			}
-			$btn.toggleClass('typcn-document-text typcn-edit').toggleHtml(['Plain text editor','Interactive editor']).enable();
-			$.Dialog.clearNotice(/Parse error on line \d+ \(shown below\)/);
-		});
-	$CGEditorFormTemplate.append(
-		`<label>
-			<span>Group name (2-30 chars.)</span>
-			<input type="text" name="label" pattern="${PRINTABLE_ASCII_PATTERN.replace('+','{2,30}')}" required>
-		</label>`,
-		$.mk('label').append(
-			$.mk('input').attr({
-				type: 'checkbox',
-				name: 'major',
-			}).on('click change',function(){
-				$(this).parent().next()[this.checked?'show':'hide']().children('input').attr('disabled', !this.checked);
-			}),
-			'<span>This is a major change</span>'
-		),
-		`<label style="display:none">
-			<span>Change reason (1-255 chars.)</span>
-			<input type='text' name='reason' pattern="${PRINTABLE_ASCII_PATTERN.replace('+','{1,255}')}" required disabled>
-		</label>
-		<p class="align-center">The # symbol is optional, rows with invalid colors will be ignored. Each color must have a short (3-30 chars.) description of its intended use.</p>`,
-		$.mk('div').attr('class', 'btn-group').append(
-			$addBtn, $editorToggle
-		),
-		$.mk('div').attr('class', 'clrs').append(
-			mkClrDiv()
-		)
-	).on('render-color-inputs',function(){
-		let $form = $(this),
-			data = $form.data('color_values'),
-			$colors = $form.children('.clrs').empty();
-
-		$.each(data, (_, color) => {
-			$colors.append(mkClrDiv(color));
-		});
-
-		$colors.data('sortable',new Sortable($colors.get(0), {
-			handle: ".move",
-			ghostClass: "moving",
-			scroll: false,
-			animation: 150,
-		}));
-	}).on('save-color-inputs', function(_, storeState, strict){
-		let $form = $(this),
-			$colors = $form.children('.clrs'),
-			is_ace = $colors.hasClass('ace_editor'),
-			editor;
-		if (is_ace){
-			// Saving
-			editor =  $colors.data('editor');
-			$form.data('color_values',parseColorsText(editor.getValue(), storeState || strict));
-			if (storeState)
-				return;
-
-			// Switching
-			editor.destroy();
-			$colors.empty().removeClass('ace_editor ace-colorguide').removeData('editor').unbind();
-			$form.trigger('render-color-inputs');
-		}
-		else {
-			// Saving
-			let data = [];
-			$form.find('.clr').each(function(){
-				let $row = $(this),
-					$ci = $row.children('.clri'),
-					val = $ci.val(),
-					valid = HEX_COLOR_PATTERN.test(val);
-
-				if (!valid && (val.length || strict))
+	const AppearanceListCache = (function(){
+		let _list;
+		const fetch = () => {
+			return new Promise((fulfill, desert) => {
+				if (typeof _list !== 'undefined'){
+					fulfill(_list);
 					return;
+				}
 
-				data.push({
-					hex: valid ? $.hexpand(val).toUpperCase().replace(HEX_COLOR_PATTERN,'#$1') : undefined,
-					label: $row.children('.clrl').val(),
+				const data = {};
+				if (PersonalGuide)
+					data.PERSONAL_GUIDE = PersonalGuide;
+				$.post('/cg/colorgroup/appearance-list',data,$.mkAjaxHandler(function(){
+					if (!this.status) return $.Dialog.fail('Appearance list retrieval', this.message);
+
+					_list = this.list;
+					fulfill(_list);
+				})).fail(function(){
+					desert();
 				});
 			});
-			$form.data('color_values',data);
-			if (storeState)
-				return;
+		};
+		return { read: () => fetch() };
+	})();
 
-			// Switching
-			let editable_content = [
-				'// One color per line',
-				'// e.g. #012ABC Fill',
-			];
-			$.each(data, (_, color) => {
-				let line = [];
-
-				if (typeof color === 'object'){
-					line.push(color.hex ? color.hex : '#');
-					if (color.label)
-						line.push(color.label);
+	const ColorListCache = (function(){
+		let _list = {};
+		const fetch = appearance_id => {
+			return new Promise((fulfill, desert) => {
+				if (typeof _list[appearance_id] !== 'undefined'){
+					fulfill(_list[appearance_id]);
+					return;
 				}
 
-				editable_content.push(line.join('\t'));
+				$.post('/cg/colorgroup/list/'+appearance_id,$.mkAjaxHandler(function(){
+					if (!this.status) return $.Dialog.fail('Appearance list retrieval', this.message);
+
+					_list[appearance_id] = this.list;
+					fulfill(_list[appearance_id]);
+				})).fail(function(){
+					desert();
+				});
 			});
+		};
+		return { read: appearance_id => fetch(appearance_id) };
+	})();
 
-			// Remove Sortable
-			let sortable_instance = $colors.data('sortable');
-			if (typeof sortable_instance !== 'undefined')
-				sortable_instance.destroy();
-			$colors.unbind().hide().text(editable_content.join('\n')+'\n');
-
-			// Create editor
-			$.getAceEditor(false, 'colorguide', (mode) => {
-				$colors.show();
-				editor = ace.edit($colors[0]);
-				let session = $.aceInit(editor, mode);
-				session.setTabSize(8);
-				session.setMode(mode);
-				editor.navigateFileEnd();
-				editor.focus();
-				$colors.data('editor', editor);
-			});
-		}
-	});
-
-	function cgEditorMaker(title, $group, dis){
-		let $changes = $('#changes'),
-			appearanceID,
-			groupID;
-		if (typeof $group !== 'undefined'){
-			if ($group instanceof jQuery){
-				groupID = $group.attr('id').substring(2);
-				appearanceID = $group.parents('[id^=p]').attr('id').substring(1);
+	class ColorGroupEditor {
+		constructor($group, data){
+			this.mode = 'gui';
+			this.editing = typeof data === 'object' && data.label && data.Colors;
+			this.removed_colors = [];
+			if (typeof $group !== 'undefined'){
+				if ($group instanceof jQuery){
+					this.group_id = $group.attr('id').substring(2);
+					this.appearance_id = parseInt($group.parents('[id^=p]').attr('id').substring(1), 10);
+				}
+				else this.appearance_id = parseInt($group, 10);
 			}
-			else appearanceID = $group;
-		}
-		$.Dialog.request(title,$CGEditorFormTemplate.clone(true, true),'Save', function($form){
-			let $label = $form.find('input[name=label]'),
-				$major = $form.find('input[name=major]'),
-				$reason = $form.find('input[name=reason]'),
-				editing = typeof dis === 'object' && dis.label && dis.Colors;
+			this.colorAppearanceDataCache = {};
 
-			if (editing){
-				$label.val(dis.label);
-				$form.data('color_values', dis.Colors).trigger('render-color-inputs');
-			}
-			$form.on('submit', function(e){
+			this.templates = {
+				$inputMethodDropdown:
+					$.mk('select').attr({'class': 'clrmthd', required: true}).html(
+						`<option value="hex">Hex</option>
+						<option value="link">Link</option>`
+					).on('change',e => {
+						const
+							$this = $(e.target),
+							$clr = $this.closest('.clr');
+						$clr.removeClass('mthd-hex mthd-link').addClass('mthd-'+$this.children('option:selected').attr('value'));
+					}),
+				$appearanceSelector:
+					$.mk('select').attr('class','clrla').html(
+						`<option value="" selected data-default>(appearance)</option>`
+					).on('mouseenter',e => {
+						const $this = $(e.target);
+						if ($this.hasClass('loaded'))
+							return;
+
+						$this.disable();
+						AppearanceListCache.read().then(list => {
+							const
+								$pony = $.mk('optgroup').attr('label','Pony Guide'),
+								$eqg = $.mk('optgroup').attr('label','EQG Guide'),
+								$pcg = $.mk('optgroup').attr('label','Personal Color Guide');
+							if (EQG === true) $this.append($eqg, $pony);
+							else if (EQG === false) $this.append($pony, $eqg);
+							else $this.append($pcg);
+
+							$.each(list,(_, el) => {
+								console.log(el.id, this.appearance_id);
+								(el.ishuman === null ? $pcg : (el.ishuman ? $eqg : $pony)).append(
+									$.mk('option').attr({
+										value: el.id,
+									}).text(el.label)
+								);
+							});
+
+							$this.addClass('loaded').enable();
+						});
+					}).on('change',e => {
+						const
+							$this = $(e.target),
+							$appearance = $this.find('option:selected'),
+							appeareance_id = $appearance.attr('value'),
+							appearance_name = $appearance.text();
+						if (isNaN(appeareance_id))
+							return;
+
+						this.loadColorSelectFor($this, appeareance_id, appearance_name);
+					}),
+				$colorSelector:
+					$.mk('select').attr({'class': 'clrlc hidden', disabled: true}).html(
+						`<option value="" selected data-default>(color)</option>
+						<option value="\n" class="appearance-name-option" disabled></option>
+						<option value="\n" data-appearance-switch>(change appearance)</option>
+						<option value="\n" disabled>----------</option>`
+					).on('change',e => {
+						const $this = $(e.target);
+						if (!$this.children('option:selected').hasAttr('data-appearance-switch'))
+							return;
+
+						$this.addClass('hidden').disable().prev().val('').removeClass('hidden');
+					}),
+				$colorInput:
+					$.mk('input').attr({
+						'class': 'clri',
+						autocomplete: 'off',
+						spellcheck: 'false',
+					}).patternAttr(HEX_COLOR_PATTERN).on('keyup change input',(e, override) => {
+						ColorGroupEditor.validateColorInput(e, override);
+					}).on('paste blur keyup',e => {
+						let f = () => this.expandColorInput(e);
+						if (e.type === 'paste') setTimeout(f, 10);
+						else f();
+					}),
+				$colorLabel:
+					$.mk('input').attr({
+						'class': 'clrl',
+						list: 'common-color-names',
+						pattern: PRINTABLE_ASCII_PATTERN.replace('+', '{3,30}'),
+						maxlength: 30,
+					}),
+				$colorActions:
+					$.mk('div').attr('class','clra')
+						.append($.mk('span').attr('class','typcn typcn-minus remove red').on('click',e => {
+							const
+								$clr = $(e.target).closest('.clr'),
+								color_id = $clr.children('.clrid').text().replace('ID:','');
+							this.removed_colors.push(color_id);
+							$clr.remove();
+						}))
+						.append($.mk('span').attr('class','typcn typcn-arrow-move move blue'))
+			};
+			this.$addBtn = $.mk('button').attr('class','typcn typcn-plus green add-color').text('Add new color').on('click',e => {
 				e.preventDefault();
 
+				this.addColor();
+			});
+			this.$editorToggle = $.mk('button').attr('class','typcn typcn-document-text darkblue').text('Plain text editor').on('click',e => {
+				e.preventDefault();
+
+				const $btn = $(e.target);
+				$btn.disable();
 				try {
-					$form.trigger('save-color-inputs', [true, true]);
+					this.saveColorInputs();
 				}
 				catch (error){
 					if (!(error instanceof ColorTextParseError))
 						throw error;
-					let editor = $form.find('.clrs').data('editor');
-					editor.gotoLine(error.lineNumber);
-					editor.navigateLineEnd();
+					this.editor.gotoLine(error.lineNumber);
+					this.editor.navigateLineEnd();
 					$.Dialog.fail(false, error.message);
-					editor.focus();
+					this.editor.focus();
+					$btn.enable();
+					return;
+				}
+				$btn.toggleClass('typcn-document-text typcn-edit').toggleHtml(['Plain text editor','Interactive editor']).enable();
+				$.Dialog.clearNotice(/Parse error on line \d+ \(shown below\)/);
+			});
+			this.$form = $.mk('form','cg-editor').append(
+				$.mk('label').append(
+					`<span>Group name (2-30 chars.)</span>`,
+					$.mk('input').attr({
+						type: 'text',
+						name: 'label',
+						pattern: PRINTABLE_ASCII_PATTERN.replace('+','{2,30}'),
+						required: true,
+						list: 'common-cg-names',
+					}).val(data.label),
+					`<datalist id="common-cg-names">
+						<option>Coat</option>
+						<option>Mane & Tail</option>
+						<option>Eyes</option>
+						<option>Iris</option>
+						<option>Cutie Mark</option>
+						<option>Magic</option>
+					</datalist>`
+				),
+				$.mk('label').append(
+					$.mk('input').attr({
+						type: 'checkbox',
+						name: 'major',
+					}).on('click change',function(){
+						$(this).parent().next()[this.checked?'removeClass':'addClass']('hidden').children('input').attr('disabled', !this.checked);
+					}),
+					'<span>This is a major change</span>'
+				),
+				`<label class="hidden">
+					<span>Change reason (1-255 chars.)</span>
+					<input type='text' name='reason' pattern="${PRINTABLE_ASCII_PATTERN.replace('+','{1,255}')}" required disabled>
+				</label>
+				<p class="align-center">The # symbol is optional, rows with invalid colors will be ignored. Each color must have a short (3-30 chars.) description of its intended use.</p>`,
+				$.mk('div').attr('class', 'btn-group').append(
+					this.$addBtn, this.$editorToggle
+				),
+				$.mk('div').attr('class', 'clrs').append(
+					this.makeColorDiv()
+				),
+				`<datalist id="common-color-names">
+					<option>Outline</option>
+					<option>Fill</option>
+					<option>Shadow Outline</option>
+					<option>Shadow Fill</option>
+					<option>Gradient Top</option>
+					<option>Gradient Middle</option>
+					<option>Gradient Bottom</option>
+					<option>Hightlight Top</option>
+					<option>Hightlight Bottom</option>
+				</datalist>`
+			).on('submit',e => {
+				e.preventDefault();
+
+				try {
+					this.saveColorInputs(true, true);
+				}
+				catch (error){
+					if (!(error instanceof ColorTextParseError))
+						throw error;
+					this.editor.gotoLine(error.lineNumber);
+					this.editor.navigateLineEnd();
+					$.Dialog.fail(false, error.message);
+					this.editor.focus();
 					return;
 				}
 
-				let data = { label: $label.val(), Colors: $form.data('color_values') };
-				if (!editing) data.ponyid = appearanceID;
+				let data = this.$form.mkData(),
+					appearance_id = this.appearance_id;
+				data.Colors = this.colorValues;
+				if (this.editing)
+					data.removed_colors = this.removed_colors.join(',');
+				if (!this.editing)
+					data.ponyid = this.appearance_id;
 				if (data.Colors.length === 0)
 					return $.Dialog.fail(false, 'You need to add at least one valid color');
 				data.Colors = JSON.stringify(data.Colors);
 
-				if ($major.is(':checked')){
-					data.major = true;
-					data.reason = $reason.val();
-				}
-
 				if (AppearancePage)
 					data.APPEARANCE_PAGE = true;
+				const $changes = $('#changes');
 				if (!$changes.length)
 					data.FULL_CHANGES_SECTION = true;
 
 				$.Dialog.wait(false, 'Saving changes');
 
-				$.post(`${PGRq}/cg/colorgroup/${editing?`set/${groupID}`:'make'}${EQGRq}`, data, $.mkAjaxHandler(function(){
+				$.post(`${PGRq}/cg/colorgroup/${this.editing?`set/${this.group_id}`:'make'}${EQGRq}`, data, $.mkAjaxHandler(function(){
 					if (!this.status) return $.Dialog.fail(false, this.message);
 
-					if (this.cg || this.cgs){
-						let $pony = $('#p'+appearanceID);
-						if (this.cg){
-							$group.children('[data-hasqtip]').qtip('destroy', true);
-							$group.html(this.cg);
-						}
-						else if (this.cgs){
+					if (this.cgs){
+						let $pony = $('#p'+appearance_id);
+						if (this.cgs)
 							$pony.find('ul.colors').html(this.cgs);
-						}
 						if (!AppearancePage && this.notes){
 							let $notes = $pony.find('.notes');
 							try {
@@ -1139,7 +1078,306 @@ $(function(){
 					else $.Dialog.close();
 				}));
 			});
-		});
+
+			if (this.editing)
+				this.setColorValues(data.Colors).renderColorInputs();
+		}
+		static factory(title, $group, data){
+			$.Dialog.request(title, new ColorGroupEditor($group, data).getForm(), 'Save');
+		}
+		static validateColorInput(e, override){
+			let $this = $(e.target),
+				$cp = $this.prev(),
+				color = (typeof override === 'string' ? override : $this.val()).trim(),
+				valid = HEX_COLOR_PATTERN.test(color);
+			if (valid)
+				$cp.removeClass('invalid').css('background-color', color.replace(HEX_COLOR_PATTERN, '#$1'));
+			else $cp.addClass('invalid');
+
+			$this.next().attr('required', valid);
+		}
+		expandColorInput(e){
+			const input = e.target;
+			let val = $.hexpand(input.value);
+			if (HEX_COLOR_PATTERN.test(val)){
+				val = val.replace(HEX_COLOR_PATTERN, '#$1').toUpperCase();
+				let $input = $(input),
+					rgb = $.hex2rgb(val);
+				$.each(rgb, function(channel, value){
+					if (value <= 3)
+						rgb[channel] = 0;
+					else if (value >= 252)
+						rgb[channel] = 255;
+				});
+				val = $.rgb2hex(rgb);
+				switch (e.type){
+					case 'paste':
+						$input.next().focus();
+					/* falls through */
+					case 'blur':
+						$input.val(val);
+				}
+				$input.trigger('change', [val]).patternAttr(
+					SHORT_HEX_COLOR_PATTERN.test(input.value)
+						? SHORT_HEX_COLOR_PATTERN
+						: HEX_COLOR_PATTERN
+				);
+			}
+		}
+		makeColorDiv(color){
+			let $mthd = this.templates.$inputMethodDropdown.clone(true, true),
+				$ci = this.templates.$colorInput.clone(true, true),
+				$cl = this.templates.$colorLabel.clone(),
+				$ca = this.templates.$colorActions.clone(true, true),
+				$cla = this.templates.$appearanceSelector.clone(true, true),
+				$clc = this.templates.$colorSelector.clone(true, true),
+				$el = $.mk('div').attr('class','clr mthd-hex'),
+				$cid;
+			$el.append($mthd,$cla,$clc);
+
+			if (typeof color === 'object'){
+				if (color.hex)
+					$ci.val(color.hex.toUpperCase());
+				if (color.label)
+					$cl.val(color.label);
+				if (color.id)
+					$cid = $.mk('span').attr('class','clrid').text('ID:'+color.id);
+				if (color.linked_to){
+					$mthd.val('link').triggerHandler('change');
+
+					// Save appearance data for when switching back from plaintext editor
+					if (typeof color.appearance !== 'undefined')
+						this.colorAppearanceDataCache[color.id] = color.appearance;
+					else color.appearance =  this.colorAppearanceDataCache[color.id];
+
+					this.loadColorSelectFor($cla, color.appearance.id, color.appearance.label).then(function($colorSelector){
+						$colorSelector.val(color.linked_to);
+					});
+				}
+			}
+
+			$el.append("<span class='clrp'></span>",$ci,$cl,$cid,$ca);
+			$ci.triggerHandler('change');
+
+			return $el;
+		}
+		addColor(){
+			let $colors = this.$form.children('.clrs');
+			if (!$colors.length){
+				$colors = $.mk('div').attr('class', 'clrs');
+				this.$form.append($colors);
+			}
+
+			if (this.mode === 'gui'){
+				const $div = this.makeColorDiv();
+				$colors.append($div);
+				$div.find('.clri').focus();
+			}
+			else {
+				this.editor.clearSelection();
+				this.editor.navigateLineEnd();
+				let curpos = this.editor.getCursorPosition(),
+					trow = curpos.row+1,
+					emptyLine = curpos.column === 0,
+					copyHashEnabled = window.copyHashEnabled();
+
+				if (!emptyLine)
+					trow++;
+
+				this.editor.insert((!emptyLine?'\n':'')+(copyHashEnabled?'#':'')+'\t');
+				this.editor.gotoLine(trow,Number(copyHashEnabled));
+				this.editor.focus();
+			}
+		}
+		renderColorInputs(){
+			let $colors = this.$form.children('.clrs');
+
+			$colors.empty();
+			$.each(this.colorValues, (_, color) => {
+				$colors.append(this.makeColorDiv(color));
+			});
+
+			this.destroySortable();
+			this.sortable = new Sortable($colors.get(0), {
+				handle: ".move",
+				ghostClass: "moving",
+				scroll: false,
+				animation: 150,
+			});
+		}
+		saveColorInputs(storeState, strict){
+			let $colors = this.$form.children('.clrs');
+			if (this.mode === 'gui'){
+				// Saving
+				let data = [];
+				$colors.children('.clr').each(function(){
+					const
+						$row = $(this),
+						method = $row.children('.clrmthd').find('option:selected').attr('value'),
+						id = $row.children('.clrid').text().replace('ID:','');
+
+					switch (method){
+						case "hex":
+							const
+								$ci = $row.children('.clri'),
+								val = $ci.val(),
+								valid = HEX_COLOR_PATTERN.test(val);
+
+							if (!valid && (val.length || strict))
+								return;
+
+							data.push({
+								id,
+								hex: valid ? $.hexpand(val).toUpperCase().replace(HEX_COLOR_PATTERN, '#$1') : undefined,
+								label: $row.children('.clrl').val(),
+							});
+						break;
+						case "link":
+							const $clc = $row.children('.clrlc');
+							data.push({
+								id,
+								hex: undefined,
+								label: $row.children('.clrl').val(),
+								linked_to: $clc.val(),
+							});
+						break;
+					}
+				});
+				this.colorValues = data;
+				if (storeState)
+					return;
+
+				// Switching
+				let editorContent = [
+					'// One color per line',
+					'// e.g. #012ABC Fill',
+				];
+				$.each(data, (_, color) =>{
+					let line = [];
+
+					if (typeof color === 'object'){
+						if (color.linked_to)
+							line.push('@'+color.linked_to);
+						else line.push(color.hex ? color.hex : '#');
+						line.push(color.label || '');
+						if (color.id)
+							line.push('ID:'+color.id);
+					}
+
+					editorContent.push(line.join('\t'));
+				});
+
+				this.destroySortable();
+				$colors.unbind().hide().text(editorContent.join('\n') + '\n');
+
+				// Create editor
+				$.getAceEditor(false, 'colorguide',mode => {
+					$colors.show();
+					this.editor = ace.edit($colors[0]);
+					let session = $.aceInit(this.editor, mode);
+					session.setTabSize(8);
+					session.setMode(mode);
+					this.editor.navigateFileEnd();
+					this.editor.focus();
+					this.mode = 'text';
+				});
+			}
+			else {
+				// Saving
+				this.colorValues = ColorGroupEditor.parseColorsText(this.editor.getValue(), storeState || strict);
+				if (storeState)
+					return;
+
+				// Switching
+				this.editor.destroy();
+				this.editor = null;
+				$colors.empty().unbind().attr('class','clrs');
+				this.renderColorInputs();
+				this.mode = 'gui';
+			}
+		}
+		static parseColorsText(text, strict){
+			let colors = [],
+				lines = text.split('\n');
+
+			for (let lineIndex = 0, lineCount = lines.length; lineIndex < lineCount; lineIndex++){
+				let line = lines[lineIndex];
+
+				// Comment or empty line
+				if (/^(\/\/.*)?$/.test(line))
+					continue;
+
+				const trimmedLine = line.trim();
+				if (trimmedLine === '#'){
+					colors.push({
+						hex: undefined,
+						label: '',
+					});
+					continue;
+				}
+
+				const matches = trimmedLine.match(/^(?:#?([a-f\d]{6}|[a-f\d]{3})?|@(\d+))(?:\s*([ -~]{3,30}))?(?:\s*ID:(\d+))?$/i);
+				// Valid line
+				if (matches && matches[3] && (strict ? matches[1] : true)){
+					colors.push({
+						hex: matches[1] ? $.hexpand(matches[1]) : undefined,
+						label: matches[3],
+						id: matches[4],
+						linked_to: matches[2] ? matches[2] : undefined,
+					});
+					continue;
+				}
+
+				// Invalid line
+				throw new ColorTextParseError(line, lineIndex+1, matches);
+			}
+
+			return colors;
+		}
+		setColorValues(values){
+			this.colorValues = values;
+
+			return this;
+		}
+		getForm(){
+			return this.$form;
+		}
+		destroySortable(){
+			if (typeof this.sortable !== 'undefined'){
+				this.sortable.destroy();
+				this.sortable = void 0;
+			}
+		}
+		loadColorSelectFor($this, appeareance_id, appearance_name){
+			const
+				$colorSelector = $this.next(),
+				color_id = parseInt($this.siblings().filter('.clrid').text().replace('ID:',''),10);
+			$this.disable();
+			return new Promise(fulfill => {
+				ColorListCache.read(appeareance_id).then(function(groups){
+					$colorSelector.children('optgroup').remove();
+					$colorSelector.children('.appearance-name-option').text(appearance_name);
+
+					$.each(groups,(_, group) => {
+						const $og = $.mk('optgroup').attr('label', group.label);
+						$colorSelector.append($og);
+
+						$.each(group.colors,(_, color) => {
+							$og.append(
+								$.mk('option').attr({
+									value: color.id,
+									disabled: color.id === color_id,
+								}).text(color.label)
+							);
+						});
+					});
+
+					$this.enable().addClass('hidden');
+					$colorSelector.enable().val('').removeClass('hidden');
+					fulfill($colorSelector);
+				});
+			});
+		}
 	}
 
 	let $tags;
@@ -1429,7 +1667,7 @@ $(function(){
 					}));
 				}},
 				{text: "Create new group", icon: 'folder-add', click: function(){
-					cgEditorMaker(`Create color group`, $(this).closest('[id^=p]').attr('id').substring(1));
+					ColorGroupEditor.factory(`Create color group`, $(this).closest('[id^=p]').attr('id').substring(1));
 				}},
 				{text: "Apply template (if empty)", icon: 'document-add', click: function(){
 					let appearanceID = $(this).closest('[id^=p]').attr('id').substring(1);
@@ -1470,7 +1708,7 @@ $(function(){
 					$.post(`${PGRq}/cg/colorgroup/get/${groupID}${EQGRq}`,$.mkAjaxHandler(function(){
 						if (!this.status) return $.Dialog.fail(title, this.message);
 
-						cgEditorMaker(title, $group, this);
+						ColorGroupEditor.factory(title, $group, this);
 					}));
 				}},
 				{text: `Delete color group`, icon: 'trash', click: function(){

@@ -111,7 +111,7 @@ class NotificationsController extends Controller {
 					}
 
 					if ($read_action === 'recheck' && $Appearance->spriteHasColorIssues())
-						Response::fail("The <a href='/cg/sprite/{$Appearance->id}'>sprite</a> still has color issues");
+						Response::fail("The <a href='/cg/sprite/{$Appearance->id}'>sprite</a> is (still) missing some colors that are in the guide");
 
 					Appearances::clearSpriteColorIssueNotifications($Appearance->id, $read_action, $Notif->recipient_id);
 					if ($read_action === 'deny')

@@ -189,7 +189,7 @@
 	}
 }
 // Global Stuff
-.hidden { display: none !important }
+.hidden, datalist, template { display: none !important }
 .unreadable { font-size: 0 }
 .star-info {
 	cursor: help;

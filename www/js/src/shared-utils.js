@@ -601,7 +601,8 @@
 	};
 
 	$.fn.hasAttr = function(attr){
-		return this.get(0).hasAttribute(attr);
+		const el = this.get(0);
+		return el && el.hasAttribute(attr);
 	};
 
 	$.fn.isOverflowing = function(){

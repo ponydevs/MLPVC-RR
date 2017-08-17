@@ -45,7 +45,7 @@ form:hover textarea {
 select {
 	padding-right: 5px;
 
-	option[default] { display: none }
+	option[data-default], option[default]  { display: none }
 }
 textarea {
 	padding-right: 5px;
@@ -211,6 +211,9 @@ input[type=checkbox] {
 			}
 			option, optgroup {
 				color: black;
+			}
+			option:disabled {
+				color: #777;
 			}
 		}
 	}

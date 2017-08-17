@@ -58,9 +58,9 @@ $TFeature:  adjust_hue($_TBase, 20);
 		left: 0;
 		padding: $padding;
 		line-height: $fontSize;
-		font-size: $fontSize;
+		font-size: $fontSize/2;
 		height: $fontSize;
-		width: $fontSize;
+		width: $fontSize/2;
 		text-align: center;
 		font-weight: bold;
 		color: $NRedBG;
@@ -94,20 +94,42 @@ $TFeature:  adjust_hue($_TBase, 20);
 
 %clr {
 	display: flex;
-	flex-direction: row;
+	flex-flow: row nowrap;
 	justify-content: flex-start;
+	width: 100%;
+	overflow: hidden;
 
 	&.moving {
 		box-shadow: 0 0 10px #000;
 		background: #fff;
 	}
 
+	.clrmthd {
+		flex: 0 0 auto;
+	}
+
+	&.mthd-hex {
+		.clrla, .clrlc {
+			display: none;
+		}
+	}
+	&.mthd-link {
+		.clrp, .clri {
+			display: none;
+		}
+	}
+
+	$height: 28px;
+	.clrla, .clrlc {
+		flex: 1 1 auto;
+		min-width: 30%;
+	}
 	.clrp {
 		flex: 0 0 auto;
 		display: block;
 		border: 1px solid #000;
-		height: 28px;
-		width: 28px;
+		height: $height;
+		width: $height/2;
 		box-sizing: border-box;
 		transition: background-color .2s linear, border .2s linear;
 
@@ -122,11 +144,18 @@ $TFeature:  adjust_hue($_TBase, 20);
 		width: 65px;
 		font-family: $monospace;
 	}
+	.clrid {
+		flex: 0 0 auto;
+		font-family: $monospace;
+		font-size: .9em;
+		padding: 0 8px;
+		line-height: $height;
+	}
 	.clra {
 		margin-left: 3px;
-		flex: 1 0 auto;
+		flex: 0 0 auto;
 
-		> *, > *:before { line-height: 28px }
+		> *, > *:before { line-height: $height }
 		.remove { cursor: pointer }
 		.move { cursor: ns-resize }
 	}

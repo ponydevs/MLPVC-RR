@@ -599,6 +599,6 @@ HTML;
 			return;
 
 		foreach ($notifs as $n)
-			Notifications::safeMarkRead($n->id, $action);
+			Notifications::safeMarkRead($n->id, $action, true);
 	}
 }

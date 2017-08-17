@@ -149,17 +149,19 @@ class Notifications {
 		CoreUtils::socketEvent('mark-read', ['nid' => $nid, 'action' => $action]);
 	}
 
-	public static function safeMarkRead(int $NotifID, ?string $action = null){
+	public static function safeMarkRead(int $NotifID, ?string $action = null, bool $silent = false){
 		try {
-			Notifications::markRead($NotifID, $action);
+			self::markRead($NotifID, $action);
 		}
 		catch (ServerConnectionFailureException $e){
 			error_log("Notification server down!\n".$e->getMessage());
-			Response::fail('Notification server is down! Please <a class="send-feedback">let us know</a>.');
+			if (!$silent)
+				Response::fail('Notification server is down! Please <a class="send-feedback">let us know</a>.');
 		}
 		catch (\Exception $e){
 			error_log("SocketEvent Error\n".$e->getMessage());
-			Response::fail('SocketEvent Error: '.$e->getMessage());
+			if (!$silent)
+				Response::fail('SocketEvent Error: '.$e->getMessage());
 		}
 	}
 }

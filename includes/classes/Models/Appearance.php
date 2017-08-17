@@ -35,6 +35,7 @@ use App\Time;
  * @method static Appearance find_by_owner_id_and_label(string $uuid, string $label)
  * @method static Appearance find_by_ishuman_and_label($ishuman, string $label)
  * @method static Appearance|Appearance[] find(...$args)
+ * @method static Appearance[] all(...$args)
  */
 class Appearance extends NSModel implements LinkableInterface {
 	public static $has_many = [
@@ -283,6 +284,9 @@ class Appearance extends NSModel implements LinkableInterface {
 		$Colors = [];
 		foreach ([0, $this->id] as $AppearanceID){
 			$ColorGroups = ColorGroup::find_all_by_appearance_id($AppearanceID);
+			uasort($ColorGroups, function(ColorGroup $a, ColorGroup $b){
+				return $a->order <=> $b->order;
+			});
 			$SortedColorGroups = [];
 			foreach ($ColorGroups as $cg)
 				$SortedColorGroups[$cg->id] = $cg;
