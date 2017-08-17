@@ -1674,6 +1674,8 @@ HTML;
 			]
 		]))->out();
 		$newcolors = [];
+		/** @var $check_colors_of Appearance[] */
+		$check_colors_of = [];
 		foreach ($recvColors as $part => $c){
 			if (isset($c['id'])){
 				$append = Color::find($c['id']);
@@ -1731,6 +1733,8 @@ HTML;
 					Response::fail("Some colors point to this color which means it cannot be changed to a link $index");
 				$append->linked_to = $link_target->id;
 				$append->hex = $link_target->hex;
+				if (!isset($check_colors_of[$link_target->appearance_id]))
+					$check_colors_of[$link_target->appearance_id] = $link_target->appearance;
 			}
 			else {
 				$hex = CoreUtils::trim($c['hex']);
@@ -1754,8 +1758,12 @@ HTML;
 		if ($colorError)
 			Response::fail("There were some issues while saving the colors. Please <a class='send-feedback'>let us know</a> about this error, so we can look into why it might've happened.");
 
-		CGUtils::clearRenderedImages($Group->appearance_id, [CGUtils::CLEAR_PALETTE, CGUtils::CLEAR_PREVIEW]);
-		$Group->appearance->checkSpriteColors();
+		if (!isset($check_colors_of[$Group->appearance_id]))
+			$check_colors_of[$Group->appearance_id] = $Group->appearance;
+		foreach ($check_colors_of as $appearance){
+			$appearance->checkSpriteColors();
+			CGUtils::clearRenderedImages($appearance->id, [CGUtils::CLEAR_PALETTE, CGUtils::CLEAR_PREVIEW]);
+		}
 
 		$colon = !$this->_appearancePage;
 		$outputNames = $this->_appearancePage;

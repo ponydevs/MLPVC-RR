@@ -925,7 +925,7 @@ GPL;
 	 *
 	 * @return string
 	 */
-	public static function stringifyColorGroups($cgs): string{
+	public static function stringifyColorGroups($cgs):string{
 		if (empty($cgs))
 			return '';
 

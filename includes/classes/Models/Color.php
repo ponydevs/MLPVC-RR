@@ -12,6 +12,7 @@ use ActiveRecord\Model;
  * @property string     $hex
  * @property int        $linked_to
  * @property ColorGroup $color_group      (Via relations)
+ * @property int        $appearance_id    (Via magic method)
  * @property Appearance $appearance       (Via magic method)
  * @property Color[]    $dependant_colors (Via magic method)
  * @method static Color|Color[] find(...$args)
@@ -22,6 +23,10 @@ class Color extends OrderedModel {
 	];
 
 	public static $after_save = ['update_dependant_colors'];
+
+	public function get_appearance_id(){
+		return $this->color_group->appearance_id;
+	}
 
 	public function get_appearance(){
 		return $this->color_group->appearance;
