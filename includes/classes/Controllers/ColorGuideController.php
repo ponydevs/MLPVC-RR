@@ -1555,7 +1555,7 @@ HTML;
 			$Group = ColorGroup::find($GroupID);
 			if (empty($Group))
 				Response::fail("There’s no color group with the ID of $GroupID");
-			if (($Group->appearance->owner_id === null && !$isStaff) || ($Group->appearance->owner_id !== Auth::$user->id))
+			if (!$isStaff && ($Group->appearance->owner_id === null || $Group->appearance->owner_id !== Auth::$user->id))
 				Response::fail();
 
 			if ($action === 'get'){
