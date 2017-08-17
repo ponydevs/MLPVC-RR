@@ -913,8 +913,9 @@ GPL;
 			return null;
 
 		$return = [];
-		foreach ($colors as $c)
-			$return[] = "{$c->hex} {$c->label}";
+		foreach ($colors as $c){
+			$return[] = ($c->linked_to !== null ? '@'.$c->linked_to : $c->hex).' '.$c->label;
+		}
 
 		return implode("\n", $return);
 	}
