@@ -962,7 +962,7 @@ GPL;
 	 *
 	 * @param ColorGroup[] $Groups
 	 *
-	 * @return RGBAColor[][]
+	 * @return Color[][]
 	 */
 	public static function getColorsForEach($Groups){
 		if (empty($Groups)){
