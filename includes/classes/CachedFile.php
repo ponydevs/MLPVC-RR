@@ -95,8 +95,9 @@ class CachedFile {
 			$handle = gzopen($this->_path, 'w9');
 			gzwrite($handle, $data);
 			gzclose($handle);
+			File::chmod($this->_path);
 		}
-		else file_put_contents($this->_path, $data);
+		else File::put($this->_path, $data);
 	}
 
 	/**
@@ -109,7 +110,7 @@ class CachedFile {
 		if (!file_exists($this->_path)){
 			if ($this->_type !== self::TYPE_LOCK)
 				throw new \RuntimeException("Trying to bump non-existant non-lock file {$this->_path}, use ".__CLASS__.'->update instead!');
-			return file_put_contents($this->_path, '') !== false;
+			return File::put($this->_path, '') !== false;
 		}
 		else return touch($this->_path) !== false;
 	}
@@ -121,14 +122,9 @@ class CachedFile {
 	 * @return mixed
 	 */
 	public function read(){
-		if ($this->_gzip){
-			$data = '';
-			$file = gzopen($this->_path, 'rb');
-			while (!gzeof($file))
-			    $data .= gzread($file, 4096);
-			gzclose($file);
-		}
-		else $data = file_get_contents($this->_path);
+		$data = $this->_gzip
+			? CoreUtils::gzread($this->_path)
+			: File::get($this->_path);
 
 		switch ($this->_type){
 			case self::TYPE_JSON:

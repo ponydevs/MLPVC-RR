@@ -738,7 +738,7 @@ class PostController extends Controller {
 			Response::fail('Stash URL lookup failed');
 
 		try {
-			$fullsize = CoreUtils::getFullsizeURL($StashItem->id, 'sta.sh');
+			$fullsize = DeviantArt::getDownloadURL($StashItem->id, 'sta.sh');
 			if (!is_string($fullsize)){
 				if ($fullsize === 404){
 					$StashItem->delete();

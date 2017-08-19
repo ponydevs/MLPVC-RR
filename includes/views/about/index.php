@@ -6,7 +6,7 @@
 use App\About;
 use App\CoreUtils;
 
-$about = file_get_contents(INCPATH.'views/about/readme_snippet.html');
+$about = \App\File::get(INCPATH.'views/about/readme_snippet.html');
 if (!empty($about)){
 	echo str_replace(GITHUB_URL.'/blob/master/www','',$about);
 

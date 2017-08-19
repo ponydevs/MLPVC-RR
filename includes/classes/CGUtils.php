@@ -5,6 +5,7 @@ namespace App;
 use App\Models\Appearance;
 use App\Models\Color;
 use App\Models\ColorGroup;
+use App\Models\Cutiemark;
 use App\Models\Logs\MajorChange;
 
 class CGUtils {
@@ -199,10 +200,10 @@ class CGUtils {
 		if ($Image->fullsize === false)
 			Response::fail('Image could not be retrieved from external provider');
 
-		$remoteFile = @file_get_contents($Image->fullsize);
+		$remoteFile = @File::get($Image->fullsize);
 		if (empty($remoteFile))
 			Response::fail('Remote file could not be found');
-		if (!file_put_contents($path, $remoteFile))
+		if (File::put($path, $remoteFile) === false)
 			Response::fail('Writing local image file was unsuccessful');
 
 		list($width, $height) = Image::checkType($path, $allowedMimeTypes);
@@ -303,15 +304,19 @@ HTML;
 		CLEAR_PALETTE = 'palette.png',
 		CLEAR_CMDIR_LEFT = 'cmdir-left.svg',
 		CLEAR_CMDIR_RIGHT = 'cmdir-right.svg',
+		CLEAR_CM_LEFT = 'cm-left.svg',
+		CLEAR_CM_RIGHT = 'cm-right.svg',
 		CLEAR_SPRITE = 'sprite.png',
 		CLEAR_SPRITE_SVG = 'sprite.svg',
 		CLEAR_SPRITE_MAP = 'linedata.json.gz';
 
-	const CLEAR_BY_DEFAULT = [
+	const CLEAR_ALL = [
 		self::CLEAR_PREVIEW,
 		self::CLEAR_PALETTE,
 		self::CLEAR_CMDIR_LEFT,
 		self::CLEAR_CMDIR_RIGHT,
+		self::CLEAR_CM_LEFT,
+		self::CLEAR_CM_RIGHT,
 		self::CLEAR_SPRITE,
 		self::CLEAR_SPRITE_SVG,
 		self::CLEAR_SPRITE_MAP,
@@ -325,7 +330,7 @@ HTML;
 	 *
 	 * @return bool
 	 */
-	public static function clearRenderedImages(int $AppearanceID, array $which = self::CLEAR_BY_DEFAULT):bool {
+	public static function clearRenderedImages(int $AppearanceID, array $which = self::CLEAR_ALL):bool {
 		$RenderedPath = FSPATH."cg_render/$AppearanceID";
 		$success = [];
 		foreach ($which as $suffix){
@@ -362,7 +367,7 @@ HTML;
 		//$PixelatedFontFile = APPATH.'font/Volter (Goldfish).ttf';
 		$PixelatedFontFile = $FontFile;
 		if (!file_exists($FontFile))
-			throw new \Exception('Font file missing');
+			throw new \RuntimeException('Font file missing');
 		$Name = $Appearance->label;
 		$NameVerticalMargin = 5;
 		$NameFontSize = 22;
@@ -497,6 +502,7 @@ HTML;
 	}
 
 	const CMDIR_SVG_PATH = FSPATH.'cg_render/#-cmdir-@.svg';
+	const CM_SVG_PATH = FSPATH.'cg_render/#-cm-@.svg';
 
 	const DEFAULT_COLOR_MAPPING = [
 		'Coat Outline' => '#0D0D0D',
@@ -548,10 +554,32 @@ HTML;
 
 		$ColorMapping = self::getColorMapping($AppearanceID, self::DEFAULT_COLOR_MAPPING);
 
-		$img = file_get_contents(APPATH.'img/cm_facing/'.($Facing===CM_FACING_RIGHT?'right':'left').'.svg');
+		$img = File::get(APPATH.'img/cm_facing/'.($Facing===CM_FACING_RIGHT?'right':'left').'.svg');
 		foreach (self::DEFAULT_COLOR_MAPPING as $label => $defhex)
 			$img = str_replace($label, $ColorMapping[$label] ?? $defhex, $img);
 
+		Image::outputSVG($img,$OutputPath,$FileRelPath);
+	}
+
+	public static function renderCMSVG($CGPath, $AppearanceID){
+		if (empty($_GET['facing']))
+			$Facing = 'left';
+		else {
+			$Facing = $_GET['facing'];
+			if (!in_array($Facing, Cutiemarks::VALID_FACING_VALUES, true))
+				Response::fail('Invalid facing value specified!');
+		}
+
+		$OutputPath = str_replace(['@','#'],[$Facing,$AppearanceID],self::CM_SVG_PATH);
+		$FileRelPath = "$CGPath/v/{$AppearanceID}c.svg?facing=$Facing";
+		if (file_exists($OutputPath))
+			Image::outputSVG(null,$OutputPath,$FileRelPath);
+
+		$CutieMark = Cutiemark::find_by_appearance_id_and_facing($AppearanceID, $Facing);
+		$tokenized = $CutieMark->getTokenizedFile();
+		if ($tokenized === null)
+			CoreUtils::notFound();
+		$img = self::untokenizeSvg($tokenized, $AppearanceID);
 		Image::outputSVG($img,$OutputPath,$FileRelPath);
 	}
 
@@ -816,6 +844,68 @@ GPL;
 		CoreUtils::downloadFile(rtrim($File), "$label.gpl");
 	}
 
+	/**
+	 * Detect all colors inside the SVG file & replace with a mapping to guide colors
+	 *
+	 * @param string $svg Image data
+	 * @param int $appearance_id
+	 *
+	 * @return string Tokenized SVG file
+	 */
+	public static function tokenizeSvg(string $svg, int $appearance_id):string {
+		/** @var $CMColorGroup ColorGroup */
+		$CMColorGroup = DB::$instance->where('label', 'Cutie Mark')->where('appearance_id', $appearance_id)->getOne(ColorGroup::$table_name);
+		if (empty($CMColorGroup))
+			return $svg;
+
+		RGBAColor::forEach($svg, function(RGBAColor $color) use ($CMColorGroup){
+			/** @var $dbcolor Color[] */
+			$dbcolor = DB::$instance->where('hex', $color->toHex())->where('group_id', $CMColorGroup->id)->get(Color::$table_name);
+
+			if ($dbcolor === null || count($dbcolor) !== 1)
+				return "<!--*({$color->red},{$color->green},{$color->blue},{$color->alpha})-->";
+
+			$id = '@'.$dbcolor[0]->id;
+			if ($color->isTransparent())
+				$id .= ','.$color->alpha;
+			return "<!--$id-->";
+		});
+
+		return $svg;
+	}
+
+	/**
+	 * Detect tokenized colors inside SVG file & replace with colors from guide
+	 *
+	 * @param string $svg Image data
+	 * @param int $appearance_id
+	 *
+	 * @return string Un-tokenized SVG file
+	 */
+	public static function untokenizeSvg(string $svg, int $appearance_id):string {
+		/** @var $CMColorGroup ColorGroup */
+		$CMColorGroup = DB::$instance->where('label', 'Cutie Mark')->where('appearance_id', $appearance_id)->getOne(ColorGroup::$table_name);
+		if (empty($CMColorGroup))
+			return $svg;
+
+		$svg = preg_replace_callback(new RegExp('<!--@(\d+)(?:,([\d.]+))?-->'), function($match){
+			/** @var $dbcolor Color */
+			$dbcolor = Color::find($match[1]);
+
+			if (empty($dbcolor))
+				return $match;
+
+			$color = RGBAColor::parse($dbcolor->hex);
+			$color->alpha = (float) (!empty($match[2]) ? $match[2] : 1);
+			return (string)$color;
+		}, $svg);
+		$svg = preg_replace_callback(new RegExp('<!--\*\(([\d,.]+)\)-->'), function($match){
+			return (string) RGBAColor::parse("rgba({$match[1]})");
+		}, $svg);
+
+		return $svg;
+	}
+
 	public static function validateTagName($key){
 		$name = strtolower((new Input($key,function($value, $range){
 			if (Input::checkStringLength($value,$range,$code))
@@ -872,7 +962,7 @@ GPL;
 	 *
 	 * @param ColorGroup[] $Groups
 	 *
-	 * @return Color[][]
+	 * @return RGBAColor[][]
 	 */
 	public static function getColorsForEach($Groups){
 		if (empty($Groups)){
@@ -904,7 +994,7 @@ GPL;
 	}
 
 	/**
-	 * @param Color[] $colors
+	 * @param RGBAColor[] $colors
 	 *
 	 * @return string|null
 	 */

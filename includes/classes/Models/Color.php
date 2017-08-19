@@ -18,6 +18,8 @@ use ActiveRecord\Model;
  * @method static Color|Color[] find(...$args)
  */
 class Color extends OrderedModel {
+	public static $table_name = 'colors';
+
 	public static $belongs_to = [
 		['color_group', 'foreign_key' => 'group_id'],
 	];

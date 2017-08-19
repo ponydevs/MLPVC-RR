@@ -28,7 +28,7 @@ class Cutiemarks {
 			$CMs[1] = new Cutiemark($CMs[0]->to_array());
 			$CMs[0]->facing = 'left';
 			$CMs[1]->facing = 'right';
-			$CMs[1]->favme_rotation = $CMs[0]->favme_rotation*-1;
+			$CMs[1]->rotation = $CMs[0]->rotation*-1;
 		}
 	}
 
@@ -66,7 +66,7 @@ class Cutiemarks {
 		$content = <<<HTML
 <span class="title">$facing</span>
 <a  class="preview" href="http://fav.me/{$cm->favme}" style="background-image:url('{$previewSVG}')">
-	<div class="img" style="transform: rotate({$cm->favme_rotation}deg); background-image:url('{$preview}')"></div>
+	<div class="img" style="transform: rotate({$cm->rotation}deg); background-image:url('{$preview}')"></div>
 </a>
 <span class="madeby">$userlink</span>
 HTML;
@@ -119,7 +119,7 @@ HTML;
 			Response::fail('Preview rotation must be a number');
 		if ($favme_rotation < -180 || $favme_rotation > 180)
 			Response::fail('Preview rotation must be between -180 and 180');
-		$data->favme_rotation = $favme_rotation;
+		$data->rotation = $favme_rotation;
 
 		$data->preview = null;
 		$data->preview_src = null;

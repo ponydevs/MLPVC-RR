@@ -12,7 +12,7 @@ $router->addMatchTypes([
 	'rr' => '(req|res)',
 	'rrl' => '(request|reservation)',
 	'rrsl' => '(request|reservation)s?',
-	'cgimg' => '[spd]',
+	'cgimg' => '[spdc]',
 	'cgext' => '(png|svg|json|gpl)',
 	'eqg' => 'eqg',
 	'favme' => 'd[a-z\d]{6}',

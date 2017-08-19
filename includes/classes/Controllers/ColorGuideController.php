@@ -170,6 +170,7 @@ class ColorGuideController extends Controller {
 					case 's': CGUtils::renderSpriteSVG($this->_cgPath, $this->_appearance->id);
 					case 'p': CGUtils::renderPreviewSVG($this->_cgPath, $this->_appearance);
 					case 'd': CGUtils::renderCMDirectionSVG($this->_cgPath, $this->_appearance->id);
+					case 'c': CGUtils::renderCMSVG($this->_cgPath, $this->_appearance->id);
 					default: CoreUtils::notFound();
 				}
 			case 'json': CGUtils::getSwatchesAI($this->_appearance);
@@ -1067,7 +1068,7 @@ class ColorGuideController extends Controller {
 					Response::fail("The used combination of facing values ($newfacing) is not allowed");
 
 				// Check for the equivalent of using symmetrical option
-				if (count($data) === 2 && $data['left']->favme === $data['right']->favme && $data['left']->favme_rotation === -$data['right']->favme_rotation){
+				if (count($data) === 2 && $data['left']->favme === $data['right']->favme && $data['left']->rotation === -$data['right']->rotation){
 					$newFacingValues = [''];
 					$data = [ $data['left']->id === null ? $data['right'] : $data['left'] ];
 					$data[0]->facing = null;
@@ -1105,8 +1106,12 @@ class ColorGuideController extends Controller {
 				$CMs = Cutiemarks::get($this->_appearance);
 				if (empty($CMs))
 					Response::done();
-				foreach ($CMs as $cm)
+				foreach ($CMs as $cm){
+					@unlink($cm->getSourceFilePath());
+					@unlink($cm->getTokenizedFilePath());
 					$cm->delete();
+				}
+				CGUtils::clearRenderedImages($this->_appearance->id, [CGUtils::CLEAR_CM_LEFT,CGUtils::CLEAR_CM_RIGHT,CGUtils::CLEAR_CMDIR_LEFT,CGUtils::CLEAR_CMDIR_RIGHT]);
 
 				Logs::logAction('cm_delete',[
 					'appearance_id' => $this->_appearance->id,
@@ -1203,6 +1208,12 @@ class ColorGuideController extends Controller {
 				]))->out();
 				if ($wipe_cache)
 					$this->_execAppearanceAction('clear-cache',null,true);
+
+				$wipe_cms = (new Input('wipe_cms','bool',[
+					Input::IS_OPTIONAL => true,
+				]))->out();
+				if ($wipe_cms)
+					$this->_execAppearanceAction('delcms',null,true);
 
 				$wipe_sprite = (new Input('wipe_sprite','bool',[
 					Input::IS_OPTIONAL => true,
@@ -1760,9 +1771,12 @@ HTML;
 
 		if (!isset($check_colors_of[$Group->appearance_id]))
 			$check_colors_of[$Group->appearance_id] = $Group->appearance;
+		$isCMGroup = $Group->label === 'Cutie Mark';
 		foreach ($check_colors_of as $appearance){
 			$appearance->checkSpriteColors();
-			CGUtils::clearRenderedImages($appearance->id, [CGUtils::CLEAR_PALETTE, CGUtils::CLEAR_PREVIEW]);
+			CGUtils::clearRenderedImages($appearance->id, [CGUtils::CLEAR_CM_LEFT, CGUtils::CLEAR_CM_RIGHT]);
+			if ($isCMGroup)
+				CGUtils::clearRenderedImages($appearance->id, [CGUtils::CLEAR_CM_LEFT, CGUtils::CLEAR_CM_RIGHT]);
 		}
 
 		$colon = !$this->_appearancePage;
@@ -1785,7 +1799,7 @@ HTML;
 		}
 
 		if (isset($_POST['APPEARANCE_PAGE']))
-			$response['cm_img'] = "/cg/v/{$Group->appearance_id}.svg?t=".time();
+			$response['cm_list'] = Cutiemarks::getListForAppearancePage(CutieMarks::get($Group->appearance), NOWRAP);
 		else $response['notes'] = Appearance::find($Group->appearance_id)->getNotesHTML(NOWRAP);
 
 		$logdata = [];

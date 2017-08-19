@@ -4,7 +4,6 @@ namespace App;
 
 use ActiveRecord\ConnectionManager;
 use ActiveRecord\SQLBuilder;
-use App\Models\CachedDeviation;
 use App\Models\Episode;
 use App\Models\Event;
 use App\Models\UsefulLink;
@@ -13,6 +12,9 @@ use Elasticsearch\Client;
 use Elasticsearch\ClientBuilder;
 use ElephantIO\Engine\SocketIO\Version2X as SocketIOEngine;
 use App\Exceptions\CURLRequestException;
+use enshrined\svgSanitize\data\AllowedTags;
+use enshrined\svgSanitize\data\TagInterface;
+use enshrined\svgSanitize\Sanitizer;
 
 class CoreUtils {
 	const
@@ -501,6 +503,37 @@ class CoreUtils {
 
 		$purifier = new \HTMLPurifier($config);
 		return self::trim($purifier->purify($dirty_html), true);
+	}
+
+	/**
+	 * Sanitizes SVG that comes from user input
+	 *
+	 * @param string $dirty_svg SVG data coming from the user
+	 * @param bool   $minify
+	 *
+	 * @return string Sanitized SVG code
+	 */
+	public static function sanitizeSvg(string $dirty_svg, bool $minify = true){
+		$sanitizer = new Sanitizer();
+		$sanitizer->setAllowedTags(new class implements TagInterface {
+			public static function getTags(){
+				return array_merge(AllowedTags::getTags(), ['use']);
+			}
+		});
+		$sanitizer->removeRemoteReferences(true);
+		$sanitized = $sanitizer->sanitize($dirty_svg);
+		if ($minify){
+			if (!file_exists(SVGO_BINARY))
+				throw new \RuntimeException('svgo is required for SVG minification, please run `yarn install` to install all NPM dependencies');
+			$tmp_path = FSPATH.'tmp/sanitize/'.self::sha256($sanitized).'.svg';
+			self::createUploadFolder($tmp_path);
+			File::put($tmp_path, $sanitized);
+
+			exec(SVGO_BINARY." $tmp_path --disable=removeUnknownsAndDefaults,removeUselessStrokeAndFill --enable=removeRasterImages,convertStyleToAttrs");
+			$sanitized = File::get($tmp_path);
+			unlink($tmp_path);
+		}
+		return $sanitized;
 	}
 
 	/**
@@ -1008,50 +1041,6 @@ HTML;
 		return self::length($normalized) < 12 ? '0'.$normalized : $normalized;
 	}
 
-	/**
-	 * Retrieve the full size URL for a submission
-	 *
-	 * @param string $id
-	 * @param string $prov
-	 *
-	 * @return null|string
-	 */
-	public static function getFullsizeURL($id, $prov){
-		$stash_url = $prov === 'sta.sh' ? "https://sta.sh/$id" : 'https://www.deviantart.com/art/REDIRECT-'.intval(self::substring($id, 1),36);
-		try {
-			$stashpage = HTTP::legitimateRequest($stash_url);
-		}
-		catch (CURLRequestException $e){
-			if ($e->getCode() === 404)
-				return 404;
-			return 1;
-		}
-		catch (\Exception $e){
-			return 2;
-		}
-		if (empty($stashpage))
-			return 3;
-
-		$DL_LINK_REGEX = '(https?://(sta\.sh|www\.deviantart\.com)/download/\d+/[a-z\d_]+-d[a-z\d]{6,}\.(?:png|jpe?g|bmp)\?[^"]+)';
-		$urlmatch = preg_match(new RegExp('<a\s+class="[^"]*?dev-page-download[^"]*?"\s+href="'.$DL_LINK_REGEX.'"'), $stashpage['response'], $_match);
-
-		if (!$urlmatch)
-			return 4;
-
-		$fullsize_url = HTTP::findRedirectTarget(htmlspecialchars_decode($_match[1]), $stash_url);
-
-		if (empty($fullsize_url))
-			return 5;
-
-		$CachedDeviation = CachedDeviation::find_by_id_and_provider($id, $prov);
-		if (!empty($CachedDeviation)){
-			$CachedDeviation->fullsize = $fullsize_url;
-			$CachedDeviation->save();
-		}
-
-		return URL::makeHttps($fullsize_url);
-	}
-
 	public static function getOverdueSubmissionList(){
 		$Query = DB::$instance->query(
 			'SELECT reserved_by, COUNT(*) as cnt FROM (
@@ -1241,5 +1230,14 @@ HTML;
 			header('Content-Type: text/plain');
 			die("This endpoint only serves JSON requests which your client isn't accepting");
 		}
+	}
+
+	public static function gzread(string $path):string {
+		$data = '';
+		$file = gzopen($path, 'rb');
+		while (!gzeof($file))
+		    $data .= gzread($file, 4096);
+		gzclose($file);
+		return $data;
 	}
 }

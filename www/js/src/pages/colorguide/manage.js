@@ -167,6 +167,8 @@ $(function(){
 										$form = $.mk('form','selective-wipe').html(
 											`<p>Select which of the following items to clear below.</p>
 											<label><input type="checkbox" name="wipe_cache"> Clear cached images</label>
+											<label><input type="checkbox" name="wipe_cms"> Remove cutie marks</label>
+											<label><input type="checkbox" name="wipe_cm_tokenized"> Clear tokenized cutie mark</label>
 											<label><input type="checkbox" name="wipe_sprite"> Clear sprite image</label>
 											<fieldset>
 												<legend>Color Groups</legend>
@@ -1062,18 +1064,9 @@ $(function(){
 						ctxmenus();
 						if (this.update || this.changes)
 							Time.Update();
-						let $ponycm = $('#pony-cm');
-						if (AppearancePage && $ponycm.length && this.cm_img){
-							$.Dialog.success(false, 'Color group updated');
-							$.Dialog.wait(false, 'Updating cutie mark orientation image');
-							let preload = new Image();
-							preload.src = this.cm_img;
-							$(preload).on('load error',function(){
-								$ponycm.backgroundImageUrl(preload.src);
-								$.Dialog.close();
-							});
-						}
-						else $.Dialog.close();
+						if (AppearancePage && this.cm_list)
+							$('#pony-cm-list').html(this.cm_list);
+						$.Dialog.close();
 					}
 					else $.Dialog.close();
 				}));

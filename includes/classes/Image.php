@@ -283,7 +283,7 @@ class Image {
 	 * @param string $FileRelPath
 	 */
 	public static function outputSVG($svgdata, $path, $FileRelPath){
-		self::_output($svgdata, $path, $FileRelPath, function($fp,$fd){ file_put_contents($fp, $fd); }, 'svg+xml');
+		self::_output($svgdata, $path, $FileRelPath, function($fp,$fd){ File::put($fp, $fd); }, 'svg+xml');
 	}
 
 	/**
@@ -294,9 +294,11 @@ class Image {
 	 * @param string $content_type
 	 */
 	private static function _output($data, $path, $relpath, $write_callback, $content_type){
-		if (isset($data)){
+		if ($data !== null){
 			CoreUtils::createUploadFolder($path);
 			$write_callback($path, $data);
+			if (file_exists($path))
+				File::chmod($path);
 		}
 
 		$filePortion = strtok($relpath,'?');

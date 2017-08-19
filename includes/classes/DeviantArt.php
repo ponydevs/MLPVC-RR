@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Exceptions\UnsupportedProviderException;
 use App\Models\CachedDeviation;
 use App\Models\Session;
 use App\Models\User;
@@ -180,7 +181,7 @@ class DeviantArt {
 			}
 
 			if (!preg_match($FULLSIZE_MATCH_REGEX, $insert['fullsize'])){
-				$fullsize_attempt = CoreUtils::getFullsizeURL($ID, $type);
+				$fullsize_attempt = self::getDownloadURL($ID, $type);
 				if (is_string($fullsize_attempt))
 					$insert['fullsize'] = $fullsize_attempt;
 			}
@@ -211,8 +212,9 @@ class DeviantArt {
 	 *
 	 * @return array
 	 */
-	public static function oEmbed($ID, $type){
-		if (empty($type) || !in_array($type, ['fav.me', 'sta.sh'], true)) $type = 'fav.me';
+	public static function oEmbed($ID, $type = null){
+		if (empty($type) || !in_array($type, ['fav.me', 'sta.sh'], true))
+			$type = 'fav.me';
 
 		if ($type === 'sta.sh')
 			$ID = CoreUtils::nomralizeStashID($ID);
@@ -221,8 +223,8 @@ class DeviantArt {
 		}
 		catch (CURLRequestException $e){
 			if ($e->getCode() === 404)
-				throw new \Exception('Image not found. The URL may be incorrect or the image has been deleted.', 404);
-			else throw new \Exception("Image could not be retrieved (HTTP {$e->getCode()})", $e->getCode());
+				throw new \RuntimeException('Image not found. The URL may be incorrect or the image has been deleted.', 404);
+			else throw new \RuntimeException("Image could not be retrieved (HTTP {$e->getCode()})", $e->getCode());
 		}
 
 		return $data;
@@ -420,7 +422,7 @@ class DeviantArt {
 			$username = $admin->childNodes->item(1)->firstChild->textContent;
 			$role = CoreUtils::makeSingular($admin->childNodes->item(3)->textContent);
 			if (!isset($revroles[$role]))
-				throw new \Exception("Role $role not reversible");
+				throw new \RuntimeException("Role $role not reversible");
 			$usernames[$username] = $revroles[$role];
 		}
 
@@ -437,5 +439,225 @@ class DeviantArt {
 	public static function getClubRole(User $user):?string {
 		$usernames = self::getMemberList();
 		return $usernames[$user->name] ?? null;
+	}
+
+	/**
+	 * @param string          $id
+	 * @param string          $provider
+	 * @return string|false Raw SVG data or false on failure
+	 */
+	private static function _readSubmissionSVG(string $id, string $provider){
+		// Attempt to find & acquire SVG/SVGZ/ZIP source file
+		$cache = self::getCachedDeviation($id, $provider);
+		if (empty($cache))
+			return false;
+
+		$format = 'zip|svgz?';
+		if (!preg_match(new RegExp("^$format$"), $cache->type))
+			return false;
+
+		$download_url = self::getDownloadURL($id, $provider, $format);
+
+		// It's a compressed folder, download & extract
+		if ($cache->type === 'zip'){
+			$tmp_folder = FSPATH."tmp/deviation/$id";
+			$cleanup = function() use ($tmp_folder){
+				$files = new \RecursiveIteratorIterator(
+					new \RecursiveDirectoryIterator($tmp_folder, \RecursiveDirectoryIterator::SKIP_DOTS),
+					\RecursiveIteratorIterator::CHILD_FIRST
+				);
+
+				foreach ($files as $fileinfo) {
+					$todo = ($fileinfo->isDir() ? 'rmdir' : 'unlink');
+					$todo($fileinfo->getRealPath());
+				}
+
+				rmdir($tmp_folder);
+			};
+			$tmp_storage = "$tmp_folder/_source.{$cache->type}";
+			CoreUtils::createUploadFolder($tmp_storage);
+			if (!file_exists($tmp_storage))
+				copy($download_url, $tmp_storage);
+
+			$zip = new \ZipArchive();
+			$zip->open($tmp_storage);
+			$zip->extractTo($tmp_folder);
+			$svgs = glob("$tmp_folder/*.{svg,svgz}", GLOB_BRACE);
+			$count = count($svgs);
+			if ($count > 0){
+				if ($count > 1)
+					sort($svgs);
+
+				$data = $cache->type === 'svgz'
+					? CoreUtils::gzread($svgs[0])
+					: File::get($svgs[0]);
+				$cleanup();
+				return $data;
+			}
+			$cleanup();
+			return false;
+		}
+
+		// Handle SVG/SVGZ direct uploads
+		return $cache->type === 'svgz'
+			? CoreUtils::gzread($download_url)
+			: File::get($download_url);
+	}
+
+	/**
+	 * @param string $href
+	 * @return string|false Raw SVG data or false on failure
+	 */
+	private static function _readProviderSVG(string $href){
+		try {
+			$prov = ImageProvider::getProvider($href);
+		}
+		catch (UnsupportedProviderException $e){
+			return false;
+		}
+		if ($prov->name === 'sta.sh'){
+			$result = self::_readSubmissionSVG($prov->itemid, $prov->name);
+			if ($result !== false)
+				return $result;
+		}
+		return false;
+	}
+
+	/**
+	 * @param string $favme_id
+	 *
+	 * @return string|null Raw SVG data or null on failure
+	 */
+	public static function trackDownSVG(string $favme_id):?string {
+		$result = self::_readSubmissionSVG($favme_id, 'fav.me');
+		if ($result !== false)
+			return $result;
+
+		// Look for links in the description
+		$submissionPage = HTTP::legitimateRequest(self::favmeHttpsUrl($favme_id));
+		if (empty($submissionPage['response']))
+			return null;
+
+		$dom = new \DOMDocument();
+		libxml_use_internal_errors(true);
+		$dom->loadHTML($submissionPage['response']);
+		libxml_use_internal_errors();
+		$divs = $dom->getElementsByTagName('div');
+		/** @var $description \DOMElement */
+		$description = null;
+		foreach ($divs as $div){
+			/** @var $div \DOMElement */
+			/** @var $class \DOMAttr */
+			$class = $div->attributes->getNamedItem('class');
+			if ($class === null || $class->value !== 'dev-description')
+				continue;
+
+			$description = $div;
+			break;
+		}
+		if ($description === null)
+			return null;
+		$links = $description->getElementsByTagName('a');
+		foreach ($links as $link){
+			/** @var $link \DOMElement */
+			/** @var $hrefAttr \DOMAttr */
+			/** @var $classAttr \DOMAttr */
+			$hrefAttr = $link->attributes->getNamedItem('href');
+			$href = $hrefAttr !== null ? $hrefAttr->value : null;
+			$classAttr = $link->attributes->getNamedItem('class');
+			$class = $classAttr !== null ? $classAttr->value : null;
+			$text = $link->textContent;
+
+			if (preg_match(new RegExp('^svgz?(?: file)?$','i'),$text)){
+				$target = self::trimOutgoingGateFromUrl($href);
+
+				$host = explode('.',parse_url($target, PHP_URL_HOST));
+				$host = implode('.', array_slice($host, -2, 2));
+
+				/** @noinspection DegradedSwitchInspection */
+				switch($host){
+					case 'gitlab.com':
+						$url = preg_replace(new RegExp('(/[a-z\w_-]+/[a-z\w_-]+/)blob(/)','i'),'$1raw$2',$target);
+						$extension = explode('.',$url);
+						$extension = array_pop($extension);
+						$data = $extension === 'svgz'
+							? CoreUtils::gzread($url)
+							: File::get($url);
+						return $data;
+					break;
+					case 'sta.sh':
+					case 'fav.me':
+					case 'deviantart.com':
+						$result = self::_readProviderSVG($href);
+						if ($result !== false)
+							return $result;
+					break;
+					default:
+						return null;
+				}
+			}
+			else if ($class === 'thumb'){
+				$result = self::_readProviderSVG($href);
+				if ($result !== false)
+					return $result;
+			}
+		}
+		die('RIP');
+
+		return null;
+	}
+
+	public static function favmeHttpsUrl(string $favme_id):string {
+		return 'https://www.deviantart.com/art/REDIRECT-'.intval(CoreUtils::substring($favme_id, 1), 36);
+	}
+
+	public static function trimOutgoingGateFromUrl(string $url):string {
+		return preg_replace(new RegExp('^https?://(www\.)?deviantart\.com/users/outgoing\?'),'',$url);
+	}
+
+	/**
+	 * Retrieve the full size URL for a submission
+	 *
+	 * @param string $id
+	 * @param string $prov
+	 * @param string $formats
+	 *
+	 * @return null|string
+	 */
+	public static function getDownloadURL($id, $prov, $formats = 'png|jpe?g|bmp'){
+		$stash_url = $prov === 'sta.sh' ? "https://sta.sh/$id" : self::favmeHttpsUrl($id);
+		try {
+			$stashpage = HTTP::legitimateRequest($stash_url);
+		}
+		catch (CURLRequestException $e){
+			if ($e->getCode() === 404)
+				return 404;
+
+			return 1;
+		}
+		catch (\Exception $e){
+			return 2;
+		}
+		if (empty($stashpage))
+			return 3;
+
+		$DL_LINK_REGEX = "(https?://(sta\.sh|www\.deviantart\.com)/download/\d+/[a-z\d_]+-d[a-z\d]{6,}\.(?:$formats)\?[^\"]+)";
+		$urlmatch = preg_match(new RegExp('<a\s+class="[^"]*?dev-page-download[^"]*?"\s+href="'.$DL_LINK_REGEX.'"'), $stashpage['response'], $_match);
+
+		if (!$urlmatch)
+			return 4;
+
+		$fullsize_url = HTTP::findRedirectTarget(htmlspecialchars_decode($_match[1]), $stash_url);
+
+		if (empty($fullsize_url))
+			return 5;
+
+		$CachedDeviation = CachedDeviation::find_by_id_and_provider($id, $prov);
+		if (!empty($CachedDeviation)){
+			$CachedDeviation->fullsize = $fullsize_url;
+			$CachedDeviation->save();
+		}
+
+		return URL::makeHttps($fullsize_url);
 	}
 }

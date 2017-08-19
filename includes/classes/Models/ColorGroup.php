@@ -17,6 +17,8 @@ use App\UserPrefs;
  * @method static ColorGroup[] find_all_by_appearance_id(int $appearance_id)
  */
 class ColorGroup extends OrderedModel {
+	public static $table_name = 'color_groups';
+
 	public static $belongs_to = [
 		['appearance'],
 	];

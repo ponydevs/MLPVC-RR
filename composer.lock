@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "437749db114873abc2d8664a306be15d",
+    "content-hash": "fb0d9a1ef5953d5381aabb7f7ccd51a5",
     "packages": [
         {
             "name": "altorouter/altorouter",
@@ -166,6 +166,43 @@
                 "search"
             ],
             "time": "2017-07-19T18:44:30+00:00"
+        },
+        {
+            "name": "enshrined/svg-sanitize",
+            "version": "0.7.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/darylldoyle/svg-sanitizer.git",
+                "reference": "1d35258e08a7bf84ea560096e86ab9cf73bc373d"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/darylldoyle/svg-sanitizer/zipball/1d35258e08a7bf84ea560096e86ab9cf73bc373d",
+                "reference": "1d35258e08a7bf84ea560096e86ab9cf73bc373d",
+                "shasum": ""
+            },
+            "require-dev": {
+                "codeclimate/php-test-reporter": "^0.1.2",
+                "phpunit/phpunit": "^4.7"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "enshrined\\svgSanitize\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-2.0+"
+            ],
+            "authors": [
+                {
+                    "name": "Daryll Doyle",
+                    "email": "daryll@enshrined.co.uk"
+                }
+            ],
+            "description": "An SVG sanitizer for PHP",
+            "time": "2017-06-28T09:07:49+00:00"
         },
         {
             "name": "erusev/parsedown",
@@ -1195,12 +1232,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/SeinopSys/phinx.git",
-                "reference": "07046acdbe04f4c77e0c3b2fb3dcdd485c03d3a7"
+                "reference": "acc2c58c9ceb41adbdc64fb7ac6960b45e19da82"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/SeinopSys/phinx/zipball/07046acdbe04f4c77e0c3b2fb3dcdd485c03d3a7",
-                "reference": "07046acdbe04f4c77e0c3b2fb3dcdd485c03d3a7",
+                "url": "https://api.github.com/repos/SeinopSys/phinx/zipball/acc2c58c9ceb41adbdc64fb7ac6960b45e19da82",
+                "reference": "acc2c58c9ceb41adbdc64fb7ac6960b45e19da82",
                 "shasum": ""
             },
             "require": {
@@ -1264,7 +1301,7 @@
             "support": {
                 "source": "https://github.com/SeinopSys/phinx/tree/feature-postgres-citext"
             },
-            "time": "2017-08-07 23:51:04"
+            "time": "2017-08-07 22:23:03"
         },
         {
             "name": "s1lentium/iptools",

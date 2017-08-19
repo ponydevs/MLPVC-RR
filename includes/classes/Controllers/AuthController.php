@@ -8,6 +8,7 @@ use App\CSRFProtection;
 use App\Cookie;
 use App\DB;
 use App\DeviantArt;
+use App\File;
 use App\HTTP;
 use App\Permission;
 use App\RegExp;
@@ -59,7 +60,7 @@ class AuthController extends Controller {
 		}
 
 		if (self::_isStateRndkey($_match)){
-			$confirm = str_replace('{{CODE}}', $_match[0], file_get_contents(INCPATH.'views/loginConfrim.html'));
+			$confirm = str_replace('{{CODE}}', $_match[0], File::get(INCPATH.'views/loginConfrim.html'));
 			die($confirm);
 		}
 		else $this->_moveToState($_GET['state']);

@@ -43,6 +43,8 @@ After some time, the idea of moving the old PNG color guide into an easier to us
    - [AltoRouter](https://github.com/dannyvankooten/AltoRouter)
    - [Parsedown](https://github.com/erusev/parsedown)
    - [IPTools](https://github.com/S1lentium/IPTools)
+   - [svg-sanitizer](https://github.com/darylldoyle/svg-sanitizer)
+   - [svgo](https://github.com/svg/svgo)
  - Development tools:
    - [Gulp](http://gulpjs.com/)
    - [Uglify-js](https://www.npmjs.com/package/uglify-js)
