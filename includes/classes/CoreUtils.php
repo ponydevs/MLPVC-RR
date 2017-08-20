@@ -563,14 +563,15 @@ class CoreUtils {
 		if ($minify)
 			$sanitized = self::minifySvgData($sanitized);
 
-		// Make sure we add the default colors of paths to the file to make them replaceable
 		$unifier = new \DOMDocument();
 		$unifier->loadXML($sanitized);
+		// Make sure we add the default colors of paths to the file to make them replaceable (unless they have a class)
 		$paths = $unifier->getElementsByTagName('path');
 		foreach ($paths as $path){
 			/** @var $path \DOMElement */
-			$fillAttr = $path->attributes->getNamedItem('fill');
-			if ($fillAttr === null)
+			$fillAttr = $path->getAttribute('fill');
+			$classAttr = $path->getAttribute('class');
+			if ($fillAttr === null && $classAttr === null)
 				$path->setAttribute('fill','#000');
 		}
 		$sanitized = $unifier->saveXML($unifier->documentElement, LIBXML_NOEMPTYTAG);

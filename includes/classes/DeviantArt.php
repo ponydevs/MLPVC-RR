@@ -550,9 +550,7 @@ class DeviantArt {
 		$description = null;
 		foreach ($divs as $div){
 			/** @var $div \DOMElement */
-			/** @var $class \DOMAttr */
-			$class = $div->attributes->getNamedItem('class');
-			if ($class === null || $class->value !== 'dev-description')
+			if ($div->getAttribute('class') !== 'dev-description')
 				continue;
 
 			$description = $div;
@@ -564,12 +562,7 @@ class DeviantArt {
 		$svgz_regex = new RegExp('svgz?.*(?::|-|$)','i');
 		foreach ($links as $link){
 			/** @var $link \DOMElement */
-			/** @var $hrefAttr \DOMAttr */
-			/** @var $classAttr \DOMAttr */
-			$hrefAttr = $link->attributes->getNamedItem('href');
-			$href = $hrefAttr !== null ? $hrefAttr->value : null;
-			$classAttr = $link->attributes->getNamedItem('class');
-			$class = $classAttr !== null ? $classAttr->value : null;
+			$href = $link->getAttribute('href');
 			$text = $link->textContent;
 
 			$textMatch = preg_match($svgz_regex,$text);
@@ -608,7 +601,7 @@ class DeviantArt {
 						return null;
 				}
 			}
-			else if ($class === 'thumb'){
+			else if ($link->getAttribute('class') === 'thumb'){
 				$result = self::_readProviderSVG($href);
 				if ($result !== false)
 					return $result;

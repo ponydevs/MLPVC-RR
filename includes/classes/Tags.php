@@ -91,7 +91,6 @@ class Tags {
 	 * @return array
 	 */
 	public static function updateUses(int $TagID, bool $returnCount = false):array {
-		// TODO Rewrite using ActiveRecord
 		$Tagged = DB::$instance->where('tag_id', $TagID)->count('tagged');
 		$return = ['status' => DB::$instance->where('id', $TagID)->update('tags', ['uses' => $Tagged])];
 

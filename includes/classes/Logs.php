@@ -43,7 +43,6 @@ class Logs {
 
 	/**
 	 * Logs a specific set of data (action) in the table belonging to the specified type
-	 * TODO Redo to use ActiveRecord in part or exclusively
 	 *
 	 * @param string $reftype Log entry type
 	 * @param array  $data    Data to be inserted
