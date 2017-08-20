@@ -474,7 +474,7 @@ class DeviantArt {
 
 				rmdir($tmp_folder);
 			};
-			$tmp_storage = "$tmp_folder/_source.{$cache->type}";
+			$tmp_storage = "$tmp_folder/_source.{$cache->type}.file";
 			CoreUtils::createUploadFolder($tmp_storage);
 			if (!file_exists($tmp_storage))
 				copy($download_url, $tmp_storage);
@@ -482,7 +482,10 @@ class DeviantArt {
 			$zip = new \ZipArchive();
 			$zip->open($tmp_storage);
 			$zip->extractTo($tmp_folder);
-			$svgs = glob("$tmp_folder/*.{svg,svgz}", GLOB_BRACE);
+			$svgs = array_merge(
+				glob("$tmp_folder/*.{svg,svgz}", GLOB_BRACE),
+				glob("$tmp_folder/**/*.{svg,svgz}", GLOB_BRACE)
+			);
 			$count = count($svgs);
 			if ($count > 0){
 				if ($count > 1)
@@ -558,6 +561,7 @@ class DeviantArt {
 		if ($description === null)
 			return null;
 		$links = $description->getElementsByTagName('a');
+		$svgz_regex = new RegExp('svgz?.*(?::|-|$)','i');
 		foreach ($links as $link){
 			/** @var $link \DOMElement */
 			/** @var $hrefAttr \DOMAttr */
@@ -568,7 +572,15 @@ class DeviantArt {
 			$class = $classAttr !== null ? $classAttr->value : null;
 			$text = $link->textContent;
 
-			if (preg_match(new RegExp('^svgz?(?: file)?$','i'),$text)){
+			$textMatch = preg_match($svgz_regex,$text);
+			$previousSiblingTextMatch = false;
+			if (!$textMatch){
+				$previousSibling = CoreUtils::closestMeaningfulPreviousSibling($link);
+				if ($previousSibling !== null){
+					$previousSiblingTextMatch = preg_match($svgz_regex, CoreUtils::trim($previousSibling->textContent));
+				}
+			}
+			if ($textMatch || $previousSiblingTextMatch){
 				$target = self::trimOutgoingGateFromUrl($href);
 
 				$host = explode('.',parse_url($target, PHP_URL_HOST));

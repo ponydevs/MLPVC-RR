@@ -167,8 +167,8 @@ $(function(){
 										$form = $.mk('form','selective-wipe').html(
 											`<p>Select which of the following items to clear below.</p>
 											<label><input type="checkbox" name="wipe_cache"> Clear cached images</label>
-											<label><input type="checkbox" name="wipe_cms"> Remove cutie marks</label>
 											<label><input type="checkbox" name="wipe_cm_tokenized"> Clear tokenized cutie mark</label>
+											<label><input type="checkbox" name="wipe_cms"> Remove all cutie marks</label>
 											<label><input type="checkbox" name="wipe_sprite"> Clear sprite image</label>
 											<fieldset>
 												<legend>Color Groups</legend>
@@ -340,7 +340,7 @@ $(function(){
 														if (!$cgRelations.length)
 															$cgRelations = $.mk('section')
 																.addClass('related')
-																.appendTo($content);
+																.appendTo($content.children().last());
 														$cgRelations.html($(this.section).filter('section').html());
 													}
 													else if ($cgRelations.length){
@@ -1207,7 +1207,8 @@ $(function(){
 					const
 						$row = $(this),
 						method = $row.children('.clrmthd').find('option:selected').attr('value'),
-						id = $row.children('.clrid').text().replace('ID:','');
+						$clrid = $row.children('.clrid'),
+						id = $clrid.length ? $clrid.text().replace('ID:','') : void 0;
 
 					switch (method){
 						case "hex":
@@ -1359,7 +1360,7 @@ $(function(){
 							$og.append(
 								$.mk('option').attr({
 									value: color.id,
-									disabled: color.id === color_id,
+									disabled: typeof color.id === 'undefined' || color.id === color_id,
 								}).text(color.label)
 							);
 						});

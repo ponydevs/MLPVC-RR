@@ -351,7 +351,7 @@ class ColorGuideController extends Controller {
 		catch (NoNodesAvailableException|ServerErrorResponseException $e){
 			$elasticAvail = false;
 		}
-		$searching = !empty($_GET['q']) && CoreUtils::length(trim($_GET['q'])) > 0;
+		$searching = !empty($_GET['q']) && CoreUtils::length(CoreUtils::trim($_GET['q'])) > 0;
 		$jsResponse = CoreUtils::isJSONExpected();
 		if ($elasticAvail){
 			$search = new ElasticsearchDSL\Search();
@@ -360,7 +360,7 @@ class ColorGuideController extends Controller {
 
 			// Search query exists
 			if ($searching){
-				$SearchQuery = preg_replace(new RegExp('[^\w\s*?]'),'',trim($_GET['q']));
+				$SearchQuery = preg_replace(new RegExp('[^\w\s*?]'),'',CoreUtils::trim($_GET['q']));
 				$title .= "$SearchQuery - ";
 				$multiMatch = new ElasticsearchDSL\Query\FullText\MultiMatchQuery(
 					['label','tags'],
@@ -1040,6 +1040,7 @@ class ColorGuideController extends Controller {
 				Response::done(['html' => Cutiemarks::getListForAppearancePage($CMs, NOWRAP)]);
 			break;
 			case 'setcms':
+				// TODO Recreate editor & allow arbitrary number of CMs
 				/** @var $data Cutiemark[] */
 				$data = [];
 				$newFacingValues = [];
@@ -1214,6 +1215,14 @@ class ColorGuideController extends Controller {
 				]))->out();
 				if ($wipe_cms)
 					$this->_execAppearanceAction('delcms',null,true);
+
+				$wipe_cm_tokenized = (new Input('wipe_cm_tokenized','bool',[
+					Input::IS_OPTIONAL => true,
+				]))->out();
+				if ($wipe_cm_tokenized){
+					foreach ($this->_appearance->cutiemarks as $cm)
+						@unlink($cm->getTokenizedFilePath());
+				}
 
 				$wipe_sprite = (new Input('wipe_sprite','bool',[
 					Input::IS_OPTIONAL => true,
@@ -1688,7 +1697,7 @@ HTML;
 		/** @var $check_colors_of Appearance[] */
 		$check_colors_of = [];
 		foreach ($recvColors as $part => $c){
-			if (isset($c['id'])){
+			if (!empty($c['id'])){
 				$append = Color::find($c['id']);
 				if (empty($append))
 					Response::fail("Trying to edit color with ID {$c['id']} which does not exist");
@@ -1861,10 +1870,10 @@ HTML;
 				'colors' => []
 			];
 			foreach ($item->colors as $c){
+				$arr = $c->to_array(['only' => ['id','label']]);
 				if ($c->linked_to !== null)
-					continue;
-
-				$group['colors'][] = $c->to_array(['only' => ['id','label']]);
+					unset($arr['id']);
+				$group['colors'][] = $arr;
 			}
 			if (count($group['colors']) > 0)
 				$list[] = $group;

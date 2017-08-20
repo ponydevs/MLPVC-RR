@@ -12,6 +12,7 @@ use ActiveRecord\Model;
  * @property string     $hex
  * @property int        $linked_to
  * @property ColorGroup $color_group      (Via relations)
+ * @property Color      $linked           (Via magic method)
  * @property int        $appearance_id    (Via magic method)
  * @property Appearance $appearance       (Via magic method)
  * @property Color[]    $dependant_colors (Via magic method)
@@ -32,6 +33,10 @@ class Color extends OrderedModel {
 
 	public function get_appearance(){
 		return $this->color_group->appearance;
+	}
+
+	public function get_linked(){
+		return $this->linked_to === null ? null : self::find($this->linked_to);
 	}
 
 	/** @inheritdoc */

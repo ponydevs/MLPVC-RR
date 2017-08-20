@@ -5,7 +5,6 @@ namespace App\Models;
 use App\CGUtils;
 use App\CoreUtils;
 use App\DeviantArt;
-use App\Exceptions\CURLRequestException;
 use App\File;
 use App\Users;
 
@@ -26,7 +25,7 @@ class Cutiemark extends NSModel {
 
 	public static $belongs_to = [
 		['appearance'],
-		['contributor', 'class' => 'User'],
+		['contributor', 'class' => 'User', 'foreign_key' => 'contributor_id'],
 	];
 
 	public function getTokenizedFilePath(){
@@ -39,21 +38,28 @@ class Cutiemark extends NSModel {
 
 	public function getTokenizedFile():?string {
 		$tokenized_path = $this->getTokenizedFilePath();
-		if (file_exists($tokenized_path))
-			return File::get($tokenized_path);
-
 		$source_path = $this->getSourceFilePath();
-		if (!file_exists($source_path)){
+		$source_exists = file_exists($source_path);
+		if (file_exists($tokenized_path)){
+			if (!$source_exists){
+				@unlink($tokenized_path);
+				CGUtils::clearRenderedImages($this->appearance_id, [CGUtils::CLEAR_CM_LEFT,CGUtils::CLEAR_CM_RIGHT]);
+				return null;
+			}
+			if (filemtime($tokenized_path) >= filemtime($source_path))
+				return File::get($tokenized_path);
+		}
+
+		if (!$source_exists){
 			$data = DeviantArt::trackDownSVG($this->favme);
 			if ($data === null)
 				return null;
 
-			$data = CoreUtils::sanitizeSvg($data);
 			CoreUtils::createUploadFolder($source_path);
 			File::put($source_path, $data);
 		}
 		else $data = File::get($source_path);
-		$data = CGUtils::tokenizeSvg($data, $this->appearance_id);
+		$data = CGUtils::tokenizeSvg(CoreUtils::sanitizeSvg($data), $this->appearance_id);
 		CoreUtils::createUploadFolder($tokenized_path);
 		File::put($tokenized_path, $data);
 		return $data;

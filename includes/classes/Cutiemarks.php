@@ -61,8 +61,7 @@ class Cutiemarks {
 		$previewSVG = Appearances::getCMPreviewSVGURL($cm);
 		$preview = CoreUtils::aposEncode($cm->getPreviewURL());
 
-		$Vector = DeviantArt::getCachedDeviation($cm->favme);
-		$userlink = Users::get($Vector->author, 'name')->toAnchor(User::WITH_AVATAR);
+		$userlink = $cm->contributor->toAnchor(User::WITH_AVATAR);
 		$content = <<<HTML
 <span class="title">$facing</span>
 <a  class="preview" href="http://fav.me/{$cm->favme}" style="background-image:url('{$previewSVG}')">
@@ -83,7 +82,7 @@ HTML;
 	 * @return bool
 	 */
 	public static function postProcess(Cutiemark $data, int $index):bool {
-		$favme = isset($_POST['favme'][$index]) ? trim($_POST['favme'][$index]) : null;
+		$favme = isset($_POST['favme'][$index]) ? CoreUtils::trim($_POST['favme'][$index]) : null;
 		if (empty($favme)){
 			if ($index > 0)
 				return false;
@@ -91,7 +90,7 @@ HTML;
 		}
 
 		if (isset($_POST['facing'][$index])){
-			$facing = trim($_POST['facing'][$index]);
+			$facing = CoreUtils::trim($_POST['facing'][$index]);
 			if (empty($facing))
 				$facing = null;
 			else if (!in_array($facing,Cutiemarks::VALID_FACING_VALUES,true))
@@ -121,19 +120,6 @@ HTML;
 			Response::fail('Preview rotation must be between -180 and 180');
 		$data->rotation = $favme_rotation;
 
-		$data->preview = null;
-		$data->preview_src = null;
-		if (isset($_POST['preview_src'][$index])){
-			$preview_src = trim($_POST['preview_src'][$index]);
-			if (!empty($preview_src)){
-				$prov = new ImageProvider($preview_src);
-				if ($prov->preview === null)
-					Response::fail('Preview image could not be found.');
-
-				$data->preview = $prov->preview;
-				$data->preview_src = $preview_src;
-			}
-		}
 		return true;
 	}
 

@@ -140,7 +140,7 @@ class Browser {
 	 * @return bool True if the browser is the specified browser
 	 */
 	public function isBrowser($browserName){
-		return (0 == strcasecmp($this->_browserName, trim($browserName)));
+		return (0 == strcasecmp($this->_browserName, CoreUtils::trim($browserName)));
 	}
 
 	/**

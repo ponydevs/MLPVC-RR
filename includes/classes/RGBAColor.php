@@ -24,12 +24,40 @@ class RGBAColor {
 		$this->alpha = $a;
 	}
 
+	public function setRed(int $r){
+		$this->red = $r;
+
+		return $this;
+	}
+
+	public function setGreen(int $g){
+		$this->green = $g;
+
+		return $this;
+	}
+
+	public function setBlue(int $b){
+		$this->blue = $b;
+
+		return $this;
+	}
+
+	public function setAlpha(float $a){
+		$this->alpha = $a;
+
+		return $this;
+	}
+
 	public function isTransparent(){
 		return $this->alpha !== 1.0;
 	}
 
 	public function toHex():string {
 		return '#'.strtoupper(CoreUtils::pad(base_convert($this->red, 10, 16)).CoreUtils::pad(base_convert($this->green, 10, 16)).CoreUtils::pad(base_convert($this->blue, 10, 16)));
+	}
+
+	public function toHexa():string {
+		return $this->toHex().strtoupper(CoreUtils::pad(base_convert(round($this->alpha*255),10,16)));
 	}
 
 	public function toRGB():string {
@@ -42,6 +70,21 @@ class RGBAColor {
 
 	public function __toString():string {
 		return $this->isTransparent() ? $this->toRGBA() : $this->toHex();
+	}
+
+	/**
+	 * @param bool $alpha
+	 *
+	 * @return self
+	 */
+	public function invert($alpha = false):self {
+		$this->red = 255 - $this->red;
+		$this->green = 255 - $this->green;
+		$this->blue = 255 - $this->blue;
+		if ($alpha)
+			$this->alpha = 1 - $this->alpha;
+
+		return $this;
 	}
 
 	public static function forEach(string &$input, callable $callback){

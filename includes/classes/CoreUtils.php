@@ -12,7 +12,9 @@ use Elasticsearch\Client;
 use Elasticsearch\ClientBuilder;
 use ElephantIO\Engine\SocketIO\Version2X as SocketIOEngine;
 use App\Exceptions\CURLRequestException;
+use enshrined\svgSanitize\data\AllowedAttributes;
 use enshrined\svgSanitize\data\AllowedTags;
+use enshrined\svgSanitize\data\AttributeInterface;
 use enshrined\svgSanitize\data\TagInterface;
 use enshrined\svgSanitize\Sanitizer;
 
@@ -505,6 +507,19 @@ class CoreUtils {
 		return self::trim($purifier->purify($dirty_html), true);
 	}
 
+	public static function minifySvgData(string $svgdata){
+		if (!file_exists(SVGO_BINARY))
+			throw new \RuntimeException('svgo is required for SVG minification, please run `yarn install` to install all NPM dependencies');
+		$tmp_path = FSPATH.'tmp/sanitize/'.self::sha256($svgdata).'.svg';
+		self::createUploadFolder($tmp_path);
+		File::put($tmp_path, $svgdata);
+
+		exec(SVGO_BINARY." $tmp_path --disable=removeUnknownsAndDefaults,removeUselessStrokeAndFill --enable=removeRasterImages,convertStyleToAttrs,removeDimensions");
+		$svgdata = File::get($tmp_path);
+		unlink($tmp_path);
+		return $svgdata;
+	}
+
 	/**
 	 * Sanitizes SVG that comes from user input
 	 *
@@ -514,25 +529,52 @@ class CoreUtils {
 	 * @return string Sanitized SVG code
 	 */
 	public static function sanitizeSvg(string $dirty_svg, bool $minify = true){
+		// Remove bogous HTML entities
+		$dirty_svg = preg_replace(new RegExp('&ns_[a-z_]+;'), '', $dirty_svg);
+		if ($minify)
+			$dirty_svg = self::minifySvgData($dirty_svg);
+
 		$sanitizer = new Sanitizer();
 		$sanitizer->setAllowedTags(new class implements TagInterface {
 			public static function getTags(){
-				return array_merge(AllowedTags::getTags(), ['use']);
+				return [
+		            'svg','circle','clippath','clipPath','defs','ellipse','filter','font','g','line',
+		            'lineargradient','marker','mask','mpath','path','pattern','style',
+		            'polygon','polyline','radialgradient','rect','stop','switch','use','view',
+
+		            'feblend','fecolormatrix','fecomponenttransfer','fecomposite',
+		            'feconvolvematrix','fediffuselighting','fedisplacementmap',
+		            'feflood','fefunca','fefuncb','fefuncg','fefuncr','fegaussianblur',
+		            'femerge','femergenode','femorphology','feoffset',
+		            'fespecularlighting','fetile','feturbulence',
+				];
+			}
+		});
+		$sanitizer->setAllowedAttrs(new class implements AttributeInterface {
+			public static function getAttributes(){
+				/** @var $allowed array */
+				$allowed = array_flip(AllowedAttributes::getAttributes());
+				unset($allowed['color']);
+				return array_keys($allowed);
 			}
 		});
 		$sanitizer->removeRemoteReferences(true);
 		$sanitized = $sanitizer->sanitize($dirty_svg);
-		if ($minify){
-			if (!file_exists(SVGO_BINARY))
-				throw new \RuntimeException('svgo is required for SVG minification, please run `yarn install` to install all NPM dependencies');
-			$tmp_path = FSPATH.'tmp/sanitize/'.self::sha256($sanitized).'.svg';
-			self::createUploadFolder($tmp_path);
-			File::put($tmp_path, $sanitized);
+		if ($minify)
+			$sanitized = self::minifySvgData($sanitized);
 
-			exec(SVGO_BINARY." $tmp_path --disable=removeUnknownsAndDefaults,removeUselessStrokeAndFill --enable=removeRasterImages,convertStyleToAttrs");
-			$sanitized = File::get($tmp_path);
-			unlink($tmp_path);
+		// Make sure we add the default colors of paths to the file to make them replaceable
+		$unifier = new \DOMDocument();
+		$unifier->loadXML($sanitized);
+		$paths = $unifier->getElementsByTagName('path');
+		foreach ($paths as $path){
+			/** @var $path \DOMElement */
+			$fillAttr = $path->attributes->getNamedItem('fill');
+			if ($fillAttr === null)
+				$path->setAttribute('fill','#000');
 		}
+		$sanitized = $unifier->saveXML($unifier->documentElement, LIBXML_NOEMPTYTAG);
+
 		return $sanitized;
 	}
 
@@ -935,7 +977,7 @@ HTML;
 	 *
 	 * @return string
 	 */
-	public static function trim(string $str, bool $multiline = false, string $chars = " \t\n\r\0\x0B"){
+	public static function trim(string $str, bool $multiline = false, string $chars = " \t\n\r\0\x0B\xC2\xA0"){
 		$out = preg_replace(new RegExp(' +'),' ',trim($str, $chars));
 		if ($multiline)
 			$out = preg_replace(new RegExp('(\r\n|\r)'),"\n",$out);
@@ -1239,5 +1281,18 @@ HTML;
 		    $data .= gzread($file, 4096);
 		gzclose($file);
 		return $data;
+	}
+
+	const USELESS_NODE_NAMES = [
+		'#text' => true,
+		'br' => true,
+	];
+
+	public static function closestMeaningfulPreviousSibling(\DOMElement $e){
+		do {
+			$e = $e->previousSibling;
+		}
+		while ($e !== null && empty(self::trim($e->textContent)));
+		return $e;
 	}
 }

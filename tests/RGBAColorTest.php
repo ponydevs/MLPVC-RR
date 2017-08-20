@@ -100,4 +100,12 @@ class RGBAColorTest extends TestCase {
 		$result = RGBAColor::parse('#b8e1fd');
 		self::assertEquals('#B8E1FD', (string)$result);
 	}
+
+	function testInvert(){
+		$result = new RGBAColor(0, 255, 0, 1);
+		self::assertEquals('#FF00FF', $result->invert()->toHex());
+
+		$result = new RGBAColor(255, 0, 255, .5);
+		self::assertEquals('rgba(0,255,0,0.5)', (string)$result->invert());
+	}
 }
