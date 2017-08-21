@@ -9,9 +9,13 @@ use App\CGUtils;
 use App\CoreUtils;
 use App\DB;
 use App\Episodes;
+use App\Models\Logs\MajorChange;
 use App\Permission;
 use App\RegExp;
+use App\Tags;
 use App\Time;
+use App\UserPrefs;
+use Elasticsearch\Common\Exceptions\NoNodesAvailableException as ElasticNoNodesAvailableException;
 
 /**
  * @property int                 $id
@@ -192,6 +196,120 @@ class Appearance extends NSModel implements LinkableInterface {
 		return $wrap ? "<div class='notes'>$notes</div>" : $notes;
 	}
 
+	/**
+	 * Returns the markup of the color list for a specific appearance
+	 *
+	 * @param bool       $wrap
+	 * @param bool       $colon
+	 * @param bool       $colorNames
+	 *
+	 * @return string
+	 */
+	public function getColorsHTML(bool $wrap = WRAP, $colon = true, $colorNames = false){
+		if ($placehold = $this->getPendingPlaceholder())
+			return $placehold;
+
+		$ColorGroups = $this->color_groups;
+		$AllColors = CGUtils::getColorsForEach($ColorGroups);
+
+		$HTML = '';
+		if (!empty($ColorGroups)) foreach ($ColorGroups as $cg)
+			$HTML .= $cg->getHTML($AllColors, WRAP, $colon, $colorNames);
+
+		return $wrap ? "<ul class='colors'>$HTML</ul>" : $HTML;
+	}
+
+	/**
+	 * Return the markup of a set of tags belonging to a specific appearance
+	 *
+	 * @param bool $wrap
+	 *
+	 * @return string
+	 */
+	public function getTagsHTML(bool $wrap = WRAP):string {
+		$isStaff = Permission::sufficient('staff');
+		$Tags = Tags::getFor($this->id, null, $isStaff);
+
+		$HTML = '';
+		if ($this->id !== 0 && $isStaff)
+			$HTML .= "<input type='text' class='addtag tag' placeholder='Enter tag' pattern='".TAG_NAME_PATTERN."' maxlength='30' required>";
+		$HideSynon = Permission::sufficient('staff') && UserPrefs::get('cg_hidesynon');
+		if (!empty($Tags)) foreach ($Tags as $t){
+			$isSynon = !empty($t->synonym_of);
+			if ($isSynon && $HideSynon)
+				continue;
+			$class = " class='tag id-{$t->id}".($isSynon?' synonym':'').(!empty($t->type)?' typ-'.$t->type:'')."'";
+			$title = !empty($t->title) ? " title='".CoreUtils::aposEncode($t->title)."'" : '';
+			$syn_of = $isSynon ? " data-syn-of='{$t->synonym_of}'" : '';
+			$HTML .= "<span$class$title$syn_of>{$t->name}</span>";
+		}
+
+		return $wrap ? "<div class='tags'>$HTML</div>" : $HTML;
+	}
+
+	/**
+	 * Returns the markup for the time of last update displayed under an appaerance
+	 *
+	 * @param bool $wrap
+	 *
+	 * @return string
+	 */
+	public function getUpdatesHTML($wrap = WRAP){
+		$update = MajorChange::get($this->id, MOST_RECENT);
+		if (!empty($update)){
+			$update = 'Last updated '.Time::tag($update->log->timestamp);
+		}
+		else {
+			if (!Permission::sufficient('staff'))
+				return '';
+			$update = '';
+		}
+		return $wrap ? "<div class='update'>$update</div>" : $update;
+	}
+
+	/**
+	 * Returns the HTML of the "Linked to from # episodes" section of appearance pages
+	 *
+	 * @param bool       $allowMovies
+	 *
+	 * @return string
+	 * @throws \Exception
+	 */
+	public function getRelatedEpisodesHTML($allowMovies = false){
+		/** @var $EpTagsOnAppearance Tag[] */
+		$EpTagsOnAppearance = DB::$instance->setModel('Tag')->query(
+			"SELECT t.name
+			FROM tagged tg
+			LEFT JOIN tags t ON tg.tag_id = t.id
+			WHERE tg.appearance_id = ? AND  t.type = 'ep'
+			ORDER BY t.name", [$this->id]);
+
+		if (empty($EpTagsOnAppearance))
+			return '';
+
+		$List = [];
+		foreach ($EpTagsOnAppearance as $tag){
+			$name = strtoupper($tag->name);
+			$EpData = Episode::parseID($name);
+			$Ep = Episodes::getActual($EpData['season'], $EpData['episode'], $allowMovies);
+			$List[] = (
+				empty($Ep)
+				? CGUtils::expandEpisodeTagName($name)
+				: $Ep->toAnchor($Ep->formatTitle())
+			);
+		}
+		$List = implode(', ',$List);
+		$N_episodes = CoreUtils::makePlural($this->ishuman ? 'movie' : 'episode',count($EpTagsOnAppearance),PREPEND_NUMBER);
+		$hide = '';
+
+		return <<<HTML
+	<section id="ep-appearances" $hide>
+		<h2><span class='typcn typcn-video'></span>Linked to from $N_episodes</h2>
+		<p>$List</p>
+	</section>
+HTML;
+	}
+
 	public function isPrivate(bool $ignoreStaff = false):bool {
 		$isPrivate = !empty($this->private);
 		if (!$ignoreStaff && (Permission::sufficient('staff') || (Auth::$signed_in ? $this->owner_id === Auth::$user->id : false)))
@@ -221,11 +339,27 @@ class Appearance extends NSModel implements LinkableInterface {
 	/**
 	 * Retruns preview image link
 	 *
+	 * @see CGUtils::renderPreviewSVG()
 	 * @return string
 	 */
 	public function getPreviewURL():string {
 		$path = str_replace('#',$this->id,CGUtils::PREVIEW_SVG_PATH);
-		return "/cg/v/{$this->id}p.svg?t=".(file_exists($path) ? filemtime($path) : time());
+		return "/cg/v/{$this->id}p.svg?t=".CoreUtils::filemtime($path);
+	}
+
+	/**
+	 * @see CGUtils::renderCMFacingSVG()
+	 *
+	 * @param string $facing
+	 * @param bool   $ts
+	 *
+	 * @return string
+	 */
+	public function getFacingSVGURL(?string $facing = null, bool $ts = true){
+		if ($facing === null)
+			$facing = 'left';
+		$path = str_replace(['@','#'],[$facing, $this->id],CGUtils::CMDIR_SVG_PATH);
+		return "/cg/v/{$this->id}f.svg?facing=$facing".($ts?'&t='.CoreUtils::filemtime($path):'');
 	}
 
 	public function toURL():string {
@@ -274,7 +408,49 @@ class Appearance extends NSModel implements LinkableInterface {
 		if ($this->owner_id !== null)
 			return;
 
-		Appearances::updateIndex($this);
+		$this->updateIndex();
+	}
+
+	public function updateIndex(){
+		try {
+			CoreUtils::elasticClient()->update($this->toElasticArray(false, true));
+		}
+		catch (ElasticNoNodesAvailableException $e){
+			error_log('ElasticSearch server was down when server attempted to index appearance '.$this->id);
+		}
+	}
+
+	public function getElasticMeta(){
+		return array_merge(CGUtils::ELASTIC_BASE,[
+			'type' => 'entry',
+			'id' => $this->id,
+		]);
+	}
+
+	public function getElasticBody(){
+		$tags = Tags::getFor($this->id, null, true, true);
+		foreach ($tags as $k => $tag)
+			$tags[$k] = $tag->name;
+		return [
+			'label' => $this->label,
+			'order' => $this->order,
+			'private' => $this->private,
+			'ishuman' => $this->ishuman,
+			'tags' =>  $tags,
+		];
+	}
+
+	public function toElasticArray(bool $no_body = false, bool $update = false):array {
+		$params = $this->getElasticMeta();
+		if ($no_body)
+			return $params;
+		$params['body'] = $this->getElasticBody();
+		if ($update)
+			$params['body'] = [
+				'doc' => $params['body'],
+				'upsert' => $params['body'],
+			];
+		return $params;
 	}
 
 	public function clearRelations(){
@@ -358,6 +534,176 @@ class Appearance extends NSModel implements LinkableInterface {
 			Notification::send($checkWho,'sprite-colors',['appearance_id' => $this->id]);
 		else if (!$hasColorIssues && !empty($oldNotifs))
 			Appearances::clearSpriteColorIssueNotifications($oldNotifs);
+	}
+
+	/**
+	 * @param bool $treatHexNullAsEmpty
+	 *
+	 * @return bool
+	 */
+	public function hasColors(bool $treatHexNullAsEmpty = false):bool {
+		$hexnull = $treatHexNullAsEmpty?' AND hex IS NOT NULL':'';
+		return (DB::$instance->querySingle(
+			"SELECT count(*) as cnt FROM colors
+			WHERE group_id IN (SELECT group_id FROM color_groups WHERE appearance_id = ?)$hexnull", [$this->id])['cnt'] ?? 0) > 0;
+	}
+
+	const
+		PONY_TEMPLATE = [
+			'Coat' => [
+				'Outline',
+				'Fill',
+				'Shadow Outline',
+				'Shadow Fill',
+			],
+			'Mane & Tail' => [
+				'Outline',
+				'Fill',
+			],
+			'Iris' => [
+				'Gradient Top',
+				'Gradient Middle',
+				'Gradient Bottom',
+				'Highlight Top',
+				'Highlight Bottom',
+			],
+			'Cutie Mark' => [
+				'Fill 1',
+				'Fill 2',
+			],
+			'Magic' => [
+				'Aura',
+			],
+		],
+		HUMAN_TEMPLATE = [
+			'Skin' => [
+				'Outline',
+				'Fill',
+			],
+			'Hair' => [
+				'Outline',
+				'Fill',
+			],
+			'Eyes' => [
+				'Gradient Top',
+				'Gradient Middle',
+				'Gradient Bottom',
+				'Highlight Top',
+				'Highlight Bottom',
+				'Eyebrows',
+			],
+		];
+
+	/**
+	 * Apply pre-defined template to an appearance
+	 *
+	 * @return self
+	 */
+	public function applyTemplate():self {
+		if (ColorGroup::exists([ 'conditions' => ['appearance_id = ?', $this->id] ]))
+			throw new \RuntimeException('Template can only be applied to empty appearances');
+
+		/** @var $Scheme string[][] */
+		$Scheme = $this->ishuman
+			? self::HUMAN_TEMPLATE
+			: self::PONY_TEMPLATE;
+
+		$cgi = 1;
+		foreach ($Scheme as $GroupName => $ColorNames){
+			/** @var $Group ColorGroup */
+			$Group = ColorGroup::create([
+				'appearance_id' => $this->id,
+				'label' => $GroupName,
+				'order' => $cgi++,
+			]);
+			$GroupID = $Group->id;
+			if (!$GroupID)
+				throw new \RuntimeException(rtrim("Color group \"$GroupName\" could not be created: ".DB::$instance->getLastError()), ': ');
+
+			$ci = 1;
+			foreach ($ColorNames as $label){
+				if (!(new Color([
+					'group_id' => $GroupID,
+					'label' => $label,
+					'order' => $ci++,
+				]))->save()) throw new \RuntimeException(rtrim("Color \"$label\" could not be added: ".DB::$instance->getLastError()), ': ');
+			}
+		}
+
+		return $this;
+	}
+
+	const CLEAR_ALL = [
+		self::CLEAR_PALETTE,
+		self::CLEAR_PREVIEW,
+		self::CLEAR_CM,
+		self::CLEAR_CMDIR,
+		self::CLEAR_SPRITE,
+		self::CLEAR_SPRITE_SVG,
+	];
+	const
+		CLEAR_PALETTE     = 'palette.png',
+		CLEAR_PREVIEW     = 'preview.svg',
+		CLEAR_CM          = 'cm-*.svg',
+		CLEAR_CMDIR       = 'cmdir-*.svg',
+		CLEAR_SPRITE      = 'sprite.png',
+		CLEAR_SPRITE_SVG  = 'sprite.svg',
+		CLEAR_SPRITE_MAP  = 'linedata.json.gz';
+
+	/**
+	 * Deletes rendered images of an appearance (forcing its re-generation)
+	 *
+	 * @param array $which
+	 *
+	 * @return bool
+	 */
+	public function clearRenderedImages(array $which = self::CLEAR_ALL):bool {
+		$RenderedPath = FSPATH.'cg_render/'.$this->id;
+		$success = [];
+		foreach ($which as $suffix){
+			$path = "$RenderedPath/$suffix";
+			if (strpos($path, '*') === false){
+				if (file_exists($path))
+					$success[] = unlink($path);
+			}
+			else {
+				foreach (glob($path) as $file)
+					$success[] = unlink($file);
+			}
+		}
+		return !in_array(false, $success, true);
+	}
+
+	const DEFAULT_COLOR_MAPPING = [
+		'Coat Outline' => '#0D0D0D',
+		'Coat Shadow Outline' => '#000000',
+		'Coat Fill' => '#2B2B2B',
+		'Coat Shadow Fill' => '#171717',
+		'Mane & Tail Outline' => '#333333',
+		'Mane & Tail Fill' => '#5E5E5E',
+	];
+	public function getColorMapping($DefaultColorMapping){
+		$Colors = DB::$instance->query(
+			'SELECT cg.label as cglabel, c.label as clabel, c.hex
+			FROM color_groups cg
+			LEFT JOIN colors c on c.group_id = cg.id
+			WHERE cg.appearance_id = ?
+			ORDER BY cg.label ASC, c.label ASC', [$this->id]);
+
+		$ColorMapping = [];
+		foreach ($Colors as $row){
+			$cglabel = preg_replace(new RegExp('^(Costume|Dress)$'),'Coat',$row['cglabel']);
+			$colorlabel = preg_replace(new RegExp('^(?:(?:(?:Purple|Yellow|Red)\s)?(?:Main|First|Normal|Gradient(?:\s(?:Light))?)\s)?(.+?)(?:\s\d+)?(?:/.*)?$'),'$1', $row['clabel']);
+			$label = "$cglabel $colorlabel";
+			if (isset($DefaultColorMapping[$label]) && !isset($ColorMapping[$label]))
+				$ColorMapping[$label] = $row['hex'];
+		}
+		if (!isset($ColorMapping['Coat Shadow Outline']) && isset($ColorMapping['Coat Outline']))
+			$ColorMapping['Coat Shadow Outline'] = $ColorMapping['Coat Outline'];
+		if (!isset($ColorMapping['Coat Shadow Fill']) && isset($ColorMapping['Coat Fill']))
+			$ColorMapping['Coat Shadow Fill'] = $ColorMapping['Coat Fill'];
+
+		return $ColorMapping;
 	}
 
 	public function render_notes(){

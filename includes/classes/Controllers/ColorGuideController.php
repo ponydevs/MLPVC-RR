@@ -169,8 +169,7 @@ class ColorGuideController extends Controller {
 				if (!empty($params['type'])) switch ($params['type']){
 					case 's': CGUtils::renderSpriteSVG($this->_cgPath, $this->_appearance->id);
 					case 'p': CGUtils::renderPreviewSVG($this->_cgPath, $this->_appearance);
-					case 'd': CGUtils::renderCMDirectionSVG($this->_cgPath, $this->_appearance->id);
-					case 'c': CGUtils::renderCMSVG($this->_cgPath, $this->_appearance->id);
+					case 'f': CGUtils::renderCMFacingSVG($this->_cgPath, $this->_appearance);
 					default: CoreUtils::notFound();
 				}
 			case 'json': CGUtils::getSwatchesAI($this->_appearance);
@@ -579,12 +578,12 @@ class ColorGuideController extends Controller {
 			$JSON['Appearances'][$AppendAppearance['id']] = $AppendAppearance;
 		}
 
-		$data = JSON::encode($JSON, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
+		$data = JSON::encode($JSON, true);
 		$data = preg_replace_callback('/^\s+/m', function($match){
 			return str_pad('',CoreUtils::length($match[0])/4,"\t", STR_PAD_LEFT);
 		}, $data);
 
-		CoreUtils::downloadFile($data, 'mlpvc-colorguide.json');
+		CoreUtils::downloadAsFile($data, 'mlpvc-colorguide.json');
 	}
 
 	public function getTags(){
@@ -773,7 +772,7 @@ class ColorGuideController extends Controller {
 					$usetemplate = isset($_POST['template']);
 					if ($usetemplate){
 						try {
-							Appearances::applyTemplate($newAppearance->id, $this->_EQG);
+							$newAppearance->applyTemplate();
 						}
 						catch (\Exception $e){
 							$response['message'] .= ', but applying the template failed';
@@ -796,7 +795,7 @@ class ColorGuideController extends Controller {
 					Response::done($response);
 				}
 
-				CGUtils::clearRenderedImages($this->_appearance->id, [CGUtils::CLEAR_PALETTE, CGUtils::CLEAR_PREVIEW]);
+				$this->_appearance->clearRenderedImages([Appearance::CLEAR_PALETTE, Appearance::CLEAR_PREVIEW]);
 
 				if (!$creating){
 					$diff = [];
@@ -833,7 +832,7 @@ class ColorGuideController extends Controller {
 					Response::dbError();
 
 				try {
-					CoreUtils::elasticClient()->delete(Appearances::toElasticArray($this->_appearance, true));
+					CoreUtils::elasticClient()->delete($this->_appearance->toElasticArray(true));
 				}
 				catch (ElasticMissing404Exception $e){
 					$message = JSON::decode($e->getMessage());
@@ -854,7 +853,7 @@ class ColorGuideController extends Controller {
 				if (file_exists($fpath))
 					unlink($fpath);
 
-				CGUtils::clearRenderedImages($this->_appearance->id);
+				$this->_appearance->clearRenderedImages();
 
 				Logs::logAction('appearances', [
 					'action' => 'del',
@@ -901,7 +900,7 @@ class ColorGuideController extends Controller {
 				Table::clear_cache();
 				$newCGs = DB::$instance->where('appearance_id', $this->_appearance->id)->get('color_groups');
 
-				CGUtils::clearRenderedImages($this->_appearance->id, [CGUtils::CLEAR_PALETTE, CGUtils::CLEAR_PREVIEW]);
+				$this->_appearance->clearRenderedImages([Appearance::CLEAR_PALETTE, Appearance::CLEAR_PREVIEW]);
 
 				$oldCGs = CGUtils::stringifyColorGroups($oldCGs);
 				$newCGs = CGUtils::stringifyColorGroups($newCGs);
@@ -911,7 +910,7 @@ class ColorGuideController extends Controller {
 					'newgroups' => $newCGs,
 				]);
 
-				Response::done(['cgs' => Appearances::getColorsHTML($this->_appearance, NOWRAP, !$this->_appearancePage, $this->_appearancePage)]);
+				Response::done(['cgs' => $this->_appearance->getColorsHTML(NOWRAP, !$this->_appearancePage, $this->_appearancePage)]);
 			break;
 			case 'delsprite':
 			case 'getsprite':
@@ -921,7 +920,7 @@ class ColorGuideController extends Controller {
 				switch ($action){
 					case 'setsprite':
 						CGUtils::processUploadedImage('sprite', $finalpath, ['image/png'], [300], [700, 300]);
-						CGUtils::clearRenderedImages($this->_appearance->id);
+						$this->_appearance->clearRenderedImages();
 
 						$this->_appearance->checkSpriteColors();
 					break;
@@ -934,7 +933,7 @@ class ColorGuideController extends Controller {
 
 						if (!unlink($finalpath))
 							Response::fail('File could not be deleted');
-						CGUtils::clearRenderedImages($this->_appearance->id);
+						$this->_appearance->clearRenderedImages();
 						Appearances::clearSpriteColorIssueNotifications($this->_appearance->id, 'del', null);
 
 						if ($noResponse)
@@ -1024,23 +1023,19 @@ class ColorGuideController extends Controller {
 			case 'getcmpreview':
 				$CMs = [];
 
-				$CM1 = new Cutiemark([ 'appearance_id' => $this->_appearance->id ]);
-				Cutiemarks::postProcess($CM1, 0);
-				$CMs[0] = $CM1;
-
-				$CM2 = new Cutiemark([ 'appearance_id' => $this->_appearance->id ]);
-				if (Cutiemarks::postProcess($CM2, 1))
-					$CMs[1] = $CM2;
+				// TODO Rewrite to use JSON instead
+				$i = 0;
+				while ($cm = Cutiemarks::postProcess(new Cutiemark([ 'appearance_id' => $this->_appearance->id ]), $i++))
+					$CMs[] = $cm;
 
 				usort($CMs, function(Cutiemark $a, Cutiemark $b){
 					return $a->facing <=> $b->facing;
 				});
 
-				Cutiemarks::processSymmetrical($CMs);
 				Response::done(['html' => Cutiemarks::getListForAppearancePage($CMs, NOWRAP)]);
 			break;
 			case 'setcms':
-				// TODO Recreate editor & allow arbitrary number of CMs
+				// TODO Rewrite to use JSON instead
 				/** @var $data Cutiemark[] */
 				$data = [];
 				$newFacingValues = [];
@@ -1057,38 +1052,15 @@ class ColorGuideController extends Controller {
 					if (Cutiemarks::postProcess($cm, $i) === false)
 						break;
 
-					$newFacingValues[] = $cm->facing;
-					$data[$cm->facing] = $cm;
-				}
-
-				sort($newFacingValues);
-				ksort($data);
-
-				$newfacing = implode(',',$newFacingValues);
-				if (!in_array($newfacing,Cutiemarks::VALID_FACING_COMBOS,true))
-					Response::fail("The used combination of facing values ($newfacing) is not allowed");
-
-				// Check for the equivalent of using symmetrical option
-				if (count($data) === 2 && $data['left']->favme === $data['right']->favme && $data['left']->rotation === -$data['right']->rotation){
-					$newFacingValues = [''];
-					$data = [ $data['left']->id === null ? $data['right'] : $data['left'] ];
-					$data[0]->facing = null;
+					$data[] = $cm;
 				}
 
 				$CurrentCMs = Cutiemarks::get($this->_appearance);
 
-				$cleanRendered = [];
-				if (!in_array('left', $newFacingValues, true))
-					$cleanRendered[] = CGUtils::CLEAR_CMDIR_LEFT;
-				if (!in_array('right', $newFacingValues, true))
-					$cleanRendered[] = CGUtils::CLEAR_CMDIR_RIGHT;
-				if (!empty($cleanRendered))
-					CGUtils::clearRenderedImages($this->_appearance->id, $cleanRendered);
-
 				foreach ($data as $cmdata)
 					$cmdata->save();
 
-				$CutieMarks = Cutiemarks::get($this->_appearance, false);
+				$CutieMarks = Cutiemarks::get($this->_appearance);
 				$olddata = Cutiemarks::convertDataForLogs($CurrentCMs);
 				$newdata = Cutiemarks::convertDataForLogs($CutieMarks);
 				if ($olddata !== $newdata)
@@ -1107,12 +1079,9 @@ class ColorGuideController extends Controller {
 				$CMs = Cutiemarks::get($this->_appearance);
 				if (empty($CMs))
 					Response::done();
-				foreach ($CMs as $cm){
-					@unlink($cm->getSourceFilePath());
-					@unlink($cm->getTokenizedFilePath());
+				foreach ($CMs as $cm)
 					$cm->delete();
-				}
-				CGUtils::clearRenderedImages($this->_appearance->id, [CGUtils::CLEAR_CM_LEFT,CGUtils::CLEAR_CM_RIGHT,CGUtils::CLEAR_CMDIR_LEFT,CGUtils::CLEAR_CMDIR_RIGHT]);
+				$this->_appearance->clearRenderedImages([Appearance::CLEAR_CM, Appearance::CLEAR_CMDIR]);
 
 				Logs::logAction('cm_delete',[
 					'appearance_id' => $this->_appearance->id,
@@ -1122,7 +1091,7 @@ class ColorGuideController extends Controller {
 				Response::done();
 			break;
 			case 'clear-cache':
-				if (!CGUtils::clearRenderedImages($this->_appearance->id))
+				if (!$this->_appearance->clearRenderedImages())
 					Response::fail('Cache could not be purged');
 
 				if ($noResponse)
@@ -1180,28 +1149,28 @@ class ColorGuideController extends Controller {
 					break;
 				}
 
-				Appearances::updateIndex($this->_appearance);
+				$this->_appearance->updateIndex();
 
 				Tags::updateUses($Tag->id);
 				if (!empty(CGUtils::GROUP_TAG_IDS_ASSOC[$this->_EQG?'eqg':'pony'][$Tag->id]))
 					Appearances::getSortReorder($this->_EQG);
 
-				$response = ['tags' => Appearances::getTagsHTML($this->_appearance->id, NOWRAP)];
+				$response = ['tags' => $this->_appearance->getTagsHTML(NOWRAP)];
 				if ($this->_appearancePage && $Tag->type === 'ep'){
 					$response['needupdate'] = true;
-					$response['eps'] = Appearances::getRelatedEpisodesHTML($this->_appearance, $this->_EQG);
+					$response['eps'] = $this->_appearance->getRelatedEpisodesHTML($this->_EQG);
 				}
 				Response::done($response);
 			break;
 			case 'applytemplate':
 				try {
-					Appearances::applyTemplate($this->_appearance->id, $this->_EQG);
+					$this->_appearance->applyTemplate();
 				}
 				catch (\Exception $e){
 					Response::fail('Applying the template failed. Reason: '.$e->getMessage());
 				}
 
-				Response::done(['cgs' => Appearances::getColorsHTML($this->_appearance, NOWRAP, !$this->_appearancePage, $this->_appearancePage)]);
+				Response::done(['cgs' => $this->_appearance->getColorsHTML(NOWRAP, !$this->_appearancePage, $this->_appearancePage)]);
 			break;
 			case 'selectiveclear':
 				$wipe_cache = (new Input('wipe_cache','bool',[
@@ -1235,14 +1204,14 @@ class ColorGuideController extends Controller {
 				]))->out();
 				switch ($wipe_colors){
 					case 'color_hex':
-						if (Appearances::hasColors($this->_appearance, true)){
+						if ($this->_appearance->hasColors(true)){
 							/** @noinspection NestedPositiveIfStatementsInspection */
 							if (!DB::$instance->query('UPDATE colors SET hex = null WHERE group_id IN (SELECT id FROM color_groups WHERE appearance_id = ?)', [$this->_appearance->id]))
 								Response::dbError();
 						}
 					break;
 					case 'color_all':
-						if (Appearances::hasColors($this->_appearance)){
+						if ($this->_appearance->hasColors()){
 							/** @noinspection NestedPositiveIfStatementsInspection */
 							if (!DB::$instance->query('DELETE FROM colors WHERE group_id IN (SELECT id FROM color_groups WHERE appearance_id = ?)', [$this->_appearance->id]))
 								Response::dbError();
@@ -1347,7 +1316,7 @@ class ColorGuideController extends Controller {
 			case 'get':
 				Response::done($Tag->to_array());
 			case 'del':
-				$AppearanceID = Appearances::validateAppearancePageID();
+				$AppearanceID = CGUtils::validateAppearancePageID();
 
 				$tid = $Tag->synonym_of ?? $Tag->id;
 				$Uses = Tagged::by_tag($tid);
@@ -1360,13 +1329,13 @@ class ColorGuideController extends Controller {
 				if (!empty(CGUtils::GROUP_TAG_IDS_ASSOC[$this->_EQG?'eqg':'pony'][$Tag->id]))
 					Appearances::getSortReorder($this->_EQG);
 				foreach ($Uses as $use)
-					Appearances::updateIndex($use->appearance);
+					$use->appearance->updateIndex();
 
 				if ($AppearanceID !== null && $Tag->type === 'ep'){
 					$Appearance = Appearance::find($AppearanceID);
 					$resp = [
 						'needupdate' => true,
-						'eps' => Appearances::getRelatedEpisodesHTML($Appearance, $this->_EQG),
+						'eps' => $Appearance->getRelatedEpisodesHTML($this->_EQG),
 					];
 				}
 				else $resp = null;
@@ -1389,7 +1358,7 @@ class ColorGuideController extends Controller {
 					}
 					else {
 						foreach ($TargetTagged as $tg)
-							Appearances::updateIndex($tg->appearance);
+							$tg->appearance->updateIndex();
 					}
 				}
 				else $keep_tagged = false;
@@ -1476,12 +1445,12 @@ HTML;
 							Response::success("The tag was created, <strong>but</strong> it could not be added to the appearance (<a href='/cg/v/$AppearanceID'>#$AppearanceID</a>) because it doesn’t seem to exist. Please try adding the tag manually.");
 
 						if (!Tagged::make($Tag->id, $Appearance->id)->save()) Response::dbError();
-						Appearances::updateIndex($Appearance);
+						$Appearance->updateIndex();
 						Tags::updateUses($Tag->id);
-						$r = ['tags' => Appearances::getTagsHTML($Appearance->id, NOWRAP)];
+						$r = ['tags' => $Appearance->getTagsHTML(NOWRAP)];
 						if ($this->_appearancePage){
 							$r['needupdate'] = true;
-							$r['eps'] = Appearances::getRelatedEpisodesHTML($Appearance, $this->_EQG);
+							$r['eps'] = $Appearance->getRelatedEpisodesHTML($this->_EQG);
 						}
 						Response::done($r);
 					}
@@ -1492,12 +1461,12 @@ HTML;
 					$AppearanceID = !empty($this->_appearancePage) ? (int) $_POST['APPEARANCE_PAGE'] : null;
 					$tagrelations = Tagged::by_tag($Tag->id);
 					foreach ($tagrelations as $tagged){
-						Appearances::updateIndex($tagged->appearance);
+						$tagged->appearance->updateIndex();
 
 						if ($tagged->appearance_id === $AppearanceID){
 							$data['needupdate'] = true;
 							$Appearance = Appearance::find($AppearanceID);
-							$data['eps'] = Appearances::getRelatedEpisodesHTML($Appearance, $this->_EQG);
+							$data['eps'] = $Appearance->getRelatedEpisodesHTML($this->_EQG);
 						}
 					}
 				}
@@ -1548,7 +1517,7 @@ HTML;
 				]);
 			}
 			foreach ($TaggedAppearanceIDs as $id)
-				Appearances::updateIndex($id);
+				Appearance::find($id)->updateIndex();
 
 			Tags::updateUses($Target->id);
 			Response::success('Tags successfully '.($merging?'merged':'synonymized'), $synoning || $merging ? ['target' => $Target] : null);
@@ -1640,50 +1609,28 @@ HTML;
 		]))->out();
 		CoreUtils::checkStringValidity($label, 'Color group label', INVERSE_PRINTABLE_ASCII_PATTERN, true);
 		$Group->label = $label;
-		$major = isset($_POST['major']);
-		if ($major){
-			$reason = (new Input('reason','string', [
-				Input::IN_RANGE => [null,255],
-				Input::CUSTOM_ERROR_MESSAGES => [
-					Input::ERROR_MISSING => 'Please specify a reason for the changes',
-					Input::ERROR_RANGE => 'The reason cannot be longer than @max characters',
-				],
-			]))->out();
-			CoreUtils::checkStringValidity($reason, 'Change reason', INVERSE_PRINTABLE_ASCII_PATTERN);
+
+		if ($Group->appearance->owner_id === null){
+			$major = isset($_POST['major']);
+			if ($major){
+				$reason = (new Input('reason','string', [
+					Input::IN_RANGE => [null,255],
+					Input::CUSTOM_ERROR_MESSAGES => [
+						Input::ERROR_MISSING => 'Please specify a reason for the changes',
+						Input::ERROR_RANGE => 'The reason cannot be longer than @max characters',
+					],
+				]))->out();
+				CoreUtils::checkStringValidity($reason, 'Change reason', INVERSE_PRINTABLE_ASCII_PATTERN);
+			}
 		}
 
 		$Group->save();
 
 		$oldcolors = $adding ? null : $Group->colors;
-
+		$oldColorIDs = [];
 		if (!$adding){
-			/** @var $removed_colors int[] */
-			$removed_colors = (new Input('removed_colors','int[]', [
-				Input::IS_OPTIONAL => true,
-				Input::CUSTOM_ERROR_MESSAGES => [
-					Input::ERROR_INVALID => 'List of removed color IDs is invalid',
-				]
-			]))->out();
-			if (!empty($removed_colors)){
-				/** @var $Affected Color[] */
-				$Affected = DB::$instance->where('id', $removed_colors)->get('colors');
-				foreach ($Affected as $color){
-					if (count((array) $color->dependant_colors) > 0){
-						$links = [];
-						foreach ($color->dependant_colors as $dep){
-							$arranged[$dep->appearance->id][$dep->group_id][$dep->id] = $dep;
-							$links[] = implode(' &rsaquo; ',[
-								$dep->appearance->toAnchor(),
-								$dep->color_group->label,
-								$dep->label
-							]);
-						}
-						Response::fail("<p>The colors listed below depend on color #{$color->id} (".CoreUtils::escapeHTML($color->label).'). Please unlink them before deleting this color.</p><ul><li>'.implode('</li><li>', $links).'</li></ul>');
-					}
-
-					$color->delete();
-				}
-			}
+			foreach ($oldcolors as $oc)
+				$oldColorIDs[] = $oc->id;
 		}
 
 		/** @var $recvColors array */
@@ -1693,7 +1640,10 @@ HTML;
 				Input::ERROR_INVALID => 'List of colors is invalid',
 			]
 		]))->out();
+		/** @var $newcolors Color[] */
 		$newcolors = [];
+		/** @var $recvColorIDs int[] */
+		$recvColorIDs = [];
 		/** @var $check_colors_of Appearance[] */
 		$check_colors_of = [];
 		foreach ($recvColors as $part => $c){
@@ -1705,6 +1655,7 @@ HTML;
 					Response::fail("Trying to edit color with ID {$c['id']} which is not part of color group {$Group->id}");
 				$append->order = $part;
 				$index = "(ID: {$c['id']})";
+				$recvColorIDs[] = $c['id'];
 			}
 			else {
 				$append = new Color([
@@ -1760,19 +1711,58 @@ HTML;
 				$hex = CoreUtils::trim($c['hex']);
 				if (!$HEX_COLOR_REGEX->match($hex, $_match))
 					Response::fail("HEX color is in an invalid format $index");
-				$append->hex = '#'.strtoupper($_match[1]);
+				$append->hex = CGUtils::roundHex('#'.strtoupper($_match[1]));
 				$append->linked_to = null;
 			}
 
 			$newcolors[] = $append;
 		}
+		if (!$adding){
+			/** @var $removedColorIDs int[] */
+			$removedColorIDs = CoreUtils::array_subtract($oldColorIDs, $recvColorIDs);
+			$removedColors = [];
+			if (!empty($removedColorIDs)){
+				/** @var $Affected Color[] */
+				$Affected = DB::$instance->where('id', $removedColorIDs)->get('colors');
+				foreach ($Affected as $color){
+					if (count((array) $color->dependant_colors) > 0){
+						$links = [];
+						foreach ($color->dependant_colors as $dep){
+							$arranged[$dep->appearance->id][$dep->group_id][$dep->id] = $dep;
+							$links[] = implode(' &rsaquo; ',[
+								$dep->appearance->toAnchor(),
+								$dep->color_group->label,
+								$dep->label
+							]);
+						}
+						Response::fail("<p>The colors listed below depend on color #{$color->id} (".CoreUtils::escapeHTML($color->label).'). Please unlink them before deleting this color.</p><ul><li>'.implode('</li><li>', $links).'</li></ul>');
+					}
+
+					$removedColors[] = $color;
+				}
+			}
+		}
+		$newlabels = [];
+		foreach ($newcolors as $color){
+			if (isset($newlabels[$color->label]))
+				Response::fail('The color name "'.CoreUtils::escapeHTML($color->label).'" appears in this color group more than once. Please choose a unique name or add numbering to the colors.');
+
+			$newlabels[$color->label] = true;
+		}
+		unset($newlabels);
+		#### Validation ends here - No removal/modification of any colors before this point ####
+
 		$colorError = false;
 		foreach ($newcolors as $c){
 			if ($c->save())
 				continue;
 
 			$colorError = true;
-			error_log('Database error triggered by user '.Auth::$user->name.' ('.Auth::$user->id.") while saving colors:\n".JSON::encode($c->errors, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+			error_log(__METHOD__.': Database error triggered by user '.Auth::$user->name.' ('.Auth::$user->id.") while saving colors:\n".JSON::encode($c->errors, JSON_PRETTY_PRINT));
+		}
+		if (!$adding && !empty($removedColors)){
+			foreach ($removedColors as $color)
+				$color->delete();
 		}
 		/** @var $newcolors Color[] */
 		if ($colorError)
@@ -1783,17 +1773,17 @@ HTML;
 		$isCMGroup = $Group->label === 'Cutie Mark';
 		foreach ($check_colors_of as $appearance){
 			$appearance->checkSpriteColors();
-			CGUtils::clearRenderedImages($appearance->id, [CGUtils::CLEAR_CM_LEFT, CGUtils::CLEAR_CM_RIGHT]);
+			$appearance->clearRenderedImages([Appearance::CLEAR_CM]);
 			if ($isCMGroup)
-				CGUtils::clearRenderedImages($appearance->id, [CGUtils::CLEAR_CM_LEFT, CGUtils::CLEAR_CM_RIGHT]);
+				$appearance->clearRenderedImages([Appearance::CLEAR_CM]);
 		}
 
 		$colon = !$this->_appearancePage;
 		$outputNames = $this->_appearancePage;
 
-		$response = ['cgs' => Appearances::getColorsHTML($Group->appearance, NOWRAP, $colon, $outputNames)];
+		$response = ['cgs' => $Group->appearance->getColorsHTML(NOWRAP, $colon, $outputNames)];
 
-		if ($major){
+		if ($Group->appearance->owner_id === null && $major){
 			Logs::logAction('major_changes', [
 				'appearance_id' => $Group->appearance_id,
 				'reason' => $reason,
@@ -1804,7 +1794,7 @@ HTML;
 				if ($FullChangesSection)
 					$response['changes'] = str_replace('@',$response['changes'],CGUtils::CHANGES_SECTION);
 			}
-			else $response['update'] = Appearances::getUpdatesHTML($Group->appearance_id);
+			else $response['update'] = $Group->appearance->getUpdatesHTML();
 		}
 
 		if (isset($_POST['APPEARANCE_PAGE']))
@@ -1931,7 +1921,7 @@ HTML;
 			'Magic Aura' => '#B7B7B7',
 		];
 
-		$ColorMappings = CGUtils::getColorMapping($this->_appearance->id, $DefaultMapping);
+		$ColorMappings = $this->_appearance->getColorMapping($DefaultMapping);
 
 		$colors = [];
 		foreach ($DefaultMapping as $k => $v){
@@ -1964,5 +1954,25 @@ HTML;
 		}
 
 		Response::success('Checkup finished');
+	}
+
+	public function cutiemarkView($params){
+		$cutiemark = Cutiemark::find($params['id']);
+		if (empty($cutiemark))
+			CoreUtils::notFound();
+
+		CGUtils::renderCMSVG($cutiemark);
+	}
+
+	public function cutiemarkDownload($params){
+		$cutiemark = Cutiemark::find($params['id']);
+		if (empty($cutiemark))
+			CoreUtils::notFound();
+
+		$file = isset($_REQUEST['source']) && Permission::sufficient('staff')
+			? $cutiemark->getSourceFilePath()
+			: $cutiemark->getVectorFilePath();
+
+		CoreUtils::downloadFile($file, CoreUtils::posess($cutiemark->appearance->label).' Cutie Mark.svg');
 	}
 }

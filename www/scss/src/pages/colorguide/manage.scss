@@ -229,6 +229,15 @@
 					opacity: .5;
 					letter-spacing: .1em;
 				}
+
+				.rotation-display {
+					font-family: $monospace;
+
+					&:after {
+						content: "°";
+					}
+				}
+
 				> :not(legend) {
 					display: block;
 

@@ -60,61 +60,6 @@ $(function(){
 				</div>
 				<label><input type='checkbox' name='private'> Make private (only ${PersonalGuide?'you':'admins'} can see added colors)</label>`
 			),
-		mkCMDataLi = function(i, el = {}){
-			if (typeof el.facing === 'undefined')
-				el.facing = 'right';
-			let $facingSelector = $.mk('div').attr('class','disabled-show').html(
-				`<p>Body orientation${i===0?'':`: <strong class="orient">${$.capitalize(el.facing)}</strong><input type="hidden" name="facing[]" value="${el.facing}">`}</p>`+
-				(i===0?`<div class="radio-group">
-					<label><input type="radio" name="facing[]" value="left" required><span>Left</span></label>
-					<label><input type="radio" name="facing[]" value="right" required><span>Right</span></label>
-					<label><input type="radio" name="facing[]" value="" required><span>Symmetrical</span></label>
-				</div>`:'')
-			);
-			$facingSelector.find(`input[value='${el.facing?el.facing:''}']`).prop('checked', true);
-			const rotation = typeof el.favme_rotation !== 'undefined' ? el.favme_rotation : (el.facing==='left'?-18:18);
-			return $.mk('li').append(
-					$.mk('fieldset').append(
-						$.mk('legend').append(
-							`<span>Cutie Mark #${i+1}</span>`,
-							(i>0?`<button class="section-toggle btn blue typcn"></button>`:'')
-						),
-						el.id ? $.mk('input').attr({
-							type: 'hidden',
-							value: el.id,
-							name: 'id[]',
-						}) : undefined,
-						$facingSelector,
-						$.mk('label').append(
-							"<span>Deviation link</span>",
-							$.mk('input').attr({
-								type: 'url',
-								name: 'favme[]',
-								required: true,
-							}).val(el.favme?`http://fav.me/${el.favme}`:undefined)
-						),
-						$.mk('div').attr('class','label disabled-show').append(
-							`<span>Preview rotation (<span class='rotation-display'>${rotation}</span>°)</span>`,
-							$.mk('input').attr({
-								type: 'range',
-								name: 'favme_rotation[]',
-								min: -180,
-								max: 180,
-								step: 2,
-								'class': 'rotation-range',
-								required: true,
-							}).val(rotation)
-						),
-						$.mk('label').append(
-							"<span>Custom preview (optional)</span>",
-							$.mk('input').attr({
-								type: 'url',
-								name: 'preview_src[]',
-							}).val(el.preview_src)
-						)
-					)
-				);
-		},
 		mkPonyEditor = function($this, title, data){
 			let editing = !!data,
 				$li = $this.parents('[id^=p]'),
@@ -161,6 +106,8 @@ $(function(){
 								.text('Selective wipe')
 								.on('click',function(e){
 									e.preventDefault();
+
+									// TODO Add some toggleable explanations on what each option clears exactly
 
 									const
 										ponyLabel = data.label,
@@ -354,7 +301,9 @@ $(function(){
 									}));
 								}),
 							$.mk('button')
-								.attr('class', 'darkblue typcn typcn-pencil')
+								.attr({
+									'class': 'darkblue typcn typcn-pencil cg-cm-editor',
+								})
 								.text('Cutie Mark')
 								.on('click',function(e){
 									e.preventDefault();
@@ -362,204 +311,10 @@ $(function(){
 									let ponyLabel = data.label;
 									$.Dialog.close();
 									$.Dialog.wait('Manage Cutie Mark of '+ponyLabel, 'Retrieving CM data from server');
-									let $cmSection = $content.find('section.approved-cutie-mark');
 									$.post(`${PGRq}/cg/appearance/getcms/${appearanceID}${EQGRq}`,$.mkAjaxHandler(function(){
 										if (!this.status) return $.Dialog.fail(false, this.message);
 
-										let data = this,
-											$CMPreviewImages,
-											$CMPreview = $.mk('ul').attr('class','dialog-preview'),
-											$CMList = $.mk('ul').attr('class','cm-list'),
-											$SectionToggle,
-											updateRQ = false,
-											updateText = 'Update preview',
-											$CMDataEditorForm,
-											updateRange = (range) => {
-												let event = $.Event('change');
-												event.target = range;
-												$CMDataEditorForm.trigger(event);
-											},
-											toggleSecondCMSection = (disable, $secondCM) => {
-												if (typeof $secondCM === 'undefined')
-													$secondCM = $CMList.children().eq(1);
-												$SectionToggle[disable?'hide':'show']();
-												let $fieldset = $secondCM.children('fieldset'),
-													ignored = $fieldset.hasClass('ignore'),
-													favmeValid = Boolean($fieldset.find('input[name="favme[]"]').val() || $fieldset.find('input[name="preview_src[]"]').val());
-												if ((disable && !ignored) || (!disable && !ignored && !favmeValid))
-													$SectionToggle.triggerHandler('click');
-											},
-											updateRanges = () => {
-												$CMList.find('.rotation-range').each(function(){
-													updateRange(this);
-												});
-											},
-											previewUpdated = () => {
-												$CMPreviewImages = $CMPreview.find('.img');
-												updateRanges();
-											},
-											$UpdatePreviewButton = $.mk('button').attr('class','darkblue typcn typcn-arrow-sync').text(updateText).on('click',function(e){
-												e.preventDefault();
-
-												if (updateRQ !== false){
-													updateRQ.abort();
-													updateRQ = false;
-												}
-
-												let $this = $(this),
-													data = $this.closest('form').mkData();
-												$this.disable().html('Updating preview&hellip;');
-												$CMPreview.addClass('loading');
-												updateRQ = $.post(`${PGRq}/cg/appearance/getcmpreview/${appearanceID}${EQGRq}`,data,$.mkAjaxHandler(function(){
-													$this.text(updateText).enable();
-													$CMPreview.removeClass('loading');
-													updateRQ = false;
-
-													if (!this.status) return $.Dialog.fail(false, this.message);
-
-													$.Dialog.clearNotice(/preview/);
-													$CMPreview.html(this.html);
-													previewUpdated();
-												}));
-											}),
-											$DeleteButton = $.mk('button').attr('class','red typcn typcn-trash').text('Delete Cutie Marks').on('click',function(e){
-												e.preventDefault();
-
-												if (updateRQ !== false){
-													updateRQ.abort();
-													updateRQ = false;
-												}
-
-												$.Dialog.close(function(){
-													$.Dialog.confirm('Delete Cutie Marks of '+ponyLabel,'Are you sure you want to remove the cutie mark(s) associated with this appearance?', sure => {
-														if (!sure) return;
-
-														$.Dialog.wait(false,'Sending removal request');
-
-														$.post(`${PGRq}/cg/appearance/delcms/${appearanceID}${EQGRq}`,$.mkAjaxHandler(function(){
-															if (!this.status) return $.Dialog.fail(false, this.message);
-
-															if ($cmSection.length)
-																$cmSection.addClass('hidden').children(':not(h2,p)').remove();
-															$.Dialog.close();
-														}));
-													});
-												});
-											});
-
-										$CMDataEditorForm = $.mk('form').attr('id','cm-data-editor').append(
-											$CMPreview,
-											$CMList,
-											$UpdatePreviewButton
-										).on('change mousemove keydown','.rotation-range',function(e){
-											let $this = $(e.target),
-												val = $this.val();
-											$this.prev().children('.rotation-display').text(val);
-											if (typeof $CMPreviewImages !== 'undefined'){
-												let $li = $this.closest('li'),
-													index = $li.index();
-												$CMPreviewImages.eq(index).css('transform',`rotateZ(${val}deg)`);
-												if (index === 0 && $li.find('input[name="facing[]"]:checked').val() === ''){
-													if ($CMPreviewImages.eq(1).length){
-														let $range = $li.next().find('.rotation-range');
-														$range.val(-val);
-														updateRange($range.get(0));
-														$CMPreviewImages.eq(1).css('transform',`rotate(${-val}deg)`);
-													}
-												}
-											}
-										}).on('change click keydown','input[name="facing[]"]',function(e){
-											let $this = $(this),
-												$group = $this.parents('.radio-group'),
-												facing = $group.find('input:checked').val(),
-												$secondCM = $CMList.children().eq(1);
-
-											let orient = facing === 'right' ? 'left' : 'right';
-											$secondCM.find('.orient').text($.capitalize(orient)).next().val(orient);
-											if (e.type === 'change'){
-												if (facing){
-													let $rangeSelectors = $this.parents('form').find('.rotation-range');
-													$rangeSelectors.each(function(i){
-														let $rangeSelector = $(this),
-															// Invert condition on second element
-															facingThatWay = facing === (i===0 ? 'right' : 'left'),
-															val = $rangeSelector.val();
-														if ((val < 0 && facingThatWay) || (val > 0 && !facingThatWay)){
-															$rangeSelector.val(val*-1);
-															updateRange(this);
-														}
-													});
-												}
-												if ($group.closest('fieldset').find('input:invalid').length === 0)
-													$UpdatePreviewButton.triggerHandler('click');
-
-												toggleSecondCMSection(!facing, $secondCM);
-											}
-										});
-
-										if (data.cms.length){
-											$.each(data.cms,(i,el)=>{
-												$CMList.append( mkCMDataLi(i, el) );
-											});
-											if (data.cms.length === 1)
-												$CMList.append( mkCMDataLi(1) );
-											$CMPreview.html(data.preview);
-											previewUpdated();
-											updateRanges();
-											$CMDataEditorForm.append($DeleteButton);
-										}
-										else {
-											$CMList.append(mkCMDataLi(0),mkCMDataLi(1));
-										}
-
-										$SectionToggle = $CMDataEditorForm.find('.section-toggle');
-
-										const sectionToggler = display => {
-											const $fieldset = $SectionToggle.closest('fieldset');
-											if (display){
-												$fieldset.removeClass('ignore');
-												$fieldset.find('.force-disabled').removeClass('force-disabled').enable().parent().removeClass('hidden');
-												$SectionToggle.removeClass('typcn-plus').addClass('typcn-minus').html('Remove');
-											}
-											else {
-												$fieldset.addClass('ignore');
-												$fieldset.find('input:not(:disabled)').disable().addClass('force-disabled').parent().addClass('hidden');
-												$SectionToggle.removeClass('typcn-minus').addClass('typcn-plus').html('Add');
-											}
-										};
-
-										$SectionToggle.on('click',function(e){
-											e.preventDefault();
-
-											sectionToggler($SectionToggle.closest('fieldset').hasClass('ignore'));
-										});
-
-										sectionToggler(data.cms.length === 2);
-
-										$.Dialog.request(false,$CMDataEditorForm,'Save',function($form){
-											$form.on('submit',function(e){
-												e.preventDefault();
-
-												if (updateRQ !== false){
-													updateRQ.abort();
-													updateRQ = false;
-												}
-
-												let data = $form.mkData();
-												if (AppearancePage)
-													data.APPEARANCE_PAGE = true;
-												$.Dialog.wait(false,'Saving cutie mark data');
-												$.post(`${PGRq}/cg/appearance/setcms/${appearanceID}${EQGRq}`,data,$.mkAjaxHandler(function(){
-													if (!this.status) return $.Dialog.fail(false, this.message);
-
-													$.Dialog.close();
-													if ($cmSection.length){
-														$cmSection.children(':not(h2,p)').remove();
-														$cmSection.removeClass('hidden').append(this.html);
-													}
-												}));
-											});
-										});
+										CutieMarkEditor.factory(false, appearanceID, ponyLabel, this);
 									}));
 								})
 						)
@@ -819,7 +574,6 @@ $(function(){
 		constructor($group, data){
 			this.mode = 'gui';
 			this.editing = typeof data === 'object' && data.label && data.Colors;
-			this.removed_colors = [];
 			if (typeof $group !== 'undefined'){
 				if ($group instanceof jQuery){
 					this.group_id = $group.attr('id').substring(2);
@@ -913,15 +667,19 @@ $(function(){
 						maxlength: 30,
 					}),
 				$colorActions:
-					$.mk('div').attr('class','clra')
-						.append($.mk('span').attr('class','typcn typcn-minus remove red').on('click',e => {
-							const
-								$clr = $(e.target).closest('.clr'),
-								color_id = $clr.children('.clrid').text().replace('ID:','');
-							this.removed_colors.push(color_id);
-							$clr.remove();
-						}))
-						.append($.mk('span').attr('class','typcn typcn-arrow-move move blue'))
+					$.mk('div').attr('class','clra').append(
+						$.mk('span').attr({'class': 'typcn typcn-trash remove red', title: 'Remove'}).on('click',e => {
+							const $this = $(e.target);
+							$this.closest('.clr').addClass('faded').find('input:not(:disabled), select:not(:disabled)').disable().addClass('fade-disabled');
+							$this.addClass('hidden').next().removeClass('hidden');
+						}),
+						$.mk('span').attr({'class': 'typcn typcn-arrow-back add green hidden', title: 'Restore'}).on('click',e => {
+							const $this = $(e.target);
+							$this.closest('.clr').removeClass('faded').find('.fade-disabled').enable().removeClass('fade-disabled');
+							$this.addClass('hidden').prev().removeClass('hidden');
+						}),
+						$.mk('span').attr('class','typcn typcn-arrow-move move blue')
+					)
 			};
 			this.$addBtn = $.mk('button').attr('class','typcn typcn-plus green add-color').text('Add new color').on('click',e => {
 				e.preventDefault();
@@ -968,7 +726,7 @@ $(function(){
 						<option>Magic</option>
 					</datalist>`
 				),
-				$.mk('label').append(
+				PersonalGuide ? undefined : $.mk('label').append(
 					$.mk('input').attr({
 						type: 'checkbox',
 						name: 'major',
@@ -981,7 +739,7 @@ $(function(){
 					<span>Change reason (1-255 chars.)</span>
 					<input type='text' name='reason' pattern="${PRINTABLE_ASCII_PATTERN.replace('+','{1,255}')}" required disabled>
 				</label>
-				<p class="align-center">The # symbol is optional, rows with invalid colors will be ignored. Each color must have a short (3-30 chars.) description of its intended use.</p>`,
+				<p class="align-center">Each color must have a short (3-30 chars.) description.<br>The eitor rounds RGB values: ≤3 to 0 and ≥252 to 255.</p>`,
 				$.mk('div').attr('class', 'btn-group').append(
 					this.$addBtn, this.$editorToggle
 				),
@@ -1018,8 +776,6 @@ $(function(){
 				let data = this.$form.mkData(),
 					appearance_id = this.appearance_id;
 				data.Colors = this.colorValues;
-				if (this.editing)
-					data.removed_colors = this.removed_colors.join(',');
 				if (!this.editing)
 					data.ponyid = this.appearance_id;
 				if (data.Colors.length === 0)
@@ -1085,9 +841,7 @@ $(function(){
 				valid = HEX_COLOR_PATTERN.test(color);
 			if (valid)
 				$cp.removeClass('invalid').css('background-color', color.replace(HEX_COLOR_PATTERN, '#$1'));
-			else $cp.addClass('invalid');
-
-			$this.next().attr('required', valid);
+			else $cp.addClass('invalid').css('background-color','');
 		}
 		expandColorInput(e){
 			const input = e.target;
@@ -1118,6 +872,8 @@ $(function(){
 			}
 		}
 		makeColorDiv(color){
+			// TODO Organize input options inside a container with a child for each method
+			// TODO Add RGB input method alongside Hex and Link
 			let $mthd = this.templates.$inputMethodDropdown.clone(true, true),
 				$ci = this.templates.$colorInput.clone(true, true),
 				$cl = this.templates.$colorLabel.clone(),
@@ -1206,7 +962,8 @@ $(function(){
 				$colors.children('.clr').each(function(){
 					const
 						$row = $(this),
-						method = $row.children('.clrmthd').find('option:selected').attr('value'),
+						$method = $row.children('.clrmthd'),
+						method = $method.is(':disabled') ? null : $method.find('option:selected').attr('value'),
 						$clrid = $row.children('.clrid'),
 						id = $clrid.length ? $clrid.text().replace('ID:','') : void 0;
 
@@ -1242,10 +999,7 @@ $(function(){
 					return;
 
 				// Switching
-				let editorContent = [
-					'// One color per line',
-					'// e.g. #012ABC Fill',
-				];
+				let editorContent = ['// One color per line, e.g. #012ABC Fill'];
 				$.each(data, (_, color) =>{
 					let line = [];
 
@@ -1374,8 +1128,186 @@ $(function(){
 		}
 	}
 
+	class CutieMarkEditor {
+		// TODO Create "credit" fieldset with radio group "None, Deviation, Username" and approperiate inputs
+		// TODO Rewrite to use JSON instead of form field names & .mkData()
+		constructor(appearance_id, appearance_label, data){
+			const
+				updateActionText = 'Update preview',
+				updatingText = 'Updating preview&hellip;',
+				$cmSection = $content.find('section.approved-cutie-mark');
+			this.previewUpdateInProgess = false;
+			this.previewUpdateRequest = null;
+
+			this.$CMPreview = $.mk('ul').attr('class','dialog-preview');
+			this.$CMList = $.mk('ul').attr('class','cm-list');
+			this.$UpdatePreviewButton = $.mk('button').attr('class','darkblue typcn typcn-arrow-sync').text(updateActionText).on('click',e => {
+				e.preventDefault();
+
+				this.cancelPreviewUpdateRequest();
+
+				const data = this.$form.mkData();
+				this.$UpdatePreviewButton.disable().html(updatingText);
+				this.$CMPreview.addClass('loading');
+				this.previewUpdateRequest = $.post(`${PGRq}/cg/appearance/getcmpreview/${appearance_id}${EQGRq}`,data,$.mkAjaxHandler(data => {
+					this.$UpdatePreviewButton.text(updateActionText).enable();
+					this.$CMPreview.removeClass('loading');
+					this.previewUpdateRequest = false;
+
+					if (!data.status) return $.Dialog.fail(false, data.message);
+
+					$.Dialog.clearNotice(/preview/);
+					this.$CMPreview.html(data.html);
+					this.previewUpdated();
+				}));
+			});
+			this.$DeleteButton = $.mk('button').attr('class','red typcn typcn-trash').text('Delete Cutie Marks').on('click',e => {
+					e.preventDefault();
+
+					this.cancelPreviewUpdateRequest();
+
+					$.Dialog.close(function(){
+						$.Dialog.confirm('Delete Cutie Marks of '+appearance_label,'Are you sure you want to remove the cutie mark(s) associated with this appearance?', sure => {
+							if (!sure) return;
+
+							$.Dialog.wait(false,'Sending removal request');
+
+							$.post(`${PGRq}/cg/appearance/delcms/${appearance_id}${EQGRq}`,$.mkAjaxHandler(data => {
+								if (!data.status) return $.Dialog.fail(false, data.message);
+
+								if ($cmSection.length)
+									$cmSection.addClass('hidden').children(':not(h2,p)').remove();
+								$.Dialog.close();
+							}));
+						});
+					});
+				});
+			this.$form = $.mk('form').attr('id','cm-data-editor').append(
+				this.$CMPreview,
+				this.$CMList,
+				this.$UpdatePreviewButton
+			).on('submit',e => {
+				e.preventDefault();
+
+				this.cancelPreviewUpdateRequest();
+
+				let data = this.$form.mkData();
+				if (AppearancePage)
+					data.APPEARANCE_PAGE = true;
+				$.Dialog.wait(false,'Saving cutie mark data');
+				$.post(`${PGRq}/cg/appearance/setcms/${appearance_id}${EQGRq}`,data,$.mkAjaxHandler(data => {
+					if (!data.status) return $.Dialog.fail(false, data.message);
+
+					$.Dialog.close();
+					if ($cmSection.length){
+						$cmSection.children(':not(h2,p)').remove();
+						$cmSection.removeClass('hidden').append(data.html);
+					}
+				}));
+			}).on('change input','.rotation-range',function(e){
+				let $this = $(e.target),
+					val = $this.val();
+				$this.prev().children('.rotation-display').text(val);
+			});
+
+			if (data.cms.length){
+				$.each(data.cms,(i,el)=>{
+					this.$CMList.append( CutieMarkEditor.crateCutiemarkDataLi(i, el) );
+				});
+				this.$CMPreview.html(data.preview);
+				this.previewUpdated();
+				this.updateRanges();
+				this.$form.append(this.$DeleteButton);
+			}
+			else {
+				this.$CMList.append(CutieMarkEditor.crateCutiemarkDataLi(0));
+			}
+		}
+		getForm(){
+			return this.$form;
+		}
+		cancelPreviewUpdateRequest(){
+			if (this.previewUpdateInProgess !== false){
+				this.previewUpdateRequest.abort();
+				this.previewUpdateInProgess = false;
+			}
+		}
+		previewUpdated(){
+			this.$CMPreviewImages = this.$CMPreview.find('.img');
+			this.updateRanges();
+		}
+		updateRange(range){
+			const event = $.Event('change');
+			event.target = range;
+			this.$form.trigger(event);
+		}
+		updateRanges(){
+			this.$CMList.find('.rotation-range').each((_, el) => {
+				this.updateRange(el);
+			});
+		}
+		static crateCutiemarkDataLi(i, el = {}){
+			if (typeof el.facing === 'undefined')
+				el.facing = 'right';
+			const radioGrouping = {
+				facing: $.randomString(),
+			};
+			let $facingSelector = $.mk('div').attr('class','disabled-show').html(
+				`<p>Body orientation</p>
+				<div class="radio-group orientation">
+					<label><input type="radio" name="${radioGrouping.facing}" value="left" required><span>Left</span></label>
+					<label><input type="radio" name="${radioGrouping.facing}" value="right" required><span>Right</span></label>
+					<label><input type="radio" name="${radioGrouping.facing}" value="" required><span>Symmetrical</span></label>
+				</div>`
+			);
+			$facingSelector.find(`input[value='${el.facing?el.facing:''}']`).prop('checked', true);
+			const rotation = typeof el.favme_rotation !== 'undefined' ? el.favme_rotation : (el.facing==='left'?-18:18);
+			return $.mk('li').attr('id', el.id).append(
+					$.mk('fieldset').append(
+						$.mk('legend').append(
+							`<span>${typeof el.id !== 'undefined' ? 'Cutie Mark #'+el.id : 'New Cutie Mark'}</span>`,
+							(i>0?`<button class="section-toggle btn blue typcn"></button>`:'')
+						),
+						$facingSelector,
+						$.mk('label').append(
+							"<span>Deviation link</span>",
+							$.mk('input').attr({
+								type: 'url',
+								name: 'favme[]',
+								required: true,
+							}).val(el.favme?`http://fav.me/${el.favme}`:undefined)
+						),
+						$.mk('div').attr('class','label disabled-show').append(
+							`<span>Preview rotation: <span class='rotation-display'>${rotation}</span></span>`,
+							$.mk('input').attr({
+								type: 'range',
+								name: 'favme_rotation[]',
+								min: -45,
+								max: 45,
+								step: 1,
+								'class': 'rotation-range',
+								required: true,
+							}).val(rotation)
+						)
+					)
+				);
+		}
+		static factory(title, appearance_id, appearance_label, data){
+			$.Dialog.request(title, new CutieMarkEditor(appearance_id, appearance_label, data).getForm(), 'Save');
+		}
+	}
+
 	let $tags;
 	function ctxmenus(){
+		$tags = $('.tags');
+		$tags.filter(':not(.ctxmenu-bound)').ctxmenu(
+			[
+				{text: 'Create new tag', icon: 'plus', click: function(){
+					createNewTag($(this));
+				}},
+			],
+			'Tags'
+		);
 		$tags.children('span:not(.ctxmenu-bound)').ctxmenu([
 			{text: 'Edit tag', icon: 'pencil', click: function(){
 				let $tag = $(this),
@@ -1940,15 +1872,6 @@ $(function(){
 				}));
 			});
 		});
-
-		$tags = $('.tags').ctxmenu(
-			[
-				{text: 'Create new tag', icon: 'plus', click: function(){
-					createNewTag($(this));
-				}},
-			],
-			'Tags'
-		);
 
 		ctxmenus();
 	}

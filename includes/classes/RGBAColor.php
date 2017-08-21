@@ -2,7 +2,11 @@
 
 namespace App;
 
-class RGBAColor {
+/**
+ * A flexible class for parsing/storing color values
+ * RGB values can be iterated on using foreach and can be acessed via array keys 0-2
+ */
+class RGBAColor implements \ArrayAccess {
 	/** @var int */
 	public $red, $green, $blue;
 	/** @var float */
@@ -87,7 +91,7 @@ class RGBAColor {
 		return $this;
 	}
 
-	public static function forEach(string &$input, callable $callback){
+	public static function forEachColorIn(string &$input, callable $callback){
 		foreach (self::PATTERNS as $pattern => $_)
 			$input = preg_replace_callback($pattern, function($match) use ($callback, $pattern){
 				return $callback(self::_parseWith($match[0], $pattern));
@@ -135,4 +139,11 @@ class RGBAColor {
 
 		return null;
 	}
+
+    # ArrayAccess support
+	private const TRAVERSABLE_KEYS = ['red','green','blue'];
+	public function offsetExists ($offset):boolean { return isset(self::TRAVERSABLE_KEYS[$offset]); }
+	public function offsetGet    ($offset)         { return $this->{self::TRAVERSABLE_KEYS[$offset]}; }
+	public function offsetSet    ($offset, $value) { $this->{self::TRAVERSABLE_KEYS[$offset]} = (int)$value; }
+	public function offsetUnset  ($offset)         { throw new \RuntimeException(__CLASS__.' does not support unsetting color values'); }
 }

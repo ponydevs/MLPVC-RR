@@ -5,7 +5,6 @@ use App\Cutiemarks;
 use App\Models\Appearance;
 use App\Models\User;
 use App\Permission;
-use App\Appearances;
 use App\ColorGroups;
 use App\Tags;
 /** @var $Appearance Appearance */
@@ -31,7 +30,7 @@ use App\Tags;
 	}
 
 	$RenderPath = $Appearance->getPalettePath();
-	$FileModTime = '?t='.(file_exists($RenderPath) ? filemtime($RenderPath) : time()); ?>
+	$FileModTime = '?t='.CoreUtils::filemtime($RenderPath); ?>
 	<div id="p<?=$Appearance->id?>" class="section-container">
 		<div class='align-center'>
 			<a class='btn link typcn typcn-image' href='/cg/v/<?="{$Appearance->id}p.png$FileModTime"?>' target='_blank'>View as PNG</a>
@@ -50,11 +49,11 @@ use App\Tags;
 		if ($Appearance->id !== 0 && (\App\DB::$instance->where('appearance_id', $Appearance->id)->has('tagged') || Permission::sufficient('staff'))){ ?>
 		<section id="tags">
 			<h2><span class='typcn typcn-tags'></span>Tags</h2>
-			<div class='tags'><?=Appearances::getTagsHTML($Appearance->id,NOWRAP)?></div>
+			<div class='tags'><?=$Appearance->getTagsHTML(NOWRAP)?></div>
 		</section>
 <?php
 		}
-		echo Appearances::getRelatedEpisodesHTML($Appearance, $EQG);
+		echo $Appearance->getRelatedEpisodesHTML($EQG);
 	}
 	if (!empty($Appearance->notes_src)){ ?>
 		<section>

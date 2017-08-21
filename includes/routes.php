@@ -12,7 +12,7 @@ $router->addMatchTypes([
 	'rr' => '(req|res)',
 	'rrl' => '(request|reservation)',
 	'rrsl' => '(request|reservation)s?',
-	'cgimg' => '[spdc]',
+	'cgimg' => '[spfc]',
 	'cgext' => '(png|svg|json|gpl)',
 	'eqg' => 'eqg',
 	'favme' => 'd[a-z\d]{6}',
@@ -52,6 +52,8 @@ $router->map('GET',      '/[cg]/[eqg:eqg]?/[v]/[adi]-[i:id]',                   
 $router->map('GET',      '/[cg]/[eqg:eqg]?/[v]/[i:id][cgimg:type]?.[cgext:ext]', 'ColorGuideController#appearanceAsFile');
 $router->map('GET',      '/[cg]/[eqg:eqg]?/sprite(-colors)?/[i:id][adi]?',      'ColorGuideController#sprite');
 $router->map('GET|POST', '/[cg]/get-tags',                                      'ColorGuideController#getTags');
+$router->map('GET',      '/[cg]/cutiemark/[i:id].svg',                          'ColorGuideController#cutiemarkView');
+$router->map('GET',      '/[cg]/cutiemark/download/[i:id][adi]?',               'ColorGuideController#cutiemarkDownload');
 $router->map('GET', '/da-auth',                        'AuthController#auth');
 $router->map('GET', '/episode/[epid:id]',              'EpisodeController#page');
 $router->map('GET', '/episodes/[i]?',                  'EpisodeController#episodeList');

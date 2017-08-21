@@ -17,8 +17,8 @@ use App\Users;
  * @property Appearance $appearance     (Via relations)
  * @property int        $contributor_id (Via magic method)
  * @property User       $contributor    (Via magic method)
+ * @method static Cutiemark find(int $id)
  * @method static Cutiemark[] find_by_sql($sql, $data = null)
- * @method static Cutiemark find_by_appearance_id_and_facing(int $appearance_id, string $facing)
  */
 class Cutiemark extends NSModel {
 	static $table_name = 'cutiemarks';
@@ -26,6 +26,8 @@ class Cutiemark extends NSModel {
 	public static $belongs_to = [
 		['appearance'],
 	];
+
+	public static $after_destroy = ['remove_files'];
 
 	public function get_contributor_id(){
 		$attrval = $this->read_attribute('contributor_id');
@@ -48,11 +50,15 @@ class Cutiemark extends NSModel {
 	}
 
 	public function getTokenizedFilePath(){
-		return FSPATH."cm_tokenized/{$this->appearance_id}-{$this->facing}.svg";
+		return FSPATH."cm_tokenized/{$this->id}.svg";
 	}
 
 	public function getSourceFilePath(){
-		return FSPATH."cm_source/{$this->appearance_id}-{$this->facing}.svg";
+		return FSPATH."cm_source/{$this->id}.svg";
+	}
+
+	public function getVectorFilePath(){
+		return str_replace(['*','#'],[$this->id,$this->appearance_id],CGUtils::CM_SVG_PATH);
 	}
 
 	public function getTokenizedFile():?string {
@@ -62,7 +68,7 @@ class Cutiemark extends NSModel {
 		if (file_exists($tokenized_path)){
 			if (!$source_exists){
 				@unlink($tokenized_path);
-				CGUtils::clearRenderedImages($this->appearance_id, [CGUtils::CLEAR_CM_LEFT,CGUtils::CLEAR_CM_RIGHT]);
+				$this->appearance->clearRenderedImages([Appearance::CLEAR_CM]);
 				return null;
 			}
 			if (filemtime($tokenized_path) >= filemtime($source_path))
@@ -84,9 +90,33 @@ class Cutiemark extends NSModel {
 		return $data;
 	}
 
-	/** @return string|null */
+	/**
+	 * @see CGUtils::renderCMSVG()
+	 * @return string|null
+	 */
+	public function getVectorRelativeURL():?string {
+		return "/cg/cutiemark/{$this->id}.svg";
+	}
+
+	/**
+	 * @see CGUtils::renderCMSVG()
+	 * @return string|null
+	 */
 	public function getVectorURL():?string {
-		$path = str_replace(['@','#'],[$this->facing,$this->appearance_id],CGUtils::CM_SVG_PATH);
-		return "/cg/v/{$this->appearance_id}c.svg?facing={$this->facing}&t=".(file_exists($path) ? filemtime($path) : time());
+		return $this->getVectorRelativeURL().'?t='.CoreUtils::filemtime($this->getVectorFilePath());
+	}
+
+	/**
+	 * @see CGUtils::renderCMFacingSVG()
+	 * @return string
+	 */
+	public function getFacingSVGURL(){
+		return $this->appearance->getFacingSVGURL($this->facing);
+	}
+
+	public function remove_files(){
+		@unlink($this->getSourceFilePath());
+		@unlink($this->getTokenizedFilePath());
+		@unlink($this->getVectorFilePath());
 	}
 }

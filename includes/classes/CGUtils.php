@@ -299,49 +299,6 @@ HTML;
 		return $wrap ? "<ul id='changes'>$HTML</ul>" : $HTML;
 	}
 
-	const
-		CLEAR_PREVIEW = 'preview.svg',
-		CLEAR_PALETTE = 'palette.png',
-		CLEAR_CMDIR_LEFT = 'cmdir-left.svg',
-		CLEAR_CMDIR_RIGHT = 'cmdir-right.svg',
-		CLEAR_CM_LEFT = 'cm-left.svg',
-		CLEAR_CM_RIGHT = 'cm-right.svg',
-		CLEAR_SPRITE = 'sprite.png',
-		CLEAR_SPRITE_SVG = 'sprite.svg',
-		CLEAR_SPRITE_MAP = 'linedata.json.gz';
-
-	const CLEAR_ALL = [
-		self::CLEAR_PREVIEW,
-		self::CLEAR_PALETTE,
-		self::CLEAR_CMDIR_LEFT,
-		self::CLEAR_CMDIR_RIGHT,
-		self::CLEAR_CM_LEFT,
-		self::CLEAR_CM_RIGHT,
-		self::CLEAR_SPRITE,
-		self::CLEAR_SPRITE_SVG,
-		self::CLEAR_SPRITE_MAP,
-	];
-
-	/**
-	 * Deletes rendered images of an appearance (forcing its re-generation)
-	 *
-	 * @param int   $AppearanceID
-	 * @param array $which
-	 *
-	 * @return bool
-	 */
-	public static function clearRenderedImages(int $AppearanceID, array $which = self::CLEAR_ALL):bool {
-		$RenderedPath = FSPATH."cg_render/$AppearanceID";
-		$success = [];
-		foreach ($which as $suffix){
-			$path = "$RenderedPath/$suffix";
-			if (file_exists($path))
-				$success[] = unlink($path);
-		}
-		return !in_array(false, $success, true);
-	}
-
-
 	/**
 	 * Render appearance PNG image
 	 *
@@ -503,84 +460,45 @@ HTML;
 	}
 
 	const CMDIR_SVG_PATH = FSPATH.'cg_render/#/cmdir-@.svg';
-	const CM_SVG_PATH = FSPATH.'cg_render/#/cm-@.svg';
+	const CM_SVG_PATH = FSPATH.'cg_render/#/cm-*.svg';
 
-	const DEFAULT_COLOR_MAPPING = [
-		'Coat Outline' => '#0D0D0D',
-		'Coat Shadow Outline' => '#000000',
-		'Coat Fill' => '#2B2B2B',
-		'Coat Shadow Fill' => '#171717',
-		'Mane & Tail Outline' => '#333333',
-		'Mane & Tail Fill' => '#5E5E5E',
-	];
-
-	public static function getColorMapping($AppearanceID, $DefaultColorMapping){
-		$Colors = DB::$instance->query(
-			'SELECT cg.label as cglabel, c.label as clabel, c.hex
-			FROM color_groups cg
-			LEFT JOIN colors c on c.group_id = cg.id
-			WHERE cg.appearance_id = ?
-			ORDER BY cg.label ASC, c.label ASC', [$AppearanceID]);
-
-		$ColorMapping = [];
-		foreach ($Colors as $row){
-			$cglabel = preg_replace(new RegExp('^(Costume|Dress)$'),'Coat',$row['cglabel']);
-			$colorlabel = preg_replace(new RegExp('^(?:(?:(?:Purple|Yellow|Red)\s)?(?:Main|First|Normal|Gradient(?:\s(?:Light))?)\s)?(.+?)(?:\s\d+)?(?:/.*)?$'),'$1', $row['clabel']);
-			$label = "$cglabel $colorlabel";
-			if (isset($DefaultColorMapping[$label]) && !isset($ColorMapping[$label]))
-				$ColorMapping[$label] = $row['hex'];
-		}
-		if (!isset($ColorMapping['Coat Shadow Outline']) && isset($ColorMapping['Coat Outline']))
-			$ColorMapping['Coat Shadow Outline'] = $ColorMapping['Coat Outline'];
-		if (!isset($ColorMapping['Coat Shadow Fill']) && isset($ColorMapping['Coat Fill']))
-			$ColorMapping['Coat Shadow Fill'] = $ColorMapping['Coat Fill'];
-
-		return $ColorMapping;
-	}
-
-	// Generate CM preview image
-	public static function renderCMDirectionSVG($CGPath, $AppearanceID){
+	// Generate appearance facing image (CM background)
+	public static function renderCMFacingSVG($CGPath, Appearance $appearance){
 		if (empty($_GET['facing']))
-			$Facing = 'left';
+			$facing = null;
 		else {
-			$Facing = $_GET['facing'];
-			if (!in_array($Facing, Cutiemarks::VALID_FACING_VALUES, true))
+			$facing = $_GET['facing'];
+			if (!in_array($facing, Cutiemarks::VALID_FACING_VALUES, true))
 				Response::fail('Invalid facing value specified!');
 		}
 
-		$OutputPath = str_replace(['@','#'],[$Facing,$AppearanceID],self::CMDIR_SVG_PATH);
-		$FileRelPath = "$CGPath/v/{$AppearanceID}d.svg?facing=$Facing";
+		$OutputPath = str_replace(['#','@'],[$appearance->id,$facing],self::CMDIR_SVG_PATH);
+		$FileRelPath = $appearance->getFacingSVGURL($facing, false);
 		if (file_exists($OutputPath))
 			Image::outputSVG(null,$OutputPath,$FileRelPath);
 
-		$ColorMapping = self::getColorMapping($AppearanceID, self::DEFAULT_COLOR_MAPPING);
+		$ColorMapping = $appearance->getColorMapping(Appearance::DEFAULT_COLOR_MAPPING);
 
 		$img = File::get(APPATH.'img/cm_facing/'.($Facing===CM_FACING_RIGHT?'right':'left').'.svg');
-		foreach (self::DEFAULT_COLOR_MAPPING as $label => $defhex)
+		foreach (Appearance::DEFAULT_COLOR_MAPPING as $label => $defhex)
 			$img = str_replace($label, $ColorMapping[$label] ?? $defhex, $img);
 
 		Image::outputSVG($img,$OutputPath,$FileRelPath);
 	}
 
-	public static function renderCMSVG($CGPath, $AppearanceID){
-		if (empty($_GET['facing']))
-			$Facing = 'left';
-		else {
-			$Facing = $_GET['facing'];
-			if (!in_array($Facing, Cutiemarks::VALID_FACING_VALUES, true))
-				Response::fail('Invalid facing value specified!');
-		}
+	public static function renderCMSVG(Cutiemark $CutieMark){
+		if (empty($CutieMark))
+			CoreUtils::notFound();
 
-		$OutputPath = str_replace(['@','#'],[$Facing,$AppearanceID],self::CM_SVG_PATH);
-		$FileRelPath = "$CGPath/v/{$AppearanceID}c.svg?facing=$Facing";
+		$OutputPath = $CutieMark->getVectorFilePath();
+		$FileRelPath = $CutieMark->getVectorRelativeURL();
 		if (file_exists($OutputPath))
 			Image::outputSVG(null,$OutputPath,$FileRelPath);
 
-		$CutieMark = Cutiemark::find_by_appearance_id_and_facing($AppearanceID, $Facing);
 		$tokenized = $CutieMark->getTokenizedFile();
 		if ($tokenized === null)
 			CoreUtils::notFound();
-		$img = self::untokenizeSvg($tokenized, $AppearanceID);
+		$img = self::untokenizeSvg($tokenized, $CutieMark->appearance_id);
 		Image::outputSVG($img,$OutputPath,$FileRelPath);
 	}
 
@@ -696,7 +614,7 @@ HTML;
 		$SizeFactor = round($size/300);
 		$PNG = Image::createTransparent($Map['width']*$SizeFactor, $Map['height']*$SizeFactor);
 		foreach ($Map['linedata'] as $line){
-			$rgb = CoreUtils::hex2Rgb($Map['colors'][$line['colorid']]);
+			$rgb = RGBAColor::parse($Map['colors'][$line['colorid']]);
 			$color = imagecolorallocatealpha($PNG, $rgb[0], $rgb[1], $rgb[2], $line['opacity']);
 			Image::drawSquare($PNG, $line['x']*$SizeFactor, $line['y']*$SizeFactor, [$line['width']*$SizeFactor, $SizeFactor], $color, null);
 		}
@@ -813,7 +731,7 @@ XML;
 				$JSON[$label][$cg->label][$c->label] = $c->hex;
 		}
 
-		CoreUtils::downloadFile(JSON::encode($JSON), "$label.json");
+		CoreUtils::downloadAsFile(JSON::encode($JSON), "$label.json");
 	}
 	/**
 	 * @param Appearance $Appearance
@@ -837,12 +755,12 @@ GPL;
 			foreach ($Colors[$cg->id] as $c){
 				if (empty($c->hex))
 					continue;
-				$rgb = CoreUtils::hex2Rgb($c->hex);
+				$rgb = RGBAColor::parse($c->hex);
 				$File .= CoreUtils::pad($rgb[0],3,' ').' '.CoreUtils::pad($rgb[1],3,' ').' '.CoreUtils::pad($rgb[2],3,' ').' '.$cg->label.' | '.$c->label.PHP_EOL;
 			}
 		}
 
-		CoreUtils::downloadFile(rtrim($File), "$label.gpl");
+		CoreUtils::downloadAsFile(rtrim($File), "$label.gpl");
 	}
 
 	/**
@@ -859,7 +777,7 @@ GPL;
 		if (empty($CMColorGroup))
 			return $svg;
 
-		RGBAColor::forEach($svg, function(RGBAColor $color) use ($CMColorGroup){
+		RGBAColor::forEachColorIn($svg, function(RGBAColor $color) use ($CMColorGroup){
 			/** @var $dbcolor Color[] */
 			$dbcolor = DB::$instance->where('hex', $color->toHex())->where('group_id', $CMColorGroup->id)->get(Color::$table_name);
 
@@ -1029,5 +947,47 @@ GPL;
 			$return[] = $c->label;
 
 		return implode("\n", $return);
+	}
+
+	public static function roundHex(string $hex):string {
+		$color = RGBAColor::parse($hex);
+		foreach ($color as &$value){
+			if ($value <= 3)
+				$value = 0;
+			else if ($value >= 252)
+				$value = 255;
+		}
+		return $color->toHex();
+	}
+
+	/**
+	 * Turns tag names into more readable text, e.g. "sNeM" into "S0N E0M" and "movie#N" into "Movie #N"
+	 *
+	 * @param string $tagname
+	 *
+	 * @return string
+	 */
+	public static function expandEpisodeTagName(string $tagname):string {
+		global $EPISODE_ID_REGEX, $MOVIE_ID_REGEX;
+
+		if (preg_match($EPISODE_ID_REGEX, $tagname, $_match))
+			return 'S'.CoreUtils::pad($_match[1]).' E'.CoreUtils::pad($_match[2]);
+		if (preg_match($MOVIE_ID_REGEX, $tagname, $_match))
+			return 'Movie #'.$_match[1];
+
+		return $tagname;
+	}
+
+	/**
+	 * @return int|null
+	 */
+	public static function validateAppearancePageID():?int {
+		return (new Input('APPEARANCE_PAGE', 'int', [
+			Input::IS_OPTIONAL => true,
+			Input::IN_RANGE => [0, null],
+			Input::CUSTOM_ERROR_MESSAGES => [
+				Input::ERROR_RANGE => 'Appearance ID must be greater than or equal to @min'
+			]
+		]))->out();
 	}
 }

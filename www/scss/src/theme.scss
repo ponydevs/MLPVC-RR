@@ -190,6 +190,7 @@
 }
 // Global Stuff
 .hidden, datalist, template { display: none !important }
+.faded { opacity: .5 !important }
 .unreadable { font-size: 0 }
 .star-info {
 	cursor: help;

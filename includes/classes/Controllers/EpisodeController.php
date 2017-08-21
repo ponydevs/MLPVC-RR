@@ -7,6 +7,7 @@ use App\CGUtils;
 use App\CoreUtils;
 use App\CSRFProtection;
 use App\DB;
+use App\DeviantArt;
 use App\Episodes;
 use App\Input;
 use App\Logs;
@@ -454,7 +455,7 @@ class EpisodeController extends Controller {
 				if (!empty($_POST[$PostKey])){
 					$Provider = Episodes::VIDEO_PROVIDER_NAMES[$provider];
 					try {
-						$vidProvider = new VideoProvider($_POST[$PostKey]);
+						$vidProvider = new VideoProvider(DeviantArt::trimOutgoingGateFromUrl($_POST[$PostKey]));
 					}
 					catch (\Exception $e){
 						Response::fail("$Provider link issue: ".$e->getMessage());

@@ -13,7 +13,6 @@ use Elasticsearch\ClientBuilder;
 use ElephantIO\Engine\SocketIO\Version2X as SocketIOEngine;
 use App\Exceptions\CURLRequestException;
 use enshrined\svgSanitize\data\AllowedAttributes;
-use enshrined\svgSanitize\data\AllowedTags;
 use enshrined\svgSanitize\data\AttributeInterface;
 use enshrined\svgSanitize\data\TagInterface;
 use enshrined\svgSanitize\Sanitizer;
@@ -1061,31 +1060,6 @@ HTML;
 		}
 	}
 
-	/**
-	 * Converts a HEX color string to an array of R, G and B values
-	 * Related: http://stackoverflow.com/a/15202130/1344955
-	 *
-	 * @param string $hex
-	 *
-	 * @return int[]
-	 */
-	public static function hex2Rgb($hex){
-		/** @noinspection PrintfScanfArgumentsInspection */
-		return sscanf($hex, '#%02x%02x%02x');
-	}
-
-	/**
-	 * Normalize a misaligned Stash submission ID
-	 *
-	 * @param string $id Stash submission ID
-	 *
-	 * @return string
-	 */
-	public static function nomralizeStashID($id){
-		$normalized = ltrim($id,'0');
-		return self::length($normalized) < 12 ? '0'.$normalized : $normalized;
-	}
-
 	public static function getOverdueSubmissionList(){
 		$Query = DB::$instance->query(
 			'SELECT reserved_by, COUNT(*) as cnt FROM (
@@ -1111,13 +1085,6 @@ HTML;
 			$HTML .= "<tr><td>$link</td><td>$count</td></tr>";
 		}
 		return "$HTML</table>";
-	}
-
-	public static function downloadFile($contents, $name){
-		header('Content-Type: application/octet-stream');
-		header('Content-Transfer-Encoding: Binary');
-		header("Content-disposition: attachment; filename=\"$name\"");
-		die($contents);
 	}
 
 	public static function substring(...$args){
@@ -1170,7 +1137,7 @@ HTML;
 	 * @return int Brightness ranging from 0 to 255
 	 */
 	public static function yiq(string $hex):int {
-		$rgb = self::hex2Rgb($hex);
+		$rgb = RGBAColor::parse($hex);
 	    return (($rgb[0]*299)+($rgb[1]*587)+($rgb[2]*114))/1000;
 	}
 
@@ -1297,5 +1264,68 @@ HTML;
 		}
 		while ($e !== null && empty(self::trim($e->textContent)));
 		return $e;
+	}
+
+	private static function _downloadHeaders(string $filename){
+		header('Content-Type: application/octet-stream');
+		header('Content-Transfer-Encoding: Binary');
+		header("Content-disposition: attachment; filename=\"$filename\"");
+	}
+
+	public static function downloadAsFile(string $data, string $name){
+		self::_downloadHeaders($name);
+		echo $data;
+		exit;
+	}
+
+	public static function downloadFile(string $path, ?string $dl_name = null){
+		self::_downloadHeaders($dl_name ?? basename($path));
+		readfile($path);
+		exit;
+	}
+
+	/**
+	 * Set theory equivalent: $initial ∖ $remove
+	 * Only works with non-associative arrays
+	 * I wouldn't rely on the order of the returned elements
+	 *
+	 * @param array $initial
+	 * @param array $remove
+	 *
+	 * @return array The inital array with the elements present in both arrays removed
+	 */
+	public static function array_subtract(array $initial, array $remove):array {
+		$initial = array_flip($initial);
+		if ($initial === false)
+			throw new \RuntimeException(__METHOD__.': $initial could not be flipped');
+		/** @var $initial array */
+		$remove = array_flip($remove);
+		if ($remove === false)
+			throw new \RuntimeException(__METHOD__.': $remove could not be flipped');
+		/** @var $remove array */
+		foreach ($initial as $el => $_){
+			if (isset($remove[$el]))
+				unset($initial[$el]);
+		}
+		return array_keys($initial);
+	}
+
+	public static function array_random(array $arr){
+		return empty($arr) ? null : $arr[array_rand($arr, 1)];
+	}
+
+	/**
+	 * Returns the file's modification timestamp or the current timestamp if it doesn't exist
+	 *
+	 * @param string $path
+	 *
+	 * @return int
+	 */
+	public static function filemtime(string $path):int {
+		if (!file_exists($path))
+			return time();
+
+		$mt = filemtime($path);
+		return $mt === false ? time() : $mt;
 	}
 }

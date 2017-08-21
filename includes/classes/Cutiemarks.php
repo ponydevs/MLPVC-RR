@@ -17,19 +17,7 @@ class Cutiemarks {
 	public static function get(Appearance $Appearance, bool $procSym = true){
 		/** @var $CMs Cutiemark[] */
 		$CMs = DB::$instance->where('appearance_id', $Appearance->id)->get(Cutiemark::$table_name);
-		if ($procSym)
-			self::processSymmetrical($CMs);
 		return $CMs;
-	}
-
-	/** @param Cutiemark[] $CMs */
-	public static function processSymmetrical(&$CMs){
-		if (count($CMs) === 1 && $CMs[0]->facing === null){
-			$CMs[1] = new Cutiemark($CMs[0]->to_array());
-			$CMs[0]->facing = 'left';
-			$CMs[1]->facing = 'right';
-			$CMs[1]->rotation = $CMs[0]->rotation*-1;
-		}
 	}
 
 	const VALID_FACING_VALUES = ['left','right'];
@@ -42,9 +30,8 @@ class Cutiemarks {
 	 */
 	public static function getListForAppearancePage($CutieMarks, $wrap = WRAP){
 		$HTML = '';
-		foreach ($CutieMarks as $cm){
+		foreach ($CutieMarks as $cm)
 			$HTML .= self::getListItemForAppearancePage($cm);
-		}
 
 		return $wrap ? "<ul id='pony-cm-list'>$HTML</ul>" : $HTML;
 	}
@@ -58,12 +45,14 @@ class Cutiemarks {
 	 */
 	public static function getListItemForAppearancePage(Cutiemark $cm, $wrap = WRAP){
 		$facing = $cm->facing !== null ? 'Facing '.CoreUtils::capitalize($cm->facing) : 'Symmetrical';
-		$facingSVG = Appearances::getCMFacingSVGURL($cm);
+		$facingSVG = $cm->getFacingSVGURL();
 		$preview = CoreUtils::aposEncode($cm->getVectorURL());
 
+		$canEdit = Permission::sufficient('staff') || (Auth::$signed_in && $cm->appearance->owner_id === Auth::$user->id);
+
 		$links = "<a href='/cg/cutiemark/download/{$cm->id}' class='btn link typcn typcn-download'>SVG</a>";
-		if (Permission::sufficient('staff'))
-			$links .= "<a href='/cg/cutiemark/download/{$cm->id}?source' class='btn darkblue typcn typcn-download'>Original</a>";
+		if ($canEdit)
+			$links .= "<a href='/cg/cutiemark/download/{$cm->id}?source' class='btn darkblue typcn typcn-download' title='Download the original file as uploaded (Staff only)'>Original</a>";
 		if (($cm->favme ?? null) !== null)
 			$links .= "<a href='http://fav.me/{$cm->favme}' class='btn btn-da typcn'>Source</a>";
 
@@ -72,19 +61,18 @@ class Cutiemarks {
 			$userlink = $cm->contributor->toAnchor(User::WITH_AVATAR);
 			$madeby = "<span class='madeby'>Contributed by $userlink</span>";
 		}
+
+		$id = $canEdit ? "<span class='cm-id'>#{$cm->id}</span> " : '';
 		$content = <<<HTML
-<span class="title">$facing</span>
+<span class="title">$id$facing</span>
 <div class="preview" style="background-image:url('{$facingSVG}')">
 	<div class="img" style="transform: rotate({$cm->rotation}deg); background-image:url('{$preview}')"></div>
 </div>
 <div class="dl-links">$links</div>
 $madeby
 HTML;
-		return $wrap ? "<li class='pony-cm'>$content</li>" : $content;
+		return $wrap ? "<li class='pony-cm' id='cm{$cm->id}'>$content</li>" : $content;
 	}
-
-	// null (=symmetric) is stringified to '' by implode
-	const VALID_FACING_COMBOS = ['left,right','left','right',''];
 
 	/**
 	 * @param Cutiemark $data
@@ -104,7 +92,7 @@ HTML;
 			$facing = CoreUtils::trim($_POST['facing'][$index]);
 			if (empty($facing))
 				$facing = null;
-			else if (!in_array($facing,Cutiemarks::VALID_FACING_VALUES,true))
+			else if (!in_array($facing,self::VALID_FACING_VALUES,true))
 				Response::fail('Body orientation is invalid');
 		}
 		else $facing = null;
@@ -127,8 +115,8 @@ HTML;
 		$favme_rotation = (int) $_POST['favme_rotation'][$index];
 		if (!is_numeric($favme_rotation))
 			Response::fail('Preview rotation must be a number');
-		if ($favme_rotation < -180 || $favme_rotation > 180)
-			Response::fail('Preview rotation must be between -180 and 180');
+		if ($favme_rotation < -45 || $favme_rotation > 45)
+			Response::fail('Preview rotation must be between -45 and 45');
 		$data->rotation = $favme_rotation;
 
 		return true;

@@ -112,7 +112,7 @@ class DeviantArt {
 		global $FULLSIZE_MATCH_REGEX;
 
 		if ($type === 'sta.sh')
-			$ID = CoreUtils::nomralizeStashID($ID);
+			$ID = self::nomralizeStashID($ID);
 
 		/** @var $Deviation CachedDeviation */
 		$Deviation = CachedDeviation::find_by_id_and_provider($ID, $type);
@@ -217,7 +217,7 @@ class DeviantArt {
 			$type = 'fav.me';
 
 		if ($type === 'sta.sh')
-			$ID = CoreUtils::nomralizeStashID($ID);
+			$ID = self::nomralizeStashID($ID);
 		try {
 			$data = self::request('https://backend.deviantart.com/oembed?url='.urlencode("http://$type/$ID"),false);
 		}
@@ -664,5 +664,18 @@ class DeviantArt {
 		}
 
 		return URL::makeHttps($fullsize_url);
+	}
+
+	/**
+	 * Normalize a misaligned Stash submission ID
+	 *
+	 * @param string $id Stash submission ID
+	 *
+	 * @return string
+	 */
+	public static function nomralizeStashID($id){
+		$normalized = ltrim($id, '0');
+
+		return CoreUtils::length($normalized) < 12 ? '0'.$normalized : $normalized;
 	}
 }

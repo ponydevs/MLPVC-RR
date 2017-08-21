@@ -58,9 +58,9 @@ $TFeature:  adjust_hue($_TBase, 20);
 		left: 0;
 		padding: $padding;
 		line-height: $fontSize;
-		font-size: $fontSize/2;
+		font-size: $fontSize;
 		height: $fontSize;
-		width: $fontSize/2;
+		width: $fontSize;
 		text-align: center;
 		font-weight: bold;
 		color: $NRedBG;
@@ -104,7 +104,7 @@ $TFeature:  adjust_hue($_TBase, 20);
 		display: block;
 		border: 1px solid #000;
 		height: $height;
-		width: $height/2;
+		width: $height;
 		box-sizing: border-box;
 		transition: background-color .2s linear, border .2s linear;
 
@@ -131,7 +131,7 @@ $TFeature:  adjust_hue($_TBase, 20);
 		flex: 0 0 auto;
 
 		> *, > *:before { line-height: $height }
-		.remove { cursor: pointer }
+		.remove, .add { cursor: pointer }
 		.move { cursor: ns-resize }
 	}
 
@@ -261,13 +261,17 @@ $TFeature:  adjust_hue($_TBase, 20);
 	background: #fff;
 	margin: 5px;
 	text-align: center;
-	padding: 5px;
+	padding: 7px;
 
 	.title {
 		font-size: 20px;
 		display: block;
 		margin-bottom: 5px;
 		font-weight: bold;
+
+		.cm-id {
+			opacity: .4;
+		}
 	}
 
 	.dl-links {
@@ -277,7 +281,7 @@ $TFeature:  adjust_hue($_TBase, 20);
 
 	.madeby {
 		display: block;
-		margin: 0 0 5px;
+		margin: 0;
 		font-size: 18px;
 	}
 }

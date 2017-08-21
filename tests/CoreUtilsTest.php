@@ -1,6 +1,7 @@
 <?php
 
 use App\CoreUtils;
+use App\DeviantArt;
 use PHPUnit\Framework\TestCase;
 
 class CoreUtilsTest extends TestCase {
@@ -168,24 +169,6 @@ class CoreUtilsTest extends TestCase {
 		self::assertEquals(1.5, $result);
 		$result = CoreUtils::average(1,2,3);
 		self::assertEquals(2, $result);
-	}
-
-	public function testHex2Rgb(){
-		$result = CoreUtils::hex2Rgb('#AFDC34');
-		self::assertEquals([175,220,52],$result);
-		$result = CoreUtils::hex2Rgb('#000000');
-		self::assertEquals([0,0,0],$result);
-		$result = CoreUtils::hex2Rgb('#ffffff');
-		self::assertEquals([255,255,255],$result);
-	}
-
-	public function testNormalizeStashID(){
-		$result = CoreUtils::nomralizeStashID('76dfg312kla');
-		self::assertEquals('076dfg312kla', $result);
-		$result = CoreUtils::nomralizeStashID('76dfg312kla4');
-		self::assertEquals('76dfg312kla4', $result);
-		$result = CoreUtils::nomralizeStashID('000adfg312kla4');
-		self::assertEquals('0adfg312kla4', $result);
 	}
 
 	public function testCutoff(){

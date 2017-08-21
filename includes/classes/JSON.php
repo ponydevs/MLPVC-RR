@@ -27,7 +27,10 @@ class JSON {
 			throw new JSONParseException(json_last_error_msg(), $err);
 		return $decoded;
 	}
-	public static function encode($value, int $options = JSON_UNESCAPED_SLASHES, int $depth = 100){
-		return json_encode($value, $options, $depth);
+	public static function encode($value, ?int $options = null, int $depth = 100){
+		$opt = JSON_UNESCAPED_SLASHES;
+		if ($options !== null)
+			$opt |= $options;
+		return json_encode($value, $opt, $depth);
 	}
 }

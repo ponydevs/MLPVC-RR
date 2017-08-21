@@ -119,12 +119,12 @@ class Image {
 	 */
 	public static function drawSquare($image, $x, $y, $size, $fill, $outline){
 		if (!empty($fill) && is_string($fill)){
-			$fill = CoreUtils::hex2Rgb($fill);
-			$fill = imagecolorallocate($image, $fill[0], $fill[1], $fill[2]);
+			$fill = RGBAColor::parse($fill);
+			$fill = imagecolorallocate($image, ...$fill);
 		}
 		if (is_string($outline)){
-			$outline = CoreUtils::hex2Rgb($outline);
-			$outline = imagecolorallocate($image, $outline[0], $outline[1], $outline[2]);
+			$outline = RGBAColor::parse($outline);
+			$outline = imagecolorallocate($image, ...$outline);
 		}
 
 		if (is_array($size)){
@@ -158,12 +158,12 @@ class Image {
 	 */
 	public static function drawCircle($image, $x, $y, $size, $fill, $outline){
 		if (!empty($fill)){
-			$fill = CoreUtils::hex2Rgb($fill);
-			$fill = imagecolorallocate($image, $fill[0], $fill[1], $fill[2]);
+			$fill = RGBAColor::parse($fill);
+			$fill = imagecolorallocate($image, ...$fill);
 		}
 		if (is_string($outline)){
-			$outline = CoreUtils::hex2Rgb($outline);
-			$outline = imagecolorallocate($image, $outline[0], $outline[1], $outline[2]);
+			$outline = RGBAColor::parse($outline);
+			$outline = imagecolorallocate($image, ...$outline);
 		}
 
 		if (is_array($size)){

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\CoreUtils;
 use App\Permission;
+use App\RGBAColor;
 use App\UserPrefs;
 
 /**
@@ -91,8 +92,8 @@ class ColorGroup extends OrderedModel {
 					$label = CoreUtils::escapeHTML($c->label);
 					$append = "<div class='color-line".(!$extraInfo || empty($color)?' no-detail':'')."'>$append<span><span class='label'>$label";
 					if ($extraInfo && !empty($color)){
-						$rgb = CoreUtils::hex2Rgb($color);
-						$rgb = 'rgb('.implode(',',$rgb).')';
+						/** @noinspection NullPointerExceptionInspection */
+						$rgb = RGBAColor::parse($color)->toRGB();
 						$append .= "</span><span class='ext'>$color &bull; $rgb";
 					}
 					$append .= '</span></div>';

@@ -331,7 +331,7 @@
 				return;
 			}
 
-			if (typeof f === 'function') f.call(data);
+			if (typeof f === 'function') f.call(data, data);
 		};
 	};
 
@@ -546,9 +546,9 @@
 		sel.addRange(range);
 	};
 
-	let shortHexRegex = /^#?([A-Fa-f0-9]{3})$/;
+	let shortHexRegex = /^#?([\dA-Fa-f]{3})$/;
 	window.SHORT_HEX_COLOR_PATTERN = shortHexRegex;
-	$.hexpand = (shorthex) => {
+	$.hexpand = shorthex => {
 		let match = shorthex.trim().match(shortHexRegex);
 		if (!match)
 			return shorthex.replace(/^#?/,'#');
@@ -716,4 +716,6 @@
 
 	window.sidebarForcedVisible = () => Math.max(document.documentElement.clientWidth, window.innerWidth || 0) >= 1200;
 	window.withinMobileBreakpoint = () => Math.max(document.documentElement.clientWidth, window.innerWidth || 0) <= 650;
+
+	$.randomString = () => parseInt(Math.random().toFixed(20).replace(/[.,]/,''), 10).toString(36);
 })(jQuery);
