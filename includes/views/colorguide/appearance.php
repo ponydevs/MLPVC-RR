@@ -30,7 +30,7 @@ use App\Tags;
 <?php
 	}
 
-	$RenderPath = FSPATH."cg_render/{$Appearance->id}.png";
+	$RenderPath = $Appearance->getPalettePath();
 	$FileModTime = '?t='.(file_exists($RenderPath) ? filemtime($RenderPath) : time()); ?>
 	<div id="p<?=$Appearance->id?>" class="section-container">
 		<div class='align-center'>

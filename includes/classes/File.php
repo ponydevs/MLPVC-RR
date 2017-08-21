@@ -33,7 +33,7 @@ class File {
 	 * @return bool True on success, false on failure
 	 */
 	public static function chmod(string $name):bool {
-		$result = @chmod($name, 0770);
+		$result = @chmod($name, FILE_PERM);
 		if ($result === false)
 			error_log(__METHOD__.': Fail for file '.$name);
 		return $result;

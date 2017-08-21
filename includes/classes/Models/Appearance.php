@@ -71,6 +71,10 @@ class Appearance extends NSModel implements LinkableInterface {
 		return $arr;
 	}
 
+	public function getPalettePath(){
+		return FSPATH."cg_render/{$this->id}/palette.png";
+	}
+
 	/**
 	 * Replaces non-alphanumeric characters in the appearance label with dashes
 	 *

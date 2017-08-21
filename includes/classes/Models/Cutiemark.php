@@ -74,12 +74,12 @@ class Cutiemark extends NSModel {
 			if ($data === null)
 				return null;
 
-			CoreUtils::createUploadFolder($source_path);
+			CoreUtils::createFoldersFor($source_path);
 			File::put($source_path, $data);
 		}
 		else $data = File::get($source_path);
 		$data = CGUtils::tokenizeSvg(CoreUtils::sanitizeSvg($data), $this->appearance_id);
-		CoreUtils::createUploadFolder($tokenized_path);
+		CoreUtils::createFoldersFor($tokenized_path);
 		File::put($tokenized_path, $data);
 		return $data;
 	}

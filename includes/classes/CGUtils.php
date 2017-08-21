@@ -173,7 +173,7 @@ class CGUtils {
 			Response::fail('File upload failed; Reason unknown');
 
 		list($width, $height) = Image::checkType($tmp, $allowedMimeTypes);
-		CoreUtils::createUploadFolder($path);
+		CoreUtils::createFoldersFor($path);
 
 		if (!move_uploaded_file($tmp, $path)){
 			@unlink($tmp);
@@ -334,8 +334,9 @@ HTML;
 		$RenderedPath = FSPATH."cg_render/$AppearanceID";
 		$success = [];
 		foreach ($which as $suffix){
-			if (file_exists("$RenderedPath-$suffix"))
-				$success[] = unlink("$RenderedPath-$suffix");
+			$path = "$RenderedPath/$suffix";
+			if (file_exists($path))
+				$success[] = unlink($path);
 		}
 		return !in_array(false, $success, true);
 	}
@@ -350,7 +351,7 @@ HTML;
 	 * @throws \Exception
 	 */
 	public static function renderAppearancePNG($CGPath, $Appearance){
-		$OutputPath = FSPATH."cg_render/{$Appearance->id}-palette.png";
+		$OutputPath = $Appearance->getPalettePath();
 		$FileRelPath = "$CGPath/v/{$Appearance->id}p.png";
 		CoreUtils::fixPath($FileRelPath);
 		if (file_exists($OutputPath))
@@ -496,13 +497,13 @@ HTML;
 		Image::drawSquare($FinalBase, 0, 0, [$OutWidth, $OutHeight], null, $BLACK);
 		Image::copyExact($FinalBase, $BaseImage, 0, 0, $OutWidth, $OutHeight);
 
-		if (!CoreUtils::createUploadFolder($OutputPath))
+		if (!CoreUtils::createFoldersFor($OutputPath))
 			Response::fail('Failed to create render directory');
 		Image::outputPNG($FinalBase, $OutputPath, $FileRelPath);
 	}
 
-	const CMDIR_SVG_PATH = FSPATH.'cg_render/#-cmdir-@.svg';
-	const CM_SVG_PATH = FSPATH.'cg_render/#-cm-@.svg';
+	const CMDIR_SVG_PATH = FSPATH.'cg_render/#/cmdir-@.svg';
+	const CM_SVG_PATH = FSPATH.'cg_render/#/cm-@.svg';
 
 	const DEFAULT_COLOR_MAPPING = [
 		'Coat Outline' => '#0D0D0D',
@@ -596,7 +597,7 @@ HTML;
 
 	public static function getSpriteImageMap($AppearanceID){
 		$PNGPath = SPRITE_PATH."$AppearanceID.png";
-		$MapFile = new CachedFile(FSPATH."cg_render/$AppearanceID-linedata.json.gz", function($path) use($PNGPath) {
+		$MapFile = new CachedFile(FSPATH."cg_render/$AppearanceID/linedata.json.gz", function($path) use($PNGPath) {
 			return !file_exists($path) || filemtime($path) < filemtime($PNGPath);
 		});
 		if (!$MapFile->expired())
@@ -684,7 +685,7 @@ HTML;
 			$size = 600;
 		$outsize = $size === Appearance::SPRITE_SIZES['REGULAR'] ? '' : "-$size";
 
-		$OutputPath = FSPATH."cg_render/{$AppearanceID}-sprite$outsize.png";
+		$OutputPath = FSPATH."cg_render/{$AppearanceID}/sprite$outsize.png";
 		$FileRelPath = "$CGPath/v/{$AppearanceID}s.png";
 		CoreUtils::fixPath($FileRelPath);
 		if (file_exists($OutputPath))
@@ -708,7 +709,7 @@ HTML;
 		if (empty($Map))
 			CoreUtils::notFound();
 
-		$OutputPath = FSPATH."cg_render/{$AppearanceID}-sprite.svg";
+		$OutputPath = FSPATH."cg_render/{$AppearanceID}/sprite.svg";
 		$FileRelPath = "$CGPath/v/{$AppearanceID}s.svg";
 		if (file_exists($OutputPath))
 			Image::outputSVG(null,$OutputPath,$FileRelPath);
@@ -740,7 +741,7 @@ XML;
 		Image::outputSVG($SVG, $OutputPath, $FileRelPath);
 	}
 
-	const PREVIEW_SVG_PATH = FSPATH.'cg_render/#-preview.svg';
+	const PREVIEW_SVG_PATH = FSPATH.'cg_render/#/preview.svg';
 
 	public static function renderPreviewSVG($CGPath, Appearance $Appearance){
 		$OutputPath = str_replace('#',$Appearance->id,self::PREVIEW_SVG_PATH);

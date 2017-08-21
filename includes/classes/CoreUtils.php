@@ -511,10 +511,10 @@ class CoreUtils {
 		if (!file_exists(SVGO_BINARY))
 			throw new \RuntimeException('svgo is required for SVG minification, please run `yarn install` to install all NPM dependencies');
 		$tmp_path = FSPATH.'tmp/sanitize/'.self::sha256($svgdata).'.svg';
-		self::createUploadFolder($tmp_path);
+		self::createFoldersFor($tmp_path);
 		File::put($tmp_path, $svgdata);
 
-		exec(SVGO_BINARY." $tmp_path --disable=removeUnknownsAndDefaults,removeUselessStrokeAndFill --enable=removeRasterImages,convertStyleToAttrs,removeDimensions");
+		exec(SVGO_BINARY." $tmp_path --disable=removeUnknownsAndDefaults,removeUselessStrokeAndFill --enable=removeRasterImages,convertStyleToAttrs,removeDimensions,cleanupIDs");
 		$svgdata = File::get($tmp_path);
 		unlink($tmp_path);
 		return $svgdata;
@@ -575,20 +575,22 @@ class CoreUtils {
 				$path->setAttribute('fill','#000');
 		}
 		$sanitized = $unifier->saveXML($unifier->documentElement, LIBXML_NOEMPTYTAG);
+		if ($minify)
+			$sanitized = self::minifySvgData($sanitized);
 
 		return $sanitized;
 	}
 
 	/**
-	 * Analyzes a file path and creates the filder structure necessary to sucessfully store it
+	 * Analyzes a file path and creates the folder structure necessary to sucessfully store it
 	 *
 	 * @param string $path Path to analyze
 	 *
 	 * @return bool Whether the folder was sucessfully created
 	 */
-	public static function createUploadFolder(string $path):bool {
+	public static function createFoldersFor(string $path):bool {
 		$folder = dirname($path);
-		return !is_dir($folder) ? mkdir($folder,0777,true) : true;
+		return !is_dir($folder) ? mkdir($folder,FOLDER_PERM,true) : true;
 	}
 
 	/**

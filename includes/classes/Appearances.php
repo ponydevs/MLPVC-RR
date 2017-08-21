@@ -75,7 +75,7 @@ class Appearances {
 			$eqgp = $Appearance->ishuman ? 'eqg/' : '';
 			$personalp = $Appearance->owner_id !== null ? '/@'.$Appearance->owner->name : '';
 
-			$RenderPath = FSPATH."cg_render/{$Appearance->id}-palette.png";
+			$RenderPath = $Appearance->getPalettePath();
 			$FileModTime = '?t='.(file_exists($RenderPath) ? filemtime($RenderPath) : time());
 			$Actions = "<a class='btn link typcn typcn-image' title='View as PNG' href='$personalp/cg/{$eqgp}v/{$Appearance->id}p.png$FileModTime' target='_blank'></a>".
 			           "<button class='getswatch typcn typcn-brush teal' title='Download swatch file'></button>";

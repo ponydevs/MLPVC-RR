@@ -89,7 +89,7 @@ class CachedFile {
 			break;
 		}
 
-		CoreUtils::createUploadFolder($this->_path);
+		CoreUtils::createFoldersFor($this->_path);
 
 		if ($this->_gzip){
 			$handle = gzopen($this->_path, 'w9');
@@ -106,7 +106,7 @@ class CachedFile {
 	 * @return bool Whether the change was successful
 	 */
 	public function bump(){
-		CoreUtils::createUploadFolder($this->_path);
+		CoreUtils::createFoldersFor($this->_path);
 		if (!file_exists($this->_path)){
 			if ($this->_type !== self::TYPE_LOCK)
 				throw new \RuntimeException("Trying to bump non-existant non-lock file {$this->_path}, use ".__CLASS__.'->update instead!');

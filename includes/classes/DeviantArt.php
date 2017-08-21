@@ -475,7 +475,7 @@ class DeviantArt {
 				rmdir($tmp_folder);
 			};
 			$tmp_storage = "$tmp_folder/_source.{$cache->type}.file";
-			CoreUtils::createUploadFolder($tmp_storage);
+			CoreUtils::createFoldersFor($tmp_storage);
 			if (!file_exists($tmp_storage))
 				copy($download_url, $tmp_storage);
 

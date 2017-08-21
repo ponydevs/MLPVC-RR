@@ -295,7 +295,7 @@ class Image {
 	 */
 	private static function _output($data, $path, $relpath, $write_callback, $content_type){
 		if ($data !== null){
-			CoreUtils::createUploadFolder($path);
+			CoreUtils::createFoldersFor($path);
 			$write_callback($path, $data);
 			if (file_exists($path))
 				File::chmod($path);
