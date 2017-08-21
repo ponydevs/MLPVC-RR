@@ -358,7 +358,7 @@ HTML;
 	public function getFacingSVGURL(?string $facing = null, bool $ts = true){
 		if ($facing === null)
 			$facing = 'left';
-		$path = str_replace(['@','#'],[$facing, $this->id],CGUtils::CMDIR_SVG_PATH);
+		$path = str_replace(['#','@'],[$this->id, $facing],CGUtils::CMDIR_SVG_PATH);
 		return "/cg/v/{$this->id}f.svg?facing=$facing".($ts?'&t='.CoreUtils::filemtime($path):'');
 	}
 

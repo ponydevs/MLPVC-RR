@@ -464,13 +464,9 @@ HTML;
 
 	// Generate appearance facing image (CM background)
 	public static function renderCMFacingSVG($CGPath, Appearance $appearance){
-		if (empty($_GET['facing']))
-			$facing = null;
-		else {
-			$facing = $_GET['facing'];
-			if (!in_array($facing, Cutiemarks::VALID_FACING_VALUES, true))
-				Response::fail('Invalid facing value specified!');
-		}
+		$facing = $_GET['facing'] ?? 'left';
+		if (!in_array($facing, Cutiemarks::VALID_FACING_VALUES, true))
+			Response::fail('Invalid facing value specified!');
 
 		$OutputPath = str_replace(['#','@'],[$appearance->id,$facing],self::CMDIR_SVG_PATH);
 		$FileRelPath = $appearance->getFacingSVGURL($facing, false);
@@ -479,7 +475,7 @@ HTML;
 
 		$ColorMapping = $appearance->getColorMapping(Appearance::DEFAULT_COLOR_MAPPING);
 
-		$img = File::get(APPATH.'img/cm_facing/'.($Facing===CM_FACING_RIGHT?'right':'left').'.svg');
+		$img = File::get(APPATH.'img/cm_facing/'.($facing===CM_FACING_RIGHT?'right':'left').'.svg');
 		foreach (Appearance::DEFAULT_COLOR_MAPPING as $label => $defhex)
 			$img = str_replace($label, $ColorMapping[$label] ?? $defhex, $img);
 

@@ -278,9 +278,9 @@ class Image {
 	/**
 	 * Output svg file to browser
 	 *
-	 * @param string $svgdata
-	 * @param string $path
-	 * @param string $FileRelPath
+	 * @param string|null $svgdata
+	 * @param string      $path
+	 * @param string      $FileRelPath
 	 */
 	public static function outputSVG($svgdata, $path, $FileRelPath){
 		self::_output($svgdata, $path, $FileRelPath, function($fp,$fd){ File::put($fp, $fd); }, 'svg+xml');
