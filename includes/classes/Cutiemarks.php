@@ -58,16 +58,27 @@ class Cutiemarks {
 	 */
 	public static function getListItemForAppearancePage(Cutiemark $cm, $wrap = WRAP){
 		$facing = $cm->facing !== null ? 'Facing '.CoreUtils::capitalize($cm->facing) : 'Symmetrical';
-		$previewSVG = Appearances::getCMPreviewSVGURL($cm);
-		$preview = CoreUtils::aposEncode($cm->getPreviewURL());
+		$facingSVG = Appearances::getCMFacingSVGURL($cm);
+		$preview = CoreUtils::aposEncode($cm->getVectorURL());
 
-		$userlink = $cm->contributor->toAnchor(User::WITH_AVATAR);
+		$links = "<a href='/cg/cutiemark/download/{$cm->id}' class='btn link typcn typcn-download'>SVG</a>";
+		if (Permission::sufficient('staff'))
+			$links .= "<a href='/cg/cutiemark/download/{$cm->id}?source' class='btn darkblue typcn typcn-download'>Original</a>";
+		if (($cm->favme ?? null) !== null)
+			$links .= "<a href='http://fav.me/{$cm->favme}' class='btn btn-da typcn'>Source</a>";
+
+		$madeby = '';
+		if ($cm->contributor !== null){
+			$userlink = $cm->contributor->toAnchor(User::WITH_AVATAR);
+			$madeby = "<span class='madeby'>Contributed by $userlink</span>";
+		}
 		$content = <<<HTML
 <span class="title">$facing</span>
-<a  class="preview" href="http://fav.me/{$cm->favme}" style="background-image:url('{$previewSVG}')">
+<div class="preview" style="background-image:url('{$facingSVG}')">
 	<div class="img" style="transform: rotate({$cm->rotation}deg); background-image:url('{$preview}')"></div>
-</a>
-<span class="madeby">$userlink</span>
+</div>
+<div class="dl-links">$links</div>
+$madeby
 HTML;
 		return $wrap ? "<li class='pony-cm'>$content</li>" : $content;
 	}

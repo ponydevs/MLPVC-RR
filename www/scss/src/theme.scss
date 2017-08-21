@@ -414,11 +414,11 @@ header, #sidebar .mobile-nav {
 		background-size: contain;
 	}
 }
-.btn-da {
-	background-color: $DeviantArtGreen !important;
+.typcn.btn-da {
+	background-color: desaturate($DeviantArtGreen, 20) !important;
 	&:before { background-image: url('/img/da-logo.svg') }
 }
-.btn-discord {
+.typcn.btn-discord {
 	background-color: #7289DA !important;
 
 	&:before { background-image: url('/img/discord-logo-white.svg') }

@@ -399,7 +399,7 @@ HTML;
 	 *
 	 * @return string
 	 */
-	public static function getCMPreviewSVGURL($cm){
+	public static function getCMFacingSVGURL($cm){
 		$path = str_replace(['@','#'],[$cm->facing,$cm->appearance_id],CGUtils::CMDIR_SVG_PATH);
 		return "/cg/v/{$cm->appearance_id}d.svg?facing={$cm->facing}&t=".(file_exists($path) ? filemtime($path) : time());
 	}

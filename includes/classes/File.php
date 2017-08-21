@@ -27,7 +27,15 @@ class File {
 		return file_get_contents($name);
 	}
 
-	public static function chmod(string $name){
-		return chmod($name, 0770);
+	/**
+	 * @param string $name
+	 *
+	 * @return bool True on success, false on failure
+	 */
+	public static function chmod(string $name):bool {
+		$result = @chmod($name, 0770);
+		if ($result === false)
+			error_log(__METHOD__.': Fail for file '.$name);
+		return $result;
 	}
 }

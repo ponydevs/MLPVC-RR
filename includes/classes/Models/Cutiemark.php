@@ -14,9 +14,9 @@ use App\Users;
  * @property string     $facing
  * @property string     $favme
  * @property int        $rotation
- * @property int        $contributor_id
- * @property Appearance $appearance
- * @property User       $contributor
+ * @property Appearance $appearance     (Via relations)
+ * @property int        $contributor_id (Via magic method)
+ * @property User       $contributor    (Via magic method)
  * @method static Cutiemark[] find_by_sql($sql, $data = null)
  * @method static Cutiemark find_by_appearance_id_and_facing(int $appearance_id, string $facing)
  */
@@ -25,8 +25,27 @@ class Cutiemark extends NSModel {
 
 	public static $belongs_to = [
 		['appearance'],
-		['contributor', 'class' => 'User', 'foreign_key' => 'contributor_id'],
 	];
+
+	public function get_contributor_id(){
+		$attrval = $this->read_attribute('contributor_id');
+		if ($attrval === null && $this->favme !== null){
+			$deviation = DeviantArt::getCachedDeviation($this->favme);
+			if (!empty($deviation)){
+				$cont = Users::get($deviation->author, 'name');
+				if (!empty($cont)){
+					$this->contributor_id = $cont->id;
+					$this->save();
+					return $cont->id;
+				}
+			}
+		}
+		return $attrval;
+	}
+
+	public function get_contributor(){
+		return $this->contributor_id !== null ? Users::get($this->contributor_id) : null;
+	}
 
 	public function getTokenizedFilePath(){
 		return FSPATH."cm_tokenized/{$this->appearance_id}-{$this->facing}.svg";
@@ -66,18 +85,7 @@ class Cutiemark extends NSModel {
 	}
 
 	/** @return string|null */
-	public function getPreviewURL():?string {
-		$deviation = DeviantArt::getCachedDeviation($this->favme);
-		if (!empty($deviation)){
-			if ($this->contributor_id === null){
-				$cont = Users::get($deviation->author, 'name');
-				if (!empty($cont)){
-					$this->contributor_id = $cont->id;
-					$this->save();
-				}
-			}
-		}
-
+	public function getVectorURL():?string {
 		$path = str_replace(['@','#'],[$this->facing,$this->appearance_id],CGUtils::CM_SVG_PATH);
 		return "/cg/v/{$this->appearance_id}c.svg?facing={$this->facing}&t=".(file_exists($path) ? filemtime($path) : time());
 	}
