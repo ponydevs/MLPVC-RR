@@ -1233,7 +1233,7 @@ $(function(){
 		deleteAction(){
 			this.cancelPreviewUpdateRequest();
 
-			$.Dialog.close(function(){
+			$.Dialog.close(() => {
 				$.Dialog.confirm('Delete Cutie Marks of '+this.appearance_label,'Are you sure you want to remove the cutie mark(s) associated with this appearance?', sure => {
 					if (!sure) return;
 

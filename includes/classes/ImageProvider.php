@@ -17,7 +17,7 @@ class ImageProvider {
 	public $extra;
 	public function __construct(string $url = null, ?array $reqProv = null){
 		if (!empty($url)){
-			$provider = self::getProvider(CoreUtils::trim($url));
+			$provider = self::getProvider(DeviantArt::trimOutgoingGateFromUrl(CoreUtils::trim($url)));
 			if (!empty($reqProv)){
 				if (!is_array($reqProv))
 					$reqProv = [$reqProv];
