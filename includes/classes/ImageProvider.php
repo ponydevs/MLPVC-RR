@@ -5,10 +5,17 @@ namespace App;
 use App\Exceptions\CURLRequestException;
 use App\Exceptions\MismatchedProviderException;
 use App\Exceptions\UnsupportedProviderException;
+use App\Models\CachedDeviation;
 
 class ImageProvider {
 	public $preview = false, $fullsize = false, $title = '', $provider, $id, $author;
-	public function __construct(string $url = null, $reqProv = null){
+	/**
+	 * May contain additional data alongside the ones provided by default
+	 *
+	 * @var null|CachedDeviation
+	 */
+	public $extra;
+	public function __construct(string $url = null, ?array $reqProv = null){
 		if (!empty($url)){
 			$provider = self::getProvider(CoreUtils::trim($url));
 			if (!empty($reqProv)){
@@ -21,14 +28,25 @@ class ImageProvider {
 			$this->setUrls($provider->itemid);
 		}
 	}
+	const
+		PROV_DA    = 'dA',
+		PROV_FAVME = 'fav.me',
+		PROV_STASH = 'sta.sh',
+		PROV_IMGUR = 'imgur',
+		PROV_DERPI = 'derpibooru',
+		PROV_LS    = 'lightshot',
+		PROV_DEVIATION = [
+			self::PROV_DA,
+			self::PROV_FAVME,
+		];
 	private static $_providerRegexes = [
-		'(?:[A-Za-z\-\d]+\.)?deviantart\.com/art/(?:[A-Za-z\-\d]+-)?(\d+)' => 'dA',
-		'fav\.me/(d[a-z\d]{6,})' => 'fav.me',
-		'sta\.sh/([a-z\d]{10,})' => 'sta.sh',
-		'(?:i\.)?imgur\.com/([A-Za-z\d]{1,7})' => 'imgur',
-		'derpiboo(?:\.ru|ru\.org)/(\d+)' => 'derpibooru',
-		'derpicdn\.net/img/(?:view|download)/\d{4}/\d{1,2}/\d{1,2}/(\d+)' => 'derpibooru',
-		'prntscr\.com/([\da-z]+)' => 'lightshot',
+		'(?:[A-Za-z\-\d]+\.)?deviantart\.com/art/(?:[A-Za-z\-\d]+-)?(\d+)' => self::PROV_DA,
+		'fav\.me/(d[a-z\d]{6,})' => self::PROV_FAVME,
+		'sta\.sh/([a-z\d]{10,})' => self::PROV_STASH,
+		'(?:i\.)?imgur\.com/([A-Za-z\d]{1,7})' => self::PROV_IMGUR,
+		'derpiboo(?:\.ru|ru\.org)/(\d+)' => self::PROV_DERPI,
+		'derpicdn\.net/img/(?:view|download)/\d{4}/\d{1,2}/\d{1,2}/(\d+)' => self::PROV_DERPI,
+		'prntscr\.com/([\da-z]+)' => self::PROV_LS,
 	];
 	private static $_allowedMimeTypes = ['image/png' => true, 'image/jpeg' => true, 'image/jpg' => true];
 	private static $_blockedMimeTypes = ['image/gif' => 'Animated GIFs'];
@@ -153,6 +171,7 @@ class ImageProvider {
 				$this->fullsize = $CachedDeviation->fullsize;
 				$this->title = $CachedDeviation->title;
 				$this->author = $CachedDeviation->author;
+				$this->extra = $CachedDeviation;
 
 				if ($this->preview !== null)
 					self::_checkImageAllowed($this->preview);

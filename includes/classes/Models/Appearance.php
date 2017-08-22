@@ -76,7 +76,7 @@ class Appearance extends NSModel implements LinkableInterface {
 	}
 
 	public function getPalettePath(){
-		return FSPATH."cg_render/{$this->id}/palette.png";
+		return FSPATH."cg_render/appearance/{$this->id}/palette.png";
 	}
 
 	/**
@@ -658,7 +658,7 @@ HTML;
 	 * @return bool
 	 */
 	public function clearRenderedImages(array $which = self::CLEAR_ALL):bool {
-		$RenderedPath = FSPATH.'cg_render/'.$this->id;
+		$RenderedPath = FSPATH.'cg_render/appearance/'.$this->id;
 		$success = [];
 		foreach ($which as $suffix){
 			$path = "$RenderedPath/$suffix";

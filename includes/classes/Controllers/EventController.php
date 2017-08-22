@@ -297,7 +297,7 @@ class EventController extends Controller {
 			]
 		]))->out();
 		try {
-			$Image = new ImageProvider($favme, ['fav.me', 'dA']);
+			$Image = new ImageProvider($favme, ImageProvider::PROV_DEVIATION);
 			$favme = $Image->id;
 		}
 		catch (MismatchedProviderException $e){
@@ -350,7 +350,11 @@ class EventController extends Controller {
 			]
 		]))->out();
 		try {
-			$submission = new ImageProvider($link, ['sta.sh','fav.me','dA']);
+			$submission = new ImageProvider($link, [
+				ImageProvider::PROV_FAVME,
+				ImageProvider::PROV_DA,
+				ImageProvider::PROV_STASH,
+			]);
 		}
 		catch (MismatchedProviderException|UnsupportedProviderException $e){
 			Response::fail('Entry link must point to a deviation or Sta.sh submission');

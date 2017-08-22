@@ -1035,29 +1035,32 @@ class ColorGuideController extends Controller {
 				Response::done(['html' => Cutiemarks::getListForAppearancePage($CMs, NOWRAP)]);
 			break;
 			case 'setcms':
-				// TODO Rewrite to use JSON instead
-				/** @var $data Cutiemark[] */
-				$data = [];
-				$newFacingValues = [];
-				for ($i = 0; $i < 2; $i++){
-					if (isset($_POST['id'][$i])){
-						if (!Cutiemark::exists($_POST['id'][$i]))
-							Response::fail('The cutie mark you\'re trying to update does not exist');
-
-						$cm = Cutiemark::find($_POST['id'][$i]);
+				/** @var $data array */
+				$data = (new Input('CMData','json',[
+					Input::CUSTOM_ERROR_MESSAGES => [
+						Input::ERROR_MISSING => 'Cutie mark data is missing',
+						Input::ERROR_INVALID => 'Cutie mark data (@value) is invalid',
+					]
+				]))->out();
+				$NewCMs = [];
+				foreach ($data as $item){
+					if (isset($item['id'])){
+						$cm = Cutiemark::find($item['id']);
+						if (empty($cm))
+							Response::fail("The cutie mark you're trying to update (#{$item['id']}) does not exist");
 					}
 					else $cm = new Cutiemark([
 						'appearance_id' => $this->_appearance->id,
 					]);
-					if (Cutiemarks::postProcess($cm, $i) === false)
+					if (Cutiemarks::postProcess($cm, $item) === false)
 						break;
 
-					$data[] = $cm;
+					$NewCMs[] = $cm;
 				}
 
 				$CurrentCMs = Cutiemarks::get($this->_appearance);
 
-				foreach ($data as $cmdata)
+				foreach ($NewCMs as $cmdata)
 					$cmdata->save();
 
 				$CutieMarks = Cutiemarks::get($this->_appearance);
@@ -1191,6 +1194,14 @@ class ColorGuideController extends Controller {
 				if ($wipe_cm_tokenized){
 					foreach ($this->_appearance->cutiemarks as $cm)
 						@unlink($cm->getTokenizedFilePath());
+				}
+
+				$wipe_cm_source = (new Input('wipe_cm_source','bool',[
+					Input::IS_OPTIONAL => true,
+				]))->out();
+				if ($wipe_cm_source){
+					foreach ($this->_appearance->cutiemarks as $cm)
+						@unlink($cm->getSourceFilePath());
 				}
 
 				$wipe_sprite = (new Input('wipe_sprite','bool',[

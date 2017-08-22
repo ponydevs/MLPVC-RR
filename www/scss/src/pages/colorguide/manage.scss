@@ -156,6 +156,7 @@
 	.dialog-preview {
 		margin: 0;
 		padding: 0;
+
 		&.loading {
 			background: url('/img/loading-ring.svg') no-repeat center;
 			background-size: 50%;
@@ -186,6 +187,9 @@
 		}
 		&:not(:empty):not(.loading) {
 			width: auto !important;
+			max-width: 100%;
+			overflow-x: auto;
+			white-space: nowrap;
 		}
 
 		> li {
@@ -207,6 +211,10 @@
 
 		> li {
 			display: block;
+
+			&:not(:last-child) {
+				margin-bottom: 8px;
+			}
 
 			&.readonly > fieldset {
 				opacity: .8;

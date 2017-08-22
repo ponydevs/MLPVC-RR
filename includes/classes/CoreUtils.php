@@ -573,6 +573,19 @@ class CoreUtils {
 			if ($fillAttr === null && $classAttr === null)
 				$path->setAttribute('fill','#000');
 		}
+		// Transform 1-stop linear gradients the same way Illustrator breaks them
+		$linearGradients = $unifier->getElementsByTagName('linearGradient');
+		foreach ($linearGradients as $grad){
+			/** @var $grad \DOMElement */
+			if ($grad->childNodes->length !== 1)
+				continue;
+
+			/** @var $stopColor \DOMElement */
+			$stopColor = $grad->childNodes->item(0)->cloneNode();
+			$stopColor->setAttribute('offset', 1 - $stopColor->getAttribute('offset'));
+			$stopColor->setAttribute('stop-color', '#000');
+			$grad->appendChild($stopColor);
+		}
 		$sanitized = $unifier->saveXML($unifier->documentElement, LIBXML_NOEMPTYTAG);
 		if ($minify)
 			$sanitized = self::minifySvgData($sanitized);

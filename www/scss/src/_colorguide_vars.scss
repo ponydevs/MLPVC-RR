@@ -261,7 +261,7 @@ $TFeature:  adjust_hue($_TBase, 20);
 	background: #fff;
 	margin: 5px;
 	text-align: center;
-	padding: 7px;
+	padding: 10px 5px;
 
 	.title {
 		font-size: 20px;
@@ -271,6 +271,8 @@ $TFeature:  adjust_hue($_TBase, 20);
 
 		.cm-id {
 			opacity: .4;
+
+			&:before { content: "#" }
 		}
 	}
 
@@ -297,13 +299,13 @@ $TFeature:  adjust_hue($_TBase, 20);
 	//noinspection CssOptimizeSimilarProperties
 	.img {
 		$CMSize: $SquareSize * 0.42;
+		$margin: ($SquareSize - $CMSize)/2;
 
 		position: absolute;
-		top: 0;
-		left: 0;
+		top: $margin;
+		left: $margin;
 		width: $CMSize;
 		height: $CMSize;
-		margin: ($SquareSize - $CMSize)/2;
 
 		background-repeat: no-repeat;
 		background-position: center center;

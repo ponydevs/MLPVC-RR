@@ -58,7 +58,7 @@ class Cutiemark extends NSModel {
 	}
 
 	public function getVectorFilePath(){
-		return str_replace(['*','#'],[$this->id,$this->appearance_id],CGUtils::CM_SVG_PATH);
+		return FSPATH."cg_render/cutiemark/{$this->id}.svg";
 	}
 
 	public function getTokenizedFile():?string {

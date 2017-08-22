@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "9435e51854fc5d937521ca7708c7e53f",
+    "content-hash": "2d6e48c23eb97bfa2b35b4ed9b2f4b6e",
     "packages": [
         {
             "name": "altorouter/altorouter",
@@ -169,16 +169,16 @@
         },
         {
             "name": "enshrined/svg-sanitize",
-            "version": "0.7.1",
+            "version": "dev-fix-remote-reference-check",
             "source": {
                 "type": "git",
-                "url": "https://github.com/darylldoyle/svg-sanitizer.git",
-                "reference": "1d35258e08a7bf84ea560096e86ab9cf73bc373d"
+                "url": "https://github.com/SeinopSys/svg-sanitizer.git",
+                "reference": "3217167330edf697a58e6668af5d3cea9bdb295c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/darylldoyle/svg-sanitizer/zipball/1d35258e08a7bf84ea560096e86ab9cf73bc373d",
-                "reference": "1d35258e08a7bf84ea560096e86ab9cf73bc373d",
+                "url": "https://api.github.com/repos/SeinopSys/svg-sanitizer/zipball/3217167330edf697a58e6668af5d3cea9bdb295c",
+                "reference": "3217167330edf697a58e6668af5d3cea9bdb295c",
                 "shasum": ""
             },
             "require-dev": {
@@ -191,7 +191,6 @@
                     "enshrined\\svgSanitize\\": "src"
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "GPL-2.0+"
             ],
@@ -202,7 +201,10 @@
                 }
             ],
             "description": "An SVG sanitizer for PHP",
-            "time": "2017-06-28T09:07:49+00:00"
+            "support": {
+                "source": "https://github.com/SeinopSys/svg-sanitizer/tree/fix-remote-reference-check"
+            },
+            "time": "2017-08-22 10:40:29"
         },
         {
             "name": "erusev/parsedown",
@@ -3502,7 +3504,8 @@
     "minimum-stability": "stable",
     "stability-flags": {
         "php-activerecord/php-activerecord": 20,
-        "robmorgan/phinx": 20
+        "robmorgan/phinx": 20,
+        "enshrined/svg-sanitize": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,

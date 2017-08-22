@@ -17,7 +17,7 @@ class Posts {
 			'chr' => 'Characters',
 			'obj' => 'Objects',
 			'bg' => 'Backgrounds',
-	];
+		];
 
 	/**
 	 * Retrieves requests & reservations for the episode specified
@@ -204,9 +204,9 @@ class Posts {
 			]
 		]))->out();
 		try {
-			$Image = new ImageProvider($deviation, ['fav.me', 'dA']);
+			$Image = new ImageProvider($deviation, ImageProvider::PROV_DEVIATION);
 
-			foreach (Posts::TYPES as $what){
+			foreach (self::TYPES as $what){
 				if (DB::$instance->where('deviation_id', $Image->id)->has("{$what}s"))
 					Response::fail("This exact deviation has already been marked as the finished version of a different $what");
 			}

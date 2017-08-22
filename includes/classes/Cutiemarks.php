@@ -52,21 +52,22 @@ class Cutiemarks {
 
 		$links = "<a href='/cg/cutiemark/download/{$cm->id}' class='btn link typcn typcn-download'>SVG</a>";
 		if ($canEdit)
-			$links .= "<a href='/cg/cutiemark/download/{$cm->id}?source' class='btn darkblue typcn typcn-download' title='Download the original file as uploaded (Staff only)'>Original</a>";
+			$links .= "<a href='/cg/cutiemark/download/{$cm->id}?source' class='btn orange typcn typcn-download' title='Download the original file as uploaded (Staff only)'></a>";
 		if (($cm->favme ?? null) !== null)
 			$links .= "<a href='http://fav.me/{$cm->favme}' class='btn btn-da typcn'>Source</a>";
 
 		$madeby = '';
 		if ($cm->contributor !== null){
 			$userlink = $cm->contributor->toAnchor(User::WITH_AVATAR);
-			$madeby = "<span class='madeby'>Contributed by $userlink</span>";
+			$madeby = "<span class='madeby'>By $userlink</span>";
 		}
 
-		$id = $canEdit ? "<span class='cm-id'>#{$cm->id}</span> " : '';
+		$id = $canEdit ? "<span class='cm-id'>{$cm->id}</span> " : '';
+		$rotate = $cm->rotation !== 0 ? "transform:rotate({$cm->rotation}deg)" : '';
 		$content = <<<HTML
 <span class="title">$id$facing</span>
 <div class="preview" style="background-image:url('{$facingSVG}')">
-	<div class="img" style="transform: rotate({$cm->rotation}deg); background-image:url('{$preview}')"></div>
+	<div class="img" style="background-image:url('{$preview}');$rotate"></div>
 </div>
 <div class="dl-links">$links</div>
 $madeby
@@ -75,51 +76,49 @@ HTML;
 	}
 
 	/**
-	 * @param Cutiemark $data
-	 * @param int       $index
-	 *
-	 * @return bool
+	 * @param Cutiemark $cm
+	 * @param array     $item
 	 */
-	public static function postProcess(Cutiemark $data, int $index):bool {
-		$favme = isset($_POST['favme'][$index]) ? CoreUtils::trim($_POST['favme'][$index]) : null;
-		if (empty($favme)){
-			if ($index > 0)
-				return false;
-			Response::fail('Deviation link is missing');
-		}
-
-		if (isset($_POST['facing'][$index])){
-			$facing = CoreUtils::trim($_POST['facing'][$index]);
+	public static function postProcess(Cutiemark $cm, array $item){
+		// TODO Update ALL uses of this method
+		if (isset($item['facing'])){
+			$facing = CoreUtils::trim($item['facing']);
 			if (empty($facing))
 				$facing = null;
 			else if (!in_array($facing,self::VALID_FACING_VALUES,true))
 				Response::fail('Body orientation is invalid');
 		}
 		else $facing = null;
-		$data->facing = $facing;
+		$cm->facing = $facing;
 
-		try {
-			$Image = new ImageProvider($favme, ['fav.me', 'dA']);
-			$favme = $Image->id;
-		}
-		catch (MismatchedProviderException $e){
-			Response::fail('The cutie mark vector must be on DeviantArt, '.$e->getActualProvider().' links are not allowed');
-		}
-		catch (\Exception $e){ Response::fail('Cutie Mark link issue: '.$e->getMessage()); }
-		if (!CoreUtils::isDeviationInClub($favme))
-			Response::fail('The cutie mark vector must be in the group gallery');
-		$data->favme = $favme;
+		switch ($item['attribution']){
+			case 'deviation':
+				$deviation = new Input('deviation','favme',[
+					Input::CUSTOM_ERROR_MESSAGES => [
+						Input::ERROR_MISSING => 'Deviation link is missing',
+						Input::ERROR_INVALID => 'Deviation link (@value) is invalid',
+					],
+				]);
+				$cm->favme = $favme;
+			break;
+			case 'user':
 
-		if (!isset($_POST['favme_rotation'][$index]))
+			break;
+			case 'none':
+				// Skip validation
+			break;
+			default:
+				Response::fail('The specified credit method is invalid');
+		}
+
+		if (!isset($item['rotation']))
 			Response::fail('Preview rotation amount is missing');
-		$favme_rotation = (int) $_POST['favme_rotation'][$index];
-		if (!is_numeric($favme_rotation))
+		if (!is_numeric($item['rotation']))
 			Response::fail('Preview rotation must be a number');
-		if ($favme_rotation < -45 || $favme_rotation > 45)
+		$rotation = (int) $item['frotation'];
+		if (abs($rotation) > 45)
 			Response::fail('Preview rotation must be between -45 and 45');
-		$data->rotation = $favme_rotation;
-
-		return true;
+		$cm->rotation = $rotation;
 	}
 
 	/**

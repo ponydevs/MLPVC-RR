@@ -115,6 +115,7 @@ $(function(){
 											`<p>Select which of the following items to clear below.</p>
 											<label><input type="checkbox" name="wipe_cache"> Clear cached images</label>
 											<label><input type="checkbox" name="wipe_cm_tokenized"> Clear tokenized cutie mark</label>
+											<label><input type="checkbox" name="wipe_cm_source"> Clear cutie mark source file</label>
 											<label><input type="checkbox" name="wipe_cms"> Remove all cutie marks</label>
 											<label><input type="checkbox" name="wipe_sprite"> Clear sprite image</label>
 											<fieldset>
@@ -1132,60 +1133,39 @@ $(function(){
 		// TODO Create "credit" fieldset with radio group "None, Deviation, Username" and approperiate inputs
 		// TODO Rewrite to use JSON instead of form field names & .mkData()
 		constructor(appearance_id, appearance_label, data){
-			const
-				updateActionText = 'Update preview',
-				updatingText = 'Updating preview&hellip;',
-				$cmSection = $content.find('section.approved-cutie-mark');
+			this.appearance_id = appearance_id;
+			this.appearance_label = appearance_label;
+			this.updateActionText = 'Preview';
+			this.updatingText = 'Updating&hellip;';
+			this.$cmSection = $content.find('section.approved-cutie-mark');
 			this.previewUpdateInProgess = false;
 			this.previewUpdateRequest = null;
 
 			this.$CMPreview = $.mk('ul').attr('class','dialog-preview');
 			this.$CMList = $.mk('ul').attr('class','cm-list');
-			this.$UpdatePreviewButton = $.mk('button').attr('class','darkblue typcn typcn-arrow-sync').text(updateActionText).on('click',e => {
+			this.$AddNewButton = $.mk('button').attr('class','green typcn typcn-plus').text('Add').on('click',e => {
 				e.preventDefault();
 
-				this.cancelPreviewUpdateRequest();
-
-				const data = this.$form.mkData();
-				this.$UpdatePreviewButton.disable().html(updatingText);
-				this.$CMPreview.addClass('loading');
-				this.previewUpdateRequest = $.post(`${PGRq}/cg/appearance/getcmpreview/${appearance_id}${EQGRq}`,data,$.mkAjaxHandler(data => {
-					this.$UpdatePreviewButton.text(updateActionText).enable();
-					this.$CMPreview.removeClass('loading');
-					this.previewUpdateRequest = false;
-
-					if (!data.status) return $.Dialog.fail(false, data.message);
-
-					$.Dialog.clearNotice(/preview/);
-					this.$CMPreview.html(data.html);
-					this.previewUpdated();
-				}));
+				this.$CMList.append(CutieMarkEditor.crateCutiemarkDataLi());
 			});
-			this.$DeleteButton = $.mk('button').attr('class','red typcn typcn-trash').text('Delete Cutie Marks').on('click',e => {
-					e.preventDefault();
+			this.$UpdatePreviewButton = $.mk('button').attr('class','darkblue typcn typcn-arrow-sync').text(this.updateActionText).on('click',e => {
+				e.preventDefault();
 
-					this.cancelPreviewUpdateRequest();
+				this.updatePreview();
+			});
+			this.$DeleteButton = $.mk('button').attr('class','red typcn typcn-trash').text('All').on('click',e => {
+				e.preventDefault();
 
-					$.Dialog.close(function(){
-						$.Dialog.confirm('Delete Cutie Marks of '+appearance_label,'Are you sure you want to remove the cutie mark(s) associated with this appearance?', sure => {
-							if (!sure) return;
-
-							$.Dialog.wait(false,'Sending removal request');
-
-							$.post(`${PGRq}/cg/appearance/delcms/${appearance_id}${EQGRq}`,$.mkAjaxHandler(data => {
-								if (!data.status) return $.Dialog.fail(false, data.message);
-
-								if ($cmSection.length)
-									$cmSection.addClass('hidden').children(':not(h2,p)').remove();
-								$.Dialog.close();
-							}));
-						});
-					});
-				});
-			this.$form = $.mk('form').attr('id','cm-data-editor').append(
+				this.deleteAction();
+			});
+			this.$BottomActionGroup = $.mk('div').attr('class','btn-group').append(
+				this.$AddNewButton,
+				this.$UpdatePreviewButton
+			);
+			this.$form = $.mk('form','cm-data-editor').append(
 				this.$CMPreview,
 				this.$CMList,
-				this.$UpdatePreviewButton
+				this.$BottomActionGroup
 			).on('submit',e => {
 				e.preventDefault();
 
@@ -1199,9 +1179,9 @@ $(function(){
 					if (!data.status) return $.Dialog.fail(false, data.message);
 
 					$.Dialog.close();
-					if ($cmSection.length){
-						$cmSection.children(':not(h2,p)').remove();
-						$cmSection.removeClass('hidden').append(data.html);
+					if (this.$cmSection.length){
+						this.$cmSection.children(':not(h2,p)').remove();
+						this.$cmSection.removeClass('hidden').append(data.html);
 					}
 				}));
 			}).on('change input','.rotation-range',function(e){
@@ -1212,12 +1192,12 @@ $(function(){
 
 			if (data.cms.length){
 				$.each(data.cms,(i,el)=>{
-					this.$CMList.append( CutieMarkEditor.crateCutiemarkDataLi(i, el) );
+					this.$CMList.append(CutieMarkEditor.crateCutiemarkDataLi(i, el));
 				});
 				this.$CMPreview.html(data.preview);
 				this.previewUpdated();
 				this.updateRanges();
-				this.$form.append(this.$DeleteButton);
+				this.$BottomActionGroup.append(this.$DeleteButton);
 			}
 			else {
 				this.$CMList.append(CutieMarkEditor.crateCutiemarkDataLi(0));
@@ -1231,6 +1211,43 @@ $(function(){
 				this.previewUpdateRequest.abort();
 				this.previewUpdateInProgess = false;
 			}
+		}
+		updatePreview(){
+			this.cancelPreviewUpdateRequest();
+
+			const data = this.$form.mkData();
+			this.$UpdatePreviewButton.disable().html(this.updatingText);
+			this.$CMPreview.addClass('loading');
+			this.previewUpdateRequest = $.post(`${PGRq}/cg/appearance/getcmpreview/${this.appearance_id}${EQGRq}`,data,$.mkAjaxHandler(data => {
+				this.$UpdatePreviewButton.text(this.updateActionText).enable();
+				this.$CMPreview.removeClass('loading');
+				this.previewUpdateRequest = false;
+
+				if (!data.status) return $.Dialog.fail(false, data.message);
+
+				$.Dialog.clearNotice(/preview/);
+				this.$CMPreview.html(data.html);
+				this.previewUpdated();
+			}));
+		}
+		deleteAction(){
+			this.cancelPreviewUpdateRequest();
+
+			$.Dialog.close(function(){
+				$.Dialog.confirm('Delete Cutie Marks of '+this.appearance_label,'Are you sure you want to remove the cutie mark(s) associated with this appearance?', sure => {
+					if (!sure) return;
+
+					$.Dialog.wait(false,'Sending removal request');
+
+					$.post(`${PGRq}/cg/appearance/delcms/${this.appearance_id}${EQGRq}`,$.mkAjaxHandler(data => {
+						if (!data.status) return $.Dialog.fail(false, data.message);
+
+						if (this.$cmSection.length)
+							this.$cmSection.addClass('hidden').children(':not(h2,p)').remove();
+						$.Dialog.close();
+					}));
+				});
+			});
 		}
 		previewUpdated(){
 			this.$CMPreviewImages = this.$CMPreview.find('.img');
@@ -1250,7 +1267,8 @@ $(function(){
 			if (typeof el.facing === 'undefined')
 				el.facing = 'right';
 			const radioGrouping = {
-				facing: $.randomString(),
+				facing: el.id ? 'facing-'+el.id : $.randomString(),
+				attribution: el.id ? 'attribution-'+el.id : $.randomString(),
 			};
 			let $facingSelector = $.mk('div').attr('class','disabled-show').html(
 				`<p>Body orientation</p>
@@ -1260,13 +1278,41 @@ $(function(){
 					<label><input type="radio" name="${radioGrouping.facing}" value="" required><span>Symmetrical</span></label>
 				</div>`
 			);
-			$facingSelector.find(`input[value='${el.facing?el.facing:''}']`).prop('checked', true);
-			const rotation = typeof el.favme_rotation !== 'undefined' ? el.favme_rotation : (el.facing==='left'?-18:18);
+			$facingSelector.find(`input[value='${el.facing||''}']`).prop('checked', true);
+			const rotation = typeof el.favme_rotation !== 'undefined' ? el.favme_rotation : 0;
+
+			const $attributionMethodSelector = $.mk('fieldset').html(
+				`<legend>Attribution</legend>
+				<div class="radio-group orientation">
+					<label><input type="radio" name="${radioGrouping.attribution}" value="none" required><span>None</span></label>
+					<label><input type="radio" name="${radioGrouping.attribution}" value="user" required><span>User</span></label>
+					<label><input type="radio" name="${radioGrouping.attribution}" value="deviation" required><span>Deviation</span></label>
+				</div>
+				<div class="label">
+				</div>`
+			);
+
+			const
+				$removeButton = $.mk('button').attr('class','btn red typcn typcn-trash').html('Remove').on('click',e => {
+					e.preventDefault();
+
+					const $this = $(e.target);
+					$this.closest('li').addClass('faded').find('input:not(:disabled), select:not(:disabled)').disable().addClass('fade-disabled');
+					$this.addClass('hidden').next().removeClass('hidden');
+				}),
+				$restoreButton = $.mk('button').attr('class','btn green typcn typcn-arrow-back hidden').html('Restore').on('click',e => {
+					e.preventDefault();
+
+					const $this = $(e.target);
+					$this.closest('li').removeClass('faded').find('.fade-disabled').enable().removeClass('fade-disabled');
+					$this.addClass('hidden').prev().removeClass('hidden');
+				});
 			return $.mk('li').attr('id', el.id).append(
 					$.mk('fieldset').append(
 						$.mk('legend').append(
 							`<span>${typeof el.id !== 'undefined' ? 'Cutie Mark #'+el.id : 'New Cutie Mark'}</span>`,
-							(i>0?`<button class="section-toggle btn blue typcn"></button>`:'')
+							$removeButton,
+							$restoreButton,
 						),
 						$facingSelector,
 						$.mk('label').append(

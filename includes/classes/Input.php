@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Exceptions\MismatchedProviderException;
 use App\Models\Episode;
 
 class Input {
@@ -180,10 +181,10 @@ class Input {
 				try {
 					$this->_origValue = JSON::decode($this->_origValue);
 					if (empty($this->_origValue))
-						throw new \Exception(rtrim('Could not decode JSON; '.json_last_error(),'; '));
+						throw new \RuntimeException(rtrim('Could not decode JSON; '.json_last_error(),'; '));
 				}
-				catch (\Exception $e){
-					error_log($e->getMessage()."\n".$e->getTraceAsString());
+				catch (\Throwable $e){
+					error_log(__METHOD__.': '.$e->getMessage()."\n".$e->getTraceAsString());
 					return self::ERROR_INVALID;
 				}
 			break;
@@ -198,6 +199,23 @@ class Input {
 				$this->_origValue = Episode::parseID($this->_origValue);
 				if (empty($this->_origValue))
 					return self::ERROR_INVALID;
+			break;
+			case 'favme':
+				try {
+					try {
+						$Image = new ImageProvider(CoreUtils::trim($this->_origValue), ImageProvider::PROV_DEVIATION);
+						$this->_value = $Image->extra;
+						return self::ERROR_NONE;
+					}
+					catch (MismatchedProviderException $e){
+						Response::fail('The cutie mark vector must be on DeviantArt, '.$e->getActualProvider().' links are not allowed');
+					}
+					catch (\Exception $e){ Response::fail('Error while checking deviation link: '.$e->getMessage()); }
+				}
+				catch (\Throwable $e){
+					error_log(__METHOD__.': '.$e->getMessage()."\n".$e->getTraceAsString());
+					return self::ERROR_INVALID;
+				}
 			break;
 		}
 

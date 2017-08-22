@@ -459,8 +459,7 @@ HTML;
 		Image::outputPNG($FinalBase, $OutputPath, $FileRelPath);
 	}
 
-	const CMDIR_SVG_PATH = FSPATH.'cg_render/#/cmdir-@.svg';
-	const CM_SVG_PATH = FSPATH.'cg_render/#/cm-*.svg';
+	const CMDIR_SVG_PATH = FSPATH.'cg_render/appearance/#/cmdir-@.svg';
 
 	// Generate appearance facing image (CM background)
 	public static function renderCMFacingSVG($CGPath, Appearance $appearance){
@@ -511,7 +510,7 @@ HTML;
 
 	public static function getSpriteImageMap($AppearanceID){
 		$PNGPath = SPRITE_PATH."$AppearanceID.png";
-		$MapFile = new CachedFile(FSPATH."cg_render/$AppearanceID/linedata.json.gz", function($path) use($PNGPath) {
+		$MapFile = new CachedFile(FSPATH."cg_render/appearance/$AppearanceID/linedata.json.gz", function($path) use($PNGPath) {
 			return !file_exists($path) || filemtime($path) < filemtime($PNGPath);
 		});
 		if (!$MapFile->expired())
@@ -599,7 +598,7 @@ HTML;
 			$size = 600;
 		$outsize = $size === Appearance::SPRITE_SIZES['REGULAR'] ? '' : "-$size";
 
-		$OutputPath = FSPATH."cg_render/{$AppearanceID}/sprite$outsize.png";
+		$OutputPath = FSPATH."cg_render/appearance/{$AppearanceID}/sprite$outsize.png";
 		$FileRelPath = "$CGPath/v/{$AppearanceID}s.png";
 		CoreUtils::fixPath($FileRelPath);
 		if (file_exists($OutputPath))
@@ -623,7 +622,7 @@ HTML;
 		if (empty($Map))
 			CoreUtils::notFound();
 
-		$OutputPath = FSPATH."cg_render/{$AppearanceID}/sprite.svg";
+		$OutputPath = FSPATH."cg_render/appearance/{$AppearanceID}/sprite.svg";
 		$FileRelPath = "$CGPath/v/{$AppearanceID}s.svg";
 		if (file_exists($OutputPath))
 			Image::outputSVG(null,$OutputPath,$FileRelPath);
@@ -655,7 +654,7 @@ XML;
 		Image::outputSVG($SVG, $OutputPath, $FileRelPath);
 	}
 
-	const PREVIEW_SVG_PATH = FSPATH.'cg_render/#/preview.svg';
+	const PREVIEW_SVG_PATH = FSPATH.'cg_render/appearance/#/preview.svg';
 
 	public static function renderPreviewSVG($CGPath, Appearance $Appearance){
 		$OutputPath = str_replace('#',$Appearance->id,self::PREVIEW_SVG_PATH);
