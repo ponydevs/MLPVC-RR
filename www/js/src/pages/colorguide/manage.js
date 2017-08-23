@@ -1214,7 +1214,8 @@ $(function(){
 					const
 						$row = $(this),
 						method = $row.children('.clrmthd').find('option:selected').attr('value'),
-						id = $row.children('.clrid').text().replace('ID:','');
+						$clrid = $row.children('.clrid'),
+						id = $clrid.length ? $clrid.text().replace('ID:','') : void 0;
 
 					switch (method){
 						case "hex":
@@ -1322,7 +1323,7 @@ $(function(){
 					colors.push({
 						hex: matches[1] ? $.hexpand(matches[1]) : undefined,
 						label: matches[3],
-						id: matches[4],
+						id: matches[4] === '' ? undefined : matches[4],
 						linked_to: matches[2] ? matches[2] : undefined,
 					});
 					continue;
