@@ -486,7 +486,7 @@ HTML;
 			CoreUtils::notFound();
 
 		$OutputPath = $CutieMark->getRenderedFilePath();
-		$FileRelPath = $CutieMark->getVectorRelativeURL();
+		$FileRelPath = $CutieMark->getRenderedRelativeURL();
 		if (file_exists($OutputPath))
 			Image::outputSVG(null,$OutputPath,$FileRelPath);
 

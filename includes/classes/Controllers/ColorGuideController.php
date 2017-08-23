@@ -1028,6 +1028,7 @@ class ColorGuideController extends Controller {
 			break;
 			case 'setcms':
 				$GrabCMs = Cutiemarks::get($this->_appearance);
+				/** @var $CurrentCMs Cutiemark[] */
 				$CurrentCMs = [];
 				foreach ($GrabCMs as $cm)
 					$CurrentCMs[$cm->id] = $cm;
@@ -1130,56 +1131,56 @@ class ColorGuideController extends Controller {
 					$NewSVGs[$i] = $svgdata;
 				}
 
-				foreach ($NewCMs as $i => $cm){
-					if (!$cm->save())
-						Response::dbError("Saving cutie mark (index $i) failed");
+				if (!empty($NewCMs)){
+					foreach ($NewCMs as $i => $cm){
+						if (!$cm->save())
+							Response::dbError("Saving cutie mark (index $i) failed");
 
-					if ($NewSVGs[$i] !== null){
-						if (false !== File::put($cm->getSourceFilePath(), $NewSVGs[$i])){
-							CoreUtils::deleteFile($cm->getTokenizedFilePath());
-							CoreUtils::deleteFile($cm->getRenderedFilePath());
-							continue;
+						if ($NewSVGs[$i] !== null){
+							if (false !== File::put($cm->getSourceFilePath(), $NewSVGs[$i])){
+								CoreUtils::deleteFile($cm->getTokenizedFilePath());
+								CoreUtils::deleteFile($cm->getRenderedFilePath());
+								continue;
+							}
+
+							Response::fail("Saving SVG data for cutie mark (index $i) failed");
 						}
-
-						Response::fail("Saving SVG data for cutie mark (index $i) failed");
 					}
-				}
 
-				$RemovedIDs = CoreUtils::array_subtract(array_keys($CurrentCMs), $NewIDs);
-				if (!empty($RemovedIDs)){
-					foreach ($RemovedIDs as $removedID)
-						$CurrentCMs[$removedID]->delete();
-				}
+					$RemovedIDs = CoreUtils::array_subtract(array_keys($CurrentCMs), $NewIDs);
+					if (!empty($RemovedIDs)){
+						foreach ($RemovedIDs as $removedID)
+							$CurrentCMs[$removedID]->delete();
+					}
 
-				$CutieMarks = Cutiemarks::get($this->_appearance);
-				$olddata = Cutiemarks::convertDataForLogs($CurrentCMs);
-				$newdata = Cutiemarks::convertDataForLogs($CutieMarks);
-				if ($olddata !== $newdata)
-					Logs::logAction('cm_modify',[
+					$CutieMarks = Cutiemarks::get($this->_appearance);
+					$olddata = Cutiemarks::convertDataForLogs($CurrentCMs);
+					$newdata = Cutiemarks::convertDataForLogs($CutieMarks);
+					if ($olddata !== $newdata)
+						Logs::logAction('cm_modify',[
+							'appearance_id' => $this->_appearance->id,
+							'olddata' => $olddata,
+							'newdata' => $newdata,
+						]);
+				}
+				else {
+					foreach ($CurrentCMs as $cm)
+						$cm->delete();
+
+					$this->_appearance->clearRenderedImages([Appearance::CLEAR_CMDIR]);
+
+					Logs::logAction('cm_delete',[
 						'appearance_id' => $this->_appearance->id,
-						'olddata' => $olddata,
-						'newdata' => $newdata,
+						'data' => Cutiemarks::convertDataForLogs($CMs),
 					]);
+
+					$CutieMarks = [];
+				}
 
 				$data = [];
 				if ($this->_appearancePage && !empty($CutieMarks))
 					$data['html'] = Cutiemarks::getListForAppearancePage(Cutiemarks::get($this->_appearance));
 				Response::done($data);
-			break;
-			case 'delcms':
-				$CMs = Cutiemarks::get($this->_appearance);
-				if (empty($CMs))
-					Response::done();
-				foreach ($CMs as $cm)
-					$cm->delete();
-				$this->_appearance->clearRenderedImages([Appearance::CLEAR_CM, Appearance::CLEAR_CMDIR]);
-
-				Logs::logAction('cm_delete',[
-					'appearance_id' => $this->_appearance->id,
-					'data' => Cutiemarks::convertDataForLogs($CMs),
-				]);
-
-				Response::done();
 			break;
 			case 'clear-cache':
 				if (!$this->_appearance->clearRenderedImages())
@@ -2078,6 +2079,8 @@ HTML;
 	public function sanitizeSvg($params){
 		if (Permission::insufficient('member'))
 			Response::fail();
+
+		CSRFProtection::protect();
 
 		$this->_getAppearance($params, false);
 

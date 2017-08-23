@@ -1136,15 +1136,16 @@ $(function(){
 
 			this.$CMPreview = $.mk('ul').attr('class','dialog-preview');
 			this.$CMList = $.mk('ul').attr('class','cm-list');
-			this.$AddNewButton = $.mk('button').attr('class','green typcn typcn-plus').text('Add').on('click',e => {
+			this.$AddNewButton = $.mk('button').attr('class','green typcn typcn-plus').text('Add new cutie mark').on('click',e => {
 				e.preventDefault();
 
 				this.$CMList.append(this.crateCutiemarkDataLi());
 			});
-			this.$DeleteButton = $.mk('button').attr('class','red typcn typcn-trash').text('All').on('click',e => {
+			this.$DeleteButton = $.mk('button').attr('class','red typcn typcn-trash').text('Delete all').on('click',e => {
 				e.preventDefault();
 
-				this.deleteAction();
+				this.$CMList.children(':not(.faded)').find('legend > .remove').trigger('click');
+				this.$DeleteButton.disable('noop-disabled');
 			});
 			this.$BottomActionGroup = $.mk('div').attr('class','btn-group').append(
 				this.$AddNewButton
@@ -1217,9 +1218,6 @@ $(function(){
 				if (stahp)
 					return;
 
-				if (CMData.length === 0)
-					return $.Dialog.fail(false, 'Seems like you want to delete all cutie marks. Please use the <strong><span class="typcn typcn-trash"></span> All</strong> button above to do so.');
-
 				const data = { CMData: JSON.stringify(CMData) };
 				if (AppearancePage)
 					data.APPEARANCE_PAGE = true;
@@ -1253,23 +1251,6 @@ $(function(){
 		getForm(){
 			return this.$form;
 		}
-		deleteAction(){
-			$.Dialog.close(() => {
-				$.Dialog.confirm('Delete Cutie Marks of '+this.appearance_label,'Are you sure you want to remove the cutie mark(s) associated with this appearance?', sure => {
-					if (!sure) return;
-
-					$.Dialog.wait(false,'Sending removal request');
-
-					$.post(`${PGRq}/cg/appearance/delcms/${this.appearance_id}${EQGRq}`,$.mkAjaxHandler(data => {
-						if (!data.status) return $.Dialog.fail(false, data.message);
-
-						if (this.$cmSection.length)
-							this.$cmSection.addClass('hidden').children(':not(h2,p)').remove();
-						$.Dialog.close();
-					}));
-				});
-			});
-		}
 		updateRange(range){
 			const event = $.Event('change');
 			event.target = range;
@@ -1289,7 +1270,7 @@ $(function(){
 				facing: el.id ? 'facing-'+el.id : $.randomString(),
 				attribution: el.id ? 'attribution-'+el.id : $.randomString(),
 			};
-			let $facingSelector = $.mk('div').attr('class','disabled-show').html(
+			let $facingSelector = $.mk('div').html(
 				`<p>Body orientation</p>
 				<div class="radio-group orientation">
 					<label><input type="radio" name="${radioGrouping.facing}" value="left" required><span>Left</span></label>
@@ -1350,33 +1331,48 @@ $(function(){
 			}
 
 			const
-				$collapseButton = $.mk('button').attr({'class':'btn typcn typcn-minus',title:'Collapse'}).on('click',e => {
+				$collapseButton = $.mk('button').attr({'class':'btn typcn typcn-minus collapse',title:'Hide inputs but retain values'}).text('Collapse').on('click',e => {
 					e.preventDefault();
 
-					const $this = $(e.target);
+					const
+						$this = $(e.target),
+						$li = $this.closest('li');
 					$this.parent().nextAll(':not(.hidden)').addClass('hidden collapse-hidden');
 					$this.addClass('hidden').next().removeClass('hidden');
+					$li.addClass('collapsed');
 				}),
-				$expandButton = $.mk('button').attr({'class':'btn typcn typcn-plus hidden',title:'Expand'}).on('click',e => {
+				$expandButton = $.mk('button').attr({'class':'btn typcn typcn-plus hidden expand',title:'Reveal inputs'}).text('Expand').on('click',e => {
 					e.preventDefault();
 
-					const $this = $(e.target);
+					const
+						$this = $(e.target),
+						$li = $this.closest('li');
 					$this.parent().nextAll('.collapse-hidden').removeClass('hidden collapse-hidden');
 					$this.addClass('hidden').prev().removeClass('hidden');
+					$li.removeClass('collapsed');
 				}),
-				$removeButton = $.mk('button').attr({'class':'btn red typcn typcn-trash',title:'Remove'}).on('click',e => {
+				$removeButton = $.mk('button').attr({'class':'btn red typcn typcn-trash remove',title:'Delete cutie mark on save'}).text('Remove').on('click',e => {
 					e.preventDefault();
 
-					const $this = $(e.target);
-					$this.closest('li').addClass('faded').find('input:not(:disabled), select:not(:disabled)').disable().addClass('fade-disabled');
+					const
+						$this = $(e.target),
+						$li = $this.closest('li');
+					$li.addClass('faded').find('input:not(:disabled), select:not(:disabled)').disable().addClass('fade-disabled');
 					$this.addClass('hidden').next().removeClass('hidden');
+					$this.siblings('.collapse:not(.hidden)').trigger('click');
+					if ($li.siblings(':not(.faded)').length === 0)
+						this.$DeleteButton.disable('noop-disabled');
 				}),
-				$restoreButton = $.mk('button').attr({'class':'btn green typcn typcn-arrow-back hidden',title:'Restore'}).on('click',e => {
+				$restoreButton = $.mk('button').attr({'class':'btn green typcn typcn-arrow-back hidden restore',title:"Don't delete cutie mark on save"}).text('Restore').on('click',e => {
 					e.preventDefault();
 
-					const $this = $(e.target);
-					$this.closest('li').removeClass('faded').find('.fade-disabled').enable().removeClass('fade-disabled');
+					const
+						$this = $(e.target),
+						$li = $this.closest('li');
+					$li.removeClass('faded').find('.fade-disabled').enable().removeClass('fade-disabled');
 					$this.addClass('hidden').prev().removeClass('hidden');
+					this.$DeleteButton.enable('noop-disabled');
+					$this.siblings('.expand:not(.hidden)').trigger('click');
 				}),
 				fileAction = (editing?'Replace':'Upload')+' SVG file';
 			const $li = $.mk('li').append(
@@ -1394,6 +1390,7 @@ $(function(){
 								type: 'checkbox',
 								checked: !editing,
 								disabled: !editing,
+								'class': !editing ? 'hidden' : undefined,
 							}).on('click',e => {
 								if (e.target.readOnly)
 									return false;
@@ -1402,22 +1399,31 @@ $(function(){
 									checked = e.target.checked,
 									$el = $(e.target).parent().next();
 								$el[checked?'removeClass':'addClass']('hidden');
-								if (checked && !$el.hasClass('upload-wrap')){
-									$el.addClass('upload-wrap').uploadZone({
-										requestKey: 'file',
-										title: fileAction,
-										accept: '.svg,.svgz,image/svg+xml',
-										target: '/cg/sanitizesvg/'+this.appearance_id,
-										helper: true,
-									}).on('uz-uploadfinish',(_, data) => {
-										if (data && data.svgel)
-											$el.data({
-												svgdata: data.svgdata,
-												svgel: data.svgel,
-											}).children('.svgcont').backgroundImageUrl(
-												'data:image/svg+xml;utf8,'+encodeURI(data.svgel)
-											);
-									});
+								if (checked){
+									const
+										$svgcont = $el.children('.svgcont'),
+										ogbg = $svgcont.attr('data-ogbg');
+									if (ogbg){
+										$el.removeData('svgdata').removeData('svgel');
+										$svgcont.backgroundImageUrl(ogbg);
+									}
+									if (!$el.hasClass('upload-wrap')){
+										$el.addClass('upload-wrap').uploadZone({
+											requestKey: 'file',
+											title: fileAction,
+											accept: '.svg,.svgz,image/svg+xml',
+											target: '/cg/sanitizesvg/'+this.appearance_id,
+											helper: true,
+										}).on('uz-uploadfinish',(_, data) => {
+											if (data && data.svgel)
+												$el.data({
+													svgdata: data.svgdata,
+													svgel: data.svgel,
+												}).children('.svgcont').backgroundImageUrl(
+													'data:image/svg+xml;utf8,'+encodeURI(data.svgel)
+												);
+										});
+									}
 								}
 							}),
 							`<span>${fileAction}</span>`
@@ -1427,7 +1433,7 @@ $(function(){
 					$facingSelector,
 					$attributionRadios,
 					$attributionMethodList,
-					$.mk('div').attr('class','label disabled-show').append(
+					$.mk('div').append(
 						`<span>Rotation: <span class='rotation-display'>${rotation}</span></span>`,
 						$.mk('input').attr({
 							type: 'range',
@@ -1443,6 +1449,8 @@ $(function(){
 			);
 			if (el.id)
 				$li.attr('id', 'cmdata-'+el.id);
+			if (el.rendered)
+				$li.find('.svgcont').attr('data-ogbg',el.rendered);
 			$li.find('.svg-replace input:checked').trigger('change');
 			return $li;
 		}

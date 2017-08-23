@@ -90,7 +90,7 @@ class Cutiemark extends NSModel {
 	 * @see CGUtils::renderCMSVG()
 	 * @return string|null
 	 */
-	public function getVectorRelativeURL():?string {
+	public function getRenderedRelativeURL():?string {
 		return "/cg/cutiemark/{$this->id}.svg";
 	}
 
@@ -98,8 +98,8 @@ class Cutiemark extends NSModel {
 	 * @see CGUtils::renderCMSVG()
 	 * @return string|null
 	 */
-	public function getVectorURL():?string {
-		return $this->getVectorRelativeURL().'?t='.CoreUtils::filemtime($this->getRenderedFilePath());
+	public function getRenderedURL():?string {
+		return $this->getRenderedRelativeURL().'?t='.CoreUtils::filemtime($this->getRenderedFilePath());
 	}
 
 	/**
@@ -116,6 +116,7 @@ class Cutiemark extends NSModel {
 			$response['deviation'] = 'http://fav.me/'.$this->favme;
 		if ($this->contributor_id !== null)
 			$response['username'] = $this->contributor->name;
+		$response['rendered'] = $this->getRenderedURL();
 		return $response;
 	}
 

@@ -13,7 +13,7 @@ class Cutiemarks {
 	 *
 	 * @param Appearance $Appearance
 	 *
-	 * @return Cutiemark[]|null
+	 * @return Cutiemark[]
 	 */
 	public static function get(Appearance $Appearance){
 		return Cutiemark::find_all_by_appearance_id($Appearance->id);
@@ -45,7 +45,7 @@ class Cutiemarks {
 	public static function getListItemForAppearancePage(Cutiemark $cm, $wrap = WRAP){
 		$facing = $cm->facing !== null ? 'Facing '.CoreUtils::capitalize($cm->facing) : 'Symmetrical';
 		$facingSVG = $cm->getFacingSVGURL();
-		$preview = CoreUtils::aposEncode($cm->getVectorURL());
+		$preview = CoreUtils::aposEncode($cm->getRenderedURL());
 
 		$canEdit = Permission::sufficient('staff') || (Auth::$signed_in && $cm->appearance->owner_id === Auth::$user->id);
 

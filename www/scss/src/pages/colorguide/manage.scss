@@ -216,17 +216,13 @@
 				margin-bottom: 8px;
 			}
 
-			&.readonly > fieldset {
-				opacity: .8;
-				cursor: not-allowed;
-
-				> * {
-					pointer-events: none;
-				}
-
-				> :not(legend):not(.disabled-show) {
-					display: none;
-				}
+			&.collapsed > fieldset:before {
+				content: "COLLAPSED";
+				display: block;
+				text-align: center;
+				letter-spacing: 3px;
+				font-size: 20px;
+				color: rgba(0,0,0,.5);
 			}
 
 			.svg-replace-preview.upload-wrap {
