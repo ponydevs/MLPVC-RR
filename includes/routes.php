@@ -107,6 +107,7 @@ $router->map('POST', '/cg/colorgroup/[make:action]',         'ColorGuideControll
 $router->map('POST', '/cg/colorgroup/appearance-list',       'ColorGuideController#colorGroupAppearanceList');
 $router->map('POST', '/cg/colorgroup/list/[i:id]',           'ColorGuideController#colorGroupList');
 $router->map('POST', '/cg/get-sprite-colors/[i:id]',         'ColorGuideController#getSpriteColors');
+$router->map('POST', '/cg/sanitizesvg/[i:id]',               'ColorGuideController#sanitizeSvg');
 $router->map('POST', '/@[un:name]/cg/slot-check',            'UserController#checkCGSlots');
 $router->map('POST', '/@[un:name]/cg/appearance/[ad:action]/[i:id]',  'ColorGuideController#appearanceAction');
 $router->map('POST', '/@[un:name]/cg/appearance/[make:action]',       'ColorGuideController#appearanceAction');

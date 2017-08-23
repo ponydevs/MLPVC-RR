@@ -644,7 +644,7 @@ HTML;
 	const
 		CLEAR_PALETTE     = 'palette.png',
 		CLEAR_PREVIEW     = 'preview.svg',
-		CLEAR_CM          = 'cm-*.svg',
+		CLEAR_CM          = '&cutiemark',
 		CLEAR_CMDIR       = 'cmdir-*.svg',
 		CLEAR_SPRITE      = 'sprite.png',
 		CLEAR_SPRITE_SVG  = 'sprite.svg',
@@ -658,17 +658,22 @@ HTML;
 	 * @return bool
 	 */
 	public function clearRenderedImages(array $which = self::CLEAR_ALL):bool {
-		$RenderedPath = FSPATH.'cg_render/appearance/'.$this->id;
 		$success = [];
-		foreach ($which as $suffix){
-			$path = "$RenderedPath/$suffix";
-			if (strpos($path, '*') === false){
-				if (file_exists($path))
-					$success[] = unlink($path);
+		$clearCMPos = array_search(self::CLEAR_CM, $which, true);
+		if ($clearCMPos !== false){
+			array_splice($which, $clearCMPos, 1);
+			foreach ($this->cutiemarks as $cm){
+				$fpath = $cm->getRenderedFilePath();
+				$success[] = CoreUtils::deleteFile($fpath);
 			}
+		}
+		foreach ($which as $suffix){
+			$path = FSPATH."cg_render/appearance/{$this->id}/$suffix";
+			if (strpos($path, '*') === false)
+				$success[] = CoreUtils::deleteFile($path);
 			else {
 				foreach (glob($path) as $file)
-					$success[] = unlink($file);
+					$success[] = CoreUtils::deleteFile($fpath);
 			}
 		}
 		return !in_array(false, $success, true);

@@ -2,22 +2,21 @@
 
 namespace App;
 
-use App\Exceptions\MismatchedProviderException;
 use App\Models\Appearance;
+use App\Models\CachedDeviation;
 use App\Models\Cutiemark;
 use App\Models\User;
 
 class Cutiemarks {
 	/**
+	 * Fetches FRESH cutiemark data from the database instead of using the cached property
+	 *
 	 * @param Appearance $Appearance
-	 * @param bool       $procSym
 	 *
 	 * @return Cutiemark[]|null
 	 */
-	public static function get(Appearance $Appearance, bool $procSym = true){
-		/** @var $CMs Cutiemark[] */
-		$CMs = DB::$instance->where('appearance_id', $Appearance->id)->get(Cutiemark::$table_name);
-		return $CMs;
+	public static function get(Appearance $Appearance){
+		return Cutiemark::find_all_by_appearance_id($Appearance->id);
 	}
 
 	const VALID_FACING_VALUES = ['left','right'];
@@ -73,52 +72,6 @@ class Cutiemarks {
 $madeby
 HTML;
 		return $wrap ? "<li class='pony-cm' id='cm{$cm->id}'>$content</li>" : $content;
-	}
-
-	/**
-	 * @param Cutiemark $cm
-	 * @param array     $item
-	 */
-	public static function postProcess(Cutiemark $cm, array $item){
-		// TODO Update ALL uses of this method
-		if (isset($item['facing'])){
-			$facing = CoreUtils::trim($item['facing']);
-			if (empty($facing))
-				$facing = null;
-			else if (!in_array($facing,self::VALID_FACING_VALUES,true))
-				Response::fail('Body orientation is invalid');
-		}
-		else $facing = null;
-		$cm->facing = $facing;
-
-		switch ($item['attribution']){
-			case 'deviation':
-				$deviation = new Input('deviation','favme',[
-					Input::CUSTOM_ERROR_MESSAGES => [
-						Input::ERROR_MISSING => 'Deviation link is missing',
-						Input::ERROR_INVALID => 'Deviation link (@value) is invalid',
-					],
-				]);
-				$cm->favme = $favme;
-			break;
-			case 'user':
-
-			break;
-			case 'none':
-				// Skip validation
-			break;
-			default:
-				Response::fail('The specified credit method is invalid');
-		}
-
-		if (!isset($item['rotation']))
-			Response::fail('Preview rotation amount is missing');
-		if (!is_numeric($item['rotation']))
-			Response::fail('Preview rotation must be a number');
-		$rotation = (int) $item['frotation'];
-		if (abs($rotation) > 45)
-			Response::fail('Preview rotation must be between -45 and 45');
-		$cm->rotation = $rotation;
 	}
 
 	/**

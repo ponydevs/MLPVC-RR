@@ -229,6 +229,38 @@
 				}
 			}
 
+			.svg-replace-preview.upload-wrap {
+				width: 100px;
+				height: 100px;
+				margin: 0 auto;
+				background: url('/img/transparency.svg') repeat;
+				background-size: 16px;
+
+				.helper:after { display: none !important }
+
+				//noinspection CssOptimizeSimilarProperties
+				> .svgcont {
+					width: 100%;
+					height: 100%;
+					background-repeat: no-repeat;
+					background-position: center;
+					background-size: contain;
+				}
+			}
+
+			.attrib-method-list > .attrib-method > label {
+				> * {
+					display: block;
+				}
+				span {
+					margin-bottom: 5px;
+				}
+				input {
+					width: 100%;
+					box-sizing: border-box;
+				}
+			}
+
 			> fieldset {
 				&.ignore:after {
 					display: block;
@@ -267,7 +299,6 @@
 				}
 				> legend {
 					text-align: left;
-					padding: 0 10px;
 
 					> * {
 						vertical-align: middle;
@@ -289,5 +320,10 @@
 		display: block;
 		width: 95%;
 		margin: 0 auto;
+	}
+	.issue-descriptions > * {
+		margin-top: 7px !important;
+		border-top: 1px solid;
+		padding-top: 7px !important;
 	}
 }

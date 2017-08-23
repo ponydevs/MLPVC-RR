@@ -19,6 +19,7 @@ use App\Users;
  * @property User       $contributor    (Via magic method)
  * @method static Cutiemark find(int $id)
  * @method static Cutiemark[] find_by_sql($sql, $data = null)
+ * @method static Cutiemark[] find_all_by_appearance_id(int $appearance_id)
  */
 class Cutiemark extends NSModel {
 	static $table_name = 'cutiemarks';
@@ -57,7 +58,7 @@ class Cutiemark extends NSModel {
 		return FSPATH."cm_source/{$this->id}.svg";
 	}
 
-	public function getVectorFilePath(){
+	public function getRenderedFilePath(){
 		return FSPATH."cg_render/cutiemark/{$this->id}.svg";
 	}
 
@@ -67,7 +68,7 @@ class Cutiemark extends NSModel {
 		$source_exists = file_exists($source_path);
 		if (file_exists($tokenized_path)){
 			if (!$source_exists){
-				@unlink($tokenized_path);
+				CoreUtils::deleteFile($tokenized_path);
 				$this->appearance->clearRenderedImages([Appearance::CLEAR_CM]);
 				return null;
 			}
@@ -75,15 +76,10 @@ class Cutiemark extends NSModel {
 				return File::get($tokenized_path);
 		}
 
-		if (!$source_exists){
-			$data = DeviantArt::trackDownSVG($this->favme);
-			if ($data === null)
-				return null;
+		if (!$source_exists)
+			return null;
 
-			CoreUtils::createFoldersFor($source_path);
-			File::put($source_path, $data);
-		}
-		else $data = File::get($source_path);
+		$data = File::get($source_path);
 		$data = CGUtils::tokenizeSvg(CoreUtils::sanitizeSvg($data), $this->appearance_id);
 		CoreUtils::createFoldersFor($tokenized_path);
 		File::put($tokenized_path, $data);
@@ -103,7 +99,7 @@ class Cutiemark extends NSModel {
 	 * @return string|null
 	 */
 	public function getVectorURL():?string {
-		return $this->getVectorRelativeURL().'?t='.CoreUtils::filemtime($this->getVectorFilePath());
+		return $this->getVectorRelativeURL().'?t='.CoreUtils::filemtime($this->getRenderedFilePath());
 	}
 
 	/**
@@ -114,9 +110,18 @@ class Cutiemark extends NSModel {
 		return $this->appearance->getFacingSVGURL($this->facing);
 	}
 
+	public function to_js_response(){
+		$response = $this->to_array(['except' => ['contributor_id','favme']]);
+		if ($this->favme !== null)
+			$response['deviation'] = 'http://fav.me/'.$this->favme;
+		if ($this->contributor_id !== null)
+			$response['username'] = $this->contributor->name;
+		return $response;
+	}
+
 	public function remove_files(){
-		@unlink($this->getSourceFilePath());
-		@unlink($this->getTokenizedFilePath());
-		@unlink($this->getVectorFilePath());
+		CoreUtils::deleteFile($this->getSourceFilePath());
+		CoreUtils::deleteFile($this->getTokenizedFilePath());
+		CoreUtils::deleteFile($this->getRenderedFilePath());
 	}
 }

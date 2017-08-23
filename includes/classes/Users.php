@@ -314,7 +314,7 @@ HTML;
 	public static function validateName($key, $errors, $method_get = false, $silent_fail = false){
 		return (new Input($key,'username', [
 			Input::IS_OPTIONAL => true,
-			Input::METHOD_GET => $method_get,
+			Input::SOURCE => $method_get ? 'GET' : 'POST',
 			Input::SILENT_FAILURE => $silent_fail,
 			Input::CUSTOM_ERROR_MESSAGES => $errors ?? [
 				Input::ERROR_MISSING => 'Username (@value) is missing',

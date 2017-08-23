@@ -515,7 +515,7 @@ class CoreUtils {
 
 		exec(SVGO_BINARY." $tmp_path --disable=removeUnknownsAndDefaults,removeUselessStrokeAndFill --enable=removeRasterImages,convertStyleToAttrs,removeDimensions,cleanupIDs");
 		$svgdata = File::get($tmp_path);
-		unlink($tmp_path);
+		self::deleteFile($tmp_path);
 		return $svgdata;
 	}
 
@@ -591,6 +591,22 @@ class CoreUtils {
 			$sanitized = self::minifySvgData($sanitized);
 
 		return $sanitized;
+	}
+
+	public static function validateSvg(string $svg_data){
+		self::conditionalUncompress($svg_data);
+		if ($svg_data === false)
+			return Input::ERROR_INVALID;
+
+		$parser = new \DOMDocument();
+		libxml_use_internal_errors(true);
+		$parser->loadXML($svg_data);
+		libxml_use_internal_errors();
+		if ($parser->documentElement === null || strtolower($parser->documentElement->nodeName) !== 'svg')
+			return Input::ERROR_INVALID;
+		unset($parser);
+
+		return Input::ERROR_NONE;
 	}
 
 	/**
@@ -1340,5 +1356,28 @@ HTML;
 
 		$mt = filemtime($path);
 		return $mt === false ? time() : $mt;
+	}
+
+	/**
+	 * Deletes a file if it exists, stays silent otherwise
+	 *
+	 * @param string $name
+	 *
+	 * @return bool
+	 */
+	public static function deleteFile(string $name):bool {
+		if (!file_exists($name))
+			return true;
+
+		return unlink($name);
+	}
+
+	public static function conditionalUncompress(string &$data){
+		if (0 === mb_strpos($data, "\x1f\x8b\x08", 0, 'US-ASCII'))
+			$data = @gzdecode($data);
+	}
+
+	public static function stringSize(string $data):int {
+		return mb_strlen($data, '8bit');
 	}
 }

@@ -172,11 +172,11 @@ class CGUtils {
 		if (CoreUtils::length($tmp) < 1)
 			Response::fail('File upload failed; Reason unknown');
 
-		list($width, $height) = Image::checkType($tmp, $allowedMimeTypes);
+		[$width, $height] = Image::checkType($tmp, $allowedMimeTypes);
 		CoreUtils::createFoldersFor($path);
 
 		if (!move_uploaded_file($tmp, $path)){
-			@unlink($tmp);
+			CoreUtils::deleteFile($tmp);
 			Response::fail('File upload failed; Writing image file was unsuccessful');
 		}
 
@@ -485,7 +485,7 @@ HTML;
 		if (empty($CutieMark))
 			CoreUtils::notFound();
 
-		$OutputPath = $CutieMark->getVectorFilePath();
+		$OutputPath = $CutieMark->getRenderedFilePath();
 		$FileRelPath = $CutieMark->getVectorRelativeURL();
 		if (file_exists($OutputPath))
 			Image::outputSVG(null,$OutputPath,$FileRelPath);

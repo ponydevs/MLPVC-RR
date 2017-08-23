@@ -8,11 +8,15 @@ use App\CoreUtils;
 use App\CSRFProtection;
 use App\Cutiemarks;
 use App\DB;
+use App\Exceptions\MismatchedProviderException;
 use App\Exceptions\NoPCGSlotsException;
+use App\File;
+use App\ImageProvider;
 use App\Input;
 use App\JSON;
 use App\Logs;
 use App\Models\Appearance;
+use App\Models\CachedDeviation;
 use App\Models\Color;
 use App\Models\ColorGroup;
 use App\Models\Cutiemark;
@@ -26,6 +30,7 @@ use App\Permission;
 use App\RegExp;
 use App\Reponse;
 use App\Response;
+use App\UploadedFile;
 use App\UserPrefs;
 use App\Appearances;
 use App\Tags;
@@ -85,13 +90,15 @@ class ColorGuideController extends Controller {
 
 	/** @var \App\Models\Appearance */
 	private $_appearance;
-	public function _getAppearance($params){
+	public function _getAppearance($params, $set_properties = true){
 		$asFile = isset($params['ext']);
 		if (!isset($params['id']))
 			Response::fail('Missing appearance ID');
 		$this->_appearance = Appearance::find($params['id']);
 		if (empty($this->_appearance))
 			CoreUtils::notFound();
+		if (!$set_properties)
+			return;
 
 		if ($this->_appearance->owner_id === null){
 			if ($this->_appearance->ishuman && !$this->_EQG){
@@ -524,7 +531,7 @@ class ColorGuideController extends Controller {
 				'private' => $p->private,
 			];
 
-			$CMs = Cutiemarks::get($p, false);
+			$CMs = Cutiemarks::get($p);
 			if (!empty($CMs)){
 				$AppendCMs = [];
 				foreach ($CMs as $CM){
@@ -850,8 +857,7 @@ class ColorGuideController extends Controller {
 						Tags::updateUses($tag->id);
 
 				$fpath = SPRITE_PATH."{$this->_appearance->id}.png";
-				if (file_exists($fpath))
-					unlink($fpath);
+				CoreUtils::deleteFile($fpath);
 
 				$this->_appearance->clearRenderedImages();
 
@@ -931,7 +937,7 @@ class ColorGuideController extends Controller {
 							Response::fail('No sprite file found');
 						}
 
-						if (!unlink($finalpath))
+						if (!CoreUtils::deleteFile($finalpath))
 							Response::fail('File could not be deleted');
 						$this->_appearance->clearRenderedImages();
 						Appearances::clearSpriteColorIssueNotifications($this->_appearance->id, 'del', null);
@@ -1011,30 +1017,20 @@ class ColorGuideController extends Controller {
 				Response::done($out);
 			break;
 			case 'getcms':
-				$CMs = Cutiemarks::get($this->_appearance,false);
+				$CMs = Cutiemarks::get($this->_appearance);
 				foreach ($CMs as &$CM)
-					$CM = $CM->to_array();
+					$CM = $CM->to_js_response();
 				unset($CM);
 
 				$ProcessedCMs = Cutiemarks::get($this->_appearance);
 
 				Response::done(['cms' => $CMs, 'preview' => Cutiemarks::getListForAppearancePage($ProcessedCMs, NOWRAP)]);
 			break;
-			case 'getcmpreview':
-				$CMs = [];
-
-				// TODO Rewrite to use JSON instead
-				$i = 0;
-				while ($cm = Cutiemarks::postProcess(new Cutiemark([ 'appearance_id' => $this->_appearance->id ]), $i++))
-					$CMs[] = $cm;
-
-				usort($CMs, function(Cutiemark $a, Cutiemark $b){
-					return $a->facing <=> $b->facing;
-				});
-
-				Response::done(['html' => Cutiemarks::getListForAppearancePage($CMs, NOWRAP)]);
-			break;
 			case 'setcms':
+				$GrabCMs = Cutiemarks::get($this->_appearance);
+				$CurrentCMs = [];
+				foreach ($GrabCMs as $cm)
+					$CurrentCMs[$cm->id] = $cm;
 				/** @var $data array */
 				$data = (new Input('CMData','json',[
 					Input::CUSTOM_ERROR_MESSAGES => [
@@ -1042,26 +1038,118 @@ class ColorGuideController extends Controller {
 						Input::ERROR_INVALID => 'Cutie mark data (@value) is invalid',
 					]
 				]))->out();
+				/** @var $NewCMs Cutiemark[] */
 				$NewCMs = [];
-				foreach ($data as $item){
+				$NewIDs = [];
+				foreach ($data as $i => $item){
 					if (isset($item['id'])){
 						$cm = Cutiemark::find($item['id']);
 						if (empty($cm))
 							Response::fail("The cutie mark you're trying to update (#{$item['id']}) does not exist");
+						$NewIDs[] = $cm->id;
 					}
 					else $cm = new Cutiemark([
 						'appearance_id' => $this->_appearance->id,
 					]);
-					if (Cutiemarks::postProcess($cm, $item) === false)
-						break;
 
-					$NewCMs[] = $cm;
+					$svg_data_missing = empty($item['svgdata']);
+					if ($cm->id === null || !$svg_data_missing){
+						if ($svg_data_missing)
+							Response::fail('SVG data is missing');
+						if (CoreUtils::stringSize($item['svgdata']) > UploadedFile::SIZES['megabyte'])
+							Response::fail('SVG data exceeds the maximum size of 1 MB');
+						if (CoreUtils::validateSvg($item['svgdata']) !== Input::ERROR_NONE)
+							Response::fail('SVG data is invalid');
+						$svgdata = $item['svgdata'];
+					}
+					else $svgdata = null;
+
+					if (isset($item['facing'])){
+						$facing = CoreUtils::trim($item['facing']);
+						if (empty($facing))
+							$facing = null;
+						else if (!in_array($facing,Cutiemarks::VALID_FACING_VALUES,true))
+							Response::fail('Body orientation "'.CoreUtils::escapeHTML($facing).'" is invalid');
+					}
+					else $facing = null;
+					$cm->facing = $facing;
+
+					switch ($item['attribution']){
+						case 'deviation':
+							if (empty($item['deviation']))
+								Response::fail('Deviation link is missing');
+
+							try {
+								$Image = new ImageProvider(CoreUtils::trim($item['deviation']), ImageProvider::PROV_DEVIATION, true);
+								/** @var $deviation CachedDeviation */
+								$deviation = $Image->extra;
+							}
+							catch (MismatchedProviderException $e){
+								Response::fail('The link must point to a DeviantArt submission, '.$e->getActualProvider().' links are not allowed');
+							}
+							catch (\Exception $e){ Response::fail('Error while checking deviation link: '.$e->getMessage()); }
+
+							if (empty($deviation))
+								Response::fail('The provided deviation could not be fetched');
+							$cm->favme = $deviation->id;
+							$contributor = Users::get($deviation->author, 'name');
+							if (empty($contributor))
+								Response::fail("The provided deviation's creator could not be fetched");
+							$cm->contributor_id = $contributor->id;
+						break;
+						case 'user':
+							global $USERNAME_REGEX;
+							if (empty($item['username']))
+								Response::fail('Username is missing');
+							if (!preg_match($USERNAME_REGEX, $item['username']))
+								Response::fail("Username ({$item['username']}) is invalid");
+							$contributor = Users::get($item['username'], 'name');
+							if (empty($contributor))
+								Response::fail("The provided deviation's creator could not be fetched");
+							$cm->favme = null;
+							$cm->contributor_id = $contributor->id;
+						break;
+						case 'none':
+							$cm->favme = null;
+							$cm->contributor_id = null;
+						break;
+						default:
+							Response::fail('The specified attribution method is invalid');
+					}
+
+					if (!isset($item['rotation']))
+						Response::fail('Preview rotation amount is missing');
+					if (!is_numeric($item['rotation']))
+						Response::fail('Preview rotation must be a number');
+					$rotation = (int) $item['rotation'];
+					if (abs($rotation) > 45)
+						Response::fail('Preview rotation must be between -45 and 45');
+					$cm->rotation = $rotation;
+
+					$NewCMs[$i] = $cm;
+					$NewSVGs[$i] = $svgdata;
 				}
 
-				$CurrentCMs = Cutiemarks::get($this->_appearance);
+				foreach ($NewCMs as $i => $cm){
+					if (!$cm->save())
+						Response::dbError("Saving cutie mark (index $i) failed");
 
-				foreach ($NewCMs as $cmdata)
-					$cmdata->save();
+					if ($NewSVGs[$i] !== null){
+						if (false !== File::put($cm->getSourceFilePath(), $NewSVGs[$i])){
+							CoreUtils::deleteFile($cm->getTokenizedFilePath());
+							CoreUtils::deleteFile($cm->getRenderedFilePath());
+							continue;
+						}
+
+						Response::fail("Saving SVG data for cutie mark (index $i) failed");
+					}
+				}
+
+				$RemovedIDs = CoreUtils::array_subtract(array_keys($CurrentCMs), $NewIDs);
+				if (!empty($RemovedIDs)){
+					foreach ($RemovedIDs as $removedID)
+						$CurrentCMs[$removedID]->delete();
+				}
 
 				$CutieMarks = Cutiemarks::get($this->_appearance);
 				$olddata = Cutiemarks::convertDataForLogs($CurrentCMs);
@@ -1193,7 +1281,7 @@ class ColorGuideController extends Controller {
 				]))->out();
 				if ($wipe_cm_tokenized){
 					foreach ($this->_appearance->cutiemarks as $cm)
-						@unlink($cm->getTokenizedFilePath());
+						CoreUtils::deleteFile($cm->getTokenizedFilePath());
 				}
 
 				$wipe_cm_source = (new Input('wipe_cm_source','bool',[
@@ -1201,7 +1289,7 @@ class ColorGuideController extends Controller {
 				]))->out();
 				if ($wipe_cm_source){
 					foreach ($this->_appearance->cutiemarks as $cm)
-						@unlink($cm->getSourceFilePath());
+						CoreUtils::deleteFile($cm->getSourceFilePath());
 				}
 
 				$wipe_sprite = (new Input('wipe_sprite','bool',[
@@ -1982,8 +2070,29 @@ HTML;
 
 		$file = isset($_REQUEST['source']) && Permission::sufficient('staff')
 			? $cutiemark->getSourceFilePath()
-			: $cutiemark->getVectorFilePath();
+			: $cutiemark->getRenderedFilePath();
 
 		CoreUtils::downloadFile($file, CoreUtils::posess($cutiemark->appearance->label).' Cutie Mark.svg');
+	}
+
+	public function sanitizeSvg($params){
+		if (Permission::insufficient('member'))
+			Response::fail();
+
+		$this->_getAppearance($params, false);
+
+		$svgdata = (new Input('file','svg_file',[
+			Input::SOURCE => 'FILES',
+			Input::IN_RANGE => [null, UploadedFile::SIZES['megabyte']],
+			Input::CUSTOM_ERROR_MESSAGES => [
+				Input::ERROR_MISSING => 'SVG data is missing',
+				Input::ERROR_INVALID => 'SVG data is invalid',
+				Input::ERROR_RANGE => 'SVG file size exceeds @max bytes.',
+			]
+		]))->out();
+
+		$svgel = CGUtils::untokenizeSvg(CGUtils::tokenizeSvg(CoreUtils::sanitizeSvg($svgdata), $this->_appearance->id), $this->_appearance->id);
+
+		Response::done(['svgel' => $svgel, 'svgdata' => $svgdata, 'keep_dialog' => true]);
 	}
 }

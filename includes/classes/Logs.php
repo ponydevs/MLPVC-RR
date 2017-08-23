@@ -489,7 +489,7 @@ HTML;
 				return Input::ERROR_INVALID;
 		}, [
 			Input::IS_OPTIONAL => $optional,
-			Input::METHOD_GET => $method_get,
+			Input::SOURCE => $method_get ? 'GET' : 'POST',
 		]))->out();
 	}
 

@@ -15,7 +15,9 @@ class ImageProvider {
 	 * @var null|CachedDeviation
 	 */
 	public $extra;
-	public function __construct(string $url = null, ?array $reqProv = null){
+
+	private $_ignoreMime;
+	public function __construct(string $url = null, ?array $reqProv = null, bool $ignoreMime = false){
 		if (!empty($url)){
 			$provider = self::getProvider(DeviantArt::trimOutgoingGateFromUrl(CoreUtils::trim($url)));
 			if (!empty($reqProv)){
@@ -25,6 +27,7 @@ class ImageProvider {
 					throw new MismatchedProviderException($provider->name);
 			}
 			$this->provider = $provider->name;
+			$this->_ignoreMime = $ignoreMime;
 			$this->setUrls($provider->itemid);
 		}
 	}
@@ -79,7 +82,10 @@ class ImageProvider {
 		throw new UnsupportedProviderException();
 	}
 
-	private static function _checkImageAllowed($url, $ctype = null){
+	private function _checkImageAllowed($url, $ctype = null){
+		if ($this->_ignoreMime)
+			return;
+
 		if (empty($ctype)){
 			if (empty($url))
 				throw new \RuntimeException("Resource URL ($url) is empty, please try again.");
@@ -99,7 +105,7 @@ class ImageProvider {
 			case 'imgur':
 				$this->fullsize = "https://i.imgur.com/$id.png";
 				$this->preview = "https://i.imgur.com/{$id}m.png";
-				self::_checkImageAllowed($this->fullsize);
+				$this->_checkImageAllowed($this->fullsize);
 			break;
 			case 'derpibooru':
 				$Data = @File::get("http://derpibooru.org/$id.json");
@@ -124,7 +130,7 @@ class ImageProvider {
 				$this->fullsize = $Data['representations']['full'];
 				$this->preview = $Data['representations']['small'];
 
-				self::_checkImageAllowed($this->fullsize, $Data['mime_type']);
+				$this->_checkImageAllowed($this->fullsize, $Data['mime_type']);
 			break;
 			case 'puush':
 				$path = "http://puu.sh/{$id}";
@@ -135,7 +141,7 @@ class ImageProvider {
 				if ($image === 'You do not have access to view that puush.')
 					throw new \RuntimeException('The requested image is a private Puu.sh and the token is missing from the URL');
 
-				self::_checkImageAllowed($path);
+				$this->_checkImageAllowed($path);
 				$this->fullsize = $this->preview = $path;
 			break;
 			case 'dA':
@@ -174,9 +180,9 @@ class ImageProvider {
 				$this->extra = $CachedDeviation;
 
 				if ($this->preview !== null)
-					self::_checkImageAllowed($this->preview);
+					$this->_checkImageAllowed($this->preview);
 				if ($this->fullsize !== null)
-					self::_checkImageAllowed($this->fullsize);
+					$this->_checkImageAllowed($this->fullsize);
 			break;
 			case 'lightshot':
 				$page = @File::get("http://prntscr.com/$id");

@@ -95,6 +95,10 @@ input[type=checkbox] {
 				> * { vertical-align: text-bottom }
 			}
 
+			fieldset > legend {
+				padding: 0 10px;
+			}
+
 			.radio-group {
 				user-select: none;
 

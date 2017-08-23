@@ -25,19 +25,27 @@
 		if (opt.helper)
 			$helper = $.mk('div').addClass('helper');
 
-		$input.on('set-image',function(_, path){
-			$.Dialog.close(function(){
+		$input.on('set-image',function(_, response){
+			const actions = function(){
 				$this.removeClass('uploading');
-				$input.prev().attr('href', path).children('img').fadeTo(200,0,function(){
-					let $image = $(this);
-					$this.addClass('loading');
-					$image.attr('src',path).on('load',function(){
-						$this.removeClass('loading');
-						$image.fadeTo(200,1);
+				if (response.path){
+					$input.prev().attr('href', response.path).children('img').fadeTo(200,0,function(){
+						let $image = $(this);
+						$this.addClass('loading');
+						$image.attr('src',response.path).on('load',function(){
+							$this.removeClass('loading');
+							$image.fadeTo(200,1);
+						});
+						$this.trigger('uz-uploadfinish', [response]);
 					});
-					$this.trigger('uz-uploadfinish');
-				});
-			});
+					return;
+				}
+
+				$this.trigger('uz-uploadfinish', [response]);
+			};
+			if (response.keep_dialog === true)
+				actions();
+			else $.Dialog.close(actions);
 		});
 		$input.on('dragenter dragleave', function(e){
 			e.stopPropagation();
@@ -54,7 +62,7 @@
 			$this.trigger('uz-uploadstart').removeClass('drop').addClass('uploading');
 
 			let fd = new FormData();
-			fd.append('sprite', files[0]);
+			fd.append(opt.requestKey, files[0]);
 			fd.append('CSRF_TOKEN', $.getCSRFToken());
 
 			let ajaxOpts = {
@@ -66,7 +74,7 @@
 				data: fd,
 				success: $.mkAjaxHandler(function(){
 					if (this.status)
-						$input.trigger('set-image', [this.path]);
+						$input.trigger('set-image', [this]);
 					else {
 						$.Dialog.fail(title,this.message);
 						$this.trigger('uz-uploadfinish');

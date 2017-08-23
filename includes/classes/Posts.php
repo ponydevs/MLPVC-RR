@@ -177,10 +177,10 @@ class Posts {
 		catch (\Exception $e){ Response::fail($e->getMessage()); }
 
 
-		foreach (Posts::TYPES as $type){
+		foreach (self::TYPES as $type){
 			/** @noinspection DisconnectedForeachInstructionInspection */
 			if ($Post !== null)
-				DB::$instance->where('r.id',$Post->id,'!=');
+				DB::$instance->where('id',$Post->id,'!=');
 			/** @var $UsedUnder Post */
 			$UsedUnder = DB::$instance->where('preview',$Image->preview)->getOne("{$type}s");
 			if (!empty($UsedUnder))
@@ -467,7 +467,7 @@ HTML;
 			throw new \InvalidArgumentException("Invalid clear reason $reason");
 
 		DB::$instance->where('read_at IS NULL');
-		$TransferAttempts = Posts::getTransferAttempts($Post, $sent_by, 'id,data');
+		$TransferAttempts = self::getTransferAttempts($Post, $sent_by, 'id,data');
 		if (!empty($TransferAttempts)){
 			$SentFor = [];
 			foreach ($TransferAttempts as $n){
@@ -599,7 +599,7 @@ HTML;
 		$escapedLabel = CoreUtils::aposEncode($Request->label);
 		$label = self::_getPostLabel($Request);
 		$time_ago = Time::tag($Request->posted);
-		$cat = Posts::REQUEST_TYPES[$Request->type];
+		$cat = self::REQUEST_TYPES[$Request->type];
 		$reserve = Permission::sufficient('member') ? self::getPostReserveButton($Request, null, false) : "<div><a href='{$Request->toURL()}' class='btn blue typcn typcn-arrow-forward'>View on episode page</a></div>";
 		return <<<HTML
 <li id="request-{$Request->id}">
@@ -734,7 +734,7 @@ HTML;
 
 	public static function checkReserveAs(&$update){
 		if (Permission::sufficient('developer')){
-			$reserve_as = Posts::validatePostAs();
+			$reserve_as = self::validatePostAs();
 			if ($reserve_as !== null){
 				$User = Users::get($reserve_as, 'name');
 				if (empty($User))

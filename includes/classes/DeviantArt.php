@@ -13,10 +13,6 @@ use App\Exceptions\JSONParseException;
 use SeinopSys\OAuth2\Client\Provider\DeviantArtProvider;
 
 class DeviantArt {
-	private static
-		$_MASS_CACHE_LIMIT = 15,
-		$_MASS_CACHE_USED = 0;
-
 	// oAuth Error Response Messages \\
 	const OAUTH_RESPONSE = [
 		'invalid_request' => 'The authorization request was not properly formatted.',
@@ -192,8 +188,6 @@ class DeviantArt {
 			if (empty($Deviation))
 				$Deviation = CachedDeviation::create($insert);
 			else $Deviation->update_attributes($insert);
-
-			self::$_MASS_CACHE_USED++;
 		}
 		else if (!empty($Deviation->updated_on)){
 			$Deviation->updated_on = date('c', strtotime($Deviation->updated_on));
@@ -404,8 +398,7 @@ class DeviantArt {
 				break;
 			$off += 100;
 		}
-		unset($dom);
-		unset($xp);
+		unset($dom, $xp);
 
 		// Get staff
 		$requri = 'http://mlp-vectorclub.deviantart.com/global/difi/?c%5B%5D=%22GrusersModules%22%2C%22displayModule%22%2C%5B%2217450764%22%2C%22374037863%22%2C%22generic%22%2C%7B%7D%5D&iid=576m8f040364c99a7d9373611b4a9414d434-j2asw8mn-1.1&mp=2&t=json';
@@ -439,177 +432,6 @@ class DeviantArt {
 	public static function getClubRole(User $user):?string {
 		$usernames = self::getMemberList();
 		return $usernames[$user->name] ?? null;
-	}
-
-	/**
-	 * @param string          $id
-	 * @param string          $provider
-	 * @return string|false Raw SVG data or false on failure
-	 */
-	private static function _readSubmissionSVG(string $id, string $provider){
-		// Attempt to find & acquire SVG/SVGZ/ZIP source file
-		$cache = self::getCachedDeviation($id, $provider);
-		if (empty($cache))
-			return false;
-
-		$format = 'zip|svgz?';
-		if (!preg_match(new RegExp("^$format$"), $cache->type))
-			return false;
-
-		$download_url = self::getDownloadURL($id, $provider, $format);
-
-		// It's a compressed folder, download & extract
-		if ($cache->type === 'zip'){
-			$tmp_folder = FSPATH."tmp/deviation/$id";
-			$cleanup = function() use ($tmp_folder){
-				$files = new \RecursiveIteratorIterator(
-					new \RecursiveDirectoryIterator($tmp_folder, \RecursiveDirectoryIterator::SKIP_DOTS),
-					\RecursiveIteratorIterator::CHILD_FIRST
-				);
-
-				foreach ($files as $fileinfo) {
-					$todo = ($fileinfo->isDir() ? 'rmdir' : 'unlink');
-					$todo($fileinfo->getRealPath());
-				}
-
-				rmdir($tmp_folder);
-			};
-			$tmp_storage = "$tmp_folder/_source.{$cache->type}.file";
-			CoreUtils::createFoldersFor($tmp_storage);
-			if (!file_exists($tmp_storage))
-				copy($download_url, $tmp_storage);
-
-			$zip = new \ZipArchive();
-			$zip->open($tmp_storage);
-			$zip->extractTo($tmp_folder);
-			$svgs = array_merge(
-				glob("$tmp_folder/*.{svg,svgz}", GLOB_BRACE),
-				glob("$tmp_folder/**/*.{svg,svgz}", GLOB_BRACE)
-			);
-			$count = count($svgs);
-			if ($count > 0){
-				if ($count > 1)
-					sort($svgs);
-
-				$data = $cache->type === 'svgz'
-					? CoreUtils::gzread($svgs[0])
-					: File::get($svgs[0]);
-				$cleanup();
-				return $data;
-			}
-			$cleanup();
-			return false;
-		}
-
-		// Handle SVG/SVGZ direct uploads
-		return $cache->type === 'svgz'
-			? CoreUtils::gzread($download_url)
-			: File::get($download_url);
-	}
-
-	/**
-	 * @param string $href
-	 * @return string|false Raw SVG data or false on failure
-	 */
-	private static function _readProviderSVG(string $href){
-		try {
-			$prov = ImageProvider::getProvider($href);
-		}
-		catch (UnsupportedProviderException $e){
-			return false;
-		}
-		if ($prov->name === 'sta.sh'){
-			$result = self::_readSubmissionSVG($prov->itemid, $prov->name);
-			if ($result !== false)
-				return $result;
-		}
-		return false;
-	}
-
-	/**
-	 * @param string $favme_id
-	 *
-	 * @return string|null Raw SVG data or null on failure
-	 */
-	public static function trackDownSVG(string $favme_id):?string {
-		$result = self::_readSubmissionSVG($favme_id, 'fav.me');
-		if ($result !== false)
-			return $result;
-
-		// Look for links in the description
-		$submissionPage = HTTP::legitimateRequest(self::favmeHttpsUrl($favme_id));
-		if (empty($submissionPage['response']))
-			return null;
-
-		$dom = new \DOMDocument();
-		libxml_use_internal_errors(true);
-		$dom->loadHTML($submissionPage['response']);
-		libxml_use_internal_errors();
-		$divs = $dom->getElementsByTagName('div');
-		/** @var $description \DOMElement */
-		$description = null;
-		foreach ($divs as $div){
-			/** @var $div \DOMElement */
-			if ($div->getAttribute('class') !== 'dev-description')
-				continue;
-
-			$description = $div;
-			break;
-		}
-		if ($description === null)
-			return null;
-		$links = $description->getElementsByTagName('a');
-		$svgz_regex = new RegExp('svgz?.*(?::|-|$)','i');
-		foreach ($links as $link){
-			/** @var $link \DOMElement */
-			$href = $link->getAttribute('href');
-			$text = $link->textContent;
-
-			$textMatch = preg_match($svgz_regex,$text);
-			$previousSiblingTextMatch = false;
-			if (!$textMatch){
-				$previousSibling = CoreUtils::closestMeaningfulPreviousSibling($link);
-				if ($previousSibling !== null){
-					$previousSiblingTextMatch = preg_match($svgz_regex, CoreUtils::trim($previousSibling->textContent));
-				}
-			}
-			if ($textMatch || $previousSiblingTextMatch){
-				$target = self::trimOutgoingGateFromUrl($href);
-
-				$host = explode('.',parse_url($target, PHP_URL_HOST));
-				$host = implode('.', array_slice($host, -2, 2));
-
-				/** @noinspection DegradedSwitchInspection */
-				switch($host){
-					case 'gitlab.com':
-						$url = preg_replace(new RegExp('(/[a-z\w_-]+/[a-z\w_-]+/)blob(/)','i'),'$1raw$2',$target);
-						$extension = explode('.',$url);
-						$extension = array_pop($extension);
-						$data = $extension === 'svgz'
-							? CoreUtils::gzread($url)
-							: File::get($url);
-						return $data;
-					break;
-					case 'sta.sh':
-					case 'fav.me':
-					case 'deviantart.com':
-						$result = self::_readProviderSVG($href);
-						if ($result !== false)
-							return $result;
-					break;
-					default:
-						return null;
-				}
-			}
-			else if ($link->getAttribute('class') === 'thumb'){
-				$result = self::_readProviderSVG($href);
-				if ($result !== false)
-					return $result;
-			}
-		}
-		die('RIP');
-
-		return null;
 	}
 
 	public static function favmeHttpsUrl(string $favme_id):string {

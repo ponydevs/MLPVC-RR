@@ -2,7 +2,6 @@
 
 namespace App;
 
-use App\Exceptions\MismatchedProviderException;
 use App\Models\Episode;
 
 class Input {
@@ -22,6 +21,7 @@ class Input {
 		'json' => true,
 		'timestamp' => true,
 		'epid' => true,
+		'svg_file' => true,
 	];
 
 	const
@@ -30,7 +30,7 @@ class Input {
 		CUSTOM_ERROR_MESSAGES = 'errors',
 		THROW_EXCEPTIONS = 'throw',
 		IN_RANGE = 'range',
-		METHOD_GET = 'GET',
+		SOURCE = 'source',
 		ERROR_NONE = 0,
 		ERROR_MISSING = 1,
 		ERROR_INVALID = 2,
@@ -86,12 +86,19 @@ class Input {
 
 		$this->_silentFail = isset($o[self::SILENT_FAILURE]) && $o[self::SILENT_FAILURE] === true;
 
-		$this->_source = $SRC = isset($o[self::METHOD_GET]) && $o[self::METHOD_GET] === true ? '_GET' : '_POST';
-		$_SRC = $GLOBALS[$SRC];
-		if (!isset($_SRC[$key]) || CoreUtils::length($_SRC[$key]) === 0)
+		$this->_source = '_POST';
+		if (isset($o[self::SOURCE])){
+			$_source = '_'.$o[self::SOURCE];
+			if (isset($GLOBALS[$_source]))
+				$this->_source = $_source;
+		}
+		$_SRC = $GLOBALS[$this->_source];
+		if (!isset($_SRC[$key]) || (is_string($_SRC[$key]) && CoreUtils::length($_SRC[$key]) === 0))
 			$result = empty($o[self::IS_OPTIONAL]) ? self::ERROR_MISSING : self::ERROR_NONE;
 		else {
-			$this->_origValue = $this->_type === 'text' ? CoreUtils::trim($_SRC[$key], true) : CoreUtils::trim($_SRC[$key]);
+			if ($this->_source === '_FILES')
+				$this->_origValue = new UploadedFile($_SRC[$key]);
+			else $this->_origValue = $this->_type === 'text' ? CoreUtils::trim($_SRC[$key], true) : CoreUtils::trim($_SRC[$key]);
 			$this->_range = $o[self::IN_RANGE] ?? null;
 
 			$result = $this->_validate();
@@ -100,7 +107,7 @@ class Input {
 			$this->_outputError(
 				!empty($o[self::CUSTOM_ERROR_MESSAGES][$result])
 				? $o[self::CUSTOM_ERROR_MESSAGES][$result]
-				: "Error wile checking \${$SRC}['{$this->_key}'] (code $result)",
+				: "Error wile checking \${$this->_source}['{$this->_key}'] (code $result)",
 				$result
 			);
 	}
@@ -200,21 +207,23 @@ class Input {
 				if (empty($this->_origValue))
 					return self::ERROR_INVALID;
 			break;
-			case 'favme':
-				try {
-					try {
-						$Image = new ImageProvider(CoreUtils::trim($this->_origValue), ImageProvider::PROV_DEVIATION);
-						$this->_value = $Image->extra;
-						return self::ERROR_NONE;
-					}
-					catch (MismatchedProviderException $e){
-						Response::fail('The cutie mark vector must be on DeviantArt, '.$e->getActualProvider().' links are not allowed');
-					}
-					catch (\Exception $e){ Response::fail('Error while checking deviation link: '.$e->getMessage()); }
-				}
-				catch (\Throwable $e){
-					error_log(__METHOD__.': '.$e->getMessage()."\n".$e->getTraceAsString());
-					return self::ERROR_INVALID;
+			case 'svg_file':
+			case 'file':
+				/** @var $upload UploadedFile */
+				$upload = $this->_origValue;
+				if (self::checkNumberRange($upload->size, $this->_range, $code))
+					return $code;
+
+				switch ($this->_type){
+					case 'svg_file':
+						if ($upload->type !== 'image/svg+xml')
+							return self::ERROR_INVALID;
+
+						$this->_origValue = file_get_contents($upload->tmp_name);
+						$result = CoreUtils::validateSvg($this->_origValue);
+						if ($result !== self::ERROR_NONE)
+							return $result;
+					break;
 				}
 			break;
 		}
@@ -228,18 +237,20 @@ class Input {
 		return $code;
 	}
 	public static function checkNumberRange($value, $range, &$code = false){
-		$result = self::_numberInRange($value, $range, $code);
-		return $code === false ? $result === self::ERROR_RANGE : $result;
+		$code = self::_numberInRange($value, $range);
+		return $code;
 	}
 
-	private static function _numberInRange($n, $range){
-		$has_min = isset($range[0]);
-		$has_max = isset($range[1]);
-		if ($has_min || $has_max){
-			if ($has_min ? $n < $range[0] : $n < 1)
-				return self::ERROR_RANGE;
-			if ($has_max && $n > $range[1])
-				return self::ERROR_RANGE;
+	private static function _numberInRange($n, $range):int {
+		if ($range !== null){
+			$has_min = isset($range[0]);
+			$has_max = isset($range[1]);
+			if ($has_min || $has_max){
+				if ($has_min ? $n < $range[0] : $n < 1)
+					return self::ERROR_RANGE;
+				if ($has_max && $n > $range[1])
+					return self::ERROR_RANGE;
+			}
 		}
 		return self::ERROR_NONE;
 	}

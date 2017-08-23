@@ -8,6 +8,12 @@
 	padding: 7.5px;
 	font-size: 16px;
 
+	button, .btn {
+		font-size: .9em;
+		padding: 0 2px;
+		margin: 3px 3px;
+	}
+
 	&:not(:last-child) { margin-bottom: 10px }
 	&.info {
 		color: $NBlue;
@@ -73,6 +79,23 @@
 			margin-bottom: 10px;
 			border-bottom: 2px solid;
 		}
+
+		> button, > .btn {
+			margin: 0;
+			font-weight: normal;
+
+			&:not(:empty){
+				padding: 1px 3px;
+
+				&:before {
+					margin-right: 3px;
+				}
+			}
+
+			&:empty {
+				padding: 0;
+			}
+		}
 	}
 	> p {
 		margin: 0 !important;
@@ -82,10 +105,10 @@
 		time { border-bottom: 1px dashed }
 
 		> button, > .btn {
-			margin: 0;
+			margin: 1px;
 			vertical-align: baseline;
 			font-size: .92em;
-			padding: 1px;
+			padding: 0 1px;
 		}
 	}
 	> hr {

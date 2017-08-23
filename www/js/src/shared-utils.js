@@ -569,6 +569,15 @@
 	$.momentToHM = momentInstance => momentInstance.format('HH:mm');
 	$.mkMoment = (datestr, timestr, utc) => moment(datestr+'T'+timestr+(utc?'Z':''));
 
+	$.nth = n => {
+		switch (n % 10){
+			case 1: return n+(/11$/.test(n+'') ? 'th' : 'st');
+			case 2: return n+(/12$/.test(n+'') ? 'th' : 'nd');
+			case 3: return n+(/13$/.test(n+'') ? 'th' : 'rd');
+			default: return n+'th';
+		}
+	};
+
 	$.escapeRegex = pattern => pattern.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
 
 	$.fn.toggleHtml = function(contentArray){
@@ -593,10 +602,14 @@
 		return this.attr('pattern', $.attributifyRegex(regex));
 	};
 
-	$.fn.enable = function(){
+	$.fn.enable = function(removeClass){
+		if (typeof removeClass !== 'undefined')
+			this.removeClass(removeClass);
 		return this.attr('disabled', false);
 	};
-	$.fn.disable = function(){
+	$.fn.disable = function(addClass){
+		if (typeof addClass !== 'undefined')
+			this.removeClass(addClass);
 		return this.attr('disabled', true);
 	};
 

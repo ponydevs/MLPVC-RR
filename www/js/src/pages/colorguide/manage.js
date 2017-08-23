@@ -614,7 +614,6 @@ $(function(){
 							else $this.append($pcg);
 
 							$.each(list,(_, el) => {
-								console.log(el.id, this.appearance_id);
 								(el.ishuman === null ? $pcg : (el.ishuman ? $eqg : $pony)).append(
 									$.mk('option').attr({
 										value: el.id,
@@ -1130,28 +1129,17 @@ $(function(){
 	}
 
 	class CutieMarkEditor {
-		// TODO Create "credit" fieldset with radio group "None, Deviation, Username" and approperiate inputs
-		// TODO Rewrite to use JSON instead of form field names & .mkData()
 		constructor(appearance_id, appearance_label, data){
 			this.appearance_id = appearance_id;
 			this.appearance_label = appearance_label;
-			this.updateActionText = 'Preview';
-			this.updatingText = 'Updating&hellip;';
 			this.$cmSection = $content.find('section.approved-cutie-mark');
-			this.previewUpdateInProgess = false;
-			this.previewUpdateRequest = null;
 
 			this.$CMPreview = $.mk('ul').attr('class','dialog-preview');
 			this.$CMList = $.mk('ul').attr('class','cm-list');
 			this.$AddNewButton = $.mk('button').attr('class','green typcn typcn-plus').text('Add').on('click',e => {
 				e.preventDefault();
 
-				this.$CMList.append(CutieMarkEditor.crateCutiemarkDataLi());
-			});
-			this.$UpdatePreviewButton = $.mk('button').attr('class','darkblue typcn typcn-arrow-sync').text(this.updateActionText).on('click',e => {
-				e.preventDefault();
-
-				this.updatePreview();
+				this.$CMList.append(this.crateCutiemarkDataLi());
 			});
 			this.$DeleteButton = $.mk('button').attr('class','red typcn typcn-trash').text('All').on('click',e => {
 				e.preventDefault();
@@ -1159,19 +1147,80 @@ $(function(){
 				this.deleteAction();
 			});
 			this.$BottomActionGroup = $.mk('div').attr('class','btn-group').append(
-				this.$AddNewButton,
-				this.$UpdatePreviewButton
+				this.$AddNewButton
 			);
 			this.$form = $.mk('form','cm-data-editor').append(
-				this.$CMPreview,
 				this.$CMList,
-				this.$BottomActionGroup
+				this.$BottomActionGroup,
+				$.mk('div').attr('class','notice info').append(
+					$.mk('p').append(
+						'<strong>Potential issues:</strong> ',
+						'<button>File size issue</button>',
+						'<button>Inverted colors</button>',
+						'<button>Gradients to black</button>',
+						'<button>Blank space around</button>',
+						'<button class="darkblue typcn typcn-minus" disabled>Close</button>'
+					),
+					`<div class="issue-descriptions">
+						<p class="hidden">Generally vector files are very light (~10KB max.) so if your file exceeds 1 MB you will see an error. This can indicate that an embedded image (such as a screencap) was left inside the vector file.</p>
+						<p class="hidden">If you see any inverted colors that means those colors are not in the guide. Make sure the colors that are displayed incorrectly match the ones in the guide.</p>
+						<p class="hidden">If you see gradients to black throughout then those colors used Inkscape's Swatches feature and the site simulates how the vector would appear in Adobe Illustator. You'll have to change those colors to regular fills to avoid this.</p>
+						<div class="hidden">
+							<p>If the cutie mark has a lot of transparent space around it that means the canvas/artboard is not cropped properly. This is strongly recommended for optimal display on the site and to make it easier to reuse. To fix this:</p>
+							<p><strong>In Illustrator:</strong> Object &rsaquo; Artboards (at the bottom) &rsaquo; Fit to Artwork Bounds</p>
+							<p><strong>In Inkscape:</strong> File &rsaquo; Document Properties&hellip; &rsaquo; Custom size &rsaquo; Resize page to content&hellip; &rsaquo; Resize page to drawing or selection</p>
+					</div>`
+				).on('click','button',e => {
+					e.preventDefault();
+
+					const $btn = $(e.target);
+					$btn.disable().siblings().enable();
+					$btn.parent().next().children().addClass('hidden').eq($btn.index()-1).removeClass('hidden');
+				})
 			).on('submit',e => {
 				e.preventDefault();
 
-				this.cancelPreviewUpdateRequest();
+				let CMData = [], stahp = false;
+				this.$CMList.children(':not(.faded)').each((i, el) => {
+					const
+						$li = $(el),
+						data = {};
 
-				let data = this.$form.mkData();
+					if ($li.hasAttr('id'))
+						data.id = parseInt($li.attr('id').replace(/\D/g,''));
+
+					const
+						$svgReplace = $li.find('.svg-replace'),
+						$replaceCheckbox = $svgReplace.find('input[type="checkbox"]');
+					if ($replaceCheckbox.is(':checked')){
+						data.svgdata = $svgReplace.find('.svg-replace-preview').data('svgdata');
+
+						if (!data.svgdata){
+							stahp = true;
+							return $.Dialog.fail(false, `SVG data missing for ${$.nth(i+1)} cutie mark`);
+						}
+					}
+
+					data.facing = $li.find('.radio-group.orientation input:checked').attr('value');
+
+					data.attribution = $li.find('.radio-group.attrib-method-radios input:checked').attr('value');
+
+					const $attribData = $li.find('.attrib-method-list input:not(:disabled)');
+
+					if ($attribData.length)
+						data[$attribData.attr('name')] = $attribData.val();
+
+					data.rotation = $li.find('.rotation-range').val();
+
+					CMData.push(data);
+				});
+				if (stahp)
+					return;
+
+				if (CMData.length === 0)
+					return $.Dialog.fail(false, 'Seems like you want to delete all cutie marks. Please use the <strong><span class="typcn typcn-trash"></span> All</strong> button above to do so.');
+
+				const data = { CMData: JSON.stringify(CMData) };
 				if (AppearancePage)
 					data.APPEARANCE_PAGE = true;
 				$.Dialog.wait(false,'Saving cutie mark data');
@@ -1192,47 +1241,19 @@ $(function(){
 
 			if (data.cms.length){
 				$.each(data.cms,(i,el)=>{
-					this.$CMList.append(CutieMarkEditor.crateCutiemarkDataLi(i, el));
+					this.$CMList.append(this.crateCutiemarkDataLi(el));
 				});
-				this.$CMPreview.html(data.preview);
-				this.previewUpdated();
 				this.updateRanges();
 				this.$BottomActionGroup.append(this.$DeleteButton);
 			}
 			else {
-				this.$CMList.append(CutieMarkEditor.crateCutiemarkDataLi(0));
+				this.$CMList.append(this.crateCutiemarkDataLi());
 			}
 		}
 		getForm(){
 			return this.$form;
 		}
-		cancelPreviewUpdateRequest(){
-			if (this.previewUpdateInProgess !== false){
-				this.previewUpdateRequest.abort();
-				this.previewUpdateInProgess = false;
-			}
-		}
-		updatePreview(){
-			this.cancelPreviewUpdateRequest();
-
-			const data = this.$form.mkData();
-			this.$UpdatePreviewButton.disable().html(this.updatingText);
-			this.$CMPreview.addClass('loading');
-			this.previewUpdateRequest = $.post(`${PGRq}/cg/appearance/getcmpreview/${this.appearance_id}${EQGRq}`,data,$.mkAjaxHandler(data => {
-				this.$UpdatePreviewButton.text(this.updateActionText).enable();
-				this.$CMPreview.removeClass('loading');
-				this.previewUpdateRequest = false;
-
-				if (!data.status) return $.Dialog.fail(false, data.message);
-
-				$.Dialog.clearNotice(/preview/);
-				this.$CMPreview.html(data.html);
-				this.previewUpdated();
-			}));
-		}
 		deleteAction(){
-			this.cancelPreviewUpdateRequest();
-
 			$.Dialog.close(() => {
 				$.Dialog.confirm('Delete Cutie Marks of '+this.appearance_label,'Are you sure you want to remove the cutie mark(s) associated with this appearance?', sure => {
 					if (!sure) return;
@@ -1249,10 +1270,6 @@ $(function(){
 				});
 			});
 		}
-		previewUpdated(){
-			this.$CMPreviewImages = this.$CMPreview.find('.img');
-			this.updateRanges();
-		}
 		updateRange(range){
 			const event = $.Event('change');
 			event.target = range;
@@ -1263,9 +1280,11 @@ $(function(){
 				this.updateRange(el);
 			});
 		}
-		static crateCutiemarkDataLi(i, el = {}){
-			if (typeof el.facing === 'undefined')
-				el.facing = 'right';
+		crateCutiemarkDataLi(el){
+			const editing = typeof el !== 'undefined';
+			if (!editing)
+				el = {};
+
 			const radioGrouping = {
 				facing: el.id ? 'facing-'+el.id : $.randomString(),
 				attribution: el.id ? 'attribution-'+el.id : $.randomString(),
@@ -1278,65 +1297,154 @@ $(function(){
 					<label><input type="radio" name="${radioGrouping.facing}" value="" required><span>Symmetrical</span></label>
 				</div>`
 			);
-			$facingSelector.find(`input[value='${el.facing||''}']`).prop('checked', true);
-			const rotation = typeof el.favme_rotation !== 'undefined' ? el.favme_rotation : 0;
+			if (typeof el.facing === 'string' || el.facing === null)
+				$facingSelector.find(`input[value='${el.facing === null ? '' : el.facing}']`).prop('checked', true);
+			const rotation = typeof el.rotation !== 'undefined' ? el.rotation : 0;
 
-			const $attributionMethodSelector = $.mk('fieldset').html(
-				`<legend>Attribution</legend>
-				<div class="radio-group orientation">
-					<label><input type="radio" name="${radioGrouping.attribution}" value="none" required><span>None</span></label>
+			const switchAttribMethod = (el, value) => {
+				const
+					$this = $(el),
+					$methodListItems = $this.closest('.label').next().children();
+				$methodListItems.addClass('hidden').find('input').disable('attrib-disabled');
+				if ($this.is(':checked'))
+					$methodListItems.filter('.' + value).removeClass('hidden').find('input').enable('attrib-disabled');
+			};
+
+			const $attributionRadios = $.mk('div').attr('class','label').html(
+				`<p>Attribution</p>
+				<div class="radio-group attrib-method-radios">
+					<label><input type="radio" name="${radioGrouping.attribution}" value="none" required checked><span>None</span></label>
 					<label><input type="radio" name="${radioGrouping.attribution}" value="user" required><span>User</span></label>
 					<label><input type="radio" name="${radioGrouping.attribution}" value="deviation" required><span>Deviation</span></label>
+				</div>`
+			).on('change input','.attrib-method-radios input',e => {
+				switchAttribMethod(e.target, e.target.value);
+			});
+
+			const $attributionMethodList = $.mk('div').attr('class','attrib-method-list').append(
+				`<div class="attrib-method user hidden">
+					<label>
+						<span>Username</span>
+						<input type="text" name="username" maxlength="20" required disabled class="attrib-disabled">
+					</label>
 				</div>
-				<div class="label">
+				<div class="attrib-method deviation hidden">
+					<label>
+						<span>Deviation link</span>
+						<input type="url" name="deviation" required disabled class="attrib-disabled">
+					</label>
 				</div>`
 			);
+			if (editing){
+				if (el.deviation){
+					$attributionMethodList.find('input[name="deviation"]').val(el.deviation).enable('attrib-disabled').closest('.hidden').removeClass('hidden');
+					$attributionRadios.find('input[value="deviation"]').prop('checked', true);
+				}
+				if (el.username){
+					const $un = $attributionMethodList.find('input[name="username"]').val(el.username);
+					if (!el.deviation){
+						$un.enable('attrib-disabled').closest('.hidden').removeClass('hidden');
+						$attributionRadios.find('input[value="user"]').prop('checked', true);
+					}
+				}
+			}
 
 			const
-				$removeButton = $.mk('button').attr('class','btn red typcn typcn-trash').html('Remove').on('click',e => {
+				$collapseButton = $.mk('button').attr({'class':'btn typcn typcn-minus',title:'Collapse'}).on('click',e => {
+					e.preventDefault();
+
+					const $this = $(e.target);
+					$this.parent().nextAll(':not(.hidden)').addClass('hidden collapse-hidden');
+					$this.addClass('hidden').next().removeClass('hidden');
+				}),
+				$expandButton = $.mk('button').attr({'class':'btn typcn typcn-plus hidden',title:'Expand'}).on('click',e => {
+					e.preventDefault();
+
+					const $this = $(e.target);
+					$this.parent().nextAll('.collapse-hidden').removeClass('hidden collapse-hidden');
+					$this.addClass('hidden').prev().removeClass('hidden');
+				}),
+				$removeButton = $.mk('button').attr({'class':'btn red typcn typcn-trash',title:'Remove'}).on('click',e => {
 					e.preventDefault();
 
 					const $this = $(e.target);
 					$this.closest('li').addClass('faded').find('input:not(:disabled), select:not(:disabled)').disable().addClass('fade-disabled');
 					$this.addClass('hidden').next().removeClass('hidden');
 				}),
-				$restoreButton = $.mk('button').attr('class','btn green typcn typcn-arrow-back hidden').html('Restore').on('click',e => {
+				$restoreButton = $.mk('button').attr({'class':'btn green typcn typcn-arrow-back hidden',title:'Restore'}).on('click',e => {
 					e.preventDefault();
 
 					const $this = $(e.target);
 					$this.closest('li').removeClass('faded').find('.fade-disabled').enable().removeClass('fade-disabled');
 					$this.addClass('hidden').prev().removeClass('hidden');
-				});
-			return $.mk('li').attr('id', el.id).append(
-					$.mk('fieldset').append(
-						$.mk('legend').append(
-							`<span>${typeof el.id !== 'undefined' ? 'Cutie Mark #'+el.id : 'New Cutie Mark'}</span>`,
-							$removeButton,
-							$restoreButton,
-						),
-						$facingSelector,
-						$.mk('label').append(
-							"<span>Deviation link</span>",
+				}),
+				fileAction = (editing?'Replace':'Upload')+' SVG file';
+			const $li = $.mk('li').append(
+				$.mk('fieldset').append(
+					$.mk('legend').append(
+						`<span>${editing ? 'Cutie Mark #'+el.id : 'New Cutie Mark'}</span>`,
+						$collapseButton,
+						$expandButton,
+						$removeButton,
+						$restoreButton
+					),
+					$.mk('label').attr('class','svg-replace').append(
+						$.mk('span').append(
 							$.mk('input').attr({
-								type: 'url',
-								name: 'favme[]',
-								required: true,
-							}).val(el.favme?`http://fav.me/${el.favme}`:undefined)
+								type: 'checkbox',
+								checked: !editing,
+								disabled: !editing,
+							}).on('click',e => {
+								if (e.target.readOnly)
+									return false;
+							}).on('change input',e => {
+								const
+									checked = e.target.checked,
+									$el = $(e.target).parent().next();
+								$el[checked?'removeClass':'addClass']('hidden');
+								if (checked && !$el.hasClass('upload-wrap')){
+									$el.addClass('upload-wrap').uploadZone({
+										requestKey: 'file',
+										title: fileAction,
+										accept: '.svg,.svgz,image/svg+xml',
+										target: '/cg/sanitizesvg/'+this.appearance_id,
+										helper: true,
+									}).on('uz-uploadfinish',(_, data) => {
+										if (data && data.svgel)
+											$el.data({
+												svgdata: data.svgdata,
+												svgel: data.svgel,
+											}).children('.svgcont').backgroundImageUrl(
+												'data:image/svg+xml;utf8,'+encodeURI(data.svgel)
+											);
+									});
+								}
+							}),
+							`<span>${fileAction}</span>`
 						),
-						$.mk('div').attr('class','label disabled-show').append(
-							`<span>Preview rotation: <span class='rotation-display'>${rotation}</span></span>`,
-							$.mk('input').attr({
-								type: 'range',
-								name: 'favme_rotation[]',
-								min: -45,
-								max: 45,
-								step: 1,
-								'class': 'rotation-range',
-								required: true,
-							}).val(rotation)
-						)
-					)
-				);
+						$.mk('div').attr('class','svg-replace-preview hidden').html('<div class="svgcont"></div>')
+					),
+					$facingSelector,
+					$attributionRadios,
+					$attributionMethodList,
+					$.mk('div').attr('class','label disabled-show').append(
+						`<span>Rotation: <span class='rotation-display'>${rotation}</span></span>`,
+						$.mk('input').attr({
+							type: 'range',
+							min: -45,
+							max: 45,
+							step: 1,
+							'class': 'rotation-range',
+							required: true,
+						}).val(rotation)
+					),
+					`<div class="notice info">Rotation does not affect the original image file, only the way it's displayed on the site.</div>`
+				)
+			);
+			if (el.id)
+				$li.attr('id', 'cmdata-'+el.id);
+			$li.find('.svg-replace input:checked').trigger('change');
+			return $li;
 		}
 		static factory(title, appearance_id, appearance_label, data){
 			$.Dialog.request(title, new CutieMarkEditor(appearance_id, appearance_label, data).getForm(), 'Save');
@@ -1732,7 +1840,7 @@ $(function(){
 			}}
 		);
 
-		$('.upload-wrap').filter(':not(.ctxmenu-bound)').each(function(){
+		$content.find('.upload-wrap').filter(':not(.ctxmenu-bound)').each(function(){
 			let $this = $(this),
 				$li = $this.closest('li');
 			if (!$li.length)
@@ -1829,7 +1937,7 @@ $(function(){
 
 								$.post(`${PGRq}/cg/appearance/setsprite/${appearanceID}${EQGRq}`,{image_url: image_url}, $.mkAjaxHandler(function(){
 									if (this.status)
-										$uploadInput.trigger('set-image', [this.path]);
+										$uploadInput.trigger('set-image', [this]);
 									else $.Dialog.fail(title,this.message);
 								}));
 							});
