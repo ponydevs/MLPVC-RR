@@ -1140,6 +1140,8 @@ $(function(){
 				e.preventDefault();
 
 				this.$CMList.append(this.crateCutiemarkDataLi());
+
+				this.$AddNewButton[this.$CMList.children().length >= 4 ? 'disable' : 'enable']();
 			});
 			this.$DeleteButton = $.mk('button').attr('class','red typcn typcn-trash').text('Delete all').on('click',e => {
 				e.preventDefault();

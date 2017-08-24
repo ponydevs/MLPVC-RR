@@ -1039,6 +1039,8 @@ class ColorGuideController extends Controller {
 						Input::ERROR_INVALID => 'Cutie mark data (@value) is invalid',
 					]
 				]))->out();
+				if (count($data) > 4)
+					Response::fail('Appearances can only have a maximum of 4 cutie marks.');
 				/** @var $NewCMs Cutiemark[] */
 				$NewCMs = [];
 				$NewIDs = [];
