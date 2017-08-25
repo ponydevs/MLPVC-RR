@@ -1386,8 +1386,8 @@ $(function(){
 						$removeButton,
 						$restoreButton
 					),
-					$.mk('label').attr('class','svg-replace').append(
-						$.mk('span').append(
+					$.mk('div').attr('class','label svg-replace').append(
+						$.mk('label').append(
 							$.mk('input').attr({
 								type: 'checkbox',
 								checked: !editing,

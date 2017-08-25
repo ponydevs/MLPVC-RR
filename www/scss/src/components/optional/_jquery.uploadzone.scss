@@ -21,9 +21,16 @@
 		padding: 0;
 		border: 0;
 		z-index: 3;
-		cursor: pointer;
+
+		&:not(:disabled){
+			cursor: pointer;
+		}
 
 		&:hover + .helper { @include activate }
+
+		&:disabled + .helper {
+			pointer-events: none;
+		}
 	}
 	&.drop, &.uploading {
 		> .helper { @include activate }

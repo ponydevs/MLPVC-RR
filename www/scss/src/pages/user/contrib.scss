@@ -24,8 +24,11 @@
 		opacity: .7;
 	}
 
-	td.approved .typcn {
+	.typcn-tick, .typcn-times {
 		font-size: 2em;
+	}
+	.typcn-times {
+		color: #888;
 	}
 }
 

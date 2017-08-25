@@ -7,8 +7,8 @@ $Background: #EFEFEF;
 $BackgroundLight: #F6F6F6;
 
 :disabled, [disabled], .disabled {
-	cursor: not-allowed !important;
-	opacity: .5 !important;
+	cursor: not-allowed;
+	opacity: .5;
 	pointer-events: none;
 }
 
@@ -93,6 +93,10 @@ input[type=checkbox] {
 				text-align: center;
 
 				> * { vertical-align: text-bottom }
+			}
+
+			.label > label + * {
+				margin-top: 5px;
 			}
 
 			fieldset > legend {

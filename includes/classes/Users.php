@@ -347,11 +347,34 @@ HTML;
 		return "<li>$item</li>";
 	}
 
+	//const NOPE = '<em>Nope</em>';
+	const NOPE = '<span class="typcn typcn-times"></span>';
+
 	private static function _contribItemFinished(Post $item):string {
-		return $item->deviation_id !== null ? "<div class='deviation-promise' data-favme='{$item->deviation_id}'></div>" : '<em>Nope</em>';
+		if ($item->deviation_id === null)
+			return self::NOPE;
+		$HTML = "<div class='deviation-promise' data-favme='{$item->deviation_id}'></div>";
+		if ($item->finished_at !== null){
+			$finished_at = Time::tag($item->finished_at);
+			$HTML .= "<div class='finshed-at-ts'><span class='typcn typcn-time'></span> $finished_at</div>";
+		}
+		return $HTML;
 	}
 	private static function _contribItemApproved(Post $item):string {
-		return !empty($item->lock) ? '<span class="color-green typcn typcn-tick"></span>' : '<em>Nope</em>';
+		if (empty($item->lock))
+			return self::NOPE;
+
+		$HTML = '<span class="color-green typcn typcn-tick"></span>';
+		$approval_entry = $item->approval_entry;
+		if ($approval_entry !== null){
+			if (Permission::sufficient('staff')){
+				$approved_by = $approval_entry->actor->toAnchor();
+				$HTML .= "<div class='approved-by'><span class='typcn typcn-user'></span> $approved_by</div>";
+			}
+			$approved_at = Time::tag($approval_entry->timestamp);
+			$HTML .= "<div class='approved-at-ts'><span class='typcn typcn-time'></span> $approved_at</div>";
+		}
+		return $HTML;
 	}
 
 	public static function getContributionListHTML(string $type, ?array $data, bool $wrap = WRAP):string {
@@ -425,7 +448,7 @@ HTML;
 						$reserved_at = Time::tag($item->reserved_at);
 						$reserved = "<span class='typcn typcn-user' title='By'></span> $reserved_by<br><span class='typcn typcn-time'></span> $reserved_at";
 					}
-					else $reserved = '<em>Nope</em>';
+					else $reserved = self::NOPE;
 					$finished = self::_contribItemFinished($item);
 					$approved = self::_contribItemApproved($item);
 					$TR = <<<HTML

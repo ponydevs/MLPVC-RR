@@ -546,28 +546,20 @@ HTML;
 					: '';
 				$locked_at = '';
 				if ($approved){
-					/** @var $LogEntry array */
-					$LogEntry = DB::$instance->querySingle(
-						"SELECT l.timestamp, l.initiator
-						FROM log__post_lock pl
-						LEFT JOIN log l ON l.reftype = 'post_lock' AND l.refid = pl.entryid
-						WHERE type = ? AND id = ?
-						ORDER BY pl.entryid ASC
-						LIMIT 1", [$Post->kind, $Post->id]
-					);
-					$approverIsNotReserver = isset($LogEntry['initiator']) && $LogEntry['initiator'] !== $Post->reserved_by;
-					$approvedby = $isStaff && isset($LogEntry['initiator'])
+					$LogEntry = $Post->approval_entry;
+					$approverIsNotReserver = isset($LogEntry->initiator) && $LogEntry->initiator !== $Post->reserved_by;
+					$approvedby = $isStaff && isset($LogEntry->initiator)
 						? ' by '.(
 							$approverIsNotReserver
 							? (
-								$Post->is_request && $LogEntry['initiator'] === $Post->requested_by
+								$Post->is_request && $LogEntry->initiator === $Post->requested_by
 								? 'the requester'
-								: User::find($LogEntry['initiator'])->toAnchor()
+								: User::find($LogEntry->initiator)->toAnchor()
 							)
 							: 'the reserver'
 						)
 						: '';
-					$locked_at = $approved ? "<em class='approve-date'>Approved <strong>".Time::tag(strtotime($LogEntry['timestamp']))."</strong>$approvedby</em>" : '';
+					$locked_at = $approved ? "<em class='approve-date'>Approved <strong>".Time::tag($LogEntry->timestamp)."</strong>$approvedby</em>" : '';
 				}
 				$Image .= $post_label.$posted_at.$reserved_at.$finished_at.$locked_at;
 				if (!empty($Post->fullsize))

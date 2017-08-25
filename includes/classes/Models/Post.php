@@ -3,7 +3,9 @@
 namespace App\Models;
 
 use ActiveRecord\DateTime;
+use App\DB;
 use App\DeviantArt;
+use App\Models\Logs\Log;
 use App\Time;
 use App\RegExp;
 use App\CoreUtils;
@@ -26,6 +28,7 @@ use App\CoreUtils;
  * @property Episode  $ep             (Via magic method)
  * @property string   $kind           (Via magic method)
  * @property bool     $finished       (Via magic method)
+ * @property Log      $approval_entry (Via magic method)
  * @property bool     $is_request     (Via magic method)
  * @property bool     $is_reservation (Via magic method)
  */
@@ -43,6 +46,17 @@ abstract class Post extends NSModel implements LinkableInterface {
 
 	abstract public function get_is_request():bool;
 	abstract public function get_is_reservation():bool;
+
+	public function get_approval_entry(){
+		return DB::$instance->setModel('Logs\Log')->querySingle(
+			"SELECT l.*
+			FROM log__post_lock pl
+			LEFT JOIN log l ON l.reftype = 'post_lock' AND l.refid = pl.entryid
+			WHERE type = ? AND id = ?
+			ORDER BY pl.entryid ASC
+			LIMIT 1", [$this->kind, $this->id]
+		);
+	}
 
 	public function get_kind(){
 		return $this->is_request ? 'request' : 'reservation';

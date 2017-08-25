@@ -477,14 +477,14 @@ $(function(){
 					e.stopPropagation();
 
 					let $el = $(this);
-					if ($el.is(':disabled'))
+					if ($el.hasClass('disabled'))
 						return;
 
 					let nid = $el.attr('data-id'),
 						data = {read_action: $el.attr('data-value')},
 						title = $el.attr('data-action') || 'Mark notification as read',
 						send = function(){
-							$el.siblings().addBack().css('opacity', '.5').disable();
+							$el.siblings('.mark-read').addBack().addClass('disabled');
 
 							$.post(`/notifications/mark-read/${nid}`,data,$.mkAjaxHandler(function(){
 								if (!this.status) return $.Dialog.fail(title, this.message);
@@ -494,7 +494,7 @@ $(function(){
 
 								$.Dialog.close();
 							})).always(function(){
-								$el.siblings().addBack().css('opacity', '').enable();
+								$el.siblings('.mark-read').addBack().removeClass('disabled');
 							});
 						};
 
