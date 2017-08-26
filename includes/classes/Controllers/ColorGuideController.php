@@ -1139,6 +1139,7 @@ class ColorGuideController extends Controller {
 				}
 
 				if (!empty($NewCMs)){
+					CoreUtils::createFoldersFor(Cutiemark::SOURCE_FOLDER);
 					foreach ($NewCMs as $i => $cm){
 						if (!$cm->save())
 							Response::dbError("Saving cutie mark (index $i) failed");

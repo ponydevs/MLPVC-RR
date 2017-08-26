@@ -54,8 +54,10 @@ class Cutiemark extends NSModel {
 		return FSPATH."cm_tokenized/{$this->id}.svg";
 	}
 
+	const SOURCE_FOLDER = FSPATH.'cm_source/';
+
 	public function getSourceFilePath(){
-		return FSPATH."cm_source/{$this->id}.svg";
+		return self::SOURCE_FOLDER.$this->id.'.svg';
 	}
 
 	public function getRenderedFilePath(){
