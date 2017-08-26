@@ -266,7 +266,7 @@ class UserController extends Controller {
 	}
 
 	const CONTRIB_NAMES = [
-		'cms-provided' => 'Cute Mark vectors provided',
+		'cms-provided' => 'Cutie Mark vectors provided',
 		'requests' => 'Requests posted',
 		'reservations' => 'Reservations posted',
 		'finished-posts' => 'Posts finished',
