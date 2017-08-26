@@ -6,7 +6,7 @@ namespace App;
  * A flexible class for parsing/storing color values
  * RGB values can be iterated on using foreach and can be acessed via array keys 0-2
  */
-class RGBAColor implements \ArrayAccess {
+class RGBAColor implements \ArrayAccess, \Iterator {
 	/** @var int */
 	public $red, $green, $blue;
 	/** @var float */
@@ -140,8 +140,19 @@ class RGBAColor implements \ArrayAccess {
 		return null;
 	}
 
-    # ArrayAccess support
+	# Iterator support
 	private const TRAVERSABLE_KEYS = ['red','green','blue'];
+    private $_travPosition = 0;
+    public function rewind()  { $this->_travPosition = 0; }
+    public function current() { return $this->{self::TRAVERSABLE_KEYS[$this->_travPosition]}; }
+    public function key()     { return $this->_travPosition; }
+    public function next()    { ++$this->_travPosition; }
+    public function valid()   { return isset(self::TRAVERSABLE_KEYS[$this->_travPosition]); }
+
+    # Countable support
+    public function count()   { return count(self::TRAVERSABLE_KEYS); }
+
+    # ArrayAccess support
 	public function offsetExists ($offset):boolean { return isset(self::TRAVERSABLE_KEYS[$offset]); }
 	public function offsetGet    ($offset)         { return $this->{self::TRAVERSABLE_KEYS[$offset]}; }
 	public function offsetSet    ($offset, $value) { $this->{self::TRAVERSABLE_KEYS[$offset]} = (int)$value; }
