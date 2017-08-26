@@ -71,6 +71,10 @@
 			margin-left: auto;
 			margin-right: auto;
 		}
+
+		> em {
+			margin-bottom: 2px;
+		}
 		> .image {
 			&.deviation {
 				&.error {

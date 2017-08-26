@@ -547,19 +547,22 @@ HTML;
 				$locked_at = '';
 				if ($approved){
 					$LogEntry = $Post->approval_entry;
-					$approverIsNotReserver = isset($LogEntry->initiator) && $LogEntry->initiator !== $Post->reserved_by;
-					$approvedby = $isStaff && isset($LogEntry->initiator)
-						? ' by '.(
-							$approverIsNotReserver
-							? (
-								$Post->is_request && $LogEntry->initiator === $Post->requested_by
-								? 'the requester'
-								: User::find($LogEntry->initiator)->toAnchor()
+					if (!empty($LogEntry)){
+						$approverIsNotReserver = $LogEntry->initiator !== null && $LogEntry->initiator !== $Post->reserved_by;
+						$approvedby = $isStaff && $LogEntry->initiator !== null
+							? ' by '.(
+								$approverIsNotReserver
+								? (
+									$Post->is_request && $LogEntry->initiator === $Post->requested_by
+									? 'the requester'
+									: $LogEntry->actor->toAnchor()
+								)
+								: 'the reserver'
 							)
-							: 'the reserver'
-						)
-						: '';
-					$locked_at = $approved ? "<em class='approve-date'>Approved <strong>".Time::tag($LogEntry->timestamp)."</strong>$approvedby</em>" : '';
+							: '';
+						$locked_at = $approved ? "<em class='approve-date'>Approved <strong>".Time::tag($LogEntry->timestamp)."</strong>$approvedby</em>" : '';
+					}
+					else $locked_at = '<em class="approve-date">Approval data unavilable</em>';
 				}
 				$Image .= $post_label.$posted_at.$reserved_at.$finished_at.$locked_at;
 				if (!empty($Post->fullsize))
