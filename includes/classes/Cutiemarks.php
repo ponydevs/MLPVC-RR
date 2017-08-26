@@ -50,8 +50,10 @@ class Cutiemarks {
 		$canEdit = Permission::sufficient('staff') || (Auth::$signed_in && $cm->appearance->owner_id === Auth::$user->id);
 
 		$links = "<a href='/cg/cutiemark/download/{$cm->id}' class='btn link typcn typcn-download'>SVG</a>";
-		if ($canEdit)
-			$links .= "<a href='/cg/cutiemark/download/{$cm->id}?source' class='btn orange typcn typcn-download' title='Download the original file as uploaded (Staff only)'></a>";
+		if ($canEdit){
+			$who = ($cm->appearance->owner_id !== null ? 'Owner and ' : '').'Staff';
+			$links .= "<a href='/cg/cutiemark/download/{$cm->id}?source' class='btn orange typcn typcn-download' title='Download the original file as uploaded ($who only)'></a>";
+		}
 		if (($cm->favme ?? null) !== null)
 			$links .= "<a href='http://fav.me/{$cm->favme}' class='btn btn-da typcn'>Source</a>";
 
