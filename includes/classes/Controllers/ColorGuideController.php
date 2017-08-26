@@ -2071,11 +2071,11 @@ HTML;
 		if (empty($cutiemark))
 			CoreUtils::notFound();
 
-		$file = isset($_REQUEST['source']) && Permission::sufficient('staff')
-			? $cutiemark->getSourceFilePath()
-			: $cutiemark->getRenderedFilePath();
+		$source = isset($_REQUEST['source']) && Permission::sufficient('staff');
 
-		CoreUtils::downloadFile($file, CoreUtils::posess($cutiemark->appearance->label).' Cutie Mark.svg');
+		$file = $source ? $cutiemark->getSourceFilePath() : $cutiemark->getRenderedFilePath();
+
+		CoreUtils::downloadFile($file, CoreUtils::posess($cutiemark->appearance->label).' Cutie Mark'.($source?' (source)':'').'.svg');
 	}
 
 	public function sanitizeSvg($params){

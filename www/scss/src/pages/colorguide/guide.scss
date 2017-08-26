@@ -177,13 +177,9 @@
 
 @import "../../components/optional/jquery.uploadzone";
 
-#content > .upload-wrap {
-	&:not(.uploading){
-		&:not(.nosprite) > .helper {
-			&:before { content: '\e00b' }
-			&:after { content: "Open in new tab" }
-		}
-	}
+#content .upload-wrap:not(.uploading):not(.nosprite) > .helper {
+	&:before { content: '\e00b' }
+	&:after { content: "Open in new tab" }
 }
 
 div.tags {
