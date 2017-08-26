@@ -618,4 +618,14 @@ class EpisodeController extends Controller {
 			default: CoreUtils::notFound();
 		}
 	}
+
+	public function nextup(){
+		$NextEpisode = DB::$instance->where('airs > CURRENT_TIMESTAMP')->orderBy('airs')->getOne('episodes');
+		if (empty($NextEpisode))
+			Reponse::fail('No upcoming episode found');
+
+		Response::done($NextEpisode->to_array([
+			'only' => ['episode','airs','season','title'],
+		]));
+	}
 }

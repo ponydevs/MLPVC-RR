@@ -17,8 +17,8 @@ use App\RegExp;
  * @property string         $title
  * @property DateTime       $posted
  * @property string         $posted_by
- * @property string         $airs
- * @property string         $willair
+ * @property DateTime       $airs
+ * @property DateTime       $willair
  * @property string         $notes
  * @property bool           $is_movie   (Via magic method)
  * @property string|null    $score      (Via magic method)
