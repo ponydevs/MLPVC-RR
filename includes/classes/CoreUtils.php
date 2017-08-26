@@ -513,7 +513,9 @@ class CoreUtils {
 		self::createFoldersFor($tmp_path);
 		File::put($tmp_path, $svgdata);
 
-		exec(SVGO_BINARY." $tmp_path --disable=removeUnknownsAndDefaults,removeUselessStrokeAndFill --enable=removeRasterImages,convertStyleToAttrs,removeDimensions,cleanupIDs");
+		exec(SVGO_BINARY." $tmp_path ".
+			'--disable=removeUnknownsAndDefaults,removeUselessStrokeAndFill,convertPathData,convertTransform,cleanupNumericValues,mergePaths,convertShapeToPath '.
+			'--enable=removeRasterImages,removeDimensions,cleanupIDs');
 		$svgdata = File::get($tmp_path);
 		self::deleteFile($tmp_path);
 		return $svgdata;
@@ -559,8 +561,6 @@ class CoreUtils {
 		});
 		$sanitizer->removeRemoteReferences(true);
 		$sanitized = $sanitizer->sanitize($dirty_svg);
-		if ($minify)
-			$sanitized = self::minifySvgData($sanitized);
 
 		$unifier = new \DOMDocument();
 		$unifier->loadXML($sanitized);
@@ -587,8 +587,6 @@ class CoreUtils {
 			$grad->appendChild($stopColor);
 		}
 		$sanitized = $unifier->saveXML($unifier->documentElement, LIBXML_NOEMPTYTAG);
-		if ($minify)
-			$sanitized = self::minifySvgData($sanitized);
 
 		return $sanitized;
 	}
