@@ -15,7 +15,7 @@ use App\Tags;
 	<p class="align-center">
 		We add characters based on demand, please <a class="send-feedback">let us know</a> if you'd like us to make a guide for a character.<br>
 		<small>Alternatively, use the old color guides: <a href="https://sta.sh/0kic0ngp3fy">Pony</a> / <a href="http://fav.me/d7120l1">EQG</a></small><br>
-		Looking for this information in a machine-readable format? <a href="<?=$jsonExport = CoreUtils::cachedAsset('mlpvc-colorguide','dist','json')?>" target="_blank" download="mlpvc-colorguide.json">JSON</a> (updated <?=\App\Time::tag((int) explode('?',$jsonExport)[1])?>)
+		Looking for this information in a machine-readable format? <a href="<?=$jsonExport = CoreUtils::cachedAssetLink('mlpvc-colorguide','dist','json')?>" target="_blank" download="mlpvc-colorguide.json">JSON</a> (updated <?=\App\Time::tag((int) explode('?',$jsonExport)[1])?>)
 	</p>
 	<p class='align-center links'>
 <?  if (Permission::sufficient('staff')){ ?>

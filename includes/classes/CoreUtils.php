@@ -344,7 +344,7 @@ class CoreUtils {
 		}
 	}
 
-	public static function cachedAsset(string $fname, string $relpath, string $type):string {
+	public static function cachedAssetLink(string $fname, string $relpath, string $type):string {
 		self::_formatFilePath($fname, $relpath, $type);
 		return $fname;
 	}

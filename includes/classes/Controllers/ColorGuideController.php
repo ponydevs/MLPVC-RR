@@ -535,10 +535,15 @@ class ColorGuideController extends Controller {
 			if (!empty($CMs)){
 				$AppendCMs = [];
 				foreach ($CMs as $CM){
-					$AppendCMs[] = [
-						'link' => "http://fav.me/{$CM->favme}",
+					$arr = [
 						'facing' => $CM->facing,
+						'svg' => $CM->getRenderedRelativeURL(),
 					];
+					if ($CM->favme !== null)
+						$arr['source'] = "http://fav.me/{$CM->favme}";
+					if ($CM->contributor_id !== null)
+						$arr['contributor'] = $CM->contributor->toDALink();
+					$AppendCMs[$CM->id] = $arr;
 				}
 				$AppendAppearance['CutieMark'] = $AppendCMs;
 			}
@@ -585,7 +590,7 @@ class ColorGuideController extends Controller {
 			$JSON['Appearances'][$AppendAppearance['id']] = $AppendAppearance;
 		}
 
-		$data = JSON::encode($JSON, true);
+		$data = JSON::encode($JSON);
 		$data = preg_replace_callback('/^\s+/m', function($match){
 			return str_pad('',CoreUtils::length($match[0])/4,"\t", STR_PAD_LEFT);
 		}, $data);
