@@ -201,10 +201,9 @@ CREATE TABLE cutiemarks (
     id integer NOT NULL,
     appearance_id integer NOT NULL,
     facing character varying(10),
-    favme character varying(7) NOT NULL,
-    favme_rotation smallint NOT NULL,
-    preview character varying(255),
-    preview_src character varying(255)
+    favme character varying(7),
+    rotation smallint NOT NULL,
+    contributor_id uuid
 );
 
 
@@ -2345,13 +2344,6 @@ CREATE UNIQUE INDEX color_groups_appearance_id_label ON color_groups USING btree
 --
 
 CREATE INDEX colors_group_id ON colors USING btree (group_id);
-
-
---
--- Name: cutiemarks_appearance_id_facing; Type: INDEX; Schema: public; Owner: mlpvc-rr
---
-
-CREATE UNIQUE INDEX cutiemarks_appearance_id_facing ON cutiemarks USING btree (appearance_id, facing);
 
 
 --

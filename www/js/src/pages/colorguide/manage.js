@@ -572,7 +572,7 @@ $(function(){
 	})();
 
 	class ColorGroupEditor {
-		constructor($group, data){
+		constructor($group, data = {}){
 			this.mode = 'gui';
 			this.editing = typeof data === 'object' && data.label && data.Colors;
 			if (typeof $group !== 'undefined'){
@@ -665,6 +665,7 @@ $(function(){
 						list: 'common-color-names',
 						pattern: PRINTABLE_ASCII_PATTERN.replace('+', '{3,30}'),
 						maxlength: 30,
+						required: true,
 					}),
 				$colorActions:
 					$.mk('div').attr('class','clra').append(
@@ -716,7 +717,7 @@ $(function(){
 						pattern: PRINTABLE_ASCII_PATTERN.replace('+','{2,30}'),
 						required: true,
 						list: 'common-cg-names',
-					}).val(data.label),
+					}).val(this.editing ? data.label : undefined),
 					`<datalist id="common-cg-names">
 						<option>Coat</option>
 						<option>Mane & Tail</option>

@@ -1701,7 +1701,7 @@ HTML;
 			]))->out();
 			$params['id'] = $ponyid;
 			$this->_getAppearance($params);
-			if (!$this->_isOwnedByUser && $isStaff)
+			if (!$isStaff && !$this->_isOwnedByUser)
 				Response::fail();
 			$Group->appearance_id = $ponyid;
 		}
