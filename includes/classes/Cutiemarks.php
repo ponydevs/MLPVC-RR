@@ -3,7 +3,6 @@
 namespace App;
 
 use App\Models\Appearance;
-use App\Models\CachedDeviation;
 use App\Models\Cutiemark;
 use App\Models\User;
 

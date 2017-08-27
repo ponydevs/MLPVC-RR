@@ -110,21 +110,21 @@ class Image {
 	/**
 	 * Draw a an (optionally filled) squre on an $image
 	 *
-	 * @param resource   $image
-	 * @param int        $x
-	 * @param int        $y
-	 * @param mixed      $size
-	 * @param string     $fill
-	 * @param string|int $outline
+	 * @param resource    $image
+	 * @param int         $x
+	 * @param int         $y
+	 * @param mixed       $size
+	 * @param string|null $fill
+	 * @param string|int  $outline
 	 */
 	public static function drawSquare($image, $x, $y, $size, $fill, $outline){
 		if (!empty($fill) && is_string($fill)){
 			$fill = RGBAColor::parse($fill);
-			$fill = imagecolorallocate($image, ...$fill);
+			$fill = imagecolorallocate($image, $fill[0], $fill[1], $fill[2]);
 		}
 		if (is_string($outline)){
 			$outline = RGBAColor::parse($outline);
-			$outline = imagecolorallocate($image, ...$outline);
+			$outline = imagecolorallocate($image, $outline[0], $outline[1], $outline[2]);
 		}
 
 		if (is_array($size)){
@@ -149,21 +149,21 @@ class Image {
 	/**
 	 * Draw a an (optionally filled) circle on an $image
 	 *
-	 * @param resource   $image
-	 * @param int        $x
-	 * @param int        $y
-	 * @param mixed      $size
-	 * @param string     $fill
-	 * @param string|int $outline
+	 * @param resource    $image
+	 * @param int         $x
+	 * @param int         $y
+	 * @param mixed       $size
+	 * @param string|null $fill
+	 * @param string|int  $outline
 	 */
 	public static function drawCircle($image, $x, $y, $size, $fill, $outline){
-		if (!empty($fill)){
+		if (!empty($fill) && is_string($fill)){
 			$fill = RGBAColor::parse($fill);
-			$fill = imagecolorallocate($image, ...$fill);
+			$fill = imagecolorallocate($image, $fill[0], $fill[1], $fill[2]);
 		}
 		if (is_string($outline)){
 			$outline = RGBAColor::parse($outline);
-			$outline = imagecolorallocate($image, ...$outline);
+			$outline = imagecolorallocate($image, $outline[0], $outline[1], $outline[2]);
 		}
 
 		if (is_array($size)){
