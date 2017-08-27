@@ -610,7 +610,7 @@ HTML;
 		$PNG = Image::createTransparent($Map['width']*$SizeFactor, $Map['height']*$SizeFactor);
 		foreach ($Map['linedata'] as $line){
 			$rgb = RGBAColor::parse($Map['colors'][$line['colorid']]);
-			$color = imagecolorallocatealpha($PNG, $rgb[0], $rgb[1], $rgb[2], $line['opacity']);
+			$color = imagecolorallocatealpha($PNG, $rgb->red, $rgb->green, $rgb->blue, $line['opacity']);
 			Image::drawSquare($PNG, $line['x']*$SizeFactor, $line['y']*$SizeFactor, [$line['width']*$SizeFactor, $SizeFactor], $color, null);
 		}
 
@@ -751,7 +751,7 @@ GPL;
 				if (empty($c->hex))
 					continue;
 				$rgb = RGBAColor::parse($c->hex);
-				$File .= CoreUtils::pad($rgb[0],3,' ').' '.CoreUtils::pad($rgb[1],3,' ').' '.CoreUtils::pad($rgb[2],3,' ').' '.$cg->label.' | '.$c->label.PHP_EOL;
+				$File .= CoreUtils::pad($rgb->red,3,' ').' '.CoreUtils::pad($rgb->green,3,' ').' '.CoreUtils::pad($rgb->blue,3,' ').' '.$cg->label.' | '.$c->label.PHP_EOL;
 			}
 		}
 
@@ -946,7 +946,8 @@ GPL;
 
 	public static function roundHex(string $hex):string {
 		$color = RGBAColor::parse($hex);
-		foreach ($color as &$value){
+		foreach (RGBAColor::COMPONENTS as $key){
+			$value = &$color->{$key};
 			if ($value <= 3)
 				$value = 0;
 			else if ($value >= 252)

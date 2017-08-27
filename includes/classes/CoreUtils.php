@@ -1165,7 +1165,7 @@ HTML;
 	 */
 	public static function yiq(string $hex):int {
 		$rgb = RGBAColor::parse($hex);
-	    return (($rgb[0]*299)+($rgb[1]*587)+($rgb[2]*114))/1000;
+	    return (($rgb->red*299)+($rgb->green*587)+($rgb->blue*114))/1000;
 	}
 
 	/**

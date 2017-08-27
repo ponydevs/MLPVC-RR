@@ -4,13 +4,14 @@ namespace App;
 
 /**
  * A flexible class for parsing/storing color values
- * RGB values can be iterated on using foreach and can be acessed via array keys 0-2
  */
-class RGBAColor implements \ArrayAccess {
+class RGBAColor {
 	/** @var int */
 	public $red, $green, $blue;
 	/** @var float */
 	public $alpha;
+
+	const COMPONENTS = ['red', 'green', 'blue'];
 
 	/**
 	 * Maps patterns to a boolean indicating whether the results can be used directly (without hex->dec conversion)
@@ -139,11 +140,4 @@ class RGBAColor implements \ArrayAccess {
 
 		return null;
 	}
-
-    # ArrayAccess support
-	private const TRAVERSABLE_KEYS = ['red','green','blue'];
-	public function offsetExists ($offset):boolean { return isset(self::TRAVERSABLE_KEYS[$offset]); }
-	public function offsetGet    ($offset)         { return $this->{self::TRAVERSABLE_KEYS[$offset]}; }
-	public function offsetSet    ($offset, $value) { $this->{self::TRAVERSABLE_KEYS[$offset]} = (int)$value; }
-	public function offsetUnset  ($offset)         { throw new \RuntimeException(__CLASS__.' does not support unsetting color values'); }
 }
