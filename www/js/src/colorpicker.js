@@ -1592,7 +1592,7 @@
 			if (pixels.length){
 				const
 					averageColor = $.RGBAColor.fromRGB(PickingArea.averageColor(pixels)),
-					averageHex = averageColor.toHEX();
+					averageHex = averageColor.toHex();
 				this._$averageColor.append(
 					$.mk('span').attr('class','color').css({
 						backgroundColor: averageColor.toString(),
