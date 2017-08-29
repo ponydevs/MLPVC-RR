@@ -1558,7 +1558,7 @@
 						avgchex = $.RGBAColor.fromRGB(avgc).toHex();
 					let avgcbg, avgcsout;
 					if (hexOut){
-						avgcbg = $.RGBAColor(avgc).toString();
+						avgcbg = $.RGBAColor.fromRGB(avgc).toString();
 						avgcsout = avgchex+(avgc.alpha !== 255 ? ` @ ${$.roundTo((avgc.alpha/255)*100,2)}%`:'');
 					}
 					else {
