@@ -1996,6 +1996,23 @@ HTML;
 		]);
 	}
 
+	public function blendingReverse(){
+		global $HEX_COLOR_REGEX;
+
+		CoreUtils::fixPath('/cg/blending-reverse');
+
+		$HexPattern = preg_replace(new RegExp('^/(.*)/.*$'),'$1',$HEX_COLOR_REGEX->jsExport());
+		CoreUtils::loadPage(__METHOD__, [
+			'title' => 'Blending Reverser',
+			'css' => [true],
+			'js' => ['nouislider', 'Blob', 'canvas-toBlob', 'FileSaver', true],
+			'import' => [
+				'HexPattern' => $HexPattern,
+				'nav_blendingrev' => true,
+			],
+		]);
+	}
+
 	public function picker(){
 		CoreUtils::loadPage(__METHOD__, [
 			'title' => 'Color Picker',

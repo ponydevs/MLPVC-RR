@@ -6,7 +6,7 @@
 @import "components/vital/notices";
 @import "components/vital/dialog";
 @import "components/vital/forms";
-@import "vendor/nouislider.css";
+@import "vendor/nouislider";
 
 html,body {
 	width: 100%;
@@ -904,16 +904,6 @@ body {
 		.slider {
 			width: calc(100% - 40px);
 			margin: 10px auto;
-
-			.noUi-handle {
-				border-color: grey;
-				&:before, &:after {
-					background: grey;
-				}
-			}
-			.noUi-connect {
-				background: $DefaultUIColor;
-			}
 		}
 		.inputs {
 			display: flex;

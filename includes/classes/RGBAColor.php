@@ -57,6 +57,15 @@ class RGBAColor {
 		return $this->alpha !== 1.0;
 	}
 
+	/**
+	 * Returns the brightness of the color using the YIQ weighing
+	 *
+	 * @return int Brightness ranging from 0 to 255
+	 */
+	public function yiq():int {
+	    return (($this->red*299)+($this->green*587)+($this->blue*114))/1000;
+	}
+
 	public function toHex():string {
 		return '#'.strtoupper(CoreUtils::pad(base_convert($this->red, 10, 16)).CoreUtils::pad(base_convert($this->green, 10, 16)).CoreUtils::pad(base_convert($this->blue, 10, 16)));
 	}

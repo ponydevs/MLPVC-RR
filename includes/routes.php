@@ -40,6 +40,7 @@ $router->map('GET', '/blending',                       'ColorGuideController#ble
 $router->map('GET', '/browser/[i:session]?',           'BrowserController#index');
 $router->map('GET', '/components',                     'ComponentsController#index');
 $router->map('GET',      '/[cg]/blending',                                      'ColorGuideController#blending');
+$router->map('GET',      '/[cg]/blending-reverse',                              'ColorGuideController#blendingReverse');
 $router->map('GET',      '/[cg]/picker',                                        'ColorGuideController#picker');
 $router->map('GET',      '/[cg]/picker/frame',                                  'ColorGuideController#pickerFrame');
 $router->map('GET',      '/[cg]/[eqg:eqg]?/[i]?',                               'ColorGuideController#guide');

@@ -483,16 +483,8 @@
 
 	$.compareFaL =  (a,b) => JSON.stringify(a) === JSON.stringify(b);
 
-	// Convert HEX to RGB
-	$.hex2rgb = hexstr =>
-		({
-			r: parseInt(hexstr.substring(1, 3), 16),
-			g: parseInt(hexstr.substring(3, 5), 16),
-			b: parseInt(hexstr.substring(5, 7), 16)
-		});
-
 	// Convert RGB to HEX
-	$.rgb2hex = color => '#'+(16777216 + (parseInt(color.r, 10) << 16) + (parseInt(color.g, 10) << 8) + parseInt(color.b, 10)).toString(16).toUpperCase().substring(1);
+	$.rgb2hex = color => $.RGBAColor.fromRGB(color).toHex();
 
 	// :valid pseudo polyfill
 	if (typeof $.expr[':'].valid !== 'function')
@@ -544,25 +536,6 @@
 		let sel = window.getSelection();
 		sel.removeAllRanges();
 		sel.addRange(range);
-	};
-
-	let shortHexRegex = /^#?([\dA-Fa-f]{3})$/;
-	window.SHORT_HEX_COLOR_PATTERN = shortHexRegex;
-	$.hexpand = shorthex => {
-		let match = shorthex.trim().match(shortHexRegex);
-		if (!match)
-			return shorthex.replace(/^#?/,'#');
-		match = match[1];
-		return '#'+match[0]+match[0]+match[1]+match[1]+match[2]+match[2];
-	};
-
-	// Return values range from 0 to 255 (inclusive)
-	// http://stackoverflow.com/questions/11867545#comment52204960_11868398
-	$.yiq = hex => {
-		if (typeof hex !== 'string')
-			throw new Error(`Invalid hex value (${hex})`);
-		const rgb = $.hex2rgb(hex);
-	    return ((rgb.r*299)+(rgb.g*587)+(rgb.b*114))/1000;
 	};
 
 	$.momentToYMD = momentInstance => momentInstance.format('YYYY-MM-DD');
@@ -716,19 +689,167 @@
 
 	$.isRunningStandalone = () => window.matchMedia('(display-mode: standalone)').matches;
 
-	window.URL = url => {
-		let a = document.createElement('a'),
-			parsed = {};
-		a.href = url;
-		$.each(['hash','host','hostname','href','origin','pathname','port','protocol','search'],function(_,el){
-			parsed[el] = a[el];
-		});
-		parsed.pathString = parsed.pathname.replace(/^([^\/].*)$/,'/$1')+parsed.search+parsed.hash;
-		return parsed;
-	};
-
 	window.sidebarForcedVisible = () => Math.max(document.documentElement.clientWidth, window.innerWidth || 0) >= 1200;
 	window.withinMobileBreakpoint = () => Math.max(document.documentElement.clientWidth, window.innerWidth || 0) <= 650;
 
 	$.randomString = () => parseInt(Math.random().toFixed(20).replace(/[.,]/,''), 10).toString(36);
+	
+	(function(){
+		const PATTERNS = [
+			/^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})?$/i,
+			/^#?([a-f\d])([a-f\d])([a-f\d])$/i,
+			/^rgba?\(\s*(\d+),\s*(\d+),\s*(\d+)(?:,\s*([10]|0?\.\d+))?\s*\)$/i,
+		];
+		/**
+		 * Maps patterns to a boolean indicating whether the results can be used directly (without hex->dec conversion)
+		 */
+		const DIRECT_USE = [false,false,true];
+		class RGBAColor {
+			constructor(r, g, b, a = 1){
+				this.red = !isNaN(r) ? parseFloat(r) : NaN;
+				this.green = !isNaN(r) ? parseFloat(g) : NaN;
+				this.blue = !isNaN(r) ? parseFloat(b) : NaN;
+				this.alpha = parseFloat(a);
+			}
+
+			setRed(r){
+				this.red = r;
+
+				return this;
+			}
+
+			setGreen(g){
+				this.green = g;
+
+				return this;
+			}
+
+			setBlue(b){
+				this.blue = b;
+
+				return this;
+			}
+
+			setAlpha(a){
+				this.alpha = a;
+
+				return this;
+			}
+
+			isTransparent(){
+				return this.alpha !== 1.0;
+			}
+
+			// Return values range from 0 to 255 (inclusive)
+			// http://stackoverflow.com/questions/11867545#comment52204960_11868398
+			yiq(){
+				return ((this.red*299)+(this.green*587)+(this.blue*114))/1000;
+			}
+
+			isLight(){
+				return this.yiq() > 127 || this.alpha < 0.5;
+			}
+
+			isDark(){
+				return !this.isLight();
+			}
+
+			toHex(){
+				return '#'+($.pad(this.red.toString(16))+$.pad(this.green.toString(16))+$.pad(this.blue.toString(16))).toUpperCase();
+			}
+
+			toHexa(){
+				return this.toHex()+($.pad(Math.round(this.alpha*255).toString(16)).toUpperCase());
+			}
+
+			toRGB(){
+				return `rgb(${this.red},${this.green},${this.blue})`;
+			}
+
+			toRGBA(){
+				return `rgba(${this.red},${this.green},${this.blue},${this.alpha})`;
+			}
+
+			toRGBString(){
+				return this.isTransparent() ? this.toRGBA() : this.toRGB();
+			}
+
+			toHexString(){
+				return this.isTransparent() ? this.toHexa() : this.toHex();
+			}
+
+			toString(){
+				return this.isTransparent() ? this.toRGBA() : this.toHex();
+			}
+
+			invert(alpha = false){
+				this.red = 255 - this.red;
+				this.green = 255 - this.green;
+				this.blue = 255 - this.blue;
+				if (alpha)
+					this.alpha = 1 - this.alpha;
+
+				return this;
+			}
+			round(){
+				this.red = Math.round(this.red);
+				this.green = Math.round(this.green);
+				this.blue = Math.round(this.blue);
+				this.alpha = $.roundTo(this.alpha, 2);
+
+				return this;
+			}
+
+			static _parseWith(color, pattern, index){
+				const matches = color.match(pattern);
+				if (!matches)
+					return null;
+
+				let values = matches.slice(1, 5);
+
+				if (!DIRECT_USE[index]){
+					if (values[0].length === 1)
+						values = values.map(el => el+el);
+					values[0] = parseInt(values[0], 16);
+					values[1] = parseInt(values[1], 16);
+					values[2] = parseInt(values[2], 16);
+					if (typeof values[3] !== 'undefined')
+						values[3] = $.roundTo(parseInt(values[3], 16)/255,3);
+				}
+
+				return new RGBAColor(...values);
+			}
+
+			/**
+			 * @param {string} color
+			 *
+			 * @return {self|null}
+			 */
+			static parse(color){
+				let output = null;
+				$.each(PATTERNS, (index, pattern) => {
+					let result = this._parseWith(color, pattern, index);
+					if (result === null)
+						return;
+
+					output = result;
+					return false;
+				});
+
+				return output;
+			}
+
+			/**
+			 * @param {string} color
+			 *
+			 * @return {self|null}
+			 */
+			static fromRGB(color){
+				return new $.RGBAColor((color.r || color.red), (color.g || color.green), (color.b || color.blue), (color.a || color.alpha || 1));
+			}
+		}
+		RGBAColor.COMPONENTS = ['red', 'green', 'blue'];
+
+		$.RGBAColor = RGBAColor;
+	})();
 })(jQuery);

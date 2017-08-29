@@ -19,7 +19,7 @@ $(function(){
 
 	let $stats = $('#stats'),
 		getPointOptons = (rgb, a = 0.2) => {
-			let rgbstr = `${rgb.r},${rgb.g},${rgb.b}`,
+			let rgbstr = `${rgb.red},${rgb.green},${rgb.blue}`,
 				rgbrgbstr = `rgb(${rgbstr})`;
 			return ({
 				lineTension: 0,
@@ -81,7 +81,7 @@ $(function(){
 			return $PostStatsLegend.html('<strong>No data available</strong>');
 		$PostStatsLegend.remove();
 		$.each(Data.datasets,function(i,el){
-			let rgb = $.hex2rgb(PostLegendColors[el.clrkey]);
+			let rgb = $.RGBAColor.parse(PostLegendColors[el.clrkey]);
 
 			$.extend(Data.datasets[i], getPointOptons(rgb));
 		});
@@ -113,7 +113,7 @@ $(function(){
 		$ApprovalStatsLegend = $ApprovalStats.children('.legend'),
 		ApprovalCTX = $ApprovalStats.find('canvas').get(0).getContext("2d"),
 		ApprovalChart,
-		ApprovalLegendColor = $.hex2rgb("#4DC742");
+		ApprovalLegendColor = $.RGBAColor.parse("#4DC742");
 	$.post('/about/stats?stat=approvals',$.mkAjaxHandler(function(){
 		if (!this.status) return $ApprovalStats.remove();
 
@@ -172,7 +172,7 @@ $(function(){
 			return $AlltimeStatsLegend.html('<strong>No data available</strong>');
 		$AlltimeStatsLegend.remove();
 		$.each(Data.datasets,function(i,el){
-			let rgb = $.hex2rgb(AlltimeLegendColor[el.clrkey]);
+			let rgb = $.RGBAColor.parse(AlltimeLegendColor[el.clrkey]);
 
 			$.extend(Data.datasets[i], getPointOptons(rgb, i === 0 ? 0 : 0.1));
 		});

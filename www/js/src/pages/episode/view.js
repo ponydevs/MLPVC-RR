@@ -143,14 +143,14 @@ $(function(){
 				$.each(data.datasets[0].data,function(k,v){
 					let bgcolor = LegendColors[parseInt(data.labels[k], 10)];
 					data.datasets[0].backgroundColor.push(bgcolor);
-					let lighter = $.hex2rgb(bgcolor),
+					let lighter = $.RGBAColor.parse(bgcolor),
 						mult = 1.06;
-					lighter.r = Math.round(Math.min(255, lighter.r * mult));
-					lighter.g = Math.round(Math.min(255, lighter.g * mult));
-					lighter.b = Math.round(Math.min(255, lighter.b * mult));
-					data.datasets[0].hoverBackgroundColor.push($.rgb2hex(lighter));
+					lighter.red = Math.round(Math.min(255, lighter.red * mult));
+					lighter.green = Math.round(Math.min(255, lighter.green * mult));
+					lighter.blue = Math.round(Math.min(255, lighter.blue * mult));
+					data.datasets[0].hoverBackgroundColor.push(lighter.toHex());
 					data.datasets[0].borderWidth.push(2);
-					data.datasets[0].hoverBorderColor.push(`rgba(${lighter.r},${lighter.g},${lighter.b},0.9)`);
+					data.datasets[0].hoverBorderColor.push(`rgba(${lighter.red},${lighter.green},${lighter.blue},0.9)`);
 					totalVotes += parseInt(v, 10);
 				});
 

@@ -12,6 +12,7 @@ use App\Episodes;
 use App\Models\Logs\MajorChange;
 use App\Permission;
 use App\RegExp;
+use App\RGBAColor;
 use App\Tags;
 use App\Time;
 use App\UserPrefs;
@@ -69,7 +70,8 @@ class Appearance extends NSModel implements LinkableInterface {
 
 		if (!empty($arr))
 			usort($arr, function(Color $a, Color $b){
-				return CoreUtils::yiq($b->hex) <=> CoreUtils::yiq($a->hex);
+				/** @noinspection NullPointerExceptionInspection */
+				return RGBAColor::parse($b->hex)->yiq() <=> RGBAColor::parse($a->hex)->yiq();
 			});
 
 		return $arr;

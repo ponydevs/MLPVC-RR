@@ -4,6 +4,7 @@
   "description": "An automated system for handling requests & reservations, made for MLP-VectorClub",
   "homepage": "https://mlpvc-rr.ml",
   "dependencies": {
+    "babel-core": "^6.26.0",
     "normalize.css": "^7.0.0",
     "svgo": "^0.7.2"
   },
@@ -12,7 +13,7 @@
     "chalk": "^2.0.0",
     "gulp": "^3.9.1",
     "gulp-autoprefixer": "^4.0.0",
-    "gulp-babel": "^6.1.2",
+    "gulp-babel": "^7.0.0",
     "gulp-cached": "^1.1.1",
     "gulp-clean-css": "^3.0.0",
     "gulp-dom": "^0.9.17",

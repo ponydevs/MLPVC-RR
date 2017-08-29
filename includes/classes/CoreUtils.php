@@ -1157,18 +1157,6 @@ HTML;
 	];
 
 	/**
-	 * Returns the brightness of the color using the YIQ weighing
-	 *
-	 * @param string $hex
-	 *
-	 * @return int Brightness ranging from 0 to 255
-	 */
-	public static function yiq(string $hex):int {
-		$rgb = RGBAColor::parse($hex);
-	    return (($rgb->red*299)+($rgb->green*587)+($rgb->blue*114))/1000;
-	}
-
-	/**
 	 * Universal method for setting keys/properties of arrays/objects
 	 * @param mixed  $on
 	 * @param string $key

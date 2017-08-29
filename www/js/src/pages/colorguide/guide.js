@@ -95,7 +95,7 @@ $(function(){
 			let $this = $(this),
 				copy = $this.html().trim();
 			if (e.shiftKey){
-				let rgb = $.hex2rgb(copy),
+				let rgb = $.RGBAColor.parse(copy),
 					$cg = $this.closest('li'),
 					path = [
 						(
@@ -106,7 +106,7 @@ $(function(){
 						$cg.children().first().text().replace(/:\s+$/,''),
 						$this.attr('oldtitle'),
 					];
-				return $.Dialog.info(`RGB values for color ${copy}`, `<div class="align-center">${path.join(' &rsaquo; ')}<br><span style="font-size:1.2em">rgb(<code class="color-red">${rgb.r}</code>, <code class="color-green">${rgb.g}</code>, <code class="color-darkblue">${rgb.b}</code>)</span></div>`);
+				return $.Dialog.info(`RGB values for color ${copy}`, `<div class="align-center">${path.join(' &rsaquo; ')}<br><span style="font-size:1.2em">rgb(<code class="color-red">${rgb.red}</code>, <code class="color-green">${rgb.green}</code>, <code class="color-darkblue">${rgb.blue}</code>)</span></div>`);
 			}
 			if (!copyHash) copy = copy.replace('#','');
 			$.copy(copy);

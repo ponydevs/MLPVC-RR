@@ -66,6 +66,18 @@ class RGBAColorTest extends TestCase {
 		self::assertEquals(1, $result->alpha);
 	}
 
+	public function testYiq(){
+		/** @noinspection NullPointerExceptionInspection */
+		$result = RGBAColor::parse('#ffffff')->yiq();
+		self::assertEquals(255, $result);
+		/** @noinspection NullPointerExceptionInspection */
+		$result = RGBAColor::parse('#808080')->yiq();
+		self::assertEquals(128, $result);
+		/** @noinspection NullPointerExceptionInspection */
+		$result = RGBAColor::parse('#000000')->yiq();
+		self::assertEquals(0, $result);
+	}
+
 	function testToHex(){
 		$result = new RGBAColor(234, 66, 139);
 		self::assertEquals('#EA428B', $result->toHex());

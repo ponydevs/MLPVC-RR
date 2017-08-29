@@ -177,15 +177,6 @@ class CoreUtilsTest extends TestCase {
 		self::assertEquals('This is a…', $result);
 	}
 
-	public function testYiq(){
-		$result = CoreUtils::yiq('#ffffff');
-		self::assertEquals(255, $result);
-		$result = CoreUtils::yiq('#808080');
-		self::assertEquals(128, $result);
-		$result = CoreUtils::yiq('#000000');
-		self::assertEquals(0, $result);
-	}
-
 	public function testSet(){
 		$array = [];
 		CoreUtils::set($array, 'key', 'value');

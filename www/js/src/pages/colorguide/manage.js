@@ -846,18 +846,17 @@ $(function(){
 		}
 		expandColorInput(e){
 			const input = e.target;
-			let val = $.hexpand(input.value);
-			if (HEX_COLOR_PATTERN.test(val)){
-				val = val.replace(HEX_COLOR_PATTERN, '#$1').toUpperCase();
-				let $input = $(input),
-					rgb = $.hex2rgb(val);
-				$.each(rgb, function(channel, value){
+			let val = $.RGBAColor.parse(input.value);
+			if (val !== null){
+				let $input = $(input);
+				$.each($.RGBAColor.COMPONENTS, function(_, channel){
+					const value = val[channel];
 					if (value <= 3)
-						rgb[channel] = 0;
+						val[channel] = 0;
 					else if (value >= 252)
-						rgb[channel] = 255;
+						val[channel] = 255;
 				});
-				val = $.rgb2hex(rgb);
+				val = val.toHex();
 				switch (e.type){
 					case 'paste':
 						$input.next().focus();
@@ -865,11 +864,7 @@ $(function(){
 					case 'blur':
 						$input.val(val);
 				}
-				$input.trigger('change', [val]).patternAttr(
-					SHORT_HEX_COLOR_PATTERN.test(input.value)
-						? SHORT_HEX_COLOR_PATTERN
-						: HEX_COLOR_PATTERN
-				);
+				$input.trigger('change', [val]);
 			}
 		}
 		makeColorDiv(color){
@@ -973,14 +968,15 @@ $(function(){
 							const
 								$ci = $row.children('.clri'),
 								val = $ci.val(),
-								valid = HEX_COLOR_PATTERN.test(val);
+								rgb = $.RGBAColor.parse(val),
+								valid = rgb !== null;
 
 							if (!valid && (val.length || strict))
 								return;
 
 							data.push({
 								id,
-								hex: valid ? $.hexpand(val).toUpperCase().replace(HEX_COLOR_PATTERN, '#$1') : undefined,
+								hex: valid ? rgb.toHex() : undefined,
 								label: $row.children('.clrl').val(),
 							});
 						break;
@@ -1069,7 +1065,7 @@ $(function(){
 				// Valid line
 				if (matches && matches[3] && (strict ? matches[1] : true)){
 					colors.push({
-						hex: matches[1] ? $.hexpand(matches[1]) : undefined,
+						hex: matches[1] ? $.RGBAColor.parse(matches[1]).toHex() : undefined,
 						label: matches[3],
 						id: matches[4],
 						linked_to: matches[2] ? matches[2] : undefined,

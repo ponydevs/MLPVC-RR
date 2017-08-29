@@ -39,7 +39,7 @@ $(function(){
 			$SVG.children().each(function(){
 				let $el = $(this),
 					stroke = $el.attr('stroke');
-				$el.addClass($.yiq(stroke) > (0xFF/2) ? 'bright' : 'dark');
+				$el.addClass($.RGBAColor.parse(stroke).isLight() ? 'bright' : 'dark');
 				$el.on('mouseenter',function(){
 					$el.addClass('highlight');
 					$Table.find('td.color').filter(function(){

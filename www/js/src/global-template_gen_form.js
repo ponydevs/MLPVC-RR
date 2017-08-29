@@ -144,9 +144,9 @@ window.$TemplateGenFormTemplate = (function($){
 
 					const mapping = colors[imageData.data.slice(i,i+3).join(',')];
 					if (mapping){
-						imageData.data[i] = mapping.r;
-						imageData.data[i + 1] = mapping.g;
-						imageData.data[i + 2] = mapping.b;
+						imageData.data[i] = mapping.red;
+						imageData.data[i + 1] = mapping.green;
+						imageData.data[i + 2] = mapping.blue;
 					}
 				}
 				ctx.putImageData(imageData, 0, 0);
@@ -171,8 +171,8 @@ window.$TemplateGenFormTemplate = (function($){
 		).on('got-colors',function(_, incolors){
 			colors = {};
 			$.each(incolors,(o,n)=>{
-				const orgb = $.hex2rgb(o);
-				colors[`${orgb.r},${orgb.g},${orgb.b}`] = $.hex2rgb(n);
+				const orgb = $.RGBAColor.parse(o);
+				colors[`${orgb.red},${orgb.green},${orgb.blue}`] = $.RGBAColor.parse(n);
 			});
 			if (typeof incolors['#606060'] !== 'undefined')
 				$form.find('input[name="eye_grad"][value="3"]').prop('checked', true);

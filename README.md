@@ -29,6 +29,7 @@ After some time, the idea of moving the old PNG color guide into an easier to us
    - [dragscroll](https://github.com/asvd/dragscroll)
    - [canvas.hdr.js](https://github.com/brianreavis/canvas.hdr.js)
    - [noUiSlider](https://github.com/leongersen/noUiSlider)
+   - [FileSaver.js](https://github.com/eligrey/FileSaver.js)
  - Back-end:
    - [moment.php](https://github.com/fightbulc/moment.php)
    - [PostgresDb](https://github.com/SeinopSys/PHP-PostgreSQL-Database-Class)

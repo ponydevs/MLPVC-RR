@@ -8,9 +8,9 @@ $(function(){
 
 	function reverseRgb(bg, blend, alpha){
 		return {
-			r: reverseComponent(bg.r, blend.r, alpha),
-			g: reverseComponent(bg.g, blend.g, alpha),
-			b: reverseComponent(bg.b, blend.b, alpha),
+			r: reverseComponent(bg.red, blend.red, alpha),
+			g: reverseComponent(bg.green, blend.green, alpha),
+			b: reverseComponent(bg.blue, blend.blue, alpha),
 			a: alpha,
 		};
 	}
@@ -28,7 +28,7 @@ $(function(){
 
 	$inputs.on('keyup change input',function(){
 		let $cp = $(this).prev(),
-			value = $.hexpand(this.value).toUpperCase();
+			value = $.RGBAColor.parse(this.value).toHex();
 		if (HEX_COLOR_PATTERN.test(value))
 			$cp.removeClass('invalid').css('background-color', value);
 		else $cp.addClass('invalid');
@@ -37,9 +37,9 @@ $(function(){
 	}).on('paste blur', function(e){
 		let $input = $(this),
 			f = function(){
-				let val = $.hexpand($input.val());
-				if (HEX_COLOR_PATTERN.test(val)){
-					$input.val(val.replace(HEX_COLOR_PATTERN, '#$1').toUpperCase()).trigger('change');
+				let val = $.RGBAColor.parse($input.val());
+				if (val !== null){
+					$input.val(val.toHex()).trigger('change');
 					if (e.type !== 'blur')
 						$input.next().focus();
 				}
@@ -58,11 +58,11 @@ $(function(){
 
 		let hex = $hexInput.val(),
 			$prev = $.mk('div').attr('class','preview').css('background-color', hex),
-			OrigRGB = $.hex2rgb(hex),
+			OrigRGB = $.RGBAColor.parse(hex),
 			$formInputs = $.mk('div').attr('class','input-group-3').html(
-				`<input type='number' class='color-red' name='r' min='0' max='255' step='1' value='${OrigRGB.r}'>
-				<input type='number' class='color-green' name='g' min='0' max='255' step='1' value='${OrigRGB.g}'>
-				<input type='number' class='color-darkblue' name='b' min='0' max='255' step='1' value='${OrigRGB.b}'>`
+				`<input type='number' class='color-red' name='r' min='0' max='255' step='1' value='${OrigRGB.red}'>
+				<input type='number' class='color-green' name='g' min='0' max='255' step='1' value='${OrigRGB.green}'>
+				<input type='number' class='color-darkblue' name='b' min='0' max='255' step='1' value='${OrigRGB.blue}'>`
 			);
 
 		$formInputs.children().on('keyup change input mouseup',function(){
@@ -97,7 +97,7 @@ $(function(){
 		if (data.bg1 === data.bg2)
 			return setPreview(false);
 		$.each(data,function(k,v){
-			data[k] = $.hex2rgb(v);
+			data[k] = $.RGBAColor.parse(v);
 		});
 
 		let minDelta = 255 * 4,
@@ -120,8 +120,8 @@ $(function(){
 			return setPreview(false);
 		$deltaWarn[minDelta > 10?'show':'hide']();
 		setPreview({
-			r: Math.round(bestMatch.r),
-			g: Math.round(bestMatch.g),
+			r: Math.round(bestMatch.red),
+			g: Math.round(bestMatch.green),
 			b: Math.round(bestMatch.b),
 			a: bestMatch.a,
 		});

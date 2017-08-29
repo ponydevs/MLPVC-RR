@@ -287,61 +287,6 @@
 		}
 	}
 
-	class ColorFormatter {
-		constructor(value){
-			const
-				rgbaTest = /^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([01]|(?:0?\.\d+)))?\)$/i,
-				hexTest = /^#([a-f0-9]{3}|[a-f0-9]{6})$/i;
-			if (typeof value === 'string'){
-				value = value.trim();
-				let rgba = value.match(rgbaTest);
-				if (rgba && rgba[1] <= 255 && rgba[2] <= 255 && rgba[3] <= 255 && (!rgba[4] || rgba[4] <= 1)){
-					this.red = parseInt(rgba[1], 10);
-					this.green = parseInt(rgba[2], 10);
-					this.blue = parseInt(rgba[3], 10);
-					this.alpha = rgba[4] ? parseFloat(rgba[4]) : 1;
-				}
-				else {
-					let hexmatch = value.match(hexTest);
-					if (hexmatch){
-						let hex = hexmatch[1];
-						if (hex.length === 3)
-							hex = hex[0]+hex[0]+hex[1]+hex[1]+hex[2]+hex[2];
-						const rgb = $.hex2rgb('#'+hex);
-						this.red = rgb.r;
-						this.green = rgb.g;
-						this.blue = rgb.b;
-						this.alpha = 1;
-					}
-					else throw new Error('Unrecognized color format: '+value);
-				}
-			}
-			else if (!isNaN(value.red) && !isNaN(value.green) && !isNaN(value.blue)){
-				this.red = value.red;
-				this.green = value.green;
-				this.blue = value.blue;
-				if (value instanceof Pixel)
-					this.alpha = value.alpha/255;
-				else this.alpha = isNaN(value.alpha) ? 1 : value.alpha;
-			}
-			else throw new Error('Unrecognized color format: '+JSON.stringify(value));
-			this.opacity = Math.round(this.alpha*100);
-		}
-		toString(forceHex = false){
-			if (this.alpha === 1 || forceHex)
-				return this.toHexString();
-
-			return this.toRGBString();
-		}
-		toHexString(){
-			return $.rgb2hex({ r: this.red, g: this.green, b: this.blue });
-		}
-		toRGBString(ignoreAlpha = false){
-			const showAlpha = !ignoreAlpha && this.alpha !== 1;
-			return `rgb${showAlpha?'a':''}(${this.red},${this.green},${this.blue}${showAlpha?','+this.alpha:''})`;
-		}
-	}
-
 	class Menubar {
 		constructor(){
 			this._$menubar = $('#menubar');
@@ -363,7 +308,7 @@
 			});
 			this._$filein = $.mk('input','screenshotin').attr({
 				type: 'file',
-				accept: 'image/png,image/jpeg',
+				accept: 'image/png,image/jpeg,image/bmp',
 				tabindex: -1,
 				'class': 'fileinput',
 			}).prop('multiple',true).appendTo($body);
@@ -441,8 +386,8 @@
 			return pluginScope.menubar;
 		}
 		handleFileOpen(file, callback){
-			if (!/^image\/(png|jpeg)$/.test(file.type)){
-				$.Dialog.fail('Invalid file', 'You may only use PNG or JPG images with this tool');
+			if (!/^image\/(png|jpeg|bmp)$/.test(file.type)){
+				$.Dialog.fail('Invalid file', 'You may only use PNG, JPEG and BMP images with this tool');
 				callback(false);
 				return;
 			}
@@ -530,7 +475,7 @@
 			if (hex.length){
 				this._$color.css({
 					backgroundColor: hex,
-					color: $.yiq(hex) > 127 ? 'black' : 'white',
+					color: $.RGBAColor.parse(hex).isLight() ? 'black' : 'white',
 				});
 			}
 			else this._$color.css({
@@ -667,7 +612,7 @@
 					const tmpctx = tmpc.getContext('2d');
 					tmpctx.drawImage(imgel,0,0,1,1);
 					const px = new Pixel(...tmpctx.getImageData(0,0,1,1).data, 127).invert();
-					this.savePickingAreaColor(new ColorFormatter(px));
+					this.savePickingAreaColor($.RGBAColor.parse(px));
 				}
 
 				callback(true);
@@ -755,12 +700,12 @@
 			area.belongsToTab(this);
 			this._pickingAreas[ix] = area;
 		}
-		/** @return {ColorFormatter|string} */
+		/** @return {$.RGBAColor|string} */
 		loadPickingAreaColor(){
 			return this._pickingAreaColor || 'rgba(255,0,255,.5)';
 		}
 		savePickingAreaColor(color){
-			this._pickingAreaColor = new ColorFormatter(color);
+			this._pickingAreaColor = $.RGBAColor.parse(color);
 			this._$pickAreaColorDisplay.html($.mk('span').css('background-color',this._pickingAreaColor.toString()));
 			if (!this.isActive())
 				return;
@@ -1610,14 +1555,14 @@
 					const
 						avgc = area.getAverageColor(),
 						hexOut = this._sidebarDisplayFormat === 'hex',
-						avgchex = new ColorFormatter(avgc).toHexString();
+						avgchex = $.RGBAColor.parse(avgc).toHex();
 					let avgcbg, avgcsout;
 					if (hexOut){
-						avgcbg = new ColorFormatter(avgc).toString();
+						avgcbg = $.RGBAColor(avgc).toString();
 						avgcsout = avgchex+(avgc.alpha !== 255 ? ` @ ${$.roundTo((avgc.alpha/255)*100,2)}%`:'');
 					}
 					else {
-						avgcbg = new ColorFormatter(avgc).toRGBString();
+						avgcbg = $.RGBAColor.parse(avgc).toRGBString();
 						avgcsout = avgcbg.replace(/^rgba?\((.+)\)$/,'$1').split(',');
 						if (avgcsout.length === 4){
 							const opacity = $.roundTo(parseFloat(avgcsout.pop())*100, 2);
@@ -1630,7 +1575,7 @@
 							$.mk('span').attr('class','index').text(++ix),
 							$.mk('span').attr('class','color').css({
 								backgroundColor: avgcbg,
-								color: $.yiq(avgchex) > 127 ? 'black' : 'white',
+								color: $.RGBAColor.parse(avgchex).isLight() ? 'black' : 'white',
 							}).html(avgcsout),
 							$.mk('span').attr('class','size '+(area instanceof RoundedPickingArea?'rounded':'square')).html($.mk('span').text(area.boundingRect.sideLength)),
 							$.mk('span').attr({'class':'select-handle','data-info':'Picking area selection handle (Click to select, Ctrl/Shift+Click to select multiple)'})
@@ -1646,12 +1591,12 @@
 			this._$averageColor.empty();
 			if (pixels.length){
 				const
-					averageColor = new ColorFormatter(PickingArea.averageColor(pixels)),
-					averageHex = averageColor.toString(true);
+					averageColor = $.RGBAColor.parse(PickingArea.averageColor(pixels)),
+					averageHex = averageColor.toHEX();
 				this._$averageColor.append(
 					$.mk('span').attr('class','color').css({
-						backgroundColor:averageColor.toString(),
-						color: $.yiq(averageHex) > 127 ? 'black' : 'white',
+						backgroundColor: averageColor.toString(),
+						color: $.RGBAColor.parse(averageHex).isLight() ? 'black' : 'white',
 					}).text(averageHex),
 					this._$copyColorBtn.clone(true,true)
 				);
@@ -1749,7 +1694,7 @@
 					Statusbar.getInstance().setColorAt();
 				else {
 					const p = this.getImageCanvasCtx().getImageData(this._mouseImagePos.left, this._mouseImagePos.top, 1, 1).data;
-					Statusbar.getInstance().setColorAt($.rgb2hex({r:p[0], g:p[1], b:p[2]}), $.roundTo((p[3]/255)*100, 2)+'%');
+					Statusbar.getInstance().setColorAt((new $.RGBAColor(p[0], p[1], p[2])).toHex(), $.roundTo((p[3]/255)*100, 2)+'%');
 				}
 			}
 		}

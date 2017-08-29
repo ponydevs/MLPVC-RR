@@ -70,7 +70,7 @@ window.$ColorAvgFormTemplate = (function($){
 				$AvgGreenTD.text(gAvg);
 				$AvgBlueTD.text(bAvg);
 
-				let hex = $.rgb2hex({ r:rAvg, g:gAvg, b:bAvg });
+				let hex = (new $.RGBAColor(rAvg, gAvg, bAvg)).toString();
 				$AvgColorPreview.css('background-color',hex);
 				$AvgHexTD.text(hex);
 			},
@@ -87,13 +87,12 @@ window.$ColorAvgFormTemplate = (function($){
 						return;
 
 					let $sib = $el.siblings(),
-						hexstr = $.hexpand($el.val().toUpperCase()),
-						rgb = $.hex2rgb(hexstr);
+						rgb = $.RGBAColor.parse($el.val().toUpperCase());
 
-					$el.val(hexstr);
-					$sib.eq(0).val(rgb.r);
-					$sib.eq(1).val(rgb.g);
-					$sib.eq(2).val(rgb.b).triggerHandler('change');
+					$el.val(rgb.toHex());
+					$sib.eq(0).val(rgb.red);
+					$sib.eq(1).val(rgb.green);
+					$sib.eq(2).val(rgb.blue).triggerHandler('change');
 				})
 			),
 			$inputsDiv = $.mk('div').attr('class','inputs'),
