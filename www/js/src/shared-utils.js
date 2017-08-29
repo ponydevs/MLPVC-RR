@@ -827,14 +827,17 @@
 			 */
 			static parse(color){
 				let output = null;
-				$.each(PATTERNS, (index, pattern) => {
-					let result = this._parseWith(color, pattern, index);
-					if (result === null)
-						return;
+				if (color instanceof $.RGBAColor)
+					return color;
+				if (typeof color === "string")
+					$.each(PATTERNS, (index, pattern) => {
+						let result = this._parseWith(color, pattern, index);
+						if (result === null)
+							return;
 
-					output = result;
-					return false;
-				});
+						output = result;
+						return false;
+					});
 
 				return output;
 			}

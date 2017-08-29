@@ -612,7 +612,7 @@
 					const tmpctx = tmpc.getContext('2d');
 					tmpctx.drawImage(imgel,0,0,1,1);
 					const px = new Pixel(...tmpctx.getImageData(0,0,1,1).data, 127).invert();
-					this.savePickingAreaColor($.RGBAColor.parse(px));
+					this.savePickingAreaColor($.RGBAColor.fromRGB(px));
 				}
 
 				callback(true);
