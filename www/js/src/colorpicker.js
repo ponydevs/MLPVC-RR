@@ -1555,14 +1555,14 @@
 					const
 						avgc = area.getAverageColor(),
 						hexOut = this._sidebarDisplayFormat === 'hex',
-						avgchex = $.RGBAColor.parse(avgc).toHex();
+						avgchex = $.RGBAColor.fromRGB(avgc).toHex();
 					let avgcbg, avgcsout;
 					if (hexOut){
 						avgcbg = $.RGBAColor(avgc).toString();
 						avgcsout = avgchex+(avgc.alpha !== 255 ? ` @ ${$.roundTo((avgc.alpha/255)*100,2)}%`:'');
 					}
 					else {
-						avgcbg = $.RGBAColor.parse(avgc).toRGBString();
+						avgcbg = $.RGBAColor.fromRGB(avgc).toRGBString();
 						avgcsout = avgcbg.replace(/^rgba?\((.+)\)$/,'$1').split(',');
 						if (avgcsout.length === 4){
 							const opacity = $.roundTo(parseFloat(avgcsout.pop())*100, 2);
@@ -1591,7 +1591,7 @@
 			this._$averageColor.empty();
 			if (pixels.length){
 				const
-					averageColor = $.RGBAColor.parse(PickingArea.averageColor(pixels)),
+					averageColor = $.RGBAColor.fromRGB(PickingArea.averageColor(pixels)),
 					averageHex = averageColor.toHEX();
 				this._$averageColor.append(
 					$.mk('span').attr('class','color').css({
