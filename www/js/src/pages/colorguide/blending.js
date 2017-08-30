@@ -8,10 +8,10 @@ $(function(){
 
 	function reverseRgb(bg, blend, alpha){
 		return {
-			r: reverseComponent(bg.red, blend.red, alpha),
-			g: reverseComponent(bg.green, blend.green, alpha),
-			b: reverseComponent(bg.blue, blend.blue, alpha),
-			a: alpha,
+			red: reverseComponent(bg.red, blend.red, alpha),
+			green: reverseComponent(bg.green, blend.green, alpha),
+			blue: reverseComponent(bg.blue, blend.blue, alpha),
+			alpha,
 		};
 	}
 
@@ -28,9 +28,9 @@ $(function(){
 
 	$inputs.on('keyup change input',function(){
 		let $cp = $(this).prev(),
-			value = $.RGBAColor.parse(this.value).toHex();
-		if (HEX_COLOR_PATTERN.test(value))
-			$cp.removeClass('invalid').css('background-color', value);
+			value = $.RGBAColor.parse(this.value);
+		if (value !== null)
+			$cp.removeClass('invalid').css('background-color', value.toHex());
 		else $cp.addClass('invalid');
 
 		$form.triggerHandler('submit');
@@ -106,9 +106,9 @@ $(function(){
 			let RevRGB1 = reverseRgb(data.bg1, data.blend1, alpha / 255),
 				RevRGB2 = reverseRgb(data.bg2, data.blend2, alpha / 255);
 
-			let delta = Math.abs(RevRGB1.r - RevRGB2.r)
-			            + Math.abs(RevRGB1.g - RevRGB2.g)
-			            + Math.abs(RevRGB1.b - RevRGB2.b);
+			let delta = Math.abs(RevRGB1.red - RevRGB2.red)
+			            + Math.abs(RevRGB1.green - RevRGB2.green)
+			            + Math.abs(RevRGB1.blue - RevRGB2.blue);
 
 			if (delta < minDelta){
 				minDelta = delta;
@@ -120,10 +120,10 @@ $(function(){
 			return setPreview(false);
 		$deltaWarn[minDelta > 10?'show':'hide']();
 		setPreview({
-			r: Math.round(bestMatch.red),
-			g: Math.round(bestMatch.green),
-			b: Math.round(bestMatch.b),
-			a: bestMatch.a,
+			red: Math.round(bestMatch.red),
+			green: Math.round(bestMatch.green),
+			blue: Math.round(bestMatch.blue),
+			alpha: bestMatch.alpha,
 		});
 	}
 
@@ -131,13 +131,13 @@ $(function(){
 		let hex = '',
 			hexa = '',
 			opacity = '';
-		if (rgba){
+		if (rgba !== false){
 			hex = $.rgb2hex(rgba);
 			$preview.css('background-color', hex);
 			hex = `#<code class="color-red">${hex.substring(1,3)}</code><code class="color-green">${hex.substring(3,5)}</code><code class="color-darkblue">${hex.substring(5,7)}</code>`;
-			hexa = hex + `<code>${Math.round(255*rgba.a).toString(16).toUpperCase()}</code>`;
-			let alpha = $.roundTo(rgba.a, 2);
-			rgba = `rgba(<code class="color-red">${rgba.r}</code>, <code class="color-green">${rgba.g}</code>, <code class="color-darkblue">${rgba.b}</code>, ${alpha})</span>`;
+			hexa = hex + `<code>${Math.round(255*rgba.alpha).toString(16).toUpperCase()}</code>`;
+			let alpha = $.roundTo(rgba.alpha, 2);
+			rgba = `rgba(<code class="color-red">${rgba.red}</code>, <code class="color-green">${rgba.green}</code>, <code class="color-darkblue">${rgba.blue}</code>, ${alpha})</span>`;
 			opacity = `${alpha*100}% opacity`;
 		}
 		else {
