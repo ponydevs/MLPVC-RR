@@ -843,6 +843,11 @@ body {
 				display: none;
 			}
 
+			&.rgb {
+				font-size: .8em;
+				margin: 0;
+			}
+
 			.color {
 				user-select: all;
 			}

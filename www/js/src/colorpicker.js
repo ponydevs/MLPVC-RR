@@ -1128,6 +1128,7 @@
 
 				$.copy(color, e);
 			});
+			this._$averageColorRgb = $.mk('span').attr('class','average text rgb');
 			this._$actionsBottomLeft = $.mk('div').attr('class','actions actions-bl').append(
 				$.mk('div').append(
 					'<span class="label">Picking tool settings</span>',
@@ -1144,7 +1145,8 @@
 						' & ',
 						this._$areaImageCounter
 					),
-					this._$averageColor
+					this._$averageColor,
+					this._$averageColorRgb
 				)
 			).on('mousedown',e => {
 				e.stopPropagation();
@@ -1590,16 +1592,16 @@
 
 			this._$averageColor.empty();
 			if (pixels.length){
-				const
-					averageColor = $.RGBAColor.fromRGB(PickingArea.averageColor(pixels)),
-					averageHex = averageColor.toHex();
+				const averageColor = $.RGBAColor.fromRGB(PickingArea.averageColor(pixels));
 				this._$averageColor.append(
 					$.mk('span').attr('class','color').css({
 						backgroundColor: averageColor.toString(),
-						color: $.RGBAColor.parse(averageHex).isLight() ? 'black' : 'white',
-					}).text(averageHex),
+						color: averageColor.isLight() ? 'black' : 'white',
+					}).text(averageColor.toHex()),
 					this._$copyColorBtn.clone(true,true)
+
 				);
+				this._$averageColorRgb.html(averageColor.toRGB());
 			}
 		}
 		selectAllAreas(unselect = false){
