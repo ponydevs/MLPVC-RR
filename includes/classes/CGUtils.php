@@ -671,7 +671,7 @@ XML;
 			break;
 			case 1:
 				$SVG .= /** @lang XML */
-					"<rect x='0' y='0' width='2' height='2' fill='{$PreviewColors[0]['hex']}'/>";
+					"<rect x='0' y='0' width='2' height='2' fill='{$PreviewColors[0]->hex}'/>";
 			break;
 			case 3:
 				$SVG .= <<<XML
