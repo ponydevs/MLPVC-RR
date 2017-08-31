@@ -66,7 +66,7 @@ $(function(){
 
 				this.$imageSelectFileInput.click();
 			});
-			this.$filterTypeSelect = $('#filter-type').children('select').on('change',e => {
+			this.$filterTypeSelect = $('#filter-type').children('select').on('change',() => {
 				this.updateFilterCandidateList();
 				this.updatePreview();
 			});
@@ -381,7 +381,7 @@ $(function(){
 						$.mk('span').attr('title', pair.original.toString()).css('background-color', pair.original),
 						$.mk('span').attr('title', pair.filtered.toString()).css('background-color', pair.filtered)
 					)
-				)
+				);
 			});
 
 			return $.mk('li').attr({'data-rgba':rgba,title:'Click to select & apply'}).append(
