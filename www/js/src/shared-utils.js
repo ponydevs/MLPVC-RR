@@ -791,13 +791,17 @@
 
 				return this;
 			}
-			round(){
-				this.red = Math.round(this.red);
-				this.green = Math.round(this.green);
-				this.blue = Math.round(this.blue);
-				this.alpha = $.roundTo(this.alpha, 2);
-
-				return this;
+			round(copy = false){
+				if (copy){
+					return new $.RGBAColor.fromRGB(this);
+				}
+				else {
+					this.red = Math.round(this.red);
+					this.green = Math.round(this.green);
+					this.blue = Math.round(this.blue);
+					this.alpha = $.roundTo(this.alpha, 2);
+					return this;
+				}
 			}
 
 			static _parseWith(color, pattern, index){
@@ -843,7 +847,7 @@
 			}
 
 			/**
-			 * @param {string} color
+			 * @param {Object} color
 			 *
 			 * @return {self|null}
 			 */

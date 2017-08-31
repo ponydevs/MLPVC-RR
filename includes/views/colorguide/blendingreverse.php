@@ -18,7 +18,7 @@
 						<tr>
 							<th>Original</th>
 							<th>Filtered</th>
-							<!--<td><button id="add-known-color" class="green typcn typcn-plus" title="Add known color"></button></td>-->
+							<td><button id="add-known-color" class="green typcn typcn-plus" title="Add known color"></button></td>
 						</tr>
 					</thead>
 					<tbody></tbody>

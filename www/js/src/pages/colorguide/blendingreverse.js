@@ -101,7 +101,7 @@ $(function(){
 
 				this.previewImageCanvas.toBlob(blob => {
 					const ins = ' (no '+this.getFilterType()+' filter)';
-				    saveAs(blob, this.fileName.replace(/^(.*?)(\.(?:[^.]+))?$/,`$1${ins}$2`) || 'image'+ins+'.png');
+					saveAs(blob, this.fileName.replace(/^(.*?)(\.(?:[^.]+))?$/,`$1${ins}$2`) || 'image'+ins+'.png');
 				});
 			});
 			this.$filterCandidates = $('#filter-candidates').children('ul');
@@ -148,12 +148,14 @@ $(function(){
 			});
 			this.$overlayColorInput.val(this.overlayColor.toString()).trigger('input');
 
-			this.addKnownValueInputRow();
+			this.addKnownValueInputRow(true);
 			this.addKnownValueInputRow();
 
 
 			/// DEBUG ///
-			const vals = ['#FFFF00','#AABD39','#0000FF','#2B3EB8'];
+			this.addKnownValueInputRow();
+			this.addKnownValueInputRow();
+			const vals = ['#FFFF00','#AABD39','#0000FF','#2B3EB8','#00ff00','#2BBD39','#FF0000','#AA3E39'];
 			this.$knownColorsTbody.find('input').each((i, el) => {
 				$(el).val(vals[i]).trigger('blur');
 			});
@@ -192,11 +194,12 @@ $(function(){
 				})
 			);
 		}
-		addKnownValueInputRow(){
+		addKnownValueInputRow(anchor = false){
+			const refclass = 'reference';
 			this.$knownColorsTbody.append(
-				$.mk('tr').append(
+				$.mk('tr').attr('class',anchor?refclass:'').append(
 					this.createKnownValueInput('original'),
-					this.createKnownValueInput('filtered')/*,
+					this.createKnownValueInput('filtered'),
 					$.mk('td').attr('class','actions').append(
 						$.mk('button').attr({
 							'class':'red typcn typcn-minus',
@@ -204,11 +207,41 @@ $(function(){
 						}).on('click', e => {
 							e.preventDefault();
 
-							$(e.target).closest('tr').remove();
+							const $tr = $(e.target).closest('tr');
+							if ($tr.siblings().length === 2)
+								$tr.siblings().find('button.red').disable().addClass('hidden');
+							$tr.remove();
+							this.updateFilterCandidateList();
+						}),
+						$.mk('button').attr({
+							'class':'darkblue typcn typcn-anchor',
+							title: 'Set as reference color',
+							disabled: anchor,
+						}).on('click',e => {
+							e.preventDefault();
+
+							const $el = $(e.target);
+
+							if ($el.is(':disabled'))
+								return;
+
+							const
+								$tr = $el.closest('tr'),
+								$invalidInputs = $tr.find('input:invalid');
+							if ($invalidInputs.length){
+								$invalidInputs.first().focus();
+								return;
+							}
+
+							$tr.addClass(refclass).siblings().removeClass(refclass).find('button.darkblue').enable();
+							$el.disable();
+							this.updateFilterCandidateList();
 						})
-					)*/
+					)
 				)
 			);
+			if (this.$knownColorsTbody.children().length >= 2)
+				this.$knownColorsTbody.find('button.red').enable().removeClass('hidden');
 		}
 		redrawPreviewImage(){
 			this.previewOverlayCanvas.width =
@@ -272,6 +305,7 @@ $(function(){
 			this.previewOverlayCtx.putImageData(overlayData,0,0);
 		}
 		updateFilterCandidateList(){
+			let reference = null;
 			const pairs = [];
 
 			this.$knownColorsTbody.children().each((_, el) => {
@@ -285,38 +319,84 @@ $(function(){
 				$inputs.each((_, input) => {
 					values[input.parentNode.className.split(' ')[1]] = $.RGBAColor.parse(input.value);
 				});
-				pairs.push(values);
+				if ($tr.hasClass('reference'))
+					reference = values;
+				else pairs.push(values);
 			});
 
-			if (!pairs.length)
+			if (reference === null || !pairs.length)
 				return;
 
-			let allfilters = this.getValidFilterValues(pairs[0].original, pairs[0].filtered);
+			let allfilters = this.getValidFilterValues(reference.original, reference.filtered);
 
 			this.$filterCandidates.empty();
-			if (pairs.length < 2)
-				return;
+			this.selectedFilterColor = null;
 
-			let bestfilters = this.pickBestFilterValues(allfilters, pairs[1].original, pairs[1].filtered);
+			// Store in an object to avoid dupes & increase a confidence count if dupes are found
+			let
+				bestfilterArray = [],
+				confidence = {},
+				bestconfidence = 1;
+			$.each(pairs, (_, pair) => {
+				let values = this.pickBestFilterValues(allfilters, pair.original, pair.filtered);
+				$.each(values, (_, value) => {
+					const k = value.round().toRGBA();
+					if (typeof confidence[k] !== 'undefined'){
+						confidence[k].push(pair);
+						if (confidence[k].length > bestconfidence)
+							bestconfidence = confidence[k].length;
+						return;
+					}
 
-			$.each(bestfilters, (_, color) => {
+					confidence[k] = [pair];
+					bestfilterArray.push(value);
+				});
+			});
+
+			if (bestfilterArray.length > 1){
+				// Sort descending by confidence
+				bestfilterArray.sort((a,b) => {
+					const ac = confidence[a.toRGBA()].length;
+					const bc = confidence[b.toRGBA()].length;
+
+					return ac === bc ? 0 : (ac < bc ? 1 : -1);
+				});
+			}
+
+			$.each(bestfilterArray, (_, color) => {
+				const pairs = confidence[color.toRGBA()];
 				this.$filterCandidates.append(
-					MultiplyReverseForm.getFilterDisplayLi(color)
+					MultiplyReverseForm.getFilterDisplayLi(color, pairs)
 				);
 			});
 		}
-		static getFilterDisplayLi(color){
-			const rgba = color.round().toRGBA();
-			return $.mk('li').attr({'data-rgba':rgba,title:'Click to select & apply'}).append(
-				$.mk('div').attr('class', 'color-preview').append(
-					$.mk('span').css('background-color', rgba)
-				),
-				$.mk('div').attr('class', 'color-rgba').append(
-					`<div><strong>R:</strong> <span class="color-red">${color.red}</span></div>`,
-					`<div><strong>G:</strong> <span class="color-green">${color.green}</span></div>`,
-					`<div><strong>B:</strong> <span class="color-blue">${color.blue}</span></div>`,
-					`<div><strong>A:</strong> <span>${color.alpha*100}%</span></div>`
+		static getFilterDisplayLi(color, pairs = []){
+			const
+				rgba = color.toRGBA(),
+				$pairs = $.mk('ul').attr('class','pairs');
+
+			$.each(pairs, (_, pair) => {
+				$pairs.append(
+					$.mk('li').append(
+						$.mk('span').attr('title', pair.original.toString()).css('background-color', pair.original),
+						$.mk('span').attr('title', pair.filtered.toString()).css('background-color', pair.filtered)
+					)
 				)
+			});
+
+			return $.mk('li').attr({'data-rgba':rgba,title:'Click to select & apply'}).append(
+				$.mk('div').attr('class', 'color').append (
+					$.mk('div').attr('class', 'color-preview').append(
+						$.mk('span').css('background-color', rgba)
+					),
+					$.mk('div').attr('class', 'color-rgba').append(
+						`<div><strong>R:</strong> <span class="color-red">${color.red}</span></div>`,
+						`<div><strong>G:</strong> <span class="color-green">${color.green}</span></div>`,
+						`<div><strong>B:</strong> <span class="color-blue">${color.blue}</span></div>`,
+						`<div><strong>A:</strong> <span>${color.alpha*100}%</span></div>`
+					)
+				),
+				$pairs
 			);
 		}
 		getFilterType(){

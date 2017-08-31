@@ -72,6 +72,9 @@
 	th {
 		padding: 6px;
 	}
+	td.actions button:not(:last-child) {
+		margin-right: 1px;
+	}
 }
 #filter-type {
 	select {
@@ -118,7 +121,7 @@
 	}
 }
 #filter-candidates {
-	ul {
+	> ul {
 		display: flex;
 		flex-flow: row wrap;
 		padding: 0;
@@ -129,13 +132,13 @@
 			font-style: italic;
 		}
 
-		li {
-			display: flex;
+		> li {
+			display: block;
 			padding: 5px 7px;
-			flex-flow: row nowrap;
-			align-items: center;
 			border: 1px solid gray;
 			cursor: pointer;
+			position: relative;
+			background-color: #fff;
 
 			&:not(.selected) {
 				margin: 5px;
@@ -144,42 +147,85 @@
 				margin: 4px;
 				border-width: 2px;
 				border-color: $DefaultUIColor;
-				background-color: rgba($DefaultUIColor, .1);
-			}
 
-			> * {
-				flex: 1;
-			}
-
-			.color-preview {
-				display: inline-block;
-				width: 50px;
-				height: 100%;
-				background: url('/img/transparency.svg');
-				background-size: 16px;
-				border: 1px solid black;
-				box-sizing: border-box;
-				margin-right: .4em;
-
-				> span {
+				&:after {
+					content: "";
 					display: block;
-					width: 100%;
-					height: 100%;
+					position: absolute;
+					top: 0;
+					right: 0;
+					width: 0;
+					height: 0;
+					border-style: solid;
+					border-width: 0 18px 18px 0;
+					border-color: transparent $DefaultUIColor transparent transparent;
 				}
 			}
 
-			.color-rgba {
+			.color {
 				display: flex;
-				flex-flow: column nowrap;
-				align-items: flex-start;
-				justify-content: space-between;
+				flex-flow: row nowrap;
+				align-items: center;
+				height: auto;
 
-				> * {
+				.color-preview {
+					flex: 1 0 auto;
+					display: inline-block;
+					$size: 70px;
+					width: $size;
+					height: $size;
+					background: url('/img/transparency.svg');
+					background-size: 16px;
+					border: 1px solid black;
+					box-sizing: border-box;
+					margin-right: .4em;
+
+					> span {
+						display: block;
+						width: 100%;
+						height: 100%;
+					}
+				}
+
+				.color-rgba {
 					flex: 1;
-					white-space: nowrap;
+					display: flex;
+					flex-flow: column nowrap;
+					align-items: flex-start;
+					justify-content: space-between;
 
-					span, strong {
-						font-family: $monospace;
+					> * {
+						flex: 1;
+						white-space: nowrap;
+
+						span, strong {
+							font-family: $monospace;
+						}
+					}
+				}
+			}
+
+			.pairs {
+				display: flex;
+				flex-flow: row wrap;
+				padding: 0;
+				margin: 5px 0 0;
+
+				> li {
+					display: flex;
+					flex-flow: row nowrap;
+					$border: 1px;
+					border: 1px solid black;
+					$margin: 2px;
+					flex: 0 1 calc(50% - #{$margin*2 + $border*2});
+					margin: $margin;
+					background-image: url("/img/transparency.svg");
+					background-size: 8px;
+
+					> span {
+						display: block;
+						flex: 1 1 50%;
+						height: 8px;
 					}
 				}
 			}
