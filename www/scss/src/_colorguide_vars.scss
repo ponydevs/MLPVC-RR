@@ -266,14 +266,27 @@ $TFeature:  adjust_hue($_TBase, 20);
 	.title {
 		font-size: 20px;
 		display: block;
-		margin-bottom: 5px;
 		font-weight: bold;
+    max-width: 250px;
+		//noinspection CssInvalidPropertyValue
+		word-break: break-word;
+		overflow: hidden;
+
+		+ :not(.subtitle) {
+			margin-top: 5px;
+		}
 
 		.cm-id {
 			opacity: .4;
 
 			&:before { content: "#" }
 		}
+	}
+
+	.subtitle {
+		display: block;
+		font-size: 14px;
+		margin-bottom: 5px;
 	}
 
 	.dl-links {

@@ -1072,6 +1072,18 @@ class ColorGuideController extends Controller {
 					}
 					else $svgdata = null;
 
+					$label = null;
+					if (isset($item['label'])){
+						$item['label'] = CoreUtils::trim($item['label']);
+						if (!empty($item['label'])){
+							CoreUtils::checkStringValidity($item['label'], 'Cutie Mark label', INVERSE_PRINTABLE_ASCII_PATTERN);
+							if (Input::checkStringLength($item['label'], [1, 32]) === Input::ERROR_RANGE)
+								Response::fail('Cutie mark label must be between 1 and 32 chars long');
+							$label = $item['label'];
+						}
+					}
+					$cm->label = $label;
+
 					if (isset($item['facing'])){
 						$facing = CoreUtils::trim($item['facing']);
 						if (empty($facing))

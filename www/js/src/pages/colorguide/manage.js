@@ -1201,6 +1201,8 @@ $(function(){
 						}
 					}
 
+					data.label = $li.find('.custom-label').val();
+
 					data.facing = $li.find('.radio-group.orientation input:checked').attr('value');
 
 					data.attribution = $li.find('.radio-group.attrib-method-radios input:checked').attr('value');
@@ -1428,6 +1430,16 @@ $(function(){
 							`<span>${fileAction}</span>`
 						),
 						$.mk('div').attr('class','svg-replace-preview hidden').html('<div class="svgcont"></div>')
+					),
+					$.mk('label').append(
+						`<span>Custom label (1-32 chars, optional)</span>`,
+						$.mk('input').attr({
+							type: 'text',
+							maxlength: 32,
+							'class': 'custom-label',
+							pattern: PRINTABLE_ASCII_PATTERN.replace('+', '{1,32}'),
+							value: el.label,
+						})
 					),
 					$facingSelector,
 					$attributionRadios,

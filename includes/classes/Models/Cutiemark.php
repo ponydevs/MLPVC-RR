@@ -6,17 +6,19 @@ use App\CGUtils;
 use App\CoreUtils;
 use App\DeviantArt;
 use App\File;
+use App\Permission;
 use App\Users;
 
 /**
- * @property int        $id
- * @property int        $appearance_id
- * @property string     $facing
- * @property string     $favme
- * @property int        $rotation
- * @property Appearance $appearance     (Via relations)
- * @property int        $contributor_id (Via magic method)
- * @property User       $contributor    (Via magic method)
+ * @property int         $id
+ * @property int         $appearance_id
+ * @property string      $facing
+ * @property string|null $favme
+ * @property int         $rotation
+ * @property string|null $label
+ * @property Appearance  $appearance     (Via relations)
+ * @property int|null    $contributor_id (Via magic method)
+ * @property User        $contributor    (Via magic method)
  * @method static Cutiemark find(int $id)
  * @method static Cutiemark[] find_by_sql($sql, $data = null)
  * @method static Cutiemark[] find_all_by_appearance_id(int $appearance_id)
@@ -110,6 +112,50 @@ class Cutiemark extends NSModel {
 	 */
 	public function getFacingSVGURL(){
 		return $this->appearance->getFacingSVGURL($this->facing);
+	}
+
+
+	/**
+	 * @param bool $wrap
+	 *
+	 * @return string
+	 * @throws \Exception
+	 */
+	public function getListItemForAppearancePage($wrap = WRAP){
+		$facing = $this->facing !== null ? 'Facing '.CoreUtils::capitalize($this->facing) : 'Symmetrical';
+		$facingSVG = $this->getFacingSVGURL();
+		$preview = CoreUtils::aposEncode($this->getRenderedURL());
+
+		$canEdit = Permission::sufficient('staff') || (Auth::$signed_in && $this->appearance->owner_id === Auth::$user->id);
+		$hasLabel = $this->label !== null;
+		$id = $canEdit ? "<span class='cm-id'>{$this->id}</span> " : '';
+		$title = "<span class='title'>$id".($hasLabel ? CoreUtils::escapeHTML($this->label) : $facing).'</span>';
+		$subtitle = $hasLabel ? "\n<span class='subtitle'>$facing</span>" : '';
+
+		$links = "<a href='/cg/cutiemark/download/{$this->id}' class='btn link typcn typcn-download'>SVG</a>";
+		if ($canEdit){
+			$who = ($this->appearance->owner_id !== null ? 'Owner and ' : '').'Staff';
+			$links .= "<a href='/cg/cutiemark/download/{$this->id}?source' class='btn orange typcn typcn-download' title='Download the original file as uploaded ($who only)'></a>";
+		}
+		if (($this->favme ?? null) !== null)
+			$links .= "<a href='http://fav.me/{$this->favme}' class='btn btn-da typcn'>Source</a>";
+
+		$madeby = '';
+		if ($this->contributor !== null){
+			$userlink = $this->contributor->toAnchor(User::WITH_AVATAR);
+			$madeby = "<span class='madeby'>By $userlink</span>";
+		}
+
+		$rotate = $this->rotation !== 0 ? "transform:rotate({$this->rotation}deg)" : '';
+		$content = <<<HTML
+$title$subtitle
+<div class="preview" style="background-image:url('{$facingSVG}')">
+	<div class="img" style="background-image:url('{$preview}');$rotate"></div>
+</div>
+<div class="dl-links">$links</div>
+$madeby
+HTML;
+		return $wrap ? "<li class='pony-cm' id='cm{$this->id}'>$content</li>" : $content;
 	}
 
 	public function to_js_response(){
