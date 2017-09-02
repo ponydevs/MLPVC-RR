@@ -29,6 +29,8 @@ $router->addMatchTypes([
 $router->map('GET', '/',                               'EpisodeController#index');
 $router->map('GET', '/footer-git',                     'FooterController#git');
 $router->map('GET', '/about',                          'AboutController#index');
+$router->map('GET', '/about/browser/[i:session]?',     'AboutController#browser');
+$router->map('GET', '/browser/[i:session]?',           'AboutController#browser');
 $router->map('GET', '/admin',                          'AdminController#index');
 $router->map('GET', '/logs/[i]?',                      'AdminController#log');
 $router->map('GET', '/admin/logs/[i]?',                'AdminController#log');
@@ -37,7 +39,6 @@ $router->map('GET', '/admin/usefullinks',              'AdminController#usefulLi
 $router->map('GET', '/admin/wsdiag',                   'AdminController#wsdiag');
 $router->map('GET', '/admin/ip/[ip:ip]',               'AdminController#ip');
 $router->map('GET', '/blending',                       'ColorGuideController#blending');
-$router->map('GET', '/browser/[i:session]?',           'BrowserController#index');
 $router->map('GET', '/components',                     'ComponentsController#index');
 $router->map('GET',      '/[cg]/blending',                                      'ColorGuideController#blending');
 $router->map('GET',      '/[cg]/blending-reverse',                              'ColorGuideController#blendingReverse');

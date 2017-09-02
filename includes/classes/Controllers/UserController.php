@@ -277,37 +277,37 @@ class UserController extends Controller {
 		if (!isset(self::CONTRIB_NAMES[$params['type']]))
 			CoreUtils::notFound();
 
-		$targetUser = Users::get($params['name'], 'name');
-		if (empty($targetUser))
+		$User = Users::get($params['name'], 'name');
+		if (empty($User))
 			CoreUtils::notFound();
-		if ($targetUser->id !== (Auth::$user->id ?? null) && $params['type'] === 'requests' && Permission::insufficient('staff'))
+		if ($User->id !== (Auth::$user->id ?? null) && $params['type'] === 'requests' && Permission::insufficient('staff'))
 			CoreUtils::notFound();
 
-		$paginationPath = "@{$targetUser->name}/contrib/{$params['type']}";
+		$paginationPath = "@{$User->name}/contrib/{$params['type']}";
 
 		$itemsPerPage = 10;
 		$Pagination = new Pagination($paginationPath, $itemsPerPage);
 
 		switch ($params['type']){
 			case 'cms-provided':
-				$cnt = $targetUser->getCMContributions();
+				$cnt = $User->getCMContributions();
 				$Pagination->calcMaxPages($cnt);
-				$data = $targetUser->getCMContributions(false, $Pagination);
+				$data = $User->getCMContributions(false, $Pagination);
 			break;
 			case 'requests':
-				$cnt = $targetUser->getRequestContributions();
+				$cnt = $User->getRequestContributions();
 				$Pagination->calcMaxPages($cnt);
-				$data = $targetUser->getRequestContributions(false, $Pagination);
+				$data = $User->getRequestContributions(false, $Pagination);
 			break;
 			case 'reservations':
-				$cnt = $targetUser->getReservationContributions();
+				$cnt = $User->getReservationContributions();
 				$Pagination->calcMaxPages($cnt);
-				$data = $targetUser->getReservationContributions(false, $Pagination);
+				$data = $User->getReservationContributions(false, $Pagination);
 			break;
 			case 'finished-posts':
-				$cnt = $targetUser->getFinishedPostContributions();
+				$cnt = $User->getFinishedPostContributions();
 				$Pagination->calcMaxPages($cnt);
-				$data = $targetUser->getFinishedPostContributions(false, $Pagination);
+				$data = $User->getFinishedPostContributions(false, $Pagination);
 				foreach ($data as &$item){
 					$isRequest = !empty($item['requested_by']);
 					if (!$isRequest)
@@ -317,9 +317,9 @@ class UserController extends Controller {
 				unset($item);
 			break;
 			case 'fulfilled-requests':
-				$cnt = $targetUser->getApprovedFinishedRequestContributions();
+				$cnt = $User->getApprovedFinishedRequestContributions();
 				$Pagination->calcMaxPages($cnt);
-				$data = $targetUser->getApprovedFinishedRequestContributions(false, $Pagination);
+				$data = $User->getApprovedFinishedRequestContributions(false, $Pagination);
 			break;
 			default:
 				throw new \RuntimeException(__METHOD__.": Mising data retriever for type {$params['type']}");
@@ -329,8 +329,8 @@ class UserController extends Controller {
 
 		$Pagination->respondIfShould(Users::getContributionListHTML($params['type'], $data, NOWRAP), '#contribs');
 
-		$title = "Page {$Pagination->page} - ".self::CONTRIB_NAMES[$params['type']].' - '.CoreUtils::posess($targetUser->name).' Contributions';
-		$heading = self::CONTRIB_NAMES[$params['type']].' by '.$targetUser->toAnchor();
+		$title = "Page {$Pagination->page} - ".self::CONTRIB_NAMES[$params['type']].' - '.CoreUtils::posess($User->name).' Contributions';
+		$heading = self::CONTRIB_NAMES[$params['type']].' by '.$User->toAnchor();
 		CoreUtils::loadPage(__METHOD__, [
 			'title' => $title,
 			'heading' => $heading,
@@ -341,8 +341,8 @@ class UserController extends Controller {
 				'params' => $params,
 				'Pagination' => $Pagination,
 				'itemsPerPage' => $itemsPerPage,
-				'nav_contrib' => true,
-				'targetUser' => $targetUser,
+				'User' => $User,
+				'contribName' => self::CONTRIB_NAMES[$params['type']],
 			],
 		]);
 	}

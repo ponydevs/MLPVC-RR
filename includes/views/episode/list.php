@@ -6,6 +6,7 @@ use App\Permission;
 /** @var $Movies \App\Models\Episode[] */
 /** @var $EpisodesPagination \App\Pagination */
 /** @var $MoviesPagination \App\Pagination */
+/** @var $areMovies bool */
 global $EP_TITLE_REGEX; ?>
 <div id="content">
 	<div class="sidebyside">

@@ -24,33 +24,6 @@
 				}
 			}
 		}
-		&.useful-links {
-			ol {
-				margin: 5px 0 0;
-				font-size: 1.2em;
-				padding-left: 30px;
-
-				&:empty:before {
-					content: "There are no useful links in the database";
-					font-style: italic;
-				}
-
-				li {
-					&:not(:last-child) { margin-bottom: 10px }
-
-					.buttons {
-						margin-top: 5px;
-
-						button, .btn {
-							margin: 0;
-							&:not(:last-child) { margin-right: 10px }
-						}
-
-						.typcn-arrow-move { cursor: move !important }
-					}
-				}
-			}
-		}
 		&.mass-approve {
 			@media all and (max-width: $Breakpoint){
 				display: none;

@@ -136,6 +136,8 @@ ga('send','pageview');
 <?php include INCPATH.'views/_sidebar.php'; ?>
 	</aside>
 
+	<div id="breadcrumbs"><?=CoreUtils::getBreadcrumbsHTML($fatalErrorPage, $scope, $view ?? null)?></div>
+
 	<div id="main">
 <?  if (isset($view) && $view instanceof View)
 		require $view;

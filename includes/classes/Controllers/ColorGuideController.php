@@ -493,7 +493,7 @@ class ColorGuideController extends Controller {
 			'import' => [
 				'Ponies' => $Ponies,
 				'Pagination' => $Pagination,
-				'Owner' => $this->_ownedBy,
+				'User' => $this->_ownedBy,
 				'isOwner' => $this->_isOwnedByUser,
 			],
 		];

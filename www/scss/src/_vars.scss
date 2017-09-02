@@ -328,22 +328,7 @@ $NoScrollbar: false;
 }
 
 %navbar-li {
-	&.active {
-		background-color: rgba(255, 255, 255, .25);
-		border-radius: 3px;
-
-		a:not(:link) {
-			background-color: rgba(255, 255, 255, .15);
-			transition: none;
-			cursor: default;
-
-			&:not(:first-child) {
-				margin-left: 2px;
-			}
-		}
-	}
-
-	a, span {
+	a {
 		display: inline-block;
 		color: inherit;
 		text-decoration: none;
@@ -352,8 +337,6 @@ $NoScrollbar: false;
 		line-height: 22px;
 		border-radius: 3px;
 		box-sizing: border-box;
-	}
-	a {
 		cursor: pointer;
 		transition: background-color .2s linear;
 

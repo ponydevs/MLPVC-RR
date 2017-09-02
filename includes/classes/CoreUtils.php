@@ -733,7 +733,7 @@ class CoreUtils {
 	public static $NavHTML;
 
 	/**
-	 * Returns the HTML code of the navigation in the header
+	 * Returns the HTML code of the main navigation in the header
 	 *
 	 * @param bool  $disabled
 	 * @param array $scope    Contains the variables passed to the current page
@@ -750,127 +750,52 @@ class CoreUtils {
 		// Navigation items
 		if (!$disabled){
 			$NavItems = [
-				'latest' => ['/', 'Latest episode'],
-				'eps' => ['/episodes', 'Episodes'],
+				['/', 'Latest episode'],
+				['/episodes', 'Episodes'],
+				['/cg', 'Color Guide'],
+				['/events', 'Events'],
 			];
-			if ($do === 'episode' && isset($scope['areMovies'])){
-				if (isset($scope['Episodes']) && $scope['areMovies'] === false)
-					$NavItems['eps'][1] .= " - Page {$scope['Pagination']->page}";
-				else if (isset($scope['Movies'])){
-					$NavItems['eps'][0] = '/movies';
-					$NavItems['eps'][1] = "Movies - Page {$scope['Pagination']->page}";
-				}
-			}
-			if (($do === 'episode' || $do === 's' || $do === 'movie' || $do === 'home') && !empty($scope['CurrentEpisode'])){
-				if ($scope['CurrentEpisode']->is_movie)
-					$NavItems['eps'][1] = 'Movies';
-				if ($scope['CurrentEpisode']->isLatest())
-					$NavItems['latest'][0] = $_SERVER['REQUEST_URI'];
-				else $NavItems['eps']['subitem'] = self::cutoff($scope['heading'],Episodes::TITLE_CUTOFF);
-			}
-			$NavItems['colorguide'] = ['/cg'.(!empty($scope['EQG'])?'/eqg':''), (!empty($scope['EQG'])?'EQG ':'').'Color Guide'];
-			if ($do === 'colorguide' && !isset($scope['Owner'])){
-				if (!empty($scope['Appearance']))
-					$NavItems['colorguide']['subitem'] = (isset($scope['Map'])? 'Sprite Colors - ' :'').self::escapeHTML($scope['Appearance']->label);
-				else if (isset($scope['Ponies']))
-					$NavItems['colorguide'][1] .= " - Page {$scope['Pagination']->page}";
-				else if (isset($scope['nav_picker']))
-					$NavItems['colorguide']['subitem'] = $scope['title'];
-				else if (isset($scope['nav_blending']))
-					$NavItems['colorguide']['subitem'] = $scope['title'];
-				else {
-					if (preg_match(new RegExp('full($|\?)'),$_SERVER['REQUEST_URI'])){
-						$NavItems['colorguide']['subitem'] = 'Full '.($scope['EQG']?'Character':'Pony').' List';
-					}
-					else {
-						if (isset($scope['Tags'])) $pagePrefix = 'Tags';
-						else if (isset($scope['Changes'])) $pagePrefix = 'Major Color Changes';
-						else $pagePrefix = null;
-
-						if (isset($scope['Pagination']))
-							$NavItems['colorguide']['subitem'] = ($pagePrefix !== null ? "$pagePrefix - " : '')."Page {$scope['Pagination']->page}";
-					}
-				}
-
-			}
-			$NavItems['events'] = ['/events', 'Events'];
-			if ($do === 'event'){
-				if (isset($scope['Event']))
-					$NavItems['events']['subitem'] = self::cutoff($scope['Event']->name, 20);
-				else if (isset($scope['Events']))
-					$NavItems['events'][1] .= " - Page {$scope['Pagination']->page}";
-			}
-			if (Auth::$signed_in){
-				$NavItems['u'] = ['/@'.Auth::$user->name, 'Account'];
-				if (isset($scope['nav_contrib']) && $scope['targetUser']->id === Auth::$user->id)
-					$NavItems['u']['subitem'] = "Your Contributions - Page {$scope['Pagination']->page}";
-				else if (isset($scope['Owner']) && $scope['Owner']->id === Auth::$user->id)
-					$NavItems['u']['subitem'] = 'Personal Color Guide';
-			}
-			if ($do === 'user' || Permission::sufficient('staff')){
-				$NavItems['users'] = ['/users', 'Users', Permission::sufficient('staff')];
-				if (!empty($scope['User']) && empty($scope['sameUser']))
-					$NavItems['users']['subitem'] = $scope['User']->name;
-			}
+			if (Auth::$signed_in)
+				$NavItems[] = ['/@'.Auth::$user->name, 'Account'];
 			if (Permission::sufficient('staff')){
-				$NavItems['admin'] = ['/admin', 'Admin'];
-				if (isset($scope['LogItems']))
-					$NavItems['admin']['subitem'] = "Logs - Page {$scope['Pagination']->page}";
-				else if (isset($scope['nav_adminip']))
-					$NavItems['admin']['subitem'] = 'Details of IP '.self::cutoff($scope['ip'], 15);
-				else if (isset($scope['nav_dsc']) || isset($scope['nav_wsdiag']))
-					$NavItems['admin']['subitem'] = $scope['heading'];
+				$NavItems[] = ['/users', 'Users'];
+				$NavItems[] = ['/admin', 'Admin'];
 			}
 			$NavItems[] = ['/about', 'About'];
 		}
-		else $NavItems = [[true, 'HTTP 503', false, 'subitem' => 'Service Temporarily Unavailable']];
+		else $NavItems = [];
 
 		self::$NavHTML = '';
-		foreach ($NavItems as $item){
-			$sublink = '';
-			if (isset($item['subitem'])){
-				[$class, $sublink] = self::_processHeaderLink([true, $item['subitem']]);
-				$sublink = " &rsaquo; $sublink";
-				$link = self::_processHeaderLink($item, HTML_ONLY);
-			}
-			else if (isset($item[2]) && !$item[2])
-				continue;
-			else [$class, $link] = self::_processHeaderLink($item);
-			self::$NavHTML .= "<li$class>$link$sublink</li>";
-		}
+		foreach ($NavItems as $item)
+			self::$NavHTML .= "<li><a href='{$item[0]}'>{$item[1]}</a></li>";
 		self::$NavHTML .= '<li><a href="http://mlp-vectorclub.deviantart.com/" target="_blank" rel="noopener">MLP-VectorClub</a></li>';
 		return self::$NavHTML;
 	}
 
 	/**
-	 * Header link HTML generator
+	 * Returns the HTML code of the secondary breadcrumbs navigation
 	 *
-	 * @param string[] $item     A header navigation item
-	 * @param bool     $htmlOnly Return just the HTML
+	 * @param bool  $disabled
+	 * @param array $scope    Contains the variables passed to the current page
+	 * @param View  $view     Contains the view object that the current page was resolved by
 	 *
-	 * @return array|string
+	 * @return string
 	 */
-	private static function _processHeaderLink($item, $htmlOnly = false){
-		static $currentSet;
+	public static function getBreadcrumbsHTML($disabled = false, array $scope = [], ?View $view = null):string {
+		$breadcrumb = '';
+		// Navigation items
+		if (!$disabled){
+			if ($view == null)
+				return '';
 
-		[$path, $label] = $item;
-		$RQURI = strtok($_SERVER['REQUEST_URI'], '?');
-		$current = (!$currentSet || $htmlOnly === HTML_ONLY) && ($path === true || preg_match(new RegExp("^$path($|/)"), $RQURI));
-		$class = '';
-		if ($current){
-			$currentSet = true;
-			$class = " class='active'";
+			try {
+				$breadcrumb = $view->getBreadcrumb($scope);
+			}
+			catch(\TypeError $e){}
 		}
+		else $breadcrumb = (new NavBreadcrumb('HTTP 503'))->setChild(new NavBreadcrumb('Service Temporarily Unavailable'));
 
-		$perm = $item[2] ?? true;
-
-		if ($perm){
-			$href = $current && $htmlOnly !== HTML_ONLY ? '' : " href='$path'";
-			$html = "<a$href>$label</a>";
-		}
-		else $html = "<span>$label</span>";
-
-		return $htmlOnly === HTML_ONLY ? $html : [$class, $html];
+		return (string)$breadcrumb;
 	}
 
 	/**

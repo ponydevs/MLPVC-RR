@@ -13,6 +13,7 @@ use App\Logs;
 use App\Models\Logs\Banish;
 use App\Models\Logs\Unbanish;
 use App\Models\Logs\DANameChange;
+use App\NavBreadcrumb;
 use App\Pagination;
 use App\Permission;
 use App\Posts;
@@ -660,5 +661,13 @@ HTML;
 		}
 
 		return $wrap ? "<section class='awaiting-approval'>$HTML</section>" : $HTML;
+	}
+
+	public function getPCGBreadcrumb($active = false){
+		return (new NavBreadcrumb('Users', '/users'))->setActive(Permission::insufficient('staff'))->setChild(
+			(new NavBreadcrumb($this->name, $this->toURL()))->setChild(
+				(new NavBreadcrumb('Personal Color Guide', $this->toURL().'/cg'))->setActive($active)
+			)
+		);
 	}
 }
