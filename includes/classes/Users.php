@@ -430,7 +430,7 @@ HTML;
 					/** @var $item \App\Models\Cutiemark */
 					$appearance = $item->appearance;
 					$preview = $appearance->toAnchorWithPreview();
-					$deviation = "<div class='deviation-promise' data-favme='{$item->favme}'></div>";
+					$deviation = $item->favme !== null ? "<div class='deviation-promise' data-favme='{$item->favme}'></div>" : self::NOPE;
 
 					$TR = <<<HTML
 <td class="pony-link">$preview</td>

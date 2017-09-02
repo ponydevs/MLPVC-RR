@@ -284,17 +284,16 @@ class User extends AbstractUser implements LinkableInterface {
 		$query =
 			"SELECT $cols
 			FROM cutiemarks c
-			LEFT JOIN cached_deviations d ON d.id = c.favme
 			LEFT JOIN appearances p ON p.id = c.appearance_id
-			WHERE d.author = ? AND p.owner_id IS NULL";
+			WHERE c.contributor_id = ? AND p.owner_id IS NULL";
 
 		if ($count)
-			return DB::$instance->querySingle($query, [$this->name])['cnt'];
+			return DB::$instance->querySingle($query, [$this->id])['cnt'];
 
 		if ($pagination)
-			$query .= ' ORDER BY p.order ASC '.$pagination->getLimitString();
+			$query .= " GROUP BY $cols ORDER BY MIN(p.order) ASC ".$pagination->getLimitString();
 
-		return Cutiemark::find_by_sql($query, [$this->name]);
+		return Cutiemark::find_by_sql($query, [$this->id]);
 	}
 
 	/**
