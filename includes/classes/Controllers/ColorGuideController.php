@@ -1049,6 +1049,7 @@ class ColorGuideController extends Controller {
 				/** @var $NewCMs Cutiemark[] */
 				$NewCMs = [];
 				$NewIDs = [];
+				$labels = [];
 				foreach ($data as $i => $item){
 					if (isset($item['id'])){
 						$cm = Cutiemark::find($item['id']);
@@ -1079,6 +1080,9 @@ class ColorGuideController extends Controller {
 							CoreUtils::checkStringValidity($item['label'], 'Cutie Mark label', INVERSE_PRINTABLE_ASCII_PATTERN);
 							if (Input::checkStringLength($item['label'], [1, 32]) === Input::ERROR_RANGE)
 								Response::fail('Cutie mark label must be between 1 and 32 chars long');
+							if (isset($labels[$item['label']]))
+								Response::fail('Cutie mark labels must be unique within an appearance');
+							else $labels[$item['label']] = true;
 							$label = $item['label'];
 						}
 					}
@@ -2110,7 +2114,11 @@ HTML;
 
 		$file = $source ? $cutiemark->getSourceFilePath() : $cutiemark->getRenderedFilePath();
 
-		CoreUtils::downloadFile($file, CoreUtils::posess($cutiemark->appearance->label).' Cutie Mark'.($source?' (source)':'').'.svg');
+		$filename = $cutiemark->label === null
+			? CoreUtils::posess($cutiemark->appearance->label).' Cutie Mark'
+			: $cutiemark->appearance->label.' - '.$cutiemark->label;
+
+		CoreUtils::downloadFile($file, $filename.($source?' (source)':'').'.svg');
 	}
 
 	public function sanitizeSvg($params){
