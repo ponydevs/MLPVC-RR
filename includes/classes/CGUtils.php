@@ -481,7 +481,7 @@ HTML;
 		Image::outputSVG($img,$OutputPath,$FileRelPath);
 	}
 
-	public static function renderCMSVG(Cutiemark $CutieMark){
+	public static function renderCMSVG(Cutiemark $CutieMark, bool $output = true){
 		if (empty($CutieMark))
 			CoreUtils::notFound();
 
@@ -494,6 +494,10 @@ HTML;
 		if ($tokenized === null)
 			CoreUtils::notFound();
 		$img = self::untokenizeSvg($tokenized, $CutieMark->appearance_id);
+		if (!$output){
+			File::put($OutputPath, $img);
+			return;
+		}
 		Image::outputSVG($img,$OutputPath,$FileRelPath);
 	}
 

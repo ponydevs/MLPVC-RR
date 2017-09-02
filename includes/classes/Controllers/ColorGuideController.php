@@ -2114,6 +2114,9 @@ HTML;
 
 		$file = $source ? $cutiemark->getSourceFilePath() : $cutiemark->getRenderedFilePath();
 
+		if (!$source && !file_exists($file))
+			CGUtils::renderCMSVG($cutiemark, false);
+
 		$filename = $cutiemark->label === null
 			? CoreUtils::posess($cutiemark->appearance->label).' Cutie Mark'
 			: $cutiemark->appearance->label.' - '.$cutiemark->label;
