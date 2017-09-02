@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Auth;
 use App\CGUtils;
 use App\CoreUtils;
 use App\DeviantArt;

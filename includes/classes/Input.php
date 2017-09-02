@@ -232,11 +232,11 @@ class Input {
 		return self::ERROR_NONE;
 	}
 
-	public static function checkStringLength($value, $range, int &$code = self::ERROR_NONE){
+	public static function checkStringLength($value, $range, &$code = self::ERROR_NONE){
 		$code = self::_numberInRange(CoreUtils::length($value), $range);
 		return $code;
 	}
-	public static function checkNumberRange($value, $range, int &$code = self::ERROR_NONE){
+	public static function checkNumberRange($value, $range, &$code = self::ERROR_NONE){
 		$code = self::_numberInRange($value, $range);
 		return $code;
 	}
