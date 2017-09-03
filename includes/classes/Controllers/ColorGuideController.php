@@ -2019,6 +2019,9 @@ HTML;
 	public function blendingReverse(){
 		global $HEX_COLOR_REGEX;
 
+		if (Permission::insufficient('staff'))
+			CoreUtils::notFound();
+
 		CoreUtils::fixPath('/cg/blending-reverse');
 
 		$HexPattern = preg_replace(new RegExp('^/(.*)/.*$'),'$1',$HEX_COLOR_REGEX->jsExport());
