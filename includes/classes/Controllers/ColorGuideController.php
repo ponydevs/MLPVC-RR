@@ -1732,6 +1732,10 @@ HTML;
 			]
 		]))->out();
 		CoreUtils::checkStringValidity($label, 'Color group label', INVERSE_PRINTABLE_ASCII_PATTERN, true);
+		if (!$adding)
+			DB::$instance->where('id',$Group->id,'!=');
+		if (DB::$instance->where('appearance_id', $Group->appearance_id)->where('label', $label)->has(ColorGroup::$table_name))
+			Response::fail('There is already a color group with the same name on this appearance.');
 		$Group->label = $label;
 
 		if ($Group->appearance->owner_id === null){
