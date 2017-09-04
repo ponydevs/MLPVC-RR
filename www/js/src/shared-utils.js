@@ -507,7 +507,7 @@
 		return Math.round(number*pow)/pow;
 	};
 
-	$.rangeLimit = function(input, overflow){
+	$.rangeLimit = function(input, overflow = false){
 		let min, max, paramCount = 2;
 		switch (arguments.length-paramCount){
 			case 1:
@@ -833,7 +833,8 @@
 				let output = null;
 				if (color instanceof $.RGBAColor)
 					return color;
-				if (typeof color === "string")
+				if (typeof color === "string"){
+					color = color.trim();
 					$.each(PATTERNS, (index, pattern) => {
 						let result = this._parseWith(color, pattern, index);
 						if (result === null)
@@ -842,6 +843,7 @@
 						output = result;
 						return false;
 					});
+				}
 
 				return output;
 			}

@@ -27,8 +27,10 @@ $(function(){
 			this.backupImage = this.$backupImage.get(0);
 			this.overlayColor = new $.RGBAColor(255,0,255,0.75);
 			this.haveImage = false;
+			this.filterOverrideActive = false;
 			this.fileName = null;
 			this.selectedFilterColor = null;
+			this.$freezing = $('#freezing');
 			this.$preview = $('#preview');
 			this.$previewImageCanvas = $('#preview-image');
 			this.previewImageCanvas = this.$previewImageCanvas.get(0);
@@ -99,7 +101,19 @@ $(function(){
 				if (!this.haveImage || this.selectedFilterColor === null)
 					return;
 
-				this.previewImageCanvas.toBlob(blob => {
+				let target;
+				if (this.isOverlayEnabled()){
+					target = document.createElement('canvas');
+					target.width = this.previewImageCanvas.width;
+					target.height = this.previewImageCanvas.height;
+					const targetctx = target.getContext('2d');
+
+					targetctx.drawImage(this.previewImageCanvas, 0, 0);
+					targetctx.drawImage(this.previewOverlayCanvas, 0, 0);
+				}
+				else target = this.previewImageCanvas;
+
+				target.toBlob(blob => {
 					const ins = ' (no '+this.getFilterType()+' filter)';
 					saveAs(blob, this.fileName.replace(/^(.*?)(\.(?:[^.]+))?$/,`$1${ins}$2`) || 'image'+ins+'.png');
 				});
@@ -147,6 +161,46 @@ $(function(){
 				});
 			});
 			this.$overlayColorInput.val(this.overlayColor.toString()).trigger('input');
+			$('#filter-override').find('input[type="checkbox"]').on('change input', e => {
+				this.filterOverrideActive = e.target.checked;
+
+				this.$filterCandidates.parent()[this.filterOverrideActive ? 'addClass' : 'removeClass']('hidden');
+				if (this.filterOverrideActive)
+					this.updateOverriddenFilterColor();
+				else {
+					const $sel = this.$filterCandidates.children('.selected');
+					this.selectedFilterColor = $sel.length ? $.RGBAColor.parse($sel.attr('data-rgba')) : null;
+					this.updatePreview();
+				}
+			});
+			this.$filterOverrideOpacity = $('#filter-override-opacity').on('change', e => {
+				e.target.value = $.rangeLimit(e.target.value,false,0,100);
+				this.updateOverriddenFilterColor();
+			});
+			this.$filterOverrideColor = $('#filter-override-color').on('change',e => {
+				const newcolor =  $.RGBAColor.parse(e.target.value);
+				if (newcolor === null)
+					return;
+
+				e.target.value = newcolor.toHex();
+				this.updateOverriddenFilterColor();
+			}).on('change input blur',e => {
+				const
+					$el = $(e.target),
+					val = $.RGBAColor.parse(e.target.value);
+				if (val === null){
+					$el.css({
+						color: '',
+						backgroundColor: '',
+					});
+					return;
+				}
+
+				$el.css({
+					color: val.isLight() ? 'black' : 'white',
+					backgroundColor: val.toHex(),
+				});
+			});
 
 			this.addKnownValueInputRow(true);
 			this.addKnownValueInputRow();
@@ -155,10 +209,27 @@ $(function(){
 			/// DEBUG ///
 			this.addKnownValueInputRow();
 			this.addKnownValueInputRow();
-			const vals = ['#FFFF00','#AABD39','#0000FF','#2B3EB8','#00ff00','#2BBD39','#FF0000','#AA3E39'];
+			const vals = ['#9BDBF5','#364AAB','#F9B764','#573F45','#1B98D1','#093395','#EC4141','#52152D'];
 			this.$knownColorsTbody.find('input').each((i, el) => {
 				$(el).val(vals[i]).trigger('blur');
 			});
+			this.$filterOverrideOpacity.val(75);
+			this.$filterOverrideColor.val('#221F9A').trigger('blur');
+		}
+		isOverlayEnabled(){
+			return !this.$previewOverlayCanvas.hasClass('hidden');
+		}
+		updateOverriddenFilterColor(){
+			if (!this.filterOverrideActive)
+				return;
+
+			const filterColor = $.RGBAColor.parse(this.$filterOverrideColor.val());
+			if (filterColor !== null){
+				filterColor.alpha = this.$filterOverrideOpacity.val()/100;
+			}
+			this.selectedFilterColor = filterColor;
+
+			this.updatePreview();
 		}
 		createKnownValueInput(className){
 			return $.mk('td').attr('class','color-cell '+className).append(
@@ -202,6 +273,7 @@ $(function(){
 					this.createKnownValueInput('filtered'),
 					$.mk('td').attr('class','actions').append(
 						$.mk('button').attr({
+							disabled: anchor,
 							'class':'red typcn typcn-minus',
 							title: 'Remove known color pair',
 						}).on('click', e => {
@@ -233,15 +305,18 @@ $(function(){
 								return;
 							}
 
-							$tr.addClass(refclass).siblings().removeClass(refclass).find('button.darkblue').enable();
-							$el.disable();
+							$tr.addClass(refclass).siblings().removeClass(refclass).find('button').enable();
+							$el.siblings().addBack().disable();
 							this.updateFilterCandidateList();
 						})
 					)
 				)
 			);
-			if (this.$knownColorsTbody.children().length >= 2)
-				this.$knownColorsTbody.find('button.red').enable().removeClass('hidden');
+			if (this.$knownColorsTbody.children().length >= 2){
+				let $trs = this.$knownColorsTbody.children();
+				$trs.find('button.red').removeClass('hidden');
+				$trs.filter(':not(.reference)').find('button.red').enable();
+			}
 		}
 		redrawPreviewImage(){
 			this.previewOverlayCanvas.width =
@@ -286,27 +361,40 @@ $(function(){
 			const overlayData = this.previewOverlayCtx.getImageData(0,0,this.previewOverlayCanvas.width,this.previewOverlayCanvas.height);
 			const calculator = this.getReverseCalculator();
 
-			for (let i=0; i<imgData.data.length; i+=4){
-				$.each(RGB, (_, k) => {
-					const j = ix(i, k);
-					const newpixel = calculator(this.selectedFilterColor.alpha, this.selectedFilterColor[k], imgData.data[j]);
-					const toobig = newpixel-maxdiff > 255;
-					const toosmall = newpixel+maxdiff < 0;
+			this.$freezing.removeClass('hidden');
+
+			setTimeout(() => {
+				for (let i=0; i<imgData.data.length; i+=4){
+					let toosmall = false;
+					let toobig = false;
+					$.each(RGB, (_, k) => {
+						const j = ix(i, k);
+						const newpixel = calculator(this.selectedFilterColor.alpha, this.selectedFilterColor[k], imgData.data[j]);
+						if (!toobig && newpixel-maxdiff > 255)
+							toobig = true;
+						if (!toosmall && newpixel+maxdiff < 0)
+							toosmall = true;
+						imgData.data[j] = $.rangeLimit(newpixel, false, 0, 255);
+					});
 					if (toosmall || toobig){
 						overlayData.data[i] = this.overlayColor.red;
 						overlayData.data[i+1] = this.overlayColor.green;
 						overlayData.data[i+2] = this.overlayColor.blue;
-						overlayData.data[i+3] = this.overlayColor.alpha;
+						overlayData.data[i+3] = this.overlayColor.alpha*255;
 					}
-					imgData.data[j] = $.rangeLimit(newpixel, false, 0, 255);
-				});
-			}
-			this.previewImageCtx.putImageData(imgData,0,0);
-			this.previewOverlayCtx.putImageData(overlayData,0,0);
+				}
+				this.previewImageCtx.putImageData(imgData,0,0);
+				this.previewOverlayCtx.putImageData(overlayData,0,0);
+
+				this.$freezing.addClass('hidden');
+			},200);
 		}
 		updateFilterCandidateList(){
 			let reference = null;
 			const pairs = [];
+
+			this.$filterCandidates.empty();
+			this.selectedFilterColor = null;
 
 			this.$knownColorsTbody.children().each((_, el) => {
 				const
@@ -328,9 +416,6 @@ $(function(){
 				return;
 
 			let allfilters = this.getValidFilterValues(reference.original, reference.filtered);
-
-			this.$filterCandidates.empty();
-			this.selectedFilterColor = null;
 
 			// Store in an object to avoid dupes & increase a confidence count if dupes are found
 			let
