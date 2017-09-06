@@ -1,4 +1,4 @@
 <div id="content">
 	<h1>403 Unathorized</h1>
-	<p>You need to be logged in &amp; have the required permissions to view this content</p>
+	<p>You <?=\App\Auth::$signed_in ? "don't have permission" : 'must be logged in'?> to view this content</p>
 </div>
